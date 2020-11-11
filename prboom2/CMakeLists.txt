@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project("PrBoom-Plus" VERSION 2.5.1.7)
+project("dsda-doom" VERSION 0.1.0)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
