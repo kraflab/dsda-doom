@@ -85,6 +85,7 @@
 #include "r_demo.h"
 #include "r_fps.h"
 #include "e6y.h"//e6y
+#include "dsda.h"
 #include "statdump.h"
 
 #define SAVEGAMESIZE  0x20000
@@ -1178,17 +1179,7 @@ void G_Ticker (void)
         }
     }
     
-    // dsda - track pacifist
-    if (!pacifist && track_pacifist)
-    {
-      static dboolean pacifist_note_shown = false;
-      
-      if (!pacifist_note_shown)
-      {
-        pacifist_note_shown = true;
-        doom_printf ("Not pacifist!");
-      }
-    }
+    dsda_TrackPacifist();
   }
 
   // cph - if the gamestate changed, we may need to clean up the old gamestate
