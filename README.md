@@ -2,6 +2,7 @@
 This is a fork of prboom+ with extra tooling for dsda.
 
 ### New Stuff
+- Use `-analysis` to write an analysis.txt file with run details (wip).
 - Use `-track_pacifist` to enable a "Not pacifist!" message to appear when breaking the category rules.
 
 ### PRBoom+ Stuff (since 2.5.1.5 - heavily abridged)

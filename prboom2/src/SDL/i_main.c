@@ -76,6 +76,7 @@ typedef BOOL (WINAPI *SetAffinityFunc)(HANDLE hProcess, DWORD mask);
 #include <stdlib.h>
 
 #include "e6y.h"
+#include "dsda.h"
 
 /* Most of the following has been rewritten by Lee Killough
  *
@@ -373,6 +374,7 @@ static void I_Quit (void)
       G_CheckDemoStatus();
     M_SaveDefaults ();
     I_DemoExShutdown();
+    dsda_WriteAnalysis();
   }
 }
 
