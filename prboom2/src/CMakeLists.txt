@@ -17,6 +17,8 @@ set(COMMON_SRC
     doomstat.c
     doomstat.h
     doomtype.h
+    dsda.c
+    dsda.h
     dstrings.c
     dstrings.h
     d_deh.c

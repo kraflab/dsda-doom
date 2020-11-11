@@ -78,6 +78,7 @@
 #include "r_sky.h"
 #include "am_map.h"
 #include "hu_tracers.h"
+#include "dsda.h"
 #ifdef GL_DOOM
 #include "gl_struct.h"
 #include "gl_intern.h"
@@ -292,6 +293,8 @@ void e6y_InitCommandLine(void)
     M_AddParam("-turbo");
     M_AddParam("50");
   }
+  
+  dsda_ReadCommandLine();
   
   track_pacifist = M_CheckParm("-track_pacifist"); // dsda - track pacifist
 
