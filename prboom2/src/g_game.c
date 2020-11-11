@@ -1177,6 +1177,18 @@ void G_Ticker (void)
             }
         }
     }
+    
+    // dsda - track pacifist
+    if (!pacifist && track_pacifist)
+    {
+      static dboolean pacifist_note_shown = false;
+      
+      if (!pacifist_note_shown)
+      {
+        pacifist_note_shown = true;
+        doom_printf ("Not pacifist!");
+      }
+    }
   }
 
   // cph - if the gamestate changed, we may need to clean up the old gamestate

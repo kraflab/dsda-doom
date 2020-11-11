@@ -292,6 +292,8 @@ void e6y_InitCommandLine(void)
     M_AddParam("-turbo");
     M_AddParam("50");
   }
+  
+  track_pacifist = M_CheckParm("-track_pacifist"); // dsda - track pacifist
 
   // TAS-tracers
   InitTracers();
@@ -834,6 +836,7 @@ int I_MessageBox(const char* text, unsigned int type)
 
 int stats_level;
 int stroller;
+int track_pacifist; // dsda - track pacifist
 int numlevels = 0;
 int levels_max = 0;
 timetable_t *stats = NULL;

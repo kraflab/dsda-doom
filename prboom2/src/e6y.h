@@ -292,6 +292,8 @@ const char* WINError(void);
 
 extern int stats_level;
 extern int stroller;
+extern int track_pacifist; // dsda - track pacifist
+
 void e6y_G_DoCompleted(void);
 void e6y_WriteStats(void);
 

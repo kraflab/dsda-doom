@@ -371,6 +371,8 @@ typedef struct mobj_s
     int iden_nums;		// hi word stores thing num, low word identifier num
 
     fixed_t             pad; // cph - needed so I can get the size unambiguously on amd64
+    
+    dboolean player_damaged_barrel; // dsda - track barrel (chains) for pacifist
 
     // SEE WARNING ABOVE ABOUT POINTER FIELDS!!!
 } mobj_t;
