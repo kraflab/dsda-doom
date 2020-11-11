@@ -19,6 +19,7 @@
 #define __DSDA__
 
 void dsda_ReadCommandLine(void);
+void dsda_TrackPacifist(void);
 void dsda_WriteAnalysis(void);
 
 #endif

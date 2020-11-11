@@ -19,13 +19,28 @@
 
 #include "m_argv.h"
 #include "p_inter.h"
+#include "g_game.h"
 
 #include "dsda.h"
 
 int dsda_analysis;
+int dsda_track_pacifist;
 
 void dsda_ReadCommandLine(void) {
+  dsda_track_pacifist = M_CheckParm("-track_pacifist");
   dsda_analysis = M_CheckParm("-analysis");
+}
+
+void dsda_TrackPacifist(void) {
+  if (!pacifist && dsda_track_pacifist) {
+    static dboolean pacifist_note_shown = false;
+    
+    if (!pacifist_note_shown)
+    {
+      pacifist_note_shown = true;
+      doom_printf("Not pacifist!");
+    }
+  }
 }
 
 void dsda_WriteAnalysis(void) {
