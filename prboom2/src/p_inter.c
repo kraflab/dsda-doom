@@ -85,6 +85,8 @@ int monsters_infight = 0; // e6y: Dehacked support - monsters infight
 int maxammo[NUMAMMO]  = {200, 50, 300, 50};
 int clipammo[NUMAMMO] = { 10,  4,  20,  1};
 
+dboolean pacifist = true; // dsda - track pacifist
+
 //
 // GET STUFF
 //
@@ -926,6 +928,15 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   if (source && target)
   {
     CheckGivenDamageTracer(source, damage);
+  }
+
+  // dsda - track pacifist (10000 = telefrags allowed)
+  if (((source && source->player) || inflictor->player_damaged_barrel) && damage != 10000)
+  {
+    if (target->type == MT_BARREL)
+      target->player_damaged_barrel = true;
+    else if (!target->player)
+      pacifist = false;
   }
 
   // do the damage
