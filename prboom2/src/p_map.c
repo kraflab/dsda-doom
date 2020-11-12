@@ -50,6 +50,7 @@
 #include "g_overflow.h"
 #include "hu_tracers.h"
 #include "e6y.h"//e6y
+#include "dsda.h"
 
 static mobj_t    *tmthing;
 static fixed_t   tmx;
@@ -2003,6 +2004,7 @@ dboolean PIT_ChangeSector (mobj_t* thing)
   if (crushchange && !(leveltime&3)) {
     int t;
     P_DamageMobj(thing,NULL,NULL,10);
+    dsda_WatchCrush(thing, 10);
 
     // spray blood in a random direction
     mo = P_SpawnMobj (thing->x,
