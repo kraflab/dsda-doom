@@ -38,8 +38,7 @@ void dsda_TrackPacifist(void) {
   if (!dsda_pacifist && dsda_track_pacifist) {
     static dboolean pacifist_note_shown = false;
     
-    if (!pacifist_note_shown)
-    {
+    if (!pacifist_note_shown) {
       pacifist_note_shown = true;
       doom_printf("Not pacifist!");
     }
