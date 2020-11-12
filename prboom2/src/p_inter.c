@@ -51,6 +51,7 @@
 #endif
 #include "p_inter.h"
 #include "e6y.h"//e6y
+#include "dsda.h"
 
 #define BONUSADD        6
 
@@ -84,8 +85,6 @@ int monsters_infight = 0; // e6y: Dehacked support - monsters infight
 // a big item has five clip loads
 int maxammo[NUMAMMO]  = {200, 50, 300, 50};
 int clipammo[NUMAMMO] = { 10,  4,  20,  1};
-
-dboolean pacifist = true; // dsda - track pacifist
 
 //
 // GET STUFF
@@ -929,15 +928,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   {
     CheckGivenDamageTracer(source, damage);
   }
-
-  // dsda - track pacifist (10000 = telefrags allowed)
-  if (((source && source->player) || (inflictor && inflictor->player_damaged_barrel)) && damage != 10000)
-  {
-    if (target->type == MT_BARREL)
-      target->player_damaged_barrel = true;
-    else if (!target->player)
-      pacifist = false;
-  }
+  
+  dsda_WatchDamage(target, inflictor, source, damage);
 
   // do the damage
   target->health -= damage;

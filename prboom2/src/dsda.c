@@ -23,8 +23,11 @@
 
 #include "dsda.h"
 
+#define TELEFRAG_DAMAGE 10000
+
 int dsda_analysis;
 int dsda_track_pacifist;
+dboolean dsda_pacifist = true;
 
 void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
@@ -32,14 +35,22 @@ void dsda_ReadCommandLine(void) {
 }
 
 void dsda_TrackPacifist(void) {
-  if (!pacifist && dsda_track_pacifist) {
+  if (!dsda_pacifist && dsda_track_pacifist) {
     static dboolean pacifist_note_shown = false;
     
-    if (!pacifist_note_shown)
-    {
+    if (!pacifist_note_shown) {
       pacifist_note_shown = true;
       doom_printf("Not pacifist!");
     }
+  }
+}
+
+void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage) {
+  if (((source && source->player) || (inflictor && inflictor->player_damaged_barrel)) && damage != TELEFRAG_DAMAGE) {
+    if (target->type == MT_BARREL)
+      target->player_damaged_barrel = true;
+    else if (!target->player)
+      dsda_pacifist = false;
   }
 }
 
@@ -55,7 +66,7 @@ void dsda_WriteAnalysis(void) {
     return;
   }
   
-  fprintf(fstream, "pacifist %d", pacifist);
+  fprintf(fstream, "pacifist %d", dsda_pacifist);
   
   fclose(fstream);
   
