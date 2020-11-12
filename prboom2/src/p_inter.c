@@ -931,7 +931,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   }
 
   // dsda - track pacifist (10000 = telefrags allowed)
-  if (((source && source->player) || inflictor->player_damaged_barrel) && damage != 10000)
+  if (((source && source->player) || (inflictor && inflictor->player_damaged_barrel)) && damage != 10000)
   {
     if (target->type == MT_BARREL)
       target->player_damaged_barrel = true;
