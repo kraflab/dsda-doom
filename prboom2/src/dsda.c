@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #include "m_argv.h"
+#include "doomstat.h"
 #include "p_inter.h"
 #include "g_game.h"
 
@@ -28,6 +29,8 @@
 int dsda_analysis;
 int dsda_track_pacifist;
 dboolean dsda_pacifist = true;
+dboolean dsda_reality = true;
+dboolean dsda_almost_reality = true;
 
 void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
@@ -52,6 +55,30 @@ void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int dam
     else if (!target->player)
       dsda_pacifist = false;
   }
+
+  if (target->player) {
+    dsda_reality = false;
+    
+    // "almost reality" means allowing nukage damage
+    // we cannot differentiate between crushers and nukage in this scope
+    // we account for crushers in dsda_WatchCrush instead
+    if (inflictor) dsda_almost_reality = false;
+  }
+}
+
+void dsda_WatchCrush(mobj_t* thing, int damage) {
+  player_t *player;
+  
+  player = thing->player;
+  if (!player) return;
+  
+  // invincible
+  if (
+    (damage < 1000 || (!comp[comp_god] && (player->cheats&CF_GODMODE))) \
+    && (player->cheats&CF_GODMODE || player->powers[pw_invulnerability])
+  ) return;
+  
+  dsda_almost_reality = false;
 }
 
 void dsda_WriteAnalysis(void) {
@@ -66,7 +93,11 @@ void dsda_WriteAnalysis(void) {
     return;
   }
   
-  fprintf(fstream, "pacifist %d", dsda_pacifist);
+  if (dsda_reality) dsda_almost_reality = false;
+  
+  fprintf(fstream, "pacifist %d\n", dsda_pacifist);
+  fprintf(fstream, "reality %d\n", dsda_reality);
+  fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
   
   fclose(fstream);
   
