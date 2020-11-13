@@ -14,6 +14,10 @@ module Utility
     Analysis.new
   end
   
+  def read_levelstat(filename = "levelstat.txt")
+    Levelstat.new(filename)
+  end
+  
   class Analysis
     def initialize
       @data = Hash[File.readlines("analysis.txt", chomp: true).map(&:split)]
@@ -29,6 +33,18 @@ module Utility
     
     def almost_reality?
       @data['almost_reality'] == '1'
+    end
+  end
+  
+  class Levelstat
+    def initialize(filename)
+      @data = File.readlines(filename, chomp: true).map(&:split)
+    end
+    
+    def total
+      return '00:00' unless @data.last
+      
+      @data.last[3].gsub(/[()]/, '')
     end
   end
 end
