@@ -4,3 +4,9 @@ prboom2/data/prboom.wad
 prboom2/release
 /build*
 /dependencies*
+
+# spec files
+analysis.txt
+levelstat.txt
+spec/support/wads/*
+!spec/support/wads/analysis_test.wad
