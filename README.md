@@ -1,10 +1,18 @@
-# dsda-doom v0.1.1
+# dsda-doom v0.2.0
 This is a fork of prboom+ with extra tooling for dsda.
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 
 ### New Stuff
-- Use `-analysis` to write an analysis.txt file with run details (wip).
+- Use `-analysis` to write an analysis.txt file with run details.
 - Use `-track_pacifist` to enable a "Not pacifist!" message to appear when breaking the category rules.
+
+### Analysis File
+This file contains summary data about a run in key-value pairs.
+Current contents:
+
+- `pacifist`, `1` or `0`.
+- `reality`, `1` or `0` (no damage taken).
+- `almost_reality`, `1` or `0` (only nukage damage taken).
 
 ### PRBoom+ Stuff (since 2.5.1.5 - heavily abridged)
 - Fix boom autoswitch behaviour (in some cases running out of ammo forced a specific weapon swap)
