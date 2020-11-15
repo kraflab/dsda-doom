@@ -86,6 +86,10 @@ void dsda_WatchCrush(mobj_t* thing, int damage) {
   dsda_almost_reality = false;
 }
 
+void dsda_WatchIconSpawn(mobj_t* spawned) {
+  spawned->dsda_extension.spawned_by_icon = true;
+}
+
 void dsda_WriteAnalysis(void) {
   FILE *fstream = NULL;
   

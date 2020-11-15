@@ -20,6 +20,7 @@
 
 typedef struct dsda_mobj_extension_s {
   dboolean player_damaged_barrel;
+  dboolean spawned_by_icon;
 } dsda_mobj_extension_t;
 
 #endif
