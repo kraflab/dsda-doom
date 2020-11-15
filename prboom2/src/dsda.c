@@ -33,6 +33,8 @@ int dsda_track_pacifist;
 dboolean dsda_pacifist = true;
 dboolean dsda_reality = true;
 dboolean dsda_almost_reality = true;
+int dsda_missed_monsters = 0;
+int dsda_missed_secrets = 0;
 
 void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
@@ -91,7 +93,33 @@ void dsda_WatchIconSpawn(mobj_t* spawned) {
 }
 
 void dsda_WatchLevelCompletion(void) {
+  thinker_t *th;
+  mobj_t *mobj;
+  int i;
+  int secret_count = 0;
   
+  for (th = thinkercap.next; th != &thinkercap; th = th->next) {
+    if (th->function != P_MobjThinker) continue;
+    
+    mobj = (mobj_t *)th;
+    
+    // max rules: everything dead that affects kill counter except icon spawns
+    if (
+      !((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)) \
+      && !mobj->dsda_extension.spawned_by_icon \
+      && mobj->health > 0
+    ) {
+      ++dsda_missed_monsters;
+    }
+  }
+  
+  for (i = 0; i < MAXPLAYERS; ++i) {
+    if (!playeringame[i]) continue;
+    
+    secret_count += players[i].secretcount;
+  }
+  
+  dsda_missed_secrets += (totalsecret - secret_count);
 }
 
 void dsda_WriteAnalysis(void) {
@@ -111,6 +139,8 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "pacifist %d\n", dsda_pacifist);
   fprintf(fstream, "reality %d\n", dsda_reality);
   fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
+  fprintf(fstream, "missed_monsters %d\n", dsda_missed_monsters);
+  fprintf(fstream, "missed_secrets %d\n", dsda_missed_secrets);
   
   fclose(fstream);
   
