@@ -6,6 +6,20 @@ RSpec.describe 'analysis' do
     Utility.play_demo(lmp: lmp, pwad: pwad)
   end
   
+  describe 'missed things' do
+    let(:missed_monsters) { analysis.missed_monsters }
+    let(:missed_secrets) { analysis.missed_secrets }
+    
+    context 'doom2 ep 3 max in 26:54 by Vile' do
+      let(:lmp) { 'lve3-2654.lmp' }
+      
+      it 'misses one secret (map 27)' do
+        expect(missed_monsters).to eq(0)
+        expect(missed_secrets).to eq(1)
+      end
+    end
+  end
+  
   describe 'pacifist' do
     subject { analysis.pacifist? }
     
