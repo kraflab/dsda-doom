@@ -12,18 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Tools
+//	DSDA Mobj Extension
 //
 
-#ifndef __DSDA__
-#define __DSDA__
+#ifndef __DSDA_MOBJ_EXTENSION__
+#define __DSDA_MOBJ_EXTENSION__
 
-void dsda_ReadCommandLine(void);
-void dsda_TrackPacifist(void);
-void dsda_WatchCrush(mobj_t* thing, int damage);
-void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage);
-void dsda_WatchIconSpawn(mobj_t* spawned);
-void dsda_WatchLevelCompletion(void);
-void dsda_WriteAnalysis(void);
+typedef struct dsda_mobj_extension_s {
+  dboolean player_damaged_barrel;
+  dboolean spawned_by_icon;
+} dsda_mobj_extension_t;
 
 #endif

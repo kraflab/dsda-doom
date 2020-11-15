@@ -1743,6 +1743,8 @@ frommapinfo:
 
   e6y_G_DoCompleted();//e6y
 
+  dsda_WatchLevelCompletion();
+
   if (gamemode == commercial || gamemap != 8)
   {
     StatCopy(&wminfo);

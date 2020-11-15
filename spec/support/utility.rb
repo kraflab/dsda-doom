@@ -34,6 +34,14 @@ module Utility
     def almost_reality?
       @data['almost_reality'] == '1'
     end
+    
+    def missed_monsters
+      @data['missed_monsters'].to_i
+    end
+    
+    def missed_secrets
+      @data['missed_secrets'].to_i
+    end
   end
   
   class Levelstat

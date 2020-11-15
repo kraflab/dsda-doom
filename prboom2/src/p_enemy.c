@@ -51,6 +51,7 @@
 #include "hu_stuff.h"
 #include "lprintf.h"
 #include "e6y.h"//e6y
+#include "dsda.h"
 
 static mobj_t *current_actor;
 
@@ -2638,6 +2639,8 @@ void A_SpawnFly(mobj_t *mo)
 
   //e6y: monsters spawned by Icon of Sin should not be countable for total killed.
   newmobj->flags |= MF_RESSURECTED;
+
+  dsda_WatchIconSpawn(newmobj);
 
   /* killough 8/29/98: add to appropriate thread */
   P_UpdateThinker(&newmobj->thinker);

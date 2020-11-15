@@ -50,6 +50,8 @@
 // Needs precompiled tables/data structures.
 #include "info.h"
 
+#include "dsda_mobj_extension.h"
+
 //
 // NOTES: mobj_t
 //
@@ -372,7 +374,7 @@ typedef struct mobj_s
 
     fixed_t             pad; // cph - needed so I can get the size unambiguously on amd64
     
-    dboolean player_damaged_barrel; // dsda - track barrel (chains) for pacifist
+    dsda_mobj_extension_t dsda_extension;
 
     // SEE WARNING ABOVE ABOUT POINTER FIELDS!!!
 } mobj_t;
