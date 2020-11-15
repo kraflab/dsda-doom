@@ -1,4 +1,4 @@
-# dsda-doom v0.2.0
+# dsda-doom v0.3.0
 This is a fork of prboom+ with extra tooling for dsda.
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 
@@ -13,6 +13,8 @@ Current contents:
 - `pacifist`, `1` or `0`.
 - `reality`, `1` or `0` (no damage taken).
 - `almost_reality`, `1` or `0` (only nukage damage taken).
+- `missed_monsters`, monsters left alive (not including icon spawns).
+- `missed_secrets`, secrets left uncollected.
 
 ### PRBoom+ Stuff (since 2.5.1.5 - heavily abridged)
 - Fix boom autoswitch behaviour (in some cases running out of ammo forced a specific weapon swap)
