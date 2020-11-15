@@ -20,8 +20,10 @@
 #include "m_argv.h"
 #include "doomstat.h"
 #include "p_inter.h"
+#include "p_tick.h"
 #include "g_game.h"
 
+#include "dsda_mobj_extension.h"
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
@@ -49,9 +51,12 @@ void dsda_TrackPacifist(void) {
 }
 
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage) {
-  if (((source && source->player) || (inflictor && inflictor->player_damaged_barrel)) && damage != TELEFRAG_DAMAGE) {
+  if (
+    ((source && source->player) || (inflictor && inflictor->dsda_extension.player_damaged_barrel)) \
+    && damage != TELEFRAG_DAMAGE
+  ) {
     if (target->type == MT_BARREL)
-      target->player_damaged_barrel = true;
+      target->dsda_extension.player_damaged_barrel = true;
     else if (!target->player)
       dsda_pacifist = false;
   }
