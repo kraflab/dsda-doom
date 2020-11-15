@@ -90,6 +90,10 @@ void dsda_WatchIconSpawn(mobj_t* spawned) {
   spawned->dsda_extension.spawned_by_icon = true;
 }
 
+void dsda_WatchLevelCompletion(void) {
+  
+}
+
 void dsda_WriteAnalysis(void) {
   FILE *fstream = NULL;
   
