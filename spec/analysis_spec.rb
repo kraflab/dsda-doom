@@ -11,6 +11,7 @@ RSpec.describe 'analysis' do
     let(:missed_secrets) { analysis.missed_secrets }
     
     context 'doom2 ep 3 max in 26:54 by Vile' do
+      let(:pwad) { nil }
       let(:lmp) { 'lve3-2654.lmp' }
       
       it 'misses one secret (map 27)' do
@@ -104,6 +105,24 @@ RSpec.describe 'analysis' do
         expect(reality).to eq(true)
         expect(almost_reality).to eq(false)
       end
+    end
+  end
+  
+  describe 'tyson weapons' do    
+    subject { analysis.tyson_weapons? }
+    
+    context 'doom2 map 1 tyson by j4rio' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv01t040.lmp' }
+      
+      it { is_expected.to eq(true) }
+    end
+    
+    context 'doom2 map 1 uv max by Xit Vono' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv01-039.lmp' }
+      
+      it { is_expected.to eq(false) }
     end
   end
 end

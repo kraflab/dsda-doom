@@ -42,6 +42,10 @@ module Utility
     def missed_secrets
       @data['missed_secrets'].to_i
     end
+    
+    def tyson_weapons?
+      @data['tyson_weapons'] == '1'
+    end
   end
   
   class Levelstat

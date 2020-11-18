@@ -47,6 +47,7 @@
 #include "g_game.h"
 #include "lprintf.h"
 #include "e6y.h"//e6y
+#include "dsda.h"
 
 #define LOWERSPEED   (FRACUNIT*6)
 #define RAISESPEED   (FRACUNIT*6)
@@ -300,6 +301,8 @@ static void P_FireWeapon(player_t *player)
 
   if (!P_CheckAmmo(player))
     return;
+
+  dsda_WatchWeaponFire(player->readyweapon);
 
   P_SetMobjState(player->mo, S_PLAY_ATK1);
   newstate = weaponinfo[player->readyweapon].atkstate;
