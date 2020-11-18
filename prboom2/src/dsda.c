@@ -35,6 +35,7 @@ dboolean dsda_reality = true;
 dboolean dsda_almost_reality = true;
 int dsda_missed_monsters = 0;
 int dsda_missed_secrets = 0;
+dboolean dsda_tyson_weapons = true;
 
 void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
@@ -122,6 +123,12 @@ void dsda_WatchLevelCompletion(void) {
   dsda_missed_secrets += (totalsecret - secret_count);
 }
 
+void dsda_WatchWeaponFire(weapontype_t weapon) {
+  if (weapon == wp_fist || weapon == wp_pistol || weapon == wp_chainsaw) return;
+  
+  dsda_tyson_weapons = false;
+}
+
 void dsda_WriteAnalysis(void) {
   FILE *fstream = NULL;
   
@@ -141,6 +148,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
   fprintf(fstream, "missed_monsters %d\n", dsda_missed_monsters);
   fprintf(fstream, "missed_secrets %d\n", dsda_missed_secrets);
+  fprintf(fstream, "tyson_weapons %d\n", dsda_tyson_weapons);
   
   fclose(fstream);
   
