@@ -39,6 +39,14 @@ int dsda_missed_secrets = 0;
 dboolean dsda_tyson_weapons = true;
 dboolean dsda_100k = true;
 dboolean dsda_100s = true;
+dboolean dsda_any_counted_monsters = false;
+dboolean dsda_any_monsters = false;
+dboolean dsda_any_secrets = false;
+dboolean dsda_collector = false; // TODO
+dboolean dsda_stroller = false; // TODO
+dboolean dsda_nomo = false;
+dboolean dsda_respawn = false;
+dboolean dsda_fast = false;
 
 // note-related
 int dsda_kills_on_map = 0;
@@ -53,6 +61,7 @@ int dsda_track_100k;
 
 void dsda_DisplayNotification(const char* msg);
 void dsda_ResetMapVariables(void);
+const char* dsda_DetectCategory(void);
 
 void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
@@ -121,6 +130,14 @@ void dsda_WatchCrush(mobj_t* thing, int damage) {
   dsda_almost_reality = false;
 }
 
+void dsda_WatchSpawn(mobj_t* spawned) {
+  if (
+    (spawned->flags & MF_COUNTKILL) \
+    || spawned->type == MT_SKULL \
+    || spawned->type == MT_BOSSBRAIN
+  ) dsda_any_monsters = true;
+}
+
 void dsda_WatchIconSpawn(mobj_t* spawned) {
   spawned->dsda_extension.spawned_by_icon = true;
 }
@@ -158,6 +175,8 @@ void dsda_WatchLevelCompletion(void) {
   
   if (kill_count < totalkills) dsda_100k = false;
   if (secret_count < totalsecret) dsda_100s = false;
+  if (totalkills > 0) dsda_any_counted_monsters = true;
+  if (totalsecret > 0) dsda_any_secrets = true;
   
   dsda_ResetMapVariables();
 }
@@ -188,10 +207,14 @@ void dsda_WriteAnalysis(void) {
   
   if (dsda_reality) dsda_almost_reality = false;
   
+  dsda_nomo = nomonsters > 0;
+  dsda_respawn = respawnparm > 0;
+  dsda_fast = fastparm > 0;
+  
   fprintf(fstream, "skill %d\n", gameskill + 1);
-  fprintf(fstream, "nomonsters %d\n", nomonsters > 0);
-  fprintf(fstream, "respawn %d\n", respawnparm > 0);
-  fprintf(fstream, "fast %d\n", fastparm > 0);
+  fprintf(fstream, "nomonsters %d\n", dsda_nomo);
+  fprintf(fstream, "respawn %d\n", dsda_respawn);
+  fprintf(fstream, "fast %d\n", dsda_fast);
   fprintf(fstream, "pacifist %d\n", dsda_pacifist);
   fprintf(fstream, "reality %d\n", dsda_reality);
   fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
@@ -204,4 +227,69 @@ void dsda_WriteAnalysis(void) {
   fclose(fstream);
   
   return;
+}
+
+const char* dsda_DetectCategory(void) {
+  dboolean satisfies_max;
+  dboolean satisfies_respawn;
+  dboolean satisfies_tyson;
+  dboolean satisfies_100s;
+  
+  satisfies_max = (
+    dsda_missed_monsters == 0 \
+    && dsda_100s \
+    && (dsda_any_secrets || dsda_any_counted_monsters)
+  );
+  satisfies_respawn = (
+    dsda_100s \
+    && dsda_100k \
+    && dsda_any_monsters \
+    && (dsda_any_secrets || dsda_any_counted_monsters)
+  );
+  satisfies_tyson = (
+    dsda_missed_monsters == 0 \
+    && dsda_tyson_weapons  \
+    && dsda_any_counted_monsters
+  );
+  satisfies_100s = dsda_any_secrets && dsda_100s;
+  
+  if (gameskill == sk_hard) {
+    if (dsda_nomo && !dsda_respawn && !dsda_fast) {
+      if (satisfies_100s) return "NoMo 100S";
+      
+      return "NoMo";
+    }
+    
+    if (dsda_respawn && !dsda_nomo && !dsda_fast) {
+      if (satisfies_respawn) return "UV Respawn";
+      
+      return "Other";
+    }
+    
+    if (dsda_fast && !dsda_nomo && !dsda_respawn) {
+      if (satisfies_max) return "UV Fast";
+      
+      return "Other";
+    }
+    
+    if (dsda_nomo || dsda_respawn || dsda_fast) return "Other";
+    
+    if (satisfies_max) return "UV Max";
+    if (satisfies_tyson) return "UV Tyson";
+    if (dsda_any_monsters && dsda_pacifist) {
+      if (dsda_stroller) return "Stroller";
+      
+      return "Pacifist";
+    }
+    
+    return "UV Speed";
+  }
+  else if (gameskill == sk_nightmare) {
+    if (nomonsters) return "Other";
+    if (satisfies_100s) return "NM 100S";
+    
+    return "NM Speed";
+  }
+  
+  return "Other";
 }
