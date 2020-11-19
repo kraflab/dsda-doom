@@ -28,8 +28,7 @@
 
 #define TELEFRAG_DAMAGE 10000
 
-int dsda_analysis;
-int dsda_track_pacifist;
+// analysis variables
 dboolean dsda_pacifist = true;
 dboolean dsda_reality = true;
 dboolean dsda_almost_reality = true;
@@ -37,9 +36,16 @@ int dsda_missed_monsters = 0;
 int dsda_missed_secrets = 0;
 dboolean dsda_tyson_weapons = true;
 dboolean dsda_100k = true;
+
+// note-related
 int dsda_kills_on_map = 0;
 dboolean dsda_100k_on_map = false;
 dboolean dsda_100k_note_shown = false;
+dboolean dsda_pacifist_note_shown = false;
+
+// command-line toggles
+int dsda_analysis;
+int dsda_track_pacifist;
 int dsda_track_100k;
 
 void dsda_ResetMapVariables(void);
@@ -51,13 +57,9 @@ void dsda_ReadCommandLine(void) {
 }
 
 void dsda_DisplayNotifications(void) {
-  if (!dsda_pacifist && dsda_track_pacifist) {
-    static dboolean pacifist_note_shown = false;
-    
-    if (!pacifist_note_shown) {
-      pacifist_note_shown = true;
-      doom_printf("Not pacifist!");
-    }
+  if (!dsda_pacifist && dsda_track_pacifist && !dsda_pacifist_note_shown) {
+    dsda_pacifist_note_shown = true;
+    doom_printf("Not pacifist!");
   }
   
   if (dsda_100k_on_map && dsda_track_100k && !dsda_100k_note_shown) {    
