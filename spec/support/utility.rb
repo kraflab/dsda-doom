@@ -39,6 +39,10 @@ module Utility
       @data['100k'] == '1'
     end
     
+    def hundred_s?
+      @data['100s'] == '1'
+    end
+    
     def missed_monsters
       @data['missed_monsters'].to_i
     end

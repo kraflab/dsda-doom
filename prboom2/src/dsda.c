@@ -36,6 +36,7 @@ int dsda_missed_monsters = 0;
 int dsda_missed_secrets = 0;
 dboolean dsda_tyson_weapons = true;
 dboolean dsda_100k = true;
+dboolean dsda_100s = true;
 
 // note-related
 int dsda_kills_on_map = 0;
@@ -148,6 +149,7 @@ void dsda_WatchLevelCompletion(void) {
   dsda_missed_secrets += (totalsecret - secret_count);
   
   if (kill_count < totalkills) dsda_100k = false;
+  if (secret_count < totalsecret) dsda_100s = false;
   
   dsda_ResetMapVariables();
 }
@@ -182,6 +184,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "reality %d\n", dsda_reality);
   fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
   fprintf(fstream, "100k %d\n", dsda_100k);
+  fprintf(fstream, "100s %d\n", dsda_100s);
   fprintf(fstream, "missed_monsters %d\n", dsda_missed_monsters);
   fprintf(fstream, "missed_secrets %d\n", dsda_missed_secrets);
   fprintf(fstream, "tyson_weapons %d\n", dsda_tyson_weapons);

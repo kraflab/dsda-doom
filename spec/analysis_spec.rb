@@ -24,6 +24,24 @@ RSpec.describe 'analysis' do
     end
   end
   
+  describe '100s' do
+    subject { analysis.hundred_s? }
+    
+    context 'doom2 episode 1 nm100s in 11:56 by JCD' do
+      let(:pwad) { nil }
+      let(:lmp) { '1156ns01.lmp' }
+      
+      it { is_expected.to eq(true) }
+    end
+    
+    context 'doom2 map 1 uv speed by Thomas Pilger' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv01-005.lmp' }
+      
+      it { is_expected.to eq(false) }
+    end
+  end
+  
   describe 'missed things' do
     let(:missed_monsters) { analysis.missed_monsters }
     let(:missed_secrets) { analysis.missed_secrets }
