@@ -61,6 +61,7 @@ int dsda_track_100k;
 
 void dsda_DisplayNotification(const char* msg);
 void dsda_ResetMapVariables(void);
+const char* dsda_DetectCategory(void);
 
 void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
