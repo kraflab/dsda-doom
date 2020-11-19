@@ -23,6 +23,22 @@ module Utility
       @data = Hash[File.readlines("analysis.txt", chomp: true).map(&:split)]
     end
     
+    def skill
+      @data['skill'].to_i
+    end
+    
+    def nomonsters?
+      @data['nomonsters'] == '1'
+    end
+    
+    def respawn?
+      @data['respawn'] == '1'
+    end
+    
+    def fast?
+      @data['fast'] == '1'
+    end
+    
     def pacifist?
       @data['pacifist'] == '1'
     end

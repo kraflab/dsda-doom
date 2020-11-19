@@ -6,6 +6,78 @@ RSpec.describe 'analysis' do
     Utility.play_demo(lmp: lmp, pwad: pwad)
   end
   
+  describe 'skill' do
+    subject { analysis.skill }
+    
+    context 'doom2 map 4 nm speed by Vile' do
+      let(:pwad) { nil }
+      let(:lmp) { 'nm04-036.lmp' }
+      
+      it { is_expected.to eq(5) }
+    end
+    
+    context 'doom2 map 1 uv speed by Thomas Pilger' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv01-005.lmp' }
+      
+      it { is_expected.to eq(4) }
+    end
+  end
+  
+  describe 'nomonsters' do
+    subject { analysis.nomonsters? }
+    
+    context 'doom2 map 1 nomonsters by depr4vity' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv01o497.lmp' }
+      
+      it { is_expected.to eq(true) }
+    end
+    
+    context 'doom2 map 1 uv speed by Thomas Pilger' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv01-005.lmp' }
+      
+      it { is_expected.to eq(false) }
+    end
+  end
+  
+  describe 'respawn' do
+    subject { analysis.respawn? }
+    
+    context 'doom2 map 2 uv respawn by Looper' do
+      let(:pwad) { nil }
+      let(:lmp) { 're02-107.lmp' }
+      
+      it { is_expected.to eq(true) }
+    end
+    
+    context 'doom2 map 4 nm speed by Vile' do
+      let(:pwad) { nil }
+      let(:lmp) { 'nm04-036.lmp' }
+      
+      it { is_expected.to eq(false) }
+    end
+  end
+  
+  describe 'fast' do
+    subject { analysis.fast? }
+    
+    context 'doom2 map 4 uv fast by Radek Pecka' do
+      let(:pwad) { nil }
+      let(:lmp) { 'fa04-109.lmp' }
+      
+      it { is_expected.to eq(true) }
+    end
+    
+    context 'doom2 map 4 nm speed by Vile' do
+      let(:pwad) { nil }
+      let(:lmp) { 'nm04-036.lmp' }
+      
+      it { is_expected.to eq(false) }
+    end
+  end
+  
   describe '100k' do
     subject { analysis.hundred_k? }
     

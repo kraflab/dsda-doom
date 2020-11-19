@@ -188,6 +188,10 @@ void dsda_WriteAnalysis(void) {
   
   if (dsda_reality) dsda_almost_reality = false;
   
+  fprintf(fstream, "skill %d\n", gameskill + 1);
+  fprintf(fstream, "nomonsters %d\n", nomonsters > 0);
+  fprintf(fstream, "respawn %d\n", respawnparm > 0);
+  fprintf(fstream, "fast %d\n", fastparm > 0);
   fprintf(fstream, "pacifist %d\n", dsda_pacifist);
   fprintf(fstream, "reality %d\n", dsda_reality);
   fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
