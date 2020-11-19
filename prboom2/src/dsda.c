@@ -22,6 +22,8 @@
 #include "p_inter.h"
 #include "p_tick.h"
 #include "g_game.h"
+#include "sounds.h"
+#include "s_sound.h"
 
 #include "dsda_mobj_extension.h"
 #include "dsda.h"
@@ -49,6 +51,7 @@ int dsda_analysis;
 int dsda_track_pacifist;
 int dsda_track_100k;
 
+void dsda_DisplayNotification(const char* msg);
 void dsda_ResetMapVariables(void);
 
 void dsda_ReadCommandLine(void) {
@@ -60,13 +63,18 @@ void dsda_ReadCommandLine(void) {
 void dsda_DisplayNotifications(void) {
   if (!dsda_pacifist && dsda_track_pacifist && !dsda_pacifist_note_shown) {
     dsda_pacifist_note_shown = true;
-    doom_printf("Not pacifist!");
+    dsda_DisplayNotification("Not pacifist!");
   }
   
   if (dsda_100k_on_map && dsda_track_100k && !dsda_100k_note_shown) {    
     dsda_100k_note_shown = true;
-    doom_printf("100K achieved!");
+    dsda_DisplayNotification("100K achieved!");
   }
+}
+
+void dsda_DisplayNotification(const char* msg) {
+  S_StartSound(0, sfx_radio);
+  doom_printf(msg);
 }
 
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage) {
