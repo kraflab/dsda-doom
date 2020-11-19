@@ -1179,7 +1179,7 @@ void G_Ticker (void)
         }
     }
     
-    dsda_TrackPacifist();
+    dsda_DisplayNotifications();
   }
 
   // cph - if the gamestate changed, we may need to clean up the old gamestate

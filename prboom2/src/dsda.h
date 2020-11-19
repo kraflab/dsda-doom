@@ -19,7 +19,7 @@
 #define __DSDA__
 
 void dsda_ReadCommandLine(void);
-void dsda_TrackPacifist(void);
+void dsda_DisplayNotifications(void);
 void dsda_WatchCrush(mobj_t* thing, int damage);
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage);
 void dsda_WatchIconSpawn(mobj_t* spawned);

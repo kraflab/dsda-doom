@@ -42,7 +42,7 @@ void dsda_ReadCommandLine(void) {
   dsda_analysis = M_CheckParm("-analysis");
 }
 
-void dsda_TrackPacifist(void) {
+void dsda_DisplayNotifications(void) {
   if (!dsda_pacifist && dsda_track_pacifist) {
     static dboolean pacifist_note_shown = false;
     
