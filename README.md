@@ -11,6 +11,10 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 This file contains summary data about a run in key-value pairs.
 Current contents:
 
+- `skill`, `1` to `5`.
+- `nomonsters`, `1` or `0` (-nomonsters parameter).
+- `respawn`, `1` or `0` (-respawn parameter).
+- `fast`, `1` or `0` (-fast parameter).
 - `pacifist`, `1` or `0`.
 - `reality`, `1` or `0` (no damage taken).
 - `almost_reality`, `1` or `0` (only nukage damage taken).
