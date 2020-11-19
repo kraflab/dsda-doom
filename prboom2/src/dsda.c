@@ -37,9 +37,16 @@ int dsda_missed_monsters = 0;
 int dsda_missed_secrets = 0;
 dboolean dsda_tyson_weapons = true;
 dboolean dsda_100k = true;
+int dsda_kills_on_map = 0;
+dboolean dsda_100k_on_map = false;
+dboolean dsda_100k_note_shown = false;
+int dsda_track_100k;
+
+void dsda_ResetMapVariables(void);
 
 void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
+  dsda_track_100k = M_CheckParm("-track_100k");
   dsda_analysis = M_CheckParm("-analysis");
 }
 
@@ -51,6 +58,11 @@ void dsda_DisplayNotifications(void) {
       pacifist_note_shown = true;
       doom_printf("Not pacifist!");
     }
+  }
+  
+  if (dsda_100k_on_map && dsda_track_100k && !dsda_100k_note_shown) {    
+    dsda_100k_note_shown = true;
+    doom_printf("100K achieved!");
   }
 }
 
@@ -72,6 +84,14 @@ void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int dam
     // we cannot differentiate between crushers and nukage in this scope
     // we account for crushers in dsda_WatchCrush instead
     if (inflictor) dsda_almost_reality = false;
+  }
+}
+
+void dsda_WatchDeath(mobj_t* thing) {
+  if (thing->flags & MF_COUNTKILL) {
+    ++dsda_kills_on_map;
+  
+    if (dsda_kills_on_map >= totalkills) dsda_100k_on_map = true;
   }
 }
 
@@ -126,6 +146,14 @@ void dsda_WatchLevelCompletion(void) {
   dsda_missed_secrets += (totalsecret - secret_count);
   
   if (kill_count < totalkills) dsda_100k = false;
+  
+  dsda_ResetMapVariables();
+}
+
+void dsda_ResetMapVariables(void) {
+  dsda_100k_on_map = false;
+  dsda_kills_on_map = 0;
+  dsda_100k_note_shown = false;
 }
 
 void dsda_WatchWeaponFire(weapontype_t weapon) {

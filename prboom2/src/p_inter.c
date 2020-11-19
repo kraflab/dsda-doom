@@ -674,6 +674,8 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   if (!((target->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
     totallive--;
 
+  dsda_WatchDeath(target);
+
   if (source && source->player)
     {
       // count for intermission
