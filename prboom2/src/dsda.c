@@ -22,35 +22,59 @@
 #include "p_inter.h"
 #include "p_tick.h"
 #include "g_game.h"
+#include "sounds.h"
+#include "s_sound.h"
 
 #include "dsda_mobj_extension.h"
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
 
-int dsda_analysis;
-int dsda_track_pacifist;
+// analysis variables
 dboolean dsda_pacifist = true;
 dboolean dsda_reality = true;
 dboolean dsda_almost_reality = true;
 int dsda_missed_monsters = 0;
 int dsda_missed_secrets = 0;
 dboolean dsda_tyson_weapons = true;
+dboolean dsda_100k = true;
+dboolean dsda_100s = true;
+
+// note-related
+int dsda_kills_on_map = 0;
+dboolean dsda_100k_on_map = false;
+dboolean dsda_100k_note_shown = false;
+dboolean dsda_pacifist_note_shown = false;
+
+// command-line toggles
+int dsda_analysis;
+int dsda_track_pacifist;
+int dsda_track_100k;
+
+void dsda_DisplayNotification(const char* msg);
+void dsda_ResetMapVariables(void);
 
 void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
+  dsda_track_100k = M_CheckParm("-track_100k");
   dsda_analysis = M_CheckParm("-analysis");
 }
 
 void dsda_DisplayNotifications(void) {
-  if (!dsda_pacifist && dsda_track_pacifist) {
-    static dboolean pacifist_note_shown = false;
-    
-    if (!pacifist_note_shown) {
-      pacifist_note_shown = true;
-      doom_printf("Not pacifist!");
-    }
+  if (!dsda_pacifist && dsda_track_pacifist && !dsda_pacifist_note_shown) {
+    dsda_pacifist_note_shown = true;
+    dsda_DisplayNotification("Not pacifist!");
   }
+  
+  if (dsda_100k_on_map && dsda_track_100k && !dsda_100k_note_shown) {    
+    dsda_100k_note_shown = true;
+    dsda_DisplayNotification("100K achieved!");
+  }
+}
+
+void dsda_DisplayNotification(const char* msg) {
+  S_StartSound(0, sfx_radio);
+  doom_printf(msg);
 }
 
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage) {
@@ -71,6 +95,14 @@ void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int dam
     // we cannot differentiate between crushers and nukage in this scope
     // we account for crushers in dsda_WatchCrush instead
     if (inflictor) dsda_almost_reality = false;
+  }
+}
+
+void dsda_WatchDeath(mobj_t* thing) {
+  if (thing->flags & MF_COUNTKILL) {
+    ++dsda_kills_on_map;
+  
+    if (dsda_kills_on_map >= totalkills) dsda_100k_on_map = true;
   }
 }
 
@@ -98,6 +130,7 @@ void dsda_WatchLevelCompletion(void) {
   mobj_t *mobj;
   int i;
   int secret_count = 0;
+  int kill_count = 0;
   
   for (th = thinkercap.next; th != &thinkercap; th = th->next) {
     if (th->function != P_MobjThinker) continue;
@@ -117,10 +150,22 @@ void dsda_WatchLevelCompletion(void) {
   for (i = 0; i < MAXPLAYERS; ++i) {
     if (!playeringame[i]) continue;
     
+    kill_count += players[i].killcount;
     secret_count += players[i].secretcount;
   }
   
   dsda_missed_secrets += (totalsecret - secret_count);
+  
+  if (kill_count < totalkills) dsda_100k = false;
+  if (secret_count < totalsecret) dsda_100s = false;
+  
+  dsda_ResetMapVariables();
+}
+
+void dsda_ResetMapVariables(void) {
+  dsda_100k_on_map = false;
+  dsda_kills_on_map = 0;
+  dsda_100k_note_shown = false;
 }
 
 void dsda_WatchWeaponFire(weapontype_t weapon) {
@@ -146,6 +191,8 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "pacifist %d\n", dsda_pacifist);
   fprintf(fstream, "reality %d\n", dsda_reality);
   fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
+  fprintf(fstream, "100k %d\n", dsda_100k);
+  fprintf(fstream, "100s %d\n", dsda_100s);
   fprintf(fstream, "missed_monsters %d\n", dsda_missed_monsters);
   fprintf(fstream, "missed_secrets %d\n", dsda_missed_secrets);
   fprintf(fstream, "tyson_weapons %d\n", dsda_tyson_weapons);

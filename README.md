@@ -5,6 +5,7 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 ### New Stuff
 - Use `-analysis` to write an analysis.txt file with run details.
 - Use `-track_pacifist` to enable a "Not pacifist!" message to appear when breaking the category rules.
+- Use `-track_100k` to enable a "100K achieved!" message to appear when reaching 100% kills on a map.
 
 ### Analysis File
 This file contains summary data about a run in key-value pairs.
@@ -13,6 +14,8 @@ Current contents:
 - `pacifist`, `1` or `0`.
 - `reality`, `1` or `0` (no damage taken).
 - `almost_reality`, `1` or `0` (only nukage damage taken).
+- `100k`, `1` or `0` (100% kills as seen on intermission).
+- `100s`, `1` or `0` (100% secrets as seen on intermission).
 - `missed_monsters`, monsters left alive (not including icon spawns).
 - `missed_secrets`, secrets left uncollected.
 - `tyson_weapons`, `1` or `0` (only pistol, chainsaw, and fist used).
