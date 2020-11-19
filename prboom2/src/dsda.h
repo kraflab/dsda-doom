@@ -23,6 +23,7 @@ void dsda_DisplayNotifications(void);
 void dsda_WatchCrush(mobj_t* thing, int damage);
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage);
 void dsda_WatchDeath(mobj_t* thing);
+void dsda_WatchSpawn(mobj_t* spawned);
 void dsda_WatchIconSpawn(mobj_t* spawned);
 void dsda_WatchLevelCompletion(void);
 void dsda_WatchWeaponFire(weapontype_t weapon);
