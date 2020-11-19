@@ -36,6 +36,7 @@ dboolean dsda_almost_reality = true;
 int dsda_missed_monsters = 0;
 int dsda_missed_secrets = 0;
 dboolean dsda_tyson_weapons = true;
+dboolean dsda_100k = true;
 
 void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
@@ -98,6 +99,7 @@ void dsda_WatchLevelCompletion(void) {
   mobj_t *mobj;
   int i;
   int secret_count = 0;
+  int kill_count = 0;
   
   for (th = thinkercap.next; th != &thinkercap; th = th->next) {
     if (th->function != P_MobjThinker) continue;
@@ -117,10 +119,13 @@ void dsda_WatchLevelCompletion(void) {
   for (i = 0; i < MAXPLAYERS; ++i) {
     if (!playeringame[i]) continue;
     
+    kill_count += players[i].killcount;
     secret_count += players[i].secretcount;
   }
   
   dsda_missed_secrets += (totalsecret - secret_count);
+  
+  if (kill_count < totalkills) dsda_100k = false;
 }
 
 void dsda_WatchWeaponFire(weapontype_t weapon) {
@@ -146,6 +151,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "pacifist %d\n", dsda_pacifist);
   fprintf(fstream, "reality %d\n", dsda_reality);
   fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
+  fprintf(fstream, "100k %d\n", dsda_100k);
   fprintf(fstream, "missed_monsters %d\n", dsda_missed_monsters);
   fprintf(fstream, "missed_secrets %d\n", dsda_missed_secrets);
   fprintf(fstream, "tyson_weapons %d\n", dsda_tyson_weapons);

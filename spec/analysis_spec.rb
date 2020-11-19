@@ -6,6 +6,24 @@ RSpec.describe 'analysis' do
     Utility.play_demo(lmp: lmp, pwad: pwad)
   end
   
+  describe '100k' do
+    subject { analysis.hundred_k? }
+    
+    context 'doom2 map 1 uv max by Xit Vono' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv01-039.lmp' }
+      
+      it { is_expected.to eq(true) }
+    end
+    
+    context 'doom2 map 1 uv speed by Thomas Pilger' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv01-005.lmp' }
+      
+      it { is_expected.to eq(false) }
+    end
+  end
+  
   describe 'missed things' do
     let(:missed_monsters) { analysis.missed_monsters }
     let(:missed_secrets) { analysis.missed_secrets }

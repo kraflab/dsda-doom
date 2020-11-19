@@ -35,6 +35,10 @@ module Utility
       @data['almost_reality'] == '1'
     end
     
+    def hundred_k?
+      @data['100k'] == '1'
+    end
+    
     def missed_monsters
       @data['missed_monsters'].to_i
     end
