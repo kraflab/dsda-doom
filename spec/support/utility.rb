@@ -78,6 +78,10 @@ module Utility
     def turbo?
       @data['turbo'] == '1'
     end
+    
+    def weapon_collector?
+      @data['weapon_collector'] == '1'
+    end
   end
   
   class Levelstat
