@@ -23,7 +23,7 @@ Current contents:
 - `100s`, `1` or `0` (100% secrets as seen on intermission).
 - `missed_monsters`, monsters left alive (not including icon spawns).
 - `missed_secrets`, secrets left uncollected.
-- `weapon_collector`, `1` o `0` (`0` if no weapons).
+- `weapon_collector`, `1` or `0` (`0` if no weapons).
 - `tyson_weapons`, `1` or `0` (only pistol, chainsaw, and fist used).
 - `turbo`, `1` or `0`.
 
