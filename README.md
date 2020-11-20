@@ -26,6 +26,17 @@ Current contents:
 - `weapon_collector`, `1` or `0` (`0` if no weapons).
 - `tyson_weapons`, `1` or `0` (only pistol, chainsaw, and fist used).
 - `turbo`, `1` or `0`.
+- `category`, `UV Max`, `NoMo`, etc.
+
+### Category Detection
+If multiple categories are detected, the first match in this list is chosen:
+UV Max, UV Tyson, Stroller, Pacifist, UV Speed
+
+Example: if you complete UV Tyson on a map and collect all the secrets, the analysis will show UV Max.
+
+Use the extra flags (`pacifist`, `stroller`, `tyson_weapons`) to check the details.
+
+Irrelevant categories for a run are ignored. E.g., you won't see `NM 100S` if a map has no secrets and you won't see `Pacifist` if a map has no monsters.
 
 ### PRBoom+ Stuff (since 2.5.1.5 - heavily abridged)
 - Fix boom autoswitch behaviour (in some cases running out of ammo forced a specific weapon swap)

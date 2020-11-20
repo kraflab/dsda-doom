@@ -20,7 +20,11 @@ module Utility
   
   class Analysis
     def initialize
-      @data = Hash[File.readlines("analysis.txt", chomp: true).map(&:split)]
+      @data = Hash[
+        File.readlines("analysis.txt", chomp: true).map(&:split).map do |a|
+          [a[0], a[1..].join(' ')]
+        end
+      ]
     end
     
     def skill
@@ -81,6 +85,10 @@ module Utility
     
     def weapon_collector?
       @data['weapon_collector'] == '1'
+    end
+    
+    def category
+      @data['category']
     end
   end
   

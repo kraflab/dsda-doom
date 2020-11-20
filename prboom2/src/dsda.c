@@ -274,6 +274,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "weapon_collector %d\n", dsda_weapon_collector);
   fprintf(fstream, "tyson_weapons %d\n", dsda_tyson_weapons);
   fprintf(fstream, "turbo %d\n", dsda_turbo);
+  fprintf(fstream, "category %s\n", dsda_DetectCategory());
   
   fclose(fstream);
   
