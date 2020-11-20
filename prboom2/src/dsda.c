@@ -39,18 +39,20 @@ dboolean dsda_reality = true;
 dboolean dsda_almost_reality = true;
 int dsda_missed_monsters = 0;
 int dsda_missed_secrets = 0;
+int dsda_missed_weapons = 0;
 dboolean dsda_tyson_weapons = true;
 dboolean dsda_100k = true;
 dboolean dsda_100s = true;
 dboolean dsda_any_counted_monsters = false;
 dboolean dsda_any_monsters = false;
 dboolean dsda_any_secrets = false;
-dboolean dsda_collector = false; // TODO
+dboolean dsda_any_weapons = false;
 dboolean dsda_stroller = true;
 dboolean dsda_nomo = false;
 dboolean dsda_respawn = false;
 dboolean dsda_fast = false;
 dboolean dsda_turbo = false;
+dboolean dsda_weapon_collector = true;
 
 // note-related
 int dsda_kills_on_map = 0;
@@ -63,6 +65,7 @@ int dsda_analysis;
 int dsda_track_pacifist;
 int dsda_track_100k;
 
+dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
 void dsda_ResetMapVariables(void);
 const char* dsda_DetectCategory(void);
@@ -140,6 +143,8 @@ void dsda_WatchSpawn(mobj_t* spawned) {
     || spawned->type == MT_SKULL \
     || spawned->type == MT_BOSSBRAIN
   ) dsda_any_monsters = true;
+  
+  if (!dsda_any_weapons) dsda_any_weapons = dsda_IsWeapon(spawned);
 }
 
 void dsda_WatchIconSpawn(mobj_t* spawned) {
@@ -183,6 +188,11 @@ void dsda_WatchLevelCompletion(void) {
     ) {
       ++dsda_missed_monsters;
     }
+    
+    if (dsda_IsWeapon(mobj)) {
+      ++dsda_missed_weapons;
+      dsda_weapon_collector = false;
+    }
   }
   
   for (i = 0; i < MAXPLAYERS; ++i) {
@@ -200,6 +210,21 @@ void dsda_WatchLevelCompletion(void) {
   if (totalsecret > 0) dsda_any_secrets = true;
   
   dsda_ResetMapVariables();
+}
+
+dboolean dsda_IsWeapon(mobj_t* thing) {
+  switch (thing->sprite) {
+    case SPR_BFUG:
+    case SPR_MGUN:
+    case SPR_CSAW:
+    case SPR_LAUN:
+    case SPR_PLAS:
+    case SPR_SHOT:
+    case SPR_SGN2:
+      return true;
+    default:
+      return false;
+  }
 }
 
 void dsda_ResetMapVariables(void) {
@@ -228,6 +253,7 @@ void dsda_WriteAnalysis(void) {
   
   if (dsda_reality) dsda_almost_reality = false;
   if (!dsda_pacifist) dsda_stroller = false;
+  if (!dsda_any_weapons) dsda_weapon_collector = false;
   
   dsda_nomo = nomonsters > 0;
   dsda_respawn = respawnparm > 0;
@@ -245,6 +271,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "100s %d\n", dsda_100s);
   fprintf(fstream, "missed_monsters %d\n", dsda_missed_monsters);
   fprintf(fstream, "missed_secrets %d\n", dsda_missed_secrets);
+  fprintf(fstream, "weapon_collector %d\n", dsda_weapon_collector);
   fprintf(fstream, "tyson_weapons %d\n", dsda_tyson_weapons);
   fprintf(fstream, "turbo %d\n", dsda_turbo);
   

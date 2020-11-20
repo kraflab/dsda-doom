@@ -269,4 +269,22 @@ RSpec.describe 'analysis' do
       it { is_expected.to eq(false) }
     end
   end
+  
+  describe 'weapon_collector' do
+    subject { analysis.weapon_collector? }
+    
+    context 'doom2 map 1 collector by hokis' do
+      let(:pwad) { nil }
+      let(:lmp) { 'cl01-022.lmp' }
+      
+      it { is_expected.to eq(true) }
+    end
+    
+    context 'doom2 map 1 tyson by j4rio' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv01t040.lmp' }
+      
+      it { is_expected.to eq(false) }
+    end
+  end
 end
