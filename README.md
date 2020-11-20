@@ -16,6 +16,7 @@ Current contents:
 - `respawn`, `1` or `0` (-respawn parameter).
 - `fast`, `1` or `0` (-fast parameter).
 - `pacifist`, `1` or `0`.
+- `stroller`, `1` or `0`.
 - `reality`, `1` or `0` (no damage taken).
 - `almost_reality`, `1` or `0` (only nukage damage taken).
 - `100k`, `1` or `0` (100% kills as seen on intermission).

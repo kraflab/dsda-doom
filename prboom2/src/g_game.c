@@ -1133,6 +1133,8 @@ void G_Ticker (void)
             }
         }
     }
+    
+    dsda_WatchCommand();
 
     // check for special buttons
     for (i=0; i<MAXPLAYERS; i++) {

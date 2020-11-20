@@ -15,6 +15,7 @@
 //	DSDA Tools
 //
 
+#include <stdlib.h>
 #include <stdio.h>
 
 #include "m_argv.h"
@@ -29,6 +30,7 @@
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
+#define STROLLER_THRESHOLD 25
 
 // analysis variables
 dboolean dsda_pacifist = true;
@@ -43,7 +45,7 @@ dboolean dsda_any_counted_monsters = false;
 dboolean dsda_any_monsters = false;
 dboolean dsda_any_secrets = false;
 dboolean dsda_collector = false; // TODO
-dboolean dsda_stroller = false; // TODO
+dboolean dsda_stroller = true;
 dboolean dsda_nomo = false;
 dboolean dsda_respawn = false;
 dboolean dsda_fast = false;
@@ -142,6 +144,20 @@ void dsda_WatchIconSpawn(mobj_t* spawned) {
   spawned->dsda_extension.spawned_by_icon = true;
 }
 
+void dsda_WatchCommand(void) {
+  int i;
+  ticcmd_t* cmd;
+  
+  for (i = 0; i < MAXPLAYERS; ++i) {
+    if (!playeringame[i]) continue;
+    
+    cmd = &players[i].cmd;
+    
+    if (cmd->sidemove != 0 || abs(cmd->forwardmove) > STROLLER_THRESHOLD)
+      dsda_stroller = false;
+  }
+}
+
 void dsda_WatchLevelCompletion(void) {
   thinker_t *th;
   mobj_t *mobj;
@@ -206,6 +222,7 @@ void dsda_WriteAnalysis(void) {
   }
   
   if (dsda_reality) dsda_almost_reality = false;
+  if (!dsda_pacifist) dsda_stroller = false;
   
   dsda_nomo = nomonsters > 0;
   dsda_respawn = respawnparm > 0;
@@ -216,6 +233,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "respawn %d\n", dsda_respawn);
   fprintf(fstream, "fast %d\n", dsda_fast);
   fprintf(fstream, "pacifist %d\n", dsda_pacifist);
+  fprintf(fstream, "stroller %d\n", dsda_stroller);
   fprintf(fstream, "reality %d\n", dsda_reality);
   fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
   fprintf(fstream, "100k %d\n", dsda_100k);
@@ -276,11 +294,8 @@ const char* dsda_DetectCategory(void) {
     
     if (satisfies_max) return "UV Max";
     if (satisfies_tyson) return "UV Tyson";
-    if (dsda_any_monsters && dsda_pacifist) {
-      if (dsda_stroller) return "Stroller";
-      
-      return "Pacifist";
-    }
+    if (dsda_any_monsters && dsda_stroller) return "Stroller";
+    if (dsda_any_monsters && dsda_pacifist) return "Pacifist";
     
     return "UV Speed";
   }

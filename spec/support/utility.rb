@@ -43,6 +43,10 @@ module Utility
       @data['pacifist'] == '1'
     end
     
+    def stroller?
+      @data['stroller'] == '1'
+    end
+    
     def reality?
       @data['reality'] == '1'
     end
