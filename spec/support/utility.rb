@@ -74,6 +74,10 @@ module Utility
     def tyson_weapons?
       @data['tyson_weapons'] == '1'
     end
+    
+    def turbo?
+      @data['turbo'] == '1'
+    end
   end
   
   class Levelstat
