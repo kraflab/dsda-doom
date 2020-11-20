@@ -175,6 +175,24 @@ RSpec.describe 'analysis' do
     end
   end
   
+  describe 'stroller' do
+    subject { analysis.stroller? }
+    
+    context 'doom2 map 8 stroller by 4shockblast' do
+      let(:pwad) { nil }
+      let(:lmp) { 'lv08str037.lmp' }
+      
+      it { is_expected.to eq(true) }
+    end
+    
+    context 'doom2 map 8 pacifist by 4shockblast' do
+      let(:pwad) { nil }
+      let(:lmp) { 'pa08-020.lmp' }
+      
+      it { is_expected.to eq(false) }
+    end
+  end
+  
   describe 'reality' do
     let(:reality) { analysis.reality? }
     let(:almost_reality) { analysis.almost_reality? }
