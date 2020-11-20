@@ -24,6 +24,7 @@ Current contents:
 - `missed_monsters`, monsters left alive (not including icon spawns).
 - `missed_secrets`, secrets left uncollected.
 - `tyson_weapons`, `1` or `0` (only pistol, chainsaw, and fist used).
+- `turbo`, `1` or `0`.
 
 ### PRBoom+ Stuff (since 2.5.1.5 - heavily abridged)
 - Fix boom autoswitch behaviour (in some cases running out of ammo forced a specific weapon swap)

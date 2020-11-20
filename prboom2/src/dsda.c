@@ -31,6 +31,7 @@
 
 #define TELEFRAG_DAMAGE 10000
 #define STROLLER_THRESHOLD 25
+#define TURBO_THRESHOLD 50
 
 // analysis variables
 dboolean dsda_pacifist = true;
@@ -49,6 +50,7 @@ dboolean dsda_stroller = true;
 dboolean dsda_nomo = false;
 dboolean dsda_respawn = false;
 dboolean dsda_fast = false;
+dboolean dsda_turbo = false;
 
 // note-related
 int dsda_kills_on_map = 0;
@@ -155,6 +157,9 @@ void dsda_WatchCommand(void) {
     
     if (cmd->sidemove != 0 || abs(cmd->forwardmove) > STROLLER_THRESHOLD)
       dsda_stroller = false;
+    
+    if (abs(cmd->sidemove) > TURBO_THRESHOLD || abs(cmd->forwardmove) > TURBO_THRESHOLD)
+      dsda_turbo = true;
   }
 }
 
@@ -241,6 +246,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "missed_monsters %d\n", dsda_missed_monsters);
   fprintf(fstream, "missed_secrets %d\n", dsda_missed_secrets);
   fprintf(fstream, "tyson_weapons %d\n", dsda_tyson_weapons);
+  fprintf(fstream, "turbo %d\n", dsda_turbo);
   
   fclose(fstream);
   
@@ -270,6 +276,8 @@ const char* dsda_DetectCategory(void) {
     && dsda_any_counted_monsters
   );
   satisfies_100s = dsda_any_secrets && dsda_100s;
+  
+  if (dsda_turbo) return "Other";
   
   if (gameskill == sk_hard) {
     if (dsda_nomo && !dsda_respawn && !dsda_fast) {
