@@ -52,6 +52,7 @@
 #include "r_main.h"
 #include "lprintf.h"
 #include "e6y.h" //e6y
+#include "dsda/hud.h"
 #include "g_overflow.h"
 
 // global heads up display controls
@@ -973,6 +974,8 @@ void HU_Start(void)
   HU_LoadHUDDefs();
 
   HU_MoveHud(true);
+  
+  dsda_InitHud(hu_font2);
 }
 
 void HU_NextHud(void)
@@ -2543,6 +2546,8 @@ void HU_Drawer(void)
 
   // display the interactive buffer for chat entry
   HUlib_drawIText(&w_chat);
+  
+  dsda_DrawHud();
 }
 
 //
@@ -2569,6 +2574,8 @@ void HU_Erase(void)
 
   // erase the automap title
   HUlib_eraseTextLine(&w_title);
+  
+  dsda_EraseHud();
 }
 
 //
@@ -2689,6 +2696,8 @@ void HU_Ticker(void)
       }
     }
   }
+  
+  dsda_UpdateHud();
 }
 
 #define QUEUESIZE   128

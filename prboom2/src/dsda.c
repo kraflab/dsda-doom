@@ -27,6 +27,7 @@
 #include "s_sound.h"
 
 #include "dsda_mobj_extension.h"
+#include "dsda/hud.h"
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
@@ -59,6 +60,10 @@ int dsda_kills_on_map = 0;
 dboolean dsda_100k_on_map = false;
 dboolean dsda_100k_note_shown = false;
 dboolean dsda_pacifist_note_shown = false;
+dboolean dsda_time_keys = false;
+dboolean dsda_time_use = false;
+dboolean dsda_time_secrets = false;
+dboolean dsda_time_all = false;
 
 // command-line toggles
 int dsda_analysis;
@@ -74,6 +79,16 @@ void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
   dsda_track_100k = M_CheckParm("-track_100k");
   dsda_analysis = M_CheckParm("-analysis");
+  dsda_time_keys = M_CheckParm("-time_keys");
+  dsda_time_use = M_CheckParm("-time_use");
+  dsda_time_secrets = M_CheckParm("-time_secrets");
+  dsda_time_all = M_CheckParm("-time_all");
+  
+  if (dsda_time_all) {
+    dsda_time_keys = true;
+    dsda_time_use = true;
+    dsda_time_secrets = true;
+  }
 }
 
 void dsda_DisplayNotifications(void) {
@@ -91,6 +106,26 @@ void dsda_DisplayNotifications(void) {
 void dsda_DisplayNotification(const char* msg) {
   S_StartSound(0, sfx_radio);
   doom_printf(msg);
+}
+
+void dsda_WatchCard(card_t card) {
+  if (dsda_time_keys)
+    switch (card) {
+      case it_bluecard:
+      case it_blueskull:
+        dsda_AddSplit(DSDA_SPLIT_BLUE_KEY);
+        break;
+      case it_yellowcard:
+      case it_yellowskull:
+        dsda_AddSplit(DSDA_SPLIT_YELLOW_KEY);
+        break;
+      case it_redcard:
+      case it_redskull:
+        dsda_AddSplit(DSDA_SPLIT_RED_KEY);
+        break;
+      default:
+        break;
+    }
 }
 
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage) {
@@ -159,6 +194,9 @@ void dsda_WatchCommand(void) {
     if (!playeringame[i]) continue;
     
     cmd = &players[i].cmd;
+    
+    if (cmd->buttons & BT_USE && dsda_time_use)
+      dsda_AddSplit(DSDA_SPLIT_USE);
     
     if (cmd->sidemove != 0 || abs(cmd->forwardmove) > STROLLER_THRESHOLD)
       dsda_stroller = false;
@@ -237,6 +275,10 @@ void dsda_WatchWeaponFire(weapontype_t weapon) {
   if (weapon == wp_fist || weapon == wp_pistol || weapon == wp_chainsaw) return;
   
   dsda_tyson_weapons = false;
+}
+
+void dsda_WatchSecret(void) {
+  if (dsda_time_secrets) dsda_AddSplit(DSDA_SPLIT_SECRET);
 }
 
 void dsda_WriteAnalysis(void) {

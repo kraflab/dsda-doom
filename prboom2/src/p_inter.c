@@ -259,6 +259,8 @@ static void P_GiveCard(player_t *player, card_t card)
     return;
   player->bonuscount = BONUSADD;
   player->cards[card] = 1;
+  
+  dsda_WatchCard(card);
 }
 
 //
