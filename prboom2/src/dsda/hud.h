@@ -15,21 +15,25 @@
 //	DSDA Tools
 //
 
-#ifndef __DSDA__
-#define __DSDA__
+#ifndef __DSDA_HUD__
+#define __DSDA_HUD__
 
-void dsda_ReadCommandLine(void);
-void dsda_DisplayNotifications(void);
-void dsda_WatchCard(card_t card);
-void dsda_WatchCrush(mobj_t* thing, int damage);
-void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage);
-void dsda_WatchDeath(mobj_t* thing);
-void dsda_WatchSpawn(mobj_t* spawned);
-void dsda_WatchIconSpawn(mobj_t* spawned);
-void dsda_WatchCommand(void);
-void dsda_WatchLevelCompletion(void);
-void dsda_WatchWeaponFire(weapontype_t weapon);
-void dsda_WatchSecret(void);
-void dsda_WriteAnalysis(void);
+#include "r_defs.h"
+
+typedef enum
+{
+  DSDA_SPLIT_BLUE_KEY,
+  DSDA_SPLIT_YELLOW_KEY,
+  DSDA_SPLIT_RED_KEY,
+  DSDA_SPLIT_USE,
+  DSDA_SPLIT_SECRET,
+  DSDA_SPLIT_CLASS_COUNT
+} dsda_split_class_t;
+
+void dsda_InitHud(patchnum_t* font);
+void dsda_UpdateHud(void);
+void dsda_DrawHud(void);
+void dsda_EraseHud(void);
+void dsda_AddSplit(dsda_split_class_t split_class);
 
 #endif

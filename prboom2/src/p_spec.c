@@ -61,6 +61,7 @@
 #include "hu_stuff.h"
 #include "lprintf.h"
 #include "e6y.h"//e6y
+#include "dsda.h"
 
 //
 //      source animation definition
@@ -2375,6 +2376,8 @@ void P_PlayerInSpecialSector (player_t* player)
           int sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_secret]) < 0 ? sfx_itmbk : sfx_secret);
           SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
         }
+        
+        dsda_WatchSecret();
 
         break;
 
@@ -2432,6 +2435,8 @@ void P_PlayerInSpecialSector (player_t* player)
         int sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_secret]) < 0 ? sfx_itmbk : sfx_secret);
         SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
       }
+      
+      dsda_WatchSecret();
     }
 
     // phares 3/19/98:
