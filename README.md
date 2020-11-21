@@ -1,4 +1,4 @@
-# dsda-doom v0.4.0
+# dsda-doom v0.5.0
 This is a fork of prboom+ with extra tooling for dsda.
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 
@@ -6,6 +6,10 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 - Use `-analysis` to write an analysis.txt file with run details.
 - Use `-track_pacifist` to enable a "Not pacifist!" message to appear when breaking the category rules.
 - Use `-track_100k` to enable a "100K achieved!" message to appear when reaching 100% kills on a map.
+- Use `-time_keys` to show a split when you pick up a key.
+- Use `-time_use` to show a split when you press the use key.
+- Use `-time_secrets` to show a split when you find a secret.
+- Use `-time_all` to enable all the split options.
 
 ### Analysis File
 This file contains summary data about a run in key-value pairs.
