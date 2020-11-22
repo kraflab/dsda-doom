@@ -57,6 +57,7 @@
 #include "g_overflow.h"
 #include "am_map.h"
 #include "e6y.h"//e6y
+#include "dsda.h"
 
 #include "config.h"
 #ifdef HAVE_LIBZ
@@ -2823,6 +2824,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   // set up world state
   P_SpawnSpecials();
+
+  dsda_WatchLevelSetup();
 
   P_MapEnd();
 
