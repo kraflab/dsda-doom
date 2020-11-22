@@ -19,6 +19,8 @@ set(COMMON_SRC
     doomtype.h
     dsda.c
     dsda.h
+    dsda/ghost.c
+    dsda/ghost.h
     dsda/hud.c
     dsda/hud.h
     dstrings.c

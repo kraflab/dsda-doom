@@ -27,6 +27,7 @@ void dsda_WatchDeath(mobj_t* thing);
 void dsda_WatchSpawn(mobj_t* spawned);
 void dsda_WatchIconSpawn(mobj_t* spawned);
 void dsda_WatchCommand(void);
+void dsda_WatchLevelSetup(void);
 void dsda_WatchLevelCompletion(void);
 void dsda_WatchWeaponFire(weapontype_t weapon);
 void dsda_WatchSecret(void);

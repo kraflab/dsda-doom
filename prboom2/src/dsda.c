@@ -27,6 +27,7 @@
 #include "s_sound.h"
 
 #include "dsda_mobj_extension.h"
+#include "dsda/ghost.h"
 #include "dsda/hud.h"
 #include "dsda.h"
 
@@ -76,6 +77,8 @@ void dsda_ResetMapVariables(void);
 const char* dsda_DetectCategory(void);
 
 void dsda_ReadCommandLine(void) {
+  int p;
+  
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
   dsda_track_100k = M_CheckParm("-track_100k");
   dsda_analysis = M_CheckParm("-analysis");
@@ -89,6 +92,12 @@ void dsda_ReadCommandLine(void) {
     dsda_time_use = true;
     dsda_time_secrets = true;
   }
+  
+  if ((p = M_CheckParm("-export_ghost")) && ++p < myargc)
+    dsda_InitGhostExport(myargv[p]);
+  
+  if ((p = M_CheckParm("-import_ghost")) && ++p < myargc)
+    dsda_InitGhostImport(myargv[p]);
 }
 
 void dsda_DisplayNotifications(void) {
@@ -204,6 +213,12 @@ void dsda_WatchCommand(void) {
     if (abs(cmd->sidemove) > TURBO_THRESHOLD || abs(cmd->forwardmove) > TURBO_THRESHOLD)
       dsda_turbo = true;
   }
+  
+  dsda_ExportGhostFrame();
+}
+
+void dsda_WatchLevelSetup(void) {
+  dsda_SpawnGhost();
 }
 
 void dsda_WatchLevelCompletion(void) {
