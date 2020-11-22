@@ -1,4 +1,4 @@
-# dsda-doom v0.5.0
+# dsda-doom v0.6.0
 This is a fork of prboom+ with extra tooling for dsda.
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 
@@ -10,6 +10,11 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 - Use `-time_use` to show a split when you press the use key.
 - Use `-time_secrets` to show a split when you find a secret.
 - Use `-time_all` to enable all the split options.
+- Use `-export_ghost xyz` to write a ghost file (xyz.gst).
+- Use `-import_ghost xyz` to import a ghost file (xyz.gst).
+
+### Ghosts
+A ghost follows the life of the player recorded in the ghost file. This can be useful to compare two demos, or to compete against a specific demo while you play. Movies are supported in the sense that they don't cause an error, but a ghost that is "on the next map" will still show up on your current map. Only one ghost is supported for now. Ghosts most likely don't work under conditions where you skip time (warping during demo playback, skipsec, etc). In the future, we will have better handling for movies, multiple ghosts, display options, etc.
 
 ### Analysis File
 This file contains summary data about a run in key-value pairs.
