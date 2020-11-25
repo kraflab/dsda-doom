@@ -3221,14 +3221,15 @@ setup_menu_t gen_settings3[] = { // General Settings screen2
 
   {"Movements",                   S_SKIP|S_TITLE,m_null,G_X, G_Y+8*8},
   {"Permanent Strafe50 (TAS)",    S_YESNO, m_null, G_X, G_Y+ 9*8, {"movement_strafe50"}, 0, 0, M_ChangeSpeed},
+  {"Strafe50 On Turns (TAS)",     S_YESNO, m_null, G_X, G_Y+ 10*8, {"movement_strafe50onturns"}, 0, 0, M_ChangeSpeed},
 
-  {"Mouse",                       S_SKIP|S_TITLE,m_null, G_X, G_Y+11*8},
-  {"Dbl-Click As Use",            S_YESNO, m_null, G_X, G_Y+12*8, {"mouse_doubleclick_as_use"}},
-  {"Carry Fractional Tics",       S_YESNO, m_null, G_X, G_Y+13*8, {"mouse_carrytics"}},
-  {"Enable Mouselook",            S_YESNO, m_null, G_X, G_Y+14*8, {"movement_mouselook"}, 0, 0, M_ChangeMouseLook},
-  {"Invert Mouse",                S_YESNO, m_null, G_X, G_Y+15*8, {"movement_mouseinvert"}, 0, 0, M_ChangeMouseInvert},
-  {"Max View Pitch",              S_NUM,   m_null, G_X, G_Y+16*8, {"movement_maxviewpitch"}, 0, 0, M_ChangeMaxViewPitch},
-  {"Mouse Strafe Divisor",        S_NUM,   m_null, G_X, G_Y+17*8, {"movement_mousestrafedivisor"}},
+  {"Mouse",                       S_SKIP|S_TITLE,m_null, G_X, G_Y+12*8},
+  {"Dbl-Click As Use",            S_YESNO, m_null, G_X, G_Y+13*8, {"mouse_doubleclick_as_use"}},
+  {"Carry Fractional Tics",       S_YESNO, m_null, G_X, G_Y+14*8, {"mouse_carrytics"}},
+  {"Enable Mouselook",            S_YESNO, m_null, G_X, G_Y+15*8, {"movement_mouselook"}, 0, 0, M_ChangeMouseLook},
+  {"Invert Mouse",                S_YESNO, m_null, G_X, G_Y+16*8, {"movement_mouseinvert"}, 0, 0, M_ChangeMouseInvert},
+  {"Max View Pitch",              S_NUM,   m_null, G_X, G_Y+17*8, {"movement_maxviewpitch"}, 0, 0, M_ChangeMaxViewPitch},
+  {"Mouse Strafe Divisor",        S_NUM,   m_null, G_X, G_Y+18*8, {"movement_mousestrafedivisor"}},
 
   {"<- PREV",S_SKIP|S_PREV, m_null,KB_PREV, KB_Y+20*8, {gen_settings2}},
   {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {gen_settings4}},

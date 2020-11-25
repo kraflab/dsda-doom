@@ -133,6 +133,7 @@ int hudadd_crosshair_target_color;
 int hudadd_crosshair_lock_target;
 int movement_strafe50;
 int movement_shorttics;
+int movement_strafe50onturns;
 int movement_mouselook;
 int movement_mouseinvert;
 int movement_maxviewpitch;

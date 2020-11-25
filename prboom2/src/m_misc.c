@@ -953,6 +953,8 @@ default_t defaults[] =
   {"Prboom-plus game settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"movement_strafe50", {&movement_strafe50},  {0},0,1,
    def_bool,ss_stat},
+  {"movement_strafe50onturns", {&movement_strafe50onturns},  {0},0,1,
+   def_bool,ss_stat},
   {"movement_shorttics", {&movement_shorttics},  {0},0,1,
    def_bool,ss_stat},
   {"interpolation_maxobjects", {&interpolation_maxobjects},  {0},0,UL,
