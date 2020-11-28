@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Tools
+//	DSDA Hud
 //
 
 #ifndef __DSDA_HUD__
