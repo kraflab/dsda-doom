@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 
+#include "m_argv.h"
 #include "lprintf.h"
 #include "doomtype.h"
 #include "doomstat.h"
@@ -42,6 +43,18 @@ typedef struct {
   int episode;
   int tic;
 } dsda_ghost_frame_t;
+
+typedef struct {
+  dsda_ghost_frame_t frame;
+  mobj_t* mobj;
+  FILE* fstream;
+} dsda_ghost_t;
+
+typedef struct {
+  thinker_t thinker;
+  dsda_ghost_t* ghosts;
+  int count;
+} dsda_ghost_import_t;
 
 mobjinfo_t dsda_ghost_info = {
   -1,            // doomednum
@@ -70,7 +83,7 @@ mobjinfo_t dsda_ghost_info = {
 };
 
 FILE *dsda_ghost_export;
-FILE *dsda_ghost_import;
+dsda_ghost_import_t dsda_ghost_import;
 
 void dsda_InitGhostExport(const char* name) {
   int version;
@@ -89,22 +102,37 @@ void dsda_InitGhostExport(const char* name) {
   free(filename);
 }
 
-void dsda_InitGhostImport(const char* name) {
+void dsda_InitGhostImport(int option_i) {
   int version;
   char* filename;
-  filename = malloc(strlen(name) + 4 + 1);
-  AddDefaultExtension(strcpy(filename, name), ".gst");
+  int arg_i;
+  int ghost_i;
   
-  dsda_ghost_import = fopen(filename, "rb");
+  ghost_i = 0;
+    
+  arg_i = option_i;
+  while (++arg_i != myargc && *myargv[arg_i] != '-') ++dsda_ghost_import.count;
   
-  if (dsda_ghost_import == NULL)
-    I_Error("dsda_InitGhostImport: failed to open %s", name);
+  dsda_ghost_import.ghosts = calloc(dsda_ghost_import.count, sizeof(dsda_ghost_t));
   
-  fread(&version, sizeof(int), 1, dsda_ghost_import);
-  if (version != DSDA_GHOST_VERSION)
-    I_Error("dsda_InitGhostImport: ghost version mismatch");
-  
-  free(filename);
+  arg_i = option_i;
+  while (++arg_i != myargc && *myargv[arg_i] != '-') {
+    filename = malloc(strlen(myargv[arg_i]) + 4 + 1);
+    AddDefaultExtension(strcpy(filename, myargv[arg_i]), ".gst");
+    
+    dsda_ghost_import.ghosts[ghost_i].fstream = fopen(filename, "rb");
+    
+    if (dsda_ghost_import.ghosts[ghost_i].fstream == NULL)
+      I_Error("dsda_InitGhostImport: failed to open %s", myargv[arg_i]);
+    
+    fread(&version, sizeof(int), 1, dsda_ghost_import.ghosts[ghost_i].fstream);
+    if (version != DSDA_GHOST_VERSION)
+      I_Error("dsda_InitGhostImport: ghost version mismatch %s", myargv[arg_i]);
+    
+    free(filename);
+    
+    ++ghost_i;
+  }
 }
 
 void dsda_ExportGhostFrame(void) {
@@ -134,73 +162,92 @@ void dsda_ExportGhostFrame(void) {
 
 // Stripped down version of P_SpawnMobj
 void dsda_SpawnGhost(void) {
-  mobj_t* ghost;
+  mobj_t* mobj;
   state_t* ghost_state;
+  int ghost_i;
+  dboolean any_ghosts;
   
-  if (dsda_ghost_import == NULL) return;
-
-  ghost = Z_Malloc(sizeof(*ghost), PU_LEVEL, NULL);
-  memset(ghost, 0, sizeof(*ghost));
-  ghost->type = MT_NULL;
-  ghost->info = &dsda_ghost_info;
-  ghost->flags = dsda_ghost_info.flags;
+  for (ghost_i = 0; ghost_i < dsda_ghost_import.count; ++ghost_i) {
+    if (dsda_ghost_import.ghosts[ghost_i].fstream == NULL) {
+      dsda_ghost_import.ghosts[ghost_i].mobj = NULL;
+      continue;
+    }
+    
+    mobj = Z_Malloc(sizeof(*mobj), PU_LEVEL, NULL);
+    memset(mobj, 0, sizeof(*mobj));
+    mobj->type = MT_NULL;
+    mobj->info = &dsda_ghost_info;
+    mobj->flags = dsda_ghost_info.flags;
+    
+    mobj->x = players[0].mo->x;
+    mobj->y = players[0].mo->y;
+    mobj->z = players[0].mo->z;
+    mobj->angle = players[0].mo->angle;
+    
+    ghost_state = &states[dsda_ghost_info.spawnstate];
+    
+    mobj->state  = ghost_state;
+    mobj->tics   = ghost_state->tics;
+    mobj->sprite = ghost_state->sprite;
+    mobj->frame  = ghost_state->frame;
+    mobj->touching_sectorlist = NULL;
+    
+    P_SetThingPosition(mobj);
+    
+    mobj->dropoffz =
+    mobj->floorz   = mobj->subsector->sector->floorheight;
+    mobj->ceilingz = mobj->subsector->sector->ceilingheight;
+    
+    mobj->PrevX = mobj->x;
+    mobj->PrevY = mobj->y;
+    mobj->PrevZ = mobj->z;
+    
+    mobj->friction = ORIG_FRICTION;
+    mobj->index = -1;
+    
+    dsda_ghost_import.ghosts[ghost_i].mobj = mobj;
+  }
   
-  ghost->x = players[0].mo->x;
-  ghost->y = players[0].mo->y;
-  ghost->z = players[0].mo->z;
-  ghost->angle = players[0].mo->angle;
-
-  ghost_state = &states[dsda_ghost_info.spawnstate];
-
-  ghost->state  = ghost_state;
-  ghost->tics   = ghost_state->tics;
-  ghost->sprite = ghost_state->sprite;
-  ghost->frame  = ghost_state->frame;
-  ghost->touching_sectorlist = NULL;
-
-  P_SetThingPosition(ghost);
-
-  ghost->dropoffz =
-  ghost->floorz   = ghost->subsector->sector->floorheight;
-  ghost->ceilingz = ghost->subsector->sector->ceilingheight;
-  
-  ghost->PrevX = ghost->x;
-  ghost->PrevY = ghost->y;
-  ghost->PrevZ = ghost->z;
-
-  ghost->thinker.function = dsda_UpdateGhost;
-
-  ghost->friction = ORIG_FRICTION;
-  ghost->index = -1;
-
-  P_AddThinker(&ghost->thinker);
+  if (dsda_ghost_import.count > 0) {
+    dsda_ghost_import.thinker.function = dsda_UpdateGhosts;
+    P_AddThinker(&dsda_ghost_import.thinker);
+  }
 }
 
-void dsda_UpdateGhost(mobj_t* ghost) {
-  dsda_ghost_frame_t ghost_frame;
-  int c;
+void dsda_UpdateGhosts(void* _void) {
+  dsda_ghost_t* ghost;
+  mobj_t* mobj;
+  int ghost_i;
+  int read_result;
   
-  if (dsda_ghost_import == NULL) return;
-  
-  c = fread(&ghost_frame, sizeof(dsda_ghost_frame_t), 1, dsda_ghost_import);
-  
-  if (c != 1) {
-    dsda_ghost_import = NULL;
-    return;
-  }
+  for (ghost_i = 0; ghost_i < dsda_ghost_import.count; ++ghost_i) {
+    ghost = &dsda_ghost_import.ghosts[ghost_i];
     
-  P_UnsetThingPosition(ghost);
-  
-  ghost->PrevX = ghost->x;
-  ghost->PrevY = ghost->y;
-  ghost->PrevZ = ghost->z;
-  
-  ghost->x = ghost_frame.x;
-  ghost->y = ghost_frame.y;
-  ghost->z = ghost_frame.z;
-  ghost->angle = ghost_frame.angle;
-  ghost->sprite = ghost_frame.sprite;
-  ghost->frame = ghost_frame.frame;
-  
-  P_SetThingPosition(ghost);
+    if (ghost->fstream == NULL) continue;
+    
+    read_result = fread(&ghost->frame, sizeof(dsda_ghost_frame_t), 1, ghost->fstream);
+    
+    if (read_result != 1) {
+      fclose(ghost->fstream);
+      ghost->fstream = NULL;
+      return;
+    }
+    
+    mobj = ghost->mobj;
+    
+    P_UnsetThingPosition(mobj);
+    
+    mobj->PrevX = mobj->x;
+    mobj->PrevY = mobj->y;
+    mobj->PrevZ = mobj->z;
+    
+    mobj->x = ghost->frame.x;
+    mobj->y = ghost->frame.y;
+    mobj->z = ghost->frame.z;
+    mobj->angle = ghost->frame.angle;
+    mobj->sprite = ghost->frame.sprite;
+    mobj->frame = ghost->frame.frame;
+    
+    P_SetThingPosition(mobj);
+  }
 }

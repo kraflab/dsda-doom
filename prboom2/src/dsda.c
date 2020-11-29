@@ -96,8 +96,7 @@ void dsda_ReadCommandLine(void) {
   if ((p = M_CheckParm("-export_ghost")) && ++p < myargc)
     dsda_InitGhostExport(myargv[p]);
   
-  if ((p = M_CheckParm("-import_ghost")) && ++p < myargc)
-    dsda_InitGhostImport(myargv[p]);
+  if ((p = M_CheckParm("-import_ghost"))) dsda_InitGhostImport(p);
 }
 
 void dsda_DisplayNotifications(void) {
