@@ -219,23 +219,40 @@ void dsda_UpdateGhosts(void* _void) {
   mobj_t* mobj;
   int ghost_i;
   int read_result;
+  dboolean ghost_was_behind;
   
   for (ghost_i = 0; ghost_i < dsda_ghost_import.count; ++ghost_i) {
     ghost = &dsda_ghost_import.ghosts[ghost_i];
     
     if (ghost->fstream == NULL) continue;
     
-    read_result = fread(&ghost->frame, sizeof(dsda_ghost_frame_t), 1, ghost->fstream);
-    
-    if (read_result != 1) {
-      fclose(ghost->fstream);
-      ghost->fstream = NULL;
-      return;
-    }
-    
     mobj = ghost->mobj;
     
+    // Ghost removed from map (finished map already)
+    if (mobj->touching_sectorlist == NULL) continue;
+    
+    ghost_was_behind = ghost->frame.map != 0 && ghost->frame.map != gamemap;
+    
+    // if the ghost was left behind, catch it up
+    do {
+      read_result = fread(&ghost->frame, sizeof(dsda_ghost_frame_t), 1, ghost->fstream);
+      
+      if (read_result != 1) {
+        fclose(ghost->fstream);
+        ghost->fstream = NULL;
+        break;
+      }
+    } while (ghost_was_behind && ghost->frame.map != gamemap);
+    
+    if (ghost->fstream == NULL) continue;
+    
     P_UnsetThingPosition(mobj);
+    
+    // Roll back one frame and leave position unset until next map
+    if (ghost->frame.map != gamemap) {
+      fseek(ghost->fstream, -(int)sizeof(dsda_ghost_frame_t), SEEK_CUR);
+      continue;
+    }
     
     mobj->PrevX = mobj->x;
     mobj->PrevY = mobj->y;
