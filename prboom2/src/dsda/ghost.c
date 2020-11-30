@@ -92,8 +92,6 @@ mobjinfo_t dsda_ghost_info = {
 FILE *dsda_ghost_export;
 dsda_ghost_import_t dsda_ghost_import;
 
-void dsda_OpenGhostFile(int arg_i, dsda_ghost_file_t* ghost_file);
-
 void dsda_InitGhostExport(const char* name) {
   int version;
   char* filename;
