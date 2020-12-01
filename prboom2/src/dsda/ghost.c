@@ -30,7 +30,8 @@
 
 #include "ghost.h"
 
-#define DSDA_GHOST_VERSION 1
+#define DSDA_GHOST_MIN_VERSION 1
+#define DSDA_GHOST_VERSION 2
 
 typedef struct {
   fixed_t x;
@@ -55,6 +56,12 @@ typedef struct {
   dsda_ghost_t* ghosts;
   int count;
 } dsda_ghost_import_t;
+
+typedef struct {
+  FILE* fstream;
+  int version;
+  int count;
+} dsda_ghost_file_t;
 
 mobjinfo_t dsda_ghost_info = {
   -1,            // doomednum
@@ -102,62 +109,101 @@ void dsda_InitGhostExport(const char* name) {
   free(filename);
 }
 
-void dsda_InitGhostImport(int option_i) {
-  int version;
+void dsda_OpenGhostFile(int arg_i, dsda_ghost_file_t* ghost_file) {
   char* filename;
+  
+  memset(ghost_file, 0, sizeof(dsda_ghost_file_t));
+  
+  filename = malloc(strlen(myargv[arg_i]) + 4 + 1);
+  AddDefaultExtension(strcpy(filename, myargv[arg_i]), ".gst");
+  
+  ghost_file->fstream = fopen(filename, "rb");
+  
+  if (ghost_file->fstream == NULL)
+    I_Error("dsda_OpenGhostImport: failed to open %s", myargv[arg_i]);
+  
+  fread(&ghost_file->version, sizeof(int), 1, ghost_file->fstream);
+  if (ghost_file->version < DSDA_GHOST_MIN_VERSION || ghost_file->version > DSDA_GHOST_VERSION)
+    I_Error("dsda_OpenGhostImport: unsupported ghost version %s", myargv[arg_i]);
+  
+  if (ghost_file->version == 1) ghost_file->count = 1;
+  else fread(&ghost_file->count, sizeof(int), 1, ghost_file->fstream);
+  
+  free(filename);
+}
+
+int dsda_GhostCount(int arg_i) {
+  dsda_ghost_file_t ghost_file;
+  
+  dsda_OpenGhostFile(arg_i, &ghost_file);
+  
+  fclose(ghost_file.fstream);
+  
+  return ghost_file.count;
+}
+
+void dsda_InitGhostImport(int option_i) {
   int arg_i;
   int ghost_i;
+  int i;
+  dsda_ghost_file_t ghost_file;
   
   ghost_i = 0;
     
   arg_i = option_i;
-  while (++arg_i != myargc && *myargv[arg_i] != '-') ++dsda_ghost_import.count;
+  while (++arg_i != myargc && *myargv[arg_i] != '-') 
+    dsda_ghost_import.count += dsda_GhostCount(arg_i);
   
   dsda_ghost_import.ghosts = calloc(dsda_ghost_import.count, sizeof(dsda_ghost_t));
   
   arg_i = option_i;
   while (++arg_i != myargc && *myargv[arg_i] != '-') {
-    filename = malloc(strlen(myargv[arg_i]) + 4 + 1);
-    AddDefaultExtension(strcpy(filename, myargv[arg_i]), ".gst");
+    dsda_OpenGhostFile(arg_i, &ghost_file);
     
-    dsda_ghost_import.ghosts[ghost_i].fstream = fopen(filename, "rb");
-    
-    if (dsda_ghost_import.ghosts[ghost_i].fstream == NULL)
-      I_Error("dsda_InitGhostImport: failed to open %s", myargv[arg_i]);
-    
-    fread(&version, sizeof(int), 1, dsda_ghost_import.ghosts[ghost_i].fstream);
-    if (version != DSDA_GHOST_VERSION)
-      I_Error("dsda_InitGhostImport: ghost version mismatch %s", myargv[arg_i]);
-    
-    free(filename);
-    
-    ++ghost_i;
+    for (i = 0; i < ghost_file.count; ++i) {
+      dsda_ghost_import.ghosts[ghost_i].fstream = ghost_file.fstream;
+      ++ghost_i;
+    }
   }
 }
 
 void dsda_ExportGhostFrame(void) {
   dsda_ghost_frame_t ghost_frame;
   mobj_t* player;
+  int i;
   
   if (dsda_ghost_export == NULL) return;
   
-  if (gametic == 0) return;
+  // just write the number of players on the zeroth tic
+  if (gametic == 0) {
+    int count = 0;
+    
+    for (i = 0; i < MAXPLAYERS; ++i) if (playeringame[i]) ++count;
+    
+    fwrite(&count, sizeof(int), 1, dsda_ghost_export);
+    
+    return;
+  }
   
-  player = players[0].mo;
-  
-  if (player == NULL) return;
-  
-  ghost_frame.x = player->x;
-  ghost_frame.y = player->y;
-  ghost_frame.z = player->z;
-  ghost_frame.angle = player->angle;
-  ghost_frame.sprite = player->sprite;
-  ghost_frame.frame = player->frame;
-  ghost_frame.map = gamemap;
-  ghost_frame.episode = gameepisode;
-  ghost_frame.tic = gametic;
-  
-  fwrite(&ghost_frame, sizeof(dsda_ghost_frame_t), 1, dsda_ghost_export);
+  for (i = 0; i < MAXPLAYERS; ++i) {
+    if (!playeringame[i]) break;
+    
+    player = players[i].mo;
+    
+    if (player == NULL) continue;
+    
+    ghost_frame.x = player->x;
+    ghost_frame.y = player->y;
+    ghost_frame.z = player->z;
+    ghost_frame.angle = player->angle;
+    ghost_frame.sprite = player->sprite;
+    ghost_frame.frame = player->frame;
+    ghost_frame.map = gamemap;
+    ghost_frame.episode = gameepisode;
+    ghost_frame.tic = gametic;
+    
+    fwrite(&ghost_frame, sizeof(dsda_ghost_frame_t), 1, dsda_ghost_export);
+  }
 }
 
 // Stripped down version of P_SpawnMobj
@@ -178,6 +224,20 @@ void dsda_SpawnGhost(void) {
     mobj->type = MT_NULL;
     mobj->info = &dsda_ghost_info;
     mobj->flags = dsda_ghost_info.flags;
+    
+    switch (ghost_i % 4) {
+      case 0:
+        break;
+      case 1:
+        mobj->flags |= MF_TRANSLATION1;
+        break;
+      case 2:
+        mobj->flags |= MF_TRANSLATION2;
+        break;
+      case 3:
+        mobj->flags |= MF_TRANSLATION;
+        break;
+    }
     
     mobj->x = players[0].mo->x;
     mobj->y = players[0].mo->y;
@@ -231,6 +291,10 @@ void dsda_UpdateGhosts(void* _void) {
     // Ghost removed from map (finished map already)
     if (mobj->touching_sectorlist == NULL) continue;
     
+    mobj->PrevX = mobj->x;
+    mobj->PrevY = mobj->y;
+    mobj->PrevZ = mobj->z;
+    
     ghost_was_behind = ghost->frame.map != 0 && ghost->frame.map != gamemap;
     
     // if the ghost was left behind, catch it up
@@ -253,10 +317,6 @@ void dsda_UpdateGhosts(void* _void) {
       fseek(ghost->fstream, -(int)sizeof(dsda_ghost_frame_t), SEEK_CUR);
       continue;
     }
-    
-    mobj->PrevX = mobj->x;
-    mobj->PrevY = mobj->y;
-    mobj->PrevZ = mobj->z;
     
     mobj->x = ghost->frame.x;
     mobj->y = ghost->frame.y;
