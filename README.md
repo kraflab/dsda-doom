@@ -1,4 +1,4 @@
-# dsda-doom v0.7.0
+# dsda-doom v0.7.1
 This is a fork of prboom+ with extra tooling for dsda.
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 
@@ -14,7 +14,7 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 - Use `-import_ghost ghost_a ghost_b ...` to import ghost files (`.gst`).
 
 ### Ghosts
-A ghost follows the life of the player recorded in the ghost file. This can be useful to compare demos, or to compete against demos while you play. For movies, ghosts that enter the next map ahead of the player will pause until that map is reached. Ghosts that are left behind will fast-forward to the current map. Ghosts most likely don't work under conditions where you skip time (warping during demo playback, skipsec, etc).
+A ghost follows the life of the player recorded in the ghost file. This can be useful to compare demos, or to compete against demos while you play. For movies, ghosts that enter the next map ahead of the player will pause until that map is reached. Ghosts that are left behind will fast-forward to the current map.
 
 ### Analysis File
 This file contains summary data about a run in key-value pairs.
