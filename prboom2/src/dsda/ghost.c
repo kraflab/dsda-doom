@@ -170,12 +170,12 @@ void dsda_InitGhostImport(int option_i) {
 void dsda_ExportGhostFrame(void) {
   dsda_ghost_frame_t ghost_frame;
   mobj_t* player;
+  int i;
   
   if (dsda_ghost_export == NULL) return;
   
   // just write the number of players on the zeroth tic
   if (gametic == 0) {
-    int i;
     int count = 0;
     
     for (i = 0; i < MAXPLAYERS; ++i) if (playeringame[i]) ++count;
@@ -185,21 +185,25 @@ void dsda_ExportGhostFrame(void) {
     return;
   }
   
-  player = players[0].mo;
-  
-  if (player == NULL) return;
-  
-  ghost_frame.x = player->x;
-  ghost_frame.y = player->y;
-  ghost_frame.z = player->z;
-  ghost_frame.angle = player->angle;
-  ghost_frame.sprite = player->sprite;
-  ghost_frame.frame = player->frame;
-  ghost_frame.map = gamemap;
-  ghost_frame.episode = gameepisode;
-  ghost_frame.tic = gametic;
-  
-  fwrite(&ghost_frame, sizeof(dsda_ghost_frame_t), 1, dsda_ghost_export);
+  for (i = 0; i < MAXPLAYERS; ++i) {
+    if (!playeringame[i]) break;
+    
+    player = players[i].mo;
+    
+    if (player == NULL) continue;
+    
+    ghost_frame.x = player->x;
+    ghost_frame.y = player->y;
+    ghost_frame.z = player->z;
+    ghost_frame.angle = player->angle;
+    ghost_frame.sprite = player->sprite;
+    ghost_frame.frame = player->frame;
+    ghost_frame.map = gamemap;
+    ghost_frame.episode = gameepisode;
+    ghost_frame.tic = gametic;
+    
+    fwrite(&ghost_frame, sizeof(dsda_ghost_frame_t), 1, dsda_ghost_export);
+  }
 }
 
 // Stripped down version of P_SpawnMobj
@@ -220,6 +224,20 @@ void dsda_SpawnGhost(void) {
     mobj->type = MT_NULL;
     mobj->info = &dsda_ghost_info;
     mobj->flags = dsda_ghost_info.flags;
+    
+    switch (ghost_i % 4) {
+      case 0:
+        break;
+      case 1:
+        mobj->flags |= MF_TRANSLATION1;
+        break;
+      case 2:
+        mobj->flags |= MF_TRANSLATION2;
+        break;
+      case 3:
+        mobj->flags |= MF_TRANSLATION;
+        break;
+    }
     
     mobj->x = players[0].mo->x;
     mobj->y = players[0].mo->y;
