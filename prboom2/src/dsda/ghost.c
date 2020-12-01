@@ -273,6 +273,10 @@ void dsda_UpdateGhosts(void* _void) {
     // Ghost removed from map (finished map already)
     if (mobj->touching_sectorlist == NULL) continue;
     
+    mobj->PrevX = mobj->x;
+    mobj->PrevY = mobj->y;
+    mobj->PrevZ = mobj->z;
+    
     ghost_was_behind = ghost->frame.map != 0 && ghost->frame.map != gamemap;
     
     // if the ghost was left behind, catch it up
@@ -295,10 +299,6 @@ void dsda_UpdateGhosts(void* _void) {
       fseek(ghost->fstream, -(int)sizeof(dsda_ghost_frame_t), SEEK_CUR);
       continue;
     }
-    
-    mobj->PrevX = mobj->x;
-    mobj->PrevY = mobj->y;
-    mobj->PrevZ = mobj->z;
     
     mobj->x = ghost->frame.x;
     mobj->y = ghost->frame.y;
