@@ -1343,10 +1343,23 @@ void M_SaveDefaults (void)
 {
   int   i;
   FILE* f;
+  int maxlen = 0;
 
   f = fopen (defaultfile, "w");
   if (!f)
     return; // can't write the file, but don't complain
+
+  // get maximum config key string length
+  for (i = 0 ; i < numdefaults ; i++) {
+    int len;
+    if (defaults[i].type == def_none) {
+      continue;
+    }
+    len = strlen(defaults[i].name);
+    if (len > maxlen && len < 80) {
+      maxlen = len;
+    }
+  }
 
   // 3/3/98 explain format of file
 
@@ -1363,7 +1376,7 @@ void M_SaveDefaults (void)
       if (defaults[i].type == def_arr)
       {
         int k;
-        fprintf (f,"%-25s \"%s\"\n",defaults[i].name,*(defaults[i].location.ppsz));
+        fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
         for (k = 0; k < *(defaults[i].location.array_size); k++)
         {
           char ***arr = defaults[i].location.array_data;
@@ -1371,7 +1384,7 @@ void M_SaveDefaults (void)
           {
             char def[80];
             sprintf(def, "%s%d", *(defaults[i].location.ppsz), k);
-            fprintf (f,"%-25s \"%s\"\n",def, (*arr)[k]);
+            fprintf (f,"%-*s \"%s\"\n",maxlen,def, (*arr)[k]);
           }
         }
         i += defaults[i].defaultvalue.array_size;
@@ -1384,13 +1397,13 @@ void M_SaveDefaults (void)
       // CPhipps - remove keycode hack
       // killough 3/6/98: use spaces instead of tabs for uniform justification
       if (defaults[i].type == def_hex)
-  fprintf (f,"%-25s 0x%x\n",defaults[i].name,*(defaults[i].location.pi));
+  fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
       else
-  fprintf (f,"%-25s %5i\n",defaults[i].name,*(defaults[i].location.pi));
+  fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
       }
     else
       {
-      fprintf (f,"%-25s \"%s\"\n",defaults[i].name,*(defaults[i].location.ppsz));
+      fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
       }
     }
 
