@@ -31,6 +31,10 @@ void dsda_WatchLevelSetup(void);
 void dsda_WatchLevelCompletion(void);
 void dsda_WatchWeaponFire(weapontype_t weapon);
 void dsda_WatchSecret(void);
+void dsda_WatchDeferedInitNew(skill_t skill, int episode, int map);
+void dsda_WatchNewGame(void);
+void dsda_WatchLevelReload(int* reloaded);
+void dsda_WatchDemoName(const char* name);
 void dsda_WriteAnalysis(void);
 
 #endif
