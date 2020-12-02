@@ -2321,3 +2321,9 @@ void AM_Drawer (void)
 
   AM_drawMarks();
 }
+
+// [crispy] reset IDDT cheat when re-starting map during demo recording
+void AM_ResetIDDTcheat(void)
+{
+  ddt_cheating = 0;
+}

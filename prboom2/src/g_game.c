@@ -2435,6 +2435,8 @@ void G_DeferedInitNew(skill_t skill, int episode, int map)
   d_episode = episode;
   d_map = map;
   gameaction = ga_newgame;
+  
+  dsda_WatchDeferedInitNew(skill, episode, map);
 }
 
 /* cph -
@@ -2638,6 +2640,8 @@ void G_DoNewGame (void)
   deathmatch = false;
   G_InitNew (d_skill, d_episode, d_map);
   gameaction = ga_nothing;
+  
+  dsda_WatchNewGame();
 
   //jff 4/26/98 wake up the status bar in case were coming out of a DM demo
   ST_Start();
@@ -2931,6 +2935,8 @@ void G_RecordDemo (const char* name)
   AddDefaultExtension(strcpy(demoname, name), ".lmp");  // 1/18/98 killough
   demorecording = true;
   
+  dsda_WatchDemoName(demoname);
+    
   /* cph - Record demos straight to file
   * If file already exists, try to continue existing demo
   */

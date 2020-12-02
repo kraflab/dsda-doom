@@ -157,6 +157,7 @@ extern int map_overlay_pos_height;
 extern int map_type;
 void M_ChangeMapTextured(void);
 void M_ChangeMapMultisamling(void);
+void AM_ResetIDDTcheat(void);
 
 typedef struct am_frame_s
 {

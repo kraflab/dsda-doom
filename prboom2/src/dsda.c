@@ -25,6 +25,7 @@
 #include "g_game.h"
 #include "sounds.h"
 #include "s_sound.h"
+#include "am_map.h"
 
 #include "dsda_mobj_extension.h"
 #include "dsda/ghost.h"
@@ -70,6 +71,9 @@ dboolean dsda_time_all = false;
 int dsda_analysis;
 int dsda_track_pacifist;
 int dsda_track_100k;
+
+// other
+char* dsda_demo_name_base;
 
 dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
@@ -293,6 +297,63 @@ void dsda_WatchWeaponFire(weapontype_t weapon) {
 
 void dsda_WatchSecret(void) {
   if (dsda_time_secrets) dsda_AddSplit(DSDA_SPLIT_SECRET);
+}
+
+// from crispy - incrementing demo file names
+char* dsda_NewDemoName(void) {
+  char* demo_name;
+  size_t demo_name_size;
+  FILE* fp = NULL;
+  static unsigned int j = 0;
+  
+  demo_name_size = strlen(dsda_demo_name_base) + 5 + 6; // .lmp-12345\0
+  demo_name = malloc(demo_name_size);
+  snprintf(demo_name, demo_name_size, "%s.lmp", dsda_demo_name_base);
+  
+  for (; j <= 99999 && (fp = fopen(demo_name, "rb")) != NULL; j++) {
+    snprintf(demo_name, demo_name_size, "%s-%05d.lmp", dsda_demo_name_base, j);
+    fclose (fp);
+  }
+  
+  return demo_name;
+}
+
+void dsda_WatchDeferedInitNew(skill_t skill, int episode, int map) {
+  char* demo_name;
+  
+  if (!demorecording) return;
+  
+  AM_ResetIDDTcheat();
+  G_CheckDemoStatus();
+  
+  demo_name = dsda_NewDemoName();
+  
+  G_RecordDemo(demo_name);
+  
+  free(demo_name);
+}
+
+void dsda_WatchNewGame(void) {
+  if (!demorecording) return;
+  
+  G_BeginRecording();
+}
+
+void dsda_WatchLevelReload(int* reloaded) {
+  if (!demorecording || *reloaded) return;
+  
+  G_DeferedInitNew(gameskill, gameepisode, startmap);
+  *reloaded = 1;
+}
+
+void dsda_WatchDemoName(const char* name) {
+  size_t base_size;
+  if (dsda_demo_name_base != NULL) return;
+  
+  base_size = strlen(name) - 3;
+  dsda_demo_name_base = malloc(base_size);
+  strncpy(dsda_demo_name_base, name, base_size);
+  dsda_demo_name_base[base_size - 1] = '\0';
 }
 
 void dsda_WriteAnalysis(void) {
