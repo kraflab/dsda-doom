@@ -306,7 +306,7 @@ char* dsda_NewDemoName(void) {
   FILE* fp = NULL;
   static unsigned int j = 0;
   
-  demo_name_size = strlen(dsda_demo_name_base) + 5 + 6; // .lmp-12345\0
+  demo_name_size = strlen(dsda_demo_name_base) + 11; // 11 = -12345.lmp\0
   demo_name = malloc(demo_name_size);
   snprintf(demo_name, demo_name_size, "%s.lmp", dsda_demo_name_base);
   
@@ -329,6 +329,8 @@ void dsda_WatchDeferedInitNew(skill_t skill, int episode, int map) {
   demo_name = dsda_NewDemoName();
   
   G_RecordDemo(demo_name);
+  
+  basetic = gametic;
   
   free(demo_name);
 }
