@@ -318,7 +318,7 @@ char* dsda_NewDemoName(void) {
   return demo_name;
 }
 
-void dsda_WatchDeferedInitNew(skill_t skill, int episode, int map) {
+void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
   char* demo_name;
   
   if (!demorecording) return;

@@ -2436,7 +2436,7 @@ void G_DeferedInitNew(skill_t skill, int episode, int map)
   d_map = map;
   gameaction = ga_newgame;
   
-  dsda_WatchDeferedInitNew(skill, episode, map);
+  dsda_WatchDeferredInitNew(skill, episode, map);
 }
 
 /* cph -
