@@ -85,6 +85,8 @@
 #include "e6y_launcher.h"
 #endif
 
+#include "dsda/settings.h"
+
 // NSM
 #include "i_capture.h"
 
@@ -232,6 +234,8 @@ extern const char* S_music_files[]; // cournia
  */
 int map_point_coordinates;
 int map_level_stat;
+
+extern int dsda_strict_mode;
 
 default_t defaults[] =
 {
@@ -977,6 +981,9 @@ default_t defaults[] =
   {"health_bar_green", {&health_bar_green}, {0},0,100,
    def_int,ss_stat},
 #endif
+
+  { "DSDA-Doom settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
+  { "dsda_strict_mode", { &dsda_strict_mode }, { 1 }, 0, 1, def_bool, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

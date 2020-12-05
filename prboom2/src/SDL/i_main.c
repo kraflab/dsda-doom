@@ -77,6 +77,7 @@ typedef BOOL (WINAPI *SetAffinityFunc)(HANDLE hProcess, DWORD mask);
 
 #include "e6y.h"
 #include "dsda.h"
+#include "dsda/settings.h"
 
 /* Most of the following has been rewritten by Lee Killough
  *
@@ -119,9 +120,9 @@ void I_Init(void)
   if (fastdemo)
     I_GetTime = I_GetTime_FastDemo;
   else
-    if (realtic_clock_rate != 100)
+    if (dsda_RealticClockRate() != 100)
       {
-        I_GetTime_Scale = ((int_64_t) realtic_clock_rate << 24) / 100;
+        I_GetTime_Scale = ((int_64_t) dsda_RealticClockRate() << 24) / 100;
         I_GetTime = I_GetTime_Scaled;
       }
     else
@@ -143,9 +144,9 @@ void I_Init2(void)
     I_GetTime = I_GetTime_FastDemo;
   else
   {
-    if (realtic_clock_rate != 100)
+    if (dsda_RealticClockRate() != 100)
       {
-        I_GetTime_Scale = ((int_64_t) realtic_clock_rate << 24) / 100;
+        I_GetTime_Scale = ((int_64_t) dsda_RealticClockRate() << 24) / 100;
         I_GetTime = I_GetTime_Scaled;
       }
     else
