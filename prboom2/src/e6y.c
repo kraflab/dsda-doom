@@ -884,7 +884,7 @@ void e6y_G_DoCompleted(void)
   {
     if (playeringame[i])
     {
-      stats[numlevels].kill[i]   = players[i].killcount - players[i].resurectedkillcount;
+      stats[numlevels].kill[i]   = players[i].killcount - players[i].smartkilldiscount;
       stats[numlevels].item[i]   = players[i].itemcount;
       stats[numlevels].secret[i] = players[i].secretcount;
       
