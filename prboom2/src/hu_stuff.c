@@ -1919,7 +1919,7 @@ void HU_widget_build_monsec(void)
 
   // clear the internal widget text buffer
   HUlib_clearTextLine(&w_monsec);
-  if (!hudadd_smarttotals || deathmatch)
+  if (!hudadd_maxtotals || deathmatch)
   {
     sprintf
       (
@@ -1946,19 +1946,19 @@ void HU_widget_build_monsec(void)
         color = i==displayplayer?0x33:0x32;
         if (playerscount==0)
         {
-          allkills_len = sprintf(allkills, "\x1b%c%d", color, players[i].killcount - players[i].smartkilldiscount);
+          allkills_len = sprintf(allkills, "\x1b%c%d", color, players[i].killcount - players[i].maxkilldiscount);
           allsecrets_len = sprintf(allsecrets, "\x1b%c%d", color, players[i].secretcount);
         }
         else
         {
           if (allkills_len >= 0 && allsecrets_len >=0)
           {
-            allkills_len += sprintf(&allkills[allkills_len], "\x1b%c+%d", color, players[i].killcount - players[i].smartkilldiscount);
+            allkills_len += sprintf(&allkills[allkills_len], "\x1b%c+%d", color, players[i].killcount - players[i].maxkilldiscount);
             allsecrets_len += sprintf(&allsecrets[allsecrets_len], "\x1b%c+%d", color, players[i].secretcount);
           }
         }
         playerscount++;
-        fullkillcount += players[i].killcount - players[i].smartkilldiscount;
+        fullkillcount += players[i].killcount - players[i].maxkilldiscount;
         fullitemcount += players[i].itemcount;
         fullsecretcount += players[i].secretcount;
       }
@@ -2417,7 +2417,7 @@ void HU_Drawer(void)
       int ttime = (totalleveltimes + leveltime) / TICRATE;
 
       sprintf(str, "Monsters: \x1b%c%d/%d", '0' + hudcolor_mapstat_value,
-        players[consoleplayer].killcount - players[consoleplayer].smartkilldiscount,
+        players[consoleplayer].killcount - players[consoleplayer].maxkilldiscount,
         totalkills);
       HUlib_clearTextLine(&w_map_monsters);
       s = str;

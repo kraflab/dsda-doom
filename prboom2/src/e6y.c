@@ -122,7 +122,7 @@ int hudadd_gamespeed;
 int hudadd_leveltime;
 int hudadd_demotime;
 int hudadd_secretarea;
-int hudadd_smarttotals;
+int hudadd_maxtotals;
 int hudadd_demoprogressbar;
 int hudadd_crosshair;
 int hudadd_crosshair_scale;
@@ -884,7 +884,7 @@ void e6y_G_DoCompleted(void)
   {
     if (playeringame[i])
     {
-      stats[numlevels].kill[i]   = players[i].killcount - players[i].smartkilldiscount;
+      stats[numlevels].kill[i]   = players[i].killcount - players[i].maxkilldiscount;
       stats[numlevels].item[i]   = players[i].itemcount;
       stats[numlevels].secret[i] = players[i].secretcount;
       

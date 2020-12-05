@@ -109,7 +109,7 @@ extern int hudadd_gamespeed;
 extern int hudadd_leveltime;
 extern int hudadd_demotime;
 extern int hudadd_secretarea;
-extern int hudadd_smarttotals;
+extern int hudadd_maxtotals;
 extern int hudadd_demoprogressbar;
 extern int hudadd_crosshair;
 extern int hudadd_crosshair_scale;

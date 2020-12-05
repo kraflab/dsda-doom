@@ -1306,13 +1306,13 @@ void G_PlayerReborn (int player)
   int killcount;
   int itemcount;
   int secretcount;
-  int smartkilldiscount; //e6y
+  int maxkilldiscount; //e6y
 
   memcpy (frags, players[player].frags, sizeof frags);
   killcount = players[player].killcount;
   itemcount = players[player].itemcount;
   secretcount = players[player].secretcount;
-  smartkilldiscount = players[player].smartkilldiscount; //e6y
+  maxkilldiscount = players[player].maxkilldiscount; //e6y
 
   p = &players[player];
 
@@ -1327,7 +1327,7 @@ void G_PlayerReborn (int player)
   players[player].killcount = killcount;
   players[player].itemcount = itemcount;
   players[player].secretcount = secretcount;
-  players[player].smartkilldiscount = smartkilldiscount; //e6y
+  players[player].maxkilldiscount = maxkilldiscount; //e6y
 
   p->usedown = p->attackdown = true;  // don't do anything immediately
   p->playerstate = PST_LIVE;

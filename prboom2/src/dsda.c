@@ -174,7 +174,7 @@ void dsda_WatchDeath(mobj_t* thing) {
 
 void dsda_WatchKill(player_t* player, mobj_t* target) {
   player->killcount++;
-  if (target->dsda_extension.spawned_by_icon) player->smartkilldiscount++;
+  if (target->dsda_extension.spawned_by_icon) player->maxkilldiscount++;
 }
 
 void dsda_WatchResurrection(mobj_t* target) {
@@ -191,7 +191,7 @@ void dsda_WatchResurrection(mobj_t* target) {
     if (!playeringame[i] || players[i].killcount == 0) continue;
     
     if (players[i].killcount > 0) {
-      players[i].smartkilldiscount++;
+      players[i].maxkilldiscount++;
       return;
     }
   }
