@@ -1,4 +1,4 @@
-# dsda-doom v0.8.2 (experimental)
+# dsda-doom v0.8.3 (experimental)
 This is a fork of prboom+ with extra tooling for dsda.
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 
@@ -16,6 +16,9 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 - Use `-export_ghost ghost` to write a ghost file (`.gst`).
 - Use `-import_ghost ghost_a ghost_b ...` to import ghost files (`.gst`).
 - Use `-tas` to disable strict mode.
+
+### Changes
+- Smart Totals renamed to Max Totals and fixed to show kill constraint for max.
 
 ### New Settings
 - Strict Mode: disable TAS options while recording, unless using `-tas`.
