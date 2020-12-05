@@ -2615,7 +2615,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   for (i=0; i<MAXPLAYERS; i++)
   {
     players[i].killcount = players[i].secretcount = players[i].itemcount = 0;
-    players[i].resurectedkillcount = 0;//e6y
+    players[i].smartkilldiscount = 0;//e6y
   }
 
   // Initial height of PointOfView will be set by player think.

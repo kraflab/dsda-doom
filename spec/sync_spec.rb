@@ -15,6 +15,19 @@ RSpec.describe 'sync' do
       it { is_expected.to eq('17:55') }
     end
     
+    # coop
+    context 'doom2 20 uv max in 2:22 by termrork & kOeGy (a)' do
+      let(:lmp) { 'cm20k222.lmp' }
+      
+      it { is_expected.to eq('2:22') }
+    end
+    
+    context 'doom2 20 uv max in 2:22 by termrork & kOeGy (b)' do
+      let(:lmp) { 'cm20t222.lmp' }
+      
+      it { is_expected.to eq('2:22') }
+    end
+    
     # complevel 9
     context 'rush 12 uv max in 21:14 by Ancalagon' do
       let(:lmp) { 'ru12-2114.lmp' }

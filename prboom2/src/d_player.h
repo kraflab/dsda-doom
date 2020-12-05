@@ -189,7 +189,7 @@ typedef struct player_s
   fixed_t            momx, momy;      // killough 10/98
 
   //e6y
-  int                 resurectedkillcount;
+  int                 smartkilldiscount;
   //not used, not removed because of savagame compatibility
   const char*         centermessage;
 

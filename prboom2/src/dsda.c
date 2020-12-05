@@ -172,6 +172,31 @@ void dsda_WatchDeath(mobj_t* thing) {
   }
 }
 
+void dsda_WatchKill(player_t* player, mobj_t* target) {
+  player->killcount++;
+  if (target->dsda_extension.spawned_by_icon) player->smartkilldiscount++;
+}
+
+void dsda_WatchResurrection(mobj_t* target) {
+  int i;
+  
+  if (
+    (
+      (target->flags ^ MF_COUNTKILL) & 
+      (MF_FRIEND | MF_COUNTKILL)
+    ) || target->dsda_extension.spawned_by_icon
+  ) return;
+  
+  for (i = 0; i < MAXPLAYERS; ++i) {
+    if (!playeringame[i] || players[i].killcount == 0) continue;
+    
+    if (players[i].killcount > 0) {
+      players[i].smartkilldiscount++;
+      return;
+    }
+  }
+}
+
 void dsda_WatchCrush(mobj_t* thing, int damage) {
   player_t *player;
   

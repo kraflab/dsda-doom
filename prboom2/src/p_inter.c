@@ -683,10 +683,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
       // count for intermission
       if (target->flags & MF_COUNTKILL)
       {
-        source->player->killcount++;
-        
-        if (target->flags & MF_RESSURECTED)
-          source->player->resurectedkillcount++;
+        dsda_WatchKill(source->player, target);
       }
       if (target->player)
         source->player->frags[target->player-players]++;
@@ -696,21 +693,14 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   if ((compatibility_level < lxdoom_1_compatibility) || !netgame) {
     if (!netgame)
     {
-      // count all monster deaths,
-      // even those caused by other monsters
-      players[0].killcount++;
-
-      if (target->flags & MF_RESSURECTED)
-        players[0].resurectedkillcount++;
+      dsda_WatchKill(&players[0], target);
     }
     else
     {
       if (!deathmatch) {
         if (target->lastenemy && target->lastenemy->health > 0 && target->lastenemy->player)
         {
-          target->lastenemy->player->killcount++;
-          if (target->flags & MF_RESSURECTED)
-            target->lastenemy->player->resurectedkillcount++;
+          dsda_WatchKill(target->lastenemy->player, target);
         }
         else
         {
@@ -719,9 +709,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
           {
             if (playeringame[player])
             {
-              players[player].killcount++;
-              if (target->flags & MF_RESSURECTED)
-                players[player].resurectedkillcount++;
+              dsda_WatchKill(&players[player], target);
               break;
             }
           }
@@ -738,10 +726,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
       if (target->lastenemy && target->lastenemy->health > 0
     && target->lastenemy->player) // Fighting a player
         {
-          target->lastenemy->player->killcount++;
-
-          if (target->flags & MF_RESSURECTED)
-            target->lastenemy->player->resurectedkillcount++;
+          dsda_WatchKill(target->lastenemy->player, target);
         }
         else {
         // cph - randomely choose a player in the game to be credited
@@ -759,10 +744,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
       if (playeringame[i])
         if (!player--)
         {
-          players[i].killcount++;
-
-          if (target->flags & MF_RESSURECTED)
-            players[i].resurectedkillcount++;
+          dsda_WatchKill(&players[i], target);
         }
         }
       }
