@@ -53,6 +53,7 @@
 #include "lprintf.h"
 #include "e6y.h" //e6y
 #include "dsda/hud.h"
+#include "dsda/settings.h"
 #include "g_overflow.h"
 
 // global heads up display controls
@@ -2009,7 +2010,7 @@ void HU_widget_build_hudadd(void)
     return;
 
   if (hudadd_gamespeed)
-    sprintf(hud_add,"\x1b\x32speed \x1b\x33%.2d ", realtic_clock_rate);
+    sprintf(hud_add,"\x1b\x32speed \x1b\x33%.2d ", dsda_RealticClockRate());
   if ((hudadd_leveltime) || (demoplayback && hudadd_demotime))
   {
     static char demo_len_null[1]={0};

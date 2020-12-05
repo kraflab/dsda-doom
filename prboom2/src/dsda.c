@@ -30,6 +30,7 @@
 #include "dsda_mobj_extension.h"
 #include "dsda/ghost.h"
 #include "dsda/hud.h"
+#include "dsda/settings.h"
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
@@ -101,6 +102,8 @@ void dsda_ReadCommandLine(void) {
     dsda_InitGhostExport(myargv[p]);
   
   if ((p = M_CheckParm("-import_ghost"))) dsda_InitGhostImport(p);
+  
+  if (M_CheckParm("-tas")) dsda_SetTas();
 }
 
 void dsda_DisplayNotifications(void) {
@@ -348,7 +351,7 @@ void dsda_WatchLevelReload(int* reloaded) {
   *reloaded = 1;
 }
 
-void dsda_WatchDemoName(const char* name) {
+void dsda_WatchRecordDemo(const char* name) {
   size_t base_size;
   if (dsda_demo_name_base != NULL) return;
   
@@ -356,6 +359,10 @@ void dsda_WatchDemoName(const char* name) {
   dsda_demo_name_base = malloc(base_size);
   strncpy(dsda_demo_name_base, name, base_size);
   dsda_demo_name_base[base_size - 1] = '\0';
+  
+  // demorecording is set after prboom+ has already cached its settings
+  // we need to reset things here to satisfy strict mode
+  dsda_InitSettings();
 }
 
 void dsda_WriteAnalysis(void) {

@@ -66,6 +66,7 @@
 #include "r_demo.h"
 #include "r_fps.h"
 #include "e6y.h"//e6y
+#include "dsda/settings.h"
 #ifdef _WIN32
 #include "e6y_launcher.h"
 #endif
@@ -3101,6 +3102,7 @@ extern int detect_voices, realtic_clock_rate, tran_filter_pct;
 setup_menu_t gen_settings1[], gen_settings2[], gen_settings3[];
 setup_menu_t gen_settings4[], gen_settings5[], gen_settings6[];
 setup_menu_t gen_settings7[], gen_settings8[];
+setup_menu_t dsda_settings[];
 
 setup_menu_t* gen_settings[] =
 {
@@ -3112,6 +3114,7 @@ setup_menu_t* gen_settings[] =
   gen_settings6,
   gen_settings7,
   gen_settings8,
+  dsda_settings,
   NULL
 };
 
@@ -3324,6 +3327,8 @@ setup_menu_t gen_settings7[] =
   {"<- PREV",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {gen_settings6}},
 #ifdef GL_DOOM
   {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {gen_settings8}},
+#else
+  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_settings}},
 #endif
   {0,S_SKIP|S_END,m_null}
 };
@@ -3358,7 +3363,19 @@ setup_menu_t gen_settings8[] = { // General Settings screen4
 #endif //GL_DOOM
 
   {"<- PREV",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {gen_settings7}},
+  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_settings}},
   {0,S_SKIP|S_END,m_null}
+};
+
+setup_menu_t dsda_settings[] = {
+  { "DSDA-Doom Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
+  { "Strict Mode", S_YESNO, m_null, G_X, G_Y + 2 * 8, {"dsda_strict_mode" }, 0, 0, dsda_ChangeStrictMode },
+#ifdef GL_DOOM
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },
+#else
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings7 } },
+#endif
+  { 0, S_SKIP | S_END, m_null }
 };
 
 void M_Trans(void) // To reset translucency after setting it in menu
@@ -4761,21 +4778,21 @@ dboolean M_Responder (event_t* ev) {
       }
 
     //e6y
-    if (ch == key_speed_default && (!netgame||demoplayback))               
+    if (ch == key_speed_default && (!netgame||demoplayback) && !dsda_StrictMode())               
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, 0, speed_step, 3, 10000, 100);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
     }
-    if (ch == key_speed_up && (!netgame||demoplayback))
+    if (ch == key_speed_up && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, 1, speed_step, 3, 10000, 100);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
     }
-    if (ch == key_speed_down && (!netgame||demoplayback))
+    if (ch == key_speed_down && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, -1, speed_step, 3, 10000, 100);
       I_Init2();

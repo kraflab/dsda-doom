@@ -86,6 +86,7 @@
 #include "r_fps.h"
 #include "e6y.h"//e6y
 #include "dsda.h"
+#include "dsda/settings.h"
 #include "statdump.h"
 
 #define SAVEGAMESIZE  0x20000
@@ -350,14 +351,13 @@ void G_SetSpeed(void)
 {
   int p;
 
-  if(movement_strafe50)
+  if(dsda_AlwaysSR50())
   {
     sidemove[0] = sidemove_strafe50[0];
     sidemove[1] = sidemove_strafe50[1];
   }
   else
   {
-    movement_strafe50onturns = false;
     sidemove[0] = sidemove_normal[0];
     sidemove[1] = sidemove_normal[1];
   }
@@ -704,7 +704,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     side = -MAXPLMOVE;
 
   //e6y
-  if (movement_strafe50)
+  if (dsda_AlwaysSR50())
   {
     if (!speed)
     {
@@ -2935,7 +2935,7 @@ void G_RecordDemo (const char* name)
   AddDefaultExtension(strcpy(demoname, name), ".lmp");  // 1/18/98 killough
   demorecording = true;
   
-  dsda_WatchDemoName(demoname);
+  dsda_WatchRecordDemo(demoname);
     
   /* cph - Record demos straight to file
   * If file already exists, try to continue existing demo

@@ -41,6 +41,7 @@
 #include "i_system.h"
 #include "i_capture.h"
 #include "e6y.h"
+#include "dsda/settings.h"
 
 int movement_smooth_default;
 int movement_smooth;
@@ -70,7 +71,6 @@ tic_vars_t tic_vars;
 
 static void R_DoAnInterpolation (int i, fixed_t smoothratio);
 
-extern int realtic_clock_rate;
 void D_Display(fixed_t frac);
 
 void M_ChangeUncappedFrameRate(void)
@@ -83,7 +83,7 @@ void M_ChangeUncappedFrameRate(void)
 
 void R_InitInterpolation(void)
 {
-  tic_vars.msec = realtic_clock_rate * TICRATE / 100000.0f;
+  tic_vars.msec = dsda_RealticClockRate() * TICRATE / 100000.0f;
 }
 
 typedef fixed_t fixed2_t[2];
