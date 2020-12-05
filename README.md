@@ -19,6 +19,7 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 
 ### New Settings
 - Strict Mode: disable TAS options while recording, unless using `-tas`.
+- Cycle Ghost Colors: cycle through the 4 player colors when spawning ghosts.
 
 ### Ghosts
 A ghost follows the life of the player recorded in the ghost file. This can be useful to compare demos, or to compete against demos while you play. For movies, ghosts that enter the next map ahead of the player will pause until that map is reached. Ghosts that are left behind will fast-forward to the current map.

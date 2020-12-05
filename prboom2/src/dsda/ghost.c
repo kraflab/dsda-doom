@@ -28,6 +28,7 @@
 #include "z_zone.h"
 #include "w_wad.h"
 
+#include "settings.h"
 #include "ghost.h"
 
 #define DSDA_GHOST_MIN_VERSION 1
@@ -225,18 +226,20 @@ void dsda_SpawnGhost(void) {
     mobj->info = &dsda_ghost_info;
     mobj->flags = dsda_ghost_info.flags;
     
-    switch (ghost_i % 4) {
-      case 0:
-        break;
-      case 1:
-        mobj->flags |= MF_TRANSLATION1;
-        break;
-      case 2:
-        mobj->flags |= MF_TRANSLATION2;
-        break;
-      case 3:
-        mobj->flags |= MF_TRANSLATION;
-        break;
+    if (dsda_CycleGhostColors()) {
+      switch (ghost_i % 4) {
+        case 0:
+          break;
+        case 1:
+          mobj->flags |= MF_TRANSLATION1;
+          break;
+        case 2:
+          mobj->flags |= MF_TRANSLATION2;
+          break;
+        case 3:
+          mobj->flags |= MF_TRANSLATION;
+          break;
+      }
     }
     
     mobj->x = players[0].mo->x;

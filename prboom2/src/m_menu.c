@@ -3370,6 +3370,7 @@ setup_menu_t gen_settings8[] = { // General Settings screen4
 setup_menu_t dsda_settings[] = {
   { "DSDA-Doom Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Strict Mode", S_YESNO, m_null, G_X, G_Y + 2 * 8, {"dsda_strict_mode" }, 0, 0, dsda_ChangeStrictMode },
+  { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, {"dsda_cycle_ghost_colors" } },
 #ifdef GL_DOOM
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },
 #else
