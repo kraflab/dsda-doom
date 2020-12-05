@@ -24,8 +24,6 @@
 int dsda_strict_mode;
 int dsda_tas;
 
-// Thanks to significant use of globals, we need to retroactively fix
-// side effects in the initialization process of legacy code
 void dsda_InitSettings(void) {
   dsda_ChangeStrictMode();
 }
