@@ -21,6 +21,7 @@
 #include "settings.h"
 
 int dsda_strict_mode;
+int dsda_cycle_ghost_colors;
 int dsda_tas;
 
 void dsda_InitSettings(void) {
@@ -38,6 +39,10 @@ void dsda_SetTas(void) {
 
 dboolean dsda_StrictMode(void) {
   return dsda_strict_mode && demorecording && !dsda_tas;
+}
+
+dboolean dsda_CycleGhostColors(void) {
+  return dsda_cycle_ghost_colors;
 }
 
 dboolean dsda_AlwaysSR50(void) {

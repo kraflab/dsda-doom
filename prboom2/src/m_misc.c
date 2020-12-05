@@ -236,6 +236,7 @@ int map_point_coordinates;
 int map_level_stat;
 
 extern int dsda_strict_mode;
+extern int dsda_cycle_ghost_colors;
 
 default_t defaults[] =
 {
@@ -984,6 +985,7 @@ default_t defaults[] =
 
   { "DSDA-Doom settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
   { "dsda_strict_mode", { &dsda_strict_mode }, { 1 }, 0, 1, def_bool, ss_stat },
+  { "dsda_cycle_ghost_colors", { &dsda_cycle_ghost_colors }, { 0 }, 0, 1, def_bool, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

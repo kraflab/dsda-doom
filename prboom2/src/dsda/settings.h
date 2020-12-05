@@ -22,6 +22,7 @@ void dsda_InitSettings(void);
 void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);
 dboolean dsda_StrictMode(void);
+dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
 int dsda_RealticClockRate(void);
 
