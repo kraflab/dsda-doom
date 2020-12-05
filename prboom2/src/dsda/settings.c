@@ -17,7 +17,6 @@
 
 #include "doomstat.h"
 #include "e6y.h"
-#include "lprintf.h"
 
 #include "settings.h"
 
