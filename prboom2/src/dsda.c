@@ -75,6 +75,7 @@ int dsda_track_100k;
 
 // other
 char* dsda_demo_name_base;
+int dsda_max_kill_requirement;
 
 dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
@@ -220,10 +221,23 @@ void dsda_WatchSpawn(mobj_t* spawned) {
   ) dsda_any_monsters = true;
   
   if (!dsda_any_weapons) dsda_any_weapons = dsda_IsWeapon(spawned);
+  
+  if (!((spawned->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+    ++dsda_max_kill_requirement;
 }
 
 void dsda_WatchIconSpawn(mobj_t* spawned) {
   spawned->dsda_extension.spawned_by_icon = true;
+  
+  // Fix count from dsda_WatchSpawn
+  // We can't know inside P_SpawnMobj what the source is
+  // This is less invasive than introducing a spawn source concept
+  if (!((spawned->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+    --dsda_max_kill_requirement;
+}
+
+int dsda_MaxKillRequirement() {
+  return dsda_max_kill_requirement;
 }
 
 void dsda_WatchCommand(void) {
@@ -248,7 +262,14 @@ void dsda_WatchCommand(void) {
   dsda_ExportGhostFrame();
 }
 
-void dsda_WatchLevelSetup(void) {
+void dsda_WatchBeforeLevelSetup(void) {
+  dsda_100k_on_map = false;
+  dsda_kills_on_map = 0;
+  dsda_100k_note_shown = false;
+  dsda_max_kill_requirement = 0;
+}
+
+void dsda_WatchAfterLevelSetup(void) {
   dsda_SpawnGhost();
 }
 
@@ -292,8 +313,6 @@ void dsda_WatchLevelCompletion(void) {
   if (secret_count < totalsecret) dsda_100s = false;
   if (totalkills > 0) dsda_any_counted_monsters = true;
   if (totalsecret > 0) dsda_any_secrets = true;
-  
-  dsda_ResetMapVariables();
 }
 
 dboolean dsda_IsWeapon(mobj_t* thing) {
@@ -309,12 +328,6 @@ dboolean dsda_IsWeapon(mobj_t* thing) {
     default:
       return false;
   }
-}
-
-void dsda_ResetMapVariables(void) {
-  dsda_100k_on_map = false;
-  dsda_kills_on_map = 0;
-  dsda_100k_note_shown = false;
 }
 
 void dsda_WatchWeaponFire(weapontype_t weapon) {

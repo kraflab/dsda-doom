@@ -2606,6 +2606,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   //e6y
   totallive = 0;
   transparentpresent = false;
+  
+  dsda_WatchBeforeLevelSetup();
 
   R_StopAllInterpolations();
 
@@ -2825,7 +2827,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // set up world state
   P_SpawnSpecials();
 
-  dsda_WatchLevelSetup();
+  dsda_WatchAfterLevelSetup();
 
   P_MapEnd();
 

@@ -29,7 +29,8 @@ void dsda_WatchResurrection(mobj_t* target);
 void dsda_WatchSpawn(mobj_t* spawned);
 void dsda_WatchIconSpawn(mobj_t* spawned);
 void dsda_WatchCommand(void);
-void dsda_WatchLevelSetup(void);
+void dsda_WatchBeforeLevelSetup(void);
+void dsda_WatchAfterLevelSetup(void);
 void dsda_WatchLevelCompletion(void);
 void dsda_WatchWeaponFire(weapontype_t weapon);
 void dsda_WatchSecret(void);
@@ -38,5 +39,7 @@ void dsda_WatchNewGame(void);
 void dsda_WatchLevelReload(int* reloaded);
 void dsda_WatchRecordDemo(const char* name);
 void dsda_WriteAnalysis(void);
+
+int dsda_MaxKillRequirement(void);
 
 #endif

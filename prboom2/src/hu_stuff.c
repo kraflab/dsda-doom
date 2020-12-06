@@ -52,6 +52,7 @@
 #include "r_main.h"
 #include "lprintf.h"
 #include "e6y.h" //e6y
+#include "dsda.h"
 #include "dsda/hud.h"
 #include "dsda/settings.h"
 #include "g_overflow.h"
@@ -1934,11 +1935,13 @@ void HU_widget_build_monsec(void)
   {
     int allkills_len = 0;
     int allsecrets_len = 0;
+    int max_kill_requirement;
 
     playerscount = 0;
     fullkillcount = 0;
     fullitemcount = 0;
     fullsecretcount = 0;
+    max_kill_requirement = dsda_MaxKillRequirement();
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
       if (playeringame[i])
@@ -1963,7 +1966,7 @@ void HU_widget_build_monsec(void)
         fullsecretcount += players[i].secretcount;
       }
     }
-    killcolor = (fullkillcount >= totalkills ? 0x37 : 0x35);
+    killcolor = (fullkillcount >= max_kill_requirement ? 0x37 : 0x35);
     secretcolor = (fullsecretcount >= totalsecret ? 0x37 : 0x35);
     itemcolor = (fullitemcount >= totalitems ? 0x37 : 0x35);
     if (playerscount<2)
@@ -1972,7 +1975,7 @@ void HU_widget_build_monsec(void)
         (
         hud_monsecstr,
         "STS \x1b\x36K \x1b%c%d/%d \x1b\x36I \x1b%c%d/%d \x1b\x36S \x1b%c%d/%d",
-        killcolor, fullkillcount,totalkills,
+        killcolor, fullkillcount,max_kill_requirement,
         itemcolor,plr->itemcount,totalitems,
         secretcolor, fullsecretcount,totalsecret
         );
@@ -1983,7 +1986,7 @@ void HU_widget_build_monsec(void)
         (
         hud_monsecstr,
         "STS \x1b\x36K %s \x1b%c%d/%d \x1b\x36I \x1b%c%d/%d \x1b\x36S %s \x1b%c%d/%d",
-        allkills,killcolor,fullkillcount,totalkills,
+        allkills,killcolor,fullkillcount,max_kill_requirement,
         itemcolor,plr->itemcount,totalitems,
         allsecrets,secretcolor,fullsecretcount,totalsecret
         );
