@@ -41,5 +41,6 @@ void dsda_WatchRecordDemo(const char* name);
 void dsda_WriteAnalysis(void);
 
 int dsda_MaxKillRequirement(void);
+char* dsda_NewDemoName(void);
 
 #endif
