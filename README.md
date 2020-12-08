@@ -19,6 +19,7 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 
 ### Changes
 - Smart Totals renamed to Max Totals and fixed to show kill constraint for max.
+- If there is a demo name clash and overwriting is off: use incrementing name `demo-12345.lmp`.
 
 ### New Settings
 - Strict Mode: disable TAS options while recording, unless using `-tas`.
