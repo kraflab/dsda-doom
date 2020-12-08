@@ -2952,13 +2952,14 @@ void G_RecordDemo (const char* name)
 
     demofp = fopen(demoname, "wb");
   }
+  else if (demo_compatibility && !demo_overwriteexisting)
+  {
+    free(demoname);
+    demoname = dsda_NewDemoName();
+    demofp = fopen(demoname, "wb");
+  }
   else
   {
-    if (demo_compatibility && !demo_overwriteexisting)
-    {
-      I_Error("G_RecordDemo: file %s already exists", name);
-    }
-
     demofp = fopen(demoname, "rb+");
     if (demofp)
     {
@@ -3013,16 +3014,16 @@ void G_RecordDemo (const char* name)
 
       //demo cannot be continued
       fclose(demofp);
-      if (demo_overwriteexisting)
+
+      if (!demo_overwriteexisting)
       {
-        //restoration of all data which could be changed by G_ReadDemoHeader
-        G_SaveRestoreGameOptions(false);
-        demofp = fopen(demoname, "wb");
+        free(demoname);
+        demoname = dsda_NewDemoName();
       }
-      else
-      {
-        I_Error("G_RecordDemo: No save in demo, can't continue");
-      }
+
+      //restoration of all data which could be changed by G_ReadDemoHeader
+      G_SaveRestoreGameOptions(false);
+      demofp = fopen(demoname, "wb");
     }
   }
 
@@ -3859,6 +3860,10 @@ dboolean G_CheckDemoStatus (void)
       G_WriteDemoFooter(demofp);
 
       lprintf(LO_INFO, "G_CheckDemoStatus: Demo recorded\n");
+
+      fclose(demofp);
+      demofp = NULL;
+
       return false;  // killough
     }
 
