@@ -3859,6 +3859,10 @@ dboolean G_CheckDemoStatus (void)
       G_WriteDemoFooter(demofp);
 
       lprintf(LO_INFO, "G_CheckDemoStatus: Demo recorded\n");
+
+      fclose(demofp);
+      demofp = NULL;
+
       return false;  // killough
     }
 
