@@ -24,7 +24,6 @@
 #include "r_fps.h"
 #include "r_main.h"
 #include "g_game.h"
-#include "lprintf.h"
 #include "e6y.h"
 
 #include "key_frame.h"
