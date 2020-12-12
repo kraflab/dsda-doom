@@ -20,6 +20,8 @@
 
 #include "settings.h"
 
+int dsda_key_store_key_frame;
+int dsda_key_restore_key_frame;
 int dsda_strict_mode;
 int dsda_cycle_ghost_colors;
 int dsda_tas;
