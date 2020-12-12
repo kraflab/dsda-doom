@@ -49,12 +49,11 @@ void dsda_StoreKeyFrame(void) {
     
   save_p = savebuffer = malloc(savegamesize);
     
-  CheckSaveGame(5);
+  CheckSaveGame(4);
   *save_p++ = gameskill;
   *save_p++ = gameepisode;
   *save_p++ = gamemap;
   *save_p++ = idmusnum;
-  *save_p++ = (gametic - basetic) & 255;
   
   // Store progress bar for demo playback
   CheckSaveGame(sizeof(demo_curr_tic));
@@ -78,6 +77,9 @@ void dsda_StoreKeyFrame(void) {
   CheckSaveGame(sizeof(totalleveltimes));
   memcpy(save_p, &totalleveltimes, sizeof(totalleveltimes));
   save_p += sizeof(totalleveltimes);
+  
+  CheckSaveGame(1);
+  *save_p++ = (gametic - basetic) & 255;
     
   Z_CheckHeap();
   P_ArchivePlayers();
@@ -122,8 +124,6 @@ void dsda_RestoreKeyFrame(void) {
   idmusnum = *save_p++;
   if (idmusnum==255) idmusnum=-1;
   
-  basetic = gametic - *save_p++;
-  
   // Restore progress bar for demo playback
   memcpy(&demo_curr_tic, save_p, sizeof(demo_curr_tic));
   save_p += sizeof(demo_curr_tic);
@@ -145,6 +145,8 @@ void dsda_RestoreKeyFrame(void) {
 
   memcpy(&totalleveltimes, save_p, sizeof(totalleveltimes));
   save_p += sizeof(totalleveltimes);
+  
+  basetic = gametic - *save_p++;
 
   P_MapStart();
   P_UnArchivePlayers();
