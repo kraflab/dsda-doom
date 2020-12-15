@@ -86,10 +86,9 @@ void dsda_StoreKeyFrame(void) {
   P_ThinkerToIndex();
   P_ArchiveWorld();
   Z_CheckHeap();
-  P_ArchiveThinkers();
+  P_TrueArchiveThinkers();
   P_IndexToThinker();
   Z_CheckHeap();
-  P_ArchiveSpecials();
   P_ArchiveRNG();
   Z_CheckHeap();
   P_ArchiveMap();
@@ -150,8 +149,7 @@ void dsda_RestoreKeyFrame(void) {
   P_MapStart();
   P_UnArchivePlayers();
   P_UnArchiveWorld();
-  P_UnArchiveThinkers();
-  P_UnArchiveSpecials();
+  P_TrueUnArchiveThinkers();
   P_UnArchiveRNG();
   P_UnArchiveMap();
   P_MapEnd();
