@@ -67,6 +67,7 @@
 #include "r_fps.h"
 #include "e6y.h"//e6y
 #include "dsda/settings.h"
+#include "dsda/key_frame.h"
 #ifdef _WIN32
 #include "e6y_launcher.h"
 #endif
@@ -2266,6 +2267,7 @@ setup_menu_t keys_settings4[];
 setup_menu_t keys_settings5[];
 setup_menu_t keys_settings6[];
 setup_menu_t keys_settings7[];
+setup_menu_t dsda_keys_settings[];
 
 // The table which gets you from one screen table to the next.
 
@@ -2278,6 +2280,7 @@ setup_menu_t* keys_settings[] =
   keys_settings5,
   keys_settings6,
   keys_settings7,
+  dsda_keys_settings,
   NULL
 };
 
@@ -2501,8 +2504,18 @@ setup_menu_t keys_settings7[] =
   {"CLEAR"       ,S_KEY       ,m_menu,KB_X,KB_Y+8*8,{&key_menu_clear}},
 
   {"<- PREV",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings6}},
+  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_keys_settings}},
   // Final entry
   {0,S_SKIP|S_END,m_null}
+};
+
+setup_menu_t dsda_keys_settings[] = {
+  { "DSDA-Doom Keys", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
+  { "Store Key Frame", S_KEY, m_scrn, KB_X, KB_Y + 1 * 8, { &dsda_key_store_key_frame } },
+  { "Restore Key Frame", S_KEY, m_scrn, KB_X, KB_Y + 2 * 8, { &dsda_key_restore_key_frame } },
+  
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
+  { 0, S_SKIP | S_END, m_null }
 };
 
 // Setting up for the Key Binding screen. Turn on flags, set pointers,
@@ -3102,7 +3115,7 @@ extern int detect_voices, realtic_clock_rate, tran_filter_pct;
 setup_menu_t gen_settings1[], gen_settings2[], gen_settings3[];
 setup_menu_t gen_settings4[], gen_settings5[], gen_settings6[];
 setup_menu_t gen_settings7[], gen_settings8[];
-setup_menu_t dsda_settings[];
+setup_menu_t dsda_gen_settings[];
 
 setup_menu_t* gen_settings[] =
 {
@@ -3114,7 +3127,7 @@ setup_menu_t* gen_settings[] =
   gen_settings6,
   gen_settings7,
   gen_settings8,
-  dsda_settings,
+  dsda_gen_settings,
   NULL
 };
 
@@ -3328,7 +3341,7 @@ setup_menu_t gen_settings7[] =
 #ifdef GL_DOOM
   {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {gen_settings8}},
 #else
-  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_settings}},
+  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_gen_settings}},
 #endif
   {0,S_SKIP|S_END,m_null}
 };
@@ -3363,14 +3376,14 @@ setup_menu_t gen_settings8[] = { // General Settings screen4
 #endif //GL_DOOM
 
   {"<- PREV",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {gen_settings7}},
-  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_settings}},
+  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_gen_settings}},
   {0,S_SKIP|S_END,m_null}
 };
 
-setup_menu_t dsda_settings[] = {
+setup_menu_t dsda_gen_settings[] = {
   { "DSDA-Doom Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Strict Mode", S_YESNO, m_null, G_X, G_Y + 2 * 8, {"dsda_strict_mode" }, 0, 0, dsda_ChangeStrictMode },
-  { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, {"dsda_cycle_ghost_colors" } },
+  { "Strict Mode", S_YESNO, m_null, G_X, G_Y + 2 * 8, { "dsda_strict_mode" }, 0, 0, dsda_ChangeStrictMode },
+  { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "dsda_cycle_ghost_colors" } },
 #ifdef GL_DOOM
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },
 #else
@@ -4845,6 +4858,26 @@ dboolean M_Responder (event_t* ev) {
         }
         return true;
       }
+    }
+    
+    if (ch == dsda_key_store_key_frame)
+    {
+      if (
+        gamestate == GS_LEVEL && 
+        gameaction == ga_nothing &&
+        !dsda_StrictMode() &&
+        !demorecording // currently broken
+      ) dsda_StoreKeyFrame();
+      return true;
+    }
+    
+    if (ch == dsda_key_restore_key_frame)
+    {
+      if (
+        !dsda_StrictMode() &&
+        !demorecording // currently broken
+      ) dsda_RestoreKeyFrame();
+      return true;
     }
 
     if (ch == key_walkcamera)

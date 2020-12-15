@@ -12,23 +12,13 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Settings
+//	DSDA Key Frame
 //
 
-#ifndef __DSDA_SETTINGS__
-#define __DSDA_SETTINGS__
+#ifndef __DSDA_KEY_FRAME__
+#define __DSDA_KEY_FRAME__
 
-extern int dsda_key_store_key_frame;
-extern int dsda_key_restore_key_frame;
-extern int dsda_strict_mode;
-extern int dsda_cycle_ghost_colors;
-
-void dsda_InitSettings(void);
-void dsda_ChangeStrictMode(void);
-void dsda_SetTas(void);
-dboolean dsda_StrictMode(void);
-dboolean dsda_CycleGhostColors(void);
-dboolean dsda_AlwaysSR50(void);
-int dsda_RealticClockRate(void);
+void dsda_StoreKeyFrame(void);
+void dsda_RestoreKeyFrame(void);
 
 #endif

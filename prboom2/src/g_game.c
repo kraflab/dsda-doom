@@ -101,11 +101,11 @@ struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
 // The old format is still supported.
 #define NEWFORMATSIG "\xff\xff\xff\xff"
 
-static size_t   savegamesize = SAVEGAMESIZE; // killough
+size_t          savegamesize = SAVEGAMESIZE; // killough
 static dboolean  netdemo;
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
-static FILE    *demofp; /* cph - record straight to file */
+FILE           *demofp; /* cph - record straight to file */
 //e6y static 
 const byte *demo_p;
 const byte *demo_continue_p = NULL;
@@ -147,7 +147,7 @@ char             democontinuename[PATH_MAX];
 dboolean         singledemo;           // quit after playing a demo from cmdline
 wbstartstruct_t wminfo;               // parms for world map / intermission
 dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
-static byte     *savebuffer;          // CPhipps - static
+byte            *savebuffer;
 int             autorun = false;      // always running?          // phares
 int             totalleveltimes;      // CPhipps - total time for all completed levels
 int             longtics;

@@ -59,6 +59,10 @@ void P_UnArchiveRNG(void);
 void P_ArchiveMap(void);
 void P_UnArchiveMap(void);
 
+// dsda - fix save / load synchronization
+void P_TrueArchiveThinkers(void);
+void P_TrueUnArchiveThinkers(void);
+
 extern byte *save_p;
 void CheckSaveGame(size_t,const char*, int);              /* killough */
 #define CheckSaveGame(a) (CheckSaveGame)(a, __FILE__, __LINE__)

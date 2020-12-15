@@ -23,6 +23,8 @@ set(COMMON_SRC
     dsda/ghost.h
     dsda/hud.c
     dsda/hud.h
+    dsda/key_frame.c
+    dsda/key_frame.h
     dsda/settings.c
     dsda/settings.h
     dstrings.c
