@@ -26,12 +26,12 @@
 #include "g_game.h"
 #include "e6y.h"
 
+#include "dsda/demo.h"
 #include "key_frame.h"
 
 #define KEY_FRAME_VERSION 1
 
 // Hook into the save & demo ecosystem
-extern FILE* demofp;
 extern const byte* demo_p;
 extern byte* savebuffer;
 extern size_t savegamesize;
@@ -43,8 +43,8 @@ static byte* dsda_key_frame_buffer;
 
 // Stripped down version of G_DoSaveGame
 void dsda_StoreKeyFrame(void) {
-  long int demofp_p = 0;
-  if (demofp != NULL) demofp_p = ftell(demofp);
+  int demo_write_buffer_offset;
+  demo_write_buffer_offset = dsda_DemoBufferOffset();
     
   save_p = savebuffer = malloc(savegamesize);
     
@@ -64,10 +64,10 @@ void dsda_StoreKeyFrame(void) {
   memcpy(save_p, &demo_p, sizeof(demo_p));
   save_p += sizeof(demo_p);
   
-  // Store location in demo file stream
-  CheckSaveGame(sizeof(demofp_p));
-  memcpy(save_p, &demofp_p, sizeof(demofp_p));
-  save_p += sizeof(demofp_p);
+  // Store location in demo recording buffer
+  CheckSaveGame(sizeof(demo_write_buffer_offset));
+  memcpy(save_p, &demo_write_buffer_offset, sizeof(demo_write_buffer_offset));
+  save_p += sizeof(demo_write_buffer_offset);
   
   CheckSaveGame(sizeof(leveltime));
   memcpy(save_p, &leveltime, sizeof(leveltime));
@@ -105,7 +105,7 @@ void dsda_StoreKeyFrame(void) {
 // Stripped down version of G_DoLoadGame
 // save_p is coopted to use the save logic
 void dsda_RestoreKeyFrame(void) {
-  long int demofp_p = 0;
+  int demo_write_buffer_offset;
   
   if (dsda_key_frame_buffer == NULL) {
     doom_printf("No key frame found");
@@ -130,12 +130,12 @@ void dsda_RestoreKeyFrame(void) {
   memcpy(&demo_p, save_p, sizeof(demo_p));
   save_p += sizeof(demo_p);
   
-  // Restore location in demo file stream
-  memcpy(&demofp_p, save_p, sizeof(demofp_p));
-  save_p += sizeof(demofp_p);
+  // Restore location in demo recording buffer
+  memcpy(&demo_write_buffer_offset, save_p, sizeof(demo_write_buffer_offset));
+  save_p += sizeof(demo_write_buffer_offset);
   
-  if (demofp_p > 0) fseek(demofp, demofp_p, SEEK_SET);
-
+  dsda_SetDemoBufferOffset(demo_write_buffer_offset);
+  
   G_InitNew(gameskill, gameepisode, gamemap);
 
   memcpy(&leveltime, save_p, sizeof(leveltime));

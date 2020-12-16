@@ -64,6 +64,7 @@
 #include "hu_stuff.h"
 #include "g_overflow.h"
 #include "e6y.h"
+#include "dsda/demo.h"
 
 int IsDemoPlayback(void)
 {
@@ -1166,7 +1167,7 @@ static int G_ReadDemoFooter(const char *filename)
   return result;
 }
 
-void G_WriteDemoFooter(FILE *file)
+void G_WriteDemoFooter(void)
 {
   wadtbl_t demoex;
 
@@ -1202,14 +1203,9 @@ void G_WriteDemoFooter(FILE *file)
   W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
 
   //write pwad header, all data and lookup table to the end of a demo
-  if (
-    fwrite(&demoex.header, sizeof(demoex.header), 1, file) != 1 ||
-    fwrite(demoex.data, demoex.datasize, 1, file) != 1 ||
-    fwrite(demoex.lumps, demoex.header.numlumps * sizeof(demoex.lumps[0]), 1, file) != 1 ||
-    false)
-  {
-    I_Error("G_WriteDemoFooter: error writing");
-  }
+  dsda_WriteToDemo(&demoex.header, sizeof(demoex.header));
+  dsda_WriteToDemo(demoex.data, demoex.datasize);
+  dsda_WriteToDemo(demoex.lumps, demoex.header.numlumps * sizeof(demoex.lumps[0]));
 }
 
 int WadDataInit(waddata_t *waddata)
