@@ -86,6 +86,7 @@
 #include "r_fps.h"
 #include "e6y.h"//e6y
 #include "dsda.h"
+#include "dsda/demo.h"
 #include "dsda/settings.h"
 #include "statdump.h"
 
@@ -105,7 +106,6 @@ size_t          savegamesize = SAVEGAMESIZE; // killough
 static dboolean  netdemo;
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
-FILE           *demofp; /* cph - record straight to file */
 //e6y static 
 const byte *demo_p;
 const byte *demo_continue_p = NULL;
@@ -2915,8 +2915,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 
   }//e6y
 
-  if (fwrite(buf, p-buf, 1, demofp) != 1)
-    I_Error("G_WriteDemoTiccmd: error writing demo");
+  dsda_WriteToDemo(buf, p - buf);
 
   /* cph - alias demo_p to it so we can read it back */
   demo_p = buf;
@@ -2936,101 +2935,16 @@ void G_RecordDemo (const char* name)
   demorecording = true;
   
   dsda_WatchRecordDemo(demoname);
-    
-  /* cph - Record demos straight to file
-  * If file already exists, try to continue existing demo
-  */
 
-  demofp = NULL;
-  if (access(demoname, F_OK) || democontinue ||
-     (demo_compatibility && demo_overwriteexisting))
-  {
-    if (strlen(demoname) > 4
-        && !strcasecmp(demoname+strlen(demoname)-4, ".wad"))
-      I_Error("G_RecordDemo: Cowardly refusing to record over "
-              "what appears to be a WAD. (%s)", demoname);
-
-    demofp = fopen(demoname, "wb");
-  }
-  else if (demo_compatibility && !demo_overwriteexisting)
+  if (!access(demoname, F_OK) && !demo_overwriteexisting)
   {
     free(demoname);
     demoname = dsda_NewDemoName();
-    demofp = fopen(demoname, "wb");
-  }
-  else
-  {
-    demofp = fopen(demoname, "rb+");
-    if (demofp)
-    {
-      int slot = -1;
-      const byte* pos;
-      byte buf[200];
-      size_t len;
-
-      //e6y: save all data which can be changed by G_ReadDemoHeader
-      G_SaveRestoreGameOptions(true);
-
-      /* Read the demo header for options etc */
-      len = fread(buf, 1, sizeof(buf), demofp);
-      pos = G_ReadDemoHeader(buf, len);
-      if (pos)
-      {
-        int rc;
-        int bytes_per_tic = longtics ? 5 : 4;
-
-        fseek(demofp, pos - buf, SEEK_SET);
-
-        /* Now read the demo to find the last save slot */
-        do
-        {
-          byte buf[5];
-
-          rc = fread(buf, 1, bytes_per_tic, demofp);
-          if (buf[0] == DEMOMARKER || rc < bytes_per_tic-1)
-          {
-            break;
-          }
-
-          if (buf[bytes_per_tic-1] & BT_SPECIAL)
-          {
-            if ((buf[bytes_per_tic-1] & BT_SPECIALMASK) == BTS_SAVEGAME)
-            {
-              slot = (buf[bytes_per_tic-1] & BTS_SAVEMASK)>>BTS_SAVESHIFT;
-            }
-          }
-        }
-        while (rc == bytes_per_tic);
-
-        if (slot != -1)
-        {
-          /* Return to the last save position, and load the relevant savegame */
-          fseek(demofp, -rc, SEEK_CUR);
-          G_LoadGame(slot, false);
-          autostart = false;
-          return;
-        }
-      }
-
-      //demo cannot be continued
-      fclose(demofp);
-
-      if (!demo_overwriteexisting)
-      {
-        free(demoname);
-        demoname = dsda_NewDemoName();
-      }
-
-      //restoration of all data which could be changed by G_ReadDemoHeader
-      G_SaveRestoreGameOptions(false);
-      demofp = fopen(demoname, "wb");
-    }
   }
 
-  if (!demofp)
-  {
-    I_Error("G_RecordDemo: failed to open %s", name);
-  }
+  // dsda - TODO: abstracting file handling, but should refactor around here
+  dsda_InitDemo(demoname);
+  
   free(demoname);
 }
 
@@ -3329,8 +3243,7 @@ void G_BeginRecording (void)
       *demo_p++ = playeringame[i];
   }
 
-  if (fwrite(demostart, 1, demo_p-demostart, demofp) != (size_t)(demo_p-demostart))
-    I_Error("G_BeginRecording: Error writing demo header");
+  dsda_WriteToDemo(demostart, demo_p - demostart);
   free(demostart);
 }
 
@@ -3853,16 +3766,17 @@ dboolean G_CheckDemoStatus (void)
 
   if (demorecording)
     {
+      byte end_marker = DEMOMARKER;
+      
       demorecording = false;
-      fputc(DEMOMARKER, demofp);
+      dsda_WriteToDemo(&end_marker, 1);
       
       //e6y
-      G_WriteDemoFooter(demofp);
+      G_WriteDemoFooter();
+      
+      dsda_WriteDemoToFile();
 
       lprintf(LO_INFO, "G_CheckDemoStatus: Demo recorded\n");
-
-      fclose(demofp);
-      demofp = NULL;
 
       return false;  // killough
     }

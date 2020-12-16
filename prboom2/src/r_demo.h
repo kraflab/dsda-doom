@@ -106,7 +106,7 @@ void M_ChangeDemoExtendedFormat(void);
 
 byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size);
 void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl);
-void G_WriteDemoFooter(FILE *file);
+void G_WriteDemoFooter(void);
 void I_DemoExShutdown(void);
 
 void W_InitPWADTable(wadtbl_t *wadtbl);
