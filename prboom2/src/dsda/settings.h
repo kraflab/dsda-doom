@@ -18,8 +18,8 @@
 #ifndef __DSDA_SETTINGS__
 #define __DSDA_SETTINGS__
 
-extern int dsda_key_store_key_frame;
-extern int dsda_key_restore_key_frame;
+extern int dsda_key_store_quick_key_frame;
+extern int dsda_key_restore_quick_key_frame;
 extern int dsda_strict_mode;
 extern int dsda_cycle_ghost_colors;
 

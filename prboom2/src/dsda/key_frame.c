@@ -30,6 +30,7 @@
 #include "key_frame.h"
 
 #define KEY_FRAME_VERSION 1
+#define SECOND_KEY_FRAME_COUNT 60
 
 // Hook into the save & demo ecosystem
 extern const byte* demo_p;
@@ -39,11 +40,19 @@ extern dboolean setsizeneeded;
 struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
 void RecalculateDrawnSubsectors(void);
 
-static byte* dsda_key_frame_buffer;
+static byte* dsda_quick_key_frame_buffer;
 static int dsda_key_frame_restored;
 
+typedef struct {
+  byte* buffer;
+  int index;
+} dsda_key_frame_t;
+
+static dsda_key_frame_t dsda_second_key_frames[SECOND_KEY_FRAME_COUNT];
+static int dsda_last_second_key_frame = -1;
+
 // Stripped down version of G_DoSaveGame
-void dsda_StoreKeyFrame(void) {
+void dsda_StoreKeyFrame(byte** buffer) {
   int demo_write_buffer_offset;
   demo_write_buffer_offset = dsda_DemoBufferOffset();
     
@@ -95,9 +104,9 @@ void dsda_StoreKeyFrame(void) {
   P_ArchiveMap();
   Z_CheckHeap();
     
-  if (dsda_key_frame_buffer != NULL) free(dsda_key_frame_buffer);
+  if (*buffer != NULL) free(*buffer);
   
-  dsda_key_frame_buffer = savebuffer;
+  *buffer = savebuffer;
   savebuffer = save_p = NULL;
     
   doom_printf("Stored key frame");
@@ -105,15 +114,15 @@ void dsda_StoreKeyFrame(void) {
 
 // Stripped down version of G_DoLoadGame
 // save_p is coopted to use the save logic
-void dsda_RestoreKeyFrame(void) {
+void dsda_RestoreKeyFrame(byte* buffer) {
   int demo_write_buffer_offset;
   
-  if (dsda_key_frame_buffer == NULL) {
+  if (buffer == NULL) {
     doom_printf("No key frame found");
     return;
   }
   
-  save_p = dsda_key_frame_buffer;
+  save_p = buffer;
 
   gameskill = *save_p++;
   gameepisode = *save_p++;
@@ -176,4 +185,30 @@ int dsda_KeyFrameRestored(void) {
   
   dsda_key_frame_restored = 0;
   return 1;
+}
+
+void dsda_StoreQuickKeyFrame(void) {
+  dsda_StoreKeyFrame(&dsda_quick_key_frame_buffer);
+}
+
+void dsda_RestoreQuickKeyFrame(void) {
+  dsda_RestoreKeyFrame(dsda_quick_key_frame_buffer);
+}
+
+void dsda_UpdateAutomaticKeyFrames(void) {
+  int key_frame_index;
+  dsda_key_frame_t* current_key_frame;
+  
+  // Automatically save a key frame each second
+  if ((totalleveltimes + leveltime) % 35 == 0) {
+    key_frame_index = (totalleveltimes + leveltime) / 35;
+    
+    dsda_last_second_key_frame += 1;
+    if (dsda_last_second_key_frame >= SECOND_KEY_FRAME_COUNT)
+      dsda_last_second_key_frame = 0;
+    
+    current_key_frame = &dsda_second_key_frames[dsda_last_second_key_frame];
+    current_key_frame->index = key_frame_index;
+    dsda_StoreKeyFrame(&current_key_frame->buffer);
+  }
 }
