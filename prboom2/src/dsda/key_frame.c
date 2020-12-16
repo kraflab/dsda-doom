@@ -40,6 +40,7 @@ struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
 void RecalculateDrawnSubsectors(void);
 
 static byte* dsda_key_frame_buffer;
+static int dsda_key_frame_restored;
 
 // Stripped down version of G_DoSaveGame
 void dsda_StoreKeyFrame(void) {
@@ -165,5 +166,14 @@ void dsda_RestoreKeyFrame(void) {
 
   R_FillBackScreen();
   
+  dsda_key_frame_restored = 1;
+  
   doom_printf("Restored key frame");
+}
+
+int dsda_KeyFrameRestored(void) {
+  if (!dsda_key_frame_restored) return 0;
+  
+  dsda_key_frame_restored = 0;
+  return 1;
 }

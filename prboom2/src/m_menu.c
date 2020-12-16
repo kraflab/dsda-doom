@@ -4865,18 +4865,14 @@ dboolean M_Responder (event_t* ev) {
       if (
         gamestate == GS_LEVEL && 
         gameaction == ga_nothing &&
-        !dsda_StrictMode() &&
-        !demorecording // currently broken
+        !dsda_StrictMode()
       ) dsda_StoreKeyFrame();
       return true;
     }
     
     if (ch == dsda_key_restore_key_frame)
     {
-      if (
-        !dsda_StrictMode() &&
-        !demorecording // currently broken
-      ) dsda_RestoreKeyFrame();
+      if (!dsda_StrictMode()) dsda_RestoreKeyFrame();
       return true;
     }
 
