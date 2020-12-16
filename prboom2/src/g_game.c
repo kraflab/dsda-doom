@@ -87,6 +87,7 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 #include "dsda/demo.h"
+#include "dsda/key_frame.h"
 #include "dsda/settings.h"
 #include "statdump.h"
 
@@ -1107,6 +1108,14 @@ void G_Ticker (void)
           ticcmd_t *cmd = &players[i].cmd;
 
           memcpy(cmd, &netcmds[i][buf], sizeof *cmd);
+
+          // Track join if bit available
+          if (
+            dsda_KeyFrameRestored() && (
+              (demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||
+              (cmd->buttons & BT_CHANGE) == 0
+            )
+          ) cmd->buttons |= BT_JOIN;
 
           //e6y
           if (democontinue)

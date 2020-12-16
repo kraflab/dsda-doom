@@ -20,5 +20,6 @@
 
 void dsda_StoreKeyFrame(void);
 void dsda_RestoreKeyFrame(void);
+int dsda_KeyFrameRestored(void);
 
 #endif
