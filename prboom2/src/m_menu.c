@@ -2513,6 +2513,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "DSDA-Doom Keys", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
   { "Store Quick Key Frame", S_KEY, m_scrn, KB_X, KB_Y + 1 * 8, { &dsda_key_store_quick_key_frame } },
   { "Restore Quick Key Frame", S_KEY, m_scrn, KB_X, KB_Y + 2 * 8, { &dsda_key_restore_quick_key_frame } },
+  { "Rewind", S_KEY, m_scrn, KB_X, KB_Y + 3 * 8, { &dsda_key_rewind } },
   
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
   { 0, S_SKIP | S_END, m_null }
@@ -3384,6 +3385,8 @@ setup_menu_t dsda_gen_settings[] = {
   { "DSDA-Doom Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Strict Mode", S_YESNO, m_null, G_X, G_Y + 2 * 8, { "dsda_strict_mode" }, 0, 0, dsda_ChangeStrictMode },
   { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "dsda_cycle_ghost_colors" } },
+  { "Automatic Key Frame Interval (s)", S_NUM, m_null, G_X, G_Y + 4 * 8, { "dsda_auto_key_frame_interval" } },
+  { "Automatic Key Frame Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 5 * 8, { "dsda_auto_key_frame_depth" } },
 #ifdef GL_DOOM
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },
 #else
@@ -4876,6 +4879,12 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
+    if (ch == dsda_key_rewind)
+    {
+      if (!dsda_StrictMode()) dsda_RewindAutoKeyFrame();
+      return true;
+    }
+    
     if (ch == key_walkcamera)
     {
       if (demoplayback && gamestate == GS_LEVEL)

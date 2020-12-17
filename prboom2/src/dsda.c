@@ -30,6 +30,7 @@
 #include "dsda_mobj_extension.h"
 #include "dsda/ghost.h"
 #include "dsda/hud.h"
+#include "dsda/key_frame.h"
 #include "dsda/settings.h"
 #include "dsda.h"
 
@@ -105,6 +106,8 @@ void dsda_ReadCommandLine(void) {
   if ((p = M_CheckParm("-import_ghost"))) dsda_InitGhostImport(p);
   
   if (M_CheckParm("-tas")) dsda_SetTas();
+  
+  dsda_InitKeyFrame();
 }
 
 void dsda_DisplayNotifications(void) {
@@ -401,6 +404,7 @@ void dsda_WatchRecordDemo(const char* name) {
   // demorecording is set after prboom+ has already cached its settings
   // we need to reset things here to satisfy strict mode
   dsda_InitSettings();
+  dsda_InitKeyFrame();
 }
 
 void dsda_WriteAnalysis(void) {

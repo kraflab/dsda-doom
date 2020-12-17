@@ -93,6 +93,7 @@
 #ifdef USE_WINDOWS_LAUNCHER
 #include "e6y_launcher.h"
 #endif
+#include "dsda/settings.h"
 
 // NSM
 #include "i_capture.h"
@@ -223,7 +224,7 @@ static void D_Wipe(void)
   dboolean done;
   int wipestart = I_GetTime () - 1;
 
-  if (!render_wipescreen) return;//e6y
+  if (!render_wipescreen || dsda_SkipWipe()) return;//e6y
   do
     {
       int nowtime, tics;

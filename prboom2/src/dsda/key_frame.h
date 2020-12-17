@@ -18,11 +18,13 @@
 #ifndef __DSDA_KEY_FRAME__
 #define __DSDA_KEY_FRAME__
 
-void dsda_StoreKeyFrame(unsigned char** buffer);
+void dsda_InitKeyFrame(void);
+void dsda_StoreKeyFrame(unsigned char** buffer, int log);
 void dsda_RestoreKeyFrame(unsigned char* buffer);
 int dsda_KeyFrameRestored(void);
 void dsda_StoreQuickKeyFrame(void);
 void dsda_RestoreQuickKeyFrame(void);
-void dsda_UpdateAutomaticKeyFrames(void);
+void dsda_RewindAutoKeyFrame(void);
+void dsda_UpdateAutoKeyFrames(void);
 
 #endif
