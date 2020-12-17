@@ -18,8 +18,11 @@
 #ifndef __DSDA_SETTINGS__
 #define __DSDA_SETTINGS__
 
-extern int dsda_key_store_key_frame;
-extern int dsda_key_restore_key_frame;
+extern int dsda_key_store_quick_key_frame;
+extern int dsda_key_restore_quick_key_frame;
+extern int dsda_key_rewind;
+extern int dsda_auto_key_frame_interval;
+extern int dsda_auto_key_frame_depth;
 extern int dsda_strict_mode;
 extern int dsda_cycle_ghost_colors;
 
@@ -30,5 +33,9 @@ dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
 int dsda_RealticClockRate(void);
+int dsda_AutoKeyFrameInterval(void);
+int dsda_AutoKeyFrameDepth(void);
+void dsda_SkipNextWipe(void);
+dboolean dsda_SkipWipe(void);
 
 #endif

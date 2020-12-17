@@ -1099,6 +1099,8 @@ void G_Ticker (void)
   if (paused & 2 || (!demoplayback && menuactive && !netgame))
     basetic++;  // For revenant tracers and RNG -- we must maintain sync
   else {
+    dsda_UpdateAutoKeyFrames();
+
     // get commands, check consistancy, and build new consistancy check
     int buf = (gametic/ticdup)%BACKUPTICS;
 

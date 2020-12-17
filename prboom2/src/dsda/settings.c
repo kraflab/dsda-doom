@@ -20,11 +20,15 @@
 
 #include "settings.h"
 
-int dsda_key_store_key_frame;
-int dsda_key_restore_key_frame;
+int dsda_key_store_quick_key_frame;
+int dsda_key_restore_quick_key_frame;
+int dsda_key_rewind;
+int dsda_auto_key_frame_interval;
+int dsda_auto_key_frame_depth;
 int dsda_strict_mode;
 int dsda_cycle_ghost_colors;
 int dsda_tas;
+int dsda_skip_next_wipe;
 
 void dsda_InitSettings(void) {
   dsda_ChangeStrictMode();
@@ -55,4 +59,29 @@ int dsda_RealticClockRate(void) {
   if (dsda_StrictMode()) return 100;
   
   return realtic_clock_rate;
+}
+
+int dsda_AutoKeyFrameInterval(void) {
+  if (dsda_StrictMode()) return 0;
+  
+  return dsda_auto_key_frame_interval;
+}
+
+int dsda_AutoKeyFrameDepth(void) {
+  if (dsda_StrictMode()) return 0;
+  
+  return dsda_auto_key_frame_depth;
+}
+
+void dsda_SkipNextWipe(void) {
+  dsda_skip_next_wipe = 1;
+}
+
+dboolean dsda_SkipWipe(void) {
+  if (dsda_skip_next_wipe) {
+    dsda_skip_next_wipe = 0;
+    return true;
+  }
+  
+  return !render_wipescreen;
 }

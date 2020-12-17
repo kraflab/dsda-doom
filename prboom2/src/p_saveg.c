@@ -1584,13 +1584,13 @@ void P_TrueUnArchiveThinkers(void) {
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
     if (th->function == P_MobjThinker) {
       P_SetNewTarget(&((mobj_t *) th)->target,
-        mobj_p[P_GetMobj(((mobj_t *)th)->target,mobj_count)]);
+        mobj_p[P_GetMobj(((mobj_t *)th)->target, mobj_count + 1)]);
 
       P_SetNewTarget(&((mobj_t *) th)->tracer,
-        mobj_p[P_GetMobj(((mobj_t *)th)->tracer,mobj_count)]);
+        mobj_p[P_GetMobj(((mobj_t *)th)->tracer, mobj_count + 1)]);
 
       P_SetNewTarget(&((mobj_t *) th)->lastenemy,
-        mobj_p[P_GetMobj(((mobj_t *)th)->lastenemy,mobj_count)]);
+        mobj_p[P_GetMobj(((mobj_t *)th)->lastenemy, mobj_count + 1)]);
     }
 
   {  // killough 9/14/98: restore soundtargets
@@ -1601,7 +1601,7 @@ void P_TrueUnArchiveThinkers(void) {
       memcpy(&target, save_p, sizeof target);
       save_p += sizeof target;
       // Must verify soundtarget. See P_ArchiveThinkers.
-      P_SetNewTarget(&sectors[i].soundtarget, mobj_p[P_GetMobj(target,mobj_count)]);
+      P_SetNewTarget(&sectors[i].soundtarget, mobj_p[P_GetMobj(target, mobj_count + 1)]);
     }
   }
 

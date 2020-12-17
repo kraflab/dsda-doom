@@ -27,9 +27,8 @@
 #include "e6y.h"
 
 #include "dsda/demo.h"
+#include "dsda/settings.h"
 #include "key_frame.h"
-
-#define KEY_FRAME_VERSION 1
 
 // Hook into the save & demo ecosystem
 extern const byte* demo_p;
@@ -39,11 +38,32 @@ extern dboolean setsizeneeded;
 struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
 void RecalculateDrawnSubsectors(void);
 
-static byte* dsda_key_frame_buffer;
+static byte* dsda_quick_key_frame_buffer;
 static int dsda_key_frame_restored;
 
+typedef struct {
+  byte* buffer;
+  int index;
+} dsda_key_frame_t;
+
+static dsda_key_frame_t* dsda_auto_key_frames;
+static int dsda_last_auto_key_frame;
+static int dsda_auto_key_frames_size;
+
+void dsda_InitKeyFrame(void) {  
+  dsda_auto_key_frames_size = dsda_AutoKeyFrameDepth();
+  
+  if (dsda_auto_key_frames_size == 0) return;
+  
+  if (dsda_auto_key_frames != NULL) free(dsda_auto_key_frames);
+  
+  dsda_auto_key_frames = 
+    calloc(dsda_auto_key_frames_size, sizeof(dsda_key_frame_t));
+  dsda_last_auto_key_frame = -1;
+}
+
 // Stripped down version of G_DoSaveGame
-void dsda_StoreKeyFrame(void) {
+void dsda_StoreKeyFrame(byte** buffer, int log) {
   int demo_write_buffer_offset;
   demo_write_buffer_offset = dsda_DemoBufferOffset();
     
@@ -95,25 +115,25 @@ void dsda_StoreKeyFrame(void) {
   P_ArchiveMap();
   Z_CheckHeap();
     
-  if (dsda_key_frame_buffer != NULL) free(dsda_key_frame_buffer);
+  if (*buffer != NULL) free(*buffer);
   
-  dsda_key_frame_buffer = savebuffer;
+  *buffer = savebuffer;
   savebuffer = save_p = NULL;
     
-  doom_printf("Stored key frame");
+  if (log) doom_printf("Stored key frame");
 }
 
 // Stripped down version of G_DoLoadGame
 // save_p is coopted to use the save logic
-void dsda_RestoreKeyFrame(void) {
+void dsda_RestoreKeyFrame(byte* buffer) {
   int demo_write_buffer_offset;
   
-  if (dsda_key_frame_buffer == NULL) {
+  if (buffer == NULL) {
     doom_printf("No key frame found");
     return;
   }
   
-  save_p = dsda_key_frame_buffer;
+  save_p = buffer;
 
   gameskill = *save_p++;
   gameepisode = *save_p++;
@@ -176,4 +196,75 @@ int dsda_KeyFrameRestored(void) {
   
   dsda_key_frame_restored = 0;
   return 1;
+}
+
+void dsda_StoreQuickKeyFrame(void) {
+  dsda_StoreKeyFrame(&dsda_quick_key_frame_buffer, true);
+}
+
+void dsda_RestoreQuickKeyFrame(void) {
+  dsda_RestoreKeyFrame(dsda_quick_key_frame_buffer);
+}
+
+void dsda_RewindAutoKeyFrame(void) {
+  int current_time;
+  int interval_tics;
+  int key_frame_index;
+  int history_index;
+  
+  if (dsda_auto_key_frames_size == 0) {
+    doom_printf("No key frame found");
+    return;
+  }
+  
+  current_time = totalleveltimes + leveltime;
+  interval_tics = 35 * dsda_AutoKeyFrameInterval();
+  
+  key_frame_index = current_time / interval_tics - 1;
+  
+  history_index = dsda_last_auto_key_frame - 1;
+  if (history_index < 0) history_index = dsda_auto_key_frames_size - 1;
+    
+  if (dsda_auto_key_frames[history_index].index <= key_frame_index) {
+    dsda_last_auto_key_frame = history_index;
+    dsda_SkipNextWipe();
+    dsda_RestoreKeyFrame(dsda_auto_key_frames[history_index].buffer);
+  }
+  else doom_printf("No key frame found"); // rewind past the depth limit
+}
+
+void dsda_UpdateAutoKeyFrames(void) {
+  int key_frame_index;
+  int current_time;
+  int interval_tics;
+  dsda_key_frame_t* current_key_frame;
+  
+  if (
+    dsda_auto_key_frames_size == 0 || 
+    gamestate != GS_LEVEL || 
+    gameaction != ga_nothing
+  ) return;
+  
+  current_time = totalleveltimes + leveltime;
+  interval_tics = 35 * dsda_AutoKeyFrameInterval();
+  
+  // Automatically save a key frame each interval
+  if (current_time % interval_tics == 0) {
+    key_frame_index = current_time / interval_tics;
+    
+    // Don't duplicate (e.g., because we rewound to this index)
+    if (
+      dsda_last_auto_key_frame >= 0 && 
+      dsda_auto_key_frames[dsda_last_auto_key_frame].index == key_frame_index
+    ) return;
+    
+    dsda_last_auto_key_frame += 1;
+    if (dsda_last_auto_key_frame >= dsda_auto_key_frames_size)
+      dsda_last_auto_key_frame = 0;
+    
+    current_key_frame = &dsda_auto_key_frames[dsda_last_auto_key_frame];
+    current_key_frame->index = key_frame_index;
+
+    dsda_StoreKeyFrame(&current_key_frame->buffer, false);
+  }
 }
