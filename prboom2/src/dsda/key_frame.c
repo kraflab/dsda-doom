@@ -35,6 +35,7 @@ extern const byte* demo_p;
 extern byte* savebuffer;
 extern size_t savegamesize;
 extern dboolean setsizeneeded;
+extern dboolean BorderNeedRefresh;
 struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
 void RecalculateDrawnSubsectors(void);
 
@@ -185,6 +186,8 @@ void dsda_RestoreKeyFrame(byte* buffer) {
   if (setsizeneeded) R_ExecuteSetViewSize();
 
   R_FillBackScreen();
+  
+  BorderNeedRefresh = true;
   
   dsda_key_frame_restored = 1;
   
