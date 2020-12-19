@@ -1,4 +1,4 @@
-# dsda-doom v0.9.0 (experimental)
+# dsda-doom v0.9.1 (experimental)
 This is a fork of prboom+ with extra tooling for dsda.
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 
@@ -30,7 +30,7 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 - Automatic Key Frame Depth: how many key frames to store (max rewind length).
 
 ### Key Frames
-Key frames capture the game state at a given moment, similar to save files. By automatically recording key frames at fixed intervals, it is possible to "rewind" the game. This can be used during normal play, while recording (tas) demos, and during demo playback. You can also set a manual "quick key frame" at a specific point and rewind to that moment at any later time. Note: rewind during demo playback sometimes breaks the "go to next map" key - this will be fixed in a later update. More features with key frames will come in future versions (e.g., starting the game via a key frame).
+Key frames capture the game state at a given moment, similar to save files. By automatically recording key frames at fixed intervals, it is possible to "rewind" the game. This can be used during normal play, while recording (tas) demos, and during demo playback. You can also set a manual "quick key frame" at a specific point and rewind to that moment at any later time. More features with key frames will come in future versions (e.g., starting the game via a key frame).
 
 ### Ghosts
 A ghost follows the life of the player recorded in the ghost file. This can be useful to compare demos, or to compete against demos while you play. For movies, ghosts that enter the next map ahead of the player will pause until that map is reached. Ghosts that are left behind will fast-forward to the current map.
