@@ -53,7 +53,7 @@ typedef struct {
 } dsda_ghost_t;
 
 typedef struct {
-  thinker_t thinker;
+  thinker_t* thinker;
   dsda_ghost_t* ghosts;
   int count;
 } dsda_ghost_import_t;
@@ -272,8 +272,10 @@ void dsda_SpawnGhost(void) {
   }
   
   if (dsda_ghost_import.count > 0) {
-    dsda_ghost_import.thinker.function = dsda_UpdateGhosts;
-    P_AddThinker(&dsda_ghost_import.thinker);
+    dsda_ghost_import.thinker = Z_Malloc(sizeof(thinker_t), PU_LEVEL, NULL);
+    memset(dsda_ghost_import.thinker, 0, sizeof(thinker_t));
+    dsda_ghost_import.thinker->function = dsda_UpdateGhosts;
+    P_AddThinker(dsda_ghost_import.thinker);
   }
 }
 
