@@ -1044,6 +1044,7 @@ typedef enum {
   tc_true_scroll,
   tc_true_pusher,
   tc_true_flicker,
+  tc_true_friction,
   tc_true_end
 } true_thinkerclass_t;
 
@@ -1090,6 +1091,7 @@ void P_TrueArchiveThinkers(void) {
         th->function==T_Scroll       ? 4+sizeof(scroll_t)      :
         th->function==T_Pusher       ? 4+sizeof(pusher_t)      :
         th->function==T_FireFlicker  ? 4+sizeof(fireflicker_t) :
+        th->function==T_Friction     ? 4+sizeof(friction_t)    :
         th->function==P_MobjThinker  ? 4+sizeof(mobj_t)        :
       0;
 
@@ -1253,6 +1255,15 @@ void P_TrueArchiveThinkers(void) {
         continue;
       }
     
+    if (th->function == T_Friction)
+      {
+        *save_p++ = tc_true_friction;
+        PADSAVEP();
+        memcpy (save_p, th, sizeof(friction_t));
+        save_p += sizeof(friction_t);
+        continue;
+      }
+    
     if (th->function == P_MobjThinker)
       {
         mobj_t *mobj;
@@ -1372,6 +1383,7 @@ void P_TrueUnArchiveThinkers(void) {
         tc == tc_true_scroll   ? sizeof(scroll_t)      :
         tc == tc_true_pusher   ? sizeof(pusher_t)      :
         tc == tc_true_flicker  ? sizeof(fireflicker_t) :
+        tc == tc_true_friction ? sizeof(friction_t)    :
         tc == tc_true_mobj     ? sizeof(mobj_t)        :
       0;
     }
@@ -1535,6 +1547,17 @@ void P_TrueUnArchiveThinkers(void) {
           pusher->thinker.function = T_Pusher;
           pusher->source = P_GetPushThing(pusher->affectee);
           P_AddThinker(&pusher->thinker);
+          break;
+        }
+
+      case tc_true_friction:
+        PADSAVEP();
+        {
+          friction_t *friction = Z_Malloc (sizeof(friction_t), PU_LEVEL, NULL);
+          memcpy (friction, save_p, sizeof(friction_t));
+          save_p += sizeof(friction_t);
+          friction->thinker.function = T_Friction;
+          P_AddThinker(&friction->thinker);
           break;
         }
 
