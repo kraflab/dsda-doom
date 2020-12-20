@@ -25,6 +25,7 @@ extern int dsda_auto_key_frame_interval;
 extern int dsda_auto_key_frame_depth;
 extern int dsda_strict_mode;
 extern int dsda_cycle_ghost_colors;
+extern int dsda_exhud;
 
 void dsda_InitSettings(void);
 void dsda_ChangeStrictMode(void);
@@ -32,6 +33,7 @@ void dsda_SetTas(void);
 dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
+dboolean dsda_ExHud(void);
 int dsda_RealticClockRate(void);
 int dsda_AutoKeyFrameInterval(void);
 int dsda_AutoKeyFrameDepth(void);
