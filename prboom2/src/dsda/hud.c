@@ -25,6 +25,7 @@
 #include "hud.h"
 
 #define DSDA_TEXT_X 2
+#define DSDA_INTERMISSION_TIME_Y 1
 #define DSDA_SPLIT_Y 12
 #define DSDA_SPLIT_LIFETIME 105
 #define DSDA_SPLIT_SIZE 80
@@ -65,6 +66,7 @@ dsda_split_text_t dsda_split;
 
 dsda_text_t dsda_exhud_timer;
 dsda_text_t dsda_exhud_max_totals;
+dsda_text_t dsda_intermission_time;
 
 static void dsda_InitExHud(patchnum_t* font) {
   HUlib_initTextLine(
@@ -99,7 +101,36 @@ void dsda_InitHud(patchnum_t* font) {
     VPT_ALIGN_LEFT
   );
   
+  HUlib_initTextLine(
+    &dsda_intermission_time.text,
+    DSDA_TEXT_X,
+    DSDA_INTERMISSION_TIME_Y,
+    font,
+    HU_FONTSTART,
+    CR_GRAY,
+    VPT_ALIGN_LEFT
+  );
+  
   dsda_InitExHud(font);
+}
+
+void dsda_DrawIntermissionTime(void) {
+  char* s;
+  
+  snprintf(
+    dsda_intermission_time.msg,
+    sizeof(dsda_intermission_time.msg),
+    "%d:%05.2f",
+    leveltime / 35 / 60,
+    (float)(leveltime % (60 * 35)) / 35
+  );
+  
+  HUlib_clearTextLine(&dsda_intermission_time.text);
+  
+  s = dsda_intermission_time.msg;
+  while (*s) HUlib_addCharToTextLine(&dsda_intermission_time.text, *(s++));
+  
+  HUlib_drawTextLine(&dsda_intermission_time.text, false);
 }
 
 static dboolean dsda_ExHudVisible(void) {

@@ -30,6 +30,7 @@ typedef enum
   DSDA_SPLIT_CLASS_COUNT
 } dsda_split_class_t;
 
+void dsda_DrawIntermissionTime(void);
 void dsda_InitHud(patchnum_t* font);
 void dsda_UpdateHud(void);
 void dsda_DrawHud(void);

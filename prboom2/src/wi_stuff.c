@@ -44,6 +44,7 @@
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "r_draw.h"
 #include "hu_stuff.h"
+#include "dsda/hud.h"
 
 // Ty 03/17/98: flag that new par times have been loaded in d_deh
 extern dboolean deh_pars;
@@ -930,6 +931,8 @@ static void WI_drawTimeStats(int cnt_time, int cnt_total_time, int cnt_par)
       WI_drawTime(320 - SP_TIMEX, SP_TIMEY, cnt_par);
     }
   }
+  
+  dsda_DrawIntermissionTime();
 }
 
 // ====================================================================
