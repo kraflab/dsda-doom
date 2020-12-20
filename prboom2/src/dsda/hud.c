@@ -15,20 +15,36 @@
 //	DSDA Hud
 //
 
+#include "st_stuff.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
 #include "doomstat.h"
+
+#include "dsda.h"
+#include "dsda/settings.h"
 #include "hud.h"
 
-#define DSDA_SPLIT_X 2
+#define DSDA_TEXT_X 2
 #define DSDA_SPLIT_Y 12
 #define DSDA_SPLIT_LIFETIME 105
 #define DSDA_SPLIT_SIZE 80
+#define DSDA_TEXT_SIZE 200
+
+// hook into screen settings
+extern int SCREENHEIGHT;
+extern int viewheight;
+
+extern int totalleveltimes;
 
 typedef struct {
   hu_textline_t text;
   char msg[DSDA_SPLIT_SIZE];
   int ticks;
+} dsda_split_text_t;
+
+typedef struct {
+  hu_textline_t text;
+  char msg[DSDA_TEXT_SIZE];
 } dsda_text_t;
 
 typedef struct {
@@ -45,18 +61,153 @@ dsda_split_state_t dsda_split_state[] = {
   {"Secret", 0, 0}
 };
 
-dsda_text_t dsda_split;
+dsda_split_text_t dsda_split;
+
+dsda_text_t dsda_exhud_timer;
+dsda_text_t dsda_exhud_max_totals;
+
+static void dsda_InitExHud(patchnum_t* font) {
+  HUlib_initTextLine(
+    &dsda_exhud_timer.text,
+    DSDA_TEXT_X,
+    200 - ST_HEIGHT - 16,
+    font,
+    HU_FONTSTART,
+    CR_GRAY,
+    VPT_ALIGN_LEFT
+  );
+  
+  HUlib_initTextLine(
+    &dsda_exhud_max_totals.text,
+    DSDA_TEXT_X,
+    200 - ST_HEIGHT - 8,
+    font,
+    HU_FONTSTART,
+    CR_GRAY,
+    VPT_ALIGN_LEFT
+  );
+}
 
 void dsda_InitHud(patchnum_t* font) {
   HUlib_initTextLine(
     &dsda_split.text,
-    DSDA_SPLIT_X,
+    DSDA_TEXT_X,
     DSDA_SPLIT_Y,
     font,
     HU_FONTSTART,
     CR_GRAY,
     VPT_ALIGN_LEFT
   );
+  
+  dsda_InitExHud(font);
+}
+
+static dboolean dsda_ExHudVisible(void) {
+  return dsda_ExHud() && // extended hud turned on
+         viewheight != SCREENHEIGHT && // not zoomed in
+         (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
+}
+
+static void dsda_UpdateExHud(void) {
+  char* s;
+  
+  // Timer - from hu_stuff.c
+  if (totalleveltimes)
+    snprintf(
+      dsda_exhud_timer.msg,
+      sizeof(dsda_exhud_timer.msg),
+      "\x1b\x32time \x1b\x35%d:%02d \x1b\x33%d:%05.2f ",
+      (totalleveltimes + leveltime) / 35 / 60,
+      ((totalleveltimes + leveltime) % (60 * 35)) / 35,
+      leveltime / 35 / 60,
+      (float)(leveltime % (60 * 35)) / 35
+    );
+  else
+    snprintf(
+      dsda_exhud_timer.msg,
+      sizeof(dsda_exhud_timer.msg),
+      "\x1b\x32time \x1b\x33%d:%05.2f ",
+      leveltime / 35 / 60,
+      (float)(leveltime % (60 * 35)) / 35
+    );
+  
+  HUlib_clearTextLine(&dsda_exhud_timer.text);
+  
+  s = dsda_exhud_timer.msg;
+  while (*s) HUlib_addCharToTextLine(&dsda_exhud_timer.text, *(s++));
+  
+  // Max totals - from hu_stuff.c
+  {
+    int i;
+    char allkills[200], allsecrets[200];
+    int playerscount;
+    int fullkillcount, fullitemcount, fullsecretcount;
+    int color, killcolor, itemcolor, secretcolor;
+    int kill_percent_color, kill_percent_count, kill_percent;
+    int allkills_len = 0;
+    int allsecrets_len = 0;
+    int max_kill_requirement;
+
+    playerscount = 0;
+    fullkillcount = 0;
+    fullitemcount = 0;
+    fullsecretcount = 0;
+    kill_percent_count = 0;
+    max_kill_requirement = dsda_MaxKillRequirement();
+    
+    for (i = 0; i < MAXPLAYERS; i++) {
+      if (playeringame[i]) {
+        color = i == displayplayer ? 0x33 : 0x32;
+        if (playerscount==0) {
+          allkills_len = sprintf(allkills, "\x1b%c%d", color, players[i].killcount - players[i].maxkilldiscount);
+          allsecrets_len = sprintf(allsecrets, "\x1b%c%d", color, players[i].secretcount);
+        }
+        else {
+          if (allkills_len >= 0 && allsecrets_len >=0) {
+            allkills_len += sprintf(&allkills[allkills_len], "\x1b%c+%d", color, players[i].killcount - players[i].maxkilldiscount);
+            allsecrets_len += sprintf(&allsecrets[allsecrets_len], "\x1b%c+%d", color, players[i].secretcount);
+          }
+        }
+        playerscount++;
+        fullkillcount += players[i].killcount - players[i].maxkilldiscount;
+        fullitemcount += players[i].itemcount;
+        fullsecretcount += players[i].secretcount;
+        kill_percent_count += players[i].killcount;
+      }
+    }
+    killcolor = (fullkillcount >= max_kill_requirement ? 0x37 : 0x35);
+    secretcolor = (fullsecretcount >= totalsecret ? 0x37 : 0x35);
+    itemcolor = (fullitemcount >= totalitems ? 0x37 : 0x35);
+    kill_percent_color = (kill_percent_count >= totalkills ? 0x37 : 0x35);
+    kill_percent = (totalkills == 0 ? 100 : kill_percent_count * 100 / totalkills);
+    if (playerscount < 2) {
+      snprintf(
+        dsda_exhud_max_totals.msg,
+        sizeof(dsda_exhud_max_totals.msg),
+        "\x1b\x36K \x1b%c%d/%d \x1b%c%d \x1b\x36I \x1b%c%d/%d \x1b\x36S \x1b%c%d/%d",
+        killcolor, fullkillcount, max_kill_requirement,
+        kill_percent_color, kill_percent,
+        itemcolor, players[displayplayer].itemcount, totalitems,
+        secretcolor, fullsecretcount, totalsecret
+      );
+    }
+    else {
+      snprintf(
+        dsda_exhud_max_totals.msg,
+        sizeof(dsda_exhud_max_totals.msg),
+        "\x1b\x36K %s \x1b%c%d/%d \x1b%c%d \x1b\x36I \x1b%c%d/%d \x1b\x36S %s \x1b%c%d/%d",
+        allkills, killcolor, fullkillcount, max_kill_requirement,
+        kill_percent_color, kill_percent,
+        itemcolor, players[displayplayer].itemcount, totalitems,
+        allsecrets, secretcolor, fullsecretcount, totalsecret
+      );
+    }
+  }
+  
+  HUlib_clearTextLine(&dsda_exhud_max_totals.text);
+  
+  s = dsda_exhud_max_totals.msg;
+  while (*s) HUlib_addCharToTextLine(&dsda_exhud_max_totals.text, *(s++));
 }
 
 void dsda_UpdateHud(void) {
@@ -67,14 +218,30 @@ void dsda_UpdateHud(void) {
   for (i = 0; i < DSDA_SPLIT_CLASS_COUNT; ++i)
     if (dsda_split_state[i].delay > 0)
       --dsda_split_state[i].delay;
+  
+  if (dsda_ExHudVisible()) dsda_UpdateExHud();
+}
+
+static void dsda_DrawExHud(void) {
+  HUlib_drawTextLine(&dsda_exhud_timer.text, false);
+  HUlib_drawTextLine(&dsda_exhud_max_totals.text, false);
 }
 
 void dsda_DrawHud(void) {
   if (dsda_split.ticks > 0) HUlib_drawTextLine(&dsda_split.text, false);
+  
+  if (dsda_ExHudVisible()) dsda_DrawExHud();
+}
+
+static void dsda_EraseExHud(void) {
+  HUlib_eraseTextLine(&dsda_exhud_timer.text);
+  HUlib_eraseTextLine(&dsda_exhud_max_totals.text);
 }
 
 void dsda_EraseHud(void) {
   if (dsda_split.ticks > 0) HUlib_eraseTextLine(&dsda_split.text);
+  
+  dsda_EraseExHud();
 }
 
 void dsda_AddSplit(dsda_split_class_t split_class) {

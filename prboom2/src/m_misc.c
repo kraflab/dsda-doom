@@ -988,6 +988,7 @@ default_t defaults[] =
   { "dsda_key_store_quick_key_frame", { &dsda_key_store_quick_key_frame }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
   { "dsda_key_restore_quick_key_frame", { &dsda_key_restore_quick_key_frame }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
   { "dsda_key_rewind", { &dsda_key_rewind }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "dsda_exhud", { &dsda_exhud }, { 0 }, 0, 1, def_bool, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},
