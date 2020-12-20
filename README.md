@@ -1,4 +1,4 @@
-# dsda-doom v0.9.1 (experimental)
+# dsda-doom v0.10.0
 This is a fork of prboom+ with extra tooling for dsda.
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 
@@ -17,6 +17,8 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 - Use `-import_ghost ghost_a ghost_b ...` to import ghost files (`.gst`).
 - Use `-tas` to disable strict mode.
 - Through the use of automatic and manual key frames, you can now rewind the game.
+- The time with tics is now displayed on the intermission screen (top left corner).
+- The extended hud provides a hybrid of the classic and advanced huds.
 
 ### Changes
 - Smart Totals renamed to Max Totals and fixed to show kill constraint for max.
@@ -28,6 +30,7 @@ This is based on the unstable branch of PRBoom+, so there could be bugs - please
 - Cycle Ghost Colors: cycle through the 4 player colors when spawning ghosts.
 - Automatic Key Frame Interval (s): time between automatic key frames.
 - Automatic Key Frame Depth: how many key frames to store (max rewind length).
+- Extended Hud: add extra info on top of the default hud.
 
 ### Key Frames
 Key frames capture the game state at a given moment, similar to save files. By automatically recording key frames at fixed intervals, it is possible to "rewind" the game. This can be used during normal play, while recording (tas) demos, and during demo playback. You can also set a manual "quick key frame" at a specific point and rewind to that moment at any later time. More features with key frames will come in future versions (e.g., starting the game via a key frame).
