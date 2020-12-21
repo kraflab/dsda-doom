@@ -2337,7 +2337,8 @@ setup_menu_t keys_settings1[] =  // Key Binding screen strings
   {"USE"         ,S_KEY       ,m_scrn,KB_X,KB_Y+11*8,{&key_use},&mousebuse,&joybuse},
   {"JUMP/FLY UP" ,S_KEY       ,m_scrn,KB_X,KB_Y+12*8,{&key_flyup}},
   {"FLY DOWN"    ,S_KEY       ,m_scrn,KB_X,KB_Y+13*8,{&key_flydown}},
-  {"MOUSE LOOK"  ,S_KEY       ,m_scrn,KB_X,KB_Y+17*8,{&key_mlook}},
+  {"MOUSE LOOK"  ,S_KEY       ,m_scrn,KB_X,KB_Y+16*8,{&key_mlook}},
+  {"NO VERTICAL MOUSE",S_KEY  ,m_scrn,KB_X,KB_Y+17*8,{&key_novert}},
 
   // Button for resetting to defaults
   {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
@@ -2827,7 +2828,7 @@ setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
   {"Show coordinates of automap pointer",     S_YESNO,m_null,AU_X,AU_Y+1*8, {"map_point_coord"}},  // killough 10/98
   {"Show Secrets only after entering",        S_YESNO,m_null,AU_X,AU_Y+2*8, {"map_secret_after"}},
   {"Update unexplored parts in automap mode", S_YESNO,m_null,AU_X,AU_Y+3*8, {"map_always_updates"}},
-  {"Grid cell size (8..256)",                 S_NUM,  m_null,AU_X,AU_Y+4*8, {"map_grid_size"}},
+  {"Grid cell size 8..256, -1 for autosize",  S_NUM,  m_null,AU_X,AU_Y+4*8, {"map_grid_size"}, 0, 0, M_ChangeMapGridSize},
   {"Scroll / Zoom speed  (1..32)",            S_NUM,  m_null,AU_X,AU_Y+5*8, {"map_scroll_speed"}},
   {"Use mouse wheel for zooming",             S_YESNO,m_null,AU_X,AU_Y+6*8, {"map_wheel_zoom"}},
   {"Apply multisampling",                     S_YESNO,m_null,AU_X,AU_Y+7*8, {"map_use_multisamling"}, 0, 0, M_ChangeMapMultisamling},
@@ -3240,10 +3241,11 @@ setup_menu_t gen_settings3[] = { // General Settings screen2
   {"Permanent Strafe50 (TAS)",    S_YESNO, m_null, G_X, G_Y+ 9*8, {"movement_strafe50"}, 0, 0, M_ChangeSpeed},
   {"Strafe50 On Turns (TAS)",     S_YESNO, m_null, G_X, G_Y+ 10*8, {"movement_strafe50onturns"}, 0, 0, M_ChangeSpeed},
 
-  {"Mouse",                       S_SKIP|S_TITLE,m_null, G_X, G_Y+12*8},
-  {"Dbl-Click As Use",            S_YESNO, m_null, G_X, G_Y+13*8, {"mouse_doubleclick_as_use"}},
-  {"Carry Fractional Tics",       S_YESNO, m_null, G_X, G_Y+14*8, {"mouse_carrytics"}},
-  {"Enable Mouselook",            S_YESNO, m_null, G_X, G_Y+15*8, {"movement_mouselook"}, 0, 0, M_ChangeMouseLook},
+  {"Mouse",                       S_SKIP|S_TITLE,m_null, G_X, G_Y+11*8},
+  {"Dbl-Click As Use",            S_YESNO, m_null, G_X, G_Y+12*8, {"mouse_doubleclick_as_use"}},
+  {"Carry Fractional Tics",       S_YESNO, m_null, G_X, G_Y+13*8, {"mouse_carrytics"}},
+  {"Enable Mouselook",            S_YESNO, m_null, G_X, G_Y+14*8, {"movement_mouselook"}, 0, 0, M_ChangeMouseLook},
+  {"No Vertical Mouse",           S_YESNO, m_null, G_X, G_Y+15*8, {"movement_mousenovert"}},
   {"Invert Mouse",                S_YESNO, m_null, G_X, G_Y+16*8, {"movement_mouseinvert"}, 0, 0, M_ChangeMouseInvert},
   {"Max View Pitch",              S_NUM,   m_null, G_X, G_Y+17*8, {"movement_maxviewpitch"}, 0, 0, M_ChangeMaxViewPitch},
   {"Mouse Strafe Divisor",        S_NUM,   m_null, G_X, G_Y+18*8, {"movement_mousestrafedivisor"}},
@@ -4916,6 +4918,13 @@ dboolean M_Responder (event_t* ev) {
     {
       movement_mouselook = !movement_mouselook;
       M_ChangeMouseLook();
+      // Don't eat the keypress in this case.
+      // return true;
+    }
+
+    if (ch == key_novert)
+    {
+      movement_mousenovert = !movement_mousenovert;
       // Don't eat the keypress in this case.
       // return true;
     }

@@ -122,6 +122,7 @@ extern int movement_strafe50;
 extern int movement_shorttics;
 extern int movement_strafe50onturns;
 extern int movement_mouselook;
+extern int movement_mousenovert;
 extern int movement_mouseinvert;
 extern int movement_maxviewpitch;
 extern int movement_mousestrafedivisor;

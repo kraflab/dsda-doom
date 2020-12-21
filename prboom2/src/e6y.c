@@ -135,6 +135,7 @@ int movement_strafe50;
 int movement_shorttics;
 int movement_strafe50onturns;
 int movement_mouselook;
+int movement_mousenovert;
 int movement_mouseinvert;
 int movement_maxviewpitch;
 int movement_mousestrafedivisor;
