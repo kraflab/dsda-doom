@@ -1019,7 +1019,7 @@ void A_RestoreArtifact(mobj_t * arti)
 
 void A_RestoreSpecialThing1(mobj_t * thing)
 {
-    if (thing->type == MT_WMACE)
+    if (thing->type == HERETIC_MT_WMACE)
     {                           // Do random mace placement
         P_RepositionMace(thing);
     }
