@@ -347,4 +347,8 @@ typedef enum {
 #define ORIG_FRICTION_FACTOR   2048        // original value
 #define FRICTION_FLY           0xeb00
 
+// heretic
+
+#define TELEFOGHEIGHT (32*FRACUNIT)
+
 #endif          // __DOOMDEF__
