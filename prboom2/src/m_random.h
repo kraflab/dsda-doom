@@ -151,4 +151,10 @@ int P_Random(pr_class_t DA(const char *, int));
 // Fix randoms for demos.
 void M_ClearRandom(void);
 
+// heretic
+
+#define HITDICE(a) ((1+(P_Random(pr_all_in_one)&7))*a)
+
+int P_SubRandom (void);
+
 #endif
