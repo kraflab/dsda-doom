@@ -2829,3 +2829,580 @@ void A_LineEffect(mobj_t *mo)
   mo->state->misc1 = junk.special;
   mo->player = oldplayer;
 }
+
+// heretic
+
+void A_DripBlood(mobj_t * actor)
+{
+    mobj_t *mo;
+    int r1,r2;
+
+    r1 = P_SubRandom();
+    r2 = P_SubRandom();
+
+    mo = P_SpawnMobj(actor->x + (r2 << 11),
+                     actor->y + (r1 << 11), actor->z,
+                     HERETIC_MT_BLOOD);
+    mo->momx = P_SubRandom() << 10;
+    mo->momy = P_SubRandom() << 10;
+    mo->flags2 |= MF2_LOGRAV;
+}
+
+void A_KnightAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(3));
+        S_StartSound(actor, heretic_sfx_kgtat2);
+        return;
+    }
+    // Throw axe
+    S_StartSound(actor, actor->info->attacksound);
+    if (actor->type == HERETIC_MT_KNIGHTGHOST || P_Random(pr_heretic) < 40)
+    {                           // Red axe
+        P_SpawnMissile(actor, actor->target, HERETIC_MT_REDAXE);
+        return;
+    }
+    // Green axe
+    P_SpawnMissile(actor, actor->target, HERETIC_MT_KNIGHTAXE);
+}
+
+void A_ImpExplode(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_IMPCHUNK1);
+    mo->momx = P_SubRandom() << 10;
+    mo->momy = P_SubRandom() << 10;
+    mo->momz = 9 * FRACUNIT;
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_IMPCHUNK2);
+    mo->momx = P_SubRandom() << 10;
+    mo->momy = P_SubRandom() << 10;
+    mo->momz = 9 * FRACUNIT;
+    if (actor->special1.i == 666)
+    {                           // Extreme death crash
+        P_SetMobjState(actor, HERETIC_S_IMP_XCRASH1);
+    }
+}
+
+void A_BeastPuff(mobj_t * actor)
+{
+    if (P_Random(pr_heretic) > 64)
+    {
+        int r1,r2,r3;
+        r1 = P_SubRandom();
+        r2 = P_SubRandom();
+        r3 = P_SubRandom();
+        P_SpawnMobj(actor->x + (r3 << 10),
+                    actor->y + (r2 << 10),
+                    actor->z + (r1 << 10), HERETIC_MT_PUFFY);
+    }
+}
+
+void A_ImpMeAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, 5 + (P_Random(pr_heretic) & 7));
+    }
+}
+
+void A_ImpMsAttack(mobj_t * actor)
+{
+    mobj_t *dest;
+    angle_t an;
+    int dist;
+
+    if (!actor->target || P_Random(pr_heretic) > 64)
+    {
+        P_SetMobjState(actor, actor->info->seestate);
+        return;
+    }
+    dest = actor->target;
+    actor->flags |= MF_SKULLFLY;
+    S_StartSound(actor, actor->info->attacksound);
+    A_FaceTarget(actor);
+    an = actor->angle >> ANGLETOFINESHIFT;
+    actor->momx = FixedMul(12 * FRACUNIT, finecosine[an]);
+    actor->momy = FixedMul(12 * FRACUNIT, finesine[an]);
+    dist = P_AproxDistance(dest->x - actor->x, dest->y - actor->y);
+    dist = dist / (12 * FRACUNIT);
+    if (dist < 1)
+    {
+        dist = 1;
+    }
+    actor->momz = (dest->z + (dest->height >> 1) - actor->z) / dist;
+}
+
+void A_ImpMsAttack2(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, 5 + (P_Random(pr_heretic) & 7));
+        return;
+    }
+    P_SpawnMissile(actor, actor->target, HERETIC_MT_IMPBALL);
+}
+
+void A_ImpDeath(mobj_t * actor)
+{
+    actor->flags &= ~MF_SOLID;
+    actor->flags2 |= MF2_FOOTCLIP;
+    if (actor->z <= actor->floorz)
+    {
+        P_SetMobjState(actor, HERETIC_S_IMP_CRASH1);
+    }
+}
+
+void A_ImpXDeath1(mobj_t * actor)
+{
+    actor->flags &= ~MF_SOLID;
+    actor->flags |= MF_NOGRAVITY;
+    actor->flags2 |= MF2_FOOTCLIP;
+    actor->special1.i = 666;      // Flag the crash routine
+}
+
+void A_ImpXDeath2(mobj_t * actor)
+{
+    actor->flags &= ~MF_NOGRAVITY;
+    if (actor->z <= actor->floorz)
+    {
+        P_SetMobjState(actor, HERETIC_S_IMP_CRASH1);
+    }
+}
+
+boolean P_UpdateChicken(mobj_t * actor, int tics)
+{
+    mobj_t *fog;
+    fixed_t x;
+    fixed_t y;
+    fixed_t z;
+    mobjtype_t moType;
+    mobj_t *mo;
+    mobj_t oldChicken;
+
+    actor->special1.i -= tics;
+    if (actor->special1.i > 0)
+    {
+        return (false);
+    }
+    moType = actor->special2.i;
+    x = actor->x;
+    y = actor->y;
+    z = actor->z;
+    oldChicken = *actor;
+    P_SetMobjState(actor, HERETIC_S_FREETARGMOBJ);
+    mo = P_SpawnMobj(x, y, z, moType);
+    if (P_TestMobjLocation(mo) == false)
+    {                           // Didn't fit
+        P_RemoveMobj(mo);
+        mo = P_SpawnMobj(x, y, z, HERETIC_MT_CHICKEN);
+        mo->angle = oldChicken.angle;
+        mo->flags = oldChicken.flags;
+        mo->health = oldChicken.health;
+        mo->target = oldChicken.target;
+        mo->special1.i = 5 * 35;  // Next try in 5 seconds
+        mo->special2.i = moType;
+        return (false);
+    }
+    mo->angle = oldChicken.angle;
+    mo->target = oldChicken.target;
+    fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
+    S_StartSound(fog, heretic_sfx_telept);
+    return (true);
+}
+
+void A_ChicAttack(mobj_t * actor)
+{
+    if (P_UpdateChicken(actor, 18))
+    {
+        return;
+    }
+    if (!actor->target)
+    {
+        return;
+    }
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, 1 + (P_Random(pr_heretic) & 1));
+    }
+}
+
+void A_ChicLook(mobj_t * actor)
+{
+    if (P_UpdateChicken(actor, 10))
+    {
+        return;
+    }
+    A_Look(actor);
+}
+
+void A_ChicChase(mobj_t * actor)
+{
+    if (P_UpdateChicken(actor, 3))
+    {
+        return;
+    }
+    A_Chase(actor);
+}
+
+void A_ChicPain(mobj_t * actor)
+{
+    if (P_UpdateChicken(actor, 10))
+    {
+        return;
+    }
+    S_StartSound(actor, actor->info->painsound);
+}
+
+void A_Feathers(mobj_t * actor)
+{
+    int i;
+    int count;
+    mobj_t *mo;
+
+    if (actor->health > 0)
+    {                           // Pain
+        count = P_Random(pr_heretic) < 32 ? 2 : 1;
+    }
+    else
+    {                           // Death
+        count = 5 + (P_Random(pr_heretic) & 3);
+    }
+    for (i = 0; i < count; i++)
+    {
+        mo = P_SpawnMobj(actor->x, actor->y, actor->z + 20 * FRACUNIT,
+                         HERETIC_MT_FEATHER);
+        mo->target = actor;
+        mo->momx = P_SubRandom() << 8;
+        mo->momy = P_SubRandom() << 8;
+        mo->momz = FRACUNIT + (P_Random(pr_heretic) << 9);
+        P_SetMobjState(mo, HERETIC_S_FEATHER1 + (P_Random(pr_heretic) & 7));
+    }
+}
+
+void A_MummyAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(2));
+        S_StartSound(actor, heretic_sfx_mumat2);
+        return;
+    }
+    S_StartSound(actor, heretic_sfx_mumat1);
+}
+
+void A_MummyAttack2(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    if (!actor->target)
+    {
+        return;
+    }
+
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(2));
+        return;
+    }
+    mo = P_SpawnMissile(actor, actor->target, HERETIC_MT_MUMMYFX1);
+
+    if (mo != NULL)
+    {
+        mo->special1.m = actor->target;
+    }
+}
+
+void A_MummyFX1Seek(mobj_t * actor)
+{
+    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 20);
+}
+
+void A_MummySoul(mobj_t * mummy)
+{
+    mobj_t *mo;
+
+    mo = P_SpawnMobj(mummy->x, mummy->y, mummy->z + 10 * FRACUNIT,
+                     HERETIC_MT_MUMMYSOUL);
+    mo->momz = FRACUNIT;
+}
+
+void A_Sor1Pain(mobj_t * actor)
+{
+    actor->special1.i = 20;       // Number of steps to walk fast
+    A_Pain(actor);
+}
+
+void A_Sor1Chase(mobj_t * actor)
+{
+    if (actor->special1.i)
+    {
+        actor->special1.i--;
+        actor->tics -= 3;
+    }
+    A_Chase(actor);
+}
+
+void A_Srcr1Attack(mobj_t * actor)
+{
+    mobj_t *mo;
+    fixed_t momz;
+    angle_t angle;
+
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(8));
+        return;
+    }
+    if (actor->health > (actor->info->spawnhealth / 3) * 2)
+    {                           // Spit one fireball
+        P_SpawnMissile(actor, actor->target, HERETIC_MT_SRCRFX1);
+    }
+    else
+    {                           // Spit three fireballs
+        mo = P_SpawnMissile(actor, actor->target, HERETIC_MT_SRCRFX1);
+        if (mo)
+        {
+            momz = mo->momz;
+            angle = mo->angle;
+            P_SpawnMissileAngle(actor, HERETIC_MT_SRCRFX1, angle - ANG1_X * 3, momz);
+            P_SpawnMissileAngle(actor, HERETIC_MT_SRCRFX1, angle + ANG1_X * 3, momz);
+        }
+        if (actor->health < actor->info->spawnhealth / 3)
+        {                       // Maybe attack again
+            if (actor->special1.i)
+            {                   // Just attacked, so don't attack again
+                actor->special1.i = 0;
+            }
+            else
+            {                   // Set state to attack again
+                actor->special1.i = 1;
+                P_SetMobjState(actor, HERETIC_S_SRCR1_ATK4);
+            }
+        }
+    }
+}
+
+void A_SorcererRise(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    actor->flags &= ~MF_SOLID;
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_SORCERER2);
+    P_SetMobjState(mo, HERETIC_S_SOR2_RISE1);
+    mo->angle = actor->angle;
+    mo->target = actor->target;
+}
+
+void P_DSparilTeleport(mobj_t * actor)
+{
+    int i;
+    fixed_t x;
+    fixed_t y;
+    fixed_t prevX;
+    fixed_t prevY;
+    fixed_t prevZ;
+    mobj_t *mo;
+
+    if (!BossSpotCount)
+    {                           // No spots
+        return;
+    }
+    i = P_Random(pr_heretic);
+    do
+    {
+        i++;
+        x = BossSpots[i % BossSpotCount].x;
+        y = BossSpots[i % BossSpotCount].y;
+    }
+    while (P_AproxDistance(actor->x - x, actor->y - y) < 128 * FRACUNIT);
+    prevX = actor->x;
+    prevY = actor->y;
+    prevZ = actor->z;
+    if (P_TeleportMove(actor, x, y))
+    {
+        mo = P_SpawnMobj(prevX, prevY, prevZ, HERETIC_MT_SOR2TELEFADE);
+        S_StartSound(mo, heretic_sfx_telept);
+        P_SetMobjState(actor, HERETIC_S_SOR2_TELE1);
+        S_StartSound(actor, heretic_sfx_telept);
+        actor->z = actor->floorz;
+        actor->angle = BossSpots[i % BossSpotCount].angle;
+        actor->momx = actor->momy = actor->momz = 0;
+    }
+}
+
+
+void A_Srcr2Decide(mobj_t * actor)
+{
+    static int chance[] = {
+        192, 120, 120, 120, 64, 64, 32, 16, 0
+    };
+
+    if (!BossSpotCount)
+    {                           // No spots
+        return;
+    }
+    if (P_Random(pr_heretic) < chance[actor->health / (actor->info->spawnhealth / 8)])
+    {
+        P_DSparilTeleport(actor);
+    }
+}
+
+void A_Srcr2Attack(mobj_t * actor)
+{
+    int chance;
+
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(NULL, actor->info->attacksound);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(20));
+        return;
+    }
+    chance = actor->health < actor->info->spawnhealth / 2 ? 96 : 48;
+    if (P_Random(pr_heretic) < chance)
+    {                           // Wizard spawners
+        P_SpawnMissileAngle(actor, HERETIC_MT_SOR2FX2,
+                            actor->angle - ANG45, FRACUNIT / 2);
+        P_SpawnMissileAngle(actor, HERETIC_MT_SOR2FX2,
+                            actor->angle + ANG45, FRACUNIT / 2);
+    }
+    else
+    {                           // Blue bolt
+        P_SpawnMissile(actor, actor->target, HERETIC_MT_SOR2FX1);
+    }
+}
+
+void A_BlueSpark(mobj_t * actor)
+{
+    int i;
+    mobj_t *mo;
+
+    for (i = 0; i < 2; i++)
+    {
+        mo = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_SOR2FXSPARK);
+        mo->momx = P_SubRandom() << 9;
+        mo->momy = P_SubRandom() << 9;
+        mo->momz = FRACUNIT + (P_Random(pr_heretic) << 8);
+    }
+}
+
+void A_GenWizard(mobj_t * actor)
+{
+    mobj_t *mo;
+    mobj_t *fog;
+
+    mo = P_SpawnMobj(actor->x, actor->y,
+                     actor->z - mobjinfo[HERETIC_MT_WIZARD].height / 2, HERETIC_MT_WIZARD);
+    if (P_TestMobjLocation(mo) == false)
+    {                           // Didn't fit
+        P_RemoveMobj(mo);
+        return;
+    }
+    actor->momx = actor->momy = actor->momz = 0;
+    P_SetMobjState(actor, mobjinfo[actor->type].deathstate);
+    actor->flags &= ~MF_MISSILE;
+    fog = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_TFOG);
+    S_StartSound(fog, heretic_sfx_telept);
+}
+
+void P_Massacre(void)
+{
+    mobj_t *mo;
+    thinker_t *think;
+
+    for (think = thinkercap.next; think != &thinkercap; think = think->next)
+    {
+        if (think->function != P_MobjThinker)
+        {                       // Not a mobj thinker
+            continue;
+        }
+        mo = (mobj_t *) think;
+        if ((mo->flags & MF_COUNTKILL) && (mo->health > 0))
+        {
+            P_DamageMobj(mo, NULL, NULL, 10000);
+        }
+    }
+}
+
+void A_Sor2DthInit(mobj_t * actor)
+{
+    actor->special1.i = 7;        // Animation loop counter
+    P_Massacre();               // Kill monsters early
+}
+
+void A_Sor2DthLoop(mobj_t * actor)
+{
+    if (--actor->special1.i)
+    {                           // Need to loop
+        P_SetMobjState(actor, HERETIC_S_SOR2_DIE4);
+    }
+}
+
+void A_SorZap(mobj_t * actor)
+{
+    S_StartSound(NULL, heretic_sfx_sorzap);
+}
+
+void A_SorRise(mobj_t * actor)
+{
+    S_StartSound(NULL, heretic_sfx_sorrise);
+}
+
+void A_SorDSph(mobj_t * actor)
+{
+    S_StartSound(NULL, heretic_sfx_sordsph);
+}
+
+void A_SorDExp(mobj_t * actor)
+{
+    S_StartSound(NULL, heretic_sfx_sordexp);
+}
+
+void A_SorDBon(mobj_t * actor)
+{
+    S_StartSound(NULL, heretic_sfx_sordbon);
+}
+
+void A_SorSightSnd(mobj_t * actor)
+{
+    S_StartSound(NULL, heretic_sfx_sorsit);
+}
+
+void A_FreeTargMobj(mobj_t * mo)
+{
+    mo->momx = mo->momy = mo->momz = 0;
+    mo->z = mo->ceilingz + 4 * FRACUNIT;
+    mo->flags &= ~(MF_SHOOTABLE | MF_FLOAT | MF_SKULLFLY | MF_SOLID);
+    mo->flags |= MF_CORPSE | MF_DROPOFF | MF_NOGRAVITY;
+    mo->flags2 &= ~(MF2_PASSMOBJ | MF2_LOGRAV);
+    mo->player = NULL;
+}
