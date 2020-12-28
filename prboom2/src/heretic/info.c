@@ -1247,7 +1247,7 @@ state_t heretic_states[HERETIC_NUMSTATES] = {
 };
 
 
-mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES] = {
+heretic_mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES] = {
 
     {                           // MT_MISC0
      81,                        // doomednum

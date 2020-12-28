@@ -3053,8 +3053,36 @@ typedef struct
 extern mobjinfo_t mobjinfo[NUMMOBJTYPES];
 
 // heretic
+typedef struct
+{
+    int doomednum;
+    int spawnstate;
+    int spawnhealth;
+    int seestate;
+    int seesound;
+    int reactiontime;
+    int attacksound;
+    int painstate;
+    int painchance;
+    int painsound;
+    int meleestate;
+    int missilestate;
+    int crashstate;
+    int deathstate;
+    int xdeathstate;
+    int deathsound;
+    int speed;
+    int radius;
+    int height;
+    int mass;
+    int damage;
+    int activesound;
+    int flags;
+    int flags2;
+} heretic_mobjinfo_t;
+
 extern state_t heretic_states[HERETIC_NUMSTATES];
 extern const char *heretic_sprnames[];
-extern mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES];
+extern heretic_mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES];
 
 #endif
