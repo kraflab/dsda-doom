@@ -150,6 +150,6 @@ void M_ClearRandom (void)
 
 int P_SubRandom (void)
 {
-    int r = P_Random(pr_all_in_one);
-    return r - P_Random(pr_all_in_one);
+    int r = P_Random(pr_heretic);
+    return r - P_Random(pr_heretic);
 }
