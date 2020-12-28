@@ -20,14 +20,28 @@
 #ifndef HERETIC_P_ACTION_H
 #define HERETIC_P_ACTION_H
 
+// in doom
+void A_Scream();
+void A_Explode();
+void A_Light0();
+void A_WeaponReady();
+void A_Lower();
+void A_Raise();
+void A_ReFire();
+void A_Pain();
+void A_SkullPop();
+void A_FaceTarget();
+void A_Look();
+void A_Chase();
+void A_HeadAttack();
+
+// not in doom
 void A_FreeTargMobj();
 void A_RestoreSpecialThing1();
 void A_RestoreSpecialThing2();
 void A_HideThing();
 void A_UnHideThing();
 void A_RestoreArtifact();
-void A_Scream();
-void A_Explode();
 void A_PodPain();
 void A_RemovePod();
 void A_MakePod();
@@ -39,12 +53,7 @@ void A_VolcBallImpact();
 void A_SpawnTeleGlitter();
 void A_SpawnTeleGlitter2();
 void A_AccTeleGlitter();
-void A_Light0();
-void A_WeaponReady();
-void A_Lower();
-void A_Raise();
 void A_StaffAttackPL1();
-void A_ReFire();
 void A_StaffAttackPL2();
 void A_BeakReady();
 void A_BeakRaise();
@@ -80,10 +89,8 @@ void A_FloatPuff();
 void A_FireCrossbowPL1();
 void A_FireCrossbowPL2();
 void A_BoltSpark();
-void A_Pain();
 void A_NoBlocking();
 void A_AddPlayerCorpse();
-void A_SkullPop();
 void A_FlameSnd();
 void A_CheckBurnGone();
 void A_CheckSkullFloor();
@@ -92,10 +99,7 @@ void A_Feathers();
 void A_ChicLook();
 void A_ChicChase();
 void A_ChicPain();
-void A_FaceTarget();
 void A_ChicAttack();
-void A_Look();
-void A_Chase();
 void A_MummyAttack();
 void A_MummyAttack2();
 void A_MummySoul();
@@ -104,7 +108,6 @@ void A_MummyFX1Seek();
 void A_BeastAttack();
 void A_SnakeAttack();
 void A_SnakeAttack2();
-void A_HeadAttack();
 void A_BossDeath();
 void A_HeadIceImpact();
 void A_HeadFireGrow();
