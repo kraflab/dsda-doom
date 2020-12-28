@@ -15,7 +15,7 @@
 //
 #include "doomdef.h"
 #include "p_action.h"
-
+#include "sounds.h"
 #include "info.h"
 
 const char *heretic_sprnames[] = {
