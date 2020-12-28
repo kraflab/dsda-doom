@@ -457,5 +457,18 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 #define MF2_FLOATBOB		0x00080000  // use float bobbing z movement
 #define MF2_DONTDRAW		0X00100000  // don't generate a vissprite
 
+#define AMMO_GWND_WIMPY 10
+#define AMMO_GWND_HEFTY 50
+#define AMMO_CBOW_WIMPY 5
+#define AMMO_CBOW_HEFTY 20
+#define AMMO_BLSR_WIMPY 10
+#define AMMO_BLSR_HEFTY 25
+#define AMMO_SKRD_WIMPY 20
+#define AMMO_SKRD_HEFTY 100
+#define AMMO_PHRD_WIMPY 1
+#define AMMO_PHRD_HEFTY 10
+#define AMMO_MACE_WIMPY 20
+#define AMMO_MACE_HEFTY 100
+
 #endif
 
