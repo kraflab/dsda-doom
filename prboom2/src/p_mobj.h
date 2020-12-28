@@ -240,6 +240,13 @@ enum {
   MIF_ARMED = 2,        // Object is armed (for MF_TOUCHY objects)
 };
 
+// heretic
+typedef union
+{
+    int i;
+    struct mobj_s *m;
+} specialval_t;
+
 // Map Object definition.
 //
 //
@@ -375,6 +382,11 @@ typedef struct mobj_s
     fixed_t             pad; // cph - needed so I can get the size unambiguously on amd64
     
     dsda_mobj_extension_t dsda_extension;
+    
+    // heretic
+    int flags2;
+    specialval_t special1;
+    specialval_t special2;
 
     // SEE WARNING ABOVE ABOUT POINTER FIELDS!!!
 } mobj_t;
