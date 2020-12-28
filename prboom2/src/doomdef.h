@@ -350,5 +350,6 @@ typedef enum {
 // heretic
 
 #define TELEFOGHEIGHT (32*FRACUNIT)
+#define ANG1_X          0x01000000
 
 #endif          // __DOOMDEF__
