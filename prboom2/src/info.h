@@ -3052,4 +3052,9 @@ typedef struct
 /* See p_mobj_h for addition more technical info */
 extern mobjinfo_t mobjinfo[NUMMOBJTYPES];
 
+// heretic
+extern state_t heretic_states[HERETIC_NUMSTATES];
+extern const char *heretic_sprnames[];
+extern mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES];
+
 #endif
