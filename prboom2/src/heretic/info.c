@@ -16,6 +16,8 @@
 #include "doomdef.h"
 #include "p_action.h"
 
+#include "info.h"
+
 const char *heretic_sprnames[] = {
     "IMPX","ACLO","PTN1","SHLD","SHD2","BAGH","SPMP","INVS","PTN2","SOAR",
     "INVU","PWBK","EGGC","EGGM","FX01","SPHL","TRCH","FBMB","XPL1","ATLP",
