@@ -1007,3 +1007,28 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
       !(target->flags & target->target->flags & MF_FRIEND)))
     target->flags |= MF_JUSTHIT;    // fight back!
 }
+
+// heretic
+
+void A_RestoreArtifact(mobj_t * arti)
+{
+    arti->flags |= MF_SPECIAL;
+    P_SetMobjState(arti, arti->info->spawnstate);
+    S_StartSound(arti, heretic_sfx_respawn);
+}
+
+void A_RestoreSpecialThing1(mobj_t * thing)
+{
+    if (thing->type == MT_WMACE)
+    {                           // Do random mace placement
+        P_RepositionMace(thing);
+    }
+    thing->flags2 &= ~MF2_DONTDRAW;
+    S_StartSound(thing, heretic_sfx_respawn);
+}
+
+void A_RestoreSpecialThing2(mobj_t * thing)
+{
+    thing->flags |= MF_SPECIAL;
+    P_SetMobjState(thing, thing->info->spawnstate);
+}

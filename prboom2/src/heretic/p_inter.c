@@ -499,19 +499,6 @@ void P_SetDormantArtifact(mobj_t * arti)
     S_StartSound(arti, sfx_artiup);
 }
 
-//---------------------------------------------------------------------------
-//
-// PROC A_RestoreArtifact
-//
-//---------------------------------------------------------------------------
-
-void A_RestoreArtifact(mobj_t * arti)
-{
-    arti->flags |= MF_SPECIAL;
-    P_SetMobjState(arti, arti->info->spawnstate);
-    S_StartSound(arti, sfx_respawn);
-}
-
 //----------------------------------------------------------------------------
 //
 // PROC P_HideSpecialThing
@@ -523,36 +510,6 @@ void P_HideSpecialThing(mobj_t * thing)
     thing->flags &= ~MF_SPECIAL;
     thing->flags2 |= MF2_DONTDRAW;
     P_SetMobjState(thing, S_HIDESPECIAL1);
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC A_RestoreSpecialThing1
-//
-// Make a special thing visible again.
-//
-//---------------------------------------------------------------------------
-
-void A_RestoreSpecialThing1(mobj_t * thing)
-{
-    if (thing->type == MT_WMACE)
-    {                           // Do random mace placement
-        P_RepositionMace(thing);
-    }
-    thing->flags2 &= ~MF2_DONTDRAW;
-    S_StartSound(thing, sfx_respawn);
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC A_RestoreSpecialThing2
-//
-//---------------------------------------------------------------------------
-
-void A_RestoreSpecialThing2(mobj_t * thing)
-{
-    thing->flags |= MF_SPECIAL;
-    P_SetMobjState(thing, thing->info->spawnstate);
 }
 
 //---------------------------------------------------------------------------
