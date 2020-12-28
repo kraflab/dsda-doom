@@ -347,37 +347,4 @@ typedef enum {
 #define ORIG_FRICTION_FACTOR   2048        // original value
 #define FRICTION_FLY           0xeb00
 
-// heretic
-
-// --- mobj.flags2 ---
-
-#define MF2_LOGRAV		0x00000001  // alternate gravity setting
-#define MF2_WINDTHRUST		0x00000002  // gets pushed around by the wind
-                                            // specials
-#define MF2_FLOORBOUNCE		0x00000004  // bounces off the floor
-#define MF2_THRUGHOST		0x00000008  // missile will pass through ghosts
-#define MF2_FLY			0x00000010  // fly mode is active
-#define MF2_FOOTCLIP		0x00000020  // if feet are allowed to be clipped
-#define MF2_SPAWNFLOAT		0x00000040  // spawn random float z
-#define MF2_NOTELEPORT		0x00000080  // does not teleport
-#define MF2_RIP			0x00000100  // missile rips through solid
-                                            // targets
-#define MF2_PUSHABLE		0x00000200  // can be pushed by other moving
-                                            // mobjs
-#define MF2_SLIDE		0x00000400  // slides against walls
-#define MF2_ONMOBJ		0x00000800  // mobj is resting on top of another
-                                            // mobj
-#define MF2_PASSMOBJ		0x00001000  // Enable z block checking.  If on,
-                                            // this flag will allow the mobj to
-                                            // pass over/under other mobjs.
-#define MF2_CANNOTPUSH		0x00002000  // cannot push other pushable mobjs
-#define MF2_FEETARECLIPPED	0x00004000  // a mobj's feet are now being cut
-#define MF2_BOSS		0x00008000  // mobj is a major boss
-#define MF2_FIREDAMAGE		0x00010000  // does fire damage
-#define MF2_NODMGTHRUST		0x00020000  // does not thrust target when
-                                            // damaging
-#define MF2_TELESTOMP		0x00040000  // mobj can stomp another
-#define MF2_FLOATBOB		0x00080000  // use float bobbing z movement
-#define MF2_DONTDRAW		0X00100000  // don't generate a vissprite
-
 #endif          // __DOOMDEF__
