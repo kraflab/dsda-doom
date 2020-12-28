@@ -717,6 +717,8 @@ typedef enum {
 
 // heretic
 
+#include "p_mobj.h"
+
 #define MAX_SND_DIST 	1600
 
 typedef struct
