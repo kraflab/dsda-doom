@@ -91,29 +91,7 @@ typedef enum
 ===============================================================================
 */
 
-// think_t is a function pointer to a routine to handle an actor
-typedef void (*think_t) ();
-
-typedef struct thinker_s
-{
-    struct thinker_s *prev, *next;
-    think_t function;
-} thinker_t;
-
-typedef union
-{
-    int i;
-    struct mobj_s *m;
-} specialval_t;
-
 struct player_s;
-
-// each sector has a degenmobj_t in it's center for sound origin purposes
-typedef struct
-{
-    thinker_t thinker;          // not used for anything
-    fixed_t x, y, z;
-} degenmobj_t;
 
 typedef enum
 {
