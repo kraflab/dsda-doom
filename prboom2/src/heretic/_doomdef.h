@@ -95,14 +95,6 @@ struct player_s;
 
 typedef enum
 {
-    key_yellow,
-    key_green,
-    key_blue,
-    NUMKEYS
-} keytype_t;
-
-typedef enum
-{
     wp_staff,
     wp_goldwand,
     wp_crossbow,
@@ -142,22 +134,6 @@ typedef struct
 extern weaponinfo_t wpnlev1info[NUMWEAPONS];
 extern weaponinfo_t wpnlev2info[NUMWEAPONS];
 
-typedef enum
-{
-    arti_none,
-    arti_invulnerability,
-    arti_invisibility,
-    arti_health,
-    arti_superhealth,
-    arti_tomeofpower,
-    arti_torch,
-    arti_firebomb,
-    arti_egg,
-    arti_fly,
-    arti_teleport,
-    NUMARTIFACTS
-} artitype_t;
-
 #define	INVULNTICS (30*35)
 #define	INVISTICS (60*35)
 #define	INFRATICS (120*35)
@@ -169,82 +145,6 @@ typedef enum
 
 #define MESSAGETICS (4*35)
 #define BLINKTHRESHOLD (4*32)
-
-#define NUMINVENTORYSLOTS	14
-typedef struct
-{
-    int type;
-    int count;
-} inventory_t;
-
-/*
-================
-=
-= player_t
-=
-================
-*/
-
-typedef struct player_s
-{
-    mobj_t *mo;
-    playerstate_t playerstate;
-    ticcmd_t cmd;
-
-    fixed_t viewz;              // focal origin above r.z
-    fixed_t viewheight;         // base height above floor for viewz
-    fixed_t deltaviewheight;    // squat speed
-    fixed_t bob;                // bounded/scaled total momentum
-
-    int flyheight;
-    int lookdir;
-    boolean centering;
-    int health;                 // only used between levels, mo->health
-    // is used during levels
-    int armorpoints, armortype; // armor type is 0-2
-
-    inventory_t inventory[NUMINVENTORYSLOTS];
-    artitype_t readyArtifact;
-    int artifactCount;
-    int inventorySlotNum;
-    int powers[NUMPOWERS];
-    boolean keys[NUMKEYS];
-    boolean backpack;
-    signed int frags[MAXPLAYERS];       // kills of other players
-    weapontype_t readyweapon;
-    weapontype_t pendingweapon; // wp_nochange if not changing
-    boolean weaponowned[NUMWEAPONS];
-    int ammo[NUMAMMO];
-    int maxammo[NUMAMMO];
-    int attackdown, usedown;    // true if button down last tic
-    int cheats;                 // bit flags
-
-    int refire;                 // refired shots are less accurate
-
-    int killcount, itemcount, secretcount;      // for intermission
-    const char *message;        // hint messages
-    int messageTics;            // counter for showing messages
-    int damagecount, bonuscount;        // for screen flashing
-    int flamecount;             // for flame thrower duration
-    mobj_t *attacker;           // who did damage (NULL for floors)
-    int extralight;             // so gun flashes light up areas
-    int fixedcolormap;          // can be set to REDCOLORMAP, etc
-    int colormap;               // 0-3 for which color to draw player
-    pspdef_t psprites[NUMPSPRITES];     // view sprites (gun, etc)
-    boolean didsecret;          // true if secret level has been done
-    int chickenTics;            // player is a chicken if > 0
-    int chickenPeck;            // chicken peck countdown
-    mobj_t *rain1;              // active rain maker 1
-    mobj_t *rain2;              // active rain maker 2
-
-    // [crispy] show centered "Secret Revealed!" message
-    const char *centerMessage;
-    int centerMessageTics;            // counter for showing centered messages
-
-    // [AM] Previous position of viewz before think.
-    //      Used to interpolate between camera positions.
-    angle_t		oldviewz;
-} player_t;
 
 #define CF_NOCLIP		1
 #define	CF_GODMODE		2

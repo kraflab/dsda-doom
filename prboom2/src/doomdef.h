@@ -193,7 +193,12 @@ typedef enum {
   it_blueskull,
   it_yellowskull,
   it_redskull,
-  NUMCARDS
+  NUMCARDS,
+  
+  // heretic
+  key_yellow = 0,
+  key_green,
+  key_blue,
 } card_t;
 
 // The defined weapons, including a marker
