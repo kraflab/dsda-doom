@@ -384,9 +384,10 @@ typedef struct mobj_s
     dsda_mobj_extension_t dsda_extension;
     
     // heretic
-    int flags2;
-    specialval_t special1;
-    specialval_t special2;
+    int damage;                 // For missiles
+    int flags2;                 // Heretic flags
+    specialval_t special1;      // Special info
+    specialval_t special2;      // Special info
 
     // SEE WARNING ABOVE ABOUT POINTER FIELDS!!!
 } mobj_t;

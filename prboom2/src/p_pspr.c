@@ -1231,7 +1231,7 @@ void A_BeakAttackPL1(player_t * player, pspdef_t * psp)
 
     damage = 1 + (P_Random(pr_heretic) & 3);
     angle = player->mo->angle;
-    slope = P_AimLineAttack(player->mo, angle, MELEERANGE);
+    slope = P_AimLineAttack(player->mo, angle, MELEERANGE, 0);
     PuffType = HERETIC_MT_BEAKPUFF;
     P_LineAttack(player->mo, angle, MELEERANGE, slope, damage);
     if (linetarget)
@@ -1253,7 +1253,7 @@ void A_BeakAttackPL2(player_t * player, pspdef_t * psp)
 
     damage = HITDICE(4);
     angle = player->mo->angle;
-    slope = P_AimLineAttack(player->mo, angle, MELEERANGE);
+    slope = P_AimLineAttack(player->mo, angle, MELEERANGE, 0);
     PuffType = HERETIC_MT_BEAKPUFF;
     P_LineAttack(player->mo, angle, MELEERANGE, slope, damage);
     if (linetarget)
@@ -1276,7 +1276,7 @@ void A_StaffAttackPL1(player_t * player, pspdef_t * psp)
     damage = 5 + (P_Random(pr_heretic) & 15);
     angle = player->mo->angle;
     angle += P_SubRandom() << 18;
-    slope = P_AimLineAttack(player->mo, angle, MELEERANGE);
+    slope = P_AimLineAttack(player->mo, angle, MELEERANGE, 0);
     PuffType = HERETIC_MT_STAFFPUFF;
     P_LineAttack(player->mo, angle, MELEERANGE, slope, damage);
     if (linetarget)
@@ -1299,7 +1299,7 @@ void A_StaffAttackPL2(player_t * player, pspdef_t * psp)
     damage = 18 + (P_Random(pr_heretic) & 63);
     angle = player->mo->angle;
     angle += P_SubRandom() << 18;
-    slope = P_AimLineAttack(player->mo, angle, MELEERANGE);
+    slope = P_AimLineAttack(player->mo, angle, MELEERANGE, 0);
     PuffType = HERETIC_MT_STAFFPUFF2;
     P_LineAttack(player->mo, angle, MELEERANGE, slope, damage);
     if (linetarget)
@@ -1570,7 +1570,7 @@ void A_DeathBallImpact(mobj_t * ball)
     int i;
     mobj_t *target;
     angle_t angle;
-    boolean newAngle;
+    dboolean newAngle;
 
     if ((ball->z <= ball->floorz) && (P_HitFloor(ball) != FLOOR_SOLID))
     {                           // Landed in some sort of liquid
@@ -1599,7 +1599,7 @@ void A_DeathBallImpact(mobj_t * ball)
             angle = 0;
             for (i = 0; i < 16; i++)
             {
-                P_AimLineAttack(ball, angle, 10 * 64 * FRACUNIT);
+                P_AimLineAttack(ball, angle, 10 * 64 * FRACUNIT, 0);
                 if (linetarget && ball->target != linetarget)
                 {
                     ball->special1.m = linetarget;
@@ -1969,7 +1969,7 @@ void A_GauntletAttack(player_t * player, pspdef_t * psp)
         angle += P_SubRandom() << 18;
         PuffType = HERETIC_MT_GAUNTLETPUFF1;
     }
-    slope = P_AimLineAttack(player->mo, angle, dist);
+    slope = P_AimLineAttack(player->mo, angle, dist, 0);
     P_LineAttack(player->mo, angle, dist, slope, damage);
     if (!linetarget)
     {

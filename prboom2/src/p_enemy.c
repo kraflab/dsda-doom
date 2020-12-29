@@ -2999,7 +2999,7 @@ void A_ImpXDeath2(mobj_t * actor)
     }
 }
 
-boolean P_UpdateChicken(mobj_t * actor, int tics)
+dboolean P_UpdateChicken(mobj_t * actor, int tics)
 {
     mobj_t *fog;
     fixed_t x;
@@ -3258,7 +3258,7 @@ void P_DSparilTeleport(mobj_t * actor)
     prevX = actor->x;
     prevY = actor->y;
     prevZ = actor->z;
-    if (P_TeleportMove(actor, x, y))
+    if (P_TeleportMove(actor, x, y, false))
     {
         mo = P_SpawnMobj(prevX, prevY, prevZ, HERETIC_MT_SOR2TELEFADE);
         S_StartSound(mo, heretic_sfx_telept);
