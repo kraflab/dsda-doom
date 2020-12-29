@@ -1619,7 +1619,6 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
 
 mobj_t* P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
 {
-  dboolean missile_ok;
   mobj_t *th;
   fixed_t x, y, z, slope = 0;
 
