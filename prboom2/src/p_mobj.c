@@ -1651,6 +1651,8 @@ void P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
 
 // heretic
 
+mobjtype_t PuffType;
+
 void A_ContMobjSound(mobj_t * actor)
 {
     switch (actor->type)

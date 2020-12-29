@@ -28,8 +28,6 @@
 #define NUMREDPALS		8
 #define NUMBONUSPALS	4
 
-#define FOOTCLIPSIZE	10*FRACUNIT
-
 #define TOCENTER -8
 #define	FLOATSPEED (FRACUNIT*4)
 
@@ -86,19 +84,6 @@ void P_RemoveThinker(thinker_t * thinker);
 
 // ***** P_PSPR *****
 
-#define USE_GWND_AMMO_1 1
-#define USE_GWND_AMMO_2 1
-#define USE_CBOW_AMMO_1 1
-#define USE_CBOW_AMMO_2 1
-#define USE_BLSR_AMMO_1 1
-#define USE_BLSR_AMMO_2 5
-#define USE_SKRD_AMMO_1 1
-#define USE_SKRD_AMMO_2 5
-#define USE_PHRD_AMMO_1 1
-#define USE_PHRD_AMMO_2 1
-#define USE_MACE_AMMO_1 1
-#define USE_MACE_AMMO_2 5
-
 void P_OpenWeapons(void);
 void P_CloseWeapons(void);
 void P_AddMaceSpot(mapthing_t * mthing);
@@ -122,16 +107,10 @@ int P_GetPlayerNum(player_t * player);
 
 // ***** P_MOBJ *****
 
-#define FLOOR_SOLID 0
-#define FLOOR_WATER 1
-#define FLOOR_LAVA 2
-#define FLOOR_SLUDGE 3
-
 #define ONFLOORZ INT_MIN
 #define ONCEILINGZ INT_MAX
 #define FLOATRANDZ (INT_MAX-1)
 
-extern mobjtype_t PuffType;
 extern mobj_t *MissileMobj;
 
 mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type);
