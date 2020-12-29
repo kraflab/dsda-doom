@@ -1664,8 +1664,8 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
     }
   }
 
-  // HERETIC_TODO: MissileMobj global for this
-  th = P_SpawnMobj (x,y,z, type);
+  // heretic global MissileMobj
+  MissileMobj = th = P_SpawnMobj (x,y,z, type);
 
   if (th->info->seesound)
     S_StartSound (th, th->info->seesound);
@@ -1683,6 +1683,7 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
 // heretic
 
 mobjtype_t PuffType;
+mobj_t *MissileMobj;
 
 void P_BlasterMobjThinker(mobj_t * mobj)
 {
@@ -1691,7 +1692,7 @@ void P_BlasterMobjThinker(mobj_t * mobj)
     fixed_t yfrac;
     fixed_t zfrac;
     fixed_t z;
-    boolean changexy;
+    dboolean changexy;
 
     // Handle movement
     if (mobj->momx || mobj->momy || (mobj->z != mobj->floorz) || mobj->momz)
@@ -1724,7 +1725,7 @@ void P_BlasterMobjThinker(mobj_t * mobj)
                 P_ExplodeMissile(mobj);
                 return;
             }
-            if (changexy && (P_Random(pr_random) < 64))
+            if (changexy && (P_Random(pr_heretic) < 64))
             {
                 z = mobj->z - 8 * FRACUNIT;
                 if (z < mobj->floorz)

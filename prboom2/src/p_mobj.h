@@ -483,5 +483,9 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 #define AMMO_MACE_WIMPY 20
 #define AMMO_MACE_HEFTY 100
 
+extern mobj_t* MissileMobj;
+
+void P_BlasterMobjThinker(mobj_t * mobj);
+
 #endif
 

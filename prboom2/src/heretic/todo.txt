@@ -1,0 +1,10 @@
+P_TestMobjLocation
+P_SpawnMissileAngle
+P_SetMobjStateNF
+P_ThrustMobj
+P_SeekerMissile
+P_RepositionMace
+P_HitFloor
+P_SPMAngle
+P_GetPlayerNum
+P_GiveBody

@@ -26,8 +26,6 @@
 void G_PlayerReborn(int player);
 void P_SpawnMapThing(mapthing_t * mthing);
 
-mobj_t *MissileMobj;
-
 static fixed_t FloatBobOffsets[64] = {
     0, 51389, 102283, 152192,
     200636, 247147, 291278, 332604,
