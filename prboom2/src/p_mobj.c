@@ -1648,3 +1648,20 @@ void P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
 
   P_CheckMissileSpawn(th);
   }
+
+// heretic
+
+void A_ContMobjSound(mobj_t * actor)
+{
+    switch (actor->type)
+    {
+        case HERETIC_MT_KNIGHTAXE:
+            S_StartSound(actor, heretic_sfx_kgtatk);
+            break;
+        case HERETIC_MT_MUMMYFX1:
+            S_StartSound(actor, heretic_sfx_mumhed);
+            break;
+        default:
+            break;
+    }
+}

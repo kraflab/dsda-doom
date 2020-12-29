@@ -104,7 +104,7 @@ void A_BoltSpark();
   void A_MummyAttack();
   void A_MummyAttack2();
   void A_MummySoul();
-void A_ContMobjSound();
+  void A_ContMobjSound();
   void A_MummyFX1Seek();
   void A_BeastAttack();
   void A_SnakeAttack();

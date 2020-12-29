@@ -1641,24 +1641,3 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     th->momz = FixedMul(th->info->speed, slope);
     return (P_CheckMissileSpawn(th) ? th : NULL);
 }
-
-//---------------------------------------------------------------------------
-//
-// PROC A_ContMobjSound
-//
-//---------------------------------------------------------------------------
-
-void A_ContMobjSound(mobj_t * actor)
-{
-    switch (actor->type)
-    {
-        case MT_KNIGHTAXE:
-            S_StartSound(actor, sfx_kgtatk);
-            break;
-        case MT_MUMMYFX1:
-            S_StartSound(actor, sfx_mumhed);
-            break;
-        default:
-            break;
-    }
-}
