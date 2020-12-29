@@ -1684,6 +1684,71 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
 
 mobjtype_t PuffType;
 
+void P_BlasterMobjThinker(mobj_t * mobj)
+{
+    int i;
+    fixed_t xfrac;
+    fixed_t yfrac;
+    fixed_t zfrac;
+    fixed_t z;
+    boolean changexy;
+
+    // Handle movement
+    if (mobj->momx || mobj->momy || (mobj->z != mobj->floorz) || mobj->momz)
+    {
+        xfrac = mobj->momx >> 3;
+        yfrac = mobj->momy >> 3;
+        zfrac = mobj->momz >> 3;
+        changexy = xfrac || yfrac;
+        for (i = 0; i < 8; i++)
+        {
+            if (changexy)
+            {
+                if (!P_TryMove(mobj, mobj->x + xfrac, mobj->y + yfrac, false))
+                {               // Blocked move
+                    P_ExplodeMissile(mobj);
+                    return;
+                }
+            }
+            mobj->z += zfrac;
+            if (mobj->z <= mobj->floorz)
+            {                   // Hit the floor
+                mobj->z = mobj->floorz;
+                P_HitFloor(mobj);
+                P_ExplodeMissile(mobj);
+                return;
+            }
+            if (mobj->z + mobj->height > mobj->ceilingz)
+            {                   // Hit the ceiling
+                mobj->z = mobj->ceilingz - mobj->height;
+                P_ExplodeMissile(mobj);
+                return;
+            }
+            if (changexy && (P_Random(pr_random) < 64))
+            {
+                z = mobj->z - 8 * FRACUNIT;
+                if (z < mobj->floorz)
+                {
+                    z = mobj->floorz;
+                }
+                P_SpawnMobj(mobj->x, mobj->y, z, HERETIC_MT_BLASTERSMOKE);
+            }
+        }
+    }
+    // Advance the state
+    if (mobj->tics != -1)
+    {
+        mobj->tics--;
+        while (!mobj->tics)
+        {
+            if (!P_SetMobjState(mobj, mobj->state->nextstate))
+            {                   // mobj was removed
+                return;
+            }
+        }
+    }
+}
+
 void A_ContMobjSound(mobj_t * actor)
 {
     switch (actor->type)
