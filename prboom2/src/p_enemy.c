@@ -3411,6 +3411,316 @@ void A_SorSightSnd(mobj_t * actor)
     S_StartSound(NULL, heretic_sfx_sorsit);
 }
 
+void A_MinotaurAtk1(mobj_t * actor)
+{
+    player_t *player;
+
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, heretic_sfx_stfpow);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(4));
+        if ((player = actor->target->player) != NULL)
+        {                       // Squish the player
+            player->deltaviewheight = -16 * FRACUNIT;
+        }
+    }
+}
+
+#define MNTR_CHARGE_SPEED (13*FRACUNIT)
+
+void A_MinotaurDecide(mobj_t * actor)
+{
+    angle_t angle;
+    mobj_t *target;
+    int dist;
+
+    target = actor->target;
+    if (!target)
+    {
+        return;
+    }
+    S_StartSound(actor, heretic_sfx_minsit);
+    dist = P_AproxDistance(actor->x - target->x, actor->y - target->y);
+    if (target->z + target->height > actor->z
+        && target->z + target->height < actor->z + actor->height
+        && dist < 8 * 64 * FRACUNIT
+        && dist > 1 * 64 * FRACUNIT && P_Random(pr_heretic) < 150)
+    {                           // Charge attack
+        // Don't call the state function right away
+        P_SetMobjStateNF(actor, HERETIC_S_MNTR_ATK4_1);
+        actor->flags |= MF_SKULLFLY;
+        A_FaceTarget(actor);
+        angle = actor->angle >> ANGLETOFINESHIFT;
+        actor->momx = FixedMul(MNTR_CHARGE_SPEED, finecosine[angle]);
+        actor->momy = FixedMul(MNTR_CHARGE_SPEED, finesine[angle]);
+        actor->special1.i = 35 / 2;       // Charge duration
+    }
+    else if (target->z == target->floorz
+             && dist < 9 * 64 * FRACUNIT && P_Random(pr_heretic) < 220)
+    {                           // Floor fire attack
+        P_SetMobjState(actor, HERETIC_S_MNTR_ATK3_1);
+        actor->special2.i = 0;
+    }
+    else
+    {                           // Swing attack
+        A_FaceTarget(actor);
+        // Don't need to call P_SetMobjState because the current state
+        // falls through to the swing attack
+    }
+}
+
+void A_MinotaurCharge(mobj_t * actor)
+{
+    mobj_t *puff;
+
+    if (actor->special1.i)
+    {
+        puff = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_PHOENIXPUFF);
+        puff->momz = 2 * FRACUNIT;
+        actor->special1.i--;
+    }
+    else
+    {
+        actor->flags &= ~MF_SKULLFLY;
+        P_SetMobjState(actor, actor->info->seestate);
+    }
+}
+
+void A_MinotaurAtk2(mobj_t * actor)
+{
+    mobj_t *mo;
+    angle_t angle;
+    fixed_t momz;
+
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, heretic_sfx_minat2);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(5));
+        return;
+    }
+    mo = P_SpawnMissile(actor, actor->target, HERETIC_MT_MNTRFX1);
+    if (mo)
+    {
+        S_StartSound(mo, heretic_sfx_minat2);
+        momz = mo->momz;
+        angle = mo->angle;
+        P_SpawnMissileAngle(actor, HERETIC_MT_MNTRFX1, angle - (ANG45 / 8), momz);
+        P_SpawnMissileAngle(actor, HERETIC_MT_MNTRFX1, angle + (ANG45 / 8), momz);
+        P_SpawnMissileAngle(actor, HERETIC_MT_MNTRFX1, angle - (ANG45 / 16), momz);
+        P_SpawnMissileAngle(actor, HERETIC_MT_MNTRFX1, angle + (ANG45 / 16), momz);
+    }
+}
+
+void A_MinotaurAtk3(mobj_t * actor)
+{
+    mobj_t *mo;
+    player_t *player;
+
+    if (!actor->target)
+    {
+        return;
+    }
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(5));
+        if ((player = actor->target->player) != NULL)
+        {                       // Squish the player
+            player->deltaviewheight = -16 * FRACUNIT;
+        }
+    }
+    else
+    {
+        mo = P_SpawnMissile(actor, actor->target, HERETIC_MT_MNTRFX2);
+        if (mo != NULL)
+        {
+            S_StartSound(mo, heretic_sfx_minat1);
+        }
+    }
+    if (P_Random(pr_heretic) < 192 && actor->special2.i == 0)
+    {
+        P_SetMobjState(actor, HERETIC_S_MNTR_ATK3_4);
+        actor->special2.i = 1;
+    }
+}
+
+void A_MntrFloorFire(mobj_t * actor)
+{
+    mobj_t *mo;
+    int r1, r2;
+
+    r1 = P_SubRandom();
+    r2 = P_SubRandom();
+
+    actor->z = actor->floorz;
+    mo = P_SpawnMobj(actor->x + (r2 << 10),
+                     actor->y + (r1 << 10), ONFLOORZ,
+                     HERETIC_MT_MNTRFX3);
+    mo->target = actor->target;
+    mo->momx = 1;               // Force block checking
+    P_CheckMissileSpawn(mo);
+}
+
+void A_BeastAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(3));
+        return;
+    }
+    P_SpawnMissile(actor, actor->target, HERETIC_MT_BEASTBALL);
+}
+
+void A_WhirlwindSeek(mobj_t * actor)
+{
+    actor->health -= 3;
+    if (actor->health < 0)
+    {
+        actor->momx = actor->momy = actor->momz = 0;
+        P_SetMobjState(actor, mobjinfo[actor->type].deathstate);
+        actor->flags &= ~MF_MISSILE;
+        return;
+    }
+    if ((actor->special2.i -= 3) < 0)
+    {
+        actor->special2.i = 58 + (P_Random(pr_heretic) & 31);
+        S_StartSound(actor, heretic_sfx_hedat3);
+    }
+    if (actor->special1.m
+        && (((mobj_t *) (actor->special1.m))->flags & MF_SHADOW))
+    {
+        return;
+    }
+    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 30);
+}
+
+void A_HeadIceImpact(mobj_t * ice)
+{
+    unsigned int i;
+    angle_t angle;
+    mobj_t *shard;
+
+    for (i = 0; i < 8; i++)
+    {
+        shard = P_SpawnMobj(ice->x, ice->y, ice->z, HERETIC_MT_HEADFX2);
+        angle = i * ANG45;
+        shard->target = ice->target;
+        shard->angle = angle;
+        angle >>= ANGLETOFINESHIFT;
+        shard->momx = FixedMul(shard->info->speed, finecosine[angle]);
+        shard->momy = FixedMul(shard->info->speed, finesine[angle]);
+        shard->momz = (fixed_t)(-.6 * FRACUNIT);
+        P_CheckMissileSpawn(shard);
+    }
+}
+
+void A_HeadFireGrow(mobj_t * fire)
+{
+    fire->health--;
+    fire->z += 9 * FRACUNIT;
+    if (fire->health == 0)
+    {
+        fire->damage = fire->info->damage;
+        P_SetMobjState(fire, HERETIC_S_HEADFX3_4);
+    }
+}
+
+void A_SnakeAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        P_SetMobjState(actor, HERETIC_S_SNAKE_WALK1);
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    A_FaceTarget(actor);
+    P_SpawnMissile(actor, actor->target, HERETIC_MT_SNAKEPRO_A);
+}
+
+void A_SnakeAttack2(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        P_SetMobjState(actor, HERETIC_S_SNAKE_WALK1);
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    A_FaceTarget(actor);
+    P_SpawnMissile(actor, actor->target, HERETIC_MT_SNAKEPRO_B);
+}
+
+void A_ClinkAttack(mobj_t * actor)
+{
+    int damage;
+
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    if (P_CheckMeleeRange(actor))
+    {
+        damage = ((P_Random(pr_heretic) % 7) + 3);
+        P_DamageMobj(actor->target, actor, actor, damage);
+    }
+}
+
+void A_GhostOff(mobj_t * actor)
+{
+    actor->flags &= ~MF_SHADOW;
+}
+
+void A_WizAtk1(mobj_t * actor)
+{
+    A_FaceTarget(actor);
+    actor->flags &= ~MF_SHADOW;
+}
+
+void A_WizAtk2(mobj_t * actor)
+{
+    A_FaceTarget(actor);
+    actor->flags |= MF_SHADOW;
+}
+
+void A_WizAtk3(mobj_t * actor)
+{
+    mobj_t *mo;
+    angle_t angle;
+    fixed_t momz;
+
+    actor->flags &= ~MF_SHADOW;
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(4));
+        return;
+    }
+    mo = P_SpawnMissile(actor, actor->target, HERETIC_MT_WIZFX1);
+    if (mo)
+    {
+        momz = mo->momz;
+        angle = mo->angle;
+        P_SpawnMissileAngle(actor, HERETIC_MT_WIZFX1, angle - (ANG45 / 8), momz);
+        P_SpawnMissileAngle(actor, HERETIC_MT_WIZFX1, angle + (ANG45 / 8), momz);
+    }
+}
+
 void A_FreeTargMobj(mobj_t * mo)
 {
     mo->momx = mo->momy = mo->momz = 0;
