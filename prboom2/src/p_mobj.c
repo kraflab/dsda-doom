@@ -53,6 +53,8 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "heretic/def.h"
+
 //
 // P_SetMobjState
 // Returns true if the mobj is still present.
@@ -1528,27 +1530,41 @@ void P_SpawnBlood(fixed_t x,fixed_t y,fixed_t z,int damage)
 //  and possibly explodes it right there.
 //
 
-void P_CheckMissileSpawn (mobj_t* th)
+dboolean P_CheckMissileSpawn (mobj_t* th)
 {
-  th->tics -= P_Random(pr_missile)&3;
-  if (th->tics < 1)
-    th->tics = 1;
+  if (!heretic) {
+    th->tics -= P_Random(pr_missile)&3;
+    if (th->tics < 1)
+      th->tics = 1;
+  }
 
   // move a little forward so an angle can
   // be computed if it immediately explodes
 
-  th->x += (th->momx>>1);
-  th->y += (th->momy>>1);
-  th->z += (th->momz>>1);
+  if (heretic && th->type == HERETIC_MT_BLASTERFX1) {
+    // Ultra-fast ripper spawning missile
+    th->x += (th->momx >> 3);
+    th->y += (th->momy >> 3);
+    th->z += (th->momz >> 3);
+  }
+  else {
+    th->x += (th->momx>>1);
+    th->y += (th->momy>>1);
+    th->z += (th->momz>>1);
+  }
 
   // killough 8/12/98: for non-missile objects (e.g. grenades)
   if (!(th->flags & MF_MISSILE) && mbf_features)
-    return;
+    return true;
 
   // killough 3/15/98: no dropoff (really = don't care for missiles)
 
-  if (!P_TryMove (th, th->x, th->y, false))
+  if (!P_TryMove (th, th->x, th->y, false)) {
     P_ExplodeMissile (th);
+    return false;
+  }
+  
+  return true;
 }
 
 
@@ -1601,8 +1617,9 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
 // Tries to aim at a nearby monster
 //
 
-void P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
+mobj_t* P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
 {
+  dboolean missile_ok;
   mobj_t *th;
   fixed_t x, y, z, slope = 0;
 
@@ -1625,8 +1642,12 @@ void P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
       slope = P_AimLineAttack(source, an += 1<<26, 16*64*FRACUNIT, mask);
     if (!linetarget)
       slope = P_AimLineAttack(source, an -= 2<<26, 16*64*FRACUNIT, mask);
-    if (!linetarget)
-      an = source->angle, slope = 0;
+    if (!linetarget) {
+      an = source->angle;
+      slope = 0;
+
+      if (heretic) slope = ((source->player->lookdir) << FRACBITS) / 173;
+    }
   }
       while (mask && (mask=0, !linetarget));  // killough 8/2/98
     }
@@ -1635,6 +1656,16 @@ void P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
   y = source->y;
   z = source->z + 4*8*FRACUNIT;
 
+  if (heretic) {
+    z += ((source->player->lookdir) << FRACBITS) / 173;
+    
+    if (source->flags2 & MF2_FEETARECLIPPED)
+    {
+        z -= FOOTCLIPSIZE;
+    }
+  }
+
+  // HERETIC_TODO: MissileMobj global for this
   th = P_SpawnMobj (x,y,z, type);
 
   if (th->info->seesound)
@@ -1646,8 +1677,9 @@ void P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
   th->momy = FixedMul(th->info->speed,finesine[an>>ANGLETOFINESHIFT]);
   th->momz = FixedMul(th->info->speed,slope);
 
-  P_CheckMissileSpawn(th);
-  }
+  // heretic - return missile if it's ok
+  return P_CheckMissileSpawn(th) ? th : NULL;
+}
 
 // heretic
 

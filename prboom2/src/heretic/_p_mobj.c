@@ -1376,32 +1376,6 @@ int P_HitFloor(mobj_t * thing)
 
 //---------------------------------------------------------------------------
 //
-// FUNC P_CheckMissileSpawn
-//
-// Returns true if the missile is at a valid spawn point, otherwise
-// explodes it and returns false.
-//
-//---------------------------------------------------------------------------
-
-boolean P_CheckMissileSpawn(mobj_t * missile)
-{
-    //missile->tics -= P_Random()&3;
-
-    // move a little forward so an angle can be computed if it
-    // immediately explodes
-    missile->x += (missile->momx >> 1);
-    missile->y += (missile->momy >> 1);
-    missile->z += (missile->momz >> 1);
-    if (!P_TryMove(missile, missile->x, missile->y))
-    {
-        P_ExplodeMissile(missile);
-        return (false);
-    }
-    return (true);
-}
-
-//---------------------------------------------------------------------------
-//
 // FUNC P_SpawnMissile
 //
 // Returns NULL if the missile exploded immediately, otherwise returns
@@ -1510,82 +1484,6 @@ mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type,
     mo->momy = FixedMul(mo->info->speed, finesine[angle]);
     mo->momz = momz;
     return (P_CheckMissileSpawn(mo) ? mo : NULL);
-}
-
-/*
-================
-=
-= P_SpawnPlayerMissile
-=
-= Tries to aim at a nearby monster
-================
-*/
-
-mobj_t *P_SpawnPlayerMissile(mobj_t * source, mobjtype_t type)
-{
-    angle_t an;
-    fixed_t x, y, z, slope;
-
-    // Try to find a target
-    an = source->angle;
-    slope = P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-    if (!linetarget)
-    {
-        an += 1 << 26;
-        slope = P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-        if (!linetarget)
-        {
-            an -= 2 << 26;
-            slope = P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-        }
-        if (!linetarget)
-        {
-            an = source->angle;
-            slope = ((source->player->lookdir) << FRACBITS) / 173;
-        }
-    }
-    x = source->x;
-    y = source->y;
-    z = source->z + 4 * 8 * FRACUNIT +
-        ((source->player->lookdir) << FRACBITS) / 173;
-    if (source->flags2 & MF2_FEETARECLIPPED)
-    {
-        z -= FOOTCLIPSIZE;
-    }
-    MissileMobj = P_SpawnMobj(x, y, z, type);
-    if (MissileMobj->info->seesound)
-    {
-        S_StartSound(MissileMobj, MissileMobj->info->seesound);
-    }
-    MissileMobj->target = source;
-    MissileMobj->angle = an;
-    MissileMobj->momx = FixedMul(MissileMobj->info->speed,
-                                 finecosine[an >> ANGLETOFINESHIFT]);
-    MissileMobj->momy = FixedMul(MissileMobj->info->speed,
-                                 finesine[an >> ANGLETOFINESHIFT]);
-    MissileMobj->momz = FixedMul(MissileMobj->info->speed, slope);
-    if (MissileMobj->type == MT_BLASTERFX1)
-    {                           // Ultra-fast ripper spawning missile
-        MissileMobj->x += (MissileMobj->momx >> 3);
-        MissileMobj->y += (MissileMobj->momy >> 3);
-        MissileMobj->z += (MissileMobj->momz >> 3);
-    }
-    else
-    {                           // Normal missile
-        MissileMobj->x += (MissileMobj->momx >> 1);
-        MissileMobj->y += (MissileMobj->momy >> 1);
-        MissileMobj->z += (MissileMobj->momz >> 1);
-    }
-
-    // [crispy] suppress interpolation of player missiles for the first tic
-    MissileMobj->interp = -1;
-
-    if (!P_TryMove(MissileMobj, MissileMobj->x, MissileMobj->y))
-    {                           // Exploded immediately
-        P_ExplodeMissile(MissileMobj);
-        return (NULL);
-    }
-    return (MissileMobj);
 }
 
 //---------------------------------------------------------------------------
