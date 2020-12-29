@@ -981,6 +981,7 @@ void P_MovePsprites(player_t *player)
 #include "heretic/def.h"
 
 #define MAGIC_JUNK 1234
+#define FLAME_THROWER_TICS 10*35
 
 #define USE_GWND_AMMO_1 1
 #define USE_GWND_AMMO_2 1
@@ -1562,4 +1563,461 @@ void A_FireMacePL2(player_t * player, pspdef_t * psp)
         }
     }
     S_StartSound(player->mo, heretic_sfx_lobsht);
+}
+
+void A_DeathBallImpact(mobj_t * ball)
+{
+    int i;
+    mobj_t *target;
+    angle_t angle;
+    boolean newAngle;
+
+    if ((ball->z <= ball->floorz) && (P_HitFloor(ball) != FLOOR_SOLID))
+    {                           // Landed in some sort of liquid
+        P_RemoveMobj(ball);
+        return;
+    }
+    if ((ball->z <= ball->floorz) && ball->momz)
+    {                           // Bounce
+        newAngle = false;
+        target = (mobj_t *) ball->special1.m;
+        if (target)
+        {
+            if (!(target->flags & MF_SHOOTABLE))
+            {                   // Target died
+                ball->special1.m = NULL;
+            }
+            else
+            {                   // Seek
+                angle = R_PointToAngle2(ball->x, ball->y,
+                                        target->x, target->y);
+                newAngle = true;
+            }
+        }
+        else
+        {                       // Find new target
+            angle = 0;
+            for (i = 0; i < 16; i++)
+            {
+                P_AimLineAttack(ball, angle, 10 * 64 * FRACUNIT);
+                if (linetarget && ball->target != linetarget)
+                {
+                    ball->special1.m = linetarget;
+                    angle = R_PointToAngle2(ball->x, ball->y,
+                                            linetarget->x, linetarget->y);
+                    newAngle = true;
+                    break;
+                }
+                angle += ANG45 / 2;
+            }
+        }
+        if (newAngle)
+        {
+            ball->angle = angle;
+            angle >>= ANGLETOFINESHIFT;
+            ball->momx = FixedMul(ball->info->speed, finecosine[angle]);
+            ball->momy = FixedMul(ball->info->speed, finesine[angle]);
+        }
+        P_SetMobjState(ball, ball->info->spawnstate);
+        S_StartSound(ball, heretic_sfx_pstop);
+    }
+    else
+    {                           // Explode
+        ball->flags |= MF_NOGRAVITY;
+        ball->flags2 &= ~MF2_LOGRAV;
+        S_StartSound(ball, heretic_sfx_phohit);
+    }
+}
+
+void A_SpawnRippers(mobj_t * actor)
+{
+    unsigned int i;
+    angle_t angle;
+    mobj_t *ripper;
+
+    for (i = 0; i < 8; i++)
+    {
+        ripper = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_RIPPER);
+        angle = i * ANG45;
+        ripper->target = actor->target;
+        ripper->angle = angle;
+        angle >>= ANGLETOFINESHIFT;
+        ripper->momx = FixedMul(ripper->info->speed, finecosine[angle]);
+        ripper->momy = FixedMul(ripper->info->speed, finesine[angle]);
+        P_CheckMissileSpawn(ripper);
+    }
+}
+
+void A_FireCrossbowPL1(player_t * player, pspdef_t * psp)
+{
+    mobj_t *pmo;
+
+    pmo = player->mo;
+    player->ammo[am_crossbow] -= USE_CBOW_AMMO_1;
+    P_SpawnPlayerMissile(pmo, HERETIC_MT_CRBOWFX1);
+    P_SPMAngle(pmo, HERETIC_MT_CRBOWFX3, pmo->angle - (ANG45 / 10));
+    P_SPMAngle(pmo, HERETIC_MT_CRBOWFX3, pmo->angle + (ANG45 / 10));
+}
+
+void A_FireCrossbowPL2(player_t * player, pspdef_t * psp)
+{
+    mobj_t *pmo;
+
+    pmo = player->mo;
+    player->ammo[am_crossbow] -=
+        deathmatch ? USE_CBOW_AMMO_1 : USE_CBOW_AMMO_2;
+    P_SpawnPlayerMissile(pmo, HERETIC_MT_CRBOWFX2);
+    P_SPMAngle(pmo, HERETIC_MT_CRBOWFX2, pmo->angle - (ANG45 / 10));
+    P_SPMAngle(pmo, HERETIC_MT_CRBOWFX2, pmo->angle + (ANG45 / 10));
+    P_SPMAngle(pmo, HERETIC_MT_CRBOWFX3, pmo->angle - (ANG45 / 5));
+    P_SPMAngle(pmo, HERETIC_MT_CRBOWFX3, pmo->angle + (ANG45 / 5));
+}
+
+void A_BoltSpark(mobj_t * bolt)
+{
+    mobj_t *spark;
+
+    if (P_Random(pr_heretic) > 50)
+    {
+        spark = P_SpawnMobj(bolt->x, bolt->y, bolt->z, HERETIC_MT_CRBOWFX4);
+        spark->x += P_SubRandom() << 10;
+        spark->y += P_SubRandom() << 10;
+    }
+}
+
+void A_FireSkullRodPL1(player_t * player, pspdef_t * psp)
+{
+    mobj_t *mo;
+
+    if (player->ammo[am_skullrod] < USE_SKRD_AMMO_1)
+    {
+        return;
+    }
+    player->ammo[am_skullrod] -= USE_SKRD_AMMO_1;
+    mo = P_SpawnPlayerMissile(player->mo, HERETIC_MT_HORNRODFX1);
+    // Randomize the first frame
+    if (mo && P_Random(pr_heretic) > 128)
+    {
+        P_SetMobjState(mo, HERETIC_S_HRODFX1_2);
+    }
+}
+
+void A_FireSkullRodPL2(player_t * player, pspdef_t * psp)
+{
+    player->ammo[am_skullrod] -=
+        deathmatch ? USE_SKRD_AMMO_1 : USE_SKRD_AMMO_2;
+    P_SpawnPlayerMissile(player->mo, HERETIC_MT_HORNRODFX2);
+    // Use MissileMobj instead of the return value from
+    // P_SpawnPlayerMissile because we need to give info to the mobj
+    // even if it exploded immediately.
+    if (netgame)
+    {                           // Multi-player game
+        MissileMobj->special2.i = P_GetPlayerNum(player);
+    }
+    else
+    {                           // Always use red missiles in single player games
+        MissileMobj->special2.i = 2;
+    }
+    if (linetarget)
+    {
+        MissileMobj->special1.m = linetarget;
+    }
+    S_StartSound(MissileMobj, heretic_sfx_hrnpow);
+}
+
+void A_SkullRodPL2Seek(mobj_t * actor)
+{
+    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 30);
+}
+
+void A_AddPlayerRain(mobj_t * actor)
+{
+    int playerNum;
+    player_t *player;
+
+    playerNum = netgame ? actor->special2.i : 0;
+    if (!playeringame[playerNum])
+    {                           // Player left the game
+        return;
+    }
+    player = &players[playerNum];
+    if (player->health <= 0)
+    {                           // Player is dead
+        return;
+    }
+    if (player->rain1 && player->rain2)
+    {                           // Terminate an active rain
+        if (player->rain1->health < player->rain2->health)
+        {
+            if (player->rain1->health > 16)
+            {
+                player->rain1->health = 16;
+            }
+            player->rain1 = NULL;
+        }
+        else
+        {
+            if (player->rain2->health > 16)
+            {
+                player->rain2->health = 16;
+            }
+            player->rain2 = NULL;
+        }
+    }
+    // Add rain mobj to list
+    if (player->rain1)
+    {
+        player->rain2 = actor;
+    }
+    else
+    {
+        player->rain1 = actor;
+    }
+}
+
+void A_SkullRodStorm(mobj_t * actor)
+{
+    fixed_t x;
+    fixed_t y;
+    mobj_t *mo;
+    int playerNum;
+    player_t *player;
+
+    if (actor->health-- == 0)
+    {
+        P_SetMobjState(actor, HERETIC_S_NULL);
+        playerNum = netgame ? actor->special2.i : 0;
+        if (!playeringame[playerNum])
+        {                       // Player left the game
+            return;
+        }
+        player = &players[playerNum];
+        if (player->health <= 0)
+        {                       // Player is dead
+            return;
+        }
+        if (player->rain1 == actor)
+        {
+            player->rain1 = NULL;
+        }
+        else if (player->rain2 == actor)
+        {
+            player->rain2 = NULL;
+        }
+        return;
+    }
+    if (P_Random(pr_heretic) < 25)
+    {                           // Fudge rain frequency
+        return;
+    }
+    x = actor->x + ((P_Random(pr_heretic) & 127) - 64) * FRACUNIT;
+    y = actor->y + ((P_Random(pr_heretic) & 127) - 64) * FRACUNIT;
+    mo = P_SpawnMobj(x, y, ONCEILINGZ, HERETIC_MT_RAINPLR1 + actor->special2.i);
+    mo->target = actor->target;
+    mo->momx = 1;               // Force collision detection
+    mo->momz = -mo->info->speed;
+    mo->special2.i = actor->special2.i;     // Transfer player number
+    P_CheckMissileSpawn(mo);
+    if (!(actor->special1.i & 31))
+    {
+        S_StartSound(actor, heretic_sfx_ramrain);
+    }
+    actor->special1.i++;
+}
+
+void A_RainImpact(mobj_t * actor)
+{
+    if (actor->z > actor->floorz)
+    {
+        P_SetMobjState(actor, HERETIC_S_RAINAIRXPLR1_1 + actor->special2.i);
+    }
+    else if (P_Random(pr_heretic) < 40)
+    {
+        P_HitFloor(actor);
+    }
+}
+
+void A_HideInCeiling(mobj_t * actor)
+{
+    actor->z = actor->ceilingz + 4 * FRACUNIT;
+}
+
+void A_FirePhoenixPL1(player_t * player, pspdef_t * psp)
+{
+    angle_t angle;
+
+    player->ammo[am_phoenixrod] -= USE_PHRD_AMMO_1;
+    P_SpawnPlayerMissile(player->mo, HERETIC_MT_PHOENIXFX1);
+    angle = player->mo->angle + ANG180;
+    angle >>= ANGLETOFINESHIFT;
+    player->mo->momx += FixedMul(4 * FRACUNIT, finecosine[angle]);
+    player->mo->momy += FixedMul(4 * FRACUNIT, finesine[angle]);
+}
+
+void A_PhoenixPuff(mobj_t * actor)
+{
+    mobj_t *puff;
+    angle_t angle;
+
+    P_SeekerMissile(actor, ANG1_X * 5, ANG1_X * 10);
+    puff = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_PHOENIXPUFF);
+    angle = actor->angle + ANG90;
+    angle >>= ANGLETOFINESHIFT;
+    puff->momx = FixedMul((fixed_t)(FRACUNIT * 1.3), finecosine[angle]);
+    puff->momy = FixedMul((fixed_t)(FRACUNIT * 1.3), finesine[angle]);
+    puff->momz = 0;
+    puff = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_PHOENIXPUFF);
+    angle = actor->angle - ANG90;
+    angle >>= ANGLETOFINESHIFT;
+    puff->momx = FixedMul((fixed_t)(FRACUNIT * 1.3), finecosine[angle]);
+    puff->momy = FixedMul((fixed_t)(FRACUNIT * 1.3), finesine[angle]);
+    puff->momz = 0;
+}
+
+//
+// This function was present in the Heretic 1.0 executable for the
+// removed "secondary phoenix flash" object (MT_PHOENIXFX_REMOVED).
+// The purpose of this object is unknown, as is this function.
+//
+
+void A_RemovedPhoenixFunc(mobj_t *actor)
+{
+    return;
+}
+
+void A_InitPhoenixPL2(player_t * player, pspdef_t * psp)
+{
+    player->flamecount = FLAME_THROWER_TICS;
+}
+
+void A_FirePhoenixPL2(player_t * player, pspdef_t * psp)
+{
+    mobj_t *mo;
+    mobj_t *pmo;
+    angle_t angle;
+    fixed_t x, y, z;
+    fixed_t slope;
+
+    if (--player->flamecount == 0)
+    {                           // Out of flame
+        P_SetPsprite(player, ps_weapon, HERETIC_S_PHOENIXATK2_4);
+        player->refire = 0;
+        return;
+    }
+    pmo = player->mo;
+    angle = pmo->angle;
+    x = pmo->x + (P_SubRandom() << 9);
+    y = pmo->y + (P_SubRandom() << 9);
+    z = pmo->z + 26 * FRACUNIT + ((player->lookdir) << FRACBITS) / 173;
+    if (pmo->flags2 & MF2_FEETARECLIPPED)
+    {
+        z -= FOOTCLIPSIZE;
+    }
+    slope = ((player->lookdir) << FRACBITS) / 173 + (FRACUNIT / 10);
+    mo = P_SpawnMobj(x, y, z, HERETIC_MT_PHOENIXFX2);
+    mo->target = pmo;
+    mo->angle = angle;
+    mo->momx = pmo->momx + FixedMul(mo->info->speed,
+                                    finecosine[angle >> ANGLETOFINESHIFT]);
+    mo->momy = pmo->momy + FixedMul(mo->info->speed,
+                                    finesine[angle >> ANGLETOFINESHIFT]);
+    mo->momz = FixedMul(mo->info->speed, slope);
+    if (!player->refire || !(leveltime % 38))
+    {
+        S_StartSound(player->mo, heretic_sfx_phopow);
+    }
+    P_CheckMissileSpawn(mo);
+}
+
+void A_ShutdownPhoenixPL2(player_t * player, pspdef_t * psp)
+{
+    player->ammo[am_phoenixrod] -= USE_PHRD_AMMO_2;
+}
+
+void A_FlameEnd(mobj_t * actor)
+{
+    actor->momz += (fixed_t)(1.5 * FRACUNIT);
+}
+
+void A_FloatPuff(mobj_t * puff)
+{
+    puff->momz += (fixed_t)(1.8 * FRACUNIT);
+}
+
+void A_GauntletAttack(player_t * player, pspdef_t * psp)
+{
+    angle_t angle;
+    int damage;
+    int slope;
+    int randVal;
+    fixed_t dist;
+
+    psp->sx = ((P_Random(pr_heretic) & 3) - 2) * FRACUNIT;
+    psp->sy = WEAPONTOP + (P_Random(pr_heretic) & 3) * FRACUNIT;
+    angle = player->mo->angle;
+    if (player->powers[pw_weaponlevel2])
+    {
+        damage = HITDICE(2);
+        dist = 4 * MELEERANGE;
+        angle += P_SubRandom() << 17;
+        PuffType = HERETIC_MT_GAUNTLETPUFF2;
+    }
+    else
+    {
+        damage = HITDICE(2);
+        dist = MELEERANGE + 1;
+        angle += P_SubRandom() << 18;
+        PuffType = HERETIC_MT_GAUNTLETPUFF1;
+    }
+    slope = P_AimLineAttack(player->mo, angle, dist);
+    P_LineAttack(player->mo, angle, dist, slope, damage);
+    if (!linetarget)
+    {
+        if (P_Random(pr_heretic) > 64)
+        {
+            player->extralight = !player->extralight;
+        }
+        S_StartSound(player->mo, heretic_sfx_gntful);
+        return;
+    }
+    randVal = P_Random(pr_heretic);
+    if (randVal < 64)
+    {
+        player->extralight = 0;
+    }
+    else if (randVal < 160)
+    {
+        player->extralight = 1;
+    }
+    else
+    {
+        player->extralight = 2;
+    }
+    if (player->powers[pw_weaponlevel2])
+    {
+        P_GiveBody(player, damage >> 1);
+        S_StartSound(player->mo, heretic_sfx_gntpow);
+    }
+    else
+    {
+        S_StartSound(player->mo, heretic_sfx_gnthit);
+    }
+    // turn to face target
+    angle = R_PointToAngle2(player->mo->x, player->mo->y,
+                            linetarget->x, linetarget->y);
+    if (angle - player->mo->angle > ANG180)
+    {
+        if (angle - player->mo->angle < -ANG90 / 20)
+            player->mo->angle = angle + ANG90 / 21;
+        else
+            player->mo->angle -= ANG90 / 20;
+    }
+    else
+    {
+        if (angle - player->mo->angle > ANG90 / 20)
+            player->mo->angle = angle - ANG90 / 21;
+        else
+            player->mo->angle += ANG90 / 20;
+    }
+    player->mo->flags |= MF_JUSTATTACKED;
 }
