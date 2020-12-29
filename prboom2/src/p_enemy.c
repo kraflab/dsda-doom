@@ -3721,6 +3721,287 @@ void A_WizAtk3(mobj_t * actor)
     }
 }
 
+void P_DropItem(mobj_t * source, mobjtype_t type, int special, int chance)
+{
+    mobj_t *mo;
+
+    if (P_Random(pr_heretic) > chance)
+    {
+        return;
+    }
+    mo = P_SpawnMobj(source->x, source->y,
+                     source->z + (source->height >> 1), type);
+    mo->momx = P_SubRandom() << 8;
+    mo->momy = P_SubRandom() << 8;
+    mo->momz = FRACUNIT * 5 + (P_Random(pr_heretic) << 10);
+    mo->flags |= MF_DROPPED;
+    mo->health = special;
+}
+
+void A_NoBlocking(mobj_t * actor)
+{
+    actor->flags &= ~MF_SOLID;
+    // Check for monsters dropping things
+    switch (actor->type)
+    {
+        case HERETIC_MT_MUMMY:
+        case HERETIC_MT_MUMMYLEADER:
+        case HERETIC_MT_MUMMYGHOST:
+        case HERETIC_MT_MUMMYLEADERGHOST:
+            P_DropItem(actor, HERETIC_MT_AMGWNDWIMPY, 3, 84);
+            break;
+        case HERETIC_MT_KNIGHT:
+        case HERETIC_MT_KNIGHTGHOST:
+            P_DropItem(actor, HERETIC_MT_AMCBOWWIMPY, 5, 84);
+            break;
+        case HERETIC_MT_WIZARD:
+            P_DropItem(actor, HERETIC_MT_AMBLSRWIMPY, 10, 84);
+            P_DropItem(actor, HERETIC_MT_ARTITOMEOFPOWER, 0, 4);
+            break;
+        case HERETIC_MT_HEAD:
+            P_DropItem(actor, HERETIC_MT_AMBLSRWIMPY, 10, 84);
+            P_DropItem(actor, HERETIC_MT_ARTIEGG, 0, 51);
+            break;
+        case HERETIC_MT_BEAST:
+            P_DropItem(actor, HERETIC_MT_AMCBOWWIMPY, 10, 84);
+            break;
+        case HERETIC_MT_CLINK:
+            P_DropItem(actor, HERETIC_MT_AMSKRDWIMPY, 20, 84);
+            break;
+        case HERETIC_MT_SNAKE:
+            P_DropItem(actor, HERETIC_MT_AMPHRDWIMPY, 5, 84);
+            break;
+        case HERETIC_MT_MINOTAUR:
+            P_DropItem(actor, HERETIC_MT_ARTISUPERHEAL, 0, 51);
+            P_DropItem(actor, HERETIC_MT_AMPHRDWIMPY, 10, 84);
+            break;
+        default:
+            break;
+    }
+}
+
+void A_PodPain(mobj_t * actor)
+{
+    int i;
+    int count;
+    int chance;
+    mobj_t *goo;
+
+    chance = P_Random(pr_heretic);
+    if (chance < 128)
+    {
+        return;
+    }
+    count = chance > 240 ? 2 : 1;
+    for (i = 0; i < count; i++)
+    {
+        goo = P_SpawnMobj(actor->x, actor->y,
+                          actor->z + 48 * FRACUNIT, HERETIC_MT_PODGOO);
+        goo->target = actor;
+        goo->momx = P_SubRandom() << 9;
+        goo->momy = P_SubRandom() << 9;
+        goo->momz = FRACUNIT / 2 + (P_Random(pr_heretic) << 9);
+    }
+}
+
+void A_RemovePod(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    if (actor->special2.m)
+    {
+        mo = (mobj_t *) actor->special2.m;
+        if (mo->special1.i > 0)
+        {
+            mo->special1.i--;
+        }
+    }
+}
+
+#define MAX_GEN_PODS 16
+
+void A_MakePod(mobj_t * actor)
+{
+    mobj_t *mo;
+    fixed_t x;
+    fixed_t y;
+
+    if (actor->special1.i == MAX_GEN_PODS)
+    {                           // Too many generated pods
+        return;
+    }
+    x = actor->x;
+    y = actor->y;
+    mo = P_SpawnMobj(x, y, ONFLOORZ, HERETIC_MT_POD);
+    if (P_CheckPosition(mo, x, y) == false)
+    {                           // Didn't fit
+        P_RemoveMobj(mo);
+        return;
+    }
+    P_SetMobjState(mo, HERETIC_S_POD_GROW1);
+    P_ThrustMobj(mo, P_Random(pr_heretic) << 24, (fixed_t) (4.5 * FRACUNIT));
+    S_StartSound(mo, heretic_sfx_newpod);
+    actor->special1.i++;          // Increment generated pod count
+    mo->special2.m = actor;       // Link the generator to the pod
+    return;
+}
+
+void A_ESound(mobj_t * mo)
+{
+    int sound = heretic_sfx_None;
+
+    switch (mo->type)
+    {
+        case HERETIC_MT_SOUNDWATERFALL:
+            sound = heretic_sfx_waterfl;
+            break;
+        case HERETIC_MT_SOUNDWIND:
+            sound = heretic_sfx_wind;
+            break;
+        default:
+            break;
+    }
+    S_StartSound(mo, sound);
+}
+
+void A_SpawnTeleGlitter(mobj_t * actor)
+{
+    mobj_t *mo;
+    int r1, r2;
+
+    r1 = P_Random(pr_heretic);
+    r2 = P_Random(pr_heretic);
+    mo = P_SpawnMobj(actor->x + ((r2 & 31) - 16) * FRACUNIT,
+                     actor->y + ((r1 & 31) - 16) * FRACUNIT,
+                     actor->subsector->sector->floorheight, HERETIC_MT_TELEGLITTER);
+    mo->momz = FRACUNIT / 4;
+}
+
+void A_SpawnTeleGlitter2(mobj_t * actor)
+{
+    mobj_t *mo;
+    int r1, r2;
+
+    r1 = P_Random(pr_heretic);
+    r2 = P_Random(pr_heretic);
+    mo = P_SpawnMobj(actor->x + ((r2 & 31) - 16) * FRACUNIT,
+                     actor->y + ((r1 & 31) - 16) * FRACUNIT,
+                     actor->subsector->sector->floorheight, HERETIC_MT_TELEGLITTER2);
+    mo->momz = FRACUNIT / 4;
+}
+
+void A_AccTeleGlitter(mobj_t * actor)
+{
+    if (++actor->health > 35)
+    {
+        actor->momz += actor->momz / 2;
+    }
+}
+
+void A_InitKeyGizmo(mobj_t * gizmo)
+{
+    mobj_t *mo;
+    statenum_t state = HERETIC_S_NULL;
+
+    switch (gizmo->type)
+    {
+        case HERETIC_MT_KEYGIZMOBLUE:
+            state = HERETIC_S_KGZ_BLUEFLOAT1;
+            break;
+        case HERETIC_MT_KEYGIZMOGREEN:
+            state = HERETIC_S_KGZ_GREENFLOAT1;
+            break;
+        case HERETIC_MT_KEYGIZMOYELLOW:
+            state = HERETIC_S_KGZ_YELLOWFLOAT1;
+            break;
+        default:
+            break;
+    }
+    mo = P_SpawnMobj(gizmo->x, gizmo->y, gizmo->z + 60 * FRACUNIT,
+                     HERETIC_MT_KEYGIZMOFLOAT);
+    P_SetMobjState(mo, state);
+}
+
+void A_VolcanoSet(mobj_t * volcano)
+{
+    volcano->tics = 105 + (P_Random(pr_heretic) & 127);
+}
+
+void A_VolcanoBlast(mobj_t * volcano)
+{
+    int i;
+    int count;
+    mobj_t *blast;
+    angle_t angle;
+
+    count = 1 + (P_Random(pr_heretic) % 3);
+    for (i = 0; i < count; i++)
+    {
+        blast = P_SpawnMobj(volcano->x, volcano->y, volcano->z + 44 * FRACUNIT, HERETIC_MT_VOLCANOBLAST);
+        blast->target = volcano;
+        angle = P_Random(pr_heretic) << 24;
+        blast->angle = angle;
+        angle >>= ANGLETOFINESHIFT;
+        blast->momx = FixedMul(1 * FRACUNIT, finecosine[angle]);
+        blast->momy = FixedMul(1 * FRACUNIT, finesine[angle]);
+        blast->momz = (fixed_t)(2.5 * FRACUNIT) + (P_Random(pr_heretic) << 10);
+        S_StartSound(blast, heretic_sfx_volsht);
+        P_CheckMissileSpawn(blast);
+    }
+}
+
+void A_VolcBallImpact(mobj_t * ball)
+{
+    unsigned int i;
+    mobj_t *tiny;
+    angle_t angle;
+
+    if (ball->z <= ball->floorz)
+    {
+        ball->flags |= MF_NOGRAVITY;
+        ball->flags2 &= ~MF2_LOGRAV;
+        ball->z += 28 * FRACUNIT;
+        //ball->momz = 3*FRACUNIT;
+    }
+    P_RadiusAttack(ball, ball->target, 25);
+    for (i = 0; i < 4; i++)
+    {
+        tiny = P_SpawnMobj(ball->x, ball->y, ball->z, HERETIC_MT_VOLCANOTBLAST);
+        tiny->target = ball;
+        angle = i * ANG90;
+        tiny->angle = angle;
+        angle >>= ANGLETOFINESHIFT;
+        tiny->momx = FixedMul((fixed_t)(FRACUNIT * .7), finecosine[angle]);
+        tiny->momy = FixedMul((fixed_t)(FRACUNIT * .7), finesine[angle]);
+        tiny->momz = FRACUNIT + (P_Random(pr_heretic) << 9);
+        P_CheckMissileSpawn(tiny);
+    }
+}
+
+void A_CheckSkullFloor(mobj_t * actor)
+{
+    if (actor->z <= actor->floorz)
+    {
+        P_SetMobjState(actor, HERETIC_S_BLOODYSKULLX1);
+    }
+}
+
+void A_CheckSkullDone(mobj_t * actor)
+{
+    if (actor->special2.i == 666)
+    {
+        P_SetMobjState(actor, HERETIC_S_BLOODYSKULLX2);
+    }
+}
+
+void A_CheckBurnGone(mobj_t * actor)
+{
+    if (actor->special2.i == 666)
+    {
+        P_SetMobjState(actor, HERETIC_S_PLAY_FDTH20);
+    }
+}
+
 void A_FreeTargMobj(mobj_t * mo)
 {
     mo->momx = mo->momy = mo->momz = 0;
@@ -3729,4 +4010,35 @@ void A_FreeTargMobj(mobj_t * mo)
     mo->flags |= MF_CORPSE | MF_DROPOFF | MF_NOGRAVITY;
     mo->flags2 &= ~(MF2_PASSMOBJ | MF2_LOGRAV);
     mo->player = NULL;
+}
+
+#define BODYQUESIZE 32
+mobj_t *bodyque[BODYQUESIZE];
+int bodyqueslot;
+
+void A_AddPlayerCorpse(mobj_t * actor)
+{
+    if (bodyqueslot >= BODYQUESIZE)
+    {                           // Too many player corpses - remove an old one
+        P_RemoveMobj(bodyque[bodyqueslot % BODYQUESIZE]);
+    }
+    bodyque[bodyqueslot % BODYQUESIZE] = actor;
+    bodyqueslot++;
+}
+
+void A_FlameSnd(mobj_t * actor)
+{
+    S_StartSound(actor, heretic_sfx_hedat1);    // Burn sound
+}
+
+void A_HideThing(mobj_t * actor)
+{
+    //P_UnsetThingPosition(actor);
+    actor->flags2 |= MF2_DONTDRAW;
+}
+
+void A_UnHideThing(mobj_t * actor)
+{
+    //P_SetThingPosition(actor);
+    actor->flags2 &= ~MF2_DONTDRAW;
 }
