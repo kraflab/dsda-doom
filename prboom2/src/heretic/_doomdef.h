@@ -72,42 +72,6 @@
 #define NUMARTIFCTS	28
 #define MAXPLAYERS	4
 
-#define	BT_ATTACK		1
-#define	BT_USE			2
-#define	BT_CHANGE		4       // if true, the next 3 bits hold weapon num
-#define	BT_WEAPONMASK	(8+16+32)
-#define	BT_WEAPONSHIFT	3
-
-#define BT_SPECIAL		128     // game events, not really buttons
-#define	BTS_SAVEMASK	(4+8+16)
-#define	BTS_SAVESHIFT	2
-#define	BT_SPECIALMASK	3
-#define	BTS_PAUSE		1       // pause the game
-#define	BTS_SAVEGAME	2       // save the game at each console
-// savegame slot numbers occupy the second byte of buttons
-
-typedef enum
-{
-    GS_LEVEL,
-    GS_INTERMISSION,
-    GS_FINALE,
-    GS_DEMOSCREEN
-} gamestate_t;
-
-typedef enum
-{
-    ga_nothing,
-    ga_loadlevel,
-    ga_newgame,
-    ga_loadgame,
-    ga_savegame,
-    ga_playdemo,
-    ga_completed,
-    ga_victory,
-    ga_worlddone,
-    ga_screenshot
-} gameaction_t;
-
 typedef enum
 {
     wipe_0,
@@ -206,12 +170,6 @@ typedef struct
     fixed_t x, y, z;
 } degenmobj_t;
 
-//
-// frame flags
-//
-#define	FF_FULLBRIGHT	0x8000  // flag in thing->frame
-#define FF_FRAMEMASK	0x7fff
-
 //=============================================================================
 typedef enum
 {
@@ -219,22 +177,6 @@ typedef enum
     PST_DEAD,                   // dead on the ground
     PST_REBORN                  // ready to restart
 } playerstate_t;
-
-// psprites are scaled shapes directly on the view screen
-// coordinates are given for a 320*200 view screen
-typedef enum
-{
-    ps_weapon,
-    ps_flash,
-    NUMPSPRITES
-} psprnum_t;
-
-typedef struct
-{
-    state_t *state;             // a NULL state means not active
-    int tics;
-    fixed_t sx, sy;
-} pspdef_t;
 
 typedef enum
 {
@@ -258,19 +200,6 @@ typedef enum
     NUMWEAPONS,
     wp_nochange
 } weapontype_t;
-
-#define AMMO_GWND_WIMPY 10
-#define AMMO_GWND_HEFTY 50
-#define AMMO_CBOW_WIMPY 5
-#define AMMO_CBOW_HEFTY 20
-#define AMMO_BLSR_WIMPY 10
-#define AMMO_BLSR_HEFTY 25
-#define AMMO_SKRD_WIMPY 20
-#define AMMO_SKRD_HEFTY 100
-#define AMMO_PHRD_WIMPY 1
-#define AMMO_PHRD_HEFTY 10
-#define AMMO_MACE_WIMPY 20
-#define AMMO_MACE_HEFTY 100
 
 typedef enum
 {
