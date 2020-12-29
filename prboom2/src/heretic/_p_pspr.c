@@ -657,38 +657,6 @@ void P_UpdateBeak(player_t * player, pspdef_t * psp)
 
 //---------------------------------------------------------------------------
 //
-// PROC A_BeakReady
-//
-//---------------------------------------------------------------------------
-
-void A_BeakReady(player_t * player, pspdef_t * psp)
-{
-    if (player->cmd.buttons & BT_ATTACK)
-    {                           // Chicken beak attack
-        player->attackdown = true;
-        P_SetMobjState(player->mo, S_CHICPLAY_ATK1);
-        if (player->powers[pw_weaponlevel2])
-        {
-            P_SetPsprite(player, ps_weapon, S_BEAKATK2_1);
-        }
-        else
-        {
-            P_SetPsprite(player, ps_weapon, S_BEAKATK1_1);
-        }
-        P_NoiseAlert(player->mo, player->mo);
-    }
-    else
-    {
-        if (player->mo->state == &states[S_CHICPLAY_ATK1])
-        {                       // Take out of attack state
-            P_SetMobjState(player->mo, S_CHICPLAY);
-        }
-        player->attackdown = false;
-    }
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC A_ReFire
 //
 // The player can re fire the weapon without lowering it entirely.

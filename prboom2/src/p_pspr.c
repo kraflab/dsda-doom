@@ -975,3 +975,31 @@ void P_MovePsprites(player_t *player)
   player->psprites[ps_flash].sx = player->psprites[ps_weapon].sx;
   player->psprites[ps_flash].sy = player->psprites[ps_weapon].sy;
 }
+
+// heretic
+
+void A_BeakReady(player_t * player, pspdef_t * psp)
+{
+    if (player->cmd.buttons & BT_ATTACK)
+    {                           // Chicken beak attack
+        player->attackdown = true;
+        P_SetMobjState(player->mo, HERETIC_S_CHICPLAY_ATK1);
+        if (player->powers[pw_weaponlevel2])
+        {
+            P_SetPsprite(player, ps_weapon, HERETIC_S_BEAKATK2_1);
+        }
+        else
+        {
+            P_SetPsprite(player, ps_weapon, HERETIC_S_BEAKATK1_1);
+        }
+        P_NoiseAlert(player->mo, player->mo);
+    }
+    else
+    {
+        if (player->mo->state == &states[HERETIC_S_CHICPLAY_ATK1])
+        {                       // Take out of attack state
+            P_SetMobjState(player->mo, HERETIC_S_CHICPLAY);
+        }
+        player->attackdown = false;
+    }
+}
