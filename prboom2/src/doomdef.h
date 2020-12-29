@@ -231,6 +231,12 @@ typedef enum {
   pw_ironfeet,
   pw_allmap,
   pw_infrared,
+
+  // heretic
+  pw_weaponlevel2,
+  pw_flight,
+  pw_shield,
+  pw_health2,
   NUMPOWERS
 } powertype_t;
 

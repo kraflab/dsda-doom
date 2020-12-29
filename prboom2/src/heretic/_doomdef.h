@@ -235,20 +235,6 @@ typedef enum
     NUMARTIFACTS
 } artitype_t;
 
-typedef enum
-{
-    pw_None,
-    pw_invulnerability,
-    pw_invisibility,
-    pw_allmap,
-    pw_infrared,
-    pw_weaponlevel2,
-    pw_flight,
-    pw_shield,
-    pw_health2,
-    NUMPOWERS
-} powertype_t;
-
 #define	INVULNTICS (30*35)
 #define	INVISTICS (60*35)
 #define	INFRATICS (120*35)
