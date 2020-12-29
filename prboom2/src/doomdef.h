@@ -214,6 +214,17 @@ typedef enum {
   wp_chainsaw,
   wp_supershotgun,
 
+  // heretic
+  wp_staff = 0,
+  wp_goldwand,
+  wp_crossbow,
+  wp_blaster,
+  wp_skullrod,
+  wp_phoenixrod,
+  wp_mace,
+  wp_gauntlets,
+  wp_beak,
+
   NUMWEAPONS,
   wp_nochange              // No pending weapon change.
 } weapontype_t;
@@ -224,8 +235,17 @@ typedef enum {
   am_shell,   // Shotgun / double barreled shotgun.
   am_cell,    // Plasma rifle, BFG.
   am_misl,    // Missile launcher.
+
+  // heretic
+  am_goldwand = 0,
+  am_crossbow,
+  am_blaster,
+  am_skullrod,
+  am_phoenixrod,
+  am_mace,
+
   NUMAMMO,
-  am_noammo   // Unlimited for chainsaw / fist.
+  am_noammo   // fist, chainsaw, staff, gauntlets
 } ammotype_t;
 
 // Power up artifacts.

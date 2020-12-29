@@ -91,35 +91,6 @@ typedef enum
 ===============================================================================
 */
 
-struct player_s;
-
-typedef enum
-{
-    wp_staff,
-    wp_goldwand,
-    wp_crossbow,
-    wp_blaster,
-    wp_skullrod,
-    wp_phoenixrod,
-    wp_mace,
-    wp_gauntlets,
-    wp_beak,
-    NUMWEAPONS,
-    wp_nochange
-} weapontype_t;
-
-typedef enum
-{
-    am_goldwand,
-    am_crossbow,
-    am_blaster,
-    am_skullrod,
-    am_phoenixrod,
-    am_mace,
-    NUMAMMO,
-    am_noammo                   // staff, gauntlets
-} ammotype_t;
-
 typedef struct
 {
     ammotype_t ammo;

@@ -57,7 +57,7 @@ void A_BossDeath();
 void A_StaffAttackPL1();
 void A_StaffAttackPL2();
   void A_BeakReady();
-void A_BeakRaise();
+  void A_BeakRaise();
 void A_BeakAttackPL1();
 void A_BeakAttackPL2();
 void A_GauntletAttack();
