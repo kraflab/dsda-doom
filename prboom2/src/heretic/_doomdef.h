@@ -170,14 +170,6 @@ typedef struct
     fixed_t x, y, z;
 } degenmobj_t;
 
-//=============================================================================
-typedef enum
-{
-    PST_LIVE,                   // playing
-    PST_DEAD,                   // dead on the ground
-    PST_REBORN                  // ready to restart
-} playerstate_t;
-
 typedef enum
 {
     key_yellow,
