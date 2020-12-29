@@ -2832,6 +2832,20 @@ void A_LineEffect(mobj_t *mo)
 
 // heretic
 
+#include "heretic/def.h"
+
+#define MAX_BOSS_SPOTS 8
+
+typedef struct
+{
+    fixed_t x;
+    fixed_t y;
+    angle_t angle;
+} BossSpot_t;
+
+static int BossSpotCount;
+static BossSpot_t BossSpots[MAX_BOSS_SPOTS];
+
 void A_DripBlood(mobj_t * actor)
 {
     mobj_t *mo;

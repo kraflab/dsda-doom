@@ -25,24 +25,6 @@
 #include "s_sound.h"
 #include "v_video.h"
 
-// Macros
-
-#define MAX_BOSS_SPOTS 8
-
-// Types
-
-typedef struct
-{
-    fixed_t x;
-    fixed_t y;
-    angle_t angle;
-} BossSpot_t;
-
-// Private Data
-
-static int BossSpotCount;
-static BossSpot_t BossSpots[MAX_BOSS_SPOTS];
-
 //----------------------------------------------------------------------------
 //
 // PROC P_InitMonsters
