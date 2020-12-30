@@ -1162,4 +1162,8 @@ int P_ActivateInStasisCeiling
 
 mobj_t* P_GetPushThing(int);                                // phares 3/23/98
 
+// heretic
+
+extern int *TerrainTypes;
+
 #endif

@@ -3522,3 +3522,20 @@ static void P_SpawnPushers(void)
 // phares 3/20/98: End of Pusher effects
 //
 ////////////////////////////////////////////////////////////////////////////
+
+// heretic
+
+int *TerrainTypes;
+struct
+{
+    const char *name;
+    int type;
+} TerrainTypeDefs[] =
+{
+    { "FLTWAWA1", FLOOR_WATER },
+    { "FLTFLWW1", FLOOR_WATER },
+    { "FLTLAVA1", FLOOR_LAVA },
+    { "FLATHUH1", FLOOR_LAVA },
+    { "FLTSLUD1", FLOOR_SLUDGE },
+    { "END", -1 }
+};

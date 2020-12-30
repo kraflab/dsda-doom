@@ -193,21 +193,6 @@ animdef_t animdefs[] = {
 anim_t anims[MAXANIMS];
 anim_t *lastanim;
 
-int *TerrainTypes;
-struct
-{
-    const char *name;
-    int type;
-} TerrainTypeDefs[] =
-{
-    { "FLTWAWA1", FLOOR_WATER },
-    { "FLTFLWW1", FLOOR_WATER },
-    { "FLTLAVA1", FLOOR_LAVA },
-    { "FLATHUH1", FLOOR_LAVA },
-    { "FLTSLUD1", FLOOR_SLUDGE },
-    { "END", -1 }
-};
-
 mobj_t LavaInflictor;
 
 // [AM] Fractional part of the current tic, in the half-open
