@@ -40,6 +40,8 @@
 #include "d_think.h"
 #include "doomtype.h"
 
+#include "dsda/global.h"
+
 /********************************************************************
  * Sprite name enumeration - must match info.c                      *
  ********************************************************************/
@@ -2630,15 +2632,6 @@ typedef struct
   long        misc1, misc2; /* apparently never used in DOOM               */
 } state_t;
 
-
-extern state_t* states;
-extern const char** sprnames;
-extern int num_states;
-
-extern state_t doom_states[NUMSTATES];
-extern const char *doom_sprnames[];
-extern int num_sprites;
-
 /********************************************************************
  * Thing enumeration -- must match info.c                           *
  ********************************************************************
@@ -3089,13 +3082,6 @@ typedef struct
     mobjtype_t droppeditem;
 } doom_mobjinfo_t;
 
-extern doom_mobjinfo_t doom_mobjinfo[NUMMOBJTYPES];
-
-extern mobjinfo_t* mobjinfo;
-extern int num_mobj_types;
-
-// heretic
-
 typedef struct
 {
     int doomednum;
@@ -3124,8 +3110,21 @@ typedef struct
     int flags2;
 } heretic_mobjinfo_t;
 
+// all the stuff - dynamically selected in global.c
+
 extern state_t heretic_states[HERETIC_NUMSTATES];
 extern const char *heretic_sprnames[];
 extern heretic_mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES];
+
+extern state_t doom_states[NUMSTATES];
+extern const char *doom_sprnames[];
+extern doom_mobjinfo_t doom_mobjinfo[NUMMOBJTYPES];
+
+extern state_t* states;
+extern int num_states;
+extern const char** sprnames;
+extern int num_sprites;
+extern mobjinfo_t* mobjinfo;
+extern int num_mobj_types;
 
 #endif
