@@ -55,6 +55,9 @@
 
 #include "heretic/def.h"
 
+// HERETIC_TODO: static NUMSTATES arrays here - probably fine?
+// NUMSTATES > HERETIC_NUMSTATES
+
 //
 // P_SetMobjState
 // Returns true if the mobj is still present.

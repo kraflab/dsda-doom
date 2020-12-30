@@ -24,6 +24,12 @@
 
 #include "global.h"
 
+state_t* states;
+int num_states;
+
+const char** sprnames;
+int num_sprites;
+
 mobjinfo_t* mobjinfo;
 int num_mobj_types;
 
@@ -34,11 +40,23 @@ static void dsda_AllocateMobjInfo(int count) {
   memset(mobjinfo, 0, sizeof(mobjinfo_t) * num_mobj_types);
 }
 
+static void dsda_SetStates(state_t* state_list, int count) {
+  states = state_list;
+  num_states = count;
+}
+
+static void dsda_SetSpriteNames(const char** sprite_name_list, int count) {
+  sprnames = sprite_name_list;
+  num_sprites = count;
+}
+
 static void dsda_InitDoom(void) {
   int i;
   doom_mobjinfo_t* mobjinfo_p;
 
   dsda_AllocateMobjInfo(NUMMOBJTYPES);
+  dsda_SetStates(doom_states, NUMSTATES);
+  dsda_SetSpriteNames(doom_sprnames, NUMSPRITES);
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -78,7 +96,9 @@ static void dsda_InitHeretic(void) {
   heretic_mobjinfo_t* mobjinfo_p;
 
   dsda_AllocateMobjInfo(HERETIC_NUMMOBJTYPES);
-
+  dsda_SetStates(heretic_states, HERETIC_NUMSTATES);
+  dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
+  
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES; ++i) {
     mobjinfo_p = &heretic_mobjinfo[i];

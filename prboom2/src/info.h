@@ -2630,9 +2630,14 @@ typedef struct
   long        misc1, misc2; /* apparently never used in DOOM               */
 } state_t;
 
-/* these are in info.c */
-extern state_t  states[NUMSTATES];
-extern const char *sprnames[]; /* 1/17/98 killough - CPhipps - const */
+
+extern state_t* states;
+extern const char** sprnames;
+extern int num_states;
+
+extern state_t doom_states[NUMSTATES];
+extern const char *doom_sprnames[];
+extern int num_sprites;
 
 /********************************************************************
  * Thing enumeration -- must match info.c                           *

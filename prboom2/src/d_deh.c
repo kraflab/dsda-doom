@@ -57,6 +57,8 @@
 #define TRUE 1
 #define FALSE 0
 
+// HERETIC_TODO: add init for static arrays of NUMSPRITES, NUMSTATES, NUMMOBJTYPES ?
+
 // e6y: for compatibility with BOOM deh parser
 int deh_strcasecmp(const char *str1, const char *str2)
 {
@@ -1405,7 +1407,7 @@ void D_BuildBEXTables(void)
      deh_codeptr[i] = states[i].action;
 
    // initialize extra dehacked states
-   for ( ; i < NUMSTATES; i++)
+   for ( ; i < num_states; i++)
    {
      states[i].sprite = SPR_TNT1;
      states[i].frame = 0;
@@ -1417,9 +1419,9 @@ void D_BuildBEXTables(void)
      deh_codeptr[i] = states[i].action;
    }
 
-   for(i = 0; i < NUMSPRITES; i++)
+   for(i = 0; i < num_sprites; i++)
       deh_spritenames[i] = strdup(sprnames[i]);
-   deh_spritenames[NUMSPRITES] = NULL;
+   deh_spritenames[num_sprites] = NULL;
 
    for(i = 1; i < NUMMUSIC; i++)
       deh_musicnames[i] = strdup(S_music[i].name);
@@ -1463,7 +1465,6 @@ int deh_mega_health;
 dboolean IsDehMaxHealth = false;
 dboolean IsDehMaxSoul = false;
 dboolean IsDehMegaHealth = false;
-// HERETIC_TODO: should this dynamically be num_mobj_types?
 dboolean DEH_mobjinfo_bits[NUMMOBJTYPES] = {0};
 
 void deh_changeCompTranslucency(void)
@@ -1730,10 +1731,10 @@ static void deh_procBexCodePointers(DEHFILE *fpin, FILE* fpout, char *line)
 
       if (fpout) fprintf(fpout,"Processing pointer at index %d: %s\n",
                          indexnum, mnemonic);
-      if (indexnum < 0 || indexnum >= NUMSTATES)
+      if (indexnum < 0 || indexnum >= num_states)
         {
           if (fpout) fprintf(fpout,"Bad pointer number %d of %d\n",
-                             indexnum, NUMSTATES);
+                             indexnum, num_states);
           return; // killough 10/98: fix SegViol
         }
       strcpy(key,"A_");  // reusing the key area to prefix the mnemonic
@@ -2022,8 +2023,8 @@ static void deh_procFrame(DEHFILE *fpin, FILE* fpout, char *line)
   // killough 8/98: allow hex numbers in input:
   sscanf(inbuffer,"%s %i",key, &indexnum);
   if (fpout) fprintf(fpout,"Processing Frame at index %d: %s\n",indexnum,key);
-  if (indexnum < 0 || indexnum >= NUMSTATES)
-    if (fpout) fprintf(fpout,"Bad frame number %d of %d\n",indexnum, NUMSTATES);
+  if (indexnum < 0 || indexnum >= num_states)
+    if (fpout) fprintf(fpout,"Bad frame number %d of %d\n",indexnum, num_states);
 
   while (!dehfeof(fpin) && *inbuffer && (*inbuffer != ' '))
     {
@@ -2109,10 +2110,10 @@ static void deh_procPointer(DEHFILE *fpin, FILE* fpout, char *line) // done
     }
 
   if (fpout) fprintf(fpout,"Processing Pointer at index %d: %s\n",indexnum, key);
-  if (indexnum < 0 || indexnum >= NUMSTATES)
+  if (indexnum < 0 || indexnum >= num_states)
     {
       if (fpout)
-        fprintf(fpout,"Bad pointer number %d of %d\n",indexnum, NUMSTATES);
+        fprintf(fpout,"Bad pointer number %d of %d\n",indexnum, num_states);
       return;
     }
 
@@ -2127,10 +2128,10 @@ static void deh_procPointer(DEHFILE *fpin, FILE* fpout, char *line) // done
           continue;
         }
 
-      if (value >= NUMSTATES)
+      if (value >= num_states)
         {
           if (fpout)
-            fprintf(fpout,"Bad pointer number %ld of %d\n",(long)value, NUMSTATES);
+            fprintf(fpout,"Bad pointer number %ld of %d\n",(long)value, num_states);
           return;
         }
 
@@ -2140,7 +2141,7 @@ static void deh_procPointer(DEHFILE *fpin, FILE* fpout, char *line) // done
           if (fpout) fprintf(fpout," - applied from codeptr[%ld] to states[%d]\n",
            (long)value,indexnum);
           // Write BEX-oriented line to match:
-          // for (i=0;i<NUMSTATES;i++) could go past the end of the array
+          // for (i=0;i<num_states;i++) could go past the end of the array
           for (i=0;i<sizeof(deh_bexptrs)/sizeof(*deh_bexptrs);i++)
             {
               if (!memcmp(&deh_bexptrs[i].cptr,&deh_codeptr[value],sizeof(actionf_t)))
