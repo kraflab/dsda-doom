@@ -3525,6 +3525,8 @@ static void P_SpawnPushers(void)
 
 // heretic
 
+#include "heretic/def.h"
+
 int *TerrainTypes;
 struct
 {

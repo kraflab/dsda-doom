@@ -979,6 +979,8 @@ void P_MovePsprites(player_t *player)
 // heretic
 
 #include "heretic/def.h"
+#include "p_user.h"
+#include "p_maputl.h"
 
 #define MAGIC_JUNK 1234
 #define FLAME_THROWER_TICS 10*35
