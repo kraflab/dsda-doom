@@ -587,3 +587,19 @@ void P_PlayerThink (player_t* player)
     player->powers[pw_invulnerability] & 8) ? INVERSECOLORMAP :
     player->powers[pw_infrared] > 4*32 || player->powers[pw_infrared] & 8;
 }
+
+// heretic
+
+int P_GetPlayerNum(player_t * player)
+{
+    int i;
+
+    for (i = 0; i < MAXPLAYERS; i++)
+    {
+        if (player == &players[i])
+        {
+            return (i);
+        }
+    }
+    return (0);
+}
