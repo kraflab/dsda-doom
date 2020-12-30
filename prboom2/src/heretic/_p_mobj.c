@@ -114,54 +114,6 @@ void P_FloorBounceMissile(mobj_t * mo)
 
 //----------------------------------------------------------------------------
 //
-// FUNC P_FaceMobj
-//
-// Returns 1 if 'source' needs to turn clockwise, or 0 if 'source' needs
-// to turn counter clockwise.  'delta' is set to the amount 'source'
-// needs to turn.
-//
-//----------------------------------------------------------------------------
-
-int P_FaceMobj(mobj_t * source, mobj_t * target, angle_t * delta)
-{
-    angle_t diff;
-    angle_t angle1;
-    angle_t angle2;
-
-    angle1 = source->angle;
-    angle2 = R_PointToAngle2(source->x, source->y, target->x, target->y);
-    if (angle2 > angle1)
-    {
-        diff = angle2 - angle1;
-        if (diff > ANG180)
-        {
-            *delta = ANG_MAX - diff;
-            return (0);
-        }
-        else
-        {
-            *delta = diff;
-            return (1);
-        }
-    }
-    else
-    {
-        diff = angle1 - angle2;
-        if (diff > ANG180)
-        {
-            *delta = ANG_MAX - diff;
-            return (1);
-        }
-        else
-        {
-            *delta = diff;
-            return (0);
-        }
-    }
-}
-
-//----------------------------------------------------------------------------
-//
 // PROC P_XYMovement
 //
 //----------------------------------------------------------------------------
