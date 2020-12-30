@@ -556,7 +556,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
       (thing->intflags & MIF_ARMED ||              // Thing is an armed mine
        sentient(thing)) &&                         // ... or a sentient thing
       (thing->type != tmthing->type ||             // only different species
-       thing->type == MT_PLAYER) &&                // ... or different players
+       thing->type == g_mt_player) &&                // ... or different players
       thing->z + thing->height >= tmthing->z &&    // touches vertically
       tmthing->z + tmthing->height >= thing->z &&
       (thing->type ^ MT_PAIN) |                    // PEs and lost souls
@@ -609,7 +609,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     return true;                // Don't hit same species as originator.
   else
     // e6y: Dehacked support - monsters infight
-    if (thing->type != MT_PLAYER && !monsters_infight) // Explode, but do no damage.
+    if (thing->type != g_mt_player && !monsters_infight) // Explode, but do no damage.
       return false;         // Let players missile other players.
       }
 

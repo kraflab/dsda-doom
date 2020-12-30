@@ -18,6 +18,8 @@
 #ifndef __DSDA_GLOBAL__
 #define __DSDA_GLOBAL__
 
+extern int g_mt_player;
+
 void dsda_InitGlobal(void);
 
 #endif

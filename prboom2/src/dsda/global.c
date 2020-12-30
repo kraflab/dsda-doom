@@ -33,6 +33,8 @@ int num_sprites;
 mobjinfo_t* mobjinfo;
 int num_mobj_types;
 
+int g_mt_player;
+
 static void dsda_AllocateMobjInfo(int count) {
   num_mobj_types = count;
   
@@ -57,6 +59,8 @@ static void dsda_InitDoom(void) {
   dsda_AllocateMobjInfo(NUMMOBJTYPES);
   dsda_SetStates(doom_states, NUMSTATES);
   dsda_SetSpriteNames(doom_sprnames, NUMSPRITES);
+  
+  g_mt_player = MT_PLAYER;
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -98,6 +102,8 @@ static void dsda_InitHeretic(void) {
   dsda_AllocateMobjInfo(HERETIC_NUMMOBJTYPES);
   dsda_SetStates(heretic_states, HERETIC_NUMSTATES);
   dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
+  
+  g_mt_player = HERETIC_MT_PLAYER;
   
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES; ++i) {

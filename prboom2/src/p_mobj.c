@@ -908,7 +908,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   if (!mbf_features)
     mobj->flags &= ~(MF_BOUNCES | MF_FRIEND | MF_TOUCHY);
   else
-    if (type == MT_PLAYER)         // Except in old demos, players
+    if (type == g_mt_player)         // Except in old demos, players
       mobj->flags |= MF_FRIEND;    // are always friends.
 
   mobj->health = info->spawnhealth;
@@ -1164,7 +1164,7 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   x    = mthing->x << FRACBITS;
   y    = mthing->y << FRACBITS;
   z    = ONFLOORZ;
-  mobj = P_SpawnMobj (x,y,z, MT_PLAYER);
+  mobj = P_SpawnMobj (x,y,z, g_mt_player);
 
   if (deathmatch)
     mobj->index = TracerGetDeathmatchStart(n);
@@ -1463,7 +1463,7 @@ spawnit:
   // the player can walk under it, to help people with map debugging
   if (!((~mobj->flags) & (MF_SOLID | MF_SPAWNCEILING)) // solid and hanging
       // invert everything, then both bits should be clear
-      && mobj->floorz + mobjinfo[MT_PLAYER].height <= mobj->z) // head <= base
+      && mobj->floorz + mobjinfo[g_mt_player].height <= mobj->z) // head <= base
       // player under body's head height <= bottom of body
   {
     lprintf(LO_WARN, "P_SpawnMapThing: solid hanging body in tall sector at "
