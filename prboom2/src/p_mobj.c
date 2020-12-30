@@ -1764,3 +1764,41 @@ void A_ContMobjSound(mobj_t * actor)
             break;
     }
 }
+
+mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type, angle_t angle, fixed_t momz)
+{
+    fixed_t z;
+    mobj_t *mo;
+
+    switch (type)
+    {
+        case HERETIC_MT_MNTRFX1:       // Minotaur swing attack missile
+            z = source->z + 40 * FRACUNIT;
+            break;
+        case HERETIC_MT_MNTRFX2:       // Minotaur floor fire missile
+            z = ONFLOORZ;
+            break;
+        case HERETIC_MT_SRCRFX1:       // Sorcerer Demon fireball
+            z = source->z + 48 * FRACUNIT;
+            break;
+        default:
+            z = source->z + 32 * FRACUNIT;
+            break;
+    }
+    if (source->flags2 & MF2_FEETARECLIPPED)
+    {
+        z -= FOOTCLIPSIZE;
+    }
+    mo = P_SpawnMobj(source->x, source->y, z, type);
+    if (mo->info->seesound)
+    {
+        S_StartSound(mo, mo->info->seesound);
+    }
+    mo->target = source;        // Originator
+    mo->angle = angle;
+    angle >>= ANGLETOFINESHIFT;
+    mo->momx = FixedMul(mo->info->speed, finecosine[angle]);
+    mo->momy = FixedMul(mo->info->speed, finesine[angle]);
+    mo->momz = momz;
+    return (P_CheckMissileSpawn(mo) ? mo : NULL);
+}

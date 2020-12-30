@@ -127,8 +127,6 @@ int P_GetThingFloorType(mobj_t * thing);
 int P_HitFloor(mobj_t * thing);
 boolean P_CheckMissileSpawn(mobj_t * missile);
 mobj_t *P_SpawnMissile(mobj_t * source, mobj_t * dest, mobjtype_t type);
-mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type,
-                            angle_t angle, fixed_t momz);
 mobj_t *P_SpawnPlayerMissile(mobj_t * source, mobjtype_t type);
 mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle);
 
