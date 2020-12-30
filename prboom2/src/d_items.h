@@ -57,4 +57,9 @@ typedef struct
 extern  weaponinfo_t    weaponinfo[NUMWEAPONS+2];
 extern int ammopershot[NUMWEAPONS+2];
 
+// heretic
+
+extern weaponinfo_t wpnlev1info[NUMWEAPONS];
+extern weaponinfo_t wpnlev2info[NUMWEAPONS];
+
 #endif

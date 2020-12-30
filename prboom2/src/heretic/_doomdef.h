@@ -91,9 +91,6 @@ typedef enum
 ===============================================================================
 */
 
-extern weaponinfo_t wpnlev1info[NUMWEAPONS];
-extern weaponinfo_t wpnlev2info[NUMWEAPONS];
-
 #define	INVULNTICS (30*35)
 #define	INVISTICS (60*35)
 #define	INFRATICS (120*35)
