@@ -1926,3 +1926,40 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     th->momz = FixedMul(th->info->speed, slope);
     return (P_CheckMissileSpawn(th) ? th : NULL);
 }
+
+int P_HitFloor(mobj_t * thing)
+{
+    mobj_t *mo;
+
+    if (thing->floorz != thing->subsector->sector->floorheight)
+    {                           // don't splash if landing on the edge above water/lava/etc....
+        return (FLOOR_SOLID);
+    }
+    switch (P_GetThingFloorType(thing))
+    {
+        case FLOOR_WATER:
+            P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SPLASHBASE);
+            mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SPLASH);
+            mo->target = thing;
+            mo->momx = P_SubRandom() << 8;
+            mo->momy = P_SubRandom() << 8;
+            mo->momz = 2 * FRACUNIT + (P_Random(pr_heretic) << 8);
+            S_StartSound(mo, heretic_sfx_gloop);
+            return (FLOOR_WATER);
+        case FLOOR_LAVA:
+            P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_LAVASPLASH);
+            mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_LAVASMOKE);
+            mo->momz = FRACUNIT + (P_Random() << 7);
+            S_StartSound(mo, heretic_sfx_burn);
+            return (FLOOR_LAVA);
+        case FLOOR_SLUDGE:
+            P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SLUDGESPLASH);
+            mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SLUDGECHUNK);
+            mo->target = thing;
+            mo->momx = P_SubRandom() << 8;
+            mo->momy = P_SubRandom() << 8;
+            mo->momz = FRACUNIT + (P_Random(pr_heretic) << 8);
+            return (FLOOR_SLUDGE);
+    }
+    return (FLOOR_SOLID);
+}

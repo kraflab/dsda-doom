@@ -119,7 +119,6 @@ void P_SpawnBlood(fixed_t x, fixed_t y, fixed_t z, int damage);
 void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
 void P_RipperBlood(mobj_t * mo);
 int P_GetThingFloorType(mobj_t * thing);
-int P_HitFloor(mobj_t * thing);
 mobj_t *P_SpawnMissile(mobj_t * source, mobj_t * dest, mobjtype_t type);
 
 // ***** P_ENEMY *****
