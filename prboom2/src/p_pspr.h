@@ -129,6 +129,8 @@ void A_FireOldBFG();
 
 // heretic
 
+#include "p_mobj.h"
+
 void P_RepositionMace(mobj_t * mo);
 
 #endif
