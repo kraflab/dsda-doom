@@ -23,6 +23,8 @@ set(COMMON_SRC
     dsda/demo.h
     dsda/ghost.c
     dsda/ghost.h
+    dsda/global.c
+    dsda/global.h
     dsda/hud.c
     dsda/hud.h
     dsda/key_frame.c

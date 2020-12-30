@@ -38,6 +38,7 @@
 
 /* Needed for action function pointer handling. */
 #include "d_think.h"
+#include "doomtype.h"
 
 /********************************************************************
  * Sprite name enumeration - must match info.c                      *
@@ -3043,16 +3044,53 @@ typedef struct
   int activesound;  /* What sound it makes wandering around, once
            in a while.  Chance is 3/256 it will. */
   uint_64_t flags;  /* Bit masks for lots of things.  See p_mobj.h */
+  
+  // not in heretic
   int raisestate;   /* The first state for an Archvile or respawn
            resurrection.  Zero means it won't come
            back to life. */
   mobjtype_t droppeditem; /* ferk: Mobj to drop after death */
+  
+  // heretic
+  int crashstate;
+  int flags2;
 } mobjinfo_t;
 
-/* See p_mobj_h for addition more technical info */
-extern mobjinfo_t mobjinfo[NUMMOBJTYPES];
+typedef struct
+{
+    int doomednum;
+    int spawnstate;
+    int spawnhealth;
+    int seestate;
+    int seesound;
+    int reactiontime;
+    int attacksound;
+    int painstate;
+    int painchance;
+    int painsound;
+    int meleestate;
+    int missilestate;
+    int deathstate;
+    int xdeathstate;
+    int deathsound;
+    int speed;
+    int radius;
+    int height;
+    int mass;
+    int damage;
+    int activesound;
+    uint_64_t flags;
+    int raisestate;
+    mobjtype_t droppeditem;
+} doom_mobjinfo_t;
+
+extern doom_mobjinfo_t doom_mobjinfo[NUMMOBJTYPES];
+
+extern mobjinfo_t* mobjinfo;
+extern int num_mobj_types;
 
 // heretic
+
 typedef struct
 {
     int doomednum;

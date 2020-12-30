@@ -1038,20 +1038,20 @@ static PUREFUNC int P_FindDoomedNum(unsigned type)
 
   if (!hash)
     {
-      hash = Z_Malloc(sizeof *hash * NUMMOBJTYPES, PU_CACHE, (void **) &hash);
-      for (i=0; i<NUMMOBJTYPES; i++)
-  hash[i].first = NUMMOBJTYPES;
-      for (i=0; i<NUMMOBJTYPES; i++)
+      hash = Z_Malloc(sizeof *hash * num_mobj_types, PU_CACHE, (void **) &hash);
+      for (i=0; i<num_mobj_types; i++)
+  hash[i].first = num_mobj_types;
+      for (i=0; i<num_mobj_types; i++)
   if (mobjinfo[i].doomednum != -1)
     {
-      unsigned h = (unsigned) mobjinfo[i].doomednum % NUMMOBJTYPES;
+      unsigned h = (unsigned) mobjinfo[i].doomednum % num_mobj_types;
       hash[i].next = hash[h].first;
       hash[h].first = i;
     }
     }
 
-  i = hash[type % NUMMOBJTYPES].first;
-  while ((i < NUMMOBJTYPES) && ((unsigned)mobjinfo[i].doomednum != type))
+  i = hash[type % num_mobj_types].first;
+  while ((i < num_mobj_types) && ((unsigned)mobjinfo[i].doomednum != type))
     i = hash[i].next;
   return i;
 }
@@ -1331,7 +1331,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     if(HelperThing != -1) // haleyjd 9/22/99: deh substitution
     {
       int type = HelperThing - 1;
-      if(type >= 0 && type < NUMMOBJTYPES)
+      if(type >= 0 && type < num_mobj_types)
       {
         i = type;
       }
@@ -1401,7 +1401,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // Do not abort because of an unknown thing. Ignore it, but post a
   // warning message for the player.
 
-  if (i == NUMMOBJTYPES)
+  if (i == num_mobj_types)
   {
     lprintf(LO_INFO, "P_SpawnMapThing: Unknown Thing type %i at (%i, %i)\n", thingtype, mthing->x, mthing->y);
     return NULL;

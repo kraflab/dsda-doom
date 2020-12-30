@@ -1435,7 +1435,7 @@ void D_BuildBEXTables(void)
    deh_soundnames[0] = deh_soundnames[NUMSFX] = NULL;
 
   // ferk: initialize Thing extra properties (keeping vanilla props in info.c)
-  for (i = 0; i < NUMMOBJTYPES; i++)
+  for (i = 0; i < num_mobj_types; i++)
   {
     // mobj id for item dropped on death
     switch (i)
@@ -1463,6 +1463,7 @@ int deh_mega_health;
 dboolean IsDehMaxHealth = false;
 dboolean IsDehMaxSoul = false;
 dboolean IsDehMegaHealth = false;
+// HERETIC_TODO: should this dynamically be num_mobj_types?
 dboolean DEH_mobjinfo_bits[NUMMOBJTYPES] = {0};
 
 void deh_changeCompTranslucency(void)
@@ -1818,7 +1819,7 @@ static uint_64_t getConvertedDEHBits(uint_64_t bits) {
 //---------------------------------------------------------------------------
 static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
   mobjinfo_t *mi;
-  if (mobjInfoIndex >= NUMMOBJTYPES || mobjInfoIndex < 0) return;
+  if (mobjInfoIndex >= num_mobj_types || mobjInfoIndex < 0) return;
   mi = &mobjinfo[mobjInfoIndex];
   switch (keyIndex) {
     case 0: mi->doomednum = (int)value; return;
