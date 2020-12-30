@@ -1,4 +1,3 @@
-P_SetMobjStateNF
 P_ThrustMobj
 P_SeekerMissile
 P_RepositionMace

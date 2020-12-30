@@ -1802,3 +1802,21 @@ mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type, angle_t angle, fix
     mo->momz = momz;
     return (P_CheckMissileSpawn(mo) ? mo : NULL);
 }
+
+dboolean P_SetMobjStateNF(mobj_t * mobj, statenum_t state)
+{
+    state_t *st;
+
+    if (state == S_NULL)
+    {                           // Remove mobj
+        mobj->state = (state_t *) S_NULL;
+        P_RemoveMobj(mobj);
+        return (false);
+    }
+    st = &states[state];
+    mobj->state = st;
+    mobj->tics = st->tics;
+    mobj->sprite = st->sprite;
+    mobj->frame = st->frame;
+    return (true);
+}

@@ -77,32 +77,6 @@ boolean P_SetMobjState(mobj_t * mobj, statenum_t state)
 
 //----------------------------------------------------------------------------
 //
-// FUNC P_SetMobjStateNF
-//
-// Same as P_SetMobjState, but does not call the state function.
-//
-//----------------------------------------------------------------------------
-
-boolean P_SetMobjStateNF(mobj_t * mobj, statenum_t state)
-{
-    state_t *st;
-
-    if (state == S_NULL)
-    {                           // Remove mobj
-        mobj->state = (state_t *) S_NULL;
-        P_RemoveMobj(mobj);
-        return (false);
-    }
-    st = &states[state];
-    mobj->state = st;
-    mobj->tics = st->tics;
-    mobj->sprite = st->sprite;
-    mobj->frame = st->frame;
-    return (true);
-}
-
-//----------------------------------------------------------------------------
-//
 // PROC P_ExplodeMissile
 //
 //----------------------------------------------------------------------------
