@@ -1820,3 +1820,10 @@ dboolean P_SetMobjStateNF(mobj_t * mobj, statenum_t state)
     mobj->frame = st->frame;
     return (true);
 }
+
+void P_ThrustMobj(mobj_t * mo, angle_t angle, fixed_t move)
+{
+    angle >>= ANGLETOFINESHIFT;
+    mo->momx += FixedMul(move, finecosine[angle]);
+    mo->momy += FixedMul(move, finesine[angle]);
+}
