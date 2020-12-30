@@ -63,6 +63,7 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_PUNCHDOWN,
     S_PUNCH,
     S_PUNCH1,
+    S_NULL,
     S_NULL
   },
   {
@@ -72,6 +73,7 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_PISTOLDOWN,
     S_PISTOL,
     S_PISTOL1,
+    S_NULL,
     S_PISTOLFLASH
   },
   {
@@ -81,6 +83,7 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_SGUNDOWN,
     S_SGUN,
     S_SGUN1,
+    S_NULL,
     S_SGUNFLASH1
   },
   {
@@ -90,6 +93,7 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_CHAINDOWN,
     S_CHAIN,
     S_CHAIN1,
+    S_NULL,
     S_CHAINFLASH1
   },
   {
@@ -99,6 +103,7 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_MISSILEDOWN,
     S_MISSILE,
     S_MISSILE1,
+    S_NULL,
     S_MISSILEFLASH1
   },
   {
@@ -108,6 +113,7 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_PLASMADOWN,
     S_PLASMA,
     S_PLASMA1,
+    S_NULL,
     S_PLASMAFLASH1
   },
   {
@@ -117,6 +123,7 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_BFGDOWN,
     S_BFG,
     S_BFG1,
+    S_NULL,
     S_BFGFLASH1
   },
   {
@@ -126,6 +133,7 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_SAWDOWN,
     S_SAW,
     S_SAW1,
+    S_NULL,
     S_NULL
   },
   {
@@ -135,6 +143,7 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_DSGUNDOWN,
     S_DSGUN,
     S_DSGUN1,
+    S_NULL,
     S_DSGUNFLASH1
   },
 
@@ -152,11 +161,13 @@ weaponinfo_t    weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     S_NULL,
     S_NULL,
+    S_NULL,
     S_NULL
   },
   {
     // preved medved weapon
     0,
+    S_NULL,
     S_NULL,
     S_NULL,
     S_NULL,

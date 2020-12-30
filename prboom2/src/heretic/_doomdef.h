@@ -91,17 +91,6 @@ typedef enum
 ===============================================================================
 */
 
-typedef struct
-{
-    ammotype_t ammo;
-    int upstate;
-    int downstate;
-    int readystate;
-    int atkstate;
-    int holdatkstate;
-    int flashstate;
-} weaponinfo_t;
-
 extern weaponinfo_t wpnlev1info[NUMWEAPONS];
 extern weaponinfo_t wpnlev2info[NUMWEAPONS];
 
