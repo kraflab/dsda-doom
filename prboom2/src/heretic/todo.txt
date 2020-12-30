@@ -1,4 +1,3 @@
-P_SeekerMissile
 P_RepositionMace
 P_HitFloor
 P_SPMAngle

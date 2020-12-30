@@ -162,67 +162,6 @@ int P_FaceMobj(mobj_t * source, mobj_t * target, angle_t * delta)
 
 //----------------------------------------------------------------------------
 //
-// FUNC P_SeekerMissile
-//
-// The missile special1 field must be mobj_t *target.  Returns true if
-// target was tracked, false if not.
-//
-//----------------------------------------------------------------------------
-
-boolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax)
-{
-    int dir;
-    int dist;
-    angle_t delta;
-    angle_t angle;
-    mobj_t *target;
-
-    target = (mobj_t *) actor->special1.m;
-    if (target == NULL)
-    {
-        return (false);
-    }
-    if (!(target->flags & MF_SHOOTABLE))
-    {                           // Target died
-        actor->special1.m = NULL;
-        return (false);
-    }
-    dir = P_FaceMobj(actor, target, &delta);
-    if (delta > thresh)
-    {
-        delta >>= 1;
-        if (delta > turnMax)
-        {
-            delta = turnMax;
-        }
-    }
-    if (dir)
-    {                           // Turn clockwise
-        actor->angle += delta;
-    }
-    else
-    {                           // Turn counter clockwise
-        actor->angle -= delta;
-    }
-    angle = actor->angle >> ANGLETOFINESHIFT;
-    actor->momx = FixedMul(actor->info->speed, finecosine[angle]);
-    actor->momy = FixedMul(actor->info->speed, finesine[angle]);
-    if (actor->z + actor->height < target->z ||
-        target->z + target->height < actor->z)
-    {                           // Need to seek vertically
-        dist = P_AproxDistance(target->x - actor->x, target->y - actor->y);
-        dist = dist / actor->info->speed;
-        if (dist < 1)
-        {
-            dist = 1;
-        }
-        actor->momz = (target->z - actor->z) / dist;
-    }
-    return (true);
-}
-
-//----------------------------------------------------------------------------
-//
 // PROC P_XYMovement
 //
 //----------------------------------------------------------------------------
