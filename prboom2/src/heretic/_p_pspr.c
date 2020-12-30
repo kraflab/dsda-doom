@@ -28,14 +28,6 @@
 #define RAISESPEED FRACUNIT*6
 #define WEAPONBOTTOM 128*FRACUNIT
 #define WEAPONTOP 32*FRACUNIT
-#define MAX_MACE_SPOTS 8
-
-static int MaceSpotCount;
-static struct
-{
-    fixed_t x;
-    fixed_t y;
-} MaceSpots[MAX_MACE_SPOTS];
 
 fixed_t bulletslope;
 
@@ -67,29 +59,6 @@ void P_AddMaceSpot(mapthing_t * mthing)
     MaceSpots[MaceSpotCount].x = mthing->x << FRACBITS;
     MaceSpots[MaceSpotCount].y = mthing->y << FRACBITS;
     MaceSpotCount++;
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC P_RepositionMace
-//
-// Chooses the next spot to place the mace.
-//
-//---------------------------------------------------------------------------
-
-void P_RepositionMace(mobj_t * mo)
-{
-    int spot;
-    subsector_t *ss;
-
-    P_UnsetThingPosition(mo);
-    spot = P_Random() % MaceSpotCount;
-    mo->x = MaceSpots[spot].x;
-    mo->y = MaceSpots[spot].y;
-    ss = R_PointInSubsector(mo->x, mo->y);
-    mo->z = mo->floorz = ss->sector->floorheight;
-    mo->ceilingz = ss->sector->ceilingheight;
-    P_SetThingPosition(mo);
 }
 
 //---------------------------------------------------------------------------

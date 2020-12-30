@@ -127,4 +127,8 @@ void A_FireBFG();
 void A_BFGSpray();
 void A_FireOldBFG();
 
+// heretic
+
+void P_RepositionMace(mobj_t * mo);
+
 #endif

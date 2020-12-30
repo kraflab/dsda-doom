@@ -996,6 +996,15 @@ void P_MovePsprites(player_t *player)
 #define USE_MACE_AMMO_1 1
 #define USE_MACE_AMMO_2 5
 
+#define MAX_MACE_SPOTS 8
+
+static int MaceSpotCount;
+static struct
+{
+    fixed_t x;
+    fixed_t y;
+} MaceSpots[MAX_MACE_SPOTS];
+
 static int WeaponAmmoUsePL1[NUMWEAPONS] = {
     0,                          // staff
     USE_GWND_AMMO_1,            // gold wand
@@ -2020,4 +2029,19 @@ void A_GauntletAttack(player_t * player, pspdef_t * psp)
             player->mo->angle += ANG90 / 20;
     }
     player->mo->flags |= MF_JUSTATTACKED;
+}
+
+void P_RepositionMace(mobj_t * mo)
+{
+    int spot;
+    subsector_t *ss;
+
+    P_UnsetThingPosition(mo);
+    spot = P_Random(pr_heretic) % MaceSpotCount;
+    mo->x = MaceSpots[spot].x;
+    mo->y = MaceSpots[spot].y;
+    ss = R_PointInSubsector(mo->x, mo->y);
+    mo->z = mo->floorz = ss->sector->floorheight;
+    mo->ceilingz = ss->sector->ceilingheight;
+    P_SetThingPosition(mo);
 }
