@@ -1963,3 +1963,8 @@ int P_HitFloor(mobj_t * thing)
     }
     return (FLOOR_SOLID);
 }
+
+int P_GetThingFloorType(mobj_t * thing)
+{
+    return (TerrainTypes[thing->subsector->sector->floorpic]);
+}

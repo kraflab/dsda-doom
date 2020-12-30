@@ -1136,28 +1136,6 @@ void P_RipperBlood(mobj_t * mo)
 
 //---------------------------------------------------------------------------
 //
-// FUNC P_GetThingFloorType
-//
-//---------------------------------------------------------------------------
-
-int P_GetThingFloorType(mobj_t * thing)
-{
-    return (TerrainTypes[thing->subsector->sector->floorpic]);
-/*
-	if(thing->subsector->sector->floorpic
-		== W_GetNumForName("FLTWAWA1")-firstflat)
-	{
-		return(FLOOR_WATER);
-	}
-	else
-	{
-		return(FLOOR_SOLID);
-	}
-*/
-}
-
-//---------------------------------------------------------------------------
-//
 // FUNC P_SpawnMissile
 //
 // Returns NULL if the missile exploded immediately, otherwise returns

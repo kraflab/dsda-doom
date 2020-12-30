@@ -492,6 +492,7 @@ void P_ThrustMobj(mobj_t * mo, angle_t angle, fixed_t move);
 dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax);
 mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle);
 int P_HitFloor(mobj_t * thing);
+int P_GetThingFloorType(mobj_t * thing);
 
 #endif
 
