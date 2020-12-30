@@ -4012,17 +4012,16 @@ void A_FreeTargMobj(mobj_t * mo)
     mo->player = NULL;
 }
 
-#define BODYQUESIZE 32
-mobj_t *bodyque[BODYQUESIZE];
-int bodyqueslot;
+extern int bodyqueslot, bodyquesize;
+extern mobj_t** bodyque;
 
 void A_AddPlayerCorpse(mobj_t * actor)
 {
-    if (bodyqueslot >= BODYQUESIZE)
+    if (bodyqueslot >= bodyquesize)
     {                           // Too many player corpses - remove an old one
-        P_RemoveMobj(bodyque[bodyqueslot % BODYQUESIZE]);
+        P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
     }
-    bodyque[bodyqueslot % BODYQUESIZE] = actor;
+    bodyque[bodyqueslot % bodyquesize] = actor;
     bodyqueslot++;
 }
 
