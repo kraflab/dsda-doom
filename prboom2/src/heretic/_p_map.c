@@ -507,35 +507,6 @@ boolean PIT_CheckOnmobjZ(mobj_t * thing)
 ===============================================================================
 */
 
-//----------------------------------------------------------------------------
-//
-// FUNC P_TestMobjLocation
-//
-// Returns true if the mobj is not blocked by anything at its current
-// location, otherwise returns false.
-//
-//----------------------------------------------------------------------------
-
-boolean P_TestMobjLocation(mobj_t * mobj)
-{
-    int flags;
-
-    flags = mobj->flags;
-    mobj->flags &= ~MF_PICKUP;
-    if (P_CheckPosition(mobj, mobj->x, mobj->y))
-    {                           // XY is ok, now check Z
-        mobj->flags = flags;
-        if ((mobj->z < mobj->floorz)
-            || (mobj->z + mobj->height > mobj->ceilingz))
-        {                       // Bad Z
-            return (false);
-        }
-        return (true);
-    }
-    mobj->flags = flags;
-    return (false);
-}
-
 /*
 ==================
 =
