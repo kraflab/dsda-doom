@@ -20,6 +20,7 @@
 
 #include "m_argv.h"
 #include "info.h"
+#include "d_items.h"
 #include "heretic/def.h"
 
 #include "global.h"
@@ -32,6 +33,8 @@ int num_sprites;
 
 mobjinfo_t* mobjinfo;
 int num_mobj_types;
+
+weaponinfo_t* weaponinfo;
 
 int g_mt_player;
 
@@ -59,6 +62,8 @@ static void dsda_InitDoom(void) {
   dsda_AllocateMobjInfo(NUMMOBJTYPES);
   dsda_SetStates(doom_states, NUMSTATES);
   dsda_SetSpriteNames(doom_sprnames, NUMSPRITES);
+  
+  weaponinfo = doom_weaponinfo;
   
   g_mt_player = MT_PLAYER;
 
@@ -102,6 +107,9 @@ static void dsda_InitHeretic(void) {
   dsda_AllocateMobjInfo(HERETIC_NUMMOBJTYPES);
   dsda_SetStates(heretic_states, HERETIC_NUMSTATES);
   dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
+  
+  // HERETIC_TODO: of course, 2 levels requires complete rework...
+  weaponinfo = wpnlev1info;
   
   g_mt_player = HERETIC_MT_PLAYER;
   
