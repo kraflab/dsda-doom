@@ -54,6 +54,10 @@ set(COMMON_SRC
     g_game.h
     g_overflow.c
     g_overflow.h
+    heretic/def.c
+    heretic/def.h
+    heretic/info.c
+    heretic/p_action.h
     hu_lib.c
     hu_lib.h
     hu_stuff.c
