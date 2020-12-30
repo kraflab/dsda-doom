@@ -53,6 +53,8 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "heretic/def.h"
+
 #define BONUSADD        6
 
 // Ty 03/07/98 - add deh externals

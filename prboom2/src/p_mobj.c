@@ -1682,6 +1682,8 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
 
 // heretic
 
+#include "p_spec.h"
+
 mobjtype_t PuffType;
 mobj_t *MissileMobj;
 
@@ -1949,7 +1951,7 @@ int P_HitFloor(mobj_t * thing)
         case FLOOR_LAVA:
             P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_LAVASPLASH);
             mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_LAVASMOKE);
-            mo->momz = FRACUNIT + (P_Random() << 7);
+            mo->momz = FRACUNIT + (P_Random(pr_heretic) << 7);
             S_StartSound(mo, heretic_sfx_burn);
             return (FLOOR_LAVA);
         case FLOOR_SLUDGE:
