@@ -91,13 +91,6 @@ typedef enum
 ===============================================================================
 */
 
-#define	INVULNTICS (30*35)
-#define	INVISTICS (60*35)
-#define	INFRATICS (120*35)
-#define	IRONTICS (60*35)
-#define WPNLEV2TICS (40*35)
-#define FLIGHTTICS (60*35)
-
 #define CHICKENTICS (40*35)
 
 #define MESSAGETICS (4*35)
@@ -158,8 +151,6 @@ extern int viewangleoffset;     // ANG90 = left side, ANG270 = right
 extern player_t players[MAXPLAYERS];
 
 extern boolean DebugSound;      // debug flag for displaying sound info
-
-extern int GetWeaponAmmo[NUMWEAPONS];
 
 extern boolean demorecording;
 extern boolean demoplayback;

@@ -213,15 +213,10 @@ extern mobj_t **blocklinks;     // for thing chains
 // ***** P_INTER *****
 
 extern int maxammo[NUMAMMO];
-extern int clipammo[NUMAMMO];
 
 void P_SetCenterMessage(player_t * player, const char *message); // [crispy] Set centered message
-void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher);
 void P_DamageMobj(mobj_t * target, mobj_t * inflictor, mobj_t * source,
                   int damage);
-boolean P_GiveAmmo(player_t * player, ammotype_t ammo, int count);
-boolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo);
-boolean P_GivePower(player_t * player, powertype_t power);
 boolean P_ChickenMorphPlayer(player_t * player);
 
 // ***** AM_MAP *****

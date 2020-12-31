@@ -77,7 +77,14 @@ extern int maxammo[], clipammo[];
 
 #define MAXCHICKENHEALTH 30
 
+extern int GetWeaponAmmo[NUMWEAPONS];
+
 dboolean P_GiveBody(player_t * player, int num);
 void P_SetMessage(player_t * player, const char *message, dboolean ultmsg);
+void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher);
+dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo);
+dboolean Heretic_P_GiveWeapon(player_t * player, weapontype_t weapon);
+void P_SetDormantArtifact(mobj_t * arti);
+void P_HideSpecialThing(mobj_t * thing);
 
 #endif

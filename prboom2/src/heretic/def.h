@@ -31,6 +31,8 @@ extern dboolean heretic;
 #define FLOOR_LAVA 2
 #define FLOOR_SLUDGE 3
 
+#define BLINKTHRESHOLD (4*32)
+
 #include "dstrings.h"
 
 #endif
