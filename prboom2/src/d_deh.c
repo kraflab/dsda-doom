@@ -1401,6 +1401,9 @@ char *deh_soundnames[NUMSFX + 1];
 void D_BuildBEXTables(void)
 {
    int i;
+   
+   // HERETIC_TODO: what to do here? EXTRASTATES breaks everything
+   if (heretic) return;
 
    // moved from ProcessDehFile, then we don't need the static int i
    for (i = 0; i < EXTRASTATES; i++)  // remember what they start as for deh xref

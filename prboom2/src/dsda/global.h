@@ -18,7 +18,10 @@
 #ifndef __DSDA_GLOBAL__
 #define __DSDA_GLOBAL__
 
+#include "doomtype.h"
+
 extern int g_mt_player;
+extern dboolean heretic;
 
 void dsda_InitGlobal(void);
 
