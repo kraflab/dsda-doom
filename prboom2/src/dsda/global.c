@@ -21,6 +21,7 @@
 #include "m_argv.h"
 #include "info.h"
 #include "d_items.h"
+#include "p_inter.h"
 #include "heretic/def.h"
 
 #include "global.h"
@@ -144,6 +145,17 @@ static void dsda_InitHeretic(void) {
     mobjinfo[i].crashstate   = mobjinfo_p->crashstate;
     mobjinfo[i].flags2       = mobjinfo_p->flags2;
   }
+  
+  // heretic doesn't use "clip" concept
+  for (i = 0; i < NUMAMMO; ++i) clipammo[i] = 1;
+  
+  // so few it's not worth implementing a pointer swap
+  maxammo[0] = 100; // gold wand
+  maxammo[1] = 50;  // crossbow
+  maxammo[2] = 200; // blaster
+  maxammo[3] = 200; // skull rod
+  maxammo[4] = 20;  // phoenix rod
+  maxammo[5] = 150; // mace
 }
 
 void dsda_InitGlobal(void) {
