@@ -1045,3 +1045,24 @@ void A_RestoreSpecialThing2(mobj_t * thing)
     thing->flags |= MF_SPECIAL;
     P_SetMobjState(thing, thing->info->spawnstate);
 }
+
+// HERETIC_TODO: uncomment the stuff, if it makes sense
+
+// dboolean ultimatemsg;
+// extern dboolean messageson;
+
+// heretic
+void P_SetMessage(player_t * player, const char *message, dboolean ultmsg)
+{
+    // if ((ultimatemsg || !messageson) && !ultmsg)
+    // {
+    //     return;
+    // }
+    player->message = message;
+    // player->messageTics = MESSAGETICS;
+    // BorderTopRefresh = true;
+    // if (ultmsg)
+    // {
+    //     ultimatemsg = true;
+    // }
+}

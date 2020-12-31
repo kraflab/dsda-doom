@@ -78,5 +78,6 @@ extern int maxammo[], clipammo[];
 #define MAXCHICKENHEALTH 30
 
 dboolean P_GiveBody(player_t * player, int num);
+void P_SetMessage(player_t * player, const char *message, dboolean ultmsg);
 
 #endif
