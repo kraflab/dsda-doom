@@ -24,54 +24,54 @@
 
 // Keys
 
-#define TXT_GOTBLUEKEY			"BLUE KEY"
-#define TXT_GOTYELLOWKEY		"YELLOW KEY"
-#define TXT_GOTGREENKEY			"GREEN KEY"
+#define HERETIC_TXT_GOTBLUEKEY			"BLUE KEY"
+#define HERETIC_TXT_GOTYELLOWKEY		"YELLOW KEY"
+#define HERETIC_TXT_GOTGREENKEY			"GREEN KEY"
 
 // Artifacts
 
-#define TXT_ARTIHEALTH			"QUARTZ FLASK"
-#define TXT_ARTIFLY				"WINGS OF WRATH"
-#define TXT_ARTIINVULNERABILITY	"RING OF INVINCIBILITY"
-#define TXT_ARTITOMEOFPOWER		"TOME OF POWER"
-#define TXT_ARTIINVISIBILITY	"SHADOWSPHERE"
-#define TXT_ARTIEGG				"MORPH OVUM"
-#define TXT_ARTISUPERHEALTH		"MYSTIC URN"
-#define TXT_ARTITORCH			"TORCH"
-#define TXT_ARTIFIREBOMB		"TIME BOMB OF THE ANCIENTS"
-#define TXT_ARTITELEPORT		"CHAOS DEVICE"
+#define HERETIC_TXT_ARTIHEALTH			"QUARTZ FLASK"
+#define HERETIC_TXT_ARTIFLY				"WINGS OF WRATH"
+#define HERETIC_TXT_ARTIINVULNERABILITY	"RING OF INVINCIBILITY"
+#define HERETIC_TXT_ARTITOMEOFPOWER		"TOME OF POWER"
+#define HERETIC_TXT_ARTIINVISIBILITY	"SHADOWSPHERE"
+#define HERETIC_TXT_ARTIEGG				"MORPH OVUM"
+#define HERETIC_TXT_ARTISUPERHEALTH		"MYSTIC URN"
+#define HERETIC_TXT_ARTITORCH			"TORCH"
+#define HERETIC_TXT_ARTIFIREBOMB		"TIME BOMB OF THE ANCIENTS"
+#define HERETIC_TXT_ARTITELEPORT		"CHAOS DEVICE"
 
 // Items
 
-#define TXT_ITEMHEALTH			"CRYSTAL VIAL"
-#define TXT_ITEMBAGOFHOLDING	"BAG OF HOLDING"
-#define TXT_ITEMSHIELD1			"SILVER SHIELD"
-#define TXT_ITEMSHIELD2			"ENCHANTED SHIELD"
-#define TXT_ITEMSUPERMAP		"MAP SCROLL"
+#define HERETIC_TXT_ITEMHEALTH			"CRYSTAL VIAL"
+#define HERETIC_TXT_ITEMBAGOFHOLDING	"BAG OF HOLDING"
+#define HERETIC_TXT_ITEMSHIELD1			"SILVER SHIELD"
+#define HERETIC_TXT_ITEMSHIELD2			"ENCHANTED SHIELD"
+#define HERETIC_TXT_ITEMSUPERMAP		"MAP SCROLL"
 
 // Ammo
 
-#define TXT_AMMOGOLDWAND1		"WAND CRYSTAL"
-#define TXT_AMMOGOLDWAND2		"CRYSTAL GEODE"
-#define TXT_AMMOMACE1			"MACE SPHERES"
-#define TXT_AMMOMACE2			"PILE OF MACE SPHERES"
-#define TXT_AMMOCROSSBOW1		"ETHEREAL ARROWS"
-#define TXT_AMMOCROSSBOW2		"QUIVER OF ETHEREAL ARROWS"
-#define TXT_AMMOBLASTER1		"CLAW ORB"
-#define TXT_AMMOBLASTER2		"ENERGY ORB"
-#define TXT_AMMOSKULLROD1		"LESSER RUNES"
-#define TXT_AMMOSKULLROD2		"GREATER RUNES"
-#define TXT_AMMOPHOENIXROD1		"FLAME ORB"
-#define TXT_AMMOPHOENIXROD2		"INFERNO ORB"
+#define HERETIC_TXT_AMMOGOLDWAND1		"WAND CRYSTAL"
+#define HERETIC_TXT_AMMOGOLDWAND2		"CRYSTAL GEODE"
+#define HERETIC_TXT_AMMOMACE1			"MACE SPHERES"
+#define HERETIC_TXT_AMMOMACE2			"PILE OF MACE SPHERES"
+#define HERETIC_TXT_AMMOCROSSBOW1		"ETHEREAL ARROWS"
+#define HERETIC_TXT_AMMOCROSSBOW2		"QUIVER OF ETHEREAL ARROWS"
+#define HERETIC_TXT_AMMOBLASTER1		"CLAW ORB"
+#define HERETIC_TXT_AMMOBLASTER2		"ENERGY ORB"
+#define HERETIC_TXT_AMMOSKULLROD1		"LESSER RUNES"
+#define HERETIC_TXT_AMMOSKULLROD2		"GREATER RUNES"
+#define HERETIC_TXT_AMMOPHOENIXROD1		"FLAME ORB"
+#define HERETIC_TXT_AMMOPHOENIXROD2		"INFERNO ORB"
 
 // Weapons
 
-#define TXT_WPNMACE				"FIREMACE"
-#define TXT_WPNCROSSBOW			"ETHEREAL CROSSBOW"
-#define TXT_WPNBLASTER			"DRAGON CLAW"
-#define TXT_WPNSKULLROD			"HELLSTAFF"
-#define TXT_WPNPHOENIXROD		"PHOENIX ROD"
-#define TXT_WPNGAUNTLETS		"GAUNTLETS OF THE NECROMANCER"
+#define HERETIC_TXT_WPNMACE				"FIREMACE"
+#define HERETIC_TXT_WPNCROSSBOW			"ETHEREAL CROSSBOW"
+#define HERETIC_TXT_WPNBLASTER			"DRAGON CLAW"
+#define HERETIC_TXT_WPNSKULLROD			"HELLSTAFF"
+#define HERETIC_TXT_WPNPHOENIXROD		"PHOENIX ROD"
+#define HERETIC_TXT_WPNGAUNTLETS		"GAUNTLETS OF THE NECROMANCER"
 
 //---------------------------------------------------------------------------
 //
@@ -79,34 +79,34 @@
 //
 //---------------------------------------------------------------------------
 
-#define TXT_CHEATGODON			"GOD MODE ON"
-#define TXT_CHEATGODOFF			"GOD MODE OFF"
-#define TXT_CHEATNOCLIPON		"NO CLIPPING ON"
-#define TXT_CHEATNOCLIPOFF		"NO CLIPPING OFF"
-#define TXT_CHEATWEAPONS		"ALL WEAPONS"
-#define TXT_CHEATFLIGHTON		"FLIGHT ON"
-#define TXT_CHEATFLIGHTOFF		"FLIGHT OFF"
-#define TXT_CHEATPOWERON		"POWER ON"
-#define TXT_CHEATPOWEROFF		"POWER OFF"
-#define TXT_CHEATHEALTH			"FULL HEALTH"
-#define TXT_CHEATKEYS			"ALL KEYS"
-#define TXT_CHEATSOUNDON		"SOUND DEBUG ON"
-#define TXT_CHEATSOUNDOFF		"SOUND DEBUG OFF"
-#define TXT_CHEATTICKERON		"TICKER ON"
-#define TXT_CHEATTICKEROFF		"TICKER OFF"
-#define TXT_CHEATARTIFACTS1		"CHOOSE AN ARTIFACT ( A - J )"
-#define TXT_CHEATARTIFACTS2		"HOW MANY ( 1 - 9 )"
-#define TXT_CHEATARTIFACTS3		"YOU GOT IT"
-#define TXT_CHEATARTIFACTSFAIL	"BAD INPUT"
-#define TXT_CHEATWARP			"LEVEL WARP"
-#define TXT_CHEATSCREENSHOT		"SCREENSHOT"
-#define TXT_CHEATCHICKENON		"CHICKEN ON"
-#define TXT_CHEATCHICKENOFF		"CHICKEN OFF"
-#define TXT_SHOWFPSON			"SHOW FPS ON"	// [crispy]
-#define TXT_SHOWFPSOFF			"SHOW FPS OFF"	// [crispy]
-#define TXT_CHEATMASSACRE		"MASSACRE"
-#define TXT_CHEATIDDQD			"TRYING TO CHEAT, EH?  NOW YOU DIE!"
-#define TXT_CHEATIDKFA			"CHEATER - YOU DON'T DESERVE WEAPONS"
+#define HERETIC_TXT_CHEATGODON			"GOD MODE ON"
+#define HERETIC_TXT_CHEATGODOFF			"GOD MODE OFF"
+#define HERETIC_TXT_CHEATNOCLIPON		"NO CLIPPING ON"
+#define HERETIC_TXT_CHEATNOCLIPOFF		"NO CLIPPING OFF"
+#define HERETIC_TXT_CHEATWEAPONS		"ALL WEAPONS"
+#define HERETIC_TXT_CHEATFLIGHTON		"FLIGHT ON"
+#define HERETIC_TXT_CHEATFLIGHTOFF		"FLIGHT OFF"
+#define HERETIC_TXT_CHEATPOWERON		"POWER ON"
+#define HERETIC_TXT_CHEATPOWEROFF		"POWER OFF"
+#define HERETIC_TXT_CHEATHEALTH			"FULL HEALTH"
+#define HERETIC_TXT_CHEATKEYS			"ALL KEYS"
+#define HERETIC_TXT_CHEATSOUNDON		"SOUND DEBUG ON"
+#define HERETIC_TXT_CHEATSOUNDOFF		"SOUND DEBUG OFF"
+#define HERETIC_TXT_CHEATTICKERON		"TICKER ON"
+#define HERETIC_TXT_CHEATTICKEROFF		"TICKER OFF"
+#define HERETIC_TXT_CHEATARTIFACTS1		"CHOOSE AN ARTIFACT ( A - J )"
+#define HERETIC_TXT_CHEATARTIFACTS2		"HOW MANY ( 1 - 9 )"
+#define HERETIC_TXT_CHEATARTIFACTS3		"YOU GOT IT"
+#define HERETIC_TXT_CHEATARTIFACTSFAIL	"BAD INPUT"
+#define HERETIC_TXT_CHEATWARP			"LEVEL WARP"
+#define HERETIC_TXT_CHEATSCREENSHOT		"SCREENSHOT"
+#define HERETIC_TXT_CHEATCHICKENON		"CHICKEN ON"
+#define HERETIC_TXT_CHEATCHICKENOFF		"CHICKEN OFF"
+#define HERETIC_TXT_SHOWFPSON			"SHOW FPS ON"	// [crispy]
+#define HERETIC_TXT_SHOWFPSOFF			"SHOW FPS OFF"	// [crispy]
+#define HERETIC_TXT_CHEATMASSACRE		"MASSACRE"
+#define HERETIC_TXT_CHEATIDDQD			"TRYING TO CHEAT, EH?  NOW YOU DIE!"
+#define HERETIC_TXT_CHEATIDKFA			"CHEATER - YOU DON'T DESERVE WEAPONS"
 
 //---------------------------------------------------------------------------
 //
@@ -114,9 +114,9 @@
 //
 //---------------------------------------------------------------------------
 
-#define TXT_NEEDBLUEKEY			"YOU NEED A BLUE KEY TO OPEN THIS DOOR"
-#define TXT_NEEDGREENKEY		"YOU NEED A GREEN KEY TO OPEN THIS DOOR"
-#define TXT_NEEDYELLOWKEY		"YOU NEED A YELLOW KEY TO OPEN THIS DOOR"
+#define HERETIC_TXT_NEEDBLUEKEY			"YOU NEED A BLUE KEY TO OPEN THIS DOOR"
+#define HERETIC_TXT_NEEDGREENKEY		"YOU NEED A GREEN KEY TO OPEN THIS DOOR"
+#define HERETIC_TXT_NEEDYELLOWKEY		"YOU NEED A YELLOW KEY TO OPEN THIS DOOR"
 
 //---------------------------------------------------------------------------
 //
@@ -124,7 +124,7 @@
 //
 //---------------------------------------------------------------------------
 
-#define TXT_GAMESAVED			"GAME SAVED"
+#define HERETIC_TXT_GAMESAVED			"GAME SAVED"
 
 //---------------------------------------------------------------------------
 //
@@ -132,14 +132,14 @@
 //
 //---------------------------------------------------------------------------
 
-#define AMSTR_FOLLOWON		"FOLLOW MODE ON"
-#define AMSTR_FOLLOWOFF		"FOLLOW MODE OFF"
+#define HERETIC_AMSTR_FOLLOWON		"FOLLOW MODE ON"
+#define HERETIC_AMSTR_FOLLOWOFF		"FOLLOW MODE OFF"
 
-#define AMSTR_GRIDON		"Grid ON"
-#define AMSTR_GRIDOFF		"Grid OFF"
+#define HERETIC_AMSTR_GRIDON		"Grid ON"
+#define HERETIC_AMSTR_GRIDOFF		"Grid OFF"
 
-#define AMSTR_MARKEDSPOT	"Marked Spot"
-#define AMSTR_MARKSCLEARED	"All Marks Cleared"
+#define HERETIC_AMSTR_MARKEDSPOT	"Marked Spot"
+#define HERETIC_AMSTR_MARKSCLEARED	"All Marks Cleared"
 
 //---------------------------------------------------------------------------
 //
@@ -147,7 +147,7 @@
 //
 //---------------------------------------------------------------------------
 
-#define E1TEXT	"with the destruction of the iron\n"\
+#define HERETIC_E1TEXT	"with the destruction of the iron\n"\
 					"liches and their minions, the last\n"\
 					"of the undead are cleared from this\n"\
 					"plane of existence.\n\n"\
@@ -164,7 +164,7 @@
 					"very unfriendly world, but no one\n"\
 					"ever said being a Heretic was easy!"
 
-#define E2TEXT "the mighty maulotaurs have proved\n"\
+#define HERETIC_E2TEXT "the mighty maulotaurs have proved\n"\
 					"to be no match for you, and as\n"\
 					"their steaming corpses slide to the\n"\
 					"ground you feel a sense of grim\n"\
@@ -182,7 +182,7 @@
 					"overhead where the sky should be is\n"\
 					"certainly not a good sign...."
 
-#define E3TEXT	"the death of d'sparil has loosed\n"\
+#define HERETIC_E3TEXT	"the death of d'sparil has loosed\n"\
 					"the magical bonds holding his\n"\
 					"creatures on this plane, their\n"\
 					"dying screams overwhelming his own\n"\
@@ -201,7 +201,7 @@
 					"then again, what about the other\n"\
 					"serpent riders?"
 
-#define E4TEXT		"you thought you would return to your\n"\
+#define HERETIC_E4TEXT		"you thought you would return to your\n"\
 					"own world after d'sparil died, but\n"\
 					"his final act banished you to his\n"\
 					"own plane. here you entered the\n"\
@@ -223,7 +223,7 @@
 					"demesne, his personal bodyguards\n"\
 					"await your arrival ..."
 
-#define E5TEXT		"as the final maulotaur bellows his\n"\
+#define HERETIC_E5TEXT		"as the final maulotaur bellows his\n"\
 					"death-agony, you realize that you\n"\
 					"have never come so close to your own\n"\
 					"destruction. not even the fight with\n"\
@@ -243,3 +243,5 @@
 					"that it is not within you to\n"\
 					"surrender without a fight. eyes\n"\
 					"wide, you go to meet your fate."
+
+const char *DEH_String(const char *s);

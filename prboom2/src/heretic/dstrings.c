@@ -14,23 +14,7 @@
 // GNU General Public License for more details.
 //
 
-#ifndef HERETIC_DEF_H
-#define HERETIC_DEF_H
-
-#include "doomtype.h"
-
-extern dboolean heretic;
-
-#define TELEFOGHEIGHT (32*FRACUNIT)
-#define ANG1_X          0x01000000
-
-#define FOOTCLIPSIZE	10*FRACUNIT
-
-#define FLOOR_SOLID 0
-#define FLOOR_WATER 1
-#define FLOOR_LAVA 2
-#define FLOOR_SLUDGE 3
-
-#include "dstrings.h"
-
-#endif
+// HERETIC_TODO: stubbed
+const char *DEH_String(const char *s) {
+  return s;
+}

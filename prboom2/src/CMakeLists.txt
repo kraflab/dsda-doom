@@ -58,6 +58,8 @@ set(COMMON_SRC
     g_overflow.h
     heretic/def.c
     heretic/def.h
+    heretic/dstrings.h
+    heretic/dstrings.c
     heretic/info.c
     heretic/p_action.h
     hu_lib.c
