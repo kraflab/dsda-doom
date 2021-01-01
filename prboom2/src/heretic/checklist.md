@@ -1,63 +1,65 @@
 ### Files in crispy src/heretic:
 
-- [ ] am_data.h
-- [ ] am_map.c
-- [ ] am_map.h
-- [ ] ct_chat.c
-- [ ] ct_chat.h
-- [ ] d_main.c
-- [ ] d_net.c
-- [ ] deh_ammo.c
-- [ ] deh_frame.c
-- [ ] deh_htext.c
-- [ ] deh_htic.c
-- [ ] deh_htic.h
-- [ ] deh_sound.c
-- [ ] deh_thing.c
-- [ ] deh_weapon.c
-- [ ] doomdata.h
-- [ ] doomdef.h
-- [x] dstrings.h
-- [ ] f_finale.c
-- [ ] g_game.c
-- [ ] in_lude.c
-- [x] info.c
-- [x] info.h
-- [x] m_random.c
-- [x] m_random.h
-- [ ] mn_menu.c
-- [x] p_action.h
-- [ ] p_ceiling.c
-- [ ] p_doors.c
-- [ ] p_enemy.c
-- [ ] p_floor.c
-- [x] p_inter.c
-- [ ] p_lights.c
-- [ ] p_local.h
-- [ ] p_map.c
-- [ ] p_maputl.c
-- [ ] p_mobj.c
-- [ ] p_plats.c
-- [ ] p_pspr.c
-- [ ] p_saveg.c
-- [ ] p_setup.c
-- [ ] p_sight.c
-- [ ] p_spec.c
-- [ ] p_spec.h
-- [ ] p_switch.c
-- [x] p_telept.c
-- [ ] p_tick.c
-- [ ] p_user.c
-- [ ] r_bsp.c
-- [ ] r_data.c
-- [ ] r_draw.c
-- [ ] r_local.h
-- [ ] r_main.c
-- [ ] r_plane.c
-- [ ] r_segs.c
-- [ ] r_things.c
-- [ ] s_sound.c
-- [ ] s_sound.h
-- [ ] sb_bar.c
-- [x] sounds.c
-- [x] sounds.h
+- [ ] am_data.h 104
+- [ ] am_map.c 1544
+- [ ] am_map.h 112
+- [ ] ct_chat.c 478
+- [ ] ct_chat.h 39
+- [ ] d_main.c 1305
+- [ ] d_net.c 227
+- [ ] deh_ammo.c 114
+- [ ] deh_frame.c 336
+- [ ] deh_htext.c 846
+- [ ] deh_htic.c 197
+- [ ] deh_htic.h 53
+- [ ] deh_sound.c 109
+- [ ] deh_thing.c 145
+- [ ] deh_weapon.c 123
+- [ ] doomdata.h 193
+- [ ] doomdef.h 852
+- [x] dstrings.h 247
+- [ ] f_finale.c 444
+- [ ] g_game.c 2356
+- [ ] in_lude.c 1129
+- [x] info.c 5601
+- [x] info.h 1579
+- [x] m_random.c 77
+- [x] m_random.h 38
+- [ ] mn_menu.c 2014
+- [x] p_action.h 152
+- [ ] p_ceiling.c 256
+- [ ] p_doors.c 380
+- [ ] p_enemy.c 2715
+- [ ] p_floor.c 466
+- [x] p_inter.c 1502
+- [ ] p_lights.c 275
+- [ ] p_local.h 282
+- [ ] p_map.c 1714
+- [ ] p_maputl.c 799
+- [ ] p_mobj.c 1665
+- [ ] p_plats.c 259
+- [ ] p_pspr.c 1908
+- [ ] p_saveg.c 1913
+- [ ] p_setup.c 763
+- [ ] p_sight.c 357
+- [ ] p_spec.c 1358
+- [ ] p_spec.h 391
+- [ ] p_switch.c 410
+- [x] p_telept.c 165
+- [ ] p_tick.c 168
+- [ ] p_user.c 1046
+- [ ] r_bsp.c 528
+- [ ] r_data.c 765
+- [ ] r_draw.c 515
+- [ ] r_local.h 509
+- [ ] r_main.c 868
+- [ ] r_plane.c 539
+- [ ] r_segs.c 678
+- [ ] r_things.c 1075
+- [ ] s_sound.c 616
+- [ ] s_sound.h 39
+- [ ] sb_bar.c 1333
+- [x] sounds.c 251
+- [x] sounds.h 292
+
+9904 / 47214 = 21%
