@@ -91,8 +91,6 @@ typedef enum
 ===============================================================================
 */
 
-#define CHICKENTICS (40*35)
-
 #define MESSAGETICS (4*35)
 #define BLINKTHRESHOLD (4*32)
 

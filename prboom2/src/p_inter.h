@@ -86,5 +86,6 @@ dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo);
 dboolean Heretic_P_GiveWeapon(player_t * player, weapontype_t weapon);
 void P_SetDormantArtifact(mobj_t * arti);
 void P_HideSpecialThing(mobj_t * thing);
+dboolean P_ChickenMorphPlayer(player_t * player);
 
 #endif

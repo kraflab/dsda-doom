@@ -32,7 +32,6 @@
 #define	FLOATSPEED (FRACUNIT*4)
 
 #define	MAXHEALTH 100
-#define MAXCHICKENHEALTH 30
 #define	VIEWHEIGHT (41*FRACUNIT)
 
 // mapblocks are used to check movement against lines and things
@@ -216,7 +215,6 @@ extern int maxammo[NUMAMMO];
 
 void P_DamageMobj(mobj_t * target, mobj_t * inflictor, mobj_t * source,
                   int damage);
-boolean P_ChickenMorphPlayer(player_t * player);
 
 // ***** AM_MAP *****
 
