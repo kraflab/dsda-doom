@@ -26,24 +26,6 @@
 
 #define BONUSADD 6
 
-//--------------------------------------------------------------------------
-//
-// PROC P_SetCenterMessage
-//
-// [crispy] Set centered message
-//
-//--------------------------------------------------------------------------
-void P_SetCenterMessage(player_t * player, const char *message)
-{
-    if (!messageson)
-    {
-        return;
-    }
-    player->centerMessage = message;
-    player->centerMessageTics = MESSAGETICS;
-    BorderTopRefresh = true;
-}
-
 //---------------------------------------------------------------------------
 //
 // FUNC P_MinotaurSlam
