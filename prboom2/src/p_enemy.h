@@ -122,6 +122,10 @@ void A_SkullPop(mobj_t *);
 
 // heretic
 
+void P_NoiseAlert(mobj_t * target, mobj_t * emmiter);
+void P_InitMonsters(void);
+void P_AddBossSpot(fixed_t x, fixed_t y, angle_t angle);
+void P_Massacre(void);
 void P_DSparilTeleport(mobj_t * actor);
 
 #endif // __P_ENEMY__

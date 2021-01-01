@@ -113,14 +113,6 @@ void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
 void P_RipperBlood(mobj_t * mo);
 mobj_t *P_SpawnMissile(mobj_t * source, mobj_t * dest, mobjtype_t type);
 
-// ***** P_ENEMY *****
-
-void P_NoiseAlert(mobj_t * target, mobj_t * emmiter);
-void P_InitMonsters(void);
-void P_AddBossSpot(fixed_t x, fixed_t y, angle_t angle);
-void P_Massacre(void);
-void P_DSparilTeleport(mobj_t * actor);
-
 // ***** P_MAPUTL *****
 
 typedef struct

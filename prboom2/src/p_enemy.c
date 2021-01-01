@@ -147,12 +147,24 @@ static dboolean P_CheckMeleeRange(mobj_t *actor)
   mobj_t *pl = actor->target;
 
   return  // killough 7/18/98: friendly monsters don't attack other friends
-    pl && !(actor->flags & pl->flags & MF_FRIEND) &&
-    (P_AproxDistance(pl->x-actor->x, pl->y-actor->y) <
-     (compatibility_level == doom_12_compatibility ?
-      MELEERANGE :
-      MELEERANGE - 20*FRACUNIT + pl->info->radius)) &&
-    P_CheckSight(actor, actor->target);
+    pl &&
+    !(actor->flags & pl->flags & MF_FRIEND) &&
+    (
+      P_AproxDistance(pl->x-actor->x, pl->y-actor->y) <
+      (
+        (compatibility_level == doom_12_compatibility || heretic) ?
+        MELEERANGE :
+        MELEERANGE - 20*FRACUNIT + pl->info->radius
+      )
+    ) &&
+    P_CheckSight(actor, actor->target) &&
+    ( // finite height!
+      !heretic ||
+      (
+        pl->z <= actor->z + actor->height &&
+        actor->z <= pl->z + pl->height
+      )
+    );
 }
 
 //
@@ -2845,6 +2857,23 @@ typedef struct
 
 static int BossSpotCount;
 static BossSpot_t BossSpots[MAX_BOSS_SPOTS];
+
+void P_InitMonsters(void)
+{
+    BossSpotCount = 0;
+}
+
+void P_AddBossSpot(fixed_t x, fixed_t y, angle_t angle)
+{
+    if (BossSpotCount == MAX_BOSS_SPOTS)
+    {
+        I_Error("Too many boss spots.");
+    }
+    BossSpots[BossSpotCount].x = x;
+    BossSpots[BossSpotCount].y = y;
+    BossSpots[BossSpotCount].angle = angle;
+    BossSpotCount++;
+}
 
 void A_DripBlood(mobj_t * actor)
 {
