@@ -748,6 +748,6 @@ typedef struct
 } SoundInfo_t;
 
 extern sfxinfo_t heretic_S_sfx[];
-extern musicinfo_t heretic_S_music[][2];
+extern musicinfo_t heretic_S_music[];
 
 #endif
