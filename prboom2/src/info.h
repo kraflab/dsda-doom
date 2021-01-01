@@ -2828,7 +2828,8 @@ typedef enum {
   NUMMOBJTYPES,  // Counter of how many there are
   
   // heretic
-  HERETIC_MT_MISC0 = 0,
+  HERETIC_MT_ZERO,
+  HERETIC_MT_MISC0 = HERETIC_MT_ZERO,
   HERETIC_MT_ITEMSHIELD1,
   HERETIC_MT_ITEMSHIELD2,
   HERETIC_MT_MISC1,
@@ -2989,7 +2990,9 @@ typedef enum {
   HERETIC_MT_AMBLSRHEFTY,
   HERETIC_MT_SOUNDWIND,
   HERETIC_MT_SOUNDWATERFALL,
-  HERETIC_NUMMOBJTYPES
+  HERETIC_NUMMOBJTYPES,
+  
+  TOTAL_NUMMOBJTYPES = HERETIC_NUMMOBJTYPES
 } mobjtype_t;
 
 /********************************************************************
@@ -3126,5 +3129,7 @@ extern const char** sprnames;
 extern int num_sprites;
 extern mobjinfo_t* mobjinfo;
 extern int num_mobj_types;
+extern int mobj_types_zero;
+extern int mobj_types_max;
 
 #endif

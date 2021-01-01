@@ -1044,7 +1044,7 @@ static PUREFUNC int P_FindDoomedNum(unsigned type)
       hash = Z_Malloc(sizeof *hash * num_mobj_types, PU_CACHE, (void **) &hash);
       for (i=0; i<num_mobj_types; i++)
   hash[i].first = num_mobj_types;
-      for (i=0; i<num_mobj_types; i++)
+      for (i=mobj_types_zero; i<mobj_types_max; i++)
   if (mobjinfo[i].doomednum != -1)
     {
       unsigned h = (unsigned) mobjinfo[i].doomednum % num_mobj_types;

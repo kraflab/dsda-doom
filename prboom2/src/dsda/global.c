@@ -35,6 +35,8 @@ int num_sprites;
 
 mobjinfo_t* mobjinfo;
 int num_mobj_types;
+int mobj_types_zero;
+int mobj_types_max;
 
 sfxinfo_t* S_sfx;
 int num_sfx;
@@ -47,8 +49,10 @@ int g_mt_player;
 
 extern const char** S_music_files;
 
-static void dsda_AllocateMobjInfo(int count) {
+static void dsda_AllocateMobjInfo(int zero, int max, int count) {
   num_mobj_types = count;
+  mobj_types_zero = zero;
+  mobj_types_max = max;
   
   mobjinfo = malloc(sizeof(mobjinfo_t) * num_mobj_types);
   memset(mobjinfo, 0, sizeof(mobjinfo_t) * num_mobj_types);
@@ -80,7 +84,7 @@ static void dsda_InitDoom(void) {
   int i;
   doom_mobjinfo_t* mobjinfo_p;
 
-  dsda_AllocateMobjInfo(NUMMOBJTYPES);
+  dsda_AllocateMobjInfo(0, NUMMOBJTYPES, NUMMOBJTYPES);
   dsda_SetStates(doom_states, NUMSTATES);
   dsda_SetSpriteNames(doom_sprnames, NUMSPRITES);
   dsda_SetSfx(doom_S_sfx, NUMSFX);
@@ -124,10 +128,10 @@ static void dsda_InitDoom(void) {
 }
 
 static void dsda_InitHeretic(void) {
-  int i;
+  int i, j;
   heretic_mobjinfo_t* mobjinfo_p;
 
-  dsda_AllocateMobjInfo(HERETIC_NUMMOBJTYPES);
+  dsda_AllocateMobjInfo(HERETIC_MT_ZERO, HERETIC_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
   dsda_SetStates(heretic_states, HERETIC_NUMSTATES);
   dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
   dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
@@ -139,35 +143,36 @@ static void dsda_InitHeretic(void) {
   g_mt_player = HERETIC_MT_PLAYER;
   
   // convert heretic mobj types to shared type
-  for (i = 0; i < HERETIC_NUMMOBJTYPES; ++i) {
+  for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {
     mobjinfo_p = &heretic_mobjinfo[i];
     
-    mobjinfo[i].doomednum    = mobjinfo_p->doomednum;
-    mobjinfo[i].spawnstate   = mobjinfo_p->spawnstate;
-    mobjinfo[i].spawnhealth  = mobjinfo_p->spawnhealth;
-    mobjinfo[i].seestate     = mobjinfo_p->seestate;
-    mobjinfo[i].seesound     = mobjinfo_p->seesound;
-    mobjinfo[i].reactiontime = mobjinfo_p->reactiontime;
-    mobjinfo[i].attacksound  = mobjinfo_p->attacksound;
-    mobjinfo[i].painstate    = mobjinfo_p->painstate;
-    mobjinfo[i].painchance   = mobjinfo_p->painchance;
-    mobjinfo[i].painsound    = mobjinfo_p->painsound;
-    mobjinfo[i].meleestate   = mobjinfo_p->meleestate;
-    mobjinfo[i].missilestate = mobjinfo_p->missilestate;
-    mobjinfo[i].deathstate   = mobjinfo_p->deathstate;
-    mobjinfo[i].xdeathstate  = mobjinfo_p->xdeathstate;
-    mobjinfo[i].deathsound   = mobjinfo_p->deathsound;
-    mobjinfo[i].speed        = mobjinfo_p->speed;
-    mobjinfo[i].radius       = mobjinfo_p->radius;
-    mobjinfo[i].height       = mobjinfo_p->height;
-    mobjinfo[i].mass         = mobjinfo_p->mass;
-    mobjinfo[i].damage       = mobjinfo_p->damage;
-    mobjinfo[i].activesound  = mobjinfo_p->activesound;
-    mobjinfo[i].flags        = mobjinfo_p->flags;
-    mobjinfo[i].raisestate   = 0; // not in heretic
-    mobjinfo[i].droppeditem  = 0; // not in heretic
-    mobjinfo[i].crashstate   = mobjinfo_p->crashstate;
-    mobjinfo[i].flags2       = mobjinfo_p->flags2;
+    j = i + HERETIC_MT_ZERO;
+    mobjinfo[j].doomednum    = mobjinfo_p->doomednum;
+    mobjinfo[j].spawnstate   = mobjinfo_p->spawnstate;
+    mobjinfo[j].spawnhealth  = mobjinfo_p->spawnhealth;
+    mobjinfo[j].seestate     = mobjinfo_p->seestate;
+    mobjinfo[j].seesound     = mobjinfo_p->seesound;
+    mobjinfo[j].reactiontime = mobjinfo_p->reactiontime;
+    mobjinfo[j].attacksound  = mobjinfo_p->attacksound;
+    mobjinfo[j].painstate    = mobjinfo_p->painstate;
+    mobjinfo[j].painchance   = mobjinfo_p->painchance;
+    mobjinfo[j].painsound    = mobjinfo_p->painsound;
+    mobjinfo[j].meleestate   = mobjinfo_p->meleestate;
+    mobjinfo[j].missilestate = mobjinfo_p->missilestate;
+    mobjinfo[j].deathstate   = mobjinfo_p->deathstate;
+    mobjinfo[j].xdeathstate  = mobjinfo_p->xdeathstate;
+    mobjinfo[j].deathsound   = mobjinfo_p->deathsound;
+    mobjinfo[j].speed        = mobjinfo_p->speed;
+    mobjinfo[j].radius       = mobjinfo_p->radius;
+    mobjinfo[j].height       = mobjinfo_p->height;
+    mobjinfo[j].mass         = mobjinfo_p->mass;
+    mobjinfo[j].damage       = mobjinfo_p->damage;
+    mobjinfo[j].activesound  = mobjinfo_p->activesound;
+    mobjinfo[j].flags        = mobjinfo_p->flags;
+    mobjinfo[j].raisestate   = 0; // not in heretic
+    mobjinfo[j].droppeditem  = 0; // not in heretic
+    mobjinfo[j].crashstate   = mobjinfo_p->crashstate;
+    mobjinfo[j].flags2       = mobjinfo_p->flags2;
   }
   
   // heretic doesn't use "clip" concept
