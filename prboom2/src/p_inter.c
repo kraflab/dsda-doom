@@ -904,11 +904,94 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     return;
 
   if (target->flags & MF_SKULLFLY)
+  {
+    if (target->type == HERETIC_MT_MINOTAUR) return;
     target->momx = target->momy = target->momz = 0;
+  }
 
   player = target->player;
   if (player && gameskill == sk_baby)
     damage >>= 1;   // take half damage in trainer mode
+
+  // Special damage types
+  if (heretic && inflictor)
+    switch (inflictor->type)
+    {
+      case HERETIC_MT_EGGFX:
+        if (player)
+        {
+          P_ChickenMorphPlayer(player);
+        }
+        else
+        {
+          P_ChickenMorph(target);
+        }
+        return;         // Always return
+      case HERETIC_MT_WHIRLWIND:
+        P_TouchWhirlwind(target);
+        return;
+      case HERETIC_MT_MINOTAUR:
+        if (inflictor->flags & MF_SKULLFLY)
+        {               // Slam only when in charge mode
+          P_MinotaurSlam(inflictor, target);
+          return;
+        }
+        break;
+      case HERETIC_MT_MACEFX4:   // Death ball
+        if ((target->flags2 & MF2_BOSS) || target->type == HERETIC_MT_HEAD)
+        {               // Don't allow cheap boss kills
+          break;
+        }
+        else if (target->player)
+        {               // Player specific checks
+          if (target->player->powers[pw_invulnerability])
+          {           // Can't hurt invulnerable players
+            break;
+          }
+          if (P_AutoUseChaosDevice(target->player))
+          {           // Player was saved using chaos device
+            return;
+          }
+        }
+        damage = 10000; // Something's gonna die
+        break;
+      case HERETIC_MT_PHOENIXFX2:        // Flame thrower
+        if (target->player && P_Random(pr_heretic) < 128)
+        {               // Freeze player for a bit
+          target->reactiontime += 4;
+        }
+        break;
+      case HERETIC_MT_RAINPLR1:  // Rain missiles
+      case HERETIC_MT_RAINPLR2:
+      case HERETIC_MT_RAINPLR3:
+      case HERETIC_MT_RAINPLR4:
+        if (target->flags2 & MF2_BOSS)
+        {               // Decrease damage for bosses
+          damage = (P_Random(pr_heretic) & 7) + 1;
+        }
+        break;
+      case HERETIC_MT_HORNRODFX2:
+      case HERETIC_MT_PHOENIXFX1:
+        if (target->type == HERETIC_MT_SORCERER2 && P_Random(pr_heretic) < 96)
+        {               // D'Sparil teleports away
+          P_DSparilTeleport(target);
+          return;
+        }
+        break;
+      case HERETIC_MT_BLASTERFX1:
+      case HERETIC_MT_RIPPER:
+        if (target->type == HERETIC_MT_HEAD)
+        {               // Less damage to Ironlich bosses
+          damage = P_Random(pr_heretic) & 1;
+          if (!damage)
+          {
+            return;
+          }
+        }
+        break;
+      default:
+        break;
+    }
 
   // Some close combat weapons should not
   // inflict thrust and push the victim out of reach,
@@ -916,69 +999,105 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 
   if (inflictor && !(target->flags & MF_NOCLIP) &&
       (!source || !source->player ||
-       source->player->readyweapon != wp_chainsaw))
+       source->player->readyweapon != g_wp_chainsaw))
+  {
+    unsigned ang = R_PointToAngle2 (inflictor->x, inflictor->y,
+                                    target->x,    target->y);
+
+    fixed_t thrust = damage * (FRACUNIT >> 3) * g_thrust_factor / target->info->mass;
+
+    // make fall forwards sometimes
+    if ( damage < 40 && damage > target->health
+         && target->z - inflictor->z > 64*FRACUNIT
+         && P_Random(pr_damagemobj) & 1)
     {
-      unsigned ang = R_PointToAngle2 (inflictor->x, inflictor->y,
-                                      target->x,    target->y);
-
-      fixed_t thrust = damage*(FRACUNIT>>3)*100/target->info->mass;
-
-      // make fall forwards sometimes
-      if ( damage < 40 && damage > target->health
-           && target->z - inflictor->z > 64*FRACUNIT
-           && P_Random(pr_damagemobj) & 1)
-        {
-          ang += ANG180;
-          thrust *= 4;
-        }
-
-      ang >>= ANGLETOFINESHIFT;
-      target->momx += FixedMul (thrust, finecosine[ang]);
-      target->momy += FixedMul (thrust, finesine[ang]);
-
-      /* killough 11/98: thrust objects hanging off ledges */
-      if (target->intflags & MIF_FALLING && target->gear >= MAXGEAR)
-        target->gear = 0;
+      ang += ANG180;
+      thrust *= 4;
     }
+
+    ang >>= ANGLETOFINESHIFT;
+
+    if (source && source->player && (source == inflictor)
+        && source->player->powers[pw_weaponlevel2]
+        && source->player->readyweapon == wp_staff)
+    {
+      // Staff power level 2
+      target->momx += FixedMul(10 * FRACUNIT, finecosine[ang]);
+      target->momy += FixedMul(10 * FRACUNIT, finesine[ang]);
+      if (!(target->flags & MF_NOGRAVITY))
+      {
+          target->momz += 5 * FRACUNIT;
+      }
+    }
+    else
+    {
+      target->momx += FixedMul(thrust, finecosine[ang]);
+      target->momy += FixedMul(thrust, finesine[ang]);
+    }
+
+    /* killough 11/98: thrust objects hanging off ledges */
+    if (target->intflags & MIF_FALLING && target->gear >= MAXGEAR)
+      target->gear = 0;
+  }
 
   // player specific
   if (player)
+  {
+    // end of game hell hack
+    if (!heretic && target->subsector->sector->special == 11 && damage >= target->health)
+      damage = target->health - 1;
+
+    // Below certain threshold,
+    // ignore damage in GOD mode, or with INVUL power.
+    // killough 3/26/98: make god mode 100% god mode in non-compat mode
+
+    if ((damage < 1000 || (!comp[comp_god] && (player->cheats&CF_GODMODE))) &&
+        (player->cheats&CF_GODMODE || player->powers[pw_invulnerability]))
+      return;
+
+    if (player->armortype)
     {
-      // end of game hell hack
-      if (target->subsector->sector->special == 11 && damage >= target->health)
-        damage = target->health - 1;
+      int saved;
 
-      // Below certain threshold,
-      // ignore damage in GOD mode, or with INVUL power.
-      // killough 3/26/98: make god mode 100% god mode in non-compat mode
+      if (heretic)
+        saved = player->armortype == 1 ? (damage >> 1) : (damage >> 1) + (damage >> 2);
+      else
+        saved = player->armortype == 1 ? damage / 3 : damage / 2;
 
-      if ((damage < 1000 || (!comp[comp_god] && (player->cheats&CF_GODMODE))) &&
-          (player->cheats&CF_GODMODE || player->powers[pw_invulnerability]))
-        return;
-
-      if (player->armortype)
-        {
-          int saved = player->armortype == 1 ? damage/3 : damage/2;
-          if (player->armorpoints <= saved)
-            {
-              // armor is used up
-              saved = player->armorpoints;
-              player->armortype = 0;
-            }
-          player->armorpoints -= saved;
-          damage -= saved;
-        }
-
-      player->health -= damage;       // mirror mobj health here for Dave
-      if (player->health < 0)
-        player->health = 0;
-
-      player->attacker = source;
-      player->damagecount += damage;  // add damage after armor / invuln
-
-      if (player->damagecount > 100)
-        player->damagecount = 100;  // teleport stomp does 10k points...
+      if (player->armorpoints <= saved)
+      {
+        // armor is used up
+        saved = player->armorpoints;
+        player->armortype = 0;
+      }
+      player->armorpoints -= saved;
+      damage -= saved;
     }
+
+    if (heretic && damage >= player->health
+        && ((gameskill == sk_baby) || deathmatch) && !player->chickenTics)
+    {                       // Try to use some inventory health
+      P_AutoUseHealth(player, damage - player->health + 1);
+    }
+
+    player->health -= damage;       // mirror mobj health here for Dave
+    if (player->health < 0)
+      player->health = 0;
+
+    player->attacker = source;
+    player->damagecount += damage;  // add damage after armor / invuln
+
+    if (player->damagecount > 100)
+      player->damagecount = 100;  // teleport stomp does 10k points...
+
+    // HERETIC_TODO: something for the hud?
+    // if (heretic && player == &players[consoleplayer])
+    // {
+    //     int temp = damage < 100 ? damage : 100;
+    //     I_Tactile(40, 10, 40 + temp * 2);
+    //     SB_PaletteFlash();
+    // }
+  }
 
   if (source && target)
   {
@@ -990,92 +1109,111 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   // do the damage
   target->health -= damage;
   if (target->health <= 0)
-    {
-      P_KillMobj (source, target);
-      return;
+  {
+    if (heretic) {
+      target->special1.i = damage;
+      if (target->type == HERETIC_MT_POD && source && source->type != HERETIC_MT_POD)
+      {                       // Make sure players get frags for chain-reaction kills
+        target->target = source;
+      }
+      if (player && inflictor && !player->chickenTics)
+      {                       // Check for flame death
+        if ((inflictor->flags2 & MF2_FIREDAMAGE)
+            || ((inflictor->type == HERETIC_MT_PHOENIXFX1)
+                && (target->health > -50) && (damage > 25)))
+        {
+          target->flags2 |= MF2_FIREDAMAGE;
+        }
+      }
     }
+
+    P_KillMobj (source, target);
+    return;
+  }
 
   // killough 9/7/98: keep track of targets so that friends can help friends
   if (mbf_features)
-    {
-      /* If target is a player, set player's target to source,
-       * so that a friend can tell who's hurting a player
-       */
-      if (player)
-  P_SetTarget(&target->target, source);
-
-      /* killough 9/8/98:
-       * If target's health is less than 50%, move it to the front of its list.
-       * This will slightly increase the chances that enemies will choose to
-       * "finish it off", but its main purpose is to alert friends of danger.
-       */
-      if (target->health*2 < target->info->spawnhealth)
   {
-    thinker_t *cap = &thinkerclasscap[target->flags & MF_FRIEND ?
-             th_friends : th_enemies];
-    (target->thinker.cprev->cnext = target->thinker.cnext)->cprev =
-      target->thinker.cprev;
-    (target->thinker.cnext = cap->cnext)->cprev = &target->thinker;
-    (target->thinker.cprev = cap)->cnext = &target->thinker;
-  }
+    /* If target is a player, set player's target to source,
+     * so that a friend can tell who's hurting a player
+     */
+    if (player) P_SetTarget(&target->target, source);
+
+    /* killough 9/8/98:
+     * If target's health is less than 50%, move it to the front of its list.
+     * This will slightly increase the chances that enemies will choose to
+     * "finish it off", but its main purpose is to alert friends of danger.
+     */
+    if (target->health*2 < target->info->spawnhealth)
+    {
+      thinker_t *cap = &thinkerclasscap[target->flags & MF_FRIEND ?
+               th_friends : th_enemies];
+      (target->thinker.cprev->cnext = target->thinker.cnext)->cprev =
+        target->thinker.cprev;
+      (target->thinker.cnext = cap->cnext)->cprev = &target->thinker;
+      (target->thinker.cprev = cap)->cnext = &target->thinker;
     }
+  }
 
   if (P_Random (pr_painchance) < target->info->painchance &&
-      !(target->flags & MF_SKULLFLY)) { //killough 11/98: see below
+      !(target->flags & MF_SKULLFLY)) //killough 11/98: see below
+  {
     if (mbf_features)
       justhit = true;
     else
       target->flags |= MF_JUSTHIT;    // fight back!
 
-  //e6y
-  {
-    if(demo_compatibility)
-      if ((target->target == source || !target->target ||
-         !(target->flags & target->target->flags & MF_FRIEND)))
-        target->flags |= MF_JUSTHIT;    // fight back!
+    P_SetMobjState(target, target->info->painstate);
   }
-
-  P_SetMobjState(target, target->info->painstate);
-  }//e6y
 
   target->reactiontime = 0;           // we're awake now...
 
+  // HERETIC_TODO: make heretic -> compatibility_level == doom_12_compatibility ?
+
   /* killough 9/9/98: cleaned up, made more consistent: */
   //e6y: Monsters could commit suicide in Doom v1.2 if they damaged themselves by exploding a barrel
-  if (source && (source != target || compatibility_level == doom_12_compatibility) &&
-      source->type != MT_VILE &&
-      (!target->threshold || target->type == MT_VILE) &&
-      ((source->flags ^ target->flags) & MF_FRIEND ||
-       monster_infighting ||
-       !mbf_features))
-    {
-      /* if not intent on another player, chase after this one
-       *
-       * killough 2/15/98: remember last enemy, to prevent
-       * sleeping early; 2/21/98: Place priority on players
-       * killough 9/9/98: cleaned up, made more consistent:
-       */
+  if (
+    source && 
+    (source != target || compatibility_level == doom_12_compatibility || heretic) &&
+    source->type != MT_VILE &&
+    (!target->threshold || target->type == MT_VILE) &&
+    ((source->flags ^ target->flags) & MF_FRIEND || monster_infighting || !mbf_features) &&
+    !(source->flags2 & MF2_BOSS) &&
+    !(target->type == HERETIC_MT_SORCERER2 && source->type == HERETIC_MT_WIZARD)
+  )
+  {
+    /* if not intent on another player, chase after this one
+     *
+     * killough 2/15/98: remember last enemy, to prevent
+     * sleeping early; 2/21/98: Place priority on players
+     * killough 9/9/98: cleaned up, made more consistent:
+     */
 
-      if (!target->lastenemy || target->lastenemy->health <= 0 ||
-    (!mbf_features ?
-     !target->lastenemy->player :
-     !((target->flags ^ target->lastenemy->flags) & MF_FRIEND) &&
-     target->target != source)) // remember last enemy - killough
-  P_SetTarget(&target->lastenemy, target->target);
+    if (
+      heretic ? false :
+      !target->lastenemy ||
+      target->lastenemy->health <= 0 ||
+      (
+        !mbf_features ?
+        !target->lastenemy->player :
+        !((target->flags ^ target->lastenemy->flags) & MF_FRIEND) && target->target != source
+      )
+    ) // remember last enemy - killough
+      P_SetTarget(&target->lastenemy, target->target);
 
-      P_SetTarget(&target->target, source);       // killough 11/98
-      target->threshold = BASETHRESHOLD;
-      if (target->state == &states[target->info->spawnstate]
-          && target->info->seestate != S_NULL)
-        P_SetMobjState (target, target->info->seestate);
-    }
+    P_SetTarget(&target->target, source);       // killough 11/98
+    target->threshold = BASETHRESHOLD;
+    if (target->state == &states[target->info->spawnstate]
+        && target->info->seestate != S_NULL)
+      P_SetMobjState (target, target->info->seestate);
+  }
 
   /* killough 11/98: Don't attack a friend, unless hit by that friend.
    * cph 2006/04/01 - implicitly this is only if mbf_features */
   if(!demo_compatibility) //e6y
-  if (justhit && (target->target == source || !target->target ||
-      !(target->flags & target->target->flags & MF_FRIEND)))
-    target->flags |= MF_JUSTHIT;    // fight back!
+    if (justhit && (target->target == source || !target->target ||
+        !(target->flags & target->target->flags & MF_FRIEND)))
+      target->flags |= MF_JUSTHIT;    // fight back!
 }
 
 // heretic

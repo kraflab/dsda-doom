@@ -46,6 +46,8 @@ int num_music;
 weaponinfo_t* weaponinfo;
 
 int g_mt_player;
+int g_wp_chainsaw;
+int g_thrust_factor;
 
 extern const char** S_music_files;
 
@@ -93,6 +95,8 @@ static void dsda_InitDoom(void) {
   weaponinfo = doom_weaponinfo;
   
   g_mt_player = MT_PLAYER;
+  g_wp_chainsaw = wp_chainsaw;
+  g_thrust_factor = 100;
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -141,6 +145,8 @@ static void dsda_InitHeretic(void) {
   weaponinfo = wpnlev1info;
   
   g_mt_player = HERETIC_MT_PLAYER;
+  g_wp_chainsaw = wp_gauntlets;
+  g_thrust_factor = 150;
   
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {

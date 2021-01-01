@@ -21,6 +21,8 @@
 #include "doomtype.h"
 
 extern int g_mt_player;
+extern int g_wp_chainsaw;
+extern int g_thrust_factor;
 extern dboolean heretic;
 
 void dsda_InitGlobal(void);
