@@ -35,73 +35,7 @@
 ================
 */
 
-fixed_t xspeed[8] =
-    { FRACUNIT, 47000, 0, -47000, -FRACUNIT, -47000, 0, 47000 };
-fixed_t yspeed[8] =
-    { 0, 47000, FRACUNIT, 47000, 0, -47000, -FRACUNIT, -47000 };
-
 #define	MAXSPECIALCROSS		8
-extern line_t **spechit; // [crispy] remove SPECHIT limit
-extern int numspechit;
-
-boolean P_Move(mobj_t * actor)
-{
-    fixed_t tryx, tryy;
-    line_t *ld;
-    boolean good;
-
-    if (actor->movedir == DI_NODIR)
-    {
-        return (false);
-    }
-    tryx = actor->x + actor->info->speed * xspeed[actor->movedir];
-    tryy = actor->y + actor->info->speed * yspeed[actor->movedir];
-    if (!P_TryMove(actor, tryx, tryy))
-    {                           // open any specials
-        if (actor->flags & MF_FLOAT && floatok)
-        {                       // must adjust height
-            if (actor->z < tmfloorz)
-            {
-                actor->z += FLOATSPEED;
-            }
-            else
-            {
-                actor->z -= FLOATSPEED;
-            }
-            actor->flags |= MF_INFLOAT;
-            return (true);
-        }
-        if (!numspechit)
-        {
-            return false;
-        }
-        actor->movedir = DI_NODIR;
-        good = false;
-        while (numspechit--)
-        {
-            ld = spechit[numspechit];
-            // if the special isn't a door that can be opened, return false
-            if (P_UseSpecialLine(actor, ld))
-            {
-                good = true;
-            }
-        }
-        return (good);
-    }
-    else
-    {
-        actor->flags &= ~MF_INFLOAT;
-    }
-    if (!(actor->flags & MF_FLOAT))
-    {
-        if (actor->z > actor->floorz)
-        {
-            P_HitFloor(actor);
-        }
-        actor->z = actor->floorz;
-    }
-    return (true);
-}
 
 //----------------------------------------------------------------------------
 //

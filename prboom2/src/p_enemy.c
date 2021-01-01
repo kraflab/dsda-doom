@@ -420,7 +420,9 @@ static dboolean P_Move(mobj_t *actor, dboolean dropoff) /* killough 9/12/98 */
 
       for (good = false; numspechit--; )
         if (P_UseSpecialLine(actor, spechit[numspechit], 0, false))
-    good |= spechit[numspechit] == blockline ? 1 : 2;
+          good |= spechit[numspechit] == blockline ? 1 : 2;
+
+      if (heretic) return good > 0;
 
       /* cph - compatibility maze here
        * Boom v2.01 and orig. Doom return "good"
@@ -429,17 +431,21 @@ static dboolean P_Move(mobj_t *actor, dboolean dropoff) /* killough 9/12/98 */
        */
       if (!good || comp[comp_doorstuck]) return good;
       if (!mbf_features)
-  return (P_Random(pr_trywalk)&3); /* jff 8/13/98 */
+        return (P_Random(pr_trywalk)&3); /* jff 8/13/98 */
       else /* finally, MBF code */
-  return ((P_Random(pr_opendoor) >= 230) ^ (good & 1));
+        return ((P_Random(pr_opendoor) >= 230) ^ (good & 1));
     }
   else
     actor->flags &= ~MF_INFLOAT;
 
   /* killough 11/98: fall more slowly, under gravity, if felldown==true */
-  if (!(actor->flags & MF_FLOAT) &&
-      (!felldown || !mbf_features))
+  if (!(actor->flags & MF_FLOAT) && (!felldown || !mbf_features)) {
+    if (heretic && actor->z > actor->floorz)
+    {
+      P_HitFloor(actor);
+    }
     actor->z = actor->floorz;
+  }
 
   return true;
 }
