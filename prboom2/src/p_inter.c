@@ -1190,7 +1190,6 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
      */
 
     if (
-      heretic ? false :
       !target->lastenemy ||
       target->lastenemy->health <= 0 ||
       (
