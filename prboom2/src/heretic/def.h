@@ -21,6 +21,11 @@
 
 extern dboolean heretic;
 
+// HERETIC_TODO: actually these are from sb_bar
+extern int inv_ptr;
+extern int curpos;
+extern int ArtifactFlash;
+
 #define TELEFOGHEIGHT (32*FRACUNIT)
 #define ANG1_X          0x01000000
 

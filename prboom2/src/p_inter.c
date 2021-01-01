@@ -1217,6 +1217,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 
 // heretic
 
+#include "p_user.h"
+
 #define CHICKENTICS (40*35)
 
 void A_RestoreArtifact(mobj_t * arti)

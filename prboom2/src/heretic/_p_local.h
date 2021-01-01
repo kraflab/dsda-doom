@@ -90,16 +90,12 @@ void P_SetPsprite(player_t * player, int position, statenum_t stnum);
 void P_SetupPsprites(player_t * curplayer);
 void P_MovePsprites(player_t * curplayer);
 void P_DropWeapon(player_t * player);
-void P_PostChickenWeapon(player_t * player, weapontype_t weapon);
 void P_UpdateBeak(player_t * player, pspdef_t * psp);
 
 // ***** P_USER *****
 
 void P_PlayerThink(player_t * player);
 void P_Thrust(player_t * player, angle_t angle, fixed_t move);
-void P_PlayerRemoveArtifact(player_t * player, int slot);
-void P_PlayerUseArtifact(player_t * player, artitype_t arti);
-boolean P_UseArtifact(player_t * player, artitype_t arti);
 
 // ***** P_MOBJ *****
 
@@ -224,7 +220,6 @@ void AM_Drawer(void);
 // ***** SB_BAR *****
 
 extern int SB_state;
-extern int ArtifactFlash;
 void SB_PaletteFlash(void);
 
 #include "p_spec.h"

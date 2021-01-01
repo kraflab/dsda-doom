@@ -87,5 +87,10 @@ dboolean Heretic_P_GiveWeapon(player_t * player, weapontype_t weapon);
 void P_SetDormantArtifact(mobj_t * arti);
 void P_HideSpecialThing(mobj_t * thing);
 dboolean P_ChickenMorphPlayer(player_t * player);
+dboolean P_ChickenMorph(mobj_t * target);
+void P_TouchWhirlwind(mobj_t * target);
+void P_MinotaurSlam(mobj_t * source, mobj_t * target);
+dboolean P_AutoUseChaosDevice(player_t * player);
+void P_AutoUseHealth(player_t * player, int saveHealth);
 
 #endif

@@ -120,4 +120,8 @@ void A_Stop(mobj_t *);
 
 void A_SkullPop(mobj_t *);
 
+// heretic
+
+void P_DSparilTeleport(mobj_t * actor);
+
 #endif // __P_ENEMY__

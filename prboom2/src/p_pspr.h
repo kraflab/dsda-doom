@@ -131,7 +131,11 @@ void A_FireOldBFG();
 
 #include "p_mobj.h"
 
+struct player_s;
+
 void P_RepositionMace(mobj_t * mo);
-void P_ActivateBeak(player_t * player);
+void P_ActivateBeak(struct player_s * player);
+void P_PostChickenWeapon(struct player_s * player, weapontype_t weapon);
+void P_SetPsprite(struct player_s * player, int position, statenum_t stnum);
 
 #endif

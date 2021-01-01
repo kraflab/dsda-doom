@@ -49,5 +49,8 @@ void P_SetPitch(player_t *player);
 // heretic
 
 int P_GetPlayerNum(player_t * player);
+void P_PlayerRemoveArtifact(player_t * player, int slot);
+void P_PlayerUseArtifact(player_t * player, artitype_t arti);
+dboolean P_UseArtifact(player_t * player, artitype_t arti);
 
 #endif  /* __P_USER__ */

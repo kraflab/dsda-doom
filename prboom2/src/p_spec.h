@@ -1166,4 +1166,6 @@ mobj_t* P_GetPushThing(int);                                // phares 3/23/98
 
 extern int *TerrainTypes;
 
+dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle);
+
 #endif

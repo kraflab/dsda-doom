@@ -125,51 +125,6 @@ void P_SetPsprite(player_t * player, int position, statenum_t stnum)
     while (!psp->tics);         // An initial state of 0 could cycle through.
 }
 
-/*
-=================
-=
-= P_CalcSwing
-=
-=================
-*/
-
-/*
-fixed_t	swingx, swingy;
-void P_CalcSwing (player_t *player)
-{
-	fixed_t	swing;
-	int		angle;
-
-// OPTIMIZE: tablify this
-
-	swing = player->bob;
-
-	angle = (FINEANGLES/70*leveltime)&FINEMASK;
-	swingx = FixedMul ( swing, finesine[angle]);
-
-	angle = (FINEANGLES/70*leveltime+FINEANGLES/2)&FINEMASK;
-	swingy = -FixedMul ( swingx, finesine[angle]);
-}
-*/
-
-//---------------------------------------------------------------------------
-//
-// PROC P_PostChickenWeapon
-//
-//---------------------------------------------------------------------------
-
-void P_PostChickenWeapon(player_t * player, weapontype_t weapon)
-{
-    if (weapon == wp_beak)
-    {                           // Should never happen
-        weapon = wp_staff;
-    }
-    player->pendingweapon = wp_nochange;
-    player->readyweapon = weapon;
-    player->psprites[ps_weapon].sy = WEAPONBOTTOM;
-    P_SetPsprite(player, ps_weapon, wpnlev1info[weapon].upstate);
-}
-
 //---------------------------------------------------------------------------
 //
 // PROC P_BringUpWeapon

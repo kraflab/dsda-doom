@@ -88,7 +88,7 @@ static const int recoil_values[] = {    // phares
 // P_SetPsprite
 //
 
-static void P_SetPsprite(player_t *player, int position, statenum_t stnum)
+void P_SetPsprite(player_t *player, int position, statenum_t stnum)
 {
   pspdef_t *psp = &player->psprites[position];
 
@@ -1886,4 +1886,16 @@ void P_ActivateBeak(player_t * player)
     player->readyweapon = wp_beak;
     player->psprites[ps_weapon].sy = WEAPONTOP;
     P_SetPsprite(player, ps_weapon, HERETIC_S_BEAKREADY);
+}
+
+void P_PostChickenWeapon(player_t * player, weapontype_t weapon)
+{
+    if (weapon == wp_beak)
+    {                           // Should never happen
+        weapon = wp_staff;
+    }
+    player->pendingweapon = wp_nochange;
+    player->readyweapon = weapon;
+    player->psprites[ps_weapon].sy = WEAPONBOTTOM;
+    P_SetPsprite(player, ps_weapon, wpnlev1info[weapon].upstate);
 }

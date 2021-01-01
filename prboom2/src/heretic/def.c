@@ -17,3 +17,7 @@
 #include "def.h"
 
 dboolean heretic = false;
+
+int inv_ptr;
+int curpos;
+int ArtifactFlash;

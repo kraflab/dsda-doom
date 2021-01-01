@@ -385,5 +385,4 @@ void T_MoveFloor(floormove_t * floor);
 ===============================================================================
 */
 
-boolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle);
 boolean EV_Teleport(line_t * line, int side, mobj_t * thing);
