@@ -1,0 +1,63 @@
+### Files in crispy src/heretic:
+
+- [ ] am_data.h
+- [ ] am_map.c
+- [ ] am_map.h
+- [ ] ct_chat.c
+- [ ] ct_chat.h
+- [ ] d_main.c
+- [ ] d_net.c
+- [ ] deh_ammo.c
+- [ ] deh_frame.c
+- [ ] deh_htext.c
+- [ ] deh_htic.c
+- [ ] deh_htic.h
+- [ ] deh_sound.c
+- [ ] deh_thing.c
+- [ ] deh_weapon.c
+- [ ] doomdata.h
+- [ ] doomdef.h
+- [x] dstrings.h
+- [ ] f_finale.c
+- [ ] g_game.c
+- [ ] in_lude.c
+- [x] info.c
+- [x] info.h
+- [x] m_random.c
+- [x] m_random.h
+- [ ] mn_menu.c
+- [x] p_action.h
+- [ ] p_ceiling.c
+- [ ] p_doors.c
+- [ ] p_enemy.c
+- [ ] p_floor.c
+- [x] p_inter.c
+- [ ] p_lights.c
+- [ ] p_local.h
+- [ ] p_map.c
+- [ ] p_maputl.c
+- [ ] p_mobj.c
+- [ ] p_plats.c
+- [ ] p_pspr.c
+- [ ] p_saveg.c
+- [ ] p_setup.c
+- [ ] p_sight.c
+- [ ] p_spec.c
+- [ ] p_spec.h
+- [ ] p_switch.c
+- [x] p_telept.c
+- [ ] p_tick.c
+- [ ] p_user.c
+- [ ] r_bsp.c
+- [ ] r_data.c
+- [ ] r_draw.c
+- [ ] r_local.h
+- [ ] r_main.c
+- [ ] r_plane.c
+- [ ] r_segs.c
+- [ ] r_things.c
+- [ ] s_sound.c
+- [ ] s_sound.h
+- [ ] sb_bar.c
+- [x] sounds.c
+- [x] sounds.h
