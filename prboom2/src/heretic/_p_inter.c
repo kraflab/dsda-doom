@@ -28,29 +28,6 @@
 
 //---------------------------------------------------------------------------
 //
-// FUNC P_MinotaurSlam
-//
-//---------------------------------------------------------------------------
-
-void P_MinotaurSlam(mobj_t * source, mobj_t * target)
-{
-    angle_t angle;
-    fixed_t thrust;
-
-    angle = R_PointToAngle2(source->x, source->y, target->x, target->y);
-    angle >>= ANGLETOFINESHIFT;
-    thrust = 16 * FRACUNIT + (P_Random() << 10);
-    target->momx += FixedMul(thrust, finecosine[angle]);
-    target->momy += FixedMul(thrust, finesine[angle]);
-    P_DamageMobj(target, NULL, NULL, HITDICE(6));
-    if (target->player)
-    {
-        target->reactiontime = 14 + (P_Random() & 7);
-    }
-}
-
-//---------------------------------------------------------------------------
-//
 // FUNC P_TouchWhirlwind
 //
 //---------------------------------------------------------------------------
