@@ -294,12 +294,12 @@ void I_SetChannels(void)
 int I_GetSfxLumpNum(sfxinfo_t *sfx)
 {
   char namebuf[9];
-  const char *prefix;
+  const char* format;
 
-  // Different prefix for PC speaker sound effects.
-  prefix = (snd_pcspeaker ? "dp" : "ds");
+  // Different prefix for PC speaker sound effects for doom.
+  format = heretic ? "%s" : snd_pcspeaker ? "dp%s" : "ds%s"
 
-  sprintf(namebuf, "%s%s", prefix, sfx->name);
+  sprintf(namebuf, format, prefix, sfx->name);
   return W_SafeGetNumForName(namebuf); //e6y: make missing sounds non-fatal
 }
 
