@@ -67,6 +67,8 @@ int EV_Teleport(line_t *line, int side, mobj_t *thing)
 {
   mobj_t    *m;
 
+  if (heretic) return Heretic_EV_Teleport(line, side, thing);
+
   // don't teleport missiles
   // Don't teleport if hit back of line,
   //  so you can get out of teleporter.
@@ -431,4 +433,49 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle)
         thing->momx = thing->momy = thing->momz = 0;
     }
     return (true);
+}
+
+dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
+{
+    int i;
+    int tag;
+    mobj_t *m;
+    thinker_t *thinker;
+    sector_t *sector;
+
+    if (thing->flags2 & MF2_NOTELEPORT)
+    {
+        return (false);
+    }
+    if (side == 1)
+    {                           // Don't teleport when crossing back side
+        return (false);
+    }
+    tag = line->tag;
+    for (i = 0; i < numsectors; i++)
+    {
+        if (sectors[i].tag == tag)
+        {
+            for (thinker = thinkercap.next; thinker != &thinkercap;
+                 thinker = thinker->next)
+            {
+                if (thinker->function != P_MobjThinker)
+                {               // Not a mobj
+                    continue;
+                }
+                m = (mobj_t *) thinker;
+                if (m->type != MT_TELEPORTMAN)
+                {               // Not a teleportman
+                    continue;
+                }
+                sector = m->subsector->sector;
+                if (sector - sectors != i)
+                {               // Wrong sector
+                    continue;
+                }
+                return (P_Teleport(thing, m->x, m->y, m->angle));
+            }
+        }
+    }
+    return (false);
 }
