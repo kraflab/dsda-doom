@@ -1879,3 +1879,11 @@ void P_RepositionMace(mobj_t * mo)
     mo->ceilingz = ss->sector->ceilingheight;
     P_SetThingPosition(mo);
 }
+
+void P_ActivateBeak(player_t * player)
+{
+    player->pendingweapon = wp_nochange;
+    player->readyweapon = wp_beak;
+    player->psprites[ps_weapon].sy = WEAPONTOP;
+    P_SetPsprite(player, ps_weapon, HERETIC_S_BEAKREADY);
+}

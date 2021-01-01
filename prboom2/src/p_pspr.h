@@ -132,5 +132,6 @@ void A_FireOldBFG();
 #include "p_mobj.h"
 
 void P_RepositionMace(mobj_t * mo);
+void P_ActivateBeak(player_t * player);
 
 #endif

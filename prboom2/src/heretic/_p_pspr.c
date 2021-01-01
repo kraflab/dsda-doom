@@ -154,20 +154,6 @@ void P_CalcSwing (player_t *player)
 
 //---------------------------------------------------------------------------
 //
-// PROC P_ActivateBeak
-//
-//---------------------------------------------------------------------------
-
-void P_ActivateBeak(player_t * player)
-{
-    player->pendingweapon = wp_nochange;
-    player->readyweapon = wp_beak;
-    player->psprites[ps_weapon].sy = WEAPONTOP;
-    P_SetPsprite(player, ps_weapon, S_BEAKREADY);
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC P_PostChickenWeapon
 //
 //---------------------------------------------------------------------------

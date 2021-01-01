@@ -90,7 +90,6 @@ void P_SetPsprite(player_t * player, int position, statenum_t stnum);
 void P_SetupPsprites(player_t * curplayer);
 void P_MovePsprites(player_t * curplayer);
 void P_DropWeapon(player_t * player);
-void P_ActivateBeak(player_t * player);
 void P_PostChickenWeapon(player_t * player, weapontype_t weapon);
 void P_UpdateBeak(player_t * player, pspdef_t * psp);
 
