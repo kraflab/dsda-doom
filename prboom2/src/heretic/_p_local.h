@@ -214,7 +214,6 @@ extern mobj_t **blocklinks;     // for thing chains
 
 extern int maxammo[NUMAMMO];
 
-void P_SetCenterMessage(player_t * player, const char *message); // [crispy] Set centered message
 void P_DamageMobj(mobj_t * target, mobj_t * inflictor, mobj_t * source,
                   int damage);
 boolean P_ChickenMorphPlayer(player_t * player);
