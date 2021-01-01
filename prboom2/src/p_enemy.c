@@ -196,21 +196,21 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
     return false;
 
   if (actor->flags & MF_JUSTHIT)
-    {      // the target just hit the enemy, so fight back!
-      actor->flags &= ~MF_JUSTHIT;
+  {      // the target just hit the enemy, so fight back!
+    actor->flags &= ~MF_JUSTHIT;
 
-      /* killough 7/18/98: no friendly fire at corpses
-       * killough 11/98: prevent too much infighting among friends
-       * cph - yikes, talk about fitting everything on one line... */
+    /* killough 7/18/98: no friendly fire at corpses
+     * killough 11/98: prevent too much infighting among friends
+     * cph - yikes, talk about fitting everything on one line... */
 
-      return
-  !(actor->flags & MF_FRIEND) ||
-  (actor->target->health > 0 &&
-   (!(actor->target->flags & MF_FRIEND) ||
-    (actor->target->player ?
-     monster_infighting || P_Random(pr_defect) >128 :
-     !(actor->target->flags & MF_JUSTHIT) && P_Random(pr_defect) >128)));
-    }
+    return
+      !(actor->flags & MF_FRIEND) ||
+      (actor->target->health > 0 &&
+       (!(actor->target->flags & MF_FRIEND) ||
+        (actor->target->player ?
+         monster_infighting || P_Random(pr_defect) >128 :
+         !(actor->target->flags & MF_JUSTHIT) && P_Random(pr_defect) >128)));
+  }
 
   /* killough 7/18/98: friendly monsters don't attack other friendly
    * monsters or players (except when attacked, and then only once)
@@ -234,17 +234,17 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
     if (dist > 14*64)
       return false;     // too far away
 
-
   if (actor->type == MT_UNDEAD)
-    {
-      if (dist < 196)
-        return false;   // close for fist attack
-      dist >>= 1;
-    }
+  {
+    if (dist < 196)
+      return false;   // close for fist attack
+    dist >>= 1;
+  }
 
   if (actor->type == MT_CYBORG ||
       actor->type == MT_SPIDER ||
-      actor->type == MT_SKULL)
+      actor->type == MT_SKULL  ||
+      actor->type == HERETIC_MT_IMP) // Imp's fly attack from far away
     dist >>= 1;
 
   if (dist > 200)

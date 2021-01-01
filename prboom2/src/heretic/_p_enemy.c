@@ -25,50 +25,6 @@
 #include "s_sound.h"
 #include "v_video.h"
 
-//----------------------------------------------------------------------------
-//
-// FUNC P_CheckMissileRange
-//
-//----------------------------------------------------------------------------
-
-boolean P_CheckMissileRange(mobj_t * actor)
-{
-    fixed_t dist;
-
-    if (!P_CheckSight(actor, actor->target))
-    {
-        return (false);
-    }
-    if (actor->flags & MF_JUSTHIT)
-    {                           // The target just hit the enemy, so fight back!
-        actor->flags &= ~MF_JUSTHIT;
-        return (true);
-    }
-    if (actor->reactiontime)
-    {                           // Don't attack yet
-        return (false);
-    }
-    dist = (P_AproxDistance(actor->x - actor->target->x,
-                            actor->y - actor->target->y) >> FRACBITS) - 64;
-    if (!actor->info->meleestate)
-    {                           // No melee attack, so fire more frequently
-        dist -= 128;
-    }
-    if (actor->type == MT_IMP)
-    {                           // Imp's fly attack from far away
-        dist >>= 1;
-    }
-    if (dist > 200)
-    {
-        dist = 200;
-    }
-    if (P_Random() < dist)
-    {
-        return (false);
-    }
-    return (true);
-}
-
 /*
 ================
 =
