@@ -22,6 +22,7 @@
 #include "info.h"
 #include "d_items.h"
 #include "p_inter.h"
+#include "sounds.h"
 #include "heretic/def.h"
 
 #include "global.h"
@@ -35,9 +36,16 @@ int num_sprites;
 mobjinfo_t* mobjinfo;
 int num_mobj_types;
 
+sfxinfo_t* S_sfx;
+int num_sfx;
+musicinfo_t* S_music;
+int num_music;
+
 weaponinfo_t* weaponinfo;
 
 int g_mt_player;
+
+extern const char** S_music_files;
 
 static void dsda_AllocateMobjInfo(int count) {
   num_mobj_types = count;
@@ -56,6 +64,18 @@ static void dsda_SetSpriteNames(const char** sprite_name_list, int count) {
   num_sprites = count;
 }
 
+static void dsda_SetSfx(sfxinfo_t* sfx_list, int count) {
+  S_sfx = sfx_list;
+  num_sfx = count;
+}
+
+static void dsda_SetMusic(musicinfo_t* music_list, int count) {
+  S_music = music_list;
+  num_music = count;
+  S_music_files = malloc(sizeof(char *) * num_music);
+  memset(S_music_files, 0, sizeof(char *) * num_music);
+} 
+
 static void dsda_InitDoom(void) {
   int i;
   doom_mobjinfo_t* mobjinfo_p;
@@ -63,6 +83,8 @@ static void dsda_InitDoom(void) {
   dsda_AllocateMobjInfo(NUMMOBJTYPES);
   dsda_SetStates(doom_states, NUMSTATES);
   dsda_SetSpriteNames(doom_sprnames, NUMSPRITES);
+  dsda_SetSfx(doom_S_sfx, NUMSFX);
+  dsda_SetMusic(doom_S_music, NUMMUSIC);
   
   weaponinfo = doom_weaponinfo;
   
@@ -108,6 +130,8 @@ static void dsda_InitHeretic(void) {
   dsda_AllocateMobjInfo(HERETIC_NUMMOBJTYPES);
   dsda_SetStates(heretic_states, HERETIC_NUMSTATES);
   dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
+  dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
+  dsda_SetMusic(heretic_S_music, HERETIC_NUMMUSIC);
   
   // HERETIC_TODO: of course, 2 levels requires complete rework...
   weaponinfo = wpnlev1info;

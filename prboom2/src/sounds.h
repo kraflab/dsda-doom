@@ -93,12 +93,6 @@ typedef struct {
   int handle;
 } musicinfo_t;
 
-// the complete set of sound effects
-extern sfxinfo_t    S_sfx[];
-
-// the complete set of music
-extern musicinfo_t  S_music[];
-
 //
 // Identifiers for all music in game.
 //
@@ -747,7 +741,17 @@ typedef struct
     ChanInfo_t chan[8];
 } SoundInfo_t;
 
+// all the stuff - dynamically selected in global.c
+
 extern sfxinfo_t heretic_S_sfx[];
 extern musicinfo_t heretic_S_music[];
+
+extern sfxinfo_t doom_S_sfx[];
+extern musicinfo_t doom_S_music[];
+
+extern sfxinfo_t* S_sfx;
+extern int num_sfx;
+extern musicinfo_t* S_music;
+extern int num_music;
 
 #endif

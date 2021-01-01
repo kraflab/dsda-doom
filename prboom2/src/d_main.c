@@ -1403,12 +1403,6 @@ static void D_DoomMainSetup(void)
     } while (rsp_found==true);
   }
 
-  // e6y: moved to main()
-  /*
-  lprintf(LO_INFO,"M_LoadDefaults: Load system defaults.\n");
-  M_LoadDefaults();              // load before initing other systems
-  */
-
   dsda_InitGlobal();
 
   // figgi 09/18/00-- added switch to force classic bsp nodes
