@@ -701,16 +701,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
 {
   mobjtype_t item;
   mobj_t     *mo;
-  dboolean   e6y = false;
-  
-#if 0
-  if (target->player && source && target->health < -target->info->spawnhealth &&
-    !demorecording && !demoplayback)
-  {
-    angle_t ang = R_PointToAngle2(target->x, target->y, source->x, source->y) - target->angle;
-    e6y = (ang > (unsigned)(ANG180 - ANG45) && ang < (unsigned)(ANG180 + ANG45));
-  }
-#endif
+  int xdeath_limit;
 
   target->flags &= ~(MF_SHOOTABLE|MF_FLOAT|MF_SKULLFLY);
 
@@ -719,6 +710,9 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
 
   target->flags |= MF_CORPSE|MF_DROPOFF;
   target->height >>= 2;
+
+  // heretic
+  target->flags2 &= ~MF2_PASSMOBJ;
 
   if (compatibility_level == mbf_compatibility && 
       !prboom_comp[PC_MBF_REMOVE_THINKER_IN_KILLMOBJ].state)
@@ -733,105 +727,127 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   dsda_WatchDeath(target);
 
   if (source && source->player)
+  {
+    // count for intermission
+    if (target->flags & MF_COUNTKILL)
     {
-      // count for intermission
-      if (target->flags & MF_COUNTKILL)
+      dsda_WatchKill(source->player, target);
+    }
+    if (target->player)
+    {
+      source->player->frags[target->player-players]++;
+      
+      if (heretic && target != source)
       {
-        dsda_WatchKill(source->player, target);
-      }
-      if (target->player)
-        source->player->frags[target->player-players]++;
-    }
-    else
-      if (target->flags & MF_COUNTKILL) { /* Add to kills tally */
-  if ((compatibility_level < lxdoom_1_compatibility) || !netgame) {
-    if (!netgame)
-    {
-      dsda_WatchKill(&players[0], target);
-    }
-    else
-    {
-      if (!deathmatch) {
-        if (target->lastenemy && target->lastenemy->health > 0 && target->lastenemy->player)
+        if (source->player == &players[consoleplayer])
         {
-          dsda_WatchKill(target->lastenemy->player, target);
+          S_StartSound(NULL, heretic_sfx_gfrag);
+        }
+        if (source->player->chickenTics)
+        {               // Make a super chicken
+          P_GivePower(source->player, pw_weaponlevel2);
+        }
+      }
+    }
+  }
+  else
+    if (target->flags & MF_COUNTKILL) { /* Add to kills tally */
+      if ((compatibility_level < lxdoom_1_compatibility) || !netgame) {
+        if (!netgame)
+        {
+          dsda_WatchKill(&players[0], target);
         }
         else
         {
-          unsigned int player;
-          for (player = 0; player<MAXPLAYERS; player++)
-          {
-            if (playeringame[player])
+          if (!deathmatch) {
+            if (target->lastenemy && target->lastenemy->health > 0 && target->lastenemy->player)
             {
-              dsda_WatchKill(&players[player], target);
-              break;
+              dsda_WatchKill(target->lastenemy->player, target);
+            }
+            else
+            {
+              unsigned int player;
+              for (player = 0; player<MAXPLAYERS; player++)
+              {
+                if (playeringame[player])
+                {
+                  dsda_WatchKill(&players[player], target);
+                  break;
+                }
+              }
             }
           }
         }
       }
+      else
+        if (!deathmatch) {
+          // try and find a player to give the kill to, otherwise give the
+          // kill to a random player.  this fixes the missing monsters bug
+          // in coop - rain
+          // CPhipps - not a bug as such, but certainly an inconsistency.
+          if (target->lastenemy && target->lastenemy->health > 0 && target->lastenemy->player) // Fighting a player
+          {
+            dsda_WatchKill(target->lastenemy->player, target);
+          }
+          else {
+            // cph - randomely choose a player in the game to be credited
+            //  and do it uniformly between the active players
+            unsigned int activeplayers = 0, player, i;
+
+            for (player = 0; player<MAXPLAYERS; player++)
+              if (playeringame[player])
+                activeplayers++;
+
+            if (activeplayers) {
+              player = P_Random(pr_friends) % activeplayers;
+
+              for (i=0; i<MAXPLAYERS; i++)
+                if (playeringame[i])
+                  if (!player--)
+                  {
+                    dsda_WatchKill(&players[i], target);
+                  }
+            }
+          }
+        }
     }
-
-  } else
-    if (!deathmatch) {
-      // try and find a player to give the kill to, otherwise give the
-      // kill to a random player.  this fixes the missing monsters bug
-      // in coop - rain
-      // CPhipps - not a bug as such, but certainly an inconsistency.
-      if (target->lastenemy && target->lastenemy->health > 0
-    && target->lastenemy->player) // Fighting a player
-        {
-          dsda_WatchKill(target->lastenemy->player, target);
-        }
-        else {
-        // cph - randomely choose a player in the game to be credited
-        //  and do it uniformly between the active players
-        unsigned int activeplayers = 0, player, i;
-
-        for (player = 0; player<MAXPLAYERS; player++)
-    if (playeringame[player])
-      activeplayers++;
-
-        if (activeplayers) {
-    player = P_Random(pr_friends) % activeplayers;
-
-    for (i=0; i<MAXPLAYERS; i++)
-      if (playeringame[i])
-        if (!player--)
-        {
-          dsda_WatchKill(&players[i], target);
-        }
-        }
-      }
-    }
-      }
 
   if (target->player)
-    {
-      // count environment kills against you
-      if (!source)
-        target->player->frags[target->player-players]++;
+  {
+    // count environment kills against you
+    if (!source)
+      target->player->frags[target->player-players]++;
 
-      target->flags &= ~MF_SOLID;
-      target->player->playerstate = PST_DEAD;
-      P_DropWeapon (target->player);
+    target->flags &= ~MF_SOLID;
 
-      if (target->player == &players[consoleplayer] && (automapmode & am_active))
-        AM_Stop();    // don't die in auto map; switch view prior to dying
+    // heretic
+    target->flags2 &= ~MF2_FLY;
+    target->player->powers[pw_flight] = 0;
+    target->player->powers[pw_weaponlevel2] = 0;
+
+    target->player->playerstate = PST_DEAD;
+    P_DropWeapon (target->player);
+
+    // heretic
+    if (target->flags2 & MF2_FIREDAMAGE)
+    {                       // Player flame death
+        P_SetMobjState(target, HERETIC_S_PLAY_FDTH1);
+        return;
     }
 
-  if (e6y)
-  {
-    P_SetMobjState (target, S_PLAY_GDIE1);
-  }
-  else
-  {
-    if (target->health < -target->info->spawnhealth && target->info->xdeathstate)
-      P_SetMobjState (target, target->info->xdeathstate);
-    else
-      P_SetMobjState (target, target->info->deathstate);
+    if (target->player == &players[consoleplayer] && (automapmode & am_active))
+      AM_Stop();    // don't die in auto map; switch view prior to dying
   }
 
+  xdeath_limit = heretic ? (target->info->spawnhealth >> 1) : target->info->spawnhealth;
+  if (target->health < -xdeath_limit && target->info->xdeathstate)
+    P_SetMobjState (target, target->info->xdeathstate);
+  else
+    P_SetMobjState (target, target->info->deathstate);
+
   target->tics -= P_Random(pr_killtics)&3;
+
+  if (heretic) return;
 
   if (target->tics < 1)
     target->tics = 1;
