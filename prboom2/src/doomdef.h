@@ -196,9 +196,9 @@ typedef enum {
   NUMCARDS,
   
   // heretic
-  key_yellow = 0,
+  key_blue = 0,
+  key_yellow,
   key_green,
-  key_blue,
 } card_t;
 
 // The defined weapons, including a marker
