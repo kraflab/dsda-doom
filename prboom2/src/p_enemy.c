@@ -514,6 +514,7 @@ static dboolean P_SmartMove(mobj_t *actor)
 // an OpenDoor call is made to start it opening.
 //
 
+// HERETIC_NOTE: Quite sure P_SmartMove == P_Move for heretic
 static dboolean P_TryWalk(mobj_t *actor)
 {
   if (!P_SmartMove(actor))

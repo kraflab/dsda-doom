@@ -37,27 +37,6 @@
 
 #define	MAXSPECIALCROSS		8
 
-//----------------------------------------------------------------------------
-//
-// FUNC P_TryWalk
-//
-// Attempts to move actor in its current (ob->moveangle) direction.
-// If blocked by either a wall or an actor returns FALSE.
-// If move is either clear of block only by a door, returns TRUE and sets.
-// If a door is in the way, an OpenDoor call is made to start it opening.
-//
-//----------------------------------------------------------------------------
-
-boolean P_TryWalk(mobj_t * actor)
-{
-    if (!P_Move(actor))
-    {
-        return (false);
-    }
-    actor->movecount = P_Random() & 15;
-    return (true);
-}
-
 /*
 ================
 =
