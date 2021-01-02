@@ -1091,41 +1091,53 @@ void A_Look(mobj_t *actor)
    */
   actor->pursuecount = 0;
 
-  if (!(actor->flags & MF_FRIEND && P_LookForTargets(actor, false)) &&
-      !((targ = actor->subsector->sector->soundtarget) &&
-  targ->flags & MF_SHOOTABLE &&
-  (P_SetTarget(&actor->target, targ),
-   !(actor->flags & MF_AMBUSH) || P_CheckSight(actor, targ))) &&
-      (actor->flags & MF_FRIEND || !P_LookForTargets(actor, false)))
+  if (
+    !(actor->flags & MF_FRIEND && P_LookForTargets(actor, false)) &&
+    !(
+      (targ = actor->subsector->sector->soundtarget) &&
+      targ->flags & MF_SHOOTABLE &&
+      (
+        P_SetTarget(&actor->target, targ),
+        !(actor->flags & MF_AMBUSH) || 
+        P_CheckSight(actor, targ)
+      )
+    ) &&
+    (
+      actor->flags & MF_FRIEND || !P_LookForTargets(actor, false)
+    )
+  )
     return;
 
   // go into chase state
 
   if (actor->info->seesound)
-    {
-      int sound;
-      switch (actor->info->seesound)
-        {
+  {
+    int sound;
+    sound = actor->info->seesound;
+
+    if (!heretic)
+      switch (sound)
+      {
         case sfx_posit1:
         case sfx_posit2:
         case sfx_posit3:
-          sound = sfx_posit1+P_Random(pr_see)%3;
+          sound = sfx_posit1 + P_Random(pr_see) % 3;
           break;
 
         case sfx_bgsit1:
         case sfx_bgsit2:
-          sound = sfx_bgsit1+P_Random(pr_see)%2;
+          sound = sfx_bgsit1 + P_Random(pr_see) % 2;
           break;
 
         default:
-          sound = actor->info->seesound;
           break;
-        }
-      if (actor->type==MT_SPIDER || actor->type == MT_CYBORG)
-        S_StartSound(NULL, sound);          // full volume
-      else
-        S_StartSound(actor, sound);
-    }
+      }
+
+    if (actor->type == MT_SPIDER || actor->type == MT_CYBORG || actor->flags2 & MF2_BOSS)
+      S_StartSound(NULL, sound);          // full volume
+    else
+      S_StartSound(actor, sound);
+  }
   P_SetMobjState(actor, actor->info->seestate);
 }
 
