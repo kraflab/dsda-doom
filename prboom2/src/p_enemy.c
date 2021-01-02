@@ -2214,7 +2214,27 @@ void A_Fall(mobj_t *actor)
 //
 void A_Explode(mobj_t *thingy)
 {
-  P_RadiusAttack( thingy, thingy->target, 128 );
+  int damage;
+
+  damage = 128;
+  switch (thingy->type)
+  {
+    case HERETIC_MT_FIREBOMB:      // Time Bombs
+      thingy->z += 32 * FRACUNIT;
+      thingy->flags &= ~MF_SHADOW;
+      break;
+    case HERETIC_MT_MNTRFX2:       // Minotaur floor fire
+      damage = 24;
+      break;
+    case HERETIC_MT_SOR2FX1:       // D'Sparil missile
+      damage = 80 + (P_Random(pr_heretic) & 31);
+      break;
+    default:
+      break;
+  }
+
+  P_RadiusAttack(thingy, thingy->target, damage);
+  if (heretic) P_HitFloor(thingy);
 }
 
 //

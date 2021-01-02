@@ -534,38 +534,6 @@ void A_Scream(mobj_t * actor)
 
 //----------------------------------------------------------------------------
 //
-// PROC A_Explode
-//
-// Handles a bunch of exploding things.
-//
-//----------------------------------------------------------------------------
-
-void A_Explode(mobj_t * actor)
-{
-    int damage;
-
-    damage = 128;
-    switch (actor->type)
-    {
-        case MT_FIREBOMB:      // Time Bombs
-            actor->z += 32 * FRACUNIT;
-            actor->flags &= ~MF_SHADOW;
-            break;
-        case MT_MNTRFX2:       // Minotaur floor fire
-            damage = 24;
-            break;
-        case MT_SOR2FX1:       // D'Sparil missile
-            damage = 80 + (P_Random() & 31);
-            break;
-        default:
-            break;
-    }
-    P_RadiusAttack(actor, actor->target, damage);
-    P_HitFloor(actor);
-}
-
-//----------------------------------------------------------------------------
-//
 // PROC A_BossDeath
 //
 // Trigger special effects if all bosses are dead.
