@@ -1971,7 +1971,9 @@ int P_HitFloor(mobj_t * thing)
 
 int P_GetThingFloorType(mobj_t * thing)
 {
-    return (TerrainTypes[thing->subsector->sector->floorpic]);
+  // HERETIC_TODO: not initialized yet
+  if (TerrainTypes == NULL) return 0;
+  return (TerrainTypes[thing->subsector->sector->floorpic]);
 }
 
 // Returns 1 if 'source' needs to turn clockwise, or 0 if 'source' needs
