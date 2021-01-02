@@ -376,13 +376,3 @@ result_e T_MovePlane(sector_t * sector, fixed_t speed,
 int EV_BuildStairs(line_t * line, fixed_t stepDelta);
 int EV_DoFloor(line_t * line, floor_e floortype);
 void T_MoveFloor(floormove_t * floor);
-
-/*
-===============================================================================
-
-							P_TELEPT
-
-===============================================================================
-*/
-
-boolean EV_Teleport(line_t * line, int side, mobj_t * thing);
