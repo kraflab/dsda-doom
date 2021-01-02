@@ -2168,18 +2168,20 @@ void A_SkullPop(mobj_t *actor)
   player_t *player;
   int sfx_id;
 
-  if (demorecording || demoplayback)
+  if (!heretic && (demorecording || demoplayback))
     return;
 
-  sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_gibdth]) < 0 ? sfx_pldeth : sfx_gibdth);
-  S_StartSound(actor, sfx_id);
+  if (!heretic) {
+    sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_gibdth]) < 0 ? sfx_pldeth : sfx_gibdth);
+    S_StartSound(actor, sfx_id);
+  }
 
   actor->flags &= ~MF_SOLID;
-  mo = P_SpawnMobj(actor->x, actor->y, actor->z + 48 * FRACUNIT, MT_GIBDTH);
+  mo = P_SpawnMobj(actor->x, actor->y, actor->z + 48 * FRACUNIT, g_skullpop_mt);
   //mo->target = actor;
-  mo->momx = (P_Random(pr_misc) - P_Random(pr_misc)) << 9;
-  mo->momy = (P_Random(pr_misc) - P_Random(pr_misc)) << 9;
-  mo->momz = FRACUNIT * 2 + (P_Random(pr_misc) << 6);
+  mo->momx = P_SubRandom() << 9;
+  mo->momy = P_SubRandom() << 9;
+  mo->momz = FRACUNIT * 2 + (P_Random(pr_heretic) << 6);
   // Attach player mobj to bloody skull
   player = actor->player;
   actor->player = NULL;
@@ -2190,6 +2192,7 @@ void A_SkullPop(mobj_t *actor)
   if (player)
   {
     player->mo = mo;
+    player->lookdir = 0;
     player->damagecount = 32;
   }
 }

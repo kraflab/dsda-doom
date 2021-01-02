@@ -23,6 +23,7 @@
 extern int g_mt_player;
 extern int g_wp_chainsaw;
 extern int g_thrust_factor;
+extern int g_skullpop_mt;
 extern dboolean heretic;
 
 void dsda_InitGlobal(void);
