@@ -809,6 +809,8 @@ static dboolean P_LookForPlayers(mobj_t *actor, dboolean allaround)
   player_t *player;
   int stop, stopc, c;
 
+  if (heretic) return Heretic_P_LookForPlayers(actor, allaround);
+
   if (actor->flags & MF_FRIEND)
     {  // killough 9/9/98: friendly monsters go about players differently
       int anyone;
@@ -910,6 +912,8 @@ static dboolean P_LookForPlayers(mobj_t *actor, dboolean allaround)
 static dboolean P_LookForMonsters(mobj_t *actor, dboolean allaround)
 {
   thinker_t *cap, *th;
+
+  if (heretic) return Heretic_P_LookForMonsters(actor);
 
   if (demo_compatibility)
     return false;
@@ -4232,4 +4236,114 @@ void Heretic_A_BossDeath(mobj_t * actor)
     }
     dummyLine.tag = 666;
     EV_DoFloor(&dummyLine, lowerFloor);
+}
+
+#define MONS_LOOK_RANGE (20*64*FRACUNIT)
+#define MONS_LOOK_LIMIT 64
+
+dboolean Heretic_P_LookForMonsters(mobj_t * actor)
+{
+    int count;
+    mobj_t *mo;
+    thinker_t *think;
+
+    if (!P_CheckSight(players[0].mo, actor))
+    {                           // Player can't see monster
+        return (false);
+    }
+    count = 0;
+    for (think = thinkercap.next; think != &thinkercap; think = think->next)
+    {
+        if (think->function != P_MobjThinker)
+        {                       // Not a mobj thinker
+            continue;
+        }
+        mo = (mobj_t *) think;
+        if (!(mo->flags & MF_COUNTKILL) || (mo == actor) || (mo->health <= 0))
+        {                       // Not a valid monster
+            continue;
+        }
+        if (P_AproxDistance(actor->x - mo->x, actor->y - mo->y)
+            > MONS_LOOK_RANGE)
+        {                       // Out of range
+            continue;
+        }
+        if (P_Random(pr_heretic) < 16)
+        {                       // Skip
+            continue;
+        }
+        if (count++ > MONS_LOOK_LIMIT)
+        {                       // Stop searching
+            return (false);
+        }
+        if (!P_CheckSight(actor, mo))
+        {                       // Out of sight
+            continue;
+        }
+        // Found a target monster
+        actor->target = mo;
+        return (true);
+    }
+    return (false);
+}
+
+dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
+{
+    int c;
+    int stop;
+    player_t *player;
+    angle_t an;
+    fixed_t dist;
+
+    if (!netgame && players[0].health <= 0)
+    {                           // Single player game and player is dead, look for monsters
+        return (P_LookForMonsters(actor, false));
+    }
+    c = 0;
+    stop = (actor->lastlook - 1) & 3;
+    for (;; actor->lastlook = (actor->lastlook + 1) & 3)
+    {
+        if (!playeringame[actor->lastlook])
+            continue;
+
+        if (c++ == 2 || actor->lastlook == stop)
+            return false;       // done looking
+
+        player = &players[actor->lastlook];
+        if (player->health <= 0)
+            continue;           // dead
+        if (!P_CheckSight(actor, player->mo))
+            continue;           // out of sight
+
+        if (!allaround)
+        {
+            an = R_PointToAngle2(actor->x, actor->y,
+                                 player->mo->x, player->mo->y) - actor->angle;
+            if (an > ANG90 && an < ANG270)
+            {
+                dist = P_AproxDistance(player->mo->x - actor->x,
+                                       player->mo->y - actor->y);
+                // if real close, react anyway
+                if (dist > MELEERANGE)
+                    continue;   // behind back
+            }
+        }
+        if (player->mo->flags & MF_SHADOW)
+        {                       // Player is invisible
+            if ((P_AproxDistance(player->mo->x - actor->x,
+                                 player->mo->y - actor->y) > 2 * MELEERANGE)
+                && P_AproxDistance(player->mo->momx, player->mo->momy)
+                < 5 * FRACUNIT)
+            {                   // Player is sneaking - can't detect
+                return (false);
+            }
+            if (P_Random(pr_heretic) < 225)
+            {                   // Player isn't sneaking, but still didn't detect
+                return (false);
+            }
+        }
+        actor->target = player->mo;
+        return (true);
+    }
+    return (false);
 }
