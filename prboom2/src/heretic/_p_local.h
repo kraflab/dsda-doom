@@ -81,22 +81,6 @@ void P_InitThinkers(void);
 void P_AddThinker(thinker_t * thinker);
 void P_RemoveThinker(thinker_t * thinker);
 
-// ***** P_MOBJ *****
-
-#define ONFLOORZ INT_MIN
-#define ONCEILINGZ INT_MAX
-#define FLOATRANDZ (INT_MAX-1)
-
-mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type);
-void P_RemoveMobj(mobj_t * th);
-boolean P_SetMobjState(mobj_t * mobj, statenum_t state);
-void P_MobjThinker(mobj_t * mobj);
-void P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z);
-void P_SpawnBlood(fixed_t x, fixed_t y, fixed_t z, int damage);
-void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
-void P_RipperBlood(mobj_t * mo);
-mobj_t *P_SpawnMissile(mobj_t * source, mobj_t * dest, mobjtype_t type);
-
 // ***** P_MAPUTL *****
 
 typedef struct

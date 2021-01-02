@@ -494,6 +494,8 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle);
 int P_HitFloor(mobj_t * thing);
 int P_GetThingFloorType(mobj_t * thing);
 int P_FaceMobj(mobj_t * source, mobj_t * target, angle_t * delta);
+void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
+void P_RipperBlood(mobj_t * mo);
+dboolean Heretic_P_SetMobjState(mobj_t * mobj, statenum_t state);
 
 #endif
-

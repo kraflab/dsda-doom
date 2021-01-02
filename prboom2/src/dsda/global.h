@@ -28,6 +28,7 @@ extern int g_thrust_factor;
 extern int g_skullpop_mt;
 extern int g_s_play_atk1;
 extern int g_s_play_atk2;
+extern int g_s_play_run1;
 extern int g_s_play;
 extern int g_s_saw;
 

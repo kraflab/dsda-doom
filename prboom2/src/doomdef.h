@@ -380,4 +380,7 @@ typedef enum {
 #define ORIG_FRICTION_FACTOR   2048        // original value
 #define FRICTION_FLY           0xeb00
 
+// heretic
+#define FRICTION_LOW 0xf900
+
 #endif          // __DOOMDEF__

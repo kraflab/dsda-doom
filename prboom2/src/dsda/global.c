@@ -55,6 +55,7 @@ int g_thrust_factor;
 int g_skullpop_mt;
 int g_s_play_atk1;
 int g_s_play_atk2;
+int g_s_play_run1;
 int g_s_play;
 
 int g_special_friction_low;
@@ -112,6 +113,7 @@ static void dsda_InitDoom(void) {
   g_skullpop_mt = MT_GIBDTH;
   g_s_play_atk1 = S_PLAY_ATK1;
   g_s_play_atk2 = S_PLAY_ATK2;
+  g_s_play_run1 = S_PLAY_RUN1;
   g_s_play = S_PLAY;
   
   g_special_friction_low = IGNORE_VALUE;
@@ -170,6 +172,7 @@ static void dsda_InitHeretic(void) {
   g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
   g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
   g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
+  g_s_play_run1 = HERETIC_S_PLAY_RUN1;
   g_s_play = HERETIC_S_PLAY;
   
   g_special_friction_low = 15;

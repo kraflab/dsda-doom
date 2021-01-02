@@ -70,11 +70,17 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
   // killough 4/9/98: remember states seen, to detect cycles:
 
   static statenum_t seenstate_tab[NUMSTATES]; // fast transition table
-  statenum_t *seenstate = seenstate_tab;      // pointer to table
+  statenum_t *seenstate;                      // pointer to table
   static int recursion;                       // detects recursion
-  statenum_t i = state;                       // initial state
-  dboolean ret = true;                         // return value
+  statenum_t i;                               // initial state
+  dboolean ret;                               // return value
   statenum_t tempstate[NUMSTATES];            // for use with recursion
+
+  if (heretic) return Heretic_P_SetMobjState(mobj, state);
+
+  seenstate = seenstate_tab;
+  i = state;
+  ret = true;
 
   if (recursion++)                            // if recursion detected,
     memset(seenstate=tempstate,0,sizeof tempstate); // clear state table
@@ -123,14 +129,25 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
 
 void P_ExplodeMissile (mobj_t* mo)
 {
+  if (mo->type == HERETIC_MT_WHIRLWIND)
+  {
+    if (++mo->special2.i < 60)
+    {
+      return;
+    }
+  }
+
   mo->momx = mo->momy = mo->momz = 0;
 
   P_SetMobjState (mo, mobjinfo[mo->type].deathstate);
 
-  mo->tics -= P_Random(pr_explode)&3;
+  if (!heretic)
+  {
+    mo->tics -= P_Random(pr_explode) & 3;
 
-  if (mo->tics < 1)
-    mo->tics = 1;
+    if (mo->tics < 1)
+      mo->tics = 1;
+  }
 
   mo->flags &= ~MF_MISSILE;
 
@@ -153,18 +170,14 @@ static void P_XYMovement (mobj_t* mo)
   //e6y
   fixed_t   oldx,oldy; // phares 9/10/98: reducing bobbing/momentum on ice
 
-#if 0
-  fixed_t   ptryx;
-  fixed_t   ptryy;
-  fixed_t   xmove;
-  fixed_t   ymove;
-  fixed_t   oldx,oldy; // phares 9/10/98: reducing bobbing/momentum on ice
-                       // when up against walls
-#endif
+  // heretic
+  int special;
+  static int windTab[3] = { 2048 * 5, 2048 * 10, 2048 * 25 };
+
   if (!(mo->momx | mo->momy)) // Any momentum?
-    {
+  {
     if (mo->flags & MF_SKULLFLY)
-      {
+    {
 
       // the skull slammed into something
 
@@ -172,9 +185,37 @@ static void P_XYMovement (mobj_t* mo)
       mo->momz = 0;
 
       P_SetMobjState (mo, mo->info->spawnstate);
-      }
-    return;
     }
+    return;
+  }
+
+  special = mo->subsector->sector->special;
+  if (mo->flags2 & MF2_WINDTHRUST)
+  {
+    switch (special)
+    {
+      case 40:
+      case 41:
+      case 42:           // Wind_East
+        P_ThrustMobj(mo, 0, windTab[special - 40]);
+        break;
+      case 43:
+      case 44:
+      case 45:           // Wind_North
+        P_ThrustMobj(mo, ANG90, windTab[special - 43]);
+        break;
+      case 46:
+      case 47:
+      case 48:           // Wind_South
+        P_ThrustMobj(mo, ANG270, windTab[special - 46]);
+        break;
+      case 49:
+      case 50:
+      case 51:           // Wind_West
+        P_ThrustMobj(mo, ANG180, windTab[special - 49]);
+        break;
+    }
+  }
 
   player = mo->player;
 
@@ -196,208 +237,262 @@ static void P_XYMovement (mobj_t* mo)
                 // to your x,y values later to see if you were able to move
 
   do
-    {
-      fixed_t ptryx, ptryy;
-      // killough 8/9/98: fix bug in original Doom source:
-      // Large negative displacements were never considered.
-      // This explains the tendency for Mancubus fireballs
-      // to pass through walls.
-      // CPhipps - compatibility optioned
+  {
+    fixed_t ptryx, ptryy;
+    // killough 8/9/98: fix bug in original Doom source:
+    // Large negative displacements were never considered.
+    // This explains the tendency for Mancubus fireballs
+    // to pass through walls.
+    // CPhipps - compatibility optioned
 
-      if (xmove > MAXMOVE/2 || ymove > MAXMOVE/2 ||
-  (!comp[comp_moveblock]
-   && (xmove < -MAXMOVE/2 || ymove < -MAXMOVE/2)))
-      {
-      ptryx = mo->x + xmove/2;
-      ptryy = mo->y + ymove/2;
+    // HERETIC_TODO: I assume third condition is false for cl 3 (not in heretic)
+    if (xmove > MAXMOVE / 2 ||
+        ymove > MAXMOVE / 2 || 
+        (!comp[comp_moveblock] && (xmove < -MAXMOVE/2 || ymove < -MAXMOVE/2)))
+    {
+      ptryx = mo->x + xmove / 2;
+      ptryy = mo->y + ymove / 2;
       xmove >>= 1;
       ymove >>= 1;
-      }
+    }
     else
-      {
+    {
       ptryx = mo->x + xmove;
       ptryy = mo->y + ymove;
       xmove = ymove = 0;
-      }
+    }
 
     // killough 3/15/98: Allow objects to drop off
 
     if (!P_TryMove (mo, ptryx, ptryy, true))
-      {
-    // blocked move
+    {
+      // blocked move
 
-    // killough 8/11/98: bouncing off walls
-    // killough 10/98:
-    // Add ability for objects other than players to bounce on ice
+      // killough 8/11/98: bouncing off walls
+      // killough 10/98:
+      // Add ability for objects other than players to bounce on ice
 
-    if (!(mo->flags & MF_MISSILE) &&
+      if (
+        !(mo->flags & MF_MISSILE) &&
         mbf_features &&
-        (mo->flags & MF_BOUNCES ||
-         (!player && blockline &&
-    variable_friction && mo->z <= mo->floorz &&
-    P_GetFriction(mo, NULL) > ORIG_FRICTION)))
+        (
+          mo->flags & MF_BOUNCES ||
+          (
+            !player && 
+            blockline &&
+            variable_friction && 
+            mo->z <= mo->floorz &&
+            P_GetFriction(mo, NULL) > ORIG_FRICTION
+          )
+        )
+      )
       {
         if (blockline)
-    {
-      fixed_t r = ((blockline->dx >> FRACBITS) * mo->momx +
-             (blockline->dy >> FRACBITS) * mo->momy) /
-        ((blockline->dx >> FRACBITS)*(blockline->dx >> FRACBITS)+
-         (blockline->dy >> FRACBITS)*(blockline->dy >> FRACBITS));
-      fixed_t x = FixedMul(r, blockline->dx);
-      fixed_t y = FixedMul(r, blockline->dy);
-
-      // reflect momentum away from wall
-
-      mo->momx = x*2 - mo->momx;
-      mo->momy = y*2 - mo->momy;
-
-      // if under gravity, slow down in
-      // direction perpendicular to wall.
-
-      if (!(mo->flags & MF_NOGRAVITY))
         {
-          mo->momx = (mo->momx + x)/2;
-          mo->momy = (mo->momy + y)/2;
-        }
-    }
-        else
-    mo->momx = mo->momy = 0;
-      }
-    else
-      if (player)   // try to slide along it
-        P_SlideMove (mo);
-      else
-        if (mo->flags & MF_MISSILE)
-    {
-      // explode a missile
+          fixed_t r = ((blockline->dx >> FRACBITS) * mo->momx +
+                       (blockline->dy >> FRACBITS) * mo->momy) /
+                      ((blockline->dx >> FRACBITS)*(blockline->dx >> FRACBITS)+
+                       (blockline->dy >> FRACBITS)*(blockline->dy >> FRACBITS));
+          fixed_t x = FixedMul(r, blockline->dx);
+          fixed_t y = FixedMul(r, blockline->dy);
 
-      if (ceilingline &&
-          ceilingline->backsector &&
-          ceilingline->backsector->ceilingpic == skyflatnum)
-        if (demo_compatibility ||  // killough
-      mo->z > ceilingline->backsector->ceilingheight)
+          // reflect momentum away from wall
+
+          mo->momx = x*2 - mo->momx;
+          mo->momy = y*2 - mo->momy;
+
+          // if under gravity, slow down in
+          // direction perpendicular to wall.
+
+          if (!(mo->flags & MF_NOGRAVITY))
           {
-      // Hack to prevent missiles exploding
-      // against the sky.
-      // Does not handle sky floors.
-
-      P_RemoveMobj (mo);
-      return;
+            mo->momx = (mo->momx + x)/2;
+            mo->momy = (mo->momy + y)/2;
           }
-      P_ExplodeMissile (mo);
-    }
-        else // whatever else it is, it is now standing still in (x,y)
-    mo->momx = mo->momy = 0;
+        }
+        else
+          mo->momx = mo->momy = 0;
       }
-    } while (xmove || ymove);
+      else
+        if (player || mo->flags2 & MF2_SLIDE)   // try to slide along it
+          P_SlideMove(mo);
+        else if (mo->flags & MF_MISSILE)
+        {
+          // explode a missile
 
-  // slow down
+          if (ceilingline &&
+              ceilingline->backsector &&
+              ceilingline->backsector->ceilingpic == skyflatnum)
+          {
+            if (mo->type == HERETIC_MT_BLOODYSKULL)
+            {
+                mo->momx = mo->momy = 0;
+                mo->momz = -FRACUNIT;
+                return;
+            }
+            else if (heretic || demo_compatibility ||  // killough
+                     mo->z > ceilingline->backsector->ceilingheight)
+            {
+              // Hack to prevent missiles exploding
+              // against the sky.
+              // Does not handle sky floors.
 
-#if 0  /* killough 10/98: this is unused code (except maybe in .deh files?) */
-  if (player && player->cheats & CF_NOMOMENTUM)
-    {
-    // debug option for no sliding at all
-    mo->momx = mo->momy = 0;
-    player->momx = player->momy = 0;         /* killough 10/98 */
-    return;
+              P_RemoveMobj (mo);
+              return;
+            }
+          }
+          P_ExplodeMissile (mo);
+        }
+        else // whatever else it is, it is now standing still in (x,y)
+          mo->momx = mo->momy = 0;
     }
-#endif
+  } while (xmove || ymove);
 
   /* no friction for missiles or skulls ever, no friction when airborne */
   if (mo->flags & (MF_MISSILE | MF_SKULLFLY))
     return;
 
-  if (mo->z > mo->floorz && !(mo->flags & MF_FLY))
+  if (mo->z > mo->floorz &&
+      !(mo->flags & MF_FLY) &&
+      !(mo->flags2 & MF2_FLY) &&
+      !(mo->flags2 & MF2_ONMOBJ))
     return;
 
   /* killough 8/11/98: add bouncers
    * killough 9/15/98: add objects falling off ledges
    * killough 11/98: only include bouncers hanging off ledges
    */
-  if (((mo->flags & MF_BOUNCES && mo->z > mo->dropoffz) ||
-       mo->flags & MF_CORPSE || mo->intflags & MIF_FALLING) &&
-      (mo->momx > FRACUNIT/4 || mo->momx < -FRACUNIT/4 ||
-       mo->momy > FRACUNIT/4 || mo->momy < -FRACUNIT/4) &&
-      mo->floorz != mo->subsector->sector->floorheight)
+  if (
+    (
+      (mo->flags & MF_BOUNCES && mo->z > mo->dropoffz) ||
+       mo->flags & MF_CORPSE ||
+       mo->intflags & MIF_FALLING
+    ) &&
+    (
+      mo->momx > FRACUNIT / 4 ||
+      mo->momx < -FRACUNIT / 4 ||
+      mo->momy > FRACUNIT / 4 ||
+      mo->momy < -FRACUNIT / 4
+    ) &&
+    mo->floorz != mo->subsector->sector->floorheight
+  )
     return;  // do not stop sliding if halfway off a step with some momentum
 
   // killough 11/98:
   // Stop voodoo dolls that have come to rest, despite any
   // moving corresponding player, except in old demos:
 
-  if (mo->momx > -STOPSPEED && mo->momx < STOPSPEED &&
-      mo->momy > -STOPSPEED && mo->momy < STOPSPEED &&
-      (!player || !(player->cmd.forwardmove | player->cmd.sidemove) ||
-       (player->mo != mo && compatibility_level >= lxdoom_1_compatibility)))
+  if (
+    mo->momx > -STOPSPEED && mo->momx < STOPSPEED &&
+    mo->momy > -STOPSPEED && mo->momy < STOPSPEED &&
+    (
+      !player || 
+      !(player->cmd.forwardmove | player->cmd.sidemove) ||
+      (
+        !heretic && // HERETIC_TODO: can remove when compatibility set
+        player->mo != mo &&
+        compatibility_level >= lxdoom_1_compatibility
+      )
+    )
+  )
+  {
+    // if in a walking frame, stop moving
+
+    // killough 10/98:
+    // Don't affect main player when voodoo dolls stop, except in old demos:
+
+    if (player)
     {
-      // if in a walking frame, stop moving
-
-      // killough 10/98:
-      // Don't affect main player when voodoo dolls stop, except in old demos:
-
-      if (player && (unsigned)(player->mo->state - states - S_PLAY_RUN1) < 4
-    && (player->mo == mo || compatibility_level >= lxdoom_1_compatibility))
-  P_SetMobjState(player->mo, S_PLAY);
-
-      mo->momx = mo->momy = 0;
-
-      /* killough 10/98: kill any bobbing momentum too (except in voodoo dolls)
-       * cph - DEMOSYNC - needs compatibility check?
-       */
-      if (player && player->mo == mo)
-  player->momx = player->momy = 0;
+      if (player->chickenTics)
+      {
+        if ((unsigned)(player->mo->state - states - HERETIC_S_CHICPLAY_RUN1) < 4)
+        {
+          P_SetMobjState(player->mo, HERETIC_S_CHICPLAY);
+        }
+      }
+      else
+      {
+        if ((unsigned)(player->mo->state - states - g_s_play_run1) < 4)
+        {
+          if (heretic || player->mo == mo || compatibility_level >= lxdoom_1_compatibility)
+            P_SetMobjState(player->mo, g_s_play);
+        }
+      }
     }
-  else
-    {
-      /* phares 3/17/98
-       *
-       * Friction will have been adjusted by friction thinkers for
-       * icy or muddy floors. Otherwise it was never touched and
-       * remained set at ORIG_FRICTION
-       *
-       * killough 8/28/98: removed inefficient thinker algorithm,
-       * instead using touching_sectorlist in P_GetFriction() to
-       * determine friction (and thus only when it is needed).
-       *
-       * killough 10/98: changed to work with new bobbing method.
-       * Reducing player momentum is no longer needed to reduce
-       * bobbing, so ice works much better now.
-       *
-       * cph - DEMOSYNC - need old code for Boom demos?
-       */
 
-      //e6y
-      if (compatibility_level <= boom_201_compatibility && !prboom_comp[PC_PRBOOM_FRICTION].state)
+    mo->momx = mo->momy = 0;
+
+    /* killough 10/98: kill any bobbing momentum too (except in voodoo dolls)
+     * cph - DEMOSYNC - needs compatibility check?
+     */
+    if (!heretic && player && player->mo == mo)
+      player->momx = player->momy = 0;
+  }
+  else
+  {
+    /* phares 3/17/98
+     *
+     * Friction will have been adjusted by friction thinkers for
+     * icy or muddy floors. Otherwise it was never touched and
+     * remained set at ORIG_FRICTION
+     *
+     * killough 8/28/98: removed inefficient thinker algorithm,
+     * instead using touching_sectorlist in P_GetFriction() to
+     * determine friction (and thus only when it is needed).
+     *
+     * killough 10/98: changed to work with new bobbing method.
+     * Reducing player momentum is no longer needed to reduce
+     * bobbing, so ice works much better now.
+     *
+     * cph - DEMOSYNC - need old code for Boom demos?
+     */
+
+    //e6y
+    if (heretic || (compatibility_level <= boom_201_compatibility && !prboom_comp[PC_PRBOOM_FRICTION].state))
+    {
+      if (mo->flags2 & MF2_FLY && !(mo->z <= mo->floorz)
+          && !(mo->flags2 & MF2_ONMOBJ))
+      {
+        mo->momx = FixedMul(mo->momx, FRICTION_FLY);
+        mo->momy = FixedMul(mo->momy, FRICTION_FLY);
+      }
+      else if (special == g_special_friction_low)
+      {
+        mo->momx = FixedMul(mo->momx, FRICTION_LOW);
+        mo->momy = FixedMul(mo->momy, FRICTION_LOW);
+      }
+      else
       {
         // phares 3/17/98
         // Friction will have been adjusted by friction thinkers for icy
         // or muddy floors. Otherwise it was never touched and
         // remained set at ORIG_FRICTION
+        mo->momx = FixedMul(mo->momx, mo->friction);
+        mo->momy = FixedMul(mo->momy, mo->friction);
+      }
+
+      mo->friction = ORIG_FRICTION; // reset to normal for next tic
+    }
+    else if (compatibility_level <= lxdoom_1_compatibility && !prboom_comp[PC_PRBOOM_FRICTION].state)
+    {
+      // phares 9/10/98: reduce bobbing/momentum when on ice & up against wall
+
+      if ((oldx == mo->x) && (oldy == mo->y)) // Did you go anywhere?
+        { // No. Use original friction. This allows you to not bob so much
+          // if you're on ice, but keeps enough momentum around to break free
+          // when you're mildly stuck in a wall.
+        mo->momx = FixedMul(mo->momx,ORIG_FRICTION);
+        mo->momy = FixedMul(mo->momy,ORIG_FRICTION);
+        }
+      else
+        { // Yes. Use stored friction.
         mo->momx = FixedMul(mo->momx,mo->friction);
         mo->momy = FixedMul(mo->momy,mo->friction);
-        mo->friction = ORIG_FRICTION; // reset to normal for next tic
-      }
-      else if (compatibility_level <= lxdoom_1_compatibility && !prboom_comp[PC_PRBOOM_FRICTION].state)
-      {
-        // phares 9/10/98: reduce bobbing/momentum when on ice & up against wall
-
-        if ((oldx == mo->x) && (oldy == mo->y)) // Did you go anywhere?
-          { // No. Use original friction. This allows you to not bob so much
-            // if you're on ice, but keeps enough momentum around to break free
-            // when you're mildly stuck in a wall.
-          mo->momx = FixedMul(mo->momx,ORIG_FRICTION);
-          mo->momy = FixedMul(mo->momy,ORIG_FRICTION);
-          }
-        else
-          { // Yes. Use stored friction.
-          mo->momx = FixedMul(mo->momx,mo->friction);
-          mo->momy = FixedMul(mo->momy,mo->friction);
-          }
-        mo->friction = ORIG_FRICTION; // reset to normal for next tic
-      }
-      else
-      {
-
+        }
+      mo->friction = ORIG_FRICTION; // reset to normal for next tic
+    }
+    else
+    {
       fixed_t friction = P_GetFriction(mo, NULL);
 
       mo->momx = FixedMul(mo->momx, friction);
@@ -409,14 +504,12 @@ static void P_XYMovement (mobj_t* mo)
        */
 
       if (player && player->mo == mo)     /* Not voodoo dolls */
-  {
-    player->momx = FixedMul(player->momx, ORIG_FRICTION);
-    player->momy = FixedMul(player->momy, ORIG_FRICTION);
-  }
-
+      {
+        player->momx = FixedMul(player->momx, ORIG_FRICTION);
+        player->momy = FixedMul(player->momy, ORIG_FRICTION);
       }
-
     }
+  }
 
 #ifdef GL_DOOM
   if (gl_use_motionblur && player == &players[displayplayer])
@@ -2015,4 +2108,35 @@ int P_FaceMobj(mobj_t * source, mobj_t * target, angle_t * delta)
             return (0);
         }
     }
+}
+
+// HERETIC_TODO: I don't know if this is necessary or not...
+// The recursion tracking and iteration aren't present in heretic
+// The looping makes me skeptical - for now I leave the original implementation
+dboolean Heretic_P_SetMobjState(mobj_t * mobj, statenum_t state)
+{
+    state_t *st;
+
+    if (state == HERETIC_S_NULL)
+    {                           // Remove mobj
+        mobj->state = (state_t *) HERETIC_S_NULL;
+        P_RemoveMobj(mobj);
+        return (false);
+    }
+    st = &states[state];
+    mobj->state = st;
+    mobj->tics = st->tics;
+    mobj->sprite = st->sprite;
+    mobj->frame = st->frame;
+    if (st->action)
+    {                           // Call action function
+        st->action(mobj);
+    }
+    return (true);
+}
+
+void P_FloorBounceMissile(mobj_t * mo)
+{
+    mo->momz = -mo->momz;
+    P_SetMobjState(mo, mobjinfo[mo->type].deathstate);
 }
