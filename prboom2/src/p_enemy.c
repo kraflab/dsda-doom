@@ -2251,6 +2251,9 @@ void A_BossDeath(mobj_t *mo)
   line_t    junk;
   int       i;
 
+  // HERETIC_TODO: Probably we can adopt the clean heretic style and merge
+  if (heretic) return Heretic_A_BossDeath(mo);
+
   // numbossactions == 0 means to use the defaults.
   // numbossactions == -1 means to do nothing.
   // positive values mean to check the list of boss actions and run all that apply.
@@ -4119,4 +4122,47 @@ void Heretic_A_Scream(mobj_t * actor)
             S_StartSound(actor, actor->info->deathsound);
             break;
     }
+}
+
+void Heretic_A_BossDeath(mobj_t * actor)
+{
+    mobj_t *mo;
+    thinker_t *think;
+    line_t dummyLine;
+    static mobjtype_t bossType[6] = {
+        HERETIC_MT_HEAD,
+        HERETIC_MT_MINOTAUR,
+        HERETIC_MT_SORCERER2,
+        HERETIC_MT_HEAD,
+        HERETIC_MT_MINOTAUR,
+        -1
+    };
+
+    if (gamemap != 8)
+    {                           // Not a boss level
+        return;
+    }
+    if (actor->type != bossType[gameepisode - 1])
+    {                           // Not considered a boss in this episode
+        return;
+    }
+    // Make sure all bosses are dead
+    for (think = thinkercap.next; think != &thinkercap; think = think->next)
+    {
+        if (think->function != P_MobjThinker)
+        {                       // Not a mobj thinker
+            continue;
+        }
+        mo = (mobj_t *) think;
+        if ((mo != actor) && (mo->type == actor->type) && (mo->health > 0))
+        {                       // Found a living boss
+            return;
+        }
+    }
+    if (gameepisode > 1)
+    {                           // Kill any remaining monsters
+        P_Massacre();
+    }
+    dummyLine.tag = 666;
+    EV_DoFloor(&dummyLine, lowerFloor);
 }
