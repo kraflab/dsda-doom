@@ -25,18 +25,6 @@
 #include "s_sound.h"
 #include "v_video.h"
 
-/*
-================
-=
-= P_Move
-=
-= Move in the current direction
-= returns false if the move is blocked
-================
-*/
-
-#define	MAXSPECIALCROSS		8
-
 //---------------------------------------------------------------------------
 //
 // FUNC P_LookForMonsters
@@ -372,40 +360,5 @@ void A_Chase(mobj_t * actor)
         {
             S_StartSound(actor, actor->info->activesound);
         }
-    }
-}
-
-//----------------------------------------------------------------------------
-//
-// PROC A_FaceTarget
-//
-//----------------------------------------------------------------------------
-
-void A_FaceTarget(mobj_t * actor)
-{
-    if (!actor->target)
-    {
-        return;
-    }
-    actor->flags &= ~MF_AMBUSH;
-    actor->angle = R_PointToAngle2(actor->x, actor->y, actor->target->x,
-                                   actor->target->y);
-    if (actor->target->flags & MF_SHADOW)
-    {                           // Target is a ghost
-        actor->angle += P_SubRandom() << 21;
-    }
-}
-
-//----------------------------------------------------------------------------
-//
-// PROC A_Pain
-//
-//----------------------------------------------------------------------------
-
-void A_Pain(mobj_t * actor)
-{
-    if (actor->info->painsound)
-    {
-        S_StartSound(actor, actor->info->painsound);
     }
 }
