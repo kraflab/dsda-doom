@@ -141,13 +141,20 @@ static void P_BringUpWeapon(player_t *player)
   if (player->pendingweapon == wp_nochange)
     player->pendingweapon = player->readyweapon;
 
-  if (player->pendingweapon == wp_chainsaw)
-    S_StartSound (player->mo, sfx_sawup);
+  if (player->pendingweapon == g_wp_chainsaw)
+    S_StartSound(player->mo, g_sfx_sawup);
 
   if (player->pendingweapon >= NUMWEAPONS)
     lprintf(LO_WARN, "P_BringUpWeapon: weaponinfo overrun has occurred.\n");
 
-  newstate = weaponinfo[player->pendingweapon].upstate;
+  if (player->powers[pw_weaponlevel2])
+  {
+    newstate = wpnlev2info[player->pendingweapon].upstate;
+  }
+  else
+  {
+    newstate = weaponinfo[player->pendingweapon].upstate;
+  }
 
   player->pendingweapon = wp_nochange;
   // killough 12/98: prevent pistol from starting visibly at bottom of screen:
@@ -259,9 +266,13 @@ int P_WeaponPreferred(int w1, int w2)
 
 dboolean P_CheckAmmo(player_t *player)
 {
-  ammotype_t ammo = weaponinfo[player->readyweapon].ammo;
-  int count = 1;  // Regular
+  ammotype_t ammo;
+  int count;  // Regular
 
+  if (heretic) return Heretic_P_CheckAmmo(player);
+
+  ammo = weaponinfo[player->readyweapon].ammo;
+  count = 1;
   if (player->readyweapon == wp_bfg)  // Minimal amount for one shot varies.
     count = BFGCELLS;
   else
@@ -304,10 +315,30 @@ static void P_FireWeapon(player_t *player)
 
   dsda_WatchWeaponFire(player->readyweapon);
 
-  P_SetMobjState(player->mo, S_PLAY_ATK1);
-  newstate = weaponinfo[player->readyweapon].atkstate;
-  P_SetPsprite(player, ps_weapon, newstate);
-  P_NoiseAlert(player->mo, player->mo);
+  // HERETIC_TODO: these can probably be combined in a clean way
+  if (heretic)
+  {
+    weaponinfo_t *wpinfo;
+
+    P_SetMobjState(player->mo, HERETIC_S_PLAY_ATK2);
+    wpinfo = player->powers[pw_weaponlevel2] ? &wpnlev2info[0]
+                                             : &weaponinfo[0];
+    newstate = player->refire ? wpinfo[player->readyweapon].holdatkstate
+                              : wpinfo[player->readyweapon].atkstate;
+    P_SetPsprite(player, ps_weapon, newstate);
+    P_NoiseAlert(player->mo, player->mo);
+    if (player->readyweapon == wp_gauntlets && !player->refire)
+    {                           // Play the sound for the initial gauntlet attack
+        S_StartSound(player->mo, heretic_sfx_gntuse);
+    }
+  }
+  else
+  {
+    P_SetMobjState(player->mo, S_PLAY_ATK1);
+    newstate = weaponinfo[player->readyweapon].atkstate;
+    P_SetPsprite(player, ps_weapon, newstate);
+    P_NoiseAlert(player->mo, player->mo);
+  }
 }
 
 //
@@ -317,7 +348,16 @@ static void P_FireWeapon(player_t *player)
 
 void P_DropWeapon(player_t *player)
 {
-  P_SetPsprite(player, ps_weapon, weaponinfo[player->readyweapon].downstate);
+  statenum_t newstate;
+  if (player->powers[pw_weaponlevel2])
+  {
+    newstate = wpnlev2info[player->readyweapon].downstate;
+  }
+  else
+  {
+    newstate = weaponinfo[player->readyweapon].downstate;
+  }
+  P_SetPsprite(player, ps_weapon, newstate);
 }
 
 //
@@ -335,38 +375,62 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
 // weapon change sequence considered complete
   done_autoswitch = false;
 
-  // get out of attack state
-  if (player->mo->state == &states[S_PLAY_ATK1]
-      || player->mo->state == &states[S_PLAY_ATK2] )
-    P_SetMobjState(player->mo, S_PLAY);
+  if (player->chickenTics)
+  {                           // Change to the chicken beak
+      P_ActivateBeak(player);
+      return;
+  }
 
-  if (player->readyweapon == wp_chainsaw && psp->state == &states[S_SAW])
-    S_StartSound(player->mo, sfx_sawidl);
+  // get out of attack state
+  if (player->mo->state == &states[g_s_play_atk1]
+      || player->mo->state == &states[g_s_play_atk2] )
+    P_SetMobjState(player->mo, g_s_play);
+
+  if (heretic)
+  {
+    if (player->readyweapon == wp_staff
+        && psp->state == &states[HERETIC_S_STAFFREADY2_1]
+        && P_Random(pr_heretic) < 128)
+    {
+        S_StartSound(player->mo, heretic_sfx_stfcrk);
+    }
+  }
+  else
+    if (player->readyweapon == wp_chainsaw && psp->state == &states[S_SAW])
+      S_StartSound(player->mo, sfx_sawidl);
 
   // check for change
   //  if player is dead, put the weapon away
 
   if (player->pendingweapon != wp_nochange || !player->health)
-    {
-      // change weapon (pending weapon should already be validated)
-      statenum_t newstate = weaponinfo[player->readyweapon].downstate;
-      P_SetPsprite(player, ps_weapon, newstate);
-      return;
-    }
+  {
+    // change weapon (pending weapon should already be validated)
+    statenum_t newstate;
+    if (player->powers[pw_weaponlevel2])
+      newstate = wpnlev2info[player->readyweapon].downstate;
+    else
+      newstate = weaponinfo[player->readyweapon].downstate;
+    P_SetPsprite(player, ps_weapon, newstate);
+    return;
+  }
 
   // check for fire
   //  the missile launcher and bfg do not auto fire
 
   if (player->cmd.buttons & BT_ATTACK)
+  {
+    // HERETIC_TODO: when weapons don't share indices, remove heretic checks
+    if (
+      !player->attackdown || 
+      (!heretic && player->readyweapon != wp_missile && player->readyweapon != wp_bfg) ||
+      (heretic && player->readyweapon != wp_phoenixrod)
+    )
     {
-      if (!player->attackdown || (player->readyweapon != wp_missile &&
-                                  player->readyweapon != wp_bfg))
-        {
-          player->attackdown = true;
-          P_FireWeapon(player);
-          return;
-        }
+      player->attackdown = true;
+      P_FireWeapon(player);
+      return;
     }
+  }
   else
     player->attackdown = false;
 
@@ -429,7 +493,14 @@ void A_Lower(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_Lower", player);
 
-  psp->sy += LOWERSPEED;
+  if (player->chickenTics)
+  {
+      psp->sy = WEAPONBOTTOM;
+  }
+  else
+  {
+      psp->sy += LOWERSPEED;
+  }
 
   // Is already down.
   if (psp->sy < WEAPONBOTTOM)
@@ -437,23 +508,20 @@ void A_Lower(player_t *player, pspdef_t *psp)
 
   // Player is dead.
   if (player->playerstate == PST_DEAD)
-    {
-      psp->sy = WEAPONBOTTOM;
-      return;      // don't bring weapon back up
-    }
+  {
+    psp->sy = WEAPONBOTTOM;
+    return;      // don't bring weapon back up
+  }
 
   // The old weapon has been lowered off the screen,
   // so change the weapon and start raising it
 
   if (!player->health)
-    {      // Player is dead, so keep the weapon off screen.
-      P_SetPsprite(player,  ps_weapon, S_NULL);
-      return;
-    }
+  {      // Player is dead, so keep the weapon off screen.
+    P_SetPsprite(player,  ps_weapon, S_NULL);
+    return;
+  }
 
-   // haleyjd 03/28/10: do not assume pendingweapon is valid
-   // e6y: probably for future complevels
-   // if(player->pendingweapon < NUMWEAPONS)
   player->readyweapon = player->pendingweapon;
 
   P_BringUpWeapon(player);
@@ -479,7 +547,10 @@ void A_Raise(player_t *player, pspdef_t *psp)
   // The weapon has been raised all the way,
   //  so change to the ready state.
 
-  newstate = weaponinfo[player->readyweapon].readystate;
+  if (player->powers[pw_weaponlevel2])
+    newstate = wpnlev2info[player->readyweapon].readystate;
+  else
+    newstate = weaponinfo[player->readyweapon].readystate;
 
   P_SetPsprite(player, ps_weapon, newstate);
 }
@@ -740,18 +811,20 @@ static void P_BulletSlope(mobj_t *mo)
     bulletslope = finetangent[(ANG90 - mo->pitch) >> ANGLETOFINESHIFT];
   else
   {
-  /* killough 8/2/98: make autoaiming prefer enemies */
-  uint_64_t mask = mbf_features ? MF_FRIEND : 0;
+    /* killough 8/2/98: make autoaiming prefer enemies */
+    uint_64_t mask = mbf_features ? MF_FRIEND : 0;
 
-  do
+    do
     {
       bulletslope = P_AimLineAttack(mo, an, 16*64*FRACUNIT, mask);
       if (!linetarget)
-  bulletslope = P_AimLineAttack(mo, an += 1<<26, 16*64*FRACUNIT, mask);
+        bulletslope = P_AimLineAttack(mo, an += 1<<26, 16*64*FRACUNIT, mask);
       if (!linetarget)
-  bulletslope = P_AimLineAttack(mo, an -= 2<<26, 16*64*FRACUNIT, mask);
+        bulletslope = P_AimLineAttack(mo, an -= 2<<26, 16*64*FRACUNIT, mask);
+      if (heretic && !linetarget)
+        bulletslope = (mo->player->lookdir << FRACBITS) / 173;
     }
-  while (mask && (mask=0, !linetarget));  /* killough 8/2/98 */
+    while (mask && (mask=0, !linetarget));  /* killough 8/2/98 */
   }
 }
 
@@ -1898,4 +1971,116 @@ void P_PostChickenWeapon(player_t * player, weapontype_t weapon)
     player->readyweapon = weapon;
     player->psprites[ps_weapon].sy = WEAPONBOTTOM;
     P_SetPsprite(player, ps_weapon, wpnlev1info[weapon].upstate);
+}
+
+void P_UpdateBeak(player_t * player, pspdef_t * psp)
+{
+    psp->sy = WEAPONTOP + (player->chickenPeck << (FRACBITS - 1));
+}
+
+dboolean Heretic_P_CheckAmmo(player_t * player)
+{
+    ammotype_t ammo;
+    int *ammoUse;
+    int count;
+
+    ammo = wpnlev1info[player->readyweapon].ammo;
+    if (player->powers[pw_weaponlevel2] && !deathmatch)
+    {
+        ammoUse = WeaponAmmoUsePL2;
+    }
+    else
+    {
+        ammoUse = WeaponAmmoUsePL1;
+    }
+    count = ammoUse[player->readyweapon];
+    if (ammo == am_noammo || player->ammo[ammo] >= count)
+    {
+        return (true);
+    }
+    // out of ammo, pick a weapon to change to
+    do
+    {
+        if (player->weaponowned[wp_skullrod]
+            && player->ammo[am_skullrod] > ammoUse[wp_skullrod])
+        {
+            player->pendingweapon = wp_skullrod;
+        }
+        else if (player->weaponowned[wp_blaster]
+                 && player->ammo[am_blaster] > ammoUse[wp_blaster])
+        {
+            player->pendingweapon = wp_blaster;
+        }
+        else if (player->weaponowned[wp_crossbow]
+                 && player->ammo[am_crossbow] > ammoUse[wp_crossbow])
+        {
+            player->pendingweapon = wp_crossbow;
+        }
+        else if (player->weaponowned[wp_mace]
+                 && player->ammo[am_mace] > ammoUse[wp_mace])
+        {
+            player->pendingweapon = wp_mace;
+        }
+        else if (player->ammo[am_goldwand] > ammoUse[wp_goldwand])
+        {
+            player->pendingweapon = wp_goldwand;
+        }
+        else if (player->weaponowned[wp_gauntlets])
+        {
+            player->pendingweapon = wp_gauntlets;
+        }
+        else if (player->weaponowned[wp_phoenixrod]
+                 && player->ammo[am_phoenixrod] > ammoUse[wp_phoenixrod])
+        {
+            player->pendingweapon = wp_phoenixrod;
+        }
+        else
+        {
+            player->pendingweapon = wp_staff;
+        }
+    }
+    while (player->pendingweapon == wp_nochange);
+    if (player->powers[pw_weaponlevel2])
+    {
+        P_SetPsprite(player, ps_weapon,
+                     wpnlev2info[player->readyweapon].downstate);
+    }
+    else
+    {
+        P_SetPsprite(player, ps_weapon,
+                     wpnlev1info[player->readyweapon].downstate);
+    }
+    return (false);
+}
+
+void P_OpenWeapons(void)
+{
+    MaceSpotCount = 0;
+}
+
+void P_AddMaceSpot(mapthing_t * mthing)
+{
+    if (MaceSpotCount == MAX_MACE_SPOTS)
+    {
+        I_Error("Too many mace spots.");
+    }
+    MaceSpots[MaceSpotCount].x = mthing->x << FRACBITS;
+    MaceSpots[MaceSpotCount].y = mthing->y << FRACBITS;
+    MaceSpotCount++;
+}
+
+void P_CloseWeapons(void)
+{
+    int spot;
+
+    if (!MaceSpotCount)
+    {                           // No maces placed
+        return;
+    }
+    if (!deathmatch && P_Random(pr_heretic) < 64)
+    {                           // Sometimes doesn't show up if not in deathmatch
+        return;
+    }
+    spot = P_Random(pr_heretic) % MaceSpotCount;
+    P_SpawnMobj(MaceSpots[spot].x, MaceSpots[spot].y, ONFLOORZ, HERETIC_MT_WMACE);
 }

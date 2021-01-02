@@ -38,7 +38,7 @@
 - [ ] p_maputl.c 799
 - [ ] p_mobj.c 1665
 - [ ] p_plats.c 259
-- [ ] p_pspr.c 1908
+- [x] p_pspr.c 1908
 - [ ] p_saveg.c 1913
 - [ ] p_setup.c 763
 - [ ] p_sight.c 357
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-12619 / 47214 = 27%
+14527 / 47214 = 31%

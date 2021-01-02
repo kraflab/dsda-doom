@@ -47,8 +47,12 @@ weaponinfo_t* weaponinfo;
 
 int g_mt_player;
 int g_wp_chainsaw;
+int g_sfx_sawup;
 int g_thrust_factor;
 int g_skullpop_mt;
+int g_s_play_atk1;
+int g_s_play_atk2;
+int g_s_play;
 
 extern const char** S_music_files;
 
@@ -97,8 +101,12 @@ static void dsda_InitDoom(void) {
   
   g_mt_player = MT_PLAYER;
   g_wp_chainsaw = wp_chainsaw;
+  g_sfx_sawup = sfx_sawup;
   g_thrust_factor = 100;
   g_skullpop_mt = MT_GIBDTH;
+  g_s_play_atk1 = S_PLAY_ATK1;
+  g_s_play_atk2 = S_PLAY_ATK2;
+  g_s_play = S_PLAY;
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -148,8 +156,12 @@ static void dsda_InitHeretic(void) {
   
   g_mt_player = HERETIC_MT_PLAYER;
   g_wp_chainsaw = wp_gauntlets;
+  g_sfx_sawup = heretic_sfx_gntact;
   g_thrust_factor = 150;
   g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
+  g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
+  g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
+  g_s_play = HERETIC_S_PLAY;
   
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {

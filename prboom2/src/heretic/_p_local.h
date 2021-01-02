@@ -81,17 +81,6 @@ void P_InitThinkers(void);
 void P_AddThinker(thinker_t * thinker);
 void P_RemoveThinker(thinker_t * thinker);
 
-// ***** P_PSPR *****
-
-void P_OpenWeapons(void);
-void P_CloseWeapons(void);
-void P_AddMaceSpot(mapthing_t * mthing);
-void P_SetPsprite(player_t * player, int position, statenum_t stnum);
-void P_SetupPsprites(player_t * curplayer);
-void P_MovePsprites(player_t * curplayer);
-void P_DropWeapon(player_t * player);
-void P_UpdateBeak(player_t * player, pspdef_t * psp);
-
 // ***** P_USER *****
 
 void P_PlayerThink(player_t * player);
