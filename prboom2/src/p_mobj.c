@@ -535,49 +535,58 @@ static void P_ZMovement (mobj_t* mo)
    * (e.g. grenade, mine, pipebomb)
    */
 
-  if (mo->flags & MF_BOUNCES && mo->momz) {
+  if (mo->flags & MF_BOUNCES && mo->momz)
+  {
     mo->z += mo->momz;
-    if (mo->z <= mo->floorz) {                /* bounce off floors */
+    if (mo->z <= mo->floorz)                /* bounce off floors */
+    {
       mo->z = mo->floorz;
-      if (mo->momz < 0) {
+      if (mo->momz < 0)
+      {
         mo->momz = -mo->momz;
-  if (!(mo->flags & MF_NOGRAVITY)) { /* bounce back with decay */
-    mo->momz = mo->flags & MF_FLOAT ?   // floaters fall slowly
-      mo->flags & MF_DROPOFF ?          // DROPOFF indicates rate
-      FixedMul(mo->momz, (fixed_t)(FRACUNIT*.85)) :
-      FixedMul(mo->momz, (fixed_t)(FRACUNIT*.70)) :
-      FixedMul(mo->momz, (fixed_t)(FRACUNIT*.45)) ;
+        if (!(mo->flags & MF_NOGRAVITY)) /* bounce back with decay */
+        {
+          mo->momz = mo->flags & MF_FLOAT ?   // floaters fall slowly
+                     mo->flags & MF_DROPOFF ? // DROPOFF indicates rate
+                     FixedMul(mo->momz, (fixed_t)(FRACUNIT*.85)) :
+                     FixedMul(mo->momz, (fixed_t)(FRACUNIT*.70)) :
+                     FixedMul(mo->momz, (fixed_t)(FRACUNIT*.45)) ;
 
-    /* Bring it to rest below a certain speed */
-    if (D_abs(mo->momz) <= mo->info->mass*(GRAVITY*4/256))
-      mo->momz = 0;
-  }
+          /* Bring it to rest below a certain speed */
+          if (D_abs(mo->momz) <= mo->info->mass*(GRAVITY*4/256))
+            mo->momz = 0;
+        }
 
-  /* killough 11/98: touchy objects explode on impact */
-  if (mo->flags & MF_TOUCHY && mo->intflags & MIF_ARMED
-      && mo->health > 0)
-    P_DamageMobj(mo, NULL, NULL, mo->health);
-  else if (mo->flags & MF_FLOAT && sentient(mo))
-    goto floater;
-  return;
+        /* killough 11/98: touchy objects explode on impact */
+        if (mo->flags & MF_TOUCHY && mo->intflags & MIF_ARMED
+            && mo->health > 0)
+          P_DamageMobj(mo, NULL, NULL, mo->health);
+        else if (mo->flags & MF_FLOAT && sentient(mo))
+          goto floater;
+        return;
       }
-    } else if (mo->z >= mo->ceilingz - mo->height) {
+    }
+    else if (mo->z >= mo->ceilingz - mo->height)
+    {
       /* bounce off ceilings */
       mo->z = mo->ceilingz - mo->height;
-      if (mo->momz > 0) {
-  if (mo->subsector->sector->ceilingpic != skyflatnum)
-    mo->momz = -mo->momz;    /* always bounce off non-sky ceiling */
-  else if (mo->flags & MF_MISSILE)
-    P_RemoveMobj(mo);        /* missiles don't bounce off skies */
-  else if (mo->flags & MF_NOGRAVITY)
-    mo->momz = -mo->momz; // bounce unless under gravity
+      if (mo->momz > 0)
+      {
+        if (mo->subsector->sector->ceilingpic != skyflatnum)
+          mo->momz = -mo->momz;    /* always bounce off non-sky ceiling */
+        else if (mo->flags & MF_MISSILE)
+          P_RemoveMobj(mo);        /* missiles don't bounce off skies */
+        else if (mo->flags & MF_NOGRAVITY)
+          mo->momz = -mo->momz; // bounce unless under gravity
 
-  if (mo->flags & MF_FLOAT && sentient(mo))
-    goto floater;
+        if (mo->flags & MF_FLOAT && sentient(mo))
+          goto floater;
 
-  return;
+        return;
       }
-    } else {
+    }
+    else
+    {
       if (!(mo->flags & MF_NOGRAVITY))      /* free-fall under gravity */
         mo->momz -= mo->info->mass*(GRAVITY/256);
 
@@ -588,14 +597,15 @@ static void P_ZMovement (mobj_t* mo)
     /* came to a stop */
     mo->momz = 0;
 
-    if (mo->flags & MF_MISSILE) {
-  if (ceilingline &&
-      ceilingline->backsector &&
-      ceilingline->backsector->ceilingpic == skyflatnum &&
-      mo->z > ceilingline->backsector->ceilingheight)
-    P_RemoveMobj(mo);  /* don't explode on skies */
-  else
-    P_ExplodeMissile(mo);
+    if (mo->flags & MF_MISSILE)
+    {
+      if (ceilingline &&
+          ceilingline->backsector &&
+          ceilingline->backsector->ceilingpic == skyflatnum &&
+          mo->z > ceilingline->backsector->ceilingheight)
+        P_RemoveMobj(mo);  /* don't explode on skies */
+      else
+        P_ExplodeMissile(mo);
     }
 
     if (mo->flags & MF_FLOAT && sentient(mo)) goto floater;
@@ -609,10 +619,10 @@ static void P_ZMovement (mobj_t* mo)
   if (mo->player && //e6y: restoring original visual behaviour for demo_compatibility
       (demo_compatibility || mo->player->mo == mo) &&  // killough 5/12/98: exclude voodoo dolls
       mo->z < mo->floorz)
-    {
+  {
     mo->player->viewheight -= mo->floorz-mo->z;
     mo->player->deltaviewheight = (VIEWHEIGHT - mo->player->viewheight)>>3;
-    }
+  }
 
   // adjust altitude
 
@@ -625,12 +635,12 @@ floater:
 
     if (!((mo->flags ^ MF_FLOAT) & (MF_FLOAT | MF_SKULLFLY | MF_INFLOAT)) &&
   mo->target)     /* killough 11/98: simplify */
-      {
-  fixed_t delta;
-  if (P_AproxDistance(mo->x - mo->target->x, mo->y - mo->target->y) <
-      D_abs(delta = mo->target->z + (mo->height>>1) - mo->z)*3)
-    mo->z += delta < 0 ? -FLOATSPEED : FLOATSPEED;
-      }
+    {
+      fixed_t delta;
+      if (P_AproxDistance(mo->x - mo->target->x, mo->y - mo->target->y) <
+          D_abs(delta = mo->target->z + (mo->height>>1) - mo->z)*3)
+        mo->z += delta < 0 ? -FLOATSPEED : FLOATSPEED;
+    }
 
     if (mo->player && (mo->flags & MF_FLY) && (mo->z > mo->floorz))
     {
@@ -641,7 +651,7 @@ floater:
   // clip movement
 
   if (mo->z <= mo->floorz)
-    {
+  {
     // hit the floor
 
     /* Note (id):
@@ -665,46 +675,46 @@ floater:
      */
 
     if (mo->flags & MF_SKULLFLY &&
-	(!comp[comp_soul] ||
-	 (compatibility_level > doom2_19_compatibility &&
-	  compatibility_level < prboom_4_compatibility)
-	))
+      	(!comp[comp_soul] ||
+      	 (compatibility_level > doom2_19_compatibility &&
+      	  compatibility_level < prboom_4_compatibility)
+      	))
       mo->momz = -mo->momz; // the skull slammed into something
 
     if (mo->momz < 0)
+    {
+      /* killough 11/98: touchy objects explode on impact */
+      if (mo->flags & MF_TOUCHY && mo->intflags & MIF_ARMED && mo->health > 0)
+        P_DamageMobj(mo, NULL, NULL, mo->health);
+      else
       {
-  /* killough 11/98: touchy objects explode on impact */
-  if (mo->flags & MF_TOUCHY && mo->intflags & MIF_ARMED && mo->health > 0)
-    P_DamageMobj(mo, NULL, NULL, mo->health);
-  else
-  {
-    if (mo->player)
-        mo->player->jumpTics = 7;
-    if (mo->player && /* killough 5/12/98: exclude voodoo dolls */
-        // e6y
-        // Restoring original visual behaviour for demo_compatibility.
-        // Viewheight of consoleplayer should be decreased for a moment
-        // after voodoo doll hits the ground.
-        // This additional condition makes sense only for plutonia complevel
-        // when voodoo doll falls down after teleporting,
-        // but can be applied globally for all demo_compatibility complevels,
-        // because original sources do not exclude voodoo dolls from condition above,
-        // but Boom does it.
-        (demo_compatibility || mo->player->mo == mo) && mo->momz < -GRAVITY*8)
-      {
-        // Squat down.
-        // Decrease viewheight for a moment
-        // after hitting the ground (hard),
-        // and utter appropriate sound.
+        if (mo->player)
+            mo->player->jumpTics = 7;
+        if (mo->player && /* killough 5/12/98: exclude voodoo dolls */
+            // e6y
+            // Restoring original visual behaviour for demo_compatibility.
+            // Viewheight of consoleplayer should be decreased for a moment
+            // after voodoo doll hits the ground.
+            // This additional condition makes sense only for plutonia complevel
+            // when voodoo doll falls down after teleporting,
+            // but can be applied globally for all demo_compatibility complevels,
+            // because original sources do not exclude voodoo dolls from condition above,
+            // but Boom does it.
+            (demo_compatibility || mo->player->mo == mo) && mo->momz < -GRAVITY*8)
+        {
+          // Squat down.
+          // Decrease viewheight for a moment
+          // after hitting the ground (hard),
+          // and utter appropriate sound.
 
-        mo->player->deltaviewheight = mo->momz>>3;
-        //e6y: compatibility optioned
-        if (comp[comp_sound] || (mo->health>0)) /* cph - prevent "oof" when dead */
-    S_StartSound (mo, sfx_oof);
+          mo->player->deltaviewheight = mo->momz>>3;
+          //e6y: compatibility optioned
+          if (comp[comp_sound] || (mo->health>0)) /* cph - prevent "oof" when dead */
+            S_StartSound (mo, sfx_oof);
+        }
       }
-  }
-  mo->momz = 0;
-      }
+      mo->momz = 0;
+    }
     mo->z = mo->floorz;
 
     /* cph 2001/04/15 - 
@@ -714,15 +724,15 @@ floater:
      * incorrectly reverse it, so we might still need this for demo sync
      */
     if (mo->flags & MF_SKULLFLY &&
-	compatibility_level <= doom2_19_compatibility)
+	     compatibility_level <= doom2_19_compatibility)
       mo->momz = -mo->momz; // the skull slammed into something
 
     if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
-      {
+    {
       P_ExplodeMissile (mo);
       return;
-      }
     }
+  }
   else // still above the floor                                     // phares
     if (mo->type == MT_GIBDTH && !demorecording && !demoplayback)
     { // if (mo->flags & MF_LOGRAV)
@@ -732,16 +742,15 @@ floater:
       else
         mo->momz -= GRAVITY >> 3;
     }
-    else
-    if (!(mo->flags & MF_NOGRAVITY))
-      {
-  if (!mo->momz)
-    mo->momz = -GRAVITY;
-        mo->momz -= GRAVITY;
-      }
+    else if (!(mo->flags & MF_NOGRAVITY))
+    {
+      if (!mo->momz)
+        mo->momz = -GRAVITY;
+      mo->momz -= GRAVITY;
+    }
 
   if (mo->z + mo->height > mo->ceilingz)
-    {
+  {
     /* cph 2001/04/15 - 
      * Lost souls were meant to bounce off of ceilings;
      *  new comp_soul compatibility option added
@@ -765,12 +774,12 @@ floater:
       mo->momz = -mo->momz; // the skull slammed into something
 
     if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
-      {
+    {
       P_ExplodeMissile (mo);
       return;
-      }
     }
   }
+}
 
 //
 // P_NightmareRespawn
