@@ -29,7 +29,7 @@
 - [x] p_action.h 152
 - [ ] p_ceiling.c 256
 - [ ] p_doors.c 380
-- [ ] p_enemy.c 2715
+- [x] p_enemy.c 2715
 - [ ] p_floor.c 466
 - [x] p_inter.c 1502
 - [ ] p_lights.c 275
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-9904 / 47214 = 21%
+12619 / 47214 = 27%
