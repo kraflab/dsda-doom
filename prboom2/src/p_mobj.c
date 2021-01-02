@@ -478,17 +478,17 @@ static void P_XYMovement (mobj_t* mo)
       // phares 9/10/98: reduce bobbing/momentum when on ice & up against wall
 
       if ((oldx == mo->x) && (oldy == mo->y)) // Did you go anywhere?
-        { // No. Use original friction. This allows you to not bob so much
-          // if you're on ice, but keeps enough momentum around to break free
-          // when you're mildly stuck in a wall.
+      { // No. Use original friction. This allows you to not bob so much
+        // if you're on ice, but keeps enough momentum around to break free
+        // when you're mildly stuck in a wall.
         mo->momx = FixedMul(mo->momx,ORIG_FRICTION);
         mo->momy = FixedMul(mo->momy,ORIG_FRICTION);
-        }
+      }
       else
-        { // Yes. Use stored friction.
+      { // Yes. Use stored friction.
         mo->momx = FixedMul(mo->momx,mo->friction);
         mo->momy = FixedMul(mo->momy,mo->friction);
-        }
+      }
       mo->friction = ORIG_FRICTION; // reset to normal for next tic
     }
     else
