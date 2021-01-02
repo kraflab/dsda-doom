@@ -1058,19 +1058,6 @@ void P_MovePsprites(player_t *player)
 #define MAGIC_JUNK 1234
 #define FLAME_THROWER_TICS 10*35
 
-#define USE_GWND_AMMO_1 1
-#define USE_GWND_AMMO_2 1
-#define USE_CBOW_AMMO_1 1
-#define USE_CBOW_AMMO_2 1
-#define USE_BLSR_AMMO_1 1
-#define USE_BLSR_AMMO_2 5
-#define USE_SKRD_AMMO_1 1
-#define USE_SKRD_AMMO_2 5
-#define USE_PHRD_AMMO_1 1
-#define USE_PHRD_AMMO_2 1
-#define USE_MACE_AMMO_1 1
-#define USE_MACE_AMMO_2 5
-
 #define MAX_MACE_SPOTS 8
 
 static int MaceSpotCount;

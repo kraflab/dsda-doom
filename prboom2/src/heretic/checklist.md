@@ -47,7 +47,7 @@
 - [ ] p_switch.c 410
 - [x] p_telept.c 165
 - [ ] p_tick.c 168
-- [ ] p_user.c 1046
+- [x] p_user.c 1046
 - [ ] r_bsp.c 528
 - [ ] r_data.c 765
 - [ ] r_draw.c 515
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-14527 / 47214 = 31%
+15573 / 47214 = 33%

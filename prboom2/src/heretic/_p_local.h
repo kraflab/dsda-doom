@@ -81,11 +81,6 @@ void P_InitThinkers(void);
 void P_AddThinker(thinker_t * thinker);
 void P_RemoveThinker(thinker_t * thinker);
 
-// ***** P_USER *****
-
-void P_PlayerThink(player_t * player);
-void P_Thrust(player_t * player, angle_t angle, fixed_t move);
-
 // ***** P_MOBJ *****
 
 #define ONFLOORZ INT_MIN

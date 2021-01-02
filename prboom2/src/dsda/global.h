@@ -21,6 +21,7 @@
 #include "doomtype.h"
 
 extern int g_mt_player;
+extern int g_wp_fist;
 extern int g_wp_chainsaw;
 extern int g_sfx_sawup;
 extern int g_thrust_factor;
@@ -29,6 +30,9 @@ extern int g_s_play_atk1;
 extern int g_s_play_atk2;
 extern int g_s_play;
 extern int g_s_saw;
+
+extern int g_special_friction_low;
+
 extern dboolean heretic;
 
 void dsda_InitGlobal(void);
