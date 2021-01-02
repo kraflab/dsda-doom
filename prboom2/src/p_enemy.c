@@ -2128,6 +2128,8 @@ void A_PainDie(mobj_t *actor)
 void A_Scream(mobj_t *actor)
 {
   int sound;
+  
+  if (heretic) return Heretic_A_Scream(actor);
 
   switch (actor->info->deathsound)
     {
@@ -4082,4 +4084,39 @@ void A_UnHideThing(mobj_t * actor)
 {
     //P_SetThingPosition(actor);
     actor->flags2 &= ~MF2_DONTDRAW;
+}
+
+void Heretic_A_Scream(mobj_t * actor)
+{
+    switch (actor->type)
+    {
+        case HERETIC_MT_CHICPLAYER:
+        case HERETIC_MT_SORCERER1:
+        case HERETIC_MT_MINOTAUR:
+            // Make boss death sounds full volume
+            S_StartSound(NULL, actor->info->deathsound);
+            break;
+        case HERETIC_MT_PLAYER:
+            // Handle the different player death screams
+            if (actor->special1.i < 10)
+            {                   // Wimpy death sound
+                S_StartSound(actor, heretic_sfx_plrwdth);
+            }
+            else if (actor->health > -50)
+            {                   // Normal death sound
+                S_StartSound(actor, actor->info->deathsound);
+            }
+            else if (actor->health > -100)
+            {                   // Crazy death sound
+                S_StartSound(actor, heretic_sfx_plrcdth);
+            }
+            else
+            {                   // Extreme death sound
+                S_StartSound(actor, heretic_sfx_gibdth);
+            }
+            break;
+        default:
+            S_StartSound(actor, actor->info->deathsound);
+            break;
+    }
 }

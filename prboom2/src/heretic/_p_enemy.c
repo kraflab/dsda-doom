@@ -493,47 +493,6 @@ void A_HeadAttack(mobj_t * actor)
 
 //----------------------------------------------------------------------------
 //
-// PROC A_Scream
-//
-//----------------------------------------------------------------------------
-
-void A_Scream(mobj_t * actor)
-{
-    switch (actor->type)
-    {
-        case MT_CHICPLAYER:
-        case MT_SORCERER1:
-        case MT_MINOTAUR:
-            // Make boss death sounds full volume
-            S_StartSound(NULL, actor->info->deathsound);
-            break;
-        case MT_PLAYER:
-            // Handle the different player death screams
-            if (actor->special1.i < 10)
-            {                   // Wimpy death sound
-                S_StartSound(actor, sfx_plrwdth);
-            }
-            else if (actor->health > -50)
-            {                   // Normal death sound
-                S_StartSound(actor, actor->info->deathsound);
-            }
-            else if (actor->health > -100)
-            {                   // Crazy death sound
-                S_StartSound(actor, sfx_plrcdth);
-            }
-            else
-            {                   // Extreme death sound
-                S_StartSound(actor, sfx_gibdth);
-            }
-            break;
-        default:
-            S_StartSound(actor, actor->info->deathsound);
-            break;
-    }
-}
-
-//----------------------------------------------------------------------------
-//
 // PROC A_BossDeath
 //
 // Trigger special effects if all bosses are dead.
