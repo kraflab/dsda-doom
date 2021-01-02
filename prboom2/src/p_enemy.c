@@ -1446,18 +1446,85 @@ void A_SargAttack(mobj_t *actor)
   }
 }
 
-void A_HeadAttack(mobj_t *actor)
+void A_HeadAttack(mobj_t * actor)
 {
-  if (!actor->target)
-    return;
-  A_FaceTarget (actor);
+  int i;
+  mobj_t *fire;
+  mobj_t *baseFire;
+  mobj_t *mo;
+  mobj_t *target;
+  int randAttack;
+  static int atkResolve1[] = { 50, 150 };
+  static int atkResolve2[] = { 150, 200 };
+  int dist;
+
+  // Ice ball     (close 20% : far 60%)
+  // Fire column  (close 40% : far 20%)
+  // Whirlwind    (close 40% : far 20%)
+  // Distance threshold = 8 cells
+
+  target = actor->target;
+  if (target == NULL) return;
+
+  A_FaceTarget(actor);
+
   if (P_CheckMeleeRange(actor))
+  {
+    int damage = heretic ? HITDICE(6) : (P_Random(pr_headattack) % 6 + 1) * 10;
+    P_DamageMobj(target, actor, actor, damage);
+    return;
+  }
+
+  if (!heretic) {
+    P_SpawnMissile(actor, target, MT_HEADSHOT);
+    return;
+  }
+  
+  dist = P_AproxDistance(actor->x - target->x, actor->y - target->y)
+         > 8 * 64 * FRACUNIT;
+  randAttack = P_Random(pr_heretic);
+  if (randAttack < atkResolve1[dist])
+  {                           // Ice ball
+    P_SpawnMissile(actor, target, HERETIC_MT_HEADFX1);
+    S_StartSound(actor, heretic_sfx_hedat2);
+  }
+  else if (randAttack < atkResolve2[dist])
+  {                           // Fire column
+    baseFire = P_SpawnMissile(actor, target, HERETIC_MT_HEADFX3);
+    if (baseFire != NULL)
     {
-      int damage = (P_Random(pr_headattack)%6+1)*10;
-      P_DamageMobj(actor->target, actor, actor, damage);
-      return;
+      P_SetMobjState(baseFire, HERETIC_S_HEADFX3_4);      // Don't grow
+      for (i = 0; i < 5; i++)
+      {
+        fire = P_SpawnMobj(baseFire->x, baseFire->y,
+                           baseFire->z, HERETIC_MT_HEADFX3);
+        if (i == 0)
+        {
+          S_StartSound(actor, heretic_sfx_hedat1);
+        }
+        fire->target = baseFire->target;
+        fire->angle = baseFire->angle;
+        fire->momx = baseFire->momx;
+        fire->momy = baseFire->momy;
+        fire->momz = baseFire->momz;
+        fire->damage = 0;
+        fire->health = (i + 1) * 2;
+        P_CheckMissileSpawn(fire);
+      }
     }
-  P_SpawnMissile(actor, actor->target, MT_HEADSHOT);  // launch a missile
+  }
+  else
+  {                           // Whirlwind
+    mo = P_SpawnMissile(actor, target, HERETIC_MT_WHIRLWIND);
+    if (mo != NULL)
+    {
+      mo->z -= 32 * FRACUNIT;
+      mo->special1.m = target;
+      mo->special2.i = 50;  // Timer for active sound
+      mo->health = 20 * TICRATE;       // Duration
+      S_StartSound(actor, heretic_sfx_hedat3);
+    }
+  }
 }
 
 void A_CyberAttack(mobj_t *actor)
