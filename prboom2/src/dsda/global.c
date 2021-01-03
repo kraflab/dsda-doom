@@ -55,6 +55,7 @@ int g_wp_fist;
 int g_wp_chainsaw;
 int g_sfx_sawup;
 int g_thrust_factor;
+int g_fuzzy_aim_shift;
 int g_skullpop_mt;
 int g_s_play_atk1;
 int g_s_play_atk2;
@@ -116,6 +117,7 @@ static void dsda_InitDoom(void) {
   g_wp_chainsaw = wp_chainsaw;
   g_sfx_sawup = sfx_sawup;
   g_thrust_factor = 100;
+  g_fuzzy_aim_shift = 20;
   g_skullpop_mt = MT_GIBDTH;
   g_s_play_atk1 = S_PLAY_ATK1;
   g_s_play_atk2 = S_PLAY_ATK2;
@@ -178,6 +180,7 @@ static void dsda_InitHeretic(void) {
   g_wp_chainsaw = wp_gauntlets;
   g_sfx_sawup = heretic_sfx_gntact;
   g_thrust_factor = 150;
+  g_fuzzy_aim_shift = 21;
   g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
   g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
   g_s_play_atk2 = HERETIC_S_PLAY_ATK2;

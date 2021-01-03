@@ -1719,6 +1719,9 @@ extern fixed_t attackrange;
 void P_SpawnPuff(fixed_t x,fixed_t y,fixed_t z)
 {
   mobj_t* th;
+
+  if (heretic) return Heretic_P_SpawnPuff(x, y, z);
+
   // killough 5/5/98: remove dependence on order of evaluation:
   int t = P_Random(pr_spawnpuff);
   z += (t - P_Random(pr_spawnpuff))<<10;
@@ -1810,41 +1813,67 @@ dboolean P_CheckMissileSpawn (mobj_t* th)
 
 mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
 {
+  fixed_t z;
   mobj_t* th;
   angle_t an;
   int     dist;
 
-  th = P_SpawnMobj (source->x,source->y,source->z + 4*8*FRACUNIT,type);
+  switch (type)
+  {
+      case HERETIC_MT_MNTRFX1:       // Minotaur swing attack missile
+          z = source->z + 40 * FRACUNIT;
+          break;
+      case HERETIC_MT_MNTRFX2:       // Minotaur floor fire missile
+          z = ONFLOORZ;
+          break;
+      case HERETIC_MT_SRCRFX1:       // Sorcerer Demon fireball
+          z = source->z + 48 * FRACUNIT;
+          break;
+      case HERETIC_MT_KNIGHTAXE:     // Knight normal axe
+      case HERETIC_MT_REDAXE:        // Knight red power axe
+          z = source->z + 36 * FRACUNIT;
+          break;
+      default:
+          z = source->z + 32 * FRACUNIT;
+          break;
+  }
+  if (source->flags2 & MF2_FEETARECLIPPED)
+  {
+      z -= FOOTCLIPSIZE;
+  }
+
+  th = P_SpawnMobj(source->x, source->y, z, type);
 
   if (th->info->seesound)
-    S_StartSound (th, th->info->seesound);
+    S_StartSound(th, th->info->seesound);
 
   P_SetTarget(&th->target, source);    // where it came from
-  an = R_PointToAngle2 (source->x, source->y, dest->x, dest->y);
+  an = R_PointToAngle2(source->x, source->y, dest->x, dest->y);
 
   // fuzzy player
-
   if (dest->flags & MF_SHADOW)
-    {  // killough 5/5/98: remove dependence on order of evaluation:
+  {  // killough 5/5/98: remove dependence on order of evaluation:
     int t = P_Random(pr_shadow);
-    an += (t - P_Random(pr_shadow))<<20;
-    }
+    an += (t - P_Random(pr_shadow)) << g_fuzzy_aim_shift;
+  }
 
   th->angle = an;
   an >>= ANGLETOFINESHIFT;
-  th->momx = FixedMul (th->info->speed, finecosine[an]);
-  th->momy = FixedMul (th->info->speed, finesine[an]);
+  th->momx = FixedMul(th->info->speed, finecosine[an]);
+  th->momy = FixedMul(th->info->speed, finesine[an]);
 
-  dist = P_AproxDistance (dest->x - source->x, dest->y - source->y);
+  dist = P_AproxDistance(dest->x - source->x, dest->y - source->y);
   dist = dist / th->info->speed;
 
   if (dist < 1)
     dist = 1;
 
   th->momz = (dest->z - source->z) / dist;
-  P_CheckMissileSpawn (th);
 
-  return th;
+  if (!heretic)
+    return th;
+
+  return (P_CheckMissileSpawn(th) ? th : NULL);
 }
 
 
@@ -2279,4 +2308,54 @@ void P_FloorBounceMissile(mobj_t * mo)
 {
     mo->momz = -mo->momz;
     P_SetMobjState(mo, mobjinfo[mo->type].deathstate);
+}
+
+void Heretic_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z)
+{
+    mobj_t *puff;
+
+    z += (P_SubRandom() << 10);
+    puff = P_SpawnMobj(x, y, z, PuffType);
+    if (puff->info->attacksound)
+    {
+        S_StartSound(puff, puff->info->attacksound);
+    }
+    switch (PuffType)
+    {
+        case HERETIC_MT_BEAKPUFF:
+        case HERETIC_MT_STAFFPUFF:
+            puff->momz = FRACUNIT;
+            break;
+        case HERETIC_MT_GAUNTLETPUFF1:
+        case HERETIC_MT_GAUNTLETPUFF2:
+            puff->momz = (fixed_t)(.8 * FRACUNIT);
+        default:
+            break;
+    }
+}
+
+void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator)
+{
+    mobj_t *mo;
+
+    mo = P_SpawnMobj(x, y, z, HERETIC_MT_BLOODSPLATTER);
+    mo->target = originator;
+    mo->momx = P_SubRandom() << 9;
+    mo->momy = P_SubRandom() << 9;
+    mo->momz = FRACUNIT * 2;
+}
+
+void P_RipperBlood(mobj_t * mo)
+{
+    mobj_t *th;
+    fixed_t x, y, z;
+
+    x = mo->x + (P_SubRandom() << 12);
+    y = mo->y + (P_SubRandom() << 12);
+    z = mo->z + (P_SubRandom() << 12);
+    th = P_SpawnMobj(x, y, z, HERETIC_MT_BLOOD);
+    th->flags |= MF_NOGRAVITY;
+    th->momx = mo->momx >> 1;
+    th->momy = mo->momy >> 1;
+    th->tics += P_Random(pr_heretic) & 3;
 }

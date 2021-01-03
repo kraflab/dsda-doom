@@ -498,5 +498,6 @@ void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
 void P_RipperBlood(mobj_t * mo);
 dboolean Heretic_P_SetMobjState(mobj_t * mobj, statenum_t state);
 void P_FloorBounceMissile(mobj_t * mo);
+void Heretic_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z);
 
 #endif

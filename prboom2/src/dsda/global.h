@@ -28,6 +28,7 @@ extern int g_wp_fist;
 extern int g_wp_chainsaw;
 extern int g_sfx_sawup;
 extern int g_thrust_factor;
+extern int g_fuzzy_aim_shift;
 extern int g_skullpop_mt;
 extern int g_s_play_atk1;
 extern int g_s_play_atk2;
