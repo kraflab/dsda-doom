@@ -401,6 +401,7 @@ typedef struct mobj_s
 
 #define ONFLOORZ        INT_MIN
 #define ONCEILINGZ      INT_MAX
+#define FLOATRANDZ     (INT_MAX-1)
 
 // Time interval for item respawning.
 #define ITEMQUESIZE     128

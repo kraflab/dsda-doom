@@ -1127,6 +1127,8 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   mobj->radius = info->radius;
   mobj->height = info->height;                                      // phares
   mobj->flags  = info->flags;
+  if (heretic) mobj->flags2 = info->flags2;
+  if (heretic) mobj->damage = info->damage;
 
   /* killough 8/23/98: no friends, bouncers, or touchy things in old demos */
   if (!mbf_features)
@@ -1161,9 +1163,46 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   mobj->floorz   = mobj->subsector->sector->floorheight;
   mobj->ceilingz = mobj->subsector->sector->ceilingheight;
 
-  mobj->z = z == ONFLOORZ ? mobj->floorz : z == ONCEILINGZ ?
-    mobj->ceilingz - mobj->height : z;
-  
+  if (z == ONFLOORZ)
+  {
+      mobj->z = mobj->floorz;
+  }
+  else if (z == ONCEILINGZ)
+  {
+      mobj->z = mobj->ceilingz - mobj->height;
+  }
+  else if (heretic && z == FLOATRANDZ)
+  {
+    fixed_t space;
+
+    space = ((mobj->ceilingz) - (mobj->height)) - mobj->floorz;
+    if (space > 48 * FRACUNIT)
+    {
+      space -= 40 * FRACUNIT;
+      mobj->z =
+        ((space * P_Random(pr_heretic)) >> 8) + mobj->floorz + 40 * FRACUNIT;
+    }
+    else
+    {
+      mobj->z = mobj->floorz;
+    }
+  }
+  else
+  {
+    mobj->z = z;
+  }
+
+  if (mobj->flags2 & MF2_FOOTCLIP
+      && P_GetThingFloorType(mobj) != FLOOR_SOLID
+      && mobj->floorz == mobj->subsector->sector->floorheight)
+  {
+      mobj->flags2 |= MF2_FEETARECLIPPED;
+  }
+  else
+  {
+      mobj->flags2 &= ~MF2_FEETARECLIPPED;
+  }
+
   mobj->PrevX = mobj->x;
   mobj->PrevY = mobj->y;
   mobj->PrevZ = mobj->z;
@@ -1171,11 +1210,11 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   mobj->thinker.function = P_MobjThinker;
 
   //e6y
-  mobj->friction    = ORIG_FRICTION;                        // phares 3/17/98
+  mobj->friction = ORIG_FRICTION;                        // phares 3/17/98
   mobj->index = -1;
 
   mobj->target = mobj->tracer = mobj->lastenemy = NULL;
-  P_AddThinker (&mobj->thinker);
+  P_AddThinker(&mobj->thinker);
   if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
     totallive++;
 
