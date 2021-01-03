@@ -63,6 +63,8 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "dsda/global.h"
+
 //
 //      source animation definition
 //
@@ -1084,7 +1086,7 @@ dboolean P_CanUnlockGenDoor
 //
 dboolean PUREFUNC P_SectorActive(special_e t, const sector_t *sec)
 {
-  if (demo_compatibility)  // return whether any thinker is active
+  if (heretic || demo_compatibility)  // return whether any thinker is active
     return sec->floordata != NULL || sec->ceilingdata != NULL || sec->lightingdata != NULL;
   else
     switch (t)             // return whether thinker of same type is active

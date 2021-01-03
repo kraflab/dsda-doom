@@ -75,44 +75,6 @@ struct line_s;
 
 typedef struct
 {
-    fixed_t floorheight, ceilingheight;
-    short floorpic, ceilingpic;
-    short lightlevel;
-    short special, tag;
-
-    int soundtraversed;         // 0 = untraversed, 1,2 = sndlines -1
-    mobj_t *soundtarget;        // thing that made a sound (or null)
-
-    int blockbox[4];            // mapblock bounding box for height changes
-    degenmobj_t soundorg;       // for any sounds played by the sector
-
-    int validcount;             // if == validcount, already checked
-    mobj_t *thinglist;          // list of mobjs in sector
-    void *specialdata;          // thinker_t for reversable actions
-    int linecount;
-    struct line_s **lines;      // [linecount] size
-
-    // [AM] Previous position of floor and ceiling before
-    //      think.  Used to interpolate between positions.
-    fixed_t	oldfloorheight;
-    fixed_t	oldceilingheight;
-
-    // [AM] Gametic when the old positions were recorded.
-    //      Has a dual purpose; it prevents movement thinkers
-    //      from storing old positions twice in a tic, and
-    //      prevents the renderer from attempting to interpolate
-    //      if old values were not updated recently.
-    int         oldgametic;
-
-    // [AM] Interpolated floor and ceiling height.
-    //      Calculated once per tic and used inside
-    //      the renderer.
-    fixed_t	interpfloorheight;
-    fixed_t	interpceilingheight;
-} sector_t;
-
-typedef struct
-{
     fixed_t textureoffset;      // add this to the calculated texture col
     fixed_t rowoffset;          // add this to the calculated texture top
     short toptexture, bottomtexture, midtexture;
