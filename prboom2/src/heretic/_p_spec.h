@@ -66,14 +66,6 @@ void P_InitPicAnims(void);
 void P_InitTerrainTypes(void);
 void P_InitLava(void);
 
-// at map load
-void P_SpawnSpecials(void);
-void P_InitAmbientSound(void);
-
-// every tic
-void P_UpdateSpecials(void);
-void P_AmbientSound(void);
-
 // when needed
 boolean P_UseSpecialLine(mobj_t * thing, line_t * line);
 void P_ShootSpecialLine(mobj_t * thing, line_t * line);

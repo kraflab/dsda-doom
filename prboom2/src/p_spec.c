@@ -3692,3 +3692,74 @@ void P_AddAmbientSfx(int sequence)
     }
     LevelAmbientSfx[AmbSfxCount++] = AmbientSfx[sequence];
 }
+
+void P_InitAmbientSound(void)
+{
+    AmbSfxCount = 0;
+    AmbSfxVolume = 0;
+    AmbSfxTics = 10 * TICRATE;
+    AmbSfxPtr = AmbSndSeqInit;
+}
+
+void P_AmbientSound(void)
+{
+    afxcmd_t cmd;
+    int sound;
+    dboolean done;
+
+    if (!AmbSfxCount)
+    {                           // No ambient sound sequences on current level
+        return;
+    }
+    if (--AmbSfxTics)
+    {
+        return;
+    }
+    done = false;
+    do
+    {
+        cmd = *AmbSfxPtr++;
+        switch (cmd)
+        {
+            case afxcmd_play:
+                AmbSfxVolume = P_Random(pr_heretic) >> 2;
+                S_StartSoundAtVolume(NULL, *AmbSfxPtr++, AmbSfxVolume);
+                break;
+            case afxcmd_playabsvol:
+                sound = *AmbSfxPtr++;
+                AmbSfxVolume = *AmbSfxPtr++;
+                S_StartSoundAtVolume(NULL, sound, AmbSfxVolume);
+                break;
+            case afxcmd_playrelvol:
+                sound = *AmbSfxPtr++;
+                AmbSfxVolume += *AmbSfxPtr++;
+                if (AmbSfxVolume < 0)
+                {
+                    AmbSfxVolume = 0;
+                }
+                else if (AmbSfxVolume > 127)
+                {
+                    AmbSfxVolume = 127;
+                }
+                S_StartSoundAtVolume(NULL, sound, AmbSfxVolume);
+                break;
+            case afxcmd_delay:
+                AmbSfxTics = *AmbSfxPtr++;
+                done = true;
+                break;
+            case afxcmd_delayrand:
+                AmbSfxTics = P_Random(pr_heretic) & (*AmbSfxPtr++);
+                done = true;
+                break;
+            case afxcmd_end:
+                AmbSfxTics = 6 * TICRATE + P_Random(pr_heretic);
+                AmbSfxPtr = LevelAmbientSfx[P_Random(pr_heretic) % AmbSfxCount];
+                done = true;
+                break;
+            default:
+                I_Error("P_AmbientSound: Unknown afxcmd %d", cmd);
+                break;
+        }
+    }
+    while (done == false);
+}
