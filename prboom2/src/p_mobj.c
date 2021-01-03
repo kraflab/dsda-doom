@@ -1758,11 +1758,12 @@ extern fixed_t attackrange;
 void P_SpawnPuff(fixed_t x,fixed_t y,fixed_t z)
 {
   mobj_t* th;
+  int t;
 
   if (heretic) return Heretic_P_SpawnPuff(x, y, z);
 
   // killough 5/5/98: remove dependence on order of evaluation:
-  int t = P_Random(pr_spawnpuff);
+  t = P_Random(pr_spawnpuff);
   z += (t - P_Random(pr_spawnpuff))<<10;
 
   th = P_SpawnMobj (x,y,z, MT_PUFF);
@@ -1910,7 +1911,10 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
   th->momz = (dest->z - source->z) / dist;
 
   if (!heretic)
+  {
+    P_CheckMissileSpawn(th);
     return th;
+  }
 
   return (P_CheckMissileSpawn(th) ? th : NULL);
 }
