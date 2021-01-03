@@ -272,24 +272,6 @@ mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
     return (mobj);
 }
 
-/*
-===============
-=
-= P_RemoveMobj
-=
-===============
-*/
-
-void P_RemoveMobj(mobj_t * mobj)
-{
-// unlink from sector and block lists
-    P_UnsetThingPosition(mobj);
-// stop any playing sound
-    S_StopSound(mobj);
-// free block
-    P_RemoveThinker((thinker_t *) mobj);
-}
-
 //=============================================================================
 
 
@@ -558,31 +540,6 @@ void P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z)
     // [crispy] suppress interpolation for the first tic
     puff->interp = -1;
 }
-
-/*
-================
-=
-= P_SpawnBlood
-=
-================
-*/
-
-/*
-void P_SpawnBlood (fixed_t x, fixed_t y, fixed_t z, int damage)
-{
-	mobj_t  *th;
-	
-	z += (P_SubRandom()<<10);
-	th = P_SpawnMobj (x,y,z, MT_BLOOD);
-	th->momz = FRACUNIT*2;
-	th->tics -= P_Random()&3;
-
-	if (damage <= 12 && damage >= 9)
-		P_SetMobjState (th,S_BLOOD2);
-	else if (damage < 9)
-		P_SetMobjState (th,S_BLOOD3);
-}
-*/
 
 //---------------------------------------------------------------------------
 //
