@@ -3527,6 +3527,148 @@ static void P_SpawnPushers(void)
 
 #include "heretic/def.h"
 
+#define MAX_AMBIENT_SFX 8
+
+typedef enum
+{
+    afxcmd_play,                // (sound)
+    afxcmd_playabsvol,          // (sound, volume)
+    afxcmd_playrelvol,          // (sound, volume)
+    afxcmd_delay,               // (ticks)
+    afxcmd_delayrand,           // (andbits)
+    afxcmd_end                  // ()
+} afxcmd_t;
+
+int *LevelAmbientSfx[MAX_AMBIENT_SFX];
+int *AmbSfxPtr;
+int AmbSfxCount;
+int AmbSfxTics;
+int AmbSfxVolume;
+
+int AmbSndSeqInit[] = {         // Startup
+    afxcmd_end
+};
+int AmbSndSeq1[] = {            // Scream
+    afxcmd_play, heretic_sfx_amb1,
+    afxcmd_end
+};
+int AmbSndSeq2[] = {            // Squish
+    afxcmd_play, heretic_sfx_amb2,
+    afxcmd_end
+};
+int AmbSndSeq3[] = {            // Drops
+    afxcmd_play, heretic_sfx_amb3,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb7,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb3,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb7,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb3,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb7,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_end
+};
+int AmbSndSeq4[] = {            // SlowFootSteps
+    afxcmd_play, heretic_sfx_amb4,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_end
+};
+int AmbSndSeq5[] = {            // Heartbeat
+    afxcmd_play, heretic_sfx_amb5,
+    afxcmd_delay, 35,
+    afxcmd_play, heretic_sfx_amb5,
+    afxcmd_delay, 35,
+    afxcmd_play, heretic_sfx_amb5,
+    afxcmd_delay, 35,
+    afxcmd_play, heretic_sfx_amb5,
+    afxcmd_end
+};
+int AmbSndSeq6[] = {            // Bells
+    afxcmd_play, heretic_sfx_amb6,
+    afxcmd_delay, 17,
+    afxcmd_playrelvol, heretic_sfx_amb6, -8,
+    afxcmd_delay, 17,
+    afxcmd_playrelvol, heretic_sfx_amb6, -8,
+    afxcmd_delay, 17,
+    afxcmd_playrelvol, heretic_sfx_amb6, -8,
+    afxcmd_end
+};
+int AmbSndSeq7[] = {            // Growl
+    afxcmd_play, heretic_sfx_bstsit,
+    afxcmd_end
+};
+int AmbSndSeq8[] = {            // Magic
+    afxcmd_play, heretic_sfx_amb8,
+    afxcmd_end
+};
+int AmbSndSeq9[] = {            // Laughter
+    afxcmd_play, heretic_sfx_amb9,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb9, -4,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb9, -4,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb10, -4,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb10, -4,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb10, -4,
+    afxcmd_end
+};
+int AmbSndSeq10[] = {           // FastFootsteps
+    afxcmd_play, heretic_sfx_amb4,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_end
+};
+
+int *AmbientSfx[] = {
+    AmbSndSeq1,                 // Scream
+    AmbSndSeq2,                 // Squish
+    AmbSndSeq3,                 // Drops
+    AmbSndSeq4,                 // SlowFootsteps
+    AmbSndSeq5,                 // Heartbeat
+    AmbSndSeq6,                 // Bells
+    AmbSndSeq7,                 // Growl
+    AmbSndSeq8,                 // Magic
+    AmbSndSeq9,                 // Laughter
+    AmbSndSeq10                 // FastFootsteps
+};
+
 int *TerrainTypes;
 struct
 {
@@ -3541,3 +3683,12 @@ struct
     { "FLTSLUD1", FLOOR_SLUDGE },
     { "END", -1 }
 };
+
+void P_AddAmbientSfx(int sequence)
+{
+    if (AmbSfxCount == MAX_AMBIENT_SFX)
+    {
+        I_Error("Too many ambient sound sequences");
+    }
+    LevelAmbientSfx[AmbSfxCount++] = AmbientSfx[sequence];
+}

@@ -54,6 +54,8 @@
 #include "dsda.h"
 
 #include "heretic/def.h"
+#include "p_enemy.h"
+#include "p_spec.h"
 
 // HERETIC_TODO: static NUMSTATES arrays here - probably fine?
 // NUMSTATES > HERETIC_NUMSTATES
@@ -1551,14 +1553,14 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // phares 5/14/98: Ignore Player 5-8 starts (for now)
 
   switch(thingtype)
-    {
-  case 0:
-  case DEN_PLAYER5:
-  case DEN_PLAYER6:
-  case DEN_PLAYER7:
-  case DEN_PLAYER8:
-    return NULL;
-    }
+  {
+    case 0:
+    case DEN_PLAYER5:
+    case DEN_PLAYER6:
+    case DEN_PLAYER7:
+    case DEN_PLAYER8:
+      return NULL;
+  }
 
   // killough 11/98: clear flags unused by Doom
   //
@@ -1568,12 +1570,15 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // bits that weren't used in Doom (such as HellMaker wads). So we should
   // then simply ignore all upper bits.
 
-  if (demo_compatibility ||
-      (compatibility_level >= lxdoom_1_compatibility  &&
-       options & MTF_RESERVED)) {
-    if (!demo_compatibility) // cph - Add warning about bad thing flags
-      lprintf(LO_WARN, "P_SpawnMapThing: correcting bad flags (%u) (thing type %d)\n",
-        options, thingtype);
+  // HERETIC_TODO: remove heretic check once heretic == demo_compatibility
+  if (
+    heretic ||
+    demo_compatibility ||
+    (compatibility_level >= lxdoom_1_compatibility && options & MTF_RESERVED)
+  )
+  {
+    if (!heretic && !demo_compatibility) // cph - Add warning about bad thing flags
+      lprintf(LO_WARN, "P_SpawnMapThing: correcting bad flags (%u) (thing type %d)\n", options, thingtype);
     options &= MTF_EASY|MTF_NORMAL|MTF_HARD|MTF_AMBUSH|MTF_NOTSINGLE;
   }
 
@@ -1581,79 +1586,102 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
   // doom2.exe has at most 10 deathmatch starts
   if (thingtype == 11)
+  {
+    if ((heretic || compatibility) && deathmatch_p - deathmatchstarts >= 10)
     {
-    if (!(!compatibility || deathmatch_p-deathmatchstarts < 10)) {
-		return NULL;
-	} else {
-    // 1/11/98 killough -- new code removes limit on deathmatch starts:
-
-    size_t offset = deathmatch_p - deathmatchstarts;
-
-    if (compatibility && deathmatch_p-deathmatchstarts >= 10)
-      return NULL; //e6y
-    if (offset >= num_deathmatchstarts)
-      {
-      num_deathmatchstarts = num_deathmatchstarts ?
-                 num_deathmatchstarts*2 : 16;
-      deathmatchstarts = realloc(deathmatchstarts,
-                   num_deathmatchstarts *
-                   sizeof(*deathmatchstarts));
-      deathmatch_p = deathmatchstarts + offset;
-      }
-    memcpy(deathmatch_p++, mthing, sizeof(*mthing));
-    (deathmatch_p-1)->options = 1;
-
-    TracerAddDeathmatchStart(deathmatch_p - deathmatchstarts - 1, index);
-
-    return NULL;
-	}
+  		return NULL;
     }
+    else
+    {
+      // 1/11/98 killough -- new code removes limit on deathmatch starts:
+
+      size_t offset = deathmatch_p - deathmatchstarts;
+
+      if (offset >= num_deathmatchstarts)
+      {
+        num_deathmatchstarts = num_deathmatchstarts ?
+                               num_deathmatchstarts * 2 : 16;
+        deathmatchstarts = realloc(deathmatchstarts,
+                                   num_deathmatchstarts *
+                                   sizeof(*deathmatchstarts));
+        deathmatch_p = deathmatchstarts + offset;
+      }
+      memcpy(deathmatch_p++, mthing, sizeof(*mthing));
+      (deathmatch_p - 1)->options = 1;
+
+      TracerAddDeathmatchStart(deathmatch_p - deathmatchstarts - 1, index);
+
+      return NULL;
+  	}
+  }
 
   // check for players specially
 
   if (thingtype <= 4 && thingtype > 0)  // killough 2/26/98 -- fix crashes
-    {
-      // killough 7/19/98: Marine's best friend :)
-      if (!netgame && thingtype > 1 && thingtype <= dogs+1 &&
-    !players[thingtype-1].secretcount)
-  {  // use secretcount to avoid multiple dogs in case of multiple starts
-    players[thingtype-1].secretcount = 1;
+  {
+    // killough 7/19/98: Marine's best friend :)
+    if (
+      !netgame &&
+      thingtype > 1 &&
+      thingtype <= dogs + 1 &&
+      !players[thingtype - 1].secretcount
+    )
+    {  // use secretcount to avoid multiple dogs in case of multiple starts
+      players[thingtype - 1].secretcount = 1;
 
-    // killough 10/98: force it to be a friend
-    options |= MTF_FRIEND;
-    if(HelperThing != -1) // haleyjd 9/22/99: deh substitution
-    {
-      int type = HelperThing - 1;
-      if(type >= 0 && type < num_mobj_types)
+      // killough 10/98: force it to be a friend
+      options |= MTF_FRIEND;
+      if (HelperThing != -1) // haleyjd 9/22/99: deh substitution
       {
-        i = type;
+        int type = HelperThing - 1;
+        if (type >= 0 && type < num_mobj_types)
+        {
+          i = type;
+        }
+        else
+        {
+          doom_printf("Invalid value %i for helper, ignored.", HelperThing);
+          i = MT_DOGS;
+        }
       }
-      else
-      {
-        doom_printf("Invalid value %i for helper, ignored.", HelperThing);
+      else {
         i = MT_DOGS;
       }
+      goto spawnit;
     }
-    else {
-      i = MT_DOGS;
-    }
-    goto spawnit;
-  }
 
     // save spots for respawning in coop games
-    playerstarts[thingtype-1] = *mthing;
+    playerstarts[thingtype - 1] = *mthing;
     /* cph 2006/07/24 - use the otherwise-unused options field to flag that
      * this start is present (so we know which elements of the array are filled
      * in, in effect). Also note that the call below to P_SpawnPlayer must use
      * the playerstarts version with this field set */
-    playerstarts[thingtype-1].options = 1;
+    playerstarts[thingtype - 1].options = 1;
 
     TracerAddPlayerStart(thingtype - 1, index);
 
     if (!deathmatch)
-      P_SpawnPlayer (thingtype-1, &playerstarts[thingtype-1]);
+      P_SpawnPlayer(thingtype - 1, &playerstarts[thingtype - 1]);
     return NULL;
+  }
+
+  if (heretic)
+  {
+    // Ambient sound sequences
+    if (mthing->type >= 1200 && mthing->type < 1300)
+    {
+      P_AddAmbientSfx(mthing->type - 1200);
+      return NULL;
     }
+
+    // Check for boss spots
+    if (mthing->type == 56)     // Monster_BossSpot
+    {
+      P_AddBossSpot(mthing->x << FRACBITS, mthing->y << FRACBITS,
+                    ANG45 * (mthing->angle / 45));
+      return NULL;
+    }
+  }
 
   // check for apropriate skill level
 
@@ -1675,10 +1703,11 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   if (gameskill == sk_baby || gameskill == sk_easy ?
       !(options & MTF_EASY) :
       gameskill == sk_hard || gameskill == sk_nightmare ?
-      !(options & MTF_HARD) : !(options & MTF_NORMAL))
+      !(options & MTF_HARD) :
+      !(options & MTF_NORMAL))
     return NULL;
 
-  if (thingtype >= 14100 && thingtype <= 14164)
+  if (!heretic && thingtype >= 14100 && thingtype <= 14164)
   {
     // Use the ambient number
     iden_num = thingtype - 14100; // Mus change
@@ -1689,6 +1718,11 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
   // killough 8/23/98: use table for faster lookup
   i = P_FindDoomedNum(thingtype);
+
+  // HERETIC_TODO: heretic uses this. I assume the faster table works
+  // for (i = 0; i < NUMMOBJTYPES; i++)
+  //     if (mthing->type == mobjinfo[i].doomednum)
+  //         break;
 
   // phares 5/16/98:
   // Do not abort because of an unknown thing. Ignore it, but post a
@@ -1713,29 +1747,42 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // spawn it
 spawnit:
 
+  if (i == HERETIC_MT_WMACE)
+  {
+    P_AddMaceSpot(mthing);
+    return NULL;
+  }
+
   x = mthing->x << FRACBITS;
   y = mthing->y << FRACBITS;
 
   if (mobjinfo[i].flags & MF_SPAWNCEILING)
     z = ONCEILINGZ;
+  else if (mobjinfo[i].flags2 & MF2_SPAWNFLOAT)
+    z = FLOATRANDZ;
   else
     z = ONFLOORZ;
 
-  mobj = P_SpawnMobj (x,y,z, i);
-  mobj->spawnpoint = *mthing;
+  mobj = P_SpawnMobj (x, y, z, i);
+  mobj->spawnpoint = *mthing; // HERETIC_TODO: this is only done with totalkills++ in heretic, probably ok
   mobj->index = index;//e6y
   mobj->iden_nums = iden_num;
 
+  if (mobj->flags2 & MF2_FLOATBOB)
+  {                           // Seed random starting index for bobbing motion
+    mobj->health = P_Random(pr_heretic);
+  }
+
   if (mobj->tics > 0)
-    mobj->tics = 1 + (P_Random (pr_spawnthing) % mobj->tics);
+    mobj->tics = 1 + (P_Random(pr_spawnthing) % mobj->tics);
 
   if (!(mobj->flags & MF_FRIEND) &&
       options & MTF_FRIEND &&
       mbf_features)
-    {
-      mobj->flags |= MF_FRIEND;            // killough 10/98:
-      P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
-    }
+  {
+    mobj->flags |= MF_FRIEND;            // killough 10/98:
+    P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
+  }
 
   /* killough 7/20/98: exclude friends */
   if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
@@ -1744,9 +1791,11 @@ spawnit:
   if (mobj->flags & MF_COUNTITEM)
     totalitems++;
 
-  mobj->angle = ANG45 * (mthing->angle/45);
+  mobj->angle = ANG45 * (mthing->angle / 45);
   if (options & MTF_AMBUSH)
     mobj->flags |= MF_AMBUSH;
+
+  if (heretic) return mobj; // check below irrelevant
 
   // RjY
   // Print a warning when a solid hanging body is used in a sector where

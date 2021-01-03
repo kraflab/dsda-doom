@@ -36,7 +36,7 @@
 - [ ] p_local.h 282
 - [ ] p_map.c 1714
 - [ ] p_maputl.c 799
-- [ ] p_mobj.c 1665
+- [x] p_mobj.c 1665
 - [ ] p_plats.c 259
 - [x] p_pspr.c 1908
 - [ ] p_saveg.c 1913
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-15573 / 47214 = 33%
+17238 / 47214 = 36%

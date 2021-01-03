@@ -69,7 +69,6 @@ void P_InitLava(void);
 // at map load
 void P_SpawnSpecials(void);
 void P_InitAmbientSound(void);
-void P_AddAmbientSfx(int sequence);
 
 // every tic
 void P_UpdateSpecials(void);

@@ -2045,7 +2045,7 @@ void P_OpenWeapons(void)
     MaceSpotCount = 0;
 }
 
-void P_AddMaceSpot(mapthing_t * mthing)
+void P_AddMaceSpot(const mapthing_t * mthing)
 {
     if (MaceSpotCount == MAX_MACE_SPOTS)
     {
