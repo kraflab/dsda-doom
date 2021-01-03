@@ -48,6 +48,9 @@ int num_music;
 weaponinfo_t* weaponinfo;
 
 int g_mt_player;
+int g_mt_tfog;
+int g_telefog_height;
+int g_sfx_telept;
 int g_wp_fist;
 int g_wp_chainsaw;
 int g_sfx_sawup;
@@ -106,6 +109,9 @@ static void dsda_InitDoom(void) {
   weaponinfo = doom_weaponinfo;
   
   g_mt_player = MT_PLAYER;
+  g_mt_tfog = MT_TFOG;
+  g_telefog_height = 0;
+  g_sfx_telept = sfx_telept;
   g_wp_fist = wp_fist;
   g_wp_chainsaw = wp_chainsaw;
   g_sfx_sawup = sfx_sawup;
@@ -165,6 +171,9 @@ static void dsda_InitHeretic(void) {
   weaponinfo = wpnlev1info;
   
   g_mt_player = HERETIC_MT_PLAYER;
+  g_mt_tfog = HERETIC_MT_TFOG;
+  g_telefog_height = TELEFOGHEIGHT;
+  g_sfx_telept = heretic_sfx_telept;
   g_wp_fist = wp_staff;
   g_wp_chainsaw = wp_gauntlets;
   g_sfx_sawup = heretic_sfx_gntact;

@@ -21,6 +21,9 @@
 #include "doomtype.h"
 
 extern int g_mt_player;
+extern int g_mt_tfog;
+extern int g_telefog_height;
+extern int g_sfx_telept;
 extern int g_wp_fist;
 extern int g_wp_chainsaw;
 extern int g_sfx_sawup;

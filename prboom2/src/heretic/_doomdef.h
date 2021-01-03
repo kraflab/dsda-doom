@@ -110,8 +110,6 @@ typedef enum
 ===============================================================================
 */
 
-#define TELEFOGHEIGHT (32*FRACUNIT)
-
 extern gameaction_t gameaction;
 
 extern boolean paused;
