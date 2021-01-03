@@ -1164,6 +1164,16 @@ mobj_t* P_GetPushThing(int);                                // phares 3/23/98
 
 // heretic
 
+// Here for reference
+// typedef enum
+// {
+//     lowerToFloor,
+//     raiseToHighest,
+//     lowerAndCrush,
+//     crushAndRaise,
+//     fastCrushAndRaise
+// } ceiling_e;
+
 extern int *TerrainTypes;
 
 void P_InitAmbientSound(void);

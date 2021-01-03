@@ -49,20 +49,24 @@ weaponinfo_t* weaponinfo;
 
 int g_mt_player;
 int g_mt_tfog;
-int g_telefog_height;
-int g_sfx_telept;
+int g_skullpop_mt;
+
 int g_wp_fist;
 int g_wp_chainsaw;
-int g_sfx_sawup;
+
+int g_telefog_height;
 int g_thrust_factor;
 int g_fuzzy_aim_shift;
-int g_skullpop_mt;
+int g_special_friction_low;
+
 int g_s_play_atk1;
 int g_s_play_atk2;
 int g_s_play_run1;
 int g_s_play;
 
-int g_special_friction_low;
+int g_sfx_sawup;
+int g_sfx_telept;
+int g_sfx_stnmov;
 
 extern const char** S_music_files;
 
@@ -111,20 +115,24 @@ static void dsda_InitDoom(void) {
   
   g_mt_player = MT_PLAYER;
   g_mt_tfog = MT_TFOG;
-  g_telefog_height = 0;
-  g_sfx_telept = sfx_telept;
+  g_skullpop_mt = MT_GIBDTH;
+  
   g_wp_fist = wp_fist;
   g_wp_chainsaw = wp_chainsaw;
-  g_sfx_sawup = sfx_sawup;
+  
+  g_telefog_height = 0;
   g_thrust_factor = 100;
   g_fuzzy_aim_shift = 20;
-  g_skullpop_mt = MT_GIBDTH;
+  g_special_friction_low = IGNORE_VALUE;
+  
   g_s_play_atk1 = S_PLAY_ATK1;
   g_s_play_atk2 = S_PLAY_ATK2;
   g_s_play_run1 = S_PLAY_RUN1;
   g_s_play = S_PLAY;
   
-  g_special_friction_low = IGNORE_VALUE;
+  g_sfx_sawup = sfx_sawup;
+  g_sfx_telept = sfx_telept;
+  g_sfx_stnmov = sfx_stnmov;
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -174,20 +182,24 @@ static void dsda_InitHeretic(void) {
   
   g_mt_player = HERETIC_MT_PLAYER;
   g_mt_tfog = HERETIC_MT_TFOG;
-  g_telefog_height = TELEFOGHEIGHT;
-  g_sfx_telept = heretic_sfx_telept;
+  g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
+  
   g_wp_fist = wp_staff;
   g_wp_chainsaw = wp_gauntlets;
-  g_sfx_sawup = heretic_sfx_gntact;
+  
+  g_telefog_height = TELEFOGHEIGHT;
   g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
-  g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
+  g_special_friction_low = 15;
+  
   g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
   g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
   g_s_play_run1 = HERETIC_S_PLAY_RUN1;
   g_s_play = HERETIC_S_PLAY;
   
-  g_special_friction_low = 15;
+  g_sfx_sawup = heretic_sfx_gntact;
+  g_sfx_telept = heretic_sfx_telept;
+  g_sfx_stnmov = heretic_sfx_dormov;
   
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {

@@ -22,21 +22,24 @@
 
 extern int g_mt_player;
 extern int g_mt_tfog;
-extern int g_telefog_height;
-extern int g_sfx_telept;
+extern int g_skullpop_mt;
+
 extern int g_wp_fist;
 extern int g_wp_chainsaw;
-extern int g_sfx_sawup;
+
+extern int g_telefog_height;
 extern int g_thrust_factor;
 extern int g_fuzzy_aim_shift;
-extern int g_skullpop_mt;
+extern int g_special_friction_low;
+
 extern int g_s_play_atk1;
 extern int g_s_play_atk2;
 extern int g_s_play_run1;
 extern int g_s_play;
-extern int g_s_saw;
 
-extern int g_special_friction_low;
+extern int g_sfx_telept;
+extern int g_sfx_sawup;
+extern int g_sfx_stnmov;
 
 extern dboolean heretic;
 
