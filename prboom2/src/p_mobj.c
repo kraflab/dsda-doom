@@ -617,11 +617,11 @@ static void P_ZMovement (mobj_t* mo)
   // check for smooth step up
 
   if (mo->player && //e6y: restoring original visual behaviour for demo_compatibility
-      (demo_compatibility || mo->player->mo == mo) &&  // killough 5/12/98: exclude voodoo dolls
+      (heretic || demo_compatibility || mo->player->mo == mo) &&  // killough 5/12/98: exclude voodoo dolls
       mo->z < mo->floorz)
   {
-    mo->player->viewheight -= mo->floorz-mo->z;
-    mo->player->deltaviewheight = (VIEWHEIGHT - mo->player->viewheight)>>3;
+    mo->player->viewheight -= mo->floorz - mo->z;
+    mo->player->deltaviewheight = (VIEWHEIGHT - mo->player->viewheight) >> 3;
   }
 
   // adjust altitude
@@ -633,26 +633,58 @@ floater:
 
     // float down towards target if too close
 
-    if (!((mo->flags ^ MF_FLOAT) & (MF_FLOAT | MF_SKULLFLY | MF_INFLOAT)) &&
-  mo->target)     /* killough 11/98: simplify */
+    if (!(mo->flags & MF_SKULLFLY) && !(mo->flags & MF_INFLOAT))
     {
       fixed_t delta;
       if (P_AproxDistance(mo->x - mo->target->x, mo->y - mo->target->y) <
-          D_abs(delta = mo->target->z + (mo->height>>1) - mo->z)*3)
+          D_abs(delta = mo->target->z + (mo->height >> 1) - mo->z) * 3)
         mo->z += delta < 0 ? -FLOATSPEED : FLOATSPEED;
     }
 
-    if (mo->player && (mo->flags & MF_FLY) && (mo->z > mo->floorz))
-    {
-      mo->z += finesine[(FINEANGLES/80*gametic)&FINEMASK]/8;
-      mo->momz = FixedMul (mo->momz, FRICTION_FLY);
-    }
+  if (mo->player && (mo->flags & MF_FLY) && (mo->z > mo->floorz))
+  {
+    mo->z += finesine[(FINEANGLES/80*gametic)&FINEMASK]/8;
+    mo->momz = FixedMul (mo->momz, FRICTION_FLY);
+  }
+
+  if (mo->player && mo->flags2 & MF2_FLY && !(mo->z <= mo->floorz)
+      && leveltime & 2)
+  {
+      mo->z += finesine[(FINEANGLES / 20 * leveltime >> 2) & FINEMASK];
+  }
 
   // clip movement
 
   if (mo->z <= mo->floorz)
   {
     // hit the floor
+
+    if (heretic) 
+    {
+      if (mo->flags & MF_MISSILE)
+      {
+        mo->z = mo->floorz;
+        if (mo->flags2 & MF2_FLOORBOUNCE)
+        {
+          P_FloorBounceMissile(mo);
+          return;
+        }
+        else if (mo->type == HERETIC_MT_MNTRFX2)
+        {                   // Minotaur floor fire can go up steps
+          return;
+        }
+        else
+        {
+          P_ExplodeMissile(mo);
+          return;
+        }
+      }
+
+      if (mo->z - mo->momz > mo->floorz)
+      {                       // Spawn splashes, etc.
+          P_HitFloor(mo);
+      }
+    }
 
     /* Note (id):
      *  somebody left this after the setting momz to 0,
@@ -674,11 +706,18 @@ floater:
      *  mimic the bug and do it further down instead)
      */
 
-    if (mo->flags & MF_SKULLFLY &&
-      	(!comp[comp_soul] ||
-      	 (compatibility_level > doom2_19_compatibility &&
-      	  compatibility_level < prboom_4_compatibility)
-      	))
+    // HERETIC_TODO: again, once compatibility is set up, remove heretic check
+    if (
+      !heretic &&
+      mo->flags & MF_SKULLFLY &&
+      (
+        !comp[comp_soul] ||
+      	(
+          compatibility_level > doom2_19_compatibility &&
+      	  compatibility_level < prboom_4_compatibility
+        )
+      )
+    )
       mo->momz = -mo->momz; // the skull slammed into something
 
     if (mo->momz < 0)
@@ -688,28 +727,39 @@ floater:
         P_DamageMobj(mo, NULL, NULL, mo->health);
       else
       {
-        if (mo->player)
+        // HERETIC_TODO: is this necessary?
+        if (!heretic && mo->player)
             mo->player->jumpTics = 7;
-        if (mo->player && /* killough 5/12/98: exclude voodoo dolls */
-            // e6y
-            // Restoring original visual behaviour for demo_compatibility.
-            // Viewheight of consoleplayer should be decreased for a moment
-            // after voodoo doll hits the ground.
-            // This additional condition makes sense only for plutonia complevel
-            // when voodoo doll falls down after teleporting,
-            // but can be applied globally for all demo_compatibility complevels,
-            // because original sources do not exclude voodoo dolls from condition above,
-            // but Boom does it.
-            (demo_compatibility || mo->player->mo == mo) && mo->momz < -GRAVITY*8)
+        if (
+          mo->player && /* killough 5/12/98: exclude voodoo dolls */
+          // e6y
+          // Restoring original visual behaviour for demo_compatibility.
+          // Viewheight of consoleplayer should be decreased for a moment
+          // after voodoo doll hits the ground.
+          // This additional condition makes sense only for plutonia complevel
+          // when voodoo doll falls down after teleporting,
+          // but can be applied globally for all demo_compatibility complevels,
+          // because original sources do not exclude voodoo dolls from condition above,
+          // but Boom does it.
+          (heretic || demo_compatibility || mo->player->mo == mo) && 
+          mo->momz < -GRAVITY * 8 &&
+          !(mo->flags2 & MF2_FLY)
+        )
         {
           // Squat down.
           // Decrease viewheight for a moment
           // after hitting the ground (hard),
           // and utter appropriate sound.
 
-          mo->player->deltaviewheight = mo->momz>>3;
+          mo->player->deltaviewheight = mo->momz >> 3;
+          
+          if (heretic)
+          {
+            S_StartSound(mo, heretic_sfx_plroof);
+            mo->player->centering = true;
+          }
           //e6y: compatibility optioned
-          if (comp[comp_sound] || (mo->health>0)) /* cph - prevent "oof" when dead */
+          else if (comp[comp_sound] || (mo->health > 0)) /* cph - prevent "oof" when dead */
             S_StartSound (mo, sfx_oof);
         }
       }
@@ -724,30 +774,35 @@ floater:
      * incorrectly reverse it, so we might still need this for demo sync
      */
     if (mo->flags & MF_SKULLFLY &&
-	     compatibility_level <= doom2_19_compatibility)
+	     (heretic || compatibility_level <= doom2_19_compatibility))
       mo->momz = -mo->momz; // the skull slammed into something
 
-    if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
+    if (mo->info->crashstate && (mo->flags & MF_CORPSE))
+    {
+      P_SetMobjState(mo, mo->info->crashstate);
+      return;
+    }
+
+    // HERETIC_TODO: heretic does this earlier - can we merge it above?
+    if (!heretic && (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP))
     {
       P_ExplodeMissile (mo);
       return;
     }
   }
-  else // still above the floor                                     // phares
-    if (mo->type == MT_GIBDTH && !demorecording && !demoplayback)
-    { // if (mo->flags & MF_LOGRAV)
-      // alternate gravity (MF2_LOGRAV from Heretic)
-      if (mo->momz == 0)
-        mo->momz = -(GRAVITY >> 3) * 2;
-      else
-        mo->momz -= GRAVITY >> 3;
-    }
-    else if (!(mo->flags & MF_NOGRAVITY))
-    {
-      if (!mo->momz)
-        mo->momz = -GRAVITY;
-      mo->momz -= GRAVITY;
-    }
+  else if (mo->flags2 & MF2_LOGRAV || (mo->type == MT_GIBDTH && !demorecording && !demoplayback))
+  {
+    if (mo->momz == 0)
+      mo->momz = -(GRAVITY >> 3) * 2;
+    else
+      mo->momz -= GRAVITY >> 3;
+  }
+  else if (!(mo->flags & MF_NOGRAVITY))
+  {
+    if (mo->momz == 0)
+      mo->momz = -GRAVITY;
+    mo->momz -= GRAVITY;
+  }
 
   if (mo->z + mo->height > mo->ceilingz)
   {
@@ -755,7 +810,7 @@ floater:
      * Lost souls were meant to bounce off of ceilings;
      *  new comp_soul compatibility option added
      */
-    if (!comp[comp_soul] && mo->flags & MF_SKULLFLY)
+    if (!heretic && !comp[comp_soul] && mo->flags & MF_SKULLFLY)
       mo->momz = -mo->momz; // the skull slammed into something
 
     // hit the ceiling
@@ -770,11 +825,24 @@ floater:
      *  lowering on us), so for old demos we must still do the buggy 
      *  momentum reversal here
      */
-    if (comp[comp_soul] && mo->flags & MF_SKULLFLY)
+    if ((heretic || comp[comp_soul]) && mo->flags & MF_SKULLFLY)
       mo->momz = -mo->momz; // the skull slammed into something
 
-    if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
+    if ((mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP))
     {
+      if (heretic && mo->subsector->sector->ceilingpic == skyflatnum)
+      {
+        if (mo->type == HERETIC_MT_BLOODYSKULL)
+        {
+          mo->momx = mo->momy = 0;
+          mo->momz = -FRACUNIT;
+        }
+        else
+        {
+          P_RemoveMobj(mo);
+        }
+        return;
+      }
       P_ExplodeMissile (mo);
       return;
     }
