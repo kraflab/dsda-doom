@@ -1457,8 +1457,13 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   p->playerstate   = PST_LIVE;
   p->refire        = 0;
   p->message       = NULL;
+  // HERETIC_TODO: ignoring this for now - not sure it will be used
+  // ultimatemsg = false;
   p->damagecount   = 0;
   p->bonuscount    = 0;
+  p->chickenTics   = 0;
+  p->rain1         = NULL;
+  p->rain2         = NULL;
   p->extralight    = 0;
   p->fixedcolormap = 0;
   p->viewheight    = VIEWHEIGHT;
@@ -1474,7 +1479,20 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   if (deathmatch)
     for (i = 0 ; i < NUMCARDS ; i++)
       p->cards[i] = true;
+      // HERETIC_TODO: statbar stuff in this loop
+      // if (p == &players[consoleplayer])
+      // {
+      //     playerkeys = 7;
+      //     UpdateState |= I_STATBAR;
+      // }
+  // HERETIC_TODO: statbar stuff if not deathmatch
+  // else if (p == &players[consoleplayer])
+  // {
+  //     playerkeys = 0;
+  //     UpdateState |= I_STATBAR;
+  // }
 
+  // HERETIC_TODO: doom hud stuff to skip
   if (mthing->type-1 == consoleplayer)
     {
     ST_Start(); // wake up the status bar
