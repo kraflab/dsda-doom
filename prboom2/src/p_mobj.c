@@ -938,6 +938,24 @@ static void P_NightmareRespawn(mobj_t* mobj)
   P_RemoveMobj (mobj);
 }
 
+static fixed_t FloatBobOffsets[64] = {
+    0, 51389, 102283, 152192,
+    200636, 247147, 291278, 332604,
+    370727, 405280, 435929, 462380,
+    484378, 501712, 514213, 521763,
+    524287, 521763, 514213, 501712,
+    484378, 462380, 435929, 405280,
+    370727, 332604, 291278, 247147,
+    200636, 152192, 102283, 51389,
+    -1, -51390, -102284, -152193,
+    -200637, -247148, -291279, -332605,
+    -370728, -405281, -435930, -462381,
+    -484380, -501713, -514215, -521764,
+    -524288, -521764, -514214, -501713,
+    -484379, -462381, -435930, -405280,
+    -370728, -332605, -291279, -247148,
+    -200637, -152193, -102284, -51389
+};
 
 //
 // P_MobjThinker
@@ -963,50 +981,87 @@ void P_MobjThinker (mobj_t* mobj)
 
   // momentum movement
   if (mobj->momx | mobj->momy || mobj->flags & MF_SKULLFLY)
+  {
+    P_XYMovement(mobj);
+    if (mobj->thinker.function != P_MobjThinker) // cph - Must've been removed
+      return;       // killough - mobj was removed
+  }
+
+  if (mobj->flags2 & MF2_FLOATBOB)
+  {                           // Floating item bobbing motion
+      mobj->z = mobj->floorz + FloatBobOffsets[(mobj->health++) & 63];
+  }
+  else if (mobj->z != mobj->floorz || mobj->momz)
+  {
+    if (mobj->flags2 & MF2_PASSMOBJ)
     {
-      P_XYMovement(mobj);
-      if (mobj->thinker.function != P_MobjThinker) // cph - Must've been removed
-  return;       // killough - mobj was removed
-    }
+      mobj_t *onmo;
 
-  if (mobj->z != mobj->floorz || mobj->momz)
-    {
-      P_ZMovement(mobj);
-      if (mobj->thinker.function != P_MobjThinker) // cph - Must've been removed
-  return;       // killough - mobj was removed
-    }
-  else
-    if (!(mobj->momx | mobj->momy) && !sentient(mobj))
-      {                                  // non-sentient objects at rest
-  mobj->intflags |= MIF_ARMED;     // arm a mine which has come to rest
-
-  // killough 9/12/98: objects fall off ledges if they are hanging off
-  // slightly push off of ledge if hanging more than halfway off
-
-  if (mobj->z > mobj->dropoffz &&      // Only objects contacting dropoff
-      !(mobj->flags & MF_NOGRAVITY) && // Only objects which fall
-      !comp[comp_falloff]) // Not in old demos
-    P_ApplyTorque(mobj);               // Apply torque
-  else
-    mobj->intflags &= ~MIF_FALLING, mobj->gear = 0;  // Reset torque
+      if (!(onmo = P_CheckOnmobj(mobj)))
+      {
+          P_ZMovement(mobj);
       }
+      else
+      {
+          if (mobj->player && mobj->momz < 0)
+          {
+              mobj->flags2 |= MF2_ONMOBJ;
+              mobj->momz = 0;
+          }
+          if (mobj->player && (onmo->player || onmo->type == HERETIC_MT_POD))
+          {
+              mobj->momx = onmo->momx;
+              mobj->momy = onmo->momy;
+              if (onmo->z < onmo->floorz)
+              {
+                  mobj->z += onmo->floorz - onmo->z;
+                  if (onmo->player)
+                  {
+                      onmo->player->viewheight -=
+                          onmo->floorz - onmo->z;
+                      onmo->player->deltaviewheight =
+                          (VIEWHEIGHT - onmo->player->viewheight) >> 3;
+                  }
+                  onmo->z = onmo->floorz;
+              }
+          }
+      }
+    }
+    else
+      P_ZMovement(mobj);
+    if (mobj->thinker.function != P_MobjThinker) // cph - Must've been removed
+      return;       // killough - mobj was removed
+  }
+  // HERETIC_TODO: are the intflags irrelevant when compatibility is enabled?
+  else if (!heretic && !(mobj->momx | mobj->momy) && !sentient(mobj))
+  {                                  // non-sentient objects at rest
+    mobj->intflags |= MIF_ARMED;     // arm a mine which has come to rest
+
+    // killough 9/12/98: objects fall off ledges if they are hanging off
+    // slightly push off of ledge if hanging more than halfway off
+
+    if (mobj->z > mobj->dropoffz &&      // Only objects contacting dropoff
+        !(mobj->flags & MF_NOGRAVITY) && // Only objects which fall
+        !comp[comp_falloff]) // Not in old demos
+      P_ApplyTorque(mobj);               // Apply torque
+    else
+      mobj->intflags &= ~MIF_FALLING, mobj->gear = 0;  // Reset torque
+  }
 
   // cycle through states,
   // calling action functions at transitions
-
   if (mobj->tics != -1)
-    {
+  {
     mobj->tics--;
 
     // you can cycle through multiple states in a tic
 
     if (!mobj->tics)
-      if (!P_SetMobjState (mobj, mobj->state->nextstate) )
+      if (!P_SetMobjState(mobj, mobj->state->nextstate))
         return;     // freed itself
-    }
+  }
   else
-    {
-
+  {
     // check for nightmare respawn
 
     if (! (mobj->flags & MF_COUNTKILL) )
@@ -1017,18 +1072,17 @@ void P_MobjThinker (mobj_t* mobj)
 
     mobj->movecount++;
 
-    if (mobj->movecount < 12*35)
+    if (mobj->movecount < 12 * 35)
       return;
 
     if (leveltime & 31)
       return;
 
-    if (P_Random (pr_respawn) > 4)
+    if (P_Random(pr_respawn) > 4)
       return;
 
     P_NightmareRespawn (mobj);
-    }
-
+  }
 }
 
 

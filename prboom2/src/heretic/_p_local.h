@@ -34,23 +34,8 @@
 #define	MAXHEALTH 100
 #define	VIEWHEIGHT (41*FRACUNIT)
 
-// mapblocks are used to check movement against lines and things
-#define MAPBLOCKUNITS	128
-#define	MAPBLOCKSIZE	(MAPBLOCKUNITS*FRACUNIT)
-#define	MAPBLOCKSHIFT	(FRACBITS+7)
-#define	MAPBMASK		(MAPBLOCKSIZE-1)
-#define	MAPBTOFRAC		(MAPBLOCKSHIFT-FRACBITS)
-
 // player radius for movement checking
 #define PLAYERRADIUS 16*FRACUNIT
-
-// MAXRADIUS is for precalculated sector block boxes
-// the spider demon is larger, but we don't have any moving sectors
-// nearby
-#define MAXRADIUS 32*FRACUNIT
-
-#define	GRAVITY FRACUNIT
-#define	MAXMOVE (30*FRACUNIT)
 
 #define	USERANGE (64*FRACUNIT)
 #define	MELEERANGE (64*FRACUNIT)
@@ -137,8 +122,6 @@ extern fixed_t tmfloorz, tmceilingz;    // within tmfloorz - tmceilingz
 
 extern line_t *ceilingline;
 boolean P_CheckPosition(mobj_t * thing, fixed_t x, fixed_t y);
-mobj_t *P_CheckOnmobj(mobj_t * thing);
-void P_FakeZMovement(mobj_t * mo);
 boolean P_TryMove(mobj_t * thing, fixed_t x, fixed_t y);
 boolean P_TeleportMove(mobj_t * thing, fixed_t x, fixed_t y);
 void P_SlideMove(mobj_t * mo);

@@ -100,5 +100,7 @@ extern line_t *blockline;   // killough 8/11/98
 // heretic
 
 dboolean P_TestMobjLocation(mobj_t * mobj);
+mobj_t *P_CheckOnmobj(mobj_t * thing);
+void P_FakeZMovement(mobj_t * mo);
 
 #endif // __P_MAP__
