@@ -147,13 +147,6 @@ extern int bmapwidth, bmapheight;       // in mapblocks
 extern fixed_t bmaporgx, bmaporgy;      // origin of block map
 extern mobj_t **blocklinks;     // for thing chains
 
-// ***** P_INTER *****
-
-extern int maxammo[NUMAMMO];
-
-void P_DamageMobj(mobj_t * target, mobj_t * inflictor, mobj_t * source,
-                  int damage);
-
 // ***** AM_MAP *****
 
 boolean AM_Responder(event_t * ev);
