@@ -27,7 +27,7 @@
 - [x] m_random.h 38
 - [ ] mn_menu.c 2014
 - [x] p_action.h 152
-- [ ] p_ceiling.c 256
+- [x] p_ceiling.c 256
 - [ ] p_doors.c 380
 - [x] p_enemy.c 2715
 - [ ] p_floor.c 466
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-17406 / 47214 = 36%
+17662 / 47214 = 37%
