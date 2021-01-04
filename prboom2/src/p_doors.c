@@ -440,16 +440,18 @@ manual_door://e6y
         break;
 
       case closeDoor:
+      case vld_close:
         door->topheight = P_FindLowestCeilingSurrounding(sec);
         door->topheight -= 4*FRACUNIT;
         door->direction = -1;
-        S_StartSound((mobj_t *)&door->sector->soundorg,sfx_dorcls);
+        S_StartSound((mobj_t *)&door->sector->soundorg,g_sfx_dorcls);
         break;
 
       case close30ThenOpen:
+      case vld_close30ThenOpen:
         door->topheight = sec->ceilingheight;
         door->direction = -1;
-        S_StartSound((mobj_t *)&door->sector->soundorg,sfx_dorcls);
+        S_StartSound((mobj_t *)&door->sector->soundorg,g_sfx_dorcls);
         break;
 
       case blazeRaise:
@@ -464,11 +466,13 @@ manual_door://e6y
 
       case normal:
       case openDoor:
+      case vld_normal:
+      case vld_open:
         door->direction = 1;
         door->topheight = P_FindLowestCeilingSurrounding(sec);
         door->topheight -= 4*FRACUNIT;
         if (door->topheight != sec->ceilingheight)
-          S_StartSound((mobj_t *)&door->sector->soundorg,sfx_doropn);
+          S_StartSound((mobj_t *)&door->sector->soundorg,g_sfx_doropn);
         break;
 
       default:
