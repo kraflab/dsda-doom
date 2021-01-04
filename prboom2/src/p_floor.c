@@ -113,14 +113,14 @@ result_e T_MovePlane
             lastpos = sector->floorheight;
             sector->floorheight -= speed;
             flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
-      /* cph - make more compatible with original Doom, by
-       *  reintroducing this code. This means floors can't lower
-       *  if objects are stuck in the ceiling */
-      if ((flag == true) && comp[comp_floors]) {
-        sector->floorheight = lastpos;
-        P_ChangeSector(sector,crush);
-        return crushed;
-      }
+            /* cph - make more compatible with original Doom, by
+             *  reintroducing this code. This means floors can't lower
+             *  if objects are stuck in the ceiling */
+            if ((flag == true) && (heretic || comp[comp_floors])) {
+              sector->floorheight = lastpos;
+              P_ChangeSector(sector,crush);
+              return crushed;
+            }
           }
           break;
 
@@ -128,7 +128,7 @@ result_e T_MovePlane
           // Moving a floor up
           // jff 02/04/98 keep floor from moving thru ceilings
           // jff 2/22/98 weaken check to demo_compatibility
-          destheight = (comp[comp_floors] || dest<sector->ceilingheight)?
+          destheight = (heretic || comp[comp_floors] || dest<sector->ceilingheight)?
                           dest : sector->ceilingheight;
           if (sector->floorheight + speed > destheight)
           {
@@ -151,7 +151,7 @@ result_e T_MovePlane
             if (flag == true)
             {
         /* jff 1/25/98 fix floor crusher */
-              if (comp[comp_floors]) {
+              if (heretic || comp[comp_floors]) {
                 
                 //e6y: warning about potential desynch
                 if (crush == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
@@ -180,7 +180,7 @@ result_e T_MovePlane
           // moving a ceiling down
           // jff 02/04/98 keep ceiling from moving thru floors
           // jff 2/22/98 weaken check to demo_compatibility
-          destheight = (comp[comp_floors] || dest>sector->floorheight)?
+          destheight = (heretic || comp[comp_floors] || dest>sector->floorheight)?
                           dest : sector->floorheight;
           if (sector->ceilingheight - speed < destheight)
           {
