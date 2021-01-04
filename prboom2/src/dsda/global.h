@@ -40,6 +40,7 @@ extern int g_s_play;
 extern int g_sfx_telept;
 extern int g_sfx_sawup;
 extern int g_sfx_stnmov;
+extern int g_sfx_swtchn;
 
 extern dboolean heretic;
 

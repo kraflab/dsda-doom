@@ -405,6 +405,13 @@ typedef enum
   genBlazeClose,
   genCdO,
   genBlazeCdO,
+
+  // heretic
+  vld_normal,
+  vld_close30ThenOpen,
+  vld_close,
+  vld_open,
+  vld_raiseIn5Mins
 } vldoor_e;
 
 // p_ceilng
@@ -1174,5 +1181,6 @@ void P_AmbientSound(void);
 void P_AddAmbientSfx(int sequence);
 dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle);
 dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing);
+dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dboolean bossaction);
 
 #endif

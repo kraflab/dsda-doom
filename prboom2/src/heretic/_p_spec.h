@@ -202,30 +202,6 @@ void P_ActivateInStasis(int tag);
 
 ===============================================================================
 */
-typedef enum
-{
-    vld_normal,
-    vld_close30ThenOpen,
-    vld_close,
-    vld_open,
-    vld_raiseIn5Mins
-} vldoor_e;
-
-typedef struct
-{
-    thinker_t thinker;
-    vldoor_e type;
-    sector_t *sector;
-    fixed_t topheight;
-    fixed_t speed;
-    int direction;              // 1 = up, 0 = waiting at top, -1 = down
-    int topwait;                // tics to wait at the top
-    // (keep in case a door going down is reset)
-    int topcountdown;           // when it reaches 0, start going down
-} vldoor_t;
-
-#define	VDOORSPEED	FRACUNIT*2
-#define	VDOORWAIT		150
 
 void EV_VerticalDoor(line_t * line, mobj_t * thing);
 int EV_DoDoor(line_t * line, vldoor_e type, fixed_t speed);

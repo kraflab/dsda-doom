@@ -69,25 +69,6 @@ typedef PACKED_STRUCT (
     short sidenum[2];           // sidenum[1] will be -1 if one sided
 }) maplinedef_t;
 
-#define	ML_BLOCKING			1
-#define	ML_BLOCKMONSTERS	2
-#define	ML_TWOSIDED			4       // backside will not be present at all
-                                                                        // if not two sided
-
-// if a texture is pegged, the texture will have the end exposed to air held
-// constant at the top or bottom of the texture (stairs or pulled down things)
-// and will move with a height change of one of the neighbor sectors
-// Unpegged textures allways have the first row of the texture at the top
-// pixel of the line for both top and bottom textures (windows)
-#define	ML_DONTPEGTOP		8
-#define	ML_DONTPEGBOTTOM	16
-
-#define ML_SECRET			32      // don't map as two sided: IT'S A SECRET!
-#define ML_SOUNDBLOCK		64      // don't let sound cross two of these
-#define	ML_DONTDRAW			128     // don't draw on the automap
-#define	ML_MAPPED			256     // set if allready drawn in automap
-
-
 typedef PACKED_STRUCT (
 {
     short floorheight, ceilingheight;
