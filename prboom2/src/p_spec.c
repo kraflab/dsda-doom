@@ -780,7 +780,8 @@ sector_t *P_FindModelFloorSector(fixed_t floordestheight,int secnum)
       else
           sec = getSector(secnum,i,0);
 
-      if (sec->floorheight == floordestheight)
+      // HERETIC_TODO: is it correct?
+      if (heretic || sec->floorheight == floordestheight)
         return sec;
     }
   }

@@ -304,7 +304,7 @@ void T_MoveFloor(floormove_t* floor)
         case lowerAndChange:
           floor->sector->special = floor->newspecial;
           //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial; // HERETIC_TODO: not in heretic
+          floor->sector->oldspecial = floor->oldspecial; // HERETIC_TODO: here and elsewhere, not in heretic
           floor->sector->floorpic = floor->texture;
           break;
         case genFloorChgT:
@@ -529,7 +529,7 @@ manual_floor://e6y
         floor->sector = sec;
         floor->speed = FLOORSPEED * 4;
         floor->floordestheight = P_FindHighestFloorSurrounding(sec);
-        if (compatibility_level == doom_12_compatibility ||
+        if (heretic || compatibility_level == doom_12_compatibility ||
             floor->floordestheight != sec->floorheight)
           floor->floordestheight += 8*FRACUNIT;
         break;
@@ -600,7 +600,7 @@ manual_floor://e6y
           side_t*     side;
 
     /* jff 3/13/98 no ovf */
-          if (!comp[comp_model]) minsize = 32000<<FRACBITS;
+          if (!heretic && !comp[comp_model]) minsize = 32000<<FRACBITS;
           floor->direction = 1;
           floor->sector = sec;
           floor->speed = FLOORSPEED;
@@ -611,18 +611,18 @@ manual_floor://e6y
               side = getSide(secnum,i,0);
               // jff 8/14/98 don't scan texture 0, its not real
               if (side->bottomtexture > 0 ||
-                  (comp[comp_model] && !side->bottomtexture))
+                  ((heretic || comp[comp_model]) && !side->bottomtexture))
                 if (textureheight[side->bottomtexture] < minsize)
                   minsize = textureheight[side->bottomtexture];
               side = getSide(secnum,i,1);
               // jff 8/14/98 don't scan texture 0, its not real
               if (side->bottomtexture > 0 ||
-                  (comp[comp_model] && !side->bottomtexture))
+                  ((heretic || comp[comp_model]) && !side->bottomtexture))
                 if (textureheight[side->bottomtexture] < minsize)
                   minsize = textureheight[side->bottomtexture];
             }
           }
-          if (comp[comp_model])
+          if (heretic || comp[comp_model])
             floor->floordestheight = floor->sector->floorheight + minsize;
           else
           {
