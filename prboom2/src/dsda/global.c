@@ -68,6 +68,8 @@ int g_sfx_sawup;
 int g_sfx_telept;
 int g_sfx_stnmov;
 int g_sfx_swtchn;
+int g_sfx_dorcls;
+int g_sfx_doropn;
 
 extern const char** S_music_files;
 
@@ -135,6 +137,8 @@ static void dsda_InitDoom(void) {
   g_sfx_telept = sfx_telept;
   g_sfx_stnmov = sfx_stnmov;
   g_sfx_swtchn = sfx_swtchn;
+  g_sfx_dorcls = sfx_dorcls;
+  g_sfx_doropn = sfx_doropn;
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -203,6 +207,8 @@ static void dsda_InitHeretic(void) {
   g_sfx_telept = heretic_sfx_telept;
   g_sfx_stnmov = heretic_sfx_dormov;
   g_sfx_swtchn = heretic_sfx_switch;
+  g_sfx_dorcls = heretic_sfx_doropn;
+  g_sfx_doropn = heretic_sfx_doropn;
   
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {

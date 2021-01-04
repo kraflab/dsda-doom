@@ -79,14 +79,16 @@ void T_VerticalDoor (vldoor_t* door)
 
           case normal:
           case genRaise:
+          case vld_normal:
             door->direction = -1; // time to go back down
-            S_StartSound((mobj_t *)&door->sector->soundorg,sfx_dorcls);
+            S_StartSound((mobj_t *)&door->sector->soundorg,g_sfx_dorcls);
             break;
 
           case close30ThenOpen:
           case genCdO:
+          case vld_close30ThenOpen:
             door->direction = 1;  // time to go back up
-            S_StartSound((mobj_t *)&door->sector->soundorg,sfx_doropn);
+            S_StartSound((mobj_t *)&door->sector->soundorg,g_sfx_doropn);
             break;
 
           case genBlazeCdO:
@@ -107,9 +109,10 @@ void T_VerticalDoor (vldoor_t* door)
         switch(door->type)
         {
           case raiseIn5Mins:
+          case vld_raiseIn5Mins:
             door->direction = 1;  // time to raise then
-            door->type = normal;  // door acts just like normal 1 DR door now
-            S_StartSound((mobj_t *)&door->sector->soundorg,sfx_doropn);
+            door->type = (door->type == raiseIn5Mins ? normal : vld_normal); // door acts just like normal 1 DR door now
+            S_StartSound((mobj_t *)&door->sector->soundorg,g_sfx_doropn);
             break;
 
           default:
@@ -134,7 +137,12 @@ void T_VerticalDoor (vldoor_t* door)
       // e6y: "Tagged doors don't trigger special lighting" handled wrong
       // http://sourceforge.net/tracker/index.php?func=detail&aid=1411400&group_id=148658&atid=772943
       // Old code: if (door->lighttag && door->topheight - door->sector->floorheight)
-      if (door->lighttag && door->topheight - door->sector->floorheight && compatibility_level >= mbf_compatibility)
+      if (
+        !heretic &&
+        door->lighttag &&
+        door->topheight - door->sector->floorheight &&
+        compatibility_level >= mbf_compatibility
+      )
         EV_LightTurnOnPartway(door->line,
                               FixedDiv(door->sector->ceilingheight -
                                        door->sector->floorheight,
@@ -166,8 +174,16 @@ void T_VerticalDoor (vldoor_t* door)
             P_RemoveThinker (&door->thinker);  // unlink and free
             break;
 
+          case vld_normal:
+          case vld_close:
+            door->sector->ceilingdata = NULL;
+            P_RemoveThinker(&door->thinker);        // unlink and free
+            S_StartSound((mobj_t *)&door->sector->soundorg, g_sfx_dorcls);
+            break;
+
           // close then open doors start waiting
           case close30ThenOpen:
+          case vld_close30ThenOpen:
             door->direction = 0;
             door->topcountdown = TICRATE*30;
             break;
@@ -183,7 +199,12 @@ void T_VerticalDoor (vldoor_t* door)
         }
         // e6y: "Tagged doors don't trigger special lighting" handled wrong
         // http://sourceforge.net/tracker/index.php?func=detail&aid=1411400&group_id=148658&atid=772943
-        if (door->lighttag && door->topheight - door->sector->floorheight && compatibility_level < mbf_compatibility)
+        if (
+          !heretic &&
+          door->lighttag &&
+          door->topheight - door->sector->floorheight &&
+          compatibility_level < mbf_compatibility
+        )
           EV_LightTurnOnPartway(door->line,0);
       }
       /* jff 1/31/98 turn lighting off in tagged sectors of manual doors
@@ -196,21 +217,22 @@ void T_VerticalDoor (vldoor_t* door)
           case genClose:
           case genBlazeClose:
           case blazeClose:
-          case closeDoor:      // Close types do not bounce, merely wait
+          case closeDoor:
+          case vld_close:      // Close types do not bounce, merely wait
             break;
 
           case blazeRaise:
           case genBlazeRaise:
             door->direction = 1;
-	    if (!comp[comp_blazing]) {
-	      S_StartSound((mobj_t *)&door->sector->soundorg,sfx_bdopn);
-	      break;
-	    }
-	    // fallthrough
+      	    if (!comp[comp_blazing]) {
+      	      S_StartSound((mobj_t *)&door->sector->soundorg,sfx_bdopn);
+      	      break;
+      	    }
+	          // fallthrough
 
           default:             // other types bounce off the obstruction
             door->direction = 1;
-            S_StartSound((mobj_t *)&door->sector->soundorg,sfx_doropn);
+            S_StartSound((mobj_t *)&door->sector->soundorg,g_sfx_doropn);
             break;
         }
       }
@@ -232,7 +254,12 @@ void T_VerticalDoor (vldoor_t* door)
       // e6y: "Tagged doors don't trigger special lighting" handled wrong
       // http://sourceforge.net/tracker/index.php?func=detail&aid=1411400&group_id=148658&atid=772943
       // Old code: if (door->lighttag && door->topheight - door->sector->floorheight)
-      if (door->lighttag && door->topheight - door->sector->floorheight && compatibility_level >= mbf_compatibility)
+      if (
+        !heretic &&
+        door->lighttag &&
+        door->topheight - door->sector->floorheight &&
+        compatibility_level >= mbf_compatibility
+      )
         EV_LightTurnOnPartway(door->line,
                               FixedDiv(door->sector->ceilingheight -
                                        door->sector->floorheight,
@@ -248,6 +275,7 @@ void T_VerticalDoor (vldoor_t* door)
           case normal:
           case genRaise:
           case genBlazeRaise:
+          case vld_normal:
             door->direction = 0; // wait at top with delay
             door->topcountdown = door->topwait;
             break;
@@ -263,6 +291,13 @@ void T_VerticalDoor (vldoor_t* door)
             P_RemoveThinker (&door->thinker); // unlink and free
             break;
 
+          case vld_close30ThenOpen:
+          case vld_open:
+            door->sector->ceilingdata = NULL;
+            P_RemoveThinker(&door->thinker);        // unlink and free
+            S_StopSound(&door->sector->soundorg);
+            break;
+
           default:
             break;
         }
@@ -271,7 +306,12 @@ void T_VerticalDoor (vldoor_t* door)
    * killough 10/98: replaced with gradual lighting code */
         // e6y: "Tagged doors don't trigger special lighting" handled wrong
         // http://sourceforge.net/tracker/index.php?func=detail&aid=1411400&group_id=148658&atid=772943
-        if (door->lighttag && door->topheight - door->sector->floorheight && compatibility_level < mbf_compatibility)
+        if (
+          !heretic &&
+          door->lighttag &&
+          door->topheight - door->sector->floorheight &&
+          compatibility_level < mbf_compatibility
+        )
           EV_LightTurnOnPartway(door->line,FRACUNIT);
       }
       break;

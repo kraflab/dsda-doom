@@ -194,17 +194,3 @@ void P_AddActivePlat(plat_t * plat);
 void P_RemoveActivePlat(plat_t * plat);
 void EV_StopPlat(line_t * line);
 void P_ActivateInStasis(int tag);
-
-/*
-===============================================================================
-
-							P_DOORS
-
-===============================================================================
-*/
-
-void EV_VerticalDoor(line_t * line, mobj_t * thing);
-int EV_DoDoor(line_t * line, vldoor_e type, fixed_t speed);
-void T_VerticalDoor(vldoor_t * door);
-void P_SpawnDoorCloseIn30(sector_t * sec);
-void P_SpawnDoorRaiseIn5Mins(sector_t * sec, int secnum);

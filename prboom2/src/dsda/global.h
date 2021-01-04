@@ -41,6 +41,8 @@ extern int g_sfx_telept;
 extern int g_sfx_sawup;
 extern int g_sfx_stnmov;
 extern int g_sfx_swtchn;
+extern int g_sfx_dorcls;
+extern int g_sfx_doropn;
 
 extern dboolean heretic;
 
