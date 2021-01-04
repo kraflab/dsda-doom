@@ -494,8 +494,11 @@ typedef enum
 typedef enum
 {
   build8, // slowly build by 8
-  turbo16 // quickly build by 16
+  turbo16, // quickly build by 16
 
+  // heretic
+  heretic_build8,
+  heretic_turbo16
 } stair_e;
 
 typedef enum
@@ -1163,16 +1166,6 @@ int P_ActivateInStasisCeiling
 mobj_t* P_GetPushThing(int);                                // phares 3/23/98
 
 // heretic
-
-// Here for reference
-// typedef enum
-// {
-//     lowerToFloor,
-//     raiseToHighest,
-//     lowerAndCrush,
-//     crushAndRaise,
-//     fastCrushAndRaise
-// } ceiling_e;
 
 extern int *TerrainTypes;
 

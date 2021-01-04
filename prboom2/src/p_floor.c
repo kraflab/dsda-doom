@@ -781,6 +781,7 @@ manual_stair://e6y
     int           texture, height;
     fixed_t       stairsize;
     fixed_t       speed;
+    dboolean      crush;
     int           ok;
 
     // create new floor thinker for first step
@@ -802,7 +803,7 @@ manual_stair://e6y
         speed = FLOORSPEED/4;
         stairsize = 8*FRACUNIT;
         if (!demo_compatibility)
-          floor->crush = false; //jff 2/27/98 fix uninitialized crush field
+          crush = false; //jff 2/27/98 fix uninitialized crush field
         // e6y
         // Uninitialized crush field will not be equal to 0 or 1 (true)
         // with high probability. So, initialize it with any other value
@@ -812,7 +813,7 @@ manual_stair://e6y
         else
         {
           if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            floor->crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
+            crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
         }
 
         break;
@@ -820,19 +821,32 @@ manual_stair://e6y
         speed = FLOORSPEED*4;
         stairsize = 16*FRACUNIT;
         if (!demo_compatibility)
-          floor->crush = true;  //jff 2/27/98 fix uninitialized crush field
+          crush = true;  //jff 2/27/98 fix uninitialized crush field
         // e6y
         // Uninitialized crush field will not be equal to 0 or 1 (true)
         // with high probability. So, initialize it with any other value
         else
         {
           if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            floor->crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
+            crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
         }
+
+        break;
+      case heretic_build8:
+        speed = FLOORSPEED;
+        stairsize = 8 * FRACUNIT;
+        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // HERETIC_TODO: I guess
+
+        break;
+      case heretic_turbo16:
+        speed = FLOORSPEED;
+        stairsize = 16 * FRACUNIT;
+        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // HERETIC_TODO: I guess
 
         break;
     }
     floor->speed = speed;
+    floor->crush = crush;
     height = sec->floorheight + stairsize;
     floor->floordestheight = height;
 
@@ -854,6 +868,7 @@ manual_stair://e6y
         if ( !((sec->lines[i])->flags & ML_TWOSIDED) )
           continue;
 
+        // HERETIC_TODO: heretic does `tsec - sectors`
         newsecnum = tsec->iSectorID;
 
         if (secnum != newsecnum)
@@ -872,7 +887,7 @@ manual_stair://e6y
    * cph 2001/02/06: stair bug fix should be controlled by comp_stairs,
    *  except if we're emulating MBF which perversly reverted the fix
    */
-        if (comp[comp_stairs] || (compatibility_level == mbf_compatibility))
+        if (heretic || comp[comp_stairs] || (compatibility_level == mbf_compatibility))
           height += stairsize; // jff 6/28/98 change demo compatibility
 
         // if sector's floor already moving, look for another
@@ -880,7 +895,7 @@ manual_stair://e6y
           continue;
 
   /* cph - see comment above - do this iff we didn't do so above */
-        if (!comp[comp_stairs] && (compatibility_level != mbf_compatibility))
+        if (!heretic && !comp[comp_stairs] && (compatibility_level != mbf_compatibility))
           height += stairsize;
 
         sec = tsec;
@@ -898,17 +913,7 @@ manual_stair://e6y
         floor->speed = speed;
         floor->floordestheight = height;
         floor->type = buildStair; //jff 3/31/98 do not leave uninited
-        //jff 2/27/98 fix uninitialized crush field
-        if (!demo_compatibility)
-          floor->crush = type==build8? false : true;
-        // e6y
-        // Uninitialized crush field will not be equal to 0 or 1 (true)
-        // with high probability. So, initialize it with any other value
-        else
-        {
-          if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            floor->crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
-        }
+        floor->crush = crush; //jff 2/27/98 fix uninitialized crush field
 
         ok = 1;
         break;
