@@ -44,6 +44,9 @@ extern int g_sfx_swtchn;
 extern int g_sfx_dorcls;
 extern int g_sfx_doropn;
 
+extern int g_door_normal;
+extern int g_door_raise_in_5_mins;
+
 extern dboolean heretic;
 
 void dsda_InitGlobal(void);

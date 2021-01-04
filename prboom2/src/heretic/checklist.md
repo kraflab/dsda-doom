@@ -28,7 +28,7 @@
 - [ ] mn_menu.c 2014
 - [x] p_action.h 152
 - [x] p_ceiling.c 256
-- [ ] p_doors.c 380
+- [x] p_doors.c 380
 - [x] p_enemy.c 2715
 - [x] p_floor.c 466
 - [x] p_inter.c 1502
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-18538 / 47214 = 39%
+18918 / 47214 = 40%

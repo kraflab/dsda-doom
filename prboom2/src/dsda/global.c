@@ -22,6 +22,7 @@
 #include "info.h"
 #include "d_items.h"
 #include "p_inter.h"
+#include "p_spec.h"
 #include "sounds.h"
 #include "heretic/def.h"
 
@@ -70,6 +71,9 @@ int g_sfx_stnmov;
 int g_sfx_swtchn;
 int g_sfx_dorcls;
 int g_sfx_doropn;
+
+int g_door_normal;
+int g_door_raise_in_5_mins;
 
 extern const char** S_music_files;
 
@@ -140,6 +144,9 @@ static void dsda_InitDoom(void) {
   g_sfx_dorcls = sfx_dorcls;
   g_sfx_doropn = sfx_doropn;
 
+  g_door_normal = normal;
+  g_door_raise_in_5_mins = raiseIn5Mins;
+
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
     mobjinfo_p = &doom_mobjinfo[i];
@@ -209,6 +216,9 @@ static void dsda_InitHeretic(void) {
   g_sfx_swtchn = heretic_sfx_switch;
   g_sfx_dorcls = heretic_sfx_doropn;
   g_sfx_doropn = heretic_sfx_doropn;
+  
+  g_door_normal = vld_normal;
+  g_door_raise_in_5_mins = vld_raiseIn5Mins;
   
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {
