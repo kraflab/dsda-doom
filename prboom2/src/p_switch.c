@@ -48,8 +48,9 @@
 //
 //==================================================================
 const switchlist_t heretic_alphSwitchList[] = {
-  {"SW1OFF", "SW1ON", 1},
-  {"SW2OFF", "SW2ON", 1}
+  { "SW1OFF", "SW1ON", 1 },
+  { "SW2OFF", "SW2ON", 1 },
+  { "",        "",     0 }
 };
 
 // killough 2/8/98: Remove switch limit
