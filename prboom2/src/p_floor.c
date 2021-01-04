@@ -268,10 +268,14 @@ void T_MoveFloor(floormove_t* floor)
   );
 
   if (!(leveltime&7))     // make the floormove sound
-    S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_stnmov);
+    S_StartSound((mobj_t *)&floor->sector->soundorg, g_sfx_stnmov);
 
   if (res == pastdest)    // if destination height is reached
   {
+    if (heretic && floor->type == buildStair)
+    {
+        S_StartSound(&floor->sector->soundorg, heretic_sfx_pstop);
+    }
     if (floor->direction == 1)       // going up
     {
       switch(floor->type) // handle texture/type changes
@@ -300,7 +304,7 @@ void T_MoveFloor(floormove_t* floor)
         case lowerAndChange:
           floor->sector->special = floor->newspecial;
           //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial;
+          floor->sector->oldspecial = floor->oldspecial; // HERETIC_TODO: not in heretic
           floor->sector->floorpic = floor->texture;
           break;
         case genFloorChgT:
@@ -349,7 +353,7 @@ void T_MoveFloor(floormove_t* floor)
 
     // Moving floors (but not plats) in versions <= v1.2 did not
     // make floor stop sound
-    if (compatibility_level > doom_12_compatibility)
+    if (!heretic && compatibility_level > doom_12_compatibility)
         S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
   }
 }
