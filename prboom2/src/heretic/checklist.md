@@ -44,7 +44,7 @@
 - [ ] p_sight.c 357
 - [ ] p_spec.c 1358
 - [ ] p_spec.h 391
-- [ ] p_switch.c 410
+- [x] p_switch.c 410
 - [x] p_telept.c 165
 - [x] p_tick.c 168
 - [x] p_user.c 1046
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-18128 / 47214 = 38%
+18538 / 47214 = 39%
