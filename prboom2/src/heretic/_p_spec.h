@@ -146,45 +146,6 @@ void P_SpawnGlowingLight(sector_t * sector);
 /*
 ===============================================================================
 
-							P_SWITCH
-
-===============================================================================
-*/
-typedef struct
-{
-    char name1[9];
-    char name2[9];
-    short episode;
-} switchlist_t;
-
-typedef enum
-{
-    top,
-    middle,
-    bottom
-} bwhere_e;
-
-typedef struct
-{
-    line_t *line;
-    bwhere_e where;
-    int btexture;
-    int btimer;
-    void *soundorg;
-} button_t;
-
-#define	MAXSWITCHES	50      // max # of wall switches in a level
-#define	MAXBUTTONS	16      // 4 players, 4 buttons each at once, max.
-#define BUTTONTIME	35      // 1 second
-
-extern button_t buttonlist[MAXBUTTONS];
-
-void P_ChangeSwitchTexture(line_t * line, int useAgain);
-void P_InitSwitchList(void);
-
-/*
-===============================================================================
-
 							P_PLATS
 
 ===============================================================================
