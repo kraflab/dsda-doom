@@ -30,7 +30,7 @@
 - [x] p_ceiling.c 256
 - [ ] p_doors.c 380
 - [x] p_enemy.c 2715
-- [ ] p_floor.c 466
+- [x] p_floor.c 466
 - [x] p_inter.c 1502
 - [ ] p_lights.c 275
 - [ ] p_local.h 282
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-17662 / 47214 = 37%
+18128 / 47214 = 38%
