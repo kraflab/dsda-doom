@@ -68,9 +68,12 @@ int g_s_play;
 int g_sfx_sawup;
 int g_sfx_telept;
 int g_sfx_stnmov;
+int g_sfx_stnmov_plats;
 int g_sfx_swtchn;
 int g_sfx_dorcls;
 int g_sfx_doropn;
+int g_sfx_pstart;
+int g_sfx_pstop;
 
 int g_door_normal;
 int g_door_raise_in_5_mins;
@@ -140,9 +143,12 @@ static void dsda_InitDoom(void) {
   g_sfx_sawup = sfx_sawup;
   g_sfx_telept = sfx_telept;
   g_sfx_stnmov = sfx_stnmov;
+  g_sfx_stnmov_plats = sfx_stnmov;
   g_sfx_swtchn = sfx_swtchn;
   g_sfx_dorcls = sfx_dorcls;
   g_sfx_doropn = sfx_doropn;
+  g_sfx_pstart = sfx_pstart;
+  g_sfx_pstop = sfx_pstop;
 
   g_door_normal = normal;
   g_door_raise_in_5_mins = raiseIn5Mins;
@@ -213,9 +219,12 @@ static void dsda_InitHeretic(void) {
   g_sfx_sawup = heretic_sfx_gntact;
   g_sfx_telept = heretic_sfx_telept;
   g_sfx_stnmov = heretic_sfx_dormov;
+  g_sfx_stnmov_plats = heretic_sfx_stnmov;
   g_sfx_swtchn = heretic_sfx_switch;
   g_sfx_dorcls = heretic_sfx_doropn;
   g_sfx_doropn = heretic_sfx_doropn;
+  g_sfx_pstart = heretic_sfx_pstart;
+  g_sfx_pstop = heretic_sfx_pstop;
   
   g_door_normal = vld_normal;
   g_door_raise_in_5_mins = vld_raiseIn5Mins;

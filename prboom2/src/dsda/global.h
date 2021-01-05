@@ -40,9 +40,12 @@ extern int g_s_play;
 extern int g_sfx_telept;
 extern int g_sfx_sawup;
 extern int g_sfx_stnmov;
+extern int g_sfx_stnmov_plats;
 extern int g_sfx_swtchn;
 extern int g_sfx_dorcls;
 extern int g_sfx_doropn;
+extern int g_sfx_pstart;
+extern int g_sfx_pstop;
 
 extern int g_door_normal;
 extern int g_door_raise_in_5_mins;
