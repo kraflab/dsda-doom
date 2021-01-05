@@ -35,7 +35,7 @@
 - [x] p_lights.c 275
 - [ ] p_local.h 282
 - [ ] p_map.c 1714
-- [ ] p_maputl.c 799
+- [x] p_maputl.c 799
 - [x] p_mobj.c 1665
 - [x] p_plats.c 259
 - [x] p_pspr.c 1908
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-19809 / 47214 = 41%
+20608 / 47214 = 43%
