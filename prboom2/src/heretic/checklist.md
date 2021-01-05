@@ -32,7 +32,7 @@
 - [x] p_enemy.c 2715
 - [x] p_floor.c 466
 - [x] p_inter.c 1502
-- [ ] p_lights.c 275
+- [x] p_lights.c 275
 - [ ] p_local.h 282
 - [ ] p_map.c 1714
 - [ ] p_maputl.c 799
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-18918 / 47214 = 40%
+19193 / 47214 = 40%
