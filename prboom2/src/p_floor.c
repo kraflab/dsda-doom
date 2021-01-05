@@ -798,6 +798,7 @@ manual_stair://e6y
     floor->direction = 1;
     floor->sector = sec;
     floor->type = buildStair;   //jff 3/31/98 do not leave uninited
+    crush = floor->crush;
 
     // set up the speed and stepsize according to the stairs type
     switch(type)
