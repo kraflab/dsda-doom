@@ -762,6 +762,7 @@ void P_SpawnDoorRaiseIn5Mins
 
 // heretic
 
+#include "p_inter.h"
 #include "heretic/dstrings.h"
 
 void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing)
