@@ -93,59 +93,6 @@ int EV_DoDonut(line_t * line);
 /*
 ===============================================================================
 
-							P_LIGHTS
-
-===============================================================================
-*/
-typedef struct
-{
-    thinker_t thinker;
-    sector_t *sector;
-    int count;
-    int maxlight;
-    int minlight;
-    int maxtime;
-    int mintime;
-} lightflash_t;
-
-typedef struct
-{
-    thinker_t thinker;
-    sector_t *sector;
-    int count;
-    int minlight;
-    int maxlight;
-    int darktime;
-    int brighttime;
-} strobe_t;
-
-typedef struct
-{
-    thinker_t thinker;
-    sector_t *sector;
-    int minlight;
-    int maxlight;
-    int direction;
-} glow_t;
-
-#define GLOWSPEED		8
-#define	STROBEBRIGHT	5
-#define	FASTDARK		15
-#define	SLOWDARK		35
-
-void T_LightFlash(lightflash_t * flash);
-void P_SpawnLightFlash(sector_t * sector);
-void T_StrobeFlash(strobe_t * flash);
-void P_SpawnStrobeFlash(sector_t * sector, int fastOrSlow, int inSync);
-void EV_StartLightStrobing(line_t * line);
-void EV_TurnTagLightsOff(line_t * line);
-void EV_LightTurnOn(line_t * line, int bright);
-void T_Glow(glow_t * g);
-void P_SpawnGlowingLight(sector_t * sector);
-
-/*
-===============================================================================
-
 							P_PLATS
 
 ===============================================================================
