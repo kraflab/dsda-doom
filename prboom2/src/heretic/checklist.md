@@ -41,7 +41,7 @@
 - [x] p_pspr.c 1908
 - [ ] p_saveg.c 1913
 - [ ] p_setup.c 763
-- [ ] p_sight.c 357
+- [x] p_sight.c 357
 - [ ] p_spec.c 1358
 - [ ] p_spec.h 391
 - [x] p_switch.c 410
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-19452 / 47214 = 41%
+19809 / 47214 = 41%
