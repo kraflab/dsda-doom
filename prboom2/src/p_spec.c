@@ -178,7 +178,7 @@ void P_InitPicAnims (void)
 {
   int         i;
   const animdef_t *animdefs; //jff 3/23/98 pointer to animation lump
-  int         lump = 0;
+  int         lump = -1;
   //  Init animation
 
   if (heretic)
@@ -234,7 +234,7 @@ void P_InitPicAnims (void)
     lastanim++;
   }
 
-  if (lump) W_UnlockLumpNum(lump);
+  if (lump == -1) W_UnlockLumpNum(lump);
   MarkAnimatedTextures();//e6y
 }
 
