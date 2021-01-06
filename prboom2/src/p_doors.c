@@ -464,6 +464,12 @@ manual_door://e6y
           S_StartSound((mobj_t *)&door->sector->soundorg,sfx_bdopn);
         break;
 
+      case vld_normal_turbo:
+        type = vld_normal;
+        door->type = type;
+        door->speed = VDOORSPEED * 3;
+        // fall through
+
       case normal:
       case openDoor:
       case vld_normal:

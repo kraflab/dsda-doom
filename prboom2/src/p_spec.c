@@ -1267,6 +1267,8 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossacti
 {
   int         ok;
 
+  if (heretic) return Heretic_P_CrossSpecialLine(line, side, thing);
+
   //  Things that should never trigger lines
   //
   // e6y: Improved support for Doom v1.2
@@ -3817,5 +3819,244 @@ void P_InitTerrainTypes(void)
         {
             TerrainTypes[lump - firstflat] = TerrainTypeDefs[i].type;
         }
+    }
+}
+
+void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing)
+{
+    if (!thing->player)
+    {                           // Check if trigger allowed by non-player mobj
+        switch (line->special)
+        {
+            case 39:           // Trigger_TELEPORT
+            case 97:           // Retrigger_TELEPORT
+            case 4:            // Trigger_Raise_Door
+                //case 10:      // PLAT DOWN-WAIT-UP-STAY TRIGGER
+                //case 88:      // PLAT DOWN-WAIT-UP-STAY RETRIGGER
+                break;
+            default:
+                return;
+                break;
+        }
+    }
+    switch (line->special)
+    {
+            //====================================================
+            // TRIGGERS
+            //====================================================
+        case 2:                // Open Door
+            EV_DoDoor(line, vld_open);
+            line->special = 0;
+            break;
+        case 3:                // Close Door
+            EV_DoDoor(line, vld_close);
+            line->special = 0;
+            break;
+        case 4:                // Raise Door
+            EV_DoDoor(line, vld_normal);
+            line->special = 0;
+            break;
+        case 5:                // Raise Floor
+            EV_DoFloor(line, raiseFloor);
+            line->special = 0;
+            break;
+        case 6:                // Fast Ceiling Crush & Raise
+            EV_DoCeiling(line, fastCrushAndRaise);
+            line->special = 0;
+            break;
+        case 8:                // Trigger_Build_Stairs (8 pixel steps)
+            EV_BuildStairs(line, 8 * FRACUNIT);
+            line->special = 0;
+            break;
+        case 106:              // Trigger_Build_Stairs_16 (16 pixel steps)
+            EV_BuildStairs(line, 16 * FRACUNIT);
+            line->special = 0;
+            break;
+        case 10:               // PlatDownWaitUp
+            EV_DoPlat(line, downWaitUpStay, 0);
+            line->special = 0;
+            break;
+        case 12:               // Light Turn On - brightest near
+            EV_LightTurnOn(line, 0);
+            line->special = 0;
+            break;
+        case 13:               // Light Turn On 255
+            EV_LightTurnOn(line, 255);
+            line->special = 0;
+            break;
+        case 16:               // Close Door 30
+            EV_DoDoor(line, vld_close30ThenOpen);
+            line->special = 0;
+            break;
+        case 17:               // Start Light Strobing
+            EV_StartLightStrobing(line);
+            line->special = 0;
+            break;
+        case 19:               // Lower Floor
+            EV_DoFloor(line, lowerFloor);
+            line->special = 0;
+            break;
+        case 22:               // Raise floor to nearest height and change texture
+            EV_DoPlat(line, raiseToNearestAndChange, 0);
+            line->special = 0;
+            break;
+        case 25:               // Ceiling Crush and Raise
+            EV_DoCeiling(line, crushAndRaise);
+            line->special = 0;
+            break;
+        case 30:               // Raise floor to shortest texture height
+            // on either side of lines
+            EV_DoFloor(line, raiseToTexture);
+            line->special = 0;
+            break;
+        case 35:               // Lights Very Dark
+            EV_LightTurnOn(line, 35);
+            line->special = 0;
+            break;
+        case 36:               // Lower Floor (TURBO)
+            EV_DoFloor(line, turboLower);
+            line->special = 0;
+            break;
+        case 37:               // LowerAndChange
+            EV_DoFloor(line, lowerAndChange);
+            line->special = 0;
+            break;
+        case 38:               // Lower Floor To Lowest
+            EV_DoFloor(line, lowerFloorToLowest);
+            line->special = 0;
+            break;
+        case 39:               // TELEPORT!
+            EV_Teleport(line, side, thing);
+            line->special = 0;
+            break;
+        case 40:               // RaiseCeilingLowerFloor
+            EV_DoCeiling(line, raiseToHighest);
+            EV_DoFloor(line, lowerFloorToLowest);
+            line->special = 0;
+            break;
+        case 44:               // Ceiling Crush
+            EV_DoCeiling(line, lowerAndCrush);
+            line->special = 0;
+            break;
+        case 52:               // EXIT!
+            G_ExitLevel();
+            line->special = 0;
+            break;
+        case 53:               // Perpetual Platform Raise
+            EV_DoPlat(line, perpetualRaise, 0);
+            line->special = 0;
+            break;
+        case 54:               // Platform Stop
+            EV_StopPlat(line);
+            line->special = 0;
+            break;
+        case 56:               // Raise Floor Crush
+            EV_DoFloor(line, raiseFloorCrush);
+            line->special = 0;
+            break;
+        case 57:               // Ceiling Crush Stop
+            EV_CeilingCrushStop(line);
+            line->special = 0;
+            break;
+        case 58:               // Raise Floor 24
+            EV_DoFloor(line, raiseFloor24);
+            line->special = 0;
+            break;
+        case 59:               // Raise Floor 24 And Change
+            EV_DoFloor(line, raiseFloor24AndChange);
+            line->special = 0;
+            break;
+        case 104:              // Turn lights off in sector(tag)
+            EV_TurnTagLightsOff(line);
+            line->special = 0;
+            break;
+        case 105:              // Trigger_SecretExit
+            G_SecretExitLevel();
+            line->special = 0;
+            break;
+
+            //====================================================
+            // RE-DOABLE TRIGGERS
+            //====================================================
+
+        case 72:               // Ceiling Crush
+            EV_DoCeiling(line, lowerAndCrush);
+            break;
+        case 73:               // Ceiling Crush and Raise
+            EV_DoCeiling(line, crushAndRaise);
+            break;
+        case 74:               // Ceiling Crush Stop
+            EV_CeilingCrushStop(line);
+            break;
+        case 75:               // Close Door
+            EV_DoDoor(line, vld_close);
+            break;
+        case 76:               // Close Door 30
+            EV_DoDoor(line, vld_close30ThenOpen);
+            break;
+        case 77:               // Fast Ceiling Crush & Raise
+            EV_DoCeiling(line, fastCrushAndRaise);
+            break;
+        case 79:               // Lights Very Dark
+            EV_LightTurnOn(line, 35);
+            break;
+        case 80:               // Light Turn On - brightest near
+            EV_LightTurnOn(line, 0);
+            break;
+        case 81:               // Light Turn On 255
+            EV_LightTurnOn(line, 255);
+            break;
+        case 82:               // Lower Floor To Lowest
+            EV_DoFloor(line, lowerFloorToLowest);
+            break;
+        case 83:               // Lower Floor
+            EV_DoFloor(line, lowerFloor);
+            break;
+        case 84:               // LowerAndChange
+            EV_DoFloor(line, lowerAndChange);
+            break;
+        case 86:               // Open Door
+            EV_DoDoor(line, vld_open);
+            break;
+        case 87:               // Perpetual Platform Raise
+            EV_DoPlat(line, perpetualRaise, 0);
+            break;
+        case 88:               // PlatDownWaitUp
+            EV_DoPlat(line, downWaitUpStay, 0);
+            break;
+        case 89:               // Platform Stop
+            EV_StopPlat(line);
+            break;
+        case 90:               // Raise Door
+            EV_DoDoor(line, vld_normal);
+            break;
+        case 100:              // Retrigger_Raise_Door_Turbo
+            EV_DoDoor(line, vld_normal_turbo);
+            break;
+        case 91:               // Raise Floor
+            EV_DoFloor(line, raiseFloor);
+            break;
+        case 92:               // Raise Floor 24
+            EV_DoFloor(line, raiseFloor24);
+            break;
+        case 93:               // Raise Floor 24 And Change
+            EV_DoFloor(line, raiseFloor24AndChange);
+            break;
+        case 94:               // Raise Floor Crush
+            EV_DoFloor(line, raiseFloorCrush);
+            break;
+        case 95:               // Raise floor to nearest height and change texture
+            EV_DoPlat(line, raiseToNearestAndChange, 0);
+            break;
+        case 96:               // Raise floor to shortest texture height
+            // on either side of lines
+            EV_DoFloor(line, raiseToTexture);
+            break;
+        case 97:               // TELEPORT!
+            EV_Teleport(line, side, thing);
+            break;
+        case 98:               // Lower Floor (TURBO)
+            EV_DoFloor(line, turboLower);
+            break;
     }
 }
