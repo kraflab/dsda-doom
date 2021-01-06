@@ -120,6 +120,11 @@ static const animdef_t heretic_animdefs[] = {
     { -1 }
 };
 
+// heretic
+#define	MAXLINEANIMS		64*256
+static short numlinespecials;
+static line_t *linespeciallist[MAXLINEANIMS];
+
 //e6y
 void MarkAnimatedTextures(void)
 {
@@ -2544,6 +2549,26 @@ void P_UpdateSpecials (void)
     }
   }
 
+  if (heretic)
+  {
+    line_t *line;
+
+    // Update scrolling texture offsets
+    for (i = 0; i < numlinespecials; i++)
+    {
+        line = linespeciallist[i];
+        switch (line->special)
+        {
+            case 48:           // Effect_Scroll_Left
+                sides[line->sidenum[0]].textureoffset += FRACUNIT;
+                break;
+            case 99:           // Effect_Scroll_Right
+                sides[line->sidenum[0]].textureoffset -= FRACUNIT;
+                break;
+        }
+    }
+  }
+
   // Check buttons (retriggerable switches) and change texture on timeout
   for (i = 0; i < MAXBUTTONS; i++)
     if (buttonlist[i].btimer)
@@ -2576,7 +2601,7 @@ void P_UpdateSpecials (void)
             /* since the buttonlist array is usually zeroed out,
              * button popouts generally appear to come from (0,0) */
             so = (mobj_t *)&buttonlist[i].soundorg;
-          S_StartSound(so, sfx_swtchn);
+          S_StartSound(so, g_sfx_swtchn);
         }
         memset(&buttonlist[i],0,sizeof(button_t));
       }

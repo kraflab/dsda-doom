@@ -1,87 +1,4 @@
 
-//----------------------------------------------------------------------------
-//
-// PROC P_UpdateSpecials
-//
-// Animate planes, scroll walls, etc.
-//
-//----------------------------------------------------------------------------
-
-void P_UpdateSpecials(void)
-{
-    int i;
-    int pic;
-    anim_t *anim;
-    line_t *line;
-
-    // Animate flats and textures
-    for (anim = anims; anim < lastanim; anim++)
-    {
-        for (i = anim->basepic; i < anim->basepic + anim->numpics; i++)
-        {
-            pic =
-                anim->basepic +
-                ((leveltime / anim->speed + i) % anim->numpics);
-            if (anim->istexture)
-            {
-                texturetranslation[i] = pic;
-            }
-            else
-            {
-                flattranslation[i] = pic;
-            }
-        }
-    }
-    // Update scrolling texture offsets
-    for (i = 0; i < numlinespecials; i++)
-    {
-        line = linespeciallist[i];
-        switch (line->special)
-        {
-            case 48:           // Effect_Scroll_Left
-                // [crispy] smooth texture scrolling
-                sides[line->sidenum[0]].basetextureoffset += FRACUNIT;
-                sides[line->sidenum[0]].textureoffset =
-                    sides[line->sidenum[0]].basetextureoffset;
-                break;
-            case 99:           // Effect_Scroll_Right
-                // [crispy] smooth texture scrolling
-                sides[line->sidenum[0]].basetextureoffset -= FRACUNIT;
-                sides[line->sidenum[0]].textureoffset =
-                    sides[line->sidenum[0]].basetextureoffset;
-                break;
-        }
-    }
-    // Handle buttons
-    for (i = 0; i < MAXBUTTONS; i++)
-    {
-        if (buttonlist[i].btimer)
-        {
-            buttonlist[i].btimer--;
-            if (!buttonlist[i].btimer)
-            {
-                switch (buttonlist[i].where)
-                {
-                    case top:
-                        sides[buttonlist[i].line->sidenum[0]].toptexture =
-                            buttonlist[i].btexture;
-                        break;
-                    case middle:
-                        sides[buttonlist[i].line->sidenum[0]].midtexture =
-                            buttonlist[i].btexture;
-                        break;
-                    case bottom:
-                        sides[buttonlist[i].line->sidenum[0]].bottomtexture =
-                            buttonlist[i].btexture;
-                        break;
-                }
-                S_StartSound(buttonlist[i].soundorg, sfx_switch);
-                memset(&buttonlist[i], 0, sizeof(button_t));
-            }
-        }
-    }
-}
-
 //============================================================
 //
 //      Special Stuff that can't be categorized
@@ -171,9 +88,6 @@ int EV_DoDonut(line_t * line)
 =
 ===============================================================================
 */
-
-short numlinespecials;
-line_t *linespeciallist[MAXLINEANIMS];
 
 void P_SpawnSpecials(void)
 {

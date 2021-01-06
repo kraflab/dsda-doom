@@ -1175,10 +1175,6 @@ mobj_t* P_GetPushThing(int);                                // phares 3/23/98
 
 // heretic
 
-#define	MAXLINEANIMS		64*256
-extern short numlinespecials;
-extern line_t *linespeciallist[MAXLINEANIMS];
-
 void P_InitTerrainTypes(void);
 void P_InitLava(void);
 void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing);
