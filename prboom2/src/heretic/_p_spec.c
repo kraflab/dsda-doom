@@ -1,44 +1,6 @@
 
 //----------------------------------------------------------------------------
 //
-// PROC P_ShootSpecialLine
-//
-// Called when a thing shoots a special line.
-//
-//----------------------------------------------------------------------------
-
-void P_ShootSpecialLine(mobj_t * thing, line_t * line)
-{
-    if (!thing->player)
-    {                           // Check if trigger allowed by non-player mobj
-        switch (line->special)
-        {
-            case 46:           // Impact_OpenDoor
-                break;
-            default:
-                return;
-                break;
-        }
-    }
-    switch (line->special)
-    {
-        case 24:               // Impact_RaiseFloor
-            EV_DoFloor(line, raiseFloor);
-            P_ChangeSwitchTexture(line, 0);
-            break;
-        case 46:               // Impact_OpenDoor
-            EV_DoDoor(line, vld_open, VDOORSPEED);
-            P_ChangeSwitchTexture(line, 1);
-            break;
-        case 47:               // Impact_RaiseFloorNear&Change
-            EV_DoPlat(line, raiseToNearestAndChange, 0);
-            P_ChangeSwitchTexture(line, 0);
-            break;
-    }
-}
-
-//----------------------------------------------------------------------------
-//
 // PROC P_PlayerInSpecialSector
 //
 // Called every tic frame that the player origin is in a special sector.

@@ -1146,7 +1146,7 @@ int P_CheckTag(line_t *line)
 {
   /* tag not zero, allowed, or
    * killough 11/98: compatibility option */
-  if (comp[comp_zerotags] || line->tag || comperr(comperr_zerotag))//e6y
+  if (heretic || comp[comp_zerotags] || line->tag || comperr(comperr_zerotag))//e6y
     return 1;
 
   switch(line->special)
@@ -2177,7 +2177,7 @@ void P_ShootSpecialLine
   line_t*       line )
 {
   //jff 02/04/98 add check here for generalized linedef
-  if (!demo_compatibility)
+  if (!heretic && !demo_compatibility)
   {
     // pointer to line function is NULL by default, set non-null if
     // line special is gun triggered generalized linedef type
@@ -2300,19 +2300,19 @@ void P_ShootSpecialLine
   {
     case 24:
       // 24 G1 raise floor to highest adjacent
-      if (EV_DoFloor(line,raiseFloor) || demo_compatibility)
+      if (EV_DoFloor(line,raiseFloor) || heretic || demo_compatibility)
         P_ChangeSwitchTexture(line,0);
       break;
 
     case 46:
       // 46 GR open door, stay open
-      EV_DoDoor(line,openDoor);
+      EV_DoDoor(line,g_door_open);
       P_ChangeSwitchTexture(line,1);
       break;
 
     case 47:
       // 47 G1 raise floor to nearest and change texture and type
-      if (EV_DoPlat(line,raiseToNearestAndChange,0) || demo_compatibility)
+      if (EV_DoPlat(line,raiseToNearestAndChange,0) || heretic || demo_compatibility)
         P_ChangeSwitchTexture(line,0);
       break;
 
@@ -2320,7 +2320,7 @@ void P_ShootSpecialLine
     // killough 1/31/98: added demo_compatibility check, added inner switch
 
     default:
-      if (!demo_compatibility)
+      if (!heretic && !demo_compatibility)
         switch (line->special)
         {
           case 197:
