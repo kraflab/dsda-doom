@@ -1174,6 +1174,13 @@ mobj_t* P_GetPushThing(int);                                // phares 3/23/98
 
 // heretic
 
+#define	MAXLINEANIMS		64*256
+extern short numlinespecials;
+extern line_t *linespeciallist[MAXLINEANIMS];
+
+void P_InitTerrainTypes(void);
+void P_InitLava(void);
+
 extern int *TerrainTypes;
 
 void P_InitAmbientSound(void);
