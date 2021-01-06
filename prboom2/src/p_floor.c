@@ -981,13 +981,15 @@ int EV_DoDonut(line_t*  line)
     if (P_SectorActive(floor_special,s1)) //jff 2/22/98
       continue;
 
+    // HERETIC_TODO: rtn = 1; // probably doesn't matter?
+
     s2 = getNextSector(s1->lines[0],s1);  // s2 is pool's sector
     
     // note lowest numbered line around
     // pillar must be two-sided
     if (!s2)
     {
-      if (demo_compatibility)
+      if (heretic || demo_compatibility)
       {
         lprintf(LO_ERROR,
           "EV_DoDonut: lowest numbered line (linedef: %d) "
@@ -1004,7 +1006,7 @@ int EV_DoDonut(line_t*  line)
 
     /* do not start the donut if the pool is already moving
      * cph - DEMOSYNC - was !compatibility */
-    if (!comp[comp_floors] && P_SectorActive(floor_special,s2))
+    if (!heretic && !comp[comp_floors] && P_SectorActive(floor_special,s2))
       continue;                           //jff 5/7/98
 
     // find a two sided line around the pool whose other side isn't the pillar
@@ -1012,7 +1014,7 @@ int EV_DoDonut(line_t*  line)
     {
       //jff 3/29/98 use true two-sidedness, not the flag
       // killough 4/5/98: changed demo_compatibility to compatibility
-      if (comp[comp_model])
+      if (heretic || comp[comp_model])
       {
         // original code:   !s2->lines[i]->flags & ML_TWOSIDED
         // equivalent to:   (!s2->lines[i]->flags) & ML_TWOSIDED , i.e. 0
