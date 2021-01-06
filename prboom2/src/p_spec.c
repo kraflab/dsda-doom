@@ -106,6 +106,23 @@ static void P_SpawnScrollers(void);
 static void P_SpawnFriction(void);    // phares 3/16/98
 static void P_SpawnPushers(void);     // phares 3/20/98
 
+static const animdef_t heretic_animdefs[] = {
+    // false = flat
+    // true = texture
+    { false, "FLTWAWA3", "FLTWAWA1", 8 }, // Water
+    { false, "FLTSLUD3", "FLTSLUD1", 8 }, // Sludge
+    { false, "FLTTELE4", "FLTTELE1", 6 }, // Teleport
+    { false, "FLTFLWW3", "FLTFLWW1", 9 }, // River - West
+    { false, "FLTLAVA4", "FLTLAVA1", 8 }, // Lava
+    { false, "FLATHUH4", "FLATHUH1", 8 }, // Super Lava
+    { true,  "LAVAFL3",  "LAVAFL1",  6 },    // Texture: Lavaflow
+    { true,  "WATRWAL3", "WATRWAL1", 4 },  // Texture: Waterfall
+    { -1 }
+};
+
+// heretic
+static mobj_t LavaInflictor;
+
 //e6y
 void MarkAnimatedTextures(void)
 {
@@ -161,11 +178,19 @@ void P_InitPicAnims (void)
 {
   int         i;
   const animdef_t *animdefs; //jff 3/23/98 pointer to animation lump
-  int         lump = W_GetNumForName("ANIMATED"); // cph - new wad lump handling
+  int         lump = 0;
   //  Init animation
 
-  //jff 3/23/98 read from predefined or wad lump instead of table
-  animdefs = (const animdef_t *)W_CacheLumpNum(lump);
+  if (heretic)
+  {
+    animdefs = heretic_animdefs;
+  }
+  else
+  {
+    lump = W_GetNumForName("ANIMATED"); // cph - new wad lump handling
+    //jff 3/23/98 read from predefined or wad lump instead of table
+    animdefs = (const animdef_t *)W_CacheLumpNum(lump);
+  }
 
   lastanim = anims;
   for (i=0 ; animdefs[i].istexture != -1 ; i++)
@@ -208,7 +233,8 @@ void P_InitPicAnims (void)
     lastanim->speed = LittleLong(animdefs[i].speed); // killough 5/5/98: add LONG()
     lastanim++;
   }
-  W_UnlockLumpNum(lump);
+
+  if (lump) W_UnlockLumpNum(lump);
   MarkAnimatedTextures();//e6y
 }
 
@@ -270,7 +296,7 @@ int twoSided
   //jff 1/26/98 return what is actually needed, whether the line
   //has two sidedefs, rather than whether the 2S flag is set
 
-  return comp[comp_model] ?
+  return (heretic || comp[comp_model]) ?
     (sectors[sector].lines[line])->flags & ML_TWOSIDED
     :
     (sectors[sector].lines[line])->sidenum[1] != NO_INDEX;
@@ -292,14 +318,14 @@ sector_t* getNextSector
   //returns NULL if the line is not two sided, and does so from
   //the actual two-sidedness of the line, rather than its 2S flag
 
-  if (comp[comp_model])
+  if (heretic || comp[comp_model])
   {
     if (!(line->flags & ML_TWOSIDED))
       return NULL;
   }
 
   if (line->frontsector == sec) {
-    if (comp[comp_model] || line->backsector!=sec)
+    if (heretic || comp[comp_model] || line->backsector!=sec)
       return line->backsector; //jff 5/3/98 don't retn sec unless compatibility
     else                       // fixes an intra-sector line breaking functions
       return NULL;             // like floor->highest floor
@@ -354,7 +380,7 @@ fixed_t P_FindHighestFloorSurrounding(sector_t *sec)
 
   //jff 1/26/98 Fix initial value for floor to not act differently
   //in sections of wad that are below -500 units
-  if (!comp[comp_model])       /* jff 3/12/98 avoid ovf */
+  if (!heretic && !comp[comp_model])       /* jff 3/12/98 avoid ovf */
     floor = -32000*FRACUNIT;   // in height calculations
 
   for (i=0 ;i < sec->linecount ; i++)
@@ -390,7 +416,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
   // e6y
   // Original P_FindNextHighestFloor() is restored for demo_compatibility
   // Adapted for prboom's complevels
-  if (demo_compatibility && !prboom_comp[PC_FORCE_BOOM_FINDNEXTHIGHESTFLOOR].state)
+  if ((heretic || demo_compatibility) && !prboom_comp[PC_FORCE_BOOM_FINDNEXTHIGHESTFLOOR].state)
   {
     int h;
     int min;
@@ -430,8 +456,9 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
         // 21: can be emulated;
         // 22..26: overflow affects saved registers - unpredictable behaviour, can crash;
         // 27: overflow affects return address - crash with high probability;
-        if (compatibility_level < dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS)
+        if ((heretic || compatibility_level < dosdoom_compatibility) && h >= MAX_ADJOINING_SECTORS)
         {
+          // HERETIC_TODO: crispy actually doesn't go here, but probably it should be done
           lprintf(LO_WARN, "P_FindNextHighestFloor: Overflow of heightlist[%d] array is detected.\n", MAX_ADJOINING_SECTORS);
           lprintf(LO_WARN, " Sector %d, line %d, heightlist index %d: ", sec->iSectorID, sec->lines[i]->iLineID, h);
 
@@ -449,7 +476,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
       }
       
       // Check for overflow. Warning.
-      if ( compatibility_level >= dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS )
+      if (!heretic && compatibility_level >= dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS)
       {
         lprintf( LO_WARN, "Sector with more than 20 adjoining sectors\n" );
         break;
@@ -468,7 +495,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
       // It's not *quite* random stack noise. If this function is called
       // as part of a loop, heightlist will be at the same location as in
       // the previous call. Doing it this way fixes 1_ON_1.WAD.
-      return (compatibility_level < doom_1666_compatibility ? last_height_0 : currentheight);
+      return ((heretic || compatibility_level < doom_1666_compatibility) ? last_height_0 : currentheight);
     }
     
     last_height_0 = heightlist[0];
@@ -615,7 +642,7 @@ fixed_t P_FindLowestCeilingSurrounding(sector_t* sec)
   fixed_t             height = INT_MAX;
 
   /* jff 3/12/98 avoid ovf in height calculations */
-  if (!comp[comp_model]) height = 32000*FRACUNIT;
+  if (!heretic && !comp[comp_model]) height = 32000*FRACUNIT;
 
   for (i=0 ;i < sec->linecount ; i++)
   {
@@ -651,7 +678,7 @@ fixed_t P_FindHighestCeilingSurrounding(sector_t* sec)
   /* jff 1/26/98 Fix initial value for floor to not act differently
    * in sections of wad that are below 0 units
    * jff 3/12/98 avoid ovf in height calculations */
-  if (!comp[comp_model]) height = -32000*FRACUNIT;
+  if (!heretic && !comp[comp_model]) height = -32000*FRACUNIT;
 
   for (i=0 ;i < sec->linecount ; i++)
   {
@@ -3765,4 +3792,30 @@ void P_AmbientSound(void)
         }
     }
     while (done == false);
+}
+
+void P_InitLava(void)
+{
+    memset(&LavaInflictor, 0, sizeof(mobj_t));
+    LavaInflictor.type = HERETIC_MT_PHOENIXFX2;
+    LavaInflictor.flags2 = MF2_FIREDAMAGE | MF2_NODMGTHRUST;
+}
+
+void P_InitTerrainTypes(void)
+{
+    int i;
+    int lump;
+    int size;
+
+    size = (numflats + 1) * sizeof(int);
+    TerrainTypes = Z_Malloc(size, PU_STATIC, 0);
+    memset(TerrainTypes, 0, size);
+    for (i = 0; TerrainTypeDefs[i].type != -1; i++)
+    {
+        lump = W_CheckNumForName(TerrainTypeDefs[i].name);
+        if (lump != -1)
+        {
+            TerrainTypes[lump - firstflat] = TerrainTypeDefs[i].type;
+        }
+    }
 }
