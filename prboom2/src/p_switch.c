@@ -1276,13 +1276,13 @@ dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dbool
             //      SWITCHES
             //===============================================
         case 7:                // Switch_Build_Stairs (8 pixel steps)
-            if (EV_BuildStairs(line, 8 * FRACUNIT))
+            if (EV_BuildStairs(line, heretic_build8))
             {
                 P_ChangeSwitchTexture(line, 0);
             }
             break;
         case 107:              // Switch_Build_Stairs_16 (16 pixel steps)
-            if (EV_BuildStairs(line, 16 * FRACUNIT))
+            if (EV_BuildStairs(line, heretic_turbo16))
             {
                 P_ChangeSwitchTexture(line, 0);
             }

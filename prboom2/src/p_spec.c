@@ -3896,11 +3896,11 @@ void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing)
             line->special = 0;
             break;
         case 8:                // Trigger_Build_Stairs (8 pixel steps)
-            EV_BuildStairs(line, 8 * FRACUNIT);
+            EV_BuildStairs(line, heretic_build8);
             line->special = 0;
             break;
         case 106:              // Trigger_Build_Stairs_16 (16 pixel steps)
-            EV_BuildStairs(line, 16 * FRACUNIT);
+            EV_BuildStairs(line, heretic_turbo16);
             line->special = 0;
             break;
         case 10:               // PlatDownWaitUp
