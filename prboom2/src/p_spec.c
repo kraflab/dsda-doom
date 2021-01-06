@@ -120,9 +120,6 @@ static const animdef_t heretic_animdefs[] = {
     { -1 }
 };
 
-// heretic
-static mobj_t LavaInflictor;
-
 //e6y
 void MarkAnimatedTextures(void)
 {
@@ -2359,6 +2356,8 @@ void P_PlayerInSpecialSector (player_t* player)
 {
   sector_t*   sector;
 
+  if (heretic) return Heretic_P_PlayerInSpecialSector(player);
+
   sector = player->mo->subsector->sector;
 
   // Falling, not all the way down yet?
@@ -3716,6 +3715,8 @@ struct
     { "END", -1 }
 };
 
+static mobj_t LavaInflictor;
+
 void P_AddAmbientSfx(int sequence)
 {
     if (AmbSfxCount == MAX_AMBIENT_SFX)
@@ -4058,5 +4059,123 @@ void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing)
         case 98:               // Lower Floor (TURBO)
             EV_DoFloor(line, turboLower);
             break;
+    }
+}
+
+#include "p_user.h"
+
+void Heretic_P_PlayerInSpecialSector(player_t * player)
+{
+    sector_t *sector;
+    static int pushTab[5] = {
+        2048 * 5,
+        2048 * 10,
+        2048 * 25,
+        2048 * 30,
+        2048 * 35
+    };
+
+    sector = player->mo->subsector->sector;
+    if (player->mo->z != sector->floorheight)
+    {                           // Player is not touching the floor
+        return;
+    }
+    switch (sector->special)
+    {
+        case 7:                // Damage_Sludge
+            if (!(leveltime & 31))
+            {
+                P_DamageMobj(player->mo, NULL, NULL, 4);
+            }
+            break;
+        case 5:                // Damage_LavaWimpy
+            if (!(leveltime & 15))
+            {
+                P_DamageMobj(player->mo, &LavaInflictor, NULL, 5);
+                P_HitFloor(player->mo);
+            }
+            break;
+        case 16:               // Damage_LavaHefty
+            if (!(leveltime & 15))
+            {
+                P_DamageMobj(player->mo, &LavaInflictor, NULL, 8);
+                P_HitFloor(player->mo);
+            }
+            break;
+        case 4:                // Scroll_EastLavaDamage
+            P_Thrust(player, 0, 2048 * 28);
+            if (!(leveltime & 15))
+            {
+                P_DamageMobj(player->mo, &LavaInflictor, NULL, 5);
+                P_HitFloor(player->mo);
+            }
+            break;
+        case 9:                // SecretArea
+            player->secretcount++;
+            sector->special = 0;
+
+            //e6y
+            if (hudadd_secretarea)
+            {
+              SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, heretic_sfx_chat);
+            }
+
+            dsda_WatchSecret();
+
+            break;
+        case 11:               // Exit_SuperDamage (DOOM E1M8 finale)
+            break;
+
+        case 25:
+        case 26:
+        case 27:
+        case 28:
+        case 29:               // Scroll_North
+            P_Thrust(player, ANG90, pushTab[sector->special - 25]);
+            break;
+        case 20:
+        case 21:
+        case 22:
+        case 23:
+        case 24:               // Scroll_East
+            P_Thrust(player, 0, pushTab[sector->special - 20]);
+            break;
+        case 30:
+        case 31:
+        case 32:
+        case 33:
+        case 34:               // Scroll_South
+            P_Thrust(player, ANG270, pushTab[sector->special - 30]);
+            break;
+        case 35:
+        case 36:
+        case 37:
+        case 38:
+        case 39:               // Scroll_West
+            P_Thrust(player, ANG180, pushTab[sector->special - 35]);
+            break;
+
+        case 40:
+        case 41:
+        case 42:
+        case 43:
+        case 44:
+        case 45:
+        case 46:
+        case 47:
+        case 48:
+        case 49:
+        case 50:
+        case 51:
+            // Wind specials are handled in (P_mobj):P_XYMovement
+            break;
+
+        case 15:               // Friction_Low
+            // Only used in (P_mobj):P_XYMovement and (P_user):P_Thrust
+            break;
+
+        default:
+            I_Error("P_PlayerInSpecialSector: "
+                    "unknown special %i", sector->special);
     }
 }

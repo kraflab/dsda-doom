@@ -1182,6 +1182,7 @@ extern line_t *linespeciallist[MAXLINEANIMS];
 void P_InitTerrainTypes(void);
 void P_InitLava(void);
 void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing);
+void Heretic_P_PlayerInSpecialSector(player_t * player);
 
 extern int *TerrainTypes;
 
