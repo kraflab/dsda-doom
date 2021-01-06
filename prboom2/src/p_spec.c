@@ -2689,7 +2689,10 @@ void P_SpawnSpecials (void)
       case 4:
         // strobe fast/death slime
         P_SpawnStrobeFlash(sector,FASTDARK,0);
-        sector->special |= 3<<DAMAGE_SHIFT; //jff 3/14/98 put damage bits in
+        if (!heretic)
+        {
+          sector->special |= 3<<DAMAGE_SHIFT; //jff 3/14/98 put damage bits in
+        }
         break;
 
       case 8:
@@ -2728,6 +2731,8 @@ void P_SpawnSpecials (void)
         break;
     }
   }
+
+  if (heretic) P_SpawnLineSpecials();
 
   P_RemoveAllActiveCeilings();  // jff 2/22/98 use killough's scheme
 
@@ -4203,4 +4208,26 @@ void Heretic_P_PlayerInSpecialSector(player_t * player)
             I_Error("P_PlayerInSpecialSector: "
                     "unknown special %i", sector->special);
     }
+}
+
+void P_SpawnLineSpecials(void)
+{
+    int i;
+
+    if (!heretic) return;
+
+    //
+    //      Init line EFFECTs
+    //
+
+    numlinespecials = 0;
+    for (i = 0; i < numlines; i++)
+        switch (lines[i].special)
+        {
+            case 48:           // Effect_Scroll_Left
+            case 99:           // Effect_Scroll_Right
+                linespeciallist[numlinespecials] = &lines[i];
+                numlinespecials++;
+                break;
+        }
 }

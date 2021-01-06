@@ -42,7 +42,7 @@
 - [ ] p_saveg.c 1913
 - [ ] p_setup.c 763
 - [x] p_sight.c 357
-- [ ] p_spec.c 1358
+- [x] p_spec.c 1358
 - [x] p_spec.h 391
 - [x] p_switch.c 410
 - [x] p_telept.c 165
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-20999 / 47214 = 44%
+22357 / 47214 = 47%
