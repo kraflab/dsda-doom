@@ -2689,3 +2689,21 @@ void P_AppendSpecHit(line_t * ld)
     SpechitOverrun(&spechit_overrun_param);
   }
 }
+
+void CheckMissileImpact(mobj_t * mobj)
+{
+    int i;
+
+    if (!numspechit || !(mobj->flags & MF_MISSILE) || !mobj->target)
+    {
+        return;
+    }
+    if (!mobj->target->player)
+    {
+        return;
+    }
+    for (i = numspechit - 1; i >= 0; i--)
+    {
+        P_ShootSpecialLine(mobj->target, spechit[i]);
+    }
+}

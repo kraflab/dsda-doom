@@ -102,6 +102,7 @@ extern line_t *blockline;   // killough 8/11/98
 dboolean P_TestMobjLocation(mobj_t * mobj);
 mobj_t *P_CheckOnmobj(mobj_t * thing);
 void P_FakeZMovement(mobj_t * mo);
+void CheckMissileImpact(mobj_t * mobj);
 
 void P_AppendSpecHit(line_t * ld);
 
