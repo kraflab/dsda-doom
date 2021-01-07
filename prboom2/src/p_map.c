@@ -896,7 +896,7 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
 //
 dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
                   dboolean dropoff) // killough 3/15/98: allow dropoff as option
-  {
+{
   fixed_t oldx;
   fixed_t oldy;
 
@@ -906,85 +906,86 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
     return false;   // solid wall or thing
 
   if ( !(thing->flags & MF_NOCLIP) )
+  {
+    if (thing->flags & MF_FLY)
     {
-      if (thing->flags & MF_FLY)
+      // When flying, slide up or down blocking lines until the actor
+      // is not blocked.
+      if (thing->z+thing->height > tmceilingz)
       {
-        // When flying, slide up or down blocking lines until the actor
-        // is not blocked.
-        if (thing->z+thing->height > tmceilingz)
-        {
-          thing->momz = -8*FRACUNIT;
-          return false;
-        }
-        else if (thing->z < tmfloorz && tmfloorz-tmdropoffz > 24*FRACUNIT)
-        {
-          thing->momz = 8*FRACUNIT;
-          return false;
-        }
+        thing->momz = -8*FRACUNIT;
+        return false;
       }
-      // killough 7/26/98: reformatted slightly
-      // killough 8/1/98: Possibly allow escape if otherwise stuck
+      else if (thing->z < tmfloorz && tmfloorz-tmdropoffz > 24*FRACUNIT)
+      {
+        thing->momz = 8*FRACUNIT;
+        return false;
+      }
+    }
+    // killough 7/26/98: reformatted slightly
+    // killough 8/1/98: Possibly allow escape if otherwise stuck
 
-      if (tmceilingz - tmfloorz < thing->height ||     // doesn't fit
-    // mobj must lower to fit
-    (floatok = true, !(thing->flags & MF_TELEPORT) &&
-     tmceilingz - thing->z < thing->height && !(thing->flags & MF_FLY)) ||
-    // too big a step up
-    (!(thing->flags & MF_TELEPORT) &&
-     tmfloorz - thing->z > 24*FRACUNIT))
-  return tmunstuck
-    && !(ceilingline && untouched(ceilingline))
-    && !(  floorline && untouched(  floorline));
+    if (tmceilingz - tmfloorz < thing->height ||     // doesn't fit
+        // mobj must lower to fit
+        (floatok = true, !(thing->flags & MF_TELEPORT) &&
+         tmceilingz - thing->z < thing->height && !(thing->flags & MF_FLY)) ||
+        // too big a step up
+        (!(thing->flags & MF_TELEPORT) &&
+         tmfloorz - thing->z > 24*FRACUNIT))
+      return tmunstuck
+        && !(ceilingline && untouched(ceilingline))
+        && !(  floorline && untouched(  floorline));
 
-      /* killough 3/15/98: Allow certain objects to drop off
-       * killough 7/24/98, 8/1/98:
-       * Prevent monsters from getting stuck hanging off ledges
-       * killough 10/98: Allow dropoffs in controlled circumstances
-       * killough 11/98: Improve symmetry of clipping on stairs
-       */
-      if (!(thing->flags & (MF_DROPOFF|MF_FLOAT))) {
-  if (comp[comp_dropoff])
+    /* killough 3/15/98: Allow certain objects to drop off
+     * killough 7/24/98, 8/1/98:
+     * Prevent monsters from getting stuck hanging off ledges
+     * killough 10/98: Allow dropoffs in controlled circumstances
+     * killough 11/98: Improve symmetry of clipping on stairs
+     */
+    if (!(thing->flags & (MF_DROPOFF|MF_FLOAT))) 
     {
-      // e6y
-      // Fix demosync bug in mbf compatibility mode
-      // There is no more desync on v2-2822.lmp/vrack2.wad
-      // -force_no_dropoff command-line switch is for mbf_compatibility demos 
-      // recorded with prboom 2.2.2 - 2.4.7
-      // Links:
-      // http://competn.doom2.net/pub/sda/t-z/v2-2822.zip
-      // http://www.doomworld.com/idgames/index.php?id=11138
-      if ((compatibility || !dropoff 
-            || (!prboom_comp[PC_NO_DROPOFF].state && mbf_features && compatibility_level <= prboom_2_compatibility))
-          && (tmfloorz - tmdropoffz > 24*FRACUNIT))
-        return false;                      // don't stand over a dropoff
-    }
-  else
-    if (!dropoff || (dropoff==2 &&  // large jump down (e.g. dogs)
-         (tmfloorz-tmdropoffz > 128*FRACUNIT ||
-          !thing->target || thing->target->z >tmdropoffz)))
+      if (comp[comp_dropoff])
       {
-        if (!monkeys || !mbf_features ?
-      tmfloorz - tmdropoffz > 24*FRACUNIT :
-      thing->floorz  - tmfloorz > 24*FRACUNIT ||
-      thing->dropoffz - tmdropoffz > 24*FRACUNIT)
-    return false;
+        // e6y
+        // Fix demosync bug in mbf compatibility mode
+        // There is no more desync on v2-2822.lmp/vrack2.wad
+        // -force_no_dropoff command-line switch is for mbf_compatibility demos 
+        // recorded with prboom 2.2.2 - 2.4.7
+        // Links:
+        // http://competn.doom2.net/pub/sda/t-z/v2-2822.zip
+        // http://www.doomworld.com/idgames/index.php?id=11138
+        if ((compatibility || !dropoff 
+              || (!prboom_comp[PC_NO_DROPOFF].state && mbf_features && compatibility_level <= prboom_2_compatibility))
+            && (tmfloorz - tmdropoffz > 24*FRACUNIT))
+          return false;                      // don't stand over a dropoff
       }
-    else { /* dropoff allowed -- check for whether it fell more than 24 */
-      felldown = !(thing->flags & MF_NOGRAVITY) &&
-        thing->z - tmfloorz > 24*FRACUNIT;
+      else
+        if (!dropoff || (dropoff==2 &&  // large jump down (e.g. dogs)
+             (tmfloorz-tmdropoffz > 128*FRACUNIT ||
+              !thing->target || thing->target->z >tmdropoffz)))
+        {
+            if (!monkeys || !mbf_features ?
+                tmfloorz - tmdropoffz > 24*FRACUNIT :
+                thing->floorz  - tmfloorz > 24*FRACUNIT ||
+                thing->dropoffz - tmdropoffz > 24*FRACUNIT)
+              return false;
+        }
+        else
+        { /* dropoff allowed -- check for whether it fell more than 24 */
+          felldown = !(thing->flags & MF_NOGRAVITY) && thing->z - tmfloorz > 24*FRACUNIT;
+        }
     }
-      }
 
-      if (thing->flags & MF_BOUNCES &&    // killough 8/13/98
-    !(thing->flags & (MF_MISSILE|MF_NOGRAVITY)) &&
-    !sentient(thing) && tmfloorz - thing->z > 16*FRACUNIT)
-  return false; // too big a step up for bouncers under gravity
+    if (thing->flags & MF_BOUNCES &&    // killough 8/13/98
+        !(thing->flags & (MF_MISSILE|MF_NOGRAVITY)) &&
+        !sentient(thing) && tmfloorz - thing->z > 16*FRACUNIT)
+      return false; // too big a step up for bouncers under gravity
 
-      // killough 11/98: prevent falling objects from going up too many steps
-      if (thing->intflags & MIF_FALLING && tmfloorz - thing->z >
-    FixedMul(thing->momx,thing->momx)+FixedMul(thing->momy,thing->momy))
-  return false;
-    }
+    // killough 11/98: prevent falling objects from going up too many steps
+    if (thing->intflags & MIF_FALLING && tmfloorz - thing->z >
+        FixedMul(thing->momx,thing->momx)+FixedMul(thing->momy,thing->momy))
+      return false;
+  }
 
   // the move is ok,
   // so unlink from the old position and link into the new position
@@ -1006,15 +1007,15 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
   if (! (thing->flags&(MF_TELEPORT|MF_NOCLIP)) )
     while (numspechit--)
       if (spechit[numspechit]->special)  // see if the line was crossed
-  {
-    int oldside;
-    if ((oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit])) !=
-        P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
-      P_CrossSpecialLine(spechit[numspechit], oldside, thing, false);
-  }
+      {
+        int oldside;
+        if ((oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit])) !=
+            P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
+          P_CrossSpecialLine(spechit[numspechit], oldside, thing, false);
+      }
 
   return true;
-  }
+}
 
 /*
  * killough 9/12/98:
