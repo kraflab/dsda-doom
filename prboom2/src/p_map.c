@@ -2034,7 +2034,11 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 
   if (bombspot->flags & MF_BOUNCES ?
       thing->type == MT_CYBORG && bombsource->type == MT_CYBORG :
-      thing->type == MT_CYBORG || thing->type == MT_SPIDER)
+      thing->type == MT_CYBORG ||
+      thing->type == MT_SPIDER ||
+      thing->type == HERETIC_MT_MINOTAUR ||
+      thing->type == HERETIC_MT_SORCERER1 ||
+      thing->type == HERETIC_MT_SORCERER2)
     return true;
 
   dx = D_abs(thing->x - bombspot->x);
@@ -2081,7 +2085,14 @@ void P_RadiusAttack(mobj_t* spot,mobj_t* source,int damage)
   xh = P_GetSafeBlockX(spot->x + dist - bmaporgx);
   xl = P_GetSafeBlockX(spot->x - dist - bmaporgx);
   bombspot = spot;
-  bombsource = source;
+  if (spot->type == HERETIC_MT_POD && spot->target)
+  {
+    bombsource = spot->target;
+  }
+  else
+  {
+    bombsource = source;
+  }
   bombdamage = damage;
 
   for (y=yl ; y<=yh ; y++)
@@ -2105,9 +2116,9 @@ dboolean PIT_ChangeSector (mobj_t* thing)
 
   if (thing->health <= 0)
     {
-    P_SetMobjState (thing, S_GIBS);
+    if (!heretic) P_SetMobjState (thing, S_GIBS);
 
-    if (compatibility_level != doom_12_compatibility)
+    if (!heretic && compatibility_level != doom_12_compatibility)
     {
       thing->flags &= ~MF_SOLID;
     }
@@ -2150,7 +2161,7 @@ dboolean PIT_ChangeSector (mobj_t* thing)
     // spray blood in a random direction
     mo = P_SpawnMobj (thing->x,
                       thing->y,
-                      thing->z + thing->height/2, MT_BLOOD);
+                      thing->z + thing->height/2, g_mt_blood);
 
     /* killough 8/10/98: remove dependence on order of evaluation */
     t = P_Random(pr_crush);

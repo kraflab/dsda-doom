@@ -34,7 +34,7 @@
 - [x] p_inter.c 1502
 - [x] p_lights.c 275
 - [ ] p_local.h 282
-- [ ] p_map.c 1714
+- [x] p_map.c 1714
 - [x] p_maputl.c 799
 - [x] p_mobj.c 1665
 - [x] p_plats.c 259
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-22357 / 47214 = 47%
+LEFT: 22421, MERGED: 24793, PERCENT: 52%

@@ -50,6 +50,7 @@ weaponinfo_t* weaponinfo;
 
 int g_mt_player;
 int g_mt_tfog;
+int g_mt_blood;
 int g_skullpop_mt;
 
 int g_wp_fist;
@@ -126,6 +127,7 @@ static void dsda_InitDoom(void) {
   
   g_mt_player = MT_PLAYER;
   g_mt_tfog = MT_TFOG;
+  g_mt_blood = MT_BLOOD;
   g_skullpop_mt = MT_GIBDTH;
   
   g_wp_fist = wp_fist;
@@ -203,6 +205,7 @@ static void dsda_InitHeretic(void) {
   
   g_mt_player = HERETIC_MT_PLAYER;
   g_mt_tfog = HERETIC_MT_TFOG;
+  g_mt_blood = HERETIC_MT_BLOOD;
   g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
   
   g_wp_fist = wp_staff;

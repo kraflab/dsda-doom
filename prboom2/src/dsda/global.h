@@ -22,6 +22,7 @@
 
 extern int g_mt_player;
 extern int g_mt_tfog;
+extern int g_mt_blood;
 extern int g_skullpop_mt;
 
 extern int g_wp_fist;
