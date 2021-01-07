@@ -142,7 +142,7 @@ dboolean PIT_StompThing (mobj_t* thing)
     return true; // didn't hit it
 
   // monsters don't stomp things except on boss level
-  if (!telefrag)  // killough 8/9/98: make consistent across all levels
+  if (!telefrag && !(tmthing->flags2 & MF2_TELESTOMP))  // killough 8/9/98: make consistent across all levels
     return false;
 
   P_DamageMobj (thing, tmthing, tmthing, 10000); // Stomp!
@@ -437,23 +437,36 @@ dboolean PIT_CheckLine (line_t* ld)
 
   // killough 7/24/98: allow player to move out of 1s wall, to prevent sticking
   if (!ld->backsector) // one sided line
+  {
+    if (heretic)
     {
-      blockline = ld;
-      return tmunstuck && !untouched(ld) &&
-  FixedMul(tmx-tmthing->x,ld->dy) > FixedMul(tmy-tmthing->y,ld->dx);
+      if (tmthing->flags & MF_MISSILE)
+      {                       // Missiles can trigger impact specials
+          if (ld->special)
+          {
+              P_AppendSpecHit(ld);
+          }
+      }
     }
+    blockline = ld;
+    return tmunstuck && !untouched(ld) &&
+           FixedMul(tmx-tmthing->x,ld->dy) > FixedMul(tmy-tmthing->y,ld->dx);
+  }
 
   // killough 8/10/98: allow bouncing objects to pass through as missiles
   if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)))
-    {
-      if (ld->flags & ML_BLOCKING)           // explicitly blocking everything
-  return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
+  {
+    if (ld->flags & ML_BLOCKING)           // explicitly blocking everything
+      return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
 
-      // killough 8/9/98: monster-blockers don't affect friends
-      if (!(tmthing->flags & MF_FRIEND || tmthing->player)
-    && ld->flags & ML_BLOCKMONSTERS)
-  return false; // block monsters only
-    }
+    // killough 8/9/98: monster-blockers don't affect friends
+    if (
+      !(tmthing->flags & MF_FRIEND || tmthing->player) &&
+      ld->flags & ML_BLOCKMONSTERS &&
+      tmthing->type != HERETIC_MT_POD
+    )
+      return false; // block monsters only
+  }
 
   // set openrange, opentop, openbottom
   // these define a 'window' from one sector to another across this line
@@ -463,18 +476,18 @@ dboolean PIT_CheckLine (line_t* ld)
   // adjust floor & ceiling heights
 
   if (opentop < tmceilingz)
-    {
-      tmceilingz = opentop;
-      ceilingline = ld;
-      blockline = ld;
-    }
+  {
+    tmceilingz = opentop;
+    ceilingline = ld;
+    blockline = ld;
+  }
 
   if (openbottom > tmfloorz)
-    {
-      tmfloorz = openbottom;
-      floorline = ld;          // killough 8/1/98: remember floor linedef
-      blockline = ld;
-    }
+  {
+    tmfloorz = openbottom;
+    floorline = ld;          // killough 8/1/98: remember floor linedef
+    blockline = ld;
+  }
 
   if (lowfloor < tmdropoffz)
     tmdropoffz = lowfloor;
@@ -483,33 +496,7 @@ dboolean PIT_CheckLine (line_t* ld)
 
   CheckLinesCrossTracer(ld);//e6y
   if (ld->special)
-    {
-      // 1/11/98 killough: remove limit on lines hit, by array doubling
-      if (numspechit >= spechit_max) {
-        spechit_max = spechit_max ? spechit_max*2 : 8;
-	spechit = realloc(spechit,sizeof *spechit*spechit_max); // killough
-      }
-      spechit[numspechit++] = ld;
-      // e6y: Spechits overrun emulation code
-      if (numspechit > 8 && demo_compatibility)
-      {
-        static spechit_overrun_param_t spechit_overrun_param = {
-          NULL,          // line_t *line;
-
-          &spechit,      // line_t **spechit;
-          &numspechit,   // int *numspechit;
-
-          tmbbox,        // fixed_t *tmbbox[4];
-          &tmfloorz,     // fixed_t *tmfloorz;
-          &tmceilingz,   // fixed_t *tmceilingz;
-
-          &crushchange,  // dboolean *crushchange;
-          &nofit,        // dboolean *nofit;
-        };
-        spechit_overrun_param.line = ld;
-        SpechitOverrun(&spechit_overrun_param);
-      }
-    }
+    P_AppendSpecHit(ld);
 
   return true;
 }
@@ -2606,4 +2593,33 @@ void P_FakeZMovement(mobj_t * mo)
             mo->momz = -mo->momz;
         }
     }
+}
+
+void P_AppendSpecHit(line_t * ld)
+{
+  // 1/11/98 killough: remove limit on lines hit, by array doubling
+  if (numspechit >= spechit_max) {
+    spechit_max = spechit_max ? spechit_max*2 : 8;
+    spechit = realloc(spechit,sizeof *spechit*spechit_max); // killough
+  }
+  spechit[numspechit++] = ld;
+  // e6y: Spechits overrun emulation code
+  if (numspechit > 8 && demo_compatibility)
+  {
+    static spechit_overrun_param_t spechit_overrun_param = {
+      NULL,          // line_t *line;
+
+      &spechit,      // line_t **spechit;
+      &numspechit,   // int *numspechit;
+
+      tmbbox,        // fixed_t *tmbbox[4];
+      &tmfloorz,     // fixed_t *tmfloorz;
+      &tmceilingz,   // fixed_t *tmceilingz;
+
+      &crushchange,  // dboolean *crushchange;
+      &nofit,        // dboolean *nofit;
+    };
+    spechit_overrun_param.line = ld;
+    SpechitOverrun(&spechit_overrun_param);
+  }
 }
