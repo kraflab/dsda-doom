@@ -1307,11 +1307,12 @@ void P_HitSlideLine (line_t* ld)
   else
   {
     extern dboolean onground;
-    icyfloor = !compatibility &&
-    variable_friction &&
-    slidemo->player &&
-    onground && 
-    slidemo->friction > ORIG_FRICTION;
+    icyfloor = !heretic && 
+               !compatibility &&
+               variable_friction &&
+               slidemo->player &&
+               onground && 
+               slidemo->friction > ORIG_FRICTION;
   }
 
   if (ld->slopetype == ST_HORIZONTAL)
@@ -1354,7 +1355,7 @@ void P_HitSlideLine (line_t* ld)
   // The moveangle+=10 breaks v1.9 demo compatibility in
   // some demos, so it needs demo_compatibility switch.
 
-  if (!demo_compatibility)
+  if (!heretic && !demo_compatibility)
     moveangle += 10; // prevents sudden path reversal due to        // phares
                      // rounding error                              //   |
   deltaangle = moveangle-lineangle;                                 //   V
@@ -1543,7 +1544,8 @@ void P_SlideMove(mobj_t *mo)
 
       /* killough 10/98: affect the bobbing the same way (but not voodoo dolls)
        * cph - DEMOSYNC? */
-      if (mo->player && mo->player->mo == mo)
+      // HERETIC_TODO: probably not necessary?
+      if (!heretic && mo->player && mo->player->mo == mo)
   {
     if (D_abs(mo->player->momx) > D_abs(tmxmove))
       mo->player->momx = tmxmove;
