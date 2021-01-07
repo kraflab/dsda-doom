@@ -1644,6 +1644,9 @@ dboolean PTR_AimTraverse (intercept_t* in)
   if (!(th->flags&MF_SHOOTABLE))
     return true;    // corpse or something
 
+  if (th->type == HERETIC_MT_POD)
+    return true;    // Can't auto-aim at pods
+
   /* killough 7/19/98, 8/2/98:
    * friends don't aim at friends (except players), at least not first
    */
@@ -1677,6 +1680,8 @@ dboolean PTR_AimTraverse (intercept_t* in)
   return false;   // don't go any farther
 }
 
+// heretic
+extern mobjtype_t PuffType;
 
 //
 // PTR_ShootTraverse
@@ -1747,7 +1752,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
         // fix bullet-eaters -- killough:
         // WARNING: Almost all demos will lose sync without this
         // demo_compatibility flag check!!! killough 1/18/98
-      if (demo_compatibility || li->backsector->ceilingheight < z)
+      if (heretic || demo_compatibility || li->backsector->ceilingheight < z)
         return false;
       }
 
@@ -1768,6 +1773,9 @@ dboolean PTR_ShootTraverse (intercept_t* in)
 
   if (!(th->flags&MF_SHOOTABLE))
     return true;  // corpse or something
+
+  if (heretic && th->flags & MF_SHADOW && shootthing->player->readyweapon == wp_staff)
+    return true;
 
   // check angles to see if the thing can be aimed at
 
@@ -1793,13 +1801,28 @@ dboolean PTR_ShootTraverse (intercept_t* in)
 
   // Spawn bullet puffs or blod spots,
   // depending on target type.
-  if (in->d.thing->flags & MF_NOBLOOD)
-    P_SpawnPuff (x,y,z);
+  if (heretic && PuffType == HERETIC_MT_BLASTERPUFF1)
+  {                           // Make blaster big puff
+    mobj_t* mo;
+    mo = P_SpawnMobj(x, y, z, HERETIC_MT_BLASTERPUFF2);
+    S_StartSound(mo, heretic_sfx_blshit);
+  }
   else
-    P_SpawnBlood (x,y,z, la_damage);
+  {
+    if (heretic || in->d.thing->flags & MF_NOBLOOD)
+      P_SpawnPuff (x,y,z);
+    else
+      P_SpawnBlood (x,y,z, la_damage);
+  }
 
   if (la_damage)
-    P_DamageMobj (th, shootthing, shootthing, la_damage);
+  {
+    if (heretic && !(in->d.thing->flags & MF_NOBLOOD) && P_Random(pr_heretic) < 192)
+    {
+      P_BloodSplatter(x, y, z, in->d.thing);
+    }
+    P_DamageMobj(th, shootthing, shootthing, la_damage);
+  }
 
   // don't go any farther
   return false;
@@ -1865,6 +1888,10 @@ void P_LineAttack
   x2 = t1->x + (distance>>FRACBITS)*finecosine[angle];
   y2 = t1->y + (distance>>FRACBITS)*finesine[angle];
   shootz = t1->z + (t1->height>>1) + 8*FRACUNIT;
+  if (t1->flags2 & MF2_FEETARECLIPPED)
+  {
+    shootz -= FOOTCLIPSIZE;
+  }
   attackrange = distance;
   aimslope = slope;
 
