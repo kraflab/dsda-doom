@@ -52,6 +52,8 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "heretic/def.h"
+
 static mobj_t    *tmthing;
 static fixed_t   tmx;
 static fixed_t   tmy;
@@ -902,10 +904,13 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
 
   felldown = floatok = false;               // killough 11/98
 
-  if (!P_CheckPosition (thing, x, y))
-    return false;   // solid wall or thing
+  if (!P_CheckPosition(thing, x, y))
+  {                           // Solid wall or thing
+    CheckMissileImpact(thing);
+    return false;
+  }
 
-  if ( !(thing->flags & MF_NOCLIP) )
+  if (!(thing->flags & MF_NOCLIP))
   {
     if (thing->flags & MF_FLY)
     {
@@ -925,16 +930,49 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
     // killough 7/26/98: reformatted slightly
     // killough 8/1/98: Possibly allow escape if otherwise stuck
 
-    if (tmceilingz - tmfloorz < thing->height ||     // doesn't fit
-        // mobj must lower to fit
-        (floatok = true, !(thing->flags & MF_TELEPORT) &&
-         tmceilingz - thing->z < thing->height && !(thing->flags & MF_FLY)) ||
-        // too big a step up
-        (!(thing->flags & MF_TELEPORT) &&
-         tmfloorz - thing->z > 24*FRACUNIT))
+    if (
+      tmceilingz - tmfloorz < thing->height ||     // doesn't fit
+      // mobj must lower to fit
+      (
+        floatok = true,
+        !(thing->flags & MF_TELEPORT) &&
+        tmceilingz - thing->z < thing->height &&
+        !(thing->flags & MF_FLY) &&
+        !(thing->flags2 & MF2_FLY)
+      ) ||
+      // too big a step up
+      (
+        !(thing->flags & MF_TELEPORT) &&
+        thing->type != HERETIC_MT_MNTRFX2 &&
+        tmfloorz - thing->z > 24*FRACUNIT
+      )
+    )
+    {
+      CheckMissileImpact(thing);
       return tmunstuck
         && !(ceilingline && untouched(ceilingline))
         && !(  floorline && untouched(  floorline));
+    }
+
+    if (thing->flags2 & MF2_FLY)
+    {
+      if (thing->z + thing->height > tmceilingz)
+      {
+        thing->momz = -8 * FRACUNIT;
+        return false;
+      }
+      else if (thing->z < tmfloorz
+               && tmfloorz - tmdropoffz > 24 * FRACUNIT)
+      {
+        thing->momz = 8 * FRACUNIT;
+        return false;
+      }
+    }
+
+    if ((thing->flags & MF_MISSILE) && tmfloorz > thing->z)
+    {
+      CheckMissileImpact(thing);
+    }
 
     /* killough 3/15/98: Allow certain objects to drop off
      * killough 7/24/98, 8/1/98:
@@ -944,7 +982,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
      */
     if (!(thing->flags & (MF_DROPOFF|MF_FLOAT))) 
     {
-      if (comp[comp_dropoff])
+      if (heretic || comp[comp_dropoff])
       {
         // e6y
         // Fix demosync bug in mbf compatibility mode
@@ -954,9 +992,19 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
         // Links:
         // http://competn.doom2.net/pub/sda/t-z/v2-2822.zip
         // http://www.doomworld.com/idgames/index.php?id=11138
-        if ((compatibility || !dropoff 
-              || (!prboom_comp[PC_NO_DROPOFF].state && mbf_features && compatibility_level <= prboom_2_compatibility))
-            && (tmfloorz - tmdropoffz > 24*FRACUNIT))
+        if (
+          (
+            heretic ||
+            compatibility ||
+            !dropoff ||
+            (
+              !prboom_comp[PC_NO_DROPOFF].state &&
+              mbf_features &&
+              compatibility_level <= prboom_2_compatibility
+            )
+          ) &&
+          (tmfloorz - tmdropoffz > 24*FRACUNIT)
+        )
           return false;                      // don't stand over a dropoff
       }
       else
@@ -983,7 +1031,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
 
     // killough 11/98: prevent falling objects from going up too many steps
     if (thing->intflags & MIF_FALLING && tmfloorz - thing->z >
-        FixedMul(thing->momx,thing->momx)+FixedMul(thing->momy,thing->momy))
+        FixedMul(thing->momx, thing->momx) + FixedMul(thing->momy, thing->momy))
       return false;
   }
 
@@ -1002,9 +1050,19 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
 
   P_SetThingPosition (thing);
 
+  if (thing->flags2 & MF2_FOOTCLIP
+      && P_GetThingFloorType(thing) != FLOOR_SOLID)
+  {
+    thing->flags2 |= MF2_FEETARECLIPPED;
+  }
+  else if (thing->flags2 & MF2_FEETARECLIPPED)
+  {
+    thing->flags2 &= ~MF2_FEETARECLIPPED;
+  }
+
   // if any special lines were hit, do the effect
 
-  if (! (thing->flags&(MF_TELEPORT|MF_NOCLIP)) )
+  if (!(thing->flags & (MF_TELEPORT | MF_NOCLIP)))
     while (numspechit--)
       if (spechit[numspechit]->special)  // see if the line was crossed
       {
@@ -2695,7 +2753,7 @@ void CheckMissileImpact(mobj_t * mobj)
 {
     int i;
 
-    if (!numspechit || !(mobj->flags & MF_MISSILE) || !mobj->target)
+    if (!heretic || !numspechit || !(mobj->flags & MF_MISSILE) || !mobj->target)
     {
         return;
     }
