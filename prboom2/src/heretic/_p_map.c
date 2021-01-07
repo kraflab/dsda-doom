@@ -2,65 +2,6 @@
 /*
 ==============================================================================
 
-							USE LINES
-
-==============================================================================
-*/
-
-mobj_t *usething;
-
-boolean PTR_UseTraverse(intercept_t * in)
-{
-    if (!in->d.line->special)
-    {
-        P_LineOpening(in->d.line);
-        if (openrange <= 0)
-        {
-            //S_StartSound (usething, sfx_noway);
-            return false;       // can't use through a wall
-        }
-        return true;            // not a special line, but keep checking
-    }
-
-    if (P_PointOnLineSide(usething->x, usething->y, in->d.line) == 1)
-        return false;           // don't use back sides
-
-    P_UseSpecialLine(usething, in->d.line);
-
-    return false;               // can't use for than one special line in a row
-}
-
-
-/*
-================
-=
-= P_UseLines
-=
-= Looks for special lines in front of the player to activate
-================ 
-*/
-
-void P_UseLines(player_t * player)
-{
-    int angle;
-    fixed_t x1, y1, x2, y2;
-
-    usething = player->mo;
-
-    angle = player->mo->angle >> ANGLETOFINESHIFT;
-    x1 = player->mo->x;
-    y1 = player->mo->y;
-    x2 = x1 + (USERANGE >> FRACBITS) * finecosine[angle];
-    y2 = y1 + (USERANGE >> FRACBITS) * finesine[angle];
-
-    P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES, PTR_UseTraverse);
-}
-
-
-
-/*
-==============================================================================
-
 							RADIUS ATTACK
 
 ==============================================================================

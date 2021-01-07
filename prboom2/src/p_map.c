@@ -1914,7 +1914,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
     P_LineOpening (in->d.line);
     if (openrange <= 0)
       {
-      S_StartSound (usething, sfx_noway);
+      if (!heretic) S_StartSound (usething, sfx_noway);
 
       // can't use through a wall
       return false;
@@ -1936,7 +1936,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
   //WAS can't use for than one special line in a row
   //jff 3/21/98 NOW multiple use allowed with enabling line flag
 
-  return (!demo_compatibility && ((in->d.line->flags&ML_PASSUSE) || comperr(comperr_passuse)))?//e6y
+  return (!heretic && !demo_compatibility && ((in->d.line->flags&ML_PASSUSE) || comperr(comperr_passuse)))?//e6y
           true : false;
 }
 
@@ -1992,7 +1992,7 @@ void P_UseLines (player_t*  player)
   // This added test makes the "oof" sound work on 2s lines -- killough:
 
   if (P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_UseTraverse ))
-    if (!comp[comp_sound] && !P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_NoWayTraverse ))
+    if (!heretic && !comp[comp_sound] && !P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_NoWayTraverse ))
       S_StartSound (usething, sfx_noway);
 }
 
