@@ -370,6 +370,7 @@ int    bodyqueslot, bodyquesize;        // killough 2/8/98
 mobj_t **bodyque = 0;                   // phares 8/10/98
 
 // heretic
+#include "p_user.h"
 #include "heretic/def.h"
 
 int inventoryTics;
@@ -1543,7 +1544,36 @@ void G_Ticker (void)
 
 static void G_PlayerFinishLevel(int player)
 {
+  int i;
   player_t *p = &players[player];
+
+  for (i = 0; i < p->inventorySlotNum; i++)
+  {
+    p->inventory[i].count = 1;
+  }
+  p->artifactCount = p->inventorySlotNum;
+  if (!deathmatch)
+  {
+    for (i = 0; i < 16; i++)
+    {
+      P_PlayerUseArtifact(p, arti_fly);
+    }
+  }
+  if (p->chickenTics)
+  {
+      p->readyweapon = p->mo->special1.i;       // Restore weapon
+      p->chickenTics = 0;
+  }
+  p->lookdir = 0;
+  p->rain1 = NULL;
+  p->rain2 = NULL;
+  // HERETIC_TODO: status bar stuff
+  // playerkeys = 0;
+  // if (p == &players[consoleplayer])
+  // {
+  //     SB_state = -1;          // refresh the status bar
+  // }
+
   memset(p->powers, 0, sizeof p->powers);
   memset(p->cards, 0, sizeof p->cards);
   p->mo = NULL;           // cph - this is allocated PU_LEVEL so it's gone
