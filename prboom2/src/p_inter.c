@@ -1206,7 +1206,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     P_SetTarget(&target->target, source);       // killough 11/98
     target->threshold = BASETHRESHOLD;
     if (target->state == &states[target->info->spawnstate]
-        && target->info->seestate != S_NULL)
+        && target->info->seestate != g_s_null)
       P_SetMobjState (target, target->info->seestate);
   }
 

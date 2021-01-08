@@ -518,7 +518,7 @@ void A_Lower(player_t *player, pspdef_t *psp)
 
   if (!player->health)
   {      // Player is dead, so keep the weapon off screen.
-    P_SetPsprite(player,  ps_weapon, S_NULL);
+    P_SetPsprite(player,  ps_weapon, g_s_null);
     return;
   }
 
@@ -1688,7 +1688,7 @@ void A_SkullRodStorm(mobj_t * actor)
 
     if (actor->health-- == 0)
     {
-        P_SetMobjState(actor, HERETIC_S_NULL);
+        P_SetMobjState(actor, g_s_null);
         playerNum = netgame ? actor->special2.i : 0;
         if (!playeringame[playerNum])
         {                       // Player left the game

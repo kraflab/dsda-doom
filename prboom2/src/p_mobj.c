@@ -89,9 +89,9 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
 
   do
     {
-    if (state == S_NULL)
+    if (state == g_s_null)
       {
-      mobj->state = (state_t *) S_NULL;
+      mobj->state = (state_t *) g_s_null;
       P_RemoveMobj (mobj);
       ret = false;
       break;                 // killough 4/9/98
@@ -2184,9 +2184,9 @@ dboolean P_SetMobjStateNF(mobj_t * mobj, statenum_t state)
 {
     state_t *st;
 
-    if (state == S_NULL)
+    if (state == g_s_null)
     {                           // Remove mobj
-        mobj->state = (state_t *) S_NULL;
+        mobj->state = (state_t *) g_s_null;
         P_RemoveMobj(mobj);
         return (false);
     }
@@ -2394,9 +2394,9 @@ dboolean Heretic_P_SetMobjState(mobj_t * mobj, statenum_t state)
 {
     state_t *st;
 
-    if (state == HERETIC_S_NULL)
+    if (state == g_s_null)
     {                           // Remove mobj
-        mobj->state = (state_t *) HERETIC_S_NULL;
+        mobj->state = (state_t *) g_s_null;
         P_RemoveMobj(mobj);
         return (false);
     }

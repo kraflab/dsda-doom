@@ -1739,7 +1739,7 @@ static dboolean PIT_VileCheck(mobj_t *thing)
   if (thing->tics != -1)
     return true;        // not lying still yet
 
-  if (thing->info->raisestate == S_NULL)
+  if (thing->info->raisestate == g_s_null)
     return true;        // monster doesn't have a raise state
 
   maxdist = thing->info->radius + mobjinfo[MT_VILE].radius;
@@ -4057,7 +4057,7 @@ void A_AccTeleGlitter(mobj_t * actor)
 void A_InitKeyGizmo(mobj_t * gizmo)
 {
     mobj_t *mo;
-    statenum_t state = HERETIC_S_NULL;
+    statenum_t state = g_s_null;
 
     switch (gizmo->type)
     {

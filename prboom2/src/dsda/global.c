@@ -65,6 +65,7 @@ int g_s_play_atk1;
 int g_s_play_atk2;
 int g_s_play_run1;
 int g_s_play;
+int g_s_null;
 
 int g_sfx_sawup;
 int g_sfx_telept;
@@ -142,6 +143,7 @@ static void dsda_InitDoom(void) {
   g_s_play_atk2 = S_PLAY_ATK2;
   g_s_play_run1 = S_PLAY_RUN1;
   g_s_play = S_PLAY;
+  g_s_null = S_NULL;
   
   g_sfx_sawup = sfx_sawup;
   g_sfx_telept = sfx_telept;
@@ -220,6 +222,7 @@ static void dsda_InitHeretic(void) {
   g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
   g_s_play_run1 = HERETIC_S_PLAY_RUN1;
   g_s_play = HERETIC_S_PLAY;
+  g_s_null = HERETIC_S_NULL;
   
   g_sfx_sawup = heretic_sfx_gntact;
   g_sfx_telept = heretic_sfx_telept;
