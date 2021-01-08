@@ -55,6 +55,58 @@ int snd_Channels = 16;
 
 int AmbChan;
 
+void S_Start(void)
+{
+    int i;
+
+    S_StartSong((gameepisode - 1) * 9 + gamemap - 1, true);
+
+    //stop all sounds
+    for (i = 0; i < snd_Channels; i++)
+    {
+        if (channel[i].handle)
+        {
+            S_StopSound(channel[i].mo);
+        }
+    }
+    memset(channel, 0, 8 * sizeof(channel_t));
+}
+
+void S_StartSong(int song, boolean loop)
+{
+    int mus_len;
+
+    if (song == mus_song)
+    {                           // don't replay an old song
+        return;
+    }
+
+    if (rs != NULL)
+    {
+        I_StopSong();
+        I_UnRegisterSong(rs);
+    }
+
+    if (song < mus_e1m1 || song > NUMMUSIC)
+    {
+        return;
+    }
+    // [crispy] support dedicated music tracks for each map
+    if (S_music[song][1].name && W_CheckNumForName(S_music[song][1].name) > 0)
+    {
+        mus_lumpnum = (W_GetNumForName(S_music[song][1].name));
+    }
+    else
+    {
+        mus_lumpnum = (W_GetNumForName(S_music[song][0].name));
+    }
+    mus_sndptr = W_CacheLumpNum(mus_lumpnum, PU_MUSIC);
+    mus_len = W_LumpLength(mus_lumpnum);
+    rs = I_RegisterSong(mus_sndptr, mus_len);
+    I_PlaySong(rs, loop);       //'true' denotes endless looping.
+    mus_song = song;
+}
+
 static mobj_t *GetSoundListener(void)
 {
     static degenmobj_t dummy_listener;
@@ -487,6 +539,55 @@ void S_Init(void)
     }
 
     I_PrecacheSounds(S_sfx, NUMSFX);
+}
+
+void S_GetChannelInfo(SoundInfo_t * s)
+{
+    int i;
+    ChanInfo_t *c;
+
+    s->channelCount = snd_Channels;
+    s->musicVolume = snd_MusicVolume;
+    s->soundVolume = snd_MaxVolume;
+    for (i = 0; i < snd_Channels; i++)
+    {
+        c = &s->chan[i];
+        c->id = channel[i].sound_id;
+        c->priority = channel[i].priority;
+        c->name = S_sfx[c->id].name;
+        c->mo = channel[i].mo;
+
+        if (c->mo != NULL)
+        {
+            c->distance = P_AproxDistance(c->mo->x - viewx, c->mo->y - viewy)
+                >> FRACBITS;
+        }
+        else
+        {
+            c->distance = 0;
+        }
+    }
+}
+
+void S_SetMaxVolume(boolean fullprocess)
+{
+    int i;
+
+    if (!fullprocess)
+    {
+        soundCurve[0] =
+            (*((byte *) W_CacheLumpName("SNDCURVE", PU_CACHE)) *
+             (snd_MaxVolume * 8)) >> 7;
+    }
+    else
+    {
+        for (i = 0; i < MAX_SND_DIST; i++)
+        {
+            soundCurve[i] =
+                (*((byte *) W_CacheLumpName("SNDCURVE", PU_CACHE) + i) *
+                 (snd_MaxVolume * 8)) >> 7;
+        }
+    }
 }
 
 static boolean musicPaused;

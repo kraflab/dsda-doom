@@ -37,6 +37,7 @@ typedef struct Cheat_s
 
 // Private Functions
 
+static void DrawSoundInfo(void);
 static void ShadeLine(int x, int y, int height, int shade);
 static void ShadeChain(void);
 static void DrINumber(signed int val, int x, int y);
@@ -65,6 +66,8 @@ static void CheatIDKFAFunc(player_t * player, Cheat_t * cheat);
 static void CheatIDDQDFunc(player_t * player, Cheat_t * cheat);
 
 // Public Data
+
+boolean DebugSound;             // debug flag for displaying sound info
 
 boolean inventory;
 int curpos;
@@ -442,6 +445,71 @@ static void ShadeChain(void)
 
 //---------------------------------------------------------------------------
 //
+// PROC DrawSoundInfo
+//
+// Displays sound debugging information.
+//
+//---------------------------------------------------------------------------
+
+static void DrawSoundInfo(void)
+{
+    int i;
+    SoundInfo_t s;
+    ChanInfo_t *c;
+    char text[32];
+    int x;
+    int y;
+    int xPos[7] = { 1, 75, 112, 156, 200, 230, 260 };
+
+    if (leveltime & 16)
+    {
+        MN_DrTextA(DEH_String("*** SOUND DEBUG INFO ***"), xPos[0], 20);
+    }
+    S_GetChannelInfo(&s);
+    if (s.channelCount == 0)
+    {
+        return;
+    }
+    x = 0;
+    MN_DrTextA(DEH_String("NAME"), xPos[x++], 30);
+    MN_DrTextA(DEH_String("MO.T"), xPos[x++], 30);
+    MN_DrTextA(DEH_String("MO.X"), xPos[x++], 30);
+    MN_DrTextA(DEH_String("MO.Y"), xPos[x++], 30);
+    MN_DrTextA(DEH_String("ID"), xPos[x++], 30);
+    MN_DrTextA(DEH_String("PRI"), xPos[x++], 30);
+    MN_DrTextA(DEH_String("DIST"), xPos[x++], 30);
+    for (i = 0; i < s.channelCount; i++)
+    {
+        c = &s.chan[i];
+        x = 0;
+        y = 40 + i * 10;
+        if (c->mo == NULL)
+        {                       // Channel is unused
+            MN_DrTextA(DEH_String("------"), xPos[0], y);
+            continue;
+        }
+        M_snprintf(text, sizeof(text), "%s", c->name);
+        M_ForceUppercase(text);
+        MN_DrTextA(text, xPos[x++], y);
+        M_snprintf(text, sizeof(text), "%d", c->mo->type);
+        MN_DrTextA(text, xPos[x++], y);
+        M_snprintf(text, sizeof(text), "%d", c->mo->x >> FRACBITS);
+        MN_DrTextA(text, xPos[x++], y);
+        M_snprintf(text, sizeof(text), "%d", c->mo->y >> FRACBITS);
+        MN_DrTextA(text, xPos[x++], y);
+        M_snprintf(text, sizeof(text), "%d", c->id);
+        MN_DrTextA(text, xPos[x++], y);
+        M_snprintf(text, sizeof(text), "%d", c->priority);
+        MN_DrTextA(text, xPos[x++], y);
+        M_snprintf(text, sizeof(text), "%d", c->distance);
+        MN_DrTextA(text, xPos[x++], y);
+    }
+    UpdateState |= I_FULLSCRN;
+    BorderNeedRefresh = true;
+}
+
+//---------------------------------------------------------------------------
+//
 // PROC SB_Drawer
 //
 //---------------------------------------------------------------------------
@@ -489,6 +557,11 @@ void SB_Drawer(void)
     int frame;
     static boolean hitCenterFrame;
 
+    // Sound info debug stuff
+    if (DebugSound == true)
+    {
+        DrawSoundInfo();
+    }
     CPlayer = &players[consoleplayer];
     if (viewheight == SCREENHEIGHT && !automapactive)
     {
@@ -1089,8 +1162,16 @@ static void CheatKeysFunc(player_t * player, Cheat_t * cheat)
 
 static void CheatSoundFunc(player_t * player, Cheat_t * cheat)
 {
-    // not going to use this
-    return;
+    NETGAME_CHECK;
+    DebugSound = !DebugSound;
+    if (DebugSound)
+    {
+        P_SetMessage(player, DEH_String(TXT_CHEATSOUNDON), false);
+    }
+    else
+    {
+        P_SetMessage(player, DEH_String(TXT_CHEATSOUNDOFF), false);
+    }
 }
 
 static void CheatTickerFunc(player_t * player, Cheat_t * cheat)
