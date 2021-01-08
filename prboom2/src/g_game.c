@@ -1004,6 +1004,17 @@ static void G_DoLoadLevel (void)
   {
 	  skytexture = R_TextureNumForName(gamemapinfo->skytexture);
   }
+  else if (heretic)
+  {
+    static const char *sky_lump_names[5] = {
+        "SKY1", "SKY2", "SKY3", "SKY1", "SKY3"
+    };
+    
+    if (gameepisode < 6)
+      skytexture = R_TextureNumForName(sky_lump_names[gameepisode - 1]);
+    else
+      skytexture = R_TextureNumForName("SKY1");
+  }
   // DOOM determines the sky texture to be used
   // depending on the current episode, and the game version.
   else if (gamemode == commercial)
@@ -1072,7 +1083,7 @@ static void G_DoLoadLevel (void)
 
   // clear cmd building stuff
   memset (gamekeydown, 0, sizeof(gamekeydown));
-  joyxmove = joyymove = 0;
+  joyxmove = joyymove = joylook = 0;
   mousex = mousey = 0;
   mlooky = 0;//e6y
   special_event = 0; paused = false;
