@@ -40,7 +40,7 @@
 - [x] p_plats.c 259
 - [x] p_pspr.c 1908
 - [ ] p_saveg.c 1913
-- [ ] p_setup.c 763
+- [x] p_setup.c 763
 - [x] p_sight.c 357
 - [x] p_spec.c 1358
 - [x] p_spec.h 391
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 22421, MERGED: 24793, PERCENT: 52%
+LEFT: 21650, MERGED: 25564, PERCENT: 54%

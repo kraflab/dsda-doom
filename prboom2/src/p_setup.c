@@ -1569,19 +1569,6 @@ static void P_LoadLineDefs (int lump)
       // killough 4/4/98: support special sidedef interpretation below
       if (ld->sidenum[0] != NO_INDEX && ld->special)
         sides[*ld->sidenum].special = ld->special;
-
-      // HERETIC_TODO: why is this different? is it necessary?
-      if (heretic)
-      {
-        if (ld->sidenum[0] != -1)
-        ld->frontsector = sides[ld->sidenum[0]].sector;
-        else
-        ld->frontsector = 0;
-        if (ld->sidenum[1] != -1)
-        ld->backsector = sides[ld->sidenum[1]].sector;
-        else
-        ld->backsector = 0;
-      }
     }
 
   W_UnlockLumpNum(lump); // cph - release the lump
@@ -2263,7 +2250,7 @@ static int P_GroupLines (void)
     sector->bbox[3] = sector->blockbox[3] >> FRACTOMAPBITS;
 
     // set the degenmobj_t to the middle of the bounding box
-    if (comp[comp_sound])
+    if (heretic || comp[comp_sound])
     {
       sector->soundorg.x = (bbox[BOXRIGHT]+bbox[BOXLEFT])/2;
       sector->soundorg.y = (bbox[BOXTOP]+bbox[BOXBOTTOM])/2;
@@ -2342,13 +2329,15 @@ static int P_GroupLines (void)
 // Firelines (TM) is a Rezistered Trademark of MBF Productions
 //
 
+// HERETIC_TODO: I didn't really go through this...
+
 static void P_RemoveSlimeTrails(void)         // killough 10/98
 {
   byte *hit = calloc(1, numvertexes);         // Hitlist for vertices
   int i;
   // Correction of desync on dv04-423.lmp/dv.wad
   // http://www.doomworld.com/vb/showthread.php?s=&postid=627257#post627257
-  int apply_for_real_vertexes = (compatibility_level>=lxdoom_1_compatibility || prboom_comp[PC_REMOVE_SLIME_TRAILS].state);
+  int apply_for_real_vertexes = (!heretic && (compatibility_level>=lxdoom_1_compatibility || prboom_comp[PC_REMOVE_SLIME_TRAILS].state));
 
   for (i=0; i<numvertexes; i++)
   {
@@ -2801,7 +2790,11 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   P_MapStart();
 
+  P_InitAmbientSound();
+  P_InitMonsters();
+  P_OpenWeapons();
   P_LoadThings(lumpnum+ML_THINGS);
+  P_CloseWeapons();
 
   // if deathmatch, randomly spawn the active players
   if (deathmatch)
