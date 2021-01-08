@@ -2343,8 +2343,6 @@ int P_HitFloor(mobj_t * thing)
 
 int P_GetThingFloorType(mobj_t * thing)
 {
-  // HERETIC_TODO: not initialized yet
-  if (TerrainTypes == NULL) return 0;
   return (TerrainTypes[thing->subsector->sector->floorpic]);
 }
 
