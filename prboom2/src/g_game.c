@@ -1366,10 +1366,10 @@ void G_Ticker (void)
   if (paused & 2 || (!demoplayback && menuactive && !netgame))
     basetic++;  // For revenant tracers and RNG -- we must maintain sync
   else {
-    dsda_UpdateAutoKeyFrames();
-
     // get commands, check consistancy, and build new consistancy check
     int buf = (gametic/ticdup)%BACKUPTICS;
+
+    dsda_UpdateAutoKeyFrames();
 
     for (i=0 ; i<MAXPLAYERS ; i++) {
       if (playeringame[i])
@@ -1466,7 +1466,15 @@ void G_Ticker (void)
             }
         }
     }
-    
+
+    // turn inventory off after a certain amount of time
+    if (inventory && !(--inventoryTics))
+    {
+        players[consoleplayer].readyArtifact =
+            players[consoleplayer].inventory[inv_ptr].type;
+        inventory = false;
+    }
+
     dsda_DisplayNotifications();
   }
 
@@ -1483,7 +1491,7 @@ void G_Ticker (void)
       // Z_FreeTags(PU_LEVEL, PU_PURGELEVEL-1);
       break;
     case GS_INTERMISSION:
-      WI_End();
+      WI_End(); // HERETIC_TODO: heretic equivalent intermission cleanup?
     default:
       break;
     }
@@ -1500,6 +1508,7 @@ void G_Ticker (void)
   switch (gamestate)
     {
     case GS_LEVEL:
+      // HERETIC_TODO: P SB AM CT _Ticker();
       P_Ticker ();
       P_WalkTicker();
       mlooky = 0;
@@ -1509,7 +1518,7 @@ void G_Ticker (void)
       break;
 
     case GS_INTERMISSION:
-       WI_Ticker ();
+       WI_Ticker (); // HERETIC_TODO: IN_Ticker();
       break;
 
     case GS_FINALE:
