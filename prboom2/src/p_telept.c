@@ -464,7 +464,7 @@ dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
                     continue;
                 }
                 m = (mobj_t *) thinker;
-                if (m->type != MT_TELEPORTMAN)
+                if (m->type != HERETIC_MT_TELEPORTMAN)
                 {               // Not a teleportman
                     continue;
                 }
