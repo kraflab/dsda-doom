@@ -146,8 +146,6 @@ extern int viewangleoffset;     // ANG90 = left side, ANG270 = right
 
 extern player_t players[MAXPLAYERS];
 
-extern boolean DebugSound;      // debug flag for displaying sound info
-
 extern boolean demorecording;
 extern boolean demoplayback;
 extern boolean demoextend;      // allow demos to persist through exit/respawn
