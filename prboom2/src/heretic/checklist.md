@@ -57,9 +57,9 @@
 - [ ] r_segs.c 678
 - [ ] r_things.c 1075
 - [ ] s_sound.c 616
-- [ ] s_sound.h 39
+- [x] s_sound.h 39
 - [ ] sb_bar.c 1333
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 21650, MERGED: 25564, PERCENT: 54%
+LEFT: 21612, MERGED: 25602, PERCENT: 54%
