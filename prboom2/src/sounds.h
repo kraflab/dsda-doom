@@ -169,7 +169,7 @@ typedef enum {
   NUMMUSIC,
   
   // heretic
-  heretic_mus_e1m1 = 0,
+  heretic_mus_e1m1 = mus_e1m1,
   heretic_mus_e1m2,
   heretic_mus_e1m3,
   heretic_mus_e1m4,

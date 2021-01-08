@@ -17,6 +17,7 @@
 #include "sounds.h"
 
 musicinfo_t heretic_S_music[] = {
+    { 0 },
     { "MUS_E1M1", 0 }, // 1-1
     { "MUS_E1M2", 0 },
     { "MUS_E1M3", 0 },
