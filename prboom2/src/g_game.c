@@ -91,6 +91,8 @@
 #include "dsda/settings.h"
 #include "statdump.h"
 
+#define MAX_MOUSE_BUTTONS 8
+
 #define SAVEGAMESIZE  0x20000
 #define SAVESTRINGSIZE  24
 
@@ -336,7 +338,7 @@ static const struct
     { wp_beak,        wp_beak },
 };
 
-static int mousearray[6];
+static int mousearray[MAX_MOUSE_BUTTONS + 1];
 static int *mousebuttons = &mousearray[1];    // allow [-1]
 
 // mouse values are used once
@@ -390,7 +392,14 @@ int key_arti_shadowsphere;
 int key_arti_wings;
 int key_arti_torch;
 int key_arti_morph;
-int joylook;
+int key_invleft;
+int key_invright;
+int mousebinvleft;
+int mousebinvright;
+
+static void SetMouseButtons(unsigned int buttons_mask);
+static dboolean InventoryMoveLeft(void);
+static dboolean InventoryMoveRight(void);
 // end heretic
 
 static void G_DoSaveGame (dboolean menu);
@@ -625,11 +634,11 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
 
     // Look up/down/center keys
-    if (gamekeydown[key_lookup] || joylook < 0)
+    if (gamekeydown[key_lookup])
     {
       look = lspeed;
     }
-    if (gamekeydown[key_lookdown] || joylook > 0)
+    if (gamekeydown[key_lookdown])
     {
       look = -lspeed;
     }
@@ -1083,7 +1092,7 @@ static void G_DoLoadLevel (void)
 
   // clear cmd building stuff
   memset (gamekeydown, 0, sizeof(gamekeydown));
-  joyxmove = joyymove = joylook = 0;
+  joyxmove = joyymove = 0;
   mousex = mousey = 0;
   mlooky = 0;//e6y
   special_event = 0; paused = false;
@@ -1116,6 +1125,22 @@ static void G_DoLoadLevel (void)
 
 dboolean G_Responder (event_t* ev)
 {
+  // HERETIC_TODO: this is supposed to be before the other responders, but in doom this is the last
+  if (heretic)
+  {
+    player_t *plr;
+
+    plr = &players[consoleplayer];
+    if (ev->type == ev_keyup && ev->data1 == key_useartifact)
+    {                           // flag to denote that it's okay to use an artifact
+      if (!inventory)
+      {
+        plr->readyArtifact = plr->inventory[inv_ptr].type;
+      }
+      usearti = true;
+    }
+  }
+
   // allow spy mode changes even during the demo
   // killough 2/22/98: even during DM demo
   //
@@ -1199,10 +1224,26 @@ dboolean G_Responder (event_t* ev)
     {
     case ev_keydown:
       if (ev->data1 == key_pause)           // phares
+      {
+        special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
+        return true;
+      }
+      if (ev->data1 == key_invleft)
+      {
+        if (InventoryMoveLeft())
         {
-          special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
           return true;
         }
+        break;
+      }
+      if (ev->data1 == key_invright)
+      {
+        if (InventoryMoveRight())
+        {
+          return true;
+        }
+        break;
+      }
       if (ev->data1 <NUMKEYS)
         gamekeydown[ev->data1] = true;
       return true;    // eat key down events
@@ -1213,11 +1254,7 @@ dboolean G_Responder (event_t* ev)
       return false;   // always let key up events filter down
 
     case ev_mouse:
-      mousebuttons[0] = ev->data1 & 1;
-      mousebuttons[1] = ev->data1 & 2;
-      mousebuttons[2] = ev->data1 & 4;
-      mousebuttons[3] = ev->data1 & 8;
-      mousebuttons[4] = ev->data1 & 16;
+      SetMouseButtons(ev->data1);
       /*
        * bmead@surfree.com
        * Modified by Barry Mead after adding vastly more resolution
@@ -4277,4 +4314,85 @@ void G_CheckDemoContinue(void)
       usergame = true;
     }
   }
+}
+
+// heretic
+
+static void SetMouseButtons(unsigned int buttons_mask)
+{
+    int i;
+
+    for (i=0; i<MAX_MOUSE_BUTTONS; ++i)
+    {
+        unsigned int button_on = (buttons_mask & (1 << i)) != 0;
+
+        // Detect button press:
+
+        if (!mousebuttons[i] && button_on)
+        {
+            if (i == mousebinvleft)
+            {
+                InventoryMoveLeft();
+            }
+            else if (i == mousebinvright)
+            {
+                InventoryMoveRight();
+            }
+        }
+
+        mousebuttons[i] = button_on;
+    }
+}
+
+static dboolean InventoryMoveLeft(void)
+{
+    inventoryTics = 5 * 35;
+    if (!inventory)
+    {
+        inventory = true;
+        return false;
+    }
+    inv_ptr--;
+    if (inv_ptr < 0)
+    {
+        inv_ptr = 0;
+    }
+    else
+    {
+        curpos--;
+        if (curpos < 0)
+        {
+            curpos = 0;
+        }
+    }
+    return true;
+}
+
+static dboolean InventoryMoveRight(void)
+{
+    player_t *plr;
+
+    plr = &players[consoleplayer];
+    inventoryTics = 5 * 35;
+    if (!inventory)
+    {
+        inventory = true;
+        return false;
+    }
+    inv_ptr++;
+    if (inv_ptr >= plr->inventorySlotNum)
+    {
+        inv_ptr--;
+        if (inv_ptr < 0)
+            inv_ptr = 0;
+    }
+    else
+    {
+        curpos++;
+        if (curpos > 6)
+        {
+            curpos = 6;
+        }
+    }
+    return true;
 }
