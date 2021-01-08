@@ -96,6 +96,28 @@
 
 struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
 
+struct
+{
+    int type;   // mobjtype_t
+    int speed[2];
+} MonsterMissileInfo[] = {
+    { HERETIC_MT_IMPBALL, { 10, 20 } },
+    { HERETIC_MT_MUMMYFX1, { 9, 18 } },
+    { HERETIC_MT_KNIGHTAXE, { 9, 18 } },
+    { HERETIC_MT_REDAXE, { 9, 18 } },
+    { HERETIC_MT_BEASTBALL, { 12, 20 } },
+    { HERETIC_MT_WIZFX1, { 18, 24 } },
+    { HERETIC_MT_SNAKEPRO_A, { 14, 20 } },
+    { HERETIC_MT_SNAKEPRO_B, { 14, 20 } },
+    { HERETIC_MT_HEADFX1, { 13, 20 } },
+    { HERETIC_MT_HEADFX3, { 10, 18 } },
+    { HERETIC_MT_MNTRFX1, { 20, 26 } },
+    { HERETIC_MT_MNTRFX2, { 14, 20 } },
+    { HERETIC_MT_SRCRFX1, { 20, 28 } },
+    { HERETIC_MT_SOR2FX1, { 20, 28 } },
+    { -1, { -1, -1 } }                 // Terminator
+};
+
 // e6y
 // It is signature for new savegame format with continuous numbering.
 // Now it is not necessary to add a new level of compatibility in case 
@@ -297,6 +319,23 @@ static const struct
   { wp_bfg,          wp_bfg }
 };
 
+// HERETIC_TODO: dynamically set these
+static const struct
+{
+    weapontype_t weapon;
+    weapontype_t weapon_num;
+} heretic_weapon_order_table[] = {
+    { wp_staff,       wp_staff },
+    { wp_gauntlets,   wp_staff },
+    { wp_goldwand,    wp_goldwand },
+    { wp_crossbow,    wp_crossbow },
+    { wp_blaster,     wp_blaster },
+    { wp_skullrod,    wp_skullrod },
+    { wp_phoenixrod,  wp_phoenixrod },
+    { wp_mace,        wp_mace },
+    { wp_beak,        wp_beak },
+};
+
 static int mousearray[6];
 static int *mousebuttons = &mousearray[1];    // allow [-1]
 
@@ -327,6 +366,32 @@ int defaultskill;               //note 1-based
 // killough 2/8/98: make corpse queue variable in size
 int    bodyqueslot, bodyquesize;        // killough 2/8/98
 mobj_t **bodyque = 0;                   // phares 8/10/98
+
+// heretic
+#include "heretic/def.h"
+
+int inventoryTics;
+int lookheld;
+dboolean usearti = true;
+int key_lookdown;
+int key_lookup;
+int key_lookcenter;
+int key_flyup;
+int key_flydown;
+int key_flycenter;
+int key_useartifact;
+int key_arti_tome;
+int key_arti_quartz;
+int key_arti_urn;
+int key_arti_bomb;
+int key_arti_ring;
+int key_arti_chaosdevice;
+int key_arti_shadowsphere;
+int key_arti_wings;
+int key_arti_torch;
+int key_arti_morph;
+int joylook;
+// end heretic
 
 static void G_DoSaveGame (dboolean menu);
 
@@ -380,6 +445,16 @@ void G_SetSpeed(void)
 
 static dboolean WeaponSelectable(weapontype_t weapon)
 {
+  if (heretic)
+  {
+    if (weapon == wp_beak)
+    {
+      return false;
+    }
+
+    return players[consoleplayer].weaponowned[weapon];
+  }
+
   if (gamemode == shareware)
   {
     if (weapon == wp_plasma || weapon == wp_bfg)
@@ -524,6 +599,145 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (gamekeydown[key_strafeleft] || joybuttons[joybstrafeleft])
     side -= sidemove[speed];
 
+  if (heretic)
+  {
+    int lspeed;
+    int look, arti;
+    int flyheight;
+    
+    look = arti = flyheight = 0;
+    
+    if (gamekeydown[key_lookdown] || gamekeydown[key_lookup])
+    {
+      lookheld += ticdup;
+    }
+    else
+    {
+      lookheld = 0;
+    }
+    if (lookheld < SLOWTURNTICS)
+    {
+      lspeed = 1;
+    }
+    else
+    {
+      lspeed = 2;
+    }
+
+    // Look up/down/center keys
+    if (gamekeydown[key_lookup] || joylook < 0)
+    {
+      look = lspeed;
+    }
+    if (gamekeydown[key_lookdown] || joylook > 0)
+    {
+      look = -lspeed;
+    }
+
+    if (gamekeydown[key_lookcenter])
+    {
+      look = TOCENTER;
+    }
+    
+    // Fly up/down/drop keys
+    if (gamekeydown[key_flyup])
+    {
+      flyheight = 5;          // note that the actual flyheight will be twice this
+    }
+    if (gamekeydown[key_flydown])
+    {
+      flyheight = -5;
+    }
+    if (gamekeydown[key_flycenter])
+    {
+      flyheight = TOCENTER;
+      look = TOCENTER;
+    }
+    
+    // Use artifact key
+    if (gamekeydown[key_useartifact])
+    {
+      if (inventory)
+      {
+        players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
+        inventory = false;
+        cmd->arti = 0;
+        usearti = false;
+      }
+      else if (usearti)
+      {
+        cmd->arti = players[consoleplayer].inventory[inv_ptr].type;
+        usearti = false;
+      }
+    }
+    if (gamekeydown[key_arti_tome] && !cmd->arti
+        && !players[consoleplayer].powers[pw_weaponlevel2])
+    {
+      gamekeydown[key_arti_tome] = false;
+      cmd->arti = arti_tomeofpower;
+    }
+    else if (gamekeydown[key_arti_quartz] && !cmd->arti
+        && (players[consoleplayer].mo->health < MAXHEALTH))
+    {
+      gamekeydown[key_arti_quartz] = false;
+      cmd->arti = arti_health;
+    }
+    else if (gamekeydown[key_arti_urn] && !cmd->arti)
+    {
+      gamekeydown[key_arti_urn] = false;
+      cmd->arti = arti_superhealth;
+    }
+    else if (gamekeydown[key_arti_bomb] && !cmd->arti)
+    {
+      gamekeydown[key_arti_bomb] = false;
+      cmd->arti = arti_firebomb;
+    }
+    else if (gamekeydown[key_arti_ring] && !cmd->arti)
+    {
+      gamekeydown[key_arti_ring] = false;
+      cmd->arti = arti_invulnerability;
+    }
+    else if (gamekeydown[key_arti_chaosdevice] && !cmd->arti)
+    {
+      gamekeydown[key_arti_chaosdevice] = false;
+      cmd->arti = arti_teleport;
+    }
+    else if (gamekeydown[key_arti_shadowsphere] && !cmd->arti)
+    {
+      gamekeydown[key_arti_shadowsphere] = false;
+      cmd->arti = arti_invisibility;
+    }
+    else if (gamekeydown[key_arti_wings] && !cmd->arti)
+    {
+      gamekeydown[key_arti_wings] = false;
+      cmd->arti = arti_fly;
+    }
+    else if (gamekeydown[key_arti_torch] && !cmd->arti)
+    {
+      gamekeydown[key_arti_torch] = false;
+      cmd->arti = arti_torch;
+    }
+    else if (gamekeydown[key_arti_morph] && !cmd->arti)
+    {
+      gamekeydown[key_arti_morph] = false;
+      cmd->arti = arti_egg;
+    }
+    
+    if (players[consoleplayer].playerstate == PST_LIVE)
+    {
+        if (look < 0)
+        {
+            look += 16;
+        }
+        cmd->lookfly = look;
+    }
+    if (flyheight < 0)
+    {
+        flyheight += 16;
+    }
+    cmd->lookfly |= flyheight << 4;
+  }
+
     // buttons
   cmd->chatchar = HU_dequeueChatChar();
 
@@ -551,7 +765,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   // killough 3/26/98, 4/2/98: fix autoswitch when no weapons are left
 
   // Make Boom insert only a single weapon change command on autoswitch.
-  if ((!demo_compatibility && players[consoleplayer].attackdown && // killough
+  if ((!heretic && !demo_compatibility && players[consoleplayer].attackdown && // killough
        !P_CheckAmmo(&players[consoleplayer]) && !done_autoswitch && boom_autoswitch) ||
        gamekeydown[key_weapontoggle])
   {
@@ -567,6 +781,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       }
       else
       {
+        // HERETIC_TODO: fix this
       newweapon =
         gamekeydown[key_weapon1] ? wp_fist :    // killough 5/2/98: reformatted
         gamekeydown[key_weapon2] ? wp_pistol :
@@ -591,7 +806,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       // Switch to fist or chainsaw based on preferences.
       // Switch to shotgun or SSG based on preferences.
 
-      if (!demo_compatibility)
+      if (!heretic && !demo_compatibility)
         {
           const player_t *player = &players[consoleplayer];
 
@@ -624,7 +839,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       //}
     }
 
-  if (newweapon != wp_nochange)
+  if (newweapon != wp_nochange && players[consoleplayer].chickenTics == 0)
     {
       cmd->buttons |= BT_CHANGE;
       cmd->buttons |= newweapon<<BT_WEAPONSHIFT;

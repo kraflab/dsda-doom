@@ -25,6 +25,7 @@ extern dboolean heretic;
 extern int inv_ptr;
 extern int curpos;
 extern int ArtifactFlash;
+extern dboolean inventory;
 
 // HERETIC_TODO: actually this is in r_draw
 extern dboolean BorderTopRefresh;
