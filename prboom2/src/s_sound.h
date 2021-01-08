@@ -104,8 +104,10 @@ extern int idmusnum;
 extern int snd_MaxVolume;
 extern int snd_MusicVolume;
 
+struct sound_info_s;
+
 void S_StartSong(int song, dboolean loop);
-void S_GetChannelInfo(SoundInfo_t * s);
+void S_GetChannelInfo(struct sound_info_s * s);
 void S_SetMaxVolume(dboolean fullprocess);
 
 #endif

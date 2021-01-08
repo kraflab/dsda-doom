@@ -733,7 +733,7 @@ typedef struct
     int distance;
 } ChanInfo_t;
 
-typedef struct
+typedef struct sound_info_s
 {
     int channelCount;
     int musicVolume;
