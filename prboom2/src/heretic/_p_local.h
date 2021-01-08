@@ -23,15 +23,6 @@
 #include "r_local.h"
 #endif
 
-// ***** P_SETUP *****
-
-extern byte *rejectmatrix;      // for fast sight rejection
-extern int32_t *blockmaplump;   // offsets in blockmap are from here // [crispy] BLOCKMAP limit
-extern int32_t *blockmap;       // [crispy] BLOCKMAP limit
-extern int bmapwidth, bmapheight;       // in mapblocks
-extern fixed_t bmaporgx, bmaporgy;      // origin of block map
-extern mobj_t **blocklinks;     // for thing chains
-
 // ***** AM_MAP *****
 
 boolean AM_Responder(event_t * ev);
