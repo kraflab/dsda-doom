@@ -3829,6 +3829,8 @@ void P_AmbientSound(void)
 
 void P_InitLava(void)
 {
+    if (!heretic) return;
+
     memset(&LavaInflictor, 0, sizeof(mobj_t));
     LavaInflictor.type = HERETIC_MT_PHOENIXFX2;
     LavaInflictor.flags2 = MF2_FIREDAMAGE | MF2_NODMGTHRUST;
@@ -3839,6 +3841,8 @@ void P_InitTerrainTypes(void)
     int i;
     int lump;
     int size;
+
+    if (!heretic) return;
 
     size = (numflats + 1) * sizeof(int);
     TerrainTypes = Z_Malloc(size, PU_STATIC, 0);

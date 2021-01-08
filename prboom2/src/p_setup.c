@@ -1569,6 +1569,19 @@ static void P_LoadLineDefs (int lump)
       // killough 4/4/98: support special sidedef interpretation below
       if (ld->sidenum[0] != NO_INDEX && ld->special)
         sides[*ld->sidenum].special = ld->special;
+
+      // HERETIC_TODO: why is this different? is it necessary?
+      if (heretic)
+      {
+        if (ld->sidenum[0] != -1)
+        ld->frontsector = sides[ld->sidenum[0]].sector;
+        else
+        ld->frontsector = 0;
+        if (ld->sidenum[1] != -1)
+        ld->backsector = sides[ld->sidenum[1]].sector;
+        else
+        ld->backsector = 0;
+      }
     }
 
   W_UnlockLumpNum(lump); // cph - release the lump
@@ -2861,5 +2874,7 @@ void P_Init (void)
 {
   P_InitSwitchList();
   P_InitPicAnims();
+  P_InitTerrainTypes();
+  P_InitLava();
   R_InitSprites(sprnames);
 }
