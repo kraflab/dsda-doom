@@ -913,9 +913,7 @@ static dboolean P_LookForMonsters(mobj_t *actor, dboolean allaround)
 {
   thinker_t *cap, *th;
 
-  if (heretic) return Heretic_P_LookForMonsters(actor);
-
-  if (demo_compatibility)
+  if (heretic || demo_compatibility)
     return false;
 
   if (actor->lastenemy && actor->lastenemy->health > 0 && monsters_remember &&
@@ -1211,10 +1209,7 @@ void A_Chase(mobj_t *actor)
 
   if (!actor->target || !(actor->target->flags&MF_SHOOTABLE))
   {
-    if (
-      (heretic && !P_LookForPlayers(actor, true)) ||
-      (!heretic && !P_LookForTargets(actor,true)) // look for a new target
-    )
+    if (!P_LookForTargets(actor,true)) // look for a new target
       P_SetMobjState(actor, actor->info->spawnstate); // no new target
     return;
   }
@@ -4279,6 +4274,7 @@ void Heretic_A_BossDeath(mobj_t * actor)
 #define MONS_LOOK_RANGE (20*64*FRACUNIT)
 #define MONS_LOOK_LIMIT 64
 
+// Not proxied by P_LookForMonsters - this is post-death brawling
 dboolean Heretic_P_LookForMonsters(mobj_t * actor)
 {
     int count;
@@ -4335,7 +4331,7 @@ dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
 
     if (!netgame && players[0].health <= 0)
     {                           // Single player game and player is dead, look for monsters
-        return (P_LookForMonsters(actor, false));
+        return (Heretic_P_LookForMonsters(actor));
     }
     c = 0;
     stop = (actor->lastlook - 1) & 3;
