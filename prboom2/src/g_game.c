@@ -3985,7 +3985,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
             // file size test;
             // DOOM_old and HERETIC don't use maps>9;
             // 2 at 4,6 means playerclass=mage -> not DOOM_old or HERETIC;
-            if ((size >= 8 && (size - 8) % 4 != 0) ||
+            if ((size >= 8 && (size - 8) % 4 != 0 && !heretic) ||
                 (map > 9) ||
                 (size >= 6 && (*(header_p + 4) == 2 || *(header_p + 6) == 2)))
             {
