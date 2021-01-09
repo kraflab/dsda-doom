@@ -1511,6 +1511,9 @@ void G_Ticker (void)
     case GS_LEVEL:
       // HERETIC_TODO: P SB AM CT _Ticker();
       P_Ticker ();
+      // The HUD in heretic uses P_Random every other frame!
+      if (heretic && leveltime & 1)
+        P_Random(pr_heretic);
       P_WalkTicker();
       mlooky = 0;
       AM_Ticker();
