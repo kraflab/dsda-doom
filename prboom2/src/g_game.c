@@ -3964,6 +3964,21 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
           fastparm = M_CheckParm("-fast");
           nomonsters = M_CheckParm("-nomonsters");
 
+          // Read special parameter bits from player one byte.
+          // This aligns with vvHeretic demo usage:
+          //   0x20 = -respawn
+          //   0x10 = -longtics
+          //   0x02 = -nomonsters
+          if (heretic)
+          {
+            if (*demo_p & DEMOHEADER_RESPAWN)
+              respawnparm = true;
+            if (*demo_p & DEMOHEADER_LONGTICS)
+              longtics = true;
+            if (*demo_p & DEMOHEADER_NOMONSTERS)
+              nomonsters = true;
+          }
+
           // e6y: detection of more unsupported demo formats
           if (*(header_p + size - 1) == DEMOMARKER)
           {
@@ -4111,6 +4126,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     const byte *p = demo_p;
 
     bytes_per_tic = (longtics ? 5 : 4);
+    if (heretic) bytes_per_tic += 2;
     demo_playerscount = 0;
     demo_tics_count = 0;
     demo_curr_tic = 0;
