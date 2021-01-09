@@ -1,36 +1,4 @@
 
-void G_RecordDemo(skill_t skill, int numplayers, int episode, int map,
-                  const char *name)
-{
-
-    // Write special parameter bits onto player one byte.
-    // This aligns with vvHeretic demo usage:
-    //   0x20 = -respawn
-    //   0x10 = -longtics
-    //   0x02 = -nomonsters
-
-    *demo_p = 1; // assume player one exists
-    if (D_NonVanillaRecord(respawnparm, "vvHeretic -respawn header flag"))
-    {
-        *demo_p |= DEMOHEADER_RESPAWN;
-    }
-    if (longtics)
-    {
-        *demo_p |= DEMOHEADER_LONGTICS;
-    }
-    if (D_NonVanillaRecord(nomonsters, "vvHeretic -nomonsters header flag"))
-    {
-        *demo_p |= DEMOHEADER_NOMONSTERS;
-    }
-    demo_p++;
-
-    for (i = 1; i < MAXPLAYERS; i++)
-        *demo_p++ = playeringame[i];
-
-    demorecording = true;
-}
-
-
 /*
 ===================
 =
