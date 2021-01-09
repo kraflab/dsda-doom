@@ -2033,21 +2033,27 @@ void G_DoCompleted (void)
         if (gamemap == 9)
           {
             // returning from secret level
-            switch (gameepisode)
-              {
-              case 1:
-                wminfo.next = 3;
-                break;
-              case 2:
-                wminfo.next = 5;
-                break;
-              case 3:
-                wminfo.next = 6;
-                break;
-              case 4:
-                wminfo.next = 2;
-                break;
-              }
+            if (heretic)
+            {
+              static int after_secret[5] = { 6, 4, 4, 4, 3 };
+              wminfo.next = after_secret[gameepisode - 1];
+            }
+            else
+              switch (gameepisode)
+                {
+                case 1:
+                  wminfo.next = 3;
+                  break;
+                case 2:
+                  wminfo.next = 5;
+                  break;
+                case 3:
+                  wminfo.next = 6;
+                  break;
+                case 4:
+                  wminfo.next = 2;
+                  break;
+                }
           }
         else
           wminfo.next = gamemap;          // go to next level
@@ -2060,6 +2066,7 @@ void G_DoCompleted (void)
   }
   else
   {
+    // HERETIC_TODO: par times
     if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9)
       wminfo.partime = TICRATE*pars[gameepisode][gamemap];
   }
@@ -2112,7 +2119,7 @@ frommapinfo:
     StatCopy(&wminfo);
   }
 
-  WI_Start (&wminfo);
+  WI_Start (&wminfo); // HERETIC_TODO: IN_Start();
 }
 
 //
