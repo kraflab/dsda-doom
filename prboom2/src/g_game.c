@@ -3239,7 +3239,13 @@ void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p)
     cmd->angleturn = (((signed int)(*(*data_p)++))<<8) + lowbyte;
   }
   cmd->buttons = (unsigned char)(*(*data_p)++);
-  
+
+  if (heretic)
+  {
+    cmd->lookfly = (unsigned char)(*(*data_p)++);
+    cmd->arti = (unsigned char)(*(*data_p)++);
+  }
+
   // e6y: ability to play tasdoom demos directly
   if (compatibility_level == tasdoom_compatibility)
   {

@@ -12,65 +12,6 @@
 #define DEMOHEADER_LONGTICS   0x10
 #define DEMOHEADER_NOMONSTERS 0x02
 
-void G_ReadDemoTiccmd(ticcmd_t * cmd)
-{
-    if (*demo_p == DEMOMARKER)
-    {                           // end of demo data stream
-        G_CheckDemoStatus();
-        return;
-    }
-    cmd->forwardmove = ((signed char) *demo_p++);
-    cmd->sidemove = ((signed char) *demo_p++);
-
-    // If this is a longtics demo, read back in higher resolution
-
-    if (longtics)
-    {
-        cmd->angleturn = *demo_p++;
-        cmd->angleturn |= (*demo_p++) << 8;
-    }
-    else
-    {
-        cmd->angleturn = ((unsigned char) *demo_p++) << 8;
-    }
-
-    cmd->buttons = (unsigned char) *demo_p++;
-    cmd->lookfly = (unsigned char) *demo_p++;
-    cmd->arti = (unsigned char) *demo_p++;
-}
-
-// Increase the size of the demo buffer to allow unlimited demos
-
-static void IncreaseDemoBuffer(void)
-{
-    int current_length;
-    byte *new_demobuffer;
-    byte *new_demop;
-    int new_length;
-
-    // Find the current size
-
-    current_length = demoend - demobuffer;
-
-    // Generate a new buffer twice the size
-    new_length = current_length * 2;
-
-    new_demobuffer = Z_Malloc(new_length, PU_STATIC, 0);
-    new_demop = new_demobuffer + (demo_p - demobuffer);
-
-    // Copy over the old data
-
-    memcpy(new_demobuffer, demobuffer, current_length);
-
-    // Free the old buffer and point the demo pointers at the new buffer.
-
-    Z_Free(demobuffer);
-
-    demobuffer = new_demobuffer;
-    demo_p = new_demop;
-    demoend = demobuffer + new_length;
-}
-
 void G_WriteDemoTiccmd(ticcmd_t * cmd)
 {
     byte *demo_start;
