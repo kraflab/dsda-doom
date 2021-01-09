@@ -1,72 +1,7 @@
 
-/*
-===============================================================================
-
-							DEMO RECORDING
-
-===============================================================================
-*/
-
-#define DEMOMARKER      0x80
 #define DEMOHEADER_RESPAWN    0x20
 #define DEMOHEADER_LONGTICS   0x10
 #define DEMOHEADER_NOMONSTERS 0x02
-
-void G_WriteDemoTiccmd(ticcmd_t * cmd)
-{
-    byte *demo_start;
-
-    if (gamekeydown[key_demo_quit]) // press to end demo recording
-        G_CheckDemoStatus();
-
-    demo_start = demo_p;
-
-    *demo_p++ = cmd->forwardmove;
-    *demo_p++ = cmd->sidemove;
-
-    // If this is a longtics demo, record in higher resolution
-
-    if (longtics)
-    {
-        *demo_p++ = (cmd->angleturn & 0xff);
-        *demo_p++ = (cmd->angleturn >> 8) & 0xff;
-    }
-    else
-    {
-        *demo_p++ = cmd->angleturn >> 8;
-    }
-
-    *demo_p++ = cmd->buttons;
-    *demo_p++ = cmd->lookfly;
-    *demo_p++ = cmd->arti;
-
-    // reset demo pointer back
-    demo_p = demo_start;
-
-    if (demo_p > demoend - 16)
-    {
-        // [crispy] unconditionally disable savegame and demo limits
-        /*
-        if (vanilla_demo_limit)
-        {
-            // no more space
-            G_CheckDemoStatus();
-            return;
-        }
-        else
-        */
-        {
-            // Vanilla demo limit disabled: unlimited
-            // demo lengths!
-
-            IncreaseDemoBuffer();
-        }
-    }
-
-    G_ReadDemoTiccmd(cmd);      // make SURE it is exactly the same
-}
-
-
 
 /*
 ===================

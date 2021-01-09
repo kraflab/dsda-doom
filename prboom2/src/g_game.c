@@ -3281,7 +3281,7 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
  */
 void G_WriteDemoTiccmd (ticcmd_t* cmd)
 {
-  char buf[5];
+  char buf[7];
   char *p = buf;
 
   if (compatibility_level == tasdoom_compatibility)
@@ -3290,20 +3290,26 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
     *p++ = cmd->forwardmove;
     *p++ = cmd->sidemove;
     *p++ = (cmd->angleturn+128)>>8;
-  } else {
-
-  *p++ = cmd->forwardmove;
-  *p++ = cmd->sidemove;
-  if (!longtics) {
-    *p++ = (cmd->angleturn+128)>>8;
-  } else {
-    signed short a = cmd->angleturn;
-    *p++ = a & 0xff;
-    *p++ = (a >> 8) & 0xff;
   }
-  *p++ = cmd->buttons;
-
-  }//e6y
+  else
+  {
+    *p++ = cmd->forwardmove;
+    *p++ = cmd->sidemove;
+    if (!longtics) {
+      *p++ = (cmd->angleturn+128)>>8;
+    } else {
+      signed short a = cmd->angleturn;
+      *p++ = a & 0xff;
+      *p++ = (a >> 8) & 0xff;
+    }
+    *p++ = cmd->buttons;
+    
+    if (heretic)
+    {
+      *p++ = cmd->lookfly;
+      *p++ = cmd->arti;
+    }
+  }
 
   dsda_WriteToDemo(buf, p - buf);
 
