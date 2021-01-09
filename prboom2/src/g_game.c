@@ -3223,6 +3223,10 @@ void G_InitNew(skill_t skill, int episode, int map)
 // DEMO RECORDING
 //
 
+#define DEMOHEADER_RESPAWN    0x20
+#define DEMOHEADER_LONGTICS   0x10
+#define DEMOHEADER_NOMONSTERS 0x02
+
 void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p)
 {
   unsigned char at = 0; // e6y: for tasdoom demo format
@@ -3607,7 +3611,7 @@ void G_BeginRecording (void)
 
     for (; i<MIN_MAXPLAYERS; i++)
       *demo_p++ = 0;
-  } else { // cph - write old v1.9 demos (might even sync)
+  } else if (!heretic) { // cph - write old v1.9 demos (might even sync)
     unsigned char v = 109;
     longtics = M_CheckParm("-longtics");
     if (longtics)
@@ -3636,6 +3640,27 @@ void G_BeginRecording (void)
     *demo_p++ = nomonsters;
     *demo_p++ = consoleplayer;
     for (i=0; i<4; i++)  // intentionally hard-coded 4 -- killough
+      *demo_p++ = playeringame[i];
+  } else { // versionless heretic
+    *demo_p++ = gameskill;
+    *demo_p++ = gameepisode;
+    *demo_p++ = gamemap;
+
+    // Write special parameter bits onto player one byte.
+    // This aligns with vvHeretic demo usage:
+    //   0x20 = -respawn
+    //   0x10 = -longtics
+    //   0x02 = -nomonsters
+    *demo_p = 1; // assume player one exists
+    if (respawnparm)
+      *demo_p |= DEMOHEADER_RESPAWN;
+    if (longtics)
+      *demo_p |= DEMOHEADER_LONGTICS;
+    if (nomonsters)
+      *demo_p |= DEMOHEADER_NOMONSTERS;
+    demo_p++;
+
+    for (i = 1; i < MAXPLAYERS; i++)
       *demo_p++ = playeringame[i];
   }
 
