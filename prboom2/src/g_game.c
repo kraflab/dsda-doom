@@ -2395,6 +2395,8 @@ void RecalculateDrawnSubsectors(void)
 #endif
 }
 
+// HERETIC_TODO: ignoring save / load differences
+
 void G_DoLoadGame(void)
 {
   int  length, i;
