@@ -31,7 +31,6 @@ void AM_Drawer(void);
 
 // ***** SB_BAR *****
 
-extern int SB_state;
 void SB_PaletteFlash(void);
 
 #include "p_spec.h"

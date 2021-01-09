@@ -22,5 +22,7 @@ int inv_ptr;
 int curpos;
 int ArtifactFlash;
 dboolean inventory;
+int SB_state = -1;
+int playerkeys;
 
 dboolean BorderTopRefresh;

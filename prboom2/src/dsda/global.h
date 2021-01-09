@@ -27,6 +27,7 @@ extern int g_skullpop_mt;
 
 extern int g_wp_fist;
 extern int g_wp_chainsaw;
+extern int g_wp_pistol;
 
 extern int g_telefog_height;
 extern int g_thrust_factor;

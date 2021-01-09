@@ -55,6 +55,7 @@ int g_skullpop_mt;
 
 int g_wp_fist;
 int g_wp_chainsaw;
+int g_wp_pistol;
 
 int g_telefog_height;
 int g_thrust_factor;
@@ -133,6 +134,7 @@ static void dsda_InitDoom(void) {
   
   g_wp_fist = wp_fist;
   g_wp_chainsaw = wp_chainsaw;
+  g_wp_pistol = wp_pistol;
   
   g_telefog_height = 0;
   g_thrust_factor = 100;
@@ -212,6 +214,7 @@ static void dsda_InitHeretic(void) {
   
   g_wp_fist = wp_staff;
   g_wp_chainsaw = wp_gauntlets;
+  g_wp_pistol = wp_goldwand;
   
   g_telefog_height = TELEFOGHEIGHT;
   g_thrust_factor = 150;

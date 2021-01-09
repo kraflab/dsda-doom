@@ -1561,18 +1561,17 @@ static void G_PlayerFinishLevel(int player)
   }
   if (p->chickenTics)
   {
-      p->readyweapon = p->mo->special1.i;       // Restore weapon
-      p->chickenTics = 0;
+    p->readyweapon = p->mo->special1.i;       // Restore weapon
+    p->chickenTics = 0;
   }
   p->lookdir = 0;
   p->rain1 = NULL;
   p->rain2 = NULL;
-  // HERETIC_TODO: status bar stuff
-  // playerkeys = 0;
-  // if (p == &players[consoleplayer])
-  // {
-  //     SB_state = -1;          // refresh the status bar
-  // }
+  playerkeys = 0;
+  if (p == &players[consoleplayer])
+  {
+    SB_state = -1;          // refresh the status bar
+  }
 
   memset(p->powers, 0, sizeof p->powers);
   memset(p->cards, 0, sizeof p->cards);
@@ -1649,10 +1648,20 @@ void G_PlayerReborn (int player)
   p->usedown = p->attackdown = true;  // don't do anything immediately
   p->playerstate = PST_LIVE;
   p->health = initial_health;  // Ty 03/12/98 - use dehacked values
-  p->readyweapon = p->pendingweapon = wp_pistol;
-  p->weaponowned[wp_fist] = true;
-  p->weaponowned[wp_pistol] = true;
-  p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  p->readyweapon = p->pendingweapon = g_wp_pistol;
+  p->weaponowned[g_wp_fist] = true;
+  p->weaponowned[g_wp_pistol] = true;
+  if (heretic)
+    p->ammo[am_goldwand] = 50;
+  else
+    p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  p->lookdir = 0;
+  if (p == &players[consoleplayer])
+  {
+    SB_state = -1;          // refresh the status bar
+    inv_ptr = 0;            // reset the inventory pointer
+    curpos = 0;
+  }
 
   for (i=0 ; i<NUMAMMO ; i++)
     p->maxammo[i] = maxammo[i];

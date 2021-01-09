@@ -26,6 +26,8 @@ extern int inv_ptr;
 extern int curpos;
 extern int ArtifactFlash;
 extern dboolean inventory;
+extern int SB_state;
+extern int playerkeys;
 
 // HERETIC_TODO: actually this is in r_draw
 extern dboolean BorderTopRefresh;
