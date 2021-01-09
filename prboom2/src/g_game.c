@@ -3016,6 +3016,18 @@ void G_SetFastParms(int fast_pending)
 {
   static int fast = 0;            // remembers fast state
   int i;
+
+  if (heretic)
+  {
+    for (i = 0; MonsterMissileInfo[i].type != -1; i++)
+    {
+      mobjinfo[MonsterMissileInfo[i].type].speed =
+        MonsterMissileInfo[i].speed[fast_pending] << FRACBITS;
+    }
+    
+    return;
+  }
+
   if (fast != fast_pending) {     /* only change if necessary */
     if ((fast = fast_pending))
       {
@@ -3128,53 +3140,64 @@ void G_InitNew(skill_t skill, int episode, int map)
 
   if (!EpiCustom)	// Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
   {
-
-  //e6y: We need to remove the fourth episode for pre-ultimate complevels.
-  if (compatibility_level < ultdoom_compatibility && episode > 3)
-  {
-    episode = 3;
-  }
-
-  //e6y: DosDoom has only this check
-  if (compatibility_level == dosdoom_compatibility)
-  {
-    if (gamemode == shareware)
-      episode = 1; // only start episode 1 on shareware
-  }
-  else
-  if (gamemode == retail)
+    if (heretic)
     {
-      // e6y: Ability to play any episode with Ultimate Doom,
-      // Final Doom or Doom95 compatibility and -warp command line switch
-      // E5M1 from 2002ado.wad is an example.
-      // Now you can play it with "-warp 5 1 -complevel 3".
-      // 'Vanilla' Ultimate Doom executable also allows it.
-      if (fake_episode_check ? episode == 0 : episode > 4)
-        episode = 4;
+      if (episode > 9)
+        episode = 9;
+      if (map < 1)
+        map = 1;
+      if (map > 9)
+        map = 9;
     }
-  else
-    if (gamemode == shareware)
+    else
+    {
+      //e6y: We need to remove the fourth episode for pre-ultimate complevels.
+      if (compatibility_level < ultdoom_compatibility && episode > 3)
       {
-        if (episode > 1)
+        episode = 3;
+      }
+
+      //e6y: DosDoom has only this check
+      if (compatibility_level == dosdoom_compatibility)
+      {
+        if (gamemode == shareware)
           episode = 1; // only start episode 1 on shareware
       }
-    else
-      // e6y: Ability to play any episode with Ultimate Doom,
-      // Final Doom or Doom95 compatibility and -warp command line switch
-      if (fake_episode_check ? episode == 0 : episode > 3)
-        episode = 3;
+      else
+      if (gamemode == retail)
+        {
+          // e6y: Ability to play any episode with Ultimate Doom,
+          // Final Doom or Doom95 compatibility and -warp command line switch
+          // E5M1 from 2002ado.wad is an example.
+          // Now you can play it with "-warp 5 1 -complevel 3".
+          // 'Vanilla' Ultimate Doom executable also allows it.
+          if (fake_episode_check ? episode == 0 : episode > 4)
+            episode = 4;
+        }
+      else
+        if (gamemode == shareware)
+          {
+            if (episode > 1)
+              episode = 1; // only start episode 1 on shareware
+          }
+        else
+          // e6y: Ability to play any episode with Ultimate Doom,
+          // Final Doom or Doom95 compatibility and -warp command line switch
+          if (fake_episode_check ? episode == 0 : episode > 3)
+            episode = 3;
 
-  if (map < 1)
-    map = 1;
-  if (map > 9 && gamemode != commercial)
-    map = 9;
+      if (map < 1)
+        map = 1;
+      if (map > 9 && gamemode != commercial)
+        map = 9;
+    }
   }
 
   G_SetFastParms(fastparm || skill == sk_nightmare);  // killough 4/10/98
 
   M_ClearRandom();
 
-  respawnmonsters = skill == sk_nightmare || respawnparm;
+  respawnmonsters = (!heretic && skill == sk_nightmare) || respawnparm;
 
   // force players to be initialized upon first level load
   for (i=0 ; i<MAXPLAYERS ; i++)
