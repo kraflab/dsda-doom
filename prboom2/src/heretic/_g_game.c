@@ -2,49 +2,6 @@
 /*
 ====================
 =
-= G_CheckSpot
-=
-= Returns false if the player cannot be respawned at the given mapthing_t spot
-= because something is occupying it
-====================
-*/
-
-void P_SpawnPlayer(mapthing_t * mthing);
-
-boolean G_CheckSpot(int playernum, mapthing_t * mthing)
-{
-    fixed_t x, y;
-    subsector_t *ss;
-    unsigned an;
-    mobj_t *mo;
-
-    x = mthing->x << FRACBITS;
-    y = mthing->y << FRACBITS;
-
-    players[playernum].mo->flags2 &= ~MF2_PASSMOBJ;
-    if (!P_CheckPosition(players[playernum].mo, x, y))
-    {
-        players[playernum].mo->flags2 |= MF2_PASSMOBJ;
-        return false;
-    }
-    players[playernum].mo->flags2 |= MF2_PASSMOBJ;
-
-// spawn a teleport fog
-    ss = R_PointInSubsector(x, y);
-    an = ((unsigned) ANG45 * (mthing->angle / 45)) >> ANGLETOFINESHIFT;
-
-    mo = P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an],
-                     ss->sector->floorheight + TELEFOGHEIGHT, MT_TFOG);
-
-    if (players[consoleplayer].viewz != 1)
-        S_StartSound(mo, sfx_telept);   // don't start sound on first frame
-
-    return true;
-}
-
-/*
-====================
-=
 = G_DeathMatchSpawnPlayer
 =
 = Spawns a player at one of the random death match spots

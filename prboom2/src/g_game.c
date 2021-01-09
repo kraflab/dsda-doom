@@ -1693,6 +1693,32 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
   x = mthing->x << FRACBITS;
   y = mthing->y << FRACBITS;
 
+  if (heretic)
+  {
+    unsigned an;
+    mobj_t *mo;
+
+    players[playernum].mo->flags2 &= ~MF2_PASSMOBJ;
+    if (!P_CheckPosition(players[playernum].mo, x, y))
+    {
+      players[playernum].mo->flags2 |= MF2_PASSMOBJ;
+      return false;
+    }
+    players[playernum].mo->flags2 |= MF2_PASSMOBJ;
+
+    // spawn a teleport fog
+    ss = R_PointInSubsector(x, y);
+    an = ((unsigned) ANG45 * (mthing->angle / 45)) >> ANGLETOFINESHIFT;
+
+    mo = P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an],
+                     ss->sector->floorheight + TELEFOGHEIGHT, HERETIC_MT_TFOG);
+
+    if (players[consoleplayer].viewz != 1)
+      S_StartSound(mo, heretic_sfx_telept);   // don't start sound on first frame
+
+    return true;
+  }
+
   // killough 4/2/98: fix bug where P_CheckPosition() uses a non-solid
   // corpse to detect collisions with other players in DM starts
   //
