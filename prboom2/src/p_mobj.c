@@ -180,13 +180,18 @@ static void P_XYMovement (mobj_t* mo)
   {
     if (mo->flags & MF_SKULLFLY)
     {
-
+      statenum_t new_state;
       // the skull slammed into something
 
       mo->flags &= ~MF_SKULLFLY;
       mo->momz = 0;
-
-      P_SetMobjState (mo, mo->info->spawnstate);
+      
+      if (heretic)
+        new_state = mo->info->seestate;
+      else
+        new_state = mo->info->spawnstate;
+      
+      P_SetMobjState (mo, new_state);
     }
     return;
   }
