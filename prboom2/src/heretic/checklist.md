@@ -19,7 +19,7 @@
 - [ ] doomdef.h 852
 - [x] dstrings.h 247
 - [ ] f_finale.c 444
-- [ ] g_game.c 2356
+- [x] g_game.c 2356
 - [ ] in_lude.c 1129
 - [x] info.c 5601
 - [x] info.h 1579
@@ -62,4 +62,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 21612, MERGED: 25602, PERCENT: 54%
+LEFT: 19256, MERGED: 27958, PERCENT: 59%
