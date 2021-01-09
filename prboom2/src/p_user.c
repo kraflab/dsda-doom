@@ -1138,6 +1138,11 @@ void Heretic_P_MovePlayer(player_t * player)
     cmd = &player->cmd;
     player->mo->angle += (cmd->angleturn << 16);
 
+    if (demo_smoothturns && player == &players[displayplayer])
+    {
+      R_SmoothPlaying_Add(cmd->angleturn << 16);
+    }
+
     onground = (player->mo->z <= player->mo->floorz
                 || (player->mo->flags2 & MF2_ONMOBJ));
 
