@@ -940,12 +940,6 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
         tmceilingz - thing->z < thing->height &&
         !(thing->flags & MF_FLY) &&
         !(thing->flags2 & MF2_FLY)
-      ) ||
-      // too big a step up
-      (
-        !(thing->flags & MF_TELEPORT) &&
-        thing->type != HERETIC_MT_MNTRFX2 &&
-        tmfloorz - thing->z > 24*FRACUNIT
       )
     )
     {
@@ -968,6 +962,18 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
         thing->momz = 8 * FRACUNIT;
         return false;
       }
+    }
+
+    if (
+      !(thing->flags & MF_TELEPORT) &&
+      thing->type != HERETIC_MT_MNTRFX2 &&
+      tmfloorz - thing->z > 24*FRACUNIT
+    )
+    {
+      CheckMissileImpact(thing);
+      return tmunstuck
+        && !(ceilingline && untouched(ceilingline))
+        && !(  floorline && untouched(  floorline));
     }
 
     if ((thing->flags & MF_MISSILE) && tmfloorz > thing->z)
