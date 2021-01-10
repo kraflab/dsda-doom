@@ -687,7 +687,8 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     {
       P_BloodSplatter(tmthing->x, tmthing->y, tmthing->z, thing);
     }
-    P_DamageMobj(thing, tmthing, tmthing->target, damage);
+    if (!heretic || damage)
+      P_DamageMobj(thing, tmthing, tmthing->target, damage);
 
     // don't traverse any more
     return false;
