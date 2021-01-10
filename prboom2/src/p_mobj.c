@@ -1243,7 +1243,6 @@ int        iquetail;
 
 void P_RemoveMobj (mobj_t* mobj)
 {
-  // HERETIC_TODO: should we be hooking into the sector_list stuff?
   if (heretic) // so short, just putting it here
   {
     P_UnsetThingPosition(mobj);
