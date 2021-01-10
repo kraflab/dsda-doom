@@ -387,6 +387,10 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle)
             player->viewz = thing->z + player->viewheight;
             player->lookdir = 0;
         }
+        if (demo_smoothturns && player == &players[displayplayer])
+        {
+          R_SmoothPlaying_Add(angle - thing->angle);
+        }
     }
     else if (thing->flags & MF_MISSILE)
     {
