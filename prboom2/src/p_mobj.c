@@ -1247,6 +1247,11 @@ void P_RemoveMobj (mobj_t* mobj)
   if (heretic) // so short, just putting it here
   {
     P_UnsetThingPosition(mobj);
+    if (sector_list)
+    {
+      P_DelSeclist(sector_list);
+      sector_list = NULL;
+    }
     S_StopSound(mobj);
     P_RemoveThinker((thinker_t *) mobj);
     return;
