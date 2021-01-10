@@ -4168,12 +4168,19 @@ extern mobj_t** bodyque;
 
 void A_AddPlayerCorpse(mobj_t * actor)
 {
-    if (bodyqueslot >= bodyquesize)
-    {                           // Too many player corpses - remove an old one
-        P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
+    if (bodyquesize > 0)
+    {
+      static int queuesize;
+      if (queuesize < bodyquesize)
+    	{
+    	  bodyque = realloc(bodyque, bodyquesize * sizeof(*bodyque));
+    	  memset(bodyque+queuesize, 0, (bodyquesize - queuesize) * sizeof(*bodyque));
+    	  queuesize = bodyquesize;
+    	}
+      if (bodyqueslot >= bodyquesize)
+    	  P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
+      bodyque[bodyqueslot++ % bodyquesize] = actor;
     }
-    bodyque[bodyqueslot % bodyquesize] = actor;
-    bodyqueslot++;
 }
 
 void A_FlameSnd(mobj_t * actor)
