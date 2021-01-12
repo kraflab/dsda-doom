@@ -1139,7 +1139,7 @@ state_t doom_states[NUMSTATES] = {
 
   OLDBFG_8FRAMES(0)
   OLDBFG_8FRAMES(8)
-  OLDBFG_8FRAMES(16) 
+  OLDBFG_8FRAMES(16)
   OLDBFG_8FRAMES(24)
   OLDBFG_8FRAMES(32)
 
@@ -1168,7 +1168,7 @@ state_t doom_states[NUMSTATES] = {
   {SPR_BON3,0,6,NULL,S_BON3},           // S_BON3  // killough 7/11/98:
   {SPR_BON4,0,6,NULL,S_BON4},           // S_BON4  // beta bonus items
 
-  // killough 10/98: beta lost souls attacked from a distance, 
+  // killough 10/98: beta lost souls attacked from a distance,
   // animated with colors, and stayed in the air when killed.
   // This is an approximation, but I'm sure it can be improved.
 

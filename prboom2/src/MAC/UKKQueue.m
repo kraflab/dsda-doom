@@ -229,7 +229,7 @@ static UKKQueue * gUKKQueueSharedQueueSingleton = nil;
 	
     if( fd >= 0 )
     {
-        EV_SET( &ev, fd, EVFILT_VNODE, 
+        EV_SET( &ev, fd, EVFILT_VNODE,
 				EV_ADD | EV_ENABLE | EV_CLEAR,
 				fflags, 0, (void*)path );
 		
@@ -460,5 +460,3 @@ static UKKQueue * gUKKQueueSharedQueueSingleton = nil;
 }
 
 @end
-
-

@@ -460,7 +460,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		do
 		{
 			if (!scanner.CheckFloat()) scanner.GetNextToken();
-			if (scanner.token > TK_BoolConst) 
+			if (scanner.token > TK_BoolConst)
 			{
 				scanner.Error(TK_Identifier);
 			}

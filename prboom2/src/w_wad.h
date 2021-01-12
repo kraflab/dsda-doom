@@ -65,7 +65,7 @@ typedef struct
 // Ty 08/29/98 - add source field to identify where this lump came from
 typedef enum {
   // CPhipps - define elements in order of 'how new/unusual'
-  source_iwad=0,    // iwad file load 
+  source_iwad=0,    // iwad file load
   source_pre,       // predefined lump
   source_auto_load, // lump auto-loaded by config file
   source_pwad,      // pwad file load
@@ -80,7 +80,7 @@ typedef enum {
 } wad_source_t;
 
 // CPhipps - changed wad init
-// We _must_ have the wadfiles[] the same as those actually loaded, so there 
+// We _must_ have the wadfiles[] the same as those actually loaded, so there
 // is no point having these separate entities. This belongs here.
 typedef struct {
   char* name;

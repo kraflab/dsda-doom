@@ -220,7 +220,7 @@ static void L_FilesOnChange(void)
   int index;
   int i, start, end;
 
-  // блядь, как заебал этот винапи...
+  // пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ...
   start = (int)SendMessage(launcher.listPWAD, LB_GETANCHORINDEX, 0, 0);
   end = (int)SendMessage(launcher.listPWAD, LB_GETCARETINDEX, 0, 0);
   
@@ -794,7 +794,7 @@ static void L_ReadCacheData(void)
 
 static void L_SelAdd(int index)
 {
-  launcher.selection = realloc(launcher.selection, 
+  launcher.selection = realloc(launcher.selection,
     sizeof(launcher.selection[0]) * (launcher.selectioncount + 1));
   launcher.selection[launcher.selectioncount] = index;
   launcher.selectioncount++;
@@ -1285,8 +1285,8 @@ BOOL CALLBACK LauncherServerCallback (HWND hWnd, UINT message, WPARAM wParam, LP
     
   case WM_INITDIALOG:
       launcher.HWNDServer = hWnd;
-      CreateDialogParam(GetModuleHandle(NULL), 
-        MAKEINTRESOURCE(IDD_LAUNCHERCLIENTDIALOG), 
+      CreateDialogParam(GetModuleHandle(NULL),
+        MAKEINTRESOURCE(IDD_LAUNCHERCLIENTDIALOG),
         launcher.HWNDServer,
         LauncherClientCallback, 0);
       break;

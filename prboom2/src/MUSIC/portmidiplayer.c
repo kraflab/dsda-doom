@@ -201,7 +201,7 @@ static void pm_shutdown (void)
     fix: at this point, we've stopped generating midi messages.  sleep for more than DRIVER_LATENCY to ensure
     all messages are flushed.
     
-    not a fix: calling Pm_Abort(); then midiStreamStop deadlocks instead of midiStreamClose. 
+    not a fix: calling Pm_Abort(); then midiStreamStop deadlocks instead of midiStreamClose.
     */
     #ifdef _WIN32
     Pt_Sleep (DRIVER_LATENCY * 2);
@@ -294,7 +294,7 @@ static void pm_clearchvolume (void)
 }
 
 static void pm_setvolume (int v)
-{ 
+{
   static int firsttime = 1;
 
   if (pm_volume == v && !firsttime)
@@ -380,7 +380,7 @@ static void writesysex (unsigned long when, int etype, unsigned char *data, int 
     Pm_WriteSysEx (pm_stream, when, sysexbuff);
     sysexbufflen = 0;
   }
-}  
+}
 
 static void pm_stop (void)
 {
@@ -450,7 +450,7 @@ static void pm_render (void *vdest, unsigned bufflen)
     switch (currevent->event_type)
     {
       case MIDI_EVENT_SYSEX:
-      case MIDI_EVENT_SYSEX_SPLIT:        
+      case MIDI_EVENT_SYSEX_SPLIT:
         writesysex (when, currevent->event_type, currevent->data.sysex.data, currevent->data.sysex.length);
         break;
       case MIDI_EVENT_META: // tempo is the only meta message we're interested in
@@ -508,7 +508,7 @@ static void pm_render (void *vdest, unsigned bufflen)
   }
 
   trackstart = newtime;
-}  
+}
 
 
 const music_player_t pm_player =
@@ -528,4 +528,3 @@ const music_player_t pm_player =
 
 
 #endif // HAVE_LIBPORTMIDI
-

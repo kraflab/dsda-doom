@@ -93,8 +93,8 @@ int flats_detail_display_list_size = 0;
 int gl_finish = 1;
 
 // e6y
-// This variables toggles the use of a trick to prevent the clearning of the 
-// z-buffer between frames. When this variable is set to "1", the game will not 
+// This variables toggles the use of a trick to prevent the clearning of the
+// z-buffer between frames. When this variable is set to "1", the game will not
 // clear the z-buffer between frames. This will result in increased performance
 // only on very old hardware and might cause problems for some display hardware.
 int gl_ztrick;
@@ -172,7 +172,7 @@ void SetFrameTextureMode(void)
     glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND1_RGB,GL_SRC_COLOR);
   }
 
-  glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE); 
+  glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
   glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
   glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
 }
@@ -540,7 +540,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   }
 
   glTranslatef(
-    (float)fx - (float)mx / (float)FRACUNIT * (float)scale / (float)FRACUNIT, 
+    (float)fx - (float)mx / (float)FRACUNIT * (float)scale / (float)FRACUNIT,
     (float)fy + (float)fh + (float)my / (float)FRACUNIT * (float)scale / (float)FRACUNIT,
     0);
   coord_scale = (float)scale / (float)(1<<FRACTOMAPBITS) / (float)FRACUNIT * MAP_COEFF;
@@ -684,7 +684,7 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
   }
 
   bFakeColormap =
-    (gltexture->flags & GLTEXTURE_HIRES) && 
+    (gltexture->flags & GLTEXTURE_HIRES) &&
     (lumpinfo[lump].flags & LUMP_CM2RGB);
   if (bFakeColormap)
   {
@@ -1470,7 +1470,7 @@ static void gld_DrawWall(GLWall *wall)
     gl_arb_multitexture &&
     (wall->flag < GLDWF_SKY) &&
     (wall->gltexture->detail) &&
-    gld_IsDetailVisible(xCamera, yCamera, 
+    gld_IsDetailVisible(xCamera, yCamera,
       wall->glseg->x1, wall->glseg->z1,
       wall->glseg->x2, wall->glseg->z2);
 
@@ -1621,7 +1621,7 @@ void gld_AddWall(seg_t *seg)
     return;
 
   // e6y: fake contrast stuff
-  // Original doom added/removed one light level ((1<<LIGHTSEGSHIFT) == 16) 
+  // Original doom added/removed one light level ((1<<LIGHTSEGSHIFT) == 16)
   // for walls exactly vertical/horizontal on the map
   if (fake_contrast)
   {
@@ -2573,7 +2573,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   sprite.y2 = sprite.y1 - ((float)patch->height / MAP_COEFF);
 
   // e6y
-  // if the sprite is below the floor, and it's not a hanger/floater/missile, 
+  // if the sprite is below the floor, and it's not a hanger/floater/missile,
   // and it's not a fully dead corpse, move it up
   if ((gl_spriteclip != spriteclip_const) &&
       (sprite.y2 < 0) && (sprite.y2 >= (float)(-gl_spriteclip_threshold_f)) &&
@@ -2618,7 +2618,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     scene_has_overlapped_sprites = true;
 
   sprite.index = gl_spriteindex++;
-  sprite.xy = thing->x + (thing->y >> 16); 
+  sprite.xy = thing->x + (thing->y >> 16);
 
   sprite.vt = 0.0f;
   sprite.vb = sprite.gltexture->scaleyfac;
@@ -2663,9 +2663,9 @@ unlock_patch:
 void gld_ProcessWall(GLWall *wall)
 {
   // e6y
-  // The ultimate 'ATI sucks' fix: Some of ATIs graphics cards are so unprecise when 
-  // rendering geometry that each and every border between polygons must be seamless, 
-  // otherwise there are rendering artifacts worse than anything that could be seen 
+  // The ultimate 'ATI sucks' fix: Some of ATIs graphics cards are so unprecise when
+  // rendering geometry that each and every border between polygons must be seamless,
+  // otherwise there are rendering artifacts worse than anything that could be seen
   // on Geforce 2's! Made this a menu option because the speed impact is quite severe
   // and this special handling is not necessary on modern NVidia cards.
   seg_t *seg = wall->seg;

@@ -234,7 +234,7 @@ RSpec.describe 'analysis' do
     end
   end
   
-  describe 'tyson weapons' do    
+  describe 'tyson weapons' do
     subject { analysis.tyson_weapons? }
     
     context 'doom2 map 1 tyson by j4rio' do

@@ -544,4 +544,3 @@ static txt_font_t main_font =
 };
 
 #endif /* __FONT_H__ */
-

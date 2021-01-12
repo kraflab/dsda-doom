@@ -440,4 +440,3 @@ int EV_LightTurnOnPartway(line_t *line, fixed_t level)
     }
   return 1;
 }
-

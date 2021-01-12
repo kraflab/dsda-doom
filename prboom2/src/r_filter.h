@@ -54,7 +54,7 @@ void R_FilterInit(void);
 #define FILTER_GETV(x,y,texV,nextRowTexV) \
   (filter_getDitheredPixelLevel(x, y, (((texV) - yl) >> 8)&0xff) ? ((nextRowTexV)>>FRACBITS) : ((texV)>>FRACBITS))
 
-// Choose current column or next column to the right based on dither of the 
+// Choose current column or next column to the right based on dither of the
 // fractional texture U coord
 #define filter_getDitheredForColumn(x, y, texV, nextRowTexV) \
   dither_sources[(filter_getDitheredPixelLevel(x, y, filter_fracu))][FILTER_GETV(x,y,texV,nextRowTexV)]
@@ -87,8 +87,8 @@ void R_FilterInit(void);
 
 byte *filter_getScale2xQuadColors(byte e, byte b, byte f, byte h, byte d);
 
-// This is the horrendous macro version of the function commented out of 
-// r_filter.c. It does a bilinear blend on the four source texels for a 
+// This is the horrendous macro version of the function commented out of
+// r_filter.c. It does a bilinear blend on the four source texels for a
 // given u and v
 #define filter_getFilteredForColumn32(depthmap, texV, nextRowTexV) ( \
   VID_PAL32( depthmap(nextsource[(nextRowTexV)>>FRACBITS]),   (filter_fracu*((texV)&0xffff))>>(32-VID_COLORWEIGHTBITS) ) + \
@@ -96,9 +96,9 @@ byte *filter_getScale2xQuadColors(byte e, byte b, byte f, byte h, byte d);
   VID_PAL32( depthmap(source[(texV)>>FRACBITS]),              ((0xffff-filter_fracu)*(0xffff-((texV)&0xffff)))>>(32-VID_COLORWEIGHTBITS) ) + \
   VID_PAL32( depthmap(nextsource[(texV)>>FRACBITS]),          (filter_fracu*(0xffff-((texV)&0xffff)))>>(32-VID_COLORWEIGHTBITS) ))
 
-// The 16 bit method of the filtering doesn't really maintain enough 
+// The 16 bit method of the filtering doesn't really maintain enough
 // accuracy for discerning viewers, but the alternative requires converting
-// from 32 bit, which is slow and requires both the intPalette and the 
+// from 32 bit, which is slow and requires both the intPalette and the
 // shortPalette to be in memory at the same time.
 #define filter_getFilteredForColumn16(depthmap, texV, nextRowTexV) ( \
   VID_PAL16( depthmap(nextsource[(nextRowTexV)>>FRACBITS]),   (filter_fracu*((texV)&0xffff))>>(32-VID_COLORWEIGHTBITS) ) + \

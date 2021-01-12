@@ -506,13 +506,13 @@ void Scanner::MustGetIdentifier(const char *ident)
 bool Scanner::ScanInteger()
 {
 	bool neg = false;
-	if (!GetNextToken()) 
+	if (!GetNextToken())
 	{
 		return false;
 	}
 	if (token == '-')
 	{
-		if (!GetNextToken()) 
+		if (!GetNextToken())
 		{
 			return false;
 		}
@@ -520,12 +520,12 @@ bool Scanner::ScanInteger()
 	}
 	else if (token == '+')
 	{
-		if (!GetNextToken()) 
+		if (!GetNextToken())
 		{
 			return false;
 		}
 	}
-	if (token != TK_IntConst) 
+	if (token != TK_IntConst)
 	{
 		return false;
 	}
@@ -540,13 +540,13 @@ bool Scanner::ScanInteger()
 bool Scanner::ScanFloat()
 {
 	bool neg = false;
-	if (!GetNextToken()) 
+	if (!GetNextToken())
 	{
 		return false;
 	}
 	if (token == '-')
 	{
-		if (!GetNextToken()) 
+		if (!GetNextToken())
 		{
 			return false;
 		}
@@ -554,12 +554,12 @@ bool Scanner::ScanFloat()
 	}
 	else if (token == '+')
 	{
-		if (!GetNextToken()) 
+		if (!GetNextToken())
 		{
 			return false;
 		}
 	}
-	if (token != TK_IntConst && token != TK_FloatConst) 
+	if (token != TK_IntConst && token != TK_FloatConst)
 	{
 		return false;
 	}
@@ -571,8 +571,8 @@ bool Scanner::ScanFloat()
 	return true;
 }
 
-bool Scanner::CheckInteger() 
-{ 
+bool Scanner::CheckInteger()
+{
 	Scanner savedstate;
 	SaveState(savedstate);
 	bool res = ScanInteger();

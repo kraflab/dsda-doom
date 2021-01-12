@@ -763,7 +763,7 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
   }
   sin[0] = sin[nreq * 2];
   sin[1] = sin[nreq * 2 + 1];
-}  
+}
   
 
 #ifndef HAVE_OWN_MUSIC
@@ -853,7 +853,7 @@ void I_InitMusic(void)
       if (fd<0) {
         lprintf(LO_ERROR, "I_InitMusic: failed to create music temp file %s", music_tmp);
         free(music_tmp); music_tmp = NULL; return;
-      } else 
+      } else
         close(fd);
     }
 #else /* !_WIN32 */
@@ -1065,8 +1065,8 @@ int I_RegisterSong(const void *data, size_t len)
       size_t muslen = len;
       const unsigned char *musptr = (const unsigned char* )data;
 
-      // haleyjd 04/04/10: scan forward for a MUS header. Evidently DMX was 
-      // capable of doing this, and would skip over any intervening data. That, 
+      // haleyjd 04/04/10: scan forward for a MUS header. Evidently DMX was
+      // capable of doing this, and would skip over any intervening data. That,
       // or DMX doesn't use the MUS header at all somehow.
       while (musptr < (const unsigned char*)data + len - sizeof(musheader))
       {
@@ -1333,7 +1333,7 @@ static void Exp_PauseSong (int handle)
       break;
     default: // Default - let music continue
       break;
-  }  
+  }
   SDL_UnlockMutex (musmutex);
 }
 
@@ -1508,7 +1508,7 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
       mem_fclose(outstream);
 
       if (song_data)
-      { 
+      {
         return Exp_RegisterSongEx (song_data, outbuf_len, 0);
       }
     }

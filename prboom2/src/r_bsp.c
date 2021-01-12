@@ -301,7 +301,7 @@ static dboolean CheckClip(seg_t * seg, sector_t * frontsector, sector_t * backse
   frontsector = R_FakeFlat(frontsector, &tempsec_front, NULL, NULL, false);
 
   // check for closed sectors!
-  if (backsector->ceilingheight <= frontsector->floorheight) 
+  if (backsector->ceilingheight <= frontsector->floorheight)
   {
     if (seg->sidedef->toptexture == NO_TEXTURE)
       return false;
@@ -312,7 +312,7 @@ static dboolean CheckClip(seg_t * seg, sector_t * frontsector, sector_t * backse
     return true;
   }
 
-  if (frontsector->ceilingheight <= backsector->floorheight) 
+  if (frontsector->ceilingheight <= backsector->floorheight)
   {
     if (seg->sidedef->bottomtexture == NO_TEXTURE)
       return false;
@@ -327,7 +327,7 @@ static dboolean CheckClip(seg_t * seg, sector_t * frontsector, sector_t * backse
   if (backsector->ceilingheight <= backsector->floorheight)
   {
     // preserve a kind of transparent door/lift special effect:
-    if (backsector->ceilingheight < frontsector->ceilingheight) 
+    if (backsector->ceilingheight < frontsector->ceilingheight)
     {
       if (seg->sidedef->toptexture == NO_TEXTURE)
         return false;
@@ -374,11 +374,11 @@ static void R_AddLine (seg_t *line)
     angle2 = R_PointToPseudoAngle(line->v2->x, line->v2->y);
 
     // Back side, i.e. backface culling	- read: endAngle >= startAngle!
-    if (angle2 - angle1 < ANG180 || !line->linedef)  
+    if (angle2 - angle1 < ANG180 || !line->linedef)
     {
       return;
     }
-    if (!gld_clipper_SafeCheckRange(angle2, angle1)) 
+    if (!gld_clipper_SafeCheckRange(angle2, angle1))
     {
       return;
     }

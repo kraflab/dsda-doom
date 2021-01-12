@@ -172,7 +172,7 @@ void gld_DrawTriangleStripARB(GLWall *wall, gl_strip_coords_t *c1, gl_strip_coor
   glBegin(GL_TRIANGLE_STRIP);
 
   // lower left corner
-  GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE0_ARB,(const GLfloat*)&c1->t[0]); 
+  GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE0_ARB,(const GLfloat*)&c1->t[0]);
   GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE1_ARB,(const GLfloat*)&c2->t[0]);
   glVertex3fv((const GLfloat*)&c1->v[0]);
 
@@ -186,7 +186,7 @@ void gld_DrawTriangleStripARB(GLWall *wall, gl_strip_coords_t *c1, gl_strip_coor
   glVertex3fv((const GLfloat*)&c1->v[1]);
 
   // upper right corner
-  GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE0_ARB,(const GLfloat*)&c1->t[2]); 
+  GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE0_ARB,(const GLfloat*)&c1->t[2]);
   GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE1_ARB,(const GLfloat*)&c2->t[2]);
   glVertex3fv((const GLfloat*)&c1->v[2]);
 
@@ -195,7 +195,7 @@ void gld_DrawTriangleStripARB(GLWall *wall, gl_strip_coords_t *c1, gl_strip_coor
   //  gld_SplitRightEdge(wall, true);
 
   // lower right corner
-  GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE0_ARB,(const GLfloat*)&c1->t[3]); 
+  GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE0_ARB,(const GLfloat*)&c1->t[3]);
   GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE1_ARB,(const GLfloat*)&c2->t[3]);
   glVertex3fv((const GLfloat*)&c1->v[3]);
 
@@ -274,7 +274,7 @@ void gld_DrawWallWithDetail(GLWall *wall)
     glBegin(GL_TRIANGLE_FAN);
 
     // lower left corner
-    GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB,wall->ul,wall->vb); 
+    GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB,wall->ul,wall->vb);
     GLEXT_glMultiTexCoord2fARB(GL_TEXTURE1_ARB,wall->ul*w+dx,wall->vb*h+dy);
     glVertex3f(wall->glseg->x1,wall->ybottom,wall->glseg->z1);
 
@@ -288,7 +288,7 @@ void gld_DrawWallWithDetail(GLWall *wall)
     glVertex3f(wall->glseg->x1,wall->ytop,wall->glseg->z1);
 
     // upper right corner
-    GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB,wall->ur,wall->vt); 
+    GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB,wall->ur,wall->vt);
     GLEXT_glMultiTexCoord2fARB(GL_TEXTURE1_ARB,wall->ur*w+dx,wall->vt*h+dy);
     glVertex3f(wall->glseg->x2,wall->ytop,wall->glseg->z2);
 
@@ -297,7 +297,7 @@ void gld_DrawWallWithDetail(GLWall *wall)
       gld_SplitRightEdge(wall, true);
 
     // lower right corner
-    GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB,wall->ur,wall->vb); 
+    GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB,wall->ur,wall->vb);
     GLEXT_glMultiTexCoord2fARB(GL_TEXTURE1_ARB,wall->ur*w+dx,wall->vb*h+dy);
     glVertex3f(wall->glseg->x2,wall->ybottom,wall->glseg->z2);
 
@@ -313,7 +313,7 @@ void gld_DrawWallDetail_NoARB(GLWall *wall)
   if (wall->flag >= GLDWF_SKY)
     return;
 
-  if (gld_IsDetailVisible(xCamera, yCamera, 
+  if (gld_IsDetailVisible(xCamera, yCamera,
       wall->glseg->x1, wall->glseg->z1,
       wall->glseg->x2, wall->glseg->z2))
   {
@@ -323,7 +323,7 @@ void gld_DrawWallDetail_NoARB(GLWall *wall)
 
     w = wall->gltexture->detail_width;
     h = wall->gltexture->detail_height;
-    dx = detail->offsetx; 
+    dx = detail->offsetx;
     dy = detail->offsety;
 
     gld_BindDetail(wall->gltexture, detail->texid);
@@ -730,12 +730,12 @@ GLuint gld_LoadDetailName(const char *name)
         glBindTexture(GL_TEXTURE_2D, texid);
 
         gluBuild2DMipmaps(GL_TEXTURE_2D, gl_tex_format,
-          surf->w, surf->h, 
-          imageformats[surf->format->BytesPerPixel], 
+          surf->w, surf->h,
+          imageformats[surf->format->BytesPerPixel],
           GL_UNSIGNED_BYTE, surf->pixels);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         if (gl_ext_texture_filter_anisotropic)

@@ -1442,7 +1442,3 @@ const music_player_t opl_synth_player =
   I_OPL_StopSong,
   I_OPL_RenderSamples
 };
-
-
-
-

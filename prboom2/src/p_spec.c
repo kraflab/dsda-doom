@@ -503,7 +503,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
     last_height_0 = heightlist[0];
     min = heightlist[0];
     
-    // Range checking? 
+    // Range checking?
     for (i = 1;i < h;i++)
     {
       if (heightlist[i] < min)
@@ -1086,8 +1086,8 @@ dboolean P_CanUnlockGenDoor
           // There is no more desync on 10sector.wad\ts27-137.lmp
           // http://www.doomworld.com/tas/ts27-137.zip
           (!player->cards[it_yellowcard] &&
-            (compatibility_level == mbf_compatibility && 
-             !prboom_comp[PC_FORCE_CORRECT_CODE_FOR_3_KEYS_DOORS_IN_MBF].state ? 
+            (compatibility_level == mbf_compatibility &&
+             !prboom_comp[PC_FORCE_CORRECT_CODE_FOR_3_KEYS_DOORS_IN_MBF].state ?
              player->cards[it_yellowskull] :
              !player->cards[it_yellowskull]))
         )
@@ -2668,7 +2668,7 @@ void P_SpawnSpecials (void)
     if (sector->special&SECRET_MASK) //jff 3/15/98 count extended
       totalsecret++;                 // secret sectors too
 
-    switch ((demo_compatibility && !prboom_comp[PC_TRUNCATED_SECTOR_SPECIALS].state) ? 
+    switch ((demo_compatibility && !prboom_comp[PC_TRUNCATED_SECTOR_SPECIALS].state) ?
       sector->special : sector->special&31)
     {
       case 1:

@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 2007 Simon Howard
@@ -37,4 +37,3 @@ int I_PCS_SoundIsPlaying(int handle);
 void I_PCS_InitSound(void);
 
 #endif /* #ifndef __I_PCSOUND_H__ */
-

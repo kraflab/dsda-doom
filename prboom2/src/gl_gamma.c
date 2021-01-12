@@ -137,7 +137,7 @@ int gld_SetGammaRamp(int gamma)
       // cached copy of the ramp that it doesn't update, so when
       // SetGammaRamp is called later to handle the NeedGammaUpdate flag,
       // it doesn't do anything, because the gamma ramp is the same as the
-      // one passed in the last call, even though the visible gamma ramp 
+      // one passed in the last call, even though the visible gamma ramp
       // actually has changed.
       //
       // So here we force the gamma ramp to something absolutely horrible and

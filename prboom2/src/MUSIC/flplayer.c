@@ -307,7 +307,7 @@ static void fl_stop (void)
 }
 
 static void fl_setvolume (int v)
-{ 
+{
   f_volume = v;
 }
 
@@ -367,7 +367,7 @@ static void writesysex (unsigned char *data, int len)
   {
     lprintf (LO_WARN, "fluidplayer: SYSEX message received but not understood\n");
   }
-}  
+}
 
 static void fl_render (void *vdest, unsigned length)
 {
@@ -379,7 +379,7 @@ static void fl_render (void *vdest, unsigned length)
   midi_event_t *currevent;
 
   if (!f_playing || f_paused)
-  { 
+  {
     // save CPU time and allow for seamless resume after pause
     memset (vdest, 0, length * 4);
     //fl_writesamples_ex (vdest, length);
@@ -442,7 +442,7 @@ static void fl_render (void *vdest, unsigned length)
       case MIDI_EVENT_SYSEX_SPLIT:
         writesysex (currevent->data.sysex.data, currevent->data.sysex.length);
         break;
-      case MIDI_EVENT_META: 
+      case MIDI_EVENT_META:
         if (currevent->data.meta.type == MIDI_META_SET_TEMPO)
           spmc = MIDI_spmc (midifile, currevent, f_soundrate);
         else if (currevent->data.meta.type == MIDI_META_END_OF_TRACK)
@@ -503,7 +503,7 @@ static void fl_render (void *vdest, unsigned length)
   }
   
 
-}  
+}
 
 
 const music_player_t fl_player =
@@ -523,4 +523,3 @@ const music_player_t fl_player =
 
 
 #endif // HAVE_LIBFLUIDSYNTH
-

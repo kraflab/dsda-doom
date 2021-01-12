@@ -762,7 +762,7 @@ static int M_FindCheats_Doom(int key)
         !(cht->when & not_menu && menuactive) &&
         !(cht->when & not_deh  && M_CheckParm("-deh")))
     {
-      // if we make a short sequence on a cheat with parameters, this 
+      // if we make a short sequence on a cheat with parameters, this
       // will not work in vanilla doom.  behave the same.
 
       if (demo_compatibility || compatibility_level == lxdoom_1_compatibility)
@@ -774,7 +774,7 @@ static int M_FindCheats_Doom(int key)
       if (cht->chars_read < cht->deh_sequence_len)
       {
         // still reading characters from the cheat code
-        // and verifying.  reset back to the beginning 
+        // and verifying.  reset back to the beginning
         // if a key is wrong
 
         if (char_key == cht->cheat[cht->chars_read])
@@ -786,8 +786,8 @@ static int M_FindCheats_Doom(int key)
       }
       else if (cht->param_chars_read < -cht->arg)
       {
-        // we have passed the end of the cheat sequence and are 
-        // entering parameters now 
+        // we have passed the end of the cheat sequence and are
+        // entering parameters now
 
         cht->parameter_buf[cht->param_chars_read] = char_key;
 

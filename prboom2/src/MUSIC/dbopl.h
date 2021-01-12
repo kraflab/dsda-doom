@@ -215,4 +215,3 @@ void Chip__WriteReg(Chip *self, Bit32u reg, Bit8u val );
 void Chip__GenerateBlock2(Chip *self, Bitu total, Bit32s* output );
 
 #endif
-

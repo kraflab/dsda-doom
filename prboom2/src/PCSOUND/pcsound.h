@@ -44,4 +44,3 @@ int PCSound_Init(pcsound_callback_func callback_func);
 void PCSound_Shutdown(void);
 
 #endif /* #ifndef PCSOUND_H */
-

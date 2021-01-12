@@ -152,7 +152,7 @@ static const void *mp_registersong (const void *data, unsigned len)
       {
         lprintf (LO_WARN, "mad_registersong failed: %s\n", mad_stream_errorstr (&Stream));
         return NULL;
-      }  
+      }
     }
     else
     {
@@ -218,7 +218,7 @@ static inline short mp_fixtoshort (mad_fixed_t f)
   if (f < -MAD_F_ONE)
     f = -MAD_F_ONE;
   if (f > MAD_F_ONE)
-    f = MAD_F_ONE;    
+    f = MAD_F_ONE;
   // apply volume before conversion to 16bit
   f /= 15;
   f *= mp_volume;
@@ -275,7 +275,7 @@ static void mp_render_ex (void *dest, unsigned nsamp)
           memset (sout, 0, nsamp * 4);
           return;
         }
-      }  
+      }
       else if (Stream.error == MAD_ERROR_BUFLEN)
       { // EOF
         // FIXME: in order to not drop the last frame, there must be at least MAD_BUFFER_GUARD
@@ -312,7 +312,7 @@ static void mp_render_ex (void *dest, unsigned nsamp)
 }
 
 static void mp_render (void *dest, unsigned nsamp)
-{ 
+{
   I_ResampleStream (dest, nsamp, mp_render_ex, Header.samplerate, mp_samplerate_target);
 }
 

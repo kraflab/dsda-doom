@@ -377,7 +377,7 @@ static void R_SetInterpolation(interpolation_type_e type, void *posptr)
     numinterpolations++;
     (*i) = numinterpolations;
   }
-} 
+}
 
 static void R_StopInterpolation(interpolation_type_e type, void *posptr)
 {

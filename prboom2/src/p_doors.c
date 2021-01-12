@@ -588,7 +588,7 @@ int EV_VerticalDoor
     /* For old demos we have to emulate the old buggy behavior and
      * mess up non-T_VerticalDoor actions.
      */
-    if (compatibility_level < prboom_4_compatibility || 
+    if (compatibility_level < prboom_4_compatibility ||
         door->thinker.function == T_VerticalDoor) {
       /* cph - we are writing outval to door->direction iff it is non-zero */
       signed int outval = 0;
@@ -603,8 +603,8 @@ int EV_VerticalDoor
         outval = -1; /* go back down */
       }
 
-      /* Write this to the thinker. In demo compatibility mode, we might be 
-       *  overwriting a field of a non-vldoor_t thinker - we need to add any 
+      /* Write this to the thinker. In demo compatibility mode, we might be
+       *  overwriting a field of a non-vldoor_t thinker - we need to add any
        *  other thinker types here if any demos depend on specific fields
        *  being corrupted by this.
        */

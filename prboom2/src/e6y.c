@@ -210,7 +210,7 @@ const char* WINError(void)
 
 //--------------------------------------------------
 
-void e6y_assert(const char *format, ...) 
+void e6y_assert(const char *format, ...)
 {
   static FILE *f = NULL;
   va_list argptr;
@@ -223,19 +223,19 @@ void e6y_assert(const char *format, ...)
 }
 
 /* ParamsMatchingCheck
- * Conflicting command-line parameters could cause the engine to be confused 
+ * Conflicting command-line parameters could cause the engine to be confused
  * in some cases. Added checks to prevent this.
  * Example: glboom.exe -record mydemo -playdemo demoname
  */
 void ParamsMatchingCheck()
 {
-  dboolean recording_attempt = 
-    M_CheckParm("-record") || 
+  dboolean recording_attempt =
+    M_CheckParm("-record") ||
     M_CheckParm("-recordfrom") ||
     M_CheckParm("-recordfromto");
   
-  dboolean playbacking_attempt = 
-    M_CheckParm("-playdemo") || 
+  dboolean playbacking_attempt =
+    M_CheckParm("-playdemo") ||
     M_CheckParm("-timedemo") ||
     M_CheckParm("-fastdemo");
 
@@ -365,7 +365,7 @@ void G_SkipDemoCheck(void)
 {
   if (doSkip && gametic > 0)
   {
-    if (((startmap <= 1) && 
+    if (((startmap <= 1) &&
          (demo_skiptics > 0 ? gametic > demo_skiptics : demo_curr_tic >= demo_tics_count)) ||
         (demo_warp && gametic - levelstarttic > demo_skiptics))
      {
@@ -984,10 +984,10 @@ void e6y_WriteStats(void)
       max.stat[TT_ALLITEM],   max.stat[TT_TOTALITEM],   allitems_len,
       max.stat[TT_ALLSECRET], max.stat[TT_TOTALSECRET], allsecrets_len);
     
-    fprintf(f, str, stats[level].map, 
+    fprintf(f, str, stats[level].map,
       stats[level].stat[TT_TIME]/TICRATE/60,
       (float)(stats[level].stat[TT_TIME]%(60*TICRATE))/TICRATE,
-      (stats[level].stat[TT_TOTALTIME])/TICRATE/60, 
+      (stats[level].stat[TT_TOTALTIME])/TICRATE/60,
       (stats[level].stat[TT_TOTALTIME]%(60*TICRATE))/TICRATE,
       stats[level].stat[TT_ALLKILL],  stats[level].stat[TT_TOTALKILL],   all[level].kill,
       stats[level].stat[TT_ALLITEM],  stats[level].stat[TT_TOTALITEM],   all[level].item,
@@ -1076,8 +1076,8 @@ void e6y_G_Compatibility(void)
       
       for (i = 0; i < PC_MAX; i++)
       {
-        prboom_comp[i].state = 
-          (emulated_version >= prboom_comp[i].minver && 
+        prboom_comp[i].state =
+          (emulated_version >= prboom_comp[i].minver &&
            emulated_version <  prboom_comp[i].maxver);
       }
     }
@@ -1366,7 +1366,7 @@ void I_midiOutSetVolumes(int volume)
 */
 
 //===========================================================================
-// 
+//
 // smooth the edges of transparent fields in the texture
 // returns false when nothing is manipulated to save the work on further
 // levels
@@ -1389,7 +1389,7 @@ void I_midiOutSetVolumes(int volume)
 dboolean SmoothEdges(unsigned char * buffer,int w, int h)
 {
   int x,y;
-  dboolean trans=buffer[MSB]==0; // If I set this to false here the code won't detect textures 
+  dboolean trans=buffer[MSB]==0; // If I set this to false here the code won't detect textures
                                 // that only contain transparent pixels.
   unsigned char * l1;
 

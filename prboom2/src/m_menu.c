@@ -2221,7 +2221,7 @@ static void M_DrawInstructions(void)
     case S_FILE:
       M_DrawStringCentered(160, 20, CR_SELECT, "Type/edit filename and Press ENTER");
       break;
-    case S_CHOICE: 
+    case S_CHOICE:
       M_DrawStringCentered(160, 20, CR_SELECT, "Press left or right to choose");
       break;
     case S_RESET:
@@ -2719,7 +2719,7 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
   {"ARMOR GOOD/EXTRA"  ,S_NUM       ,m_null,SB_X,SB_Y+13*8, {"armor_green"}},
   {"AMMO LOW/OK"       ,S_NUM       ,m_null,SB_X,SB_Y+14*8, {"ammo_red"}},
   {"AMMO OK/GOOD"      ,S_NUM       ,m_null,SB_X,SB_Y+15*8, {"ammo_yellow"}},
-  {"BACKPACK CHANGES THRESHOLDS",S_CHOICE,m_null,SB_X,SB_Y+16*8, 
+  {"BACKPACK CHANGES THRESHOLDS",S_CHOICE,m_null,SB_X,SB_Y+16*8,
    {"ammo_colour_behaviour"},0,0,NULL,ammo_colour_behaviour_list},
 
   // Button for resetting to defaults
@@ -3211,7 +3211,7 @@ setup_menu_t gen_settings2[] = { // General Settings screen2
   {"Enable Joystick",                  S_YESNO, m_null, G_X, G_Y+ 3*8, {"use_joystick"}},
 
   {"Files Preloaded at Game Startup",  S_SKIP|S_TITLE, m_null, G_X, G_Y + 5*8},
-  {"WAD # 1",                          S_FILE, m_null, GF_X, G_Y+ 6*8, {"wadfile_1"}}, 
+  {"WAD # 1",                          S_FILE, m_null, GF_X, G_Y+ 6*8, {"wadfile_1"}},
   {"WAD #2",                           S_FILE, m_null, GF_X, G_Y+ 7*8, {"wadfile_2"}},
   {"DEH/BEX # 1",                      S_FILE, m_null, GF_X, G_Y+ 8*8, {"dehfile_1"}},
   {"DEH/BEX #2",                       S_FILE, m_null, GF_X, G_Y+ 9*8, {"dehfile_2"}},
@@ -3274,7 +3274,7 @@ setup_menu_t gen_settings4[] = { // General Settings screen3
   {"Drawing of patch edges",     S_CHOICE, m_null, G_X, G_Y+ 9*8, {"patch_edges"}, 0, 0, NULL, edgetypes},
   {"Flashing HOM indicator",     S_YESNO,  m_null, G_X, G_Y+10*8, {"flashing_hom"}},
 
-  // prboom-plus 
+  // prboom-plus
   {"Wipe Screen Effect",         S_YESNO,  m_null, G_X, G_Y+12*8, {"render_wipescreen"}},
   {"Change Palette On Pain",     S_YESNO,  m_null, G_X, G_Y+14*8, {"palette_ondamage"}, 0, 0, M_ChangeApplyPalette},
   {"Change Palette On Bonus",    S_YESNO,  m_null, G_X, G_Y+15*8, {"palette_onbonus"}, 0, 0, M_ChangeApplyPalette},
@@ -3357,7 +3357,7 @@ setup_menu_t gen_settings7[] =
 static const char *gltexfilters[] = {
   "None", "Linear", "Nearest Mipmap", "Linear Mipmap", "Bilinear", "Trilinear", NULL};
 
-static const char *gltexfilters_anisotropics[] = 
+static const char *gltexfilters_anisotropics[] =
   {"Off", "2x", "4x", "8x", "16x", NULL};
 
 setup_menu_t gen_settings8[] = { // General Settings screen4
@@ -4761,8 +4761,8 @@ dboolean M_Responder (event_t* ev) {
           useglgamma++;
           if (useglgamma > MAX_GLGAMMA)
             useglgamma = 0;
-          sprintf(str, "Gamma correction level %d", useglgamma); 
-          players[consoleplayer].message = str; 
+          sprintf(str, "Gamma correction level %d", useglgamma);
+          players[consoleplayer].message = str;
 
           gld_SetGammaRamp(useglgamma);
         }
@@ -4803,7 +4803,7 @@ dboolean M_Responder (event_t* ev) {
       }
 
     //e6y
-    if (ch == key_speed_default && (!netgame||demoplayback) && !dsda_StrictMode())               
+    if (ch == key_speed_default && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, 0, speed_step, 3, 10000, 100);
       I_Init2();
@@ -4874,7 +4874,7 @@ dboolean M_Responder (event_t* ev) {
     if (ch == dsda_key_store_quick_key_frame)
     {
       if (
-        gamestate == GS_LEVEL && 
+        gamestate == GS_LEVEL &&
         gameaction == ga_nothing &&
         !dsda_StrictMode()
       ) dsda_StoreQuickKeyFrame();

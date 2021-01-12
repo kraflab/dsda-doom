@@ -4,7 +4,7 @@
  *
  *  PrBoom: a Doom port merged with LxDoom and LSDLDoom
  *  based on BOOM, a modified and improved DOOM engine
- *  Copyright 2006 - 2008 G Jackson, Jaakko Kerônen
+ *  Copyright 2006 - 2008 G Jackson, Jaakko Kerï¿½nen
  *  Copyright 2009 - Andrey Budko
  *
  *  This program is free software; you can redistribute it and/or
@@ -45,7 +45,7 @@
 #include "am_map.h"
 #include "lprintf.h"
 
-am_icon_t am_icons[am_icon_count + 1] = 
+am_icon_t am_icons[am_icon_count + 1] =
 {
   {-1, "M_SHADOW"},
 

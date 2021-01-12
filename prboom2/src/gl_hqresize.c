@@ -95,8 +95,8 @@ static void scale2x ( unsigned int* inputBuffer, unsigned int* outputBuffer, int
 
   for ( i = 0; i < inWidth; ++i )
   {
-    // [JB] when the current index is at an edge and seamlessWidth is true, 
-    // the opposite edge's index will be used for iMinus and iPlus 
+    // [JB] when the current index is at an edge and seamlessWidth is true,
+    // the opposite edge's index will be used for iMinus and iPlus
     // when the current index is at an edge and seamlessWidth is false,
     // the current index will be used for iMinus and iPlus
     // otherwise iMinus and iPlus are equal to i-1 and i+1 respectively
@@ -210,7 +210,7 @@ static unsigned char *HQScaleHelper( void (*scaleNxFunction) ( unsigned int* , u
 }
 
 //===========================================================================
-// 
+//
 // [BB] Upsamples the texture in inputBuffer, frees inputBuffer and returns
 //  the upsampled buffer.
 //

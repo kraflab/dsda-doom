@@ -113,7 +113,7 @@ static void dsda_SetMusic(musicinfo_t* music_list, int count) {
   num_music = count;
   S_music_files = malloc(sizeof(char *) * num_music);
   memset(S_music_files, 0, sizeof(char *) * num_music);
-} 
+}
 
 static void dsda_InitDoom(void) {
   int i;

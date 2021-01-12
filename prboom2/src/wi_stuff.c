@@ -1381,7 +1381,7 @@ void WI_drawDeathmatchStats(void)
 // the condition (cnt_kills[0] >= (plrs[me].skills * 100) / wbs->maxkills)
 // will be always false in this case.
 //
-// If you will kill 800 monsters on MAP30 on Ultra-Violence skill and 
+// If you will kill 800 monsters on MAP30 on Ultra-Violence skill and
 // will not press <Use>, vanilla will count up to 80000%, but PrBoom
 // will be in infinite cycle of counting:
 // (0, 1, 2, ..., 32766, 32767, -32768, -32767, ..., -1, 0, 1, ...)

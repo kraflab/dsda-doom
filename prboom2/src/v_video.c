@@ -124,9 +124,9 @@ static const crdef_t crdefs[] = {
 };
 
 // haleyjd: DOSDoom-style single translucency lookup-up table
-// generation code. This code has a 32k (plus a bit more) 
+// generation code. This code has a 32k (plus a bit more)
 // footprint but allows a much wider range of translucency effects
-// than BOOM-style translucency. This will be used for particles, 
+// than BOOM-style translucency. This will be used for particles,
 // for variable mapthing trans levels, and for screen patches.
 
 // haleyjd: Updated 06/21/08 to use 32k lookup, mainly to fix
@@ -620,7 +620,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
         {
           // e6y
           // More accurate patch drawing from Eternity.
-          // Predefined arrays are used instead of dynamic calculation 
+          // Predefined arrays are used instead of dynamic calculation
           // of the top and bottom screen coordinates of a column.
 
           int tmpy;
@@ -672,7 +672,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 
         //e6y
         dcvars.dy = params->deltay1;
-        dcvars.flags |= DRAW_COLUMN_ISPATCH; 
+        dcvars.flags |= DRAW_COLUMN_ISPATCH;
 
         colfunc(&dcvars);
       }
@@ -726,8 +726,8 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
   int gtlump = (W_CheckNumForName)("GAMMATBL",ns_prboom);
   const byte *pal = W_CacheLumpNum(pplump);
   // opengl doesn't use the gamma
-  const byte *const gtable = 
-    (const byte *)W_CacheLumpNum(gtlump) + 
+  const byte *const gtable =
+    (const byte *)W_CacheLumpNum(gtlump) +
     (V_GetMode() == VID_MODEGL ? 0 : 256*(usegamma))
   ;
 
@@ -742,7 +742,7 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
     Palettes15 = NULL;
     Palettes16 = NULL;
     Palettes32 = NULL;
-    usegammaOnLastPaletteGeneration = usegamma;      
+    usegammaOnLastPaletteGeneration = usegamma;
   }
   
   if (mode == VID_MODE32) {
@@ -834,7 +834,7 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
       }
     }
     V_Palette15 = Palettes15 + paletteNum*256*VID_NUMCOLORWEIGHTS;
-  }       
+  }
    
   W_UnlockLumpNum(pplump);
   W_UnlockLumpNum(gtlump);
@@ -865,7 +865,7 @@ static void V_DestroyTrueColorPalette(video_mode_t mode) {
 void V_DestroyUnusedTrueColorPalettes(void) {
   if (V_GetMode() != VID_MODE15) V_DestroyTrueColorPalette(VID_MODE15);
   if (V_GetMode() != VID_MODE16) V_DestroyTrueColorPalette(VID_MODE16);
-  if (V_GetMode() != VID_MODE32) V_DestroyTrueColorPalette(VID_MODE32);  
+  if (V_GetMode() != VID_MODE32) V_DestroyTrueColorPalette(VID_MODE32);
 }
 
 //
@@ -1375,7 +1375,7 @@ void WRAP_V_DrawLineWu(fline_t *fl, int color)
 {
   unsigned short erroracc, erroradj, erroracctmp;
   int dx, dy, xdir = 1;
-  int x, y;   
+  int x, y;
 
   // swap end points if necessary
   if(fl->a.y > fl->b.y)
@@ -1393,8 +1393,8 @@ void WRAP_V_DrawLineWu(fline_t *fl, int color)
   if(dx < 0)
   {
     dx   = -dx;
-    xdir = -xdir;      
-  }   
+    xdir = -xdir;
+  }
 
   // detect special cases -- horizontal, vertical, and 45 degrees;
   // revert to Bresenham
@@ -1413,7 +1413,7 @@ void WRAP_V_DrawLineWu(fline_t *fl, int color)
   if(dy > dx)
   {
     // line is y-axis major.
-    erroracc = 0; 
+    erroracc = 0;
     erroradj = (unsigned short)(((unsigned int)dx << 16) / (unsigned int)dy);
 
     while(--dy)
@@ -1429,9 +1429,9 @@ void WRAP_V_DrawLineWu(fline_t *fl, int color)
       y += 1; // advance y
 
       // the trick is in the trig!
-      V_PlotPixelWu(0, x, y, (byte)color, 
+      V_PlotPixelWu(0, x, y, (byte)color,
         finecosine[erroracc >> wu_fineshift] >> wu_fixedshift);
-      V_PlotPixelWu(0, x + xdir, y, (byte)color, 
+      V_PlotPixelWu(0, x + xdir, y, (byte)color,
         finesine[erroracc >> wu_fineshift] >> wu_fixedshift);
     }
   }
@@ -1454,9 +1454,9 @@ void WRAP_V_DrawLineWu(fline_t *fl, int color)
       x += xdir; // advance x
 
       // the trick is in the trig!
-      V_PlotPixelWu(0, x, y, (byte)color, 
+      V_PlotPixelWu(0, x, y, (byte)color,
         finecosine[erroracc >> wu_fineshift] >> wu_fixedshift);
-      V_PlotPixelWu(0, x, y + 1, (byte)color, 
+      V_PlotPixelWu(0, x, y + 1, (byte)color,
         finesine[erroracc >> wu_fineshift] >> wu_fixedshift);
     }
   }
@@ -1689,7 +1689,7 @@ void SetRatio(int width, int height)
   if (SCREENWIDTH < 320 || WIDE_SCREENWIDTH < 320 ||
       SCREENHEIGHT < 200 || WIDE_SCREENHEIGHT < 200)
   {
-    render_stretch_hud = patch_stretch_full; 
+    render_stretch_hud = patch_stretch_full;
   }
 
   switch (render_stretch_hud)
@@ -1741,7 +1741,7 @@ void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flag
   *y += params->deltay1;
 }
 
-// 
+//
 // V_BestColor
 //
 // Adapted from zdoom -- thanks to Randy Heit.

@@ -29,7 +29,7 @@
  * DESCRIPTION:
  *  Dehacked file support
  *  New for the TeamTNT "Boom" engine
- * 
+ *
  *  Author: Ty Halderman, TeamTNT
  *
  *  Description: This file translates the #defined string constants

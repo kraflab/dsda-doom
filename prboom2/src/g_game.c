@@ -124,7 +124,7 @@ struct
 
 // e6y
 // It is signature for new savegame format with continuous numbering.
-// Now it is not necessary to add a new level of compatibility in case 
+// Now it is not necessary to add a new level of compatibility in case
 // of need to savegame format change from one minor version to another.
 // The old format is still supported.
 #define NEWFORMATSIG "\xff\xff\xff\xff"
@@ -133,7 +133,7 @@ size_t          savegamesize = SAVEGAMESIZE; // killough
 static dboolean  netdemo;
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
-//e6y static 
+//e6y static
 const byte *demo_p;
 const byte *demo_continue_p = NULL;
 static short    consistancy[MAXPLAYERS][BACKUPTICS];
@@ -3617,7 +3617,7 @@ void G_BeginRecording (void)
         case prboom_4_compatibility: v = 212; break;
         case prboom_5_compatibility: v = 213; break;
         case prboom_6_compatibility:
-				     v = 214; 
+				     v = 214;
 				     longtics = 1;
 				     break;
         default: I_Error("G_BeginRecording: PrBoom compatibility level unrecognised?");
@@ -4391,7 +4391,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
     if (demo_playerscount > 0 && demolength > 0)
     {
-      do        
+      do
       {
         demo_tics_count++;
         p += bytes_per_tic;
@@ -4400,8 +4400,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
       demo_tics_count /= demo_playerscount;
 
-      sprintf(demo_len_st, "\x1b\x35/%d:%02d", 
-        demo_tics_count/TICRATE/60, 
+      sprintf(demo_len_st, "\x1b\x35/%d:%02d",
+        demo_tics_count/TICRATE/60,
         (demo_tics_count%(60*TICRATE))/TICRATE);
     }
   }
@@ -4686,7 +4686,7 @@ void G_ReadDemoContinueTiccmd (ticcmd_t* cmd)
   if (!demo_continue_p)
     return;
 
-  if (gametic <= demo_tics_count && 
+  if (gametic <= demo_tics_count &&
     demo_continue_p + bytes_per_tic <= demobuffer + demolength &&
     *demo_continue_p != DEMOMARKER)
   {

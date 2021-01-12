@@ -209,7 +209,7 @@ static void WriteRegister(unsigned int reg_num, unsigned int value)
     }
 }
 
-static void OPL_AdvanceTime(unsigned int nsamples) 
+static void OPL_AdvanceTime(unsigned int nsamples)
 {
     opl_callback_t callback;
     void *callback_data;
@@ -448,12 +448,3 @@ void OPL_SetPaused(int paused)
 {
     opl_paused = paused;
 }
-
-
-
-
-
-
-
-
-

@@ -277,7 +277,7 @@ dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
 }
 #endif // PRBOOM_SERVER
 
-/* 
+/*
  * I_Read
  *
  * cph 2001/11/18 - wrapper for read(2) which handles partial reads and aborts

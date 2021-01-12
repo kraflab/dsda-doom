@@ -244,7 +244,7 @@ void W_InitCache(void)
       if (lumpinfo[i].wadfile) {
         int fd = lumpinfo[i].wadfile->handle;
         if (!mapped_wad[fd])
-          if ((mapped_wad[fd] = mmap(NULL,I_Filelength(fd),PROT_READ,MAP_SHARED,fd,0)) == MAP_FAILED) 
+          if ((mapped_wad[fd] = mmap(NULL,I_Filelength(fd),PROT_READ,MAP_SHARED,fd,0)) == MAP_FAILED)
             I_Error("W_InitCache: failed to mmap");
       }
     }
@@ -259,7 +259,7 @@ void W_DoneCache(void)
       if (lumpinfo[i].wadfile) {
         int fd = lumpinfo[i].wadfile->handle;
         if (mapped_wad[fd]) {
-          if (munmap(mapped_wad[fd],I_Filelength(fd))) 
+          if (munmap(mapped_wad[fd],I_Filelength(fd)))
             I_Error("W_DoneCache: failed to munmap");
           mapped_wad[fd] = NULL;
         }
@@ -342,4 +342,3 @@ void W_UnlockLumpNum(int lump) {
   if (cachelump[lump].locks == 0)
     Z_ChangeTag(cachelump[lump].cache, PU_CACHE);
 }
-

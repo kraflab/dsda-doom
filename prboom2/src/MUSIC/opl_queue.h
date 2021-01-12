@@ -42,4 +42,3 @@ int OPL_Queue_Pop(opl_callback_queue_t *queue,
 unsigned int OPL_Queue_Peek(opl_callback_queue_t *queue);
 
 #endif /* #ifndef OPL_QUEUE_H */
-

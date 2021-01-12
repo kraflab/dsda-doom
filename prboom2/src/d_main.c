@@ -161,7 +161,7 @@ const char *const standard_iwads[]=
   "bfgdoom2.wad",
   "bfgdoom.wad",
 };
-//e6y static 
+//e6y static
 const int nstandard_iwads = sizeof standard_iwads/sizeof*standard_iwads;
 
 /*
@@ -169,7 +169,7 @@ const int nstandard_iwads = sizeof standard_iwads/sizeof*standard_iwads;
  *
  * Called by I/O functions when an event is received.
  * Try event handlers for each code area in turn.
- * cph - in the true spirit of the Boom source, let the 
+ * cph - in the true spirit of the Boom source, let the
  *  short ciruit operator madness begin!
  */
 
@@ -348,7 +348,7 @@ void D_Display (fixed_t frac)
       // e6y
       // I should do it because I call R_RenderPlayerView in all cases,
       // not only if viewactive is true
-      borderwillneedredraw = (borderwillneedredraw) || 
+      borderwillneedredraw = (borderwillneedredraw) ||
         (((automapmode & am_active) && !(automapmode & am_overlay)));
     }
     if (redrawborderstuff || (V_GetMode() == VID_MODEGL))
@@ -752,7 +752,7 @@ void D_AddFile (const char *file, wad_source_t source)
 
 // killough 10/98: support -dehout filename
 // cph - made const, don't cache results
-//e6y static 
+//e6y static
 const char *D_dehout(void)
 {
   int p = M_CheckParm("-dehout");
@@ -774,7 +774,7 @@ const char *D_dehout(void)
 // jff 4/19/98 Add routine to test IWAD for validity and determine
 // the gamemode from it. Also note if DOOM II, whether secret levels exist
 // CPhipps - const char* for iwadname, made static
-//e6y static 
+//e6y static
 void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
 {
   if ( !access (iwadname,R_OK) )
@@ -1138,14 +1138,14 @@ static void FindResponseFile (void)
 	    if (size > 0) {
 	      char *s = malloc(size+1);
 	      char *p = s;
-	      int quoted = 0; 
+	      int quoted = 0;
 
 	      while (size > 0) {
 		// Whitespace terminates the token unless quoted
 		if (!quoted && isspace(*infile)) break;
 		if (*infile == '\"') {
 		  // Quotes are removed but remembered
-		  infile++; size--; quoted ^= 1; 
+		  infile++; size--; quoted ^= 1;
 		} else {
 		  *p++ = *infile++; size--;
 		}
@@ -1735,7 +1735,7 @@ static void D_DoomMainSetup(void)
 
   lprintf(LO_INFO,"\n");     // killough 3/6/98: add a newline, by popular demand :)
 
-  // e6y 
+  // e6y
   // option to disable automatic loading of dehacked-in-wad lump
   if (!M_CheckParm ("-nodeh"))
   {

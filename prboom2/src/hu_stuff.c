@@ -1287,7 +1287,7 @@ int HU_GetAmmoColor(int ammo, int fullammo, int def, int tofire, dboolean backpa
 
   if (ammo < tofire)
     result = CR_BROWN;
-  else if ((ammo==fullammo) || 
+  else if ((ammo==fullammo) ||
     (ammo_colour_behaviour == ammo_colour_behaviour_no && backpack && ammo*2 >= fullammo))
     result=def;
   else {
@@ -2019,11 +2019,11 @@ void HU_widget_build_hudadd(void)
     static char demo_len_null[1]={0};
     char *demo_len = demoplayback && hudadd_demotime ? demo_len_st : demo_len_null;
     if (totalleveltimes)
-      sprintf(hud_add+strlen(hud_add),"\x1b\x32time \x1b\x35%d:%02d%s \x1b\x33%d:%05.2f ", 
-      (totalleveltimes+leveltime)/35/60, ((totalleveltimes+leveltime)%(60*35))/35, demo_len, 
+      sprintf(hud_add+strlen(hud_add),"\x1b\x32time \x1b\x35%d:%02d%s \x1b\x33%d:%05.2f ",
+      (totalleveltimes+leveltime)/35/60, ((totalleveltimes+leveltime)%(60*35))/35, demo_len,
       leveltime/35/60, (float)(leveltime%(60*35))/35);
     else
-      sprintf(hud_add+strlen(hud_add),"\x1b\x32time \x1b\x33%d:%05.2f%s ", 
+      sprintf(hud_add+strlen(hud_add),"\x1b\x32time \x1b\x33%d:%05.2f%s ",
       leveltime/35/60, (float)(leveltime%(60*35))/35, demo_len);
   }
   HUlib_clearTextLine(&w_hudadd);
@@ -2642,7 +2642,7 @@ void HU_Ticker(void)
   }
   if (custom_message_p->msg)
   {
-    const char *s = custom_message_p->msg; 
+    const char *s = custom_message_p->msg;
     HUlib_clearTextLine(&w_centermsg);
     while (*s)
     {

@@ -370,7 +370,7 @@ static dboolean CheckIfPatch(int lump)
   if (result)
   {
     // The dimensions seem like they might be valid for a patch, so
-    // check the column directory for extra security. All columns 
+    // check the column directory for extra security. All columns
     // must begin after the column directory, and none of them must
     // point past the end of the patch.
     int x;
@@ -895,11 +895,11 @@ void R_UnlockPatchNum(int id)
   const int unlocks = 1;
 #ifdef SIMPLECHECKS
   if ((signed short)patches[id].locks < unlocks)
-    lprintf(LO_DEBUG, "R_UnlockPatchNum: Excess unlocks on %8s (%d-%d)\n", 
+    lprintf(LO_DEBUG, "R_UnlockPatchNum: Excess unlocks on %8s (%d-%d)\n",
 	    lumpinfo[id].name, patches[id].locks, unlocks);
 #endif
   patches[id].locks -= unlocks;
-  /* cph - Note: must only tell z_zone to make purgeable if currently locked, 
+  /* cph - Note: must only tell z_zone to make purgeable if currently locked,
    * else it might already have been purged
    */
   if (unlocks && !patches[id].locks)
@@ -945,11 +945,11 @@ void R_UnlockTextureCompositePatchNum(int id)
   const int unlocks = 1;
 #ifdef SIMPLECHECKS
   if ((signed short)texture_composites[id].locks < unlocks)
-    lprintf(LO_DEBUG, "R_UnlockTextureCompositePatchNum: Excess unlocks on %8s (%d-%d)\n", 
+    lprintf(LO_DEBUG, "R_UnlockTextureCompositePatchNum: Excess unlocks on %8s (%d-%d)\n",
 	    textures[id]->name, texture_composites[id].locks, unlocks);
 #endif
   texture_composites[id].locks -= unlocks;
-  /* cph - Note: must only tell z_zone to make purgeable if currently locked, 
+  /* cph - Note: must only tell z_zone to make purgeable if currently locked,
    * else it might already have been purged
    */
   if (unlocks && !texture_composites[id].locks)
@@ -975,4 +975,3 @@ const rcolumn_t *R_GetPatchColumn(const rpatch_t *patch, int columnIndex) {
   if (patch->flags&PATCH_ISNOTTILEABLE) return R_GetPatchColumnClamped(patch, columnIndex);
   else return R_GetPatchColumnWrapped(patch, columnIndex);
 }
-

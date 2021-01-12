@@ -57,7 +57,7 @@
 #if (R_DRAWCOLUMN_PIPELINE & RDC_NOCOLMAP)
   #define GETCOL8_DEPTH(col) GETCOL8_MAPPED(col)
 #else
-  #if (R_DRAWCOLUMN_PIPELINE & RDC_DITHERZ)  
+  #if (R_DRAWCOLUMN_PIPELINE & RDC_DITHERZ)
     #define GETCOL8_DEPTH(col) (dither_colormaps[filter_getDitheredPixelLevel(x, y, fracz)][GETCOL8_MAPPED(col)])
   #else
     #define GETCOL8_DEPTH(col) colormap[GETCOL8_MAPPED(col)]
@@ -208,7 +208,7 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
         count -= shift;
       }
     }
-    if (count <= 0) return;  
+    if (count <= 0) return;
   }
 
   // Framebuffer destination address.
@@ -350,7 +350,7 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
           dest += 4;
           INCFRAC(frac);
 #if (R_DRAWCOLUMN_PIPELINE & (RDC_BILINEAR|RDC_ROUNDED))
-          INCFRAC(nextfrac); 
+          INCFRAC(nextfrac);
 #endif
         }
       }

@@ -118,7 +118,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
          *dest = GETDESTCOLOR(dest[fuzzoffset[fuzzpos]]);
          
          // Clamp table lookup index.
-         if(++fuzzpos == FUZZTABLE) 
+         if(++fuzzpos == FUZZTABLE)
             fuzzpos = 0;
 #else
          *dest = *source;
@@ -166,7 +166,7 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
             *dest = GETDESTCOLOR(dest[fuzzoffset[fuzzpos]]);
             
             // Clamp table lookup index.
-            if(++fuzzpos == FUZZTABLE) 
+            if(++fuzzpos == FUZZTABLE)
                fuzzpos = 0;
 #else
             *dest = *source;
@@ -194,7 +194,7 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
             *dest = GETDESTCOLOR(dest[fuzzoffset[fuzzpos]]);
             
             // Clamp table lookup index.
-            if(++fuzzpos == FUZZTABLE) 
+            if(++fuzzpos == FUZZTABLE)
                fuzzpos = 0;
 #else
             *dest = *source;
@@ -203,7 +203,7 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
             source += 4;
             dest += drawvars.PITCH;
          }
-      }         
+      }
       ++colnum;
    }
 }

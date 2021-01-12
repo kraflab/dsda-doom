@@ -139,7 +139,7 @@ static int	invhgtbits = 4;
 //   cases. These effects cannot be corrected without increasing the
 //   precision of various renderer variables, and, possibly, suffering
 //   a performance penalty.
-//   
+//
 
 void R_FixWiggle(sector_t *sec)
 {

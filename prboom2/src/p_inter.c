@@ -405,7 +405,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       // If you set the "IDKFA Armor" to MAX_INT (DWORD at 0x00064B5A -> FFFFFF7F)
       // and pick up one or more armor bonuses, your armor becomes negative
       // and you will die after reception of any damage since this moment.
-      // It happens because the taken health damage depends from armor points 
+      // It happens because the taken health damage depends from armor points
       // if they are present and becomes equal to very large value in this case
       if (player->armorpoints > max_armor && compatibility_level != doom_12_compatibility)
         player->armorpoints = max_armor;
@@ -414,7 +414,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       // dehacked only affects the GreenArmor.
       if (!player->armortype)
         player->armortype =
-         ((!demo_compatibility || prboom_comp[PC_APPLY_GREEN_ARMOR_CLASS_TO_ARMOR_BONUSES].state) ? 
+         ((!demo_compatibility || prboom_comp[PC_APPLY_GREEN_ARMOR_CLASS_TO_ARMOR_BONUSES].state) ?
           green_armor_class : 1);
       player->message = s_GOTARMBONUS; // Ty 03/22/98 - externalized
       break;
@@ -437,7 +437,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       // We always give armor type 2 for the megasphere;
       // dehacked only affects the MegaArmor.
       P_GiveArmor (player,
-         ((!demo_compatibility || prboom_comp[PC_APPLY_BLUE_ARMOR_CLASS_TO_MEGASPHERE].state) ? 
+         ((!demo_compatibility || prboom_comp[PC_APPLY_BLUE_ARMOR_CLASS_TO_MEGASPHERE].state) ?
           blue_armor_class : 2));
       player->message = s_GOTMSPHERE; // Ty 03/22/98 - externalized
       sound = sfx_getpow;
@@ -714,7 +714,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   // heretic
   target->flags2 &= ~MF2_PASSMOBJ;
 
-  if (compatibility_level == mbf_compatibility && 
+  if (compatibility_level == mbf_compatibility &&
       !prboom_comp[PC_MBF_REMOVE_THINKER_IN_KILLMOBJ].state)
   {
     // killough 8/29/98: remove from threaded list
@@ -1176,7 +1176,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   /* killough 9/9/98: cleaned up, made more consistent: */
   //e6y: Monsters could commit suicide in Doom v1.2 if they damaged themselves by exploding a barrel
   if (
-    source && 
+    source &&
     (source != target || compatibility_level == doom_12_compatibility || heretic) &&
     source->type != MT_VILE &&
     (!target->threshold || target->type == MT_VILE) &&

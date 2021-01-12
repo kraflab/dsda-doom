@@ -178,12 +178,12 @@ dboolean P_SightTraverseIntercepts(void)
   for (scan = intercepts; scan<intercept_p; scan++)
   {
     P_MakeDivline(scan->d.line, &dl);
-    scan->frac = P_InterceptVector(&trace, &dl);    
+    scan->frac = P_InterceptVector(&trace, &dl);
   }
 
   //
   // go through in order
-  //  
+  //
   in = 0; // shut up compiler warning
 
   while (count--)
@@ -270,7 +270,7 @@ dboolean P_SightPathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2)
     mapxstep = 0;
     partial = FRACUNIT;
     ystep = 256*FRACUNIT;
-  }  
+  }
   yintercept = (y1>>MAPBTOFRAC) + FixedMul (partial, ystep);
 
 
@@ -291,7 +291,7 @@ dboolean P_SightPathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2)
     mapystep = 0;
     partial = FRACUNIT;
     xstep = 256*FRACUNIT;
-  }  
+  }
   xintercept = (x1>>MAPBTOFRAC) + FixedMul (partial, xstep);
 
 
@@ -370,7 +370,7 @@ dboolean P_CheckSight_12(mobj_t *t1, mobj_t *t2)
 
   //
   // check precisely
-  //    
+  //
   sightzstart = t1->z + t1->height - (t1->height>>2);
   topslope = (t2->z+t2->height) - sightzstart;
   bottomslope = (t2->z) - sightzstart;
@@ -542,7 +542,7 @@ dboolean P_CrossSubsector_PrBoom(int num)
       // no wall to block sight with?
       if (front->floorheight == back->floorheight
         && front->ceilingheight == back->ceilingheight)
-        continue;	
+        continue;
 
       // possible occluder
       // because of ceiling height differences
@@ -566,9 +566,9 @@ dboolean P_CrossSubsector_PrBoom(int num)
 
     { // crosses a two sided line
       /* cph 2006/07/15 - oops, we missed this in 2.4.0 & .1;
-       *  use P_InterceptVector2 for those compat levels only. */ 
+       *  use P_InterceptVector2 for those compat levels only. */
       fixed_t frac = (compatibility_level == prboom_5_compatibility || compatibility_level == prboom_6_compatibility) ?
-		      P_InterceptVector2(&los.strace, &divl) : 
+		      P_InterceptVector2(&los.strace, &divl) :
 		      P_InterceptVector(&los.strace, &divl);
 
       if (front->floorheight != back->floorheight)
@@ -650,7 +650,7 @@ dboolean P_CrossSubsector_Doom(int num)
     // no wall to block sight with?
     if (front->floorheight == back->floorheight
       && front->ceilingheight == back->ceilingheight)
-      continue;	
+      continue;
 
     // possible occluder
     // because of ceiling height differences

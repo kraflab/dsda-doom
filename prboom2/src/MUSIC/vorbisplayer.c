@@ -139,7 +139,7 @@ static int vseek (void *src, ogg_int64_t offset, int whence)
 
 static long vtell (void *src)
 {
-  // correct to vorbisfile spec, this is a long, not 64 bit 
+  // correct to vorbisfile spec, this is a long, not 64 bit
   return (long) vorb_pos;
 }
 
@@ -222,7 +222,7 @@ static unsigned parsetag (const char *str, int samplerate)
   }
   // either flat pcm or :. in which case everything was converted already
   return ret;
-}      
+}
 #endif // ZDOOM_AUDIO_LOOP
 
 #ifdef _MSC_VER
@@ -242,7 +242,7 @@ static int vorb_init (int samplerate)
 
 static void vorb_shutdown (void)
 {
-  // nothing to do                 
+  // nothing to do
 
 
 }
@@ -317,7 +317,7 @@ static void vorb_resume (void)
 }
 
 static void vorb_unregistersong (const void *handle)
-{ 
+{
   vorb_data = NULL;
   ov_clear (&vf);
   vorb_playing = 0;
@@ -445,7 +445,7 @@ static void vorb_render_ex (void *dest, unsigned nsamp)
 }
 
 static void vorb_render (void *dest, unsigned nsamp)
-{ 
+{
   I_ResampleStream (dest, nsamp, vorb_render_ex, vorb_samplerate_in, vorb_samplerate_target);
 }
 

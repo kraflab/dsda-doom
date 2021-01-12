@@ -311,7 +311,7 @@ void gld_SetupFloodStencil(GLWall *wall)
 {
   int recursion = 0;
 
-  // Create stencil 
+  // Create stencil
   glStencilFunc(GL_EQUAL, recursion, ~0); // create stencil
   glStencilOp(GL_KEEP, GL_KEEP, GL_INCR); // increment stencil of valid pixels
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // don't write to the graphics buffer

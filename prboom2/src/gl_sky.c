@@ -117,7 +117,7 @@ void gld_DrawFakeSkyStrips(void)
   // doesn't get overwritten by the level's geometry.
 
   // Because some of outdated hardware has no support for
-  // glColorMask(0, 0, 0, 0) or something, 
+  // glColorMask(0, 0, 0, 0) or something,
   // I need to render fake strips of sky before dome with using
   // full clearing of color buffer (only in compatibility mode)
 
@@ -161,7 +161,7 @@ void gld_GetScreenSkyScale(GLWall *wall, float *scale_x, float *scale_y)
     sx = sx / (float)wall->gltexture->buffer_width;
     sy = 200.0f / 160.0f;//wall->gltexture->buffer_height;
   }
-  else 
+  else
   {
     sx = sx * skyscale / (float)wall->gltexture->buffer_width;
     sy = 127.0f * skyscale / 160.0f;
@@ -317,8 +317,8 @@ void gld_DrawStripsSky(void)
 
 #if 0
     {
-      float r = (float)(wall->seg->sidedef - sides) / (float)(numsides - 1); 
-      float g = (float)wall->seg->linedef->iLineID / (float)(numlines - 1); 
+      float r = (float)(wall->seg->sidedef - sides) / (float)(numsides - 1);
+      float g = (float)wall->seg->linedef->iLineID / (float)(numlines - 1);
       float b = (float)i / (float)(gld_drawinfo.num_items[GLDIT_SWALL] - 1);
       glColor4f(r, g, b, 1.0f);
     }
@@ -360,7 +360,7 @@ void gld_DrawStripsSky(void)
 void gld_DrawSkyCaps(void)
 {
   if (SkyBox.type && SkyBox.wall.gltexture)
-  {             
+  {
     dboolean mlook = GetMouseLook();
 
     if (mlook)
@@ -403,7 +403,7 @@ void gld_DrawSkyCaps(void)
 //
 // averageColor
 //  input is RGBA8 pixel format.
-//	The resulting RGB color can be scaled uniformly so that the highest 
+//	The resulting RGB color can be scaled uniformly so that the highest
 //	component becomes one.
 //
 //===========================================================================
@@ -420,7 +420,7 @@ void averageColor(PalEntry_t * PalEntry, const unsigned int *data, int size, fix
   
   // First clear them.
   r = g = b = 0;
-  if (size == 0) 
+  if (size == 0)
   {
     PalEntry->r = 255;
     PalEntry->g = 255;
@@ -549,7 +549,7 @@ void gld_DrawScreenSkybox(void)
 }
 
 // The texture offset to be applied to the texture coordinates in SkyVertex().
-static int rows, columns;	
+static int rows, columns;
 static dboolean yflip;
 static int texw;
 static float yMult, yAdd;
@@ -594,7 +594,7 @@ void gld_GetSkyCapColors(void)
 
   if (height > 30)
   {
-    averageColor(floor_rgb, 
+    averageColor(floor_rgb,
       ((unsigned int*)buffer) + (height - 30) * width, width * 30, 0);
   }
   else
@@ -782,9 +782,9 @@ static void RenderDome(SkyBoxParams_t *sky)
     return;
 
   if (invul_method == INVUL_CM && frame_fixedcolormap == INVERSECOLORMAP)
-    vbo = &sky_vbo[1]; 
+    vbo = &sky_vbo[1];
   else
-    vbo = &sky_vbo[0]; 
+    vbo = &sky_vbo[0];
   
 
 #if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
@@ -1025,7 +1025,7 @@ void gld_ParseSkybox(void)
 
       while (SC_GetString() && !SC_Compare("}"))
       {
-        if (facecount < 6) 
+        if (facecount < 6)
         {
           strcpy(sb.faces[facecount], sc_String);
         }
@@ -1147,7 +1147,7 @@ int gld_DrawBoxSkyBox(void)
     glRotatef(-180.0f + xoffset, 0.0f, 1.0f, 0.0f);
   }
 
-  if (sb->faces[5][0]) 
+  if (sb->faces[5][0])
   {
     faces = 4;
 

@@ -66,7 +66,7 @@ enum {PU_FREE, PU_STATIC, PU_SOUND, PU_MUSIC, PU_LEVEL, PU_LEVSPEC, PU_CACHE,
 #define DA(x,y) ,x,y
 #define DAC(x,y) x,y
 #else
-#define DA(x,y) 
+#define DA(x,y)
 #define DAC(x,y)
 #endif
 
@@ -83,7 +83,7 @@ void (Z_CheckHeap)(DAC(const char *,int));   // killough 3/22/98: add file/line 
 void Z_DumpHistory(char *);
 
 #ifdef INSTRUMENTED
-/* cph - save space if not debugging, don't require file 
+/* cph - save space if not debugging, don't require file
  * and line to memory calls */
 #define Z_Free(a)          (Z_Free)     (a,      __FILE__,__LINE__)
 #define Z_FreeTags(a,b)    (Z_FreeTags) (a,b,    __FILE__,__LINE__)

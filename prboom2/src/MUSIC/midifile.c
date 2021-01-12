@@ -511,7 +511,7 @@ static dboolean ReadTrack(midi_track_t *track, midimem_t *mf)
         if (track->num_events == track->num_event_mem)
         { // depending on the state of the heap and the malloc implementation, realloc()
           // one more event at a time can be VERY slow.  10sec+ in MSVC
-          track->num_event_mem += 100; 
+          track->num_event_mem += 100;
           new_events = (midi_event_t*)realloc (track->events, sizeof (midi_event_t) * track->num_event_mem);
         }
 
@@ -1086,8 +1086,8 @@ midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf)
     midi_event_t *nextev;
 
     if (ret->tracks->num_events == ret->tracks->num_event_mem)
-    { 
-      ret->tracks->num_event_mem += 100; 
+    {
+      ret->tracks->num_event_mem += 100;
       ret->tracks->events = (midi_event_t*)realloc (ret->tracks->events, sizeof (midi_event_t) * ret->tracks->num_event_mem);
     }
 
@@ -1269,4 +1269,3 @@ int main(int argc, char *argv[])
 }
 
 #endif
-

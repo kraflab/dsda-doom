@@ -137,7 +137,7 @@ static int fuzzpos = 0;
 #define RDC_BILINEAR     64
 #define RDC_ROUNDED     128
 
-draw_vars_t drawvars = { 
+draw_vars_t drawvars = {
   NULL, // byte_topleft
   NULL, // short_topleft
   NULL, // int_topleft
@@ -159,7 +159,7 @@ draw_vars_t drawvars = {
 };
 
 //
-// Error functions that will abort if R_FlushColumns tries to flush 
+// Error functions that will abort if R_FlushColumns tries to flush
 // columns without a column type.
 //
 
@@ -1164,7 +1164,7 @@ void R_DrawViewBorder(void)
   }
 
   if ( viewheight >= ( SCREENHEIGHT - ST_SCALED_HEIGHT ))
-    return; // if high-res, don´t go any further!
+    return; // if high-res, donï¿½t go any further!
 
   top = ((SCREENHEIGHT-ST_SCALED_HEIGHT)-viewheight)/2;
   side = (SCREENWIDTH-scaledviewwidth)/2;

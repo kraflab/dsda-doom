@@ -116,7 +116,7 @@ void dsda_DisplayNotifications(void) {
     dsda_DisplayNotification("Not pacifist!");
   }
   
-  if (dsda_100k_on_map && dsda_track_100k && !dsda_100k_note_shown) {    
+  if (dsda_100k_on_map && dsda_track_100k && !dsda_100k_note_shown) {
     dsda_100k_note_shown = true;
     dsda_DisplayNotification("100K achieved!");
   }
@@ -186,7 +186,7 @@ void dsda_WatchResurrection(mobj_t* target) {
   
   if (
     (
-      (target->flags ^ MF_COUNTKILL) & 
+      (target->flags ^ MF_COUNTKILL) &
       (MF_FRIEND | MF_COUNTKILL)
     ) || target->dsda_extension.spawned_by_icon
   ) return;

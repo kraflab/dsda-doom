@@ -1255,7 +1255,7 @@ dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dbool
 
     //
     // do something
-    //      
+    //
     switch (line->special)
     {
             //===============================================

@@ -1592,5 +1592,3 @@ void DBOPL_InitTables( void ) {
   }
 #endif
 }
-
-

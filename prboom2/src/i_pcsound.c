@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 2007 Simon Howard
@@ -157,7 +157,7 @@ int I_PCS_StartSound(int id,
         return -1;
     }
 
-    // These PC speaker sounds are not played - this can be seen in the 
+    // These PC speaker sounds are not played - this can be seen in the
     // Heretic source code, where there are remnants of this left over
     // from Doom.
 
@@ -234,4 +234,3 @@ void I_PCS_InitSound(void)
 
     sound_lock = SDL_CreateMutex();
 }
-

@@ -270,9 +270,9 @@ angle_t R_PointToAngleEx2(fixed_t x1, fixed_t y1, fixed_t x, fixed_t y)
 
 //-----------------------------------------------------------------------------
 //
-// ! Returns the pseudoangle between the line p1 to (infinity, p1.y) and the 
-// line from p1 to p2. The pseudoangle has the property that the ordering of 
-// points by true angle anround p1 and ordering of points by pseudoangle are the 
+// ! Returns the pseudoangle between the line p1 to (infinity, p1.y) and the
+// line from p1 to p2. The pseudoangle has the property that the ordering of
+// points by true angle anround p1 and ordering of points by pseudoangle are the
 // same.
 //
 // For clipping exact angles are not needed. Only the ordering matters.
@@ -399,8 +399,8 @@ static void R_InitLightTables (void)
   //  for each level / distance combination.
   for (i=0; i< LIGHTLEVELS; i++)
     {
-      // SoM: the LIGHTBRIGHT constant must be used to scale the start offset of 
-      // the colormaps, otherwise the levels are staggered and become slightly 
+      // SoM: the LIGHTBRIGHT constant must be used to scale the start offset of
+      // the colormaps, otherwise the levels are staggered and become slightly
       // darker.
       int j, startmap = ((LIGHTLEVELS-LIGHTBRIGHT-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
       for (j=0; j<MAXLIGHTZ; j++)
@@ -564,7 +564,7 @@ void R_SetupViewScaling(void)
 
   // SoM: ok, assemble the realx1/x2 arrays differently. To start, we are using floats
   // to do the scaling which is 100 times more accurate, secondly, I realized that the
-  // reason the old single arrays were causing problems was they was only calculating the 
+  // reason the old single arrays were causing problems was they was only calculating the
   // top-left corner of the scaled pixels. Calculating widths through these arrays is wrong
   // because the scaling will change the final scaled widths depending on what their unscaled
   // screen coords were. Thusly, all rectangles should be converted to unscaled x1, y1, x2, y2
@@ -692,7 +692,7 @@ void R_BuildModelViewMatrix(void)
   z = -(float)viewy / MAP_SCALE;
   y = -(float)viewz / MAP_SCALE;
 
-/*  
+/*
   R_LoadIdentity(modelMatrix);
   R_Rotate(modelMatrix, pitch, 0);
   R_Rotate(modelMatrix, yaw, 1);

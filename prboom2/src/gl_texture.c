@@ -890,7 +890,7 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
         {
           int y;
           tex_buffer = calloc(1, tex_buffer_size);
-          for (y = 0; y < height; y++)          
+          for (y = 0; y < height; y++)
           {
             memcpy(tex_buffer + y * tex_width * 4,
               ((unsigned char*)data) + y * width * 4, width * 4);
@@ -1233,7 +1233,7 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
   }
 #endif
 
-  gld_GetTextureTexID(gltexture, CR_DEFAULT); 
+  gld_GetTextureTexID(gltexture, CR_DEFAULT);
 
   if (last_glTexID == gltexture->texid_p)
   {
@@ -1353,7 +1353,7 @@ void gld_Precache(void)
 
   unsigned int tics = SDL_GetTicks();
 
-  int usehires = (gl_texture_external_hires) || 
+  int usehires = (gl_texture_external_hires) ||
     (gl_texture_internal_hires && r_have_internal_hires);
 
   if (doSkip || nodrawers)

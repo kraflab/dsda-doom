@@ -297,7 +297,7 @@ typedef struct _DDRAW_H_DDSURFACEDESC2
   union
   {
     unsigned long dwBackBufferCount; // number of back buffers requested
-    unsigned long dwDepth;           // the depth if this is a volume texture 
+    unsigned long dwDepth;           // the depth if this is a volume texture
   } u5;
   union
   {
@@ -340,7 +340,7 @@ typedef struct
   GLubyte *pixels;
 } GLGenericImage;
 
-GLGenericImage * ReadDDSFile(const char *filename, int * bufsize, int * numMipmaps) 
+GLGenericImage * ReadDDSFile(const char *filename, int * bufsize, int * numMipmaps)
 {
   GLGenericImage * genericImage = NULL;
   DDRAW_H_DDSURFACEDESC2 ddsd;
@@ -637,7 +637,7 @@ static int gld_HiRes_GetExternalName(GLTexture *gltexture, char *img_path, char 
   hires_path_item_t *checklist = NULL;
   GLTexType useType = gltexture->textype;
 
-  dboolean supported = (gl_texture_external_hires && 
+  dboolean supported = (gl_texture_external_hires &&
     ((useType == GLDT_TEXTURE) || (useType == GLDT_FLAT) || (useType == GLDT_PATCH)));
 
   img_path[0] = '\0';
@@ -649,7 +649,7 @@ static int gld_HiRes_GetExternalName(GLTexture *gltexture, char *img_path, char 
   i = 0;
   while (hires_paths[i].gamemission != none)
   {
-    if (gamemission == hires_paths[i].gamemission && 
+    if (gamemission == hires_paths[i].gamemission &&
       gltexture->textype == hires_paths[i].textype)
     {
       checklist = &hires_paths[i].item[0];
@@ -835,9 +835,9 @@ void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
 
     color = RGB2PAL[(buffer[pos+0]<<16) + (buffer[pos+1]<<8) + buffer[pos+2]];
 
-    factor = 
-      0.30f * playpal[color*3+0] + 
-      0.59f * playpal[color*3+1] + 
+    factor =
+      0.30f * playpal[color*3+0] +
+      0.59f * playpal[color*3+1] +
       0.11f * playpal[color*3+2];
 
     if (fabs(factor) < 0.001f)
@@ -880,9 +880,9 @@ void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
 
     color = RGB2PAL[(buffer[pos+0]<<16) + (buffer[pos+1]<<8) + buffer[pos+2]];
 
-    factor = 
-      0.30f * playpal[color*3+0] + 
-      0.59f * playpal[color*3+1] + 
+    factor =
+      0.30f * playpal[color*3+0] +
+      0.59f * playpal[color*3+1] +
       0.11f * playpal[color*3+2];
 
     if (fabs(factor) < 0.001f)
@@ -1102,7 +1102,7 @@ static int gld_HiRes_LoadDDSTexture(GLTexture* gltexture, GLuint* texid, const c
           size = ((ddsimage->width + 3) / 4) * ((ddsimage->height + 3) / 4) * blockSize;
       
           GLEXT_glCompressedTexImage2DARB(GL_TEXTURE_2D, i, ddsimage->format,
-            ddsimage->width, ddsimage->height, 
+            ddsimage->width, ddsimage->height,
             0, size, ddsimage->pixels + offset);
       
     //      GLErrorReport();
@@ -1421,7 +1421,7 @@ int gld_PrecacheGUIPatches(void)
     "M_SAVEG",  "M_SCRNSZ", "M_SFXVOL", "M_SGTTL",
     "M_SKILL",  "M_SKULL1", "M_SKULL2", "M_SVOL",
     "M_THERML", "M_THERMM", "M_THERMO", "M_THERMR",
-    "M_ULTRA",  
+    "M_ULTRA",
     "M_EPI4",
 
     //prboom's M_*

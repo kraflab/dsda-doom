@@ -57,7 +57,7 @@ enum draw_filter_type_e {
   RDRAW_FILTER_MAXFILTERS
 };
 
-// Used to specify what kind of column edge rendering to use on masked 
+// Used to specify what kind of column edge rendering to use on masked
 // columns. SQUARE = standard, SLOPED = slope the column edge up or down
 // based on neighboring columns
 enum sloped_edge_type_e {

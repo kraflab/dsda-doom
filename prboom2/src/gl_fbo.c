@@ -124,7 +124,7 @@ static dboolean gld_CreateScreenSizeFBO(void)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   
   // e6y
-  // Some ATI’s drivers have a bug whereby adding the depth renderbuffer
+  // Some ATIï¿½s drivers have a bug whereby adding the depth renderbuffer
   // and then a texture causes the application to crash.
   // This should be kept in mind when doing any FBO related work and
   // tested for as it is possible it could be fixed in a future driver revision

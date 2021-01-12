@@ -154,7 +154,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
     shader = calloc(1, sizeof(GLShader));
 
     shader->hVertProg = GLEXT_glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-    shader->hFragProg = GLEXT_glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);	
+    shader->hFragProg = GLEXT_glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 
     GLEXT_glShaderSourceARB(shader->hVertProg, 1, &vp_data, &vp_size);
     GLEXT_glShaderSourceARB(shader->hFragProg, 1, &fp_data, &fp_size);

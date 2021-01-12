@@ -125,19 +125,19 @@ static const void* db_registersong (const void *data, unsigned len)
   {
     dumbfile_close (dfil);
     dfil = dumbfile_open_memory ((const char*)data, len);
-    duh = dumb_read_it_quick (dfil);  
+    duh = dumb_read_it_quick (dfil);
   }
   if (!duh)
   {
     dumbfile_close (dfil);
     dfil = dumbfile_open_memory ((const char*)data, len);
-    duh = dumb_read_xm_quick (dfil);  
+    duh = dumb_read_xm_quick (dfil);
   }
   if (!duh)
   {
     dumbfile_close (dfil);
     dfil = dumbfile_open_memory ((const char*)data, len);
-    duh = dumb_read_s3m_quick (dfil);  
+    duh = dumb_read_s3m_quick (dfil);
   }
   if (!duh)
   {
@@ -286,6 +286,3 @@ const music_player_t db_player =
 
 
 #endif // HAVE_DUMB
-
-
-

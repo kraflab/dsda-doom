@@ -61,7 +61,7 @@ static int SoundThread(void *unused)
     {
         callback(&duration, &frequency);
 
-        if (frequency != 0) 
+        if (frequency != 0)
         {
             cycles = PCSOUND_8253_FREQUENCY / frequency;
         }
@@ -126,4 +126,3 @@ pcsound_driver_t pcsound_linux_driver =
 };
 
 #endif /* #ifdef HAVE_LINUX_KD_H */
-

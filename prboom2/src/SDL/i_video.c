@@ -212,7 +212,7 @@ static int I_TranslateKey(SDL_Keysym* key)
 // Main input code
 
 /* cph - pulled out common button code logic */
-//e6y static 
+//e6y static
 int I_SDLtoDoomMouseState(Uint32 buttonstate)
 {
   return 0
@@ -803,7 +803,7 @@ static void I_ClosestResolution (int *width, int *height)
       //if (iteration == 0 && (twidth < *width || theight < *height))
       //  continue;
 
-      dist = (twidth - *width) * (twidth - *width) + 
+      dist = (twidth - *width) * (twidth - *width) +
              (theight - *height) * (theight - *height);
 
       if (dist < closest)
@@ -820,7 +820,7 @@ static void I_ClosestResolution (int *width, int *height)
       return;
     }
   }
-}  
+}
 
 int process_affinity_mask;
 int process_priority;
@@ -864,7 +864,7 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
 void I_CalculateRes(int width, int height)
 {
 // e6y
-// GLBoom will try to set the closest supported resolution 
+// GLBoom will try to set the closest supported resolution
 // if the requested mode can't be set correctly.
 // For example glboom.exe -geom 1025x768 -nowindow will set 1024x768.
 // It affects only fullscreen modes.
@@ -946,7 +946,7 @@ void I_InitScreenResolution(void)
       use_fullscreen = 0;
 
     // e6y
-    // New command-line options for setting a window (-window) 
+    // New command-line options for setting a window (-window)
     // or fullscreen (-nowindow) mode temporarily which is not saved in cfg.
     // It works like "-geom" switch
     desired_fullscreen = use_fullscreen;
@@ -1034,7 +1034,7 @@ void I_InitScreenResolution(void)
   lprintf(LO_INFO,"I_InitScreenResolution: Using resolution %dx%d\n", SCREENWIDTH, SCREENHEIGHT);
 }
 
-// 
+//
 // Set the window caption
 //
 
@@ -1043,9 +1043,9 @@ void I_SetWindowCaption(void)
   SDL_SetWindowTitle(NULL, PACKAGE_NAME " " PACKAGE_VERSION);
 }
 
-// 
+//
 // Set the application icon
-// 
+//
 
 #include "icon.c"
 
@@ -1419,7 +1419,7 @@ static dboolean MouseShouldBeGrabbed()
   if (!window_focused)
     return false;
 
-  // always grab the mouse when full screen (dont want to 
+  // always grab the mouse when full screen (dont want to
   // see the mouse pointer)
   if (desired_fullscreen)
     return true;
@@ -1428,12 +1428,12 @@ static dboolean MouseShouldBeGrabbed()
   if (!mouse_enabled)
     return false;
 
-  // always grab the mouse in camera mode when playing levels 
+  // always grab the mouse in camera mode when playing levels
   // and menu is not active
   if (walkcamera.type)
     return (demoplayback && gamestate == GS_LEVEL && !menuactive);
 
-  // when menu is active or game is paused, release the mouse 
+  // when menu is active or game is paused, release the mouse
   if (menuactive || paused)
     return false;
 

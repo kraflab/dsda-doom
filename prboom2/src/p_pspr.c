@@ -421,7 +421,7 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
   {
     // HERETIC_TODO: when weapons don't share indices, remove heretic checks
     if (
-      !player->attackdown || 
+      !player->attackdown ||
       (!heretic && player->readyweapon != wp_missile && player->readyweapon != wp_bfg) ||
       (heretic && player->readyweapon != wp_phoenixrod)
     )
@@ -800,7 +800,7 @@ void A_FirePlasma(player_t *player, pspdef_t *psp)
 // the height of the intended target
 //
 
-//e6y static 
+//e6y static
 fixed_t bulletslope;
 
 static void P_BulletSlope(mobj_t *mo)

@@ -595,7 +595,7 @@ static void P_LoadSegs (int lump)
       // http://www.doomworld.com/idgames/index.php?id=12647
       if (v1 >= numvertexes || v2 >= numvertexes)
       {
-        char str[200] = 
+        char str[200] =
           "P_LoadSegs: compatibility loss - seg %d references a non-existent vertex %d\n";
         
         if (demorecording)
@@ -717,7 +717,7 @@ static void P_LoadSegs_V4(int lump)
     // http://www.doomworld.com/idgames/index.php?id=12647
     if (v1 >= numvertexes || v2 >= numvertexes)
     {
-      char str[200] = 
+      char str[200] =
         "P_LoadSegs_V4: compatibility loss - seg %d references a non-existent vertex %d\n";
 
       if (demorecording)
@@ -1526,7 +1526,7 @@ static void P_LoadLineDefs (int lump)
       ld->sidenum[0] = LittleShort(mld->sidenum[0]);
       ld->sidenum[1] = LittleShort(mld->sidenum[1]);
 
-      { 
+      {
         /* cph 2006/09/30 - fix sidedef errors right away.
          * cph 2002/07/20 - these errors are fatal if not fixed, so apply them
          * in compatibility mode - a desync is better than a crash! */

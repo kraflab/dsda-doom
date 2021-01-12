@@ -140,7 +140,7 @@ void gld_SplitLeftEdge(const GLWall *wall, dboolean detail)
       {
         if (gl_arb_multitexture)
         {
-          GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t); 
+          GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t);
           GLEXT_glMultiTexCoord2fARB(GL_TEXTURE1_ARB,
             s * tex->detail_width + tex->detail->offsetx,
             t * tex->detail_height + tex->detail->offsety);
@@ -202,7 +202,7 @@ void gld_SplitRightEdge(const GLWall *wall, dboolean detail)
       {
         if (gl_arb_multitexture)
         {
-          GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t); 
+          GLEXT_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t);
           GLEXT_glMultiTexCoord2fARB(GL_TEXTURE1_ARB,
             s * tex->detail_width + tex->detail->offsetx,
             t * tex->detail_height + tex->detail->offsety);
@@ -283,7 +283,7 @@ void gld_RecalcVertexHeights(const vertex_t *v)
 
 //==========================================================================
 //
-// 
+//
 //
 //==========================================================================
 static void AddToVertex(const sector_t *sec, int **list, unsigned int *size)
@@ -303,7 +303,7 @@ static void AddToVertex(const sector_t *sec, int **list, unsigned int *size)
 
 //==========================================================================
 //
-// 
+//
 //
 //==========================================================================
 static void AddToSplitBySector(vertexsplit_info_t *vi, splitsbysector_t *splitsbysector)
@@ -315,7 +315,7 @@ static void AddToSplitBySector(vertexsplit_info_t *vi, splitsbysector_t *splitsb
       return;
   }
   splitsbysector->splits = realloc(
-    splitsbysector->splits, 
+    splitsbysector->splits,
     sizeof(splitsbysector->splits) * (splitsbysector->numsplits + 1));
   splitsbysector->splits[splitsbysector->numsplits] = vi;
   splitsbysector->numsplits++;
@@ -323,7 +323,7 @@ static void AddToSplitBySector(vertexsplit_info_t *vi, splitsbysector_t *splitsb
 
 //==========================================================================
 //
-// 
+//
 //
 //==========================================================================
 void gld_InitVertexData()
@@ -435,7 +435,7 @@ void gld_InitVertexData()
 
 //==========================================================================
 //
-// 
+//
 //
 //==========================================================================
 void gld_UpdateSplitData(sector_t *sector)
@@ -454,7 +454,7 @@ void gld_UpdateSplitData(sector_t *sector)
 
 //==========================================================================
 //
-// 
+//
 //
 //==========================================================================
 void gld_CleanVertexData()

@@ -88,7 +88,7 @@ void R_PrecacheLevel (void);
 int R_FlatNumForName (const char* name);   // killough -- const added
 
 
-// R_*TextureNumForName returns the texture number for the texture name, or NO_TEXTURE if 
+// R_*TextureNumForName returns the texture number for the texture name, or NO_TEXTURE if
 //  there is no texture (i.e. "-") specified.
 /* cph 2006/07/23 - defined value for no-texture marker (texture "-" in the WAD file) */
 #define NO_TEXTURE 0

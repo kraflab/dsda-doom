@@ -162,4 +162,3 @@ void W_UnlockLumpNum(int lump)
   if (unlocks && !cachelump[lump].locks)
     Z_ChangeTag(cachelump[lump].cache, PU_CACHE);
 }
-

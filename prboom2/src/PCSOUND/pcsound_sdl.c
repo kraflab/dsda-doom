@@ -177,4 +177,3 @@ pcsound_driver_t pcsound_sdl_driver =
     PCSound_SDL_Init,
     PCSound_SDL_Shutdown,
 };
-

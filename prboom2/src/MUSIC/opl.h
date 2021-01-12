@@ -120,4 +120,3 @@ void OPL_SetCallback(unsigned int ms, opl_callback_t callback, void *data);
 void OPL_ClearCallbacks(void);
 
 #endif
-

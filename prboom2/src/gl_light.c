@@ -201,7 +201,7 @@ static void gld_InitLightTable_gzdoom(void)
 
   for (i = 0; i < 256; i++)
   {
-    if (i < 192) 
+    if (i < 192)
       light = (192.0f - (192 - i) * 1.95f);
     else
       light = (float)i;
@@ -222,7 +222,7 @@ static void gld_InitLightTable_fogbased(void)
 
   for (i = 0; i < 256; i++)
   {
-    if (i < 192) 
+    if (i < 192)
       light = (float)255;
     else
       light = (float)i;
@@ -326,7 +326,7 @@ void M_ChangeAllowFog(void)
       distfogtable[0][i] = (float)((gl_distfog >> 1) + (gl_distfog) * (164 - i) / 164);
     }
     else if (i < 230)
-    {											    
+    {
       distfogtable[0][i] = (float)((gl_distfog >> 1) - (gl_distfog >> 1) * (i - 164) / (230 - 164));
     }
     else
@@ -339,7 +339,7 @@ void M_ChangeAllowFog(void)
       distfogtable[1][i] = 6.0f + (gl_distfog >> 1) + (gl_distfog) * (128 - i) / 48;
     }
     else if (i < 216)
-    {											    
+    {
       distfogtable[1][i] = (216.0f - i) / ((216.0f - 128.0f)) * gl_distfog / 10;
     }
     else
@@ -354,11 +354,11 @@ void M_ChangeAllowFog(void)
         distfogtable[2][i] = 2048;
     }
     else if (i < 192)
-    {											    
+    {
       distfogtable[2][i] = (float)(1<<13) / (float)pow(1.30f, ((float)i / 8.0f));
     }
     else if (i < 216)
-    {											    
+    {
       distfogtable[2][i] = (216.0f - i) / ((216.0f - 128.0f)) * gl_distfog / 10;
     }
     else
@@ -435,12 +435,12 @@ void gld_SetFog(float fogdensity)
 
 void gl_EnableFog(int on)
 {
-  if (on) 
+  if (on)
   {
     if (!gl_fogenabled)
     glEnable(GL_FOG);
   }
-  else 
+  else
   {
     if (gl_fogenabled)
       glDisable(GL_FOG);

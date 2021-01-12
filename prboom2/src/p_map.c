@@ -604,7 +604,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
   // missiles can hit other things
   // killough 8/10/98: bouncing non-solid things can hit other things too
 
-  if (tmthing->flags & MF_MISSILE || 
+  if (tmthing->flags & MF_MISSILE ||
      (tmthing->flags & MF_BOUNCES && !(tmthing->flags & MF_SOLID)))
   {
     // Check for passing through a ghost
@@ -622,7 +622,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
       return true;    // underneath
 
     if (
-      tmthing->target && 
+      tmthing->target &&
       (
         tmthing->target->type == thing->type ||
         (tmthing->target->type == MT_KNIGHT && thing->type == MT_BRUISER) ||
@@ -646,7 +646,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
       {
           return true;
       }
-      else 
+      else
       {
         tmthing->momx = -tmthing->momx;
         tmthing->momy = -tmthing->momy;
@@ -989,14 +989,14 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
      * killough 10/98: Allow dropoffs in controlled circumstances
      * killough 11/98: Improve symmetry of clipping on stairs
      */
-    if (!(thing->flags & (MF_DROPOFF|MF_FLOAT))) 
+    if (!(thing->flags & (MF_DROPOFF|MF_FLOAT)))
     {
       if (heretic || comp[comp_dropoff])
       {
         // e6y
         // Fix demosync bug in mbf compatibility mode
         // There is no more desync on v2-2822.lmp/vrack2.wad
-        // -force_no_dropoff command-line switch is for mbf_compatibility demos 
+        // -force_no_dropoff command-line switch is for mbf_compatibility demos
         // recorded with prboom 2.2.2 - 2.4.7
         // Links:
         // http://competn.doom2.net/pub/sda/t-z/v2-2822.zip
@@ -1316,11 +1316,11 @@ void P_HitSlideLine (line_t* ld)
   else
   {
     extern dboolean onground;
-    icyfloor = !heretic && 
+    icyfloor = !heretic &&
                !compatibility &&
                variable_friction &&
                slidemo->player &&
-               onground && 
+               onground &&
                slidemo->friction > ORIG_FRICTION;
   }
 
@@ -2010,9 +2010,9 @@ void P_UseLines (player_t*  player)
 // RADIUS ATTACK
 //
 
-//e6y static 
+//e6y static
 mobj_t *bombsource, *bombspot;
-//e6y static 
+//e6y static
 int bombdamage;
 
 
@@ -2311,7 +2311,7 @@ static msecnode_t *P_GetSecnode(void)
 
   return headsecnode ?
     node = headsecnode, headsecnode = node->m_snext, node :
-  (msecnode_t *)(Z_Malloc(sizeof *node, PU_LEVEL, NULL)); 
+  (msecnode_t *)(Z_Malloc(sizeof *node, PU_LEVEL, NULL));
 }
 
 //
@@ -2568,7 +2568,7 @@ void P_CreateSecNodeList(mobj_t* thing,fixed_t x,fixed_t y)
   }
 }
 
-/* cphipps 2004/08/30 - 
+/* cphipps 2004/08/30 -
  * Must clear tmthing at tic end, as it might contain a pointer to a removed thinker, or the level might have ended/been ended and we clear the objects it was pointing too. Hopefully we don't need to carry this between tics for sync. */
 void P_MapStart(void) {
 	if (tmthing) I_Error("P_MapStart: tmthing set!");

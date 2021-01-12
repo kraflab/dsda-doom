@@ -54,4 +54,3 @@
 #define UKFileWatcherSizeIncreaseNotification		@"UKKQueueFileSizeIncreasedNotification"
 #define UKFileWatcherLinkCountChangeNotification	@"UKKQueueFileLinkCountChangedNotification"
 #define UKFileWatcherAccessRevocationNotification	@"UKKQueueFileAccessRevocationNotification"
-

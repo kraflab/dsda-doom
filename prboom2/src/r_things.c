@@ -1406,13 +1406,13 @@ void R_DrawMasked(void)
         // e6y: ~13% of speed improvement on sunder.wad map10
         if (ds->x1 < cx)
         {
-          drawsegs_xranges[1].items[drawsegs_xranges[1].count] = 
+          drawsegs_xranges[1].items[drawsegs_xranges[1].count] =
             drawsegs_xranges[0].items[drawsegs_xranges[0].count];
           drawsegs_xranges[1].count++;
         }
         if (ds->x2 >= cx)
         {
-          drawsegs_xranges[2].items[drawsegs_xranges[2].count] = 
+          drawsegs_xranges[2].items[drawsegs_xranges[2].count] =
             drawsegs_xranges[0].items[drawsegs_xranges[0].count];
           drawsegs_xranges[2].count++;
         }

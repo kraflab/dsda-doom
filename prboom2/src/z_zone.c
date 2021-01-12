@@ -189,7 +189,7 @@ void Z_DumpMemory(void)
     while (1)
     {
       switch (block->tag) {
-      case PU_FREE: 
+      case PU_FREE:
         fprintf(fp, "free %d\n", block->size);
         total_free += block->size;
         break;
@@ -216,7 +216,7 @@ void Z_DumpMemory(void)
     }
   }
   fprintf(fp, "malloc %d, cache %d, free %d, total %d\n",
-    total_malloc, total_cache, total_free, 
+    total_malloc, total_cache, total_free,
     total_malloc + total_cache + total_free);
   fclose(fp);
   free(buf);
@@ -283,7 +283,7 @@ void Z_Init(void)
 #endif
 
 #ifdef INSTRUMENTED
-  if (!(HEADER_SIZE >= sizeof(memblock_t) && size > HEADER_SIZE)) 
+  if (!(HEADER_SIZE >= sizeof(memblock_t) && size > HEADER_SIZE))
     I_Error("Z_Init: Sanity check failed");
 #endif
 
@@ -327,12 +327,12 @@ void Z_Init(void)
 /* Z_Malloc
  * You can pass a NULL user if the tag is < PU_PURGELEVEL.
  *
- * cph - the algorithm here was a very simple first-fit round-robin 
- *  one - just keep looping around, freeing everything we can until 
+ * cph - the algorithm here was a very simple first-fit round-robin
+ *  one - just keep looping around, freeing everything we can until
  *  we get a large enough space
  *
- * This has been changed now; we still do the round-robin first-fit, 
- * but we only free the blocks we actually end up using; we don't 
+ * This has been changed now; we still do the round-robin first-fit,
+ * but we only free the blocks we actually end up using; we don't
  * free all the stuff we just pass on the way.
  */
 

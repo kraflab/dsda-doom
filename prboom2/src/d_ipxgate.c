@@ -36,10 +36,10 @@ a
     byte                retransmitfrom;
 
     byte                starttic;
-    byte                player; 
+    byte                player;
     byte                numtics;
     ticcmd_t            cmds[BACKUPTICS];
-} doomdata_t;   
+} doomdata_t;
 	    
 typedef struct
 {
@@ -288,4 +288,3 @@ int main(int argc, char**argv) {
     loop(ipxs,udps);
     return 0;
 }
-

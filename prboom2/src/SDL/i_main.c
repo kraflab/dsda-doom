@@ -397,7 +397,7 @@ static void I_SetAffinityMask(void)
   }
 
   // Set the process affinity mask so that all threads
-  // run on the same processor.  This is a workaround for a bug in 
+  // run on the same processor.  This is a workaround for a bug in
   // SDL_mixer that causes occasional crashes.
   if (process_affinity_mask)
   {
@@ -519,7 +519,7 @@ int main(int argc, char **argv)
   memcpy(myargv, argv, sizeof(myargv[0]) * myargc);
 
   // e6y: Check for conflicts.
-  // Conflicting command-line parameters could cause the engine to be confused 
+  // Conflicting command-line parameters could cause the engine to be confused
   // in some cases. Added checks to prevent this.
   // Example: glboom.exe -record mydemo -playdemo demoname
   ParamsMatchingCheck();

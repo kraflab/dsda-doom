@@ -117,7 +117,7 @@ void D_InitNetGame (void)
 
     do
     {
-      do { 
+      do {
 	// Send init packet
 	initpacket.pn = doom_htons(wanted_player_number);
 	packet_set(&initpacket.head, PKT_INIT, 0);
@@ -341,7 +341,7 @@ void NetUpdate(void)
       if (maketic - gametic > BACKUPTICS/2) break;
       
       // e6y
-      // Eliminating the sudden jump of six frames(BACKUPTICS/2) 
+      // Eliminating the sudden jump of six frames(BACKUPTICS/2)
       // after change of realtic_clock_rate.
       if (maketic - gametic && gametic <= force_singletics_to && dsda_RealticClockRate() < 200) break;
 

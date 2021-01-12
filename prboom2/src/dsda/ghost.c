@@ -152,7 +152,7 @@ void dsda_InitGhostImport(int option_i) {
   ghost_i = 0;
     
   arg_i = option_i;
-  while (++arg_i != myargc && *myargv[arg_i] != '-') 
+  while (++arg_i != myargc && *myargv[arg_i] != '-')
     dsda_ghost_import.count += dsda_GhostCount(arg_i);
   
   dsda_ghost_import.ghosts = calloc(dsda_ghost_import.count, sizeof(dsda_ghost_t));

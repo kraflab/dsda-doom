@@ -30,7 +30,7 @@
  *
  * DESCRIPTION:
  *      Game completion, final screen animation.
- *      This is an alternative version for UMAPINFO defined 
+ *      This is an alternative version for UMAPINFO defined
  *      intermission so that the feature can be cleanly implemented
  *      without worrying about demo sync implications
  *

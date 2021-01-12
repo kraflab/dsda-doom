@@ -77,10 +77,10 @@ static void ShowOverflowWarning(overrun_list_t overflow, int fatal, const char *
       "Desync or crash can occur soon "
       "or during playback with the vanilla engine in case you're recording demo.%s%s";
     
-    static const char str2[] = 
+    static const char str2[] =
       "%s overflow has been detected.%s%s";
 
-    static const char str3[] = 
+    static const char str3[] =
       "%s overflow has been detected. "
       "The option responsible for emulation of this overflow is switched off "
       "hence desync or crash can occur soon "
@@ -89,7 +89,7 @@ static void ShowOverflowWarning(overrun_list_t overflow, int fatal, const char *
     overflows[overflow].promted = true;
 
     sprintf(buffer,
-      (fatal ? str1 : (EMULATE(overflow) ? str2 : str3)), 
+      (fatal ? str1 : (EMULATE(overflow) ? str2 : str3)),
       name[overflow],
       "\nYou can change PrBoom behaviour for this overflow through in-game menu.",
       params);
@@ -168,7 +168,7 @@ void InterceptsOverrun(int num_intercepts, intercept_t *intercept)
       // the values from the intercept structure.
       //
       // Note: the ->d.{thing,line} member should really have its
-      // address translated into the correct address value for 
+      // address translated into the correct address value for
       // Vanilla Doom.
 
       InterceptsMemoryOverrun(location, intercept->frac);
@@ -220,9 +220,9 @@ void SpechitOverrun(spechit_overrun_param_t *params)
     line_t **spechit = *(params->spechit);
 
     ShowOverflowWarning(OVERFLOW_SPECHIT,
-      numspechit > 
-        (compatibility_level == dosdoom_compatibility || 
-        compatibility_level == tasdoom_compatibility ? 10 : 14), 
+      numspechit >
+        (compatibility_level == dosdoom_compatibility ||
+        compatibility_level == tasdoom_compatibility ? 10 : 14),
       "\n\nThe list of LineID leading to overrun:\n%d, %d, %d, %d, %d, %d, %d, %d, %d.",
       spechit[0]->iLineID, spechit[1]->iLineID, spechit[2]->iLineID,
       spechit[3]->iLineID, spechit[4]->iLineID, spechit[5]->iLineID,
@@ -263,7 +263,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
 
       if (compatibility_level == dosdoom_compatibility || compatibility_level == tasdoom_compatibility)
       {
-        // There are no more desyncs in the following dosdoom demos: 
+        // There are no more desyncs in the following dosdoom demos:
         // flsofdth.wad\fod3uv.lmp - http://www.doomworld.com/sda/flsofdth.htm
         // hr.wad\hf181430.lmp - http://www.doomworld.com/tas/hf181430.zip
         // hr.wad\hr181329.lmp - http://www.doomworld.com/tas/hr181329.zip
@@ -271,7 +271,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
 
         switch(numspechit)
         {
-        case 9: 
+        case 9:
           *(params->tmfloorz) = addr;
           break;
         case 10:
@@ -289,7 +289,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
       {
         switch(numspechit)
         {
-        case 9: 
+        case 9:
         case 10:
         case 11:
         case 12:
@@ -320,7 +320,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
 // padding the reject table if it is too short
 // totallines must be the number returned by P_GroupLines()
 // an underflow will be padded with zeroes, or a doom.exe z_zone header
-// 
+//
 // e6y
 // reject overrun emulation code
 // It's emulated successfully if the size of overflow no more than 16 bytes.
@@ -345,7 +345,7 @@ void RejectOverrun(int rejectlump, const byte **rejectmatrix, int totallines)
 
     // e6y
     // PrBoom 2.2.5 and 2.2.6 padded a short REJECT with 0xff
-    // This command line switch is needed for all potential demos 
+    // This command line switch is needed for all potential demos
     // recorded with these versions of PrBoom on maps with too short REJECT
     // I don't think there are any demos that will need it but yes that seems sensible
     pad = prboom_comp[PC_REJECT_PAD_WITH_FF].state ? 0xff : 0;

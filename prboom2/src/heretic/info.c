@@ -31,7 +31,7 @@ const char *heretic_sprnames[HERETIC_NUMSPRITES + 1] = {
     "FX15","BEAS","FRB1","SNKE","SNFX","HEAD","FX05","FX06","FX07","CLNK",
     "WZRD","FX11","FX10","KNIG","SPAX","RAXE","SRCR","FX14","SOR2","SDTH",
     "FX16","MNTR","FX12","FX13","AKYY","BKYY","CKYY","AMG2","AMM1","AMM2",
-    "AMC1","AMC2","AMS1","AMS2","AMP1","AMP2","AMB1","AMB2", 
+    "AMC1","AMC2","AMS1","AMS2","AMP1","AMP2","AMB1","AMB2",
     NULL
 };
 

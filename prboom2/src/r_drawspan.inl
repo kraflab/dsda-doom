@@ -50,7 +50,7 @@
 #define PITCH int_pitch
 #endif
 
-#if (R_DRAWSPAN_PIPELINE & RDC_DITHERZ)  
+#if (R_DRAWSPAN_PIPELINE & RDC_DITHERZ)
   #define GETDEPTHMAP(col) dither_colormaps[filter_getDitheredPixelLevel(x1, y, fracz)][(col)]
 #else
   #define GETDEPTHMAP(col) colormap[(col)]

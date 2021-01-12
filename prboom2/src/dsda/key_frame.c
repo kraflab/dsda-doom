@@ -51,14 +51,14 @@ static dsda_key_frame_t* dsda_auto_key_frames;
 static int dsda_last_auto_key_frame;
 static int dsda_auto_key_frames_size;
 
-void dsda_InitKeyFrame(void) {  
+void dsda_InitKeyFrame(void) {
   dsda_auto_key_frames_size = dsda_AutoKeyFrameDepth();
   
   if (dsda_auto_key_frames_size == 0) return;
   
   if (dsda_auto_key_frames != NULL) free(dsda_auto_key_frames);
   
-  dsda_auto_key_frames = 
+  dsda_auto_key_frames =
     calloc(dsda_auto_key_frames_size, sizeof(dsda_key_frame_t));
   dsda_last_auto_key_frame = -1;
 }
@@ -243,8 +243,8 @@ void dsda_UpdateAutoKeyFrames(void) {
   dsda_key_frame_t* current_key_frame;
   
   if (
-    dsda_auto_key_frames_size == 0 || 
-    gamestate != GS_LEVEL || 
+    dsda_auto_key_frames_size == 0 ||
+    gamestate != GS_LEVEL ||
     gameaction != ga_nothing
   ) return;
   
@@ -257,7 +257,7 @@ void dsda_UpdateAutoKeyFrames(void) {
     
     // Don't duplicate (e.g., because we rewound to this index)
     if (
-      dsda_last_auto_key_frame >= 0 && 
+      dsda_last_auto_key_frame >= 0 &&
       dsda_auto_key_frames[dsda_last_auto_key_frame].index == key_frame_index
     ) return;
     

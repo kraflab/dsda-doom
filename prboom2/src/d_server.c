@@ -724,7 +724,7 @@ int main(int argc, char** argv)
       }
     }
   }
-      if (!((ingame ? 0xff : 0xf) & displaycounter++)) { 
+      if (!((ingame ? 0xff : 0xf) & displaycounter++)) {
         int i;
         fprintf(stderr,"Player states: [");
         for (i=0;i<MAXPLAYERS;i++) {

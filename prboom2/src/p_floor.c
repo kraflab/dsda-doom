@@ -773,9 +773,9 @@ int EV_BuildStairs
   // start a stair at each sector tagged the same as the linedef
   while ((ssec = P_FindSectorFromLineTagWithLowerBound(line,ssec,minssec)) >= 0)
   {
-   //e6y int           
+   //e6y int
    secnum = ssec;
-   //e6y sector_t*     
+   //e6y sector_t*
    sec = &sectors[secnum];
 
 manual_stair://e6y

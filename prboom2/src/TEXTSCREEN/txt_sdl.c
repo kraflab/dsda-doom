@@ -66,7 +66,7 @@ static txt_font_t *font;
 
 #ifndef TANGO
 
-static SDL_Color ega_colors[] = 
+static SDL_Color ega_colors[] =
 {
     {0x00, 0x00, 0x00, 0xff},          // 0: Black
     {0x00, 0x00, 0xa8, 0xff},          // 1: Blue
@@ -92,7 +92,7 @@ static SDL_Color ega_colors[] =
 // http://tango.freedesktop.org/ also
 // http://uwstopia.nl/blog/2006/07/tango-terminal
 
-static SDL_Color ega_colors[] = 
+static SDL_Color ega_colors[] =
 {
     {0x2e, 0x34, 0x36, 0xff},          // 0: Black
     {0x34, 0x65, 0xa4, 0xff},          // 1: Blue
@@ -786,7 +786,7 @@ int TXT_ScreenHasBlinkingChars(void)
 
     for (y=0; y<TXT_SCREEN_H; ++y)
     {
-        for (x=0; x<TXT_SCREEN_W; ++x) 
+        for (x=0; x<TXT_SCREEN_W; ++x)
         {
             p = &screendata[(y * TXT_SCREEN_W + x) * 2];
 
@@ -804,7 +804,7 @@ int TXT_ScreenHasBlinkingChars(void)
     return 0;
 }
 
-// Sleeps until an event is received, the screen needs to be redrawn, 
+// Sleeps until an event is received, the screen needs to be redrawn,
 // or until timeout expires (if timeout != 0)
 
 void TXT_Sleep(int timeout)
@@ -817,7 +817,7 @@ void TXT_Sleep(int timeout)
 
         time_to_next_blink = BLINK_PERIOD - (SDL_GetTicks() % BLINK_PERIOD);
 
-        // There are blinking characters on the screen, so we 
+        // There are blinking characters on the screen, so we
         // must time out after a while
        
         if (timeout == 0 || timeout > time_to_next_blink)
@@ -942,4 +942,3 @@ int TXT_snprintf(char *buf, size_t buf_len, const char *s, ...)
     va_end(args);
     return result;
 }
-
