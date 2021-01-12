@@ -2,6 +2,17 @@ cmake_minimum_required(VERSION 3.0)
 
 project("dsda-doom" VERSION 0.10.0)
 
+# Set a default build type if none was specified
+set(default_build_type "RelWithDebInfo")
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+  set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
+      STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(TargetArch)
@@ -63,7 +74,7 @@ if(BUILD_GL)
     find_package(OpenGL)
 endif()
 
-find_package(SDL2 REQUIRED)
+find_package(SDL2 2.0.7 REQUIRED)
 
 option(WITH_IMAGE "Use SDL2_image if available" ON)
 if(WITH_IMAGE)
@@ -182,6 +193,21 @@ else()
     )
 endif()
 
+# Support cross compiling
+option(FORCE_CROSSCOMPILE "Enable cross-compilation" OFF)
+if(FORCE_CROSSCOMPILE)
+    set(CMAKE_CROSSCOMPILING ON)
+endif()
+
+if(CMAKE_CROSSCOMPILING)
+    set(IMPORT_EXECUTABLES "IMPORTFILE-NOTFOUND" CACHE FILEPATH "Export file from native build")
+    include(${IMPORT_EXECUTABLES})
+else()
+    if(NOT CROSS_EXPORTS)
+        set(CROSS_EXPORTS "")
+    endif()
+endif()
+
 set(PRBOOM_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 set(WAD_DATA prboom-plus.wad)
@@ -190,3 +216,7 @@ set(WAD_DATA_PATH "${PRBOOM_OUTPUT_PATH}/${WAD_DATA}")
 add_subdirectory(data)
 add_subdirectory(doc)
 add_subdirectory(src)
+
+if(NOT CMAKE_CROSSCOMPILING)
+    export(TARGETS ${CROSS_EXPORTS} FILE "${CMAKE_BINARY_DIR}/ImportExecutables.cmake")
+endif()
