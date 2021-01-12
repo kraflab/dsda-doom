@@ -53,6 +53,8 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "heretic/def.h"
+
 #define BONUSADD        6
 
 // Ty 03/07/98 - add deh externals
@@ -83,12 +85,22 @@ int monsters_infight = 0; // e6y: Dehacked support - monsters infight
 
 // a weapon is found with two clip loads,
 // a big item has five clip loads
-int maxammo[NUMAMMO]  = {200, 50, 300, 50};
-int clipammo[NUMAMMO] = { 10,  4,  20,  1};
+int maxammo[NUMAMMO]  = {200, 50, 300, 50, 0, 0}; // heretic +2 ammo types
+int clipammo[NUMAMMO] = { 10,  4,  20,  1, 0, 0}; // heretic +2 ammo types
 
 //
 // GET STUFF
 //
+
+// heretic
+static weapontype_t GetAmmoChange[] = {
+    wp_goldwand,
+    wp_crossbow,
+    wp_blaster,
+    wp_skullrod,
+    wp_phoenixrod,
+    wp_mace
+};
 
 //
 // P_GiveAmmo
@@ -118,8 +130,10 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
     num = clipammo[ammo]/2;
 
   // give double ammo in trainer mode, you'll need in nightmare
-  if (gameskill == sk_baby || gameskill == sk_nightmare)
-    num <<= 1;
+  if (gameskill == sk_baby || gameskill == sk_nightmare) {
+    if (heretic) num += num >> 1;
+    else num <<= 1;
+  }
 
   oldammo = player->ammo[ammo];
   player->ammo[ammo] += num;
@@ -133,6 +147,18 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
 
   // We were down to zero, so select a new weapon.
   // Preferences are not user selectable.
+
+  if (heretic) {
+    if (player->readyweapon == wp_staff || player->readyweapon == wp_gauntlets)
+    {
+        if (player->weaponowned[GetAmmoChange[ammo]])
+        {
+            player->pendingweapon = GetAmmoChange[ammo];
+        }
+    }
+    
+    return true;
+  }
 
   switch (ammo)
     {
@@ -176,6 +202,8 @@ static dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dro
 {
   dboolean gaveammo;
   dboolean gaveweapon;
+  
+  if (heretic) return Heretic_P_GiveWeapon(player, weapon);
 
   if (netgame && deathmatch!=2 && !dropped)
     {
@@ -222,15 +250,26 @@ static dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dro
 // Returns false if the body isn't needed at all
 //
 
-static dboolean P_GiveBody(player_t *player, int num)
+dboolean P_GiveBody(player_t * player, int num)
 {
-  if (player->health >= maxhealth)
-    return false; // Ty 03/09/98 externalized MAXHEALTH to maxhealth
-  player->health += num;
-  if (player->health > maxhealth)
-    player->health = maxhealth;
-  player->mo->health = player->health;
-  return true;
+    int max;
+
+    max = maxhealth;
+    if (heretic && player->chickenTics)
+    {
+        max = MAXCHICKENHEALTH;
+    }
+    if (player->health >= max)
+    {
+        return (false);
+    }
+    player->health += num;
+    if (player->health > max)
+    {
+        player->health = max;
+    }
+    player->mo->health = player->health;
+    return (true);
 }
 
 //
@@ -259,7 +298,9 @@ static void P_GiveCard(player_t *player, card_t card)
     return;
   player->bonuscount = BONUSADD;
   player->cards[card] = 1;
-  
+
+  // HERETIC_TODO: ignored KeyPoints & playerkeys logic
+
   dsda_WatchCard(card);
 }
 
@@ -274,7 +315,10 @@ dboolean P_GivePower(player_t *player, int power)
   static const int tics[NUMPOWERS] = {
     INVULNTICS, 1 /* strength */, INVISTICS,
     IRONTICS, 1 /* allmap */, INFRATICS,
+    WPNLEV2TICS, FLIGHTTICS, 1 /* shield */, 1 /* health2 */
    };
+
+  if (heretic && tics[power] > 1 && power != pw_ironfeet && player->powers[power] > BLINKTHRESHOLD) return false;
 
   switch (power)
     {
@@ -287,6 +331,14 @@ dboolean P_GivePower(player_t *player, int power)
         break;
       case pw_strength:
         P_GiveBody(player,100);
+        break;
+      case pw_flight:
+        player->mo->flags2 |= MF2_FLY;
+        player->mo->flags |= MF_NOGRAVITY;
+        if (player->mo->z <= player->mo->floorz)
+        {
+            player->flyheight = 10;     // thrust the player in the air a bit
+        }
         break;
     }
 
@@ -307,6 +359,8 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
   int      i;
   int      sound;
   fixed_t  delta = special->z - toucher->z;
+
+  if (heretic) return Heretic_P_TouchSpecialThing(special, toucher);
 
   if (delta > toucher->height || delta < -8*FRACUNIT)
     return;        // out of reach
@@ -647,16 +701,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
 {
   mobjtype_t item;
   mobj_t     *mo;
-  dboolean   e6y = false;
-  
-#if 0
-  if (target->player && source && target->health < -target->info->spawnhealth &&
-    !demorecording && !demoplayback)
-  {
-    angle_t ang = R_PointToAngle2(target->x, target->y, source->x, source->y) - target->angle;
-    e6y = (ang > (unsigned)(ANG180 - ANG45) && ang < (unsigned)(ANG180 + ANG45));
-  }
-#endif
+  int xdeath_limit;
 
   target->flags &= ~(MF_SHOOTABLE|MF_FLOAT|MF_SKULLFLY);
 
@@ -665,6 +710,9 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
 
   target->flags |= MF_CORPSE|MF_DROPOFF;
   target->height >>= 2;
+
+  // heretic
+  target->flags2 &= ~MF2_PASSMOBJ;
 
   if (compatibility_level == mbf_compatibility && 
       !prboom_comp[PC_MBF_REMOVE_THINKER_IN_KILLMOBJ].state)
@@ -679,105 +727,127 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   dsda_WatchDeath(target);
 
   if (source && source->player)
+  {
+    // count for intermission
+    if (target->flags & MF_COUNTKILL)
     {
-      // count for intermission
-      if (target->flags & MF_COUNTKILL)
+      dsda_WatchKill(source->player, target);
+    }
+    if (target->player)
+    {
+      source->player->frags[target->player-players]++;
+      
+      if (heretic && target != source)
       {
-        dsda_WatchKill(source->player, target);
-      }
-      if (target->player)
-        source->player->frags[target->player-players]++;
-    }
-    else
-      if (target->flags & MF_COUNTKILL) { /* Add to kills tally */
-  if ((compatibility_level < lxdoom_1_compatibility) || !netgame) {
-    if (!netgame)
-    {
-      dsda_WatchKill(&players[0], target);
-    }
-    else
-    {
-      if (!deathmatch) {
-        if (target->lastenemy && target->lastenemy->health > 0 && target->lastenemy->player)
+        if (source->player == &players[consoleplayer])
         {
-          dsda_WatchKill(target->lastenemy->player, target);
+          S_StartSound(NULL, heretic_sfx_gfrag);
+        }
+        if (source->player->chickenTics)
+        {               // Make a super chicken
+          P_GivePower(source->player, pw_weaponlevel2);
+        }
+      }
+    }
+  }
+  else
+    if (target->flags & MF_COUNTKILL) { /* Add to kills tally */
+      if ((compatibility_level < lxdoom_1_compatibility) || !netgame) {
+        if (!netgame)
+        {
+          dsda_WatchKill(&players[0], target);
         }
         else
         {
-          unsigned int player;
-          for (player = 0; player<MAXPLAYERS; player++)
-          {
-            if (playeringame[player])
+          if (!deathmatch) {
+            if (target->lastenemy && target->lastenemy->health > 0 && target->lastenemy->player)
             {
-              dsda_WatchKill(&players[player], target);
-              break;
+              dsda_WatchKill(target->lastenemy->player, target);
+            }
+            else
+            {
+              unsigned int player;
+              for (player = 0; player<MAXPLAYERS; player++)
+              {
+                if (playeringame[player])
+                {
+                  dsda_WatchKill(&players[player], target);
+                  break;
+                }
+              }
             }
           }
         }
       }
+      else
+        if (!deathmatch) {
+          // try and find a player to give the kill to, otherwise give the
+          // kill to a random player.  this fixes the missing monsters bug
+          // in coop - rain
+          // CPhipps - not a bug as such, but certainly an inconsistency.
+          if (target->lastenemy && target->lastenemy->health > 0 && target->lastenemy->player) // Fighting a player
+          {
+            dsda_WatchKill(target->lastenemy->player, target);
+          }
+          else {
+            // cph - randomely choose a player in the game to be credited
+            //  and do it uniformly between the active players
+            unsigned int activeplayers = 0, player, i;
+
+            for (player = 0; player<MAXPLAYERS; player++)
+              if (playeringame[player])
+                activeplayers++;
+
+            if (activeplayers) {
+              player = P_Random(pr_friends) % activeplayers;
+
+              for (i=0; i<MAXPLAYERS; i++)
+                if (playeringame[i])
+                  if (!player--)
+                  {
+                    dsda_WatchKill(&players[i], target);
+                  }
+            }
+          }
+        }
     }
-
-  } else
-    if (!deathmatch) {
-      // try and find a player to give the kill to, otherwise give the
-      // kill to a random player.  this fixes the missing monsters bug
-      // in coop - rain
-      // CPhipps - not a bug as such, but certainly an inconsistency.
-      if (target->lastenemy && target->lastenemy->health > 0
-    && target->lastenemy->player) // Fighting a player
-        {
-          dsda_WatchKill(target->lastenemy->player, target);
-        }
-        else {
-        // cph - randomely choose a player in the game to be credited
-        //  and do it uniformly between the active players
-        unsigned int activeplayers = 0, player, i;
-
-        for (player = 0; player<MAXPLAYERS; player++)
-    if (playeringame[player])
-      activeplayers++;
-
-        if (activeplayers) {
-    player = P_Random(pr_friends) % activeplayers;
-
-    for (i=0; i<MAXPLAYERS; i++)
-      if (playeringame[i])
-        if (!player--)
-        {
-          dsda_WatchKill(&players[i], target);
-        }
-        }
-      }
-    }
-      }
 
   if (target->player)
-    {
-      // count environment kills against you
-      if (!source)
-        target->player->frags[target->player-players]++;
+  {
+    // count environment kills against you
+    if (!source)
+      target->player->frags[target->player-players]++;
 
-      target->flags &= ~MF_SOLID;
-      target->player->playerstate = PST_DEAD;
-      P_DropWeapon (target->player);
+    target->flags &= ~MF_SOLID;
 
-      if (target->player == &players[consoleplayer] && (automapmode & am_active))
-        AM_Stop();    // don't die in auto map; switch view prior to dying
+    // heretic
+    target->flags2 &= ~MF2_FLY;
+    target->player->powers[pw_flight] = 0;
+    target->player->powers[pw_weaponlevel2] = 0;
+
+    target->player->playerstate = PST_DEAD;
+    P_DropWeapon (target->player);
+
+    // heretic
+    if (target->flags2 & MF2_FIREDAMAGE)
+    {                       // Player flame death
+        P_SetMobjState(target, HERETIC_S_PLAY_FDTH1);
+        return;
     }
 
-  if (e6y)
-  {
-    P_SetMobjState (target, S_PLAY_GDIE1);
-  }
-  else
-  {
-    if (target->health < -target->info->spawnhealth && target->info->xdeathstate)
-      P_SetMobjState (target, target->info->xdeathstate);
-    else
-      P_SetMobjState (target, target->info->deathstate);
+    if (target->player == &players[consoleplayer] && (automapmode & am_active))
+      AM_Stop();    // don't die in auto map; switch view prior to dying
   }
 
+  xdeath_limit = heretic ? (target->info->spawnhealth >> 1) : target->info->spawnhealth;
+  if (target->health < -xdeath_limit && target->info->xdeathstate)
+    P_SetMobjState (target, target->info->xdeathstate);
+  else
+    P_SetMobjState (target, target->info->deathstate);
+
   target->tics -= P_Random(pr_killtics)&3;
+
+  if (heretic) return;
 
   if (target->tics < 1)
     target->tics = 1;
@@ -834,81 +904,203 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     return;
 
   if (target->flags & MF_SKULLFLY)
+  {
+    if (target->type == HERETIC_MT_MINOTAUR) return;
     target->momx = target->momy = target->momz = 0;
+  }
 
   player = target->player;
   if (player && gameskill == sk_baby)
     damage >>= 1;   // take half damage in trainer mode
 
+  // Special damage types
+  if (heretic && inflictor)
+    switch (inflictor->type)
+    {
+      case HERETIC_MT_EGGFX:
+        if (player)
+        {
+          P_ChickenMorphPlayer(player);
+        }
+        else
+        {
+          P_ChickenMorph(target);
+        }
+        return;         // Always return
+      case HERETIC_MT_WHIRLWIND:
+        P_TouchWhirlwind(target);
+        return;
+      case HERETIC_MT_MINOTAUR:
+        if (inflictor->flags & MF_SKULLFLY)
+        {               // Slam only when in charge mode
+          P_MinotaurSlam(inflictor, target);
+          return;
+        }
+        break;
+      case HERETIC_MT_MACEFX4:   // Death ball
+        if ((target->flags2 & MF2_BOSS) || target->type == HERETIC_MT_HEAD)
+        {               // Don't allow cheap boss kills
+          break;
+        }
+        else if (target->player)
+        {               // Player specific checks
+          if (target->player->powers[pw_invulnerability])
+          {           // Can't hurt invulnerable players
+            break;
+          }
+          if (P_AutoUseChaosDevice(target->player))
+          {           // Player was saved using chaos device
+            return;
+          }
+        }
+        damage = 10000; // Something's gonna die
+        break;
+      case HERETIC_MT_PHOENIXFX2:        // Flame thrower
+        if (target->player && P_Random(pr_heretic) < 128)
+        {               // Freeze player for a bit
+          target->reactiontime += 4;
+        }
+        break;
+      case HERETIC_MT_RAINPLR1:  // Rain missiles
+      case HERETIC_MT_RAINPLR2:
+      case HERETIC_MT_RAINPLR3:
+      case HERETIC_MT_RAINPLR4:
+        if (target->flags2 & MF2_BOSS)
+        {               // Decrease damage for bosses
+          damage = (P_Random(pr_heretic) & 7) + 1;
+        }
+        break;
+      case HERETIC_MT_HORNRODFX2:
+      case HERETIC_MT_PHOENIXFX1:
+        if (target->type == HERETIC_MT_SORCERER2 && P_Random(pr_heretic) < 96)
+        {               // D'Sparil teleports away
+          P_DSparilTeleport(target);
+          return;
+        }
+        break;
+      case HERETIC_MT_BLASTERFX1:
+      case HERETIC_MT_RIPPER:
+        if (target->type == HERETIC_MT_HEAD)
+        {               // Less damage to Ironlich bosses
+          damage = P_Random(pr_heretic) & 1;
+          if (!damage)
+          {
+            return;
+          }
+        }
+        break;
+      default:
+        break;
+    }
+
   // Some close combat weapons should not
   // inflict thrust and push the victim out of reach,
   // thus kick away unless using the chainsaw.
 
-  if (inflictor && !(target->flags & MF_NOCLIP) &&
-      (!source || !source->player ||
-       source->player->readyweapon != wp_chainsaw))
+  if (
+    inflictor &&
+    !(target->flags & MF_NOCLIP) &&
+    (!source || !source->player ||source->player->readyweapon != g_wp_chainsaw) &&
+    !(inflictor->flags2 & MF2_NODMGTHRUST)
+  )
+  {
+    unsigned ang = R_PointToAngle2 (inflictor->x, inflictor->y,
+                                    target->x,    target->y);
+
+    fixed_t thrust = damage * (FRACUNIT >> 3) * g_thrust_factor / target->info->mass;
+
+    // make fall forwards sometimes
+    if ( damage < 40 && damage > target->health
+         && target->z - inflictor->z > 64*FRACUNIT
+         && P_Random(pr_damagemobj) & 1)
     {
-      unsigned ang = R_PointToAngle2 (inflictor->x, inflictor->y,
-                                      target->x,    target->y);
-
-      fixed_t thrust = damage*(FRACUNIT>>3)*100/target->info->mass;
-
-      // make fall forwards sometimes
-      if ( damage < 40 && damage > target->health
-           && target->z - inflictor->z > 64*FRACUNIT
-           && P_Random(pr_damagemobj) & 1)
-        {
-          ang += ANG180;
-          thrust *= 4;
-        }
-
-      ang >>= ANGLETOFINESHIFT;
-      target->momx += FixedMul (thrust, finecosine[ang]);
-      target->momy += FixedMul (thrust, finesine[ang]);
-
-      /* killough 11/98: thrust objects hanging off ledges */
-      if (target->intflags & MIF_FALLING && target->gear >= MAXGEAR)
-        target->gear = 0;
+      ang += ANG180;
+      thrust *= 4;
     }
+
+    ang >>= ANGLETOFINESHIFT;
+
+    if (source && source->player && (source == inflictor)
+        && source->player->powers[pw_weaponlevel2]
+        && source->player->readyweapon == wp_staff)
+    {
+      // Staff power level 2
+      target->momx += FixedMul(10 * FRACUNIT, finecosine[ang]);
+      target->momy += FixedMul(10 * FRACUNIT, finesine[ang]);
+      if (!(target->flags & MF_NOGRAVITY))
+      {
+          target->momz += 5 * FRACUNIT;
+      }
+    }
+    else
+    {
+      target->momx += FixedMul(thrust, finecosine[ang]);
+      target->momy += FixedMul(thrust, finesine[ang]);
+    }
+
+    /* killough 11/98: thrust objects hanging off ledges */
+    if (target->intflags & MIF_FALLING && target->gear >= MAXGEAR)
+      target->gear = 0;
+  }
 
   // player specific
   if (player)
+  {
+    // end of game hell hack
+    if (!heretic && target->subsector->sector->special == 11 && damage >= target->health)
+      damage = target->health - 1;
+
+    // Below certain threshold,
+    // ignore damage in GOD mode, or with INVUL power.
+    // killough 3/26/98: make god mode 100% god mode in non-compat mode
+
+    if ((damage < 1000 || (!comp[comp_god] && (player->cheats&CF_GODMODE))) &&
+        (player->cheats&CF_GODMODE || player->powers[pw_invulnerability]))
+      return;
+
+    if (player->armortype)
     {
-      // end of game hell hack
-      if (target->subsector->sector->special == 11 && damage >= target->health)
-        damage = target->health - 1;
+      int saved;
 
-      // Below certain threshold,
-      // ignore damage in GOD mode, or with INVUL power.
-      // killough 3/26/98: make god mode 100% god mode in non-compat mode
+      if (heretic)
+        saved = player->armortype == 1 ? (damage >> 1) : (damage >> 1) + (damage >> 2);
+      else
+        saved = player->armortype == 1 ? damage / 3 : damage / 2;
 
-      if ((damage < 1000 || (!comp[comp_god] && (player->cheats&CF_GODMODE))) &&
-          (player->cheats&CF_GODMODE || player->powers[pw_invulnerability]))
-        return;
-
-      if (player->armortype)
-        {
-          int saved = player->armortype == 1 ? damage/3 : damage/2;
-          if (player->armorpoints <= saved)
-            {
-              // armor is used up
-              saved = player->armorpoints;
-              player->armortype = 0;
-            }
-          player->armorpoints -= saved;
-          damage -= saved;
-        }
-
-      player->health -= damage;       // mirror mobj health here for Dave
-      if (player->health < 0)
-        player->health = 0;
-
-      player->attacker = source;
-      player->damagecount += damage;  // add damage after armor / invuln
-
-      if (player->damagecount > 100)
-        player->damagecount = 100;  // teleport stomp does 10k points...
+      if (player->armorpoints <= saved)
+      {
+        // armor is used up
+        saved = player->armorpoints;
+        player->armortype = 0;
+      }
+      player->armorpoints -= saved;
+      damage -= saved;
     }
+
+    if (heretic && damage >= player->health
+        && ((gameskill == sk_baby) || deathmatch) && !player->chickenTics)
+    {                       // Try to use some inventory health
+      P_AutoUseHealth(player, damage - player->health + 1);
+    }
+
+    player->health -= damage;       // mirror mobj health here for Dave
+    if (player->health < 0)
+      player->health = 0;
+
+    player->attacker = source;
+    player->damagecount += damage;  // add damage after armor / invuln
+
+    if (player->damagecount > 100)
+      player->damagecount = 100;  // teleport stomp does 10k points...
+
+    // HERETIC_TODO: something for the hud?
+    // if (heretic && player == &players[consoleplayer])
+    // {
+    //     int temp = damage < 100 ? damage : 100;
+    //     I_Tactile(40, 10, 40 + temp * 2);
+    //     SB_PaletteFlash();
+    // }
+  }
 
   if (source && target)
   {
@@ -920,90 +1112,836 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   // do the damage
   target->health -= damage;
   if (target->health <= 0)
-    {
-      P_KillMobj (source, target);
-      return;
+  {
+    if (heretic) {
+      target->special1.i = damage;
+      if (target->type == HERETIC_MT_POD && source && source->type != HERETIC_MT_POD)
+      {                       // Make sure players get frags for chain-reaction kills
+        target->target = source;
+      }
+      if (player && inflictor && !player->chickenTics)
+      {                       // Check for flame death
+        if ((inflictor->flags2 & MF2_FIREDAMAGE)
+            || ((inflictor->type == HERETIC_MT_PHOENIXFX1)
+                && (target->health > -50) && (damage > 25)))
+        {
+          target->flags2 |= MF2_FIREDAMAGE;
+        }
+      }
     }
+
+    P_KillMobj (source, target);
+    return;
+  }
 
   // killough 9/7/98: keep track of targets so that friends can help friends
   if (mbf_features)
-    {
-      /* If target is a player, set player's target to source,
-       * so that a friend can tell who's hurting a player
-       */
-      if (player)
-  P_SetTarget(&target->target, source);
-
-      /* killough 9/8/98:
-       * If target's health is less than 50%, move it to the front of its list.
-       * This will slightly increase the chances that enemies will choose to
-       * "finish it off", but its main purpose is to alert friends of danger.
-       */
-      if (target->health*2 < target->info->spawnhealth)
   {
-    thinker_t *cap = &thinkerclasscap[target->flags & MF_FRIEND ?
-             th_friends : th_enemies];
-    (target->thinker.cprev->cnext = target->thinker.cnext)->cprev =
-      target->thinker.cprev;
-    (target->thinker.cnext = cap->cnext)->cprev = &target->thinker;
-    (target->thinker.cprev = cap)->cnext = &target->thinker;
-  }
+    /* If target is a player, set player's target to source,
+     * so that a friend can tell who's hurting a player
+     */
+    if (player) P_SetTarget(&target->target, source);
+
+    /* killough 9/8/98:
+     * If target's health is less than 50%, move it to the front of its list.
+     * This will slightly increase the chances that enemies will choose to
+     * "finish it off", but its main purpose is to alert friends of danger.
+     */
+    if (target->health*2 < target->info->spawnhealth)
+    {
+      thinker_t *cap = &thinkerclasscap[target->flags & MF_FRIEND ?
+               th_friends : th_enemies];
+      (target->thinker.cprev->cnext = target->thinker.cnext)->cprev =
+        target->thinker.cprev;
+      (target->thinker.cnext = cap->cnext)->cprev = &target->thinker;
+      (target->thinker.cprev = cap)->cnext = &target->thinker;
     }
+  }
 
   if (P_Random (pr_painchance) < target->info->painchance &&
-      !(target->flags & MF_SKULLFLY)) { //killough 11/98: see below
+      !(target->flags & MF_SKULLFLY)) //killough 11/98: see below
+  {
     if (mbf_features)
       justhit = true;
     else
       target->flags |= MF_JUSTHIT;    // fight back!
 
-  //e6y
-  {
-    if(demo_compatibility)
-      if ((target->target == source || !target->target ||
-         !(target->flags & target->target->flags & MF_FRIEND)))
-        target->flags |= MF_JUSTHIT;    // fight back!
+    P_SetMobjState(target, target->info->painstate);
   }
-
-  P_SetMobjState(target, target->info->painstate);
-  }//e6y
 
   target->reactiontime = 0;           // we're awake now...
 
+  // HERETIC_TODO: make heretic -> compatibility_level == doom_12_compatibility ?
+
   /* killough 9/9/98: cleaned up, made more consistent: */
   //e6y: Monsters could commit suicide in Doom v1.2 if they damaged themselves by exploding a barrel
-  if (source && (source != target || compatibility_level == doom_12_compatibility) &&
-      source->type != MT_VILE &&
-      (!target->threshold || target->type == MT_VILE) &&
-      ((source->flags ^ target->flags) & MF_FRIEND ||
-       monster_infighting ||
-       !mbf_features))
-    {
-      /* if not intent on another player, chase after this one
-       *
-       * killough 2/15/98: remember last enemy, to prevent
-       * sleeping early; 2/21/98: Place priority on players
-       * killough 9/9/98: cleaned up, made more consistent:
-       */
+  if (
+    source && 
+    (source != target || compatibility_level == doom_12_compatibility || heretic) &&
+    source->type != MT_VILE &&
+    (!target->threshold || target->type == MT_VILE) &&
+    ((source->flags ^ target->flags) & MF_FRIEND || monster_infighting || !mbf_features) &&
+    !(source->flags2 & MF2_BOSS) &&
+    !(target->type == HERETIC_MT_SORCERER2 && source->type == HERETIC_MT_WIZARD)
+  )
+  {
+    /* if not intent on another player, chase after this one
+     *
+     * killough 2/15/98: remember last enemy, to prevent
+     * sleeping early; 2/21/98: Place priority on players
+     * killough 9/9/98: cleaned up, made more consistent:
+     */
 
-      if (!target->lastenemy || target->lastenemy->health <= 0 ||
-    (!mbf_features ?
-     !target->lastenemy->player :
-     !((target->flags ^ target->lastenemy->flags) & MF_FRIEND) &&
-     target->target != source)) // remember last enemy - killough
-  P_SetTarget(&target->lastenemy, target->target);
+    if (
+      !target->lastenemy ||
+      target->lastenemy->health <= 0 ||
+      (
+        !mbf_features ?
+        !target->lastenemy->player :
+        !((target->flags ^ target->lastenemy->flags) & MF_FRIEND) && target->target != source
+      )
+    ) // remember last enemy - killough
+      P_SetTarget(&target->lastenemy, target->target);
 
-      P_SetTarget(&target->target, source);       // killough 11/98
-      target->threshold = BASETHRESHOLD;
-      if (target->state == &states[target->info->spawnstate]
-          && target->info->seestate != S_NULL)
-        P_SetMobjState (target, target->info->seestate);
-    }
+    P_SetTarget(&target->target, source);       // killough 11/98
+    target->threshold = BASETHRESHOLD;
+    if (target->state == &states[target->info->spawnstate]
+        && target->info->seestate != g_s_null)
+      P_SetMobjState (target, target->info->seestate);
+  }
 
   /* killough 11/98: Don't attack a friend, unless hit by that friend.
    * cph 2006/04/01 - implicitly this is only if mbf_features */
   if(!demo_compatibility) //e6y
-  if (justhit && (target->target == source || !target->target ||
-      !(target->flags & target->target->flags & MF_FRIEND)))
-    target->flags |= MF_JUSTHIT;    // fight back!
+    if (justhit && (target->target == source || !target->target ||
+        !(target->flags & target->target->flags & MF_FRIEND)))
+      target->flags |= MF_JUSTHIT;    // fight back!
+}
+
+// heretic
+
+#include "p_user.h"
+
+#define CHICKENTICS (40*35)
+
+void A_RestoreArtifact(mobj_t * arti)
+{
+    arti->flags |= MF_SPECIAL;
+    P_SetMobjState(arti, arti->info->spawnstate);
+    S_StartSound(arti, heretic_sfx_respawn);
+}
+
+void A_RestoreSpecialThing1(mobj_t * thing)
+{
+    if (thing->type == HERETIC_MT_WMACE)
+    {                           // Do random mace placement
+        P_RepositionMace(thing);
+    }
+    thing->flags2 &= ~MF2_DONTDRAW;
+    S_StartSound(thing, heretic_sfx_respawn);
+}
+
+void A_RestoreSpecialThing2(mobj_t * thing)
+{
+    thing->flags |= MF_SPECIAL;
+    P_SetMobjState(thing, thing->info->spawnstate);
+}
+
+// HERETIC_TODO: uncomment the stuff, if it makes sense
+
+// dboolean ultimatemsg;
+// extern dboolean messageson;
+
+// heretic
+void P_SetMessage(player_t * player, const char *message, dboolean ultmsg)
+{
+    // if ((ultimatemsg || !messageson) && !ultmsg)
+    // {
+    //     return;
+    // }
+    player->message = message;
+    // player->messageTics = MESSAGETICS;
+    // BorderTopRefresh = true;
+    // if (ultmsg)
+    // {
+    //     ultimatemsg = true;
+    // }
+}
+
+void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
+{
+    int i;
+    player_t *player;
+    fixed_t delta;
+    int sound;
+
+    delta = special->z - toucher->z;
+    if (delta > toucher->height || delta < -32 * FRACUNIT)
+    {                           // Out of reach
+        return;
+    }
+    if (toucher->health <= 0)
+    {                           // Toucher is dead
+        return;
+    }
+    sound = heretic_sfx_itemup;
+    player = toucher->player;
+
+    switch (special->sprite)
+    {
+            // Items
+        case HERETIC_SPR_PTN1:         // Item_HealingPotion
+            if (!P_GiveBody(player, 10))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMHEALTH), false);
+            break;
+        case HERETIC_SPR_SHLD:         // Item_Shield1
+            if (!P_GiveArmor(player, 1))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMSHIELD1), false);
+            break;
+        case HERETIC_SPR_SHD2:         // Item_Shield2
+            if (!P_GiveArmor(player, 2))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMSHIELD2), false);
+            break;
+        case HERETIC_SPR_BAGH:         // Item_BagOfHolding
+            if (!player->backpack)
+            {
+                for (i = 0; i < NUMAMMO; i++)
+                {
+                    player->maxammo[i] *= 2;
+                }
+                player->backpack = true;
+            }
+            P_GiveAmmo(player, am_goldwand, AMMO_GWND_WIMPY);
+            P_GiveAmmo(player, am_blaster, AMMO_BLSR_WIMPY);
+            P_GiveAmmo(player, am_crossbow, AMMO_CBOW_WIMPY);
+            P_GiveAmmo(player, am_skullrod, AMMO_SKRD_WIMPY);
+            P_GiveAmmo(player, am_phoenixrod, AMMO_PHRD_WIMPY);
+            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMBAGOFHOLDING), false);
+            break;
+        case HERETIC_SPR_SPMP:         // Item_SuperMap
+            if (!P_GivePower(player, pw_allmap))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMSUPERMAP), false);
+            break;
+
+            // Keys
+        case HERETIC_SPR_BKYY:         // Key_Blue
+            if (!player->cards[key_blue])
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_GOTBLUEKEY), false);
+            }
+            P_GiveCard(player, key_blue);
+            sound = heretic_sfx_keyup;
+            if (!netgame)
+            {
+                break;
+            }
+            return;
+        case HERETIC_SPR_CKYY:         // Key_Yellow
+            if (!player->cards[key_yellow])
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_GOTYELLOWKEY), false);
+            }
+            sound = heretic_sfx_keyup;
+            P_GiveCard(player, key_yellow);
+            if (!netgame)
+            {
+                break;
+            }
+            return;
+        case HERETIC_SPR_AKYY:         // Key_Green
+            if (!player->cards[key_green])
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_GOTGREENKEY), false);
+            }
+            sound = heretic_sfx_keyup;
+            P_GiveCard(player, key_green);
+            if (!netgame)
+            {
+                break;
+            }
+            return;
+
+            // Artifacts
+        case HERETIC_SPR_PTN2:         // Arti_HealingPotion
+            if (P_GiveArtifact(player, arti_health, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIHEALTH), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+        case HERETIC_SPR_SOAR:         // Arti_Fly
+            if (P_GiveArtifact(player, arti_fly, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIFLY), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+        case HERETIC_SPR_INVU:         // Arti_Invulnerability
+            if (P_GiveArtifact(player, arti_invulnerability, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIINVULNERABILITY), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+        case HERETIC_SPR_PWBK:         // Arti_TomeOfPower
+            if (P_GiveArtifact(player, arti_tomeofpower, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTITOMEOFPOWER), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+        case HERETIC_SPR_INVS:         // Arti_Invisibility
+            if (P_GiveArtifact(player, arti_invisibility, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIINVISIBILITY), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+        case HERETIC_SPR_EGGC:         // Arti_Egg
+            if (P_GiveArtifact(player, arti_egg, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIEGG), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+        case HERETIC_SPR_SPHL:         // Arti_SuperHealth
+            if (P_GiveArtifact(player, arti_superhealth, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTISUPERHEALTH), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+        case HERETIC_SPR_TRCH:         // Arti_Torch
+            if (P_GiveArtifact(player, arti_torch, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTITORCH), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+        case HERETIC_SPR_FBMB:         // Arti_FireBomb
+            if (P_GiveArtifact(player, arti_firebomb, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIFIREBOMB), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+        case HERETIC_SPR_ATLP:         // Arti_Teleport
+            if (P_GiveArtifact(player, arti_teleport, special))
+            {
+                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTITELEPORT), false);
+                P_SetDormantArtifact(special);
+            }
+            return;
+
+            // Ammo
+        case HERETIC_SPR_AMG1:         // Ammo_GoldWandWimpy
+            if (!P_GiveAmmo(player, am_goldwand, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOGOLDWAND1), false);
+            break;
+        case HERETIC_SPR_AMG2:         // Ammo_GoldWandHefty
+            if (!P_GiveAmmo(player, am_goldwand, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOGOLDWAND2), false);
+            break;
+        case HERETIC_SPR_AMM1:         // Ammo_MaceWimpy
+            if (!P_GiveAmmo(player, am_mace, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOMACE1), false);
+            break;
+        case HERETIC_SPR_AMM2:         // Ammo_MaceHefty
+            if (!P_GiveAmmo(player, am_mace, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOMACE2), false);
+            break;
+        case HERETIC_SPR_AMC1:         // Ammo_CrossbowWimpy
+            if (!P_GiveAmmo(player, am_crossbow, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOCROSSBOW1), false);
+            break;
+        case HERETIC_SPR_AMC2:         // Ammo_CrossbowHefty
+            if (!P_GiveAmmo(player, am_crossbow, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOCROSSBOW2), false);
+            break;
+        case HERETIC_SPR_AMB1:         // Ammo_BlasterWimpy
+            if (!P_GiveAmmo(player, am_blaster, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOBLASTER1), false);
+            break;
+        case HERETIC_SPR_AMB2:         // Ammo_BlasterHefty
+            if (!P_GiveAmmo(player, am_blaster, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOBLASTER2), false);
+            break;
+        case HERETIC_SPR_AMS1:         // Ammo_SkullRodWimpy
+            if (!P_GiveAmmo(player, am_skullrod, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOSKULLROD1), false);
+            break;
+        case HERETIC_SPR_AMS2:         // Ammo_SkullRodHefty
+            if (!P_GiveAmmo(player, am_skullrod, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOSKULLROD2), false);
+            break;
+        case HERETIC_SPR_AMP1:         // Ammo_PhoenixRodWimpy
+            if (!P_GiveAmmo(player, am_phoenixrod, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOPHOENIXROD1), false);
+            break;
+        case HERETIC_SPR_AMP2:         // Ammo_PhoenixRodHefty
+            if (!P_GiveAmmo(player, am_phoenixrod, special->health))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOPHOENIXROD2), false);
+            break;
+
+            // Weapons
+        case HERETIC_SPR_WMCE:         // Weapon_Mace
+            if (!P_GiveWeapon(player, wp_mace, false))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNMACE), false);
+            sound = heretic_sfx_wpnup;
+            break;
+        case HERETIC_SPR_WBOW:         // Weapon_Crossbow
+            if (!P_GiveWeapon(player, wp_crossbow, false))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNCROSSBOW), false);
+            sound = heretic_sfx_wpnup;
+            break;
+        case HERETIC_SPR_WBLS:         // Weapon_Blaster
+            if (!P_GiveWeapon(player, wp_blaster, false))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNBLASTER), false);
+            sound = heretic_sfx_wpnup;
+            break;
+        case HERETIC_SPR_WSKL:         // Weapon_SkullRod
+            if (!P_GiveWeapon(player, wp_skullrod, false))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNSKULLROD), false);
+            sound = heretic_sfx_wpnup;
+            break;
+        case HERETIC_SPR_WPHX:         // Weapon_PhoenixRod
+            if (!P_GiveWeapon(player, wp_phoenixrod, false))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNPHOENIXROD), false);
+            sound = heretic_sfx_wpnup;
+            break;
+        case HERETIC_SPR_WGNT:         // Weapon_Gauntlets
+            if (!P_GiveWeapon(player, wp_gauntlets, false))
+            {
+                return;
+            }
+            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNGAUNTLETS), false);
+            sound = heretic_sfx_wpnup;
+            break;
+        default:
+            I_Error("Heretic_P_TouchSpecialThing: Unknown gettable thing");
+    }
+    if (special->flags & MF_COUNTITEM)
+    {
+        player->itemcount++;
+    }
+    if (deathmatch && !(special->flags & MF_DROPPED))
+    {
+        P_HideSpecialThing(special);
+    }
+    else
+    {
+        P_RemoveMobj(special);
+    }
+    player->bonuscount += BONUSADD;
+    if (player == &players[consoleplayer])
+    {
+        S_StartSound(NULL, sound);
+        // HERETIC_TODO: ignoring status bar code
+        // SB_PaletteFlash();
+    }
+}
+
+dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
+{
+    int i;
+
+    i = 0;
+    while (player->inventory[i].type != arti && i < player->inventorySlotNum)
+    {
+        i++;
+    }
+    if (i == player->inventorySlotNum)
+    {
+        player->inventory[i].count = 1;
+        player->inventory[i].type = arti;
+        player->inventorySlotNum++;
+    }
+    else
+    {
+        if (player->inventory[i].count >= 16)
+        {                       // Player already has 16 of this item
+            return (false);
+        }
+        player->inventory[i].count++;
+    }
+    if (player->artifactCount == 0)
+    {
+        player->readyArtifact = arti;
+    }
+    player->artifactCount++;
+    if (mo && (mo->flags & MF_COUNTITEM))
+    {
+        player->itemcount++;
+    }
+    return (true);
+}
+
+void P_SetDormantArtifact(mobj_t * arti)
+{
+    arti->flags &= ~MF_SPECIAL;
+    if (deathmatch && (arti->type != HERETIC_MT_ARTIINVULNERABILITY)
+        && (arti->type != HERETIC_MT_ARTIINVISIBILITY))
+    {
+        P_SetMobjState(arti, HERETIC_S_DORMANTARTI1);
+    }
+    else
+    {                           // Don't respawn
+        P_SetMobjState(arti, HERETIC_S_DEADARTI1);
+    }
+    S_StartSound(arti, heretic_sfx_artiup);
+}
+
+int GetWeaponAmmo[NUMWEAPONS] = {
+    0,                          // staff
+    25,                         // gold wand
+    10,                         // crossbow
+    30,                         // blaster
+    50,                         // skull rod
+    2,                          // phoenix rod
+    50,                         // mace
+    0,                          // gauntlets
+    0                           // beak
+};
+
+int WeaponValue[] = {
+    1,                          // staff
+    3,                          // goldwand
+    4,                          // crossbow
+    5,                          // blaster
+    6,                          // skullrod
+    7,                          // phoenixrod
+    8,                          // mace
+    2,                          // gauntlets
+    0                           // beak
+};
+
+dboolean Heretic_P_GiveWeapon(player_t * player, weapontype_t weapon)
+{
+    dboolean gaveAmmo;
+    dboolean gaveWeapon;
+
+    if (netgame && !deathmatch)
+    {                           // Cooperative net-game
+        if (player->weaponowned[weapon])
+        {
+            return (false);
+        }
+        player->bonuscount += BONUSADD;
+        player->weaponowned[weapon] = true;
+        P_GiveAmmo(player, wpnlev1info[weapon].ammo, GetWeaponAmmo[weapon]);
+        player->pendingweapon = weapon;
+        if (player == &players[consoleplayer])
+        {
+            S_StartSound(NULL, heretic_sfx_wpnup);
+        }
+        return (false);
+    }
+    gaveAmmo = P_GiveAmmo(player, wpnlev1info[weapon].ammo,
+                          GetWeaponAmmo[weapon]);
+    if (player->weaponowned[weapon])
+    {
+        gaveWeapon = false;
+    }
+    else
+    {
+        gaveWeapon = true;
+        player->weaponowned[weapon] = true;
+        if (WeaponValue[weapon] > WeaponValue[player->readyweapon])
+        {                       // Only switch to more powerful weapons
+            player->pendingweapon = weapon;
+        }
+    }
+    return (gaveWeapon || gaveAmmo);
+}
+
+void P_HideSpecialThing(mobj_t * thing)
+{
+    thing->flags &= ~MF_SPECIAL;
+    thing->flags2 |= MF2_DONTDRAW;
+    P_SetMobjState(thing, HERETIC_S_HIDESPECIAL1);
+}
+
+void P_MinotaurSlam(mobj_t * source, mobj_t * target)
+{
+    angle_t angle;
+    fixed_t thrust;
+
+    angle = R_PointToAngle2(source->x, source->y, target->x, target->y);
+    angle >>= ANGLETOFINESHIFT;
+    thrust = 16 * FRACUNIT + (P_Random(pr_heretic) << 10);
+    target->momx += FixedMul(thrust, finecosine[angle]);
+    target->momy += FixedMul(thrust, finesine[angle]);
+    P_DamageMobj(target, NULL, NULL, HITDICE(6));
+    if (target->player)
+    {
+        target->reactiontime = 14 + (P_Random(pr_heretic) & 7);
+    }
+}
+
+void P_TouchWhirlwind(mobj_t * target)
+{
+    int randVal;
+
+    target->angle += P_SubRandom() << 20;
+    target->momx += P_SubRandom() << 10;
+    target->momy += P_SubRandom() << 10;
+    if (leveltime & 16 && !(target->flags2 & MF2_BOSS))
+    {
+        randVal = P_Random(pr_heretic);
+        if (randVal > 160)
+        {
+            randVal = 160;
+        }
+        target->momz += randVal << 10;
+        if (target->momz > 12 * FRACUNIT)
+        {
+            target->momz = 12 * FRACUNIT;
+        }
+    }
+    if (!(leveltime & 7))
+    {
+        P_DamageMobj(target, NULL, NULL, 3);
+    }
+}
+
+dboolean P_ChickenMorphPlayer(player_t * player)
+{
+    mobj_t *pmo;
+    mobj_t *fog;
+    mobj_t *chicken;
+    fixed_t x;
+    fixed_t y;
+    fixed_t z;
+    angle_t angle;
+    int oldFlags2;
+
+    if (player->chickenTics)
+    {
+        if ((player->chickenTics < CHICKENTICS - TICRATE)
+            && !player->powers[pw_weaponlevel2])
+        {                       // Make a super chicken
+            P_GivePower(player, pw_weaponlevel2);
+        }
+        return (false);
+    }
+    if (player->powers[pw_invulnerability])
+    {                           // Immune when invulnerable
+        return (false);
+    }
+    pmo = player->mo;
+    x = pmo->x;
+    y = pmo->y;
+    z = pmo->z;
+    angle = pmo->angle;
+    oldFlags2 = pmo->flags2;
+    P_SetMobjState(pmo, HERETIC_S_FREETARGMOBJ);
+    fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
+    S_StartSound(fog, heretic_sfx_telept);
+    chicken = P_SpawnMobj(x, y, z, HERETIC_MT_CHICPLAYER);
+    chicken->special1.i = player->readyweapon;
+    chicken->angle = angle;
+    chicken->player = player;
+    player->health = chicken->health = MAXCHICKENHEALTH;
+    player->mo = chicken;
+    player->armorpoints = player->armortype = 0;
+    player->powers[pw_invisibility] = 0;
+    player->powers[pw_weaponlevel2] = 0;
+    if (oldFlags2 & MF2_FLY)
+    {
+        chicken->flags2 |= MF2_FLY;
+    }
+    player->chickenTics = CHICKENTICS;
+    P_ActivateBeak(player);
+    return (true);
+}
+
+dboolean P_ChickenMorph(mobj_t * actor)
+{
+    mobj_t *fog;
+    mobj_t *chicken;
+    mobj_t *target;
+    mobjtype_t moType;
+    fixed_t x;
+    fixed_t y;
+    fixed_t z;
+    angle_t angle;
+    int ghost;
+
+    if (actor->player)
+    {
+        return (false);
+    }
+    moType = actor->type;
+    switch (moType)
+    {
+        case HERETIC_MT_POD:
+        case HERETIC_MT_CHICKEN:
+        case HERETIC_MT_HEAD:
+        case HERETIC_MT_MINOTAUR:
+        case HERETIC_MT_SORCERER1:
+        case HERETIC_MT_SORCERER2:
+            return (false);
+        default:
+            break;
+    }
+    x = actor->x;
+    y = actor->y;
+    z = actor->z;
+    angle = actor->angle;
+    ghost = actor->flags & MF_SHADOW;
+    target = actor->target;
+    P_SetMobjState(actor, HERETIC_S_FREETARGMOBJ);
+    fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
+    S_StartSound(fog, heretic_sfx_telept);
+    chicken = P_SpawnMobj(x, y, z, HERETIC_MT_CHICKEN);
+    chicken->special2.i = moType;
+    chicken->special1.i = CHICKENTICS + P_Random(pr_heretic);
+    chicken->flags |= ghost;
+    chicken->target = target;
+    chicken->angle = angle;
+    return (true);
+}
+
+dboolean P_AutoUseChaosDevice(player_t * player)
+{
+    int i;
+
+    for (i = 0; i < player->inventorySlotNum; i++)
+    {
+        if (player->inventory[i].type == arti_teleport)
+        {
+            P_PlayerUseArtifact(player, arti_teleport);
+            player->health = player->mo->health = (player->health + 1) / 2;
+            return (true);
+        }
+    }
+    return (false);
+}
+
+void P_AutoUseHealth(player_t * player, int saveHealth)
+{
+    int i;
+    int count;
+    int normalCount;
+    int normalSlot;
+    int superCount;
+    int superSlot;
+
+    normalCount = 0;
+    superCount = 0;
+    normalSlot = 0;
+    superSlot = 0;
+
+    for (i = 0; i < player->inventorySlotNum; i++)
+    {
+        if (player->inventory[i].type == arti_health)
+        {
+            normalSlot = i;
+            normalCount = player->inventory[i].count;
+        }
+        else if (player->inventory[i].type == arti_superhealth)
+        {
+            superSlot = i;
+            superCount = player->inventory[i].count;
+        }
+    }
+    if ((gameskill == sk_baby) && (normalCount * 25 >= saveHealth))
+    {                           // Use quartz flasks
+        count = (saveHealth + 24) / 25;
+        for (i = 0; i < count; i++)
+        {
+            player->health += 25;
+            P_PlayerRemoveArtifact(player, normalSlot);
+        }
+    }
+    else if (superCount * 100 >= saveHealth)
+    {                           // Use mystic urns
+        count = (saveHealth + 99) / 100;
+        for (i = 0; i < count; i++)
+        {
+            player->health += 100;
+            P_PlayerRemoveArtifact(player, superSlot);
+        }
+    }
+    else if ((gameskill == sk_baby)
+             && (superCount * 100 + normalCount * 25 >= saveHealth))
+    {                           // Use mystic urns and quartz flasks
+        count = (saveHealth + 24) / 25;
+        saveHealth -= count * 25;
+        for (i = 0; i < count; i++)
+        {
+            player->health += 25;
+            P_PlayerRemoveArtifact(player, normalSlot);
+        }
+        count = (saveHealth + 99) / 100;
+        for (i = 0; i < count; i++)
+        {
+            player->health += 100;
+            P_PlayerRemoveArtifact(player, normalSlot);
+        }
+    }
+    player->mo->health = player->health;
 }

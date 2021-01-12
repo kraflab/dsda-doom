@@ -23,6 +23,8 @@ set(COMMON_SRC
     dsda/demo.h
     dsda/ghost.c
     dsda/ghost.h
+    dsda/global.c
+    dsda/global.h
     dsda/hud.c
     dsda/hud.h
     dsda/key_frame.c
@@ -54,6 +56,13 @@ set(COMMON_SRC
     g_game.h
     g_overflow.c
     g_overflow.h
+    heretic/def.c
+    heretic/def.h
+    heretic/dstrings.h
+    heretic/dstrings.c
+    heretic/info.c
+    heretic/p_action.h
+    heretic/sounds.c
     hu_lib.c
     hu_lib.h
     hu_stuff.c

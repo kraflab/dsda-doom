@@ -221,7 +221,7 @@ static void R_InitTextures (void)
       texture->height = LittleShort(mtexture->height);
       texture->patchcount = LittleShort(mtexture->patchcount);
 
-        /* Mattias Engdegård emailed me of the following explenation of
+        /* Mattias Engdegï¿½rd emailed me of the following explenation of
          * why memcpy doesnt work on some systems:
          * "I suppose it is the mad unaligned allocation
          * going on (and which gcc in some way manages to cope with
@@ -746,7 +746,7 @@ void R_SetSpriteByNum(patchnum_t *patchnum, int lump)
 int R_SetSpriteByIndex(patchnum_t *patchnum, spritenum_t item)
 {
   int result = false;
-  if (item < NUMSPRITES)
+  if (item < num_sprites)
   {
     int lump = firstspritelump + sprites[item].spriteframes->lump[0];
     R_SetSpriteByNum(patchnum, lump);

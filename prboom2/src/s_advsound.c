@@ -62,7 +62,7 @@ void S_ParseMusInfo(const char *mapid)
   memset(&musinfo, 0, sizeof(musinfo));
   musinfo.current_item = -1;
 
-  S_music[NUMMUSIC].lumpnum = -1;
+  S_music[num_music].lumpnum = -1;
 
   if (W_CheckNumForName("MUSINFO") != -1)
   {

@@ -73,4 +73,24 @@ extern int bfgcells;
 extern int monsters_infight; // e6y: Dehacked support - monsters infight
 extern int maxammo[], clipammo[];
 
+// heretic
+
+#define MAXCHICKENHEALTH 30
+
+extern int GetWeaponAmmo[NUMWEAPONS];
+
+dboolean P_GiveBody(player_t * player, int num);
+void P_SetMessage(player_t * player, const char *message, dboolean ultmsg);
+void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher);
+dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo);
+dboolean Heretic_P_GiveWeapon(player_t * player, weapontype_t weapon);
+void P_SetDormantArtifact(mobj_t * arti);
+void P_HideSpecialThing(mobj_t * thing);
+dboolean P_ChickenMorphPlayer(player_t * player);
+dboolean P_ChickenMorph(mobj_t * target);
+void P_TouchWhirlwind(mobj_t * target);
+void P_MinotaurSlam(mobj_t * source, mobj_t * target);
+dboolean P_AutoUseChaosDevice(player_t * player);
+void P_AutoUseHealth(player_t * player, int saveHealth);
+
 #endif

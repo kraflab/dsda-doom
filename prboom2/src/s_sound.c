@@ -68,7 +68,7 @@
 #define NORM_SEP 128
 #define S_STEREO_SWING (96<<FRACBITS)
 
-const char* S_music_files[NUMMUSIC]; // cournia - stores music file names
+const char** S_music_files; // cournia - stores music file names
 
 typedef struct
 {
@@ -149,7 +149,7 @@ void S_Init(int sfxVolume, int musicVolume)
       (channel_t *) calloc(numChannels,sizeof(channel_t));
 
     // Note that sounds have not been cached (yet).
-    for (i=1 ; i<NUMSFX ; i++)
+    for (i=1 ; i<num_sfx ; i++)
       S_sfx[i].lumpnum = S_sfx[i].usefulness = -1;
   }
 
@@ -221,7 +221,9 @@ void S_Start(void)
           mus_e1m9      // Tim          e4m9
         };
 
-        if (gameepisode < 4)
+        if (heretic)
+          mnum = heretic_mus_e1m1 + (gameepisode - 1) * 9 + gamemap - 1;
+        else if (gameepisode < 4)
           mnum = mus_e1m1 + (gameepisode-1)*9 + gamemap-1;
         else
           mnum = spmus[gamemap-1];
@@ -250,7 +252,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
     return;
 
   // check for bogus sound #
-  if (sfx_id < 1 || sfx_id > NUMSFX)
+  if (sfx_id < 1 || sfx_id > num_sfx)
     I_Error("S_StartSoundAtVolume: Bad sfx #: %d", sfx_id);
 
   sfx = &S_sfx[sfx_id];
@@ -498,7 +500,7 @@ void S_ChangeMusic(int musicnum, int looping)
   if (!mus_card || nomusicparm)
     return;
 
-  if (musicnum <= mus_None || musicnum >= NUMMUSIC)
+  if (musicnum <= mus_None || musicnum >= num_music)
     I_Error("S_ChangeMusic: Bad music number %d", musicnum);
 
   music = &S_music[musicnum];
@@ -513,7 +515,12 @@ void S_ChangeMusic(int musicnum, int looping)
   if (!music->lumpnum)
     {
       char namebuf[9];
-      sprintf(namebuf, "d_%s", music->name);
+      const char* format;
+      
+      // HERETIC_TODO: put d_ where it belongs in the definition and remove this
+      format = heretic ? "%s" : "d_%s";
+      
+      sprintf(namebuf, format, music->name);
       music->lumpnum = W_GetNumForName(namebuf);
     }
 
@@ -552,7 +559,7 @@ void S_ChangeMusic(int musicnum, int looping)
   if (musinfo.items[0] == -1)
   {
      musinfo.items[0] = music->lumpnum;
-     S_music[NUMMUSIC].lumpnum = -1;
+     S_music[num_music].lumpnum = -1;
   }
 }
 
@@ -564,7 +571,7 @@ void S_RestartMusic(void)
   }
   else
   {
-    if (musicnum_current > mus_None && musicnum_current < NUMMUSIC)
+    if (musicnum_current > mus_None && musicnum_current < num_music)
     {
       S_ChangeMusic(musicnum_current, true);
     }
@@ -588,7 +595,7 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
   if (mus_playing && mus_playing->lumpnum == lumpnum)
     return;
 
-  music = &S_music[NUMMUSIC];
+  music = &S_music[num_music];
 
   if (music->lumpnum == lumpnum)
     return;

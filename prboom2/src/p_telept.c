@@ -67,6 +67,8 @@ int EV_Teleport(line_t *line, int side, mobj_t *thing)
 {
   mobj_t    *m;
 
+  if (heretic) return Heretic_EV_Teleport(line, side, thing);
+
   // don't teleport missiles
   // Don't teleport if hit back of line,
   //  so you can get out of teleporter.
@@ -342,4 +344,142 @@ int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
         return 1;
       }
   return 0;
+}
+
+// heretic
+
+#include "heretic/def.h"
+
+dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle)
+{
+    fixed_t oldx;
+    fixed_t oldy;
+    fixed_t oldz;
+    fixed_t aboveFloor;
+    fixed_t fogDelta;
+    player_t *player;
+    unsigned an;
+    mobj_t *fog;
+
+    oldx = thing->x;
+    oldy = thing->y;
+    oldz = thing->z;
+    aboveFloor = thing->z - thing->floorz;
+    if (!P_TeleportMove(thing, x, y, false))
+    {
+        return (false);
+    }
+    if (thing->player)
+    {
+        player = thing->player;
+        if (player->powers[pw_flight] && aboveFloor)
+        {
+            thing->z = thing->floorz + aboveFloor;
+            if (thing->z + thing->height > thing->ceilingz)
+            {
+                thing->z = thing->ceilingz - thing->height;
+            }
+            player->viewz = thing->z + player->viewheight;
+        }
+        else
+        {
+            thing->z = thing->floorz;
+            player->viewz = thing->z + player->viewheight;
+            player->lookdir = 0;
+        }
+        if (demo_smoothturns && player == &players[displayplayer])
+        {
+          R_SmoothPlaying_Add(angle - thing->angle);
+        }
+    }
+    else if (thing->flags & MF_MISSILE)
+    {
+        thing->z = thing->floorz + aboveFloor;
+        if (thing->z + thing->height > thing->ceilingz)
+        {
+            thing->z = thing->ceilingz - thing->height;
+        }
+    }
+    else
+    {
+        thing->z = thing->floorz;
+    }
+    // Spawn teleport fog at source and destination
+    fogDelta = thing->flags & MF_MISSILE ? 0 : TELEFOGHEIGHT;
+    fog = P_SpawnMobj(oldx, oldy, oldz + fogDelta, HERETIC_MT_TFOG);
+    S_StartSound(fog, heretic_sfx_telept);
+    an = angle >> ANGLETOFINESHIFT;
+    fog = P_SpawnMobj(x + 20 * finecosine[an],
+                      y + 20 * finesine[an], thing->z + fogDelta, HERETIC_MT_TFOG);
+    S_StartSound(fog, heretic_sfx_telept);
+    if (thing->player && !thing->player->powers[pw_weaponlevel2])
+    {                           // Freeze player for about .5 sec
+        thing->reactiontime = 18;
+    }
+    thing->angle = angle;
+    if (thing->flags2 & MF2_FOOTCLIP
+        && P_GetThingFloorType(thing) != FLOOR_SOLID)
+    {
+        thing->flags2 |= MF2_FEETARECLIPPED;
+    }
+    else if (thing->flags2 & MF2_FEETARECLIPPED)
+    {
+        thing->flags2 &= ~MF2_FEETARECLIPPED;
+    }
+    if (thing->flags & MF_MISSILE)
+    {
+        angle >>= ANGLETOFINESHIFT;
+        thing->momx = FixedMul(thing->info->speed, finecosine[angle]);
+        thing->momy = FixedMul(thing->info->speed, finesine[angle]);
+    }
+    else
+    {
+        thing->momx = thing->momy = thing->momz = 0;
+    }
+    return (true);
+}
+
+dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
+{
+    int i;
+    int tag;
+    mobj_t *m;
+    thinker_t *thinker;
+    sector_t *sector;
+
+    if (thing->flags2 & MF2_NOTELEPORT)
+    {
+        return (false);
+    }
+    if (side == 1)
+    {                           // Don't teleport when crossing back side
+        return (false);
+    }
+    tag = line->tag;
+    for (i = 0; i < numsectors; i++)
+    {
+        if (sectors[i].tag == tag)
+        {
+            for (thinker = thinkercap.next; thinker != &thinkercap;
+                 thinker = thinker->next)
+            {
+                if (thinker->function != P_MobjThinker)
+                {               // Not a mobj
+                    continue;
+                }
+                m = (mobj_t *) thinker;
+                if (m->type != HERETIC_MT_TELEPORTMAN)
+                {               // Not a teleportman
+                    continue;
+                }
+                sector = m->subsector->sector;
+                if (sector - sectors != i)
+                {               // Wrong sector
+                    continue;
+                }
+                return (P_Teleport(thing, m->x, m->y, m->angle));
+            }
+        }
+    }
+    return (false);
 }

@@ -93,6 +93,8 @@
 #ifdef USE_WINDOWS_LAUNCHER
 #include "e6y_launcher.h"
 #endif
+
+#include "dsda/global.h"
 #include "dsda/settings.h"
 
 // NSM
@@ -210,6 +212,8 @@ void D_PostEvent(event_t *ev)
 				     )
 	  ) ||
 	G_Responder(ev);
+
+  // HERETIC_TODO: gamestate == GS_LEVEL && (CT_Responder(ev) || SB_Responder(ev) || AM_Responder(ev))
 }
 
 //
@@ -1401,11 +1405,7 @@ static void D_DoomMainSetup(void)
     } while (rsp_found==true);
   }
 
-  // e6y: moved to main()
-  /*
-  lprintf(LO_INFO,"M_LoadDefaults: Load system defaults.\n");
-  M_LoadDefaults();              // load before initing other systems
-  */
+  dsda_InitGlobal();
 
   // figgi 09/18/00-- added switch to force classic bsp nodes
   if (M_CheckParm ("-forceoldbsp"))

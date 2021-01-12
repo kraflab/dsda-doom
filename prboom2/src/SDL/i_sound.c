@@ -221,12 +221,19 @@ static void updateSoundParams(int handle, int volume, int seperation, int pitch)
   seperation = seperation - 257;
   rightvol = volume - ((volume * seperation * seperation) >> 16);
 
+  // HERETIC_TODO: probably will be fixed once sound stuff is merged
   // Sanity check, clamp volume.
   if (rightvol < 0 || rightvol > 127)
-    I_Error("rightvol out of bounds");
+  {
+    rightvol = rightvol < 0 ? 0 : 127;
+    lprintf(LO_WARN, "rightvol out of bounds\n");
+  }
 
   if (leftvol < 0 || leftvol > 127)
-    I_Error("leftvol out of bounds");
+  {
+    leftvol = leftvol < 0 ? 0 : 127;
+    lprintf(LO_WARN, "leftvol out of bounds\n");
+  }
 
   // Get the proper lookup table piece
   //  for this volume level???
@@ -294,12 +301,12 @@ void I_SetChannels(void)
 int I_GetSfxLumpNum(sfxinfo_t *sfx)
 {
   char namebuf[9];
-  const char *prefix;
+  const char* format;
 
-  // Different prefix for PC speaker sound effects.
-  prefix = (snd_pcspeaker ? "dp" : "ds");
+  // Different prefix for PC speaker sound effects for doom.
+  format = heretic ? "%s" : snd_pcspeaker ? "dp%s" : "ds%s";
 
-  sprintf(namebuf, "%s%s", prefix, sfx->name);
+  sprintf(namebuf, format, sfx->name);
   return W_SafeGetNumForName(namebuf); //e6y: make missing sounds non-fatal
 }
 

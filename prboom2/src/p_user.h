@@ -46,4 +46,15 @@ void P_Thrust(player_t *player, angle_t angle, fixed_t move);
 
 void P_SetPitch(player_t *player);
 
+// heretic
+
+int P_GetPlayerNum(player_t * player);
+void P_PlayerRemoveArtifact(player_t * player, int slot);
+void P_PlayerUseArtifact(player_t * player, artitype_t arti);
+void P_PlayerNextArtifact(player_t * player);
+dboolean P_UseArtifact(player_t * player, artitype_t arti);
+void P_ChickenPlayerThink(player_t * player);
+dboolean P_UndoPlayerChicken(player_t * player);
+void Heretic_P_MovePlayer(player_t * player);
+
 #endif  /* __P_USER__ */

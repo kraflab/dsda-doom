@@ -178,6 +178,9 @@ typedef struct
 #ifdef GL_DOOM
   int fakegroup[2];
 #endif
+
+  // heretic (covered by ceilingdata / etc?)
+  // void *specialdata; // thinker_t for reversible actions
 } sector_t;
 
 //

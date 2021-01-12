@@ -91,10 +91,34 @@
 #include "dsda/settings.h"
 #include "statdump.h"
 
+#define MAX_MOUSE_BUTTONS 8
+
 #define SAVEGAMESIZE  0x20000
 #define SAVESTRINGSIZE  24
 
 struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
+
+struct
+{
+    int type;   // mobjtype_t
+    int speed[2];
+} MonsterMissileInfo[] = {
+    { HERETIC_MT_IMPBALL, { 10, 20 } },
+    { HERETIC_MT_MUMMYFX1, { 9, 18 } },
+    { HERETIC_MT_KNIGHTAXE, { 9, 18 } },
+    { HERETIC_MT_REDAXE, { 9, 18 } },
+    { HERETIC_MT_BEASTBALL, { 12, 20 } },
+    { HERETIC_MT_WIZFX1, { 18, 24 } },
+    { HERETIC_MT_SNAKEPRO_A, { 14, 20 } },
+    { HERETIC_MT_SNAKEPRO_B, { 14, 20 } },
+    { HERETIC_MT_HEADFX1, { 13, 20 } },
+    { HERETIC_MT_HEADFX3, { 10, 18 } },
+    { HERETIC_MT_MNTRFX1, { 20, 26 } },
+    { HERETIC_MT_MNTRFX2, { 14, 20 } },
+    { HERETIC_MT_SRCRFX1, { 20, 28 } },
+    { HERETIC_MT_SOR2FX1, { 20, 28 } },
+    { -1, { -1, -1 } }                 // Terminator
+};
 
 // e6y
 // It is signature for new savegame format with continuous numbering.
@@ -297,7 +321,24 @@ static const struct
   { wp_bfg,          wp_bfg }
 };
 
-static int mousearray[6];
+// HERETIC_TODO: dynamically set these
+static const struct
+{
+    weapontype_t weapon;
+    weapontype_t weapon_num;
+} heretic_weapon_order_table[] = {
+    { wp_staff,       wp_staff },
+    { wp_gauntlets,   wp_staff },
+    { wp_goldwand,    wp_goldwand },
+    { wp_crossbow,    wp_crossbow },
+    { wp_blaster,     wp_blaster },
+    { wp_skullrod,    wp_skullrod },
+    { wp_phoenixrod,  wp_phoenixrod },
+    { wp_mace,        wp_mace },
+    { wp_beak,        wp_beak },
+};
+
+static int mousearray[MAX_MOUSE_BUTTONS + 1];
 static int *mousebuttons = &mousearray[1];    // allow [-1]
 
 // mouse values are used once
@@ -327,6 +368,40 @@ int defaultskill;               //note 1-based
 // killough 2/8/98: make corpse queue variable in size
 int    bodyqueslot, bodyquesize;        // killough 2/8/98
 mobj_t **bodyque = 0;                   // phares 8/10/98
+
+// heretic
+#include "p_user.h"
+#include "heretic/def.h"
+
+int inventoryTics;
+int lookheld;
+dboolean usearti = true;
+int key_lookdown;
+int key_lookup;
+int key_lookcenter;
+int key_flyup;
+int key_flydown;
+int key_flycenter;
+int key_useartifact;
+int key_arti_tome;
+int key_arti_quartz;
+int key_arti_urn;
+int key_arti_bomb;
+int key_arti_ring;
+int key_arti_chaosdevice;
+int key_arti_shadowsphere;
+int key_arti_wings;
+int key_arti_torch;
+int key_arti_morph;
+int key_invleft;
+int key_invright;
+int mousebinvleft;
+int mousebinvright;
+
+static void SetMouseButtons(unsigned int buttons_mask);
+static dboolean InventoryMoveLeft(void);
+static dboolean InventoryMoveRight(void);
+// end heretic
 
 static void G_DoSaveGame (dboolean menu);
 
@@ -380,6 +455,16 @@ void G_SetSpeed(void)
 
 static dboolean WeaponSelectable(weapontype_t weapon)
 {
+  if (heretic)
+  {
+    if (weapon == wp_beak)
+    {
+      return false;
+    }
+
+    return players[consoleplayer].weaponowned[weapon];
+  }
+
   if (gamemode == shareware)
   {
     if (weapon == wp_plasma || weapon == wp_bfg)
@@ -524,6 +609,145 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (gamekeydown[key_strafeleft] || joybuttons[joybstrafeleft])
     side -= sidemove[speed];
 
+  if (heretic)
+  {
+    int lspeed;
+    int look, arti;
+    int flyheight;
+    
+    look = arti = flyheight = 0;
+    
+    if (gamekeydown[key_lookdown] || gamekeydown[key_lookup])
+    {
+      lookheld += ticdup;
+    }
+    else
+    {
+      lookheld = 0;
+    }
+    if (lookheld < SLOWTURNTICS)
+    {
+      lspeed = 1;
+    }
+    else
+    {
+      lspeed = 2;
+    }
+
+    // Look up/down/center keys
+    if (gamekeydown[key_lookup])
+    {
+      look = lspeed;
+    }
+    if (gamekeydown[key_lookdown])
+    {
+      look = -lspeed;
+    }
+
+    if (gamekeydown[key_lookcenter])
+    {
+      look = TOCENTER;
+    }
+    
+    // Fly up/down/drop keys
+    if (gamekeydown[key_flyup])
+    {
+      flyheight = 5;          // note that the actual flyheight will be twice this
+    }
+    if (gamekeydown[key_flydown])
+    {
+      flyheight = -5;
+    }
+    if (gamekeydown[key_flycenter])
+    {
+      flyheight = TOCENTER;
+      look = TOCENTER;
+    }
+    
+    // Use artifact key
+    if (gamekeydown[key_useartifact])
+    {
+      if (inventory)
+      {
+        players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
+        inventory = false;
+        cmd->arti = 0;
+        usearti = false;
+      }
+      else if (usearti)
+      {
+        cmd->arti = players[consoleplayer].inventory[inv_ptr].type;
+        usearti = false;
+      }
+    }
+    if (gamekeydown[key_arti_tome] && !cmd->arti
+        && !players[consoleplayer].powers[pw_weaponlevel2])
+    {
+      gamekeydown[key_arti_tome] = false;
+      cmd->arti = arti_tomeofpower;
+    }
+    else if (gamekeydown[key_arti_quartz] && !cmd->arti
+        && (players[consoleplayer].mo->health < MAXHEALTH))
+    {
+      gamekeydown[key_arti_quartz] = false;
+      cmd->arti = arti_health;
+    }
+    else if (gamekeydown[key_arti_urn] && !cmd->arti)
+    {
+      gamekeydown[key_arti_urn] = false;
+      cmd->arti = arti_superhealth;
+    }
+    else if (gamekeydown[key_arti_bomb] && !cmd->arti)
+    {
+      gamekeydown[key_arti_bomb] = false;
+      cmd->arti = arti_firebomb;
+    }
+    else if (gamekeydown[key_arti_ring] && !cmd->arti)
+    {
+      gamekeydown[key_arti_ring] = false;
+      cmd->arti = arti_invulnerability;
+    }
+    else if (gamekeydown[key_arti_chaosdevice] && !cmd->arti)
+    {
+      gamekeydown[key_arti_chaosdevice] = false;
+      cmd->arti = arti_teleport;
+    }
+    else if (gamekeydown[key_arti_shadowsphere] && !cmd->arti)
+    {
+      gamekeydown[key_arti_shadowsphere] = false;
+      cmd->arti = arti_invisibility;
+    }
+    else if (gamekeydown[key_arti_wings] && !cmd->arti)
+    {
+      gamekeydown[key_arti_wings] = false;
+      cmd->arti = arti_fly;
+    }
+    else if (gamekeydown[key_arti_torch] && !cmd->arti)
+    {
+      gamekeydown[key_arti_torch] = false;
+      cmd->arti = arti_torch;
+    }
+    else if (gamekeydown[key_arti_morph] && !cmd->arti)
+    {
+      gamekeydown[key_arti_morph] = false;
+      cmd->arti = arti_egg;
+    }
+    
+    if (players[consoleplayer].playerstate == PST_LIVE)
+    {
+        if (look < 0)
+        {
+            look += 16;
+        }
+        cmd->lookfly = look;
+    }
+    if (flyheight < 0)
+    {
+        flyheight += 16;
+    }
+    cmd->lookfly |= flyheight << 4;
+  }
+
     // buttons
   cmd->chatchar = HU_dequeueChatChar();
 
@@ -551,7 +775,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   // killough 3/26/98, 4/2/98: fix autoswitch when no weapons are left
 
   // Make Boom insert only a single weapon change command on autoswitch.
-  if ((!demo_compatibility && players[consoleplayer].attackdown && // killough
+  if ((!heretic && !demo_compatibility && players[consoleplayer].attackdown && // killough
        !P_CheckAmmo(&players[consoleplayer]) && !done_autoswitch && boom_autoswitch) ||
        gamekeydown[key_weapontoggle])
   {
@@ -567,6 +791,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       }
       else
       {
+        // HERETIC_TODO: fix this
       newweapon =
         gamekeydown[key_weapon1] ? wp_fist :    // killough 5/2/98: reformatted
         gamekeydown[key_weapon2] ? wp_pistol :
@@ -591,7 +816,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       // Switch to fist or chainsaw based on preferences.
       // Switch to shotgun or SSG based on preferences.
 
-      if (!demo_compatibility)
+      if (!heretic && !demo_compatibility)
         {
           const player_t *player = &players[consoleplayer];
 
@@ -624,7 +849,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       //}
     }
 
-  if (newweapon != wp_nochange)
+  if (newweapon != wp_nochange && players[consoleplayer].chickenTics == 0)
     {
       cmd->buttons |= BT_CHANGE;
       cmd->buttons |= newweapon<<BT_WEAPONSHIFT;
@@ -789,6 +1014,17 @@ static void G_DoLoadLevel (void)
   {
 	  skytexture = R_TextureNumForName(gamemapinfo->skytexture);
   }
+  else if (heretic)
+  {
+    static const char *sky_lump_names[5] = {
+        "SKY1", "SKY2", "SKY3", "SKY1", "SKY3"
+    };
+    
+    if (gameepisode < 6)
+      skytexture = R_TextureNumForName(sky_lump_names[gameepisode - 1]);
+    else
+      skytexture = R_TextureNumForName("SKY1");
+  }
   // DOOM determines the sky texture to be used
   // depending on the current episode, and the game version.
   else if (gamemode == commercial)
@@ -890,6 +1126,22 @@ static void G_DoLoadLevel (void)
 
 dboolean G_Responder (event_t* ev)
 {
+  // HERETIC_TODO: this is supposed to be before the other responders, but in doom this is the last
+  if (heretic)
+  {
+    player_t *plr;
+
+    plr = &players[consoleplayer];
+    if (ev->type == ev_keyup && ev->data1 == key_useartifact)
+    {                           // flag to denote that it's okay to use an artifact
+      if (!inventory)
+      {
+        plr->readyArtifact = plr->inventory[inv_ptr].type;
+      }
+      usearti = true;
+    }
+  }
+
   // allow spy mode changes even during the demo
   // killough 2/22/98: even during DM demo
   //
@@ -973,10 +1225,26 @@ dboolean G_Responder (event_t* ev)
     {
     case ev_keydown:
       if (ev->data1 == key_pause)           // phares
+      {
+        special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
+        return true;
+      }
+      if (ev->data1 == key_invleft)
+      {
+        if (InventoryMoveLeft())
         {
-          special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
           return true;
         }
+        break;
+      }
+      if (ev->data1 == key_invright)
+      {
+        if (InventoryMoveRight())
+        {
+          return true;
+        }
+        break;
+      }
       if (ev->data1 <NUMKEYS)
         gamekeydown[ev->data1] = true;
       return true;    // eat key down events
@@ -987,11 +1255,7 @@ dboolean G_Responder (event_t* ev)
       return false;   // always let key up events filter down
 
     case ev_mouse:
-      mousebuttons[0] = ev->data1 & 1;
-      mousebuttons[1] = ev->data1 & 2;
-      mousebuttons[2] = ev->data1 & 4;
-      mousebuttons[3] = ev->data1 & 8;
-      mousebuttons[4] = ev->data1 & 16;
+      SetMouseButtons(ev->data1);
       /*
        * bmead@surfree.com
        * Modified by Barry Mead after adding vastly more resolution
@@ -1103,10 +1367,10 @@ void G_Ticker (void)
   if (paused & 2 || (!demoplayback && menuactive && !netgame))
     basetic++;  // For revenant tracers and RNG -- we must maintain sync
   else {
-    dsda_UpdateAutoKeyFrames();
-
     // get commands, check consistancy, and build new consistancy check
     int buf = (gametic/ticdup)%BACKUPTICS;
+
+    dsda_UpdateAutoKeyFrames();
 
     for (i=0 ; i<MAXPLAYERS ; i++) {
       if (playeringame[i])
@@ -1203,7 +1467,15 @@ void G_Ticker (void)
             }
         }
     }
-    
+
+    // turn inventory off after a certain amount of time
+    if (inventory && !(--inventoryTics))
+    {
+        players[consoleplayer].readyArtifact =
+            players[consoleplayer].inventory[inv_ptr].type;
+        inventory = false;
+    }
+
     dsda_DisplayNotifications();
   }
 
@@ -1220,7 +1492,7 @@ void G_Ticker (void)
       // Z_FreeTags(PU_LEVEL, PU_PURGELEVEL-1);
       break;
     case GS_INTERMISSION:
-      WI_End();
+      WI_End(); // HERETIC_TODO: heretic equivalent intermission cleanup?
     default:
       break;
     }
@@ -1237,7 +1509,11 @@ void G_Ticker (void)
   switch (gamestate)
     {
     case GS_LEVEL:
+      // HERETIC_TODO: P SB AM CT _Ticker();
       P_Ticker ();
+      // The HUD in heretic uses P_Random every other frame!
+      if (heretic && !paused && leveltime & 1)
+        P_Random(pr_heretic);
       P_WalkTicker();
       mlooky = 0;
       AM_Ticker();
@@ -1246,7 +1522,7 @@ void G_Ticker (void)
       break;
 
     case GS_INTERMISSION:
-       WI_Ticker ();
+       WI_Ticker (); // HERETIC_TODO: IN_Ticker();
       break;
 
     case GS_FINALE:
@@ -1271,7 +1547,35 @@ void G_Ticker (void)
 
 static void G_PlayerFinishLevel(int player)
 {
+  int i;
   player_t *p = &players[player];
+
+  for (i = 0; i < p->inventorySlotNum; i++)
+  {
+    p->inventory[i].count = 1;
+  }
+  p->artifactCount = p->inventorySlotNum;
+  if (!deathmatch)
+  {
+    for (i = 0; i < 16; i++)
+    {
+      P_PlayerUseArtifact(p, arti_fly);
+    }
+  }
+  if (p->chickenTics)
+  {
+    p->readyweapon = p->mo->special1.i;       // Restore weapon
+    p->chickenTics = 0;
+  }
+  p->lookdir = 0;
+  p->rain1 = NULL;
+  p->rain2 = NULL;
+  playerkeys = 0;
+  if (p == &players[consoleplayer])
+  {
+    SB_state = -1;          // refresh the status bar
+  }
+
   memset(p->powers, 0, sizeof p->powers);
   memset(p->cards, 0, sizeof p->cards);
   p->mo = NULL;           // cph - this is allocated PU_LEVEL so it's gone
@@ -1347,10 +1651,20 @@ void G_PlayerReborn (int player)
   p->usedown = p->attackdown = true;  // don't do anything immediately
   p->playerstate = PST_LIVE;
   p->health = initial_health;  // Ty 03/12/98 - use dehacked values
-  p->readyweapon = p->pendingweapon = wp_pistol;
-  p->weaponowned[wp_fist] = true;
-  p->weaponowned[wp_pistol] = true;
-  p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  p->readyweapon = p->pendingweapon = g_wp_pistol;
+  p->weaponowned[g_wp_fist] = true;
+  p->weaponowned[g_wp_pistol] = true;
+  if (heretic)
+    p->ammo[am_goldwand] = 50;
+  else
+    p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  p->lookdir = 0;
+  if (p == &players[consoleplayer])
+  {
+    SB_state = -1;          // refresh the status bar
+    inv_ptr = 0;            // reset the inventory pointer
+    curpos = 0;
+  }
 
   for (i=0 ; i<NUMAMMO ; i++)
     p->maxammo[i] = maxammo[i];
@@ -1381,6 +1695,32 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
 
   x = mthing->x << FRACBITS;
   y = mthing->y << FRACBITS;
+
+  if (heretic)
+  {
+    unsigned an;
+    mobj_t *mo;
+
+    players[playernum].mo->flags2 &= ~MF2_PASSMOBJ;
+    if (!P_CheckPosition(players[playernum].mo, x, y))
+    {
+      players[playernum].mo->flags2 |= MF2_PASSMOBJ;
+      return false;
+    }
+    players[playernum].mo->flags2 |= MF2_PASSMOBJ;
+
+    // spawn a teleport fog
+    ss = R_PointInSubsector(x, y);
+    an = ((unsigned) ANG45 * (mthing->angle / 45)) >> ANGLETOFINESHIFT;
+
+    mo = P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an],
+                     ss->sector->floorheight + TELEFOGHEIGHT, HERETIC_MT_TFOG);
+
+    if (players[consoleplayer].viewz != 1)
+      S_StartSound(mo, heretic_sfx_telept);   // don't start sound on first frame
+
+    return true;
+  }
 
   // killough 4/2/98: fix bug where P_CheckPosition() uses a non-solid
   // corpse to detect collisions with other players in DM starts
@@ -1696,21 +2036,27 @@ void G_DoCompleted (void)
         if (gamemap == 9)
           {
             // returning from secret level
-            switch (gameepisode)
-              {
-              case 1:
-                wminfo.next = 3;
-                break;
-              case 2:
-                wminfo.next = 5;
-                break;
-              case 3:
-                wminfo.next = 6;
-                break;
-              case 4:
-                wminfo.next = 2;
-                break;
-              }
+            if (heretic)
+            {
+              static int after_secret[5] = { 6, 4, 4, 4, 3 };
+              wminfo.next = after_secret[gameepisode - 1];
+            }
+            else
+              switch (gameepisode)
+                {
+                case 1:
+                  wminfo.next = 3;
+                  break;
+                case 2:
+                  wminfo.next = 5;
+                  break;
+                case 3:
+                  wminfo.next = 6;
+                  break;
+                case 4:
+                  wminfo.next = 2;
+                  break;
+                }
           }
         else
           wminfo.next = gamemap;          // go to next level
@@ -1723,6 +2069,7 @@ void G_DoCompleted (void)
   }
   else
   {
+    // HERETIC_TODO: par times
     if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9)
       wminfo.partime = TICRATE*pars[gameepisode][gamemap];
   }
@@ -1775,7 +2122,7 @@ frommapinfo:
     StatCopy(&wminfo);
   }
 
-  WI_Start (&wminfo);
+  WI_Start (&wminfo); // HERETIC_TODO: IN_Start();
 }
 
 //
@@ -2050,6 +2397,8 @@ void RecalculateDrawnSubsectors(void)
   gld_ResetTexturedAutomap();
 #endif
 }
+
+// HERETIC_TODO: ignoring save / load differences
 
 void G_DoLoadGame(void)
 {
@@ -2670,6 +3019,18 @@ void G_SetFastParms(int fast_pending)
 {
   static int fast = 0;            // remembers fast state
   int i;
+
+  if (heretic)
+  {
+    for (i = 0; MonsterMissileInfo[i].type != -1; i++)
+    {
+      mobjinfo[MonsterMissileInfo[i].type].speed =
+        MonsterMissileInfo[i].speed[fast_pending] << FRACBITS;
+    }
+    
+    return;
+  }
+
   if (fast != fast_pending) {     /* only change if necessary */
     if ((fast = fast_pending))
       {
@@ -2782,53 +3143,64 @@ void G_InitNew(skill_t skill, int episode, int map)
 
   if (!EpiCustom)	// Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
   {
-
-  //e6y: We need to remove the fourth episode for pre-ultimate complevels.
-  if (compatibility_level < ultdoom_compatibility && episode > 3)
-  {
-    episode = 3;
-  }
-
-  //e6y: DosDoom has only this check
-  if (compatibility_level == dosdoom_compatibility)
-  {
-    if (gamemode == shareware)
-      episode = 1; // only start episode 1 on shareware
-  }
-  else
-  if (gamemode == retail)
+    if (heretic)
     {
-      // e6y: Ability to play any episode with Ultimate Doom,
-      // Final Doom or Doom95 compatibility and -warp command line switch
-      // E5M1 from 2002ado.wad is an example.
-      // Now you can play it with "-warp 5 1 -complevel 3".
-      // 'Vanilla' Ultimate Doom executable also allows it.
-      if (fake_episode_check ? episode == 0 : episode > 4)
-        episode = 4;
+      if (episode > 9)
+        episode = 9;
+      if (map < 1)
+        map = 1;
+      if (map > 9)
+        map = 9;
     }
-  else
-    if (gamemode == shareware)
+    else
+    {
+      //e6y: We need to remove the fourth episode for pre-ultimate complevels.
+      if (compatibility_level < ultdoom_compatibility && episode > 3)
       {
-        if (episode > 1)
+        episode = 3;
+      }
+
+      //e6y: DosDoom has only this check
+      if (compatibility_level == dosdoom_compatibility)
+      {
+        if (gamemode == shareware)
           episode = 1; // only start episode 1 on shareware
       }
-    else
-      // e6y: Ability to play any episode with Ultimate Doom,
-      // Final Doom or Doom95 compatibility and -warp command line switch
-      if (fake_episode_check ? episode == 0 : episode > 3)
-        episode = 3;
+      else
+      if (gamemode == retail)
+        {
+          // e6y: Ability to play any episode with Ultimate Doom,
+          // Final Doom or Doom95 compatibility and -warp command line switch
+          // E5M1 from 2002ado.wad is an example.
+          // Now you can play it with "-warp 5 1 -complevel 3".
+          // 'Vanilla' Ultimate Doom executable also allows it.
+          if (fake_episode_check ? episode == 0 : episode > 4)
+            episode = 4;
+        }
+      else
+        if (gamemode == shareware)
+          {
+            if (episode > 1)
+              episode = 1; // only start episode 1 on shareware
+          }
+        else
+          // e6y: Ability to play any episode with Ultimate Doom,
+          // Final Doom or Doom95 compatibility and -warp command line switch
+          if (fake_episode_check ? episode == 0 : episode > 3)
+            episode = 3;
 
-  if (map < 1)
-    map = 1;
-  if (map > 9 && gamemode != commercial)
-    map = 9;
+      if (map < 1)
+        map = 1;
+      if (map > 9 && gamemode != commercial)
+        map = 9;
+    }
   }
 
   G_SetFastParms(fastparm || skill == sk_nightmare);  // killough 4/10/98
 
   M_ClearRandom();
 
-  respawnmonsters = skill == sk_nightmare || respawnparm;
+  respawnmonsters = (!heretic && skill == sk_nightmare) || respawnparm;
 
   // force players to be initialized upon first level load
   for (i=0 ; i<MAXPLAYERS ; i++)
@@ -2854,6 +3226,10 @@ void G_InitNew(skill_t skill, int episode, int map)
 // DEMO RECORDING
 //
 
+#define DEMOHEADER_RESPAWN    0x20
+#define DEMOHEADER_LONGTICS   0x10
+#define DEMOHEADER_NOMONSTERS 0x02
+
 void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p)
 {
   unsigned char at = 0; // e6y: for tasdoom demo format
@@ -2870,7 +3246,13 @@ void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p)
     cmd->angleturn = (((signed int)(*(*data_p)++))<<8) + lowbyte;
   }
   cmd->buttons = (unsigned char)(*(*data_p)++);
-  
+
+  if (heretic)
+  {
+    cmd->lookfly = (unsigned char)(*(*data_p)++);
+    cmd->arti = (unsigned char)(*(*data_p)++);
+  }
+
   // e6y: ability to play tasdoom demos directly
   if (compatibility_level == tasdoom_compatibility)
   {
@@ -2906,7 +3288,7 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
  */
 void G_WriteDemoTiccmd (ticcmd_t* cmd)
 {
-  char buf[5];
+  char buf[7];
   char *p = buf;
 
   if (compatibility_level == tasdoom_compatibility)
@@ -2915,20 +3297,26 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
     *p++ = cmd->forwardmove;
     *p++ = cmd->sidemove;
     *p++ = (cmd->angleturn+128)>>8;
-  } else {
-
-  *p++ = cmd->forwardmove;
-  *p++ = cmd->sidemove;
-  if (!longtics) {
-    *p++ = (cmd->angleturn+128)>>8;
-  } else {
-    signed short a = cmd->angleturn;
-    *p++ = a & 0xff;
-    *p++ = (a >> 8) & 0xff;
   }
-  *p++ = cmd->buttons;
-
-  }//e6y
+  else
+  {
+    *p++ = cmd->forwardmove;
+    *p++ = cmd->sidemove;
+    if (!longtics) {
+      *p++ = (cmd->angleturn+128)>>8;
+    } else {
+      signed short a = cmd->angleturn;
+      *p++ = a & 0xff;
+      *p++ = (a >> 8) & 0xff;
+    }
+    *p++ = cmd->buttons;
+    
+    if (heretic)
+    {
+      *p++ = cmd->lookfly;
+      *p++ = cmd->arti;
+    }
+  }
 
   dsda_WriteToDemo(buf, p - buf);
 
@@ -3226,7 +3614,7 @@ void G_BeginRecording (void)
 
     for (; i<MIN_MAXPLAYERS; i++)
       *demo_p++ = 0;
-  } else { // cph - write old v1.9 demos (might even sync)
+  } else if (!heretic) { // cph - write old v1.9 demos (might even sync)
     unsigned char v = 109;
     longtics = M_CheckParm("-longtics");
     if (longtics)
@@ -3255,6 +3643,27 @@ void G_BeginRecording (void)
     *demo_p++ = nomonsters;
     *demo_p++ = consoleplayer;
     for (i=0; i<4; i++)  // intentionally hard-coded 4 -- killough
+      *demo_p++ = playeringame[i];
+  } else { // versionless heretic
+    *demo_p++ = gameskill;
+    *demo_p++ = gameepisode;
+    *demo_p++ = gamemap;
+
+    // Write special parameter bits onto player one byte.
+    // This aligns with vvHeretic demo usage:
+    //   0x20 = -respawn
+    //   0x10 = -longtics
+    //   0x02 = -nomonsters
+    *demo_p = 1; // assume player one exists
+    if (respawnparm)
+      *demo_p |= DEMOHEADER_RESPAWN;
+    if (longtics)
+      *demo_p |= DEMOHEADER_LONGTICS;
+    if (nomonsters)
+      *demo_p |= DEMOHEADER_NOMONSTERS;
+    demo_p++;
+
+    for (i = 1; i < MAXPLAYERS; i++)
       *demo_p++ = playeringame[i];
   }
 
@@ -3558,13 +3967,28 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
           fastparm = M_CheckParm("-fast");
           nomonsters = M_CheckParm("-nomonsters");
 
+          // Read special parameter bits from player one byte.
+          // This aligns with vvHeretic demo usage:
+          //   0x20 = -respawn
+          //   0x10 = -longtics
+          //   0x02 = -nomonsters
+          if (heretic)
+          {
+            if (*demo_p & DEMOHEADER_RESPAWN)
+              respawnparm = true;
+            if (*demo_p & DEMOHEADER_LONGTICS)
+              longtics = true;
+            if (*demo_p & DEMOHEADER_NOMONSTERS)
+              nomonsters = true;
+          }
+
           // e6y: detection of more unsupported demo formats
           if (*(header_p + size - 1) == DEMOMARKER)
           {
             // file size test;
             // DOOM_old and HERETIC don't use maps>9;
             // 2 at 4,6 means playerclass=mage -> not DOOM_old or HERETIC;
-            if ((size >= 8 && (size - 8) % 4 != 0) ||
+            if ((size >= 8 && (size - 8) % 4 != 0 && !heretic) ||
                 (map > 9) ||
                 (size >= 6 && (*(header_p + 4) == 2 || *(header_p + 6) == 2)))
             {
@@ -3705,6 +4129,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     const byte *p = demo_p;
 
     bytes_per_tic = (longtics ? 5 : 4);
+    if (heretic) bytes_per_tic += 2;
     demo_playerscount = 0;
     demo_tics_count = 0;
     demo_curr_tic = 0;
@@ -4051,4 +4476,85 @@ void G_CheckDemoContinue(void)
       usergame = true;
     }
   }
+}
+
+// heretic
+
+static void SetMouseButtons(unsigned int buttons_mask)
+{
+    int i;
+
+    for (i=0; i<MAX_MOUSE_BUTTONS; ++i)
+    {
+        unsigned int button_on = (buttons_mask & (1 << i)) != 0;
+
+        // Detect button press:
+
+        if (!mousebuttons[i] && button_on)
+        {
+            if (i == mousebinvleft)
+            {
+                InventoryMoveLeft();
+            }
+            else if (i == mousebinvright)
+            {
+                InventoryMoveRight();
+            }
+        }
+
+        mousebuttons[i] = button_on;
+    }
+}
+
+static dboolean InventoryMoveLeft(void)
+{
+    inventoryTics = 5 * 35;
+    if (!inventory)
+    {
+        inventory = true;
+        return false;
+    }
+    inv_ptr--;
+    if (inv_ptr < 0)
+    {
+        inv_ptr = 0;
+    }
+    else
+    {
+        curpos--;
+        if (curpos < 0)
+        {
+            curpos = 0;
+        }
+    }
+    return true;
+}
+
+static dboolean InventoryMoveRight(void)
+{
+    player_t *plr;
+
+    plr = &players[consoleplayer];
+    inventoryTics = 5 * 35;
+    if (!inventory)
+    {
+        inventory = true;
+        return false;
+    }
+    inv_ptr++;
+    if (inv_ptr >= plr->inventorySlotNum)
+    {
+        inv_ptr--;
+        if (inv_ptr < 0)
+            inv_ptr = 0;
+    }
+    else
+    {
+        curpos++;
+        if (curpos > 6)
+        {
+            curpos = 6;
+        }
+    }
+    return true;
 }

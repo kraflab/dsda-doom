@@ -64,12 +64,17 @@ void T_PlatRaise(plat_t* plat)
     case up: // plat moving up
       res = T_MovePlane(plat->sector,plat->speed,plat->high,plat->crush,0,1);
 
+      if (heretic && !(leveltime & 31))
+      {
+        S_StartSound(&plat->sector->soundorg, g_sfx_stnmov_plats);
+      }
+
       // if a pure raise type, make the plat moving sound
       if (plat->type == raiseAndChange
           || plat->type == raiseToNearestAndChange)
       {
         if (!(leveltime&7))
-          S_StartSound((mobj_t *)&plat->sector->soundorg, sfx_stnmov);
+          S_StartSound((mobj_t *)&plat->sector->soundorg, g_sfx_stnmov_plats);
       }
 
       // if encountered an obstacle, and not a crush type, reverse direction
@@ -77,7 +82,7 @@ void T_PlatRaise(plat_t* plat)
       {
         plat->count = plat->wait;
         plat->status = down;
-        S_StartSound((mobj_t *)&plat->sector->soundorg, sfx_pstart);
+        S_StartSound((mobj_t *)&plat->sector->soundorg, g_sfx_pstart);
 
         if (demo_compatibility &&
             (plat->type == raiseToNearestAndChange ||
@@ -101,7 +106,7 @@ void T_PlatRaise(plat_t* plat)
           {
             plat->count = plat->wait;
             plat->status = waiting;
-            S_StartSound((mobj_t *)&plat->sector->soundorg, sfx_pstop);
+            S_StartSound((mobj_t *)&plat->sector->soundorg, g_sfx_pstop);
           }
           else // else go into stasis awaiting next toggle activation
           {
@@ -118,6 +123,8 @@ void T_PlatRaise(plat_t* plat)
             case raiseAndChange:
             case raiseToNearestAndChange:
             case genLift:
+              // HERETIC_TODO: is this correct?
+              if (heretic && plat->type == raiseToNearestAndChange) break;
               P_RemoveActivePlat(plat);     // killough
             default:
               break;
@@ -137,7 +144,7 @@ void T_PlatRaise(plat_t* plat)
         {                           // is silent, instant, no waiting
           plat->count = plat->wait;
           plat->status = waiting;
-          S_StartSound((mobj_t *)&plat->sector->soundorg,sfx_pstop);
+          S_StartSound((mobj_t *)&plat->sector->soundorg,g_sfx_pstop);
         }
         else // instant toggles go into stasis awaiting next activation
         {
@@ -162,6 +169,10 @@ void T_PlatRaise(plat_t* plat)
           }
         }
       }
+      else if (heretic && !(leveltime & 31))
+      {
+        S_StartSound(&plat->sector->soundorg, g_sfx_stnmov_plats);
+      }
       break;
 
     case waiting: // plat is waiting
@@ -173,7 +184,7 @@ void T_PlatRaise(plat_t* plat)
           plat->status = down;   // if at top, start down
 
         // make plat start sound
-        S_StartSound((mobj_t *)&plat->sector->soundorg,sfx_pstart);
+        S_StartSound((mobj_t *)&plat->sector->soundorg,g_sfx_pstart);
       }
       break; //jff 1/27/98 don't pickup code added later to in_stasis
 
@@ -247,7 +258,7 @@ manual_plat://e6y
 
     //jff 1/26/98 Avoid raise plat bouncing a head off a ceiling and then
     //going down forever -- default low to plat height when triggered
-    plat->low = sec->floorheight;
+    plat->low = sec->floorheight; // HERETIC_TODO: not in heretic
 
     // set up plat according to type
     switch(type)
@@ -262,7 +273,7 @@ manual_plat://e6y
         //jff 3/14/98 clear old field as well
         sec->oldspecial = 0;
 
-        S_StartSound((mobj_t *)&sec->soundorg,sfx_stnmov);
+        S_StartSound((mobj_t *)&sec->soundorg,g_sfx_stnmov_plats);
         break;
 
       case raiseAndChange:
@@ -272,7 +283,7 @@ manual_plat://e6y
         plat->wait = 0;
         plat->status = up;
 
-        S_StartSound((mobj_t *)&sec->soundorg,sfx_stnmov);
+        S_StartSound((mobj_t *)&sec->soundorg,g_sfx_stnmov_plats);
         break;
 
       case downWaitUpStay:
@@ -285,7 +296,7 @@ manual_plat://e6y
         plat->high = sec->floorheight;
         plat->wait = 35*PLATWAIT;
         plat->status = down;
-        S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
+        S_StartSound((mobj_t *)&sec->soundorg,g_sfx_pstart);
         break;
 
       case blazeDWUS:
@@ -316,7 +327,7 @@ manual_plat://e6y
         plat->wait = 35*PLATWAIT;
         plat->status = P_Random(pr_plats)&1;
 
-        S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
+        S_StartSound((mobj_t *)&sec->soundorg,g_sfx_pstart);
         break;
 
       case toggleUpDn: //jff 3/14/98 add new type to support instant toggle

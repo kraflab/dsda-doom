@@ -193,7 +193,12 @@ typedef enum {
   it_blueskull,
   it_yellowskull,
   it_redskull,
-  NUMCARDS
+  NUMCARDS,
+  
+  // heretic
+  key_blue = 0,
+  key_yellow,
+  key_green,
 } card_t;
 
 // The defined weapons, including a marker
@@ -209,6 +214,17 @@ typedef enum {
   wp_chainsaw,
   wp_supershotgun,
 
+  // heretic
+  wp_staff = 0,
+  wp_goldwand,
+  wp_crossbow,
+  wp_blaster,
+  wp_skullrod,
+  wp_phoenixrod,
+  wp_mace,
+  wp_gauntlets,
+  wp_beak,
+
   NUMWEAPONS,
   wp_nochange              // No pending weapon change.
 } weapontype_t;
@@ -219,8 +235,17 @@ typedef enum {
   am_shell,   // Shotgun / double barreled shotgun.
   am_cell,    // Plasma rifle, BFG.
   am_misl,    // Missile launcher.
+
+  // heretic
+  am_goldwand = 0,
+  am_crossbow,
+  am_blaster,
+  am_skullrod,
+  am_phoenixrod,
+  am_mace,
+
   NUMAMMO,
-  am_noammo   // Unlimited for chainsaw / fist.
+  am_noammo   // fist, chainsaw, staff, gauntlets
 } ammotype_t;
 
 // Power up artifacts.
@@ -231,6 +256,12 @@ typedef enum {
   pw_ironfeet,
   pw_allmap,
   pw_infrared,
+
+  // heretic
+  pw_weaponlevel2,
+  pw_flight,
+  pw_shield,
+  pw_health2,
   NUMPOWERS
 } powertype_t;
 
@@ -239,7 +270,9 @@ typedef enum {
   INVULNTICS  = (30*TICRATE),
   INVISTICS   = (60*TICRATE),
   INFRATICS   = (120*TICRATE),
-  IRONTICS    = (60*TICRATE)
+  IRONTICS    = (60*TICRATE),
+  WPNLEV2TICS = (40*TICRATE),
+  FLIGHTTICS  = (60*TICRATE)
 } powerduration_t;
 
 // DOOM keyboard definition.
@@ -346,5 +379,8 @@ typedef enum {
 #define ORIG_FRICTION          0xE800      // original value
 #define ORIG_FRICTION_FACTOR   2048        // original value
 #define FRICTION_FLY           0xeb00
+
+// heretic
+#define FRICTION_LOW 0xf900
 
 #endif          // __DOOMDEF__

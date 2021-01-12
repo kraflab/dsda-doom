@@ -113,14 +113,14 @@ result_e T_MovePlane
             lastpos = sector->floorheight;
             sector->floorheight -= speed;
             flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
-      /* cph - make more compatible with original Doom, by
-       *  reintroducing this code. This means floors can't lower
-       *  if objects are stuck in the ceiling */
-      if ((flag == true) && comp[comp_floors]) {
-        sector->floorheight = lastpos;
-        P_ChangeSector(sector,crush);
-        return crushed;
-      }
+            /* cph - make more compatible with original Doom, by
+             *  reintroducing this code. This means floors can't lower
+             *  if objects are stuck in the ceiling */
+            if ((flag == true) && (heretic || comp[comp_floors])) {
+              sector->floorheight = lastpos;
+              P_ChangeSector(sector,crush);
+              return crushed;
+            }
           }
           break;
 
@@ -128,7 +128,7 @@ result_e T_MovePlane
           // Moving a floor up
           // jff 02/04/98 keep floor from moving thru ceilings
           // jff 2/22/98 weaken check to demo_compatibility
-          destheight = (comp[comp_floors] || dest<sector->ceilingheight)?
+          destheight = (heretic || comp[comp_floors] || dest<sector->ceilingheight)?
                           dest : sector->ceilingheight;
           if (sector->floorheight + speed > destheight)
           {
@@ -151,7 +151,7 @@ result_e T_MovePlane
             if (flag == true)
             {
         /* jff 1/25/98 fix floor crusher */
-              if (comp[comp_floors]) {
+              if (heretic || comp[comp_floors]) {
                 
                 //e6y: warning about potential desynch
                 if (crush == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
@@ -180,7 +180,7 @@ result_e T_MovePlane
           // moving a ceiling down
           // jff 02/04/98 keep ceiling from moving thru floors
           // jff 2/22/98 weaken check to demo_compatibility
-          destheight = (comp[comp_floors] || dest>sector->floorheight)?
+          destheight = (heretic || comp[comp_floors] || dest>sector->floorheight)?
                           dest : sector->floorheight;
           if (sector->ceilingheight - speed < destheight)
           {
@@ -268,10 +268,14 @@ void T_MoveFloor(floormove_t* floor)
   );
 
   if (!(leveltime&7))     // make the floormove sound
-    S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_stnmov);
+    S_StartSound((mobj_t *)&floor->sector->soundorg, g_sfx_stnmov);
 
   if (res == pastdest)    // if destination height is reached
   {
+    if (heretic && floor->type == buildStair)
+    {
+        S_StartSound(&floor->sector->soundorg, heretic_sfx_pstop);
+    }
     if (floor->direction == 1)       // going up
     {
       switch(floor->type) // handle texture/type changes
@@ -300,7 +304,7 @@ void T_MoveFloor(floormove_t* floor)
         case lowerAndChange:
           floor->sector->special = floor->newspecial;
           //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial;
+          floor->sector->oldspecial = floor->oldspecial; // HERETIC_TODO: here and elsewhere, not in heretic
           floor->sector->floorpic = floor->texture;
           break;
         case genFloorChgT:
@@ -349,7 +353,7 @@ void T_MoveFloor(floormove_t* floor)
 
     // Moving floors (but not plats) in versions <= v1.2 did not
     // make floor stop sound
-    if (compatibility_level > doom_12_compatibility)
+    if (!heretic && compatibility_level > doom_12_compatibility)
         S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
   }
 }
@@ -525,7 +529,7 @@ manual_floor://e6y
         floor->sector = sec;
         floor->speed = FLOORSPEED * 4;
         floor->floordestheight = P_FindHighestFloorSurrounding(sec);
-        if (compatibility_level == doom_12_compatibility ||
+        if (heretic || compatibility_level == doom_12_compatibility ||
             floor->floordestheight != sec->floorheight)
           floor->floordestheight += 8*FRACUNIT;
         break;
@@ -596,7 +600,7 @@ manual_floor://e6y
           side_t*     side;
 
     /* jff 3/13/98 no ovf */
-          if (!comp[comp_model]) minsize = 32000<<FRACBITS;
+          if (!heretic && !comp[comp_model]) minsize = 32000<<FRACBITS;
           floor->direction = 1;
           floor->sector = sec;
           floor->speed = FLOORSPEED;
@@ -607,18 +611,18 @@ manual_floor://e6y
               side = getSide(secnum,i,0);
               // jff 8/14/98 don't scan texture 0, its not real
               if (side->bottomtexture > 0 ||
-                  (comp[comp_model] && !side->bottomtexture))
+                  ((heretic || comp[comp_model]) && !side->bottomtexture))
                 if (textureheight[side->bottomtexture] < minsize)
                   minsize = textureheight[side->bottomtexture];
               side = getSide(secnum,i,1);
               // jff 8/14/98 don't scan texture 0, its not real
               if (side->bottomtexture > 0 ||
-                  (comp[comp_model] && !side->bottomtexture))
+                  ((heretic || comp[comp_model]) && !side->bottomtexture))
                 if (textureheight[side->bottomtexture] < minsize)
                   minsize = textureheight[side->bottomtexture];
             }
           }
-          if (comp[comp_model])
+          if (heretic || comp[comp_model])
             floor->floordestheight = floor->sector->floorheight + minsize;
           else
           {
@@ -781,6 +785,7 @@ manual_stair://e6y
     int           texture, height;
     fixed_t       stairsize;
     fixed_t       speed;
+    dboolean      crush;
     int           ok;
 
     // create new floor thinker for first step
@@ -793,6 +798,7 @@ manual_stair://e6y
     floor->direction = 1;
     floor->sector = sec;
     floor->type = buildStair;   //jff 3/31/98 do not leave uninited
+    crush = floor->crush;
 
     // set up the speed and stepsize according to the stairs type
     switch(type)
@@ -802,7 +808,7 @@ manual_stair://e6y
         speed = FLOORSPEED/4;
         stairsize = 8*FRACUNIT;
         if (!demo_compatibility)
-          floor->crush = false; //jff 2/27/98 fix uninitialized crush field
+          crush = false; //jff 2/27/98 fix uninitialized crush field
         // e6y
         // Uninitialized crush field will not be equal to 0 or 1 (true)
         // with high probability. So, initialize it with any other value
@@ -812,7 +818,7 @@ manual_stair://e6y
         else
         {
           if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            floor->crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
+            crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
         }
 
         break;
@@ -820,19 +826,32 @@ manual_stair://e6y
         speed = FLOORSPEED*4;
         stairsize = 16*FRACUNIT;
         if (!demo_compatibility)
-          floor->crush = true;  //jff 2/27/98 fix uninitialized crush field
+          crush = true;  //jff 2/27/98 fix uninitialized crush field
         // e6y
         // Uninitialized crush field will not be equal to 0 or 1 (true)
         // with high probability. So, initialize it with any other value
         else
         {
           if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            floor->crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
+            crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
         }
+
+        break;
+      case heretic_build8:
+        speed = FLOORSPEED;
+        stairsize = 8 * FRACUNIT;
+        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // HERETIC_TODO: I guess
+
+        break;
+      case heretic_turbo16:
+        speed = FLOORSPEED;
+        stairsize = 16 * FRACUNIT;
+        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // HERETIC_TODO: I guess
 
         break;
     }
     floor->speed = speed;
+    floor->crush = crush;
     height = sec->floorheight + stairsize;
     floor->floordestheight = height;
 
@@ -854,6 +873,7 @@ manual_stair://e6y
         if ( !((sec->lines[i])->flags & ML_TWOSIDED) )
           continue;
 
+        // HERETIC_TODO: heretic does `tsec - sectors`
         newsecnum = tsec->iSectorID;
 
         if (secnum != newsecnum)
@@ -872,7 +892,7 @@ manual_stair://e6y
    * cph 2001/02/06: stair bug fix should be controlled by comp_stairs,
    *  except if we're emulating MBF which perversly reverted the fix
    */
-        if (comp[comp_stairs] || (compatibility_level == mbf_compatibility))
+        if (heretic || comp[comp_stairs] || (compatibility_level == mbf_compatibility))
           height += stairsize; // jff 6/28/98 change demo compatibility
 
         // if sector's floor already moving, look for another
@@ -880,7 +900,7 @@ manual_stair://e6y
           continue;
 
   /* cph - see comment above - do this iff we didn't do so above */
-        if (!comp[comp_stairs] && (compatibility_level != mbf_compatibility))
+        if (!heretic && !comp[comp_stairs] && (compatibility_level != mbf_compatibility))
           height += stairsize;
 
         sec = tsec;
@@ -898,17 +918,7 @@ manual_stair://e6y
         floor->speed = speed;
         floor->floordestheight = height;
         floor->type = buildStair; //jff 3/31/98 do not leave uninited
-        //jff 2/27/98 fix uninitialized crush field
-        if (!demo_compatibility)
-          floor->crush = type==build8? false : true;
-        // e6y
-        // Uninitialized crush field will not be equal to 0 or 1 (true)
-        // with high probability. So, initialize it with any other value
-        else
-        {
-          if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            floor->crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
-        }
+        floor->crush = crush; //jff 2/27/98 fix uninitialized crush field
 
         ok = 1;
         break;
@@ -971,13 +981,15 @@ int EV_DoDonut(line_t*  line)
     if (P_SectorActive(floor_special,s1)) //jff 2/22/98
       continue;
 
+    // HERETIC_TODO: rtn = 1; // probably doesn't matter?
+
     s2 = getNextSector(s1->lines[0],s1);  // s2 is pool's sector
     
     // note lowest numbered line around
     // pillar must be two-sided
     if (!s2)
     {
-      if (demo_compatibility)
+      if (heretic || demo_compatibility)
       {
         lprintf(LO_ERROR,
           "EV_DoDonut: lowest numbered line (linedef: %d) "
@@ -994,7 +1006,7 @@ int EV_DoDonut(line_t*  line)
 
     /* do not start the donut if the pool is already moving
      * cph - DEMOSYNC - was !compatibility */
-    if (!comp[comp_floors] && P_SectorActive(floor_special,s2))
+    if (!heretic && !comp[comp_floors] && P_SectorActive(floor_special,s2))
       continue;                           //jff 5/7/98
 
     // find a two sided line around the pool whose other side isn't the pillar
@@ -1002,7 +1014,7 @@ int EV_DoDonut(line_t*  line)
     {
       //jff 3/29/98 use true two-sidedness, not the flag
       // killough 4/5/98: changed demo_compatibility to compatibility
-      if (comp[comp_model])
+      if (heretic || comp[comp_model])
       {
         // original code:   !s2->lines[i]->flags & ML_TWOSIDED
         // equivalent to:   (!s2->lines[i]->flags) & ML_TWOSIDED , i.e. 0

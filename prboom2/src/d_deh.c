@@ -57,6 +57,8 @@
 #define TRUE 1
 #define FALSE 0
 
+// HERETIC_TODO: add init for static arrays of NUMSPRITES, NUMSTATES, NUMMOBJTYPES, NUMSFX, NUMMUSIC ?
+
 // e6y: for compatibility with BOOM deh parser
 int deh_strcasecmp(const char *str1, const char *str2)
 {
@@ -1399,13 +1401,16 @@ char *deh_soundnames[NUMSFX + 1];
 void D_BuildBEXTables(void)
 {
    int i;
+   
+   // HERETIC_TODO: what to do here? EXTRASTATES breaks everything
+   if (heretic) return;
 
    // moved from ProcessDehFile, then we don't need the static int i
    for (i = 0; i < EXTRASTATES; i++)  // remember what they start as for deh xref
      deh_codeptr[i] = states[i].action;
 
    // initialize extra dehacked states
-   for ( ; i < NUMSTATES; i++)
+   for ( ; i < num_states; i++)
    {
      states[i].sprite = SPR_TNT1;
      states[i].frame = 0;
@@ -1417,25 +1422,25 @@ void D_BuildBEXTables(void)
      deh_codeptr[i] = states[i].action;
    }
 
-   for(i = 0; i < NUMSPRITES; i++)
+   for(i = 0; i < num_sprites; i++)
       deh_spritenames[i] = strdup(sprnames[i]);
-   deh_spritenames[NUMSPRITES] = NULL;
+   deh_spritenames[num_sprites] = NULL;
 
-   for(i = 1; i < NUMMUSIC; i++)
+   for(i = 1; i < num_music; i++)
       deh_musicnames[i] = strdup(S_music[i].name);
-   deh_musicnames[0] = deh_musicnames[NUMMUSIC] = NULL;
+   deh_musicnames[0] = deh_musicnames[num_music] = NULL;
 
-   for(i = 1; i < NUMSFX; i++) {
+   for(i = 1; i < num_sfx; i++) {
       if (S_sfx[i].name != NULL) {
          deh_soundnames[i] = strdup(S_sfx[i].name);
       } else { // This is possible due to how DEHEXTRA has turned S_sfx into a sparse array
          deh_soundnames[i] = NULL;
       }
    }
-   deh_soundnames[0] = deh_soundnames[NUMSFX] = NULL;
+   deh_soundnames[0] = deh_soundnames[num_sfx] = NULL;
 
   // ferk: initialize Thing extra properties (keeping vanilla props in info.c)
-  for (i = 0; i < NUMMOBJTYPES; i++)
+  for (i = 0; i < num_mobj_types; i++)
   {
     // mobj id for item dropped on death
     switch (i)
@@ -1729,10 +1734,10 @@ static void deh_procBexCodePointers(DEHFILE *fpin, FILE* fpout, char *line)
 
       if (fpout) fprintf(fpout,"Processing pointer at index %d: %s\n",
                          indexnum, mnemonic);
-      if (indexnum < 0 || indexnum >= NUMSTATES)
+      if (indexnum < 0 || indexnum >= num_states)
         {
           if (fpout) fprintf(fpout,"Bad pointer number %d of %d\n",
-                             indexnum, NUMSTATES);
+                             indexnum, num_states);
           return; // killough 10/98: fix SegViol
         }
       strcpy(key,"A_");  // reusing the key area to prefix the mnemonic
@@ -1818,7 +1823,7 @@ static uint_64_t getConvertedDEHBits(uint_64_t bits) {
 //---------------------------------------------------------------------------
 static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
   mobjinfo_t *mi;
-  if (mobjInfoIndex >= NUMMOBJTYPES || mobjInfoIndex < 0) return;
+  if (mobjInfoIndex >= num_mobj_types || mobjInfoIndex < 0) return;
   mi = &mobjinfo[mobjInfoIndex];
   switch (keyIndex) {
     case 0: mi->doomednum = (int)value; return;
@@ -2021,8 +2026,8 @@ static void deh_procFrame(DEHFILE *fpin, FILE* fpout, char *line)
   // killough 8/98: allow hex numbers in input:
   sscanf(inbuffer,"%s %i",key, &indexnum);
   if (fpout) fprintf(fpout,"Processing Frame at index %d: %s\n",indexnum,key);
-  if (indexnum < 0 || indexnum >= NUMSTATES)
-    if (fpout) fprintf(fpout,"Bad frame number %d of %d\n",indexnum, NUMSTATES);
+  if (indexnum < 0 || indexnum >= num_states)
+    if (fpout) fprintf(fpout,"Bad frame number %d of %d\n",indexnum, num_states);
 
   while (!dehfeof(fpin) && *inbuffer && (*inbuffer != ' '))
     {
@@ -2108,10 +2113,10 @@ static void deh_procPointer(DEHFILE *fpin, FILE* fpout, char *line) // done
     }
 
   if (fpout) fprintf(fpout,"Processing Pointer at index %d: %s\n",indexnum, key);
-  if (indexnum < 0 || indexnum >= NUMSTATES)
+  if (indexnum < 0 || indexnum >= num_states)
     {
       if (fpout)
-        fprintf(fpout,"Bad pointer number %d of %d\n",indexnum, NUMSTATES);
+        fprintf(fpout,"Bad pointer number %d of %d\n",indexnum, num_states);
       return;
     }
 
@@ -2126,10 +2131,10 @@ static void deh_procPointer(DEHFILE *fpin, FILE* fpout, char *line) // done
           continue;
         }
 
-      if (value >= NUMSTATES)
+      if (value >= num_states)
         {
           if (fpout)
-            fprintf(fpout,"Bad pointer number %ld of %d\n",(long)value, NUMSTATES);
+            fprintf(fpout,"Bad pointer number %ld of %d\n",(long)value, num_states);
           return;
         }
 
@@ -2139,7 +2144,7 @@ static void deh_procPointer(DEHFILE *fpin, FILE* fpout, char *line) // done
           if (fpout) fprintf(fpout," - applied from codeptr[%ld] to states[%d]\n",
            (long)value,indexnum);
           // Write BEX-oriented line to match:
-          // for (i=0;i<NUMSTATES;i++) could go past the end of the array
+          // for (i=0;i<num_states;i++) could go past the end of the array
           for (i=0;i<sizeof(deh_bexptrs)/sizeof(*deh_bexptrs);i++)
             {
               if (!memcmp(&deh_bexptrs[i].cptr,&deh_codeptr[value],sizeof(actionf_t)))
@@ -2180,9 +2185,9 @@ static void deh_procSounds(DEHFILE *fpin, FILE* fpout, char *line)
   sscanf(inbuffer,"%s %i",key, &indexnum);
   if (fpout) fprintf(fpout,"Processing Sounds at index %d: %s\n",
                      indexnum, key);
-  if (indexnum < 0 || indexnum >= NUMSFX)
+  if (indexnum < 0 || indexnum >= num_sfx)
     if (fpout) fprintf(fpout,"Bad sound number %d of %d\n",
-                       indexnum, NUMSFX);
+                       indexnum, num_sfx);
 
   while (!dehfeof(fpin) && *inbuffer && (*inbuffer != ' '))
     {
@@ -2724,7 +2729,7 @@ static void deh_procText(DEHFILE *fpin, FILE* fpout, char *line)
                              "Warning: Mismatched lengths from=%d, to=%d, used %d\n",
                              fromlen, tolen, usedlen);
         // Try sound effects entries - see sounds.c
-        for (i=1; i<NUMSFX; i++)
+        for (i=1; i<num_sfx; i++)
           {
             // skip empty dummy entries in S_sfx[]
             if (!S_sfx[i].name) continue;
@@ -2748,7 +2753,7 @@ static void deh_procText(DEHFILE *fpin, FILE* fpout, char *line)
         if (!found)  // not yet
           {
             // Try music name entries - see sounds.c
-            for (i=1; i<NUMMUSIC; i++)
+            for (i=1; i<num_music; i++)
               {
                 // avoid short prefix erroneous match
                 if (strlen(S_music[i].name) != (size_t)fromlen) continue;

@@ -40,6 +40,12 @@
 #include "e6y.h"
 #include "s_advsound.h"
 
+// HERETIC_TODO:
+// heretic doesn't use the thinker class organization
+// does it matter?
+//
+// Also, ignored TimerGame deathmatch countdown logic
+
 int leveltime;
 
 static dboolean newthinkerpresent;
@@ -293,6 +299,7 @@ void P_Ticker (void)
   P_RunThinkers();
   P_UpdateSpecials();
   P_RespawnSpecials();
+  P_AmbientSound();
   P_MapEnd();
   leveltime++;                       // for par times
 }

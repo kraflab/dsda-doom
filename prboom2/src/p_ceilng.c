@@ -90,7 +90,7 @@ void T_MoveCeiling (ceiling_t* ceiling)
           case genSilentCrusher:
             break;
           default:
-            S_StartSound((mobj_t *)&ceiling->sector->soundorg,sfx_stnmov);
+            S_StartSound((mobj_t *)&ceiling->sector->soundorg, g_sfx_stnmov);
             break;
         }
       }
@@ -156,7 +156,7 @@ void T_MoveCeiling (ceiling_t* ceiling)
           case genSilentCrusher:
             break;
           default:
-            S_StartSound((mobj_t *)&ceiling->sector->soundorg,sfx_stnmov);
+            S_StartSound((mobj_t *)&ceiling->sector->soundorg, g_sfx_stnmov);
         }
       }
 
@@ -261,6 +261,7 @@ int EV_DoCeiling
   secnum = -1;
   rtn = 0;
 
+  // HERETIC_TODO: I think this is irrelevant for our purposes
   if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_ceiling; else {return rtn;}};//e6y
   // Reactivate in-stasis ceilings...for certain types.
   // This restarts a crusher after it has been stopped
@@ -270,7 +271,7 @@ int EV_DoCeiling
     case silentCrushAndRaise:
     case crushAndRaise:
       //jff 4/5/98 return if activated
-      rtn = P_ActivateInStasisCeiling(line);
+      rtn = P_ActivateInStasisCeiling(line); // HERETIC_TODO: rtn not set in heretic
     default:
       break;
   }

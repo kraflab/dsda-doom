@@ -240,6 +240,13 @@ enum {
   MIF_ARMED = 2,        // Object is armed (for MF_TOUCHY objects)
 };
 
+// heretic
+typedef union
+{
+    int i;
+    struct mobj_s *m;
+} specialval_t;
+
 // Map Object definition.
 //
 //
@@ -375,6 +382,12 @@ typedef struct mobj_s
     fixed_t             pad; // cph - needed so I can get the size unambiguously on amd64
     
     dsda_mobj_extension_t dsda_extension;
+    
+    // heretic
+    int damage;                 // For missiles
+    int flags2;                 // Heretic flags
+    specialval_t special1;      // Special info
+    specialval_t special2;      // Special info
 
     // SEE WARNING ABOVE ABOUT POINTER FIELDS!!!
 } mobj_t;
@@ -388,6 +401,7 @@ typedef struct mobj_s
 
 #define ONFLOORZ        INT_MIN
 #define ONCEILINGZ      INT_MAX
+#define FLOATRANDZ     (INT_MAX-1)
 
 // Time interval for item respawning.
 #define ITEMQUESIZE     128
@@ -417,11 +431,74 @@ void    P_MobjThinker(mobj_t *mobj);
 void    P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z);
 void    P_SpawnBlood(fixed_t x, fixed_t y, fixed_t z, int damage);
 mobj_t  *P_SpawnMissile(mobj_t *source, mobj_t *dest, mobjtype_t type);
-void    P_SpawnPlayerMissile(mobj_t *source, mobjtype_t type);
+mobj_t  *P_SpawnPlayerMissile(mobj_t *source, mobjtype_t type);
 dboolean P_IsDoomnumAllowed(int doomnum);
 mobj_t* P_SpawnMapThing (const mapthing_t*  mthing, int index);
 void    P_SpawnPlayer(int n, const mapthing_t *mthing);
-void    P_CheckMissileSpawn(mobj_t*);  // killough 8/2/98
+dboolean P_CheckMissileSpawn(mobj_t*);  // killough 8/2/98
 void    P_ExplodeMissile(mobj_t*);    // killough
-#endif
 
+// heretic
+
+// --- mobj.flags2 ---
+
+#define MF2_LOGRAV		0x00000001  // alternate gravity setting
+#define MF2_WINDTHRUST		0x00000002  // gets pushed around by the wind
+                                            // specials
+#define MF2_FLOORBOUNCE		0x00000004  // bounces off the floor
+#define MF2_THRUGHOST		0x00000008  // missile will pass through ghosts
+#define MF2_FLY			0x00000010  // fly mode is active
+#define MF2_FOOTCLIP		0x00000020  // if feet are allowed to be clipped
+#define MF2_SPAWNFLOAT		0x00000040  // spawn random float z
+#define MF2_NOTELEPORT		0x00000080  // does not teleport
+#define MF2_RIP			0x00000100  // missile rips through solid
+                                            // targets
+#define MF2_PUSHABLE		0x00000200  // can be pushed by other moving
+                                            // mobjs
+#define MF2_SLIDE		0x00000400  // slides against walls
+#define MF2_ONMOBJ		0x00000800  // mobj is resting on top of another
+                                            // mobj
+#define MF2_PASSMOBJ		0x00001000  // Enable z block checking.  If on,
+                                            // this flag will allow the mobj to
+                                            // pass over/under other mobjs.
+#define MF2_CANNOTPUSH		0x00002000  // cannot push other pushable mobjs
+#define MF2_FEETARECLIPPED	0x00004000  // a mobj's feet are now being cut
+#define MF2_BOSS		0x00008000  // mobj is a major boss
+#define MF2_FIREDAMAGE		0x00010000  // does fire damage
+#define MF2_NODMGTHRUST		0x00020000  // does not thrust target when
+                                            // damaging
+#define MF2_TELESTOMP		0x00040000  // mobj can stomp another
+#define MF2_FLOATBOB		0x00080000  // use float bobbing z movement
+#define MF2_DONTDRAW		0X00100000  // don't generate a vissprite
+
+#define AMMO_GWND_WIMPY 10
+#define AMMO_GWND_HEFTY 50
+#define AMMO_CBOW_WIMPY 5
+#define AMMO_CBOW_HEFTY 20
+#define AMMO_BLSR_WIMPY 10
+#define AMMO_BLSR_HEFTY 25
+#define AMMO_SKRD_WIMPY 20
+#define AMMO_SKRD_HEFTY 100
+#define AMMO_PHRD_WIMPY 1
+#define AMMO_PHRD_HEFTY 10
+#define AMMO_MACE_WIMPY 20
+#define AMMO_MACE_HEFTY 100
+
+extern mobj_t* MissileMobj;
+
+void P_BlasterMobjThinker(mobj_t * mobj);
+mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type, angle_t angle, fixed_t momz);
+dboolean P_SetMobjStateNF(mobj_t * mobj, statenum_t state);
+void P_ThrustMobj(mobj_t * mo, angle_t angle, fixed_t move);
+dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax);
+mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle);
+int P_HitFloor(mobj_t * thing);
+int P_GetThingFloorType(mobj_t * thing);
+int P_FaceMobj(mobj_t * source, mobj_t * target, angle_t * delta);
+void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
+void P_RipperBlood(mobj_t * mo);
+dboolean Heretic_P_SetMobjState(mobj_t * mobj, statenum_t state);
+void P_FloorBounceMissile(mobj_t * mo);
+void Heretic_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z);
+
+#endif
