@@ -45,7 +45,7 @@
 // Information about all the music
 //
 
-musicinfo_t S_music[] = {
+musicinfo_t doom_S_music[] = {
   { 0 },
   { "e1m1", 0 },
   { "e1m2", 0 },
@@ -124,7 +124,7 @@ musicinfo_t S_music[] = {
 // Information about all the sfx
 //
 
-sfxinfo_t S_sfx[] = {
+sfxinfo_t doom_S_sfx[] = {
   // S_sfx[0] needs to be a dummy for odd reasons.
   { "none", false,  0, 0, -1, -1, 0 },
 
@@ -213,7 +213,7 @@ sfxinfo_t S_sfx[] = {
   { "punch", false, 64, 0, -1, -1, 0 },
   { "hoof", false, 70, 0, -1, -1, 0 },
   { "metal", false, 70, 0, -1, -1, 0 },
-  { "chgun", false, 64, &S_sfx[sfx_pistol], 150, 0, 0 },
+  { "chgun", false, 64, &doom_S_sfx[sfx_pistol], 150, 0, 0 },
   { "tink", false, 60, 0, -1, -1, 0 },
   { "bdopn", false, 100, 0, -1, -1, 0 },
   { "bdcls", false, 100, 0, -1, -1, 0 },

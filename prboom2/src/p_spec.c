@@ -63,6 +63,8 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "dsda/global.h"
+
 //
 //      source animation definition
 //
@@ -103,6 +105,25 @@ static void P_SpawnScrollers(void);
 
 static void P_SpawnFriction(void);    // phares 3/16/98
 static void P_SpawnPushers(void);     // phares 3/20/98
+
+static const animdef_t heretic_animdefs[] = {
+    // false = flat
+    // true = texture
+    { false, "FLTWAWA3", "FLTWAWA1", 8 }, // Water
+    { false, "FLTSLUD3", "FLTSLUD1", 8 }, // Sludge
+    { false, "FLTTELE4", "FLTTELE1", 6 }, // Teleport
+    { false, "FLTFLWW3", "FLTFLWW1", 9 }, // River - West
+    { false, "FLTLAVA4", "FLTLAVA1", 8 }, // Lava
+    { false, "FLATHUH4", "FLATHUH1", 8 }, // Super Lava
+    { true,  "LAVAFL3",  "LAVAFL1",  6 },    // Texture: Lavaflow
+    { true,  "WATRWAL3", "WATRWAL1", 4 },  // Texture: Waterfall
+    { -1 }
+};
+
+// heretic
+#define	MAXLINEANIMS		64*256
+static short numlinespecials;
+static line_t *linespeciallist[MAXLINEANIMS];
 
 //e6y
 void MarkAnimatedTextures(void)
@@ -159,11 +180,19 @@ void P_InitPicAnims (void)
 {
   int         i;
   const animdef_t *animdefs; //jff 3/23/98 pointer to animation lump
-  int         lump = W_GetNumForName("ANIMATED"); // cph - new wad lump handling
+  int         lump = -1;
   //  Init animation
 
-  //jff 3/23/98 read from predefined or wad lump instead of table
-  animdefs = (const animdef_t *)W_CacheLumpNum(lump);
+  if (heretic)
+  {
+    animdefs = heretic_animdefs;
+  }
+  else
+  {
+    lump = W_GetNumForName("ANIMATED"); // cph - new wad lump handling
+    //jff 3/23/98 read from predefined or wad lump instead of table
+    animdefs = (const animdef_t *)W_CacheLumpNum(lump);
+  }
 
   lastanim = anims;
   for (i=0 ; animdefs[i].istexture != -1 ; i++)
@@ -206,7 +235,8 @@ void P_InitPicAnims (void)
     lastanim->speed = LittleLong(animdefs[i].speed); // killough 5/5/98: add LONG()
     lastanim++;
   }
-  W_UnlockLumpNum(lump);
+
+  if (lump == -1) W_UnlockLumpNum(lump);
   MarkAnimatedTextures();//e6y
 }
 
@@ -268,7 +298,7 @@ int twoSided
   //jff 1/26/98 return what is actually needed, whether the line
   //has two sidedefs, rather than whether the 2S flag is set
 
-  return comp[comp_model] ?
+  return (heretic || comp[comp_model]) ?
     (sectors[sector].lines[line])->flags & ML_TWOSIDED
     :
     (sectors[sector].lines[line])->sidenum[1] != NO_INDEX;
@@ -290,14 +320,14 @@ sector_t* getNextSector
   //returns NULL if the line is not two sided, and does so from
   //the actual two-sidedness of the line, rather than its 2S flag
 
-  if (comp[comp_model])
+  if (heretic || comp[comp_model])
   {
     if (!(line->flags & ML_TWOSIDED))
       return NULL;
   }
 
   if (line->frontsector == sec) {
-    if (comp[comp_model] || line->backsector!=sec)
+    if (heretic || comp[comp_model] || line->backsector!=sec)
       return line->backsector; //jff 5/3/98 don't retn sec unless compatibility
     else                       // fixes an intra-sector line breaking functions
       return NULL;             // like floor->highest floor
@@ -352,7 +382,7 @@ fixed_t P_FindHighestFloorSurrounding(sector_t *sec)
 
   //jff 1/26/98 Fix initial value for floor to not act differently
   //in sections of wad that are below -500 units
-  if (!comp[comp_model])       /* jff 3/12/98 avoid ovf */
+  if (!heretic && !comp[comp_model])       /* jff 3/12/98 avoid ovf */
     floor = -32000*FRACUNIT;   // in height calculations
 
   for (i=0 ;i < sec->linecount ; i++)
@@ -388,7 +418,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
   // e6y
   // Original P_FindNextHighestFloor() is restored for demo_compatibility
   // Adapted for prboom's complevels
-  if (demo_compatibility && !prboom_comp[PC_FORCE_BOOM_FINDNEXTHIGHESTFLOOR].state)
+  if ((heretic || demo_compatibility) && !prboom_comp[PC_FORCE_BOOM_FINDNEXTHIGHESTFLOOR].state)
   {
     int h;
     int min;
@@ -428,8 +458,9 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
         // 21: can be emulated;
         // 22..26: overflow affects saved registers - unpredictable behaviour, can crash;
         // 27: overflow affects return address - crash with high probability;
-        if (compatibility_level < dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS)
+        if ((heretic || compatibility_level < dosdoom_compatibility) && h >= MAX_ADJOINING_SECTORS)
         {
+          // HERETIC_TODO: crispy actually doesn't go here, but probably it should be done
           lprintf(LO_WARN, "P_FindNextHighestFloor: Overflow of heightlist[%d] array is detected.\n", MAX_ADJOINING_SECTORS);
           lprintf(LO_WARN, " Sector %d, line %d, heightlist index %d: ", sec->iSectorID, sec->lines[i]->iLineID, h);
 
@@ -447,7 +478,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
       }
       
       // Check for overflow. Warning.
-      if ( compatibility_level >= dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS )
+      if (!heretic && compatibility_level >= dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS)
       {
         lprintf( LO_WARN, "Sector with more than 20 adjoining sectors\n" );
         break;
@@ -466,7 +497,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
       // It's not *quite* random stack noise. If this function is called
       // as part of a loop, heightlist will be at the same location as in
       // the previous call. Doing it this way fixes 1_ON_1.WAD.
-      return (compatibility_level < doom_1666_compatibility ? last_height_0 : currentheight);
+      return ((heretic || compatibility_level < doom_1666_compatibility) ? last_height_0 : currentheight);
     }
     
     last_height_0 = heightlist[0];
@@ -613,7 +644,7 @@ fixed_t P_FindLowestCeilingSurrounding(sector_t* sec)
   fixed_t             height = INT_MAX;
 
   /* jff 3/12/98 avoid ovf in height calculations */
-  if (!comp[comp_model]) height = 32000*FRACUNIT;
+  if (!heretic && !comp[comp_model]) height = 32000*FRACUNIT;
 
   for (i=0 ;i < sec->linecount ; i++)
   {
@@ -649,7 +680,7 @@ fixed_t P_FindHighestCeilingSurrounding(sector_t* sec)
   /* jff 1/26/98 Fix initial value for floor to not act differently
    * in sections of wad that are below 0 units
    * jff 3/12/98 avoid ovf in height calculations */
-  if (!comp[comp_model]) height = -32000*FRACUNIT;
+  if (!heretic && !comp[comp_model]) height = -32000*FRACUNIT;
 
   for (i=0 ;i < sec->linecount ; i++)
   {
@@ -778,7 +809,8 @@ sector_t *P_FindModelFloorSector(fixed_t floordestheight,int secnum)
       else
           sec = getSector(secnum,i,0);
 
-      if (sec->floorheight == floordestheight)
+      // HERETIC_TODO: is it correct?
+      if (heretic || sec->floorheight == floordestheight)
         return sec;
     }
   }
@@ -1084,7 +1116,7 @@ dboolean P_CanUnlockGenDoor
 //
 dboolean PUREFUNC P_SectorActive(special_e t, const sector_t *sec)
 {
-  if (demo_compatibility)  // return whether any thinker is active
+  if (heretic || demo_compatibility)  // return whether any thinker is active
     return sec->floordata != NULL || sec->ceilingdata != NULL || sec->lightingdata != NULL;
   else
     switch (t)             // return whether thinker of same type is active
@@ -1116,7 +1148,7 @@ int P_CheckTag(line_t *line)
 {
   /* tag not zero, allowed, or
    * killough 11/98: compatibility option */
-  if (comp[comp_zerotags] || line->tag || comperr(comperr_zerotag))//e6y
+  if (heretic || comp[comp_zerotags] || line->tag || comperr(comperr_zerotag))//e6y
     return 1;
 
   switch(line->special)
@@ -1236,6 +1268,8 @@ dboolean PUREFUNC P_WasSecret(const sector_t *sec)
 void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
 {
   int         ok;
+
+  if (heretic) return Heretic_P_CrossSpecialLine(line, side, thing);
 
   //  Things that should never trigger lines
   //
@@ -2145,7 +2179,7 @@ void P_ShootSpecialLine
   line_t*       line )
 {
   //jff 02/04/98 add check here for generalized linedef
-  if (!demo_compatibility)
+  if (!heretic && !demo_compatibility)
   {
     // pointer to line function is NULL by default, set non-null if
     // line special is gun triggered generalized linedef type
@@ -2268,19 +2302,19 @@ void P_ShootSpecialLine
   {
     case 24:
       // 24 G1 raise floor to highest adjacent
-      if (EV_DoFloor(line,raiseFloor) || demo_compatibility)
+      if (EV_DoFloor(line,raiseFloor) || heretic || demo_compatibility)
         P_ChangeSwitchTexture(line,0);
       break;
 
     case 46:
       // 46 GR open door, stay open
-      EV_DoDoor(line,openDoor);
+      EV_DoDoor(line,g_door_open);
       P_ChangeSwitchTexture(line,1);
       break;
 
     case 47:
       // 47 G1 raise floor to nearest and change texture and type
-      if (EV_DoPlat(line,raiseToNearestAndChange,0) || demo_compatibility)
+      if (EV_DoPlat(line,raiseToNearestAndChange,0) || heretic || demo_compatibility)
         P_ChangeSwitchTexture(line,0);
       break;
 
@@ -2288,7 +2322,7 @@ void P_ShootSpecialLine
     // killough 1/31/98: added demo_compatibility check, added inner switch
 
     default:
-      if (!demo_compatibility)
+      if (!heretic && !demo_compatibility)
         switch (line->special)
         {
           case 197:
@@ -2326,6 +2360,8 @@ void P_ShootSpecialLine
 void P_PlayerInSpecialSector (player_t* player)
 {
   sector_t*   sector;
+
+  if (heretic) return Heretic_P_PlayerInSpecialSector(player);
 
   sector = player->mo->subsector->sector;
 
@@ -2513,6 +2549,26 @@ void P_UpdateSpecials (void)
     }
   }
 
+  if (heretic)
+  {
+    line_t *line;
+
+    // Update scrolling texture offsets
+    for (i = 0; i < numlinespecials; i++)
+    {
+        line = linespeciallist[i];
+        switch (line->special)
+        {
+            case 48:           // Effect_Scroll_Left
+                sides[line->sidenum[0]].textureoffset += FRACUNIT;
+                break;
+            case 99:           // Effect_Scroll_Right
+                sides[line->sidenum[0]].textureoffset -= FRACUNIT;
+                break;
+        }
+    }
+  }
+
   // Check buttons (retriggerable switches) and change texture on timeout
   for (i = 0; i < MAXBUTTONS; i++)
     if (buttonlist[i].btimer)
@@ -2545,7 +2601,7 @@ void P_UpdateSpecials (void)
             /* since the buttonlist array is usually zeroed out,
              * button popouts generally appear to come from (0,0) */
             so = (mobj_t *)&buttonlist[i].soundorg;
-          S_StartSound(so, sfx_swtchn);
+          S_StartSound(so, g_sfx_swtchn);
         }
         memset(&buttonlist[i],0,sizeof(button_t));
       }
@@ -2633,7 +2689,10 @@ void P_SpawnSpecials (void)
       case 4:
         // strobe fast/death slime
         P_SpawnStrobeFlash(sector,FASTDARK,0);
-        sector->special |= 3<<DAMAGE_SHIFT; //jff 3/14/98 put damage bits in
+        if (!heretic)
+        {
+          sector->special |= 3<<DAMAGE_SHIFT; //jff 3/14/98 put damage bits in
+        }
         break;
 
       case 8:
@@ -2672,6 +2731,8 @@ void P_SpawnSpecials (void)
         break;
     }
   }
+
+  if (heretic) P_SpawnLineSpecials();
 
   P_RemoveAllActiveCeilings();  // jff 2/22/98 use killough's scheme
 
@@ -3522,3 +3583,655 @@ static void P_SpawnPushers(void)
 // phares 3/20/98: End of Pusher effects
 //
 ////////////////////////////////////////////////////////////////////////////
+
+// heretic
+
+#include "heretic/def.h"
+
+#define MAX_AMBIENT_SFX 8
+
+typedef enum
+{
+    afxcmd_play,                // (sound)
+    afxcmd_playabsvol,          // (sound, volume)
+    afxcmd_playrelvol,          // (sound, volume)
+    afxcmd_delay,               // (ticks)
+    afxcmd_delayrand,           // (andbits)
+    afxcmd_end                  // ()
+} afxcmd_t;
+
+int *LevelAmbientSfx[MAX_AMBIENT_SFX];
+int *AmbSfxPtr;
+int AmbSfxCount;
+int AmbSfxTics;
+int AmbSfxVolume;
+
+int AmbSndSeqInit[] = {         // Startup
+    afxcmd_end
+};
+int AmbSndSeq1[] = {            // Scream
+    afxcmd_play, heretic_sfx_amb1,
+    afxcmd_end
+};
+int AmbSndSeq2[] = {            // Squish
+    afxcmd_play, heretic_sfx_amb2,
+    afxcmd_end
+};
+int AmbSndSeq3[] = {            // Drops
+    afxcmd_play, heretic_sfx_amb3,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb7,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb3,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb7,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb3,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_play, heretic_sfx_amb7,
+    afxcmd_delay, 16,
+    afxcmd_delayrand, 31,
+    afxcmd_end
+};
+int AmbSndSeq4[] = {            // SlowFootSteps
+    afxcmd_play, heretic_sfx_amb4,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 15,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_end
+};
+int AmbSndSeq5[] = {            // Heartbeat
+    afxcmd_play, heretic_sfx_amb5,
+    afxcmd_delay, 35,
+    afxcmd_play, heretic_sfx_amb5,
+    afxcmd_delay, 35,
+    afxcmd_play, heretic_sfx_amb5,
+    afxcmd_delay, 35,
+    afxcmd_play, heretic_sfx_amb5,
+    afxcmd_end
+};
+int AmbSndSeq6[] = {            // Bells
+    afxcmd_play, heretic_sfx_amb6,
+    afxcmd_delay, 17,
+    afxcmd_playrelvol, heretic_sfx_amb6, -8,
+    afxcmd_delay, 17,
+    afxcmd_playrelvol, heretic_sfx_amb6, -8,
+    afxcmd_delay, 17,
+    afxcmd_playrelvol, heretic_sfx_amb6, -8,
+    afxcmd_end
+};
+int AmbSndSeq7[] = {            // Growl
+    afxcmd_play, heretic_sfx_bstsit,
+    afxcmd_end
+};
+int AmbSndSeq8[] = {            // Magic
+    afxcmd_play, heretic_sfx_amb8,
+    afxcmd_end
+};
+int AmbSndSeq9[] = {            // Laughter
+    afxcmd_play, heretic_sfx_amb9,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb9, -4,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb9, -4,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb10, -4,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb10, -4,
+    afxcmd_delay, 16,
+    afxcmd_playrelvol, heretic_sfx_amb10, -4,
+    afxcmd_end
+};
+int AmbSndSeq10[] = {           // FastFootsteps
+    afxcmd_play, heretic_sfx_amb4,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb4, -3,
+    afxcmd_delay, 8,
+    afxcmd_playrelvol, heretic_sfx_amb11, -3,
+    afxcmd_end
+};
+
+int *AmbientSfx[] = {
+    AmbSndSeq1,                 // Scream
+    AmbSndSeq2,                 // Squish
+    AmbSndSeq3,                 // Drops
+    AmbSndSeq4,                 // SlowFootsteps
+    AmbSndSeq5,                 // Heartbeat
+    AmbSndSeq6,                 // Bells
+    AmbSndSeq7,                 // Growl
+    AmbSndSeq8,                 // Magic
+    AmbSndSeq9,                 // Laughter
+    AmbSndSeq10                 // FastFootsteps
+};
+
+int *TerrainTypes;
+struct
+{
+    const char *name;
+    int type;
+} TerrainTypeDefs[] =
+{
+    { "FLTWAWA1", FLOOR_WATER },
+    { "FLTFLWW1", FLOOR_WATER },
+    { "FLTLAVA1", FLOOR_LAVA },
+    { "FLATHUH1", FLOOR_LAVA },
+    { "FLTSLUD1", FLOOR_SLUDGE },
+    { "END", -1 }
+};
+
+static mobj_t LavaInflictor;
+
+void P_AddAmbientSfx(int sequence)
+{
+    if (AmbSfxCount == MAX_AMBIENT_SFX)
+    {
+        I_Error("Too many ambient sound sequences");
+    }
+    LevelAmbientSfx[AmbSfxCount++] = AmbientSfx[sequence];
+}
+
+void P_InitAmbientSound(void)
+{
+    AmbSfxCount = 0;
+    AmbSfxVolume = 0;
+    AmbSfxTics = 10 * TICRATE;
+    AmbSfxPtr = AmbSndSeqInit;
+}
+
+void P_AmbientSound(void)
+{
+    afxcmd_t cmd;
+    int sound;
+    dboolean done;
+
+    if (!AmbSfxCount)
+    {                           // No ambient sound sequences on current level
+        return;
+    }
+    if (--AmbSfxTics)
+    {
+        return;
+    }
+    done = false;
+    do
+    {
+        cmd = *AmbSfxPtr++;
+        switch (cmd)
+        {
+            case afxcmd_play:
+                AmbSfxVolume = P_Random(pr_heretic) >> 2;
+                S_StartSoundAtVolume(NULL, *AmbSfxPtr++, AmbSfxVolume);
+                break;
+            case afxcmd_playabsvol:
+                sound = *AmbSfxPtr++;
+                AmbSfxVolume = *AmbSfxPtr++;
+                S_StartSoundAtVolume(NULL, sound, AmbSfxVolume);
+                break;
+            case afxcmd_playrelvol:
+                sound = *AmbSfxPtr++;
+                AmbSfxVolume += *AmbSfxPtr++;
+                if (AmbSfxVolume < 0)
+                {
+                    AmbSfxVolume = 0;
+                }
+                else if (AmbSfxVolume > 127)
+                {
+                    AmbSfxVolume = 127;
+                }
+                S_StartSoundAtVolume(NULL, sound, AmbSfxVolume);
+                break;
+            case afxcmd_delay:
+                AmbSfxTics = *AmbSfxPtr++;
+                done = true;
+                break;
+            case afxcmd_delayrand:
+                AmbSfxTics = P_Random(pr_heretic) & (*AmbSfxPtr++);
+                done = true;
+                break;
+            case afxcmd_end:
+                AmbSfxTics = 6 * TICRATE + P_Random(pr_heretic);
+                AmbSfxPtr = LevelAmbientSfx[P_Random(pr_heretic) % AmbSfxCount];
+                done = true;
+                break;
+            default:
+                I_Error("P_AmbientSound: Unknown afxcmd %d", cmd);
+                break;
+        }
+    }
+    while (done == false);
+}
+
+void P_InitLava(void)
+{
+    if (!heretic) return;
+
+    memset(&LavaInflictor, 0, sizeof(mobj_t));
+    LavaInflictor.type = HERETIC_MT_PHOENIXFX2;
+    LavaInflictor.flags2 = MF2_FIREDAMAGE | MF2_NODMGTHRUST;
+}
+
+void P_InitTerrainTypes(void)
+{
+    int i;
+    int lump;
+    int size;
+
+    if (!heretic) return;
+
+    size = (numflats + 1) * sizeof(int);
+    TerrainTypes = Z_Malloc(size, PU_STATIC, 0);
+    memset(TerrainTypes, 0, size);
+    for (i = 0; TerrainTypeDefs[i].type != -1; i++)
+    {
+        lump = (W_CheckNumForName)(TerrainTypeDefs[i].name, ns_flats);
+        if (lump != -1)
+        {
+            TerrainTypes[lump - firstflat] = TerrainTypeDefs[i].type;
+        }
+    }
+}
+
+void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing)
+{
+    if (!thing->player)
+    {                           // Check if trigger allowed by non-player mobj
+        switch (line->special)
+        {
+            case 39:           // Trigger_TELEPORT
+            case 97:           // Retrigger_TELEPORT
+            case 4:            // Trigger_Raise_Door
+                //case 10:      // PLAT DOWN-WAIT-UP-STAY TRIGGER
+                //case 88:      // PLAT DOWN-WAIT-UP-STAY RETRIGGER
+                break;
+            default:
+                return;
+                break;
+        }
+    }
+    switch (line->special)
+    {
+            //====================================================
+            // TRIGGERS
+            //====================================================
+        case 2:                // Open Door
+            EV_DoDoor(line, vld_open);
+            line->special = 0;
+            break;
+        case 3:                // Close Door
+            EV_DoDoor(line, vld_close);
+            line->special = 0;
+            break;
+        case 4:                // Raise Door
+            EV_DoDoor(line, vld_normal);
+            line->special = 0;
+            break;
+        case 5:                // Raise Floor
+            EV_DoFloor(line, raiseFloor);
+            line->special = 0;
+            break;
+        case 6:                // Fast Ceiling Crush & Raise
+            EV_DoCeiling(line, fastCrushAndRaise);
+            line->special = 0;
+            break;
+        case 8:                // Trigger_Build_Stairs (8 pixel steps)
+            EV_BuildStairs(line, heretic_build8);
+            line->special = 0;
+            break;
+        case 106:              // Trigger_Build_Stairs_16 (16 pixel steps)
+            EV_BuildStairs(line, heretic_turbo16);
+            line->special = 0;
+            break;
+        case 10:               // PlatDownWaitUp
+            EV_DoPlat(line, downWaitUpStay, 0);
+            line->special = 0;
+            break;
+        case 12:               // Light Turn On - brightest near
+            EV_LightTurnOn(line, 0);
+            line->special = 0;
+            break;
+        case 13:               // Light Turn On 255
+            EV_LightTurnOn(line, 255);
+            line->special = 0;
+            break;
+        case 16:               // Close Door 30
+            EV_DoDoor(line, vld_close30ThenOpen);
+            line->special = 0;
+            break;
+        case 17:               // Start Light Strobing
+            EV_StartLightStrobing(line);
+            line->special = 0;
+            break;
+        case 19:               // Lower Floor
+            EV_DoFloor(line, lowerFloor);
+            line->special = 0;
+            break;
+        case 22:               // Raise floor to nearest height and change texture
+            EV_DoPlat(line, raiseToNearestAndChange, 0);
+            line->special = 0;
+            break;
+        case 25:               // Ceiling Crush and Raise
+            EV_DoCeiling(line, crushAndRaise);
+            line->special = 0;
+            break;
+        case 30:               // Raise floor to shortest texture height
+            // on either side of lines
+            EV_DoFloor(line, raiseToTexture);
+            line->special = 0;
+            break;
+        case 35:               // Lights Very Dark
+            EV_LightTurnOn(line, 35);
+            line->special = 0;
+            break;
+        case 36:               // Lower Floor (TURBO)
+            EV_DoFloor(line, turboLower);
+            line->special = 0;
+            break;
+        case 37:               // LowerAndChange
+            EV_DoFloor(line, lowerAndChange);
+            line->special = 0;
+            break;
+        case 38:               // Lower Floor To Lowest
+            EV_DoFloor(line, lowerFloorToLowest);
+            line->special = 0;
+            break;
+        case 39:               // TELEPORT!
+            EV_Teleport(line, side, thing);
+            line->special = 0;
+            break;
+        case 40:               // RaiseCeilingLowerFloor
+            EV_DoCeiling(line, raiseToHighest);
+            EV_DoFloor(line, lowerFloorToLowest);
+            line->special = 0;
+            break;
+        case 44:               // Ceiling Crush
+            EV_DoCeiling(line, lowerAndCrush);
+            line->special = 0;
+            break;
+        case 52:               // EXIT!
+            G_ExitLevel();
+            line->special = 0;
+            break;
+        case 53:               // Perpetual Platform Raise
+            EV_DoPlat(line, perpetualRaise, 0);
+            line->special = 0;
+            break;
+        case 54:               // Platform Stop
+            EV_StopPlat(line);
+            line->special = 0;
+            break;
+        case 56:               // Raise Floor Crush
+            EV_DoFloor(line, raiseFloorCrush);
+            line->special = 0;
+            break;
+        case 57:               // Ceiling Crush Stop
+            EV_CeilingCrushStop(line);
+            line->special = 0;
+            break;
+        case 58:               // Raise Floor 24
+            EV_DoFloor(line, raiseFloor24);
+            line->special = 0;
+            break;
+        case 59:               // Raise Floor 24 And Change
+            EV_DoFloor(line, raiseFloor24AndChange);
+            line->special = 0;
+            break;
+        case 104:              // Turn lights off in sector(tag)
+            EV_TurnTagLightsOff(line);
+            line->special = 0;
+            break;
+        case 105:              // Trigger_SecretExit
+            G_SecretExitLevel();
+            line->special = 0;
+            break;
+
+            //====================================================
+            // RE-DOABLE TRIGGERS
+            //====================================================
+
+        case 72:               // Ceiling Crush
+            EV_DoCeiling(line, lowerAndCrush);
+            break;
+        case 73:               // Ceiling Crush and Raise
+            EV_DoCeiling(line, crushAndRaise);
+            break;
+        case 74:               // Ceiling Crush Stop
+            EV_CeilingCrushStop(line);
+            break;
+        case 75:               // Close Door
+            EV_DoDoor(line, vld_close);
+            break;
+        case 76:               // Close Door 30
+            EV_DoDoor(line, vld_close30ThenOpen);
+            break;
+        case 77:               // Fast Ceiling Crush & Raise
+            EV_DoCeiling(line, fastCrushAndRaise);
+            break;
+        case 79:               // Lights Very Dark
+            EV_LightTurnOn(line, 35);
+            break;
+        case 80:               // Light Turn On - brightest near
+            EV_LightTurnOn(line, 0);
+            break;
+        case 81:               // Light Turn On 255
+            EV_LightTurnOn(line, 255);
+            break;
+        case 82:               // Lower Floor To Lowest
+            EV_DoFloor(line, lowerFloorToLowest);
+            break;
+        case 83:               // Lower Floor
+            EV_DoFloor(line, lowerFloor);
+            break;
+        case 84:               // LowerAndChange
+            EV_DoFloor(line, lowerAndChange);
+            break;
+        case 86:               // Open Door
+            EV_DoDoor(line, vld_open);
+            break;
+        case 87:               // Perpetual Platform Raise
+            EV_DoPlat(line, perpetualRaise, 0);
+            break;
+        case 88:               // PlatDownWaitUp
+            EV_DoPlat(line, downWaitUpStay, 0);
+            break;
+        case 89:               // Platform Stop
+            EV_StopPlat(line);
+            break;
+        case 90:               // Raise Door
+            EV_DoDoor(line, vld_normal);
+            break;
+        case 100:              // Retrigger_Raise_Door_Turbo
+            EV_DoDoor(line, vld_normal_turbo);
+            break;
+        case 91:               // Raise Floor
+            EV_DoFloor(line, raiseFloor);
+            break;
+        case 92:               // Raise Floor 24
+            EV_DoFloor(line, raiseFloor24);
+            break;
+        case 93:               // Raise Floor 24 And Change
+            EV_DoFloor(line, raiseFloor24AndChange);
+            break;
+        case 94:               // Raise Floor Crush
+            EV_DoFloor(line, raiseFloorCrush);
+            break;
+        case 95:               // Raise floor to nearest height and change texture
+            EV_DoPlat(line, raiseToNearestAndChange, 0);
+            break;
+        case 96:               // Raise floor to shortest texture height
+            // on either side of lines
+            EV_DoFloor(line, raiseToTexture);
+            break;
+        case 97:               // TELEPORT!
+            EV_Teleport(line, side, thing);
+            break;
+        case 98:               // Lower Floor (TURBO)
+            EV_DoFloor(line, turboLower);
+            break;
+    }
+}
+
+#include "p_user.h"
+
+void Heretic_P_PlayerInSpecialSector(player_t * player)
+{
+    sector_t *sector;
+    static int pushTab[5] = {
+        2048 * 5,
+        2048 * 10,
+        2048 * 25,
+        2048 * 30,
+        2048 * 35
+    };
+
+    sector = player->mo->subsector->sector;
+    if (player->mo->z != sector->floorheight)
+    {                           // Player is not touching the floor
+        return;
+    }
+    switch (sector->special)
+    {
+        case 7:                // Damage_Sludge
+            if (!(leveltime & 31))
+            {
+                P_DamageMobj(player->mo, NULL, NULL, 4);
+            }
+            break;
+        case 5:                // Damage_LavaWimpy
+            if (!(leveltime & 15))
+            {
+                P_DamageMobj(player->mo, &LavaInflictor, NULL, 5);
+                P_HitFloor(player->mo);
+            }
+            break;
+        case 16:               // Damage_LavaHefty
+            if (!(leveltime & 15))
+            {
+                P_DamageMobj(player->mo, &LavaInflictor, NULL, 8);
+                P_HitFloor(player->mo);
+            }
+            break;
+        case 4:                // Scroll_EastLavaDamage
+            P_Thrust(player, 0, 2048 * 28);
+            if (!(leveltime & 15))
+            {
+                P_DamageMobj(player->mo, &LavaInflictor, NULL, 5);
+                P_HitFloor(player->mo);
+            }
+            break;
+        case 9:                // SecretArea
+            player->secretcount++;
+            sector->special = 0;
+
+            //e6y
+            if (hudadd_secretarea)
+            {
+              SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, heretic_sfx_chat);
+            }
+
+            dsda_WatchSecret();
+
+            break;
+        case 11:               // Exit_SuperDamage (DOOM E1M8 finale)
+            break;
+
+        case 25:
+        case 26:
+        case 27:
+        case 28:
+        case 29:               // Scroll_North
+            P_Thrust(player, ANG90, pushTab[sector->special - 25]);
+            break;
+        case 20:
+        case 21:
+        case 22:
+        case 23:
+        case 24:               // Scroll_East
+            P_Thrust(player, 0, pushTab[sector->special - 20]);
+            break;
+        case 30:
+        case 31:
+        case 32:
+        case 33:
+        case 34:               // Scroll_South
+            P_Thrust(player, ANG270, pushTab[sector->special - 30]);
+            break;
+        case 35:
+        case 36:
+        case 37:
+        case 38:
+        case 39:               // Scroll_West
+            P_Thrust(player, ANG180, pushTab[sector->special - 35]);
+            break;
+
+        case 40:
+        case 41:
+        case 42:
+        case 43:
+        case 44:
+        case 45:
+        case 46:
+        case 47:
+        case 48:
+        case 49:
+        case 50:
+        case 51:
+            // Wind specials are handled in (P_mobj):P_XYMovement
+            break;
+
+        case 15:               // Friction_Low
+            // Only used in (P_mobj):P_XYMovement and (P_user):P_Thrust
+            break;
+
+        default:
+            I_Error("P_PlayerInSpecialSector: "
+                    "unknown special %i", sector->special);
+    }
+}
+
+void P_SpawnLineSpecials(void)
+{
+    int i;
+
+    if (!heretic) return;
+
+    //
+    //      Init line EFFECTs
+    //
+
+    numlinespecials = 0;
+    for (i = 0; i < numlines; i++)
+        switch (lines[i].special)
+        {
+            case 48:           // Effect_Scroll_Left
+            case 99:           // Effect_Scroll_Right
+                linespeciallist[numlinespecials] = &lines[i];
+                numlinespecials++;
+                break;
+        }
+}

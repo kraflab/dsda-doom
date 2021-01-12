@@ -145,3 +145,11 @@ void M_ClearRandom (void)
     rng.seed[i] = seed *= 69069ul;     // each starting seed differently
   rng.prndindex = rng.rndindex = 0;    // clear two compatibility indices
 }
+
+// heretic
+
+int P_SubRandom (void)
+{
+    int r = P_Random(pr_heretic);
+    return r - P_Random(pr_heretic);
+}

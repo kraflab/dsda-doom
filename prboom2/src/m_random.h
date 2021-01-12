@@ -123,6 +123,7 @@ typedef enum {
   pr_dropoff,                 // #60
   pr_randomjump,              // #61
   pr_defect,                  // #62  // Start new entries -- add new entries below
+  pr_heretic,                 // #63
 
   // End of new entries
   NUMPRCLASS               // MUST be last item in list
@@ -150,5 +151,11 @@ int P_Random(pr_class_t DA(const char *, int));
 
 // Fix randoms for demos.
 void M_ClearRandom(void);
+
+// heretic
+
+#define HITDICE(a) ((1+(P_Random(pr_heretic)&7))*a)
+
+int P_SubRandom (void);
 
 #endif

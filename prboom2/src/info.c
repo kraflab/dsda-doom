@@ -63,7 +63,7 @@ void A_Stop();
 // NUMSPRITES is an enum from info.h where all these are listed
 // as SPR_xxxx
 
-const char *sprnames[NUMSPRITES+1] = {
+const char *doom_sprnames[NUMSPRITES+1] = {
   "TROO","SHTG","PUNG","PISG","PISF","SHTF","SHT2","CHGG","CHGF","MISG",
   "MISF","SAWG","PLSG","PLSF","BFGG","BFGF","BLUD","PUFF","BAL1","BAL2",
   "PLSS","PLSE","MISL","BFS1","BFE1","BFE2","TFOG","IFOG","PLAY","POSS",
@@ -120,7 +120,7 @@ const char *sprnames[NUMSPRITES+1] = {
 // parts where frame rewiring is done for more details and the
 // extended way a BEX file can handle this.
 
-state_t states[NUMSTATES] = {
+state_t doom_states[NUMSTATES] = {
   {SPR_TROO,0,-1,NULL,S_NULL,0,0},  // S_NULL
   {SPR_SHTG,4,0,A_Light0,S_NULL,0,0}, // S_LIGHTDONE
   {SPR_PUNG,0,1,A_WeaponReady,S_PUNCH,0,0}, // S_PUNCH
@@ -1240,7 +1240,7 @@ state_t states[NUMSTATES] = {
 //
 // This goes on for the next 3000+ lines...
 
-mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
+doom_mobjinfo_t doom_mobjinfo[NUMMOBJTYPES] = {
   {   // MT_PLAYER
     -1,   // doomednum
     S_PLAY,   // spawnstate

@@ -52,6 +52,8 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "heretic/def.h"
+
 static mobj_t    *tmthing;
 static fixed_t   tmx;
 static fixed_t   tmy;
@@ -142,7 +144,7 @@ dboolean PIT_StompThing (mobj_t* thing)
     return true; // didn't hit it
 
   // monsters don't stomp things except on boss level
-  if (!telefrag)  // killough 8/9/98: make consistent across all levels
+  if (!telefrag && !(tmthing->flags2 & MF2_TELESTOMP))  // killough 8/9/98: make consistent across all levels
     return false;
 
   P_DamageMobj (thing, tmthing, tmthing, 10000); // Stomp!
@@ -437,23 +439,36 @@ dboolean PIT_CheckLine (line_t* ld)
 
   // killough 7/24/98: allow player to move out of 1s wall, to prevent sticking
   if (!ld->backsector) // one sided line
+  {
+    if (heretic)
     {
-      blockline = ld;
-      return tmunstuck && !untouched(ld) &&
-  FixedMul(tmx-tmthing->x,ld->dy) > FixedMul(tmy-tmthing->y,ld->dx);
+      if (tmthing->flags & MF_MISSILE)
+      {                       // Missiles can trigger impact specials
+          if (ld->special)
+          {
+              P_AppendSpecHit(ld);
+          }
+      }
     }
+    blockline = ld;
+    return tmunstuck && !untouched(ld) &&
+           FixedMul(tmx-tmthing->x,ld->dy) > FixedMul(tmy-tmthing->y,ld->dx);
+  }
 
   // killough 8/10/98: allow bouncing objects to pass through as missiles
   if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)))
-    {
-      if (ld->flags & ML_BLOCKING)           // explicitly blocking everything
-  return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
+  {
+    if (ld->flags & ML_BLOCKING)           // explicitly blocking everything
+      return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
 
-      // killough 8/9/98: monster-blockers don't affect friends
-      if (!(tmthing->flags & MF_FRIEND || tmthing->player)
-    && ld->flags & ML_BLOCKMONSTERS)
-  return false; // block monsters only
-    }
+    // killough 8/9/98: monster-blockers don't affect friends
+    if (
+      !(tmthing->flags & MF_FRIEND || tmthing->player) &&
+      ld->flags & ML_BLOCKMONSTERS &&
+      tmthing->type != HERETIC_MT_POD
+    )
+      return false; // block monsters only
+  }
 
   // set openrange, opentop, openbottom
   // these define a 'window' from one sector to another across this line
@@ -463,18 +478,18 @@ dboolean PIT_CheckLine (line_t* ld)
   // adjust floor & ceiling heights
 
   if (opentop < tmceilingz)
-    {
-      tmceilingz = opentop;
-      ceilingline = ld;
-      blockline = ld;
-    }
+  {
+    tmceilingz = opentop;
+    ceilingline = ld;
+    blockline = ld;
+  }
 
   if (openbottom > tmfloorz)
-    {
-      tmfloorz = openbottom;
-      floorline = ld;          // killough 8/1/98: remember floor linedef
-      blockline = ld;
-    }
+  {
+    tmfloorz = openbottom;
+    floorline = ld;          // killough 8/1/98: remember floor linedef
+    blockline = ld;
+  }
 
   if (lowfloor < tmdropoffz)
     tmdropoffz = lowfloor;
@@ -483,33 +498,7 @@ dboolean PIT_CheckLine (line_t* ld)
 
   CheckLinesCrossTracer(ld);//e6y
   if (ld->special)
-    {
-      // 1/11/98 killough: remove limit on lines hit, by array doubling
-      if (numspechit >= spechit_max) {
-        spechit_max = spechit_max ? spechit_max*2 : 8;
-	spechit = realloc(spechit,sizeof *spechit*spechit_max); // killough
-      }
-      spechit[numspechit++] = ld;
-      // e6y: Spechits overrun emulation code
-      if (numspechit > 8 && demo_compatibility)
-      {
-        static spechit_overrun_param_t spechit_overrun_param = {
-          NULL,          // line_t *line;
-
-          &spechit,      // line_t **spechit;
-          &numspechit,   // int *numspechit;
-
-          tmbbox,        // fixed_t *tmbbox[4];
-          &tmfloorz,     // fixed_t *tmfloorz;
-          &tmceilingz,   // fixed_t *tmceilingz;
-
-          &crushchange,  // dboolean *crushchange;
-          &nofit,        // dboolean *nofit;
-        };
-        spechit_overrun_param.line = ld;
-        SpechitOverrun(&spechit_overrun_param);
-      }
-    }
+    P_AppendSpecHit(ld);
 
   return true;
 }
@@ -556,7 +545,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
       (thing->intflags & MIF_ARMED ||              // Thing is an armed mine
        sentient(thing)) &&                         // ... or a sentient thing
       (thing->type != tmthing->type ||             // only different species
-       thing->type == MT_PLAYER) &&                // ... or different players
+       thing->type == g_mt_player) &&                // ... or different players
       thing->z + thing->height >= tmthing->z &&    // touches vertically
       tmthing->z + tmthing->height >= thing->z &&
       (thing->type ^ MT_PAIN) |                    // PEs and lost souls
@@ -568,90 +557,158 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
       return true;
     }
 
+  if (tmthing->flags2 & MF2_PASSMOBJ)
+  {                           // check if a mobj passed over/under another object
+    if ((tmthing->type == HERETIC_MT_IMP || tmthing->type == HERETIC_MT_WIZARD)
+        && (thing->type == HERETIC_MT_IMP || thing->type == HERETIC_MT_WIZARD))
+    {                       // don't let imps/wizards fly over other imps/wizards
+      return false;
+    }
+    if (tmthing->z > thing->z + thing->height
+        && !(thing->flags & MF_SPECIAL))
+    {
+      return (true);
+    }
+    else if (tmthing->z + tmthing->height < thing->z
+             && !(thing->flags & MF_SPECIAL))
+    {                       // under thing
+      return (true);
+    }
+  }
+
   // check for skulls slamming into things
 
   if (tmthing->flags & MF_SKULLFLY)
-    {
-      // A flying skull is smacking something.
-      // Determine damage amount, and the skull comes to a dead stop.
+  {
+    // A flying skull is smacking something.
+    // Determine damage amount, and the skull comes to a dead stop.
 
-      int damage = ((P_Random(pr_skullfly)%8)+1)*tmthing->info->damage;
+    int new_state;
+    int damage = ((P_Random(pr_skullfly)%8)+1)*tmthing->info->damage;
 
-      P_DamageMobj (thing, tmthing, tmthing, damage);
+    P_DamageMobj (thing, tmthing, tmthing, damage);
 
-      tmthing->flags &= ~MF_SKULLFLY;
-      tmthing->momx = tmthing->momy = tmthing->momz = 0;
+    tmthing->flags &= ~MF_SKULLFLY;
+    tmthing->momx = tmthing->momy = tmthing->momz = 0;
 
-      P_SetMobjState (tmthing, tmthing->info->spawnstate);
+    if (heretic)
+      new_state = tmthing->info->seestate;
+    else
+      new_state = tmthing->info->spawnstate;
+    
+    P_SetMobjState (tmthing, new_state);
 
-      return false;   // stop moving
-    }
+    return false;   // stop moving
+  }
 
   // missiles can hit other things
   // killough 8/10/98: bouncing non-solid things can hit other things too
 
-  if (tmthing->flags & MF_MISSILE || (tmthing->flags & MF_BOUNCES &&
-              !(tmthing->flags & MF_SOLID)))
+  if (tmthing->flags & MF_MISSILE || 
+     (tmthing->flags & MF_BOUNCES && !(tmthing->flags & MF_SOLID)))
+  {
+    // Check for passing through a ghost
+    if ((thing->flags & MF_SHADOW) && (tmthing->flags2 & MF2_THRUGHOST))
     {
-      // see if it went over / under
-
-      if (tmthing->z > thing->z + thing->height)
-  return true;    // overhead
-
-      if (tmthing->z+tmthing->height < thing->z)
-  return true;    // underneath
-
-      if (tmthing->target && (tmthing->target->type == thing->type ||
-    (tmthing->target->type == MT_KNIGHT && thing->type == MT_BRUISER)||
-    (tmthing->target->type == MT_BRUISER && thing->type == MT_KNIGHT)))
-      {
-  if (thing == tmthing->target)
-    return true;                // Don't hit same species as originator.
-  else
-    // e6y: Dehacked support - monsters infight
-    if (thing->type != MT_PLAYER && !monsters_infight) // Explode, but do no damage.
-      return false;         // Let players missile other players.
-      }
-
-      // killough 8/10/98: if moving thing is not a missile, no damage
-      // is inflicted, and momentum is reduced if object hit is solid.
-
-      if (!(tmthing->flags & MF_MISSILE)) {
-  if (!(thing->flags & MF_SOLID)) {
-      return true;
-  } else {
-      tmthing->momx = -tmthing->momx;
-      tmthing->momy = -tmthing->momy;
-      if (!(tmthing->flags & MF_NOGRAVITY))
-        {
-    tmthing->momx >>= 2;
-    tmthing->momy >>= 2;
-        }
-      return false;
-  }
-      }
-
-      if (!(thing->flags & MF_SHOOTABLE))
-  return !(thing->flags & MF_SOLID); // didn't do any damage
-
-      // damage / explode
-
-      damage = ((P_Random(pr_damage)%8)+1)*tmthing->info->damage;
-      P_DamageMobj (thing, tmthing, tmthing->target, damage);
-
-      // don't traverse any more
-      return false;
+        return (true);
     }
+
+    // see if it went over / under
+
+    if (tmthing->z > thing->z + thing->height)
+      return true;    // overhead
+
+    if (tmthing->z + tmthing->height < thing->z)
+      return true;    // underneath
+
+    if (
+      tmthing->target && 
+      (
+        tmthing->target->type == thing->type ||
+        (tmthing->target->type == MT_KNIGHT && thing->type == MT_BRUISER) ||
+        (tmthing->target->type == MT_BRUISER && thing->type == MT_KNIGHT)
+      )
+    )
+    {
+      if (thing == tmthing->target)
+        return true;                // Don't hit same species as originator.
+      else
+        // e6y: Dehacked support - monsters infight
+        if (thing->type != g_mt_player && !monsters_infight) // Explode, but do no damage.
+          return false;         // Let players missile other players.
+    }
+
+    // killough 8/10/98: if moving thing is not a missile, no damage
+    // is inflicted, and momentum is reduced if object hit is solid.
+
+    if (!(tmthing->flags & MF_MISSILE)) {
+      if (!(thing->flags & MF_SOLID))
+      {
+          return true;
+      }
+      else 
+      {
+        tmthing->momx = -tmthing->momx;
+        tmthing->momy = -tmthing->momy;
+        if (!(tmthing->flags & MF_NOGRAVITY))
+        {
+          tmthing->momx >>= 2;
+          tmthing->momy >>= 2;
+        }
+        return false;
+      }
+    }
+
+    if (!(thing->flags & MF_SHOOTABLE))
+      return !(thing->flags & MF_SOLID); // didn't do any damage
+
+    if (tmthing->flags2 & MF2_RIP)
+    {
+      if (!(thing->flags & MF_NOBLOOD))
+      {                   // Ok to spawn some blood
+        P_RipperBlood(tmthing);
+      }
+      S_StartSound(tmthing, heretic_sfx_ripslop);
+      damage = ((P_Random(pr_heretic) & 3) + 2) * tmthing->damage;
+      P_DamageMobj(thing, tmthing, tmthing->target, damage);
+      if (thing->flags2 & MF2_PUSHABLE && !(tmthing->flags2 & MF2_CANNOTPUSH))
+      {                   // Push thing
+        thing->momx += tmthing->momx >> 2;
+        thing->momy += tmthing->momy >> 2;
+      }
+      numspechit = 0;
+      return (true);
+    }
+
+    // damage / explode
+
+    damage = ((P_Random(pr_damage) % 8) + 1) * tmthing->info->damage;
+    if (heretic && damage && !(thing->flags & MF_NOBLOOD) && P_Random(pr_heretic) < 192)
+    {
+      P_BloodSplatter(tmthing->x, tmthing->y, tmthing->z, thing);
+    }
+    if (!heretic || damage)
+      P_DamageMobj(thing, tmthing, tmthing->target, damage);
+
+    // don't traverse any more
+    return false;
+  }
+
+  if (thing->flags2 & MF2_PUSHABLE && !(tmthing->flags2 & MF2_CANNOTPUSH))
+  {                           // Push thing
+      thing->momx += tmthing->momx >> 2;
+      thing->momy += tmthing->momy >> 2;
+  }
 
   // check for special pickup
 
   if (thing->flags & MF_SPECIAL)
-    {
-      uint_64_t solid = thing->flags & MF_SOLID;
-      if (tmthing->flags & MF_PICKUP)
-  P_TouchSpecialThing(thing, tmthing); // can remove thing
-      return !solid;
-    }
+  {
+    uint_64_t solid = thing->flags & MF_SOLID;
+    if (tmthing->flags & MF_PICKUP)
+      P_TouchSpecialThing(thing, tmthing); // can remove thing
+    return !solid;
+  }
 
   // RjY
   // comperr_hangsolid, an attempt to handle blocking hanging bodies
@@ -676,11 +733,10 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
   // Correction of wrong return value with demo_compatibility.
   // There is no more synch on http://www.doomworld.com/sda/dwdemo/w303-115.zip
   // (with correction in setMobjInfoValue)
-  if (demo_compatibility && !prboom_comp[PC_TREAT_NO_CLIPPING_THINGS_AS_NOT_BLOCKING].state)
+  if (heretic || (demo_compatibility && !prboom_comp[PC_TREAT_NO_CLIPPING_THINGS_AS_NOT_BLOCKING].state))
     return !(thing->flags & MF_SOLID);
   else
-
-  return !((thing->flags & MF_SOLID && !(thing->flags & MF_NOCLIP))
+    return !((thing->flags & MF_SOLID && !(thing->flags & MF_NOCLIP))
            && (tmthing->flags & MF_SOLID || demo_compatibility));
 
   // return !(thing->flags & MF_SOLID);   // old code -- killough
@@ -826,6 +882,8 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
   yl = P_GetSafeBlockY(tmbbox[BOXBOTTOM] - bmaporgy);
   yh = P_GetSafeBlockY(tmbbox[BOXTOP] - bmaporgy);
 
+  // heretic - this must be incremented before iterating over the lines
+  validcount++;
   for (bx=xl ; bx<=xh ; bx++)
     for (by=yl ; by<=yh ; by++)
       if (!P_BlockLinesIterator (bx,by,PIT_CheckLine))
@@ -843,95 +901,148 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
 //
 dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
                   dboolean dropoff) // killough 3/15/98: allow dropoff as option
-  {
+{
   fixed_t oldx;
   fixed_t oldy;
 
   felldown = floatok = false;               // killough 11/98
 
-  if (!P_CheckPosition (thing, x, y))
-    return false;   // solid wall or thing
-
-  if ( !(thing->flags & MF_NOCLIP) )
-    {
-      if (thing->flags & MF_FLY)
-      {
-        // When flying, slide up or down blocking lines until the actor
-        // is not blocked.
-        if (thing->z+thing->height > tmceilingz)
-        {
-          thing->momz = -8*FRACUNIT;
-          return false;
-        }
-        else if (thing->z < tmfloorz && tmfloorz-tmdropoffz > 24*FRACUNIT)
-        {
-          thing->momz = 8*FRACUNIT;
-          return false;
-        }
-      }
-      // killough 7/26/98: reformatted slightly
-      // killough 8/1/98: Possibly allow escape if otherwise stuck
-
-      if (tmceilingz - tmfloorz < thing->height ||     // doesn't fit
-    // mobj must lower to fit
-    (floatok = true, !(thing->flags & MF_TELEPORT) &&
-     tmceilingz - thing->z < thing->height && !(thing->flags & MF_FLY)) ||
-    // too big a step up
-    (!(thing->flags & MF_TELEPORT) &&
-     tmfloorz - thing->z > 24*FRACUNIT))
-  return tmunstuck
-    && !(ceilingline && untouched(ceilingline))
-    && !(  floorline && untouched(  floorline));
-
-      /* killough 3/15/98: Allow certain objects to drop off
-       * killough 7/24/98, 8/1/98:
-       * Prevent monsters from getting stuck hanging off ledges
-       * killough 10/98: Allow dropoffs in controlled circumstances
-       * killough 11/98: Improve symmetry of clipping on stairs
-       */
-      if (!(thing->flags & (MF_DROPOFF|MF_FLOAT))) {
-  if (comp[comp_dropoff])
-    {
-      // e6y
-      // Fix demosync bug in mbf compatibility mode
-      // There is no more desync on v2-2822.lmp/vrack2.wad
-      // -force_no_dropoff command-line switch is for mbf_compatibility demos 
-      // recorded with prboom 2.2.2 - 2.4.7
-      // Links:
-      // http://competn.doom2.net/pub/sda/t-z/v2-2822.zip
-      // http://www.doomworld.com/idgames/index.php?id=11138
-      if ((compatibility || !dropoff 
-            || (!prboom_comp[PC_NO_DROPOFF].state && mbf_features && compatibility_level <= prboom_2_compatibility))
-          && (tmfloorz - tmdropoffz > 24*FRACUNIT))
-        return false;                      // don't stand over a dropoff
-    }
-  else
-    if (!dropoff || (dropoff==2 &&  // large jump down (e.g. dogs)
-         (tmfloorz-tmdropoffz > 128*FRACUNIT ||
-          !thing->target || thing->target->z >tmdropoffz)))
-      {
-        if (!monkeys || !mbf_features ?
-      tmfloorz - tmdropoffz > 24*FRACUNIT :
-      thing->floorz  - tmfloorz > 24*FRACUNIT ||
-      thing->dropoffz - tmdropoffz > 24*FRACUNIT)
+  if (!P_CheckPosition(thing, x, y))
+  {                           // Solid wall or thing
+    CheckMissileImpact(thing);
     return false;
-      }
-    else { /* dropoff allowed -- check for whether it fell more than 24 */
-      felldown = !(thing->flags & MF_NOGRAVITY) &&
-        thing->z - tmfloorz > 24*FRACUNIT;
-    }
-      }
+  }
 
-      if (thing->flags & MF_BOUNCES &&    // killough 8/13/98
-    !(thing->flags & (MF_MISSILE|MF_NOGRAVITY)) &&
-    !sentient(thing) && tmfloorz - thing->z > 16*FRACUNIT)
-  return false; // too big a step up for bouncers under gravity
-
-      // killough 11/98: prevent falling objects from going up too many steps
-      if (thing->intflags & MIF_FALLING && tmfloorz - thing->z >
-    FixedMul(thing->momx,thing->momx)+FixedMul(thing->momy,thing->momy))
-  return false;
+  if (!(thing->flags & MF_NOCLIP))
+  {
+    if (thing->flags & MF_FLY)
+    {
+      // When flying, slide up or down blocking lines until the actor
+      // is not blocked.
+      if (thing->z+thing->height > tmceilingz)
+      {
+        thing->momz = -8*FRACUNIT;
+        return false;
+      }
+      else if (thing->z < tmfloorz && tmfloorz-tmdropoffz > 24*FRACUNIT)
+      {
+        thing->momz = 8*FRACUNIT;
+        return false;
+      }
     }
+    // killough 7/26/98: reformatted slightly
+    // killough 8/1/98: Possibly allow escape if otherwise stuck
+
+    if (
+      tmceilingz - tmfloorz < thing->height ||     // doesn't fit
+      // mobj must lower to fit
+      (
+        floatok = true,
+        !(thing->flags & MF_TELEPORT) &&
+        tmceilingz - thing->z < thing->height &&
+        !(thing->flags & MF_FLY) &&
+        !(thing->flags2 & MF2_FLY)
+      )
+    )
+    {
+      CheckMissileImpact(thing);
+      return tmunstuck
+        && !(ceilingline && untouched(ceilingline))
+        && !(  floorline && untouched(  floorline));
+    }
+
+    if (thing->flags2 & MF2_FLY)
+    {
+      if (thing->z + thing->height > tmceilingz)
+      {
+        thing->momz = -8 * FRACUNIT;
+        return false;
+      }
+      else if (thing->z < tmfloorz
+               && tmfloorz - tmdropoffz > 24 * FRACUNIT)
+      {
+        thing->momz = 8 * FRACUNIT;
+        return false;
+      }
+    }
+
+    if (
+      !(thing->flags & MF_TELEPORT) &&
+      thing->type != HERETIC_MT_MNTRFX2 &&
+      tmfloorz - thing->z > 24*FRACUNIT
+    )
+    {
+      CheckMissileImpact(thing);
+      return tmunstuck
+        && !(ceilingline && untouched(ceilingline))
+        && !(  floorline && untouched(  floorline));
+    }
+
+    if ((thing->flags & MF_MISSILE) && tmfloorz > thing->z)
+    {
+      CheckMissileImpact(thing);
+    }
+
+    /* killough 3/15/98: Allow certain objects to drop off
+     * killough 7/24/98, 8/1/98:
+     * Prevent monsters from getting stuck hanging off ledges
+     * killough 10/98: Allow dropoffs in controlled circumstances
+     * killough 11/98: Improve symmetry of clipping on stairs
+     */
+    if (!(thing->flags & (MF_DROPOFF|MF_FLOAT))) 
+    {
+      if (heretic || comp[comp_dropoff])
+      {
+        // e6y
+        // Fix demosync bug in mbf compatibility mode
+        // There is no more desync on v2-2822.lmp/vrack2.wad
+        // -force_no_dropoff command-line switch is for mbf_compatibility demos 
+        // recorded with prboom 2.2.2 - 2.4.7
+        // Links:
+        // http://competn.doom2.net/pub/sda/t-z/v2-2822.zip
+        // http://www.doomworld.com/idgames/index.php?id=11138
+        if (
+          (
+            heretic ||
+            compatibility ||
+            !dropoff ||
+            (
+              !prboom_comp[PC_NO_DROPOFF].state &&
+              mbf_features &&
+              compatibility_level <= prboom_2_compatibility
+            )
+          ) &&
+          (tmfloorz - tmdropoffz > 24*FRACUNIT)
+        )
+          return false;                      // don't stand over a dropoff
+      }
+      else
+        if (!dropoff || (dropoff==2 &&  // large jump down (e.g. dogs)
+             (tmfloorz-tmdropoffz > 128*FRACUNIT ||
+              !thing->target || thing->target->z >tmdropoffz)))
+        {
+            if (!monkeys || !mbf_features ?
+                tmfloorz - tmdropoffz > 24*FRACUNIT :
+                thing->floorz  - tmfloorz > 24*FRACUNIT ||
+                thing->dropoffz - tmdropoffz > 24*FRACUNIT)
+              return false;
+        }
+        else
+        { /* dropoff allowed -- check for whether it fell more than 24 */
+          felldown = !(thing->flags & MF_NOGRAVITY) && thing->z - tmfloorz > 24*FRACUNIT;
+        }
+    }
+
+    if (thing->flags & MF_BOUNCES &&    // killough 8/13/98
+        !(thing->flags & (MF_MISSILE|MF_NOGRAVITY)) &&
+        !sentient(thing) && tmfloorz - thing->z > 16*FRACUNIT)
+      return false; // too big a step up for bouncers under gravity
+
+    // killough 11/98: prevent falling objects from going up too many steps
+    if (thing->intflags & MIF_FALLING && tmfloorz - thing->z >
+        FixedMul(thing->momx, thing->momx) + FixedMul(thing->momy, thing->momy))
+      return false;
+  }
 
   // the move is ok,
   // so unlink from the old position and link into the new position
@@ -948,20 +1059,30 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
 
   P_SetThingPosition (thing);
 
+  if (thing->flags2 & MF2_FOOTCLIP
+      && P_GetThingFloorType(thing) != FLOOR_SOLID)
+  {
+    thing->flags2 |= MF2_FEETARECLIPPED;
+  }
+  else if (thing->flags2 & MF2_FEETARECLIPPED)
+  {
+    thing->flags2 &= ~MF2_FEETARECLIPPED;
+  }
+
   // if any special lines were hit, do the effect
 
-  if (! (thing->flags&(MF_TELEPORT|MF_NOCLIP)) )
+  if (!(thing->flags & (MF_TELEPORT | MF_NOCLIP)))
     while (numspechit--)
       if (spechit[numspechit]->special)  // see if the line was crossed
-  {
-    int oldside;
-    if ((oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit])) !=
-        P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
-      P_CrossSpecialLine(spechit[numspechit], oldside, thing, false);
-  }
+      {
+        int oldside;
+        if ((oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit])) !=
+            P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
+          P_CrossSpecialLine(spechit[numspechit], oldside, thing, false);
+      }
 
   return true;
-  }
+}
 
 /*
  * killough 9/12/98:
@@ -1195,11 +1316,12 @@ void P_HitSlideLine (line_t* ld)
   else
   {
     extern dboolean onground;
-    icyfloor = !compatibility &&
-    variable_friction &&
-    slidemo->player &&
-    onground && 
-    slidemo->friction > ORIG_FRICTION;
+    icyfloor = !heretic && 
+               !compatibility &&
+               variable_friction &&
+               slidemo->player &&
+               onground && 
+               slidemo->friction > ORIG_FRICTION;
   }
 
   if (ld->slopetype == ST_HORIZONTAL)
@@ -1242,7 +1364,7 @@ void P_HitSlideLine (line_t* ld)
   // The moveangle+=10 breaks v1.9 demo compatibility in
   // some demos, so it needs demo_compatibility switch.
 
-  if (!demo_compatibility)
+  if (!heretic && !demo_compatibility)
     moveangle += 10; // prevents sudden path reversal due to        // phares
                      // rounding error                              //   |
   deltaangle = moveangle-lineangle;                                 //   V
@@ -1431,7 +1553,8 @@ void P_SlideMove(mobj_t *mo)
 
       /* killough 10/98: affect the bobbing the same way (but not voodoo dolls)
        * cph - DEMOSYNC? */
-      if (mo->player && mo->player->mo == mo)
+      // HERETIC_TODO: probably not necessary?
+      if (!heretic && mo->player && mo->player->mo == mo)
   {
     if (D_abs(mo->player->momx) > D_abs(tmxmove))
       mo->player->momx = tmxmove;
@@ -1530,6 +1653,9 @@ dboolean PTR_AimTraverse (intercept_t* in)
   if (!(th->flags&MF_SHOOTABLE))
     return true;    // corpse or something
 
+  if (th->type == HERETIC_MT_POD)
+    return true;    // Can't auto-aim at pods
+
   /* killough 7/19/98, 8/2/98:
    * friends don't aim at friends (except players), at least not first
    */
@@ -1563,6 +1689,8 @@ dboolean PTR_AimTraverse (intercept_t* in)
   return false;   // don't go any farther
 }
 
+// heretic
+extern mobjtype_t PuffType;
 
 //
 // PTR_ShootTraverse
@@ -1633,7 +1761,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
         // fix bullet-eaters -- killough:
         // WARNING: Almost all demos will lose sync without this
         // demo_compatibility flag check!!! killough 1/18/98
-      if (demo_compatibility || li->backsector->ceilingheight < z)
+      if (heretic || demo_compatibility || li->backsector->ceilingheight < z)
         return false;
       }
 
@@ -1654,6 +1782,9 @@ dboolean PTR_ShootTraverse (intercept_t* in)
 
   if (!(th->flags&MF_SHOOTABLE))
     return true;  // corpse or something
+
+  if (heretic && th->flags & MF_SHADOW && shootthing->player->readyweapon == wp_staff)
+    return true;
 
   // check angles to see if the thing can be aimed at
 
@@ -1679,13 +1810,28 @@ dboolean PTR_ShootTraverse (intercept_t* in)
 
   // Spawn bullet puffs or blod spots,
   // depending on target type.
-  if (in->d.thing->flags & MF_NOBLOOD)
-    P_SpawnPuff (x,y,z);
+  if (heretic && PuffType == HERETIC_MT_BLASTERPUFF1)
+  {                           // Make blaster big puff
+    mobj_t* mo;
+    mo = P_SpawnMobj(x, y, z, HERETIC_MT_BLASTERPUFF2);
+    S_StartSound(mo, heretic_sfx_blshit);
+  }
   else
-    P_SpawnBlood (x,y,z, la_damage);
+  {
+    if (heretic || in->d.thing->flags & MF_NOBLOOD)
+      P_SpawnPuff (x,y,z);
+    else
+      P_SpawnBlood (x,y,z, la_damage);
+  }
 
   if (la_damage)
-    P_DamageMobj (th, shootthing, shootthing, la_damage);
+  {
+    if (heretic && !(in->d.thing->flags & MF_NOBLOOD) && P_Random(pr_heretic) < 192)
+    {
+      P_BloodSplatter(x, y, z, in->d.thing);
+    }
+    P_DamageMobj(th, shootthing, shootthing, la_damage);
+  }
 
   // don't go any farther
   return false;
@@ -1751,6 +1897,10 @@ void P_LineAttack
   x2 = t1->x + (distance>>FRACBITS)*finecosine[angle];
   y2 = t1->y + (distance>>FRACBITS)*finesine[angle];
   shootz = t1->z + (t1->height>>1) + 8*FRACUNIT;
+  if (t1->flags2 & MF2_FEETARECLIPPED)
+  {
+    shootz -= FOOTCLIPSIZE;
+  }
   attackrange = distance;
   aimslope = slope;
 
@@ -1773,7 +1923,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
     P_LineOpening (in->d.line);
     if (openrange <= 0)
       {
-      S_StartSound (usething, sfx_noway);
+      if (!heretic) S_StartSound (usething, sfx_noway);
 
       // can't use through a wall
       return false;
@@ -1795,7 +1945,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
   //WAS can't use for than one special line in a row
   //jff 3/21/98 NOW multiple use allowed with enabling line flag
 
-  return (!demo_compatibility && ((in->d.line->flags&ML_PASSUSE) || comperr(comperr_passuse)))?//e6y
+  return (!heretic && !demo_compatibility && ((in->d.line->flags&ML_PASSUSE) || comperr(comperr_passuse)))?//e6y
           true : false;
 }
 
@@ -1851,7 +2001,7 @@ void P_UseLines (player_t*  player)
   // This added test makes the "oof" sound work on 2s lines -- killough:
 
   if (P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_UseTraverse ))
-    if (!comp[comp_sound] && !P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_NoWayTraverse ))
+    if (!heretic && !comp[comp_sound] && !P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_NoWayTraverse ))
       S_StartSound (usething, sfx_noway);
 }
 
@@ -1893,7 +2043,11 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 
   if (bombspot->flags & MF_BOUNCES ?
       thing->type == MT_CYBORG && bombsource->type == MT_CYBORG :
-      thing->type == MT_CYBORG || thing->type == MT_SPIDER)
+      thing->type == MT_CYBORG ||
+      thing->type == MT_SPIDER ||
+      thing->type == HERETIC_MT_MINOTAUR ||
+      thing->type == HERETIC_MT_SORCERER1 ||
+      thing->type == HERETIC_MT_SORCERER2)
     return true;
 
   dx = D_abs(thing->x - bombspot->x);
@@ -1940,7 +2094,14 @@ void P_RadiusAttack(mobj_t* spot,mobj_t* source,int damage)
   xh = P_GetSafeBlockX(spot->x + dist - bmaporgx);
   xl = P_GetSafeBlockX(spot->x - dist - bmaporgx);
   bombspot = spot;
-  bombsource = source;
+  if (spot->type == HERETIC_MT_POD && spot->target)
+  {
+    bombsource = spot->target;
+  }
+  else
+  {
+    bombsource = source;
+  }
   bombdamage = damage;
 
   for (y=yl ; y<=yh ; y++)
@@ -1964,9 +2125,9 @@ dboolean PIT_ChangeSector (mobj_t* thing)
 
   if (thing->health <= 0)
     {
-    P_SetMobjState (thing, S_GIBS);
+    if (!heretic) P_SetMobjState (thing, S_GIBS);
 
-    if (compatibility_level != doom_12_compatibility)
+    if (!heretic && compatibility_level != doom_12_compatibility)
     {
       thing->flags &= ~MF_SOLID;
     }
@@ -2009,7 +2170,7 @@ dboolean PIT_ChangeSector (mobj_t* thing)
     // spray blood in a random direction
     mo = P_SpawnMobj (thing->x,
                       thing->y,
-                      thing->z + thing->height/2, MT_BLOOD);
+                      thing->z + thing->height/2, g_mt_blood);
 
     /* killough 8/10/98: remove dependence on order of evaluation */
     t = P_Random(pr_crush);
@@ -2414,4 +2575,243 @@ void P_MapStart(void) {
 }
 void P_MapEnd(void) {
 	tmthing = NULL;
+}
+
+// heretic
+
+int tmflags;
+mobj_t *onmobj; // generic global onmobj...used for landing on pods/players
+
+dboolean P_TestMobjLocation(mobj_t * mobj)
+{
+    int flags;
+
+    flags = mobj->flags;
+    mobj->flags &= ~MF_PICKUP;
+    if (P_CheckPosition(mobj, mobj->x, mobj->y))
+    {                           // XY is ok, now check Z
+        mobj->flags = flags;
+        if ((mobj->z < mobj->floorz)
+            || (mobj->z + mobj->height > mobj->ceilingz))
+        {                       // Bad Z
+            return (false);
+        }
+        return (true);
+    }
+    mobj->flags = flags;
+    return (false);
+}
+
+dboolean PIT_CheckOnmobjZ(mobj_t * thing)
+{
+    fixed_t blockdist;
+
+    if (!(thing->flags & (MF_SOLID | MF_SPECIAL | MF_SHOOTABLE)))
+    {                           // Can't hit thing
+        return (true);
+    }
+    blockdist = thing->radius + tmthing->radius;
+    if (abs(thing->x - tmx) >= blockdist || abs(thing->y - tmy) >= blockdist)
+    {                           // Didn't hit thing
+        return (true);
+    }
+    if (thing == tmthing)
+    {                           // Don't clip against self
+        return (true);
+    }
+    if (tmthing->z > thing->z + thing->height)
+    {
+        return (true);
+    }
+    else if (tmthing->z + tmthing->height < thing->z)
+    {                           // under thing
+        return (true);
+    }
+    if (thing->flags & MF_SOLID)
+    {
+        onmobj = thing;
+    }
+    return (!(thing->flags & MF_SOLID));
+}
+
+// Checks if the new Z position is legal
+mobj_t *P_CheckOnmobj(mobj_t * thing)
+{
+    int xl, xh, yl, yh, bx, by;
+    subsector_t *newsubsec;
+    fixed_t x;
+    fixed_t y;
+    mobj_t oldmo;
+
+    x = thing->x;
+    y = thing->y;
+    tmthing = thing;
+    tmflags = thing->flags;
+    oldmo = *thing;             // save the old mobj before the fake zmovement
+    P_FakeZMovement(tmthing);
+
+    tmx = x;
+    tmy = y;
+
+    tmbbox[BOXTOP] = y + tmthing->radius;
+    tmbbox[BOXBOTTOM] = y - tmthing->radius;
+    tmbbox[BOXRIGHT] = x + tmthing->radius;
+    tmbbox[BOXLEFT] = x - tmthing->radius;
+
+    newsubsec = R_PointInSubsector(x, y);
+    ceilingline = NULL;
+
+//
+// the base floor / ceiling is from the subsector that contains the
+// point.  Any contacted lines the step closer together will adjust them
+//
+    tmfloorz = tmdropoffz = newsubsec->sector->floorheight;
+    tmceilingz = newsubsec->sector->ceilingheight;
+
+    validcount++;
+    numspechit = 0;
+
+    if (tmflags & MF_NOCLIP)
+        return NULL;
+
+//
+// check things first, possibly picking things up
+// the bounding box is extended by MAXRADIUS because mobj_ts are grouped
+// into mapblocks based on their origin point, and can overlap into adjacent
+// blocks by up to MAXRADIUS units
+//
+    xl = (tmbbox[BOXLEFT] - bmaporgx - MAXRADIUS) >> MAPBLOCKSHIFT;
+    xh = (tmbbox[BOXRIGHT] - bmaporgx + MAXRADIUS) >> MAPBLOCKSHIFT;
+    yl = (tmbbox[BOXBOTTOM] - bmaporgy - MAXRADIUS) >> MAPBLOCKSHIFT;
+    yh = (tmbbox[BOXTOP] - bmaporgy + MAXRADIUS) >> MAPBLOCKSHIFT;
+
+    for (bx = xl; bx <= xh; bx++)
+        for (by = yl; by <= yh; by++)
+            if (!P_BlockThingsIterator(bx, by, PIT_CheckOnmobjZ))
+            {
+                *tmthing = oldmo;
+                return onmobj;
+            }
+    *tmthing = oldmo;
+    return NULL;
+}
+
+void P_FakeZMovement(mobj_t * mo)
+{
+    int dist;
+    int delta;
+//
+// adjust height
+//
+    mo->z += mo->momz;
+    if (mo->flags & MF_FLOAT && mo->target)
+    {                           // float down towards target if too close
+        if (!(mo->flags & MF_SKULLFLY) && !(mo->flags & MF_INFLOAT))
+        {
+            dist =
+                P_AproxDistance(mo->x - mo->target->x, mo->y - mo->target->y);
+            delta = (mo->target->z + (mo->height >> 1)) - mo->z;
+            if (delta < 0 && dist < -(delta * 3))
+                mo->z -= FLOATSPEED;
+            else if (delta > 0 && dist < (delta * 3))
+                mo->z += FLOATSPEED;
+        }
+    }
+    if (mo->player && mo->flags2 & MF2_FLY && !(mo->z <= mo->floorz)
+        && leveltime & 2)
+    {
+        mo->z += finesine[(FINEANGLES / 20 * leveltime >> 2) & FINEMASK];
+    }
+
+//
+// clip movement
+//
+    if (mo->z <= mo->floorz)
+    {                           // Hit the floor
+        mo->z = mo->floorz;
+        if (mo->momz < 0)
+        {
+            mo->momz = 0;
+        }
+        if (mo->flags & MF_SKULLFLY)
+        {                       // The skull slammed into something
+            mo->momz = -mo->momz;
+        }
+        if (mo->info->crashstate && (mo->flags & MF_CORPSE))
+        {
+            return;
+        }
+    }
+    else if (mo->flags2 & MF2_LOGRAV)
+    {
+        if (mo->momz == 0)
+            mo->momz = -(GRAVITY >> 3) * 2;
+        else
+            mo->momz -= GRAVITY >> 3;
+    }
+    else if (!(mo->flags & MF_NOGRAVITY))
+    {
+        if (mo->momz == 0)
+            mo->momz = -GRAVITY * 2;
+        else
+            mo->momz -= GRAVITY;
+    }
+
+    if (mo->z + mo->height > mo->ceilingz)
+    {                           // hit the ceiling
+        if (mo->momz > 0)
+            mo->momz = 0;
+        mo->z = mo->ceilingz - mo->height;
+        if (mo->flags & MF_SKULLFLY)
+        {                       // the skull slammed into something
+            mo->momz = -mo->momz;
+        }
+    }
+}
+
+void P_AppendSpecHit(line_t * ld)
+{
+  // 1/11/98 killough: remove limit on lines hit, by array doubling
+  if (numspechit >= spechit_max) {
+    spechit_max = spechit_max ? spechit_max*2 : 8;
+    spechit = realloc(spechit,sizeof *spechit*spechit_max); // killough
+  }
+  spechit[numspechit++] = ld;
+  // e6y: Spechits overrun emulation code
+  if (numspechit > 8 && demo_compatibility)
+  {
+    static spechit_overrun_param_t spechit_overrun_param = {
+      NULL,          // line_t *line;
+
+      &spechit,      // line_t **spechit;
+      &numspechit,   // int *numspechit;
+
+      tmbbox,        // fixed_t *tmbbox[4];
+      &tmfloorz,     // fixed_t *tmfloorz;
+      &tmceilingz,   // fixed_t *tmceilingz;
+
+      &crushchange,  // dboolean *crushchange;
+      &nofit,        // dboolean *nofit;
+    };
+    spechit_overrun_param.line = ld;
+    SpechitOverrun(&spechit_overrun_param);
+  }
+}
+
+void CheckMissileImpact(mobj_t * mobj)
+{
+    int i;
+
+    if (!heretic || !numspechit || !(mobj->flags & MF_MISSILE) || !mobj->target)
+    {
+        return;
+    }
+    if (!mobj->target->player)
+    {
+        return;
+    }
+    for (i = numspechit - 1; i >= 0; i--)
+    {
+        P_ShootSpecialLine(mobj->target, spechit[i]);
+    }
 }

@@ -1,4 +1,4 @@
-# dsda-doom v0.10.0
+# dsda-doom v0.11.0-dev
 This is a fork of prboom+ with extra tooling for dsda.
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 

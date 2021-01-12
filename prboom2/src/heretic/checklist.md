@@ -1,0 +1,65 @@
+### Files in crispy src/heretic:
+
+- [ ] am_data.h 104
+- [ ] am_map.c 1544
+- [ ] am_map.h 112
+- [ ] ct_chat.c 478
+- [ ] ct_chat.h 39
+- [ ] d_main.c 1305
+- [ ] d_net.c 227
+- [ ] deh_ammo.c 114
+- [ ] deh_frame.c 336
+- [ ] deh_htext.c 846
+- [ ] deh_htic.c 197
+- [ ] deh_htic.h 53
+- [ ] deh_sound.c 109
+- [ ] deh_thing.c 145
+- [ ] deh_weapon.c 123
+- [ ] doomdata.h 193
+- [ ] doomdef.h 852
+- [x] dstrings.h 247
+- [ ] f_finale.c 444
+- [x] g_game.c 2356
+- [ ] in_lude.c 1129
+- [x] info.c 5601
+- [x] info.h 1579
+- [x] m_random.c 77
+- [x] m_random.h 38
+- [ ] mn_menu.c 2014
+- [x] p_action.h 152
+- [x] p_ceiling.c 256
+- [x] p_doors.c 380
+- [x] p_enemy.c 2715
+- [x] p_floor.c 466
+- [x] p_inter.c 1502
+- [x] p_lights.c 275
+- [ ] p_local.h 282
+- [x] p_map.c 1714
+- [x] p_maputl.c 799
+- [x] p_mobj.c 1665
+- [x] p_plats.c 259
+- [x] p_pspr.c 1908
+- [ ] p_saveg.c 1913
+- [x] p_setup.c 763
+- [x] p_sight.c 357
+- [x] p_spec.c 1358
+- [x] p_spec.h 391
+- [x] p_switch.c 410
+- [x] p_telept.c 165
+- [x] p_tick.c 168
+- [x] p_user.c 1046
+- [ ] r_bsp.c 528
+- [ ] r_data.c 765
+- [ ] r_draw.c 515
+- [ ] r_local.h 509
+- [ ] r_main.c 868
+- [ ] r_plane.c 539
+- [ ] r_segs.c 678
+- [ ] r_things.c 1075
+- [ ] s_sound.c 616
+- [x] s_sound.h 39
+- [ ] sb_bar.c 1333
+- [x] sounds.c 251
+- [x] sounds.h 292
+
+LEFT: 19256, MERGED: 27958, PERCENT: 59%

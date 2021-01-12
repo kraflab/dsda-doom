@@ -90,6 +90,30 @@ typedef enum
   CF_FLY              = 16,
 } cheat_t;
 
+// heretic
+#define NUMINVENTORYSLOTS	14
+typedef struct
+{
+    int type;
+    int count;
+} inventory_t;
+
+// heretic
+typedef enum
+{
+    arti_none,
+    arti_invulnerability,
+    arti_invisibility,
+    arti_health,
+    arti_superhealth,
+    arti_tomeofpower,
+    arti_torch,
+    arti_firebomb,
+    arti_egg,
+    arti_fly,
+    arti_teleport,
+    NUMARTIFACTS
+} artitype_t;
 
 //
 // Extended player object info: player_t
@@ -197,6 +221,22 @@ typedef struct player_s
   angle_t prev_viewangle;
   angle_t prev_viewpitch;
   fixed_t jumpTics;      // delay the next jump for a moment
+
+  // heretic
+  int flyheight;
+  int lookdir;
+  dboolean centering;
+  inventory_t inventory[NUMINVENTORYSLOTS];
+  artitype_t readyArtifact;
+  int artifactCount;
+  int inventorySlotNum;
+  int messageTics;            // counter for showing messages
+  int flamecount;             // for flame thrower duration
+  int chickenTics;            // player is a chicken if > 0
+  int chickenPeck;            // chicken peck countdown
+  mobj_t *rain1;              // active rain maker 1
+  mobj_t *rain2;              // active rain maker 2
+  int centerMessageTics;      // counter for showing centered messages
 } player_t;
 
 

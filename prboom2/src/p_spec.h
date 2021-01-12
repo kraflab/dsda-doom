@@ -405,6 +405,14 @@ typedef enum
   genBlazeClose,
   genCdO,
   genBlazeCdO,
+
+  // heretic
+  vld_normal,
+  vld_normal_turbo,
+  vld_close30ThenOpen,
+  vld_close,
+  vld_open,
+  vld_raiseIn5Mins
 } vldoor_e;
 
 // p_ceilng
@@ -494,8 +502,11 @@ typedef enum
 typedef enum
 {
   build8, // slowly build by 8
-  turbo16 // quickly build by 16
+  turbo16, // quickly build by 16
 
+  // heretic
+  heretic_build8,
+  heretic_turbo16
 } stair_e;
 
 typedef enum
@@ -1161,5 +1172,23 @@ int P_ActivateInStasisCeiling
 ( line_t* line );
 
 mobj_t* P_GetPushThing(int);                                // phares 3/23/98
+
+// heretic
+
+void P_InitTerrainTypes(void);
+void P_InitLava(void);
+void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing);
+void Heretic_P_PlayerInSpecialSector(player_t * player);
+void P_SpawnLineSpecials(void);
+
+extern int *TerrainTypes;
+
+void P_InitAmbientSound(void);
+void P_AmbientSound(void);
+void P_AddAmbientSfx(int sequence);
+dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle);
+dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing);
+dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dboolean bossaction);
+void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing);
 
 #endif
