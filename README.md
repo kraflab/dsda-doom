@@ -3,7 +3,7 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 This is based on the unstable branch of PRBoom+, so there could be bugs - please keep this in mind. :^)
 
 ### Experimental Stuff
-- Use the "restart current map" key while demo recording to perform an in-game restart.
+- Use the "restart current map" key while demo recording to perform an in-game restart. Known issue: solo net is not preserved properly.
 
 ### New Stuff
 - Use `-analysis` to write an analysis.txt file with run details.
