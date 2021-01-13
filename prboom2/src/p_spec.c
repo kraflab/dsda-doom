@@ -2689,10 +2689,10 @@ void P_SpawnSpecials (void)
       case 4:
         // strobe fast/death slime
         P_SpawnStrobeFlash(sector,FASTDARK,0);
-        if (!heretic)
-        {
+        if (heretic)
+          sector->special = 4;
+        else
           sector->special |= 3<<DAMAGE_SHIFT; //jff 3/14/98 put damage bits in
-        }
         break;
 
       case 8:
