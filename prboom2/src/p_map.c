@@ -682,7 +682,8 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
 
     // damage / explode
 
-    damage = ((P_Random(pr_damage) % 8) + 1) * tmthing->info->damage;
+    damage = heretic ? tmthing->damage : tmthing->info->damage;
+    damage = ((P_Random(pr_damage) % 8) + 1) * damage;
     if (heretic && damage && !(thing->flags & MF_NOBLOOD) && P_Random(pr_heretic) < 192)
     {
       P_BloodSplatter(tmthing->x, tmthing->y, tmthing->z, thing);
