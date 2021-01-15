@@ -21,7 +21,6 @@
 ========================
 */
 
-#include "doomdef.h"
 #include "doomstat.h"
 #include "d_event.h"
 #include "s_sound.h"
@@ -31,13 +30,17 @@
 #include "v_video.h"
 #include "lprintf.h"
 #include "w_wad.h"
-#include "d_player.h"
 #include "g_game.h"
+
+#include "dsda/hud.h"
 
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
 
+#include "in_lude.h"
+
 extern dboolean BorderNeedRefresh;
+extern dboolean finalintermission;
 
 typedef enum
 {
@@ -79,7 +82,6 @@ static void MN_DrTextB(const char *text, int x, int y);
 static int MN_TextBWidth(const char *text);
 
 static int prevmap;
-static dboolean finalintermission;
 static dboolean skipintermission;
 static int interstate = 0;
 static int intertime = -1;
@@ -584,31 +586,12 @@ void IN_Drawer(void)
 //
 //========================================================================
 
-// HERETIC_TODO: IN_DrawStatBack
 void IN_DrawStatBack(void)
 {
-    // int x;
-    // int y;
-    //
-    // byte *src;
-    // byte *dest;
-    //
-    // src = W_CacheLumpName(DEH_String("FLOOR16"), PU_CACHE);
-    // dest = I_VideoBuffer;
-    //
-    // for (y = 0; y < SCREENHEIGHT; y++)
-    // {
-    //     for (x = 0; x < SCREENWIDTH / 64; x++)
-    //     {
-    //         memcpy(dest, src + ((y & 63) << 6), 64);
-    //         dest += 64;
-    //     }
-    //     if (SCREENWIDTH & 63)
-    //     {
-    //         memcpy(dest, src + ((y & 63) << 6), SCREENWIDTH & 63);
-    //         dest += (SCREENWIDTH & 63);
-    //     }
-    // }
+    V_DrawBackground(DEH_String("FLOOR16"), 0);
+
+    // e6y: wide-res
+    V_FillBorder(-1, 0);
 }
 
 //========================================================================
@@ -793,6 +776,8 @@ void IN_DrawSingleStats(void)
         IN_DrTextB(next_level_name, x, 170);
         skipintermission = false;
     }
+
+    dsda_DrawIntermissionTime();
 }
 
 //========================================================================
