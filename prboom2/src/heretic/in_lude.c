@@ -21,14 +21,26 @@
 ========================
 */
 
-#include "doomdef.h"
-#include "deh_str.h"
-#include "p_local.h"
+#include "doomstat.h"
+#include "d_event.h"
 #include "s_sound.h"
-#include "i_swap.h"
+#include "sounds.h"
 #include "i_system.h"
 #include "i_video.h"
 #include "v_video.h"
+#include "lprintf.h"
+#include "w_wad.h"
+#include "g_game.h"
+
+#include "dsda/hud.h"
+
+#include "heretic/def.h"
+#include "heretic/dstrings.h"
+
+#include "in_lude.h"
+
+extern dboolean BorderNeedRefresh;
+extern dboolean finalintermission;
 
 typedef enum
 {
@@ -40,14 +52,12 @@ typedef enum
 // Public functions
 
 
-boolean intermission;
+dboolean intermission;
 
 // Private functions
 
 static void IN_WaitStop(void);
 static void IN_Stop(void);
-static void IN_LoadPics(void);
-static void IN_UnloadPics(void);
 static void IN_CheckForSkip(void);
 static void IN_InitStats(void);
 static void IN_DrawOldLevel(void);
@@ -60,7 +70,19 @@ static void IN_DrawNumber(int val, int x, int y, int digits);
 static void IN_DrawTime(int x, int y, int h, int m, int s);
 static void IN_DrTextB(const char *text, int x, int y);
 
-static boolean skipintermission;
+// contains information passed into intermission
+static wbstartstruct_t* wbs;
+
+// HERETIC_TODO: temporary copy from _mn_menu.c
+static int FontABaseLump;
+static int FontBBaseLump;
+static void MN_DrTextA(const char *text, int x, int y);
+static int MN_TextAWidth(const char *text);
+static void MN_DrTextB(const char *text, int x, int y);
+static int MN_TextBWidth(const char *text);
+
+static int prevmap;
+static dboolean skipintermission;
 static int interstate = 0;
 static int intertime = -1;
 static int oldintertime = 0;
@@ -83,16 +105,9 @@ static int killPercent[MAXPLAYERS];
 static int bonusPercent[MAXPLAYERS];
 static int secretPercent[MAXPLAYERS];
 
-static patch_t *patchINTERPIC;
-static patch_t *patchBEENTHERE;
-static patch_t *patchGOINGTHERE;
-static patch_t *FontBNumbers[10];
-static patch_t *FontBNegative;
-static patch_t *FontBSlash;
-static patch_t *FontBPercent;
+static int FontBNumbers[10];
 
 static int FontBLump;
-static int FontBLumpBase;
 static int patchFaceOkayBase;
 static int patchFaceDeadBase;
 
@@ -157,6 +172,60 @@ static const char *NameForMap(int map)
     return name + 7;
 }
 
+static void IN_DrawInterpic(void)
+{
+  char name[9];
+
+  if (gameepisode < 1 || gameepisode > 3) return;
+
+  snprintf(name, 9, "MAPE%d", gameepisode);
+
+  V_DrawNamePatch(0, 0, 0, DEH_String(name), CR_DEFAULT, VPT_STRETCH);
+
+  // e6y: wide-res
+  V_FillBorder(-1, 0);
+}
+
+static void IN_DrawBeenThere(int i)
+{
+  V_DrawNamePatch(
+    YAHspot[gameepisode - 1][i].x, YAHspot[gameepisode - 1][i].y, 0,
+    DEH_String("IN_X"), CR_DEFAULT, VPT_STRETCH
+  );
+}
+
+static void IN_DrawGoingThere(int i)
+{
+  V_DrawNamePatch(
+    YAHspot[gameepisode - 1][i].x, YAHspot[gameepisode - 1][i].y, 0,
+    DEH_String("IN_YAH"), CR_DEFAULT, VPT_STRETCH
+  );
+}
+
+static void IN_InitLumps(void)
+{
+  int i, base;
+
+  base = W_GetNumForName(DEH_String("FONTB16"));
+  for (i = 0; i < 10; i++)
+  {
+      FontBNumbers[i] = base + i;
+  }
+
+  FontBLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
+  patchFaceOkayBase = W_GetNumForName(DEH_String("FACEA0"));
+  patchFaceDeadBase = W_GetNumForName(DEH_String("FACEB0"));
+
+  FontABaseLump = W_GetNumForName(DEH_String("FONTA_S")) + 1;
+  FontBBaseLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
+}
+
+static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
+{
+  wbs = wbstartstruct;
+  prevmap = wbs->last + 1;
+}
+
 //========================================================================
 //
 // IN_Start
@@ -165,10 +234,11 @@ static const char *NameForMap(int map)
 
 extern void AM_Stop(void);
 
-void IN_Start(void)
+void IN_Start(wbstartstruct_t* wbstartstruct)
 {
-    I_SetPalette(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
-    IN_LoadPics();
+    // I_SetPalette(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
+    IN_InitVariables(wbstartstruct);
+    IN_InitLumps();
     IN_InitStats();
     intermission = true;
     interstate = -1;
@@ -176,7 +246,7 @@ void IN_Start(void)
     intertime = 0;
     oldintertime = 0;
     AM_Stop();
-    S_StartSong(mus_intr, true);
+    S_ChangeMusic(heretic_mus_intr, true);
 }
 
 //========================================================================
@@ -203,7 +273,6 @@ void IN_WaitStop(void)
 void IN_Stop(void)
 {
     intermission = false;
-    IN_UnloadPics();
     SB_state = -1;
     BorderNeedRefresh = true;
 }
@@ -236,7 +305,7 @@ void IN_InitStats(void)
         seconds = count;
 
         // [crispy] Show total time on intermission
-        count = totalleveltimes / 35;
+        count = wbs->totaltimes / 35;
         totalHours = count / 3600;
         count -= totalHours * 3600;
         totalMinutes = count / 60;
@@ -311,92 +380,6 @@ void IN_InitStats(void)
             slaughterboy = 0;
         }
     }
-}
-
-static void IN_LoadUnloadPics(void (*callback)(const char *lumpname,
-                                               int lumpnum,
-                                               patch_t **ptr))
-{
-    int i;
-
-    switch (gameepisode)
-    {
-        case 1:
-            callback(DEH_String("MAPE1"), 0, &patchINTERPIC);
-            break;
-        case 2:
-            callback(DEH_String("MAPE2"), 0, &patchINTERPIC);
-            break;
-        case 3:
-            callback(DEH_String("MAPE3"), 0, &patchINTERPIC);
-            break;
-        default:
-            break;
-    }
-
-    callback(DEH_String("IN_X"), 0, &patchBEENTHERE);
-    callback(DEH_String("IN_YAH"), 0, &patchGOINGTHERE);
-    callback(DEH_String("FONTB13"), 0, &FontBNegative);
-
-    callback(DEH_String("FONTB15"), 0, &FontBSlash);
-    callback(DEH_String("FONTB05"), 0, &FontBPercent);
-
-    FontBLumpBase = W_GetNumForName(DEH_String("FONTB16"));
-
-    for (i = 0; i < 10; i++)
-    {
-        callback(NULL, FontBLumpBase + i, &FontBNumbers[i]);
-    }
-}
-
-//========================================================================
-//
-// IN_LoadPics
-//
-//========================================================================
-
-static void LoadLumpCallback(const char *lumpname, int lumpnum, patch_t **ptr)
-{
-    if (lumpname != NULL)
-    {
-        lumpnum = W_GetNumForName(lumpname);
-    }
-
-    // Cache the lump
-
-    *ptr = W_CacheLumpNum(lumpnum, PU_STATIC);
-}
-
-void IN_LoadPics(void)
-{
-    FontBLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
-    patchFaceOkayBase = W_GetNumForName(DEH_String("FACEA0"));
-    patchFaceDeadBase = W_GetNumForName(DEH_String("FACEB0"));
-
-    IN_LoadUnloadPics(LoadLumpCallback);
-}
-
-//========================================================================
-//
-// IN_UnloadPics
-//
-//========================================================================
-
-static void UnloadLumpCallback(const char *lumpname, int lumpnum, patch_t **ptr)
-{
-    if (lumpname != NULL)
-    {
-        W_ReleaseLumpName(lumpname);
-    }
-    else
-    {
-        W_ReleaseLumpNum(lumpnum);
-    }
-}
-
-void IN_UnloadPics(void)
-{
-    IN_LoadUnloadPics(UnloadLumpCallback);
 }
 
 //========================================================================
@@ -475,13 +458,13 @@ void IN_Ticker(void)
         {
             interstate = 2;
             skipintermission = false;
-            S_StartSound(NULL, sfx_dorcls);
+            S_StartSound(NULL, heretic_sfx_dorcls);
             return;
         }
         interstate = 3;
         cnt = 10;
         skipintermission = false;
-        S_StartSound(NULL, sfx_dorcls);
+        S_StartSound(NULL, heretic_sfx_dorcls);
     }
 }
 
@@ -547,10 +530,11 @@ void IN_Drawer(void)
     {
         return;
     }
-    UpdateState |= I_FULLSCRN;
+    // HERETIC_TODO: UpdateState
+    // UpdateState |= I_FULLSCRN;
     if (oldinterstate != 2 && interstate == 2)
     {
-        S_StartSound(NULL, sfx_pstop);
+        S_StartSound(NULL, heretic_sfx_pstop);
     }
     oldinterstate = interstate;
     switch (interstate)
@@ -573,21 +557,21 @@ void IN_Drawer(void)
         case 1:                // leaving old level
             if (gameepisode < 4)
             {
-                V_DrawPatch(0, 0, patchINTERPIC);
+                IN_DrawInterpic();
                 IN_DrawOldLevel();
             }
             break;
         case 2:                // going to the next level
             if (gameepisode < 4)
             {
-                V_DrawPatch(0, 0, patchINTERPIC);
+                IN_DrawInterpic();
                 IN_DrawYAH();
             }
             break;
         case 3:                // waiting before going to the next level
             if (gameepisode < 4)
             {
-                V_DrawPatch(0, 0, patchINTERPIC);
+                IN_DrawInterpic();
             }
             break;
         default:
@@ -604,28 +588,10 @@ void IN_Drawer(void)
 
 void IN_DrawStatBack(void)
 {
-    int x;
-    int y;
+    V_DrawBackground(DEH_String("FLOOR16"), 0);
 
-    byte *src;
-    byte *dest;
-
-    src = W_CacheLumpName(DEH_String("FLOOR16"), PU_CACHE);
-    dest = I_VideoBuffer;
-
-    for (y = 0; y < SCREENHEIGHT; y++)
-    {
-        for (x = 0; x < SCREENWIDTH / 64; x++)
-        {
-            memcpy(dest, src + ((y & 63) << 6), 64);
-            dest += 64;
-        }
-        if (SCREENWIDTH & 63)
-        {
-            memcpy(dest, src + ((y & 63) << 6), SCREENWIDTH & 63);
-            dest += (SCREENWIDTH & 63);
-        }
-    }
+    // e6y: wide-res
+    V_FillBorder(-1, 0);
 }
 
 //========================================================================
@@ -649,32 +615,26 @@ void IN_DrawOldLevel(void)
     {
         for (i = 0; i < gamemap - 1; i++)
         {
-            V_DrawPatch(YAHspot[gameepisode - 1][i].x,
-                        YAHspot[gameepisode - 1][i].y, patchBEENTHERE);
+            IN_DrawBeenThere(i);
         }
         if (!(intertime & 16))
         {
-            V_DrawPatch(YAHspot[gameepisode - 1][8].x,
-                        YAHspot[gameepisode - 1][8].y, patchBEENTHERE);
+            IN_DrawBeenThere(8);
         }
     }
     else
     {
         for (i = 0; i < prevmap - 1; i++)
         {
-            V_DrawPatch(YAHspot[gameepisode - 1][i].x,
-                        YAHspot[gameepisode - 1][i].y, patchBEENTHERE);
+            IN_DrawBeenThere(i);
         }
         if (players[consoleplayer].didsecret)
         {
-            V_DrawPatch(YAHspot[gameepisode - 1][8].x,
-                        YAHspot[gameepisode - 1][8].y, patchBEENTHERE);
+            IN_DrawBeenThere(8);
         }
         if (!(intertime & 16))
         {
-            V_DrawPatch(YAHspot[gameepisode - 1][prevmap - 1].x,
-                        YAHspot[gameepisode - 1][prevmap - 1].y,
-                        patchBEENTHERE);
+            IN_DrawBeenThere(prevmap - 1);
         }
     }
 }
@@ -702,18 +662,15 @@ void IN_DrawYAH(void)
     }
     for (i = 0; i < prevmap; i++)
     {
-        V_DrawPatch(YAHspot[gameepisode - 1][i].x,
-                    YAHspot[gameepisode - 1][i].y, patchBEENTHERE);
+        IN_DrawBeenThere(i);
     }
     if (players[consoleplayer].didsecret)
     {
-        V_DrawPatch(YAHspot[gameepisode - 1][8].x,
-                    YAHspot[gameepisode - 1][8].y, patchBEENTHERE);
+        IN_DrawBeenThere(8);
     }
     if (!(intertime & 16) || interstate == 3)
     {                           // draw the destination 'X'
-        V_DrawPatch(YAHspot[gameepisode - 1][gamemap - 1].x,
-                    YAHspot[gameepisode - 1][gamemap - 1].y, patchGOINGTHERE);
+        IN_DrawGoingThere(gamemap - 1);
     }
 }
 
@@ -753,11 +710,11 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 1 && intertime >= 30)
     {
-        S_StartSound(NULL, sfx_dorcls);
+        S_StartSound(NULL, heretic_sfx_dorcls);
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].killcount, 200, 65 - yoffset, 3);
-    V_DrawShadowedPatch(237, 65 - yoffset, FontBSlash);
+    V_DrawShadowedNamePatch(237, 65 - yoffset, DEH_String("FONTB15"));
     IN_DrawNumber(totalkills, 248, 65 - yoffset, 3);
     if (intertime < 60)
     {
@@ -765,11 +722,11 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 2 && intertime >= 60)
     {
-        S_StartSound(NULL, sfx_dorcls);
+        S_StartSound(NULL, heretic_sfx_dorcls);
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].itemcount, 200, 90 - yoffset, 3);
-    V_DrawShadowedPatch(237, 90 - yoffset, FontBSlash);
+    V_DrawShadowedNamePatch(237, 90 - yoffset, DEH_String("FONTB15"));
     IN_DrawNumber(totalitems, 248, 90 - yoffset, 3);
     if (intertime < 90)
     {
@@ -777,11 +734,11 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 3 && intertime >= 90)
     {
-        S_StartSound(NULL, sfx_dorcls);
+        S_StartSound(NULL, heretic_sfx_dorcls);
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].secretcount, 200, 115 - yoffset, 3);
-    V_DrawShadowedPatch(237, 115 - yoffset, FontBSlash);
+    V_DrawShadowedNamePatch(237, 115 - yoffset, DEH_String("FONTB15"));
     IN_DrawNumber(totalsecret, 248, 115 - yoffset, 3);
     if (intertime < 150)
     {
@@ -789,7 +746,7 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 4 && intertime >= 150)
     {
-        S_StartSound(NULL, sfx_dorcls);
+        S_StartSound(NULL, heretic_sfx_dorcls);
         sounds++;
     }
 
@@ -819,6 +776,8 @@ void IN_DrawSingleStats(void)
         IN_DrTextB(next_level_name, x, 170);
         skipintermission = false;
     }
+
+    dsda_DrawIntermissionTime();
 }
 
 //========================================================================
@@ -849,9 +808,7 @@ void IN_DrawCoopStats(void)
     {
         if (playeringame[i])
         {
-            V_DrawShadowedPatch(25, ypos,
-                                W_CacheLumpNum(patchFaceOkayBase + i,
-                                               PU_CACHE));
+            V_DrawShadowedNumPatch(25, ypos, patchFaceOkayBase + i);
             if (intertime < 40)
             {
                 sounds = 0;
@@ -860,15 +817,15 @@ void IN_DrawCoopStats(void)
             }
             else if (intertime >= 40 && sounds < 1)
             {
-                S_StartSound(NULL, sfx_dorcls);
+                S_StartSound(NULL, heretic_sfx_dorcls);
                 sounds++;
             }
             IN_DrawNumber(killPercent[i], 85, ypos + 10, 3);
-            V_DrawShadowedPatch(121, ypos + 10, FontBPercent);
+            V_DrawShadowedNamePatch(121, ypos + 10, DEH_String("FONTB05"));
             IN_DrawNumber(bonusPercent[i], 160, ypos + 10, 3);
-            V_DrawShadowedPatch(196, ypos + 10, FontBPercent);
+            V_DrawShadowedNamePatch(196, ypos + 10, DEH_String("FONTB05"));
             IN_DrawNumber(secretPercent[i], 237, ypos + 10, 3);
-            V_DrawShadowedPatch(273, ypos + 10, FontBPercent);
+            V_DrawShadowedNamePatch(273, ypos + 10, DEH_String("FONTB05"));
             ypos += 37;
         }
     }
@@ -905,15 +862,16 @@ void IN_DrawDMStats(void)
         {
             if (playeringame[i])
             {
-                V_DrawShadowedPatch(40,
-                                    ((ypos << FRACBITS) +
-                                     dSlideY[i] * intertime) >> FRACBITS,
-                                    W_CacheLumpNum(patchFaceOkayBase + i,
-                                                   PU_CACHE));
-                V_DrawShadowedPatch(((xpos << FRACBITS) +
-                                     dSlideX[i] * intertime) >> FRACBITS, 18,
-                                    W_CacheLumpNum(patchFaceDeadBase + i,
-                                                   PU_CACHE));
+                V_DrawShadowedNumPatch(
+                  40,
+                  ((ypos << FRACBITS) + dSlideY[i] * intertime) >> FRACBITS,
+                  patchFaceOkayBase + i
+                );
+                V_DrawShadowedNumPatch(
+                  ((xpos << FRACBITS) + dSlideX[i] * intertime) >> FRACBITS,
+                  18,
+                  patchFaceDeadBase + i
+                );
             }
         }
         sounds = 0;
@@ -921,12 +879,12 @@ void IN_DrawDMStats(void)
     }
     if (intertime >= 20 && sounds < 1)
     {
-        S_StartSound(NULL, sfx_dorcls);
+        S_StartSound(NULL, heretic_sfx_dorcls);
         sounds++;
     }
     if (intertime >= 100 && slaughterboy && sounds < 2)
     {
-        S_StartSound(NULL, sfx_wpnup);
+        S_StartSound(NULL, heretic_sfx_wpnup);
         sounds++;
     }
     for (i = 0; i < MAXPLAYERS; i++)
@@ -935,21 +893,13 @@ void IN_DrawDMStats(void)
         {
             if (intertime < 100 || i == consoleplayer)
             {
-                V_DrawShadowedPatch(40, ypos,
-                                    W_CacheLumpNum(patchFaceOkayBase + i,
-                                                   PU_CACHE));
-                V_DrawShadowedPatch(xpos, 18,
-                                    W_CacheLumpNum(patchFaceDeadBase + i,
-                                                   PU_CACHE));
+                V_DrawShadowedNumPatch(40, ypos, patchFaceOkayBase + i);
+                V_DrawShadowedNumPatch(xpos, 18, patchFaceDeadBase + i);
             }
             else
             {
-                V_DrawTLPatch(40, ypos,
-                              W_CacheLumpNum(patchFaceOkayBase + i,
-                                             PU_CACHE));
-                V_DrawTLPatch(xpos, 18,
-                              W_CacheLumpNum(patchFaceDeadBase + i,
-                                             PU_CACHE));
+                V_DrawTLNumPatch(40, ypos, patchFaceOkayBase + i);
+                V_DrawTLNumPatch(xpos, 18, patchFaceDeadBase + i);
             }
             kpos = 86;
             for (j = 0; j < MAXPLAYERS; j++)
@@ -1015,11 +965,11 @@ void IN_DrawTime(int x, int y, int h, int m, int s)
 
 void IN_DrawNumber(int val, int x, int y, int digits)
 {
-    patch_t *patch;
+    int lump;
     int xpos;
     int oldval;
     int realdigits;
-    boolean neg;
+    dboolean neg;
 
     oldval = val;
     xpos = x;
@@ -1064,15 +1014,15 @@ void IN_DrawNumber(int val, int x, int y, int digits)
     }
     if (digits == 4)
     {
-        patch = FontBNumbers[val / 1000];
-        V_DrawShadowedPatch(xpos + 6 - SHORT(patch->width) / 2 - 12, y, patch);
+        lump = FontBNumbers[val / 1000];
+        V_DrawShadowedNumPatch(xpos + 6 - R_NumPatchWidth(lump) / 2 - 12, y, lump);
     }
     if (digits > 2)
     {
         if (realdigits > 2)
         {
-            patch = FontBNumbers[val / 100];
-            V_DrawShadowedPatch(xpos + 6 - SHORT(patch->width) / 2, y, patch);
+            lump = FontBNumbers[val / 100];
+            V_DrawShadowedNumPatch(xpos + 6 - R_NumPatchWidth(lump) / 2, y, lump);
         }
         xpos += 12;
     }
@@ -1081,23 +1031,25 @@ void IN_DrawNumber(int val, int x, int y, int digits)
     {
         if (val > 9)
         {
-            patch = FontBNumbers[val / 10];
-            V_DrawShadowedPatch(xpos + 6 - SHORT(patch->width) / 2, y, patch);
+            lump = FontBNumbers[val / 10];
+            V_DrawShadowedNumPatch(xpos + 6 - R_NumPatchWidth(lump) / 2, y, lump);
         }
         else if (digits == 2 || oldval > 99)
         {
-            V_DrawShadowedPatch(xpos, y, FontBNumbers[0]);
+            V_DrawShadowedNumPatch(xpos, y, FontBNumbers[0]);
         }
         xpos += 12;
     }
     val = val % 10;
-    patch = FontBNumbers[val];
-    V_DrawShadowedPatch(xpos + 6 - SHORT(patch->width) / 2, y, patch);
+    lump = FontBNumbers[val];
+    V_DrawShadowedNumPatch(xpos + 6 - R_NumPatchWidth(lump) / 2, y, lump);
     if (neg)
     {
-        patch = FontBNegative;
-        V_DrawShadowedPatch(xpos + 6 - SHORT(patch->width) / 2 - 12 * (realdigits),
-                            y, patch);
+        V_DrawShadowedNamePatch(
+          xpos + 6 - R_NamePatchWidth("FONTB13") / 2 - 12 * (realdigits),
+          y,
+          DEH_String("FONTB13")
+        );
     }
 }
 
@@ -1110,7 +1062,6 @@ void IN_DrawNumber(int val, int x, int y, int digits)
 void IN_DrTextB(const char *text, int x, int y)
 {
     char c;
-    patch_t *p;
 
     while ((c = *text++) != 0)
     {
@@ -1120,9 +1071,127 @@ void IN_DrTextB(const char *text, int x, int y)
         }
         else
         {
-            p = W_CacheLumpNum(FontBLump + c - 33, PU_CACHE);
-            V_DrawShadowedPatch(x, y, p);
-            x += SHORT(p->width) - 1;
+            int lump = FontBLump + c - 33;
+            V_DrawShadowedNumPatch(x, y, lump);
+            x += R_NumPatchWidth(lump) - 1;
         }
     }
+}
+
+// Temporary stuff from mn_menu
+
+//---------------------------------------------------------------------------
+//
+// PROC MN_DrTextA
+//
+// Draw text using font A.
+//
+//---------------------------------------------------------------------------
+
+void MN_DrTextA(const char *text, int x, int y)
+{
+    char c;
+    int lump;
+
+    while ((c = *text++) != 0)
+    {
+        if (c < 33)
+        {
+            x += 5;
+        }
+        else
+        {
+            lump = FontABaseLump + c - 33;
+            V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+            x += R_NumPatchWidth(lump) - 1;
+        }
+    }
+}
+
+//---------------------------------------------------------------------------
+//
+// FUNC MN_TextAWidth
+//
+// Returns the pixel width of a string using font A.
+//
+//---------------------------------------------------------------------------
+
+int MN_TextAWidth(const char *text)
+{
+    char c;
+    int width;
+    int lump;
+
+    width = 0;
+    while ((c = *text++) != 0)
+    {
+        if (c < 33)
+        {
+            width += 5;
+        }
+        else
+        {
+            lump = FontABaseLump + c - 33;
+            width += R_NumPatchWidth(lump) - 1;
+        }
+    }
+    return (width);
+}
+
+//---------------------------------------------------------------------------
+//
+// PROC MN_DrTextB
+//
+// Draw text using font B.
+//
+//---------------------------------------------------------------------------
+
+void MN_DrTextB(const char *text, int x, int y)
+{
+    char c;
+    int lump;
+
+    while ((c = *text++) != 0)
+    {
+        if (c < 33)
+        {
+            x += 8;
+        }
+        else
+        {
+            lump = FontBBaseLump + c - 33;
+            V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+            x += R_NumPatchWidth(lump) - 1;
+        }
+    }
+}
+
+//---------------------------------------------------------------------------
+//
+// FUNC MN_TextBWidth
+//
+// Returns the pixel width of a string using font B.
+//
+//---------------------------------------------------------------------------
+
+int MN_TextBWidth(const char *text)
+{
+    char c;
+    int width;
+    int lump;
+
+    width = 0;
+    while ((c = *text++) != 0)
+    {
+        if (c < 33)
+        {
+            width += 5;
+        }
+        else
+        {
+            lump = FontBBaseLump + c - 33;
+            width += R_NumPatchWidth(lump) - 1;
+        }
+    }
+    return (width);
 }
