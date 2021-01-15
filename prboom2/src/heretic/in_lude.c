@@ -40,6 +40,8 @@
 #include "in_lude.h"
 
 extern dboolean BorderNeedRefresh;
+
+// HERETIC_TODO: finalintermission logic
 extern dboolean finalintermission;
 
 typedef enum
@@ -48,13 +50,6 @@ typedef enum
     COOPERATIVE,
     DEATHMATCH
 } gametype_t;
-
-// Public functions
-
-
-dboolean intermission;
-
-// Private functions
 
 static void IN_WaitStop(void);
 static void IN_Stop(void);
@@ -82,6 +77,7 @@ static void MN_DrTextB(const char *text, int x, int y);
 static int MN_TextBWidth(const char *text);
 
 static int prevmap;
+static dboolean intermission;
 static dboolean skipintermission;
 static int interstate = 0;
 static int intertime = -1;
