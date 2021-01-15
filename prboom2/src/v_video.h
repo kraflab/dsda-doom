@@ -305,4 +305,11 @@ int V_BestColor(const unsigned char *palette, int r, int g, int b);
 #ifdef GL_DOOM
 #include "gl_struct.h"
 #endif
+
+// heretic
+
+void V_DrawShadowedNumPatch(int x, int y, int lump);
+void V_DrawShadowedNamePatch(int x, int y, const char* name);
+void V_DrawTLNumPatch(int x, int y, int lump);
+
 #endif

@@ -399,6 +399,7 @@ int key_invleft;
 int key_invright;
 int mousebinvleft;
 int mousebinvright;
+dboolean finalintermission;
 
 static void SetMouseButtons(unsigned int buttons_mask);
 static dboolean InventoryMoveLeft(void);
@@ -2071,7 +2072,6 @@ void G_DoCompleted (void)
   }
   else
   {
-    // HERETIC_TODO: par times
     if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9)
       wminfo.partime = TICRATE*pars[gameepisode][gamemap];
   }
