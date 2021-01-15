@@ -4584,7 +4584,7 @@ dboolean M_Responder (event_t* ev) {
       // to where key binding can eat it.
 
       if (setup_active && set_keybnd_active)
-  if (ev->data1&4 || ev->data1&8 || ev->data1&16)
+  if (ev->data1 & (4 + 8 + 16 + 32 + 64 + 128))
     {
     ch = 0; // meaningless, just to get you past the check for -1
     mousewait = I_GetTime() + 15;
@@ -5272,6 +5272,12 @@ dboolean M_Responder (event_t* ev) {
       ch = 3;
     else if (ev->data1 & 16)
       ch = 4;
+    else if (ev->data1 & 32)
+      ch = 5;
+    else if (ev->data1 & 64)
+      ch = 6;
+    else if (ev->data1 & 128)
+      ch = 7;
     else
       return true;
     for (i = 0 ; keys_settings[i] && search ; i++)
