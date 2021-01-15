@@ -190,7 +190,7 @@ typedef enum {
   it_yellowskull,
   it_redskull,
   NUMCARDS,
-  
+
   // heretic
   key_blue = 0,
   key_yellow,

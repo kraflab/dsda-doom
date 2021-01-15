@@ -1401,7 +1401,7 @@ char *deh_soundnames[NUMSFX + 1];
 void D_BuildBEXTables(void)
 {
    int i;
-   
+
    // HERETIC_TODO: what to do here? EXTRASTATES breaks everything
    if (heretic) return;
 
@@ -1478,7 +1478,7 @@ void deh_changeCompTranslucency(void)
     MT_TROOPSHOT, MT_HEADSHOT, MT_PLASMA, MT_BFG, MT_ARACHPLAZ, MT_PUFF,
     MT_TFOG, MT_IFOG, MT_MISC12, MT_INV, MT_INS, MT_MEGA
   };
-  
+
   for(i = 0; (size_t)i < sizeof(predefined_translucency)/sizeof(predefined_translucency[0]); i++)
   {
     if (!DEH_mobjinfo_bits[predefined_translucency[i]])
@@ -1920,7 +1920,7 @@ static void deh_procThing(DEHFILE *fpin, FILE* fpout, char *line)
 
       // killough 11/98: really bail out on blank lines (break != continue)
       if (!*inbuffer) break;  // bail out with blank line between sections
-      
+
       // e6y: Correction of wrong processing of Bits parameter if its value is equal to zero
       // No more desync on HACX demos.
       bGetData = deh_GetData(inbuffer,key,&value,&strval,fpout);
@@ -1932,10 +1932,10 @@ static void deh_procThing(DEHFILE *fpin, FILE* fpout, char *line)
         }
       for (ix=0; ix<DEH_MOBJINFOMAX; ix++) {
         if (deh_strcasecmp(key,deh_mobjinfo[ix])) continue;
-        
+
         if (deh_strcasecmp(key,"Bits")) {
           // standard value set
-          
+
           // The old code here was the cause of a DEH-related bug in prboom.
           // When the mobjinfo_t.flags member was graduated to an int64, this
           // code was caught unawares and was indexing each property of the
@@ -2708,7 +2708,7 @@ static void deh_procText(DEHFILE *fpin, FILE* fpout, char *line)
     // CPhipps - fix constness problem
     char *s;
     sprnames[i] = s = strdup(sprnames[i]);
-    
+
     //e6y: flag the sprite as changed
     sprnames_state[i] = true;
 
@@ -3004,7 +3004,7 @@ static void deh_procBexSprites(DEHFILE *fpin, FILE *fpout, char *line)
 
    if(fpout)
       fprintf(fpout,"Processing sprite name substitution\n");
-   
+
    strncpy(inbuffer,line,DEH_BUFFERMAX-1);
 
    while(!dehfeof(fpin) && *inbuffer && (*inbuffer != ' '))
@@ -3060,10 +3060,10 @@ static void deh_procBexSounds(DEHFILE *fpin, FILE *fpout, char *line)
    char candidate[7];
    int  rover;
    size_t len;
-   
+
    if(fpout)
       fprintf(fpout,"Processing sound name substitution\n");
-   
+
    strncpy(inbuffer,line,DEH_BUFFERMAX-1);
 
    while(!dehfeof(fpin) && *inbuffer && (*inbuffer != ' '))
@@ -3120,10 +3120,10 @@ static void deh_procBexMusic(DEHFILE *fpin, FILE *fpout, char *line)
    char candidate[7];
    int  rover;
    size_t len;
-   
+
    if(fpout)
       fprintf(fpout,"Processing music name substitution\n");
-   
+
    strncpy(inbuffer,line,DEH_BUFFERMAX-1);
 
    while(!dehfeof(fpin) && *inbuffer && (*inbuffer != ' '))

@@ -119,4 +119,3 @@ deh_section_t deh_section_weapon =
     NULL,
     DEH_WeaponSHA1Sum,
 };
-

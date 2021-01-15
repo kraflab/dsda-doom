@@ -35,4 +35,3 @@
 extern char *chat_macros[10];
 
 #endif /* #ifndef HERETIC_CT_CHAT_H */
-

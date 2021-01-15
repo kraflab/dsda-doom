@@ -76,7 +76,7 @@ static void ShowOverflowWarning(overrun_list_t overflow, int fatal, const char *
       "Too big or not supported %s overflow has been detected. "
       "Desync or crash can occur soon "
       "or during playback with the vanilla engine in case you're recording demo.%s%s";
-    
+
     static const char str2[] =
       "%s overflow has been detected.%s%s";
 
@@ -93,7 +93,7 @@ static void ShowOverflowWarning(overrun_list_t overflow, int fatal, const char *
       name[overflow],
       "\nYou can change PrBoom behaviour for this overflow through in-game menu.",
       params);
-    
+
     va_start(argptr, params);
     I_vWarning(buffer, argptr);
     va_end(argptr);
@@ -245,7 +245,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
         //
 
         p = M_CheckParm("-spechit");
-        
+
         if (p > 0)
         {
           //baseaddr = atoi(myargv[p+1]);
@@ -277,7 +277,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
         case 10:
           *(params->tmceilingz) = addr;
           break;
-          
+
         default:
           fprintf(stderr, "SpechitOverrun: Warning: unable to emulate"
                           "an overrun where numspechit=%i\n",
@@ -481,7 +481,7 @@ int DonutOverrun(fixed_t *pfloorheight, short *pfloorpic)
       {
         GetMemoryValue(0, pfloorheight, 4);
         GetMemoryValue(8, pfloorpic, 2);
-        
+
         // bounds-check floorpic
         if ((*pfloorpic) <= 0 || (*pfloorpic) >= numflats)
         {

@@ -152,7 +152,7 @@ result_e T_MovePlane
             {
         /* jff 1/25/98 fix floor crusher */
               if (heretic || comp[comp_floors]) {
-                
+
                 //e6y: warning about potential desynch
                 if (crush == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
                 {
@@ -460,7 +460,7 @@ int EV_DoFloor
 
   secnum = -1;
   rtn = 0;
-  
+
   if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_floor; else {return rtn;}};//e6y
   // move all floors with the same tag as the linedef
   while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
@@ -965,7 +965,7 @@ int EV_DoDonut(line_t*  line)
   int       rtn;
   int       i;
   floormove_t* floor;
-  
+
   //e6y
   fixed_t s3_floorheight;
   short s3_floorpic;
@@ -984,7 +984,7 @@ int EV_DoDonut(line_t*  line)
     // HERETIC_TODO: rtn = 1; // probably doesn't matter?
 
     s2 = getNextSector(s1->lines[0],s1);  // s2 is pool's sector
-    
+
     // note lowest numbered line around
     // pillar must be two-sided
     if (!s2)
@@ -1029,7 +1029,7 @@ int EV_DoDonut(line_t*  line)
       rtn = 1; //jff 1/26/98 no donut action - no switch change on return
 
       s3 = s2->lines[i]->backsector;      // s3 is model sector for changes
-      
+
       if (!s3)
       {
         // e6y

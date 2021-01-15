@@ -248,7 +248,7 @@ static void FillBuffer(int16_t *buffer, unsigned int nsamples)
 {
     unsigned int i;
     int sampval;
-    
+
     // FIXME???
     //assert(nsamples < opl_sample_rate);
 
@@ -276,7 +276,7 @@ void OPL_Render_Samples (void *dest, unsigned buffer_len)
 
 
     short *buffer = (short *) dest;
-   
+
 
     // Repeatedly call the OPL emulator update function until the buffer is
     // full.

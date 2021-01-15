@@ -612,4 +612,3 @@ void S_ShutDown(void)
     I_UnRegisterSong(rs);
     I_ShutdownSound();
 }
-

@@ -53,11 +53,11 @@ static int dsda_auto_key_frames_size;
 
 void dsda_InitKeyFrame(void) {
   dsda_auto_key_frames_size = dsda_AutoKeyFrameDepth();
-  
+
   if (dsda_auto_key_frames_size == 0) return;
-  
+
   if (dsda_auto_key_frames != NULL) free(dsda_auto_key_frames);
-  
+
   dsda_auto_key_frames =
     calloc(dsda_auto_key_frames_size, sizeof(dsda_key_frame_t));
   dsda_last_auto_key_frame = -1;
@@ -67,41 +67,41 @@ void dsda_InitKeyFrame(void) {
 void dsda_StoreKeyFrame(byte** buffer, int log) {
   int demo_write_buffer_offset;
   demo_write_buffer_offset = dsda_DemoBufferOffset();
-    
+
   save_p = savebuffer = malloc(savegamesize);
-    
+
   CheckSaveGame(4);
   *save_p++ = gameskill;
   *save_p++ = gameepisode;
   *save_p++ = gamemap;
   *save_p++ = idmusnum;
-  
+
   // Store progress bar for demo playback
   CheckSaveGame(sizeof(demo_curr_tic));
   memcpy(save_p, &demo_curr_tic, sizeof(demo_curr_tic));
   save_p += sizeof(demo_curr_tic);
-  
+
   // Store location in demo playback buffer
   CheckSaveGame(sizeof(demo_p));
   memcpy(save_p, &demo_p, sizeof(demo_p));
   save_p += sizeof(demo_p);
-  
+
   // Store location in demo recording buffer
   CheckSaveGame(sizeof(demo_write_buffer_offset));
   memcpy(save_p, &demo_write_buffer_offset, sizeof(demo_write_buffer_offset));
   save_p += sizeof(demo_write_buffer_offset);
-  
+
   CheckSaveGame(sizeof(leveltime));
   memcpy(save_p, &leveltime, sizeof(leveltime));
   save_p += sizeof(leveltime);
-  
+
   CheckSaveGame(sizeof(totalleveltimes));
   memcpy(save_p, &totalleveltimes, sizeof(totalleveltimes));
   save_p += sizeof(totalleveltimes);
-  
+
   CheckSaveGame(1);
   *save_p++ = (gametic - basetic) & 255;
-    
+
   Z_CheckHeap();
   P_ArchivePlayers();
   Z_CheckHeap();
@@ -115,12 +115,12 @@ void dsda_StoreKeyFrame(byte** buffer, int log) {
   Z_CheckHeap();
   P_ArchiveMap();
   Z_CheckHeap();
-    
+
   if (*buffer != NULL) free(*buffer);
-  
+
   *buffer = savebuffer;
   savebuffer = save_p = NULL;
-    
+
   if (log) doom_printf("Stored key frame");
 }
 
@@ -128,12 +128,12 @@ void dsda_StoreKeyFrame(byte** buffer, int log) {
 // save_p is coopted to use the save logic
 void dsda_RestoreKeyFrame(byte* buffer) {
   int demo_write_buffer_offset;
-  
+
   if (buffer == NULL) {
     doom_printf("No key frame found");
     return;
   }
-  
+
   save_p = buffer;
 
   gameskill = *save_p++;
@@ -143,21 +143,21 @@ void dsda_RestoreKeyFrame(byte* buffer) {
 
   idmusnum = *save_p++;
   if (idmusnum==255) idmusnum=-1;
-  
+
   // Restore progress bar for demo playback
   memcpy(&demo_curr_tic, save_p, sizeof(demo_curr_tic));
   save_p += sizeof(demo_curr_tic);
-  
+
   // Restore location in demo playback buffer
   memcpy(&demo_p, save_p, sizeof(demo_p));
   save_p += sizeof(demo_p);
-  
+
   // Restore location in demo recording buffer
   memcpy(&demo_write_buffer_offset, save_p, sizeof(demo_write_buffer_offset));
   save_p += sizeof(demo_write_buffer_offset);
-  
+
   dsda_SetDemoBufferOffset(demo_write_buffer_offset);
-  
+
   G_InitNew(gameskill, gameepisode, gamemap);
 
   memcpy(&leveltime, save_p, sizeof(leveltime));
@@ -165,7 +165,7 @@ void dsda_RestoreKeyFrame(byte* buffer) {
 
   memcpy(&totalleveltimes, save_p, sizeof(totalleveltimes));
   save_p += sizeof(totalleveltimes);
-  
+
   basetic = gametic - *save_p++;
 
   P_MapStart();
@@ -186,17 +186,17 @@ void dsda_RestoreKeyFrame(byte* buffer) {
   if (setsizeneeded) R_ExecuteSetViewSize();
 
   R_FillBackScreen();
-  
+
   BorderNeedRefresh = true;
-  
+
   dsda_key_frame_restored = 1;
-  
+
   doom_printf("Restored key frame");
 }
 
 int dsda_KeyFrameRestored(void) {
   if (!dsda_key_frame_restored) return 0;
-  
+
   dsda_key_frame_restored = 0;
   return 1;
 }
@@ -214,20 +214,20 @@ void dsda_RewindAutoKeyFrame(void) {
   int interval_tics;
   int key_frame_index;
   int history_index;
-  
+
   if (dsda_auto_key_frames_size == 0) {
     doom_printf("No key frame found");
     return;
   }
-  
+
   current_time = totalleveltimes + leveltime;
   interval_tics = 35 * dsda_AutoKeyFrameInterval();
-  
+
   key_frame_index = current_time / interval_tics - 1;
-  
+
   history_index = dsda_last_auto_key_frame - 1;
   if (history_index < 0) history_index = dsda_auto_key_frames_size - 1;
-    
+
   if (dsda_auto_key_frames[history_index].index <= key_frame_index) {
     dsda_last_auto_key_frame = history_index;
     dsda_SkipNextWipe();
@@ -241,30 +241,30 @@ void dsda_UpdateAutoKeyFrames(void) {
   int current_time;
   int interval_tics;
   dsda_key_frame_t* current_key_frame;
-  
+
   if (
     dsda_auto_key_frames_size == 0 ||
     gamestate != GS_LEVEL ||
     gameaction != ga_nothing
   ) return;
-  
+
   current_time = totalleveltimes + leveltime;
   interval_tics = 35 * dsda_AutoKeyFrameInterval();
-  
+
   // Automatically save a key frame each interval
   if (current_time % interval_tics == 0) {
     key_frame_index = current_time / interval_tics;
-    
+
     // Don't duplicate (e.g., because we rewound to this index)
     if (
       dsda_last_auto_key_frame >= 0 &&
       dsda_auto_key_frames[dsda_last_auto_key_frame].index == key_frame_index
     ) return;
-    
+
     dsda_last_auto_key_frame += 1;
     if (dsda_last_auto_key_frame >= dsda_auto_key_frames_size)
       dsda_last_auto_key_frame = 0;
-    
+
     current_key_frame = &dsda_auto_key_frames[dsda_last_auto_key_frame];
     current_key_frame->index = key_frame_index;
 

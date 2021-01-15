@@ -819,7 +819,7 @@ void TXT_Sleep(int timeout)
 
         // There are blinking characters on the screen, so we
         // must time out after a while
-       
+
         if (timeout == 0 || timeout > time_to_next_blink)
         {
             // Add one so it is always positive

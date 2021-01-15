@@ -109,7 +109,7 @@ int I_GetTime_RealTime (void)
 {
   int i;
   int t = SDL_GetTicks();
-  
+
   //e6y: removing startup delay
   if (basetime == 0)
     basetime = t;
@@ -134,7 +134,7 @@ dboolean I_StartDisplay(void)
     return false;
 
   realframe = (!movement_smooth) || (gametic > saved_gametic);
-  
+
   if (realframe)
     saved_gametic = gametic;
 
@@ -323,7 +323,7 @@ void I_SwitchToWindow(HWND hwnd)
 
   if (!SwitchToThisWindow)
     SwitchToThisWindow = (TSwitchToThisWindow)GetProcAddress(GetModuleHandle("user32.dll"), "SwitchToThisWindow");
-  
+
   if (SwitchToThisWindow)
   {
     HWND hwndLastActive = GetLastActivePopup(hwnd);

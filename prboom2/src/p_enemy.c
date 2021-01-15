@@ -1516,7 +1516,7 @@ void A_HeadAttack(mobj_t * actor)
     P_SpawnMissile(actor, target, MT_HEADSHOT);
     return;
   }
-  
+
   dist = P_AproxDistance(actor->x - target->x, actor->y - target->y)
          > 8 * 64 * FRACUNIT;
   randAttack = P_Random(pr_heretic);
@@ -1844,12 +1844,12 @@ void A_VileChase(mobj_t* actor)
       corpsehit->flags =
         (info->flags & ~MF_FRIEND) | (actor->flags & MF_FRIEND);
       corpsehit->flags = corpsehit->flags | MF_RESSURECTED;//e6y
-      
+
       dsda_WatchResurrection(corpsehit);
 
 		  if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
 		    totallive++;
-		  
+
                   corpsehit->health = info->spawnhealth;
       P_SetTarget(&corpsehit->target, NULL);  // killough 11/98
 
@@ -2232,7 +2232,7 @@ void A_PainDie(mobj_t *actor)
 void A_Scream(mobj_t *actor)
 {
   int sound;
-  
+
   if (heretic) return Heretic_A_Scream(actor);
 
   switch (actor->info->deathsound)
@@ -2700,7 +2700,7 @@ void A_BrainSpit(mobj_t *mo)
 
   // spawn brain missile
   newmobj = P_SpawnMissile(mo, targ, MT_SPAWNSHOT);
-  
+
   // e6y: do not crash with 'incorrect' DEHs
   if (!newmobj || !newmobj->state || newmobj->momy == 0 || newmobj->state->tics == 0)
     I_Error("A_BrainSpit: can't spawn brain missile (incorrect DEH)");

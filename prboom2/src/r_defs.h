@@ -367,7 +367,7 @@ typedef struct drawseg_s
 
   // Added for filtering (fractional texture u coord) support - POPE
   fixed_t rw_offset, rw_distance, rw_centerangle;
-  
+
   // Pointers to lists for sprite clipping,
   // all three adjusted so [x1] is first value.
 

@@ -233,7 +233,7 @@ void ParamsMatchingCheck()
     M_CheckParm("-record") ||
     M_CheckParm("-recordfrom") ||
     M_CheckParm("-recordfromto");
-  
+
   dboolean playbacking_attempt =
     M_CheckParm("-playdemo") ||
     M_CheckParm("-timedemo") ||
@@ -295,7 +295,7 @@ void e6y_InitCommandLine(void)
     M_AddParam("-turbo");
     M_AddParam("50");
   }
-  
+
   dsda_ReadCommandLine();
 
   // TAS-tracers
@@ -317,7 +317,7 @@ void G_SkipDemoStart(void)
   saved_nomusicparm = nomusicparm;
 
   paused = false;
-  
+
   doSkip = true;
 
   S_StopMusic();
@@ -337,7 +337,7 @@ void G_SkipDemoStop(void)
   nodrawers = saved_nodrawers;
   nosfxparm = saved_nosfxparm;
   nomusicparm = saved_nomusicparm;
-  
+
   demo_stoponnext = false;
   demo_stoponend = false;
   demo_warp = false;
@@ -498,7 +498,7 @@ void M_ChangeMouseInvert(void)
 void M_ChangeMaxViewPitch(void)
 {
   int max_up, max_dn, angle_up, angle_dn;
-  
+
   if (V_GetMode() == VID_MODEGL)
   {
     max_up = movement_maxviewpitch;
@@ -712,12 +712,12 @@ int StepwiseSum(int value, int direction, int step, int minval, int maxval, int 
 
   int newvalue;
   int val = (direction > 0 ? value : value - 1);
-  
+
   if (direction == 0)
     return defval;
 
   direction = (direction > 0 ? 1 : -1);
-  
+
   if (step != 0)
     newvalue = (prev_direction * direction < 0 ? prev_value : value + direction * step);
   else
@@ -795,7 +795,7 @@ int I_MessageBox(const char* text, unsigned int type)
 
     int i, c;
     char* hotkeys_str = NULL;
-    
+
     type &= 0x000000ff;
 
     i = 0;
@@ -889,7 +889,7 @@ void e6y_G_DoCompleted(void)
       stats[numlevels].kill[i]   = players[i].killcount - players[i].maxkilldiscount;
       stats[numlevels].item[i]   = players[i].itemcount;
       stats[numlevels].secret[i] = players[i].secretcount;
-      
+
       stats[numlevels].stat[TT_ALLKILL]   += stats[numlevels].kill[i];
       stats[numlevels].stat[TT_ALLITEM]   += stats[numlevels].item[i];
       stats[numlevels].stat[TT_ALLSECRET] += stats[numlevels].secret[i];
@@ -919,7 +919,7 @@ void e6y_WriteStats(void)
   size_t allkills_len=0, allitems_len=0, allsecrets_len=0;
 
   f = fopen("levelstat.txt", "wb");
-  
+
   memset(&max, 0, sizeof(timetable_t));
 
   playerscount = 0;
@@ -939,10 +939,10 @@ void e6y_WriteStats(void)
 
         doom_snprintf(strtmp, sizeof(strtmp), str, tmp.kill, stats[level].kill[i]);
         strcpy(tmp.kill, strtmp);
-        
+
         doom_snprintf(strtmp, sizeof(strtmp), str, tmp.item, stats[level].item[i]);
         strcpy(tmp.item, strtmp);
-        
+
         doom_snprintf(strtmp, sizeof(strtmp), str, tmp.secret, stats[level].secret[i]);
         strcpy(tmp.secret, strtmp);
       }
@@ -969,7 +969,7 @@ void e6y_WriteStats(void)
   }
   max.stat[TT_TIME] = max.stat[TT_TIME]/TICRATE/60;
   max.stat[TT_TOTALTIME] = max.stat[TT_TOTALTIME]/TICRATE/60;
-  
+
   for(i=0; i<TT_MAX; i++) {
     doom_snprintf(str, 200, "%d", max.stat[i]);
     max.stat[i] = strlen(str);
@@ -983,7 +983,7 @@ void e6y_WriteStats(void)
       max.stat[TT_ALLKILL],   max.stat[TT_TOTALKILL],   allkills_len,
       max.stat[TT_ALLITEM],   max.stat[TT_TOTALITEM],   allitems_len,
       max.stat[TT_ALLSECRET], max.stat[TT_TOTALSECRET], allsecrets_len);
-    
+
     fprintf(f, str, stats[level].map,
       stats[level].stat[TT_TIME]/TICRATE/60,
       (float)(stats[level].stat[TT_TIME]%(60*TICRATE))/TICRATE,
@@ -993,9 +993,9 @@ void e6y_WriteStats(void)
       stats[level].stat[TT_ALLITEM],  stats[level].stat[TT_TOTALITEM],   all[level].item,
       stats[level].stat[TT_ALLSECRET],stats[level].stat[TT_TOTALSECRET], all[level].secret
       );
-    
+
   }
-  
+
   fclose(f);
 }
 
@@ -1027,7 +1027,7 @@ void e6y_G_DoWorldDone(void)
 
     demo_warp = demo_stoponnext ||
       (gamemode == commercial ? (map == gamemap) : (episode == gameepisode && map == gamemap));
-    
+
     if (demo_warp && demo_skiptics == 0 && !firstmap)
       G_SkipDemoStop();
 
@@ -1073,7 +1073,7 @@ void e6y_G_Compatibility(void)
 #endif
         emulated_version += b[i] * k;
       }
-      
+
       for (i = 0; i < PC_MAX; i++)
       {
         prboom_comp[i].state =
@@ -1126,7 +1126,7 @@ dboolean ProcessNoTagLines(line_t* line, sector_t **sec, int *secnum)
 char* PathFindFileName(const char* pPath)
 {
   const char* pT = pPath;
-  
+
   if (pPath)
   {
     for ( ; *pPath; pPath++)
@@ -1136,7 +1136,7 @@ char* PathFindFileName(const char* pPath)
         pT = pPath + 1;
     }
   }
-  
+
   return (char*)pT;
 }
 
@@ -1156,10 +1156,10 @@ void NormalizeSlashes2(char *str)
 unsigned int AfxGetFileName(const char* lpszPathName, char* lpszTitle, unsigned int nMax)
 {
   char* lpszTemp = PathFindFileName(lpszPathName);
-  
+
   if (lpszTitle == NULL)
     return strlen(lpszTemp)+1;
-  
+
   strncpy(lpszTitle, lpszTemp, nMax-1);
   return 0;
 }
@@ -1170,44 +1170,44 @@ void AbbreviateName(char* lpszCanon, int cchMax, int bAtLeastName)
   const char* lpszCur;
   const char* lpszBase;
   const char* lpszFileName;
-  
+
   lpszBase = lpszCanon;
   cchFullPath = strlen(lpszCanon);
-  
+
   cchFileName = AfxGetFileName(lpszCanon, NULL, 0) - 1;
   lpszFileName = lpszBase + (cchFullPath-cchFileName);
-  
+
   if (cchMax >= cchFullPath)
     return;
-  
+
   if (cchMax < cchFileName)
   {
     strcpy(lpszCanon, (bAtLeastName) ? lpszFileName : "");
     return;
   }
-  
+
   lpszCur = lpszBase + 2;
-  
+
   if (lpszBase[0] == '\\' && lpszBase[1] == '\\')
   {
     while (*lpszCur != '\\')
       lpszCur++;
   }
-  
+
   if (cchFullPath - cchFileName > 3)
   {
     lpszCur++;
     while (*lpszCur != '\\')
       lpszCur++;
   }
-  
+
   cchVolName = (int)(lpszCur - lpszBase);
   if (cchMax < cchVolName + 5 + cchFileName)
   {
     strcpy(lpszCanon, lpszFileName);
     return;
   }
-  
+
   while (cchVolName + 4 + (int)strlen(lpszCur) > cchMax)
   {
     do
@@ -1216,7 +1216,7 @@ void AbbreviateName(char* lpszCanon, int cchMax, int bAtLeastName)
     }
     while (*lpszCur != '\\');
   }
-  
+
   lpszCanon[cchVolName] = '\0';
   strcat(lpszCanon, "\\...");
   strcat(lpszCanon, lpszCur);
@@ -1233,7 +1233,7 @@ int HU_DrawDemoProgress(int force)
 
   int len, tics_count, diff;
   unsigned int tick, max_period;
-  
+
   if (gamestate == GS_DEMOSCREEN || (!demoplayback && !democontinue) || !hudadd_demoprogressbar)
     return false;
 
@@ -1258,7 +1258,7 @@ int HU_DrawDemoProgress(int force)
   }
 
   prev_len = len;
-  
+
   V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, 4);
   if (len > 4)
     V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, 0);
@@ -1272,7 +1272,7 @@ int GetFullPath(const char* FileName, const char* ext, char *Buffer, size_t Buff
   int i, Result;
   char *p;
   char dir[PATH_MAX];
-  
+
   for (i=0; i<3; i++)
   {
     switch(i)
@@ -1309,7 +1309,7 @@ void I_midiOutSetVolumes(int volume)
 {
   // NSM changed to work on the 0-15 volume scale,
   // and to check mus_extend_volume itself.
-  
+
   MMRESULT result;
   int calcVolume;
   MIDIOUTCAPS capabilities;

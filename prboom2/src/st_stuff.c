@@ -402,7 +402,7 @@ static void ST_refreshBackground(void)
 {
   int y = ST_Y;
   enum patch_translation_e flags = VPT_ALIGN_LEFT_TOP;
-  
+
   if (st_statusbaron)
     {
       flags = VPT_ALIGN_BOTTOM;

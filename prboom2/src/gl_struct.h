@@ -158,7 +158,7 @@ typedef enum
   hq_scale_2x,
   hq_scale_3x,
   hq_scale_4x,
-  
+
   hq_scale_max
 } gl_hqresizemode_t;
 extern const char *gl_hqresizemodes[];

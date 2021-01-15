@@ -616,9 +616,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     int lspeed;
     int look, arti;
     int flyheight;
-    
+
     look = arti = flyheight = 0;
-    
+
     if (gamekeydown[key_lookdown] || gamekeydown[key_lookup])
     {
       lookheld += ticdup;
@@ -650,7 +650,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     {
       look = TOCENTER;
     }
-    
+
     // Fly up/down/drop keys
     if (gamekeydown[key_flyup])
     {
@@ -665,7 +665,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       flyheight = TOCENTER;
       look = TOCENTER;
     }
-    
+
     // Use artifact key
     if (gamekeydown[key_useartifact])
     {
@@ -734,7 +734,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       gamekeydown[key_arti_morph] = false;
       cmd->arti = arti_egg;
     }
-    
+
     if (players[consoleplayer].playerstate == PST_LIVE)
     {
         if (look < 0)
@@ -1021,7 +1021,7 @@ static void G_DoLoadLevel (void)
     static const char *sky_lump_names[5] = {
         "SKY1", "SKY2", "SKY3", "SKY1", "SKY3"
     };
-    
+
     if (gameepisode < 6)
       skytexture = R_TextureNumForName(sky_lump_names[gameepisode - 1]);
     else
@@ -1422,7 +1422,7 @@ void G_Ticker (void)
             }
         }
     }
-    
+
     dsda_WatchCommand();
 
     // check for special buttons
@@ -2801,7 +2801,7 @@ void G_DeferedInitNew(skill_t skill, int episode, int map)
   d_episode = episode;
   d_map = map;
   gameaction = ga_newgame;
-  
+
   dsda_WatchDeferredInitNew(skill, episode, map);
 }
 
@@ -3006,7 +3006,7 @@ void G_DoNewGame (void)
   deathmatch = false;
   G_InitNew (d_skill, d_episode, d_map);
   gameaction = ga_nothing;
-  
+
   dsda_WatchNewGame();
 
   //jff 4/26/98 wake up the status bar in case were coming out of a DM demo
@@ -3029,7 +3029,7 @@ void G_SetFastParms(int fast_pending)
       mobjinfo[MonsterMissileInfo[i].type].speed =
         MonsterMissileInfo[i].speed[fast_pending] << FRACBITS;
     }
-    
+
     return;
   }
 
@@ -3312,7 +3312,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
       *p++ = (a >> 8) & 0xff;
     }
     *p++ = cmd->buttons;
-    
+
     if (heretic)
     {
       *p++ = cmd->lookfly;
@@ -3338,7 +3338,7 @@ void G_RecordDemo (const char* name)
   demoname = malloc(strlen(name)+4+1);
   AddDefaultExtension(strcpy(demoname, name), ".lmp");  // 1/18/98 killough
   demorecording = true;
-  
+
   dsda_WatchRecordDemo(demoname);
 
   if (!access(demoname, F_OK) && !demo_overwriteexisting)
@@ -3349,7 +3349,7 @@ void G_RecordDemo (const char* name)
 
   // dsda - TODO: abstracting file handling, but should refactor around here
   dsda_InitDemo(demoname);
-  
+
   free(demoname);
 }
 
@@ -3844,7 +3844,7 @@ void G_SaveRestoreGameOptions(int save)
     {1, 0, &help_friends},
     {1, 0, &dog_jumping},
     {1, 0, &monkeys},
-  
+
     {2, 0, (int*)&forceOldBsp},
     {-1, -1, NULL}
   };
@@ -4051,7 +4051,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
         for (i = 0; demo_p < string_end; i++)
         {
           char cur = *demo_p++;
-          
+
           if (cur < '0' || cur > '9')
           {
             if (cur != 0)
@@ -4110,7 +4110,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       {
         I_Error("G_ReadDemoHeader: Unable to determine map for UMAPINFO demo.");
       }
-    
+
       demo_p = string_end;
     }
 
@@ -4190,7 +4190,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
           map = *demo_p++;
           deathmatch = respawnparm = fastparm =
             nomonsters = consoleplayer = 0;
-          
+
           // e6y
           // Ability to force -nomonsters and -respawn for playback of 1.2 demos.
           // Demos recorded with Doom.exe 1.2 did not contain any information
@@ -4453,13 +4453,13 @@ dboolean G_CheckDemoStatus (void)
   if (demorecording)
     {
       byte end_marker = DEMOMARKER;
-      
+
       demorecording = false;
       dsda_WriteToDemo(&end_marker, 1);
-      
+
       //e6y
       G_WriteDemoFooter();
-      
+
       dsda_WriteDemoToFile();
 
       lprintf(LO_INFO, "G_CheckDemoStatus: Demo recorded\n");

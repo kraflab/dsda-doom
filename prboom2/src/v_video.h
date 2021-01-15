@@ -51,7 +51,7 @@ typedef enum
   patch_stretch_16x10,
   patch_stretch_4x3,
   patch_stretch_full,
-  
+
   patch_stretch_max
 } patch_stretch_t;
 

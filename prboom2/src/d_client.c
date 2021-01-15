@@ -339,7 +339,7 @@ void NetUpdate(void)
     while (newtics--) {
       I_StartTic();
       if (maketic - gametic > BACKUPTICS/2) break;
-      
+
       // e6y
       // Eliminating the sudden jump of six frames(BACKUPTICS/2)
       // after change of realtic_clock_rate.

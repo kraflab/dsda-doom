@@ -72,7 +72,7 @@ void PCSCallbackFunc(int *duration, int *freq)
         *freq = 0;
         return;
     }
-    
+
     if (current_sound_lump != NULL && current_sound_remaining > 0)
     {
         // Read the next tone
@@ -109,7 +109,7 @@ static dboolean CachePCSLump(int sound_id)
     int headerlen;
 
     // Free the current sound lump back to the cache
- 
+
     if (current_sound_lump != NULL)
     {
         //e6y Z_ChangeTag(current_sound_lump, PU_CACHE);
@@ -122,7 +122,7 @@ static dboolean CachePCSLump(int sound_id)
     lumplen = W_LumpLength(S_sfx[sound_id].lumpnum);
 
     // Read header
-  
+
     if (current_sound_lump[0] != 0x00 || current_sound_lump[1] != 0x00)
     {
         return false;
@@ -209,7 +209,7 @@ void I_PCS_StopSound(int handle)
     {
         current_sound_remaining = 0;
     }
-    
+
     SDL_UnlockMutex(sound_lock);
 }
 

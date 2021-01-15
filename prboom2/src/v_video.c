@@ -407,7 +407,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     trans=colrngs[cm];
   else
     trans=translationtables + 256*((cm-CR_LIMIT)-1);
-  
+
   if (!(flags & VPT_NOOFFSET))
   {
     y -= patch->topoffset;
@@ -624,7 +624,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
           // of the top and bottom screen coordinates of a column.
 
           int tmpy;
-          
+
           tmpy = y + post->topdelta;
           if (tmpy < 0 || tmpy > 200)
             dcvars.yl = (tmpy * params->video->height) / 200 + params->deltay1;
@@ -721,7 +721,7 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
   float t;
   int paletteNum = (V_GetMode() == VID_MODEGL ? 0 : currentPaletteIndex);
   static int usegammaOnLastPaletteGeneration = -1;
-  
+
   int pplump = W_GetNumForName("PLAYPAL");
   int gtlump = (W_CheckNumForName)("GAMMATBL",ns_prboom);
   const byte *pal = W_CacheLumpNum(pplump);
@@ -734,7 +734,7 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
   int numPals = W_LumpLength(pplump) / (3*256);
   const float dontRoundAbove = 220;
   float roundUpR, roundUpG, roundUpB;
-  
+
   if (usegammaOnLastPaletteGeneration != usegamma) {
     if (Palettes15) free(Palettes15);
     if (Palettes16) free(Palettes16);
@@ -744,7 +744,7 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
     Palettes32 = NULL;
     usegammaOnLastPaletteGeneration = usegamma;
   }
-  
+
   if (mode == VID_MODE32) {
     if (!Palettes32) {
       // set int palette
@@ -754,13 +754,13 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
           r = gtable[pal[(256*p+i)*3+0]];
           g = gtable[pal[(256*p+i)*3+1]];
           b = gtable[pal[(256*p+i)*3+2]];
-          
+
           // ideally, we should always round up, but very bright colors
           // overflow the blending adds, so they don't get rounded.
           roundUpR = (r > dontRoundAbove) ? 0 : 0.5f;
           roundUpG = (g > dontRoundAbove) ? 0 : 0.5f;
           roundUpB = (b > dontRoundAbove) ? 0 : 0.5f;
-                  
+
           for (w=0; w<VID_NUMCOLORWEIGHTS; w++) {
             t = (float)(w)/(float)(VID_NUMCOLORWEIGHTS-1);
             nr = (int)(r*t+roundUpR);
@@ -784,13 +784,13 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
           r = gtable[pal[(256*p+i)*3+0]];
           g = gtable[pal[(256*p+i)*3+1]];
           b = gtable[pal[(256*p+i)*3+2]];
-          
+
           // ideally, we should always round up, but very bright colors
           // overflow the blending adds, so they don't get rounded.
           roundUpR = (r > dontRoundAbove) ? 0 : 0.5f;
           roundUpG = (g > dontRoundAbove) ? 0 : 0.5f;
           roundUpB = (b > dontRoundAbove) ? 0 : 0.5f;
-                   
+
           for (w=0; w<VID_NUMCOLORWEIGHTS; w++) {
             t = (float)(w)/(float)(VID_NUMCOLORWEIGHTS-1);
             nr = (int)((r>>3)*t+roundUpR);
@@ -814,13 +814,13 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
           r = gtable[pal[(256*p+i)*3+0]];
           g = gtable[pal[(256*p+i)*3+1]];
           b = gtable[pal[(256*p+i)*3+2]];
-          
+
           // ideally, we should always round up, but very bright colors
           // overflow the blending adds, so they don't get rounded.
           roundUpR = (r > dontRoundAbove) ? 0 : 0.5f;
           roundUpG = (g > dontRoundAbove) ? 0 : 0.5f;
           roundUpB = (b > dontRoundAbove) ? 0 : 0.5f;
-                   
+
           for (w=0; w<VID_NUMCOLORWEIGHTS; w++) {
             t = (float)(w)/(float)(VID_NUMCOLORWEIGHTS-1);
             nr = (int)((r>>3)*t+roundUpR);
@@ -835,7 +835,7 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
     }
     V_Palette15 = Palettes15 + paletteNum*256*VID_NUMCOLORWEIGHTS;
   }
-   
+
   W_UnlockLumpNum(pplump);
   W_UnlockLumpNum(gtlump);
 }
@@ -1337,7 +1337,7 @@ static void V_PlotPixelWu15(int scrn, int x, int y, byte color, int weight)
   byte r = (*(rgb + 0) * weight) >> wu_weightbits;
   byte g = (*(rgb + 1) * weight) >> wu_weightbits;
   byte b = (*(rgb + 2) * weight) >> wu_weightbits;
-  
+
   ((unsigned short *)screens[scrn].data)[x+screens[scrn].short_pitch*y] =
     (unsigned short)RGB2COLOR(r, g, b);
 }
@@ -1348,7 +1348,7 @@ static void V_PlotPixelWu16(int scrn, int x, int y, byte color, int weight)
   byte r = (*(rgb + 0) * weight) >> wu_weightbits;
   byte g = (*(rgb + 1) * weight) >> wu_weightbits;
   byte b = (*(rgb + 2) * weight) >> wu_weightbits;
-  
+
   ((unsigned short *)screens[scrn].data)[x+screens[scrn].short_pitch*y] =
     (unsigned short)RGB2COLOR(r, g, b);
 }
@@ -1359,7 +1359,7 @@ static void V_PlotPixelWu32(int scrn, int x, int y, byte color, int weight)
   byte r = (*(rgb + 0) * weight) >> wu_weightbits;
   byte g = (*(rgb + 1) * weight) >> wu_weightbits;
   byte b = (*(rgb + 2) * weight) >> wu_weightbits;
-  
+
   ((unsigned int *)screens[scrn].data)[x+screens[scrn].int_pitch*y] =
     (unsigned int)RGB2COLOR(r, g, b);
 }
@@ -1628,7 +1628,7 @@ void SetRatio(int width, int height)
       lprintf(LO_INFO, "SetRatio: revised display aspect ratio %u:%u\n", ratio_multiplier, ratio_scale);
     }
   }
-  
+
   gl_ratio = RMUL * ratio_multiplier / ratio_scale;
   lprintf(LO_INFO, "SetRatio: gl_ratio %f\n", gl_ratio);
 
@@ -1705,7 +1705,7 @@ void SetRatio(int width, int height)
     ST_SCALED_WIDTH  = WIDE_SCREENWIDTH;
 
     ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
-    
+
     wide_offset2x = (SCREENWIDTH - WIDE_SCREENWIDTH);
     wide_offset2y = (SCREENHEIGHT - WIDE_SCREENHEIGHT);
     break;
@@ -1754,7 +1754,7 @@ void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flag
 int V_BestColor(const unsigned char *palette, int r, int g, int b)
 {
   int color;
-  
+
   // use color 0 as a worst-case match for any color
   int bestcolor = 0;
   int bestdist = 257 * 257 + 257 * 257 + 257 * 257;

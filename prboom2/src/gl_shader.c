@@ -148,7 +148,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
   sprintf(filename, "%s/shaders/%s.txt", I_DoomExeDir(), fpname);
   fp_size = ReadLump(filename, fpname, &fp_data);
-  
+
   if (vp_data && fp_data)
   {
     shader = calloc(1, sizeof(GLShader));

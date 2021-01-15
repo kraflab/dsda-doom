@@ -332,4 +332,3 @@ deh_section_t deh_section_frame =
     NULL,
     DEH_FrameSHA1Sum,
 };
-

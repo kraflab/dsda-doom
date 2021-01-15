@@ -603,7 +603,7 @@ void I_CaptureFinish (void)
   // on linux, we have to close videopipe first, because it has a copy of the write
   // end of soundpipe_stdin (so that stream will never see EOF).
   // is there a better way to do this?
-  
+
   // (on windows, it doesn't matter what order we do it in)
   my_pclose3 (&videopipe);
   SDL_WaitThread (videopipe.outthread, &s);

@@ -185,12 +185,12 @@ static void P_XYMovement (mobj_t* mo)
 
       mo->flags &= ~MF_SKULLFLY;
       mo->momz = 0;
-      
+
       if (heretic)
         new_state = mo->info->seestate;
       else
         new_state = mo->info->spawnstate;
-      
+
       P_SetMobjState (mo, new_state);
     }
     return;
@@ -759,7 +759,7 @@ floater:
           // and utter appropriate sound.
 
           mo->player->deltaviewheight = mo->momz >> 3;
-          
+
           if (heretic)
           {
             S_StartSound(mo, heretic_sfx_plroof);
@@ -1427,7 +1427,7 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   // http://www.doom2.net/doom2/research/runningbody.zip
   if (PlayeringameOverrun(mthing))
     return;
-                                                                
+
   // not playing?
 
   if (!playeringame[n])
@@ -1443,7 +1443,7 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
    */
   if (!mthing->options)
     I_Error("P_SpawnPlayer: attempt to spawn player at unavailable start point");
-  
+
   x    = mthing->x << FRACBITS;
   y    = mthing->y << FRACBITS;
   z    = ONFLOORZ;
@@ -1918,7 +1918,7 @@ dboolean P_CheckMissileSpawn (mobj_t* th)
     P_ExplodeMissile (th);
     return false;
   }
-  
+
   return true;
 }
 
@@ -2041,7 +2041,7 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
 
   if (heretic) {
     z += ((source->player->lookdir) << FRACBITS) / 173;
-    
+
     if (source->flags2 & MF2_FEETARECLIPPED)
     {
         z -= FOOTCLIPSIZE;

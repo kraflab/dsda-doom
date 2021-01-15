@@ -132,7 +132,7 @@ void R_InitPlanesRes(void)
 void R_InitVisplanesRes(void)
 {
   int i;
-  
+
   freetail = NULL;
   freehead = &freetail;
 
@@ -190,14 +190,14 @@ static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
     return;
   den = (int_64_t)FRACUNIT * FRACUNIT * D_abs(centery - y);
   distance = FixedMul (planeheight, yslope[y]);
-  
+
   dsvars->xstep = (fixed_t)((int_64_t)viewsin * planeheight * viewfocratio / den);
   dsvars->ystep = (fixed_t)((int_64_t)viewcos * planeheight * viewfocratio / den);
 
   // killough 2/28/98: Add offsets
   dsvars->xfrac =  viewx + xoffs + FixedMul(viewcos, distance) + (x1 - centerx) * dsvars->xstep;
   dsvars->yfrac = -viewy + yoffs - FixedMul(viewsin, distance) + (x1 - centerx) * dsvars->ystep;
-  
+
   if (drawvars.filterfloor == RDRAW_FILTER_LINEAR) {
     dsvars->xfrac -= (FRACUNIT>>1);
     dsvars->yfrac -= (FRACUNIT>>1);
@@ -462,9 +462,9 @@ static void R_DoDrawPlane(visplane_t *pl)
 
       //dcvars.texturemid = skytexturemid;
       dcvars.texheight = textureheight[texture]>>FRACBITS; // killough
-      
+
       // proff 09/21/98: Changed for high-res
-      
+
       // e6y
       // disable sky texture scaling if status bar is used
       // old code: dcvars.iscale = FRACUNIT*200/viewheight;

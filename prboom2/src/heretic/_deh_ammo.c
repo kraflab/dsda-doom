@@ -110,4 +110,3 @@ deh_section_t deh_section_ammo =
     NULL,
     DEH_AmmoSHA1Hash,
 };
-

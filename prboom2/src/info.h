@@ -2826,7 +2826,7 @@ typedef enum {
   MT_EXTRA95, MT_EXTRA96, MT_EXTRA97, MT_EXTRA98, MT_EXTRA99,
 
   NUMMOBJTYPES,  // Counter of how many there are
-  
+
   // heretic
   HERETIC_MT_ZERO,
   HERETIC_MT_MISC0 = HERETIC_MT_ZERO,
@@ -2991,7 +2991,7 @@ typedef enum {
   HERETIC_MT_SOUNDWIND,
   HERETIC_MT_SOUNDWATERFALL,
   HERETIC_NUMMOBJTYPES,
-  
+
   TOTAL_NUMMOBJTYPES = HERETIC_NUMMOBJTYPES
 } mobjtype_t;
 
@@ -3045,13 +3045,13 @@ typedef struct
   int activesound;  /* What sound it makes wandering around, once
            in a while.  Chance is 3/256 it will. */
   uint_64_t flags;  /* Bit masks for lots of things.  See p_mobj.h */
-  
+
   // not in heretic
   int raisestate;   /* The first state for an Archvile or respawn
            resurrection.  Zero means it won't come
            back to life. */
   mobjtype_t droppeditem; /* ferk: Mobj to drop after death */
-  
+
   // heretic
   int crashstate;
   int flags2;

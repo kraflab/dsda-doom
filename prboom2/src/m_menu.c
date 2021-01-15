@@ -1124,7 +1124,7 @@ static void M_QuitResponse(int ch)
 {
   if (ch != 'y')
     return;
-  
+
   //e6y: Optional removal of a quit sound
   if ((!netgame && showendoom) // killough 12/98
       && !nosfxparm && snd_card) // avoid delay if no sound card
@@ -2515,7 +2515,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Store Quick Key Frame", S_KEY, m_scrn, KB_X, KB_Y + 1 * 8, { &dsda_key_store_quick_key_frame } },
   { "Restore Quick Key Frame", S_KEY, m_scrn, KB_X, KB_Y + 2 * 8, { &dsda_key_restore_quick_key_frame } },
   { "Rewind", S_KEY, m_scrn, KB_X, KB_Y + 3 * 8, { &dsda_key_rewind } },
-  
+
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
   { 0, S_SKIP | S_END, m_null }
 };
@@ -3157,7 +3157,7 @@ setup_menu_t gen_settings1[] = { // General Settings screen1
   {"Fullscreen Video mode",          S_YESNO,            m_null, G_X, G_Y+ 5*8, {"use_fullscreen"}, 0, 0, M_ChangeFullScreen},
   {"Status Bar and Menu Appearance", S_CHOICE,           m_null, G_X, G_Y+ 6*8, {"render_stretch_hud"}, 0, 0, M_ChangeStretch, render_stretch_list},
   {"Vertical Sync",                  S_YESNO,            m_null, G_X, G_Y+ 7*8, {"render_vsync"}, 0, 0, M_ChangeVideoMode},
-  
+
   {"Enable Translucency",            S_YESNO,            m_null, G_X, G_Y+10*8, {"translucency"}, 0, 0, M_Trans},
   {"Translucency filter percentage", S_NUM,              m_null, G_X, G_Y+11*8, {"tran_filter_pct"}, 0, 0, M_Trans},
   {"Uncapped Framerate",             S_YESNO,            m_null, G_X, G_Y+12*8, {"uncapped_framerate"}, 0, 0, M_ChangeUncappedFrameRate},
@@ -4844,7 +4844,7 @@ dboolean M_Responder (event_t* ev) {
       if (G_ReloadLevel())
         return true;
     }
- 
+
     if (ch == key_demo_endlevel)
     {
       if (demoplayback && !doSkip && singledemo)
@@ -4870,7 +4870,7 @@ dboolean M_Responder (event_t* ev) {
         return true;
       }
     }
-    
+
     if (ch == dsda_key_store_quick_key_frame)
     {
       if (
@@ -4880,7 +4880,7 @@ dboolean M_Responder (event_t* ev) {
       ) dsda_StoreQuickKeyFrame();
       return true;
     }
-    
+
     if (ch == dsda_key_restore_quick_key_frame)
     {
       if (!dsda_StrictMode()) dsda_RestoreQuickKeyFrame();
@@ -4892,7 +4892,7 @@ dboolean M_Responder (event_t* ev) {
       if (!dsda_StrictMode()) dsda_RewindAutoKeyFrame();
       return true;
     }
-    
+
     if (ch == key_walkcamera)
     {
       if (demoplayback && gamestate == GS_LEVEL)
@@ -5026,7 +5026,7 @@ dboolean M_Responder (event_t* ev) {
 
       if (ptr1->action)      // killough 10/98
         ptr1->action();
-      
+
       //e6y
 #ifdef GL_DOOM
       {
@@ -5123,7 +5123,7 @@ dboolean M_Responder (event_t* ev) {
     if (ch == key_menu_left) {
       if (ptr1->var.def->type == def_int) {
         int value = *ptr1->var.def->location.pi;
-      
+
         value = value - 1;
         if ((ptr1->var.def->minvalue != UL &&
              value < ptr1->var.def->minvalue))
@@ -5151,7 +5151,7 @@ dboolean M_Responder (event_t* ev) {
     if (ch == key_menu_right) {
       if (ptr1->var.def->type == def_int) {
         int value = *ptr1->var.def->location.pi;
-      
+
         value = value + 1;
         if ((ptr1->var.def->minvalue != UL &&
              value < ptr1->var.def->minvalue))
@@ -6236,7 +6236,7 @@ void M_Init(void)
 
   M_InitHelpScreen();   // init the help screen       // phares 4/08/98
   M_InitExtendedHelp(); // init extended help screens // phares 3/30/98
-  
+
   //e6y
   M_ChangeSpeed();
   M_ChangeMaxViewPitch();

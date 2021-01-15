@@ -191,7 +191,7 @@ void gld_SplitRightEdge(const GLWall *wall, dboolean detail)
 
     while (i > 0 && vi->heightlist[i] >= wall->ytop)
       i--;
-    
+
     while (i > 0 && vi->heightlist[i] > wall->ybottom)
     {
       GLTexture *tex = wall->gltexture;

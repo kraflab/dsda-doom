@@ -167,7 +167,7 @@ typedef enum {
   mus_dm2ttl,
   mus_dm2int,
   NUMMUSIC,
-  
+
   // heretic
   heretic_mus_e1m1 = mus_e1m1,
   heretic_mus_e1m2,
@@ -559,7 +559,7 @@ typedef enum {
   sfx_fre199,
 
   NUMSFX,
-  
+
   // heretic
   heretic_sfx_None = 0,
   heretic_sfx_gldhit,

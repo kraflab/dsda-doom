@@ -413,10 +413,10 @@ static void R_AddLine (seg_t *line)
       ds_p = drawsegs + pos;          // jff 8/9/98 fix from ZDOOM1.14a
       maxdrawsegs = newmax;
     }
-    
+
     if(curline->miniseg == false) // figgi -- skip minisegs
       curline->linedef->flags |= ML_MAPPED;
-    
+
     // proff 11/99: the rest of the calculations is not needed for OpenGL
     ds_p++->curline = curline;
     gld_AddWall(curline);

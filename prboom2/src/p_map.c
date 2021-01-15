@@ -595,7 +595,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
       new_state = tmthing->info->seestate;
     else
       new_state = tmthing->info->spawnstate;
-    
+
     P_SetMobjState (tmthing, new_state);
 
     return false;   // stop moving
@@ -889,7 +889,7 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
     for (by=yl ; by<=yh ; by++)
       if (!P_BlockLinesIterator (bx,by,PIT_CheckLine))
         return false; // doesn't fit
-  
+
   ClearLinesCrossTracer();//e6y
   return true;
 }

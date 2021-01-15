@@ -622,7 +622,7 @@ void drawstatus(void)
     TXT_BGColor(TXT_COLOR_BLUE, 0);
     TXT_FGColor(TXT_COLOR_BRIGHT_WHITE);
 
-    for (i=0; smsg[i] != '\0'; ++i) 
+    for (i=0; smsg[i] != '\0'; ++i)
     {
         TXT_PutChar(smsg[i]);
     }
@@ -683,7 +683,7 @@ void initStartup(void)
         return;
     }
 
-    if (!TXT_Init()) 
+    if (!TXT_Init())
     {
         using_graphical_startup = false;
         return;
@@ -816,7 +816,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_vsync",           &crispy->vsync);
 }
 
-// 
+//
 // Called at exit to display the ENDOOM screen (ENDTEXT in Heretic)
 //
 

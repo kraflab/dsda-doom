@@ -59,7 +59,7 @@ simple_shadow_params_t simple_shadows =
 void gld_InitShadows(void)
 {
   int lump;
-  
+
   simple_shadows.loaded = false;
 
   simple_shadows.tex_id = -1;
@@ -70,7 +70,7 @@ void gld_InitShadows(void)
   simple_shadows.max_dist = gl_shadows_maxdist;
   simple_shadows.factor = (float)gl_shadows_factor / 256.0f;
   simple_shadows.bias = 0.0044f;
-  
+
   lump = (W_CheckNumForName)("GLSHADOW", ns_prboom);
   if (lump != -1)
   {
@@ -154,7 +154,7 @@ void gld_ProcessThingShadow(mobj_t *mo)
 
   if (mo->frame & FF_FULLBRIGHT)
     return;
-  
+
   // Don't render mobj shadows on sky floors.
   if (mo->subsector->sector->floorpic == skyflatnum)
     return;
@@ -172,7 +172,7 @@ void gld_ProcessThingShadow(mobj_t *mo)
     z = sectors[sec->heightsec].floorheight;
   else
     z = sec->floorheight;
-  
+
   // below visible floor
   if (!paused && movement_smooth)
   {
@@ -189,7 +189,7 @@ void gld_ProcessThingShadow(mobj_t *mo)
   moh = mo->height / (float)FRACUNIT;
   if(!moh)
     moh = 1;
-  
+
   // Too high above floor.
   if(height > moh)
     return;
@@ -197,11 +197,11 @@ void gld_ProcessThingShadow(mobj_t *mo)
   // Calculate the strength of the shadow.
 
   shadow.light = simple_shadows.factor * sec->lightlevel / 255.0f;
-  
+
   halfmoh = moh * 0.5f;
   if(height > halfmoh)
     shadow.light *= 1 - (height - halfmoh) / (moh - halfmoh);
-  
+
   // Can't be seen.
   if(shadow.light <= 0)
     return;

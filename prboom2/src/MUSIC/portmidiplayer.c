@@ -190,17 +190,17 @@ static void pm_shutdown (void)
     winapi ref says:
     "Applications should not call any multimedia functions from inside the callback function,
      as doing so can cause a deadlock. Other system functions can safely be called from the callback."
-    
+
     winmm_streamout_callback calls midiOutUnprepareHeader.  oops?
 
-    
+
     since timestamps are slightly in the future, it's very possible to have some messages still in
     the windows midi queue when Pm_Close is called.  this is normally no problem, but if one so happens
     to dequeue and call winmm_streamout_callback at the exact right moment...
 
     fix: at this point, we've stopped generating midi messages.  sleep for more than DRIVER_LATENCY to ensure
     all messages are flushed.
-    
+
     not a fix: calling Pm_Abort(); then midiStreamStop deadlocks instead of midiStreamClose.
     */
     #ifdef _WIN32
@@ -232,7 +232,7 @@ static const void *pm_registersong (const void *data, unsigned len)
     lprintf (LO_WARN, "pm_registersong: Failed to load MIDI.\n");
     return NULL;
   }
-  
+
   events = MIDI_GenerateFlatList (midifile);
   if (!events)
   {
@@ -302,7 +302,7 @@ static void pm_setvolume (int v)
   firsttime = 0;
 
   pm_volume = v;
-  
+
   // this is a bit of a hack
   // fix: add non-win32 version
   // fix: change win32 version to only modify the device we're using?
@@ -357,7 +357,7 @@ static void pm_play (const void *handle, int looping)
   pm_clearchvolume ();
   pm_refreshvolume ();
   trackstart = Pt_Time ();
-  
+
 }
 
 
@@ -387,7 +387,7 @@ static void pm_stop (void)
   int i;
   unsigned long when = Pt_Time ();
   pm_playing = 0;
-  
+
 
   // songs can be stopped at any time, so reset everything
   for (i = 0; i < 16; i++)
@@ -402,7 +402,7 @@ static void pm_stop (void)
 static void pm_render (void *vdest, unsigned bufflen)
 {
   // wherever you see samples in here, think milliseconds
-  
+
   unsigned long newtime = Pt_Time ();
   unsigned long length = newtime - trackstart;
 
@@ -410,7 +410,7 @@ static void pm_render (void *vdest, unsigned bufflen)
   unsigned long when;
 
   midi_event_t *currevent;
-  
+
   unsigned sampleswritten = 0;
   unsigned samples;
 
@@ -421,12 +421,12 @@ static void pm_render (void *vdest, unsigned bufflen)
   if (!pm_playing || pm_paused)
     return;
 
-  
+
   while (1)
   {
     double eventdelta;
     currevent = events[eventpos];
-    
+
     // how many samples away event is
     eventdelta = currevent->delta_time * spmc;
 
@@ -443,8 +443,8 @@ static void pm_render (void *vdest, unsigned bufflen)
 
     sampleswritten += samples;
     pm_delta -= samples;
- 
-    
+
+
     // process event
     when = trackstart + sampleswritten;
     switch (currevent->event_type)
@@ -488,7 +488,7 @@ static void pm_render (void *vdest, unsigned bufflen)
       default:
         writeevent (when, currevent->event_type, currevent->data.channel.channel, currevent->data.channel.param1, currevent->data.channel.param2);
         break;
-      
+
     }
     // if the event was a "reset all controllers", we need to additionally re-fix the volume (which itself was reset)
     if (currevent->event_type == MIDI_EVENT_CONTROLLER && currevent->data.channel.param1 == 121)

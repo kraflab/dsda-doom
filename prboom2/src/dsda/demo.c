@@ -34,22 +34,22 @@ static char* dsda_demo_name;
 
 static void dsda_EnsureDemoBufferSpace(size_t length) {
   int offset;
-  
+
   offset = dsda_DemoBufferOffset();
-  
+
   if (offset + length <= dsda_demo_write_buffer_length) return;
-  
+
   while (offset + length > dsda_demo_write_buffer_length)
     dsda_demo_write_buffer_length *= 2;
-  
+
   dsda_demo_write_buffer =
     (byte *)realloc(dsda_demo_write_buffer, dsda_demo_write_buffer_length);
-    
+
   if (dsda_demo_write_buffer == NULL)
     I_Error("dsda_EnsureDemoBufferSpace: out of memory!");
-  
+
   dsda_demo_write_buffer_p = dsda_demo_write_buffer + offset;
-  
+
   lprintf(
     LO_INFO,
     "dsda_EnsureDemoBufferSpace: expanding demo buffer %d\n",
@@ -59,35 +59,35 @@ static void dsda_EnsureDemoBufferSpace(size_t length) {
 
 void dsda_InitDemo(char* name) {
   size_t name_size;
-  
+
   name_size = strlen(name) + 1;
   dsda_demo_name = malloc(name_size);
   memcpy(dsda_demo_name, name, name_size);
-  
+
   dsda_demo_write_buffer = malloc(INITIAL_DEMO_BUFFER_SIZE);
   if (dsda_demo_write_buffer == NULL)
     I_Error("dsda_InitDemo: unable to initialize demo buffer!");
-  
+
   dsda_demo_write_buffer_p = dsda_demo_write_buffer;
-  
+
   dsda_demo_write_buffer_length = INITIAL_DEMO_BUFFER_SIZE;
 }
 
 void dsda_WriteToDemo(byte* buffer, size_t length) {
   dsda_EnsureDemoBufferSpace(length);
-  
+
   memcpy(dsda_demo_write_buffer_p, buffer, length);
   dsda_demo_write_buffer_p += length;
 }
 
 void dsda_WriteDemoToFile(void) {
   int length;
-  
+
   length = dsda_DemoBufferOffset();
-    
+
   if (!M_WriteFile(dsda_demo_name, dsda_demo_write_buffer, length))
     I_Error("dsda_WriteDemoToFile: Failed to write demo file.");
-  
+
   free(dsda_demo_write_buffer);
   free(dsda_demo_name);
   dsda_demo_write_buffer = NULL;
@@ -102,10 +102,10 @@ int dsda_DemoBufferOffset(void) {
 
 void dsda_SetDemoBufferOffset(int offset) {
   if (dsda_demo_write_buffer == NULL) return;
-  
+
   // Cannot load forward (demo buffer would desync)
   if (offset > dsda_DemoBufferOffset())
     I_Error("dsda_SetDemoBufferOffset: Impossible time traveling detected.");
-  
+
   dsda_demo_write_buffer_p = dsda_demo_write_buffer + offset;
 }

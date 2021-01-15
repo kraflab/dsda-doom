@@ -681,7 +681,7 @@ void R_StoreWallRange(const int start, const int stop)
   dx1 = ((int_64_t)viewx - curline->v1->px) >> shift_bits;
   dy1 = ((int_64_t)viewy - curline->v1->py) >> shift_bits;
   len = curline->length >> shift_bits;
-  
+
   dist = (((dy * dx1 - dx * dy1) / len) << shift_bits);
   rw_distance = (fixed_t)BETWEEN(INT_MIN, INT_MAX, dist);
 
@@ -724,7 +724,7 @@ void R_StoreWallRange(const int start, const int stop)
 
   worldtop = frontsector->ceilingheight - viewz;
   worldbottom = frontsector->floorheight - viewz;
-  
+
   R_FixWiggle(frontsector);
 
   // calculate scale at both ends and step
@@ -920,7 +920,7 @@ void R_StoreWallRange(const int start, const int stop)
   ds_p->rw_offset = rw_offset;
   ds_p->rw_distance = rw_distance;
   ds_p->rw_centerangle = rw_centerangle;
-      
+
   // if a floor / ceiling plane is on the wrong side of the view
   // plane, it is definitely invisible and doesn't need to be marked.
 

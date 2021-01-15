@@ -177,7 +177,7 @@ void D_PostEvent(event_t *ev)
 {
   /* cph - suppress all input events at game start
    * FIXME: This is a lousy kludge */
-  
+
   // e6y
   // Is this condition needed here?
   // Moved to I_StartTic()
@@ -282,7 +282,7 @@ void D_Display (fixed_t frac)
     }
 #endif
   }
-  
+
   if (!doSkip || !gamekeydown[key_use])
 
   if (nodrawers)                    // for comparative timing / profiling
@@ -1260,7 +1260,7 @@ static void DoLooseFiles(void)
 
     // so now we must have a loose file.  Find out what kind and store it.
     arglen = strlen(myargv[i]);
-    
+
     k = 0;
     while (looses[k].ext)
     {

@@ -108,7 +108,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
       source = &TEMPBUF[temp_x + (yl << 2)];
       dest   = drawvars.TOPLEFT + yl*drawvars.PITCH + startx + temp_x;
       count  = tempyh[temp_x] - yl + 1;
-      
+
       while(--count >= 0)
       {
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLUCENT)
@@ -116,7 +116,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 #elif (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
          // SoM 7-28-04: Fix the fuzz problem.
          *dest = GETDESTCOLOR(dest[fuzzoffset[fuzzpos]]);
-         
+
          // Clamp table lookup index.
          if(++fuzzpos == FUZZTABLE)
             fuzzpos = 0;
@@ -148,14 +148,14 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
    {
       yl = tempyl[colnum];
       yh = tempyh[colnum];
-      
+
       // flush column head
       if(yl < commontop)
       {
          source = &TEMPBUF[colnum + (yl << 2)];
          dest   = drawvars.TOPLEFT + yl*drawvars.PITCH + startx + colnum;
          count  = commontop - yl;
-         
+
          while(--count >= 0)
          {
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLUCENT)
@@ -164,7 +164,7 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
 #elif (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
             // SoM 7-28-04: Fix the fuzz problem.
             *dest = GETDESTCOLOR(dest[fuzzoffset[fuzzpos]]);
-            
+
             // Clamp table lookup index.
             if(++fuzzpos == FUZZTABLE)
                fuzzpos = 0;
@@ -176,14 +176,14 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
             dest += drawvars.PITCH;
          }
       }
-      
+
       // flush column tail
       if(yh > commonbot)
       {
          source = &TEMPBUF[colnum + ((commonbot + 1) << 2)];
          dest   = drawvars.TOPLEFT + (commonbot + 1)*drawvars.PITCH + startx + colnum;
          count  = yh - commonbot;
-         
+
          while(--count >= 0)
          {
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLUCENT)
@@ -192,7 +192,7 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
 #elif (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
             // SoM 7-28-04: Fix the fuzz problem.
             *dest = GETDESTCOLOR(dest[fuzzoffset[fuzzpos]]);
-            
+
             // Clamp table lookup index.
             if(++fuzzpos == FUZZTABLE)
                fuzzpos = 0;

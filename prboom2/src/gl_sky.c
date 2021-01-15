@@ -190,7 +190,7 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
       l = &lines[sky2 & ~PL_SKYFLAT];
     }
   }
-  
+
   if (l)
   {
     s = *l->sidenum + sides;
@@ -417,7 +417,7 @@ void averageColor(PalEntry_t * PalEntry, const unsigned int *data, int size, fix
   int i;
   int maxv;
   unsigned int r, g, b;
-  
+
   // First clear them.
   r = g = b = 0;
   if (size == 0)
@@ -574,7 +574,7 @@ void gld_GetSkyCapColors(void)
   const lighttable_t *fixedcolormap_saved;
   PalEntry_t *ceiling_rgb = &SkyBox.CeilingSkyColor[0];
   PalEntry_t *floor_rgb = &SkyBox.FloorSkyColor[0];
-  
+
   // saving current colormap
   fixedcolormap_saved = fixedcolormap;
   frame_fixedcolormap_saved = frame_fixedcolormap;
@@ -651,7 +651,7 @@ static void SkyVertex(vbo_vertex_t *vbo, int r, int c)
     vbo->g = 255;
     vbo->b = 255;
     vbo->a = (r == 0 ? 0 : 255);
-    
+
     // And the texture coordinates.
     if(!yflip)	// Flipped Y is for the lower hemisphere.
     {
@@ -785,7 +785,7 @@ static void RenderDome(SkyBoxParams_t *sky)
     vbo = &sky_vbo[1];
   else
     vbo = &sky_vbo[0];
-  
+
 
 #if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   // be sure the second ARB is not enabled
@@ -803,7 +803,7 @@ static void RenderDome(SkyBoxParams_t *sky)
       sky->wall.gltexture->index != sky->index)
   {
     y_offset_saved = sky->y_offset;
-    
+
     if (sky->wall.gltexture->index != sky->index)
     {
       sky->index = sky->wall.gltexture->index;

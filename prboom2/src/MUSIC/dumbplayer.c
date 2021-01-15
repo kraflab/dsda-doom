@@ -212,7 +212,7 @@ static void db_stop (void)
   dsren = NULL;
   db_playing = 0;
 }
-  
+
 static void db_pause (void)
 {
   db_paused = 1;
@@ -235,21 +235,21 @@ static void db_render (void *dest, unsigned nsamp)
     { // end of file
       // tracker formats can have looping imbedded in them, in which case
       // we'll never reach this (even if db_looping is 0!!)
-      
+
       cdest += nsampwrit * 4;
 
 
       if (db_looping)
       { // but if the tracker doesn't loop, and we want loop anyway, restart
         // from beginning
-        
+
         if (nsampwrit == 0)
         { // special case: avoid infinite recursion
           db_stop ();
           lprintf (LO_WARN, "db_render: problem (0 length tracker file on loop?\n");
           return;
         }
-        
+
         // im not sure if this is the best way to seek, but there isn't
         // a sigrenderer_rewind type function
         db_stop ();

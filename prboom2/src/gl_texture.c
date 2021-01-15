@@ -134,10 +134,10 @@ int gld_GetTexDimension(int value)
 
   if (value > gl_max_texture_size)
     value = gl_max_texture_size;
-  
+
   if (gl_arb_texture_non_power_of_two)
     return value;
-  
+
   i = 1;
   while (i < value)
     i += i;
@@ -315,7 +315,7 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
     xs=-originx;
   if ((xe+originx)>gltexture->realtexwidth)
     xe+=(gltexture->realtexwidth-(xe+originx));
-  
+
   //e6y
   if (patch->flags&PATCH_HASHOLES)
     gltexture->flags |= GLTEXTURE_HASHOLES;
@@ -578,7 +578,7 @@ GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force)
       return NULL;
     gltexture->textype=GLDT_BROKEN;
     gltexture->index=texture_num;
-    
+
     //e6y
     gltexture->flags = 0;
     if (mipmap && tex_filter[MIP_TEXTURE].mipmap)
@@ -607,7 +607,7 @@ GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force)
       gltexture->buffer_width=gltexture->realtexwidth;
       gltexture->buffer_height=gltexture->realtexheight;
     }
-    
+
     //e6y: right/bottom UV coordinates for texture drawing
     gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
     gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
@@ -992,7 +992,7 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
-  
+
   if (gltexture->flags & GLTEXTURE_HASHOLES)
   {
     SmoothEdges(buffer, gltexture->buffer_width, gltexture->buffer_height);
@@ -1132,7 +1132,7 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   // It is necessary for textures that are not power of two
   // to avoid the lines (boxes) around the elements that change
   // on the intermission screens in Doom1 (E2, E3)
-  
+
 //  if ((gltexture->flags & (GLTEXTURE_HASHOLES | GLTEXTURE_SPRITE)) ==
 //    (GLTEXTURE_HASHOLES | GLTEXTURE_SPRITE))
   if ((gltexture->flags & GLTEXTURE_HASHOLES))
@@ -1298,7 +1298,7 @@ static void gld_CleanTexItems(int count, GLTexture ***items)
           }
         }
       }
-      
+
       Z_Free((*items)[i]->glTexExID);
       (*items)[i]->glTexExID = NULL;
 
@@ -1315,7 +1315,7 @@ void gld_FlushTextures(void)
   gld_CleanTexItems(numlumps, &gld_GLStaticPatchTextures);
 
   gl_has_hires = 0;
-  
+
   gld_ResetLastTexture();
 #ifdef HAVE_LIBSDL2_IMAGE
   gld_HiRes_BuildTables();
@@ -1382,17 +1382,17 @@ void gld_Precache(void)
   for (i = numsectors; --i >= 0; )
   {
     int j,k;
-    
+
     int floorpic = sectors[i].floorpic;
     int ceilingpic = sectors[i].ceilingpic;
-    
+
     anim_t *flatanims[2] = {
       anim_flats[floorpic].anim,
       anim_flats[ceilingpic].anim
     };
 
     hitlist[floorpic] = hitlist[ceilingpic] = 1;
-    
+
     //e6y: animated flats
     for (k = 0; k < 2; k++)
     {
@@ -1449,7 +1449,7 @@ void gld_Precache(void)
     bottomtexture = sides[i].bottomtexture;
     toptexture = sides[i].toptexture;
     midtexture = sides[i].midtexture;
-    
+
     textureanims[0] = anim_textures[bottomtexture].anim;
     textureanims[1] = anim_textures[toptexture].anim;
     textureanims[2] = anim_textures[midtexture].anim;
@@ -1580,7 +1580,7 @@ void gld_Precache(void)
       sprintf(map, "MAP%02i", gamemap);
     else
       sprintf(map, "E%iM%i", gameepisode, gamemap);
-    
+
     lprintf(LO_INFO, "gld_Precache: %s done in %d ms\n", map, SDL_GetTicks() - tics);
   }
 }

@@ -90,7 +90,7 @@ void F_StartFinale (void)
 		FMI_StartFinale();
 		return;
 	}
-  
+
   // Okay - IWAD dependend stuff.
   // This has been changed severly, and
   //  some stuff might have changed in the process.
@@ -233,7 +233,7 @@ void F_Ticker(void)
 		FMI_Ticker();
 		return;
 	}
-	
+
   if (!demo_compatibility)
     WI_checkForAccelerate();  // killough 3/28/98: check for acceleration
   else
@@ -663,7 +663,7 @@ void F_Drawer (void)
 		FMI_Drawer();
 		return;
 	}
-	
+
   if (finalestage == 2)
   {
     F_CastDrawer ();

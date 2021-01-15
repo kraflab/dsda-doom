@@ -284,7 +284,7 @@ typedef struct timetable_s
   int kill[MAXPLAYERS];
   int item[MAXPLAYERS];
   int secret[MAXPLAYERS];
-  
+
   int stat[TT_MAX];
 } timetable_t;
 

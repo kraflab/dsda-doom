@@ -4910,7 +4910,7 @@ doom_mobjinfo_t doom_mobjinfo[NUMMOBJTYPES] = {
     MF_NOBLOCKMAP|MF_MISSILE|MF_DROPOFF|MF_NOGRAVITY|MF_BOUNCES, // flags
     S_NULL          // raisestate
   },
-  
+
   // killough 7/11/98: this is the second of two plasma fireballs in the beta
   {   // MT_PLASMA2
     -1,             // doomednum

@@ -250,10 +250,10 @@ void gld_MultisamplingInit(void)
   {
     extern int gl_colorbuffer_bits;
     extern int gl_depthbuffer_bits;
-    
+
     gl_colorbuffer_bits = 32;
     SDL_GL_SetAttribute( SDL_GL_BUFFER_SIZE, gl_colorbuffer_bits );
-  
+
     if (gl_depthbuffer_bits!=8 && gl_depthbuffer_bits!=16 && gl_depthbuffer_bits!=24)
       gl_depthbuffer_bits = 16;
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, gl_depthbuffer_bits );
@@ -468,7 +468,7 @@ void gld_ResetTexturedAutomap(void)
 void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my, int fw, int fh, fixed_t scale)
 {
   extern int ddt_cheating;
-  
+
   static subsector_t **visible_subsectors = NULL;
   static int visible_subsectors_size = 0;
   int visible_subsectors_count;
@@ -545,7 +545,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
     0);
   coord_scale = (float)scale / (float)(1<<FRACTOMAPBITS) / (float)FRACUNIT * MAP_COEFF;
   glScalef(-coord_scale, -coord_scale, 1.0f);
-  
+
   for (i = 0; i < visible_subsectors_count; i++)
   {
     subsector_t *sub = visible_subsectors[i];
@@ -608,7 +608,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
 void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c)
 {
   glBegin(GL_TRIANGLE_STRIP);
-  
+
   glTexCoord2fv((const GLfloat*)&c->t[0]);
   glVertex3fv((const GLfloat*)&c->v[0]);
 
@@ -708,7 +708,7 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
     glTexCoord2f(fU2, fV1); glVertex2f((xpos+width),(ypos));
     glTexCoord2f(fU2, fV2); glVertex2f((xpos+width),(ypos+height));
   glEnd();
-  
+
   if (bFakeColormap)
   {
     glColor3f(1.0f,1.0f,1.0f);
@@ -807,7 +807,7 @@ void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
   const unsigned char *playpal = V_GetPlaypal();
   unsigned char r, g, b, a;
   map_line_t *line;
-  
+
   a = ((automapmode & am_overlay) ? map_lines_overlay_trans * 255 / 100 : 255);
   if (a == 0)
     return;
@@ -833,7 +833,7 @@ void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
   line->point[1].a = a;
 #else
   const unsigned char *playpal = V_GetPlaypal();
-  
+
   float alpha = ((automapmode & am_overlay) ? map_lines_overlay_trans / 100.0f : 1.0f);
   if (alpha == 0)
     return;
@@ -1031,10 +1031,10 @@ unsigned char *gld_ReadScreen(void)
     GLint pack_aligment;
     glGetIntegerv(GL_PACK_ALIGNMENT, &pack_aligment);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    
+
     glFlush();
     glReadPixels(0, 0, SCREENWIDTH, SCREENHEIGHT, GL_RGB, GL_UNSIGNED_BYTE, scr);
-    
+
     glPixelStorei(GL_PACK_ALIGNMENT, pack_aligment);
 
     gld_ApplyGammaRamp(scr, SCREENWIDTH * 3, SCREENWIDTH, SCREENHEIGHT);
@@ -1204,7 +1204,7 @@ void gld_StartDrawScene(void)
   gl_mask_sprite_threshold_f = (gl_sprite_blend ? (float)gl_mask_sprite_threshold / 100.0f : 0.5f);
 
   gld_InitFrameSky();
-  
+
   invul_method = 0;
   if (players[displayplayer].fixedcolormap == 32)
   {
@@ -1359,7 +1359,7 @@ void gld_EndDrawScene(void)
       glBlendFunc(GL_CONSTANT_ALPHA_EXT, GL_ONE_MINUS_CONSTANT_ALPHA_EXT);
       GLEXT_glBlendColorEXT(1.0f, 1.0f, 1.0f, motionblur_alpha);
     }
-  
+
     glBegin(GL_TRIANGLE_STRIP);
     {
       glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
@@ -1369,7 +1369,7 @@ void gld_EndDrawScene(void)
     }
     glEnd();
 
-    
+
     if (motion_blur.enabled)
     {
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1989,7 +1989,7 @@ static void gld_DrawFlat(GLFlat *flat)
   unsigned int flags;
 
   rendered_visplanes++;
-  
+
   has_detail =
     scene_has_details &&
     gl_arb_multitexture &&
@@ -2004,7 +2004,7 @@ static void gld_DrawFlat(GLFlat *flat)
     flags = GLTEXTURE_CLAMPXY;
   else
     flags = 0;
-  
+
   gld_BindFlat(flat->gltexture, flags);
   gld_StaticLightAlpha(flat->light, flat->alpha);
 
@@ -2020,7 +2020,7 @@ static void gld_DrawFlat(GLFlat *flat)
     glPushMatrix();
     glTranslatef(flat->uoffs, flat->voffs, 0.0f);
   }
-  
+
   gld_BindDetailARB(flat->gltexture, has_detail);
   if (has_detail)
   {
@@ -2029,7 +2029,7 @@ static void gld_DrawFlat(GLFlat *flat)
 
     GLEXT_glActiveTextureARB(GL_TEXTURE1_ARB);
     gld_StaticLightAlpha(flat->light, flat->alpha);
-    
+
     glPushMatrix();
 
     w = flat->gltexture->detail_width;

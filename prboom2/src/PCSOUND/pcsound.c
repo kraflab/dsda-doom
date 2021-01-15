@@ -106,7 +106,7 @@ int PCSound_Init(pcsound_callback_func callback_func)
             }
         }
     }
-    
+
     if (pcsound_driver != NULL)
     {
         lprintf(LO_INFO, "Using PC sound driver: %s\n", pcsound_driver->name);

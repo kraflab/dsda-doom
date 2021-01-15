@@ -217,7 +217,7 @@ static void FreeMap(MapEntry *mape)
 void FreeMapList()
 {
 	unsigned i;
-	
+
 	for(i = 0; i < Maps.mapcount; i++)
 	{
 		FreeMap(&Maps.maps[i]);
@@ -243,7 +243,7 @@ void ReplaceString(char **pptr, const char *newstring)
 static char *ParseMultiString(Scanner &scanner, int error)
 {
 	char *build = NULL;
-	
+
 	if (scanner.CheckToken(TK_Identifier))
 	{
 		if (!stricmp(scanner.string, "clear"))
@@ -255,7 +255,7 @@ static char *ParseMultiString(Scanner &scanner, int error)
 			scanner.ErrorF("Either 'clear' or string constant expected");
 		}
 	}
-	
+
 	do
 	{
 		scanner.MustGetToken(TK_StringConst);
@@ -303,7 +303,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 {
 	// find the next line with content.
 	// this line is no property.
-	
+
 	scanner.MustGetToken(TK_Identifier);
 	char *pname = strdup(scanner.string);
 	scanner.MustGetToken('=');
@@ -464,7 +464,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			{
 				scanner.Error(TK_Identifier);
 			}
-			
+
 		} while (scanner.CheckToken(','));
 	}
 	free(pname);
@@ -562,7 +562,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 			Maps.maps = (MapEntry*)realloc(Maps.maps, sizeof(MapEntry)*Maps.mapcount);
 			Maps.maps[Maps.mapcount-1] = parsed;
 		}
-		
+
 	}
 	return 1;
 }

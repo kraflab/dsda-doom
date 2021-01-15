@@ -69,7 +69,7 @@ typedef struct
 // that can be generated in a scene by the DOOM engine. This was determined by
 // Lee Killough during BOOM development to be a function of the screensize.
 // The simplest thing we can do, other than fix this bug, is to let the game
-// render overage and then bomb out by detecting the overflow after the 
+// render overage and then bomb out by detecting the overflow after the
 // fact. -haleyjd
 //#define MAXSEGS 32
 #define MAXSEGS (MAXWIDTH / 2 + 1)
@@ -388,7 +388,7 @@ boolean R_CheckBBox(fixed_t * bspcoord)
 
 //
 // check clip list for an open space
-//      
+//
     angle1 = R_PointToAngle(x1, y1) - viewangle;
     angle2 = R_PointToAngle(x2, y2) - viewangle;
 

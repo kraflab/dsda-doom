@@ -355,7 +355,7 @@ static dboolean CheckIfPatch(int lump)
   dboolean result;
 
   size = W_LumpLength(lump);
-  
+
   // minimum length of a valid Doom patch
   if (size < 13)
     return false;

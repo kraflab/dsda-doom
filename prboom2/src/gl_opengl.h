@@ -165,7 +165,7 @@ extern PFNGLGETUNIFORMLOCATIONARBPROC       GLEXT_glGetUniformLocationARB;
 extern PFNGLGETACTIVEUNIFORMARBPROC         GLEXT_glGetActiveUniformARB;
 extern PFNGLGETUNIFORMFVARBPROC             GLEXT_glGetUniformfvARB;
 #endif
-  
+
 void gld_InitOpenGL(dboolean compatibility_mode);
 
 //states

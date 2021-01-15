@@ -236,7 +236,7 @@ sfxinfo_t doom_S_sfx[] = {
   { "skesit", false, 70, 0, -1, -1, 0 },
   { "skeatk", false, 70, 0, -1, -1, 0 },
   { "radio", false, 60, 0, -1, -1, 0 },
-  
+
   // killough 11/98: dog sounds
   { "dgsit",  false,   98, 0, -1, -1, 0 },
   { "dgatk",  false,   70, 0, -1, -1, 0 },

@@ -806,7 +806,7 @@ static int M_FindCheats_Doom(int key)
 
           // process the arg buffer
           memcpy(argbuf, cht->parameter_buf, -cht->arg);
-          
+
           cht->func(argbuf);
         }
         else

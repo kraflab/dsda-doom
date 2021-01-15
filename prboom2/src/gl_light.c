@@ -97,13 +97,13 @@ static GLLight gld_light[gl_lightmode_last] = {
    gld_InitLightTable_glboom,
    gld_CalcLightLevel_glboom, gld_CalcLightLevel_glboom,
    gld_CalcFogDensity_glboom},
-  
+
    //gl_lightmode_gzdoom
   {true, 8,
    gld_InitLightTable_gzdoom,
    gld_CalcLightLevel_gzdoom, gld_CalcLightLevel_gzdoom,
    gld_CalcFogDensity_gzdoom},
-  
+
    //gl_lightmode_fogbased
   {true, 8,
    gld_InitLightTable_fogbased,
@@ -257,7 +257,7 @@ static float gld_CalcLightLevel_fogbased(int lightlevel)
 static float gld_CalcLightLevel_shaders(int lightlevel)
 {
   int light;
-  
+
   light = BETWEEN(0, 255, lightlevel);
 
   return (float)light/255.0f;
@@ -395,7 +395,7 @@ static float gld_CalcFogDensity_fogbased(sector_t *sector, int lightlevel, GLDra
   else
   {
     float fog = distfogtable[2][BETWEEN(0, 255, lightlevel)];
-    
+
     if (extralight)
     {
       if (extralight == 1)

@@ -305,7 +305,7 @@ void W_InitPWADTable(wadtbl_t *wadtbl)
 
   //clear PWAD lookup table
   wadtbl->lumps = NULL;
-  
+
   //clear PWAD data
   wadtbl->data = NULL;
   wadtbl->datasize = 0;
@@ -315,7 +315,7 @@ void W_FreePWADTable(wadtbl_t *wadtbl)
 {
   //clear PWAD lookup table
   free(wadtbl->lumps);
-  
+
   //clear PWAD data
   free(wadtbl->data);
 }
@@ -331,7 +331,7 @@ void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size
   }
 
   lumpnum = wadtbl->header.numlumps;
-  
+
   if (name)
   {
     wadtbl->lumps = realloc(wadtbl->lumps, (lumpnum + 1) * sizeof(wadtbl->lumps[0]));
@@ -509,7 +509,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
   const char *data;
   char **params;
   int i, p, paramscount;
-  
+
   lump = W_CheckNumForName(DEMOEX_PARAMS_LUMPNAME);
   if (lump == -1)
     return;
@@ -541,7 +541,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
     };
 
     M_ParseCmdLine(str, params, ((char*)params) + sizeof(char*) * paramscount, &paramscount, &i);
-  
+
     if (!M_CheckParm("-iwad") && !M_CheckParm("-file"))
     {
       i = 0;
@@ -733,7 +733,7 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
     AddString(&files, "-iwad ");
     AddString(&files, iwad);
   }
-  
+
   if (pwads)
   {
     AddString(&files, "-file ");
@@ -890,7 +890,7 @@ byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size)
           //got it!
           //the demo has an additional information itself
           int demoex_size = file_size - (p - buffer);
-          
+
           result = buffer;
 
           if (footer)
@@ -938,7 +938,7 @@ void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl)
       int headersize = sizeof(wadtbl->header);
       int datasize = wadtbl->datasize;
       int lumpssize = wadtbl->header.numlumps * sizeof(wadtbl->lumps[0]);
-  
+
       //write pwad header, all data and lookup table to the end of a demo
       if (
         fwrite(buffer, demosize, 1, hfile) != 1 ||
@@ -963,7 +963,7 @@ int CheckWadBufIntegrity(const char *buffer, size_t size)
   wadinfo_t *header;
   filelump_t *fileinfo;
   int result = false;
-  
+
   if (buffer && size > sizeof(*header))
   {
     header = (wadinfo_t*)buffer;
@@ -1002,7 +1002,7 @@ int CheckWadFileIntegrity(const char *filename)
   wadinfo_t header;
   filelump_t *fileinfo, *fileinfo2free = NULL;
   int result = false;
-  
+
   hfile = fopen(filename, "rb");
   if (hfile)
   {
@@ -1260,7 +1260,7 @@ int ParseDemoPattern(const char *str, waddata_t* waddata, char **missed, dboolea
   size_t numwadfiles = 0;
   char *pStr = strdup(str);
   char *pToken = pStr;
-  
+
   if (missed)
   {
     *missed = NULL;
@@ -1285,7 +1285,7 @@ int ParseDemoPattern(const char *str, waddata_t* waddata, char **missed, dboolea
       wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
       wadfiles[numwadfiles].name = token;
       wadfiles[numwadfiles].handle = 0;
-      
+
       if (pToken == pStr)
       {
         wadfiles[numwadfiles].src = source_iwad;
@@ -1331,7 +1331,7 @@ int DemoNameToWadData(const char * demoname, waddata_t *waddata, patterndata_t *
   char *pattern;
 
   char *demofilename = PathFindFileName(demoname);
-  
+
   WadDataInit(waddata);
 
   for (i = 0; i < demo_patterns_count; i++)
@@ -1567,12 +1567,12 @@ int CheckAutoDemo(void)
       if (wadfiles[i].src == source_lmp)
       {
         int numwadfiles_required;
-        
+
         patterndata_t patterndata;
         memset(&patterndata, 0, sizeof(patterndata));
 
         numwadfiles_required = DemoNameToWadData(wadfiles[i].name, &waddata, &patterndata);
-        
+
         if (waddata.numwadfiles)
         {
           result = true;

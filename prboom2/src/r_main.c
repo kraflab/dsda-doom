@@ -611,17 +611,17 @@ int R_Project(float objx, float objy, float objz, float *winx, float *winy, floa
   in[1] = objy;
   in[2] = objz;
   in[3] = 1.0f;
-  
+
   R_MultMatrixVecd(modelMatrix, in, out);
   R_MultMatrixVecd(projMatrix, out, in);
-  
+
   if (in[3] == 0.0f)
     return false;
 
   in[0] /= in[3];
   in[1] /= in[3];
   in[2] /= in[3];
-  
+
   /* Map x, y and z to range 0-1 */
   in[0] = in[0] * 0.5f + 0.5f;
   in[1] = in[1] * 0.5f + 0.5f;
@@ -703,7 +703,7 @@ void R_BuildModelViewMatrix(void)
   B = (float)sin(pitch);
   C = (float)cos(yaw);
   D = (float)sin(yaw);
-  
+
   m[0] = C;
   m[1] = D*B;
   m[2] = -D*A;
@@ -918,7 +918,7 @@ void R_SetupFreelook(void)
       centery += dy >> FRACBITS;
     }
     centeryfrac = centery<<FRACBITS;
-    
+
     InvZtoScale = yaspectmul * centerx;
     globaluclip = FixedDiv (-centeryfrac, InvZtoScale);
     globaldclip = FixedDiv ((viewheight<<FRACBITS)-centeryfrac, InvZtoScale);
@@ -965,7 +965,7 @@ void R_SetupMatrix(void)
 static void R_SetupFrame (player_t *player)
 {
   int i, cm;
-  
+
   int FocalTangent = finetangent[FINEANGLES/4 + FieldOfView/2];
 
   viewplayer = player;
@@ -1088,7 +1088,7 @@ void R_RenderPlayerView (player_t* player)
 #ifdef GL_DOOM
     // proff 11/99: clear buffers
     gld_InitDrawScene();
-    
+
     if (!automap)
     {
       // proff 11/99: switch to perspective mode

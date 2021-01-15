@@ -260,7 +260,7 @@ int GetPairForSwitchTexture(side_t *side)
 
   if (texture == NULL)
     return -1;
-  
+
   return switchlist[i^1];
 }
 

@@ -103,11 +103,11 @@ byte *filter_getScale2xQuadColors(byte e, byte b, byte f, byte h, byte d) {
   static byte quad[5];
   static byte rowColors[3];
   int code;
-  
+
   rowColors[0] = d;
   rowColors[1] = e;
   rowColors[2] = f;
-  
+
   #define getCode(b,f,h,d) ( (b == f)<<0 | (f == h)<<1 | (h == d)<<2 | (d == b)<<3 )
 
   code = getCode(b,f,h,d);
@@ -116,6 +116,6 @@ byte *filter_getScale2xQuadColors(byte e, byte b, byte f, byte h, byte d) {
   quad[2] = rowColors[filter_roundedRowMap[2*16+code]];
   quad[3] = rowColors[filter_roundedRowMap[3*16+code]];
   quad[4] = e;
-  
+
   return quad;
 }

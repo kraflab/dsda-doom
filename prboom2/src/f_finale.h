@@ -57,7 +57,7 @@ extern const char*   finaleflat; // made static const
 #define NEWTEXTWAIT  1000  // new value                         // phares
 
 
- 
+
 /* Called by main loop. */
 dboolean F_Responder (event_t* ev);
 

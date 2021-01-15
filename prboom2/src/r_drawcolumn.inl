@@ -237,12 +237,12 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
       } else {
          tempyl[temp_x] = dcvars->yl;
          tempyh[temp_x] = dcvars->yh;
-   
+
          if(dcvars->yl > commontop)
             commontop = dcvars->yl;
          if(dcvars->yh < commonbot)
             commonbot = dcvars->yh;
-      
+
          dest = &TEMPBUF[(dcvars->yl << 2) + temp_x];
       }
       temp_x += 1;
@@ -336,7 +336,7 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
         while (nextfrac >= (int)heightmask)
           nextfrac -= heightmask;
 #endif
-      
+
 #define INCFRAC(f) if ((f += fracstep) >= (int)heightmask) f -= heightmask;
 
         while (count--) {

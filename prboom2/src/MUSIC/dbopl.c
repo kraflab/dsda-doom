@@ -1352,7 +1352,7 @@ void Chip__Setup(Chip *self, Bit32u rate ) {
     guessAdd = (Bit32u)( scale * (EnvelopeIncreaseTable[ index ] << ( RATE_SH - shift - 3 )));
     bestAdd = guessAdd;
     bestDiff = 1 << 30;
-              
+
     for ( passes = 0; passes < 16; passes ++ ) {
       Bit32s diff, lDiff;
       Bit32s volume = ENV_MAX;

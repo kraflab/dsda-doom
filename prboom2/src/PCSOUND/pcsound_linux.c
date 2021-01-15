@@ -56,7 +56,7 @@ static int SoundThread(void *unused)
     int frequency;
     int duration;
     int cycles;
-    
+
     while (sound_thread_running)
     {
         callback(&duration, &frequency);
@@ -102,12 +102,12 @@ static int PCSound_Linux_Init(pcsound_callback_func callback_func)
     }
 
     // Start a thread up to generate PC speaker output
-    
+
     callback = callback_func;
     sound_thread_running = 1;
 
     sound_thread_handle = SDL_CreateThread(SoundThread, "sound_thread_handle", NULL);
-    
+
     return 1;
 }
 

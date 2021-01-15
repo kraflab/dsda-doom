@@ -240,7 +240,7 @@ static const void *fl_registersong (const void *data, unsigned len)
     lprintf (LO_WARN, "fl_registersong: Failed to load MIDI.\n");
     return NULL;
   }
-  
+
   events = MIDI_GenerateFlatList (midifile);
   if (!events)
   {
@@ -349,7 +349,7 @@ static void writesysex (unsigned char *data, int len)
   // midi file could make it grow arbitrarily large (since it must grow
   // until it hits an 0xf7 terminator)
   int didrespond = 0;
-  
+
   if (len + sysexbufflen > SYSEX_BUFF_SIZE)
   {
     lprintf (LO_WARN, "fluidplayer: ignoring large or malformed sysex message\n");
@@ -372,7 +372,7 @@ static void writesysex (unsigned char *data, int len)
 static void fl_render (void *vdest, unsigned length)
 {
   short *dest = (short*)vdest;
-  
+
   unsigned sampleswritten = 0;
   unsigned samples;
 
@@ -391,7 +391,7 @@ static void fl_render (void *vdest, unsigned length)
   {
     double eventdelta;
     currevent = events[eventpos];
-    
+
     // how many samples away event is
     eventdelta = currevent->delta_time * spmc;
 
@@ -467,14 +467,14 @@ static void fl_render (void *vdest, unsigned length)
             sampleswritten += samples;
             // timecodes no longer relevant
             dest += samples * 2;
-      
+
           }
           return;
         }
         break; // not interested in most metas
       default: //uhh
         break;
-      
+
     }
     // event processed so advance midiclock
     f_delta += eventdelta;
@@ -501,7 +501,7 @@ static void fl_render (void *vdest, unsigned length)
   { // huh?
     return;
   }
-  
+
 
 }
 

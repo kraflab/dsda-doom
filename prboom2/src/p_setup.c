@@ -597,7 +597,7 @@ static void P_LoadSegs (int lump)
       {
         char str[200] =
           "P_LoadSegs: compatibility loss - seg %d references a non-existent vertex %d\n";
-        
+
         if (demorecording)
         {
           I_Error(strcat(str, "Demo recording on levels with invalid nodes is not allowed"),
@@ -1357,7 +1357,7 @@ static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
 {
   const mobj_t *m1 = (*((const mobj_t * const *)a));
   const mobj_t *m2 = (*((const mobj_t * const *)b));
-  
+
   int res = GETXY(m2) - GETXY(m1);
   no_overlapped_sprites = no_overlapped_sprites && res;
   return res;
@@ -1531,7 +1531,7 @@ static void P_LoadLineDefs (int lump)
          * cph 2002/07/20 - these errors are fatal if not fixed, so apply them
          * in compatibility mode - a desync is better than a crash! */
         int j;
-        
+
         for (j=0; j < 2; j++)
         {
           if (ld->sidenum[j] != NO_INDEX && ld->sidenum[j] >= numsides) {
@@ -1540,16 +1540,16 @@ static void P_LoadLineDefs (int lump)
                     " has out-of-range sidedef number\n", i);
           }
         }
-        
+
         // killough 11/98: fix common wad errors (missing sidedefs):
-        
+
         if (ld->sidenum[0] == NO_INDEX) {
           ld->sidenum[0] = 0;  // Substitute dummy sidedef for missing right side
           // cph - print a warning about the bug
           lprintf(LO_WARN, "P_LoadLineDefs: linedef %d"
                   " missing first sidedef\n", i);
         }
-        
+
         if ((ld->sidenum[1] == NO_INDEX) && (ld->flags & ML_TWOSIDED)) {
           // e6y
           // ML_TWOSIDED flag shouldn't be cleared for compatibility purposes
@@ -2370,7 +2370,7 @@ static void P_RemoveSlimeTrails(void)         // killough 10/98
         int x0 = v->x, y0 = v->y, x1 = l->v1->x, y1 = l->v1->y;
         v->px = (int)((dx2 * x0 + dy2 * x1 + dxy * (y0 - y1)) / s);
         v->py = (int)((dy2 * y0 + dx2 * y1 + dxy * (x0 - x1)) / s);
-        
+
         // [crispy] wait a minute... moved more than 8 map units?
         // maybe that's a linguortal then, back to the original coordinates
         // http://www.doomworld.com/vb/doom-editing/74354-stupid-bsp-tricks/
@@ -2422,10 +2422,10 @@ dboolean P_CheckLumpsForSameSource(int lump1, int lump2)
 
   if (((unsigned)lump1 >= (unsigned)numlumps) || ((unsigned)lump2 >= (unsigned)numlumps))
     return false;
-  
+
   wad1 = lumpinfo[lump1].wadfile;
   wad2 = lumpinfo[lump2].wadfile;
-  
+
   if (!wad1 || !wad2)
     return false;
 
@@ -2608,7 +2608,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   //e6y
   totallive = 0;
   transparentpresent = false;
-  
+
   dsda_WatchBeforeLevelSetup();
 
   R_StopAllInterpolations();
@@ -2633,7 +2633,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     W_UnlockLumpNum(rejectlump);
     rejectlump = -1;
   }
-  
+
   P_InitThinkers();
 
   // if working with a devlopment map, reload it

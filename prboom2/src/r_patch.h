@@ -65,14 +65,14 @@ typedef struct {
   int width;
   int height;
   unsigned  widthmask;
-    
+
   int leftoffset;
   int topoffset;
-  
+
   // this is the single malloc'ed/free'd array
   // for this patch
   unsigned char *data;
-  
+
   // these are pointers into the data array
   unsigned char *pixels;
   rcolumn_t *columns;

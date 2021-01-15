@@ -105,7 +105,7 @@ typedef struct
   int realtexwidth, realtexheight;
   int buffer_width,buffer_height;
   int buffer_size;
-  
+
   //e6y: support for Boom colormaps
   GLuint ***glTexExID;
   unsigned int texflags[CR_LIMIT+MAXPLAYERS][PLAYERCOLORMAP_COUNT];
@@ -267,7 +267,7 @@ typedef enum
 
   GLDIT_AWALL,   // animated wall
   GLDIT_FAWALL,  // animated projected wall
-  
+
   GLDIT_CEILING, // ceiling
   GLDIT_FLOOR,   // floor
 

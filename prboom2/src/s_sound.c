@@ -516,10 +516,10 @@ void S_ChangeMusic(int musicnum, int looping)
     {
       char namebuf[9];
       const char* format;
-      
+
       // HERETIC_TODO: put d_ where it belongs in the definition and remove this
       format = heretic ? "%s" : "d_%s";
-      
+
       sprintf(namebuf, format, music->name);
       music->lumpnum = W_GetNumForName(namebuf);
     }

@@ -84,7 +84,7 @@ static void gld_PrepareSectorSpecialEffects(void)
 
       side_t *side0 = (sidenum0 == NO_INDEX ? NULL : &sides[sidenum0]);
       side_t *side1 = (sidenum1 == NO_INDEX ? NULL : &sides[sidenum1]);
-      
+
       if (side0 && side1)
       {
         if (side0->toptexture != NO_TEXTURE)

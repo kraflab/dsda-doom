@@ -1081,7 +1081,7 @@ void P_TrueArchiveThinkers(void) {
   CheckSaveGame(sizeof brain);      // killough 3/26/98: Save boss brain state
   memcpy(save_p, &brain, sizeof brain);
   save_p += sizeof brain;
-  
+
   // save off the current thinkers (memory size calculation -- killough)
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
     if (!th->function)
@@ -1278,7 +1278,7 @@ void P_TrueArchiveThinkers(void) {
         save_p += sizeof(pusher_t);
         continue;
       }
-    
+
     if (th->function == T_Friction)
       {
         *save_p++ = tc_true_friction;
@@ -1287,7 +1287,7 @@ void P_TrueArchiveThinkers(void) {
         save_p += sizeof(friction_t);
         continue;
       }
-    
+
     if (th->function == P_MobjThinker)
       {
         mobj_t *mobj;
@@ -1388,10 +1388,10 @@ void P_TrueUnArchiveThinkers(void) {
   // killough 2/14/98: count number of thinkers by skipping through them
   {
     byte *sp;     // save pointer and skip header
-    
+
     sp = save_p;
     mobj_count = 0;
-    
+
     while ((tc = *save_p++) != tc_true_end) {
       if (tc == tc_true_mobj) mobj_count++;
       PADSAVEP();

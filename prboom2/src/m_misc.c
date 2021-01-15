@@ -300,7 +300,7 @@ default_t defaults[] =
   //e6y
   {"System settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"process_priority", {&process_priority},{0},0,2,def_int,ss_none},
-  
+
   {"Misc settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"default_compatibility_level",{(int*)&default_compatibility_level},
    {-1},-1,MAX_COMPATIBILITY_LEVEL-1,
@@ -324,7 +324,7 @@ default_t defaults[] =
   {"demo_smoothturnsfactor", {&demo_smoothturnsfactor},  {6},1,SMOOTH_PLAYING_MAXFACTOR,
    def_int,ss_stat},
   {"boom_autoswitch", {(int*)&boom_autoswitch}, {1}, 0, 1, def_bool, ss_none},
-   
+
   {"Files",{NULL},{0},UL,UL,def_none,ss_none},
   /* cph - MBF-like wad/deh/bex autoload code */
   {"wadfile_1",{NULL,&wad_files[1]},{0,""},UL,UL,def_str,ss_none},

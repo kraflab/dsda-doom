@@ -51,10 +51,10 @@ GLuint CaptureScreenAsTexID(void)
   GLuint id;
 
   gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
- 
+
   glGenTextures(1, &id);
   glBindTexture(GL_TEXTURE_2D, id);
-  
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -82,9 +82,9 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
   fV1 = (float)SCREENHEIGHT / (float)total_h;
   fU2 = (float)SCREENWIDTH / (float)total_w;
   fV2 = 0.0f;
-  
+
   gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
-  
+
   glBindTexture(GL_TEXTURE_2D, wipe_scr_end_tex);
   glColor3f(1.0f, 1.0f, 1.0f);
 
@@ -96,26 +96,26 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
     glTexCoord2f(fU2, fV2); glVertex2f((float)SCREENWIDTH, (float)SCREENHEIGHT);
   }
   glEnd();
-  
+
   glBindTexture(GL_TEXTURE_2D, wipe_scr_start_tex);
   glColor3f(1.0f, 1.0f, 1.0f);
-  
+
   glBegin(GL_QUAD_STRIP);
-  
+
   for (i=0; i <= SCREENWIDTH; i++)
   {
     int yoffs = MAX(0, y_lookup[i]);
-    
+
     float tx = (float) i / total_w;
     float sx = (float) i;
     float sy = (float) yoffs;
-    
+
     glTexCoord2f(tx, fV1); glVertex2f(sx, sy);
     glTexCoord2f(tx, fV2); glVertex2f(sx, sy + (float)SCREENHEIGHT);
   }
-  
+
   glEnd();
-  
+
   return 0;
 }
 

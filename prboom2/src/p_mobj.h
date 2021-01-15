@@ -380,9 +380,9 @@ typedef struct mobj_s
     int iden_nums;		// hi word stores thing num, low word identifier num
 
     fixed_t             pad; // cph - needed so I can get the size unambiguously on amd64
-    
+
     dsda_mobj_extension_t dsda_extension;
-    
+
     // heretic
     int damage;                 // For missiles
     int flags2;                 // Heretic flags

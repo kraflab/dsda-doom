@@ -193,4 +193,3 @@ void DEH_SuggestHereticVersion(deh_hhe_version_t version)
     hhe_versions[version],
     hhe_versions[version]);
 }
-

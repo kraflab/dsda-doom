@@ -397,7 +397,7 @@ static void I_InitInputs(void)
 
   // check if the user wants to use the mouse
   mouse_enabled = usemouse && !nomouse_parm;
-  
+
   SDL_PumpEvents();
 
   // Save the default cursor so it can be recalled later
@@ -742,7 +742,7 @@ static void I_FillScreenResolutionsList(void)
     }
     screen_resolutions_list[list_size] = NULL;
   }
-  
+
   if (list_size == 0)
   {
     doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", desired_screenwidth, desired_screenheight);
@@ -832,7 +832,7 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
   int i, k;
   char *s, *d, *ps, *pd;
   unsigned int tickStart;
-  
+
   s = (char*)malloc(width * height);
   d = (char*)malloc(width * height);
 
@@ -1006,7 +1006,7 @@ void I_InitScreenResolution(void)
     mode = (video_mode_t)I_GetModeFromString(default_videomode = "8bit");
   }
 #endif
-  
+
   V_InitMode(mode);
 
   I_CalculateRes(w, h);
@@ -1152,7 +1152,7 @@ void I_UpdateVideoMode(void)
     if (sdl_texture) SDL_DestroyTexture(sdl_texture);
     if (sdl_renderer) SDL_DestroyRenderer(sdl_renderer);
     SDL_DestroyWindow(sdl_window);
-    
+
     sdl_renderer = NULL;
     sdl_window = NULL;
     sdl_glcontext = NULL;

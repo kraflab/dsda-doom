@@ -42,7 +42,7 @@ static int SoundThread(void *unused)
 {
     int frequency;
     int duration;
-    
+
     while (sound_thread_running)
     {
         callback(&duration, &frequency);
@@ -56,7 +56,7 @@ static int SoundThread(void *unused)
             Sleep(duration);
         }
     }
-    
+
     return 0;
 }
 
@@ -67,7 +67,7 @@ static int PCSound_Win32_Init(pcsound_callback_func callback_func)
 
     // Temporarily disabled - the Windows scheduler is strange and
     // stupid.
-   
+
     return 0;
 
     // Find the OS version
@@ -91,7 +91,7 @@ static int PCSound_Win32_Init(pcsound_callback_func callback_func)
 
         return 0;
     }
-    
+
     // Start a thread to play sound.
 
     callback = callback_func;

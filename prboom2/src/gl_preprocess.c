@@ -584,7 +584,7 @@ static void gld_PrecalculateSector(int num)
       // calculate the angle of this line for use below
       lineangle = R_PointToAngle2(sectors[num].lines[currentline]->v1->x,sectors[num].lines[currentline]->v1->y,sectors[num].lines[currentline]->v2->x,sectors[num].lines[currentline]->v2->y);
       lineangle=(lineangle>>ANGLETOFINESHIFT)*360/8192;
-      
+
       //e6y: direction of a line shouldn't be changed
       //if (lineangle>=180)
       //  lineangle=lineangle-360;
@@ -822,7 +822,7 @@ static void gld_MarkSectorsForClamp(void)
         if (vbo->v < minv) minv = (float)floor(vbo->v);
         if (vbo->u > maxu) maxu = vbo->u;
         if (vbo->v > maxv) maxv = vbo->v;
-        
+
         fail = (maxu - minu > 1.0f || maxv - minv > 1.0f);
       }
     }
@@ -985,7 +985,7 @@ static void gld_PreprocessSectors(void)
         sectors[i].lines[j]->r_flags |= RF_ISOLATED;
       }
     }
-    
+
     // figgi -- adapted for glnodes
     if (sectors[i].flags & SECTOR_IS_CLOSED)
       gld_PrecalculateSector(i);
@@ -1053,7 +1053,7 @@ void gld_PreprocessLevel(void)
     free(segrendered);
     free(linerendered[0]);
     free(linerendered[1]);
-    
+
     for (i = 0; i < numsectors_prev; i++)
     {
       free(sectorloops[i].loops);

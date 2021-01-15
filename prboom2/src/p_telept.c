@@ -198,7 +198,7 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
               // Reset the delta to have the same dynamics as before
               player->deltaviewheight = deltaviewheight;
             }
-          
+
           // e6y
           if (player && player->mo == thing)
             R_ResetAfterTeleport(player);

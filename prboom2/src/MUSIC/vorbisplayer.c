@@ -267,14 +267,14 @@ static const void *vorb_registersong (const void *data, unsigned len)
     return NULL;
   }
   i = ov_test_open (&vf);
-  
+
   if (i != 0)
   {
     lprintf (LO_WARN, "vorb_registersong: failed\n");
     ov_clear (&vf);
     return NULL;
   }
-  
+
   vinfo = ov_info (&vf, -1);
   vorb_samplerate_in = vinfo->rate;
 
@@ -326,7 +326,7 @@ static void vorb_unregistersong (const void *handle)
 static void vorb_play (const void *handle, int looping)
 {
   ov_raw_seek_lap (&vf, 0);
- 
+
 
   vorb_playing = 1;
   vorb_looping = looping;
@@ -359,7 +359,7 @@ static void vorb_render_ex (void *dest, unsigned nsamp)
   int numread;
 
   int i;
- 
+
   // this call needs to be moved if support for changed number
   // of channels in middle of file is wanted
   vorbis_info *vinfo = ov_info (&vf, -1);
@@ -418,7 +418,7 @@ static void vorb_render_ex (void *dest, unsigned nsamp)
       memset (sout, 0, nsamp * 4);
       return;
     }
-  
+
     multiplier = 16384.0f / 15.0f * vorb_volume;
     // volume and downmix
     if (vinfo->channels == 2)

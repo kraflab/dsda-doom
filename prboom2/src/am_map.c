@@ -942,7 +942,7 @@ static void AM_changeWindowScale(void)
       ftom_zoommul = ((int) ((float)FRACUNIT * (1.00f + f_paninc / 200.0f)));
     }
   }
-  
+
   scale_mtof = FixedMul(scale_mtof, mtof_zoommul);
   scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 
@@ -1208,7 +1208,7 @@ static void AM_drawGrid(int color)
   fixed_t minlen, extx, exty;
   fixed_t minx, miny;
   fixed_t gridsize = map_grid_size << MAPBITS;
-  
+
   if(map_grid_size == -1)
   {
     fixed_t oprtimal_gridsize = m_h / 16;
@@ -1709,7 +1709,7 @@ static void AM_ProcessNiceThing(mobj_t* mobj, angle_t angle, fixed_t x, fixed_t 
     int rotate;
     unsigned char r, g, b;
   } map_nice_icon_param_t;
-  
+
   static const map_nice_icon_param_t icons[] =
   {
     {SPR_STIM, am_icon_health, 12, 0, 100, 100, 200},
@@ -1890,7 +1890,7 @@ static void AM_DrawNiceThings(void)
       AM_ProcessNiceThing(t, angle, p.x, p.y);
     }
   }
-  
+
   // walls
   if (ddt_cheating == 2)
   {
@@ -2109,7 +2109,7 @@ static void AM_drawMarks(void)
     {
       int k, w;
       mpoint_t p;
-      
+
       p.x = markpoints[i].x;// - m_x + prev_m_x;
       p.y = markpoints[i].y;// - m_y + prev_m_y;
 
@@ -2323,7 +2323,7 @@ void AM_Drawer (void)
   AM_drawPlayers();
   AM_drawThings(); //jff 1/5/98 default double IDDT sprite
   AM_drawCrosshair(mapcolor_hair);   //jff 1/7/98 default crosshair color
-  
+
 #if defined(HAVE_LIBSDL2_IMAGE) && defined(GL_DOOM)
   if (V_GetMode() == VID_MODEGL)
   {

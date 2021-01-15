@@ -88,7 +88,7 @@ static void dsda_AllocateMobjInfo(int zero, int max, int count) {
   num_mobj_types = count;
   mobj_types_zero = zero;
   mobj_types_max = max;
-  
+
   mobjinfo = malloc(sizeof(mobjinfo_t) * num_mobj_types);
   memset(mobjinfo, 0, sizeof(mobjinfo_t) * num_mobj_types);
 }
@@ -124,29 +124,29 @@ static void dsda_InitDoom(void) {
   dsda_SetSpriteNames(doom_sprnames, NUMSPRITES);
   dsda_SetSfx(doom_S_sfx, NUMSFX);
   dsda_SetMusic(doom_S_music, NUMMUSIC);
-  
+
   weaponinfo = doom_weaponinfo;
-  
+
   g_mt_player = MT_PLAYER;
   g_mt_tfog = MT_TFOG;
   g_mt_blood = MT_BLOOD;
   g_skullpop_mt = MT_GIBDTH;
-  
+
   g_wp_fist = wp_fist;
   g_wp_chainsaw = wp_chainsaw;
   g_wp_pistol = wp_pistol;
-  
+
   g_telefog_height = 0;
   g_thrust_factor = 100;
   g_fuzzy_aim_shift = 20;
   g_special_friction_low = IGNORE_VALUE;
-  
+
   g_s_play_atk1 = S_PLAY_ATK1;
   g_s_play_atk2 = S_PLAY_ATK2;
   g_s_play_run1 = S_PLAY_RUN1;
   g_s_play = S_PLAY;
   g_s_null = S_NULL;
-  
+
   g_sfx_sawup = sfx_sawup;
   g_sfx_telept = sfx_telept;
   g_sfx_stnmov = sfx_stnmov;
@@ -164,7 +164,7 @@ static void dsda_InitDoom(void) {
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
     mobjinfo_p = &doom_mobjinfo[i];
-    
+
     mobjinfo[i].doomednum    = mobjinfo_p->doomednum;
     mobjinfo[i].spawnstate   = mobjinfo_p->spawnstate;
     mobjinfo[i].spawnhealth  = mobjinfo_p->spawnhealth;
@@ -203,30 +203,30 @@ static void dsda_InitHeretic(void) {
   dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
   dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
   dsda_SetMusic(heretic_S_music, HERETIC_NUMMUSIC);
-  
+
   // HERETIC_TODO: of course, 2 levels requires complete rework...
   weaponinfo = wpnlev1info;
-  
+
   g_mt_player = HERETIC_MT_PLAYER;
   g_mt_tfog = HERETIC_MT_TFOG;
   g_mt_blood = HERETIC_MT_BLOOD;
   g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
-  
+
   g_wp_fist = wp_staff;
   g_wp_chainsaw = wp_gauntlets;
   g_wp_pistol = wp_goldwand;
-  
+
   g_telefog_height = TELEFOGHEIGHT;
   g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
   g_special_friction_low = 15;
-  
+
   g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
   g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
   g_s_play_run1 = HERETIC_S_PLAY_RUN1;
   g_s_play = HERETIC_S_PLAY;
   g_s_null = HERETIC_S_NULL;
-  
+
   g_sfx_sawup = heretic_sfx_gntact;
   g_sfx_telept = heretic_sfx_telept;
   g_sfx_stnmov = heretic_sfx_dormov;
@@ -236,15 +236,15 @@ static void dsda_InitHeretic(void) {
   g_sfx_doropn = heretic_sfx_doropn;
   g_sfx_pstart = heretic_sfx_pstart;
   g_sfx_pstop = heretic_sfx_pstop;
-  
+
   g_door_normal = vld_normal;
   g_door_raise_in_5_mins = vld_raiseIn5Mins;
   g_door_open = vld_open;
-  
+
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {
     mobjinfo_p = &heretic_mobjinfo[i];
-    
+
     j = i + HERETIC_MT_ZERO;
     mobjinfo[j].doomednum    = mobjinfo_p->doomednum;
     mobjinfo[j].spawnstate   = mobjinfo_p->spawnstate;
@@ -273,10 +273,10 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].crashstate   = mobjinfo_p->crashstate;
     mobjinfo[j].flags2       = mobjinfo_p->flags2;
   }
-  
+
   // heretic doesn't use "clip" concept
   for (i = 0; i < NUMAMMO; ++i) clipammo[i] = 1;
-  
+
   // so few it's not worth implementing a pointer swap
   maxammo[0] = 100; // gold wand
   maxammo[1] = 50;  // crossbow
@@ -288,6 +288,6 @@ static void dsda_InitHeretic(void) {
 
 void dsda_InitGlobal(void) {
   heretic = M_CheckParm ("-heretic");
-  
+
   heretic ? dsda_InitHeretic() : dsda_InitDoom();
 }

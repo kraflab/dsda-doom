@@ -239,7 +239,7 @@ void gld_DrawWallWithDetail(GLWall *wall)
   float w, h, dx, dy;
   dboolean fake = (wall->flag == GLDWF_TOPFLUD) || (wall->flag == GLDWF_BOTFLUD);
   detail_t *detail = wall->gltexture->detail;
-  
+
   w = wall->gltexture->detail_width;
   h = wall->gltexture->detail_height;
   dx = detail->offsetx;
@@ -705,7 +705,7 @@ GLuint gld_LoadDetailName(const char *name)
     SDL_PixelFormat fmt;
     SDL_Surface *surf = NULL;
     SDL_Surface *surf_raw;
-    
+
 #ifdef HAVE_LIBSDL2_IMAGE
     surf_raw = IMG_Load_RW(SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump)), 1);
 #else

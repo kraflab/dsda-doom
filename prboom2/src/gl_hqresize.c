@@ -202,7 +202,7 @@ static unsigned char *HQScaleHelper( void (*scaleNxFunction) ( unsigned int* , u
   (*outWidth) = N * inWidth;
   (*outHeight) = N *inHeight;
   newBuffer = malloc((*outWidth) * (*outHeight) * 4 * sizeof(unsigned char));
-                                                   
+
   scaleNxFunction ( (unsigned int*)inputBuffer, (unsigned int*)newBuffer, inWidth, inHeight, seamlessWidth, seamlessHeight );
   free(inputBuffer);
   inputBuffer = NULL;
@@ -253,7 +253,7 @@ unsigned char* gld_HQResize(GLTexture *gltexture, unsigned char *inputBuffer, in
     sw = sh = 1;
     scale_mode = gl_texture_hqresize_textures;
     break;
-    
+
   case GLDT_TEXTURE:
     //sw = gltexture->flags & GLTEXTURE_SKY;
     //sh = 0;

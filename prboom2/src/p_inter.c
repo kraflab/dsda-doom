@@ -156,7 +156,7 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
             player->pendingweapon = GetAmmoChange[ammo];
         }
     }
-    
+
     return true;
   }
 
@@ -202,7 +202,7 @@ static dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dro
 {
   dboolean gaveammo;
   dboolean gaveweapon;
-  
+
   if (heretic) return Heretic_P_GiveWeapon(player, weapon);
 
   if (netgame && deathmatch!=2 && !dropped)
@@ -736,7 +736,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
     if (target->player)
     {
       source->player->frags[target->player-players]++;
-      
+
       if (heretic && target != source)
       {
         if (source->player == &players[consoleplayer])
@@ -1106,7 +1106,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   {
     CheckGivenDamageTracer(source, damage);
   }
-  
+
   dsda_WatchDamage(target, inflictor, source, damage);
 
   // do the damage

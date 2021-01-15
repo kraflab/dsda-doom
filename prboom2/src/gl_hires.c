@@ -94,17 +94,17 @@ int gld_ProgressRestoreScreen(void)
   {
     total_w = gld_GetTexDimension(SCREENWIDTH);
     total_h = gld_GetTexDimension(SCREENHEIGHT);
-    
+
     fU1 = 0.0f;
     fV1 = (float)SCREENHEIGHT / (float)total_h;
     fU2 = (float)SCREENWIDTH / (float)total_w;
     fV2 = 0.0f;
-    
+
     gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
-    
+
     glBindTexture(GL_TEXTURE_2D, progress_texid);
     glColor3f(1.0f, 1.0f, 1.0f);
-    
+
     glBegin(GL_TRIANGLE_STRIP);
     {
       glTexCoord2f(fU1, fV1); glVertex2f(0.0f, 0.0f);
@@ -167,7 +167,7 @@ void gld_ProgressUpdate(const char * text, int progress, int total)
 
   gld_ProgressRestoreScreen();
   HUlib_drawTextLine(&w_precache, false);
-  
+
   len = MIN(SCREENWIDTH, (int)((int_64_t)SCREENWIDTH * progress / total));
   V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, 4);
   if (len > 4)
@@ -461,7 +461,7 @@ static int gld_HiRes_GetExternalName(GLTexture *gltexture, char *img_path, char 
     hires_path_item_t item[16];
   } hires_path_t;
 
-  
+
   static hires_path_t hires_paths[] = {
     {doom, GLDT_TEXTURE, {
       {"%stextures/doom/doom1/%s.%s", -1},
@@ -719,10 +719,10 @@ static int gld_HiRes_GetExternalName(GLTexture *gltexture, char *img_path, char 
   do
   {
     char checkName[PATH_MAX + 1];
-    
+
     if (checklist->exists == 0)
       continue;
-    
+
     if (checklist->exists == -1)
     {
       doom_snprintf(checkName, sizeof(checkName), checklist->path, hiresdir, "", "");
@@ -731,7 +731,7 @@ static int gld_HiRes_GetExternalName(GLTexture *gltexture, char *img_path, char 
       else
         checklist->exists = 0;
     }
-    
+
     if (checklist->exists == 1) //dir exists
     {
       static const char * extensions[] =
@@ -746,7 +746,7 @@ static int gld_HiRes_GetExternalName(GLTexture *gltexture, char *img_path, char 
           strcpy(dds_path, checkName);
         }
       }
-      
+
       for (extp = extensions; *extp; extp++)
       {
         doom_snprintf(checkName, sizeof(checkName), checklist->path, hiresdir, texname, *extp);
@@ -817,7 +817,7 @@ void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
   {
 #if 1
     byte color;
-    
+
     if (gl_hires_24bit_colormap)
       color = RGB2PAL[(buffer[pos+0]<<16) + (buffer[pos+1]<<8) + buffer[pos+2]];
     else
@@ -1098,13 +1098,13 @@ static int gld_HiRes_LoadDDSTexture(GLTexture* gltexture, GLuint* texid, const c
             ddsimage->width = 1;
           if (ddsimage->height == 0)
             ddsimage->height = 1;
-      
+
           size = ((ddsimage->width + 3) / 4) * ((ddsimage->height + 3) / 4) * blockSize;
-      
+
           GLEXT_glCompressedTexImage2DARB(GL_TEXTURE_2D, i, ddsimage->format,
             ddsimage->width, ddsimage->height,
             0, size, ddsimage->pixels + offset);
-      
+
     //      GLErrorReport();
           offset += size;
           ddsimage->width >>= 1;
@@ -1112,7 +1112,7 @@ static int gld_HiRes_LoadDDSTexture(GLTexture* gltexture, GLuint* texid, const c
         }
 
         gld_SetTexFilters(gltexture);
-        
+
         free(ddsimage->pixels);
         free(ddsimage);
 
@@ -1138,7 +1138,7 @@ static int gld_HiRes_LoadFromCache(GLTexture* gltexture, GLuint* texid, const ch
 
   memset(&tex_stat, 0, sizeof(tex_stat));
   stat(img_path, &tex_stat);
-  
+
   cache_filename = malloc(strlen(img_path) + 16);
   sprintf(cache_filename, "%s.cache", img_path);
 
@@ -1277,7 +1277,7 @@ int gld_LoadHiresTex(GLTexture *gltexture, int cm)
           {
             SDL_RWops *rw_data = SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump));
             SDL_Surface *surf_tmp = IMG_Load_RW(rw_data, false);
-            
+
             // SDL can't load some TGA with common method
             if (!surf_tmp)
             {
@@ -1453,7 +1453,7 @@ int gld_PrecacheGUIPatches(void)
     if (lump > 0)
     {
       GLTexture *gltexture;
-      
+
       lumpinfo[lump].flags |= LUMP_STATIC;
       gltexture = gld_RegisterPatch(lump, CR_DEFAULT, false);
       if (gltexture)

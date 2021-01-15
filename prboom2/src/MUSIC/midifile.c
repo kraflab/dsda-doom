@@ -822,7 +822,7 @@ static void MIDI_PrintFlatListDBG (const midi_event_t **evs)
     }
   }
 }
-    
+
 
 
 
@@ -900,7 +900,7 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
     }
     epos++;
   }
-  
+
   if (trackactive)
   { // unexpected EOF
     lprintf (LO_WARN, "MIDI_GenerateFlatList: Unexpected end of midi file\n");
@@ -909,13 +909,13 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
     free (ret);
     return NULL;
   }
-  
+
   // last end of track event is preserved though
   epos[-1]->data.meta.type = MIDI_META_END_OF_TRACK;
 
   free (trackpos);
   free (tracktime);
-  
+
   if (totaldelta < 100)
   {
     lprintf (LO_WARN, "MIDI_GeneratFlatList: very short file %i\n", totaldelta);
@@ -1048,7 +1048,7 @@ midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf)
   midi_event_t **flatlist;
   midi_file_t *base = MIDI_LoadFile (mf);
   midi_file_t *ret;
-  
+
   double opi;
 
   int epos = 0;

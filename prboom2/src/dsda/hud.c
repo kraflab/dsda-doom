@@ -78,7 +78,7 @@ static void dsda_InitExHud(patchnum_t* font) {
     CR_GRAY,
     VPT_ALIGN_LEFT
   );
-  
+
   HUlib_initTextLine(
     &dsda_exhud_max_totals.text,
     DSDA_TEXT_X,
@@ -100,7 +100,7 @@ void dsda_InitHud(patchnum_t* font) {
     CR_GRAY,
     VPT_ALIGN_LEFT
   );
-  
+
   HUlib_initTextLine(
     &dsda_intermission_time.text,
     DSDA_TEXT_X,
@@ -110,13 +110,13 @@ void dsda_InitHud(patchnum_t* font) {
     CR_GRAY,
     VPT_ALIGN_LEFT
   );
-  
+
   dsda_InitExHud(font);
 }
 
 void dsda_DrawIntermissionTime(void) {
   char* s;
-  
+
   snprintf(
     dsda_intermission_time.msg,
     sizeof(dsda_intermission_time.msg),
@@ -124,12 +124,12 @@ void dsda_DrawIntermissionTime(void) {
     leveltime / 35 / 60,
     (float)(leveltime % (60 * 35)) / 35
   );
-  
+
   HUlib_clearTextLine(&dsda_intermission_time.text);
-  
+
   s = dsda_intermission_time.msg;
   while (*s) HUlib_addCharToTextLine(&dsda_intermission_time.text, *(s++));
-  
+
   HUlib_drawTextLine(&dsda_intermission_time.text, false);
 }
 
@@ -141,7 +141,7 @@ static dboolean dsda_ExHudVisible(void) {
 
 static void dsda_UpdateExHud(void) {
   char* s;
-  
+
   // Timer - from hu_stuff.c
   if (totalleveltimes)
     snprintf(
@@ -161,12 +161,12 @@ static void dsda_UpdateExHud(void) {
       leveltime / 35 / 60,
       (float)(leveltime % (60 * 35)) / 35
     );
-  
+
   HUlib_clearTextLine(&dsda_exhud_timer.text);
-  
+
   s = dsda_exhud_timer.msg;
   while (*s) HUlib_addCharToTextLine(&dsda_exhud_timer.text, *(s++));
-  
+
   // Max totals - from hu_stuff.c
   {
     int i;
@@ -185,7 +185,7 @@ static void dsda_UpdateExHud(void) {
     fullsecretcount = 0;
     kill_percent_count = 0;
     max_kill_requirement = dsda_MaxKillRequirement();
-    
+
     for (i = 0; i < MAXPLAYERS; i++) {
       if (playeringame[i]) {
         color = i == displayplayer ? 0x33 : 0x32;
@@ -234,22 +234,22 @@ static void dsda_UpdateExHud(void) {
       );
     }
   }
-  
+
   HUlib_clearTextLine(&dsda_exhud_max_totals.text);
-  
+
   s = dsda_exhud_max_totals.msg;
   while (*s) HUlib_addCharToTextLine(&dsda_exhud_max_totals.text, *(s++));
 }
 
 void dsda_UpdateHud(void) {
   int i;
-  
+
   if (dsda_split.ticks > 0) --dsda_split.ticks;
-  
+
   for (i = 0; i < DSDA_SPLIT_CLASS_COUNT; ++i)
     if (dsda_split_state[i].delay > 0)
       --dsda_split_state[i].delay;
-  
+
   if (dsda_ExHudVisible()) dsda_UpdateExHud();
 }
 
@@ -260,7 +260,7 @@ static void dsda_DrawExHud(void) {
 
 void dsda_DrawHud(void) {
   if (dsda_split.ticks > 0) HUlib_drawTextLine(&dsda_split.text, false);
-  
+
   if (dsda_ExHudVisible()) dsda_DrawExHud();
 }
 
@@ -271,7 +271,7 @@ static void dsda_EraseExHud(void) {
 
 void dsda_EraseHud(void) {
   if (dsda_split.ticks > 0) HUlib_eraseTextLine(&dsda_split.text);
-  
+
   dsda_EraseExHud();
 }
 
@@ -280,27 +280,27 @@ void dsda_AddSplit(dsda_split_class_t split_class) {
   float seconds;
   char* s;
   dsda_split_state_t* split_state;
-  
+
   split_state = &dsda_split_state[split_class];
-  
+
   if (split_state->delay > 0) {
     split_state->delay = split_state->default_delay;
     return;
   }
-  
+
   split_state->delay = split_state->default_delay;
-  
+
   dsda_split.ticks = DSDA_SPLIT_LIFETIME;
-  
+
   minutes = leveltime / 35 / 60;
   seconds = (float)(leveltime % (60 * 35)) / 35;
   snprintf(
     dsda_split.msg, DSDA_SPLIT_SIZE, "%d:%05.2f - %s",
     minutes, seconds, split_state->msg
   );
-  
+
   HUlib_clearTextLine(&dsda_split.text);
-  
+
   s = dsda_split.msg;
   while (*s) HUlib_addCharToTextLine(&dsda_split.text, *(s++));
 }

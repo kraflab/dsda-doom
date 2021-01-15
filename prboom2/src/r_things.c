@@ -424,7 +424,7 @@ static vissprite_t *R_NewVisSprite(void)
 
       num_vissprite_alloc = num_vissprite_alloc ? num_vissprite_alloc*2 : 128;
       vissprites = realloc(vissprites,num_vissprite_alloc*sizeof(*vissprites));
-      
+
       //e6y: set all fields to zero
       memset(vissprites + num_vissprite_alloc_prev, 0,
         (num_vissprite_alloc - num_vissprite_alloc_prev)*sizeof(*vissprites));
@@ -1402,7 +1402,7 @@ void R_DrawMasked(void)
         drawsegs_xranges[0].items[drawsegs_xranges[0].count].x1 = ds->x1;
         drawsegs_xranges[0].items[drawsegs_xranges[0].count].x2 = ds->x2;
         drawsegs_xranges[0].items[drawsegs_xranges[0].count].user = ds;
-        
+
         // e6y: ~13% of speed improvement on sunder.wad map10
         if (ds->x1 < cx)
         {

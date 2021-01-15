@@ -62,19 +62,19 @@ dboolean dsda_ExHud(void) {
 
 int dsda_RealticClockRate(void) {
   if (dsda_StrictMode()) return 100;
-  
+
   return realtic_clock_rate;
 }
 
 int dsda_AutoKeyFrameInterval(void) {
   if (dsda_StrictMode()) return 0;
-  
+
   return dsda_auto_key_frame_interval;
 }
 
 int dsda_AutoKeyFrameDepth(void) {
   if (dsda_StrictMode()) return 0;
-  
+
   return dsda_auto_key_frame_depth;
 }
 
@@ -87,6 +87,6 @@ dboolean dsda_SkipWipe(void) {
     dsda_skip_next_wipe = 0;
     return true;
   }
-  
+
   return !render_wipescreen;
 }

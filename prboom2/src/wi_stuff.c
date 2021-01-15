@@ -931,7 +931,7 @@ static void WI_drawTimeStats(int cnt_time, int cnt_total_time, int cnt_par)
       WI_drawTime(320 - SP_TIMEX, SP_TIMEY, cnt_par);
     }
   }
-  
+
   dsda_DrawIntermissionTime();
 }
 

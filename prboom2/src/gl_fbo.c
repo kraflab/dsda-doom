@@ -105,7 +105,7 @@ static dboolean gld_CreateScreenSizeFBO(void)
 
   internalFormat = (attach_stencil ? GL_DEPTH_STENCIL_EXT : GL_DEPTH_COMPONENT);
   GLEXT_glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, internalFormat, SCREENWIDTH, SCREENHEIGHT);
-  
+
   // attach a renderbuffer to depth attachment point
   GLEXT_glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, glDepthBufferFBOTexID);
 
@@ -114,7 +114,7 @@ static dboolean gld_CreateScreenSizeFBO(void)
     // attach a renderbuffer to stencil attachment point
     GLEXT_glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, glDepthBufferFBOTexID);
   }
-  
+
   glGenTextures(1, &glSceneImageTextureFBOTexID);
   glBindTexture(GL_TEXTURE_2D, glSceneImageTextureFBOTexID);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, SCREENWIDTH, SCREENHEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
@@ -122,7 +122,7 @@ static dboolean gld_CreateScreenSizeFBO(void)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  
+
   // e6y
   // Some ATI�s drivers have a bug whereby adding the depth renderbuffer
   // and then a texture causes the application to crash.
@@ -171,7 +171,7 @@ void gld_InitMotionBlur(void)
 
     sscanf(motion_blur.str_min_speed, "%f", &f);
     motion_blur.minspeed_pow2 = f * f;
-    
+
     sscanf(motion_blur.str_min_angle, "%f", &f);
     motion_blur.minangle = (int)(f * 65536.0f / 360.0f);
 

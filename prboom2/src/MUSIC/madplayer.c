@@ -115,7 +115,7 @@ static int mp_init (int samplerate)
 
 static void mp_shutdown (void)
 {
-                   
+
   mad_synth_finish (&Synth);
   mad_frame_finish (&Frame);
   mad_stream_finish (&Stream);
@@ -134,7 +134,7 @@ static const void *mp_registersong (const void *data, unsigned len)
 
   // this routine is a bit slower than it could be, but apparently there are lots of files out
   // there with some dodgy stuff at the beginning.
-    
+
   // if the stream begins with an ID3v2 magic, search hard and long for our first valid header
   if (memcmp (data, "ID3", 3) == 0)
     maxtry = 100;
@@ -166,9 +166,9 @@ static const void *mp_registersong (const void *data, unsigned len)
     lprintf (LO_WARN, "mad_registersong failed\n");
     return NULL;
   }
-  
+
   lprintf (LO_INFO, "mad_registersong succeed. bitrate %lu samplerate %d\n", Header.bitrate, Header.samplerate);
- 
+
   mp_data = data;
   mp_len = len;
   // handle not used
@@ -257,7 +257,7 @@ static void mp_render_ex (void *dest, unsigned nsamp)
     }
     if (nsamp == 0)
       return; // done
-    
+
     // decode next valid MP3 frame
     while (mad_frame_decode (&Frame, &Stream) != 0)
     {

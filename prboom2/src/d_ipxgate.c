@@ -40,7 +40,7 @@ a
     byte                numtics;
     ticcmd_t            cmds[BACKUPTICS];
 } doomdata_t;
-	    
+
 typedef struct
 {
   signed int tic;
@@ -130,9 +130,9 @@ int basetic;
 int ExpandTics (int low, int maketic)
 {
     int delta;
-        
+
     delta = low - (maketic&0xff);
-        
+
     if (delta >= -64 && delta <= 64)
         return (maketic&~0xff) + low;
     if (delta > 64)
@@ -198,7 +198,7 @@ void udp_receive(int s) {
   size_t len = 1024;
   packet_header_t *p = malloc(len);
   int rc;
-  
+
   rc = read(s,p,len);
   if (rc < 0) {
     fprintf(stderr,"read(udp): %s\n", strerror(errno));

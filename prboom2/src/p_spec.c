@@ -441,15 +441,15 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
       } while (sec->linecount > heightlist_size);
       heightlist = realloc(heightlist, heightlist_size * sizeof(heightlist[0]));
     }
-    
+
     for (i=0, h=0 ;i < sec->linecount ; i++)
     {
       check = sec->lines[i];
       other = getNextSector(check,sec);
-      
+
       if (!other)
         continue;
-      
+
       if (other->floorheight > height)
       {
         // e6y
@@ -476,7 +476,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
         }
         heightlist[h++] = other->floorheight;
       }
-      
+
       // Check for overflow. Warning.
       if (!heretic && compatibility_level >= dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS)
       {
@@ -484,7 +484,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
         break;
       }
     }
-    
+
     // Find lowest height in list
     if (!h)
     {
@@ -499,17 +499,17 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
       // the previous call. Doing it this way fixes 1_ON_1.WAD.
       return ((heretic || compatibility_level < doom_1666_compatibility) ? last_height_0 : currentheight);
     }
-    
+
     last_height_0 = heightlist[0];
     min = heightlist[0];
-    
+
     // Range checking?
     for (i = 1;i < h;i++)
     {
       if (heightlist[i] < min)
         min = heightlist[i];
     }
-      
+
     return min;
   }
 
@@ -2412,7 +2412,7 @@ void P_PlayerInSpecialSector (player_t* player)
           int sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_secret]) < 0 ? sfx_itmbk : sfx_secret);
           SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
         }
-        
+
         dsda_WatchSecret();
 
         break;
@@ -2471,7 +2471,7 @@ void P_PlayerInSpecialSector (player_t* player)
         int sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_secret]) < 0 ? sfx_itmbk : sfx_secret);
         SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
       }
-      
+
       dsda_WatchSecret();
     }
 

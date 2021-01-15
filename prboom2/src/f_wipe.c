@@ -204,7 +204,7 @@ int wipe_StartScreen(void)
   wipe_scr_start.byte_pitch = screens[0].byte_pitch;
   wipe_scr_start.short_pitch = screens[0].short_pitch;
   wipe_scr_start.int_pitch = screens[0].int_pitch;
-  
+
   //e6y: fixed slowdown at 1024x768 on some systems
   if (!(wipe_scr_start.byte_pitch % 1024))
     wipe_scr_start.byte_pitch += 32;

@@ -1198,7 +1198,7 @@ static void StartTrack(const midi_file_t *file, unsigned int track_num)
 
     // Default is 120 bpm.
     // TODO: this is wrong
-    
+
     track->ms_per_beat = 500;
 
     for (i=0; i<MIDI_CHANNELS_PER_TRACK; ++i)
@@ -1366,7 +1366,7 @@ static const void *I_OPL_RegisterSong(const void *data, unsigned len)
     {
         lprintf (LO_WARN, "I_OPL_RegisterSong: Failed to load MID.\n");
     }
-    
+
 
     return result;
 }

@@ -421,7 +421,7 @@ void *(Z_Malloc)(size_t size, int tag, void **user
     block->next = blockbytag[tag];
     blockbytag[tag]->prev = block;
   }
-    
+
   block->size = size;
 
 #ifdef INSTRUMENTED
@@ -436,7 +436,7 @@ void *(Z_Malloc)(size_t size, int tag, void **user
   block->file = file;
   block->line = line;
 #endif
-  
+
 #ifdef ZONEIDCHECK
   block->id = ZONEID;         // signature required in block header
 #endif
@@ -445,7 +445,7 @@ void *(Z_Malloc)(size_t size, int tag, void **user
   block = (memblock_t *)((char *) block + HEADER_SIZE);
   if (user)                   // if there is a user
     *user = block;            // set user to point to new block
-  
+
 #ifdef INSTRUMENTED
   Z_DrawStats();           // print memory allocation stats
   // scramble memory -- weed out any bugs

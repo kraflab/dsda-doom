@@ -97,13 +97,13 @@ typedef struct
   HWND listHistory;
   HWND listCMD;
   HWND staticFileName;
-  
+
   fileitem_t *files;
   size_t filescount;
-  
+
   fileitem_t *cache;
   size_t cachesize;
-  
+
   int *selection;
   size_t selectioncount;
 } launcher_t;
@@ -223,7 +223,7 @@ static void L_FilesOnChange(void)
   // �����, ��� ������ ���� ������...
   start = (int)SendMessage(launcher.listPWAD, LB_GETANCHORINDEX, 0, 0);
   end = (int)SendMessage(launcher.listPWAD, LB_GETCARETINDEX, 0, 0);
-  
+
   for (i = start; (start<end?(i<=end):(i>=end)); (start<end?i++:i--))
   {
     if (SendMessage(launcher.listPWAD, LB_GETSEL, i, 0) > 0)
@@ -235,7 +235,7 @@ static void L_FilesOnChange(void)
       }
     }
   }
-  
+
   index = (int)SendMessage(launcher.listPWAD, LB_GETCURSEL, 0, 0);
   if (index != LB_ERR)
   {
@@ -257,7 +257,7 @@ static void L_FilesOnChange(void)
 
       font = (HFONT)SendMessage(launcher.staticFileName, WM_GETFONT, 0, 0);
       oldfont = SelectObject(hdc, font);
-      
+
       for (count = strlen(path); count > 0 ; count--)
       {
         char tmppath[PATH_MAX];
@@ -273,7 +273,7 @@ static void L_FilesOnChange(void)
           }
         }
       }
-      
+
       SelectObject(hdc, oldfont);
     }
   }
@@ -333,15 +333,15 @@ static void L_CommandOnChange(void)
   int index;
 
   index = (int)SendMessage(launcher.listCMD, CB_GETCURSEL, 0, 0);
-  
+
   switch (index)
   {
   case 0:
     remove(launchercachefile);
-    
+
     SendMessage(launcher.listPWAD, LB_RESETCONTENT, 0, 0);
     SendMessage(launcher.listHistory, CB_SETCURSEL, -1, 0);
-    
+
     if (launcher.files)
     {
       free(launcher.files);
@@ -374,13 +374,13 @@ static void L_CommandOnChange(void)
 
         sprintf(str, "launcher_history%d", i);
         history = M_LookupDefault(str);
-        
+
         strcpy((char*)history->location.ppsz[0], "");
       }
       M_SaveDefaults();
       L_FillHistoryList();
       SendMessage(launcher.listHistory, CB_SETCURSEL, -1, 0);
-  
+
       MessageBox(launcher.HWNDServer, "The history has been successfully cleared", LAUNCHER_CAPTION, MB_OK|MB_ICONEXCLAMATION);
     }
     break;
@@ -427,7 +427,7 @@ static void L_CommandOnChange(void)
     {
       char buf[128], next_mode[100];
       launcher_enable_t launcher_next_mode = (launcher_enable + 1) % launcher_enable_count;
-      
+
       if (launcher_next_mode == launcher_enable_never)
         strcpy(next_mode, "disable");
       if (launcher_next_mode == launcher_enable_smart)
@@ -452,7 +452,7 @@ static void L_CommandOnChange(void)
     }
     break;
   }
-  
+
   SendMessage(launcher.listCMD, CB_SETCURSEL, -1, 0);
 }
 
@@ -466,7 +466,7 @@ static dboolean L_GetFileType(const char *filename, fileitem_t *item)
   item->doom1 = false;
   item->doom2 = false;
   strcpy(item->name, filename);
-  
+
   len = strlen(filename);
 
   if (!strcasecmp(&filename[len-4],".deh") || !strcasecmp(&filename[len-4],".bex"))
@@ -474,7 +474,7 @@ static dboolean L_GetFileType(const char *filename, fileitem_t *item)
     item->source = source_deh;
     return true;
   }
-  
+
   for (i = 0; i < launcher.cachesize; i++)
   {
     if (!strcasecmp(filename, launcher.cache[i].name))
@@ -506,7 +506,7 @@ static dboolean L_GetFileType(const char *filename, fileitem_t *item)
         for (i = 0; !item->doom1 && !item->doom2 && i < (size_t)header.numlumps; i++)
         {
           filelump_t lump;
-          
+
           if (0 == fread (&lump, sizeof(lump), 1, f))
             break;
 
@@ -544,7 +544,7 @@ static dboolean L_GUISelect(waddata_t *waddata)
   dboolean processed = false;
   int listIWADCount, listPWADCount;
   char fullpath[PATH_MAX];
-  
+
   if (!waddata->wadfiles)
     return false;
 
@@ -623,7 +623,7 @@ static dboolean L_GUISelect(waddata_t *waddata)
     //else
     //  return false;
   }
-  
+
   if (topindex == -1)
     topindex = 0;
   SendMessage(launcher.listPWAD, LB_SETTOPINDEX, topindex, 0);
@@ -646,9 +646,9 @@ static dboolean L_PrepareToLaunch(void)
   numwadfiles = 0;
   free(wadfiles);
   wadfiles = NULL;
-  
+
   listPWADCount = (int)SendMessage(launcher.listPWAD, LB_GETCOUNT, 0, 0);
-  
+
   index = (int)SendMessage(launcher.listIWAD, CB_GETCURSEL, 0, 0);
   if (index != CB_ERR)
   {
@@ -697,7 +697,7 @@ static dboolean L_PrepareToLaunch(void)
     strcat(history, "|");
     strcat(history, item->name);
   }
- 
+
   free(selection);
   L_SelClearAndFree();
 
@@ -783,7 +783,7 @@ static void L_ReadCacheData(void)
           launcher.cache[launcher.cachesize].source = item.source;
           launcher.cache[launcher.cachesize].doom1 = item.doom1;
           launcher.cache[launcher.cachesize].doom2 = item.doom2;
-          
+
           launcher.cachesize++;
         }
       }
@@ -821,7 +821,7 @@ static int L_SelGetList(int **list)
     {
       present = (*list)[j] == launcher.selection[i];
     }
-    
+
     if (!present)
     {
       for (j=0; j < listPWADCount; j++)
@@ -855,7 +855,7 @@ static void L_FillGameList(void)
   extern const char *const standard_iwads[];
 
   int i, j;
-  
+
   // "doom2f.wad", "doom2.wad", "plutonia.wad", "tnt.wad",
   // "doom.wad", "doom1.wad", "doomu.wad",
   // "freedoom2.wad", "freedoom1.wad", "freedm.wad"
@@ -882,7 +882,7 @@ static void L_FillGameList(void)
     "DOOM 2: BFG Edition",
     "DOOM 1: BFG Edition",
   };
-  
+
   for (i = 0; (size_t)i < launcher.filescount; i++)
   {
     fileitem_t *item = &launcher.files[i];
@@ -964,7 +964,7 @@ char* e6y_I_FindFile(const char* ext)
       char fullmask[PATH_MAX];
 
       sprintf(fullmask, "%s%s", (p?p:""), ext);
-      
+
       if ((handle = I_FindFirst(fullmask, &findstate)) != (void *)-1)
       {
         do
@@ -973,9 +973,9 @@ char* e6y_I_FindFile(const char* ext)
           {
             fileitem_t item;
             char fullpath[PATH_MAX];
-            
+
             sprintf(fullpath, "%s%s", (p?p:""), I_FindName(&findstate));
-            
+
             if (L_GetFileType(fullpath, &item))
             {
               if (item.source != source_err)
@@ -988,7 +988,7 @@ char* e6y_I_FindFile(const char* ext)
                 if (!present)
                 {
                   launcher.files = realloc(launcher.files, sizeof(*launcher.files) * (launcher.filescount + 1));
-                  
+
                   strcpy(launcher.files[launcher.filescount].name, fullpath);
                   launcher.files[launcher.filescount].source = item.source;
                   launcher.files[launcher.filescount].doom1 = item.doom1;
@@ -1045,10 +1045,10 @@ static char* L_HistoryGetStr(waddata_t *data)
   if (iwad) len += strlen(iwad);
   if (pwad) len += strlen(pwad);
   if (deh)  len += strlen(deh);
-  
+
   result = malloc(len + 16);
   strcpy(result, "");
-  
+
   if (pwad)
   {
     strcat(result, M_Strlwr(pwad));
@@ -1094,7 +1094,7 @@ static void L_FillHistoryList(void)
   char *p = NULL;
 
   L_HistoryFreeData();
-  
+
   SendMessage(launcher.listHistory, CB_RESETCONTENT, 0, 0);
 
   for (i = 0; i < sizeof(launcher_history)/sizeof(launcher_history[0]); i++)
@@ -1114,7 +1114,7 @@ static void L_FillHistoryList(void)
         index = (int)SendMessage(launcher.listHistory, CB_ADDSTRING, 0, (LPARAM)p);
         if (index >= 0)
           SendMessage(launcher.listHistory, CB_SETITEMDATA, index, (LPARAM)waddata);
-        
+
         free(p);
         p = NULL;
       }
@@ -1170,7 +1170,7 @@ BOOL CALLBACK LauncherClientCallback (HWND hDlg, UINT message, WPARAM wParam, LP
       L_CommandOnChange();
 
       L_ReadCacheData();
-      
+
       e6y_I_FindFile("*.wad");
       e6y_I_FindFile("*.deh");
       e6y_I_FindFile("*.bex");
@@ -1207,7 +1207,7 @@ BOOL CALLBACK LauncherClientCallback (HWND hDlg, UINT message, WPARAM wParam, LP
         }
 #endif
       }
-      
+
       if ((size_t)i == numwadfiles)
       {
         if (SendMessage(launcher.listHistory, CB_SETCURSEL, 0, 0) != CB_ERR)
@@ -1238,13 +1238,13 @@ BOOL CALLBACK LauncherClientCallback (HWND hDlg, UINT message, WPARAM wParam, LP
         if (L_PrepareToLaunch())
           EndDialog (launcher.HWNDServer, 1);
       }
-      
+
       if (wmId == IDC_HISTORYCOMBO && wmEvent == CBN_SELCHANGE)
         L_HistoryOnChange();
-      
+
       if (wmId == IDC_IWADCOMBO && wmEvent == CBN_SELCHANGE)
         L_GameOnChange();
-      
+
       if (wmId == IDC_PWADLIST && wmEvent == LBN_SELCHANGE)
         L_FilesOnChange();
 
@@ -1263,7 +1263,7 @@ BOOL CALLBACK LauncherClientCallback (HWND hDlg, UINT message, WPARAM wParam, LP
 BOOL CALLBACK LauncherServerCallback (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   int wmId, wmEvent;
-  
+
   switch (message)
   {
   case WM_COMMAND:
@@ -1282,7 +1282,7 @@ BOOL CALLBACK LauncherServerCallback (HWND hWnd, UINT message, WPARAM wParam, LP
       break;
     }
     break;
-    
+
   case WM_INITDIALOG:
       launcher.HWNDServer = hWnd;
       CreateDialogParam(GetModuleHandle(NULL),
@@ -1290,7 +1290,7 @@ BOOL CALLBACK LauncherServerCallback (HWND hWnd, UINT message, WPARAM wParam, LP
         launcher.HWNDServer,
         LauncherClientCallback, 0);
       break;
-      
+
   case WM_DESTROY:
     L_HistoryFreeData();
     break;
@@ -1321,7 +1321,7 @@ BOOL DoCreateDialogTooltip(void)
   // Enumerate the child windows to register them with the tooltip control.
   if (!EnumChildWindows(launcher.HWNDClient, (WNDENUMPROC) EnumChildProc, 0))
     return FALSE;
- 
+
   // Install a hook procedure to monitor the message stream for mouse
   // messages intended for the controls in the dialog box.
   g_hhk = SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc,
@@ -1372,7 +1372,7 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
   lpmsg = (MSG *) lParam;
   if (nCode < 0 || !(IsChild(launcher.HWNDClient, lpmsg->hwnd)))
     return (CallNextHookEx(g_hhk, nCode, wParam, lParam));
- 
+
   switch (lpmsg->message)
   {
     case WM_MOUSEMOVE:

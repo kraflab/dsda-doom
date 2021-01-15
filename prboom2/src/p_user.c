@@ -193,7 +193,7 @@ void P_CalcHeight (player_t* player)
     if (player->bob > MAXBOB)
       player->bob = MAXBOB;
   }
-  
+
   if (player->mo->flags2 & MF2_FLY && !onground)
   {
     player->bob = FRACUNIT / 2;
@@ -451,7 +451,7 @@ void P_DeathThink (player_t* player)
       player->viewheight = 6*FRACUNIT;
 
     player->deltaviewheight = 0;
-    
+
     if (player->lookdir > 0)
     {
         player->lookdir -= 6;

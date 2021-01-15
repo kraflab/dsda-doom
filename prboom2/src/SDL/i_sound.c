@@ -727,12 +727,12 @@ unsigned char *I_GrabSound (int len)
 // NSM helper routine for some of the streaming audio
 void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, unsigned nsamp), unsigned sratein, unsigned srateout)
 { // assumes 16 bit signed interleaved stereo
-  
+
   unsigned i;
   int j = 0;
-  
+
   short *sout = (short*)dest;
-  
+
   static short *sin = NULL;
   static unsigned sinsamp = 0;
 
@@ -764,7 +764,7 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
   sin[0] = sin[nreq * 2];
   sin[1] = sin[nreq * 2 + 1];
 }
-  
+
 
 #ifndef HAVE_OWN_MUSIC
 
@@ -1088,13 +1088,13 @@ int I_RegisterSong(const void *data, size_t len)
     if (result == 0)
     {
       mem_get_buf(outstream, &outbuf, &outbuf_len);
-      
+
       rw_midi = SDL_RWFromMem(outbuf, outbuf_len);
       if (rw_midi)
       {
         music[0] = Mix_LoadMUS_RW(rw_midi, SDL_FALSE);
       }
-      
+
       if (!music[0])
       {
         io_errors = M_WriteFile(music_tmp, outbuf, outbuf_len) == 0;
@@ -1110,7 +1110,7 @@ int I_RegisterSong(const void *data, size_t len)
     mem_fclose(instream);
     mem_fclose(outstream);
   }
-  
+
   // Failed to load
   if (!music[0])
   {
@@ -1142,7 +1142,7 @@ int I_RegisterMusic( const char* filename, musicinfo_t *song )
   if (use_experimental_music)
   {
     return Exp_RegisterMusic (filename, song);
-    
+
   }
 
 
@@ -1341,7 +1341,7 @@ static void Exp_ResumeSong (int handle)
 {
   if (!music_handle)
     return;
-  
+
   SDL_LockMutex (musmutex);
   switch (mus_pause_opt)
   {
@@ -1422,7 +1422,7 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
   {
     // The header has no MUS signature
     // Let's try to load this song directly
-  
+
     // go through music players in order
     int found = 0;
 

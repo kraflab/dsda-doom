@@ -969,14 +969,14 @@ void HU_Start(void)
     );
 
   HU_init_crosshair();
-  
+
   // now allow the heads-up display to run
   headsupactive = true;
 
   HU_LoadHUDDefs();
 
   HU_MoveHud(true);
-  
+
   dsda_InitHud(hu_font2);
 }
 
@@ -2286,7 +2286,7 @@ void HU_draw_crosshair(void)
   {
     fixed_t slope;
     angle_t an = plr->mo->angle;
-    
+
     // intercepts overflow guard
     overflows_enabled = false;
     slope = P_AimLineAttack(plr->mo, an, 16*64*FRACUNIT, 0);
@@ -2550,7 +2550,7 @@ void HU_Drawer(void)
 
   // display the interactive buffer for chat entry
   HUlib_drawIText(&w_chat);
-  
+
   dsda_DrawHud();
 }
 
@@ -2578,7 +2578,7 @@ void HU_Erase(void)
 
   // erase the automap title
   HUlib_eraseTextLine(&w_title);
-  
+
   dsda_EraseHud();
 }
 
@@ -2633,7 +2633,7 @@ void HU_Ticker(void)
       message_dontfuckwithme = 0;
     }
   }
-  
+
   // centered messages
   for (i = 0; i < MAXPLAYERS; i++)
   {
@@ -2700,7 +2700,7 @@ void HU_Ticker(void)
       }
     }
   }
-  
+
   dsda_UpdateHud();
 }
 
