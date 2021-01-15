@@ -465,8 +465,7 @@ manual_door://e6y
         break;
 
       case vld_normal_turbo:
-        type = vld_normal;
-        door->type = type;
+        door->type = vld_normal;
         door->speed = VDOORSPEED * 3;
         // fall through
 
