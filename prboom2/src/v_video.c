@@ -1817,3 +1817,120 @@ void V_ChangeScreenResolution(void)
   }
 #endif
 }
+
+// heretic
+
+void V_DrawShadowedNumPatch(int x, int y, int lump)
+{
+  V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+}
+
+void V_DrawShadowedNamePatch(int x, int y, const char* name)
+{
+  V_DrawNamePatch(x, y, 0, name, CR_DEFAULT, VPT_STRETCH);
+}
+
+void V_DrawTLNumPatch(int x, int y, int lump)
+{
+  V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+}
+
+// void V_DrawShadowedPatch(int x, int y, patch_t *patch)
+// {
+//     int count, col;
+//     column_t *column;
+//     pixel_t *desttop, *dest;
+//     byte *source;
+//     pixel_t *desttop2, *dest2;
+//     int w;
+//
+//     y -= SHORT(patch->topoffset);
+//     x -= SHORT(patch->leftoffset);
+//
+//     if (x < 0
+//      || x + SHORT(patch->width) > ORIGWIDTH
+//      || y < 0
+//      || y + SHORT(patch->height) > ORIGHEIGHT)
+//     {
+//         I_Error("Bad V_DrawShadowedPatch");
+//     }
+//
+//     col = 0;
+//     desttop = dest_screen + ((y * dy) >> FRACBITS) * SCREENWIDTH + ((x * dx) >> FRACBITS);
+//     desttop2 = dest_screen + (((y + 2) * dy) >> FRACBITS) * SCREENWIDTH + (((x + 2) * dx) >> FRACBITS);
+//
+//     w = SHORT(patch->width);
+//     for (; col < w << FRACBITS; x++, col+=dxi, desttop++, desttop2++)
+//     {
+//         column = (column_t *) ((byte *) patch + LONG(patch->columnofs[col >> FRACBITS]));
+//
+//         // step through the posts in a column
+//
+//         while (column->topdelta != 0xff)
+//         {
+//             int srccol = 0;
+//             source = (byte *) column + 3;
+//             dest = desttop + ((column->topdelta * dy) >> FRACBITS) * SCREENWIDTH;
+//             dest2 = desttop2 + ((column->topdelta * dy) >> FRACBITS) * SCREENWIDTH;
+//             count = (column->length * dy) >> FRACBITS;
+//
+//             while (count--)
+//             {
+//                 *dest2 = tinttable[((*dest2) << 8)];
+//                 dest2 += SCREENWIDTH;
+//                 *dest = source[srccol >> FRACBITS];
+//                 srccol += dyi;
+//                 dest += SCREENWIDTH;
+//
+//             }
+//             column = (column_t *) ((byte *) column + column->length + 4);
+//         }
+//     }
+// }
+
+// void V_DrawTLPatch(int x, int y, patch_t * patch)
+// {
+//     int count, col;
+//     column_t *column;
+//     pixel_t *desttop, *dest;
+//     byte *source;
+//     int w;
+//
+//     y -= SHORT(patch->topoffset);
+//     x -= SHORT(patch->leftoffset);
+//
+//     if (x < 0
+//      || x + SHORT(patch->width) > ORIGWIDTH
+//      || y < 0
+//      || y + SHORT(patch->height) > ORIGHEIGHT)
+//     {
+//         I_Error("Bad V_DrawTLPatch");
+//     }
+//
+//     col = 0;
+//     desttop = dest_screen + ((y * dy) >> FRACBITS) * SCREENWIDTH + ((x * dx) >> FRACBITS);
+//
+//     w = SHORT(patch->width);
+//     for (; col < w << FRACBITS; x++, col+=dxi, desttop++)
+//     {
+//         column = (column_t *) ((byte *) patch + LONG(patch->columnofs[col >> FRACBITS]));
+//
+//         // step through the posts in a column
+//
+//         while (column->topdelta != 0xff)
+//         {
+//             int srccol = 0;
+//             source = (byte *) column + 3;
+//             dest = desttop + ((column->topdelta * dy) >> FRACBITS) * SCREENWIDTH;
+//             count = (column->length * dy) >> FRACBITS;
+//
+//             while (count--)
+//             {
+//                 *dest = tinttable[((*dest) << 8) + source[srccol >> FRACBITS]];
+//                 srccol += dyi;
+//                 dest += SCREENWIDTH;
+//             }
+//             column = (column_t *) ((byte *) column + column->length + 4);
+//         }
+//     }
+// }

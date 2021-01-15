@@ -61,6 +61,7 @@ set(COMMON_SRC
     heretic/dstrings.h
     heretic/dstrings.c
     heretic/info.c
+    heretic/in_lude.c
     heretic/p_action.h
     heretic/sounds.c
     hu_lib.c
