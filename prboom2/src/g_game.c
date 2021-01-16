@@ -93,7 +93,6 @@
 
 // ano - used for version 255+ demos, like EE or MBF
 static char     prdemosig[] = "PR+UM";
-#define MAX_MOUSE_BUTTONS 8
 
 #define SAVEGAMESIZE  0x20000
 #define SAVESTRINGSIZE  24
@@ -401,7 +400,6 @@ int mousebinvleft;
 int mousebinvright;
 dboolean finalintermission;
 
-static void SetMouseButtons(unsigned int buttons_mask);
 static dboolean InventoryMoveLeft(void);
 static dboolean InventoryMoveRight(void);
 // end heretic
@@ -425,6 +423,32 @@ static inline signed char fudgef(signed char b)
   if (++c & 0x1f) return b;
   b |= 1; if (b>2) b-=2;*/
   return b;
+}
+
+static void SetMouseButtons(unsigned int buttons_mask)
+{
+  int i;
+
+  for (i = 0; i < MAX_MOUSE_BUTTONS; ++i)
+  {
+    unsigned int button_on = (buttons_mask & (1 << i)) != 0;
+
+    // Detect button press:
+
+    if (!mousebuttons[i] && button_on)
+    {
+      if (i == mousebinvleft)
+      {
+          InventoryMoveLeft();
+      }
+      else if (i == mousebinvright)
+      {
+          InventoryMoveRight();
+      }
+    }
+
+    mousebuttons[i] = button_on;
+  }
 }
 
 void G_SetSpeed(void)
@@ -4725,32 +4749,6 @@ void G_CheckDemoContinue(void)
 }
 
 // heretic
-
-static void SetMouseButtons(unsigned int buttons_mask)
-{
-    int i;
-
-    for (i=0; i<MAX_MOUSE_BUTTONS; ++i)
-    {
-        unsigned int button_on = (buttons_mask & (1 << i)) != 0;
-
-        // Detect button press:
-
-        if (!mousebuttons[i] && button_on)
-        {
-            if (i == mousebinvleft)
-            {
-                InventoryMoveLeft();
-            }
-            else if (i == mousebinvright)
-            {
-                InventoryMoveRight();
-            }
-        }
-
-        mousebuttons[i] = button_on;
-    }
-}
 
 static dboolean InventoryMoveLeft(void)
 {
