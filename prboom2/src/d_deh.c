@@ -873,6 +873,16 @@ const char **const mapnames[] =
   &deh_newlevel,
   &deh_newlevel,
   &deh_newlevel,
+  &deh_newlevel,
+
+  &deh_newlevel,  // spares?  Unused.
+  &deh_newlevel,
+  &deh_newlevel,
+  &deh_newlevel,
+  &deh_newlevel,
+  &deh_newlevel,
+  &deh_newlevel,
+  &deh_newlevel,
   &deh_newlevel
 };
 
