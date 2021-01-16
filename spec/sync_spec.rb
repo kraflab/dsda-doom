@@ -1,8 +1,10 @@
 RSpec.describe 'sync' do
   let(:pwad) { nil }
+  let(:iwad) { "DOOM2.WAD" }
+  let(:extra) { nil }
 
   before do
-    Utility.play_demo(lmp: lmp, pwad: pwad)
+    Utility.play_demo(lmp: lmp, iwad: iwad, pwad: pwad, extra: extra)
   end
 
   describe 'total time' do
@@ -42,6 +44,43 @@ RSpec.describe 'sync' do
       let(:pwad) { 'Valiant.wad' }
 
       it { is_expected.to eq('5:13') }
+    end
+
+    # heretic
+    context 'heretic' do
+      let(:iwad) { "DOOM.WAD" }
+      let(:pwad) { "HERETIC.WAD" }
+      let(:extra) { "-heretic" }
+
+      context 'e1 sm max in 52:40 by JCD' do
+        let(:lmp) { 'h1m-5240.lmp' }
+
+        it { is_expected.to eq('52:40') }
+      end
+
+      context 'e2 sm max in 67:02 by JCD' do
+        let(:lmp) { 'h2ma6702.lmp' }
+
+        it { is_expected.to eq('67:02') }
+      end
+
+      context 'e3 sm max in 62:48 by JCD' do
+        let(:lmp) { 'h3ma6248.lmp' }
+
+        it { is_expected.to eq('62:48') }
+      end
+
+      context 'e4 sm speed in 10:55 by veovis' do
+        let(:lmp) { 'h4sp1055.lmp' }
+
+        it { is_expected.to eq('10:55') }
+      end
+
+      context 'e5 sm speed in 12:57 by veovis' do
+        let(:lmp) { 'h5sp1257.lmp' }
+
+        it { is_expected.to eq('12:57') }
+      end
     end
   end
 end
