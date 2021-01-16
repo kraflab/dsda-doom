@@ -4499,17 +4499,17 @@ static int M_IndexInChoices(const char *str, const char **choices) {
 
 static inline int GetButtons(const unsigned int max, int data)
 {
-	int i;
+  int i;
 
-	for (i = 0; i < max; ++i)
-	{
-		if (data & (1 << i))
-		{
-			return i;
-		}
-	}
+  for (i = 0; i < max; ++i)
+  {
+    if (data & (1 << i))
+    {
+      return i;
+    }
+  }
 
-	return -1;
+  return -1;
 }
 
 /////////////////////////////////////////////////////////////////////////////
