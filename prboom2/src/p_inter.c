@@ -1745,8 +1745,16 @@ void P_MinotaurSlam(mobj_t * source, mobj_t * target)
 void P_TouchWhirlwind(mobj_t * target)
 {
     int randVal;
+    int angle_delta;
 
-    target->angle += P_SubRandom() << 20;
+    angle_delta = P_SubRandom() << 20;
+    target->angle += angle_delta;
+
+    if (demo_smoothturns && target->player && target->player == &players[displayplayer])
+    {
+      R_SmoothPlaying_Add(angle_delta);
+    }
+
     target->momx += P_SubRandom() << 10;
     target->momy += P_SubRandom() << 10;
     if (leveltime & 16 && !(target->flags2 & MF2_BOSS))
