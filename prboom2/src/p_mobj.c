@@ -1488,22 +1488,15 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   // give all cards in death match mode
 
   if (deathmatch)
+  {
     for (i = 0 ; i < NUMCARDS ; i++)
       p->cards[i] = true;
-      // HERETIC_TODO: statbar stuff in this loop
-      // if (p == &players[consoleplayer])
-      // {
-      //     playerkeys = 7;
-      //     UpdateState |= I_STATBAR;
-      // }
-  // HERETIC_TODO: statbar stuff if not deathmatch
-  // else if (p == &players[consoleplayer])
-  // {
-  //     playerkeys = 0;
-  //     UpdateState |= I_STATBAR;
-  // }
+    if (p == &players[consoleplayer])
+      playerkeys = 7;
+  }
+  else if (p == &players[consoleplayer])
+    playerkeys = 0;
 
-  // HERETIC_TODO: doom hud stuff to skip
   if (mthing->type-1 == consoleplayer)
     {
     ST_Start(); // wake up the status bar

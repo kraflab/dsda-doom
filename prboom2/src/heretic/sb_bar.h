@@ -14,25 +14,17 @@
 // GNU General Public License for more details.
 //
 
-// P_local.h
+// SB_bar.h
 
-#ifndef __P_LOCAL__
-#define __P_LOCAL__
+#ifndef __SB_BAR__
+#define __SB_BAR__
 
-#ifndef __R_LOCAL__
-#include "r_local.h"
-#endif
+#include "d_event.h"
 
-// ***** AM_MAP *****
-
-boolean AM_Responder(event_t * ev);
-void AM_Ticker(void);
-void AM_Drawer(void);
-
-// ***** SB_BAR *****
-
+void SB_Init(void);
+void SB_Ticker(void);
+void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu);
+dboolean SB_Responder(event_t *ev);
 void SB_PaletteFlash(void);
 
-#include "p_spec.h"
-
-#endif // __P_LOCAL__
+#endif

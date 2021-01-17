@@ -21,7 +21,6 @@
 
 extern dboolean heretic;
 
-// HERETIC_TODO: actually these are from sb_bar
 extern int inv_ptr;
 extern int curpos;
 extern int ArtifactFlash;
@@ -29,8 +28,13 @@ extern dboolean inventory;
 extern int SB_state;
 extern int playerkeys;
 
-// HERETIC_TODO: actually this is in r_draw
+// HERETIC_TODO: r_draw
 extern dboolean BorderTopRefresh;
+
+// HERETIC_TODO: am_map from p_local
+// boolean AM_Responder(event_t * ev);
+// void AM_Ticker(void);
+// void AM_Drawer(void);
 
 #define TELEFOGHEIGHT (32*FRACUNIT)
 #define ANG1_X          0x01000000
@@ -60,5 +64,11 @@ extern dboolean BorderTopRefresh;
 #define BLINKTHRESHOLD (4*32)
 
 #include "dstrings.h"
+
+// HERETIC_TODO: mn_menu
+void MN_DrTextA(const char *text, int x, int y);
+int MN_TextAWidth(const char *text);
+void MN_DrTextB(const char *text, int x, int y);
+int MN_TextBWidth(const char *text);
 
 #endif

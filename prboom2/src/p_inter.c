@@ -299,7 +299,8 @@ static void P_GiveCard(player_t *player, card_t card)
   player->bonuscount = BONUSADD;
   player->cards[card] = 1;
 
-  // HERETIC_TODO: ignored KeyPoints & playerkeys logic
+  if (player == &players[consoleplayer])
+    playerkeys |= 1 << card;
 
   dsda_WatchCard(card);
 }

@@ -54,6 +54,8 @@ extern int g_door_normal;
 extern int g_door_raise_in_5_mins;
 extern int g_door_open;
 
+extern int g_st_height;
+
 extern dboolean heretic;
 
 void dsda_InitGlobal(void);

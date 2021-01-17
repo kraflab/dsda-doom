@@ -21,6 +21,7 @@
 #include "doomstat.h"
 
 #include "dsda.h"
+#include "dsda/global.h"
 #include "dsda/settings.h"
 #include "hud.h"
 
@@ -72,7 +73,7 @@ static void dsda_InitExHud(patchnum_t* font) {
   HUlib_initTextLine(
     &dsda_exhud_timer.text,
     DSDA_TEXT_X,
-    200 - ST_HEIGHT - 16,
+    200 - g_st_height - 16,
     font,
     HU_FONTSTART,
     CR_GRAY,
@@ -82,7 +83,7 @@ static void dsda_InitExHud(patchnum_t* font) {
   HUlib_initTextLine(
     &dsda_exhud_max_totals.text,
     DSDA_TEXT_X,
-    200 - ST_HEIGHT - 8,
+    200 - g_st_height - 8,
     font,
     HU_FONTSTART,
     CR_GRAY,

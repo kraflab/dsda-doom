@@ -82,6 +82,8 @@ int g_door_normal;
 int g_door_raise_in_5_mins;
 int g_door_open;
 
+int g_st_height;
+
 extern const char** S_music_files;
 
 static void dsda_AllocateMobjInfo(int zero, int max, int count) {
@@ -160,6 +162,8 @@ static void dsda_InitDoom(void) {
   g_door_normal = normal;
   g_door_raise_in_5_mins = raiseIn5Mins;
   g_door_open = openDoor;
+
+  g_st_height = 32;
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -240,6 +244,8 @@ static void dsda_InitHeretic(void) {
   g_door_normal = vld_normal;
   g_door_raise_in_5_mins = vld_raiseIn5Mins;
   g_door_open = vld_open;
+
+  g_st_height = 42;
 
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {

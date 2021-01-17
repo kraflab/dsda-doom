@@ -71,10 +71,6 @@ static wbstartstruct_t* wbs;
 // HERETIC_TODO: temporary copy from _mn_menu.c
 static int FontABaseLump;
 static int FontBBaseLump;
-static void MN_DrTextA(const char *text, int x, int y);
-static int MN_TextAWidth(const char *text);
-static void MN_DrTextB(const char *text, int x, int y);
-static int MN_TextBWidth(const char *text);
 
 static int prevmap;
 static dboolean intermission;

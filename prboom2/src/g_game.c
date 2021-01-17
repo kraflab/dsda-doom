@@ -396,8 +396,8 @@ int key_arti_torch;
 int key_arti_morph;
 int key_invleft;
 int key_invright;
-int mousebinvleft;
-int mousebinvright;
+int mousebinvleft = -1;
+int mousebinvright = -1;
 dboolean finalintermission;
 
 static dboolean InventoryMoveLeft(void);
@@ -1538,9 +1538,6 @@ void G_Ticker (void)
     case GS_LEVEL:
       // HERETIC_TODO: P SB AM CT _Ticker();
       P_Ticker ();
-      // The HUD in heretic uses P_Random every other frame!
-      if (heretic && !paused && leveltime & 1)
-        P_Random(pr_heretic);
       P_WalkTicker();
       mlooky = 0;
       AM_Ticker();

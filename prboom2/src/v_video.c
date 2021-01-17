@@ -53,6 +53,8 @@
 #include "st_stuff.h"
 #include "e6y.h"
 
+#include "dsda/global.h"
+
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
 // user preferences. The integer ratio is hardly used anymore, so further
@@ -1684,7 +1686,7 @@ void SetRatio(int width, int height)
   }
 
   ST_SCALED_WIDTH = ST_WIDTH * patches_scalex;
-  ST_SCALED_HEIGHT = ST_HEIGHT * patches_scaley;
+  ST_SCALED_HEIGHT = g_st_height * patches_scaley;
 
   if (SCREENWIDTH < 320 || WIDE_SCREENWIDTH < 320 ||
       SCREENHEIGHT < 200 || WIDE_SCREENHEIGHT < 200)
@@ -1701,7 +1703,7 @@ void SetRatio(int width, int height)
     wide_offset2y = (SCREENHEIGHT - patches_scaley * 200);
     break;
   case patch_stretch_4x3:
-    ST_SCALED_HEIGHT = ST_HEIGHT * WIDE_SCREENHEIGHT / 200;
+    ST_SCALED_HEIGHT = g_st_height * WIDE_SCREENHEIGHT / 200;
     ST_SCALED_WIDTH  = WIDE_SCREENWIDTH;
 
     ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
@@ -1710,7 +1712,7 @@ void SetRatio(int width, int height)
     wide_offset2y = (SCREENHEIGHT - WIDE_SCREENHEIGHT);
     break;
   case patch_stretch_full:
-    ST_SCALED_HEIGHT = ST_HEIGHT * SCREENHEIGHT / 200;
+    ST_SCALED_HEIGHT = g_st_height * SCREENHEIGHT / 200;
     ST_SCALED_WIDTH  = SCREENWIDTH;
 
     ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
@@ -1833,6 +1835,11 @@ void V_DrawShadowedNamePatch(int x, int y, const char* name)
 void V_DrawTLNumPatch(int x, int y, int lump)
 {
   V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+}
+
+void V_DrawTLNamePatch(int x, int y, const char* name)
+{
+  V_DrawNamePatch(x, y, 0, name, CR_DEFAULT, VPT_STRETCH);
 }
 
 // void V_DrawShadowedPatch(int x, int y, patch_t *patch)
