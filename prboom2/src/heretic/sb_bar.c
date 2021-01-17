@@ -37,7 +37,7 @@ static void DrawCommonBar(void);
 static void DrawMainBar(void);
 static void DrawInventoryBar(void);
 static void DrawFullScreenStuff(void);
-static boolean HandleCheats(byte key);
+static dboolean HandleCheats(byte key);
 static void CheatGodFunc(player_t * player, Cheat_t * cheat);
 static void CheatNoClipFunc(player_t * player, Cheat_t * cheat);
 static void CheatWeaponsFunc(player_t * player, Cheat_t * cheat);
@@ -58,9 +58,9 @@ static void CheatIDDQDFunc(player_t * player, Cheat_t * cheat);
 
 // Public Data
 
-boolean DebugSound;             // debug flag for displaying sound info
+dboolean DebugSound;             // debug flag for displaying sound info
 
-boolean inventory;
+dboolean inventory;
 int curpos;
 int inv_ptr;
 int ArtifactFlash;
@@ -541,12 +541,12 @@ static int oldkeys = -1;
 
 int playerkeys = 0;
 
-extern boolean automapactive;
+extern dboolean automapactive;
 
 void SB_Drawer(void)
 {
     int frame;
-    static boolean hitCenterFrame;
+    static dboolean hitCenterFrame;
 
     // Sound info debug stuff
     if (DebugSound == true)
@@ -994,7 +994,7 @@ void DrawFullScreenStuff(void)
 //
 //--------------------------------------------------------------------------
 
-boolean SB_Responder(event_t * event)
+dboolean SB_Responder(event_t * event)
 {
     if (event->type == ev_keydown)
     {
@@ -1014,10 +1014,10 @@ boolean SB_Responder(event_t * event)
 //
 //--------------------------------------------------------------------------
 
-static boolean HandleCheats(byte key)
+static dboolean HandleCheats(byte key)
 {
     int i;
-    boolean eat;
+    dboolean eat;
 
     /* [crispy] check for nightmare/netgame per cheat, to allow "harmless" cheats
     if (netgame || gameskill == sk_nightmare)
@@ -1082,7 +1082,7 @@ static void CheatNoClipFunc(player_t * player, Cheat_t * cheat)
 static void CheatWeaponsFunc(player_t * player, Cheat_t * cheat)
 {
     int i;
-    //extern boolean *WeaponInShareware;
+    //extern dboolean *WeaponInShareware;
 
     NIGHTMARE_NETGAME_CHECK;
     player->armorpoints = 200;
@@ -1261,7 +1261,7 @@ static void CheatWarpFunc(player_t * player, Cheat_t * cheat)
 
 static void CheatChickenFunc(player_t * player, Cheat_t * cheat)
 {
-    extern boolean P_UndoPlayerChicken(player_t * player);
+    extern dboolean P_UndoPlayerChicken(player_t * player);
 
     NIGHTMARE_NETGAME_CHECK;
     if (player->chickenTics)
