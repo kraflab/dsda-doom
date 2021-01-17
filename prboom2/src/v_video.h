@@ -311,5 +311,6 @@ int V_BestColor(const unsigned char *palette, int r, int g, int b);
 void V_DrawShadowedNumPatch(int x, int y, int lump);
 void V_DrawShadowedNamePatch(int x, int y, const char* name);
 void V_DrawTLNumPatch(int x, int y, int lump);
+void V_DrawTLNamePatch(int x, int y, const char* name);
 
 #endif

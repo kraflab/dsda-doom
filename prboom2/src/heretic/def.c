@@ -18,13 +18,6 @@
 
 dboolean heretic = false;
 
-int inv_ptr;
-int curpos;
-int ArtifactFlash;
-dboolean inventory;
-int SB_state = -1;
-int playerkeys;
-
 dboolean BorderTopRefresh;
 
 // HERETIC_TODO: this is actually in am_map

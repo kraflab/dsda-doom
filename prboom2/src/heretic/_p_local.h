@@ -29,10 +29,6 @@ boolean AM_Responder(event_t * ev);
 void AM_Ticker(void);
 void AM_Drawer(void);
 
-// ***** SB_BAR *****
-
-void SB_PaletteFlash(void);
-
 #include "p_spec.h"
 
 #endif // __P_LOCAL__

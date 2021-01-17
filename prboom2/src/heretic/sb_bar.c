@@ -16,19 +16,20 @@
 
 // SB_bar.c
 
+#include "doomstat.h"
+#include "m_cheat.h"
+#include "m_random.h"
+#include "v_video.h"
+#include "r_main.h"
+#include "w_wad.h"
+
+#include "heretic/def.h"
+#include "heretic/dstrings.h"
+
 #include "sb_bar.h"
-
-// Types
-
-typedef struct Cheat_s
-{
-    void (*func) (player_t * player, struct Cheat_s * cheat);
-    cheatseq_t *seq;
-} Cheat_t;
 
 // Private Functions
 
-static void DrawSoundInfo(void);
 static void ShadeLine(int x, int y, int height, int shade);
 static void ShadeChain(void);
 static void DrINumber(signed int val, int x, int y);
@@ -37,143 +38,62 @@ static void DrawCommonBar(void);
 static void DrawMainBar(void);
 static void DrawInventoryBar(void);
 static void DrawFullScreenStuff(void);
-static dboolean HandleCheats(byte key);
-static void CheatGodFunc(player_t * player, Cheat_t * cheat);
-static void CheatNoClipFunc(player_t * player, Cheat_t * cheat);
-static void CheatWeaponsFunc(player_t * player, Cheat_t * cheat);
-static void CheatPowerFunc(player_t * player, Cheat_t * cheat);
-static void CheatHealthFunc(player_t * player, Cheat_t * cheat);
-static void CheatKeysFunc(player_t * player, Cheat_t * cheat);
-static void CheatSoundFunc(player_t * player, Cheat_t * cheat);
-static void CheatTickerFunc(player_t * player, Cheat_t * cheat);
-static void CheatArtifact1Func(player_t * player, Cheat_t * cheat);
-static void CheatArtifact2Func(player_t * player, Cheat_t * cheat);
-static void CheatArtifact3Func(player_t * player, Cheat_t * cheat);
-static void CheatWarpFunc(player_t * player, Cheat_t * cheat);
-static void CheatChickenFunc(player_t * player, Cheat_t * cheat);
-static void CheatShowFpsFunc(player_t* player, Cheat_t* cheat); // [crispy]
-static void CheatMassacreFunc(player_t * player, Cheat_t * cheat);
-static void CheatIDKFAFunc(player_t * player, Cheat_t * cheat);
-static void CheatIDDQDFunc(player_t * player, Cheat_t * cheat);
 
 // Public Data
-
-dboolean DebugSound;             // debug flag for displaying sound info
 
 dboolean inventory;
 int curpos;
 int inv_ptr;
 int ArtifactFlash;
-
-static int DisplayTicker = 0;
+int SB_state = -1;
+int playerkeys = 0;
 
 // Private Data
 
+static int DisplayTicker = 0;
 static int HealthMarker;
 static int ChainWiggle;
 static player_t *CPlayer;
 int playpalette;
 
-patch_t *PatchLTFACE;
-patch_t *PatchRTFACE;
-patch_t *PatchBARBACK;
-patch_t *PatchCHAIN;
-patch_t *PatchSTATBAR;
-patch_t *PatchLIFEGEM;
-//patch_t *PatchEMPWEAP;
-//patch_t *PatchLIL4BOX;
-patch_t *PatchLTFCTOP;
-patch_t *PatchRTFCTOP;
-//patch_t *PatchARMORBOX;
-//patch_t *PatchARTIBOX;
-patch_t *PatchSELECTBOX;
-//patch_t *PatchKILLSPIC;
-//patch_t *PatchMANAPIC;
-//patch_t *PatchPOWERICN;
-patch_t *PatchINVLFGEM1;
-patch_t *PatchINVLFGEM2;
-patch_t *PatchINVRTGEM1;
-patch_t *PatchINVRTGEM2;
-patch_t *PatchINumbers[10];
-patch_t *PatchNEGATIVE;
-patch_t *PatchSmNumbers[10];
-patch_t *PatchBLACKSQ;
-patch_t *PatchINVBAR;
-patch_t *PatchARMCLEAR;
-patch_t *PatchCHAINBACK;
-//byte *ShadeTables;
+int LumpLTFACE;
+int LumpRTFACE;
+int LumpBARBACK;
+int LumpCHAIN;
+int LumpSTATBAR;
+int LumpLIFEGEM;
+int LumpLTFCTOP;
+int LumpRTFCTOP;
+int LumpSELECTBOX;
+int LumpINVLFGEM1;
+int LumpINVLFGEM2;
+int LumpINVRTGEM1;
+int LumpINVRTGEM2;
+int LumpINumbers[10];
+int LumpNEGATIVE;
+int LumpSmNumbers[10];
+int LumpBLACKSQ;
+int LumpINVBAR;
+int LumpARMCLEAR;
+int LumpCHAINBACK;
 int FontBNumBase;
 int spinbooklump;
 int spinflylump;
 
-// Toggle god mode
-cheatseq_t CheatGodSeq = CHEAT("quicken", 0);
-
-// Toggle no clipping mode
-cheatseq_t CheatNoClipSeq = CHEAT("kitty", 0);
-
-// Get all weapons and ammo
-cheatseq_t CheatWeaponsSeq = CHEAT("rambo", 0);
-
-// Toggle tome of power
-cheatseq_t CheatPowerSeq = CHEAT("shazam", 0);
-
-// Get full health
-cheatseq_t CheatHealthSeq = CHEAT("ponce", 0);
-
-// Get all keys
-cheatseq_t CheatKeysSeq = CHEAT("skel", 0);
-
-// Toggle sound debug info
-cheatseq_t CheatSoundSeq = CHEAT("noise", 0);
-
-// Toggle ticker
-cheatseq_t CheatTickerSeq = CHEAT("ticker", 0);
-
-// Get an artifact 1st stage (ask for type)
-cheatseq_t CheatArtifact1Seq = CHEAT("gimme", 0);
-
-// Get an artifact 2nd stage (ask for count)
-cheatseq_t CheatArtifact2Seq = CHEAT("gimme", 1);
-
-// Get an artifact final stage
-cheatseq_t CheatArtifact3Seq = CHEAT("gimme", 2);
-
-// Warp to new level
-cheatseq_t CheatWarpSeq = CHEAT("engage", 2);
-
-// Save a screenshot
-cheatseq_t CheatChickenSeq = CHEAT("cockadoodledoo", 0);
-
-// [crispy] Show FPS
-cheatseq_t CheatShowFpsSeq = CHEAT("showfps", 0);
-
-// Kill all monsters
-cheatseq_t CheatMassacreSeq = CHEAT("massacre", 0);
-
-cheatseq_t CheatIDKFASeq = CHEAT("idkfa", 0);
-cheatseq_t CheatIDDQDSeq = CHEAT("iddqd", 0);
-
-static Cheat_t Cheats[] = {
-    {CheatGodFunc,       &CheatGodSeq},
-    {CheatNoClipFunc,    &CheatNoClipSeq},
-    {CheatWeaponsFunc,   &CheatWeaponsSeq},
-    {CheatPowerFunc,     &CheatPowerSeq},
-    {CheatHealthFunc,    &CheatHealthSeq},
-    {CheatKeysFunc,      &CheatKeysSeq},
-    {CheatSoundFunc,     &CheatSoundSeq},
-    {CheatTickerFunc,    &CheatTickerSeq},
-    {CheatArtifact1Func, &CheatArtifact1Seq},
-    {CheatArtifact2Func, &CheatArtifact2Seq},
-    {CheatArtifact3Func, &CheatArtifact3Seq},
-    {CheatWarpFunc,      &CheatWarpSeq},
-    {CheatChickenFunc,   &CheatChickenSeq},
-    {CheatShowFpsFunc,   &CheatShowFpsSeq},
-    {CheatMassacreFunc,  &CheatMassacreSeq},
-    {CheatIDKFAFunc,     &CheatIDKFASeq},
-    {CheatIDDQDFunc,     &CheatIDDQDSeq},
-    {NULL,               NULL}
+char namearti[][10] = {
+    {"ARTIBOX"},                // none
+    {"ARTIINVU"},               // invulnerability
+    {"ARTIINVS"},               // invisibility
+    {"ARTIPTN2"},               // health
+    {"ARTISPHL"},               // superhealth
+    {"ARTIPWBK"},               // tomeofpower
+    {"ARTITRCH"},               // torch
+    {"ARTIFBMB"},               // firebomb
+    {"ARTIEGGC"},               // egg
+    {"ARTISOAR"},               // fly
+    {"ARTIATLP"}                // teleport
 };
+int lumparti[10];
 
 //---------------------------------------------------------------------------
 //
@@ -186,49 +106,53 @@ void SB_Init(void)
     int i;
     int startLump;
 
-    PatchLTFACE = W_CacheLumpName(DEH_String("LTFACE"), PU_STATIC);
-    PatchRTFACE = W_CacheLumpName(DEH_String("RTFACE"), PU_STATIC);
-    PatchBARBACK = W_CacheLumpName(DEH_String("BARBACK"), PU_STATIC);
-    PatchINVBAR = W_CacheLumpName(DEH_String("INVBAR"), PU_STATIC);
-    PatchCHAIN = W_CacheLumpName(DEH_String("CHAIN"), PU_STATIC);
+    for (i = 0; i < 10; ++i)
+    {
+      lumparti[i] = (W_CheckNumForName)(DEH_String(namearti[i]), ns_sprites);
+    }
+
+    LumpLTFACE = W_GetNumForName(DEH_String("LTFACE"));
+    LumpRTFACE = W_GetNumForName(DEH_String("RTFACE"));
+    LumpBARBACK = W_GetNumForName(DEH_String("BARBACK"));
+    LumpINVBAR = W_GetNumForName(DEH_String("INVBAR"));
+    LumpCHAIN = W_GetNumForName(DEH_String("CHAIN"));
     if (deathmatch)
     {
-        PatchSTATBAR = W_CacheLumpName(DEH_String("STATBAR"), PU_STATIC);
+        LumpSTATBAR = W_GetNumForName(DEH_String("STATBAR"));
     }
     else
     {
-        PatchSTATBAR = W_CacheLumpName(DEH_String("LIFEBAR"), PU_STATIC);
+        LumpSTATBAR = W_GetNumForName(DEH_String("LIFEBAR"));
     }
     if (!netgame)
     {                           // single player game uses red life gem
-        PatchLIFEGEM = W_CacheLumpName(DEH_String("LIFEGEM2"), PU_STATIC);
+        LumpLIFEGEM = W_GetNumForName(DEH_String("LIFEGEM2"));
     }
     else
     {
-        PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName(DEH_String("LIFEGEM0"))
-                                      + consoleplayer, PU_STATIC);
+        LumpLIFEGEM = W_GetNumForName(DEH_String("LIFEGEM0") + consoleplayer);
     }
-    PatchLTFCTOP = W_CacheLumpName(DEH_String("LTFCTOP"), PU_STATIC);
-    PatchRTFCTOP = W_CacheLumpName(DEH_String("RTFCTOP"), PU_STATIC);
-    PatchSELECTBOX = W_CacheLumpName(DEH_String("SELECTBOX"), PU_STATIC);
-    PatchINVLFGEM1 = W_CacheLumpName(DEH_String("INVGEML1"), PU_STATIC);
-    PatchINVLFGEM2 = W_CacheLumpName(DEH_String("INVGEML2"), PU_STATIC);
-    PatchINVRTGEM1 = W_CacheLumpName(DEH_String("INVGEMR1"), PU_STATIC);
-    PatchINVRTGEM2 = W_CacheLumpName(DEH_String("INVGEMR2"), PU_STATIC);
-    PatchBLACKSQ = W_CacheLumpName(DEH_String("BLACKSQ"), PU_STATIC);
-    PatchARMCLEAR = W_CacheLumpName(DEH_String("ARMCLEAR"), PU_STATIC);
-    PatchCHAINBACK = W_CacheLumpName(DEH_String("CHAINBACK"), PU_STATIC);
+    LumpLTFCTOP = W_GetNumForName(DEH_String("LTFCTOP"));
+    LumpRTFCTOP = W_GetNumForName(DEH_String("RTFCTOP"));
+    LumpSELECTBOX = W_GetNumForName(DEH_String("SELECTBOX"));
+    LumpINVLFGEM1 = W_GetNumForName(DEH_String("INVGEML1"));
+    LumpINVLFGEM2 = W_GetNumForName(DEH_String("INVGEML2"));
+    LumpINVRTGEM1 = W_GetNumForName(DEH_String("INVGEMR1"));
+    LumpINVRTGEM2 = W_GetNumForName(DEH_String("INVGEMR2"));
+    LumpBLACKSQ = W_GetNumForName(DEH_String("BLACKSQ"));
+    LumpARMCLEAR = W_GetNumForName(DEH_String("ARMCLEAR"));
+    LumpCHAINBACK = W_GetNumForName(DEH_String("CHAINBACK"));
     startLump = W_GetNumForName(DEH_String("IN0"));
     for (i = 0; i < 10; i++)
     {
-        PatchINumbers[i] = W_CacheLumpNum(startLump + i, PU_STATIC);
+        LumpINumbers[i] = startLump + i;
     }
-    PatchNEGATIVE = W_CacheLumpName(DEH_String("NEGNUM"), PU_STATIC);
+    LumpNEGATIVE = W_GetNumForName(DEH_String("NEGNUM"));
     FontBNumBase = W_GetNumForName(DEH_String("FONTB16"));
     startLump = W_GetNumForName(DEH_String("SMALLIN0"));
     for (i = 0; i < 10; i++)
     {
-        PatchSmNumbers[i] = W_CacheLumpNum(startLump + i, PU_STATIC);
+        LumpSmNumbers[i] = startLump + i;
     }
     playpalette = W_GetNumForName(DEH_String("PLAYPAL"));
     spinbooklump = W_GetNumForName(DEH_String("SPINBK0"));
@@ -246,9 +170,9 @@ void SB_Ticker(void)
     int delta;
     int curHealth;
 
-    if (leveltime & 1)
+    if (leveltime & 1 && !paused)
     {
-        ChainWiggle = P_Random() & 1;
+        ChainWiggle = P_Random(pr_heretic) & 1;
     }
     curHealth = players[consoleplayer].mo->health;
     if (curHealth < 0)
@@ -293,7 +217,7 @@ void SB_Ticker(void)
 
 static void DrINumber(signed int val, int x, int y)
 {
-    patch_t *patch;
+    int lump;
     int oldval;
 
     oldval = val;
@@ -301,30 +225,30 @@ static void DrINumber(signed int val, int x, int y)
     {
         if (val < -9)
         {
-            V_DrawPatch(x + 1, y + 1, W_CacheLumpName(DEH_String("LAME"), PU_CACHE));
+            V_DrawNamePatch(x + 1, y + 1, 0, DEH_String("LAME"), CR_DEFAULT, VPT_STRETCH);
         }
         else
         {
             val = -val;
-            V_DrawPatch(x + 18, y, PatchINumbers[val]);
-            V_DrawPatch(x + 9, y, PatchNEGATIVE);
+            V_DrawNumPatch(x + 18, y, 0, LumpINumbers[val], CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(x + 9, y, 0, LumpNEGATIVE, CR_DEFAULT, VPT_STRETCH);
         }
         return;
     }
     if (val > 99)
     {
-        patch = PatchINumbers[val / 100];
-        V_DrawPatch(x, y, patch);
+        lump = LumpINumbers[val / 100];
+        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
     }
     val = val % 100;
     if (val > 9 || oldval > 99)
     {
-        patch = PatchINumbers[val / 10];
-        V_DrawPatch(x + 9, y, patch);
+        lump = LumpINumbers[val / 10];
+        V_DrawNumPatch(x + 9, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
     }
     val = val % 10;
-    patch = PatchINumbers[val];
-    V_DrawPatch(x + 18, y, patch);
+    lump = LumpINumbers[val];
+    V_DrawNumPatch(x + 18, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
 }
 
 //---------------------------------------------------------------------------
@@ -337,7 +261,7 @@ static void DrINumber(signed int val, int x, int y)
 
 static void DrBNumber(signed int val, int x, int y)
 {
-    patch_t *patch;
+    int lump;
     int xpos;
     int oldval;
 
@@ -349,20 +273,20 @@ static void DrBNumber(signed int val, int x, int y)
     }
     if (val > 99)
     {
-        patch = W_CacheLumpNum(FontBNumBase + val / 100, PU_CACHE);
-        V_DrawShadowedPatch(xpos + 6 - SHORT(patch->width) / 2, y, patch);
+        lump = FontBNumBase + val / 100;
+        V_DrawShadowedNumPatch(xpos + 6 - R_NumPatchWidth(lump) / 2, y, lump);
     }
     val = val % 100;
     xpos += 12;
     if (val > 9 || oldval > 99)
     {
-        patch = W_CacheLumpNum(FontBNumBase + val / 10, PU_CACHE);
-        V_DrawShadowedPatch(xpos + 6 - SHORT(patch->width) / 2, y, patch);
+        lump = FontBNumBase + val / 10;
+        V_DrawShadowedNumPatch(xpos + 6 - R_NumPatchWidth(lump) / 2, y, lump);
     }
     val = val % 10;
     xpos += 12;
-    patch = W_CacheLumpNum(FontBNumBase + val, PU_CACHE);
-    V_DrawShadowedPatch(xpos + 6 - SHORT(patch->width) / 2, y, patch);
+    lump = FontBNumBase + val;
+    V_DrawShadowedNumPatch(xpos + 6 - R_NumPatchWidth(lump) / 2, y, lump);
 }
 
 //---------------------------------------------------------------------------
@@ -375,7 +299,7 @@ static void DrBNumber(signed int val, int x, int y)
 
 static void DrSmallNumber(int val, int x, int y)
 {
-    patch_t *patch;
+    int lump;
 
     if (val == 1)
     {
@@ -383,12 +307,12 @@ static void DrSmallNumber(int val, int x, int y)
     }
     if (val > 9)
     {
-        patch = PatchSmNumbers[val / 10];
-        V_DrawPatch(x, y, patch);
+        lump = LumpSmNumbers[val / 10];
+        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
     }
     val = val % 10;
-    patch = PatchSmNumbers[val];
-    V_DrawPatch(x + 4, y, patch);
+    lump = LumpSmNumbers[val];
+    V_DrawNumPatch(x + 4, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
 }
 
 //---------------------------------------------------------------------------
@@ -399,22 +323,23 @@ static void DrSmallNumber(int val, int x, int y)
 
 static void ShadeLine(int x, int y, int height, int shade)
 {
-    byte *dest;
-    byte *shades;
-
-    x <<= crispy->hires;
-    y <<= crispy->hires;
-    height <<= crispy->hires;
-
-    shades = colormaps + 9 * 256 + shade * 2 * 256;
-    dest = I_VideoBuffer + y * SCREENWIDTH + x;
-    while (height--)
-    {
-        if (crispy->hires)
-            *(dest + 1) = *(shades + *dest);
-        *(dest) = *(shades + *dest);
-        dest += SCREENWIDTH;
-    }
+    // HERETIC_TODO: ShadeLine
+    // byte *dest;
+    // byte *shades;
+    //
+    // x <<= crispy->hires;
+    // y <<= crispy->hires;
+    // height <<= crispy->hires;
+    //
+    // shades = colormaps + 9 * 256 + shade * 2 * 256;
+    // dest = I_VideoBuffer + y * SCREENWIDTH + x;
+    // while (height--)
+    // {
+    //     if (crispy->hires)
+    //         *(dest + 1) = *(shades + *dest);
+    //     *(dest) = *(shades + *dest);
+    //     dest += SCREENWIDTH;
+    // }
 }
 
 //---------------------------------------------------------------------------
@@ -436,88 +361,9 @@ static void ShadeChain(void)
 
 //---------------------------------------------------------------------------
 //
-// PROC DrawSoundInfo
-//
-// Displays sound debugging information.
-//
-//---------------------------------------------------------------------------
-
-static void DrawSoundInfo(void)
-{
-    int i;
-    SoundInfo_t s;
-    ChanInfo_t *c;
-    char text[32];
-    int x;
-    int y;
-    int xPos[7] = { 1, 75, 112, 156, 200, 230, 260 };
-
-    if (leveltime & 16)
-    {
-        MN_DrTextA(DEH_String("*** SOUND DEBUG INFO ***"), xPos[0], 20);
-    }
-    S_GetChannelInfo(&s);
-    if (s.channelCount == 0)
-    {
-        return;
-    }
-    x = 0;
-    MN_DrTextA(DEH_String("NAME"), xPos[x++], 30);
-    MN_DrTextA(DEH_String("MO.T"), xPos[x++], 30);
-    MN_DrTextA(DEH_String("MO.X"), xPos[x++], 30);
-    MN_DrTextA(DEH_String("MO.Y"), xPos[x++], 30);
-    MN_DrTextA(DEH_String("ID"), xPos[x++], 30);
-    MN_DrTextA(DEH_String("PRI"), xPos[x++], 30);
-    MN_DrTextA(DEH_String("DIST"), xPos[x++], 30);
-    for (i = 0; i < s.channelCount; i++)
-    {
-        c = &s.chan[i];
-        x = 0;
-        y = 40 + i * 10;
-        if (c->mo == NULL)
-        {                       // Channel is unused
-            MN_DrTextA(DEH_String("------"), xPos[0], y);
-            continue;
-        }
-        M_snprintf(text, sizeof(text), "%s", c->name);
-        M_ForceUppercase(text);
-        MN_DrTextA(text, xPos[x++], y);
-        M_snprintf(text, sizeof(text), "%d", c->mo->type);
-        MN_DrTextA(text, xPos[x++], y);
-        M_snprintf(text, sizeof(text), "%d", c->mo->x >> FRACBITS);
-        MN_DrTextA(text, xPos[x++], y);
-        M_snprintf(text, sizeof(text), "%d", c->mo->y >> FRACBITS);
-        MN_DrTextA(text, xPos[x++], y);
-        M_snprintf(text, sizeof(text), "%d", c->id);
-        MN_DrTextA(text, xPos[x++], y);
-        M_snprintf(text, sizeof(text), "%d", c->priority);
-        MN_DrTextA(text, xPos[x++], y);
-        M_snprintf(text, sizeof(text), "%d", c->distance);
-        MN_DrTextA(text, xPos[x++], y);
-    }
-    UpdateState |= I_FULLSCRN;
-    BorderNeedRefresh = true;
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC SB_Drawer
 //
 //---------------------------------------------------------------------------
-
-char patcharti[][10] = {
-    {"ARTIBOX"},                // none
-    {"ARTIINVU"},               // invulnerability
-    {"ARTIINVS"},               // invisibility
-    {"ARTIPTN2"},               // health
-    {"ARTISPHL"},               // superhealth
-    {"ARTIPWBK"},               // tomeofpower
-    {"ARTITRCH"},               // torch
-    {"ARTIFBMB"},               // firebomb
-    {"ARTIEGGC"},               // egg
-    {"ARTISOAR"},               // fly
-    {"ARTIATLP"}                // teleport
-};
 
 char ammopic[][10] = {
     {"INAMGLD"},
@@ -528,7 +374,6 @@ char ammopic[][10] = {
     {"INAMLOB"}
 };
 
-int SB_state = -1;
 static int oldarti = 0;
 static int oldartiCount = 0;
 static int oldfrags = -9999;
@@ -539,22 +384,17 @@ static int oldhealth = -1;
 static int oldlife = -1;
 static int oldkeys = -1;
 
-int playerkeys = 0;
-
-extern dboolean automapactive;
-
-void SB_Drawer(void)
+void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 {
     int frame;
     static dboolean hitCenterFrame;
 
-    // Sound info debug stuff
-    if (DebugSound == true)
-    {
-        DrawSoundInfo();
-    }
+    if (refresh || fullmenu) SB_state = -1;
+
+    if (!statusbaron) return;
+
     CPlayer = &players[consoleplayer];
-    if (viewheight == SCREENHEIGHT && !automapactive)
+    if (viewheight == SCREENHEIGHT && !(automapmode & am_active))
     {
         DrawFullScreenStuff();
         SB_state = -1;
@@ -563,13 +403,11 @@ void SB_Drawer(void)
     {
         if (SB_state == -1)
         {
-            V_DrawPatch(0, 158, PatchBARBACK);
+            V_DrawNumPatch(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);
             if (players[consoleplayer].cheats & CF_GODMODE)
             {
-                V_DrawPatch(16, 167,
-                            W_CacheLumpName(DEH_String("GOD1"), PU_CACHE));
-                V_DrawPatch(287, 167,
-                            W_CacheLumpName(DEH_String("GOD2"), PU_CACHE));
+                V_DrawNamePatch(16, 167, 0, DEH_String("GOD1"), CR_DEFAULT, VPT_STRETCH);
+                V_DrawNamePatch(287, 167, 0, DEH_String("GOD2"), CR_DEFAULT, VPT_STRETCH);
             }
             oldhealth = -1;
         }
@@ -579,7 +417,7 @@ void SB_Drawer(void)
             if (SB_state != 0)
             {
                 // Main interface
-                V_DrawPatch(34, 160, PatchSTATBAR);
+                V_DrawNumPatch(34, 160, 0, LumpSTATBAR, CR_DEFAULT, VPT_STRETCH);
                 oldarti = 0;
                 oldammo = -1;
                 oldarmor = -1;
@@ -595,7 +433,7 @@ void SB_Drawer(void)
         {
             if (SB_state != 1)
             {
-                V_DrawPatch(34, 160, PatchINVBAR);
+                V_DrawNumPatch(34, 160, 0, LumpINVBAR, CR_DEFAULT, VPT_STRETCH);
             }
             DrawInventoryBar();
             SB_state = 1;
@@ -614,13 +452,11 @@ void SB_Drawer(void)
             {
                 if (hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawPatch(20, 17, W_CacheLumpNum(spinflylump + 15,
-                                                       PU_CACHE));
+                    V_DrawNumPatch(20, 17, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
                 }
                 else
                 {
-                    V_DrawPatch(20, 17, W_CacheLumpNum(spinflylump + frame,
-                                                       PU_CACHE));
+                    V_DrawNumPatch(20, 17, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
                     hitCenterFrame = false;
                 }
             }
@@ -628,24 +464,22 @@ void SB_Drawer(void)
             {
                 if (!hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawPatch(20, 17, W_CacheLumpNum(spinflylump + frame,
-                                                       PU_CACHE));
+                    V_DrawNumPatch(20, 17, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
                     hitCenterFrame = false;
                 }
                 else
                 {
-                    V_DrawPatch(20, 17, W_CacheLumpNum(spinflylump + 15,
-                                                       PU_CACHE));
+                    V_DrawNumPatch(20, 17, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
                     hitCenterFrame = true;
                 }
             }
             BorderTopRefresh = true;
-            UpdateState |= I_MESSAGES;
+            // UpdateState |= I_MESSAGES;
         }
         else
         {
             BorderTopRefresh = true;
-            UpdateState |= I_MESSAGES;
+            // UpdateState |= I_MESSAGES;
         }
     }
 
@@ -655,69 +489,57 @@ void SB_Drawer(void)
             || !(CPlayer->powers[pw_weaponlevel2] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawPatch(300, 17,
-                        W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
+            V_DrawNumPatch(300, 17, 0, spinbooklump + frame, CR_DEFAULT, VPT_STRETCH);
             BorderTopRefresh = true;
-            UpdateState |= I_MESSAGES;
+            // UpdateState |= I_MESSAGES;
         }
         else
         {
             BorderTopRefresh = true;
-            UpdateState |= I_MESSAGES;
+            // UpdateState |= I_MESSAGES;
         }
     }
-/*
-		if(CPlayer->powers[pw_weaponlevel2] > BLINKTHRESHOLD
-			|| (CPlayer->powers[pw_weaponlevel2]&8))
-		{
-			V_DrawPatch(291, 0, W_CacheLumpName("ARTIPWBK", PU_CACHE));
-		}
-		else
-		{
-			BorderTopRefresh = true;
-		}
-	}
-*/
 }
 
 // sets the new palette based upon current values of player->damagecount
 // and player->bonuscount
 void SB_PaletteFlash(void)
 {
-    static int sb_palette = 0;
-    int palette;
-    byte *pal;
-
-    CPlayer = &players[consoleplayer];
-
-    if (CPlayer->damagecount)
-    {
-        palette = (CPlayer->damagecount + 7) >> 3;
-        if (palette >= NUMREDPALS)
-        {
-            palette = NUMREDPALS - 1;
-        }
-        palette += STARTREDPALS;
-    }
-    else if (CPlayer->bonuscount)
-    {
-        palette = (CPlayer->bonuscount + 7) >> 3;
-        if (palette >= NUMBONUSPALS)
-        {
-            palette = NUMBONUSPALS - 1;
-        }
-        palette += STARTBONUSPALS;
-    }
-    else
-    {
-        palette = 0;
-    }
-    if (palette != sb_palette)
-    {
-        sb_palette = palette;
-        pal = (byte *) W_CacheLumpNum(playpalette, PU_CACHE) + palette * 768;
-        I_SetPalette(pal);
-    }
+    // HERETIC_TODO: SB_PaletteFlash
+    // static int sb_palette = 0;
+    // int palette;
+    // byte *pal;
+    //
+    // CPlayer = &players[consoleplayer];
+    //
+    // if (CPlayer->damagecount)
+    // {
+    //     palette = (CPlayer->damagecount + 7) >> 3;
+    //     if (palette >= NUMREDPALS)
+    //     {
+    //         palette = NUMREDPALS - 1;
+    //     }
+    //     palette += STARTREDPALS;
+    // }
+    // else if (CPlayer->bonuscount)
+    // {
+    //     palette = (CPlayer->bonuscount + 7) >> 3;
+    //     if (palette >= NUMBONUSPALS)
+    //     {
+    //         palette = NUMBONUSPALS - 1;
+    //     }
+    //     palette += STARTBONUSPALS;
+    // }
+    // else
+    // {
+    //     palette = 0;
+    // }
+    // if (palette != sb_palette)
+    // {
+    //     sb_palette = palette;
+    //     pal = (byte *) W_CacheLumpNum(playpalette, PU_CACHE) + palette * 768;
+    //     I_SetPalette(pal);
+    // }
 }
 
 //---------------------------------------------------------------------------
@@ -731,8 +553,8 @@ void DrawCommonBar(void)
     int chainY;
     int healthPos;
 
-    V_DrawPatch(0, 148, PatchLTFCTOP);
-    V_DrawPatch(290, 148, PatchRTFCTOP);
+    V_DrawNumPatch(0,  148, 0, LumpLTFCTOP, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNumPatch(290,  148, 0, LumpRTFCTOP, CR_DEFAULT, VPT_STRETCH);
 
     if (oldhealth != HealthMarker)
     {
@@ -749,13 +571,13 @@ void DrawCommonBar(void)
         healthPos = (healthPos * 256) / 100;
         chainY =
             (HealthMarker == CPlayer->mo->health) ? 191 : 191 + ChainWiggle;
-        V_DrawPatch(0, 190, PatchCHAINBACK);
-        V_DrawPatch(2 + (healthPos % 17), chainY, PatchCHAIN);
-        V_DrawPatch(17 + healthPos, chainY, PatchLIFEGEM);
-        V_DrawPatch(0, 190, PatchLTFACE);
-        V_DrawPatch(276, 190, PatchRTFACE);
+        V_DrawNumPatch(0,  190, 0, LumpCHAINBACK, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(2 + (healthPos % 17),  chainY, 0, LumpCHAIN, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(17 + healthPos,  chainY, 0, LumpLIFEGEM, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(0,  190, 0, LumpLTFACE, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(276,  190, 0, LumpRTFACE, CR_DEFAULT, VPT_STRETCH);
         ShadeChain();
-        UpdateState |= I_STATBAR;
+        // UpdateState |= I_STATBAR;
     }
 }
 
@@ -773,29 +595,30 @@ void DrawMainBar(void)
     // Ready artifact
     if (ArtifactFlash)
     {
-        V_DrawPatch(180, 161, PatchBLACKSQ);
+        V_DrawNumPatch(180,  161, 0, LumpBLACKSQ, CR_DEFAULT, VPT_STRETCH);
 
         temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
 
-        V_DrawPatch(182, 161, W_CacheLumpNum(temp, PU_CACHE));
+        V_DrawNumPatch(182, 161, 0, temp, CR_DEFAULT, VPT_STRETCH);
         ArtifactFlash--;
         oldarti = -1;           // so that the correct artifact fills in after the flash
-        UpdateState |= I_STATBAR;
+        // UpdateState |= I_STATBAR;
     }
     else if (oldarti != CPlayer->readyArtifact
              || oldartiCount != CPlayer->inventory[inv_ptr].count)
     {
-        V_DrawPatch(180, 161, PatchBLACKSQ);
+        V_DrawNumPatch(180,  161, 0, LumpBLACKSQ, CR_DEFAULT, VPT_STRETCH);
         if (CPlayer->readyArtifact > 0)
         {
-            V_DrawPatch(179, 160,
-                        W_CacheLumpName(DEH_String(patcharti[CPlayer->readyArtifact]),
-                                        PU_CACHE));
+            V_DrawNumPatch(
+              179, 160, 0, lumparti[CPlayer->readyArtifact], CR_DEFAULT, VPT_STRETCH
+            );
+
             DrSmallNumber(CPlayer->inventory[inv_ptr].count, 201, 182);
         }
         oldarti = CPlayer->readyArtifact;
         oldartiCount = CPlayer->inventory[inv_ptr].count;
-        UpdateState |= I_STATBAR;
+        // UpdateState |= I_STATBAR;
     }
 
     // Frags
@@ -808,10 +631,10 @@ void DrawMainBar(void)
         }
         if (temp != oldfrags)
         {
-            V_DrawPatch(57, 171, PatchARMCLEAR);
+            V_DrawNumPatch(57,  171, 0, LumpARMCLEAR, CR_DEFAULT, VPT_STRETCH);
             DrINumber(temp, 61, 170);
             oldfrags = temp;
-            UpdateState |= I_STATBAR;
+            // UpdateState |= I_STATBAR;
         }
     }
     else
@@ -828,54 +651,54 @@ void DrawMainBar(void)
         if (oldlife != temp)
         {
             oldlife = temp;
-            V_DrawPatch(57, 171, PatchARMCLEAR);
+            V_DrawNumPatch(57,  171, 0, LumpARMCLEAR, CR_DEFAULT, VPT_STRETCH);
             DrINumber(temp, 61, 170);
-            UpdateState |= I_STATBAR;
+            // UpdateState |= I_STATBAR;
         }
     }
 
     // Keys
     if (oldkeys != playerkeys)
     {
-        if (CPlayer->keys[key_yellow])
+        if (CPlayer->cards[key_yellow])
         {
-            V_DrawPatch(153, 164, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
+            V_DrawNamePatch(153, 164, 0, DEH_String("ykeyicon"), CR_DEFAULT, VPT_STRETCH);
         }
-        if (CPlayer->keys[key_green])
+        if (CPlayer->cards[key_green])
         {
-            V_DrawPatch(153, 172, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
+            V_DrawNamePatch(153, 172, 0, DEH_String("gkeyicon"), CR_DEFAULT, VPT_STRETCH);
         }
-        if (CPlayer->keys[key_blue])
+        if (CPlayer->cards[key_blue])
         {
-            V_DrawPatch(153, 180, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
+            V_DrawNamePatch(153, 180, 0, DEH_String("bkeyicon"), CR_DEFAULT, VPT_STRETCH);
         }
         oldkeys = playerkeys;
-        UpdateState |= I_STATBAR;
+        // UpdateState |= I_STATBAR;
     }
     // Ammo
     temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
     if (oldammo != temp || oldweapon != CPlayer->readyweapon)
     {
-        V_DrawPatch(108, 161, PatchBLACKSQ);
+        V_DrawNumPatch(108,  161, 0, LumpBLACKSQ, CR_DEFAULT, VPT_STRETCH);
         if (temp && CPlayer->readyweapon > 0 && CPlayer->readyweapon < 7)
         {
             DrINumber(temp, 109, 162);
-            V_DrawPatch(111, 172,
-                        W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
-                                        PU_CACHE));
+            V_DrawNamePatch(
+              111, 172, 0, DEH_String(ammopic[CPlayer->readyweapon - 1]), CR_DEFAULT, VPT_STRETCH
+            );
         }
         oldammo = temp;
         oldweapon = CPlayer->readyweapon;
-        UpdateState |= I_STATBAR;
+        // UpdateState |= I_STATBAR;
     }
 
     // Armor
     if (oldarmor != CPlayer->armorpoints)
     {
-        V_DrawPatch(224, 171, PatchARMCLEAR);
+        V_DrawNumPatch(224,  171, 0, LumpARMCLEAR, CR_DEFAULT, VPT_STRETCH);
         DrINumber(CPlayer->armorpoints, 228, 170);
         oldarmor = CPlayer->armorpoints;
-        UpdateState |= I_STATBAR;
+        // UpdateState |= I_STATBAR;
     }
 }
 
@@ -887,46 +710,47 @@ void DrawMainBar(void)
 
 void DrawInventoryBar(void)
 {
-    const char *patch;
     int i;
     int x;
+    int lump;
 
     x = inv_ptr - curpos;
-    UpdateState |= I_STATBAR;
-    V_DrawPatch(34, 160, PatchINVBAR);
+    // UpdateState |= I_STATBAR;
+    V_DrawNumPatch(34,  160, 0, LumpINVBAR, CR_DEFAULT, VPT_STRETCH);
     for (i = 0; i < 7; i++)
     {
-        //V_DrawPatch(50+i*31, 160, W_CacheLumpName("ARTIBOX", PU_CACHE));
         if (CPlayer->inventorySlotNum > x + i
             && CPlayer->inventory[x + i].type != arti_none)
         {
-            patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
-
-            V_DrawPatch(50 + i * 31, 160, W_CacheLumpName(patch, PU_CACHE));
+            V_DrawNumPatch(
+              50 + i * 31, 160, 0,
+              lumparti[CPlayer->inventory[x + i].type], CR_DEFAULT, VPT_STRETCH
+            );
             DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31, 182);
         }
     }
-    V_DrawPatch(50 + curpos * 31, 189, PatchSELECTBOX);
+    V_DrawNumPatch(50 + curpos * 31,  189, 0, LumpSELECTBOX, CR_DEFAULT, VPT_STRETCH);
     if (x != 0)
     {
-        V_DrawPatch(38, 159, !(leveltime & 4) ? PatchINVLFGEM1 :
-                    PatchINVLFGEM2);
+        lump = !(leveltime & 4) ? LumpINVLFGEM1 : LumpINVLFGEM2;
+        V_DrawNumPatch(38, 159, 0, lump, CR_DEFAULT, VPT_STRETCH);
     }
     if (CPlayer->inventorySlotNum - x > 7)
     {
-        V_DrawPatch(269, 159, !(leveltime & 4) ?
-                    PatchINVRTGEM1 : PatchINVRTGEM2);
+        lump = !(leveltime & 4) ? LumpINVRTGEM1 : LumpINVRTGEM2;
+        V_DrawNumPatch(269, 159, 0, lump, CR_DEFAULT, VPT_STRETCH);
     }
 }
 
 void DrawFullScreenStuff(void)
 {
-    const char *patch;
+    const char *name;
+    int lump;
     int i;
     int x;
     int temp;
 
-    UpdateState |= I_FULLSCRN;
+    // UpdateState |= I_FULLSCRN;
     if (CPlayer->mo->health > 0)
     {
         DrBNumber(CPlayer->mo->health, 5, 180);
@@ -951,9 +775,9 @@ void DrawFullScreenStuff(void)
     {
         if (CPlayer->readyArtifact > 0)
         {
-            patch = DEH_String(patcharti[CPlayer->readyArtifact]);
-            V_DrawTLPatch(286, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
-            V_DrawPatch(286, 170, W_CacheLumpName(patch, PU_CACHE));
+            lump = lumparti[CPlayer->readyArtifact];
+            V_DrawTLNamePatch(286, 170, DEH_String("ARTIBOX"));
+            V_DrawNumPatch(286, 170, 0, lump, CR_DEFAULT, VPT_STRETCH);
             DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307, 192);
         }
     }
@@ -962,28 +786,25 @@ void DrawFullScreenStuff(void)
         x = inv_ptr - curpos;
         for (i = 0; i < 7; i++)
         {
-            V_DrawTLPatch(50 + i * 31, 168,
-                          W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+            V_DrawTLNamePatch(50 + i * 31, 168, DEH_String("ARTIBOX"));
             if (CPlayer->inventorySlotNum > x + i
                 && CPlayer->inventory[x + i].type != arti_none)
             {
-                patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
-                V_DrawPatch(50 + i * 31, 168,
-                            W_CacheLumpName(patch, PU_CACHE));
-                DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
-                              190);
+                lump = lumparti[CPlayer->inventory[x + i].type];
+                V_DrawNumPatch(50 + i * 31, 168, 0, lump, CR_DEFAULT, VPT_STRETCH);
+                DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31, 190);
             }
         }
-        V_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
+        V_DrawNumPatch(50 + curpos * 31,  197, 0, LumpSELECTBOX, CR_DEFAULT, VPT_STRETCH);
         if (x != 0)
         {
-            V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
-                        PatchINVLFGEM2);
+            lump = !(leveltime & 4) ? LumpINVLFGEM1 : LumpINVLFGEM2;
+            V_DrawNumPatch(38, 167, 0, lump, CR_DEFAULT, VPT_STRETCH);
         }
         if (CPlayer->inventorySlotNum - x > 7)
         {
-            V_DrawPatch(269, 167, !(leveltime & 4) ?
-                        PatchINVRTGEM1 : PatchINVRTGEM2);
+            lump = !(leveltime & 4) ? LumpINVRTGEM1 : LumpINVRTGEM2;
+            V_DrawNumPatch(269, 167, 0, lump, CR_DEFAULT, VPT_STRETCH);
         }
     }
 }
@@ -994,330 +815,26 @@ void DrawFullScreenStuff(void)
 //
 //--------------------------------------------------------------------------
 
-dboolean SB_Responder(event_t * event)
+dboolean SB_Responder(event_t * ev)
 {
-    if (event->type == ev_keydown)
-    {
-        if (HandleCheats(event->data1))
-        {                       // Need to eat the key
-            return (true);
-        }
-    }
-    return (false);
-}
-
-//--------------------------------------------------------------------------
-//
-// FUNC HandleCheats
-//
-// Returns true if the caller should eat the key.
-//
-//--------------------------------------------------------------------------
-
-static dboolean HandleCheats(byte key)
-{
-    int i;
-    dboolean eat;
-
-    /* [crispy] check for nightmare/netgame per cheat, to allow "harmless" cheats
-    if (netgame || gameskill == sk_nightmare)
-    {                           // Can't cheat in a net-game, or in nightmare mode
-        return (false);
-    }
-    */
-    if (players[consoleplayer].health <= 0)
-    {                           // Dead players can't cheat
-        return (false);
-    }
-    eat = false;
-    for (i = 0; Cheats[i].func != NULL; i++)
-    {
-        if (cht_CheckCheat(Cheats[i].seq, key))
-        {
-            Cheats[i].func(&players[consoleplayer], &Cheats[i]);
-            S_StartSound(NULL, sfx_dorcls);
-        }
-    }
-    return (eat);
-}
-
-//--------------------------------------------------------------------------
-//
-// CHEAT FUNCTIONS
-//
-//--------------------------------------------------------------------------
-
-#define NIGHTMARE_NETGAME_CHECK if(netgame||gameskill==sk_nightmare){return;}
-#define NETGAME_CHECK if(netgame){return;}
-
-static void CheatGodFunc(player_t * player, Cheat_t * cheat)
-{
-    NIGHTMARE_NETGAME_CHECK;
-    player->cheats ^= CF_GODMODE;
-    if (player->cheats & CF_GODMODE)
-    {
-        P_SetMessage(player, DEH_String(TXT_CHEATGODON), false);
-    }
-    else
-    {
-        P_SetMessage(player, DEH_String(TXT_CHEATGODOFF), false);
-    }
-    SB_state = -1;
-}
-
-static void CheatNoClipFunc(player_t * player, Cheat_t * cheat)
-{
-    NIGHTMARE_NETGAME_CHECK;
-    player->cheats ^= CF_NOCLIP;
-    if (player->cheats & CF_NOCLIP)
-    {
-        P_SetMessage(player, DEH_String(TXT_CHEATNOCLIPON), false);
-    }
-    else
-    {
-        P_SetMessage(player, DEH_String(TXT_CHEATNOCLIPOFF), false);
-    }
-}
-
-static void CheatWeaponsFunc(player_t * player, Cheat_t * cheat)
-{
-    int i;
-    //extern dboolean *WeaponInShareware;
-
-    NIGHTMARE_NETGAME_CHECK;
-    player->armorpoints = 200;
-    player->armortype = 2;
-    if (!player->backpack)
-    {
-        for (i = 0; i < NUMAMMO; i++)
-        {
-            player->maxammo[i] *= 2;
-        }
-        player->backpack = true;
-    }
-    for (i = 0; i < NUMWEAPONS - 1; i++)
-    {
-        player->weaponowned[i] = true;
-    }
-    if (gamemode == shareware)
-    {
-        player->weaponowned[wp_skullrod] = false;
-        player->weaponowned[wp_phoenixrod] = false;
-        player->weaponowned[wp_mace] = false;
-    }
-    for (i = 0; i < NUMAMMO; i++)
-    {
-        player->ammo[i] = player->maxammo[i];
-    }
-    P_SetMessage(player, DEH_String(TXT_CHEATWEAPONS), false);
-}
-
-static void CheatPowerFunc(player_t * player, Cheat_t * cheat)
-{
-    NIGHTMARE_NETGAME_CHECK;
-    if (player->powers[pw_weaponlevel2])
-    {
-        player->powers[pw_weaponlevel2] = 0;
-        P_SetMessage(player, DEH_String(TXT_CHEATPOWEROFF), false);
-    }
-    else
-    {
-        P_UseArtifact(player, arti_tomeofpower);
-        P_SetMessage(player, DEH_String(TXT_CHEATPOWERON), false);
-    }
-}
-
-static void CheatHealthFunc(player_t * player, Cheat_t * cheat)
-{
-    NIGHTMARE_NETGAME_CHECK;
-    if (player->chickenTics)
-    {
-        player->health = player->mo->health = MAXCHICKENHEALTH;
-    }
-    else
-    {
-        player->health = player->mo->health = MAXHEALTH;
-    }
-    P_SetMessage(player, DEH_String(TXT_CHEATHEALTH), false);
-}
-
-static void CheatKeysFunc(player_t * player, Cheat_t * cheat)
-{
-    NIGHTMARE_NETGAME_CHECK;
-    player->keys[key_yellow] = true;
-    player->keys[key_green] = true;
-    player->keys[key_blue] = true;
-    playerkeys = 7;             // Key refresh flags
-    P_SetMessage(player, DEH_String(TXT_CHEATKEYS), false);
-}
-
-static void CheatSoundFunc(player_t * player, Cheat_t * cheat)
-{
-    NETGAME_CHECK;
-    DebugSound = !DebugSound;
-    if (DebugSound)
-    {
-        P_SetMessage(player, DEH_String(TXT_CHEATSOUNDON), false);
-    }
-    else
-    {
-        P_SetMessage(player, DEH_String(TXT_CHEATSOUNDOFF), false);
-    }
-}
-
-static void CheatTickerFunc(player_t * player, Cheat_t * cheat)
-{
-    DisplayTicker = !DisplayTicker;
-    if (DisplayTicker)
-    {
-        P_SetMessage(player, DEH_String(TXT_CHEATTICKERON), false);
-    }
-    else
-    {
-        P_SetMessage(player, DEH_String(TXT_CHEATTICKEROFF), false);
-    }
-
-    I_DisplayFPSDots(DisplayTicker);
-}
-
-static void CheatArtifact1Func(player_t * player, Cheat_t * cheat)
-{
-    NIGHTMARE_NETGAME_CHECK;
-    P_SetMessage(player, DEH_String(TXT_CHEATARTIFACTS1), false);
-}
-
-static void CheatArtifact2Func(player_t * player, Cheat_t * cheat)
-{
-    NIGHTMARE_NETGAME_CHECK;
-    P_SetMessage(player, DEH_String(TXT_CHEATARTIFACTS2), false);
-}
-
-static void CheatArtifact3Func(player_t * player, Cheat_t * cheat)
-{
-    char args[2];
-    int i;
-    int j;
-    int type;
-    int count;
-
-    NIGHTMARE_NETGAME_CHECK;
-    cht_GetParam(cheat->seq, args);
-    type = args[0] - 'a' + 1;
-    count = args[1] - '0';
-    if (type == 26 && count == 0)
-    {                           // All artifacts
-        for (i = arti_none + 1; i < NUMARTIFACTS; i++)
-        {
-            if (gamemode == shareware
-             && (i == arti_superhealth || i == arti_teleport))
-            {
-                continue;
-            }
-            for (j = 0; j < 16; j++)
-            {
-                P_GiveArtifact(player, i, NULL);
-            }
-        }
-        P_SetMessage(player, DEH_String(TXT_CHEATARTIFACTS3), false);
-    }
-    else if (type > arti_none && type < NUMARTIFACTS
-             && count > 0 && count < 10)
-    {
-        if (gamemode == shareware
-         && (type == arti_superhealth || type == arti_teleport))
-        {
-            P_SetMessage(player, DEH_String(TXT_CHEATARTIFACTSFAIL), false);
-            return;
-        }
-        for (i = 0; i < count; i++)
-        {
-            P_GiveArtifact(player, type, NULL);
-        }
-        P_SetMessage(player, DEH_String(TXT_CHEATARTIFACTS3), false);
-    }
-    else
-    {                           // Bad input
-        P_SetMessage(player, DEH_String(TXT_CHEATARTIFACTSFAIL), false);
-    }
-}
-
-static void CheatWarpFunc(player_t * player, Cheat_t * cheat)
-{
-    char args[2];
-    int episode;
-    int map;
-
-    NETGAME_CHECK;
-    cht_GetParam(cheat->seq, args);
-
-    episode = args[0] - '0';
-    map = args[1] - '0';
-    if (D_ValidEpisodeMap(heretic, gamemode, episode, map))
-    {
-        G_DeferedInitNew(gameskill, episode, map);
-        P_SetMessage(player, DEH_String(TXT_CHEATWARP), false);
-    }
-}
-
-static void CheatChickenFunc(player_t * player, Cheat_t * cheat)
-{
-    extern dboolean P_UndoPlayerChicken(player_t * player);
-
-    NIGHTMARE_NETGAME_CHECK;
-    if (player->chickenTics)
-    {
-        if (P_UndoPlayerChicken(player))
-        {
-            P_SetMessage(player, DEH_String(TXT_CHEATCHICKENOFF), false);
-        }
-    }
-    else if (P_ChickenMorphPlayer(player))
-    {
-        P_SetMessage(player, DEH_String(TXT_CHEATCHICKENON), false);
-    }
-}
-
-// [crispy] "Cheat" to show FPS
-static void CheatShowFpsFunc(player_t* player, Cheat_t* cheat)
-{
-    player->cheats ^= CF_SHOWFPS;
-    if (player->cheats & CF_SHOWFPS)
-    {
-        P_SetMessage(player, DEH_String(TXT_SHOWFPSON), false);
-    }
-    else
-    {
-        P_SetMessage(player, DEH_String(TXT_SHOWFPSOFF), false);
-    }
-}
-
-static void CheatMassacreFunc(player_t * player, Cheat_t * cheat)
-{
-    NIGHTMARE_NETGAME_CHECK;
-    P_Massacre();
-    P_SetMessage(player, DEH_String(TXT_CHEATMASSACRE), false);
-}
-
-static void CheatIDKFAFunc(player_t * player, Cheat_t * cheat)
-{
-    int i;
-
-    NIGHTMARE_NETGAME_CHECK;
-    if (player->chickenTics)
-    {
-        return;
-    }
-    for (i = 1; i < 8; i++)
-    {
-        player->weaponowned[i] = false;
-    }
-    player->pendingweapon = wp_staff;
-    P_SetMessage(player, DEH_String(TXT_CHEATIDKFA), true);
-}
-
-static void CheatIDDQDFunc(player_t * player, Cheat_t * cheat)
-{
-    NIGHTMARE_NETGAME_CHECK;
-    P_DamageMobj(player->mo, NULL, player->mo, 10000);
-    P_SetMessage(player, DEH_String(TXT_CHEATIDDQD), true);
+  // Note to self: doom logic
+  // // Filter automap on/off.
+  // if (ev->type == ev_keyup && (ev->data1 & 0xffff0000) == AM_MSGHEADER)
+  //   {
+  //     switch(ev->data1)
+  //       {
+  //       case AM_MSGENTERED:
+  //         st_gamestate = AutomapState;
+  //         st_firsttime = true;
+  //         break;
+  //
+  //       case AM_MSGEXITED:
+  //         st_gamestate = FirstPersonState;
+  //         break;
+  //       }
+  //   }
+  // else  // if a user keypress...
+    if (ev->type == ev_keydown)       // Try cheat responder in m_cheat.c
+      return M_FindCheats(ev->data1); // killough 4/17/98, 5/2/98
+  return false;
 }

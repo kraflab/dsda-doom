@@ -901,7 +901,7 @@ void ST_SetResolution(void)
 
 void ST_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 {
-  if (heretic) return SB_Drawer();
+  if (heretic) return SB_Drawer(statusbaron, refresh, fullmenu);
 
   /* cph - let status bar on be controlled
    * completely by the call from D_Display
