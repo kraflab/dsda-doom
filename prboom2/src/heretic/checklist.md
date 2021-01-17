@@ -20,7 +20,7 @@
 - [x] dstrings.h 247
 - [ ] f_finale.c 444
 - [x] g_game.c 2356
-- [ ] in_lude.c 1129
+- [x] in_lude.c 1129
 - [x] info.c 5601
 - [x] info.h 1579
 - [x] m_random.c 77
@@ -33,7 +33,7 @@
 - [x] p_floor.c 466
 - [x] p_inter.c 1502
 - [x] p_lights.c 275
-- [ ] p_local.h 282
+- [x] p_local.h 282
 - [x] p_map.c 1714
 - [x] p_maputl.c 799
 - [x] p_mobj.c 1665
@@ -58,8 +58,8 @@
 - [ ] r_things.c 1075
 - [ ] s_sound.c 616
 - [x] s_sound.h 39
-- [ ] sb_bar.c 1333
+- [x] sb_bar.c 1333
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 19256, MERGED: 27958, PERCENT: 59%
+LEFT: 16745, MERGED: 30469, PERCENT: 64%
