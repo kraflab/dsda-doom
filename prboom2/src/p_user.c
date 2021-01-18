@@ -640,7 +640,10 @@ void P_PlayerThink (player_t* player)
 
       if (
         newweapon == g_wp_fist && player->weaponowned[g_wp_chainsaw]
-        && (player->readyweapon != g_wp_chainsaw || !player->powers[pw_strength])
+        && (
+          player->readyweapon != g_wp_chainsaw ||
+          (!heretic && !player->powers[pw_strength])
+        )
       )
         newweapon = g_wp_chainsaw;
 
