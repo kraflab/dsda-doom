@@ -1189,6 +1189,7 @@ void A_StaffAttackPL1(player_t * player, pspdef_t * psp)
         player->mo->angle = R_PointToAngle2(player->mo->x,
                                             player->mo->y, linetarget->x,
                                             linetarget->y);
+        R_SmoothPlaying_Reset(player); // e6y
     }
 }
 
@@ -1212,6 +1213,7 @@ void A_StaffAttackPL2(player_t * player, pspdef_t * psp)
         player->mo->angle = R_PointToAngle2(player->mo->x,
                                             player->mo->y, linetarget->x,
                                             linetarget->y);
+        R_SmoothPlaying_Reset(player); // e6y
     }
 }
 
@@ -1923,6 +1925,7 @@ void A_GauntletAttack(player_t * player, pspdef_t * psp)
             player->mo->angle += ANG90 / 20;
     }
     player->mo->flags |= MF_JUSTATTACKED;
+    R_SmoothPlaying_Reset(player); // e6y
 }
 
 void P_RepositionMace(mobj_t * mo)

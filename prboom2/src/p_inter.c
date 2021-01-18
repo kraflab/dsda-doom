@@ -1766,6 +1766,8 @@ void P_TouchWhirlwind(mobj_t * target)
     {
         P_DamageMobj(target, NULL, NULL, 3);
     }
+
+    if (target->player) R_SmoothPlaying_Reset(target->player); // e6y
 }
 
 dboolean P_ChickenMorphPlayer(player_t * player)
