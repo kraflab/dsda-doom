@@ -4089,7 +4089,7 @@ void A_VolcanoBlast(mobj_t * volcano)
     for (i = 0; i < count; i++)
     {
         blast = P_SpawnMobj(volcano->x, volcano->y, volcano->z + 44 * FRACUNIT, HERETIC_MT_VOLCANOBLAST);
-        blast->target = volcano;
+        P_SetTarget(&blast->target, volcano);
         angle = P_Random(pr_heretic) << 24;
         blast->angle = angle;
         angle >>= ANGLETOFINESHIFT;
@@ -4118,7 +4118,7 @@ void A_VolcBallImpact(mobj_t * ball)
     for (i = 0; i < 4; i++)
     {
         tiny = P_SpawnMobj(ball->x, ball->y, ball->z, HERETIC_MT_VOLCANOTBLAST);
-        tiny->target = ball;
+        P_SetTarget(&tiny->target, ball);
         angle = i * ANG90;
         tiny->angle = angle;
         angle >>= ANGLETOFINESHIFT;
