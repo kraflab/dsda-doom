@@ -1118,7 +1118,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
       target->special1.i = damage;
       if (target->type == HERETIC_MT_POD && source && source->type != HERETIC_MT_POD)
       {                       // Make sure players get frags for chain-reaction kills
-        target->target = source;
+        P_SetTarget(&target->target, source);
       }
       if (player && inflictor && !player->chickenTics)
       {                       // Check for flame death
@@ -1863,7 +1863,7 @@ dboolean P_ChickenMorph(mobj_t * actor)
     chicken->special2.i = moType;
     chicken->special1.i = CHICKENTICS + P_Random(pr_heretic);
     chicken->flags |= ghost;
-    chicken->target = target;
+    P_SetTarget(&chicken->target, target);
     chicken->angle = angle;
     return (true);
 }

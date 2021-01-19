@@ -1539,7 +1539,7 @@ void A_HeadAttack(mobj_t * actor)
         {
           S_StartSound(actor, heretic_sfx_hedat1);
         }
-        fire->target = baseFire->target;
+        P_SetTarget(&fire->target, baseFire->target);
         fire->angle = baseFire->angle;
         fire->momx = baseFire->momx;
         fire->momy = baseFire->momy;
@@ -3179,13 +3179,13 @@ dboolean P_UpdateChicken(mobj_t * actor, int tics)
         mo->angle = oldChicken.angle;
         mo->flags = oldChicken.flags;
         mo->health = oldChicken.health;
-        mo->target = oldChicken.target;
+        P_SetTarget(&mo->target, oldChicken.target);
         mo->special1.i = 5 * 35;  // Next try in 5 seconds
         mo->special2.i = moType;
         return (false);
     }
     mo->angle = oldChicken.angle;
-    mo->target = oldChicken.target;
+    P_SetTarget(&mo->target, oldChicken.target);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
     S_StartSound(fog, heretic_sfx_telept);
     return (true);
@@ -3252,7 +3252,7 @@ void A_Feathers(mobj_t * actor)
     {
         mo = P_SpawnMobj(actor->x, actor->y, actor->z + 20 * FRACUNIT,
                          HERETIC_MT_FEATHER);
-        mo->target = actor;
+        P_SetTarget(&mo->target, actor);
         mo->momx = P_SubRandom() << 8;
         mo->momy = P_SubRandom() << 8;
         mo->momz = FRACUNIT + (P_Random(pr_heretic) << 9);
@@ -3381,7 +3381,7 @@ void A_SorcererRise(mobj_t * actor)
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_SORCERER2);
     P_SetMobjState(mo, HERETIC_S_SOR2_RISE1);
     mo->angle = actor->angle;
-    mo->target = actor->target;
+    P_SetTarget(&mo->target, actor->target);
 }
 
 void P_DSparilTeleport(mobj_t * actor)
@@ -3714,7 +3714,7 @@ void A_MntrFloorFire(mobj_t * actor)
     mo = P_SpawnMobj(actor->x + (r2 << 10),
                      actor->y + (r1 << 10), ONFLOORZ,
                      HERETIC_MT_MNTRFX3);
-    mo->target = actor->target;
+    P_SetTarget(&mo->target, actor->target);
     mo->momx = 1;               // Force block checking
     P_CheckMissileSpawn(mo);
 }
@@ -3767,7 +3767,7 @@ void A_HeadIceImpact(mobj_t * ice)
     {
         shard = P_SpawnMobj(ice->x, ice->y, ice->z, HERETIC_MT_HEADFX2);
         angle = i * ANG45;
-        shard->target = ice->target;
+        P_SetTarget(&shard->target, ice->target);
         shard->angle = angle;
         angle >>= ANGLETOFINESHIFT;
         shard->momx = FixedMul(shard->info->speed, finecosine[angle]);
@@ -3948,7 +3948,7 @@ void A_PodPain(mobj_t * actor)
     {
         goo = P_SpawnMobj(actor->x, actor->y,
                           actor->z + 48 * FRACUNIT, HERETIC_MT_PODGOO);
-        goo->target = actor;
+        P_SetTarget(&goo->target, actor);
         goo->momx = P_SubRandom() << 9;
         goo->momy = P_SubRandom() << 9;
         goo->momz = FRACUNIT / 2 + (P_Random(pr_heretic) << 9);
@@ -4322,7 +4322,7 @@ dboolean Heretic_P_LookForMonsters(mobj_t * actor)
             continue;
         }
         // Found a target monster
-        actor->target = mo;
+        P_SetTarget(&actor->target, mo);
         return (true);
     }
     return (false);
@@ -4383,7 +4383,7 @@ dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
                 return (false);
             }
         }
-        actor->target = player->mo;
+        P_SetTarget(&actor->target, player->mo);
         return (true);
     }
     return (false);

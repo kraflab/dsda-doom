@@ -829,6 +829,8 @@ void P_PlayerThink (player_t* player)
 
 // heretic
 
+#include "p_tick.h"
+
 void P_PlayerNextArtifact(player_t * player);
 
 int P_GetPlayerNum(player_t * player)
@@ -1107,7 +1109,7 @@ dboolean P_UseArtifact(player_t * player, artitype_t arti)
                              player->mo->z -
                              15 * FRACUNIT * (player->mo->flags2 & 1),
                              HERETIC_MT_FIREBOMB);
-            mo->target = player->mo;
+            P_SetTarget(&mo->target, player->mo);
             break;
         case arti_egg:
             mo = player->mo;

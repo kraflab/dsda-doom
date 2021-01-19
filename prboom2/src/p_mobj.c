@@ -2173,7 +2173,7 @@ mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type, angle_t angle, fix
     {
         S_StartSound(mo, mo->info->seesound);
     }
-    mo->target = source;        // Originator
+    P_SetTarget(&mo->target, source); // Originator
     mo->angle = angle;
     angle >>= ANGLETOFINESHIFT;
     mo->momx = FixedMul(mo->info->speed, finecosine[angle]);
@@ -2298,7 +2298,7 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     {
         S_StartSound(th, th->info->seesound);
     }
-    th->target = source;
+    P_SetTarget(&th->target, source);
     th->angle = an;
     th->momx = FixedMul(th->info->speed, finecosine[an >> ANGLETOFINESHIFT]);
     th->momy = FixedMul(th->info->speed, finesine[an >> ANGLETOFINESHIFT]);
@@ -2319,7 +2319,7 @@ int P_HitFloor(mobj_t * thing)
         case FLOOR_WATER:
             P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SPLASHBASE);
             mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SPLASH);
-            mo->target = thing;
+            P_SetTarget(&mo->target, thing);
             mo->momx = P_SubRandom() << 8;
             mo->momy = P_SubRandom() << 8;
             mo->momz = 2 * FRACUNIT + (P_Random(pr_heretic) << 8);
@@ -2334,7 +2334,7 @@ int P_HitFloor(mobj_t * thing)
         case FLOOR_SLUDGE:
             P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SLUDGESPLASH);
             mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SLUDGECHUNK);
-            mo->target = thing;
+            P_SetTarget(&mo->target, thing);
             mo->momx = P_SubRandom() << 8;
             mo->momy = P_SubRandom() << 8;
             mo->momz = FRACUNIT + (P_Random(pr_heretic) << 8);
@@ -2449,7 +2449,7 @@ void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator)
     mobj_t *mo;
 
     mo = P_SpawnMobj(x, y, z, HERETIC_MT_BLOODSPLATTER);
-    mo->target = originator;
+    P_SetTarget(&mo->target, originator);
     mo->momx = P_SubRandom() << 9;
     mo->momy = P_SubRandom() << 9;
     mo->momz = FRACUNIT * 2;

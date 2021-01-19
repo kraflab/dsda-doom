@@ -1323,7 +1323,7 @@ void A_FireMacePL1B(player_t * player, pspdef_t * psp)
 
     ball->momz = 2 * FRACUNIT + ((player->lookdir) << (FRACBITS - 5));
     angle = pmo->angle;
-    ball->target = pmo;
+    P_SetTarget(&ball->target, pmo);
     ball->angle = angle;
     ball->z += (player->lookdir) << (FRACBITS - 4);
     angle >>= ANGLETOFINESHIFT;
@@ -1427,7 +1427,7 @@ void A_MaceBallImpact2(mobj_t * ball)
 
         tiny = P_SpawnMobj(ball->x, ball->y, ball->z, HERETIC_MT_MACEFX3);
         angle = ball->angle + ANG90;
-        tiny->target = ball->target;
+        P_SetTarget(&tiny->target, ball->target);
         tiny->angle = angle;
         angle >>= ANGLETOFINESHIFT;
         tiny->momx = (ball->momx >> 1) + FixedMul(ball->momz - FRACUNIT,
@@ -1439,7 +1439,7 @@ void A_MaceBallImpact2(mobj_t * ball)
 
         tiny = P_SpawnMobj(ball->x, ball->y, ball->z, HERETIC_MT_MACEFX3);
         angle = ball->angle - ANG90;
-        tiny->target = ball->target;
+        P_SetTarget(&tiny->target, ball->target);
         tiny->angle = angle;
         angle >>= ANGLETOFINESHIFT;
         tiny->momx = (ball->momx >> 1) + FixedMul(ball->momz - FRACUNIT,
@@ -1544,7 +1544,7 @@ void A_SpawnRippers(mobj_t * actor)
     {
         ripper = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_RIPPER);
         angle = i * ANG45;
-        ripper->target = actor->target;
+        P_SetTarget(&ripper->target, actor->target);
         ripper->angle = angle;
         angle >>= ANGLETOFINESHIFT;
         ripper->momx = FixedMul(ripper->info->speed, finecosine[angle]);
@@ -1718,7 +1718,7 @@ void A_SkullRodStorm(mobj_t * actor)
     x = actor->x + ((P_Random(pr_heretic) & 127) - 64) * FRACUNIT;
     y = actor->y + ((P_Random(pr_heretic) & 127) - 64) * FRACUNIT;
     mo = P_SpawnMobj(x, y, ONCEILINGZ, HERETIC_MT_RAINPLR1 + actor->special2.i);
-    mo->target = actor->target;
+    P_SetTarget(&mo->target, actor->target);
     mo->momx = 1;               // Force collision detection
     mo->momz = -mo->info->speed;
     mo->special2.i = actor->special2.i;     // Transfer player number
@@ -1820,7 +1820,7 @@ void A_FirePhoenixPL2(player_t * player, pspdef_t * psp)
     }
     slope = ((player->lookdir) << FRACBITS) / 173 + (FRACUNIT / 10);
     mo = P_SpawnMobj(x, y, z, HERETIC_MT_PHOENIXFX2);
-    mo->target = pmo;
+    P_SetTarget(&mo->target, pmo);
     mo->angle = angle;
     mo->momx = pmo->momx + FixedMul(mo->info->speed,
                                     finecosine[angle >> ANGLETOFINESHIFT]);
