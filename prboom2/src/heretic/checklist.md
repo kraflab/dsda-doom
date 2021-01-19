@@ -1,3 +1,23 @@
+### Heretic Support
+- [x] Load without crashing as pwad
+- [x] Merge engine behaviour
+- [ ] Reach 100% demo sync rate
+- [x] Add intermission
+- [x] Add status bar
+- [ ] Add finale
+- [ ] Add start screen
+- [ ] Support new graphics format (CREDITS)
+- [ ] Load without crashing as iwad
+- [ ] Support new keybinds
+- [ ] Fix menu visuals
+- [ ] Fix hud visuals
+- [ ] Support graphical player pitch
+- [ ] Integrate heretic sound system
+- [ ] Fix palette updates
+- [ ] Support ghosts
+- [ ] Support analysis
+- [ ] Support key frames
+
 ### Files in crispy src/heretic:
 
 - [ ] am_data.h 104
