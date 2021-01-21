@@ -1580,7 +1580,37 @@ dboolean set_compat_active = false;
 // current_setup_menu is a pointer to the current setup menu table.
 
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
-setup_menu_t* current_setup_menu; // points to current setup menu table
+static setup_menu_t* current_setup_menu; // points to current setup menu table
+
+// save the setup menu's itemon value in the S_END element's x coordinate
+
+static int M_GetSetupMenuItemOn (void)
+{
+  const setup_menu_t* menu = current_setup_menu;
+
+  if (menu)
+  {
+    while (!(menu->m_flags & S_END))
+      menu++;
+
+    return menu->m_x;
+  }
+
+  return 0;
+}
+
+static void M_SetSetupMenuItemOn (const int x)
+{
+  setup_menu_t* menu = current_setup_menu;
+
+  if (menu)
+  {
+    while (!(menu->m_flags & S_END))
+      menu++;
+
+    menu->m_x = x;
+  }
+}
 
 /////////////////////////////
 //
@@ -2536,7 +2566,7 @@ void M_KeyBindings(int choice)
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = keys_settings[0];
-  set_menu_itemon = 0;
+  set_menu_itemon = M_GetSetupMenuItemOn();
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -2652,7 +2682,7 @@ void M_Weapons(int choice)
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = weap_settings[0];
-  set_menu_itemon = 0;
+  set_menu_itemon = M_GetSetupMenuItemOn();
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -2773,7 +2803,7 @@ void M_StatusBar(int choice)
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = stat_settings[0];
-  set_menu_itemon = 0;
+  set_menu_itemon = M_GetSetupMenuItemOn();
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -2924,9 +2954,9 @@ void M_Automap(int choice)
   colorbox_active = false;
   default_verify = false;
   setup_gather = false;
-  set_menu_itemon = 0;
   mult_screens_index = 0;
   current_setup_menu = auto_settings[0];
+  set_menu_itemon = M_GetSetupMenuItemOn();
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -3079,7 +3109,7 @@ void M_Enemy(int choice)
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = enem_settings[0];
-  set_menu_itemon = 0;
+  set_menu_itemon = M_GetSetupMenuItemOn();
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -3459,7 +3489,7 @@ void M_General(int choice)
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = gen_settings[0];
-  set_menu_itemon = 0;
+  set_menu_itemon = M_GetSetupMenuItemOn();
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -3665,7 +3695,7 @@ void M_Compat(int choice)
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = comp_settings[0];
-  set_menu_itemon = 0;
+  set_menu_itemon = M_GetSetupMenuItemOn();
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -3785,7 +3815,7 @@ void M_Messages(int choice)
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = mess_settings[0];
-  set_menu_itemon = 0;
+  set_menu_itemon = M_GetSetupMenuItemOn();
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -3860,7 +3890,7 @@ void M_ChatStrings(int choice)
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = chat_settings[0];
-  set_menu_itemon = 0;
+  set_menu_itemon = M_GetSetupMenuItemOn();
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -5604,6 +5634,7 @@ dboolean M_Responder (event_t* ev) {
 
       if ((ch == key_menu_escape) || (ch == key_menu_backspace))
   {
+    M_SetSetupMenuItemOn(set_menu_itemon);
     if (ch == key_menu_escape) // Clear all menus
       M_ClearMenus();
     else // key_menu_backspace = return to Setup Menu
@@ -5648,8 +5679,9 @@ dboolean M_Responder (event_t* ev) {
     {
       ptr1->m_flags &= ~S_HILITE;
       mult_screens_index--;
+      M_SetSetupMenuItemOn(set_menu_itemon);
       current_setup_menu = ptr2->var.menu;
-      set_menu_itemon = 0;
+      set_menu_itemon = M_GetSetupMenuItemOn();
       print_warning_about_changes = false; // killough 10/98
       while (current_setup_menu[set_menu_itemon++].m_flags&S_SKIP);
       current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
@@ -5670,8 +5702,9 @@ dboolean M_Responder (event_t* ev) {
     {
       ptr1->m_flags &= ~S_HILITE;
       mult_screens_index++;
+      M_SetSetupMenuItemOn(set_menu_itemon);
       current_setup_menu = ptr2->var.menu;
-      set_menu_itemon = 0;
+      set_menu_itemon = M_GetSetupMenuItemOn();
       print_warning_about_changes = false; // killough 10/98
       while (current_setup_menu[set_menu_itemon++].m_flags&S_SKIP);
       current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
