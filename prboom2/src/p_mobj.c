@@ -931,6 +931,13 @@ static void P_NightmareRespawn(mobj_t* mobj)
   mo->angle = ANG45 * (mthing->angle/45);
   mo->index = mobj->index;
 
+  // "bug" in the respawn code for heretic
+  // the chicken's return type is stored in special2.i
+  // that value didn't exist in doom so is left uninitialized on respawn
+  // we have to set this to the MT zero value for heretic
+  if (mo->type == HERETIC_MT_CHICKEN)
+    mo->special2.i = HERETIC_MT_ZERO;
+
   if (mthing->options & MTF_AMBUSH)
     mo->flags |= MF_AMBUSH;
 
