@@ -252,7 +252,6 @@ static void P_XYMovement (mobj_t* mo)
     // to pass through walls.
     // CPhipps - compatibility optioned
 
-    // HERETIC_TODO: I assume third condition is false for cl 3 (not in heretic)
     if (xmove > MAXMOVE / 2 ||
         ymove > MAXMOVE / 2 ||
         (!comp[comp_moveblock] && (xmove < -MAXMOVE/2 || ymove < -MAXMOVE/2)))
@@ -337,7 +336,7 @@ static void P_XYMovement (mobj_t* mo)
                 mo->momz = -FRACUNIT;
                 return;
             }
-            else if (heretic || demo_compatibility ||  // killough
+            else if (demo_compatibility ||  // killough
                      mo->z > ceilingline->backsector->ceilingheight)
             {
               // Hack to prevent missiles exploding
@@ -396,7 +395,6 @@ static void P_XYMovement (mobj_t* mo)
       !player ||
       !(player->cmd.forwardmove | player->cmd.sidemove) ||
       (
-        !heretic && // HERETIC_TODO: can remove when compatibility set
         player->mo != mo &&
         compatibility_level >= lxdoom_1_compatibility
       )
@@ -455,7 +453,7 @@ static void P_XYMovement (mobj_t* mo)
      */
 
     //e6y
-    if (heretic || (compatibility_level <= boom_201_compatibility && !prboom_comp[PC_PRBOOM_FRICTION].state))
+    if (compatibility_level <= boom_201_compatibility && !prboom_comp[PC_PRBOOM_FRICTION].state)
     {
       if (mo->flags2 & MF2_FLY && !(mo->z <= mo->floorz)
           && !(mo->flags2 & MF2_ONMOBJ))
@@ -624,7 +622,7 @@ static void P_ZMovement (mobj_t* mo)
   // check for smooth step up
 
   if (mo->player && //e6y: restoring original visual behaviour for demo_compatibility
-      (heretic || demo_compatibility || mo->player->mo == mo) &&  // killough 5/12/98: exclude voodoo dolls
+      (demo_compatibility || mo->player->mo == mo) &&  // killough 5/12/98: exclude voodoo dolls
       mo->z < mo->floorz)
   {
     mo->player->viewheight -= mo->floorz - mo->z;
@@ -713,9 +711,7 @@ floater:
      *  mimic the bug and do it further down instead)
      */
 
-    // HERETIC_TODO: again, once compatibility is set up, remove heretic check
     if (
-      !heretic &&
       mo->flags & MF_SKULLFLY &&
       (
         !comp[comp_soul] ||
@@ -748,7 +744,7 @@ floater:
           // but can be applied globally for all demo_compatibility complevels,
           // because original sources do not exclude voodoo dolls from condition above,
           // but Boom does it.
-          (heretic || demo_compatibility || mo->player->mo == mo) &&
+          (demo_compatibility || mo->player->mo == mo) &&
           mo->momz < -GRAVITY * 8 &&
           !(mo->flags2 & MF2_FLY)
         )
@@ -781,7 +777,7 @@ floater:
      * incorrectly reverse it, so we might still need this for demo sync
      */
     if (mo->flags & MF_SKULLFLY &&
-	     (heretic || compatibility_level <= doom2_19_compatibility))
+	     compatibility_level <= doom2_19_compatibility)
       mo->momz = -mo->momz; // the skull slammed into something
 
     if (mo->info->crashstate && (mo->flags & MF_CORPSE))
@@ -817,7 +813,7 @@ floater:
      * Lost souls were meant to bounce off of ceilings;
      *  new comp_soul compatibility option added
      */
-    if (!heretic && !comp[comp_soul] && mo->flags & MF_SKULLFLY)
+    if (!comp[comp_soul] && mo->flags & MF_SKULLFLY)
       mo->momz = -mo->momz; // the skull slammed into something
 
     // hit the ceiling
@@ -832,7 +828,7 @@ floater:
      *  lowering on us), so for old demos we must still do the buggy
      *  momentum reversal here
      */
-    if ((heretic || comp[comp_soul]) && mo->flags & MF_SKULLFLY)
+    if (comp[comp_soul] && mo->flags & MF_SKULLFLY)
       mo->momz = -mo->momz; // the skull slammed into something
 
     if ((mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP))
@@ -884,7 +880,7 @@ static void P_NightmareRespawn(mobj_t* mobj)
    *   and the logic is reversed (i.e. like the rest of comp_ it *disables*
    *   the fix)
    */
-  if(!heretic && !comp[comp_respawn] && !x && !y)
+  if(!comp[comp_respawn] && !x && !y)
   {
      // spawnpoint was zeroed out, so use point of death instead
      x = mobj->x;
@@ -1142,7 +1138,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   mobj->height = info->height;                                      // phares
   mobj->flags  = info->flags;
   mobj->flags2 = info->flags2;
-  if (heretic) mobj->damage = info->damage; // HERETIC_TODO: doom doesn't do this, but why?
+  if (heretic) mobj->damage = info->damage;
 
   /* killough 8/23/98: no friends, bouncers, or touchy things in old demos */
   if (!mbf_features)
@@ -1579,14 +1575,12 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // bits that weren't used in Doom (such as HellMaker wads). So we should
   // then simply ignore all upper bits.
 
-  // HERETIC_TODO: remove heretic check once heretic == demo_compatibility
   if (
-    heretic ||
     demo_compatibility ||
     (compatibility_level >= lxdoom_1_compatibility && options & MTF_RESERVED)
   )
   {
-    if (!heretic && !demo_compatibility) // cph - Add warning about bad thing flags
+    if (!demo_compatibility) // cph - Add warning about bad thing flags
       lprintf(LO_WARN, "P_SpawnMapThing: correcting bad flags (%u) (thing type %d)\n", options, thingtype);
     options &= MTF_EASY|MTF_NORMAL|MTF_HARD|MTF_AMBUSH|MTF_NOTSINGLE;
   }
@@ -1596,7 +1590,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // doom2.exe has at most 10 deathmatch starts
   if (thingtype == 11)
   {
-    if ((heretic || compatibility) && deathmatch_p - deathmatchstarts >= 10)
+    if (compatibility && deathmatch_p - deathmatchstarts >= 10)
     {
   		return NULL;
     }

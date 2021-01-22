@@ -802,7 +802,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   // killough 3/26/98, 4/2/98: fix autoswitch when no weapons are left
 
   // Make Boom insert only a single weapon change command on autoswitch.
-  if ((!heretic && !demo_compatibility && players[consoleplayer].attackdown && // killough
+  if ((!demo_compatibility && players[consoleplayer].attackdown && // killough
        !P_CheckAmmo(&players[consoleplayer]) && !done_autoswitch && boom_autoswitch) ||
        gamekeydown[key_weapontoggle])
   {
@@ -843,7 +843,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       // Switch to fist or chainsaw based on preferences.
       // Switch to shotgun or SSG based on preferences.
 
-      if (!heretic && !demo_compatibility)
+      if (!demo_compatibility)
         {
           const player_t *player = &players[consoleplayer];
 
@@ -1519,7 +1519,7 @@ void G_Ticker (void)
       // Z_FreeTags(PU_LEVEL, PU_PURGELEVEL-1);
       break;
     case GS_INTERMISSION:
-      WI_End(); // HERETIC_TODO: heretic equivalent intermission cleanup?
+      WI_End();
     default:
       break;
     }
@@ -1536,7 +1536,6 @@ void G_Ticker (void)
   switch (gamestate)
     {
     case GS_LEVEL:
-      // HERETIC_TODO: P SB AM CT _Ticker();
       P_Ticker ();
       P_WalkTicker();
       mlooky = 0;
@@ -1546,7 +1545,7 @@ void G_Ticker (void)
       break;
 
     case GS_INTERMISSION:
-       WI_Ticker (); // HERETIC_TODO: IN_Ticker();
+       WI_Ticker ();
       break;
 
     case GS_FINALE:
@@ -2145,7 +2144,7 @@ frommapinfo:
     StatCopy(&wminfo);
   }
 
-  WI_Start (&wminfo); // HERETIC_TODO: IN_Start();
+  WI_Start (&wminfo);
 }
 
 //

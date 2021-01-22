@@ -401,7 +401,7 @@ int EV_LightTurnOn(line_t *line, int bright)
 
       //jff 5/17/98 unless compatibility optioned
       //then maximum near ANY tagged sector
-      if (heretic || comp[comp_model])
+      if (comp[comp_model])
   bright = tbright;
     }
   return 1;

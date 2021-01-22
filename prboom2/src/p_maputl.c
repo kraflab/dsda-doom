@@ -155,7 +155,7 @@ fixed_t PUREFUNC P_InterceptVector2(const divline_t *v2, const divline_t *v1)
 
 fixed_t PUREFUNC P_InterceptVector(const divline_t *v2, const divline_t *v1)
 {
-  if (heretic || compatibility_level < prboom_4_compatibility)
+  if (compatibility_level < prboom_4_compatibility)
     return P_InterceptVector2(v2, v1);
   else {
     /* cph - This was introduced at prboom_4_compatibility - no precision/overflow problems */
@@ -380,7 +380,7 @@ dboolean P_BlockLinesIterator(int x, int y, dboolean func(line_t*))
   // Most demos go out of sync, and maybe other problems happen, if we
   // don't consider linedef 0. For safety this should be qualified.
 
-  if (!heretic && !demo_compatibility) // killough 2/22/98: demo_compatibility check
+  if (!demo_compatibility) // killough 2/22/98: demo_compatibility check
     list++;     // skip 0 starting delimiter                      // phares
   for ( ; *list != -1 ; list++)                                   // phares
     {

@@ -2250,7 +2250,7 @@ static int P_GroupLines (void)
     sector->bbox[3] = sector->blockbox[3] >> FRACTOMAPBITS;
 
     // set the degenmobj_t to the middle of the bounding box
-    if (heretic || comp[comp_sound])
+    if (comp[comp_sound])
     {
       sector->soundorg.x = (bbox[BOXRIGHT]+bbox[BOXLEFT])/2;
       sector->soundorg.y = (bbox[BOXTOP]+bbox[BOXBOTTOM])/2;
@@ -2337,7 +2337,7 @@ static void P_RemoveSlimeTrails(void)         // killough 10/98
   int i;
   // Correction of desync on dv04-423.lmp/dv.wad
   // http://www.doomworld.com/vb/showthread.php?s=&postid=627257#post627257
-  int apply_for_real_vertexes = (!heretic && (compatibility_level>=lxdoom_1_compatibility || prboom_comp[PC_REMOVE_SLIME_TRAILS].state));
+  int apply_for_real_vertexes = (compatibility_level>=lxdoom_1_compatibility || prboom_comp[PC_REMOVE_SLIME_TRAILS].state);
 
   for (i=0; i<numvertexes; i++)
   {
