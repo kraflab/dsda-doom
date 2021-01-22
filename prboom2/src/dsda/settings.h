@@ -18,6 +18,8 @@
 #ifndef __DSDA_SETTINGS__
 #define __DSDA_SETTINGS__
 
+#define UNSPECIFIED_COMPLEVEL -2
+
 extern int dsda_key_store_quick_key_frame;
 extern int dsda_key_restore_quick_key_frame;
 extern int dsda_key_rewind;
@@ -28,6 +30,7 @@ extern int dsda_cycle_ghost_colors;
 extern int dsda_exhud;
 
 void dsda_InitSettings(void);
+int dsda_CompatibilityLevel(void);
 void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);
 dboolean dsda_StrictMode(void);

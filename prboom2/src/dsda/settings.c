@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "m_argv.h"
 #include "e6y.h"
 
 #include "settings.h"
@@ -33,6 +34,22 @@ int dsda_skip_next_wipe;
 
 void dsda_InitSettings(void) {
   dsda_ChangeStrictMode();
+}
+
+int dsda_CompatibilityLevel(void) {
+  int i, level;
+
+  if (heretic) return doom_12_compatibility;
+
+  i = M_CheckParm("-complevel");
+
+  if (i && (i + 1 < myargc)) {
+    level = atoi(myargv[i + 1]);
+
+    if (level >= -1) return level;
+  }
+
+  return UNSPECIFIED_COMPLEVEL;
 }
 
 void dsda_ChangeStrictMode(void) {
