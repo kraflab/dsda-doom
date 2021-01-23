@@ -43,14 +43,9 @@ boolean S_StopSoundID(int sound_id, int priority);
 
 static channel_t channel[MAX_CHANNELS];
 
-static void *rs;          // Handle for the registered song
-int mus_song = -1;
-int mus_lumpnum;
-void *mus_sndptr;
 byte *soundCurve;
 
 int snd_MaxVolume = 10;
-int snd_MusicVolume = 10;
 int snd_Channels = 16;
 
 int AmbChan;
@@ -58,8 +53,6 @@ int AmbChan;
 void S_Start(void)
 {
     int i;
-
-    S_StartSong((gameepisode - 1) * 9 + gamemap - 1, true);
 
     //stop all sounds
     for (i = 0; i < snd_Channels; i++)
@@ -70,41 +63,6 @@ void S_Start(void)
         }
     }
     memset(channel, 0, 8 * sizeof(channel_t));
-}
-
-void S_StartSong(int song, boolean loop)
-{
-    int mus_len;
-
-    if (song == mus_song)
-    {                           // don't replay an old song
-        return;
-    }
-
-    if (rs != NULL)
-    {
-        I_StopSong();
-        I_UnRegisterSong(rs);
-    }
-
-    if (song < mus_e1m1 || song > NUMMUSIC)
-    {
-        return;
-    }
-    // [crispy] support dedicated music tracks for each map
-    if (S_music[song][1].name && W_CheckNumForName(S_music[song][1].name) > 0)
-    {
-        mus_lumpnum = (W_GetNumForName(S_music[song][1].name));
-    }
-    else
-    {
-        mus_lumpnum = (W_GetNumForName(S_music[song][0].name));
-    }
-    mus_sndptr = W_CacheLumpNum(mus_lumpnum, PU_MUSIC);
-    mus_len = W_LumpLength(mus_lumpnum);
-    rs = I_RegisterSong(mus_sndptr, mus_len);
-    I_PlaySong(rs, loop);       //'true' denotes endless looping.
-    mus_song = song;
 }
 
 static mobj_t *GetSoundListener(void)
@@ -430,16 +388,6 @@ void S_SoundLink(mobj_t * oldactor, mobj_t * newactor)
     }
 }
 
-void S_PauseSound(void)
-{
-    I_PauseSong();
-}
-
-void S_ResumeSound(void)
-{
-    I_ResumeSong();
-}
-
 void S_UpdateSounds(mobj_t * listener)
 {
     int i, dist, vol;
@@ -527,7 +475,6 @@ void S_Init(void)
     {
         snd_Channels = 8;
     }
-    I_SetMusicVolume(snd_MusicVolume * 8);
     S_SetMaxVolume(true);
 
     I_AtExit(S_ShutDown, true);
@@ -590,25 +537,7 @@ void S_SetMaxVolume(boolean fullprocess)
     }
 }
 
-static boolean musicPaused;
-void S_SetMusicVolume(void)
-{
-    I_SetMusicVolume(snd_MusicVolume * 8);
-    if (snd_MusicVolume == 0)
-    {
-        I_PauseSong();
-        musicPaused = true;
-    }
-    else if (musicPaused)
-    {
-        musicPaused = false;
-        I_ResumeSong();
-    }
-}
-
 void S_ShutDown(void)
 {
-    I_StopSong();
-    I_UnRegisterSong(rs);
     I_ShutdownSound();
 }
