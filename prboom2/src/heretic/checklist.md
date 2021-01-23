@@ -4,6 +4,7 @@
 - [x] Reach 100% demo sync rate
 - [x] Add intermission
 - [x] Add status bar
+- [x] Integrate heretic sound system
 - [ ] Add finale
 - [ ] Add start screen
 - [ ] Support new graphics format (CREDITS)
@@ -12,7 +13,6 @@
 - [ ] Fix menu visuals
 - [ ] Fix hud visuals
 - [ ] Support graphical player pitch
-- [ ] Integrate heretic sound system
 - [ ] Fix palette updates
 - [ ] Support ghosts
 - [ ] Support analysis
@@ -76,10 +76,10 @@
 - [ ] r_plane.c 539
 - [ ] r_segs.c 678
 - [ ] r_things.c 1075
-- [ ] s_sound.c 616
+- [x] s_sound.c 616
 - [x] s_sound.h 39
 - [x] sb_bar.c 1333
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 16745, MERGED: 30469, PERCENT: 64%
+LEFT: 16131, MERGED: 31083, PERCENT: 65%
