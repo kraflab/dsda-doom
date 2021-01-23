@@ -73,6 +73,9 @@ struct sfxinfo_struct {
 
   // lump number of sfx
   int lumpnum;
+
+  // heretic - total number of channels a sound type may occupy
+  int numchannels;
 };
 
 //
