@@ -1,7 +1,7 @@
 ### Heretic Support
 - [x] Load without crashing as pwad
 - [x] Merge engine behaviour
-- [ ] Reach 100% demo sync rate
+- [x] Reach 100% demo sync rate
 - [x] Add intermission
 - [x] Add status bar
 - [ ] Add finale
