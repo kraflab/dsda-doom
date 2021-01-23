@@ -408,46 +408,46 @@ void S_UpdateSounds(void* listener_p)
 #endif
 
   for (cnum=0 ; cnum<numChannels ; cnum++)
+  {
+    sfxinfo_t *sfx;
+    channel_t *c = &channels[cnum];
+    if ((sfx = c->sfxinfo))
     {
-      sfxinfo_t *sfx;
-      channel_t *c = &channels[cnum];
-      if ((sfx = c->sfxinfo))
+      if (I_SoundIsPlaying(c->handle))
+      {
+        // initialize parameters
+        int volume = snd_SfxVolume;
+        int pitch = c->pitch; // use channel's pitch!
+        int sep = NORM_SEP;
+
+        if (sfx->link)
         {
-          if (I_SoundIsPlaying(c->handle))
-            {
-              // initialize parameters
-              int volume = snd_SfxVolume;
-              int pitch = c->pitch; // use channel's pitch!
-              int sep = NORM_SEP;
-
-              if (sfx->link)
-                {
-                  pitch = sfx->pitch;
-                  volume += sfx->volume;
-                  if (volume < 1)
-                    {
-                      S_StopChannel(cnum);
-                      continue;
-                    }
-                  else
-                    if (volume > snd_SfxVolume)
-                      volume = snd_SfxVolume;
-                }
-
-              // check non-local sounds for distance clipping
-              // or modify their params
-              if (c->origin && listener_p != c->origin) { // killough 3/20/98
-                if (!S_AdjustSoundParams(listener, c->origin,
-                                         &volume, &sep, &pitch))
-                  S_StopChannel(cnum);
-                else
-                  I_UpdateSoundParams(c->handle, volume, sep, pitch);
-        }
-            }
-          else   // if channel is allocated but sound has stopped, free it
+          pitch = sfx->pitch;
+          volume += sfx->volume;
+          if (volume < 1)
+          {
             S_StopChannel(cnum);
+            continue;
+          }
+          else
+            if (volume > snd_SfxVolume)
+              volume = snd_SfxVolume;
         }
+
+        // check non-local sounds for distance clipping
+        // or modify their params
+        if (c->origin && listener_p != c->origin) // killough 3/20/98
+        {
+          if (!S_AdjustSoundParams(listener, c->origin, &volume, &sep, &pitch))
+            S_StopChannel(cnum);
+          else
+            I_UpdateSoundParams(c->handle, volume, sep, pitch);
+        }
+      }
+      else   // if channel is allocated but sound has stopped, free it
+        S_StopChannel(cnum);
     }
+  }
 }
 
 
