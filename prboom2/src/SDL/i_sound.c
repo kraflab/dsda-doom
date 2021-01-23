@@ -303,6 +303,9 @@ int I_GetSfxLumpNum(sfxinfo_t *sfx)
   char namebuf[9];
   const char* format;
 
+  if (sfx->link)
+    sfx = sfx->link;
+
   // Different prefix for PC speaker sound effects for doom.
   format = heretic ? "%s" : snd_pcspeaker ? "dp%s" : "ds%s";
 
