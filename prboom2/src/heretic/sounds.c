@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 //
 
+#include "doomtype.h"
 #include "sounds.h"
 
 musicinfo_t heretic_S_music[] = {
@@ -77,7 +78,6 @@ musicinfo_t heretic_S_music[] = {
     { "MUS_CPTD", 0 }
 };
 
-// HERETIC_TODO: numchannels is not in soundinfo_t
 sfxinfo_t heretic_S_sfx[] = {
     { "", false, 0, 0, -1, -1, 0, 0, 0, 0 },
     { "gldhit", false, 32, 0, -1, -1, 0, 0, 0, 2 },

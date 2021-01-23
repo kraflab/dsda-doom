@@ -101,13 +101,6 @@ extern int idmusnum;
 
 // heretic
 
-extern int snd_MaxVolume;
-extern int snd_MusicVolume;
-
-struct sound_info_s;
-
-void S_StartSong(int song, dboolean loop);
-void S_GetChannelInfo(struct sound_info_s * s);
-void S_SetMaxVolume(dboolean fullprocess);
+void S_SetSoundCurve(dboolean fullprocess);
 
 #endif
