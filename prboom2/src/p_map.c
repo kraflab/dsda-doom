@@ -734,7 +734,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
   // Correction of wrong return value with demo_compatibility.
   // There is no more synch on http://www.doomworld.com/sda/dwdemo/w303-115.zip
   // (with correction in setMobjInfoValue)
-  if (heretic || (demo_compatibility && !prboom_comp[PC_TREAT_NO_CLIPPING_THINGS_AS_NOT_BLOCKING].state))
+  if (demo_compatibility && !prboom_comp[PC_TREAT_NO_CLIPPING_THINGS_AS_NOT_BLOCKING].state)
     return !(thing->flags & MF_SOLID);
   else
     return !((thing->flags & MF_SOLID && !(thing->flags & MF_NOCLIP))
@@ -992,7 +992,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
      */
     if (!(thing->flags & (MF_DROPOFF|MF_FLOAT)))
     {
-      if (heretic || comp[comp_dropoff])
+      if (comp[comp_dropoff])
       {
         // e6y
         // Fix demosync bug in mbf compatibility mode
@@ -1004,7 +1004,6 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
         // http://www.doomworld.com/idgames/index.php?id=11138
         if (
           (
-            heretic ||
             compatibility ||
             !dropoff ||
             (
@@ -1317,8 +1316,7 @@ void P_HitSlideLine (line_t* ld)
   else
   {
     extern dboolean onground;
-    icyfloor = !heretic &&
-               !compatibility &&
+    icyfloor = !compatibility &&
                variable_friction &&
                slidemo->player &&
                onground &&
@@ -1365,7 +1363,7 @@ void P_HitSlideLine (line_t* ld)
   // The moveangle+=10 breaks v1.9 demo compatibility in
   // some demos, so it needs demo_compatibility switch.
 
-  if (!heretic && !demo_compatibility)
+  if (!demo_compatibility)
     moveangle += 10; // prevents sudden path reversal due to        // phares
                      // rounding error                              //   |
   deltaangle = moveangle-lineangle;                                 //   V
@@ -1762,7 +1760,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
         // fix bullet-eaters -- killough:
         // WARNING: Almost all demos will lose sync without this
         // demo_compatibility flag check!!! killough 1/18/98
-      if (heretic || demo_compatibility || li->backsector->ceilingheight < z)
+      if (demo_compatibility || li->backsector->ceilingheight < z)
         return false;
       }
 
@@ -1946,7 +1944,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
   //WAS can't use for than one special line in a row
   //jff 3/21/98 NOW multiple use allowed with enabling line flag
 
-  return (!heretic && !demo_compatibility && ((in->d.line->flags&ML_PASSUSE) || comperr(comperr_passuse)))?//e6y
+  return (!demo_compatibility && ((in->d.line->flags&ML_PASSUSE) || comperr(comperr_passuse)))?//e6y
           true : false;
 }
 
@@ -2002,7 +2000,7 @@ void P_UseLines (player_t*  player)
   // This added test makes the "oof" sound work on 2s lines -- killough:
 
   if (P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_UseTraverse ))
-    if (!heretic && !comp[comp_sound] && !P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_NoWayTraverse ))
+    if (!comp[comp_sound] && !P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_NoWayTraverse ))
       S_StartSound (usething, sfx_noway);
 }
 
@@ -2128,7 +2126,7 @@ dboolean PIT_ChangeSector (mobj_t* thing)
     {
     if (!heretic) P_SetMobjState (thing, S_GIBS);
 
-    if (!heretic && compatibility_level != doom_12_compatibility)
+    if (compatibility_level != doom_12_compatibility)
     {
       thing->flags &= ~MF_SOLID;
     }

@@ -152,7 +152,7 @@ static dboolean P_CheckMeleeRange(mobj_t *actor)
     (
       P_AproxDistance(pl->x-actor->x, pl->y-actor->y) <
       (
-        (compatibility_level == doom_12_compatibility || heretic) ?
+        (compatibility_level == doom_12_compatibility) ?
         MELEERANGE :
         MELEERANGE - 20*FRACUNIT + pl->info->radius
       )
@@ -913,7 +913,7 @@ static dboolean P_LookForMonsters(mobj_t *actor, dboolean allaround)
 {
   thinker_t *cap, *th;
 
-  if (heretic || demo_compatibility)
+  if (demo_compatibility)
     return false;
 
   if (actor->lastenemy && actor->lastenemy->health > 0 && monsters_remember &&
@@ -1169,7 +1169,7 @@ void A_Chase(mobj_t *actor)
     actor->reactiontime--;
 
   if (actor->threshold) { /* modify target threshold */
-    if (compatibility_level == doom_12_compatibility || heretic)
+    if (compatibility_level == doom_12_compatibility)
     {
       actor->threshold--;
     }

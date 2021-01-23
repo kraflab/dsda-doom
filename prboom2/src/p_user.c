@@ -171,8 +171,7 @@ void P_CalcHeight (player_t* player)
   }
   else
   {
-    // HERETIC_TODO: probably heretic will / should imply demo_compatibility
-    if (heretic || demo_compatibility || player_bobbing || prboom_comp[PC_FORCE_INCORRECT_BOBBING_IN_BOOM].state)
+    if (demo_compatibility || player_bobbing || prboom_comp[PC_FORCE_INCORRECT_BOBBING_IN_BOOM].state)
     {
       player->bob = (FixedMul(player->mo->momx, player->mo->momx) +
         FixedMul(player->mo->momy, player->mo->momy)) >> 2;

@@ -857,7 +857,7 @@ dboolean P_CheckSight(mobj_t *t1, mobj_t *t2)
   const sector_t *s1, *s2;
   int pnum;
 
-  if (heretic || compatibility_level == doom_12_compatibility)
+  if (compatibility_level == doom_12_compatibility)
   {
     return P_CheckSight_12(t1, t2);
   }

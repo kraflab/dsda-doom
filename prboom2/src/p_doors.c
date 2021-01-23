@@ -138,7 +138,6 @@ void T_VerticalDoor (vldoor_t* door)
       // http://sourceforge.net/tracker/index.php?func=detail&aid=1411400&group_id=148658&atid=772943
       // Old code: if (door->lighttag && door->topheight - door->sector->floorheight)
       if (
-        !heretic &&
         door->lighttag &&
         door->topheight - door->sector->floorheight &&
         compatibility_level >= mbf_compatibility
@@ -255,7 +254,6 @@ void T_VerticalDoor (vldoor_t* door)
       // http://sourceforge.net/tracker/index.php?func=detail&aid=1411400&group_id=148658&atid=772943
       // Old code: if (door->lighttag && door->topheight - door->sector->floorheight)
       if (
-        !heretic &&
         door->lighttag &&
         door->topheight - door->sector->floorheight &&
         compatibility_level >= mbf_compatibility
@@ -867,7 +865,7 @@ void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing)
     door->speed = VDOORSPEED;
     door->topwait = VDOORWAIT;
     door->line = line; // HERETIC_TODO: this is from doom
-    door->lighttag = 0; // HERETIC_TODO: !comp[comp_doorlight] does line->tag
+    door->lighttag = 0;
     switch (line->special)
     {
         case 1:

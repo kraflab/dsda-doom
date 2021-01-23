@@ -298,7 +298,7 @@ int twoSided
   //jff 1/26/98 return what is actually needed, whether the line
   //has two sidedefs, rather than whether the 2S flag is set
 
-  return (heretic || comp[comp_model]) ?
+  return (comp[comp_model]) ?
     (sectors[sector].lines[line])->flags & ML_TWOSIDED
     :
     (sectors[sector].lines[line])->sidenum[1] != NO_INDEX;
@@ -320,14 +320,14 @@ sector_t* getNextSector
   //returns NULL if the line is not two sided, and does so from
   //the actual two-sidedness of the line, rather than its 2S flag
 
-  if (heretic || comp[comp_model])
+  if (comp[comp_model])
   {
     if (!(line->flags & ML_TWOSIDED))
       return NULL;
   }
 
   if (line->frontsector == sec) {
-    if (heretic || comp[comp_model] || line->backsector!=sec)
+    if (comp[comp_model] || line->backsector!=sec)
       return line->backsector; //jff 5/3/98 don't retn sec unless compatibility
     else                       // fixes an intra-sector line breaking functions
       return NULL;             // like floor->highest floor
@@ -382,7 +382,7 @@ fixed_t P_FindHighestFloorSurrounding(sector_t *sec)
 
   //jff 1/26/98 Fix initial value for floor to not act differently
   //in sections of wad that are below -500 units
-  if (!heretic && !comp[comp_model])       /* jff 3/12/98 avoid ovf */
+  if (!comp[comp_model])       /* jff 3/12/98 avoid ovf */
     floor = -32000*FRACUNIT;   // in height calculations
 
   for (i=0 ;i < sec->linecount ; i++)
@@ -418,7 +418,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
   // e6y
   // Original P_FindNextHighestFloor() is restored for demo_compatibility
   // Adapted for prboom's complevels
-  if ((heretic || demo_compatibility) && !prboom_comp[PC_FORCE_BOOM_FINDNEXTHIGHESTFLOOR].state)
+  if (demo_compatibility && !prboom_comp[PC_FORCE_BOOM_FINDNEXTHIGHESTFLOOR].state)
   {
     int h;
     int min;
@@ -458,7 +458,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
         // 21: can be emulated;
         // 22..26: overflow affects saved registers - unpredictable behaviour, can crash;
         // 27: overflow affects return address - crash with high probability;
-        if ((heretic || compatibility_level < dosdoom_compatibility) && h >= MAX_ADJOINING_SECTORS)
+        if (compatibility_level < dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS)
         {
           // HERETIC_TODO: crispy actually doesn't go here, but probably it should be done
           lprintf(LO_WARN, "P_FindNextHighestFloor: Overflow of heightlist[%d] array is detected.\n", MAX_ADJOINING_SECTORS);
@@ -478,7 +478,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
       }
 
       // Check for overflow. Warning.
-      if (!heretic && compatibility_level >= dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS)
+      if (compatibility_level >= dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS)
       {
         lprintf( LO_WARN, "Sector with more than 20 adjoining sectors\n" );
         break;
@@ -497,7 +497,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
       // It's not *quite* random stack noise. If this function is called
       // as part of a loop, heightlist will be at the same location as in
       // the previous call. Doing it this way fixes 1_ON_1.WAD.
-      return ((heretic || compatibility_level < doom_1666_compatibility) ? last_height_0 : currentheight);
+      return (compatibility_level < doom_1666_compatibility ? last_height_0 : currentheight);
     }
 
     last_height_0 = heightlist[0];
@@ -644,7 +644,7 @@ fixed_t P_FindLowestCeilingSurrounding(sector_t* sec)
   fixed_t             height = INT_MAX;
 
   /* jff 3/12/98 avoid ovf in height calculations */
-  if (!heretic && !comp[comp_model]) height = 32000*FRACUNIT;
+  if (!comp[comp_model]) height = 32000*FRACUNIT;
 
   for (i=0 ;i < sec->linecount ; i++)
   {
@@ -680,7 +680,7 @@ fixed_t P_FindHighestCeilingSurrounding(sector_t* sec)
   /* jff 1/26/98 Fix initial value for floor to not act differently
    * in sections of wad that are below 0 units
    * jff 3/12/98 avoid ovf in height calculations */
-  if (!heretic && !comp[comp_model]) height = -32000*FRACUNIT;
+  if (!comp[comp_model]) height = -32000*FRACUNIT;
 
   for (i=0 ;i < sec->linecount ; i++)
   {
@@ -1116,7 +1116,7 @@ dboolean P_CanUnlockGenDoor
 //
 dboolean PUREFUNC P_SectorActive(special_e t, const sector_t *sec)
 {
-  if (heretic || demo_compatibility)  // return whether any thinker is active
+  if (demo_compatibility)  // return whether any thinker is active
     return sec->floordata != NULL || sec->ceilingdata != NULL || sec->lightingdata != NULL;
   else
     switch (t)             // return whether thinker of same type is active
@@ -1148,7 +1148,7 @@ int P_CheckTag(line_t *line)
 {
   /* tag not zero, allowed, or
    * killough 11/98: compatibility option */
-  if (heretic || comp[comp_zerotags] || line->tag || comperr(comperr_zerotag))//e6y
+  if (comp[comp_zerotags] || line->tag || comperr(comperr_zerotag))//e6y
     return 1;
 
   switch(line->special)
@@ -2179,7 +2179,7 @@ void P_ShootSpecialLine
   line_t*       line )
 {
   //jff 02/04/98 add check here for generalized linedef
-  if (!heretic && !demo_compatibility)
+  if (!demo_compatibility)
   {
     // pointer to line function is NULL by default, set non-null if
     // line special is gun triggered generalized linedef type
@@ -2302,7 +2302,7 @@ void P_ShootSpecialLine
   {
     case 24:
       // 24 G1 raise floor to highest adjacent
-      if (EV_DoFloor(line,raiseFloor) || heretic || demo_compatibility)
+      if (EV_DoFloor(line,raiseFloor) || demo_compatibility)
         P_ChangeSwitchTexture(line,0);
       break;
 
@@ -2314,7 +2314,7 @@ void P_ShootSpecialLine
 
     case 47:
       // 47 G1 raise floor to nearest and change texture and type
-      if (EV_DoPlat(line,raiseToNearestAndChange,0) || heretic || demo_compatibility)
+      if (EV_DoPlat(line,raiseToNearestAndChange,0) || demo_compatibility)
         P_ChangeSwitchTexture(line,0);
       break;
 
@@ -2322,7 +2322,7 @@ void P_ShootSpecialLine
     // killough 1/31/98: added demo_compatibility check, added inner switch
 
     default:
-      if (!heretic && !demo_compatibility)
+      if (!demo_compatibility)
         switch (line->special)
         {
           case 197:

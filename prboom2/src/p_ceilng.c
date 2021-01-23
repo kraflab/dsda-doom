@@ -261,7 +261,6 @@ int EV_DoCeiling
   secnum = -1;
   rtn = 0;
 
-  // HERETIC_TODO: I think this is irrelevant for our purposes
   if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_ceiling; else {return rtn;}};//e6y
   // Reactivate in-stasis ceilings...for certain types.
   // This restarts a crusher after it has been stopped

@@ -208,7 +208,6 @@ static void dsda_InitHeretic(void) {
   dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
   dsda_SetMusic(heretic_S_music, HERETIC_NUMMUSIC);
 
-  // HERETIC_TODO: of course, 2 levels requires complete rework...
   weaponinfo = wpnlev1info;
 
   g_mt_player = HERETIC_MT_PLAYER;

@@ -116,7 +116,7 @@ result_e T_MovePlane
             /* cph - make more compatible with original Doom, by
              *  reintroducing this code. This means floors can't lower
              *  if objects are stuck in the ceiling */
-            if ((flag == true) && (heretic || comp[comp_floors])) {
+            if ((flag == true) && comp[comp_floors]) {
               sector->floorheight = lastpos;
               P_ChangeSector(sector,crush);
               return crushed;
@@ -128,7 +128,7 @@ result_e T_MovePlane
           // Moving a floor up
           // jff 02/04/98 keep floor from moving thru ceilings
           // jff 2/22/98 weaken check to demo_compatibility
-          destheight = (heretic || comp[comp_floors] || dest<sector->ceilingheight)?
+          destheight = (comp[comp_floors] || dest<sector->ceilingheight)?
                           dest : sector->ceilingheight;
           if (sector->floorheight + speed > destheight)
           {
@@ -151,7 +151,7 @@ result_e T_MovePlane
             if (flag == true)
             {
         /* jff 1/25/98 fix floor crusher */
-              if (heretic || comp[comp_floors]) {
+              if (comp[comp_floors]) {
 
                 //e6y: warning about potential desynch
                 if (crush == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
@@ -180,7 +180,7 @@ result_e T_MovePlane
           // moving a ceiling down
           // jff 02/04/98 keep ceiling from moving thru floors
           // jff 2/22/98 weaken check to demo_compatibility
-          destheight = (heretic || comp[comp_floors] || dest>sector->floorheight)?
+          destheight = (comp[comp_floors] || dest>sector->floorheight)?
                           dest : sector->floorheight;
           if (sector->ceilingheight - speed < destheight)
           {
@@ -353,7 +353,7 @@ void T_MoveFloor(floormove_t* floor)
 
     // Moving floors (but not plats) in versions <= v1.2 did not
     // make floor stop sound
-    if (!heretic && compatibility_level > doom_12_compatibility)
+    if (compatibility_level > doom_12_compatibility)
         S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
   }
 }
@@ -529,7 +529,7 @@ manual_floor://e6y
         floor->sector = sec;
         floor->speed = FLOORSPEED * 4;
         floor->floordestheight = P_FindHighestFloorSurrounding(sec);
-        if (heretic || compatibility_level == doom_12_compatibility ||
+        if (compatibility_level == doom_12_compatibility ||
             floor->floordestheight != sec->floorheight)
           floor->floordestheight += 8*FRACUNIT;
         break;
@@ -600,7 +600,7 @@ manual_floor://e6y
           side_t*     side;
 
     /* jff 3/13/98 no ovf */
-          if (!heretic && !comp[comp_model]) minsize = 32000<<FRACBITS;
+          if (!comp[comp_model]) minsize = 32000<<FRACBITS;
           floor->direction = 1;
           floor->sector = sec;
           floor->speed = FLOORSPEED;
@@ -611,18 +611,18 @@ manual_floor://e6y
               side = getSide(secnum,i,0);
               // jff 8/14/98 don't scan texture 0, its not real
               if (side->bottomtexture > 0 ||
-                  ((heretic || comp[comp_model]) && !side->bottomtexture))
+                  (comp[comp_model] && !side->bottomtexture))
                 if (textureheight[side->bottomtexture] < minsize)
                   minsize = textureheight[side->bottomtexture];
               side = getSide(secnum,i,1);
               // jff 8/14/98 don't scan texture 0, its not real
               if (side->bottomtexture > 0 ||
-                  ((heretic || comp[comp_model]) && !side->bottomtexture))
+                  (comp[comp_model] && !side->bottomtexture))
                 if (textureheight[side->bottomtexture] < minsize)
                   minsize = textureheight[side->bottomtexture];
             }
           }
-          if (heretic || comp[comp_model])
+          if (comp[comp_model])
             floor->floordestheight = floor->sector->floorheight + minsize;
           else
           {
@@ -892,7 +892,7 @@ manual_stair://e6y
    * cph 2001/02/06: stair bug fix should be controlled by comp_stairs,
    *  except if we're emulating MBF which perversly reverted the fix
    */
-        if (heretic || comp[comp_stairs] || (compatibility_level == mbf_compatibility))
+        if (comp[comp_stairs] || (compatibility_level == mbf_compatibility))
           height += stairsize; // jff 6/28/98 change demo compatibility
 
         // if sector's floor already moving, look for another
@@ -900,7 +900,7 @@ manual_stair://e6y
           continue;
 
   /* cph - see comment above - do this iff we didn't do so above */
-        if (!heretic && !comp[comp_stairs] && (compatibility_level != mbf_compatibility))
+        if (!comp[comp_stairs] && (compatibility_level != mbf_compatibility))
           height += stairsize;
 
         sec = tsec;
@@ -989,7 +989,7 @@ int EV_DoDonut(line_t*  line)
     // pillar must be two-sided
     if (!s2)
     {
-      if (heretic || demo_compatibility)
+      if (demo_compatibility)
       {
         lprintf(LO_ERROR,
           "EV_DoDonut: lowest numbered line (linedef: %d) "
@@ -1006,7 +1006,7 @@ int EV_DoDonut(line_t*  line)
 
     /* do not start the donut if the pool is already moving
      * cph - DEMOSYNC - was !compatibility */
-    if (!heretic && !comp[comp_floors] && P_SectorActive(floor_special,s2))
+    if (!comp[comp_floors] && P_SectorActive(floor_special,s2))
       continue;                           //jff 5/7/98
 
     // find a two sided line around the pool whose other side isn't the pillar
@@ -1014,7 +1014,7 @@ int EV_DoDonut(line_t*  line)
     {
       //jff 3/29/98 use true two-sidedness, not the flag
       // killough 4/5/98: changed demo_compatibility to compatibility
-      if (heretic || comp[comp_model])
+      if (comp[comp_model])
       {
         // original code:   !s2->lines[i]->flags & ML_TWOSIDED
         // equivalent to:   (!s2->lines[i]->flags) & ML_TWOSIDED , i.e. 0
