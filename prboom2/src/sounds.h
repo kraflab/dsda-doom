@@ -73,6 +73,9 @@ struct sfxinfo_struct {
 
   // lump number of sfx
   int lumpnum;
+
+  // heretic - total number of channels a sound type may occupy
+  int numchannels;
 };
 
 //
@@ -708,38 +711,6 @@ typedef enum {
   heretic_sfx_amb11,
   HERETIC_NUMSFX
 } sfxenum_t;
-
-// heretic
-
-#include "p_mobj.h"
-
-#define MAX_SND_DIST 	1600
-
-typedef struct
-{
-    mobj_t *mo;
-    int sound_id;
-    int handle;
-    int pitch;
-    int priority;
-} heretic_channel_t;
-
-typedef struct
-{
-    int id;
-    unsigned short priority;
-    char *name;
-    mobj_t *mo;
-    int distance;
-} ChanInfo_t;
-
-typedef struct sound_info_s
-{
-    int channelCount;
-    int musicVolume;
-    int soundVolume;
-    ChanInfo_t chan[8];
-} SoundInfo_t;
 
 // all the stuff - dynamically selected in global.c
 

@@ -77,6 +77,9 @@ typedef struct
   int handle;          // handle of the sound being played
   int is_pickup;       // killough 4/25/98: whether sound is a player's weapon
   int pitch;
+
+  // heretic
+  int priority;
 } channel_t;
 
 // the set of channels available
@@ -119,6 +122,18 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
 
 static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup);
 
+
+// heretic
+#define MAX_SND_DIST 	1600
+
+static byte* soundCurve;
+static int AmbChan = -1;
+
+static void Heretic_S_StopSound(void *_origin);
+static void Heretic_S_UpdateSounds(mobj_t *listener);
+static void Heretic_S_StartSound(void *_origin, int sound_id);
+static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
+
 // Initializes sound stuff, including volume
 // Sets channels, SFX and music volume,
 //  allocates channel buffer, sets S_sfx lookup.
@@ -160,6 +175,18 @@ void S_Init(int sfxVolume, int musicVolume)
     // no sounds are playing, and they are not mus_paused
     mus_paused = 0;
   }
+
+  if (!heretic) return;
+
+  soundCurve = Z_Malloc(MAX_SND_DIST, PU_STATIC, NULL);
+  S_SetSoundCurve(true);
+
+  // HERETIC_TODO: snd_pitchshift (not in prboom+)
+  // Heretic defaults to pitch-shifting on
+  // if (snd_pitchshift == -1)
+  // {
+  //     snd_pitchshift = 1;
+  // }
 }
 
 void S_Stop(void)
@@ -240,6 +267,8 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   int sep, pitch, priority, cnum, is_pickup;
   sfxinfo_t *sfx;
   mobj_t *origin = (mobj_t *) origin_p;
+
+  if (heretic) return Heretic_S_StartSoundAtVolume(origin_p, sfx_id, volume);
 
   //jff 1/22/98 return if sound is not enabled
   if (!snd_card || nosfxparm)
@@ -341,12 +370,16 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
 
 void S_StartSound(void *origin, int sfx_id)
 {
+  if (heretic) return Heretic_S_StartSound(origin, sfx_id);
+
   S_StartSoundAtVolume(origin, sfx_id, snd_SfxVolume);
 }
 
 void S_StopSound(void *origin)
 {
   int cnum;
+
+  if (heretic) return Heretic_S_StopSound(origin);
 
   //jff 1/22/98 return if sound is not enabled
   if (!snd_card || nosfxparm)
@@ -399,6 +432,8 @@ void S_UpdateSounds(void* listener_p)
   mobj_t *listener = (mobj_t*) listener_p;
   int cnum;
 
+  if (heretic) return Heretic_S_UpdateSounds(listener_p);
+
   //jff 1/22/98 return if sound is not enabled
   if (!snd_card || nosfxparm)
     return;
@@ -408,46 +443,46 @@ void S_UpdateSounds(void* listener_p)
 #endif
 
   for (cnum=0 ; cnum<numChannels ; cnum++)
+  {
+    sfxinfo_t *sfx;
+    channel_t *c = &channels[cnum];
+    if ((sfx = c->sfxinfo))
     {
-      sfxinfo_t *sfx;
-      channel_t *c = &channels[cnum];
-      if ((sfx = c->sfxinfo))
+      if (I_SoundIsPlaying(c->handle))
+      {
+        // initialize parameters
+        int volume = snd_SfxVolume;
+        int pitch = c->pitch; // use channel's pitch!
+        int sep = NORM_SEP;
+
+        if (sfx->link)
         {
-          if (I_SoundIsPlaying(c->handle))
-            {
-              // initialize parameters
-              int volume = snd_SfxVolume;
-              int pitch = c->pitch; // use channel's pitch!
-              int sep = NORM_SEP;
-
-              if (sfx->link)
-                {
-                  pitch = sfx->pitch;
-                  volume += sfx->volume;
-                  if (volume < 1)
-                    {
-                      S_StopChannel(cnum);
-                      continue;
-                    }
-                  else
-                    if (volume > snd_SfxVolume)
-                      volume = snd_SfxVolume;
-                }
-
-              // check non-local sounds for distance clipping
-              // or modify their params
-              if (c->origin && listener_p != c->origin) { // killough 3/20/98
-                if (!S_AdjustSoundParams(listener, c->origin,
-                                         &volume, &sep, &pitch))
-                  S_StopChannel(cnum);
-                else
-                  I_UpdateSoundParams(c->handle, volume, sep, pitch);
-        }
-            }
-          else   // if channel is allocated but sound has stopped, free it
+          pitch = sfx->pitch;
+          volume += sfx->volume;
+          if (volume < 1)
+          {
             S_StopChannel(cnum);
+            continue;
+          }
+          else
+            if (volume > snd_SfxVolume)
+              volume = snd_SfxVolume;
         }
+
+        // check non-local sounds for distance clipping
+        // or modify their params
+        if (c->origin && listener_p != c->origin) // killough 3/20/98
+        {
+          if (!S_AdjustSoundParams(listener, c->origin, &volume, &sep, &pitch))
+            S_StopChannel(cnum);
+          else
+            I_UpdateSoundParams(c->handle, volume, sep, pitch);
+        }
+      }
+      else   // if channel is allocated but sound has stopped, free it
+        S_StopChannel(cnum);
     }
+  }
 }
 
 
@@ -665,6 +700,9 @@ void S_StopChannel(int cnum)
       // degrade usefulness of sound data
       c->sfxinfo->usefulness--;
       c->sfxinfo = 0;
+
+      // HERETIC_TODO: do this for doom too?
+      if (heretic) c->handle = 0;
     }
 }
 
@@ -791,4 +829,389 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup)
   c->origin = origin;
   c->is_pickup = is_pickup;         // killough 4/25/98
   return cnum;
+}
+
+// heretic
+
+void S_SetSoundCurve(dboolean fullprocess)
+{
+  int i;
+  int limit;
+  const byte* lump;
+
+  limit = fullprocess ? MAX_SND_DIST : 1;
+  lump = (const byte *) W_CacheLumpName("SNDCURVE");
+
+  for (i = 0; i < limit; i++)
+    soundCurve[i] = (*(lump + i) * (snd_SfxVolume * 8)) >> 7;
+}
+
+static mobj_t* GetSoundListener(void)
+{
+  static degenmobj_t dummy_listener;
+
+  // If we are at the title screen, the display player doesn't have an
+  // object yet, so return a pointer to a static dummy listener instead.
+
+  if (players[displayplayer].mo != NULL)
+  {
+    return players[displayplayer].mo;
+  }
+  else
+  {
+    dummy_listener.x = 0;
+    dummy_listener.y = 0;
+    dummy_listener.z = 0;
+
+    return (mobj_t *) &dummy_listener;
+  }
+}
+
+static dboolean S_StopSoundInfo(sfxinfo_t* sfx, int priority)
+{
+  int i;
+  int least_priority;
+  int found;
+
+  if (sfx->numchannels == -1)
+    return true;
+
+  least_priority = -1;
+  found = 0;
+
+  for (i = 0; i < numChannels; i++)
+  {
+    if (channels[i].sfxinfo == sfx && channels[i].origin)
+    {
+      found++;            //found one.  Now, should we replace it??
+      if (priority >= channels[i].priority)
+      {                   // if we're gonna kill one, then this'll be it
+        least_priority = i;
+        priority = channels[i].priority;
+      }
+    }
+  }
+
+  if (found < sfx->numchannels)
+    return true;
+
+  if (least_priority >= 0)
+  {
+    channel_t* channel = &channels[least_priority];
+
+    if (channel->handle)
+    {
+      if (I_SoundIsPlaying(channel->handle))
+        I_StopSound(channel->handle);
+
+      // Bug in heretic? i in heretic source points to static zeroed data
+      // if (channels[i].sfxinfo->usefulness > 0)
+      //   channels[i].sfxinfo->usefulness--;
+
+      channel->origin = NULL;
+    }
+
+    return true;
+  }
+
+  return false; // don't replace any sounds
+}
+
+static void Heretic_S_StartSound(void *_origin, int sound_id)
+{
+  sfxinfo_t *sfx;
+  mobj_t *origin;
+  mobj_t *listener;
+  int dist, vol;
+  int i;
+  int priority;
+  int sep;
+  angle_t angle;
+  fixed_t absx;
+  fixed_t absy;
+  int chan;
+
+  static int sndcount = 0;
+
+  origin = (mobj_t *)_origin;
+  listener = GetSoundListener();
+
+  //jff 1/22/98 return if sound is not enabled
+  if (!snd_card || nosfxparm)
+    return;
+
+  if (sound_id == heretic_sfx_None)
+    return;
+
+  if (origin == NULL)
+    origin = listener;
+
+  sfx = &S_sfx[sound_id];
+
+  // calculate the distance before other stuff so that we can throw out
+  // sounds that are beyond the hearing range.
+  absx = abs(origin->x - listener->x);
+  absy = abs(origin->y - listener->y);
+  dist = absx + absy - (absx > absy ? absy >> 1 : absx >> 1);
+  dist >>= FRACBITS;
+
+  if (dist >= MAX_SND_DIST)
+    return; //sound is beyond the hearing range...
+  if (dist < 0)
+    dist = 0;
+
+  priority = sfx->priority;
+  priority *= (10 - (dist / 160));
+
+  if (!S_StopSoundInfo(sfx, priority))
+    return; // other sounds have greater priority
+
+  for (i = 0; i < numChannels; i++)
+  {
+    if (origin->player)
+    {
+      i = numChannels;
+      break;              // let the player have more than one sound.
+    }
+    if (origin == channels[i].origin)
+    {                       // only allow other mobjs one sound
+      S_StopSound(channels[i].origin);
+      break;
+    }
+  }
+
+  if (i >= numChannels)
+  {
+    if (sound_id >= heretic_sfx_wind)
+    {
+      if (AmbChan != -1 && sfx->priority <= channels[AmbChan].sfxinfo->priority)
+        return;         //ambient channel already in use
+
+      AmbChan = -1;
+    }
+
+    for (i = 0; i < numChannels; i++)
+      if (channels[i].origin == NULL)
+        break;
+
+    if (i >= numChannels)
+    {
+      //look for a lower priority sound to replace.
+      sndcount++;
+      if (sndcount >= numChannels)
+        sndcount = 0;
+
+      for (chan = 0; chan < numChannels; chan++)
+      {
+        i = (sndcount + chan) % numChannels;
+        if (priority >= channels[i].priority)
+        {
+          chan = -1;  //denote that sound should be replaced.
+          break;
+        }
+      }
+
+      if (chan != -1)
+        return;         //no free channels.
+
+      if (channels[i].handle)
+      {
+        if (I_SoundIsPlaying(channels[i].handle))
+          I_StopSound(channels[i].handle);
+
+        if (channels[i].sfxinfo->usefulness > 0)
+          channels[i].sfxinfo->usefulness--;
+
+        if (AmbChan == i)
+          AmbChan = -1;
+      }
+    }
+  }
+
+  if (sfx->lumpnum <= 0)
+    sfx->lumpnum = I_GetSfxLumpNum(sfx);
+
+  vol = soundCurve[dist];
+
+  if (origin == listener)
+    sep = 128;
+  else
+  {
+    angle = R_PointToAngle2(listener->x, listener->y, origin->x, origin->y);
+    if (angle <= listener->angle)
+      angle += 0xffffffff;
+    angle -= listener->angle;
+    angle >>= ANGLETOFINESHIFT;
+
+    // stereo separation
+    sep = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
+  }
+
+  channels[i].pitch = (byte) (NORM_PITCH + (M_Random() & 7) - (M_Random() & 7));
+  channels[i].handle = I_StartSound(sound_id, i, vol, sep, channels[i].pitch, priority);
+  channels[i].origin = origin;
+  channels[i].sfxinfo = sfx;
+  channels[i].priority = priority;
+  if (sound_id >= heretic_sfx_wind)
+    AmbChan = i;
+  if (sfx->usefulness == -1)
+    sfx->usefulness = 1;
+  else
+    sfx->usefulness++;
+}
+
+static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
+{
+  sfxinfo_t *sfx;
+  mobj_t *origin;
+  mobj_t *listener;
+  int i;
+
+  origin = (mobj_t *)_origin;
+  listener = GetSoundListener();
+
+  if (!snd_card || nosfxparm)
+    return;
+
+  if (sound_id == heretic_sfx_None || volume == 0)
+    return;
+
+  if (origin == NULL)
+    origin = listener;
+
+  sfx = &S_sfx[sound_id];
+
+  volume = (volume * (snd_SfxVolume + 1) * 8) >> 7;
+
+  // no priority checking, as ambient sounds would be the LOWEST.
+  for (i = 0; i < numChannels; i++)
+    if (channels[i].origin == NULL)
+      break;
+
+  if (i >= numChannels)
+    return;
+
+  if (sfx->lumpnum <= 0)
+    sfx->lumpnum = I_GetSfxLumpNum(sfx);
+
+  channels[i].pitch = (byte) (NORM_PITCH - (M_Random() & 3) + (M_Random() & 3));
+  channels[i].handle = I_StartSound(sound_id, i, volume, 128, channels[i].pitch, 1);
+  channels[i].origin = origin;
+  channels[i].sfxinfo = sfx;
+  channels[i].priority = 1;    //super low priority.
+  if (sfx->usefulness == -1)
+    sfx->usefulness = 1;
+  else
+    sfx->usefulness++;
+}
+
+static void Heretic_S_StopSound(void *_origin)
+{
+  mobj_t *origin = _origin;
+  int i;
+
+  //jff 1/22/98 return if sound is not enabled
+  if (!snd_card || nosfxparm)
+    return;
+
+  for (i = 0; i < numChannels; i++)
+  {
+    if (channels[i].origin == origin)
+    {
+      I_StopSound(channels[i].handle);
+
+      if (channels[i].sfxinfo->usefulness > 0)
+        channels[i].sfxinfo->usefulness--;
+
+      channels[i].handle = 0;
+      channels[i].origin = NULL;
+
+      if (AmbChan == i)
+        AmbChan = -1;
+    }
+  }
+}
+
+void Heretic_S_UpdateSounds(mobj_t *listener)
+{
+  int i, dist, vol;
+  int sep;
+  int priority;
+  angle_t angle;
+  fixed_t absx;
+  fixed_t absy;
+
+  //jff 1/22/98 return if sound is not enabled
+  if (!snd_card || nosfxparm)
+    return;
+
+#ifdef UPDATE_MUSIC
+  I_UpdateMusic();
+#endif
+
+  // I_UpdateSound();
+
+  listener = GetSoundListener();
+  if (snd_SfxVolume == 0)
+    return;
+
+  for (i = 0; i < numChannels; i++)
+  {
+    mobj_t* origin;
+
+    if (!channels[i].handle || channels[i].sfxinfo->usefulness == -1)
+      continue;
+
+    if (!I_SoundIsPlaying(channels[i].handle))
+    {
+      if (channels[i].sfxinfo->usefulness > 0)
+        channels[i].sfxinfo->usefulness--;
+      channels[i].handle = 0;
+      channels[i].origin = NULL;
+      channels[i].sfxinfo = NULL;
+      if (AmbChan == i)
+        AmbChan = -1;
+    }
+
+    if (
+      channels[i].origin == NULL ||
+      channels[i].sfxinfo == NULL ||
+      channels[i].origin == listener ||
+      listener == NULL
+    )
+      continue;
+
+    origin = (mobj_t*)channels[i].origin;
+
+    absx = abs(origin->x - listener->x);
+    absy = abs(origin->y - listener->y);
+    dist = absx + absy - (absx > absy ? absy >> 1 : absx >> 1);
+    dist >>= FRACBITS;
+
+    if (dist >= MAX_SND_DIST)
+    {
+      S_StopSound(origin);
+      continue;
+    }
+    if (dist < 0)
+      dist = 0;
+
+    // calculate the volume based upon the distance from the sound origin.
+    vol = soundCurve[dist];
+
+    angle = R_PointToAngle2(listener->x, listener->y, origin->x, origin->y);
+    if (angle <= listener->angle)
+      angle += 0xffffffff;
+    angle -= listener->angle;
+    angle >>= ANGLETOFINESHIFT;
+
+    // stereo separation
+    sep = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
+
+    // TODO: Pitch shifting.
+    I_UpdateSoundParams(channels[i].handle, vol, sep, channels[i].pitch);
+    priority = channels[i].sfxinfo->priority;
+    priority *= (10 - (dist >> 8));
+    channels[i].priority = priority;
+  }
 }
