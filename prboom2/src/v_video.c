@@ -1822,6 +1822,29 @@ void V_ChangeScreenResolution(void)
 
 // heretic
 
+// HERETIC_TODO: is something already implemented to handle this?
+void V_DrawRawScreen(const byte *raw)
+{
+  int i, j;
+  float x_factor, y_factor;
+
+  x_factor = (float)SCREENWIDTH / 320;
+  y_factor = (float)SCREENHEIGHT / 200;
+
+  for (j = 0; j < 200; ++j)
+    for (i = 0; i < 320; ++i, ++raw)
+    {
+      int x, y, width, height;
+
+      x = (int)(i * x_factor);
+      y = (int)(j * y_factor);
+      width = (int)((i + 1) * x_factor) - x;
+      height = (int)((j + 1) * y_factor) - y;
+
+      V_FillRect(0, x, y, width, height, *raw);
+    }
+}
+
 void V_DrawShadowedNumPatch(int x, int y, int lump)
 {
   V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);

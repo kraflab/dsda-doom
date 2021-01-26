@@ -308,6 +308,7 @@ int V_BestColor(const unsigned char *palette, int r, int g, int b);
 
 // heretic
 
+void V_DrawRawScreen(const byte *raw);
 void V_DrawShadowedNumPatch(int x, int y, int lump);
 void V_DrawShadowedNamePatch(int x, int y, const char* name);
 void V_DrawTLNumPatch(int x, int y, int lump);

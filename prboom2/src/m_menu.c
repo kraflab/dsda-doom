@@ -4468,6 +4468,16 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
 {
   const int creditlump = W_CheckNumForName("CREDIT");
 
+  // HERETIC_TODO: fixes CREDIT crash but probably shouldn't reach this?
+  if (heretic)
+  {
+    const byte* lump = W_CacheLumpName("CREDIT");
+
+    V_DrawRawScreen(lump);
+
+    return;
+  }
+
   inhelpscreens = true;
   if (creditlump >= 0 && lumpinfo[creditlump].source != source_iwad)
   {

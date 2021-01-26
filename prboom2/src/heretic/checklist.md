@@ -5,9 +5,9 @@
 - [x] Add intermission
 - [x] Add status bar
 - [x] Integrate heretic sound system
+- [x] Support new graphics format
 - [ ] Add finale
 - [ ] Add start screen
-- [ ] Support new graphics format (CREDITS)
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds
 - [ ] Fix menu visuals
