@@ -6,12 +6,13 @@
 - [x] Add status bar
 - [x] Integrate heretic sound system
 - [x] Support new graphics format
+- [x] Fix hud font
 - [ ] Add finale
 - [ ] Add start screen
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds
 - [ ] Fix menu visuals
-- [ ] Fix hud visuals
+- [ ] Fix hud palette
 - [ ] Support graphical player pitch
 - [ ] Fix palette updates
 - [ ] Support ghosts

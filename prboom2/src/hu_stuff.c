@@ -320,73 +320,118 @@ void HU_Init(void)
     {
       sprintf(buffer, "DIG%.1d",j-48);
       R_SetPatchNum(&hu_font2[i], buffer);
-      sprintf(buffer, "STCFN%.3d",j);
+
+      if (heretic)
+        sprintf(buffer, "FONTA%.2d",j - 32);
+      else
+        sprintf(buffer, "STCFN%.3d",j);
       R_SetPatchNum(&hu_font[i], buffer);
-      sprintf(buffer, "STTNUM%.1d",j-48);
-      R_SetPatchNum(&hu_font_hud[i], buffer);
+
+      if (!heretic)
+      {
+        sprintf(buffer, "STTNUM%.1d",j-48);
+        R_SetPatchNum(&hu_font_hud[i], buffer);
+      }
     }
     else if ('A'<=j && j<='Z')
     {
       sprintf(buffer, "DIG%c",j);
       R_SetPatchNum(&hu_font2[i], buffer);
-      sprintf(buffer, "STCFN%.3d",j);
+
+      if (heretic)
+        sprintf(buffer, "FONTA%.2d",j - 32);
+      else
+        sprintf(buffer, "STCFN%.3d",j);
       R_SetPatchNum(&hu_font[i], buffer);
     }
     else if (j=='-')
     {
       R_SetPatchNum(&hu_font2[i], "DIG45");
-      R_SetPatchNum(&hu_font[i], "STCFN045");
+
+      if (heretic)
+        R_SetPatchNum(&hu_font[i], "FONTA13");
+      else
+        R_SetPatchNum(&hu_font[i], "STCFN045");
     }
     else if (j=='/')
     {
       R_SetPatchNum(&hu_font2[i], "DIG47");
-      R_SetPatchNum(&hu_font[i], "STCFN047");
+
+      if (heretic)
+        R_SetPatchNum(&hu_font[i], "FONTA15");
+      else
+        R_SetPatchNum(&hu_font[i], "STCFN047");
     }
     else if (j==':')
     {
       R_SetPatchNum(&hu_font2[i], "DIG58");
-      R_SetPatchNum(&hu_font[i], "STCFN058");
+
+      if (heretic)
+        R_SetPatchNum(&hu_font[i], "FONTA26");
+      else
+        R_SetPatchNum(&hu_font[i], "STCFN058");
     }
     else if (j=='[')
     {
       R_SetPatchNum(&hu_font2[i], "DIG91");
-      R_SetPatchNum(&hu_font[i], "STCFN091");
+
+      if (heretic)
+        hu_font[i] = hu_font[0];
+      else
+        R_SetPatchNum(&hu_font[i], "STCFN091");
     }
     else if (j==']')
     {
       R_SetPatchNum(&hu_font2[i], "DIG93");
-      R_SetPatchNum(&hu_font[i], "STCFN093");
+
+      if (heretic)
+        hu_font[i] = hu_font[0];
+      else
+        R_SetPatchNum(&hu_font[i], "STCFN093");
     }
-    else if (j<97)
+    else if (!heretic && j < 97)
     {
       sprintf(buffer, "STCFN%.3d",j);
       R_SetPatchNum(&hu_font2[i], buffer);
       R_SetPatchNum(&hu_font[i], buffer);
       //jff 2/23/98 make all font chars defined, useful or not
     }
-    else if (j>122)
+    else if (heretic && j < 91)
+    {
+      sprintf(buffer, "FONTA%.2d", j - 32);
+      R_SetPatchNum(&hu_font2[i], buffer);
+      R_SetPatchNum(&hu_font[i], buffer);
+      //jff 2/23/98 make all font chars defined, useful or not
+    }
+    else if (j > 122)
     {
       sprintf(buffer, "STBR%.3d",j);
       R_SetPatchNum(&hu_font2[i], buffer);
       R_SetPatchNum(&hu_font[i], buffer);
     }
     else
+    {
       hu_font[i] = hu_font[0]; //jff 2/16/98 account for gap
+      hu_font2[i] = hu_font2[0];
+    }
   }
 
-  // these patches require cm to rgb translation
-  for (i = 33; i < 96; i++)
+  if (!heretic)
   {
-    sprintf(buffer, "STCFN%.3d", i);
-    HU_SetLumpTrans(buffer);
+    // these patches require cm to rgb translation
+    for (i = 33; i < 96; i++)
+    {
+      sprintf(buffer, "STCFN%.3d", i);
+      HU_SetLumpTrans(buffer);
+    }
+    for (i = 0; i < 10; i++)
+    {
+      sprintf(buffer, "STTNUM%d", i);
+      HU_SetLumpTrans(buffer);
+    }
+    HU_SetLumpTrans("STTPRCNT");
+    HU_SetLumpTrans("STTMINUS");
   }
-  for (i = 0; i < 10; i++)
-  {
-    sprintf(buffer, "STTNUM%d", i);
-    HU_SetLumpTrans(buffer);
-  }
-  HU_SetLumpTrans("STTPRCNT");
-  HU_SetLumpTrans("STTMINUS");
 
   // CPhipps - load patches for message background
   for (i=0; i<9; i++) {
@@ -394,35 +439,37 @@ void HU_Init(void)
     R_SetPatchNum(&hu_msgbg[i], buffer);
   }
 
-  // CPhipps - load patches for keys and double keys
-  for (i=0; i<6; i++) {
-    sprintf(buffer, "STKEYS%d", i);
-    R_SetPatchNum(&hu_fontk[i], buffer);
+  if (!heretic)
+  {
+    // CPhipps - load patches for keys and double keys
+    for (i=0; i<6; i++) {
+      sprintf(buffer, "STKEYS%d", i);
+      R_SetPatchNum(&hu_fontk[i], buffer);
+    }
+
+    R_SetSpriteByIndex(&hu_font_hud[4], SPR_MEDI);
+    R_SetSpriteByIndex(&hu_font_hud[5], SPR_ARM1);
+    R_SetSpriteByIndex(&hu_font_hud[6], SPR_ARM1);
+    R_SetSpriteByIndex(&hu_font_hud[7], SPR_ARM2);
+
+    R_SetSpriteByIndex(&hu_font_hud[8], SPR_STIM);
+    R_SetSpriteByName(&hu_font_hud[9], "BON2A0");
+    R_SetSpriteByName(&hu_font_hud[10], "BON2B0");
+    R_SetSpriteByName(&hu_font_hud[11], "BON2D0");
+
+    R_SetPatchNum(&hu_font_hud[12], "STTPRCNT");
+    R_SetPatchNum(&hu_font_hud[13], "STTPRCNT");
+
+    R_SetPatchByName(&hu_font_hud[30], "HUDMED");
+    R_SetPatchByName(&hu_font_hud[31], "HUDARM1");
+    R_SetPatchByName(&hu_font_hud[32], "HUDARM1");
+    R_SetPatchByName(&hu_font_hud[33], "HUDARM2");
+
+    R_SetSpriteByName(&hu_font_hud[40], "CLIPA0");
+    R_SetSpriteByName(&hu_font_hud[41], "SHELA0");
+    R_SetSpriteByName(&hu_font_hud[42], "CELLA0");
+    R_SetSpriteByName(&hu_font_hud[43], "ROCKA0");
   }
-
-  R_SetSpriteByIndex(&hu_font_hud[4], SPR_MEDI);
-  R_SetSpriteByIndex(&hu_font_hud[5], SPR_ARM1);
-  R_SetSpriteByIndex(&hu_font_hud[6], SPR_ARM1);
-  R_SetSpriteByIndex(&hu_font_hud[7], SPR_ARM2);
-
-  R_SetSpriteByIndex(&hu_font_hud[8], SPR_STIM);
-  R_SetSpriteByName(&hu_font_hud[9], "BON2A0");
-  R_SetSpriteByName(&hu_font_hud[10], "BON2B0");
-  R_SetSpriteByName(&hu_font_hud[11], "BON2D0");
-
-  R_SetPatchNum(&hu_font_hud[12], "STTPRCNT");
-  R_SetPatchNum(&hu_font_hud[13], "STTPRCNT");
-
-  R_SetPatchByName(&hu_font_hud[30], "HUDMED");
-  R_SetPatchByName(&hu_font_hud[31], "HUDARM1");
-  R_SetPatchByName(&hu_font_hud[32], "HUDARM1");
-  R_SetPatchByName(&hu_font_hud[33], "HUDARM2");
-
-  R_SetSpriteByName(&hu_font_hud[40], "CLIPA0");
-  R_SetSpriteByName(&hu_font_hud[41], "SHELA0");
-  R_SetSpriteByName(&hu_font_hud[42], "CELLA0");
-  R_SetSpriteByName(&hu_font_hud[43], "ROCKA0");
-
 }
 
 //
@@ -973,7 +1020,7 @@ void HU_Start(void)
   // now allow the heads-up display to run
   headsupactive = true;
 
-  HU_LoadHUDDefs();
+  if (!heretic) HU_LoadHUDDefs();
 
   HU_MoveHud(true);
 
@@ -1219,7 +1266,7 @@ void HU_MoveHud(int force)
   static int ohud_num = -1;
 
   //jff 3/4/98 move displays around on F5 changing hud_distributed
-  if ((huds_count > 0) && (force || hud_num != ohud_num))
+  if (!heretic && (huds_count > 0) && (force || hud_num != ohud_num))
   {
     int i;
 
@@ -2468,6 +2515,7 @@ void HU_Drawer(void)
   // killough 2/21/98: really allow new hud stuff to be turned off COMPLETELY
   if
   (
+    !heretic &&
     hud_num > 0 &&                   // hud optioned on
     hud_displayed &&                 // hud on from fullscreen key
     viewheight==SCREENHEIGHT &&      // fullscreen mode is active
