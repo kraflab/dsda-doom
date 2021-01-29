@@ -91,7 +91,6 @@ typedef enum
 ===============================================================================
 */
 
-#define MESSAGETICS (4*35)
 #define BLINKTHRESHOLD (4*32)
 
 #define CF_NOCLIP		1

@@ -556,16 +556,6 @@ void P_PlayerThink (player_t* player)
     player->mo->flags &= ~MF_JUSTATTACKED;
   }
 
-  // HERETIC_TODO: do we need the messageTics stuff?
-  // messageTics is above the rest of the counters so that messages will
-  //              go away, even in death.
-  // player->messageTics--;      // Can go negative
-  // if (!player->messageTics)
-  // {                           // Refresh the screen when a message goes away
-  //     ultimatemsg = false;    // clear out any chat messages.
-  //     BorderTopRefresh = true;
-  // }
-
   if (player->playerstate == PST_DEAD)
   {
     P_DeathThink(player);

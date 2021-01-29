@@ -214,8 +214,6 @@ typedef struct player_s
 
   //e6y
   int                 maxkilldiscount;
-  //not used, not removed because of savagame compatibility
-  const char*         centermessage;
 
   fixed_t prev_viewz;
   angle_t prev_viewangle;
@@ -230,13 +228,11 @@ typedef struct player_s
   artitype_t readyArtifact;
   int artifactCount;
   int inventorySlotNum;
-  int messageTics;            // counter for showing messages
   int flamecount;             // for flame thrower duration
   int chickenTics;            // player is a chicken if > 0
   int chickenPeck;            // chicken peck countdown
   mobj_t *rain1;              // active rain maker 1
   mobj_t *rain2;              // active rain maker 2
-  int centerMessageTics;      // counter for showing centered messages
 } player_t;
 
 
