@@ -1825,13 +1825,18 @@ void V_ChangeScreenResolution(void)
 // HERETIC_TODO: is something already implemented to handle this?
 void V_DrawRawScreen(const byte *raw)
 {
+  V_DrawRawScreenSection(raw, 0, 200);
+}
+
+void V_DrawRawScreenSection(const byte *raw, int dest_y_offset, int dest_y_limit)
+{
   int i, j;
   float x_factor, y_factor;
 
   x_factor = (float)SCREENWIDTH / 320;
   y_factor = (float)SCREENHEIGHT / 200;
 
-  for (j = 0; j < 200; ++j)
+  for (j = dest_y_offset; j < dest_y_offset + dest_y_limit; ++j)
     for (i = 0; i < 320; ++i, ++raw)
     {
       int x, y, width, height;

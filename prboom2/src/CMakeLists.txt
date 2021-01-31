@@ -60,6 +60,8 @@ set(COMMON_SRC
     heretic/def.h
     heretic/dstrings.h
     heretic/dstrings.c
+    heretic/f_finale.h
+    heretic/f_finale.c
     heretic/info.c
     heretic/in_lude.c
     heretic/in_lude.h

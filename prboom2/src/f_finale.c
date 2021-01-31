@@ -40,6 +40,8 @@
 #include "s_sound.h"
 #include "sounds.h"
 #include "d_deh.h"  // Ty 03/22/98 - externalizations
+#include "heretic/f_finale.h"
+
 #include "f_finale.h" // CPhipps - hmm...
 
 
@@ -78,6 +80,8 @@ int midstage;                 // whether we're in "mid-stage"
 //
 void F_StartFinale (void)
 {
+  if (heretic) return Heretic_F_StartFinale();
+
   gameaction = ga_nothing;
   gamestate = GS_FINALE;
   automapmode &= ~am_active;
@@ -195,6 +199,8 @@ void F_StartFinale (void)
 
 dboolean F_Responder (event_t *event)
 {
+  if (heretic) return Heretic_F_Responder(event);
+
   if (finalestage == 2)
     return F_CastResponder (event);
 
@@ -227,6 +233,8 @@ float Get_TextSpeed(void)
 void F_Ticker(void)
 {
   int i;
+
+  if (heretic) return Heretic_F_Ticker();
 
 	if (using_FMI)
 	{
@@ -658,6 +666,8 @@ static void F_BunnyScroll (void)
 //
 void F_Drawer (void)
 {
+  if (heretic) return Heretic_F_Drawer();
+
 	if (using_FMI)
 	{
 		FMI_Drawer();
