@@ -398,7 +398,6 @@ int key_invleft;
 int key_invright;
 int mousebinvleft = -1;
 int mousebinvright = -1;
-dboolean finalintermission;
 
 static dboolean InventoryMoveLeft(void);
 static dboolean InventoryMoveRight(void);

@@ -41,9 +41,6 @@
 
 extern dboolean BorderNeedRefresh;
 
-// HERETIC_TODO: finalintermission logic
-extern dboolean finalintermission;
-
 typedef enum
 {
     SINGLE,
@@ -75,6 +72,7 @@ static int FontBBaseLump;
 static int prevmap;
 static dboolean intermission;
 static dboolean skipintermission;
+static dboolean finalintermission;
 static int interstate = 0;
 static int intertime = -1;
 static int oldintertime = 0;
@@ -216,6 +214,8 @@ static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
 {
   wbs = wbstartstruct;
   prevmap = wbs->last + 1;
+
+  finalintermission = (prevmap == 8);
 }
 
 //========================================================================
