@@ -7,7 +7,8 @@
 - [x] Integrate heretic sound system
 - [x] Support new graphics format
 - [x] Fix hud font
-- [ ] Add finale
+- [x] Add finale
+- [ ] Fix shadow effect
 - [ ] Add start screen
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds
@@ -39,7 +40,7 @@
 - [ ] doomdata.h 193
 - [ ] doomdef.h 852
 - [x] dstrings.h 247
-- [ ] f_finale.c 444
+- [x] f_finale.c 444
 - [x] g_game.c 2356
 - [x] in_lude.c 1129
 - [x] info.c 5601
@@ -83,4 +84,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 16131, MERGED: 31083, PERCENT: 65%
+LEFT: 15659, MERGED: 31555, PERCENT: 66%
