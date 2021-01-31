@@ -84,8 +84,6 @@ void F_StartFinale(void)
     finalestage = 0;
     finalecount = 0;
     FontABaseLump = W_GetNumForName(DEH_String("FONTA_S")) + 1;
-
-//      S_ChangeMusic(mus_victor, true);
     S_StartSong(mus_cptd, true);
 }
 
@@ -100,11 +98,6 @@ boolean F_Responder(event_t * event)
     if (finalestage == 1 && gameepisode == 2)
     {                           // we're showing the water pic, make any key kick to demo mode
         finalestage++;
-        /*
-        memset((byte *) 0xa0000, 0, SCREENWIDTH * SCREENHEIGHT);
-        memset(I_VideoBuffer, 0, SCREENWIDTH * SCREENHEIGHT);
-        I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
-        */
         return true;
     }
     return false;
@@ -130,12 +123,6 @@ void F_Ticker(void)
         {
             finalestage = 1;
         }
-
-//              wipegamestate = -1;             // force a wipe
-/*
-		if (gameepisode == 3)
-			S_StartMusic (mus_bunny);
-*/
     }
 }
 
@@ -147,9 +134,6 @@ void F_Ticker(void)
 =
 =======================
 */
-
-//#include "hu_stuff.h"
-//extern        patch_t *hu_font[HU_FONTSIZE];
 
 void F_TextWrite(void)
 {
@@ -179,8 +163,6 @@ void F_TextWrite(void)
             dest += (SCREENWIDTH & 63);
         }
     }
-
-//      V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
 
 //
 // draw some of the text onto the screen
@@ -339,66 +321,6 @@ void F_DrawUnderwater(void)
 }
 
 
-#if 0
-/*
-==================
-=
-= F_BunnyScroll
-=
-==================
-*/
-
-void F_BunnyScroll(void)
-{
-    int scrolled, x;
-    patch_t *p1, *p2;
-    char name[10];
-    int stage;
-    static int laststage;
-
-    p1 = W_CacheLumpName("PFUB2", PU_LEVEL);
-    p2 = W_CacheLumpName("PFUB1", PU_LEVEL);
-
-    V_MarkRect(0, 0, SCREENWIDTH, SCREENHEIGHT);
-
-    scrolled = 320 - (finalecount - 230) / 2;
-    if (scrolled > 320)
-        scrolled = 320;
-    if (scrolled < 0)
-        scrolled = 0;
-
-    for (x = 0; x < SCREENWIDTH; x++)
-    {
-        if (x + scrolled < 320)
-            F_DrawPatchCol(x, p1, x + scrolled);
-        else
-            F_DrawPatchCol(x, p2, x + scrolled - 320);
-    }
-
-    if (finalecount < 1130)
-        return;
-    if (finalecount < 1180)
-    {
-        V_DrawPatch((SCREENWIDTH - 13 * 8) / 2, (SCREENHEIGHT - 8 * 8) / 2, 0,
-                    W_CacheLumpName("END0", PU_CACHE));
-        laststage = 0;
-        return;
-    }
-
-    stage = (finalecount - 1180) / 5;
-    if (stage > 6)
-        stage = 6;
-    if (stage > laststage)
-    {
-        S_StartSound(NULL, sfx_pistol);
-        laststage = stage;
-    }
-
-    M_snprintf(name, sizeof(name), "END%i", stage);
-    V_DrawPatch((SCREENWIDTH - 13 * 8) / 2, (SCREENHEIGHT - 8 * 8) / 2,
-                W_CacheLumpName(name, PU_CACHE));
-}
-#endif
 
 /*
 =======================
