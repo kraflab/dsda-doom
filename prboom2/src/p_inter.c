@@ -54,6 +54,7 @@
 #include "dsda.h"
 
 #include "heretic/def.h"
+#include "heretic/sb_bar.h"
 
 #define BONUSADD        6
 
@@ -1094,13 +1095,10 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     if (player->damagecount > 100)
       player->damagecount = 100;  // teleport stomp does 10k points...
 
-    // HERETIC_TODO: something for the hud?
-    // if (heretic && player == &players[consoleplayer])
-    // {
-    //     int temp = damage < 100 ? damage : 100;
-    //     I_Tactile(40, 10, 40 + temp * 2);
-    //     SB_PaletteFlash();
-    // }
+    if (heretic && player == &players[consoleplayer])
+    {
+      SB_PaletteFlash();
+    }
   }
 
   if (source && target)
@@ -1584,8 +1582,7 @@ void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     if (player == &players[consoleplayer])
     {
         S_StartSound(NULL, sound);
-        // HERETIC_TODO: ignoring status bar code
-        // SB_PaletteFlash();
+        SB_PaletteFlash();
     }
 }
 

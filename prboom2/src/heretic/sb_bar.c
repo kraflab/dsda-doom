@@ -22,11 +22,17 @@
 #include "v_video.h"
 #include "r_main.h"
 #include "w_wad.h"
+#include "i_video.h"
 
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
 
 #include "sb_bar.h"
+
+#define STARTREDPALS            1
+#define STARTBONUSPALS          9
+#define NUMREDPALS              8
+#define NUMBONUSPALS            4
 
 // Private Functions
 
@@ -505,41 +511,38 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 // and player->bonuscount
 void SB_PaletteFlash(void)
 {
-    // HERETIC_TODO: SB_PaletteFlash
-    // static int sb_palette = 0;
-    // int palette;
-    // byte *pal;
-    //
-    // CPlayer = &players[consoleplayer];
-    //
-    // if (CPlayer->damagecount)
-    // {
-    //     palette = (CPlayer->damagecount + 7) >> 3;
-    //     if (palette >= NUMREDPALS)
-    //     {
-    //         palette = NUMREDPALS - 1;
-    //     }
-    //     palette += STARTREDPALS;
-    // }
-    // else if (CPlayer->bonuscount)
-    // {
-    //     palette = (CPlayer->bonuscount + 7) >> 3;
-    //     if (palette >= NUMBONUSPALS)
-    //     {
-    //         palette = NUMBONUSPALS - 1;
-    //     }
-    //     palette += STARTBONUSPALS;
-    // }
-    // else
-    // {
-    //     palette = 0;
-    // }
-    // if (palette != sb_palette)
-    // {
-    //     sb_palette = palette;
-    //     pal = (byte *) W_CacheLumpNum(playpalette, PU_CACHE) + palette * 768;
-    //     I_SetPalette(pal);
-    // }
+    static int sb_palette = 0;
+    int palette;
+
+    CPlayer = &players[consoleplayer];
+
+    if (CPlayer->damagecount)
+    {
+        palette = (CPlayer->damagecount + 7) >> 3;
+        if (palette >= NUMREDPALS)
+        {
+            palette = NUMREDPALS - 1;
+        }
+        palette += STARTREDPALS;
+    }
+    else if (CPlayer->bonuscount)
+    {
+        palette = (CPlayer->bonuscount + 7) >> 3;
+        if (palette >= NUMBONUSPALS)
+        {
+            palette = NUMBONUSPALS - 1;
+        }
+        palette += STARTBONUSPALS;
+    }
+    else
+    {
+        palette = 0;
+    }
+    if (palette != sb_palette)
+    {
+        sb_palette = palette;
+        I_SetPalette(sb_palette);
+    }
 }
 
 //---------------------------------------------------------------------------
