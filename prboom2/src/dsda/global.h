@@ -55,6 +55,8 @@ extern int g_door_raise_in_5_mins;
 extern int g_door_open;
 
 extern int g_st_height;
+extern int g_mf_translucent;
+extern int g_mf_shadow;
 
 extern dboolean heretic;
 

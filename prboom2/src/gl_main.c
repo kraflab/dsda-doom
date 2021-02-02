@@ -892,7 +892,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   }
   else
   {
-    if (viewplayer->mo->flags & MF_TRANSLUCENT)
+    if (viewplayer->mo->flags & g_mf_translucent)
       gld_StaticLightAlpha(light,(float)tran_filter_pct/100.0f);
     else
       gld_StaticLight(light);
@@ -2245,7 +2245,7 @@ static void gld_DrawSprite(GLSprite *sprite)
 
   if (!(sprite->flags & MF_NO_DEPTH_TEST))
   {
-    if(sprite->flags & MF_SHADOW)
+    if(sprite->flags & g_mf_shadow)
     {
       glGetIntegerv(GL_BLEND_SRC, &blend_src);
       glGetIntegerv(GL_BLEND_DST, &blend_dst);
@@ -2257,7 +2257,7 @@ static void gld_DrawSprite(GLSprite *sprite)
     }
     else
     {
-      if(sprite->flags & MF_TRANSLUCENT)
+      if(sprite->flags & g_mf_translucent)
         gld_StaticLightAlpha(sprite->light,(float)tran_filter_pct/100.0f);
       else
         gld_StaticLight(sprite->light);

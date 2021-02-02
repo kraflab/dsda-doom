@@ -9,7 +9,8 @@
 - [x] Fix hud font
 - [x] Add finale
 - [x] Fix palette updates
-- [ ] Fix shadow effect
+- [x] Fix shadow effect
+- [ ] Fix opengl status bar updating
 - [ ] Add start screen
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds

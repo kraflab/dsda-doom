@@ -83,6 +83,8 @@ int g_door_raise_in_5_mins;
 int g_door_open;
 
 int g_st_height;
+int g_mf_translucent;
+int g_mf_shadow;
 
 extern const char** S_music_files;
 
@@ -164,6 +166,8 @@ static void dsda_InitDoom(void) {
   g_door_open = openDoor;
 
   g_st_height = 32;
+  g_mf_translucent = MF_TRANSLUCENT;
+  g_mf_shadow = MF_SHADOW;
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -245,6 +249,8 @@ static void dsda_InitHeretic(void) {
   g_door_open = vld_open;
 
   g_st_height = 42;
+  g_mf_translucent = MF_SHADOW;
+  g_mf_shadow = 0; // doesn't exist in heretic
 
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {

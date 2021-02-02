@@ -545,7 +545,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
           ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
       }
     else
-      if (vis->mobjflags & MF_TRANSLUCENT && general_translucency) // phares
+      if (vis->mobjflags & g_mf_translucent && general_translucency) // phares
         {
           colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, filter, filterz);
           tranmap = main_tranmap;       // killough 4/11/98
@@ -821,7 +821,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
   R_SetSpritelights(lightlevel);
 
   // get light level
-  if (thing->flags & MF_SHADOW)
+  if (thing->flags & g_mf_shadow)
       vis->colormap = NULL;             // shadow draw
   else if (fixedcolormap)
     vis->colormap = fixedcolormap;      // fixed map
