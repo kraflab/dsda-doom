@@ -22,7 +22,6 @@
 #include "v_video.h"
 #include "r_main.h"
 #include "w_wad.h"
-#include "i_video.h"
 
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
@@ -541,7 +540,7 @@ void SB_PaletteFlash(void)
     if (palette != sb_palette)
     {
         sb_palette = palette;
-        I_SetPalette(sb_palette);
+        V_SetPalette(sb_palette);
     }
 }
 

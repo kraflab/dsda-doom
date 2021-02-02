@@ -500,8 +500,7 @@ void P_DeathThink (player_t* player)
     {
       if (player == &players[consoleplayer])
       {
-        // HERETIC_TODO: Does this work? Type mismatch
-        // I_SetPalette(W_CacheLumpName(DEH_String("PLAYPAL")));
+        V_SetPalette(0);
         inv_ptr = 0;
         curpos = 0;
         newtorch = 0;

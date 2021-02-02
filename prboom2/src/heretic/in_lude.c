@@ -228,7 +228,7 @@ extern void AM_Stop(void);
 
 void IN_Start(wbstartstruct_t* wbstartstruct)
 {
-    // I_SetPalette(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
+    V_SetPalette(0);
     IN_InitVariables(wbstartstruct);
     IN_InitLumps();
     IN_InitStats();
