@@ -11,6 +11,7 @@
 - [x] Fix palette updates
 - [x] Fix shadow effect
 - [ ] Fix opengl status bar updating
+- [ ] Fix hud text color
 - [ ] Add start screen
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds
