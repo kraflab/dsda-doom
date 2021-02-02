@@ -264,10 +264,7 @@ void F_DrawUnderwater(void)
     case 2:
       if (underwawa)
       {
-        // lumpname = DEH_String("PLAYPAL");
-        // palette = W_CacheLumpName(lumpname, PU_STATIC);
-        // I_SetPalette(palette);
-        // W_ReleaseLumpName(lumpname);
+        V_SetPalette(0);
         underwawa = false;
       }
       V_DrawRawScreen(W_CacheLumpName(DEH_String("TITLE")));
