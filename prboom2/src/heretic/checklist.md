@@ -8,17 +8,17 @@
 - [x] Support new graphics format
 - [x] Fix hud font
 - [x] Add finale
+- [x] Fix palette updates
 - [ ] Fix shadow effect
 - [ ] Add start screen
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds
 - [ ] Fix menu visuals
-- [ ] Fix hud palette
 - [ ] Support graphical player pitch
-- [ ] Fix palette updates
 - [ ] Support ghosts
 - [ ] Support analysis
 - [ ] Support key frames
+- [ ] Support E2END palette
 
 ### Files in crispy src/heretic:
 

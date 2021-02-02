@@ -233,7 +233,6 @@ void F_DemonScroll(void)
 ==================
 */
 
-// HERETIC_TODO: F_DrawUnderwater palette
 void F_DrawUnderwater(void)
 {
   static dboolean underwawa = false;
@@ -251,6 +250,7 @@ void F_DrawUnderwater(void)
       if (!underwawa)
       {
         underwawa = true;
+        // HERETIC_TODO: E2END palette
         // V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT, 0);
         // lumpname = DEH_String("E2PAL");
         // palette = W_CacheLumpName(lumpname, PU_STATIC);
