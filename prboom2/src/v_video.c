@@ -1832,9 +1832,15 @@ void V_DrawRawScreenSection(const byte *raw, int dest_y_offset, int dest_y_limit
 {
   int i, j;
   float x_factor, y_factor;
+  int x_offset;
 
   x_factor = (float)SCREENWIDTH / 320;
   y_factor = (float)SCREENHEIGHT / 200;
+
+  if (y_factor < x_factor)
+    x_factor = y_factor;
+
+  x_offset = (int)((SCREENWIDTH - (x_factor * 320)) / 2);
 
   for (j = dest_y_offset; j < dest_y_offset + dest_y_limit; ++j)
     for (i = 0; i < 320; ++i, ++raw)
@@ -1846,8 +1852,11 @@ void V_DrawRawScreenSection(const byte *raw, int dest_y_offset, int dest_y_limit
       width = (int)((i + 1) * x_factor) - x;
       height = (int)((j + 1) * y_factor) - y;
 
-      V_FillRect(0, x, y, width, height, *raw);
+      V_FillRect(0, x_offset + x, y, width, height, *raw);
     }
+
+  // e6y: wide-res
+  V_FillBorder(-1, 0);
 }
 
 void V_DrawShadowedNumPatch(int x, int y, int lump)

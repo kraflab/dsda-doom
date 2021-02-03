@@ -313,8 +313,5 @@ void Heretic_F_Drawer(void)
         W_UnlockLumpName("CREDIT");
         break;
     }
-
-    // e6y: wide-res
-    V_FillBorder(-1, 0);
   }
 }
