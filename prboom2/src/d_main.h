@@ -83,4 +83,12 @@ void AddIWAD(const char *iwad);
 #define MAXLOADFILES 3
 extern const char *wad_files[MAXLOADFILES], *deh_files[MAXLOADFILES];
 
+typedef struct
+{
+  void (*func)(const char *);
+  const char *name;
+} demostate_t;
+
+void D_SetPage(const char* name, int tics, int music);
+
 #endif

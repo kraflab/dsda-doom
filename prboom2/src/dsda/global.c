@@ -24,11 +24,16 @@
 #include "p_inter.h"
 #include "p_spec.h"
 #include "sounds.h"
+#include "d_main.h"
 #include "heretic/def.h"
 
 #include "global.h"
 
 #define IGNORE_VALUE -1
+
+const demostate_t (*demostates)[4];
+extern const demostate_t doom_demostates[][4];
+extern const demostate_t heretic_demostates[][4];
 
 state_t* states;
 int num_states;
@@ -129,6 +134,8 @@ static void dsda_InitDoom(void) {
   dsda_SetSfx(doom_S_sfx, NUMSFX);
   dsda_SetMusic(doom_S_music, NUMMUSIC);
 
+  demostates = doom_demostates;
+
   weaponinfo = doom_weaponinfo;
 
   g_mt_player = MT_PLAYER;
@@ -211,6 +218,8 @@ static void dsda_InitHeretic(void) {
   dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
   dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
   dsda_SetMusic(heretic_S_music, HERETIC_NUMMUSIC);
+
+  demostates = heretic_demostates;
 
   weaponinfo = wpnlev1info;
 

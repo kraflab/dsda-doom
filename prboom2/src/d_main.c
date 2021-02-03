@@ -552,6 +552,15 @@ void D_PageTicker(void)
 //
 static void D_PageDrawer(void)
 {
+  if (heretic)
+  {
+    const byte* lump = W_CacheLumpName(pagename);
+    V_DrawRawScreen(lump);
+    W_UnlockLumpName(pagename);
+
+    return;
+  }
+
   // proff/nicolas 09/14/98 -- now stretchs bitmaps to fullscreen!
   // CPhipps - updated for new patch drawing
   // proff - added M_DrawCredits
@@ -586,93 +595,100 @@ static void D_SetPageName(const char *name)
     pagename = name;
 }
 
+void D_SetPage(const char* name, int tics, int music)
+{
+  if (music)
+    S_StartMusic(music);
+
+  if (tics)
+    pagetic = tics;
+
+  D_SetPageName(name);
+}
+
 static void D_DrawTitle1(const char *name)
 {
-  S_StartMusic(mus_intro);
-  pagetic = (TICRATE*170)/35;
-  D_SetPageName(name);
+  D_SetPage(name, TICRATE * 170 / 35, mus_intro);
 }
 
 static void D_DrawTitle2(const char *name)
 {
-  S_StartMusic(mus_dm2ttl);
-  D_SetPageName(name);
+  D_SetPage(name, 0, mus_dm2ttl);
 }
 
 /* killough 11/98: tabulate demo sequences
  */
 
-static struct
+extern const demostate_t (*demostates)[4];
+
+const demostate_t doom_demostates[][4] =
 {
-  void (*func)(const char *);
-  const char *name;
-} const demostates[][4] =
   {
-    {
-      {D_DrawTitle1, "TITLEPIC"},
-      {D_DrawTitle1, "TITLEPIC"},
-      {D_DrawTitle2, "TITLEPIC"},
-      {D_DrawTitle1, "TITLEPIC"},
-    },
+    {D_DrawTitle1, "TITLEPIC"},
+    {D_DrawTitle1, "TITLEPIC"},
+    {D_DrawTitle2, "TITLEPIC"},
+    {D_DrawTitle1, "TITLEPIC"},
+  },
 
-    {
-      {G_DeferedPlayDemo, "demo1"},
-      {G_DeferedPlayDemo, "demo1"},
-      {G_DeferedPlayDemo, "demo1"},
-      {G_DeferedPlayDemo, "demo1"},
-    },
-    {
-      {D_SetPageName, NULL},
-      {D_SetPageName, NULL},
-      {D_SetPageName, NULL},
-      {D_SetPageName, NULL},
-    },
+  {
+    {G_DeferedPlayDemo, "demo1"},
+    {G_DeferedPlayDemo, "demo1"},
+    {G_DeferedPlayDemo, "demo1"},
+    {G_DeferedPlayDemo, "demo1"},
+  },
 
-    {
-      {G_DeferedPlayDemo, "demo2"},
-      {G_DeferedPlayDemo, "demo2"},
-      {G_DeferedPlayDemo, "demo2"},
-      {G_DeferedPlayDemo, "demo2"},
-    },
+  {
+    {D_SetPageName, NULL},
+    {D_SetPageName, NULL},
+    {D_SetPageName, NULL},
+    {D_SetPageName, NULL},
+  },
 
-    {
-      {D_SetPageName, "HELP2"},
-      {D_SetPageName, "HELP2"},
-      {D_SetPageName, "CREDIT"},
-      {D_DrawTitle1,  "TITLEPIC"},
-    },
+  {
+    {G_DeferedPlayDemo, "demo2"},
+    {G_DeferedPlayDemo, "demo2"},
+    {G_DeferedPlayDemo, "demo2"},
+    {G_DeferedPlayDemo, "demo2"},
+  },
 
-    {
-      {G_DeferedPlayDemo, "demo3"},
-      {G_DeferedPlayDemo, "demo3"},
-      {G_DeferedPlayDemo, "demo3"},
-      {G_DeferedPlayDemo, "demo3"},
-    },
+  {
+    {D_SetPageName, "HELP2"},
+    {D_SetPageName, "HELP2"},
+    {D_SetPageName, "CREDIT"},
+    {D_DrawTitle1,  "TITLEPIC"},
+  },
 
-    {
-      {NULL},
-      {NULL},
-      // e6y
-      // Both Plutonia and TNT are commercial like Doom2,
-      // but in difference from  Doom2, they have demo4 in demo cycle.
-      {G_DeferedPlayDemo, "demo4"},
-      {D_SetPageName, "CREDIT"},
-    },
+  {
+    {G_DeferedPlayDemo, "demo3"},
+    {G_DeferedPlayDemo, "demo3"},
+    {G_DeferedPlayDemo, "demo3"},
+    {G_DeferedPlayDemo, "demo3"},
+  },
 
-    {
-      {NULL},
-      {NULL},
-      {NULL},
-      {G_DeferedPlayDemo, "demo4"},
-    },
+  {
+    {NULL},
+    {NULL},
+    // e6y
+    // Both Plutonia and TNT are commercial like Doom2,
+    // but in difference from  Doom2, they have demo4 in demo cycle.
+    {G_DeferedPlayDemo, "demo4"},
+    {D_SetPageName, "CREDIT"},
+  },
 
-    {
-      {NULL},
-      {NULL},
-      {NULL},
-      {NULL},
-    }
-  };
+  {
+    {NULL},
+    {NULL},
+    {NULL},
+    {G_DeferedPlayDemo, "demo4"},
+  },
+
+  {
+    {NULL},
+    {NULL},
+    {NULL},
+    {NULL},
+  }
+};
 
 /*
  * This cycles through the demo sequences.
@@ -688,13 +704,12 @@ void D_DoAdvanceDemo(void)
   pagetic = TICRATE * 11;         /* killough 11/98: default behavior */
   gamestate = GS_DEMOSCREEN;
 
-  if (netgame && !demoplayback) {
+  if (netgame && !demoplayback)
     demosequence = 0;
-  } else
-   if (!demostates[++demosequence][gamemode].func)
+  else if (!demostates[++demosequence][gamemode].func)
     demosequence = 0;
-  demostates[demosequence][gamemode].func
-    (demostates[demosequence][gamemode].name);
+
+  demostates[demosequence][gamemode].func(demostates[demosequence][gamemode].name);
 }
 
 //

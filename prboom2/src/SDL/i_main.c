@@ -282,7 +282,8 @@ static void I_EndDoom(void)
   PrintVer();
 #endif
 
-  if (!showendoom || demorecording)
+  // HERETIC_TODO: ENDTEXT
+  if (!showendoom || demorecording || heretic)
   {
     return;
   }
