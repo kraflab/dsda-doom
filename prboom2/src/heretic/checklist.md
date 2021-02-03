@@ -10,17 +10,21 @@
 - [x] Add finale
 - [x] Fix palette updates
 - [x] Fix shadow effect
+- [x] Add start screen
+- [ ] Fix pain palette stuck on status bar
 - [ ] Fix opengl status bar updating
 - [ ] Fix hud text color
-- [ ] Add start screen
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds
-- [ ] Fix menu visuals
+- [ ] Fix lump cache high lock
+- [ ] Set up menu
+- [ ] Fix prboom+ settings visuals
 - [ ] Support graphical player pitch
 - [ ] Support ghosts
 - [ ] Support analysis
 - [ ] Support key frames
 - [ ] Support E2END palette
+- [ ] Set gamemission to heretic (?)
 
 ### Files in crispy src/heretic:
 
