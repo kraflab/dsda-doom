@@ -14,6 +14,7 @@
 - [x] Check status bar chain during menu
 - [x] Fix pain palette stuck on status bar
 - [x] Fix opengl status bar updating
+- [x] Fix missing hud period
 - [ ] Fix hud text color
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds
