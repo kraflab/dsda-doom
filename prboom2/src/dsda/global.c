@@ -25,6 +25,7 @@
 #include "p_spec.h"
 #include "sounds.h"
 #include "d_main.h"
+#include "v_video.h"
 #include "heretic/def.h"
 
 #include "global.h"
@@ -90,6 +91,12 @@ int g_door_open;
 int g_st_height;
 int g_mf_translucent;
 int g_mf_shadow;
+
+int g_cr_gray;
+int g_cr_green;
+int g_cr_gold;
+int g_cr_red;
+int g_cr_blue;
 
 extern const char** S_music_files;
 
@@ -176,6 +183,12 @@ static void dsda_InitDoom(void) {
   g_mf_translucent = MF_TRANSLUCENT;
   g_mf_shadow = MF_SHADOW;
 
+  g_cr_gray = CR_GRAY;
+  g_cr_green = CR_GREEN;
+  g_cr_gold = CR_GOLD;
+  g_cr_red = CR_RED;
+  g_cr_blue = CR_BLUE;
+
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
     mobjinfo_p = &doom_mobjinfo[i];
@@ -260,6 +273,12 @@ static void dsda_InitHeretic(void) {
   g_st_height = 42;
   g_mf_translucent = MF_SHADOW;
   g_mf_shadow = 0; // doesn't exist in heretic
+
+  g_cr_gray = CR_TAN;
+  g_cr_green = CR_YELLOW;
+  g_cr_gold = CR_ORANGE;
+  g_cr_red = CR_RED;
+  g_cr_blue = CR_BROWN;
 
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {

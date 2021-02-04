@@ -76,7 +76,7 @@ static void dsda_InitExHud(patchnum_t* font) {
     200 - g_st_height - 16,
     font,
     HU_FONTSTART,
-    CR_GRAY,
+    g_cr_gray,
     VPT_ALIGN_LEFT
   );
 
@@ -86,7 +86,7 @@ static void dsda_InitExHud(patchnum_t* font) {
     200 - g_st_height - 8,
     font,
     HU_FONTSTART,
-    CR_GRAY,
+    g_cr_gray,
     VPT_ALIGN_LEFT
   );
 }
@@ -98,7 +98,7 @@ void dsda_InitHud(patchnum_t* font) {
     DSDA_SPLIT_Y,
     font,
     HU_FONTSTART,
-    CR_GRAY,
+    g_cr_gray,
     VPT_ALIGN_LEFT
   );
 
@@ -108,7 +108,7 @@ void dsda_InitHud(patchnum_t* font) {
     DSDA_INTERMISSION_TIME_Y,
     font,
     HU_FONTSTART,
-    CR_GRAY,
+    g_cr_gray,
     VPT_ALIGN_LEFT
   );
 
@@ -148,9 +148,12 @@ static void dsda_UpdateExHud(void) {
     snprintf(
       dsda_exhud_timer.msg,
       sizeof(dsda_exhud_timer.msg),
-      "\x1b\x32time \x1b\x35%d:%02d \x1b\x33%d:%05.2f ",
+      "\x1b%ctime \x1b%c%d:%02d \x1b%c%d:%05.2f ",
+      g_cr_gray + 0x30,
+      g_cr_gold + 0x30,
       (totalleveltimes + leveltime) / 35 / 60,
       ((totalleveltimes + leveltime) % (60 * 35)) / 35,
+      g_cr_green + 0x30,
       leveltime / 35 / 60,
       (float)(leveltime % (60 * 35)) / 35
     );
@@ -158,7 +161,9 @@ static void dsda_UpdateExHud(void) {
     snprintf(
       dsda_exhud_timer.msg,
       sizeof(dsda_exhud_timer.msg),
-      "\x1b\x32time \x1b\x33%d:%05.2f ",
+      "\x1b%ctime \x1b%c%d:%05.2f ",
+      g_cr_gray + 0x30,
+      g_cr_green + 0x30,
       leveltime / 35 / 60,
       (float)(leveltime % (60 * 35)) / 35
     );
@@ -189,7 +194,7 @@ static void dsda_UpdateExHud(void) {
 
     for (i = 0; i < MAXPLAYERS; i++) {
       if (playeringame[i]) {
-        color = i == displayplayer ? 0x33 : 0x32;
+        color = i == displayplayer ? 0x30 + g_cr_green : 0x30 + g_cr_gray;
         if (playerscount==0) {
           allkills_len = sprintf(allkills, "\x1b%c%d", color, players[i].killcount - players[i].maxkilldiscount);
           allsecrets_len = sprintf(allsecrets, "\x1b%c%d", color, players[i].secretcount);
@@ -207,19 +212,22 @@ static void dsda_UpdateExHud(void) {
         kill_percent_count += players[i].killcount;
       }
     }
-    killcolor = (fullkillcount >= max_kill_requirement ? 0x37 : 0x35);
-    secretcolor = (fullsecretcount >= totalsecret ? 0x37 : 0x35);
-    itemcolor = (fullitemcount >= totalitems ? 0x37 : 0x35);
-    kill_percent_color = (kill_percent_count >= totalkills ? 0x37 : 0x35);
+    killcolor = (fullkillcount >= max_kill_requirement ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
+    secretcolor = (fullsecretcount >= totalsecret ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
+    itemcolor = (fullitemcount >= totalitems ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
+    kill_percent_color = (kill_percent_count >= totalkills ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
     kill_percent = (totalkills == 0 ? 100 : kill_percent_count * 100 / totalkills);
     if (playerscount < 2) {
       snprintf(
         dsda_exhud_max_totals.msg,
         sizeof(dsda_exhud_max_totals.msg),
-        "\x1b\x36K \x1b%c%d/%d \x1b%c%d \x1b\x36I \x1b%c%d/%d \x1b\x36S \x1b%c%d/%d",
+        "\x1b%cK \x1b%c%d/%d \x1b%c%d \x1b%cI \x1b%c%d/%d \x1b%cS \x1b%c%d/%d",
+        0x30 + g_cr_red,
         killcolor, fullkillcount, max_kill_requirement,
         kill_percent_color, kill_percent,
+        0x30 + g_cr_red,
         itemcolor, players[displayplayer].itemcount, totalitems,
+        0x30 + g_cr_red,
         secretcolor, fullsecretcount, totalsecret
       );
     }
@@ -227,10 +235,13 @@ static void dsda_UpdateExHud(void) {
       snprintf(
         dsda_exhud_max_totals.msg,
         sizeof(dsda_exhud_max_totals.msg),
-        "\x1b\x36K %s \x1b%c%d/%d \x1b%c%d \x1b\x36I \x1b%c%d/%d \x1b\x36S %s \x1b%c%d/%d",
+        "\x1b%cK %s \x1b%c%d/%d \x1b%c%d \x1b%cI \x1b%c%d/%d \x1b%cS %s \x1b%c%d/%d",
+        0x30 + g_cr_red,
         allkills, killcolor, fullkillcount, max_kill_requirement,
         kill_percent_color, kill_percent,
+        0x30 + g_cr_red,
         itemcolor, players[displayplayer].itemcount, totalitems,
+        0x30 + g_cr_red,
         allsecrets, secretcolor, fullsecretcount, totalsecret
       );
     }
