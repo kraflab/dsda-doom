@@ -539,6 +539,7 @@ void SB_PaletteFlash(void)
     }
     if (palette != sb_palette)
     {
+        SB_state = -1;
         sb_palette = palette;
         V_SetPalette(sb_palette);
     }
