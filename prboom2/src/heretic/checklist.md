@@ -1,4 +1,4 @@
-### Heretic Support
+### Heretic Support (phase 1)
 - [x] Load without crashing as pwad
 - [x] Merge engine behaviour
 - [x] Reach 100% demo sync rate
@@ -20,11 +20,14 @@
 - [ ] Set up menu
 - [ ] Fix prboom+ settings visuals
 - [ ] Support graphical player pitch
+
+### Heretic Support (phase 2)
 - [ ] Support ghosts
 - [ ] Support analysis
 - [ ] Support key frames
 - [ ] Support E2END palette
 - [ ] Set gamemission to heretic (?)
+- [ ] Support dehacked
 
 ### Files in crispy src/heretic:
 
