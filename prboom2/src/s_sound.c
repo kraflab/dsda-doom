@@ -904,10 +904,6 @@ static dboolean S_StopSoundInfo(sfxinfo_t* sfx, int priority)
       if (I_SoundIsPlaying(channel->handle))
         I_StopSound(channel->handle);
 
-      // Bug in heretic? i in heretic source points to static zeroed data
-      // if (channels[i].sfxinfo->usefulness > 0)
-      //   channels[i].sfxinfo->usefulness--;
-
       channel->origin = NULL;
     }
 
@@ -1019,9 +1015,6 @@ static void Heretic_S_StartSound(void *_origin, int sound_id)
         if (I_SoundIsPlaying(channels[i].handle))
           I_StopSound(channels[i].handle);
 
-        if (channels[i].sfxinfo->usefulness > 0)
-          channels[i].sfxinfo->usefulness--;
-
         if (AmbChan == i)
           AmbChan = -1;
       }
@@ -1054,10 +1047,6 @@ static void Heretic_S_StartSound(void *_origin, int sound_id)
   channels[i].priority = priority;
   if (sound_id >= heretic_sfx_wind)
     AmbChan = i;
-  if (sfx->usefulness == -1)
-    sfx->usefulness = 1;
-  else
-    sfx->usefulness++;
 }
 
 static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
@@ -1099,10 +1088,6 @@ static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume
   channels[i].origin = origin;
   channels[i].sfxinfo = sfx;
   channels[i].priority = 1;    //super low priority.
-  if (sfx->usefulness == -1)
-    sfx->usefulness = 1;
-  else
-    sfx->usefulness++;
 }
 
 static void Heretic_S_StopSound(void *_origin)
@@ -1119,9 +1104,6 @@ static void Heretic_S_StopSound(void *_origin)
     if (channels[i].origin == origin)
     {
       I_StopSound(channels[i].handle);
-
-      if (channels[i].sfxinfo->usefulness > 0)
-        channels[i].sfxinfo->usefulness--;
 
       channels[i].handle = 0;
       channels[i].origin = NULL;
@@ -1159,13 +1141,11 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
   {
     mobj_t* origin;
 
-    if (!channels[i].handle || channels[i].sfxinfo->usefulness == -1)
+    if (!channels[i].handle)
       continue;
 
     if (!I_SoundIsPlaying(channels[i].handle))
     {
-      if (channels[i].sfxinfo->usefulness > 0)
-        channels[i].sfxinfo->usefulness--;
       channels[i].handle = 0;
       channels[i].origin = NULL;
       channels[i].sfxinfo = NULL;
