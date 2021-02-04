@@ -11,7 +11,8 @@
 - [x] Fix palette updates
 - [x] Fix shadow effect
 - [x] Add start screen
-- [ ] Fix pain palette stuck on status bar
+- [x] Check status bar chain during menu
+- [x] Fix pain palette stuck on status bar
 - [ ] Fix opengl status bar updating
 - [ ] Fix hud text color
 - [ ] Load without crashing as iwad
