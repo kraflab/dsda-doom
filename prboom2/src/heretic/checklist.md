@@ -13,7 +13,7 @@
 - [x] Add start screen
 - [x] Check status bar chain during menu
 - [x] Fix pain palette stuck on status bar
-- [ ] Fix opengl status bar updating
+- [x] Fix opengl status bar updating
 - [ ] Fix hud text color
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds
