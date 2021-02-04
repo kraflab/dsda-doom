@@ -17,7 +17,6 @@
 - [ ] Fix hud text color
 - [ ] Load without crashing as iwad
 - [ ] Support new keybinds
-- [ ] Fix lump cache high lock
 - [ ] Set up menu
 - [ ] Fix prboom+ settings visuals
 - [ ] Support graphical player pitch
