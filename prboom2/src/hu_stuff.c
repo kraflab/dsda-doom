@@ -353,6 +353,15 @@ void HU_Init(void)
       else
         R_SetPatchNum(&hu_font[i], "STCFN045");
     }
+    else if (j=='.')
+    {
+      R_SetPatchNum(&hu_font2[i], "DIG46");
+
+      if (heretic)
+        R_SetPatchNum(&hu_font[i], "FONTA14");
+      else
+        R_SetPatchNum(&hu_font[i], "STCFN046");
+    }
     else if (j=='/')
     {
       R_SetPatchNum(&hu_font2[i], "DIG47");
