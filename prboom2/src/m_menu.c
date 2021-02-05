@@ -4500,7 +4500,7 @@ setup_menu_t cred_settings[]={
 
 void M_DrawCredits(void)     // killough 10/98: credit screen
 {
-  const int creditlump = W_CheckNumForName("CREDIT");
+  const int creditlump;
 
   if (heretic)
   {
@@ -4513,6 +4513,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
     return;
   }
 
+  creditlump = W_CheckNumForName("CREDIT");
   inhelpscreens = true;
   if (creditlump >= 0 && lumpinfo[creditlump].source != source_iwad)
   {
