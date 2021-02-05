@@ -1132,8 +1132,7 @@ static void M_QuitResponse(int ch)
     return;
 
   //e6y: Optional removal of a quit sound
-  if ((!netgame && showendoom) // killough 12/98
-      && !nosfxparm && snd_card) // avoid delay if no sound card
+  if (!heretic && !netgame && showendoom && !nosfxparm && snd_card)
   {
     int i;
 
@@ -4752,14 +4751,14 @@ dboolean M_Responder (event_t* ev) {
       currentMenu = &HelpDef;         // killough 10/98: new help screen
 
       itemOn = 0;
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       return true;
       }
 
     if (ch == key_savegame)     // Save Game
       {
       M_StartControlPanel();
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       M_SaveGame(0);
       return true;
       }
@@ -4767,7 +4766,7 @@ dboolean M_Responder (event_t* ev) {
     if (ch == key_loadgame)     // Load Game
       {
       M_StartControlPanel();
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       M_LoadGame(0);
       return true;
       }
@@ -4777,20 +4776,20 @@ dboolean M_Responder (event_t* ev) {
       M_StartControlPanel ();
       currentMenu = &SoundDef;
       itemOn = sfx_vol;
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       return true;
       }
 
     if (ch == key_quicksave)      // Quicksave
       {
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       M_QuickSave();
       return true;
       }
 
     if (ch == key_endgame)      // End game
       {
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       M_EndGame(0);
       return true;
       }
@@ -4798,20 +4797,20 @@ dboolean M_Responder (event_t* ev) {
     if (ch == key_messages)      // Toggle messages
       {
       M_ChangeMessages(0);
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       return true;
       }
 
     if (ch == key_quickload)      // Quickload
       {
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       M_QuickLoad();
       return true;
       }
 
     if (ch == key_quit)       // Quit DOOM
       {
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       M_QuitDOOM(0);
       return true;
       }
@@ -5018,7 +5017,7 @@ dboolean M_Responder (event_t* ev) {
     /* killough 10/98: allow key shortcut into Setup menu */
     if (ch == key_setup) {
       M_StartControlPanel();
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       M_SetupNextMenu(&SetupDef);
       return true;
     }
@@ -5030,7 +5029,7 @@ dboolean M_Responder (event_t* ev) {
     if (ch == key_escape)                                     // phares
       {
       M_StartControlPanel ();
-      S_StartSound(NULL,sfx_swtchn);
+      S_StartSound(NULL,g_sfx_swtchn);
       return true;
       }
     return false;
@@ -5650,7 +5649,7 @@ dboolean M_Responder (event_t* ev) {
         {
     currentMenu = currentMenu->prevMenu;
     itemOn = currentMenu->lastOn;
-    S_StartSound(NULL,sfx_swtchn);
+    S_StartSound(NULL,g_sfx_swtchn);
         }
     ptr1->m_flags &= ~(S_HILITE|S_SELECT);// phares 4/19/98
     setup_active = false;
@@ -5831,7 +5830,7 @@ dboolean M_Responder (event_t* ev) {
     else
       currentMenu = currentMenu->prevMenu;
     itemOn = currentMenu->lastOn;
-    S_StartSound(NULL,sfx_swtchn);
+    S_StartSound(NULL,g_sfx_swtchn);
   }
       return true;
     }
