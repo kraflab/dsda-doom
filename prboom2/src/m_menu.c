@@ -6020,13 +6020,14 @@ void M_SetupNextMenu(menu_t *menudef)
 //
 void M_Ticker (void)
 {
-  if (heretic) return MN_Ticker();
-
+  // The skull counter is also used for non-skull pointers
   if (--skullAnimCounter <= 0)
-    {
-      whichSkull ^= 1;
-      skullAnimCounter = 8;
-    }
+  {
+    whichSkull ^= 1;
+    skullAnimCounter = 8;
+  }
+
+  if (heretic) return MN_Ticker();
 }
 
 /////////////////////////////
