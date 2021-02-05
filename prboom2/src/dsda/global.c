@@ -98,6 +98,8 @@ int g_cr_gold;
 int g_cr_red;
 int g_cr_blue;
 
+const char* g_menu_flat;
+
 extern const char** S_music_files;
 
 static void dsda_AllocateMobjInfo(int zero, int max, int count) {
@@ -189,6 +191,8 @@ static void dsda_InitDoom(void) {
   g_cr_red = CR_RED;
   g_cr_blue = CR_BLUE;
 
+  g_menu_flat = "FLOOR4_6";
+
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
     mobjinfo_p = &doom_mobjinfo[i];
@@ -279,6 +283,8 @@ static void dsda_InitHeretic(void) {
   g_cr_gold = CR_ORANGE;
   g_cr_red = CR_RED;
   g_cr_blue = CR_BROWN;
+
+  g_menu_flat = "FLOOR18";
 
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {
