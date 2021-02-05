@@ -389,26 +389,6 @@ static int G_GotoNextLevel(void)
 
 //---------------------------------------------------------------------------
 //
-// PROC MN_Init
-//
-//---------------------------------------------------------------------------
-
-void MN_Init(void)
-{
-    InitFonts();
-    MenuActive = false;
-    messageson = true;
-    SkullBaseLump = W_GetNumForName(DEH_String("M_SKL00"));
-
-    if (gamemode == retail)
-    {                           // Add episodes 4 and 5 to the menu
-        EpisodeMenu.itemCount = 5;
-        EpisodeMenu.y -= ITEM_HEIGHT;
-    }
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC InitFonts
 //
 //---------------------------------------------------------------------------
@@ -537,21 +517,6 @@ int MN_TextBWidth(const char *text)
 
 //---------------------------------------------------------------------------
 //
-// PROC MN_Ticker
-//
-//---------------------------------------------------------------------------
-
-void MN_Ticker(void)
-{
-    if (MenuActive == false)
-    {
-        return;
-    }
-    MenuTime++;
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC MN_Drawer
 //
 //---------------------------------------------------------------------------
@@ -658,23 +623,6 @@ void MN_Drawer(void)
                     W_CacheLumpName(selName, PU_CACHE));
         }
     }
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawMainMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawMainMenu(void)
-{
-    int frame;
-
-    frame = (MenuTime / 3) % 18;
-    V_DrawPatch(88, 0, W_CacheLumpName(DEH_String("M_HTIC"), PU_CACHE));
-    V_DrawPatch(40, 10, W_CacheLumpNum(SkullBaseLump + (17 - frame),
-                                       PU_CACHE));
-    V_DrawPatch(232, 10, W_CacheLumpNum(SkullBaseLump + frame, PU_CACHE));
 }
 
 //---------------------------------------------------------------------------

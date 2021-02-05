@@ -69,6 +69,7 @@
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/key_frame.h"
+#include "heretic/mn_menu.h"
 #ifdef _WIN32
 #include "e6y_launcher.h"
 #endif
@@ -378,6 +379,8 @@ menu_t MainDef =
 
 void M_DrawMainMenu(void)
 {
+  if (heretic) return MN_DrawMainMenu();
+
   // CPhipps - patch drawing updated
   V_DrawNamePatch(94, 2, 0, "M_DOOM", CR_DEFAULT, VPT_STRETCH);
 }
@@ -6018,6 +6021,8 @@ void M_SetupNextMenu(menu_t *menudef)
 //
 void M_Ticker (void)
 {
+  if (heretic) return MN_Ticker();
+
   if (--skullAnimCounter <= 0)
     {
       whichSkull ^= 1;
@@ -6240,6 +6245,8 @@ void M_InitHelpScreen(void)
 //
 void M_Init(void)
 {
+  if (heretic) MN_Init();
+
   M_InitDefaults();                // killough 11/98
   currentMenu = &MainDef;
   menuactive = mnact_inactive;
