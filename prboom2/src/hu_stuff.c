@@ -443,7 +443,7 @@ void HU_Init(void)
   }
   else
   {
-    for (i = 33; i < 90; i++)
+    for (i = 33; i < 91; i++)
     {
       sprintf(buffer, "FONTA%.2d", i - 32);
       HU_SetLumpTrans(buffer);
