@@ -441,6 +441,14 @@ void HU_Init(void)
     HU_SetLumpTrans("STTPRCNT");
     HU_SetLumpTrans("STTMINUS");
   }
+  else
+  {
+    for (i = 33; i < 90; i++)
+    {
+      sprintf(buffer, "FONTA%.2d", i - 32);
+      HU_SetLumpTrans(buffer);
+    }
+  }
 
   // CPhipps - load patches for message background
   for (i=0; i<9; i++) {
