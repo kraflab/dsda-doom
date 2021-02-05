@@ -17,6 +17,7 @@
 - [x] Fix missing hud period
 - [x] Adjust hud text color
 - [ ] Load without crashing as iwad
+- [ ] Set up automap
 - [ ] Support new keybinds
 - [ ] Set up menu
 - [ ] Fix prboom+ settings visuals
