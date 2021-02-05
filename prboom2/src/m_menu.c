@@ -4502,12 +4502,13 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
 {
   const int creditlump = W_CheckNumForName("CREDIT");
 
-  // HERETIC_TODO: fixes CREDIT crash but probably shouldn't reach this?
   if (heretic)
   {
     const byte* lump = W_CacheLumpName("CREDIT");
 
     V_DrawRawScreen(lump);
+
+    W_UnlockLumpName("CREDIT");
 
     return;
   }
