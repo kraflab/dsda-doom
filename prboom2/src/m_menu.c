@@ -5920,70 +5920,69 @@ void M_Drawer (void)
   // Horiz. & Vertically center string and print it.
   // killough 9/29/98: simplified code, removed 40-character width limit
   if (messageToPrint)
+  {
+    /* cph - strdup string to writable memory */
+    char *ms = strdup(messageString);
+    char *p = ms;
+
+    int y = 100 - M_StringHeight(messageString)/2;
+    while (*p)
     {
-      /* cph - strdup string to writable memory */
-      char *ms = strdup(messageString);
-      char *p = ms;
-
-      int y = 100 - M_StringHeight(messageString)/2;
-      while (*p)
-      {
-        char *string = p, c;
-        while ((c = *p) && *p != '\n')
-          p++;
-        *p = 0;
-        M_WriteText(160 - M_StringWidth(string)/2, y, string, CR_DEFAULT);
-        y += hu_font[0].height;
-        if ((*p = c))
-          p++;
-      }
-      free(ms);
+      char *string = p, c;
+      while ((c = *p) && *p != '\n')
+        p++;
+      *p = 0;
+      M_WriteText(160 - M_StringWidth(string)/2, y, string, CR_DEFAULT);
+      y += hu_font[0].height;
+      if ((*p = c))
+        p++;
     }
-  else
-    if (menuactive)
-      {
-  int x,y,max,i;
-  int lumps_missing = 0;
+    free(ms);
+  }
+  else if (menuactive)
+  {
+    int x,y,max,i;
+    int lumps_missing = 0;
 
-  menuactive = mnact_float; // Boom-style menu drawers will set mnact_full
+    menuactive = mnact_float; // Boom-style menu drawers will set mnact_full
 
-  if (currentMenu->routine)
-    currentMenu->routine();     // call Draw routine
+    if (currentMenu->routine)
+      currentMenu->routine();     // call Draw routine
 
-  // DRAW MENU
+    // DRAW MENU
 
-  x = currentMenu->x;
-  y = currentMenu->y;
-  max = currentMenu->numitems;
+    x = currentMenu->x;
+    y = currentMenu->y;
+    max = currentMenu->numitems;
 
-  for (i = 0; i < max; i++)
-    if (currentMenu->menuitems[i].name[0])
-      if (W_CheckNumForName(currentMenu->menuitems[i].name) < 0)
-        lumps_missing++;
-
-  if (lumps_missing == 0)
-    for (i=0;i<max;i++)
-    {
-      if (currentMenu->menuitems[i].name[0])
-        V_DrawNamePatch(x,y,0,currentMenu->menuitems[i].name,
-            CR_DEFAULT, VPT_STRETCH);
-      y += LINEHEIGHT;
-    }
-  else
     for (i = 0; i < max; i++)
-    {
-      const char *alttext = currentMenu->menuitems[i].alttext;
-      if (alttext)
-        M_WriteText(x, y+8-(M_StringHeight(alttext)/2), alttext, CR_DEFAULT);
-      y += LINEHEIGHT;
-    }
+      if (currentMenu->menuitems[i].name[0])
+        if (W_CheckNumForName(currentMenu->menuitems[i].name) < 0)
+          lumps_missing++;
 
-  // DRAW SKULL
-
-  // CPhipps - patch drawing updated
-  V_DrawNamePatch(x + SKULLXOFF, currentMenu->y - 5 + itemOn*LINEHEIGHT,0,
-      skullName[whichSkull], CR_DEFAULT, VPT_STRETCH);
+    if (lumps_missing == 0)
+      for (i=0;i<max;i++)
+      {
+        if (currentMenu->menuitems[i].name[0])
+          V_DrawNamePatch(x,y,0,currentMenu->menuitems[i].name,
+              CR_DEFAULT, VPT_STRETCH);
+        y += LINEHEIGHT;
       }
+    else
+      for (i = 0; i < max; i++)
+      {
+        const char *alttext = currentMenu->menuitems[i].alttext;
+        if (alttext)
+          M_WriteText(x, y+8-(M_StringHeight(alttext)/2), alttext, CR_DEFAULT);
+        y += LINEHEIGHT;
+      }
+
+    // DRAW SKULL
+
+    // CPhipps - patch drawing updated
+    V_DrawNamePatch(x + SKULLXOFF, currentMenu->y - 5 + itemOn*LINEHEIGHT,0,
+        skullName[whichSkull], CR_DEFAULT, VPT_STRETCH);
+  }
 }
 
 //
