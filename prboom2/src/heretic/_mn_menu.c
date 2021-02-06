@@ -202,23 +202,6 @@ static Menu_t SaveMenu = {
     MENU_FILES
 };
 
-static MenuItem_t SkillItems[] = {
-    {ITT_EFUNC, "THOU NEEDETH A WET-NURSE", SCSkill, sk_baby, MENU_NONE},
-    {ITT_EFUNC, "YELLOWBELLIES-R-US", SCSkill, sk_easy, MENU_NONE},
-    {ITT_EFUNC, "BRINGEST THEM ONETH", SCSkill, sk_medium, MENU_NONE},
-    {ITT_EFUNC, "THOU ART A SMITE-MEISTER", SCSkill, sk_hard, MENU_NONE},
-    {ITT_EFUNC, "BLACK PLAGUE POSSESSES THEE",
-     SCSkill, sk_nightmare, MENU_NONE}
-};
-
-static Menu_t SkillMenu = {
-    38, 30,
-    DrawSkillMenu,
-    5, SkillItems,
-    2,
-    MENU_EPISODE
-};
-
 static MenuItem_t OptionsItems[] = {
     {ITT_EFUNC, "END GAME", SCEndGame, 0, MENU_NONE},
     {ITT_EFUNC, "MESSAGES : ", SCMessages, 0, MENU_NONE},
@@ -330,16 +313,6 @@ const char *QuitEndMsg[] = {
     "DO YOU WANT TO QUICKSAVE THE GAME NAMED",
     "DO YOU WANT TO QUICKLOAD THE GAME NAMED"
 };
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawSkillMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawSkillMenu(void)
-{
-}
 
 //---------------------------------------------------------------------------
 //

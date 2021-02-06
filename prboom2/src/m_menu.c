@@ -580,6 +580,8 @@ void M_AddEpisode(const char *map, char *def)
 
 void M_DrawEpisode(void)
 {
+  if (heretic) return;
+
   // CPhipps - patch drawing updated
   V_DrawNamePatch(54, EpiDef.y - 25, 0, "M_EPISOD", CR_DEFAULT, VPT_STRETCH);
 }
@@ -650,6 +652,8 @@ menu_t NewDef =
 
 void M_DrawNewGame(void)
 {
+  if (heretic) return;
+
   // CPhipps - patch drawing updated
   V_DrawNamePatch(96, 14, 0, "M_NEWG", CR_DEFAULT, VPT_STRETCH);
   V_DrawNamePatch(54, 38, 0, "M_SKILL",CR_DEFAULT, VPT_STRETCH);

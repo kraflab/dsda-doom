@@ -41,7 +41,9 @@ static void MN_InitFonts(void)
 
 extern menu_t MainDef;
 extern menu_t EpiDef;
+extern menu_t NewDef;
 extern menuitem_t EpisodeMenu[];
+extern menuitem_t NewGameMenu[];
 extern short EpiMenuMap[];
 extern short EpiMenuEpi[];
 
@@ -58,11 +60,20 @@ void MN_Init(void)
   EpiDef.x = 80;
   EpiDef.y = 50;
 
+  NewDef.x = 38;
+  NewDef.y = 30;
+
   EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
   EpisodeMenu[1].alttext = "HELL'S MAW";
   EpisodeMenu[2].alttext = "THE DOME OF D'SPARIL";
   EpisodeMenu[3].alttext = "THE OSSUARY";
   EpisodeMenu[4].alttext = "THE STAGNANT DEMESNE";
+
+  NewGameMenu[0].alttext = "THOU NEEDETH A WET-NURSE";
+  NewGameMenu[1].alttext = "YELLOWBELLIES-R-US";
+  NewGameMenu[2].alttext = "BRINGEST THEM ONETH";
+  NewGameMenu[3].alttext = "THOU ART A SMITE-MEISTER";
+  NewGameMenu[4].alttext = "BLACK PLAGUE POSSESSES THEE";
 
   if (gamemode == retail)
   {
