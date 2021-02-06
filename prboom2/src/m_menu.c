@@ -6048,6 +6048,10 @@ void M_DrawThermo(int x,int y,int thermWidth,int thermDot )
 {
   int          xx;
   int           i;
+  int horizScaler; //Used to allow more thermo range for mouse sensitivity.
+
+  if (heretic) return MN_DrawSlider(x, y, thermWidth, thermDot);
+
   /*
    * Modification By Barry Mead to allow the Thermometer to have vastly
    * larger ranges. (the thermWidth parameter can now have a value as
@@ -6056,7 +6060,6 @@ void M_DrawThermo(int x,int y,int thermWidth,int thermDot )
    * be used to improve the dynamic range of music and sound affect
    * volume controls for example.
    */
-  int horizScaler; //Used to allow more thermo range for mouse sensitivity.
   thermWidth = (thermWidth > 200) ? 200 : thermWidth; //Clamp to 200 max
   horizScaler = (thermWidth > 23) ? (200 / thermWidth) : 8; //Dynamic range
   xx = x;

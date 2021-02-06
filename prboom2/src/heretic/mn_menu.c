@@ -23,7 +23,6 @@
 #include "heretic/dstrings.h"
 #include "heretic/mn_menu.h"
 
-#define LINEHEIGHT  16
 #define ITEM_HEIGHT 20
 #define SELECTOR_XOFFSET (-28)
 #define SELECTOR_YOFFSET (-1)
@@ -136,10 +135,10 @@ void MN_Drawer(void)
     const char *text = currentMenu->menuitems[i].alttext;
     if (text)
       MN_DrTextB(DEH_String(text), x, y);
-    y += LINEHEIGHT;
+    y += ITEM_HEIGHT;
   }
 
-  y = currentMenu->y + (itemOn * LINEHEIGHT) + SELECTOR_YOFFSET;
+  y = currentMenu->y + (itemOn * ITEM_HEIGHT) + SELECTOR_YOFFSET;
   selName = DEH_String(MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
   V_DrawNamePatch(x + SELECTOR_XOFFSET, y, 0, selName, CR_DEFAULT, VPT_STRETCH);
   // MenuItem_t *item;
@@ -222,13 +221,13 @@ void MN_DrawOptions(void)
 {
     if (showMessages)
     {
-        MN_DrTextB(DEH_String("ON"), 196, OptionsDef.y + 3 * LINEHEIGHT);
+        MN_DrTextB(DEH_String("ON"), 196, OptionsDef.y + 3 * ITEM_HEIGHT);
     }
     else
     {
-        MN_DrTextB(DEH_String("OFF"), 196, OptionsDef.y + 3 * LINEHEIGHT);
+        MN_DrTextB(DEH_String("OFF"), 196, OptionsDef.y + 3 * ITEM_HEIGHT);
     }
-    M_DrawThermo(OptionsDef.x, OptionsDef.y + 4 + LINEHEIGHT * SCREENSIZE_INDEX, 9, screenSize);
+    MN_DrawSlider(OptionsDef.x - 8, OptionsDef.y + ITEM_HEIGHT * SCREENSIZE_INDEX, 9, screenSize);
 }
 
 void MN_DrawSetup(void)
@@ -318,4 +317,47 @@ int MN_TextBWidth(const char *text)
     }
   }
   return (width);
+}
+
+#define SLIDER_LIMIT 200
+#define SLIDER_WIDTH (SLIDER_LIMIT - 64)
+#define SLIDER_PATCH_COUNT (SLIDER_WIDTH / 8)
+
+void MN_DrawSlider(int x, int y, int width, int slot)
+{
+  int x2;
+  int count;
+  char num[4];
+  int slot_x;
+  short slider_img = 0;
+
+  width = (width > SLIDER_LIMIT) ? SLIDER_LIMIT : width;
+
+  V_DrawNamePatch(x, y, 0, DEH_String("M_SLDLT"), CR_DEFAULT, VPT_STRETCH);
+
+  for (x2 = x + 32, count = SLIDER_PATCH_COUNT; count--; x2 += 8)
+  {
+    const char* name;
+
+    name = DEH_String(slider_img & 1 ? "M_SLDMD1" : "M_SLDMD2");
+    slider_img ^= 1;
+
+    V_DrawNamePatch(x2, y, 0, name, CR_DEFAULT, VPT_STRETCH);
+  }
+
+  V_DrawNamePatch(x2, y, 0, DEH_String("M_SLDRT"), CR_DEFAULT, VPT_STRETCH);
+
+  // [crispy] print the value
+  snprintf(num, 4, "%3d", slot);
+  MN_DrTextA(num, x2 + 32, y + 3);
+
+  // [crispy] do not crash anymore if the value is out of bounds
+  if (slot >= width)
+  {
+    slot = width - 1;
+  }
+
+  slot_x = x + 36 + (SLIDER_WIDTH - 8) * slot / (width - 1);
+
+  V_DrawNamePatch(slot_x, y + 7, 0, DEH_String("M_SLDKB"), CR_DEFAULT, VPT_STRETCH);
 }
