@@ -42,6 +42,8 @@ static void MN_InitFonts(void)
 extern menu_t MainDef;
 extern menu_t EpiDef;
 extern menuitem_t EpisodeMenu[];
+extern short EpiMenuMap[];
+extern short EpiMenuEpi[];
 
 void MN_Init(void)
 {
@@ -64,11 +66,19 @@ void MN_Init(void)
 
   if (gamemode == retail)
   {
+    EpiMenuEpi[3] = 4;
+    EpiMenuEpi[4] = 5;
+    EpiMenuMap[3] = 1;
+    EpiMenuMap[4] = 1;
     EpiDef.numitems = 5;
     EpiDef.y -= ITEM_HEIGHT;
   }
   else
   {
+    EpiMenuEpi[3] = -1;
+    EpiMenuEpi[4] = -1;
+    EpiMenuMap[3] = -1;
+    EpiMenuMap[4] = -1;
     EpiDef.numitems = 3;
   }
 }
