@@ -25,6 +25,8 @@
 
 #define LINEHEIGHT  16
 #define ITEM_HEIGHT 20
+#define SELECTOR_XOFFSET (-28)
+#define SELECTOR_YOFFSET (-1)
 
 static int FontABaseLump;
 static int FontBBaseLump;
@@ -81,6 +83,7 @@ void MN_Ticker(void)
 }
 
 extern menu_t* currentMenu;
+extern short itemOn;
 
 void MN_Drawer(void)
 {
@@ -88,6 +91,7 @@ void MN_Drawer(void)
   int x;
   int y;
   int max;
+  const char* selName;
 
   x = currentMenu->x;
   y = currentMenu->y;
@@ -100,6 +104,10 @@ void MN_Drawer(void)
       MN_DrTextB(DEH_String(text), x, y);
     y += LINEHEIGHT;
   }
+
+  y = currentMenu->y + (itemOn * LINEHEIGHT) + SELECTOR_YOFFSET;
+  selName = DEH_String(MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
+  V_DrawNamePatch(x + SELECTOR_XOFFSET, y, 0, selName, CR_DEFAULT, VPT_STRETCH);
   // MenuItem_t *item;
   // const char *message;
   // const char *selName;
