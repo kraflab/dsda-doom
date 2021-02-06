@@ -193,6 +193,9 @@ void S_Stop(void)
 {
   int cnum;
 
+  // heretic
+  AmbChan = -1;
+
   //jff 1/22/98 skip sound init if sound not enabled
   if (snd_card && !nosfxparm)
     for (cnum=0 ; cnum<numChannels ; cnum++)
