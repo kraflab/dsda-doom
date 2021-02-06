@@ -367,6 +367,33 @@ static void cheat_behold()
   plyr->message = s_STSTR_BEHOLD; // Ty 03/27/98 - externalized
 }
 
+static dboolean cannot_clev(int epsd, int map)
+{
+  if (heretic)
+    return (
+      epsd < 1 ||
+      epsd > 6 ||
+      map < 1 ||
+      map > 9 ||
+      (gamemode != retail && epsd > 3) ||
+      (gamemode == shareware && epsd > 1) ||
+      (epsd == 6 && map > 3)
+    );
+
+  return (
+    epsd < 1 ||
+    map < 1 ||
+    //e6y: The fourth episode for pre-ultimate complevels is not allowed.
+    (compatibility_level < ultdoom_compatibility && (epsd > 3)) ||
+    (gamemode == retail && (epsd > 4 || map > 9)) ||
+    (gamemode == registered && (epsd > 3 || map > 9)) ||
+    (gamemode == shareware && (epsd > 1 || map > 9)) ||
+    (gamemode == commercial && (epsd > 1 || map > 33)) ||
+    (!bfgedition && map == 33) ||
+    (gamemission == pack_nerve && map > 9)
+  );
+}
+
 extern int EpiCustom;
 struct MapEntry* G_LookupMapinfo(int gameepisode, int gamemap);
 
@@ -393,18 +420,7 @@ static void cheat_clev(char buf[3])
   {
 
 	  // Catch invalid maps.
-	  if (epsd < 1 || map < 1 ||   // Ohmygod - this is not going to work.
-		  //e6y: The fourth episode for pre-ultimate complevels is not allowed.
-		  (compatibility_level < ultdoom_compatibility && (epsd > 3)) ||
-		  (gamemode == retail && (epsd > 4 || map > 9)) ||
-		  (gamemode == registered && (epsd > 3 || map > 9)) ||
-		  (gamemode == shareware && (epsd > 1 || map > 9)) ||
-		  (gamemode == commercial && (epsd > 1 || map > 33)))  //jff no 33 and 34
-		  return;                                                  //8/14/98 allowed
-
-	  if (!bfgedition && map == 33)
-		  return;
-	  if (gamemission == pack_nerve && map > 9)
+	  if (cannot_clev(epsd, map))
 		  return;
 
 	  // Chex.exe always warps to episode 1.
