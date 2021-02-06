@@ -68,7 +68,7 @@ void MN_Init(void)
   NewDef.y = 30;
 
   OptionsDef.x = 88;
-  OptionsDef.y = 30;
+  OptionsDef.y = 16;
 
   EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
   EpisodeMenu[1].alttext = "HELL'S MAW";
