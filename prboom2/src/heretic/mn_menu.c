@@ -27,6 +27,12 @@
 #define SELECTOR_XOFFSET (-28)
 #define SELECTOR_YOFFSET (-1)
 #define SCREENSIZE_INDEX 5
+#define MOUSE_HORIZ_INDEX 1
+#define MOUSE_VERT_INDEX 3
+#define MOUSE_MLOOK_INDEX 5
+#define MOUSE_ACCEL_INDEX 7
+#define SFX_VOL_INDEX 1
+#define MUS_VOL_INDEX 3
 
 static int FontABaseLump;
 static int FontBBaseLump;
@@ -44,8 +50,11 @@ extern menu_t EpiDef;
 extern menu_t NewDef;
 extern menu_t OptionsDef;
 extern menu_t SetupDef;
+extern menu_t MouseDef;
+extern menu_t SoundDef;
 extern menuitem_t EpisodeMenu[];
 extern menuitem_t NewGameMenu[];
+extern menuitem_t SoundMenu[];
 extern short EpiMenuMap[];
 extern short EpiMenuEpi[];
 
@@ -73,6 +82,12 @@ void MN_Init(void)
   SetupDef.x = OptionsDef.x;
   SetupDef.y = OptionsDef.y;
 
+  MouseDef.x = OptionsDef.x;
+  MouseDef.y = OptionsDef.y;
+
+  SoundDef.x = OptionsDef.x;
+  SoundDef.y = OptionsDef.y;
+
   EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
   EpisodeMenu[1].alttext = "HELL'S MAW";
   EpisodeMenu[2].alttext = "THE DOME OF D'SPARIL";
@@ -84,6 +99,9 @@ void MN_Init(void)
   NewGameMenu[2].alttext = "BRINGEST THEM ONETH";
   NewGameMenu[3].alttext = "THOU ART A SMITE-MEISTER";
   NewGameMenu[4].alttext = "BLACK PLAGUE POSSESSES THEE";
+
+  SoundMenu[0].alttext = "SFX VOLUME";
+  SoundMenu[2].alttext = "MUSIC VOLUME";
 
   if (gamemode == retail)
   {
@@ -233,6 +251,40 @@ void MN_DrawOptions(void)
 void MN_DrawSetup(void)
 {
   // nothing for heretic
+}
+
+extern int mouseSensitivity_mlook;
+extern int mouse_acceleration;
+
+void MN_DrawMouse(void)
+{
+  int mhmx,mvmx; /* jff 4/3/98 clamp drawn position    99max mead */
+
+  //jff 4/3/98 clamp horizontal sensitivity display
+  mhmx = mouseSensitivity_horiz > 99 ? 99 : mouseSensitivity_horiz; /*mead*/
+  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_HORIZ_INDEX, 100, mhmx);
+
+  //jff 4/3/98 clamp vertical sensitivity display
+  mvmx = mouseSensitivity_vert > 99 ? 99 : mouseSensitivity_vert; /*mead*/
+  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_VERT_INDEX, 100, mvmx);
+
+  //e6y
+  {
+    int mpmx;
+
+    mpmx = mouseSensitivity_mlook > 99 ? 99 : mouseSensitivity_mlook;
+    MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_MLOOK_INDEX, 100, mpmx);
+
+    mpmx = mouse_acceleration > 99 ? 99 : mouse_acceleration;
+    MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_ACCEL_INDEX, 100, mpmx);
+  }
+}
+
+void MN_DrawSound(void)
+{
+  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX, 16, snd_SfxVolume);
+
+  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX, 16, snd_MusicVolume);
 }
 
 void MN_DrTextA(const char *text, int x, int y)

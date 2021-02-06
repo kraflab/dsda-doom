@@ -104,7 +104,6 @@ static boolean SCSaveGame(int option);
 static boolean SCMessages(int option);
 static boolean SCEndGame(int option);
 static boolean SCInfo(int option);
-static void DrawOptions2Menu(void);
 static void DrawFileSlots(Menu_t * menu);
 static void DrawFilesMenu(void);
 static void MN_DrawInfo(void);
@@ -196,23 +195,6 @@ static Menu_t SaveMenu = {
     6, SaveItems,
     0,
     MENU_FILES
-};
-
-static MenuItem_t Options2Items[] = {
-    {ITT_LRFUNC, "SCREEN SIZE", SCScreenSize, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_LRFUNC, "SFX VOLUME", SCSfxVolume, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_LRFUNC, "MUSIC VOLUME", SCMusicVolume, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE}
-};
-
-static Menu_t Options2Menu = {
-    90, 20,
-    DrawOptions2Menu,
-    6, Options2Items,
-    0,
-    MENU_OPTIONS
 };
 
 static Menu_t *Menus[] = {
@@ -405,19 +387,6 @@ static void DrawFileSlots(Menu_t * menu)
         }
         y += ITEM_HEIGHT;
     }
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawOptions2Menu
-//
-//---------------------------------------------------------------------------
-
-static void DrawOptions2Menu(void)
-{
-    DrawSlider(&Options2Menu, 1, 9, screenblocks - 3);
-    DrawSlider(&Options2Menu, 3, 16, snd_MaxVolume);
-    DrawSlider(&Options2Menu, 5, 16, snd_MusicVolume);
 }
 
 //---------------------------------------------------------------------------

@@ -1189,6 +1189,8 @@ menu_t SoundDef =
 
 void M_DrawSound(void)
 {
+  if (heretic) return MN_DrawSound();
+
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 38, 0, "M_SVOL", CR_DEFAULT, VPT_STRETCH);
 
@@ -1299,6 +1301,8 @@ menu_t MouseDef =
 void M_DrawMouse(void)
 {
   int mhmx,mvmx; /* jff 4/3/98 clamp drawn position    99max mead */
+
+  if (heretic) return MN_DrawMouse();
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 15, 0, "M_MSENS", CR_DEFAULT, VPT_STRETCH);//e6y
