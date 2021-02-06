@@ -105,7 +105,6 @@ static boolean SCMessages(int option);
 static boolean SCEndGame(int option);
 static boolean SCInfo(int option);
 static void DrawMainMenu(void);
-static void DrawEpisodeMenu(void);
 static void DrawSkillMenu(void);
 static void DrawOptionsMenu(void);
 static void DrawOptions2Menu(void);
@@ -155,22 +154,6 @@ static int slotptr;
 static int currentSlot;
 static int quicksave;
 static int quickload;
-
-static MenuItem_t EpisodeItems[] = {
-    {ITT_EFUNC, "CITY OF THE DAMNED", SCEpisode, 1, MENU_NONE},
-    {ITT_EFUNC, "HELL'S MAW", SCEpisode, 2, MENU_NONE},
-    {ITT_EFUNC, "THE DOME OF D'SPARIL", SCEpisode, 3, MENU_NONE},
-    {ITT_EFUNC, "THE OSSUARY", SCEpisode, 4, MENU_NONE},
-    {ITT_EFUNC, "THE STAGNANT DEMESNE", SCEpisode, 5, MENU_NONE}
-};
-
-static Menu_t EpisodeMenu = {
-    80, 50,
-    DrawEpisodeMenu,
-    3, EpisodeItems,
-    0,
-    MENU_MAIN
-};
 
 static MenuItem_t FilesItems[] = {
     {ITT_EFUNC, "LOAD GAME", SCNetCheck, 2, MENU_LOAD},
@@ -347,16 +330,6 @@ const char *QuitEndMsg[] = {
     "DO YOU WANT TO QUICKSAVE THE GAME NAMED",
     "DO YOU WANT TO QUICKLOAD THE GAME NAMED"
 };
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawEpisodeMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawEpisodeMenu(void)
-{
-}
 
 //---------------------------------------------------------------------------
 //
