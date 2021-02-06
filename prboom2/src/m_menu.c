@@ -5858,8 +5858,7 @@ void M_StartControlPanel (void)
   // e6y
   // We need to remove the fourth episode for pre-ultimate complevels.
   // It is located here instead of M_Init() because of TNTCOMP cheat.
-  // HERETIC_NOTE: ep 4 removal
-  if (!EpiCustom)
+  if (!heretic && !EpiCustom)
   {
 	  EpiDef.numitems = ep_end;
 	  if (gamemode != commercial

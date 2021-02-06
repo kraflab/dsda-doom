@@ -38,20 +38,37 @@ static void MN_InitFonts(void)
 }
 
 extern menu_t MainDef;
+extern menu_t EpiDef;
+extern menuitem_t EpisodeMenu[];
 
 void MN_Init(void)
 {
   MN_InitFonts();
   SkullBaseLump = W_GetNumForName(DEH_String("M_SKL00"));
 
+  // override doom menu parameters
+
   MainDef.x = 110;
   MainDef.y = 56;
-  //
-  // if (gamemode == retail)
-  // {                           // Add episodes 4 and 5 to the menu
-  //     EpisodeMenu.itemCount = 5;
-  //     EpisodeMenu.y -= ITEM_HEIGHT;
-  // }
+
+  EpiDef.x = 80;
+  EpiDef.y = 50;
+
+  EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
+  EpisodeMenu[1].alttext = "HELL'S MAW";
+  EpisodeMenu[2].alttext = "THE DOME OF D'SPARIL";
+  EpisodeMenu[3].alttext = "THE OSSUARY";
+  EpisodeMenu[4].alttext = "THE STAGNANT DEMESNE";
+
+  if (gamemode == retail)
+  {
+    EpiDef.numitems = 5;
+    EpiDef.y -= ITEM_HEIGHT;
+  }
+  else
+  {
+    EpiDef.numitems = 3;
+  }
 }
 
 void MN_Ticker(void)
