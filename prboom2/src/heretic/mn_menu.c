@@ -52,6 +52,7 @@ extern menu_t OptionsDef;
 extern menu_t SetupDef;
 extern menu_t MouseDef;
 extern menu_t SoundDef;
+extern menu_t LoadDef;
 extern menuitem_t EpisodeMenu[];
 extern menuitem_t NewGameMenu[];
 extern menuitem_t SoundMenu[];
@@ -87,6 +88,10 @@ void MN_Init(void)
 
   SoundDef.x = OptionsDef.x;
   SoundDef.y = OptionsDef.y;
+
+  LoadDef.x = 70;
+  LoadDef.y = 30;
+  LoadDef.numitems = 6;
 
   EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
   EpisodeMenu[1].alttext = "HELL'S MAW";
@@ -287,6 +292,30 @@ void MN_DrawSound(void)
   MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX, 16, snd_MusicVolume);
 }
 
+extern char savegamestrings[10][SAVESTRINGSIZE];
+
+static void MN_DrawFileSlots(int x, int y)
+{
+  int i;
+
+  for (i = 0; i < 6; i++)
+  {
+    V_DrawNamePatch(x, y, 0, DEH_String("M_FSLOT"), CR_DEFAULT, VPT_STRETCH);
+    MN_DrTextA(savegamestrings[i], x + 5, y + 5);
+    y += ITEM_HEIGHT;
+  }
+}
+
+void MN_DrawLoad(void)
+{
+  const char *title;
+
+  title = DEH_String("LOAD GAME");
+
+  MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
+  MN_DrawFileSlots(LoadDef.x, LoadDef.y);
+}
+
 void MN_DrTextA(const char *text, int x, int y)
 {
   char c;
@@ -294,6 +323,7 @@ void MN_DrTextA(const char *text, int x, int y)
 
   while ((c = *text++) != 0)
   {
+    c = toupper(c);
     if (c < 33)
     {
       x += 5;
@@ -316,6 +346,7 @@ int MN_TextAWidth(const char *text)
   width = 0;
   while ((c = *text++) != 0)
   {
+    c = toupper(c);
     if (c < 33)
     {
       width += 5;
@@ -336,6 +367,7 @@ void MN_DrTextB(const char *text, int x, int y)
 
   while ((c = *text++) != 0)
   {
+    c = toupper(c);
     if (c < 33)
     {
       x += 8;
@@ -358,6 +390,7 @@ int MN_TextBWidth(const char *text)
   width = 0;
   while ((c = *text++) != 0)
   {
+    c = toupper(c);
     if (c < 33)
     {
       width += 5;

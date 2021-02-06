@@ -114,8 +114,6 @@ dboolean messageNeedsInput; // timed message = no input from user
 
 void (*messageRoutine)(int response);
 
-#define SAVESTRINGSIZE  24
-
 /* killough 8/15/98: when changes are allowed to sync-critical variables */
 static int allow_changes(void)
 {
@@ -776,6 +774,8 @@ menu_t LoadDef =
 void M_DrawLoad(void)
 {
   int i;
+
+  if (heretic) return MN_DrawLoad();
 
   //jff 3/15/98 use symbolic load position
   // CPhipps - patch drawing updated

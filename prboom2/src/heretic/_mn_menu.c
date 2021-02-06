@@ -293,26 +293,6 @@ static void DrawFilesMenu(void)
 
 //---------------------------------------------------------------------------
 //
-// PROC DrawLoadMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawLoadMenu(void)
-{
-    const char *title;
-
-    title = DEH_String("LOAD GAME");
-
-    MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
-    if (!slottextloaded)
-    {
-        MN_LoadSlotText();
-    }
-    DrawFileSlots(&LoadMenu);
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC DrawSaveMenu
 //
 //---------------------------------------------------------------------------
@@ -362,31 +342,6 @@ void MN_LoadSlotText(void)
         SlotStatus[i] = retval == SLOTTEXTLEN;
     }
     slottextloaded = true;
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawFileSlots
-//
-//---------------------------------------------------------------------------
-
-static void DrawFileSlots(Menu_t * menu)
-{
-    int i;
-    int x;
-    int y;
-
-    x = menu->x;
-    y = menu->y;
-    for (i = 0; i < 6; i++)
-    {
-        V_DrawPatch(x, y, W_CacheLumpName(DEH_String("M_FSLOT"), PU_CACHE));
-        if (SlotStatus[i])
-        {
-            MN_DrTextA(SlotText[i], x + 5, y + 5);
-        }
-        y += ITEM_HEIGHT;
-    }
 }
 
 //---------------------------------------------------------------------------

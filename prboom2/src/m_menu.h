@@ -212,4 +212,6 @@ typedef struct menu_s
   short           lastOn;       // last item user was on in menu
 } menu_t;
 
+#define SAVESTRINGSIZE 24
+
 #endif

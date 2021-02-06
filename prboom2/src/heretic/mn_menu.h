@@ -27,6 +27,7 @@ void MN_DrawOptions(void);
 void MN_DrawSetup(void);
 void MN_DrawMouse(void);
 void MN_DrawSound(void);
+void MN_DrawLoad(void);
 void MN_DrawSlider(int x, int y, int width, int slot);
 void MN_DrTextA(const char *text, int x, int y);
 int MN_TextAWidth(const char *text);
