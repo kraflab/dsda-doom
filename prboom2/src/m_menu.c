@@ -1789,6 +1789,8 @@ menu_t CompatDef =                                           // killough 10/98
 
 void M_DrawSetup(void)
 {
+  if (heretic) return MN_DrawSetup();
+
   // CPhipps - patch drawing updated
   M_DrawTitle(124, 15, "M_SETUP", CR_DEFAULT, "SETUP", CR_GOLD);
 }

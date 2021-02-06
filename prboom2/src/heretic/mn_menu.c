@@ -44,6 +44,7 @@ extern menu_t MainDef;
 extern menu_t EpiDef;
 extern menu_t NewDef;
 extern menu_t OptionsDef;
+extern menu_t SetupDef;
 extern menuitem_t EpisodeMenu[];
 extern menuitem_t NewGameMenu[];
 extern short EpiMenuMap[];
@@ -69,6 +70,9 @@ void MN_Init(void)
 
   OptionsDef.x = 88;
   OptionsDef.y = 16;
+
+  SetupDef.x = OptionsDef.x;
+  SetupDef.y = OptionsDef.y;
 
   EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
   EpisodeMenu[1].alttext = "HELL'S MAW";
@@ -225,6 +229,11 @@ void MN_DrawOptions(void)
         MN_DrTextB(DEH_String("OFF"), 196, OptionsDef.y + 3 * LINEHEIGHT);
     }
     M_DrawThermo(OptionsDef.x, OptionsDef.y + 4 + LINEHEIGHT * SCREENSIZE_INDEX, 9, screenSize);
+}
+
+void MN_DrawSetup(void)
+{
+  // nothing for heretic
 }
 
 void MN_DrTextA(const char *text, int x, int y)
