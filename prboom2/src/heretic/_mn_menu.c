@@ -64,7 +64,6 @@ typedef enum
     MENU_FILES,
     MENU_LOAD,
     MENU_SAVE,
-    MENU_CRISPNESS,
     MENU_NONE
 } MenuType_t;
 
@@ -270,13 +269,12 @@ static MenuItem_t OptionsItems[] = {
     {ITT_LRFUNC, "MOUSE SENSITIVITY", SCMouseSensi, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_SETMENU, "MORE...", NULL, 0, MENU_OPTIONS2},
-    {ITT_SETMENU, "CRISPNESS...", NULL, 0, MENU_CRISPNESS}
 };
 
 static Menu_t OptionsMenu = {
     88, 30,
     DrawOptionsMenu,
-    5+1, OptionsItems, // [JN] Extra item: Crispness menu
+    5, OptionsItems,
     0,
     MENU_MAIN
 };
@@ -296,19 +294,6 @@ static Menu_t Options2Menu = {
     6, Options2Items,
     0,
     MENU_OPTIONS
-};
-
-static MenuItem_t CrispnessItems[] = {
-    {ITT_LRFUNC, "HIGH RESOLUTION RENDERING:", CrispyHires, 0, MENU_NONE},
-    {ITT_LRFUNC, "SMOOTH PIXEL SCALING:", CrispySmoothing, 0, MENU_NONE},
-    {ITT_LRFUNC, "UNCAPPED FRAMERATE:", CrispyUncapped, 0, MENU_NONE},
-    {ITT_LRFUNC, "ENABLE VSYNC:", CrispyVsync, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_LRFUNC, "SHOW LEVEL STATS:", CrispyAutomapStats, 0, MENU_NONE},
-    {ITT_LRFUNC, "SHOW LEVEL TIME:", CrispyLevelTime, 0, MENU_NONE},
-    {ITT_LRFUNC, "SHOW PLAYER COORDS:", CrispyPlayerCoords, 0, MENU_NONE},
-    {ITT_LRFUNC, "REPORT REVEALED SECRETS:", CrispySecretMessage, 0, MENU_NONE},
 };
 
 static Menu_t *Menus[] = {
@@ -1066,86 +1051,6 @@ static boolean SCInfo(int option)
     {
         paused = true;
     }
-    return true;
-}
-
-//---------------------------------------------------------------------------
-//
-// Crispness menu: toggable features
-//
-//---------------------------------------------------------------------------
-
-static void CrispyHiresHook(void)
-{
-    crispy->hires = !crispy->hires;
-    // [crispy] re-initialize framebuffers, textures and renderer
-    I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
-    // [crispy] re-calculate framebuffer coordinates
-    R_ExecuteSetViewSize();
-    // [crispy] scale the sky for new resolution
-    R_InitSkyMap();
-    // [crispy] re-calculate automap coordinates
-    AM_LevelInit();
-    if (automapactive) {
-        AM_initVariables();
-    }
-    // [crispy] refresh the status bar
-    SB_state = -1;
-}
-
-static boolean CrispyHires(int option)
-{
-    crispy->post_rendering_hook = CrispyHiresHook;
-
-    return true;
-}
-
-static boolean CrispySmoothing(int option)
-{
-    crispy->smoothscaling = !crispy->smoothscaling;
-    return true;
-}
-
-static boolean CrispyUncapped(int option)
-{
-    crispy->uncapped = !crispy->uncapped;
-    return true;
-}
-
-static void CrispyVsyncHook(void)
-{
-    crispy->vsync = !crispy->vsync;
-    I_ReInitGraphics(REINIT_RENDERER | REINIT_TEXTURES | REINIT_ASPECTRATIO);
-}
-
-static boolean CrispyVsync(int option)
-{
-    crispy->post_rendering_hook = CrispyVsyncHook;
-
-    return true;
-}
-
-static boolean CrispyAutomapStats(int option)
-{
-    crispy->automapstats = (crispy->automapstats + 1) % NUM_WIDGETS;
-    return true;
-}
-
-static boolean CrispyLevelTime(int option)
-{
-    crispy->leveltime = (crispy->leveltime + 1) % NUM_WIDGETS;
-    return true;
-}
-
-static boolean CrispyPlayerCoords(int option)
-{
-    crispy->playercoords = (crispy->playercoords + 1) % (NUM_WIDGETS - 1); // [crispy] disable "always" setting
-    return true;
-}
-
-static boolean CrispySecretMessage(int option)
-{
-    crispy->secretmessage = (crispy->secretmessage + 1) % NUM_SECRETMESSAGE; // [crispy] enable secret message
     return true;
 }
 
