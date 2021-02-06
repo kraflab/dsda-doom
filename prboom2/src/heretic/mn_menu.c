@@ -27,6 +27,7 @@
 #define ITEM_HEIGHT 20
 #define SELECTOR_XOFFSET (-28)
 #define SELECTOR_YOFFSET (-1)
+#define SCREENSIZE_INDEX 5
 
 static int FontABaseLump;
 static int FontBBaseLump;
@@ -42,10 +43,13 @@ static void MN_InitFonts(void)
 extern menu_t MainDef;
 extern menu_t EpiDef;
 extern menu_t NewDef;
+extern menu_t OptionsDef;
 extern menuitem_t EpisodeMenu[];
 extern menuitem_t NewGameMenu[];
 extern short EpiMenuMap[];
 extern short EpiMenuEpi[];
+
+void M_DrawThermo(int x, int y, int thermWidth, int thermDot);
 
 void MN_Init(void)
 {
@@ -62,6 +66,9 @@ void MN_Init(void)
 
   NewDef.x = 38;
   NewDef.y = 30;
+
+  OptionsDef.x = 88;
+  OptionsDef.y = 30;
 
   EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
   EpisodeMenu[1].alttext = "HELL'S MAW";
@@ -105,6 +112,8 @@ void MN_Ticker(void)
 
 extern menu_t* currentMenu;
 extern short itemOn;
+extern int showMessages;
+extern int screenSize;
 
 void MN_Drawer(void)
 {
@@ -203,6 +212,19 @@ void MN_DrawMainMenu(void)
   V_DrawNamePatch(88, 0, 0, DEH_String("M_HTIC"), CR_DEFAULT, VPT_STRETCH);
   V_DrawNumPatch(40, 10, 0, SkullBaseLump + (17 - frame), CR_DEFAULT, VPT_STRETCH);
   V_DrawNumPatch(232, 10, 0, SkullBaseLump + frame, CR_DEFAULT, VPT_STRETCH);
+}
+
+void MN_DrawOptions(void)
+{
+    if (showMessages)
+    {
+        MN_DrTextB(DEH_String("ON"), 196, OptionsDef.y + 3 * LINEHEIGHT);
+    }
+    else
+    {
+        MN_DrTextB(DEH_String("OFF"), 196, OptionsDef.y + 3 * LINEHEIGHT);
+    }
+    M_DrawThermo(OptionsDef.x, OptionsDef.y + 4 + LINEHEIGHT * SCREENSIZE_INDEX, 9, screenSize);
 }
 
 void MN_DrTextA(const char *text, int x, int y)

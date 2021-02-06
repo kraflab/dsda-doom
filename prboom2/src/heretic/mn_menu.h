@@ -23,6 +23,7 @@ void MN_Init(void);
 void MN_Ticker(void);
 void MN_Drawer(void);
 void MN_DrawMainMenu(void);
+void MN_DrawOptions(void);
 void MN_DrTextA(const char *text, int x, int y);
 int MN_TextAWidth(const char *text);
 void MN_DrTextB(const char *text, int x, int y);

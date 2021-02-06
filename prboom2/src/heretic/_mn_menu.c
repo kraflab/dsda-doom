@@ -104,9 +104,6 @@ static boolean SCSaveGame(int option);
 static boolean SCMessages(int option);
 static boolean SCEndGame(int option);
 static boolean SCInfo(int option);
-static void DrawMainMenu(void);
-static void DrawSkillMenu(void);
-static void DrawOptionsMenu(void);
 static void DrawOptions2Menu(void);
 static void DrawFileSlots(Menu_t * menu);
 static void DrawFilesMenu(void);
@@ -200,22 +197,6 @@ static Menu_t SaveMenu = {
     6, SaveItems,
     0,
     MENU_FILES
-};
-
-static MenuItem_t OptionsItems[] = {
-    {ITT_EFUNC, "END GAME", SCEndGame, 0, MENU_NONE},
-    {ITT_EFUNC, "MESSAGES : ", SCMessages, 0, MENU_NONE},
-    {ITT_LRFUNC, "MOUSE SENSITIVITY", SCMouseSensi, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_SETMENU, "MORE...", NULL, 0, MENU_OPTIONS2},
-};
-
-static Menu_t OptionsMenu = {
-    88, 30,
-    DrawOptionsMenu,
-    5, OptionsItems,
-    0,
-    MENU_MAIN
 };
 
 static MenuItem_t Options2Items[] = {
@@ -425,25 +406,6 @@ static void DrawFileSlots(Menu_t * menu)
         }
         y += ITEM_HEIGHT;
     }
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawOptionsMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawOptionsMenu(void)
-{
-    if (messageson)
-    {
-        MN_DrTextB(DEH_String("ON"), 196, 50);
-    }
-    else
-    {
-        MN_DrTextB(DEH_String("OFF"), 196, 50);
-    }
-    DrawSlider(&OptionsMenu, 3, 10, mouseSensitivity);
 }
 
 //---------------------------------------------------------------------------

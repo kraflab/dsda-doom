@@ -1048,6 +1048,8 @@ char msgNames[2][9]  = {"M_MSGOFF","M_MSGON"};
 
 void M_DrawOptions(void)
 {
+  if (heretic) return MN_DrawOptions();
+
   // CPhipps - patch drawing updated
   // proff/nicolas 09/20/98 -- changed for hi-res
   V_DrawNamePatch(108, 15, 0, "M_OPTTTL", CR_DEFAULT, VPT_STRETCH);
