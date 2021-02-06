@@ -65,10 +65,4 @@ extern dboolean BorderTopRefresh;
 
 #include "dstrings.h"
 
-// HERETIC_TODO: mn_menu
-void MN_DrTextA(const char *text, int x, int y);
-int MN_TextAWidth(const char *text);
-void MN_DrTextB(const char *text, int x, int y);
-int MN_TextBWidth(const char *text);
-
 #endif

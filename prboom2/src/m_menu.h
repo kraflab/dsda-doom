@@ -184,4 +184,32 @@ typedef struct setup_menu_s
   const char **selectstrings; /* list of strings for choice value */
 } setup_menu_t;
 
+//
+// MENU TYPEDEFS
+//
+
+typedef struct
+{
+  short status; // 0 = no cursor here, 1 = ok, 2 = arrows ok
+  char  name[10];
+
+  // choice = menu item #.
+  // if status = 2,
+  //   choice=0:leftarrow,1:rightarrow
+  void  (*routine)(int choice);
+  char  alphaKey; // hotkey in menu
+  const char *alttext;
+} menuitem_t;
+
+typedef struct menu_s
+{
+  short           numitems;     // # of menu items
+  struct menu_s*  prevMenu;     // previous menu
+  menuitem_t*     menuitems;    // menu items
+  void            (*routine)(); // draw routine
+  short           x;
+  short           y;            // x,y of menu
+  short           lastOn;       // last item user was on in menu
+} menu_t;
+
 #endif

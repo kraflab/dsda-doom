@@ -164,34 +164,6 @@ enum menuactive_e menuactive;    // The menus are up
 
 char savegamestrings[10][SAVESTRINGSIZE];
 
-//
-// MENU TYPEDEFS
-//
-
-typedef struct
-{
-  short status; // 0 = no cursor here, 1 = ok, 2 = arrows ok
-  char  name[10];
-
-  // choice = menu item #.
-  // if status = 2,
-  //   choice=0:leftarrow,1:rightarrow
-  void  (*routine)(int choice);
-  char  alphaKey; // hotkey in menu
-  const char *alttext;
-} menuitem_t;
-
-typedef struct menu_s
-{
-  short           numitems;     // # of menu items
-  struct menu_s*  prevMenu;     // previous menu
-  menuitem_t*     menuitems;    // menu items
-  void            (*routine)(); // draw routine
-  short           x;
-  short           y;            // x,y of menu
-  short           lastOn;       // last item user was on in menu
-} menu_t;
-
 short itemOn;           // menu item skull is on (for Big Font menus)
 short skullAnimCounter; // skull animation counter
 short whichSkull;       // which skull to draw (he blinks)
@@ -354,13 +326,12 @@ enum
 
 menuitem_t MainMenu[]=
 {
-  {1,"M_NGAME", M_NewGame, 'n'},
-  {1,"M_OPTION",M_Options, 'o'},
-  {1,"M_LOADG", M_LoadGame,'l'},
-  {1,"M_SAVEG", M_SaveGame,'s'},
-  // Another hickup with Special edition.
-  {1,"M_RDTHIS",M_ReadThis,'r'},
-  {1,"M_QUITG", M_QuitDOOM,'q'}
+  {1,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
+  {1,"M_OPTION",M_Options, 'o', "OPTIONS"},
+  {1,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
+  {1,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
+  {1,"M_RDTHIS",M_ReadThis,'r', "READ THIS!"},
+  {1,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
 };
 
 menu_t MainDef =
@@ -5887,6 +5858,7 @@ void M_StartControlPanel (void)
   // e6y
   // We need to remove the fourth episode for pre-ultimate complevels.
   // It is located here instead of M_Init() because of TNTCOMP cheat.
+  // HERETIC_NOTE: ep 4 removal
   if (!EpiCustom)
   {
 	  EpiDef.numitems = ep_end;
@@ -5948,6 +5920,8 @@ void M_Drawer (void)
 
     if (currentMenu->routine)
       currentMenu->routine();     // call Draw routine
+
+    if (heretic) return MN_Drawer();
 
     // DRAW MENU
 

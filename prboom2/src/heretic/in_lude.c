@@ -36,6 +36,7 @@
 
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
+#include "heretic/mn_menu.h"
 
 #include "in_lude.h"
 
@@ -64,10 +65,6 @@ static void IN_DrTextB(const char *text, int x, int y);
 
 // contains information passed into intermission
 static wbstartstruct_t* wbs;
-
-// HERETIC_TODO: temporary copy from _mn_menu.c
-static int FontABaseLump;
-static int FontBBaseLump;
 
 static int prevmap;
 static dboolean intermission;
@@ -205,9 +202,6 @@ static void IN_InitLumps(void)
   FontBLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
   patchFaceOkayBase = W_GetNumForName(DEH_String("FACEA0"));
   patchFaceDeadBase = W_GetNumForName(DEH_String("FACEB0"));
-
-  FontABaseLump = W_GetNumForName(DEH_String("FONTA_S")) + 1;
-  FontBBaseLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
 }
 
 static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
@@ -1068,122 +1062,4 @@ void IN_DrTextB(const char *text, int x, int y)
             x += R_NumPatchWidth(lump) - 1;
         }
     }
-}
-
-// Temporary stuff from mn_menu
-
-//---------------------------------------------------------------------------
-//
-// PROC MN_DrTextA
-//
-// Draw text using font A.
-//
-//---------------------------------------------------------------------------
-
-void MN_DrTextA(const char *text, int x, int y)
-{
-    char c;
-    int lump;
-
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            x += 5;
-        }
-        else
-        {
-            lump = FontABaseLump + c - 33;
-            V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
-            x += R_NumPatchWidth(lump) - 1;
-        }
-    }
-}
-
-//---------------------------------------------------------------------------
-//
-// FUNC MN_TextAWidth
-//
-// Returns the pixel width of a string using font A.
-//
-//---------------------------------------------------------------------------
-
-int MN_TextAWidth(const char *text)
-{
-    char c;
-    int width;
-    int lump;
-
-    width = 0;
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            width += 5;
-        }
-        else
-        {
-            lump = FontABaseLump + c - 33;
-            width += R_NumPatchWidth(lump) - 1;
-        }
-    }
-    return (width);
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC MN_DrTextB
-//
-// Draw text using font B.
-//
-//---------------------------------------------------------------------------
-
-void MN_DrTextB(const char *text, int x, int y)
-{
-    char c;
-    int lump;
-
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            x += 8;
-        }
-        else
-        {
-            lump = FontBBaseLump + c - 33;
-            V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
-            x += R_NumPatchWidth(lump) - 1;
-        }
-    }
-}
-
-//---------------------------------------------------------------------------
-//
-// FUNC MN_TextBWidth
-//
-// Returns the pixel width of a string using font B.
-//
-//---------------------------------------------------------------------------
-
-int MN_TextBWidth(const char *text)
-{
-    char c;
-    int width;
-    int lump;
-
-    width = 0;
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            width += 5;
-        }
-        else
-        {
-            lump = FontBBaseLump + c - 33;
-            width += R_NumPatchWidth(lump) - 1;
-        }
-    }
-    return (width);
 }

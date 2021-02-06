@@ -104,14 +104,6 @@ static boolean SCSaveGame(int option);
 static boolean SCMessages(int option);
 static boolean SCEndGame(int option);
 static boolean SCInfo(int option);
-static boolean CrispyHires(int option);
-static boolean CrispySmoothing(int option);
-static boolean CrispyAutomapStats(int option);
-static boolean CrispyLevelTime(int option);
-static boolean CrispyPlayerCoords(int option);
-static boolean CrispySecretMessage(int option);
-static boolean CrispyUncapped(int option);
-static boolean CrispyVsync(int option);
 static void DrawMainMenu(void);
 static void DrawEpisodeMenu(void);
 static void DrawSkillMenu(void);
@@ -146,9 +138,6 @@ boolean messageson;
 
 // Private Data
 
-static int FontABaseLump;
-static int FontBBaseLump;
-static int SkullBaseLump;
 static Menu_t *CurrentMenu;
 static int CurrentItPos;
 static int MenuEpisode;
@@ -166,22 +155,6 @@ static int slotptr;
 static int currentSlot;
 static int quicksave;
 static int quickload;
-
-static MenuItem_t MainItems[] = {
-    {ITT_EFUNC, "NEW GAME", SCNetCheck, 1, MENU_EPISODE},
-    {ITT_SETMENU, "OPTIONS", NULL, 0, MENU_OPTIONS},
-    {ITT_SETMENU, "GAME FILES", NULL, 0, MENU_FILES},
-    {ITT_EFUNC, "INFO", SCInfo, 0, MENU_NONE},
-    {ITT_EFUNC, "QUIT GAME", SCQuitGame, 0, MENU_NONE}
-};
-
-static Menu_t MainMenu = {
-    110, 56,
-    DrawMainMenu,
-    5, MainItems,
-    0,
-    MENU_NONE
-};
 
 static MenuItem_t EpisodeItems[] = {
     {ITT_EFUNC, "CITY OF THE DAMNED", SCEpisode, 1, MENU_NONE},
@@ -364,134 +337,6 @@ static int G_GotoNextLevel(void)
 
 //---------------------------------------------------------------------------
 //
-// PROC InitFonts
-//
-//---------------------------------------------------------------------------
-
-static void InitFonts(void)
-{
-    FontABaseLump = W_GetNumForName(DEH_String("FONTA_S")) + 1;
-    FontBBaseLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC MN_DrTextA
-//
-// Draw text using font A.
-//
-//---------------------------------------------------------------------------
-
-void MN_DrTextA(const char *text, int x, int y)
-{
-    char c;
-    patch_t *p;
-
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            x += 5;
-        }
-        else
-        {
-            p = W_CacheLumpNum(FontABaseLump + c - 33, PU_CACHE);
-            V_DrawPatch(x, y, p);
-            x += SHORT(p->width) - 1;
-        }
-    }
-}
-
-//---------------------------------------------------------------------------
-//
-// FUNC MN_TextAWidth
-//
-// Returns the pixel width of a string using font A.
-//
-//---------------------------------------------------------------------------
-
-int MN_TextAWidth(const char *text)
-{
-    char c;
-    int width;
-    patch_t *p;
-
-    width = 0;
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            width += 5;
-        }
-        else
-        {
-            p = W_CacheLumpNum(FontABaseLump + c - 33, PU_CACHE);
-            width += SHORT(p->width) - 1;
-        }
-    }
-    return (width);
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC MN_DrTextB
-//
-// Draw text using font B.
-//
-//---------------------------------------------------------------------------
-
-void MN_DrTextB(const char *text, int x, int y)
-{
-    char c;
-    patch_t *p;
-
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            x += 8;
-        }
-        else
-        {
-            p = W_CacheLumpNum(FontBBaseLump + c - 33, PU_CACHE);
-            V_DrawPatch(x, y, p);
-            x += SHORT(p->width) - 1;
-        }
-    }
-}
-
-//---------------------------------------------------------------------------
-//
-// FUNC MN_TextBWidth
-//
-// Returns the pixel width of a string using font B.
-//
-//---------------------------------------------------------------------------
-
-int MN_TextBWidth(const char *text)
-{
-    char c;
-    int width;
-    patch_t *p;
-
-    width = 0;
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            width += 5;
-        }
-        else
-        {
-            p = W_CacheLumpNum(FontBBaseLump + c - 33, PU_CACHE);
-            width += SHORT(p->width) - 1;
-        }
-    }
-    return (width);
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC MN_Drawer
 //
 //---------------------------------------------------------------------------
@@ -502,77 +347,6 @@ const char *QuitEndMsg[] = {
     "DO YOU WANT TO QUICKSAVE THE GAME NAMED",
     "DO YOU WANT TO QUICKLOAD THE GAME NAMED"
 };
-
-void MN_Drawer(void)
-{
-    int i;
-    int x;
-    int y;
-    MenuItem_t *item;
-    const char *message;
-    const char *selName;
-
-    if (MenuActive == false)
-    {
-        if (askforquit)
-        {
-            message = DEH_String(QuitEndMsg[typeofask - 1]);
-
-            MN_DrTextA(message, 160 - MN_TextAWidth(message) / 2, 80);
-            if (typeofask == 3)
-            {
-                MN_DrTextA(SlotText[quicksave - 1], 160 -
-                           MN_TextAWidth(SlotText[quicksave - 1]) / 2, 90);
-                MN_DrTextA(DEH_String("?"), 160 +
-                           MN_TextAWidth(SlotText[quicksave - 1]) / 2, 90);
-            }
-            if (typeofask == 4)
-            {
-                MN_DrTextA(SlotText[quickload - 1], 160 -
-                           MN_TextAWidth(SlotText[quickload - 1]) / 2, 90);
-                MN_DrTextA(DEH_String("?"), 160 +
-                           MN_TextAWidth(SlotText[quickload - 1]) / 2, 90);
-            }
-            UpdateState |= I_FULLSCRN;
-        }
-        return;
-    }
-    else
-    {
-        UpdateState |= I_FULLSCRN;
-        if (InfoType)
-        {
-            MN_DrawInfo();
-            return;
-        }
-        if (screenblocks < 10)
-        {
-            BorderNeedRefresh = true;
-        }
-        if (CurrentMenu->drawFunc != NULL)
-        {
-            CurrentMenu->drawFunc();
-        }
-        x = CurrentMenu->x;
-        y = CurrentMenu->y;
-        item = CurrentMenu->items;
-        for (i = 0; i < CurrentMenu->itemCount; i++)
-        {
-            if (item->type != ITT_EMPTY && item->text)
-            {
-                MN_DrTextB(DEH_String(item->text), x, y);
-            }
-
-            y += ITEM_HEIGHT;
-            item++;
-        }
-
-        y = CurrentMenu->y + (CurrentItPos * ITEM_HEIGHT) + SELECTOR_YOFFSET;
-        selName = DEH_String(MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
-        V_DrawPatch(x + SELECTOR_XOFFSET, y,
-                    W_CacheLumpName(selName, PU_CACHE));
-    }
-}
 
 //---------------------------------------------------------------------------
 //
