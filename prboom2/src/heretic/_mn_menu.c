@@ -124,7 +124,6 @@ static void MN_DrawInfo(void);
 static void DrawLoadMenu(void);
 static void DrawSaveMenu(void);
 static void DrawSlider(Menu_t * menu, int item, int width, int slot);
-static void DrawCrispnessMenu(void);
 void MN_LoadSlotText(void);
 
 // External Functions
@@ -312,14 +311,6 @@ static MenuItem_t CrispnessItems[] = {
     {ITT_LRFUNC, "REPORT REVEALED SECRETS:", CrispySecretMessage, 0, MENU_NONE},
 };
 
-static Menu_t CrispnessMenu = {
-    68, 40,
-    DrawCrispnessMenu,
-    10, CrispnessItems,
-    0,
-    MENU_OPTIONS
-};
-
 static Menu_t *Menus[] = {
     &MainMenu,
     &EpisodeMenu,
@@ -328,8 +319,7 @@ static Menu_t *Menus[] = {
     &Options2Menu,
     &FilesMenu,
     &LoadMenu,
-    &SaveMenu,
-    &CrispnessMenu
+    &SaveMenu
 };
 
 // [crispy] reload current level / go to next level
@@ -585,43 +575,17 @@ void MN_Drawer(void)
         {
             if (item->type != ITT_EMPTY && item->text)
             {
-                if (CurrentMenu == &CrispnessMenu)
-                {
-                // [JN] Crispness menu: use small "A" font
-                MN_DrTextA(DEH_String(item->text), x, y);
-                }
-                else
-                {
                 MN_DrTextB(DEH_String(item->text), x, y);
-                }
             }
-            if (CurrentMenu == &CrispnessMenu)
-            {
-            // [JN] Crispness menu: use 10px vertical spacing for small font
-            y += ITEM_HEIGHT/2;
-            }
-            else
-            {
+
             y += ITEM_HEIGHT;
-            }
             item++;
         }
-        if (CurrentMenu == &CrispnessMenu)
-        {
-        // [JN] Crispness menu: use small blue gem instead of big red arrow.
-        // Blinks a bit faster and shifted right, closer to the text.
-        y = CurrentMenu->y + (CurrentItPos * (ITEM_HEIGHT/2)) + SELECTOR_YOFFSET;
-        selName = DEH_String(MenuTime & 8 ? "INVGEMR1" : "INVGEMR2");
-        V_DrawPatch(x + (SELECTOR_XOFFSET/2), y,
-                    W_CacheLumpName(selName, PU_CACHE));
-        }
-        else
-        {
+
         y = CurrentMenu->y + (CurrentItPos * ITEM_HEIGHT) + SELECTOR_YOFFSET;
         selName = DEH_String(MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
         V_DrawPatch(x + SELECTOR_XOFFSET, y,
                     W_CacheLumpName(selName, PU_CACHE));
-        }
     }
 }
 
@@ -1870,92 +1834,4 @@ static void DrawSlider(Menu_t * menu, int item, int width, int slot)
 
     V_DrawPatch(x + 4 + slot * 8, y + 7,
                 W_CacheLumpName(DEH_String("M_SLDKB"), PU_CACHE));
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawCrispnessMenu
-//
-//---------------------------------------------------------------------------
-
-static void M_DrawCrispnessBackground(void)
-{
-    byte *src, *dest;
-    int x, y;
-
-    if (gamemode == shareware)
-    {
-        src = W_CacheLumpName(DEH_String("FLOOR04"), PU_CACHE);
-    }
-    else
-    {
-        src = W_CacheLumpName(DEH_String("FLAT513"), PU_CACHE);
-    }
-    dest = I_VideoBuffer;
-
-    for (y = 0; y < SCREENHEIGHT; y++)
-    {
-        for (x = 0; x < SCREENWIDTH / 64; x++)
-        {
-            memcpy(dest, src + ((y & 63) << 6), 64);
-            dest += 64;
-        }
-        if (SCREENWIDTH & 63)
-        {
-            memcpy(dest, src + ((y & 63) << 6), SCREENWIDTH & 63);
-            dest += (SCREENWIDTH & 63);
-        }
-    }
-
-    SB_state = -1;
-}
-
-static void DrawCrispnessMenu(void)
-{
-    static const char *title;
-
-    // Background
-    M_DrawCrispnessBackground();
-
-    // Title
-    title = DEH_String("CRISPNESS");
-    MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 6);
-
-    // Subheaders
-    dp_translation = cr[CR_GOLD];
-    MN_DrTextA("RENDERING", 63, 30);
-    MN_DrTextA("NAVIGATIONAL", 63, 90);
-    dp_translation = cr[CR_GREY];
-
-    // Hires rendering
-    MN_DrTextA(crispy->hires ? "ON" : "OFF", 254, 40);
-
-    // Smooth pixel scaling
-    MN_DrTextA(crispy->smoothscaling ? "ON" : "OFF", 216, 50);
-
-    // Uncapped framerate
-    MN_DrTextA(crispy->uncapped ? "ON" : "OFF", 217, 60);
-
-    // Vsync
-    MN_DrTextA(crispy->vsync ? "ON" : "OFF", 167, 70);
-
-    // Show level stats
-    MN_DrTextA(crispy->automapstats == WIDGETS_OFF ? "NEVER" :
-               crispy->automapstats == WIDGETS_AUTOMAP ? "IN AUTOMAP" :
-                                                         "ALWAYS", 190, 100);
-
-    // Show level time
-    MN_DrTextA(crispy->leveltime == WIDGETS_OFF ? "NEVER" :
-               crispy->leveltime == WIDGETS_AUTOMAP ? "IN AUTOMAP" :
-                                                       "ALWAYS", 179, 110);
-
-    // Show player coords
-    MN_DrTextA(crispy->playercoords == WIDGETS_OFF ? "NEVER" : "IN AUTOMAP", 211, 120);
-
-    // Show secret message
-    MN_DrTextA(crispy->secretmessage == SECRETMESSAGE_OFF ? "OFF" :
-        crispy->secretmessage == SECRETMESSAGE_ON ? "ON" :
-        "COUNT", 250, 130);
-
-    dp_translation = NULL;
 }
