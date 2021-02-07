@@ -394,82 +394,102 @@ int G_ReloadLevel(void)
 
 int G_GotoNextLevel(void)
 {
-	static byte doom2_next[33] = {
-	  2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-	  12, 13, 14, 15, 31, 17, 18, 19, 20, 21,
-	  22, 23, 24, 25, 26, 27, 28, 29, 30, 1,
-	  32, 16, 3
-	};
-	static byte doom_next[4][9] = {
-	  {12, 13, 19, 15, 16, 17, 18, 21, 14},
-	  {22, 23, 24, 25, 29, 27, 28, 31, 26},
-	  {32, 33, 34, 35, 36, 39, 38, 41, 37},
-	  {42, 49, 44, 45, 46, 47, 48, 11, 43}
-	};
-	int epsd;
-	int map = -1;
+  static byte doom2_next[33] = {
+    2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+    12, 13, 14, 15, 31, 17, 18, 19, 20, 21,
+    22, 23, 24, 25, 26, 27, 28, 29, 30, 1,
+    32, 16, 3
+  };
+  static byte doom_next[4][9] = {
+    {12, 13, 19, 15, 16, 17, 18, 21, 14},
+    {22, 23, 24, 25, 29, 27, 28, 31, 26},
+    {32, 33, 34, 35, 36, 39, 38, 41, 37},
+    {42, 49, 44, 45, 46, 47, 48, 11, 43}
+  };
+  static byte heretic_next[6][9] = {
+    {12, 13, 14, 15, 16, 19, 18, 21, 17},
+    {22, 23, 24, 29, 26, 27, 28, 31, 25},
+    {32, 33, 34, 39, 36, 37, 38, 41, 35},
+    {42, 43, 44, 49, 46, 47, 48, 51, 45},
+    {52, 53, 59, 55, 56, 57, 58, 61, 54},
+    {62, 63, 11, 11, 11, 11, 11, 11, 11}, // E6M4-E6M9 shouldn't be accessible
+  };
+  int epsd;
+  int map = -1;
 
-	int changed = false;
-	if (gamemapinfo != NULL)
-	{
-		const char *n;
-		if (gamemapinfo->nextsecret[0]) n = gamemapinfo->nextsecret;
-		else n = gamemapinfo->nextmap;
-		G_ValidateMapName(n, &epsd, &map);
-	}
+  int changed = false;
+  if (gamemapinfo != NULL)
+  {
+    const char *n;
+    if (gamemapinfo->nextsecret[0]) n = gamemapinfo->nextsecret;
+    else n = gamemapinfo->nextmap;
+    G_ValidateMapName(n, &epsd, &map);
+  }
 
-	if (map == -1)
-	{
-		// secret level
-		doom2_next[14] = (haswolflevels ? 31 : 16);
+  if (map == -1)
+  {
+    // secret level
+    doom2_next[14] = (haswolflevels ? 31 : 16);
 
-		if (bfgedition && singleplayer)
-		{
-			if (gamemission == pack_nerve)
-			{
-				doom2_next[3] = 9;
-				doom2_next[7] = 1;
-				doom2_next[8] = 5;
-			}
-			else
-				doom2_next[1] = 33;
-		}
+    if (bfgedition && singleplayer)
+    {
+      if (gamemission == pack_nerve)
+      {
+        doom2_next[3] = 9;
+        doom2_next[7] = 1;
+        doom2_next[8] = 5;
+      }
+      else
+        doom2_next[1] = 33;
+    }
 
-		// shareware doom has only episode 1
-		doom_next[0][7] = (gamemode == shareware ? 11 : 21);
+    if (gamemode == shareware)
+      heretic_next[0][7] = 11;
 
-		doom_next[2][7] = ((gamemode == registered) ||
-			// the fourth episode for pre-ultimate complevels is not allowed.
-			(compatibility_level < ultdoom_compatibility) ?
-			11 : 41);
+    if (gamemode == registered)
+      heretic_next[2][7] = 11;
 
-		//doom2_next and doom_next are 0 based, unlike gameepisode and gamemap
-		epsd = gameepisode - 1;
-		map = gamemap - 1;
+    // shareware doom has only episode 1
+    doom_next[0][7] = (gamemode == shareware ? 11 : 21);
 
-		if (gamemode == commercial)
-		{
-			epsd = 1;
-			map = doom2_next[BETWEEN(0, 32, map)];
-		}
-		else
-		{
-			int next = doom_next[BETWEEN(0, 3, epsd)][BETWEEN(0, 9, map)];
-			epsd = next / 10;
-			map = next % 10;
-		}
-	}
+    doom_next[2][7] = ((gamemode == registered) ||
+      // the fourth episode for pre-ultimate complevels is not allowed.
+      (compatibility_level < ultdoom_compatibility) ?
+      11 : 41);
 
-	if ((gamestate == GS_LEVEL) &&
-		!deathmatch && !netgame &&
-		!demorecording && !demoplayback &&
-		!menuactive)
-	{
-		G_DeferedInitNew(gameskill, epsd, map);
-		changed = true;
-	}
+    //doom2_next and doom_next are 0 based, unlike gameepisode and gamemap
+    epsd = gameepisode - 1;
+    map = gamemap - 1;
 
-	return changed;
+    if (heretic)
+    {
+      int next = heretic_next[BETWEEN(0, 5, epsd)][BETWEEN(0, 8, map)];
+      epsd = next / 10;
+      map = next % 10;
+    }
+    else if (gamemode == commercial)
+    {
+      epsd = 1;
+      map = doom2_next[BETWEEN(0, 32, map)];
+    }
+    else
+    {
+      int next = doom_next[BETWEEN(0, 3, epsd)][BETWEEN(0, 9, map)];
+      epsd = next / 10;
+      map = next % 10;
+    }
+  }
+
+  if ((gamestate == GS_LEVEL) &&
+    !deathmatch && !netgame &&
+    !demorecording && !demoplayback &&
+    !menuactive)
+  {
+    G_DeferedInitNew(gameskill, epsd, map);
+    changed = true;
+  }
+
+  return changed;
 }
 
 void M_ChangeSpeed(void)
