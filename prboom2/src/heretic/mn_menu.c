@@ -53,6 +53,7 @@ extern menu_t SetupDef;
 extern menu_t MouseDef;
 extern menu_t SoundDef;
 extern menu_t LoadDef;
+extern menu_t SaveDef;
 extern menuitem_t EpisodeMenu[];
 extern menuitem_t NewGameMenu[];
 extern menuitem_t SoundMenu[];
@@ -92,6 +93,10 @@ void MN_Init(void)
   LoadDef.x = 70;
   LoadDef.y = 30;
   LoadDef.numitems = 6;
+
+  SaveDef.x = 70;
+  SaveDef.y = 30;
+  SaveDef.numitems = 6;
 
   EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
   EpisodeMenu[1].alttext = "HELL'S MAW";
@@ -314,6 +319,27 @@ void MN_DrawLoad(void)
 
   MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
   MN_DrawFileSlots(LoadDef.x, LoadDef.y);
+}
+
+extern int saveStringEnter;
+extern int saveSlot;
+
+void MN_DrawSave(void)
+{
+  const char *title;
+
+  title = DEH_String("SAVE GAME");
+
+  MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
+  MN_DrawFileSlots(SaveDef.x, SaveDef.y);
+
+  if (saveStringEnter)
+  {
+    int i;
+
+    i = MN_TextAWidth(savegamestrings[saveSlot]);
+    MN_DrTextA("[", SaveDef.x + 5 + i, SaveDef.y + 5 + saveSlot * ITEM_HEIGHT); // [ is _ in font A
+  }
 }
 
 void MN_DrTextA(const char *text, int x, int y)

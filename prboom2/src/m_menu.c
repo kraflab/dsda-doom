@@ -926,6 +926,8 @@ void M_DrawSave(void)
 {
   int i;
 
+  if (heretic) return MN_DrawSave();
+
   //jff 3/15/98 use symbolic load position
   // CPhipps - patch drawing updated
   V_DrawNamePatch(72, LOADGRAPHIC_Y, 0, "M_SAVEG", CR_DEFAULT, VPT_STRETCH);

@@ -99,17 +99,10 @@ static boolean SCMouseSensi(int option);
 static boolean SCSfxVolume(int option);
 static boolean SCMusicVolume(int option);
 static boolean SCScreenSize(int option);
-static boolean SCLoadGame(int option);
-static boolean SCSaveGame(int option);
 static boolean SCMessages(int option);
 static boolean SCEndGame(int option);
 static boolean SCInfo(int option);
-static void DrawFileSlots(Menu_t * menu);
-static void DrawFilesMenu(void);
 static void MN_DrawInfo(void);
-static void DrawLoadMenu(void);
-static void DrawSaveMenu(void);
-void MN_LoadSlotText(void);
 
 // External Functions
 
@@ -149,53 +142,6 @@ static int slotptr;
 static int currentSlot;
 static int quicksave;
 static int quickload;
-
-static MenuItem_t FilesItems[] = {
-    {ITT_EFUNC, "LOAD GAME", SCNetCheck, 2, MENU_LOAD},
-    {ITT_SETMENU, "SAVE GAME", NULL, 0, MENU_SAVE}
-};
-
-static Menu_t FilesMenu = {
-    110, 60,
-    DrawFilesMenu,
-    2, FilesItems,
-    0,
-    MENU_MAIN
-};
-
-static MenuItem_t LoadItems[] = {
-    {ITT_EFUNC, NULL, SCLoadGame, 0, MENU_NONE},
-    {ITT_EFUNC, NULL, SCLoadGame, 1, MENU_NONE},
-    {ITT_EFUNC, NULL, SCLoadGame, 2, MENU_NONE},
-    {ITT_EFUNC, NULL, SCLoadGame, 3, MENU_NONE},
-    {ITT_EFUNC, NULL, SCLoadGame, 4, MENU_NONE},
-    {ITT_EFUNC, NULL, SCLoadGame, 5, MENU_NONE}
-};
-
-static Menu_t LoadMenu = {
-    70, 30,
-    DrawLoadMenu,
-    6, LoadItems,
-    0,
-    MENU_FILES
-};
-
-static MenuItem_t SaveItems[] = {
-    {ITT_EFUNC, NULL, SCSaveGame, 0, MENU_NONE},
-    {ITT_EFUNC, NULL, SCSaveGame, 1, MENU_NONE},
-    {ITT_EFUNC, NULL, SCSaveGame, 2, MENU_NONE},
-    {ITT_EFUNC, NULL, SCSaveGame, 3, MENU_NONE},
-    {ITT_EFUNC, NULL, SCSaveGame, 4, MENU_NONE},
-    {ITT_EFUNC, NULL, SCSaveGame, 5, MENU_NONE}
-};
-
-static Menu_t SaveMenu = {
-    70, 30,
-    DrawSaveMenu,
-    6, SaveItems,
-    0,
-    MENU_FILES
-};
 
 static Menu_t *Menus[] = {
     &MainMenu,
@@ -275,74 +221,6 @@ const char *QuitEndMsg[] = {
     "DO YOU WANT TO QUICKSAVE THE GAME NAMED",
     "DO YOU WANT TO QUICKLOAD THE GAME NAMED"
 };
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawFilesMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawFilesMenu(void)
-{
-// clear out the quicksave/quickload stuff
-    quicksave = 0;
-    quickload = 0;
-    players[consoleplayer].message = NULL;
-    players[consoleplayer].messageTics = 1;
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawSaveMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawSaveMenu(void)
-{
-    const char *title;
-
-    title = DEH_String("SAVE GAME");
-
-    MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
-    if (!slottextloaded)
-    {
-        MN_LoadSlotText();
-    }
-    DrawFileSlots(&SaveMenu);
-}
-
-//===========================================================================
-//
-// MN_LoadSlotText
-//
-//              Loads in the text message for each slot
-//===========================================================================
-
-void MN_LoadSlotText(void)
-{
-    FILE *fp;
-    int i;
-    char *filename;
-
-    for (i = 0; i < 6; i++)
-    {
-        int retval;
-        filename = SV_Filename(i);
-        fp = fopen(filename, "rb+");
-	free(filename);
-
-        if (!fp)
-        {
-            SlotText[i][0] = 0; // empty the string
-            SlotStatus[i] = 0;
-            continue;
-        }
-        retval = fread(&SlotText[i], 1, SLOTTEXTLEN, fp);
-        fclose(fp);
-        SlotStatus[i] = retval == SLOTTEXTLEN;
-    }
-    slottextloaded = true;
-}
 
 //---------------------------------------------------------------------------
 //
@@ -431,87 +309,6 @@ static boolean SCMessages(int option)
         P_SetMessage(&players[consoleplayer], DEH_String("MESSAGES OFF"), true);
     }
     S_StartSound(NULL, sfx_chat);
-    return true;
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC SCLoadGame
-//
-//---------------------------------------------------------------------------
-
-static boolean SCLoadGame(int option)
-{
-    char *filename;
-
-    if (!SlotStatus[option])
-    {                           // slot's empty...don't try and load
-        return false;
-    }
-
-    filename = SV_Filename(option);
-    G_LoadGame(filename);
-    free(filename);
-
-    MN_DeactivateMenu();
-    BorderNeedRefresh = true;
-    if (quickload == -1)
-    {
-        quickload = option + 1;
-        players[consoleplayer].message = NULL;
-        players[consoleplayer].messageTics = 1;
-    }
-    return true;
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC SCSaveGame
-//
-//---------------------------------------------------------------------------
-
-static boolean SCSaveGame(int option)
-{
-    char *ptr;
-
-    if (!FileMenuKeySteal)
-    {
-        int x, y;
-
-        FileMenuKeySteal = true;
-        // We need to activate the text input interface to type the save
-        // game name:
-        x = SaveMenu.x + 1;
-        y = SaveMenu.y + 1 + option * ITEM_HEIGHT;
-        I_StartTextInput(x, y, x + 190, y + ITEM_HEIGHT - 2);
-
-        M_StringCopy(oldSlotText, SlotText[option], sizeof(oldSlotText));
-        ptr = SlotText[option];
-        while (*ptr)
-        {
-            ptr++;
-        }
-        *ptr = '[';
-        *(ptr + 1) = 0;
-        SlotStatus[option]++;
-        currentSlot = option;
-        slotptr = ptr - SlotText[option];
-        return false;
-    }
-    else
-    {
-        G_SaveGame(option, SlotText[option]);
-        FileMenuKeySteal = false;
-        I_StopTextInput();
-        MN_DeactivateMenu();
-    }
-    BorderNeedRefresh = true;
-    if (quicksave == -1)
-    {
-        quicksave = option + 1;
-        players[consoleplayer].message = NULL;
-        players[consoleplayer].messageTics = 1;
-    }
     return true;
 }
 
@@ -1277,33 +1074,4 @@ void MN_DeactivateMenu(void)
     }
     players[consoleplayer].message = NULL;
     players[consoleplayer].messageTics = 1;
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC MN_DrawInfo
-//
-//---------------------------------------------------------------------------
-
-void MN_DrawInfo(void)
-{
-    I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
-    V_DrawRawScreen(W_CacheLumpNum(W_GetNumForName("TITLE") + InfoType,
-                                   PU_CACHE));
-//      V_DrawPatch(0, 0, W_CacheLumpNum(W_GetNumForName("TITLE")+InfoType,
-//              PU_CACHE));
-}
-
-
-//---------------------------------------------------------------------------
-//
-// PROC SetMenu
-//
-//---------------------------------------------------------------------------
-
-static void SetMenu(MenuType_t menu)
-{
-    CurrentMenu->oldItPos = CurrentItPos;
-    CurrentMenu = Menus[menu];
-    CurrentItPos = CurrentMenu->oldItPos;
 }
