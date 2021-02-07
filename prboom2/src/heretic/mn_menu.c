@@ -342,6 +342,14 @@ void MN_DrawSave(void)
   }
 }
 
+void MN_DrawPause(void)
+{
+  const char *title;
+
+  title = "PAUSE";
+  MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
+}
+
 void MN_DrTextA(const char *text, int x, int y)
 {
   char c;

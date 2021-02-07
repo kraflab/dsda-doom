@@ -97,6 +97,8 @@
 #include "dsda/global.h"
 #include "dsda/settings.h"
 
+#include "heretic/mn_menu.h"
+
 // NSM
 #include "i_capture.h"
 
@@ -400,9 +402,14 @@ void D_Display (fixed_t frac)
 
   // draw pause pic
   if (paused && (menuactive != mnact_full)) {
-    // Simplified the "logic" here and no need for x-coord caching - POPE
-    V_DrawNamePatch((320 - V_NamePatchWidth("M_PAUSE"))/2, 4,
-                    0, "M_PAUSE", CR_DEFAULT, VPT_STRETCH);
+    if (heretic)
+      MN_DrawPause();
+    else
+      // Simplified the "logic" here and no need for x-coord caching - POPE
+      V_DrawNamePatch(
+        (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,
+        "M_PAUSE", CR_DEFAULT, VPT_STRETCH
+      );
   }
 
   // menus go directly to the screen
