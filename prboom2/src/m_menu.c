@@ -1888,10 +1888,10 @@ static void M_DrawItem(const setup_menu_t* s)
     char *p, *t;
     int w = 0;
     int color =
-  flags & S_DISABLE ? CR_DISABLE : //e6y
-  flags & S_SELECT ? CR_SELECT :
-  flags & S_HILITE ? CR_HILITE :
-  flags & (S_TITLE|S_NEXT|S_PREV) ? CR_TITLE : CR_ITEM; // killough 10/98
+      flags & S_DISABLE ? CR_DISABLE : //e6y
+      flags & S_SELECT ? CR_SELECT :
+      flags & S_HILITE ? CR_HILITE :
+      flags & (S_TITLE|S_NEXT|S_PREV) ? CR_TITLE : CR_ITEM; // killough 10/98
 
     /* killough 10/98:
      * Enhance to support multiline text separated by newlines.
@@ -1899,15 +1899,15 @@ static void M_DrawItem(const setup_menu_t* s)
      */
 
     for (p = t = strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
-      {      /* killough 10/98: support left-justification: */
-  strcpy(menu_buffer,p);
-  if (!(flags & S_LEFTJUST))
-    w = M_GetPixelWidth(menu_buffer) + 4;
-  M_DrawMenuString(x - w, y ,color);
-  // print a blinking "arrow" next to the currently highlighted menu item
-  if (s == current_setup_menu + set_menu_itemon && whichSkull)
-    M_DrawString(x - w - 8, y, color, ">");
-      }
+    {      /* killough 10/98: support left-justification: */
+      strcpy(menu_buffer,p);
+      if (!(flags & S_LEFTJUST))
+        w = M_GetPixelWidth(menu_buffer) + 4;
+      M_DrawMenuString(x - w, y ,color);
+      // print a blinking "arrow" next to the currently highlighted menu item
+      if (s == current_setup_menu + set_menu_itemon && whichSkull)
+        M_DrawString(x - w - 8, y, color, ">");
+    }
     free(t);
   }
 }
