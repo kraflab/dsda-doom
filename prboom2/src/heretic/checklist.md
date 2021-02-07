@@ -16,11 +16,12 @@
 - [x] Fix opengl status bar updating
 - [x] Fix missing hud period
 - [x] Adjust hud text color
-- [ ] Load without crashing as iwad
+- [x] Load without crashing as iwad
+- [x] Set up menu
+- [x] Fix prboom+ settings visuals
+- [ ] Fix menu sounds
 - [ ] Set up automap
 - [ ] Support new keybinds
-- [ ] Set up menu
-- [ ] Fix prboom+ settings visuals
 - [ ] Support graphical player pitch
 
 ### Heretic Support (phase 2)
