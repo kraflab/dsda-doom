@@ -45,10 +45,15 @@ extern int g_sfx_sawup;
 extern int g_sfx_stnmov;
 extern int g_sfx_stnmov_plats;
 extern int g_sfx_swtchn;
+extern int g_sfx_swtchx;
 extern int g_sfx_dorcls;
 extern int g_sfx_doropn;
 extern int g_sfx_pstart;
 extern int g_sfx_pstop;
+extern int g_sfx_itemup;
+extern int g_sfx_pistol;
+extern int g_sfx_oof;
+extern int g_sfx_menu;
 
 extern int g_door_normal;
 extern int g_door_raise_in_5_mins;

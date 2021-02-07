@@ -1379,14 +1379,14 @@ static void M_QuickSaveResponse(int ch)
 {
   if (ch == 'y')  {
     M_DoSave(quickSaveSlot);
-    S_StartSound(NULL,sfx_swtchx);
+    S_StartSound(NULL,g_sfx_swtchx);
   }
 }
 
 void M_QuickSave(void)
 {
   if (!usergame && (!demoplayback || netgame)) { /* killough 10/98 */
-    S_StartSound(NULL,sfx_oof);
+    S_StartSound(NULL,g_sfx_oof);
     return;
   }
 
@@ -1413,7 +1413,7 @@ static void M_QuickLoadResponse(int ch)
 {
   if (ch == 'y') {
     M_LoadSelect(quickSaveSlot);
-    S_StartSound(NULL,sfx_swtchx);
+    S_StartSound(NULL,g_sfx_swtchx);
   }
 }
 
@@ -3911,7 +3911,7 @@ static void M_SelectDone(setup_menu_t* ptr)
 {
   ptr->m_flags &= ~S_SELECT;
   ptr->m_flags |= S_HILITE;
-  S_StartSound(NULL,sfx_itemup);
+  S_StartSound(NULL,g_sfx_itemup);
   setup_select = false;
   colorbox_active = false;
   if (print_warning_about_changes)     // killough 8/15/98
@@ -4698,7 +4698,7 @@ dboolean M_Responder (event_t* ev) {
       messageRoutine(ch);
 
     menuactive = mnact_inactive;
-    S_StartSound(NULL,sfx_swtchx);
+    S_StartSound(NULL,g_sfx_swtchx);
     return true;
   }
 
@@ -4827,7 +4827,7 @@ dboolean M_Responder (event_t* ev) {
       if ((automapmode & am_active) || chat_on)
         return false;
       M_SizeDisplay(0);
-      S_StartSound(NULL,sfx_stnmov);
+      S_StartSound(NULL,g_sfx_stnmov);
       return true;
       }
 
@@ -4836,7 +4836,7 @@ dboolean M_Responder (event_t* ev) {
       if ((automapmode & am_active) || chat_on)     // allow
         return false;                   // key_hud==key_zoomin
       M_SizeDisplay(1);                                             //  ^
-      S_StartSound(NULL,sfx_stnmov);                                //  |
+      S_StartSound(NULL,g_sfx_stnmov);                                //  |
       return true;                                                  // phares
       }
 
@@ -5170,7 +5170,7 @@ dboolean M_Responder (event_t* ev) {
              value > ptr1->var.def->maxvalue))
           value = ptr1->var.def->maxvalue;
         if (*ptr1->var.def->location.pi != value)
-          S_StartSound(NULL,sfx_pstop);
+          S_StartSound(NULL,g_sfx_menu);
         *ptr1->var.def->location.pi = value;
       }
       if (ptr1->var.def->type == def_str) {
@@ -5182,7 +5182,7 @@ dboolean M_Responder (event_t* ev) {
         if (value < 0)
           value = 0;
         if (old_value != value)
-          S_StartSound(NULL,sfx_pstop);
+          S_StartSound(NULL,g_sfx_menu);
         *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
       }
     }
@@ -5198,7 +5198,7 @@ dboolean M_Responder (event_t* ev) {
              value > ptr1->var.def->maxvalue))
           value = ptr1->var.def->maxvalue;
         if (*ptr1->var.def->location.pi != value)
-          S_StartSound(NULL,sfx_pstop);
+          S_StartSound(NULL,g_sfx_menu);
         *ptr1->var.def->location.pi = value;
       }
       if (ptr1->var.def->type == def_str) {
@@ -5210,7 +5210,7 @@ dboolean M_Responder (event_t* ev) {
         if (ptr1->selectstrings[value] == NULL)
           value = old_value;
         if (old_value != value)
-          S_StartSound(NULL,sfx_pstop);
+          S_StartSound(NULL,g_sfx_menu);
         *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
       }
     }
@@ -5399,7 +5399,7 @@ dboolean M_Responder (event_t* ev) {
         {
     if (++color_palette_y == 16)
       color_palette_y = 0;
-    S_StartSound(NULL,sfx_itemup);
+    S_StartSound(NULL,g_sfx_itemup);
     return true;
         }
 
@@ -5407,7 +5407,7 @@ dboolean M_Responder (event_t* ev) {
         {
     if (--color_palette_y < 0)
       color_palette_y = 15;
-    S_StartSound(NULL,sfx_itemup);
+    S_StartSound(NULL,g_sfx_itemup);
     return true;
         }
 
@@ -5415,7 +5415,7 @@ dboolean M_Responder (event_t* ev) {
         {
     if (--color_palette_x < 0)
       color_palette_x = 15;
-    S_StartSound(NULL,sfx_itemup);
+    S_StartSound(NULL,g_sfx_itemup);
     return true;
         }
 
@@ -5423,7 +5423,7 @@ dboolean M_Responder (event_t* ev) {
         {
     if (++color_palette_x == 16)
       color_palette_x = 0;
-    S_StartSound(NULL,sfx_itemup);
+    S_StartSound(NULL,g_sfx_itemup);
     return true;
         }
 
@@ -5609,7 +5609,7 @@ dboolean M_Responder (event_t* ev) {
 
     ptr1->m_flags |= S_SELECT;
     setup_select = true;
-    S_StartSound(NULL,sfx_itemup);
+    S_StartSound(NULL,g_sfx_itemup);
     return true;
   }
 
@@ -5639,7 +5639,7 @@ dboolean M_Responder (event_t* ev) {
     set_general_active = false;    // killough 10/98
           set_compat_active = false;    // killough 10/98
     HU_Start();    // catch any message changes // phares 4/19/98
-    S_StartSound(NULL,sfx_swtchx);
+    S_StartSound(NULL,g_sfx_swtchx);
     return true;
   }
 
@@ -5666,7 +5666,7 @@ dboolean M_Responder (event_t* ev) {
       print_warning_about_changes = false; // killough 10/98
       while (current_setup_menu[set_menu_itemon++].m_flags&S_SKIP);
       current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
-      S_StartSound(NULL,sfx_pstop);  // killough 10/98
+      S_StartSound(NULL,g_sfx_menu);  // killough 10/98
       return true;
     }
       }
@@ -5689,7 +5689,7 @@ dboolean M_Responder (event_t* ev) {
       print_warning_about_changes = false; // killough 10/98
       while (current_setup_menu[set_menu_itemon++].m_flags&S_SKIP);
       current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
-      S_StartSound(NULL,sfx_pstop);  // killough 10/98
+      S_StartSound(NULL,g_sfx_menu);  // killough 10/98
       return true;
     }
       }
@@ -5709,7 +5709,7 @@ dboolean M_Responder (event_t* ev) {
       itemOn = 0;
     else
       itemOn++;
-    S_StartSound(NULL,sfx_pstop);
+    S_StartSound(NULL,g_sfx_menu);
   }
       while(currentMenu->menuitems[itemOn].status==-1);
       return true;
@@ -5723,7 +5723,7 @@ dboolean M_Responder (event_t* ev) {
       itemOn = currentMenu->numitems-1;
     else
       itemOn--;
-    S_StartSound(NULL,sfx_pstop);
+    S_StartSound(NULL,g_sfx_menu);
   }
       while(currentMenu->menuitems[itemOn].status==-1);
       return true;
@@ -5734,7 +5734,7 @@ dboolean M_Responder (event_t* ev) {
       if (currentMenu->menuitems[itemOn].routine &&
     currentMenu->menuitems[itemOn].status == 2)
   {
-    S_StartSound(NULL,sfx_stnmov);
+    S_StartSound(NULL,g_sfx_stnmov);
     currentMenu->menuitems[itemOn].routine(0);
   }
       return true;
@@ -5745,7 +5745,7 @@ dboolean M_Responder (event_t* ev) {
       if (currentMenu->menuitems[itemOn].routine &&
     currentMenu->menuitems[itemOn].status == 2)
   {
-    S_StartSound(NULL,sfx_stnmov);
+    S_StartSound(NULL,g_sfx_stnmov);
     currentMenu->menuitems[itemOn].routine(1);
   }
       return true;
@@ -5760,12 +5760,12 @@ dboolean M_Responder (event_t* ev) {
     if (currentMenu->menuitems[itemOn].status == 2)
       {
         currentMenu->menuitems[itemOn].routine(1);   // right arrow
-        S_StartSound(NULL,sfx_stnmov);
+        S_StartSound(NULL,g_sfx_stnmov);
       }
     else
       {
         currentMenu->menuitems[itemOn].routine(itemOn);
-        S_StartSound(NULL,sfx_pistol);
+        S_StartSound(NULL,g_sfx_pistol);
       }
   }
       //jff 3/24/98 remember last skill selected
@@ -5777,7 +5777,7 @@ dboolean M_Responder (event_t* ev) {
     {
       currentMenu->lastOn = itemOn;
       M_ClearMenus ();
-      S_StartSound(NULL,sfx_swtchx);
+      S_StartSound(NULL,g_sfx_swtchx);
       return true;
     }
 
@@ -5815,14 +5815,14 @@ dboolean M_Responder (event_t* ev) {
   if (currentMenu->menuitems[i].alphaKey == ch)
     {
       itemOn = i;
-      S_StartSound(NULL,sfx_pstop);
+      S_StartSound(NULL,g_sfx_menu);
       return true;
     }
       for (i = 0;i <= itemOn;i++)
   if (currentMenu->menuitems[i].alphaKey == ch)
     {
       itemOn = i;
-      S_StartSound(NULL,sfx_pstop);
+      S_StartSound(NULL,g_sfx_menu);
       return true;
     }
     }

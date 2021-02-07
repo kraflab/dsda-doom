@@ -19,7 +19,7 @@
 - [x] Load without crashing as iwad
 - [x] Set up menu
 - [x] Fix prboom+ settings visuals
-- [ ] Fix menu sounds
+- [x] Fix menu sounds
 - [ ] Set up automap
 - [ ] Support new keybinds
 - [ ] Support graphical player pitch
