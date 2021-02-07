@@ -26,6 +26,7 @@
 #include "sounds.h"
 #include "d_main.h"
 #include "v_video.h"
+#include "hu_stuff.h"
 #include "heretic/def.h"
 
 #include "global.h"
@@ -99,8 +100,18 @@ int g_cr_red;
 int g_cr_blue;
 
 const char* g_menu_flat;
+patchnum_t* g_menu_font;
+int g_menu_font_spacing;
+int g_menu_cr_title;
+int g_menu_cr_set;
+int g_menu_cr_item;
+int g_menu_cr_hilite;
+int g_menu_cr_select;
+int g_menu_cr_disable;
 
 extern const char** S_music_files;
+extern patchnum_t hu_font[HU_FONTSIZE];
+extern patchnum_t hu_font2[HU_FONTSIZE];
 
 static void dsda_AllocateMobjInfo(int zero, int max, int count) {
   num_mobj_types = count;
@@ -192,6 +203,14 @@ static void dsda_InitDoom(void) {
   g_cr_blue = CR_BLUE;
 
   g_menu_flat = "FLOOR4_6";
+  g_menu_font = hu_font;
+  g_menu_font_spacing = -1;
+  g_menu_cr_title = CR_GOLD;
+  g_menu_cr_set = CR_GREEN;
+  g_menu_cr_item = CR_RED;
+  g_menu_cr_hilite = CR_ORANGE;
+  g_menu_cr_select = CR_GRAY;
+  g_menu_cr_disable = CR_GRAY;
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -285,6 +304,14 @@ static void dsda_InitHeretic(void) {
   g_cr_blue = CR_BROWN;
 
   g_menu_flat = "FLOOR18";
+  g_menu_font = hu_font2;
+  g_menu_font_spacing = 0;
+  g_menu_cr_title = g_cr_gold;
+  g_menu_cr_set = g_cr_green;
+  g_menu_cr_item = g_cr_red;
+  g_menu_cr_hilite = g_cr_blue;
+  g_menu_cr_select = g_cr_gray;
+  g_menu_cr_disable = g_cr_gray;
 
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {

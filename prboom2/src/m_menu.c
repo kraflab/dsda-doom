@@ -74,12 +74,19 @@
 #include "e6y_launcher.h"
 #endif
 
-extern patchnum_t hu_font[HU_FONTSIZE];
 extern dboolean  message_dontfuckwithme;
 
 extern dboolean chat_on;          // in heads-up code
 
 extern const char* g_menu_flat;
+extern patchnum_t* g_menu_font;
+extern int g_menu_font_spacing;
+extern int g_menu_cr_title;
+extern int g_menu_cr_set;
+extern int g_menu_cr_item;
+extern int g_menu_cr_hilite;
+extern int g_menu_cr_select;
+extern int g_menu_cr_disable;
 
 //
 // defaulted values
@@ -328,7 +335,7 @@ menuitem_t MainMenu[]=
   {1,"M_OPTION",M_Options, 'o', "OPTIONS"},
   {1,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
   {1,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
-  {1,"M_RDTHIS",M_ReadThis,'r', "READ THIS!"},
+  {1,"M_RDTHIS",M_ReadThis,'r', "READ THIS"},
   {1,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
 };
 
@@ -480,14 +487,7 @@ void M_DrawReadThis1(void)
 void M_DrawReadThis2(void)
 {
   inhelpscreens = true;
-  if (gamemode == shareware)
-    M_DrawCredits();
-  else
-  {
-    V_DrawNamePatch(0, 0, 0, "CREDIT", CR_DEFAULT, VPT_STRETCH);
-    // e6y: wide-res
-    V_FillBorder(-1, 0);
-  }
+  M_DrawCredits();
 }
 
 /////////////////////////////
@@ -1798,7 +1798,7 @@ void M_DrawSetup(void)
   if (heretic) return MN_DrawSetup();
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(124, 15, "M_SETUP", CR_DEFAULT, "SETUP", CR_GOLD);
+  M_DrawTitle(124, 15, "M_SETUP", CR_DEFAULT, "SETUP", g_cr_gold);
 }
 
 /////////////////////////////
@@ -1810,21 +1810,6 @@ void M_Setup(int choice)
 {
   M_SetupNextMenu(&SetupDef);
 }
-
-/////////////////////////////
-//
-// Data that's used by the Setup screen code
-//
-// Establish the message colors to be used
-
-#define CR_TITLE  CR_GOLD
-#define CR_SET    CR_GREEN
-#define CR_ITEM   CR_RED
-#define CR_HILITE CR_ORANGE
-#define CR_SELECT CR_GRAY
-
-//e6y
-#define CR_DISABLE CR_GRAY
 
 // Data used by the Automap color selection code
 
@@ -1873,25 +1858,29 @@ static void M_DrawItem(const setup_menu_t* s)
   int y = s->m_y;
   int flags = s->m_flags;
   if (flags & S_RESET)
-
+  {
     // This item is the reset button
     // Draw the 'off' version if this isn't the current menu item
     // Draw the blinking version in tune with the blinking skull otherwise
 
     // proff/nicolas 09/20/98 -- changed for hi-res
     // CPhipps - Patch drawing updated, reformatted
-
-    V_DrawNamePatch(x, y, 0, ResetButtonName[(flags & (S_HILITE|S_SELECT)) ? whichSkull : 0],
-        CR_DEFAULT, VPT_STRETCH);
-
-  else { // Draw the item string
+    if (!heretic)
+      V_DrawNamePatch(
+        x, y, 0,
+        ResetButtonName[(flags & (S_HILITE|S_SELECT)) ? whichSkull : 0],
+        CR_DEFAULT, VPT_STRETCH
+      );
+  }
+  else // Draw the item string
+  {
     char *p, *t;
     int w = 0;
     int color =
-      flags & S_DISABLE ? CR_DISABLE : //e6y
-      flags & S_SELECT ? CR_SELECT :
-      flags & S_HILITE ? CR_HILITE :
-      flags & (S_TITLE|S_NEXT|S_PREV) ? CR_TITLE : CR_ITEM; // killough 10/98
+      flags & S_DISABLE ? g_menu_cr_disable : //e6y
+      flags & S_SELECT ? g_menu_cr_select :
+      flags & S_HILITE ? g_menu_cr_hilite :
+      flags & (S_TITLE|S_NEXT|S_PREV) ? g_menu_cr_title : g_menu_cr_item; // killough 10/98
 
     /* killough 10/98:
      * Enhance to support multiline text separated by newlines.
@@ -1939,8 +1928,8 @@ static void M_DrawSetting(const setup_menu_t* s)
   // depending on whether the item is a text string or not.
 
   color =
-    flags & S_DISABLE ? CR_DISABLE : //e6y
-    flags & S_SELECT ? CR_SELECT : flags & S_HILITE ? CR_HILITE : CR_SET;
+    flags & S_DISABLE ? g_menu_cr_disable : //e6y
+    flags & S_SELECT ? g_menu_cr_select : flags & S_HILITE ? g_menu_cr_hilite : g_menu_cr_set;
 
   // Is the item a YES/NO item?
 
@@ -2134,25 +2123,25 @@ static void M_DrawScreenItems(const setup_menu_t* src)
   //e6y
     if (warning_about_changes & S_CANT_GL_ARB_MULTITEXTURE) {
   strcpy(menu_buffer, "Extension GL_ARB_multitexture not found");
-  M_DrawMenuString(30,176,CR_RED);
+  M_DrawMenuString(30,176,g_cr_red);
   } else
     if (warning_about_changes & S_CANT_GL_ARB_MULTISAMPLEFACTOR) {
   strcpy(menu_buffer, "Mast be even number like 0-none, 2, 4, 6");
-  M_DrawMenuString(30,176,CR_RED);
+  M_DrawMenuString(30,176,g_cr_red);
   } else
 
     if (warning_about_changes & S_BADVAL) {
   strcpy(menu_buffer, "Value out of Range");
-  M_DrawMenuString(100,176,CR_RED);
+  M_DrawMenuString(100,176,g_cr_red);
     } else if (warning_about_changes & S_PRGWARN) {
         strcpy(menu_buffer, "Warning: Program must be restarted to see changes");
-  M_DrawMenuString(3, 176, CR_RED);
+  M_DrawMenuString(3, 176, g_cr_red);
     } else if (warning_about_changes & S_BADVID) {
         strcpy(menu_buffer, "Video mode not supported");
-  M_DrawMenuString(80,176,CR_RED);
+  M_DrawMenuString(80,176,g_cr_red);
     } else {
   strcpy(menu_buffer, "Warning: Changes are pending until next game");
-        M_DrawMenuString(18,184,CR_RED);
+        M_DrawMenuString(18,184,g_cr_red);
     }
   }
 
@@ -2190,7 +2179,7 @@ static void M_DrawDefVerify(void)
 
   if (whichSkull) { // blink the text
     strcpy(menu_buffer,"Reset to defaults? (Y or N)");
-    M_DrawMenuString(VERIFYBOXXORG+8,VERIFYBOXYORG+8,CR_RED);
+    M_DrawMenuString(VERIFYBOXXORG+8,VERIFYBOXYORG+8,g_cr_red);
   }
 }
 
@@ -2216,34 +2205,34 @@ static void M_DrawInstructions(void)
         // See if a joystick or mouse button setting is allowed for
         // this item.
         if (current_setup_menu[set_menu_itemon].m_mouse || current_setup_menu[set_menu_itemon].m_joy)
-          M_DrawStringCentered(160, 20, CR_SELECT, "Press key or button for this action");
+          M_DrawStringCentered(160, 20, g_menu_cr_select, "Press key or button for this action");
         else
-          M_DrawStringCentered(160, 20, CR_SELECT, "Press key for this action");
+          M_DrawStringCentered(160, 20, g_menu_cr_select, "Press key for this action");
         break;
 
     case S_YESNO:
-      M_DrawStringCentered(160, 20, CR_SELECT, "Press ENTER key to toggle");
+      M_DrawStringCentered(160, 20, g_menu_cr_select, "Press ENTER key to toggle");
       break;
     case S_WEAP:
-      M_DrawStringCentered(160, 20, CR_SELECT, "Enter weapon number");
+      M_DrawStringCentered(160, 20, g_menu_cr_select, "Enter weapon number");
       break;
     case S_NUM:
-      M_DrawStringCentered(160, 20, CR_SELECT, "Enter value. Press ENTER when finished.");
+      M_DrawStringCentered(160, 20, g_menu_cr_select, "Enter value. Press ENTER when finished.");
       break;
     case S_COLOR:
-      M_DrawStringCentered(160, 20, CR_SELECT, "Select color and press enter");
+      M_DrawStringCentered(160, 20, g_menu_cr_select, "Select color and press enter");
       break;
     case S_CRITEM:
-      M_DrawStringCentered(160, 20, CR_SELECT, "Enter value");
+      M_DrawStringCentered(160, 20, g_menu_cr_select, "Enter value");
       break;
     case S_CHAT:
-      M_DrawStringCentered(160, 20, CR_SELECT, "Type/edit chat string and Press ENTER");
+      M_DrawStringCentered(160, 20, g_menu_cr_select, "Type/edit chat string and Press ENTER");
       break;
     case S_FILE:
-      M_DrawStringCentered(160, 20, CR_SELECT, "Type/edit filename and Press ENTER");
+      M_DrawStringCentered(160, 20, g_menu_cr_select, "Type/edit filename and Press ENTER");
       break;
     case S_CHOICE:
-      M_DrawStringCentered(160, 20, CR_SELECT, "Press left or right to choose");
+      M_DrawStringCentered(160, 20, g_menu_cr_select, "Press left or right to choose");
       break;
     case S_RESET:
       break;
@@ -2254,11 +2243,11 @@ static void M_DrawInstructions(void)
     }
   } else {
     if (flags & S_RESET)
-      M_DrawStringCentered(160, 20, CR_HILITE, "Press ENTER key to reset to defaults");
+      M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press ENTER key to reset to defaults");
     else if (flags & S_KEY)
-      M_DrawStringCentered(160, 20, CR_HILITE, "Press Enter to Change, Del to Clear");
+      M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press Enter to Change, Del to Clear");
     else
-      M_DrawStringCentered(160, 20, CR_HILITE, "Press Enter to Change");
+      M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press Enter to Change");
   }
 }
 
@@ -2574,7 +2563,7 @@ void M_DrawKeybnd(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", CR_GOLD);
+  M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", g_cr_gold);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -2689,7 +2678,7 @@ void M_DrawWeapons(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", CR_GOLD);
+  M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", g_cr_gold);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -2810,7 +2799,7 @@ void M_DrawStatusHUD(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", CR_GOLD);
+  M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", g_cr_gold);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -2994,7 +2983,7 @@ void M_DrawAutoMap(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", CR_GOLD);
+  M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", g_cr_gold);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3115,7 +3104,7 @@ void M_DrawEnemy(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(114, 2, "M_ENEM", CR_DEFAULT, "ENEMIES", CR_GOLD);
+  M_DrawTitle(114, 2, "M_ENEM", CR_DEFAULT, "ENEMIES", g_cr_gold);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3495,7 +3484,7 @@ void M_DrawGeneral(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", CR_GOLD);
+  M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", g_cr_gold);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3700,7 +3689,7 @@ void M_DrawCompat(void)
 
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
-  M_DrawTitle(52, 2, "M_COMPAT", CR_DEFAULT, "DOOM COMPATIBILITY", CR_GOLD);
+  M_DrawTitle(52, 2, "M_COMPAT", CR_DEFAULT, "DOOM COMPATIBILITY", g_cr_gold);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3822,7 +3811,7 @@ void M_DrawMessages(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(103, 2, "M_MESS", CR_DEFAULT, "MESSAGES", CR_GOLD);
+  M_DrawTitle(103, 2, "M_MESS", CR_DEFAULT, "MESSAGES", g_cr_gold);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
   if (default_verify)
@@ -3896,7 +3885,7 @@ void M_DrawChatStrings(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(83, 2, "M_CHAT", CR_DEFAULT, "CHAT STRINGS", CR_GOLD);
+  M_DrawTitle(83, 2, "M_CHAT", CR_DEFAULT, "CHAT STRINGS", g_cr_gold);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -4367,7 +4356,7 @@ static void M_DrawString(int cx, int cy, int color, const char* ch)
       cx += SPACEWIDTH;    // space
       continue;
       }
-    w = hu_font[c].width;
+    w = g_menu_font[c].width;
     if (cx + w > 320)
       break;
 
@@ -4375,10 +4364,10 @@ static void M_DrawString(int cx, int cy, int color, const char* ch)
     // desired color, colrngs[color]
 
     // CPhipps - patch drawing updated
-    V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, color, VPT_STRETCH | VPT_TRANS);
+    V_DrawNumPatch(cx, cy, 0, g_menu_font[c].lumpnum, color, VPT_STRETCH | VPT_TRANS);
     // The screen is cramped, so trim one unit from each
     // character so they butt up against each other.
-    cx += w - 1;
+    cx += w + g_menu_font_spacing;
   }
 }
 
@@ -4405,10 +4394,10 @@ static int M_GetPixelWidth(const char* ch)
       len += SPACEWIDTH;   // space
       continue;
       }
-    len += hu_font[c].width;
-    len--; // adjust so everything fits
+    len += g_menu_font[c].width;
+    len += g_menu_font_spacing;
   }
-  len++; // replace what you took away on the last char only
+  len -= g_menu_font_spacing; // replace what you took away on the last char only
   return len;
 }
 
@@ -4510,7 +4499,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   {
     // Use V_DrawBackground here deliberately to force drawing a background
     V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
-    M_DrawTitle(81, 9, "PRBOOM", CR_GOLD, PACKAGE_NAME " v" PACKAGE_VERSION, CR_GOLD);
+    M_DrawTitle(81, 9, "PRBOOM", g_cr_gold, PACKAGE_NAME " v" PACKAGE_VERSION, g_cr_gold);
     M_DrawScreenItems(cred_settings);
   }
 }
@@ -5918,7 +5907,7 @@ void M_Drawer (void)
         p++;
       *p = 0;
       M_WriteText(160 - M_StringWidth(string)/2, y, string, CR_DEFAULT);
-      y += hu_font[0].height;
+      y += g_menu_font[0].height;
       if ((*p = c))
         p++;
     }
@@ -6111,7 +6100,7 @@ void M_DrawSelCell (menu_t* menu,int item)
 //
 
 //
-// Find string width from hu_font chars
+// Find string width from g_menu_font chars
 //
 
 int M_StringWidth(const char* string)
@@ -6119,17 +6108,17 @@ int M_StringWidth(const char* string)
   int i, c, w = 0;
   for (i = 0;(size_t)i < strlen(string);i++)
     w += (c = toupper(string[i]) - HU_FONTSTART) < 0 || c >= HU_FONTSIZE ?
-      4 : hu_font[c].width;
+      4 : g_menu_font[c].width;
   return w;
 }
 
 //
-//    Find string height from hu_font chars
+//    Find string height from g_menu_font chars
 //
 
 int M_StringHeight(const char* string)
 {
-  int i, h, height = h = hu_font[0].height;
+  int i, h, height = h = g_menu_font[0].height;
   for (i = 0;string[i];i++)            // killough 1/31/98
     if (string[i] == '\n')
       h += height;
@@ -6137,7 +6126,7 @@ int M_StringHeight(const char* string)
 }
 
 //
-//    Write a string using the hu_font
+//    Write a string using the g_menu_font
 //
 void M_WriteText (int x,int y, const char* string, int cm)
 {
@@ -6172,12 +6161,12 @@ void M_WriteText (int x,int y, const char* string, int cm)
       continue;
     }
 
-    w = hu_font[c].width;
+    w = g_menu_font[c].width;
     if (cx+w > BASE_WIDTH)
       break;
     // proff/nicolas 09/20/98 -- changed for hi-res
     // CPhipps - patch drawing updated
-    V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, cm, flags);
+    V_DrawNumPatch(cx, cy, 0, g_menu_font[c].lumpnum, cm, flags);
     cx+=w;
   }
 }
