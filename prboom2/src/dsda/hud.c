@@ -221,7 +221,7 @@ static void dsda_UpdateExHud(void) {
       snprintf(
         dsda_exhud_max_totals.msg,
         sizeof(dsda_exhud_max_totals.msg),
-        "\x1b%cK \x1b%c%d/%d \x1b%c%d \x1b%cI \x1b%c%d/%d \x1b%cS \x1b%c%d/%d",
+        "\x1b%cK \x1b%c%d/%d \x1b%c%d%% \x1b%cI \x1b%c%d/%d \x1b%cS \x1b%c%d/%d",
         0x30 + g_cr_red,
         killcolor, fullkillcount, max_kill_requirement,
         kill_percent_color, kill_percent,
@@ -235,7 +235,7 @@ static void dsda_UpdateExHud(void) {
       snprintf(
         dsda_exhud_max_totals.msg,
         sizeof(dsda_exhud_max_totals.msg),
-        "\x1b%cK %s \x1b%c%d/%d \x1b%c%d \x1b%cI \x1b%c%d/%d \x1b%cS %s \x1b%c%d/%d",
+        "\x1b%cK %s \x1b%c%d/%d \x1b%c%d%% \x1b%cI \x1b%c%d/%d \x1b%cS %s \x1b%c%d/%d",
         0x30 + g_cr_red,
         allkills, killcolor, fullkillcount, max_kill_requirement,
         kill_percent_color, kill_percent,
