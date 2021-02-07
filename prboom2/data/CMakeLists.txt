@@ -1,7 +1,7 @@
 # PrBoom-Plus WAD creation tool
 
 if(NOT CMAKE_CROSSCOMPILING)
-    add_executable(rdatawad 
+    add_executable(rdatawad
         rd_main.c
         rd_util.c
         rd_util.h
@@ -41,7 +41,7 @@ set(LUMPS
     lumps/cryellow.lmp
 )
 
-set(COLORMAPS 
+set(COLORMAPS
     lumps/watermap.lmp
 )
 
@@ -78,48 +78,100 @@ set(SOUNDS
 )
 
 set(GRAPHICS
-    graphics/dig0.ppm
-    graphics/dig1.ppm
-    graphics/dig2.ppm
-    graphics/dig3.ppm
-    graphics/dig4.ppm
-    graphics/dig5.ppm
-    graphics/dig6.ppm
-    graphics/dig7.ppm
-    graphics/dig8.ppm
-    graphics/dig9.ppm
-    graphics/diga.ppm
-    graphics/digb.ppm
-    graphics/digc.ppm
-    graphics/digd.ppm
-    graphics/dige.ppm
-    graphics/digf.ppm
-    graphics/digg.ppm
-    graphics/digh.ppm
-    graphics/digi.ppm
-    graphics/digj.ppm
-    graphics/digk.ppm
-    graphics/digl.ppm
-    graphics/digm.ppm
-    graphics/dign.ppm
-    graphics/digo.ppm
-    graphics/digp.ppm
-    graphics/digq.ppm
-    graphics/digr.ppm
-    graphics/digs.ppm
-    graphics/digt.ppm
-    graphics/digu.ppm
-    graphics/digv.ppm
-    graphics/digw.ppm
-    graphics/digx.ppm
-    graphics/digy.ppm
-    graphics/digz.ppm
-    graphics/dig45.ppm
-    graphics/dig46.ppm
-    graphics/dig47.ppm
-    graphics/dig58.ppm
-    graphics/dig91.ppm
-    graphics/dig93.ppm
+    graphics/dig033.ppm
+    graphics/dig034.ppm
+    graphics/dig035.ppm
+    graphics/dig036.ppm
+    graphics/dig037.ppm
+    graphics/dig038.ppm
+    graphics/dig039.ppm
+    graphics/dig040.ppm
+    graphics/dig041.ppm
+    graphics/dig042.ppm
+    graphics/dig043.ppm
+    graphics/dig044.ppm
+    graphics/dig045.ppm
+    graphics/dig046.ppm
+    graphics/dig047.ppm
+    graphics/dig048.ppm
+    graphics/dig049.ppm
+    graphics/dig050.ppm
+    graphics/dig051.ppm
+    graphics/dig052.ppm
+    graphics/dig053.ppm
+    graphics/dig054.ppm
+    graphics/dig055.ppm
+    graphics/dig056.ppm
+    graphics/dig057.ppm
+    graphics/dig058.ppm
+    graphics/dig059.ppm
+    graphics/dig060.ppm
+    graphics/dig061.ppm
+    graphics/dig062.ppm
+    graphics/dig063.ppm
+    graphics/dig064.ppm
+    graphics/dig065.ppm
+    graphics/dig066.ppm
+    graphics/dig067.ppm
+    graphics/dig068.ppm
+    graphics/dig069.ppm
+    graphics/dig070.ppm
+    graphics/dig071.ppm
+    graphics/dig072.ppm
+    graphics/dig073.ppm
+    graphics/dig074.ppm
+    graphics/dig075.ppm
+    graphics/dig076.ppm
+    graphics/dig077.ppm
+    graphics/dig078.ppm
+    graphics/dig079.ppm
+    graphics/dig080.ppm
+    graphics/dig081.ppm
+    graphics/dig082.ppm
+    graphics/dig083.ppm
+    graphics/dig084.ppm
+    graphics/dig085.ppm
+    graphics/dig086.ppm
+    graphics/dig087.ppm
+    graphics/dig088.ppm
+    graphics/dig089.ppm
+    graphics/dig090.ppm
+    graphics/dig091.ppm
+    graphics/dig092.ppm
+    graphics/dig093.ppm
+    graphics/dig094.ppm
+    graphics/dig095.ppm
+    graphics/dig096.ppm
+    graphics/dig097.ppm
+    graphics/dig098.ppm
+    graphics/dig099.ppm
+    graphics/dig100.ppm
+    graphics/dig101.ppm
+    graphics/dig102.ppm
+    graphics/dig103.ppm
+    graphics/dig104.ppm
+    graphics/dig105.ppm
+    graphics/dig106.ppm
+    graphics/dig107.ppm
+    graphics/dig108.ppm
+    graphics/dig109.ppm
+    graphics/dig110.ppm
+    graphics/dig111.ppm
+    graphics/dig112.ppm
+    graphics/dig113.ppm
+    graphics/dig114.ppm
+    graphics/dig115.ppm
+    graphics/dig116.ppm
+    graphics/dig117.ppm
+    graphics/dig118.ppm
+    graphics/dig119.ppm
+    graphics/dig120.ppm
+    graphics/dig121.ppm
+    graphics/dig122.ppm
+    graphics/dig123.ppm
+    graphics/dig124.ppm
+    graphics/dig125.ppm
+    graphics/dig126.ppm
     graphics/stbr123.ppm
     graphics/stbr124.ppm
     graphics/stbr125.ppm
@@ -336,7 +388,7 @@ set(SPRITEP
     "18,27,sprites/pls2e0.ppm"
 )
 
-set(WAD_SRC 
+set(WAD_SRC
     ${PALETTE}
     ${LUMPS}
     ${COLORMAPS}
@@ -347,7 +399,7 @@ set(WAD_SRC
     ${SPRITES}
 )
 
-set(WAD_CMDLINE 
+set(WAD_CMDLINE
     -palette ${PALETTE}
     -lumps ${LUMPS}
     -marker C_START -lumps ${COLORMAPS} -marker C_END

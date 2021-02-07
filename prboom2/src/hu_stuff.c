@@ -314,13 +314,17 @@ void HU_Init(void)
 
   // load the heads-up font
   j = HU_FONTSTART;
+  for (i = 0; i < HU_FONTSIZE - 1; i++, j++)
+  {
+    sprintf(buffer, "DIG%.3d", j);
+    R_SetPatchNum(&hu_font2[i], buffer);
+  }
+
+  j = HU_FONTSTART;
   for (i=0;i<HU_FONTSIZE;i++,j++)
   {
     if ('0'<=j && j<='9')
     {
-      sprintf(buffer, "DIG%.1d",j-48);
-      R_SetPatchNum(&hu_font2[i], buffer);
-
       if (heretic)
         sprintf(buffer, "FONTA%.2d",j - 32);
       else
@@ -335,80 +339,21 @@ void HU_Init(void)
     }
     else if ('A'<=j && j<='Z')
     {
-      sprintf(buffer, "DIG%c",j);
-      R_SetPatchNum(&hu_font2[i], buffer);
-
       if (heretic)
         sprintf(buffer, "FONTA%.2d",j - 32);
       else
         sprintf(buffer, "STCFN%.3d",j);
       R_SetPatchNum(&hu_font[i], buffer);
     }
-    else if (j=='-')
-    {
-      R_SetPatchNum(&hu_font2[i], "DIG45");
-
-      if (heretic)
-        R_SetPatchNum(&hu_font[i], "FONTA13");
-      else
-        R_SetPatchNum(&hu_font[i], "STCFN045");
-    }
-    else if (j=='.')
-    {
-      R_SetPatchNum(&hu_font2[i], "DIG46");
-
-      if (heretic)
-        R_SetPatchNum(&hu_font[i], "FONTA14");
-      else
-        R_SetPatchNum(&hu_font[i], "STCFN046");
-    }
-    else if (j=='/')
-    {
-      R_SetPatchNum(&hu_font2[i], "DIG47");
-
-      if (heretic)
-        R_SetPatchNum(&hu_font[i], "FONTA15");
-      else
-        R_SetPatchNum(&hu_font[i], "STCFN047");
-    }
-    else if (j==':')
-    {
-      R_SetPatchNum(&hu_font2[i], "DIG58");
-
-      if (heretic)
-        R_SetPatchNum(&hu_font[i], "FONTA26");
-      else
-        R_SetPatchNum(&hu_font[i], "STCFN058");
-    }
-    else if (j=='[')
-    {
-      R_SetPatchNum(&hu_font2[i], "DIG91");
-
-      if (heretic)
-        hu_font[i] = hu_font[0];
-      else
-        R_SetPatchNum(&hu_font[i], "STCFN091");
-    }
-    else if (j==']')
-    {
-      R_SetPatchNum(&hu_font2[i], "DIG93");
-
-      if (heretic)
-        hu_font[i] = hu_font[0];
-      else
-        R_SetPatchNum(&hu_font[i], "STCFN093");
-    }
     else if (!heretic && j < 97)
     {
       sprintf(buffer, "STCFN%.3d",j);
-      R_SetPatchNum(&hu_font2[i], buffer);
       R_SetPatchNum(&hu_font[i], buffer);
       //jff 2/23/98 make all font chars defined, useful or not
     }
     else if (heretic && j < 91)
     {
       sprintf(buffer, "FONTA%.2d", j - 32);
-      R_SetPatchNum(&hu_font2[i], buffer);
       R_SetPatchNum(&hu_font[i], buffer);
       //jff 2/23/98 make all font chars defined, useful or not
     }
@@ -421,7 +366,6 @@ void HU_Init(void)
     else
     {
       hu_font[i] = hu_font[0]; //jff 2/16/98 account for gap
-      hu_font2[i] = hu_font2[0];
     }
   }
 
@@ -440,14 +384,6 @@ void HU_Init(void)
     }
     HU_SetLumpTrans("STTPRCNT");
     HU_SetLumpTrans("STTMINUS");
-  }
-  else
-  {
-    for (i = 33; i < 91; i++)
-    {
-      sprintf(buffer, "FONTA%.2d", i - 32);
-      HU_SetLumpTrans(buffer);
-    }
   }
 
   // CPhipps - load patches for message background
