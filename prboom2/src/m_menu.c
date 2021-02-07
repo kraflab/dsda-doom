@@ -5895,11 +5895,17 @@ void M_Drawer (void)
   // killough 9/29/98: simplified code, removed 40-character width limit
   if (messageToPrint)
   {
-    /* cph - strdup string to writable memory */
-    char *ms = strdup(messageString);
-    char *p = ms;
+    char* ms;
+    char* p;
+    int y;
 
-    int y = 100 - M_StringHeight(messageString)/2;
+    if (heretic) return MN_DrawMessage(messageString);
+
+    /* cph - strdup string to writable memory */
+    ms = strdup(messageString);
+    p = ms;
+
+    y = 100 - M_StringHeight(messageString)/2;
     while (*p)
     {
       char *string = p, c;

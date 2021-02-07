@@ -146,6 +146,35 @@ extern short itemOn;
 extern int showMessages;
 extern int screenSize;
 
+void MN_DrawMessage(const char* messageString)
+{
+  char *msg;
+  char *p;
+  int y;
+
+  msg = strdup(messageString);
+  p = msg;
+  y = 100 - MN_TextAHeight(msg) / 2;
+
+  while (*p)
+  {
+    char *text;
+    char c;
+
+    text = p;
+    while ((c = *p) && *p != '\n')
+      p++;
+    *p = 0;
+
+    MN_DrTextA(text, 160 - MN_TextAWidth(text) / 2, y);
+    y += R_NumPatchHeight(FontABaseLump);
+
+    if ((*p = c))
+      p++;
+  }
+  free(msg);
+}
+
 void MN_Drawer(void)
 {
   int i;
@@ -369,6 +398,19 @@ void MN_DrTextA(const char *text, int x, int y)
       x += R_NumPatchWidth(lump) - 1;
     }
   }
+}
+
+int MN_TextAHeight(const char *text)
+{
+  int i, line_height, total_height;
+
+  line_height = R_NumPatchHeight(FontABaseLump);
+  total_height = line_height;
+
+  for (i = 0; text[i]; i++)
+    if (text[i] == '\n')
+      total_height += line_height;
+  return total_height;
 }
 
 int MN_TextAWidth(const char *text)
