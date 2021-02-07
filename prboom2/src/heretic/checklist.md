@@ -59,7 +59,7 @@
 - [x] info.h 1579
 - [x] m_random.c 77
 - [x] m_random.h 38
-- [ ] mn_menu.c 2014
+- [x] mn_menu.c 2014
 - [x] p_action.h 152
 - [x] p_ceiling.c 256
 - [x] p_doors.c 380
@@ -96,4 +96,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 15659, MERGED: 31555, PERCENT: 66%
+LEFT: 13575, MERGED: 33639, PERCENT: 71%
