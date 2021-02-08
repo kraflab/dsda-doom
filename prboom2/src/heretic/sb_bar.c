@@ -396,7 +396,11 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 
     if (refresh || fullmenu || V_GetMode() == VID_MODEGL) SB_state = -1;
 
-    if (!statusbaron) return;
+    if (!statusbaron)
+    {
+        SB_PaletteFlash();
+        return;
+    }
 
     CPlayer = &players[consoleplayer];
     if (viewheight == SCREENHEIGHT && !(automapmode & am_active))
