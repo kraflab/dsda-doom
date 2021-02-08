@@ -206,16 +206,7 @@ void D_PostEvent(event_t *ev)
     }
   }
 
-  M_Responder(ev) ||
-	  (gamestate == GS_LEVEL && (
-				     HU_Responder(ev) ||
-				     ST_Responder(ev) ||
-				     AM_Responder(ev)
-				     )
-	  ) ||
-	G_Responder(ev);
-
-  // HERETIC_TODO: gamestate == GS_LEVEL && (CT_Responder(ev) || SB_Responder(ev) || AM_Responder(ev))
+  M_Responder(ev) || G_Responder(ev);
 }
 
 //

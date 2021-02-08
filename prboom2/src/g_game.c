@@ -1152,7 +1152,6 @@ static void G_DoLoadLevel (void)
 
 dboolean G_Responder (event_t* ev)
 {
-  // HERETIC_TODO: this is supposed to be before the other responders, but in doom this is the last
   if (heretic)
   {
     player_t *plr;
@@ -1167,6 +1166,14 @@ dboolean G_Responder (event_t* ev)
       usearti = true;
     }
   }
+
+  if (
+    gamestate == GS_LEVEL && (
+      HU_Responder(ev) ||
+      ST_Responder(ev) ||
+      AM_Responder(ev)
+    )
+  ) return true;
 
   // allow spy mode changes even during the demo
   // killough 2/22/98: even during DM demo
