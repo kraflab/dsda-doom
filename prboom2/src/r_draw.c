@@ -1085,6 +1085,8 @@ void R_FillBackScreen (void)
       V_FillFlat(grnrock.lumpnum, 1,
         SCREENWIDTH - wide_offsetx, stbar_top, wide_offsetx, ST_SCALED_HEIGHT, VPT_NONE);
 
+      if (heretic) return;
+
       // line between view and status bar
       V_FillPatch(brdr_b.lumpnum, 1, 0, stbar_top, wide_offsetx, brdr_b.height, VPT_NONE);
       V_FillPatch(brdr_b.lumpnum, 1, SCREENWIDTH - wide_offsetx, stbar_top, wide_offsetx, brdr_b.height, VPT_NONE);
@@ -1097,6 +1099,8 @@ void R_FillBackScreen (void)
     return;
 
   V_FillFlat(grnrock.lumpnum, 1, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_NONE);
+
+  if (heretic) return;
 
   // line between view and status bar
   if ((ratio_multiplier != ratio_scale || wide_offsety) &&

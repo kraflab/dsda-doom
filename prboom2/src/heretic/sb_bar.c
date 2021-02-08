@@ -110,6 +110,10 @@ void SB_Init(void)
 {
     int i;
     int startLump;
+    extern patchnum_t grnrock;
+
+    // magic global that ends up in the background
+    R_SetFloorNum(&grnrock, "FLOOR30");
 
     for (i = 0; i < 10; ++i)
     {
