@@ -315,7 +315,7 @@ static void P_FireWeapon(player_t *player)
 
   dsda_WatchWeaponFire(player->readyweapon);
 
-  // HERETIC_TODO: these can probably be combined in a clean way
+  // heretic_note: these can probably be combined in a clean way
   if (heretic)
   {
     weaponinfo_t *wpinfo;

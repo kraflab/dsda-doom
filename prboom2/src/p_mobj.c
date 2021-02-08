@@ -57,7 +57,7 @@
 #include "p_enemy.h"
 #include "p_spec.h"
 
-// HERETIC_TODO: static NUMSTATES arrays here - probably fine?
+// heretic_note: static NUMSTATES arrays here - probably fine?
 // NUMSTATES > HERETIC_NUMSTATES
 
 //
@@ -730,7 +730,7 @@ floater:
         P_DamageMobj(mo, NULL, NULL, mo->health);
       else
       {
-        // HERETIC_TODO: is this necessary?
+        // heretic_note: probably not necessary?
         if (!heretic && mo->player)
             mo->player->jumpTics = 7;
         if (
@@ -786,7 +786,6 @@ floater:
       return;
     }
 
-    // HERETIC_TODO: heretic does this earlier - can we merge it above?
     if (!heretic && (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP))
     {
       P_ExplodeMissile (mo);
@@ -1042,7 +1041,7 @@ void P_MobjThinker (mobj_t* mobj)
     if (mobj->thinker.function != P_MobjThinker) // cph - Must've been removed
       return;       // killough - mobj was removed
   }
-  // HERETIC_TODO: are the intflags irrelevant when compatibility is enabled?
+  // heretic_note: are the intflags irrelevant when compatibility is enabled?
   else if (!heretic && !(mobj->momx | mobj->momy) && !sentient(mobj))
   {                                  // non-sentient objects at rest
     mobj->intflags |= MIF_ARMED;     // arm a mine which has come to rest
@@ -1471,8 +1470,6 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   p->playerstate   = PST_LIVE;
   p->refire        = 0;
   p->message       = NULL;
-  // HERETIC_TODO: ignoring this for now - not sure it will be used
-  // ultimatemsg = false;
   p->damagecount   = 0;
   p->bonuscount    = 0;
   p->chickenTics   = 0;
@@ -1722,11 +1719,6 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // killough 8/23/98: use table for faster lookup
   i = P_FindDoomedNum(thingtype);
 
-  // HERETIC_TODO: heretic uses this. I assume the faster table works
-  // for (i = 0; i < NUMMOBJTYPES; i++)
-  //     if (mthing->type == mobjinfo[i].doomednum)
-  //         break;
-
   // phares 5/16/98:
   // Do not abort because of an unknown thing. Ignore it, but post a
   // warning message for the player.
@@ -1767,7 +1759,7 @@ spawnit:
     z = ONFLOORZ;
 
   mobj = P_SpawnMobj (x, y, z, i);
-  mobj->spawnpoint = *mthing; // HERETIC_TODO: this is only done with totalkills++ in heretic, probably ok
+  mobj->spawnpoint = *mthing; // heretic_note: this is only done with totalkills++ in heretic
   mobj->index = index;//e6y
   mobj->iden_nums = iden_num;
 
@@ -2390,9 +2382,6 @@ int P_FaceMobj(mobj_t * source, mobj_t * target, angle_t * delta)
     }
 }
 
-// HERETIC_TODO: I don't know if this is necessary or not...
-// The recursion tracking and iteration aren't present in heretic
-// The looping makes me skeptical - for now I leave the original implementation
 dboolean Heretic_P_SetMobjState(mobj_t * mobj, statenum_t state)
 {
     state_t *st;

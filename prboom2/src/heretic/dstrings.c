@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 
-// HERETIC_TODO: stubbed
+// HERETIC_TODO: DEH_String
 const char *DEH_String(const char *s) {
   return s;
 }

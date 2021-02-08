@@ -40,12 +40,6 @@
 #include "e6y.h"
 #include "s_advsound.h"
 
-// HERETIC_TODO:
-// heretic doesn't use the thinker class organization
-// does it matter?
-//
-// Also, ignored TimerGame deathmatch countdown logic
-
 int leveltime;
 
 static dboolean newthinkerpresent;

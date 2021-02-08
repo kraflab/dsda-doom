@@ -20,7 +20,7 @@ dboolean heretic = false;
 
 dboolean BorderTopRefresh;
 
-// HERETIC_TODO: this is actually in am_map
+// heretic_note: this is actually in am_map
 const char *LevelNames[] = {
     // EPISODE 1 - THE CITY OF THE DAMNED
     "E1M1:  THE DOCKS",

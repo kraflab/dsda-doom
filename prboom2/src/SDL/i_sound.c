@@ -221,7 +221,6 @@ static void updateSoundParams(int handle, int volume, int seperation, int pitch)
   seperation = seperation - 257;
   rightvol = volume - ((volume * seperation * seperation) >> 16);
 
-  // HERETIC_TODO: probably will be fixed once sound stuff is merged
   // Sanity check, clamp volume.
   if (rightvol < 0 || rightvol > 127)
   {

@@ -152,7 +152,6 @@ static void P_StartButton
 {
   int           i;
 
-  // HERETIC_TODO: is this correct?
   if (!heretic)
     // See if button is already pressed
     for (i = 0;i < MAXBUTTONS;i++)

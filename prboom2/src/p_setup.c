@@ -2329,8 +2329,6 @@ static int P_GroupLines (void)
 // Firelines (TM) is a Rezistered Trademark of MBF Productions
 //
 
-// HERETIC_TODO: I didn't really go through this...
-
 static void P_RemoveSlimeTrails(void)         // killough 10/98
 {
   byte *hit = calloc(1, numvertexes);         // Hitlist for vertices

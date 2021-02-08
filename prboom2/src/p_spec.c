@@ -460,7 +460,6 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
         // 27: overflow affects return address - crash with high probability;
         if (compatibility_level < dosdoom_compatibility && h >= MAX_ADJOINING_SECTORS)
         {
-          // HERETIC_TODO: crispy actually doesn't go here, but probably it should be done
           lprintf(LO_WARN, "P_FindNextHighestFloor: Overflow of heightlist[%d] array is detected.\n", MAX_ADJOINING_SECTORS);
           lprintf(LO_WARN, " Sector %d, line %d, heightlist index %d: ", sec->iSectorID, sec->lines[i]->iLineID, h);
 
@@ -809,7 +808,6 @@ sector_t *P_FindModelFloorSector(fixed_t floordestheight,int secnum)
       else
           sec = getSector(secnum,i,0);
 
-      // HERETIC_TODO: is it correct?
       if (heretic || sec->floorheight == floordestheight)
         return sec;
     }

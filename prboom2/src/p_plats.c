@@ -123,7 +123,6 @@ void T_PlatRaise(plat_t* plat)
             case raiseAndChange:
             case raiseToNearestAndChange:
             case genLift:
-              // HERETIC_TODO: is this correct?
               if (heretic && plat->type == raiseToNearestAndChange) break;
               P_RemoveActivePlat(plat);     // killough
             default:
@@ -258,7 +257,7 @@ manual_plat://e6y
 
     //jff 1/26/98 Avoid raise plat bouncing a head off a ceiling and then
     //going down forever -- default low to plat height when triggered
-    plat->low = sec->floorheight; // HERETIC_TODO: not in heretic
+    plat->low = sec->floorheight; // heretic_note: not in heretic
 
     // set up plat according to type
     switch(type)

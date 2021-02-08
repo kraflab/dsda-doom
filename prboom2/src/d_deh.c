@@ -57,8 +57,6 @@
 #define TRUE 1
 #define FALSE 0
 
-// HERETIC_TODO: add init for static arrays of NUMSPRITES, NUMSTATES, NUMMOBJTYPES, NUMSFX, NUMMUSIC ?
-
 // e6y: for compatibility with BOOM deh parser
 int deh_strcasecmp(const char *str1, const char *str2)
 {
@@ -1412,7 +1410,6 @@ void D_BuildBEXTables(void)
 {
    int i;
 
-   // HERETIC_TODO: what to do here? EXTRASTATES breaks everything
    if (heretic) return;
 
    // moved from ProcessDehFile, then we don't need the static int i

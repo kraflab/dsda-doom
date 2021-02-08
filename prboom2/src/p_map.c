@@ -1552,7 +1552,7 @@ void P_SlideMove(mobj_t *mo)
 
       /* killough 10/98: affect the bobbing the same way (but not voodoo dolls)
        * cph - DEMOSYNC? */
-      // HERETIC_TODO: probably not necessary?
+      // heretic_note: probably not necessary?
       if (!heretic && mo->player && mo->player->mo == mo)
   {
     if (D_abs(mo->player->momx) > D_abs(tmxmove))

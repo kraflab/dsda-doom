@@ -180,13 +180,6 @@ void S_Init(int sfxVolume, int musicVolume)
 
   soundCurve = Z_Malloc(MAX_SND_DIST, PU_STATIC, NULL);
   S_SetSoundCurve(true);
-
-  // HERETIC_TODO: snd_pitchshift (not in prboom+)
-  // Heretic defaults to pitch-shifting on
-  // if (snd_pitchshift == -1)
-  // {
-  //     snd_pitchshift = 1;
-  // }
 }
 
 void S_Stop(void)
@@ -704,7 +697,7 @@ void S_StopChannel(int cnum)
       c->sfxinfo->usefulness--;
       c->sfxinfo = 0;
 
-      // HERETIC_TODO: do this for doom too?
+      // heretic_note: do this for doom too?
       if (heretic) c->handle = 0;
     }
 }

@@ -218,8 +218,6 @@ void P_LineOpening(const line_t *linedef)
 // THING POSITION SETTING
 //
 
-// HERETIC_TODO: assuming changes to P_UnsetThingPosition and P_SetThingPosition are compatible
-
 //
 // P_UnsetThingPosition
 // Unlinks a thing from block map and sectors.

@@ -1822,7 +1822,7 @@ void V_ChangeScreenResolution(void)
 
 // heretic
 
-// HERETIC_TODO: is something already implemented to handle this?
+// heretic_note: is something already implemented to handle this?
 void V_DrawRawScreen(const byte *raw)
 {
   V_DrawRawScreenSection(raw, 0, 200);

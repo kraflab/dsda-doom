@@ -584,7 +584,7 @@ void P_PlayerThink (player_t* player)
   else
     P_MovePlayer(player);
 
-  P_SetPitch(player); // HERETIC_TODO: probably disable pitch?
+  P_SetPitch(player);
 
   P_CalcHeight (player); // Determines view height and bobbing
 
@@ -606,7 +606,7 @@ void P_PlayerThink (player_t* player)
     }
   }
 
-  // HERETIC_TODO: is this needed or a defense mechanism?
+  // heretic_note: is this needed or a defense mechanism?
   // if (cmd->buttons & BT_SPECIAL)
   // {                           // A special event has no other buttons
   //     cmd->buttons = 0;
@@ -655,7 +655,7 @@ void P_PlayerThink (player_t* player)
       // Do not go to plasma or BFG in shareware,
       //  even if cheated.
 
-      // HERETIC_TODO: ignoring this...not sure it's worth worrying about
+      // heretic_note: ignoring this...not sure it's worth worrying about
       if ((newweapon != wp_plasma && newweapon != wp_bfg)
           || (gamemode != shareware) )
         player->pendingweapon = newweapon;

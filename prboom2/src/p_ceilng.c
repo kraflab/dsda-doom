@@ -270,7 +270,7 @@ int EV_DoCeiling
     case silentCrushAndRaise:
     case crushAndRaise:
       //jff 4/5/98 return if activated
-      rtn = P_ActivateInStasisCeiling(line); // HERETIC_TODO: rtn not set in heretic
+      rtn = P_ActivateInStasisCeiling(line); // heretic_note: rtn not set in heretic
     default:
       break;
   }

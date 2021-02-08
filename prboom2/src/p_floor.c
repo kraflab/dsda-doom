@@ -304,7 +304,7 @@ void T_MoveFloor(floormove_t* floor)
         case lowerAndChange:
           floor->sector->special = floor->newspecial;
           //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial; // HERETIC_TODO: here and elsewhere, not in heretic
+          floor->sector->oldspecial = floor->oldspecial; // heretic_note: here and elsewhere, not in heretic
           floor->sector->floorpic = floor->texture;
           break;
         case genFloorChgT:
@@ -840,13 +840,13 @@ manual_stair://e6y
       case heretic_build8:
         speed = FLOORSPEED;
         stairsize = 8 * FRACUNIT;
-        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // HERETIC_TODO: I guess
+        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
 
         break;
       case heretic_turbo16:
         speed = FLOORSPEED;
         stairsize = 16 * FRACUNIT;
-        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // HERETIC_TODO: I guess
+        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
 
         break;
     }
@@ -873,7 +873,6 @@ manual_stair://e6y
         if ( !((sec->lines[i])->flags & ML_TWOSIDED) )
           continue;
 
-        // HERETIC_TODO: heretic does `tsec - sectors`
         newsecnum = tsec->iSectorID;
 
         if (secnum != newsecnum)
@@ -981,7 +980,7 @@ int EV_DoDonut(line_t*  line)
     if (P_SectorActive(floor_special,s1)) //jff 2/22/98
       continue;
 
-    // HERETIC_TODO: rtn = 1; // probably doesn't matter?
+    // heretic_note: rtn = 1; // probably doesn't matter?
 
     s2 = getNextSector(s1->lines[0],s1);  // s2 is pool's sector
 

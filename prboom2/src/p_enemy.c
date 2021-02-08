@@ -2355,7 +2355,7 @@ void A_BossDeath(mobj_t *mo)
   line_t    junk;
   int       i;
 
-  // HERETIC_TODO: Probably we can adopt the clean heretic style and merge
+  // heretic_note: probably we can adopt the clean heretic style and merge
   if (heretic) return Heretic_A_BossDeath(mo);
 
   // numbossactions == 0 means to use the defaults.

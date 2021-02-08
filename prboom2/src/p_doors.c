@@ -505,7 +505,7 @@ int EV_VerticalDoor
   sector_t* sec;
   vldoor_t* door;
 
-  // HERETIC_TODO: I don't see where the return value is used...keeping heretic signature
+  // heretic_note: I don't see where the return value is used...keeping heretic signature
   if (heretic) { Heretic_EV_VerticalDoor(line, thing); return 0; }
 
   //  Check for locks
@@ -864,7 +864,7 @@ void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing)
     door->direction = 1;
     door->speed = VDOORSPEED;
     door->topwait = VDOORWAIT;
-    door->line = line; // HERETIC_TODO: this is from doom
+    door->line = line; // heretic_note: this is from doom
     door->lighttag = 0;
     switch (line->special)
     {

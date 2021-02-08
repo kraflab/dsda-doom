@@ -516,7 +516,6 @@ void IN_Drawer(void)
     {
         return;
     }
-    // HERETIC_TODO: UpdateState
     // UpdateState |= I_FULLSCRN;
     if (oldinterstate != 2 && interstate == 2)
     {

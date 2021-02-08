@@ -28,10 +28,10 @@ extern dboolean inventory;
 extern int SB_state;
 extern int playerkeys;
 
-// HERETIC_TODO: r_draw
+// heretic_note: this is from r_draw
 extern dboolean BorderTopRefresh;
 
-// HERETIC_TODO: am_map from p_local
+// heretic_note: am_map from p_local
 // boolean AM_Responder(event_t * ev);
 // void AM_Ticker(void);
 // void AM_Drawer(void);
