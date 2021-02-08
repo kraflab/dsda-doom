@@ -233,4 +233,28 @@ extern dboolean done_autoswitch;
 #define singleplayer (!demorecording && !demoplayback && !democontinue && !netgame)
 #define comperr(i) (default_comperr[i] && !demorecording && !demoplayback && !democontinue && !netgame)
 
+// heretic
+
+extern int key_lookdown;
+extern int key_lookup;
+extern int key_lookcenter;
+extern int key_flyup;
+extern int key_flydown;
+extern int key_flycenter;
+extern int key_useartifact;
+extern int key_arti_tome;
+extern int key_arti_quartz;
+extern int key_arti_urn;
+extern int key_arti_bomb;
+extern int key_arti_ring;
+extern int key_arti_chaosdevice;
+extern int key_arti_shadowsphere;
+extern int key_arti_wings;
+extern int key_arti_torch;
+extern int key_arti_morph;
+extern int key_invleft;
+extern int key_invright;
+extern int mousebinvleft;
+extern int mousebinvright;
+
 #endif

@@ -1966,16 +1966,14 @@ static void M_DrawSetting(const setup_menu_t* s)
 
     if (key) {
       M_GetKeyString(*key,0); // string to display
-      if (key == &key_up || key == &key_down || key == &key_speed ||
-         key == &key_fire || key == &key_strafe || key == &key_strafeleft || key == &key_straferight || key == &key_use)
-  {
-    if (s->m_mouse && *s->m_mouse != -1)
-      sprintf(menu_buffer+strlen(menu_buffer), "/MB%d",
-        *s->m_mouse+1);
-    if (s->m_joy)
-      sprintf(menu_buffer+strlen(menu_buffer), "/JSB%d",
-        *s->m_joy+1);
-  }
+
+      if (s->m_mouse && *s->m_mouse != -1)
+        sprintf(menu_buffer+strlen(menu_buffer), "/MB%d",
+          *s->m_mouse+1);
+      if (s->m_joy)
+        sprintf(menu_buffer+strlen(menu_buffer), "/JSB%d",
+          *s->m_joy+1);
+
       if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
         strcat(menu_buffer, " <");
       M_DrawMenuString(x,y,color);
@@ -2277,6 +2275,8 @@ setup_menu_t keys_settings4[];
 setup_menu_t keys_settings5[];
 setup_menu_t keys_settings6[];
 setup_menu_t keys_settings7[];
+setup_menu_t heretic_keys_settings1[];
+setup_menu_t heretic_keys_settings2[];
 setup_menu_t dsda_keys_settings[];
 
 // The table which gets you from one screen table to the next.
@@ -2290,6 +2290,8 @@ setup_menu_t* keys_settings[] =
   keys_settings5,
   keys_settings6,
   keys_settings7,
+  heretic_keys_settings1,
+  heretic_keys_settings2,
   dsda_keys_settings,
   NULL
 };
@@ -2515,9 +2517,48 @@ setup_menu_t keys_settings7[] =
   {"CLEAR"       ,S_KEY       ,m_menu,KB_X,KB_Y+8*8,{&key_menu_clear}},
 
   {"<- PREV",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings6}},
-  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_keys_settings}},
+  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {heretic_keys_settings1}},
   // Final entry
   {0,S_SKIP|S_END,m_null}
+};
+
+setup_menu_t heretic_keys_settings1[] = {
+  { "HERETIC MOVEMENT", S_SKIP | S_TITLE, m_null, KB_X, KB_Y },
+  { "LOOK UP", S_KEY, m_scrn, KB_X, KB_Y + 1 * 8, { &key_lookup } },
+  { "LOOK DOWN", S_KEY, m_scrn, KB_X, KB_Y + 2 * 8, { &key_lookdown } },
+  { "LOOK CENTER", S_KEY, m_scrn, KB_X, KB_Y + 3 * 8, { &key_lookcenter } },
+  { "FLY UP", S_KEY, m_scrn, KB_X, KB_Y + 4 * 8, { &key_flyup } },
+  { "FLY DOWN", S_KEY, m_scrn, KB_X, KB_Y + 5 * 8, { &key_flydown } },
+  { "FLY CENTER", S_KEY, m_scrn, KB_X, KB_Y + 6 * 8, { &key_flycenter } },
+
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
+  { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { heretic_keys_settings2 } },
+
+  // Final entry
+  { 0, S_SKIP | S_END, m_null }
+};
+
+setup_menu_t heretic_keys_settings2[] = {
+  { "HERETIC INVENTORY", S_SKIP | S_TITLE, m_null, KB_X, KB_Y },
+  { "USE ARTIFACT", S_KEY, m_scrn, KB_X, KB_Y + 1 * 8, { &key_useartifact } },
+  { "USE TOME OF POWER", S_KEY, m_scrn, KB_X, KB_Y + 2 * 8, { &key_arti_tome } },
+  { "USE QUARTZ FLASK", S_KEY, m_scrn, KB_X, KB_Y + 3 * 8, { &key_arti_quartz } },
+  { "USE MYSTIC URN", S_KEY, m_scrn, KB_X, KB_Y + 4 * 8, { &key_arti_urn } },
+  { "USE TIMEBOMB OF THE ANCIENTS", S_KEY, m_scrn, KB_X, KB_Y + 5 * 8, { &key_arti_bomb } },
+  { "USE RING OF INVINCIBILITY", S_KEY, m_scrn, KB_X, KB_Y + 6 * 8, { &key_arti_ring } },
+  { "USE CHAOS DEVICE", S_KEY, m_scrn, KB_X, KB_Y + 7 * 8, { &key_arti_chaosdevice } },
+  { "USE SHADOWSPHERE", S_KEY, m_scrn, KB_X, KB_Y + 8 * 8, { &key_arti_shadowsphere } },
+  { "USE WINGS OF WRATH", S_KEY, m_scrn, KB_X, KB_Y + 9 * 8, { &key_arti_wings } },
+  { "USE TORCH", S_KEY, m_scrn, KB_X, KB_Y + 10 * 8, { &key_arti_torch } },
+  { "USER MORPH OVUM", S_KEY, m_scrn, KB_X, KB_Y + 11 * 8, { &key_arti_morph } },
+  { "INVENTORY LEFT", S_KEY, m_scrn, KB_X, KB_Y + 12 * 8, { &key_invleft }, &mousebinvleft },
+  { "INVENTORY RIGHT", S_KEY, m_scrn, KB_X, KB_Y + 13 * 8, { &key_invright }, &mousebinvright },
+
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings1 } },
+  { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { dsda_keys_settings } },
+
+  // Final entry
+  { 0, S_SKIP | S_END, m_null }
 };
 
 setup_menu_t dsda_keys_settings[] = {
@@ -2526,7 +2567,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Restore Quick Key Frame", S_KEY, m_scrn, KB_X, KB_Y + 2 * 8, { &dsda_key_restore_quick_key_frame } },
   { "Rewind", S_KEY, m_scrn, KB_X, KB_Y + 3 * 8, { &dsda_key_rewind } },
 
-  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings2 } },
   { 0, S_SKIP | S_END, m_null }
 };
 

@@ -20,8 +20,8 @@
 - [x] Set up menu
 - [x] Fix prboom+ settings visuals
 - [x] Fix menu sounds
+- [x] Support new keybinds
 - [ ] Set up automap
-- [ ] Support new keybinds
 - [ ] Support graphical player pitch
 
 ### Heretic Support (phase 2)
@@ -31,6 +31,7 @@
 - [ ] Support E2END palette
 - [ ] Set gamemission to heretic (?)
 - [ ] Support dehacked
+- [ ] Support cheats
 
 ### Files in crispy src/heretic:
 

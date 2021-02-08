@@ -396,8 +396,8 @@ int key_arti_torch;
 int key_arti_morph;
 int key_invleft;
 int key_invright;
-int mousebinvleft = -1;
-int mousebinvright = -1;
+int mousebinvleft;
+int mousebinvright;
 
 static dboolean InventoryMoveLeft(void);
 static dboolean InventoryMoveRight(void);

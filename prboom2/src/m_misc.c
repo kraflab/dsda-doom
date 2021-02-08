@@ -616,10 +616,6 @@ default_t defaults[] =
   {"key_strafeleft",  {&key_strafeleft},     {'a'}           ,
    0,MAX_KEY,def_key,ss_keys}, // key to strafe left
   {"key_straferight", {&key_straferight},    {'d'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to fly up
-  {"key_flyup",  {&key_flyup}, {'.'},
-   0,MAX_KEY,def_key,ss_keys}, // key to fly down
-  {"key_flydown", {&key_flydown}, {','},
    0,MAX_KEY,def_key,ss_keys}, // key to strafe right
 
   {"key_fire",        {&key_fire},           {KEYD_RCTRL}     ,
@@ -1020,6 +1016,29 @@ default_t defaults[] =
    def_int,ss_stat},
   {"health_bar_green", {&health_bar_green}, {0},0,100,
    def_int,ss_stat},
+
+  { "Heretic settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
+  { "key_flyup",  { &key_flyup }, { '.' }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_flydown", { &key_flydown }, { ',' }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_flycenter", { &key_flycenter }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_lookup", { &key_lookup }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_lookdown", { &key_lookdown }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_lookcenter", { &key_lookcenter }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_useartifact", { &key_useartifact }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_tome", { &key_arti_tome }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_quartz", { &key_arti_quartz }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_urn", { &key_arti_urn }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_bomb", { &key_arti_bomb }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_ring", { &key_arti_ring }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_chaosdevice", { &key_arti_chaosdevice }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_shadowsphere", { &key_arti_shadowsphere }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_wings", { &key_arti_wings }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_torch", { &key_arti_torch }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_arti_morph", { &key_arti_morph }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_invleft", { &key_invleft }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "key_invright", { &key_invright }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
+  { "mousebinvleft", { &mousebinvleft }, { -1 }, -1, MAX_MOUSEB, def_int, ss_keys },
+  { "mousebinvright", { &mousebinvright }, { -1 }, -1, MAX_MOUSEB, def_int, ss_keys },
 
   { "DSDA-Doom settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
   { "dsda_strict_mode", { &dsda_strict_mode }, { 1 }, 0, 1, def_bool, ss_stat },
