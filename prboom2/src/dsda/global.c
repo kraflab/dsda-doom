@@ -318,7 +318,7 @@ static void dsda_InitHeretic(void) {
   g_cr_red = CR_GOLD;
   g_cr_blue = CR_BROWN;
 
-  g_menu_flat = "FLOOR18";
+  g_menu_flat = "FLOOR30";
   g_menu_font = hu_font2;
   g_menu_font_spacing = 0;
   g_menu_cr_title = g_cr_gold;
