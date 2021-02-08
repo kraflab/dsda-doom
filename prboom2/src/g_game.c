@@ -4636,7 +4636,7 @@ void P_WalkTicker()
     walkcamera.x = players[0].mo->x;
     walkcamera.y = players[0].mo->y;
     walkcamera.angle = players[0].mo->angle;
-    walkcamera.pitch = players[0].mo->pitch;
+    walkcamera.pitch = P_PlayerPitch(&players[0]);
   }
 
   if (forward > MAXPLMOVE)
@@ -4691,7 +4691,7 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
     if (sync_sight)
     {
       walkcamera.angle = players[displayplayer].mo->angle;
-      walkcamera.pitch = players[displayplayer].mo->pitch;
+      walkcamera.pitch = P_PlayerPitch(&players[displayplayer]);
     }
 
     if(sync_coords)

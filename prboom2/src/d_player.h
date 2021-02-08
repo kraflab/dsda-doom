@@ -286,5 +286,6 @@ typedef struct
 
 } wbstartstruct_t;
 
+angle_t P_PlayerPitch(player_t* player);
 
 #endif

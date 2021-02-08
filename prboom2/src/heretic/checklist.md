@@ -21,8 +21,8 @@
 - [x] Fix prboom+ settings visuals
 - [x] Fix menu sounds
 - [x] Support new keybinds
+- [x] Support graphical player pitch
 - [ ] Set up automap
-- [ ] Support graphical player pitch
 
 ### Heretic Support (phase 2)
 - [ ] Support ghosts

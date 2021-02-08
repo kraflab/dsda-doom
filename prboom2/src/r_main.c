@@ -918,7 +918,7 @@ void R_SetupFreelook(void)
     int i;
 
     centery = viewheight / 2;
-    if (GetMouseLook())
+    if (heretic || GetMouseLook())
     {
       dy = FixedMul(focallengthy, finetangent[(ANG90-viewpitch)>>ANGLETOFINESHIFT]);
       centery += dy >> FRACBITS;

@@ -65,6 +65,11 @@ dboolean onground; // whether player is on ground or in air
 int newtorch;      // used in the torch flicker effect.
 int newtorchdelta;
 
+angle_t P_PlayerPitch(player_t* player)
+{
+  return player->mo->pitch - (angle_t)(player->lookdir * ANG1 / M_PI);
+}
+
 //
 // P_Thrust
 // Moves the given origin along a given angle.
@@ -530,7 +535,7 @@ void P_PlayerThink (player_t* player)
   {
     player->prev_viewz = player->viewz;
     player->prev_viewangle = R_SmoothPlaying_Get(player) + viewangleoffset;
-    player->prev_viewpitch = player->mo->pitch + viewpitchoffset;
+    player->prev_viewpitch = P_PlayerPitch(player) + viewpitchoffset;
 
     if (&players[displayplayer] == player)
     {
