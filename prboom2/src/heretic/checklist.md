@@ -23,6 +23,7 @@
 - [x] Support new keybinds
 - [x] Support graphical player pitch
 - [ ] Set up automap
+- [ ] Save files (?)
 
 ### Heretic Support (phase 2)
 - [ ] Support ghosts
