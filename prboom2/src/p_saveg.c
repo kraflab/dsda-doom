@@ -714,18 +714,31 @@ void P_TrueArchiveThinkers(void) {
 
         // killough 2/14/98: end changes
 
-        if (mobj->special1.m)
+        if (heretic)
         {
-          mobj->special1.m = mobj->special1.m->thinker.function ==
-            P_MobjThinker ?
-            (mobj_t *) mobj->special1.m->thinker.prev : NULL;
-        }
-
-        if (mobj->special2.m)
-        {
-          mobj->special2.m = mobj->special2.m->thinker.function ==
-            P_MobjThinker ?
-            (mobj_t *) mobj->special2.m->thinker.prev : NULL;
+          switch (mobj->type)
+          {
+            case HERETIC_MT_MACEFX4:     // A_DeathBallImpact
+            case HERETIC_MT_WHIRLWIND:   // A_WhirlwindSeek
+            case HERETIC_MT_MUMMYFX1:    // A_MummyFX1Seek
+            case HERETIC_MT_HORNRODFX2:  // A_SkullRodPL2Seek
+            case HERETIC_MT_PHOENIXFX1:  // A_PhoenixPuff
+              if (mobj->special1.m)
+              {
+                mobj->special1.m = mobj->special1.m->thinker.function ==
+                  P_MobjThinker ?
+                  (mobj_t *) mobj->special1.m->thinker.prev : NULL;
+              }
+              break;
+            case HERETIC_MT_POD:
+              if (mobj->special2.m)
+              {
+                mobj->special2.m = mobj->special2.m->thinker.function ==
+                  P_MobjThinker ?
+                  (mobj_t *) mobj->special2.m->thinker.prev : NULL;
+              }
+              break;
+          }
         }
 
         if (mobj->player)
@@ -1037,11 +1050,24 @@ void P_TrueUnArchiveThinkers(void) {
       P_SetNewTarget(&((mobj_t *) th)->lastenemy,
         mobj_p[P_GetMobj(((mobj_t *)th)->lastenemy, mobj_count + 1)]);
 
-      P_SetNewTarget(&((mobj_t *) th)->special1.m,
-        mobj_p[P_GetMobj(((mobj_t *)th)->special1.m, mobj_count + 1)]);
-
-      P_SetNewTarget(&((mobj_t *) th)->special2.m,
-        mobj_p[P_GetMobj(((mobj_t *)th)->special2.m, mobj_count + 1)]);
+      if (heretic)
+      {
+        switch (((mobj_t *) th)->type)
+        {
+          case HERETIC_MT_MACEFX4:     // A_DeathBallImpact
+          case HERETIC_MT_WHIRLWIND:   // A_WhirlwindSeek
+          case HERETIC_MT_MUMMYFX1:    // A_MummyFX1Seek
+          case HERETIC_MT_HORNRODFX2:  // A_SkullRodPL2Seek
+          case HERETIC_MT_PHOENIXFX1:  // A_PhoenixPuff
+            P_SetNewTarget(&((mobj_t *) th)->special1.m,
+              mobj_p[P_GetMobj(((mobj_t *)th)->special1.m, mobj_count + 1)]);
+            break;
+          case HERETIC_MT_POD:
+            P_SetNewTarget(&((mobj_t *) th)->special2.m,
+              mobj_p[P_GetMobj(((mobj_t *)th)->special2.m, mobj_count + 1)]);
+            break;
+        }
+      }
     }
 
   {  // killough 9/14/98: restore soundtargets
