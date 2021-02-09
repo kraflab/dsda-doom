@@ -2559,8 +2559,7 @@ void G_DoLoadGame(void)
   P_MapStart();
   P_UnArchivePlayers ();
   P_UnArchiveWorld ();
-  P_UnArchiveThinkers ();
-  P_UnArchiveSpecials ();
+  P_TrueUnArchiveThinkers();
   P_UnArchiveRNG ();    // killough 1/18/98: load RNG information
   P_UnArchiveMap ();    // killough 1/22/98: load automap information
   P_MapEnd();
@@ -2778,7 +2777,7 @@ static void G_DoSaveGame (dboolean menu)
 
   P_ArchiveWorld();
   Z_CheckHeap();
-  P_ArchiveThinkers();
+  P_TrueArchiveThinkers();
 
   // phares 9/13/98: Move index->mobj_t out of P_ArchiveThinkers, simply
   // for symmetry with the P_ThinkerToIndex call above.
@@ -2786,7 +2785,6 @@ static void G_DoSaveGame (dboolean menu)
   P_IndexToThinker();
 
   Z_CheckHeap();
-  P_ArchiveSpecials();
   P_ArchiveRNG();    // killough 1/18/98: save RNG information
   Z_CheckHeap();
   P_ArchiveMap();    // killough 1/22/98: save automap information

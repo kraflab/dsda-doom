@@ -44,10 +44,6 @@ void P_ArchivePlayers(void);
 void P_UnArchivePlayers(void);
 void P_ArchiveWorld(void);
 void P_UnArchiveWorld(void);
-void P_ArchiveThinkers(void);
-void P_UnArchiveThinkers(void);
-void P_ArchiveSpecials(void);
-void P_UnArchiveSpecials(void);
 void P_ThinkerToIndex(void); /* phares 9/13/98: save soundtarget in savegame */
 void P_IndexToThinker(void); /* phares 9/13/98: save soundtarget in savegame */
 
