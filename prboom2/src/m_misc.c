@@ -1709,8 +1709,8 @@ void M_LoadDefaults (void)
   /* proff 2001/7/1 - added prboom.wad as last entry so it's always loaded and
      doesn't overlap with the cfg settings */
   //e6y: Check on existence of prboom.wad
-  if (!(wad_files[0] = I_FindFile(PACKAGE_TARNAME ".wad", "")))
-    I_Error("PrBoom-Plus.wad not found. Can't continue.");
+  if (!(wad_files[0] = I_FindFile(WAD_DATA, "")))
+    I_Error("dsda-doom.wad not found. Can't continue.");
 }
 
 

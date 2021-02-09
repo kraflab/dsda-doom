@@ -177,11 +177,11 @@ static void W_AddFile(wadfile_info_t *wadfile)
   // mark lumps from internal resource
   if (wadfile->src == source_auto_load)
   {
-    int len = strlen(PACKAGE_TARNAME ".wad");
+    int len = strlen(WAD_DATA);
     int len_file = strlen(wadfile->name);
     if (len_file >= len)
     {
-      if (!strcasecmp(wadfile->name + len_file - len, PACKAGE_TARNAME ".wad"))
+      if (!strcasecmp(wadfile->name + len_file - len, WAD_DATA))
       {
         flags = LUMP_PRBOOM;
       }
