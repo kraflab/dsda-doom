@@ -22,8 +22,8 @@
 - [x] Fix menu sounds
 - [x] Support new keybinds
 - [x] Support graphical player pitch
+- [x] Save files
 - [ ] Set up automap
-- [ ] Save files (?)
 
 ### Heretic Support (phase 2)
 - [ ] Support ghosts
@@ -33,6 +33,7 @@
 - [ ] Set gamemission to heretic (?)
 - [ ] Support dehacked
 - [ ] Support cheats
+- [ ] rain1, rain2, special1.m, special2.m -> P_SetTarget
 
 ### Files in crispy src/heretic:
 
@@ -75,7 +76,7 @@
 - [x] p_mobj.c 1665
 - [x] p_plats.c 259
 - [x] p_pspr.c 1908
-- [ ] p_saveg.c 1913
+- [x] p_saveg.c 1913
 - [x] p_setup.c 763
 - [x] p_sight.c 357
 - [x] p_spec.c 1358
@@ -98,4 +99,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 13575, MERGED: 33639, PERCENT: 71%
+LEFT: 11665, MERGED: 35549, PERCENT: 75%

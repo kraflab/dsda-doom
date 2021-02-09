@@ -97,6 +97,9 @@ void P_UnArchivePlayers (void)
         players[i].mo = NULL;
         players[i].message = NULL;
         players[i].attacker = NULL;
+        // HERETIC_TODO: does the rain need to be remembered?
+        players[i].rain1 = NULL;
+        players[i].rain2 = NULL;
 
         for (j=0 ; j<NUMPSPRITES ; j++)
           if (players[i]. psprites[j].state)
@@ -1330,6 +1333,20 @@ void P_TrueArchiveThinkers(void) {
 
         // killough 2/14/98: end changes
 
+        if (mobj->special1.m)
+        {
+          mobj->special1.m = mobj->special1.m->thinker.function ==
+            P_MobjThinker ?
+            (mobj_t *) mobj->special1.m->thinker.prev : NULL;
+        }
+
+        if (mobj->special2.m)
+        {
+          mobj->special2.m = mobj->special2.m->thinker.function ==
+            P_MobjThinker ?
+            (mobj_t *) mobj->special2.m->thinker.prev : NULL;
+        }
+
         if (mobj->player)
           mobj->player = (player_t *)((mobj->player-players) + 1);
       }
@@ -1638,6 +1655,12 @@ void P_TrueUnArchiveThinkers(void) {
 
       P_SetNewTarget(&((mobj_t *) th)->lastenemy,
         mobj_p[P_GetMobj(((mobj_t *)th)->lastenemy, mobj_count + 1)]);
+
+      P_SetNewTarget(&((mobj_t *) th)->special1.m,
+        mobj_p[P_GetMobj(((mobj_t *)th)->special1.m, mobj_count + 1)]);
+
+      P_SetNewTarget(&((mobj_t *) th)->special2.m,
+        mobj_p[P_GetMobj(((mobj_t *)th)->special2.m, mobj_count + 1)]);
     }
 
   {  // killough 9/14/98: restore soundtargets
