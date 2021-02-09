@@ -273,6 +273,11 @@ typedef enum {
 
 static int number_of_thinkers;
 
+static dboolean P_IsMobjThinker(thinker_t* thinker)
+{
+  return thinker->function == P_MobjThinker || thinker->function == P_BlasterMobjThinker;
+}
+
 void P_ThinkerToIndex(void)
 {
   thinker_t *th;
@@ -283,7 +288,7 @@ void P_ThinkerToIndex(void)
 
   number_of_thinkers = 0;
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
-    if (th->function == P_MobjThinker)
+    if (P_IsMobjThinker(th))
       th->prev = (thinker_t *)(intptr_t) ++number_of_thinkers;
 }
 
@@ -500,7 +505,7 @@ void P_TrueArchiveThinkers(void) {
         th->function==T_Pusher       ? 4+sizeof(pusher_t)      :
         th->function==T_FireFlicker  ? 4+sizeof(fireflicker_t) :
         th->function==T_Friction     ? 4+sizeof(friction_t)    :
-        th->function==P_MobjThinker  ? 4+sizeof(mobj_t)        :
+        P_IsMobjThinker(th)          ? 4+sizeof(mobj_t)        :
       0;
 
   CheckSaveGame(size + 1);    // killough; cph: +1 for the tc_endspecials
@@ -672,7 +677,7 @@ void P_TrueArchiveThinkers(void) {
         continue;
       }
 
-    if (th->function == P_MobjThinker)
+    if (P_IsMobjThinker(th))
       {
         mobj_t *mobj;
 
@@ -693,13 +698,13 @@ void P_TrueArchiveThinkers(void) {
         // mobj thinker.
 
         if (mobj->target)
-          mobj->target = mobj->target->thinker.function ==
-            P_MobjThinker ?
+          mobj->target =
+            P_IsMobjThinker(&mobj->target->thinker) ?
             (mobj_t *) mobj->target->thinker.prev : NULL;
 
         if (mobj->tracer)
-          mobj->tracer = mobj->tracer->thinker.function ==
-            P_MobjThinker ?
+          mobj->tracer =
+            P_IsMobjThinker(&mobj->tracer->thinker) ?
             (mobj_t *) mobj->tracer->thinker.prev : NULL;
 
         // killough 2/14/98: new field: save last known enemy. Prevents
@@ -707,8 +712,8 @@ void P_TrueArchiveThinkers(void) {
         // seeing player anymore.
 
         if (mobj->lastenemy)
-          mobj->lastenemy = mobj->lastenemy->thinker.function ==
-            P_MobjThinker ?
+          mobj->lastenemy =
+            P_IsMobjThinker(&mobj->lastenemy->thinker) ?
             (mobj_t *) mobj->lastenemy->thinker.prev : NULL;
 
 
@@ -725,16 +730,16 @@ void P_TrueArchiveThinkers(void) {
             case HERETIC_MT_PHOENIXFX1:  // A_PhoenixPuff
               if (mobj->special1.m)
               {
-                mobj->special1.m = mobj->special1.m->thinker.function ==
-                  P_MobjThinker ?
+                mobj->special1.m =
+                  P_IsMobjThinker(&mobj->special1.m->thinker) ?
                   (mobj_t *) mobj->special1.m->thinker.prev : NULL;
               }
               break;
             case HERETIC_MT_POD:
               if (mobj->special2.m)
               {
-                mobj->special2.m = mobj->special2.m->thinker.function ==
-                  P_MobjThinker ?
+                mobj->special2.m =
+                  P_IsMobjThinker(&mobj->special2.m->thinker) ?
                   (mobj_t *) mobj->special2.m->thinker.prev : NULL;
               }
               break;
@@ -758,7 +763,7 @@ void P_TrueArchiveThinkers(void) {
       mobj_t *target = sectors[i].soundtarget;
       // Fix crash on reload when a soundtarget points to a removed corpse
       // (prboom bug #1590350)
-      if (target && target->thinker.function == P_MobjThinker)
+      if (target && P_IsMobjThinker(&target->thinker))
         target = (mobj_t *) target->thinker.prev;
       else
         target = NULL;
@@ -785,7 +790,7 @@ void P_TrueUnArchiveThinkers(void) {
   for (th = thinkercap.next; th != &thinkercap; )
     {
       thinker_t *next = th->next;
-      if (th->function == P_MobjThinker)
+      if (P_IsMobjThinker(th))
       {
         P_RemoveMobj ((mobj_t *) th);
         P_RemoveThinkerDelayed(th); // fix mobj leak
@@ -1024,6 +1029,9 @@ void P_TrueUnArchiveThinkers(void) {
           mobj->thinker.function = P_MobjThinker;
           P_AddThinker (&mobj->thinker);
 
+          if (mobj->type == HERETIC_MT_BLASTERFX1)
+            mobj->thinker.function = P_BlasterMobjThinker;
+
           if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL | MF_CORPSE)))
             totallive++;
           break;
@@ -1040,7 +1048,7 @@ void P_TrueUnArchiveThinkers(void) {
   // killough 11/98: use P_SetNewTarget() to set fields
 
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
-    if (th->function == P_MobjThinker) {
+    if (P_IsMobjThinker(th)) {
       P_SetNewTarget(&((mobj_t *) th)->target,
         mobj_p[P_GetMobj(((mobj_t *)th)->target, mobj_count + 1)]);
 
