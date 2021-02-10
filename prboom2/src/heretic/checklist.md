@@ -37,9 +37,9 @@
 
 ### Files in crispy src/heretic:
 
-- [ ] am_data.h 104
+- [x] am_data.h 104
 - [ ] am_map.c 1544
-- [ ] am_map.h 112
+- [x] am_map.h 112
 - [ ] ct_chat.c 478
 - [ ] ct_chat.h 39
 - [ ] d_main.c 1305
