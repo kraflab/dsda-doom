@@ -16,7 +16,17 @@
 
 // AM_map.c
 
+#include "doomstat.h"
 #include "v_video.h"
+#include "p_setup.h"
+#include "p_maputl.h"
+#include "p_inter.h"
+#include "p_tick.h"
+#include "w_wad.h"
+#include "g_game.h"
+
+#include "mn_menu.h"
+#include "dstrings.h"
 
 #include "../am_map.h"
 
@@ -89,7 +99,7 @@
 
 #define R ((8*PLAYERRADIUS)/7)
 
-mline_t player_arrow[] = {
+mline_t heretic_player_arrow[] = {
   { { -R+R/4, 0 }, { 0, 0} }, // center line.
   { { -R+R/4, R/8 }, { R, 0} }, // blade
   { { -R+R/4, -R/8 }, { R, 0 } },
@@ -114,11 +124,11 @@ mline_t keysquare[] = {
 	};
 
 #undef R
-#define NUMPLYRLINES (sizeof(player_arrow)/sizeof(mline_t))
+#define NUMPLYRLINES (sizeof(heretic_player_arrow)/sizeof(mline_t))
 #define NUMKEYSQUARELINES (sizeof(keysquare)/sizeof(mline_t))
 
 #define R ((8*PLAYERRADIUS)/7)
-mline_t cheat_player_arrow[] = {
+mline_t cheat_heretic_player_arrow[] = {
   { { -R+R/8, 0 }, { R, 0 } }, // -----
   { { R, 0 }, { R-R/2, R/6 } },  // ----->
   { { R, 0 }, { R-R/2, -R/6 } },
@@ -137,7 +147,7 @@ mline_t cheat_player_arrow[] = {
   { { R/6+R/32, -R/7-R/32 }, { R/6+R/10, -R/7 } }
   };
 #undef R
-#define NUMCHEATPLYRLINES (sizeof(cheat_player_arrow)/sizeof(mline_t))
+#define NUMCHEATPLYRLINES (sizeof(cheat_heretic_player_arrow)/sizeof(mline_t))
 
 #define R (FRACUNIT)
 mline_t triangle_guy[] = {
@@ -149,17 +159,19 @@ mline_t triangle_guy[] = {
 #define NUMTRIANGLEGUYLINES (sizeof(triangle_guy)/sizeof(mline_t))
 
 #define R (FRACUNIT)
-mline_t thintriangle_guy[] = {
+mline_t heretic_thintriangle_guy[] = {
   { { (fixed_t)(-.5*R), (fixed_t)(-.7*R) }, { (fixed_t)(R    ), (fixed_t)(0    ) } },
   { { (fixed_t)(R    ), (fixed_t)(0    ) }, { (fixed_t)(-.5*R), (fixed_t)(.7*R ) } },
   { { (fixed_t)(-.5*R), (fixed_t)(.7*R ) }, { (fixed_t)(-.5*R), (fixed_t)(-.7*R) } }
   };
 #undef R
-#define NUMTHINTRIANGLEGUYLINES (sizeof(thintriangle_guy)/sizeof(mline_t))
+#define NUMTHINTRIANGLEGUYLINES (sizeof(heretic_thintriangle_guy)/sizeof(mline_t))
 
-mpoint_t KeyPoints[NUMKEYS];
+mpoint_t KeyPoints[3];
 
 #define NUMALIAS 3              // Number of antialiased lines.
+
+extern dboolean BorderNeedRefresh;
 
 const char *LevelNames[] = {
     // EPISODE 1 - THE CITY OF THE DAMNED
@@ -223,7 +235,7 @@ static int grid = 0;
 
 static int leveljuststarted = 1;        // kluge until Heretic_AM_LevelInit() is called
 
-boolean automapactive = false;
+dboolean automapactive = false;
 static int finit_width;
 static int finit_height;
 static int f_x, f_y;            // location of window on screen
@@ -268,15 +280,13 @@ static char cheat_amap[] = { 'r', 'a', 'v', 'm', 'a', 'p' };
 
 static byte cheatcount = 0;
 
-extern boolean viewactive;
-
 static byte antialias[NUMALIAS][8] = {
     {96, 97, 98, 99, 100, 101, 102, 103},
     {110, 109, 108, 107, 106, 105, 104, 103},
     {75, 76, 77, 78, 79, 80, 81, 103}
 };
 
-static byte *maplump;           // pointer to the raw data for the automap background.
+static const byte *maplump;     // pointer to the raw data for the automap background.
 static short mapystart = 0;     // y-value for the start of the map bitmap...used in the paralax stuff.
 static short mapxstart = 0;     //x-value for the bitmap.
 
@@ -400,7 +410,7 @@ void Heretic_AM_changeWindowLoc(void)
     if(mapxstart >= finit_width)
         mapxstart -= finit_width;
     if(mapxstart < 0)
-        mapxstart += finit_width);
+        mapxstart += finit_width;
     if(mapystart >= finit_height)
         mapystart -= finit_height;
     if(mapystart < 0)
@@ -461,17 +471,17 @@ void Heretic_AM_initVariables(void)
                 continue;
             }
             mo = (mobj_t *) think;
-            if (mo->type == MT_CKEY)
+            if (mo->type == HERETIC_MT_CKEY)
             {
                 KeyPoints[0].x = mo->x;
                 KeyPoints[0].y = mo->y;
             }
-            else if (mo->type == MT_AKYY)
+            else if (mo->type == HERETIC_MT_AKYY)
             {
                 KeyPoints[1].x = mo->x;
                 KeyPoints[1].y = mo->y;
             }
-            else if (mo->type == MT_BKYY)
+            else if (mo->type == HERETIC_MT_BKYY)
             {
                 KeyPoints[2].x = mo->x;
                 KeyPoints[2].y = mo->y;
@@ -482,7 +492,7 @@ void Heretic_AM_initVariables(void)
 
 void Heretic_AM_loadPics(void)
 {
-    maplump = W_CacheLumpName(DEH_String("AUTOPAGE"), PU_STATIC);
+    maplump = W_CacheLumpName(DEH_String("AUTOPAGE"));
 }
 
 // should be called at the start of every level
@@ -506,7 +516,7 @@ void Heretic_AM_LevelInit(void)
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
 
-static boolean stopped = true;
+static dboolean stopped = true;
 
 void Heretic_AM_Stop(void)
 {
@@ -554,42 +564,22 @@ void Heretic_AM_maxOutWindowScale(void)
     Heretic_AM_activateNewScale();
 }
 
-boolean Heretic_AM_Responder(event_t * ev)
+dboolean Heretic_AM_Responder(event_t * ev)
 {
     int rc;
     int key;
     static int bigstate = 0;
-    static int joywait = 0;
 
     key = ev->data1;
     rc = false;
 
-    if (ev->type == ev_joystick && joybautomap >= 0
-        && (ev->data1 & (1 << joybautomap)) != 0 && joywait < I_GetTime())
-    {
-        joywait = I_GetTime() + 5;
-
-        if (!automapactive)
-        {
-            Heretic_AM_Start ();
-            viewactive = false;
-        }
-        else
-        {
-            bigstate = 0;
-            viewactive = true;
-            Heretic_AM_Stop ();
-        }
-    }
-
     if (!automapactive)
     {
 
-        if (ev->type == ev_keydown && key == key_map_toggle
+        if (ev->type == ev_keydown && key == key_map
          && gamestate == GS_LEVEL)
         {
             Heretic_AM_Start();
-            viewactive = false;
             rc = true;
         }
     }
@@ -597,51 +587,50 @@ boolean Heretic_AM_Responder(event_t * ev)
     {
         rc = true;
 
-        if (key == key_map_east)                 // pan right
+        if (key == key_map_right)                 // pan right
         {
             if (!followplayer)
                 m_paninc.x = FTOM(F_PANINC);
             else
                 rc = false;
         }
-        else if (key == key_map_west)            // pan left
+        else if (key == key_map_left)            // pan left
         {
             if (!followplayer)
                 m_paninc.x = -FTOM(F_PANINC);
             else
                 rc = false;
         }
-        else if (key == key_map_north)           // pan up
+        else if (key == key_map_up)           // pan up
         {
             if (!followplayer)
                 m_paninc.y = FTOM(F_PANINC);
             else
                 rc = false;
         }
-        else if (key == key_map_south)           // pan down
+        else if (key == key_map_down)           // pan down
         {
             if (!followplayer)
                 m_paninc.y = -FTOM(F_PANINC);
             else
                 rc = false;
         }
-        else if (key == key_map_zoomout)         // zoom out
+        else if (key == key_map_zoomout || (map_wheel_zoom && key == KEYD_MWHEELDOWN))
         {
             mtof_zoommul = M_ZOOMOUT;
             ftom_zoommul = M_ZOOMIN;
         }
-        else if (key == key_map_zoomin)          // zoom in
+        else if (key == key_map_zoomin || (map_wheel_zoom && key == KEYD_MWHEELUP))
         {
             mtof_zoommul = M_ZOOMIN;
             ftom_zoommul = M_ZOOMOUT;
         }
-        else if (key == key_map_toggle)          // toggle map (tab)
+        else if (key == key_map)          // toggle map (tab)
         {
             bigstate = 0;
-            viewactive = true;
             Heretic_AM_Stop();
         }
-        else if (key == key_map_maxzoom)
+        else if (key == key_map_gobig)
         {
             bigstate = !bigstate;
             if (bigstate)
@@ -657,7 +646,7 @@ boolean Heretic_AM_Responder(event_t * ev)
             followplayer = !followplayer;
             f_oldloc.x = INT_MAX;
             P_SetMessage(plr,
-                         followplayer ? AMSTR_FOLLOWON : AMSTR_FOLLOWOFF,
+                         followplayer ? HERETIC_AMSTR_FOLLOWON : HERETIC_AMSTR_FOLLOWOFF,
                          true);
         }
         else
@@ -680,22 +669,22 @@ boolean Heretic_AM_Responder(event_t * ev)
     {
         rc = false;
 
-        if (key == key_map_east)
+        if (key == key_map_right)
         {
             if (!followplayer)
                 m_paninc.x = 0;
         }
-        else if (key == key_map_west)
+        else if (key == key_map_left)
         {
             if (!followplayer)
                 m_paninc.x = 0;
         }
-        else if (key == key_map_north)
+        else if (key == key_map_up)
         {
             if (!followplayer)
                 m_paninc.y = 0;
         }
-        else if (key == key_map_south)
+        else if (key == key_map_down)
         {
             if (!followplayer)
                 m_paninc.y = 0;
@@ -788,10 +777,8 @@ void Heretic_AM_clearFB(int color)
     j = mapystart * finit_width;
     for (i = 0; i < finit_height; i++)
     {
-        memcpy(I_VideoBuffer + i * finit_width, maplump + j + mapxstart,
-               finit_width - mapxstart);
-        memcpy(I_VideoBuffer + i * finit_width + finit_width - mapxstart,
-               maplump + j, mapxstart);
+        V_DrawRawScreenLength(maplump + j + mapxstart, 0, i, finit_width - mapxstart);
+        V_DrawRawScreenLength(maplump + j, finit_width - mapxstart, i, mapxstart);
         j += finit_width;
         if (j >= finit_height * finit_width)
             j = 0;
@@ -802,7 +789,7 @@ void Heretic_AM_clearFB(int color)
 // faster reject and precalculated slopes.  If I need the speed, will
 // hash algorithm to the common cases.
 
-boolean Heretic_AM_clipMline(mline_t * ml, fline_t * fl)
+dboolean Heretic_AM_clipMline(mline_t * ml, fline_t * fl)
 {
     enum
     { LEFT = 1, RIGHT = 2, BOTTOM = 4, TOP = 8 };
@@ -1354,7 +1341,7 @@ void Heretic_AM_drawPlayers(void)
 
     if (!netgame)
     {
-        Heretic_AM_drawLineCharacter(player_arrow, NUMPLYRLINES, 0, plr->mo->angle,
+        Heretic_AM_drawLineCharacter(heretic_player_arrow, NUMPLYRLINES, 0, plr->mo->angle,
                              WHITE, plr->mo->x, plr->mo->y);
         return;
     }
@@ -1373,7 +1360,7 @@ void Heretic_AM_drawPlayers(void)
             color = 102;        // *close* to the automap color
         else
             color = their_colors[their_color];
-        Heretic_AM_drawLineCharacter(player_arrow, NUMPLYRLINES, 0, p->mo->angle,
+        Heretic_AM_drawLineCharacter(heretic_player_arrow, NUMPLYRLINES, 0, p->mo->angle,
                              color, p->mo->x, p->mo->y);
     }
 }
@@ -1388,7 +1375,7 @@ void Heretic_AM_drawThings(int colors, int colorrange)
         t = sectors[i].thinglist;
         while (t)
         {
-            Heretic_AM_drawLineCharacter(thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
+            Heretic_AM_drawLineCharacter(heretic_thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
                                  16 << FRACBITS, t->angle, colors + lightlev,
                                  t->x, t->y);
             t = t->snext;
@@ -1428,7 +1415,6 @@ void Heretic_AM_Drawer(void)
     if (!automapactive)
         return;
 
-    UpdateState |= I_FULLSCRN;
     Heretic_AM_clearFB(BACKGROUND);
     if (grid)
         Heretic_AM_drawGrid(GRIDCOLORS);
