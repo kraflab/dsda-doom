@@ -86,7 +86,7 @@ const char *LevelNames[] = {
 static int cheating = 0;
 static int grid = 0;
 
-static int leveljuststarted = 1;        // kluge until AM_LevelInit() is called
+static int leveljuststarted = 1;        // kluge until Heretic_AM_LevelInit() is called
 
 boolean automapactive = false;
 static int finit_width;
@@ -150,7 +150,7 @@ static short mapxstart = 0;     //x-value for the bitmap.
 void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
                 int NumLevels, unsigned short IntensityBits);
 
-void AM_activateNewScale(void)
+void Heretic_AM_activateNewScale(void)
 {
     m_x += m_w / 2;
     m_y += m_h / 2;
@@ -162,7 +162,7 @@ void AM_activateNewScale(void)
     m_y2 = m_y + m_h;
 }
 
-void AM_saveScaleAndLoc(void)
+void Heretic_AM_saveScaleAndLoc(void)
 {
     old_m_x = m_x;
     old_m_y = m_y;
@@ -170,7 +170,7 @@ void AM_saveScaleAndLoc(void)
     old_m_h = m_h;
 }
 
-void AM_restoreScaleAndLoc(void)
+void Heretic_AM_restoreScaleAndLoc(void)
 {
 
     m_w = old_m_w;
@@ -193,7 +193,7 @@ void AM_restoreScaleAndLoc(void)
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
 
-void AM_findMinMaxBoundaries(void)
+void Heretic_AM_findMinMaxBoundaries(void)
 {
     int i;
     fixed_t a, b;
@@ -224,7 +224,7 @@ void AM_findMinMaxBoundaries(void)
 
 }
 
-void AM_changeWindowLoc(void)
+void Heretic_AM_changeWindowLoc(void)
 {
     if (m_paninc.x || m_paninc.y)
     {
@@ -259,7 +259,7 @@ void AM_changeWindowLoc(void)
     // The following code was commented out in the released Heretic source,
     // but I believe we need to do this here to stop the background moving
     // when we reach the map boundaries. (In the released source it's done
-    // in AM_clearFB).
+    // in Heretic_AM_clearFB).
     mapxstart += MTOF(m_paninc.x+FRACUNIT/2);
     mapystart -= MTOF(m_paninc.y+FRACUNIT/2);
     if(mapxstart >= finit_width)
@@ -276,7 +276,7 @@ void AM_changeWindowLoc(void)
     m_y2 = m_y + m_h;
 }
 
-void AM_initVariables(void)
+void Heretic_AM_initVariables(void)
 {
     int pnum;
     thinker_t *think;
@@ -305,7 +305,7 @@ void AM_initVariables(void)
     oldplr.y = plr->mo->y;
     m_x = plr->mo->x - m_w / 2;
     m_y = plr->mo->y - m_h / 2;
-    AM_changeWindowLoc();
+    Heretic_AM_changeWindowLoc();
 
     // for saving & restoring
     old_m_x = m_x;
@@ -345,7 +345,7 @@ void AM_initVariables(void)
     }
 }
 
-void AM_loadPics(void)
+void Heretic_AM_loadPics(void)
 {
     maplump = W_CacheLumpName(DEH_String("AUTOPAGE"), PU_STATIC);
 }
@@ -353,7 +353,7 @@ void AM_loadPics(void)
 // should be called at the start of every level
 // right now, i figure it out myself
 
-void AM_LevelInit(void)
+void Heretic_AM_LevelInit(void)
 {
     leveljuststarted = 0;
 
@@ -364,7 +364,7 @@ void AM_LevelInit(void)
     f_h = finit_height;
     mapxstart = mapystart = 0;
 
-    AM_findMinMaxBoundaries();
+    Heretic_AM_findMinMaxBoundaries();
     scale_mtof = FixedDiv(min_scale_mtof, (int) (0.7 * FRACUNIT));
     if (scale_mtof > max_scale_mtof)
         scale_mtof = min_scale_mtof;
@@ -373,19 +373,19 @@ void AM_LevelInit(void)
 
 static boolean stopped = true;
 
-void AM_Stop(void)
+void Heretic_AM_Stop(void)
 {
     automapactive = false;
     stopped = true;
     BorderNeedRefresh = true;
 }
 
-void AM_Start(void)
+void Heretic_AM_Start(void)
 {
     static int lastlevel = -1, lastepisode = -1;
 
     if (!stopped)
-        AM_Stop();
+        Heretic_AM_Stop();
     stopped = false;
     if (gamestate != GS_LEVEL)
     {
@@ -393,33 +393,33 @@ void AM_Start(void)
     }
     if (lastlevel != gamemap || lastepisode != gameepisode)
     {
-        AM_LevelInit();
+        Heretic_AM_LevelInit();
         lastlevel = gamemap;
         lastepisode = gameepisode;
     }
-    AM_initVariables();
-    AM_loadPics();
+    Heretic_AM_initVariables();
+    Heretic_AM_loadPics();
 }
 
 // set the window scale to the maximum size
 
-void AM_minOutWindowScale(void)
+void Heretic_AM_minOutWindowScale(void)
 {
     scale_mtof = min_scale_mtof;
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
-    AM_activateNewScale();
+    Heretic_AM_activateNewScale();
 }
 
 // set the window scale to the minimum size
 
-void AM_maxOutWindowScale(void)
+void Heretic_AM_maxOutWindowScale(void)
 {
     scale_mtof = max_scale_mtof;
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
-    AM_activateNewScale();
+    Heretic_AM_activateNewScale();
 }
 
-boolean AM_Responder(event_t * ev)
+boolean Heretic_AM_Responder(event_t * ev)
 {
     int rc;
     int key;
@@ -436,14 +436,14 @@ boolean AM_Responder(event_t * ev)
 
         if (!automapactive)
         {
-            AM_Start ();
+            Heretic_AM_Start ();
             viewactive = false;
         }
         else
         {
             bigstate = 0;
             viewactive = true;
-            AM_Stop ();
+            Heretic_AM_Stop ();
         }
     }
 
@@ -453,7 +453,7 @@ boolean AM_Responder(event_t * ev)
         if (ev->type == ev_keydown && key == key_map_toggle
          && gamestate == GS_LEVEL)
         {
-            AM_Start();
+            Heretic_AM_Start();
             viewactive = false;
             rc = true;
         }
@@ -504,18 +504,18 @@ boolean AM_Responder(event_t * ev)
         {
             bigstate = 0;
             viewactive = true;
-            AM_Stop();
+            Heretic_AM_Stop();
         }
         else if (key == key_map_maxzoom)
         {
             bigstate = !bigstate;
             if (bigstate)
             {
-                AM_saveScaleAndLoc();
-                AM_minOutWindowScale();
+                Heretic_AM_saveScaleAndLoc();
+                Heretic_AM_minOutWindowScale();
             }
             else
-                AM_restoreScaleAndLoc();
+                Heretic_AM_restoreScaleAndLoc();
         }
         else if (key == key_map_follow)
         {
@@ -575,21 +575,21 @@ boolean AM_Responder(event_t * ev)
     return rc;
 }
 
-void AM_changeWindowScale(void)
+void Heretic_AM_changeWindowScale(void)
 {
     // Change the scaling multipliers
     scale_mtof = FixedMul(scale_mtof, mtof_zoommul);
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 
     if (scale_mtof < min_scale_mtof)
-        AM_minOutWindowScale();
+        Heretic_AM_minOutWindowScale();
     else if (scale_mtof > max_scale_mtof)
-        AM_maxOutWindowScale();
+        Heretic_AM_maxOutWindowScale();
     else
-        AM_activateNewScale();
+        Heretic_AM_activateNewScale();
 }
 
-void AM_doFollowPlayer(void)
+void Heretic_AM_doFollowPlayer(void)
 {
     if (f_oldloc.x != plr->mo->x || f_oldloc.y != plr->mo->y)
     {
@@ -603,7 +603,7 @@ void AM_doFollowPlayer(void)
     }
 }
 
-void AM_Ticker(void)
+void Heretic_AM_Ticker(void)
 {
     if (!automapactive)
         return;
@@ -611,18 +611,18 @@ void AM_Ticker(void)
     amclock++;
 
     if (followplayer)
-        AM_doFollowPlayer();
+        Heretic_AM_doFollowPlayer();
 
     // Change the zoom if necessary
     if (ftom_zoommul != FRACUNIT)
-        AM_changeWindowScale();
+        Heretic_AM_changeWindowScale();
 
     // Change x,y location
     if (m_paninc.x || m_paninc.y)
-        AM_changeWindowLoc();
+        Heretic_AM_changeWindowLoc();
 }
 
-void AM_clearFB(int color)
+void Heretic_AM_clearFB(int color)
 {
     int i, j;
     int dmapx;
@@ -667,7 +667,7 @@ void AM_clearFB(int color)
 // faster reject and precalculated slopes.  If I need the speed, will
 // hash algorithm to the common cases.
 
-boolean AM_clipMline(mline_t * ml, fline_t * fl)
+boolean Heretic_AM_clipMline(mline_t * ml, fline_t * fl)
 {
     enum
     { LEFT = 1, RIGHT = 2, BOTTOM = 4, TOP = 8 };
@@ -773,7 +773,7 @@ boolean AM_clipMline(mline_t * ml, fline_t * fl)
 
 // Classic Bresenham w/ whatever optimizations I need for speed
 
-void AM_drawFline(fline_t * fl, int color)
+void Heretic_AM_drawFline(fline_t * fl, int color)
 {
     register int x, y, dx, dy, sx, sy, ax, ay, d;
     static int fuck = 0;
@@ -1037,15 +1037,15 @@ void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
     PUTDOT(X1, Y1, &BaseColor[0], NULL);
 }
 
-void AM_drawMline(mline_t * ml, int color)
+void Heretic_AM_drawMline(mline_t * ml, int color)
 {
     static fline_t fl;
 
-    if (AM_clipMline(ml, &fl))
-        AM_drawFline(&fl, color);
+    if (Heretic_AM_clipMline(ml, &fl))
+        Heretic_AM_drawFline(&fl, color);
 }
 
-void AM_drawGrid(int color)
+void Heretic_AM_drawGrid(int color)
 {
     fixed_t x, y;
     fixed_t start, end;
@@ -1065,7 +1065,7 @@ void AM_drawGrid(int color)
     {
         ml.a.x = x;
         ml.b.x = x;
-        AM_drawMline(&ml, color);
+        Heretic_AM_drawMline(&ml, color);
     }
 
     // Figure out start of horizontal gridlines
@@ -1082,11 +1082,11 @@ void AM_drawGrid(int color)
     {
         ml.a.y = y;
         ml.b.y = y;
-        AM_drawMline(&ml, color);
+        Heretic_AM_drawMline(&ml, color);
     }
 }
 
-void AM_drawWalls(void)
+void Heretic_AM_drawWalls(void)
 {
     int i;
     static mline_t l;
@@ -1103,20 +1103,20 @@ void AM_drawWalls(void)
                 continue;
             if (!lines[i].backsector)
             {
-                AM_drawMline(&l, WALLCOLORS + lightlev);
+                Heretic_AM_drawMline(&l, WALLCOLORS + lightlev);
             }
             else
             {
                 if (lines[i].special == 39)
                 {               // teleporters
-                    AM_drawMline(&l, WALLCOLORS + WALLRANGE / 2);
+                    Heretic_AM_drawMline(&l, WALLCOLORS + WALLRANGE / 2);
                 }
                 else if (lines[i].flags & ML_SECRET)    // secret door
                 {
                     if (cheating)
-                        AM_drawMline(&l, 0);
+                        Heretic_AM_drawMline(&l, 0);
                     else
-                        AM_drawMline(&l, WALLCOLORS + lightlev);
+                        Heretic_AM_drawMline(&l, WALLCOLORS + lightlev);
                 }
                 else if (lines[i].special > 25 && lines[i].special < 35)
                 {
@@ -1124,15 +1124,15 @@ void AM_drawWalls(void)
                     {
                         case 26:
                         case 32:
-                            AM_drawMline(&l, BLUEKEY);
+                            Heretic_AM_drawMline(&l, BLUEKEY);
                             break;
                         case 27:
                         case 34:
-                            AM_drawMline(&l, YELLOWKEY);
+                            Heretic_AM_drawMline(&l, YELLOWKEY);
                             break;
                         case 28:
                         case 33:
-                            AM_drawMline(&l, GREENKEY);
+                            Heretic_AM_drawMline(&l, GREENKEY);
                             break;
                         default:
                             break;
@@ -1141,28 +1141,28 @@ void AM_drawWalls(void)
                 else if (lines[i].backsector->floorheight
                          != lines[i].frontsector->floorheight)
                 {
-                    AM_drawMline(&l, FDWALLCOLORS + lightlev);  // floor level change
+                    Heretic_AM_drawMline(&l, FDWALLCOLORS + lightlev);  // floor level change
                 }
                 else if (lines[i].backsector->ceilingheight
                          != lines[i].frontsector->ceilingheight)
                 {
-                    AM_drawMline(&l, CDWALLCOLORS + lightlev);  // ceiling level change
+                    Heretic_AM_drawMline(&l, CDWALLCOLORS + lightlev);  // ceiling level change
                 }
                 else if (cheating)
                 {
-                    AM_drawMline(&l, TSWALLCOLORS + lightlev);
+                    Heretic_AM_drawMline(&l, TSWALLCOLORS + lightlev);
                 }
             }
         }
         else if (plr->powers[pw_allmap])
         {
             if (!(lines[i].flags & LINE_NEVERSEE))
-                AM_drawMline(&l, GRAYS + 3);
+                Heretic_AM_drawMline(&l, GRAYS + 3);
         }
     }
 }
 
-void AM_rotate(fixed_t * x, fixed_t * y, angle_t a)
+void Heretic_AM_rotate(fixed_t * x, fixed_t * y, angle_t a)
 {
     fixed_t tmpx;
 
@@ -1173,7 +1173,7 @@ void AM_rotate(fixed_t * x, fixed_t * y, angle_t a)
     *x = tmpx;
 }
 
-void AM_drawLineCharacter(mline_t * lineguy, int lineguylines, fixed_t scale,
+void Heretic_AM_drawLineCharacter(mline_t * lineguy, int lineguylines, fixed_t scale,
                           angle_t angle, int color, fixed_t x, fixed_t y)
 {
     int i;
@@ -1189,7 +1189,7 @@ void AM_drawLineCharacter(mline_t * lineguy, int lineguylines, fixed_t scale,
             l.a.y = FixedMul(scale, l.a.y);
         }
         if (angle)
-            AM_rotate(&l.a.x, &l.a.y, angle);
+            Heretic_AM_rotate(&l.a.x, &l.a.y, angle);
         l.a.x += x;
         l.a.y += y;
 
@@ -1201,15 +1201,15 @@ void AM_drawLineCharacter(mline_t * lineguy, int lineguylines, fixed_t scale,
             l.b.y = FixedMul(scale, l.b.y);
         }
         if (angle)
-            AM_rotate(&l.b.x, &l.b.y, angle);
+            Heretic_AM_rotate(&l.b.x, &l.b.y, angle);
         l.b.x += x;
         l.b.y += y;
 
-        AM_drawMline(&l, color);
+        Heretic_AM_drawMline(&l, color);
     }
 }
 
-void AM_drawPlayers(void)
+void Heretic_AM_drawPlayers(void)
 {
     int i;
     player_t *p;
@@ -1219,7 +1219,7 @@ void AM_drawPlayers(void)
 
     if (!netgame)
     {
-        AM_drawLineCharacter(player_arrow, NUMPLYRLINES, 0, plr->mo->angle,
+        Heretic_AM_drawLineCharacter(player_arrow, NUMPLYRLINES, 0, plr->mo->angle,
                              WHITE, plr->mo->x, plr->mo->y);
         return;
     }
@@ -1238,12 +1238,12 @@ void AM_drawPlayers(void)
             color = 102;        // *close* to the automap color
         else
             color = their_colors[their_color];
-        AM_drawLineCharacter(player_arrow, NUMPLYRLINES, 0, p->mo->angle,
+        Heretic_AM_drawLineCharacter(player_arrow, NUMPLYRLINES, 0, p->mo->angle,
                              color, p->mo->x, p->mo->y);
     }
 }
 
-void AM_drawThings(int colors, int colorrange)
+void Heretic_AM_drawThings(int colors, int colorrange)
 {
     int i;
     mobj_t *t;
@@ -1253,7 +1253,7 @@ void AM_drawThings(int colors, int colorrange)
         t = sectors[i].thinglist;
         while (t)
         {
-            AM_drawLineCharacter(thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
+            Heretic_AM_drawLineCharacter(thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
                                  16 << FRACBITS, t->angle, colors + lightlev,
                                  t->x, t->y);
             t = t->snext;
@@ -1261,31 +1261,31 @@ void AM_drawThings(int colors, int colorrange)
     }
 }
 
-void AM_drawkeys(void)
+void Heretic_AM_drawkeys(void)
 {
     if (KeyPoints[0].x != 0 || KeyPoints[0].y != 0)
     {
-        AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, YELLOWKEY,
+        Heretic_AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, YELLOWKEY,
                              KeyPoints[0].x, KeyPoints[0].y);
     }
     if (KeyPoints[1].x != 0 || KeyPoints[1].y != 0)
     {
-        AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, GREENKEY,
+        Heretic_AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, GREENKEY,
                              KeyPoints[1].x, KeyPoints[1].y);
     }
     if (KeyPoints[2].x != 0 || KeyPoints[2].y != 0)
     {
-        AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, BLUEKEY,
+        Heretic_AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, BLUEKEY,
                              KeyPoints[2].x, KeyPoints[2].y);
     }
 }
 
-void AM_drawCrosshair(int color)
+void Heretic_AM_drawCrosshair(int color)
 {
     V_PlotPixel(0, f_w / 2, f_h / 2, (byte)color);
 }
 
-void AM_Drawer(void)
+void Heretic_AM_Drawer(void)
 {
     const char *level_name;
     int numepisodes;
@@ -1294,17 +1294,17 @@ void AM_Drawer(void)
         return;
 
     UpdateState |= I_FULLSCRN;
-    AM_clearFB(BACKGROUND);
+    Heretic_AM_clearFB(BACKGROUND);
     if (grid)
-        AM_drawGrid(GRIDCOLORS);
-    AM_drawWalls();
-    AM_drawPlayers();
+        Heretic_AM_drawGrid(GRIDCOLORS);
+    Heretic_AM_drawWalls();
+    Heretic_AM_drawPlayers();
     if (cheating == 2)
-        AM_drawThings(THINGCOLORS, THINGRANGE);
+        Heretic_AM_drawThings(THINGCOLORS, THINGRANGE);
 
     if (gameskill == sk_baby)
     {
-        AM_drawkeys();
+        Heretic_AM_drawkeys();
     }
 
     if (gamemode == retail)
