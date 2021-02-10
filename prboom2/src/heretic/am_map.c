@@ -172,6 +172,7 @@ mpoint_t KeyPoints[3];
 #define NUMALIAS 3              // Number of antialiased lines.
 
 extern dboolean BorderNeedRefresh;
+extern enum automapmode_e automapmode;
 
 const char *LevelNames[] = {
     // EPISODE 1 - THE CITY OF THE DAMNED
@@ -231,11 +232,9 @@ const char *LevelNames[] = {
 };
 
 static int cheating = 0;
-static int grid = 0;
 
 static int leveljuststarted = 1;        // kluge until Heretic_AM_LevelInit() is called
 
-dboolean automapactive = false;
 static int finit_width;
 static int finit_height;
 static int f_x, f_y;            // location of window on screen
@@ -273,8 +272,6 @@ static fixed_t scale_ftom;
 
 static player_t *plr;           // the player represented by an arrow
 static mpoint_t oldplr;
-
-static int followplayer = 1;    // specifies whether to follow the player around
 
 static char cheat_amap[] = { 'r', 'a', 'v', 'm', 'a', 'p' };
 
@@ -320,7 +317,7 @@ void Heretic_AM_restoreScaleAndLoc(void)
 
     m_w = old_m_w;
     m_h = old_m_h;
-    if (!followplayer)
+    if (!(automapmode & am_follow))
     {
         m_x = old_m_x;
         m_y = old_m_y;
@@ -373,7 +370,7 @@ void Heretic_AM_changeWindowLoc(void)
 {
     if (m_paninc.x || m_paninc.y)
     {
-        followplayer = 0;
+        automapmode &= ~am_follow;
         f_oldloc.x = INT_MAX;
     }
 
@@ -427,7 +424,7 @@ void Heretic_AM_initVariables(void)
     thinker_t *think;
     mobj_t *mo;
 
-    automapactive = true;
+    automapmode |= am_active;
 
     f_oldloc.x = INT_MAX;
     amclock = 0;
@@ -520,7 +517,7 @@ static dboolean stopped = true;
 
 void Heretic_AM_Stop(void)
 {
-    automapactive = false;
+    automapmode &= ~am_active;
     stopped = true;
     BorderNeedRefresh = true;
 }
@@ -573,7 +570,7 @@ dboolean Heretic_AM_Responder(event_t * ev)
     key = ev->data1;
     rc = false;
 
-    if (!automapactive)
+    if (!(automapmode & am_active))
     {
 
         if (ev->type == ev_keydown && key == key_map
@@ -589,28 +586,28 @@ dboolean Heretic_AM_Responder(event_t * ev)
 
         if (key == key_map_right)                 // pan right
         {
-            if (!followplayer)
+            if (!(automapmode & am_follow))
                 m_paninc.x = FTOM(F_PANINC);
             else
                 rc = false;
         }
         else if (key == key_map_left)            // pan left
         {
-            if (!followplayer)
+            if (!(automapmode & am_follow))
                 m_paninc.x = -FTOM(F_PANINC);
             else
                 rc = false;
         }
         else if (key == key_map_up)           // pan up
         {
-            if (!followplayer)
+            if (!(automapmode & am_follow))
                 m_paninc.y = FTOM(F_PANINC);
             else
                 rc = false;
         }
         else if (key == key_map_down)           // pan down
         {
-            if (!followplayer)
+            if (!(automapmode & am_follow))
                 m_paninc.y = -FTOM(F_PANINC);
             else
                 rc = false;
@@ -643,10 +640,17 @@ dboolean Heretic_AM_Responder(event_t * ev)
         }
         else if (key == key_map_follow)
         {
-            followplayer = !followplayer;
+            automapmode ^= am_follow;
             f_oldloc.x = INT_MAX;
             P_SetMessage(plr,
-                         followplayer ? HERETIC_AMSTR_FOLLOWON : HERETIC_AMSTR_FOLLOWOFF,
+                         (automapmode & am_follow) ? HERETIC_AMSTR_FOLLOWON : HERETIC_AMSTR_FOLLOWOFF,
+                         true);
+        }
+        else if (key == key_map_grid)
+        {
+            automapmode ^= am_grid;
+            P_SetMessage(plr,
+                         (automapmode & am_grid) ? HERETIC_AMSTR_GRIDON : HERETIC_AMSTR_GRIDOFF,
                          true);
         }
         else
@@ -671,22 +675,22 @@ dboolean Heretic_AM_Responder(event_t * ev)
 
         if (key == key_map_right)
         {
-            if (!followplayer)
+            if (!(automapmode & am_follow))
                 m_paninc.x = 0;
         }
         else if (key == key_map_left)
         {
-            if (!followplayer)
+            if (!(automapmode & am_follow))
                 m_paninc.x = 0;
         }
         else if (key == key_map_up)
         {
-            if (!followplayer)
+            if (!(automapmode & am_follow))
                 m_paninc.y = 0;
         }
         else if (key == key_map_down)
         {
-            if (!followplayer)
+            if (!(automapmode & am_follow))
                 m_paninc.y = 0;
         }
         else if (key == key_map_zoomout || key == key_map_zoomin)
@@ -729,12 +733,12 @@ void Heretic_AM_doFollowPlayer(void)
 
 void Heretic_AM_Ticker(void)
 {
-    if (!automapactive)
+    if (!(automapmode & am_active))
         return;
 
     amclock++;
 
-    if (followplayer)
+    if (automapmode & am_follow)
         Heretic_AM_doFollowPlayer();
 
     // Change the zoom if necessary
@@ -752,7 +756,7 @@ void Heretic_AM_clearFB(int color)
     int dmapx;
     int dmapy;
 
-    if (followplayer)
+    if (automapmode & am_follow)
     {
         dmapx = (MTOF(plr->mo->x) - MTOF(oldplr.x));    //fixed point
         dmapy = (MTOF(oldplr.y) - MTOF(plr->mo->y));
@@ -1412,11 +1416,11 @@ void Heretic_AM_Drawer(void)
     const char *level_name;
     int numepisodes;
 
-    if (!automapactive)
+    if (!(automapmode & am_active))
         return;
 
     Heretic_AM_clearFB(BACKGROUND);
-    if (grid)
+    if (automapmode & am_grid)
         Heretic_AM_drawGrid(GRIDCOLORS);
     Heretic_AM_drawWalls();
     Heretic_AM_drawPlayers();
