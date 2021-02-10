@@ -84,4 +84,8 @@
 // the following is crap
 #define LINE_NEVERSEE ML_DONTDRAW
 
+dboolean Heretic_AM_Responder(event_t * ev);
+void Heretic_AM_Ticker(void);
+void Heretic_AM_Drawer(void);
+
 #endif
