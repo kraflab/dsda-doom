@@ -192,4 +192,10 @@ typedef enum
 extern map_things_appearance_t map_things_appearance;
 extern const char *map_things_appearance_list[];
 
+// heretic
+
+dboolean Heretic_AM_Responder(event_t * ev);
+void Heretic_AM_Ticker(void);
+void Heretic_AM_Drawer(void);
+
 #endif
