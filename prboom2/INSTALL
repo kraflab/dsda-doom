@@ -1,7 +1,7 @@
 Basic Installation (ZIP, tarball, Git)
 ==================
 
-  1. To compile PrBoom-Plus, you need at least SDL2. To enable various
+  1. To compile DSDA-Doom, you need at least SDL2. To enable various
      extensions and optional features, the following are required:
      - SDL2_net (for network play)
      - SDL2_image (for high-res textures in OpenGL, and PNG screenshots)
@@ -20,7 +20,7 @@ Basic Installation (ZIP, tarball, Git)
 
     You will also need `cmake` and `make` if you haven't already got them.
 
-  2. `cd' to the directory containing the PrBoom distribution (the directory
+  2. `cd' to the directory containing the DSDA-Doom distribution (the directory
      this file is in, prboom2).
 
      Create a new `build` folder and `cd` into it.
@@ -33,7 +33,7 @@ Basic Installation (ZIP, tarball, Git)
 
      This should end with the message "Build files have been written to: [folderpath]".
 
-  3. Type `make` to compile PrBoom. This may take some time; while it's
+  3. Type `make` to compile DSDA-Doom. This may take some time; while it's
      compiling I suggest you read the README, or maybe go and look for some
      good doom levels to play when it's finished :-).
 
@@ -43,10 +43,10 @@ Basic Installation (ZIP, tarball, Git)
      instructions. I have tested BSD pmake and it works fine.
 
   4. Type `make install/strip' as root, to install the programs, data files
-     and man pages for PrBoom. If you don't have root access on the machine,
+     and man pages for DSDA-Doom. If you don't have root access on the machine,
      you should ask the syadmin to do this and the next step for you.
 
-     If you want to install manually then you should put the `dsda-doom.wad` 
+     If you want to install manually then you should put the `dsda-doom.wad`
      in /usr/local/share/games/doom/ (or symlink it from there).
 
   5. Copy your Doom, Doom 2, Ultimate Doom or Final Doom IWAD (doom.wad or
@@ -70,8 +70,8 @@ Basic Installation (ZIP, tarball, Git)
      all sorts of other programs in order to regenerate files that came
      with the distribution.
 
-  7. PrBoom is now ready for use. If /usr/local/games is in your path,
-     you can just run prboom; otherwise give the full path.
+  7. DSDA-Doom is now ready for use. If /usr/local/games is in your path,
+     you can just run dsda-doom; otherwise give the full path.
 
 
 
@@ -79,7 +79,7 @@ Building an RPM
 ===============
 
 If you are on a system which uses the RPM packaging format, you might prefer
-to build an RPM containing the PrBoom binaries rather than installing them
+to build an RPM containing the DSDA-Doom binaries rather than installing them
 directly. Follow steps 1 and 2 above, then run a "make rpm". This performs
 the usual proceedure for building the rpm in /usr/src/redhat/. Note that
 the RPM sets its own parameters to ./configure; if you want to override

@@ -97,7 +97,7 @@ void I_ShutdownMusic(void)
 
 void I_InitMusic(void)
 {
-  music_tmp = strdup("/tmp/prboom-music-XXXXXX");
+  music_tmp = strdup("/tmp/dsda-doom-music-XXXXXX");
   {
     int fd = mkstemp(music_tmp);
     if (fd<0)

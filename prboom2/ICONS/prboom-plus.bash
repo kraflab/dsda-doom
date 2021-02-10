@@ -46,6 +46,6 @@ _prboom_plus()
     fi
 } &&
 
-complete -F _prboom_plus prboom-plus
+complete -F _prboom_plus dsda-doom
 
 # ex: ts=4 sw=4 et filetype=sh
