@@ -89,8 +89,8 @@ static int grid = 0;
 static int leveljuststarted = 1;        // kluge until AM_LevelInit() is called
 
 boolean automapactive = false;
-static int finit_width;// = SCREENWIDTH;
-static int finit_height;// = SCREENHEIGHT - (42 << crispy->hires);
+static int finit_width;
+static int finit_height;
 static int f_x, f_y;            // location of window on screen
 static int f_w, f_h;            // size of window on screen
 static int lightlev;            // used for funky strobing effect
@@ -262,14 +262,14 @@ void AM_changeWindowLoc(void)
     // in AM_clearFB).
     mapxstart += MTOF(m_paninc.x+FRACUNIT/2);
     mapystart -= MTOF(m_paninc.y+FRACUNIT/2);
-    if(mapxstart >= (finit_width >> crispy->hires))
-        mapxstart -= (finit_width >> crispy->hires);
+    if(mapxstart >= finit_width)
+        mapxstart -= finit_width;
     if(mapxstart < 0)
-        mapxstart += (finit_width >> crispy->hires);
-    if(mapystart >= (finit_height >> crispy->hires))
-        mapystart -= (finit_height >> crispy->hires);
+        mapxstart += finit_width);
+    if(mapystart >= finit_height)
+        mapystart -= finit_height;
     if(mapystart < 0)
-        mapystart += (finit_height >> crispy->hires);
+        mapystart += finit_height;
     // - end of code that was commented-out
 
     m_x2 = m_x + m_w;
@@ -358,7 +358,7 @@ void AM_LevelInit(void)
     leveljuststarted = 0;
 
     finit_width = SCREENWIDTH;
-    finit_height = SCREENHEIGHT - (42 << crispy->hires);
+    finit_height = SCREENHEIGHT - 42;
     f_x = f_y = 0;
     f_w = finit_width;
     f_h = finit_height;
@@ -639,18 +639,18 @@ void AM_clearFB(int color)
         mapxstart += dmapx >> 1;
         mapystart += dmapy >> 1;
 
-        while (mapxstart >= (finit_width >> crispy->hires))
-            mapxstart -= (finit_width >> crispy->hires);
+        while (mapxstart >= finit_width)
+            mapxstart -= finit_width;
         while (mapxstart < 0)
-            mapxstart += (finit_width >> crispy->hires);
-        while (mapystart >= (finit_height >> crispy->hires))
-            mapystart -= (finit_height >> crispy->hires);
+            mapxstart += finit_width;
+        while (mapystart >= finit_height)
+            mapystart -= finit_height;
         while (mapystart < 0)
-            mapystart += (finit_height >> crispy->hires);
+            mapystart += finit_height;
     }
 
     //blit the automap background to the screen.
-    j = (mapystart & ~crispy->hires) * (finit_width >> crispy->hires);
+    j = mapystart * finit_width;
     for (i = 0; i < finit_height; i++)
     {
         memcpy(I_VideoBuffer + i * finit_width, maplump + j + mapxstart,
@@ -658,7 +658,7 @@ void AM_clearFB(int color)
         memcpy(I_VideoBuffer + i * finit_width + finit_width - mapxstart,
                maplump + j, mapxstart);
         j += finit_width;
-        if (j >= (finit_height >> crispy->hires) * (finit_width >> crispy->hires))
+        if (j >= finit_height * finit_width)
             j = 0;
     }
 }
