@@ -94,7 +94,6 @@ static int finit_height;// = SCREENHEIGHT - (42 << crispy->hires);
 static int f_x, f_y;            // location of window on screen
 static int f_w, f_h;            // size of window on screen
 static int lightlev;            // used for funky strobing effect
-static byte *fb;                // pseudo-frame buffer
 static int amclock;
 
 static mpoint_t m_paninc;       // how far the window pans each tic (map coords)
@@ -284,7 +283,6 @@ void AM_initVariables(void)
     mobj_t *mo;
 
     automapactive = true;
-    fb = I_VideoBuffer;
 
     f_oldloc.x = INT_MAX;
     amclock = 0;
@@ -806,7 +804,7 @@ void AM_drawFline(fline_t * fl, int color)
                     return;
                 }
 
-#define DOT(xx,yy,cc) fb[(yy)*f_w+(xx)]=(cc)    //the MACRO!
+#define DOT(xx,yy,cc) V_PlotPixel(0,xx,yy,(byte)cc)
 
                 dx = fl->b.x - fl->a.x;
                 ax = 2 * (dx < 0 ? -dx : dx);
@@ -869,7 +867,6 @@ void AM_drawFline(fline_t * fl, int color)
 void PUTDOT(short xx, short yy, byte * cc, byte * cm)
 {
     static int oldyy;
-    static int oldyyshifted;
     byte *oldcc = cc;
 
     if (xx < 32)
@@ -893,19 +890,16 @@ void PUTDOT(short xx, short yy, byte * cc, byte * cm)
     if (yy == oldyy + 1)
     {
         oldyy++;
-        oldyyshifted += (320 << crispy->hires);
     }
     else if (yy == oldyy - 1)
     {
         oldyy--;
-        oldyyshifted -= (320 << crispy->hires);
     }
     else if (yy != oldyy)
     {
         oldyy = yy;
-        oldyyshifted = yy * (320 << crispy->hires);
     }
-    fb[oldyyshifted + xx] = *(cc);
+    V_PlotPixel(0, xx, oldyy, *cc);
 }
 
 void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
@@ -1048,8 +1042,7 @@ void AM_drawMline(mline_t * ml, int color)
     static fline_t fl;
 
     if (AM_clipMline(ml, &fl))
-        AM_drawFline(&fl, color);       // draws it on frame buffer using fb coords
-
+        AM_drawFline(&fl, color);
 }
 
 void AM_drawGrid(int color)
@@ -1289,7 +1282,7 @@ void AM_drawkeys(void)
 
 void AM_drawCrosshair(int color)
 {
-    fb[(f_w * (f_h + 1)) / 2] = color;  // single point for now
+    V_PlotPixel(0, f_w / 2, f_h / 2, (byte)color);
 }
 
 void AM_Drawer(void)
