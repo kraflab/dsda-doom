@@ -46,16 +46,6 @@ mline_t keysquare[] = {
 	{ { -3*R/4, 0 }, { -3*R/4, -R/4 } }
 	};
 
-/*mline_t player_arrow[] = {
-  { { -R+R/8, 0 }, { R, 0 } }, // -----
-  { { R, 0 }, { R-R/2, R/4 } },  // ----->
-  { { R, 0 }, { R-R/2, -R/4 } },
-  { { -R+R/8, 0 }, { -R-R/8, R/4 } }, // >---->
-  { { -R+R/8, 0 }, { -R-R/8, -R/4 } },
-  { { -R+3*R/8, 0 }, { -R+R/8, R/4 } }, // >>--->
-  { { -R+3*R/8, 0 }, { -R+R/8, -R/4 } }
-  };
-*/
 #undef R
 #define NUMPLYRLINES (sizeof(player_arrow)/sizeof(mline_t))
 #define NUMKEYSQUARELINES (sizeof(keysquare)/sizeof(mline_t))
