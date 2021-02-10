@@ -84,26 +84,4 @@
 // the following is crap
 #define LINE_NEVERSEE ML_DONTDRAW
 
-typedef struct
-{
-    int x, y;
-} fpoint_t;
-
-typedef struct
-{
-    fpoint_t a, b;
-} fline_t;
-
-typedef vertex_t mpoint_t;
-
-typedef struct
-{
-    mpoint_t a, b;
-} mline_t;
-
-typedef struct
-{
-    fixed_t slp, islp;
-} islope_t;
-
 #endif

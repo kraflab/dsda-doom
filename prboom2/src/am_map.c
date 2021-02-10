@@ -144,11 +144,6 @@ const char *map_things_appearance_list[map_things_appearance_max] =
 #define CXMTOF_F(x)  ((float)f_x + MTOF_F((x)-m_x))
 #define CYMTOF_F(y)  ((float)f_y + (f_h - MTOF_F((y)-m_y)))
 
-typedef struct
-{
-    mpoint_t a, b;
-} mline_t;
-
 //
 // The vector graphics for the automap.
 //  A line drawing of the player pointing right,

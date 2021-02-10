@@ -96,6 +96,11 @@ typedef struct
 
 typedef struct
 {
+    mpoint_t a, b;
+} mline_t;
+
+typedef struct
+{
  fixed_t x, y;
  fixed_t w, h;
 

@@ -16,21 +16,13 @@
 
 // AM_map.c
 
-#include <stdio.h>
-
-#include "doomdef.h"
-#include "deh_str.h"
-#include "i_timer.h"
-#include "i_video.h"
-#include "m_controls.h"
-#include "p_local.h"
-#include "doomkeys.h"
 #include "v_video.h"
 
+#include "../am_map.h"
 #include "am_map.h"
 #include "am_data.h"
 
-vertex_t KeyPoints[NUMKEYS];
+mpoint_t KeyPoints[NUMKEYS];
 
 #define NUMALIAS 3              // Number of antialiased lines.
 
@@ -134,7 +126,7 @@ static fixed_t scale_mtof = (fixed_t)INITSCALEMTOF;
 static fixed_t scale_ftom;
 
 static player_t *plr;           // the player represented by an arrow
-static vertex_t oldplr;
+static mpoint_t oldplr;
 
 static int followplayer = 1;    // specifies whether to follow the player around
 
@@ -325,7 +317,7 @@ void AM_initVariables(void)
 
     // load in the location of keys, if in baby mode
 
-    memset(KeyPoints, 0, sizeof(vertex_t) * 3);
+    memset(KeyPoints, 0, sizeof(mpoint_t) * 3);
     if (gameskill == sk_baby)
     {
         for (think = thinkercap.next; think != &thinkercap;
