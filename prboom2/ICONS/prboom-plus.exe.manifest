@@ -4,10 +4,10 @@
 <assemblyIdentity
     version="1.0.0.0"
     processorArchitecture="*"
-    name="prboom-plus.prboom-plus.prboom-plus"
+    name="dsda-doom.dsda-doom.dsda-doom"
     type="win32"
 />
-<description>PrBoom-Plus</description>
+<description>DSDA-Doom</description>
 <dependency>
     <dependentAssembly>
         <assemblyIdentity
