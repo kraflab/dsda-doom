@@ -640,6 +640,8 @@ void AM_Stop (void)
 {
   static event_t st_notify = { 0, ev_keyup, AM_MSGEXITED, 0 };
 
+  if (heretic) return Heretic_AM_Stop();
+
   AM_unloadPics();
   automapmode &= ~am_active;
   ST_Responder(&st_notify);
@@ -659,6 +661,8 @@ void AM_Stop (void)
 void AM_Start(void)
 {
   static int lastlevel = -1, lastepisode = -1;
+
+  if (heretic) return Heretic_AM_Start();
 
   if (!stopped)
     AM_Stop();
@@ -715,6 +719,8 @@ dboolean AM_Responder
   int rc;
   static int bigstate=0;
   int ch;                                                       // phares
+
+  if (heretic) return Heretic_AM_Responder(ev);
 
   rc = false;
 
@@ -971,6 +977,8 @@ static void AM_doFollowPlayer(void)
 //
 void AM_Ticker (void)
 {
+  if (heretic) return Heretic_AM_Ticker();
+
   prev_scale_mtof = scale_mtof;
   prev_m_x = m_x;
   prev_m_y = m_y;
@@ -2277,6 +2285,8 @@ static void AM_setFrameVariables(void)
 
 void AM_Drawer (void)
 {
+  if (heretic) return Heretic_AM_Drawer();
+
   // CPhipps - all automap modes put into one enum
   if (!(automapmode & am_active))
     return;

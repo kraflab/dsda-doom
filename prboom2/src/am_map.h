@@ -199,5 +199,7 @@ extern const char *map_things_appearance_list[];
 dboolean Heretic_AM_Responder(event_t * ev);
 void Heretic_AM_Ticker(void);
 void Heretic_AM_Drawer(void);
+void Heretic_AM_Start(void);
+void Heretic_AM_Stop(void);
 
 #endif

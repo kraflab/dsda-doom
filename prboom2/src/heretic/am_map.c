@@ -693,7 +693,8 @@ dboolean Heretic_AM_Responder(event_t * ev)
             if (!(automapmode & am_follow))
                 m_paninc.y = 0;
         }
-        else if (key == key_map_zoomout || key == key_map_zoomin)
+        else if (key == key_map_zoomout || key == key_map_zoomin ||
+                 (map_wheel_zoom && ((key == KEYD_MWHEELDOWN) || (key == KEYD_MWHEELUP))))
         {
             mtof_zoommul = FRACUNIT;
             ftom_zoommul = FRACUNIT;
@@ -750,6 +751,9 @@ void Heretic_AM_Ticker(void)
         Heretic_AM_changeWindowLoc();
 }
 
+#define CLEAR_FB_WIDTH 320
+#define CLEAR_FB_HEIGHT (200-42)
+
 void Heretic_AM_clearFB(int color)
 {
     int i, j;
@@ -767,24 +771,24 @@ void Heretic_AM_clearFB(int color)
         mapxstart += dmapx >> 1;
         mapystart += dmapy >> 1;
 
-        while (mapxstart >= finit_width)
-            mapxstart -= finit_width;
+        while (mapxstart >= CLEAR_FB_WIDTH)
+            mapxstart -= CLEAR_FB_WIDTH;
         while (mapxstart < 0)
-            mapxstart += finit_width;
-        while (mapystart >= finit_height)
-            mapystart -= finit_height;
+            mapxstart += CLEAR_FB_WIDTH;
+        while (mapystart >= CLEAR_FB_HEIGHT)
+            mapystart -= CLEAR_FB_HEIGHT;
         while (mapystart < 0)
-            mapystart += finit_height;
+            mapystart += CLEAR_FB_HEIGHT;
     }
 
     //blit the automap background to the screen.
-    j = mapystart * finit_width;
-    for (i = 0; i < finit_height; i++)
+    j = mapystart * CLEAR_FB_WIDTH;
+    for (i = 0; i < CLEAR_FB_HEIGHT; i++)
     {
-        V_DrawRawScreenLength(maplump + j + mapxstart, 0, i, finit_width - mapxstart);
-        V_DrawRawScreenLength(maplump + j, finit_width - mapxstart, i, mapxstart);
-        j += finit_width;
-        if (j >= finit_height * finit_width)
+        V_DrawRawScreenLength(maplump + j + mapxstart, 0, i, CLEAR_FB_WIDTH - mapxstart);
+        V_DrawRawScreenLength(maplump + j, CLEAR_FB_WIDTH - mapxstart, i, mapxstart);
+        j += CLEAR_FB_WIDTH;
+        if (j >= CLEAR_FB_HEIGHT * CLEAR_FB_WIDTH)
             j = 0;
     }
 }
@@ -1345,7 +1349,7 @@ void Heretic_AM_drawPlayers(void)
 
     if (!netgame)
     {
-        Heretic_AM_drawLineCharacter(heretic_player_arrow, NUMPLYRLINES, 0, plr->mo->angle,
+        Heretic_AM_drawLineCharacter(heretic_player_arrow, NUMPLYRLINES, 16 << FRACBITS, plr->mo->angle,
                              WHITE, plr->mo->x, plr->mo->y);
         return;
     }
@@ -1364,7 +1368,7 @@ void Heretic_AM_drawPlayers(void)
             color = 102;        // *close* to the automap color
         else
             color = their_colors[their_color];
-        Heretic_AM_drawLineCharacter(heretic_player_arrow, NUMPLYRLINES, 0, p->mo->angle,
+        Heretic_AM_drawLineCharacter(heretic_player_arrow, NUMPLYRLINES, 16 << FRACBITS, p->mo->angle,
                              color, p->mo->x, p->mo->y);
     }
 }
@@ -1391,17 +1395,17 @@ void Heretic_AM_drawkeys(void)
 {
     if (KeyPoints[0].x != 0 || KeyPoints[0].y != 0)
     {
-        Heretic_AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, YELLOWKEY,
+        Heretic_AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 16 << FRACBITS, 0, YELLOWKEY,
                              KeyPoints[0].x, KeyPoints[0].y);
     }
     if (KeyPoints[1].x != 0 || KeyPoints[1].y != 0)
     {
-        Heretic_AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, GREENKEY,
+        Heretic_AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 16 << FRACBITS, 0, GREENKEY,
                              KeyPoints[1].x, KeyPoints[1].y);
     }
     if (KeyPoints[2].x != 0 || KeyPoints[2].y != 0)
     {
-        Heretic_AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, BLUEKEY,
+        Heretic_AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 16 << FRACBITS, 0, BLUEKEY,
                              KeyPoints[2].x, KeyPoints[2].y);
     }
 }
