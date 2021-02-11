@@ -31,11 +31,6 @@ extern int playerkeys;
 // heretic_note: this is from r_draw
 extern dboolean BorderTopRefresh;
 
-// heretic_note: am_map from p_local
-// boolean AM_Responder(event_t * ev);
-// void AM_Ticker(void);
-// void AM_Drawer(void);
-
 #define TELEFOGHEIGHT (32*FRACUNIT)
 #define ANG1_X          0x01000000
 

@@ -62,6 +62,8 @@
 int hud_displayed;    //jff 2/23/98 turns heads-up display on/off
 int hud_num;
 
+extern const char* LevelNames[];
+
 //
 // Locally used constants, shortcuts.
 //
@@ -483,8 +485,8 @@ void HU_Start(void)
   HUlib_initTextLine
   (
     &w_title,
-    HU_TITLEX,
-    HU_TITLEY,
+    heretic ? 20 : HU_TITLEX,
+    heretic ? 145 : HU_TITLEY,
     hu_font,
     HU_FONTSTART,
     hudcolor_titl,
@@ -751,31 +753,43 @@ void HU_Start(void)
   }
   else
   {
-	  // initialize the automap's level title widget
-	  // e6y: stop SEGV here when gamemap is not initialized
-	  if (gamestate == GS_LEVEL && gamemap > 0) /* cph - stop SEGV here when not in level */
-		  switch (gamemode)
-		  {
-		  case shareware:
-		  case registered:
-		  case retail:
-			  s = HU_TITLE;
-			  break;
+    if (heretic)
+    {
+      if (gameepisode < 6 && gamemap < 10)
+      {
+        s = LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
+      }
+      else
+        s = "";
+    }
+    else
+    {
+  	  // initialize the automap's level title widget
+  	  // e6y: stop SEGV here when gamemap is not initialized
+  	  if (gamestate == GS_LEVEL && gamemap > 0) /* cph - stop SEGV here when not in level */
+  		  switch (gamemode)
+  		  {
+  		  case shareware:
+  		  case registered:
+  		  case retail:
+  			  s = HU_TITLE;
+  			  break;
 
-		  case commercial:
-		  default:  // Ty 08/27/98 - modified to check mission for TNT/Plutonia
-			  s = (gamemission == pack_tnt) ? HU_TITLET :
-				  (gamemission == pack_plut) ? HU_TITLEP : HU_TITLE2;
-			  break;
-		  }
-	  else s = "";
+  		  case commercial:
+  		  default:  // Ty 08/27/98 - modified to check mission for TNT/Plutonia
+  			  s = (gamemission == pack_tnt) ? HU_TITLET :
+  				  (gamemission == pack_plut) ? HU_TITLEP : HU_TITLE2;
+  			  break;
+  		  }
+  	  else s = "";
 
-	  // Chex.exe always uses the episode 1 level title
-	  // eg. E2M1 gives the title for E1M1
-	  if (gamemission == chex)
-	  {
-		  s = HU_TITLEC;
-	  }
+  	  // Chex.exe always uses the episode 1 level title
+  	  // eg. E2M1 gives the title for E1M1
+  	  if (gamemission == chex)
+  	  {
+  		  s = HU_TITLEC;
+  	  }
+    }
 	  while (*s)
 		  HUlib_addCharToTextLine(&w_title, *(s++));
   }

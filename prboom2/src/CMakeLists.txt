@@ -66,6 +66,7 @@ set(COMMON_SRC
     heretic/info.c
     heretic/in_lude.c
     heretic/in_lude.h
+    heretic/level_names.c
     heretic/mn_menu.c
     heretic/mn_menu.h
     heretic/p_action.h
