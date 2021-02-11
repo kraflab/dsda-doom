@@ -1694,6 +1694,11 @@ void SetRatio(int width, int height)
     render_stretch_hud = patch_stretch_full;
   }
 
+  if (heretic && render_stretch_hud == 0)
+  {
+    render_stretch_hud++;
+  }
+
   switch (render_stretch_hud)
   {
   case patch_stretch_16x10:
