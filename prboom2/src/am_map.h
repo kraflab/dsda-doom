@@ -88,8 +88,6 @@ void AM_setMarkParams(int num);
 
 void AM_SetResolution(void);
 
-#define PLAYERRADIUS    (16*(1<<MAPBITS)) // e6y
-
 typedef struct
 {
  fixed_t x,y;
