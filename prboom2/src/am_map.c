@@ -2168,11 +2168,11 @@ static void AM_drawThings(void)
           switch(t->info->doomednum)
           {
             //jff 1/5/98 treat keys special
-            case 95: //jff  red key
+            case 73: //jff  red key
               color = (*mapcolor_rkey_p) != -1? (*mapcolor_rkey_p) : (*mapcolor_sprt_p); break;
-            case 96: //jff yellow key
+            case 80: //jff yellow key
               color = (*mapcolor_ykey_p) != -1? (*mapcolor_ykey_p) : (*mapcolor_sprt_p); break;
-            case 94: //jff blue key
+            case 79: //jff blue key
               color = (*mapcolor_bkey_p) != -1? (*mapcolor_bkey_p) : (*mapcolor_sprt_p); break;
           }
         }
