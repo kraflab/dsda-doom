@@ -373,8 +373,21 @@ static void dsda_InitHeretic(void) {
   maxammo[5] = 150; // mace
 }
 
+static dboolean dsda_AutoDetectHeretic(void)
+{
+  int i, length;
+  i = M_CheckParm("-iwad");
+  if (i && (++i < myargc)) {
+    length = strlen(myargv[i]);
+    if (length >= 11 && !strnicmp(myargv[i] + length - 11, "heretic.wad", 11))
+      return true;
+  }
+
+  return false;
+}
+
 void dsda_InitGlobal(void) {
-  heretic = M_CheckParm ("-heretic");
+  heretic = M_CheckParm("-heretic") || dsda_AutoDetectHeretic();
 
   heretic ? dsda_InitHeretic() : dsda_InitDoom();
 }
