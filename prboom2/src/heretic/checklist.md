@@ -23,7 +23,7 @@
 - [x] Support new keybinds
 - [x] Support graphical player pitch
 - [x] Save files
-- [ ] Set up automap
+- [x] Set up automap
 
 ### Heretic Support (phase 2)
 - [ ] Support ghosts
@@ -38,7 +38,7 @@
 ### Files in crispy src/heretic:
 
 - [x] am_data.h 104
-- [ ] am_map.c 1544
+- [x] am_map.c 1544
 - [x] am_map.h 112
 - [ ] ct_chat.c 478
 - [ ] ct_chat.h 39
@@ -99,4 +99,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 11665, MERGED: 35549, PERCENT: 75%
+LEFT: 9908, MERGED: 37306, PERCENT: 79%

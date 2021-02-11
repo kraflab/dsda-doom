@@ -56,7 +56,6 @@ set(COMMON_SRC
     g_game.h
     g_overflow.c
     g_overflow.h
-    heretic/am_map.c
     heretic/d_main.c
     heretic/def.c
     heretic/def.h
@@ -67,6 +66,7 @@ set(COMMON_SRC
     heretic/info.c
     heretic/in_lude.c
     heretic/in_lude.h
+    heretic/level_names.c
     heretic/mn_menu.c
     heretic/mn_menu.h
     heretic/p_action.h

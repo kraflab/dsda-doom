@@ -87,6 +87,114 @@ int mapcolor_hair;    // crosshair color
 int mapcolor_sngl;    // single player arrow color
 int mapcolor_plyr[4] = { 112, 88, 64, 32 }; // colors for player arrows in multiplayer
 
+static int heretic_mapcolor_back = 13 * 8 - 1;
+static int heretic_mapcolor_grid = 5 * 8;
+static int heretic_mapcolor_wall = 14 * 8;
+static int heretic_mapcolor_fchg = 12 * 8;
+static int heretic_mapcolor_cchg = 10 * 8;
+static int heretic_mapcolor_clsd;
+static int heretic_mapcolor_rkey = 220;
+static int heretic_mapcolor_bkey = 197;
+static int heretic_mapcolor_ykey = 144;
+static int heretic_mapcolor_rdor = 220;
+static int heretic_mapcolor_bdor = 197;
+static int heretic_mapcolor_ydor = 144;
+static int heretic_mapcolor_tele = 12 * 8;
+static int heretic_mapcolor_secr = 12 * 8;
+static int heretic_mapcolor_exit;
+static int heretic_mapcolor_unsn = 5 * 8 + 3;
+static int heretic_mapcolor_flat;
+static int heretic_mapcolor_sprt = 33 * 8;
+static int heretic_mapcolor_item = 33 * 8;
+static int heretic_mapcolor_frnd = 33 * 8;
+static int heretic_mapcolor_enemy = 33 * 8;
+static int heretic_mapcolor_hair = 5 * 8;
+static int heretic_mapcolor_sngl = 4 * 8;
+static int heretic_mapcolor_plyr[4] = { 220, 144, 150, 197 };
+
+static int* mapcolor_back_p;
+static int* mapcolor_grid_p;
+static int* mapcolor_wall_p;
+static int* mapcolor_fchg_p;
+static int* mapcolor_cchg_p;
+static int* mapcolor_clsd_p;
+static int* mapcolor_rkey_p;
+static int* mapcolor_bkey_p;
+static int* mapcolor_ykey_p;
+static int* mapcolor_rdor_p;
+static int* mapcolor_bdor_p;
+static int* mapcolor_ydor_p;
+static int* mapcolor_tele_p;
+static int* mapcolor_secr_p;
+static int* mapcolor_exit_p;
+static int* mapcolor_unsn_p;
+static int* mapcolor_flat_p;
+static int* mapcolor_sprt_p;
+static int* mapcolor_item_p;
+static int* mapcolor_frnd_p;
+static int* mapcolor_enemy_p;
+static int* mapcolor_hair_p;
+static int* mapcolor_sngl_p;
+static int* mapcolor_plyr_p;
+
+static void AM_SetColors(void)
+{
+  if (heretic)
+  {
+    mapcolor_back_p = &heretic_mapcolor_back;
+    mapcolor_grid_p = &heretic_mapcolor_grid;
+    mapcolor_wall_p = &heretic_mapcolor_wall;
+    mapcolor_fchg_p = &heretic_mapcolor_fchg;
+    mapcolor_cchg_p = &heretic_mapcolor_cchg;
+    mapcolor_clsd_p = &heretic_mapcolor_clsd;
+    mapcolor_rkey_p = &heretic_mapcolor_rkey;
+    mapcolor_bkey_p = &heretic_mapcolor_bkey;
+    mapcolor_ykey_p = &heretic_mapcolor_ykey;
+    mapcolor_rdor_p = &heretic_mapcolor_rdor;
+    mapcolor_bdor_p = &heretic_mapcolor_bdor;
+    mapcolor_ydor_p = &heretic_mapcolor_ydor;
+    mapcolor_tele_p = &heretic_mapcolor_tele;
+    mapcolor_secr_p = &heretic_mapcolor_secr;
+    mapcolor_exit_p = &heretic_mapcolor_exit;
+    mapcolor_unsn_p = &heretic_mapcolor_unsn;
+    mapcolor_flat_p = &heretic_mapcolor_flat;
+    mapcolor_sprt_p = &heretic_mapcolor_sprt;
+    mapcolor_item_p = &heretic_mapcolor_item;
+    mapcolor_frnd_p = &heretic_mapcolor_frnd;
+    mapcolor_enemy_p = &heretic_mapcolor_enemy;
+    mapcolor_hair_p = &heretic_mapcolor_hair;
+    mapcolor_sngl_p = &heretic_mapcolor_sngl;
+    mapcolor_plyr_p = heretic_mapcolor_plyr;
+  }
+  else
+  {
+    mapcolor_back_p = &mapcolor_back;
+    mapcolor_grid_p = &mapcolor_grid;
+    mapcolor_wall_p = &mapcolor_wall;
+    mapcolor_fchg_p = &mapcolor_fchg;
+    mapcolor_cchg_p = &mapcolor_cchg;
+    mapcolor_clsd_p = &mapcolor_clsd;
+    mapcolor_rkey_p = &mapcolor_rkey;
+    mapcolor_bkey_p = &mapcolor_bkey;
+    mapcolor_ykey_p = &mapcolor_ykey;
+    mapcolor_rdor_p = &mapcolor_rdor;
+    mapcolor_bdor_p = &mapcolor_bdor;
+    mapcolor_ydor_p = &mapcolor_ydor;
+    mapcolor_tele_p = &mapcolor_tele;
+    mapcolor_secr_p = &mapcolor_secr;
+    mapcolor_exit_p = &mapcolor_exit;
+    mapcolor_unsn_p = &mapcolor_unsn;
+    mapcolor_flat_p = &mapcolor_flat;
+    mapcolor_sprt_p = &mapcolor_sprt;
+    mapcolor_item_p = &mapcolor_item;
+    mapcolor_frnd_p = &mapcolor_frnd;
+    mapcolor_enemy_p = &mapcolor_enemy;
+    mapcolor_hair_p = &mapcolor_hair;
+    mapcolor_sngl_p = &mapcolor_sngl;
+    mapcolor_plyr_p = mapcolor_plyr;
+  }
+}
+
 //jff 3/9/98 add option to not show secret sectors until entered
 int map_secret_after;
 
@@ -565,6 +673,8 @@ static void AM_initVariables(void)
   m_y = (plr->mo->y >> FRACTOMAPBITS) - m_h/2;//e6y
   AM_Ticker();
   AM_changeWindowLoc();
+
+  AM_SetColors();
 
   // for saving & restoring
   old_m_x = m_x;
@@ -1178,7 +1288,7 @@ static void AM_drawMline
   if (AM_clipMline(ml, &fl))
   {
     // draws it on frame buffer using fb coords
-    if (map_use_multisamling)
+    if (!heretic && map_use_multisamling)
       V_DrawLineWu(&fl, color);
     else
       V_DrawLine(&fl, color);
@@ -1295,6 +1405,8 @@ static void AM_drawGrid(int color)
 //
 static int AM_DoorColor(int type)
 {
+  if (heretic && type > 34) return -1;
+
   if (GenLockedBase <= type && type< GenDoorBase)
   {
     type -= GenLockedBase;
@@ -1375,7 +1487,7 @@ static void AM_drawWalls(void)
       {
         /* cph - show keyed doors and lines */
         int amd;
-        if ((mapcolor_bdor || mapcolor_ydor || mapcolor_rdor) &&
+        if (((*mapcolor_bdor_p) || (*mapcolor_ydor_p) || (*mapcolor_rdor_p)) &&
             !(lines[i].flags & ML_SECRET) &&    /* non-secret */
           (amd = AM_DoorColor(lines[i].special)) != -1
         )
@@ -1386,22 +1498,22 @@ static void AM_drawWalls(void)
               case 1:
                 /*bluekey*/
                 AM_drawMline(&l,
-                  mapcolor_bdor? mapcolor_bdor : mapcolor_cchg);
+                  (*mapcolor_bdor_p)? (*mapcolor_bdor_p) : (*mapcolor_cchg_p));
                 continue;
               case 2:
                 /*yellowkey*/
                 AM_drawMline(&l,
-                  mapcolor_ydor? mapcolor_ydor : mapcolor_cchg);
+                  (*mapcolor_ydor_p)? (*mapcolor_ydor_p) : (*mapcolor_cchg_p));
                 continue;
               case 0:
                 /*redkey*/
                 AM_drawMline(&l,
-                  mapcolor_rdor? mapcolor_rdor : mapcolor_cchg);
+                  (*mapcolor_rdor_p)? (*mapcolor_rdor_p) : (*mapcolor_cchg_p));
                 continue;
               case 3:
                 /*any or all*/
                 AM_drawMline(&l,
-                  mapcolor_clsd? mapcolor_clsd : mapcolor_cchg);
+                  (*mapcolor_clsd_p)? (*mapcolor_clsd_p) : (*mapcolor_cchg_p));
                 continue;
             }
           }
@@ -1409,7 +1521,7 @@ static void AM_drawWalls(void)
       }
       if /* jff 4/23/98 add exit lines to automap */
         (
-          mapcolor_exit &&
+          (*mapcolor_exit_p) &&
           (
             lines[i].special==11 ||
             lines[i].special==52 ||
@@ -1419,14 +1531,14 @@ static void AM_drawWalls(void)
             lines[i].special==198
           )
         ) {
-          AM_drawMline(&l, mapcolor_exit); /* exit line */
+          AM_drawMline(&l, (*mapcolor_exit_p)); /* exit line */
           continue;
         }
 
       if (!lines[i].backsector)
       {
         // jff 1/10/98 add new color for 1S secret sector boundary
-        if (mapcolor_secr && //jff 4/3/98 0 is disable
+        if ((*mapcolor_secr_p) && //jff 4/3/98 0 is disable
             (
              (
               map_secret_after &&
@@ -1440,39 +1552,44 @@ static void AM_drawWalls(void)
              )
             )
           )
-          AM_drawMline(&l, mapcolor_secr); // line bounding secret sector
+          AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
         else                               //jff 2/16/98 fixed bug
-          AM_drawMline(&l, mapcolor_wall); // special was cleared
+          AM_drawMline(&l, (*mapcolor_wall_p)); // special was cleared
       }
       else /* now for 2S lines */
       {
         // jff 1/10/98 add color change for all teleporter types
         if
         (
-            mapcolor_tele && !(lines[i].flags & ML_SECRET) &&
-            (lines[i].special == 39 || lines[i].special == 97 ||
-            lines[i].special == 125 || lines[i].special == 126)
+            (*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) &&
+            (
+              lines[i].special == 39 ||
+              (
+                !heretic &&
+                (lines[i].special == 97 || lines[i].special == 125 || lines[i].special == 126)
+              )
+            )
         )
         { // teleporters
-          AM_drawMline(&l, mapcolor_tele);
+          AM_drawMline(&l, (*mapcolor_tele_p));
         }
         else if (lines[i].flags & ML_SECRET)    // secret door
         {
-          AM_drawMline(&l, mapcolor_wall);      // wall color
+          AM_drawMline(&l, (*mapcolor_wall_p));      // wall color
         }
         else if
         (
-            mapcolor_clsd &&
+            (*mapcolor_clsd_p) &&
             !(lines[i].flags & ML_SECRET) &&    // non-secret closed door
             ((lines[i].backsector->floorheight==lines[i].backsector->ceilingheight) ||
             (lines[i].frontsector->floorheight==lines[i].frontsector->ceilingheight))
         )
         {
-          AM_drawMline(&l, mapcolor_clsd);      // non-secret closed door
+          AM_drawMline(&l, (*mapcolor_clsd_p));      // non-secret closed door
         } //jff 1/6/98 show secret sector 2S lines
         else if
         (
-            mapcolor_secr && //jff 2/16/98 fixed bug
+            (*mapcolor_secr_p) && //jff 2/16/98 fixed bug
             (                    // special was cleared after getting it
               (map_secret_after &&
                (
@@ -1491,21 +1608,21 @@ static void AM_drawWalls(void)
             )
         )
         {
-          AM_drawMline(&l, mapcolor_secr); // line bounding secret sector
+          AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
         } //jff 1/6/98 end secret sector line change
         else if (lines[i].backsector->floorheight !=
                   lines[i].frontsector->floorheight)
         {
-          AM_drawMline(&l, mapcolor_fchg); // floor level change
+          AM_drawMline(&l, (*mapcolor_fchg_p)); // floor level change
         }
         else if (lines[i].backsector->ceilingheight !=
                   lines[i].frontsector->ceilingheight)
         {
-          AM_drawMline(&l, mapcolor_cchg); // ceiling level change
+          AM_drawMline(&l, (*mapcolor_cchg_p)); // ceiling level change
         }
-        else if (mapcolor_flat && ddt_cheating)
+        else if ((*mapcolor_flat_p) && ddt_cheating)
         {
-          AM_drawMline(&l, mapcolor_flat); //2S lines that appear only in IDDT
+          AM_drawMline(&l, (*mapcolor_flat_p)); //2S lines that appear only in IDDT
         }
       }
     } // now draw the lines only visible because the player has computermap
@@ -1515,7 +1632,7 @@ static void AM_drawWalls(void)
       {
         if
         (
-          mapcolor_flat
+          (*mapcolor_flat_p)
           ||
           !lines[i].backsector
           ||
@@ -1525,7 +1642,7 @@ static void AM_drawWalls(void)
           lines[i].backsector->ceilingheight
           != lines[i].frontsector->ceilingheight
         )
-          AM_drawMline(&l, mapcolor_unsn);
+          AM_drawMline(&l, (*mapcolor_unsn_p));
       }
     }
   }
@@ -1656,9 +1773,9 @@ static void AM_drawPlayers(void)
       AM_SetMPointFloatValue(&pt);
 
     if (ddt_cheating)
-      AM_drawLineCharacter(cheat_player_arrow, NUMCHEATPLYRLINES, scale, viewangle, mapcolor_sngl, pt.x, pt.y);
+      AM_drawLineCharacter(cheat_player_arrow, NUMCHEATPLYRLINES, scale, viewangle, (*mapcolor_sngl_p), pt.x, pt.y);
     else
-      AM_drawLineCharacter(player_arrow, NUMPLYRLINES, scale, viewangle, mapcolor_sngl, pt.x, pt.y);
+      AM_drawLineCharacter(player_arrow, NUMPLYRLINES, scale, viewangle, (*mapcolor_sngl_p), pt.x, pt.y);
     return;
   }
 
@@ -1679,7 +1796,7 @@ static void AM_drawPlayers(void)
 
       AM_drawLineCharacter (player_arrow, NUMPLYRLINES, scale, angle,
           p->powers[pw_invisibility] ? 246 /* *close* to black */
-          : mapcolor_plyr[i], //jff 1/6/98 use default color
+          : mapcolor_plyr_p[i], //jff 1/6/98 use default color
           pt.x, pt.y);
     }
   }
@@ -1772,7 +1889,7 @@ static void AM_ProcessNiceThing(mobj_t* mobj, angle_t angle, fixed_t x, fixed_t 
   if (mobj->player)
   {
     player_t *p = mobj->player;
-    int color = mapcolor_plyr[p - players];
+    int color = mapcolor_plyr_p[p - players];
     const unsigned char *playpal = V_GetPlaypal();
 
     if ((deathmatch && !demoplayback) && p != plr)
@@ -2035,18 +2152,35 @@ static void AM_drawThings(void)
         AM_SetMPointFloatValue(&p);
 
       //jff 1/5/98 case over doomednum of thing being drawn
-      if (mapcolor_rkey || mapcolor_ykey || mapcolor_bkey)
+      if ((*mapcolor_rkey_p) || (*mapcolor_ykey_p) || (*mapcolor_bkey_p))
       {
         int color = -1;
-        switch(t->info->doomednum)
+
+        if (heretic)
         {
-          //jff 1/5/98 treat keys special
-          case 38: case 13: //jff  red key
-            color = mapcolor_rkey != -1? mapcolor_rkey : mapcolor_sprt; break;
-          case 39: case 6: //jff yellow key
-            color = mapcolor_ykey != -1? mapcolor_ykey : mapcolor_sprt; break;
-          case 40: case 5: //jff blue key
-            color = mapcolor_bkey != -1? mapcolor_bkey : mapcolor_sprt; break;
+          switch(t->info->doomednum)
+          {
+            //jff 1/5/98 treat keys special
+            case 95: //jff  red key
+              color = (*mapcolor_rkey_p) != -1? (*mapcolor_rkey_p) : (*mapcolor_sprt_p); break;
+            case 96: //jff yellow key
+              color = (*mapcolor_ykey_p) != -1? (*mapcolor_ykey_p) : (*mapcolor_sprt_p); break;
+            case 94: //jff blue key
+              color = (*mapcolor_bkey_p) != -1? (*mapcolor_bkey_p) : (*mapcolor_sprt_p); break;
+          }
+        }
+        else
+        {
+          switch(t->info->doomednum)
+          {
+            //jff 1/5/98 treat keys special
+            case 38: case 13: //jff  red key
+              color = (*mapcolor_rkey_p) != -1? (*mapcolor_rkey_p) : (*mapcolor_sprt_p); break;
+            case 39: case 6: //jff yellow key
+              color = (*mapcolor_ykey_p) != -1? (*mapcolor_ykey_p) : (*mapcolor_sprt_p); break;
+            case 40: case 5: //jff blue key
+              color = (*mapcolor_bkey_p) != -1? (*mapcolor_bkey_p) : (*mapcolor_sprt_p); break;
+          }
         }
 
         if (color != -1)
@@ -2061,11 +2195,11 @@ static void AM_drawThings(void)
       //jff previously entire code
       AM_drawLineCharacter(thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
         scale, angle,
-        t->flags & MF_FRIEND && !t->player ? mapcolor_frnd :
+        t->flags & MF_FRIEND && !t->player ? (*mapcolor_frnd_p) :
         /* cph 2006/07/30 - Show count-as-kills in red. */
-        ((t->flags & (MF_COUNTKILL | MF_CORPSE)) == MF_COUNTKILL) ? mapcolor_enemy :
+        ((t->flags & (MF_COUNTKILL | MF_CORPSE)) == MF_COUNTKILL) ? (*mapcolor_enemy_p) :
         /* bbm 2/28/03 Show countable items in yellow. */
-        t->flags & MF_COUNTITEM ? mapcolor_item : mapcolor_sprt,
+        t->flags & MF_COUNTITEM ? (*mapcolor_item_p) : (*mapcolor_sprt_p),
         p.x, p.y);
       t = t->snext;
     }
@@ -2208,7 +2342,7 @@ void M_ChangeMapTextured(void)
 
 void M_ChangeMapMultisamling(void)
 {
-  if (map_use_multisamling && V_GetMode() != VID_MODEGL)
+  if (!heretic && map_use_multisamling && V_GetMode() != VID_MODEGL)
   {
     V_InitFlexTranTable();
   }
@@ -2303,7 +2437,7 @@ void AM_Drawer (void)
 #endif
 
   if (!(automapmode & am_overlay)) // cph - If not overlay mode, clear background for the automap
-    V_FillRect(FB, f_x, f_y, f_w, f_h, (byte)mapcolor_back); //jff 1/5/98 background default color
+    V_FillRect(FB, f_x, f_y, f_w, f_h, (byte)(*mapcolor_back_p)); //jff 1/5/98 background default color
 
   if (map_textured)
   {
@@ -2311,11 +2445,11 @@ void AM_Drawer (void)
   }
 
   if (automapmode & am_grid)
-    AM_drawGrid(mapcolor_grid);      //jff 1/7/98 grid default color
+    AM_drawGrid((*mapcolor_grid_p));      //jff 1/7/98 grid default color
   AM_drawWalls();
   AM_drawPlayers();
   AM_drawThings(); //jff 1/5/98 default double IDDT sprite
-  AM_drawCrosshair(mapcolor_hair);   //jff 1/7/98 default crosshair color
+  AM_drawCrosshair((*mapcolor_hair_p));   //jff 1/7/98 default crosshair color
 
 #if defined(HAVE_LIBSDL2_IMAGE) && defined(GL_DOOM)
   if (V_GetMode() == VID_MODEGL)
