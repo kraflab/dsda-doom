@@ -34,6 +34,7 @@
 - [ ] Support dehacked
 - [ ] Support cheats
 - [ ] rain1, rain2, special1.m, special2.m -> P_SetTarget
+- [ ] Review r_* files for graphical differences
 
 ### Files in crispy src/heretic:
 
