@@ -16,6 +16,9 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - At the end of E2, one of the images requires palette swapping. This is not implemented yet, so the image will look wrong.
 - There isn't a separate heretic configuration file - if you'd like to keep different key configurations for each game, you'll have to keep two config files for now.
 - Save files should work but are not compatible with the original.
+- Advanced hud is not implemented for heretic.
+- Extended hud colors are different due to heretic's different palette and the existing color translation tables. This can be improved eventually.
+- The heretic font does not have all the characters that the doom font does. As a result, the prboom+ hud font has been extended to the full character set and is used in various menus.
 - Any number of things may be broken...please let me know on dw or discord if you run into a problem.
 
 ### New Stuff
