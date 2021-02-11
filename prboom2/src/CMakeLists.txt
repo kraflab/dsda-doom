@@ -388,7 +388,7 @@ function(AddGameExecutable TARGET SOURCES)
         target_include_directories(${TARGET} PRIVATE ${PORTMIDI_INCLUDE_DIR})
         target_link_libraries(${TARGET} PRIVATE ${PORTMIDI_LIBRARIES})
     endif()
-    add_dependencies(${TARGET} prboomwad)
+    add_dependencies(${TARGET} dsda-doom-wad)
 
     if(MSVC)
         set_target_properties(${TARGET} PROPERTIES
