@@ -109,7 +109,6 @@ void doom_printf(const char *, ...) __attribute__((format(printf,1,2)));
 
 extern int  key_right;
 extern int  key_left;
-extern int  key_up;
 extern int  key_down;
 extern int  key_mlook;
 extern int  key_novert;
@@ -188,7 +187,6 @@ extern int  key_screenshot;    // killough 2/22/98 -- add key for screenshot
 extern int  autorun;           // always running?                   // phares
 extern int  mousebfire;
 extern int  mousebstrafe;
-extern int  mousebforward;
 extern int  mousebbackward;
 extern int  mousebuse;
 extern int  joybfire;

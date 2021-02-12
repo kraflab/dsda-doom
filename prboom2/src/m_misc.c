@@ -555,6 +555,10 @@ default_t defaults[] =
   {"gl_use_shared_texture_palette",{&gl_use_shared_texture_palette},{0},0,1,
    def_bool,ss_none},
 
+  { "Input settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
+  { "input_forward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_forward, { 'w', 2, -1 } },
+
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
    def_bool,ss_none}, // enables use of mouse with DOOM
@@ -569,8 +573,6 @@ default_t defaults[] =
    def_int,ss_keys}, // mouse button number to use for fire
   {"mouseb_strafe",{&mousebstrafe},{1},-1,MAX_MOUSEB,
    def_int,ss_keys}, // mouse button number to use for strafing
-  {"mouseb_forward",{&mousebforward},{2},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for forward motion
   {"mouseb_backward",{&mousebbackward},{-1},-1,MAX_MOUSEB,
    def_int,ss_keys}, // mouse button number to use for backward motion
   {"mouseb_use", {&mousebuse},{-1},-1,MAX_MOUSEB,
@@ -587,8 +589,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to turn right
   {"key_left",        {&key_left},           {KEYD_LEFTARROW} ,
    0,MAX_KEY,def_key,ss_keys}, // key to turn left
-  {"key_up",          {&key_up},             {'w'}   ,
-   0,MAX_KEY,def_key,ss_keys}, // key to move forward
   {"key_down",        {&key_down},           {'s'},
    0,MAX_KEY,def_key,ss_keys}, // key to move backward
   {"key_mlook",       {&key_mlook},           {'\\'},
@@ -1469,19 +1469,27 @@ void M_SaveDefaults (void)
 
     // CPhipps - modified for new default_t form
     if (!IS_STRING(defaults[i])) //jff 4/10/98 kill super-hack on pointer value
-      {
+    {
       // CPhipps - remove keycode hack
       // killough 3/6/98: use spaces instead of tabs for uniform justification
       if (defaults[i].type == def_hex)
-  fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
-      else
-  fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
-      }
-    else
+        fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
+      else if (defaults[i].type == def_input)
       {
-      fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
+        dsda_input_t input;
+        input = dsda_Input(defaults[i].identifier);
+
+        fprintf(f, "%-*s %d %d %d\n",
+                maxlen, defaults[i].name, input.key, input.mouseb, input.joyb);
       }
+      else
+        fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
     }
+    else
+    {
+      fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
+    }
+  }
 
   fclose (f);
 }
@@ -1531,10 +1539,17 @@ void M_LoadDefaults (void)
 
   numdefaults = sizeof(defaults)/sizeof(defaults[0]);
   for (i = 0 ; i < numdefaults ; i++) {
-    if (defaults[i].location.ppsz)
-      *defaults[i].location.ppsz = strdup(defaults[i].defaultvalue.psz);
-    if (defaults[i].location.pi)
-      *defaults[i].location.pi = defaults[i].defaultvalue.i;
+    if (defaults[i].type == def_input)
+    {
+      dsda_InputSet(defaults[i].identifier, defaults[i].input);
+    }
+    else
+    {
+      if (defaults[i].location.ppsz)
+        *defaults[i].location.ppsz = strdup(defaults[i].defaultvalue.psz);
+      if (defaults[i].location.pi)
+        *defaults[i].location.pi = defaults[i].defaultvalue.i;
+    }
   }
 
   //e6y: arrays
@@ -1679,12 +1694,22 @@ void M_LoadDefaults (void)
       }
             if (!isstring)
               {
+                if (defaults[i].type == def_input)
+                {
+                  dsda_input_t input;
+                  sscanf(strparm, "%d %d %d", &input.key, &input.mouseb, &input.joyb);
 
-              //jff 3/4/98 range check numeric parameters
+                  if (input.key >= 0 && input.key < 512 && // TODO: make NUMKEYS available
+                      input.mouseb >= -1 && input.mouseb < MAX_MOUSEB &&
+                      input.joyb >= -1 && input.joyb < 8) // TODO: define MAX_JOYB
+                    dsda_InputSet(defaults[i].identifier, input);
+                }
 
-              if ((defaults[i].minvalue==UL || defaults[i].minvalue<=parm) &&
-                  (defaults[i].maxvalue==UL || defaults[i].maxvalue>=parm))
-                *(defaults[i].location.pi) = parm;
+                //jff 3/4/98 range check numeric parameters
+
+                else if ((defaults[i].minvalue==UL || defaults[i].minvalue<=parm) &&
+                         (defaults[i].maxvalue==UL || defaults[i].maxvalue>=parm))
+                  *(defaults[i].location.pi) = parm;
               }
             else
               {

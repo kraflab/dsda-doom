@@ -69,6 +69,7 @@
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/key_frame.h"
+#include "dsda/input.h"
 #include "heretic/mn_menu.h"
 #ifdef _WIN32
 #include "e6y_launcher.h"
@@ -1981,6 +1982,27 @@ static void M_DrawSetting(const setup_menu_t* s)
     return;
   }
 
+  if (flags & S_INPUT) {
+    dsda_input_t input;
+    input = dsda_Input(s->input);
+
+    // Draw the input bound to the action
+
+    M_GetKeyString(input.key, 0); // string to display
+
+    if (input.mouseb != -1)
+      sprintf(menu_buffer + strlen(menu_buffer), "/MB%d", input.mouseb + 1);
+    if (input.joyb != -1)
+      sprintf(menu_buffer + strlen(menu_buffer), "/JSB%d", input.joyb + 1);
+
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
+      strcat(menu_buffer, " <");
+
+    M_DrawMenuString(x, y, color);
+
+    return;
+  }
+
   // Is the item a weapon number?
   // OR, Is the item a colored text string from the Automap?
   //
@@ -2198,7 +2220,7 @@ static void M_DrawInstructions(void)
   // are changing an item or just sitting on it.
 
   if (setup_select) {
-    switch (flags & (S_KEY | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_CHAT | S_RESET | S_FILE | S_CHOICE)) {
+    switch (flags & (S_KEY | S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_CHAT | S_RESET | S_FILE | S_CHOICE)) {
       case S_KEY:
         // See if a joystick or mouse button setting is allowed for
         // this item.
@@ -2206,6 +2228,9 @@ static void M_DrawInstructions(void)
           M_DrawStringCentered(160, 20, g_menu_cr_select, "Press key or button for this action");
         else
           M_DrawStringCentered(160, 20, g_menu_cr_select, "Press key for this action");
+        break;
+      case S_INPUT:
+        M_DrawStringCentered(160, 20, g_menu_cr_select, "Press key or button for this action");
         break;
 
     case S_YESNO:
@@ -2242,7 +2267,7 @@ static void M_DrawInstructions(void)
   } else {
     if (flags & S_RESET)
       M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press ENTER key to reset to defaults");
-    else if (flags & S_KEY)
+    else if (flags & (S_KEY | S_INPUT))
       M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press Enter to Change, Del to Clear");
     else
       M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press Enter to Change");
@@ -2336,7 +2361,7 @@ int mult_screens_index; // the index of the current screen in a set
 setup_menu_t keys_settings1[] =  // Key Binding screen strings
 {
   {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y},
-  {"FORWARD"     ,S_KEY       ,m_scrn,KB_X,KB_Y+1*8,{&key_up},&mousebforward},
+  {"FORWARD"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+1*8,{0},NULL,NULL,NULL,NULL,dsda_input_forward},
   {"BACKWARD"    ,S_KEY       ,m_scrn,KB_X,KB_Y+2*8,{&key_down},&mousebbackward},
   {"TURN LEFT"   ,S_KEY       ,m_scrn,KB_X,KB_Y+3*8,{&key_left}},
   {"TURN RIGHT"  ,S_KEY       ,m_scrn,KB_X,KB_Y+4*8,{&key_right}},
@@ -4353,7 +4378,7 @@ setup_menu_t helpstrings[] =  // HELP screen strings
   {"FIRE"        ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y1+11*8,{&key_fire},&mousebfire,&joybfire},
 
   {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KT_X3,KT_Y3},
-  {"FORWARD"     ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+ 1*8,{&key_up},&mousebforward},
+  {"FORWARD"     ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 1*8,{0},NULL,NULL,NULL,NULL,dsda_input_forward},
   {"BACKWARD"    ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+ 2*8,{&key_down},&mousebbackward},
   {"TURN LEFT"   ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+ 3*8,{&key_left}},
   {"TURN RIGHT"  ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+ 4*8,{&key_right}},
@@ -4585,6 +4610,8 @@ static inline int GetButtons(const unsigned int max, int data)
 dboolean M_Responder (event_t* ev) {
   int    ch;
   int    i;
+  // to be removed once everything uses S_INPUT
+  int s_input;
   static int joywait   = 0;
   static int mousewait = 0;
 
@@ -5062,342 +5089,386 @@ dboolean M_Responder (event_t* ev) {
     // screen
 
     if (default_verify)
+    {
+      if (toupper(ch) == 'Y') {
+        M_ResetDefaults();
+        default_verify = false;
+        M_SelectDone(ptr1);
+      }
+      else if (toupper(ch) == 'N') {
+        default_verify = false;
+        M_SelectDone(ptr1);
+      }
+      return true;
+    }
+
+    // Common processing for some items
+
+    if (setup_select) { // changing an entry
+      if (ch == key_menu_escape) // Exit key = no change
       {
-  if (toupper(ch) == 'Y') {
-    M_ResetDefaults();
-    default_verify = false;
-    M_SelectDone(ptr1);
-  }
-  else if (toupper(ch) == 'N') {
-    default_verify = false;
-    M_SelectDone(ptr1);
-  }
-  return true;
+        M_SelectDone(ptr1);                           // phares 4/17/98
+        setup_gather = false;   // finished gathering keys, if any
+        return true;
       }
 
-      // Common processing for some items
-
-      if (setup_select) { // changing an entry
-  if (ch == key_menu_escape) // Exit key = no change
-    {
-    M_SelectDone(ptr1);                           // phares 4/17/98
-    setup_gather = false;   // finished gathering keys, if any
-    return true;
-    }
-
-  if (ptr1->m_flags & S_YESNO) // yes or no setting?
-    {
-    if (ch == key_menu_enter) {
-      *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
-
-      // phares 4/14/98:
-      // If not in demoplayback, demorecording, or netgame,
-      // and there's a second variable in var2, set that
-      // as well
-
-      // killough 8/15/98: add warning messages
-
-      if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
-        warn_about_changes(ptr1->m_flags &    // killough 10/98
-         (S_LEVWARN | S_PRGWARN));
-      else
-        M_UpdateCurrent(ptr1->var.def);
-
-      if (ptr1->action)      // killough 10/98
-        ptr1->action();
-
-      //e6y
-#ifdef GL_DOOM
+      if (ptr1->m_flags & S_YESNO) // yes or no setting?
       {
-        extern dboolean gl_arb_multitexture;
-        if ((ptr1->m_flags&S_CANT_GL_ARB_MULTITEXTURE) && !gl_arb_multitexture)
-          warn_about_changes(ptr1->m_flags & S_CANT_GL_ARB_MULTITEXTURE);
-      }
-#endif
-    }
-    M_SelectDone(ptr1);                           // phares 4/17/98
-    return true;
-    }
-
-  if (ptr1->m_flags & S_CRITEM)
-    {
-    if (ch != key_menu_enter)
-      {
-      ch -= 0x30; // out of ascii
-      if (ch < 0 || ch > 9)
-        return true; // ignore
-      *ptr1->var.def->location.pi = ch;
-      }
-    if (ptr1->action)      // killough 10/98
-      ptr1->action();
-    M_SelectDone(ptr1);                      // phares 4/17/98
-    return true;
-    }
-
-  if (ptr1->m_flags & S_NUM) // number?
-    {
-      if (setup_gather) { // gathering keys for a value?
-        /* killough 10/98: Allow negatives, and use a more
-         * friendly input method (e.g. don't clear value early,
-         * allow backspace, and return to original value if bad
-         * value is entered).
-         */
         if (ch == key_menu_enter) {
-    if (gather_count) {     // Any input?
-      int value;
+          *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
 
-      gather_buffer[gather_count] = 0;
-      value = atoi(gather_buffer);  // Integer value
+          // phares 4/14/98:
+          // If not in demoplayback, demorecording, or netgame,
+          // and there's a second variable in var2, set that
+          // as well
 
-      //e6y
-      if ((ptr1->m_flags&S_CANT_GL_ARB_MULTISAMPLEFACTOR) && value%2!=0)
-        warn_about_changes(ptr1->m_flags & S_CANT_GL_ARB_MULTISAMPLEFACTOR);
-      else
+          // killough 8/15/98: add warning messages
 
-      if ((ptr1->var.def->minvalue != UL &&
-           value < ptr1->var.def->minvalue) ||
-          (ptr1->var.def->maxvalue != UL &&
-           value > ptr1->var.def->maxvalue))
-        warn_about_changes(S_BADVAL);
-      else {
-        *ptr1->var.def->location.pi = value;
+          if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
+            warn_about_changes(ptr1->m_flags &    // killough 10/98
+             (S_LEVWARN | S_PRGWARN));
+          else
+            M_UpdateCurrent(ptr1->var.def);
 
-        /* killough 8/9/98: fix numeric vars
-         * killough 8/15/98: add warning message
-         */
-        if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
-          warn_about_changes(ptr1->m_flags &
-           (S_LEVWARN | S_PRGWARN));
-        else
-          M_UpdateCurrent(ptr1->var.def);
+          if (ptr1->action)      // killough 10/98
+            ptr1->action();
 
+          //e6y
+          #ifdef GL_DOOM
+          {
+            extern dboolean gl_arb_multitexture;
+            if ((ptr1->m_flags&S_CANT_GL_ARB_MULTITEXTURE) && !gl_arb_multitexture)
+              warn_about_changes(ptr1->m_flags & S_CANT_GL_ARB_MULTITEXTURE);
+          }
+          #endif
+        }
+        M_SelectDone(ptr1);                           // phares 4/17/98
+        return true;
+      }
+
+      if (ptr1->m_flags & S_CRITEM)
+      {
+        if (ch != key_menu_enter)
+        {
+          ch -= 0x30; // out of ascii
+          if (ch < 0 || ch > 9)
+            return true; // ignore
+          *ptr1->var.def->location.pi = ch;
+        }
         if (ptr1->action)      // killough 10/98
           ptr1->action();
-      }
-    }
-    M_SelectDone(ptr1);     // phares 4/17/98
-    setup_gather = false; // finished gathering keys
-    return true;
-        }
-
-        if (ch == key_menu_backspace && gather_count) {
-    gather_count--;
-    return true;
-        }
-
-        if (gather_count >= MAXGATHER)
-    return true;
-
-        if (!isdigit(ch) && ch != '-')
-    return true; // ignore
-
-        /* killough 10/98: character-based numerical input */
-        gather_buffer[gather_count++] = ch;
-      }
-      return true;
-    }
-
-  if (ptr1->m_flags & S_CHOICE) // selection of choices?
-    {
-    if (ch == key_menu_left) {
-      if (ptr1->var.def->type == def_int) {
-        int value = *ptr1->var.def->location.pi;
-
-        value = value - 1;
-        if ((ptr1->var.def->minvalue != UL &&
-             value < ptr1->var.def->minvalue))
-          value = ptr1->var.def->minvalue;
-        if ((ptr1->var.def->maxvalue != UL &&
-             value > ptr1->var.def->maxvalue))
-          value = ptr1->var.def->maxvalue;
-        if (*ptr1->var.def->location.pi != value)
-          S_StartSound(NULL,g_sfx_menu);
-        *ptr1->var.def->location.pi = value;
-      }
-      if (ptr1->var.def->type == def_str) {
-        int old_value, value;
-
-        old_value = M_IndexInChoices(*ptr1->var.def->location.ppsz,
-                                     ptr1->selectstrings);
-        value = old_value - 1;
-        if (value < 0)
-          value = 0;
-        if (old_value != value)
-          S_StartSound(NULL,g_sfx_menu);
-        *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
-      }
-    }
-    if (ch == key_menu_right) {
-      if (ptr1->var.def->type == def_int) {
-        int value = *ptr1->var.def->location.pi;
-
-        value = value + 1;
-        if ((ptr1->var.def->minvalue != UL &&
-             value < ptr1->var.def->minvalue))
-          value = ptr1->var.def->minvalue;
-        if ((ptr1->var.def->maxvalue != UL &&
-             value > ptr1->var.def->maxvalue))
-          value = ptr1->var.def->maxvalue;
-        if (*ptr1->var.def->location.pi != value)
-          S_StartSound(NULL,g_sfx_menu);
-        *ptr1->var.def->location.pi = value;
-      }
-      if (ptr1->var.def->type == def_str) {
-        int old_value, value;
-
-        old_value = M_IndexInChoices(*ptr1->var.def->location.ppsz,
-                                     ptr1->selectstrings);
-        value = old_value + 1;
-        if (ptr1->selectstrings[value] == NULL)
-          value = old_value;
-        if (old_value != value)
-          S_StartSound(NULL,g_sfx_menu);
-        *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
-      }
-    }
-    if (ch == key_menu_enter) {
-      // phares 4/14/98:
-      // If not in demoplayback, demorecording, or netgame,
-      // and there's a second variable in var2, set that
-      // as well
-
-      // killough 8/15/98: add warning messages
-
-      if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
-        warn_about_changes(ptr1->m_flags &    // killough 10/98
-         (S_LEVWARN | S_PRGWARN));
-      else
-        M_UpdateCurrent(ptr1->var.def);
-
-      if (ptr1->action)      // killough 10/98
-        ptr1->action();
-      M_SelectDone(ptr1);                           // phares 4/17/98
-    }
-    return true;
-    }
-
+        M_SelectDone(ptr1);                      // phares 4/17/98
+        return true;
       }
 
-      // Key Bindings
-
-      if (set_keybnd_active) // on a key binding setup screen
-  if (setup_select)    // incoming key or button gets bound
-    {
-      if (ev->type == ev_joystick)
-        {
-    int oldbutton;
-    setup_group group;
-    dboolean search = true;
-
-    if (!ptr1->m_joy)
-      return true; // not a legal action here (yet)
-
-    // see if the button is already bound elsewhere. if so, you
-    // have to swap bindings so the action where it's currently
-    // bound doesn't go dead. Since there is more than one
-    // keybinding screen, you have to search all of them for
-    // any duplicates. You're only interested in the items
-    // that belong to the same group as the one you're changing.
-
-    oldbutton = *ptr1->m_joy;
-    group  = ptr1->m_group;
-    if (ev->data1 & 1)
-      ch = 0;
-    else if (ev->data1 & 2)
-      ch = 1;
-    else if (ev->data1 & 4)
-      ch = 2;
-    else if (ev->data1 & 8)
-      ch = 3;
-    else
-      return true;
-    for (i = 0 ; keys_settings[i] && search ; i++)
-      for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
-        if (ptr2->m_group == group && ptr1 != ptr2)
-          if (ptr2->m_flags & S_KEY && ptr2->m_joy)
-      if (*ptr2->m_joy == ch)
-        {
-          *ptr2->m_joy = oldbutton;
-          search = false;
-          break;
-        }
-    *ptr1->m_joy = ch;
-        }
-      else if (ev->type == ev_mouse)
-        {
-    int i,oldbutton;
-    setup_group group;
-    dboolean search = true;
-
-    if (!ptr1->m_mouse)
-      return true; // not a legal action here (yet)
-
-    // see if the button is already bound elsewhere. if so, you
-    // have to swap bindings so the action where it's currently
-    // bound doesn't go dead. Since there is more than one
-    // keybinding screen, you have to search all of them for
-    // any duplicates. You're only interested in the items
-    // that belong to the same group as the one you're changing.
-
-    oldbutton = *ptr1->m_mouse;
-    group  = ptr1->m_group;
-    if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1)) == -1)
-      return true;
-    for (i = 0 ; keys_settings[i] && search ; i++)
-      for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
-        if (ptr2->m_group == group && ptr1 != ptr2)
-          if (ptr2->m_flags & S_KEY && ptr2->m_mouse)
-      if (*ptr2->m_mouse == ch)
-        {
-          *ptr2->m_mouse = oldbutton;
-          search = false;
-          break;
-        }
-    *ptr1->m_mouse = ch;
-        }
-      else  // keyboard key
-        {
-    int i,oldkey;
-    setup_group group;
-    dboolean search = true;
-
-    // see if 'ch' is already bound elsewhere. if so, you have
-    // to swap bindings so the action where it's currently
-    // bound doesn't go dead. Since there is more than one
-    // keybinding screen, you have to search all of them for
-    // any duplicates. You're only interested in the items
-    // that belong to the same group as the one you're changing.
-
-    // if you find that you're trying to swap with an action
-    // that has S_KEEP set, you can't bind ch; it's already
-    // bound to that S_KEEP action, and that action has to
-    // keep that key.
-
-    oldkey = *ptr1->var.m_key;
-    group  = ptr1->m_group;
-    for (i = 0 ; keys_settings[i] && search ; i++)
-      for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
-        if (ptr2->m_flags & (S_KEY|S_KEEP) &&
-      ptr2->m_group == group &&
-      ptr1 != ptr2)
-          if (*ptr2->var.m_key == ch)
+      if (ptr1->m_flags & S_NUM) // number?
       {
-        if (ptr2->m_flags & S_KEEP)
-          return true; // can't have it!
-        *ptr2->var.m_key = oldkey;
-        search = false;
-        break;
-      }
-    *ptr1->var.m_key = ch;
-        }
+        if (setup_gather) { // gathering keys for a value?
+          /* killough 10/98: Allow negatives, and use a more
+           * friendly input method (e.g. don't clear value early,
+           * allow backspace, and return to original value if bad
+           * value is entered).
+           */
+          if (ch == key_menu_enter) {
+            if (gather_count) {     // Any input?
+              int value;
 
-      M_SelectDone(ptr1);       // phares 4/17/98
-      return true;
+              gather_buffer[gather_count] = 0;
+              value = atoi(gather_buffer);  // Integer value
+
+              //e6y
+              if ((ptr1->m_flags&S_CANT_GL_ARB_MULTISAMPLEFACTOR) && value%2!=0)
+                warn_about_changes(ptr1->m_flags & S_CANT_GL_ARB_MULTISAMPLEFACTOR);
+              else
+
+              if ((ptr1->var.def->minvalue != UL &&
+                   value < ptr1->var.def->minvalue) ||
+                  (ptr1->var.def->maxvalue != UL &&
+                   value > ptr1->var.def->maxvalue))
+                warn_about_changes(S_BADVAL);
+              else {
+                *ptr1->var.def->location.pi = value;
+
+                /* killough 8/9/98: fix numeric vars
+                 * killough 8/15/98: add warning message
+                 */
+                if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
+                  warn_about_changes(ptr1->m_flags &
+                   (S_LEVWARN | S_PRGWARN));
+                else
+                  M_UpdateCurrent(ptr1->var.def);
+
+                if (ptr1->action)      // killough 10/98
+                  ptr1->action();
+              }
+            }
+            M_SelectDone(ptr1);     // phares 4/17/98
+            setup_gather = false; // finished gathering keys
+            return true;
+          }
+
+          if (ch == key_menu_backspace && gather_count) {
+            gather_count--;
+            return true;
+          }
+
+          if (gather_count >= MAXGATHER)
+            return true;
+
+          if (!isdigit(ch) && ch != '-')
+            return true; // ignore
+
+          /* killough 10/98: character-based numerical input */
+          gather_buffer[gather_count++] = ch;
+        }
+        return true;
+      }
+
+      if (ptr1->m_flags & S_CHOICE) // selection of choices?
+      {
+        if (ch == key_menu_left) {
+          if (ptr1->var.def->type == def_int) {
+            int value = *ptr1->var.def->location.pi;
+
+            value = value - 1;
+            if ((ptr1->var.def->minvalue != UL &&
+                 value < ptr1->var.def->minvalue))
+              value = ptr1->var.def->minvalue;
+            if ((ptr1->var.def->maxvalue != UL &&
+                 value > ptr1->var.def->maxvalue))
+              value = ptr1->var.def->maxvalue;
+            if (*ptr1->var.def->location.pi != value)
+              S_StartSound(NULL,g_sfx_menu);
+            *ptr1->var.def->location.pi = value;
+          }
+          if (ptr1->var.def->type == def_str) {
+            int old_value, value;
+
+            old_value = M_IndexInChoices(*ptr1->var.def->location.ppsz,
+                                         ptr1->selectstrings);
+            value = old_value - 1;
+            if (value < 0)
+              value = 0;
+            if (old_value != value)
+              S_StartSound(NULL,g_sfx_menu);
+            *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
+          }
+        }
+        if (ch == key_menu_right) {
+          if (ptr1->var.def->type == def_int) {
+            int value = *ptr1->var.def->location.pi;
+
+            value = value + 1;
+            if ((ptr1->var.def->minvalue != UL &&
+                 value < ptr1->var.def->minvalue))
+              value = ptr1->var.def->minvalue;
+            if ((ptr1->var.def->maxvalue != UL &&
+                 value > ptr1->var.def->maxvalue))
+              value = ptr1->var.def->maxvalue;
+            if (*ptr1->var.def->location.pi != value)
+              S_StartSound(NULL,g_sfx_menu);
+            *ptr1->var.def->location.pi = value;
+          }
+          if (ptr1->var.def->type == def_str) {
+            int old_value, value;
+
+            old_value = M_IndexInChoices(*ptr1->var.def->location.ppsz,
+                                         ptr1->selectstrings);
+            value = old_value + 1;
+            if (ptr1->selectstrings[value] == NULL)
+              value = old_value;
+            if (old_value != value)
+              S_StartSound(NULL,g_sfx_menu);
+            *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
+          }
+        }
+        if (ch == key_menu_enter) {
+          // phares 4/14/98:
+          // If not in demoplayback, demorecording, or netgame,
+          // and there's a second variable in var2, set that
+          // as well
+
+          // killough 8/15/98: add warning messages
+
+          if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
+            warn_about_changes(ptr1->m_flags &    // killough 10/98
+             (S_LEVWARN | S_PRGWARN));
+          else
+            M_UpdateCurrent(ptr1->var.def);
+
+          if (ptr1->action)      // killough 10/98
+            ptr1->action();
+          M_SelectDone(ptr1);                           // phares 4/17/98
+        }
+        return true;
+      }
     }
 
-      // Weapons
+    // Key Bindings
 
-      if (set_weapon_active) // on the weapons setup screen
+    s_input = (ptr1->m_flags & S_INPUT) ? ptr1->input : 0;
+
+    if (set_keybnd_active) // on a key binding setup screen
+      if (setup_select)    // incoming key or button gets bound
+      {
+        if (ev->type == ev_joystick)
+        {
+          int oldbutton;
+          setup_group group;
+          dboolean search = true;
+
+          if (!s_input && !ptr1->m_joy)
+            return true; // not a legal action here (yet)
+
+          // see if the button is already bound elsewhere. if so, you
+          // have to swap bindings so the action where it's currently
+          // bound doesn't go dead. Since there is more than one
+          // keybinding screen, you have to search all of them for
+          // any duplicates. You're only interested in the items
+          // that belong to the same group as the one you're changing.
+
+          oldbutton = s_input ? dsda_InputJoyB(s_input) : *ptr1->m_joy;
+          group  = ptr1->m_group;
+          if (ev->data1 & 1)
+            ch = 0;
+          else if (ev->data1 & 2)
+            ch = 1;
+          else if (ev->data1 & 4)
+            ch = 2;
+          else if (ev->data1 & 8)
+            ch = 3;
+          else
+            return true;
+          for (i = 0 ; keys_settings[i] && search ; i++)
+            for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
+              if (ptr2->m_group == group && ptr1 != ptr2)
+              {
+                if (ptr2->m_flags & S_KEY && ptr2->m_joy)
+                {
+                  if (*ptr2->m_joy == ch)
+                  {
+                    *ptr2->m_joy = oldbutton;
+                    search = false;
+                    break;
+                  }
+                }
+                else if (ptr2->m_flags & S_INPUT)
+                  if (dsda_InputJoyB(ptr2->input) == ch)
+                  {
+                    dsda_InputSetJoyB(ptr2->input, oldbutton);
+                    search = false;
+                    break;
+                  }
+              }
+          if (s_input)
+            dsda_InputSetJoyB(s_input, ch);
+          else
+            *ptr1->m_joy = ch;
+        }
+        else if (ev->type == ev_mouse)
+        {
+          int i,oldbutton;
+          setup_group group;
+          dboolean search = true;
+
+          if (!s_input && !ptr1->m_mouse)
+            return true; // not a legal action here (yet)
+
+          // see if the button is already bound elsewhere. if so, you
+          // have to swap bindings so the action where it's currently
+          // bound doesn't go dead. Since there is more than one
+          // keybinding screen, you have to search all of them for
+          // any duplicates. You're only interested in the items
+          // that belong to the same group as the one you're changing.
+
+          oldbutton = s_input ? dsda_InputMouseB(s_input) : *ptr1->m_mouse;
+          group  = ptr1->m_group;
+          if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1)) == -1)
+            return true;
+          for (i = 0 ; keys_settings[i] && search ; i++)
+            for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
+              if (ptr2->m_group == group && ptr1 != ptr2)
+              {
+                if (ptr2->m_flags & S_KEY && ptr2->m_mouse)
+                {
+                  if (*ptr2->m_mouse == ch)
+                  {
+                    *ptr2->m_mouse = oldbutton;
+                    search = false;
+                    break;
+                  }
+                }
+                else if (ptr2->m_flags & S_INPUT)
+                  if (dsda_InputMouseB(ptr2->input) == ch)
+                  {
+                    dsda_InputSetMouseB(ptr2->input, oldbutton);
+                    search = false;
+                    break;
+                  }
+              }
+          if (s_input)
+            dsda_InputSetMouseB(s_input, ch);
+          else
+            *ptr1->m_mouse = ch;
+        }
+        else  // keyboard key
+        {
+          int i,oldkey;
+          setup_group group;
+          dboolean search = true;
+
+          // see if 'ch' is already bound elsewhere. if so, you have
+          // to swap bindings so the action where it's currently
+          // bound doesn't go dead. Since there is more than one
+          // keybinding screen, you have to search all of them for
+          // any duplicates. You're only interested in the items
+          // that belong to the same group as the one you're changing.
+
+          // if you find that you're trying to swap with an action
+          // that has S_KEEP set, you can't bind ch; it's already
+          // bound to that S_KEEP action, and that action has to
+          // keep that key.
+
+          oldkey = s_input ? dsda_InputKey(s_input) : *ptr1->var.m_key;
+          group  = ptr1->m_group;
+          for (i = 0 ; keys_settings[i] && search ; i++)
+            for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
+              if (ptr2->m_group == group && ptr1 != ptr2)
+              {
+                if (ptr2->m_flags & (S_KEY|S_KEEP))
+                {
+                  if (*ptr2->var.m_key == ch)
+                  {
+                    if (ptr2->m_flags & S_KEEP)
+                      return true; // can't have it!
+                    *ptr2->var.m_key = oldkey;
+                    search = false;
+                    break;
+                  }
+                }
+                else if (ptr2->m_flags & (S_INPUT | S_KEEP))
+                  if (dsda_InputKey(ptr2->input) == ch)
+                  {
+                    if (ptr2->m_flags & S_KEEP)
+                      return true; // can't have it!
+                    dsda_InputSetKey(ptr2->input, oldkey);
+                    search = false;
+                    break;
+                  }
+              }
+          if (s_input)
+            dsda_InputSetKey(s_input, ch);
+          else
+            *ptr1->var.m_key = ch;
+        }
+
+        M_SelectDone(ptr1);       // phares 4/17/98
+        return true;
+      }
+
+    // Weapons
+
+    if (set_weapon_active) // on the weapons setup screen
   if (setup_select) // changing an entry
     {
       if (ch != key_menu_enter)
@@ -5587,6 +5658,10 @@ dboolean M_Responder (event_t* ev) {
           *ptr1->m_mouse = -1;
 
         *ptr1->var.m_key = 0;
+    }
+    else if (ptr1->m_flags & S_INPUT)
+    {
+      dsda_InputReset(ptr1->input);
     }
 
     return true;

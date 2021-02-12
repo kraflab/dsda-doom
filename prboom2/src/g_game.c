@@ -89,6 +89,7 @@
 #include "dsda/demo.h"
 #include "dsda/key_frame.h"
 #include "dsda/settings.h"
+#include "dsda/input.h"
 #include "statdump.h"
 
 // ano - used for version 255+ demos, like EE or MBF
@@ -196,7 +197,6 @@ int shorttics;
 
 int     key_right;
 int     key_left;
-int     key_up;
 int     key_down;
 int     key_mlook;
 int     key_novert;
@@ -270,7 +270,6 @@ int     key_prevweapon;
 int     key_screenshot;             // killough 2/22/98: screenshot key
 int     mousebfire;
 int     mousebstrafe;
-int     mousebforward;
 int     mousebbackward;
 int     mousebuse;
 int     joybfire;
@@ -340,7 +339,7 @@ static const struct
 };
 
 static int mousearray[MAX_MOUSE_BUTTONS + 1];
-static int *mousebuttons = &mousearray[1];    // allow [-1]
+int *mousebuttons = &mousearray[1];    // allow [-1]
 
 // mouse values are used once
 static int   mousex;
@@ -356,7 +355,7 @@ static int   dclicks2;
 static int   joyxmove;
 static int   joyymove;
 static dboolean joyarray[9];
-static dboolean *joybuttons = &joyarray[1];    // allow [-1]
+dboolean *joybuttons = &joyarray[1];    // allow [-1]
 
 // Game events info
 static buttoncode_t special_event; // Event triggered by local player, to send
@@ -622,7 +621,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         cmd->angleturn += angleturn[tspeed];
     }
 
-  if (gamekeydown[key_up])
+  if (dsda_InputActive(dsda_input_forward))
     forward += forwardmove[speed];
   if (gamekeydown[key_down])
     forward -= forwardmove[speed];
@@ -882,17 +881,15 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
 
   // mouse
-  if (mousebuttons[mousebforward])
-    forward += forwardmove[speed];
   if (mousebuttons[mousebbackward])
     forward -= forwardmove[speed];
 
   if (mouse_doubleclick_as_use) {//e6y
 
   // forward double click
-  if (mousebuttons[mousebforward] != dclickstate && dclicktime > 1 )
+  if (dsda_InputMouseBActive(dsda_input_forward) != dclickstate && dclicktime > 1 )
     {
-      dclickstate = mousebuttons[mousebforward];
+      dclickstate = dsda_InputMouseBActive(dsda_input_forward);
       if (dclickstate)
         dclicks++;
       if (dclicks == 2)
@@ -4601,7 +4598,7 @@ void P_WalkTicker()
         angturn += angleturn[tspeed];
     }
 
-  if (gamekeydown[key_up])
+  if (dsda_InputActive(dsda_input_forward))
     forward += forwardmove[speed];
   if (gamekeydown[key_down])
     forward -= forwardmove[speed];
@@ -4613,10 +4610,6 @@ void P_WalkTicker()
     side += sidemove[speed];
   if (gamekeydown[key_strafeleft])
     side -= sidemove[speed];
-
-  //mouse
-  if (mousebuttons[mousebforward])
-    forward += forwardmove[speed];
 
   forward += mousey;
   if (strafe)

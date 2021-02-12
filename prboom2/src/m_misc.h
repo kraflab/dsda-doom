@@ -38,6 +38,9 @@
 
 
 #include "doomtype.h"
+
+#include "dsda/input.h"
+
 //
 // MISC
 //
@@ -97,6 +100,7 @@ typedef struct default_s
     def_int,  // Integer
     def_hex,  // Integer (write in hex)
     def_arr,  // e6y: arrays
+    def_input, // Composite input
     def_bool = def_int,  // Boolean
     def_key = def_hex,   // Key code (byte)
     def_mouseb = def_int,// Mouse button
@@ -108,6 +112,10 @@ typedef struct default_s
   // const char* help;       // jff 3/3/98 description of parameter
   // CPhipps - remove unused "lousy hack" code
   struct setup_menu_s *setup_menu;   /* Xref to setup menu item, if any */
+
+  // composite input - need to completely refactor this...
+  int identifier;
+  dsda_input_t input;
 } default_t;
 
 #define IS_STRING(dv) ((dv).type == def_str)
