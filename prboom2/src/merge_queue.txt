@@ -1,0 +1,18 @@
+Checked up to: d840f4258568acbefa1c4608526f2e4469496f8b
+
+Commits from upstream to go through:
+
+mbf sky transfers:
+2119b6f006a5dbb561ee950c5bf3177e8023f401
+
+complevel cheat (improvement PR ongoing)
+a2fe4057c1db79eea410058baf345090ba600d28
+...
+
+shorttics / longtics cheat
+2e3e94ddf5de7e9c20ee0aa7db1948e98874ab5e
+
+melee crosshair:
+b2503fa073298ead6b10a74ca5d0f0ca2d9b27d2
+70fe9a30eff96321f3d42f5f966bf52193840c5a
+24afe0b80d8794be8cc104908ddd7a96b38acb3a
