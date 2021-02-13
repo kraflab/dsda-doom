@@ -31,11 +31,6 @@
  *
  *-----------------------------------------------------------------------------*/
 
-extern int joyleft;
-extern int joyright;
-extern int joyup;
-extern int joydown;
-
 extern int usejoystick;
 
 void I_InitJoystick(void);

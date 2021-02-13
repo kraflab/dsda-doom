@@ -732,10 +732,6 @@ default_t defaults[] =
   {"Joystick settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_joystick",{&usejoystick},{0},0,2,
    def_int,ss_none}, // number of joystick to use (0 for none)
-  {"joy_left",{&joyleft},{0},  UL,UL,def_int,ss_none},
-  {"joy_right",{&joyright},{0},UL,UL,def_int,ss_none},
-  {"joy_up",  {&joyup},  {0},  UL,UL,def_int,ss_none},
-  {"joy_down",{&joydown},{0},  UL,UL,def_int,ss_none},
 
   {"Chat macros",{NULL},{0},UL,UL,def_none,ss_none},
   {"chatmacro0", {0,&chat_macros[0]}, {0,HUSTR_CHATMACRO0},UL,UL,
