@@ -107,8 +107,6 @@ void doom_printf(const char *, ...) __attribute__((format(printf,1,2)));
 
 // killough 5/2/98: moved from m_misc.c:
 
-extern int  key_right;
-extern int  key_left;
 extern int  key_mlook;
 extern int  key_novert;
 extern int  key_menu_right;                                  // phares 3/7/98
@@ -151,8 +149,6 @@ extern int  key_spy;
 extern int  key_pause;
 extern int  key_setup;
 extern int  key_forward;
-extern int  key_leftturn;
-extern int  key_rightturn;
 extern int  key_backward;
 extern int  key_weapontoggle;
 extern int  key_weapon1;

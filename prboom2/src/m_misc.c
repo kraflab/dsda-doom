@@ -560,6 +560,10 @@ default_t defaults[] =
     dsda_input_forward, { 'w', 2, -1 } },
   { "input_backward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_backward, { 's', -1, -1 } },
+  { "input_turnleft", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_turnleft, { 'e', -1, -1 } },
+  { "input_turnright", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_turnright, { 'q', -1, -1 } },
 
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
@@ -585,10 +589,6 @@ default_t defaults[] =
 // CPhipps - now they're the doom codes, so default.cfg can be portable
 
   {"Key bindings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"key_right",       {&key_right},          {KEYD_RIGHTARROW},
-   0,MAX_KEY,def_key,ss_keys}, // key to turn right
-  {"key_left",        {&key_left},           {KEYD_LEFTARROW} ,
-   0,MAX_KEY,def_key,ss_keys}, // key to turn left
   {"key_mlook",       {&key_mlook},           {'\\'},
    0,MAX_KEY,def_key,ss_keys}, // key to move backward
   {"key_novert",      {&key_novert},          {0}  ,

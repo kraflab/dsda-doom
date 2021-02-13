@@ -195,8 +195,6 @@ int shorttics;
 // controls (have defaults)
 //
 
-int     key_right;
-int     key_left;
 int     key_mlook;
 int     key_novert;
 int     key_menu_right;                                      // phares 3/7/98
@@ -574,8 +572,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
     // use two stage accelerative turning
     // on the keyboard and joystick
-  if (joyxmove < 0 || joyxmove > 0 ||
-      gamekeydown[key_right] || gamekeydown[key_left])
+  if (joyxmove != 0 ||
+      dsda_InputActive(dsda_input_turnright) ||
+      dsda_InputActive(dsda_input_turnleft))
     turnheld += ticdup;
   else
     turnheld = 0;
@@ -598,9 +597,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (strafe)
     {
-      if (gamekeydown[key_right])
+      if (dsda_InputActive(dsda_input_turnright))
         side += sidemove[speed];
-      if (gamekeydown[key_left])
+      if (dsda_InputActive(dsda_input_turnleft))
         side -= sidemove[speed];
       if (joyxmove > 0)
         side += sidemove[speed];
@@ -609,9 +608,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
   else
     {
-      if (gamekeydown[key_right])
+      if (dsda_InputActive(dsda_input_turnright))
         cmd->angleturn -= angleturn[tspeed];
-      if (gamekeydown[key_left])
+      if (dsda_InputActive(dsda_input_turnleft))
         cmd->angleturn += angleturn[tspeed];
       if (joyxmove > 0)
         cmd->angleturn -= angleturn[tspeed];
@@ -4558,8 +4557,9 @@ void P_WalkTicker()
 
     // use two stage accelerative turning
     // on the keyboard and joystick
-  if (joyxmove < 0 || joyxmove > 0 ||
-      gamekeydown[key_right] || gamekeydown[key_left])
+  if (joyxmove != 0 ||
+      dsda_InputActive(dsda_input_turnright) ||
+      dsda_InputActive(dsda_input_turnleft))
     turnheld += ticdup;
   else
     turnheld = 0;
@@ -4573,9 +4573,9 @@ void P_WalkTicker()
 
   if (strafe)
     {
-      if (gamekeydown[key_right])
+      if (dsda_InputActive(dsda_input_turnright))
         side += sidemove[speed];
-      if (gamekeydown[key_left])
+      if (dsda_InputActive(dsda_input_turnleft))
         side -= sidemove[speed];
       if (joyxmove > 0)
         side += sidemove[speed];
@@ -4584,9 +4584,9 @@ void P_WalkTicker()
     }
   else
     {
-      if (gamekeydown[key_right])
+      if (dsda_InputActive(dsda_input_turnright))
         angturn -= angleturn[tspeed];
-      if (gamekeydown[key_left])
+      if (dsda_InputActive(dsda_input_turnleft))
         angturn += angleturn[tspeed];
       if (joyxmove > 0)
         angturn -= angleturn[tspeed];

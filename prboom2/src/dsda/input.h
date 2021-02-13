@@ -26,6 +26,8 @@ typedef enum {
   dsda_input_null,
   dsda_input_forward,
   dsda_input_backward,
+  dsda_input_turnleft,
+  dsda_input_turnright,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
