@@ -96,3 +96,6 @@ Irrelevant categories for a run are ignored. E.g., you won't see `NM 100S` if a 
 - Use `-stroller` to prevent strafing and limit speed (-turbo 50)
 - Fix boom rng seed (previously this was hardware dependent and not random)
 - Add mouse strafe divisor setting - limit horizontal mouse strafe.
+
+### Credits
+- The DSDA-Doom icon was designed by Mal (129thVisplane). Thanks!
