@@ -555,6 +555,7 @@ default_t defaults[] =
   {"gl_use_shared_texture_palette",{&gl_use_shared_texture_palette},{0},0,1,
    def_bool,ss_none},
 
+  // defaults { key, mouseb, joyb }
   { "Input settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
   { "input_forward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_forward, { 'w', 2, -1 } },
@@ -564,6 +565,29 @@ default_t defaults[] =
     dsda_input_turnleft, { 'e', -1, -1 } },
   { "input_turnright", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_turnright, { 'q', -1, -1 } },
+  { "input_speed", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_speed, { KEYD_RSHIFT, -1, 2 } },
+  { "input_strafeleft", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_strafeleft, { 'a', -1, 4 } },
+  { "input_straferight", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_straferight, { 'd', -1, 5 } },
+  { "input_strafe", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_strafe, { KEYD_RALT, 1, 1 } },
+  { "input_autorun", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_autorun, { KEYD_CAPSLOCK, -1, -1 } },
+  { "input_reverse", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_reverse, { '/', -1, -1 } },
+  { "input_use", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_use, { ' ', -1, 3 } },
+  { "input_flyup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_flyup, { '.', -1, -1 } },
+  { "input_flydown", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_flydown, { ',', -1, -1 } },
+  { "input_mlook", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_mlook, { '\\', -1, -1 } },
+  { "input_novert", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_novert, { 0, -1, -1 } },
+
 
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
@@ -577,10 +601,6 @@ default_t defaults[] =
   //jff 3/8/98 allow -1 in mouse bindings to disable mouse function
   {"mouseb_fire",{&mousebfire},{0},-1,MAX_MOUSEB,
    def_int,ss_keys}, // mouse button number to use for fire
-  {"mouseb_strafe",{&mousebstrafe},{1},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for strafing
-  {"mouseb_use", {&mousebuse},{-1},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for using doors/switches
   //jff 3/8/98 end of lower range change for -1 allowed in mouse binding
 
 // For key bindings, the values stored in the key_* variables       // phares
@@ -589,10 +609,6 @@ default_t defaults[] =
 // CPhipps - now they're the doom codes, so default.cfg can be portable
 
   {"Key bindings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"key_mlook",       {&key_mlook},           {'\\'},
-   0,MAX_KEY,def_key,ss_keys}, // key to move backward
-  {"key_novert",      {&key_novert},          {0}  ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle novert mode
   {"key_menu_right",  {&key_menu_right},     {KEYD_RIGHTARROW},// phares 3/7/98
    0,MAX_KEY,def_key,ss_keys}, // key to move right in a menu  //     |
   {"key_menu_left",   {&key_menu_left},      {KEYD_LEFTARROW} ,//     V
@@ -611,20 +627,9 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to clear a key binding
   {"key_setup",       {&key_setup},          {0},
    0,MAX_KEY,def_key,ss_keys}, //e6y: key for entering setup menu
-  {"key_strafeleft",  {&key_strafeleft},     {'a'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to strafe left
-  {"key_straferight", {&key_straferight},    {'d'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to strafe right
 
   {"key_fire",        {&key_fire},           {KEYD_RCTRL}     ,
    0,MAX_KEY,def_key,ss_keys}, // duh
-  {"key_use",         {&key_use},            {' '}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to open a door, use a switch
-  {"key_strafe",      {&key_strafe},         {KEYD_RALT}      ,
-   0,MAX_KEY,def_key,ss_keys}, // key to use with arrows to strafe
-  {"key_speed",       {&key_speed},          {KEYD_RSHIFT}    ,
-   0,MAX_KEY,def_key,ss_keys}, // key to run
-
   {"key_savegame",    {&key_savegame},       {KEYD_F2}        ,
    0,MAX_KEY,def_key,ss_keys}, // key to save current game
   {"key_loadgame",    {&key_loadgame},       {KEYD_F3}        ,
@@ -649,8 +654,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to view from another coop player's view
   {"key_pause",       {&key_pause},          {KEYD_PAUSE}     ,
    0,MAX_KEY,def_key,ss_keys}, // key to pause the game
-  {"key_autorun",     {&key_autorun},        {KEYD_CAPSLOCK}  ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle always run mode
   {"key_chat",        {&key_chat},           {'t'}            ,
    0,MAX_KEY,def_key,ss_keys}, // key to enter a chat message
   {"key_backspace",   {&key_backspace},      {KEYD_BACKSPACE} ,
@@ -687,8 +690,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to toggle overlaying the automap on the rendered display
   {"key_map_textured", {&key_map_textured},   {0}             ,
    0,MAX_KEY,def_key,ss_keys}, // key to toggle textured automap
-  {"key_reverse",     {&key_reverse},         {'/'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to spin 180 instantly
   {"key_zoomin",      {&key_zoomin},          {'='}           ,
    0,MAX_KEY,def_key,ss_keys}, // key to enlarge display
   {"key_zoomout",     {&key_zoomout},         {'-'}           ,
@@ -740,16 +741,6 @@ default_t defaults[] =
   {"joy_down",{&joydown},{0},  UL,UL,def_int,ss_none},
   {"joyb_fire",{&joybfire},{0},0,UL,
    def_int,ss_keys}, // joystick button number to use for fire
-  {"joyb_strafe",{&joybstrafe},{1},0,UL,
-   def_int,ss_keys}, // joystick button number to use for strafing
-  {"joyb_strafeleft",{&joybstrafeleft},{4},0,UL,
-   def_int,ss_keys}, // joystick button number to use for strafe left
-  {"joyb_straferight",{&joybstraferight},{5},0,UL,
-   def_int,ss_keys}, // joystick button number to use for strafe right
-  {"joyb_speed",{&joybspeed},{2},0,UL,
-   def_int,ss_keys}, // joystick button number to use for running
-  {"joyb_use",{&joybuse},{3},0,UL,
-   def_int,ss_keys}, // joystick button number to use for use/open
 
   {"Chat macros",{NULL},{0},UL,UL,def_none,ss_none},
   {"chatmacro0", {0,&chat_macros[0]}, {0,HUSTR_CHATMACRO0},UL,UL,
@@ -1016,8 +1007,6 @@ default_t defaults[] =
    def_int,ss_stat},
 
   { "Heretic settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "key_flyup",  { &key_flyup }, { '.' }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_flydown", { &key_flydown }, { ',' }, 0, MAX_KEY, def_key, ss_keys },
   { "key_flycenter", { &key_flycenter }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
   { "key_lookup", { &key_lookup }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
   { "key_lookdown", { &key_lookdown }, { 0 }, 0, MAX_KEY, def_key, ss_keys },

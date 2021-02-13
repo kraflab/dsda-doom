@@ -101,3 +101,12 @@ dboolean dsda_InputJoyBActive(int identifier) {
 
   return input->joyb >= 0 && joybuttons[input->joyb];
 }
+
+void dsda_InputDeactivateKey(int identifier) {
+  dsda_input_t* input;
+  input = &dsda_input[dsda_input_index][identifier];
+
+  if (!input->key) return;
+
+  gamekeydown[input->key] = false;
+}

@@ -28,6 +28,17 @@ typedef enum {
   dsda_input_backward,
   dsda_input_turnleft,
   dsda_input_turnright,
+  dsda_input_speed,
+  dsda_input_strafeleft,
+  dsda_input_straferight,
+  dsda_input_strafe,
+  dsda_input_autorun, // todo - mouse / joy ignored
+  dsda_input_reverse, // todo - mouse / joy ignored
+  dsda_input_use, // note - joyb use doubles as join demo
+  dsda_input_flyup,
+  dsda_input_flydown,
+  dsda_input_mlook, // todo - mouse / joy ignored
+  dsda_input_novert, // todo - mouse / joy ignored
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
@@ -53,5 +64,6 @@ dboolean dsda_InputActive(int identifer);
 dboolean dsda_InputKeyActive(int identifier);
 dboolean dsda_InputMouseBActive(int identifier);
 dboolean dsda_InputJoyBActive(int identifier);
+void dsda_InputDeactivateKey(int identifier);
 
 #endif

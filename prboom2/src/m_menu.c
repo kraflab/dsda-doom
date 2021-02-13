@@ -2365,17 +2365,17 @@ setup_menu_t keys_settings1[] =  // Key Binding screen strings
   {"BACKWARD"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+2*8,{0},NULL,NULL,NULL,NULL,dsda_input_backward},
   {"TURN LEFT"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+3*8,{0},NULL,NULL,NULL,NULL,dsda_input_turnleft},
   {"TURN RIGHT"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+4*8,{0},NULL,NULL,NULL,NULL,dsda_input_turnright},
-  {"RUN"         ,S_KEY       ,m_scrn,KB_X,KB_Y+5*8,{&key_speed},0,&joybspeed},
-  {"STRAFE LEFT" ,S_KEY       ,m_scrn,KB_X,KB_Y+6*8,{&key_strafeleft},0,&joybstrafeleft},
-  {"STRAFE RIGHT",S_KEY       ,m_scrn,KB_X,KB_Y+7*8,{&key_straferight},0,&joybstraferight},
-  {"STRAFE"      ,S_KEY       ,m_scrn,KB_X,KB_Y+8*8,{&key_strafe},&mousebstrafe,&joybstrafe},
-  {"AUTORUN"     ,S_KEY       ,m_scrn,KB_X,KB_Y+9*8,{&key_autorun}},
-  {"180 TURN"    ,S_KEY       ,m_scrn,KB_X,KB_Y+10*8,{&key_reverse}},
-  {"USE"         ,S_KEY       ,m_scrn,KB_X,KB_Y+11*8,{&key_use},&mousebuse,&joybuse},
-  {"JUMP/FLY UP" ,S_KEY       ,m_scrn,KB_X,KB_Y+12*8,{&key_flyup}},
-  {"FLY DOWN"    ,S_KEY       ,m_scrn,KB_X,KB_Y+13*8,{&key_flydown}},
-  {"MOUSE LOOK"  ,S_KEY       ,m_scrn,KB_X,KB_Y+16*8,{&key_mlook}},
-  {"NO VERTICAL MOUSE",S_KEY  ,m_scrn,KB_X,KB_Y+17*8,{&key_novert}},
+  {"RUN"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+5*8,{0},NULL,NULL,NULL,NULL,dsda_input_speed},
+  {"STRAFE LEFT" ,S_INPUT     ,m_scrn,KB_X,KB_Y+6*8,{0},NULL,NULL,NULL,NULL,dsda_input_strafeleft},
+  {"STRAFE RIGHT",S_INPUT     ,m_scrn,KB_X,KB_Y+7*8,{0},NULL,NULL,NULL,NULL,dsda_input_straferight},
+  {"STRAFE"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+8*8,{0},NULL,NULL,NULL,NULL,dsda_input_strafe},
+  {"AUTORUN"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+9*8,{0},NULL,NULL,NULL,NULL,dsda_input_autorun},
+  {"180 TURN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+10*8,{0},NULL,NULL,NULL,NULL,dsda_input_reverse},
+  {"USE"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},NULL,NULL,NULL,NULL,dsda_input_use},
+  {"JUMP/FLY UP" ,S_INPUT     ,m_scrn,KB_X,KB_Y+12*8,{0},NULL,NULL,NULL,NULL,dsda_input_flyup},
+  {"FLY DOWN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,{0},NULL,NULL,NULL,NULL,dsda_input_flydown},
+  {"MOUSE LOOK"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,{0},NULL,NULL,NULL,NULL,dsda_input_mlook},
+  {"NO VERTICAL MOUSE",S_INPUT,m_scrn,KB_X,KB_Y+17*8,{0},NULL,NULL,NULL,NULL,dsda_input_novert},
 
   // Button for resetting to defaults
   {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
@@ -2552,8 +2552,8 @@ setup_menu_t heretic_keys_settings1[] = {
   { "LOOK UP", S_KEY, m_scrn, KB_X, KB_Y + 1 * 8, { &key_lookup } },
   { "LOOK DOWN", S_KEY, m_scrn, KB_X, KB_Y + 2 * 8, { &key_lookdown } },
   { "LOOK CENTER", S_KEY, m_scrn, KB_X, KB_Y + 3 * 8, { &key_lookcenter } },
-  { "FLY UP", S_KEY, m_scrn, KB_X, KB_Y + 4 * 8, { &key_flyup } },
-  { "FLY DOWN", S_KEY, m_scrn, KB_X, KB_Y + 5 * 8, { &key_flydown } },
+  { "FLY UP", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, NULL, NULL, NULL, NULL, dsda_input_flyup },
+  { "FLY DOWN", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, NULL, NULL, NULL, NULL, dsda_input_flydown },
   { "FLY CENTER", S_KEY, m_scrn, KB_X, KB_Y + 6 * 8, { &key_flycenter } },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
@@ -4379,16 +4379,16 @@ setup_menu_t helpstrings[] =  // HELP screen strings
 
   {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KT_X3,KT_Y3},
   {"FORWARD"     ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 1*8,{0},NULL,NULL,NULL,NULL,dsda_input_forward},
-  {"RUN"         ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+ 5*8,{&key_speed},0,&joybspeed},
-  {"STRAFE LEFT" ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+ 6*8,{&key_strafeleft},0,&joybstrafeleft},
-  {"STRAFE RIGHT",S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+ 7*8,{&key_straferight},0,&joybstraferight},
-  {"STRAFE"      ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+ 8*8,{&key_strafe},&mousebstrafe,&joybstrafe},
-  {"AUTORUN"     ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+ 9*8,{&key_autorun}},
-  {"180 TURN"    ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+10*8,{&key_reverse}},
-  {"USE"         ,S_SKIP|S_KEY,m_null,KT_X3,KT_Y3+11*8,{&key_use},&mousebuse,&joybuse},
   {"BACKWARD"    ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 2*8,{0},NULL,NULL,NULL,NULL,dsda_input_backward},
   {"TURN LEFT"   ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 3*8,{0},NULL,NULL,NULL,NULL,dsda_input_turnleft},
   {"TURN RIGHT"  ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 4*8,{0},NULL,NULL,NULL,NULL,dsda_input_turnright},
+  {"RUN"         ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 5*8,{0},NULL,NULL,NULL,NULL,dsda_input_speed},
+  {"STRAFE LEFT" ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 6*8,{0},NULL,NULL,NULL,NULL,dsda_input_strafeleft},
+  {"STRAFE RIGHT",S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 7*8,{0},NULL,NULL,NULL,NULL,dsda_input_straferight},
+  {"STRAFE"      ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 8*8,{0},NULL,NULL,NULL,NULL,dsda_input_strafe},
+  {"AUTORUN"     ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 9*8,{0},NULL,NULL,NULL,NULL,dsda_input_autorun},
+  {"180 TURN"    ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+10*8,{0},NULL,NULL,NULL,NULL,dsda_input_reverse},
+  {"USE"         ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+11*8,{0},NULL,NULL,NULL,NULL,dsda_input_use},
 
   {"GAME"        ,S_SKIP|S_TITLE,m_null,KT_X2,KT_Y1},
   {"SAVE"        ,S_SKIP|S_KEY,m_null,KT_X2,KT_Y1+ 1*8,{&key_savegame}},
@@ -4780,7 +4780,7 @@ dboolean M_Responder (event_t* ev) {
   // If there is no active menu displayed...
 
   if (!menuactive) {                                           // phares
-    if (ch == key_autorun)      // Autorun                          //  V
+    if (ch == dsda_InputKey(dsda_input_autorun))      // Autorun                          //  V
       {
       autorun = !autorun;
       return true;
@@ -5025,7 +5025,7 @@ dboolean M_Responder (event_t* ev) {
     }
 #endif
 
-    if (ch == key_mlook) // mouse look
+    if (ch == dsda_InputKey(dsda_input_mlook)) // mouse look
     {
       movement_mouselook = !movement_mouselook;
       M_ChangeMouseLook();
@@ -5033,7 +5033,7 @@ dboolean M_Responder (event_t* ev) {
       // return true;
     }
 
-    if (ch == key_novert)
+    if (ch == dsda_InputKey(dsda_input_novert))
     {
       movement_mousenovert = !movement_mousenovert;
       // Don't eat the keypress in this case.

@@ -107,8 +107,6 @@ void doom_printf(const char *, ...) __attribute__((format(printf,1,2)));
 
 // killough 5/2/98: moved from m_misc.c:
 
-extern int  key_mlook;
-extern int  key_novert;
 extern int  key_menu_right;                                  // phares 3/7/98
 extern int  key_menu_left;                                   //     |
 extern int  key_menu_up;                                     //     V
@@ -117,20 +115,11 @@ extern int  key_menu_backspace;                              //     ^
 extern int  key_menu_escape;                                 //     |
 extern int  key_menu_enter;                                  // phares 3/7/98
 extern int  key_menu_clear;
-extern int  key_strafeleft;
-extern int  key_straferight;
-extern int  key_flyup;
-extern int  key_flydown;
 
 extern int  key_fire;
-extern int  key_use;
-extern int  key_strafe;
-extern int  key_speed;
 extern int  key_escape;                                             // phares
 extern int  key_savegame;                                           //    |
 extern int  key_loadgame;                                           //    V
-extern int  key_autorun;
-extern int  key_reverse;
 extern int  key_zoomin;
 extern int  key_zoomout;
 extern int  key_chat;
@@ -181,14 +170,7 @@ extern int  key_map_textured;  //e6y: textured automap
 extern int  key_screenshot;    // killough 2/22/98 -- add key for screenshot
 extern int  autorun;           // always running?                   // phares
 extern int  mousebfire;
-extern int  mousebstrafe;
-extern int  mousebuse;
 extern int  joybfire;
-extern int  joybstrafe;
-extern int  joybstrafeleft;
-extern int  joybstraferight;
-extern int  joybuse;
-extern int  joybspeed;
 
 extern int  defaultskill;      //jff 3/24/98 default skill
 extern dboolean haswolflevels;  //jff 4/18/98 wolf levels present
@@ -230,8 +212,6 @@ extern dboolean done_autoswitch;
 extern int key_lookdown;
 extern int key_lookup;
 extern int key_lookcenter;
-extern int key_flyup;
-extern int key_flydown;
 extern int key_flycenter;
 extern int key_useartifact;
 extern int key_arti_tome;

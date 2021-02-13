@@ -197,8 +197,8 @@ void D_PostEvent(event_t *ev)
       }
       else
       {
-        // key_use is used for seeing the current frame
-        if (ev->data1 != key_use && ev->data1 != key_demo_skip)
+        // use key is used for seeing the current frame
+        if (ev->data1 != dsda_InputKey(dsda_input_use) && ev->data1 != key_demo_skip)
         {
           return;
         }
@@ -265,7 +265,7 @@ void D_Display (fixed_t frac)
   {
     if (HU_DrawDemoProgress(false))
       I_FinishUpdate();
-    if (!gamekeydown[key_use])
+    if (!dsda_InputActive(dsda_input_use))
       return;
 
 #ifdef GL_DOOM
@@ -276,7 +276,7 @@ void D_Display (fixed_t frac)
 #endif
   }
 
-  if (!doSkip || !gamekeydown[key_use])
+  if (!doSkip || !dsda_InputActive(dsda_input_use))
 
   if (nodrawers)                    // for comparative timing / profiling
     return;

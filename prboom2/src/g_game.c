@@ -195,8 +195,6 @@ int shorttics;
 // controls (have defaults)
 //
 
-int     key_mlook;
-int     key_novert;
 int     key_menu_right;                                      // phares 3/7/98
 int     key_menu_left;                                       //     |
 int     key_menu_up;                                         //     V
@@ -205,19 +203,10 @@ int     key_menu_backspace;                                  //     ^
 int     key_menu_escape;                                     //     |
 int     key_menu_enter;                                      // phares 3/7/98
 int     key_menu_clear;
-int     key_strafeleft;
-int     key_straferight;
-int     key_flyup;
-int     key_flydown;
 int     key_fire;
-int     key_use;
-int     key_strafe;
-int     key_speed;
 int     key_escape = KEYD_ESCAPE;                           // phares 4/13/98
 int     key_savegame;                                               // phares
 int     key_loadgame;                                               //    |
-int     key_autorun;                                                //    V
-int     key_reverse;
 int     key_zoomin;
 int     key_zoomout;
 int     key_chat;
@@ -266,14 +255,7 @@ int     key_prevweapon;
 
 int     key_screenshot;             // killough 2/22/98: screenshot key
 int     mousebfire;
-int     mousebstrafe;
-int     mousebuse;
 int     joybfire;
-int     joybstrafe;
-int     joybstrafeleft;
-int     joybstraferight;
-int     joybuse;
-int     joybspeed;
 
 #define MAXPLMOVE   (forwardmove[1])
 #define TURBOTHRESHOLD  0x32
@@ -375,8 +357,6 @@ dboolean usearti = true;
 int key_lookdown;
 int key_lookup;
 int key_lookcenter;
-int key_flyup;
-int key_flydown;
 int key_flycenter;
 int key_useartifact;
 int key_arti_tome;
@@ -555,10 +535,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   memset(cmd,0,sizeof*cmd);
   cmd->consistancy = consistancy[consoleplayer][maketic%BACKUPTICS];
 
-  strafe = gamekeydown[key_strafe] || mousebuttons[mousebstrafe]
-    || joybuttons[joybstrafe];
+  strafe = dsda_InputActive(dsda_input_strafe);
   //e6y: the "RUN" key inverts the autorun state
-  speed = (gamekeydown[key_speed] || joybuttons[joybspeed] ? !autorun : autorun); // phares
+  speed = (dsda_InputActive(dsda_input_speed) ? !autorun : autorun); // phares
 
   forward = side = 0;
 
@@ -586,11 +565,11 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // turn 180 degrees in one keystroke?                           // phares
                                                                   //    |
-  if (gamekeydown[key_reverse])                                   //    V
+  if (dsda_InputKeyActive(dsda_input_reverse))                    //    V
     {
       if (!strafe)
         cmd->angleturn += QUICKREVERSE;                           //    ^
-      gamekeydown[key_reverse] = false;                           //    |
+      dsda_InputDeactivateKey(dsda_input_reverse);                //    |
     }                                                             // phares
 
   // let movement keys cancel each other out
@@ -626,9 +605,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     forward += forwardmove[speed];
   if (joyymove > 0)
     forward -= forwardmove[speed];
-  if (gamekeydown[key_straferight] || joybuttons[joybstraferight])
+  if (dsda_InputActive(dsda_input_straferight))
     side += sidemove[speed];
-  if (gamekeydown[key_strafeleft] || joybuttons[joybstrafeleft])
+  if (dsda_InputActive(dsda_input_strafeleft))
     side -= sidemove[speed];
 
   if (heretic)
@@ -672,11 +651,11 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
 
     // Fly up/down/drop keys
-    if (gamekeydown[key_flyup])
+    if (dsda_InputActive(dsda_input_flyup))
     {
       flyheight = 5;          // note that the actual flyheight will be twice this
     }
-    if (gamekeydown[key_flydown])
+    if (dsda_InputActive(dsda_input_flydown))
     {
       flyheight = -5;
     }
@@ -777,8 +756,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       joybuttons[joybfire])
     cmd->buttons |= BT_ATTACK;
 
-  if (gamekeydown[key_use] || mousebuttons[mousebuse] ||
-      joybuttons[joybuse])
+  if (dsda_InputActive(dsda_input_use))
     {
       cmd->buttons |= BT_USE;
       // clear double clicks if hit use button
@@ -904,7 +882,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // strafe double click
 
-  bstrafe = mousebuttons[mousebstrafe] || joybuttons[joybstrafe];
+  bstrafe = dsda_InputMouseBActive(dsda_input_strafe) || dsda_InputJoyBActive(dsda_input_strafe);
   if (bstrafe != dclickstate2 && dclicktime2 > 1 )
     {
       dclickstate2 = bstrafe;
@@ -994,9 +972,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   }
 
   upmove = 0;
-  if (gamekeydown[key_flyup])
+  if (dsda_InputActive(dsda_input_flyup))
     upmove += flyspeed[speed];
-  if (gamekeydown[key_flydown])
+  if (dsda_InputActive(dsda_input_flydown))
     upmove -= flyspeed[speed];
 
   // CPhipps - special events (game new/load/save/pause)
@@ -4547,9 +4525,8 @@ void P_WalkTicker()
   if (!walkcamera.type || menuactive)
     return;
 
-  strafe = gamekeydown[key_strafe] || mousebuttons[mousebstrafe]
-    || joybuttons[joybstrafe];
-  speed = autorun || gamekeydown[key_speed] || joybuttons[joybspeed]; // phares
+  strafe = dsda_InputActive(dsda_input_strafe);
+  speed = autorun || dsda_InputActive(dsda_input_speed); // phares
 
   forward = side = 0;
   angturn = 0;
@@ -4602,9 +4579,9 @@ void P_WalkTicker()
     forward += forwardmove[speed];
   if (joyymove > 0)
     forward -= forwardmove[speed];
-  if (gamekeydown[key_straferight])
+  if (dsda_InputActive(dsda_input_straferight))
     side += sidemove[speed];
-  if (gamekeydown[key_strafeleft])
+  if (dsda_InputActive(dsda_input_strafeleft))
     side -= sidemove[speed];
 
   forward += mousey;
@@ -4706,7 +4683,7 @@ void G_ReadDemoContinueTiccmd (ticcmd_t* cmd)
 
   if (gametic >= demo_tics_count ||
     demo_continue_p > demobuffer + demolength ||
-    gamekeydown[key_demo_jointogame] || joybuttons[joybuse])
+    gamekeydown[key_demo_jointogame] || dsda_InputJoyBActive(dsda_input_use))
   {
     demo_continue_p = NULL;
     democontinue = false;

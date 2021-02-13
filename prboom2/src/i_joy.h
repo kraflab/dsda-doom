@@ -32,11 +32,6 @@
  *-----------------------------------------------------------------------------*/
 
 extern int joybfire;
-extern int joybstrafe;
-extern int joybstrafeleft;
-extern int joybstraferight;
-extern int joybuse;
-extern int joybspeed;
 
 extern int joyleft;
 extern int joyright;
