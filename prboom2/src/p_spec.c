@@ -236,7 +236,7 @@ void P_InitPicAnims (void)
     lastanim++;
   }
 
-  if (lump == -1) W_UnlockLumpNum(lump);
+  if (lump != -1) W_UnlockLumpNum(lump);
   MarkAnimatedTextures();//e6y
 }
 
