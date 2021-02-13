@@ -31,8 +31,6 @@
  *
  *-----------------------------------------------------------------------------*/
 
-extern int joybfire;
-
 extern int joyleft;
 extern int joyright;
 extern int joyup;

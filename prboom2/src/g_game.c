@@ -203,7 +203,6 @@ int     key_menu_backspace;                                  //     ^
 int     key_menu_escape;                                     //     |
 int     key_menu_enter;                                      // phares 3/7/98
 int     key_menu_clear;
-int     key_fire;
 int     key_escape = KEYD_ESCAPE;                           // phares 4/13/98
 int     key_savegame;                                               // phares
 int     key_loadgame;                                               //    |
@@ -240,22 +239,8 @@ int     key_spy;
 int     key_pause;
 int     key_setup;
 int     destination_keys[MAXPLAYERS];
-int     key_weapontoggle;
-int     key_weapon1;
-int     key_weapon2;
-int     key_weapon3;
-int     key_weapon4;
-int     key_weapon5;
-int     key_weapon6;
-int     key_weapon7;                                                //    ^
-int     key_weapon8;                                                //    |
-int     key_weapon9;                                                // phares
-int     key_nextweapon;
-int     key_prevweapon;
 
 int     key_screenshot;             // killough 2/22/98: screenshot key
-int     mousebfire;
-int     joybfire;
 
 #define MAXPLMOVE   (forwardmove[1])
 #define TURBOTHRESHOLD  0x32
@@ -752,8 +737,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     // buttons
   cmd->chatchar = HU_dequeueChatChar();
 
-  if (gamekeydown[key_fire] || mousebuttons[mousebfire] ||
-      joybuttons[joybfire])
+  if (dsda_InputActive(dsda_input_fire))
     cmd->buttons |= BT_ATTACK;
 
   if (dsda_InputActive(dsda_input_use))
@@ -777,7 +761,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   // Make Boom insert only a single weapon change command on autoswitch.
   if ((!demo_compatibility && players[consoleplayer].attackdown && // killough
        !P_CheckAmmo(&players[consoleplayer]) && !done_autoswitch && boom_autoswitch) ||
-       gamekeydown[key_weapontoggle])
+       dsda_InputActive(dsda_input_toggleweapon))
   {
     newweapon = P_SwitchWeapon(&players[consoleplayer]);           // phares
     done_autoswitch = true;
@@ -793,15 +777,15 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       {
         // HERETIC_TODO: fix this
       newweapon =
-        gamekeydown[key_weapon1] ? wp_fist :    // killough 5/2/98: reformatted
-        gamekeydown[key_weapon2] ? wp_pistol :
-        gamekeydown[key_weapon3] ? wp_shotgun :
-        gamekeydown[key_weapon4] ? wp_chaingun :
-        gamekeydown[key_weapon5] ? wp_missile :
-        gamekeydown[key_weapon6] && gamemode != shareware ? wp_plasma :
-        gamekeydown[key_weapon7] && gamemode != shareware ? wp_bfg :
-        gamekeydown[key_weapon8] ? wp_chainsaw :
-        (!demo_compatibility && gamekeydown[key_weapon9] && gamemode == commercial) ? wp_supershotgun :
+        dsda_InputActive(dsda_input_weapon1) ? wp_fist :    // killough 5/2/98: reformatted
+        dsda_InputActive(dsda_input_weapon2) ? wp_pistol :
+        dsda_InputActive(dsda_input_weapon3) ? wp_shotgun :
+        dsda_InputActive(dsda_input_weapon4) ? wp_chaingun :
+        dsda_InputActive(dsda_input_weapon5) ? wp_missile :
+        dsda_InputActive(dsda_input_weapon6) && gamemode != shareware ? wp_plasma :
+        dsda_InputActive(dsda_input_weapon7) && gamemode != shareware ? wp_bfg :
+        dsda_InputActive(dsda_input_weapon8) ? wp_chainsaw :
+        (!demo_compatibility && dsda_InputActive(dsda_input_weapon9) && gamemode == commercial) ? wp_supershotgun :
         wp_nochange;
       }
 
@@ -1217,11 +1201,11 @@ dboolean G_Responder (event_t* ev)
   // variable to change weapons when the next ticcmd is generated.
   if (ev->type == ev_keydown)
   {
-    if (ev->data1 == key_prevweapon)
+    if (ev->data1 == dsda_InputKey(dsda_input_prevweapon))
     {
       next_weapon = -1;
     }
-    else if (ev->data1 == key_nextweapon)
+    else if (ev->data1 == dsda_InputKey(dsda_input_nextweapon))
     {
       next_weapon = 1;
     }
@@ -4597,8 +4581,7 @@ void P_WalkTicker()
     CheckPitch((signed int *) &walkcamera.pitch);
   }
 
-  if (gamekeydown[key_fire] || mousebuttons[mousebfire] ||
-      joybuttons[joybfire])
+  if (dsda_InputActive(dsda_input_fire))
   {
     walkcamera.x = players[0].mo->x;
     walkcamera.y = players[0].mo->y;

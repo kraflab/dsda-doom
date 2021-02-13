@@ -557,6 +557,7 @@ default_t defaults[] =
 
   // defaults { key, mouseb, joyb }
   { "Input settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
+
   { "input_forward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_forward, { 'w', 2, -1 } },
   { "input_backward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
@@ -588,6 +589,32 @@ default_t defaults[] =
   { "input_novert", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_novert, { 0, -1, -1 } },
 
+  { "input_weapon1", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon1, { '1', -1, -1 } },
+  { "input_weapon2", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon2, { '2', -1, -1 } },
+  { "input_weapon3", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon3, { '3', -1, -1 } },
+  { "input_weapon4", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon4, { '4', -1, -1 } },
+  { "input_weapon5", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon5, { '5', -1, -1 } },
+  { "input_weapon6", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon6, { '6', -1, -1 } },
+  { "input_weapon7", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon7, { '7', -1, -1 } },
+  { "input_weapon8", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon8, { '8', -1, -1 } },
+  { "input_weapon9", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon9, { '9', -1, -1 } },
+  { "input_nextweapon", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_nextweapon, { KEYD_MWHEELUP, -1, -1 } },
+  { "input_prevweapon", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_prevweapon, { KEYD_MWHEELDOWN, -1, -1 } },
+  { "input_toggleweapon", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_toggleweapon, { '0', -1, -1 } },
+  { "input_fire", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_fire, { KEYD_RCTRL, 0, 0 } },
 
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
@@ -598,10 +625,6 @@ default_t defaults[] =
   //jff 4/3/98 allow unlimited sensitivity
   {"mouse_sensitivity_vert",{&mouseSensitivity_vert},{1},0,UL,
    def_int,ss_none}, /* adjust vertical (y) mouse sensitivity killough/mead */
-  //jff 3/8/98 allow -1 in mouse bindings to disable mouse function
-  {"mouseb_fire",{&mousebfire},{0},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for fire
-  //jff 3/8/98 end of lower range change for -1 allowed in mouse binding
 
 // For key bindings, the values stored in the key_* variables       // phares
 // are the internal Doom Codes. The values stored in the default.cfg
@@ -628,8 +651,6 @@ default_t defaults[] =
   {"key_setup",       {&key_setup},          {0},
    0,MAX_KEY,def_key,ss_keys}, //e6y: key for entering setup menu
 
-  {"key_fire",        {&key_fire},           {KEYD_RCTRL}     ,
-   0,MAX_KEY,def_key,ss_keys}, // duh
   {"key_savegame",    {&key_savegame},       {KEYD_F2}        ,
    0,MAX_KEY,def_key,ss_keys}, // key to save current game
   {"key_loadgame",    {&key_loadgame},       {KEYD_F3}        ,
@@ -703,30 +724,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to chat with player 3
   {"key_chatplayer4", {&destination_keys[3]}, {'r'}            ,
    0,MAX_KEY,def_key,ss_keys}, // key to chat with player 4
-  {"key_weapontoggle",{&key_weapontoggle},    {'0'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle between two most preferred weapons with ammo
-  {"key_weapon1",     {&key_weapon1},         {'1'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 1 (fist/chainsaw)
-  {"key_weapon2",     {&key_weapon2},         {'2'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 2 (pistol)
-  {"key_weapon3",     {&key_weapon3},         {'3'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 3 (supershotgun/shotgun)
-  {"key_weapon4",     {&key_weapon4},         {'4'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 4 (chaingun)
-  {"key_weapon5",     {&key_weapon5},         {'5'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 5 (rocket launcher)
-  {"key_weapon6",     {&key_weapon6},         {'6'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 6 (plasma rifle)
-  {"key_weapon7",     {&key_weapon7},         {'7'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 7 (bfg9000)         //    ^
-  {"key_weapon8",     {&key_weapon8},         {'8'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 8 (chainsaw)        //    |
-  {"key_weapon9",     {&key_weapon9},         {'9'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 9 (supershotgun)    // phares
-  {"key_nextweapon",  {&key_nextweapon},      {KEYD_MWHEELUP}  ,
-   0,MAX_KEY,def_key,ss_keys}, // key to cycle to the next weapon
-  {"key_prevweapon",  {&key_prevweapon},      {KEYD_MWHEELDOWN},
-   0,MAX_KEY,def_key,ss_keys}, // key to cycle to the previous weapon
 
   // killough 2/22/98: screenshot key
   {"key_screenshot",  {&key_screenshot},      {'*'}            ,
@@ -739,8 +736,6 @@ default_t defaults[] =
   {"joy_right",{&joyright},{0},UL,UL,def_int,ss_none},
   {"joy_up",  {&joyup},  {0},  UL,UL,def_int,ss_none},
   {"joy_down",{&joydown},{0},  UL,UL,def_int,ss_none},
-  {"joyb_fire",{&joybfire},{0},0,UL,
-   def_int,ss_keys}, // joystick button number to use for fire
 
   {"Chat macros",{NULL},{0},UL,UL,def_none,ss_none},
   {"chatmacro0", {0,&chat_macros[0]}, {0,HUSTR_CHATMACRO0},UL,UL,

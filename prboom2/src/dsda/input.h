@@ -39,6 +39,19 @@ typedef enum {
   dsda_input_flydown,
   dsda_input_mlook, // todo - mouse / joy ignored
   dsda_input_novert, // todo - mouse / joy ignored
+  dsda_input_weapon1,
+  dsda_input_weapon2,
+  dsda_input_weapon3,
+  dsda_input_weapon4,
+  dsda_input_weapon5,
+  dsda_input_weapon6,
+  dsda_input_weapon7,
+  dsda_input_weapon8,
+  dsda_input_weapon9,
+  dsda_input_nextweapon, // todo - mouse / joy ignored
+  dsda_input_prevweapon, // todo - mouse / joy ignored
+  dsda_input_toggleweapon,
+  dsda_input_fire,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
