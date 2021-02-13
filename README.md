@@ -1,4 +1,4 @@
-# dsda-doom v0.12.0
+# dsda-doom v0.12.1
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning.
 
 ### Heretic Support (beta)
