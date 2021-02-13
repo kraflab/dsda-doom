@@ -17,8 +17,6 @@
 
 #include "input.h"
 
-#define DSDA_SEPARATE_CONFIG_COUNT 1
-
 int dsda_input_index = 0;
 dsda_input_t dsda_input[DSDA_SEPARATE_CONFIG_COUNT][DSDA_INPUT_IDENTIFIER_COUNT];
 
@@ -28,6 +26,14 @@ extern dboolean* joybuttons;
 
 dsda_input_t dsda_Input(int identifier) {
   return dsda_input[dsda_input_index][identifier];
+}
+
+void dsda_InputCopy(int identifier, dsda_input_t* input) {
+  int i;
+
+  for (i = 0; i < DSDA_SEPARATE_CONFIG_COUNT; ++i) {
+    input[i] = dsda_input[i][identifier];
+  }
 }
 
 int dsda_InputKey(int identifier) {
@@ -48,6 +54,10 @@ void dsda_InputReset(int identifier) {
 
 void dsda_InputSet(int identifier, dsda_input_t input) {
   dsda_input[dsda_input_index][identifier] = input;
+}
+
+void dsda_InputSetSpecific(int config_index, int identifier, dsda_input_t input) {
+  dsda_input[config_index][identifier] = input;
 }
 
 void dsda_InputSetKey(int identifier, int value) {

@@ -20,6 +20,8 @@
 
 #include "doomtype.h"
 
+#define DSDA_SEPARATE_CONFIG_COUNT 2
+
 typedef enum {
   dsda_input_null,
   dsda_input_forward,
@@ -34,11 +36,13 @@ typedef struct
 } dsda_input_t;
 
 dsda_input_t dsda_Input(int identifier);
+void dsda_InputCopy(int identifier, dsda_input_t input[DSDA_SEPARATE_CONFIG_COUNT]);
 int dsda_InputKey(int identifier);
 int dsda_InputMouseB(int identifier);
 int dsda_InputJoyB(int identifier);
 void dsda_InputReset(int identifier);
 void dsda_InputSet(int identifier, dsda_input_t input);
+void dsda_InputSetSpecific(int config_index, int identifier, dsda_input_t input);
 void dsda_InputSetKey(int identifier, int value);
 void dsda_InputSetMouseB(int identifier, int value);
 void dsda_InputSetJoyB(int identifier, int value);

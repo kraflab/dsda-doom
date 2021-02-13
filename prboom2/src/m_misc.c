@@ -1476,11 +1476,12 @@ void M_SaveDefaults (void)
         fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
       else if (defaults[i].type == def_input)
       {
-        dsda_input_t input;
-        input = dsda_Input(defaults[i].identifier);
+        dsda_input_t input[DSDA_SEPARATE_CONFIG_COUNT];
+        dsda_InputCopy(defaults[i].identifier, input);
 
-        fprintf(f, "%-*s %d %d %d\n",
-                maxlen, defaults[i].name, input.key, input.mouseb, input.joyb);
+        fprintf(f, "%-*s %d %d %d | %d %d %d\n", maxlen, defaults[i].name,
+                input[0].key, input[0].mouseb, input[0].joyb,
+                input[1].key, input[1].mouseb, input[1].joyb);
       }
       else
         fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
@@ -1541,7 +1542,9 @@ void M_LoadDefaults (void)
   for (i = 0 ; i < numdefaults ; i++) {
     if (defaults[i].type == def_input)
     {
-      dsda_InputSet(defaults[i].identifier, defaults[i].input);
+      int c;
+      for (c = 0; c < DSDA_SEPARATE_CONFIG_COUNT; ++c)
+        dsda_InputSetSpecific(c, defaults[i].identifier, defaults[i].input);
     }
     else
     {
@@ -1696,13 +1699,18 @@ void M_LoadDefaults (void)
               {
                 if (defaults[i].type == def_input)
                 {
-                  dsda_input_t input;
-                  sscanf(strparm, "%d %d %d", &input.key, &input.mouseb, &input.joyb);
+                  int c, count;
+                  dsda_input_t input[DSDA_SEPARATE_CONFIG_COUNT];
+                  count = sscanf(strparm, "%d %d %d | %d %d %d",
+                                 &input[0].key, &input[0].mouseb, &input[0].joyb,
+                                 &input[1].key, &input[1].mouseb, &input[1].joyb);
+                  count = count / 3;
 
-                  if (input.key >= 0 && input.key < 512 && // TODO: make NUMKEYS available
-                      input.mouseb >= -1 && input.mouseb < MAX_MOUSEB &&
-                      input.joyb >= -1 && input.joyb < 8) // TODO: define MAX_JOYB
-                    dsda_InputSet(defaults[i].identifier, input);
+                  for (c = 0; c < DSDA_SEPARATE_CONFIG_COUNT, c < count; ++c)
+                    if (input[c].key >= 0 && input[c].key < 512 && // TODO: make NUMKEYS available
+                        input[c].mouseb >= -1 && input[c].mouseb < MAX_MOUSEB &&
+                        input[c].joyb >= -1 && input[c].joyb < 8) // TODO: define MAX_JOYB
+                      dsda_InputSetSpecific(c, defaults[i].identifier, input[c]);
                 }
 
                 //jff 3/4/98 range check numeric parameters
