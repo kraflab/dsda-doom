@@ -241,7 +241,7 @@ enum {
 };
 
 // heretic
-typedef union
+typedef struct
 {
     int i;
     struct mobj_s *m;
