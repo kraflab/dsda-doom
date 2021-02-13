@@ -339,25 +339,6 @@ mobj_t **bodyque = 0;                   // phares 8/10/98
 int inventoryTics;
 int lookheld;
 dboolean usearti = true;
-int key_lookdown;
-int key_lookup;
-int key_lookcenter;
-int key_flycenter;
-int key_useartifact;
-int key_arti_tome;
-int key_arti_quartz;
-int key_arti_urn;
-int key_arti_bomb;
-int key_arti_ring;
-int key_arti_chaosdevice;
-int key_arti_shadowsphere;
-int key_arti_wings;
-int key_arti_torch;
-int key_arti_morph;
-int key_invleft;
-int key_invright;
-int mousebinvleft;
-int mousebinvright;
 
 static dboolean InventoryMoveLeft(void);
 static dboolean InventoryMoveRight(void);
@@ -396,11 +377,11 @@ static void SetMouseButtons(unsigned int buttons_mask)
 
     if (!mousebuttons[i] && button_on)
     {
-      if (i == mousebinvleft)
+      if (i == dsda_InputMouseB(dsda_input_invleft))
       {
           InventoryMoveLeft();
       }
-      else if (i == mousebinvright)
+      else if (i == dsda_InputMouseB(dsda_input_invright))
       {
           InventoryMoveRight();
       }
@@ -603,7 +584,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
     look = arti = flyheight = 0;
 
-    if (gamekeydown[key_lookdown] || gamekeydown[key_lookup])
+    if (dsda_InputActive(dsda_input_lookdown) || dsda_InputActive(dsda_input_lookup))
     {
       lookheld += ticdup;
     }
@@ -621,16 +602,16 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
 
     // Look up/down/center keys
-    if (gamekeydown[key_lookup])
+    if (dsda_InputActive(dsda_input_lookup))
     {
       look = lspeed;
     }
-    if (gamekeydown[key_lookdown])
+    if (dsda_InputActive(dsda_input_lookdown))
     {
       look = -lspeed;
     }
 
-    if (gamekeydown[key_lookcenter])
+    if (dsda_InputActive(dsda_input_lookcenter))
     {
       look = TOCENTER;
     }
@@ -644,14 +625,15 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     {
       flyheight = -5;
     }
-    if (gamekeydown[key_flycenter])
+    if (dsda_InputActive(dsda_input_flycenter))
     {
       flyheight = TOCENTER;
       look = TOCENTER;
     }
 
     // Use artifact key
-    if (gamekeydown[key_useartifact])
+    // add full input once mouse / joy release implemented
+    if (dsda_InputKeyActive(dsda_input_use_artifact))
     {
       if (inventory)
       {
@@ -666,56 +648,56 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         usearti = false;
       }
     }
-    if (gamekeydown[key_arti_tome] && !cmd->arti
+    if (dsda_InputKeyActive(dsda_input_arti_tome) && !cmd->arti
         && !players[consoleplayer].powers[pw_weaponlevel2])
     {
-      gamekeydown[key_arti_tome] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_tome);
       cmd->arti = arti_tomeofpower;
     }
-    else if (gamekeydown[key_arti_quartz] && !cmd->arti
+    else if (dsda_InputKeyActive(dsda_input_arti_quartz) && !cmd->arti
         && (players[consoleplayer].mo->health < MAXHEALTH))
     {
-      gamekeydown[key_arti_quartz] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_quartz);
       cmd->arti = arti_health;
     }
-    else if (gamekeydown[key_arti_urn] && !cmd->arti)
+    else if (dsda_InputKeyActive(dsda_input_arti_urn) && !cmd->arti)
     {
-      gamekeydown[key_arti_urn] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_urn);
       cmd->arti = arti_superhealth;
     }
-    else if (gamekeydown[key_arti_bomb] && !cmd->arti)
+    else if (dsda_InputKeyActive(dsda_input_arti_bomb) && !cmd->arti)
     {
-      gamekeydown[key_arti_bomb] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_bomb);
       cmd->arti = arti_firebomb;
     }
-    else if (gamekeydown[key_arti_ring] && !cmd->arti)
+    else if (dsda_InputKeyActive(dsda_input_arti_ring) && !cmd->arti)
     {
-      gamekeydown[key_arti_ring] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_ring);
       cmd->arti = arti_invulnerability;
     }
-    else if (gamekeydown[key_arti_chaosdevice] && !cmd->arti)
+    else if (dsda_InputKeyActive(dsda_input_arti_chaosdevice) && !cmd->arti)
     {
-      gamekeydown[key_arti_chaosdevice] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_chaosdevice);
       cmd->arti = arti_teleport;
     }
-    else if (gamekeydown[key_arti_shadowsphere] && !cmd->arti)
+    else if (dsda_InputKeyActive(dsda_input_arti_shadowsphere) && !cmd->arti)
     {
-      gamekeydown[key_arti_shadowsphere] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_shadowsphere);
       cmd->arti = arti_invisibility;
     }
-    else if (gamekeydown[key_arti_wings] && !cmd->arti)
+    else if (dsda_InputKeyActive(dsda_input_arti_wings) && !cmd->arti)
     {
-      gamekeydown[key_arti_wings] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_wings);
       cmd->arti = arti_fly;
     }
-    else if (gamekeydown[key_arti_torch] && !cmd->arti)
+    else if (dsda_InputKeyActive(dsda_input_arti_torch) && !cmd->arti)
     {
-      gamekeydown[key_arti_torch] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_torch);
       cmd->arti = arti_torch;
     }
-    else if (gamekeydown[key_arti_morph] && !cmd->arti)
+    else if (dsda_InputKeyActive(dsda_input_arti_morph) && !cmd->arti)
     {
-      gamekeydown[key_arti_morph] = false;
+      dsda_InputDeactivateKey(dsda_input_arti_morph);
       cmd->arti = arti_egg;
     }
 
@@ -1114,7 +1096,7 @@ dboolean G_Responder (event_t* ev)
     player_t *plr;
 
     plr = &players[consoleplayer];
-    if (ev->type == ev_keyup && ev->data1 == key_useartifact)
+    if (ev->type == ev_keyup && ev->data1 == dsda_InputKey(dsda_input_use_artifact))
     {                           // flag to denote that it's okay to use an artifact
       if (!inventory)
       {
@@ -1219,7 +1201,7 @@ dboolean G_Responder (event_t* ev)
         special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
         return true;
       }
-      if (ev->data1 == key_invleft)
+      if (ev->data1 == dsda_InputKey(dsda_input_invleft))
       {
         if (InventoryMoveLeft())
         {
@@ -1227,7 +1209,7 @@ dboolean G_Responder (event_t* ev)
         }
         break;
       }
-      if (ev->data1 == key_invright)
+      if (ev->data1 == dsda_InputKey(dsda_input_invright))
       {
         if (InventoryMoveRight())
         {

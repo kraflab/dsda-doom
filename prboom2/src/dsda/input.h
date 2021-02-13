@@ -37,6 +37,7 @@ typedef enum {
   dsda_input_use, // note - joyb use doubles as join demo
   dsda_input_flyup,
   dsda_input_flydown,
+  dsda_input_flycenter,
   dsda_input_mlook, // todo - mouse / joy ignored
   dsda_input_novert, // todo - mouse / joy ignored
   dsda_input_weapon1,
@@ -52,6 +53,22 @@ typedef enum {
   dsda_input_prevweapon, // todo - mouse / joy ignored
   dsda_input_toggleweapon,
   dsda_input_fire,
+  dsda_input_lookup,
+  dsda_input_lookdown,
+  dsda_input_lookcenter,
+  dsda_input_use_artifact, // todo - mouse / joy ignored (need release tracking)
+  dsda_input_arti_tome, // todo - mouse / joy ignored
+  dsda_input_arti_quartz, // todo - mouse / joy ignored
+  dsda_input_arti_urn, // todo - mouse / joy ignored
+  dsda_input_arti_bomb, // todo - mouse / joy ignored
+  dsda_input_arti_ring, // todo - mouse / joy ignored
+  dsda_input_arti_chaosdevice, // todo - mouse / joy ignored
+  dsda_input_arti_shadowsphere, // todo - mouse / joy ignored
+  dsda_input_arti_wings, // todo - mouse / joy ignored
+  dsda_input_arti_torch, // todo - mouse / joy ignored
+  dsda_input_arti_morph, // todo - mouse / joy ignored
+  dsda_input_invleft, // todo - joy ignored
+  dsda_input_invright, // todo - joy ignored
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
