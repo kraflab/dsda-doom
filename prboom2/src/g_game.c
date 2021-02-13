@@ -197,7 +197,6 @@ int shorttics;
 
 int     key_right;
 int     key_left;
-int     key_down;
 int     key_mlook;
 int     key_novert;
 int     key_menu_right;                                      // phares 3/7/98
@@ -270,7 +269,6 @@ int     key_prevweapon;
 int     key_screenshot;             // killough 2/22/98: screenshot key
 int     mousebfire;
 int     mousebstrafe;
-int     mousebbackward;
 int     mousebuse;
 int     joybfire;
 int     joybstrafe;
@@ -623,7 +621,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (dsda_InputActive(dsda_input_forward))
     forward += forwardmove[speed];
-  if (gamekeydown[key_down])
+  if (dsda_InputActive(dsda_input_backward))
     forward -= forwardmove[speed];
   if (joyymove < 0)
     forward += forwardmove[speed];
@@ -881,8 +879,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
 
   // mouse
-  if (mousebuttons[mousebbackward])
-    forward -= forwardmove[speed];
 
   if (mouse_doubleclick_as_use) {//e6y
 
@@ -4600,7 +4596,7 @@ void P_WalkTicker()
 
   if (dsda_InputActive(dsda_input_forward))
     forward += forwardmove[speed];
-  if (gamekeydown[key_down])
+  if (dsda_InputActive(dsda_input_backward))
     forward -= forwardmove[speed];
   if (joyymove < 0)
     forward += forwardmove[speed];

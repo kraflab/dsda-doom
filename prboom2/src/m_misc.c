@@ -558,6 +558,8 @@ default_t defaults[] =
   { "Input settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
   { "input_forward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_forward, { 'w', 2, -1 } },
+  { "input_backward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_backward, { 's', -1, -1 } },
 
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
@@ -573,8 +575,6 @@ default_t defaults[] =
    def_int,ss_keys}, // mouse button number to use for fire
   {"mouseb_strafe",{&mousebstrafe},{1},-1,MAX_MOUSEB,
    def_int,ss_keys}, // mouse button number to use for strafing
-  {"mouseb_backward",{&mousebbackward},{-1},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for backward motion
   {"mouseb_use", {&mousebuse},{-1},-1,MAX_MOUSEB,
    def_int,ss_keys}, // mouse button number to use for using doors/switches
   //jff 3/8/98 end of lower range change for -1 allowed in mouse binding
@@ -589,8 +589,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to turn right
   {"key_left",        {&key_left},           {KEYD_LEFTARROW} ,
    0,MAX_KEY,def_key,ss_keys}, // key to turn left
-  {"key_down",        {&key_down},           {'s'},
-   0,MAX_KEY,def_key,ss_keys}, // key to move backward
   {"key_mlook",       {&key_mlook},           {'\\'},
    0,MAX_KEY,def_key,ss_keys}, // key to move backward
   {"key_novert",      {&key_novert},          {0}  ,
