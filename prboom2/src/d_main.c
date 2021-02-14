@@ -185,6 +185,8 @@ void D_PostEvent(event_t *ev)
   // Moved to I_StartTic()
   // if (gametic < 3) return;
 
+  dsda_InputTrackEvent(ev);
+
   // Allow only sensible keys during skipping
   if (doSkip)
   {

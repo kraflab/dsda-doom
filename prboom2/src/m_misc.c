@@ -1700,7 +1700,7 @@ void M_LoadDefaults (void)
                   count = count / 3;
 
                   for (c = 0; c < DSDA_SEPARATE_CONFIG_COUNT && c < count; ++c)
-                    if (input[c].key >= 0 && input[c].key < 512 && // TODO: make NUMKEYS available
+                    if (input[c].key >= 0 && input[c].key < NUMKEYS &&
                         input[c].mouseb >= -1 && input[c].mouseb < MAX_MOUSE_BUTTONS &&
                         input[c].joyb >= -1 && input[c].joyb < 8) // TODO: define MAX_JOYB
                       dsda_InputSetSpecific(c, defaults[i].identifier, input[c]);

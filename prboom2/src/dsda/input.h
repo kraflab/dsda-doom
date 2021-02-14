@@ -19,9 +19,11 @@
 #define __DSDA_INPUT__
 
 #include "doomtype.h"
+#include "d_event.h"
 
 #define DSDA_SEPARATE_CONFIG_COUNT 2
 #define NUMKEYS 512
+#define MAX_MOUSE_BUTTONS 8
 
 typedef enum {
   dsda_input_null,
@@ -82,6 +84,7 @@ typedef struct
   int joyb;
 } dsda_input_t;
 
+void dsda_InputTrackEvent(event_t* ev);
 dsda_input_t dsda_Input(int identifier);
 void dsda_InputFlush(void);
 void dsda_InputCopy(int identifier, dsda_input_t input[DSDA_SEPARATE_CONFIG_COUNT]);
@@ -97,6 +100,7 @@ void dsda_InputSetJoyB(int identifier, int value);
 dboolean dsda_InputActive(int identifer);
 dboolean dsda_InputKeyActive(int identifier);
 dboolean dsda_InputMouseBActive(int identifier);
+dboolean dsda_InputMouseBActivated(int identifier);
 dboolean dsda_InputJoyBActive(int identifier);
 void dsda_InputActivateKey(int identifier);
 void dsda_InputActivateKeyValue(int key);

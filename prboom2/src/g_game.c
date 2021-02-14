@@ -296,9 +296,6 @@ static const struct
     { wp_beak,        wp_beak },
 };
 
-static int mousearray[MAX_MOUSE_BUTTONS + 1];
-int *mousebuttons = &mousearray[1];    // allow [-1]
-
 // mouse values are used once
 static int   mousex;
 static int   mousey;
@@ -360,29 +357,15 @@ static inline signed char fudgef(signed char b)
   return b;
 }
 
-static void SetMouseButtons(unsigned int buttons_mask)
+static void TempCheckMouseButton(void)
 {
-  int i;
-
-  for (i = 0; i < MAX_MOUSE_BUTTONS; ++i)
+  if (dsda_InputMouseBActivated(dsda_input_invleft))
   {
-    unsigned int button_on = (buttons_mask & (1 << i)) != 0;
-
-    // Detect button press:
-
-    if (!mousebuttons[i] && button_on)
-    {
-      if (i == dsda_InputMouseB(dsda_input_invleft))
-      {
-          InventoryMoveLeft();
-      }
-      else if (i == dsda_InputMouseB(dsda_input_invright))
-      {
-          InventoryMoveRight();
-      }
-    }
-
-    mousebuttons[i] = button_on;
+    InventoryMoveLeft();
+  }
+  else if (dsda_InputMouseBActivated(dsda_input_invright))
+  {
+    InventoryMoveRight();
   }
 }
 
@@ -1057,7 +1040,6 @@ static void G_DoLoadLevel (void)
   mousex = mousey = 0;
   mlooky = 0;//e6y
   special_event = 0; paused = false;
-  memset (&mousearray, 0, sizeof(mousearray));
   memset (&joyarray, 0, sizeof(joyarray));
 
   // killough 5/13/98: in case netdemo has consoleplayer other than green
@@ -1220,7 +1202,7 @@ dboolean G_Responder (event_t* ev)
       return false;   // always let key up events filter down
 
     case ev_mouse:
-      SetMouseButtons(ev->data1);
+      TempCheckMouseButton();
       /*
        * bmead@surfree.com
        * Modified by Barry Mead after adding vastly more resolution

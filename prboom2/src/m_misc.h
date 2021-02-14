@@ -103,7 +103,6 @@ typedef struct default_s
     def_input, // Composite input
     def_bool = def_int,  // Boolean
     def_key = def_hex,   // Key code (byte)
-    def_mouseb = def_int,// Mouse button
     def_colour = def_hex // Colour (256 colour palette entry)
   } type; // CPhipps - type of entry
   int   setupscreen;      // phares 4/19/98: setup screen where this appears
@@ -121,7 +120,6 @@ typedef struct default_s
 #define IS_STRING(dv) ((dv).type == def_str)
 // CPhipps - What is the max. key code that X will send us?
 #define MAX_KEY 65536
-#define MAX_MOUSEB 4
 
 #define UL (-123456789) /* magic number for no min or max for parameter */
 
