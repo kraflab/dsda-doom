@@ -1093,32 +1093,17 @@ dboolean G_Responder (event_t* ev)
   // which kind of demo, and allow other events during playback
 
   if (gameaction == ga_nothing && (demoplayback || gamestate == GS_DEMOSCREEN))
-    {
-      // killough 9/29/98: allow user to pause demos during playback
-      if (ev->type == ev_keydown && ev->data1 == key_pause)
   {
-    if (paused ^= 2)
-      S_PauseSound();
-    else
-      S_ResumeSound();
-    return true;
-  }
-
-      // killough 10/98:
-      // Don't pop up menu, if paused in middle
-      // of demo playback, or if automap active.
-      // Don't suck up keys, which may be cheats
-
-//e6y
-  /*
-      return gamestate == GS_DEMOSCREEN &&
-  !(paused & 2) && !(automapmode & am_active) &&
-  ((ev->type == ev_keydown) ||
-   (ev->type == ev_mouse && ev->data1) ||
-   (ev->type == ev_joystick && ev->data1)) ?
-  M_StartControlPanel(), true : false;
-    */
+    // killough 9/29/98: allow user to pause demos during playback
+    if (ev->type == ev_keydown && ev->data1 == key_pause)
+    {
+      if (paused ^= 2)
+        S_PauseSound();
+      else
+        S_ResumeSound();
+      return true;
     }
+  }
 
   if (gamestate == GS_FINALE && F_Responder(ev))
     return true;  // finale ate the event
@@ -1153,16 +1138,6 @@ dboolean G_Responder (event_t* ev)
       return true;    // eat key down events
 
     case ev_mouse:
-      /*
-       * bmead@surfree.com
-       * Modified by Barry Mead after adding vastly more resolution
-       * to the Mouse Sensitivity Slider in the options menu 1-9-2000
-       * Removed the mouseSensitivity "*4" to allow more low end
-       * sensitivity resolution especially for lsdoom users.
-       */
-      //e6y mousex += (ev->data2*(mouseSensitivity_horiz))/10;  /* killough */
-      //e6y mousey += (ev->data3*(mouseSensitivity_vert))/10;  /*Mead rm *4 */
-
       //e6y
       mousex += (AccelerateMouse(ev->data2)*(mouseSensitivity_horiz))/10;  /* killough */
       if(GetMouseLook())
