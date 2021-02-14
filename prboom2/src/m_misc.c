@@ -622,6 +622,8 @@ default_t defaults[] =
     dsda_input_spy, { KEYD_F12, -1, -1 } },
   { "input_join_demo", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_join_demo, { 0, -1, -1 } },
+  { "input_pause", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_pause, { KEYD_PAUSE, -1, -1 } },
 
   { "input_lookup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_lookup, { 0, -1, -1 } },
@@ -711,8 +713,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to quit game
   {"key_gamma",       {&key_gamma},          {KEYD_F11}       ,
    0,MAX_KEY,def_key,ss_keys}, // key to adjust gamma correction
-  {"key_pause",       {&key_pause},          {KEYD_PAUSE}     ,
-   0,MAX_KEY,def_key,ss_keys}, // key to pause the game
   {"key_chat",        {&key_chat},           {'t'}            ,
    0,MAX_KEY,def_key,ss_keys}, // key to enter a chat message
   {"key_backspace",   {&key_backspace},      {KEYD_BACKSPACE} ,

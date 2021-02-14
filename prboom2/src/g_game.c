@@ -235,7 +235,6 @@ int     key_messages;
 int     key_quickload;
 int     key_quit;
 int     key_gamma;
-int     key_pause;
 int     key_setup;
 int     destination_keys[MAXPLAYERS];
 
@@ -1095,7 +1094,7 @@ dboolean G_Responder (event_t* ev)
   if (gameaction == ga_nothing && (demoplayback || gamestate == GS_DEMOSCREEN))
   {
     // killough 9/29/98: allow user to pause demos during playback
-    if (ev->type == ev_keydown && ev->data1 == key_pause)
+    if (dsda_InputActivated(dsda_input_pause))
     {
       if (paused ^= 2)
         S_PauseSound();
@@ -1128,13 +1127,15 @@ dboolean G_Responder (event_t* ev)
     return InventoryMoveRight();
   }
 
+  if (dsda_InputActivated(dsda_input_pause))
+  {
+    special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
+    return true;
+  }
+
   switch (ev->type)
   {
     case ev_keydown:
-      if (ev->data1 == key_pause)           // phares
-      {
-        special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
-      }
       return true;    // eat key down events
 
     case ev_mouse:

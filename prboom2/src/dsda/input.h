@@ -75,6 +75,7 @@ typedef enum {
   dsda_input_invright,
   dsda_input_spy,
   dsda_input_join_demo,
+  dsda_input_pause,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
