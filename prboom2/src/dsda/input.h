@@ -86,7 +86,7 @@ typedef struct
   int joyb;
 } dsda_input_t;
 
-void dsda_InputTrackTick(void);
+void dsda_InputFlushTick(void);
 void dsda_InputTrackEvent(event_t* ev);
 dboolean dsda_InputActivated(int identifier);
 dboolean dsda_InputTickActivated(int identifier);

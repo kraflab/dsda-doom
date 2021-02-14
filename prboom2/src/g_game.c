@@ -1268,7 +1268,7 @@ void G_Ticker (void)
         }
     }
 
-    dsda_InputTrackTick();
+    dsda_InputFlushTick();
     dsda_WatchCommand();
 
     // check for special buttons

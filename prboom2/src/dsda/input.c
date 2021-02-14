@@ -71,7 +71,7 @@ static void dsda_InputTrackKeyUp(event_t* ev) {
   gamekeys[key].deactivated_at = dsda_input_counter;
 }
 
-void dsda_InputTrackTick(void) {
+void dsda_InputFlushTick(void) {
   dsda_input_tick_counter = dsda_input_counter;
 }
 

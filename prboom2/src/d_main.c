@@ -208,7 +208,10 @@ void D_PostEvent(event_t *ev)
     }
   }
 
-  M_Responder(ev) || G_Responder(ev);
+  if (M_Responder(ev))
+    dsda_InputFlushTick(); // If the menu used the event, make it invisible
+  else
+    G_Responder(ev);
 }
 
 //
