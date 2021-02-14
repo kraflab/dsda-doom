@@ -327,7 +327,6 @@ mobj_t **bodyque = 0;                   // phares 8/10/98
 
 int inventoryTics;
 int lookheld;
-dboolean usearti = true;
 
 static dboolean InventoryMoveLeft(void);
 static dboolean InventoryMoveRight(void);
@@ -594,19 +593,17 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
 
     // Use artifact key
-    if (dsda_InputActive(dsda_input_use_artifact))
+    if (dsda_InputTickActivated(dsda_input_use_artifact))
     {
       if (inventory)
       {
         players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
         inventory = false;
         cmd->arti = 0;
-        usearti = false;
       }
-      else if (usearti)
+      else
       {
         cmd->arti = players[consoleplayer].inventory[inv_ptr].type;
-        usearti = false;
       }
     }
     if (dsda_InputTickActivated(dsda_input_arti_tome) && !cmd->arti
@@ -1040,21 +1037,6 @@ static void G_DoLoadLevel (void)
 
 dboolean G_Responder (event_t* ev)
 {
-  if (heretic)
-  {
-    player_t *plr;
-
-    plr = &players[consoleplayer];
-    if (dsda_InputDeactivated(dsda_input_use_artifact))
-    {                           // flag to denote that it's okay to use an artifact
-      if (!inventory)
-      {
-        plr->readyArtifact = plr->inventory[inv_ptr].type;
-      }
-      usearti = true;
-    }
-  }
-
   if (
     gamestate == GS_LEVEL && (
       HU_Responder(ev) ||
