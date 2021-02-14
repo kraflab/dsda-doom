@@ -260,7 +260,6 @@ void D_Display (fixed_t frac)
   dboolean viewactive = false, isborder = false;
 
   // e6y
-  extern dboolean gamekeydown[];
   if (doSkip)
   {
     if (HU_DrawDemoProgress(false))

@@ -15,14 +15,20 @@
 //	DSDA Input
 //
 
+#include <string.h>
+
 #include "input.h"
 
 int dsda_input_index = 0;
 dsda_input_t dsda_input[DSDA_SEPARATE_CONFIG_COUNT][DSDA_INPUT_IDENTIFIER_COUNT];
 
-extern dboolean gamekeydown[];
+static dboolean gamekeydown[NUMKEYS];
 extern int* mousebuttons;
 extern dboolean* joybuttons;
+
+void dsda_InputFlush(void) {
+  memset(gamekeydown, 0, sizeof(gamekeydown));
+}
 
 dsda_input_t dsda_Input(int identifier) {
   return dsda_input[dsda_input_index][identifier];
@@ -102,6 +108,15 @@ dboolean dsda_InputJoyBActive(int identifier) {
   return input->joyb >= 0 && joybuttons[input->joyb];
 }
 
+void dsda_InputActivateKey(int identifier) {
+  dsda_input_t* input;
+  input = &dsda_input[dsda_input_index][identifier];
+
+  if (!input->key) return;
+
+  gamekeydown[input->key] = true;
+}
+
 void dsda_InputDeactivateKey(int identifier) {
   dsda_input_t* input;
   input = &dsda_input[dsda_input_index][identifier];
@@ -109,4 +124,16 @@ void dsda_InputDeactivateKey(int identifier) {
   if (!input->key) return;
 
   gamekeydown[input->key] = false;
+}
+
+void dsda_InputActivateKeyValue(int key) {
+  if (key >= NUMKEYS) return;
+
+  gamekeydown[key] = true;
+}
+
+void dsda_InputDeactivateKeyValue(int key) {
+  if (key >= NUMKEYS) return;
+
+  gamekeydown[key] = false;
 }

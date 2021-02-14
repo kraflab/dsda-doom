@@ -99,7 +99,6 @@ extern int key_speed_default;
 extern int speed_step;
 extern int key_level_restart;
 extern int key_nextlevel;
-extern int key_demo_jointogame;
 extern int key_demo_endlevel;
 extern int key_demo_skip;
 extern int key_walkcamera;

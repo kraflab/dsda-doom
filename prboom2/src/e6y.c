@@ -112,7 +112,6 @@ int key_speed_default;
 int speed_step;
 int key_level_restart;
 int key_nextlevel;
-int key_demo_jointogame;
 int key_demo_endlevel;
 int key_demo_skip;
 int key_walkcamera;

@@ -235,7 +235,6 @@ int     key_messages;
 int     key_quickload;
 int     key_quit;
 int     key_gamma;
-int     key_spy;
 int     key_pause;
 int     key_setup;
 int     destination_keys[MAXPLAYERS];
@@ -246,7 +245,6 @@ int     key_screenshot;             // killough 2/22/98: screenshot key
 #define TURBOTHRESHOLD  0x32
 #define SLOWTURNTICS  6
 #define QUICKREVERSE (short)32768 // 180 degree reverse                    // phares
-#define NUMKEYS   512
 
 fixed_t forwardmove[2] = {0x19, 0x32};
 fixed_t sidemove[2]    = {0x18, 0x28};
@@ -257,9 +255,6 @@ fixed_t forwardmove_normal[2] = {0x19, 0x32};
 fixed_t sidemove_normal[2]    = {0x18, 0x28};
 fixed_t sidemove_strafe50[2]  = {0x19, 0x32};
 
-// CPhipps - made lots of key/button state vars static
-//e6y static
-dboolean gamekeydown[NUMKEYS];
 static int     turnheld;       // for accelerative turning
 
 // Set to -1 or +1 to switch to the previous or next weapon.
@@ -1057,7 +1052,7 @@ static void G_DoLoadLevel (void)
   Z_CheckHeap ();
 
   // clear cmd building stuff
-  memset (gamekeydown, 0, sizeof(gamekeydown));
+  dsda_InputFlush();
   joyxmove = joyymove = 0;
   mousex = mousey = 0;
   mlooky = 0;//e6y
@@ -1119,27 +1114,27 @@ dboolean G_Responder (event_t* ev)
   //
   // killough 11/98: don't autorepeat spy mode switch
 
-  if (ev->data1 == key_spy && netgame && (demoplayback || !deathmatch) &&
+  if (ev->data1 == dsda_InputKey(dsda_input_spy) && netgame && (demoplayback || !deathmatch) &&
       gamestate == GS_LEVEL)
-    {
-      if (ev->type == ev_keyup)
-  gamekeydown[key_spy] = false;
-      if (ev->type == ev_keydown && !gamekeydown[key_spy])
   {
-    gamekeydown[key_spy] = true;
-    do                                          // spy mode
-      if (++displayplayer >= MAXPLAYERS)
-        displayplayer = 0;
-    while (!playeringame[displayplayer] && displayplayer!=consoleplayer);
+    if (ev->type == ev_keyup)
+      dsda_InputDeactivateKey(dsda_input_spy);
+    if (ev->type == ev_keydown && !dsda_InputKeyActive(dsda_input_spy))
+    {
+      dsda_InputActivateKey(dsda_input_spy);
+      do                                          // spy mode
+        if (++displayplayer >= MAXPLAYERS)
+          displayplayer = 0;
+      while (!playeringame[displayplayer] && displayplayer!=consoleplayer);
 
-    ST_Start();    // killough 3/7/98: switch status bar views too
-    HU_Start();
-    S_UpdateSounds(players[displayplayer].mo);
-    R_ActivateSectorInterpolations();
-    R_SmoothPlaying_Reset(NULL);
-  }
-      return true;
+      ST_Start();    // killough 3/7/98: switch status bar views too
+      HU_Start();
+      S_UpdateSounds(players[displayplayer].mo);
+      R_ActivateSectorInterpolations();
+      R_SmoothPlaying_Reset(NULL);
     }
+    return true;
+  }
 
   // any other key pops up menu if in demos
   //
@@ -1217,13 +1212,11 @@ dboolean G_Responder (event_t* ev)
         }
         break;
       }
-      if (ev->data1 <NUMKEYS)
-        gamekeydown[ev->data1] = true;
+      dsda_InputActivateKeyValue(ev->data1);
       return true;    // eat key down events
 
     case ev_keyup:
-      if (ev->data1 <NUMKEYS)
-        gamekeydown[ev->data1] = false;
+      dsda_InputDeactivateKeyValue(ev->data1);
       return false;   // always let key up events filter down
 
     case ev_mouse:
@@ -4648,7 +4641,7 @@ void G_ReadDemoContinueTiccmd (ticcmd_t* cmd)
 
   if (gametic >= demo_tics_count ||
     demo_continue_p > demobuffer + demolength ||
-    gamekeydown[key_demo_jointogame] || dsda_InputJoyBActive(dsda_input_use))
+    dsda_InputKeyActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use))
   {
     demo_continue_p = NULL;
     democontinue = false;

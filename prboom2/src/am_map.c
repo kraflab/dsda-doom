@@ -61,8 +61,6 @@
 
 #include "dsda/input.h"
 
-extern dboolean gamekeydown[];
-
 //jff 1/7/98 default automap colors added
 int mapcolor_back;    // map background
 int mapcolor_grid;    // grid lines color

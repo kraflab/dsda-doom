@@ -21,6 +21,7 @@
 #include "doomtype.h"
 
 #define DSDA_SEPARATE_CONFIG_COUNT 2
+#define NUMKEYS 512
 
 typedef enum {
   dsda_input_null,
@@ -69,6 +70,8 @@ typedef enum {
   dsda_input_arti_morph, // todo - mouse / joy ignored
   dsda_input_invleft, // todo - joy ignored
   dsda_input_invright, // todo - joy ignored
+  dsda_input_spy,
+  dsda_input_join_demo,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
@@ -80,6 +83,7 @@ typedef struct
 } dsda_input_t;
 
 dsda_input_t dsda_Input(int identifier);
+void dsda_InputFlush(void);
 void dsda_InputCopy(int identifier, dsda_input_t input[DSDA_SEPARATE_CONFIG_COUNT]);
 int dsda_InputKey(int identifier);
 int dsda_InputMouseB(int identifier);
@@ -94,6 +98,9 @@ dboolean dsda_InputActive(int identifer);
 dboolean dsda_InputKeyActive(int identifier);
 dboolean dsda_InputMouseBActive(int identifier);
 dboolean dsda_InputJoyBActive(int identifier);
+void dsda_InputActivateKey(int identifier);
+void dsda_InputActivateKeyValue(int key);
 void dsda_InputDeactivateKey(int identifier);
+void dsda_InputDeactivateKeyValue(int key);
 
 #endif

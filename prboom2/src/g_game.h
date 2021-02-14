@@ -133,7 +133,6 @@ extern int  key_messages;
 extern int  key_quickload;
 extern int  key_quit;
 extern int  key_gamma;
-extern int  key_spy;
 extern int  key_pause;
 extern int  key_setup;
 extern int  key_forward;

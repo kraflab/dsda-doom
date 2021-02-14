@@ -618,6 +618,11 @@ default_t defaults[] =
   { "input_fire", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_fire, { KEYD_RCTRL, 0, 0 } },
 
+  { "input_spy", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_spy, { KEYD_F12, -1, -1 } },
+  { "input_join_demo", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_join_demo, { 0, -1, -1 } },
+
   { "input_lookup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_lookup, { 0, -1, -1 } },
   { "input_lookdown", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
@@ -706,8 +711,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to quit game
   {"key_gamma",       {&key_gamma},          {KEYD_F11}       ,
    0,MAX_KEY,def_key,ss_keys}, // key to adjust gamma correction
-  {"key_spy",         {&key_spy},            {KEYD_F12}       ,
-   0,MAX_KEY,def_key,ss_keys}, // key to view from another coop player's view
   {"key_pause",       {&key_pause},          {KEYD_PAUSE}     ,
    0,MAX_KEY,def_key,ss_keys}, // key to pause the game
   {"key_chat",        {&key_chat},           {'t'}            ,
@@ -945,8 +948,6 @@ default_t defaults[] =
   {"key_level_restart", {&key_level_restart}, {KEYD_HOME},
    0,MAX_KEY,def_key,ss_keys},
   {"key_nextlevel", {&key_nextlevel}, {KEYD_PAGEDOWN},
-   0,MAX_KEY,def_key,ss_keys},
-  {"key_demo_jointogame", {&key_demo_jointogame}, {'q'},
    0,MAX_KEY,def_key,ss_keys},
   {"key_demo_endlevel", {&key_demo_endlevel}, {KEYD_END},
    0,MAX_KEY,def_key,ss_keys},
