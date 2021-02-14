@@ -355,18 +355,6 @@ static inline signed char fudgef(signed char b)
   return b;
 }
 
-static void TempCheckMouseButton(void)
-{
-  if (dsda_InputMouseBActivated(dsda_input_invleft))
-  {
-    InventoryMoveLeft();
-  }
-  else if (dsda_InputMouseBActivated(dsda_input_invright))
-  {
-    InventoryMoveRight();
-  }
-}
-
 void G_SetSpeed(void)
 {
   int p;
@@ -507,11 +495,10 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // turn 180 degrees in one keystroke?                           // phares
                                                                   //    |
-  if (dsda_InputKeyActive(dsda_input_reverse))                    //    V
+  if (dsda_InputTickActivated(dsda_input_reverse))                    //    V
     {
       if (!strafe)
         cmd->angleturn += QUICKREVERSE;                           //    ^
-      dsda_InputDeactivateKey(dsda_input_reverse);                //    |
     }                                                             // phares
 
   // let movement keys cancel each other out
@@ -608,8 +595,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
 
     // Use artifact key
-    // add full input once mouse / joy release implemented
-    if (dsda_InputKeyActive(dsda_input_use_artifact))
+    if (dsda_InputActive(dsda_input_use_artifact))
     {
       if (inventory)
       {
@@ -624,56 +610,46 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         usearti = false;
       }
     }
-    if (dsda_InputKeyActive(dsda_input_arti_tome) && !cmd->arti
+    if (dsda_InputTickActivated(dsda_input_arti_tome) && !cmd->arti
         && !players[consoleplayer].powers[pw_weaponlevel2])
     {
-      dsda_InputDeactivateKey(dsda_input_arti_tome);
       cmd->arti = arti_tomeofpower;
     }
-    else if (dsda_InputKeyActive(dsda_input_arti_quartz) && !cmd->arti
+    else if (dsda_InputTickActivated(dsda_input_arti_quartz) && !cmd->arti
         && (players[consoleplayer].mo->health < MAXHEALTH))
     {
-      dsda_InputDeactivateKey(dsda_input_arti_quartz);
       cmd->arti = arti_health;
     }
-    else if (dsda_InputKeyActive(dsda_input_arti_urn) && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_urn) && !cmd->arti)
     {
-      dsda_InputDeactivateKey(dsda_input_arti_urn);
       cmd->arti = arti_superhealth;
     }
-    else if (dsda_InputKeyActive(dsda_input_arti_bomb) && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_bomb) && !cmd->arti)
     {
-      dsda_InputDeactivateKey(dsda_input_arti_bomb);
       cmd->arti = arti_firebomb;
     }
-    else if (dsda_InputKeyActive(dsda_input_arti_ring) && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_ring) && !cmd->arti)
     {
-      dsda_InputDeactivateKey(dsda_input_arti_ring);
       cmd->arti = arti_invulnerability;
     }
-    else if (dsda_InputKeyActive(dsda_input_arti_chaosdevice) && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_chaosdevice) && !cmd->arti)
     {
-      dsda_InputDeactivateKey(dsda_input_arti_chaosdevice);
       cmd->arti = arti_teleport;
     }
-    else if (dsda_InputKeyActive(dsda_input_arti_shadowsphere) && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_shadowsphere) && !cmd->arti)
     {
-      dsda_InputDeactivateKey(dsda_input_arti_shadowsphere);
       cmd->arti = arti_invisibility;
     }
-    else if (dsda_InputKeyActive(dsda_input_arti_wings) && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_wings) && !cmd->arti)
     {
-      dsda_InputDeactivateKey(dsda_input_arti_wings);
       cmd->arti = arti_fly;
     }
-    else if (dsda_InputKeyActive(dsda_input_arti_torch) && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_torch) && !cmd->arti)
     {
-      dsda_InputDeactivateKey(dsda_input_arti_torch);
       cmd->arti = arti_torch;
     }
-    else if (dsda_InputKeyActive(dsda_input_arti_morph) && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_morph) && !cmd->arti)
     {
-      dsda_InputDeactivateKey(dsda_input_arti_morph);
       cmd->arti = arti_egg;
     }
 
@@ -1070,7 +1046,7 @@ dboolean G_Responder (event_t* ev)
     player_t *plr;
 
     plr = &players[consoleplayer];
-    if (ev->type == ev_keyup && ev->data1 == dsda_InputKey(dsda_input_use_artifact))
+    if (dsda_InputDeactivated(dsda_input_use_artifact))
     {                           // flag to denote that it's okay to use an artifact
       if (!inventory)
       {
@@ -1092,26 +1068,20 @@ dboolean G_Responder (event_t* ev)
   // killough 2/22/98: even during DM demo
   //
   // killough 11/98: don't autorepeat spy mode switch
-
-  if (ev->data1 == dsda_InputKey(dsda_input_spy) && netgame && (demoplayback || !deathmatch) &&
+  if (dsda_InputActivated(dsda_input_spy) &&
+      netgame && (demoplayback || !deathmatch) &&
       gamestate == GS_LEVEL)
   {
-    if (ev->type == ev_keyup)
-      dsda_InputDeactivateKey(dsda_input_spy);
-    if (ev->type == ev_keydown && !dsda_InputKeyActive(dsda_input_spy))
-    {
-      dsda_InputActivateKey(dsda_input_spy);
-      do                                          // spy mode
-        if (++displayplayer >= MAXPLAYERS)
-          displayplayer = 0;
-      while (!playeringame[displayplayer] && displayplayer!=consoleplayer);
+    do                                          // spy mode
+      if (++displayplayer >= MAXPLAYERS)
+        displayplayer = 0;
+    while (!playeringame[displayplayer] && displayplayer!=consoleplayer);
 
-      ST_Start();    // killough 3/7/98: switch status bar views too
-      HU_Start();
-      S_UpdateSounds(players[displayplayer].mo);
-      R_ActivateSectorInterpolations();
-      R_SmoothPlaying_Reset(NULL);
-    }
+    ST_Start();    // killough 3/7/98: switch status bar views too
+    HU_Start();
+    S_UpdateSounds(players[displayplayer].mo);
+    R_ActivateSectorInterpolations();
+    R_SmoothPlaying_Reset(NULL);
     return true;
   }
 
@@ -1155,51 +1125,34 @@ dboolean G_Responder (event_t* ev)
 
   // If the next/previous weapon keys are pressed, set the next_weapon
   // variable to change weapons when the next ticcmd is generated.
-  if (ev->type == ev_keydown)
+  if (dsda_InputActivated(dsda_input_prevweapon))
   {
-    if (ev->data1 == dsda_InputKey(dsda_input_prevweapon))
-    {
-      next_weapon = -1;
-    }
-    else if (ev->data1 == dsda_InputKey(dsda_input_nextweapon))
-    {
-      next_weapon = 1;
-    }
+    next_weapon = -1;
+  }
+  else if (dsda_InputActivated(dsda_input_nextweapon))
+  {
+    next_weapon = 1;
+  }
+
+  if (dsda_InputActivated(dsda_input_invleft))
+  {
+    return InventoryMoveLeft();
+  }
+  if (dsda_InputActivated(dsda_input_invright))
+  {
+    return InventoryMoveRight();
   }
 
   switch (ev->type)
-    {
+  {
     case ev_keydown:
       if (ev->data1 == key_pause)           // phares
       {
         special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
-        return true;
       }
-      if (ev->data1 == dsda_InputKey(dsda_input_invleft))
-      {
-        if (InventoryMoveLeft())
-        {
-          return true;
-        }
-        break;
-      }
-      if (ev->data1 == dsda_InputKey(dsda_input_invright))
-      {
-        if (InventoryMoveRight())
-        {
-          return true;
-        }
-        break;
-      }
-      dsda_InputActivateKeyValue(ev->data1);
       return true;    // eat key down events
 
-    case ev_keyup:
-      dsda_InputDeactivateKeyValue(ev->data1);
-      return false;   // always let key up events filter down
-
     case ev_mouse:
-      TempCheckMouseButton();
       /*
        * bmead@surfree.com
        * Modified by Barry Mead after adding vastly more resolution
@@ -1229,7 +1182,7 @@ dboolean G_Responder (event_t* ev)
 
     default:
       break;
-    }
+  }
   return false;
 }
 
@@ -1357,6 +1310,7 @@ void G_Ticker (void)
         }
     }
 
+    dsda_InputTrackTick();
     dsda_WatchCommand();
 
     // check for special buttons

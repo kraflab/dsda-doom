@@ -37,7 +37,7 @@ typedef enum {
   dsda_input_straferight,
   dsda_input_strafe,
   dsda_input_autorun, // todo - mouse / joy ignored
-  dsda_input_reverse, // todo - mouse / joy ignored
+  dsda_input_reverse,
   dsda_input_use, // note - joyb use doubles as join demo
   dsda_input_flyup,
   dsda_input_flydown,
@@ -53,26 +53,26 @@ typedef enum {
   dsda_input_weapon7,
   dsda_input_weapon8,
   dsda_input_weapon9,
-  dsda_input_nextweapon, // todo - mouse / joy ignored
-  dsda_input_prevweapon, // todo - mouse / joy ignored
+  dsda_input_nextweapon,
+  dsda_input_prevweapon,
   dsda_input_toggleweapon,
   dsda_input_fire,
   dsda_input_lookup,
   dsda_input_lookdown,
   dsda_input_lookcenter,
-  dsda_input_use_artifact, // todo - mouse / joy ignored (need release tracking)
-  dsda_input_arti_tome, // todo - mouse / joy ignored
-  dsda_input_arti_quartz, // todo - mouse / joy ignored
-  dsda_input_arti_urn, // todo - mouse / joy ignored
-  dsda_input_arti_bomb, // todo - mouse / joy ignored
-  dsda_input_arti_ring, // todo - mouse / joy ignored
-  dsda_input_arti_chaosdevice, // todo - mouse / joy ignored
-  dsda_input_arti_shadowsphere, // todo - mouse / joy ignored
-  dsda_input_arti_wings, // todo - mouse / joy ignored
-  dsda_input_arti_torch, // todo - mouse / joy ignored
-  dsda_input_arti_morph, // todo - mouse / joy ignored
-  dsda_input_invleft, // todo - joy ignored
-  dsda_input_invright, // todo - joy ignored
+  dsda_input_use_artifact,
+  dsda_input_arti_tome,
+  dsda_input_arti_quartz,
+  dsda_input_arti_urn,
+  dsda_input_arti_bomb,
+  dsda_input_arti_ring,
+  dsda_input_arti_chaosdevice,
+  dsda_input_arti_shadowsphere,
+  dsda_input_arti_wings,
+  dsda_input_arti_torch,
+  dsda_input_arti_morph,
+  dsda_input_invleft,
+  dsda_input_invright,
   dsda_input_spy,
   dsda_input_join_demo,
   DSDA_INPUT_IDENTIFIER_COUNT
@@ -85,7 +85,11 @@ typedef struct
   int joyb;
 } dsda_input_t;
 
+void dsda_InputTrackTick(void);
 void dsda_InputTrackEvent(event_t* ev);
+dboolean dsda_InputActivated(int identifier);
+dboolean dsda_InputTickActivated(int identifier);
+dboolean dsda_InputDeactivated(int identifier);
 dsda_input_t dsda_Input(int identifier);
 void dsda_InputFlush(void);
 void dsda_InputCopy(int identifier, dsda_input_t input[DSDA_SEPARATE_CONFIG_COUNT]);
@@ -101,11 +105,6 @@ void dsda_InputSetJoyB(int identifier, int value);
 dboolean dsda_InputActive(int identifer);
 dboolean dsda_InputKeyActive(int identifier);
 dboolean dsda_InputMouseBActive(int identifier);
-dboolean dsda_InputMouseBActivated(int identifier);
 dboolean dsda_InputJoyBActive(int identifier);
-void dsda_InputActivateKey(int identifier);
-void dsda_InputActivateKeyValue(int key);
-void dsda_InputDeactivateKey(int identifier);
-void dsda_InputDeactivateKeyValue(int key);
 
 #endif
