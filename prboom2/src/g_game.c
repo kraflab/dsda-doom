@@ -309,8 +309,6 @@ static int   dclicks2;
 // joystick values are repeated
 static int   joyxmove;
 static int   joyymove;
-static dboolean joyarray[9];
-dboolean *joybuttons = &joyarray[1];    // allow [-1]
 
 // Game events info
 static buttoncode_t special_event; // Event triggered by local player, to send
@@ -1040,7 +1038,6 @@ static void G_DoLoadLevel (void)
   mousex = mousey = 0;
   mlooky = 0;//e6y
   special_event = 0; paused = false;
-  memset (&joyarray, 0, sizeof(joyarray));
 
   // killough 5/13/98: in case netdemo has consoleplayer other than green
   ST_Start();
@@ -1226,14 +1223,6 @@ dboolean G_Responder (event_t* ev)
       return true;    // eat events
 
     case ev_joystick:
-      joybuttons[0] = ev->data1 & 1;
-      joybuttons[1] = ev->data1 & 2;
-      joybuttons[2] = ev->data1 & 4;
-      joybuttons[3] = ev->data1 & 8;
-      joybuttons[4] = ev->data1 & 16;
-      joybuttons[5] = ev->data1 & 32;
-      joybuttons[6] = ev->data1 & 64;
-      joybuttons[7] = ev->data1 & 128;
       joyxmove = ev->data2;
       joyymove = ev->data3;
       return true;    // eat events

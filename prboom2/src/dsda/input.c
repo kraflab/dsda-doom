@@ -33,21 +33,22 @@ static int dsda_input_counter;
 static dboolean gamekeydown[NUMKEYS];
 static dsda_input_state_t mousearray[MAX_MOUSE_BUTTONS + 1];
 static dsda_input_state_t *mousebuttons = &mousearray[1]; // allow [-1]
-extern dboolean* joybuttons;
+static dsda_input_state_t joyarray[MAX_JOY_BUTTONS + 1];
+static dsda_input_state_t *joybuttons = &joyarray[1];    // allow [-1]
 
-static void dsda_InputTrackMouse(event_t* ev) {
+static void dsda_InputTrackButtons(dsda_input_state_t* buttons, int max, event_t* ev) {
   int i;
 
-  for (i = 0; i < MAX_MOUSE_BUTTONS; ++i) {
+  for (i = 0; i < max; ++i) {
     unsigned int button_on = (ev->data1 & (1 << i)) != 0;
 
-    if (!mousebuttons[i].on && button_on)
-      mousebuttons[i].activated_at = dsda_input_counter;
+    if (!buttons[i].on && button_on)
+      buttons[i].activated_at = dsda_input_counter;
 
-    if (mousebuttons[i].on && !button_on)
-      mousebuttons[i].deactivated_at = dsda_input_counter;
+    if (buttons[i].on && !button_on)
+      buttons[i].deactivated_at = dsda_input_counter;
 
-    mousebuttons[i].on = button_on;
+    buttons[i].on = button_on;
   }
 }
 
@@ -57,7 +58,10 @@ void dsda_InputTrackEvent(event_t* ev) {
   switch (ev->type)
   {
     case ev_mouse:
-      dsda_InputTrackMouse(ev);
+      dsda_InputTrackButtons(mousebuttons, MAX_MOUSE_BUTTONS, ev);
+      break;
+    case ev_joystick:
+      dsda_InputTrackButtons(joybuttons, MAX_JOY_BUTTONS, ev);
       break;
   }
 }
@@ -77,6 +81,7 @@ dboolean dsda_InputMouseBDeactivated(int identifier) {
 void dsda_InputFlush(void) {
   memset(gamekeydown, 0, sizeof(gamekeydown));
   memset(mousearray, 0, sizeof(mousearray));
+  memset(joyarray, 0, sizeof(joyarray));
 }
 
 dsda_input_t dsda_Input(int identifier) {
@@ -133,7 +138,7 @@ dboolean dsda_InputActive(int identifier) {
 
   return (input->key         && gamekeydown[input->key]) ||
          (input->mouseb >= 0 && mousebuttons[input->mouseb].on) ||
-         (input->joyb >= 0   && joybuttons[input->joyb]);
+         (input->joyb >= 0   && joybuttons[input->joyb].on);
 }
 
 dboolean dsda_InputKeyActive(int identifier) {
@@ -154,7 +159,7 @@ dboolean dsda_InputJoyBActive(int identifier) {
   dsda_input_t* input;
   input = &dsda_input[dsda_input_index][identifier];
 
-  return input->joyb >= 0 && joybuttons[input->joyb];
+  return input->joyb >= 0 && joybuttons[input->joyb].on;
 }
 
 void dsda_InputActivateKey(int identifier) {

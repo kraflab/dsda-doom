@@ -24,6 +24,7 @@
 #define DSDA_SEPARATE_CONFIG_COUNT 2
 #define NUMKEYS 512
 #define MAX_MOUSE_BUTTONS 8
+#define MAX_JOY_BUTTONS 8
 
 typedef enum {
   dsda_input_null,
