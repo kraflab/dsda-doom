@@ -4524,7 +4524,7 @@ void G_ReadDemoContinueTiccmd (ticcmd_t* cmd)
 
   if (gametic >= demo_tics_count ||
     demo_continue_p > demobuffer + demolength ||
-    dsda_InputKeyActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use))
+    dsda_InputActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use))
   {
     demo_continue_p = NULL;
     democontinue = false;
