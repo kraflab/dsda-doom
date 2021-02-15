@@ -115,23 +115,10 @@ extern int  key_menu_enter;                                  // phares 3/7/98
 extern int  key_menu_clear;
 
 extern int  key_escape;                                             // phares
-extern int  key_savegame;                                           //    |
-extern int  key_loadgame;                                           //    V
-extern int  key_zoomin;
-extern int  key_zoomout;
 extern int  key_chat;
 extern int  key_backspace;
 extern int  key_enter;
 extern int  key_help;
-extern int  key_soundvolume;
-extern int  key_hud;
-extern int  key_quicksave;
-extern int  key_endgame;
-extern int  key_messages;
-extern int  key_quickload;
-extern int  key_quit;
-extern int  key_gamma;
-extern int  key_setup;
 extern int  key_forward;
 extern int  key_backward;
 extern int  destination_keys[MAXPLAYERS];
@@ -141,7 +128,6 @@ extern int  key_map_up;
 extern int  key_map_down;
 extern int  key_map_zoomin;
 extern int  key_map_zoomout;
-extern int  key_map;
 extern int  key_map_gobig;
 extern int  key_map_follow;
 extern int  key_map_mark;                                           //    ^
@@ -150,7 +136,6 @@ extern int  key_map_grid;                                           // phares
 extern int  key_map_rotate; // cph - map rotation
 extern int  key_map_overlay;// cph - map overlay
 extern int  key_map_textured;  //e6y: textured automap
-extern int  key_screenshot;    // killough 2/22/98 -- add key for screenshot
 extern int  autorun;           // always running?                   // phares
 
 extern int  defaultskill;      //jff 3/24/98 default skill

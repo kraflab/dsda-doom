@@ -835,13 +835,19 @@ dboolean AM_Responder
 
   rc = false;
 
-  if (!(automapmode & am_active))
+  if (dsda_InputActivated(dsda_input_map))
   {
-    if (ev->type == ev_keydown && ev->data1 == key_map)         // phares
+    if (!(automapmode & am_active))
     {
       AM_Start ();
-      rc = true;
     }
+    else
+    {
+      bigstate = 0;
+      AM_Stop ();
+    }
+
+    return true;
   }
   else if (ev->type == ev_keydown)
   {
@@ -878,11 +884,6 @@ dboolean AM_Responder
       mtof_zoommul = M_ZOOMIN;
       ftom_zoommul = M_ZOOMOUT;
       curr_mtof_zoommul = mtof_zoommul;
-    }
-    else if (ch == key_map)
-    {
-      bigstate = 0;
-      AM_Stop ();
     }
     else if (ch == key_map_gobig)
     {

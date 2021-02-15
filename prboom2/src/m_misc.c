@@ -618,12 +618,44 @@ default_t defaults[] =
   { "input_fire", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_fire, { KEYD_RCTRL, 0, 0 } },
 
-  { "input_spy", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_spy, { KEYD_F12, -1, -1 } },
-  { "input_join_demo", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_join_demo, { 0, -1, -1 } },
+  { "input_setup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_setup, { 0, -1, -1 } },
   { "input_pause", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_pause, { KEYD_PAUSE, -1, -1 } },
+  { "input_map", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map, { KEYD_TAB, -1, -1 } },
+  { "input_soundvolume", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_soundvolume, { KEYD_F4, -1, -1 } },
+  { "input_hud", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_hud, { KEYD_F5, -1, -1 } },
+  { "input_messages", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_messages, { KEYD_F8, -1, -1 } },
+  { "input_gamma", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_gamma, { KEYD_F11, -1, -1 } },
+  { "input_spy", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_spy, { KEYD_F12, -1, -1 } },
+  { "input_zoomin", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_zoomin, { '=', -1, -1 } },
+  { "input_zoomout", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_zoomout, { '-', -1, -1 } },
+  { "input_screenshot", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_screenshot, { '*', -1, -1 } },
+  { "input_savegame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_savegame, { KEYD_F2, -1, -1 } },
+  { "input_loadgame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_loadgame, { KEYD_F3, -1, -1 } },
+  { "input_quicksave", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_quicksave, { KEYD_F6, -1, -1 } },
+  { "input_quickload", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_quickload, { KEYD_F9, -1, -1 } },
+  { "input_endgame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_endgame, { KEYD_F7, -1, -1 } },
+  { "input_quit", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_quit, { KEYD_F10, -1, -1 } },
+
+
+  { "input_join_demo", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_join_demo, { 0, -1, -1 } },
 
   { "input_lookup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_lookup, { 0, -1, -1 } },
@@ -690,37 +722,13 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to select from menu
   {"key_menu_clear",  {&key_menu_clear},     {KEYD_DEL}     ,
    0,MAX_KEY,def_key,ss_keys}, // key to clear a key binding
-  {"key_setup",       {&key_setup},          {0},
-   0,MAX_KEY,def_key,ss_keys}, //e6y: key for entering setup menu
 
-  {"key_savegame",    {&key_savegame},       {KEYD_F2}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to save current game
-  {"key_loadgame",    {&key_loadgame},       {KEYD_F3}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to restore from saved games
-  {"key_soundvolume", {&key_soundvolume},    {KEYD_F4}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to bring up sound controls
-  {"key_hud",         {&key_hud},            {KEYD_F5}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to adjust HUD
-  {"key_quicksave",   {&key_quicksave},      {KEYD_F6}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to to quicksave
-  {"key_endgame",     {&key_endgame},        {KEYD_F7}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to end the game
-  {"key_messages",    {&key_messages},       {KEYD_F8}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle message enable
-  {"key_quickload",   {&key_quickload},      {KEYD_F9}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to load from quicksave
-  {"key_quit",        {&key_quit},           {KEYD_F10}       ,
-   0,MAX_KEY,def_key,ss_keys}, // key to quit game
-  {"key_gamma",       {&key_gamma},          {KEYD_F11}       ,
-   0,MAX_KEY,def_key,ss_keys}, // key to adjust gamma correction
   {"key_chat",        {&key_chat},           {'t'}            ,
    0,MAX_KEY,def_key,ss_keys}, // key to enter a chat message
   {"key_backspace",   {&key_backspace},      {KEYD_BACKSPACE} ,
    0,MAX_KEY,def_key,ss_keys}, // backspace key
   {"key_enter",       {&key_enter},          {KEYD_ENTER}     ,
    0,MAX_KEY,def_key,ss_keys}, // key to select from menu or see last message
-  {"key_map",         {&key_map},            {KEYD_TAB}       ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle automap display
   {"key_map_right",   {&key_map_right},      {KEYD_RIGHTARROW},// phares 3/7/98
    0,MAX_KEY,def_key,ss_keys}, // key to shift automap right   //     |
   {"key_map_left",    {&key_map_left},       {KEYD_LEFTARROW} ,//     V
@@ -749,10 +757,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to toggle overlaying the automap on the rendered display
   {"key_map_textured", {&key_map_textured},   {0}             ,
    0,MAX_KEY,def_key,ss_keys}, // key to toggle textured automap
-  {"key_zoomin",      {&key_zoomin},          {'='}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to enlarge display
-  {"key_zoomout",     {&key_zoomout},         {'-'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to reduce display
   {"key_chatplayer1", {&destination_keys[0]}, {'g'}            ,
    0,MAX_KEY,def_key,ss_keys}, // key to chat with player 1
   // killough 11/98: fix 'i'/'b' reversal
@@ -762,10 +766,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to chat with player 3
   {"key_chatplayer4", {&destination_keys[3]}, {'r'}            ,
    0,MAX_KEY,def_key,ss_keys}, // key to chat with player 4
-
-  // killough 2/22/98: screenshot key
-  {"key_screenshot",  {&key_screenshot},      {'*'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to take a screenshot
 
   {"Joystick settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_joystick",{&usejoystick},{0},0,2,

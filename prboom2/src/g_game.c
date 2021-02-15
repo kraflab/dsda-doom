@@ -204,10 +204,6 @@ int     key_menu_escape;                                     //     |
 int     key_menu_enter;                                      // phares 3/7/98
 int     key_menu_clear;
 int     key_escape = KEYD_ESCAPE;                           // phares 4/13/98
-int     key_savegame;                                               // phares
-int     key_loadgame;                                               //    |
-int     key_zoomin;
-int     key_zoomout;
 int     key_chat;
 int     key_backspace;
 int     key_enter;
@@ -217,7 +213,6 @@ int     key_map_up;
 int     key_map_down;
 int     key_map_zoomin;
 int     key_map_zoomout;
-int     key_map;
 int     key_map_gobig;
 int     key_map_follow;
 int     key_map_mark;
@@ -227,18 +222,7 @@ int     key_map_overlay; // cph - map overlay
 int     key_map_rotate;  // cph - map rotation
 int     key_map_textured;  // e6y - textured automap
 int     key_help = KEYD_F1;                                 // phares 4/13/98
-int     key_soundvolume;
-int     key_hud;
-int     key_quicksave;
-int     key_endgame;
-int     key_messages;
-int     key_quickload;
-int     key_quit;
-int     key_gamma;
-int     key_setup;
 int     destination_keys[MAXPLAYERS];
-
-int     key_screenshot;             // killough 2/22/98: screenshot key
 
 #define MAXPLMOVE   (forwardmove[1])
 #define TURBOTHRESHOLD  0x32

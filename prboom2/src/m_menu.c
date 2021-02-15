@@ -2404,24 +2404,24 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
   {"HELP"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,{&key_help}},
   {"MENU"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,{&key_escape}},
   // killough 10/98: hotkey for entering setup menu:
-  {"SETUP"       ,S_KEY       ,m_scrn,KB_X,KB_Y+ 1*8,{&key_setup}},
+  {"SETUP"       ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 1*8,{0},NULL,NULL,NULL,NULL,dsda_input_setup},
   {"PAUSE"       ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 2*8,{0},NULL,NULL,NULL,NULL,dsda_input_pause},
-  {"AUTOMAP"     ,S_KEY       ,m_scrn,KB_X,KB_Y+ 3*8,{&key_map}},
-  {"VOLUME"      ,S_KEY       ,m_scrn,KB_X,KB_Y+ 4*8,{&key_soundvolume}},
-  {"HUD"         ,S_KEY       ,m_scrn,KB_X,KB_Y+ 5*8,{&key_hud}},
-  {"MESSAGES"    ,S_KEY       ,m_scrn,KB_X,KB_Y+ 6*8,{&key_messages}},
-  {"GAMMA FIX"   ,S_KEY       ,m_scrn,KB_X,KB_Y+ 7*8,{&key_gamma}},
+  {"AUTOMAP"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 3*8,{0},NULL,NULL,NULL,NULL,dsda_input_map},
+  {"VOLUME"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 4*8,{0},NULL,NULL,NULL,NULL,dsda_input_soundvolume},
+  {"HUD"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 5*8,{0},NULL,NULL,NULL,NULL,dsda_input_hud},
+  {"MESSAGES"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 6*8,{0},NULL,NULL,NULL,NULL,dsda_input_messages},
+  {"GAMMA FIX"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 7*8,{0},NULL,NULL,NULL,NULL,dsda_input_gamma},
   {"SPY"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 8*8,{0},NULL,NULL,NULL,NULL,dsda_input_spy},
-  {"LARGER VIEW" ,S_KEY       ,m_scrn,KB_X,KB_Y+ 9*8,{&key_zoomin}},
-  {"SMALLER VIEW",S_KEY       ,m_scrn,KB_X,KB_Y+10*8,{&key_zoomout}},
-  {"SCREENSHOT"  ,S_KEY       ,m_scrn,KB_X,KB_Y+11*8,{&key_screenshot}},
+  {"LARGER VIEW" ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 9*8,{0},NULL,NULL,NULL,NULL,dsda_input_zoomin},
+  {"SMALLER VIEW",S_INPUT     ,m_scrn,KB_X,KB_Y+10*8,{0},NULL,NULL,NULL,NULL,dsda_input_zoomout},
+  {"SCREENSHOT"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},NULL,NULL,NULL,NULL,dsda_input_screenshot},
   {"GAME"        ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+12*8},
-  {"SAVE"        ,S_KEY       ,m_scrn,KB_X,KB_Y+13*8,{&key_savegame}},
-  {"LOAD"        ,S_KEY       ,m_scrn,KB_X,KB_Y+14*8,{&key_loadgame}},
-  {"QUICKSAVE"   ,S_KEY       ,m_scrn,KB_X,KB_Y+15*8,{&key_quicksave}},
-  {"QUICKLOAD"   ,S_KEY       ,m_scrn,KB_X,KB_Y+16*8,{&key_quickload}},
-  {"END GAME"    ,S_KEY       ,m_scrn,KB_X,KB_Y+17*8,{&key_endgame}},
-  {"QUIT"        ,S_KEY       ,m_scrn,KB_X,KB_Y+18*8,{&key_quit}},
+  {"SAVE"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,{0},NULL,NULL,NULL,NULL,dsda_input_savegame},
+  {"LOAD"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,{0},NULL,NULL,NULL,NULL,dsda_input_loadgame},
+  {"QUICKSAVE"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+15*8,{0},NULL,NULL,NULL,NULL,dsda_input_quicksave},
+  {"QUICKLOAD"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,{0},NULL,NULL,NULL,NULL,dsda_input_quickload},
+  {"END GAME"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+17*8,{0},NULL,NULL,NULL,NULL,dsda_input_endgame},
+  {"QUIT"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+18*8,{0},NULL,NULL,NULL,NULL,dsda_input_quit},
   {"<- PREV", S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings1}},
   {"NEXT ->", S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings3}},
 
@@ -4341,17 +4341,17 @@ setup_menu_t helpstrings[] =  // HELP screen strings
   {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KT_X1,KT_Y1},
   {"HELP"        ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 1*8,{&key_help}},
   {"MENU"        ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 2*8,{&key_escape}},
-  {"SETUP"       ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 3*8,{&key_setup}},
+  {"SETUP"       ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 3*8,{0},NULL,NULL,NULL,NULL,dsda_input_setup},
   {"PAUSE"       ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 4*8,{0},NULL,NULL,NULL,NULL,dsda_input_pause},
-  {"AUTOMAP"     ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 5*8,{&key_map}},
-  {"SOUND VOLUME",S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 6*8,{&key_soundvolume}},
-  {"HUD"         ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 7*8,{&key_hud}},
-  {"MESSAGES"    ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 8*8,{&key_messages}},
-  {"GAMMA FIX"   ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 9*8,{&key_gamma}},
+  {"AUTOMAP"     ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 5*8,{0},NULL,NULL,NULL,NULL,dsda_input_map},
+  {"SOUND VOLUME",S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 6*8,{0},NULL,NULL,NULL,NULL,dsda_input_soundvolume},
+  {"HUD"         ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 7*8,{0},NULL,NULL,NULL,NULL,dsda_input_hud},
+  {"MESSAGES"    ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 8*8,{0},NULL,NULL,NULL,NULL,dsda_input_messages},
+  {"GAMMA FIX"   ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 9*8,{0},NULL,NULL,NULL,NULL,dsda_input_gamma},
   {"SPY"         ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+10*8,{0},NULL,NULL,NULL,NULL,dsda_input_spy},
-  {"LARGER VIEW" ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+11*8,{&key_zoomin}},
-  {"SMALLER VIEW",S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+12*8,{&key_zoomout}},
-  {"SCREENSHOT"  ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+13*8,{&key_screenshot}},
+  {"LARGER VIEW" ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+11*8,{0},NULL,NULL,NULL,NULL,dsda_input_zoomin},
+  {"SMALLER VIEW",S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+12*8,{0},NULL,NULL,NULL,NULL,dsda_input_zoomout},
+  {"SCREENSHOT"  ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+13*8,{0},NULL,NULL,NULL,NULL,dsda_input_screenshot},
 
   {"AUTOMAP"     ,S_SKIP|S_TITLE,m_null,KT_X1,KT_Y2},
   {"FOLLOW MODE" ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y2+ 1*8,{&key_map_follow}},
@@ -4391,12 +4391,12 @@ setup_menu_t helpstrings[] =  // HELP screen strings
   {"USE"         ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+11*8,{0},NULL,NULL,NULL,NULL,dsda_input_use},
 
   {"GAME"        ,S_SKIP|S_TITLE,m_null,KT_X2,KT_Y1},
-  {"SAVE"        ,S_SKIP|S_KEY,m_null,KT_X2,KT_Y1+ 1*8,{&key_savegame}},
-  {"LOAD"        ,S_SKIP|S_KEY,m_null,KT_X2,KT_Y1+ 2*8,{&key_loadgame}},
-  {"QUICKSAVE"   ,S_SKIP|S_KEY,m_null,KT_X2,KT_Y1+ 3*8,{&key_quicksave}},
-  {"END GAME"    ,S_SKIP|S_KEY,m_null,KT_X2,KT_Y1+ 4*8,{&key_endgame}},
-  {"QUICKLOAD"   ,S_SKIP|S_KEY,m_null,KT_X2,KT_Y1+ 5*8,{&key_quickload}},
-  {"QUIT"        ,S_SKIP|S_KEY,m_null,KT_X2,KT_Y1+ 6*8,{&key_quit}},
+  {"SAVE"        ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 1*8,{0},NULL,NULL,NULL,NULL,dsda_input_savegame},
+  {"LOAD"        ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 2*8,{0},NULL,NULL,NULL,NULL,dsda_input_loadgame},
+  {"QUICKSAVE"   ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 3*8,{0},NULL,NULL,NULL,NULL,dsda_input_quicksave},
+  {"END GAME"    ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 4*8,{0},NULL,NULL,NULL,NULL,dsda_input_endgame},
+  {"QUICKLOAD"   ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 5*8,{0},NULL,NULL,NULL,NULL,dsda_input_quickload},
+  {"QUIT"        ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 6*8,{0},NULL,NULL,NULL,NULL,dsda_input_quit},
 
   // Final entry
 
@@ -4683,14 +4683,11 @@ dboolean M_Responder (event_t* ev) {
 
       // phares 4/4/98:
       // Handle mouse buttons 3+, and allow it to pass down
-      // to where key binding can eat it.
-
-      if (setup_active && set_keybnd_active)
-        if (ev->data1 >> 2)
-        {
-          ch = 0; // meaningless, just to get you past the check for -1
-          mousewait = I_GetTime() + 15;
-        }
+      if (ev->data1 >> 2)
+      {
+        ch = 0; // meaningless, just to get you past the check for -1
+        mousewait = I_GetTime() + 15;
+      }
     }
     else
       // Process keyboard input
@@ -4762,7 +4759,7 @@ dboolean M_Responder (event_t* ev) {
   }
 
   // killough 2/22/98: add support for screenshot key:
-  if (ch == key_screenshot)
+  if (dsda_InputActivated(dsda_input_screenshot))
   {
     G_ScreenShot ();
     // Don't eat the keypress in this case. See sf bug #1843280.
@@ -4771,7 +4768,7 @@ dboolean M_Responder (event_t* ev) {
   // If there is no active menu displayed...
 
   if (!menuactive) {                                           // phares
-    if (ch == dsda_InputKey(dsda_input_autorun))      // Autorun                          //  V
+    if (dsda_InputActivated(dsda_input_autorun))               //  V
     {
       autorun = !autorun;
       return true;
@@ -4788,7 +4785,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (ch == key_savegame)     // Save Game
+    if (dsda_InputActivated(dsda_input_savegame))
     {
       M_StartControlPanel();
       S_StartSound(NULL,g_sfx_swtchn);
@@ -4796,7 +4793,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (ch == key_loadgame)     // Load Game
+    if (dsda_InputActivated(dsda_input_loadgame))
     {
       M_StartControlPanel();
       S_StartSound(NULL,g_sfx_swtchn);
@@ -4804,7 +4801,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (ch == key_soundvolume)      // Sound Volume
+    if (dsda_InputActivated(dsda_input_soundvolume))
     {
       M_StartControlPanel ();
       currentMenu = &SoundDef;
@@ -4813,42 +4810,44 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (ch == key_quicksave)      // Quicksave
+    if (dsda_InputActivated(dsda_input_quicksave))
     {
       S_StartSound(NULL,g_sfx_swtchn);
       M_QuickSave();
       return true;
     }
 
-    if (ch == key_endgame)      // End game
+    if (dsda_InputActivated(dsda_input_endgame))
     {
       S_StartSound(NULL,g_sfx_swtchn);
       M_EndGame(0);
       return true;
     }
 
-    if (ch == key_messages)      // Toggle messages
+    // Toggle messages
+    if (dsda_InputActivated(dsda_input_messages))
     {
       M_ChangeMessages(0);
       S_StartSound(NULL,g_sfx_swtchn);
       return true;
     }
 
-    if (ch == key_quickload)      // Quickload
+    if (dsda_InputActivated(dsda_input_quickload))
     {
       S_StartSound(NULL,g_sfx_swtchn);
       M_QuickLoad();
       return true;
     }
 
-    if (ch == key_quit)       // Quit DOOM
+    if (dsda_InputActivated(dsda_input_quit))
     {
       S_StartSound(NULL,g_sfx_swtchn);
       M_QuitDOOM(0);
       return true;
     }
 
-    if (ch == key_gamma)       // gamma toggle
+    // Toggle gamma
+    if (dsda_InputActivated(dsda_input_gamma))
     {
 //e6y
 #ifdef GL_DOOM
@@ -4880,7 +4879,7 @@ dboolean M_Responder (event_t* ev) {
       }
     }
 
-    if (ch == key_zoomout)     // zoom out
+    if (dsda_InputActivated(dsda_input_zoomout))
     {
       if ((automapmode & am_active) || chat_on)
         return false;
@@ -4889,7 +4888,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (ch == key_zoomin)               // zoom in
+    if (dsda_InputActivated(dsda_input_zoomin))
     {                                   // jff 2/23/98
       if ((automapmode & am_active) || chat_on)     // allow
         return false;                   // key_hud==key_zoomin
@@ -5015,7 +5014,7 @@ dboolean M_Responder (event_t* ev) {
     }
 #endif
 
-    if (ch == dsda_InputKey(dsda_input_mlook)) // mouse look
+    if (dsda_InputActivated(dsda_input_mlook)) // mouse look
     {
       movement_mouselook = !movement_mouselook;
       M_ChangeMouseLook();
@@ -5023,14 +5022,14 @@ dboolean M_Responder (event_t* ev) {
       // return true;
     }
 
-    if (ch == dsda_InputKey(dsda_input_novert))
+    if (dsda_InputActivated(dsda_input_novert))
     {
       movement_mousenovert = !movement_mousenovert;
       // Don't eat the keypress in this case.
       // return true;
     }
 
-    if (ch == key_hud)   // heads-up mode
+    if (dsda_InputActivated(dsda_input_hud))   // heads-up mode
     {
       if ((automapmode & am_active) || chat_on)    // jff 2/22/98
         return false;                  // HUD mode control
@@ -5047,7 +5046,7 @@ dboolean M_Responder (event_t* ev) {
     }
 
     /* killough 10/98: allow key shortcut into Setup menu */
-    if (ch == key_setup) {
+    if (dsda_InputActivated(dsda_input_setup)) {
       M_StartControlPanel();
       S_StartSound(NULL,g_sfx_swtchn);
       M_SetupNextMenu(&SetupDef);

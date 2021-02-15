@@ -76,6 +76,21 @@ typedef enum {
   dsda_input_spy,
   dsda_input_join_demo,
   dsda_input_pause,
+  dsda_input_setup,
+  dsda_input_map,
+  dsda_input_soundvolume,
+  dsda_input_hud,
+  dsda_input_messages,
+  dsda_input_gamma,
+  dsda_input_zoomin,
+  dsda_input_zoomout,
+  dsda_input_screenshot,
+  dsda_input_savegame,
+  dsda_input_loadgame,
+  dsda_input_quicksave,
+  dsda_input_quickload,
+  dsda_input_endgame,
+  dsda_input_quit,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

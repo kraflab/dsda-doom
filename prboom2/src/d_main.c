@@ -192,9 +192,9 @@ void D_PostEvent(event_t *ev)
   {
     if (ev->type == ev_keydown || ev->type == ev_keyup)
     {
-      if (ev->data1 == key_quit)
+      if (dsda_InputActivated(dsda_input_quit))
       {
-        // Immediate exit if key_quit is pressed in skip mode
+        // Immediate exit if quit key is pressed in skip mode
         I_SafeExit(0);
       }
       else
