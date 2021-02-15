@@ -4655,15 +4655,12 @@ dboolean M_Responder (event_t* ev) {
     }
 
     // phares 4/4/98:
-    // Handle joystick buttons 3 and 4, and allow them to pass down
+    // Handle joystick buttons 3+, and allow them to pass down
     // to where key binding can eat them.
 
     if (setup_active && set_keybnd_active) {
-      if (ev->data1&4) {
-        ch = 0; // meaningless, just to get you past the check for -1
-        joywait = I_GetTime() + 5;
-      }
-      if (ev->data1&8) {
+      if (ev->data1 >> 2)
+      {
         ch = 0; // meaningless, just to get you past the check for -1
         joywait = I_GetTime() + 5;
       }
@@ -4685,7 +4682,7 @@ dboolean M_Responder (event_t* ev) {
       }
 
       // phares 4/4/98:
-      // Handle mouse button 3, and allow it to pass down
+      // Handle mouse buttons 3+, and allow it to pass down
       // to where key binding can eat it.
 
       if (setup_active && set_keybnd_active)
