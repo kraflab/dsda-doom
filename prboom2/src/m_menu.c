@@ -513,7 +513,7 @@ enum
 
 // The definitions of the Episodes menu
 
-menuitem_t EpisodeMenu[]=	// added a few free entries for UMAPINFO
+menuitem_t EpisodeMenu[]=  // added a few free entries for UMAPINFO
 {
   {1,"M_EPI1", M_Episode,'k'},
   {1,"M_EPI2", M_Episode,'t'},
@@ -546,35 +546,35 @@ int epiChoice;
 
 void M_AddEpisode(const char *map, char *def)
 {
-	EpiCustom = true;
-	if (*def == '-')	// means 'clear'
-	{
-		EpiDef.numitems = 0;
-	}
-	else
-	{
-		int epi, mapnum;
-		const char *gfx = strtok(def, "\n");
-		const char *txt = strtok(NULL, "\n");
-		const char *alpha = strtok(NULL, "\n");
-		if (EpiDef.numitems >= 8) return;
-		G_ValidateMapName(map, &epi, &mapnum);
-		EpiMenuEpi[EpiDef.numitems] = epi;
-		EpiMenuMap[EpiDef.numitems] = mapnum;
-		strncpy(EpisodeMenu[EpiDef.numitems].name, gfx, 8);
-		EpisodeMenu[EpiDef.numitems].name[8] = 0;
-		EpisodeMenu[EpiDef.numitems].alttext = txt;
-		EpisodeMenu[EpiDef.numitems].alphaKey = alpha ? *alpha : 0;
-		EpiDef.numitems++;
-	}
-	if (EpiDef.numitems <= 4)
-	{
-		EpiDef.y = 63;
-	}
-	else
-	{
-		EpiDef.y = 63 - (EpiDef.numitems - 4) * (LINEHEIGHT / 2);
-	}
+  EpiCustom = true;
+  if (*def == '-')  // means 'clear'
+  {
+    EpiDef.numitems = 0;
+  }
+  else
+  {
+    int epi, mapnum;
+    const char *gfx = strtok(def, "\n");
+    const char *txt = strtok(NULL, "\n");
+    const char *alpha = strtok(NULL, "\n");
+    if (EpiDef.numitems >= 8) return;
+    G_ValidateMapName(map, &epi, &mapnum);
+    EpiMenuEpi[EpiDef.numitems] = epi;
+    EpiMenuMap[EpiDef.numitems] = mapnum;
+    strncpy(EpisodeMenu[EpiDef.numitems].name, gfx, 8);
+    EpisodeMenu[EpiDef.numitems].name[8] = 0;
+    EpisodeMenu[EpiDef.numitems].alttext = txt;
+    EpisodeMenu[EpiDef.numitems].alphaKey = alpha ? *alpha : 0;
+    EpiDef.numitems++;
+  }
+  if (EpiDef.numitems <= 4)
+  {
+    EpiDef.y = 63;
+  }
+  else
+  {
+    EpiDef.y = 63 - (EpiDef.numitems - 4) * (LINEHEIGHT / 2);
+  }
 }
 
 void M_DrawEpisode(void)
@@ -587,24 +587,24 @@ void M_DrawEpisode(void)
 
 void M_Episode(int choice)
 {
-	if (!EpiCustom)
-	{
-		if ((gamemode == shareware) && choice) {
-			M_StartMessage(s_SWSTRING, NULL, false); // Ty 03/27/98 - externalized
-			M_SetupNextMenu(&ReadDef1);
-			return;
-		}
+  if (!EpiCustom)
+  {
+    if ((gamemode == shareware) && choice) {
+      M_StartMessage(s_SWSTRING, NULL, false); // Ty 03/27/98 - externalized
+      M_SetupNextMenu(&ReadDef1);
+      return;
+    }
 
-		// Yet another hack...
-		if ((gamemode == registered) && (choice > 2) && !EpiCustom)
-		{
-			lprintf(LO_WARN,
-				"M_Episode: 4th episode requires UltimateDOOM\n");
-			choice = 0;
-		}
-	}
-	epiChoice = choice;
-	M_SetupNextMenu(&NewDef);
+    // Yet another hack...
+    if ((gamemode == registered) && (choice > 2) && !EpiCustom)
+    {
+      lprintf(LO_WARN,
+        "M_Episode: 4th episode requires UltimateDOOM\n");
+      choice = 0;
+    }
+  }
+  epiChoice = choice;
+  M_SetupNextMenu(&NewDef);
 }
 
 /////////////////////////////
@@ -694,8 +694,8 @@ void M_NewGame(int choice)
     M_SetupNextMenu(&NewDef);
   else
   {
-	  epiChoice = 0;
-	  M_SetupNextMenu(&EpiDef);
+    epiChoice = 0;
+    M_SetupNextMenu(&EpiDef);
   }
 }
 
@@ -716,7 +716,7 @@ void M_ChooseSkill(int choice)
       M_StartMessage(s_NIGHTMARE,M_VerifyNightmare,true);
       return;
     }
-  if (EpiMenuEpi[epiChoice] == -1 || EpiMenuMap[epiChoice] == -1) return;	// There is no map to start here.
+  if (EpiMenuEpi[epiChoice] == -1 || EpiMenuMap[epiChoice] == -1) return;  // There is no map to start here.
 
   G_DeferedInitNew(choice, EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
   M_ClearMenus ();
@@ -4619,40 +4619,40 @@ dboolean M_Responder (event_t* ev) {
 
   // Process joystick input
 
-  if (ev->type == ev_joystick && joywait < I_GetTime())  {
+  if (ev->type == ev_joystick && joywait < I_GetTime()) {
     if (ev->data3 == -1)
-      {
-  ch = key_menu_up;                                // phares 3/7/98
-  joywait = I_GetTime() + 5;
-      }
+    {
+      ch = key_menu_up;                                // phares 3/7/98
+      joywait = I_GetTime() + 5;
+    }
     else if (ev->data3 == 1)
-      {
-  ch = key_menu_down;                              // phares 3/7/98
-  joywait = I_GetTime() + 5;
-      }
+    {
+      ch = key_menu_down;                              // phares 3/7/98
+      joywait = I_GetTime() + 5;
+    }
 
     if (ev->data2 == -1)
-      {
-  ch = key_menu_left;                              // phares 3/7/98
-  joywait = I_GetTime() + 2;
-      }
+    {
+      ch = key_menu_left;                              // phares 3/7/98
+      joywait = I_GetTime() + 2;
+    }
     else if (ev->data2 == 1)
-      {
-  ch = key_menu_right;                             // phares 3/7/98
-  joywait = I_GetTime() + 2;
-      }
+    {
+      ch = key_menu_right;                             // phares 3/7/98
+      joywait = I_GetTime() + 2;
+    }
 
     if (ev->data1&1)
-      {
-  ch = key_menu_enter;                             // phares 3/7/98
-  joywait = I_GetTime() + 5;
-      }
+    {
+      ch = key_menu_enter;                             // phares 3/7/98
+      joywait = I_GetTime() + 5;
+    }
 
     if (ev->data1&2)
-      {
-  ch = key_menu_backspace;                         // phares 3/7/98
-  joywait = I_GetTime() + 5;
-      }
+    {
+      ch = key_menu_backspace;                         // phares 3/7/98
+      joywait = I_GetTime() + 5;
+    }
 
     // phares 4/4/98:
     // Handle joystick buttons 3 and 4, and allow them to pass down
@@ -4660,30 +4660,29 @@ dboolean M_Responder (event_t* ev) {
 
     if (setup_active && set_keybnd_active) {
       if (ev->data1&4) {
-  ch = 0; // meaningless, just to get you past the check for -1
-  joywait = I_GetTime() + 5;
+        ch = 0; // meaningless, just to get you past the check for -1
+        joywait = I_GetTime() + 5;
       }
       if (ev->data1&8) {
-  ch = 0; // meaningless, just to get you past the check for -1
-  joywait = I_GetTime() + 5;
+        ch = 0; // meaningless, just to get you past the check for -1
+        joywait = I_GetTime() + 5;
       }
     }
-
-  } else {
+  }
+  else {
    // Process mouse input
     if (ev->type == ev_mouse && mousewait < I_GetTime()) {
-
       if (ev->data1&1)
-  {
-    ch = key_menu_enter;                           // phares 3/7/98
-    mousewait = I_GetTime() + 15;
-  }
+      {
+        ch = key_menu_enter;                           // phares 3/7/98
+        mousewait = I_GetTime() + 15;
+      }
 
       if (ev->data1&2)
-  {
-    ch = key_menu_backspace;                       // phares 3/7/98
-    mousewait = I_GetTime() + 15;
-  }
+      {
+        ch = key_menu_backspace;                       // phares 3/7/98
+        mousewait = I_GetTime() + 15;
+      }
 
       // phares 4/4/98:
       // Handle mouse button 3, and allow it to pass down
@@ -4694,22 +4693,20 @@ dboolean M_Responder (event_t* ev) {
         {
           ch = 0; // meaningless, just to get you past the check for -1
           mousewait = I_GetTime() + 15;
-          }
         }
-        else
-
-          // Process keyboard input
-
-          if (ev->type == ev_keydown)
-            {
-            ch = ev->data1;               // phares 4/11/98:
-            if (ch == KEYD_RSHIFT)        // For chat string processing, need
-              shiftdown = true;           // to know when shift key is up or
-            }                             // down so you can get at the !,#,
-          else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
-            if (ev->data1 == KEYD_RSHIFT) // past this point, but keyups aren't
-              shiftdown = false;          // so we need to note the difference
-  }                                       // here using the 'shiftdown' dboolean.
+    }
+    else
+      // Process keyboard input
+      if (ev->type == ev_keydown)
+      {
+        ch = ev->data1;               // phares 4/11/98:
+        if (ch == KEYD_RSHIFT)        // For chat string processing, need
+          shiftdown = true;           // to know when shift key is up or
+      }                               // down so you can get at the !,#,
+      else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
+        if (ev->data1 == KEYD_RSHIFT) // past this point, but keyups aren't
+          shiftdown = false;          // so we need to note the difference
+  }                                   // here using the 'shiftdown' dboolean.
 
   if (ch == -1)
     return false; // we can't use the event here
@@ -4718,38 +4715,35 @@ dboolean M_Responder (event_t* ev) {
 
   if (saveStringEnter) {
     if (ch == key_menu_backspace)                            // phares 3/7/98
-      {
+    {
       if (saveCharIndex > 0)
-        {
+      {
         saveCharIndex--;
         savegamestrings[saveSlot][saveCharIndex] = 0;
-        }
       }
-
-      else if (ch == key_menu_escape)                    // phares 3/7/98
-  {
-    saveStringEnter = 0;
-    strcpy(&savegamestrings[saveSlot][0],saveOldString);
-  }
-
-      else if (ch == key_menu_enter)                     // phares 3/7/98
-  {
-    saveStringEnter = 0;
-    if (savegamestrings[saveSlot][0])
-      M_DoSave(saveSlot);
-  }
-
-      else
-  {
-  ch = toupper(ch);
-  if (ch >= 32 && ch <= 127 &&
-      saveCharIndex < SAVESTRINGSIZE-1 &&
-      M_StringWidth(savegamestrings[saveSlot]) < (SAVESTRINGSIZE-2)*8)
-    {
-    savegamestrings[saveSlot][saveCharIndex++] = ch;
-    savegamestrings[saveSlot][saveCharIndex] = 0;
     }
-  }
+    else if (ch == key_menu_escape)                    // phares 3/7/98
+    {
+      saveStringEnter = 0;
+      strcpy(&savegamestrings[saveSlot][0],saveOldString);
+    }
+    else if (ch == key_menu_enter)                     // phares 3/7/98
+    {
+      saveStringEnter = 0;
+      if (savegamestrings[saveSlot][0])
+        M_DoSave(saveSlot);
+    }
+    else
+    {
+      ch = toupper(ch);
+      if (ch >= 32 && ch <= 127 &&
+          saveCharIndex < SAVESTRINGSIZE-1 &&
+          M_StringWidth(savegamestrings[saveSlot]) < (SAVESTRINGSIZE-2)*8)
+      {
+        savegamestrings[saveSlot][saveCharIndex++] = ch;
+        savegamestrings[saveSlot][saveCharIndex] = 0;
+      }
+    }
     return true;
   }
 
@@ -4757,7 +4751,7 @@ dboolean M_Responder (event_t* ev) {
 
   if (messageToPrint) {
     if (messageNeedsInput == true &&
-  !(ch == ' ' || ch == 'n' || ch == 'y' || ch == key_escape)) // phares
+        !(ch == ' ' || ch == 'n' || ch == 'y' || ch == key_escape)) // phares
       return false;
 
     menuactive = messageLastMenuActive;
@@ -4772,22 +4766,22 @@ dboolean M_Responder (event_t* ev) {
 
   // killough 2/22/98: add support for screenshot key:
   if (ch == key_screenshot)
-    {
+  {
     G_ScreenShot ();
     // Don't eat the keypress in this case. See sf bug #1843280.
-    }
+  }
 
   // If there is no active menu displayed...
 
   if (!menuactive) {                                           // phares
     if (ch == dsda_InputKey(dsda_input_autorun))      // Autorun                          //  V
-      {
+    {
       autorun = !autorun;
       return true;
-      }
+    }
 
     if (ch == key_help)      // Help key
-      {
+    {
       M_StartControlPanel ();
 
       currentMenu = &HelpDef;         // killough 10/98: new help screen
@@ -4795,118 +4789,117 @@ dboolean M_Responder (event_t* ev) {
       itemOn = 0;
       S_StartSound(NULL,g_sfx_swtchn);
       return true;
-      }
+    }
 
     if (ch == key_savegame)     // Save Game
-      {
+    {
       M_StartControlPanel();
       S_StartSound(NULL,g_sfx_swtchn);
       M_SaveGame(0);
       return true;
-      }
+    }
 
     if (ch == key_loadgame)     // Load Game
-      {
+    {
       M_StartControlPanel();
       S_StartSound(NULL,g_sfx_swtchn);
       M_LoadGame(0);
       return true;
-      }
+    }
 
     if (ch == key_soundvolume)      // Sound Volume
-      {
+    {
       M_StartControlPanel ();
       currentMenu = &SoundDef;
       itemOn = sfx_vol;
       S_StartSound(NULL,g_sfx_swtchn);
       return true;
-      }
+    }
 
     if (ch == key_quicksave)      // Quicksave
-      {
+    {
       S_StartSound(NULL,g_sfx_swtchn);
       M_QuickSave();
       return true;
-      }
+    }
 
     if (ch == key_endgame)      // End game
-      {
+    {
       S_StartSound(NULL,g_sfx_swtchn);
       M_EndGame(0);
       return true;
-      }
+    }
 
     if (ch == key_messages)      // Toggle messages
-      {
+    {
       M_ChangeMessages(0);
       S_StartSound(NULL,g_sfx_swtchn);
       return true;
-      }
+    }
 
     if (ch == key_quickload)      // Quickload
-      {
+    {
       S_StartSound(NULL,g_sfx_swtchn);
       M_QuickLoad();
       return true;
-      }
+    }
 
     if (ch == key_quit)       // Quit DOOM
-      {
+    {
       S_StartSound(NULL,g_sfx_swtchn);
       M_QuitDOOM(0);
       return true;
-      }
+    }
 
     if (ch == key_gamma)       // gamma toggle
-      {
+    {
 //e6y
 #ifdef GL_DOOM
-        if (V_GetMode() == VID_MODEGL && gl_hardware_gamma)
-        {
-          static char str[200];
-          useglgamma++;
-          if (useglgamma > MAX_GLGAMMA)
-            useglgamma = 0;
-          sprintf(str, "Gamma correction level %d", useglgamma);
-          players[consoleplayer].message = str;
+      if (V_GetMode() == VID_MODEGL && gl_hardware_gamma)
+      {
+        static char str[200];
+        useglgamma++;
+        if (useglgamma > MAX_GLGAMMA)
+          useglgamma = 0;
+        sprintf(str, "Gamma correction level %d", useglgamma);
+        players[consoleplayer].message = str;
 
-          gld_SetGammaRamp(useglgamma);
-        }
-        else
-#endif
-        {
-      usegamma++;
-      if (usegamma > 4)
-  usegamma = 0;
-      players[consoleplayer].message =
-  usegamma == 0 ? s_GAMMALVL0 :
-  usegamma == 1 ? s_GAMMALVL1 :
-  usegamma == 2 ? s_GAMMALVL2 :
-  usegamma == 3 ? s_GAMMALVL3 :
-  s_GAMMALVL4;
-      V_SetPalette(0);
-      return true;
-        }
+        gld_SetGammaRamp(useglgamma);
       }
-
+      else
+#endif
+      {
+        usegamma++;
+        if (usegamma > 4)
+          usegamma = 0;
+        players[consoleplayer].message =
+          usegamma == 0 ? s_GAMMALVL0 :
+          usegamma == 1 ? s_GAMMALVL1 :
+          usegamma == 2 ? s_GAMMALVL2 :
+          usegamma == 3 ? s_GAMMALVL3 :
+          s_GAMMALVL4;
+        V_SetPalette(0);
+        return true;
+      }
+    }
 
     if (ch == key_zoomout)     // zoom out
-      {
+    {
       if ((automapmode & am_active) || chat_on)
         return false;
       M_SizeDisplay(0);
       S_StartSound(NULL,g_sfx_stnmov);
       return true;
-      }
+    }
 
     if (ch == key_zoomin)               // zoom in
-      {                                 // jff 2/23/98
+    {                                   // jff 2/23/98
       if ((automapmode & am_active) || chat_on)     // allow
         return false;                   // key_hud==key_zoomin
       M_SizeDisplay(1);                                             //  ^
-      S_StartSound(NULL,g_sfx_stnmov);                                //  |
+      S_StartSound(NULL,g_sfx_stnmov);                              //  |
       return true;                                                  // phares
-      }
+    }
 
     //e6y
     if (ch == key_speed_default && (!netgame||demoplayback) && !dsda_StrictMode())
@@ -5041,7 +5034,7 @@ dboolean M_Responder (event_t* ev) {
     }
 
     if (ch == key_hud)   // heads-up mode
-      {
+    {
       if ((automapmode & am_active) || chat_on)    // jff 2/22/98
         return false;                  // HUD mode control
       if (screenSize<8)                // function on default F5
@@ -5054,7 +5047,7 @@ dboolean M_Responder (event_t* ev) {
         HU_MoveHud(true);                //jff 3/9/98 move it now to avoid glitch
         }
       return true;
-      }
+    }
 
     /* killough 10/98: allow key shortcut into Setup menu */
     if (ch == key_setup) {
@@ -5067,15 +5060,15 @@ dboolean M_Responder (event_t* ev) {
   // Pop-up Main menu?
 
   if (!menuactive)
-    {
+  {
     if (ch == key_escape)                                     // phares
-      {
+    {
       M_StartControlPanel ();
       S_StartSound(NULL,g_sfx_swtchn);
       return true;
-      }
-    return false;
     }
+    return false;
+  }
 
   // phares 3/26/98 - 4/11/98:
   // Setup screen key processing
@@ -5979,13 +5972,13 @@ void M_StartControlPanel (void)
   // It is located here instead of M_Init() because of TNTCOMP cheat.
   if (!heretic && !EpiCustom)
   {
-	  EpiDef.numitems = ep_end;
-	  if (gamemode != commercial
-		  && (compatibility_level < ultdoom_compatibility
-			  || W_SafeGetNumForName(EpiDef.menuitems[ep4].name) == -1))
-	  {
-		  EpiDef.numitems--;
-	  }
+    EpiDef.numitems = ep_end;
+    if (gamemode != commercial
+      && (compatibility_level < ultdoom_compatibility
+        || W_SafeGetNumForName(EpiDef.menuitems[ep4].name) == -1))
+    {
+      EpiDef.numitems--;
+    }
   }
 
   default_verify = 0;                  // killough 10/98
