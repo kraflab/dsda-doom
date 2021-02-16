@@ -36,14 +36,14 @@ typedef enum {
   dsda_input_strafeleft,
   dsda_input_straferight,
   dsda_input_strafe,
-  dsda_input_autorun, // todo - mouse / joy ignored
+  dsda_input_autorun,
   dsda_input_reverse,
   dsda_input_use, // note - joyb use doubles as join demo
   dsda_input_flyup,
   dsda_input_flydown,
   dsda_input_flycenter,
-  dsda_input_mlook, // todo - mouse / joy ignored
-  dsda_input_novert, // todo - mouse / joy ignored
+  dsda_input_mlook,
+  dsda_input_novert,
   dsda_input_weapon1,
   dsda_input_weapon2,
   dsda_input_weapon3,
