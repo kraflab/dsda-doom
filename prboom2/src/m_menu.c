@@ -2588,9 +2588,9 @@ setup_menu_t heretic_keys_settings2[] = {
 
 setup_menu_t dsda_keys_settings[] = {
   { "DSDA-Doom Keys", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
-  { "Store Quick Key Frame", S_KEY, m_scrn, KB_X, KB_Y + 1 * 8, { &dsda_key_store_quick_key_frame } },
-  { "Restore Quick Key Frame", S_KEY, m_scrn, KB_X, KB_Y + 2 * 8, { &dsda_key_restore_quick_key_frame } },
-  { "Rewind", S_KEY, m_scrn, KB_X, KB_Y + 3 * 8, { &dsda_key_rewind } },
+  { "Store Quick Key Frame", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, NULL, NULL, NULL, NULL, dsda_input_store_quick_key_frame },
+  { "Restore Quick Key Frame", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, NULL, NULL, NULL, NULL, dsda_input_restore_quick_key_frame },
+  { "Rewind", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, { 0 }, NULL, NULL, NULL, NULL, dsda_input_rewind },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings2 } },
   { 0, S_SKIP | S_END, m_null }
@@ -4966,7 +4966,7 @@ dboolean M_Responder (event_t* ev) {
       }
     }
 
-    if (ch == dsda_key_store_quick_key_frame)
+    if (dsda_InputActivated(dsda_input_store_quick_key_frame))
     {
       if (
         gamestate == GS_LEVEL &&
@@ -4976,13 +4976,13 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (ch == dsda_key_restore_quick_key_frame)
+    if (dsda_InputActivated(dsda_input_restore_quick_key_frame))
     {
       if (!dsda_StrictMode()) dsda_RestoreQuickKeyFrame();
       return true;
     }
 
-    if (ch == dsda_key_rewind)
+    if (dsda_InputActivated(dsda_input_rewind))
     {
       if (!dsda_StrictMode()) dsda_RewindAutoKeyFrame();
       return true;

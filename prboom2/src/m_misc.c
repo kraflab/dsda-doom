@@ -688,7 +688,13 @@ default_t defaults[] =
   { "input_invleft", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_invleft, { 0, -1, -1 } },
   { "input_invright", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_invright, { 0, -1, -1 } },
+  dsda_input_invright, { 0, -1, -1 } },
+  { "input_store_quick_key_frame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_store_quick_key_frame, { 0, -1, -1 } },
+  { "input_restore_quick_key_frame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_restore_quick_key_frame, { 0, -1, -1 } },
+  { "input_rewind", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_rewind, { 0, -1, -1 } },
 
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
@@ -1038,9 +1044,6 @@ default_t defaults[] =
   { "dsda_cycle_ghost_colors", { &dsda_cycle_ghost_colors }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_auto_key_frame_interval", { &dsda_auto_key_frame_interval }, { 1 }, 1, 600, def_int, ss_stat },
   { "dsda_auto_key_frame_depth", { &dsda_auto_key_frame_depth }, { 60 }, 0, 600, def_int, ss_stat },
-  { "dsda_key_store_quick_key_frame", { &dsda_key_store_quick_key_frame }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "dsda_key_restore_quick_key_frame", { &dsda_key_restore_quick_key_frame }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "dsda_key_rewind", { &dsda_key_rewind }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
   { "dsda_exhud", { &dsda_exhud }, { 0 }, 0, 1, def_bool, ss_stat },
 
   // NSM

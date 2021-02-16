@@ -91,6 +91,9 @@ typedef enum {
   dsda_input_quickload,
   dsda_input_endgame,
   dsda_input_quit,
+  dsda_input_store_quick_key_frame,
+  dsda_input_restore_quick_key_frame,
+  dsda_input_rewind,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
