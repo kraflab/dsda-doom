@@ -4702,12 +4702,9 @@ dboolean M_Responder (event_t* ev) {
           shiftdown = false;          // so we need to note the difference
   }                                   // here using the 'shiftdown' dboolean.
 
-  if (ch == -1)
-    return false; // we can't use the event here
-
   // Save Game string input
 
-  if (saveStringEnter) {
+  if (saveStringEnter && ch >= 0) {
     if (ch == key_menu_backspace)                            // phares 3/7/98
     {
       if (saveCharIndex > 0)
@@ -4743,7 +4740,7 @@ dboolean M_Responder (event_t* ev) {
 
   // Take care of any messages that need input
 
-  if (messageToPrint) {
+  if (messageToPrint && ch >= 0) {
     if (messageNeedsInput == true &&
         !(ch == ' ' || ch == 'n' || ch == 'y' || ch == key_escape)) // phares
       return false;
@@ -5065,6 +5062,9 @@ dboolean M_Responder (event_t* ev) {
     }
     return false;
   }
+
+  if (ch == -1)
+    return false; // we can't use the event here
 
   // phares 3/26/98 - 4/11/98:
   // Setup screen key processing
