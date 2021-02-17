@@ -831,17 +831,18 @@ dboolean AM_Responder
 {
   static int bigstate=0;
 
-  if (dsda_InputActivated(dsda_input_map))
+  if (!(automapmode & am_active))
   {
-    if (!(automapmode & am_active))
+    if (dsda_InputActivated(dsda_input_map))
     {
       AM_Start ();
+      return true;
     }
-    else
-    {
-      bigstate = 0;
-      AM_Stop ();
-    }
+  }
+  else if (dsda_InputActivated(dsda_input_map))
+  {
+    bigstate = 0;
+    AM_Stop ();
 
     return true;
   }
