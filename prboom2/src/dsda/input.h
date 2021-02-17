@@ -94,6 +94,20 @@ typedef enum {
   dsda_input_store_quick_key_frame,
   dsda_input_restore_quick_key_frame,
   dsda_input_rewind,
+  dsda_input_map_follow,
+  dsda_input_map_zoomin,
+  dsda_input_map_zoomout,
+  dsda_input_map_up,
+  dsda_input_map_down,
+  dsda_input_map_left,
+  dsda_input_map_right,
+  dsda_input_map_mark,
+  dsda_input_map_clear,
+  dsda_input_map_gobig,
+  dsda_input_map_grid,
+  dsda_input_map_rotate,
+  dsda_input_map_overlay,
+  dsda_input_map_textured,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

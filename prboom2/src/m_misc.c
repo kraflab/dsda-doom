@@ -653,6 +653,34 @@ default_t defaults[] =
   { "input_quit", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_quit, { KEYD_F10, -1, -1 } },
 
+  { "input_map_follow", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_follow, { 'f', -1, -1 } },
+  { "input_map_zoomin", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_zoomin, { '=', -1, -1 } },
+  { "input_map_zoomout", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_zoomout, { '-', -1, -1 } },
+  { "input_map_up", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_up, { KEYD_UPARROW, -1, -1 } },
+  { "input_map_down", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_down, { KEYD_DOWNARROW, -1, -1 } },
+  { "input_map_left", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_left, { KEYD_LEFTARROW, -1, -1 } },
+  { "input_map_right", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_right, { KEYD_RIGHTARROW, -1, -1 } },
+  { "input_map_mark", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_mark, { 'm', -1, -1 } },
+  { "input_map_clear", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_clear, { 'c', -1, -1 } },
+  { "input_map_gobig", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_gobig, { '0', -1, -1 } },
+  { "input_map_grid", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_grid, { 'g', -1, -1 } },
+  { "input_map_rotate", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_rotate, { 'r', -1, -1 } },
+  { "input_map_overlay", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_overlay, { 'o', -1, -1 } },
+  { "input_map_textured", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_textured, { 0, -1, -1 } },
 
   { "input_join_demo", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_join_demo, { 0, -1, -1 } },
@@ -735,34 +763,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // backspace key
   {"key_enter",       {&key_enter},          {KEYD_ENTER}     ,
    0,MAX_KEY,def_key,ss_keys}, // key to select from menu or see last message
-  {"key_map_right",   {&key_map_right},      {KEYD_RIGHTARROW},// phares 3/7/98
-   0,MAX_KEY,def_key,ss_keys}, // key to shift automap right   //     |
-  {"key_map_left",    {&key_map_left},       {KEYD_LEFTARROW} ,//     V
-   0,MAX_KEY,def_key,ss_keys}, // key to shift automap left
-  {"key_map_up",      {&key_map_up},         {KEYD_UPARROW}   ,
-   0,MAX_KEY,def_key,ss_keys}, // key to shift automap up
-  {"key_map_down",    {&key_map_down},       {KEYD_DOWNARROW} ,
-   0,MAX_KEY,def_key,ss_keys}, // key to shift automap down
-  {"key_map_zoomin",  {&key_map_zoomin},      {'='}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to enlarge automap
-  {"key_map_zoomout", {&key_map_zoomout},     {'-'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to reduce automap
-  {"key_map_gobig",   {&key_map_gobig},       {'0'}           ,
-   0,MAX_KEY,def_key,ss_keys},  // key to get max zoom for automap
-  {"key_map_follow",  {&key_map_follow},      {'f'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle follow mode
-  {"key_map_mark",    {&key_map_mark},        {'m'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to drop a marker on automap
-  {"key_map_clear",   {&key_map_clear},       {'c'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to clear all markers on automap
-  {"key_map_grid",    {&key_map_grid},        {'g'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle grid display over automap
-  {"key_map_rotate",  {&key_map_rotate},      {'r'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle rotating the automap to match the player's orientation
-  {"key_map_overlay", {&key_map_overlay},     {'o'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle overlaying the automap on the rendered display
-  {"key_map_textured", {&key_map_textured},   {0}             ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle textured automap
   {"key_chatplayer1", {&destination_keys[0]}, {'g'}            ,
    0,MAX_KEY,def_key,ss_keys}, // key to chat with player 1
   // killough 11/98: fix 'i'/'b' reversal

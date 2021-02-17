@@ -122,20 +122,6 @@ extern int  key_help;
 extern int  key_forward;
 extern int  key_backward;
 extern int  destination_keys[MAXPLAYERS];
-extern int  key_map_right;
-extern int  key_map_left;
-extern int  key_map_up;
-extern int  key_map_down;
-extern int  key_map_zoomin;
-extern int  key_map_zoomout;
-extern int  key_map_gobig;
-extern int  key_map_follow;
-extern int  key_map_mark;                                           //    ^
-extern int  key_map_clear;                                          //    |
-extern int  key_map_grid;                                           // phares
-extern int  key_map_rotate; // cph - map rotation
-extern int  key_map_overlay;// cph - map overlay
-extern int  key_map_textured;  //e6y: textured automap
 extern int  autorun;           // always running?                   // phares
 
 extern int  defaultskill;      //jff 3/24/98 default skill

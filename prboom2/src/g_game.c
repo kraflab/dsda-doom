@@ -207,20 +207,6 @@ int     key_escape = KEYD_ESCAPE;                           // phares 4/13/98
 int     key_chat;
 int     key_backspace;
 int     key_enter;
-int     key_map_right;
-int     key_map_left;
-int     key_map_up;
-int     key_map_down;
-int     key_map_zoomin;
-int     key_map_zoomout;
-int     key_map_gobig;
-int     key_map_follow;
-int     key_map_mark;
-int     key_map_clear;
-int     key_map_grid;
-int     key_map_overlay; // cph - map overlay
-int     key_map_rotate;  // cph - map rotation
-int     key_map_textured;  // e6y - textured automap
 int     key_help = KEYD_F1;                                 // phares 4/13/98
 int     destination_keys[MAXPLAYERS];
 
