@@ -108,6 +108,13 @@ typedef enum {
   dsda_input_map_rotate,
   dsda_input_map_overlay,
   dsda_input_map_textured,
+  dsda_input_chat,
+  dsda_input_chat_dest0,
+  dsda_input_chat_dest1,
+  dsda_input_chat_dest2,
+  dsda_input_chat_dest3,
+  dsda_input_chat_backspace,
+  dsda_input_chat_enter,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

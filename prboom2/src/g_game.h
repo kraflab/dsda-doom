@@ -115,13 +115,9 @@ extern int  key_menu_enter;                                  // phares 3/7/98
 extern int  key_menu_clear;
 
 extern int  key_escape;                                             // phares
-extern int  key_chat;
-extern int  key_backspace;
-extern int  key_enter;
 extern int  key_help;
 extern int  key_forward;
 extern int  key_backward;
-extern int  destination_keys[MAXPLAYERS];
 extern int  autorun;           // always running?                   // phares
 
 extern int  defaultskill;      //jff 3/24/98 default skill

@@ -2487,13 +2487,13 @@ setup_menu_t keys_settings4[] =  // Key Binding screen strings
 setup_menu_t keys_settings5[] =  // Key Binding screen strings
 {
   {"CHATTING"   ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+0*8},
-  {"BEGIN CHAT" ,S_KEY       ,m_scrn,KB_X,KB_Y+1*8,{&key_chat}},
-  {"PLAYER 1"   ,S_KEY       ,m_scrn,KB_X,KB_Y+2*8,{&destination_keys[0]}},
-  {"PLAYER 2"   ,S_KEY       ,m_scrn,KB_X,KB_Y+3*8,{&destination_keys[1]}},
-  {"PLAYER 3"   ,S_KEY       ,m_scrn,KB_X,KB_Y+4*8,{&destination_keys[2]}},
-  {"PLAYER 4"   ,S_KEY       ,m_scrn,KB_X,KB_Y+5*8,{&destination_keys[3]}},
-  {"BACKSPACE"  ,S_KEY       ,m_scrn,KB_X,KB_Y+6*8,{&key_backspace}},
-  {"ENTER"      ,S_KEY       ,m_scrn,KB_X,KB_Y+7*8,{&key_enter}},
+  {"BEGIN CHAT" ,S_INPUT     ,m_scrn,KB_X,KB_Y+1*8,{0},NULL,NULL,NULL,NULL,dsda_input_chat},
+  {"PLAYER 1"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+2*8,{0},NULL,NULL,NULL,NULL,dsda_input_chat_dest0},
+  {"PLAYER 2"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+3*8,{0},NULL,NULL,NULL,NULL,dsda_input_chat_dest1},
+  {"PLAYER 3"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+4*8,{0},NULL,NULL,NULL,NULL,dsda_input_chat_dest2},
+  {"PLAYER 4"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+5*8,{0},NULL,NULL,NULL,NULL,dsda_input_chat_dest3},
+  {"BACKSPACE"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+6*8,{0},NULL,NULL,NULL,NULL,dsda_input_chat_backspace},
+  {"ENTER"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+7*8,{0},NULL,NULL,NULL,NULL,dsda_input_chat_enter},
 
   {"<- PREV" ,S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings4}},
   {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings6}},

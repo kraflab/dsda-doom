@@ -682,6 +682,21 @@ default_t defaults[] =
   { "input_map_textured", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_map_textured, { 0, -1, -1 } },
 
+  { "input_chat", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat, { 't', -1, -1 } },
+  { "input_chat_dest0", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_dest0, { 'g', -1, -1 } },
+  { "input_chat_dest1", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_dest1, { 'i', -1, -1 } },
+  { "input_chat_dest2", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_dest2, { 'b', -1, -1 } },
+  { "input_chat_dest3", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_dest3, { 'r', -1, -1 } },
+  { "input_chat_backspace", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_backspace, { KEYD_BACKSPACE, -1, -1 } },
+  { "input_chat_enter", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_enter, { KEYD_ENTER, -1, -1 } },
+
   { "input_join_demo", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_join_demo, { 0, -1, -1 } },
 
@@ -756,22 +771,6 @@ default_t defaults[] =
    0,MAX_KEY,def_key,ss_keys}, // key to select from menu
   {"key_menu_clear",  {&key_menu_clear},     {KEYD_DEL}     ,
    0,MAX_KEY,def_key,ss_keys}, // key to clear a key binding
-
-  {"key_chat",        {&key_chat},           {'t'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to enter a chat message
-  {"key_backspace",   {&key_backspace},      {KEYD_BACKSPACE} ,
-   0,MAX_KEY,def_key,ss_keys}, // backspace key
-  {"key_enter",       {&key_enter},          {KEYD_ENTER}     ,
-   0,MAX_KEY,def_key,ss_keys}, // key to select from menu or see last message
-  {"key_chatplayer1", {&destination_keys[0]}, {'g'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to chat with player 1
-  // killough 11/98: fix 'i'/'b' reversal
-  {"key_chatplayer2", {&destination_keys[1]}, {'i'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to chat with player 2
-  {"key_chatplayer3", {&destination_keys[2]}, {'b'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to chat with player 3
-  {"key_chatplayer4", {&destination_keys[3]}, {'r'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to chat with player 4
 
   {"Joystick settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_joystick",{&usejoystick},{0},0,2,

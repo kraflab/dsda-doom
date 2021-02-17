@@ -204,11 +204,7 @@ int     key_menu_escape;                                     //     |
 int     key_menu_enter;                                      // phares 3/7/98
 int     key_menu_clear;
 int     key_escape = KEYD_ESCAPE;                           // phares 4/13/98
-int     key_chat;
-int     key_backspace;
-int     key_enter;
 int     key_help = KEYD_F1;                                 // phares 4/13/98
-int     destination_keys[MAXPLAYERS];
 
 #define MAXPLMOVE   (forwardmove[1])
 #define TURBOTHRESHOLD  0x32

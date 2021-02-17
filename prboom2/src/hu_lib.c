@@ -39,9 +39,6 @@
 #include "r_main.h"
 #include "r_draw.h"
 
-extern int  key_backspace;                                          // phares
-extern int  key_enter;                                              // phares
-
 //
 // not used currently
 // code to initialize HUlib would go here if needed
@@ -758,9 +755,9 @@ dboolean HUlib_keyInIText
 
   if (ch >= ' ' && ch <= '_')
     HUlib_addCharToTextLine(&it->l, (char) ch);
-  else if (ch == key_backspace)                   // phares
+  else if (ch == KEYD_BACKSPACE)                  // phares
     HUlib_delCharFromIText(it);
-  else if (ch != key_enter)                       // phares
+  else if (ch != KEYD_ENTER)                      // phares
     return false;                                 // did not eat key
 
   return true;                                    // ate the key
