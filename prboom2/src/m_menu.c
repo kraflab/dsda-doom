@@ -2507,20 +2507,20 @@ setup_menu_t keys_settings5[] =  // Key Binding screen strings
 setup_menu_t keys_settings6[] =  // Key Binding screen strings
 {
   {"GAME SPEED"           ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y},
-  {"SPEED UP"             ,S_KEY     ,m_scrn,KB_X,KB_Y+ 1*8,{&key_speed_up}},
-  {"SPEED DOWN"           ,S_KEY     ,m_scrn,KB_X,KB_Y+ 2*8,{&key_speed_down}},
-  {"RESET TO DEFAULT"     ,S_KEY     ,m_scrn,KB_X,KB_Y+ 3*8,{&key_speed_default}},
+  {"SPEED UP"             ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 1*8,{0},NULL,NULL,NULL,NULL,dsda_input_speed_up},
+  {"SPEED DOWN"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 2*8,{0},NULL,NULL,NULL,NULL,dsda_input_speed_down},
+  {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 3*8,{0},NULL,NULL,NULL,NULL,dsda_input_speed_default},
   {"STEP OF CHANGE (0-AUTO)" ,S_NUM  ,m_null,KB_X,KB_Y+ 4*8, {"speed_step"}},
   {"DEMOS"                ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+5*8},
-  {"START/STOP SKIPPING"  ,S_KEY     ,m_scrn,KB_X,KB_Y+ 6*8,{&key_demo_skip}},
-  {"END LEVEL"            ,S_KEY     ,m_scrn,KB_X,KB_Y+ 7*8,{&key_demo_endlevel}},
-  {"CAMERA MODE"          ,S_KEY     ,m_scrn,KB_X,KB_Y+ 8*8,{&key_walkcamera}},
+  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 6*8,{0},NULL,NULL,NULL,NULL,dsda_input_demo_skip},
+  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 7*8,{0},NULL,NULL,NULL,NULL,dsda_input_demo_endlevel},
+  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 8*8,{0},NULL,NULL,NULL,NULL,dsda_input_walkcamera},
   {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 9*8,{0},NULL,NULL,NULL,NULL,dsda_input_join_demo},
   {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+10*8},
-  {"RESTART CURRENT MAP"  ,S_KEY     ,m_scrn,KB_X,KB_Y+ 11*8,{&key_level_restart}},
-  {"NEXT LEVEL"           ,S_KEY     ,m_scrn,KB_X,KB_Y+ 12*8,{&key_nextlevel}},
+  {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 11*8,{0},NULL,NULL,NULL,NULL,dsda_input_restart},
+  {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 12*8,{0},NULL,NULL,NULL,NULL,dsda_input_nextlevel},
 #ifdef GL_DOOM
-  {"Show Alive Monsters"  ,S_KEY     ,m_scrn,KB_X,KB_Y+13*8,{&key_showalive}},
+  {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+13*8,{0},NULL,NULL,NULL,NULL,dsda_input_showalive},
 #endif
 
   {"<- PREV",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings5}},
@@ -4898,28 +4898,28 @@ dboolean M_Responder (event_t* ev) {
     }
 
     //e6y
-    if (ch == key_speed_default && (!netgame||demoplayback) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_speed_default) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, 0, speed_step, 3, 10000, 100);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
     }
-    if (ch == key_speed_up && (!netgame||demoplayback) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_speed_up) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, 1, speed_step, 3, 10000, 100);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
     }
-    if (ch == key_speed_down && (!netgame||demoplayback) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_speed_down) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, -1, speed_step, 3, 10000, 100);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
     }
-    if (ch == key_nextlevel)
+    if (dsda_InputActivated(dsda_input_nextlevel))
     {
       if (demoplayback && !doSkip && singledemo)
       {
@@ -4934,13 +4934,13 @@ dboolean M_Responder (event_t* ev) {
       }
     }
 
-    if (ch == key_level_restart)
+    if (dsda_InputActivated(dsda_input_restart))
     {
       if (G_ReloadLevel())
         return true;
     }
 
-    if (ch == key_demo_endlevel)
+    if (dsda_InputActivated(dsda_input_demo_endlevel))
     {
       if (demoplayback && !doSkip && singledemo)
       {
@@ -4950,7 +4950,7 @@ dboolean M_Responder (event_t* ev) {
       }
     }
 
-    if (ch == key_demo_skip)
+    if (dsda_InputActivated(dsda_input_demo_skip))
     {
       if (demoplayback && singledemo)
       {
@@ -4988,7 +4988,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (ch == key_walkcamera)
+    if (dsda_InputActivated(dsda_input_walkcamera))
     {
       if (demoplayback && gamestate == GS_LEVEL)
       {
@@ -5005,7 +5005,7 @@ dboolean M_Responder (event_t* ev) {
 #ifdef GL_DOOM
     if (V_GetMode() == VID_MODEGL)
     {
-      if (ch == key_showalive)
+      if (dsda_InputActivated(dsda_input_showalive))
       {
         show_alive = (show_alive + 1) % 3;
         doom_printf("Show Alive Monsters %s",

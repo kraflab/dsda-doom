@@ -115,6 +115,15 @@ typedef enum {
   dsda_input_chat_dest3,
   dsda_input_chat_backspace,
   dsda_input_chat_enter,
+  dsda_input_speed_up,
+  dsda_input_speed_down,
+  dsda_input_speed_default,
+  dsda_input_demo_skip,
+  dsda_input_demo_endlevel,
+  dsda_input_walkcamera,
+  dsda_input_restart,
+  dsda_input_nextlevel,
+  dsda_input_showalive,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

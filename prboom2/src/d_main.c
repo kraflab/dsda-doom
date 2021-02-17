@@ -190,20 +190,20 @@ void D_PostEvent(event_t *ev)
   // Allow only sensible keys during skipping
   if (doSkip)
   {
-    if (ev->type == ev_keydown || ev->type == ev_keyup)
+    if (dsda_InputActivated(dsda_input_quit))
     {
-      if (dsda_InputActivated(dsda_input_quit))
+      // Immediate exit if quit key is pressed in skip mode
+      I_SafeExit(0);
+    }
+    else
+    {
+      // use key is used for seeing the current frame
+      if (
+        !dsda_InputActivated(dsda_input_use) && !dsda_InputActivated(dsda_input_demo_skip) &&
+        (ev->type == ev_keydown || ev->type == ev_keyup) // is this condition important?
+      )
       {
-        // Immediate exit if quit key is pressed in skip mode
-        I_SafeExit(0);
-      }
-      else
-      {
-        // use key is used for seeing the current frame
-        if (ev->data1 != dsda_InputKey(dsda_input_use) && ev->data1 != key_demo_skip)
-        {
-          return;
-        }
+        return;
       }
     }
   }
