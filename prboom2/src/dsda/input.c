@@ -48,8 +48,6 @@ static void dsda_InputTrackButtons(dsda_input_state_t* buttons, int max, event_t
 
     if (buttons[i].on && !button_on)
       buttons[i].deactivated_at = dsda_input_counter;
-
-    buttons[i].on = button_on;
   }
 }
 
@@ -58,7 +56,6 @@ static void dsda_InputTrackKeyDown(event_t* ev) {
 
   if (key >= NUMKEYS || gamekeys[key].on) return;
 
-  gamekeys[key].on = true;
   gamekeys[key].activated_at = dsda_input_counter;
 }
 
@@ -67,7 +64,6 @@ static void dsda_InputTrackKeyUp(event_t* ev) {
 
   if (key >= NUMKEYS || !gamekeys[key].on) return;
 
-  gamekeys[key].on = false;
   gamekeys[key].deactivated_at = dsda_input_counter;
 }
 
@@ -91,6 +87,50 @@ void dsda_InputTrackEvent(event_t* ev) {
       break;
     case ev_joystick:
       dsda_InputTrackButtons(joybuttons, MAX_JOY_BUTTONS, ev);
+      break;
+  }
+}
+
+static void dsda_InputTrackGameButtons(dsda_input_state_t* buttons, int max, event_t* ev) {
+  int i;
+
+  for (i = 0; i < max; ++i) {
+    unsigned int button_on = (ev->data1 & (1 << i)) != 0;
+
+    buttons[i].on = button_on;
+  }
+}
+
+static void dsda_InputTrackGameKeyDown(event_t* ev) {
+  int key = ev->data1;
+
+  if (key >= NUMKEYS || gamekeys[key].on) return;
+
+  gamekeys[key].on = true;
+}
+
+static void dsda_InputTrackGameKeyUp(event_t* ev) {
+  int key = ev->data1;
+
+  if (key >= NUMKEYS || !gamekeys[key].on) return;
+
+  gamekeys[key].on = false;
+}
+
+void dsda_InputTrackGameEvent(event_t* ev) {
+  switch (ev->type)
+  {
+    case ev_keydown:
+      dsda_InputTrackGameKeyDown(ev);
+      break;
+    case ev_keyup:
+      dsda_InputTrackGameKeyUp(ev);
+      break;
+    case ev_mouse:
+      dsda_InputTrackGameButtons(mousebuttons, MAX_MOUSE_BUTTONS, ev);
+      break;
+    case ev_joystick:
+      dsda_InputTrackGameButtons(joybuttons, MAX_JOY_BUTTONS, ev);
       break;
   }
 }

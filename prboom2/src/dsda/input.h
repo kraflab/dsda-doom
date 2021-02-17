@@ -120,6 +120,7 @@ typedef struct
 
 void dsda_InputFlushTick(void);
 void dsda_InputTrackEvent(event_t* ev);
+void dsda_InputTrackGameEvent(event_t* ev);
 dboolean dsda_InputActivated(int identifier);
 dboolean dsda_InputTickActivated(int identifier);
 dboolean dsda_InputDeactivated(int identifier);

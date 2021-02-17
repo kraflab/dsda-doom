@@ -1085,6 +1085,9 @@ dboolean G_Responder (event_t* ev)
     return true;
   }
 
+  // Events that make it here should reach into the game logic
+  dsda_InputTrackGameEvent(ev);
+
   switch (ev->type)
   {
     case ev_keydown:
