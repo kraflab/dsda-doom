@@ -102,7 +102,6 @@ typedef struct default_s
     def_arr,  // e6y: arrays
     def_input, // Composite input
     def_bool = def_int,  // Boolean
-    def_key = def_hex,   // Key code (byte)
     def_colour = def_hex // Colour (256 colour palette entry)
   } type; // CPhipps - type of entry
   int   setupscreen;      // phares 4/19/98: setup screen where this appears
