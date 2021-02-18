@@ -1541,6 +1541,18 @@ void M_LoadDefaults (void)
     }
   }
 
+  // special fallback input values
+  {
+    dsda_input_t fallback_help = { KEYD_F1, -1, -1 };
+    dsda_input_t fallback_escape = { KEYD_ESCAPE, -1, -1 };
+
+    for (i = 0; i < DSDA_SEPARATE_CONFIG_COUNT; ++i)
+    {
+      dsda_InputSetSpecific(i, dsda_input_help, fallback_help);
+      dsda_InputSetSpecific(i, dsda_input_escape, fallback_escape);
+    }
+  }
+
   //e6y: arrays
   for (i = 0 ; i < numdefaults ; i++) {
     if (defaults[i].type == def_arr)

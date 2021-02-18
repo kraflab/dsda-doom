@@ -2387,9 +2387,6 @@ setup_menu_t keys_settings1[] =  // Key Binding screen strings
 
 };
 
-static int key_escape = KEYD_ESCAPE; // phares 4/13/98
-static int key_help = KEYD_F1; // phares 4/13/98
-
 setup_menu_t keys_settings2[] =  // Key Binding screen strings
 {
   {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y},
@@ -2404,8 +2401,8 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
   // functions. Introduce an S_KEEP flag to show that you cannot swap this
   // key with other keys in the same 'group'. (m_scrn, etc.)
 
-  {"HELP"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,{&key_help}},
-  {"MENU"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,{&key_escape}},
+  {"HELP"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,{0},NULL,NULL,NULL,NULL,dsda_input_help},
+  {"MENU"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,{0},NULL,NULL,NULL,NULL,dsda_input_escape},
   // killough 10/98: hotkey for entering setup menu:
   {"SETUP"       ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 1*8,{0},NULL,NULL,NULL,NULL,dsda_input_setup},
   {"PAUSE"       ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 2*8,{0},NULL,NULL,NULL,NULL,dsda_input_pause},
@@ -4342,8 +4339,8 @@ int M_GetKeyString(int c,int offset)
 setup_menu_t helpstrings[] =  // HELP screen strings
 {
   {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KT_X1,KT_Y1},
-  {"HELP"        ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 1*8,{&key_help}},
-  {"MENU"        ,S_SKIP|S_KEY,m_null,KT_X1,KT_Y1+ 2*8,{&key_escape}},
+  {"HELP"        ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 1*8,{0},NULL,NULL,NULL,NULL,dsda_input_help},
+  {"MENU"        ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 2*8,{0},NULL,NULL,NULL,NULL,dsda_input_escape},
   {"SETUP"       ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 3*8,{0},NULL,NULL,NULL,NULL,dsda_input_setup},
   {"PAUSE"       ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 4*8,{0},NULL,NULL,NULL,NULL,dsda_input_pause},
   {"AUTOMAP"     ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 5*8,{0},NULL,NULL,NULL,NULL,dsda_input_map},
@@ -4626,6 +4623,7 @@ dboolean M_Responder (event_t* ev) {
   // to be removed once everything uses S_INPUT
   int s_input;
   dboolean escape_key = 0;
+  dboolean help_key = 0;
   static int joywait   = 0;
   static int mousewait = 0;
 
@@ -4709,9 +4707,13 @@ dboolean M_Responder (event_t* ev) {
       {
         ch = ev->data1;
 
-        // It's a failsafe that the escape key opens the menu if it's not up
+        // It's a failsafe for the escape key to work regardless of config
         if (ch == KEYD_ESCAPE)
           escape_key = true;
+
+        // It's a failsafe for the help key to work regardless of config
+        if (ch == KEYD_F1)
+          help_key = true;
                                       // phares 4/11/98:
         if (ch == KEYD_RSHIFT)        // For chat string processing, need
           shiftdown = true;           // to know when shift key is up or
@@ -4826,7 +4828,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (ch == key_help)      // Help key
+    if (help_key)
     {
       M_StartControlPanel ();
 
@@ -5479,12 +5481,10 @@ dboolean M_Responder (event_t* ev) {
             for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
               if (ptr2->m_group == group && ptr1 != ptr2)
               {
-                if (ptr2->m_flags & (S_KEY|S_KEEP))
+                if (ptr2->m_flags & (S_KEY))
                 {
                   if (*ptr2->var.m_key == ch)
                   {
-                    if (ptr2->m_flags & S_KEEP)
-                      return true; // can't have it!
                     *ptr2->var.m_key = oldkey;
                     search = false;
                     break;
