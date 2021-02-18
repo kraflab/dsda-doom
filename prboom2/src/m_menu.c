@@ -5306,7 +5306,6 @@ dboolean M_Responder (event_t* ev) {
       {
         if (ev->type == ev_joystick)
         {
-          int oldbutton;
           setup_group group;
           dboolean search = true;
 
@@ -5320,7 +5319,6 @@ dboolean M_Responder (event_t* ev) {
           // any duplicates. You're only interested in the items
           // that belong to the same group as the one you're changing.
 
-          oldbutton = dsda_InputJoyB(s_input);
           group  = ptr1->m_group;
           if (ev->data1 & 1)
             ch = 0;
@@ -5339,7 +5337,7 @@ dboolean M_Responder (event_t* ev) {
                 if (ptr2->m_flags & S_INPUT)
                   if (dsda_InputJoyB(ptr2->input) == ch)
                   {
-                    dsda_InputSetJoyB(ptr2->input, oldbutton);
+                    dsda_InputSetJoyB(ptr2->input, -1);
                     search = false;
                     break;
                   }
@@ -5348,7 +5346,7 @@ dboolean M_Responder (event_t* ev) {
         }
         else if (ev->type == ev_mouse)
         {
-          int i,oldbutton;
+          int i;
           setup_group group;
           dboolean search = true;
 
@@ -5362,7 +5360,6 @@ dboolean M_Responder (event_t* ev) {
           // any duplicates. You're only interested in the items
           // that belong to the same group as the one you're changing.
 
-          oldbutton = dsda_InputMouseB(s_input);
           group  = ptr1->m_group;
           if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1)) == -1)
             return true;
@@ -5373,7 +5370,7 @@ dboolean M_Responder (event_t* ev) {
                 if (ptr2->m_flags & S_INPUT)
                   if (dsda_InputMouseB(ptr2->input) == ch)
                   {
-                    dsda_InputSetMouseB(ptr2->input, oldbutton);
+                    dsda_InputSetMouseB(ptr2->input, -1);
                     search = false;
                     break;
                   }
@@ -5382,7 +5379,7 @@ dboolean M_Responder (event_t* ev) {
         }
         else  // keyboard key
         {
-          int i,oldkey;
+          int i;
           setup_group group;
           dboolean search = true;
 
@@ -5398,7 +5395,6 @@ dboolean M_Responder (event_t* ev) {
           // bound to that S_KEEP action, and that action has to
           // keep that key.
 
-          oldkey = dsda_InputKey(s_input);
           group  = ptr1->m_group;
           for (i = 0 ; keys_settings[i] && search ; i++)
             for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
@@ -5409,7 +5405,7 @@ dboolean M_Responder (event_t* ev) {
                   {
                     if (ptr2->m_flags & S_KEEP)
                       return true; // can't have it!
-                    dsda_InputSetKey(ptr2->input, oldkey);
+                    dsda_InputSetKey(ptr2->input, 0);
                     search = false;
                     break;
                   }
