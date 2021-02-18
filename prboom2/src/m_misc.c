@@ -718,6 +718,23 @@ default_t defaults[] =
   { "input_showalive", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_showalive, { KEYD_KEYPADDIVIDE, -1, -1 } },
 
+  { "input_menu_down", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_down, { KEYD_DOWNARROW, -1, -1 } },
+  { "input_menu_up", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_up, { KEYD_UPARROW, -1, -1 } },
+  { "input_menu_left", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_left, { KEYD_LEFTARROW, -1, -1 } },
+  { "input_menu_right", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_right, { KEYD_RIGHTARROW, -1, -1 } },
+  { "input_menu_backspace", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_backspace, { KEYD_BACKSPACE, -1, -1 } },
+  { "input_menu_enter", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_enter, { KEYD_ENTER, -1, -1 } },
+  { "input_menu_escape", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_escape, { KEYD_ESCAPE, -1, -1 } },
+  { "input_menu_clear", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_clear, { KEYD_DEL, -1, -1 } },
+
   { "input_lookup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_lookup, { 0, -1, -1 } },
   { "input_lookdown", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
@@ -766,29 +783,6 @@ default_t defaults[] =
   //jff 4/3/98 allow unlimited sensitivity
   {"mouse_sensitivity_vert",{&mouseSensitivity_vert},{1},0,UL,
    def_int,ss_none}, /* adjust vertical (y) mouse sensitivity killough/mead */
-
-// For key bindings, the values stored in the key_* variables       // phares
-// are the internal Doom Codes. The values stored in the default.cfg
-// file are the keyboard codes.
-// CPhipps - now they're the doom codes, so default.cfg can be portable
-
-  {"Key bindings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"key_menu_right",  {&key_menu_right},     {KEYD_RIGHTARROW},// phares 3/7/98
-   0,MAX_KEY,def_key,ss_keys}, // key to move right in a menu  //     |
-  {"key_menu_left",   {&key_menu_left},      {KEYD_LEFTARROW} ,//     V
-   0,MAX_KEY,def_key,ss_keys}, // key to move left in a menu
-  {"key_menu_up",     {&key_menu_up},        {KEYD_UPARROW}   ,
-   0,MAX_KEY,def_key,ss_keys}, // key to move up in a menu
-  {"key_menu_down",   {&key_menu_down},      {KEYD_DOWNARROW} ,
-   0,MAX_KEY,def_key,ss_keys}, // key to move down in a menu
-  {"key_menu_backspace",{&key_menu_backspace},{KEYD_BACKSPACE} ,
-   0,MAX_KEY,def_key,ss_keys}, // delete key in a menu
-  {"key_menu_escape", {&key_menu_escape},    {KEYD_ESCAPE}    ,
-   0,MAX_KEY,def_key,ss_keys}, // key to leave a menu      ,   // phares 3/7/98
-  {"key_menu_enter",  {&key_menu_enter},     {KEYD_ENTER}     ,
-   0,MAX_KEY,def_key,ss_keys}, // key to select from menu
-  {"key_menu_clear",  {&key_menu_clear},     {KEYD_DEL}     ,
-   0,MAX_KEY,def_key,ss_keys}, // key to clear a key binding
 
   {"Joystick settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_joystick",{&usejoystick},{0},0,2,

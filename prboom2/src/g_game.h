@@ -105,17 +105,6 @@ void doom_printf(const char *, ...) __attribute__((format(printf,1,2)));
 
 // killough 5/2/98: moved from m_misc.c:
 
-extern int  key_menu_right;                                  // phares 3/7/98
-extern int  key_menu_left;                                   //     |
-extern int  key_menu_up;                                     //     V
-extern int  key_menu_down;
-extern int  key_menu_backspace;                              //     ^
-extern int  key_menu_escape;                                 //     |
-extern int  key_menu_enter;                                  // phares 3/7/98
-extern int  key_menu_clear;
-
-extern int  key_escape;                                             // phares
-extern int  key_help;
 extern int  key_forward;
 extern int  key_backward;
 extern int  autorun;           // always running?                   // phares

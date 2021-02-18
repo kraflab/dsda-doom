@@ -195,17 +195,6 @@ int shorttics;
 // controls (have defaults)
 //
 
-int     key_menu_right;                                      // phares 3/7/98
-int     key_menu_left;                                       //     |
-int     key_menu_up;                                         //     V
-int     key_menu_down;
-int     key_menu_backspace;                                  //     ^
-int     key_menu_escape;                                     //     |
-int     key_menu_enter;                                      // phares 3/7/98
-int     key_menu_clear;
-int     key_escape = KEYD_ESCAPE;                           // phares 4/13/98
-int     key_help = KEYD_F1;                                 // phares 4/13/98
-
 #define MAXPLMOVE   (forwardmove[1])
 #define TURBOTHRESHOLD  0x32
 #define SLOWTURNTICS  6

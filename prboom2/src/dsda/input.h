@@ -124,6 +124,14 @@ typedef enum {
   dsda_input_restart,
   dsda_input_nextlevel,
   dsda_input_showalive,
+  dsda_input_menu_down,
+  dsda_input_menu_up,
+  dsda_input_menu_left,
+  dsda_input_menu_right,
+  dsda_input_menu_backspace,
+  dsda_input_menu_enter,
+  dsda_input_menu_escape,
+  dsda_input_menu_clear,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

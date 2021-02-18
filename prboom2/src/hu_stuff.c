@@ -2923,7 +2923,7 @@ dboolean HU_Responder(event_t *ev)
           plr->message = lastmessage;
         }
       }
-      else if (c == key_escape)                               // phares
+      else if (c == KEYD_ESCAPE)                               // phares
         chat_on = false;
     }
   }
