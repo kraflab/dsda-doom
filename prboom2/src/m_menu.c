@@ -5335,14 +5335,14 @@ dboolean M_Responder (event_t* ev) {
               if (ptr2->m_group == group && ptr1 != ptr2)
               {
                 if (ptr2->m_flags & S_INPUT)
-                  if (dsda_InputJoyB(ptr2->input) == ch)
+                  if (dsda_InputMatchJoyB(ptr2->input, ch))
                   {
-                    dsda_InputSetJoyB(ptr2->input, -1);
+                    dsda_InputRemoveJoyB(ptr2->input, ch);
                     search = false;
                     break;
                   }
               }
-          dsda_InputSetJoyB(s_input, ch);
+          dsda_InputAddJoyB(s_input, ch);
         }
         else if (ev->type == ev_mouse)
         {
@@ -5368,14 +5368,14 @@ dboolean M_Responder (event_t* ev) {
               if (ptr2->m_group == group && ptr1 != ptr2)
               {
                 if (ptr2->m_flags & S_INPUT)
-                  if (dsda_InputMouseB(ptr2->input) == ch)
+                  if (dsda_InputMatchMouseB(ptr2->input, ch))
                   {
-                    dsda_InputSetMouseB(ptr2->input, -1);
+                    dsda_InputRemoveMouseB(ptr2->input, ch);
                     search = false;
                     break;
                   }
               }
-          dsda_InputSetMouseB(s_input, ch);
+          dsda_InputAddMouseB(s_input, ch);
         }
         else  // keyboard key
         {
@@ -5401,16 +5401,16 @@ dboolean M_Responder (event_t* ev) {
               if (ptr2->m_group == group && ptr1 != ptr2)
               {
                 if (ptr2->m_flags & (S_INPUT | S_KEEP))
-                  if (dsda_InputKey(ptr2->input) == ch)
+                  if (dsda_InputMatchKey(ptr2->input, ch))
                   {
                     if (ptr2->m_flags & S_KEEP)
                       return true; // can't have it!
-                    dsda_InputSetKey(ptr2->input, 0);
+                    dsda_InputRemoveKey(ptr2->input, ch);
                     search = false;
                     break;
                   }
               }
-          dsda_InputSetKey(s_input, ch);
+          dsda_InputAddKey(s_input, ch);
         }
 
         M_SelectDone(ptr1);       // phares 4/17/98

@@ -200,16 +200,16 @@ void dsda_InputCopy(int identifier, dsda_input_t* input) {
   }
 }
 
-int dsda_InputKey(int identifier) {
-  return dsda_input[dsda_input_index][identifier].key;
+int dsda_InputMatchKey(int identifier, int value) {
+  return dsda_input[dsda_input_index][identifier].key == value;
 }
 
-int dsda_InputMouseB(int identifier) {
-  return dsda_input[dsda_input_index][identifier].mouseb;
+int dsda_InputMatchMouseB(int identifier, int value) {
+  return dsda_input[dsda_input_index][identifier].mouseb == value;
 }
 
-int dsda_InputJoyB(int identifier) {
-  return dsda_input[dsda_input_index][identifier].joyb;
+int dsda_InputMatchJoyB(int identifier, int value) {
+  return dsda_input[dsda_input_index][identifier].joyb == value;
 }
 
 void dsda_InputReset(int identifier) {
@@ -224,16 +224,28 @@ void dsda_InputSetSpecific(int config_index, int identifier, dsda_input_t input)
   dsda_input[config_index][identifier] = input;
 }
 
-void dsda_InputSetKey(int identifier, int value) {
+void dsda_InputAddKey(int identifier, int value) {
   dsda_input[dsda_input_index][identifier].key = value;
 }
 
-void dsda_InputSetMouseB(int identifier, int value) {
+void dsda_InputAddMouseB(int identifier, int value) {
   dsda_input[dsda_input_index][identifier].mouseb = value;
 }
 
-void dsda_InputSetJoyB(int identifier, int value) {
+void dsda_InputAddJoyB(int identifier, int value) {
   dsda_input[dsda_input_index][identifier].joyb = value;
+}
+
+void dsda_InputRemoveKey(int identifier, int value) {
+  dsda_input[dsda_input_index][identifier].key = 0;
+}
+
+void dsda_InputRemoveMouseB(int identifier, int value) {
+  dsda_input[dsda_input_index][identifier].mouseb = -1;
+}
+
+void dsda_InputRemoveJoyB(int identifier, int value) {
+  dsda_input[dsda_input_index][identifier].joyb = -1;
 }
 
 dboolean dsda_InputActive(int identifier) {
