@@ -2347,20 +2347,21 @@ int mult_screens_index; // the index of the current screen in a set
 
 setup_menu_t keys_settings1[] =  // Key Binding screen strings
 {
-  {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y},
-  {"FORWARD"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+1*8,{0},dsda_input_forward},
-  {"BACKWARD"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+2*8,{0},dsda_input_backward},
-  {"TURN LEFT"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+3*8,{0},dsda_input_turnleft},
-  {"TURN RIGHT"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+4*8,{0},dsda_input_turnright},
-  {"RUN"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+5*8,{0},dsda_input_speed},
-  {"STRAFE LEFT" ,S_INPUT     ,m_scrn,KB_X,KB_Y+6*8,{0},dsda_input_strafeleft},
-  {"STRAFE RIGHT",S_INPUT     ,m_scrn,KB_X,KB_Y+7*8,{0},dsda_input_straferight},
-  {"STRAFE"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+8*8,{0},dsda_input_strafe},
-  {"AUTORUN"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+9*8,{0},dsda_input_autorun},
-  {"180 TURN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+10*8,{0},dsda_input_reverse},
-  {"USE"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_use},
-  {"JUMP/FLY UP" ,S_INPUT     ,m_scrn,KB_X,KB_Y+12*8,{0},dsda_input_flyup},
-  {"FLY DOWN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,{0},dsda_input_flydown},
+  {"INPUT PROFILE",S_NUM,m_null,KB_X,KB_Y,{"input_profile"}},
+  {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+2*8},
+  {"FORWARD"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+3*8,{0},dsda_input_forward},
+  {"BACKWARD"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+4*8,{0},dsda_input_backward},
+  {"TURN LEFT"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+5*8,{0},dsda_input_turnleft},
+  {"TURN RIGHT"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+6*8,{0},dsda_input_turnright},
+  {"RUN"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+7*8,{0},dsda_input_speed},
+  {"STRAFE LEFT" ,S_INPUT     ,m_scrn,KB_X,KB_Y+8*8,{0},dsda_input_strafeleft},
+  {"STRAFE RIGHT",S_INPUT     ,m_scrn,KB_X,KB_Y+9*8,{0},dsda_input_straferight},
+  {"STRAFE"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+10*8,{0},dsda_input_strafe},
+  {"AUTORUN"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_autorun},
+  {"180 TURN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+12*8,{0},dsda_input_reverse},
+  {"USE"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,{0},dsda_input_use},
+  {"JUMP/FLY UP" ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_flyup},
+  {"FLY DOWN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_flydown},
   {"MOUSE LOOK"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_mlook},
   {"NO VERTICAL MOUSE",S_INPUT,m_scrn,KB_X,KB_Y+17*8,{0},dsda_input_novert},
 
@@ -2578,6 +2579,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Store Quick Key Frame", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_store_quick_key_frame },
   { "Restore Quick Key Frame", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_restore_quick_key_frame },
   { "Rewind", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_rewind },
+  { "Cycle Input Profile", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_cycle_profile },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings2 } },
   { 0, S_SKIP | S_END, m_null }
@@ -4602,50 +4604,55 @@ static inline int GetButtons(const unsigned int max, int data)
 #define MENU_CLEAR     -9
 
 dboolean M_Responder (event_t* ev) {
-  int    ch;
+  int    ch, action;
   int    i;
   int s_input;
-  dboolean escape_key = 0;
-  dboolean help_key = 0;
   static int joywait   = 0;
   static int mousewait = 0;
 
   ch = MENU_NULL; // will be changed to a legit char if we're going to use it here
+  action = MENU_NULL; // differentiate between action caused by a binding and input ch
 
   // Process joystick input
 
   if (ev->type == ev_joystick && joywait < I_GetTime()) {
     if (ev->data3 == -1)
     {
-      ch = MENU_UP;                                // phares 3/7/98
+      action = MENU_UP;                                // phares 3/7/98
+      ch = 0;
       joywait = I_GetTime() + 5;
     }
     else if (ev->data3 == 1)
     {
-      ch = MENU_DOWN;                              // phares 3/7/98
+      action = MENU_DOWN;                              // phares 3/7/98
+      ch = 0;
       joywait = I_GetTime() + 5;
     }
 
     if (ev->data2 == -1)
     {
-      ch = MENU_LEFT;                              // phares 3/7/98
+      action = MENU_LEFT;                              // phares 3/7/98
+      ch = 0;
       joywait = I_GetTime() + 2;
     }
     else if (ev->data2 == 1)
     {
-      ch = MENU_RIGHT;                             // phares 3/7/98
+      action = MENU_RIGHT;                             // phares 3/7/98
+      ch = 0;
       joywait = I_GetTime() + 2;
     }
 
     if (ev->data1&1)
     {
-      ch = MENU_ENTER;                             // phares 3/7/98
+      action = MENU_ENTER;                             // phares 3/7/98
+      ch = 0;
       joywait = I_GetTime() + 5;
     }
 
     if (ev->data1&2)
     {
-      ch = MENU_BACKSPACE;                         // phares 3/7/98
+      action = MENU_BACKSPACE;                         // phares 3/7/98
+      ch = 0;
       joywait = I_GetTime() + 5;
     }
 
@@ -4666,13 +4673,15 @@ dboolean M_Responder (event_t* ev) {
     if (ev->type == ev_mouse && mousewait < I_GetTime()) {
       if (ev->data1&1)
       {
-        ch = MENU_ENTER;                           // phares 3/7/98
+        action = MENU_ENTER;                           // phares 3/7/98
+        ch = 0;
         mousewait = I_GetTime() + 15;
       }
 
       if (ev->data1&2)
       {
-        ch = MENU_BACKSPACE;                       // phares 3/7/98
+        action = MENU_BACKSPACE;                       // phares 3/7/98
+        ch = 0;
         mousewait = I_GetTime() + 15;
       }
 
@@ -4689,14 +4698,6 @@ dboolean M_Responder (event_t* ev) {
       if (ev->type == ev_keydown)
       {
         ch = ev->data1;
-
-        // It's a failsafe for the escape key to work regardless of config
-        if (ch == KEYD_ESCAPE)
-          escape_key = true;
-
-        // It's a failsafe for the help key to work regardless of config
-        if (ch == KEYD_F1)
-          help_key = true;
                                       // phares 4/11/98:
         if (ch == KEYD_RSHIFT)        // For chat string processing, need
           shiftdown = true;           // to know when shift key is up or
@@ -4708,41 +4709,41 @@ dboolean M_Responder (event_t* ev) {
 
   if (dsda_InputActivated(dsda_input_menu_left))
   {
-    ch = MENU_LEFT;
+    action = MENU_LEFT;
   }
   else if (dsda_InputActivated(dsda_input_menu_right))
   {
-    ch = MENU_RIGHT;
+    action = MENU_RIGHT;
   }
   else if (dsda_InputActivated(dsda_input_menu_up))
   {
-    ch = MENU_UP;
+    action = MENU_UP;
   }
   else if (dsda_InputActivated(dsda_input_menu_down))
   {
-    ch = MENU_DOWN;
+    action = MENU_DOWN;
   }
   else if (dsda_InputActivated(dsda_input_menu_backspace))
   {
-    ch = MENU_BACKSPACE;
+    action = MENU_BACKSPACE;
   }
   else if (dsda_InputActivated(dsda_input_menu_enter))
   {
-    ch = MENU_ENTER;
+    action = MENU_ENTER;
   }
   else if (dsda_InputActivated(dsda_input_menu_escape))
   {
-    ch = MENU_ESCAPE;
+    action = MENU_ESCAPE;
   }
   else if (dsda_InputActivated(dsda_input_menu_clear))
   {
-    ch = MENU_CLEAR;
+    action = MENU_CLEAR;
   }
 
   // Save Game string input
 
-  if (saveStringEnter && ch != MENU_NULL) {
-    if (ch == MENU_BACKSPACE)                            // phares 3/7/98
+  if (saveStringEnter && (ch != MENU_NULL || action != MENU_NULL)) {
+    if (action == MENU_BACKSPACE)                            // phares 3/7/98
     {
       if (saveCharIndex > 0)
       {
@@ -4750,18 +4751,18 @@ dboolean M_Responder (event_t* ev) {
         savegamestrings[saveSlot][saveCharIndex] = 0;
       }
     }
-    else if (ch == MENU_ESCAPE)                    // phares 3/7/98
+    else if (action == MENU_ESCAPE)                    // phares 3/7/98
     {
       saveStringEnter = 0;
       strcpy(&savegamestrings[saveSlot][0],saveOldString);
     }
-    else if (ch == MENU_ENTER)                     // phares 3/7/98
+    else if (action == MENU_ENTER)                     // phares 3/7/98
     {
       saveStringEnter = 0;
       if (savegamestrings[saveSlot][0])
         M_DoSave(saveSlot);
     }
-    else
+    else if (ch > 0)
     {
       ch = toupper(ch);
       if (ch >= 32 && ch <= 127 &&
@@ -4779,11 +4780,8 @@ dboolean M_Responder (event_t* ev) {
 
   if (messageToPrint && ch != MENU_NULL) {
     if (messageNeedsInput == true &&
-        !(ch == ' ' || ch == 'n' || ch == 'y' || escape_key)) // phares
+        !(ch == ' ' || ch == 'n' || ch == 'y' || ch == KEYD_ESCAPE)) // phares
       return false;
-
-    if (escape_key)
-      ch = KEYD_ESCAPE;
 
     menuactive = messageLastMenuActive;
     messageToPrint = 0;
@@ -4811,7 +4809,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (help_key)
+    if (ch == KEYD_F1)
     {
       M_StartControlPanel ();
 
@@ -5025,6 +5023,14 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
+    if (dsda_InputActivated(dsda_input_cycle_profile))
+    {
+      dsda_InputCycleProfile();
+      doom_printf("Input Profile %d", dsda_input_profile);
+      S_StartSound(NULL, g_sfx_swtchn);
+      return true;
+    }
+
     if (dsda_InputActivated(dsda_input_walkcamera))
     {
       if (demoplayback && gamestate == GS_LEVEL)
@@ -5094,7 +5100,7 @@ dboolean M_Responder (event_t* ev) {
 
   if (!menuactive)
   {
-    if (escape_key)                                     // phares
+    if (ch == KEYD_ESCAPE) // phares
     {
       M_StartControlPanel ();
       S_StartSound(NULL,g_sfx_swtchn);
@@ -5134,7 +5140,7 @@ dboolean M_Responder (event_t* ev) {
     // Common processing for some items
 
     if (setup_select) { // changing an entry
-      if (ch == MENU_ESCAPE) // Exit key = no change
+      if (action == MENU_ESCAPE) // Exit key = no change
       {
         M_SelectDone(ptr1);                           // phares 4/17/98
         setup_gather = false;   // finished gathering keys, if any
@@ -5143,7 +5149,7 @@ dboolean M_Responder (event_t* ev) {
 
       if (ptr1->m_flags & S_YESNO) // yes or no setting?
       {
-        if (ch == MENU_ENTER) {
+        if (action == MENU_ENTER) {
           *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
 
           // phares 4/14/98:
@@ -5177,7 +5183,7 @@ dboolean M_Responder (event_t* ev) {
 
       if (ptr1->m_flags & S_CRITEM)
       {
-        if (ch != MENU_ENTER)
+        if (action != MENU_ENTER)
         {
           ch -= 0x30; // out of ascii
           if (ch < 0 || ch > 9)
@@ -5198,7 +5204,7 @@ dboolean M_Responder (event_t* ev) {
            * allow backspace, and return to original value if bad
            * value is entered).
            */
-          if (ch == MENU_ENTER) {
+          if (action == MENU_ENTER) {
             if (gather_count) {     // Any input?
               int value;
 
@@ -5236,7 +5242,7 @@ dboolean M_Responder (event_t* ev) {
             return true;
           }
 
-          if (ch == MENU_BACKSPACE && gather_count) {
+          if (action == MENU_BACKSPACE && gather_count) {
             gather_count--;
             return true;
           }
@@ -5255,7 +5261,7 @@ dboolean M_Responder (event_t* ev) {
 
       if (ptr1->m_flags & S_CHOICE) // selection of choices?
       {
-        if (ch == MENU_LEFT) {
+        if (action == MENU_LEFT) {
           if (ptr1->var.def->type == def_int) {
             int value = *ptr1->var.def->location.pi;
 
@@ -5283,7 +5289,7 @@ dboolean M_Responder (event_t* ev) {
             *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
           }
         }
-        if (ch == MENU_RIGHT) {
+        if (action == MENU_RIGHT) {
           if (ptr1->var.def->type == def_int) {
             int value = *ptr1->var.def->location.pi;
 
@@ -5311,7 +5317,7 @@ dboolean M_Responder (event_t* ev) {
             *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
           }
         }
-        if (ch == MENU_ENTER) {
+        if (action == MENU_ENTER) {
           // phares 4/14/98:
           // If not in demoplayback, demorecording, or netgame,
           // and there's a second variable in var2, set that
@@ -5450,7 +5456,7 @@ dboolean M_Responder (event_t* ev) {
     if (set_weapon_active) // on the weapons setup screen
   if (setup_select) // changing an entry
     {
-      if (ch != MENU_ENTER)
+      if (action != MENU_ENTER)
         {
     ch -= '0'; // out of ascii
     if (ch < 1 || ch > 9)
@@ -5486,7 +5492,7 @@ dboolean M_Responder (event_t* ev) {
       if (set_auto_active) // on the automap setup screen
   if (setup_select) // incoming key
     {
-      if (ch == MENU_DOWN)
+      if (action == MENU_DOWN)
         {
     if (++color_palette_y == 16)
       color_palette_y = 0;
@@ -5494,7 +5500,7 @@ dboolean M_Responder (event_t* ev) {
     return true;
         }
 
-      if (ch == MENU_UP)
+      if (action == MENU_UP)
         {
     if (--color_palette_y < 0)
       color_palette_y = 15;
@@ -5502,7 +5508,7 @@ dboolean M_Responder (event_t* ev) {
     return true;
         }
 
-      if (ch == MENU_LEFT)
+      if (action == MENU_LEFT)
         {
     if (--color_palette_x < 0)
       color_palette_x = 15;
@@ -5510,7 +5516,7 @@ dboolean M_Responder (event_t* ev) {
     return true;
         }
 
-      if (ch == MENU_RIGHT)
+      if (action == MENU_RIGHT)
         {
     if (++color_palette_x == 16)
       color_palette_x = 0;
@@ -5518,7 +5524,7 @@ dboolean M_Responder (event_t* ev) {
     return true;
         }
 
-      if (ch == MENU_ENTER)
+      if (action == MENU_ENTER)
         {
     *ptr1->var.def->location.pi = color_palette_x + 16*color_palette_y;
     M_SelectDone(ptr1);                         // phares 4/17/98
@@ -5534,7 +5540,7 @@ dboolean M_Responder (event_t* ev) {
   {
     if (ptr1->m_flags & S_STRING) // creating/editing a string?
       {
-        if (ch == MENU_BACKSPACE) // backspace and DEL
+        if (action == MENU_BACKSPACE) // backspace and DEL
     {
       if (chat_string_buffer[chat_index] == 0)
         {
@@ -5546,18 +5552,18 @@ dboolean M_Responder (event_t* ev) {
         strcpy(&chat_string_buffer[chat_index],
          &chat_string_buffer[chat_index+1]);
     }
-        else if (ch == MENU_LEFT) // move cursor left
+        else if (action == MENU_LEFT) // move cursor left
     {
       if (chat_index > 0)
         chat_index--;
     }
-        else if (ch == MENU_RIGHT) // move cursor right
+        else if (action == MENU_RIGHT) // move cursor right
     {
       if (chat_string_buffer[chat_index] != 0)
         chat_index++;
     }
-        else if ((ch == MENU_ENTER) ||
-           (ch == MENU_ESCAPE))
+        else if ((action == MENU_ENTER) ||
+           (action == MENU_ESCAPE))
     {
       *ptr1->var.def->location.ppsz = chat_string_buffer;
       M_SelectDone(ptr1);   // phares 4/17/98
@@ -5591,7 +5597,7 @@ dboolean M_Responder (event_t* ev) {
       // Not changing any items on the Setup screens. See if we're
       // navigating the Setup menus or selecting an item to change.
 
-      if (ch == MENU_DOWN)
+      if (action == MENU_DOWN)
   {
     ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
     do
@@ -5610,7 +5616,7 @@ dboolean M_Responder (event_t* ev) {
     return true;
   }
 
-      if (ch == MENU_UP)
+      if (action == MENU_UP)
   {
     ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
     do
@@ -5626,7 +5632,7 @@ dboolean M_Responder (event_t* ev) {
     return true;
   }
 
-      if (ch == MENU_CLEAR)
+      if (action == MENU_CLEAR)
   {
     if (ptr1->m_flags & S_INPUT)
     {
@@ -5636,7 +5642,7 @@ dboolean M_Responder (event_t* ev) {
     return true;
   }
 
-      if (ch == MENU_ENTER)
+      if (action == MENU_ENTER)
   {
     int flags = ptr1->m_flags;
 
@@ -5698,10 +5704,10 @@ dboolean M_Responder (event_t* ev) {
     return true;
   }
 
-      if ((ch == MENU_ESCAPE) || (ch == MENU_BACKSPACE))
+      if ((action == MENU_ESCAPE) || (action == MENU_BACKSPACE))
   {
     M_SetSetupMenuItemOn(set_menu_itemon);
-    if (ch == MENU_ESCAPE) // Clear all menus
+    if (action == MENU_ESCAPE) // Clear all menus
       M_ClearMenus();
     else // MENU_BACKSPACE = return to Setup Menu
       if (currentMenu->prevMenu)
@@ -5735,7 +5741,7 @@ dboolean M_Responder (event_t* ev) {
       // The m_var1 field contains a pointer to the appropriate screen
       // to move to.
 
-      if (ch == MENU_LEFT)
+      if (action == MENU_LEFT)
   {
     ptr2 = ptr1;
     do
@@ -5758,7 +5764,7 @@ dboolean M_Responder (event_t* ev) {
     while (!(ptr2->m_flags & S_END));
   }
 
-      if (ch == MENU_RIGHT)
+      if (action == MENU_RIGHT)
   {
     ptr2 = ptr1;
     do
@@ -5786,7 +5792,7 @@ dboolean M_Responder (event_t* ev) {
   // From here on, these navigation keys are used on the BIG FONT menus
   // like the Main Menu.
 
-  if (ch == MENU_DOWN)                             // phares 3/7/98
+  if (action == MENU_DOWN)                             // phares 3/7/98
     {
       do
   {
@@ -5800,7 +5806,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-  if (ch == MENU_UP)                               // phares 3/7/98
+  if (action == MENU_UP)                               // phares 3/7/98
     {
       do
   {
@@ -5814,7 +5820,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-  if (ch == MENU_LEFT)                             // phares 3/7/98
+  if (action == MENU_LEFT)                             // phares 3/7/98
     {
       if (currentMenu->menuitems[itemOn].routine &&
     currentMenu->menuitems[itemOn].status == 2)
@@ -5825,7 +5831,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-  if (ch == MENU_RIGHT)                            // phares 3/7/98
+  if (action == MENU_RIGHT)                            // phares 3/7/98
     {
       if (currentMenu->menuitems[itemOn].routine &&
     currentMenu->menuitems[itemOn].status == 2)
@@ -5836,7 +5842,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-  if (ch == MENU_ENTER)                            // phares 3/7/98
+  if (action == MENU_ENTER)                            // phares 3/7/98
     {
       if (currentMenu->menuitems[itemOn].routine &&
     currentMenu->menuitems[itemOn].status)
@@ -5858,7 +5864,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-  if (ch == MENU_ESCAPE)                           // phares 3/7/98
+  if (action == MENU_ESCAPE)                           // phares 3/7/98
     {
       currentMenu->lastOn = itemOn;
       M_ClearMenus ();
@@ -5866,7 +5872,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-  if (ch == MENU_BACKSPACE)                        // phares 3/7/98
+  if (action == MENU_BACKSPACE)                        // phares 3/7/98
     {
       currentMenu->lastOn = itemOn;
 

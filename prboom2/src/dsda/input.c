@@ -20,8 +20,8 @@
 
 #include "input.h"
 
-static int dsda_input_index = 0;
-static dsda_input_t dsda_input[DSDA_SEPARATE_CONFIG_COUNT][DSDA_INPUT_IDENTIFIER_COUNT];
+int dsda_input_profile = 0;
+static dsda_input_t dsda_input[DSDA_INPUT_PROFILE_COUNT][DSDA_INPUT_IDENTIFIER_COUNT];
 
 typedef struct
 {
@@ -149,7 +149,7 @@ void dsda_InputTrackGameEvent(event_t* ev) {
 dboolean dsda_InputActivated(int identifier) {
   int i;
   dsda_input_t* input;
-  input = &dsda_input[dsda_input_index][identifier];
+  input = &dsda_input[dsda_input_profile][identifier];
 
   for (i = 0; i < input->num_keys; ++i)
     if (gamekeys[input->key[i]].activated_at == dsda_input_counter)
@@ -163,7 +163,7 @@ dboolean dsda_InputActivated(int identifier) {
 dboolean dsda_InputTickActivated(int identifier) {
   int i;
   dsda_input_t* input;
-  input = &dsda_input[dsda_input_index][identifier];
+  input = &dsda_input[dsda_input_profile][identifier];
 
   for (i = 0; i < input->num_keys; ++i)
     if (gamekeys[input->key[i]].game_activated_at > dsda_input_tick_counter)
@@ -178,7 +178,7 @@ dboolean dsda_InputDeactivated(int identifier) {
   int i;
   dboolean deactivated = false;
   dsda_input_t* input;
-  input = &dsda_input[dsda_input_index][identifier];
+  input = &dsda_input[dsda_input_profile][identifier];
 
   for (i = 0; i < input->num_keys; ++i)
     if (gamekeys[input->key[i]].on)
@@ -205,20 +205,20 @@ void dsda_InputFlush(void) {
 }
 
 dsda_input_t* dsda_Input(int identifier) {
-  return &dsda_input[dsda_input_index][identifier];
+  return &dsda_input[dsda_input_profile][identifier];
 }
 
 void dsda_InputCopy(int identifier, dsda_input_t** input) {
   int i;
 
-  for (i = 0; i < DSDA_SEPARATE_CONFIG_COUNT; ++i) {
+  for (i = 0; i < DSDA_INPUT_PROFILE_COUNT; ++i) {
     input[i] = &dsda_input[i][identifier];
   }
 }
 
 int dsda_InputMatchKey(int identifier, int value) {
   int i;
-  dsda_input_t* p = &dsda_input[dsda_input_index][identifier];
+  dsda_input_t* p = &dsda_input[dsda_input_profile][identifier];
 
   for (i = 0; i < p->num_keys; ++i)
     if (p->key[i] == value)
@@ -228,11 +228,11 @@ int dsda_InputMatchKey(int identifier, int value) {
 }
 
 int dsda_InputMatchMouseB(int identifier, int value) {
-  return dsda_input[dsda_input_index][identifier].mouseb == value;
+  return dsda_input[dsda_input_profile][identifier].mouseb == value;
 }
 
 int dsda_InputMatchJoyB(int identifier, int value) {
-  return dsda_input[dsda_input_index][identifier].joyb == value;
+  return dsda_input[dsda_input_profile][identifier].joyb == value;
 }
 
 void dsda_InputResetSpecific(int config_index, int identifier) {
@@ -244,11 +244,11 @@ void dsda_InputResetSpecific(int config_index, int identifier) {
 }
 
 void dsda_InputReset(int identifier) {
-  dsda_InputResetSpecific(dsda_input_index, identifier);
+  dsda_InputResetSpecific(dsda_input_profile, identifier);
 }
 
 void dsda_InputSet(int identifier, dsda_input_default_t input) {
-  dsda_InputSetSpecific(dsda_input_index, identifier, input);
+  dsda_InputSetSpecific(dsda_input_profile, identifier, input);
 }
 
 void dsda_InputSetSpecific(int config_index, int identifier, dsda_input_default_t input) {
@@ -256,8 +256,12 @@ void dsda_InputSetSpecific(int config_index, int identifier, dsda_input_default_
 
   if (p->num_keys == 0)
     p->key = realloc(p->key, sizeof(*p->key));
-  p->key[0] = input.key;
-  p->num_keys = 1;
+  if (input.key > 0) {
+    p->key[0] = input.key;
+    p->num_keys = 1;
+  }
+  else p->num_keys = 0;
+
   p->mouseb = input.mouseb;
   p->joyb = input.joyb;
 }
@@ -276,27 +280,33 @@ static void dsda_InputAddThing(int** list, int* count, int value) {
 void dsda_InputAddSpecificKey(int config_index, int identifier, int value) {
   dsda_input_t* p = &dsda_input[config_index][identifier];
 
+  if (value < 1 || value >= NUMKEYS) return;
+
   dsda_InputAddThing(&p->key, &p->num_keys, value);
 }
 
 void dsda_InputAddKey(int identifier, int value) {
-  dsda_InputAddSpecificKey(dsda_input_index, identifier, value);
+  dsda_InputAddSpecificKey(dsda_input_profile, identifier, value);
 }
 
 void dsda_InputAddSpecificMouseB(int config_index, int identifier, int value) {
+  if (value < -1 || value >= MAX_MOUSE_BUTTONS) return;
+
   dsda_input[config_index][identifier].mouseb = value;
 }
 
 void dsda_InputAddMouseB(int identifier, int value) {
-  dsda_InputAddSpecificMouseB(dsda_input_index, identifier, value);
+  dsda_InputAddSpecificMouseB(dsda_input_profile, identifier, value);
 }
 
 void dsda_InputAddSpecificJoyB(int config_index, int identifier, int value) {
+  if (value < -1 || value >= MAX_JOY_BUTTONS) return;
+
   dsda_input[config_index][identifier].joyb = value;
 }
 
 void dsda_InputAddJoyB(int identifier, int value) {
-  dsda_InputAddSpecificJoyB(dsda_input_index, identifier, value);
+  dsda_InputAddSpecificJoyB(dsda_input_profile, identifier, value);
 }
 
 static void dsda_InputRemoveThing(int* list, int* count, int value) {
@@ -319,23 +329,23 @@ static void dsda_InputRemoveThing(int* list, int* count, int value) {
 }
 
 void dsda_InputRemoveKey(int identifier, int value) {
-  dsda_input_t* p = &dsda_input[dsda_input_index][identifier];
+  dsda_input_t* p = &dsda_input[dsda_input_profile][identifier];
 
   dsda_InputRemoveThing(p->key, &p->num_keys, value);
 }
 
 void dsda_InputRemoveMouseB(int identifier, int value) {
-  dsda_input[dsda_input_index][identifier].mouseb = -1;
+  dsda_input[dsda_input_profile][identifier].mouseb = -1;
 }
 
 void dsda_InputRemoveJoyB(int identifier, int value) {
-  dsda_input[dsda_input_index][identifier].joyb = -1;
+  dsda_input[dsda_input_profile][identifier].joyb = -1;
 }
 
 dboolean dsda_InputActive(int identifier) {
   int i;
   dsda_input_t* input;
-  input = &dsda_input[dsda_input_index][identifier];
+  input = &dsda_input[dsda_input_profile][identifier];
 
   for (i = 0; i < input->num_keys; ++i)
     if (gamekeys[input->key[i]].on)
@@ -348,7 +358,7 @@ dboolean dsda_InputActive(int identifier) {
 dboolean dsda_InputKeyActive(int identifier) {
   int i;
   dsda_input_t* input;
-  input = &dsda_input[dsda_input_index][identifier];
+  input = &dsda_input[dsda_input_profile][identifier];
 
   for (i = 0; i < input->num_keys; ++i)
     if (gamekeys[input->key[i]].on)
@@ -359,14 +369,21 @@ dboolean dsda_InputKeyActive(int identifier) {
 
 dboolean dsda_InputMouseBActive(int identifier) {
   dsda_input_t* input;
-  input = &dsda_input[dsda_input_index][identifier];
+  input = &dsda_input[dsda_input_profile][identifier];
 
   return input->mouseb >= 0 && mousebuttons[input->mouseb].on;
 }
 
 dboolean dsda_InputJoyBActive(int identifier) {
   dsda_input_t* input;
-  input = &dsda_input[dsda_input_index][identifier];
+  input = &dsda_input[dsda_input_profile][identifier];
 
   return input->joyb >= 0 && joybuttons[input->joyb].on;
+}
+
+void dsda_InputCycleProfile(void) {
+  dsda_input_profile++;
+
+  if (dsda_input_profile == DSDA_INPUT_PROFILE_COUNT)
+    dsda_input_profile = 0;
 }

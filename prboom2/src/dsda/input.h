@@ -21,10 +21,12 @@
 #include "doomtype.h"
 #include "d_event.h"
 
-#define DSDA_SEPARATE_CONFIG_COUNT 3
+#define DSDA_INPUT_PROFILE_COUNT 3
 #define NUMKEYS 512
 #define MAX_MOUSE_BUTTONS 8
 #define MAX_JOY_BUTTONS 8
+
+extern int dsda_input_profile;
 
 typedef enum {
   dsda_input_null,
@@ -134,6 +136,7 @@ typedef enum {
   dsda_input_menu_clear,
   dsda_input_help,
   dsda_input_escape,
+  dsda_input_cycle_profile,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
@@ -160,7 +163,7 @@ dboolean dsda_InputTickActivated(int identifier);
 dboolean dsda_InputDeactivated(int identifier);
 dsda_input_t* dsda_Input(int identifier);
 void dsda_InputFlush(void);
-void dsda_InputCopy(int identifier, dsda_input_t* input[DSDA_SEPARATE_CONFIG_COUNT]);
+void dsda_InputCopy(int identifier, dsda_input_t* input[DSDA_INPUT_PROFILE_COUNT]);
 int dsda_InputMatchKey(int identifier, int value);
 int dsda_InputMatchMouseB(int identifier, int value);
 int dsda_InputMatchJoyB(int identifier, int value);
@@ -181,5 +184,6 @@ dboolean dsda_InputActive(int identifer);
 dboolean dsda_InputKeyActive(int identifier);
 dboolean dsda_InputMouseBActive(int identifier);
 dboolean dsda_InputJoyBActive(int identifier);
+void dsda_InputCycleProfile(void);
 
 #endif

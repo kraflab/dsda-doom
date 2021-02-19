@@ -558,6 +558,8 @@ default_t defaults[] =
   // defaults { key, mouseb, joyb }
   { "Input settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
 
+  { "input_profile", { &dsda_input_profile }, { 0 }, 0, DSDA_INPUT_PROFILE_COUNT - 1, def_int, ss_none },
+
   { "input_forward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_forward, { 'w', 2, -1 } },
   { "input_backward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
@@ -773,6 +775,8 @@ default_t defaults[] =
     dsda_input_restore_quick_key_frame, { 0, -1, -1 } },
   { "input_rewind", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_rewind, { 0, -1, -1 } },
+  { "input_cycle_profile", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_cycle_profile, { 0, -1, -1 } },
 
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
@@ -1463,12 +1467,12 @@ void M_SaveDefaults (void)
       else if (defaults[i].type == def_input)
       {
         int a, j;
-        dsda_input_t* input[DSDA_SEPARATE_CONFIG_COUNT];
+        dsda_input_t* input[DSDA_INPUT_PROFILE_COUNT];
         dsda_InputCopy(defaults[i].identifier, input);
 
         fprintf(f, "%-*s", maxlen, defaults[i].name);
 
-        for (a = 0; a < DSDA_SEPARATE_CONFIG_COUNT; ++a)
+        for (a = 0; a < DSDA_INPUT_PROFILE_COUNT; ++a)
         {
           if (input[a]->num_keys)
           {
@@ -1483,7 +1487,7 @@ void M_SaveDefaults (void)
 
           fprintf(f, " %i %i", input[a]->mouseb, input[a]->joyb);
 
-          if (a != DSDA_SEPARATE_CONFIG_COUNT - 1)
+          if (a != DSDA_INPUT_PROFILE_COUNT - 1)
             fprintf(f, " |");
         }
 
@@ -1549,7 +1553,7 @@ void M_LoadDefaults (void)
     if (defaults[i].type == def_input)
     {
       int c;
-      for (c = 0; c < DSDA_SEPARATE_CONFIG_COUNT; ++c)
+      for (c = 0; c < DSDA_INPUT_PROFILE_COUNT; ++c)
         dsda_InputSetSpecific(c, defaults[i].identifier, defaults[i].input);
     }
     else
@@ -1566,7 +1570,7 @@ void M_LoadDefaults (void)
     dsda_input_default_t fallback_help = { KEYD_F1, -1, -1 };
     dsda_input_default_t fallback_escape = { KEYD_ESCAPE, -1, -1 };
 
-    for (i = 0; i < DSDA_SEPARATE_CONFIG_COUNT; ++i)
+    for (i = 0; i < DSDA_INPUT_PROFILE_COUNT; ++i)
     {
       dsda_InputSetSpecific(i, dsda_input_help, fallback_help);
       dsda_InputSetSpecific(i, dsda_input_escape, fallback_escape);
@@ -1754,7 +1758,7 @@ void M_LoadDefaults (void)
                     config_scan_p = strchr(config_scan_p, '|');
                     if (config_scan_p)
                       config_scan_p++;
-                  } while (config_scan_p && index < DSDA_SEPARATE_CONFIG_COUNT);
+                  } while (config_scan_p && index < DSDA_INPUT_PROFILE_COUNT);
                 }
 
                 //jff 3/4/98 range check numeric parameters
