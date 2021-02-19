@@ -1961,17 +1961,53 @@ static void M_DrawSetting(const setup_menu_t* s)
   // Is the item a key binding?
 
   if (flags & S_INPUT) {
-    dsda_input_t input;
+    int i;
+    int offset = 0;
+    const char* format;
+    dboolean any_input = false;
+    dsda_input_t* input;
     input = dsda_Input(s->input);
 
     // Draw the input bound to the action
+    menu_buffer[0] = '\0';
 
-    M_GetKeyString(input.key, 0); // string to display
+    for (i = 0; i < input->num_keys; ++i)
+    {
+      if (any_input)
+      {
+        menu_buffer[offset++] = '/';
+        menu_buffer[offset] = '\0';
+      }
 
-    if (input.mouseb != -1)
-      sprintf(menu_buffer + strlen(menu_buffer), "/MB%d", input.mouseb + 1);
-    if (input.joyb != -1)
-      sprintf(menu_buffer + strlen(menu_buffer), "/JSB%d", input.joyb + 1);
+      offset = M_GetKeyString(input->key[i], offset);
+      any_input = true;
+    }
+
+    if (input->mouseb != -1)
+    {
+      if (any_input)
+        format = "/MB%d";
+      else
+        format = "MB%d";
+
+      sprintf(menu_buffer + strlen(menu_buffer), format, input->mouseb + 1);
+      any_input = true;
+    }
+
+    if (input->joyb != -1)
+    {
+      if (any_input)
+        format = "/JSB%d";
+      else
+        format = "JSB%d";
+
+      sprintf(menu_buffer + strlen(menu_buffer), format, input->joyb + 1);
+      any_input = true;
+    }
+
+    // "NONE"
+    if (!any_input)
+      M_GetKeyString(0, 0);
 
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");

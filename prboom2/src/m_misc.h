@@ -113,7 +113,7 @@ typedef struct default_s
 
   // composite input - need to completely refactor this...
   int identifier;
-  dsda_input_t input;
+  dsda_input_default_t input;
 } default_t;
 
 #define IS_STRING(dv) ((dv).type == def_str)

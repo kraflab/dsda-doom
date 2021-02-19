@@ -1462,12 +1462,32 @@ void M_SaveDefaults (void)
         fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
       else if (defaults[i].type == def_input)
       {
-        dsda_input_t input[DSDA_SEPARATE_CONFIG_COUNT];
+        int a, j;
+        dsda_input_t* input[DSDA_SEPARATE_CONFIG_COUNT];
         dsda_InputCopy(defaults[i].identifier, input);
 
-        fprintf(f, "%-*s %d %d %d | %d %d %d\n", maxlen, defaults[i].name,
-                input[0].key, input[0].mouseb, input[0].joyb,
-                input[1].key, input[1].mouseb, input[1].joyb);
+        fprintf(f, "%-*s", maxlen, defaults[i].name);
+
+        for (a = 0; a < DSDA_SEPARATE_CONFIG_COUNT; ++a)
+        {
+          if (input[a]->num_keys)
+          {
+            fprintf(f, " %i", input[a]->key[0]);
+            for (j = 1; j < input[a]->num_keys; ++j)
+            {
+              fprintf(f, ",%i", input[a]->key[j]);
+            }
+          }
+          else
+            fprintf(f, " 0");
+
+          fprintf(f, " %i %i", input[a]->mouseb, input[a]->joyb);
+
+          if (a != DSDA_SEPARATE_CONFIG_COUNT - 1)
+            fprintf(f, " |");
+        }
+
+        fprintf(f, "\n");
       }
       else
         fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
@@ -1543,8 +1563,8 @@ void M_LoadDefaults (void)
 
   // special fallback input values
   {
-    dsda_input_t fallback_help = { KEYD_F1, -1, -1 };
-    dsda_input_t fallback_escape = { KEYD_ESCAPE, -1, -1 };
+    dsda_input_default_t fallback_help = { KEYD_F1, -1, -1 };
+    dsda_input_default_t fallback_escape = { KEYD_ESCAPE, -1, -1 };
 
     for (i = 0; i < DSDA_SEPARATE_CONFIG_COUNT; ++i)
     {
@@ -1697,18 +1717,44 @@ void M_LoadDefaults (void)
               {
                 if (defaults[i].type == def_input)
                 {
-                  int c, count;
-                  dsda_input_t input[DSDA_SEPARATE_CONFIG_COUNT];
-                  count = sscanf(strparm, "%d %d %d | %d %d %d",
-                                 &input[0].key, &input[0].mouseb, &input[0].joyb,
-                                 &input[1].key, &input[1].mouseb, &input[1].joyb);
-                  count = count / 3;
+                  int count;
+                  char keys[80];
+                  int key, mouseb, joyb;
+                  int index = 0;
+                  char* key_scan_p;
+                  char* config_scan_p;
 
-                  for (c = 0; c < DSDA_SEPARATE_CONFIG_COUNT && c < count; ++c)
-                    if (input[c].key >= 0 && input[c].key < NUMKEYS &&
-                        input[c].mouseb >= -1 && input[c].mouseb < MAX_MOUSE_BUTTONS &&
-                        input[c].joyb >= -1 && input[c].joyb < MAX_JOY_BUTTONS)
-                      dsda_InputSetSpecific(c, defaults[i].identifier, input[c]);
+                  config_scan_p = strparm;
+                  do
+                  {
+                    count = sscanf(config_scan_p, "%79s %d %d", keys, &mouseb, &joyb);
+
+                    if (count != 3)
+                      break;
+
+                    dsda_InputResetSpecific(index, defaults[i].identifier);
+
+                    dsda_InputAddSpecificMouseB(index, defaults[i].identifier, mouseb);
+                    dsda_InputAddSpecificJoyB(index, defaults[i].identifier, joyb);
+
+                    key_scan_p = strtok(keys, ",");
+                    do
+                    {
+                      count = sscanf(key_scan_p, "%d,", &key);
+
+                      if (count != 1)
+                        break;
+
+                      dsda_InputAddSpecificKey(index, defaults[i].identifier, key);
+
+                      key_scan_p = strtok(NULL, ",");
+                    } while (key_scan_p);
+
+                    index++;
+                    config_scan_p = strchr(config_scan_p, '|');
+                    if (config_scan_p)
+                      config_scan_p++;
+                  } while (config_scan_p && index < DSDA_SEPARATE_CONFIG_COUNT);
                 }
 
                 //jff 3/4/98 range check numeric parameters
