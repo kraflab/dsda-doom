@@ -755,7 +755,7 @@ void HU_Start(void)
   {
     if (heretic)
     {
-      if (gameepisode < 6 && gamemap < 10)
+      if (gameepisode > 0 && gameepisode < 6 && gamemap > 0 && gamemap < 10)
       {
         s = LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
       }
