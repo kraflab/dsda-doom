@@ -162,6 +162,8 @@ const char *const standard_iwads[]=
 
   "bfgdoom2.wad",
   "bfgdoom.wad",
+
+  "heretic.wad"
 };
 //e6y static
 const int nstandard_iwads = sizeof standard_iwads/sizeof*standard_iwads;
@@ -912,6 +914,13 @@ void AddIWAD(const char *iwad)
   * cphipps 12/1999 - no version output here, leave that to the caller
   */
   i = strlen(iwad);
+
+  if (i >= 11 && !strnicmp(iwad + i - 11, "heretic.wad", 11))
+  {
+    if (!M_CheckParm("-heretic"))
+      M_AddParam("-heretic");
+  }
+
   switch(gamemode)
   {
   case retail:
@@ -1422,16 +1431,16 @@ static void D_DoomMainSetup(void)
     } while (rsp_found==true);
   }
 
-  dsda_InitGlobal();
-
   // figgi 09/18/00-- added switch to force classic bsp nodes
   if (M_CheckParm ("-forceoldbsp"))
     forceOldBsp = true;
 
-  D_BuildBEXTables(); // haleyjd
-
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
   IdentifyVersion();
+
+  dsda_InitGlobal();
+
+  D_BuildBEXTables(); // haleyjd
 
   // e6y: DEH files preloaded in wrong order
   // http://sourceforge.net/tracker/index.php?func=detail&aid=1418158&group_id=148658&atid=772943
