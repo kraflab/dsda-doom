@@ -98,7 +98,7 @@ char namearti[][10] = {
     {"ARTISOAR"},               // fly
     {"ARTIATLP"}                // teleport
 };
-int lumparti[10];
+int lumparti[11];
 
 //---------------------------------------------------------------------------
 //
@@ -115,7 +115,7 @@ void SB_Init(void)
     // magic global that ends up in the background
     R_SetFloorNum(&grnrock, "FLOOR30");
 
-    for (i = 0; i < 10; ++i)
+    for (i = 0; i < 11; ++i)
     {
       lumparti[i] = (W_CheckNumForName)(DEH_String(namearti[i]), ns_sprites);
     }
