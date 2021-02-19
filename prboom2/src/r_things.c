@@ -1032,7 +1032,17 @@ static void R_DrawPSprite (pspdef_t *psp)
 
   if (viewplayer->powers[pw_invisibility] > 4*32
       || viewplayer->powers[pw_invisibility] & 8)
-    vis->colormap = NULL;                    // shadow draw
+  {
+    if (heretic)
+    {
+      vis->mobjflags |= MF_SHADOW;
+      vis->colormap = spritelights[MAXLIGHTSCALE-1];
+    }
+    else
+    {
+      vis->colormap = NULL;                    // shadow draw
+    }
+  }
   else if (fixedcolormap)
     vis->colormap = fixedcolormap;           // fixed color
   else if (psp->state->frame & FF_FULLBRIGHT)
