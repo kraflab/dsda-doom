@@ -5356,15 +5356,7 @@ dboolean M_Responder (event_t* ev) {
           // that belong to the same group as the one you're changing.
 
           group  = ptr1->m_group;
-          if (ev->data1 & 1)
-            ch = 0;
-          else if (ev->data1 & 2)
-            ch = 1;
-          else if (ev->data1 & 4)
-            ch = 2;
-          else if (ev->data1 & 8)
-            ch = 3;
-          else
+          if ((ch = GetButtons(MAX_JOY_BUTTONS, ev->data1)) == -1)
             return true;
           for (i = 0 ; keys_settings[i] && search ; i++)
             for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
