@@ -111,7 +111,7 @@ typedef struct default_s
   // CPhipps - remove unused "lousy hack" code
   struct setup_menu_s *setup_menu;   /* Xref to setup menu item, if any */
 
-  // composite input - need to completely refactor this...
+  // composite input
   int identifier;
   dsda_input_default_t input;
 } default_t;
