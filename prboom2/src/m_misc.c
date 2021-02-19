@@ -555,6 +555,229 @@ default_t defaults[] =
   {"gl_use_shared_texture_palette",{&gl_use_shared_texture_palette},{0},0,1,
    def_bool,ss_none},
 
+  // defaults { key, mouseb, joyb }
+  { "Input settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
+
+  { "input_profile", { &dsda_input_profile }, { 0 }, 0, DSDA_INPUT_PROFILE_COUNT - 1, def_int, ss_none },
+
+  { "input_forward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_forward, { 'w', 2, -1 } },
+  { "input_backward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_backward, { 's', -1, -1 } },
+  { "input_turnleft", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_turnleft, { 'e', -1, -1 } },
+  { "input_turnright", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_turnright, { 'q', -1, -1 } },
+  { "input_speed", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_speed, { KEYD_RSHIFT, -1, 2 } },
+  { "input_strafeleft", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_strafeleft, { 'a', -1, 4 } },
+  { "input_straferight", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_straferight, { 'd', -1, 5 } },
+  { "input_strafe", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_strafe, { KEYD_RALT, 1, 1 } },
+  { "input_autorun", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_autorun, { KEYD_CAPSLOCK, -1, -1 } },
+  { "input_reverse", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_reverse, { '/', -1, -1 } },
+  { "input_use", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_use, { ' ', -1, 3 } },
+  { "input_flyup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_flyup, { '.', -1, -1 } },
+  { "input_flydown", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_flydown, { ',', -1, -1 } },
+  { "input_flycenter", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_flycenter, { 0, -1, -1 } },
+  { "input_mlook", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_mlook, { '\\', -1, -1 } },
+  { "input_novert", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_novert, { 0, -1, -1 } },
+
+  { "input_weapon1", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon1, { '1', -1, -1 } },
+  { "input_weapon2", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon2, { '2', -1, -1 } },
+  { "input_weapon3", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon3, { '3', -1, -1 } },
+  { "input_weapon4", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon4, { '4', -1, -1 } },
+  { "input_weapon5", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon5, { '5', -1, -1 } },
+  { "input_weapon6", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon6, { '6', -1, -1 } },
+  { "input_weapon7", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon7, { '7', -1, -1 } },
+  { "input_weapon8", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon8, { '8', -1, -1 } },
+  { "input_weapon9", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_weapon9, { '9', -1, -1 } },
+  { "input_nextweapon", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_nextweapon, { KEYD_MWHEELUP, -1, -1 } },
+  { "input_prevweapon", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_prevweapon, { KEYD_MWHEELDOWN, -1, -1 } },
+  { "input_toggleweapon", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_toggleweapon, { '0', -1, -1 } },
+  { "input_fire", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_fire, { KEYD_RCTRL, 0, 0 } },
+
+  { "input_setup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_setup, { 0, -1, -1 } },
+  { "input_pause", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_pause, { KEYD_PAUSE, -1, -1 } },
+  { "input_map", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map, { KEYD_TAB, -1, -1 } },
+  { "input_soundvolume", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_soundvolume, { KEYD_F4, -1, -1 } },
+  { "input_hud", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_hud, { KEYD_F5, -1, -1 } },
+  { "input_messages", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_messages, { KEYD_F8, -1, -1 } },
+  { "input_gamma", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_gamma, { KEYD_F11, -1, -1 } },
+  { "input_spy", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_spy, { KEYD_F12, -1, -1 } },
+  { "input_zoomin", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_zoomin, { '=', -1, -1 } },
+  { "input_zoomout", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_zoomout, { '-', -1, -1 } },
+  { "input_screenshot", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_screenshot, { '*', -1, -1 } },
+  { "input_savegame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_savegame, { KEYD_F2, -1, -1 } },
+  { "input_loadgame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_loadgame, { KEYD_F3, -1, -1 } },
+  { "input_quicksave", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_quicksave, { KEYD_F6, -1, -1 } },
+  { "input_quickload", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_quickload, { KEYD_F9, -1, -1 } },
+  { "input_endgame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_endgame, { KEYD_F7, -1, -1 } },
+  { "input_quit", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_quit, { KEYD_F10, -1, -1 } },
+
+  { "input_map_follow", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_follow, { 'f', -1, -1 } },
+  { "input_map_zoomin", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_zoomin, { '=', -1, -1 } },
+  { "input_map_zoomout", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_zoomout, { '-', -1, -1 } },
+  { "input_map_up", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_up, { KEYD_UPARROW, -1, -1 } },
+  { "input_map_down", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_down, { KEYD_DOWNARROW, -1, -1 } },
+  { "input_map_left", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_left, { KEYD_LEFTARROW, -1, -1 } },
+  { "input_map_right", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_right, { KEYD_RIGHTARROW, -1, -1 } },
+  { "input_map_mark", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_mark, { 'm', -1, -1 } },
+  { "input_map_clear", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_clear, { 'c', -1, -1 } },
+  { "input_map_gobig", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_gobig, { '0', -1, -1 } },
+  { "input_map_grid", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_grid, { 'g', -1, -1 } },
+  { "input_map_rotate", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_rotate, { 'r', -1, -1 } },
+  { "input_map_overlay", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_overlay, { 'o', -1, -1 } },
+  { "input_map_textured", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_map_textured, { 0, -1, -1 } },
+
+  { "input_chat", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat, { 't', -1, -1 } },
+  { "input_chat_dest0", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_dest0, { 'g', -1, -1 } },
+  { "input_chat_dest1", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_dest1, { 'i', -1, -1 } },
+  { "input_chat_dest2", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_dest2, { 'b', -1, -1 } },
+  { "input_chat_dest3", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_dest3, { 'r', -1, -1 } },
+  { "input_chat_backspace", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_backspace, { KEYD_BACKSPACE, -1, -1 } },
+  { "input_chat_enter", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chat_enter, { KEYD_ENTER, -1, -1 } },
+
+  { "input_speed_up", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_speed_up, { 0, -1, -1 } },
+  { "input_speed_down", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_speed_down, { 0, -1, -1 } },
+  { "input_speed_default", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_speed_default, { 0, -1, -1 } },
+  { "input_demo_skip", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_demo_skip, { KEYD_INSERT, -1, -1 } },
+  { "input_demo_endlevel", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_demo_endlevel, { KEYD_END, -1, -1 } },
+  { "input_walkcamera", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_walkcamera, { KEYD_KEYPAD0, -1, -1 } },
+  { "input_join_demo", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_join_demo, { 0, -1, -1 } },
+  { "input_restart", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_restart, { KEYD_HOME, -1, -1 } },
+  { "input_nextlevel", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_nextlevel, { KEYD_PAGEDOWN, -1, -1 } },
+  { "input_showalive", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_showalive, { KEYD_KEYPADDIVIDE, -1, -1 } },
+
+  { "input_menu_down", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_down, { KEYD_DOWNARROW, -1, -1 } },
+  { "input_menu_up", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_up, { KEYD_UPARROW, -1, -1 } },
+  { "input_menu_left", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_left, { KEYD_LEFTARROW, -1, -1 } },
+  { "input_menu_right", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_right, { KEYD_RIGHTARROW, -1, -1 } },
+  { "input_menu_backspace", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_backspace, { KEYD_BACKSPACE, -1, -1 } },
+  { "input_menu_enter", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_enter, { KEYD_ENTER, -1, -1 } },
+  { "input_menu_escape", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_escape, { KEYD_ESCAPE, -1, -1 } },
+  { "input_menu_clear", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_menu_clear, { KEYD_DEL, -1, -1 } },
+
+  { "input_lookup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_lookup, { 0, -1, -1 } },
+  { "input_lookdown", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_lookdown, { 0, -1, -1 } },
+  { "input_lookcenter", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_lookcenter, { 0, -1, -1 } },
+  { "input_use_artifact", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_use_artifact, { 0, -1, -1 } },
+  { "input_arti_tome", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_tome, { 0, -1, -1 } },
+  { "input_arti_quartz", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_quartz, { 0, -1, -1 } },
+  { "input_arti_urn", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_urn, { 0, -1, -1 } },
+  { "input_arti_bomb", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_bomb, { 0, -1, -1 } },
+  { "input_arti_ring", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_ring, { 0, -1, -1 } },
+  { "input_arti_chaosdevice", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_chaosdevice, { 0, -1, -1 } },
+  { "input_arti_shadowsphere", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_shadowsphere, { 0, -1, -1 } },
+  { "input_arti_wings", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_wings, { 0, -1, -1 } },
+  { "input_arti_torch", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_torch, { 0, -1, -1 } },
+  { "input_arti_morph", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_arti_morph, { 0, -1, -1 } },
+  { "input_invleft", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_invleft, { 0, -1, -1 } },
+  { "input_invright", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+  dsda_input_invright, { 0, -1, -1 } },
+  { "input_store_quick_key_frame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_store_quick_key_frame, { 0, -1, -1 } },
+  { "input_restore_quick_key_frame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_restore_quick_key_frame, { 0, -1, -1 } },
+  { "input_rewind", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_rewind, { 0, -1, -1 } },
+  { "input_cycle_profile", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_cycle_profile, { 0, -1, -1 } },
+
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
    def_bool,ss_none}, // enables use of mouse with DOOM
@@ -564,194 +787,10 @@ default_t defaults[] =
   //jff 4/3/98 allow unlimited sensitivity
   {"mouse_sensitivity_vert",{&mouseSensitivity_vert},{1},0,UL,
    def_int,ss_none}, /* adjust vertical (y) mouse sensitivity killough/mead */
-  //jff 3/8/98 allow -1 in mouse bindings to disable mouse function
-  {"mouseb_fire",{&mousebfire},{0},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for fire
-  {"mouseb_strafe",{&mousebstrafe},{1},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for strafing
-  {"mouseb_forward",{&mousebforward},{2},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for forward motion
-  {"mouseb_backward",{&mousebbackward},{-1},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for backward motion
-  {"mouseb_use", {&mousebuse},{-1},-1,MAX_MOUSEB,
-   def_int,ss_keys}, // mouse button number to use for using doors/switches
-  //jff 3/8/98 end of lower range change for -1 allowed in mouse binding
-
-// For key bindings, the values stored in the key_* variables       // phares
-// are the internal Doom Codes. The values stored in the default.cfg
-// file are the keyboard codes.
-// CPhipps - now they're the doom codes, so default.cfg can be portable
-
-  {"Key bindings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"key_right",       {&key_right},          {KEYD_RIGHTARROW},
-   0,MAX_KEY,def_key,ss_keys}, // key to turn right
-  {"key_left",        {&key_left},           {KEYD_LEFTARROW} ,
-   0,MAX_KEY,def_key,ss_keys}, // key to turn left
-  {"key_up",          {&key_up},             {'w'}   ,
-   0,MAX_KEY,def_key,ss_keys}, // key to move forward
-  {"key_down",        {&key_down},           {'s'},
-   0,MAX_KEY,def_key,ss_keys}, // key to move backward
-  {"key_mlook",       {&key_mlook},           {'\\'},
-   0,MAX_KEY,def_key,ss_keys}, // key to move backward
-  {"key_novert",      {&key_novert},          {0}  ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle novert mode
-  {"key_menu_right",  {&key_menu_right},     {KEYD_RIGHTARROW},// phares 3/7/98
-   0,MAX_KEY,def_key,ss_keys}, // key to move right in a menu  //     |
-  {"key_menu_left",   {&key_menu_left},      {KEYD_LEFTARROW} ,//     V
-   0,MAX_KEY,def_key,ss_keys}, // key to move left in a menu
-  {"key_menu_up",     {&key_menu_up},        {KEYD_UPARROW}   ,
-   0,MAX_KEY,def_key,ss_keys}, // key to move up in a menu
-  {"key_menu_down",   {&key_menu_down},      {KEYD_DOWNARROW} ,
-   0,MAX_KEY,def_key,ss_keys}, // key to move down in a menu
-  {"key_menu_backspace",{&key_menu_backspace},{KEYD_BACKSPACE} ,
-   0,MAX_KEY,def_key,ss_keys}, // delete key in a menu
-  {"key_menu_escape", {&key_menu_escape},    {KEYD_ESCAPE}    ,
-   0,MAX_KEY,def_key,ss_keys}, // key to leave a menu      ,   // phares 3/7/98
-  {"key_menu_enter",  {&key_menu_enter},     {KEYD_ENTER}     ,
-   0,MAX_KEY,def_key,ss_keys}, // key to select from menu
-  {"key_menu_clear",  {&key_menu_clear},     {KEYD_DEL}     ,
-   0,MAX_KEY,def_key,ss_keys}, // key to clear a key binding
-  {"key_setup",       {&key_setup},          {0},
-   0,MAX_KEY,def_key,ss_keys}, //e6y: key for entering setup menu
-  {"key_strafeleft",  {&key_strafeleft},     {'a'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to strafe left
-  {"key_straferight", {&key_straferight},    {'d'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to strafe right
-
-  {"key_fire",        {&key_fire},           {KEYD_RCTRL}     ,
-   0,MAX_KEY,def_key,ss_keys}, // duh
-  {"key_use",         {&key_use},            {' '}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to open a door, use a switch
-  {"key_strafe",      {&key_strafe},         {KEYD_RALT}      ,
-   0,MAX_KEY,def_key,ss_keys}, // key to use with arrows to strafe
-  {"key_speed",       {&key_speed},          {KEYD_RSHIFT}    ,
-   0,MAX_KEY,def_key,ss_keys}, // key to run
-
-  {"key_savegame",    {&key_savegame},       {KEYD_F2}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to save current game
-  {"key_loadgame",    {&key_loadgame},       {KEYD_F3}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to restore from saved games
-  {"key_soundvolume", {&key_soundvolume},    {KEYD_F4}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to bring up sound controls
-  {"key_hud",         {&key_hud},            {KEYD_F5}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to adjust HUD
-  {"key_quicksave",   {&key_quicksave},      {KEYD_F6}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to to quicksave
-  {"key_endgame",     {&key_endgame},        {KEYD_F7}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to end the game
-  {"key_messages",    {&key_messages},       {KEYD_F8}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle message enable
-  {"key_quickload",   {&key_quickload},      {KEYD_F9}        ,
-   0,MAX_KEY,def_key,ss_keys}, // key to load from quicksave
-  {"key_quit",        {&key_quit},           {KEYD_F10}       ,
-   0,MAX_KEY,def_key,ss_keys}, // key to quit game
-  {"key_gamma",       {&key_gamma},          {KEYD_F11}       ,
-   0,MAX_KEY,def_key,ss_keys}, // key to adjust gamma correction
-  {"key_spy",         {&key_spy},            {KEYD_F12}       ,
-   0,MAX_KEY,def_key,ss_keys}, // key to view from another coop player's view
-  {"key_pause",       {&key_pause},          {KEYD_PAUSE}     ,
-   0,MAX_KEY,def_key,ss_keys}, // key to pause the game
-  {"key_autorun",     {&key_autorun},        {KEYD_CAPSLOCK}  ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle always run mode
-  {"key_chat",        {&key_chat},           {'t'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to enter a chat message
-  {"key_backspace",   {&key_backspace},      {KEYD_BACKSPACE} ,
-   0,MAX_KEY,def_key,ss_keys}, // backspace key
-  {"key_enter",       {&key_enter},          {KEYD_ENTER}     ,
-   0,MAX_KEY,def_key,ss_keys}, // key to select from menu or see last message
-  {"key_map",         {&key_map},            {KEYD_TAB}       ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle automap display
-  {"key_map_right",   {&key_map_right},      {KEYD_RIGHTARROW},// phares 3/7/98
-   0,MAX_KEY,def_key,ss_keys}, // key to shift automap right   //     |
-  {"key_map_left",    {&key_map_left},       {KEYD_LEFTARROW} ,//     V
-   0,MAX_KEY,def_key,ss_keys}, // key to shift automap left
-  {"key_map_up",      {&key_map_up},         {KEYD_UPARROW}   ,
-   0,MAX_KEY,def_key,ss_keys}, // key to shift automap up
-  {"key_map_down",    {&key_map_down},       {KEYD_DOWNARROW} ,
-   0,MAX_KEY,def_key,ss_keys}, // key to shift automap down
-  {"key_map_zoomin",  {&key_map_zoomin},      {'='}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to enlarge automap
-  {"key_map_zoomout", {&key_map_zoomout},     {'-'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to reduce automap
-  {"key_map_gobig",   {&key_map_gobig},       {'0'}           ,
-   0,MAX_KEY,def_key,ss_keys},  // key to get max zoom for automap
-  {"key_map_follow",  {&key_map_follow},      {'f'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle follow mode
-  {"key_map_mark",    {&key_map_mark},        {'m'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to drop a marker on automap
-  {"key_map_clear",   {&key_map_clear},       {'c'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to clear all markers on automap
-  {"key_map_grid",    {&key_map_grid},        {'g'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle grid display over automap
-  {"key_map_rotate",  {&key_map_rotate},      {'r'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle rotating the automap to match the player's orientation
-  {"key_map_overlay", {&key_map_overlay},     {'o'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle overlaying the automap on the rendered display
-  {"key_map_textured", {&key_map_textured},   {0}             ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle textured automap
-  {"key_reverse",     {&key_reverse},         {'/'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to spin 180 instantly
-  {"key_zoomin",      {&key_zoomin},          {'='}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to enlarge display
-  {"key_zoomout",     {&key_zoomout},         {'-'}           ,
-   0,MAX_KEY,def_key,ss_keys}, // key to reduce display
-  {"key_chatplayer1", {&destination_keys[0]}, {'g'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to chat with player 1
-  // killough 11/98: fix 'i'/'b' reversal
-  {"key_chatplayer2", {&destination_keys[1]}, {'i'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to chat with player 2
-  {"key_chatplayer3", {&destination_keys[2]}, {'b'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to chat with player 3
-  {"key_chatplayer4", {&destination_keys[3]}, {'r'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to chat with player 4
-  {"key_weapontoggle",{&key_weapontoggle},    {'0'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to toggle between two most preferred weapons with ammo
-  {"key_weapon1",     {&key_weapon1},         {'1'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 1 (fist/chainsaw)
-  {"key_weapon2",     {&key_weapon2},         {'2'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 2 (pistol)
-  {"key_weapon3",     {&key_weapon3},         {'3'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 3 (supershotgun/shotgun)
-  {"key_weapon4",     {&key_weapon4},         {'4'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 4 (chaingun)
-  {"key_weapon5",     {&key_weapon5},         {'5'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 5 (rocket launcher)
-  {"key_weapon6",     {&key_weapon6},         {'6'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 6 (plasma rifle)
-  {"key_weapon7",     {&key_weapon7},         {'7'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 7 (bfg9000)         //    ^
-  {"key_weapon8",     {&key_weapon8},         {'8'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 8 (chainsaw)        //    |
-  {"key_weapon9",     {&key_weapon9},         {'9'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 9 (supershotgun)    // phares
-  {"key_nextweapon",  {&key_nextweapon},      {KEYD_MWHEELUP}  ,
-   0,MAX_KEY,def_key,ss_keys}, // key to cycle to the next weapon
-  {"key_prevweapon",  {&key_prevweapon},      {KEYD_MWHEELDOWN},
-   0,MAX_KEY,def_key,ss_keys}, // key to cycle to the previous weapon
-
-  // killough 2/22/98: screenshot key
-  {"key_screenshot",  {&key_screenshot},      {'*'}            ,
-   0,MAX_KEY,def_key,ss_keys}, // key to take a screenshot
 
   {"Joystick settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_joystick",{&usejoystick},{0},0,2,
    def_int,ss_none}, // number of joystick to use (0 for none)
-  {"joy_left",{&joyleft},{0},  UL,UL,def_int,ss_none},
-  {"joy_right",{&joyright},{0},UL,UL,def_int,ss_none},
-  {"joy_up",  {&joyup},  {0},  UL,UL,def_int,ss_none},
-  {"joy_down",{&joydown},{0},  UL,UL,def_int,ss_none},
-  {"joyb_fire",{&joybfire},{0},0,UL,
-   def_int,ss_keys}, // joystick button number to use for fire
-  {"joyb_strafe",{&joybstrafe},{1},0,UL,
-   def_int,ss_keys}, // joystick button number to use for strafing
-  {"joyb_strafeleft",{&joybstrafeleft},{4},0,UL,
-   def_int,ss_keys}, // joystick button number to use for strafe left
-  {"joyb_straferight",{&joybstraferight},{5},0,UL,
-   def_int,ss_keys}, // joystick button number to use for strafe right
-  {"joyb_speed",{&joybspeed},{2},0,UL,
-   def_int,ss_keys}, // joystick button number to use for running
-  {"joyb_use",{&joybuse},{3},0,UL,
-   def_int,ss_keys}, // joystick button number to use for use/open
 
   {"Chat macros",{NULL},{0},UL,UL,def_none,ss_none},
   {"chatmacro0", {0,&chat_macros[0]}, {0,HUSTR_CHATMACRO0},UL,UL,
@@ -915,31 +954,6 @@ default_t defaults[] =
   {"hud_displayed", {&hud_displayed},  {0},0,1, // whether hud is displayed
    def_bool,ss_none}, // enables display of HUD
 
-//e6y
-  {"Prboom-plus key bindings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"key_speedup", {&key_speed_up}, {0},
-   0,MAX_KEY,def_key,ss_keys},
-  {"key_speeddown", {&key_speed_down}, {0},
-   0,MAX_KEY,def_key,ss_keys},
-  {"key_speeddefault", {&key_speed_default}, {0},
-   0,MAX_KEY,def_key,ss_keys},
-  {"speed_step",{&speed_step},{0},0,1000,
-   def_int,ss_none},
-  {"key_demo_skip", {&key_demo_skip}, {KEYD_INSERT},
-   0,MAX_KEY,def_key,ss_keys},
-  {"key_level_restart", {&key_level_restart}, {KEYD_HOME},
-   0,MAX_KEY,def_key,ss_keys},
-  {"key_nextlevel", {&key_nextlevel}, {KEYD_PAGEDOWN},
-   0,MAX_KEY,def_key,ss_keys},
-  {"key_demo_jointogame", {&key_demo_jointogame}, {'q'},
-   0,MAX_KEY,def_key,ss_keys},
-  {"key_demo_endlevel", {&key_demo_endlevel}, {KEYD_END},
-   0,MAX_KEY,def_key,ss_keys},
-  {"key_walkcamera", {&key_walkcamera}, {KEYD_KEYPAD0},
-   0,MAX_KEY,def_key,ss_keys},
-  {"key_showalive", {&key_showalive}, {KEYD_KEYPADDIVIDE},
-   0,MAX_KEY,def_key,ss_keys},
-
   {"Prboom-plus heads-up display settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"hudadd_gamespeed", {&hudadd_gamespeed},  {0},0,1,
    def_bool,ss_stat},
@@ -1000,6 +1014,8 @@ default_t defaults[] =
    def_bool,ss_stat},
   {"interpolation_maxobjects", {&interpolation_maxobjects},  {0},0,UL,
    def_int,ss_stat},
+  {"speed_step",{&speed_step},{0},0,1000,
+   def_int,ss_none},
 
   {"Prboom-plus misc settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"showendoom", {&showendoom},  {0},0,1,
@@ -1017,37 +1033,11 @@ default_t defaults[] =
   {"health_bar_green", {&health_bar_green}, {0},0,100,
    def_int,ss_stat},
 
-  { "Heretic settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "key_flyup",  { &key_flyup }, { '.' }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_flydown", { &key_flydown }, { ',' }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_flycenter", { &key_flycenter }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_lookup", { &key_lookup }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_lookdown", { &key_lookdown }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_lookcenter", { &key_lookcenter }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_useartifact", { &key_useartifact }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_tome", { &key_arti_tome }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_quartz", { &key_arti_quartz }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_urn", { &key_arti_urn }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_bomb", { &key_arti_bomb }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_ring", { &key_arti_ring }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_chaosdevice", { &key_arti_chaosdevice }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_shadowsphere", { &key_arti_shadowsphere }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_wings", { &key_arti_wings }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_torch", { &key_arti_torch }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_arti_morph", { &key_arti_morph }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_invleft", { &key_invleft }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "key_invright", { &key_invright }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "mousebinvleft", { &mousebinvleft }, { -1 }, -1, MAX_MOUSEB, def_int, ss_keys },
-  { "mousebinvright", { &mousebinvright }, { -1 }, -1, MAX_MOUSEB, def_int, ss_keys },
-
   { "DSDA-Doom settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
   { "dsda_strict_mode", { &dsda_strict_mode }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_cycle_ghost_colors", { &dsda_cycle_ghost_colors }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_auto_key_frame_interval", { &dsda_auto_key_frame_interval }, { 1 }, 1, 600, def_int, ss_stat },
   { "dsda_auto_key_frame_depth", { &dsda_auto_key_frame_depth }, { 60 }, 0, 600, def_int, ss_stat },
-  { "dsda_key_store_quick_key_frame", { &dsda_key_store_quick_key_frame }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "dsda_key_restore_quick_key_frame", { &dsda_key_restore_quick_key_frame }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
-  { "dsda_key_rewind", { &dsda_key_rewind }, { 0 }, 0, MAX_KEY, def_key, ss_keys },
   { "dsda_exhud", { &dsda_exhud }, { 0 }, 0, 1, def_bool, ss_stat },
 
   // NSM
@@ -1469,19 +1459,48 @@ void M_SaveDefaults (void)
 
     // CPhipps - modified for new default_t form
     if (!IS_STRING(defaults[i])) //jff 4/10/98 kill super-hack on pointer value
-      {
+    {
       // CPhipps - remove keycode hack
       // killough 3/6/98: use spaces instead of tabs for uniform justification
       if (defaults[i].type == def_hex)
-  fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
-      else
-  fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
-      }
-    else
+        fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
+      else if (defaults[i].type == def_input)
       {
-      fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
+        int a, j;
+        dsda_input_t* input[DSDA_INPUT_PROFILE_COUNT];
+        dsda_InputCopy(defaults[i].identifier, input);
+
+        fprintf(f, "%-*s", maxlen, defaults[i].name);
+
+        for (a = 0; a < DSDA_INPUT_PROFILE_COUNT; ++a)
+        {
+          if (input[a]->num_keys)
+          {
+            fprintf(f, " %i", input[a]->key[0]);
+            for (j = 1; j < input[a]->num_keys; ++j)
+            {
+              fprintf(f, ",%i", input[a]->key[j]);
+            }
+          }
+          else
+            fprintf(f, " 0");
+
+          fprintf(f, " %i %i", input[a]->mouseb, input[a]->joyb);
+
+          if (a != DSDA_INPUT_PROFILE_COUNT - 1)
+            fprintf(f, " |");
+        }
+
+        fprintf(f, "\n");
       }
+      else
+        fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
     }
+    else
+    {
+      fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
+    }
+  }
 
   fclose (f);
 }
@@ -1531,10 +1550,31 @@ void M_LoadDefaults (void)
 
   numdefaults = sizeof(defaults)/sizeof(defaults[0]);
   for (i = 0 ; i < numdefaults ; i++) {
-    if (defaults[i].location.ppsz)
-      *defaults[i].location.ppsz = strdup(defaults[i].defaultvalue.psz);
-    if (defaults[i].location.pi)
-      *defaults[i].location.pi = defaults[i].defaultvalue.i;
+    if (defaults[i].type == def_input)
+    {
+      int c;
+      for (c = 0; c < DSDA_INPUT_PROFILE_COUNT; ++c)
+        dsda_InputSetSpecific(c, defaults[i].identifier, defaults[i].input);
+    }
+    else
+    {
+      if (defaults[i].location.ppsz)
+        *defaults[i].location.ppsz = strdup(defaults[i].defaultvalue.psz);
+      if (defaults[i].location.pi)
+        *defaults[i].location.pi = defaults[i].defaultvalue.i;
+    }
+  }
+
+  // special fallback input values
+  {
+    dsda_input_default_t fallback_help = { KEYD_F1, -1, -1 };
+    dsda_input_default_t fallback_escape = { KEYD_ESCAPE, -1, -1 };
+
+    for (i = 0; i < DSDA_INPUT_PROFILE_COUNT; ++i)
+    {
+      dsda_InputSetSpecific(i, dsda_input_help, fallback_help);
+      dsda_InputSetSpecific(i, dsda_input_escape, fallback_escape);
+    }
   }
 
   //e6y: arrays
@@ -1679,12 +1719,53 @@ void M_LoadDefaults (void)
       }
             if (!isstring)
               {
+                if (defaults[i].type == def_input)
+                {
+                  int count;
+                  char keys[80];
+                  int key, mouseb, joyb;
+                  int index = 0;
+                  char* key_scan_p;
+                  char* config_scan_p;
 
-              //jff 3/4/98 range check numeric parameters
+                  config_scan_p = strparm;
+                  do
+                  {
+                    count = sscanf(config_scan_p, "%79s %d %d", keys, &mouseb, &joyb);
 
-              if ((defaults[i].minvalue==UL || defaults[i].minvalue<=parm) &&
-                  (defaults[i].maxvalue==UL || defaults[i].maxvalue>=parm))
-                *(defaults[i].location.pi) = parm;
+                    if (count != 3)
+                      break;
+
+                    dsda_InputResetSpecific(index, defaults[i].identifier);
+
+                    dsda_InputAddSpecificMouseB(index, defaults[i].identifier, mouseb);
+                    dsda_InputAddSpecificJoyB(index, defaults[i].identifier, joyb);
+
+                    key_scan_p = strtok(keys, ",");
+                    do
+                    {
+                      count = sscanf(key_scan_p, "%d,", &key);
+
+                      if (count != 1)
+                        break;
+
+                      dsda_InputAddSpecificKey(index, defaults[i].identifier, key);
+
+                      key_scan_p = strtok(NULL, ",");
+                    } while (key_scan_p);
+
+                    index++;
+                    config_scan_p = strchr(config_scan_p, '|');
+                    if (config_scan_p)
+                      config_scan_p++;
+                  } while (config_scan_p && index < DSDA_INPUT_PROFILE_COUNT);
+                }
+
+                //jff 3/4/98 range check numeric parameters
+
+                else if ((defaults[i].minvalue==UL || defaults[i].minvalue<=parm) &&
+                         (defaults[i].maxvalue==UL || defaults[i].maxvalue>=parm))
+                  *(defaults[i].location.pi) = parm;
               }
             else
               {

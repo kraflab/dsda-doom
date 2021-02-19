@@ -46,11 +46,6 @@
 #include "i_joy.h"
 #include "lprintf.h"
 
-int joyleft;
-int joyright;
-int joyup;
-int joydown;
-
 int usejoystick;
 
 #ifdef HAVE_SDL_JOYSTICKGETAXIS
@@ -112,10 +107,6 @@ void I_InitJoystick(void)
   else {
     atexit(I_EndJoystick);
     lprintf(LO_INFO, "%sopened %s\n", fname, SDL_JoystickName(joystick));
-    joyup = 32767;
-    joydown = -32768;
-    joyright = 32767;
-    joyleft = -32768;
   }
 #endif
 }

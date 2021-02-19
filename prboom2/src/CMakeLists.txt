@@ -27,6 +27,8 @@ set(COMMON_SRC
     dsda/global.h
     dsda/hud.c
     dsda/hud.h
+    dsda/input.c
+    dsda/input.h
     dsda/key_frame.c
     dsda/key_frame.h
     dsda/settings.c

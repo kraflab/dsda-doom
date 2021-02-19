@@ -21,9 +21,6 @@
 
 #include "settings.h"
 
-int dsda_key_store_quick_key_frame;
-int dsda_key_restore_quick_key_frame;
-int dsda_key_rewind;
 int dsda_auto_key_frame_interval;
 int dsda_auto_key_frame_depth;
 int dsda_strict_mode;

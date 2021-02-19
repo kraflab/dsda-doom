@@ -185,28 +185,33 @@ void D_PostEvent(event_t *ev)
   // Moved to I_StartTic()
   // if (gametic < 3) return;
 
+  dsda_InputTrackEvent(ev);
+
   // Allow only sensible keys during skipping
   if (doSkip)
   {
-    if (ev->type == ev_keydown || ev->type == ev_keyup)
+    if (dsda_InputActivated(dsda_input_quit))
     {
-      if (ev->data1 == key_quit)
+      // Immediate exit if quit key is pressed in skip mode
+      I_SafeExit(0);
+    }
+    else
+    {
+      // use key is used for seeing the current frame
+      if (
+        !dsda_InputActivated(dsda_input_use) && !dsda_InputActivated(dsda_input_demo_skip) &&
+        (ev->type == ev_keydown || ev->type == ev_keyup) // is this condition important?
+      )
       {
-        // Immediate exit if key_quit is pressed in skip mode
-        I_SafeExit(0);
-      }
-      else
-      {
-        // key_use is used for seeing the current frame
-        if (ev->data1 != key_use && ev->data1 != key_demo_skip)
-        {
-          return;
-        }
+        return;
       }
     }
   }
 
-  M_Responder(ev) || G_Responder(ev);
+  if (M_Responder(ev))
+    dsda_InputFlushTick(); // If the menu used the event, make it invisible
+  else
+    G_Responder(ev);
 }
 
 //
@@ -260,12 +265,11 @@ void D_Display (fixed_t frac)
   dboolean viewactive = false, isborder = false;
 
   // e6y
-  extern dboolean gamekeydown[];
   if (doSkip)
   {
     if (HU_DrawDemoProgress(false))
       I_FinishUpdate();
-    if (!gamekeydown[key_use])
+    if (!dsda_InputActive(dsda_input_use))
       return;
 
 #ifdef GL_DOOM
@@ -276,7 +280,7 @@ void D_Display (fixed_t frac)
 #endif
   }
 
-  if (!doSkip || !gamekeydown[key_use])
+  if (!doSkip || !dsda_InputActive(dsda_input_use))
 
   if (nodrawers)                    // for comparative timing / profiling
     return;

@@ -2619,7 +2619,7 @@ void HU_Ticker(void)
     message_nottobefuckedwith = false;
   }
   if (bsdown && bscounter++ > 9) {
-    HUlib_keyInIText(&w_chat, (unsigned char)key_backspace);
+    HUlib_keyInIText(&w_chat, KEYD_BACKSPACE);
     bscounter = 8;
   }
 
@@ -2789,6 +2789,8 @@ dboolean HU_Responder(event_t *ev)
 
   static int    num_nobrainers = 0;
 
+  c = ev->type == ev_keydown ? ev->data1 : 0;
+
   numplayers = 0;
   for (i=0 ; i<MAXPLAYERS ; i++)
     numplayers += playeringame[i];
@@ -2803,18 +2805,26 @@ dboolean HU_Responder(event_t *ev)
     altdown = ev->type == ev_keydown;
     return false;
   }
-  else if (ev->data1 == key_backspace)
+
+  if (dsda_InputActivated(dsda_input_chat_backspace))
   {
-    bsdown = ev->type == ev_keydown;
+    bsdown = true;
+    bscounter = 0;
+    c = KEYD_BACKSPACE;
+  }
+  else if (dsda_InputDeactivated(dsda_input_chat_backspace))
+  {
+    bsdown = false;
     bscounter = 0;
   }
-
-  if (ev->type != ev_keydown)
-    return false;
+  else if (dsda_InputActivated(dsda_input_chat_enter))
+  {
+    c = KEYD_ENTER;
+  }
 
   if (!chat_on)
   {
-    if (ev->data1 == key_enter)                                 // phares
+    if (c == KEYD_ENTER) // phares
     {
 #ifndef INSTRUMENTED  // never turn on message review if INSTRUMENTED defined
       if (hud_msg_lines>1)  // it posts multi-line messages that will trash
@@ -2834,47 +2844,46 @@ dboolean HU_Responder(event_t *ev)
     // no chat in -solo-net mode
     else if (!demoplayback && !message_list && netgame && numplayers > 1)
     {
-      if (ev->data1 == key_chat)
-    {
-      eatkey = chat_on = true;
-      HUlib_resetIText(&w_chat);
-      HU_queueChatChar(HU_BROADCAST);
-    }
-    else if (numplayers > 2)
-    {
-      for (i=0; i<MAXPLAYERS ; i++)
+      if (dsda_InputActivated(dsda_input_chat))
       {
-        if (ev->data1 == destination_keys[i])
+        eatkey = chat_on = true;
+        HUlib_resetIText(&w_chat);
+        HU_queueChatChar(HU_BROADCAST);
+      }
+      else if (numplayers > 2)
+      {
+        for (i=0; i<MAXPLAYERS ; i++)
         {
-          if (playeringame[i] && i!=consoleplayer)
+          if (dsda_InputActivated(dsda_input_chat_dest0 + i))
           {
-            eatkey = chat_on = true;
-            HUlib_resetIText(&w_chat);
-            HU_queueChatChar((char)(i+1));
-            break;
-          }
-          else if (i == consoleplayer)
-          {
-            num_nobrainers++;
-            if (num_nobrainers < 3)
-                plr->message = HUSTR_TALKTOSELF1;
-            else if (num_nobrainers < 6)
-                plr->message = HUSTR_TALKTOSELF2;
-            else if (num_nobrainers < 9)
-                plr->message = HUSTR_TALKTOSELF3;
-            else if (num_nobrainers < 32)
-                plr->message = HUSTR_TALKTOSELF4;
-            else
-                plr->message = HUSTR_TALKTOSELF5;
+            if (playeringame[i] && i!=consoleplayer)
+            {
+              eatkey = chat_on = true;
+              HUlib_resetIText(&w_chat);
+              HU_queueChatChar((char)(i+1));
+              break;
+            }
+            else if (i == consoleplayer)
+            {
+              num_nobrainers++;
+              if (num_nobrainers < 3)
+                  plr->message = HUSTR_TALKTOSELF1;
+              else if (num_nobrainers < 6)
+                  plr->message = HUSTR_TALKTOSELF2;
+              else if (num_nobrainers < 9)
+                  plr->message = HUSTR_TALKTOSELF3;
+              else if (num_nobrainers < 32)
+                  plr->message = HUSTR_TALKTOSELF4;
+              else
+                  plr->message = HUSTR_TALKTOSELF5;
+            }
           }
         }
       }
     }
-    }
   }//jff 2/26/98 no chat functions if message review is displayed
-  else if (!message_list)
+  else if (!message_list && c)
   {
-    c = ev->data1;
     // send a macro
     if (altdown)
     {
@@ -2884,12 +2893,12 @@ dboolean HU_Responder(event_t *ev)
       macromessage = chat_macros[c];
 
       // kill last message with a '\n'
-        HU_queueChatChar((char)key_enter); // DEBUG!!!                // phares
+      HU_queueChatChar(KEYD_ENTER); // DEBUG!!!                // phares
 
       // send the macro message
       while (*macromessage)
         HU_queueChatChar(*macromessage++);
-      HU_queueChatChar((char)key_enter);                            // phares
+      HU_queueChatChar(KEYD_ENTER);                            // phares
 
       // leave chat mode and notify that it was sent
       chat_on = false;
@@ -2905,7 +2914,7 @@ dboolean HU_Responder(event_t *ev)
       if (eatkey)
         HU_queueChatChar(c);
 
-      if (c == key_enter)                                     // phares
+      if (c == KEYD_ENTER) // phares
       {
         chat_on = false;
         if (w_chat.l.len)
@@ -2914,7 +2923,7 @@ dboolean HU_Responder(event_t *ev)
           plr->message = lastmessage;
         }
       }
-      else if (c == key_escape)                               // phares
+      else if (c == KEYD_ESCAPE)                               // phares
         chat_on = false;
     }
   }

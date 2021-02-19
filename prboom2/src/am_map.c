@@ -59,7 +59,7 @@
 #include "m_misc.h"
 #include "m_bbox.h"
 
-extern dboolean gamekeydown[];
+#include "dsda/input.h"
 
 //jff 1/7/98 default automap colors added
 int mapcolor_back;    // map background
@@ -229,7 +229,7 @@ const char *map_things_appearance_list[map_things_appearance_max] =
 #define INITSCALEMTOF (.2*FRACUNIT)
 // how much the automap moves window per tic in frame-buffer coordinates
 // moves 140 pixels in 1 second
-#define F_PANINC  (gamekeydown[key_speed] ? map_scroll_speed * 2 : map_scroll_speed)
+#define F_PANINC  (dsda_InputActive(dsda_input_speed) ? map_scroll_speed * 2 : map_scroll_speed)
 // how much zoom-in per tic
 // goes to 2x in 1 second
 #define M_ZOOMIN        ((int) ((float)FRACUNIT * (1.00f + F_PANINC / 200.0f)))
@@ -829,151 +829,183 @@ static void AM_maxOutWindowScale(void)
 dboolean AM_Responder
 ( event_t*  ev )
 {
-  int rc;
   static int bigstate=0;
-  int ch;                                                       // phares
-
-  rc = false;
 
   if (!(automapmode & am_active))
   {
-    if (ev->type == ev_keydown && ev->data1 == key_map)         // phares
+    if (dsda_InputActivated(dsda_input_map))
     {
       AM_Start ();
-      rc = true;
+      return true;
     }
   }
-  else if (ev->type == ev_keydown)
+  else if (dsda_InputActivated(dsda_input_map))
   {
-    rc = true;
-    ch = ev->data1;                                             // phares
-    if (ch == key_map_right)                                    //    |
-      if (!(automapmode & am_follow))                           //    V
-        m_paninc.x = FTOM(F_PANINC);
-      else
-        rc = false;
-    else if (ch == key_map_left)
-      if (!(automapmode & am_follow))
-          m_paninc.x = -FTOM(F_PANINC);
-      else
-          rc = false;
-    else if (ch == key_map_up)
-      if (!(automapmode & am_follow))
-          m_paninc.y = FTOM(F_PANINC);
-      else
-          rc = false;
-    else if (ch == key_map_down)
-      if (!(automapmode & am_follow))
-          m_paninc.y = -FTOM(F_PANINC);
-      else
-          rc = false;
-    else if ((ch == key_map_zoomout) || (map_wheel_zoom && ch == KEYD_MWHEELDOWN))
+    bigstate = 0;
+    AM_Stop ();
+
+    return true;
+  }
+  else if (dsda_InputActivated(dsda_input_map_right))
+  {
+    if (!(automapmode & am_follow))
     {
-      mtof_zoommul = M_ZOOMOUT;
-      ftom_zoommul = M_ZOOMIN;
-      curr_mtof_zoommul = mtof_zoommul;
+      m_paninc.x = FTOM(F_PANINC);
+      return true;
     }
-    else if ((ch == key_map_zoomin) || (map_wheel_zoom && ch == KEYD_MWHEELUP))
+  }
+  else if (dsda_InputActivated(dsda_input_map_left))
+  {
+    if (!(automapmode & am_follow))
     {
-      mtof_zoommul = M_ZOOMIN;
-      ftom_zoommul = M_ZOOMOUT;
-      curr_mtof_zoommul = mtof_zoommul;
+      m_paninc.x = -FTOM(F_PANINC);
+      return true;
     }
-    else if (ch == key_map)
+  }
+  else if (dsda_InputDeactivated(dsda_input_map_right))
+  {
+    if (!(automapmode & am_follow))
+      m_paninc.x = 0;
+  }
+  else if (dsda_InputDeactivated(dsda_input_map_left))
+  {
+    if (!(automapmode & am_follow))
+      m_paninc.x = 0;
+  }
+  else if (dsda_InputActivated(dsda_input_map_up))
+  {
+    if (!(automapmode & am_follow))
     {
-      bigstate = 0;
-      AM_Stop ();
+      m_paninc.y = FTOM(F_PANINC);
+      return true;
     }
-    else if (ch == key_map_gobig)
+  }
+  else if (dsda_InputActivated(dsda_input_map_down))
+  {
+    if (!(automapmode & am_follow))
     {
-      bigstate = !bigstate;
-      if (bigstate)
-      {
-        AM_saveScaleAndLoc();
-        AM_minOutWindowScale();
-      }
-      else
-        AM_restoreScaleAndLoc();
+      m_paninc.y = -FTOM(F_PANINC);
+      return true;
     }
-    else if (ch == key_map_follow)
+  }
+  else if (dsda_InputDeactivated(dsda_input_map_up))
+  {
+    if (!(automapmode & am_follow))
+      m_paninc.y = 0;
+  }
+  else if (dsda_InputDeactivated(dsda_input_map_down))
+  {
+    if (!(automapmode & am_follow))
+      m_paninc.y = 0;
+  }
+  else if (
+    dsda_InputActivated(dsda_input_map_zoomout) ||
+    (map_wheel_zoom && ev->type == ev_keydown && ev->data1 == KEYD_MWHEELDOWN)
+  )
+  {
+    mtof_zoommul = M_ZOOMOUT;
+    ftom_zoommul = M_ZOOMIN;
+    curr_mtof_zoommul = mtof_zoommul;
+
+    return true;
+  }
+  else if (
+    dsda_InputActivated(dsda_input_map_zoomin) ||
+    (map_wheel_zoom && ev->type == ev_keydown && ev->data1 == KEYD_MWHEELUP)
+  )
+  {
+    mtof_zoommul = M_ZOOMIN;
+    ftom_zoommul = M_ZOOMOUT;
+    curr_mtof_zoommul = mtof_zoommul;
+
+    return true;
+  }
+  else if (dsda_InputActivated(dsda_input_map_gobig))
+  {
+    bigstate = !bigstate;
+    if (bigstate)
     {
-      automapmode ^= am_follow;     // CPhipps - put all automap mode stuff into one enum
-      // Ty 03/27/98 - externalized
-      plr->message = (automapmode & am_follow) ? s_AMSTR_FOLLOWON : s_AMSTR_FOLLOWOFF;
+      AM_saveScaleAndLoc();
+      AM_minOutWindowScale();
     }
-    else if (ch == key_map_grid)
-    {
-      automapmode ^= am_grid;      // CPhipps
-      // Ty 03/27/98 - *not* externalized
-      plr->message = (automapmode & am_grid) ? s_AMSTR_GRIDON : s_AMSTR_GRIDOFF;
-    }
-    else if (ch == key_map_mark)
-    {
-      /* Ty 03/27/98 - *not* externalized
-       * cph 2001/11/20 - use doom_printf so we don't have our own buffer */
-      doom_printf("%s %d", s_AMSTR_MARKEDSPOT, markpointnum);
-      AM_addMark();
-    }
-    else if (ch == key_map_clear)
-    {
-      AM_clearMarks();  // Ty 03/27/98 - *not* externalized
-      plr->message = s_AMSTR_MARKSCLEARED;                      //    ^
-    }                                                           //    |
-    else if (ch == key_map_rotate) {
-      automapmode ^= am_rotate;
-      plr->message = (automapmode & am_rotate) ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF;
-    }
-    else if (ch == key_map_overlay) {
-      automapmode ^= am_overlay;
-      AM_SetPosition();
-      AM_SetScale();
-      AM_initVariables();
-      plr->message = (automapmode & am_overlay) ? s_AMSTR_OVERLAYON : s_AMSTR_OVERLAYOFF;
-    }
+    else
+      AM_restoreScaleAndLoc();
+
+    return true;
+  }
+  else if (dsda_InputActivated(dsda_input_map_follow))
+  {
+    automapmode ^= am_follow;     // CPhipps - put all automap mode stuff into one enum
+    // Ty 03/27/98 - externalized
+    plr->message = (automapmode & am_follow) ? s_AMSTR_FOLLOWON : s_AMSTR_FOLLOWOFF;
+
+    return true;
+  }
+  else if (dsda_InputActivated(dsda_input_map_grid))
+  {
+    automapmode ^= am_grid;      // CPhipps
+    // Ty 03/27/98 - *not* externalized
+    plr->message = (automapmode & am_grid) ? s_AMSTR_GRIDON : s_AMSTR_GRIDOFF;
+
+    return true;
+  }
+  else if (dsda_InputActivated(dsda_input_map_mark))
+  {
+    /* Ty 03/27/98 - *not* externalized
+     * cph 2001/11/20 - use doom_printf so we don't have our own buffer */
+    doom_printf("%s %d", s_AMSTR_MARKEDSPOT, markpointnum);
+    if (!heretic) AM_addMark();
+
+    return true;
+  }
+  else if (dsda_InputActivated(dsda_input_map_clear))
+  {
+    AM_clearMarks();  // Ty 03/27/98 - *not* externalized
+    plr->message = s_AMSTR_MARKSCLEARED;
+
+    return true;
+  }
+  else if (dsda_InputActivated(dsda_input_map_rotate))
+  {
+    automapmode ^= am_rotate;
+    plr->message = (automapmode & am_rotate) ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF;
+
+    return true;
+  }
+  else if (dsda_InputActivated(dsda_input_map_overlay))
+  {
+    automapmode ^= am_overlay;
+    AM_SetPosition();
+    AM_SetScale();
+    AM_initVariables();
+    plr->message = (automapmode & am_overlay) ? s_AMSTR_OVERLAYON : s_AMSTR_OVERLAYOFF;
+
+    return true;
+  }
+  else if (dsda_InputActivated(dsda_input_map_textured))
+  {
 #ifdef GL_DOOM
-    else if (ch == key_map_textured) {
-      map_textured = !map_textured;
-      M_ChangeMapTextured();
-      plr->message = (map_textured ? s_AMSTR_TEXTUREDON : s_AMSTR_TEXTUREDOFF);
-    }
+    map_textured = !map_textured;
+    M_ChangeMapTextured();
+    plr->message = (map_textured ? s_AMSTR_TEXTUREDON : s_AMSTR_TEXTUREDOFF);
+
+    return true;
 #endif
-    else                                                        // phares
-    {
-      rc = false;
-    }
   }
-  else if (ev->type == ev_keyup)
+  else if (
+    dsda_InputDeactivated(dsda_input_map_zoomout) ||
+    dsda_InputDeactivated(dsda_input_map_zoomin) ||
+    (
+      map_wheel_zoom && ev->type == ev_keyup &&
+      (ev->data1 == KEYD_MWHEELDOWN || ev->data1 == KEYD_MWHEELUP)
+    )
+  )
   {
-    rc = false;
-    ch = ev->data1;
-    if (ch == key_map_right)
-    {
-      if (!(automapmode & am_follow))
-          m_paninc.x = 0;
-    }
-    else if (ch == key_map_left)
-    {
-      if (!(automapmode & am_follow))
-          m_paninc.x = 0;
-    }
-    else if (ch == key_map_up)
-    {
-      if (!(automapmode & am_follow))
-          m_paninc.y = 0;
-    }
-    else if (ch == key_map_down)
-    {
-      if (!(automapmode & am_follow))
-          m_paninc.y = 0;
-    }
-    else if ((ch == key_map_zoomout) || (ch == key_map_zoomin) ||
-             (map_wheel_zoom && ((ch == KEYD_MWHEELDOWN) || (ch == KEYD_MWHEELUP))))
-    {
-      mtof_zoommul = FRACUNIT;
-      ftom_zoommul = FRACUNIT;
-    }
+    mtof_zoommul = FRACUNIT;
+    ftom_zoommul = FRACUNIT;
   }
-  return rc;
+
+  return false;
 }
 
 //

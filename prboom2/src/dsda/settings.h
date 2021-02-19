@@ -20,9 +20,6 @@
 
 #define UNSPECIFIED_COMPLEVEL -2
 
-extern int dsda_key_store_quick_key_frame;
-extern int dsda_key_restore_quick_key_frame;
-extern int dsda_key_rewind;
 extern int dsda_auto_key_frame_interval;
 extern int dsda_auto_key_frame_depth;
 extern int dsda_strict_mode;

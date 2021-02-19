@@ -89,6 +89,7 @@
 #include "dsda/demo.h"
 #include "dsda/key_frame.h"
 #include "dsda/settings.h"
+#include "dsda/input.h"
 #include "statdump.h"
 
 // ano - used for version 255+ demos, like EE or MBF
@@ -194,97 +195,10 @@ int shorttics;
 // controls (have defaults)
 //
 
-int     key_right;
-int     key_left;
-int     key_up;
-int     key_down;
-int     key_mlook;
-int     key_novert;
-int     key_menu_right;                                      // phares 3/7/98
-int     key_menu_left;                                       //     |
-int     key_menu_up;                                         //     V
-int     key_menu_down;
-int     key_menu_backspace;                                  //     ^
-int     key_menu_escape;                                     //     |
-int     key_menu_enter;                                      // phares 3/7/98
-int     key_menu_clear;
-int     key_strafeleft;
-int     key_straferight;
-int     key_flyup;
-int     key_flydown;
-int     key_fire;
-int     key_use;
-int     key_strafe;
-int     key_speed;
-int     key_escape = KEYD_ESCAPE;                           // phares 4/13/98
-int     key_savegame;                                               // phares
-int     key_loadgame;                                               //    |
-int     key_autorun;                                                //    V
-int     key_reverse;
-int     key_zoomin;
-int     key_zoomout;
-int     key_chat;
-int     key_backspace;
-int     key_enter;
-int     key_map_right;
-int     key_map_left;
-int     key_map_up;
-int     key_map_down;
-int     key_map_zoomin;
-int     key_map_zoomout;
-int     key_map;
-int     key_map_gobig;
-int     key_map_follow;
-int     key_map_mark;
-int     key_map_clear;
-int     key_map_grid;
-int     key_map_overlay; // cph - map overlay
-int     key_map_rotate;  // cph - map rotation
-int     key_map_textured;  // e6y - textured automap
-int     key_help = KEYD_F1;                                 // phares 4/13/98
-int     key_soundvolume;
-int     key_hud;
-int     key_quicksave;
-int     key_endgame;
-int     key_messages;
-int     key_quickload;
-int     key_quit;
-int     key_gamma;
-int     key_spy;
-int     key_pause;
-int     key_setup;
-int     destination_keys[MAXPLAYERS];
-int     key_weapontoggle;
-int     key_weapon1;
-int     key_weapon2;
-int     key_weapon3;
-int     key_weapon4;
-int     key_weapon5;
-int     key_weapon6;
-int     key_weapon7;                                                //    ^
-int     key_weapon8;                                                //    |
-int     key_weapon9;                                                // phares
-int     key_nextweapon;
-int     key_prevweapon;
-
-int     key_screenshot;             // killough 2/22/98: screenshot key
-int     mousebfire;
-int     mousebstrafe;
-int     mousebforward;
-int     mousebbackward;
-int     mousebuse;
-int     joybfire;
-int     joybstrafe;
-int     joybstrafeleft;
-int     joybstraferight;
-int     joybuse;
-int     joybspeed;
-
 #define MAXPLMOVE   (forwardmove[1])
 #define TURBOTHRESHOLD  0x32
 #define SLOWTURNTICS  6
 #define QUICKREVERSE (short)32768 // 180 degree reverse                    // phares
-#define NUMKEYS   512
 
 fixed_t forwardmove[2] = {0x19, 0x32};
 fixed_t sidemove[2]    = {0x18, 0x28};
@@ -295,9 +209,6 @@ fixed_t forwardmove_normal[2] = {0x19, 0x32};
 fixed_t sidemove_normal[2]    = {0x18, 0x28};
 fixed_t sidemove_strafe50[2]  = {0x19, 0x32};
 
-// CPhipps - made lots of key/button state vars static
-//e6y static
-dboolean gamekeydown[NUMKEYS];
 static int     turnheld;       // for accelerative turning
 
 // Set to -1 or +1 to switch to the previous or next weapon.
@@ -339,9 +250,6 @@ static const struct
     { wp_beak,        wp_beak },
 };
 
-static int mousearray[MAX_MOUSE_BUTTONS + 1];
-static int *mousebuttons = &mousearray[1];    // allow [-1]
-
 // mouse values are used once
 static int   mousex;
 static int   mousey;
@@ -355,8 +263,6 @@ static int   dclicks2;
 // joystick values are repeated
 static int   joyxmove;
 static int   joyymove;
-static dboolean joyarray[9];
-static dboolean *joybuttons = &joyarray[1];    // allow [-1]
 
 // Game events info
 static buttoncode_t special_event; // Event triggered by local player, to send
@@ -376,28 +282,6 @@ mobj_t **bodyque = 0;                   // phares 8/10/98
 
 int inventoryTics;
 int lookheld;
-dboolean usearti = true;
-int key_lookdown;
-int key_lookup;
-int key_lookcenter;
-int key_flyup;
-int key_flydown;
-int key_flycenter;
-int key_useartifact;
-int key_arti_tome;
-int key_arti_quartz;
-int key_arti_urn;
-int key_arti_bomb;
-int key_arti_ring;
-int key_arti_chaosdevice;
-int key_arti_shadowsphere;
-int key_arti_wings;
-int key_arti_torch;
-int key_arti_morph;
-int key_invleft;
-int key_invright;
-int mousebinvleft;
-int mousebinvright;
 
 static dboolean InventoryMoveLeft(void);
 static dboolean InventoryMoveRight(void);
@@ -422,32 +306,6 @@ static inline signed char fudgef(signed char b)
   if (++c & 0x1f) return b;
   b |= 1; if (b>2) b-=2;*/
   return b;
-}
-
-static void SetMouseButtons(unsigned int buttons_mask)
-{
-  int i;
-
-  for (i = 0; i < MAX_MOUSE_BUTTONS; ++i)
-  {
-    unsigned int button_on = (buttons_mask & (1 << i)) != 0;
-
-    // Detect button press:
-
-    if (!mousebuttons[i] && button_on)
-    {
-      if (i == mousebinvleft)
-      {
-          InventoryMoveLeft();
-      }
-      else if (i == mousebinvright)
-      {
-          InventoryMoveRight();
-      }
-    }
-
-    mousebuttons[i] = button_on;
-  }
 }
 
 void G_SetSpeed(void)
@@ -560,10 +418,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   memset(cmd,0,sizeof*cmd);
   cmd->consistancy = consistancy[consoleplayer][maketic%BACKUPTICS];
 
-  strafe = gamekeydown[key_strafe] || mousebuttons[mousebstrafe]
-    || joybuttons[joybstrafe];
+  strafe = dsda_InputActive(dsda_input_strafe);
   //e6y: the "RUN" key inverts the autorun state
-  speed = (gamekeydown[key_speed] || joybuttons[joybspeed] ? !autorun : autorun); // phares
+  speed = (dsda_InputActive(dsda_input_speed) ? !autorun : autorun); // phares
 
   forward = side = 0;
 
@@ -577,8 +434,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
     // use two stage accelerative turning
     // on the keyboard and joystick
-  if (joyxmove < 0 || joyxmove > 0 ||
-      gamekeydown[key_right] || gamekeydown[key_left])
+  if (joyxmove != 0 ||
+      dsda_InputActive(dsda_input_turnright) ||
+      dsda_InputActive(dsda_input_turnleft))
     turnheld += ticdup;
   else
     turnheld = 0;
@@ -590,20 +448,19 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // turn 180 degrees in one keystroke?                           // phares
                                                                   //    |
-  if (gamekeydown[key_reverse])                                   //    V
+  if (dsda_InputTickActivated(dsda_input_reverse))                    //    V
     {
       if (!strafe)
         cmd->angleturn += QUICKREVERSE;                           //    ^
-      gamekeydown[key_reverse] = false;                           //    |
     }                                                             // phares
 
   // let movement keys cancel each other out
 
   if (strafe)
     {
-      if (gamekeydown[key_right])
+      if (dsda_InputActive(dsda_input_turnright))
         side += sidemove[speed];
-      if (gamekeydown[key_left])
+      if (dsda_InputActive(dsda_input_turnleft))
         side -= sidemove[speed];
       if (joyxmove > 0)
         side += sidemove[speed];
@@ -612,9 +469,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
   else
     {
-      if (gamekeydown[key_right])
+      if (dsda_InputActive(dsda_input_turnright))
         cmd->angleturn -= angleturn[tspeed];
-      if (gamekeydown[key_left])
+      if (dsda_InputActive(dsda_input_turnleft))
         cmd->angleturn += angleturn[tspeed];
       if (joyxmove > 0)
         cmd->angleturn -= angleturn[tspeed];
@@ -622,17 +479,17 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         cmd->angleturn += angleturn[tspeed];
     }
 
-  if (gamekeydown[key_up])
+  if (dsda_InputActive(dsda_input_forward))
     forward += forwardmove[speed];
-  if (gamekeydown[key_down])
+  if (dsda_InputActive(dsda_input_backward))
     forward -= forwardmove[speed];
   if (joyymove < 0)
     forward += forwardmove[speed];
   if (joyymove > 0)
     forward -= forwardmove[speed];
-  if (gamekeydown[key_straferight] || joybuttons[joybstraferight])
+  if (dsda_InputActive(dsda_input_straferight))
     side += sidemove[speed];
-  if (gamekeydown[key_strafeleft] || joybuttons[joybstrafeleft])
+  if (dsda_InputActive(dsda_input_strafeleft))
     side -= sidemove[speed];
 
   if (heretic)
@@ -643,7 +500,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
     look = arti = flyheight = 0;
 
-    if (gamekeydown[key_lookdown] || gamekeydown[key_lookup])
+    if (dsda_InputActive(dsda_input_lookdown) || dsda_InputActive(dsda_input_lookup))
     {
       lookheld += ticdup;
     }
@@ -661,101 +518,89 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
 
     // Look up/down/center keys
-    if (gamekeydown[key_lookup])
+    if (dsda_InputActive(dsda_input_lookup))
     {
       look = lspeed;
     }
-    if (gamekeydown[key_lookdown])
+    if (dsda_InputActive(dsda_input_lookdown))
     {
       look = -lspeed;
     }
 
-    if (gamekeydown[key_lookcenter])
+    if (dsda_InputActive(dsda_input_lookcenter))
     {
       look = TOCENTER;
     }
 
     // Fly up/down/drop keys
-    if (gamekeydown[key_flyup])
+    if (dsda_InputActive(dsda_input_flyup))
     {
       flyheight = 5;          // note that the actual flyheight will be twice this
     }
-    if (gamekeydown[key_flydown])
+    if (dsda_InputActive(dsda_input_flydown))
     {
       flyheight = -5;
     }
-    if (gamekeydown[key_flycenter])
+    if (dsda_InputActive(dsda_input_flycenter))
     {
       flyheight = TOCENTER;
       look = TOCENTER;
     }
 
     // Use artifact key
-    if (gamekeydown[key_useartifact])
+    if (dsda_InputTickActivated(dsda_input_use_artifact))
     {
       if (inventory)
       {
         players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
         inventory = false;
         cmd->arti = 0;
-        usearti = false;
       }
-      else if (usearti)
+      else
       {
         cmd->arti = players[consoleplayer].inventory[inv_ptr].type;
-        usearti = false;
       }
     }
-    if (gamekeydown[key_arti_tome] && !cmd->arti
+    if (dsda_InputTickActivated(dsda_input_arti_tome) && !cmd->arti
         && !players[consoleplayer].powers[pw_weaponlevel2])
     {
-      gamekeydown[key_arti_tome] = false;
       cmd->arti = arti_tomeofpower;
     }
-    else if (gamekeydown[key_arti_quartz] && !cmd->arti
+    else if (dsda_InputTickActivated(dsda_input_arti_quartz) && !cmd->arti
         && (players[consoleplayer].mo->health < MAXHEALTH))
     {
-      gamekeydown[key_arti_quartz] = false;
       cmd->arti = arti_health;
     }
-    else if (gamekeydown[key_arti_urn] && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_urn) && !cmd->arti)
     {
-      gamekeydown[key_arti_urn] = false;
       cmd->arti = arti_superhealth;
     }
-    else if (gamekeydown[key_arti_bomb] && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_bomb) && !cmd->arti)
     {
-      gamekeydown[key_arti_bomb] = false;
       cmd->arti = arti_firebomb;
     }
-    else if (gamekeydown[key_arti_ring] && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_ring) && !cmd->arti)
     {
-      gamekeydown[key_arti_ring] = false;
       cmd->arti = arti_invulnerability;
     }
-    else if (gamekeydown[key_arti_chaosdevice] && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_chaosdevice) && !cmd->arti)
     {
-      gamekeydown[key_arti_chaosdevice] = false;
       cmd->arti = arti_teleport;
     }
-    else if (gamekeydown[key_arti_shadowsphere] && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_shadowsphere) && !cmd->arti)
     {
-      gamekeydown[key_arti_shadowsphere] = false;
       cmd->arti = arti_invisibility;
     }
-    else if (gamekeydown[key_arti_wings] && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_wings) && !cmd->arti)
     {
-      gamekeydown[key_arti_wings] = false;
       cmd->arti = arti_fly;
     }
-    else if (gamekeydown[key_arti_torch] && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_torch) && !cmd->arti)
     {
-      gamekeydown[key_arti_torch] = false;
       cmd->arti = arti_torch;
     }
-    else if (gamekeydown[key_arti_morph] && !cmd->arti)
+    else if (dsda_InputTickActivated(dsda_input_arti_morph) && !cmd->arti)
     {
-      gamekeydown[key_arti_morph] = false;
       cmd->arti = arti_egg;
     }
 
@@ -777,12 +622,10 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     // buttons
   cmd->chatchar = HU_dequeueChatChar();
 
-  if (gamekeydown[key_fire] || mousebuttons[mousebfire] ||
-      joybuttons[joybfire])
+  if (dsda_InputActive(dsda_input_fire))
     cmd->buttons |= BT_ATTACK;
 
-  if (gamekeydown[key_use] || mousebuttons[mousebuse] ||
-      joybuttons[joybuse])
+  if (dsda_InputActive(dsda_input_use))
     {
       cmd->buttons |= BT_USE;
       // clear double clicks if hit use button
@@ -803,7 +646,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   // Make Boom insert only a single weapon change command on autoswitch.
   if ((!demo_compatibility && players[consoleplayer].attackdown && // killough
        !P_CheckAmmo(&players[consoleplayer]) && !done_autoswitch && boom_autoswitch) ||
-       gamekeydown[key_weapontoggle])
+       dsda_InputActive(dsda_input_toggleweapon))
   {
     newweapon = P_SwitchWeapon(&players[consoleplayer]);           // phares
     done_autoswitch = true;
@@ -819,15 +662,15 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       {
         // HERETIC_TODO: fix this
       newweapon =
-        gamekeydown[key_weapon1] ? wp_fist :    // killough 5/2/98: reformatted
-        gamekeydown[key_weapon2] ? wp_pistol :
-        gamekeydown[key_weapon3] ? wp_shotgun :
-        gamekeydown[key_weapon4] ? wp_chaingun :
-        gamekeydown[key_weapon5] ? wp_missile :
-        gamekeydown[key_weapon6] && gamemode != shareware ? wp_plasma :
-        gamekeydown[key_weapon7] && gamemode != shareware ? wp_bfg :
-        gamekeydown[key_weapon8] ? wp_chainsaw :
-        (!demo_compatibility && gamekeydown[key_weapon9] && gamemode == commercial) ? wp_supershotgun :
+        dsda_InputActive(dsda_input_weapon1) ? wp_fist :    // killough 5/2/98: reformatted
+        dsda_InputActive(dsda_input_weapon2) ? wp_pistol :
+        dsda_InputActive(dsda_input_weapon3) ? wp_shotgun :
+        dsda_InputActive(dsda_input_weapon4) ? wp_chaingun :
+        dsda_InputActive(dsda_input_weapon5) ? wp_missile :
+        dsda_InputActive(dsda_input_weapon6) && gamemode != shareware ? wp_plasma :
+        dsda_InputActive(dsda_input_weapon7) && gamemode != shareware ? wp_bfg :
+        dsda_InputActive(dsda_input_weapon8) ? wp_chainsaw :
+        (!demo_compatibility && dsda_InputActive(dsda_input_weapon9) && gamemode == commercial) ? wp_supershotgun :
         wp_nochange;
       }
 
@@ -882,17 +725,13 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
 
   // mouse
-  if (mousebuttons[mousebforward])
-    forward += forwardmove[speed];
-  if (mousebuttons[mousebbackward])
-    forward -= forwardmove[speed];
 
   if (mouse_doubleclick_as_use) {//e6y
 
   // forward double click
-  if (mousebuttons[mousebforward] != dclickstate && dclicktime > 1 )
+  if (dsda_InputMouseBActive(dsda_input_forward) != dclickstate && dclicktime > 1 )
     {
-      dclickstate = mousebuttons[mousebforward];
+      dclickstate = dsda_InputMouseBActive(dsda_input_forward);
       if (dclickstate)
         dclicks++;
       if (dclicks == 2)
@@ -912,7 +751,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // strafe double click
 
-  bstrafe = mousebuttons[mousebstrafe] || joybuttons[joybstrafe];
+  bstrafe = dsda_InputMouseBActive(dsda_input_strafe) || dsda_InputJoyBActive(dsda_input_strafe);
   if (bstrafe != dclickstate2 && dclicktime2 > 1 )
     {
       dclickstate2 = bstrafe;
@@ -1002,9 +841,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   }
 
   upmove = 0;
-  if (gamekeydown[key_flyup])
+  if (dsda_InputActive(dsda_input_flyup))
     upmove += flyspeed[speed];
-  if (gamekeydown[key_flydown])
+  if (dsda_InputActive(dsda_input_flydown))
     upmove -= flyspeed[speed];
 
   // CPhipps - special events (game new/load/save/pause)
@@ -1121,13 +960,11 @@ static void G_DoLoadLevel (void)
   Z_CheckHeap ();
 
   // clear cmd building stuff
-  memset (gamekeydown, 0, sizeof(gamekeydown));
+  dsda_InputFlush();
   joyxmove = joyymove = 0;
   mousex = mousey = 0;
   mlooky = 0;//e6y
   special_event = 0; paused = false;
-  memset (&mousearray, 0, sizeof(mousearray));
-  memset (&joyarray, 0, sizeof(joyarray));
 
   // killough 5/13/98: in case netdemo has consoleplayer other than green
   ST_Start();
@@ -1155,21 +992,6 @@ static void G_DoLoadLevel (void)
 
 dboolean G_Responder (event_t* ev)
 {
-  if (heretic)
-  {
-    player_t *plr;
-
-    plr = &players[consoleplayer];
-    if (ev->type == ev_keyup && ev->data1 == key_useartifact)
-    {                           // flag to denote that it's okay to use an artifact
-      if (!inventory)
-      {
-        plr->readyArtifact = plr->inventory[inv_ptr].type;
-      }
-      usearti = true;
-    }
-  }
-
   if (
     gamestate == GS_LEVEL && (
       HU_Responder(ev) ||
@@ -1182,15 +1004,10 @@ dboolean G_Responder (event_t* ev)
   // killough 2/22/98: even during DM demo
   //
   // killough 11/98: don't autorepeat spy mode switch
-
-  if (ev->data1 == key_spy && netgame && (demoplayback || !deathmatch) &&
+  if (dsda_InputActivated(dsda_input_spy) &&
+      netgame && (demoplayback || !deathmatch) &&
       gamestate == GS_LEVEL)
-    {
-      if (ev->type == ev_keyup)
-  gamekeydown[key_spy] = false;
-      if (ev->type == ev_keydown && !gamekeydown[key_spy])
   {
-    gamekeydown[key_spy] = true;
     do                                          // spy mode
       if (++displayplayer >= MAXPLAYERS)
         displayplayer = 0;
@@ -1201,9 +1018,8 @@ dboolean G_Responder (event_t* ev)
     S_UpdateSounds(players[displayplayer].mo);
     R_ActivateSectorInterpolations();
     R_SmoothPlaying_Reset(NULL);
+    return true;
   }
-      return true;
-    }
 
   // any other key pops up menu if in demos
   //
@@ -1213,95 +1029,56 @@ dboolean G_Responder (event_t* ev)
   // which kind of demo, and allow other events during playback
 
   if (gameaction == ga_nothing && (demoplayback || gamestate == GS_DEMOSCREEN))
-    {
-      // killough 9/29/98: allow user to pause demos during playback
-      if (ev->type == ev_keydown && ev->data1 == key_pause)
   {
-    if (paused ^= 2)
-      S_PauseSound();
-    else
-      S_ResumeSound();
-    return true;
-  }
-
-      // killough 10/98:
-      // Don't pop up menu, if paused in middle
-      // of demo playback, or if automap active.
-      // Don't suck up keys, which may be cheats
-
-//e6y
-  /*
-      return gamestate == GS_DEMOSCREEN &&
-  !(paused & 2) && !(automapmode & am_active) &&
-  ((ev->type == ev_keydown) ||
-   (ev->type == ev_mouse && ev->data1) ||
-   (ev->type == ev_joystick && ev->data1)) ?
-  M_StartControlPanel(), true : false;
-    */
+    // killough 9/29/98: allow user to pause demos during playback
+    if (dsda_InputActivated(dsda_input_pause))
+    {
+      if (paused ^= 2)
+        S_PauseSound();
+      else
+        S_ResumeSound();
+      return true;
     }
+  }
 
   if (gamestate == GS_FINALE && F_Responder(ev))
     return true;  // finale ate the event
 
   // If the next/previous weapon keys are pressed, set the next_weapon
   // variable to change weapons when the next ticcmd is generated.
-  if (ev->type == ev_keydown)
+  if (dsda_InputActivated(dsda_input_prevweapon))
   {
-    if (ev->data1 == key_prevweapon)
-    {
-      next_weapon = -1;
-    }
-    else if (ev->data1 == key_nextweapon)
-    {
-      next_weapon = 1;
-    }
+    next_weapon = -1;
+  }
+  else if (dsda_InputActivated(dsda_input_nextweapon))
+  {
+    next_weapon = 1;
   }
 
+  if (dsda_InputActivated(dsda_input_invleft))
+  {
+    return InventoryMoveLeft();
+  }
+  if (dsda_InputActivated(dsda_input_invright))
+  {
+    return InventoryMoveRight();
+  }
+
+  if (dsda_InputActivated(dsda_input_pause))
+  {
+    special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
+    return true;
+  }
+
+  // Events that make it here should reach into the game logic
+  dsda_InputTrackGameEvent(ev);
+
   switch (ev->type)
-    {
+  {
     case ev_keydown:
-      if (ev->data1 == key_pause)           // phares
-      {
-        special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
-        return true;
-      }
-      if (ev->data1 == key_invleft)
-      {
-        if (InventoryMoveLeft())
-        {
-          return true;
-        }
-        break;
-      }
-      if (ev->data1 == key_invright)
-      {
-        if (InventoryMoveRight())
-        {
-          return true;
-        }
-        break;
-      }
-      if (ev->data1 <NUMKEYS)
-        gamekeydown[ev->data1] = true;
       return true;    // eat key down events
 
-    case ev_keyup:
-      if (ev->data1 <NUMKEYS)
-        gamekeydown[ev->data1] = false;
-      return false;   // always let key up events filter down
-
     case ev_mouse:
-      SetMouseButtons(ev->data1);
-      /*
-       * bmead@surfree.com
-       * Modified by Barry Mead after adding vastly more resolution
-       * to the Mouse Sensitivity Slider in the options menu 1-9-2000
-       * Removed the mouseSensitivity "*4" to allow more low end
-       * sensitivity resolution especially for lsdoom users.
-       */
-      //e6y mousex += (ev->data2*(mouseSensitivity_horiz))/10;  /* killough */
-      //e6y mousey += (ev->data3*(mouseSensitivity_vert))/10;  /*Mead rm *4 */
-
       //e6y
       mousex += (AccelerateMouse(ev->data2)*(mouseSensitivity_horiz))/10;  /* killough */
       if(GetMouseLook())
@@ -1315,21 +1092,13 @@ dboolean G_Responder (event_t* ev)
       return true;    // eat events
 
     case ev_joystick:
-      joybuttons[0] = ev->data1 & 1;
-      joybuttons[1] = ev->data1 & 2;
-      joybuttons[2] = ev->data1 & 4;
-      joybuttons[3] = ev->data1 & 8;
-      joybuttons[4] = ev->data1 & 16;
-      joybuttons[5] = ev->data1 & 32;
-      joybuttons[6] = ev->data1 & 64;
-      joybuttons[7] = ev->data1 & 128;
       joyxmove = ev->data2;
       joyymove = ev->data3;
       return true;    // eat events
 
     default:
       break;
-    }
+  }
   return false;
 }
 
@@ -1457,6 +1226,7 @@ void G_Ticker (void)
         }
     }
 
+    dsda_InputFlushTick();
     dsda_WatchCommand();
 
     // check for special buttons
@@ -4555,9 +4325,8 @@ void P_WalkTicker()
   if (!walkcamera.type || menuactive)
     return;
 
-  strafe = gamekeydown[key_strafe] || mousebuttons[mousebstrafe]
-    || joybuttons[joybstrafe];
-  speed = autorun || gamekeydown[key_speed] || joybuttons[joybspeed]; // phares
+  strafe = dsda_InputActive(dsda_input_strafe);
+  speed = autorun || dsda_InputActive(dsda_input_speed); // phares
 
   forward = side = 0;
   angturn = 0;
@@ -4565,8 +4334,9 @@ void P_WalkTicker()
 
     // use two stage accelerative turning
     // on the keyboard and joystick
-  if (joyxmove < 0 || joyxmove > 0 ||
-      gamekeydown[key_right] || gamekeydown[key_left])
+  if (joyxmove != 0 ||
+      dsda_InputActive(dsda_input_turnright) ||
+      dsda_InputActive(dsda_input_turnleft))
     turnheld += ticdup;
   else
     turnheld = 0;
@@ -4580,9 +4350,9 @@ void P_WalkTicker()
 
   if (strafe)
     {
-      if (gamekeydown[key_right])
+      if (dsda_InputActive(dsda_input_turnright))
         side += sidemove[speed];
-      if (gamekeydown[key_left])
+      if (dsda_InputActive(dsda_input_turnleft))
         side -= sidemove[speed];
       if (joyxmove > 0)
         side += sidemove[speed];
@@ -4591,9 +4361,9 @@ void P_WalkTicker()
     }
   else
     {
-      if (gamekeydown[key_right])
+      if (dsda_InputActive(dsda_input_turnright))
         angturn -= angleturn[tspeed];
-      if (gamekeydown[key_left])
+      if (dsda_InputActive(dsda_input_turnleft))
         angturn += angleturn[tspeed];
       if (joyxmove > 0)
         angturn -= angleturn[tspeed];
@@ -4601,22 +4371,18 @@ void P_WalkTicker()
         angturn += angleturn[tspeed];
     }
 
-  if (gamekeydown[key_up])
+  if (dsda_InputActive(dsda_input_forward))
     forward += forwardmove[speed];
-  if (gamekeydown[key_down])
+  if (dsda_InputActive(dsda_input_backward))
     forward -= forwardmove[speed];
   if (joyymove < 0)
     forward += forwardmove[speed];
   if (joyymove > 0)
     forward -= forwardmove[speed];
-  if (gamekeydown[key_straferight])
+  if (dsda_InputActive(dsda_input_straferight))
     side += sidemove[speed];
-  if (gamekeydown[key_strafeleft])
+  if (dsda_InputActive(dsda_input_strafeleft))
     side -= sidemove[speed];
-
-  //mouse
-  if (mousebuttons[mousebforward])
-    forward += forwardmove[speed];
 
   forward += mousey;
   if (strafe)
@@ -4631,8 +4397,7 @@ void P_WalkTicker()
     CheckPitch((signed int *) &walkcamera.pitch);
   }
 
-  if (gamekeydown[key_fire] || mousebuttons[mousebfire] ||
-      joybuttons[joybfire])
+  if (dsda_InputActive(dsda_input_fire))
   {
     walkcamera.x = players[0].mo->x;
     walkcamera.y = players[0].mo->y;
@@ -4717,7 +4482,7 @@ void G_ReadDemoContinueTiccmd (ticcmd_t* cmd)
 
   if (gametic >= demo_tics_count ||
     demo_continue_p > demobuffer + demolength ||
-    gamekeydown[key_demo_jointogame] || joybuttons[joybuse])
+    dsda_InputActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use))
   {
     demo_continue_p = NULL;
     democontinue = false;
