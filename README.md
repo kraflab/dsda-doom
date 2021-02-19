@@ -1,4 +1,4 @@
-# dsda-doom v0.12.1
+# dsda-doom v0.13.0
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning.
 
 ### Heretic Support (beta)
@@ -37,6 +37,8 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - The time with tics is now displayed on the intermission screen (top left corner).
 - The extended hud provides a hybrid of the classic and advanced huds.
 - Use the "restart current map" key while demo recording to perform an in-game restart. Known issue: solo net is not preserved properly.
+- You can configure multiple input profiles.
+- You can configure multiple keys to one action.
 
 ### Changes
 - Smart Totals renamed to Max Totals and fixed to show kill constraint for max.
