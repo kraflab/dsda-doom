@@ -60,7 +60,7 @@ static void dsda_InputTrackButtons(dsda_input_state_t* buttons, int max, event_t
 static void dsda_InputTrackKeyDown(event_t* ev) {
   int key = ev->data1;
 
-  if (key >= NUMKEYS || gamekeys[key].on) return;
+  if (key >= NUMKEYS) return;
 
   gamekeys[key].activated_at = dsda_input_counter;
   gamekeys[key].on = true;
@@ -69,7 +69,7 @@ static void dsda_InputTrackKeyDown(event_t* ev) {
 static void dsda_InputTrackKeyUp(event_t* ev) {
   int key = ev->data1;
 
-  if (key >= NUMKEYS || !gamekeys[key].on) return;
+  if (key >= NUMKEYS) return;
 
   gamekeys[key].deactivated_at = dsda_input_counter;
   gamekeys[key].on = false;
@@ -118,7 +118,7 @@ static void dsda_InputTrackGameButtons(dsda_input_state_t* buttons, int max, eve
 static void dsda_InputTrackGameKeyDown(event_t* ev) {
   int key = ev->data1;
 
-  if (key >= NUMKEYS || gamekeys[key].game_on) return;
+  if (key >= NUMKEYS) return;
 
   gamekeys[key].game_activated_at = dsda_input_counter;
   gamekeys[key].game_on = true;
@@ -127,7 +127,7 @@ static void dsda_InputTrackGameKeyDown(event_t* ev) {
 static void dsda_InputTrackGameKeyUp(event_t* ev) {
   int key = ev->data1;
 
-  if (key >= NUMKEYS || !gamekeys[key].game_on) return;
+  if (key >= NUMKEYS) return;
 
   gamekeys[key].game_deactivated_at = dsda_input_counter;
   gamekeys[key].game_on = false;
