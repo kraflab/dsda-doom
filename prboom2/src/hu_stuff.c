@@ -2379,7 +2379,8 @@ void HU_Drawer(void)
   // draw the automap widgets if automap is displayed
   if (automapmode & am_active)
   {
-    if (!(automapmode & am_overlay) || (viewheight != SCREENHEIGHT))//!hud_displayed)
+    // Hide title if automap in overlay mode and adv / ex hud is active
+    if (!(automapmode & am_overlay) || ((viewheight != SCREENHEIGHT) && !dsda_ExHud()))
     {
       // map title
       HUlib_drawTextLine(&w_title, false);
