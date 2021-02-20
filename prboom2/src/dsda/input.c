@@ -28,6 +28,7 @@ typedef struct
   dboolean on;
   int activated_at;
   int deactivated_at;
+  dboolean game_on;
   int game_activated_at;
   int game_deactivated_at;
 } dsda_input_state_t;
@@ -51,6 +52,8 @@ static void dsda_InputTrackButtons(dsda_input_state_t* buttons, int max, event_t
 
     if (buttons[i].on && !button_on)
       buttons[i].deactivated_at = dsda_input_counter;
+
+    buttons[i].on = button_on;
   }
 }
 
@@ -60,6 +63,7 @@ static void dsda_InputTrackKeyDown(event_t* ev) {
   if (key >= NUMKEYS || gamekeys[key].on) return;
 
   gamekeys[key].activated_at = dsda_input_counter;
+  gamekeys[key].on = true;
 }
 
 static void dsda_InputTrackKeyUp(event_t* ev) {
@@ -68,6 +72,7 @@ static void dsda_InputTrackKeyUp(event_t* ev) {
   if (key >= NUMKEYS || !gamekeys[key].on) return;
 
   gamekeys[key].deactivated_at = dsda_input_counter;
+  gamekeys[key].on = false;
 }
 
 void dsda_InputFlushTick(void) {
@@ -100,32 +105,32 @@ static void dsda_InputTrackGameButtons(dsda_input_state_t* buttons, int max, eve
   for (i = 0; i < max; ++i) {
     unsigned int button_on = (ev->data1 & (1 << i)) != 0;
 
-    if (!buttons[i].on && button_on)
+    if (!buttons[i].game_on && button_on)
       buttons[i].game_activated_at = dsda_input_counter;
 
-    if (buttons[i].on && !button_on)
+    if (buttons[i].game_on && !button_on)
       buttons[i].game_deactivated_at = dsda_input_counter;
 
-    buttons[i].on = button_on;
+    buttons[i].game_on = button_on;
   }
 }
 
 static void dsda_InputTrackGameKeyDown(event_t* ev) {
   int key = ev->data1;
 
-  if (key >= NUMKEYS || gamekeys[key].on) return;
+  if (key >= NUMKEYS || gamekeys[key].game_on) return;
 
   gamekeys[key].game_activated_at = dsda_input_counter;
-  gamekeys[key].on = true;
+  gamekeys[key].game_on = true;
 }
 
 static void dsda_InputTrackGameKeyUp(event_t* ev) {
   int key = ev->data1;
 
-  if (key >= NUMKEYS || !gamekeys[key].on) return;
+  if (key >= NUMKEYS || !gamekeys[key].game_on) return;
 
   gamekeys[key].game_deactivated_at = dsda_input_counter;
-  gamekeys[key].on = false;
+  gamekeys[key].game_on = false;
 }
 
 void dsda_InputTrackGameEvent(event_t* ev) {
@@ -348,11 +353,11 @@ dboolean dsda_InputActive(int identifier) {
   input = &dsda_input[dsda_input_profile][identifier];
 
   for (i = 0; i < input->num_keys; ++i)
-    if (gamekeys[input->key[i]].on)
+    if (gamekeys[input->key[i]].game_on)
       return true;
 
-  return (input->mouseb >= 0 && mousebuttons[input->mouseb].on) ||
-         (input->joyb >= 0   && joybuttons[input->joyb].on);
+  return (input->mouseb >= 0 && mousebuttons[input->mouseb].game_on) ||
+         (input->joyb >= 0   && joybuttons[input->joyb].game_on);
 }
 
 dboolean dsda_InputKeyActive(int identifier) {
@@ -361,7 +366,7 @@ dboolean dsda_InputKeyActive(int identifier) {
   input = &dsda_input[dsda_input_profile][identifier];
 
   for (i = 0; i < input->num_keys; ++i)
-    if (gamekeys[input->key[i]].on)
+    if (gamekeys[input->key[i]].game_on)
       return true;
 
   return false;
@@ -371,14 +376,14 @@ dboolean dsda_InputMouseBActive(int identifier) {
   dsda_input_t* input;
   input = &dsda_input[dsda_input_profile][identifier];
 
-  return input->mouseb >= 0 && mousebuttons[input->mouseb].on;
+  return input->mouseb >= 0 && mousebuttons[input->mouseb].game_on;
 }
 
 dboolean dsda_InputJoyBActive(int identifier) {
   dsda_input_t* input;
   input = &dsda_input[dsda_input_profile][identifier];
 
-  return input->joyb >= 0 && joybuttons[input->joyb].on;
+  return input->joyb >= 0 && joybuttons[input->joyb].game_on;
 }
 
 void dsda_InputCycleProfile(void) {
