@@ -442,6 +442,84 @@ void P_UnArchiveMap(void)
     }
 }
 
+extern mobj_t** blocklinks;
+extern int      bmapwidth;
+extern int      bmapheight;
+
+void P_ArchiveBlockLinks(void)
+{
+  int i;
+  int size;
+
+  size = bmapwidth * bmapheight;
+
+  for (i = 0; i < size; ++i)
+  {
+    int count = 0;
+    mobj_t*  mobj;
+
+    mobj = blocklinks[i];
+    while (mobj)
+    {
+      ++count;
+      mobj = mobj->bnext;
+    }
+
+    CheckSaveGame(count * sizeof(mobj_t*) + sizeof(count));
+
+    memcpy(save_p, &count, sizeof(count));
+    save_p += sizeof(count);
+
+    mobj = blocklinks[i];
+    while (mobj)
+    {
+      memcpy(save_p, &mobj->thinker.prev, sizeof(mobj->thinker.prev));
+      save_p += sizeof(mobj->thinker.prev);
+      mobj = mobj->bnext;
+    }
+  }
+}
+
+void P_UnArchiveBlockLinks(mobj_t** mobj_p, int mobj_count)
+{
+  int i;
+  int size;
+
+  size = bmapwidth * bmapheight;
+
+  for (i = 0; i < size; ++i)
+  {
+    int j;
+    int count;
+    mobj_t* mobj;
+    mobj_t** bprev;
+
+    memcpy(&count, save_p, sizeof(count));
+    save_p += sizeof(count);
+
+    bprev = &blocklinks[i];
+    for (j = 0; j < count; ++j)
+    {
+      memcpy(&mobj, save_p, sizeof(mobj));
+      save_p += sizeof(mobj);
+
+      mobj = mobj_p[P_GetMobj(mobj, mobj_count + 1)];
+
+      if (mobj)
+      {
+        *bprev = mobj;
+        mobj->bprev = bprev;
+        mobj->bnext = NULL;
+        bprev = &mobj->bnext;
+      }
+      else
+      {
+        I_Error("P_UnArchiveBlockLinks: mobj does not exist!\n");
+      }
+    }
+  }
+}
+
 // dsda - fix save / load synchronization
 // merges thinkerclass_t and specials_e
 typedef enum {
@@ -771,6 +849,8 @@ void P_TrueArchiveThinkers(void) {
       save_p += sizeof target;
     }
   }
+
+  P_ArchiveBlockLinks();
 }
 
 // dsda - fix save / load synchronization
@@ -1089,6 +1169,8 @@ void P_TrueUnArchiveThinkers(void) {
       P_SetNewTarget(&sectors[i].soundtarget, mobj_p[P_GetMobj(target, mobj_count + 1)]);
     }
   }
+
+  P_UnArchiveBlockLinks(mobj_p, mobj_count);
 
   free(mobj_p);    // free translation table
 
