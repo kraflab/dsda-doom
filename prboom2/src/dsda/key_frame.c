@@ -65,16 +65,27 @@ void dsda_InitKeyFrame(void) {
 
 // Stripped down version of G_DoSaveGame
 void dsda_StoreKeyFrame(byte** buffer, int log) {
-  int demo_write_buffer_offset;
+  int demo_write_buffer_offset, i;
   demo_write_buffer_offset = dsda_DemoBufferOffset();
 
   save_p = savebuffer = malloc(savegamesize);
 
-  CheckSaveGame(4);
+  CheckSaveGame(5 + MIN_MAXPLAYERS);
+  *save_p++ = compatibility_level;
   *save_p++ = gameskill;
   *save_p++ = gameepisode;
   *save_p++ = gamemap;
+
+  for (i = 0; i < MAXPLAYERS; i++)
+    *save_p++ = playeringame[i];
+
+  for (; i < MIN_MAXPLAYERS; i++)
+    *save_p++ = 0;
+
   *save_p++ = idmusnum;
+
+  CheckSaveGame(GAME_OPTION_SIZE);
+  save_p = G_WriteOptions(save_p);
 
   // Store progress bar for demo playback
   CheckSaveGame(sizeof(demo_curr_tic));
@@ -127,7 +138,7 @@ void dsda_StoreKeyFrame(byte** buffer, int log) {
 // Stripped down version of G_DoLoadGame
 // save_p is coopted to use the save logic
 void dsda_RestoreKeyFrame(byte* buffer) {
-  int demo_write_buffer_offset;
+  int demo_write_buffer_offset, i;
 
   if (buffer == NULL) {
     doom_printf("No key frame found");
@@ -136,13 +147,20 @@ void dsda_RestoreKeyFrame(byte* buffer) {
 
   save_p = buffer;
 
+  compatibility_level = *save_p++;
   gameskill = *save_p++;
   gameepisode = *save_p++;
   gamemap = *save_p++;
   gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
 
+  for (i = 0; i < MAXPLAYERS; i++)
+    playeringame[i] = *save_p++;
+  save_p += MIN_MAXPLAYERS - MAXPLAYERS;
+
   idmusnum = *save_p++;
-  if (idmusnum==255) idmusnum=-1;
+  if (idmusnum == 255) idmusnum = -1;
+
+  save_p += (G_ReadOptions(save_p) - save_p);
 
   // Restore progress bar for demo playback
   memcpy(&demo_curr_tic, save_p, sizeof(demo_curr_tic));
