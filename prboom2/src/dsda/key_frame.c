@@ -64,7 +64,7 @@ void dsda_InitKeyFrame(void) {
 }
 
 // Stripped down version of G_DoSaveGame
-void dsda_StoreKeyFrame(byte** buffer, int log) {
+void dsda_StoreKeyFrame(byte** buffer, byte complete) {
   int demo_write_buffer_offset, i;
   demo_write_buffer_offset = dsda_DemoBufferOffset();
 
@@ -102,6 +102,11 @@ void dsda_StoreKeyFrame(byte** buffer, int log) {
   memcpy(save_p, &demo_write_buffer_offset, sizeof(demo_write_buffer_offset));
   save_p += sizeof(demo_write_buffer_offset);
 
+  if (complete && demo_write_buffer_offset) {
+    CheckSaveGame(demo_write_buffer_offset);
+    save_p += dsda_CopyDemoBuffer(save_p);
+  }
+
   CheckSaveGame(sizeof(leveltime));
   memcpy(save_p, &leveltime, sizeof(leveltime));
   save_p += sizeof(leveltime);
@@ -132,12 +137,12 @@ void dsda_StoreKeyFrame(byte** buffer, int log) {
   *buffer = savebuffer;
   savebuffer = save_p = NULL;
 
-  if (log) doom_printf("Stored key frame");
+  if (complete) doom_printf("Stored key frame");
 }
 
 // Stripped down version of G_DoLoadGame
 // save_p is coopted to use the save logic
-void dsda_RestoreKeyFrame(byte* buffer) {
+void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   int demo_write_buffer_offset, i;
 
   if (buffer == NULL) {
@@ -174,7 +179,14 @@ void dsda_RestoreKeyFrame(byte* buffer) {
   memcpy(&demo_write_buffer_offset, save_p, sizeof(demo_write_buffer_offset));
   save_p += sizeof(demo_write_buffer_offset);
 
-  dsda_SetDemoBufferOffset(demo_write_buffer_offset);
+  if (complete && demo_write_buffer_offset) {
+    dsda_SetDemoBufferOffset(0);
+    dsda_WriteToDemo(save_p, demo_write_buffer_offset);
+    save_p += demo_write_buffer_offset;
+  }
+  else {
+    dsda_SetDemoBufferOffset(demo_write_buffer_offset);
+  }
 
   G_InitNew(gameskill, gameepisode, gamemap);
 
@@ -224,7 +236,7 @@ void dsda_StoreQuickKeyFrame(void) {
 }
 
 void dsda_RestoreQuickKeyFrame(void) {
-  dsda_RestoreKeyFrame(dsda_quick_key_frame_buffer);
+  dsda_RestoreKeyFrame(dsda_quick_key_frame_buffer, true);
 }
 
 void dsda_RewindAutoKeyFrame(void) {
@@ -249,7 +261,7 @@ void dsda_RewindAutoKeyFrame(void) {
   if (dsda_auto_key_frames[history_index].index <= key_frame_index) {
     dsda_last_auto_key_frame = history_index;
     dsda_SkipNextWipe();
-    dsda_RestoreKeyFrame(dsda_auto_key_frames[history_index].buffer);
+    dsda_RestoreKeyFrame(dsda_auto_key_frames[history_index].buffer, false);
   }
   else doom_printf("No key frame found"); // rewind past the depth limit
 }

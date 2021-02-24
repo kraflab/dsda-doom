@@ -19,9 +19,10 @@
 #define __DSDA_DEMO__
 
 void dsda_InitDemo(char* name);
-void dsda_WriteToDemo(byte* buffer, size_t length);
+void dsda_WriteToDemo(void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);
 int dsda_DemoBufferOffset(void);
+int dsda_CopyDemoBuffer(void* buffer);
 void dsda_SetDemoBufferOffset(int offset);
 
 #endif
