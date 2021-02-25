@@ -15,6 +15,8 @@
 //	DSDA Key Frame
 //
 
+#include "time.h"
+
 #include "doomstat.h"
 #include "s_advsound.h"
 #include "s_sound.h"
@@ -24,6 +26,10 @@
 #include "r_fps.h"
 #include "r_main.h"
 #include "g_game.h"
+#include "m_argv.h"
+#include "m_misc.h"
+#include "i_system.h"
+#include "lprintf.h"
 #include "e6y.h"
 
 #include "dsda/demo.h"
@@ -63,9 +69,27 @@ void dsda_InitKeyFrame(void) {
   dsda_last_auto_key_frame = -1;
 }
 
+void dsda_ExportKeyFrame(byte* buffer, int length) {
+  char name[40];
+  FILE* fp = NULL;
+  int timestamp;
+
+  timestamp = totalleveltimes + leveltime;
+
+  snprintf(name, 40, "backup-%010d.kf", timestamp);
+
+  if ((fp = fopen(name, "rb")) != NULL) {
+    fclose(fp);
+    snprintf(name, 40, "backup-%010d-%lld.kf", timestamp, time(NULL));
+  }
+
+  if (!M_WriteFile(name, buffer, length))
+    I_Error("dsda_ExportKeyFrame: Failed to write key frame.");
+}
+
 // Stripped down version of G_DoSaveGame
 void dsda_StoreKeyFrame(byte** buffer, byte complete) {
-  int demo_write_buffer_offset, i;
+  int demo_write_buffer_offset, i, length;
   demo_write_buffer_offset = dsda_DemoBufferOffset();
 
   save_p = savebuffer = malloc(savegamesize);
@@ -134,10 +158,16 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
 
   if (*buffer != NULL) free(*buffer);
 
+  length = save_p - savebuffer;
+
   *buffer = savebuffer;
   savebuffer = save_p = NULL;
 
-  if (complete) doom_printf("Stored key frame");
+  if (complete) {
+    dsda_ExportKeyFrame(*buffer, length);
+
+    doom_printf("Stored key frame");
+  }
 }
 
 // Stripped down version of G_DoLoadGame
@@ -237,6 +267,32 @@ void dsda_StoreQuickKeyFrame(void) {
 
 void dsda_RestoreQuickKeyFrame(void) {
   dsda_RestoreKeyFrame(dsda_quick_key_frame_buffer, true);
+}
+
+void dsda_RestoreKeyFrameFile(const char* name) {
+  char *filename;
+  byte* buffer;
+
+  filename = I_FindFile(name, ".kf");
+  if (filename)
+  {
+    M_ReadFile(filename, &buffer);
+    free(filename);
+
+    dsda_RestoreKeyFrame(buffer, true);
+    free(buffer);
+  }
+  else
+    I_Error("dsda_RestoreKeyFrameFile: cannot find %s", name);
+}
+
+void dsda_ContinueKeyFrame(void) {
+  int p;
+
+  p = M_CheckParm("-from_key_frame");
+  if (p && (p + 1 < myargc)) {
+    dsda_RestoreKeyFrameFile(myargv[p + 1]);
+  }
 }
 
 void dsda_RewindAutoKeyFrame(void) {
