@@ -46,6 +46,8 @@
 #include "s_advsound.h"
 #include "e6y.h"//e6y
 
+#define MARKED_FOR_DELETION -2
+
 byte *save_p;
 
 // Pads save_p to a 4-byte boundary
@@ -275,7 +277,9 @@ static int number_of_thinkers;
 
 static dboolean P_IsMobjThinker(thinker_t* thinker)
 {
-  return thinker->function == P_MobjThinker || thinker->function == P_BlasterMobjThinker;
+  return thinker->function == P_MobjThinker ||
+         thinker->function == P_BlasterMobjThinker ||
+         (thinker->function == P_RemoveThinkerDelayed && thinker->references);
 }
 
 void P_ThinkerToIndex(void)
@@ -769,6 +773,15 @@ void P_TrueArchiveThinkers(void) {
 
         mobj->state = (state_t *)(mobj->state - states);
 
+        // Example:
+        // - Archvile is attacking a lost soul
+        // - The lost soul dies before the attack hits
+        // - The lost soul is marked for deletion
+        // - The archvile will still attack the spot where the lost soul was
+        // - We need to save such objects and remember they are marked for deletion
+        if (mobj->thinker.function == P_RemoveThinkerDelayed)
+          mobj->index = MARKED_FOR_DELETION;
+
         // killough 2/14/98: convert pointers into indices.
         // Fixes many savegame problems, by properly saving
         // target and tracer fields. Note: we store NULL if
@@ -1098,8 +1111,20 @@ void P_TrueUnArchiveThinkers(void) {
           if (mobj->player)
             (mobj->player = &players[(size_t) mobj->player - 1]) -> mo = mobj;
 
-          P_SetThingPosition (mobj);
           mobj->info = &mobjinfo[mobj->type];
+
+          // Don't place objects marked for deletion
+          if (mobj->index == MARKED_FOR_DELETION)
+          {
+            mobj->thinker.function = P_RemoveThinkerDelayed;
+            P_AddThinker(&mobj->thinker);
+
+            // The references value must be nonzero to reach the target code
+            mobj->thinker.references = 1;
+            break;
+          }
+
+          P_SetThingPosition (mobj);
 
           // killough 2/28/98:
           // Fix for falling down into a wall after savegame loaded:
@@ -1155,6 +1180,13 @@ void P_TrueUnArchiveThinkers(void) {
               mobj_p[P_GetMobj(((mobj_t *)th)->special2.m, mobj_count + 1)]);
             break;
         }
+      }
+
+      // restore references now that targets are set
+      if (((mobj_t *) th)->index == MARKED_FOR_DELETION)
+      {
+        ((mobj_t *) th)->index = -1;
+        th->references--;
       }
     }
 
