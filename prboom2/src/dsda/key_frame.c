@@ -56,6 +56,7 @@ typedef struct {
 static dsda_key_frame_t* dsda_auto_key_frames;
 static int dsda_last_auto_key_frame;
 static int dsda_auto_key_frames_size;
+static int restore_key_frame_index = -1;
 
 void dsda_InitKeyFrame(void) {
   dsda_auto_key_frames_size = dsda_AutoKeyFrameDepth();
@@ -226,6 +227,8 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   memcpy(&totalleveltimes, save_p, sizeof(totalleveltimes));
   save_p += sizeof(totalleveltimes);
 
+  restore_key_frame_index = (totalleveltimes + leveltime) / (35 * dsda_AutoKeyFrameInterval());
+
   basetic = gametic - *save_p++;
 
   P_MapStart();
@@ -341,11 +344,9 @@ void dsda_UpdateAutoKeyFrames(void) {
   if (current_time % interval_tics == 0) {
     key_frame_index = current_time / interval_tics;
 
-    // Don't duplicate (e.g., because we rewound to this index)
-    if (
-      dsda_last_auto_key_frame >= 0 &&
-      dsda_auto_key_frames[dsda_last_auto_key_frame].index == key_frame_index
-    ) return;
+    // Don't duplicate on rewind
+    if (key_frame_index == restore_key_frame_index)
+      return;
 
     dsda_last_auto_key_frame += 1;
     if (dsda_last_auto_key_frame >= dsda_auto_key_frames_size)
