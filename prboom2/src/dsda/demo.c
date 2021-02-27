@@ -73,7 +73,7 @@ void dsda_InitDemo(char* name) {
   dsda_demo_write_buffer_length = INITIAL_DEMO_BUFFER_SIZE;
 }
 
-void dsda_WriteToDemo(byte* buffer, size_t length) {
+void dsda_WriteToDemo(void* buffer, size_t length) {
   dsda_EnsureDemoBufferSpace(length);
 
   memcpy(dsda_demo_write_buffer_p, buffer, length);
@@ -98,6 +98,15 @@ void dsda_WriteDemoToFile(void) {
 
 int dsda_DemoBufferOffset(void) {
   return dsda_demo_write_buffer_p - dsda_demo_write_buffer;
+}
+
+int dsda_CopyDemoBuffer(void* buffer) {
+  int offset;
+
+  offset = dsda_DemoBufferOffset();
+  memcpy(buffer, dsda_demo_write_buffer, offset);
+
+  return offset;
 }
 
 void dsda_SetDemoBufferOffset(int offset) {

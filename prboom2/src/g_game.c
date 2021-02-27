@@ -1998,13 +1998,6 @@ void G_DoWorldDone (void)
   e6y_G_DoWorldDone();//e6y
 }
 
-// killough 2/28/98: A ridiculously large number
-// of players, the most you'll ever need in a demo
-// or savegame. This is used to prevent problems, in
-// case more players in a game are supported later.
-
-#define MIN_MAXPLAYERS 32
-
 extern dboolean setsizeneeded;
 
 //CPhipps - savename variable redundant
@@ -3545,6 +3538,8 @@ void G_BeginRecording (void)
   }
 
   dsda_WriteToDemo(demostart, demo_p - demostart);
+  dsda_ContinueKeyFrame();
+
   free(demostart);
 }
 
