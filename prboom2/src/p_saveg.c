@@ -46,6 +46,8 @@
 #include "s_advsound.h"
 #include "e6y.h"//e6y
 
+#include "dsda/msecnode.h"
+
 #define MARKED_FOR_DELETION -2
 
 byte *save_p;
@@ -325,7 +327,7 @@ static void P_SetNewTarget(mobj_t **mop, mobj_t *targ)
 
 // savegame file stores ints in the corresponding * field; this function
 // safely casts them back to int.
-static int P_GetMobj(mobj_t* mi, size_t s)
+int P_GetMobj(mobj_t* mi, size_t s)
 {
   size_t i = (size_t)mi;
   if (i >= s)
@@ -947,6 +949,8 @@ void P_TrueArchiveThinkers(void) {
 
   P_ArchiveBlockLinks();
   P_ArchiveThinkerSubclasses();
+
+  dsda_ArchiveMSecNodes();
 }
 
 // dsda - fix save / load synchronization
@@ -1287,6 +1291,8 @@ void P_TrueUnArchiveThinkers(void) {
 
   P_UnArchiveBlockLinks(mobj_p, mobj_count);
   P_UnArchiveThinkerSubclasses(mobj_p, mobj_count);
+
+  dsda_UnArchiveMSecNodes(mobj_p, mobj_count);
 
   free(mobj_p);    // free translation table
 

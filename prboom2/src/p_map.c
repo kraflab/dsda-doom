@@ -2270,7 +2270,7 @@ void P_FreeSecNodeList(void)
   NULL_BLOCK_MEMORY_ALLOC_ZONE(secnodezone);
 }
 
-inline static msecnode_t* P_GetSecnode(void)
+msecnode_t* P_GetSecnode(void)
 {
   return (msecnode_t*)Z_BMalloc(&secnodezone);
 }
@@ -2304,7 +2304,7 @@ void P_FreeSecNodeList(void)
 //
 // killough 11/98: reformatted
 //
-static msecnode_t *P_GetSecnode(void)
+msecnode_t *P_GetSecnode(void)
 {
   msecnode_t *node;
 
