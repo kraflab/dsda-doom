@@ -46,6 +46,8 @@
 #include "s_advsound.h"
 #include "e6y.h"//e6y
 
+#include "dsda/msecnode.h"
+
 #define MARKED_FOR_DELETION -2
 
 byte *save_p;
@@ -325,7 +327,7 @@ static void P_SetNewTarget(mobj_t **mop, mobj_t *targ)
 
 // savegame file stores ints in the corresponding * field; this function
 // safely casts them back to int.
-static int P_GetMobj(mobj_t* mi, size_t s)
+int P_GetMobj(mobj_t* mi, size_t s)
 {
   size_t i = (size_t)mi;
   if (i >= s)
@@ -444,6 +446,88 @@ void P_UnArchiveMap(void)
         AM_setMarkParams(i);
       }
     }
+}
+
+void P_ArchiveThinkerSubclass(th_class class)
+{
+  int count;
+  thinker_t *cap, *th;
+
+  count = 0;
+  cap = &thinkerclasscap[class];
+  for (th = cap->cnext; th != cap; th = th->cnext)
+    count++;
+
+  CheckSaveGame(count * sizeof(mobj_t*) + sizeof(count));
+
+  memcpy(save_p, &count, sizeof(count));
+  save_p += sizeof(count);
+
+  for (th = cap->cnext; th != cap; th = th->cnext)
+  {
+    memcpy(save_p, &th->prev, sizeof(th->prev));
+    save_p += sizeof(th->prev);
+  }
+}
+
+void P_ArchiveThinkerSubclasses(void)
+{
+  // Other subclass ordering is not relevant
+  P_ArchiveThinkerSubclass(th_friends);
+  P_ArchiveThinkerSubclass(th_enemies);
+}
+
+void P_UnArchiveThinkerSubclass(th_class class, mobj_t** mobj_p, int mobj_count)
+{
+  int i;
+  int count;
+
+  // Reset thinker subclass list
+  thinkerclasscap[class].cprev->cnext = thinkerclasscap[class].cnext;
+  thinkerclasscap[class].cnext->cprev = thinkerclasscap[class].cprev;
+  thinkerclasscap[class].cprev =
+    thinkerclasscap[class].cnext = &thinkerclasscap[class];
+
+  memcpy(&count, save_p, sizeof(count));
+  save_p += sizeof(count);
+
+  for (i = 0; i < count; ++i)
+  {
+    thinker_t* th;
+    mobj_t* mobj;
+
+    memcpy(&mobj, save_p, sizeof(mobj));
+    save_p += sizeof(mobj);
+
+    mobj = mobj_p[P_GetMobj(mobj, mobj_count + 1)];
+
+    if (mobj)
+    {
+      // remove mobj from current subclass list
+      th = mobj->thinker.cnext;
+      if (th != NULL)
+      {
+        th->cprev = mobj->thinker.cprev;
+        th->cprev->cnext = th;
+      }
+
+      th = &thinkerclasscap[class];
+      th->cprev->cnext = &mobj->thinker;
+      mobj->thinker.cnext = th;
+      mobj->thinker.cprev = th->cprev;
+      th->cprev = &mobj->thinker;
+    }
+    else
+    {
+      I_Error("P_UnArchiveThinkerSubclass: mobj does not exist!\n");
+    }
+  }
+}
+
+void P_UnArchiveThinkerSubclasses(mobj_t** mobj_p, int mobj_count)
+{
+  P_UnArchiveThinkerSubclass(th_friends, mobj_p, mobj_count);
+  P_UnArchiveThinkerSubclass(th_enemies, mobj_p, mobj_count);
 }
 
 extern mobj_t** blocklinks;
@@ -864,6 +948,9 @@ void P_TrueArchiveThinkers(void) {
   }
 
   P_ArchiveBlockLinks();
+  P_ArchiveThinkerSubclasses();
+
+  dsda_ArchiveMSecNodes();
 }
 
 // dsda - fix save / load synchronization
@@ -1203,6 +1290,9 @@ void P_TrueUnArchiveThinkers(void) {
   }
 
   P_UnArchiveBlockLinks(mobj_p, mobj_count);
+  P_UnArchiveThinkerSubclasses(mobj_p, mobj_count);
+
+  dsda_UnArchiveMSecNodes(mobj_p, mobj_count);
 
   free(mobj_p);    // free translation table
 

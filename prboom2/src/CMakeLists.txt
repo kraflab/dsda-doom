@@ -31,6 +31,8 @@ set(COMMON_SRC
     dsda/input.h
     dsda/key_frame.c
     dsda/key_frame.h
+    dsda/msecnode.c
+    dsda/msecnode.h
     dsda/settings.c
     dsda/settings.h
     dstrings.c
