@@ -144,7 +144,7 @@ skill_t         gameskill;
 dboolean         respawnmonsters;
 int             gameepisode;
 int             gamemap;
-struct MapEntry		*gamemapinfo;
+struct MapEntry    *gamemapinfo;
 dboolean         paused;
 // CPhipps - moved *_loadgame vars here
 static dboolean forced_loadgame = false;
@@ -827,15 +827,15 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if ((demorecording && !longtics) || shorttics)
   {
-	// Chocolate Doom Mouse Behaviour
-	// Don't discard mouse delta even if value is too small to
-	// turn the player this tic
-	if (mouse_carrytics) {
-	  static signed short carry = 0;
-	  signed short desired_angleturn = cmd->angleturn + carry;
-	  cmd->angleturn = (desired_angleturn + 128) & 0xff00;
-	  carry = desired_angleturn - cmd->angleturn;
-	}
+    // Chocolate Doom Mouse Behaviour
+    // Don't discard mouse delta even if value is too small to
+    // turn the player this tic
+    if (mouse_carrytics) {
+      static signed short carry = 0;
+      signed short desired_angleturn = cmd->angleturn + carry;
+      cmd->angleturn = (desired_angleturn + 128) & 0xff00;
+      carry = desired_angleturn - cmd->angleturn;
+    }
 
     cmd->angleturn = (((cmd->angleturn + 128) >> 8) << 8);
   }
@@ -880,7 +880,7 @@ static void G_DoLoadLevel (void)
 
   if (gamemapinfo && gamemapinfo->skytexture[0])
   {
-	  skytexture = R_TextureNumForName(gamemapinfo->skytexture);
+    skytexture = R_TextureNumForName(gamemapinfo->skytexture);
   }
   else if (heretic)
   {
@@ -923,8 +923,8 @@ static void G_DoLoadLevel (void)
         break;
       }//jff 3/27/98 end sky setting fix
 
-	// [RH] Set up details about sky rendering
-	R_InitSkyMap ();
+  // [RH] Set up details about sky rendering
+  R_InitSkyMap ();
 
 #ifdef GL_DOOM
   R_SetBoxSkybox(skytexture);
@@ -1545,14 +1545,14 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     {
       static int queuesize;
       if (queuesize < bodyquesize)
-	{
-	  bodyque = realloc(bodyque, bodyquesize*sizeof*bodyque);
-	  memset(bodyque+queuesize, 0,
-		 (bodyquesize-queuesize)*sizeof*bodyque);
-	  queuesize = bodyquesize;
-	}
+  {
+    bodyque = realloc(bodyque, bodyquesize*sizeof*bodyque);
+    memset(bodyque+queuesize, 0,
+     (bodyquesize-queuesize)*sizeof*bodyque);
+    queuesize = bodyquesize;
+  }
       if (bodyqueslot >= bodyquesize)
-	P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
+  P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
       bodyque[bodyqueslot++ % bodyquesize] = players[playernum].mo;
     }
   else
@@ -1576,23 +1576,23 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     if (compatibility_level <= finaldoom_compatibility || compatibility_level == prboom_4_compatibility)
       switch (an) {
       case -4096: xa = finetangent[2048];   // finecosine[-4096]
-          	ya = finetangent[0];      // finesine[-4096]
-          	break;
+            ya = finetangent[0];      // finesine[-4096]
+            break;
       case -3072: xa = finetangent[3072];   // finecosine[-3072]
-          	ya = finetangent[1024];   // finesine[-3072]
-          	break;
+            ya = finetangent[1024];   // finesine[-3072]
+            break;
       case -2048: xa = finesine[0];   // finecosine[-2048]
-          	ya = finetangent[2048];   // finesine[-2048]
-          	break;
-      case -1024:	xa = finesine[1024];     // finecosine[-1024]
-          	ya = finetangent[3072];  // finesine[-1024]
-          	break;
+            ya = finetangent[2048];   // finesine[-2048]
+            break;
+      case -1024:  xa = finesine[1024];     // finecosine[-1024]
+            ya = finetangent[3072];  // finesine[-1024]
+            break;
       case 1024:
       case 2048:
       case 3072:
       case 4096:
-      case 0:	break; /* correct angles set above */
-      default:	I_Error("G_CheckSpot: unexpected angle %d\n",an);
+      case 0:  break; /* correct angles set above */
+      default:  I_Error("G_CheckSpot: unexpected angle %d\n",an);
       }
 
     mo = P_SpawnMobj(x+20*xa, y+20*ya, ss->sector->floorheight, MT_TFOG);
@@ -1741,29 +1741,29 @@ void G_DoCompleted (void)
   wminfo.nextmapinfo = NULL;
   if (gamemapinfo)
   {
-	  const char *next = "";
-	  if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0) && gamemapinfo->nointermission)
-	  {
-		  gameaction = ga_victory;
-		  return;
-	  }
-	  if (secretexit) next = gamemapinfo->nextsecret;
-	  if (next[0] == 0) next = gamemapinfo->nextmap;
-	  if (next[0])
-	  {
-		  G_ValidateMapName(next, &wminfo.nextep, &wminfo.next);
-		  wminfo.nextep--;
-		  wminfo.next--;
-		  // episode change
-		  if (wminfo.nextep != wminfo.epsd)
-		  {
-		    for (i = 0; i < MAXPLAYERS; i++)
-		      players[i].didsecret = false;
-		  }
-		  wminfo.didsecret = players[consoleplayer].didsecret;
-		  wminfo.partime = gamemapinfo->partime;
-		  goto frommapinfo;	// skip past the default setup.
-	  }
+    const char *next = "";
+    if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0) && gamemapinfo->nointermission)
+    {
+      gameaction = ga_victory;
+      return;
+    }
+    if (secretexit) next = gamemapinfo->nextsecret;
+    if (next[0] == 0) next = gamemapinfo->nextmap;
+    if (next[0])
+    {
+      G_ValidateMapName(next, &wminfo.nextep, &wminfo.next);
+      wminfo.nextep--;
+      wminfo.next--;
+      // episode change
+      if (wminfo.nextep != wminfo.epsd)
+      {
+        for (i = 0; i < MAXPLAYERS; i++)
+          players[i].didsecret = false;
+      }
+      wminfo.didsecret = players[consoleplayer].didsecret;
+      wminfo.partime = gamemapinfo->partime;
+      goto frommapinfo;  // skip past the default setup.
+    }
   }
 
   if (gamemode != commercial) // kilough 2/7/98
@@ -1939,27 +1939,27 @@ void G_WorldDone (void)
 
   if (gamemapinfo)
   {
-	  if (gamemapinfo->intertextsecret && secretexit)
-	  {
-		  if (gamemapinfo->intertextsecret[0] != '-') // '-' means that any default intermission was cleared.
-			F_StartFinale();
+    if (gamemapinfo->intertextsecret && secretexit)
+    {
+      if (gamemapinfo->intertextsecret[0] != '-') // '-' means that any default intermission was cleared.
+      F_StartFinale();
 
-		  return;
-	  }
-	  else if (gamemapinfo->intertext && !secretexit)
-	  {
-		  if (gamemapinfo->intertext[0] != '-') // '-' means that any default intermission was cleared.
-			F_StartFinale();
+      return;
+    }
+    else if (gamemapinfo->intertext && !secretexit)
+    {
+      if (gamemapinfo->intertext[0] != '-') // '-' means that any default intermission was cleared.
+      F_StartFinale();
 
-		  return;
-	  }
-	  else if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0))
-	  {
-		  // game ends without a status screen.
-		  gameaction = ga_victory;
-		  return;
-	  }
-	  // if nothing applied, use the defaults.
+      return;
+    }
+    else if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0))
+    {
+      // game ends without a status screen.
+      gameaction = ga_victory;
+      return;
+    }
+    // if nothing applied, use the defaults.
   }
 
   if (gamemode == commercial && gamemission != pack_nerve)
@@ -2845,58 +2845,58 @@ void G_SetFastParms(int fast_pending)
 
 struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap)
 {
-	char lumpname[9];
-	unsigned i;
-	if (gamemode == commercial) snprintf(lumpname, 9, "MAP%02d", gamemap);
-	else snprintf(lumpname, 9, "E%dM%d", gameepisode, gamemap);
-	for (i = 0; i < Maps.mapcount; i++)
-	{
-		if (!stricmp(lumpname, Maps.maps[i].mapname))
-		{
-			return &Maps.maps[i];
-		}
-	}
-	return NULL;
+  char lumpname[9];
+  unsigned i;
+  if (gamemode == commercial) snprintf(lumpname, 9, "MAP%02d", gamemap);
+  else snprintf(lumpname, 9, "E%dM%d", gameepisode, gamemap);
+  for (i = 0; i < Maps.mapcount; i++)
+  {
+    if (!stricmp(lumpname, Maps.maps[i].mapname))
+    {
+      return &Maps.maps[i];
+    }
+  }
+  return NULL;
 }
 
 struct MapEntry *G_LookupMapinfoByName(const char *lumpname)
 {
-	unsigned i;
-	for (i = 0; i < Maps.mapcount; i++)
-	{
-		if (!stricmp(lumpname, Maps.maps[i].mapname))
-		{
-			return &Maps.maps[i];
-		}
-	}
-	return NULL;
+  unsigned i;
+  for (i = 0; i < Maps.mapcount; i++)
+  {
+    if (!stricmp(lumpname, Maps.maps[i].mapname))
+    {
+      return &Maps.maps[i];
+    }
+  }
+  return NULL;
 }
 
 int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap)
 {
-	// Check if the given map name can be expressed as a gameepisode/gamemap pair and be reconstructed from it.
-	char lumpname[9], mapuname[9];
-	int epi = -1, map = -1;
+  // Check if the given map name can be expressed as a gameepisode/gamemap pair and be reconstructed from it.
+  char lumpname[9], mapuname[9];
+  int epi = -1, map = -1;
 
-	if (strlen(mapname) > 8) return 0;
-	strncpy(mapuname, mapname, 8);
-	mapuname[8] = 0;
-	M_Strupr(mapuname);
+  if (strlen(mapname) > 8) return 0;
+  strncpy(mapuname, mapname, 8);
+  mapuname[8] = 0;
+  M_Strupr(mapuname);
 
-	if (gamemode != commercial)
-	{
-		if (sscanf(mapuname, "E%dM%d", &epi, &map) != 2) return 0;
-		snprintf(lumpname, 9, "E%dM%d", epi, map);
-	}
-	else
-	{
-		if (sscanf(mapuname, "MAP%d", &map) != 1) return 0;
-		snprintf(lumpname, 9, "MAP%02d", map);
-		epi = 1;
-	}
-	if (pEpi) *pEpi = epi;
-	if (pMap) *pMap = map;
-	return !strcmp(mapuname, lumpname);
+  if (gamemode != commercial)
+  {
+    if (sscanf(mapuname, "E%dM%d", &epi, &map) != 2) return 0;
+    snprintf(lumpname, 9, "E%dM%d", epi, map);
+  }
+  else
+  {
+    if (sscanf(mapuname, "MAP%d", &map) != 1) return 0;
+    snprintf(lumpname, 9, "MAP%02d", map);
+    epi = 1;
+  }
+  if (pEpi) *pEpi = epi;
+  if (pMap) *pMap = map;
+  return !strcmp(mapuname, lumpname);
 }
 
 //
@@ -2932,7 +2932,7 @@ void G_InitNew(skill_t skill, int episode, int map)
   if (episode < 1)
     episode = 1;
 
-  if (!EpiCustom)	// Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
+  if (!EpiCustom)  // Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
   {
     if (heretic)
     {
@@ -3407,9 +3407,9 @@ void G_BeginRecording (void)
         case prboom_4_compatibility: v = 212; break;
         case prboom_5_compatibility: v = 213; break;
         case prboom_6_compatibility:
-				     v = 214;
-				     longtics = 1;
-				     break;
+             v = 214;
+             longtics = 1;
+             break;
         default: I_Error("G_BeginRecording: PrBoom compatibility level unrecognised?");
       }
       *demo_p++ = v;
@@ -4033,9 +4033,9 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
           return NULL;
 
         if (!*demo_p++)
-	  compatibility_level = boom_201_compatibility;
+    compatibility_level = boom_201_compatibility;
         else
-	  compatibility_level = boom_compatibility_compatibility;
+    compatibility_level = boom_compatibility_compatibility;
         break;
       case 202:
         //e6y: check for overrun
@@ -4043,45 +4043,45 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
           return NULL;
 
         if (!*demo_p++)
-	  compatibility_level = boom_202_compatibility;
+    compatibility_level = boom_202_compatibility;
         else
-	  compatibility_level = boom_compatibility_compatibility;
+    compatibility_level = boom_compatibility_compatibility;
         break;
       case 203:
-	/* LxDoom or MBF - determine from signature
-	 * cph - load compatibility level */
-	switch (*(header_p + 2)) {
-	case 'B': /* LxDoom */
-	  /* cph - DEMOSYNC - LxDoom demos recorded in compatibility modes support dropped */
-	  compatibility_level = lxdoom_1_compatibility;
-	  break;
-	case 'M':
-	  compatibility_level = mbf_compatibility;
-	  demo_p++;
-	  break;
-	}
-	break;
+  /* LxDoom or MBF - determine from signature
+   * cph - load compatibility level */
+  switch (*(header_p + 2)) {
+  case 'B': /* LxDoom */
+    /* cph - DEMOSYNC - LxDoom demos recorded in compatibility modes support dropped */
+    compatibility_level = lxdoom_1_compatibility;
+    break;
+  case 'M':
+    compatibility_level = mbf_compatibility;
+    demo_p++;
+    break;
+  }
+  break;
       case 210:
-	compatibility_level = prboom_2_compatibility;
-	demo_p++;
-	break;
+  compatibility_level = prboom_2_compatibility;
+  demo_p++;
+  break;
       case 211:
-	compatibility_level = prboom_3_compatibility;
-	demo_p++;
-	break;
+  compatibility_level = prboom_3_compatibility;
+  demo_p++;
+  break;
       case 212:
-	compatibility_level = prboom_4_compatibility;
-	demo_p++;
-	break;
+  compatibility_level = prboom_4_compatibility;
+  demo_p++;
+  break;
       case 213:
-	compatibility_level = prboom_5_compatibility;
-	demo_p++;
-	break;
+  compatibility_level = prboom_5_compatibility;
+  demo_p++;
+  break;
       case 214:
-	compatibility_level = prboom_6_compatibility;
+  compatibility_level = prboom_6_compatibility;
         longtics = 1;
-	demo_p++;
-	break;
+  demo_p++;
+  break;
       }
       //e6y: check for overrun
       if (CheckForOverrun(header_p, demo_p, size, 5, failonerror))
