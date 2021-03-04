@@ -1,4 +1,4 @@
-# dsda-doom v0.14.0
+# dsda-doom v0.15.0
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning.
 
 ### Heretic Support (beta)
@@ -33,6 +33,8 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Use `-export_ghost ghost` to write a ghost file (`.gst`).
 - Use `-import_ghost ghost_a ghost_b ...` to import ghost files (`.gst`).
 - Use `-tas` to disable strict mode.
+- Use `-first_input f s t` to "build" the first command of a tas, where `f = forwardmove`, `s = sidemove` and `t = angleturn`.
+  - Example: `-first_turn 50 50 32` will do a quarter turn left and sr50 forward right.
 - Through the use of automatic and manual key frames, you can now rewind the game.
 - The time with tics is now displayed on the intermission screen (top left corner).
 - The extended hud provides a hybrid of the classic and advanced huds.
@@ -51,6 +53,7 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Automatic Key Frame Interval (s): time between automatic key frames.
 - Automatic Key Frame Depth: how many key frames to store (max rewind length).
 - Extended Hud: add extra info on top of the default hud.
+- Wipe At Full Speed: always display the wipe animation at normal speed.
 
 ### Key Frames
 Key frames capture the game state at a given moment, similar to save files. By automatically recording key frames at fixed intervals, it is possible to "rewind" the game. This can be used during normal play, while recording (tas) demos, and during demo playback. You can also set a manual "quick key frame" at a specific point and rewind to that moment at any later time. When storing a key frame while recording, a backup file is created (`backup-ttt.kf`). You can continue a demo _from a key frame_ like so: `-record x.lmp -from_key_frame backup-1234.kf -complevel x`. While recording from a key frame, the demo restart key will return you to the original key frame, even if you have made other key frames later on.
@@ -88,16 +91,6 @@ Example: if you complete UV Tyson on a map and collect all the secrets, the anal
 Use the extra flags (`pacifist`, `stroller`, `tyson_weapons`) to check the details.
 
 Irrelevant categories for a run are ignored. E.g., you won't see `NM 100S` if a map has no secrets and you won't see `Pacifist` if a map has no monsters.
-
-### PRBoom+ Stuff (since 2.5.1.5 - heavily abridged)
-- Fix boom autoswitch behaviour (in some cases running out of ammo forced a specific weapon swap)
-- Add mouse code option (classic prboom+ vs chocolate doom)
-- Forbid 180 while strafe is on (previously could produce sr50 on turns)
-- Add configurable quick start window (simulates different hardware speed)
-- Include secret exit format in levelstat (E1M3s instead of E1M3)
-- Use `-stroller` to prevent strafing and limit speed (-turbo 50)
-- Fix boom rng seed (previously this was hardware dependent and not random)
-- Add mouse strafe divisor setting - limit horizontal mouse strafe.
 
 ### Credits
 - The DSDA-Doom icon was designed by Mal (129thVisplane). Thanks!
