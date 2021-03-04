@@ -853,10 +853,12 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   }
 
   if (leveltime == 0 && totalleveltimes == 0 && !dsda_StrictMode()) {
-    int p = M_CheckParm("-first_turn");
+    int p = M_CheckParm("-first_input");
 
-    if (p && (p + 1 < myargc)) {
-      cmd->angleturn = (signed short) (atoi(myargv[p + 1]) << 8);
+    if (p && (p + 3 < myargc)) {
+      cmd->forwardmove = (signed char) atoi(myargv[p + 1]);
+      cmd->sidemove = (signed char) atoi(myargv[p + 2]);
+      cmd->angleturn = (signed short) (atoi(myargv[p + 3]) << 8);
 
       dsda_JoinDemoCmd(cmd);
     }
