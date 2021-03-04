@@ -246,6 +246,8 @@ static void D_Wipe(void)
       I_FinishUpdate();             // page flip or blit buffer
     }
   while (!done);
+
+  force_singletics_to = gametic + BACKUPTICS;
 }
 
 //
