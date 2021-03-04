@@ -18,11 +18,14 @@
 #ifndef __DSDA_DEMO__
 #define __DSDA_DEMO__
 
+#include "d_ticcmd.h"
+
 void dsda_InitDemo(char* name);
 void dsda_WriteToDemo(void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);
 int dsda_DemoBufferOffset(void);
 int dsda_CopyDemoBuffer(void* buffer);
 void dsda_SetDemoBufferOffset(int offset);
+void dsda_JoinDemoCmd(ticcmd_t* cmd);
 
 #endif

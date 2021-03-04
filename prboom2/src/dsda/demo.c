@@ -20,8 +20,10 @@
 #include <string.h>
 
 #include "doomtype.h"
+#include "doomstat.h"
 #include "m_misc.h"
 #include "lprintf.h"
+#include "e6y.h"
 
 #include "demo.h"
 
@@ -117,4 +119,13 @@ void dsda_SetDemoBufferOffset(int offset) {
     I_Error("dsda_SetDemoBufferOffset: Impossible time traveling detected.");
 
   dsda_demo_write_buffer_p = dsda_demo_write_buffer + offset;
+}
+
+void dsda_JoinDemoCmd(ticcmd_t* cmd) {
+  // Sometimes this bit is not available
+  if (
+    (demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||
+    (cmd->buttons & BT_CHANGE) == 0
+  )
+    cmd->buttons |= BT_JOIN;
 }

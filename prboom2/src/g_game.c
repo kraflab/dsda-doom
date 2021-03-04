@@ -855,8 +855,11 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (leveltime == 0 && totalleveltimes == 0 && !dsda_StrictMode()) {
     int p = M_CheckParm("-first_turn");
 
-    if (p && (p + 1 < myargc))
+    if (p && (p + 1 < myargc)) {
       cmd->angleturn = (signed short) (atoi(myargv[p + 1]) << 8);
+
+      dsda_JoinDemoCmd(cmd);
+    }
   }
 }
 
@@ -1191,13 +1194,8 @@ void G_Ticker (void)
 
           memcpy(cmd, &netcmds[i][buf], sizeof *cmd);
 
-          // Track join if bit available
-          if (
-            dsda_KeyFrameRestored() && (
-              (demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||
-              (cmd->buttons & BT_CHANGE) == 0
-            )
-          ) cmd->buttons |= BT_JOIN;
+          if (dsda_KeyFrameRestored())
+            dsda_JoinDemoCmd(cmd);
 
           //e6y
           if (democontinue)
@@ -4488,10 +4486,8 @@ void G_ReadDemoContinueTiccmd (ticcmd_t* cmd)
   {
     demo_continue_p = NULL;
     democontinue = false;
-    // Sometimes this bit is not available
-    if ((demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||
-      (cmd->buttons & BT_CHANGE) == 0)
-      cmd->buttons |= BT_JOIN;
+
+    dsda_JoinDemoCmd(cmd);
   }
 }
 
