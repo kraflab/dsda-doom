@@ -851,6 +851,13 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     cmd->buttons = special_event;
     special_event = 0;
   }
+
+  if (leveltime == 0 && totalleveltimes == 0 && !dsda_StrictMode()) {
+    int p = M_CheckParm("-first_turn");
+
+    if (p && (p + 1 < myargc))
+      cmd->angleturn = (signed short) (atoi(myargv[p + 1]) << 8);
+  }
 }
 
 //
