@@ -28,6 +28,7 @@ int dsda_cycle_ghost_colors;
 int dsda_exhud;
 int dsda_tas;
 int dsda_skip_next_wipe;
+int dsda_wipe_at_full_speed;
 
 void dsda_InitSettings(void) {
   dsda_ChangeStrictMode();
@@ -72,6 +73,10 @@ dboolean dsda_AlwaysSR50(void) {
 
 dboolean dsda_ExHud(void) {
   return dsda_exhud;
+}
+
+dboolean dsda_WipeAtFullSpeed(void) {
+  return dsda_wipe_at_full_speed;
 }
 
 int dsda_RealticClockRate(void) {

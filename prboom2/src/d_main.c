@@ -226,9 +226,20 @@ void D_PostEvent(event_t *ev)
 static void D_Wipe(void)
 {
   dboolean done;
-  int wipestart = I_GetTime () - 1;
+  int wipestart;
+  int old_realtic_clock_rate = 0;
 
   if (!render_wipescreen || dsda_SkipWipe()) return;//e6y
+
+  if (realtic_clock_rate != 100 && dsda_WipeAtFullSpeed())
+  {
+    old_realtic_clock_rate = realtic_clock_rate;
+    realtic_clock_rate = 100;
+    I_Init2();
+  }
+
+  wipestart = I_GetTime () - 1;
+
   do
     {
       int nowtime, tics;
@@ -246,6 +257,12 @@ static void D_Wipe(void)
       I_FinishUpdate();             // page flip or blit buffer
     }
   while (!done);
+
+  if (old_realtic_clock_rate)
+  {
+    realtic_clock_rate = old_realtic_clock_rate;
+    I_Init2();
+  }
 
   force_singletics_to = gametic + BACKUPTICS;
 }

@@ -25,6 +25,7 @@ extern int dsda_auto_key_frame_depth;
 extern int dsda_strict_mode;
 extern int dsda_cycle_ghost_colors;
 extern int dsda_exhud;
+extern int dsda_wipe_at_full_speed;
 
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);
@@ -34,6 +35,7 @@ dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
 dboolean dsda_ExHud(void);
+dboolean dsda_WipeAtFullSpeed(void);
 int dsda_RealticClockRate(void);
 int dsda_AutoKeyFrameInterval(void);
 int dsda_AutoKeyFrameDepth(void);
