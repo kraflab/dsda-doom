@@ -33,8 +33,8 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Use `-export_ghost ghost` to write a ghost file (`.gst`).
 - Use `-import_ghost ghost_a ghost_b ...` to import ghost files (`.gst`).
 - Use `-tas` to disable strict mode.
-- Use `-first_input f s t` to "build" the first command of a tas, where `f = forwardmove`, `s = sidemove` and `t = angleturn`.
-  - Example: `-first_turn 50 50 32` will do a quarter turn left and sr50 forward right.
+- Use `-first_input f s t` to "build" the first command of a tas, where `f = forwardmove`, `s = sidemove`, and `t = angleturn`.
+  - Example: `-first_input 50 50 32` will do a quarter turn left and sr50 forward right.
 - Through the use of automatic and manual key frames, you can now rewind the game.
 - The time with tics is now displayed on the intermission screen (top left corner).
 - The extended hud provides a hybrid of the classic and advanced huds.
