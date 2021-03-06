@@ -47,6 +47,8 @@
 /* cph 2006/07/23 - needs direct access to thinkercap */
 #include "p_tick.h"
 
+#include "dsda/settings.h"
+
 #define plyr (players+consoleplayer)     /* the console player */
 
 //e6y: for speedup
@@ -678,6 +680,16 @@ static void cheat_fly()
   }
 }
 
+static dboolean M_CheatAllowed(cheatseq_t* cheat)
+{
+  return !(cheat->when && dsda_StrictMode()) &&
+         !(cheat->when & not_dm   && deathmatch) &&
+         !(cheat->when & not_coop && netgame && !deathmatch) &&
+         !(cheat->when & not_demo && (demorecording || demoplayback)) &&
+         !(cheat->when & not_menu && menuactive) &&
+         !(cheat->when & not_deh  && M_CheckParm("-deh"));
+}
+
 //-----------------------------------------------------------------------------
 // 2/7/98: Cheat detection rewritten by Lee Killough, to avoid
 // scrambling and to use a more general table-driven approach.
@@ -732,12 +744,7 @@ static int M_FindCheats_Boom(int key)
   sr = (sr<<5) + key;                   // shift this key into shift register
 
   for (matchedbefore = ret = i = 0; cheat[i].cheat; i++)
-    if ((sr & cheat[i].mask) == cheat[i].code &&      // if match found
-        !(cheat[i].when & not_dm   && deathmatch) &&  // and if cheat allowed
-        !(cheat[i].when & not_coop && netgame && !deathmatch) &&
-        !(cheat[i].when & not_demo && (demorecording || demoplayback)) &&
-        !(cheat[i].when & not_menu && menuactive) &&
-        !(cheat[i].when & not_deh  && M_CheckParm("-deh"))) {
+    if ((sr & cheat[i].mask) == cheat[i].code && M_CheatAllowed(&cheat[i])) {
       if (cheat[i].arg < 0)               // if additional args are required
         {
           cht = i;                        // remember this cheat code
@@ -773,11 +780,7 @@ static int M_FindCheats_Doom(int key)
 
   for (cht = cheat; cht->cheat; cht++)
   {
-    if (!(cht->when & not_dm   && deathmatch) &&  // and if cheat allowed
-        !(cht->when & not_coop && netgame && !deathmatch) &&
-        !(cht->when & not_demo && (demorecording || demoplayback)) &&
-        !(cht->when & not_menu && menuactive) &&
-        !(cht->when & not_deh  && M_CheckParm("-deh")))
+    if (M_CheatAllowed(cht))
     {
       // if we make a short sequence on a cheat with parameters, this
       // will not work in vanilla doom.  behave the same.
