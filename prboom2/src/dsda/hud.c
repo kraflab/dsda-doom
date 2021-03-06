@@ -304,7 +304,7 @@ void dsda_AddSplit(dsda_split_class_t split_class) {
 
   dsda_split.ticks = DSDA_SPLIT_LIFETIME;
 
-  // leveltime is incremented _after_ the frame, so it's off by one here
+  // to match the timer, we use the leveltime value at the end of the frame
   minutes = (leveltime + 1) / 35 / 60;
   seconds = (float)((leveltime + 1) % (60 * 35)) / 35;
   snprintf(
