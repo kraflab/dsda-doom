@@ -44,6 +44,8 @@
 #include "g_game.h"
 #include "e6y.h"//e6y
 
+#include "dsda/settings.h"
+
 // heretic needs
 #include "heretic/def.h"
 #include "s_sound.h"
@@ -759,7 +761,7 @@ void P_PlayerThink (player_t* player)
   // Handling colormaps.
   // killough 3/20/98: reformat to terse C syntax
   if (!heretic)
-    player->fixedcolormap = palette_onpowers &&
+    player->fixedcolormap = dsda_PowerPalette() &&
       (player->powers[pw_invulnerability] > 4*32 ||
       player->powers[pw_invulnerability] & 8) ? INVERSECOLORMAP :
       player->powers[pw_infrared] > 4*32 || player->powers[pw_infrared] & 8;

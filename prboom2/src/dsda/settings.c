@@ -76,6 +76,18 @@ dboolean dsda_ExHud(void) {
   return dsda_exhud;
 }
 
+dboolean dsda_PainPalette(void) {
+  return dsda_StrictMode() || palette_ondamage;
+}
+
+dboolean dsda_BonusPalette(void) {
+  return dsda_StrictMode() || palette_onbonus;
+}
+
+dboolean dsda_PowerPalette(void) {
+  return dsda_StrictMode() || palette_onpowers;
+}
+
 dboolean dsda_ShowHealthBars(void) {
   return health_bar && !dsda_StrictMode();
 }

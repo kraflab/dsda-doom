@@ -49,6 +49,8 @@
 #include "r_draw.h"
 #include "e6y.h"//e6y
 
+#include "dsda/settings.h"
+
 #include "heretic/sb_bar.h"
 
 //
@@ -748,9 +750,9 @@ int st_palette = 0;
 static void ST_doPaletteStuff(void)
 {
   int         palette;
-  int cnt = palette_ondamage ? plyr->damagecount : 0;
+  int cnt = dsda_PainPalette() ? plyr->damagecount : 0;
 
-  if (palette_onpowers && plyr->powers[pw_strength])
+  if (dsda_PowerPalette() && plyr->powers[pw_strength])
     {
       // slowly fade the berzerk out
       int bzc = 12 - (plyr->powers[pw_strength]>>6);
@@ -771,7 +773,7 @@ static void ST_doPaletteStuff(void)
       palette += STARTREDPALS;
     }
   else
-    if (palette_onbonus && plyr->bonuscount)
+    if (dsda_BonusPalette() && plyr->bonuscount)
       {
         palette = (plyr->bonuscount+7)>>3;
         if (palette >= NUMBONUSPALS)
@@ -779,7 +781,7 @@ static void ST_doPaletteStuff(void)
         palette += STARTBONUSPALS;
       }
     else
-      if (palette_onpowers && (plyr->powers[pw_ironfeet] > 4*32 || plyr->powers[pw_ironfeet] & 8))
+      if (dsda_PowerPalette() && (plyr->powers[pw_ironfeet] > 4*32 || plyr->powers[pw_ironfeet] & 8))
         palette = RADIATIONPAL;
       else
         palette = 0;
@@ -789,7 +791,7 @@ static void ST_doPaletteStuff(void)
   // as though the player is being covered in goo by an
   // attacking flemoid.
 
-  if (palette_onpowers && gamemission == chex
+  if (dsda_PowerPalette() && gamemission == chex
     && palette >= STARTREDPALS && palette < STARTREDPALS + NUMREDPALS)
   {
     palette = RADIATIONPAL;
