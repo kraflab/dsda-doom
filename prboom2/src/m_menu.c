@@ -5049,7 +5049,7 @@ dboolean M_Responder (event_t* ev) {
 #ifdef GL_DOOM
     if (V_GetMode() == VID_MODEGL)
     {
-      if (dsda_InputActivated(dsda_input_showalive))
+      if (dsda_InputActivated(dsda_input_showalive) && !dsda_StrictMode())
       {
         show_alive = (show_alive + 1) % 3;
         doom_printf("Show Alive Monsters %s",
