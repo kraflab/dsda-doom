@@ -72,6 +72,8 @@
 #include "hu_stuff.h"
 #include "e6y.h"//e6y
 
+#include "dsda/settings.h"
+
 // All OpenGL extentions will be disabled in gl_compatibility mode
 int gl_compatibility = 0;
 
@@ -2644,7 +2646,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     gld_ProcessThingShadow(thing);
   }
 
-  if (health_bar)
+  if (dsda_ShowHealthBars())
   {
     gld_AddHealthBar(thing, &sprite);
   }
@@ -3169,7 +3171,7 @@ void gld_DrawScene(player_t *player)
     glEnable(GL_DEPTH_TEST);
   }
 
-  if (health_bar)
+  if (dsda_ShowHealthBars())
   {
     glsl_SetActiveShader(NULL);
     gld_DrawHealthBars();

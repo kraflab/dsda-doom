@@ -35,6 +35,7 @@ dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
 dboolean dsda_ExHud(void);
+dboolean dsda_ShowHealthBars(void);
 dboolean dsda_WipeAtFullSpeed(void);
 int dsda_RealticClockRate(void);
 int dsda_AutoKeyFrameInterval(void);

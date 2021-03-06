@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "m_argv.h"
 #include "e6y.h"
+#include "r_things.h"
 
 #include "settings.h"
 
@@ -73,6 +74,10 @@ dboolean dsda_AlwaysSR50(void) {
 
 dboolean dsda_ExHud(void) {
   return dsda_exhud;
+}
+
+dboolean dsda_ShowHealthBars(void) {
+  return health_bar && !dsda_StrictMode();
 }
 
 dboolean dsda_WipeAtFullSpeed(void) {
