@@ -304,8 +304,9 @@ void dsda_AddSplit(dsda_split_class_t split_class) {
 
   dsda_split.ticks = DSDA_SPLIT_LIFETIME;
 
-  minutes = leveltime / 35 / 60;
-  seconds = (float)(leveltime % (60 * 35)) / 35;
+  // leveltime is incremented _after_ the frame, so it's off by one here
+  minutes = (leveltime + 1) / 35 / 60;
+  seconds = (float)((leveltime + 1) % (60 * 35)) / 35;
   snprintf(
     dsda_split.msg, DSDA_SPLIT_SIZE, "%d:%05.2f - %s",
     minutes, seconds, split_state->msg
