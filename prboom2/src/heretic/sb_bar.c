@@ -844,8 +844,5 @@ dboolean SB_Responder(event_t * ev)
   //         break;
   //       }
   //   }
-  // else  // if a user keypress...
-    if (ev->type == ev_keydown)       // Try cheat responder in m_cheat.c
-      return M_FindCheats(ev->data1); // killough 4/17/98, 5/2/98
-  return false;
+  return M_CheatResponder(ev);
 }

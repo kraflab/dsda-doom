@@ -34,6 +34,8 @@
 #ifndef __M_CHEAT__
 #define __M_CHEAT__
 
+#include "d_event.h"
+
 #define CHEAT(cheat, deh_cheat, when, func, arg) \
   { cheat, deh_cheat, when, func, arg, 0, 0, \
     sizeof(cheat) - 1, 0, 0, 0, "" }
@@ -71,6 +73,6 @@ typedef struct cheatseq_s {
 
 extern cheatseq_t cheat[];
 
-dboolean M_FindCheats(int key);
+dboolean M_CheatResponder(event_t *ev);
 
 #endif

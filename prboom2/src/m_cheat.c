@@ -876,3 +876,13 @@ dboolean M_FindCheats(int key)
   else
     return M_FindCheats_Doom(key);
 }
+
+dboolean M_CheatResponder(event_t *ev)
+{
+  if (ev->type == ev_keydown && M_FindCheats(ev->data1))
+    return true;
+
+  // cheat bindings
+
+  return false;
+}
