@@ -362,10 +362,33 @@ char* dsda_NewDemoName(void) {
   return demo_name;
 }
 
+static void dsda_ResetTracking(void) {
+  dsda_pacifist = true;
+  dsda_reality = true;
+  dsda_almost_reality = true;
+  dsda_missed_monsters = 0;
+  dsda_missed_secrets = 0;
+  dsda_missed_weapons = 0;
+  dsda_tyson_weapons = true;
+  dsda_100k = true;
+  dsda_100s = true;
+  dsda_any_counted_monsters = false;
+  dsda_any_monsters = false;
+  dsda_any_secrets = false;
+  dsda_any_weapons = false;
+  dsda_stroller = true;
+  dsda_turbo = false;
+  dsda_weapon_collector = true;
+
+  dsda_pacifist_note_shown = false;
+}
+
 void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
   char* demo_name;
 
   if (!demorecording) return;
+
+  dsda_ResetTracking();
 
   AM_ResetIDDTcheat();
   G_CheckDemoStatus();
