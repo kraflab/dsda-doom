@@ -77,6 +77,8 @@ int dsda_track_100k;
 // other
 char* dsda_demo_name_base;
 int dsda_max_kill_requirement;
+int dsda_session_attempts = 1;
+int dsda_total_attempts = 1;
 
 dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
@@ -110,7 +112,15 @@ void dsda_ReadCommandLine(void) {
   dsda_InitKeyFrame();
 }
 
+static int dsda_shown_attempt = 0;
+
 void dsda_DisplayNotifications(void) {
+  if (dsda_TrackAttempts() && dsda_session_attempts > dsda_shown_attempt) {
+    doom_printf("Attempt %d / %d", dsda_session_attempts, dsda_total_attempts);
+
+    dsda_shown_attempt = dsda_session_attempts;
+  }
+
   if (!dsda_pacifist && dsda_track_pacifist && !dsda_pacifist_note_shown) {
     dsda_pacifist_note_shown = true;
     dsda_DisplayNotification("Not pacifist!");
@@ -348,7 +358,7 @@ char* dsda_NewDemoName(void) {
   char* demo_name;
   size_t demo_name_size;
   FILE* fp = NULL;
-  static unsigned int j = 0;
+  static unsigned int j = 2;
 
   demo_name_size = strlen(dsda_demo_name_base) + 11; // 11 = -12345.lmp\0
   demo_name = malloc(demo_name_size);
@@ -358,6 +368,8 @@ char* dsda_NewDemoName(void) {
     snprintf(demo_name, demo_name_size, "%s-%05d.lmp", dsda_demo_name_base, j);
     fclose (fp);
   }
+
+  dsda_total_attempts = j - 1;
 
   return demo_name;
 }
@@ -387,6 +399,8 @@ void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
   char* demo_name;
 
   if (!demorecording) return;
+
+  ++dsda_session_attempts;
 
   dsda_ResetTracking();
 
