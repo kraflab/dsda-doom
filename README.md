@@ -1,4 +1,4 @@
-# dsda-doom v0.15.0
+# dsda-doom v0.15.1
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning.
 
 ### Heretic Support (beta)
@@ -41,6 +41,7 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Use the "restart current map" key while demo recording to perform an in-game restart. Known issue: solo net is not preserved properly.
 - You can configure multiple input profiles.
 - You can configure multiple keys to one action.
+- You can bind (many) cheats.
 
 ### Changes
 - Smart Totals renamed to Max Totals and fixed to show kill constraint for max.
@@ -54,6 +55,7 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Automatic Key Frame Depth: how many key frames to store (max rewind length).
 - Extended Hud: add extra info on top of the default hud.
 - Wipe At Full Speed: always display the wipe animation at normal speed.
+- Track Demo Attempts: show the attempt count (session / total) when starting a demo.
 
 ### Key Frames
 Key frames capture the game state at a given moment, similar to save files. By automatically recording key frames at fixed intervals, it is possible to "rewind" the game. This can be used during normal play, while recording (tas) demos, and during demo playback. You can also set a manual "quick key frame" at a specific point and rewind to that moment at any later time. When storing a key frame while recording, a backup file is created (`backup-ttt.kf`). You can continue a demo _from a key frame_ like so: `-record x.lmp -from_key_frame backup-1234.kf -complevel x`. While recording from a key frame, the demo restart key will return you to the original key frame, even if you have made other key frames later on.
