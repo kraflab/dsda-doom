@@ -2323,7 +2323,10 @@ static void deh_procWeapon(DEHFILE *fpin, FILE* fpout, char *line)
           continue;
         }
       if (!deh_strcasecmp(key,deh_weapon[0]))  // Ammo type
+      {
+        if (!heretic && value == 5) value = am_noammo;
         weaponinfo[indexnum].ammo = (ammotype_t)value;
+      }
       else
         if (!deh_strcasecmp(key,deh_weapon[1]))  // Deselect frame
           weaponinfo[indexnum].upstate = (int)value;
