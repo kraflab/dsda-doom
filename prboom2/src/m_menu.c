@@ -2306,6 +2306,7 @@ setup_menu_t keys_settings4[];
 setup_menu_t keys_settings5[];
 setup_menu_t keys_settings6[];
 setup_menu_t keys_settings7[];
+setup_menu_t keys_settings8[];
 setup_menu_t heretic_keys_settings1[];
 setup_menu_t heretic_keys_settings2[];
 setup_menu_t dsda_keys_settings[];
@@ -2321,6 +2322,7 @@ setup_menu_t* keys_settings[] =
   keys_settings5,
   keys_settings6,
   keys_settings7,
+  keys_settings8,
   heretic_keys_settings1,
   heretic_keys_settings2,
   dsda_keys_settings,
@@ -2530,9 +2532,35 @@ setup_menu_t keys_settings7[] =
   {"CLEAR"       ,S_INPUT     ,m_menu,KB_X,KB_Y+8*8,{0},dsda_input_menu_clear},
 
   {"<- PREV",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings6}},
-  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {heretic_keys_settings1}},
+  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings8}},
   // Final entry
   {0,S_SKIP|S_END,m_null}
+};
+
+setup_menu_t keys_settings8[] =
+{
+  { "CHEATS", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
+  { "God Mode", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_iddqd },
+  { "Ammo & Keys", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_idkfa },
+  { "Ammo", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_idfa },
+  { "No Clipping", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_idclip },
+  { "Health", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_idbeholdh },
+  { "Armor", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_idbeholdm },
+  { "Invulnerability", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_idbeholdv },
+  { "Berserk", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_idbeholds },
+  { "Partial Invisibility", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_idbeholdi },
+  { "Radiation Suit", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_idbeholdr },
+  { "Computer Area Map", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_idbeholda },
+  { "Light Amplification", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, { 0 }, dsda_input_idbeholdl },
+  { "Show Position", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, { 0 }, dsda_input_idmypos },
+  { "Show FPS", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_idrate },
+  { "Reveal Map", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, { 0 }, dsda_input_iddt },
+
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
+  { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { heretic_keys_settings1 } },
+
+  // Final entry
+  { 0, S_SKIP | S_END, m_null }
 };
 
 setup_menu_t heretic_keys_settings1[] = {
@@ -2544,7 +2572,7 @@ setup_menu_t heretic_keys_settings1[] = {
   { "FLY DOWN", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_flydown },
   { "FLY CENTER", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_flycenter },
 
-  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings8 } },
   { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { heretic_keys_settings2 } },
 
   // Final entry

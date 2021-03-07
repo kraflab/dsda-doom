@@ -137,6 +137,21 @@ typedef enum {
   dsda_input_help,
   dsda_input_escape,
   dsda_input_cycle_profile,
+  dsda_input_iddqd,
+  dsda_input_idkfa,
+  dsda_input_idfa,
+  dsda_input_idclip,
+  dsda_input_idbeholdh,
+  dsda_input_idbeholdm,
+  dsda_input_idbeholdv,
+  dsda_input_idbeholds,
+  dsda_input_idbeholdi,
+  dsda_input_idbeholdr,
+  dsda_input_idbeholda,
+  dsda_input_idbeholdl,
+  dsda_input_idmypos,
+  dsda_input_idrate,
+  dsda_input_iddt,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

@@ -47,6 +47,7 @@
 /* cph 2006/07/23 - needs direct access to thinkercap */
 #include "p_tick.h"
 
+#include "dsda/input.h"
 #include "dsda/settings.h"
 
 #define plyr (players+consoleplayer)     /* the console player */
@@ -680,14 +681,14 @@ static void cheat_fly()
   }
 }
 
-static dboolean M_CheatAllowed(cheatseq_t* cheat)
+static dboolean M_CheatAllowed(int when)
 {
-  return !(cheat->when && dsda_StrictMode()) &&
-         !(cheat->when & not_dm   && deathmatch) &&
-         !(cheat->when & not_coop && netgame && !deathmatch) &&
-         !(cheat->when & not_demo && (demorecording || demoplayback)) &&
-         !(cheat->when & not_menu && menuactive) &&
-         !(cheat->when & not_deh  && M_CheckParm("-deh"));
+  return !(when && dsda_StrictMode()) &&
+         !(when & not_dm   && deathmatch) &&
+         !(when & not_coop && netgame && !deathmatch) &&
+         !(when & not_demo && (demorecording || demoplayback)) &&
+         !(when & not_menu && menuactive) &&
+         !(when & not_deh  && M_CheckParm("-deh"));
 }
 
 //-----------------------------------------------------------------------------
@@ -744,7 +745,7 @@ static int M_FindCheats_Boom(int key)
   sr = (sr<<5) + key;                   // shift this key into shift register
 
   for (matchedbefore = ret = i = 0; cheat[i].cheat; i++)
-    if ((sr & cheat[i].mask) == cheat[i].code && M_CheatAllowed(&cheat[i])) {
+    if ((sr & cheat[i].mask) == cheat[i].code && M_CheatAllowed(cheat[i].when)) {
       if (cheat[i].arg < 0)               // if additional args are required
         {
           cht = i;                        // remember this cheat code
@@ -780,7 +781,7 @@ static int M_FindCheats_Doom(int key)
 
   for (cht = cheat; cht->cheat; cht++)
   {
-    if (M_CheatAllowed(cht))
+    if (M_CheatAllowed(cht->when))
     {
       // if we make a short sequence on a cheat with parameters, this
       // will not work in vanilla doom.  behave the same.
@@ -877,12 +878,49 @@ dboolean M_FindCheats(int key)
     return M_FindCheats_Doom(key);
 }
 
+typedef struct cheat_input_s {
+  int input;
+  const cheat_when_t when;
+  void (*const func)();
+  const int arg;
+} cheat_input_t;
+
+static cheat_input_t cheat_input[] = {
+  { dsda_input_iddqd, cht_never, cheat_god, 0 },
+  { dsda_input_idkfa, cht_never, cheat_kfa, 0 },
+  { dsda_input_idfa, cht_never, cheat_fa, 0 },
+  { dsda_input_idclip, cht_never, cheat_noclip, 0 },
+  { dsda_input_idbeholdh, cht_never, cheat_health, 0 },
+  { dsda_input_idbeholdm, cht_never, cheat_megaarmour, 0 },
+  { dsda_input_idbeholdv, cht_never, cheat_pw, pw_invulnerability },
+  { dsda_input_idbeholds, cht_never, cheat_pw, pw_strength },
+  { dsda_input_idbeholdi, cht_never, cheat_pw, pw_invisibility },
+  { dsda_input_idbeholdr, cht_never, cheat_pw, pw_ironfeet },
+  { dsda_input_idbeholda, not_dm, cheat_pw, pw_allmap },
+  { dsda_input_idbeholdl, not_dm, cheat_pw, pw_infrared },
+  { dsda_input_idmypos, not_dm, cheat_mypos, 0 },
+  { dsda_input_idrate, always, cheat_rate, 0 },
+  { dsda_input_iddt, not_dm, cheat_ddt, 0 },
+  { 0 }
+};
+
 dboolean M_CheatResponder(event_t *ev)
 {
+  cheat_input_t* cheat_i;
+
   if (ev->type == ev_keydown && M_FindCheats(ev->data1))
     return true;
 
-  // cheat bindings
+  for (cheat_i = cheat_input; cheat_i->input; cheat_i++)
+  {
+    if (dsda_InputActivated(cheat_i->input))
+    {
+      if (M_CheatAllowed(cheat_i->when))
+        cheat_i->func(cheat_i->arg);
+
+      return true;
+    }
+  }
 
   return false;
 }
