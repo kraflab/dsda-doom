@@ -4269,7 +4269,7 @@ dboolean G_CheckDemoStatus (void)
 
       M_SaveDefaults();
 
-      lprintf(LO_INFO, "Timed %u gametics in %u realtics = %-.1f frames per second",
+      lprintf(LO_INFO, "Timed %u gametics in %u realtics = %-.1f frames per second\n",
                (unsigned) gametic,realtics,
                (unsigned) gametic * (double) TICRATE / realtics);
       exit(0);
