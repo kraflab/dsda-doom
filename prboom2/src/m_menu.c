@@ -70,6 +70,7 @@
 #include "dsda/settings.h"
 #include "dsda/key_frame.h"
 #include "dsda/input.h"
+#include "dsda/palette.h"
 #include "heretic/mn_menu.h"
 #ifdef _WIN32
 #include "e6y_launcher.h"
@@ -2608,6 +2609,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Restore Quick Key Frame", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_restore_quick_key_frame },
   { "Rewind", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_rewind },
   { "Cycle Input Profile", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_cycle_profile },
+  { "Cycle Palette", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_cycle_palette },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings2 } },
   { 0, S_SKIP | S_END, m_null }
@@ -5058,6 +5060,14 @@ dboolean M_Responder (event_t* ev) {
     {
       dsda_InputCycleProfile();
       doom_printf("Input Profile %d", dsda_input_profile);
+      S_StartSound(NULL, g_sfx_swtchn);
+      return true;
+    }
+
+    if (dsda_InputActivated(dsda_input_cycle_palette))
+    {
+      dsda_CyclePlayPal();
+      doom_printf("Palette %s", dsda_PlayPalData()->lump_name);
       S_StartSound(NULL, g_sfx_swtchn);
       return true;
     }

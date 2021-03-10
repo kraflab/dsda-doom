@@ -152,6 +152,7 @@ typedef enum {
   dsda_input_idmypos,
   dsda_input_idrate,
   dsda_input_iddt,
+  dsda_input_cycle_palette,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

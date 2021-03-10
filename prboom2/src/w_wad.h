@@ -39,6 +39,8 @@
 #pragma interface
 #endif
 
+#include <stddef.h>
+
 //
 // TYPES
 //

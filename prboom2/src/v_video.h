@@ -253,6 +253,7 @@ extern V_DrawBackground_f V_DrawBackground;
 void V_DestroyUnusedTrueColorPalettes(void);
 // CPhipps - function to set the palette to palette number pal.
 void V_SetPalette(int pal);
+void V_SetPlayPal(int playpal_index);
 
 // Alt-Enter: fullscreen <-> windowed
 void V_ToggleFullscreen(void);

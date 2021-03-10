@@ -73,6 +73,8 @@
 #include "v_video.h"
 #include <assert.h>
 
+#include "dsda/palette.h"
+
 // posts are runs of non masked source pixels
 typedef struct
 {
@@ -124,42 +126,16 @@ void R_InitPatches(void) {
     memset(texture_composites, 0, sizeof(rpatch_t)*numtextures);
   }
 
-  if (!playpal_duplicate)
-  {
-    int lump = W_GetNumForName("PLAYPAL");
-    const byte *playpal = W_CacheLumpNum(lump);
+  dsda_InitPlayPal();
+  R_UpdatePlayPal();
+}
 
-    // find two duplicate palette entries. use one for transparency.
-    // rewrite source pixels in patches to the other on composition.
+void R_UpdatePlayPal(void) {
+  dsda_playpal_t* playpal_data;
 
-    int i, j, found = 0;
-
-    for (i = 0; i < 256; i++)
-    {
-      for (j = i+1; j < 256; j++)
-      {
-        if (playpal[3*i+0] == playpal[3*j+0] &&
-            playpal[3*i+1] == playpal[3*j+1] &&
-            playpal[3*i+2] == playpal[3*j+2])
-        {
-          found = 1;
-          break;
-        }
-      }
-      if (found)
-        break;
-    }
-
-    if (found) { // found duplicate
-      playpal_transparent = i;
-      playpal_duplicate   = j;
-    } else { // no duplicate: use 255 for transparency, as done previously
-      playpal_transparent = 255;
-      playpal_duplicate   = -1;
-    }
-
-    W_UnlockLumpNum(lump);
-  }
+  playpal_data = dsda_PlayPalData();
+  playpal_transparent = playpal_data->transparent;
+  playpal_duplicate = playpal_data->duplicate;
 }
 
 //---------------------------------------------------------------------------
