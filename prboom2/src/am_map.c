@@ -976,8 +976,7 @@ dboolean AM_Responder
   {
     automapmode ^= am_overlay;
     AM_SetPosition();
-    AM_SetScale();
-    AM_initVariables();
+    AM_activateNewScale();
     plr->message = (automapmode & am_overlay) ? s_AMSTR_OVERLAYON : s_AMSTR_OVERLAYOFF;
 
     return true;
