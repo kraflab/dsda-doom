@@ -21,6 +21,8 @@
 #include "s_sound.h"
 #include "sounds.h"
 
+#include "dsda/palette.h"
+
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
 
@@ -235,38 +237,16 @@ void F_DemonScroll(void)
 
 void F_DrawUnderwater(void)
 {
-  static dboolean underwawa = false;
-  const char *lumpname;
-  byte *palette;
-
-  // The underwater screen has its own palette, which is rather annoying.
-  // The palette doesn't correspond to the normal palette. Because of
-  // this, we must regenerate the lookup tables used in the video scaling
-  // code.
-
   switch (finalestage)
   {
     case 1:
-      if (!underwawa)
-      {
-        underwawa = true;
-        // HERETIC_TODO: E2END palette
-        // V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT, 0);
-        // lumpname = DEH_String("E2PAL");
-        // palette = W_CacheLumpName(lumpname, PU_STATIC);
-        // I_SetPalette(palette);
-        // W_ReleaseLumpName(lumpname);
-        V_DrawRawScreen(W_CacheLumpName(DEH_String("E2END")));
-        W_UnlockLumpName(DEH_String("E2END"));
-      }
+      V_SetPlayPal(playpal_heretic_e2end);
+      V_DrawRawScreen(W_CacheLumpName(DEH_String("E2END")));
+      W_UnlockLumpName(DEH_String("E2END"));
+      V_SetPlayPal(playpal_default);
 
       break;
     case 2:
-      if (underwawa)
-      {
-        V_SetPalette(0);
-        underwawa = false;
-      }
       V_DrawRawScreen(W_CacheLumpName(DEH_String("TITLE")));
       W_UnlockLumpName(DEH_String("TITLE"));
   }

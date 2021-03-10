@@ -112,6 +112,7 @@ const rcolumn_t *R_GetPatchColumn(const rpatch_t *patch, int columnIndex);
 
 
 void R_InitPatches();
+void R_UpdatePlayPal();
 void R_FlushAllPatches();
 
 #endif

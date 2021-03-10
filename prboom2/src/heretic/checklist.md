@@ -29,7 +29,7 @@
 - [ ] Support ghosts
 - [ ] Support analysis
 - [ ] Support key frames
-- [ ] Support E2END palette
+- [x] Support E2END palette
 - [ ] Set gamemission to heretic (?)
 - [ ] Support dehacked
 - [ ] Support cheats

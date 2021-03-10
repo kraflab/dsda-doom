@@ -59,7 +59,6 @@ static int DisplayTicker = 0;
 static int HealthMarker;
 static int ChainWiggle;
 static player_t *CPlayer;
-int playpalette;
 
 int LumpLTFACE;
 int LumpRTFACE;
@@ -163,7 +162,6 @@ void SB_Init(void)
     {
         LumpSmNumbers[i] = startLump + i;
     }
-    playpalette = W_GetNumForName(DEH_String("PLAYPAL"));
     spinbooklump = W_GetNumForName(DEH_String("SPINBK0"));
     spinflylump = W_GetNumForName(DEH_String("SPFLY0"));
 }

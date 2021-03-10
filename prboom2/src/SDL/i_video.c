@@ -87,6 +87,8 @@
 #include "e6y.h"//e6y
 #include "i_main.h"
 
+#include "dsda/palette.h"
+
 //e6y: new mouse code
 static SDL_Cursor* cursors[2] = {NULL, NULL};
 
@@ -445,40 +447,47 @@ static void I_UploadNewPalette(int pal, int force)
   // This is used to replace the current 256 colour cmap with a new one
   // Used by 256 colour PseudoColor modes
 
-  // Array of SDL_Color structs used for setting the 256-colour palette
-  static SDL_Color* colours;
   static int cachedgamma;
   static size_t num_pals;
+  dsda_playpal_t* playpal_data;
 
   if (V_GetMode() == VID_MODEGL)
     return;
 
-  if ((colours == NULL) || (cachedgamma != usegamma) || force) {
-    int pplump = W_GetNumForName("PLAYPAL");
-    int gtlump = (W_CheckNumForName)("GAMMATBL",ns_prboom);
-    register const byte * palette = (const byte*)W_CacheLumpNum(pplump);
-    register const byte * const gtable = (const byte *)W_CacheLumpNum(gtlump) + 256*(cachedgamma = usegamma);
+  playpal_data = dsda_PlayPalData();
+
+  if ((playpal_data->colours == NULL) || (cachedgamma != usegamma) || force) {
+    int pplump;
+    int gtlump;
+    register const byte * palette;
+    register const byte * gtable;
     register int i;
 
-    num_pals = W_LumpLength(pplump) / (3*256);
+    pplump = W_GetNumForName(playpal_data->lump_name);
+    gtlump = (W_CheckNumForName)("GAMMATBL", ns_prboom);
+    palette = (const byte*) W_CacheLumpNum(pplump);
+    gtable = (const byte*) W_CacheLumpNum(gtlump) + 256 * (cachedgamma = usegamma);
+
+    num_pals = W_LumpLength(pplump) / (3 * 256);
     num_pals *= 256;
 
-    if (!colours) {
+    if (!playpal_data->colours) {
       // First call - allocate and prepare colour array
-      colours = (SDL_Color*)malloc(sizeof(*colours)*num_pals);
+      playpal_data->colours =
+        (SDL_Color*) malloc(sizeof(*playpal_data->colours) * num_pals);
     }
 
     // set the colormap entries
-    for (i=0 ; (size_t)i<num_pals ; i++) {
-      colours[i].r = gtable[palette[0]];
-      colours[i].g = gtable[palette[1]];
-      colours[i].b = gtable[palette[2]];
+    for (i = 0; (size_t) i < num_pals; i++) {
+      playpal_data->colours[i].r = gtable[palette[0]];
+      playpal_data->colours[i].g = gtable[palette[1]];
+      playpal_data->colours[i].b = gtable[palette[2]];
       palette += 3;
     }
 
     W_UnlockLumpNum(pplump);
     W_UnlockLumpNum(gtlump);
-    num_pals/=256;
+    num_pals /= 256;
   }
 
 #ifdef RANGECHECK
@@ -487,7 +496,7 @@ static void I_UploadNewPalette(int pal, int force)
       pal, num_pals);
 #endif
 
-  SDL_SetPaletteColors(screen->format->palette, colours+256*pal, 0, 256);
+  SDL_SetPaletteColors(screen->format->palette, playpal_data->colours + 256 * pal, 0, 256);
 }
 
 //////////////////////////////////////////////////////////////////////////////

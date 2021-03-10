@@ -44,6 +44,7 @@
 #include "doomstat.h"
 #include "r_main.h"
 #include "r_draw.h"
+#include "r_patch.h"
 #include "m_bbox.h"
 #include "w_wad.h"   /* needed for color translation lump lookup */
 #include "v_video.h"
@@ -54,6 +55,7 @@
 #include "e6y.h"
 
 #include "dsda/global.h"
+#include "dsda/palette.h"
 
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
@@ -708,9 +710,6 @@ static void FUNC_V_DrawNumPatchPrecise(float x, float y, int scrn, int lump,
 unsigned short *V_Palette15 = NULL;
 unsigned short *V_Palette16 = NULL;
 unsigned int *V_Palette32 = NULL;
-static unsigned short *Palettes15 = NULL;
-static unsigned short *Palettes16 = NULL;
-static unsigned int *Palettes32 = NULL;
 static int currentPaletteIndex = 0;
 
 //
@@ -721,36 +720,52 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
   byte r,g,b;
   int nr,ng,nb;
   float t;
-  int paletteNum = (V_GetMode() == VID_MODEGL ? 0 : currentPaletteIndex);
-  static int usegammaOnLastPaletteGeneration = -1;
-
-  int pplump = W_GetNumForName("PLAYPAL");
-  int gtlump = (W_CheckNumForName)("GAMMATBL",ns_prboom);
-  const byte *pal = W_CacheLumpNum(pplump);
-  // opengl doesn't use the gamma
-  const byte *const gtable =
-    (const byte *)W_CacheLumpNum(gtlump) +
-    (V_GetMode() == VID_MODEGL ? 0 : 256*(usegamma))
-  ;
-
-  int numPals = W_LumpLength(pplump) / (3*256);
+  int paletteNum;
+  int pplump;
+  int gtlump;
+  const byte *pal;
+  const byte *gtable;
+  int numPals;
   const float dontRoundAbove = 220;
   float roundUpR, roundUpG, roundUpB;
+  dsda_playpal_t* playpal_data;
+  static int usegammaOnLastPaletteGeneration = -1;
+
+  paletteNum = (V_GetMode() == VID_MODEGL ? 0 : currentPaletteIndex);
+
+  playpal_data = dsda_PlayPalData();
+  pplump = W_CheckNumForName(playpal_data->lump_name);
+
+  // V_UpdateTrueColorPalette can be called as part of the gamma setting before
+  // we've loaded any wads, which prevents us from reading the palette - POPE
+  if (pplump < 0)
+    return;
+
+  gtlump = (W_CheckNumForName)("GAMMATBL", ns_prboom);
+  pal = W_CacheLumpNum(pplump);
+
+  // opengl doesn't use the gamma
+  gtable =
+    (const byte *) W_CacheLumpNum(gtlump) +
+    (V_GetMode() == VID_MODEGL ? 0 : 256 * (usegamma))
+  ;
+
+  numPals = W_LumpLength(pplump) / (3 * 256);
 
   if (usegammaOnLastPaletteGeneration != usegamma) {
-    if (Palettes15) free(Palettes15);
-    if (Palettes16) free(Palettes16);
-    if (Palettes32) free(Palettes32);
-    Palettes15 = NULL;
-    Palettes16 = NULL;
-    Palettes32 = NULL;
+    if (playpal_data->Palettes15) free(playpal_data->Palettes15);
+    if (playpal_data->Palettes16) free(playpal_data->Palettes16);
+    if (playpal_data->Palettes32) free(playpal_data->Palettes32);
+    playpal_data->Palettes15 = NULL;
+    playpal_data->Palettes16 = NULL;
+    playpal_data->Palettes32 = NULL;
     usegammaOnLastPaletteGeneration = usegamma;
   }
 
   if (mode == VID_MODE32) {
-    if (!Palettes32) {
+    if (!playpal_data->Palettes32) {
       // set int palette
-      Palettes32 = malloc(numPals*256*sizeof(int)*VID_NUMCOLORWEIGHTS);
+      playpal_data->Palettes32 = malloc(numPals*256*sizeof(int)*VID_NUMCOLORWEIGHTS);
       for (p=0; p<numPals; p++) {
         for (i=0; i<256; i++) {
           r = gtable[pal[(256*p+i)*3+0]];
@@ -768,19 +783,19 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
             nr = (int)(r*t+roundUpR);
             ng = (int)(g*t+roundUpG);
             nb = (int)(b*t+roundUpB);
-            Palettes32[((p*256+i)*VID_NUMCOLORWEIGHTS)+w] = (
+            playpal_data->Palettes32[((p*256+i)*VID_NUMCOLORWEIGHTS)+w] = (
               (nr<<16) | (ng<<8) | nb
             );
           }
         }
       }
     }
-    V_Palette32 = Palettes32 + paletteNum*256*VID_NUMCOLORWEIGHTS;
+    V_Palette32 = playpal_data->Palettes32 + paletteNum*256*VID_NUMCOLORWEIGHTS;
   }
   else if (mode == VID_MODE16) {
-    if (!Palettes16) {
+    if (!playpal_data->Palettes16) {
       // set short palette
-      Palettes16 = malloc(numPals*256*sizeof(short)*VID_NUMCOLORWEIGHTS);
+      playpal_data->Palettes16 = malloc(numPals*256*sizeof(short)*VID_NUMCOLORWEIGHTS);
       for (p=0; p<numPals; p++) {
         for (i=0; i<256; i++) {
           r = gtable[pal[(256*p+i)*3+0]];
@@ -798,19 +813,19 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
             nr = (int)((r>>3)*t+roundUpR);
             ng = (int)((g>>2)*t+roundUpG);
             nb = (int)((b>>3)*t+roundUpB);
-            Palettes16[((p*256+i)*VID_NUMCOLORWEIGHTS)+w] = (
+            playpal_data->Palettes16[((p*256+i)*VID_NUMCOLORWEIGHTS)+w] = (
               (nr<<11) | (ng<<5) | nb
             );
           }
         }
       }
     }
-    V_Palette16 = Palettes16 + paletteNum*256*VID_NUMCOLORWEIGHTS;
+    V_Palette16 = playpal_data->Palettes16 + paletteNum*256*VID_NUMCOLORWEIGHTS;
   }
   else if (mode == VID_MODE15) {
-    if (!Palettes15) {
+    if (!playpal_data->Palettes15) {
       // set short palette
-      Palettes15 = malloc(numPals*256*sizeof(short)*VID_NUMCOLORWEIGHTS);
+      playpal_data->Palettes15 = malloc(numPals*256*sizeof(short)*VID_NUMCOLORWEIGHTS);
       for (p=0; p<numPals; p++) {
         for (i=0; i<256; i++) {
           r = gtable[pal[(256*p+i)*3+0]];
@@ -828,46 +843,25 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
             nr = (int)((r>>3)*t+roundUpR);
             ng = (int)((g>>3)*t+roundUpG);
             nb = (int)((b>>3)*t+roundUpB);
-            Palettes15[((p*256+i)*VID_NUMCOLORWEIGHTS)+w] = (
+            playpal_data->Palettes15[((p*256+i)*VID_NUMCOLORWEIGHTS)+w] = (
               (nr<<10) | (ng<<5) | nb
             );
           }
         }
       }
     }
-    V_Palette15 = Palettes15 + paletteNum*256*VID_NUMCOLORWEIGHTS;
+    V_Palette15 = playpal_data->Palettes15 + paletteNum*256*VID_NUMCOLORWEIGHTS;
   }
 
   W_UnlockLumpNum(pplump);
   W_UnlockLumpNum(gtlump);
 }
 
-
-//---------------------------------------------------------------------------
-// V_DestroyTrueColorPalette
-//---------------------------------------------------------------------------
-static void V_DestroyTrueColorPalette(video_mode_t mode) {
-  if (mode == VID_MODE15) {
-    if (Palettes15) free(Palettes15);
-    Palettes15 = NULL;
-    V_Palette15 = NULL;
-  }
-  if (mode == VID_MODE16) {
-    if (Palettes16) free(Palettes16);
-    Palettes16 = NULL;
-    V_Palette16 = NULL;
-  }
-  if (mode == VID_MODE32) {
-    if (Palettes32) free(Palettes32);
-    Palettes32 = NULL;
-    V_Palette32 = NULL;
-  }
-}
-
 void V_DestroyUnusedTrueColorPalettes(void) {
-  if (V_GetMode() != VID_MODE15) V_DestroyTrueColorPalette(VID_MODE15);
-  if (V_GetMode() != VID_MODE16) V_DestroyTrueColorPalette(VID_MODE16);
-  if (V_GetMode() != VID_MODE32) V_DestroyTrueColorPalette(VID_MODE32);
+  dsda_FreeTrueColorPlayPal();
+  if (V_GetMode() != VID_MODE15) V_Palette15 = NULL;
+  if (V_GetMode() != VID_MODE16) V_Palette16 = NULL;
+  if (V_GetMode() != VID_MODE32) V_Palette32 = NULL;
 }
 
 //
@@ -887,12 +881,22 @@ void V_SetPalette(int pal)
   } else {
     I_SetPalette(pal);
     if (V_GetMode() == VID_MODE15 || V_GetMode() == VID_MODE16 || V_GetMode() == VID_MODE32) {
-      // V_SetPalette can be called as part of the gamma setting before
-      // we've loaded any wads, which prevents us from reading the palette - POPE
-      if (W_CheckNumForName("PLAYPAL") >= 0) {
-        V_UpdateTrueColorPalette(V_GetMode());
-      }
+      V_UpdateTrueColorPalette(V_GetMode());
     }
+  }
+}
+
+void V_SetPlayPal(int playpal_index)
+{
+  dsda_SetPlayPal(playpal_index);
+  R_UpdatePlayPal();
+  V_SetPalette(currentPaletteIndex);
+
+  if (V_GetMode() == VID_MODEGL)
+  {
+#ifdef GL_DOOM
+    gld_FlushTextures();
+#endif
   }
 }
 
@@ -1468,29 +1472,28 @@ void WRAP_V_DrawLineWu(fline_t *fl, int color)
 }
 
 
-static unsigned char *playpal_data = NULL;
 const unsigned char* V_GetPlaypal(void)
 {
-  if (!playpal_data)
+  dsda_playpal_t* playpal_data;
+
+  playpal_data = dsda_PlayPalData();
+
+  if (!playpal_data->lump)
   {
-    int lump = W_GetNumForName("PLAYPAL");
+    int lump = W_GetNumForName(playpal_data->lump_name);
     int len = W_LumpLength(lump);
     const byte *data = W_CacheLumpNum(lump);
-    playpal_data = malloc(len);
-    memcpy(playpal_data, data, len);
+    playpal_data->lump = malloc(len);
+    memcpy(playpal_data->lump, data, len);
     W_UnlockLumpNum(lump);
   }
 
-  return playpal_data;
+  return playpal_data->lump;
 }
 
 void V_FreePlaypal(void)
 {
-  if (playpal_data)
-  {
-    free(playpal_data);
-    playpal_data = NULL;
-  }
+  dsda_FreePlayPal();
 }
 
 void V_FillBorder(int lump, byte color)
