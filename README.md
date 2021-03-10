@@ -1,4 +1,4 @@
-# dsda-doom v0.15.2
+# dsda-doom v0.16.0
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning.
 
 ### Heretic Support (beta)
@@ -40,6 +40,8 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - You can configure multiple input profiles.
 - You can configure multiple keys to one action.
 - You can bind (many) cheats.
+- You can cycle through alternate palettes (for testing purposes).
+  The cycle starts with `PLAYPAL`, followed by `PLAYPAL1` to `PLAYPAL9`.
 
 ### Changes
 - Smart Totals renamed to Max Totals and fixed to show kill constraint for max.
