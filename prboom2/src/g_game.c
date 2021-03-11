@@ -1092,14 +1092,14 @@ dboolean G_Responder (event_t* ev)
 
     case ev_mouse:
       //e6y
-      mousex += (AccelerateMouse(ev->data2)*(mouseSensitivity_horiz))/10;  /* killough */
+      mousex += (AccelerateMouse(ev->data2) * (mouseSensitivity_horiz));  /* killough */
       if(GetMouseLook())
         if (movement_mouseinvert)
-          mlooky += (AccelerateMouse(ev->data3)*(mouseSensitivity_mlook))/10;
+          mlooky += (AccelerateMouse(ev->data3) * (mouseSensitivity_mlook));
         else
-          mlooky -= (AccelerateMouse(ev->data3)*(mouseSensitivity_mlook))/10;
+          mlooky -= (AccelerateMouse(ev->data3) * (mouseSensitivity_mlook));
       else
-        mousey += (AccelerateMouse(ev->data3)*(mouseSensitivity_vert))/40;
+        mousey += (AccelerateMouse(ev->data3) * (mouseSensitivity_vert)) / 4;
 
       return true;    // eat events
 
