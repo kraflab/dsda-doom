@@ -1098,7 +1098,19 @@ dboolean G_Responder (event_t* ev)
         else
           mlooky -= (AccelerateMouse(ev->data3) * (mouseSensitivity_mlook));
       else
-        mousey += (AccelerateMouse(ev->data3) * (mouseSensitivity_vert)) / 8;
+      {
+        static double vertmouse_carry = 0;
+        int delta;
+        double true_delta;
+
+        true_delta = vertmouse_carry +
+                     (double)(AccelerateMouse(ev->data3) * (mouseSensitivity_vert)) / 8;
+
+        delta = (int) true_delta;
+        vertmouse_carry = true_delta - delta;
+
+        mousey += delta;
+      }
 
       return true;    // eat events
 
