@@ -287,6 +287,28 @@ static dboolean InventoryMoveLeft(void);
 static dboolean InventoryMoveRight(void);
 // end heretic
 
+typedef enum
+{
+  carry_vertmouse,
+  carry_mousex,
+  carry_mousey,
+  NUMDOUBLECARRY
+} double_carry_t;
+
+static double double_carry[NUMDOUBLECARRY];
+
+static int G_CarryDouble(double_carry_t c, double value)
+{
+  int truncated_result;
+  double true_result;
+
+  true_result = double_carry[c] + value;
+  truncated_result = (int) true_result;
+  double_carry[c] = true_result - truncated_result;
+
+  return truncated_result;
+}
+
 static void G_DoSaveGame (dboolean menu);
 
 //e6y: save/restore all data which could be changed by G_ReadDemoHeader
@@ -1102,28 +1124,27 @@ dboolean G_Responder (event_t* ev)
       return true;    // eat key down events
 
     case ev_mouse:
-      mousex += (AccelerateMouse(ev->data2) * (mouseSensitivity_horiz));  /* killough */
-      if(GetMouseLook())
-        if (movement_mouseinvert)
-          mlooky += (AccelerateMouse(ev->data3) * (mouseSensitivity_mlook));
-        else
-          mlooky -= (AccelerateMouse(ev->data3) * (mouseSensitivity_mlook));
-      else
       {
-        static double vertmouse_carry = 0;
-        int delta;
-        double true_delta;
+        double value;
 
-        true_delta = vertmouse_carry +
-                     (double)(AccelerateMouse(ev->data3) * (mouseSensitivity_vert)) / 8;
+        value = (double) mouseSensitivity_horiz * AccelerateMouse(ev->data2);
+        mousex += G_CarryDouble(carry_mousex, value);
+        if(GetMouseLook())
+        {
+          value = (double) mouseSensitivity_mlook * AccelerateMouse(ev->data3);
+          if (movement_mouseinvert)
+            mlooky += G_CarryDouble(carry_mousey, value);
+          else
+            mlooky -= G_CarryDouble(carry_mousey, value);
+        }
+        else
+        {
+          value = (double) mouseSensitivity_vert * AccelerateMouse(ev->data3) / 8;
+          mousey += G_CarryDouble(carry_vertmouse, value);
+        }
 
-        delta = (int) true_delta;
-        vertmouse_carry = true_delta - delta;
-
-        mousey += delta;
+        return true;    // eat events
       }
-
-      return true;    // eat events
 
     case ev_joystick:
       joyxmove = ev->data2;
