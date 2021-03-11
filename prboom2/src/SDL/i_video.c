@@ -1411,6 +1411,7 @@ void I_UpdateVideoMode(void)
 static void ActivateMouse(void)
 {
   SDL_SetRelativeMouseMode(SDL_TRUE);
+  SDL_GetRelativeMouseState(NULL, NULL);
 }
 
 static void DeactivateMouse(void)
