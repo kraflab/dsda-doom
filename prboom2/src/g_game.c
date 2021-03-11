@@ -780,7 +780,18 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   }
   if (strafe)
   {
-    side += mousex / movement_mousestrafedivisor; /* mead  Don't want to strafe as fast as turns.*/
+    static double mousestrafe_carry = 0;
+    int delta;
+    double true_delta;
+
+    true_delta = mousestrafe_carry +
+                 (double) mousex / movement_mousestrafedivisor;
+
+    delta = (int) true_delta;
+    delta = (delta / 2) * 2;
+    mousestrafe_carry = true_delta - delta;
+
+    side += delta;
     side = (side / 2) * 2; // only even values are possible
   }
   else
