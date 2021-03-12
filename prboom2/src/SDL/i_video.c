@@ -236,8 +236,6 @@ static void I_GetEvent(void)
   SDL_Event SDLEvent;
   SDL_Event *Event = &SDLEvent;
 
-  static int mwheeluptic = 0, mwheeldowntic = 0;
-
 while (SDL_PollEvent(Event))
 {
   switch (Event->type) {
@@ -303,16 +301,22 @@ while (SDL_PollEvent(Event))
   {
     if (Event->wheel.y > 0)
     {
-      event.type = ev_keydown;
       event.data1 = KEYD_MWHEELUP;
-      mwheeluptic = gametic;
+
+      event.type = ev_keydown;
+      D_PostEvent(&event);
+
+      event.type = ev_keyup;
       D_PostEvent(&event);
     }
     else if (Event->wheel.y < 0)
     {
-      event.type = ev_keydown;
       event.data1 = KEYD_MWHEELDOWN;
-      mwheeldowntic = gametic;
+
+      event.type = ev_keydown;
+      D_PostEvent(&event);
+
+      event.type = ev_keyup;
       D_PostEvent(&event);
     }
   }
@@ -342,22 +346,6 @@ while (SDL_PollEvent(Event))
     break;
   }
 }
-
-  if(mwheeluptic && mwheeluptic + 1 < gametic)
-  {
-    event.type = ev_keyup;
-    event.data1 = KEYD_MWHEELUP;
-    D_PostEvent(&event);
-    mwheeluptic = 0;
-  }
-
-  if(mwheeldowntic && mwheeldowntic + 1 < gametic)
-  {
-    event.type = ev_keyup;
-    event.data1 = KEYD_MWHEELDOWN;
-    D_PostEvent(&event);
-    mwheeldowntic = 0;
-  }
 }
 
 //
