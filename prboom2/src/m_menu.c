@@ -1304,28 +1304,22 @@ menu_t MouseDef =
 
 void M_DrawMouse(void)
 {
-  int mhmx,mvmx; /* jff 4/3/98 clamp drawn position    99max mead */
-
   if (heretic) return MN_DrawMouse();
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 15, 0, "M_MSENS", CR_DEFAULT, VPT_STRETCH);//e6y
 
-  //jff 4/3/98 clamp horizontal sensitivity display
-  mhmx = mouseSensitivity_horiz>99? 99 : mouseSensitivity_horiz; /*mead*/
-  M_DrawThermo(MouseDef.x,MouseDef.y+LINEHEIGHT*(mouse_horiz+1),100,mhmx);
-  //jff 4/3/98 clamp vertical sensitivity display
-  mvmx = mouseSensitivity_vert>99? 99 : mouseSensitivity_vert; /*mead*/
-  M_DrawThermo(MouseDef.x,MouseDef.y+LINEHEIGHT*(mouse_vert+1),100,mvmx);
+  M_DrawThermo(MouseDef.x, MouseDef.y + LINEHEIGHT * (mouse_horiz + 1),
+               200, mouseSensitivity_horiz);
 
-  //e6y
-  {
-    int mpmx;
-    mpmx = mouseSensitivity_mlook>99? 99 : mouseSensitivity_mlook;
-    M_DrawThermo(MouseDef.x,MouseDef.y+LINEHEIGHT*(mouse_mlook+1),100,mpmx);
-    mpmx = mouse_acceleration>99? 99 : mouse_acceleration;
-    M_DrawThermo(MouseDef.x,MouseDef.y+LINEHEIGHT*(mouse_accel+1),100,mpmx);
-  }
+  M_DrawThermo(MouseDef.x, MouseDef.y + LINEHEIGHT * (mouse_vert + 1),
+               200, mouseSensitivity_vert);
+
+  M_DrawThermo(MouseDef.x, MouseDef.y + LINEHEIGHT * (mouse_mlook + 1),
+               200, mouseSensitivity_mlook);
+
+  M_DrawThermo(MouseDef.x, MouseDef.y + LINEHEIGHT * (mouse_accel + 1),
+               200, mouse_acceleration);
 }
 
 void M_ChangeSensitivity(int choice)
@@ -1364,8 +1358,7 @@ void M_Mouse(int choice, int *sens)
         --*sens;
       break;
     case 1:
-      if (*sens < 99)
-        ++*sens;              /*mead*/
+      ++*sens;
       break;
     }
 }
@@ -6181,6 +6174,7 @@ void M_DrawThermo(int x,int y,int thermWidth,int thermDot )
 {
   int          xx;
   int           i;
+  char num[4];
   int horizScaler; //Used to allow more thermo range for mouse sensitivity.
 
   if (heretic) return MN_DrawSlider(x, y, thermWidth, thermDot);
@@ -6207,6 +6201,18 @@ void M_DrawThermo(int x,int y,int thermWidth,int thermDot )
   xx += (8 - horizScaler);  /* make the right end look even */
 
   V_DrawNamePatch(xx, y, 0, "M_THERMR", CR_DEFAULT, VPT_STRETCH);
+
+  // [crispy] print the value
+  snprintf(num, 4, "%3d", thermDot);
+  strcpy(menu_buffer, num);
+  M_DrawMenuString(xx + 12, y + 3, g_menu_cr_select);
+
+  // [crispy]
+  if (thermDot >= thermWidth)
+  {
+    thermDot = thermWidth - 1;
+  }
+
   V_DrawNamePatch((x+8)+thermDot*horizScaler,y,0,"M_THERMO",CR_DEFAULT,VPT_STRETCH);
 }
 
