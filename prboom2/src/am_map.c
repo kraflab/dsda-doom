@@ -1136,6 +1136,9 @@ void AM_Ticker (void)
   prev_scale_mtof = scale_mtof;
   prev_m_x = m_x;
   prev_m_y = m_y;
+
+  if (stop_zooming && leveltime - zoom_leveltime != 1)
+    AM_StopZooming();
 }
 
 //
@@ -2473,9 +2476,6 @@ void AM_Drawer (void)
   // Change the zoom if necessary
   if (ftom_zoommul != FRACUNIT)
     AM_changeWindowScale();
-
-  if (stop_zooming)
-    AM_StopZooming();
 
   // Change x,y location
   if (m_paninc.x || m_paninc.y)
