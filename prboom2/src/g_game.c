@@ -1123,7 +1123,7 @@ dboolean G_Responder (event_t* ev)
     case ev_keydown:
       return true;    // eat key down events
 
-    case ev_mouse:
+    case ev_mousemotion:
       {
         double value;
 
