@@ -236,8 +236,6 @@ static void I_GetEvent(void)
   SDL_Event SDLEvent;
   SDL_Event *Event = &SDLEvent;
 
-  static int mwheeluptic = 0, mwheeldowntic = 0;
-
 while (SDL_PollEvent(Event))
 {
   switch (Event->type) {
@@ -303,31 +301,26 @@ while (SDL_PollEvent(Event))
   {
     if (Event->wheel.y > 0)
     {
-      event.type = ev_keydown;
       event.data1 = KEYD_MWHEELUP;
-      mwheeluptic = gametic;
+
+      event.type = ev_keydown;
+      D_PostEvent(&event);
+
+      event.type = ev_keyup;
       D_PostEvent(&event);
     }
     else if (Event->wheel.y < 0)
     {
-      event.type = ev_keydown;
       event.data1 = KEYD_MWHEELDOWN;
-      mwheeldowntic = gametic;
+
+      event.type = ev_keydown;
+      D_PostEvent(&event);
+
+      event.type = ev_keyup;
       D_PostEvent(&event);
     }
   }
   break;
-  case SDL_MOUSEMOTION:
-    if (mouse_enabled && window_focused)
-    {
-      int xrel, yrel;
-      event.type = ev_mouse;
-      event.data1 = I_SDLtoDoomMouseState(SDL_GetRelativeMouseState(&xrel, &yrel));
-      event.data2 = xrel << 4;
-      event.data3 = -yrel << 4;
-      D_PostEvent(&event);
-    }
-    break;
 
   case SDL_WINDOWEVENT:
     if (Event->window.windowID == windowid)
@@ -353,22 +346,6 @@ while (SDL_PollEvent(Event))
     break;
   }
 }
-
-  if(mwheeluptic && mwheeluptic + 1 < gametic)
-  {
-    event.type = ev_keyup;
-    event.data1 = KEYD_MWHEELUP;
-    D_PostEvent(&event);
-    mwheeluptic = 0;
-  }
-
-  if(mwheeldowntic && mwheeldowntic + 1 < gametic)
-  {
-    event.type = ev_keyup;
-    event.data1 = KEYD_MWHEELDOWN;
-    D_PostEvent(&event);
-    mwheeldowntic = 0;
-  }
 }
 
 //
@@ -1411,6 +1388,7 @@ void I_UpdateVideoMode(void)
 static void ActivateMouse(void)
 {
   SDL_SetRelativeMouseMode(SDL_TRUE);
+  SDL_GetRelativeMouseState(NULL, NULL);
 }
 
 static void DeactivateMouse(void)
@@ -1425,6 +1403,24 @@ static void DeactivateMouse(void)
 // motion event.
 static void I_ReadMouse(void)
 {
+  if (mouse_enabled && window_focused)
+  {
+    int x, y;
+
+    SDL_GetRelativeMouseState(&x, &y);
+
+    if (x != 0 || y != 0)
+    {
+      event_t event;
+      event.type = ev_mousemotion;
+      event.data1 = 0;
+      event.data2 = x;
+      event.data3 = -y;
+
+      D_PostEvent(&event);
+    }
+  }
+
   if (!usemouse)
     return;
 

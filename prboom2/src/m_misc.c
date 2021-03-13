@@ -1023,7 +1023,7 @@ default_t defaults[] =
    def_int,ss_none},
   {"mouse_doubleclick_as_use", {&mouse_doubleclick_as_use},  {1},0,1,
    def_bool,ss_stat},
-  {"mouse_carrytics", {&mouse_carrytics}, {0},0,1,
+  {"mouse_carrytics", {&mouse_carrytics}, {1},0,1,
    def_bool,ss_stat},
 
   {"Prboom-plus demos settings",{NULL},{0},UL,UL,def_none,ss_none},
@@ -1074,6 +1074,7 @@ default_t defaults[] =
   { "dsda_exhud", { &dsda_exhud }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_wipe_at_full_speed", { &dsda_wipe_at_full_speed }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_track_attempts", { &dsda_track_attempts }, { 1 }, 0, 1, def_bool, ss_stat },
+  { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

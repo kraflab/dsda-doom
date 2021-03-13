@@ -404,6 +404,16 @@ static void AM_SetFPointFloatValue(fpoint_t *p)
 #endif
 }
 
+static dboolean stop_zooming;
+static int zoom_leveltime;
+
+static void AM_StopZooming(void)
+{
+  mtof_zoommul = FRACUNIT;
+  ftom_zoommul = FRACUNIT;
+  stop_zooming = false;
+}
+
 //
 // AM_activateNewScale()
 //
@@ -906,6 +916,7 @@ dboolean AM_Responder
     mtof_zoommul = M_ZOOMOUT;
     ftom_zoommul = M_ZOOMIN;
     curr_mtof_zoommul = mtof_zoommul;
+    zoom_leveltime = leveltime;
 
     return true;
   }
@@ -917,6 +928,7 @@ dboolean AM_Responder
     mtof_zoommul = M_ZOOMIN;
     ftom_zoommul = M_ZOOMOUT;
     curr_mtof_zoommul = mtof_zoommul;
+    zoom_leveltime = leveltime;
 
     return true;
   }
@@ -1000,8 +1012,10 @@ dboolean AM_Responder
     )
   )
   {
-    mtof_zoommul = FRACUNIT;
-    ftom_zoommul = FRACUNIT;
+    stop_zooming = true;
+
+    if (leveltime != zoom_leveltime)
+      AM_StopZooming();
   }
 
   return false;
@@ -2459,6 +2473,9 @@ void AM_Drawer (void)
   // Change the zoom if necessary
   if (ftom_zoommul != FRACUNIT)
     AM_changeWindowScale();
+
+  if (stop_zooming)
+    AM_StopZooming();
 
   // Change x,y location
   if (m_paninc.x || m_paninc.y)

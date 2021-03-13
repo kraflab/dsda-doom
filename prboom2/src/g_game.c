@@ -287,6 +287,28 @@ static dboolean InventoryMoveLeft(void);
 static dboolean InventoryMoveRight(void);
 // end heretic
 
+typedef enum
+{
+  carry_vertmouse,
+  carry_mousex,
+  carry_mousey,
+  NUMDOUBLECARRY
+} double_carry_t;
+
+static double double_carry[NUMDOUBLECARRY];
+
+static int G_CarryDouble(double_carry_t c, double value)
+{
+  int truncated_result;
+  double true_result;
+
+  true_result = double_carry[c] + value;
+  truncated_result = (int) true_result;
+  double_carry[c] = true_result - truncated_result;
+
+  return truncated_result;
+}
+
 static void G_DoSaveGame (dboolean menu);
 
 //e6y: save/restore all data which could be changed by G_ReadDemoHeader
@@ -625,7 +647,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (dsda_InputActive(dsda_input_fire))
     cmd->buttons |= BT_ATTACK;
 
-  if (dsda_InputActive(dsda_input_use))
+  if (dsda_InputActive(dsda_input_use) || dsda_InputTickActivated(dsda_input_use))
     {
       cmd->buttons |= BT_USE;
       // clear double clicks if hit use button
@@ -780,7 +802,18 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   }
   if (strafe)
   {
-    side += mousex / movement_mousestrafedivisor; /* mead  Don't want to strafe as fast as turns.*/
+    static double mousestrafe_carry = 0;
+    int delta;
+    double true_delta;
+
+    true_delta = mousestrafe_carry +
+                 (double) mousex / movement_mousestrafedivisor;
+
+    delta = (int) true_delta;
+    delta = (delta / 2) * 2;
+    mousestrafe_carry = true_delta - delta;
+
+    side += delta;
     side = (side / 2) * 2; // only even values are possible
   }
   else
@@ -1090,18 +1123,28 @@ dboolean G_Responder (event_t* ev)
     case ev_keydown:
       return true;    // eat key down events
 
-    case ev_mouse:
-      //e6y
-      mousex += (AccelerateMouse(ev->data2)*(mouseSensitivity_horiz))/10;  /* killough */
-      if(GetMouseLook())
-        if (movement_mouseinvert)
-          mlooky += (AccelerateMouse(ev->data3)*(mouseSensitivity_mlook))/10;
-        else
-          mlooky -= (AccelerateMouse(ev->data3)*(mouseSensitivity_mlook))/10;
-      else
-        mousey += (AccelerateMouse(ev->data3)*(mouseSensitivity_vert))/40;
+    case ev_mousemotion:
+      {
+        double value;
 
-      return true;    // eat events
+        value = dsda_FineSensitivity(mouseSensitivity_horiz) * AccelerateMouse(ev->data2);
+        mousex += G_CarryDouble(carry_mousex, value);
+        if(GetMouseLook())
+        {
+          value = (double) mouseSensitivity_mlook * AccelerateMouse(ev->data3);
+          if (movement_mouseinvert)
+            mlooky += G_CarryDouble(carry_mousey, value);
+          else
+            mlooky -= G_CarryDouble(carry_mousey, value);
+        }
+        else
+        {
+          value = (double) mouseSensitivity_vert * AccelerateMouse(ev->data3) / 8;
+          mousey += G_CarryDouble(carry_vertmouse, value);
+        }
+
+        return true;    // eat events
+      }
 
     case ev_joystick:
       joyxmove = ev->data2;

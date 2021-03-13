@@ -27,11 +27,13 @@ extern int dsda_cycle_ghost_colors;
 extern int dsda_exhud;
 extern int dsda_track_attempts;
 extern int dsda_wipe_at_full_speed;
+extern int dsda_fine_sensitivity;
 
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);
 void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);
+double dsda_FineSensitivity(int base);
 dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);

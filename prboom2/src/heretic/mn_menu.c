@@ -297,26 +297,18 @@ extern int mouse_acceleration;
 
 void MN_DrawMouse(void)
 {
-  int mhmx,mvmx; /* jff 4/3/98 clamp drawn position    99max mead */
+  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_HORIZ_INDEX,
+                200, mouseSensitivity_horiz);
 
-  //jff 4/3/98 clamp horizontal sensitivity display
-  mhmx = mouseSensitivity_horiz > 99 ? 99 : mouseSensitivity_horiz; /*mead*/
-  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_HORIZ_INDEX, 100, mhmx);
-
-  //jff 4/3/98 clamp vertical sensitivity display
-  mvmx = mouseSensitivity_vert > 99 ? 99 : mouseSensitivity_vert; /*mead*/
-  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_VERT_INDEX, 100, mvmx);
+  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_VERT_INDEX,
+                200, mouseSensitivity_vert);
 
   //e6y
-  {
-    int mpmx;
+  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_MLOOK_INDEX,
+                200, mouseSensitivity_mlook);
 
-    mpmx = mouseSensitivity_mlook > 99 ? 99 : mouseSensitivity_mlook;
-    MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_MLOOK_INDEX, 100, mpmx);
-
-    mpmx = mouse_acceleration > 99 ? 99 : mouse_acceleration;
-    MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_ACCEL_INDEX, 100, mpmx);
-  }
+  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_ACCEL_INDEX,
+                200, mouse_acceleration);
 }
 
 void MN_DrawSound(void)
