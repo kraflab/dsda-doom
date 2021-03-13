@@ -1,4 +1,4 @@
-# dsda-doom v0.16.0
+# dsda-doom v0.17.0
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning.
 
 ### Heretic Support (beta)
@@ -44,6 +44,9 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Smart Totals renamed to Max Totals and fixed to show kill constraint for max.
 - If there is a demo name clash and overwriting is off: use incrementing name `demo-12345.lmp`.
 - Removed the "continue from save slots set in demos" feature. The implementation was confusing and bugged.
+- Mouse sensitivity: multiply your pr+ value by 1.6 in order to get the same result. This change was done to create a 1:1 relationship between mouse input and the turning value created in the game. See "Fine Sensitivity" in the settings below to handle fractions.
+- Vertical mouse movement and mouse strafing carry fractional values, so you eventually move even at a very slow input speed.
+- Mouse scales show integer values and have no limits.
 
 ### New Settings
 - Strict Mode: disable TAS options while recording, unless using `-tas`.
@@ -53,6 +56,7 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Extended Hud: add extra info on top of the default hud.
 - Wipe At Full Speed: always display the wipe animation at normal speed.
 - Track Demo Attempts: show the attempt count (session / total) when starting a demo.
+- Fine Sensitivity: hundredths of a point adjustment to horizontal mouse sensitivity.
 
 ### Key Frames
 Key frames capture the game state at a given moment, similar to save files. By automatically recording key frames at fixed intervals, it is possible to "rewind" the game. This can be used during normal play, while recording (tas) demos, and during demo playback. You can also set a manual "quick key frame" at a specific point and rewind to that moment at any later time. When storing a key frame while recording, a backup file is created (`backup-ttt.kf`). You can continue a demo _from a key frame_ like so: `-record x.lmp -from_key_frame backup-1234.kf -complevel x`. While recording from a key frame, the demo restart key will return you to the original key frame, even if you have made other key frames later on.
