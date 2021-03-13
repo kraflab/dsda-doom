@@ -1,16 +1,18 @@
-Checked up to: 39b11953c43f9048a44fa0ca0dd7060b581206b0 (Feb 2021)
+Checked up to: 37f05fa7c48e1365df71825a5bf6a9a979baaddb (Mar 8 2021)
 
 Commits from upstream to go through:
 
+exclusive fullscreen
+ce65528a95393d0391058c1ba98ca33c12d6e86c
+
+delete savegames
+fbcd834d2eb3b860176d5af1327503dd5cdb6e25
+
+sound cutoffs
+6c1c64ae583a94b0ad094acc73e823e400b190e7
+
 mbf sky transfers:
 2119b6f006a5dbb561ee950c5bf3177e8023f401
-
-complevel cheat (improvement PR ongoing)
-a2fe4057c1db79eea410058baf345090ba600d28
-...
-
-shorttics / longtics cheat
-2e3e94ddf5de7e9c20ee0aa7db1948e98874ab5e
 
 melee crosshair:
 b2503fa073298ead6b10a74ca5d0f0ca2d9b27d2
