@@ -1131,7 +1131,7 @@ dboolean G_Responder (event_t* ev)
         mousex += G_CarryDouble(carry_mousex, value);
         if(GetMouseLook())
         {
-          value = dsda_FineSensitivity(mouseSensitivity_mlook) * AccelerateMouse(ev->data3);
+          value = (double) mouseSensitivity_mlook * AccelerateMouse(ev->data3);
           if (movement_mouseinvert)
             mlooky += G_CarryDouble(carry_mousey, value);
           else
