@@ -1293,11 +1293,6 @@ menu_t MouseDef =
   0
 };
 
-
-// I'm using a scale of 100 since I don't know what's normal -- killough.
-
-#define MOUSE_SENS_MAX 100
-
 //
 // Change Mouse Sensitivities -- killough
 //
