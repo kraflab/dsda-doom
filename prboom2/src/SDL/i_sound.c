@@ -777,7 +777,6 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 int use_experimental_music = -1;
 
 static void Exp_UpdateMusic (void *buff, unsigned nsamp);
-static int Exp_RegisterMusic (const char *filename, musicinfo_t *song);
 static int Exp_RegisterSong (const void *data, size_t len);
 static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid);
 static void Exp_SetMusicVolume (int volume);
@@ -1137,38 +1136,6 @@ int I_RegisterSong(const void *data, size_t len)
   return (0);
 }
 
-// cournia - try to load a music file into SDL_Mixer
-//           returns true if could not load the file
-int I_RegisterMusic( const char* filename, musicinfo_t *song )
-{
-  if (use_experimental_music)
-  {
-    return Exp_RegisterMusic (filename, song);
-
-  }
-
-
-#ifdef HAVE_MIXER
-  if (!filename) return 1;
-  if (!song) return 1;
-  music[0] = Mix_LoadMUS(filename);
-  if (music[0] == NULL)
-    {
-      lprintf(LO_WARN,"Couldn't load music from %s: %s\nAttempting to load default MIDI music.\n", filename, Mix_GetError());
-      return 1;
-    }
-  else
-    {
-      song->data = 0;
-      song->handle = 0;
-      song->lumpnum = 0;
-      return 0;
-    }
-#else
-  return 1;
-#endif
-}
-
 void I_SetMusicVolume(int volume)
 {
   if (use_experimental_music)
@@ -1524,34 +1491,6 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
 static int Exp_RegisterSong (const void *data, size_t len)
 {
   Exp_RegisterSongEx (data, len, 1);
-  return 0;
-}
-
-// try register external music file (not in WAD)
-
-static int Exp_RegisterMusic (const char *filename, musicinfo_t *song)
-{
-  int len;
-
-  len = M_ReadFile (filename, (byte **) &song_data);
-
-  if (len == -1)
-  {
-    lprintf (LO_WARN, "Couldn't read %s\nAttempting to load default MIDI music.\n", filename);
-    return 1;
-  }
-
-  if (!Exp_RegisterSongEx (song_data, len, 1))
-  {
-    free (song_data);
-    song_data = NULL;
-    lprintf(LO_WARN, "Couldn't load music from %s\nAttempting to load default MIDI music.\n", filename);
-    return 1; // failure
-  }
-
-  song->data = 0;
-  song->handle = 0;
-  song->lumpnum = 0;
   return 0;
 }
 

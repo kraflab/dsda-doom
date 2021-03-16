@@ -228,12 +228,6 @@ int I_RegisterSong(const void *data, size_t len)
   return 1;
 }
 
-int I_RegisterMusic( const char* filename, musicinfo_t *song )
-{
-  // TODO
-  return 1;
-}
-
 void I_SetMusicVolume(int value)
 {
   movieVolume = (float)value / 15.0;
