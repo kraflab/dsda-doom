@@ -639,6 +639,7 @@ static void R_Subsector(int num)
                   frontsector->sky & PL_SKYFLAT ? frontsector->sky :
                   frontsector->floorpic,
                   floorlightlevel,                // killough 3/16/98
+                  frontsector->special,
                   frontsector->floor_xoffs,       // killough 3/7/98
                   frontsector->floor_yoffs
                   ) : NULL;
@@ -652,6 +653,7 @@ static void R_Subsector(int num)
                   frontsector->sky & PL_SKYFLAT ? frontsector->sky :
                   frontsector->ceilingpic,
                   ceilinglightlevel,              // killough 4/11/98
+                  frontsector->special,
                   frontsector->ceiling_xoffs,     // killough 3/7/98
                   frontsector->ceiling_yoffs
                   ) : NULL;
@@ -679,6 +681,7 @@ static void R_Subsector(int num)
             dummyfloorplane.height = tmpsec->floorheight;
             dummyfloorplane.lightlevel = tmpsec->lightlevel;
             dummyfloorplane.picnum = tmpsec->floorpic;
+            dummyfloorplane.special = tmpsec->special;
             floorplane = &dummyfloorplane;
           }
         }
@@ -693,6 +696,7 @@ static void R_Subsector(int num)
             dummyceilingplane.height = tmpsec->ceilingheight;
             dummyceilingplane.lightlevel = tmpsec->lightlevel;
             dummyceilingplane.picnum = tmpsec->ceilingpic;
+            dummyceilingplane.special = tmpsec->special;
             ceilingplane = &dummyceilingplane;
           }
         }

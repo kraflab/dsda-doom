@@ -285,6 +285,7 @@ visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
       new_pl->height = pl->height;
       new_pl->picnum = pl->picnum;
       new_pl->lightlevel = pl->lightlevel;
+      new_pl->special = pl->special;
       new_pl->xoffs = pl->xoffs;           // killough 2/28/98
       new_pl->yoffs = pl->yoffs;
       new_pl->minx = start;
@@ -298,7 +299,7 @@ visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
 //
 // killough 2/28/98: Add offsets
 
-visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel,
+visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
                         fixed_t xoffs, fixed_t yoffs)
 {
   visplane_t *check;
@@ -314,6 +315,7 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel,
     if (height == check->height &&
         picnum == check->picnum &&
         lightlevel == check->lightlevel &&
+        special == check->special &&
         xoffs == check->xoffs &&      // killough 2/28/98: Add offset checks
         yoffs == check->yoffs)
       return check;
@@ -323,6 +325,7 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel,
   check->height = height;
   check->picnum = picnum;
   check->lightlevel = lightlevel;
+  check->special = special;
   check->xoffs = xoffs;               // killough 2/28/98: Save offsets
   check->yoffs = yoffs;
 #ifdef GL_DOOM
@@ -490,6 +493,25 @@ static void R_DoDrawPlane(visplane_t *pl)
       draw_span_vars_t dsvars;
 
       dsvars.source = W_CacheLumpNum(firstflat + flattranslation[pl->picnum]);
+
+      if (heretic)
+      {
+        switch (pl->special)
+        {
+          case 20:
+          case 21:
+          case 22:
+          case 23:
+          case 24:           // Scroll_East
+            dsvars.source = dsvars.source +
+              ((63 - ((leveltime >> 1) & 63)) << (pl->special - 20) & 63);
+            break;
+          case 4:            // Scroll_EastLavaDamage
+            dsvars.source = dsvars.source +
+              (((63 - ((leveltime >> 1) & 63)) << 3) & 63);
+            break;
+        }
+      }
 
       xoffs = pl->xoffs;  // killough 2/28/98: Add offsets
       yoffs = pl->yoffs;

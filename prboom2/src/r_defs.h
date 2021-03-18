@@ -455,6 +455,7 @@ typedef struct visplane
 {
   struct visplane *next;        // Next visplane in hash chain -- killough
   int picnum, lightlevel, minx, maxx;
+  int special; // heretic
   fixed_t height;
   fixed_t xoffs, yoffs;         // killough 2/28/98: Support scrolling flats
   // e6y: resolution limitation is removed

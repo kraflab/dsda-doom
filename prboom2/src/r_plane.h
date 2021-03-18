@@ -60,6 +60,7 @@ visplane_t *R_FindPlane(
                         fixed_t height,
                         int picnum,
                         int lightlevel,
+                        int special,
                         fixed_t xoffs,  /* killough 2/28/98: add x-y offsets */
                         fixed_t yoffs
                        );
