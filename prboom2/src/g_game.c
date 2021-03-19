@@ -2982,7 +2982,8 @@ void G_InitNew(skill_t skill, int episode, int map)
   if (episode < 1)
     episode = 1;
 
-  if (!EpiCustom)  // Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
+  // Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
+  if (!EpiCustom && W_CheckNumForName(MAPNAME(episode, map)) == -1)
   {
     if (heretic)
     {

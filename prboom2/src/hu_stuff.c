@@ -67,14 +67,6 @@ extern const char* LevelNames[];
 //
 // Locally used constants, shortcuts.
 //
-// Ty 03/28/98 -
-// These four shortcuts modifed to reflect char ** of mapnamesx[]
-// e6y: why sizeof(mapnamest)/sizeof(mapnamest[0]) does not work?
-#define HU_TITLE  (*mapnames[(gameepisode-1)*9+gamemap-1])
-#define HU_TITLE2 (gamemap <= 33 ? *mapnames2[gamemap-1] : "")
-#define HU_TITLEP (gamemap <= 32 ? *mapnamesp[gamemap-1] : "")
-#define HU_TITLET (gamemap <= 32 ? *mapnamest[gamemap-1] : "")
-#define HU_TITLEC (*mapnames[gamemap-1])
 #define HU_TITLEX 0
 //jff 2/16/98 change 167 to ST_Y-1
 // CPhipps - changed to ST_TY
@@ -296,6 +288,58 @@ static void HU_SetLumpTrans(const char *name)
   {
     lumpinfo[lump].flags |= LUMP_CM2RGB;
   }
+}
+
+static const char* HU_Title(void)
+{
+  if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0)
+  {
+    if (heretic)
+    {
+      if (gameepisode < 6 && gamemap < 10)
+      {
+        return LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
+      }
+    }
+    else
+    {
+      switch (gamemode)
+      {
+        case shareware:
+        case registered:
+        case retail:
+          // Chex.exe always uses the episode 1 level title
+          // eg. E2M1 gives the title for E1M1
+          if (gamemission == chex && gamemap < 10)
+          {
+            return *mapnames[gamemap - 1];
+          }
+          else if (gameepisode < 6 && gamemap < 10)
+          {
+            return *mapnames[(gameepisode - 1) * 9 + gamemap - 1];
+          }
+          break;
+
+        case commercial:
+        default:  // Ty 08/27/98 - modified to check mission for TNT/Plutonia
+          if (gamemission == pack_tnt && gamemap < 33)
+          {
+            return *mapnamest[gamemap - 1];
+          }
+          else if (gamemission == pack_plut && gamemap < 33)
+          {
+            return *mapnamesp[gamemap - 1];
+          }
+          else if (gamemap < 34)
+          {
+            return *mapnames2[gamemap - 1];
+          }
+          break;
+      }
+    }
+  }
+
+  return "";
 }
 
 //
@@ -747,52 +791,14 @@ void HU_Start(void)
 	  HUlib_addCharToTextLine(&w_title, ' ');
 	  s = gamemapinfo->levelname;
 	  if (!s) s = "Unnamed";
-	  while (*s)
-		  HUlib_addCharToTextLine(&w_title, *(s++));
-
   }
   else
   {
-    if (heretic)
-    {
-      if (gameepisode > 0 && gameepisode < 6 && gamemap > 0 && gamemap < 10)
-      {
-        s = LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
-      }
-      else
-        s = "";
-    }
-    else
-    {
-  	  // initialize the automap's level title widget
-  	  // e6y: stop SEGV here when gamemap is not initialized
-  	  if (gamestate == GS_LEVEL && gamemap > 0) /* cph - stop SEGV here when not in level */
-  		  switch (gamemode)
-  		  {
-  		  case shareware:
-  		  case registered:
-  		  case retail:
-  			  s = HU_TITLE;
-  			  break;
-
-  		  case commercial:
-  		  default:  // Ty 08/27/98 - modified to check mission for TNT/Plutonia
-  			  s = (gamemission == pack_tnt) ? HU_TITLET :
-  				  (gamemission == pack_plut) ? HU_TITLEP : HU_TITLE2;
-  			  break;
-  		  }
-  	  else s = "";
-
-  	  // Chex.exe always uses the episode 1 level title
-  	  // eg. E2M1 gives the title for E1M1
-  	  if (gamemission == chex)
-  	  {
-  		  s = HU_TITLEC;
-  	  }
-    }
-	  while (*s)
-		  HUlib_addCharToTextLine(&w_title, *(s++));
+    s = HU_Title();
   }
+
+  while (*s)
+    HUlib_addCharToTextLine(&w_title, *(s++));
 
 
   // create the automaps coordinate widget
