@@ -1,9 +1,10 @@
-Checked up to: 37f05fa7c48e1365df71825a5bf6a9a979baaddb (Mar 8 2021)
+Checked up to: d0102943e3a130d7cce6ddc11c0ee55b78858c63 (Mar 19 2021)
 
 Commits from upstream to go through:
 
-exclusive fullscreen
-ce65528a95393d0391058c1ba98ca33c12d6e86c
+alsa
+e9543d450f8dd0bddac98e0fcb41a80126275542
+73c4ef6b103a9f20eeb26c718981b164d592a268
 
 delete savegames
 fbcd834d2eb3b860176d5af1327503dd5cdb6e25
