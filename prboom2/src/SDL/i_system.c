@@ -97,6 +97,7 @@
 
 #include "z_zone.h"
 
+#include "dsda/settings.h"
 #include "dsda/time.h"
 
 void I_uSleep(unsigned long usecs)
@@ -121,9 +122,10 @@ int I_GetTime_RealTime (void)
 
   t = dsda_ElapsedTime(dsda_timer_realtime);
 
-  if (ms_to_next_tick > 1000/TICRATE || ms_to_next_tick<1) ms_to_next_tick = 1;
   i = t * TICRATE / 1000000;
   ms_to_next_tick = (i + 1) * 1000 / TICRATE - t / 1000;
+  if (ms_to_next_tick > 1000 / TICRATE) ms_to_next_tick = 1;
+  if (ms_to_next_tick < 1) ms_to_next_tick = dsda_LaggySleepMode();
   return i;
 }
 
