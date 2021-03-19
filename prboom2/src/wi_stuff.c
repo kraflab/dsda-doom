@@ -451,41 +451,41 @@ extern patchnum_t hu_font[HU_FONTSIZE];
 
 static void WI_DrawString(int cx, int cy, const char* ch)
 {
-	int   w;
-	int   c;
-	const char *cc = ch;
-	int width = 0;
+  int   w;
+  int   c;
+  const char *cc = ch;
+  int width = 0;
 
-	// center the text.
-	while (*cc) {
-		c = *cc++;         // get next char
-		c = toupper(c) - HU_FONTSTART;
-		if (c < 0 || c> HU_FONTSIZE)
-		{
-			width += SPACEWIDTH;    // space
-			continue;
-		}
-		width += hu_font[c].width;
-	}
-	cx -= width / 2;
-	if (cx < 0) cx = 0;
+  // center the text.
+  while (*cc) {
+    c = *cc++;         // get next char
+    c = toupper(c) - HU_FONTSTART;
+    if (c < 0 || c> HU_FONTSIZE)
+    {
+      width += SPACEWIDTH;    // space
+      continue;
+    }
+    width += hu_font[c].width;
+  }
+  cx -= width / 2;
+  if (cx < 0) cx = 0;
 
 
-	while (*ch) {
-		c = *ch++;         // get next char
-		c = toupper(c) - HU_FONTSTART;
-		if (c < 0 || c> HU_FONTSIZE)
-		{
-			cx += SPACEWIDTH;    // space
-			continue;
-		}
-		w = hu_font[c].width;
-		if (cx + w > 320)
-			break;
+  while (*ch) {
+    c = *ch++;         // get next char
+    c = toupper(c) - HU_FONTSTART;
+    if (c < 0 || c> HU_FONTSIZE)
+    {
+      cx += SPACEWIDTH;    // space
+      continue;
+    }
+    w = hu_font[c].width;
+    if (cx + w > 320)
+      break;
 
-		V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_GRAY, VPT_STRETCH | VPT_TRANS);
-		cx += w;
-	}
+    V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_GRAY, VPT_STRETCH | VPT_TRANS);
+    cx += w;
+  }
 }
 
 // ====================================================================
@@ -501,22 +501,22 @@ void WI_drawLF(void)
 
   if (wbs->lastmapinfo != NULL && wbs->lastmapinfo->levelname != NULL && wbs->lastmapinfo->levelpic[0] == 0)
   {
-	  // The level defines a new name but no texture for the name.
-	  WI_DrawString(160, y, wbs->lastmapinfo->levelname);
-	  y += (5 * hu_font['A' - HU_FONTSTART].height / 4);
+    // The level defines a new name but no texture for the name.
+    WI_DrawString(160, y, wbs->lastmapinfo->levelname);
+    y += (5 * hu_font['A' - HU_FONTSTART].height / 4);
   }
   else
   {
-	  // draw <LevelName>
-	  /* cph - get the graphic lump name and use it */
-	  if (wbs->lastmapinfo != NULL && wbs->lastmapinfo->levelpic[0]) strcpy(lname, wbs->lastmapinfo->levelpic);
-	  else WI_levelNameLump(wbs->epsd, wbs->last, lname);
-	  // CPhipps - patch drawing updated
-	  V_DrawNamePatch((320 - V_NamePatchWidth(lname)) / 2, y,
-		  FB, lname, CR_DEFAULT, VPT_STRETCH);
+    // draw <LevelName>
+    /* cph - get the graphic lump name and use it */
+    if (wbs->lastmapinfo != NULL && wbs->lastmapinfo->levelpic[0]) strcpy(lname, wbs->lastmapinfo->levelpic);
+    else WI_levelNameLump(wbs->epsd, wbs->last, lname);
+    // CPhipps - patch drawing updated
+    V_DrawNamePatch((320 - V_NamePatchWidth(lname)) / 2, y,
+      FB, lname, CR_DEFAULT, VPT_STRETCH);
 
-	  // draw "Finished!"
-	  y += (5 * V_NamePatchHeight(lname)) / 4;
+    // draw "Finished!"
+    y += (5 * V_NamePatchHeight(lname)) / 4;
   }
 
 
@@ -534,35 +534,35 @@ void WI_drawLF(void)
 //
 void WI_drawEL(void)
 {
-	int y = WI_TITLEY;
-	char lname[9];
+  int y = WI_TITLEY;
+  char lname[9];
 
-	// draw "Entering"
-	// CPhipps - patch drawing updated
-	V_DrawNamePatch((320 - V_NamePatchWidth(entering)) / 2,
-		y, FB, entering, CR_DEFAULT, VPT_STRETCH);
+  // draw "Entering"
+  // CPhipps - patch drawing updated
+  V_DrawNamePatch((320 - V_NamePatchWidth(entering)) / 2,
+    y, FB, entering, CR_DEFAULT, VPT_STRETCH);
 
 
-	if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelname != NULL && wbs->nextmapinfo->levelpic[0] == 0)
-	{
-		y += (5 * V_NamePatchHeight(entering)) / 4;
+  if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelname != NULL && wbs->nextmapinfo->levelpic[0] == 0)
+  {
+    y += (5 * V_NamePatchHeight(entering)) / 4;
 
-		// The level defines a new name but no texture for the name.
-		WI_DrawString(160, y, wbs->nextmapinfo->levelname);
-	}
-	else
-	{
-		/* cph - get the graphic lump name */
-		if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelpic[0]) strcpy(lname, wbs->nextmapinfo->levelpic);
-		else WI_levelNameLump(wbs->nextep, wbs->next, lname);
+    // The level defines a new name but no texture for the name.
+    WI_DrawString(160, y, wbs->nextmapinfo->levelname);
+  }
+  else
+  {
+    /* cph - get the graphic lump name */
+    if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelpic[0]) strcpy(lname, wbs->nextmapinfo->levelpic);
+    else WI_levelNameLump(wbs->nextep, wbs->next, lname);
 
-		// draw level
-		y += (5 * V_NamePatchHeight(lname)) / 4;
+    // draw level
+    y += (5 * V_NamePatchHeight(lname)) / 4;
 
-		// CPhipps - patch drawing updated
-		V_DrawNamePatch((320 - V_NamePatchWidth(lname)) / 2, y, FB,
-			lname, CR_DEFAULT, VPT_STRETCH);
-	}
+    // CPhipps - patch drawing updated
+    V_DrawNamePatch((320 - V_NamePatchWidth(lname)) / 2, y, FB,
+      lname, CR_DEFAULT, VPT_STRETCH);
+  }
 }
 
 /* ====================================================================
@@ -964,48 +964,48 @@ static dboolean    snl_pointeron = false;
 //
 void WI_initShowNextLoc(void)
 {
-	if (gamemapinfo != NULL)
-	{
-		if (gamemapinfo->endpic[0])
-		{
-			G_WorldDone();
-			return;
-		}
-		state = ShowNextLoc;
+  if (gamemapinfo != NULL)
+  {
+    if (gamemapinfo->endpic[0])
+    {
+      G_WorldDone();
+      return;
+    }
+    state = ShowNextLoc;
 
-		// episode change
-		if (wbs->epsd != wbs->nextep)
-		{
-			void WI_loadData(void);
+    // episode change
+    if (wbs->epsd != wbs->nextep)
+    {
+      void WI_loadData(void);
 
-			wbs->epsd = wbs->nextep;
-			wbs->last = wbs->next - 1;
-			WI_loadData();
-		}
-	}
-	else if ((gamemode != commercial) && (gamemap == 8)) {
-		G_WorldDone();
-		return;
-	}
-	else
-		state = ShowNextLoc;
+      wbs->epsd = wbs->nextep;
+      wbs->last = wbs->next - 1;
+      WI_loadData();
+    }
+  }
+  else if ((gamemode != commercial) && (gamemap == 8)) {
+    G_WorldDone();
+    return;
+  }
+  else
+    state = ShowNextLoc;
 
-	acceleratestage = 0;
+  acceleratestage = 0;
 
-	// e6y: That was pretty easy - only a HEX editor and luck
-	// There is no more desync on ddt-tas.zip\e4tux231.lmp
-	// --------- tasdoom.idb ---------
-	// .text:00031194 loc_31194:      ; CODE XREF: WI_updateStats+3A9j
-	// .text:00031194                 mov     ds:state, 1
-	// .text:0003119E                 mov     ds:acceleratestage, 0
-	// .text:000311A8                 mov     ds:cnt, 3Ch
-	// nowhere no hide
-	if (compatibility_level == tasdoom_compatibility)
-		cnt = 60;
-	else
-		cnt = SHOWNEXTLOCDELAY * TICRATE;
+  // e6y: That was pretty easy - only a HEX editor and luck
+  // There is no more desync on ddt-tas.zip\e4tux231.lmp
+  // --------- tasdoom.idb ---------
+  // .text:00031194 loc_31194:      ; CODE XREF: WI_updateStats+3A9j
+  // .text:00031194                 mov     ds:state, 1
+  // .text:0003119E                 mov     ds:acceleratestage, 0
+  // .text:000311A8                 mov     ds:cnt, 3Ch
+  // nowhere no hide
+  if (compatibility_level == tasdoom_compatibility)
+    cnt = 60;
+  else
+    cnt = SHOWNEXTLOCDELAY * TICRATE;
 
-	WI_initAnimatedBack(true);
+  WI_initAnimatedBack(true);
 }
 
 
@@ -1045,8 +1045,8 @@ void WI_drawShowNextLoc(void)
   // custom interpic.
   if (exitpic || (enterpic && state != StatCount))
   {
-	  WI_drawEL();
-	  return;
+    WI_drawEL();
+    return;
   }
 
   if ( gamemode != commercial)
@@ -1777,7 +1777,7 @@ void WI_updateStats(void)
 
     // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
     if ((!wbs->maxsecret && compatibility_level < lxdoom_1_compatibility) ||
-	cnt_secret[0] >= (wbs->maxsecret ?
+  cnt_secret[0] >= (wbs->maxsecret ?
       (plrs[me].ssecret * 100) / wbs->maxsecret : 100))
     {
       cnt_secret[0] = (wbs->maxsecret ?
