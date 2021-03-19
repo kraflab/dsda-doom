@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project("dsda-doom" VERSION 0.17.1)
+project("dsda-doom" VERSION 0.18.0)
 
 # Set a default build type if none was specified
 set(default_build_type "RelWithDebInfo")
