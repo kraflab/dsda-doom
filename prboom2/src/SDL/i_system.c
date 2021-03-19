@@ -97,6 +97,8 @@
 
 #include "z_zone.h"
 
+#include "dsda/time.h"
+
 void I_uSleep(unsigned long usecs)
 {
     SDL_Delay(usecs/1000);
@@ -122,8 +124,7 @@ int I_GetTime_RealTime (void)
 }
 
 #ifndef PRBOOM_SERVER
-static unsigned int start_displaytime;
-static unsigned int displaytime;
+static unsigned long long displaytime;
 static dboolean InDisplay = false;
 static int saved_gametic = -1;
 dboolean realframe = false;
@@ -138,14 +139,14 @@ dboolean I_StartDisplay(void)
   if (realframe)
     saved_gametic = gametic;
 
-  start_displaytime = SDL_GetTicks();
+  dsda_StartTimer(dsda_timer_displaytime);
   InDisplay = true;
   return true;
 }
 
 void I_EndDisplay(void)
 {
-  displaytime = SDL_GetTicks() - start_displaytime;
+  displaytime = dsda_ElapsedTime(dsda_timer_displaytime);
   InDisplay = false;
 }
 
@@ -154,14 +155,14 @@ static int prevsubframe = 0;
 int interpolation_method;
 fixed_t I_GetTimeFrac (void)
 {
-  unsigned long now;
+  unsigned long long tic_time;
   fixed_t frac;
 
-  now = SDL_GetTicks();
+  tic_time = dsda_ElapsedTime(dsda_timer_tic);
 
   subframe++;
 
-  if (tic_vars.step == 0)
+  if (!movement_smooth)
   {
     frac = FRACUNIT;
   }
@@ -170,11 +171,11 @@ fixed_t I_GetTimeFrac (void)
     extern int renderer_fps;
     if ((interpolation_method == 0) || (prevsubframe <= 0) || (renderer_fps <= 0))
     {
-      frac = (fixed_t)((now - tic_vars.start + displaytime) * FRACUNIT / tic_vars.step);
+      frac = (fixed_t)((tic_time + displaytime) * FRACUNIT * tic_vars.tics_per_usec);
     }
     else
     {
-      frac = (fixed_t)((now - tic_vars.start) * FRACUNIT / tic_vars.step);
+      frac = (fixed_t)(tic_time * FRACUNIT * tic_vars.tics_per_usec);
       frac = (unsigned int)((float)FRACUNIT * TICRATE * subframe / renderer_fps);
     }
     frac = BETWEEN(0, FRACUNIT, frac);
@@ -188,9 +189,7 @@ void I_GetTime_SaveMS(void)
   if (!movement_smooth)
     return;
 
-  tic_vars.start = SDL_GetTicks();
-  tic_vars.next = (unsigned int) ((tic_vars.start * tic_vars.msec + 1.0f) / tic_vars.msec);
-  tic_vars.step = tic_vars.next - tic_vars.start;
+  dsda_StartTimer(dsda_timer_tic);
   prevsubframe = subframe;
   subframe = 0;
 }
