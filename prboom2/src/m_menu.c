@@ -2666,7 +2666,6 @@ static const char *weapon_attack_alignment_strings[] = {
 // neighboring screens.
 
 enum {           // killough 10/98: enum for y-offset info
-  weap_recoil,
   weap_bobbing,
   weap_attack_alignment,
   weap_stub1,
@@ -2694,7 +2693,6 @@ setup_menu_t* weap_settings[] =
 
 setup_menu_t weap_settings1[] =  // Weapons Settings screen
 {
-  {"ENABLE RECOIL", S_YESNO,m_null,WP_X, WP_Y+ weap_recoil*8, {"weapon_recoil"}},
   {"ENABLE BOBBING",S_YESNO,m_null,WP_X, WP_Y+weap_bobbing*8, {"player_bobbing"}},
   {"WEAPON ATTACK ALIGNMENT",S_CHOICE,m_null,WP_X, WP_Y+weap_attack_alignment*8, {"weapon_attack_alignment"}, 0, NULL, weapon_attack_alignment_strings},
 
