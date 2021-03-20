@@ -37,8 +37,6 @@ set(COMMON_SRC
     dsda/palette.h
     dsda/settings.c
     dsda/settings.h
-    dsda/time.c
-    dsda/time.h
     dstrings.c
     dstrings.h
     d_deh.c

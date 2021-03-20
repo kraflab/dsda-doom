@@ -32,7 +32,6 @@ int dsda_skip_next_wipe;
 int dsda_wipe_at_full_speed;
 int dsda_track_attempts;
 int dsda_fine_sensitivity;
-int dsda_laggy_sleep_mode;
 
 void dsda_InitSettings(void) {
   dsda_ChangeStrictMode();
@@ -61,10 +60,6 @@ void dsda_ChangeStrictMode(void) {
 
 void dsda_SetTas(void) {
   dsda_tas = true;
-}
-
-dboolean dsda_LaggySleepMode(void) {
-  return dsda_laggy_sleep_mode;
 }
 
 double dsda_FineSensitivity(int base) {
