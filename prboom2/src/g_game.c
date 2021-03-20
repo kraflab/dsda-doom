@@ -2767,7 +2767,7 @@ void G_ReloadDefaults(void)
   // (allows functions above to load different values for demos
   // and savegames without messing up defaults).
 
-  weapon_recoil = default_weapon_recoil;    // weapon recoil
+  weapon_recoil = 0;    // weapon recoil
 
   player_bobbing = default_player_bobbing;  // whether player bobs or not
 
