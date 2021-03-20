@@ -97,9 +97,6 @@
 
 #include "z_zone.h"
 
-#include "dsda/settings.h"
-#include "dsda/time.h"
-
 void I_uSleep(unsigned long usecs)
 {
     SDL_Delay(usecs/1000);
@@ -107,30 +104,26 @@ void I_uSleep(unsigned long usecs)
 
 int ms_to_next_tick;
 
+static int basetime = 0;
 int I_GetTime_RealTime (void)
 {
-  static dboolean started = false;
   int i;
-  unsigned long long t;
+  int t = SDL_GetTicks();
 
   //e6y: removing startup delay
-  if (!started)
-  {
-    started = true;
-    dsda_StartTimer(dsda_timer_realtime);
-  }
+  if (basetime == 0)
+    basetime = t;
+  t -= basetime;
 
-  t = dsda_ElapsedTime(dsda_timer_realtime);
-
-  i = t * TICRATE / 1000000;
-  ms_to_next_tick = (i + 1) * 1000 / TICRATE - t / 1000;
-  if (ms_to_next_tick > 1000 / TICRATE) ms_to_next_tick = 1;
-  if (ms_to_next_tick < 1) ms_to_next_tick = dsda_LaggySleepMode();
+  i = t*(TICRATE/5)/200;
+  ms_to_next_tick = (i+1)*200/(TICRATE/5) - t;
+  if (ms_to_next_tick > 1000/TICRATE || ms_to_next_tick<1) ms_to_next_tick = 1;
   return i;
 }
 
 #ifndef PRBOOM_SERVER
-static unsigned long long displaytime;
+static unsigned int start_displaytime;
+static unsigned int displaytime;
 static dboolean InDisplay = false;
 static int saved_gametic = -1;
 dboolean realframe = false;
@@ -145,14 +138,14 @@ dboolean I_StartDisplay(void)
   if (realframe)
     saved_gametic = gametic;
 
-  dsda_StartTimer(dsda_timer_displaytime);
+  start_displaytime = SDL_GetTicks();
   InDisplay = true;
   return true;
 }
 
 void I_EndDisplay(void)
 {
-  displaytime = dsda_ElapsedTime(dsda_timer_displaytime);
+  displaytime = SDL_GetTicks() - start_displaytime;
   InDisplay = false;
 }
 
@@ -161,14 +154,14 @@ static int prevsubframe = 0;
 int interpolation_method;
 fixed_t I_GetTimeFrac (void)
 {
-  unsigned long long tic_time;
+  unsigned long now;
   fixed_t frac;
 
-  tic_time = dsda_ElapsedTime(dsda_timer_tic);
+  now = SDL_GetTicks();
 
   subframe++;
 
-  if (!movement_smooth)
+  if (tic_vars.step == 0)
   {
     frac = FRACUNIT;
   }
@@ -177,11 +170,11 @@ fixed_t I_GetTimeFrac (void)
     extern int renderer_fps;
     if ((interpolation_method == 0) || (prevsubframe <= 0) || (renderer_fps <= 0))
     {
-      frac = (fixed_t)((tic_time + displaytime) * FRACUNIT * tic_vars.tics_per_usec);
+      frac = (fixed_t)((now - tic_vars.start + displaytime) * FRACUNIT / tic_vars.step);
     }
     else
     {
-      frac = (fixed_t)(tic_time * FRACUNIT * tic_vars.tics_per_usec);
+      frac = (fixed_t)((now - tic_vars.start) * FRACUNIT / tic_vars.step);
       frac = (unsigned int)((float)FRACUNIT * TICRATE * subframe / renderer_fps);
     }
     frac = BETWEEN(0, FRACUNIT, frac);
@@ -195,7 +188,9 @@ void I_GetTime_SaveMS(void)
   if (!movement_smooth)
     return;
 
-  dsda_StartTimer(dsda_timer_tic);
+  tic_vars.start = SDL_GetTicks();
+  tic_vars.next = (unsigned int) ((tic_vars.start * tic_vars.msec + 1.0f) / tic_vars.msec);
+  tic_vars.step = tic_vars.next - tic_vars.start;
   prevsubframe = subframe;
   subframe = 0;
 }
