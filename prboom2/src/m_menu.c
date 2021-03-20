@@ -267,7 +267,6 @@ void M_KeyBindings(int choice);
 void M_Weapons(int);
 void M_StatusBar(int);
 void M_Automap(int);
-void M_Enemy(int);
 void M_Messages(int);
 void M_ChatStrings(int);
 void M_InitExtendedHelp(void);
@@ -282,7 +281,6 @@ static void M_DrawStringCentered(int,int,int,const char*);
 void M_DrawStatusHUD(void);
 void M_DrawExtHelp(void);
 void M_DrawAutoMap(void);
-void M_DrawEnemy(void);
 void M_DrawMessages(void);
 void M_DrawChatStrings(void);
 void M_Compat(int);       // killough 10/98
@@ -1521,7 +1519,6 @@ void M_SizeDisplay(int choice)
 //    Weapons
 //    Status Bar / HUD
 //    Automap
-//    Enemies
 //    Messages
 //    Chat Strings
 //
@@ -1540,7 +1537,6 @@ dboolean set_keybnd_active = false; // in key binding setup screens
 dboolean set_weapon_active = false; // in weapons setup screen
 dboolean set_status_active = false; // in status bar/hud setup screen
 dboolean set_auto_active   = false; // in automap setup screen
-dboolean set_enemy_active  = false; // in enemies setup screen
 dboolean set_mess_active   = false; // in messages setup screen
 dboolean set_chat_active   = false; // in chat string setup screen
 dboolean setup_select      = false; // changing an item
@@ -1608,7 +1604,6 @@ enum
   set_weapons,
   set_statbar,
   set_automap,
-  set_enemy,
   set_messages,
   set_chatstrings,
   set_setup_end
@@ -1631,7 +1626,6 @@ menuitem_t SetupMenu[]=
   {1,"M_WEAP"  ,M_Weapons,    'w', "WEAPONS"},
   {1,"M_STAT"  ,M_StatusBar,  's', "STATUS BAR / HUD"},
   {1,"M_AUTO"  ,M_Automap,    'a', "AUTOMAP"},
-  {1,"M_ENEM"  ,M_Enemy,      'e', "ENEMIES"},
   {1,"M_MESS"  ,M_Messages,   'm', "MESSAGES"},
   {1,"M_CHAT"  ,M_ChatStrings,'c', "CHAT STRINGS"},
 };
@@ -1725,16 +1719,6 @@ menu_t AutoMapDef =
   &SetupDef,
   Generic_Setup,
   M_DrawAutoMap,
-  34,5,      // skull drawn here
-  0
-};
-
-menu_t EnemyDef =                                           // phares 4/08/98
-{
-  generic_setup_end,
-  &SetupDef,
-  Generic_Setup,
-  M_DrawEnemy,
   34,5,      // skull drawn here
   0
 };
@@ -3070,123 +3054,6 @@ void M_DrawAutoMap(void)
     M_DrawDefVerify();
 }
 
-
-/////////////////////////////
-//
-// The Enemies table.
-
-#define E_X 250
-#define E_Y  31
-
-setup_menu_t enem_settings1[];
-
-setup_menu_t* enem_settings[] =
-{
-  enem_settings1,
-  NULL
-};
-
-enum {
-  enem_infighting,
-
-  enem_remember = 1,
-
-  enem_backing,
-  enem_monkeys,
-  enem_avoid_hazards,
-  enem_friction,
-  enem_help_friends,
-
-  enem_helpers,
-
-  enem_distfriend,
-
-  enem_dog_jumping,
-
-  enem_end
-};
-
-setup_menu_t enem_settings1[] =  // Enemy Settings screen
-{
-  // killough 7/19/98
-  {"Monster Infighting When Provoked",S_YESNO,m_null,E_X,E_Y+ enem_infighting*8, {"monster_infighting"}},
-
-  {"Remember Previous Enemy",S_YESNO,m_null,E_X,E_Y+ enem_remember*8, {"monsters_remember"}},
-
-  // killough 9/8/98
-  {"Monster Backing Out",S_YESNO,m_null,E_X,E_Y+ enem_backing*8, {"monster_backing"}},
-
-  {"Climb Steep Stairs", S_YESNO,m_null,E_X,E_Y+enem_monkeys*8, {"monkeys"}},
-
-  // killough 9/9/98
-  {"Intelligently Avoid Hazards",S_YESNO,m_null,E_X,E_Y+ enem_avoid_hazards*8, {"monster_avoid_hazards"}},
-
-  // killough 10/98
-  {"Affected by Friction",S_YESNO,m_null,E_X,E_Y+ enem_friction*8, {"monster_friction"}},
-
-  {"Rescue Dying Friends",S_YESNO,m_null,E_X,E_Y+ enem_help_friends*8, {"help_friends"}},
-
-  // killough 7/19/98
-  {"Number Of Single-Player Helper Dogs",S_NUM|S_LEVWARN,m_null,E_X,E_Y+ enem_helpers*8, {"player_helpers"}},
-
-  // killough 8/8/98
-  {"Distance Friends Stay Away",S_NUM,m_null,E_X,E_Y+ enem_distfriend*8, {"friend_distance"}},
-
-  {"Allow dogs to jump down",S_YESNO,m_null,E_X,E_Y+ enem_dog_jumping*8, {"dog_jumping"}},
-
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-
-  // Final entry
-  {0,S_SKIP|S_END,m_null}
-
-};
-
-/////////////////////////////
-
-// Setting up for the Enemies screen. Turn on flags, set pointers,
-// locate the first item on the screen where the cursor is allowed to
-// land.
-
-void M_Enemy(int choice)
-{
-  M_SetupNextMenu(&EnemyDef);
-
-  setup_active = true;
-  setup_screen = ss_enem;
-  set_enemy_active = true;
-  setup_select = false;
-  default_verify = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  current_setup_menu = enem_settings[0];
-  set_menu_itemon = M_GetSetupMenuItemOn();
-  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
-}
-
-// The drawing part of the Enemies Setup initialization. Draw the
-// background, title, instruction line, and items.
-
-void M_DrawEnemy(void)
-{
-  menuactive = mnact_full;
-
-  M_DrawBackground(g_menu_flat, 0); // Draw background
-
-  // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(114, 2, "M_ENEM", CR_DEFAULT, "ENEMIES", g_cr_gold);
-  M_DrawInstructions();
-  M_DrawScreenItems(current_setup_menu);
-
-  // If the Reset Button has been selected, an "Are you sure?" message
-  // is overlayed across everything else.
-
-  if (default_verify)
-    M_DrawDefVerify();
-}
-
-
 /////////////////////////////
 //
 // The General table.
@@ -4003,7 +3870,6 @@ static setup_menu_t **setup_screens[] =
   weap_settings,
   stat_settings,
   auto_settings,
-  enem_settings,
   mess_settings,
   chat_settings,
   gen_settings,      // killough 10/98
@@ -5564,7 +5430,7 @@ dboolean M_Responder (event_t* ev) {
 
       // killough 10/98: consolidate handling into one place:
       if (setup_select &&
-    set_enemy_active | set_general_active | set_chat_active |
+    set_general_active | set_chat_active |
     set_mess_active | set_status_active | set_compat_active)
   {
     if (ptr1->m_flags & S_STRING) // creating/editing a string?
@@ -5751,7 +5617,6 @@ dboolean M_Responder (event_t* ev) {
     set_weapon_active = false;
     set_status_active = false;
     set_auto_active = false;
-    set_enemy_active = false;
     set_mess_active = false;
     set_chat_active = false;
     colorbox_active = false;

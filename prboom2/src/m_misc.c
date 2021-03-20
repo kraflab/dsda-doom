@@ -340,26 +340,6 @@ default_t defaults[] =
    def_bool,ss_weap, &player_bobbing},
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
    def_int,ss_weap, &weapon_attack_alignment},
-   /* MBF AI enhancement options */
-  {"monster_infighting",{&default_monster_infighting}, {1}, 0, 1,
-   def_bool, ss_enem, &monster_infighting},
-  {"monster_backing",{&default_monster_backing}, {0}, 0, 1,
-   def_bool, ss_enem, &monster_backing},
-  {"monster_avoid_hazards",{&default_monster_avoid_hazards}, {1}, 0, 1,
-   def_bool, ss_enem, &monster_avoid_hazards},
-  {"monkeys",{&default_monkeys}, {0}, 0, 1,
-   def_bool, ss_enem, &monkeys},
-  {"monster_friction",{&default_monster_friction}, {1}, 0, 1,
-   def_bool, ss_enem, &monster_friction},
-  {"help_friends",{&default_help_friends}, {0}, 0, 1,
-   def_bool, ss_enem, &help_friends},
-  {"player_helpers",{&default_dogs}, {0}, 0, 3,
-   def_bool, ss_enem },
-  {"friend_distance",{&default_distfriend}, {128}, 0, 999,
-   def_int, ss_enem, &distfriend},
-  {"dog_jumping",{&default_dog_jumping}, {1}, 0, 1,
-   def_bool, ss_enem, &dog_jumping},
-   /* End of MBF AI extras */
 
   {"sts_always_red",{&sts_always_red},{1},0,1, // no color changes on status bar
    def_bool,ss_stat},

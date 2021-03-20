@@ -90,6 +90,7 @@
 #include "dsda/key_frame.h"
 #include "dsda/settings.h"
 #include "dsda/input.h"
+#include "dsda/options.h"
 #include "statdump.h"
 
 // ano - used for version 255+ demos, like EE or MBF
@@ -2748,49 +2749,43 @@ void G_Compatibility(void)
   }
 }
 
-/* killough 7/19/98: Marine's best friend :) */
-static int G_GetHelpers(void)
-{
-  int j = M_CheckParm ("-dog");
-
-  if (!j)
-    j = M_CheckParm ("-dogs");
-  return j ? j+1 < myargc ? atoi(myargv[j+1]) : 1 : default_dogs;
-}
-
 // killough 3/1/98: function to reload all the default parameter
 // settings before a new game begins
 
 void G_ReloadDefaults(void)
 {
+  dsda_options_t* options;
+
   // killough 3/1/98: Initialize options based on config file
   // (allows functions above to load different values for demos
   // and savegames without messing up defaults).
 
-  weapon_recoil = 0;    // weapon recoil
+  options = dsda_Options();
+
+  weapon_recoil = options->weapon_recoil;    // weapon recoil
 
   player_bobbing = default_player_bobbing;  // whether player bobs or not
 
   variable_friction = 1;
   allow_pushers     = 1;
-  monsters_remember = 1;   // remember former enemies
+  monsters_remember = options->monsters_remember; // remember former enemies
 
-  monster_infighting = default_monster_infighting; // killough 7/19/98
+  monster_infighting = options->monster_infighting; // killough 7/19/98
 
-  dogs = netgame ? 0 : G_GetHelpers();             // killough 7/19/98
-  dog_jumping = default_dog_jumping;
+  dogs = netgame ? 0 : options->player_helpers; // killough 7/19/98
+  dog_jumping = options->dog_jumping;
 
-  distfriend = default_distfriend;                 // killough 8/8/98
+  distfriend = options->friend_distance; // killough 8/8/98
 
-  monster_backing = default_monster_backing;     // killough 9/8/98
+  monster_backing = options->monster_backing; // killough 9/8/98
 
-  monster_avoid_hazards = default_monster_avoid_hazards; // killough 9/9/98
+  monster_avoid_hazards = options->monster_avoid_hazards; // killough 9/9/98
 
-  monster_friction = default_monster_friction;     // killough 10/98
+  monster_friction = options->monster_friction; // killough 10/98
 
-  help_friends = default_help_friends;             // killough 9/9/98
+  help_friends = options->help_friends; // killough 9/9/98
 
-  monkeys = default_monkeys;
+  monkeys = options->monkeys;
 
   // jff 1/24/98 reset play mode to command line spec'd version
   // killough 3/1/98: moved to here
