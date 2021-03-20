@@ -2771,12 +2771,9 @@ void G_ReloadDefaults(void)
 
   player_bobbing = default_player_bobbing;  // whether player bobs or not
 
-  /* cph 2007/06/31 - for some reason, the default_* of the next 2 vars was never implemented */
-  variable_friction = default_variable_friction;
-  allow_pushers     = default_allow_pushers;
-
-
-  monsters_remember = default_monsters_remember;   // remember former enemies
+  variable_friction = 1;
+  allow_pushers     = 1;
+  monsters_remember = 1;   // remember former enemies
 
   monster_infighting = default_monster_infighting; // killough 7/19/98
 

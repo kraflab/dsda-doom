@@ -68,10 +68,8 @@ dboolean general_translucency; // true if translucency is ok // phares
 int demo_insurance, default_demo_insurance;        // killough 1/16/98
 
 int  allow_pushers = 1;      // MT_PUSH Things              // phares 3/10/98
-int  default_allow_pushers;  // killough 3/1/98: make local to each game
 
 int  variable_friction = 1;      // ice & mud               // phares 3/10/98
-int  default_variable_friction;  // killough 3/1/98: make local to each game
 
 int  weapon_recoil;              // weapon recoil                   // phares
 int  default_weapon_recoil;      // killough 3/1/98: make local to each game
@@ -79,8 +77,7 @@ int  default_weapon_recoil;      // killough 3/1/98: make local to each game
 int player_bobbing;  // whether player bobs or not          // phares 2/25/98
 int default_player_bobbing;  // killough 3/1/98: make local to each game
 
-int monsters_remember;          // killough 3/1/98
-int default_monsters_remember;
+int monsters_remember = 1;          // killough 3/1/98
 
 int monster_infighting=1;       // killough 7/19/98: monster<=>monster attacks
 int default_monster_infighting=1;

@@ -318,13 +318,10 @@ extern  int        ticdup;
 //-----------------------------------------------------------------------------
 
 extern int allow_pushers;         // MT_PUSH Things    // phares 3/10/98
-extern int default_allow_pushers;
 
 extern int variable_friction;  // ice & mud            // phares 3/10/98
-extern int default_variable_friction;
 
 extern int monsters_remember;                          // killough 3/1/98
-extern int default_monsters_remember;
 
 extern int weapon_recoil;          // weapon recoil    // phares
 extern int default_weapon_recoil;

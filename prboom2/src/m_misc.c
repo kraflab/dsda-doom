@@ -342,8 +342,6 @@ default_t defaults[] =
    def_bool,ss_weap, &player_bobbing},
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
    def_int,ss_weap, &weapon_attack_alignment},
-  {"monsters_remember",{&default_monsters_remember},{1},0,1,   // killough 3/1/98
-   def_bool,ss_enem, &monsters_remember},
    /* MBF AI enhancement options */
   {"monster_infighting",{&default_monster_infighting}, {1}, 0, 1,
    def_bool, ss_enem, &monster_infighting},
@@ -357,10 +355,6 @@ default_t defaults[] =
    def_bool, ss_enem, &monster_friction},
   {"help_friends",{&default_help_friends}, {0}, 0, 1,
    def_bool, ss_enem, &help_friends},
-  {"allow_pushers",{&default_allow_pushers},{1},0,1,
-   def_bool,ss_weap, &allow_pushers},
-  {"variable_friction",{&default_variable_friction},{1},0,1,
-   def_bool,ss_weap, &variable_friction},
   {"player_helpers",{&default_dogs}, {0}, 0, 3,
    def_bool, ss_enem },
   {"friend_distance",{&default_distfriend}, {128}, 0, 999,
