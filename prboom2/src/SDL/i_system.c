@@ -125,7 +125,7 @@ int I_GetTime_RealTime (void)
   i = t * TICRATE / 1000000;
   ms_to_next_tick = (i + 1) * 1000 / TICRATE - t / 1000;
   if (ms_to_next_tick > 1000 / TICRATE) ms_to_next_tick = 1;
-  if (ms_to_next_tick < 1) ms_to_next_tick = dsda_LaggySleepMode();
+  if (ms_to_next_tick < 1) ms_to_next_tick = 0;
   return i;
 }
 

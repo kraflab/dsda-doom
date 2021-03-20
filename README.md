@@ -56,7 +56,6 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Wipe At Full Speed: always display the wipe animation at normal speed.
 - Track Demo Attempts: show the attempt count (session / total) when starting a demo.
 - Fine Sensitivity: hundredths of a point adjustment to horizontal mouse sensitivity.
-- Laggy Sleep Mode: emulates old pr+ sleep habits (unstable delay).
 
 ### Key Frames
 Key frames capture the game state at a given moment, similar to save files. By automatically recording key frames at fixed intervals, it is possible to "rewind" the game. This can be used during normal play, while recording (tas) demos, and during demo playback. You can also set a manual "quick key frame" at a specific point and rewind to that moment at any later time. When storing a key frame while recording, a backup file is created (`backup-ttt.kf`). You can continue a demo _from a key frame_ like so: `-record x.lmp -from_key_frame backup-1234.kf -complevel x`. While recording from a key frame, the demo restart key will return you to the original key frame, even if you have made other key frames later on.
