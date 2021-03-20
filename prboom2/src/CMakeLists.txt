@@ -33,6 +33,8 @@ set(COMMON_SRC
     dsda/key_frame.h
     dsda/msecnode.c
     dsda/msecnode.h
+    dsda/options.c
+    dsda/options.h
     dsda/palette.c
     dsda/palette.h
     dsda/settings.c
