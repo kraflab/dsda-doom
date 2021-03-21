@@ -1778,6 +1778,9 @@ static void D_DoomMainSetup(void)
   lprintf(LO_INFO,"W_Init: Init WADfiles.\n");
   W_Init(); // CPhipps - handling of wadfiles init changed
 
+  lprintf(LO_INFO, "G_ReloadDefaults: Checking OPTIONS.\n");
+  G_ReloadDefaults();
+
   lprintf(LO_INFO,"\n");     // killough 3/6/98: add a newline, by popular demand :)
 
   // e6y

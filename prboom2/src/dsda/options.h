@@ -27,12 +27,12 @@ typedef struct dsda_options {
   int monkeys;
   int monster_friction;
   int help_friends;
-  int player_helpers; // (3) dogs
-  int friend_distance; // (999) distfriend
+  int player_helpers;
+  int friend_distance;
   int dog_jumping;
   // comp_*
 } dsda_options_t;
 
-dsda_options_t* dsda_Options(void);
+const dsda_options_t* dsda_Options(void);
 
 #endif

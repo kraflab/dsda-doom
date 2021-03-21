@@ -2754,7 +2754,17 @@ void G_Compatibility(void)
 
 void G_ReloadDefaults(void)
 {
-  dsda_options_t* options;
+  const dsda_options_t* options;
+
+  compatibility_level = default_compatibility_level;
+  {
+    int l;
+    l = dsda_CompatibilityLevel();
+    if (l != UNSPECIFIED_COMPLEVEL)
+      compatibility_level = l;
+  }
+  if (compatibility_level == -1)
+    compatibility_level = best_compatibility;
 
   // killough 3/1/98: Initialize options based on config file
   // (allows functions above to load different values for demos
@@ -2806,16 +2816,6 @@ void G_ReloadDefaults(void)
   memset(playeringame+1, 0, sizeof(*playeringame)*(MAXPLAYERS-1));
 
   consoleplayer = 0;
-
-  compatibility_level = default_compatibility_level;
-  {
-    int l;
-    l = dsda_CompatibilityLevel();
-    if (l != UNSPECIFIED_COMPLEVEL)
-      compatibility_level = l;
-  }
-  if (compatibility_level == -1)
-    compatibility_level = best_compatibility;
 
   if (mbf_features)
     memcpy(comp, default_comp, sizeof comp);
