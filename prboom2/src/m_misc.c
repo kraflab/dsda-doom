@@ -333,8 +333,6 @@ default_t defaults[] =
   {"Game settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"default_skill",{&defaultskill},{3},1,5, // jff 3/24/98 allow default skill setting
    def_int,ss_none}, // selects default skill 1=TYTD 2=NTR 3=HMP 4=UV 5=NM
-  {"weapon_recoil",{&default_weapon_recoil},{0},0,1,
-   def_bool,ss_weap, &weapon_recoil},
   /* killough 10/98 - toggle between SG/SSG and Fist/Chainsaw */
   {"doom_weapon_toggles",{&doom_weapon_toggles}, {1}, 0, 1,
    def_bool, ss_weap },
@@ -342,32 +340,6 @@ default_t defaults[] =
    def_bool,ss_weap, &player_bobbing},
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
    def_int,ss_weap, &weapon_attack_alignment},
-  {"monsters_remember",{&default_monsters_remember},{1},0,1,   // killough 3/1/98
-   def_bool,ss_enem, &monsters_remember},
-   /* MBF AI enhancement options */
-  {"monster_infighting",{&default_monster_infighting}, {1}, 0, 1,
-   def_bool, ss_enem, &monster_infighting},
-  {"monster_backing",{&default_monster_backing}, {0}, 0, 1,
-   def_bool, ss_enem, &monster_backing},
-  {"monster_avoid_hazards",{&default_monster_avoid_hazards}, {1}, 0, 1,
-   def_bool, ss_enem, &monster_avoid_hazards},
-  {"monkeys",{&default_monkeys}, {0}, 0, 1,
-   def_bool, ss_enem, &monkeys},
-  {"monster_friction",{&default_monster_friction}, {1}, 0, 1,
-   def_bool, ss_enem, &monster_friction},
-  {"help_friends",{&default_help_friends}, {0}, 0, 1,
-   def_bool, ss_enem, &help_friends},
-  {"allow_pushers",{&default_allow_pushers},{1},0,1,
-   def_bool,ss_weap, &allow_pushers},
-  {"variable_friction",{&default_variable_friction},{1},0,1,
-   def_bool,ss_weap, &variable_friction},
-  {"player_helpers",{&default_dogs}, {0}, 0, 3,
-   def_bool, ss_enem },
-  {"friend_distance",{&default_distfriend}, {128}, 0, 999,
-   def_int, ss_enem, &distfriend},
-  {"dog_jumping",{&default_dog_jumping}, {1}, 0, 1,
-   def_bool, ss_enem, &dog_jumping},
-   /* End of MBF AI extras */
 
   {"sts_always_red",{&sts_always_red},{1},0,1, // no color changes on status bar
    def_bool,ss_stat},
@@ -385,37 +357,6 @@ default_t defaults[] =
   {"Dehacked settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"deh_apply_cheats",{&deh_apply_cheats},{1},0,1,
    def_bool,ss_stat}, // if 0, dehacked cheat replacements are ignored.
-
-  {"Compatibility settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"comp_zombie",{&default_comp[comp_zombie]},{1},0,1,def_bool,ss_comp,&comp[comp_zombie]},
-  {"comp_infcheat",{&default_comp[comp_infcheat]},{0},0,1,def_bool,ss_comp,&comp[comp_infcheat]},
-  {"comp_stairs",{&default_comp[comp_stairs]},{0},0,1,def_bool,ss_comp,&comp[comp_stairs]},
-  {"comp_telefrag",{&default_comp[comp_telefrag]},{0},0,1,def_bool,ss_comp,&comp[comp_telefrag]},
-  {"comp_dropoff",{&default_comp[comp_dropoff]},{0},0,1,def_bool,ss_comp,&comp[comp_dropoff]},
-  {"comp_falloff",{&default_comp[comp_falloff]},{0},0,1,def_bool,ss_comp,&comp[comp_falloff]},
-  {"comp_staylift",{&default_comp[comp_staylift]},{0},0,1,def_bool,ss_comp,&comp[comp_staylift]},
-  {"comp_doorstuck",{&default_comp[comp_doorstuck]},{0},0,1,def_bool,ss_comp,&comp[comp_doorstuck]},
-  {"comp_pursuit",{&default_comp[comp_pursuit]},{0},0,1,def_bool,ss_comp,&comp[comp_pursuit]},
-  {"comp_vile",{&default_comp[comp_vile]},{0},0,1,def_bool,ss_comp,&comp[comp_vile]},
-  {"comp_pain",{&default_comp[comp_pain]},{0},0,1,def_bool,ss_comp,&comp[comp_pain]},
-  {"comp_skull",{&default_comp[comp_skull]},{0},0,1,def_bool,ss_comp,&comp[comp_skull]},
-  {"comp_blazing",{&default_comp[comp_blazing]},{0},0,1,def_bool,ss_comp,&comp[comp_blazing]},
-  {"comp_doorlight",{&default_comp[comp_doorlight]},{0},0,1,def_bool,ss_comp,&comp[comp_doorlight]},
-  {"comp_god",{&default_comp[comp_god]},{0},0,1,def_bool,ss_comp,&comp[comp_god]},
-  {"comp_skymap",{&default_comp[comp_skymap]},{0},0,1,def_bool,ss_comp,&comp[comp_skymap]},
-  {"comp_floors",{&default_comp[comp_floors]},{0},0,1,def_bool,ss_comp,&comp[comp_floors]},
-  {"comp_model",{&default_comp[comp_model]},{0},0,1,def_bool,ss_comp,&comp[comp_model]},
-  {"comp_zerotags",{&default_comp[comp_zerotags]},{0},0,1,def_bool,ss_comp,&comp[comp_zerotags]},
-  {"comp_moveblock",{&default_comp[comp_moveblock]},{0},0,1,def_bool,ss_comp,&comp[comp_moveblock]},
-  {"comp_sound",{&default_comp[comp_sound]},{0},0,1,def_bool,ss_comp,&comp[comp_sound]},
-  {"comp_666",{&default_comp[comp_666]},{0},0,1,def_bool,ss_comp,&comp[comp_666]},
-  {"comp_soul",{&default_comp[comp_soul]},{0},0,1,def_bool,ss_comp,&comp[comp_soul]},
-  {"comp_maskedanim",{&default_comp[comp_maskedanim]},{0},0,1,def_bool,ss_comp,&comp[comp_maskedanim]},
-  //e6y
-  {"PrBoom-plus compatibility settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"comp_ouchface",{&default_comp[comp_ouchface]},{0},0,1,def_bool,ss_comp,&comp[comp_ouchface]},
-  {"comp_maxhealth",{&default_comp[comp_maxhealth]},{0},0,1,def_bool,ss_comp,&comp[comp_maxhealth]},
-  {"comp_translucency",{&default_comp[comp_translucency]},{0},0,1,def_bool,ss_comp,&comp[comp_translucency]},
 
   {"Sound settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"snd_pcspeaker",{&snd_pcspeaker},{0}, 0, 1, def_bool,ss_none},

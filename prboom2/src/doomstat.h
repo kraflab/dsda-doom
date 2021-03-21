@@ -135,7 +135,7 @@ enum {
   COMPERR_NUM
 };
 
-extern int comp[COMP_TOTAL], default_comp[COMP_TOTAL];
+extern int comp[COMP_TOTAL];
 extern int /*comperr[COMPERR_NUM], */default_comperr[COMPERR_NUM];
 
 // -------------------------------------------
@@ -318,46 +318,42 @@ extern  int        ticdup;
 //-----------------------------------------------------------------------------
 
 extern int allow_pushers;         // MT_PUSH Things    // phares 3/10/98
-extern int default_allow_pushers;
 
 extern int variable_friction;  // ice & mud            // phares 3/10/98
-extern int default_variable_friction;
 
 extern int monsters_remember;                          // killough 3/1/98
-extern int default_monsters_remember;
 
 extern int weapon_recoil;          // weapon recoil    // phares
-extern int default_weapon_recoil;
 
 extern int player_bobbing;  // whether player bobs or not   // phares 2/25/98
 extern int default_player_bobbing;  // killough 3/1/98: make local to each game
 
-extern int dogs, default_dogs;     // killough 7/19/98: Marine's best friend :)
-extern int dog_jumping, default_dog_jumping;   // killough 10/98
+extern int dogs;     // killough 7/19/98: Marine's best friend :)
+extern int dog_jumping;   // killough 10/98
 
 /* killough 8/8/98: distance friendly monsters tend to stay from player */
-extern int distfriend, default_distfriend;
+extern int distfriend;
 
 /* killough 9/8/98: whether monsters are allowed to strafe or retreat */
-extern int monster_backing, default_monster_backing;
+extern int monster_backing;
 
 /* killough 9/9/98: whether monsters intelligently avoid hazards */
-extern int monster_avoid_hazards, default_monster_avoid_hazards;
+extern int monster_avoid_hazards;
 
 /* killough 10/98: whether monsters are affected by friction */
-extern int monster_friction, default_monster_friction;
+extern int monster_friction;
 
 /* killough 9/9/98: whether monsters help friends */
-extern int help_friends, default_help_friends;
+extern int help_friends;
 
 extern int flashing_hom; // killough 10/98
 
 extern int doom_weapon_toggles;   // killough 10/98
 
 /* killough 7/19/98: whether monsters should fight against each other */
-extern int monster_infighting, default_monster_infighting;
+extern int monster_infighting;
 
-extern int monkeys, default_monkeys;
+extern int monkeys;
 
 extern int HelperThing;          // type of thing to use for helper
 
