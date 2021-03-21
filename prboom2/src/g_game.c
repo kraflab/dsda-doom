@@ -2817,8 +2817,40 @@ void G_ReloadDefaults(void)
 
   consoleplayer = 0;
 
+  // MBF introduced configurable compatibility settings
   if (mbf_features)
-    memcpy(comp, default_comp, sizeof comp);
+  {
+    comp[comp_telefrag] = options->comp_telefrag;
+    comp[comp_dropoff] = options->comp_dropoff;
+    comp[comp_vile] = options->comp_vile;
+    comp[comp_pain] = options->comp_pain;
+    comp[comp_skull] = options->comp_skull;
+    comp[comp_blazing] = options->comp_blazing;
+    comp[comp_doorlight] = options->comp_doorlight;
+    comp[comp_model] = options->comp_model;
+    comp[comp_god] = options->comp_god;
+    comp[comp_falloff] = options->comp_falloff;
+    comp[comp_floors] = options->comp_floors;
+    comp[comp_skymap] = options->comp_skymap;
+    comp[comp_pursuit] = options->comp_pursuit;
+    comp[comp_doorstuck] = options->comp_doorstuck;
+    comp[comp_staylift] = options->comp_staylift;
+    comp[comp_zombie] = options->comp_zombie;
+    comp[comp_stairs] = options->comp_stairs;
+    comp[comp_infcheat] = options->comp_infcheat;
+    comp[comp_zerotags] = options->comp_zerotags;
+
+    comp[comp_moveblock] = options->comp_moveblock;
+    comp[comp_respawn] = options->comp_respawn;
+    comp[comp_sound] = options->comp_sound;
+    comp[comp_666] = options->comp_666;
+    comp[comp_soul] = options->comp_soul;
+    comp[comp_maskedanim] = options->comp_maskedanim;
+    comp[comp_ouchface] = options->comp_ouchface;
+    comp[comp_maxhealth] = options->comp_maxhealth;
+    comp[comp_translucency] = options->comp_translucency;
+  }
+
   G_Compatibility();
 
   // killough 3/31/98, 4/5/98: demo sync insurance

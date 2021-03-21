@@ -283,11 +283,9 @@ void M_DrawExtHelp(void);
 void M_DrawAutoMap(void);
 void M_DrawMessages(void);
 void M_DrawChatStrings(void);
-void M_Compat(int);       // killough 10/98
 void M_ChangeDemoSmoothTurns(void);
 void M_ChangeTextureParams(void);
 void M_General(int);      // killough 10/98
-void M_DrawCompat(void);  // killough 10/98
 void M_DrawGeneral(void); // killough 10/98
 void M_ChangeFullScreen(void);
 void M_ChangeVideoMode(void);
@@ -1544,7 +1542,6 @@ dboolean setup_gather      = false; // gathering keys for value
 dboolean colorbox_active   = false; // color palette being shown
 dboolean default_verify    = false; // verify reset defaults decision
 dboolean set_general_active = false;
-dboolean set_compat_active = false;
 
 /////////////////////////////
 //
@@ -1599,7 +1596,6 @@ static char menu_buffer[66];
 
 enum
 {
-  set_compat,
   set_key_bindings,
   set_weapons,
   set_statbar,
@@ -1621,7 +1617,6 @@ int setup_screen; // the current setup screen. takes values from setup_e
 
 menuitem_t SetupMenu[]=
 {
-  {1,"M_COMPAT",M_Compat,     'p', "DOOM COMPATIBILITY"},
   {1,"M_KEYBND",M_KeyBindings,'k', "KEY BINDINGS"},
   {1,"M_WEAP"  ,M_Weapons,    'w', "WEAPONS"},
   {1,"M_STAT"  ,M_StatusBar,  's', "STATUS BAR / HUD"},
@@ -1749,16 +1744,6 @@ menu_t GeneralDef =                                           // killough 10/98
   &OptionsDef,
   Generic_Setup,
   M_DrawGeneral,
-  34,5,      // skull drawn here
-  0
-};
-
-menu_t CompatDef =                                           // killough 10/98
-{
-  generic_setup_end,
-  &SetupDef,
-  Generic_Setup,
-  M_DrawCompat,
   34,5,      // skull drawn here
   0
 };
@@ -3440,211 +3425,6 @@ void M_DrawGeneral(void)
 
 /////////////////////////////
 //
-// The Compatibility table.
-// killough 10/10/98
-
-#define C_X  284
-#define C_Y  32
-#define COMP_SPC 12
-#define C_NEXTPREV 131
-
-setup_menu_t comp_settings1[], comp_settings2[], comp_settings3[];
-setup_menu_t comp_settings3[];//e6y
-
-setup_menu_t* comp_settings[] =
-{
-  comp_settings1,
-  comp_settings2,
-  comp_settings3,
-  NULL
-};
-
-enum
-{
-  compat_telefrag,
-  compat_dropoff,
-  compat_falloff,
-  compat_staylift,
-  compat_doorstuck,
-  compat_pursuit,
-  compat_vile,
-  compat_pain,
-  compat_skull,
-  compat_blazing,
-  compat_doorlight = 0,
-  compat_god,
-  compat_infcheat,
-  compat_zombie,
-  compat_skymap,
-  compat_stairs,
-  compat_floors,
-  compat_moveblock,
-  compat_model,
-  compat_zerotags,
-  compat_666 = 0,
-  compat_soul,
-  compat_maskedanim,
-  compat_sound,
-  //e6y
-  compat_plussettings,
-  compat_ouchface,
-  compat_maxhealth,
-  compat_translucency,
-};
-
-setup_menu_t comp_settings1[] =  // Compatibility Settings screen #1
-{
-  {"Any monster can telefrag on MAP30", S_YESNO, m_null, C_X,
-   C_Y + compat_telefrag * COMP_SPC, {"comp_telefrag"}},
-
-  {"Some objects never hang over tall ledges", S_YESNO, m_null, C_X,
-   C_Y + compat_dropoff * COMP_SPC, {"comp_dropoff"}},
-
-  {"Objects don't fall under their own weight", S_YESNO, m_null, C_X,
-   C_Y + compat_falloff * COMP_SPC, {"comp_falloff"}},
-
-  {"Monsters randomly walk off of moving lifts", S_YESNO, m_null, C_X,
-   C_Y + compat_staylift * COMP_SPC, {"comp_staylift"}},
-
-  {"Monsters get stuck on doortracks", S_YESNO, m_null, C_X,
-   C_Y + compat_doorstuck * COMP_SPC, {"comp_doorstuck"}},
-
-  {"Monsters don't give up pursuit of targets", S_YESNO, m_null, C_X,
-   C_Y + compat_pursuit * COMP_SPC, {"comp_pursuit"}},
-
-  {"Arch-Vile resurrects invincible ghosts", S_YESNO, m_null, C_X,
-   C_Y + compat_vile * COMP_SPC, {"comp_vile"}},
-
-  {"Pain Elementals limited to 21 lost souls", S_YESNO, m_null, C_X,
-   C_Y + compat_pain * COMP_SPC, {"comp_pain"}},
-
-  {"Lost souls get stuck behind walls", S_YESNO, m_null, C_X,
-   C_Y + compat_skull * COMP_SPC, {"comp_skull"}},
-
-  {"Blazing doors make double closing sounds", S_YESNO, m_null, C_X,
-   C_Y + compat_blazing * COMP_SPC, {"comp_blazing"}},
-
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-
-  {"NEXT ->",S_SKIP|S_NEXT, m_null, KB_NEXT, C_Y+C_NEXTPREV, {comp_settings2}},
-
-  // Final entry
-  {0,S_SKIP|S_END,m_null}
-};
-
-setup_menu_t comp_settings2[] =  // Compatibility Settings screen #2
-{
-  {"Tagged doors don't trigger special lighting", S_YESNO, m_null, C_X,
-   C_Y + compat_doorlight * COMP_SPC, {"comp_doorlight"}},
-
-  {"God mode isn't absolute", S_YESNO, m_null, C_X,
-   C_Y + compat_god * COMP_SPC, {"comp_god"}},
-
-  {"Powerup cheats are not infinite duration", S_YESNO, m_null, C_X,
-   C_Y + compat_infcheat * COMP_SPC, {"comp_infcheat"}},
-
-  {"Dead players can exit levels", S_YESNO, m_null, C_X,
-   C_Y + compat_zombie * COMP_SPC, {"comp_zombie"}},
-
-  {"Sky is unaffected by invulnerability", S_YESNO, m_null, C_X,
-   C_Y + compat_skymap * COMP_SPC, {"comp_skymap"}},
-
-  {"Use exactly Doom's stairbuilding method", S_YESNO, m_null, C_X,
-   C_Y + compat_stairs * COMP_SPC, {"comp_stairs"}},
-
-  {"Use exactly Doom's floor motion behavior", S_YESNO, m_null, C_X,
-   C_Y + compat_floors * COMP_SPC, {"comp_floors"}},
-
-  {"Use exactly Doom's movement clipping code", S_YESNO, m_null, C_X,
-   C_Y + compat_moveblock * COMP_SPC, {"comp_moveblock"}},
-
-  {"Use exactly Doom's linedef trigger model", S_YESNO, m_null, C_X,
-   C_Y + compat_model * COMP_SPC, {"comp_model"}},
-
-  {"Linedef effects work with sector tag = 0", S_YESNO, m_null, C_X,
-   C_Y + compat_zerotags * COMP_SPC, {"comp_zerotags"}},
-
-  {"NEXT ->",S_SKIP|S_NEXT, m_null, KB_NEXT, C_Y+C_NEXTPREV, {comp_settings3}},//e6y
-  {"<- PREV", S_SKIP|S_PREV, m_null, KB_PREV, C_Y+C_NEXTPREV,{comp_settings1}},
-
-  {"NEXT ->",S_SKIP|S_NEXT, m_null, KB_NEXT, C_Y+C_NEXTPREV, {comp_settings3}},
-
-  // Final entry
-
-  {0,S_SKIP|S_END,m_null}
-};
-
-//e6y
-setup_menu_t comp_settings3[] =  // Compatibility Settings screen #3
-{
-  {"Emulate pre-Ultimate BossDeath behaviour", S_YESNO, m_null, C_X,
-   C_Y + compat_666 * COMP_SPC, {"comp_666"}},
-
-  {"Lost souls don't bounce off flat surfaces", S_YESNO, m_null, C_X,
-   C_Y + compat_soul * COMP_SPC, {"comp_soul"}},
-
-  {"2S middle textures do not animate", S_YESNO, m_null, C_X,
-   C_Y + compat_maskedanim * COMP_SPC, {"comp_maskedanim"}},
-
-  //e6y
-  {"Retain quirks in Doom's sound code", S_YESNO, m_null, C_X,
-   C_Y + compat_sound * COMP_SPC, {"comp_sound"}},
-  {"PrBoom-Plus Settings", S_SKIP|S_TITLE,m_null,C_X,
-   C_Y + compat_plussettings * COMP_SPC},
-  {"Use Doom's buggy \"Ouch\" face code", S_YESNO, m_null, C_X,
-   C_Y + compat_ouchface * COMP_SPC, {"comp_ouchface"}},
-  {"Max Health in DEH applies only to potions", S_YESNO, m_null, C_X,
-   C_Y + compat_maxhealth * COMP_SPC, {"comp_maxhealth"}},
-  {"No predefined translucency for some things", S_YESNO, m_null, C_X,
-   C_Y + compat_translucency * COMP_SPC, {"comp_translucency"}},
-  {"<- PREV", S_SKIP|S_PREV, m_null, KB_PREV, C_Y+C_NEXTPREV,{comp_settings2}},
-  {0,S_SKIP|S_END,m_null}
-};
-
-// Setting up for the Compatibility screen. Turn on flags, set pointers,
-// locate the first item on the screen where the cursor is allowed to
-// land.
-
-void M_Compat(int choice)
-{
-  M_SetupNextMenu(&CompatDef);
-
-  setup_active = true;
-  setup_screen = ss_comp;
-  set_general_active = true;
-  setup_select = false;
-  default_verify = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  current_setup_menu = comp_settings[0];
-  set_menu_itemon = M_GetSetupMenuItemOn();
-  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
-}
-
-// The drawing part of the Compatibility Setup initialization. Draw the
-// background, title, instruction line, and items.
-
-void M_DrawCompat(void)
-{
-  menuactive = mnact_full;
-
-  M_DrawBackground(g_menu_flat, 0); // Draw background
-
-  M_DrawTitle(52, 2, "M_COMPAT", CR_DEFAULT, "DOOM COMPATIBILITY", g_cr_gold);
-  M_DrawInstructions();
-  M_DrawScreenItems(current_setup_menu);
-
-  // If the Reset Button has been selected, an "Are you sure?" message
-  // is overlayed across everything else.
-
-  if (default_verify)
-    M_DrawDefVerify();
-}
-
-/////////////////////////////
-//
 // The Messages table.
 
 #define M_X 230
@@ -3873,7 +3653,6 @@ static setup_menu_t **setup_screens[] =
   mess_settings,
   chat_settings,
   gen_settings,      // killough 10/98
-  comp_settings,
 };
 
 // phares 4/19/98:
@@ -5430,8 +5209,7 @@ dboolean M_Responder (event_t* ev) {
 
       // killough 10/98: consolidate handling into one place:
       if (setup_select &&
-    set_general_active | set_chat_active |
-    set_mess_active | set_status_active | set_compat_active)
+    set_general_active | set_chat_active | set_mess_active | set_status_active)
   {
     if (ptr1->m_flags & S_STRING) // creating/editing a string?
       {
@@ -5622,7 +5400,6 @@ dboolean M_Responder (event_t* ev) {
     colorbox_active = false;
     default_verify = false;       // phares 4/19/98
     set_general_active = false;    // killough 10/98
-          set_compat_active = false;    // killough 10/98
     HU_Start();    // catch any message changes // phares 4/19/98
     S_StartSound(NULL,g_sfx_swtchx);
     return true;

@@ -60,7 +60,82 @@ static const dsda_options_t default_mbf_options = {
   .help_friends = 0,
   .player_helpers = 0,
   .friend_distance = 128,
-  .dog_jumping = 1
+  .dog_jumping = 1,
+
+  .comp_telefrag = 0,
+  .comp_dropoff = 0,
+  .comp_vile = 0,
+  .comp_pain = 0,
+  .comp_skull = 0,
+  .comp_blazing = 0,
+  .comp_doorlight = 0,
+  .comp_model = 0,
+  .comp_god = 0,
+  .comp_falloff = 0,
+  .comp_floors = 0,
+  .comp_skymap = 0,
+  .comp_pursuit = 0,
+  .comp_doorstuck = 0,
+  .comp_staylift = 0,
+  .comp_zombie = 1,
+  .comp_stairs = 0,
+  .comp_infcheat = 0,
+  .comp_zerotags = 0
+
+  // These are not configurable:
+  // .comp_moveblock = 0,
+  // .comp_respawn = 1,
+  // .comp_sound = 0,
+  // .comp_666 = 0,
+  // .comp_soul = 1,
+  // .comp_maskedanim = 0,
+  // .comp_ouchface = 1,
+  // .comp_maxhealth = 0,
+  // .comp_translucency = 0
+};
+
+static const dsda_options_t default_latest_options = {
+  .weapon_recoil = 0,
+  .monsters_remember = 1,
+  .monster_infighting = 1,
+  .monster_backing = 0,
+  .monster_avoid_hazards = 1,
+  .monkeys = 0,
+  .monster_friction = 1,
+  .help_friends = 0,
+  .player_helpers = 0,
+  .friend_distance = 128,
+  .dog_jumping = 1,
+
+  .comp_telefrag = 0,
+  .comp_dropoff = 0,
+  .comp_vile = 0,
+  .comp_pain = 0,
+  .comp_skull = 0,
+  .comp_blazing = 0,
+  .comp_doorlight = 0,
+  .comp_model = 0,
+  .comp_god = 0,
+  .comp_falloff = 0,
+  .comp_floors = 0,
+  .comp_skymap = 0,
+  .comp_pursuit = 0,
+  .comp_doorstuck = 0,
+  .comp_staylift = 0,
+  .comp_zombie = 1,
+  .comp_stairs = 0,
+  .comp_infcheat = 0,
+  .comp_zerotags = 0,
+
+  .comp_moveblock = 0,
+  .comp_respawn = 0,
+  .comp_sound = 0,
+  .comp_666 = 0,
+  .comp_soul = 0,
+  .comp_maskedanim = 0,
+  .comp_ouchface = 0,
+  .comp_maxhealth = 0,
+  .comp_translucency = 0
 };
 
 static dsda_options_t lump_options;
@@ -118,8 +193,6 @@ static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
   int value, count;
   dsda_option_t* option;
 
-  lump_options = default_mbf_options;
-
   lump.length = W_LumpLength(lumpnum);
   lump.data = W_CacheLumpNum(lumpnum);
 
@@ -152,10 +225,15 @@ static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
 static const dsda_options_t* dsda_MBFOptions(void) {
   int lumpnum;
 
+  if (compatibility_level == mbf_compatibility)
+    lump_options = default_mbf_options;
+  else
+    lump_options = default_latest_options;
+
   lumpnum = W_CheckNumForName("OPTIONS");
 
   if (lumpnum == -1)
-    return &default_mbf_options;
+    return &lump_options;
 
   return dsda_LumpOptions(lumpnum);
 }
