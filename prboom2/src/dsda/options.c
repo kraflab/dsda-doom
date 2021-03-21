@@ -138,7 +138,7 @@ static const dsda_options_t default_latest_options = {
   .comp_translucency = 0
 };
 
-static dsda_options_t lump_options;
+static dsda_options_t mbf_options;
 
 typedef struct {
   const char* key;
@@ -148,17 +148,17 @@ typedef struct {
 } dsda_option_t;
 
 static dsda_option_t option_list[] = {
-  { "weapon_recoil", &lump_options.weapon_recoil, 0, 1 },
-  { "monsters_remember", &lump_options.monsters_remember, 0, 1 },
-  { "monster_infighting", &lump_options.monster_infighting, 0, 1 },
-  { "monster_backing", &lump_options.monster_backing, 0, 1 },
-  { "monster_avoid_hazards", &lump_options.monster_avoid_hazards, 0, 1 },
-  { "monkeys", &lump_options.monkeys, 0, 1 },
-  { "monster_friction", &lump_options.monster_friction, 0, 1 },
-  { "help_friends", &lump_options.help_friends, 0, 1 },
-  { "player_helpers", &lump_options.player_helpers, 0, 3 },
-  { "friend_distance", &lump_options.friend_distance, 0, 999 },
-  { "dog_jumping", &lump_options.dog_jumping, 0, 1 },
+  { "weapon_recoil", &mbf_options.weapon_recoil, 0, 1 },
+  { "monsters_remember", &mbf_options.monsters_remember, 0, 1 },
+  { "monster_infighting", &mbf_options.monster_infighting, 0, 1 },
+  { "monster_backing", &mbf_options.monster_backing, 0, 1 },
+  { "monster_avoid_hazards", &mbf_options.monster_avoid_hazards, 0, 1 },
+  { "monkeys", &mbf_options.monkeys, 0, 1 },
+  { "monster_friction", &mbf_options.monster_friction, 0, 1 },
+  { "help_friends", &mbf_options.help_friends, 0, 1 },
+  { "player_helpers", &mbf_options.player_helpers, 0, 3 },
+  { "friend_distance", &mbf_options.friend_distance, 0, 999 },
+  { "dog_jumping", &mbf_options.dog_jumping, 0, 1 },
   { 0 }
 };
 
@@ -219,21 +219,21 @@ static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
 
   W_UnlockLumpNum(lumpnum);
 
-  return &lump_options;
+  return &mbf_options;
 }
 
 static const dsda_options_t* dsda_MBFOptions(void) {
   int lumpnum;
 
   if (compatibility_level == mbf_compatibility)
-    lump_options = default_mbf_options;
+    mbf_options = default_mbf_options;
   else
-    lump_options = default_latest_options;
+    mbf_options = default_latest_options;
 
   lumpnum = W_CheckNumForName("OPTIONS");
 
   if (lumpnum == -1)
-    return &lump_options;
+    return &mbf_options;
 
   return dsda_LumpOptions(lumpnum);
 }
