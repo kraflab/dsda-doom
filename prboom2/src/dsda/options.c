@@ -239,11 +239,11 @@ static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
     if (count != 2)
       continue;
 
-    lprintf(LO_INFO, "dsda_LumpOptions: %s = %d\n", key, value);
-
     for (option = option_list; option->value; option++) {
       if (!strncmp(key, option->key, OPTIONS_LINE_LENGTH)) {
         *option->value = BETWEEN(option->min, option->max, value);
+
+        lprintf(LO_INFO, "dsda_LumpOptions: %s = %d\n", key, value);
 
         break;
       }
