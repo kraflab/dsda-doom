@@ -180,6 +180,7 @@ static dsda_option_t option_list[] = {
   { "comp_zerotags", &mbf_options.comp_zerotags, 0, 1 },
   { "comp_moveblock", &mbf_options.comp_moveblock, 0, 1 },
   { "comp_respawn", &mbf_options.comp_respawn, 0, 1 },
+  { "comp_respawnfix", &mbf_options.comp_respawn, 0, 1 },
   { "comp_sound", &mbf_options.comp_sound, 0, 1 },
   { "comp_666", &mbf_options.comp_666, 0, 1 },
   { "comp_soul", &mbf_options.comp_soul, 0, 1 },
