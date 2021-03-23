@@ -100,4 +100,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 2774, MERGED: 44440, PERCENT: 94%
+LEFT: 1907, MERGED: 45307, PERCENT: 95%
