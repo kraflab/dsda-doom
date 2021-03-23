@@ -86,7 +86,7 @@
 - [x] p_telept.c 165
 - [x] p_tick.c 168
 - [x] p_user.c 1046
-- [ ] r_bsp.c 528
+- [x] r_bsp.c 528
 - [ ] r_data.c 765
 - [ ] r_draw.c 515
 - [ ] r_local.h 509
@@ -100,4 +100,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 5726, MERGED: 41488, PERCENT: 87%
+LEFT: 5199, MERGED: 42015, PERCENT: 88%
