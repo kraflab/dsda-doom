@@ -89,7 +89,7 @@
 - [x] r_bsp.c 528
 - [x] r_data.c 765
 - [x] r_draw.c 515
-- [ ] r_local.h 509
+- [x] r_local.h 509
 - [ ] r_main.c 868
 - [x] r_plane.c 539
 - [x] r_segs.c 678
@@ -100,4 +100,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 3244, MERGED: 43970, PERCENT: 93%
+LEFT: 2774, MERGED: 44440, PERCENT: 94%
