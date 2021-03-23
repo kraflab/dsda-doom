@@ -47,6 +47,9 @@
 #include "v_video.h"
 #include "v_trans.h" // [crispy] dp_translation
 
+#define HERETIC_VERSION 130
+#define HERETIC_VERSION_TEXT "v1.3"
+
 #define CT_KEY_GREEN    'g'
 #define CT_KEY_YELLOW   'y'
 #define CT_KEY_RED      'r'

@@ -43,7 +43,7 @@
 - [x] am_map.h 112
 - [x] ct_chat.c 478
 - [x] ct_chat.h 39
-- [ ] d_main.c 1305
+- [ ] d_main.c 1308
 - [x] d_net.c 227
 - [ ] deh_ammo.c 114
 - [ ] deh_frame.c 336
@@ -54,7 +54,7 @@
 - [ ] deh_thing.c 145
 - [ ] deh_weapon.c 123
 - [x] doomdata.h 193
-- [ ] doomdef.h 852
+- [x] doomdef.h 852
 - [x] dstrings.h 247
 - [x] f_finale.c 444
 - [x] g_game.c 2356
@@ -100,4 +100,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 7384, MERGED: 39830, PERCENT: 84%
+LEFT: 6936, MERGED: 40278, PERCENT: 85%
