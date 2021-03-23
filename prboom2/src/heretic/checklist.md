@@ -43,7 +43,7 @@
 - [x] am_map.h 112
 - [x] ct_chat.c 478
 - [x] ct_chat.h 39
-- [ ] d_main.c 1308
+- [x] d_main.c 1308
 - [x] d_net.c 227
 - [ ] deh_ammo.c 114
 - [ ] deh_frame.c 336
@@ -100,4 +100,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 6936, MERGED: 40278, PERCENT: 85%
+LEFT: 5726, MERGED: 41488, PERCENT: 87%
