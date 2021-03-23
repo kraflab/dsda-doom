@@ -110,9 +110,19 @@ void SB_Init(void)
     int i;
     int startLump;
     extern patchnum_t grnrock;
+    extern patchnum_t brdr_t, brdr_b, brdr_l, brdr_r;
+    extern patchnum_t brdr_tl, brdr_tr, brdr_bl, brdr_br;
 
-    // magic global that ends up in the background
+    // magic globals that ends up in the background
     R_SetFloorNum(&grnrock, "FLOOR30");
+    R_SetPatchNum(&brdr_t, DEH_String("bordt"));
+    R_SetPatchNum(&brdr_b, DEH_String("bordb"));
+    R_SetPatchNum(&brdr_l, DEH_String("bordl"));
+    R_SetPatchNum(&brdr_r, DEH_String("bordr"));
+    R_SetPatchNum(&brdr_tl, DEH_String("bordtl"));
+    R_SetPatchNum(&brdr_tr, DEH_String("bordtr"));
+    R_SetPatchNum(&brdr_bl, DEH_String("bordbl"));
+    R_SetPatchNum(&brdr_br, DEH_String("bordbr"));
 
     for (i = 0; i < 11; ++i)
     {

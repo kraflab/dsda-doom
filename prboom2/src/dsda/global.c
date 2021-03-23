@@ -95,6 +95,7 @@ int g_door_raise_in_5_mins;
 int g_door_open;
 
 int g_st_height;
+int g_border_offset;
 int g_mf_translucent;
 int g_mf_shadow;
 
@@ -200,6 +201,7 @@ static void dsda_InitDoom(void) {
   g_door_open = openDoor;
 
   g_st_height = 32;
+  g_border_offset = 8;
   g_mf_translucent = MF_TRANSLUCENT;
   g_mf_shadow = MF_SHADOW;
 
@@ -306,6 +308,7 @@ static void dsda_InitHeretic(void) {
   g_door_open = vld_open;
 
   g_st_height = 42;
+  g_border_offset = 4;
   g_mf_translucent = MF_SHADOW;
   g_mf_shadow = 0; // doesn't exist in heretic
 
