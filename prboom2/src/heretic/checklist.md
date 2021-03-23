@@ -92,7 +92,7 @@
 - [ ] r_local.h 509
 - [ ] r_main.c 868
 - [x] r_plane.c 539
-- [ ] r_segs.c 678
+- [x] r_segs.c 678
 - [x] r_things.c 1075
 - [x] s_sound.c 616
 - [x] s_sound.h 39
@@ -100,4 +100,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 3921, MERGED: 43293, PERCENT: 91%
+LEFT: 3244, MERGED: 43970, PERCENT: 93%
