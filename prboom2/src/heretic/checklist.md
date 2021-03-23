@@ -93,11 +93,11 @@
 - [ ] r_main.c 868
 - [x] r_plane.c 539
 - [ ] r_segs.c 678
-- [ ] r_things.c 1075
+- [x] r_things.c 1075
 - [x] s_sound.c 616
 - [x] s_sound.h 39
 - [x] sb_bar.c 1333
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 9370, MERGED: 37844, PERCENT: 80%
+LEFT: 8296, MERGED: 38918, PERCENT: 82%
