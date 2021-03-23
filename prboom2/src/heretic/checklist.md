@@ -53,7 +53,7 @@
 - [ ] deh_sound.c 109
 - [ ] deh_thing.c 145
 - [ ] deh_weapon.c 123
-- [ ] doomdata.h 193
+- [x] doomdata.h 193
 - [ ] doomdef.h 852
 - [x] dstrings.h 247
 - [x] f_finale.c 444
@@ -100,4 +100,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 7557, MERGED: 39657, PERCENT: 83%
+LEFT: 7384, MERGED: 39830, PERCENT: 84%
