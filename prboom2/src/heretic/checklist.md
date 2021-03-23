@@ -41,8 +41,8 @@
 - [x] am_data.h 104
 - [x] am_map.c 1544
 - [x] am_map.h 112
-- [ ] ct_chat.c 478
-- [ ] ct_chat.h 39
+- [x] ct_chat.c 478
+- [x] ct_chat.h 39
 - [ ] d_main.c 1305
 - [ ] d_net.c 227
 - [ ] deh_ammo.c 114
@@ -100,4 +100,4 @@
 - [x] sounds.c 251
 - [x] sounds.h 292
 
-LEFT: 8296, MERGED: 38918, PERCENT: 82%
+LEFT: 7782, MERGED: 39432, PERCENT: 83%
