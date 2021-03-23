@@ -928,6 +928,19 @@ static void R_ApplyWeaponBob (fixed_t *sx, dboolean bobx, fixed_t *sy, dboolean 
 // R_DrawPSprite
 //
 
+// heretic
+static int PSpriteSY[NUMWEAPONS] = {
+    0,                          // staff
+    5 * FRACUNIT,               // goldwand
+    15 * FRACUNIT,              // crossbow
+    15 * FRACUNIT,              // blaster
+    15 * FRACUNIT,              // skullrod
+    15 * FRACUNIT,              // phoenix rod
+    15 * FRACUNIT,              // mace
+    15 * FRACUNIT,              // gauntlets
+    15 * FRACUNIT               // beak
+};
+
 static void R_DrawPSprite (pspdef_t *psp)
 {
   int           x1, x2;
@@ -1005,6 +1018,11 @@ static void R_DrawPSprite (pspdef_t *psp)
    // killough 12/98: fix psprite positioning problem
   vis->texturemid = (BASEYCENTER<<FRACBITS) /* +  FRACUNIT/2 */ -
                     (psp_sy-topoffset);
+
+  if (viewheight == SCREENHEIGHT && heretic)
+  {
+    vis->texturemid -= PSpriteSY[players[consoleplayer].readyweapon];
+  }
 
   // Move the weapon down for 1280x1024.
   vis->texturemid -= psprite_offset;
