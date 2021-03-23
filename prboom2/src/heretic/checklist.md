@@ -90,7 +90,7 @@
 - [x] r_data.c 765
 - [x] r_draw.c 515
 - [x] r_local.h 509
-- [ ] r_main.c 868
+- [x] r_main.c 868
 - [x] r_plane.c 539
 - [x] r_segs.c 678
 - [x] r_things.c 1075
