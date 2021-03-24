@@ -23,6 +23,8 @@
 #include "r_main.h"
 #include "w_wad.h"
 
+#include "dsda/settings.h"
+
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
 
@@ -572,8 +574,11 @@ void DrawCommonBar(void)
     int chainY;
     int healthPos;
 
-    V_DrawNumPatch(0,  148, 0, LumpLTFCTOP, CR_DEFAULT, VPT_STRETCH);
-    V_DrawNumPatch(290,  148, 0, LumpRTFCTOP, CR_DEFAULT, VPT_STRETCH);
+    if (!dsda_HideHorns())
+    {
+      V_DrawNumPatch(0,  148, 0, LumpLTFCTOP, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNumPatch(290,  148, 0, LumpRTFCTOP, CR_DEFAULT, VPT_STRETCH);
+    }
 
     if (oldhealth != HealthMarker)
     {

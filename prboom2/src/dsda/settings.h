@@ -28,6 +28,7 @@ extern int dsda_exhud;
 extern int dsda_track_attempts;
 extern int dsda_wipe_at_full_speed;
 extern int dsda_fine_sensitivity;
+extern int dsda_hide_horns;
 
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);
@@ -37,6 +38,7 @@ double dsda_FineSensitivity(int base);
 dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
+dboolean dsda_HideHorns(void);
 dboolean dsda_ExHud(void);
 dboolean dsda_TrackAttempts(void);
 dboolean dsda_ShowHealthBars(void);
