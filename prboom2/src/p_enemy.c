@@ -2964,6 +2964,79 @@ void A_LineEffect(mobj_t *mo)
   mo->player = oldplayer;
 }
 
+//
+// [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
+//
+
+//
+// A_MonsterProjectile
+// A parameterized monster projectile attack.
+//   misc1: Type of actor to spawn
+//   misc2: Angle (degrees, in fixed point), relative to calling actor's angle
+//
+void A_MonsterProjectile(mobj_t *actor)
+{
+  mobj_t *mo;
+  int an;
+
+  // [XA] TODO: abort if not in correct complevel
+
+  if (!actor->target || !actor->state->misc1)
+    return;
+
+  A_FaceTarget(actor);
+  mo = P_SpawnMissile(actor, actor->target, actor->state->misc1 - 1);
+  if (!mo)
+    return;
+
+  // adjust the angle by misc2;
+  mo->angle += (unsigned int)(((int_64_t)actor->state->misc2 << 16) / 360);
+  an = mo->angle >> ANGLETOFINESHIFT;
+  mo->momx = FixedMul(mo->info->speed, finecosine[an]);
+  mo->momy = FixedMul(mo->info->speed, finesine[an]);
+
+  // always set the 'tracer' field, so this pointer
+  // can be used to fire seeker missiles at will.
+  P_SetTarget(&mo->tracer, actor->target);
+}
+
+//
+// A_MonsterBulletAttack
+// A parameterized monster bullet attack.
+//   misc1: Damage of attack (times 1d5)
+//   misc2: Horizontal spread (degrees, in fixed point)
+//
+void A_MonsterBulletAttack(mobj_t *actor)
+{
+  int damage, angle, slope, t;
+  int_64_t spread;
+
+  // [XA] TODO: abort if not in correct complevel
+
+  if (!actor->target)
+    return;
+
+  A_FaceTarget(actor);
+  S_StartSound(actor, actor->info->attacksound);
+
+  damage = (P_Random(pr_monsterbulletattack) % 5 + 1) * actor->state->misc1;
+
+  angle = actor->angle;
+  slope = P_AimLineAttack(actor, angle, MISSILERANGE, 0);
+
+  // [XA] layman's explanation of this crazy math:
+  // convert fixed-point-degrees to byte angles (BAM)...
+  spread = ((int_64_t)actor->state->misc2 << 16) / 360;
+
+  // ...then calculate a random number between (-255
+  // and 255), multiply by spread, and shift right 8
+  // (i.e. divide by 256) to convert back to BAM. word.
+  t = P_Random(pr_monsterbulletattack);
+  angle += (int)((spread * (t - P_Random(pr_monsterbulletattack))) >> 8);
+
+  P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
+}
+
 // heretic
 
 #include "heretic/def.h"

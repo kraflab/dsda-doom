@@ -120,6 +120,11 @@ void A_Stop(mobj_t *);
 
 void A_SkullPop(mobj_t *);
 
+// [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
+
+void A_MonsterProjectile(mobj_t *);
+void A_MonsterBulletAttack(mobj_t *);
+
 // heretic
 
 void P_NoiseAlert(mobj_t * target, mobj_t * emmiter);
