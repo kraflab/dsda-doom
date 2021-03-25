@@ -127,6 +127,13 @@ void A_FireBFG();
 void A_BFGSpray();
 void A_FireOldBFG();
 
+// [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
+
+void A_WeaponProjectile();
+void A_WeaponBulletAttack();
+void A_WeaponSound();
+void A_ConsumeAmmo();
+
 // heretic
 
 #include "p_mobj.h"

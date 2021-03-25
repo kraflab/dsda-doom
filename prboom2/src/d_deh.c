@@ -1396,6 +1396,10 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   // [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
   {A_MonsterProjectile,   "A_MonsterProjectile"},
   {A_MonsterBulletAttack, "A_MonsterBulletAttack"},
+  {A_WeaponProjectile,    "A_WeaponProjectile"},
+  {A_WeaponBulletAttack,  "A_WeaponBulletAttack"},
+  {A_WeaponSound,         "A_WeaponSound"},
+  {A_ConsumeAmmo,         "A_ConsumeAmmo"},
 
   // This NULL entry must be the last in the list
   {NULL,              "A_NULL"},  // Ty 05/16/98

@@ -1010,6 +1010,113 @@ void A_BFGsound(player_t *player, pspdef_t *psp)
 }
 
 //
+// [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
+//
+
+//
+// A_WeaponProjectile
+// A parameterized player weapon projectile attack. Does not consume ammo.
+//   misc1: Type of actor to spawn
+//   misc2: Angle (degrees, in fixed point), relative to calling actor's angle
+//
+void A_WeaponProjectile(player_t *player, pspdef_t *psp)
+{
+  mobj_t *mo;
+  int an;
+
+  CHECK_WEAPON_CODEPOINTER("A_WeaponProjectile", player);
+
+  // [XA] TODO: abort if not in correct complevel
+
+  if (!psp->state || !psp->state->misc1)
+    return;
+
+  mo = P_SpawnPlayerMissile(player->mo, psp->state->misc1 - 1);
+  if (!mo)
+	return;
+
+  // adjust the angle by misc2;
+  mo->angle += (unsigned int)(((int_64_t)psp->state->misc2 << 16) / 360);
+  an = mo->angle >> ANGLETOFINESHIFT;
+  mo->momx = FixedMul(mo->info->speed, finecosine[an]);
+  mo->momy = FixedMul(mo->info->speed, finesine[an]);
+}
+
+//
+// A_WeaponBulletAttack
+// A parameterized player weapon bullet attack. Does not consume ammo.
+//   misc1: Damage of attack (times 1d3)
+//   misc2: Horizontal spread (degrees, in fixed point)
+//
+void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
+{
+  int damage, angle, t;
+  int_64_t spread;
+
+  CHECK_WEAPON_CODEPOINTER("A_WeaponBulletAttack", player);
+
+  // [XA] TODO: abort if not in correct complevel
+
+  if (!psp->state)
+    return;
+
+  P_BulletSlope(player->mo);
+
+  damage = (P_Random(pr_weaponbulletattack) % 3 + 1) * psp->state->misc1;
+  angle = player->mo->angle;
+
+  // [XA] same math as A_MonsterBulletAttack
+  spread = ((int_64_t)psp->state->misc2 << 16) / 360;
+  t = P_Random(pr_weaponbulletattack);
+  angle += (int)((spread * (t - P_Random(pr_weaponbulletattack))) >> 8);
+
+  P_LineAttack(player->mo, angle, MISSILERANGE, bulletslope, damage);
+}
+
+//
+// A_WeaponSound
+// Plays a sound. Usable from weapons, unlike A_PlaySound
+//   misc1: ID of sound to play
+//   misc2: If 1, play sound at full volume (may be useful in DM?)
+//
+void A_WeaponSound(player_t *player, pspdef_t *psp)
+{
+  CHECK_WEAPON_CODEPOINTER("A_WeaponSound", player);
+
+  // [XA] TODO: abort if not in correct complevel
+
+  if (!psp->state)
+    return;
+
+  S_StartSound(psp->state->misc2 ? NULL : player->mo, psp->state->misc1);
+}
+
+//
+// A_ConsumeAmmo
+// Subtracts ammo from the player's "inventory". 'Nuff said.
+//   misc1: Amount of ammo to consume.
+//
+void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
+{
+  ammotype_t type;
+
+  CHECK_WEAPON_CODEPOINTER("A_ConsumeAmmo", player);
+
+  // [XA] TODO: abort if not in correct complevel
+
+  // don't do dumb things, kids
+  type = weaponinfo[player->readyweapon].ammo;
+  if (!psp->state || !psp->state->misc1 || type == am_noammo)
+	return;
+
+  // subtract ammo, but don't let it get below zero
+  if (player->ammo[type] >= psp->state->misc1)
+    player->ammo[type] -= psp->state->misc1;
+  else
+    player->ammo[type] = 0;
+}
+
+//
 // P_SetupPsprites
 // Called at start of level for each player.
 //
