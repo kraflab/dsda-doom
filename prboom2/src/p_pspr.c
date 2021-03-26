@@ -1136,6 +1136,7 @@ void A_WeaponSound(player_t *player, pspdef_t *psp)
 //
 void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
 {
+  int amount;
   ammotype_t type;
 
   CHECK_WEAPON_CODEPOINTER("A_ConsumeAmmo", player);
@@ -1144,12 +1145,24 @@ void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
 
   // don't do dumb things, kids
   type = weaponinfo[player->readyweapon].ammo;
-  if (!psp->state || !psp->state->misc1 || type == am_noammo)
+  if (!psp->state || type == am_noammo)
 	return;
 
+  // [XA] future proofin' -- if misc1 is zero,
+  // subtract whatever the default ammo usage
+  // is for the player's current weapon.
+  if (psp->state->misc1 != 0)
+    amount = psp->state->misc1;
+  else if (player->readyweapon == wp_bfg)
+    amount = BFGCELLS;
+  else if (player->readyweapon == wp_supershotgun)
+    amount = 2;
+  else
+    amount = 1;
+
   // subtract ammo, but don't let it get below zero
-  if (player->ammo[type] >= psp->state->misc1)
-    player->ammo[type] -= psp->state->misc1;
+  if (player->ammo[type] >= amount)
+    player->ammo[type] -= amount;
   else
     player->ammo[type] = 0;
 }
