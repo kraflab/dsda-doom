@@ -84,6 +84,44 @@ static const int recoil_values[] = {    // phares
   80  // wp_supershotgun
 };
 
+// [XA] keep a list of all parameterized weapon pointers,
+// so we can disable the misc1/misc2 weapon offset
+// behavior for states that use one of these
+
+static const actionf_t param_weapon_ptrs[] = {
+	A_WeaponProjectile,
+	A_WeaponBulletAttack,
+	A_WeaponSound,
+	A_ConsumeAmmo,
+
+	// This NULL entry must be the last in the list
+	NULL
+};
+
+//
+// P_IsParamWeaponPtr
+// Returns true if the specified action is a
+// parameterized weapon code pointer.
+//
+dboolean P_IsParamWeaponPtr(const actionf_t ptr)
+{
+  int i;
+
+  if (ptr == NULL)
+    return false;
+
+  i = -1;
+  do
+    {
+      ++i;
+      if (param_weapon_ptrs[i] == ptr)
+        return true;
+    }
+  while (param_weapon_ptrs[i] != NULL);
+
+  return false;
+}
+
 //
 // P_SetPsprite
 //
@@ -107,7 +145,7 @@ void P_SetPsprite(player_t *player, int position, statenum_t stnum)
       psp->state = state;
       psp->tics = state->tics;        // could be 0
 
-      if (state->misc1)
+      if (state->misc1 && !P_IsParamWeaponPtr(state->action))
         {
           // coordinate set
           psp->sx = state->misc1 << FRACBITS;
