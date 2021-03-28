@@ -3377,7 +3377,7 @@ const byte *G_ReadOptions(const byte *demo_p)
 
     if (mbf21)
     {
-      int count;
+      int i, count;
       count = *demo_p++;
 
       if (count > COMP_NUM)
