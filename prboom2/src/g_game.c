@@ -3996,109 +3996,109 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   }
 
   if (demover < 200)     // Autodetect old demos
+  {
+    if (demover >= 111) longtics = 1;
+
+    // killough 3/2/98: force these variables to be 0 in demo_compatibility
+
+    variable_friction = 0;
+
+    weapon_recoil = 0;
+
+    allow_pushers = 0;
+
+    monster_infighting = 1;           // killough 7/19/98
+
+    dogs = 0;                         // killough 7/19/98
+    dog_jumping = 0;                  // killough 10/98
+
+    monster_backing = 0;              // killough 9/8/98
+
+    monster_avoid_hazards = 0;        // killough 9/9/98
+
+    monster_friction = 0;             // killough 10/98
+    help_friends = 0;                 // killough 9/9/98
+    monkeys = 0;
+
+    // killough 3/6/98: rearrange to fix savegame bugs (moved fastparm,
+    // respawnparm, nomonsters flags to G_LoadOptions()/G_SaveOptions())
+
+    if ((skill = demover) >= 100)         // For demos from versions >= 1.4
     {
-      if (demover >= 111) longtics = 1;
+      //e6y: check for overrun
+      if (CheckForOverrun(header_p, demo_p, size, 8, failonerror))
+        return NULL;
 
-      // killough 3/2/98: force these variables to be 0 in demo_compatibility
-
-      variable_friction = 0;
-
-      weapon_recoil = 0;
-
-      allow_pushers = 0;
-
-      monster_infighting = 1;           // killough 7/19/98
-
-      dogs = 0;                         // killough 7/19/98
-      dog_jumping = 0;                  // killough 10/98
-
-      monster_backing = 0;              // killough 9/8/98
-
-      monster_avoid_hazards = 0;        // killough 9/9/98
-
-      monster_friction = 0;             // killough 10/98
-      help_friends = 0;                 // killough 9/9/98
-      monkeys = 0;
-
-      // killough 3/6/98: rearrange to fix savegame bugs (moved fastparm,
-      // respawnparm, nomonsters flags to G_LoadOptions()/G_SaveOptions())
-
-      if ((skill=demover) >= 100)         // For demos from versions >= 1.4
-        {
-          //e6y: check for overrun
-          if (CheckForOverrun(header_p, demo_p, size, 8, failonerror))
-            return NULL;
-
-          compatibility_level = G_GetOriginalDoomCompatLevel(demover);
-          skill = *demo_p++;
-          episode = *demo_p++;
-          map = *demo_p++;
-          deathmatch = *demo_p++;
-          respawnparm = *demo_p++;
-          fastparm = *demo_p++;
-          nomonsters = *demo_p++;
-          consoleplayer = *demo_p++;
-        }
-      else
-        {
-          //e6y: check for overrun
-          if (CheckForOverrun(header_p, demo_p, size, 2, failonerror))
-            return NULL;
-
-          compatibility_level = doom_12_compatibility;
-          episode = *demo_p++;
-          map = *demo_p++;
-          deathmatch = respawnparm = fastparm =
-            nomonsters = consoleplayer = 0;
-
-          // e6y
-          // Ability to force -nomonsters and -respawn for playback of 1.2 demos.
-          // Demos recorded with Doom.exe 1.2 did not contain any information
-          // about whether these parameters had been used. In order to play them
-          // back, you should add them to the command-line for playback.
-          // There is no more desynch on mesh.lmp @ mesh.wad
-          // prboom -iwad doom.wad -file mesh.wad -playdemo mesh.lmp -nomonsters
-          // http://www.doomworld.com/idgames/index.php?id=13976
-          respawnparm = M_CheckParm("-respawn");
-          fastparm = M_CheckParm("-fast");
-          nomonsters = M_CheckParm("-nomonsters");
-
-          // Read special parameter bits from player one byte.
-          // This aligns with vvHeretic demo usage:
-          //   0x20 = -respawn
-          //   0x10 = -longtics
-          //   0x02 = -nomonsters
-          if (heretic)
-          {
-            if (*demo_p & DEMOHEADER_RESPAWN)
-              respawnparm = true;
-            if (*demo_p & DEMOHEADER_LONGTICS)
-              longtics = true;
-            if (*demo_p & DEMOHEADER_NOMONSTERS)
-              nomonsters = true;
-          }
-
-          // e6y: detection of more unsupported demo formats
-          if (*(header_p + size - 1) == DEMOMARKER)
-          {
-            // file size test;
-            // DOOM_old and HERETIC don't use maps>9;
-            // 2 at 4,6 means playerclass=mage -> not DOOM_old or HERETIC;
-            if ((size >= 8 && (size - 8) % 4 != 0 && !heretic) ||
-                (map > 9) ||
-                (size >= 6 && (*(header_p + 4) == 2 || *(header_p + 6) == 2)))
-            {
-              I_Error("Unrecognised demo format.");
-            }
-          }
-
-        }
-      G_Compatibility();
+      compatibility_level = G_GetOriginalDoomCompatLevel(demover);
+      skill = *demo_p++;
+      episode = *demo_p++;
+      map = *demo_p++;
+      deathmatch = *demo_p++;
+      respawnparm = *demo_p++;
+      fastparm = *demo_p++;
+      nomonsters = *demo_p++;
+      consoleplayer = *demo_p++;
     }
-  else    // new versions of demos
+    else
     {
-      demo_p += 6;               // skip signature;
-      switch (demover) {
+      //e6y: check for overrun
+      if (CheckForOverrun(header_p, demo_p, size, 2, failonerror))
+        return NULL;
+
+      compatibility_level = doom_12_compatibility;
+      episode = *demo_p++;
+      map = *demo_p++;
+      deathmatch = respawnparm = fastparm =
+        nomonsters = consoleplayer = 0;
+
+      // e6y
+      // Ability to force -nomonsters and -respawn for playback of 1.2 demos.
+      // Demos recorded with Doom.exe 1.2 did not contain any information
+      // about whether these parameters had been used. In order to play them
+      // back, you should add them to the command-line for playback.
+      // There is no more desynch on mesh.lmp @ mesh.wad
+      // prboom -iwad doom.wad -file mesh.wad -playdemo mesh.lmp -nomonsters
+      // http://www.doomworld.com/idgames/index.php?id=13976
+      respawnparm = M_CheckParm("-respawn");
+      fastparm = M_CheckParm("-fast");
+      nomonsters = M_CheckParm("-nomonsters");
+
+      // Read special parameter bits from player one byte.
+      // This aligns with vvHeretic demo usage:
+      //   0x20 = -respawn
+      //   0x10 = -longtics
+      //   0x02 = -nomonsters
+      if (heretic)
+      {
+        if (*demo_p & DEMOHEADER_RESPAWN)
+          respawnparm = true;
+        if (*demo_p & DEMOHEADER_LONGTICS)
+          longtics = true;
+        if (*demo_p & DEMOHEADER_NOMONSTERS)
+          nomonsters = true;
+      }
+
+      // e6y: detection of more unsupported demo formats
+      if (*(header_p + size - 1) == DEMOMARKER)
+      {
+        // file size test;
+        // DOOM_old and HERETIC don't use maps>9;
+        // 2 at 4,6 means playerclass=mage -> not DOOM_old or HERETIC;
+        if ((size >= 8 && (size - 8) % 4 != 0 && !heretic) ||
+            (map > 9) ||
+            (size >= 6 && (*(header_p + 4) == 2 || *(header_p + 6) == 2)))
+        {
+          I_Error("Unrecognised demo format.");
+        }
+      }
+
+    }
+    G_Compatibility();
+  }
+  else    // new versions of demos
+  {
+    demo_p += 6;               // skip signature;
+    switch (demover) {
       case 200: /* BOOM */
       case 201:
         //e6y: check for overrun
@@ -4106,9 +4106,9 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
           return NULL;
 
         if (!*demo_p++)
-    compatibility_level = boom_201_compatibility;
+          compatibility_level = boom_201_compatibility;
         else
-    compatibility_level = boom_compatibility_compatibility;
+          compatibility_level = boom_compatibility_compatibility;
         break;
       case 202:
         //e6y: check for overrun
@@ -4116,75 +4116,75 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
           return NULL;
 
         if (!*demo_p++)
-    compatibility_level = boom_202_compatibility;
+          compatibility_level = boom_202_compatibility;
         else
-    compatibility_level = boom_compatibility_compatibility;
+          compatibility_level = boom_compatibility_compatibility;
         break;
       case 203:
-  /* LxDoom or MBF - determine from signature
-   * cph - load compatibility level */
-  switch (*(header_p + 2)) {
-  case 'B': /* LxDoom */
-    /* cph - DEMOSYNC - LxDoom demos recorded in compatibility modes support dropped */
-    compatibility_level = lxdoom_1_compatibility;
-    break;
-  case 'M':
-    compatibility_level = mbf_compatibility;
-    demo_p++;
-    break;
-  }
-  break;
+        /* LxDoom or MBF - determine from signature
+         * cph - load compatibility level */
+        switch (*(header_p + 2)) {
+        case 'B': /* LxDoom */
+          /* cph - DEMOSYNC - LxDoom demos recorded in compatibility modes support dropped */
+          compatibility_level = lxdoom_1_compatibility;
+          break;
+        case 'M':
+          compatibility_level = mbf_compatibility;
+          demo_p++;
+          break;
+        }
+        break;
       case 210:
-  compatibility_level = prboom_2_compatibility;
-  demo_p++;
-  break;
+        compatibility_level = prboom_2_compatibility;
+        demo_p++;
+        break;
       case 211:
-  compatibility_level = prboom_3_compatibility;
-  demo_p++;
-  break;
+        compatibility_level = prboom_3_compatibility;
+        demo_p++;
+        break;
       case 212:
-  compatibility_level = prboom_4_compatibility;
-  demo_p++;
-  break;
+        compatibility_level = prboom_4_compatibility;
+        demo_p++;
+        break;
       case 213:
-  compatibility_level = prboom_5_compatibility;
-  demo_p++;
-  break;
+        compatibility_level = prboom_5_compatibility;
+        demo_p++;
+        break;
       case 214:
-  compatibility_level = prboom_6_compatibility;
-        longtics = 1;
-  demo_p++;
-  break;
-      }
-      //e6y: check for overrun
-      if (CheckForOverrun(header_p, demo_p, size, 5, failonerror))
-        return NULL;
-
-      skill = *demo_p++;
-
-      if (!using_umapinfo)
-      {
-        // ano - jun2019 - umapinfo loads mapname earlier
-        episode = *demo_p++;
-        map = *demo_p++;
-      }
-      else
-      {
-        *demo_p++;
-        *demo_p++;
-      }
-      deathmatch = *demo_p++;
-      consoleplayer = *demo_p++;
-
-      //e6y: check for overrun
-      if (CheckForOverrun(header_p, demo_p, size, GAME_OPTION_SIZE, failonerror))
-        return NULL;
-
-      demo_p = G_ReadOptions(demo_p);  // killough 3/1/98: Read game options
-
-      if (demover == 200)              // killough 6/3/98: partially fix v2.00 demos
-        demo_p += 256-GAME_OPTION_SIZE;
+        compatibility_level = prboom_6_compatibility;
+              longtics = 1;
+        demo_p++;
+        break;
     }
+    //e6y: check for overrun
+    if (CheckForOverrun(header_p, demo_p, size, 5, failonerror))
+      return NULL;
+
+    skill = *demo_p++;
+
+    if (!using_umapinfo)
+    {
+      // ano - jun2019 - umapinfo loads mapname earlier
+      episode = *demo_p++;
+      map = *demo_p++;
+    }
+    else
+    {
+      *demo_p++;
+      *demo_p++;
+    }
+    deathmatch = *demo_p++;
+    consoleplayer = *demo_p++;
+
+    //e6y: check for overrun
+    if (CheckForOverrun(header_p, demo_p, size, GAME_OPTION_SIZE, failonerror))
+      return NULL;
+
+    demo_p = G_ReadOptions(demo_p);  // killough 3/1/98: Read game options
+
+    if (demover == 200)              // killough 6/3/98: partially fix v2.00 demos
+      demo_p += 256 - GAME_OPTION_SIZE;
+  }
 
   if (sizeof(comp_lev_str)/sizeof(comp_lev_str[0]) != MAX_COMPATIBILITY_LEVEL)
     I_Error("G_ReadDemoHeader: compatibility level strings incomplete");
@@ -4192,41 +4192,41 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     comp_lev_str[compatibility_level]);
 
   if (demo_compatibility || demover < 200) //e6y  // only 4 players can exist in old demos
-    {
-      //e6y: check for overrun
-      if (CheckForOverrun(header_p, demo_p, size, 4, failonerror))
-        return NULL;
+  {
+    //e6y: check for overrun
+    if (CheckForOverrun(header_p, demo_p, size, 4, failonerror))
+      return NULL;
 
-      for (i=0; i<4; i++)  // intentionally hard-coded 4 -- killough
-        playeringame[i] = *demo_p++;
-      for (;i < MAXPLAYERS; i++)
-        playeringame[i] = 0;
-    }
+    for (i = 0; i < 4; i++)  // intentionally hard-coded 4 -- killough
+      playeringame[i] = *demo_p++;
+    for (; i < MAXPLAYERS; i++)
+      playeringame[i] = 0;
+  }
   else
-    {
-      //e6y: check for overrun
-      if (CheckForOverrun(header_p, demo_p, size, MAXPLAYERS, failonerror))
-        return NULL;
+  {
+    //e6y: check for overrun
+    if (CheckForOverrun(header_p, demo_p, size, MAXPLAYERS, failonerror))
+      return NULL;
 
-      for (i=0 ; i < MAXPLAYERS; i++)
-        playeringame[i] = *demo_p++;
-      demo_p += MIN_MAXPLAYERS - MAXPLAYERS;
-    }
+    for (i=0 ; i < MAXPLAYERS; i++)
+      playeringame[i] = *demo_p++;
+    demo_p += MIN_MAXPLAYERS - MAXPLAYERS;
+  }
 
   if (playeringame[1])
-    {
-      netgame = true;
-      netdemo = true;
-    }
+  {
+    netgame = true;
+    netdemo = true;
+  }
 
-  if (!(params&RDH_SKIP_HEADER))
+  if (!(params & RDH_SKIP_HEADER))
   {
     if (gameaction != ga_loadgame) { /* killough 12/98: support -loadgame */
       G_InitNew(skill, episode, map);
     }
   }
 
-  for (i=0; i<MAXPLAYERS;i++)         // killough 4/24/98
+  for (i = 0; i < MAXPLAYERS; i++)         // killough 4/24/98
     players[i].cheats = 0;
 
   // e6y
@@ -4261,8 +4261,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       demo_tics_count /= demo_playerscount;
 
       sprintf(demo_len_st, "\x1b\x35/%d:%02d",
-        demo_tics_count/TICRATE/60,
-        (demo_tics_count%(60*TICRATE))/TICRATE);
+        demo_tics_count / TICRATE / 60,
+        (demo_tics_count % (60 * TICRATE)) / TICRATE);
     }
   }
 
