@@ -3298,11 +3298,18 @@ byte *G_WriteOptions(byte *demo_p)
 
   *demo_p++ = (compatibility_level >= prboom_2_compatibility) && forceOldBsp; // cph 2002/07/20
 
-  //----------------
-  // Padding at end
-  //----------------
-  while (demo_p < target)
-    *demo_p++ = 0;
+  if (mbf21)
+  {
+    target = demo_p;
+  }
+  else
+  {
+    //----------------
+    // Padding at end
+    //----------------
+    while (demo_p < target)
+      *demo_p++ = 0;
+  }
 
   if (demo_p != target)
     I_Error("G_WriteOptions: GAME_OPTION_SIZE is too small");
@@ -3401,6 +3408,11 @@ const byte *G_ReadOptions(const byte *demo_p)
   }
 
   G_Compatibility();
+
+  if (mbf21)
+  {
+    return demo_p;
+  }
 
   return target;
 }
