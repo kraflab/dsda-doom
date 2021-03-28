@@ -3278,7 +3278,7 @@ byte *G_WriteOptions(byte *demo_p)
 
   {   // killough 10/98: a compatibility vector now
     int i;
-    for (i=0; i < COMP_TOTAL; i++)
+    for (i = 0; i < COMP_TOTAL; i++)
       *demo_p++ = comp[i] != 0;
   }
 
@@ -3339,42 +3339,43 @@ const byte *G_ReadOptions(const byte *demo_p)
 
   // Options new to v2.03
   if (mbf_features)
-    {
-      monster_infighting = *demo_p++;   // killough 7/19/98
+  {
+    monster_infighting = *demo_p++;   // killough 7/19/98
 
-      dogs = *demo_p++;                 // killough 7/19/98
+    dogs = *demo_p++;                 // killough 7/19/98
 
-      demo_p += 2;
+    demo_p += 2;
 
-      distfriend = *demo_p++ << 8;      // killough 8/8/98
-      distfriend+= *demo_p++;
+    distfriend = *demo_p++ << 8;      // killough 8/8/98
+    distfriend+= *demo_p++;
 
-      monster_backing = *demo_p++;     // killough 9/8/98
+    monster_backing = *demo_p++;     // killough 9/8/98
 
-      monster_avoid_hazards = *demo_p++; // killough 9/9/98
+    monster_avoid_hazards = *demo_p++; // killough 9/9/98
 
-      monster_friction = *demo_p++;      // killough 10/98
+    monster_friction = *demo_p++;      // killough 10/98
 
-      help_friends = *demo_p++;          // killough 9/9/98
+    help_friends = *demo_p++;          // killough 9/9/98
 
-      dog_jumping = *demo_p++;           // killough 10/98
+    dog_jumping = *demo_p++;           // killough 10/98
 
-      monkeys = *demo_p++;
+    monkeys = *demo_p++;
 
-      {   // killough 10/98: a compatibility vector now
-  int i;
-  for (i=0; i < COMP_TOTAL; i++)
-    comp[i] = *demo_p++;
-      }
-
-      forceOldBsp = *demo_p++; // cph 2002/07/20
+    {   // killough 10/98: a compatibility vector now
+      int i;
+      for (i = 0; i < COMP_TOTAL; i++)
+        comp[i] = *demo_p++;
     }
+
+    forceOldBsp = *demo_p++; // cph 2002/07/20
+  }
   else  /* defaults for versions <= 2.02 */
-    {
-      /* G_Compatibility will set these */
-    }
+  {
+    /* G_Compatibility will set these */
+  }
 
   G_Compatibility();
+
   return target;
 }
 
