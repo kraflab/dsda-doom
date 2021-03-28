@@ -2718,6 +2718,14 @@ void G_Compatibility(void)
     { boom_compatibility_compatibility, prboom_6_compatibility },
     // comp_translucency - No predefined translucency for some things
     { boom_compatibility_compatibility, prboom_6_compatibility },
+    // comp_placeholder_29 - Not defined yet
+    { 255, 255 },
+    // comp_placeholder_30 - Not defined yet
+    { 255, 255 },
+    // comp_placeholder_31 - Not defined yet
+    { 255, 255 },
+    // comp_placeholder_32 - Not defined yet
+    { 255, 255 }
   };
   unsigned int i;
 
@@ -3273,9 +3281,18 @@ byte *G_WriteOptions(byte *demo_p)
 
   *demo_p++ = monkeys;
 
+  if (mbf21)
+  {
+    int i;
+    *demo_p++ = COMP_NUM;
+
+    for (i = 0; i < COMP_NUM; i++)
+      *demo_p++ = comp[i] != 0;
+  }
+  else
   {   // killough 10/98: a compatibility vector now
     int i;
-    for (i = 0; i < COMP_TOTAL; i++)
+    for (i = 0; i < MBF_COMP_TOTAL; i++)
       *demo_p++ = comp[i] != 0;
   }
 
@@ -3358,9 +3375,21 @@ const byte *G_ReadOptions(const byte *demo_p)
 
     monkeys = *demo_p++;
 
+    if (mbf21)
+    {
+      int count;
+      count = *demo_p++;
+
+      if (count > COMP_NUM)
+        I_Error("Encountered mbf21 compatibility options unknown to this version!");
+
+      for (i = 0; i < count; i++)
+        comp[i] = *demo_p++;
+    }
+    else
     {   // killough 10/98: a compatibility vector now
       int i;
-      for (i = 0; i < COMP_TOTAL; i++)
+      for (i = 0; i < MBF_COMP_TOTAL; i++)
         comp[i] = *demo_p++;
     }
 
@@ -3481,6 +3510,7 @@ void G_BeginRecording (void)
              v = 214;
              longtics = 1;
              break;
+        case mbf21_compatibility: v = 221; break;
         default: I_Error("G_BeginRecording: PrBoom compatibility level unrecognised?");
       }
       *demo_p++ = v;
@@ -3494,9 +3524,11 @@ void G_BeginRecording (void)
     *demo_p++ = 0xe6;
     *demo_p++ = '\0';
 
-    /* killough 2/22/98: save compatibility flag in new demos
-     * cph - FIXME? MBF demos will always be not in compat. mode */
-    *demo_p++ = 0;
+    if (!mbf21)
+    {
+      // boom compatibility mode flag, which has no meaning in mbf+
+      *demo_p++ = 0;
+    }
 
     *demo_p++ = gameskill;
     *demo_p++ = gameepisode;
@@ -3865,7 +3897,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   // BOOM's demoversion starts from 200
   if (!((demover >=   0  && demover <=   4) ||
         (demover >= 104  && demover <= 111) ||
-        (demover >= 200  && demover <= 214)))
+        (demover >= 200  && demover <= 214) ||
+        (demover == 221)))
   {
     I_Error("G_ReadDemoHeader: Unknown demo format %d.", demover);
   }
@@ -4029,6 +4062,9 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
         compatibility_level = prboom_6_compatibility;
               longtics = 1;
         demo_p++;
+        break;
+      case 221:
+        compatibility_level = mbf21_compatibility;
         break;
     }
     //e6y: check for overrun
