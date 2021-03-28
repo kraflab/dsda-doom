@@ -312,9 +312,6 @@ static int G_CarryDouble(double_carry_t c, double value)
 
 static void G_DoSaveGame (dboolean menu);
 
-//e6y: save/restore all data which could be changed by G_ReadDemoHeader
-static void G_SaveRestoreGameOptions(int save);
-
 //
 // G_BuildTiccmd
 // Builds a ticcmd from all of the available inputs
@@ -3657,129 +3654,6 @@ static dboolean CheckForOverrun(const byte *start_p, const byte *current_p, size
       return true;
   }
   return false;
-}
-
-// e6y
-// save/restore all data which could be changed by G_ReadDemoHeader
-void G_SaveRestoreGameOptions(int save)
-{
-  typedef struct gameoption_s
-  {
-    int type;
-    int value_int;
-    int *value_p;
-  } gameoption_t;
-
-  static gameoption_t gameoptions[] =
-  {
-    {1, 0, &demover},
-    {1, 0, (int*)&compatibility_level},
-    {1, 0, &basetic},
-    {3, 0, (int*)&rngseed},
-
-    {1, 0, (int*)&gameskill},
-    {1, 0, &gameepisode},
-    {1, 0, &gamemap},
-
-    {2, 0, (int*)&deathmatch},
-    {2, 0, (int*)&respawnparm},
-    {2, 0, (int*)&fastparm},
-    {2, 0, (int*)&nomonsters},
-    {1, 0, &consoleplayer},
-    {2, 0, (int*)&netgame},
-    {2, 0, (int*)&netdemo},
-
-    {1, 0, &longtics},
-    {1, 0, &monsters_remember},
-    {1, 0, &variable_friction},
-    {1, 0, &weapon_recoil},
-    {1, 0, &allow_pushers},
-    {1, 0, &player_bobbing},
-    {1, 0, &demo_insurance},
-    {1, 0, &monster_infighting},
-    {1, 0, &dogs},
-    {1, 0, &distfriend},
-    {1, 0, &monster_backing},
-    {1, 0, &monster_avoid_hazards},
-    {1, 0, &monster_friction},
-    {1, 0, &help_friends},
-    {1, 0, &dog_jumping},
-    {1, 0, &monkeys},
-
-    {2, 0, (int*)&forceOldBsp},
-    {-1, -1, NULL}
-  };
-
-  static dboolean was_saved_once = false;
-
-  static dboolean playeringame_o[MAXPLAYERS];
-  static dboolean playerscheats_o[MAXPLAYERS];
-  static int comp_o[COMP_TOTAL];
-
-  int i = 0;
-
-  if (save)
-  {
-    was_saved_once = true;
-  }
-  else
-  {
-    if (!was_saved_once)
-    {
-      I_Error("G_SaveRestoreGameOptions: Trying to restore unsaved data");
-    }
-  }
-
-  while (gameoptions[i].value_p)
-  {
-    switch (gameoptions[i].type)
-    {
-    case 1: //int
-    case 2: //dboolean
-    case 3: //unsigned long
-      if (save)
-      {
-        gameoptions[i].value_int = *gameoptions[i].value_p;
-      }
-      else
-      {
-        *gameoptions[i].value_p = gameoptions[i].value_int;
-      }
-      break;
-    default: // unrecognised type
-      I_Error("G_SaveRestoreGameOptions: Unrecognised type of option");
-      break;
-    }
-
-    i++;
-  }
-
-  for (i = 0 ; i < MAXPLAYERS; i++)
-  {
-    if (save)
-    {
-      playeringame_o[i] = playeringame[i];
-      playerscheats_o[i] = players[i].cheats;
-    }
-    else
-    {
-      playeringame[i] = playeringame_o[i];
-      players[i].cheats = playerscheats_o[i];
-    }
-  }
-
-  for (i = 0; i < COMP_TOTAL; i++)
-  {
-    if (save)
-    {
-      comp_o[i] = comp[i];
-    }
-    else
-    {
-      comp[i] = comp_o[i];
-    }
-  }
-  if (!save) G_LookupMapinfo(gameepisode, gamemap);
 }
 
 const byte* G_ReadDemoHeader(const byte *demo_p, size_t size)
