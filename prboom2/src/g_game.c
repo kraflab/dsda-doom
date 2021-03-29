@@ -2539,7 +2539,7 @@ static void G_DoSaveGame (dboolean menu)
     *save_p++ = 0;
   }
 
-  CheckSaveGame(GAME_OPTION_SIZE+MIN_MAXPLAYERS+14+strlen(NEWFORMATSIG)+sizeof packageversion);
+  CheckSaveGame(dsda_GameOptionSize()+MIN_MAXPLAYERS+14+strlen(NEWFORMATSIG)+sizeof packageversion);
 
   //e6y: saving of the version number of package
   strcpy((char*)save_p, NEWFORMATSIG);
@@ -2718,6 +2718,14 @@ void G_Compatibility(void)
     { boom_compatibility_compatibility, prboom_6_compatibility },
     // comp_translucency - No predefined translucency for some things
     { boom_compatibility_compatibility, prboom_6_compatibility },
+    // comp_placeholder_29 - Not defined yet
+    { 255, 255 },
+    // comp_placeholder_30 - Not defined yet
+    { 255, 255 },
+    // comp_placeholder_31 - Not defined yet
+    { 255, 255 },
+    // comp_placeholder_32 - Not defined yet
+    { 255, 255 }
   };
   unsigned int i;
 
@@ -2849,7 +2857,7 @@ void G_ReloadDefaults(void)
   G_Compatibility();
 
   // killough 3/31/98, 4/5/98: demo sync insurance
-  demo_insurance = default_demo_insurance == 1;
+  demo_insurance = mbf21 ? 0 : (default_demo_insurance == 1);
 
   rngseed += I_GetRandomTimeSeed() + gametic; // CPhipps
 }
@@ -3222,7 +3230,14 @@ void G_RecordDemo (const char* name)
 
 byte *G_WriteOptions(byte *demo_p)
 {
-  byte *target = demo_p + GAME_OPTION_SIZE;
+  byte *target;
+
+  if (mbf21)
+  {
+    return dsda_WriteOptions21(demo_p);
+  }
+
+  target = demo_p + dsda_GameOptionSize();
 
   *demo_p++ = monsters_remember;  // part of monster AI
 
@@ -3275,7 +3290,7 @@ byte *G_WriteOptions(byte *demo_p)
 
   {   // killough 10/98: a compatibility vector now
     int i;
-    for (i = 0; i < COMP_TOTAL; i++)
+    for (i = 0; i < MBF_COMP_TOTAL; i++)
       *demo_p++ = comp[i] != 0;
   }
 
@@ -3288,7 +3303,7 @@ byte *G_WriteOptions(byte *demo_p)
     *demo_p++ = 0;
 
   if (demo_p != target)
-    I_Error("G_WriteOptions: GAME_OPTION_SIZE is too small");
+    I_Error("G_WriteOptions: dsda_GameOptionSize is too small");
 
   return target;
 }
@@ -3299,7 +3314,14 @@ byte *G_WriteOptions(byte *demo_p)
 
 const byte *G_ReadOptions(const byte *demo_p)
 {
-  const byte *target = demo_p + GAME_OPTION_SIZE;
+  const byte *target;
+
+  if (mbf21)
+  {
+    return dsda_ReadOptions21(demo_p);
+  }
+
+  target = demo_p + dsda_GameOptionSize();
 
   monsters_remember = *demo_p++;
 
@@ -3360,7 +3382,7 @@ const byte *G_ReadOptions(const byte *demo_p)
 
     {   // killough 10/98: a compatibility vector now
       int i;
-      for (i = 0; i < COMP_TOTAL; i++)
+      for (i = 0; i < MBF_COMP_TOTAL; i++)
         comp[i] = *demo_p++;
     }
 
@@ -3481,6 +3503,10 @@ void G_BeginRecording (void)
              v = 214;
              longtics = 1;
              break;
+        case mbf21_compatibility:
+             v = 221;
+             longtics = 1;
+             break;
         default: I_Error("G_BeginRecording: PrBoom compatibility level unrecognised?");
       }
       *demo_p++ = v;
@@ -3494,9 +3520,11 @@ void G_BeginRecording (void)
     *demo_p++ = 0xe6;
     *demo_p++ = '\0';
 
-    /* killough 2/22/98: save compatibility flag in new demos
-     * cph - FIXME? MBF demos will always be not in compat. mode */
-    *demo_p++ = 0;
+    if (!mbf21)
+    {
+      // boom compatibility mode flag, which has no meaning in mbf+
+      *demo_p++ = 0;
+    }
 
     *demo_p++ = gameskill;
     *demo_p++ = gameepisode;
@@ -3865,7 +3893,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   // BOOM's demoversion starts from 200
   if (!((demover >=   0  && demover <=   4) ||
         (demover >= 104  && demover <= 111) ||
-        (demover >= 200  && demover <= 214)))
+        (demover >= 200  && demover <= 214) ||
+        (demover == 221)))
   {
     I_Error("G_ReadDemoHeader: Unknown demo format %d.", demover);
   }
@@ -4030,6 +4059,10 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
               longtics = 1;
         demo_p++;
         break;
+      case 221:
+        compatibility_level = mbf21_compatibility;
+        longtics = 1;
+        break;
     }
     //e6y: check for overrun
     if (CheckForOverrun(header_p, demo_p, size, 5, failonerror))
@@ -4052,13 +4085,13 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     consoleplayer = *demo_p++;
 
     //e6y: check for overrun
-    if (CheckForOverrun(header_p, demo_p, size, GAME_OPTION_SIZE, failonerror))
+    if (CheckForOverrun(header_p, demo_p, size, dsda_GameOptionSize(), failonerror))
       return NULL;
 
     demo_p = G_ReadOptions(demo_p);  // killough 3/1/98: Read game options
 
     if (demover == 200)              // killough 6/3/98: partially fix v2.00 demos
-      demo_p += 256 - GAME_OPTION_SIZE;
+      demo_p += 256 - dsda_GameOptionSize();
   }
 
   if (sizeof(comp_lev_str)/sizeof(comp_lev_str[0]) != MAX_COMPATIBILITY_LEVEL)

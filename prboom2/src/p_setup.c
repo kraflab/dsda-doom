@@ -318,7 +318,9 @@ static void P_GetNodesVersion(int lumpnum, int gl_lumpnum)
   int ver = -1;
   nodesVersion = 0;
 
-  if ( (gl_lumpnum > lumpnum) && (forceOldBsp == false) && (compatibility_level >= prboom_2_compatibility) )
+  if ((gl_lumpnum > lumpnum) &&
+      (mbf21 || forceOldBsp == false) &&
+      (compatibility_level >= prboom_2_compatibility))
   {
     if (CheckForIdentifier(gl_lumpnum+ML_GL_VERTS, "gNd2", 4)) {
       if (CheckForIdentifier(gl_lumpnum+ML_GL_SEGS, "gNd3", 4)) {
