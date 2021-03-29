@@ -283,8 +283,98 @@ const dsda_options_t* dsda_Options(void) {
 
 // killough 5/2/98: number of bytes reserved for saving options
 #define MBF_GAME_OPTION_SIZE 64
-#define MBF21_GAME_OPTION_SIZE (27 + COMP_NUM)
+#define MBF21_GAME_OPTION_SIZE (20 + COMP_NUM)
 
 int dsda_GameOptionSize(void) {
   return mbf21 ? MBF21_GAME_OPTION_SIZE : MBF_GAME_OPTION_SIZE;
+}
+
+byte* dsda_WriteOptions21(byte* demo_p) {
+  int i;
+  byte *target = demo_p + dsda_GameOptionSize();
+
+  *demo_p++ = monsters_remember;
+  *demo_p++ = weapon_recoil;
+  *demo_p++ = player_bobbing;
+
+  *demo_p++ = respawnparm;
+  *demo_p++ = fastparm;
+  *demo_p++ = nomonsters;
+
+  *demo_p++ = (byte)((rngseed >> 24) & 0xff);
+  *demo_p++ = (byte)((rngseed >> 16) & 0xff);
+  *demo_p++ = (byte)((rngseed >>  8) & 0xff);
+  *demo_p++ = (byte)( rngseed        & 0xff);
+
+  *demo_p++ = monster_infighting;
+  *demo_p++ = dogs;
+
+  *demo_p++ = (distfriend >> 8) & 0xff;
+  *demo_p++ =  distfriend       & 0xff;
+
+  *demo_p++ = monster_backing;
+  *demo_p++ = monster_avoid_hazards;
+  *demo_p++ = monster_friction;
+  *demo_p++ = help_friends;
+  *demo_p++ = dog_jumping;
+  *demo_p++ = monkeys;
+
+  *demo_p++ = COMP_NUM;
+  for (i = 0; i < COMP_NUM; i++)
+    *demo_p++ = comp[i] != 0;
+
+  if (demo_p != target)
+    I_Error("dsda_WriteOptions21: dsda_GameOptionSize is too small");
+
+  return demo_p;
+}
+
+const byte *dsda_ReadOptions21(const byte *demo_p) {
+  int i, count;
+
+  // not configurable in mbf21
+  variable_friction = 1;
+  allow_pushers = 1;
+  demo_insurance = 0;
+
+  monsters_remember = *demo_p++;
+  weapon_recoil = *demo_p++;
+  player_bobbing = *demo_p++;
+
+  respawnparm = *demo_p++;
+  fastparm = *demo_p++;
+  nomonsters = *demo_p++;
+
+  rngseed  = *demo_p++ & 0xff;
+  rngseed <<= 8;
+  rngseed += *demo_p++ & 0xff;
+  rngseed <<= 8;
+  rngseed += *demo_p++ & 0xff;
+  rngseed <<= 8;
+  rngseed += *demo_p++ & 0xff;
+
+  monster_infighting = *demo_p++;
+  dogs = *demo_p++;
+
+  distfriend  = *demo_p++ << 8;
+  distfriend += *demo_p++;
+
+  monster_backing = *demo_p++;
+  monster_avoid_hazards = *demo_p++;
+  monster_friction = *demo_p++;
+  help_friends = *demo_p++;
+  dog_jumping = *demo_p++;
+  monkeys = *demo_p++;
+
+  count = *demo_p++;
+
+  if (count > COMP_NUM)
+    I_Error("Encountered unknown mbf21 compatibility options!");
+
+  for (i = 0; i < count; i++)
+    comp[i] = *demo_p++;
+
+  G_Compatibility();
+
+  return demo_p;
 }

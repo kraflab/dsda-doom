@@ -2857,7 +2857,7 @@ void G_ReloadDefaults(void)
   G_Compatibility();
 
   // killough 3/31/98, 4/5/98: demo sync insurance
-  demo_insurance = default_demo_insurance == 1;
+  demo_insurance = mbf21 ? 0 : (default_demo_insurance == 1);
 
   rngseed += I_GetRandomTimeSeed() + gametic; // CPhipps
 }
@@ -3230,7 +3230,14 @@ void G_RecordDemo (const char* name)
 
 byte *G_WriteOptions(byte *demo_p)
 {
-  byte *target = demo_p + dsda_GameOptionSize();
+  byte *target;
+
+  if (mbf21)
+  {
+    return dsda_WriteOptions21(demo_p);
+  }
+
+  target = demo_p + dsda_GameOptionSize();
 
   *demo_p++ = monsters_remember;  // part of monster AI
 
@@ -3281,31 +3288,19 @@ byte *G_WriteOptions(byte *demo_p)
 
   *demo_p++ = monkeys;
 
-  if (mbf21)
-  {
-    int i;
-    *demo_p++ = COMP_NUM;
-
-    for (i = 0; i < COMP_NUM; i++)
-      *demo_p++ = comp[i] != 0;
-  }
-  else
   {   // killough 10/98: a compatibility vector now
     int i;
     for (i = 0; i < MBF_COMP_TOTAL; i++)
       *demo_p++ = comp[i] != 0;
-
-    *demo_p++ = (compatibility_level >= prboom_2_compatibility) && forceOldBsp; // cph 2002/07/20
   }
 
-  if (!mbf21)
-  {
-    //----------------
-    // Padding at end
-    //----------------
-    while (demo_p < target)
-      *demo_p++ = 0;
-  }
+  *demo_p++ = (compatibility_level >= prboom_2_compatibility) && forceOldBsp; // cph 2002/07/20
+
+  //----------------
+  // Padding at end
+  //----------------
+  while (demo_p < target)
+    *demo_p++ = 0;
 
   if (demo_p != target)
     I_Error("G_WriteOptions: dsda_GameOptionSize is too small");
@@ -3319,7 +3314,14 @@ byte *G_WriteOptions(byte *demo_p)
 
 const byte *G_ReadOptions(const byte *demo_p)
 {
-  const byte *target = demo_p + dsda_GameOptionSize();
+  const byte *target;
+
+  if (mbf21)
+  {
+    return dsda_ReadOptions21(demo_p);
+  }
+
+  target = demo_p + dsda_GameOptionSize();
 
   monsters_remember = *demo_p++;
 
@@ -3378,25 +3380,14 @@ const byte *G_ReadOptions(const byte *demo_p)
 
     monkeys = *demo_p++;
 
-    if (mbf21)
-    {
-      int i, count;
-      count = *demo_p++;
-
-      if (count > COMP_NUM)
-        I_Error("Encountered mbf21 compatibility options unknown to this version!");
-
-      for (i = 0; i < count; i++)
-        comp[i] = *demo_p++;
-    }
-    else
     {   // killough 10/98: a compatibility vector now
       int i;
       for (i = 0; i < MBF_COMP_TOTAL; i++)
         comp[i] = *demo_p++;
 
-      forceOldBsp = *demo_p++; // cph 2002/07/20
     }
+
+    forceOldBsp = *demo_p++; // cph 2002/07/20
   }
   else  /* defaults for versions <= 2.02 */
   {
@@ -3404,11 +3395,6 @@ const byte *G_ReadOptions(const byte *demo_p)
   }
 
   G_Compatibility();
-
-  if (mbf21)
-  {
-    return demo_p;
-  }
 
   return target;
 }
