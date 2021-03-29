@@ -3294,9 +3294,9 @@ byte *G_WriteOptions(byte *demo_p)
     int i;
     for (i = 0; i < MBF_COMP_TOTAL; i++)
       *demo_p++ = comp[i] != 0;
-  }
 
-  *demo_p++ = (compatibility_level >= prboom_2_compatibility) && forceOldBsp; // cph 2002/07/20
+    *demo_p++ = (compatibility_level >= prboom_2_compatibility) && forceOldBsp; // cph 2002/07/20
+  }
 
   if (mbf21)
   {
@@ -3398,9 +3398,9 @@ const byte *G_ReadOptions(const byte *demo_p)
       int i;
       for (i = 0; i < MBF_COMP_TOTAL; i++)
         comp[i] = *demo_p++;
-    }
 
-    forceOldBsp = *demo_p++; // cph 2002/07/20
+      forceOldBsp = *demo_p++; // cph 2002/07/20
+    }
   }
   else  /* defaults for versions <= 2.02 */
   {
