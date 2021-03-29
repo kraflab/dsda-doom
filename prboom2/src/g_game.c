@@ -2539,7 +2539,7 @@ static void G_DoSaveGame (dboolean menu)
     *save_p++ = 0;
   }
 
-  CheckSaveGame(MBF_GAME_OPTION_SIZE+MIN_MAXPLAYERS+14+strlen(NEWFORMATSIG)+sizeof packageversion);
+  CheckSaveGame(dsda_GameOptionSize()+MIN_MAXPLAYERS+14+strlen(NEWFORMATSIG)+sizeof packageversion);
 
   //e6y: saving of the version number of package
   strcpy((char*)save_p, NEWFORMATSIG);
@@ -3230,7 +3230,7 @@ void G_RecordDemo (const char* name)
 
 byte *G_WriteOptions(byte *demo_p)
 {
-  byte *target = demo_p + MBF_GAME_OPTION_SIZE;
+  byte *target = demo_p + dsda_GameOptionSize();
 
   *demo_p++ = monsters_remember;  // part of monster AI
 
@@ -3298,11 +3298,7 @@ byte *G_WriteOptions(byte *demo_p)
     *demo_p++ = (compatibility_level >= prboom_2_compatibility) && forceOldBsp; // cph 2002/07/20
   }
 
-  if (mbf21)
-  {
-    target = demo_p;
-  }
-  else
+  if (!mbf21)
   {
     //----------------
     // Padding at end
@@ -3312,7 +3308,7 @@ byte *G_WriteOptions(byte *demo_p)
   }
 
   if (demo_p != target)
-    I_Error("G_WriteOptions: MBF_GAME_OPTION_SIZE is too small");
+    I_Error("G_WriteOptions: dsda_GameOptionSize is too small");
 
   return target;
 }
@@ -3323,7 +3319,7 @@ byte *G_WriteOptions(byte *demo_p)
 
 const byte *G_ReadOptions(const byte *demo_p)
 {
-  const byte *target = demo_p + MBF_GAME_OPTION_SIZE;
+  const byte *target = demo_p + dsda_GameOptionSize();
 
   monsters_remember = *demo_p++;
 
@@ -4100,13 +4096,13 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     consoleplayer = *demo_p++;
 
     //e6y: check for overrun
-    if (CheckForOverrun(header_p, demo_p, size, MBF_GAME_OPTION_SIZE, failonerror))
+    if (CheckForOverrun(header_p, demo_p, size, dsda_GameOptionSize(), failonerror))
       return NULL;
 
     demo_p = G_ReadOptions(demo_p);  // killough 3/1/98: Read game options
 
     if (demover == 200)              // killough 6/3/98: partially fix v2.00 demos
-      demo_p += 256 - MBF_GAME_OPTION_SIZE;
+      demo_p += 256 - dsda_GameOptionSize();
   }
 
   if (sizeof(comp_lev_str)/sizeof(comp_lev_str[0]) != MAX_COMPATIBILITY_LEVEL)
