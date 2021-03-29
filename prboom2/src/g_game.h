@@ -42,9 +42,6 @@
 
 #define DEMOMARKER    0x80
 
-// killough 5/2/98: number of bytes reserved for saving options
-#define GAME_OPTION_SIZE 64
-
 dboolean G_Responder(event_t *ev);
 dboolean G_CheckDemoStatus(void);
 void G_DeathMatchSpawnPlayer(int playernum);

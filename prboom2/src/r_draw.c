@@ -1085,6 +1085,7 @@ void R_FillBackScreen (void)
       V_FillFlat(grnrock.lumpnum, 1,
         SCREENWIDTH - wide_offsetx, stbar_top, wide_offsetx, ST_SCALED_HEIGHT, VPT_NONE);
 
+      // heretic_note: I think this looks bad, so I'm skipping it...
       if (heretic) return;
 
       // line between view and status bar
@@ -1100,8 +1101,6 @@ void R_FillBackScreen (void)
 
   V_FillFlat(grnrock.lumpnum, 1, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_NONE);
 
-  if (heretic) return;
-
   // line between view and status bar
   if ((ratio_multiplier != ratio_scale || wide_offsety) &&
       (automap || scaledviewwidth == SCREENWIDTH))
@@ -1109,22 +1108,22 @@ void R_FillBackScreen (void)
     V_FillPatch(brdr_b.lumpnum, 1, 0, SCREENHEIGHT - ST_SCALED_HEIGHT, SCREENWIDTH, brdr_b.height, VPT_NONE);
   }
 
-  V_FillPatch(brdr_t.lumpnum, 1, viewwindowx, viewwindowy-8, scaledviewwidth, brdr_t.height, VPT_NONE);
+  V_FillPatch(brdr_t.lumpnum, 1, viewwindowx, viewwindowy - g_border_offset, scaledviewwidth, brdr_t.height, VPT_NONE);
 
-  V_FillPatch(brdr_b.lumpnum, 1, viewwindowx, viewwindowy+viewheight, scaledviewwidth, brdr_b.height, VPT_NONE);
+  V_FillPatch(brdr_b.lumpnum, 1, viewwindowx, viewwindowy + viewheight, scaledviewwidth, brdr_b.height, VPT_NONE);
 
-  V_FillPatch(brdr_l.lumpnum, 1, viewwindowx-8, viewwindowy, brdr_l.width, viewheight, VPT_NONE);
+  V_FillPatch(brdr_l.lumpnum, 1, viewwindowx - g_border_offset, viewwindowy, brdr_l.width, viewheight, VPT_NONE);
 
-  V_FillPatch(brdr_r.lumpnum, 1, viewwindowx+scaledviewwidth, viewwindowy, brdr_r.width, viewheight, VPT_NONE);
+  V_FillPatch(brdr_r.lumpnum, 1, viewwindowx + scaledviewwidth, viewwindowy, brdr_r.width, viewheight, VPT_NONE);
 
   // Draw beveled edge.
-  V_DrawNumPatch(viewwindowx-8,viewwindowy-8,1,brdr_tl.lumpnum, CR_DEFAULT, VPT_NONE);
+  V_DrawNumPatch(viewwindowx - g_border_offset, viewwindowy - g_border_offset, 1, brdr_tl.lumpnum, CR_DEFAULT, VPT_NONE);
 
-  V_DrawNumPatch(viewwindowx+scaledviewwidth,viewwindowy-8,1,brdr_tr.lumpnum, CR_DEFAULT, VPT_NONE);
+  V_DrawNumPatch(viewwindowx + scaledviewwidth, viewwindowy - g_border_offset, 1, brdr_tr.lumpnum, CR_DEFAULT, VPT_NONE);
 
-  V_DrawNumPatch(viewwindowx-8,viewwindowy+viewheight,1,brdr_bl.lumpnum, CR_DEFAULT, VPT_NONE);
+  V_DrawNumPatch(viewwindowx - g_border_offset, viewwindowy + viewheight, 1, brdr_bl.lumpnum, CR_DEFAULT, VPT_NONE);
 
-  V_DrawNumPatch(viewwindowx+scaledviewwidth,viewwindowy+viewheight,1,brdr_br.lumpnum, CR_DEFAULT, VPT_NONE);
+  V_DrawNumPatch(viewwindowx + scaledviewwidth, viewwindowy + viewheight, 1, brdr_br.lumpnum, CR_DEFAULT, VPT_NONE);
 }
 
 //

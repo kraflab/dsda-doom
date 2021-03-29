@@ -2175,7 +2175,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
           case 4:            // Scroll_EastLavaDamage
             flat.flags |= GLFLAT_HAVE_OFFSET;
             flat.uoffs = (float) (((63 - ((leveltime >> 1) & 63)) << 3) & 63) / 64;
-            lprintf(LO_INFO, "uoffs: %f\n", flat.uoffs);
             break;
         }
       }
@@ -2204,26 +2203,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
     {
       flat.uoffs=0.0f;
       flat.voffs=0.0f;
-
-      if (heretic)
-      {
-        switch (plane->special)
-        {
-          case 20:
-          case 21:
-          case 22:
-          case 23:
-          case 24:           // Scroll_East
-            flat.flags |= GLFLAT_HAVE_OFFSET;
-            flat.uoffs = (float) ((63 - ((leveltime >> 1) & 63)) << (plane->special - 20) & 63) / 64;
-            break;
-          case 4:            // Scroll_EastLavaDamage
-            flat.flags |= GLFLAT_HAVE_OFFSET;
-            flat.uoffs = (float) (((63 - ((leveltime >> 1) & 63)) << 3) & 63) / 64;
-            lprintf(LO_INFO, "uoffs: %f\n", flat.uoffs);
-            break;
-        }
-      }
     }
   }
 

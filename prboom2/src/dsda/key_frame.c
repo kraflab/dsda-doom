@@ -33,6 +33,7 @@
 #include "e6y.h"
 
 #include "dsda/demo.h"
+#include "dsda/options.h"
 #include "dsda/settings.h"
 #include "key_frame.h"
 
@@ -109,7 +110,7 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
 
   *save_p++ = idmusnum;
 
-  CheckSaveGame(GAME_OPTION_SIZE);
+  CheckSaveGame(dsda_GameOptionSize());
   save_p = G_WriteOptions(save_p);
 
   // Store progress bar for demo playback

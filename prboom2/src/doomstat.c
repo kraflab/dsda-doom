@@ -56,7 +56,7 @@ complevel_t compatibility_level, default_compatibility_level;
 // it's required for demos recorded in "demo compatibility" mode by boom201 for example
 int demover;
 
-int comp[COMP_TOTAL];    // killough 10/98
+int comp[COMP_NUM];    // killough 10/98
 int /*comperr[COMPERR_NUM], */default_comperr[COMPERR_NUM];
 
 // v1.1-like pitched sounds
@@ -65,7 +65,7 @@ int pitched_sounds;        // killough
 int     default_translucency; // config file says           // phares
 dboolean general_translucency; // true if translucency is ok // phares
 
-int demo_insurance, default_demo_insurance;        // killough 1/16/98
+int demo_insurance;        // killough 1/16/98
 
 int  allow_pushers = 1;      // MT_PUSH Things              // phares 3/10/98
 

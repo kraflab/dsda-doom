@@ -76,6 +76,7 @@ extern complevel_t compatibility_level, default_compatibility_level;
 #define compatibility (compatibility_level<=boom_compatibility_compatibility)
 #define demo_compatibility (compatibility_level < boom_compatibility_compatibility)
 #define mbf_features (compatibility_level>=mbf_compatibility)
+#define mbf21 (compatibility_level == mbf21_compatibility)
 
 // v1.1-like pitched sounds
 extern int pitched_sounds;        // killough
@@ -83,7 +84,7 @@ extern int pitched_sounds;        // killough
 extern int     default_translucency; // config file says           // phares
 extern dboolean general_translucency; // true if translucency is ok // phares
 
-extern int demo_insurance, default_demo_insurance;      // killough 4/5/98
+extern int demo_insurance;      // killough 4/5/98
 
 // -------------------------------------------
 // killough 10/98: compatibility vector
@@ -109,7 +110,7 @@ enum {
   comp_infcheat,
   comp_zerotags,
   comp_moveblock,
-  comp_respawn,  /* cph - this is the inverse of comp_respawnfix from eternity */
+  comp_respawn,  /* cph - alias of comp_respawnfix from eternity */
   comp_sound,
   comp_666,
   comp_soul,
@@ -120,8 +121,15 @@ enum {
   comp_maxhealth,
   comp_translucency,
 
+  // mbf21
+  comp_placeholder_29,
+  comp_placeholder_30,
+  comp_placeholder_31,
+  comp_placeholder_32,
+  // and more!
+
   COMP_NUM,      /* cph - should be last in sequence */
-  COMP_TOTAL=32  // Some extra room for additional variables
+  MBF_COMP_TOTAL = 32  // limit in MBF format
 };
 
 enum {
@@ -135,7 +143,7 @@ enum {
   COMPERR_NUM
 };
 
-extern int comp[COMP_TOTAL];
+extern int comp[COMP_NUM];
 extern int /*comperr[COMPERR_NUM], */default_comperr[COMPERR_NUM];
 
 // -------------------------------------------

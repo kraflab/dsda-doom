@@ -339,7 +339,7 @@ static const char* HU_Title(void)
     }
   }
 
-  return "";
+  return MAPNAME(gameepisode, gamemap);
 }
 
 //

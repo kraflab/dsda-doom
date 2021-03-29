@@ -1,30 +1,3 @@
-### Heretic Support (phase 1)
-- [x] Load without crashing as pwad
-- [x] Merge engine behaviour
-- [x] Reach 100% demo sync rate
-- [x] Add intermission
-- [x] Add status bar
-- [x] Integrate heretic sound system
-- [x] Support new graphics format
-- [x] Fix hud font
-- [x] Add finale
-- [x] Fix palette updates
-- [x] Fix shadow effect
-- [x] Add start screen
-- [x] Check status bar chain during menu
-- [x] Fix pain palette stuck on status bar
-- [x] Fix opengl status bar updating
-- [x] Fix missing hud period
-- [x] Adjust hud text color
-- [x] Load without crashing as iwad
-- [x] Set up menu
-- [x] Fix prboom+ settings visuals
-- [x] Fix menu sounds
-- [x] Support new keybinds
-- [x] Support graphical player pitch
-- [x] Save files
-- [x] Set up automap
-
 ### Heretic Support (phase 2)
 - [ ] Support ghosts
 - [ ] Support analysis
@@ -34,70 +7,15 @@
 - [ ] Support dehacked
 - [ ] Support cheats
 - [ ] rain1, rain2, special1.m, special2.m -> P_SetTarget
-- [ ] Review r_* files for graphical differences
+- [x] Review r_* files for graphical differences
 
-### Files in crispy src/heretic:
+### File queue from crispy src/heretic:
 
-- [x] am_data.h 104
-- [x] am_map.c 1544
-- [x] am_map.h 112
-- [ ] ct_chat.c 478
-- [ ] ct_chat.h 39
-- [ ] d_main.c 1305
-- [ ] d_net.c 227
-- [ ] deh_ammo.c 114
-- [ ] deh_frame.c 336
-- [ ] deh_htext.c 846
-- [ ] deh_htic.c 197
-- [ ] deh_htic.h 53
-- [ ] deh_sound.c 109
-- [ ] deh_thing.c 145
-- [ ] deh_weapon.c 123
-- [ ] doomdata.h 193
-- [ ] doomdef.h 852
-- [x] dstrings.h 247
-- [x] f_finale.c 444
-- [x] g_game.c 2356
-- [x] in_lude.c 1129
-- [x] info.c 5601
-- [x] info.h 1579
-- [x] m_random.c 77
-- [x] m_random.h 38
-- [x] mn_menu.c 2014
-- [x] p_action.h 152
-- [x] p_ceiling.c 256
-- [x] p_doors.c 380
-- [x] p_enemy.c 2715
-- [x] p_floor.c 466
-- [x] p_inter.c 1502
-- [x] p_lights.c 275
-- [x] p_local.h 282
-- [x] p_map.c 1714
-- [x] p_maputl.c 799
-- [x] p_mobj.c 1665
-- [x] p_plats.c 259
-- [x] p_pspr.c 1908
-- [x] p_saveg.c 1913
-- [x] p_setup.c 763
-- [x] p_sight.c 357
-- [x] p_spec.c 1358
-- [x] p_spec.h 391
-- [x] p_switch.c 410
-- [x] p_telept.c 165
-- [x] p_tick.c 168
-- [x] p_user.c 1046
-- [ ] r_bsp.c 528
-- [ ] r_data.c 765
-- [ ] r_draw.c 515
-- [ ] r_local.h 509
-- [ ] r_main.c 868
-- [x] r_plane.c 539
-- [ ] r_segs.c 678
-- [ ] r_things.c 1075
-- [x] s_sound.c 616
-- [x] s_sound.h 39
-- [x] sb_bar.c 1333
-- [x] sounds.c 251
-- [x] sounds.h 292
-
-LEFT: 9370, MERGED: 37844, PERCENT: 80%
+- [ ] deh_ammo.c
+- [ ] deh_frame.c
+- [ ] deh_htext.c
+- [ ] deh_htic.c
+- [ ] deh_htic.h
+- [ ] deh_sound.c
+- [ ] deh_thing.c
+- [ ] deh_weapon.c
