@@ -3384,7 +3384,6 @@ const byte *G_ReadOptions(const byte *demo_p)
       int i;
       for (i = 0; i < MBF_COMP_TOTAL; i++)
         comp[i] = *demo_p++;
-
     }
 
     forceOldBsp = *demo_p++; // cph 2002/07/20
