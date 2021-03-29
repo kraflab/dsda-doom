@@ -109,7 +109,7 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
 
   *save_p++ = idmusnum;
 
-  CheckSaveGame(GAME_OPTION_SIZE);
+  CheckSaveGame(MBF_GAME_OPTION_SIZE);
   save_p = G_WriteOptions(save_p);
 
   // Store progress bar for demo playback
