@@ -4062,6 +4062,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
         break;
       case 221:
         compatibility_level = mbf21_compatibility;
+        longtics = 1;
         break;
     }
     //e6y: check for overrun
