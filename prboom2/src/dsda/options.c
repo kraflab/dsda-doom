@@ -285,7 +285,7 @@ const dsda_options_t* dsda_Options(void) {
 
 // killough 5/2/98: number of bytes reserved for saving options
 #define MBF_GAME_OPTION_SIZE 64
-#define MBF21_GAME_OPTION_SIZE (20 + COMP_NUM)
+#define MBF21_GAME_OPTION_SIZE (21 + COMP_NUM)
 
 int dsda_GameOptionSize(void) {
   return mbf21 ? MBF21_GAME_OPTION_SIZE : MBF_GAME_OPTION_SIZE;
