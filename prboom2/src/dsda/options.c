@@ -17,6 +17,8 @@
 
 #include "doomstat.h"
 #include "w_wad.h"
+#include "g_game.h"
+#include "m_random.h"
 #include "lprintf.h"
 
 #include "options.h"
