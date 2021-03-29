@@ -311,8 +311,6 @@ default_t defaults[] =
    def_int,ss_none}, // number of dead bodies in view supported (-1 = no limit)
   {"flashing_hom",{&flashing_hom},{0},0,1,
    def_bool,ss_none}, // killough 10/98 - enable flashing HOM indicator
-  {"demo_insurance",{&default_demo_insurance},{2},0,2,  // killough 3/31/98
-   def_int,ss_none}, // 1=take special steps ensuring demo sync, 2=only during recordings
   {"endoom_mode", {&endoom_mode},{5},0,7, // CPhipps - endoom flags
    def_hex, ss_none}, // 0, +1 for colours, +2 for non-ascii chars, +4 for skip-last-line
   {"level_precache",{(int*)&precache},{1},0,1,
