@@ -1064,9 +1064,7 @@ void A_WeaponProjectile(player_t *player, pspdef_t *psp)
 
   CHECK_WEAPON_CODEPOINTER("A_WeaponProjectile", player);
 
-  // [XA] TODO: abort if not in correct complevel
-
-  if (!psp->state || !psp->state->misc1)
+  if (!mbf21 || !psp->state || !psp->state->misc1)
     return;
 
   mo = P_SpawnPlayerMissile(player->mo, psp->state->misc1 - 1);
@@ -1093,9 +1091,7 @@ void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
 
   CHECK_WEAPON_CODEPOINTER("A_WeaponBulletAttack", player);
 
-  // [XA] TODO: abort if not in correct complevel
-
-  if (!psp->state)
+  if (!mbf21 || !psp->state)
     return;
 
   P_BulletSlope(player->mo);
@@ -1121,9 +1117,7 @@ void A_WeaponSound(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_WeaponSound", player);
 
-  // [XA] TODO: abort if not in correct complevel
-
-  if (!psp->state)
+  if (!mbf21 || !psp->state)
     return;
 
   S_StartSound(psp->state->misc2 ? NULL : player->mo, psp->state->misc1);
@@ -1141,7 +1135,8 @@ void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
 
   CHECK_WEAPON_CODEPOINTER("A_ConsumeAmmo", player);
 
-  // [XA] TODO: abort if not in correct complevel
+  if (!mbf21)
+    return;
 
   // don't do dumb things, kids
   type = weaponinfo[player->readyweapon].ammo;

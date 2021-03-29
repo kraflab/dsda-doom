@@ -2979,9 +2979,7 @@ void A_MonsterProjectile(mobj_t *actor)
   mobj_t *mo;
   int an;
 
-  // [XA] TODO: abort if not in correct complevel
-
-  if (!actor->target || !actor->state->misc1)
+  if (!mbf21 || !actor->target || !actor->state->misc1)
     return;
 
   A_FaceTarget(actor);
@@ -3011,9 +3009,7 @@ void A_MonsterBulletAttack(mobj_t *actor)
   int damage, angle, slope, t;
   int_64_t spread;
 
-  // [XA] TODO: abort if not in correct complevel
-
-  if (!actor->target)
+  if (!mbf21 || !actor->target)
     return;
 
   A_FaceTarget(actor);
