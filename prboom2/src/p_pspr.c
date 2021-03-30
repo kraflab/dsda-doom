@@ -92,9 +92,11 @@ static const actionf_t param_weapon_ptrs[] = {
 	A_WeaponProjectile,
 	A_WeaponBulletAttack,
 	A_WeaponSound,
+	A_WeaponJump,
 	A_ConsumeAmmo,
 	A_CheckAmmo,
 	A_RefireTo,
+	A_GunFlashTo,
 
 	// This NULL entry must be the last in the list
 	NULL
@@ -1152,6 +1154,24 @@ void A_WeaponSound(player_t *player, pspdef_t *psp)
 }
 
 //
+// A_WeaponJump
+// Jumps to the specified state, with variable random chance.
+// Basically the same as A_RandomJump, but for weapons.
+//   misc1: State number
+//   misc2: Chance, out of 255, to make the jump
+//
+void A_WeaponJump(player_t *player, pspdef_t *psp)
+{
+  CHECK_WEAPON_CODEPOINTER("A_WeaponJump", player);
+
+  if (!mbf21 || !psp->state)
+    return;
+
+  if (P_Random(pr_randomjump) < psp->state->misc2)
+    P_SetPspritePtr(player, psp, psp->state->misc1);
+}
+
+//
 // A_ConsumeAmmo
 // Subtracts ammo from the player's "inventory". 'Nuff said.
 //   misc1: Amount of ammo to consume. If zero, use the weapon's ammo-per-shot amount.
@@ -1231,6 +1251,25 @@ void A_RefireTo(player_t *player, pspdef_t *psp)
   &&  (player->cmd.buttons & BT_ATTACK)
   &&  (player->pendingweapon == wp_nochange && player->health))
     P_SetPspritePtr(player, psp, psp->state->misc1);
+}
+
+//
+// A_GunFlashTo
+// Sets the weapon flash layer to the specified state.
+//   misc1: State number
+//   misc2: If nonzero, don't change the player actor state
+//
+void A_GunFlashTo(player_t *player, pspdef_t *psp)
+{
+  CHECK_WEAPON_CODEPOINTER("A_GunFlashTo", player);
+
+  if (!mbf21 || !psp->state)
+    return;
+
+  if(!psp->state->misc2)
+    P_SetMobjState(player->mo, S_PLAY_ATK2);
+
+  P_SetPsprite(player, ps_flash, psp->state->misc1);
 }
 
 //

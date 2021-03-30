@@ -133,9 +133,11 @@ void A_FireOldBFG();
 void A_WeaponProjectile();
 void A_WeaponBulletAttack();
 void A_WeaponSound();
+void A_WeaponJump();
 void A_ConsumeAmmo();
 void A_CheckAmmo();
 void A_RefireTo();
+void A_GunFlashTo();
 
 // heretic
 
