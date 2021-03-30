@@ -2969,6 +2969,26 @@ void A_LineEffect(mobj_t *mo)
 //
 
 //
+// A_SpawnFacing
+// Spawns an actor facing the same direction as the caller.
+// Basically just A_Spawn with a major quality-of-life tweak.
+//   misc1: Type of actor to spawn
+//   misc2: Height to spawn at, relative to calling actor
+//
+void A_SpawnFacing(mobj_t *actor)
+{
+  if (!mbf21 || !actor->state->misc1)
+    return;
+
+  mobj_t *mo = P_SpawnMobj(actor->x, actor->y, (actor->state->misc2 << FRACBITS) + actor->z, actor->state->misc1 - 1);
+  if (mo)
+    mo->angle = actor->angle;
+
+  // [XA] don't bother with the dont-inherit-friendliness hack
+  // that exists in A_Spawn, 'cause WTF is that about anyway?
+}
+
+//
 // A_MonsterProjectile
 // A parameterized monster projectile attack.
 //   misc1: Type of actor to spawn

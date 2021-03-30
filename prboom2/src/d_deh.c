@@ -1394,6 +1394,7 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_Stop,            "A_Stop"},
 
   // [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
+  {A_SpawnFacing,         "A_SpawnFacing"},
   {A_MonsterProjectile,   "A_MonsterProjectile"},
   {A_MonsterBulletAttack, "A_MonsterBulletAttack"},
   {A_WeaponProjectile,    "A_WeaponProjectile"},

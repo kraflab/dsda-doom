@@ -122,6 +122,7 @@ void A_SkullPop(mobj_t *);
 
 // [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
 
+void A_SpawnFacing(mobj_t *);
 void A_MonsterProjectile(mobj_t *);
 void A_MonsterBulletAttack(mobj_t *);
 
