@@ -2436,11 +2436,9 @@ void P_PlayerInSpecialSector (player_t* player)
   {
     if (mbf21 && sector->special & DEATH_MASK)
     {
-      dboolean invulnerable = player->cheats & CF_GODMODE || player->powers[pw_invulnerability];
-
       if (
-        (!invulnerable                || sector->special & DEATH_INVULN) &&
-        (!player->powers[pw_ironfeet] || sector->special & DEATH_RADSUIT)
+        (!player->powers[pw_invulnerability] || sector->special & DEATH_INVULN) &&
+        (!player->powers[pw_ironfeet]        || sector->special & DEATH_RADSUIT)
       )
         P_DamageMobj(player->mo, NULL, NULL, 10000);
     }
