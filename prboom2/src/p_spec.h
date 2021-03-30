@@ -91,9 +91,9 @@
 // bit 11: disable any sounds due to floor or ceiling motion by the sector
 
 // mbf21
-#define DEATH_MASK 0x1000 // 12th bit
-#define DEATH_RADSUIT 0x20 // 5th bit
-#define DEATH_INVULN 0x40 // 6th bit
+#define DEATH_MASK 0x1000 // bit 12
+#define DEATH_RADSUIT 0x20 // bit 5
+#define DEATH_INVULN 0x40 // bit 6
 
 //jff 02/04/98 Define masks, shifts, for fields in
 // generalized linedef types
