@@ -2434,28 +2434,55 @@ void P_PlayerInSpecialSector (player_t* player)
   }
   else //jff 3/14/98 handle extended sector types for secrets and damage
   {
-    switch ((sector->special&DAMAGE_MASK)>>DAMAGE_SHIFT)
+    if (mbf21 && sector->special & DEATH_MASK)
     {
-      case 0: // no damage
-        break;
-      case 1: // 2/5 damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 5);
-        break;
-      case 2: // 5/10 damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 10);
-        break;
-      case 3: // 10/20 damage per 31 ticks
-        if (!player->powers[pw_ironfeet]
-            || (P_Random(pr_slimehurt)<5))  // take damage even with suit
-        {
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 20);
-        }
-        break;
+      switch ((sector->special & DAMAGE_MASK) >> DAMAGE_SHIFT)
+      {
+        case 0: // no damage
+          break;
+        case 1: // instant death without radsuit
+          if (!player->powers[pw_ironfeet])
+            P_DamageMobj(player->mo, NULL, NULL, 10000);
+          break;
+        case 2: // instant death even with radsuit
+          P_DamageMobj(player->mo, NULL, NULL, 10000);
+          break;
+        case 3: // heal
+          if (player->health < maxhealth)
+          {
+            P_GiveBody(player, maxhealth);
+            player->bonuscount += BONUSADD;
+            if (player == &players[displayplayer])
+              S_StartSound (player->mo, sfx_getpow);
+          }
+          break;
+      }
+    }
+    else
+    {
+      switch ((sector->special&DAMAGE_MASK)>>DAMAGE_SHIFT)
+      {
+        case 0: // no damage
+          break;
+        case 1: // 2/5 damage per 31 ticks
+          if (!player->powers[pw_ironfeet])
+            if (!(leveltime&0x1f))
+              P_DamageMobj (player->mo, NULL, NULL, 5);
+          break;
+        case 2: // 5/10 damage per 31 ticks
+          if (!player->powers[pw_ironfeet])
+            if (!(leveltime&0x1f))
+              P_DamageMobj (player->mo, NULL, NULL, 10);
+          break;
+        case 3: // 10/20 damage per 31 ticks
+          if (!player->powers[pw_ironfeet]
+              || (P_Random(pr_slimehurt)<5))  // take damage even with suit
+          {
+            if (!(leveltime&0x1f))
+              P_DamageMobj (player->mo, NULL, NULL, 20);
+          }
+          break;
+      }
     }
     if (sector->special&SECRET_MASK)
     {

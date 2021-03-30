@@ -44,6 +44,8 @@
 /* Ty 03/09/98 Moved to an int in p_inter.c for deh and externalization */
 #define MAXHEALTH maxhealth
 
+#define BONUSADD        6
+
 /* follow a player exlusively for 3 seconds */
 #define BASETHRESHOLD   (100)
 

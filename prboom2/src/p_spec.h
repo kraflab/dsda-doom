@@ -86,6 +86,13 @@
 #define PUSH_MASK       0x200
 #define PUSH_SHIFT      9
 
+// reserved by boom spec - not implemented?
+// bit 10: suppress all sounds within the sector
+// bit 11: disable any sounds due to floor or ceiling motion by the sector
+
+// mbf21
+#define DEATH_MASK 0x1000 // 12th bit
+
 //jff 02/04/98 Define masks, shifts, for fields in
 // generalized linedef types
 
