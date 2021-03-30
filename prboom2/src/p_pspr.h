@@ -97,6 +97,7 @@ int P_WeaponPreferred(int w1, int w2);
 
 struct player_s;
 int P_SwitchWeapon(struct player_s *player);
+int P_GetAmmoPerShot(struct player_s *player);
 dboolean P_CheckAmmo(struct player_s *player);
 void P_SetupPsprites(struct player_s *curplayer);
 void P_MovePsprites(struct player_s *curplayer);
@@ -133,6 +134,8 @@ void A_WeaponProjectile();
 void A_WeaponBulletAttack();
 void A_WeaponSound();
 void A_ConsumeAmmo();
+void A_CheckAmmo();
+void A_RefireTo();
 
 // heretic
 
@@ -144,6 +147,7 @@ void P_RepositionMace(mobj_t * mo);
 void P_ActivateBeak(struct player_s * player);
 void P_PostChickenWeapon(struct player_s * player, weapontype_t weapon);
 void P_SetPsprite(struct player_s * player, int position, statenum_t stnum);
+void P_SetPspritePtr(struct player_s * player, pspdef_t *psp, statenum_t stnum);
 void P_OpenWeapons(void);
 void P_CloseWeapons(void);
 void P_AddMaceSpot(const mapthing_t * mthing);

@@ -93,6 +93,8 @@ static const actionf_t param_weapon_ptrs[] = {
 	A_WeaponBulletAttack,
 	A_WeaponSound,
 	A_ConsumeAmmo,
+	A_CheckAmmo,
+	A_RefireTo,
 
 	// This NULL entry must be the last in the list
 	NULL
@@ -128,8 +130,15 @@ dboolean P_IsParamWeaponPtr(const actionf_t ptr)
 
 void P_SetPsprite(player_t *player, int position, statenum_t stnum)
 {
-  pspdef_t *psp = &player->psprites[position];
+	P_SetPspritePtr(player, &player->psprites[position], stnum);
+}
 
+//
+// P_SetPspritePtr
+//
+
+void P_SetPspritePtr(player_t *player, pspdef_t *psp, statenum_t stnum)
+{
   do
     {
       state_t *state;
@@ -293,6 +302,25 @@ int P_WeaponPreferred(int w1, int w2)
     (weapon_preferences[0][6] !=   w2 && (weapon_preferences[0][6] ==   w1 ||
     (weapon_preferences[0][7] !=   w2 && (weapon_preferences[0][7] ==   w1
    ))))))))))))))));
+}
+
+//
+// P_GetAmmoPerShot
+// Returns ammo per shot for the currently selected weapon.
+//
+// [XA] Eventually this value will be customizable
+// instead of hardcoded, presuming everything goes
+// according to plan...
+//
+
+int P_GetAmmoPerShot(player_t *player)
+{
+  if (player->readyweapon == wp_bfg)
+    return BFGCELLS;
+  else if (player->readyweapon == wp_supershotgun)
+    return 2;
+  else
+    return 1;
 }
 
 //
@@ -1126,7 +1154,7 @@ void A_WeaponSound(player_t *player, pspdef_t *psp)
 //
 // A_ConsumeAmmo
 // Subtracts ammo from the player's "inventory". 'Nuff said.
-//   misc1: Amount of ammo to consume.
+//   misc1: Amount of ammo to consume. If zero, use the weapon's ammo-per-shot amount.
 //
 void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
 {
@@ -1143,23 +1171,66 @@ void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
   if (!psp->state || type == am_noammo)
 	return;
 
-  // [XA] future proofin' -- if misc1 is zero,
-  // subtract whatever the default ammo usage
-  // is for the player's current weapon.
+  // use the weapon's ammo-per-shot amount if zero.
+  // to subtract zero ammo, don't call this function. ;)
   if (psp->state->misc1 != 0)
     amount = psp->state->misc1;
-  else if (player->readyweapon == wp_bfg)
-    amount = BFGCELLS;
-  else if (player->readyweapon == wp_supershotgun)
-    amount = 2;
   else
-    amount = 1;
+    amount = P_GetAmmoPerShot(player);
 
   // subtract ammo, but don't let it get below zero
   if (player->ammo[type] >= amount)
     player->ammo[type] -= amount;
   else
     player->ammo[type] = 0;
+}
+
+//
+// A_CheckAmmo
+// Jumps to a state if the player's ammo is lower than the specified amount.
+//   misc1: State to jump to
+//   misc2: Minimum required ammo to NOT jump. If zero, use the weapon's ammo-per-shot amount.
+//
+void A_CheckAmmo(player_t *player, pspdef_t *psp)
+{
+  int amount;
+  ammotype_t type;
+
+  CHECK_WEAPON_CODEPOINTER("A_CheckAmmo", player);
+
+  if (!mbf21)
+    return;
+
+  type = weaponinfo[player->readyweapon].ammo;
+  if (!psp->state || type == am_noammo)
+    return;
+
+  if (psp->state->misc2 != 0)
+    amount = psp->state->misc2;
+  else
+    amount = P_GetAmmoPerShot(player);
+
+  if (player->ammo[type] < amount)
+    P_SetPspritePtr(player, psp, psp->state->misc1);
+}
+
+//
+// A_RefireTo
+// Jumps to a state if the player is holding down the fire button
+//   misc1: State to jump to
+//   misc2: If nonzero, skip the ammo check
+//
+void A_RefireTo(player_t *player, pspdef_t *psp)
+{
+  CHECK_WEAPON_CODEPOINTER("A_RefireTo", player);
+
+  if (!mbf21 || !psp->state)
+    return;
+
+  if ((psp->state->misc2 || P_CheckAmmo(player))
+  &&  (player->cmd.buttons & BT_ATTACK)
+  &&  (player->pendingweapon == wp_nochange && player->health))
+    P_SetPspritePtr(player, psp, psp->state->misc1);
 }
 
 //
