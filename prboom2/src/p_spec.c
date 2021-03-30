@@ -2438,7 +2438,14 @@ void P_PlayerInSpecialSector (player_t* player)
     {
       switch ((sector->special & DAMAGE_MASK) >> DAMAGE_SHIFT)
       {
-        case 0: // no damage
+        case 0: // heal
+          if (player->health < maxhealth)
+          {
+            P_GiveBody(player, maxhealth);
+            player->bonuscount += BONUSADD;
+            if (player == &players[displayplayer])
+              S_StartSound (player->mo, sfx_getpow);
+          }
           break;
         case 1: // instant death without radsuit
           if (!player->powers[pw_ironfeet])
@@ -2447,14 +2454,8 @@ void P_PlayerInSpecialSector (player_t* player)
         case 2: // instant death even with radsuit
           P_DamageMobj(player->mo, NULL, NULL, 10000);
           break;
-        case 3: // heal
-          if (player->health < maxhealth)
-          {
-            P_GiveBody(player, maxhealth);
-            player->bonuscount += BONUSADD;
-            if (player == &players[displayplayer])
-              S_StartSound (player->mo, sfx_getpow);
-          }
+        case 3:
+          // reserved
           break;
       }
     }
