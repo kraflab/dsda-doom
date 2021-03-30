@@ -2434,28 +2434,39 @@ void P_PlayerInSpecialSector (player_t* player)
   }
   else //jff 3/14/98 handle extended sector types for secrets and damage
   {
-    switch ((sector->special&DAMAGE_MASK)>>DAMAGE_SHIFT)
+    if (mbf21 && sector->special & DEATH_MASK)
     {
-      case 0: // no damage
-        break;
-      case 1: // 2/5 damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 5);
-        break;
-      case 2: // 5/10 damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 10);
-        break;
-      case 3: // 10/20 damage per 31 ticks
-        if (!player->powers[pw_ironfeet]
-            || (P_Random(pr_slimehurt)<5))  // take damage even with suit
-        {
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 20);
-        }
-        break;
+      if (
+        (!player->powers[pw_invulnerability] || sector->special & DEATH_INVULN) &&
+        (!player->powers[pw_ironfeet]        || sector->special & DEATH_RADSUIT)
+      )
+        P_DamageMobj(player->mo, NULL, NULL, 10000);
+    }
+    else
+    {
+      switch ((sector->special&DAMAGE_MASK)>>DAMAGE_SHIFT)
+      {
+        case 0: // no damage
+          break;
+        case 1: // 2/5 damage per 31 ticks
+          if (!player->powers[pw_ironfeet])
+            if (!(leveltime&0x1f))
+              P_DamageMobj (player->mo, NULL, NULL, 5);
+          break;
+        case 2: // 5/10 damage per 31 ticks
+          if (!player->powers[pw_ironfeet])
+            if (!(leveltime&0x1f))
+              P_DamageMobj (player->mo, NULL, NULL, 10);
+          break;
+        case 3: // 10/20 damage per 31 ticks
+          if (!player->powers[pw_ironfeet]
+              || (P_Random(pr_slimehurt)<5))  // take damage even with suit
+          {
+            if (!(leveltime&0x1f))
+              P_DamageMobj (player->mo, NULL, NULL, 20);
+          }
+          break;
+      }
     }
     if (sector->special&SECRET_MASK)
     {

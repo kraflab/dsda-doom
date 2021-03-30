@@ -56,8 +56,6 @@
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
 
-#define BONUSADD        6
-
 // Ty 03/07/98 - add deh externals
 // Maximums and such were hardcoded values.  Need to externalize those for
 // dehacked support (and future flexibility).  Most var names came from the key
