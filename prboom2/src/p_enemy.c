@@ -3035,7 +3035,7 @@ void A_MonsterBulletAttack(mobj_t *actor)
   A_FaceTarget(actor);
   S_StartSound(actor, actor->info->attacksound);
 
-  damage = (P_Random(pr_monsterbulletattack) % 5 + 1) * actor->state->misc1;
+  damage = (P_Random(pr_mbf21) % 5 + 1) * actor->state->misc1;
 
   angle = actor->angle;
   slope = P_AimLineAttack(actor, angle, MISSILERANGE, 0);
@@ -3047,8 +3047,8 @@ void A_MonsterBulletAttack(mobj_t *actor)
   // ...then calculate a random number between (-255
   // and 255), multiply by spread, and shift right 8
   // (i.e. divide by 256) to convert back to BAM. word.
-  t = P_Random(pr_monsterbulletattack);
-  angle += (int)((spread * (t - P_Random(pr_monsterbulletattack))) >> 8);
+  t = P_Random(pr_mbf21);
+  angle += (int)((spread * (t - P_Random(pr_mbf21))) >> 8);
 
   P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
 }

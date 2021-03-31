@@ -124,8 +124,7 @@ typedef enum {
   pr_randomjump,              // #61
   pr_defect,                  // #62  // Start new entries -- add new entries below
   pr_heretic,                 // #63
-  pr_monsterbulletattack,     // #64
-  pr_weaponbulletattack,      // #65
+  pr_mbf21,                   // #64
 
   // End of new entries
   NUMPRCLASS               // MUST be last item in list

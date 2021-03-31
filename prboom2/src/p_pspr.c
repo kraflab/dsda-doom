@@ -1126,13 +1126,13 @@ void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
 
   P_BulletSlope(player->mo);
 
-  damage = (P_Random(pr_weaponbulletattack) % 3 + 1) * psp->state->misc1;
+  damage = (P_Random(pr_mbf21) % 3 + 1) * psp->state->misc1;
   angle = player->mo->angle;
 
   // [XA] same math as A_MonsterBulletAttack
   spread = ((int_64_t)psp->state->misc2 << 16) / 360;
-  t = P_Random(pr_weaponbulletattack);
-  angle += (int)((spread * (t - P_Random(pr_weaponbulletattack))) >> 8);
+  t = P_Random(pr_mbf21);
+  angle += (int)((spread * (t - P_Random(pr_mbf21))) >> 8);
 
   P_LineAttack(player->mo, angle, MISSILERANGE, bulletslope, damage);
 }
@@ -1167,7 +1167,7 @@ void A_WeaponJump(player_t *player, pspdef_t *psp)
   if (!mbf21 || !psp->state)
     return;
 
-  if (P_Random(pr_randomjump) < psp->state->misc2)
+  if (P_Random(pr_mbf21) < psp->state->misc2)
     P_SetPspritePtr(player, psp, psp->state->misc1);
 }
 
