@@ -153,6 +153,9 @@ int P_Random(pr_class_t DA(const char *, int));
 // Fix randoms for demos.
 void M_ClearRandom(void);
 
+// [XA] Common random formulas used by codepointers
+int P_RandomHitscanAngle(pr_class_t pr_class, fixed_t spread);
+
 // heretic
 
 #define HITDICE(a) ((1+(P_Random(pr_heretic)&7))*a)

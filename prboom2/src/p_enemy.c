@@ -3037,18 +3037,8 @@ void A_MonsterBulletAttack(mobj_t *actor)
 
   damage = (P_Random(pr_mbf21) % 5 + 1) * actor->state->misc1;
 
-  angle = actor->angle;
+  angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, actor->state->misc2);;
   slope = P_AimLineAttack(actor, angle, MISSILERANGE, 0);
-
-  // [XA] layman's explanation of this crazy math:
-  // convert fixed-point-degrees to byte angles (BAM)...
-  spread = ((int_64_t)actor->state->misc2 << 16) / 360;
-
-  // ...then calculate a random number between (-255
-  // and 255), multiply by spread, and shift right 8
-  // (i.e. divide by 256) to convert back to BAM. word.
-  t = P_Random(pr_mbf21);
-  angle += (int)((spread * (t - P_Random(pr_mbf21))) >> 8);
 
   P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
 }
