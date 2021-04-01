@@ -166,6 +166,26 @@ int P_RandomHitscanAngle(pr_class_t pr_class, fixed_t spread)
   return (int)((spread_bam * (t - P_Random(pr_mbf21))) >> 8);
 }
 
+//
+// P_RandomHitscanSlope
+// Outputs a random angle between (-spread, spread), converted to values used for slope
+//   spread: Maximum vertical angle (degrees, in fixed point -- not BAM!)
+//
+int P_RandomHitscanSlope(pr_class_t pr_class, fixed_t spread)
+{
+  int angle;
+
+  angle = P_RandomHitscanAngle(pr_class, spread);
+
+  // clamp it, yo
+  if (angle > ANG90)
+    return finetangent[0];
+  else if (-angle > ANG90)
+    return finetangent[FINEANGLES/2 - 1];
+  else
+    return finetangent[(ANG90 - angle) >> ANGLETOFINESHIFT];
+}
+
 // heretic
 
 int P_SubRandom (void)

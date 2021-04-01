@@ -155,6 +155,7 @@ void M_ClearRandom(void);
 
 // [XA] Common random formulas used by codepointers
 int P_RandomHitscanAngle(pr_class_t pr_class, fixed_t spread);
+int P_RandomHitscanSlope(pr_class_t pr_class, fixed_t spread);
 
 // heretic
 

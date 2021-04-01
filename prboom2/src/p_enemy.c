@@ -3022,7 +3022,8 @@ void A_MonsterProjectile(mobj_t *actor)
 // A_MonsterBulletAttack
 // A parameterized monster bullet attack.
 //   misc1: Damage of attack (times 1d5)
-//   misc2: Horizontal spread (degrees, in fixed point)
+//   misc2: Horizontal spread (degrees, in fixed point);
+//          if negative, also use 2/3 of this value for vertical spread
 //
 void A_MonsterBulletAttack(mobj_t *actor)
 {
@@ -3039,6 +3040,9 @@ void A_MonsterBulletAttack(mobj_t *actor)
 
   angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, actor->state->misc2);;
   slope = P_AimLineAttack(actor, angle, MISSILERANGE, 0);
+
+  if (actor->state->misc2 < 0)
+    slope += P_RandomHitscanSlope(pr_mbf21, actor->state->misc2 * 2 / 3);
 
   P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
 }

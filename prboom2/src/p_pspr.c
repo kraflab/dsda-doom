@@ -1112,11 +1112,12 @@ void A_WeaponProjectile(player_t *player, pspdef_t *psp)
 // A_WeaponBulletAttack
 // A parameterized player weapon bullet attack. Does not consume ammo.
 //   misc1: Damage of attack (times 1d3)
-//   misc2: Horizontal spread (degrees, in fixed point)
+//   misc2: Horizontal spread (degrees, in fixed point);
+//          if negative, also use 2/3 of this value for vertical spread
 //
 void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
 {
-  int damage, angle;
+  int damage, angle, slope;
 
   CHECK_WEAPON_CODEPOINTER("A_WeaponBulletAttack", player);
 
@@ -1127,8 +1128,12 @@ void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
 
   damage = (P_Random(pr_mbf21) % 3 + 1) * psp->state->misc1;
   angle = (int)player->mo->angle + P_RandomHitscanAngle(pr_mbf21, psp->state->misc2);
+  slope = bulletslope;
 
-  P_LineAttack(player->mo, angle, MISSILERANGE, bulletslope, damage);
+  if (psp->state->misc2 < 0)
+    slope += P_RandomHitscanSlope(pr_mbf21, psp->state->misc2 * 2 / 3);
+
+  P_LineAttack(player->mo, angle, MISSILERANGE, slope, damage);
 }
 
 //
