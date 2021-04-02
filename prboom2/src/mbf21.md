@@ -15,7 +15,7 @@ This is proof-of-concept implemented in dsda-doom.
 - longtics are enabled while recording.
 
 #### Instant death sector special
-- [PR](https://github.com/kraflab/dsda-doom/pull/17)
+- [PR](https://github.com/kraflab/dsda-doom/pull/17), [update](https://github.com/kraflab/dsda-doom/commit/c23d2acffdea93c420844b4031b9f218b28c7711)
 - Bit 12 (4096) turns on "alternate damage meaning" for bit 5 & 6:
 
 | Dec | Bit 6-5 | Description                                                   |
