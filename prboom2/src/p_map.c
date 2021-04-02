@@ -464,7 +464,10 @@ dboolean PIT_CheckLine (line_t* ld)
     // killough 8/9/98: monster-blockers don't affect friends
     if (
       !(tmthing->flags & MF_FRIEND || tmthing->player) &&
-      ld->flags & ML_BLOCKMONSTERS &&
+      (
+        ld->flags & ML_BLOCKMONSTERS ||
+        (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT))
+      ) &&
       tmthing->type != HERETIC_MT_POD
     )
       return false; // block monsters only
