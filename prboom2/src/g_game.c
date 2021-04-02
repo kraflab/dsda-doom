@@ -2146,45 +2146,13 @@ static void G_LoadGameErr(const char *msg)
 
 // CPhipps - size of version header
 #define VERSIONSIZE   16
+#define SAVEVERSION "DSDA-DOOM 1"
 
 const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
 { "Doom v1.2", "Doom v1.666", "Doom/Doom2 v1.9", "Ultimate Doom/Doom95", "Final Doom",
   "early DosDoom", "TASDoom", "\"boom compatibility\"", "boom v2.01", "boom v2.02", "lxdoom v1.3.2+",
   "MBF", "PrBoom 2.03beta", "PrBoom v2.1.0-2.1.1", "PrBoom v2.1.2-v2.2.6",
   "PrBoom v2.3.x", "PrBoom 2.4.0", "Current PrBoom"  };
-
-// comp_options_by_version removed - see G_Compatibility
-
-static byte map_old_comp_levels[] =
-{ 0, 1, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
-
-static const struct {
-  int comp_level;
-  const char* ver_printf;
-  int version;
-} version_headers[] = {
-  /* cph - we don't need a new version_header for prboom_3_comp/v2.1.1, since
-   *  the file format is unchanged. */
-  { prboom_3_compatibility, "PrBoom %d", 210},
-  { prboom_5_compatibility, "PrBoom %d", 211},
-  { prboom_6_compatibility, "PrBoom %d", 212}
-  //e6y
-  ,{ doom_12_compatibility,  "PrBoom %d", 100}
-  ,{ doom_1666_compatibility,"PrBoom %d", 101}
-  ,{ doom2_19_compatibility, "PrBoom %d", 102}
-  ,{ ultdoom_compatibility,  "PrBoom %d", 103}
-  ,{ finaldoom_compatibility,"PrBoom %d", 104}
-  ,{ dosdoom_compatibility,  "PrBoom %d", 105}
-  ,{ tasdoom_compatibility,  "PrBoom %d", 106}
-  ,{ boom_compatibility_compatibility, "PrBoom %d", 107}
-  ,{ boom_201_compatibility, "PrBoom %d", 108}
-  ,{ boom_202_compatibility, "PrBoom %d", 109}
-  ,{ lxdoom_1_compatibility, "PrBoom %d", 110}
-  ,{ mbf_compatibility, "PrBoom %d", 111}
-  ,{ prboom_2_compatibility, "PrBoom %d", 113}
-};
-
-static const size_t num_version_headers = sizeof(version_headers) / sizeof(version_headers[0]);
 
 //e6y
 unsigned int GetPackageVersion(void)
@@ -2263,24 +2231,9 @@ void G_DoLoadGame(void)
   free(name);
   save_p = savebuffer + SAVESTRINGSIZE;
 
-  // CPhipps - read the description field, compare with supported ones
-  for (i=0; (size_t)i<num_version_headers; i++) {
-    char vcheck[VERSIONSIZE];
-    // killough 2/22/98: "proprietary" version string :-)
-    sprintf (vcheck, version_headers[i].ver_printf, version_headers[i].version);
-
-    if (!strncmp((char*)save_p, vcheck, VERSIONSIZE)) {
-      savegame_compatibility = version_headers[i].comp_level;
-      break;
-    }
-  }
-  if (savegame_compatibility == -1) {
-    if (forced_loadgame) {
-      savegame_compatibility = MAX_COMPATIBILITY_LEVEL-1;
-    } else {
-      G_LoadGameErr("Unrecognised savegame version!\nAre you sure? (y/n) ");
-      return;
-    }
+  if (strncmp((char*)save_p, SAVEVERSION, VERSIONSIZE) && !forced_loadgame) {
+    G_LoadGameErr("Unrecognised savegame version!\nAre you sure? (y/n) ");
+    return;
   }
 
   save_p += VERSIONSIZE;
@@ -2328,11 +2281,7 @@ void G_DoLoadGame(void)
       lprintf(LO_WARN, "G_DoLoadGame: Incompatible savegame version\n");
   }
 
-  compatibility_level = (savegame_compatibility >= prboom_4_compatibility) ? *save_p : savegame_compatibility;
-  if (savegame_compatibility < prboom_6_compatibility)
-    compatibility_level = map_old_comp_levels[compatibility_level];
-  save_p++;
-
+  compatibility_level = *save_p++;
   gameskill = *save_p++;
   gameepisode = *save_p++;
   gamemap = *save_p++;
@@ -2483,7 +2432,6 @@ int G_SaveGameName(char *name, size_t size, int slot, dboolean demoplayback)
 static void G_DoSaveGame (dboolean menu)
 {
   char *name;
-  char name2[VERSIONSIZE];
   char *description;
   int  length, i;
   //e6y: numeric version number of package
@@ -2505,17 +2453,9 @@ static void G_DoSaveGame (dboolean menu)
   CheckSaveGame(SAVESTRINGSIZE+VERSIONSIZE+sizeof(uint_64_t));
   memcpy (save_p, description, SAVESTRINGSIZE);
   save_p += SAVESTRINGSIZE;
-  memset (name2,0,sizeof(name2));
 
-  // CPhipps - scan for the version header
-  for (i=0; (size_t)i<num_version_headers; i++)
-    if (version_headers[i].comp_level == best_compatibility) {
-      // killough 2/22/98: "proprietary" version string :-)
-      sprintf (name2,version_headers[i].ver_printf,version_headers[i].version);
-      memcpy (save_p, name2, VERSIONSIZE);
-      i = num_version_headers+1;
-    }
-
+  memset(save_p, 0, VERSIONSIZE);
+  strncpy(save_p, SAVEVERSION, VERSIONSIZE);
   save_p += VERSIONSIZE;
 
   { /* killough 3/16/98, 12/98: store lump name checksum */
