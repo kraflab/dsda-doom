@@ -18,12 +18,12 @@ This is proof-of-concept implemented in dsda-doom.
 - [PR](https://github.com/kraflab/dsda-doom/pull/17)
 - Bit 12 (4096) turns on "alternate damage meaning" for bit 5 & 6:
 
-| Dec | Bit 6-5 | Description                                                        |
-|-----|---------|--------------------------------------------------------------------|
-| 0   | 00      | Kills a player if they have neither a rad suit nor invulnerability |
-| 32  | 01      | Kills a player unless they have invulnerability                    |
-| 64  | 10      | Kills a player unless they have a radsuit                          |
-| 96  | 11      | Kills a player                                                     |
+| Dec | Bit 6-5 | Description                                                   |
+|-----|---------|---------------------------------------------------------------|
+| 0   | 00      | Kills a player unless they have a rad suit or invulnerability |
+| 32  | 01      | Kills a player unless they have invulnerability               |
+| 64  | 10      | Kills a player                                                |
+| 96  | 11      | Kills a player and exits the map                              |
 
 #### Kill monsters sector special
 - [PR](https://github.com/kraflab/dsda-doom/pull/18)

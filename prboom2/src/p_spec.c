@@ -2436,11 +2436,24 @@ void P_PlayerInSpecialSector (player_t* player)
   {
     if (mbf21 && sector->special & DEATH_MASK)
     {
-      if (
-        (!player->powers[pw_invulnerability] || sector->special & DEATH_INVULN) &&
-        (!player->powers[pw_ironfeet]        || sector->special & DEATH_RADSUIT)
-      )
-        P_DamageMobj(player->mo, NULL, NULL, 10000);
+      switch ((sector->special & DAMAGE_MASK) >> DAMAGE_SHIFT)
+      {
+        case 0:
+          if (!player->powers[pw_invulnerability] && !player->powers[pw_ironfeet])
+            P_DamageMobj(player->mo, NULL, NULL, 10000);
+          break;
+        case 1:
+          if (!player->powers[pw_invulnerability])
+            P_DamageMobj(player->mo, NULL, NULL, 10000);
+          break;
+        case 2:
+          P_DamageMobj(player->mo, NULL, NULL, 10000);
+          break;
+        case 3:
+          P_DamageMobj(player->mo, NULL, NULL, 10000);
+          G_ExitLevel();
+          break;
+      }
     }
     else
     {

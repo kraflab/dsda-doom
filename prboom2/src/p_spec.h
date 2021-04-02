@@ -92,8 +92,6 @@
 
 // mbf21
 #define DEATH_MASK 0x1000 // bit 12
-#define DEATH_RADSUIT 0x20 // bit 5
-#define DEATH_INVULN 0x40 // bit 6
 #define KILL_MONSTERS_MASK 0x2000 // bit 13
 
 //jff 02/04/98 Define masks, shifts, for fields in
