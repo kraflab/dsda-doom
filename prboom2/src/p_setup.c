@@ -164,6 +164,8 @@ mobj_t    **blocklinks;           // for thing chains
 int blockmapxneg = -257;
 int blockmapyneg = -257;
 
+dboolean skipblstart;  // MaxW: Skip initial blocklist short
+
 //
 // REJECT
 // For fast sight rejection.
@@ -2015,6 +2017,8 @@ static dboolean P_VerifyBlockMap(int count)
   int x, y;
   int *maxoffs = blockmaplump + count;
 
+  skipblstart = true;
+
   for(y = 0; y < bmapheight; y++)
   {
     for(x = 0; x < bmapwidth; x++)
@@ -2043,6 +2047,9 @@ static dboolean P_VerifyBlockMap(int count)
       }
 
       list   = blockmaplump + offset;
+
+      if (*list != 0)
+        skipblstart = false;
 
       // scan forward for a -1 terminator before maxoffs
       for(tmplist = list; ; tmplist++)
