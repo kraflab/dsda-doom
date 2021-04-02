@@ -1,16 +1,18 @@
-## MBF21 Current Status / Proposal
+## MBF21 Current Status
 
 These are changes / features that are currently implemented.
 
 Tracked [here](https://trello.com/b/qyrnGsFs/mbf21).
 
-**This is NOT a spec. Anything could change.**
+**This is NOT a spec.**
+
+This is proof-of-concept implemented in dsda-doom.
 
 #### Demo format / header
+- [PR](https://github.com/kraflab/dsda-doom/pull/16)
 - MBF21 occupies complevel 21.
 - Demo version is 221.
 - longtics are enabled while recording.
-- [PR](https://github.com/kraflab/dsda-doom/pull/16)
 
 #### Instant death sector special
 - [PR](https://github.com/kraflab/dsda-doom/pull/17)
