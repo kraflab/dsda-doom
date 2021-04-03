@@ -2965,7 +2965,7 @@ void A_LineEffect(mobj_t *mo)
 }
 
 //
-// [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
+// [XA] New mbf21 codepointers
 //
 
 //

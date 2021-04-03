@@ -128,7 +128,7 @@ void A_FireBFG();
 void A_BFGSpray();
 void A_FireOldBFG();
 
-// [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
+// [XA] New mbf21 codepointers
 
 void A_WeaponProjectile();
 void A_WeaponBulletAttack();

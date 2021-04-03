@@ -1393,7 +1393,7 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_BetaSkullAttack, "A_BetaSkullAttack"}, // killough 10/98: beta lost souls attacked different
   {A_Stop,            "A_Stop"},
 
-  // [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
+  // [XA] New mbf21 codepointers
   {A_SpawnFacing,         "A_SpawnFacing"},
   {A_MonsterProjectile,   "A_MonsterProjectile"},
   {A_MonsterBulletAttack, "A_MonsterBulletAttack"},

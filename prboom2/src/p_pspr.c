@@ -1078,7 +1078,7 @@ void A_BFGsound(player_t *player, pspdef_t *psp)
 }
 
 //
-// [XA] New "MBF+" codepointers (proper 'standard' name pending ;)
+// [XA] New mbf21 codepointers
 //
 
 //
