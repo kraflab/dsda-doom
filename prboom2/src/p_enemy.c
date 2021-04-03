@@ -1976,7 +1976,7 @@ void A_VileAttack(mobj_t *actor)
   // move the fire between the vile and the player
   fire->x = actor->target->x - FixedMul (24*FRACUNIT, finecosine[an]);
   fire->y = actor->target->y - FixedMul (24*FRACUNIT, finesine[an]);
-  P_RadiusAttack(fire, actor, 70);
+  P_RadiusAttack(fire, actor, 70, 70);
 }
 
 //
@@ -2339,7 +2339,7 @@ void A_Explode(mobj_t *thingy)
       break;
   }
 
-  P_RadiusAttack(thingy, thingy->target, damage);
+  P_RadiusAttack(thingy, thingy->target, damage, damage);
   if (heretic) P_HitFloor(thingy);
 }
 
@@ -2822,7 +2822,7 @@ void A_Detonate(mobj_t *mo)
       !prboom_comp[PC_APPLY_MBF_CODEPOINTERS_TO_ANY_COMPLEVEL].state)
     return;
 
-  P_RadiusAttack(mo, mo->target, mo->info->damage);
+  P_RadiusAttack(mo, mo->target, mo->info->damage, mo->info->damage);
 }
 
 //
@@ -3046,6 +3046,21 @@ void A_MonsterBulletAttack(mobj_t *actor)
 
   P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
 }
+
+//
+// A_RadiusDamage
+// A parameterized version of A_Explode. Friggin' finally. :P
+//   misc1: Damage (int)
+//   misc2: Radius (also int; no real need for fractional precision here)
+//
+void A_RadiusDamage(mobj_t *actor)
+{
+  if (!mbf21 || !actor->state)
+    return;
+
+  P_RadiusAttack(actor, actor->target, actor->state->misc1, actor->state->misc2);
+}
+
 
 // heretic
 
@@ -4197,7 +4212,7 @@ void A_VolcBallImpact(mobj_t * ball)
         ball->z += 28 * FRACUNIT;
         //ball->momz = 3*FRACUNIT;
     }
-    P_RadiusAttack(ball, ball->target, 25);
+    P_RadiusAttack(ball, ball->target, 25, 25);
     for (i = 0; i < 4; i++)
     {
         tiny = P_SpawnMobj(ball->x, ball->y, ball->z, HERETIC_MT_VOLCANOTBLAST);

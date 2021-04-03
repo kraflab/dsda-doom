@@ -2013,6 +2013,7 @@ void P_UseLines (player_t*  player)
 mobj_t *bombsource, *bombspot;
 //e6y static
 int bombdamage;
+int bombdistance;
 
 
 //
@@ -2026,6 +2027,7 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   fixed_t dx;
   fixed_t dy;
   fixed_t dist;
+  int damage;
 
   /* killough 8/20/98: allow bouncers to take damage
    * (missile bouncers are already excluded with MF_NOBLOCKMAP)
@@ -2058,13 +2060,21 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   if (dist < 0)
   dist = 0;
 
-  if (dist >= bombdamage)
+  if (dist >= bombdistance)
     return true;  // out of range
 
   if ( P_CheckSight (thing, bombspot) )
     {
     // must be in direct path
-    P_DamageMobj (thing, bombspot, bombsource, bombdamage - dist);
+
+    // [XA] independent damage/distance calculation.
+    //      same formula as eternity; thanks Quas :P
+    if (bombdamage == bombdistance)
+      damage = bombdamage - dist;
+    else
+      damage = (bombdamage * (bombdistance - dist) / bombdistance) + 1;
+
+    P_DamageMobj (thing, bombspot, bombsource, damage);
     }
 
   return true;
@@ -2075,7 +2085,7 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 // P_RadiusAttack
 // Source is the creature that caused the explosion at spot.
 //
-void P_RadiusAttack(mobj_t* spot,mobj_t* source,int damage)
+void P_RadiusAttack(mobj_t* spot,mobj_t* source, int damage, int distance)
 {
   int x;
   int y;
@@ -2087,7 +2097,7 @@ void P_RadiusAttack(mobj_t* spot,mobj_t* source,int damage)
 
   fixed_t dist;
 
-  dist = (damage+MAXRADIUS)<<FRACBITS;
+  dist = (distance+MAXRADIUS)<<FRACBITS;
   yh = P_GetSafeBlockY(spot->y + dist - bmaporgy);
   yl = P_GetSafeBlockY(spot->y - dist - bmaporgy);
   xh = P_GetSafeBlockX(spot->x + dist - bmaporgx);
@@ -2102,6 +2112,7 @@ void P_RadiusAttack(mobj_t* spot,mobj_t* source,int damage)
     bombsource = source;
   }
   bombdamage = damage;
+  bombdistance = distance;
 
   for (y=yl ; y<=yh ; y++)
     for (x=xl ; x<=xh ; x++)
