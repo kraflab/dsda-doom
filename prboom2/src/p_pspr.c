@@ -109,19 +109,14 @@ static const actionf_t param_weapon_ptrs[] = {
 //
 dboolean P_IsParamWeaponPtr(const actionf_t ptr)
 {
-  int i;
+  const actionf_t* weapon_ptr;
 
   if (ptr == NULL)
     return false;
 
-  i = -1;
-  do
-    {
-      ++i;
-      if (param_weapon_ptrs[i] == ptr)
-        return true;
-    }
-  while (param_weapon_ptrs[i] != NULL);
+  for (weapon_ptr = param_weapon_ptrs; *weapon_ptr != NULL; weapon_ptr++)
+    if (*weapon_ptr == ptr)
+      return true;
 
   return false;
 }
