@@ -162,8 +162,8 @@ int P_RandomHitscanAngle(pr_class_t pr_class, fixed_t spread)
   // FixedToAngle doesn't work for negative numbers,
   // so for convenience take just the absolute value.
   spread_bam = (spread < 0 ? FixedToAngle(-spread) : FixedToAngle(spread));
-  t = P_Random(pr_mbf21);
-  return (int)((spread_bam * (t - P_Random(pr_mbf21))) >> 8);
+  t = P_Random(pr_class);
+  return (int)((spread_bam * (t - P_Random(pr_class))) >> 8);
 }
 
 //
