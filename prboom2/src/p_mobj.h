@@ -473,6 +473,7 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 
 // mbf21
 #define MF2_SHORTMRANGE 0X00200000 // has short missile range (archvile)
+#define MF2_DMGIGNORED 0X00400000 // other things ignore its attacks (archvile)
 
 #define AMMO_GWND_WIMPY 10
 #define AMMO_GWND_HEFTY 50

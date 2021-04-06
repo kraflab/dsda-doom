@@ -1173,7 +1173,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   if (
     source &&
     (source != target || compatibility_level == doom_12_compatibility) &&
-    source->type != MT_VILE &&
+    !(source->flags2 & MF2_DMGIGNORED) &&
     (!target->threshold || target->type == MT_VILE) &&
     ((source->flags ^ target->flags) & MF_FRIEND || monster_infighting || !mbf_features) &&
     !(source->flags2 & MF2_BOSS) &&
