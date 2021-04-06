@@ -250,7 +250,7 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
   if (dist > 200)
     dist = 200;
 
-  if (actor->type == MT_CYBORG && dist > 160)
+  if (actor->flags2 & MF2_HIGHERMPROB && dist > 160)
     dist = 160;
 
   if (P_Random(pr_missrange) < dist)
