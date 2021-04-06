@@ -2045,7 +2045,8 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 
   if (bombspot->flags & MF_BOUNCES ?
       thing->type == MT_CYBORG && bombsource->type == MT_CYBORG :
-      thing->flags2 & (MF2_NORADIUSDMG | MF2_BOSS))
+      thing->flags2 & (MF2_NORADIUSDMG | MF2_BOSS) &&
+      !(bombspot->flags2 & MF2_FORCERADIUSDMG))
     return true;
 
   dx = D_abs(thing->x - bombspot->x);
