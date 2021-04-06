@@ -1174,7 +1174,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     source &&
     (source != target || compatibility_level == doom_12_compatibility) &&
     !(source->flags2 & MF2_DMGIGNORED) &&
-    (!target->threshold || target->type == MT_VILE) &&
+    (!target->threshold || target->flags2 & MF2_NOTHRESHOLD) &&
     ((source->flags ^ target->flags) & MF_FRIEND || monster_infighting || !mbf_features) &&
     !(source->flags2 & MF2_BOSS) &&
     !(target->type == HERETIC_MT_SORCERER2 && source->type == HERETIC_MT_WIZARD)
