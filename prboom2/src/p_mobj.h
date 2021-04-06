@@ -477,6 +477,7 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 #define MF2_NORADIUSDMG 0X00800000 // Doesn't take damage from blast radii
 #define MF2_FORCERADIUSDMG 0X01000000 // Does radius damage to everything, no exceptions
 #define MF2_HIGHERMPROB 0X02000000 // min prob. of miss. att. = 37.5% vs 22%
+#define MF2_RANGEHALF 0X04000000 // use half actual distance for missile attack probability
 
 #define AMMO_GWND_WIMPY 10
 #define AMMO_GWND_HEFTY 50

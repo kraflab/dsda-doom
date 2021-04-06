@@ -241,10 +241,7 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
     dist >>= 1;
   }
 
-  if (actor->type == MT_CYBORG ||
-      actor->type == MT_SPIDER ||
-      actor->type == MT_SKULL  ||
-      actor->type == HERETIC_MT_IMP) // Imp's fly attack from far away
+  if (actor->flags2 & MF2_RANGEHALF)
     dist >>= 1;
 
   if (dist > 200)
