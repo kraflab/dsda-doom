@@ -263,6 +263,7 @@ static void dsda_InitDoom(void) {
   mobjinfo[MT_FATSO].flags2 = MF2_MAP07BOSS1;
   mobjinfo[MT_BABY].flags2 = MF2_MAP07BOSS2;
   mobjinfo[MT_BRUISER].flags2 = MF2_E1M8BOSS;
+  mobjinfo[MT_UNDEAD].flags2 = MF2_LONGMELEE | MF2_RANGEHALF;
 }
 
 static void dsda_InitHeretic(void) {

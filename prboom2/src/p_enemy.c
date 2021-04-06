@@ -234,11 +234,10 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
     if (dist > 14*64)
       return false;     // too far away
 
-  if (actor->type == MT_UNDEAD)
+  if (actor->flags2 & MF2_LONGMELEE)
   {
     if (dist < 196)
       return false;   // close for fist attack
-    dist >>= 1;
   }
 
   if (actor->flags2 & MF2_RANGEHALF)
