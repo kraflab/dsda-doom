@@ -252,6 +252,9 @@ static void dsda_InitDoom(void) {
     mobjinfo[i].crashstate   = 0; // not in doom
     mobjinfo[i].flags2       = 0; // not in doom
   }
+
+  // don't want to reorganize info.c structure for a few tweaks...
+  mobjinfo[MT_VILE].flags2 = MF2_SHORTMRANGE;
 }
 
 static void dsda_InitHeretic(void) {
