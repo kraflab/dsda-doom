@@ -3054,7 +3054,7 @@ typedef struct
 
   // heretic
   int crashstate;
-  int flags2;
+  uint_64_t flags2;
 } mobjinfo_t;
 
 typedef struct

@@ -2408,8 +2408,7 @@ void A_BossDeath(mobj_t *mo)
       if (gamemap != 7)
         return;
 
-      if ((mo->type != MT_FATSO)
-          && (mo->type != MT_BABY))
+      if (!(mo->flags2 & (MF2_MAP07BOSS1 | MF2_MAP07BOSS2)))
         return;
     }
   else
@@ -2427,7 +2426,7 @@ void A_BossDeath(mobj_t *mo)
         // http://www.doomworld.com/idgames/index.php?id=6909
         if (gamemap != 8)
           return;
-        if (mo->type == MT_BRUISER && gameepisode != 1)
+        if (mo->flags2 & MF2_E1M8BOSS && gameepisode != 1)
           return;
       }
       else
@@ -2438,7 +2437,7 @@ void A_BossDeath(mobj_t *mo)
           if (gamemap != 8)
             return;
 
-          if (mo->type != MT_BRUISER)
+          if (!(mo->flags2 & MF2_E1M8BOSS))
             return;
           break;
 
@@ -2446,7 +2445,7 @@ void A_BossDeath(mobj_t *mo)
           if (gamemap != 8)
             return;
 
-          if (mo->type != MT_CYBORG)
+          if (!(mo->flags2 & MF2_E2M8BOSS))
             return;
           break;
 
@@ -2454,7 +2453,7 @@ void A_BossDeath(mobj_t *mo)
           if (gamemap != 8)
             return;
 
-          if (mo->type != MT_SPIDER)
+          if (!(mo->flags2 & MF2_E3M8BOSS))
             return;
 
           break;
@@ -2463,12 +2462,12 @@ void A_BossDeath(mobj_t *mo)
           switch(gamemap)
             {
             case 6:
-              if (mo->type != MT_CYBORG)
+              if (!(mo->flags2 & MF2_E4M6BOSS))
                 return;
               break;
 
             case 8:
-              if (mo->type != MT_SPIDER)
+              if (!(mo->flags2 & MF2_E4M8BOSS))
                 return;
               break;
 
@@ -2510,14 +2509,14 @@ void A_BossDeath(mobj_t *mo)
     {
       if (gamemap == 7)
         {
-          if (mo->type == MT_FATSO)
+          if (mo->flags2 & MF2_MAP07BOSS1)
             {
               junk.tag = 666;
               EV_DoFloor(&junk,lowerFloorToLowest);
               return;
             }
 
-          if (mo->type == MT_BABY)
+          if (mo->flags2 & MF2_MAP07BOSS2)
             {
               junk.tag = 667;
               EV_DoFloor(&junk,raiseToTexture);
