@@ -148,7 +148,7 @@ typedef enum {
   MAX_COMPATIBILITY_LEVEL,               /* Must be last entry */
   /* Aliases follow */
   boom_compatibility = boom_201_compatibility, /* Alias used by G_Compatibility */
-  best_compatibility = prboom_6_compatibility,
+  best_compatibility = mbf21_compatibility
 } complevel_t_e;
 typedef int complevel_t;
 

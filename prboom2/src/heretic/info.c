@@ -4625,7 +4625,7 @@ heretic_mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES] = {
      0,                         // damage
      heretic_sfx_impact,                // activesound
      MF_SOLID | MF_SHOOTABLE | MF_FLOAT | MF_NOGRAVITY | MF_COUNTKILL,  // flags
-     MF2_SPAWNFLOAT | MF2_PASSMOBJ      // flags2
+     MF2_SPAWNFLOAT | MF2_PASSMOBJ | MF2_RANGEHALF      // flags2
      },
 
     {                           // MT_IMPLEADER

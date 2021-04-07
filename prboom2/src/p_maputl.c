@@ -378,7 +378,9 @@ dboolean P_BlockLinesIterator(int x, int y, dboolean func(line_t*))
   // Most demos go out of sync, and maybe other problems happen, if we
   // don't consider linedef 0. For safety this should be qualified.
 
-  if (!demo_compatibility) // killough 2/22/98: demo_compatibility check
+  // killough 2/22/98: demo_compatibility check
+  // In mbf21, skip if all blocklists start w/ 0 (fixes btsx e2 map 20)
+  if ((!demo_compatibility && !mbf21) || (mbf21 && skipblstart))
     list++;     // skip 0 starting delimiter                      // phares
   for ( ; *list != -1 ; list++)                                   // phares
     {

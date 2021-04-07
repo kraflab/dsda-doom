@@ -464,7 +464,10 @@ dboolean PIT_CheckLine (line_t* ld)
     // killough 8/9/98: monster-blockers don't affect friends
     if (
       !(tmthing->flags & MF_FRIEND || tmthing->player) &&
-      ld->flags & ML_BLOCKMONSTERS &&
+      (
+        ld->flags & ML_BLOCKMONSTERS ||
+        (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT))
+      ) &&
       tmthing->type != HERETIC_MT_POD
     )
       return false; // block monsters only
@@ -2044,11 +2047,8 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 
   if (bombspot->flags & MF_BOUNCES ?
       thing->type == MT_CYBORG && bombsource->type == MT_CYBORG :
-      thing->type == MT_CYBORG ||
-      thing->type == MT_SPIDER ||
-      thing->type == HERETIC_MT_MINOTAUR ||
-      thing->type == HERETIC_MT_SORCERER1 ||
-      thing->type == HERETIC_MT_SORCERER2)
+      thing->flags2 & (MF2_NORADIUSDMG | MF2_BOSS) &&
+      !(bombspot->flags2 & MF2_FORCERADIUSDMG))
     return true;
 
   dx = D_abs(thing->x - bombspot->x);

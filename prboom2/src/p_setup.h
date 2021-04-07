@@ -54,6 +54,8 @@ extern fixed_t  bmaporgx;
 extern fixed_t  bmaporgy;        /* origin of block map */
 extern mobj_t   **blocklinks;    /* for thing chains */
 
+extern dboolean skipblstart; // MaxW: Skip initial blocklist short
+
 // MAES: extensions to support 512x512 blockmaps.
 extern int blockmapxneg;
 extern int blockmapyneg;

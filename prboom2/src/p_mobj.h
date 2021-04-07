@@ -385,7 +385,7 @@ typedef struct mobj_s
 
     // heretic
     int damage;                 // For missiles
-    int flags2;                 // Heretic flags
+    uint_64_t flags2;           // Heretic & MBF21 flags
     specialval_t special1;      // Special info
     specialval_t special2;      // Special info
 
@@ -442,34 +442,44 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 
 // --- mobj.flags2 ---
 
-#define MF2_LOGRAV		0x00000001  // alternate gravity setting
-#define MF2_WINDTHRUST		0x00000002  // gets pushed around by the wind
-                                            // specials
-#define MF2_FLOORBOUNCE		0x00000004  // bounces off the floor
-#define MF2_THRUGHOST		0x00000008  // missile will pass through ghosts
-#define MF2_FLY			0x00000010  // fly mode is active
-#define MF2_FOOTCLIP		0x00000020  // if feet are allowed to be clipped
-#define MF2_SPAWNFLOAT		0x00000040  // spawn random float z
-#define MF2_NOTELEPORT		0x00000080  // does not teleport
-#define MF2_RIP			0x00000100  // missile rips through solid
-                                            // targets
-#define MF2_PUSHABLE		0x00000200  // can be pushed by other moving
-                                            // mobjs
-#define MF2_SLIDE		0x00000400  // slides against walls
-#define MF2_ONMOBJ		0x00000800  // mobj is resting on top of another
-                                            // mobj
-#define MF2_PASSMOBJ		0x00001000  // Enable z block checking.  If on,
-                                            // this flag will allow the mobj to
-                                            // pass over/under other mobjs.
-#define MF2_CANNOTPUSH		0x00002000  // cannot push other pushable mobjs
-#define MF2_FEETARECLIPPED	0x00004000  // a mobj's feet are now being cut
-#define MF2_BOSS		0x00008000  // mobj is a major boss
-#define MF2_FIREDAMAGE		0x00010000  // does fire damage
-#define MF2_NODMGTHRUST		0x00020000  // does not thrust target when
-                                            // damaging
-#define MF2_TELESTOMP		0x00040000  // mobj can stomp another
-#define MF2_FLOATBOB		0x00080000  // use float bobbing z movement
-#define MF2_DONTDRAW		0X00100000  // don't generate a vissprite
+#define MF2_LOGRAV         (uint_64_t)(0x00000001)  // alternate gravity setting
+#define MF2_WINDTHRUST     (uint_64_t)(0x00000002)  // gets pushed around by the wind
+#define MF2_FLOORBOUNCE    (uint_64_t)(0x00000004)  // bounces off the floor
+#define MF2_THRUGHOST      (uint_64_t)(0x00000008)  // missile will pass through ghosts
+#define MF2_FLY            (uint_64_t)(0x00000010)  // fly mode is active
+#define MF2_FOOTCLIP       (uint_64_t)(0x00000020)  // if feet are allowed to be clipped
+#define MF2_SPAWNFLOAT     (uint_64_t)(0x00000040)  // spawn random float z
+#define MF2_NOTELEPORT     (uint_64_t)(0x00000080)  // does not teleport
+#define MF2_RIP            (uint_64_t)(0x00000100)  // missile rips through solid
+#define MF2_PUSHABLE       (uint_64_t)(0x00000200)  // can be pushed by other moving
+#define MF2_SLIDE          (uint_64_t)(0x00000400)  // slides against walls
+#define MF2_ONMOBJ         (uint_64_t)(0x00000800)  // mobj is resting on top of another
+#define MF2_PASSMOBJ       (uint_64_t)(0x00001000)  // Enable z block checking (pass over / under)
+#define MF2_CANNOTPUSH     (uint_64_t)(0x00002000)  // cannot push other pushable mobjs
+#define MF2_FEETARECLIPPED (uint_64_t)(0x00004000)  // a mobj's feet are now being cut
+#define MF2_BOSS           (uint_64_t)(0x00008000)  // mobj is a major boss
+#define MF2_FIREDAMAGE     (uint_64_t)(0x00010000)  // does fire damage
+#define MF2_NODMGTHRUST    (uint_64_t)(0x00020000)  // does not thrust target when
+#define MF2_TELESTOMP      (uint_64_t)(0x00040000)  // mobj can stomp another
+#define MF2_FLOATBOB       (uint_64_t)(0x00080000)  // use float bobbing z movement
+#define MF2_DONTDRAW       (uint_64_t)(0x00100000)  // don't generate a vissprite
+
+// mbf21
+#define MF2_SHORTMRANGE    (uint_64_t)(0x00200000) // has short missile range (archvile)
+#define MF2_DMGIGNORED     (uint_64_t)(0x00400000) // other things ignore its attacks (archvile)
+#define MF2_NORADIUSDMG    (uint_64_t)(0x00800000) // Doesn't take damage from blast radii
+#define MF2_FORCERADIUSDMG (uint_64_t)(0x01000000) // Does radius damage to everything, no exceptions
+#define MF2_HIGHERMPROB    (uint_64_t)(0x02000000) // min prob. of miss. att. = 37.5% vs 22%
+#define MF2_RANGEHALF      (uint_64_t)(0x04000000) // use half actual distance for missile attack probability
+#define MF2_NOTHRESHOLD    (uint_64_t)(0x08000000) // has no target threshold
+#define MF2_MAP07BOSS1     (uint_64_t)(0x10000000) // is a MAP07 boss type 1 (666)
+#define MF2_MAP07BOSS2     (uint_64_t)(0x20000000) // is a MAP07 boss type 2 (667)
+#define MF2_E1M8BOSS       (uint_64_t)(0x40000000) // is an E1M8 boss
+#define MF2_E2M8BOSS       (uint_64_t)(0x80000000) // is an E2M8 boss
+#define MF2_E3M8BOSS  LONGLONG(0x0000000100000000) // is an E3M8 boss
+#define MF2_E4M6BOSS  LONGLONG(0x0000000200000000) // is an E4M6 boss
+#define MF2_E4M8BOSS  LONGLONG(0x0000000400000000) // is an E4M8 boss
+#define MF2_LONGMELEE LONGLONG(0x0000000800000000) // has long melee range (revenant)
 
 #define AMMO_GWND_WIMPY 10
 #define AMMO_GWND_HEFTY 50

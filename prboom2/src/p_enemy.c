@@ -230,27 +230,23 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
 
   dist >>= FRACBITS;
 
-  if (actor->type == MT_VILE)
+  if (actor->flags2 & MF2_SHORTMRANGE)
     if (dist > 14*64)
       return false;     // too far away
 
-  if (actor->type == MT_UNDEAD)
+  if (actor->flags2 & MF2_LONGMELEE)
   {
     if (dist < 196)
       return false;   // close for fist attack
-    dist >>= 1;
   }
 
-  if (actor->type == MT_CYBORG ||
-      actor->type == MT_SPIDER ||
-      actor->type == MT_SKULL  ||
-      actor->type == HERETIC_MT_IMP) // Imp's fly attack from far away
+  if (actor->flags2 & MF2_RANGEHALF)
     dist >>= 1;
 
   if (dist > 200)
     dist = 200;
 
-  if (actor->type == MT_CYBORG && dist > 160)
+  if (actor->flags2 & MF2_HIGHERMPROB && dist > 160)
     dist = 160;
 
   if (P_Random(pr_missrange) < dist)
@@ -1131,7 +1127,7 @@ void A_Look(mobj_t *actor)
           break;
       }
 
-    if (actor->type == MT_SPIDER || actor->type == MT_CYBORG || actor->flags2 & MF2_BOSS)
+    if (actor->flags2 & MF2_BOSS)
       S_StartSound(NULL, sound);          // full volume
     else
       S_StartSound(actor, sound);
@@ -2257,7 +2253,7 @@ void A_Scream(mobj_t *actor)
     }
 
   // Check for bosses.
-  if (actor->type==MT_SPIDER || actor->type == MT_CYBORG)
+  if (actor->flags2 & MF2_BOSS)
     S_StartSound(NULL, sound); // full volume
   else
     S_StartSound(actor, sound);
@@ -2411,8 +2407,7 @@ void A_BossDeath(mobj_t *mo)
       if (gamemap != 7)
         return;
 
-      if ((mo->type != MT_FATSO)
-          && (mo->type != MT_BABY))
+      if (!(mo->flags2 & (MF2_MAP07BOSS1 | MF2_MAP07BOSS2)))
         return;
     }
   else
@@ -2430,7 +2425,7 @@ void A_BossDeath(mobj_t *mo)
         // http://www.doomworld.com/idgames/index.php?id=6909
         if (gamemap != 8)
           return;
-        if (mo->type == MT_BRUISER && gameepisode != 1)
+        if (mo->flags2 & MF2_E1M8BOSS && gameepisode != 1)
           return;
       }
       else
@@ -2441,7 +2436,7 @@ void A_BossDeath(mobj_t *mo)
           if (gamemap != 8)
             return;
 
-          if (mo->type != MT_BRUISER)
+          if (!(mo->flags2 & MF2_E1M8BOSS))
             return;
           break;
 
@@ -2449,7 +2444,7 @@ void A_BossDeath(mobj_t *mo)
           if (gamemap != 8)
             return;
 
-          if (mo->type != MT_CYBORG)
+          if (!(mo->flags2 & MF2_E2M8BOSS))
             return;
           break;
 
@@ -2457,7 +2452,7 @@ void A_BossDeath(mobj_t *mo)
           if (gamemap != 8)
             return;
 
-          if (mo->type != MT_SPIDER)
+          if (!(mo->flags2 & MF2_E3M8BOSS))
             return;
 
           break;
@@ -2466,12 +2461,12 @@ void A_BossDeath(mobj_t *mo)
           switch(gamemap)
             {
             case 6:
-              if (mo->type != MT_CYBORG)
+              if (!(mo->flags2 & MF2_E4M6BOSS))
                 return;
               break;
 
             case 8:
-              if (mo->type != MT_SPIDER)
+              if (!(mo->flags2 & MF2_E4M8BOSS))
                 return;
               break;
 
@@ -2513,14 +2508,14 @@ void A_BossDeath(mobj_t *mo)
     {
       if (gamemap == 7)
         {
-          if (mo->type == MT_FATSO)
+          if (mo->flags2 & MF2_MAP07BOSS1)
             {
               junk.tag = 666;
               EV_DoFloor(&junk,lowerFloorToLowest);
               return;
             }
 
-          if (mo->type == MT_BABY)
+          if (mo->flags2 & MF2_MAP07BOSS2)
             {
               junk.tag = 667;
               EV_DoFloor(&junk,raiseToTexture);

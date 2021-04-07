@@ -56,8 +56,6 @@
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
 
-#define BONUSADD        6
-
 // Ty 03/07/98 - add deh externals
 // Maximums and such were hardcoded values.  Need to externalize those for
 // dehacked support (and future flexibility).  Most var names came from the key
@@ -1175,10 +1173,10 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   if (
     source &&
     (source != target || compatibility_level == doom_12_compatibility) &&
-    source->type != MT_VILE &&
-    (!target->threshold || target->type == MT_VILE) &&
+    !(source->flags2 & MF2_DMGIGNORED) &&
+    (!target->threshold || target->flags2 & MF2_NOTHRESHOLD) &&
     ((source->flags ^ target->flags) & MF_FRIEND || monster_infighting || !mbf_features) &&
-    !(source->flags2 & MF2_BOSS) &&
+    !(heretic && source->flags2 & MF2_BOSS) &&
     !(target->type == HERETIC_MT_SORCERER2 && source->type == HERETIC_MT_WIZARD)
   )
   {
