@@ -75,3 +75,20 @@ The DEH specification is still TBD - this is just a list of implemented flags of
 | MF2_E4M6BOSS       | MF2_E4M6BOSS       | E4M6 boss (cyberdemon)                                                                         |
 | MF2_E4M8BOSS       | MF2_E4M8BOSS       | E4M8 boss (mastermind)                                                                         |
 | MF2_RIP            | MF3_RIP            | Ripper projectile (does not disappear on impact)                                               |
+
+#### New DEHACKED Codepointers
+- [PR](https://github.com/kraflab/dsda-doom/pull/20)
+- Actor pointers:
+  - **A_SpawnFacing(type, height)** -- spawns an actor of `type` at `height` z units and sets its angle to the caller's angle.
+  - **A_MonsterProjectile(type, angle)** -- generic monster projectile attack; always sets `tracer` field.
+  - **A_MonsterBulletAttack(damage, spread)** -- generic monster bullet attack w/horizontal `spread`; if `spread` is negative, apply vertical spread equal to 2/3 of this value (approx. equal to SSG vert-spread)
+  - **A_RadiusDamage(damage, radius)** -- generic A_Explode, w/customizable damage and radius (helll yeah)
+- Weapon pointers:
+  - **A_WeaponProjectile(type, angle)** -- generic weapon projectile attack; does not consume ammo
+  - **A_WeaponBulletAttack(damage, spread)** -- generic weapon bullet attack; does not consume ammo; same `spread` behavior as A_MonsterBulletAttack
+  - **A_WeaponSound(sound, fullvol)** -- same as A_PlaySound, but for weapons
+  - **A_WeaponJump(state, chance)** -- same as A_RandomJump, but for  weapons
+  - **A_ConsumeAmmo(amount)** -- subtract `amount` units of ammo. if `amount` is zero, use the weapon slot's `ammopershot`. will not reduce ammo below zero.
+  - **A_CheckAmmo(state, amount)** -- jumps to `state` if ammo is below `amount`; if `amount` is zero, use the weapon slot's `ammopershot` value instead
+  - **A_RefireTo(state, noammocheck)** -- jumps to `state` if trigger is still held down; will also check ammo unless `noammocheck` is set
+  - **A_GunFlashTo(state, nothirdperson)** -- sets the weapon's flash state to `state`; also sets the player's 3rd-person sprite to the player actor's firing frame unless `nothirdperson` is set

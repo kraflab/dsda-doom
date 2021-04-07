@@ -124,6 +124,7 @@ typedef enum {
   pr_randomjump,              // #61
   pr_defect,                  // #62  // Start new entries -- add new entries below
   pr_heretic,                 // #63
+  pr_mbf21,                   // #64
 
   // End of new entries
   NUMPRCLASS               // MUST be last item in list
@@ -151,6 +152,10 @@ int P_Random(pr_class_t DA(const char *, int));
 
 // Fix randoms for demos.
 void M_ClearRandom(void);
+
+// [XA] Common random formulas used by codepointers
+int P_RandomHitscanAngle(pr_class_t pr_class, fixed_t spread);
+int P_RandomHitscanSlope(pr_class_t pr_class, fixed_t spread);
 
 // heretic
 

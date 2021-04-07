@@ -41,6 +41,7 @@
 #include "doomstat.h"
 #include "m_random.h"
 #include "lprintf.h"
+#include "tables.h"
 
 //
 // M_Random
@@ -144,6 +145,45 @@ void M_ClearRandom (void)
   for (i=0; i<NUMPRCLASS; i++)         // go through each pr_class and set
     rng.seed[i] = seed *= 69069ul;     // each starting seed differently
   rng.prndindex = rng.rndindex = 0;    // clear two compatibility indices
+}
+
+// [XA] Common random formulas used by codepointers
+
+//
+// P_RandomHitscanAngle
+// Outputs a random angle between (-spread, spread), as an int ('cause it can be negative).
+//   spread: Maximum angle (degrees, in fixed point -- not BAM!)
+//
+int P_RandomHitscanAngle(pr_class_t pr_class, fixed_t spread)
+{
+  int t;
+  int_64_t spread_bam;
+
+  // FixedToAngle doesn't work for negative numbers,
+  // so for convenience take just the absolute value.
+  spread_bam = (spread < 0 ? FixedToAngle(-spread) : FixedToAngle(spread));
+  t = P_Random(pr_class);
+  return (int)((spread_bam * (t - P_Random(pr_class))) / 255);
+}
+
+//
+// P_RandomHitscanSlope
+// Outputs a random angle between (-spread, spread), converted to values used for slope
+//   spread: Maximum vertical angle (degrees, in fixed point -- not BAM!)
+//
+int P_RandomHitscanSlope(pr_class_t pr_class, fixed_t spread)
+{
+  int angle;
+
+  angle = P_RandomHitscanAngle(pr_class, spread);
+
+  // clamp it, yo
+  if (angle > ANG90)
+    return finetangent[0];
+  else if (-angle > ANG90)
+    return finetangent[FINEANGLES/2 - 1];
+  else
+    return finetangent[(ANG90 - angle) >> ANGLETOFINESHIFT];
 }
 
 // heretic

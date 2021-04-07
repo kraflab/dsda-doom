@@ -84,14 +84,58 @@ static const int recoil_values[] = {    // phares
   80  // wp_supershotgun
 };
 
+// [XA] keep a list of all parameterized weapon pointers,
+// so we can disable the misc1/misc2 weapon offset
+// behavior for states that use one of these
+
+static const actionf_t param_weapon_ptrs[] = {
+	A_WeaponProjectile,
+	A_WeaponBulletAttack,
+	A_WeaponSound,
+	A_WeaponJump,
+	A_ConsumeAmmo,
+	A_CheckAmmo,
+	A_RefireTo,
+	A_GunFlashTo,
+
+	// This NULL entry must be the last in the list
+	NULL
+};
+
+//
+// P_IsParamWeaponPtr
+// Returns true if the specified action is a
+// parameterized weapon code pointer.
+//
+dboolean P_IsParamWeaponPtr(const actionf_t ptr)
+{
+  const actionf_t* weapon_ptr;
+
+  if (ptr == NULL)
+    return false;
+
+  for (weapon_ptr = param_weapon_ptrs; *weapon_ptr != NULL; weapon_ptr++)
+    if (*weapon_ptr == ptr)
+      return true;
+
+  return false;
+}
+
 //
 // P_SetPsprite
 //
 
 void P_SetPsprite(player_t *player, int position, statenum_t stnum)
 {
-  pspdef_t *psp = &player->psprites[position];
+	P_SetPspritePtr(player, &player->psprites[position], stnum);
+}
 
+//
+// P_SetPspritePtr
+//
+
+void P_SetPspritePtr(player_t *player, pspdef_t *psp, statenum_t stnum)
+{
   do
     {
       state_t *state;
@@ -107,7 +151,7 @@ void P_SetPsprite(player_t *player, int position, statenum_t stnum)
       psp->state = state;
       psp->tics = state->tics;        // could be 0
 
-      if (state->misc1)
+      if (state->misc1 && !P_IsParamWeaponPtr(state->action))
         {
           // coordinate set
           psp->sx = state->misc1 << FRACBITS;
@@ -255,6 +299,25 @@ int P_WeaponPreferred(int w1, int w2)
     (weapon_preferences[0][6] !=   w2 && (weapon_preferences[0][6] ==   w1 ||
     (weapon_preferences[0][7] !=   w2 && (weapon_preferences[0][7] ==   w1
    ))))))))))))))));
+}
+
+//
+// P_GetAmmoPerShot
+// Returns ammo per shot for the currently selected weapon.
+//
+// [XA] Eventually this value will be customizable
+// instead of hardcoded, presuming everything goes
+// according to plan...
+//
+
+int P_GetAmmoPerShot(player_t *player)
+{
+  if (player->readyweapon == wp_bfg)
+    return BFGCELLS;
+  else if (player->readyweapon == wp_supershotgun)
+    return 2;
+  else
+    return 1;
 }
 
 //
@@ -1007,6 +1070,200 @@ void A_BFGsound(player_t *player, pspdef_t *psp)
   CHECK_WEAPON_CODEPOINTER("A_BFGsound", player);
 
   S_StartSound(player->mo, sfx_bfg);
+}
+
+//
+// [XA] New mbf21 codepointers
+//
+
+//
+// A_WeaponProjectile
+// A parameterized player weapon projectile attack. Does not consume ammo.
+//   misc1: Type of actor to spawn
+//   misc2: Angle (degrees, in fixed point), relative to calling actor's angle
+//
+void A_WeaponProjectile(player_t *player, pspdef_t *psp)
+{
+  mobj_t *mo;
+  int an;
+
+  CHECK_WEAPON_CODEPOINTER("A_WeaponProjectile", player);
+
+  if (!mbf21 || !psp->state || !psp->state->misc1)
+    return;
+
+  mo = P_SpawnPlayerMissile(player->mo, psp->state->misc1 - 1);
+  if (!mo)
+	return;
+
+  // adjust the angle by misc2;
+  mo->angle += (unsigned int)(((int_64_t)psp->state->misc2 << 16) / 360);
+  an = mo->angle >> ANGLETOFINESHIFT;
+  mo->momx = FixedMul(mo->info->speed, finecosine[an]);
+  mo->momy = FixedMul(mo->info->speed, finesine[an]);
+}
+
+//
+// A_WeaponBulletAttack
+// A parameterized player weapon bullet attack. Does not consume ammo.
+//   misc1: Damage of attack (times 1d3)
+//   misc2: Horizontal spread (degrees, in fixed point);
+//          if negative, also use 2/3 of this value for vertical spread
+//
+void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
+{
+  int damage, angle, slope;
+
+  CHECK_WEAPON_CODEPOINTER("A_WeaponBulletAttack", player);
+
+  if (!mbf21 || !psp->state)
+    return;
+
+  P_BulletSlope(player->mo);
+
+  damage = (P_Random(pr_mbf21) % 3 + 1) * psp->state->misc1;
+  angle = (int)player->mo->angle + P_RandomHitscanAngle(pr_mbf21, psp->state->misc2);
+  slope = bulletslope;
+
+  if (psp->state->misc2 < 0)
+    slope += P_RandomHitscanSlope(pr_mbf21, psp->state->misc2 * 2 / 3);
+
+  P_LineAttack(player->mo, angle, MISSILERANGE, slope, damage);
+}
+
+//
+// A_WeaponSound
+// Plays a sound. Usable from weapons, unlike A_PlaySound
+//   misc1: ID of sound to play
+//   misc2: If 1, play sound at full volume (may be useful in DM?)
+//
+void A_WeaponSound(player_t *player, pspdef_t *psp)
+{
+  CHECK_WEAPON_CODEPOINTER("A_WeaponSound", player);
+
+  if (!mbf21 || !psp->state)
+    return;
+
+  S_StartSound(psp->state->misc2 ? NULL : player->mo, psp->state->misc1);
+}
+
+//
+// A_WeaponJump
+// Jumps to the specified state, with variable random chance.
+// Basically the same as A_RandomJump, but for weapons.
+//   misc1: State number
+//   misc2: Chance, out of 255, to make the jump
+//
+void A_WeaponJump(player_t *player, pspdef_t *psp)
+{
+  CHECK_WEAPON_CODEPOINTER("A_WeaponJump", player);
+
+  if (!mbf21 || !psp->state)
+    return;
+
+  if (P_Random(pr_mbf21) < psp->state->misc2)
+    P_SetPspritePtr(player, psp, psp->state->misc1);
+}
+
+//
+// A_ConsumeAmmo
+// Subtracts ammo from the player's "inventory". 'Nuff said.
+//   misc1: Amount of ammo to consume. If zero, use the weapon's ammo-per-shot amount.
+//
+void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
+{
+  int amount;
+  ammotype_t type;
+
+  CHECK_WEAPON_CODEPOINTER("A_ConsumeAmmo", player);
+
+  if (!mbf21)
+    return;
+
+  // don't do dumb things, kids
+  type = weaponinfo[player->readyweapon].ammo;
+  if (!psp->state || type == am_noammo)
+	return;
+
+  // use the weapon's ammo-per-shot amount if zero.
+  // to subtract zero ammo, don't call this function. ;)
+  if (psp->state->misc1 != 0)
+    amount = psp->state->misc1;
+  else
+    amount = P_GetAmmoPerShot(player);
+
+  // subtract ammo, but don't let it get below zero
+  if (player->ammo[type] >= amount)
+    player->ammo[type] -= amount;
+  else
+    player->ammo[type] = 0;
+}
+
+//
+// A_CheckAmmo
+// Jumps to a state if the player's ammo is lower than the specified amount.
+//   misc1: State to jump to
+//   misc2: Minimum required ammo to NOT jump. If zero, use the weapon's ammo-per-shot amount.
+//
+void A_CheckAmmo(player_t *player, pspdef_t *psp)
+{
+  int amount;
+  ammotype_t type;
+
+  CHECK_WEAPON_CODEPOINTER("A_CheckAmmo", player);
+
+  if (!mbf21)
+    return;
+
+  type = weaponinfo[player->readyweapon].ammo;
+  if (!psp->state || type == am_noammo)
+    return;
+
+  if (psp->state->misc2 != 0)
+    amount = psp->state->misc2;
+  else
+    amount = P_GetAmmoPerShot(player);
+
+  if (player->ammo[type] < amount)
+    P_SetPspritePtr(player, psp, psp->state->misc1);
+}
+
+//
+// A_RefireTo
+// Jumps to a state if the player is holding down the fire button
+//   misc1: State to jump to
+//   misc2: If nonzero, skip the ammo check
+//
+void A_RefireTo(player_t *player, pspdef_t *psp)
+{
+  CHECK_WEAPON_CODEPOINTER("A_RefireTo", player);
+
+  if (!mbf21 || !psp->state)
+    return;
+
+  if ((psp->state->misc2 || P_CheckAmmo(player))
+  &&  (player->cmd.buttons & BT_ATTACK)
+  &&  (player->pendingweapon == wp_nochange && player->health))
+    P_SetPspritePtr(player, psp, psp->state->misc1);
+}
+
+//
+// A_GunFlashTo
+// Sets the weapon flash layer to the specified state.
+//   misc1: State number
+//   misc2: If nonzero, don't change the player actor state
+//
+void A_GunFlashTo(player_t *player, pspdef_t *psp)
+{
+  CHECK_WEAPON_CODEPOINTER("A_GunFlashTo", player);
+
+  if (!mbf21 || !psp->state)
+    return;
+
+  if(!psp->state->misc2)
+    P_SetMobjState(player->mo, S_PLAY_ATK2);
+
+  P_SetPsprite(player, ps_flash, psp->state->misc1);
 }
 
 //

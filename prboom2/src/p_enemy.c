@@ -1972,7 +1972,7 @@ void A_VileAttack(mobj_t *actor)
   // move the fire between the vile and the player
   fire->x = actor->target->x - FixedMul (24*FRACUNIT, finecosine[an]);
   fire->y = actor->target->y - FixedMul (24*FRACUNIT, finesine[an]);
-  P_RadiusAttack(fire, actor, 70);
+  P_RadiusAttack(fire, actor, 70, 70);
 }
 
 //
@@ -2335,7 +2335,7 @@ void A_Explode(mobj_t *thingy)
       break;
   }
 
-  P_RadiusAttack(thingy, thingy->target, damage);
+  P_RadiusAttack(thingy, thingy->target, damage, damage);
   if (heretic) P_HitFloor(thingy);
 }
 
@@ -2817,7 +2817,7 @@ void A_Detonate(mobj_t *mo)
       !prboom_comp[PC_APPLY_MBF_CODEPOINTERS_TO_ANY_COMPLEVEL].state)
     return;
 
-  P_RadiusAttack(mo, mo->target, mo->info->damage);
+  P_RadiusAttack(mo, mo->target, mo->info->damage, mo->info->damage);
 }
 
 //
@@ -2958,6 +2958,106 @@ void A_LineEffect(mobj_t *mo)
   mo->state->misc1 = junk.special;
   mo->player = oldplayer;
 }
+
+//
+// [XA] New mbf21 codepointers
+//
+
+//
+// A_SpawnFacing
+// Spawns an actor facing the same direction as the caller.
+// Basically just A_Spawn with a major quality-of-life tweak.
+//   misc1: Type of actor to spawn
+//   misc2: Height to spawn at, relative to calling actor
+//
+void A_SpawnFacing(mobj_t *actor)
+{
+  mobj_t *mo;
+
+  if (!mbf21 || !actor->state->misc1)
+    return;
+
+  mo = P_SpawnMobj(actor->x, actor->y, (actor->state->misc2 << FRACBITS) + actor->z, actor->state->misc1 - 1);
+  if (mo)
+    mo->angle = actor->angle;
+
+  // [XA] don't bother with the dont-inherit-friendliness hack
+  // that exists in A_Spawn, 'cause WTF is that about anyway?
+}
+
+//
+// A_MonsterProjectile
+// A parameterized monster projectile attack.
+//   misc1: Type of actor to spawn
+//   misc2: Angle (degrees, in fixed point), relative to calling actor's angle
+//
+void A_MonsterProjectile(mobj_t *actor)
+{
+  mobj_t *mo;
+  int an;
+
+  if (!mbf21 || !actor->target || !actor->state->misc1)
+    return;
+
+  A_FaceTarget(actor);
+  mo = P_SpawnMissile(actor, actor->target, actor->state->misc1 - 1);
+  if (!mo)
+    return;
+
+  // adjust the angle by misc2;
+  mo->angle += (unsigned int)(((int_64_t)actor->state->misc2 << 16) / 360);
+  an = mo->angle >> ANGLETOFINESHIFT;
+  mo->momx = FixedMul(mo->info->speed, finecosine[an]);
+  mo->momy = FixedMul(mo->info->speed, finesine[an]);
+
+  // always set the 'tracer' field, so this pointer
+  // can be used to fire seeker missiles at will.
+  P_SetTarget(&mo->tracer, actor->target);
+}
+
+//
+// A_MonsterBulletAttack
+// A parameterized monster bullet attack.
+//   misc1: Damage of attack (times 1d5)
+//   misc2: Horizontal spread (degrees, in fixed point);
+//          if negative, also use 2/3 of this value for vertical spread
+//
+void A_MonsterBulletAttack(mobj_t *actor)
+{
+  int damage, angle, slope, t;
+  int_64_t spread;
+
+  if (!mbf21 || !actor->target)
+    return;
+
+  A_FaceTarget(actor);
+  S_StartSound(actor, actor->info->attacksound);
+
+  damage = (P_Random(pr_mbf21) % 5 + 1) * actor->state->misc1;
+
+  angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, actor->state->misc2);;
+  slope = P_AimLineAttack(actor, angle, MISSILERANGE, 0);
+
+  if (actor->state->misc2 < 0)
+    slope += P_RandomHitscanSlope(pr_mbf21, actor->state->misc2 * 2 / 3);
+
+  P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
+}
+
+//
+// A_RadiusDamage
+// A parameterized version of A_Explode. Friggin' finally. :P
+//   misc1: Damage (int)
+//   misc2: Radius (also int; no real need for fractional precision here)
+//
+void A_RadiusDamage(mobj_t *actor)
+{
+  if (!mbf21 || !actor->state)
+    return;
+
+  P_RadiusAttack(actor, actor->target, actor->state->misc1, actor->state->misc2);
+}
+
 
 // heretic
 
@@ -4109,7 +4209,7 @@ void A_VolcBallImpact(mobj_t * ball)
         ball->z += 28 * FRACUNIT;
         //ball->momz = 3*FRACUNIT;
     }
-    P_RadiusAttack(ball, ball->target, 25);
+    P_RadiusAttack(ball, ball->target, 25, 25);
     for (i = 0; i < 4; i++)
     {
         tiny = P_SpawnMobj(ball->x, ball->y, ball->z, HERETIC_MT_VOLCANOTBLAST);

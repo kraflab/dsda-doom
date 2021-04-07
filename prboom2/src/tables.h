@@ -94,4 +94,16 @@ typedef int (*slope_div_fn)(unsigned int num, unsigned int den);
 int SlopeDiv(unsigned int num, unsigned int den);
 int SlopeDivEx(unsigned int num, unsigned int den);
 
+// More utility functions, courtesy of Quasar (James Haley).
+// These are straight from Eternity so demos stay in sync.
+inline static angle_t FixedToAngle(fixed_t a)
+{
+  return (angle_t)(((uint_64_t)a * ANG1) >> FRACBITS);
+}
+
+inline static fixed_t AngleToFixed(angle_t a)
+{
+  return (fixed_t)(((uint_64_t)a << FRACBITS) / ANG1);
+}
+
 #endif
