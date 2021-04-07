@@ -2436,6 +2436,8 @@ void P_PlayerInSpecialSector (player_t* player)
   {
     if (mbf21 && sector->special & DEATH_MASK)
     {
+      int i;
+
       switch ((sector->special & DAMAGE_MASK) >> DAMAGE_SHIFT)
       {
         case 0:
@@ -2443,15 +2445,19 @@ void P_PlayerInSpecialSector (player_t* player)
             P_DamageMobj(player->mo, NULL, NULL, 10000);
           break;
         case 1:
-          if (!player->powers[pw_invulnerability])
-            P_DamageMobj(player->mo, NULL, NULL, 10000);
+          P_DamageMobj(player->mo, NULL, NULL, 10000);
           break;
         case 2:
-          P_DamageMobj(player->mo, NULL, NULL, 10000);
+          for (i = 0; i < MAXPLAYERS; i++)
+            if (playeringame[i])
+              P_DamageMobj(players[i].mo, NULL, NULL, 10000);
+          G_ExitLevel();
           break;
         case 3:
-          P_DamageMobj(player->mo, NULL, NULL, 10000);
-          G_ExitLevel();
+          for (i = 0; i < MAXPLAYERS; i++)
+            if (playeringame[i])
+              P_DamageMobj(players[i].mo, NULL, NULL, 10000);
+          G_SecretExitLevel();
           break;
       }
     }

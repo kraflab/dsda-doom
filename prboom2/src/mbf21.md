@@ -21,9 +21,9 @@ This is proof-of-concept implemented in dsda-doom.
 | Dec | Bit 6-5 | Description                                                   |
 |-----|---------|---------------------------------------------------------------|
 | 0   | 00      | Kills a player unless they have a rad suit or invulnerability |
-| 32  | 01      | Kills a player unless they have invulnerability               |
-| 64  | 10      | Kills a player                                                |
-| 96  | 11      | Kills a player and exits the map                              |
+| 32  | 01      | Kills a player                                                |
+| 64  | 10      | Kills all players and exits the map (normal exit)             |
+| 96  | 11      | Kills all players and exits the map (secret exit)             |
 
 #### Kill monsters sector special
 - [PR](https://github.com/kraflab/dsda-doom/pull/18)
