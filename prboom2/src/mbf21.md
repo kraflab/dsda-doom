@@ -39,6 +39,9 @@ This is proof-of-concept implemented in dsda-doom.
 - [PR](https://github.com/kraflab/dsda-doom/pull/19)
 - Uses bit 12 (4096).
 
+#### Fix generalized crusher walkover lines
+- [commit](https://github.com/kraflab/dsda-doom/commit/76776f721b5d1d8a1a0ae95daab525cf8183ce44)
+
 #### New Thing Flags
 
 Implementations match between DSDA-Doom and Eternity Engine,
