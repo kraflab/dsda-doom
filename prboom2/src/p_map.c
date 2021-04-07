@@ -995,7 +995,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
      */
     if (!(thing->flags & (MF_DROPOFF|MF_FLOAT)))
     {
-      if (comp[comp_dropoff])
+      if (comp[comp_dropoff] || comp[comp_ledgeblock])
       {
         // e6y
         // Fix demosync bug in mbf compatibility mode
@@ -1007,7 +1007,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
         // http://www.doomworld.com/idgames/index.php?id=11138
         if (
           (
-            compatibility ||
+            comp[comp_ledgeblock] ||
             !dropoff ||
             (
               !prboom_comp[PC_NO_DROPOFF].state &&

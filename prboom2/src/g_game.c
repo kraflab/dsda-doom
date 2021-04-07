@@ -2658,8 +2658,8 @@ void G_Compatibility(void)
     { boom_compatibility_compatibility, prboom_6_compatibility },
     // comp_translucency - No predefined translucency for some things
     { boom_compatibility_compatibility, prboom_6_compatibility },
-    // comp_placeholder_29 - Not defined yet
-    { 255, 255 },
+    // comp_ledgeblock - ground monsters are blocked by ledges
+    { boom_compatibility, mbf21_compatibility },
     // comp_placeholder_30 - Not defined yet
     { 255, 255 },
     // comp_placeholder_31 - Not defined yet

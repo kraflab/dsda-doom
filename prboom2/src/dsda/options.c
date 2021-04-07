@@ -93,7 +93,8 @@ static const dsda_options_t default_mbf_options = {
   // .comp_maskedanim = 0,
   // .comp_ouchface = 1,
   // .comp_maxhealth = 0,
-  // .comp_translucency = 0
+  // .comp_translucency = 0,
+  // .comp_ledgeblock = 0
 };
 
 static const dsda_options_t default_latest_options = {
@@ -137,7 +138,8 @@ static const dsda_options_t default_latest_options = {
   .comp_maskedanim = 0,
   .comp_ouchface = 0,
   .comp_maxhealth = 0,
-  .comp_translucency = 0
+  .comp_translucency = 0,
+  .comp_ledgeblock = 1
 };
 
 static dsda_options_t mbf_options;
