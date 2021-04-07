@@ -20,7 +20,7 @@
 #include "time.h"
 
 // [XA] MSVC hack: need to implement a handful of functions here.
-// this was yoinked from a handful of stackoverflow posts so
+// this was yoinked from https://stackoverflow.com/a/31335254 so
 // no guarantees on if this stuff is accurate/kosher/whatever,
 // so maybe don't cut an official release with MSVC just yet.
 // it's enough to hack it into compiling for me, at least. ;)
