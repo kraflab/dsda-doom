@@ -2977,10 +2977,12 @@ void A_LineEffect(mobj_t *mo)
 //
 void A_SpawnFacing(mobj_t *actor)
 {
+  mobj_t *mo;
+
   if (!mbf21 || !actor->state->misc1)
     return;
 
-  mobj_t *mo = P_SpawnMobj(actor->x, actor->y, (actor->state->misc2 << FRACBITS) + actor->z, actor->state->misc1 - 1);
+  mo = P_SpawnMobj(actor->x, actor->y, (actor->state->misc2 << FRACBITS) + actor->z, actor->state->misc1 - 1);
   if (mo)
     mo->angle = actor->angle;
 
