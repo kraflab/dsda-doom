@@ -674,47 +674,58 @@ static void P_NewChaseDir(mobj_t *actor)
   actor->strafecount = 0;
 
   if (mbf_features) {
-    if (actor->floorz - actor->dropoffz > FRACUNIT*24 &&
-  actor->z <= actor->floorz &&
-  !(actor->flags & (MF_DROPOFF|MF_FLOAT)) &&
-  !comp[comp_dropoff] &&
-  P_AvoidDropoff(actor)) /* Move away from dropoff */
-      {
-  P_DoNewChaseDir(actor, dropoff_deltax, dropoff_deltay);
+    if (
+      actor->floorz - actor->dropoffz > FRACUNIT*24 &&
+      actor->z <= actor->floorz &&
+      !(actor->flags & (MF_DROPOFF|MF_FLOAT)) &&
+      !comp[comp_dropoff] &&
+      P_AvoidDropoff(actor)
+    ) /* Move away from dropoff */
+    {
+      P_DoNewChaseDir(actor, dropoff_deltax, dropoff_deltay);
 
-  // If moving away from dropoff, set movecount to 1 so that
-  // small steps are taken to get monster away from dropoff.
+      // If moving away from dropoff, set movecount to 1 so that
+      // small steps are taken to get monster away from dropoff.
 
-  actor->movecount = 1;
-  return;
-      }
-    else
-      {
-  fixed_t dist = P_AproxDistance(deltax, deltay);
-
-  // Move away from friends when too close, except
-  // in certain situations (e.g. a crowded lift)
-
-  if (actor->flags & target->flags & MF_FRIEND &&
-      distfriend << FRACBITS > dist &&
-      !P_IsOnLift(target) && !P_IsUnderDamage(actor))
-  {
-    deltax = -deltax, deltay = -deltay;
-  } else
-    if (target->health > 0 && (actor->flags ^ target->flags) & MF_FRIEND)
-      {   // Live enemy target
-        if (monster_backing &&
-      actor->info->missilestate && actor->type != MT_SKULL &&
-      ((!target->info->missilestate && dist < MELEERANGE*2) ||
-       (target->player && dist < MELEERANGE*3 &&
-        (target->player->readyweapon == wp_fist ||
-         target->player->readyweapon == wp_chainsaw))))
-    {       // Back away from melee attacker
-      actor->strafecount = P_Random(pr_enemystrafe) & 15;
-      deltax = -deltax, deltay = -deltay;
+      actor->movecount = 1;
+      return;
     }
+    else
+    {
+      fixed_t dist = P_AproxDistance(deltax, deltay);
+
+      // Move away from friends when too close, except
+      // in certain situations (e.g. a crowded lift)
+
+      if (actor->flags & target->flags & MF_FRIEND &&
+          distfriend << FRACBITS > dist &&
+          !P_IsOnLift(target) && !P_IsUnderDamage(actor))
+      {
+        deltax = -deltax, deltay = -deltay;
       }
+      else if (target->health > 0 && (actor->flags ^ target->flags) & MF_FRIEND)
+      {   // Live enemy target
+        if (
+          monster_backing &&
+          actor->info->missilestate &&
+          actor->type != MT_SKULL &&
+          (
+            (!target->info->missilestate && dist < MELEERANGE*2) ||
+            (
+              target->player && dist < MELEERANGE*3 &&
+              (
+                target->player->readyweapon == wp_fist ||
+                target->player->readyweapon == wp_chainsaw
+              )
+            )
+          )
+        )
+        {       // Back away from melee attacker
+          actor->strafecount = P_Random(pr_enemystrafe) & 15;
+          deltax = -deltax, deltay = -deltay;
+        }
       }
+    }
   }
 
   P_DoNewChaseDir(actor, deltax, deltay);
