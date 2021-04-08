@@ -1260,18 +1260,25 @@ void A_Chase(mobj_t *actor)
        * changing targets */
       actor->pursuecount = BASETHRESHOLD;
 
-      /* Unless (we have a live target
-       *         and it's not friendly
-       *         and we can see it)
-       *  try to find a new one; return if sucessful */
-
-      if (!(actor->target && actor->target->health > 0 &&
-            ((comp[comp_pursuit] && !netgame) ||
-             (((actor->target->flags ^ actor->flags) & MF_FRIEND ||
-         (!(actor->flags & MF_FRIEND) && monster_infighting)) &&
-        P_CheckSight(actor, actor->target))))
-          && P_LookForTargets(actor, true))
-            return;
+      // look for new target, unless conditions are met
+      if (
+        !(
+          actor->target &&                       // have a target
+          actor->target->health > 0 &&           // and the target is alive
+          (
+            (comp[comp_pursuit] && !netgame) ||  // and using old pursuit behaviour
+            (
+              (                                  // or the target is not friendly
+                (actor->target->flags ^ actor->flags) & MF_FRIEND ||
+                (!(actor->flags & MF_FRIEND) && monster_infighting)
+              ) &&
+              P_CheckSight(actor, actor->target) // and we can see it
+            )
+          )
+        ) &&
+        P_LookForTargets(actor, true)
+      )
+        return;
 
       /* (Current target was good, or no new target was found.)
        *
