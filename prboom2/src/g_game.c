@@ -2792,6 +2792,7 @@ void G_ReloadDefaults(void)
     comp[comp_ouchface] = options->comp_ouchface;
     comp[comp_maxhealth] = options->comp_maxhealth;
     comp[comp_translucency] = options->comp_translucency;
+    comp[comp_ledgeblock] = options->comp_ledgeblock;
   }
 
   G_Compatibility();
