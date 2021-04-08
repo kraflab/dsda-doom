@@ -49,6 +49,9 @@ This is proof-of-concept implemented in dsda-doom.
 |-----------------|--------|---------|-----------------------------|
 | comp_ledgeblock | 28     | 1       | Ledges block ground enemies |
 
+#### Option default changes
+- comp_pursuit: 1 (was 0)
+
 #### New Thing Flags
 
 Implementations match between DSDA-Doom and Eternity Engine,
