@@ -513,18 +513,18 @@ dboolean PIT_CheckLine (line_t* ld)
 static dboolean P_ProjectileImmune(mobj_t *target, mobj_t *source)
 {
   return
-    ( // PIG_GROUPLESS means no immunity, even to own species
-      mobjinfo[target->type].projectile_immunity_group != PIG_GROUPLESS ||
+    ( // PG_GROUPLESS means no immunity, even to own species
+      mobjinfo[target->type].projectile_group != PG_GROUPLESS ||
       target == source
     ) &&
     (
       ( // target type has default behaviour, and things are the same type
-        mobjinfo[target->type].projectile_immunity_group == PIG_DEFAULT &&
+        mobjinfo[target->type].projectile_group == PG_DEFAULT &&
         source->type == target->type
       ) ||
       ( // target type has special behaviour, and things have the same group
-        mobjinfo[target->type].projectile_immunity_group != PIG_DEFAULT &&
-        mobjinfo[target->type].projectile_immunity_group == mobjinfo[source->type].projectile_immunity_group
+        mobjinfo[target->type].projectile_group != PG_DEFAULT &&
+        mobjinfo[target->type].projectile_group == mobjinfo[source->type].projectile_group
       )
     );
 }

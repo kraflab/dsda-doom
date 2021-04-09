@@ -3002,11 +3002,11 @@ typedef enum {
 } infighting_group_t;
 
 typedef enum {
-  PIG_GROUPLESS = -1,
-  PIG_DEFAULT,
-  PIG_BARON,
-  PIG_END
-} projectile_immunity_group_t;
+  PG_GROUPLESS = -1,
+  PG_DEFAULT,
+  PG_BARON,
+  PG_END
+} projectile_group_t;
 
 /********************************************************************
  * Definition of the Thing structure
@@ -3071,7 +3071,7 @@ typedef struct
 
   // mbf21
   int infighting_group;
-  int projectile_immunity_group;
+  int projectile_group;
 } mobjinfo_t;
 
 typedef struct
