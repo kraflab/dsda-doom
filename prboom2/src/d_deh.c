@@ -1046,7 +1046,7 @@ typedef struct
 // killough 8/9/98: make DEH_BLOCKMAX self-adjusting
 #define DEH_BLOCKMAX (sizeof deh_blocks/sizeof*deh_blocks)  // size of array
 #define DEH_MAXKEYLEN 32 // as much of any key as we'll look at
-#define DEH_MOBJINFOMAX 25 // number of ints in the mobjinfo_t structure (!)
+#define DEH_MOBJINFOMAX 27 // number of mobjinfo configuration keys
 
 // Put all the block header values, and the function to be called when that
 // one is encountered, in this array:
@@ -1112,6 +1112,10 @@ static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
   "Bits2",               // .flags
   "Respawn frame",       // .raisestate
   "Dropped item",        // .droppeditem
+
+  // mbf21
+  "Infighting group",    // .infighting_group
+  "Projectile group",    // .projectile_group
 };
 
 // Strings that are used to indicate flags ("Bits" in mobjinfo)
@@ -1888,6 +1892,21 @@ static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
       }
       break;
     case 24: mi->droppeditem = (int)(value-1); return; // make it base zero (deh is 1-based)
+
+    // mbf21
+    // custom groups count from the end of the vanilla list
+    // -> no concern for clashes
+    case 25:
+      mi->infighting_group = (int)(value) + IG_END;
+      return;
+    case 26:
+      mi->projectile_group = (int)(value);
+      if (mi->projectile_group < 0)
+        mi->projectile_group = PG_GROUPLESS;
+      else
+        mi->projectile_group = mi->projectile_group + PG_END;
+      return;
+
     default: return;
   }
 }
