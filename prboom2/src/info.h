@@ -3002,6 +3002,7 @@ typedef enum {
 } infighting_group_t;
 
 typedef enum {
+  PIG_GROUPLESS = -1,
   PIG_DEFAULT,
   PIG_BARON,
   PIG_END
