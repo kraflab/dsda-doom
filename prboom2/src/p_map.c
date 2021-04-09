@@ -646,7 +646,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     if (tmthing->target && P_ProjectileImmune(thing, tmthing->target))
     {
       if (thing == tmthing->target)
-        return true;                // Don't hit same species as originator.
+        return true;                // Don't hit self.
       else
         // e6y: Dehacked support - monsters infight
         if (thing->type != g_mt_player && !monsters_infight) // Explode, but do no damage.
