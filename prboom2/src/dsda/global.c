@@ -253,8 +253,8 @@ static void dsda_InitDoom(void) {
     mobjinfo[i].flags2       = 0; // not in doom
 
     // mbf21
-    mobjinfo[i].infighting_group = 0;
-    mobjinfo[i].projectile_group = 0;
+    mobjinfo[i].infighting_group = IG_DEFAULT;
+    mobjinfo[i].projectile_group = PG_DEFAULT;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
@@ -380,8 +380,8 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].flags2       = mobjinfo_p->flags2;
 
     // mbf21
-    mobjinfo[j].infighting_group = 0;
-    mobjinfo[j].projectile_group = 0;
+    mobjinfo[j].infighting_group = IG_DEFAULT;
+    mobjinfo[j].projectile_group = PG_DEFAULT;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
