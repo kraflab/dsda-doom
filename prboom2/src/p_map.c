@@ -510,6 +510,19 @@ dboolean PIT_CheckLine (line_t* ld)
 // PIT_CheckThing
 //
 
+static dboolean P_ProjectileImmune(mobj_t *target, mobj_t *source)
+{
+  return
+    ( // target type has default behaviour, and things are the same type
+      mobjinfo[target->type].projectile_immunity_group == PIG_DEFAULT &&
+      source->type == target->type
+    ) ||
+    ( // target type has special behaviour, and things have the same group
+      mobjinfo[target->type].projectile_immunity_group != PIG_DEFAULT &&
+      mobjinfo[target->type].projectile_immunity_group == mobjinfo[source->type].projectile_immunity_group
+    );
+}
+
 static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
 {
   fixed_t blockdist;
@@ -624,14 +637,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     if (tmthing->z + tmthing->height < thing->z)
       return true;    // underneath
 
-    if (
-      tmthing->target &&
-      (
-        tmthing->target->type == thing->type ||
-        (tmthing->target->type == MT_KNIGHT && thing->type == MT_BRUISER) ||
-        (tmthing->target->type == MT_BRUISER && thing->type == MT_KNIGHT)
-      )
-    )
+    if (tmthing->target && P_ProjectileImmune(thing, tmthing->target))
     {
       if (thing == tmthing->target)
         return true;                // Don't hit same species as originator.
