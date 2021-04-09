@@ -1897,7 +1897,13 @@ static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
     // custom groups count from the end of the vanilla list
     // -> no concern for clashes
     case 25:
-      mi->infighting_group = (int)(value) + IG_END;
+      mi->infighting_group = (int)(value);
+      if (mi->infighting_group < 0)
+      {
+        I_Error("Infighting groups must be >= 0 (check your dehacked)");
+        return;
+      }
+      mi->infighting_group = mi->infighting_group + IG_END;
       return;
     case 26:
       mi->projectile_group = (int)(value);
