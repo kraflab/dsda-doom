@@ -251,6 +251,10 @@ static void dsda_InitDoom(void) {
     mobjinfo[i].droppeditem  = mobjinfo_p->droppeditem;
     mobjinfo[i].crashstate   = 0; // not in doom
     mobjinfo[i].flags2       = 0; // not in doom
+
+    // mbf21
+    mobjinfo[i].infighting_group = IG_DEFAULT;
+    mobjinfo[i].projectile_group = PG_DEFAULT;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
@@ -264,6 +268,9 @@ static void dsda_InitDoom(void) {
   mobjinfo[MT_BABY].flags2    = MF2_MAP07BOSS2;
   mobjinfo[MT_BRUISER].flags2 = MF2_E1M8BOSS;
   mobjinfo[MT_UNDEAD].flags2  = MF2_LONGMELEE | MF2_RANGEHALF;
+
+  mobjinfo[MT_BRUISER].projectile_group = PG_BARON;
+  mobjinfo[MT_KNIGHT].projectile_group = PG_BARON;
 }
 
 static void dsda_InitHeretic(void) {
@@ -371,7 +378,15 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].droppeditem  = 0; // not in heretic
     mobjinfo[j].crashstate   = mobjinfo_p->crashstate;
     mobjinfo[j].flags2       = mobjinfo_p->flags2;
+
+    // mbf21
+    mobjinfo[j].infighting_group = IG_DEFAULT;
+    mobjinfo[j].projectile_group = PG_DEFAULT;
   }
+
+  // don't want to reorganize info.c structure for a few tweaks...
+  mobjinfo[HERETIC_MT_SORCERER2].infighting_group = IG_WIZARD;
+  mobjinfo[HERETIC_MT_WIZARD].infighting_group = IG_WIZARD;
 
   // heretic doesn't use "clip" concept
   for (i = 0; i < NUMAMMO; ++i) clipammo[i] = 1;

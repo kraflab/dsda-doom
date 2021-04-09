@@ -52,6 +52,44 @@ This is proof-of-concept implemented in dsda-doom.
 #### Option default changes
 - comp_pursuit: 1 (was 0)
 
+#### Dehacked Thing Groups
+
+##### Infighting
+- Add `Infighting group = N` in Thing definition.
+- `N` is a nonnegative integer.
+- Things with the same value of `N` will not target each other after taking damage.
+
+##### Projectile
+- Add `Projectile group = M` in Thing definition.
+- `M` is an integer.
+- Things with the same value of `M` will not deal projectile damage to each other.
+- A negative value of `M` means that species has no projectile immunity, even to other things in the same species.
+
+##### Examples
+
+```
+Thing 12 (Imp)
+Projectile group = -1
+
+Thing 16 (Baron of Hell)
+Projectile group = 2
+
+Thing 18 (Hell Knight)
+Infighting group = 1
+Projectile group = 1
+
+Thing 21 (Arachnotron)
+Infighting group = 1
+Projectile group = 2
+```
+
+In this example:
+- Imp projectiles now damage other Imps (and they will infight with their own kind).
+- Barons and Arachnotrons are in the same projectile group: their projectiles will no longer damage each other.
+- Barons and Hell Knights are not in the same projectile group: their projectiles will now damage each other, leading to infighting.
+- Hell Knights and Arachnotrons are in the same infighting group: they will not infight with each other, despite taking damage from each other's projectiles.
+- Note that the group numbers for infighting and projectiles are separate - being in infighting group 1 doesn't mean you are in projectile group 1.
+
 #### New Thing Flags
 
 Implementations match between DSDA-Doom and Eternity Engine,
