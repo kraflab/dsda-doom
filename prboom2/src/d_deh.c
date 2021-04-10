@@ -1046,7 +1046,7 @@ typedef struct
 // killough 8/9/98: make DEH_BLOCKMAX self-adjusting
 #define DEH_BLOCKMAX (sizeof deh_blocks/sizeof*deh_blocks)  // size of array
 #define DEH_MAXKEYLEN 32 // as much of any key as we'll look at
-#define DEH_MOBJINFOMAX 27 // number of mobjinfo configuration keys
+#define DEH_MOBJINFOMAX 28 // number of mobjinfo configuration keys
 
 // Put all the block header values, and the function to be called when that
 // one is encountered, in this array:
@@ -1116,6 +1116,7 @@ static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
   // mbf21
   "Infighting group",    // .infighting_group
   "Projectile group",    // .projectile_group
+  "Splash group",        // .splash_group
 };
 
 // Strings that are used to indicate flags ("Bits" in mobjinfo)
@@ -1911,6 +1912,15 @@ static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
         mi->projectile_group = PG_GROUPLESS;
       else
         mi->projectile_group = mi->projectile_group + PG_END;
+      return;
+    case 27:
+      mi->splash_group = (int)(value);
+      if (mi->splash_group < 0)
+      {
+        I_Error("Splash groups must be >= 0 (check your dehacked)");
+        return;
+      }
+      mi->splash_group = mi->splash_group + SG_END;
       return;
 
     default: return;

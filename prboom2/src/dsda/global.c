@@ -255,6 +255,7 @@ static void dsda_InitDoom(void) {
     // mbf21
     mobjinfo[i].infighting_group = IG_DEFAULT;
     mobjinfo[i].projectile_group = PG_DEFAULT;
+    mobjinfo[i].splash_group = SG_DEFAULT;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
@@ -268,6 +269,8 @@ static void dsda_InitDoom(void) {
   mobjinfo[MT_BABY].flags2    = MF2_MAP07BOSS2;
   mobjinfo[MT_BRUISER].flags2 = MF2_E1M8BOSS;
   mobjinfo[MT_UNDEAD].flags2  = MF2_LONGMELEE | MF2_RANGEHALF;
+
+  mobjinfo[MT_BARREL].flags2 = MF2_NEUTRAL_SPLASH;
 
   mobjinfo[MT_BRUISER].projectile_group = PG_BARON;
   mobjinfo[MT_KNIGHT].projectile_group = PG_BARON;
@@ -382,6 +385,7 @@ static void dsda_InitHeretic(void) {
     // mbf21
     mobjinfo[j].infighting_group = IG_DEFAULT;
     mobjinfo[j].projectile_group = PG_DEFAULT;
+    mobjinfo[j].splash_group = SG_DEFAULT;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
