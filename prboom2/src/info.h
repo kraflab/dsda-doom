@@ -3008,6 +3008,11 @@ typedef enum {
   PG_END
 } projectile_group_t;
 
+typedef enum {
+  SG_DEFAULT,
+  SG_END
+} splash_group_t;
+
 /********************************************************************
  * Definition of the Thing structure
  ********************************************************************/
@@ -3072,6 +3077,7 @@ typedef struct
   // mbf21
   int infighting_group;
   int projectile_group;
+  int splash_group;
 } mobjinfo_t;
 
 typedef struct
