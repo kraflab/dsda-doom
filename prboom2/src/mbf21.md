@@ -53,7 +53,7 @@ This is proof-of-concept implemented in dsda-doom.
 - comp_pursuit: 1 (was 0)
 
 #### Dehacked Thing Groups
-- [PR](https://github.com/kraflab/dsda-doom/pull/22)
+- [PR](https://github.com/kraflab/dsda-doom/pull/22), [PR](https://github.com/kraflab/dsda-doom/pull/23)
 
 ##### Infighting
 - Add `Infighting group = N` in Thing definition.
