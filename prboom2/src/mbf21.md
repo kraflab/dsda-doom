@@ -67,7 +67,7 @@ This is proof-of-concept implemented in dsda-doom.
 - A negative value of `M` means that species has no projectile immunity, even to other things in the same species.
 
 ##### Splash
-- Add `Infighting group = S` in Thing definition.
+- Add `Splash group = S` in Thing definition.
 - `S` is a nonnegative integer.
 - Things with the same value of `S` will not deal splash damage to each other.
 - Splash damage coming through a neutral thing (e.g., exploding a barrel) will still occur.
