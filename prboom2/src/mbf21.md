@@ -100,7 +100,7 @@ In this example:
 - Barons and Hell Knights are not in the same projectile group: their projectiles will now damage each other, leading to infighting.
 - Hell Knights and Arachnotrons are in the same infighting group: they will not infight with each other, despite taking damage from each other's projectiles.
 - Imps and Cyberdemons are in the same splash group: cyberdemon rocket splash will no longer damage imps (but direct impacts do).
-- Note that the group numbers for infighting and projectiles are separate - being in infighting group 1 doesn't mean you are in projectile group 1.
+- Note that the group numbers are separate - being in infighting group 1 doesn't mean you are in projectile group 1.
 
 #### New Thing Flags
 
