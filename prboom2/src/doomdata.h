@@ -158,6 +158,7 @@ typedef struct {
 
 // mbf21
 #define ML_BLOCKLANDMONSTERS 4096
+#define ML_BLOCKPLAYERS 8192
 
 // Sector definition, from editing.
 typedef struct {
