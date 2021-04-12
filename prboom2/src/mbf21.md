@@ -132,7 +132,7 @@ The DEH specification is still TBD - this is just a list of implemented flags of
 | MF2_E4M6BOSS       | MF2_E4M6BOSS       | E4M6 boss (cyberdemon)                                                                         |
 | MF2_E4M8BOSS       | MF2_E4M8BOSS       | E4M8 boss (mastermind)                                                                         |
 | MF2_RIP            | MF3_RIP            | Ripper projectile (does not disappear on impact)                                               |
-| MF2_NEUTRAL_SPLASH | ?                  | Splash damage from this thing is not affected by splash groups                                 |
+| MF2_NEUTRAL_SPLASH | ?                  | Splash damage from this thing is not affected by splash groups (barrel)                        |
 
 #### New DEHACKED Codepointers
 - [PR](https://github.com/kraflab/dsda-doom/pull/20)
