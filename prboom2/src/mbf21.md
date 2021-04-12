@@ -108,10 +108,11 @@ In this example:
 
 #### New Thing Flags
 
-The usage is similar to older flags, but with new names and a new key:
-`MBF21 Bits = DMGIGNORED+MAP07BOSS1` in the Thing definition.
-Implementations match between DSDA-Doom and Eternity Engine,
-except for the ripper projectile, which is still TODO.
+- [commit](https://github.com/kraflab/dsda-doom/commit/10907e5d37dc2337c93f6dd59573fd42c5a8aaf6)
+- Add `MBF21 Bits = X` in the Thing definition.
+- The format is the same as the existing `Bits` field.
+- Example: `MBF21 Bits = LOGRAV+DMGIGNORED+MAP07BOSS1`.
+- Implementations match between DSDA-Doom and Eternity Engine, except for the ripper projectile, which is still TODO.
 
 | DSDA-Doom          | Eternity Engine    | Description                                                                                    |
 |--------------------|--------------------|------------------------------------------------------------------------------------------------|
@@ -132,7 +133,7 @@ except for the ripper projectile, which is still TODO.
 | MF2_E3M8BOSS       | MF2_E3M8BOSS       | E3M8 boss (mastermind)                                                                         |
 | MF2_E4M6BOSS       | MF2_E4M6BOSS       | E4M6 boss (cyberdemon)                                                                         |
 | MF2_E4M8BOSS       | MF2_E4M8BOSS       | E4M8 boss (mastermind)                                                                         |
-| MF2_RIP            | MF3_RIP            | Ripper projectile (does not disappear on impact)                                               |
+| MF2_RIP (TODO)     | MF3_RIP (TODO)     | Ripper projectile (does not disappear on impact)                                               |
 | MF2_NEUTRAL_SPLASH | ?                  | Splash damage from this thing is not affected by splash groups (barrel)                        |
 
 #### New DEHACKED Codepointers
