@@ -108,9 +108,10 @@ In this example:
 
 #### New Thing Flags
 
+The usage is similar to older flags, but with new names and a new key:
+`MBF21 Bits = DMGIGNORED+MAP07BOSS1` in the Thing definition.
 Implementations match between DSDA-Doom and Eternity Engine,
 except for the ripper projectile, which is still TODO.
-The DEH specification is still TBD - this is just a list of implemented flags of note.
 
 | DSDA-Doom          | Eternity Engine    | Description                                                                                    |
 |--------------------|--------------------|------------------------------------------------------------------------------------------------|

@@ -1046,7 +1046,7 @@ typedef struct
 // killough 8/9/98: make DEH_BLOCKMAX self-adjusting
 #define DEH_BLOCKMAX (sizeof deh_blocks/sizeof*deh_blocks)  // size of array
 #define DEH_MAXKEYLEN 32 // as much of any key as we'll look at
-#define DEH_MOBJINFOMAX 28 // number of mobjinfo configuration keys
+#define DEH_MOBJINFOMAX 29 // number of mobjinfo configuration keys
 
 // Put all the block header values, and the function to be called when that
 // one is encountered, in this array:
@@ -1117,6 +1117,7 @@ static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
   "Infighting group",    // .infighting_group
   "Projectile group",    // .projectile_group
   "Splash group",        // .splash_group
+  "MBF21 Bits",          // .flags2
 };
 
 // Strings that are used to indicate flags ("Bits" in mobjinfo)
@@ -1177,6 +1178,29 @@ static const struct deh_mobjflags_s deh_mobjflags[] = {
   {"TOUCHY",       MF_TOUCHY},       // dies on contact with solid objects (MBF)
   {"BOUNCES",      MF_BOUNCES},      // bounces off floors, ceilings and maybe walls (MBF)
   {"FRIEND",       MF_FRIEND},       // a friend of the player(s) (MBF)
+};
+
+#define DEH_MOBJFLAGMAX_MBF21 (sizeof(deh_mobjflags_mbf21) / sizeof(*deh_mobjflags_mbf21))
+
+static const struct deh_mobjflags_s deh_mobjflags_mbf21[] = {
+  {"LOGRAV",         MF2_LOGRAV}, // low gravity
+  {"SHORTMRANGE",    MF2_SHORTMRANGE}, // short missile range
+  {"DMGIGNORED",     MF2_DMGIGNORED}, // other things ignore its attacks
+  {"NORADIUSDMG",    MF2_NORADIUSDMG}, // doesn't take splash damage
+  {"FORCERADIUSDMG", MF2_FORCERADIUSDMG}, // causes splash damage even if target immune
+  {"HIGHERMPROB",    MF2_HIGHERMPROB}, // higher missile attack probability
+  {"RANGEHALF",      MF2_RANGEHALF}, // use half distance for missile attack probability
+  {"NOTHRESHOLD",    MF2_NOTHRESHOLD}, // no targeting threshold
+  {"LONGMELEE",      MF2_LONGMELEE}, // long melee range
+  {"BOSS",           MF2_BOSS}, // full volume see / death sound + splash immunity
+  {"MAP07BOSS1",     MF2_MAP07BOSS1}, // Tag 666 "boss" on doom 2 map 7
+  {"MAP07BOSS2",     MF2_MAP07BOSS2}, // Tag 667 "boss" on doom 2 map 7
+  {"E1M8BOSS",       MF2_E1M8BOSS}, // E1M8 boss
+  {"E2M8BOSS",       MF2_E2M8BOSS}, // E2M8 boss
+  {"E3M8BOSS",       MF2_E3M8BOSS}, // E3M8 boss
+  {"E4M6BOSS",       MF2_E4M6BOSS}, // E4M6 boss
+  {"E4M8BOSS",       MF2_E4M8BOSS}, // E4M8 boss
+  {"NEUTRAL_SPLASH", MF2_NEUTRAL_SPLASH}, // splash damage ignores splash groups
 };
 
 // STATE - Dehacked block name = "Frame" and "Pointer"
@@ -1989,7 +2013,25 @@ static void deh_procThing(DEHFILE *fpin, FILE* fpout, char *line)
       for (ix=0; ix<DEH_MOBJINFOMAX; ix++) {
         if (deh_strcasecmp(key,deh_mobjinfo[ix])) continue;
 
-        if (deh_strcasecmp(key,"Bits")) {
+        if (!deh_strcasecmp(key, "MBF21 Bits")) {
+          for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
+            size_t iy;
+
+            for (iy = 0; iy < DEH_MOBJFLAGMAX_MBF21; iy++) {
+              if (deh_strcasecmp(strval, deh_mobjflags_mbf21[iy].name)) continue;
+
+              value |= deh_mobjflags_mbf21[iy].value;
+              break;
+            }
+
+            if (iy >= DEH_MOBJFLAGMAX_MBF21 && fpout) {
+              fprintf(fpout, "Could not find MBF21 bit mnemonic %s\n", strval);
+            }
+          }
+
+          mobjinfo[indexnum].flags2 = value;
+        }
+        else if (deh_strcasecmp(key,"Bits")) {
           // standard value set
 
           // The old code here was the cause of a DEH-related bug in prboom.
