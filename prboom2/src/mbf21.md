@@ -39,6 +39,10 @@ This is proof-of-concept implemented in dsda-doom.
 - [PR](https://github.com/kraflab/dsda-doom/pull/19)
 - Uses bit 12 (4096).
 
+#### Block players line flag
+- [commit](https://github.com/kraflab/dsda-doom/commit/687237e3d236056730f58dca27efd45e1774d53e)
+- Uses bit 13 (8192).
+
 #### Fix generalized crusher walkover lines
 - [commit](https://github.com/kraflab/dsda-doom/commit/76776f721b5d1d8a1a0ae95daab525cf8183ce44)
 
