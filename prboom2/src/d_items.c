@@ -104,7 +104,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_MISSILE,
     S_MISSILE1,
     S_NULL,
-    S_MISSILEFLASH1
+    S_MISSILEFLASH1,
+    WPF_NOAUTOFIRE
   },
   {
     // plasma rifle
@@ -124,7 +125,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_BFG,
     S_BFG1,
     S_NULL,
-    S_BFGFLASH1
+    S_BFGFLASH1,
+    WPF_NOAUTOFIRE
   },
   {
     // chainsaw
@@ -234,7 +236,8 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_PHOENIXREADY,            // readystate
     HERETIC_S_PHOENIXATK1_1,           // atkstate
     HERETIC_S_PHOENIXATK1_1,           // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOAUTOFIRE
   },
   {                           // Mace
     am_mace,                   // ammo

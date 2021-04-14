@@ -486,8 +486,7 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
     // HERETIC_TODO: when weapons don't share indices, remove heretic checks
     if (
       !player->attackdown ||
-      (!heretic && player->readyweapon != wp_missile && player->readyweapon != wp_bfg) ||
-      (heretic && player->readyweapon != wp_phoenixrod)
+      !(weaponinfo[player->readyweapon].flags & WPF_NOAUTOFIRE)
     )
     {
       player->attackdown = true;
