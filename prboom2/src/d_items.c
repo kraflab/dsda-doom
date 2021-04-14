@@ -64,7 +64,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_PUNCH,
     S_PUNCH1,
     S_NULL,
-    S_NULL
+    S_NULL,
+    WPF_FLEEMELEE
   },
   {
     // pistol
@@ -137,7 +138,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_SAW1,
     S_NULL,
     S_NULL,
-    WPF_NOTHRUST
+    WPF_NOTHRUST | WPF_FLEEMELEE
   },
   {
     // super shotgun
