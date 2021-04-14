@@ -302,25 +302,6 @@ int P_WeaponPreferred(int w1, int w2)
 }
 
 //
-// P_GetAmmoPerShot
-// Returns ammo per shot for the currently selected weapon.
-//
-// [XA] Eventually this value will be customizable
-// instead of hardcoded, presuming everything goes
-// according to plan...
-//
-
-int P_GetAmmoPerShot(player_t *player)
-{
-  if (player->readyweapon == wp_bfg)
-    return BFGCELLS;
-  else if (player->readyweapon == wp_supershotgun)
-    return 2;
-  else
-    return 1;
-}
-
-//
 // P_CheckAmmo
 // Returns true if there is enough ammo to shoot.
 // If not, selects the next weapon to use.
@@ -335,12 +316,16 @@ dboolean P_CheckAmmo(player_t *player)
   if (heretic) return Heretic_P_CheckAmmo(player);
 
   ammo = weaponinfo[player->readyweapon].ammo;
-  count = 1;
-  if (player->readyweapon == wp_bfg)  // Minimal amount for one shot varies.
-    count = BFGCELLS;
+  if (mbf21)
+    count = weaponinfo[player->readyweapon].ammopershot;
   else
-    if (player->readyweapon == wp_supershotgun)        // Double barrel.
-      count = 2;
+    if (player->readyweapon == wp_bfg)  // Minimal amount for one shot varies.
+      count = BFGCELLS;
+    else
+      if (player->readyweapon == wp_supershotgun)        // Double barrel.
+        count = 2;
+	  else
+        count = 1;
 
   // Some do not need ammunition anyway.
   // Return if current ammunition sufficient.
@@ -363,6 +348,31 @@ dboolean P_CheckAmmo(player_t *player)
     }
 
   return false;
+}
+
+//
+// P_SubtractAmmo
+// Subtracts ammo, w/compat handling. In mbf21, use
+// readyweapon's "ammopershot" field if it's explicitly
+// defined in dehacked; otherwise use the amount specified
+// by the codepointer instead (Doom behavior)
+//
+// [XA] NOTE: this function is for handling Doom's native
+// attack pointers; of note, the new A_ConsumeAmmo mbf21
+// codepointer does NOT call this function, since it doesn't
+// have to worry about any compatibility shenanigans.
+//
+
+void P_SubtractAmmo(struct player_s *player, int compat_amt)
+{
+  int amount;
+
+  if (mbf21 && (weaponinfo[player->readyweapon].intflags & WIF_ENABLEAPS))
+    amount = weaponinfo[player->readyweapon].ammopershot;
+  else
+    amount = compat_amt;
+
+  player->ammo[weaponinfo[player->readyweapon].ammo] -= amount;
 }
 
 //
@@ -761,7 +771,7 @@ void A_FireMissile(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_FireMissile", player);
 
-  player->ammo[weaponinfo[player->readyweapon].ammo]--;
+  P_SubtractAmmo(player, 1);
   P_SpawnPlayerMissile(player->mo, MT_ROCKET);
 }
 
@@ -773,7 +783,7 @@ void A_FireBFG(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_FireBFG", player);
 
-  player->ammo[weaponinfo[player->readyweapon].ammo] -= BFGCELLS;
+  P_SubtractAmmo(player, BFGCELLS);
   P_SpawnPlayerMissile(player->mo, MT_BFG);
 }
 
@@ -800,7 +810,7 @@ void A_FireOldBFG(player_t *player, pspdef_t *psp)
     P_Thrust(player, ANG180 + player->mo->angle,
     512*recoil_values[wp_plasma]);
 
-  player->ammo[weaponinfo[player->readyweapon].ammo]--;
+  P_SubtractAmmo(player, 1);
 
   player->extralight = 2;
 
@@ -851,7 +861,7 @@ void A_FirePlasma(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_FirePlasma", player);
 
-  player->ammo[weaponinfo[player->readyweapon].ammo]--;
+  P_SubtractAmmo(player, 1);
 
   A_FireSomething(player,P_Random(pr_plasma)&1);              // phares
   P_SpawnPlayerMissile(player->mo, MT_PLASMA);
@@ -920,7 +930,7 @@ void A_FirePistol(player_t *player, pspdef_t *psp)
   S_StartSound(player->mo, sfx_pistol);
 
   P_SetMobjState(player->mo, S_PLAY_ATK2);
-  player->ammo[weaponinfo[player->readyweapon].ammo]--;
+  P_SubtractAmmo(player, 1);
 
   A_FireSomething(player,0);                                      // phares
   P_BulletSlope(player->mo);
@@ -940,7 +950,7 @@ void A_FireShotgun(player_t *player, pspdef_t *psp)
   S_StartSound(player->mo, sfx_shotgn);
   P_SetMobjState(player->mo, S_PLAY_ATK2);
 
-  player->ammo[weaponinfo[player->readyweapon].ammo]--;
+  P_SubtractAmmo(player, 1);
 
   A_FireSomething(player,0);                                      // phares
 
@@ -962,7 +972,7 @@ void A_FireShotgun2(player_t *player, pspdef_t *psp)
 
   S_StartSound(player->mo, sfx_dshtgn);
   P_SetMobjState(player->mo, S_PLAY_ATK2);
-  player->ammo[weaponinfo[player->readyweapon].ammo] -= 2;
+  P_SubtractAmmo(player, 2);
 
   A_FireSomething(player,0);                                      // phares
 
@@ -996,7 +1006,7 @@ void A_FireCGun(player_t *player, pspdef_t *psp)
     return;
 
   P_SetMobjState(player->mo, S_PLAY_ATK2);
-  player->ammo[weaponinfo[player->readyweapon].ammo]--;
+  P_SubtractAmmo(player, 1);
 
   A_FireSomething(player,psp->state - &states[S_CHAIN1]);           // phares
 
@@ -1190,7 +1200,7 @@ void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
   if (psp->state->misc1 != 0)
     amount = psp->state->misc1;
   else
-    amount = P_GetAmmoPerShot(player);
+    amount = weaponinfo[player->readyweapon].ammopershot;
 
   // subtract ammo, but don't let it get below zero
   if (player->ammo[type] >= amount)
@@ -1222,7 +1232,7 @@ void A_CheckAmmo(player_t *player, pspdef_t *psp)
   if (psp->state->misc2 != 0)
     amount = psp->state->misc2;
   else
-    amount = P_GetAmmoPerShot(player);
+    amount = weaponinfo[player->readyweapon].ammopershot;
 
   if (player->ammo[type] < amount)
     P_SetPspritePtr(player, psp, psp->state->misc1);
@@ -1323,30 +1333,6 @@ static struct
     fixed_t x;
     fixed_t y;
 } MaceSpots[MAX_MACE_SPOTS];
-
-static int WeaponAmmoUsePL1[NUMWEAPONS] = {
-    0,                          // staff
-    USE_GWND_AMMO_1,            // gold wand
-    USE_CBOW_AMMO_1,            // crossbow
-    USE_BLSR_AMMO_1,            // blaster
-    USE_SKRD_AMMO_1,            // skull rod
-    USE_PHRD_AMMO_1,            // phoenix rod
-    USE_MACE_AMMO_1,            // mace
-    0,                          // gauntlets
-    0                           // beak
-};
-
-static int WeaponAmmoUsePL2[NUMWEAPONS] = {
-    0,                          // staff
-    USE_GWND_AMMO_2,            // gold wand
-    USE_CBOW_AMMO_2,            // crossbow
-    USE_BLSR_AMMO_2,            // blaster
-    USE_SKRD_AMMO_2,            // skull rod
-    USE_PHRD_AMMO_2,            // phoenix rod
-    USE_MACE_AMMO_2,            // mace
-    0,                          // gauntlets
-    0                           // beak
-};
 
 void A_BeakReady(player_t * player, pspdef_t * psp)
 {
@@ -2228,19 +2214,19 @@ void P_UpdateBeak(player_t * player, pspdef_t * psp)
 dboolean Heretic_P_CheckAmmo(player_t * player)
 {
     ammotype_t ammo;
-    int *ammoUse;
+    weaponinfo_t *weaponinfo;
     int count;
 
     ammo = wpnlev1info[player->readyweapon].ammo;
     if (player->powers[pw_weaponlevel2] && !deathmatch)
     {
-        ammoUse = WeaponAmmoUsePL2;
+      weaponinfo = wpnlev2info;
     }
     else
     {
-        ammoUse = WeaponAmmoUsePL1;
+      weaponinfo = wpnlev1info;
     }
-    count = ammoUse[player->readyweapon];
+    count = weaponinfo[player->readyweapon].ammopershot;
     if (ammo == am_noammo || player->ammo[ammo] >= count)
     {
         return (true);
@@ -2249,26 +2235,26 @@ dboolean Heretic_P_CheckAmmo(player_t * player)
     do
     {
         if (player->weaponowned[wp_skullrod]
-            && player->ammo[am_skullrod] > ammoUse[wp_skullrod])
+            && player->ammo[am_skullrod] > weaponinfo[wp_skullrod].ammopershot)
         {
             player->pendingweapon = wp_skullrod;
         }
         else if (player->weaponowned[wp_blaster]
-                 && player->ammo[am_blaster] > ammoUse[wp_blaster])
+                 && player->ammo[am_blaster] > weaponinfo[wp_blaster].ammopershot)
         {
             player->pendingweapon = wp_blaster;
         }
         else if (player->weaponowned[wp_crossbow]
-                 && player->ammo[am_crossbow] > ammoUse[wp_crossbow])
+                 && player->ammo[am_crossbow] > weaponinfo[wp_crossbow].ammopershot)
         {
             player->pendingweapon = wp_crossbow;
         }
         else if (player->weaponowned[wp_mace]
-                 && player->ammo[am_mace] > ammoUse[wp_mace])
+                 && player->ammo[am_mace] > weaponinfo[wp_mace].ammopershot)
         {
             player->pendingweapon = wp_mace;
         }
-        else if (player->ammo[am_goldwand] > ammoUse[wp_goldwand])
+        else if (player->ammo[am_goldwand] > weaponinfo[wp_goldwand].ammopershot)
         {
             player->pendingweapon = wp_goldwand;
         }
@@ -2277,7 +2263,7 @@ dboolean Heretic_P_CheckAmmo(player_t * player)
             player->pendingweapon = wp_gauntlets;
         }
         else if (player->weaponowned[wp_phoenixrod]
-                 && player->ammo[am_phoenixrod] > ammoUse[wp_phoenixrod])
+                 && player->ammo[am_phoenixrod] > weaponinfo[wp_phoenixrod].ammopershot)
         {
             player->pendingweapon = wp_phoenixrod;
         }

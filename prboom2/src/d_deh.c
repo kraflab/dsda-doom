@@ -1252,7 +1252,8 @@ static const char *deh_weapon[] = // CPhipps - static const*
   "Select frame",   // .downstate
   "Bobbing frame",  // .readystate
   "Shooting frame", // .atkstate
-  "Firing frame"    // .flashstate
+  "Firing frame",   // .flashstate
+  "Ammo per shot",  // .ammopershot [XA] new to mbf21
 };
 
 // CHEATS - Dehacked block name = "Cheat"
@@ -2357,7 +2358,13 @@ static void deh_procWeapon(DEHFILE *fpin, FILE* fpout, char *line)
                 if (!deh_strcasecmp(key,deh_weapon[5]))  // Firing frame
                   weaponinfo[indexnum].flashstate = (int)value;
                 else
-                  if (fpout) fprintf(fpout,"Invalid weapon string index for '%s'\n",key);
+                  if (!deh_strcasecmp(key,deh_weapon[6]))  // Ammo per shot
+                    {
+                      weaponinfo[indexnum].ammopershot = (int)value;
+                      weaponinfo[indexnum].intflags |= WIF_ENABLEAPS;
+                    }
+                  else
+                    if (fpout) fprintf(fpout,"Invalid weapon string index for '%s'\n",key);
     }
   return;
 }
@@ -2635,7 +2642,7 @@ static void deh_procMisc(DEHFILE *fpin, FILE* fpout, char *line) // done
                                   idkfa_armor_class = (int)value;
                                 else
                                   if (!deh_strcasecmp(key,deh_misc[14]))  // BFG Cells/Shot
-                                    bfgcells = (int)value;
+                                    weaponinfo[MT_BFG].ammopershot = bfgcells = (int)value;
                                   else
                                     if (!deh_strcasecmp(key,deh_misc[15])) { // Monsters Infight
                                       // e6y: Dehacked support - monsters infight

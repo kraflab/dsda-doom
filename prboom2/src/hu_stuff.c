@@ -1377,7 +1377,7 @@ void HU_widget_build_ammo(void)
 
     // set the display color from the percentage of total ammo held
     w_ammo.cm = HU_GetAmmoColor(ammo, fullammo, CR_BLUE,
-      ammopershot[plr->readyweapon], plr->backpack);
+      weaponinfo[plr->readyweapon].ammopershot, plr->backpack);
   }
   // transfer the init string to the widget
   s = hud_ammostr;
@@ -1681,7 +1681,7 @@ void HU_widget_build_weapon(void)
     hud_weapstr[i++] = '\x1b'; //jff 3/26/98 use ESC not '\' for paths
     if (weaponinfo[w].ammo==am_noammo) //jff 3/14/98 show berserk on HUD
       hud_weapstr[i++] = plr->powers[pw_strength]? '0'+CR_GREEN : '0'+CR_GRAY;
-    else if (ammo<ammopershot[w])
+    else if (ammo<weaponinfo[w].ammopershot)
       hud_weapstr[i++] = '0'+CR_BROWN;
     else if (fullammo && ((ammo==fullammo) ||
       (ammo_colour_behaviour == ammo_colour_behaviour_no &&
@@ -2133,7 +2133,7 @@ void HU_widget_build_ammo_big(void)
     // set the display color from the percentage of total ammo held
     if (!sts_always_red)
       w_ammo_big.cm = HU_GetAmmoColor(ammo, fullammo, CR_BLUE2,
-        ammopershot[plr->readyweapon], plr->backpack);
+        weaponinfo[plr->readyweapon].ammopershot, plr->backpack);
 
     // transfer the init string to the widget
     s = ammostr;
