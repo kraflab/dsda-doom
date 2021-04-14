@@ -221,6 +221,73 @@ int weapon_preferences[2][NUMWEAPONS+1] = {
 // Center Weapon when Firing.
 int weapon_attack_alignment=0;
 
+// [XA] fixed version of P_SwitchWeapon that correctly
+// takes each weapon's ammotype and ammopershot into account,
+// instead of blindly assuming both.
+
+static int P_SwitchWeaponMBF21(player_t *player)
+{
+  int *prefer = weapon_preferences[0];
+  int currentweapon = player->readyweapon;
+  int newweapon = currentweapon;
+  int i = NUMWEAPONS+1;
+
+  weapontype_t checkweapon;
+  ammotype_t ammotype;
+
+  do
+  {
+    checkweapon = wp_nochange;
+    switch (*prefer++)
+    {
+      case 1:
+        if (!player->powers[pw_strength]) // allow chainsaw override
+          break;
+        // fallthrough
+      case 0:
+        checkweapon = wp_fist;
+        break;
+      case 2:
+        checkweapon = wp_pistol;
+        break;
+      case 3:
+        checkweapon = wp_shotgun;
+        break;
+      case 4:
+        checkweapon = wp_chaingun;
+        break;
+      case 5:
+        checkweapon = wp_missile;
+        break;
+      case 6:
+        if (gamemode != shareware)
+          checkweapon = wp_plasma;
+        break;
+      case 7:
+        if (gamemode != shareware)
+          checkweapon = wp_bfg;
+        break;
+      case 8:
+        checkweapon = wp_chainsaw;
+        break;
+      case 9:
+        if (gamemode == commercial)
+          checkweapon = wp_supershotgun;
+        break;
+    }
+
+    if (checkweapon != wp_nochange && player->weaponowned[checkweapon])
+    {
+      ammotype = weaponinfo[checkweapon].ammo;
+      if (ammotype == am_noammo ||
+        player->ammo[ammotype] >= weaponinfo[checkweapon].ammopershot)
+        newweapon = checkweapon;
+    }
+  }
+  while (newweapon==currentweapon && --i);
+  return newweapon;
+}
+
 // P_SwitchWeapon checks current ammo levels and gives you the
 // most preferred weapon with ammo. It will not pick the currently
 // raised weapon. When called from P_CheckAmmo this won't matter,
@@ -233,6 +300,13 @@ int P_SwitchWeapon(player_t *player)
   int currentweapon = player->readyweapon;
   int newweapon = currentweapon;
   int i = NUMWEAPONS+1;   // killough 5/2/98
+
+  // [XA] use fixed behavior for mbf21. no need
+  // for a discrete compat option for this, as
+  // it doesn't impact demo playback (weapon
+  // switches are saved in the demo itself)
+  if (mbf21)
+    return P_SwitchWeaponMBF21(player);
 
   // killough 2/8/98: follow preferences and fix BFG/SSG bugs
 
