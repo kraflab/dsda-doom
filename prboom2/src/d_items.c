@@ -134,7 +134,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_SAW,
     S_SAW1,
     S_NULL,
-    S_NULL
+    S_NULL,
+    WPF_NOTHRUST
   },
   {
     // super shotgun
@@ -251,7 +252,8 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_GAUNTLETREADY,           // readystate
     HERETIC_S_GAUNTLETATK1_1,          // atkstate
     HERETIC_S_GAUNTLETATK1_3,          // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOTHRUST
   },
   {                           // Beak
     am_noammo,                 // ammo
