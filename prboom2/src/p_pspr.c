@@ -227,13 +227,16 @@ int weapon_attack_alignment=0;
 
 static int P_SwitchWeaponMBF21(player_t *player)
 {
-  int *prefer = weapon_preferences[0];
-  int currentweapon = player->readyweapon;
-  int newweapon = currentweapon;
-  int i = NUMWEAPONS+1;
-
+  int *prefer;
+  int currentweapon, newweapon;
+  int i;
   weapontype_t checkweapon;
   ammotype_t ammotype;
+
+  prefer = weapon_preferences[0];
+  currentweapon = player->readyweapon;
+  newweapon = currentweapon;
+  i = NUMWEAPONS + 1;
 
   do
   {
@@ -284,7 +287,7 @@ static int P_SwitchWeaponMBF21(player_t *player)
         newweapon = checkweapon;
     }
   }
-  while (newweapon==currentweapon && --i);
+  while (newweapon == currentweapon && --i);
   return newweapon;
 }
 
@@ -296,10 +299,14 @@ static int P_SwitchWeaponMBF21(player_t *player)
 
 int P_SwitchWeapon(player_t *player)
 {
-  int *prefer = weapon_preferences[demo_compatibility!=0]; // killough 3/22/98
-  int currentweapon = player->readyweapon;
-  int newweapon = currentweapon;
-  int i = NUMWEAPONS+1;   // killough 5/2/98
+  int *prefer;
+  int currentweapon, newweapon;
+  int i;
+
+  prefer = weapon_preferences[demo_compatibility != 0]; // killough 3/22/98
+  currentweapon = player->readyweapon;
+  newweapon = currentweapon;
+  i = NUMWEAPONS + 1;   // killough 5/2/98
 
   // [XA] use fixed behavior for mbf21. no need
   // for a discrete compat option for this, as
@@ -356,7 +363,7 @@ int P_SwitchWeapon(player_t *player)
           newweapon = wp_supershotgun;
         break;
       }
-  while (newweapon==currentweapon && --i);          // killough 5/2/98
+  while (newweapon == currentweapon && --i);          // killough 5/2/98
   return newweapon;
 }
 
@@ -398,7 +405,7 @@ dboolean P_CheckAmmo(player_t *player)
     else
       if (player->readyweapon == wp_supershotgun)        // Double barrel.
         count = 2;
-	  else
+      else
         count = 1;
 
   // Some do not need ammunition anyway.
@@ -437,7 +444,7 @@ dboolean P_CheckAmmo(player_t *player)
 // have to worry about any compatibility shenanigans.
 //
 
-void P_SubtractAmmo(struct player_s *player, int compat_amt)
+void P_SubtractAmmo(struct player_s *player, int vanilla_amount)
 {
   int amount;
   ammotype_t ammotype = weaponinfo[player->readyweapon].ammo;
@@ -448,7 +455,7 @@ void P_SubtractAmmo(struct player_s *player, int compat_amt)
   if (mbf21 && (weaponinfo[player->readyweapon].intflags & WIF_ENABLEAPS))
     amount = weaponinfo[player->readyweapon].ammopershot;
   else
-    amount = compat_amt;
+    amount = vanilla_amount;
 
   if (!mbf21 || player->ammo[ammotype] >= amount)
     player->ammo[ammotype] -= amount;
@@ -2293,19 +2300,19 @@ void P_UpdateBeak(player_t * player, pspdef_t * psp)
 dboolean Heretic_P_CheckAmmo(player_t * player)
 {
     ammotype_t ammo;
-    weaponinfo_t *weaponinfo;
+    weaponinfo_t *checkweaponinfo;
     int count;
 
     ammo = wpnlev1info[player->readyweapon].ammo;
     if (player->powers[pw_weaponlevel2] && !deathmatch)
     {
-      weaponinfo = wpnlev2info;
+      checkweaponinfo = wpnlev2info;
     }
     else
     {
-      weaponinfo = wpnlev1info;
+      checkweaponinfo = wpnlev1info;
     }
-    count = weaponinfo[player->readyweapon].ammopershot;
+    count = checkweaponinfo[player->readyweapon].ammopershot;
     if (ammo == am_noammo || player->ammo[ammo] >= count)
     {
         return (true);
@@ -2314,26 +2321,26 @@ dboolean Heretic_P_CheckAmmo(player_t * player)
     do
     {
         if (player->weaponowned[wp_skullrod]
-            && player->ammo[am_skullrod] > weaponinfo[wp_skullrod].ammopershot)
+            && player->ammo[am_skullrod] > checkweaponinfo[wp_skullrod].ammopershot)
         {
             player->pendingweapon = wp_skullrod;
         }
         else if (player->weaponowned[wp_blaster]
-                 && player->ammo[am_blaster] > weaponinfo[wp_blaster].ammopershot)
+                 && player->ammo[am_blaster] > checkweaponinfo[wp_blaster].ammopershot)
         {
             player->pendingweapon = wp_blaster;
         }
         else if (player->weaponowned[wp_crossbow]
-                 && player->ammo[am_crossbow] > weaponinfo[wp_crossbow].ammopershot)
+                 && player->ammo[am_crossbow] > checkweaponinfo[wp_crossbow].ammopershot)
         {
             player->pendingweapon = wp_crossbow;
         }
         else if (player->weaponowned[wp_mace]
-                 && player->ammo[am_mace] > weaponinfo[wp_mace].ammopershot)
+                 && player->ammo[am_mace] > checkweaponinfo[wp_mace].ammopershot)
         {
             player->pendingweapon = wp_mace;
         }
-        else if (player->ammo[am_goldwand] > weaponinfo[wp_goldwand].ammopershot)
+        else if (player->ammo[am_goldwand] > checkweaponinfo[wp_goldwand].ammopershot)
         {
             player->pendingweapon = wp_goldwand;
         }
@@ -2342,7 +2349,7 @@ dboolean Heretic_P_CheckAmmo(player_t * player)
             player->pendingweapon = wp_gauntlets;
         }
         else if (player->weaponowned[wp_phoenixrod]
-                 && player->ammo[am_phoenixrod] > weaponinfo[wp_phoenixrod].ammopershot)
+                 && player->ammo[am_phoenixrod] > checkweaponinfo[wp_phoenixrod].ammopershot)
         {
             player->pendingweapon = wp_phoenixrod;
         }
