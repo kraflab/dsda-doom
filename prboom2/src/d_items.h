@@ -44,6 +44,7 @@
 //
 // haleyjd 09/11/07: weapon flags
 //
+#define WPF_NOFLAG         0x00000000 // no flag
 #define WPF_NOTHRUST       0x00000001 // doesn't thrust Mobj's
 #define WPF_SILENT         0x00000002 // weapon is silent
 #define WPF_NOAUTOFIRE     0x00000004 // weapon won't autofire in A_WeaponReady

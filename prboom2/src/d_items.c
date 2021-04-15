@@ -75,7 +75,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_PISTOL,
     S_PISTOL1,
     S_NULL,
-    S_PISTOLFLASH
+    S_PISTOLFLASH,
+    WPF_NOFLAG
   },
   {
     // shotgun
@@ -85,7 +86,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_SGUN,
     S_SGUN1,
     S_NULL,
-    S_SGUNFLASH1
+    S_SGUNFLASH1,
+    WPF_NOFLAG
   },
   {
     // chaingun
@@ -95,7 +97,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_CHAIN,
     S_CHAIN1,
     S_NULL,
-    S_CHAINFLASH1
+    S_CHAINFLASH1,
+    WPF_NOFLAG
   },
   {
     // missile launcher
@@ -116,7 +119,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_PLASMA,
     S_PLASMA1,
     S_NULL,
-    S_PLASMAFLASH1
+    S_PLASMAFLASH1,
+    WPF_NOFLAG
   },
   {
     // bfg 9000
@@ -148,7 +152,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_DSGUN,
     S_DSGUN1,
     S_NULL,
-    S_DSGUNFLASH1
+    S_DSGUNFLASH1,
+    WPF_NOFLAG
   },
 
   // dseg03:00082D90                 weaponinfo_t <5, 46h, 45h, 43h, 47h, 0>
@@ -166,7 +171,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     S_NULL,
     S_NULL,
-    S_NULL
+    S_NULL,
+    WPF_NOFLAG
   },
   {
     // preved medved weapon
@@ -176,7 +182,8 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     S_NULL,
     S_NULL,
-    S_NULL
+    S_NULL,
+    WPF_NOFLAG
   },
 };
 
@@ -192,7 +199,8 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_STAFFREADY,              // readystate
     HERETIC_S_STAFFATK1_1,             // atkstate
     HERETIC_S_STAFFATK1_1,             // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Gold wand
     am_goldwand,               // ammo
@@ -201,7 +209,8 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_GOLDWANDREADY,           // readystate
     HERETIC_S_GOLDWANDATK1_1,          // atkstate
     HERETIC_S_GOLDWANDATK1_1,          // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Crossbow
     am_crossbow,               // ammo
@@ -210,7 +219,8 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_CRBOW1,                  // readystate
     HERETIC_S_CRBOWATK1_1,             // atkstate
     HERETIC_S_CRBOWATK1_1,             // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Blaster
     am_blaster,                // ammo
@@ -219,7 +229,8 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_BLASTERREADY,            // readystate
     HERETIC_S_BLASTERATK1_1,           // atkstate
     HERETIC_S_BLASTERATK1_3,           // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Skull rod
     am_skullrod,               // ammo
@@ -228,7 +239,8 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_HORNRODREADY,            // readystae
     HERETIC_S_HORNRODATK1_1,           // atkstate
     HERETIC_S_HORNRODATK1_1,           // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Phoenix rod
     am_phoenixrod,             // ammo
@@ -247,7 +259,8 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_MACEREADY,               // readystate
     HERETIC_S_MACEATK1_1,              // atkstate
     HERETIC_S_MACEATK1_2,              // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                     // flashstate
+    WPF_NOFLAG
   },
   {                           // Gauntlets
     am_noammo,                 // ammo
@@ -266,7 +279,8 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_BEAKREADY,               // readystate
     HERETIC_S_BEAKATK1_1,              // atkstate
     HERETIC_S_BEAKATK1_1,              // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   }
 };
 
@@ -278,7 +292,8 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_STAFFREADY2_1,           // readystate
     HERETIC_S_STAFFATK2_1,             // atkstate
     HERETIC_S_STAFFATK2_1,             // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Gold wand
     am_goldwand,               // ammo
@@ -287,7 +302,8 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_GOLDWANDREADY,           // readystate
     HERETIC_S_GOLDWANDATK2_1,          // atkstate
     HERETIC_S_GOLDWANDATK2_1,          // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Crossbow
     am_crossbow,               // ammo
@@ -296,7 +312,8 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_CRBOW1,                  // readystate
     HERETIC_S_CRBOWATK2_1,             // atkstate
     HERETIC_S_CRBOWATK2_1,             // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Blaster
     am_blaster,                // ammo
@@ -305,7 +322,8 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_BLASTERREADY,            // readystate
     HERETIC_S_BLASTERATK2_1,           // atkstate
     HERETIC_S_BLASTERATK2_3,           // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Skull rod
     am_skullrod,               // ammo
@@ -314,7 +332,8 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_HORNRODREADY,            // readystae
     HERETIC_S_HORNRODATK2_1,           // atkstate
     HERETIC_S_HORNRODATK2_1,           // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Phoenix rod
     am_phoenixrod,             // ammo
@@ -323,7 +342,8 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_PHOENIXREADY,            // readystate
     HERETIC_S_PHOENIXATK2_1,           // atkstate
     HERETIC_S_PHOENIXATK2_2,           // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOAUTOFIRE
   },
   {                           // Mace
     am_mace,                   // ammo
@@ -332,7 +352,8 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_MACEREADY,               // readystate
     HERETIC_S_MACEATK2_1,              // atkstate
     HERETIC_S_MACEATK2_1,              // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   },
   {                           // Gauntlets
     am_noammo,                 // ammo
@@ -341,7 +362,8 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_GAUNTLETREADY2_1,        // readystate
     HERETIC_S_GAUNTLETATK2_1,          // atkstate
     HERETIC_S_GAUNTLETATK2_3,          // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOTHRUST
   },
   {                           // Beak
     am_noammo,                 // ammo
@@ -350,6 +372,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_BEAKREADY,               // readystate
     HERETIC_S_BEAKATK2_1,              // atkstate
     HERETIC_S_BEAKATK2_1,              // holdatkstate
-    HERETIC_S_NULL                     // flashstate
+    HERETIC_S_NULL,                    // flashstate
+    WPF_NOFLAG
   }
 };
