@@ -440,13 +440,18 @@ dboolean P_CheckAmmo(player_t *player)
 void P_SubtractAmmo(struct player_s *player, int compat_amt)
 {
   int amount;
+  ammotype_t ammotype = weaponinfo[player->readyweapon].ammo;
+
+  if (mbf21 && ammotype == am_noammo)
+    return; // [XA] hmm... I guess vanilla/boom will go out of bounds then?
 
   if (mbf21 && (weaponinfo[player->readyweapon].intflags & WIF_ENABLEAPS))
     amount = weaponinfo[player->readyweapon].ammopershot;
   else
     amount = compat_amt;
 
-  player->ammo[weaponinfo[player->readyweapon].ammo] -= amount;
+  if (!mbf21 || player->ammo[ammotype] >= amount)
+    player->ammo[ammotype] -= amount;
 }
 
 //
