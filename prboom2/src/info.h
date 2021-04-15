@@ -2995,6 +2995,24 @@ typedef enum {
   TOTAL_NUMMOBJTYPES = HERETIC_NUMMOBJTYPES
 } mobjtype_t;
 
+typedef enum {
+  IG_DEFAULT,
+  IG_WIZARD,
+  IG_END
+} infighting_group_t;
+
+typedef enum {
+  PG_GROUPLESS = -1,
+  PG_DEFAULT,
+  PG_BARON,
+  PG_END
+} projectile_group_t;
+
+typedef enum {
+  SG_DEFAULT,
+  SG_END
+} splash_group_t;
+
 /********************************************************************
  * Definition of the Thing structure
  ********************************************************************/
@@ -3055,6 +3073,11 @@ typedef struct
   // heretic
   int crashstate;
   uint_64_t flags2;
+
+  // mbf21
+  int infighting_group;
+  int projectile_group;
+  int splash_group;
 } mobjinfo_t;
 
 typedef struct

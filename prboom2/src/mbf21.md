@@ -39,6 +39,10 @@ This is proof-of-concept implemented in dsda-doom.
 - [PR](https://github.com/kraflab/dsda-doom/pull/19)
 - Uses bit 12 (4096).
 
+#### Block players line flag
+- [commit](https://github.com/kraflab/dsda-doom/commit/687237e3d236056730f58dca27efd45e1774d53e)
+- Uses bit 13 (8192).
+
 #### Fix generalized crusher walkover lines
 - [commit](https://github.com/kraflab/dsda-doom/commit/76776f721b5d1d8a1a0ae95daab525cf8183ce44)
 
@@ -52,11 +56,63 @@ This is proof-of-concept implemented in dsda-doom.
 #### Option default changes
 - comp_pursuit: 1 (was 0)
 
+#### Dehacked Thing Groups
+- [PR](https://github.com/kraflab/dsda-doom/pull/22), [PR](https://github.com/kraflab/dsda-doom/pull/23)
+
+##### Infighting
+- Add `Infighting group = N` in Thing definition.
+- `N` is a nonnegative integer.
+- Things with the same value of `N` will not target each other after taking damage.
+
+##### Projectile
+- Add `Projectile group = M` in Thing definition.
+- `M` is an integer.
+- Things with the same value of `M` will not deal projectile damage to each other.
+- A negative value of `M` means that species has no projectile immunity, even to other things in the same species.
+
+##### Splash
+- Add `Splash group = S` in Thing definition.
+- `S` is a nonnegative integer.
+- Things with the same value of `S` will not deal splash damage to each other.
+- Splash damage coming through a neutral thing (e.g., exploding a barrel) will still occur.
+
+##### Examples
+
+```
+Thing 12 (Imp)
+Projectile group = -1
+Splash group = 0
+
+Thing 16 (Baron of Hell)
+Projectile group = 2
+
+Thing 18 (Hell Knight)
+Infighting group = 1
+Projectile group = 1
+
+Thing 21 (Arachnotron)
+Infighting group = 1
+Projectile group = 2
+
+Thing 22 (Cyberdemon)
+Splash group = 0
+```
+
+In this example:
+- Imp projectiles now damage other Imps (and they will infight with their own kind).
+- Barons and Arachnotrons are in the same projectile group: their projectiles will no longer damage each other.
+- Barons and Hell Knights are not in the same projectile group: their projectiles will now damage each other, leading to infighting.
+- Hell Knights and Arachnotrons are in the same infighting group: they will not infight with each other, despite taking damage from each other's projectiles.
+- Imps and Cyberdemons are in the same splash group: cyberdemon rocket splash will no longer damage imps (but direct impacts do).
+- Note that the group numbers are separate - being in infighting group 1 doesn't mean you are in projectile group 1.
+
 #### New Thing Flags
 
-Implementations match between DSDA-Doom and Eternity Engine,
-except for the ripper projectile, which is still TODO.
-The DEH specification is still TBD - this is just a list of implemented flags of note.
+- [commit](https://github.com/kraflab/dsda-doom/commit/10907e5d37dc2337c93f6dd59573fd42c5a8aaf6)
+- Add `MBF21 Bits = X` in the Thing definition.
+- The format is the same as the existing `Bits` field.
+- Example: `MBF21 Bits = LOGRAV+DMGIGNORED+MAP07BOSS1`.
+- Implementations match between DSDA-Doom and Eternity Engine, except for the ripper projectile, which is still TODO.
 
 | DSDA-Doom          | Eternity Engine    | Description                                                                                    |
 |--------------------|--------------------|------------------------------------------------------------------------------------------------|
@@ -77,7 +133,8 @@ The DEH specification is still TBD - this is just a list of implemented flags of
 | MF2_E3M8BOSS       | MF2_E3M8BOSS       | E3M8 boss (mastermind)                                                                         |
 | MF2_E4M6BOSS       | MF2_E4M6BOSS       | E4M6 boss (cyberdemon)                                                                         |
 | MF2_E4M8BOSS       | MF2_E4M8BOSS       | E4M8 boss (mastermind)                                                                         |
-| MF2_RIP            | MF3_RIP            | Ripper projectile (does not disappear on impact)                                               |
+| MF2_RIP (TODO)     | MF3_RIP (TODO)     | Ripper projectile (does not disappear on impact)                                               |
+| MF2_NEUTRAL_SPLASH | ?                  | Splash damage from this thing is not affected by splash groups (barrel)                        |
 
 #### New DEHACKED Codepointers
 - [PR](https://github.com/kraflab/dsda-doom/pull/20)

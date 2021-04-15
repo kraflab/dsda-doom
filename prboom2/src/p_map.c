@@ -458,7 +458,9 @@ dboolean PIT_CheckLine (line_t* ld)
   // killough 8/10/98: allow bouncing objects to pass through as missiles
   if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)))
   {
-    if (ld->flags & ML_BLOCKING)           // explicitly blocking everything
+    // explicitly blocking everything
+    // or blocking player
+    if (ld->flags & ML_BLOCKING || (mbf21 && tmthing->player && ld->flags & ML_BLOCKPLAYERS))
       return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
 
     // killough 8/9/98: monster-blockers don't affect friends
@@ -509,6 +511,25 @@ dboolean PIT_CheckLine (line_t* ld)
 //
 // PIT_CheckThing
 //
+
+static dboolean P_ProjectileImmune(mobj_t *target, mobj_t *source)
+{
+  return
+    ( // PG_GROUPLESS means no immunity, even to own species
+      mobjinfo[target->type].projectile_group != PG_GROUPLESS ||
+      target == source
+    ) &&
+    (
+      ( // target type has default behaviour, and things are the same type
+        mobjinfo[target->type].projectile_group == PG_DEFAULT &&
+        source->type == target->type
+      ) ||
+      ( // target type has special behaviour, and things have the same group
+        mobjinfo[target->type].projectile_group != PG_DEFAULT &&
+        mobjinfo[target->type].projectile_group == mobjinfo[source->type].projectile_group
+      )
+    );
+}
 
 static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
 {
@@ -624,17 +645,10 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     if (tmthing->z + tmthing->height < thing->z)
       return true;    // underneath
 
-    if (
-      tmthing->target &&
-      (
-        tmthing->target->type == thing->type ||
-        (tmthing->target->type == MT_KNIGHT && thing->type == MT_BRUISER) ||
-        (tmthing->target->type == MT_BRUISER && thing->type == MT_KNIGHT)
-      )
-    )
+    if (tmthing->target && P_ProjectileImmune(thing, tmthing->target))
     {
       if (thing == tmthing->target)
-        return true;                // Don't hit same species as originator.
+        return true;                // Don't hit self.
       else
         // e6y: Dehacked support - monsters infight
         if (thing->type != g_mt_player && !monsters_infight) // Explode, but do no damage.
@@ -2025,6 +2039,14 @@ int bombdistance;
 // that caused the explosion at "bombspot".
 //
 
+static dboolean P_SplashImmune(mobj_t *target, mobj_t *source, mobj_t *spot)
+{
+  return // not neutral, not default behaviour, and same group
+    !(spot->flags2 & MF2_NEUTRAL_SPLASH) &&
+    mobjinfo[target->type].splash_group != SG_DEFAULT &&
+    mobjinfo[target->type].splash_group == mobjinfo[source->type].splash_group;
+}
+
 dboolean PIT_RadiusAttack (mobj_t* thing)
 {
   fixed_t dx;
@@ -2037,6 +2059,9 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
    */
 
   if (!(thing->flags & (MF_SHOOTABLE | MF_BOUNCES)))
+    return true;
+
+  if (bombsource && P_SplashImmune(thing, bombsource, bombspot))
     return true;
 
   // Boss spider and cyborg
