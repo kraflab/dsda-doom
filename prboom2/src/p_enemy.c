@@ -713,10 +713,7 @@ static void P_NewChaseDir(mobj_t *actor)
             (!target->info->missilestate && dist < MELEERANGE*2) ||
             (
               target->player && dist < MELEERANGE*3 &&
-              (
-                target->player->readyweapon == wp_fist ||
-                target->player->readyweapon == wp_chainsaw
-              )
+              weaponinfo[target->player->readyweapon].flags & WPF_FLEEMELEE
             )
           )
         )

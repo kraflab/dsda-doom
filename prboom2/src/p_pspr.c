@@ -400,7 +400,8 @@ static void P_FireWeapon(player_t *player)
     P_SetMobjState(player->mo, S_PLAY_ATK1);
     newstate = weaponinfo[player->readyweapon].atkstate;
     P_SetPsprite(player, ps_weapon, newstate);
-    P_NoiseAlert(player->mo, player->mo);
+    if (!(weaponinfo[player->readyweapon].flags & WPF_SILENT))
+      P_NoiseAlert(player->mo, player->mo);
   }
 }
 
@@ -482,11 +483,9 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
 
   if (player->cmd.buttons & BT_ATTACK)
   {
-    // HERETIC_TODO: when weapons don't share indices, remove heretic checks
     if (
       !player->attackdown ||
-      (!heretic && player->readyweapon != wp_missile && player->readyweapon != wp_bfg) ||
-      (heretic && player->readyweapon != wp_phoenixrod)
+      !(weaponinfo[player->readyweapon].flags & WPF_NOAUTOFIRE)
     )
     {
       player->attackdown = true;
