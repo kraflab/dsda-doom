@@ -483,7 +483,6 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
 
   if (player->cmd.buttons & BT_ATTACK)
   {
-    // HERETIC_TODO: when weapons don't share indices, remove heretic checks
     if (
       !player->attackdown ||
       !(weaponinfo[player->readyweapon].flags & WPF_NOAUTOFIRE)
