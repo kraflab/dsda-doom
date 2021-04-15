@@ -1007,7 +1007,11 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   if (
     inflictor &&
     !(target->flags & MF_NOCLIP) &&
-    (!source || !source->player ||source->player->readyweapon != g_wp_chainsaw) &&
+    !(
+      source &&
+      source->player &&
+      weaponinfo[source->player->readyweapon].flags & WPF_NOTHRUST
+    ) &&
     !(inflictor->flags2 & MF2_NODMGTHRUST)
   )
   {

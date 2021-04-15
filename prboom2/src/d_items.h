@@ -46,6 +46,15 @@
 //
 #define WIF_ENABLEAPS (0x0000000000000001) // [XA] enable "ammo per shot" field for native Doom weapon codepointers
 
+// haleyjd 09/11/07: weapon flags
+//
+#define WPF_NOFLAG         0x00000000 // no flag
+#define WPF_NOTHRUST       0x00000001 // doesn't thrust Mobj's
+#define WPF_SILENT         0x00000002 // weapon is silent
+#define WPF_NOAUTOFIRE     0x00000004 // weapon won't autofire in A_WeaponReady
+#define WPF_FLEEMELEE      0x00000008 // monsters consider it a melee weapon
+#define WPF_AUTOSWITCHFROM 0x00000010 // switches away if ammo for a better weapon is picked up
+
 /* Weapon info: sprite frames, ammunition use. */
 typedef struct
 {
@@ -58,6 +67,7 @@ typedef struct
   int         flashstate;
   int         ammopershot;
   int         intflags;
+  int         flags;
 } weaponinfo_t;
 
 extern weaponinfo_t doom_weaponinfo[NUMWEAPONS+2];
