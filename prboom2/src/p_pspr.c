@@ -457,8 +457,10 @@ void P_SubtractAmmo(struct player_s *player, int vanilla_amount)
   else
     amount = vanilla_amount;
 
-  if (!mbf21 || player->ammo[ammotype] >= amount)
-    player->ammo[ammotype] -= amount;
+  player->ammo[ammotype] -= amount;
+
+  if (mbf21 && player->ammo[ammotype] < 0)
+    player->ammo[ammotype] = 0;
 }
 
 //
