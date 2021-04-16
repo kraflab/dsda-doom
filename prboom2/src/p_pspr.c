@@ -303,17 +303,17 @@ int P_SwitchWeapon(player_t *player)
   int currentweapon, newweapon;
   int i;
 
-  prefer = weapon_preferences[demo_compatibility != 0]; // killough 3/22/98
-  currentweapon = player->readyweapon;
-  newweapon = currentweapon;
-  i = NUMWEAPONS + 1;   // killough 5/2/98
-
   // [XA] use fixed behavior for mbf21. no need
   // for a discrete compat option for this, as
   // it doesn't impact demo playback (weapon
   // switches are saved in the demo itself)
   if (mbf21)
     return P_SwitchWeaponMBF21(player);
+
+  prefer = weapon_preferences[demo_compatibility != 0]; // killough 3/22/98
+  currentweapon = player->readyweapon;
+  newweapon = currentweapon;
+  i = NUMWEAPONS + 1;   // killough 5/2/98
 
   // killough 2/8/98: follow preferences and fix BFG/SSG bugs
 
