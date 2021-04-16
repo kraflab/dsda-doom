@@ -44,7 +44,7 @@
 //
 // Internal weapon flags
 //
-#define WIF_ENABLEAPS (0x0000000000000001) // [XA] enable "ammo per shot" field for native Doom weapon codepointers
+#define WIF_ENABLEAPS 0x00000001 // [XA] enable "ammo per shot" field for native Doom weapon codepointers
 
 // haleyjd 09/11/07: weapon flags
 //
