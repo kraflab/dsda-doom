@@ -46,6 +46,12 @@ This is proof-of-concept implemented in dsda-doom.
 #### Fix generalized crusher walkover lines
 - [commit](https://github.com/kraflab/dsda-doom/commit/76776f721b5d1d8a1a0ae95daab525cf8183ce44)
 
+#### Fix negative ammo counts
+- [PR](https://github.com/kraflab/dsda-doom/pull/24)
+
+#### Fix weapon autoswitch not taking DEHACKED ammotype changes into account
+- [PR](https://github.com/kraflab/dsda-doom/pull/24)
+
 #### New comp flags
 - comp_ledgeblock: [commit](https://github.com/kraflab/dsda-doom/commit/4423cbcf8580e4d3839ddf4403b1fb4a0f993507)
 
@@ -135,6 +141,20 @@ In this example:
 | MF2_E4M8BOSS       | MF2_E4M8BOSS       | E4M8 boss (mastermind)                                                                         |
 | MF2_RIP (TODO)     | MF3_RIP (TODO)     | Ripper projectile (does not disappear on impact)                                               |
 | MF2_NEUTRAL_SPLASH | ?                  | Splash damage from this thing is not affected by splash groups (barrel)                        |
+
+#### New DEHACKED "Ammo per shot" Weapon field
+- [PR](https://github.com/kraflab/dsda-doom/pull/24)
+- Add `Ammo per shot = X` in the Weapon definition.
+- Value must be a nonnegative integer.
+- Tools should assume this value is undefined for all vanilla weapons (i.e. always write it to the patch if the user specifies any valid value)
+- Weapons WITH this field set will use the ammo-per-shot value when:
+  - Checking if there is enough ammo before firing
+  - Determining if the weapon has ammo during weapon auto-switch
+  - Deciding how much ammo to subtract in native Doom weapon attack pointers
+    - Exceptions: A_Saw and A_Punch will never attempt to subtract ammo.
+  - The `amount` param is zero for certain new MBF21 DEHACKED codepointers (see below).
+- Weapons WITHOUT this field set will use vanilla Doom semantics for all above behaviors.
+- For backwards-compatibility, setting the `BFG cells/shot` misc field will also set the BFG weapon's `Ammo per shot` field (but not vice-versa).
 
 #### New DEHACKED Codepointers
 - [PR](https://github.com/kraflab/dsda-doom/pull/20)

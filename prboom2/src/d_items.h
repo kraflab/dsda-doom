@@ -42,6 +42,10 @@
 #endif
 
 //
+// Internal weapon flags
+//
+#define WIF_ENABLEAPS 0x00000001 // [XA] enable "ammo per shot" field for native Doom weapon codepointers
+
 // haleyjd 09/11/07: weapon flags
 //
 #define WPF_NOFLAG         0x00000000 // no flag
@@ -61,11 +65,12 @@ typedef struct
   int         atkstate;
   int         holdatkstate;
   int         flashstate;
+  int         ammopershot;
+  int         intflags;
   int         flags;
 } weaponinfo_t;
 
 extern weaponinfo_t doom_weaponinfo[NUMWEAPONS+2];
-extern int ammopershot[NUMWEAPONS+2];
 
 // heretic
 
