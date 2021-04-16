@@ -57,6 +57,18 @@
 #define TRUE 1
 #define FALSE 0
 
+static dboolean bfgcells_modified = false;
+
+void CheckDehConsistency(void)
+{
+  if (
+    bfgcells_modified &&
+    weaponinfo[MT_BFG].intflags & WIF_ENABLEAPS &&
+    bfgcells != weaponinfo[MT_BFG].ammopershot
+  )
+    I_Error("Mismatch between bfgcells and bfg ammo per shot modifications! Check your dehacked.");
+}
+
 // e6y: for compatibility with BOOM deh parser
 int deh_strcasecmp(const char *str1, const char *str2)
 {
@@ -2719,7 +2731,10 @@ static void deh_procMisc(DEHFILE *fpin, FILE* fpout, char *line) // done
                                   idkfa_armor_class = (int)value;
                                 else
                                   if (!deh_strcasecmp(key,deh_misc[14]))  // BFG Cells/Shot
+                                  {
                                     weaponinfo[MT_BFG].ammopershot = bfgcells = (int)value;
+                                    bfgcells_modified = true;
+                                  }
                                   else
                                     if (!deh_strcasecmp(key,deh_misc[15])) { // Monsters Infight
                                       // e6y: Dehacked support - monsters infight

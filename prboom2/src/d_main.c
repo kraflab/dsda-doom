@@ -1896,6 +1896,7 @@ static void D_DoomMainSetup(void)
 	  }
   }
 
+  CheckDehConsistency();
 
   V_InitColorTranslation(); //jff 4/24/98 load color translation lumps
 
