@@ -53,7 +53,8 @@
 #define WPF_SILENT         0x00000002 // weapon is silent
 #define WPF_NOAUTOFIRE     0x00000004 // weapon won't autofire in A_WeaponReady
 #define WPF_FLEEMELEE      0x00000008 // monsters consider it a melee weapon
-#define WPF_AUTOSWITCHFROM 0x00000010 // switches away if ammo for a better weapon is picked up
+#define WPF_AUTOSWITCHFROM 0x00000010 // can be switched away from when ammo is picked up
+#define WPF_AUTOSWITCHTO   0x00000020 // can be switched to when ammo is picked up
 
 /* Weapon info: sprite frames, ammunition use. */
 typedef struct
