@@ -42,6 +42,8 @@
 
 #include "dsda/global.h"
 
+#define MAXSTATEARGS 8
+
 /********************************************************************
  * Sprite name enumeration - must match info.c                      *
  ********************************************************************/
@@ -2630,6 +2632,7 @@ typedef struct
   actionf_t   action;       /* code pointer to function for action if any  */
   statenum_t  nextstate;    /* linked list pointer to next state or zero   */
   long        misc1, misc2; /* apparently never used in DOOM               */
+  long        args[MAXSTATEARGS]; // [XA] mbf21 args
 } state_t;
 
 /********************************************************************

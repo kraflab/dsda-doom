@@ -1245,7 +1245,15 @@ static const char *deh_state[] = // CPhipps - static const*
   // This is set in a separate "Pointer" block from Dehacked
   "Codep Frame",      // pointer to first use of action (actionf_t)
   "Unknown 1",        // .misc1 (long)
-  "Unknown 2"         // .misc2 (long)
+  "Unknown 2",        // .misc2 (long)
+  "Args1",            // .args[0] (long)
+  "Args2",            // .args[1] (long)
+  "Args3",            // .args[2] (long)
+  "Args4",            // .args[3] (long)
+  "Args5",            // .args[4] (long)
+  "Args6",            // .args[5] (long)
+  "Args7",            // .args[6] (long)
+  "Args8",            // .args[7] (long)
 };
 
 // SFXINFO_STRUCT - Dehacked block name = "Sounds"
@@ -2204,7 +2212,55 @@ static void deh_procFrame(DEHFILE *fpin, FILE* fpout, char *line)
                       states[indexnum].misc2 = (long)value; // long
                     }
                   else
-                    if (fpout) fprintf(fpout,"Invalid frame string index for '%s'\n",key);
+                    if (!deh_strcasecmp(key,deh_state[7]))  // Args1
+                      {
+                        if (fpout) fprintf(fpout," - args[0] = %ld\n",(long)value);
+                        states[indexnum].args[0] = (long)value; // long
+                      }
+                    else
+                      if (!deh_strcasecmp(key,deh_state[8]))  // Args2
+                        {
+                          if (fpout) fprintf(fpout," - args[1] = %ld\n",(long)value);
+                          states[indexnum].args[1] = (long)value; // long
+                        }
+                      else
+                        if (!deh_strcasecmp(key,deh_state[9]))  // Args3
+                          {
+                            if (fpout) fprintf(fpout," - args[2] = %ld\n",(long)value);
+                            states[indexnum].args[2] = (long)value; // long
+                          }
+                        else
+                          if (!deh_strcasecmp(key,deh_state[10]))  // Args4
+                            {
+                              if (fpout) fprintf(fpout," - args[3] = %ld\n",(long)value);
+                              states[indexnum].args[3] = (long)value; // long
+                            }
+                          else
+                            if (!deh_strcasecmp(key,deh_state[11]))  // Args5
+                              {
+                                if (fpout) fprintf(fpout," - args[4] = %ld\n",(long)value);
+                                states[indexnum].args[4] = (long)value; // long
+                              }
+                            else
+                              if (!deh_strcasecmp(key,deh_state[12]))  // Args6
+                                {
+                                  if (fpout) fprintf(fpout," - args[5] = %ld\n",(long)value);
+                                  states[indexnum].args[5] = (long)value; // long
+                                }
+                              else
+                                if (!deh_strcasecmp(key,deh_state[13]))  // Args7
+                                  {
+                                    if (fpout) fprintf(fpout," - args[6] = %ld\n",(long)value);
+                                    states[indexnum].args[6] = (long)value; // long
+                                  }
+                                else
+                                  if (!deh_strcasecmp(key,deh_state[14]))  // Args8
+                                    {
+                                      if (fpout) fprintf(fpout," - args[7] = %ld\n",(long)value);
+                                      states[indexnum].args[7] = (long)value; // long
+                                    }
+                                  else
+                                    if (fpout) fprintf(fpout,"Invalid frame string index for '%s'\n",key);
     }
   return;
 }
