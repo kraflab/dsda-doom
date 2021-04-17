@@ -80,7 +80,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_PISTOLFLASH,
     1,
     0,
-    WPF_NOFLAG | WPF_AUTOSWITCHFROM | WPF_AUTOSWITCHTO
+    WPF_AUTOSWITCHFROM | WPF_AUTOSWITCHTO
   },
   {
     // shotgun
@@ -93,7 +93,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_SGUNFLASH1,
     1,
     0,
-    WPF_NOFLAG | WPF_AUTOSWITCHTO
+    WPF_AUTOSWITCHTO
   },
   {
     // chaingun
@@ -106,7 +106,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_CHAINFLASH1,
     1,
     0,
-    WPF_NOFLAG | WPF_AUTOSWITCHTO
+    WPF_AUTOSWITCHTO
   },
   {
     // missile launcher
@@ -132,7 +132,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_PLASMAFLASH1,
     1,
     0,
-    WPF_NOFLAG | WPF_AUTOSWITCHTO
+    WPF_AUTOSWITCHTO
   },
   {
     // bfg 9000
@@ -171,7 +171,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_DSGUNFLASH1,
     2,
     0,
-    WPF_NOFLAG | WPF_AUTOSWITCHTO
+    WPF_AUTOSWITCHTO
   },
 
   // dseg03:00082D90                 weaponinfo_t <5, 46h, 45h, 43h, 47h, 0>
