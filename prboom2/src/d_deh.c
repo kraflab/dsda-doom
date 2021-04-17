@@ -1143,13 +1143,13 @@ static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
 
 #define DEH_MOBJFLAGMAX (sizeof deh_mobjflags/sizeof*deh_mobjflags)
 
-struct deh_mobjflags_s {
+struct deh_flag_s {
   const char *name; // CPhipps - const*
   uint_64_t value;
 };
 
 // CPhipps - static const
-static const struct deh_mobjflags_s deh_mobjflags[] = {
+static const struct deh_flag_s deh_mobjflags[] = {
   {"SPECIAL",      MF_SPECIAL}, // call  P_Specialthing when touched
   {"SOLID",        MF_SOLID}, // block movement
   {"SHOOTABLE",    MF_SHOOTABLE}, // can be hit
@@ -1194,7 +1194,7 @@ static const struct deh_mobjflags_s deh_mobjflags[] = {
 
 #define DEH_MOBJFLAGMAX_MBF21 (sizeof(deh_mobjflags_mbf21) / sizeof(*deh_mobjflags_mbf21))
 
-static const struct deh_mobjflags_s deh_mobjflags_mbf21[] = {
+static const struct deh_flag_s deh_mobjflags_mbf21[] = {
   {"LOGRAV",         MF2_LOGRAV}, // low gravity
   {"SHORTMRANGE",    MF2_SHORTMRANGE}, // short missile range
   {"DMGIGNORED",     MF2_DMGIGNORED}, // other things ignore its attacks
