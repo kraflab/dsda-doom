@@ -46,6 +46,13 @@ This is proof-of-concept implemented in dsda-doom.
 #### Fix generalized crusher walkover lines
 - [commit](https://github.com/kraflab/dsda-doom/commit/76776f721b5d1d8a1a0ae95daab525cf8183ce44)
 
+#### Line scroll special variants
+- [PR](https://github.com/kraflab/dsda-doom/pull/29)
+- Scroll like special 255, but the special line determines the speed / direction with which all tagged lines scroll.
+- 1024 is without control sector / acceleration.
+- 1025 uses control sector.
+- 1026 uses control sector + acceleration.
+
 #### Fix negative ammo counts
 - [PR](https://github.com/kraflab/dsda-doom/pull/24)
 

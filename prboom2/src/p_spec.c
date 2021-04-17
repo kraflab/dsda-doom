@@ -3098,6 +3098,27 @@ static void P_SpawnScrollers(void)
                        sides[s].rowoffset, -1, s, accel);
           break;
 
+        case 1024: // special 255 with tag control
+        case 1025:
+        case 1026:
+          if (l->tag == 0)
+            I_Error("Line %d is missing a tag!", i);
+
+          if (special > 1024)
+            control = sides[*l->sidenum].sector->iSectorID;
+
+          if (special == 1026)
+            accel = 1;
+
+          s = lines[i].sidenum[0];
+          dx = -sides[s].textureoffset;
+          dy = sides[s].rowoffset;
+          for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
+            if (s != i)
+              Add_Scroller(sc_side, dx, dy, control, lines[s].sidenum[0], accel);
+
+          break;
+
         case 48:                  // scroll first side
           Add_Scroller(sc_side,  FRACUNIT, 0, -1, lines[i].sidenum[0], accel);
           break;
