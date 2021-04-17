@@ -681,12 +681,24 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
 
     if (tmthing->flags2 & MF2_RIP)
     {
-      if (!(thing->flags & MF_NOBLOOD))
-      {                   // Ok to spawn some blood
-        P_RipperBlood(tmthing);
+      if (heretic)
+      {
+        if (!(thing->flags & MF_NOBLOOD))
+        {                   // Ok to spawn some blood
+          P_RipperBlood(tmthing);
+        }
+        S_StartSound(tmthing, heretic_sfx_ripslop);
+        damage = ((P_Random(pr_heretic) & 3) + 2) * tmthing->damage;
       }
-      S_StartSound(tmthing, heretic_sfx_ripslop);
-      damage = ((P_Random(pr_heretic) & 3) + 2) * tmthing->damage;
+      else
+      {
+        damage = ((P_Random(pr_mbf21) & 3) + 2) * tmthing->info->damage;
+        if (!(thing->flags & MF_NOBLOOD))
+          P_SpawnBlood(tmthing->x, tmthing->y, tmthing->z, damage);
+        if (tmthing->info->painsound)
+          S_StartSound(tmthing, tmthing->info->painsound);
+      }
+
       P_DamageMobj(thing, tmthing, tmthing->target, damage);
       if (thing->flags2 & MF2_PUSHABLE && !(tmthing->flags2 & MF2_CANNOTPUSH))
       {                   // Push thing
