@@ -2982,17 +2982,17 @@ void A_LineEffect(mobj_t *mo)
 // A_SpawnFacing
 // Spawns an actor facing the same direction as the caller.
 // Basically just A_Spawn with a major quality-of-life tweak.
-//   misc1: Type of actor to spawn
-//   misc2: Height to spawn at, relative to calling actor
+//   args[0]: Type of actor to spawn
+//   args[1]: Height to spawn at, relative to calling actor
 //
 void A_SpawnFacing(mobj_t *actor)
 {
   mobj_t *mo;
 
-  if (!mbf21 || !actor->state->misc1)
+  if (!mbf21 || !actor->state->args[0])
     return;
 
-  mo = P_SpawnMobj(actor->x, actor->y, (actor->state->misc2 << FRACBITS) + actor->z, actor->state->misc1 - 1);
+  mo = P_SpawnMobj(actor->x, actor->y, (actor->state->args[1] << FRACBITS) + actor->z, actor->state->args[0] - 1);
   if (mo)
     mo->angle = actor->angle;
 
@@ -3003,24 +3003,24 @@ void A_SpawnFacing(mobj_t *actor)
 //
 // A_MonsterProjectile
 // A parameterized monster projectile attack.
-//   misc1: Type of actor to spawn
-//   misc2: Angle (degrees, in fixed point), relative to calling actor's angle
+//   args[0]: Type of actor to spawn
+//   args[1]: Angle (degrees, in fixed point), relative to calling actor's angle
 //
 void A_MonsterProjectile(mobj_t *actor)
 {
   mobj_t *mo;
   int an;
 
-  if (!mbf21 || !actor->target || !actor->state->misc1)
+  if (!mbf21 || !actor->target || !actor->state->args[0])
     return;
 
   A_FaceTarget(actor);
-  mo = P_SpawnMissile(actor, actor->target, actor->state->misc1 - 1);
+  mo = P_SpawnMissile(actor, actor->target, actor->state->args[0] - 1);
   if (!mo)
     return;
 
-  // adjust the angle by misc2;
-  mo->angle += (unsigned int)(((int_64_t)actor->state->misc2 << 16) / 360);
+  // adjust the angle by args[1];
+  mo->angle += (unsigned int)(((int_64_t)actor->state->args[1] << 16) / 360);
   an = mo->angle >> ANGLETOFINESHIFT;
   mo->momx = FixedMul(mo->info->speed, finecosine[an]);
   mo->momy = FixedMul(mo->info->speed, finesine[an]);
@@ -3033,8 +3033,8 @@ void A_MonsterProjectile(mobj_t *actor)
 //
 // A_MonsterBulletAttack
 // A parameterized monster bullet attack.
-//   misc1: Damage of attack (times 1d5)
-//   misc2: Horizontal spread (degrees, in fixed point);
+//   args[0]: Damage of attack (times 1d5)
+//   args[1]: Horizontal spread (degrees, in fixed point);
 //          if negative, also use 2/3 of this value for vertical spread
 //
 void A_MonsterBulletAttack(mobj_t *actor)
@@ -3048,13 +3048,13 @@ void A_MonsterBulletAttack(mobj_t *actor)
   A_FaceTarget(actor);
   S_StartSound(actor, actor->info->attacksound);
 
-  damage = (P_Random(pr_mbf21) % 5 + 1) * actor->state->misc1;
+  damage = (P_Random(pr_mbf21) % 5 + 1) * actor->state->args[0];
 
-  angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, actor->state->misc2);;
+  angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, actor->state->args[1]);;
   slope = P_AimLineAttack(actor, angle, MISSILERANGE, 0);
 
-  if (actor->state->misc2 < 0)
-    slope += P_RandomHitscanSlope(pr_mbf21, actor->state->misc2 * 2 / 3);
+  if (actor->state->args[1] < 0)
+    slope += P_RandomHitscanSlope(pr_mbf21, actor->state->args[1] * 2 / 3);
 
   P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
 }
@@ -3062,15 +3062,15 @@ void A_MonsterBulletAttack(mobj_t *actor)
 //
 // A_RadiusDamage
 // A parameterized version of A_Explode. Friggin' finally. :P
-//   misc1: Damage (int)
-//   misc2: Radius (also int; no real need for fractional precision here)
+//   args[0]: Damage (int)
+//   args[1]: Radius (also int; no real need for fractional precision here)
 //
 void A_RadiusDamage(mobj_t *actor)
 {
   if (!mbf21 || !actor->state)
     return;
 
-  P_RadiusAttack(actor, actor->target, actor->state->misc1, actor->state->misc2);
+  P_RadiusAttack(actor, actor->target, actor->state->args[0], actor->state->args[1]);
 }
 
 
