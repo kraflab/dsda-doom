@@ -142,6 +142,47 @@ In this example:
 | MF2_RIP (TODO)     | MF3_RIP (TODO)     | Ripper projectile (does not disappear on impact)                                               |
 | MF2_NEUTRAL_SPLASH | ?                  | Splash damage from this thing is not affected by splash groups (barrel)                        |
 
+#### Weapon Flags
+
+- [PR](https://github.com/kraflab/dsda-doom/pull/27)
+- Add `MBF21 Bits = X` in the Weapon definition.
+- The format is the same as the existing thing `Bits` field.
+- Example: `MBF21 Bits = SILENT+NOAUTOFIRE`.
+
+| Name           | Description                                      |
+|----------------|--------------------------------------------------|
+| NOTHRUST       | Doesn't thrust things                            |
+| SILENT         | Weapon is silent                                 |
+| NOAUTOFIRE     | Weapon won't autofire when swapped to            |
+| FLEEMELEE      | Monsters consider it a melee weapon              |
+| AUTOSWITCHFROM | Can be switched away from when ammo is picked up |
+| AUTOSWITCHTO   | Can be switch to when ammo is picked up          |
+
+MBF21 defaults:
+
+| Weapon          | Flags                       |
+|-----------------|-----------------------------|
+| Fist            | FLEEMELEE+AUTOSWITCHFROM    |
+| Pistol          | AUTOSWITCHFROM+AUTOSWITCHTO |
+| Shotgun         | AUTOSWITCHTO                |
+| Chaingun        | AUTOSWITCHTO                |
+| Rocket Launcher | NOAUTOFIRE+AUTOSWITCHTO     |
+| Plasma Rifle    | AUTOSWITCHTO                |
+| BFG             | NOAUTOFIRE+AUTOSWITCHTO     |
+| Chainsaw        | NOTHRUST+FLEEMELEE          |
+| Super Shotgun   | AUTOSWITCHTO                |
+
+#### Ammo pickup weapon autoswitch changes
+
+- [PR](https://github.com/kraflab/dsda-doom/pull/26)
+- Weapon autoswitch on ammo pickup now accounts for the ammo per shot of a weapon, as well as the `AUTOSWITCHTO` and `AUTOSWITCHFROM` weapon flags, allowing more accuracy and customization of this behaviour.
+- If the current weapon is enabled for `AUTOSWITCHFROM` and the player picks up ammo for a different weapon, autoswitch will occur for the highest ranking weapon (by index) matching these conditions:
+  - player has the weapon
+  - weapon is enabled for `AUTOSWITCHTO`
+  - weapon uses the ammo that was picked up
+  - player did not have enough ammo to fire the weapon before
+  - player now has enough ammo to fire the weapon
+
 #### New DEHACKED "Ammo per shot" Weapon field
 - [PR](https://github.com/kraflab/dsda-doom/pull/24)
 - Add `Ammo per shot = X` in the Weapon definition.

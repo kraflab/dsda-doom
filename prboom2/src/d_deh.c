@@ -1143,13 +1143,13 @@ static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
 
 #define DEH_MOBJFLAGMAX (sizeof deh_mobjflags/sizeof*deh_mobjflags)
 
-struct deh_mobjflags_s {
+struct deh_flag_s {
   const char *name; // CPhipps - const*
   uint_64_t value;
 };
 
 // CPhipps - static const
-static const struct deh_mobjflags_s deh_mobjflags[] = {
+static const struct deh_flag_s deh_mobjflags[] = {
   {"SPECIAL",      MF_SPECIAL}, // call  P_Specialthing when touched
   {"SOLID",        MF_SOLID}, // block movement
   {"SHOOTABLE",    MF_SHOOTABLE}, // can be hit
@@ -1194,7 +1194,7 @@ static const struct deh_mobjflags_s deh_mobjflags[] = {
 
 #define DEH_MOBJFLAGMAX_MBF21 (sizeof(deh_mobjflags_mbf21) / sizeof(*deh_mobjflags_mbf21))
 
-static const struct deh_mobjflags_s deh_mobjflags_mbf21[] = {
+static const struct deh_flag_s deh_mobjflags_mbf21[] = {
   {"LOGRAV",         MF2_LOGRAV}, // low gravity
   {"SHORTMRANGE",    MF2_SHORTMRANGE}, // short missile range
   {"DMGIGNORED",     MF2_DMGIGNORED}, // other things ignore its attacks
@@ -1213,6 +1213,16 @@ static const struct deh_mobjflags_s deh_mobjflags_mbf21[] = {
   {"E4M6BOSS",       MF2_E4M6BOSS}, // E4M6 boss
   {"E4M8BOSS",       MF2_E4M8BOSS}, // E4M8 boss
   {"NEUTRAL_SPLASH", MF2_NEUTRAL_SPLASH}, // splash damage ignores splash groups
+};
+
+static const struct deh_flag_s deh_weaponflags_mbf21[] = {
+  { "NOTHRUST",       WPF_NOTHRUST }, // doesn't thrust Mobj's
+  { "SILENT",         WPF_SILENT }, // weapon is silent
+  { "NOAUTOFIRE",     WPF_NOAUTOFIRE }, // weapon won't autofire in A_WeaponReady
+  { "FLEEMELEE",      WPF_FLEEMELEE }, // monsters consider it a melee weapon
+  { "AUTOSWITCHFROM", WPF_AUTOSWITCHFROM }, // can be switched away from when ammo is picked up
+  { "AUTOSWITCHTO",   WPF_AUTOSWITCHTO }, // can be switched to when ammo is picked up
+  { NULL }
 };
 
 // STATE - Dehacked block name = "Frame" and "Pointer"
@@ -1295,6 +1305,7 @@ static const char *deh_weapon[] = // CPhipps - static const*
   "Shooting frame", // .atkstate
   "Firing frame",   // .flashstate
   "Ammo per shot",  // .ammopershot [XA] new to mbf21
+  "MBF21 Bits",     // .flags
 };
 
 // CHEATS - Dehacked block name = "Cheat"
@@ -2405,6 +2416,7 @@ static void deh_procWeapon(DEHFILE *fpin, FILE* fpout, char *line)
   char inbuffer[DEH_BUFFERMAX];
   uint_64_t value;      // All deh values are ints or longs
   int indexnum;
+  char *strval;
 
   strncpy(inbuffer,line,DEH_BUFFERMAX-1);
 
@@ -2421,7 +2433,7 @@ static void deh_procWeapon(DEHFILE *fpin, FILE* fpout, char *line)
       if (!dehfgets(inbuffer, sizeof(inbuffer), fpin)) break;
       lfstrip(inbuffer);
       if (!*inbuffer) break;       // killough 11/98
-      if (!deh_GetData(inbuffer,key,&value,NULL,fpout)) // returns TRUE if ok
+      if (!deh_GetData(inbuffer,key,&value,&strval,fpout)) // returns TRUE if ok
         {
           if (fpout) fprintf(fpout,"Bad data pair in '%s'\n",inbuffer);
           continue;
@@ -2453,7 +2465,27 @@ static void deh_procWeapon(DEHFILE *fpin, FILE* fpout, char *line)
                       weaponinfo[indexnum].intflags |= WIF_ENABLEAPS;
                     }
                   else
-                    if (fpout) fprintf(fpout,"Invalid weapon string index for '%s'\n",key);
+                    if (!deh_strcasecmp(key,deh_weapon[7]))  // MBF21 Bits
+                    {
+                      for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
+                        const struct deh_flag_s *flag;
+
+                        for (flag = deh_weaponflags_mbf21; flag->name; flag++) {
+                          if (deh_strcasecmp(strval, flag->name)) continue;
+
+                          value |= flag->value;
+                          break;
+                        }
+
+                        if (!flag->name && fpout) {
+                          fprintf(fpout, "Could not find MBF21 weapon bit mnemonic %s\n", strval);
+                        }
+                      }
+
+                      weaponinfo[indexnum].flags = value;
+                    }
+                    else
+                      if (fpout) fprintf(fpout,"Invalid weapon string index for '%s'\n",key);
     }
   return;
 }
