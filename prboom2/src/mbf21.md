@@ -149,6 +149,13 @@ In this example:
 | MF2_RIP            | MF3_RIP            | Ripper projectile (does not disappear on impact)                                               |
 | MF2_NEUTRAL_SPLASH | ?                  | Splash damage from this thing is not affected by splash groups (barrel)                        |
 
+#### Rip sound
+
+- [commit](https://github.com/kraflab/dsda-doom/commit/3d9fc1cccc7b85c527331e74802dd25d94a80b10)
+- When set, this is the sound that plays for ripper projectiles when they rip through something.
+- Add `Rip sound = X` in the Thing definition.
+- `X` is the sound index, as seen in other sound fields.
+
 #### Weapon Flags
 
 - [PR](https://github.com/kraflab/dsda-doom/pull/27)
