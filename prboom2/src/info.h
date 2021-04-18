@@ -3078,6 +3078,7 @@ typedef struct
   int infighting_group;
   int projectile_group;
   int splash_group;
+  int ripsound;
 } mobjinfo_t;
 
 typedef struct

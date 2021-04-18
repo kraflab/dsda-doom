@@ -695,8 +695,8 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
         damage = ((P_Random(pr_mbf21) & 3) + 2) * tmthing->info->damage;
         if (!(thing->flags & MF_NOBLOOD))
           P_SpawnBlood(tmthing->x, tmthing->y, tmthing->z, damage);
-        if (tmthing->info->painsound)
-          S_StartSound(tmthing, tmthing->info->painsound);
+        if (tmthing->info->ripsound)
+          S_StartSound(tmthing, tmthing->info->ripsound);
       }
 
       P_DamageMobj(thing, tmthing, tmthing->target, damage);

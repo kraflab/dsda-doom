@@ -256,6 +256,7 @@ static void dsda_InitDoom(void) {
     mobjinfo[i].infighting_group = IG_DEFAULT;
     mobjinfo[i].projectile_group = PG_DEFAULT;
     mobjinfo[i].splash_group = SG_DEFAULT;
+    mobjinfo[i].ripsound = sfx_None;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
@@ -386,6 +387,7 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].infighting_group = IG_DEFAULT;
     mobjinfo[j].projectile_group = PG_DEFAULT;
     mobjinfo[j].splash_group = SG_DEFAULT;
+    mobjinfo[i].ripsound = heretic_sfx_None;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
