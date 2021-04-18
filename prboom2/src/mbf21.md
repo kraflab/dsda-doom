@@ -35,6 +35,36 @@ This is proof-of-concept implemented in dsda-doom.
 #### Fix blockmap issue seen in btsx e2 Map 20
 - [commit](https://github.com/kraflab/dsda-doom/commit/c31040e0df9c2bc0c865d84bd496840f8123984a)
 
+#### Fix T_VerticalDoor mistake
+- Already fixed in pr+ / EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_doors.c#L588-L589)
+
+#### Fix buggy comp_stairs implementation
+- Already fixed in pr+ / EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_floor.c#L934-L942)
+
+#### Fix missing dropoff condition
+- Already fixed in pr+, but not in EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_map.c#L1037)
+- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_map.cpp#L1342)
+
+#### P_CreateSecNodeList global tmthing fix
+- Already fixed in pr+ / EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_map.c#L2601-L2603)
+
+#### P_InterceptVector precision / overflow fix
+- Already fixed in pr+, but not in EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_maputl.c#L161-L166)
+- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_maputl.cpp#L275)
+
+#### A_CheckReload downstate
+- Already fixed in pr+ / EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_pspr.c#L636-L643)
+
+#### Fix P_DivlineSide bug
+- Already fixed in pr+ / EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_sight.c#L408)
+
 #### Block land monsters line flag
 - [PR](https://github.com/kraflab/dsda-doom/pull/19)
 - Uses bit 12 (4096).

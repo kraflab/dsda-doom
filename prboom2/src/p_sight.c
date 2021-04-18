@@ -413,62 +413,7 @@ INLINE static int P_DivlineSide(fixed_t x, fixed_t y, const divline_t *node)
 
 INLINE static int P_DivlineCrossed(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2, divline_t *node)
 {
-#if 1
    return (P_DivlineSide(x1, y1, node) == P_DivlineSide(x2, y2, node));
-#else
-  if (!node->dx)
-  {
-    if (x1 == node->x)
-      return (x2 == node->x);
-    if (x2 == node->x)
-      return (x1 == node->x);
-    if (x1 < node->x)
-      return (x2 < node->x);
-    return (x2 > node->x);
-  }
-
-  if (!node->dy)
-  {
-    fixed_t _y1, _y2;
-    if (compatibility_level < prboom_4_compatibility)
-    {
-      _y1 = x1;
-      _y2 = x2;
-    }
-    else
-    {
-      _y1 = y1;
-      _y2 = y2;
-    }
-    //if ((compatibility_level < prboom_4_compatibility ? x1 : y1) == node->y)
-    //  return (x2 == node->y);
-    if (_y1 == node->y)
-      return (_y2 == node->y);
-    if (_y2 == node->y)
-      return (_y1 == node->y);
-    if (y1 <= node->y)
-      return (y2 < node->y);
-    return (y2 > node->y);
-  }
-
-  {
-    fixed_t node_dx = (node->dx >> FRACBITS);
-    fixed_t node_dy = (node->dy >> FRACBITS);
-
-    fixed_t left1  = node_dy * ((x1 - node->x) >> FRACBITS);
-    fixed_t right1 = ((y1 - node->y) >> FRACBITS) * node_dx;
-    fixed_t left2  = node_dy * ((x2 - node->x) >> FRACBITS);
-    fixed_t right2 = ((y2 - node->y) >> FRACBITS) * node_dx;
-
-    if (right1 < left1)
-      return (right2 < left2);
-
-    if (left1 == right1)
-      return (left2 == right2);
-
-    return (right2 > left2);
-  }
-#endif
 }
 
 
