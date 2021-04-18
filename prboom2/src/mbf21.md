@@ -29,13 +29,9 @@ This is proof-of-concept implemented in dsda-doom.
 - [PR](https://github.com/kraflab/dsda-doom/pull/18)
 - Bit 13 turns on "kill monsters" flag for sectors - kills grounded monsters.
 
-#### Fix 3 key doors bug from mbf
+#### Fix 3 key doors bug
 - Already fixed in pr+ / EE.
 - [code](https://github.com/kraflab/dsda-doom/blob/61eac73ea246b48b17a30bc5a678a46b80d48fa1/prboom2/src/p_spec.c#L1086-L1090)
-
-#### Fix blockmap issue seen in btsx e2 Map 20
-- Already fixed in EE, but not in pr+.
-- [commit](https://github.com/kraflab/dsda-doom/commit/c31040e0df9c2bc0c865d84bd496840f8123984a)
 
 #### Fix T_VerticalDoor mistake
 - Already fixed in pr+ / EE.
@@ -45,19 +41,9 @@ This is proof-of-concept implemented in dsda-doom.
 - Already fixed in pr+ / EE.
 - [code](https://github.com/kraflab/dsda-doom/blob/6006aa42d3fba0ad2822ea35b144a921678821bf/prboom2/src/p_floor.c#L894-L895) and [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_floor.c#L934-L942)
 
-#### Fix missing dropoff condition
-- Already fixed in pr+, but not in EE.
-- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_map.c#L1037)
-- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_map.cpp#L1342)
-
 #### P_CreateSecNodeList global tmthing fix
 - Already fixed in pr+ / EE.
 - [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_map.c#L2601-L2603)
-
-#### P_InterceptVector precision / overflow fix
-- Already fixed in pr+, but not in EE.
-- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_maputl.c#L161-L166)
-- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_maputl.cpp#L275)
 
 #### A_CheckReload downstate
 - Already fixed in pr+ / EE.
@@ -66,6 +52,24 @@ This is proof-of-concept implemented in dsda-doom.
 #### Fix P_DivlineSide bug
 - Already fixed in pr+ / EE.
 - [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_sight.c#L408)
+
+#### Fix generalized crusher walkover lines
+- Already fixed in EE, but not in pr+.
+- [commit](https://github.com/kraflab/dsda-doom/commit/76776f721b5d1d8a1a0ae95daab525cf8183ce44)
+
+#### Fix blockmap issue seen in btsx e2 Map 20
+- Already fixed in EE, but not in pr+.
+- [commit](https://github.com/kraflab/dsda-doom/commit/c31040e0df9c2bc0c865d84bd496840f8123984a)
+
+#### Fix missing dropoff condition
+- Already fixed in pr+, but not in EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_map.c#L1037)
+- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_map.cpp#L1342)
+
+#### P_InterceptVector precision / overflow fix
+- Already fixed in pr+, but not in EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_maputl.c#L161-L166)
+- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_maputl.cpp#L275)
 
 #### P_KillMobj thinker updates
 - Changed in pr+, but not in EE.
@@ -92,9 +96,6 @@ This is proof-of-concept implemented in dsda-doom.
 #### Block players line flag
 - [commit](https://github.com/kraflab/dsda-doom/commit/687237e3d236056730f58dca27efd45e1774d53e)
 - Uses bit 13 (8192).
-
-#### Fix generalized crusher walkover lines
-- [commit](https://github.com/kraflab/dsda-doom/commit/76776f721b5d1d8a1a0ae95daab525cf8183ce44)
 
 #### Line scroll special variants
 - [PR](https://github.com/kraflab/dsda-doom/pull/29)
