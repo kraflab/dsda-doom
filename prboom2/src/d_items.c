@@ -65,7 +65,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_PUNCH1,
     S_NULL,
     S_NULL,
-    0,
+    1,
     0,
     WPF_FLEEMELEE | WPF_AUTOSWITCHFROM
   },
@@ -156,7 +156,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_SAW1,
     S_NULL,
     S_NULL,
-    0,
+    1,
     0,
     WPF_NOTHRUST | WPF_FLEEMELEE
   },
