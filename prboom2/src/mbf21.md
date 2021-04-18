@@ -34,6 +34,7 @@ This is proof-of-concept implemented in dsda-doom.
 - [code](https://github.com/kraflab/dsda-doom/blob/61eac73ea246b48b17a30bc5a678a46b80d48fa1/prboom2/src/p_spec.c#L1086-L1090)
 
 #### Fix blockmap issue seen in btsx e2 Map 20
+- Already fixed in EE, but not in pr+.
 - [commit](https://github.com/kraflab/dsda-doom/commit/c31040e0df9c2bc0c865d84bd496840f8123984a)
 
 #### Fix T_VerticalDoor mistake
@@ -42,7 +43,7 @@ This is proof-of-concept implemented in dsda-doom.
 
 #### Fix buggy comp_stairs implementation
 - Already fixed in pr+ / EE.
-- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_floor.c#L934-L942)
+- [code](https://github.com/kraflab/dsda-doom/blob/6006aa42d3fba0ad2822ea35b144a921678821bf/prboom2/src/p_floor.c#L894-L895) and [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_floor.c#L934-L942)
 
 #### Fix missing dropoff condition
 - Already fixed in pr+, but not in EE.
@@ -65,6 +66,24 @@ This is proof-of-concept implemented in dsda-doom.
 #### Fix P_DivlineSide bug
 - Already fixed in pr+ / EE.
 - [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_sight.c#L408)
+
+#### P_KillMobj thinker updates
+- Changed in pr+, but not in EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/6006aa42d3fba0ad2822ea35b144a921678821bf/prboom2/src/p_inter.c#L748-L753)
+- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_inter.cpp#L971)
+- Why? Needs investigation.
+
+#### A_Spawn friendliness inheritance
+- Changed in pr+, but not in EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/6006aa42d3fba0ad2822ea35b144a921678821bf/prboom2/src/p_enemy.c#L2894-L2897)
+- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/a_general.cpp#L189)
+- Why? Needs investigation.
+
+#### A_Mushroom changes
+- Changed in pr+, but not in EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/6006aa42d3fba0ad2822ea35b144a921678821bf/prboom2/src/p_enemy.c#L2848-L2851)
+- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/a_general.cpp#L116-L120)
+- Why? Needs investigation.
 
 #### Block land monsters line flag
 - [PR](https://github.com/kraflab/dsda-doom/pull/19)
