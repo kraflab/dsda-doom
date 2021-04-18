@@ -90,9 +90,6 @@
 //e6y
 #include "r_demo.h"
 #include "e6y.h"
-#ifdef USE_WINDOWS_LAUNCHER
-#include "e6y_launcher.h"
-#endif
 
 #include "dsda/global.h"
 #include "dsda/settings.h"
@@ -1761,9 +1758,6 @@ static void D_DoomMainSetup(void)
     int demo_footer = CheckDemoExDemo();
     if (!demo_footer)
       demo_footer = CheckAutoDemo();
-#ifdef USE_WINDOWS_LAUNCHER
-    LauncherShow(demo_footer);
-#endif
   }
 
 
