@@ -182,20 +182,10 @@ static dsda_option_t option_list[] = {
   { "comp_stairs", &mbf_options.comp_stairs, 0, 1 },
   { "comp_infcheat", &mbf_options.comp_infcheat, 0, 1 },
   { "comp_zerotags", &mbf_options.comp_zerotags, 0, 1 },
-  { "comp_moveblock", &mbf_options.comp_moveblock, 0, 1 },
   { "comp_respawn", &mbf_options.comp_respawn, 0, 1 },
   { "comp_respawnfix", &mbf_options.comp_respawn, 0, 1 },
-  { "comp_sound", &mbf_options.comp_sound, 0, 1 },
-  { "comp_666", &mbf_options.comp_666, 0, 1 },
   { "comp_soul", &mbf_options.comp_soul, 0, 1 },
-  { "comp_maskedanim", &mbf_options.comp_maskedanim, 0, 1 },
-  { "comp_ouchface", &mbf_options.comp_ouchface, 0, 1 },
-  { "comp_maxhealth", &mbf_options.comp_maxhealth, 0, 1 },
-  { "comp_translucency", &mbf_options.comp_translucency, 0, 1 },
   { "comp_ledgeblock", &mbf_options.comp_ledgeblock, 0, 1 },
-  // { "comp_30", &mbf_options.comp_30, 0, 1 },
-  // { "comp_31", &mbf_options.comp_31, 0, 1 },
-  // { "comp_32", &mbf_options.comp_32, 0, 1 },
   { 0 }
 };
 

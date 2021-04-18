@@ -2690,6 +2690,18 @@ void G_Compatibility(void)
 
     monkeys = 0;
   }
+
+  // These options were deoptionalized in mbf21
+  if (mbf21)
+  {
+    comp[comp_moveblock] = 0;
+    comp[comp_sound] = 0;
+    comp[comp_666] = 0;
+    comp[comp_maskedanim] = 0;
+    comp[comp_ouchface] = 0;
+    comp[comp_maxhealth] = 0;
+    comp[comp_translucency] = 0;
+  }
 }
 
 // killough 3/1/98: function to reload all the default parameter

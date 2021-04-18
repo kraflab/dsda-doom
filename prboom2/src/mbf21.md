@@ -62,9 +62,23 @@ This is proof-of-concept implemented in dsda-doom.
 #### New comp flags
 - comp_ledgeblock: [commit](https://github.com/kraflab/dsda-doom/commit/4423cbcf8580e4d3839ddf4403b1fb4a0f993507)
 
-| Name            | Number | Default | Description                 |
-|-----------------|--------|---------|-----------------------------|
-| comp_ledgeblock | 28     | 1       | Ledges block ground enemies |
+Summary of comp flags since mbf in pr+ and changes:
+
+| Name               | Index | Default | Description                                   |
+|--------------------|-------|---------|-----------------------------------------------|
+| comp_moveblock-    | 19    | 0       | Large negative displacements are mishandled   |
+| comp_respawn*      | 20    | 0       | Creatures with no spawnpoint respawn at (0,0) |
+| comp_sound-        | 21    | 0       | Assorted sound errors                         |
+| comp_666-          | 22    | 0       | Buggy pre-udoom boss checks                   |
+| comp_soul*         | 23    | 0       | Lost souls do not bounce                      |
+| comp_maskedanim-   | 24    | 0       | Two-sided midtextures don't animate           |
+| comp_ouchface-     | 25    | 0       | Buggy vanilla ouchface code                   |
+| comp_maxhealth-    | 26    | 0       | Max health in deh only applies to potions     |
+| comp_translucency- | 27    | 0       | Disable some predefined translucency          |
+| comp_ledgeblock    | 28    | 1       | Ledges block ground enemies                   |
+
+- Comp options marked with a `-` have been deoptionalized in mbf21 (forced to `0`). Many of these have nothing to do with demo compatibility - others are simple bug fixes.
+- Comp options marked with a `*` are already implemented in EE.
 
 #### Option default changes
 - comp_pursuit: 1 (was 0)
