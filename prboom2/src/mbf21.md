@@ -30,7 +30,8 @@ This is proof-of-concept implemented in dsda-doom.
 - Bit 13 turns on "kill monsters" flag for sectors - kills grounded monsters.
 
 #### Fix 3 key doors bug from mbf
-- already fixed actually in post-mbf pr+ levels.
+- Already fixed in pr+ / EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/61eac73ea246b48b17a30bc5a678a46b80d48fa1/prboom2/src/p_spec.c#L1086-L1090)
 
 #### Fix blockmap issue seen in btsx e2 Map 20
 - [commit](https://github.com/kraflab/dsda-doom/commit/c31040e0df9c2bc0c865d84bd496840f8123984a)
