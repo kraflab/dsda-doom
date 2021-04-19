@@ -127,6 +127,7 @@ extern int snd_card;
 extern int mus_card;
 // CPhipps - put these in config file
 extern int snd_samplerate;
+extern int snd_samplecount;
 
 extern int use_experimental_music;
 
