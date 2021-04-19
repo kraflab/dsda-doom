@@ -331,10 +331,12 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
 
     if(WIN32)
-        add_definitions("-DUSE_WIN32_PCSOUND_DRIVER")
+        add_definitions("-DUSE_WIN32_PCSOUND_DRIVER -DUSE_WINDOWS_LAUNCHER")
         set(SOURCES
             ${SOURCES}
             ../ICONS/icons.rc
+            e6y_launcher.c
+            e6y_launcher.h
             SDL/SDL_windows_main.c
         )
     endif()
