@@ -83,7 +83,7 @@ void M_ChangeUncappedFrameRate(void)
 
 void R_InitInterpolation(void)
 {
-  tic_vars.msec = dsda_RealticClockRate() * TICRATE / 100000.0f;
+  tic_vars.tics_per_usec = dsda_RealticClockRate() * TICRATE / 100000000.0f;
 }
 
 typedef fixed_t fixed2_t[2];

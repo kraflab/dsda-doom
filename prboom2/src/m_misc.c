@@ -1075,6 +1075,7 @@ default_t defaults[] =
   { "dsda_wipe_at_full_speed", { &dsda_wipe_at_full_speed }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_track_attempts", { &dsda_track_attempts }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int, ss_stat },
+  { "dsda_laggy_sleep_mode", { &dsda_laggy_sleep_mode }, { 0 }, 0, 1, def_bool, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},
