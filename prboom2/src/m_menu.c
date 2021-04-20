@@ -71,6 +71,7 @@
 #include "dsda/key_frame.h"
 #include "dsda/input.h"
 #include "dsda/palette.h"
+#include "dsda/save.h"
 #include "heretic/mn_menu.h"
 #ifdef _WIN32
 #include "e6y_launcher.h"
@@ -901,9 +902,7 @@ void M_ReadSaveStrings(void)
 
     /* killough 3/22/98
      * cph - add not-demoplayback parameter */
-    len = G_SaveGameName(NULL, 0, i, false);
-    name = malloc(len+1);
-    G_SaveGameName(name, len+1, i, false);
+    name = dsda_SaveGameName(i, false);
     fp = fopen(name,"rb");
     free(name);
     if (!fp) {   // Ty 03/27/98 - externalized:
@@ -3333,6 +3332,7 @@ setup_menu_t dsda_gen_settings[] = {
   { "Track Demo Attempts", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "dsda_track_attempts" } },
   { "Fine Sensitivity", S_NUM, m_null, G_X, G_Y + 9 * 8, { "dsda_fine_sensitivity" } },
   { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "dsda_hide_horns" } },
+  { "Organize My Save Files", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "dsda_organized_saves" } },
 
 #ifdef GL_DOOM
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },

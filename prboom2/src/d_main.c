@@ -95,6 +95,7 @@
 #endif
 
 #include "dsda/global.h"
+#include "dsda/save.h"
 #include "dsda/settings.h"
 
 #include "heretic/mn_menu.h"
@@ -138,8 +139,6 @@ FILE    *debugfile;
 int ffmap;
 
 dboolean advancedemo;
-
-char    *basesavegame;             // killough 2/16/98: savegame directory
 
 //jff 4/19/98 list of standard IWAD names
 const char *const standard_iwads[]=
@@ -970,29 +969,6 @@ void AddIWAD(const char *iwad)
   D_AddFile(iwad,source_iwad);
 }
 
-// NormalizeSlashes
-//
-// Remove trailing slashes, translate backslashes to slashes
-// The string to normalize is passed and returned in str
-//
-// jff 4/19/98 Make killoughs slash fixer a subroutine
-//
-static void NormalizeSlashes(char *str)
-{
-  size_t l;
-
-  // killough 1/18/98: Neater / \ handling.
-  // Remove trailing / or \ to prevent // /\ \/ \\, and change \ to /
-
-  if (!str || !(l = strlen(str)))
-    return;
-  if (str[--l]=='/' || str[l]=='\\')     // killough 1/18/98
-    str[l]=0;
-  while (l--)
-    if (str[l]=='\\')
-      str[l]='/';
-}
-
 /*
  * FindIWADFIle
  *
@@ -1038,35 +1014,9 @@ static char *FindIWADFile(void)
 
 static void IdentifyVersion (void)
 {
-  int         i;    //jff 3/24/98 index of args on commandline
-  struct stat sbuf; //jff 3/24/98 used to test save path for existence
   char *iwad;
 
-  // set save path to -save parm or current dir
-
-  //jff 3/27/98 default to current dir
-  //V.Aguilar (5/30/99): In LiNUX, default to $HOME/.lxdoom
-  {
-    // CPhipps - use DOOMSAVEDIR if defined
-    const char *p = getenv("DOOMSAVEDIR");
-
-    if (p == NULL)
-      p = I_DoomExeDir();
-
-    free(basesavegame);
-    basesavegame = strdup(p);
-  }
-  if ((i=M_CheckParm("-save")) && i<myargc-1) //jff 3/24/98 if -save present
-  {
-    if (!stat(myargv[i+1],&sbuf) && S_ISDIR(sbuf.st_mode)) // and is a dir
-    {
-      free(basesavegame);
-      basesavegame = strdup(myargv[i+1]);//jff 3/24/98 use that for savegame
-      NormalizeSlashes(basesavegame);    //jff 9/22/98 fix c:\ not working
-    }
-    //jff 9/3/98 use logical output routine
-    else lprintf(LO_ERROR,"Error: -save path does not exist, using %s\n", basesavegame);
-  }
+  dsda_InitSaveDir(); // why is this here?
 
   // locate the IWAD and determine game mode from it
 
