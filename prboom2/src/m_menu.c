@@ -897,7 +897,6 @@ void M_ReadSaveStrings(void)
 
   for (i = 0 ; i < load_end ; i++) {
     char *name;               // killough 3/22/98
-    int len;
     FILE *fp;  // killough 11/98: change to use stdio
 
     /* killough 3/22/98
