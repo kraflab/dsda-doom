@@ -88,6 +88,7 @@
 #include "dsda.h"
 #include "dsda/demo.h"
 #include "dsda/key_frame.h"
+#include "dsda/save.h"
 #include "dsda/settings.h"
 #include "dsda/input.h"
 #include "dsda/options.h"
@@ -2219,9 +2220,7 @@ void G_DoLoadGame(void)
   char maplump[8];
   int time, ttime;
 
-  length = G_SaveGameName(NULL, 0, savegameslot, demoplayback);
-  name = malloc(length+1);
-  G_SaveGameName(name, length+1, savegameslot, demoplayback);
+  name = dsda_SaveGameName(savegameslot, demoplayback);
 
   gameaction = ga_nothing;
 
@@ -2418,22 +2417,11 @@ void (CheckSaveGame)(size_t size, const char* file, int line)
            savegamesize += (size+1023) & ~1023)) + pos;
 }
 
-/* killough 3/22/98: form savegame name in one location
- * (previously code was scattered around in multiple places)
- * cph - Avoid possible buffer overflow problems by passing
- * size to this function and using snprintf */
-
-int G_SaveGameName(char *name, size_t size, int slot, dboolean demoplayback)
-{
-  const char* sgn = demoplayback ? "demosav" : savegamename;
-  return doom_snprintf (name, size, "%s/%s%d.dsg", basesavegame, sgn, slot);
-}
-
 static void G_DoSaveGame (dboolean menu)
 {
   char *name;
   char *description;
-  int  length, i;
+  int  i;
   //e6y: numeric version number of package
   unsigned int packageversion = GetPackageVersion();
   char maplump[8];
@@ -2442,9 +2430,7 @@ static void G_DoSaveGame (dboolean menu)
   gameaction = ga_nothing; // cph - cancel savegame at top of this function,
     // in case later problems cause a premature exit
 
-  length = G_SaveGameName(NULL, 0, savegameslot, demoplayback && !menu);
-  name = malloc(length+1);
-  G_SaveGameName(name, length+1, savegameslot, demoplayback && !menu);
+  name = dsda_SaveGameName(savegameslot, demoplayback && !menu);
 
   description = savedescription;
 

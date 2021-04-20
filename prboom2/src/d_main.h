@@ -44,8 +44,6 @@
 
 /* CPhipps - removed wadfiles[] stuff to w_wad.h */
 
-extern char *basesavegame;      // killough 2/16/98: savegame path
-
 //jff 1/24/98 make command line copies of play modes available
 extern dboolean clnomonsters; // checkparm of -nomonsters
 extern dboolean clrespawnparm;  // checkparm of -respawn

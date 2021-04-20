@@ -29,6 +29,7 @@ extern int dsda_track_attempts;
 extern int dsda_wipe_at_full_speed;
 extern int dsda_fine_sensitivity;
 extern int dsda_hide_horns;
+extern int dsda_organized_saves;
 
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);
