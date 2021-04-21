@@ -109,6 +109,7 @@ int screenblocks;    // has default
 int screenSize;      // temp for screenblocks (0-9)
 
 int quickSaveSlot;   // -1 = no quicksave slot picked!
+int quickSavePage;
 
 int messageToPrint;  // 1 = message to be printed
 
@@ -959,7 +960,10 @@ static void M_DoSave(int slot)
 
   // PICK QUICKSAVE SLOT YET?
   if (quickSaveSlot == -2)
+  {
     quickSaveSlot = slot;
+    quickSavePage = save_page;
+  }
 }
 
 //
@@ -1393,6 +1397,11 @@ void M_QuickSave(void)
     quickSaveSlot = -2; // means to pick a slot now
     return;
   }
+  else
+  {
+    save_page = quickSavePage;
+    M_ReadSaveStrings();
+  }
   sprintf(tempstring,s_QSPROMPT,savegamestrings[quickSaveSlot]); // Ty 03/27/98 - externalized
   M_StartMessage(tempstring,M_QuickSaveResponse,true);
 }
@@ -1424,6 +1433,11 @@ void M_QuickLoad(void)
   if (quickSaveSlot < 0) {
     M_StartMessage(s_QSAVESPOT,NULL,false); // Ty 03/27/98 - externalized
     return;
+  }
+  else
+  {
+    save_page = quickSavePage;
+    M_ReadSaveStrings();
   }
   sprintf(tempstring,s_QLPROMPT,savegamestrings[quickSaveSlot]); // Ty 03/27/98 - externalized
   M_StartMessage(tempstring,M_QuickLoadResponse,true);
