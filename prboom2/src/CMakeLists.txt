@@ -448,6 +448,8 @@ if(BUILD_SERVER AND SDL2_NET_FOUND)
         set(PRBOOM_PLUS_GAME_SERVER_SOURCES
             ${PRBOOM_PLUS_GAME_SERVER_SOURCES}
             SDL/i_system.c
+            dsda/time.c
+            dsda/time.h
         )
     else()
         set(PRBOOM_PLUS_GAME_SERVER_SOURCES
