@@ -1302,15 +1302,6 @@ void G_Ticker (void)
                   gameaction = ga_savegame;
                   break;
 
-      // CPhipps - remote loadgame request
-                case BTS_LOADGAME:
-                  savegameslot =
-                    (players[i].cmd.buttons & BTS_SAVEMASK)>>BTS_SAVESHIFT;
-                  gameaction = ga_loadgame;
-      forced_loadgame = netgame; // Force if a netgame
-      command_loadgame = false;
-                  break;
-
       // CPhipps - Restart the level
     case BTS_RESTARTLEVEL:
                   if (demoplayback || (compatibility_level < lxdoom_1_compatibility))
@@ -2111,22 +2102,17 @@ void G_ForcedLoadGame(void)
 void G_LoadGame(int slot, dboolean command)
 {
   if (!demoplayback && !command) {
-    // CPhipps - handle savegame filename in G_DoLoadGame
-    //         - Delay load so it can be communicated in net game
-    //         - store info in special_event
-    special_event = BT_SPECIAL | (BTS_LOADGAME & BT_SPECIALMASK) |
-      ((slot << BTS_SAVESHIFT) & BTS_SAVEMASK);
     forced_loadgame = netgame; // CPhipps - always force load netgames
   } else {
-    // Do the old thing, immediate load
-    gameaction = ga_loadgame;
     forced_loadgame = false;
-    savegameslot = slot;
     demoplayback = false;
     // Don't stay in netgame state if loading single player save
     // while watching multiplayer demo
     netgame = false;
   }
+
+  gameaction = ga_loadgame;
+  savegameslot = slot;
   command_loadgame = command;
   R_SmoothPlaying_Reset(NULL); // e6y
 }
@@ -2378,16 +2364,10 @@ void G_DoLoadGame(void)
 void G_SaveGame(int slot, char *description)
 {
   strcpy(savedescription, description);
-  if (demoplayback) {
-    /* cph - We're doing a user-initiated save game while a demo is
-     * running so, go outside normal mechanisms
-     */
-    savegameslot = slot;
-    G_DoSaveGame(true);
-  }
-  // CPhipps - store info in special_event
-  special_event = BT_SPECIAL | (BTS_SAVEGAME & BT_SPECIALMASK) |
-    ((slot << BTS_SAVESHIFT) & BTS_SAVEMASK);
+
+  savegameslot = slot;
+  G_DoSaveGame(true);
+
 #ifdef HAVE_NET
   D_NetSendMisc(nm_savegamename, strlen(savedescription)+1, savedescription);
 #endif
