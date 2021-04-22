@@ -83,6 +83,7 @@ extern dboolean chat_on;          // in heads-up code
 
 extern const char* g_menu_flat;
 extern patchnum_t* g_menu_font;
+extern int g_menu_save_page_size;
 extern int g_menu_font_spacing;
 extern int g_menu_cr_title;
 extern int g_menu_cr_set;
@@ -109,6 +110,7 @@ int screenblocks;    // has default
 int screenSize;      // temp for screenblocks (0-9)
 
 int quickSaveSlot;   // -1 = no quicksave slot picked!
+int quickSavePage;
 
 int messageToPrint;  // 1 = message to be printed
 
@@ -735,10 +737,15 @@ enum
   load4,
   load5,
   load6,
-  load7, //jff 3/15/98 extend number of slots
-  load8,
+  load7,
   load_end
 } load_e;
+
+static int save_page = 0;
+static const int save_page_limit = 16;
+
+#define SAVE_PAGE_STRING_SIZE 16
+char save_page_string[SAVE_PAGE_STRING_SIZE];
 
 // The definitions of the Load Game screen
 
@@ -783,6 +790,8 @@ void M_DrawLoad(void)
     M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
     M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], CR_DEFAULT);
   }
+
+  M_WriteText(LoadDef.x, LoadDef.y + LINEHEIGHT * load_end, save_page_string, CR_DEFAULT);
 }
 
 //
@@ -813,9 +822,9 @@ void M_LoadSelect(int choice)
   // CPhipps - Modified so savegame filename is worked out only internal
   //  to g_game.c, this only passes the slot.
 
-  G_LoadGame(choice, false); // killough 3/16/98, 5/15/98: add slot, cmd
-
-  M_ClearMenus ();
+  // killough 3/16/98, 5/15/98: add slot, cmd
+  G_LoadGame(choice + save_page * g_menu_save_page_size, false);
+  M_ClearMenus();
 }
 
 //
@@ -844,15 +853,14 @@ void M_ForcedLoadGame(const char *msg)
 
 void M_LoadGame (int choice)
 {
-  /* killough 5/26/98: exclude during demo recordings
-   * cph - unless a new demo */
-  if (demorecording && (compatibility_level < prboom_2_compatibility) && !mbf21)
-    {
+  // killough 5/26/98: exclude during demo recordings
+  if (demorecording)
+  {
     M_StartMessage("you can't load a game\n"
-       "while recording a demo in this complevel!\n\n"PRESSKEY,
+       "while recording a demo!\n\n"PRESSKEY,
        NULL, false); // killough 5/26/98: not externalized
     return;
-    }
+  }
 
   M_SetupNextMenu(&LoadDef);
   M_ReadSaveStrings();
@@ -901,7 +909,7 @@ void M_ReadSaveStrings(void)
 
     /* killough 3/22/98
      * cph - add not-demoplayback parameter */
-    name = dsda_SaveGameName(i, false);
+    name = dsda_SaveGameName(i + save_page * g_menu_save_page_size, false);
     fp = fopen(name,"rb");
     free(name);
     if (!fp) {   // Ty 03/27/98 - externalized:
@@ -913,6 +921,8 @@ void M_ReadSaveStrings(void)
     fclose(fp);
     LoadMenue[i].status = 1;
   }
+
+  snprintf(save_page_string, SAVE_PAGE_STRING_SIZE, "PAGE %d/%d", save_page + 1, save_page_limit);
 }
 
 //
@@ -933,6 +943,8 @@ void M_DrawSave(void)
     M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], CR_DEFAULT);
     }
 
+  M_WriteText(LoadDef.x, LoadDef.y + LINEHEIGHT * load_end, save_page_string, CR_DEFAULT);
+
   if (saveStringEnter)
     {
     i = M_StringWidth(savegamestrings[saveSlot]);
@@ -945,12 +957,15 @@ void M_DrawSave(void)
 //
 static void M_DoSave(int slot)
 {
-  G_SaveGame (slot,savegamestrings[slot]);
-  M_ClearMenus ();
+  G_SaveGame(slot + save_page * g_menu_save_page_size, savegamestrings[slot]);
+  M_ClearMenus();
 
   // PICK QUICKSAVE SLOT YET?
   if (quickSaveSlot == -2)
+  {
     quickSaveSlot = slot;
+    quickSavePage = save_page;
+  }
 }
 
 //
@@ -1384,6 +1399,11 @@ void M_QuickSave(void)
     quickSaveSlot = -2; // means to pick a slot now
     return;
   }
+  else
+  {
+    save_page = quickSavePage;
+    M_ReadSaveStrings();
+  }
   sprintf(tempstring,s_QSPROMPT,savegamestrings[quickSaveSlot]); // Ty 03/27/98 - externalized
   M_StartMessage(tempstring,M_QuickSaveResponse,true);
 }
@@ -1415,6 +1435,11 @@ void M_QuickLoad(void)
   if (quickSaveSlot < 0) {
     M_StartMessage(s_QSAVESPOT,NULL,false); // Ty 03/27/98 - externalized
     return;
+  }
+  else
+  {
+    save_page = quickSavePage;
+    M_ReadSaveStrings();
   }
   sprintf(tempstring,s_QLPROMPT,savegamestrings[quickSaveSlot]); // Ty 03/27/98 - externalized
   M_StartMessage(tempstring,M_QuickLoadResponse,true);
@@ -4440,6 +4465,27 @@ dboolean M_Responder (event_t* ev) {
       }
     }
     return true;
+  }
+
+  if ((currentMenu == &LoadDef || currentMenu == &SaveDef) && !saveStringEnter)
+  {
+    int diff = 0;
+
+    if (action == MENU_LEFT)
+      diff = -1;
+    else if (action == MENU_RIGHT)
+      diff = 1;
+
+    if (diff)
+    {
+      save_page += diff;
+      if (save_page < 0)
+        save_page = save_page_limit - 1;
+      else if (save_page >= save_page_limit)
+        save_page = 0;
+
+      M_ReadSaveStrings();
+    }
   }
 
   // Take care of any messages that need input
