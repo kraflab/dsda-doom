@@ -83,6 +83,7 @@ extern dboolean chat_on;          // in heads-up code
 
 extern const char* g_menu_flat;
 extern patchnum_t* g_menu_font;
+extern int g_menu_save_page_size;
 extern int g_menu_font_spacing;
 extern int g_menu_cr_title;
 extern int g_menu_cr_set;
@@ -744,7 +745,7 @@ static int save_page = 0;
 static const int save_page_limit = 16;
 
 #define SAVE_PAGE_STRING_SIZE 16
-static char save_page_string[SAVE_PAGE_STRING_SIZE];
+char save_page_string[SAVE_PAGE_STRING_SIZE];
 
 // The definitions of the Load Game screen
 
@@ -821,7 +822,8 @@ void M_LoadSelect(int choice)
   // CPhipps - Modified so savegame filename is worked out only internal
   //  to g_game.c, this only passes the slot.
 
-  G_LoadGame(choice + save_page * load_end, false); // killough 3/16/98, 5/15/98: add slot, cmd
+  // killough 3/16/98, 5/15/98: add slot, cmd
+  G_LoadGame(choice + save_page * g_menu_save_page_size, false);
   M_ClearMenus();
 }
 
@@ -907,7 +909,7 @@ void M_ReadSaveStrings(void)
 
     /* killough 3/22/98
      * cph - add not-demoplayback parameter */
-    name = dsda_SaveGameName(i + save_page * load_end, false);
+    name = dsda_SaveGameName(i + save_page * g_menu_save_page_size, false);
     fp = fopen(name,"rb");
     free(name);
     if (!fp) {   // Ty 03/27/98 - externalized:
@@ -955,7 +957,7 @@ void M_DrawSave(void)
 //
 static void M_DoSave(int slot)
 {
-  G_SaveGame(slot + save_page * load_end, savegamestrings[slot]);
+  G_SaveGame(slot + save_page * g_menu_save_page_size, savegamestrings[slot]);
   M_ClearMenus();
 
   // PICK QUICKSAVE SLOT YET?

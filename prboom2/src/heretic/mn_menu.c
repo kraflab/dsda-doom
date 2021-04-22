@@ -34,6 +34,8 @@
 #define SFX_VOL_INDEX 1
 #define MUS_VOL_INDEX 3
 
+extern int g_menu_save_page_size;
+
 static int FontABaseLump;
 static int FontBBaseLump;
 static int SkullBaseLump;
@@ -92,11 +94,11 @@ void MN_Init(void)
 
   LoadDef.x = 70;
   LoadDef.y = 30;
-  LoadDef.numitems = 6;
+  LoadDef.numitems = g_menu_save_page_size;
 
   SaveDef.x = 70;
   SaveDef.y = 30;
-  SaveDef.numitems = 6;
+  SaveDef.numitems = g_menu_save_page_size;
 
   EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
   EpisodeMenu[1].alttext = "HELL'S MAW";
@@ -323,13 +325,16 @@ extern char savegamestrings[10][SAVESTRINGSIZE];
 static void MN_DrawFileSlots(int x, int y)
 {
   int i;
+  extern char save_page_string[];
 
-  for (i = 0; i < 6; i++)
+  for (i = 0; i < g_menu_save_page_size; i++)
   {
     V_DrawNamePatch(x, y, 0, DEH_String("M_FSLOT"), CR_DEFAULT, VPT_STRETCH);
     MN_DrTextA(savegamestrings[i], x + 5, y + 5);
     y += ITEM_HEIGHT;
   }
+
+  MN_DrTextA(save_page_string, x + 5, y + 5);
 }
 
 void MN_DrawLoad(void)

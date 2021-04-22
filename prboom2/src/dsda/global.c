@@ -107,6 +107,7 @@ int g_cr_blue;
 
 const char* g_menu_flat;
 patchnum_t* g_menu_font;
+int g_menu_save_page_size;
 int g_menu_font_spacing;
 int g_menu_cr_title;
 int g_menu_cr_set;
@@ -213,6 +214,7 @@ static void dsda_InitDoom(void) {
 
   g_menu_flat = "FLOOR4_6";
   g_menu_font = hu_font;
+  g_menu_save_page_size = 7;
   g_menu_font_spacing = -1;
   g_menu_cr_title = CR_GOLD;
   g_menu_cr_set = CR_GREEN;
@@ -343,6 +345,7 @@ static void dsda_InitHeretic(void) {
 
   g_menu_flat = "FLOOR30";
   g_menu_font = hu_font2;
+  g_menu_save_page_size = 5;
   g_menu_font_spacing = 0;
   g_menu_cr_title = g_cr_gold;
   g_menu_cr_set = g_cr_green;
