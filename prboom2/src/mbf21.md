@@ -235,29 +235,29 @@ In this example:
 | NOAUTOFIRE     | Weapon won't autofire when swapped to            |
 | FLEEMELEE      | Monsters consider it a melee weapon              |
 | AUTOSWITCHFROM | Can be switched away from when ammo is picked up |
-| AUTOSWITCHTO   | Can be switch to when ammo is picked up          |
+| NOAUTOSWITCHTO | Cannot be switched to when ammo is picked up     |
 
 MBF21 defaults:
 
-| Weapon          | Flags                       |
-|-----------------|-----------------------------|
-| Fist            | FLEEMELEE+AUTOSWITCHFROM    |
-| Pistol          | AUTOSWITCHFROM+AUTOSWITCHTO |
-| Shotgun         | AUTOSWITCHTO                |
-| Chaingun        | AUTOSWITCHTO                |
-| Rocket Launcher | NOAUTOFIRE+AUTOSWITCHTO     |
-| Plasma Rifle    | AUTOSWITCHTO                |
-| BFG             | NOAUTOFIRE+AUTOSWITCHTO     |
-| Chainsaw        | NOTHRUST+FLEEMELEE          |
-| Super Shotgun   | AUTOSWITCHTO                |
+| Weapon          | Flags                                   |
+|-----------------|-----------------------------------------|
+| Fist            | FLEEMELEE+AUTOSWITCHFROM+NOAUTOSWITCHTO |
+| Pistol          | AUTOSWITCHFROM                          |
+| Shotgun         |                                         |
+| Chaingun        |                                         |
+| Rocket Launcher | NOAUTOFIRE                              |
+| Plasma Rifle    |                                         |
+| BFG             | NOAUTOFIRE                              |
+| Chainsaw        | NOTHRUST+FLEEMELEE+NOAUTOSWITCHTO       |
+| Super Shotgun   |                                         |
 
 #### Ammo pickup weapon autoswitch changes
 
 - [PR](https://github.com/kraflab/dsda-doom/pull/26)
-- Weapon autoswitch on ammo pickup now accounts for the ammo per shot of a weapon, as well as the `AUTOSWITCHTO` and `AUTOSWITCHFROM` weapon flags, allowing more accuracy and customization of this behaviour.
+- Weapon autoswitch on ammo pickup now accounts for the ammo per shot of a weapon, as well as the `NOAUTOSWITCHTO` and `AUTOSWITCHFROM` weapon flags, allowing more accuracy and customization of this behaviour.
 - If the current weapon is enabled for `AUTOSWITCHFROM` and the player picks up ammo for a different weapon, autoswitch will occur for the highest ranking weapon (by index) matching these conditions:
   - player has the weapon
-  - weapon is enabled for `AUTOSWITCHTO`
+  - weapon is not flagged with `NOAUTOSWITCHTO`
   - weapon uses the ammo that was picked up
   - player did not have enough ammo to fire the weapon before
   - player now has enough ammo to fire the weapon

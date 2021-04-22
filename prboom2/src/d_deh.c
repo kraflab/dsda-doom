@@ -1223,7 +1223,7 @@ static const struct deh_flag_s deh_weaponflags_mbf21[] = {
   { "NOAUTOFIRE",     WPF_NOAUTOFIRE }, // weapon won't autofire in A_WeaponReady
   { "FLEEMELEE",      WPF_FLEEMELEE }, // monsters consider it a melee weapon
   { "AUTOSWITCHFROM", WPF_AUTOSWITCHFROM }, // can be switched away from when ammo is picked up
-  { "AUTOSWITCHTO",   WPF_AUTOSWITCHTO }, // can be switched to when ammo is picked up
+  { "NOAUTOSWITCHTO", WPF_NOAUTOSWITCHTO }, // cannot be switched to when ammo is picked up
   { NULL }
 };
 
