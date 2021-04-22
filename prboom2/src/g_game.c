@@ -3558,6 +3558,8 @@ void G_BeginRecording (void)
   dsda_WriteToDemo(demostart, demo_p - demostart);
   dsda_ContinueKeyFrame();
 
+  R_DemoEx_ResetMLook();
+
   free(demostart);
 }
 
