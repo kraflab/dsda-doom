@@ -59,7 +59,7 @@ typedef struct dsda_options {
   int comp_maxhealth;
   int comp_translucency;
   int comp_ledgeblock;
-  // int comp_30;
+  int comp_friendlyspawn;
   // int comp_31;
   // int comp_32;
 } dsda_options_t;

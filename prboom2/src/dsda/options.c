@@ -94,7 +94,8 @@ static const dsda_options_t default_mbf_options = {
   // .comp_ouchface = 1,
   // .comp_maxhealth = 0,
   // .comp_translucency = 0,
-  // .comp_ledgeblock = 0
+  // .comp_ledgeblock = 0,
+  // .comp_friendlyspawn = 1
 };
 
 static const dsda_options_t default_latest_options = {
@@ -139,7 +140,8 @@ static const dsda_options_t default_latest_options = {
   .comp_ouchface = 0,
   .comp_maxhealth = 0,
   .comp_translucency = 0,
-  .comp_ledgeblock = 1
+  .comp_ledgeblock = 1,
+  .comp_friendlyspawn = 1
 };
 
 static dsda_options_t mbf_options;
@@ -186,6 +188,7 @@ static dsda_option_t option_list[] = {
   { "comp_respawnfix", &mbf_options.comp_respawn, 0, 1 },
   { "comp_soul", &mbf_options.comp_soul, 0, 1 },
   { "comp_ledgeblock", &mbf_options.comp_ledgeblock, 0, 1 },
+  { "comp_friendlyspawn", &mbf_options.comp_friendlyspawn, 0, 1 },
   { 0 }
 };
 

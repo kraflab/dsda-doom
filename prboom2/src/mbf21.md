@@ -76,12 +76,6 @@ This is proof-of-concept implemented in dsda-doom.
 - [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_inter.cpp#L971)
 - Why? Needs investigation.
 
-#### A_Spawn friendliness inheritance
-- Changed in pr+, but not in EE.
-- [code](https://github.com/kraflab/dsda-doom/blob/6006aa42d3fba0ad2822ea35b144a921678821bf/prboom2/src/p_enemy.c#L2894-L2897)
-- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/a_general.cpp#L189)
-- Why? Needs investigation.
-
 #### A_Mushroom changes
 - Changed in pr+, reverted for mbf21.
 - [commit](https://github.com/kraflab/dsda-doom/commit/a330db45dee7f255510f6b2c06006e97dc04d578)
@@ -111,6 +105,9 @@ This is proof-of-concept implemented in dsda-doom.
 - comp_ledgeblock: [commit](https://github.com/kraflab/dsda-doom/commit/4423cbcf8580e4d3839ddf4403b1fb4a0f993507)
   - Ledges block ground enemies
   - Exception: movement due to scrolling / pushers / pullers disables comp_ledgeblock for the next xy movement: [commit](https://github.com/kraflab/dsda-doom/commit/db8c3d606ed23dfb6b2408c4ddbf0af91d33f3de)
+- comp_friendlyspawn: [PR](https://github.com/kraflab/dsda-doom/pull/34)
+  - When on: A_Spawn new thing inherits friend flag from source thing.
+  - When off: A_Spawn new thing keeps its default friend flag.
 
 Summary of comp flags since mbf in pr+ and changes:
 
@@ -126,6 +123,7 @@ Summary of comp flags since mbf in pr+ and changes:
 | comp_maxhealth-    | 26    | 0       | Max health in deh only applies to potions     |
 | comp_translucency- | 27    | 0       | Disable some predefined translucency          |
 | comp_ledgeblock    | 28    | 1       | Ledges block ground enemies                   |
+| comp_friendlyspawn | 29    | 1       | A_Spawn new thing inherits friendliness       |
 
 - Comp options marked with a `-` have been deoptionalized in mbf21 (forced to `0`). Many of these have nothing to do with demo compatibility - others are simple bug fixes.
 - Comp options marked with a `*` are already implemented in EE.

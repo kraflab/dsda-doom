@@ -2626,8 +2626,8 @@ void G_Compatibility(void)
     { boom_compatibility_compatibility, prboom_6_compatibility },
     // comp_ledgeblock - ground monsters are blocked by ledges
     { boom_compatibility, mbf21_compatibility },
-    // comp_placeholder_30 - Not defined yet
-    { 255, 255 },
+    // comp_friendlyspawn - A_Spawn new mobj inherits friendliness
+    { prboom_1_compatibility, mbf21_compatibility },
     // comp_placeholder_31 - Not defined yet
     { 255, 255 },
     // comp_placeholder_32 - Not defined yet
@@ -2771,6 +2771,7 @@ void G_ReloadDefaults(void)
     comp[comp_maxhealth] = options->comp_maxhealth;
     comp[comp_translucency] = options->comp_translucency;
     comp[comp_ledgeblock] = options->comp_ledgeblock;
+    comp[comp_friendlyspawn] = options->comp_friendlyspawn;
   }
 
   G_Compatibility();
