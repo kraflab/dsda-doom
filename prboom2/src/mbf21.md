@@ -109,6 +109,8 @@ This is proof-of-concept implemented in dsda-doom.
 
 #### New comp flags
 - comp_ledgeblock: [commit](https://github.com/kraflab/dsda-doom/commit/4423cbcf8580e4d3839ddf4403b1fb4a0f993507)
+  - Ledges block ground enemies
+  - Exception: movement due to scrolling / pushers / pullers disables comp_ledgeblock for the next xy movement: [commit](https://github.com/kraflab/dsda-doom/commit/db8c3d606ed23dfb6b2408c4ddbf0af91d33f3de)
 
 Summary of comp flags since mbf in pr+ and changes:
 
