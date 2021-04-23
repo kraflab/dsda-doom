@@ -238,6 +238,7 @@
 enum {
   MIF_FALLING = 1,      // Object is falling
   MIF_ARMED = 2,        // Object is armed (for MF_TOUCHY objects)
+  MIF_SCROLLING = 4,    // Object is affected by scroller / pusher / puller
 };
 
 // heretic

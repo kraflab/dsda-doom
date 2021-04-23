@@ -2938,6 +2938,7 @@ void T_Scroll(scroll_t *s)
             // non-floating, and clipped.
             thing->momx += dx;
             thing->momy += dy;
+            thing->intflags |= MIF_SCROLLING;
           }
       break;
 
@@ -3446,6 +3447,7 @@ static dboolean PIT_PushThing(mobj_t* thing)
           pushangle >>= ANGLETOFINESHIFT;
           thing->momx += FixedMul(speed,finecosine[pushangle]);
           thing->momy += FixedMul(speed,finesine[pushangle]);
+          thing->intflags |= MIF_SCROLLING;
         }
     }
   return true;
@@ -3575,6 +3577,7 @@ void T_Pusher(pusher_t *p)
             }
         thing->momx += xspeed<<(FRACBITS-PUSH_FACTOR);
         thing->momy += yspeed<<(FRACBITS-PUSH_FACTOR);
+        thing->intflags |= MIF_SCROLLING;
         }
 }
 

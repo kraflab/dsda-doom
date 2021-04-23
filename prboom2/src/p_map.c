@@ -1021,7 +1021,10 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
      */
     if (!(thing->flags & (MF_DROPOFF|MF_FLOAT)))
     {
-      if (comp[comp_dropoff] || comp[comp_ledgeblock])
+      dboolean ledgeblock = comp[comp_ledgeblock] &&
+                            !(mbf21 && thing->intflags & MIF_SCROLLING);
+
+      if (comp[comp_dropoff] || ledgeblock)
       {
         // e6y
         // Fix demosync bug in mbf compatibility mode
@@ -1033,7 +1036,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
         // http://www.doomworld.com/idgames/index.php?id=11138
         if (
           (
-            comp[comp_ledgeblock] ||
+            ledgeblock ||
             !dropoff ||
             (
               !prboom_comp[PC_NO_DROPOFF].state &&
