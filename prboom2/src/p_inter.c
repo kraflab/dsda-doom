@@ -745,8 +745,12 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   // heretic
   target->flags2 &= ~MF2_PASSMOBJ;
 
-  if (compatibility_level == mbf_compatibility &&
-      !prboom_comp[PC_MBF_REMOVE_THINKER_IN_KILLMOBJ].state)
+  if (
+    mbf21 || (
+      compatibility_level == mbf_compatibility &&
+      !prboom_comp[PC_MBF_REMOVE_THINKER_IN_KILLMOBJ].state
+    )
+  )
   {
     // killough 8/29/98: remove from threaded list
     P_UpdateThinker(&target->thinker);
