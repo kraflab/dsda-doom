@@ -27,7 +27,7 @@
 #include "s_sound.h"
 #include "am_map.h"
 
-#include "dsda_mobj_extension.h"
+#include "dsda/mobj_extension.h"
 #include "dsda/ghost.h"
 #include "dsda/hud.h"
 #include "dsda/key_frame.h"

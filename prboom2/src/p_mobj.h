@@ -50,7 +50,7 @@
 // Needs precompiled tables/data structures.
 #include "info.h"
 
-#include "dsda_mobj_extension.h"
+#include "dsda/mobj_extension.h"
 
 //
 // NOTES: mobj_t
