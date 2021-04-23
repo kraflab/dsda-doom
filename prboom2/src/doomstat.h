@@ -123,7 +123,7 @@ enum {
 
   // mbf21
   comp_ledgeblock,
-  comp_placeholder_30,
+  comp_friendlyspawn,
   comp_placeholder_31,
   comp_placeholder_32,
   // and more!
