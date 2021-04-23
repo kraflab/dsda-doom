@@ -53,6 +53,10 @@ This is proof-of-concept implemented in dsda-doom.
 - Already fixed in pr+ / EE.
 - [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_sight.c#L408)
 
+#### P_InterceptVector precision / overflow fix
+- Already fixed in pr+ / EE.
+- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_maputl.c#L161-L166)
+
 #### Fix generalized crusher walkover lines
 - Already fixed in EE, but not in pr+.
 - [commit](https://github.com/kraflab/dsda-doom/commit/76776f721b5d1d8a1a0ae95daab525cf8183ce44)
@@ -65,11 +69,6 @@ This is proof-of-concept implemented in dsda-doom.
 - Already fixed in pr+, but not in EE.
 - [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_map.c#L1037)
 - [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_map.cpp#L1342)
-
-#### P_InterceptVector precision / overflow fix
-- Already fixed in pr+, but not in EE.
-- [code](https://github.com/kraflab/dsda-doom/blob/cd2ce9f532a80b871f0fdef2ae3ce6331b6e47b4/prboom2/src/p_maputl.c#L161-L166)
-- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_maputl.cpp#L275)
 
 #### P_KillMobj thinker updates
 - Changed in pr+, but not in EE.
