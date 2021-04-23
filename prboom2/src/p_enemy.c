@@ -2865,17 +2865,17 @@ void A_Mushroom(mobj_t *actor)
   // Now launch mushroom cloud
   for (i = -n; i <= n; i += 8)
     for (j = -n; j <= n; j += 8)
-      {
-  mobj_t target = *actor, *mo;
-  target.x += i << FRACBITS;    // Aim in many directions from source
-  target.y += j << FRACBITS;
-  target.z += P_AproxDistance(i,j) * misc1;         // Aim up fairly high
-  mo = P_SpawnMissile(actor, &target, MT_FATSHOT);  // Launch fireball
-  mo->momx = FixedMul(mo->momx, misc2);
-  mo->momy = FixedMul(mo->momy, misc2);             // Slow down a bit
-  mo->momz = FixedMul(mo->momz, misc2);
-  mo->flags &= ~MF_NOGRAVITY;   // Make debris fall under gravity
-      }
+    {
+      mobj_t target = *actor, *mo;
+      target.x += i << FRACBITS;    // Aim in many directions from source
+      target.y += j << FRACBITS;
+      target.z += P_AproxDistance(i,j) * misc1;         // Aim up fairly high
+      mo = P_SpawnMissile(actor, &target, MT_FATSHOT);  // Launch fireball
+      mo->momx = FixedMul(mo->momx, misc2);
+      mo->momy = FixedMul(mo->momy, misc2);             // Slow down a bit
+      mo->momz = FixedMul(mo->momz, misc2);
+      mo->flags &= ~MF_NOGRAVITY;   // Make debris fall under gravity
+    }
 }
 
 //
