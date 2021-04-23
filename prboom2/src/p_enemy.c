@@ -2842,17 +2842,23 @@ void A_Detonate(mobj_t *mo)
 
 void A_Mushroom(mobj_t *actor)
 {
-  int i, j, n = actor->info->damage;
+  int i, j, n;
 
   // Mushroom parameters are part of code pointer's state
-  dboolean mbf = (compatibility_level == mbf_compatibility &&
-    !prboom_comp[PC_DO_NOT_USE_MISC12_FRAME_PARAMETERS_IN_A_MUSHROOM].state);
-  fixed_t misc1 = ((mbf && actor->state->misc1) ? actor->state->misc1 : FRACUNIT*4);
-  fixed_t misc2 = ((mbf && actor->state->misc2) ? actor->state->misc2 : FRACUNIT/2);
+  dboolean use_misc;
+  fixed_t misc1, misc2;
 
   if (compatibility_level < lxdoom_1_compatibility &&
       !prboom_comp[PC_APPLY_MBF_CODEPOINTERS_TO_ANY_COMPLEVEL].state)
     return;
+
+  use_misc = mbf21 || (
+    compatibility_level == mbf_compatibility &&
+    !prboom_comp[PC_DO_NOT_USE_MISC12_FRAME_PARAMETERS_IN_A_MUSHROOM].state
+  );
+  misc1 = ((use_misc && actor->state->misc1) ? actor->state->misc1 : FRACUNIT * 4);
+  misc2 = ((use_misc && actor->state->misc2) ? actor->state->misc2 : FRACUNIT / 2);
+  n = actor->info->damage;
 
   A_Explode(actor);  // First make normal explosion
 
