@@ -71,10 +71,8 @@ This is proof-of-concept implemented in dsda-doom.
 - [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_map.cpp#L1342)
 
 #### P_KillMobj thinker updates
-- Changed in pr+, but not in EE.
-- [code](https://github.com/kraflab/dsda-doom/blob/6006aa42d3fba0ad2822ea35b144a921678821bf/prboom2/src/p_inter.c#L748-L753)
-- [EE](https://github.com/team-eternity/eternity/blob/0fc2a38da688d9f5001fef723b40ef92c5db0956/source/p_inter.cpp#L971)
-- Why? Needs investigation.
+- Changed in pr+, reverted for mbf21.
+- [commit](https://github.com/kraflab/dsda-doom/commit/c5d99305ef2aa79983f5e95ac6cdc13ce415b54c)
 
 #### A_Mushroom changes
 - Changed in pr+, reverted for mbf21.
