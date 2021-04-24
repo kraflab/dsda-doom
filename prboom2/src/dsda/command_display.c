@@ -28,6 +28,7 @@
 #include "command_display.h"
 
 #define INPUT_TEXT_X 198
+#define MAX_HISTORY 20
 
 typedef struct {
   signed char forwardmove;
@@ -98,10 +99,10 @@ void dsda_InitCommandDisplay(patchnum_t* font) {
   if (firsttime) {
     firsttime = 0;
 
-    command_history = calloc(dsda_command_history_size, sizeof(*command_history));
+    command_history = calloc(MAX_HISTORY, sizeof(*command_history));
     current_command = command_history;
 
-    for (i = 0; i < dsda_command_history_size; ++i) {
+    for (i = 0; i < MAX_HISTORY; ++i) {
       HUlib_initTextLine(
         &command_history[i].hu_text,
         INPUT_TEXT_X,
@@ -120,8 +121,8 @@ void dsda_InitCommandDisplay(patchnum_t* font) {
       }
     }
 
-    command_history[0].prev = &command_history[dsda_command_history_size - 1];
-    command_history[dsda_command_history_size - 1].next = &command_history[0];
+    command_history[0].prev = &command_history[MAX_HISTORY - 1];
+    command_history[MAX_HISTORY - 1].next = &command_history[0];
   }
 }
 
