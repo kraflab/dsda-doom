@@ -49,6 +49,7 @@ typedef struct dsda_command_display_s {
 
 int dsda_command_display;
 int dsda_command_history_size;
+int dsda_hide_empty_commands;
 
 static dsda_command_display_t* command_history;
 static dsda_command_display_t* current_command;
@@ -131,7 +132,7 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
 
   dsda_TicCmdToCommand(&command, cmd);
 
-  if (dsda_IsEmptyCommand(&command))
+  if (dsda_hide_empty_commands && dsda_IsEmptyCommand(&command))
     return;
 
   if (dsda_IsCommandEqual(&command, &current_command->command))

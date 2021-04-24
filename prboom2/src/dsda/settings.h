@@ -27,6 +27,7 @@ extern int dsda_cycle_ghost_colors;
 extern int dsda_exhud;
 extern int dsda_command_display;
 extern int dsda_command_history_size;
+extern int dsda_hide_empty_commands;
 extern int dsda_track_attempts;
 extern int dsda_wipe_at_full_speed;
 extern int dsda_fine_sensitivity;
