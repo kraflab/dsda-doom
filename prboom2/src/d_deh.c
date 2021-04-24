@@ -59,16 +59,6 @@
 
 static dboolean bfgcells_modified = false;
 
-void CheckDehConsistency(void)
-{
-  if (
-    bfgcells_modified &&
-    weaponinfo[MT_BFG].intflags & WIF_ENABLEAPS &&
-    bfgcells != weaponinfo[MT_BFG].ammopershot
-  )
-    I_Error("Mismatch between bfgcells and bfg ammo per shot modifications! Check your dehacked.");
-}
-
 // e6y: for compatibility with BOOM deh parser
 int deh_strcasecmp(const char *str1, const char *str2)
 {
@@ -1246,7 +1236,15 @@ static const char *deh_state[] = // CPhipps - static const*
   // This is set in a separate "Pointer" block from Dehacked
   "Codep Frame",      // pointer to first use of action (actionf_t)
   "Unknown 1",        // .misc1 (long)
-  "Unknown 2"         // .misc2 (long)
+  "Unknown 2",        // .misc2 (long)
+  "Args1",            // .args[0] (long)
+  "Args2",            // .args[1] (long)
+  "Args3",            // .args[2] (long)
+  "Args4",            // .args[3] (long)
+  "Args5",            // .args[4] (long)
+  "Args6",            // .args[5] (long)
+  "Args7",            // .args[6] (long)
+  "Args8",            // .args[7] (long)
 };
 
 // SFXINFO_STRUCT - Dehacked block name = "Sounds"
@@ -1355,6 +1353,7 @@ typedef struct {
   actionf_t cptr;  // actual pointer to the subroutine
   const char *lookup;  // mnemonic lookup string to be specified in BEX
   // CPhipps - const*
+  int argcount;  // [XA] number of mbf21 args this action uses, if any
 } deh_bexptr;
 
 static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
@@ -1449,18 +1448,18 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_Stop,            "A_Stop"},
 
   // [XA] New mbf21 codepointers
-  {A_SpawnFacing,         "A_SpawnFacing"},
-  {A_MonsterProjectile,   "A_MonsterProjectile"},
-  {A_MonsterBulletAttack, "A_MonsterBulletAttack"},
-  {A_RadiusDamage,        "A_RadiusDamage"},
-  {A_WeaponProjectile,    "A_WeaponProjectile"},
-  {A_WeaponBulletAttack,  "A_WeaponBulletAttack"},
-  {A_WeaponSound,         "A_WeaponSound"},
-  {A_WeaponJump,          "A_WeaponJump"},
-  {A_ConsumeAmmo,         "A_ConsumeAmmo"},
-  {A_CheckAmmo,           "A_CheckAmmo"},
-  {A_RefireTo,            "A_RefireTo"},
-  {A_GunFlashTo,          "A_GunFlashTo"},
+  {A_SpawnFacing,         "A_SpawnFacing", 2},
+  {A_MonsterProjectile,   "A_MonsterProjectile", 2},
+  {A_MonsterBulletAttack, "A_MonsterBulletAttack", 2},
+  {A_RadiusDamage,        "A_RadiusDamage", 2},
+  {A_WeaponProjectile,    "A_WeaponProjectile", 2},
+  {A_WeaponBulletAttack,  "A_WeaponBulletAttack", 2},
+  {A_WeaponSound,         "A_WeaponSound", 2},
+  {A_WeaponJump,          "A_WeaponJump", 2},
+  {A_ConsumeAmmo,         "A_ConsumeAmmo", 1},
+  {A_CheckAmmo,           "A_CheckAmmo", 2},
+  {A_RefireTo,            "A_RefireTo", 2},
+  {A_GunFlashTo,          "A_GunFlashTo", 2},
 
   // This NULL entry must be the last in the list
   {NULL,              "A_NULL"},  // Ty 05/16/98
@@ -2206,7 +2205,55 @@ static void deh_procFrame(DEHFILE *fpin, FILE* fpout, char *line)
                       states[indexnum].misc2 = (long)value; // long
                     }
                   else
-                    if (fpout) fprintf(fpout,"Invalid frame string index for '%s'\n",key);
+                    if (!deh_strcasecmp(key,deh_state[7]))  // Args1
+                      {
+                        if (fpout) fprintf(fpout," - args[0] = %ld\n",(long)value);
+                        states[indexnum].args[0] = (long)value; // long
+                      }
+                    else
+                      if (!deh_strcasecmp(key,deh_state[8]))  // Args2
+                        {
+                          if (fpout) fprintf(fpout," - args[1] = %ld\n",(long)value);
+                          states[indexnum].args[1] = (long)value; // long
+                        }
+                      else
+                        if (!deh_strcasecmp(key,deh_state[9]))  // Args3
+                          {
+                            if (fpout) fprintf(fpout," - args[2] = %ld\n",(long)value);
+                            states[indexnum].args[2] = (long)value; // long
+                          }
+                        else
+                          if (!deh_strcasecmp(key,deh_state[10]))  // Args4
+                            {
+                              if (fpout) fprintf(fpout," - args[3] = %ld\n",(long)value);
+                              states[indexnum].args[3] = (long)value; // long
+                            }
+                          else
+                            if (!deh_strcasecmp(key,deh_state[11]))  // Args5
+                              {
+                                if (fpout) fprintf(fpout," - args[4] = %ld\n",(long)value);
+                                states[indexnum].args[4] = (long)value; // long
+                              }
+                            else
+                              if (!deh_strcasecmp(key,deh_state[12]))  // Args6
+                                {
+                                  if (fpout) fprintf(fpout," - args[5] = %ld\n",(long)value);
+                                  states[indexnum].args[5] = (long)value; // long
+                                }
+                              else
+                                if (!deh_strcasecmp(key,deh_state[13]))  // Args7
+                                  {
+                                    if (fpout) fprintf(fpout," - args[6] = %ld\n",(long)value);
+                                    states[indexnum].args[6] = (long)value; // long
+                                  }
+                                else
+                                  if (!deh_strcasecmp(key,deh_state[14]))  // Args8
+                                    {
+                                      if (fpout) fprintf(fpout," - args[7] = %ld\n",(long)value);
+                                      states[indexnum].args[7] = (long)value; // long
+                                    }
+                                  else
+                                    if (fpout) fprintf(fpout,"Invalid frame string index for '%s'\n",key);
     }
   return;
 }
@@ -3467,4 +3514,42 @@ dboolean deh_GetData(char *s, char *k, uint_64_t *l, char **strval, FILE *fpout)
   // even if pointing at the zero byte.
 
   return(okrc);
+}
+
+//
+// CheckDehConsistency
+//
+void CheckDehConsistency(void)
+{
+  int i, j, maxargs;
+  const char *bexptr_name;
+
+  // sanity-check bfgcells and bfg ammopershot
+  if (
+    bfgcells_modified &&
+    weaponinfo[MT_BFG].intflags & WIF_ENABLEAPS &&
+    bfgcells != weaponinfo[MT_BFG].ammopershot
+  )
+    I_Error("Mismatch between bfgcells and bfg ammo per shot modifications! Check your dehacked.");
+
+  // ensure states don't use more mbf21 args than their
+  // action pointer expects, for future-proofing's sake
+  for (i = 0; i < num_states; i++)
+  {
+    bexptr_name = "(NULL)";
+    maxargs = 0;
+
+    for (j = 0; deh_bexptrs[j].cptr != NULL; ++j)
+      if (states[i].action == deh_bexptrs[j].cptr)
+      {
+        bexptr_name = deh_bexptrs[j].lookup;
+        maxargs = deh_bexptrs[j].argcount;
+        break;
+      }
+
+    for (j = MAXSTATEARGS - 1; j >= maxargs; j--)
+      if (states[i].args[j] != 0)
+        I_Error("Action %s on state %d expects no more than %d nonzero args (%d found). Check your dehacked.",
+          bexptr_name, i, maxargs, j+1);
+  }
 }
