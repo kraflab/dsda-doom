@@ -193,12 +193,7 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
 
 void dsda_DrawCommandDisplay(void) {
   int i;
-  dsda_command_display_t* command;
-
-  if (!dsda_CommandDisplay())
-    return;
-
-  command = current_command;
+  dsda_command_display_t* command = current_command;
 
   for (i = 0; i < dsda_command_history_size; ++i) {
     command->hu_text.y = 200 - g_st_height - 8 * (i + 1);
