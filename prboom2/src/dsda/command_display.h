@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Input Display
+//	DSDA Command Display
 //
 
 #ifndef __DSDA_COMMAND_DISPLAY__
