@@ -29,8 +29,17 @@
 
 #define INPUT_TEXT_X 198
 
+typedef struct {
+  signed char forwardmove;
+  signed char sidemove;
+  signed char angleturn;
+  char use;
+  char attack;
+  char change;
+} dsda_command_t;
+
 typedef struct dsda_command_display_s {
-  ticcmd_t cmd;
+  dsda_command_t command;
   int repeat;
   char text[200];
   hu_textline_t hu_text;
@@ -41,6 +50,43 @@ typedef struct dsda_command_display_s {
 static dsda_command_display_t* command_history;
 static dsda_command_display_t* current_command;
 static int dsda_command_history_size = 20;
+
+static void dsda_TicCmdToCommand(dsda_command_t* command, ticcmd_t* cmd) {
+  command->forwardmove = cmd->forwardmove;
+  command->sidemove = cmd->sidemove;
+  command->angleturn = (cmd->angleturn + 128) >> 8;
+
+  command->use = command->attack = command->change = 0;
+
+  if (cmd->buttons && !(cmd->buttons & BT_SPECIAL)) {
+    if (cmd->buttons & BT_ATTACK)
+      command->attack = 1;
+
+    if (cmd->buttons & BT_USE)
+      command->use = 1;
+
+    if (cmd->buttons & BT_CHANGE)
+      command->change = 1 + ((cmd->buttons & BT_WEAPONMASK) >> BT_WEAPONSHIFT);
+  }
+}
+
+static int dsda_IsEmptyCommand(dsda_command_t* command) {
+  return command->forwardmove == 0 &&
+         command->sidemove == 0 &&
+         command->angleturn == 0 &&
+         command->use == 0 &&
+         command->attack == 0 &&
+         command->change == 0;
+}
+
+static int dsda_IsCommandEqual(dsda_command_t* command, dsda_command_t* other) {
+  return command->forwardmove == other->forwardmove &&
+         command->sidemove == other->sidemove &&
+         command->angleturn == other->angleturn &&
+         command->use == other->use &&
+         command->attack == other->attack &&
+         command->change == other->change;
+}
 
 void dsda_InitCommandDisplay(patchnum_t* font) {
   int i;
@@ -74,29 +120,19 @@ void dsda_InitCommandDisplay(patchnum_t* font) {
 void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
   char* s;
   int length = 0;
-  signed char angleturn;
+  dsda_command_t command;
 
-  angleturn = (cmd->angleturn + 128) >> 8;
+  dsda_TicCmdToCommand(&command, cmd);
 
-  if (
-    angleturn == cmd->forwardmove &&
-    angleturn == cmd->sidemove &&
-    angleturn == 0 &&
-    cmd->buttons == 0
-  )
+  if (dsda_IsEmptyCommand(&command))
     return;
 
-  if (
-    current_command->cmd.angleturn == cmd->angleturn &&
-    current_command->cmd.forwardmove == cmd->forwardmove &&
-    current_command->cmd.sidemove == cmd->sidemove &&
-    current_command->cmd.buttons == cmd->buttons
-  )
+  if (dsda_IsCommandEqual(&command, &current_command->command))
     ++current_command->repeat;
   else {
     current_command->repeat = 0;
     current_command = current_command->next;
-    current_command->cmd = *cmd;
+    current_command->command = command;
   }
 
   current_command->text[0] = '\0';
@@ -106,46 +142,41 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
   else
     length += sprintf(current_command->text + length, "     ");
 
-  if (cmd->forwardmove > 0)
-    length += sprintf(current_command->text + length, "MF%2d ", cmd->forwardmove);
-  else if (cmd->forwardmove < 0)
-    length += sprintf(current_command->text + length, "MB%2d ", -cmd->forwardmove);
+  if (command.forwardmove > 0)
+    length += sprintf(current_command->text + length, "MF%2d ", command.forwardmove);
+  else if (command.forwardmove < 0)
+    length += sprintf(current_command->text + length, "MB%2d ", -command.forwardmove);
   else
     length += sprintf(current_command->text + length, "     ");
 
-  if (cmd->sidemove > 0)
-    length += sprintf(current_command->text + length, "SR%2d ", cmd->sidemove);
-  else if (cmd->sidemove < 0)
-    length += sprintf(current_command->text + length, "SL%2d ", -cmd->sidemove);
+  if (command.sidemove > 0)
+    length += sprintf(current_command->text + length, "SR%2d ", command.sidemove);
+  else if (command.sidemove < 0)
+    length += sprintf(current_command->text + length, "SL%2d ", -command.sidemove);
   else
     length += sprintf(current_command->text + length, "     ");
 
-  if (angleturn > 0)
-    length += sprintf(current_command->text + length, "TL%2d ", angleturn);
-  else if (angleturn < 0)
-    length += sprintf(current_command->text + length, "TR%2d ", -angleturn);
+  if (command.angleturn > 0)
+    length += sprintf(current_command->text + length, "TL%2d ", command.angleturn);
+  else if (command.angleturn < 0)
+    length += sprintf(current_command->text + length, "TR%2d ", -command.angleturn);
   else
     length += sprintf(current_command->text + length, "     ");
 
-  if (cmd->buttons) {
-    if (!(cmd->buttons & BT_SPECIAL)) {
-      if (cmd->buttons & BT_ATTACK)
-        length += sprintf(current_command->text + length, "A");
-      else
-        length += sprintf(current_command->text + length, " ");
+  if (command.attack)
+    length += sprintf(current_command->text + length, "A");
+  else
+    length += sprintf(current_command->text + length, " ");
 
-      if (cmd->buttons & BT_USE)
-        length += sprintf(current_command->text + length, "U");
-      else
-        length += sprintf(current_command->text + length, " ");
+  if (command.use)
+    length += sprintf(current_command->text + length, "U");
+  else
+    length += sprintf(current_command->text + length, " ");
 
-      if (cmd->buttons & BT_CHANGE) {
-        int weapon = (cmd->buttons & BT_WEAPONMASK) >> BT_WEAPONSHIFT;
-
-        length += sprintf(current_command->text + length, "C%d", weapon);
-      }
-    }
-  }
+  if (command.change)
+    length += sprintf(current_command->text + length, "C%d", command.change);
+  else
+    length += sprintf(current_command->text + length, "  ");
 
   HUlib_clearTextLine(&current_command->hu_text);
   s = current_command->text;
