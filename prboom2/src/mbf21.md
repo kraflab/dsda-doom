@@ -183,6 +183,13 @@ MBF21 defaults:
   - player did not have enough ammo to fire the weapon before
   - player now has enough ammo to fire the weapon
 
+#### New "Args" fields for DEHACKED states
+- [PR](https://github.com/kraflab/dsda-doom/pull/30)
+- Defines 8 new integer fields in the state table for use as codepointer arguments
+- Args are defined in dehacked by adding `Args1 = X`, `Args2 = X`... up to `Args8 = X` in the State definition.
+- Default value for every arg is 0
+- For future-proofing, if more nonzero args are defined on a state than its action pointer expects (e.g. defining Args3 on a state that uses A_WeaponSound), an error will be thrown on startup.
+
 #### New DEHACKED "Ammo per shot" Weapon field
 - [PR](https://github.com/kraflab/dsda-doom/pull/24)
 - Add `Ammo per shot = X` in the Weapon definition.
@@ -199,6 +206,7 @@ MBF21 defaults:
 
 #### New DEHACKED Codepointers
 - [PR](https://github.com/kraflab/dsda-doom/pull/20)
+- All new MBF21 pointers use the new "Args" fields for params, rather than misc1/misc2 fields
 - Actor pointers:
   - **A_SpawnFacing(type, height)** -- spawns an actor of `type` at `height` z units and sets its angle to the caller's angle.
   - **A_MonsterProjectile(type, angle)** -- generic monster projectile attack; always sets `tracer` field.
