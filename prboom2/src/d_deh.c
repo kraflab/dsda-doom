@@ -3536,20 +3536,16 @@ void CheckDehConsistency(void)
   {
     bexptr_name = "(NULL)";
     maxargs = 0;
-    j= -1;
 
-    do
-    {
-      ++j;
+    for (j = 0; deh_bexptrs[j].cptr != NULL; ++j)
       if (states[i].action == deh_bexptrs[j].cptr)
       {
         bexptr_name = deh_bexptrs[j].lookup;
         maxargs = deh_bexptrs[j].argcount;
         break;
       }
-    } while (deh_bexptrs[j].cptr != NULL);
 
-    for(j = MAXSTATEARGS - 1; j >= maxargs; j--)
+    for (j = MAXSTATEARGS - 1; j >= maxargs; j--)
       if (states[i].args[j] != 0)
         I_Error("Action %s on state %d expects no more than %d nonzero args (%d found). Check your dehacked.",
           bexptr_name, i, maxargs, j+1);
