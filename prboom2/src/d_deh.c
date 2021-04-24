@@ -59,16 +59,6 @@
 
 static dboolean bfgcells_modified = false;
 
-void CheckDehConsistency(void)
-{
-  if (
-    bfgcells_modified &&
-    weaponinfo[MT_BFG].intflags & WIF_ENABLEAPS &&
-    bfgcells != weaponinfo[MT_BFG].ammopershot
-  )
-    I_Error("Mismatch between bfgcells and bfg ammo per shot modifications! Check your dehacked.");
-}
-
 // e6y: for compatibility with BOOM deh parser
 int deh_strcasecmp(const char *str1, const char *str2)
 {
@@ -1362,6 +1352,7 @@ typedef struct {
   actionf_t cptr;  // actual pointer to the subroutine
   const char *lookup;  // mnemonic lookup string to be specified in BEX
   // CPhipps - const*
+  int argcount;  // [XA] number of mbf21 args this action uses, if any
 } deh_bexptr;
 
 static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
@@ -1456,18 +1447,18 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_Stop,            "A_Stop"},
 
   // [XA] New mbf21 codepointers
-  {A_SpawnFacing,         "A_SpawnFacing"},
-  {A_MonsterProjectile,   "A_MonsterProjectile"},
-  {A_MonsterBulletAttack, "A_MonsterBulletAttack"},
-  {A_RadiusDamage,        "A_RadiusDamage"},
-  {A_WeaponProjectile,    "A_WeaponProjectile"},
-  {A_WeaponBulletAttack,  "A_WeaponBulletAttack"},
-  {A_WeaponSound,         "A_WeaponSound"},
-  {A_WeaponJump,          "A_WeaponJump"},
-  {A_ConsumeAmmo,         "A_ConsumeAmmo"},
-  {A_CheckAmmo,           "A_CheckAmmo"},
-  {A_RefireTo,            "A_RefireTo"},
-  {A_GunFlashTo,          "A_GunFlashTo"},
+  {A_SpawnFacing,         "A_SpawnFacing", 2},
+  {A_MonsterProjectile,   "A_MonsterProjectile", 2},
+  {A_MonsterBulletAttack, "A_MonsterBulletAttack", 2},
+  {A_RadiusDamage,        "A_RadiusDamage", 2},
+  {A_WeaponProjectile,    "A_WeaponProjectile", 2},
+  {A_WeaponBulletAttack,  "A_WeaponBulletAttack", 2},
+  {A_WeaponSound,         "A_WeaponSound", 2},
+  {A_WeaponJump,          "A_WeaponJump", 2},
+  {A_ConsumeAmmo,         "A_ConsumeAmmo", 1},
+  {A_CheckAmmo,           "A_CheckAmmo", 2},
+  {A_RefireTo,            "A_RefireTo", 2},
+  {A_GunFlashTo,          "A_GunFlashTo", 2},
 
   // This NULL entry must be the last in the list
   {NULL,              "A_NULL"},  // Ty 05/16/98
@@ -3521,4 +3512,48 @@ dboolean deh_GetData(char *s, char *k, uint_64_t *l, char **strval, FILE *fpout)
   // even if pointing at the zero byte.
 
   return(okrc);
+}
+
+//
+// CheckDehConsistency
+//
+void CheckDehConsistency(void)
+{
+  int i, j, maxargs;
+  dboolean found;
+  const char *bexptr_name;
+
+  // sanity-check bfgcells and bfg ammopershot
+  if (
+    bfgcells_modified &&
+    weaponinfo[MT_BFG].intflags & WIF_ENABLEAPS &&
+    bfgcells != weaponinfo[MT_BFG].ammopershot
+  )
+    I_Error("Mismatch between bfgcells and bfg ammo per shot modifications! Check your dehacked.");
+
+  // ensure states don't use more mbf21 args than their
+  // action pointer expects, for future-proofing's sake
+  for (i = 0; i < num_states; i++)
+  {
+    bexptr_name = "(NULL)";
+    maxargs = 0;
+    found = FALSE;
+    j= -1;
+
+    do
+    {
+      ++j;
+      if (states[i].action == deh_bexptrs[j].cptr)
+      {
+        bexptr_name = deh_bexptrs[j].lookup;
+        maxargs = deh_bexptrs[j].argcount;
+        found = TRUE;
+      }
+    } while (!found && (deh_bexptrs[j].cptr != NULL));
+
+    for(j = MAXSTATEARGS - 1; j >= maxargs; j--)
+      if (states[i].args[j] != 0)
+        I_Error("Action %s on state %d expects no more than %d nonzero args (%d found). Check your dehacked.",
+          bexptr_name, i, maxargs, j+1);
+  }
 }
