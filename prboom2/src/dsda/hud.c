@@ -23,6 +23,7 @@
 #include "dsda.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
+#include "dsda/command_display.h"
 #include "hud.h"
 
 #define DSDA_TEXT_X 2
@@ -113,6 +114,7 @@ void dsda_InitHud(patchnum_t* font) {
   );
 
   dsda_InitExHud(font);
+  dsda_InitCommandDisplay(font);
 }
 
 void dsda_DrawIntermissionTime(void) {
@@ -136,6 +138,12 @@ void dsda_DrawIntermissionTime(void) {
 
 static dboolean dsda_ExHudVisible(void) {
   return dsda_ExHud() && // extended hud turned on
+         viewheight != SCREENHEIGHT && // not zoomed in
+         (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
+}
+
+static dboolean dsda_CommandDisplayVisible(void) {
+  return dsda_CommandDisplay() && // command display turned on
          viewheight != SCREENHEIGHT && // not zoomed in
          (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
 }
@@ -274,6 +282,7 @@ void dsda_DrawHud(void) {
   if (dsda_split.ticks > 0) HUlib_drawTextLine(&dsda_split.text, false);
 
   if (dsda_ExHudVisible()) dsda_DrawExHud();
+  if (dsda_CommandDisplayVisible()) dsda_DrawCommandDisplay();
 }
 
 static void dsda_EraseExHud(void) {
@@ -285,6 +294,7 @@ void dsda_EraseHud(void) {
   if (dsda_split.ticks > 0) HUlib_eraseTextLine(&dsda_split.text);
 
   dsda_EraseExHud();
+  dsda_EraseCommandDisplay();
 }
 
 void dsda_AddSplit(dsda_split_class_t split_class) {

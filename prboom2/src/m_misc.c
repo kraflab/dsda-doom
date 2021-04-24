@@ -749,6 +749,8 @@ default_t defaults[] =
     dsda_input_cycle_profile, { 0, -1, -1 } },
   { "input_cycle_palette", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_cycle_palette, { 0, -1, -1 } },
+  { "input_command_display", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_command_display, { 0, -1, -1 } },
 
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
@@ -1016,6 +1018,9 @@ default_t defaults[] =
   { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int, ss_stat },
   { "dsda_hide_horns", { &dsda_hide_horns }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_organized_saves", { &dsda_organized_saves }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_command_display", { &dsda_command_display }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_command_history_size", { &dsda_command_history_size }, { 10 }, 1, 20, def_int, ss_stat },
+  { "dsda_hide_empty_commands", { &dsda_hide_empty_commands }, { 1 }, 0, 1, def_bool, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

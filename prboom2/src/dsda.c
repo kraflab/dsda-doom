@@ -30,6 +30,7 @@
 #include "dsda/mobj_extension.h"
 #include "dsda/ghost.h"
 #include "dsda/hud.h"
+#include "dsda/command_display.h"
 #include "dsda/key_frame.h"
 #include "dsda/settings.h"
 #include "dsda.h"
@@ -271,6 +272,8 @@ void dsda_WatchCommand(void) {
     if (abs(cmd->sidemove) > TURBO_THRESHOLD || abs(cmd->forwardmove) > TURBO_THRESHOLD)
       dsda_turbo = true;
   }
+
+  dsda_AddCommandToCommandDisplay(&players[displayplayer].cmd);
 
   dsda_ExportGhostFrame();
 }
