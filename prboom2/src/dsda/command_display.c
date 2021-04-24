@@ -92,31 +92,36 @@ static int dsda_IsCommandEqual(dsda_command_t* command, dsda_command_t* other) {
 
 void dsda_InitCommandDisplay(patchnum_t* font) {
   int i;
+  static int firsttime = 1;
 
-  command_history = calloc(dsda_command_history_size, sizeof(*command_history));
-  current_command = command_history;
+  if (firsttime) {
+    firsttime = 0;
 
-  for (i = 0; i < dsda_command_history_size; ++i) {
-    HUlib_initTextLine(
-      &command_history[i].hu_text,
-      INPUT_TEXT_X,
-      200 - g_st_height - 8 * (i + 1),
-      font,
-      HU_FONTSTART,
-      g_cr_gray,
-      VPT_ALIGN_RIGHT_BOTTOM
-    );
+    command_history = calloc(dsda_command_history_size, sizeof(*command_history));
+    current_command = command_history;
 
-    command_history[i].hu_text.space_width = 5;
+    for (i = 0; i < dsda_command_history_size; ++i) {
+      HUlib_initTextLine(
+        &command_history[i].hu_text,
+        INPUT_TEXT_X,
+        200 - g_st_height - 8 * (i + 1),
+        font,
+        HU_FONTSTART,
+        g_cr_gray,
+        VPT_ALIGN_RIGHT_BOTTOM
+      );
 
-    if (i > 0) {
-      command_history[i].prev = &command_history[i - 1];
-      command_history[i - 1].next = &command_history[i];
+      command_history[i].hu_text.space_width = 5;
+
+      if (i > 0) {
+        command_history[i].prev = &command_history[i - 1];
+        command_history[i - 1].next = &command_history[i];
+      }
     }
-  }
 
-  command_history[0].prev = &command_history[dsda_command_history_size - 1];
-  command_history[dsda_command_history_size - 1].next = &command_history[0];
+    command_history[0].prev = &command_history[dsda_command_history_size - 1];
+    command_history[dsda_command_history_size - 1].next = &command_history[0];
+  }
 }
 
 void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
