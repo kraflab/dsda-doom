@@ -89,6 +89,7 @@ void HUlib_initTextLine(hu_textline_t* t, int x, int y,
   t->sc = sc;
   t->cm = cm;
   t->flags = flags;
+  t->space_width = 4;
   HUlib_clearTextLine(t);
 }
 
@@ -173,7 +174,7 @@ void HUlib_drawTextLine
       else if (c != ' ' && c >= l->sc && c <= 127)
         l->w += l->f[c - l->sc].width;
       else
-        l->w += 4;
+        l->w += l->space_width;
     }
   }
 
@@ -207,7 +208,7 @@ void HUlib_drawTextLine
     }
     else
     {
-      x += 4;
+      x += l->space_width;
       if (x >= BASE_WIDTH)
       break;
     }
