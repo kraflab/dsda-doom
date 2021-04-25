@@ -1182,18 +1182,11 @@ void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
   if (!mbf21 || !psp->state)
     return;
 
-  hspread    = psp->state->args[0];
-  vspread    = psp->state->args[1];
-  numbullets = psp->state->args[2];
-  damagebase = psp->state->args[3];
-  damagemod  = psp->state->args[4];
-
-  if (numbullets == 0)
-    numbullets = 1;
-  if (damagebase == 0)
-    damagebase = 5;
-  if (damagemod == 0)
-    damagemod = 3;
+  hspread    = ARG_DEFAULT(psp->state->args[0], 0);
+  vspread    = ARG_DEFAULT(psp->state->args[1], 0);
+  numbullets = ARG_DEFAULT(psp->state->args[2], 1);
+  damagebase = ARG_DEFAULT(psp->state->args[3], 5);
+  damagemod  = ARG_DEFAULT(psp->state->args[4], 3);
 
   P_BulletSlope(player->mo);
 

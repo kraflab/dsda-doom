@@ -175,4 +175,7 @@ enum patch_translation_e {
   VPT_NOOFFSET = 1024,
 };
 
+// [XA] Common macro for defining an arg's default value if zero
+#define ARG_DEFAULT(x, y) ((x) == 0 ? (y) : (x))
+
 #endif

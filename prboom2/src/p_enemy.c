@@ -3056,18 +3056,11 @@ void A_MonsterBulletAttack(mobj_t *actor)
   if (!mbf21 || !actor->target)
     return;
 
-  hspread    = actor->state->args[0];
-  vspread    = actor->state->args[1];
-  numbullets = actor->state->args[2];
-  damagebase = actor->state->args[3];
-  damagemod  = actor->state->args[4];
-
-  if (numbullets == 0)
-    numbullets = 1;
-  if (damagebase == 0)
-    damagebase = 3;
-  if (damagemod == 0)
-    damagemod = 5;
+  hspread    = ARG_DEFAULT(actor->state->args[0], 0);
+  vspread    = ARG_DEFAULT(actor->state->args[1], 0);
+  numbullets = ARG_DEFAULT(actor->state->args[2], 1);
+  damagebase = ARG_DEFAULT(actor->state->args[3], 3);
+  damagemod  = ARG_DEFAULT(actor->state->args[4], 5);
 
   A_FaceTarget(actor);
   S_StartSound(actor, actor->info->attacksound);
