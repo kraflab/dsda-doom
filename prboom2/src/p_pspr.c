@@ -1166,29 +1166,45 @@ void A_WeaponProjectile(player_t *player, pspdef_t *psp)
 //
 // A_WeaponBulletAttack
 // A parameterized player weapon bullet attack. Does not consume ammo.
-//   args[0]: Damage of attack (times 1d3)
-//   args[1]: Horizontal spread (degrees, in fixed point);
-//            if negative, also use 2/3 of this value for vertical spread
+//   args[0]: Horizontal spread (degrees, in fixed point)
+//   args[1]: Vertical spread (degrees, in fixed point)
+//   args[2]: Number of bullets to fire; if not set, defaults to 1
+//   args[3]: Base damage of attack (e.g. for 5d3, customize the 5); if not set, defaults to 5
+//   args[4]: Attack damage modulus (e.g. for 5d3, customize the 3); if not set, defaults to 3
 //
 void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
 {
-  int damage, angle, slope;
+  int hspread, vspread, numbullets, damagebase, damagemod;
+  int i, damage, angle, slope;
 
   CHECK_WEAPON_CODEPOINTER("A_WeaponBulletAttack", player);
 
   if (!mbf21 || !psp->state)
     return;
 
+  hspread    = psp->state->args[0];
+  vspread    = psp->state->args[1];
+  numbullets = psp->state->args[2];
+  damagebase = psp->state->args[3];
+  damagemod  = psp->state->args[4];
+
+  if (numbullets == 0)
+    numbullets = 1;
+  if (damagebase == 0)
+    damagebase = 5;
+  if (damagemod == 0)
+    damagemod = 3;
+
   P_BulletSlope(player->mo);
 
-  damage = (P_Random(pr_mbf21) % 3 + 1) * psp->state->args[0];
-  angle = (int)player->mo->angle + P_RandomHitscanAngle(pr_mbf21, psp->state->args[1]);
-  slope = bulletslope;
+  for (i = 0; i < numbullets; i++)
+  {
+    damage = (P_Random(pr_mbf21) % damagemod + 1) * damagebase;
+    angle = (int)player->mo->angle + P_RandomHitscanAngle(pr_mbf21, hspread);
+    slope = bulletslope + P_RandomHitscanSlope(pr_mbf21, vspread);
 
-  if (psp->state->args[1] < 0)
-    slope += P_RandomHitscanSlope(pr_mbf21, psp->state->args[1] * 2 / 3);
-
-  P_LineAttack(player->mo, angle, MISSILERANGE, slope, damage);
+    P_LineAttack(player->mo, angle, MISSILERANGE, slope, damage);
+  }
 }
 
 //

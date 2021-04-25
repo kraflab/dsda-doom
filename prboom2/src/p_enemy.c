@@ -3041,30 +3041,47 @@ void A_MonsterProjectile(mobj_t *actor)
 //
 // A_MonsterBulletAttack
 // A parameterized monster bullet attack.
-//   args[0]: Damage of attack (times 1d5)
-//   args[1]: Horizontal spread (degrees, in fixed point);
-//          if negative, also use 2/3 of this value for vertical spread
+//   args[0]: Horizontal spread (degrees, in fixed point)
+//   args[1]: Vertical spread (degrees, in fixed point)
+//   args[2]: Number of bullets to fire; if not set, defaults to 1
+//   args[3]: Base damage of attack (e.g. for 3d5, customize the 3); if not set, defaults to 3
+//   args[4]: Attack damage modulus (e.g. for 3d5, customize the 5); if not set, defaults to 5
 //
 void A_MonsterBulletAttack(mobj_t *actor)
 {
-  int damage, angle, slope, t;
+  int hspread, vspread, numbullets, damagebase, damagemod;
+  int aimslope, i, damage, angle, slope;
   int_64_t spread;
 
   if (!mbf21 || !actor->target)
     return;
 
+  hspread    = actor->state->args[0];
+  vspread    = actor->state->args[1];
+  numbullets = actor->state->args[2];
+  damagebase = actor->state->args[3];
+  damagemod  = actor->state->args[4];
+
+  if (numbullets == 0)
+    numbullets = 1;
+  if (damagebase == 0)
+    damagebase = 3;
+  if (damagemod == 0)
+    damagemod = 5;
+
   A_FaceTarget(actor);
   S_StartSound(actor, actor->info->attacksound);
 
-  damage = (P_Random(pr_mbf21) % 5 + 1) * actor->state->args[0];
+  aimslope = P_AimLineAttack(actor, actor->angle, MISSILERANGE, 0);
 
-  angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, actor->state->args[1]);;
-  slope = P_AimLineAttack(actor, angle, MISSILERANGE, 0);
+  for (i = 0; i < numbullets; i++)
+  {
+    damage = (P_Random(pr_mbf21) % damagemod + 1) * damagebase;
+    angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, hspread);
+    slope = aimslope + P_RandomHitscanSlope(pr_mbf21, vspread);
 
-  if (actor->state->args[1] < 0)
-    slope += P_RandomHitscanSlope(pr_mbf21, actor->state->args[1] * 2 / 3);
-
-  P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
+    P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
+  }
 }
 
 //
