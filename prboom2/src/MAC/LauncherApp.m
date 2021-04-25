@@ -14,7 +14,7 @@ static LauncherApp *LApp;
 
 - (NSString *)wadPath
 {
-	return [@"~/Library/Application Support/PrBoom-Plus" stringByExpandingTildeInPath];
+	return [@"~/.dsda-doom" stringByExpandingTildeInPath];
 }
 
 - (void)awakeFromNib
