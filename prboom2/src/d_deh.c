@@ -1246,6 +1246,12 @@ static const char *deh_state[] = // CPhipps - static const*
   "Args6",            // .args[5] (long)
   "Args7",            // .args[6] (long)
   "Args8",            // .args[7] (long)
+  "MBF21 Bits",       // .flags
+};
+
+static const struct deh_flag_s deh_stateflags_mbf21[] = {
+  { "SKILL5FAST", STATEF_SKILL5FAST }, // tics halve on nightmare skill
+  { NULL }
 };
 
 // SFXINFO_STRUCT - Dehacked block name = "Sounds"
@@ -2146,6 +2152,7 @@ static void deh_procFrame(DEHFILE *fpin, FILE* fpout, char *line)
   char inbuffer[DEH_BUFFERMAX];
   uint_64_t value;      // All deh values are ints or longs
   int indexnum;
+  char *strval;
 
   strncpy(inbuffer,line,DEH_BUFFERMAX-1);
 
@@ -2160,7 +2167,7 @@ static void deh_procFrame(DEHFILE *fpin, FILE* fpout, char *line)
       if (!dehfgets(inbuffer, sizeof(inbuffer), fpin)) break;
       lfstrip(inbuffer);
       if (!*inbuffer) break;         // killough 11/98
-      if (!deh_GetData(inbuffer,key,&value,NULL,fpout)) // returns TRUE if ok
+      if (!deh_GetData(inbuffer,key,&value,&strval,fpout)) // returns TRUE if ok
         {
           if (fpout) fprintf(fpout,"Bad data pair in '%s'\n",inbuffer);
           continue;
@@ -2255,7 +2262,27 @@ static void deh_procFrame(DEHFILE *fpin, FILE* fpout, char *line)
                                       states[indexnum].args[7] = (long)value; // long
                                     }
                                   else
-                                    if (fpout) fprintf(fpout,"Invalid frame string index for '%s'\n",key);
+                                    if (!deh_strcasecmp(key,deh_state[15]))  // MBF21 Bits
+                                      {
+                                        for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
+                                          const struct deh_flag_s *flag;
+
+                                          for (flag = deh_stateflags_mbf21; flag->name; flag++) {
+                                            if (deh_strcasecmp(strval, flag->name)) continue;
+
+                                            value |= flag->value;
+                                            break;
+                                          }
+
+                                          if (!flag->name && fpout) {
+                                            fprintf(fpout, "Could not find MBF21 frame bit mnemonic %s\n", strval);
+                                          }
+                                        }
+
+                                        states[indexnum].flags = value;
+                                      }
+                                    else
+                                      if (fpout) fprintf(fpout,"Invalid frame string index for '%s'\n",key);
     }
   return;
 }
