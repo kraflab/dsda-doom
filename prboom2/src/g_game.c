@@ -2828,13 +2828,17 @@ void G_SetFastParms(int fast_pending)
     }
 
     if ((fast = fast_pending))
+    {
       for (i = 0; i < num_states; i++)
         if (states[i].flags & STATEF_SKILL5FAST && (states[i].tics != 1 || demo_compatibility))
           states[i].tics >>= 1;  // don't change 1->0 since it causes cycles
+    }
     else
+    {
       for (i = 0; i < num_states; i++)
         if (states[i].flags & STATEF_SKILL5FAST)
           states[i].tics <<= 1;
+    }
   }
 }
 
