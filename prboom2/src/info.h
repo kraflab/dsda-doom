@@ -2633,7 +2633,11 @@ typedef struct
   statenum_t  nextstate;    /* linked list pointer to next state or zero   */
   long        misc1, misc2; /* apparently never used in DOOM               */
   long        args[MAXSTATEARGS]; // [XA] mbf21 args
+  int         flags;
 } state_t;
+
+// state flags
+#define STATEF_SKILL5FAST 0x00000001 // tics halve on nightmare skill
 
 /********************************************************************
  * Thing enumeration -- must match info.c                           *
@@ -3082,6 +3086,7 @@ typedef struct
   int projectile_group;
   int splash_group;
   int ripsound;
+  int altspeed;
 } mobjinfo_t;
 
 typedef struct
