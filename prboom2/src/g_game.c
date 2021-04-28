@@ -2820,24 +2820,21 @@ void G_SetFastParms(int fast_pending)
   }
 
   if (fast != fast_pending) {     /* only change if necessary */
+    for (i = 0; i < num_mobj_types; ++i)
+    {
+      int swap = mobjinfo[i].speed;
+      mobjinfo[i].speed = mobjinfo[i].altspeed;
+      mobjinfo[i].altspeed = swap;
+    }
+
     if ((fast = fast_pending))
-      {
-        for (i = 0; i < num_states; i++)
-          if (states[i].flags & STATEF_SKILL5FAST && (states[i].tics != 1 || demo_compatibility))
-            states[i].tics >>= 1;  // don't change 1->0 since it causes cycles
-        mobjinfo[MT_BRUISERSHOT].speed = 20*FRACUNIT;
-        mobjinfo[MT_HEADSHOT].speed = 20*FRACUNIT;
-        mobjinfo[MT_TROOPSHOT].speed = 20*FRACUNIT;
-      }
+      for (i = 0; i < num_states; i++)
+        if (states[i].flags & STATEF_SKILL5FAST && (states[i].tics != 1 || demo_compatibility))
+          states[i].tics >>= 1;  // don't change 1->0 since it causes cycles
     else
-      {
-        for (i = 0; i < num_states; i++)
-          if (states[i].flags & STATEF_SKILL5FAST)
-            states[i].tics <<= 1;
-        mobjinfo[MT_BRUISERSHOT].speed = 15*FRACUNIT;
-        mobjinfo[MT_HEADSHOT].speed = 10*FRACUNIT;
-        mobjinfo[MT_TROOPSHOT].speed = 10*FRACUNIT;
-      }
+      for (i = 0; i < num_states; i++)
+        if (states[i].flags & STATEF_SKILL5FAST)
+          states[i].tics <<= 1;
   }
 }
 
