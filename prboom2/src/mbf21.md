@@ -219,7 +219,7 @@ In this example:
 #### Fast speed
 
 - [PR](https://github.com/kraflab/dsda-doom/pull/37)
-- Sets the projectile speed for skill 5 / -fast.
+- Sets the thing speed for skill 5 / -fast.
 - Add `Fast speed = X` in the Thing definition.
 - `X` has the same units as the normal `Speed` field.
 
