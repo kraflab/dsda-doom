@@ -1048,7 +1048,7 @@ typedef struct
 // killough 8/9/98: make DEH_BLOCKMAX self-adjusting
 #define DEH_BLOCKMAX (sizeof deh_blocks/sizeof*deh_blocks)  // size of array
 #define DEH_MAXKEYLEN 32 // as much of any key as we'll look at
-#define DEH_MOBJINFOMAX 30 // number of mobjinfo configuration keys
+#define DEH_MOBJINFOMAX 31 // number of mobjinfo configuration keys
 
 // Put all the block header values, and the function to be called when that
 // one is encountered, in this array:
@@ -1121,6 +1121,7 @@ static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
   "Splash group",        // .splash_group
   "MBF21 Bits",          // .flags2
   "Rip sound",           // .ripsound
+  "Fast speed",          // .altspeed
 };
 
 // Strings that are used to indicate flags ("Bits" in mobjinfo)
@@ -1972,6 +1973,7 @@ static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
       mi->splash_group = mi->splash_group + SG_END;
       return;
     case 29: mi->ripsound = (int)value; return;
+    case 30: mi->altspeed = (int)value; return;
 
     default: return;
   }
