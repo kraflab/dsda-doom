@@ -216,6 +216,24 @@ In this example:
 - Add `Rip sound = X` in the Thing definition.
 - `X` is the sound index, as seen in other sound fields.
 
+#### Fast speed
+
+- [PR](https://github.com/kraflab/dsda-doom/pull/37)
+- Sets the projectile speed for skill 5 / -fast.
+- Add `Fast speed = X` in the Thing definition.
+- `X` has the same units as the normal `Speed` field.
+
+#### Frame Flags
+
+- [PR](https://github.com/kraflab/dsda-doom/pull/37)
+- Add `MBF21 Bits = X` in the Frame definition.
+- The format is the same as the existing thing `Bits` field.
+- Example: `MBF21 Bits = SKILL5FAST`.
+
+| Name       | Description                           |
+|------------|---------------------------------------|
+| SKILL5FAST | Tics halve on nightmare skill (demon) |
+
 #### Weapon Flags
 
 - [PR](https://github.com/kraflab/dsda-doom/pull/27)
