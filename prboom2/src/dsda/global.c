@@ -277,6 +277,9 @@ static void dsda_InitDoom(void) {
 
   mobjinfo[MT_BRUISER].projectile_group = PG_BARON;
   mobjinfo[MT_KNIGHT].projectile_group = PG_BARON;
+
+  for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; ++i)
+    states[i].flags |= STATEF_SKILL5FAST;
 }
 
 static void dsda_InitHeretic(void) {
