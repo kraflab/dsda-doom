@@ -2821,11 +2821,12 @@ void G_SetFastParms(int fast_pending)
 
   if (fast != fast_pending) {     /* only change if necessary */
     for (i = 0; i < num_mobj_types; ++i)
-    {
-      int swap = mobjinfo[i].speed;
-      mobjinfo[i].speed = mobjinfo[i].altspeed;
-      mobjinfo[i].altspeed = swap;
-    }
+      if (mobjinfo[i].altspeed != NO_ALTSPEED)
+      {
+        int swap = mobjinfo[i].speed;
+        mobjinfo[i].speed = mobjinfo[i].altspeed;
+        mobjinfo[i].altspeed = swap;
+      }
 
     if ((fast = fast_pending))
     {

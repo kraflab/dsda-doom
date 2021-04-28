@@ -3089,6 +3089,8 @@ typedef struct
   int altspeed;
 } mobjinfo_t;
 
+#define NO_ALTSPEED -1
+
 typedef struct
 {
     int doomednum;

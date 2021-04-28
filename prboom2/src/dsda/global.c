@@ -259,7 +259,7 @@ static void dsda_InitDoom(void) {
     mobjinfo[i].projectile_group = PG_DEFAULT;
     mobjinfo[i].splash_group = SG_DEFAULT;
     mobjinfo[i].ripsound = sfx_None;
-    mobjinfo[i].altspeed = mobjinfo[i].speed;
+    mobjinfo[i].altspeed = NO_ALTSPEED;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
@@ -399,7 +399,7 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].projectile_group = PG_DEFAULT;
     mobjinfo[j].splash_group = SG_DEFAULT;
     mobjinfo[j].ripsound = heretic_sfx_None;
-    mobjinfo[j].altspeed = mobjinfo[j].speed;
+    mobjinfo[j].altspeed = NO_ALTSPEED;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
