@@ -218,7 +218,7 @@ In this example:
 
 #### Fast speed
 
-- [PR](https://github.com/kraflab/dsda-doom/pull/37)
+- [PR](https://github.com/kraflab/dsda-doom/pull/37), [commit](https://github.com/kraflab/dsda-doom/commit/ad8304b7df2a6fde2c26f6241eb40e00e954cb58)
 - Sets the thing speed for skill 5 / -fast.
 - Add `Fast speed = X` in the Thing definition.
 - `X` has the same units as the normal `Speed` field.
