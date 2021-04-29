@@ -315,15 +315,6 @@ void gld_DrawStripsSky(void)
       glTranslatef(wall->skyyaw, wall->skyymid / skyymid_multiplier, 0.0f);
     }
 
-#if 0
-    {
-      float r = (float)(wall->seg->sidedef - sides) / (float)(numsides - 1);
-      float g = (float)wall->seg->linedef->iLineID / (float)(numlines - 1);
-      float b = (float)i / (float)(gld_drawinfo.num_items[GLDIT_SWALL] - 1);
-      glColor4f(r, g, b, 1.0f);
-    }
-#endif
-
     glBegin(GL_TRIANGLE_STRIP);
     glVertex3f(wall->glseg->x1,wall->ytop,wall->glseg->z1);
     glVertex3f(wall->glseg->x1,wall->ybottom,wall->glseg->z1);
@@ -1064,28 +1055,6 @@ int gld_BindFace(box_skybox_t *sb, int index)
   int lump;
   GLTexture *gltexture;
   char *name = sb->faces[index];
-
-#if 0
-  lump = W_CheckNumForName(name);
-  if (lump != -1)
-  {
-    gltexture = gld_RegisterPatch(lump, CR_DEFAULT, false);
-    gltexture->wrap_mode = GLEXT_CLAMP_TO_EDGE;
-    gld_BindPatch(gltexture, CR_DEFAULT);
-    return true;
-  }
-
-  //lump = R_FlatNumForName(name);
-  lump = (W_CheckNumForName)(name, ns_flats);
-  if (lump != -1)
-  {
-    lump -= firstflat;
-    gltexture = gld_RegisterFlat(lump, true);
-    gltexture->wrap_mode = GLEXT_CLAMP_TO_EDGE;
-    gld_BindFlat(gltexture);
-    return true;
-  }
-#endif
 
   lump = R_CheckTextureNumForName(name);
   if (lump != -1)

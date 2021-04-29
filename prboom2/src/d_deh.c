@@ -2741,20 +2741,7 @@ static void deh_procCheat(DEHFILE *fpin, FILE* fpout, char *line) // done
                 // Ty 03/14/98 - skip leading spaces
                 p = strval;
                 while (*p == ' ') ++p;
-                // Ty 03/16/98 - change to use a strdup and orphan the original
-                // Also has the advantage of allowing length changes.
-                // strncpy(cheat[iy].cheat,p,strlen(cheat[iy].cheat));
-#if 0
-                {    // killough 9/12/98: disable cheats which are prefixes of this one
-                  int i;
-                  for (i=0; cheat[i].cheat; i++)
-                    if (cheat[i].when & not_deh &&
-                        !strncasecmp(cheat[i].cheat,
-                                     cheat[iy].cheat,
-                                     strlen(cheat[i].cheat)) && i != iy)
-          cheat[i].deh_modified = true;
-                }
-#endif
+
                 //e6y: ability to ignore cheats in dehacked files.
                 if (deh_apply_cheats && !M_CheckParm("-nocheats"))
                 {

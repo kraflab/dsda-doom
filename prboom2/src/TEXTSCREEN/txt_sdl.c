@@ -503,17 +503,15 @@ static int TranslateKey(SDL_Keysym *sym)
         // Unicode characters beyond the ASCII range need to be
         // mapped up into textscreen's Unicode range.
 
-#if 0
-    // SDL2-TODO
-        if (sym->unicode < 128)
-        {
-            return sym->unicode;
-        }
-        else
-        {
-            return sym->unicode - 128 + TXT_UNICODE_BASE;
-        }
-#endif
+        // SDL2-TODO
+        // if (sym->unicode < 128)
+        // {
+        //     return sym->unicode;
+        // }
+        // else
+        // {
+        //     return sym->unicode - 128 + TXT_UNICODE_BASE;
+        // }
         return 0;
     }
     else
