@@ -974,7 +974,7 @@ default_t defaults[] =
    def_str,ss_none},
   {"getwad_cmdline", {NULL, &getwad_cmdline}, {0,""},UL,UL,
    def_str,ss_none},
-  {"demo_overwriteexisting", {&demo_overwriteexisting},  {1},0,1,
+  {"demo_overwriteexisting", {&demo_overwriteexisting},  {0},0,1,
    def_bool,ss_stat},
   {"quickstart_window_ms", {&quickstart_window_ms},  {0},0,1000,
    def_int,ss_stat},
