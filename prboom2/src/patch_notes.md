@@ -17,8 +17,10 @@
 - Can be used for playback analysis, tasing, practice, etc
 
 #### Miscellaneous
+- Change demo overwrite default to off
 - Remove deprecated laggy sleep option
 - Remove various unwelcome / secret configuration options
+- Remove option to turn demo footer off
 - Add mbf OPTIONS lump support
 - Add default map name fallback to automap
 - Add comp_respawnfix alias for cross-port OPTIONS support (EE)
@@ -30,5 +32,6 @@
 - Fix heretic scrolling floors also scrolling the ceiling
 - Fix dsda-doom save game header
 - Fix a bug where mouselook data was not reset when using demo restart
+- Fix an issue with wad lump loading - small performance improvement
 - Fix msvc build (xaser)
 - Fix macos launcher iwad directory mismatch (PBeGood4)
