@@ -3013,25 +3013,45 @@ void A_SpawnFacing(mobj_t *actor)
 // A parameterized monster projectile attack.
 //   args[0]: Type of actor to spawn
 //   args[1]: Angle (degrees, in fixed point), relative to calling actor's angle
+//   args[2]: Pitch (degrees, in fixed point), relative to calling actor's pitch; approximated
+//   args[3]: X/Y spawn offset, relative to calling actor's angle
+//   args[4]: Z spawn offset, relative to actor's default projectile fire height
 //
 void A_MonsterProjectile(mobj_t *actor)
 {
+  int type, angle, pitch, spawnofs_xy, spawnofs_z;
   mobj_t *mo;
   int an;
 
   if (!mbf21 || !actor->target || !actor->state->args[0])
     return;
 
+  type        = ARG_DEFAULT(actor->state->args[0], 0) - 1;
+  angle       = ARG_DEFAULT(actor->state->args[1], 0);
+  pitch       = ARG_DEFAULT(actor->state->args[2], 0);
+  spawnofs_xy = ARG_DEFAULT(actor->state->args[3], 0);
+  spawnofs_z  = ARG_DEFAULT(actor->state->args[4], 0);
+
   A_FaceTarget(actor);
-  mo = P_SpawnMissile(actor, actor->target, actor->state->args[0] - 1);
+  mo = P_SpawnMissile(actor, actor->target, type);
   if (!mo)
     return;
 
-  // adjust the angle by args[1];
-  mo->angle += (unsigned int)(((int_64_t)actor->state->args[1] << 16) / 360);
+  // adjust angle
+  mo->angle += (unsigned int)(((int_64_t)angle << 16) / 360);
   an = mo->angle >> ANGLETOFINESHIFT;
   mo->momx = FixedMul(mo->info->speed, finecosine[an]);
   mo->momy = FixedMul(mo->info->speed, finesine[an]);
+
+  // adjust pitch (approximated, using Doom's ye olde
+  // finetangent table; same method as monster aim)
+  mo->momz += FixedMul(mo->info->speed, DegToSlope(pitch));
+
+  // adjust position
+  an = (actor->angle - ANG90) >> ANGLETOFINESHIFT;
+  mo->x += FixedMul(spawnofs_xy, finecosine[an]);
+  mo->y += FixedMul(spawnofs_xy, finesine[an]);
+  mo->z += spawnofs_z;
 
   // always set the 'tracer' field, so this pointer
   // can be used to fire seeker missiles at will.
@@ -3051,7 +3071,6 @@ void A_MonsterBulletAttack(mobj_t *actor)
 {
   int hspread, vspread, numbullets, damagebase, damagemod;
   int aimslope, i, damage, angle, slope;
-  int_64_t spread;
 
   if (!mbf21 || !actor->target)
     return;

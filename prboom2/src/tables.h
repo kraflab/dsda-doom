@@ -106,4 +106,24 @@ inline static fixed_t AngleToFixed(angle_t a)
   return (fixed_t)(((uint_64_t)a << FRACBITS) / ANG1);
 }
 
+// [XA] Clamped angle->slope, for convenience
+inline static fixed_t AngleToSlope(int a)
+{
+  if (a > ANG90)
+    return finetangent[0];
+  else if (-a > ANG90)
+    return finetangent[FINEANGLES / 2 - 1];
+  else
+    return finetangent[(ANG90 - a) >> ANGLETOFINESHIFT];
+}
+
+// [XA] Ditto, using fixed-point-degrees input
+inline static fixed_t DegToSlope(fixed_t a)
+{
+  if (a >= 0)
+    return AngleToSlope(FixedToAngle(a));
+  else
+    return AngleToSlope(-(int)FixedToAngle(-a));
+}
+
 #endif
