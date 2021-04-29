@@ -815,7 +815,6 @@ void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
 
   for (pos = 0; pos < bufSize; pos += 4)
   {
-#if 1
     byte color;
 
     if (gl_hires_24bit_colormap)
@@ -826,7 +825,6 @@ void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
     buffer[pos+0] = playpal[colormap[color]*3+0];
     buffer[pos+1] = playpal[colormap[color]*3+1];
     buffer[pos+2] = playpal[colormap[color]*3+2];
-#endif
   }
 }
 
