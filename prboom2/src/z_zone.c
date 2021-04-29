@@ -265,8 +265,6 @@ void Z_DumpHistory(char *buf)
 
 #endif
 
-void Z_Close(void) { }
-
 void Z_Init(void) { }
 
 /* Z_Malloc
