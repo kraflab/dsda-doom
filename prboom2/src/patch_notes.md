@@ -7,7 +7,7 @@
 #### Save Organization
 - New option to let dsda-doom organize your saves
   - Save files will be separated based on the wad files you use
-  - The location will be old_place/save_files/iwad/pwad/...\
+  - The location will be old_place/save_files/iwad/pwad/...
   - Directories are created automatically
 - There are now pages in the save / load screens, giving you more file slots
 
