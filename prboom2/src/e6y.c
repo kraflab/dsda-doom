@@ -1324,7 +1324,7 @@ void I_midiOutSetVolumes(int volume)
   MMRESULT result;
   int calcVolume;
   MIDIOUTCAPS capabilities;
-  unsigned int i;
+  unsigned long long i;
 
   if (volume > 15)
     volume = 15;
