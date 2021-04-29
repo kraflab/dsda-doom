@@ -112,7 +112,7 @@ launcher_t launcher;
 
 launcher_enable_t launcher_enable;
 const char *launcher_enable_states[launcher_enable_count] = {"never", "smart", "always"};
-char *launcher_history[LAUNCHER_HISTORY_SIZE];
+const char *launcher_history[LAUNCHER_HISTORY_SIZE];
 
 static char launchercachefile[PATH_MAX];
 
