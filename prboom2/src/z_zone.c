@@ -290,10 +290,6 @@ void *(Z_Malloc)(size_t size, int tag, void **user
   memblock_t *block = NULL;
 
 #ifdef INSTRUMENTED
-#ifdef CHECKHEAP
-  Z_CheckHeap();
-#endif
-
   file_history[malloc_history][history_index[malloc_history]] = file;
   line_history[malloc_history][history_index[malloc_history]++] = line;
   history_index[malloc_history] &= ZONE_HISTORY-1;
@@ -409,9 +405,6 @@ void (Z_Free)(void *p
   memblock_t *block = (memblock_t *)((char *) p - HEADER_SIZE);
 
 #ifdef INSTRUMENTED
-#ifdef CHECKHEAP
-  Z_CheckHeap();
-#endif
   file_history[free_history][history_index[free_history]] = file;
   line_history[free_history][history_index[free_history]++] = line;
   history_index[free_history] &= ZONE_HISTORY-1;
@@ -519,12 +512,6 @@ void (Z_ChangeTag)(void *ptr, int tag
   if (tag == block->tag)
     return;
 
-#ifdef INSTRUMENTED
-#ifdef CHECKHEAP
-  Z_CheckHeap();
-#endif
-#endif
-
 #ifdef ZONEIDCHECK
   if (block->id != ZONEID)
     I_Error ("Z_ChangeTag: freed a pointer without ZONEID"
@@ -620,11 +607,3 @@ char *(Z_Strdup)(const char *s, int tag, void **user
 {
   return strcpy((Z_Malloc)(strlen(s)+1, tag, user DA(file, line)), s);
 }
-
-void (Z_CheckHeap)(
-#ifdef INSTRUMENTED
-       const char *file, int line
-#else
-       void
-#endif
-       ) { }

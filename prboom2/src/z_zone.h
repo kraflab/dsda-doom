@@ -79,7 +79,6 @@ void Z_Close(void);
 void *(Z_Calloc)(size_t n, size_t n2, int tag, void **user DA(const char *, int));
 void *(Z_Realloc)(void *p, size_t n, int tag, void **user DA(const char *, int));
 char *(Z_Strdup)(const char *s, int tag, void **user DA(const char *, int));
-void (Z_CheckHeap)(DAC(const char *,int));   // killough 3/22/98: add file/line info
 void Z_DumpHistory(char *);
 
 #ifdef INSTRUMENTED
@@ -92,7 +91,6 @@ void Z_DumpHistory(char *);
 #define Z_Strdup(a,b,c)    (Z_Strdup)   (a,b,c,  __FILE__,__LINE__)
 #define Z_Calloc(a,b,c,d)  (Z_Calloc)   (a,b,c,d,__FILE__,__LINE__)
 #define Z_Realloc(a,b,c,d) (Z_Realloc)  (a,b,c,d,__FILE__,__LINE__)
-#define Z_CheckHeap()      (Z_CheckHeap)(__FILE__,__LINE__)
 #endif
 
 /* cphipps 2001/11/18 -

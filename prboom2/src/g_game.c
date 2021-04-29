@@ -1001,7 +1001,6 @@ static void G_DoLoadLevel (void)
   if (!demoplayback) // Don't switch views if playing a demo
     displayplayer = consoleplayer;    // view the guy you are playing
   gameaction = ga_nothing;
-  Z_CheckHeap ();
 
   // clear cmd building stuff
   dsda_InputFlush();
@@ -2482,10 +2481,7 @@ static void G_DoSaveGame (dboolean menu)
   // killough 11/98: save revenant tracer state
   *save_p++ = (gametic-basetic) & 255;
 
-  // killough 3/22/98: add Z_CheckHeap after each call to ensure consistency
-  Z_CheckHeap();
   P_ArchivePlayers();
-  Z_CheckHeap();
 
   // phares 9/13/98: Move mobj_t->index out of P_ArchiveThinkers so the
   // indices can be used by P_ArchiveWorld when the sectors are saved.
@@ -2494,7 +2490,6 @@ static void G_DoSaveGame (dboolean menu)
   P_ThinkerToIndex();
 
   P_ArchiveWorld();
-  Z_CheckHeap();
   P_TrueArchiveThinkers();
 
   // phares 9/13/98: Move index->mobj_t out of P_ArchiveThinkers, simply
@@ -2502,14 +2497,11 @@ static void G_DoSaveGame (dboolean menu)
 
   P_IndexToThinker();
 
-  Z_CheckHeap();
   P_ArchiveRNG();    // killough 1/18/98: save RNG information
-  Z_CheckHeap();
   P_ArchiveMap();    // killough 1/22/98: save automap information
 
   *save_p++ = 0xe6;   // consistancy marker
 
-  Z_CheckHeap();
   doom_printf( "%s", M_WriteFile(name, savebuffer, save_p - savebuffer)
          ? s_GGSAVED /* Ty - externalised */
          : "Game save failed!"); // CPhipps - not externalised
