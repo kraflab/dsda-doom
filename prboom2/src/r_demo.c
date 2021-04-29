@@ -966,12 +966,17 @@ int CheckWadBufIntegrity(const char *buffer, size_t size)
   int i;
   unsigned int length;
   wadinfo_t *header;
-  filelump_t *fileinfo;
+  const filelump_t *fileinfo;
   int result = false;
 
   if (buffer && size > sizeof(*header))
   {
+    // This is dirty, but essentially there is a part of the buffer that is editable
+    // It would take too much work to take care of all the chained calls to fix this
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wcast-qual"
     header = (wadinfo_t*)buffer;
+    #pragma GCC diagnostic pop
     if (strncmp(header->identification, "IWAD", 4) == 0 ||
         strncmp(header->identification, "PWAD", 4) == 0)
     {
@@ -981,7 +986,7 @@ int CheckWadBufIntegrity(const char *buffer, size_t size)
 
       if (header->infotableofs + length <= size)
       {
-        fileinfo = (filelump_t*)(buffer + header->infotableofs);
+        fileinfo = (const filelump_t*)(buffer + header->infotableofs);
         for (i = 0; i < header->numlumps; i++, fileinfo++)
         {
           if (fileinfo->filepos < 0 ||
