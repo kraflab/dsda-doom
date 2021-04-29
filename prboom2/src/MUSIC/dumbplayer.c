@@ -227,13 +227,18 @@ static void db_render (void *dest, unsigned nsamp)
 {
   unsigned char *cdest = (unsigned char *)dest;
   unsigned nsampwrit = 0;
-  static sample_t **sig_samples;
-  static long sig_samples_size;
-
   if (db_playing && !db_paused)
   {
+#if ( DUMB_MAJOR_VERSION >= 2 )
+    sample_t **sig_samples;
+    long sig_samples_size;
+
     nsampwrit = duh_render_int(dsren, &sig_samples, &sig_samples_size,
                                16, 0, db_volume, db_delta, nsamp, dest);
+    destroy_sample_buffer(sig_samples);
+#else
+    nsampwrit = duh_render(dsren, 16, 0, db_volume, db_delta, nsamp, dest);
+#endif
     if (nsampwrit != nsamp)
     { // end of file
       // tracker formats can have looping imbedded in them, in which case
