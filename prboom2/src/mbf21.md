@@ -8,8 +8,6 @@ Tracked [here](https://trello.com/b/qyrnGsFs/mbf21).
 
 This is proof-of-concept implemented in dsda-doom.
 
----
-
 ## Sectors
 
 #### Instant death sector special
@@ -27,8 +25,6 @@ This is proof-of-concept implemented in dsda-doom.
 - [PR](https://github.com/kraflab/dsda-doom/pull/18)
 - Bit 13 turns on "kill monsters" flag for sectors - kills grounded monsters.
 
----
-
 ## Lines
 
 #### Block land monsters line flag
@@ -45,8 +41,6 @@ This is proof-of-concept implemented in dsda-doom.
 - 1024 is without control sector / acceleration.
 - 1025 uses control sector.
 - 1026 uses control sector + acceleration.
-
----
 
 ## Things
 
@@ -140,8 +134,6 @@ In this example:
 - Add `Fast speed = X` in the Thing definition.
 - `X` has the same units as the normal `Speed` field.
 
----
-
 ## Weapons
 
 #### Weapon Flags
@@ -197,8 +189,6 @@ MBF21 defaults:
 - Weapons WITHOUT this field set will use vanilla Doom semantics for all above behaviors.
 - For backwards-compatibility, setting the `BFG cells/shot` misc field will also set the BFG weapon's `Ammo per shot` field (but not vice-versa).
 
----
-
 ## Frames
 
 #### Frame Flags
@@ -235,8 +225,6 @@ MBF21 defaults:
   - **A_CheckAmmo(state, amount)** -- jumps to `state` if ammo is below `amount`; if `amount` is zero, use the weapon slot's `ammopershot` value instead
   - **A_RefireTo(state, noammocheck)** -- jumps to `state` if trigger is still held down; will also check ammo unless `noammocheck` is set
   - **A_GunFlashTo(state, nothirdperson)** -- sets the weapon's flash state to `state`; also sets the player's 3rd-person sprite to the player actor's firing frame unless `nothirdperson` is set
-
----
 
 ## Miscellaneous
 
