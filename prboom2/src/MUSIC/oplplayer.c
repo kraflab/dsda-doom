@@ -1354,11 +1354,7 @@ static const void *I_OPL_RegisterSong(const void *data, unsigned len)
     }
     mf.len = len;
     mf.pos = 0;
-    // This is required to interface with OPL (I think)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wcast-qual"
-    mf.data = (byte*)data;
-    #pragma GCC diagnostic pop
+    mf.data = data;
 
     // NSM: if a file has a miniscule timecode we have to not load it.
     // if it's 0, we'll hang in scheduling and never finish.  if it's
