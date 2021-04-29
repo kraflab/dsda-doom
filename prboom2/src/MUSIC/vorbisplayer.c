@@ -233,9 +233,6 @@ static unsigned parsetag (const char *str, int samplerate)
 
 static int vorb_init (int samplerate)
 {
-  TESTDLLLOAD ("libogg-0.dll", FALSE)
-  TESTDLLLOAD ("libvorbis-0.dll", FALSE)
-  TESTDLLLOAD ("libvorbisfile-3.dll", TRUE)
   vorb_samplerate_target = samplerate;
   return 1;
 }

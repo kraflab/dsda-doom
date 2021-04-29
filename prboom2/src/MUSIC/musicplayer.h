@@ -84,9 +84,4 @@ typedef struct
   void (*render)(void *dest, unsigned nsamp);
 } music_player_t;
 
-
-
-// helper for deferred load dll
-#define TESTDLLLOAD(a,b)
-
 #endif // MUSICPLAYER_H
