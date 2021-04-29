@@ -227,6 +227,7 @@ static void db_render (void *dest, unsigned nsamp)
 {
   unsigned char *cdest = (unsigned char *)dest;
   unsigned nsampwrit = 0;
+
   if (db_playing && !db_paused)
   {
 #if ( DUMB_MAJOR_VERSION >= 2 )
