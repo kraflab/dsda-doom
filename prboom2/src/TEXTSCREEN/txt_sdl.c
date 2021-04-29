@@ -901,7 +901,7 @@ void TXT_StringConcat(char *dest, const char *src, size_t dest_len)
 
 // On Windows, vsnprintf() is _vsnprintf().
 #ifdef _WIN32
-#if _MSC_VER < 1400 /* not needed for Visual Studio 2008 */
+#if !defined(_MSC_VER) || _MSC_VER < 1400 /* not needed for Visual Studio 2008 */
 #define vsnprintf _vsnprintf
 #endif
 #endif
