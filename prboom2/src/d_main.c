@@ -1716,9 +1716,6 @@ static void D_DoomMainSetup(void)
 #endif
   }
 
-
-  // 1/18/98 killough: Z_Init() call moved to i_main.c
-
   // CPhipps - move up netgame init
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"D_InitNetGame: Checking for network game.\n");

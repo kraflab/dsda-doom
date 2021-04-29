@@ -551,8 +551,6 @@ int main(int argc, char **argv)
      left in an unstable state.
   */
 
-  Z_Init();                  /* 1/18/98 killough: start up memory stuff first */
-
   atexit(I_Quit);
 #ifndef PRBOOM_DEBUG
   if (!M_CheckParm("-devparm"))

@@ -265,8 +265,6 @@ void Z_DumpHistory(char *buf)
 
 #endif
 
-void Z_Init(void) { }
-
 /* Z_Malloc
  * You can pass a NULL user if the tag is < PU_PURGELEVEL.
  *
