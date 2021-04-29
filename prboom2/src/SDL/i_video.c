@@ -894,7 +894,6 @@ void I_CalculateRes(int width, int height)
     // It is extremally important for wiping in software.
     // I have ~20x improvement in speed with using 1056 instead of 1024 on Pentium4
     // and only ~10% for Core2Duo
-    if (1)
     {
       unsigned int mintime = 100;
       int w = (width+15) & ~15;
@@ -911,10 +910,6 @@ void I_CalculateRes(int width, int height)
       SCREENPITCH = (count2 > count1 ? pitch2 : pitch1);
 
       lprintf(LO_INFO, " optimized screen pitch is %d\n", SCREENPITCH);
-    }
-    else
-    {
-      SCREENPITCH = SCREENWIDTH * V_GetPixelDepth();
     }
   }
 }

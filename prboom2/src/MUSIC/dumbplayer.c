@@ -116,11 +116,9 @@ static const void* db_registersong (const void *data, unsigned len)
   // because dumbfiles don't have any concept of backward seek or
   // rewind, you have to reopen if any loader fails
 
-  if (1)
-  {
-    dfil = dumbfile_open_memory ((const char *)data, len);
-    duh = read_duh (dfil);
-  }
+  dfil = dumbfile_open_memory ((const char *)data, len);
+  duh = read_duh (dfil);
+
   if (!duh)
   {
     dumbfile_close (dfil);
