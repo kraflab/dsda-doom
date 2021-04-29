@@ -305,7 +305,7 @@ extern dboolean zerotag_manual;
 
 dboolean ProcessNoTagLines(line_t* line, sector_t **sec, int *secnum);
 
-char* PathFindFileName(const char* pPath);
+const char* PathFindFileName(const char* pPath);
 void NormalizeSlashes2(char *str);
 unsigned int AfxGetFileName(const char* lpszPathName, char* lpszTitle, unsigned int nMax);
 void AbbreviateName(char* lpszCanon, int cchMax, int bAtLeastName);

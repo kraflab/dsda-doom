@@ -1134,7 +1134,7 @@ dboolean ProcessNoTagLines(line_t* line, sector_t **sec, int *secnum)
   return false;
 }
 
-char* PathFindFileName(const char* pPath)
+const char* PathFindFileName(const char* pPath)
 {
   const char* pT = pPath;
 
@@ -1148,7 +1148,7 @@ char* PathFindFileName(const char* pPath)
     }
   }
 
-  return (char*)pT;
+  return pT;
 }
 
 void NormalizeSlashes2(char *str)
@@ -1166,7 +1166,7 @@ void NormalizeSlashes2(char *str)
 
 unsigned int AfxGetFileName(const char* lpszPathName, char* lpszTitle, unsigned int nMax)
 {
-  char* lpszTemp = PathFindFileName(lpszPathName);
+  const char* lpszTemp = PathFindFileName(lpszPathName);
 
   if (lpszTitle == NULL)
     return strlen(lpszTemp)+1;

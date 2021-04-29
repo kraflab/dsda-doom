@@ -655,7 +655,7 @@ static dboolean L_PrepareToLaunch(void)
     index = (int)SendMessage(launcher.listIWAD, CB_GETITEMDATA, index, 0);
     if (index != CB_ERR)
     {
-      char *iwadname = PathFindFileName(launcher.files[index].name);
+      const char *iwadname = PathFindFileName(launcher.files[index].name);
       history = malloc(strlen(iwadname) + 8);
       strcpy(history, iwadname);
       AddIWAD(launcher.files[index].name);
@@ -1434,7 +1434,7 @@ VOID OnWMNotify(LPARAM lParam)
         for (i=0; i < selectioncount; i++)
         {
           int index = selection[i];
-          char *line = PathFindFileName(launcher.files[index].name);
+          const char *line = PathFindFileName(launcher.files[index].name);
           int needlen = (tooltip_str?strlen(tooltip_str):0) + strlen(line) + sizeof(char) * 8;
           if (needlen > tooltip_maxlen)
           {

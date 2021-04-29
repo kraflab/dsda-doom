@@ -679,8 +679,8 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   int p;
   char buf[200];
 
-  char* filename_p;
-  char* fileext_p;
+  const char* filename_p;
+  const char* fileext_p;
 
   char *files = NULL;
   char *iwad  = NULL;
@@ -1335,7 +1335,7 @@ int DemoNameToWadData(const char * demoname, waddata_t *waddata, patterndata_t *
   size_t maxlen = 0;
   char *pattern;
 
-  char *demofilename = PathFindFileName(demoname);
+  const char *demofilename = PathFindFileName(demoname);
 
   WadDataInit(waddata);
 
