@@ -1,4 +1,4 @@
-## MBF21 Current Status
+# MBF21 Current Status
 
 These are changes / features that are currently implemented.
 
@@ -8,7 +8,9 @@ Tracked [here](https://trello.com/b/qyrnGsFs/mbf21).
 
 This is proof-of-concept implemented in dsda-doom.
 
-### Sectors
+---
+
+## Sectors
 
 #### Instant death sector special
 - [Implementation](https://github.com/kraflab/dsda-doom/blob/07639e2f1834c6d6ae5a37c720e01d52c2c95d4d/prboom2/src/p_spec.c#L2437-L2463)
@@ -25,7 +27,9 @@ This is proof-of-concept implemented in dsda-doom.
 - [PR](https://github.com/kraflab/dsda-doom/pull/18)
 - Bit 13 turns on "kill monsters" flag for sectors - kills grounded monsters.
 
-### Lines
+---
+
+## Lines
 
 #### Block land monsters line flag
 - [PR](https://github.com/kraflab/dsda-doom/pull/19)
@@ -42,7 +46,9 @@ This is proof-of-concept implemented in dsda-doom.
 - 1025 uses control sector.
 - 1026 uses control sector + acceleration.
 
-### Things
+---
+
+## Things
 
 #### Dehacked Thing Groups
 - [PR](https://github.com/kraflab/dsda-doom/pull/22), [PR](https://github.com/kraflab/dsda-doom/pull/23)
@@ -134,7 +140,9 @@ In this example:
 - Add `Fast speed = X` in the Thing definition.
 - `X` has the same units as the normal `Speed` field.
 
-### Weapons
+---
+
+## Weapons
 
 #### Weapon Flags
 - [PR](https://github.com/kraflab/dsda-doom/pull/27)
@@ -189,7 +197,9 @@ MBF21 defaults:
 - Weapons WITHOUT this field set will use vanilla Doom semantics for all above behaviors.
 - For backwards-compatibility, setting the `BFG cells/shot` misc field will also set the BFG weapon's `Ammo per shot` field (but not vice-versa).
 
-### Frames
+---
+
+## Frames
 
 #### Frame Flags
 - [PR](https://github.com/kraflab/dsda-doom/pull/37)
@@ -226,7 +236,9 @@ MBF21 defaults:
   - **A_RefireTo(state, noammocheck)** -- jumps to `state` if trigger is still held down; will also check ammo unless `noammocheck` is set
   - **A_GunFlashTo(state, nothirdperson)** -- sets the weapon's flash state to `state`; also sets the player's 3rd-person sprite to the player actor's firing frame unless `nothirdperson` is set
 
-### Miscellaneous
+---
+
+## Miscellaneous
 
 #### New comp flags
 - comp_ledgeblock: [commit](https://github.com/kraflab/dsda-doom/commit/4423cbcf8580e4d3839ddf4403b1fb4a0f993507)
