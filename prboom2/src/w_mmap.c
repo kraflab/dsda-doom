@@ -173,7 +173,7 @@ void W_InitCache(void)
           GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
           NULL, OPEN_EXISTING, 0, NULL);
         if (mapped_wad[wad_index].hnd==INVALID_HANDLE_VALUE)
-          I_Error("W_InitCache: CreateFile for memory mapping failed (LastError %i)",GetLastError());
+          I_Error("W_InitCache: CreateFile for memory mapping failed (LastError %li)",GetLastError());
         mapped_wad[wad_index].hnd_map =
           CreateFileMapping(
             mapped_wad[wad_index].hnd,
@@ -184,7 +184,7 @@ void W_InitCache(void)
             NULL
           );
         if (mapped_wad[wad_index].hnd_map==NULL)
-          I_Error("W_InitCache: CreateFileMapping for memory mapping failed (LastError %i)",GetLastError());
+          I_Error("W_InitCache: CreateFileMapping for memory mapping failed (LastError %li)",GetLastError());
         mapped_wad[wad_index].data =
           MapViewOfFile(
             mapped_wad[wad_index].hnd_map,
@@ -194,7 +194,7 @@ void W_InitCache(void)
             0
           );
         if (mapped_wad[wad_index].data==NULL)
-          I_Error("W_InitCache: MapViewOfFile for memory mapping failed (LastError %i)",GetLastError());
+          I_Error("W_InitCache: MapViewOfFile for memory mapping failed (LastError %li)",GetLastError());
       }
     }
   }
