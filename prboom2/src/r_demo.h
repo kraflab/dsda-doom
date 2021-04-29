@@ -80,8 +80,6 @@ typedef struct
   char *missed;
 } patterndata_t;
 
-extern int demo_extendedformat;
-extern int demo_extendedformat_default;
 extern const char *demo_demoex_filename;
 
 extern int demo_patterns_count;
@@ -102,8 +100,6 @@ int DemoNameToWadData(const char * demoname, waddata_t *waddata, patterndata_t *
 void WadDataToWadFiles(waddata_t *waddata);
 void WadFilesToWadData(waddata_t *waddata);
 
-void M_ChangeDemoExtendedFormat(void);
-
 byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size);
 void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl);
 void G_WriteDemoFooter(void);
@@ -113,7 +109,6 @@ void W_InitPWADTable(wadtbl_t *wadtbl);
 void W_FreePWADTable(wadtbl_t *wadtbl);
 void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size);
 
-extern dboolean use_demoex_info;
 void R_DemoEx_WriteMLook(angle_t pitch);
 angle_t R_DemoEx_ReadMLook(void);
 void R_DemoEx_ResetMLook(void);

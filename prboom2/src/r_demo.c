@@ -235,10 +235,6 @@ char **demo_patterns_list;
 const char *demo_patterns_list_def[9];
 
 // demo ex
-int demo_extendedformat = -1;
-int demo_extendedformat_default;
-dboolean use_demoex_info = false;
-
 char demoex_filename[PATH_MAX];
 const char *demo_demoex_filename;
 //wadtbl_t demoex;
@@ -284,16 +280,6 @@ int AddString(char **str, const char *val)
   }
 
   return size;
-}
-
-void M_ChangeDemoExtendedFormat(void)
-{
-  if (demo_extendedformat == -1)
-  {
-    demo_extendedformat = demo_extendedformat_default;
-  }
-
-  use_demoex_info = demo_extendedformat || M_CheckParm("-auto");
 }
 
 void W_InitPWADTable(wadtbl_t *wadtbl)
@@ -365,9 +351,6 @@ void R_DemoEx_ShowComment(void)
   int         count;
   int         w;
 
-  if (!use_demoex_info)
-    return;
-
   lump = W_CheckNumForName(DEMOEX_COMMENT_LUMPNAME);
   if (lump == -1)
     return;
@@ -414,7 +397,7 @@ angle_t R_DemoEx_ReadMLook(void)
 {
   angle_t pitch;
 
-  if (!use_demoex_info || !(demoplayback || democontinue))
+  if (!(demoplayback || democontinue))
     return 0;
 
   // mlook data must be initialised here
@@ -458,7 +441,7 @@ void R_DemoEx_ResetMLook(void)
 
 void R_DemoEx_WriteMLook(angle_t pitch)
 {
-  if (!use_demoex_info || !demorecording)
+  if (!demorecording)
     return;
 
   if (mlook_lump.tick >= mlook_lump.maxtick)
@@ -1058,11 +1041,6 @@ static int G_ReadDemoFooter(const char *filename)
   const byte *demoex_p = NULL;
   size_t size;
 
-  M_ChangeDemoExtendedFormat();
-
-  if (!use_demoex_info)
-    return result;
-
   demoex_filename[0] = 0;
 
   if (demo_demoex_filename && *demo_demoex_filename)
@@ -1180,9 +1158,6 @@ static int G_ReadDemoFooter(const char *filename)
 void G_WriteDemoFooter(void)
 {
   wadtbl_t demoex;
-
-  if (!use_demoex_info)
-    return;
 
   //init PWAD header
   W_InitPWADTable(&demoex);
@@ -1530,8 +1505,6 @@ int CheckDemoExDemo(void)
 {
   int result = false;
   int p;
-
-  M_ChangeDemoExtendedFormat();
 
   p = IsDemoPlayback();
   if (!p)

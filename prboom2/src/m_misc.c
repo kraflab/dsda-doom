@@ -968,8 +968,6 @@ default_t defaults[] =
    def_bool,ss_stat},
 
   {"Prboom-plus demos settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"demo_extendedformat", {&demo_extendedformat_default},  {1},0,1,
-   def_bool,ss_stat},
   {"demo_demoex_filename", {NULL,&demo_demoex_filename}, {0,""},UL,UL,
    def_str,ss_none},
   {"getwad_cmdline", {NULL, &getwad_cmdline}, {0,""},UL,UL,
