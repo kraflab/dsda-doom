@@ -226,7 +226,7 @@ static const void *pm_registersong (const void *data, unsigned len)
 
   mf.len = len;
   mf.pos = 0;
-  mf.data = (byte*)data;
+  mf.data = data;
 
   midifile = MIDI_LoadFile (&mf);
 
