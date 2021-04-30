@@ -379,6 +379,7 @@ default_t defaults[] =
   {"snd_soundfont",{NULL, &snd_soundfont},{0,"/usr/share/sounds/sf3/default-GM.sf3"},UL,UL,def_str,ss_none}, // soundfont name for synths that support it
 #endif
   {"snd_mididev",{NULL, &snd_mididev},{0,""},UL,UL,def_str,ss_none}, // midi device to use for portmidiplayer
+  {"full_sounds",{&full_sounds},{0},0,1,def_bool,ss_none}, // disable sound cutoffs
 
 #ifdef _WIN32
   {"mus_extend_volume",{&mus_extend_volume},{0},0,1,
