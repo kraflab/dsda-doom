@@ -29,6 +29,7 @@
 - Add notification when toggling vertmouse
 - Add notification when toggling mouselook
 - Add option to disable sound cutoffs (pr+)
+- Add Fireb3rt advanced hud layout option (pr+)
 - Fix missing small screen border for heretic
 - Fix zoomed in heretic weapon heights
 - Fix heretic scrolling floors also scrolling the ceiling
@@ -39,3 +40,7 @@
 - Fix macos launcher iwad directory mismatch (PBeGood4)
 - Fix umapinfo custom episode select for doom2 (pr+)
 - Fix shifting automap markers (pr+)
+- Fix flood hom in plutonia map 11 in opengl (pr+)
+- Fix sky walls as seen in e4m6 in opengl (pr+)
+- Fix transparent sprites in opengl (pr+)
+- Fix non-standard sky scaling in opengl (pr+)
