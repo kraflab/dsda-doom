@@ -9,9 +9,6 @@ e9543d450f8dd0bddac98e0fcb41a80126275542
 delete savegames
 fbcd834d2eb3b860176d5af1327503dd5cdb6e25
 
-sound cutoffs
-6c1c64ae583a94b0ad094acc73e823e400b190e7
-
 mbf sky transfers:
 2119b6f006a5dbb561ee950c5bf3177e8023f401
 
