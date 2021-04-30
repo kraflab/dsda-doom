@@ -1060,7 +1060,7 @@ static void FindResponseFile (void)
       {
         int  size;
         int  index;
-	int indexinfile;
+        int indexinfile;
         byte *file = NULL;
         const char **moreargs = malloc(myargc * sizeof(const char*));
         char **newargv;
@@ -1074,7 +1074,7 @@ static void FindResponseFile (void)
         // READ THE RESPONSE FILE INTO MEMORY
         // proff 04/05/2000: changed for searching responsefile
         // cph 2002/08/09 - use M_ReadFile for simplicity
-	size = M_ReadFile(fname, &file);
+        size = M_ReadFile(fname, &file);
         // proff 04/05/2000: Added for searching responsefile
         if (size < 0)
         {
@@ -1084,7 +1084,7 @@ static void FindResponseFile (void)
           doom_snprintf(fname, fnlen+1, "%s/%s",
                         I_DoomExeDir(), &myargv[i][1]);
           AddDefaultExtension(fname,".rsp");
-	  size = M_ReadFile(fname, &file);
+          size = M_ReadFile(fname, &file);
         }
         if (size < 0)
         {
@@ -1100,7 +1100,7 @@ static void FindResponseFile (void)
         // proff 04/05/2000: Added check for empty rsp file
         if (size<=0)
         {
-	  int k;
+          int k;
           lprintf(LO_ERROR,"\nResponse file empty!\n");
 
           newargv = calloc(sizeof(newargv[0]),myargc);
@@ -1116,49 +1116,49 @@ static void FindResponseFile (void)
         }
 
         // KEEP ALL CMDLINE ARGS FOLLOWING @RESPONSEFILE ARG
-	memcpy((void *)moreargs,&myargv[i+1],(index = myargc - i - 1) * sizeof(myargv[0]));
-
-	{
-	  char *firstargv = myargv[0];
-	  newargv = calloc(sizeof(newargv[0]), 1);
-	  newargv[0] = firstargv;
-	}
+        memcpy((void *)moreargs,&myargv[i+1],(index = myargc - i - 1) * sizeof(myargv[0]));
 
         {
-	  byte *infile = file;
-	  indexinfile = 0;
-	  indexinfile++;  // SKIP PAST ARGV[0] (KEEP IT)
-	  do {
-	    while (size > 0 && isspace(*infile)) { infile++; size--; }
-	    if (size > 0) {
-	      char *s = malloc(size+1);
-	      char *p = s;
-	      int quoted = 0;
+          char *firstargv = myargv[0];
+          newargv = calloc(sizeof(newargv[0]), 1);
+          newargv[0] = firstargv;
+        }
 
-	      while (size > 0) {
-		// Whitespace terminates the token unless quoted
-		if (!quoted && isspace(*infile)) break;
-		if (*infile == '\"') {
-		  // Quotes are removed but remembered
-		  infile++; size--; quoted ^= 1;
-		} else {
-		  *p++ = *infile++; size--;
-		}
-	      }
-	      if (quoted) I_Error("Runaway quoted string in response file");
+        {
+          byte *infile = file;
+          indexinfile = 0;
+          indexinfile++;  // SKIP PAST ARGV[0] (KEEP IT)
+          do {
+            while (size > 0 && isspace(*infile)) { infile++; size--; }
+            if (size > 0) {
+              char *s = malloc(size+1);
+              char *p = s;
+              int quoted = 0;
 
-	      // Terminate string, realloc and add to argv
-	      *p = 0;
-        newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + 1));
-	      newargv[indexinfile++] = realloc(s,strlen(s)+1);
-	    }
-	  } while(size > 0);
-	}
-	free(file);
+              while (size > 0) {
+                // Whitespace terminates the token unless quoted
+                if (!quoted && isspace(*infile)) break;
+                if (*infile == '\"') {
+                  // Quotes are removed but remembered
+                  infile++; size--; quoted ^= 1;
+                } else {
+                  *p++ = *infile++; size--;
+                }
+              }
+              if (quoted) I_Error("Runaway quoted string in response file");
 
-  newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
-	memcpy((void *)&newargv[indexinfile],moreargs,index*sizeof(moreargs[0]));
-	free((void *)moreargs);
+              // Terminate string, realloc and add to argv
+              *p = 0;
+              newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + 1));
+              newargv[indexinfile++] = realloc(s,strlen(s)+1);
+            }
+          } while(size > 0);
+        }
+        free(file);
+
+        newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
+        memcpy((void *)&newargv[indexinfile],moreargs,index*sizeof(moreargs[0]));
+        free((void *)moreargs);
 
         myargc = indexinfile+index;
         myargv = newargv;
@@ -1166,8 +1166,8 @@ static void FindResponseFile (void)
         // DISPLAY ARGS
         //jff 9/3/98 use logical output routine
         lprintf(LO_CONFIRM,"%d command-line args:\n",myargc);
-	for (index=1;index<myargc;index++)
-	  //jff 9/3/98 use logical output routine
+        for (index=1;index<myargc;index++)
+          //jff 9/3/98 use logical output routine
           lprintf(LO_CONFIRM,"%s\n",myargv[index]);
         break;
       }
@@ -1834,13 +1834,13 @@ static void D_DoomMainSetup(void)
 
   if (!M_CheckParm("-nomapinfo"))
   {
-	  int p;
-	  for (p = -1; (p = W_ListNumFromName("UMAPINFO", p)) >= 0; )
-	  {
-		  const unsigned char * lump = (const unsigned char *)W_CacheLumpNum(p);
-		  ParseUMapInfo(lump, W_LumpLength(p), I_Error);
-		  umapinfo_loaded = true;
-	  }
+    int p;
+    for (p = -1; (p = W_ListNumFromName("UMAPINFO", p)) >= 0; )
+    {
+      const unsigned char * lump = (const unsigned char *)W_CacheLumpNum(p);
+      ParseUMapInfo(lump, W_LumpLength(p), I_Error);
+      umapinfo_loaded = true;
+    }
   }
 
   CheckDehConsistency();
