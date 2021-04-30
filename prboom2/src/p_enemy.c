@@ -2988,21 +2988,61 @@ void A_LineEffect(mobj_t *mo)
 
 //
 // A_SpawnFacing
-// Spawns an actor facing the same direction as the caller.
-// Basically just A_Spawn with a major quality-of-life tweak.
+// Basically just A_Spawn with better behavior and more args.
 //   args[0]: Type of actor to spawn
-//   args[1]: Height to spawn at, relative to calling actor
+//   args[1]: Angle (degrees, in fixed point), relative to calling actor's angle
+//   args[2]: X spawn offset (fixed point), relative to calling actor
+//   args[3]: Y spawn offset (fixed point), relative to calling actor
+//   args[4]: Z spawn offset (fixed point), relative to calling actor
+//   args[5]: X velocity (fixed point)
+//   args[6]: Y velocity (fixed point)
+//   args[7]: Z velocity (fixed point)
 //
 void A_SpawnFacing(mobj_t *actor)
 {
+  int type, angle, ofs_x, ofs_y, ofs_z, vel_x, vel_y, vel_z;
+  angle_t an;
+  int fan, dx, dy;
   mobj_t *mo;
 
   if (!mbf21 || !actor->state->args[0])
     return;
 
-  mo = P_SpawnMobj(actor->x, actor->y, (actor->state->args[1] << FRACBITS) + actor->z, actor->state->args[0] - 1);
-  if (mo)
-    mo->angle = actor->angle;
+  type  = ARG_DEFAULT(actor->state->args[0], 0) - 1;
+  angle = ARG_DEFAULT(actor->state->args[1], 0);
+  ofs_x = ARG_DEFAULT(actor->state->args[2], 0);
+  ofs_y = ARG_DEFAULT(actor->state->args[3], 0);
+  ofs_z = ARG_DEFAULT(actor->state->args[4], 0);
+  vel_x = ARG_DEFAULT(actor->state->args[5], 0);
+  vel_y = ARG_DEFAULT(actor->state->args[6], 0);
+  vel_z = ARG_DEFAULT(actor->state->args[7], 0);
+
+  // calculate position offsets
+  an = actor->angle + (unsigned int)(((int_64_t)angle << 16) / 360);
+  fan = an >> ANGLETOFINESHIFT;
+  dx = FixedMul(ofs_x, finecosine[fan]) - FixedMul(ofs_y, finesine[fan]  );
+  dy = FixedMul(ofs_x, finesine[fan]  ) + FixedMul(ofs_y, finecosine[fan]);
+
+  // spawn it, yo
+  mo = P_SpawnMobj(actor->x + dx, actor->y + dy, actor->z + ofs_z, type);
+  if (!mo)
+    return;
+
+  // angle dangle
+  mo->angle = an;
+
+  // set velocity
+  mo->momx = FixedMul(vel_x, finecosine[fan]) - FixedMul(vel_y, finesine[fan]  );
+  mo->momy = FixedMul(vel_x, finesine[fan]  ) + FixedMul(vel_y, finecosine[fan]);
+  mo->momz = vel_z;
+
+  // copy target+tracer pointers for missiles, so
+  // they can use this to spawn sub-missiles safely
+  if (actor->flags & (MF_MISSILE | MF_BOUNCES))
+  {
+    P_SetTarget(&mo->target, actor->target);
+    P_SetTarget(&mo->tracer, actor->tracer);
+  }
 
   // [XA] don't bother with the dont-inherit-friendliness hack
   // that exists in A_Spawn, 'cause WTF is that about anyway?
