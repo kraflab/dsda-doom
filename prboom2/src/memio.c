@@ -56,7 +56,12 @@ MEMFILE *mem_fopen_read(const void *buf, size_t buflen)
 
   file = Z_Malloc(sizeof(MEMFILE), PU_STATIC, 0);
 
+  // The MEMFILE struct is overloaded for both read-only and write use cases
+  // This is required to interface with 3rd party libraries (I think)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wcast-qual"
   file->buf = (unsigned char *) buf;
+  #pragma GCC diagnostic pop
   file->buflen = buflen;
   file->position = 0;
   file->mode = MODE_READ;

@@ -1001,7 +1001,6 @@ static void G_DoLoadLevel (void)
   if (!demoplayback) // Don't switch views if playing a demo
     displayplayer = consoleplayer;    // view the guy you are playing
   gameaction = ga_nothing;
-  Z_CheckHeap ();
 
   // clear cmd building stuff
   dsda_InputFlush();
@@ -2482,10 +2481,7 @@ static void G_DoSaveGame (dboolean menu)
   // killough 11/98: save revenant tracer state
   *save_p++ = (gametic-basetic) & 255;
 
-  // killough 3/22/98: add Z_CheckHeap after each call to ensure consistency
-  Z_CheckHeap();
   P_ArchivePlayers();
-  Z_CheckHeap();
 
   // phares 9/13/98: Move mobj_t->index out of P_ArchiveThinkers so the
   // indices can be used by P_ArchiveWorld when the sectors are saved.
@@ -2494,7 +2490,6 @@ static void G_DoSaveGame (dboolean menu)
   P_ThinkerToIndex();
 
   P_ArchiveWorld();
-  Z_CheckHeap();
   P_TrueArchiveThinkers();
 
   // phares 9/13/98: Move index->mobj_t out of P_ArchiveThinkers, simply
@@ -2502,14 +2497,11 @@ static void G_DoSaveGame (dboolean menu)
 
   P_IndexToThinker();
 
-  Z_CheckHeap();
   P_ArchiveRNG();    // killough 1/18/98: save RNG information
-  Z_CheckHeap();
   P_ArchiveMap();    // killough 1/22/98: save automap information
 
   *save_p++ = 0xe6;   // consistancy marker
 
-  Z_CheckHeap();
   doom_printf( "%s", M_WriteFile(name, savebuffer, save_p - savebuffer)
          ? s_GGSAVED /* Ty - externalised */
          : "Game save failed!"); // CPhipps - not externalised
@@ -2820,23 +2812,26 @@ void G_SetFastParms(int fast_pending)
   }
 
   if (fast != fast_pending) {     /* only change if necessary */
+    for (i = 0; i < num_mobj_types; ++i)
+      if (mobjinfo[i].altspeed != NO_ALTSPEED)
+      {
+        int swap = mobjinfo[i].speed;
+        mobjinfo[i].speed = mobjinfo[i].altspeed;
+        mobjinfo[i].altspeed = swap;
+      }
+
     if ((fast = fast_pending))
-      {
-        for (i=S_SARG_RUN1; i<=S_SARG_PAIN2; i++)
-          if (states[i].tics != 1 || demo_compatibility) // killough 4/10/98
-            states[i].tics >>= 1;  // don't change 1->0 since it causes cycles
-        mobjinfo[MT_BRUISERSHOT].speed = 20*FRACUNIT;
-        mobjinfo[MT_HEADSHOT].speed = 20*FRACUNIT;
-        mobjinfo[MT_TROOPSHOT].speed = 20*FRACUNIT;
-      }
+    {
+      for (i = 0; i < num_states; i++)
+        if (states[i].flags & STATEF_SKILL5FAST && (states[i].tics != 1 || demo_compatibility))
+          states[i].tics >>= 1;  // don't change 1->0 since it causes cycles
+    }
     else
-      {
-        for (i=S_SARG_RUN1; i<=S_SARG_PAIN2; i++)
+    {
+      for (i = 0; i < num_states; i++)
+        if (states[i].flags & STATEF_SKILL5FAST)
           states[i].tics <<= 1;
-        mobjinfo[MT_BRUISERSHOT].speed = 15*FRACUNIT;
-        mobjinfo[MT_HEADSHOT].speed = 10*FRACUNIT;
-        mobjinfo[MT_TROOPSHOT].speed = 10*FRACUNIT;
-      }
+    }
   }
 }
 

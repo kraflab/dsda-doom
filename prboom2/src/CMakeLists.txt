@@ -19,6 +19,8 @@ set(COMMON_SRC
     doomtype.h
     dsda.c
     dsda.h
+    dsda/command_display.c
+    dsda/command_display.h
     dsda/demo.c
     dsda/demo.h
     dsda/ghost.c
@@ -31,6 +33,8 @@ set(COMMON_SRC
     dsda/input.h
     dsda/key_frame.c
     dsda/key_frame.h
+    dsda/memory.c
+    dsda/memory.h
     dsda/msecnode.c
     dsda/msecnode.h
     dsda/options.c
@@ -219,7 +223,7 @@ set(NET_CLIENT_SRC
     d_client.c
 )
 
-if(HAVE_MMAP)
+if(HAVE_MMAP OR HAVE_CREATE_FILE_MAPPING)
     set(WAD_SRC w_mmap.c)
 else()
     set(WAD_SRC w_memcache.c)

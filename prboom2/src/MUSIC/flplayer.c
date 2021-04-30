@@ -109,12 +109,9 @@ static int fl_init (int samplerate)
 {
   const char *filename;
 
-  TESTDLLLOAD ("libfluidsynth.dll", TRUE)
-
   f_soundrate = samplerate;
   // fluidsynth 1.1.4 supports sample rates as low as 8000hz.  earlier versions only go down to 22050hz
   // since the versions are ABI compatible, detect at runtime, not compile time
-  if (1)
   {
     int sratemin;
     int major;

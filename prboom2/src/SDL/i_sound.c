@@ -93,11 +93,11 @@ static dboolean sound_inited = false;
 static dboolean first_sound_init = true;
 
 // Needed for calling the actual sound output.
-static int SAMPLECOUNT =   512;
 #define MAX_CHANNELS    32
 
 // MWM 2000-01-08: Sample rate in samples/second
 int snd_samplerate = 11025;
+int snd_samplecount = 512;
 
 // The actual output device.
 int audio_fd;
@@ -309,7 +309,7 @@ int I_GetSfxLumpNum(sfxinfo_t *sfx)
   format = heretic ? "%s" : snd_pcspeaker ? "dp%s" : "ds%s";
 
   sprintf(namebuf, format, sfx->name);
-  return W_SafeGetNumForName(namebuf); //e6y: make missing sounds non-fatal
+  return W_CheckNumForName(namebuf); //e6y: make missing sounds non-fatal
 }
 
 //
@@ -432,9 +432,7 @@ dboolean I_AnySoundStillPlaying(void)
 // This function currently supports only 16bit.
 //
 
-#ifndef HAVE_OWN_MUSIC
 static void Exp_UpdateMusic (void *buff, unsigned nsamp);
-#endif
 
 // from pcsound_sdl.c
 void PCSound_Mix_Callback(void *udata, Uint8 *stream, int len);
@@ -465,7 +463,6 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
   if (dumping_sound && unused != (void *) 0xdeadbeef)
     return;
 
-#ifndef HAVE_OWN_MUSIC
   // do music update
   if (use_experimental_music)
   {
@@ -473,7 +470,6 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
     Exp_UpdateMusic (stream, len / 4);
     SDL_UnlockMutex (musmutex);
   }
-#endif
 
   if (snd_pcspeaker)
   {
@@ -625,8 +621,7 @@ void I_InitSound(void)
     /* Initialize variables */
     audio_rate = snd_samplerate;
     audio_channels = 2;
-    SAMPLECOUNT = 512;
-    audio_buffers = SAMPLECOUNT*snd_samplerate/11025;
+    audio_buffers = snd_samplecount * snd_samplerate / 11025;
 
     if (Mix_OpenAudio(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers) < 0)
     {
@@ -637,9 +632,8 @@ void I_InitSound(void)
     }
     sound_inited_once = true;//e6y
     sound_inited = true;
-    SAMPLECOUNT = audio_buffers;
     Mix_SetPostMix(I_UpdateSound, NULL);
-    lprintf(LO_INFO," configured audio device with %d samples/slice\n", SAMPLECOUNT);
+    lprintf(LO_INFO," configured audio device with %d samples/slice\n", audio_buffers);
   }
   else
 #else // HAVE_MIXER
@@ -654,7 +648,7 @@ void I_InitSound(void)
     audio.format = AUDIO_S16LSB;
 #endif
     audio.channels = 2;
-    audio.samples = SAMPLECOUNT * snd_samplerate / 11025;
+    audio.samples = snd_samplecount * snd_samplerate / 11025;
     audio.callback = I_UpdateSound;
     if ( SDL_OpenAudio(&audio, NULL) < 0 )
     {
@@ -665,8 +659,7 @@ void I_InitSound(void)
     }
     sound_inited_once = true;//e6y
     sound_inited = true;
-    SAMPLECOUNT = audio.samples;
-    lprintf(LO_INFO, " configured audio device with %d samples/slice\n", SAMPLECOUNT);
+    lprintf(LO_INFO, " configured audio device with %d samples/slice\n", audio.samples);
   }
   if (first_sound_init)
   {
@@ -766,9 +759,6 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
   sin[0] = sin[nreq * 2];
   sin[1] = sin[nreq * 2 + 1];
 }
-
-
-#ifndef HAVE_OWN_MUSIC
 
 //
 // MUSIC API.
@@ -1511,13 +1501,6 @@ void M_ChangeMIDIPlayer(void)
 {
   int experimental_music;
 
-#ifdef HAVE_OWN_MUSIC
-  // do not bother about small memory leak
-  snd_midiplayer = strdup(midiplayers[midi_player_sdl]);
-  use_experimental_music = 0;
-  return;
-#endif
-
   if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_sdl]))
   {
     experimental_music = false;
@@ -1546,7 +1529,6 @@ void M_ChangeMIDIPlayer(void)
     }
   }
 
-#if 1
   if (use_experimental_music == -1)
   {
     use_experimental_music = experimental_music;
@@ -1559,23 +1541,4 @@ void M_ChangeMIDIPlayer(void)
       S_RestartMusic();
     }
   }
-#else
-  S_StopMusic();
-
-  if (use_experimental_music != experimental_music)
-  {
-    I_ShutdownMusic();
-
-    S_Stop();
-    I_ShutdownSound();
-
-    use_experimental_music = experimental_music;
-
-    I_InitSound();
-  }
-
-  S_RestartMusic();
-#endif
 }
-
-#endif

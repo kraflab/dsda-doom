@@ -159,12 +159,12 @@ void gld_GetScreenSkyScale(GLWall *wall, float *scale_x, float *scale_y)
   if (!mlook_or_fov)
   {
     sx = sx / (float)wall->gltexture->buffer_width;
-    sy = 200.0f / 160.0f;//wall->gltexture->buffer_height;
+    sy = 200.0f / (wall->gltexture->buffer_height * 1.25f);
   }
   else
   {
     sx = sx * skyscale / (float)wall->gltexture->buffer_width;
-    sy = 127.0f * skyscale / 160.0f;
+    sy = 127.0f * skyscale / (wall->gltexture->buffer_height * 1.25f);
   }
 
   *scale_x = sx;
@@ -314,15 +314,6 @@ void gld_DrawStripsSky(void)
       glScalef(sx, sy * skyymid_multiplier, 1.0f);
       glTranslatef(wall->skyyaw, wall->skyymid / skyymid_multiplier, 0.0f);
     }
-
-#if 0
-    {
-      float r = (float)(wall->seg->sidedef - sides) / (float)(numsides - 1);
-      float g = (float)wall->seg->linedef->iLineID / (float)(numlines - 1);
-      float b = (float)i / (float)(gld_drawinfo.num_items[GLDIT_SWALL] - 1);
-      glColor4f(r, g, b, 1.0f);
-    }
-#endif
 
     glBegin(GL_TRIANGLE_STRIP);
     glVertex3f(wall->glseg->x1,wall->ytop,wall->glseg->z1);
@@ -1064,28 +1055,6 @@ int gld_BindFace(box_skybox_t *sb, int index)
   int lump;
   GLTexture *gltexture;
   char *name = sb->faces[index];
-
-#if 0
-  lump = W_CheckNumForName(name);
-  if (lump != -1)
-  {
-    gltexture = gld_RegisterPatch(lump, CR_DEFAULT, false);
-    gltexture->wrap_mode = GLEXT_CLAMP_TO_EDGE;
-    gld_BindPatch(gltexture, CR_DEFAULT);
-    return true;
-  }
-
-  //lump = R_FlatNumForName(name);
-  lump = (W_CheckNumForName)(name, ns_flats);
-  if (lump != -1)
-  {
-    lump -= firstflat;
-    gltexture = gld_RegisterFlat(lump, true);
-    gltexture->wrap_mode = GLEXT_CLAMP_TO_EDGE;
-    gld_BindFlat(gltexture);
-    return true;
-  }
-#endif
 
   lump = R_CheckTextureNumForName(name);
   if (lump != -1)

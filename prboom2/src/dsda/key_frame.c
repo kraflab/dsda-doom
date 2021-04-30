@@ -144,19 +144,13 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
   CheckSaveGame(1);
   *save_p++ = (gametic - basetic) & 255;
 
-  Z_CheckHeap();
   P_ArchivePlayers();
-  Z_CheckHeap();
   P_ThinkerToIndex();
   P_ArchiveWorld();
-  Z_CheckHeap();
   P_TrueArchiveThinkers();
   P_IndexToThinker();
-  Z_CheckHeap();
   P_ArchiveRNG();
-  Z_CheckHeap();
   P_ArchiveMap();
-  Z_CheckHeap();
 
   if (*buffer != NULL) free(*buffer);
 

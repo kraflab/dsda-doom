@@ -1,19 +1,9 @@
-Checked up to: a43dff0255b6d81c5115010f27cd65b2598ded98 (Mar 22 2021)
+Checked up to: 4c8d90c008725e0aaf53f057b8f44b136ddbfb2a (Apr 19 2021)
 
 Commits from upstream to go through:
 
-alsa
-e9543d450f8dd0bddac98e0fcb41a80126275542
-73c4ef6b103a9f20eeb26c718981b164d592a268
-
-delete savegames
-fbcd834d2eb3b860176d5af1327503dd5cdb6e25
-
-sound cutoffs
-6c1c64ae583a94b0ad094acc73e823e400b190e7
-
-mbf sky transfers:
-2119b6f006a5dbb561ee950c5bf3177e8023f401
+default save name:
+5ef9e7509103303fc810ddd3414b4442d86ee540
 
 melee crosshair:
 b2503fa073298ead6b10a74ca5d0f0ca2d9b27d2

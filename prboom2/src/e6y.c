@@ -637,32 +637,6 @@ void M_ChangeSpriteClip(void)
 void ResolveColormapsHiresConflict(dboolean prefer_colormap)
 {
   gl_boom_colormaps = !r_have_internal_hires && !gl_texture_external_hires;
-#if 0
-  if (prefer_colormap)
-  {
-    if (gl_boom_colormaps_default)
-    {
-      gl_texture_external_hires = false;
-    }
-    else if (gl_texture_external_hires)
-    {
-      gl_boom_colormaps = false;
-      gl_boom_colormaps_default = false;
-    }
-  }
-  else
-  {
-    if (gl_texture_external_hires)
-    {
-      gl_boom_colormaps = false;
-      gl_boom_colormaps_default = false;
-    }
-    else if (gl_boom_colormaps_default)
-    {
-      gl_texture_external_hires = false;
-    }
-  }
-#endif
 }
 
 void M_ChangeAllowBoomColormaps(void)
@@ -785,69 +759,7 @@ int I_MessageBox(const char* text, unsigned int type)
   }
 #endif
 
-#if 0
-  {
-    typedef struct mb_hotkeys_s
-    {
-      int type;
-      char *hotkeys_str;
-    } mb_hotkeys_t;
-
-    mb_hotkeys_t mb_hotkeys[] = {
-      {PRB_MB_OK               , "(press <enter> to continue)"},
-      {PRB_MB_OKCANCEL         , "(press <enter> to continue or <esc> to cancel)"},
-      {PRB_MB_ABORTRETRYIGNORE , "(a - abort, r - retry, i - ignore)"},
-      {PRB_MB_YESNOCANCEL      , "(y - yes, n - no, esc - cancel"},
-      {PRB_MB_YESNO            , "(y - yes, n - no)"},
-      {PRB_MB_RETRYCANCEL      , "(r - retry, <esc> - cancel)"},
-      {0, NULL}
-    };
-
-    int i, c;
-    char* hotkeys_str = NULL;
-
-    type &= 0x000000ff;
-
-    i = 0;
-    while (mb_hotkeys[i].hotkeys_str)
-    {
-      if (mb_hotkeys[i].type == type)
-      {
-        hotkeys_str = mb_hotkeys[i].hotkeys_str;
-        break;
-      }
-      i++;
-    }
-
-    if (hotkeys_str)
-    {
-      lprintf(LO_CONFIRM, "%s\n%s\n", text, hotkeys_str);
-
-      result = -1;
-      do
-      {
-        I_uSleep(1000);
-
-        c = tolower(getchar());
-
-        if (c == 'y') result = PRB_IDYES;
-        else if (c == 'n') result = PRB_IDNO;
-        else if (c == 'a') result = PRB_IDABORT;
-        else if (c == 'r') result = PRB_IDRETRY;
-        else if (c == 'i') result = PRB_IDIGNORE;
-        else if (c == 'o' || c == 13) result = PRB_IDOK;
-        else if (c == 'c' || c == 27) result = PRB_IDCANCEL;
-      }
-      while (result == EOF);
-
-      return result;
-    }
-
-    return result;
-  }
-#else
   return PRB_IDCANCEL;
-#endif
 }
 
 int stats_level;
@@ -1134,7 +1046,7 @@ dboolean ProcessNoTagLines(line_t* line, sector_t **sec, int *secnum)
   return false;
 }
 
-char* PathFindFileName(const char* pPath)
+const char* PathFindFileName(const char* pPath)
 {
   const char* pT = pPath;
 
@@ -1148,7 +1060,7 @@ char* PathFindFileName(const char* pPath)
     }
   }
 
-  return (char*)pT;
+  return pT;
 }
 
 void NormalizeSlashes2(char *str)
@@ -1166,7 +1078,7 @@ void NormalizeSlashes2(char *str)
 
 unsigned int AfxGetFileName(const char* lpszPathName, char* lpszTitle, unsigned int nMax)
 {
-  char* lpszTemp = PathFindFileName(lpszPathName);
+  const char* lpszTemp = PathFindFileName(lpszPathName);
 
   if (lpszTitle == NULL)
     return strlen(lpszTemp)+1;
@@ -1324,7 +1236,7 @@ void I_midiOutSetVolumes(int volume)
   MMRESULT result;
   int calcVolume;
   MIDIOUTCAPS capabilities;
-  unsigned int i;
+  unsigned long long i;
 
   if (volume > 15)
     volume = 15;

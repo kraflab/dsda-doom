@@ -12,21 +12,18 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Time
+//	DSDA Command Display
 //
 
-#ifndef __DSDA_TIME__
-#define __DSDA_TIME__
+#ifndef __DSDA_COMMAND_DISPLAY__
+#define __DSDA_COMMAND_DISPLAY__
 
-typedef enum {
-  dsda_timer_displaytime,
-  dsda_timer_tic,
-  dsda_timer_realtime,
-  dsda_timer_memory,
-  DSDA_TIMER_COUNT
-} dsda_timer_t;
+#include "r_defs.h"
+#include "d_ticcmd.h"
 
-void dsda_StartTimer(int timer);
-unsigned long long dsda_ElapsedTime(int timer);
+void dsda_InitCommandDisplay(patchnum_t* font);
+void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd);
+void dsda_DrawCommandDisplay(void);
+void dsda_EraseCommandDisplay(void);
 
 #endif

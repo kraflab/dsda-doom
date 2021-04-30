@@ -819,11 +819,6 @@ static dboolean P_LookForPlayers(mobj_t *actor, dboolean allaround)
     {  // killough 9/9/98: friendly monsters go about players differently
       int anyone;
 
-#if 0
-      if (!allaround) // If you want friendly monsters not to awaken unprovoked
-  return false;
-#endif
-
       // Go back to a player, no matter whether it's visible or not
       for (anyone=0; anyone<=1; anyone++)
   for (c=0; c<MAXPLAYERS; c++)
@@ -1138,7 +1133,13 @@ void A_Look(mobj_t *actor)
     if (actor->flags2 & MF2_BOSS)
       S_StartSound(NULL, sound);          // full volume
     else
+    {
       S_StartSound(actor, sound);
+
+      // [FG] make seesounds uninterruptible
+      if (full_sounds)
+        S_UnlinkSound(actor);
+    }
   }
   P_SetMobjState(actor, actor->info->seestate);
 }

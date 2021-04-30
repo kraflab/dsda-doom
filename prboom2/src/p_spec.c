@@ -2789,7 +2789,23 @@ void P_SpawnSpecials (void)
 
   // e6y
   if (demo_compatibility)
+  {
+    // allow MBF sky transfers in all complevels
+    if (!heretic)
+      for (i = 0; i < numlines; ++i)
+        switch (lines[i].special)
+        {
+          int s;
+
+          case 271:   // Regular sky
+          case 272:   // Same, only flipped
+            for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
+              sectors[s].sky = i | PL_SKYFLAT;
+          break;
+        }
+
     return;
+  }
 
   P_SpawnFriction();  // phares 3/12/98: New friction model using linedefs
 

@@ -126,8 +126,6 @@ static int pm_init (int samplerate)
   int i;
   char devname[64];
 
-  TESTDLLLOAD("portmidi.dll", TRUE)
-
   if (Pm_Initialize () != pmNoError)
   {
     lprintf (LO_WARN, "portmidiplayer: Pm_Initialize () failed\n");
@@ -226,7 +224,7 @@ static const void *pm_registersong (const void *data, unsigned len)
 
   mf.len = len;
   mf.pos = 0;
-  mf.data = (byte*)data;
+  mf.data = data;
 
   midifile = MIDI_LoadFile (&mf);
 

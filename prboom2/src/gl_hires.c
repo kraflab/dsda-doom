@@ -815,7 +815,6 @@ void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
 
   for (pos = 0; pos < bufSize; pos += 4)
   {
-#if 1
     byte color;
 
     if (gl_hires_24bit_colormap)
@@ -826,77 +825,6 @@ void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
     buffer[pos+0] = playpal[colormap[color]*3+0];
     buffer[pos+1] = playpal[colormap[color]*3+1];
     buffer[pos+2] = playpal[colormap[color]*3+2];
-#endif
-
-#if 0
-    float factor;
-    int c, r, g, b, m;
-    byte color;
-
-    color = RGB2PAL[(buffer[pos+0]<<16) + (buffer[pos+1]<<8) + buffer[pos+2]];
-
-    factor =
-      0.30f * playpal[color*3+0] +
-      0.59f * playpal[color*3+1] +
-      0.11f * playpal[color*3+2];
-
-    if (fabs(factor) < 0.001f)
-      factor = 1;
-    else
-      factor = (0.3f * buffer[pos+0] + 0.59f * buffer[pos+1] + 0.11f * buffer[pos+2]) / factor;
-
-    r = (int)(playpal[colormap[color]*3+0] * factor);
-    g = (int)(playpal[colormap[color]*3+1] * factor);
-    b = (int)(playpal[colormap[color]*3+2] * factor);
-
-    m = 255;
-    if (r > m)
-    {
-      m = r;
-      factor = 255.0f / (float)playpal[colormap[color]*3+0];
-    }
-    if (g > m)
-    {
-      m = g;
-      factor = 255.0f / (float)playpal[colormap[color]*3+1];
-    }
-    if (b > m)
-    {
-      m = b;
-      factor = 255.0f / (float)playpal[colormap[color]*3+2];
-    }
-
-    c = (int)(playpal[colormap[color]*3+0] * factor);
-    buffer[pos+0] = BETWEEN(0, 255, c);
-    c = (int)(playpal[colormap[color]*3+1] * factor);
-    buffer[pos+1] = BETWEEN(0, 255, c);
-    c = (int)(playpal[colormap[color]*3+2] * factor);
-    buffer[pos+2] = BETWEEN(0, 255, c);
-#endif
-
-#if 0
-    float factor;
-    int c;
-
-    color = RGB2PAL[(buffer[pos+0]<<16) + (buffer[pos+1]<<8) + buffer[pos+2]];
-
-    factor =
-      0.30f * playpal[color*3+0] +
-      0.59f * playpal[color*3+1] +
-      0.11f * playpal[color*3+2];
-
-    if (fabs(factor) < 0.001f)
-      factor = 1;
-    else
-      factor = (0.3f * buffer[pos+0] + 0.59f * buffer[pos+1] + 0.11f * buffer[pos+2]) / factor;
-
-    c = (int)(playpal[colormap[color]*3+0] * factor);
-    buffer[pos+0] = BETWEEN(0, 255, c);
-    c = (int)(playpal[colormap[color]*3+1] * factor);
-    buffer[pos+1] = BETWEEN(0, 255, c);
-    c = (int)(playpal[colormap[color]*3+2] * factor);
-    buffer[pos+2] = BETWEEN(0, 255, c);
-#endif
   }
 }
 

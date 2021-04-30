@@ -259,6 +259,7 @@ static void dsda_InitDoom(void) {
     mobjinfo[i].projectile_group = PG_DEFAULT;
     mobjinfo[i].splash_group = SG_DEFAULT;
     mobjinfo[i].ripsound = sfx_None;
+    mobjinfo[i].altspeed = NO_ALTSPEED;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
@@ -277,6 +278,13 @@ static void dsda_InitDoom(void) {
 
   mobjinfo[MT_BRUISER].projectile_group = PG_BARON;
   mobjinfo[MT_KNIGHT].projectile_group = PG_BARON;
+
+  mobjinfo[MT_BRUISERSHOT].altspeed = 20 * FRACUNIT;
+  mobjinfo[MT_HEADSHOT].altspeed = 20 * FRACUNIT;
+  mobjinfo[MT_TROOPSHOT].altspeed = 20 * FRACUNIT;
+
+  for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; ++i)
+    states[i].flags |= STATEF_SKILL5FAST;
 }
 
 static void dsda_InitHeretic(void) {
@@ -390,7 +398,8 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].infighting_group = IG_DEFAULT;
     mobjinfo[j].projectile_group = PG_DEFAULT;
     mobjinfo[j].splash_group = SG_DEFAULT;
-    mobjinfo[i].ripsound = heretic_sfx_None;
+    mobjinfo[j].ripsound = heretic_sfx_None;
+    mobjinfo[j].altspeed = NO_ALTSPEED;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...

@@ -235,10 +235,6 @@ char **demo_patterns_list;
 const char *demo_patterns_list_def[9];
 
 // demo ex
-int demo_extendedformat = -1;
-int demo_extendedformat_default;
-dboolean use_demoex_info = false;
-
 char demoex_filename[PATH_MAX];
 const char *demo_demoex_filename;
 //wadtbl_t demoex;
@@ -284,16 +280,6 @@ int AddString(char **str, const char *val)
   }
 
   return size;
-}
-
-void M_ChangeDemoExtendedFormat(void)
-{
-  if (demo_extendedformat == -1)
-  {
-    demo_extendedformat = demo_extendedformat_default;
-  }
-
-  use_demoex_info = demo_extendedformat || M_CheckParm("-auto");
 }
 
 void W_InitPWADTable(wadtbl_t *wadtbl)
@@ -365,9 +351,6 @@ void R_DemoEx_ShowComment(void)
   int         count;
   int         w;
 
-  if (!use_demoex_info)
-    return;
-
   lump = W_CheckNumForName(DEMOEX_COMMENT_LUMPNAME);
   if (lump == -1)
     return;
@@ -414,7 +397,7 @@ angle_t R_DemoEx_ReadMLook(void)
 {
   angle_t pitch;
 
-  if (!use_demoex_info || !(demoplayback || democontinue))
+  if (!(demoplayback || democontinue))
     return 0;
 
   // mlook data must be initialised here
@@ -458,7 +441,7 @@ void R_DemoEx_ResetMLook(void)
 
 void R_DemoEx_WriteMLook(angle_t pitch)
 {
-  if (!use_demoex_info || !demorecording)
+  if (!demorecording)
     return;
 
   if (mlook_lump.tick >= mlook_lump.maxtick)
@@ -679,8 +662,8 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   int p;
   char buf[200];
 
-  char* filename_p;
-  char* fileext_p;
+  const char* filename_p;
+  const char* fileext_p;
 
   char *files = NULL;
   char *iwad  = NULL;
@@ -966,12 +949,17 @@ int CheckWadBufIntegrity(const char *buffer, size_t size)
   int i;
   unsigned int length;
   wadinfo_t *header;
-  filelump_t *fileinfo;
+  const filelump_t *fileinfo;
   int result = false;
 
   if (buffer && size > sizeof(*header))
   {
+    // This is dirty, but essentially there is a part of the buffer that is editable
+    // It would take too much work to take care of all the chained calls to fix this
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wcast-qual"
     header = (wadinfo_t*)buffer;
+    #pragma GCC diagnostic pop
     if (strncmp(header->identification, "IWAD", 4) == 0 ||
         strncmp(header->identification, "PWAD", 4) == 0)
     {
@@ -981,7 +969,7 @@ int CheckWadBufIntegrity(const char *buffer, size_t size)
 
       if (header->infotableofs + length <= size)
       {
-        fileinfo = (filelump_t*)(buffer + header->infotableofs);
+        fileinfo = (const filelump_t*)(buffer + header->infotableofs);
         for (i = 0; i < header->numlumps; i++, fileinfo++)
         {
           if (fileinfo->filepos < 0 ||
@@ -1052,11 +1040,6 @@ static int G_ReadDemoFooter(const char *filename)
   byte *buffer = NULL;
   const byte *demoex_p = NULL;
   size_t size;
-
-  M_ChangeDemoExtendedFormat();
-
-  if (!use_demoex_info)
-    return result;
 
   demoex_filename[0] = 0;
 
@@ -1175,9 +1158,6 @@ static int G_ReadDemoFooter(const char *filename)
 void G_WriteDemoFooter(void)
 {
   wadtbl_t demoex;
-
-  if (!use_demoex_info)
-    return;
 
   //init PWAD header
   W_InitPWADTable(&demoex);
@@ -1335,7 +1315,7 @@ int DemoNameToWadData(const char * demoname, waddata_t *waddata, patterndata_t *
   size_t maxlen = 0;
   char *pattern;
 
-  char *demofilename = PathFindFileName(demoname);
+  const char *demofilename = PathFindFileName(demoname);
 
   WadDataInit(waddata);
 
@@ -1525,8 +1505,6 @@ int CheckDemoExDemo(void)
 {
   int result = false;
   int p;
-
-  M_ChangeDemoExtendedFormat();
 
   p = IsDemoPlayback();
   if (!p)

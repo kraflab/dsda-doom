@@ -233,9 +233,6 @@ static unsigned parsetag (const char *str, int samplerate)
 
 static int vorb_init (int samplerate)
 {
-  TESTDLLLOAD ("libogg-0.dll", FALSE)
-  TESTDLLLOAD ("libvorbis-0.dll", FALSE)
-  TESTDLLLOAD ("libvorbisfile-3.dll", TRUE)
   vorb_samplerate_target = samplerate;
   return 1;
 }
@@ -259,7 +256,11 @@ static const void *vorb_registersong (const void *data, unsigned len)
   vorb_len = len;
   vorb_pos = 0;
 
+  // This is required to interface with vorbis (I guess)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wcast-qual"
   i = ov_test_callbacks ((void *) data, &vf, NULL, 0, vcallback);
+  #pragma GCC diagnostic pop
 
   if (i != 0)
   {

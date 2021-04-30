@@ -535,8 +535,6 @@ int main(int argc, char **argv)
   lprintf(LO_INFO,"\n");
   PrintVer();
 
-  /* cph - Z_Close must be done after I_Quit, so we register it first. */
-  atexit(Z_Close);
   /*
      killough 1/98:
 
@@ -552,8 +550,6 @@ int main(int argc, char **argv)
      loud SFX noise because the sound card is
      left in an unstable state.
   */
-
-  Z_Init();                  /* 1/18/98 killough: start up memory stuff first */
 
   atexit(I_Quit);
 #ifndef PRBOOM_DEBUG

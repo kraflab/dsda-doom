@@ -68,16 +68,7 @@ typedef int fixed_t;
 //
 // btw, GCC generates code without nonsenses
 
-#if 0
-inline static CONSTFUNC fixed_t D_abs(fixed_t x)
-{
-  fixed_t _t = (x),_s;
-  _s = _t >> (8*sizeof _t-1);
-  return (_t^_s)-_s;
-}
-#else
 #define D_abs abs
-#endif
 
 /*
  * Fixed Point Multiplication

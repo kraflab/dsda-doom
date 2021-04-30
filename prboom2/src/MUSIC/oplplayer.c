@@ -1223,7 +1223,11 @@ static void I_OPL_PlaySong(const void *handle, int looping)
         return;
     }
 
+    // This is required to interface with OPL (I think)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wcast-qual"
     file = (midi_file_t*)handle;
+    #pragma GCC diagnostic pop
 
     // Allocate track data.
 
@@ -1323,7 +1327,11 @@ static void I_OPL_UnRegisterSong(const void *handle)
 
     if (handle != NULL)
     {
+        // This is required to interface with OPL (I think)
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wcast-qual"
         MIDI_FreeFile((midi_file_t *) handle);
+        #pragma GCC diagnostic pop
     }
 }
 
@@ -1346,7 +1354,7 @@ static const void *I_OPL_RegisterSong(const void *data, unsigned len)
     }
     mf.len = len;
     mf.pos = 0;
-    mf.data = (byte*)data;
+    mf.data = data;
 
     // NSM: if a file has a miniscule timecode we have to not load it.
     // if it's 0, we'll hang in scheduling and never finish.  if it's
@@ -1356,7 +1364,7 @@ static const void *I_OPL_RegisterSong(const void *data, unsigned len)
     // time numbers we have to traverse the tracks and everything
     if (mf.len < 100)
     {
-        lprintf (LO_WARN, "I_OPL_RegisterSong: Very short MIDI (%li bytes)\n", mf.len);
+        lprintf (LO_WARN, "I_OPL_RegisterSong: Very short MIDI (%I64i bytes)\n", mf.len);
         return NULL;
     }
 

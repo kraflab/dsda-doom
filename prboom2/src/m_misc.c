@@ -365,6 +365,7 @@ default_t defaults[] =
   {"pitched_sounds",{&pitched_sounds},{0},0,1, // killough 2/21/98
    def_bool,ss_none}, // enables variable pitch in sound effects (from id's original code)
   {"samplerate",{&snd_samplerate},{44100},11025,48000, def_int,ss_none},
+  {"slice_samplecount",{&snd_samplecount},{512},32,8192, def_int,ss_none},
   {"sfx_volume",{&snd_SfxVolume},{8},0,15, def_int,ss_none},
   {"music_volume",{&snd_MusicVolume},{8},0,15, def_int,ss_none},
   {"mus_pause_opt",{&mus_pause_opt},{1},0,2, // CPhipps - music pausing
@@ -379,6 +380,7 @@ default_t defaults[] =
   {"snd_soundfont",{NULL, &snd_soundfont},{0,"/usr/share/sounds/sf3/default-GM.sf3"},UL,UL,def_str,ss_none}, // soundfont name for synths that support it
 #endif
   {"snd_mididev",{NULL, &snd_mididev},{0,""},UL,UL,def_str,ss_none}, // midi device to use for portmidiplayer
+  {"full_sounds",{&full_sounds},{0},0,1,def_bool,ss_none}, // disable sound cutoffs
 
 #ifdef _WIN32
   {"mus_extend_volume",{&mus_extend_volume},{0},0,1,
@@ -749,6 +751,8 @@ default_t defaults[] =
     dsda_input_cycle_profile, { 0, -1, -1 } },
   { "input_cycle_palette", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_cycle_palette, { 0, -1, -1 } },
+  { "input_command_display", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_command_display, { 0, -1, -1 } },
 
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
@@ -966,13 +970,11 @@ default_t defaults[] =
    def_bool,ss_stat},
 
   {"Prboom-plus demos settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"demo_extendedformat", {&demo_extendedformat_default},  {1},0,1,
-   def_bool,ss_stat},
   {"demo_demoex_filename", {NULL,&demo_demoex_filename}, {0,""},UL,UL,
    def_str,ss_none},
   {"getwad_cmdline", {NULL, &getwad_cmdline}, {0,""},UL,UL,
    def_str,ss_none},
-  {"demo_overwriteexisting", {&demo_overwriteexisting},  {1},0,1,
+  {"demo_overwriteexisting", {&demo_overwriteexisting},  {0},0,1,
    def_bool,ss_stat},
   {"quickstart_window_ms", {&quickstart_window_ms},  {0},0,1000,
    def_int,ss_stat},
@@ -1016,6 +1018,9 @@ default_t defaults[] =
   { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int, ss_stat },
   { "dsda_hide_horns", { &dsda_hide_horns }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_organized_saves", { &dsda_organized_saves }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_command_display", { &dsda_command_display }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_command_history_size", { &dsda_command_history_size }, { 10 }, 1, 20, def_int, ss_stat },
+  { "dsda_hide_empty_commands", { &dsda_hide_empty_commands }, { 1 }, 0, 1, def_bool, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

@@ -546,7 +546,15 @@ int epiChoice;
 
 void M_AddEpisode(const char *map, char *def)
 {
-  EpiCustom = true;
+  if (!EpiCustom)
+  {
+    EpiCustom = true;
+    NewDef.prevMenu = &EpiDef;
+
+    if (gamemode == commercial || gamemission == chex)
+      EpiDef.numitems = 0;
+  }
+
   if (*def == '-')  // means 'clear'
   {
     EpiDef.numitems = 0;
@@ -2590,6 +2598,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Rewind", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_rewind },
   { "Cycle Input Profile", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_cycle_profile },
   { "Cycle Palette", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_cycle_palette },
+  { "Toggle Command Display", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_command_display },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings2 } },
   { 0, S_SKIP | S_END, m_null }
@@ -3114,16 +3123,16 @@ setup_menu_t gen_settings1[] = { // General Settings screen1
   {"Software Exclusive Fullscreen",  S_YESNO,            m_null, G_X, G_Y+ 6*8, {"exclusive_fullscreen"}, 0, M_ChangeVideoMode},
   {"Status Bar and Menu Appearance", S_CHOICE,           m_null, G_X, G_Y+ 7*8, {"render_stretch_hud"}, 0, M_ChangeStretch, render_stretch_list},
   {"Vertical Sync",                  S_YESNO,            m_null, G_X, G_Y+ 8*8, {"render_vsync"}, 0, M_ChangeVideoMode},
+  {"Enable Translucency",            S_YESNO,            m_null, G_X, G_Y+ 9*8, {"translucency"}, 0, M_Trans},
+  {"Translucency filter percentage", S_NUM,              m_null, G_X, G_Y+10*8, {"tran_filter_pct"}, 0, M_Trans},
+  {"Uncapped Framerate",             S_YESNO,            m_null, G_X, G_Y+11*8, {"uncapped_framerate"}, 0, M_ChangeUncappedFrameRate},
 
-  {"Enable Translucency",            S_YESNO,            m_null, G_X, G_Y+10*8, {"translucency"}, 0, M_Trans},
-  {"Translucency filter percentage", S_NUM,              m_null, G_X, G_Y+11*8, {"tran_filter_pct"}, 0, M_Trans},
-  {"Uncapped Framerate",             S_YESNO,            m_null, G_X, G_Y+12*8, {"uncapped_framerate"}, 0, M_ChangeUncappedFrameRate},
-
-  {"Sound & Music",                  S_SKIP|S_TITLE,     m_null, G_X, G_Y+14*8},
-  {"Number of Sound Channels",       S_NUM|S_PRGWARN,    m_null, G_X, G_Y+15*8, {"snd_channels"}},
-  {"Enable v1.1 Pitch Effects",      S_YESNO,            m_null, G_X, G_Y+16*8, {"pitched_sounds"}},
-  {"PC Speaker emulation",           S_YESNO|S_PRGWARN,  m_null, G_X, G_Y+17*8, {"snd_pcspeaker"}},
-  {"Preferred MIDI player",          S_CHOICE|S_PRGWARN, m_null, G_X, G_Y+18*8, {"snd_midiplayer"}, 0, M_ChangeMIDIPlayer, midiplayers},
+  {"Sound & Music",                  S_SKIP|S_TITLE,     m_null, G_X, G_Y+13*8},
+  {"Number of Sound Channels",       S_NUM|S_PRGWARN,    m_null, G_X, G_Y+14*8, {"snd_channels"}},
+  {"Enable v1.1 Pitch Effects",      S_YESNO,            m_null, G_X, G_Y+15*8, {"pitched_sounds"}},
+  {"PC Speaker emulation",           S_YESNO|S_PRGWARN,  m_null, G_X, G_Y+16*8, {"snd_pcspeaker"}},
+  {"Preferred MIDI player",          S_CHOICE|S_PRGWARN, m_null, G_X, G_Y+17*8, {"snd_midiplayer"}, 0, M_ChangeMIDIPlayer, midiplayers},
+  {"Disable Sound Cutoffs",          S_YESNO,            m_null, G_X, G_Y+18*8, {"full_sounds"}},
 
   // Button for resetting to defaults
   {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
@@ -3192,15 +3201,14 @@ setup_menu_t gen_settings2[] = { // General Settings screen2
 
 setup_menu_t gen_settings3[] = { // General Settings screen2
   {"Demos",                       S_SKIP|S_TITLE, m_null, G_X, G_Y+ 1*8},
-  {"Use Extended Format",         S_YESNO|S_PRGWARN, m_null,G_X,G_Y+ 2*8, {"demo_extendedformat"}, 0, M_ChangeDemoExtendedFormat},
-  {"Overwrite Existing",          S_YESNO, m_null, G_X, G_Y+ 3*8, {"demo_overwriteexisting"}},
-  {"Smooth Demo Playback",        S_YESNO, m_null, G_X, G_Y+ 4*8, {"demo_smoothturns"}, 0, M_ChangeDemoSmoothTurns},
-  {"Smooth Demo Playback Factor", S_NUM,   m_null, G_X, G_Y+ 5*8, {"demo_smoothturnsfactor"}, 0, M_ChangeDemoSmoothTurns},
-  {"Quickstart Window (ms)",      S_NUM,   m_null, G_X, G_Y+6*8, {"quickstart_window_ms"}},
+  {"Overwrite Existing",          S_YESNO, m_null, G_X, G_Y+ 2*8, {"demo_overwriteexisting"}},
+  {"Smooth Demo Playback",        S_YESNO, m_null, G_X, G_Y+ 3*8, {"demo_smoothturns"}, 0, M_ChangeDemoSmoothTurns},
+  {"Smooth Demo Playback Factor", S_NUM,   m_null, G_X, G_Y+ 4*8, {"demo_smoothturnsfactor"}, 0, M_ChangeDemoSmoothTurns},
+  {"Quickstart Window (ms)",      S_NUM,   m_null, G_X, G_Y+ 5*8, {"quickstart_window_ms"}},
 
-  {"Movements",                   S_SKIP|S_TITLE,m_null,G_X, G_Y+8*8},
-  {"Permanent Strafe50 (TAS)",    S_YESNO, m_null, G_X, G_Y+ 9*8, {"movement_strafe50"}, 0, M_ChangeSpeed},
-  {"Strafe50 On Turns (TAS)",     S_YESNO, m_null, G_X, G_Y+ 10*8, {"movement_strafe50onturns"}, 0, M_ChangeSpeed},
+  {"Movements",                   S_SKIP|S_TITLE,m_null,G_X, G_Y+7*8},
+  {"Permanent Strafe50 (TAS)",    S_YESNO, m_null, G_X, G_Y+ 8*8, {"movement_strafe50"}, 0, M_ChangeSpeed},
+  {"Strafe50 On Turns (TAS)",     S_YESNO, m_null, G_X, G_Y+ 9*8, {"movement_strafe50onturns"}, 0, M_ChangeSpeed},
 
   {"Mouse",                       S_SKIP|S_TITLE,m_null, G_X, G_Y+11*8},
   {"Dbl-Click As Use",            S_YESNO, m_null, G_X, G_Y+12*8, {"mouse_doubleclick_as_use"}},
@@ -3357,6 +3365,9 @@ setup_menu_t dsda_gen_settings[] = {
   { "Fine Sensitivity", S_NUM, m_null, G_X, G_Y + 9 * 8, { "dsda_fine_sensitivity" } },
   { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "dsda_hide_horns" } },
   { "Organize My Save Files", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "dsda_organized_saves" } },
+  { "Show Command Display (TAS)", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "dsda_command_display" } },
+  { "Command History", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_command_history_size" } },
+  { "Hide Empty Commands", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_hide_empty_commands" } },
 
 #ifdef GL_DOOM
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },
@@ -3483,37 +3494,14 @@ setup_menu_t mess_settings1[] =  // Messages screen
   {"Message Color During Play", S_CRITEM, m_null, M_X,
    M_Y + mess_color_play*8, {"hudcolor_mesg"}},
 
-#if 0
-  {"Message Duration During Play (ms)", S_NUM, m_null, M_X,
-   M_Y  + mess_timer*8, {"message_timer"}},
-#endif
-
   {"Chat Message Color", S_CRITEM, m_null, M_X,
    M_Y + mess_color_chat*8, {"hudcolor_chat"}},
-
-#if 0
-  {"Chat Message Duration (ms)", S_NUM, m_null, M_X,
-   M_Y  + mess_chat_timer*8, {"chat_msg_timer"}},
-#endif
 
   {"Message Review Color", S_CRITEM, m_null, M_X,
    M_Y + mess_color_review*8, {"hudcolor_list"}},
 
-#if 0
-  {"Message Listing Review is Temporary",  S_YESNO,  m_null,  M_X,
-   M_Y + mess_timed*8, {"hud_msg_timed"}},
-
-  {"Message Review Duration (ms)", S_NUM, m_null, M_X,
-   M_Y  + mess_hud_timer*8, {"hud_msg_timer"}},
-#endif
-
   {"Number of Review Message Lines", S_NUM, m_null,  M_X,
    M_Y + mess_lines*8, {"hud_msg_lines"}},
-
-#if 0
-  {"Message Listing Scrolls Upwards",  S_YESNO,  m_null,  M_X,
-   M_Y + mess_scrollup*8, {"hud_msg_scrollup"}},
-#endif
 
   {"Message Background",  S_YESNO,  m_null,  M_X,
    M_Y + mess_background*8, {"hud_list_bgon"}},
@@ -4777,10 +4765,17 @@ dboolean M_Responder (event_t* ev) {
     }
 #endif
 
+    if (dsda_InputActivated(dsda_input_command_display) && !dsda_StrictMode())
+    {
+      dsda_command_display = !dsda_command_display;
+      doom_printf("Command Display %s", dsda_command_display ? "on" : "off");
+    }
+
     if (dsda_InputActivated(dsda_input_mlook)) // mouse look
     {
       movement_mouselook = !movement_mouselook;
       M_ChangeMouseLook();
+      doom_printf("Mouselook %s", movement_mouselook ? "on" : "off");
       // Don't eat the keypress in this case.
       // return true;
     }
@@ -4788,6 +4783,7 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_novert))
     {
       movement_mousenovert = !movement_mousenovert;
+      doom_printf("Vertical Mouse Movement %s", movement_mousenovert ? "off" : "on");
       // Don't eat the keypress in this case.
       // return true;
     }
@@ -5674,7 +5670,7 @@ void M_StartControlPanel (void)
     EpiDef.numitems = ep_end;
     if (gamemode != commercial
       && (compatibility_level < ultdoom_compatibility
-        || W_SafeGetNumForName(EpiDef.menuitems[ep4].name) == -1))
+        || W_CheckNumForName(EpiDef.menuitems[ep4].name) == -1))
     {
       EpiDef.numitems--;
     }
@@ -6076,7 +6072,8 @@ void M_Init(void)
       MainMenu[readthis] = MainMenu[quitdoom];
       MainDef.numitems--;
       MainDef.y += 8;
-      NewDef.prevMenu = &MainDef;
+      if (!EpiCustom)
+        NewDef.prevMenu = &MainDef;
       ReadDef1.routine = M_DrawReadThis1;
       ReadDef1.x = 330;
       ReadDef1.y = 165;
@@ -6116,7 +6113,6 @@ void M_Init(void)
 #endif
 
   M_ChangeDemoSmoothTurns();
-  M_ChangeDemoExtendedFormat();
 
   M_ChangeMapMultisamling();
 

@@ -85,6 +85,8 @@ typedef struct
 
   // e6y: wide-res
   enum patch_translation_e flags;
+
+  int space_width;
 } hu_textline_t;
 
 
