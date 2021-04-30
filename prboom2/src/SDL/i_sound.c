@@ -309,7 +309,7 @@ int I_GetSfxLumpNum(sfxinfo_t *sfx)
   format = heretic ? "%s" : snd_pcspeaker ? "dp%s" : "ds%s";
 
   sprintf(namebuf, format, sfx->name);
-  return W_SafeGetNumForName(namebuf); //e6y: make missing sounds non-fatal
+  return W_CheckNumForName(namebuf); //e6y: make missing sounds non-fatal
 }
 
 //
