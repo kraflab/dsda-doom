@@ -2987,7 +2987,7 @@ void A_LineEffect(mobj_t *mo)
 //
 
 //
-// A_SpawnFacing
+// A_SpawnObject
 // Basically just A_Spawn with better behavior and more args.
 //   args[0]: Type of actor to spawn
 //   args[1]: Angle (degrees, in fixed point), relative to calling actor's angle
@@ -2998,7 +2998,7 @@ void A_LineEffect(mobj_t *mo)
 //   args[6]: Y velocity (fixed point)
 //   args[7]: Z velocity (fixed point)
 //
-void A_SpawnFacing(mobj_t *actor)
+void A_SpawnObject(mobj_t *actor)
 {
   int type, angle, ofs_x, ofs_y, ofs_z, vel_x, vel_y, vel_z;
   angle_t an;

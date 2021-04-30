@@ -1448,7 +1448,7 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_Stop,            "A_Stop"},
 
   // [XA] New mbf21 codepointers
-  {A_SpawnFacing,         "A_SpawnFacing", 8},
+  {A_SpawnObject,         "A_SpawnObject", 8},
   {A_MonsterProjectile,   "A_MonsterProjectile", 5},
   {A_MonsterBulletAttack, "A_MonsterBulletAttack", 5},
   {A_RadiusDamage,        "A_RadiusDamage", 2},
