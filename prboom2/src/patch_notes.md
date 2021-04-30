@@ -18,7 +18,7 @@
 
 #### Miscellaneous
 - Allow mbf sky transfers in all complevels (pr+)
-- Update to umapinfo rev 1.5 (pr+)
+- Update to umapinfo rev 1.6 (pr+)
 - Change demo overwrite default to off
 - Remove deprecated laggy sleep option
 - Remove various unwelcome / secret configuration options
@@ -46,3 +46,5 @@
 - Fix transparent sprites in opengl (pr+)
 - Fix non-standard sky scaling in opengl (pr+)
 - Fix issue with windows dpi virtualization (pr+)
+- Fix umapinfo musinfo (pr+)
+- Fix umapinfo endbunny / endgame fields (pr+)
