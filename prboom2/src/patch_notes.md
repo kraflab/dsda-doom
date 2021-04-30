@@ -17,6 +17,7 @@
 - Can be used for playback analysis, tasing, practice, etc
 
 #### Miscellaneous
+- Allow mbf sky transfers in all complevels (pr+)
 - Change demo overwrite default to off
 - Remove deprecated laggy sleep option
 - Remove various unwelcome / secret configuration options
@@ -27,6 +28,7 @@
 - Add option to hide the heretic hud horns
 - Add notification when toggling vertmouse
 - Add notification when toggling mouselook
+- Add option to disable sound cutoffs (pr+)
 - Fix missing small screen border for heretic
 - Fix zoomed in heretic weapon heights
 - Fix heretic scrolling floors also scrolling the ceiling
@@ -35,3 +37,5 @@
 - Fix an issue with wad lump loading - small performance improvement
 - Fix msvc build (xaser)
 - Fix macos launcher iwad directory mismatch (PBeGood4)
+- Fix umapinfo custom episode select for doom2 (pr+)
+- Fix shifting automap markers (pr+)
