@@ -178,14 +178,6 @@ const int nstandard_iwads = sizeof standard_iwads/sizeof*standard_iwads;
 
 void D_PostEvent(event_t *ev)
 {
-  /* cph - suppress all input events at game start
-   * FIXME: This is a lousy kludge */
-
-  // e6y
-  // Is this condition needed here?
-  // Moved to I_StartTic()
-  // if (gametic < 3) return;
-
   dsda_InputTrackEvent(ev);
 
   // Allow only sensible keys during skipping
