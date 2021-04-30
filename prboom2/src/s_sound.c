@@ -50,6 +50,8 @@
 #include "sc_man.h"
 #include "e6y.h"
 
+#include "dsda/memory.h"
+
 // when to clip out sounds
 // Does not fit the large outdoor areas.
 #define S_CLIPPING_DIST (1200<<FRACBITS)
@@ -164,6 +166,8 @@ void S_Init(int sfxVolume, int musicVolume)
     // Note that sounds have not been cached (yet).
     for (i=1 ; i<num_sfx ; i++)
       S_sfx[i].lumpnum = S_sfx[i].usefulness = -1;
+
+    dsda_CacheSoundLumps();
   }
 
   // CPhipps - music init reformatted
