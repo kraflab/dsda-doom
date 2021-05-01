@@ -45,7 +45,7 @@
 extern int deh_apply_cheats;
 
 void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum);
-void CheckDehConsistency(void);
+void PostProcessDeh(void);
 
 //
 //      Ty 03/22/98 - note that we are keeping the english versions and
