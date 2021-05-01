@@ -3009,14 +3009,14 @@ void A_SpawnObject(mobj_t *actor)
   if (!mbf21 || !actor->state->args[0])
     return;
 
-  type  = ARG_DEFAULT(actor->state->args[0], 0) - 1;
-  angle = ARG_DEFAULT(actor->state->args[1], 0);
-  ofs_x = ARG_DEFAULT(actor->state->args[2], 0);
-  ofs_y = ARG_DEFAULT(actor->state->args[3], 0);
-  ofs_z = ARG_DEFAULT(actor->state->args[4], 0);
-  vel_x = ARG_DEFAULT(actor->state->args[5], 0);
-  vel_y = ARG_DEFAULT(actor->state->args[6], 0);
-  vel_z = ARG_DEFAULT(actor->state->args[7], 0);
+  type  = actor->state->args[0] - 1;
+  angle = actor->state->args[1];
+  ofs_x = actor->state->args[2];
+  ofs_y = actor->state->args[3];
+  ofs_z = actor->state->args[4];
+  vel_x = actor->state->args[5];
+  vel_y = actor->state->args[6];
+  vel_z = actor->state->args[7];
 
   // calculate position offsets
   an = actor->angle + (unsigned int)(((int_64_t)angle << 16) / 360);
@@ -3076,11 +3076,11 @@ void A_MonsterProjectile(mobj_t *actor)
   if (!mbf21 || !actor->target || !actor->state->args[0])
     return;
 
-  type        = ARG_DEFAULT(actor->state->args[0], 0) - 1;
-  angle       = ARG_DEFAULT(actor->state->args[1], 0);
-  pitch       = ARG_DEFAULT(actor->state->args[2], 0);
-  spawnofs_xy = ARG_DEFAULT(actor->state->args[3], 0);
-  spawnofs_z  = ARG_DEFAULT(actor->state->args[4], 0);
+  type        = actor->state->args[0] - 1;
+  angle       = actor->state->args[1];
+  pitch       = actor->state->args[2];
+  spawnofs_xy = actor->state->args[3];
+  spawnofs_z  = actor->state->args[4];
 
   A_FaceTarget(actor);
   mo = P_SpawnMissile(actor, actor->target, type);
@@ -3125,11 +3125,11 @@ void A_MonsterBulletAttack(mobj_t *actor)
   if (!mbf21 || !actor->target)
     return;
 
-  hspread    = ARG_DEFAULT(actor->state->args[0], 0);
-  vspread    = ARG_DEFAULT(actor->state->args[1], 0);
-  numbullets = ARG_DEFAULT(actor->state->args[2], 1);
-  damagebase = ARG_DEFAULT(actor->state->args[3], 3);
-  damagemod  = ARG_DEFAULT(actor->state->args[4], 5);
+  hspread    = actor->state->args[0];
+  vspread    = actor->state->args[1];
+  numbullets = actor->state->args[2];
+  damagebase = actor->state->args[3];
+  damagemod  = actor->state->args[4];
 
   A_FaceTarget(actor);
   S_StartSound(actor, actor->info->attacksound);
