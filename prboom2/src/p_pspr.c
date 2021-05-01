@@ -1256,11 +1256,9 @@ void A_WeaponMeleeAttack(player_t *player, pspdef_t *psp)
   t = P_Random(pr_mbf21);
   angle += (t - P_Random(pr_mbf21))<<18;
 
-  /* killough 8/2/98: make autoaiming prefer enemies */
-  // [XA] ain't touchin' this.
-  if (!mbf_features ||
-      (slope = P_AimLineAttack(player->mo, angle, range, MF_FRIEND),
-       !linetarget))
+  // make autoaim prefer enemies
+  slope = P_AimLineAttack(player->mo, angle, range, MF_FRIEND);
+  if (!linetarget)
     slope = P_AimLineAttack(player->mo, angle, range, 0);
 
   // attack, dammit!
