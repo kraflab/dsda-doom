@@ -20,6 +20,7 @@
 - Allow mbf sky transfers in all complevels (pr+)
 - Update to umapinfo rev 1.6 (pr+)
 - Change demo overwrite default to off
+- Protect map coordinates with strict mode
 - Remove deprecated laggy sleep option
 - Remove various unwelcome / secret configuration options
 - Remove option to turn demo footer off
