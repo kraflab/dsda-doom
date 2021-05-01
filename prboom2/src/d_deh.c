@@ -1473,6 +1473,8 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {NULL,              "A_NULL"},  // Ty 05/16/98
 };
 
+static byte *defined_codeptr_args;
+
 // to hold startup code pointers from INFO.C
 // CPhipps - static
 static actionf_t deh_codeptr[NUMSTATES];
@@ -1619,6 +1621,9 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
   DEHFILE infile, *filein = &infile;    // killough 10/98
   char inbuffer[DEH_BUFFERMAX];  // Place to put the primary infostring
   const char *file_or_lump;
+
+  if (!defined_codeptr_args)
+    defined_codeptr_args = calloc(NUMSTATES, sizeof(*defined_codeptr_args));
 
   // Open output file if we're writing output
   if (outfilename && *outfilename && !fileout)
@@ -2207,48 +2212,56 @@ static void deh_procFrame(DEHFILE *fpin, FILE* fpout, char *line)
                       {
                         if (fpout) fprintf(fpout," - args[0] = %ld\n",(long)value);
                         states[indexnum].args[0] = (long)value; // long
+                        defined_codeptr_args[indexnum] |= (1 << 0);
                       }
                     else
                       if (!deh_strcasecmp(key,deh_state[8]))  // Args2
                         {
                           if (fpout) fprintf(fpout," - args[1] = %ld\n",(long)value);
                           states[indexnum].args[1] = (long)value; // long
+                          defined_codeptr_args[indexnum] |= (1 << 1);
                         }
                       else
                         if (!deh_strcasecmp(key,deh_state[9]))  // Args3
                           {
                             if (fpout) fprintf(fpout," - args[2] = %ld\n",(long)value);
                             states[indexnum].args[2] = (long)value; // long
+                            defined_codeptr_args[indexnum] |= (1 << 2);
                           }
                         else
                           if (!deh_strcasecmp(key,deh_state[10]))  // Args4
                             {
                               if (fpout) fprintf(fpout," - args[3] = %ld\n",(long)value);
                               states[indexnum].args[3] = (long)value; // long
+                              defined_codeptr_args[indexnum] |= (1 << 3);
                             }
                           else
                             if (!deh_strcasecmp(key,deh_state[11]))  // Args5
                               {
                                 if (fpout) fprintf(fpout," - args[4] = %ld\n",(long)value);
                                 states[indexnum].args[4] = (long)value; // long
+                                defined_codeptr_args[indexnum] |= (1 << 4);
                               }
                             else
                               if (!deh_strcasecmp(key,deh_state[12]))  // Args6
                                 {
                                   if (fpout) fprintf(fpout," - args[5] = %ld\n",(long)value);
                                   states[indexnum].args[5] = (long)value; // long
+                                  defined_codeptr_args[indexnum] |= (1 << 5);
                                 }
                               else
                                 if (!deh_strcasecmp(key,deh_state[13]))  // Args7
                                   {
                                     if (fpout) fprintf(fpout," - args[6] = %ld\n",(long)value);
                                     states[indexnum].args[6] = (long)value; // long
+                                    defined_codeptr_args[indexnum] |= (1 << 6);
                                   }
                                 else
                                   if (!deh_strcasecmp(key,deh_state[14]))  // Args8
                                     {
                                       if (fpout) fprintf(fpout," - args[7] = %ld\n",(long)value);
                                       states[indexnum].args[7] = (long)value; // long
+                                      defined_codeptr_args[indexnum] |= (1 << 7);
                                     }
                                   else
                                     if (!deh_strcasecmp(key,deh_state[15]))  // MBF21 Bits
@@ -3523,10 +3536,7 @@ dboolean deh_GetData(char *s, char *k, uint_64_t *l, char **strval, FILE *fpout)
 
 static deh_bexptr null_bexptr = { NULL, "(NULL)" };
 
-//
-// CheckDehConsistency
-//
-void CheckDehConsistency(void)
+void PostProcessDeh(void)
 {
   int i, j;
   const deh_bexptr *bexptr_match;
@@ -3559,7 +3569,7 @@ void CheckDehConsistency(void)
 
     // replace unset fields with default values
     for (; j >= 0; j--)
-      if (states[i].args[j] == 0)
+      if (!(defined_codeptr_args[i] & (1 << j)))
         states[i].args[j] = bexptr_match->default_args[j];
   }
 }
