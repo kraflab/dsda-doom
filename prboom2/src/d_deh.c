@@ -3572,4 +3572,7 @@ void PostProcessDeh(void)
       if (!(defined_codeptr_args[i] & (1 << j)))
         states[i].args[j] = bexptr_match->default_args[j];
   }
+
+  if (defined_codeptr_args)
+    free(defined_codeptr_args);
 }
