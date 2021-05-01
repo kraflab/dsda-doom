@@ -753,6 +753,8 @@ default_t defaults[] =
     dsda_input_cycle_palette, { 0, -1, -1 } },
   { "input_command_display", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_command_display, { 0, -1, -1 } },
+  { "input_strict_mode", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_strict_mode, { 0, -1, -1 } },
 
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,

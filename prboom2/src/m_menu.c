@@ -2599,6 +2599,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Cycle Input Profile", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_cycle_profile },
   { "Cycle Palette", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_cycle_palette },
   { "Toggle Command Display", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_command_display },
+  { "Toggle Strict Mode", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_strict_mode },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings2 } },
   { 0, S_SKIP | S_END, m_null }
@@ -4769,6 +4770,12 @@ dboolean M_Responder (event_t* ev) {
     {
       dsda_command_display = !dsda_command_display;
       doom_printf("Command Display %s", dsda_command_display ? "on" : "off");
+    }
+
+    if (dsda_InputActivated(dsda_input_strict_mode))
+    {
+      dsda_strict_mode = !dsda_strict_mode;
+      doom_printf("Strict Mode %s", dsda_strict_mode ? "on" : "off");
     }
 
     if (dsda_InputActivated(dsda_input_mlook)) // mouse look

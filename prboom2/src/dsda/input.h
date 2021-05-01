@@ -154,6 +154,7 @@ typedef enum {
   dsda_input_iddt,
   dsda_input_cycle_palette,
   dsda_input_command_display,
+  dsda_input_strict_mode,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
