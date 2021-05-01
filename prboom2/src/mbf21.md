@@ -211,20 +211,130 @@ MBF21 defaults:
 #### New DEHACKED Codepointers
 - [PR](https://github.com/kraflab/dsda-doom/pull/20)
 - All new MBF21 pointers use the new "Args" fields for params, rather than misc1/misc2 fields
-- Actor pointers:
-  - **A_SpawnFacing(type, height)** -- spawns an actor of `type` at `height` z units and sets its angle to the caller's angle.
-  - **A_MonsterProjectile(type, angle)** -- generic monster projectile attack; always sets `tracer` field.
-  - **A_MonsterBulletAttack(damage, spread)** -- generic monster bullet attack w/horizontal `spread`; if `spread` is negative, apply vertical spread equal to 2/3 of this value (approx. equal to SSG vert-spread)
-  - **A_RadiusDamage(damage, radius)** -- generic A_Explode, w/customizable damage and radius (helll yeah)
-- Weapon pointers:
-  - **A_WeaponProjectile(type, angle)** -- generic weapon projectile attack; does not consume ammo
-  - **A_WeaponBulletAttack(damage, spread)** -- generic weapon bullet attack; does not consume ammo; same `spread` behavior as A_MonsterBulletAttack
-  - **A_WeaponSound(sound, fullvol)** -- same as A_PlaySound, but for weapons
-  - **A_WeaponJump(state, chance)** -- same as A_RandomJump, but for  weapons
-  - **A_ConsumeAmmo(amount)** -- subtract `amount` units of ammo. if `amount` is zero, use the weapon slot's `ammopershot`. will not reduce ammo below zero.
-  - **A_CheckAmmo(state, amount)** -- jumps to `state` if ammo is below `amount`; if `amount` is zero, use the weapon slot's `ammopershot` value instead
-  - **A_RefireTo(state, noammocheck)** -- jumps to `state` if trigger is still held down; will also check ammo unless `noammocheck` is set
-  - **A_GunFlashTo(state, nothirdperson)** -- sets the weapon's flash state to `state`; also sets the player's 3rd-person sprite to the player actor's firing frame unless `nothirdperson` is set
+- Arg fields are listed in order in the docs below, e.g. for `A_SpawnObject`, `type` is Args1, `angle` is Args2, etc.
+- Although all args are integers internally, there are effectively the following types of args:
+  - `int`: An integer. 'Nuff said.
+  - `uint`: An unsigned integer. Must be greater than or equal to zero.
+  - `fixed` A [fixed-point](https://doomwiki.org/wiki/Fixed_point) number.
+    - For user-friendliness, a suggested convention for MBF21-supporting DEHACKED tools is to convert numbers with decimal points to their fixed-point representation when saving the patch (e.g. "1.0" gets saved as "65536"), so this doesn't get super-ugly on the user side of life.
+
+##### Actor pointers
+
+- **A_SpawnObject(type, angle, x_ofs, y_ofs, z_ofs, x_vel, y_vel, z_vel)**
+  - Generic actor spawn function.
+  - Args:
+    - `type (uint)`: Type (dehnum) of actor to spawn
+    - `angle (fixed)`: Angle (degrees), relative to calling actor's angle
+    - `x_ofs (fixed)`: X (forward/back) spawn position offset
+    - `y_ofs (fixed)`: Y (left/right) spawn position offset
+    - `z_ofs (fixed)`: Z (up/down) spawn position offset
+    - `x_vel (fixed)`: X (forward/back) velocity
+    - `y_vel (fixed)`: Y (left/right) velocity
+    - `z_vel (fixed)`: Z (up/down) velocity
+  - Notes:
+    - If the spawnee is a missile, the `tracer` and `target` pointers are set as follows:
+      - If spawner is also a missile, `tracer` and `target` are copied to spawnee
+      - Otherwise, spawnee's `target` is set to the spawner and `tracer` is set to the spawner's `target`.
+
+- **A_MonsterProjectile(type, angle, pitch, hoffset, voffset)**
+  - Generic monster projectile attack.
+  - Args:
+    - `type (uint)`: Type (dehnum) of actor to spawn
+    - `angle (fixed)`: Angle (degrees), relative to calling actor's angle
+    - `pitch (fixed)`: Pitch (degrees), relative to calling actor's pitch
+    - `hoffset (fixed)`: Horizontal spawn offset, relative to calling actor's angle
+    - `voffset (fixed)`: Vertical spawn offset, relative to actor's default projectile fire height
+  - Notes:
+    - The `pitch` arg uses the same approximated pitch calculation that Doom's monster aim / autoaim uses. Refer to the implementation for specifics.
+    - The spawned projectile's `tracer` pointer is always set to the spawner's `target`, for generic seeker missile support.
+
+- **A_MonsterBulletAttack(hspread, vspread, numbullets, damagebase, damagedice)**
+  - Generic monster bullet attack.
+  - Args:
+    - `hspread (fixed)`: Horizontal spread (degrees, in fixed point)
+    - `vspread (fixed)`: Vertical spread (degrees, in fixed point)
+    - `numbullets (int)`: Number of bullets to fire; if not set, defaults to 1
+    - `damagebase (int)`: Base damage of attack; if not set, defaults to 3
+    - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 5
+  - Notes:
+    - Damage formula is: `damage = (damagebase * random(1, damagedice))`
+    - Damage arg defaults are identical to Doom's usual monster bullet attack values.
+    - Entering a negative value for `numbullets`, `damagebase`, and `damagedice` is undefined behavior (for now).
+
+- **A_RadiusDamage(damage, radius)**
+  - Generic A_Explode (hell yeah).
+  - Args:
+    - `damage (int)`: Max explosion damge
+    - `radius (int)`: Explosion radius
+
+##### Weapon pointers
+
+- **A_WeaponProjectile(type, angle)**
+  - Generic weapon projectile attack.
+  - Args:
+    - `type (uint)`: Type (dehnum) of actor to spawn
+    - `angle (fixed)`: Angle (degrees), relative to player's angle
+    - `pitch (fixed)`: Pitch (degrees), relative to player's pitch
+    - `hoffset (fixed)`: Horizontal spawn offset, relative to player's angle
+    - `voffset (fixed)`: Vertical spawn offset, relative to player's default projectile fire height
+  - Notes:
+    - Unlike native Doom attack codepointers, this function will not consume ammo, trigger the Flash state, or play a sound.
+    - The `pitch` arg uses the same approximated pitch calculation that Doom's monster aim / autoaim uses. Refer to the implementation for specifics.
+
+- **A_WeaponBulletAttack(damage, spread)** 
+  - Generic weapon bullet attack.
+  - Args:
+    - `hspread (fixed)`: Horizontal spread (degrees, in fixed point)
+    - `vspread (fixed)`: Vertical spread (degrees, in fixed point)
+    - `numbullets (int)`: Number of bullets to fire; if not set, defaults to 1
+    - `damagebase (int)`: Base damage of attack; if not set, defaults to 5
+    - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 3
+  - Notes:
+    - Unlike native Doom attack codepointers, this function will not consume ammo, trigger the Flash state, or play a sound.
+    - Damage formula is: `damage = (damagebase * random(1, damagedice))`
+    - Damage arg defaults are identical to Doom's usual monster bullet attack values.
+      - Note that these defaults are different for weapons and monsters (5d3 vs 3d5) -- yup, Doom did it this way. :P
+
+- **A_WeaponSound(sound, fullvol)**
+  - Generic playsound for weapons.
+  - Args:
+    - `sound (uint)`: DEH Index of sound to play.
+    - `fullvol (int)`: If nonzero, play this sound at full volume across the entire map.
+
+- **A_WeaponJump(state, chance)**
+  - Random state jump for weapons.
+  - Args:
+    - `state (uint)`: State index to jump to.
+    - `chance (int)`: Chance out of 256 to perform the jump. 0 never jumps, 256 always jumps.
+
+- **A_ConsumeAmmo(amount)**
+  - Subtracts ammo from the currently-selected weapon's ammo pool.
+  - Args:
+    - `amount (int)`: Amount of ammo to subtract. If zero, will default to the current weapon's `ammopershot` value.
+  - Notes:
+    - This function will not reduce ammo below zero.
+    - This function will no-op if the current weapon uses the `am_noammo` ("None"/"Infinite") ammotype.
+
+- **A_CheckAmmo(state, amount)**
+  - Jumps to `state` if ammo is below `amount`.
+  - Args:
+    - `state (uint)`: State index to jump to.
+    - `amount (int)`: Amount of ammo to check. If zero, will default to the current weapon's `ammopershot` value.
+  - Notes:
+    - The jump will only occur if ammo is BELOW the given value -- e.g. `A_CheckAmmo(420, 695)` will jump to state 420 if ammo is 68 or lower.
+    - This function will no-op if the current weapon uses the `am_noammo` ("None"/"Infinite") ammotype.
+
+- **A_RefireTo(state, noammocheck)**
+  - Jumps to `state` if the fire button is currently being pressed and the weapon has enough ammo to fire.
+  - Args:
+    - `state (uint)`: State index to jump to.
+    - `noammocheck (int)`: If nonzero, skip the ammo check.
+
+- **A_GunFlashTo(state, nothirdperson)**
+  - Generic weapon muzzle flash.
+  - Args:
+    - `state (uint)`: State index to set the flash psprite to.
+    - `nothirdperson (int)`: If nonzero, do not change the 3rd-person player sprite to the player muzzleflash state.
 
 ## Miscellaneous
 
