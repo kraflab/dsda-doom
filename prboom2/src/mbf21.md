@@ -262,6 +262,16 @@ Summary of comp flags since mbf in pr+ and changes:
 - MBF21 occupies complevel 21.
 - Demo version is 221.
 - longtics are enabled while recording.
+- Old option entries removed:
+  - variable_friction (always 1)
+  - allow_pushers (always 1)
+  - demo_insurance (always 0)
+  - obsolete / empty bytes
+- New option entries:
+  - New comp options from above
+  - Size of comp option list
+    - This could be used to add comp options later without adding a complevel
+    - When reading a demo that has a size larger than what you expect, abort
 - Header options block:
 
 | Key                   | Bytes |
