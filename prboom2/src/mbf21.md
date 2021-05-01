@@ -269,7 +269,7 @@ MBF21 defaults:
 
 ##### Weapon pointers
 
-- **A_WeaponProjectile(type, angle)**
+- **A_WeaponProjectile(type, angle, pitch, hoffset, voffset)**
   - Generic weapon projectile attack.
   - Args:
     - `type (uint)`: Type (dehnum) of actor to spawn
@@ -281,7 +281,7 @@ MBF21 defaults:
     - Unlike native Doom attack codepointers, this function will not consume ammo, trigger the Flash state, or play a sound.
     - The `pitch` arg uses the same approximated pitch calculation that Doom's monster aim / autoaim uses. Refer to the implementation for specifics.
 
-- **A_WeaponBulletAttack(damage, spread)** 
+- **A_WeaponBulletAttack(hspread, vspread, numbullets, damagebase, damagedice)**
   - Generic weapon bullet attack.
   - Args:
     - `hspread (fixed)`: Horizontal spread (degrees, in fixed point)
