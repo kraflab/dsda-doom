@@ -1156,11 +1156,11 @@ void A_WeaponProjectile(player_t *player, pspdef_t *psp)
   if (!mbf21 || !psp->state || !psp->state->args[0])
     return;
 
-  type        = ARG_DEFAULT(psp->state->args[0], 0) - 1;
-  angle       = ARG_DEFAULT(psp->state->args[1], 0);
-  pitch       = ARG_DEFAULT(psp->state->args[2], 0);
-  spawnofs_xy = ARG_DEFAULT(psp->state->args[3], 0);
-  spawnofs_z  = ARG_DEFAULT(psp->state->args[4], 0);
+  type        = psp->state->args[0] - 1;
+  angle       = psp->state->args[1];
+  pitch       = psp->state->args[2];
+  spawnofs_xy = psp->state->args[3];
+  spawnofs_z  = psp->state->args[4];
 
   mo = P_SpawnPlayerMissile(player->mo, type);
   if (!mo)
@@ -1202,11 +1202,11 @@ void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
   if (!mbf21 || !psp->state)
     return;
 
-  hspread    = ARG_DEFAULT(psp->state->args[0], 0);
-  vspread    = ARG_DEFAULT(psp->state->args[1], 0);
-  numbullets = ARG_DEFAULT(psp->state->args[2], 1);
-  damagebase = ARG_DEFAULT(psp->state->args[3], 5);
-  damagemod  = ARG_DEFAULT(psp->state->args[4], 3);
+  hspread    = psp->state->args[0];
+  vspread    = psp->state->args[1];
+  numbullets = psp->state->args[2];
+  damagebase = psp->state->args[3];
+  damagemod  = psp->state->args[4];
 
   P_BulletSlope(player->mo);
 

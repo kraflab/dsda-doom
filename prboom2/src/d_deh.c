@@ -1361,6 +1361,7 @@ typedef struct {
   const char *lookup;  // mnemonic lookup string to be specified in BEX
   // CPhipps - const*
   int argcount;  // [XA] number of mbf21 args this action uses, if any
+  long default_args[MAXSTATEARGS]; // default values for mbf21 args
 } deh_bexptr;
 
 static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
@@ -1457,10 +1458,10 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   // [XA] New mbf21 codepointers
   {A_SpawnObject,         "A_SpawnObject", 8},
   {A_MonsterProjectile,   "A_MonsterProjectile", 5},
-  {A_MonsterBulletAttack, "A_MonsterBulletAttack", 5},
+  {A_MonsterBulletAttack, "A_MonsterBulletAttack", 5, {0, 0, 1, 3, 5}},
   {A_RadiusDamage,        "A_RadiusDamage", 2},
   {A_WeaponProjectile,    "A_WeaponProjectile", 5},
-  {A_WeaponBulletAttack,  "A_WeaponBulletAttack", 5},
+  {A_WeaponBulletAttack,  "A_WeaponBulletAttack", 5, {0, 0, 1, 5, 3}},
   {A_WeaponSound,         "A_WeaponSound", 2},
   {A_WeaponJump,          "A_WeaponJump", 2},
   {A_ConsumeAmmo,         "A_ConsumeAmmo", 1},
@@ -3520,13 +3521,15 @@ dboolean deh_GetData(char *s, char *k, uint_64_t *l, char **strval, FILE *fpout)
   return(okrc);
 }
 
+static deh_bexptr null_bexptr = { NULL, "(NULL)" };
+
 //
 // CheckDehConsistency
 //
 void CheckDehConsistency(void)
 {
-  int i, j, maxargs;
-  const char *bexptr_name;
+  int i, j;
+  const deh_bexptr *bexptr_match;
 
   // sanity-check bfgcells and bfg ammopershot
   if (
@@ -3536,24 +3539,27 @@ void CheckDehConsistency(void)
   )
     I_Error("Mismatch between bfgcells and bfg ammo per shot modifications! Check your dehacked.");
 
-  // ensure states don't use more mbf21 args than their
-  // action pointer expects, for future-proofing's sake
   for (i = 0; i < num_states; i++)
   {
-    bexptr_name = "(NULL)";
-    maxargs = 0;
+    bexptr_match = &null_bexptr;
 
     for (j = 0; deh_bexptrs[j].cptr != NULL; ++j)
       if (states[i].action == deh_bexptrs[j].cptr)
       {
-        bexptr_name = deh_bexptrs[j].lookup;
-        maxargs = deh_bexptrs[j].argcount;
+        bexptr_match = &deh_bexptrs[j];
         break;
       }
 
-    for (j = MAXSTATEARGS - 1; j >= maxargs; j--)
+    // ensure states don't use more mbf21 args than their
+    // action pointer expects, for future-proofing's sake
+    for (j = MAXSTATEARGS - 1; j >= bexptr_match->argcount; j--)
       if (states[i].args[j] != 0)
         I_Error("Action %s on state %d expects no more than %d nonzero args (%d found). Check your dehacked.",
-          bexptr_name, i, maxargs, j+1);
+          bexptr_match->lookup, i, bexptr_match->argcount, j+1);
+
+    // replace unset fields with default values
+    for (; j >= 0; j--)
+      if (states[i].args[j] == 0)
+        states[i].args[j] = bexptr_match->default_args[j];
   }
 }
