@@ -124,11 +124,8 @@ enum {
   // mbf21
   comp_ledgeblock,
   comp_friendlyspawn,
-  comp_placeholder_31,
-  comp_placeholder_32,
-  // and more!
+  MBF21_COMP_TOTAL,
 
-  COMP_NUM,      /* cph - should be last in sequence */
   MBF_COMP_TOTAL = 32  // limit in MBF format
 };
 
@@ -143,7 +140,7 @@ enum {
   COMPERR_NUM
 };
 
-extern int comp[COMP_NUM];
+extern int comp[MBF_COMP_TOTAL];
 extern int /*comperr[COMPERR_NUM], */default_comperr[COMPERR_NUM];
 
 // -------------------------------------------

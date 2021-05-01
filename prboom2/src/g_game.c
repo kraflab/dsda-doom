@@ -2627,7 +2627,7 @@ void G_Compatibility(void)
   };
   unsigned int i;
 
-  if (sizeof(levels)/sizeof(*levels) != COMP_NUM)
+  if (sizeof(levels)/sizeof(*levels) != MBF_COMP_TOTAL)
     I_Error("G_Compatibility: consistency error");
 
   for (i = 0; i < sizeof(levels)/sizeof(*levels); i++)

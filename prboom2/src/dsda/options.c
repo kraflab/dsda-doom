@@ -280,7 +280,7 @@ const dsda_options_t* dsda_Options(void) {
 
 // killough 5/2/98: number of bytes reserved for saving options
 #define MBF_GAME_OPTION_SIZE 64
-#define MBF21_GAME_OPTION_SIZE (21 + COMP_NUM)
+#define MBF21_GAME_OPTION_SIZE (21 + MBF21_COMP_TOTAL)
 
 int dsda_GameOptionSize(void) {
   return mbf21 ? MBF21_GAME_OPTION_SIZE : MBF_GAME_OPTION_SIZE;
@@ -316,8 +316,8 @@ byte* dsda_WriteOptions21(byte* demo_p) {
   *demo_p++ = dog_jumping;
   *demo_p++ = monkeys;
 
-  *demo_p++ = COMP_NUM;
-  for (i = 0; i < COMP_NUM; i++)
+  *demo_p++ = MBF21_COMP_TOTAL;
+  for (i = 0; i < MBF21_COMP_TOTAL; i++)
     *demo_p++ = comp[i] != 0;
 
   if (demo_p != target)
@@ -365,7 +365,7 @@ const byte *dsda_ReadOptions21(const byte *demo_p) {
 
   count = *demo_p++;
 
-  if (count > COMP_NUM)
+  if (count > MBF21_COMP_TOTAL)
     I_Error("Encountered unknown mbf21 compatibility options!");
 
   for (i = 0; i < count; i++)
