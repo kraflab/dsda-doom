@@ -259,10 +259,53 @@ Summary of comp flags since mbf in pr+ and changes:
 - comp_pursuit: 1 (was 0)
 
 #### Demo format / header
-- [PR](https://github.com/kraflab/dsda-doom/pull/16)
 - MBF21 occupies complevel 21.
 - Demo version is 221.
 - longtics are enabled while recording.
+- Header options block:
+
+| Key                   | Bytes |
+|-----------------------|--------------|
+| monsters_remember     | 1     |
+| weapon_recoil         | 1     |
+| player_bobbing        | 1     |
+| respawnparm           | 1     |
+| fastparm              | 1     |
+| nomonsters            | 1     |
+| rngseed               | 4     |
+| monster_infighting    | 1     |
+| dogs                  | 1     |
+| distfriend            | 2     |
+| monster_backing       | 1     |
+| monster_avoid_hazards | 1     |
+| monster_friction      | 1     |
+| help_friends          | 1     |
+| dog_jumping           | 1     |
+| monkeys               | 1     |
+| comp list size (23)   | 1     |
+| comp_telefrag         | 1     |
+| comp_dropoff          | 1     |
+| comp_vile             | 1     |
+| comp_pain             | 1     |
+| comp_skull            | 1     |
+| comp_blazing          | 1     |
+| comp_doorlight        | 1     |
+| comp_model            | 1     |
+| comp_god              | 1     |
+| comp_falloff          | 1     |
+| comp_floors           | 1     |
+| comp_skymap           | 1     |
+| comp_pursuit          | 1     |
+| comp_doorstuck        | 1     |
+| comp_staylift         | 1     |
+| comp_zombie           | 1     |
+| comp_stairs           | 1     |
+| comp_infcheat         | 1     |
+| comp_zerotags         | 1     |
+| comp_respawn          | 1     |
+| comp_soul             | 1     |
+| comp_ledgeblock       | 1     |
+| comp_friendlyspawn    | 1     |
 
 #### Fixes / adjustments since mbf
 - Fix 3 key door bug
