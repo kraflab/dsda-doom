@@ -3037,12 +3037,21 @@ void A_SpawnObject(mobj_t *actor)
   mo->momy = FixedMul(vel_x, finesine[fan]  ) + FixedMul(vel_y, finecosine[fan]);
   mo->momz = vel_z;
 
-  // copy target+tracer pointers for missiles, so
-  // they can use this to spawn sub-missiles safely
-  if (actor->flags & (MF_MISSILE | MF_BOUNCES))
+  // if spawned object is a missile, set target+tracer
+  if (mo->flags & (MF_MISSILE | MF_BOUNCES))
   {
-    P_SetTarget(&mo->target, actor->target);
-    P_SetTarget(&mo->tracer, actor->tracer);
+    // if spawner is also a missile, copy 'em
+    if (actor->flags & (MF_MISSILE | MF_BOUNCES))
+    {
+      P_SetTarget(&mo->target, actor->target);
+      P_SetTarget(&mo->tracer, actor->tracer);
+    }
+    // otherwise, set 'em as if a monster fired 'em
+    else
+    {
+      P_SetTarget(&mo->target, actor);
+      P_SetTarget(&mo->tracer, actor->target);
+    }
   }
 
   // [XA] don't bother with the dont-inherit-friendliness hack
