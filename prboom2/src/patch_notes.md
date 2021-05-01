@@ -37,6 +37,7 @@
 - Fix dsda-doom save game header
 - Fix a bug where mouselook data was not reset when using demo restart
 - Fix an issue with wad lump loading - small performance improvement
+- Fix an issue with sound effects causing lag spikes for some users
 - Fix msvc build (xaser)
 - Fix macos launcher iwad directory mismatch (PBeGood4)
 - Fix umapinfo custom episode select for doom2 (pr+)
