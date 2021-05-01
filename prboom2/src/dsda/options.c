@@ -278,6 +278,34 @@ const dsda_options_t* dsda_Options(void) {
   return dsda_MBFOptions();
 }
 
+#define MBF21_COMP_TOTAL 23
+
+static int mbf21_comp_translation[MBF21_COMP_TOTAL] = {
+  comp_telefrag,
+  comp_dropoff,
+  comp_vile,
+  comp_pain,
+  comp_skull,
+  comp_blazing,
+  comp_doorlight,
+  comp_model,
+  comp_god,
+  comp_falloff,
+  comp_floors,
+  comp_skymap,
+  comp_pursuit,
+  comp_doorstuck,
+  comp_staylift,
+  comp_zombie,
+  comp_stairs,
+  comp_infcheat,
+  comp_zerotags,
+  comp_respawn,
+  comp_soul,
+  comp_ledgeblock,
+  comp_friendlyspawn,
+};
+
 // killough 5/2/98: number of bytes reserved for saving options
 #define MBF_GAME_OPTION_SIZE 64
 #define MBF21_GAME_OPTION_SIZE (21 + MBF21_COMP_TOTAL)
@@ -318,7 +346,7 @@ byte* dsda_WriteOptions21(byte* demo_p) {
 
   *demo_p++ = MBF21_COMP_TOTAL;
   for (i = 0; i < MBF21_COMP_TOTAL; i++)
-    *demo_p++ = comp[i] != 0;
+    *demo_p++ = comp[mbf21_comp_translation[i]] != 0;
 
   if (demo_p != target)
     I_Error("dsda_WriteOptions21: dsda_GameOptionSize is too small");
@@ -369,7 +397,7 @@ const byte *dsda_ReadOptions21(const byte *demo_p) {
     I_Error("Encountered unknown mbf21 compatibility options!");
 
   for (i = 0; i < count; i++)
-    comp[i] = *demo_p++;
+    comp[mbf21_comp_translation[i]] = *demo_p++;
 
   G_Compatibility();
 

@@ -124,7 +124,6 @@ enum {
   // mbf21
   comp_ledgeblock,
   comp_friendlyspawn,
-  MBF21_COMP_TOTAL,
 
   MBF_COMP_TOTAL = 32  // limit in MBF format
 };
