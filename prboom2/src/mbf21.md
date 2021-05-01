@@ -261,6 +261,16 @@ MBF21 defaults:
     - Damage arg defaults are identical to Doom's usual monster bullet attack values.
     - Entering a negative value for `numbullets`, `damagebase`, and `damagedice` is undefined behavior (for now).
 
+- **A_MonsterMeleeAttack(damagebase, damagedice, sound, range)**
+  - Generic monster melee attack.
+  - Args:
+    - `damagebase (int)`: Base damage of attack; if not set, defaults to 3
+    - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 8
+    - `sound (uint)`: Sound to play if attack hits
+    - `range (fixed)`: Attack range; if not set, defaults to 64.0
+  - Notes:
+    - Damage formula is: `damage = (damagebase * random(1, damagedice))`
+
 - **A_RadiusDamage(damage, radius)**
   - Generic A_Explode (hell yeah).
   - Args:
@@ -294,6 +304,17 @@ MBF21 defaults:
     - Damage formula is: `damage = (damagebase * random(1, damagedice))`
     - Damage arg defaults are identical to Doom's usual monster bullet attack values.
       - Note that these defaults are different for weapons and monsters (5d3 vs 3d5) -- yup, Doom did it this way. :P
+
+- **A_WeaponMeleeAttack(damagebase, damagedice, zerkfactor, sound, range)**
+  - Generic weapon melee attack.
+  - Args:
+    - `damagebase (int)`: Base damage of attack; if not set, defaults to 2
+    - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 10
+    - `zerkfactor (fixed)`: Berserk damage multiplier; if not set, defaults to 1.0
+    - `sound (uint)`: Sound to play if attack hits
+    - `range (fixed)`: Attack range; if not set, defaults to 64.0
+  - Notes:
+    - Damage formula is: `damage = (damagebase * random(1, damagedice))`; this is then multiplied by `zerkfactor` if the player has Berserk.
 
 - **A_WeaponSound(sound, fullvol)**
   - Generic playsound for weapons.
