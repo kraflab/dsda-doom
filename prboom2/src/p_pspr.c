@@ -1221,6 +1221,64 @@ void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
 }
 
 //
+// A_WeaponMeleeAttack
+// A parameterized player weapon melee attack.
+//   args[0]: Base damage of attack (e.g. for 2d10, customize the 2); if not set, defaults to 2
+//   args[1]: Attack damage modulus (e.g. for 2d10, customize the 10); if not set, defaults to 10
+//   args[2]: Berserk damage multiplier (fixed point); if not set, defaults to 1.0 (no change).
+//   args[3]: Sound to play if attack hits
+//   args[4]: Range (fixed point); if not set, defaults to MELEERANGE (64.0)
+//
+void A_WeaponMeleeAttack(player_t *player, pspdef_t *psp)
+{
+  int damagebase, damagemod, zerkfactor, hitsound, range;
+  angle_t angle;
+  int t, slope, damage;
+
+  CHECK_WEAPON_CODEPOINTER("A_WeaponMeleeAttack", player);
+
+  if (!mbf21 || !psp->state)
+    return;
+
+  damagebase = psp->state->args[0];
+  damagemod  = psp->state->args[1];
+  zerkfactor = psp->state->args[2];
+  hitsound   = psp->state->args[3];
+  range      = psp->state->args[4];
+
+  damage = (P_Random(pr_mbf21) % damagemod + 1) * damagebase;
+  if (player->powers[pw_strength])
+    damage = (damage * zerkfactor) >> FRACBITS;
+
+  // slight randomization; weird vanillaism here. :P
+  angle = player->mo->angle;
+
+  t = P_Random(pr_mbf21);
+  angle += (t - P_Random(pr_mbf21))<<18;
+
+  /* killough 8/2/98: make autoaiming prefer enemies */
+  // [XA] ain't touchin' this.
+  if (!mbf_features ||
+      (slope = P_AimLineAttack(player->mo, angle, range, MF_FRIEND),
+       !linetarget))
+    slope = P_AimLineAttack(player->mo, angle, range, 0);
+
+  // attack, dammit!
+  P_LineAttack(player->mo, angle, range, slope, damage);
+
+  // missed? ah, welp.
+  if (!linetarget)
+    return;
+
+  // un-missed!
+  S_StartSound(player->mo, hitsound);
+
+  // turn to face target
+  player->mo->angle = R_PointToAngle2(player->mo->x, player->mo->y, linetarget->x, linetarget->y);
+  R_SmoothPlaying_Reset(player);
+}
+
+//
 // A_WeaponSound
 // Plays a sound. Usable from weapons, unlike A_PlaySound
 //   args[0]: ID of sound to play

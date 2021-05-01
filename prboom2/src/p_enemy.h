@@ -125,6 +125,7 @@ void A_SkullPop(mobj_t *);
 void A_SpawnObject(mobj_t *);
 void A_MonsterProjectile(mobj_t *);
 void A_MonsterBulletAttack(mobj_t *);
+void A_MonsterMeleeAttack(mobj_t *);
 void A_RadiusDamage(mobj_t *);
 
 // heretic
