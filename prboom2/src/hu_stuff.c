@@ -2394,7 +2394,7 @@ void HU_Drawer(void)
 
     //jff 2/16/98 output new coord display
     // x-coord
-    if (map_point_coordinates)
+    if (dsda_MapPointCoordinates())
     {
 
       //e6y: speedup

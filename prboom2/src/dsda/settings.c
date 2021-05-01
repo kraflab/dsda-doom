@@ -95,6 +95,12 @@ dboolean dsda_TrackAttempts(void) {
   return dsda_track_attempts && demorecording;
 }
 
+dboolean dsda_MapPointCoordinates(void) {
+  extern int map_point_coordinates;
+
+  return map_point_coordinates && !dsda_StrictMode();
+}
+
 dboolean dsda_PainPalette(void) {
   return dsda_StrictMode() || palette_ondamage;
 }
