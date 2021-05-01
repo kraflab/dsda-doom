@@ -2988,22 +2988,71 @@ void A_LineEffect(mobj_t *mo)
 //
 
 //
-// A_SpawnFacing
-// Spawns an actor facing the same direction as the caller.
-// Basically just A_Spawn with a major quality-of-life tweak.
+// A_SpawnObject
+// Basically just A_Spawn with better behavior and more args.
 //   args[0]: Type of actor to spawn
-//   args[1]: Height to spawn at, relative to calling actor
+//   args[1]: Angle (degrees, in fixed point), relative to calling actor's angle
+//   args[2]: X spawn offset (fixed point), relative to calling actor
+//   args[3]: Y spawn offset (fixed point), relative to calling actor
+//   args[4]: Z spawn offset (fixed point), relative to calling actor
+//   args[5]: X velocity (fixed point)
+//   args[6]: Y velocity (fixed point)
+//   args[7]: Z velocity (fixed point)
 //
-void A_SpawnFacing(mobj_t *actor)
+void A_SpawnObject(mobj_t *actor)
 {
+  int type, angle, ofs_x, ofs_y, ofs_z, vel_x, vel_y, vel_z;
+  angle_t an;
+  int fan, dx, dy;
   mobj_t *mo;
 
   if (!mbf21 || !actor->state->args[0])
     return;
 
-  mo = P_SpawnMobj(actor->x, actor->y, (actor->state->args[1] << FRACBITS) + actor->z, actor->state->args[0] - 1);
-  if (mo)
-    mo->angle = actor->angle;
+  type  = actor->state->args[0] - 1;
+  angle = actor->state->args[1];
+  ofs_x = actor->state->args[2];
+  ofs_y = actor->state->args[3];
+  ofs_z = actor->state->args[4];
+  vel_x = actor->state->args[5];
+  vel_y = actor->state->args[6];
+  vel_z = actor->state->args[7];
+
+  // calculate position offsets
+  an = actor->angle + (unsigned int)(((int_64_t)angle << 16) / 360);
+  fan = an >> ANGLETOFINESHIFT;
+  dx = FixedMul(ofs_x, finecosine[fan]) - FixedMul(ofs_y, finesine[fan]  );
+  dy = FixedMul(ofs_x, finesine[fan]  ) + FixedMul(ofs_y, finecosine[fan]);
+
+  // spawn it, yo
+  mo = P_SpawnMobj(actor->x + dx, actor->y + dy, actor->z + ofs_z, type);
+  if (!mo)
+    return;
+
+  // angle dangle
+  mo->angle = an;
+
+  // set velocity
+  mo->momx = FixedMul(vel_x, finecosine[fan]) - FixedMul(vel_y, finesine[fan]  );
+  mo->momy = FixedMul(vel_x, finesine[fan]  ) + FixedMul(vel_y, finecosine[fan]);
+  mo->momz = vel_z;
+
+  // if spawned object is a missile, set target+tracer
+  if (mo->flags & (MF_MISSILE | MF_BOUNCES))
+  {
+    // if spawner is also a missile, copy 'em
+    if (actor->flags & (MF_MISSILE | MF_BOUNCES))
+    {
+      P_SetTarget(&mo->target, actor->target);
+      P_SetTarget(&mo->tracer, actor->tracer);
+    }
+    // otherwise, set 'em as if a monster fired 'em
+    else
+    {
+      P_SetTarget(&mo->target, actor);
+      P_SetTarget(&mo->tracer, actor->target);
+    }
+  }
 
   // [XA] don't bother with the dont-inherit-friendliness hack
   // that exists in A_Spawn, 'cause WTF is that about anyway?
@@ -3014,25 +3063,45 @@ void A_SpawnFacing(mobj_t *actor)
 // A parameterized monster projectile attack.
 //   args[0]: Type of actor to spawn
 //   args[1]: Angle (degrees, in fixed point), relative to calling actor's angle
+//   args[2]: Pitch (degrees, in fixed point), relative to calling actor's pitch; approximated
+//   args[3]: X/Y spawn offset, relative to calling actor's angle
+//   args[4]: Z spawn offset, relative to actor's default projectile fire height
 //
 void A_MonsterProjectile(mobj_t *actor)
 {
+  int type, angle, pitch, spawnofs_xy, spawnofs_z;
   mobj_t *mo;
   int an;
 
   if (!mbf21 || !actor->target || !actor->state->args[0])
     return;
 
+  type        = actor->state->args[0] - 1;
+  angle       = actor->state->args[1];
+  pitch       = actor->state->args[2];
+  spawnofs_xy = actor->state->args[3];
+  spawnofs_z  = actor->state->args[4];
+
   A_FaceTarget(actor);
-  mo = P_SpawnMissile(actor, actor->target, actor->state->args[0] - 1);
+  mo = P_SpawnMissile(actor, actor->target, type);
   if (!mo)
     return;
 
-  // adjust the angle by args[1];
-  mo->angle += (unsigned int)(((int_64_t)actor->state->args[1] << 16) / 360);
+  // adjust angle
+  mo->angle += (unsigned int)(((int_64_t)angle << 16) / 360);
   an = mo->angle >> ANGLETOFINESHIFT;
   mo->momx = FixedMul(mo->info->speed, finecosine[an]);
   mo->momy = FixedMul(mo->info->speed, finesine[an]);
+
+  // adjust pitch (approximated, using Doom's ye olde
+  // finetangent table; same method as monster aim)
+  mo->momz += FixedMul(mo->info->speed, DegToSlope(pitch));
+
+  // adjust position
+  an = (actor->angle - ANG90) >> ANGLETOFINESHIFT;
+  mo->x += FixedMul(spawnofs_xy, finecosine[an]);
+  mo->y += FixedMul(spawnofs_xy, finesine[an]);
+  mo->z += spawnofs_z;
 
   // always set the 'tracer' field, so this pointer
   // can be used to fire seeker missiles at will.
@@ -3042,30 +3111,39 @@ void A_MonsterProjectile(mobj_t *actor)
 //
 // A_MonsterBulletAttack
 // A parameterized monster bullet attack.
-//   args[0]: Damage of attack (times 1d5)
-//   args[1]: Horizontal spread (degrees, in fixed point);
-//          if negative, also use 2/3 of this value for vertical spread
+//   args[0]: Horizontal spread (degrees, in fixed point)
+//   args[1]: Vertical spread (degrees, in fixed point)
+//   args[2]: Number of bullets to fire; if not set, defaults to 1
+//   args[3]: Base damage of attack (e.g. for 3d5, customize the 3); if not set, defaults to 3
+//   args[4]: Attack damage modulus (e.g. for 3d5, customize the 5); if not set, defaults to 5
 //
 void A_MonsterBulletAttack(mobj_t *actor)
 {
-  int damage, angle, slope, t;
-  int_64_t spread;
+  int hspread, vspread, numbullets, damagebase, damagemod;
+  int aimslope, i, damage, angle, slope;
 
   if (!mbf21 || !actor->target)
     return;
 
+  hspread    = actor->state->args[0];
+  vspread    = actor->state->args[1];
+  numbullets = actor->state->args[2];
+  damagebase = actor->state->args[3];
+  damagemod  = actor->state->args[4];
+
   A_FaceTarget(actor);
   S_StartSound(actor, actor->info->attacksound);
 
-  damage = (P_Random(pr_mbf21) % 5 + 1) * actor->state->args[0];
+  aimslope = P_AimLineAttack(actor, actor->angle, MISSILERANGE, 0);
 
-  angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, actor->state->args[1]);;
-  slope = P_AimLineAttack(actor, angle, MISSILERANGE, 0);
+  for (i = 0; i < numbullets; i++)
+  {
+    damage = (P_Random(pr_mbf21) % damagemod + 1) * damagebase;
+    angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, hspread);
+    slope = aimslope + P_RandomHitscanSlope(pr_mbf21, vspread);
 
-  if (actor->state->args[1] < 0)
-    slope += P_RandomHitscanSlope(pr_mbf21, actor->state->args[1] * 2 / 3);
-
-  P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
+    P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
+  }
 }
 
 //
