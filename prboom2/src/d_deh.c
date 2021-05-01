@@ -44,6 +44,7 @@
 #include "m_cheat.h"
 #include "p_inter.h"
 #include "p_enemy.h"
+#include "p_map.h"
 #include "g_game.h"
 #include "d_think.h"
 #include "w_wad.h"
@@ -1459,9 +1460,11 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_SpawnObject,         "A_SpawnObject", 8},
   {A_MonsterProjectile,   "A_MonsterProjectile", 5},
   {A_MonsterBulletAttack, "A_MonsterBulletAttack", 5, {0, 0, 1, 3, 5}},
+  {A_MonsterMeleeAttack,  "A_MonsterMeleeAttack", 4, {3, 8, 0, MELEERANGE}},
   {A_RadiusDamage,        "A_RadiusDamage", 2},
   {A_WeaponProjectile,    "A_WeaponProjectile", 5},
   {A_WeaponBulletAttack,  "A_WeaponBulletAttack", 5, {0, 0, 1, 5, 3}},
+  {A_WeaponMeleeAttack,   "A_WeaponMeleeAttack", 5, {2, 10, 1 * FRACUNIT, 0, MELEERANGE}},
   {A_WeaponSound,         "A_WeaponSound", 2},
   {A_WeaponJump,          "A_WeaponJump", 2},
   {A_ConsumeAmmo,         "A_ConsumeAmmo", 1},

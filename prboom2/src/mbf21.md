@@ -209,7 +209,7 @@ MBF21 defaults:
 - For future-proofing, if more nonzero args are defined on a state than its action pointer expects (e.g. defining Args3 on a state that uses A_WeaponSound), an error will be thrown on startup.
 
 #### New DEHACKED Codepointers
-- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38)
+- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38), [PR](https://github.com/kraflab/dsda-doom/pull/40)
 - All new MBF21 pointers use the new "Args" fields for params, rather than misc1/misc2 fields
 - Arg fields are listed in order in the docs below, e.g. for `A_SpawnObject`, `type` is Args1, `angle` is Args2, etc.
 - Although all args are integers internally, there are effectively the following types of args:
@@ -261,6 +261,16 @@ MBF21 defaults:
     - Damage arg defaults are identical to Doom's usual monster bullet attack values.
     - Entering a negative value for `numbullets`, `damagebase`, and `damagedice` is undefined behavior (for now).
 
+- **A_MonsterMeleeAttack(damagebase, damagedice, sound, range)**
+  - Generic monster melee attack.
+  - Args:
+    - `damagebase (int)`: Base damage of attack; if not set, defaults to 3
+    - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 8
+    - `sound (uint)`: Sound to play if attack hits
+    - `range (fixed)`: Attack range; if not set, defaults to 64.0
+  - Notes:
+    - Damage formula is: `damage = (damagebase * random(1, damagedice))`
+
 - **A_RadiusDamage(damage, radius)**
   - Generic A_Explode (hell yeah).
   - Args:
@@ -294,6 +304,17 @@ MBF21 defaults:
     - Damage formula is: `damage = (damagebase * random(1, damagedice))`
     - Damage arg defaults are identical to Doom's usual monster bullet attack values.
       - Note that these defaults are different for weapons and monsters (5d3 vs 3d5) -- yup, Doom did it this way. :P
+
+- **A_WeaponMeleeAttack(damagebase, damagedice, zerkfactor, sound, range)**
+  - Generic weapon melee attack.
+  - Args:
+    - `damagebase (int)`: Base damage of attack; if not set, defaults to 2
+    - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 10
+    - `zerkfactor (fixed)`: Berserk damage multiplier; if not set, defaults to 1.0
+    - `sound (uint)`: Sound to play if attack hits
+    - `range (fixed)`: Attack range; if not set, defaults to 64.0
+  - Notes:
+    - Damage formula is: `damage = (damagebase * random(1, damagedice))`; this is then multiplied by `zerkfactor` if the player has Berserk.
 
 - **A_WeaponSound(sound, fullvol)**
   - Generic playsound for weapons.

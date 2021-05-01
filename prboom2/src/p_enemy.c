@@ -139,24 +139,17 @@ void P_NoiseAlert(mobj_t *target, mobj_t *emitter)
 }
 
 //
-// P_CheckMeleeRange
+// P_CheckRange
 //
 
-static dboolean P_CheckMeleeRange(mobj_t *actor)
+static dboolean P_CheckRange(mobj_t *actor, fixed_t range)
 {
   mobj_t *pl = actor->target;
 
   return  // killough 7/18/98: friendly monsters don't attack other friends
     pl &&
     !(actor->flags & pl->flags & MF_FRIEND) &&
-    (
-      P_AproxDistance(pl->x-actor->x, pl->y-actor->y) <
-      (
-        (compatibility_level == doom_12_compatibility) ?
-        MELEERANGE :
-        MELEERANGE - 20*FRACUNIT + pl->info->radius
-      )
-    ) &&
+    P_AproxDistance(pl->x-actor->x, pl->y-actor->y) < range &&
     P_CheckSight(actor, actor->target) &&
     ( // finite height!
       !heretic ||
@@ -165,6 +158,20 @@ static dboolean P_CheckMeleeRange(mobj_t *actor)
         actor->z <= pl->z + pl->height
       )
     );
+}
+
+//
+// P_CheckMeleeRange
+//
+
+static dboolean P_CheckMeleeRange(mobj_t *actor)
+{
+  return P_CheckRange(
+    actor,
+    compatibility_level == doom_12_compatibility ?
+     MELEERANGE :
+     MELEERANGE - 20*FRACUNIT + actor->target->info->radius
+  );
 }
 
 //
@@ -3144,6 +3151,37 @@ void A_MonsterBulletAttack(mobj_t *actor)
 
     P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
   }
+}
+
+//
+// A_MonsterMeleeAttack
+// A parameterized monster melee attack.
+//   args[0]: Base damage of attack (e.g. for 3d8, customize the 3); if not set, defaults to 3
+//   args[1]: Attack damage modulus (e.g. for 3d8, customize the 8); if not set, defaults to 8
+//   args[2]: Sound to play if attack hits
+//   args[3]: Range (fixed point); if not set, defaults to MELEERANGE (64.0)
+//
+void A_MonsterMeleeAttack(mobj_t *actor)
+{
+  int damagebase, damagemod, hitsound, range;
+  int damage;
+
+  if (!mbf21 || !actor->target)
+    return;
+
+  damagebase = actor->state->args[0];
+  damagemod  = actor->state->args[1];
+  hitsound   = actor->state->args[2];
+  range      = actor->state->args[3];
+
+  A_FaceTarget(actor);
+  if (!P_CheckRange(actor, range + actor->target->info->radius))
+    return;
+
+  S_StartSound(actor, hitsound);
+
+  damage = (P_Random(pr_mbf21) % damagemod + 1) * damagebase;
+  P_DamageMobj(actor->target, actor, actor, damage);
 }
 
 //
