@@ -48,6 +48,8 @@ dboolean dsda_CommandDisplay(void);
 dboolean dsda_TrackAttempts(void);
 dboolean dsda_ShowHealthBars(void);
 dboolean dsda_MapPointCoordinates(void);
+dboolean dsda_CrosshairTarget(void);
+dboolean dsda_CrosshairLockTarget(void);
 dboolean dsda_PainPalette(void);
 dboolean dsda_BonusPalette(void);
 dboolean dsda_PowerPalette(void);

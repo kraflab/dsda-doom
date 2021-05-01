@@ -101,6 +101,14 @@ dboolean dsda_MapPointCoordinates(void) {
   return map_point_coordinates && !dsda_StrictMode();
 }
 
+dboolean dsda_CrosshairTarget(void) {
+  return hudadd_crosshair_target && !dsda_StrictMode();
+}
+
+dboolean dsda_CrosshairLockTarget(void) {
+  return hudadd_crosshair_lock_target && !dsda_StrictMode();
+}
+
 dboolean dsda_PainPalette(void) {
   return dsda_StrictMode() || palette_ondamage;
 }

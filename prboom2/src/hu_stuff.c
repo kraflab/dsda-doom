@@ -2241,7 +2241,7 @@ void SetCrosshairTarget(void)
   crosshair.target_screen_x = 0.0f;
   crosshair.target_screen_y = 0.0f;
 
-  if (hudadd_crosshair_lock_target && crosshair.target_sprite >= 0)
+  if (dsda_CrosshairLockTarget() && crosshair.target_sprite >= 0)
   {
     float x, y, z;
     float winx, winy, winz;
@@ -2302,7 +2302,7 @@ void HU_draw_crosshair(void)
   else
     cm = hudadd_crosshair_color;
 
-  if (hudadd_crosshair_target || hudadd_crosshair_lock_target)
+  if (dsda_CrosshairTarget() || dsda_CrosshairLockTarget())
   {
     fixed_t slope;
     angle_t an = plr->mo->angle;
@@ -2327,7 +2327,7 @@ void HU_draw_crosshair(void)
       crosshair.target_z += linetarget->height / 2 + linetarget->height / 8;
       crosshair.target_sprite = linetarget->sprite;
 
-      if (hudadd_crosshair_target)
+      if (dsda_CrosshairTarget())
         cm = hudadd_crosshair_target_color;
     }
   }
