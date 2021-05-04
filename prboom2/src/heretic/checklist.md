@@ -3,7 +3,6 @@
 - [ ] Support analysis
 - [ ] Support key frames
 - [x] Support E2END palette
-- [ ] Set gamemission to heretic (?)
 - [ ] Support dehacked
 - [ ] Support cheats
 - [ ] rain1, rain2, special1.m, special2.m -> P_SetTarget
