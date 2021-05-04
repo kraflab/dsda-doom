@@ -3198,6 +3198,18 @@ void A_RadiusDamage(mobj_t *actor)
   P_RadiusAttack(actor, actor->target, actor->state->args[0], actor->state->args[1]);
 }
 
+//
+// A_NoiseAlert
+// Alerts nearby monsters (via sound) to the calling actor's target's presence.
+//
+void A_NoiseAlert(mobj_t *actor)
+{
+  if (!mbf21 || !actor->target)
+    return;
+
+  P_NoiseAlert(actor->target, actor);
+}
+
 
 // heretic
 

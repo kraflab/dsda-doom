@@ -1293,6 +1293,20 @@ void A_WeaponSound(player_t *player, pspdef_t *psp)
 }
 
 //
+// A_WeaponAlert
+// Alerts monsters to the player's presence. Handy when combined with WPF_SILENT.
+//
+void A_WeaponAlert(player_t *player, pspdef_t *psp)
+{
+  CHECK_WEAPON_CODEPOINTER("A_WeaponAlert", player);
+
+  if (!mbf21)
+    return;
+
+  P_NoiseAlert(player->mo, player->mo);
+}
+
+//
 // A_WeaponJump
 // Jumps to the specified state, with variable random chance.
 // Basically the same as A_RandomJump, but for weapons.
