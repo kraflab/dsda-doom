@@ -4637,6 +4637,7 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_speed_default) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, 0, speed_step, 3, 10000, 100);
+      doom_printf("Game Speed %d", realtic_clock_rate);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
@@ -4644,6 +4645,7 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_speed_up) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, 1, speed_step, 3, 10000, 100);
+      doom_printf("Game Speed %d", realtic_clock_rate);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
@@ -4651,6 +4653,7 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_speed_down) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, -1, speed_step, 3, 10000, 100);
+      doom_printf("Game Speed %d", realtic_clock_rate);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
