@@ -1237,7 +1237,6 @@ static const struct deh_flag_s deh_mobjflags_mbf21[] = {
   {"E3M8BOSS",       MF2_E3M8BOSS}, // E3M8 boss
   {"E4M6BOSS",       MF2_E4M6BOSS}, // E4M6 boss
   {"E4M8BOSS",       MF2_E4M8BOSS}, // E4M8 boss
-  {"NEUTRALSPLASH",  MF2_NEUTRALSPLASH}, // splash damage ignores splash groups
   {"RIP",            MF2_RIP}, // projectile rips through targets
   { NULL }
 };
