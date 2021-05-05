@@ -708,6 +708,12 @@ default_t defaults[] =
     dsda_input_idrate, { 0, -1, -1 } },
   { "input_iddt", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_iddt, { 0, -1, -1 } },
+  { "input_ponce", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_ponce, { 0, -1, -1 } },
+  { "input_shazam", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_shazam, { 0, -1, -1 } },
+  { "input_chicken", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_chicken, { 0, -1, -1 } },
 
   { "input_lookup", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_lookup, { 0, -1, -1 } },

@@ -924,6 +924,9 @@ static cheat_input_t cheat_input[] = {
   { dsda_input_idmypos, not_dm, cheat_mypos, 0 },
   { dsda_input_idrate, always, cheat_rate, 0 },
   { dsda_input_iddt, not_dm, cheat_ddt, 0 },
+  { dsda_input_ponce, cht_never, cheat_reset_health, 0 },
+  { dsda_input_shazam, cht_never, cheat_tome, 0 },
+  { dsda_input_chicken, cht_never, cheat_chicken, 0 },
   { 0 }
 };
 
