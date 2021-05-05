@@ -120,7 +120,7 @@ In this example:
 | MF2_E4M6BOSS       | MF2_E4M6BOSS       | E4M6 boss (cyberdemon)                                                                         |
 | MF2_E4M8BOSS       | MF2_E4M8BOSS       | E4M8 boss (mastermind)                                                                         |
 | MF2_RIP            | MF3_RIP            | Ripper projectile (does not disappear on impact)                                               |
-| MF2_NEUTRAL_SPLASH | ?                  | Splash damage from this thing is not affected by splash groups (barrel)                        |
+| MF2_NEUTRALSPLASH  | ?                  | Splash damage from this thing is not affected by splash groups (barrel)                        |
 
 #### Rip sound
 - [commit](https://github.com/kraflab/dsda-doom/commit/3d9fc1cccc7b85c527331e74802dd25d94a80b10)

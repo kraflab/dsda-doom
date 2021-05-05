@@ -2057,7 +2057,7 @@ int bombdistance;
 static dboolean P_SplashImmune(mobj_t *target, mobj_t *source, mobj_t *spot)
 {
   return // not neutral, not default behaviour, and same group
-    !(spot->flags2 & MF2_NEUTRAL_SPLASH) &&
+    !(spot->flags2 & MF2_NEUTRALSPLASH) &&
     mobjinfo[target->type].splash_group != SG_DEFAULT &&
     mobjinfo[target->type].splash_group == mobjinfo[source->type].splash_group;
 }
