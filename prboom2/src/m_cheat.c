@@ -99,7 +99,7 @@ static void cheat_notarget();
 static void cheat_fly();
 
 // heretic
-static void cheat_100_health();
+static void cheat_reset_health();
 static void cheat_tome();
 static void cheat_chicken();
 static void cheat_artifact();
@@ -200,7 +200,7 @@ cheatseq_t cheat[] = {
 
   // heretic
   CHEAT("quicken", NULL, cht_never, cheat_god, 0),
-  CHEAT("ponce", NULL, cht_never, cheat_100_health, 0),
+  CHEAT("ponce", NULL, cht_never, cheat_reset_health, 0),
   CHEAT("kitty", NULL, cht_never, cheat_noclip, 0),
   CHEAT("massacre", NULL, cht_never, cheat_massacre, 0),
   CHEAT("rambo", NULL, cht_never, cheat_fa, 0),
@@ -952,7 +952,7 @@ dboolean M_CheatResponder(event_t *ev)
 
 #include "p_user.h"
 
-static void cheat_100_health(void)
+static void cheat_reset_health(void)
 {
   if (heretic && plyr->chickenTics)
   {
