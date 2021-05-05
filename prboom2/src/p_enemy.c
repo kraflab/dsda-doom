@@ -3242,6 +3242,65 @@ void A_HealChase(mobj_t* actor)
     A_Chase(actor);
 }
 
+//
+// A_JumpIfHealthBelow
+// Jumps to a state if caller's health is below the specified threshold.
+//   args[0]: State to jump to
+//   args[1]: Health threshold
+//
+void A_JumpIfHealthBelow(mobj_t* actor)
+{
+  int state, health;
+
+  if (!mbf21 || !actor)
+    return;
+
+  state  = actor->state->args[0];
+  health = actor->state->args[1];
+
+  if (actor->health < health)
+    P_SetMobjState(actor, state);
+}
+
+//
+// A_JumpIfTargetInSight
+// Jumps to a state if caller's target is in line-of-sight.
+//   args[0]: State to jump to
+//
+void A_JumpIfTargetInSight(mobj_t* actor)
+{
+  int state;
+
+  if (!mbf21 || !actor)
+    return;
+
+  state = actor->state->args[0];
+
+  if (P_CheckSight(actor, actor->target))
+    P_SetMobjState(actor, state);
+}
+
+//
+// A_JumpIfTargetCloser
+// Jumps to a state if caller's target is closer than the specified distance.
+//   args[0]: State to jump to
+//   args[1]: Distance threshold
+//
+void A_JumpIfTargetCloser(mobj_t* actor)
+{
+  int state, distance;
+
+  if (!mbf21 || !actor)
+    return;
+
+  state    = actor->state->args[0];
+  distance = actor->state->args[1];
+
+  if (distance > P_AproxDistance(actor->x - actor->target->x,
+                                 actor->y - actor->target->y))
+    P_SetMobjState(actor, state);
+}
+
 
 
 // heretic
