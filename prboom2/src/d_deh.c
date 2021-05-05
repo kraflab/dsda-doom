@@ -1157,6 +1157,22 @@ struct deh_flag_s {
   uint_64_t value;
 };
 
+static uint_64_t deh_translate_bits(uint64_t value, const struct deh_flag_s *flags)
+{
+  int i;
+  uint_64_t result = 0;
+
+  for (i = 0; flags[i].name; ++i)
+  {
+    if (value & 1)
+      result |= flags[i].value;
+
+    value >>= 1;
+  }
+
+  return result;
+}
+
 // CPhipps - static const
 static const struct deh_flag_s deh_mobjflags[] = {
   {"SPECIAL",      MF_SPECIAL}, // call  P_Specialthing when touched
@@ -1223,6 +1239,7 @@ static const struct deh_flag_s deh_mobjflags_mbf21[] = {
   {"E4M8BOSS",       MF2_E4M8BOSS}, // E4M8 boss
   {"NEUTRAL_SPLASH", MF2_NEUTRAL_SPLASH}, // splash damage ignores splash groups
   {"RIP",            MF2_RIP}, // projectile rips through targets
+  { NULL }
 };
 
 static const struct deh_flag_s deh_weaponflags_mbf21[] = {
@@ -2042,18 +2059,25 @@ static void deh_procThing(DEHFILE *fpin, char *line)
       if (deh_strcasecmp(key, deh_mobjinfo[ix])) continue;
 
       if (!deh_strcasecmp(key, "MBF21 Bits")) {
-        for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
-          size_t iy;
+        if (bGetData == 1)
+        {
+          value = deh_translate_bits(value, deh_mobjflags_mbf21);
+        }
+        else
+        {
+          for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
+            size_t iy;
 
-          for (iy = 0; iy < DEH_MOBJFLAGMAX_MBF21; iy++) {
-            if (deh_strcasecmp(strval, deh_mobjflags_mbf21[iy].name)) continue;
+            for (iy = 0; iy < DEH_MOBJFLAGMAX_MBF21; iy++) {
+              if (deh_strcasecmp(strval, deh_mobjflags_mbf21[iy].name)) continue;
 
-            value |= deh_mobjflags_mbf21[iy].value;
-            break;
-          }
+              value |= deh_mobjflags_mbf21[iy].value;
+              break;
+            }
 
-          if (iy >= DEH_MOBJFLAGMAX_MBF21) {
-            deh_log("Could not find MBF21 bit mnemonic %s\n", strval);
+            if (iy >= DEH_MOBJFLAGMAX_MBF21) {
+              deh_log("Could not find MBF21 bit mnemonic %s\n", strval);
+            }
           }
         }
 
@@ -2135,6 +2159,7 @@ static void deh_procFrame(DEHFILE *fpin, char *line)
   uint_64_t value;      // All deh values are ints or longs
   int indexnum;
   char *strval;
+  int bGetData;
 
   strncpy(inbuffer, line, DEH_BUFFERMAX - 1);
 
@@ -2149,7 +2174,8 @@ static void deh_procFrame(DEHFILE *fpin, char *line)
     if (!dehfgets(inbuffer, sizeof(inbuffer), fpin)) break;
     lfstrip(inbuffer);
     if (!*inbuffer) break;         // killough 11/98
-    if (!deh_GetData(inbuffer, key, &value, &strval)) // returns TRUE if ok
+    bGetData = deh_GetData(inbuffer, key, &value, &strval);
+    if (!bGetData) // returns TRUE if ok
     {
       deh_log("Bad data pair in '%s'\n", inbuffer);
       continue;
@@ -2240,18 +2266,25 @@ static void deh_procFrame(DEHFILE *fpin, char *line)
     }
     else if (!deh_strcasecmp(key, deh_state[15]))  // MBF21 Bits
     {
-      for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
-        const struct deh_flag_s *flag;
+      if (bGetData == 1)
+      {
+        value = deh_translate_bits(value, deh_stateflags_mbf21);
+      }
+      else
+      {
+        for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
+          const struct deh_flag_s *flag;
 
-        for (flag = deh_stateflags_mbf21; flag->name; flag++) {
-          if (deh_strcasecmp(strval, flag->name)) continue;
+          for (flag = deh_stateflags_mbf21; flag->name; flag++) {
+            if (deh_strcasecmp(strval, flag->name)) continue;
 
-          value |= flag->value;
-          break;
-        }
+            value |= flag->value;
+            break;
+          }
 
-        if (!flag->name) {
-          deh_log("Could not find MBF21 frame bit mnemonic %s\n", strval);
+          if (!flag->name) {
+            deh_log("Could not find MBF21 frame bit mnemonic %s\n", strval);
+          }
         }
       }
 
@@ -2445,6 +2478,7 @@ static void deh_procWeapon(DEHFILE *fpin, char *line)
   uint_64_t value;      // All deh values are ints or longs
   int indexnum;
   char *strval;
+  int bGetData;
 
   strncpy(inbuffer, line, DEH_BUFFERMAX - 1);
 
@@ -2459,7 +2493,8 @@ static void deh_procWeapon(DEHFILE *fpin, char *line)
     if (!dehfgets(inbuffer, sizeof(inbuffer), fpin)) break;
     lfstrip(inbuffer);
     if (!*inbuffer) break;       // killough 11/98
-    if (!deh_GetData(inbuffer, key, &value, &strval)) // returns TRUE if ok
+    bGetData = deh_GetData(inbuffer, key, &value, &strval);
+    if (!bGetData) // returns TRUE if ok
     {
       deh_log("Bad data pair in '%s'\n", inbuffer);
       continue;
@@ -2486,18 +2521,25 @@ static void deh_procWeapon(DEHFILE *fpin, char *line)
     }
     else if (!deh_strcasecmp(key, deh_weapon[7]))  // MBF21 Bits
     {
-      for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
-        const struct deh_flag_s *flag;
+      if (bGetData == 1)
+      {
+        value = deh_translate_bits(value, deh_weaponflags_mbf21);
+      }
+      else
+      {
+        for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
+          const struct deh_flag_s *flag;
 
-        for (flag = deh_weaponflags_mbf21; flag->name; flag++) {
-          if (deh_strcasecmp(strval, flag->name)) continue;
+          for (flag = deh_weaponflags_mbf21; flag->name; flag++) {
+            if (deh_strcasecmp(strval, flag->name)) continue;
 
-          value |= flag->value;
-          break;
-        }
+            value |= flag->value;
+            break;
+          }
 
-        if (!flag->name) {
-          deh_log("Could not find MBF21 weapon bit mnemonic %s\n", strval);
+          if (!flag->name) {
+            deh_log("Could not find MBF21 weapon bit mnemonic %s\n", strval);
+          }
         }
       }
 
