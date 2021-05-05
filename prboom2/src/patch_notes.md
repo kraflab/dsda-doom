@@ -23,39 +23,39 @@
 - Input bindings for tome, chicken, and health reset cheats
 
 #### Miscellaneous
-- Allow mbf sky transfers in all complevels (pr+)
-- Update to umapinfo rev 1.6 (pr+)
-- Change demo overwrite default to off
-- Protect map coordinates with strict mode
-- Protect crosshair target color / lock with strict mode
-- Remove deprecated laggy sleep option
-- Remove various unwelcome / secret configuration options
-- Remove option to turn demo footer off
-- Add mbf OPTIONS lump support
-- Add default map name fallback to automap
-- Add comp_respawnfix alias for cross-port OPTIONS support (EE)
-- Add option to hide the heretic hud horns
-- Add notification when toggling vertmouse
-- Add notification when toggling mouselook
-- Add notification when changing game speed
-- Add strict mode toggle input binding
-- Add option to disable sound cutoffs (pr+)
-- Add Fireb3rt advanced hud layout option (pr+)
-- Fix missing small screen border for heretic
-- Fix zoomed in heretic weapon heights
-- Fix heretic scrolling floors also scrolling the ceiling
-- Fix dsda-doom save game header
-- Fix a bug where mouselook data was not reset when using demo restart
-- Fix an issue with wad lump loading - small performance improvement
-- Fix an issue with sound effects causing lag spikes for some users
-- Fix msvc build (xaser)
-- Fix macos launcher iwad directory mismatch (PBeGood4)
-- Fix umapinfo custom episode select for doom2 (pr+)
-- Fix shifting automap markers (pr+)
-- Fix flood hom in plutonia map 11 in opengl (pr+)
-- Fix sky walls as seen in e4m6 in opengl (pr+)
-- Fix transparent sprites in opengl (pr+)
-- Fix non-standard sky scaling in opengl (pr+)
-- Fix issue with windows dpi virtualization (pr+)
-- Fix umapinfo musinfo (pr+)
-- Fix umapinfo endbunny / endgame fields (pr+)
+- MBF sky transfers work in all complevels (pr+)
+- Map coordinates are protected with strict mode
+- Crosshair target color / lock are protected with strict mode
+- Updated to umapinfo rev 1.6 (pr+)
+- Changed demo overwrite default to off
+- Removed deprecated laggy sleep option
+- Removed various unwelcome / secret configuration options
+- Removed option to turn demo footer off
+- Added mbf OPTIONS lump support
+- Added default map name fallback to automap
+- Added comp_respawnfix alias for cross-port OPTIONS support (EE)
+- Added option to hide the heretic hud horns
+- Added notification when toggling vertmouse
+- Added notification when toggling mouselook
+- Added notification when changing game speed
+- Added strict mode toggle input binding
+- Added option to disable sound cutoffs (pr+)
+- Added Fireb3rt advanced hud layout option (pr+)
+- Fixed missing small screen border for heretic
+- Fixed zoomed in heretic weapon heights
+- Fixed heretic scrolling floors also scrolling the ceiling
+- Fixed dsda-doom save game header
+- Fixed a bug where mouselook data was not reset when using demo restart
+- Fixed an issue with wad lump loading - small performance improvement
+- Fixed an issue with sound effects causing lag spikes for some users
+- Fixed msvc build (xaser)
+- Fixed macos launcher iwad directory mismatch (PBeGood4)
+- Fixed umapinfo custom episode select for doom2 (pr+)
+- Fixed shifting automap markers (pr+)
+- Fixed flood hom in plutonia map 11 in opengl (pr+)
+- Fixed sky walls as seen in e4m6 in opengl (pr+)
+- Fixed transparent sprites in opengl (pr+)
+- Fixed non-standard sky scaling in opengl (pr+)
+- Fixed issue with windows dpi virtualization (pr+)
+- Fixed umapinfo musinfo (pr+)
+- Fixed umapinfo endbunny / endgame fields (pr+)
