@@ -16,6 +16,12 @@
 - Disabled while strict mode is active
 - Can be used for playback analysis, tasing, practice, etc
 
+#### Heretic Cheats
+- Added heretic cheat codes
+- Can use doom cheats in heretic and vice versa
+- The only new code relevant for doom is "ponce" (reset health)
+- Input bindings for tome, chicken, and health reset cheats
+
 #### Miscellaneous
 - Allow mbf sky transfers in all complevels (pr+)
 - Update to umapinfo rev 1.6 (pr+)

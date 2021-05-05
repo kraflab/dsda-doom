@@ -4,7 +4,7 @@
 - [ ] Support key frames
 - [x] Support E2END palette
 - [ ] Support dehacked
-- [ ] Support cheats
+- [x] Support cheats
 - [ ] rain1, rain2, special1.m, special2.m -> P_SetTarget
 - [x] Review r_* files for graphical differences
 
