@@ -31,6 +31,7 @@
 - Add option to hide the heretic hud horns
 - Add notification when toggling vertmouse
 - Add notification when toggling mouselook
+- Add notification when changing game speed
 - Add strict mode toggle input binding
 - Add option to disable sound cutoffs (pr+)
 - Add Fireb3rt advanced hud layout option (pr+)
