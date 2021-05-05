@@ -1463,6 +1463,7 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_MonsterMeleeAttack,  "A_MonsterMeleeAttack", 4, {3, 8, 0, MELEERANGE}},
   {A_RadiusDamage,        "A_RadiusDamage", 2},
   {A_NoiseAlert,          "A_NoiseAlert", 0},
+  {A_HealChase,           "A_HealChase", 2},
   {A_WeaponProjectile,    "A_WeaponProjectile", 5},
   {A_WeaponBulletAttack,  "A_WeaponBulletAttack", 5, {0, 0, 1, 5, 3}},
   {A_WeaponMeleeAttack,   "A_WeaponMeleeAttack", 5, {2, 10, 1 * FRACUNIT, 0, MELEERANGE}},

@@ -128,6 +128,7 @@ void A_MonsterBulletAttack(mobj_t *);
 void A_MonsterMeleeAttack(mobj_t *);
 void A_RadiusDamage(mobj_t *);
 void A_NoiseAlert(mobj_t *);
+void A_HealChase(mobj_t *);
 
 // heretic
 

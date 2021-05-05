@@ -1741,6 +1741,7 @@ mobj_t* corpsehit;
 mobj_t* vileobj;
 fixed_t viletryx;
 fixed_t viletryy;
+int viletryradius;
 
 static dboolean PIT_VileCheck(mobj_t *thing)
 {
@@ -1756,7 +1757,7 @@ static dboolean PIT_VileCheck(mobj_t *thing)
   if (thing->info->raisestate == g_s_null)
     return true;        // monster doesn't have a raise state
 
-  maxdist = thing->info->radius + mobjinfo[MT_VILE].radius;
+  maxdist = thing->info->radius + viletryradius;
 
   if (D_abs(thing->x-viletryx) > maxdist || D_abs(thing->y-viletryy) > maxdist)
     return true;                // not actually touching
@@ -1802,11 +1803,11 @@ static dboolean PIT_VileCheck(mobj_t *thing)
 }
 
 //
-// A_VileChase
+// P_HealCorpse
 // Check for ressurecting a body
 //
 
-void A_VileChase(mobj_t* actor)
+static dboolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sfxenum_t healsound)
 {
   int xl, xh;
   int yl, yh;
@@ -1826,6 +1827,7 @@ void A_VileChase(mobj_t* actor)
       yh = P_GetSafeBlockY(viletryy - bmaporgy + MAXRADIUS*2);
 
       vileobj = actor;
+      viletryradius = radius;
       for (bx=xl ; bx<=xh ; bx++)
         {
           for (by=yl ; by<=yh ; by++)
@@ -1843,8 +1845,8 @@ void A_VileChase(mobj_t* actor)
                   A_FaceTarget(actor);
                   actor->target = temp;
 
-                  P_SetMobjState(actor, S_VILE_HEAL1);
-                  S_StartSound(corpsehit, sfx_slop);
+                  P_SetMobjState(actor, healstate);
+                  S_StartSound(corpsehit, healsound);
                   info = corpsehit->info;
 
                   P_SetMobjState(corpsehit,info->raisestate);
@@ -1881,12 +1883,22 @@ void A_VileChase(mobj_t* actor)
       /* killough 8/29/98: add to appropriate thread */
       P_UpdateThinker(&corpsehit->thinker);
 
-                  return;
+                  return true;
                 }
             }
         }
     }
-  A_Chase(actor);  // Return to normal attack.
+  return false;
+}
+
+//
+// A_VileChase
+//
+
+void A_VileChase(mobj_t* actor)
+{
+  if (!P_HealCorpse(actor, mobjinfo[MT_VILE].radius, S_VILE_HEAL1, sfx_slop))
+    A_Chase(actor);  // Return to normal attack.
 }
 
 //
@@ -3209,6 +3221,27 @@ void A_NoiseAlert(mobj_t *actor)
 
   P_NoiseAlert(actor->target, actor);
 }
+
+//
+// A_HealChase
+// A parameterized version of A_VileChase.
+//   args[0]: State to jump to on the calling actor when resurrecting a corpse
+//   args[1]: Sound to play when resurrecting a corpse
+//
+void A_HealChase(mobj_t* actor)
+{
+  int state, sound;
+
+  if (!mbf21 || !actor)
+    return;
+
+  state = actor->state->args[0];
+  sound = actor->state->args[1];
+
+  if (!P_HealCorpse(actor, actor->info->radius, state, sound))
+    A_Chase(actor);
+}
+
 
 
 // heretic
