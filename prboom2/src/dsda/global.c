@@ -274,8 +274,6 @@ static void dsda_InitDoom(void) {
   mobjinfo[MT_BRUISER].flags2 = MF2_E1M8BOSS;
   mobjinfo[MT_UNDEAD].flags2  = MF2_LONGMELEE | MF2_RANGEHALF;
 
-  mobjinfo[MT_BARREL].flags2 = MF2_NEUTRAL_SPLASH;
-
   mobjinfo[MT_BRUISER].projectile_group = PG_BARON;
   mobjinfo[MT_KNIGHT].projectile_group = PG_BARON;
 

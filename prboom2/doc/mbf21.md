@@ -61,8 +61,7 @@ This is proof-of-concept implemented in dsda-doom.
 ##### Splash
 - Add `Splash group = S` in Thing definition.
 - `S` is a nonnegative integer.
-- Things with the same value of `S` will not deal splash damage to each other.
-- Splash damage coming through a neutral thing (e.g., exploding a barrel) will still occur.
+- If an explosion (or other splash damage source) has the same splash group as the target, it will not deal damage.
 
 ##### Examples
 ```
@@ -81,7 +80,7 @@ Thing 21 (Arachnotron)
 Infighting group = 1
 Projectile group = 2
 
-Thing 22 (Cyberdemon)
+Thing 31 (Barrel)
 Splash group = 0
 ```
 
@@ -90,7 +89,7 @@ In this example:
 - Barons and Arachnotrons are in the same projectile group: their projectiles will no longer damage each other.
 - Barons and Hell Knights are not in the same projectile group: their projectiles will now damage each other, leading to infighting.
 - Hell Knights and Arachnotrons are in the same infighting group: they will not infight with each other, despite taking damage from each other's projectiles.
-- Imps and Cyberdemons are in the same splash group: cyberdemon rocket splash will no longer damage imps (but direct impacts do).
+- Imps and Barrels are in the same splash group: barrels no longer deal splash damage to imps.
 - Note that the group numbers are separate - being in infighting group 1 doesn't mean you are in projectile group 1.
 
 #### New Thing Flags
@@ -120,7 +119,6 @@ In this example:
 | MF2_E4M6BOSS       | MF2_E4M6BOSS       | E4M6 boss (cyberdemon)                                                                         |
 | MF2_E4M8BOSS       | MF2_E4M8BOSS       | E4M8 boss (mastermind)                                                                         |
 | MF2_RIP            | MF3_RIP            | Ripper projectile (does not disappear on impact)                                               |
-| MF2_NEUTRAL_SPLASH | ?                  | Splash damage from this thing is not affected by splash groups (barrel)                        |
 
 #### Rip sound
 - [commit](https://github.com/kraflab/dsda-doom/commit/3d9fc1cccc7b85c527331e74802dd25d94a80b10)

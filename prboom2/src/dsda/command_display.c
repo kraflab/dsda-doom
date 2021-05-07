@@ -52,8 +52,8 @@ int dsda_command_display;
 int dsda_command_history_size;
 int dsda_hide_empty_commands;
 
-static dsda_command_display_t* command_history;
-static dsda_command_display_t* current_command;
+static dsda_command_display_t command_history[MAX_HISTORY];
+static dsda_command_display_t* current_command = command_history;
 
 static void dsda_TicCmdToCommand(dsda_command_t* command, ticcmd_t* cmd) {
   command->forwardmove = cmd->forwardmove;
@@ -98,9 +98,6 @@ void dsda_InitCommandDisplay(patchnum_t* font) {
 
   if (firsttime) {
     firsttime = 0;
-
-    command_history = calloc(MAX_HISTORY, sizeof(*command_history));
-    current_command = command_history;
 
     for (i = 0; i < MAX_HISTORY; ++i) {
       HUlib_initTextLine(

@@ -2054,12 +2054,11 @@ int bombdistance;
 // that caused the explosion at "bombspot".
 //
 
-static dboolean P_SplashImmune(mobj_t *target, mobj_t *source, mobj_t *spot)
+static dboolean P_SplashImmune(mobj_t *target, mobj_t *spot)
 {
-  return // not neutral, not default behaviour, and same group
-    !(spot->flags2 & MF2_NEUTRAL_SPLASH) &&
+  return // not default behaviour and same group
     mobjinfo[target->type].splash_group != SG_DEFAULT &&
-    mobjinfo[target->type].splash_group == mobjinfo[source->type].splash_group;
+    mobjinfo[target->type].splash_group == mobjinfo[spot->type].splash_group;
 }
 
 dboolean PIT_RadiusAttack (mobj_t* thing)
@@ -2076,7 +2075,7 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   if (!(thing->flags & (MF_SHOOTABLE | MF_BOUNCES)))
     return true;
 
-  if (bombsource && P_SplashImmune(thing, bombsource, bombspot))
+  if (P_SplashImmune(thing, bombspot))
     return true;
 
   // Boss spider and cyborg

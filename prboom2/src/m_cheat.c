@@ -48,6 +48,8 @@
 #include "p_tick.h"
 #include "w_wad.h"
 
+#include "heretic/def.h"
+
 #include "dsda/input.h"
 #include "dsda/settings.h"
 
@@ -95,6 +97,12 @@ static void cheat_megaarmour();
 static void cheat_health();
 static void cheat_notarget();
 static void cheat_fly();
+
+// heretic
+static void cheat_reset_health();
+static void cheat_tome();
+static void cheat_chicken();
+static void cheat_artifact();
 
 //-----------------------------------------------------------------------------
 //
@@ -189,6 +197,20 @@ cheatseq_t cheat[] = {
   CHEAT("notarget",   NULL,               cht_never, cheat_notarget, 0),
   // fly mode is active
   CHEAT("fly",        NULL,               cht_never, cheat_fly, 0),
+
+  // heretic
+  CHEAT("quicken", NULL, cht_never, cheat_god, 0),
+  CHEAT("ponce", NULL, cht_never, cheat_reset_health, 0),
+  CHEAT("kitty", NULL, cht_never, cheat_noclip, 0),
+  CHEAT("massacre", NULL, cht_never, cheat_massacre, 0),
+  CHEAT("rambo", NULL, cht_never, cheat_fa, 0),
+  CHEAT("skel", NULL, cht_never, cheat_k, 0),
+  CHEAT("gimme", NULL, cht_never, cheat_artifact, -2),
+  CHEAT("shazam", NULL, cht_never, cheat_tome, 0),
+  CHEAT("engage", NULL, cht_never | not_menu, cheat_clev, -2),
+  CHEAT("ravmap", NULL, not_dm, cheat_ddt, 0),
+  CHEAT("cockadoodledoo", NULL, cht_never, cheat_chicken, 0),
+
   // end-of-list marker
   {NULL}
 };
@@ -333,6 +355,9 @@ static void cheat_k()
         plyr->cards[i] = true;
         plyr->message = "Keys Added";
       }
+
+  // heretic - reset status bar
+  SB_state = -1;
 }
 
 static void cheat_kfa()
@@ -899,6 +924,9 @@ static cheat_input_t cheat_input[] = {
   { dsda_input_idmypos, not_dm, cheat_mypos, 0 },
   { dsda_input_idrate, always, cheat_rate, 0 },
   { dsda_input_iddt, not_dm, cheat_ddt, 0 },
+  { dsda_input_ponce, cht_never, cheat_reset_health, 0 },
+  { dsda_input_shazam, cht_never, cheat_tome, 0 },
+  { dsda_input_chicken, cht_never, cheat_chicken, 0 },
   { 0 }
 };
 
@@ -921,4 +949,101 @@ dboolean M_CheatResponder(event_t *ev)
   }
 
   return false;
+}
+
+// heretic
+
+#include "p_user.h"
+
+static void cheat_reset_health(void)
+{
+  if (heretic && plyr->chickenTics)
+  {
+    plyr->health = plyr->mo->health = MAXCHICKENHEALTH;
+  }
+  else
+  {
+    plyr->health = plyr->mo->health = MAXHEALTH;
+  }
+  plyr->message = DEH_String("FULL HEALTH");
+}
+
+static void cheat_artifact(char buf[3])
+{
+  int i;
+  int j;
+  int type;
+  int count;
+
+  if (!heretic) return;
+
+  type = buf[0] - 'a' + 1;
+  count = buf[1] - '0';
+  if (type == 26 && count == 0)
+  { // All artifacts
+    for (i = arti_none + 1; i < NUMARTIFACTS; i++)
+    {
+      if (gamemode == shareware && (i == arti_superhealth || i == arti_teleport))
+      {
+        continue;
+      }
+      for (j = 0; j < 16; j++)
+      {
+        P_GiveArtifact(plyr, i, NULL);
+      }
+    }
+    plyr->message = DEH_String("YOU GOT IT");
+  }
+  else if (type > arti_none && type < NUMARTIFACTS && count > 0 && count < 10)
+  {
+    if (gamemode == shareware && (type == arti_superhealth || type == arti_teleport))
+    {
+      plyr->message = DEH_String("BAD INPUT");
+      return;
+    }
+    for (i = 0; i < count; i++)
+    {
+      P_GiveArtifact(plyr, type, NULL);
+    }
+    plyr->message = DEH_String("YOU GOT IT");
+  }
+  else
+  { // Bad input
+    plyr->message = DEH_String("BAD INPUT");
+  }
+}
+
+static void cheat_tome(void)
+{
+  if (!heretic) return;
+
+  if (plyr->powers[pw_weaponlevel2])
+  {
+    plyr->powers[pw_weaponlevel2] = 0;
+    plyr->message = DEH_String("POWER OFF");
+  }
+  else
+  {
+    P_UseArtifact(plyr, arti_tomeofpower);
+    plyr->message = DEH_String("POWER ON");
+  }
+}
+
+static void cheat_chicken(void)
+{
+  if (!heretic) return;
+
+  P_MapStart();
+  if (plyr->chickenTics)
+  {
+    if (P_UndoPlayerChicken(plyr))
+    {
+        plyr->message = DEH_String("CHICKEN OFF");
+    }
+  }
+  else if (P_ChickenMorphPlayer(plyr))
+  {
+    plyr->message = DEH_String("CHICKEN ON");
+  }
+  P_MapEnd();
 }

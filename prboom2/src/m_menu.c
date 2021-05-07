@@ -2544,6 +2544,9 @@ setup_menu_t keys_settings8[] =
   { "Show Position", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, { 0 }, dsda_input_idmypos },
   { "Show FPS", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_idrate },
   { "Reveal Map", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, { 0 }, dsda_input_iddt },
+  { "Reset Health", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_ponce },
+  { "Tome of Power", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_shazam },
+  { "Chicken", S_INPUT, m_scrn, KB_X, KB_Y + 18 * 8, { 0 }, dsda_input_chicken },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
   { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { heretic_keys_settings1 } },
@@ -4637,6 +4640,7 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_speed_default) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, 0, speed_step, 3, 10000, 100);
+      doom_printf("Game Speed %d", realtic_clock_rate);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
@@ -4644,6 +4648,7 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_speed_up) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, 1, speed_step, 3, 10000, 100);
+      doom_printf("Game Speed %d", realtic_clock_rate);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
@@ -4651,6 +4656,7 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_speed_down) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
       realtic_clock_rate = StepwiseSum(realtic_clock_rate, -1, speed_step, 3, 10000, 100);
+      doom_printf("Game Speed %d", realtic_clock_rate);
       I_Init2();
       // Don't eat the keypress in this case.
       // return true;
