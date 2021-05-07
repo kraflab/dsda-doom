@@ -132,6 +132,9 @@ void A_HealChase(mobj_t *);
 void A_JumpIfHealthBelow(mobj_t *);
 void A_JumpIfTargetInSight(mobj_t *);
 void A_JumpIfTargetCloser(mobj_t *);
+void A_JumpIfFlagsSet(mobj_t *);
+void A_AddFlags(mobj_t *);
+void A_RemoveFlags(mobj_t *);
 
 // heretic
 
