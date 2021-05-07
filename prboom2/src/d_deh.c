@@ -1215,6 +1215,7 @@ static const struct deh_flag_s deh_mobjflags[] = {
   {"TOUCHY",       MF_TOUCHY},       // dies on contact with solid objects (MBF)
   {"BOUNCES",      MF_BOUNCES},      // bounces off floors, ceilings and maybe walls (MBF)
   {"FRIEND",       MF_FRIEND},       // a friend of the player(s) (MBF)
+  { NULL }
 };
 
 #define DEH_MOBJFLAGMAX_MBF21 (sizeof(deh_mobjflags_mbf21) / sizeof(*deh_mobjflags_mbf21))
@@ -3495,6 +3496,18 @@ void PostProcessDeh(void)
       for (; j >= 0; j--)
         if (!(defined_codeptr_args[i] & (1 << j)))
           states[i].args[j] = bexptr_match->default_args[j];
+
+      // Flags specifications aren't cross-port consistent -> must translate / mask bits
+      if (bexptr_match->cptr == A_AddFlags || bexptr_match->cptr == A_RemoveFlags)
+      {
+        states[i].args[0] = deh_translate_bits(states[i].args[0], deh_mobjflags);
+        states[i].args[1] = deh_translate_bits(states[i].args[1], deh_mobjflags_mbf21);
+      }
+      else if (bexptr_match->cptr == A_JumpIfFlagsSet)
+      {
+        states[i].args[1] = deh_translate_bits(states[i].args[1], deh_mobjflags);
+        states[i].args[2] = deh_translate_bits(states[i].args[2], deh_mobjflags_mbf21);
+      }
     }
 
     free(defined_codeptr_args);
