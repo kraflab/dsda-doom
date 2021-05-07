@@ -92,6 +92,18 @@ static int dsda_IsCommandEqual(dsda_command_t* command, dsda_command_t* other) {
          command->change == other->change;
 }
 
+void dsda_InitCommandHistory(void) {
+  int i;
+
+  for (i = 1; i < MAX_HISTORY; ++i) {
+    command_history[i].prev = &command_history[i - 1];
+    command_history[i - 1].next = &command_history[i];
+  }
+
+  command_history[0].prev = &command_history[MAX_HISTORY - 1];
+  command_history[MAX_HISTORY - 1].next = &command_history[0];
+}
+
 void dsda_InitCommandDisplay(patchnum_t* font) {
   int i;
   static int firsttime = 1;
@@ -111,15 +123,7 @@ void dsda_InitCommandDisplay(patchnum_t* font) {
       );
 
       command_history[i].hu_text.space_width = 5;
-
-      if (i > 0) {
-        command_history[i].prev = &command_history[i - 1];
-        command_history[i - 1].next = &command_history[i];
-      }
     }
-
-    command_history[0].prev = &command_history[MAX_HISTORY - 1];
-    command_history[MAX_HISTORY - 1].next = &command_history[0];
   }
 }
 

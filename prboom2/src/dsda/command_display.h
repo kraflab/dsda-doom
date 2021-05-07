@@ -21,6 +21,7 @@
 #include "r_defs.h"
 #include "d_ticcmd.h"
 
+void dsda_InitCommandHistory(void);
 void dsda_InitCommandDisplay(patchnum_t* font);
 void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd);
 void dsda_DrawCommandDisplay(void);

@@ -111,6 +111,7 @@ void dsda_ReadCommandLine(void) {
   if (M_CheckParm("-tas")) dsda_SetTas();
 
   dsda_InitKeyFrame();
+  dsda_InitCommandHistory();
 }
 
 static int dsda_shown_attempt = 0;
