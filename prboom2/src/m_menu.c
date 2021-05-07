@@ -4461,7 +4461,11 @@ dboolean M_Responder (event_t* ev) {
     return true;
   }
 
-  if ((currentMenu == &LoadDef || currentMenu == &SaveDef) && !saveStringEnter)
+  if (
+    menuactive &&
+    (currentMenu == &LoadDef || currentMenu == &SaveDef) &&
+    !saveStringEnter
+  )
   {
     int diff = 0;
 
