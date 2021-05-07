@@ -211,4 +211,16 @@ typedef struct menu_s
 
 #define SAVESTRINGSIZE 24
 
+#define MENU_NULL      -1
+#define MENU_LEFT      -2
+#define MENU_RIGHT     -3
+#define MENU_UP        -4
+#define MENU_DOWN      -5
+#define MENU_BACKSPACE -6
+#define MENU_ENTER     -7
+#define MENU_ESCAPE    -8
+#define MENU_CLEAR     -9
+
+void M_SetupNextMenu(menu_t *menudef);
+
 #endif

@@ -72,6 +72,7 @@
 #include "dsda/input.h"
 #include "dsda/palette.h"
 #include "dsda/save.h"
+#include "dsda/console.h"
 #include "heretic/mn_menu.h"
 #ifdef _WIN32
 #include "e6y_launcher.h"
@@ -248,7 +249,6 @@ void M_DrawSetup(void);                                     // phares 3/21/98
 void M_DrawHelp (void);                                     // phares 5/04/98
 
 void M_DrawSaveLoadBorder(int x,int y);
-void M_SetupNextMenu(menu_t *menudef);
 void M_DrawThermo(int x,int y,int thermWidth,int thermDot);
 void M_DrawEmptyCell(menu_t *menu,int item);
 void M_DrawSelCell(menu_t *menu,int item);
@@ -2603,6 +2603,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Cycle Palette", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_cycle_palette },
   { "Toggle Command Display", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_command_display },
   { "Toggle Strict Mode", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_strict_mode },
+  { "Open Console", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_console },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings2 } },
   { 0, S_SKIP | S_END, m_null }
@@ -4276,16 +4277,6 @@ static inline int GetButtons(const unsigned int max, int data)
 // action based on the state of the system.
 //
 
-#define MENU_NULL      -1
-#define MENU_LEFT      -2
-#define MENU_RIGHT     -3
-#define MENU_UP        -4
-#define MENU_DOWN      -5
-#define MENU_BACKSPACE -6
-#define MENU_ENTER     -7
-#define MENU_ESCAPE    -8
-#define MENU_CLEAR     -9
-
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
@@ -4421,6 +4412,17 @@ dboolean M_Responder (event_t* ev) {
   else if (dsda_InputActivated(dsda_input_menu_clear))
   {
     action = MENU_CLEAR;
+  }
+
+  if (
+    menuactive &&
+    currentMenu == &dsda_ConsoleDef &&
+    (ch != MENU_NULL || action != MENU_NULL) &&
+    action != MENU_ESCAPE
+  )
+  {
+    dsda_UpdateConsole(ch, action);
+    return true;
   }
 
   // Save Game string input
@@ -4582,6 +4584,13 @@ dboolean M_Responder (event_t* ev) {
     {
       S_StartSound(NULL,g_sfx_swtchn);
       M_QuitDOOM(0);
+      return true;
+    }
+
+    if (dsda_InputActivated(dsda_input_console) && !dsda_StrictMode())
+    {
+      if (dsda_OpenConsole())
+        S_StartSound(NULL,g_sfx_swtchn);
       return true;
     }
 
@@ -5777,10 +5786,10 @@ void M_Drawer (void)
       }
 
     // DRAW SKULL
-
-    // CPhipps - patch drawing updated
-    V_DrawNamePatch(x + SKULLXOFF, currentMenu->y - 5 + itemOn*LINEHEIGHT,0,
-        skullName[whichSkull], CR_DEFAULT, VPT_STRETCH);
+    if (max > 0)
+      // CPhipps - patch drawing updated
+      V_DrawNamePatch(x + SKULLXOFF, currentMenu->y - 5 + itemOn*LINEHEIGHT,0,
+          skullName[whichSkull], CR_DEFAULT, VPT_STRETCH);
   }
 }
 

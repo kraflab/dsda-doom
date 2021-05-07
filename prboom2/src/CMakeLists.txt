@@ -21,6 +21,8 @@ set(COMMON_SRC
     dsda.h
     dsda/command_display.c
     dsda/command_display.h
+    dsda/console.c
+    dsda/console.h
     dsda/demo.c
     dsda/demo.h
     dsda/ghost.c
