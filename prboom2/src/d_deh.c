@@ -1150,8 +1150,6 @@ static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
 //
 // Convert array to struct to allow multiple values, make array size variable
 
-#define DEH_MOBJFLAGMAX (sizeof deh_mobjflags/sizeof*deh_mobjflags)
-
 struct deh_flag_s {
   const char *name; // CPhipps - const*
   uint_64_t value;
@@ -1215,9 +1213,8 @@ static const struct deh_flag_s deh_mobjflags[] = {
   {"TOUCHY",       MF_TOUCHY},       // dies on contact with solid objects (MBF)
   {"BOUNCES",      MF_BOUNCES},      // bounces off floors, ceilings and maybe walls (MBF)
   {"FRIEND",       MF_FRIEND},       // a friend of the player(s) (MBF)
+  { NULL }
 };
-
-#define DEH_MOBJFLAGMAX_MBF21 (sizeof(deh_mobjflags_mbf21) / sizeof(*deh_mobjflags_mbf21))
 
 static const struct deh_flag_s deh_mobjflags_mbf21[] = {
   {"LOGRAV",         MF2_LOGRAV}, // low gravity
@@ -2065,18 +2062,17 @@ static void deh_procThing(DEHFILE *fpin, char *line)
         else
         {
           for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
-            size_t iy;
+            const struct deh_flag_s *flags;
 
-            for (iy = 0; iy < DEH_MOBJFLAGMAX_MBF21; iy++) {
-              if (deh_strcasecmp(strval, deh_mobjflags_mbf21[iy].name)) continue;
+            for (flags = deh_mobjflags_mbf21; flags->name; flags++) {
+              if (deh_strcasecmp(strval, flags->name)) continue;
 
-              value |= deh_mobjflags_mbf21[iy].value;
+              value |= flags->value;
               break;
             }
 
-            if (iy >= DEH_MOBJFLAGMAX_MBF21) {
+            if (!flags->name)
               deh_log("Could not find MBF21 bit mnemonic %s\n", strval);
-            }
           }
         }
 
@@ -2115,18 +2111,19 @@ static void deh_procThing(DEHFILE *fpin, char *line)
         //
         // Use OR logic instead of addition, to allow repetition
         for (;(strval = strtok(strval,deh_getBitsDelims())); strval = NULL) {
-          size_t iy;
-          for (iy=0; iy < DEH_MOBJFLAGMAX; iy++) {
-            if (deh_strcasecmp(strval,deh_mobjflags[iy].name)) continue;
+          const struct deh_flag_s *flags;
+
+          for (flags = deh_mobjflags; flags->name; flags++) {
+            if (deh_strcasecmp(strval, flags->name)) continue;
             deh_log("ORed value 0x%08lX%08lX %s\n",
-                    (unsigned long)(deh_mobjflags[iy].value>>32) & 0xffffffff,
-                    (unsigned long)deh_mobjflags[iy].value & 0xffffffff, strval);
-            value |= deh_mobjflags[iy].value;
+                    (unsigned long)(flags->value >> 32) & 0xffffffff,
+                    (unsigned long)flags->value & 0xffffffff, strval);
+            value |= flags->value;
             break;
           }
-          if (iy >= DEH_MOBJFLAGMAX) {
+
+          if (!flags->name)
             deh_log("Could not find bit mnemonic %s\n", strval);
-          }
         }
 
         // Don't worry about conversion -- simply print values
