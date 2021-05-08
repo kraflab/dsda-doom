@@ -87,16 +87,42 @@ dboolean dsda_OpenConsole(void) {
   return true;
 }
 
+static dboolean console_PlayerSetHealth(const char* args) {
+  int health;
+
+  if (sscanf(args, "%i", &health) == 1) {
+    players[consoleplayer].mo->health = health;
+    players[consoleplayer].health = health;
+
+    return true;
+  }
+
+  return false;
+}
+
+typedef dboolean (*console_command_t)(const char*);
+
+typedef struct {
+  const char* command_name;
+  console_command_t command;
+} console_command_entry_t;
+
+static console_command_entry_t console_commands[] = {
+  { "player.sethealth", console_PlayerSetHealth },
+  { NULL }
+};
+
 static void dsda_ExecuteConsole(void) {
   char command[CONSOLE_ENTRY_SIZE];
   char args[CONSOLE_ENTRY_SIZE];
 
   if (sscanf(console_entry, "%s %s", command, args) == 2) {
-    if (!stricmp(command, "player.sethealth")) {
-      int health;
-      if (sscanf(args, "%i", &health) == 1) {
-        players[consoleplayer].mo->health = health;
-        players[consoleplayer].health = health;
+    console_command_entry_t* entry;
+
+    for (entry = console_commands; entry->command; entry++) {
+      if (!stricmp(command, entry->command_name)) {
+        entry->command(args);
+        break;
       }
     }
   }
