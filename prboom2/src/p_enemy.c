@@ -3305,55 +3305,64 @@ void A_JumpIfTargetCloser(mobj_t* actor)
 // A_JumpIfFlagsSet
 // Jumps to a state if caller has the specified thing flags set.
 //   args[0]: State to jump to
-//   args[1]: Flag(s) to check
+//   args[1]: Standard Flag(s) to check
+//   args[2]: MBF21 Flag(s) to check
 //
 void A_JumpIfFlagsSet(mobj_t* actor)
 {
   int state;
-  unsigned int flags;
+  unsigned int flags, flags2;
 
   if (!mbf21 || !actor)
     return;
 
-  state = actor->state->args[0];
-  flags = actor->state->args[1];
+  state  = actor->state->args[0];
+  flags  = actor->state->args[1];
+  flags2 = actor->state->args[2];
 
-  if (actor->flags & flags)
+  if ((flags == 0 || actor->flags & flags) &&
+      (flags2 == 0 || actor->flags2 & flags2))
     P_SetMobjState(actor, state);
 }
 
 //
 // A_AddFlags
 // Adds the specified thing flags to the caller.
-//   args[0]: Flag(s) to add
+//   args[0]: Standard Flag(s) to add
+//   args[1]: MBF21 Flag(s) to add
 //
 void A_AddFlags(mobj_t* actor)
 {
-  unsigned int flags;
+  unsigned int flags, flags2;
 
   if (!mbf21 || !actor)
     return;
 
-  flags = actor->state->args[0];
+  flags  = actor->state->args[0];
+  flags2 = actor->state->args[1];
 
-  actor->flags |= flags;
+  actor->flags  |= flags;
+  actor->flags2 |= flags2;
 }
 
 //
 // A_RemoveFlags
-// Removes the specified thing flags to the caller.
-//   args[0]: Flag(s) to add
+// Removes the specified thing flags from the caller.
+//   args[0]: Flag(s) to remove
+//   args[1]: MBF21 Flag(s) to remove
 //
 void A_RemoveFlags(mobj_t* actor)
 {
-  unsigned int flags;
+  unsigned int flags, flags2;
 
   if (!mbf21 || !actor)
     return;
 
-  flags = actor->state->args[0];
+  flags  = actor->state->args[0];
+  flags2 = actor->state->args[1];
 
-  actor->flags &= ~flags;
+  actor->flags  &= ~flags;
+  actor->flags2 &= ~flags2;
 }
 
 
