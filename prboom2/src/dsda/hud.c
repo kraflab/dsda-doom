@@ -24,6 +24,7 @@
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/command_display.h"
+#include "dsda/coordinate_display.h"
 #include "hud.h"
 
 #define DSDA_TEXT_X 2
@@ -31,7 +32,6 @@
 #define DSDA_SPLIT_Y 12
 #define DSDA_SPLIT_LIFETIME 105
 #define DSDA_SPLIT_SIZE 80
-#define DSDA_TEXT_SIZE 200
 
 // hook into screen settings
 extern int SCREENHEIGHT;
@@ -44,11 +44,6 @@ typedef struct {
   char msg[DSDA_SPLIT_SIZE];
   int ticks;
 } dsda_split_text_t;
-
-typedef struct {
-  hu_textline_t text;
-  char msg[DSDA_TEXT_SIZE];
-} dsda_text_t;
 
 typedef struct {
   const char* msg;
@@ -124,6 +119,7 @@ void dsda_InitHud(patchnum_t* font) {
 
   dsda_InitExHud(font);
   dsda_InitCommandDisplay(font);
+  dsda_InitCoordinateDisplay(font);
 }
 
 void dsda_DrawIntermissionTime(void) {
@@ -150,6 +146,12 @@ static dboolean dsda_ExHudVisible(void) {
 
 static dboolean dsda_CommandDisplayVisible(void) {
   return dsda_CommandDisplay() && // command display turned on
+         viewheight != SCREENHEIGHT && // not zoomed in
+         (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
+}
+
+static dboolean dsda_CoordinateDisplayVisible(void) {
+  return dsda_CoordinateDisplay() && // command display turned on
          viewheight != SCREENHEIGHT && // not zoomed in
          (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
 }
@@ -271,6 +273,7 @@ void dsda_UpdateHud(void) {
       --dsda_split_state[i].delay;
 
   if (dsda_ExHudVisible()) dsda_UpdateExHud();
+  if (dsda_CoordinateDisplayVisible()) dsda_UpdateCoordinateDisplay();
 }
 
 static void dsda_DrawExHud(void) {
@@ -283,6 +286,7 @@ void dsda_DrawHud(void) {
 
   if (dsda_ExHudVisible()) dsda_DrawExHud();
   if (dsda_CommandDisplayVisible()) dsda_DrawCommandDisplay();
+  if (dsda_CoordinateDisplayVisible()) dsda_DrawCoordinateDisplay();
 }
 
 static void dsda_EraseExHud(void) {
@@ -295,6 +299,7 @@ void dsda_EraseHud(void) {
 
   dsda_EraseExHud();
   dsda_EraseCommandDisplay();
+  dsda_EraseCoordinateDisplay();
 }
 
 void dsda_AddSplit(dsda_split_class_t split_class) {

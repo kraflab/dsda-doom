@@ -159,6 +159,7 @@ typedef enum {
   dsda_input_shazam,
   dsda_input_chicken,
   dsda_input_console,
+  dsda_input_coordinate_display,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

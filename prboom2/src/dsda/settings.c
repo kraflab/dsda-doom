@@ -91,6 +91,10 @@ dboolean dsda_CommandDisplay(void) {
   return dsda_command_display && !dsda_StrictMode();
 }
 
+dboolean dsda_CoordinateDisplay(void) {
+  return dsda_coordinate_display && !dsda_StrictMode();
+}
+
 dboolean dsda_TrackAttempts(void) {
   return dsda_track_attempts && demorecording;
 }

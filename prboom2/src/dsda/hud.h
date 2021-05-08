@@ -19,6 +19,7 @@
 #define __DSDA_HUD__
 
 #include "r_defs.h"
+#include "hu_lib.h"
 
 typedef enum
 {
@@ -30,6 +31,14 @@ typedef enum
   DSDA_SPLIT_CLASS_COUNT
 } dsda_split_class_t;
 
+#define DSDA_TEXT_SIZE 200
+
+typedef struct {
+  hu_textline_t text;
+  char msg[DSDA_TEXT_SIZE];
+} dsda_text_t;
+
+void dsda_RefreshHudText(dsda_text_t* hud_text);
 void dsda_DrawIntermissionTime(void);
 void dsda_InitHud(patchnum_t* font);
 void dsda_UpdateHud(void);

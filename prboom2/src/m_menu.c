@@ -2604,6 +2604,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Toggle Command Display", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_command_display },
   { "Toggle Strict Mode", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_strict_mode },
   { "Open Console", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_console },
+  { "Toggle Coordinate Display", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_coordinate_display },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings2 } },
   { 0, S_SKIP | S_END, m_null }
@@ -3373,6 +3374,7 @@ setup_menu_t dsda_gen_settings[] = {
   { "Show Command Display (TAS)", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "dsda_command_display" } },
   { "Command History", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_command_history_size" } },
   { "Hide Empty Commands", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_hide_empty_commands" } },
+  { "Show Coordinate Display (TAS)", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_coordinate_display" } },
 
 #ifdef GL_DOOM
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },
@@ -4789,6 +4791,12 @@ dboolean M_Responder (event_t* ev) {
     {
       dsda_command_display = !dsda_command_display;
       doom_printf("Command Display %s", dsda_command_display ? "on" : "off");
+    }
+
+    if (dsda_InputActivated(dsda_input_coordinate_display) && !dsda_StrictMode())
+    {
+      dsda_coordinate_display = !dsda_coordinate_display;
+      doom_printf("Coordinate Display %s", dsda_coordinate_display ? "on" : "off");
     }
 
     if (dsda_InputActivated(dsda_input_strict_mode))
