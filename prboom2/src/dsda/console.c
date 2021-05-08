@@ -100,6 +100,27 @@ static dboolean console_PlayerSetHealth(const char* args) {
   return false;
 }
 
+static dboolean console_PlayerSetArmor(const char* args) {
+  int arg_count;
+  int armorpoints, armortype;
+
+  arg_count = sscanf(args, "%i %i", &armorpoints, &armortype);
+
+  if (arg_count != 2 || (armortype != 1 && armortype != 2))
+    armortype = players[consoleplayer].armortype;
+
+  if (arg_count) {
+    players[consoleplayer].armorpoints = armorpoints;
+
+    if (armortype == 0) armortype = 1;
+    players[consoleplayer].armortype = armortype;
+
+    return true;
+  }
+
+  return false;
+}
+
 typedef dboolean (*console_command_t)(const char*);
 
 typedef struct {
@@ -109,6 +130,7 @@ typedef struct {
 
 static console_command_entry_t console_commands[] = {
   { "player.sethealth", console_PlayerSetHealth },
+  { "player.setarmor", console_PlayerSetArmor },
   { NULL }
 };
 
