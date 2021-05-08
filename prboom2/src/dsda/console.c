@@ -39,12 +39,10 @@ static void dsda_DrawConsole(void) {
   HUlib_drawTextLine(&hu_console_prompt, false);
 }
 
-static menuitem_t dsda_ConsoleMenu[] = {};
-
 menu_t dsda_ConsoleDef = {
   0,
   NULL,
-  dsda_ConsoleMenu,
+  NULL,
   dsda_DrawConsole,
   0, 0
 };
