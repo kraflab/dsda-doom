@@ -90,7 +90,7 @@ dboolean dsda_OpenConsole(void) {
 static dboolean console_PlayerSetHealth(const char* args) {
   int health;
 
-  if (sscanf(args, "%i", &health) == 1) {
+  if (sscanf(args, "%i", &health)) {
     players[consoleplayer].mo->health = health;
     players[consoleplayer].health = health;
 
@@ -116,7 +116,7 @@ static void dsda_ExecuteConsole(void) {
   char command[CONSOLE_ENTRY_SIZE];
   char args[CONSOLE_ENTRY_SIZE];
 
-  if (sscanf(console_entry, "%s %s", command, args) == 2) {
+  if (sscanf(console_entry, "%s %[^;]", command, args) == 2) {
     console_command_entry_t* entry;
 
     for (entry = console_commands; entry->command; entry++) {
