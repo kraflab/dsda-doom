@@ -121,6 +121,36 @@ static dboolean console_PlayerSetArmor(const char* args) {
   return false;
 }
 
+static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
+  int x, x_frac = 0;
+  double x_double;
+
+  if (sscanf(args, "%i.%i", &x, &x_frac)) {
+    *dest = FRACUNIT * x;
+
+    if (args[0] == '-')
+      *dest -= x_frac;
+    else
+      *dest += x_frac;
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerSetX(const char* args) {
+  return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->x);
+}
+
+static dboolean console_PlayerSetY(const char* args) {
+  return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->y);
+}
+
+static dboolean console_PlayerSetZ(const char* args) {
+  return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->z);
+}
+
 typedef dboolean (*console_command_t)(const char*);
 
 typedef struct {
@@ -131,6 +161,9 @@ typedef struct {
 static console_command_entry_t console_commands[] = {
   { "player.sethealth", console_PlayerSetHealth },
   { "player.setarmor", console_PlayerSetArmor },
+  { "player.setx", console_PlayerSetX },
+  { "player.sety", console_PlayerSetY },
+  { "player.setz", console_PlayerSetZ },
   { NULL }
 };
 
