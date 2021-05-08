@@ -16,11 +16,21 @@
 - Disabled while strict mode is active
 - Can be used for playback analysis, tasing, practice, etc
 
+#### Coordinate Display
+- New option to display coordinates
+- Disabled while strict mode is active
+- Useful for figuring out setups, tasing, practice, etc
+
 #### Heretic Cheats
 - Added heretic cheat codes
 - Can use doom cheats in heretic and vice versa
 - The only new code relevant for doom is "ponce" (reset health)
 - Input bindings for tome, chicken, and health reset cheats
+
+#### Command Console
+- Added a console where you can enter various commands
+- Set up a key binding to access
+- Command list: WIP
 
 #### Miscellaneous
 - MBF sky transfers work in all complevels (pr+)
