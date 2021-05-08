@@ -70,6 +70,15 @@ dsda_text_t dsda_exhud_timer;
 dsda_text_t dsda_exhud_max_totals;
 dsda_text_t dsda_intermission_time;
 
+void dsda_RefreshHudText(dsda_text_t* hud_text) {
+  const char* s;
+
+  HUlib_clearTextLine(&hud_text->text);
+
+  s = hud_text->msg;
+  while (*s) HUlib_addCharToTextLine(&hud_text->text, *(s++));
+}
+
 static void dsda_InitExHud(patchnum_t* font) {
   HUlib_initTextLine(
     &dsda_exhud_timer.text,
@@ -128,10 +137,7 @@ void dsda_DrawIntermissionTime(void) {
     (float)(leveltime % (60 * 35)) / 35
   );
 
-  HUlib_clearTextLine(&dsda_intermission_time.text);
-
-  s = dsda_intermission_time.msg;
-  while (*s) HUlib_addCharToTextLine(&dsda_intermission_time.text, *(s++));
+  dsda_RefreshHudText(&dsda_intermission_time);
 
   HUlib_drawTextLine(&dsda_intermission_time.text, false);
 }
@@ -176,10 +182,7 @@ static void dsda_UpdateExHud(void) {
       (float)(leveltime % (60 * 35)) / 35
     );
 
-  HUlib_clearTextLine(&dsda_exhud_timer.text);
-
-  s = dsda_exhud_timer.msg;
-  while (*s) HUlib_addCharToTextLine(&dsda_exhud_timer.text, *(s++));
+  dsda_RefreshHudText(&dsda_exhud_timer);
 
   // Max totals - from hu_stuff.c
   {
@@ -255,10 +258,7 @@ static void dsda_UpdateExHud(void) {
     }
   }
 
-  HUlib_clearTextLine(&dsda_exhud_max_totals.text);
-
-  s = dsda_exhud_max_totals.msg;
-  while (*s) HUlib_addCharToTextLine(&dsda_exhud_max_totals.text, *(s++));
+  dsda_RefreshHudText(&dsda_exhud_max_totals);
 }
 
 void dsda_UpdateHud(void) {
