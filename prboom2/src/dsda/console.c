@@ -170,9 +170,14 @@ static console_command_entry_t console_commands[] = {
 static void dsda_ExecuteConsole(void) {
   char command[CONSOLE_ENTRY_SIZE];
   char args[CONSOLE_ENTRY_SIZE];
+  int scan_count;
 
-  if (sscanf(console_entry, "%s %[^;]", command, args) == 2) {
+  scan_count = sscanf(console_entry, "%s %[^;]", command, args);
+
+  if (scan_count) {
     console_command_entry_t* entry;
+
+    if (scan_count == 1) args[0] = '\0';
 
     for (entry = console_commands; entry->command; entry++) {
       if (!stricmp(command, entry->command_name)) {
