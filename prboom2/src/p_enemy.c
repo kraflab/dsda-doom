@@ -3320,8 +3320,8 @@ void A_JumpIfFlagsSet(mobj_t* actor)
   flags  = actor->state->args[1];
   flags2 = actor->state->args[2];
 
-  if ((flags == 0 || actor->flags & flags) &&
-      (flags2 == 0 || actor->flags2 & flags2))
+  if ((actor->flags & flags) == flags &&
+      (actor->flags2 & flags2) == flags2)
     P_SetMobjState(actor, state);
 }
 
