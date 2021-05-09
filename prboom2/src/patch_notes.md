@@ -17,8 +17,17 @@
 - Can be used for playback analysis, tasing, practice, etc
 
 #### Coordinate Display
-- New option to display coordinates
+- New option to display coordinates / velocity
 - Disabled while strict mode is active
+- Position display uses doom units
+  - Doom uses fractions instead of floating points for position variables
+  - For example, the coordinate 3.7 doesn't exist. The closest position is 3 + 45875 / 65536
+  - This will display as 3.45875 so that you have the exact location without approximations
+- Velocity display is color-coded based on speed thresholds:
+  - speed achievable without straferunning
+  - speed achievable with sr40
+  - speed achievable with sr50
+  - speed beyond sr50 range
 - Useful for figuring out setups, tasing, practice, etc
 
 #### Heretic Cheats
