@@ -151,6 +151,31 @@ static dboolean console_PlayerSetZ(const char* args) {
   return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->z);
 }
 
+static void console_PlayerRoundCoordinate(int* x) {
+  int bits = *x & 0xffff;
+  if (!bits) return;
+
+  if (*x > 0) {
+    if (bits >= 0x8000)
+      *x = (*x & ~0xffff) + FRACUNIT;
+    else
+      *x = *x & ~0xffff;
+  }
+  else {
+    if (bits < 0x8000)
+      *x = (*x & ~0xffff) - FRACUNIT;
+    else
+      *x = *x & ~0xffff;
+  }
+}
+
+static dboolean console_PlayerRoundXY(const char* args) {
+  console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
+  console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
+
+  return true;
+}
+
 typedef dboolean (*console_command_t)(const char*);
 
 typedef struct {
@@ -164,6 +189,7 @@ static console_command_entry_t console_commands[] = {
   { "player.setx", console_PlayerSetX },
   { "player.sety", console_PlayerSetY },
   { "player.setz", console_PlayerSetZ },
+  { "player.roundxy", console_PlayerRoundXY },
   { NULL }
 };
 
