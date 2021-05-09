@@ -48,10 +48,10 @@ static void dsda_BreakDownCoordinate(int* x, int* base, int* frac) {
   *frac = *x & 0xffff;
 
   if (*base < 0) {
-    *base += 1;
-
-    if (*frac != 0)
+    if (*frac != 0) {
+      *base += 1;
       *frac = 0xffff - *frac + 1;
+    }
   }
 }
 
