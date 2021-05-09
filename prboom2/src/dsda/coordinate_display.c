@@ -99,11 +99,11 @@ static void dsda_WriteVelocity(dsda_text_t* text) {
   v = dsda_CalculateVelocity();
 
   dsda_velocity_color =
-    abs(v) >= THRESHOLD_3 ?
+    v >= THRESHOLD_3 ?
       0x30 + g_cr_red   :
-    abs(v) >= THRESHOLD_2 ?
+    v >= THRESHOLD_2 ?
       0x30 + g_cr_blue  :
-    abs(v) >= THRESHOLD_1 ?
+    v >= THRESHOLD_1 ?
       0x30 + g_cr_green :
     0x30 + g_cr_gray;
 
