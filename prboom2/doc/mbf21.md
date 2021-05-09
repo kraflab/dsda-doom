@@ -207,7 +207,7 @@ MBF21 defaults:
 - For future-proofing, if more nonzero args are defined on a state than its action pointer expects (e.g. defining Args3 on a state that uses A_WeaponSound), an error will be thrown on startup.
 
 #### New DEHACKED Codepointers
-- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38), [PR](https://github.com/kraflab/dsda-doom/pull/40)
+- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38), [PR](https://github.com/kraflab/dsda-doom/pull/40), [PR](https://github.com/kraflab/dsda-doom/pull/41)
 - All new MBF21 pointers use the new "Args" fields for params, rather than misc1/misc2 fields
 - Arg fields are listed in order in the docs below, e.g. for `A_SpawnObject`, `type` is Args1, `angle` is Args2, etc.
 - Although all args are integers internally, there are effectively the following types of args:
@@ -274,6 +274,61 @@ MBF21 defaults:
   - Args:
     - `damage (int)`: Max explosion damge
     - `radius (int)`: Explosion radius
+
+- **A_NoiseAlert**
+  - Alerts monsters within sound-travel distance of the calling actor's target.
+  - No Args.
+
+- **A_HealChase(state, sound)**
+  - Generic A_VileChase. Chases the player and resurrects any corpses with a Raise state when bumping into them.
+  - Args:
+    - `state (uint)`: State to jump to on the calling actor when resurrecting a corpse
+    - `sound (uint)`: Sound to play when resurrecting a corpse
+
+- **A_JumpIfHealthBelow(state, health)**
+  - Jumps to a state if caller's health is below the specified threshold.
+  - Args:
+    - `state (uint)`: State to jump to
+    - `health (int)`: Health to check
+  - Notes:
+    - The jump will only occur if health is BELOW the given value -- e.g. `A_JumpIfHealthBelow(420, 69)` will jump to state 420 if health is 68 or lower.
+
+- **A_JumpIfTargetInSight(state)**
+  - Jumps to a state if caller's target is in line-of-sight.
+  - Args:
+    - `state (uint)`: State to jump to
+  - Notes:
+    - This function only considers line-of-sight, i.e. independent of calling actor's facing direction.
+
+- **A_JumpIfTargetCloser(state, distance)**
+  - Jumps to a state if caller's target is closer than the specified distance.
+  - Args:
+    - `state (uint)`: State to jump to
+    - `distance (int)`: Distance threshold, in map units
+  - Notes:
+    - This function uses the same approximate distance check as other functions in the game (P_AproxDistance).
+    - The jump will only occur if distance is BELOW the given value -- e.g. `A_JumpIfTargetCloser(420, 69)` will jump to state 420 if distance is 68 or lower.
+
+- **A_JumpIfFlagsSet(state, flags, flags2)**
+  - Jumps to a state if caller has the specified thing flags set.
+  - Args:
+    - `state (uint)`: State to jump to.
+    - `flags (int)`: Standard actor flag(s) to check
+    - `flags2 (int)`: MBF21 actor flag(s) to check
+  - Notes:
+    - If multiple flags are specified in a field, jump will only occur if all the flags are set (e.g. AND comparison, not OR)
+
+- **A_AddFlags(flags, flags2)**
+  - Adds the specified thing flags to the caller.
+  - Args:
+    - `flags (int)`: Standard actor flag(s) to add
+    - `flags2 (int)`: MBF21 actor flag(s) to add
+
+- **A_RemoveFlags(flags, flags2)**
+  - Removes the specified thing flags from the caller.
+  - Args:
+    - `flags (int)`: Standard actor flag(s) to remove
+    - `flags2 (int)`: MBF21 actor flag(s) to remove
 
 ##### Weapon pointers
 
@@ -354,6 +409,10 @@ MBF21 defaults:
   - Args:
     - `state (uint)`: State index to set the flash psprite to.
     - `nothirdperson (int)`: If nonzero, do not change the 3rd-person player sprite to the player muzzleflash state.
+
+- **A_WeaponAlert**
+  - Alerts monsters within sound-travel distance of the player's presence. Handy when combined with the WPF_SILENT flag.
+  - No Args.
 
 ## Miscellaneous
 

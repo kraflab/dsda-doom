@@ -1491,10 +1491,19 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_MonsterBulletAttack, "A_MonsterBulletAttack", 5, {0, 0, 1, 3, 5}},
   {A_MonsterMeleeAttack,  "A_MonsterMeleeAttack", 4, {3, 8, 0, MELEERANGE}},
   {A_RadiusDamage,        "A_RadiusDamage", 2},
+  {A_NoiseAlert,          "A_NoiseAlert", 0},
+  {A_HealChase,           "A_HealChase", 2},
+  {A_JumpIfHealthBelow,   "A_JumpIfHealthBelow", 2},
+  {A_JumpIfTargetInSight, "A_JumpIfTargetInSight", 1},
+  {A_JumpIfTargetCloser,  "A_JumpIfTargetCloser", 2},
+  {A_JumpIfFlagsSet,      "A_JumpIfFlagsSet", 3},
+  {A_AddFlags,            "A_AddFlags", 2},
+  {A_RemoveFlags,         "A_RemoveFlags", 2},
   {A_WeaponProjectile,    "A_WeaponProjectile", 5},
   {A_WeaponBulletAttack,  "A_WeaponBulletAttack", 5, {0, 0, 1, 5, 3}},
   {A_WeaponMeleeAttack,   "A_WeaponMeleeAttack", 5, {2, 10, 1 * FRACUNIT, 0, MELEERANGE}},
   {A_WeaponSound,         "A_WeaponSound", 2},
+  {A_WeaponAlert,         "A_WeaponAlert", 0},
   {A_WeaponJump,          "A_WeaponJump", 2},
   {A_ConsumeAmmo,         "A_ConsumeAmmo", 1},
   {A_CheckAmmo,           "A_CheckAmmo", 2},
@@ -3483,6 +3492,18 @@ void PostProcessDeh(void)
       for (; j >= 0; j--)
         if (!(defined_codeptr_args[i] & (1 << j)))
           states[i].args[j] = bexptr_match->default_args[j];
+
+      // Flags specifications aren't cross-port consistent -> must translate / mask bits
+      if (bexptr_match->cptr == A_AddFlags || bexptr_match->cptr == A_RemoveFlags)
+      {
+        states[i].args[0] = deh_translate_bits(states[i].args[0], deh_mobjflags);
+        states[i].args[1] = deh_translate_bits(states[i].args[1], deh_mobjflags_mbf21);
+      }
+      else if (bexptr_match->cptr == A_JumpIfFlagsSet)
+      {
+        states[i].args[1] = deh_translate_bits(states[i].args[1], deh_mobjflags);
+        states[i].args[2] = deh_translate_bits(states[i].args[2], deh_mobjflags_mbf21);
+      }
     }
 
     free(defined_codeptr_args);
