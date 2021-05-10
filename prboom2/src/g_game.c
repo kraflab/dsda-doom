@@ -92,6 +92,7 @@
 #include "dsda/settings.h"
 #include "dsda/input.h"
 #include "dsda/options.h"
+#include "dsda/tas.h"
 #include "statdump.h"
 
 // ano - used for version 255+ demos, like EE or MBF
@@ -884,16 +885,20 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     special_event = 0;
   }
 
-  if (leveltime == 0 && totalleveltimes == 0 && !dsda_StrictMode()) {
-    int p = M_CheckParm("-first_input");
+  if (!dsda_StrictMode()) {
+    if (leveltime == 0 && totalleveltimes == 0) {
+      int p = M_CheckParm("-first_input");
 
-    if (p && (p + 3 < myargc)) {
-      cmd->forwardmove = (signed char) atoi(myargv[p + 1]);
-      cmd->sidemove = (signed char) atoi(myargv[p + 2]);
-      cmd->angleturn = (signed short) (atoi(myargv[p + 3]) << 8);
+      if (p && (p + 3 < myargc)) {
+        cmd->forwardmove = (signed char) atoi(myargv[p + 1]);
+        cmd->sidemove = (signed char) atoi(myargv[p + 2]);
+        cmd->angleturn = (signed short) (atoi(myargv[p + 3]) << 8);
 
-      dsda_JoinDemoCmd(cmd);
+        dsda_JoinDemoCmd(cmd);
+      }
     }
+    else
+      dsda_ApplyTasCommand(cmd);
   }
 }
 

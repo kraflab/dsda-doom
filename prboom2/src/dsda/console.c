@@ -22,6 +22,7 @@
 #include "v_video.h"
 
 #include "dsda/global.h"
+#include "dsda/tas.h"
 
 #include "console.h"
 
@@ -188,6 +189,22 @@ static dboolean console_PlayerRoundXY(const char* args) {
   return true;
 }
 
+static dboolean console_CommandLock(const char* args) {
+  char element[CONSOLE_ENTRY_SIZE];
+  int value;
+
+  if (sscanf(args, "%s %i", element, &value) == 2)
+    return dsda_UpdatePersistentCommand(element, value);
+
+  return false;
+}
+
+static dboolean console_CommandUnlock(const char* args) {
+  dsda_DisablePersistentCommand();
+
+  return true;
+}
+
 typedef dboolean (*console_command_t)(const char*);
 
 typedef struct {
@@ -204,6 +221,8 @@ static console_command_entry_t console_commands[] = {
   { "player.roundxy", console_PlayerRoundX },
   { "player.roundxy", console_PlayerRoundY },
   { "player.roundxy", console_PlayerRoundXY },
+  { "command.lock", console_CommandLock },
+  { "command.unlock", console_CommandUnlock },
   { NULL }
 };
 

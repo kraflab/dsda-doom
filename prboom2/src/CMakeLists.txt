@@ -49,6 +49,8 @@ set(COMMON_SRC
     dsda/save.h
     dsda/settings.c
     dsda/settings.h
+    dsda/tas.c
+    dsda/tas.h
     dsda/time.c
     dsda/time.h
     dstrings.c
