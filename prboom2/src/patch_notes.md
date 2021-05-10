@@ -67,6 +67,7 @@
 - Fixed a bug where mouselook data was not reset when using demo restart
 - Fixed an issue with wad lump loading - small performance improvement
 - Fixed an issue with sound effects causing lag spikes for some users
+- Fixed a bug where loading a save with the automap open could activate god mode
 - Fixed msvc build (xaser)
 - Fixed macos launcher iwad directory mismatch (PBeGood4)
 - Fixed umapinfo custom episode select for doom2 (pr+)
