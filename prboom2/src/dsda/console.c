@@ -169,6 +169,18 @@ static void console_PlayerRoundCoordinate(int* x) {
   }
 }
 
+static dboolean console_PlayerRoundX(const char* args) {
+  console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
+
+  return true;
+}
+
+static dboolean console_PlayerRoundY(const char* args) {
+  console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
+
+  return true;
+}
+
 static dboolean console_PlayerRoundXY(const char* args) {
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
@@ -189,6 +201,8 @@ static console_command_entry_t console_commands[] = {
   { "player.setx", console_PlayerSetX },
   { "player.sety", console_PlayerSetY },
   { "player.setz", console_PlayerSetZ },
+  { "player.roundxy", console_PlayerRoundX },
+  { "player.roundxy", console_PlayerRoundY },
   { "player.roundxy", console_PlayerRoundXY },
   { NULL }
 };
