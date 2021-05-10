@@ -58,6 +58,7 @@
 #include "r_demo.h"
 #include "m_misc.h"
 #include "m_bbox.h"
+#include "d_main.h"
 
 #include "dsda/input.h"
 
@@ -700,7 +701,7 @@ static void AM_initVariables(void)
   old_m_h = m_h;
 
   // inform the status bar of the change
-  ST_Responder(&st_notify);
+  D_PostEvent(&st_notify);
 }
 
 void AM_SetResolution(void)
@@ -769,7 +770,7 @@ void AM_Stop (void)
 
   AM_unloadPics();
   automapmode &= ~am_active;
-  ST_Responder(&st_notify);
+  D_PostEvent(&st_notify);
   stopped = true;
 }
 
@@ -2341,7 +2342,7 @@ static void AM_drawMarks(void)
 
                 x = p.x * 320 / WIDE_SCREENWIDTH;
                 y = p.y * 200 / WIDE_SCREENHEIGHT;
-                
+
                 flags = VPT_ALIGN_LEFT | VPT_STRETCH;
                 break;
               case patch_stretch_full:
@@ -2350,7 +2351,7 @@ static void AM_drawMarks(void)
 
                 x = p.x * 320 / SCREENWIDTH;
                 y = p.y * 200 / SCREENHEIGHT;
-                
+
                 flags = VPT_ALIGN_WIDE | VPT_STRETCH;
                 break;
             }
