@@ -443,7 +443,7 @@ AddGameExecutable(dsda-doom "${PRBOOM_PLUS_SOURCES}")
 
 # PrBoom-Plus server executable
 
-option(BUILD_SERVER "Build PrBoom-Plus server executable" ON)
+option(BUILD_SERVER "Build PrBoom-Plus server executable" OFF)
 
 if(BUILD_SERVER AND SDL2_NET_FOUND)
     set(PRBOOM_PLUS_GAME_SERVER_SOURCES
