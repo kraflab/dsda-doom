@@ -441,46 +441,46 @@ endfunction()
 AddGameExecutable(dsda-doom "${PRBOOM_PLUS_SOURCES}")
 
 
-# PrBoom-Plus server executable
+# DSDA-Doom server executable
 
-option(BUILD_SERVER "Build PrBoom-Plus server executable" OFF)
+option(BUILD_SERVER "Build DSDA-Doom server executable" OFF)
 
 if(BUILD_SERVER AND SDL2_NET_FOUND)
-    set(PRBOOM_PLUS_GAME_SERVER_SOURCES
+    set(DSDA_DOOM_GAME_SERVER_SOURCES
         d_server.c
         protocol.h
         SDL/i_network.c
     )
 
     if(MSVC)
-        set(PRBOOM_PLUS_GAME_SERVER_SOURCES
-            ${PRBOOM_PLUS_GAME_SERVER_SOURCES}
+        set(DSDA_DOOM_GAME_SERVER_SOURCES
+            ${DSDA_DOOM_GAME_SERVER_SOURCES}
             SDL/i_system.c
             dsda/time.c
             dsda/time.h
         )
     else()
-        set(PRBOOM_PLUS_GAME_SERVER_SOURCES
-            ${PRBOOM_PLUS_GAME_SERVER_SOURCES}
+        set(DSDA_DOOM_GAME_SERVER_SOURCES
+            ${DSDA_DOOM_GAME_SERVER_SOURCES}
             POSIX/i_system.c
         )
     endif()
 
-    add_executable(prboom-plus-game-server ${PRBOOM_PLUS_GAME_SERVER_SOURCES})
-    target_include_directories(prboom-plus-game-server PRIVATE
+    add_executable(dsda-doom-game-server ${DSDA_DOOM_GAME_SERVER_SOURCES})
+    target_include_directories(dsda-doom-game-server PRIVATE
         ${SDL2_INCLUDE_DIRS}
         ${CMAKE_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
     )
-    target_link_libraries(prboom-plus-game-server PRIVATE
+    target_link_libraries(dsda-doom-game-server PRIVATE
         ${SDL2_LIBRARIES}
     )
-    set_target_properties(prboom-plus-game-server PROPERTIES
+    set_target_properties(dsda-doom-game-server PROPERTIES
         COMPILE_DEFINITIONS PRBOOM_SERVER
         RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
     )
-    ApplySDL2NetOptions(prboom-plus-game-server)
-    install(TARGETS prboom-plus-game-server COMPONENT "Game server executable" RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+    ApplySDL2NetOptions(dsda-doom-game-server)
+    install(TARGETS dsda-doom-game-server COMPONENT "Game server executable" RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
 endif()
 
 
@@ -553,9 +553,9 @@ if(APPLE)
     )
 
     if(BUILD_SERVER AND SDL2_NET_FOUND)
-        add_dependencies(prboom-plus-launcher prboom-plus-game-server)
+        add_dependencies(prboom-plus-launcher dsda-doom-game-server)
         add_custom_command(TARGET prboom-plus-launcher POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:prboom-plus-game-server> $<TARGET_FILE_DIR:prboom-plus-launcher>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:dsda-doom-game-server> $<TARGET_FILE_DIR:prboom-plus-launcher>
         )
     endif()
 endif()
