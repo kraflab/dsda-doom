@@ -342,6 +342,34 @@ static void I_EndDoom(void)
   }
 }
 
+// Schedule a function to be called when the program exits.
+// If run_if_error is true, the function is called if the exit
+// is due to an error (I_Error)
+// Copyright(C) 2005-2014 Simon Howard
+
+typedef struct atexit_listentry_s atexit_listentry_t;
+
+struct atexit_listentry_s
+{
+    atexit_func_t func;
+    dboolean run_on_error;
+    atexit_listentry_t *next;
+};
+
+static atexit_listentry_t *exit_funcs = NULL;
+
+void I_AtExit(atexit_func_t func, dboolean run_on_error)
+{
+    atexit_listentry_t *entry;
+
+    entry = malloc(sizeof(*entry));
+
+    entry->func = func;
+    entry->run_on_error = run_on_error;
+    entry->next = exit_funcs;
+    exit_funcs = entry;
+}
+
 static int has_exited;
 
 /* I_SafeExit
@@ -354,6 +382,21 @@ void I_SafeExit(int rc)
 {
   if (!has_exited)    /* If it hasn't exited yet, exit now -- killough */
     {
+      atexit_listentry_t *entry;
+
+      // Run through all exit functions
+
+      entry = exit_funcs;
+
+      while (entry != NULL)
+      {
+        if (rc == 0 || entry->run_on_error)
+        {
+          entry->func();
+        }
+        entry = entry->next;
+      }
+
       has_exited=rc ? 2 : 1;
       exit(rc);
     }
@@ -365,6 +408,7 @@ static void I_Quit (void)
     has_exited=1;   /* Prevent infinitely recursive exits -- killough */
 
   if (has_exited == 1) {
+    has_exited = 2;
     if (!demorecording)
       I_EndDoom();
     if (demorecording)
@@ -547,7 +591,7 @@ int main(int argc, char **argv)
      left in an unstable state.
   */
 
-  atexit(I_Quit);
+  I_AtExit(I_Quit, false);
 #ifndef PRBOOM_DEBUG
   if (!M_CheckParm("-devparm"))
   {
