@@ -62,9 +62,6 @@
 
 // Tunables
 
-// Minimum chunk size at which blocks are allocated
-#define CHUNK_SIZE 32
-
 // signature for block header
 #define ZONEID  0x931d4a11
 
@@ -91,10 +88,7 @@ typedef struct memblock {
 
 } memblock_t;
 
-/* size of block header
- * cph - base on sizeof(memblock_t), which can be larger than CHUNK_SIZE on
- * 64bit architectures */
-static const size_t HEADER_SIZE = (sizeof(memblock_t)+CHUNK_SIZE-1) & ~(CHUNK_SIZE-1);
+static const size_t HEADER_SIZE = sizeof(memblock_t);
 
 static memblock_t *blockbytag[PU_MAX];
 
@@ -290,8 +284,6 @@ void *(Z_Malloc)(size_t size, int tag, void **user
 
   if (!size)
     return user ? *user = NULL : NULL;           // malloc(0) returns NULL
-
-  size = (size+CHUNK_SIZE-1) & ~(CHUNK_SIZE-1);  // round to chunk size
 
   if (memory_size > 0 && ((free_memory + memory_size) < (int)(size + HEADER_SIZE)))
   {
