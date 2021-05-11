@@ -97,7 +97,7 @@ void Z_DumpHistory(char *);
  * directly, for efficiency. Except we do need a wrapper to handle out of memory
  * errors... damn, ok, we'll leave it for now.
  */
-#ifndef HAVE_LIBDMALLOC
+
 // Remove all definitions before including system definitions
 
 #undef malloc
@@ -111,14 +111,6 @@ void Z_DumpHistory(char *);
 #define realloc(p,n)       Z_Realloc(p,n,PU_STATIC,0)
 #define calloc(n1,n2)      Z_Calloc(n1,n2,PU_STATIC,0)
 #define strdup(s)          Z_Strdup(s,PU_STATIC,0)
-
-#else
-
-#ifdef HAVE_LIBDMALLOC
-#include <dmalloc.h>
-#endif
-
-#endif
 
 void Z_ZoneHistory(char *);
 
