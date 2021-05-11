@@ -62,20 +62,8 @@
 
 // Tunables
 
-// Alignment of zone memory (benefit may be negated by HEADER_SIZE, CHUNK_SIZE)
-#define CACHE_ALIGN 32
-
 // Minimum chunk size at which blocks are allocated
 #define CHUNK_SIZE 32
-
-// Minimum size a block must be to become part of a split
-#define MIN_BLOCK_SPLIT (1024)
-
-// How much RAM to leave aside for other libraries
-#define LEAVE_ASIDE (128*1024)
-
-// Amount to subtract when retrying failed attempts to allocate initial pool
-#define RETRY_AMOUNT (256*1024)
 
 // signature for block header
 #define ZONEID  0x931d4a11
