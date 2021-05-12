@@ -229,8 +229,8 @@ static void db_render (void *dest, unsigned nsamp)
   if (db_playing && !db_paused)
   {
 #if ( DUMB_MAJOR_VERSION >= 2 )
-    sample_t **sig_samples;
-    long sig_samples_size;
+    sample_t **sig_samples = NULL;
+    long sig_samples_size = 0;
 
     nsampwrit = duh_render_int(dsren, &sig_samples, &sig_samples_size,
                                16, 0, db_volume, db_delta, nsamp, dest);
