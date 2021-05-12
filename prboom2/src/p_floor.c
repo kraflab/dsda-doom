@@ -474,7 +474,7 @@ manual_floor://e6y
 
     // new floor thinker
     rtn = 1;
-    floor = Z_Malloc (sizeof(*floor), PU_LEVSPEC, 0);
+    floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
     memset(floor, 0, sizeof(*floor));
     P_AddThinker (&floor->thinker);
     sec->floordata = floor; //jff 2/22/98
@@ -790,7 +790,7 @@ manual_stair://e6y
 
     // create new floor thinker for first step
     rtn = 1;
-    floor = Z_Malloc (sizeof(*floor), PU_LEVSPEC, 0);
+    floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
     memset(floor, 0, sizeof(*floor));
     P_AddThinker (&floor->thinker);
     sec->floordata = floor;
@@ -906,7 +906,7 @@ manual_stair://e6y
         secnum = newsecnum;
 
         // create and initialize a thinker for the next step
-        floor = Z_Malloc (sizeof(*floor), PU_LEVSPEC, 0);
+        floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
         memset(floor, 0, sizeof(*floor));
         P_AddThinker (&floor->thinker);
 
@@ -1057,7 +1057,7 @@ int EV_DoDonut(line_t*  line)
       }
 
       //  Spawn rising slime
-      floor = Z_Malloc (sizeof(*floor), PU_LEVSPEC, 0);
+      floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
       memset(floor, 0, sizeof(*floor));
       P_AddThinker (&floor->thinker);
       s2->floordata = floor; //jff 2/22/98
@@ -1072,7 +1072,7 @@ int EV_DoDonut(line_t*  line)
       floor->floordestheight = s3_floorheight;
 
       //  Spawn lowering donut-hole pillar
-      floor = Z_Malloc (sizeof(*floor), PU_LEVSPEC, 0);
+      floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
       memset(floor, 0, sizeof(*floor));
       P_AddThinker (&floor->thinker);
       s1->floordata = floor; //jff 2/22/98
@@ -1120,7 +1120,7 @@ int EV_DoElevator
 
     // create and initialize new elevator thinker
     rtn = 1;
-    elevator = Z_Malloc (sizeof(*elevator), PU_LEVSPEC, 0);
+    elevator = Z_Malloc (sizeof(*elevator), PU_LEVEL, 0);
     memset(elevator, 0, sizeof(*elevator));
     P_AddThinker (&elevator->thinker);
     sec->floordata = elevator; //jff 2/22/98

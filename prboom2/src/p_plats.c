@@ -244,7 +244,7 @@ manual_plat://e6y
 
     // Create a thinker
     rtn = 1;
-    plat = Z_Malloc( sizeof(*plat), PU_LEVSPEC, 0);
+    plat = Z_Malloc( sizeof(*plat), PU_LEVEL, 0);
     memset(plat, 0, sizeof(*plat));
     P_AddThinker(&plat->thinker);
 

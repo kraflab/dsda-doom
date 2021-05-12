@@ -182,7 +182,7 @@ void P_SpawnFireFlicker (sector_t*  sector)
   // Nothing special about it during gameplay.
   sector->special &= ~31; //jff 3/14/98 clear non-generalized sector type
 
-  flick = Z_Malloc ( sizeof(*flick), PU_LEVSPEC, 0);
+  flick = Z_Malloc ( sizeof(*flick), PU_LEVEL, 0);
 
   memset(flick, 0, sizeof(*flick));
   P_AddThinker (&flick->thinker);
@@ -212,7 +212,7 @@ void P_SpawnLightFlash (sector_t* sector)
   else
     sector->special &= ~31; //jff 3/14/98 clear non-generalized sector type
 
-  flash = Z_Malloc ( sizeof(*flash), PU_LEVSPEC, 0);
+  flash = Z_Malloc ( sizeof(*flash), PU_LEVEL, 0);
 
   memset(flash, 0, sizeof(*flash));
   P_AddThinker (&flash->thinker);
@@ -244,7 +244,7 @@ void P_SpawnStrobeFlash
 {
   strobe_t* flash;
 
-  flash = Z_Malloc ( sizeof(*flash), PU_LEVSPEC, 0);
+  flash = Z_Malloc ( sizeof(*flash), PU_LEVEL, 0);
 
   memset(flash, 0, sizeof(*flash));
   P_AddThinker (&flash->thinker);
@@ -283,7 +283,7 @@ void P_SpawnGlowingLight(sector_t*  sector)
 {
   glow_t* g;
 
-  g = Z_Malloc( sizeof(*g), PU_LEVSPEC, 0);
+  g = Z_Malloc( sizeof(*g), PU_LEVEL, 0);
 
   memset(g, 0, sizeof(*g));
   P_AddThinker(&g->thinker);

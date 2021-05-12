@@ -60,7 +60,6 @@
 enum {
   PU_STATIC,
   PU_LEVEL,
-  PU_LEVSPEC,
   PU_CACHE,
   /* Must always be last -- killough */
   PU_MAX
