@@ -110,7 +110,7 @@ static dboolean CachePCSLump(int sound_id)
 
     // Load from WAD
 
-    current_sound_lump = W_CacheLumpNum(S_sfx[sound_id].lumpnum/* e6y, PU_STATIC*/);
+    current_sound_lump = W_CacheLumpNum(S_sfx[sound_id].lumpnum);
     lumplen = W_LumpLength(S_sfx[sound_id].lumpnum);
 
     // Read header
