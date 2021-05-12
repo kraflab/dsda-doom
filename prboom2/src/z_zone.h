@@ -62,13 +62,13 @@ enum {PU_FREE, PU_STATIC, PU_SOUND, PU_MUSIC, PU_LEVEL, PU_LEVSPEC, PU_CACHE,
 
 #define PU_PURGELEVEL PU_CACHE        /* First purgable tag's level */
 
-void *(Z_Malloc)(size_t size, int tag, void **ptr);
-void (Z_Free)(void *ptr);
-void (Z_FreeTags)(int lowtag, int hightag);
-void (Z_ChangeTag)(void *ptr, int tag);
-void *(Z_Calloc)(size_t n, size_t n2, int tag, void **user);
-void *(Z_Realloc)(void *p, size_t n, int tag, void **user);
-char *(Z_Strdup)(const char *s, int tag, void **user);
+void *Z_Malloc(size_t size, int tag, void **ptr);
+void Z_Free(void *ptr);
+void Z_FreeTags(int lowtag, int hightag);
+void Z_ChangeTag(void *ptr, int tag);
+void *Z_Calloc(size_t n, size_t n2, int tag, void **user);
+void *Z_Realloc(void *p, size_t n, int tag, void **user);
+char *Z_Strdup(const char *s, int tag, void **user);
 
 /* cphipps 2001/11/18 -
  * If we're using memory mapped file access to WADs, we won't need to maintain

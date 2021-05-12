@@ -98,7 +98,7 @@ static memblock_t *blockbytag[PU_MAX];
  * free all the stuff we just pass on the way.
  */
 
-void *(Z_Malloc)(size_t size, int tag, void **user)
+void *Z_Malloc(size_t size, int tag, void **user)
 {
   memblock_t *block = NULL;
 
@@ -143,7 +143,7 @@ void *(Z_Malloc)(size_t size, int tag, void **user)
   return block;
 }
 
-void (Z_Free)(void *p)
+void Z_Free(void *p)
 {
   memblock_t *block = (memblock_t *)((char *) p - HEADER_SIZE);
 
@@ -171,7 +171,7 @@ void (Z_Free)(void *p)
   (free)(block);
 }
 
-void (Z_FreeTags)(int lowtag, int hightag)
+void Z_FreeTags(int lowtag, int hightag)
 {
 #ifdef HEAPDUMP
   Z_DumpMemory();
@@ -193,7 +193,7 @@ void (Z_FreeTags)(int lowtag, int hightag)
     while (1)
     {
       memblock_t *next = block->next;
-      (Z_Free)((char *) block + HEADER_SIZE);
+      Z_Free((char *) block + HEADER_SIZE);
       if (block == end_block)
         break;
       block = next;               // Advance to next block
@@ -201,7 +201,7 @@ void (Z_FreeTags)(int lowtag, int hightag)
   }
 }
 
-void (Z_ChangeTag)(void *ptr, int tag)
+void Z_ChangeTag(void *ptr, int tag)
 {
   memblock_t *block = (memblock_t *)((char *) ptr - HEADER_SIZE);
 
@@ -246,27 +246,27 @@ void (Z_ChangeTag)(void *ptr, int tag)
   block->tag = tag;
 }
 
-void *(Z_Realloc)(void *ptr, size_t n, int tag, void **user)
+void *Z_Realloc(void *ptr, size_t n, int tag, void **user)
 {
-  void *p = (Z_Malloc)(n, tag, user);
+  void *p = Z_Malloc(n, tag, user);
   if (ptr)
     {
       memblock_t *block = (memblock_t *)((char *) ptr - HEADER_SIZE);
       memcpy(p, ptr, n <= block->size ? n : block->size);
-      (Z_Free)(ptr);
+      Z_Free(ptr);
       if (user) // in case Z_Free nullified same user
         *user=p;
     }
   return p;
 }
 
-void *(Z_Calloc)(size_t n1, size_t n2, int tag, void **user)
+void *Z_Calloc(size_t n1, size_t n2, int tag, void **user)
 {
   return
-    (n1*=n2) ? memset((Z_Malloc)(n1, tag, user), 0, n1) : NULL;
+    (n1*=n2) ? memset(Z_Malloc(n1, tag, user), 0, n1) : NULL;
 }
 
-char *(Z_Strdup)(const char *s, int tag, void **user)
+char *Z_Strdup(const char *s, int tag, void **user)
 {
-  return strcpy((Z_Malloc)(strlen(s)+1, tag, user), s);
+  return strcpy(Z_Malloc(strlen(s)+1, tag, user), s);
 }
