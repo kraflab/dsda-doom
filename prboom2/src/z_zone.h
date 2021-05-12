@@ -57,8 +57,14 @@
 // ZONE MEMORY
 // PU - purge tags.
 
-enum {PU_FREE, PU_STATIC, PU_SOUND, PU_MUSIC, PU_LEVEL, PU_LEVSPEC, PU_CACHE,
-      /* Must always be last -- killough */ PU_MAX};
+enum {
+  PU_STATIC,
+  PU_LEVEL,
+  PU_LEVSPEC,
+  PU_CACHE,
+  /* Must always be last -- killough */
+  PU_MAX
+};
 
 #define PU_PURGELEVEL PU_CACHE        /* First purgable tag's level */
 

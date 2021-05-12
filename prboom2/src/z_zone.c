@@ -177,8 +177,8 @@ void Z_FreeTags(int lowtag, int hightag)
   Z_DumpMemory();
 #endif
 
-  if (lowtag <= PU_FREE)
-    lowtag = PU_FREE+1;
+  if (lowtag < PU_STATIC)
+    lowtag = PU_STATIC;
 
   if (hightag > PU_CACHE)
     hightag = PU_CACHE;
