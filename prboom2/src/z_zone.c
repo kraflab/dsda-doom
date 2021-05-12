@@ -113,7 +113,7 @@ void *Z_Malloc(size_t size, int tag, void **user)
   while (!(block = (malloc)(size + HEADER_SIZE))) {
     if (!blockbytag[PU_CACHE])
       I_Error ("Z_Malloc: Failure trying to allocate %lu bytes", (unsigned long) size);
-    Z_FreeTags(PU_CACHE,PU_CACHE);
+    Z_FreeTag(PU_CACHE);
   }
 
   if (!blockbytag[tag])
@@ -171,33 +171,28 @@ void Z_Free(void *p)
   (free)(block);
 }
 
-void Z_FreeTags(int lowtag, int hightag)
+void Z_FreeTag(int tag)
 {
+  memblock_t *block, *end_block;
+
 #ifdef HEAPDUMP
   Z_DumpMemory();
 #endif
 
-  if (lowtag < PU_STATIC)
-    lowtag = PU_STATIC;
+  if (tag < 0 || tag >= PU_MAX)
+    I_Error("Z_FreeTag: Tag %i does not exist", tag);
 
-  if (hightag > PU_CACHE)
-    hightag = PU_CACHE;
-
-  for (;lowtag <= hightag; lowtag++)
+  block = blockbytag[tag];
+  if (!block)
+    return;
+  end_block = block->prev;
+  while (1)
   {
-    memblock_t *block, *end_block;
-    block = blockbytag[lowtag];
-    if (!block)
-      continue;
-    end_block = block->prev;
-    while (1)
-    {
-      memblock_t *next = block->next;
-      Z_Free((char *) block + HEADER_SIZE);
-      if (block == end_block)
-        break;
-      block = next;               // Advance to next block
-    }
+    memblock_t *next = block->next;
+    Z_Free((char *) block + HEADER_SIZE);
+    if (block == end_block)
+      break;
+    block = next;               // Advance to next block
   }
 }
 

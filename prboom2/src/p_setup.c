@@ -2637,10 +2637,10 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // Initial height of PointOfView will be set by player think.
   players[consoleplayer].viewz = 1;
 
-  // Make sure all sounds are stopped before Z_FreeTags.
+  // Make sure all sounds are stopped before Z_FreeTag.
   S_Start();
 
-  Z_FreeTags(PU_LEVEL, PU_PURGELEVEL-1);
+  Z_FreeTag(PU_LEVEL);
   if (rejectlump != -1) { // cph - unlock the reject table
     W_UnlockLumpNum(rejectlump);
     rejectlump = -1;
