@@ -2833,13 +2833,11 @@ dboolean HU_Responder(event_t *ev)
   {
     if (c == KEYD_ENTER) // phares
     {
-#ifndef INSTRUMENTED  // never turn on message review if INSTRUMENTED defined
       if (hud_msg_lines>1)  // it posts multi-line messages that will trash
       {
         if (message_list) HU_Erase(); //jff 4/28/98 erase behind messages
         message_list = !message_list; //jff 2/26/98 toggle list of messages
       }
-#endif
       if (!message_list)              // if not message list, refresh message
       {
         message_on = true;

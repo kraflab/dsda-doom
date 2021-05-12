@@ -62,34 +62,13 @@ enum {PU_FREE, PU_STATIC, PU_SOUND, PU_MUSIC, PU_LEVEL, PU_LEVSPEC, PU_CACHE,
 
 #define PU_PURGELEVEL PU_CACHE        /* First purgable tag's level */
 
-#ifdef INSTRUMENTED
-#define DA(x,y) ,x,y
-#define DAC(x,y) x,y
-#else
-#define DA(x,y)
-#define DAC(x,y)
-#endif
-
-void *(Z_Malloc)(size_t size, int tag, void **ptr DA(const char *, int));
-void (Z_Free)(void *ptr DA(const char *, int));
-void (Z_FreeTags)(int lowtag, int hightag DA(const char *, int));
-void (Z_ChangeTag)(void *ptr, int tag DA(const char *, int));
-void *(Z_Calloc)(size_t n, size_t n2, int tag, void **user DA(const char *, int));
-void *(Z_Realloc)(void *p, size_t n, int tag, void **user DA(const char *, int));
-char *(Z_Strdup)(const char *s, int tag, void **user DA(const char *, int));
-void Z_DumpHistory(char *);
-
-#ifdef INSTRUMENTED
-/* cph - save space if not debugging, don't require file
- * and line to memory calls */
-#define Z_Free(a)          (Z_Free)     (a,      __FILE__,__LINE__)
-#define Z_FreeTags(a,b)    (Z_FreeTags) (a,b,    __FILE__,__LINE__)
-#define Z_ChangeTag(a,b)   (Z_ChangeTag)(a,b,    __FILE__,__LINE__)
-#define Z_Malloc(a,b,c)    (Z_Malloc)   (a,b,c,  __FILE__,__LINE__)
-#define Z_Strdup(a,b,c)    (Z_Strdup)   (a,b,c,  __FILE__,__LINE__)
-#define Z_Calloc(a,b,c,d)  (Z_Calloc)   (a,b,c,d,__FILE__,__LINE__)
-#define Z_Realloc(a,b,c,d) (Z_Realloc)  (a,b,c,d,__FILE__,__LINE__)
-#endif
+void *(Z_Malloc)(size_t size, int tag, void **ptr);
+void (Z_Free)(void *ptr);
+void (Z_FreeTags)(int lowtag, int hightag);
+void (Z_ChangeTag)(void *ptr, int tag);
+void *(Z_Calloc)(size_t n, size_t n2, int tag, void **user);
+void *(Z_Realloc)(void *p, size_t n, int tag, void **user);
+char *(Z_Strdup)(const char *s, int tag, void **user);
 
 /* cphipps 2001/11/18 -
  * If we're using memory mapped file access to WADs, we won't need to maintain
