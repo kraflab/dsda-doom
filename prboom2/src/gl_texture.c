@@ -934,7 +934,7 @@ l_exit:
 
   if (!readonly)
   {
-    free(data);
+    Z_Free(data);
     data = NULL;
   }
 
@@ -1299,7 +1299,7 @@ static void gld_CleanTexItems(int count, GLTexture ***items)
         }
       }
 
-      Z_Free((*items)[i]->glTexExID);
+      free((*items)[i]->glTexExID);
       (*items)[i]->glTexExID = NULL;
 
       Z_Free((*items)[i]);
