@@ -108,14 +108,6 @@ static dboolean CachePCSLump(int sound_id)
     int lumplen;
     int headerlen;
 
-    // Free the current sound lump back to the cache
-
-    if (current_sound_lump != NULL)
-    {
-        //e6y Z_ChangeTag(current_sound_lump, PU_CACHE);
-        current_sound_lump = NULL;
-    }
-
     // Load from WAD
 
     current_sound_lump = W_CacheLumpNum(S_sfx[sound_id].lumpnum/* e6y, PU_STATIC*/);
