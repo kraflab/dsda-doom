@@ -174,7 +174,6 @@ option(ZONEIDCHECK "Enable id checks on zone blocks, to detect corrupted and ill
 
 # Debug options, disabled by default
 option(RANGECHECK "Enable internal range checking" OFF)
-option(TIMEDIAG "Enable creation of time stamps each time a lump is locked, and reporting of lumps locked for long periods of time" OFF)
 option(HEAPCHECK "Turn on continuous heap checking (very slow)" OFF)
 option(HEAPDUMP "Turn on dumping the heap state for debugging" OFF)
 

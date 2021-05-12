@@ -49,9 +49,6 @@
 
 static struct {
   void *cache;
-#ifdef TIMEDIAG
-  int locktic;
-#endif
   unsigned int locks;
 } *cachelump;
 
@@ -68,19 +65,6 @@ void W_PrintLump(FILE* fp, void* p) {
 }
 #endif
 
-#ifdef TIMEDIAG
-static void W_ReportLocks(void)
-{
-  int i;
-  lprintf(LO_DEBUG, "W_ReportLocks:\nLump     Size   Locks  Tics\n");
-  for (i=0; i<numlumps; i++) {
-    if (cachelump[i].locks)
-      lprintf(LO_DEBUG, "%8.8s %6u %2d   %6d\n", lumpinfo[i].name,
-	      W_LumpLength(i), cachelump[i].locks, gametic - cachelump[i].locktic);
-  }
-}
-#endif
-
 /* W_InitCache
  *
  * cph 2001/07/07 - split from W_Init
@@ -91,10 +75,6 @@ void W_InitCache(void)
   cachelump = calloc(sizeof *cachelump, numlumps);
   if (!cachelump)
     I_Error ("W_Init: Couldn't allocate lumpcache");
-
-#ifdef TIMEDIAG
-  atexit(W_ReportLocks);
-#endif
 }
 
 void W_DoneCache(void)
@@ -121,9 +101,6 @@ const void *W_CacheLumpNum(int lump)
   /* cph - if wasn't locked but now is, tell z_zone to hold it */
   if (!cachelump[lump].locks && locks) {
     Z_ChangeTag(cachelump[lump].cache,PU_STATIC);
-#ifdef TIMEDIAG
-    cachelump[lump].locktic = gametic;
-#endif
   }
   cachelump[lump].locks += locks;
 

@@ -38,6 +38,5 @@
 #cmakedefine ZONEIDCHECK
 
 #cmakedefine RANGECHECK
-#cmakedefine TIMEDIAG
 #cmakedefine HEAPCHECK
 #cmakedefine HEAPDUMP

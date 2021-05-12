@@ -59,9 +59,6 @@
 
 static struct {
   void *cache;
-#ifdef TIMEDIAG
-  int locktic;
-#endif
   int locks;
 } *cachelump;
 
@@ -75,25 +72,6 @@ void W_PrintLump(FILE* fp, void* p) {
       return;
     }
   fprintf(fp, " not found");
-}
-#endif
-
-#ifdef TIMEDIAG
-static void W_ReportLocks(void)
-{
-  int i;
-  lprintf(LO_DEBUG, "W_ReportLocks:\nLump     Size   Locks  Tics\n");
-  if (cachelump)
-  {
-    for (i=0; i<numlumps; i++)
-    {
-      if (cachelump[i].locks > 0)
-      {
-        lprintf(LO_DEBUG, "%8.8s %6u %2d   %6d\n", lumpinfo[i].name,
-        W_LumpLength(i), cachelump[i].locks, gametic - cachelump[i].locktic);
-      }
-    }
-  }
 }
 #endif
 
@@ -146,10 +124,6 @@ void W_InitCache(void)
   cachelump = calloc(numlumps, sizeof *cachelump);
   if (!cachelump)
     I_Error ("W_Init: Couldn't allocate lumpcache");
-
-#ifdef TIMEDIAG
-  atexit(W_ReportLocks);
-#endif
 
   mapped_wad = calloc(numwadfiles,sizeof(mmap_info_t));
   memset(mapped_wad,0,sizeof(mmap_info_t)*numwadfiles);
@@ -225,10 +199,6 @@ void W_InitCache(void)
   cachelump = calloc(numlumps, sizeof *cachelump);
   if (!cachelump)
     I_Error ("W_Init: Couldn't allocate lumpcache");
-
-#ifdef TIMEDIAG
-  atexit(W_ReportLocks);
-#endif
 
   {
     int i;
@@ -307,9 +277,6 @@ const void* W_LockLumpNum(int lump)
   /* cph - if wasn't locked but now is, tell z_zone to hold it */
   if (cachelump[lump].locks <= 0) {
     Z_ChangeTag(cachelump[lump].cache,PU_STATIC);
-#ifdef TIMEDIAG
-    cachelump[lump].locktic = gametic;
-#endif
     // reset lock counter
     cachelump[lump].locks = 1;
   } else {
