@@ -87,7 +87,7 @@ static const size_t HEADER_SIZE = sizeof(memblock_t);
 static memblock_t *blockbytag[PU_MAX];
 
 /* Z_Malloc
- * You can pass a NULL user if the tag is < PU_PURGELEVEL.
+ * You can pass a NULL user if the tag is not PU_CACHE.
  *
  * cph - the algorithm here was a very simple first-fit round-robin
  *  one - just keep looping around, freeing everything we can until
@@ -103,7 +103,7 @@ void *Z_Malloc(size_t size, int tag, void **user)
   memblock_t *block = NULL;
 
 #ifdef ZONEIDCHECK
-  if (tag >= PU_PURGELEVEL && !user)
+  if (tag == PU_CACHE && !user)
     I_Error ("Z_Malloc: An owner is required for purgable blocks");
 #endif
 
@@ -212,7 +212,7 @@ void Z_ChangeTag(void *ptr, int tag)
   if (block->id != ZONEID)
     I_Error ("Z_ChangeTag: freed a pointer without ZONEID");
 
-  if (tag >= PU_PURGELEVEL && !block->user)
+  if (tag == PU_CACHE && !block->user)
     I_Error ("Z_ChangeTag: an owner is required for purgable blocks\n");
 
 #endif // ZONEIDCHECK
