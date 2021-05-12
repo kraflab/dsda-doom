@@ -71,11 +71,7 @@
 // End Tunables
 
 typedef struct memblock {
-
-#ifdef ZONEIDCHECK
   unsigned id;
-#endif
-
   struct memblock *next,*prev;
   size_t size;
   void **user;
@@ -102,10 +98,8 @@ void *Z_Malloc(size_t size, int tag, void **user)
 {
   memblock_t *block = NULL;
 
-#ifdef ZONEIDCHECK
   if (tag == PU_CACHE && !user)
     I_Error ("Z_Malloc: An owner is required for purgable blocks");
-#endif
 
   if (!size)
     return user ? *user = NULL : NULL;           // malloc(0) returns NULL
@@ -130,10 +124,7 @@ void *Z_Malloc(size_t size, int tag, void **user)
   }
 
   block->size = size;
-
-#ifdef ZONEIDCHECK
   block->id = ZONEID;         // signature required in block header
-#endif
   block->tag = tag;           // tag
   block->user = user;         // user
   block = (memblock_t *)((char *) block + HEADER_SIZE);
@@ -150,12 +141,9 @@ void Z_Free(void *p)
   if (!p)
     return;
 
-
-#ifdef ZONEIDCHECK
   if (block->id != ZONEID)
     I_Error("Z_Free: freed a pointer without ZONEID");
   block->id = 0;              // Nullify id so another free fails
-#endif
 
   if (block->user)            // Nullify user if one exists
     *block->user = NULL;
@@ -208,14 +196,11 @@ void Z_ChangeTag(void *ptr, int tag)
   if (tag == block->tag)
     return;
 
-#ifdef ZONEIDCHECK
   if (block->id != ZONEID)
     I_Error ("Z_ChangeTag: freed a pointer without ZONEID");
 
   if (tag == PU_CACHE && !block->user)
     I_Error ("Z_ChangeTag: an owner is required for purgable blocks\n");
-
-#endif // ZONEIDCHECK
 
   if (block == block->next)
     blockbytag[block->tag] = NULL;
