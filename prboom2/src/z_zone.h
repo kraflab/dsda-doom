@@ -59,6 +59,7 @@
 
 enum {
   PU_STATIC,
+  PU_LOCKED,
   PU_LEVEL,
   PU_CACHE,
   /* Must always be last -- killough */

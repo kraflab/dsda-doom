@@ -100,7 +100,7 @@ const void *W_CacheLumpNum(int lump)
 
   /* cph - if wasn't locked but now is, tell z_zone to hold it */
   if (!cachelump[lump].locks && locks) {
-    Z_ChangeTag(cachelump[lump].cache,PU_STATIC);
+    Z_ChangeTag(cachelump[lump].cache, PU_LOCKED);
   }
   cachelump[lump].locks += locks;
 

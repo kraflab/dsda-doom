@@ -658,7 +658,7 @@ static void createTextureCompositePatch(int id) {
 
   // allocate our data chunk
   dataSize = pixelDataSize + columnsDataSize + postsDataSize;
-  composite_patch->data = (unsigned char*)Z_Malloc(dataSize, PU_STATIC, (void **)&composite_patch->data);
+  composite_patch->data = (unsigned char*)Z_Malloc(dataSize, PU_LOCKED, (void **)&composite_patch->data);
   memset(composite_patch->data, 0, dataSize);
 
   // set out pixel, column, and post pointers into our data array
@@ -850,7 +850,7 @@ const rpatch_t *R_CachePatchNum(int id) {
 
   /* cph - if wasn't locked but now is, tell z_zone to hold it */
   if (!patches[id].locks && locks) {
-    Z_ChangeTag(patches[id].data,PU_STATIC);
+    Z_ChangeTag(patches[id].data, PU_LOCKED);
   }
   patches[id].locks += locks;
 
@@ -896,7 +896,7 @@ const rpatch_t *R_CacheTextureCompositePatchNum(int id) {
 
   /* cph - if wasn't locked but now is, tell z_zone to hold it */
   if (!texture_composites[id].locks && locks) {
-    Z_ChangeTag(texture_composites[id].data,PU_STATIC);
+    Z_ChangeTag(texture_composites[id].data, PU_LOCKED);
   }
   texture_composites[id].locks += locks;
 
