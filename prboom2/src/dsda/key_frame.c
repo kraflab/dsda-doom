@@ -20,6 +20,7 @@
 #include "doomstat.h"
 #include "s_advsound.h"
 #include "s_sound.h"
+#include "st_stuff.h"
 #include "p_saveg.h"
 #include "p_map.h"
 #include "r_draw.h"
@@ -247,6 +248,7 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   R_FillBackScreen();
 
   BorderNeedRefresh = true;
+  ST_Start();
 
   dsda_key_frame_restored = 1;
 
