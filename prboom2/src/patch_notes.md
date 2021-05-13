@@ -45,6 +45,7 @@
 - MBF sky transfers work in all complevels (pr+)
 - Map coordinates are protected with strict mode
 - Crosshair target color / lock are protected with strict mode
+- Advanced hud tracers are protected with strict mode
 - Updated to umapinfo rev 1.6 (pr+)
 - Changed demo overwrite default to off
 - Removed deprecated laggy sleep option
