@@ -203,65 +203,7 @@ void D_CheckNetGame(void)
 
 dboolean D_NetGetWad(const char* name)
 {
-#if defined(HAVE_WAIT_H)
-  size_t psize = sizeof(packet_header_t) + strlen(name) + 500;
-  packet_header_t *packet;
-  dboolean done = false;
-
-  if (!server || strchr(name, '/')) return false; // If it contains path info, reject
-
-  do {
-    // Send WAD request to remote
-    packet = Z_Malloc(psize, PU_STATIC, NULL);
-    packet_set(packet, PKT_WAD, 0);
-    *(byte*)(packet+1) = consoleplayer;
-    strcpy(1+(byte*)(packet+1), name);
-    I_SendPacket(packet, sizeof(packet_header_t) + strlen(name) + 2);
-
-    I_uSleep(10000);
-  } while (!I_GetPacket(packet, psize) || (packet->type != PKT_WAD));
-  Z_Free(packet);
-
-  if (!strcasecmp((void*)(packet+1), name)) {
-    pid_t pid;
-    int   rv;
-    byte *p = (byte*)(packet+1) + strlen(name) + 1;
-
-    /* Automatic wad file retrieval using wget (supports http and ftp, using URLs)
-     * Unix systems have all these commands handy, this kind of thing is easy
-     * Any windo$e port will have some awkward work replacing these.
-     */
-    /* cph - caution here. This is data from an untrusted source.
-     * Don't pass it via a shell. */
-    if ((pid = fork()) == -1)
-      perror("fork");
-    else if (!pid) {
-      /* Child chains to wget, does the download */
-      execlp("wget", "wget", p, NULL);
-    }
-    /* This is the parent, i.e. main LxDoom process */
-    wait(&rv);
-    if (!(done = !access(name, R_OK))) {
-      if (!strcmp(p+strlen(p)-4, ".zip")) {
-  p = strrchr(p, '/')+1;
-  if ((pid = fork()) == -1)
-    perror("fork");
-  else if (!pid) {
-    /* Child executes decompressor */
-    execlp("unzip", "unzip", p, name, NULL);
-  }
-  /* Parent waits for the file */
-  wait(&rv);
-  done = !!access(name, R_OK);
-      }
-      /* Add more decompression protocols here as desired */
-    }
-    Z_Free(buffer);
-  }
-  return done;
-#else /* HAVE_WAIT_H */
   return false;
-#endif
 }
 
 void NetUpdate(void)
