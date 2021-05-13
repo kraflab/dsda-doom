@@ -2623,6 +2623,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   dsda_WatchBeforeLevelSetup();
 
+  ClearThingsHealthTracers();
   R_StopAllInterpolations();
 
   totallive = totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;

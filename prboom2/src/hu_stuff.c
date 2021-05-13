@@ -2517,9 +2517,15 @@ void HU_Drawer(void)
     }
 
     //e6y
-    if (traces_present)
+    if (traces_present && !dsda_StrictMode())
     {
       int k, num = 0;
+
+      if (realframe)
+      {
+        UpdateThingsHealthTracers();
+      }
+
       for(k = 0; k < NUMTRACES; k++)
       {
         if (traces[k].count)

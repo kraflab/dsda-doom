@@ -51,7 +51,10 @@ typedef struct
 {
   int index;
   char value[16];
-  int data1;
+  union {
+    int crossed;
+    mobj_t *mobj;
+  } data;
 } traceitem_t;
 
 typedef void (*TRACERFUNC)(tracertype_t index);
@@ -84,7 +87,10 @@ void InitTracers(void);
 
 void CheckGivenDamageTracer(mobj_t *mobj, int damage);
 void CheckThingsPickupTracer(mobj_t *mobj);
-void CheckThingsHealthTracer(mobj_t *mobj);
+void InitThingsHealthTracer(mobj_t *mobj);
+void ClearThingsHealthTracer(mobj_t *mobj);
+void ClearThingsHealthTracers(void);
+void UpdateThingsHealthTracers(void);
 void CheckLinesCrossTracer(line_t *line);
 void ClearLinesCrossTracer(void);
 

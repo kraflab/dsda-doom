@@ -123,7 +123,7 @@ void CheckThingsPickupTracer(mobj_t *mobj)
   }
 }
 
-void CheckThingsHealthTracer(mobj_t *mobj)
+void InitThingsHealthTracer(mobj_t *mobj)
 {
   if (traces[TRACE_HEALTH].count)
   {
@@ -132,10 +132,57 @@ void CheckThingsHealthTracer(mobj_t *mobj)
     {
       if (mobj->index == traces[TRACE_HEALTH].items[i].index)
       {
-        sprintf(traces[TRACE_HEALTH].items[i].value,
-          "\x1b\x36%d \x1b\x33%d",
-          mobj->index, mobj->health);
+        traces[TRACE_HEALTH].items[i].data.mobj = mobj;
       }
+    }
+  }
+}
+
+void ClearThingsHealthTracer(mobj_t *mobj)
+{
+  if (traces[TRACE_HEALTH].count)
+  {
+    int i;
+    for (i = 0; i < traces[TRACE_HEALTH].count; i++)
+    {
+      if (traces[TRACE_HEALTH].items[i].data.mobj == mobj)
+      {
+        traces[TRACE_HEALTH].items[i].data.mobj = NULL;
+      }
+    }
+  }
+}
+
+void ClearThingsHealthTracers(void)
+{
+  if (traces[TRACE_HEALTH].count)
+  {
+    int i;
+    for (i = 0; i < traces[TRACE_HEALTH].count; i++)
+    {
+      traces[TRACE_HEALTH].items[i].data.mobj = NULL;
+    }
+  }
+}
+
+void UpdateThingsHealthTracers(void)
+{
+  int i;
+  mobj_t *mobj;
+
+  for (i = 0; i < traces[TRACE_HEALTH].count; i++)
+  {
+    if ((mobj = traces[TRACE_HEALTH].items[i].data.mobj))
+    {
+      sprintf(traces[TRACE_HEALTH].items[i].value,
+        "\x1b\x36%d \x1b\x33%d",
+        mobj->index, mobj->health);
+    }
+    else
+    {
+      sprintf(traces[TRACE_HEALTH].items[i].value,
+        "\x1b\x36%d \x1b\x33%d",
+        traces[TRACE_HEALTH].items[i].index, 0);
     }
   }
 }
@@ -151,12 +198,12 @@ void CheckLinesCrossTracer(line_t *line)
     {
       if (line->iLineID == traces[TRACE_CROSS].items[i].index)
       {
-        if (!traces[TRACE_CROSS].items[i].data1)
+        if (!traces[TRACE_CROSS].items[i].data.crossed)
         {
           sprintf(traces[TRACE_CROSS].items[i].value,
             "\x1b\x36%d \x1b\x33%05.2f",
             traces[TRACE_CROSS].items[i].index, (float)(leveltime)/35);
-          traces[TRACE_CROSS].items[i].data1 = 1;
+          traces[TRACE_CROSS].items[i].data.crossed = 1;
         }
       }
     }
@@ -172,7 +219,7 @@ void ClearLinesCrossTracer(void)
       int i;
       for (i = 0; i < traces[TRACE_CROSS].count; i++)
       {
-        traces[TRACE_CROSS].items[i].data1 = 0;
+        traces[TRACE_CROSS].items[i].data.crossed = 0;
       }
     }
     crossed_lines_count = 0;

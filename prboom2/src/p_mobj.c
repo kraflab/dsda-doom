@@ -987,8 +987,6 @@ void P_MobjThinker (mobj_t* mobj)
   mobj->PrevY = mobj->y;
   mobj->PrevZ = mobj->z;
 
-  CheckThingsHealthTracer(mobj);  //e6y
-
   // momentum movement
   if (mobj->momx | mobj->momy || mobj->flags & MF_SKULLFLY)
   {
@@ -1279,6 +1277,8 @@ void P_RemoveMobj (mobj_t* mobj)
     P_RemoveThinker((thinker_t *) mobj);
     return;
   }
+
+  ClearThingsHealthTracer(mobj);
 
   if ((mobj->flags & MF_SPECIAL)
       && !(mobj->flags & MF_DROPPED)
@@ -1788,6 +1788,8 @@ spawnit:
   mobj->spawnpoint = *mthing; // heretic_note: this is only done with totalkills++ in heretic
   mobj->index = index;//e6y
   mobj->iden_nums = iden_num;
+
+  InitThingsHealthTracer(mobj);
 
   if (mobj->flags2 & MF2_FLOATBOB)
   {                           // Seed random starting index for bobbing motion
