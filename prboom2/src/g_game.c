@@ -668,7 +668,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // Make Boom insert only a single weapon change command on autoswitch.
   if ((!demo_compatibility && players[consoleplayer].attackdown && // killough
-       !P_CheckAmmo(&players[consoleplayer]) && !done_autoswitch && boom_autoswitch) ||
+       !P_CheckAmmo(&players[consoleplayer]) && !(done_autoswitch && boom_autoswitch)) ||
        dsda_InputActive(dsda_input_toggleweapon))
   {
     newweapon = P_SwitchWeapon(&players[consoleplayer]);           // phares
