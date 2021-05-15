@@ -71,6 +71,7 @@
 - Fixed a bug where loading a save with the automap open could activate god mode
 - Fixed a bug where the doom status bar didn't reset properly when loading a key frame
 - Fixed solo net demo restart
+- Fixed powered dragon claw explosions with uncapped fps
 - Fixed msvc build (xaser)
 - Fixed macos launcher iwad directory mismatch (PBeGood4)
 - Fixed umapinfo custom episode select for doom2 (pr+)
