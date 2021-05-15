@@ -19,6 +19,8 @@
 #include "m_argv.h"
 #include "e6y.h"
 #include "r_things.h"
+#include "w_wad.h"
+#include "lprintf.h"
 
 #include "settings.h"
 
@@ -39,6 +41,48 @@ void dsda_InitSettings(void) {
   dsda_ChangeStrictMode();
 }
 
+static int dsda_WadCompatibilityLevel(void) {
+  static int complvl = -1;
+  static int last_numwadfiles = -1;
+
+  // This might be called before all wads are loaded
+  if (numwadfiles != last_numwadfiles) {
+    int num;
+
+    last_numwadfiles = numwadfiles;
+    num = W_CheckNumForName("COMPLVL");
+
+    if (num >= 0) {
+      int length;
+      const char* data;
+
+      length = W_LumpLength(num);
+      data = W_CacheLumpNum(num);
+
+      if (length == 7 && !strncasecmp("vanilla", data, 7)) {
+        if (gamemode == commercial) {
+          if (gamemission == pack_plut || gamemission == pack_tnt)
+            complvl = 4;
+          else
+            complvl = 2;
+        }
+        else
+          complvl = 3;
+      }
+      else if (length == 4 && !strncasecmp("boom", data, 4))
+        complvl = 9;
+      else if (length == 3 && !strncasecmp("mbf", data, 3))
+        complvl = 11;
+      else if (length == 5 && !strncasecmp("mbf21", data, 5))
+        complvl = 21;
+
+      lprintf(LO_INFO, "Detected COMPLVL lump: %i\n", complvl);
+    }
+  }
+
+  return complvl;
+}
+
 int dsda_CompatibilityLevel(void) {
   int i, level;
 
@@ -50,6 +94,13 @@ int dsda_CompatibilityLevel(void) {
     level = atoi(myargv[i + 1]);
 
     if (level >= -1) return level;
+  }
+
+  if (!demoplayback) {
+    level = dsda_WadCompatibilityLevel();
+
+    if (level >= 0)
+      return level;
   }
 
   return UNSPECIFIED_COMPLEVEL;
