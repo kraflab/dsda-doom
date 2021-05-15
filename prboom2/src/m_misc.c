@@ -1034,6 +1034,7 @@ default_t defaults[] =
   { "dsda_command_history_size", { &dsda_command_history_size }, { 10 }, 1, 20, def_int, ss_stat },
   { "dsda_hide_empty_commands", { &dsda_hide_empty_commands }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_coordinate_display", { &dsda_coordinate_display }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_skip_quit_prompt", { &dsda_skip_quit_prompt }, { 0 }, 0, 1, def_bool, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

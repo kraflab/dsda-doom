@@ -33,6 +33,7 @@ int dsda_wipe_at_full_speed;
 int dsda_track_attempts;
 int dsda_fine_sensitivity;
 int dsda_hide_horns;
+int dsda_skip_quit_prompt;
 
 void dsda_InitSettings(void) {
   dsda_ChangeStrictMode();
@@ -81,6 +82,10 @@ dboolean dsda_AlwaysSR50(void) {
 
 dboolean dsda_HideHorns(void) {
   return dsda_hide_horns;
+}
+
+dboolean dsda_SkipQuitPrompt(void) {
+  return dsda_skip_quit_prompt;
 }
 
 dboolean dsda_ExHud(void) {

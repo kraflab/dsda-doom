@@ -34,6 +34,7 @@ extern int dsda_wipe_at_full_speed;
 extern int dsda_fine_sensitivity;
 extern int dsda_hide_horns;
 extern int dsda_organized_saves;
+extern int dsda_skip_quit_prompt;
 
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);
@@ -44,6 +45,7 @@ dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
 dboolean dsda_HideHorns(void);
+dboolean dsda_SkipQuitPrompt(void);
 dboolean dsda_ExHud(void);
 dboolean dsda_CommandDisplay(void);
 dboolean dsda_CoordinateDisplay(void);

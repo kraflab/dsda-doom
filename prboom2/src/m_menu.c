@@ -1164,7 +1164,10 @@ void M_QuitDOOM(int choice)
   else         // killough 1/18/98: fix endgame message calculation:
     sprintf(endstring,"%s\n\n%s", endmsg[gametic%(NUM_QUITMESSAGES-1)+1], s_DOSY);
 
-  M_StartMessage(endstring,M_QuitResponse,true);
+  if (dsda_SkipQuitPrompt())
+    M_QuitResponse('y');
+  else
+    M_StartMessage(endstring,M_QuitResponse,true);
 }
 
 /////////////////////////////
@@ -3375,6 +3378,7 @@ setup_menu_t dsda_gen_settings[] = {
   { "Command History", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_command_history_size" } },
   { "Hide Empty Commands", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_hide_empty_commands" } },
   { "Show Coordinate Display (TAS)", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_coordinate_display" } },
+  { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 16 * 8, { "dsda_skip_quit_prompt" } },
 
 #ifdef GL_DOOM
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },
