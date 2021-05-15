@@ -59,6 +59,7 @@
 - Added notification when toggling mouselook
 - Added notification when changing game speed
 - Added strict mode toggle input binding
+- Added option to disable the quit game prompt
 - Added option to disable sound cutoffs (pr+)
 - Added Fireb3rt advanced hud layout option (pr+)
 - Fixed missing small screen border for heretic
