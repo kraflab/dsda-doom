@@ -2094,6 +2094,10 @@ void P_BlasterMobjThinker(mobj_t * mobj)
     fixed_t z;
     dboolean changexy;
 
+    mobj->PrevX = mobj->x;
+    mobj->PrevY = mobj->y;
+    mobj->PrevZ = mobj->z;
+
     // Handle movement
     if (mobj->momx || mobj->momy || (mobj->z != mobj->floorz) || mobj->momz)
     {
