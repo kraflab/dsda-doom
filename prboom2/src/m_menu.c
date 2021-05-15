@@ -4592,7 +4592,8 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_quit))
     {
-      S_StartSound(NULL,g_sfx_swtchn);
+      if (!dsda_SkipQuitPrompt())
+        S_StartSound(NULL,g_sfx_swtchn);
       M_QuitDOOM(0);
       return true;
     }
