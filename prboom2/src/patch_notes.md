@@ -41,6 +41,14 @@
 - Set up a key binding to access
 - Command list: WIP
 
+#### Configuration Lump Support
+- Added COMPLVL lump support
+  - text lump "vanilla", "boom", "mbf", or "mbf21"
+  - sets complevel to 2-4 (based on iwad), 9, 11, or 21
+  - the `-complevel` parameter still has precedence
+- Added OPTIONS lump support
+  - set values for comp options and some parameters
+
 #### Miscellaneous
 - MBF sky transfers work in all complevels (pr+)
 - Map coordinates are protected with strict mode
@@ -51,7 +59,6 @@
 - Removed deprecated laggy sleep option
 - Removed various unwelcome / secret configuration options
 - Removed option to turn demo footer off
-- Added mbf OPTIONS lump support
 - Added default map name fallback to automap
 - Added comp_respawnfix alias for cross-port OPTIONS support (EE)
 - Added option to hide the heretic hud horns
