@@ -71,7 +71,7 @@ static void dsda_WriteCoordinate(dsda_text_t* text, int* x, const char* ch) {
   dsda_BreakDownCoordinate(x, &base, &frac);
 
   if (frac)
-    snprintf(text->msg, sizeof(text->msg), "%s: %i.%i", ch, base, frac);
+    snprintf(text->msg, sizeof(text->msg), "%s: %i.%05i", ch, base, frac);
   else
     snprintf(text->msg, sizeof(text->msg), "%s: %i", ch, base);
 
