@@ -1489,11 +1489,7 @@ static dboolean L_LauncherIsNeeded(void)
   dboolean pwad = false;
   char *iwad = NULL;
 
-//  SHIFT for invert
-//  if (GetAsyncKeyState(VK_SHIFT) ? launcher_enable : !launcher_enable)
-//    return false;
-
-  if ((GetKeyState(VK_SHIFT) & 0x8000))
+  if (M_CheckParm("-launcher"))
     return true;
 
   if (launcher_enable == launcher_enable_always)
