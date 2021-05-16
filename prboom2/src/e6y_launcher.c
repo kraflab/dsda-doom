@@ -200,6 +200,16 @@ char *strrtrm (char *str)
 }
 #undef prb_isspace
 
+// The config stores ppsz as const char*, but free discards the const.
+// The allocated strings are constant, but need to be freed.
+// Basically an accident of the standard.
+static void L_FreeLauncherHistoryEntry(default_t *history)
+{
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wcast-qual"
+  free((char *)history->location.ppsz[0]);
+  #pragma GCC diagnostic pop
+}
 
 //events
 static void L_GameOnChange(void)
@@ -379,11 +389,8 @@ static void L_CommandOnChange(void)
         sprintf(str, "launcher_history%lld", i);
         history = M_LookupDefault(str);
 
-        // Let's just avert our gaze for this hack
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wcast-qual"
-        strcpy((char*)history->location.ppsz[0], "");
-        #pragma GCC diagnostic pop
+        L_FreeLauncherHistoryEntry(history);
+        history->location.ppsz[0] = strdup("");
       }
       M_SaveDefaults();
       L_FillHistoryList();
@@ -745,19 +752,17 @@ static dboolean L_PrepareToLaunch(void)
       sprintf(str, "launcher_history%lld", i-1);
       history2 = M_LookupDefault(str);
 
-      if (i == shiftfrom)
-        // Let's just avert our gaze for this hack
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wcast-qual"
-        free((char*)history1->location.ppsz[0]);
-        #pragma GCC diagnostic pop
-      history1->location.ppsz[0] = history2->location.ppsz[0];
+      L_FreeLauncherHistoryEntry(history1);
+      history1->location.ppsz[0] = strdup(history2->location.ppsz[0]);
     }
     if (shiftfrom > 0)
     {
       history1 = M_LookupDefault("launcher_history0");
-      history1->location.ppsz[0] = history;
+      L_FreeLauncherHistoryEntry(history1);
+      history1->location.ppsz[0] = strdup(history);
     }
+
+    free(history);
   }
   return true;
 }
