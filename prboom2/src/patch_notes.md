@@ -80,6 +80,7 @@
 - Fixed a bug where the doom status bar didn't reset properly when loading a key frame
 - Fixed solo net demo restart
 - Fixed powered dragon claw explosions with uncapped fps
+- Fixed an issue with dragging heretic onto the exe (should always work now)
 - Fixed msvc build (xaser)
 - Fixed macos launcher iwad directory mismatch (PBeGood4)
 - Fixed umapinfo custom episode select for doom2 (pr+)
