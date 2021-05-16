@@ -250,7 +250,7 @@ static void dsda_InitDoom(void) {
     mobjinfo[i].activesound  = mobjinfo_p->activesound;
     mobjinfo[i].flags        = mobjinfo_p->flags;
     mobjinfo[i].raisestate   = mobjinfo_p->raisestate;
-    mobjinfo[i].droppeditem  = mobjinfo_p->droppeditem;
+    mobjinfo[i].droppeditem  = MT_NULL;
     mobjinfo[i].crashstate   = 0; // not in doom
     mobjinfo[i].flags2       = 0; // not in doom
 
@@ -263,6 +263,11 @@ static void dsda_InitDoom(void) {
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
+  mobjinfo[MT_WOLFSS].droppeditem    = MT_CLIP;
+  mobjinfo[MT_POSSESSED].droppeditem = MT_CLIP;
+  mobjinfo[MT_SHOTGUY].droppeditem   = MT_SHOTGUN;
+  mobjinfo[MT_CHAINGUY].droppeditem  = MT_CHAINGUN;
+
   mobjinfo[MT_VILE].flags2    = MF2_SHORTMRANGE | MF2_DMGIGNORED | MF2_NOTHRESHOLD;
   mobjinfo[MT_CYBORG].flags2  = MF2_NORADIUSDMG | MF2_HIGHERMPROB | MF2_RANGEHALF |
                                 MF2_BOSS | MF2_E2M8BOSS | MF2_E4M6BOSS;

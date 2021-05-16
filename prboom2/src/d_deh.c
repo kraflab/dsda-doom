@@ -1564,27 +1564,6 @@ void D_BuildBEXTables(void)
     }
   }
   deh_soundnames[0] = deh_soundnames[num_sfx] = NULL;
-
-  // ferk: initialize Thing extra properties (keeping vanilla props in info.c)
-  for (i = 0; i < num_mobj_types; i++)
-  {
-    // mobj id for item dropped on death
-    switch (i)
-    {
-      case MT_WOLFSS:
-      case MT_POSSESSED:
-        mobjinfo[i].droppeditem = MT_CLIP;
-        break;
-      case MT_SHOTGUY:
-        mobjinfo[i].droppeditem = MT_SHOTGUN;
-        break;
-      case MT_CHAINGUY:
-        mobjinfo[i].droppeditem = MT_CHAINGUN;
-        break;
-      default:
-        mobjinfo[i].droppeditem = MT_NULL;
-    }
-  }
 }
 
 int deh_maxhealth;
