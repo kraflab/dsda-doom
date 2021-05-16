@@ -249,7 +249,7 @@ static void L_FilesOnChange(void)
       RECT rect;
       HFONT font, oldfont;
       HDC hdc;
-      long long int temp;
+      LRESULT temp;
 
       strcpy(path, launcher.files[index].name);
       NormalizeSlashes2(path);
@@ -290,9 +290,9 @@ static void L_HistoryOnChange(void)
   index = (int)SendMessage(launcher.listHistory, CB_GETCURSEL, 0, 0);
   if (index >= 0)
   {
-    long long int temp = SendMessage(launcher.listHistory, CB_GETITEMDATA, index, 0);
+    LRESULT temp = SendMessage(launcher.listHistory, CB_GETITEMDATA, index, 0);
     waddata_t *waddata = (waddata_t*)temp;
-    if ((long long int)waddata != CB_ERR)
+    if (temp != CB_ERR)
     {
       if (!L_GUISelect(waddata))
       {
@@ -1101,9 +1101,9 @@ static void L_HistoryFreeData(void)
   {
     for (i = 0; i < count; i++)
     {
-      long long int temp = SendMessage(launcher.listHistory, CB_GETITEMDATA, i, 0);
+      LRESULT temp = SendMessage(launcher.listHistory, CB_GETITEMDATA, i, 0);
       waddata_t *waddata = (waddata_t*)temp;
-      if ((long long int)waddata != CB_ERR)
+      if (temp != CB_ERR)
       {
         WadDataFree(waddata);
       }
@@ -1147,7 +1147,7 @@ static void L_FillHistoryList(void)
   }
 }
 
-long long int CALLBACK LauncherClientCallback (HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK LauncherClientCallback (HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
   switch (message)
   {
