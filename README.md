@@ -5,16 +5,15 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - DSDA-Doom includes demo-compatible support for heretic (all the demos stored on dsda are in sync).
 - Not everything is a 1 to 1 match with vanilla heretic (similar to doom in prboom+) - some of this will be fixed and refined. The game should be identical _mechanically_.
 - Heretic game logic should be set automatically if you use `HERETIC.WAD` as the iwad. If it doesn't work, please use the `-heretic` commandline option. This flips a switch in the engine that determines all the core game data.
+- The prboom+ launcher doesn't work properly with heretic.
 - You do not need to (and can't) set the complevel when playing heretic. It is implicitly set to `0`, since heretic is based on doom v1.2.
 - Setting the "Status Bar and Menu Appearance" option to "not adjusted" will have no effect for heretic (it will default instead to "Doom format").
 - The "Apply multisampling" automap option is disabled for heretic.
 - The automap is partially supported. It's functional but does not have, for example, the parchment background. That being said, many of the extra features added in prboom+ also apply to the heretic automap. Automap colors are not configurable for heretic.
 - Some of the more advanced features are not implemented for heretic yet, and using them may cause crashes or other odd behaviour. This includes ghost players, key frames (working but not always in sync), and the analysis code.
-- Heretic cheats aren't implemented yet, but you should be able to use the corresponding doom ones.
-- Dehacked support for heretic isn't implemented / investigated yet. It's possible some things will work by chance.
+- Dehacked support for heretic isn't implemented yet.
 - Advanced hud is not implemented for heretic.
 - Some menus extend over the hud. This will be cleaned up later.
-- Any number of things may be broken...please let me know on dw or discord if you run into a problem.
 
 ### New Stuff
 - Use `-analysis` to write an analysis.txt file with run details.
