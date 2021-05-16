@@ -984,6 +984,27 @@ static char *FindIWADFile(void)
   return iwad;
 }
 
+static dboolean FileMatchesIWAD(const char *name)
+{
+  int i;
+  int name_length;
+
+  name_length = strlen(name);
+  for (i = 0; i < nstandard_iwads; ++i)
+  {
+    int iwad_length;
+
+    iwad_length = strlen(standard_iwads[i]);
+    if (
+      name_length >= iwad_length &&
+      !stricmp(name + name_length - iwad_length, standard_iwads[i])
+    )
+      return true;
+  }
+
+  return false;
+}
+
 //
 // IdentifyVersion
 //
@@ -1198,6 +1219,7 @@ static void DoLooseFiles(void)
   char **wads;  // store the respective loose filenames
   char **lmps;
   char **dehs;
+  char  *iwad = NULL;
   int wadcount = 0;      // count the loose filenames
   int lmpcount = 0;
   int dehcount = 0;
@@ -1205,6 +1227,7 @@ static void DoLooseFiles(void)
   char **tmyargv;  // use these to recreate the argv array
   int tmyargc;
   dboolean *skip; // CPhipps - should these be skipped at the end
+  const int loose_wad_index = 0;
 
   struct {
     const char *ext;
@@ -1255,6 +1278,15 @@ static void DoLooseFiles(void)
       extlen = strlen(looses[k].ext);
       if (arglen >= extlen && !stricmp(&myargv[i][arglen - extlen], looses[k].ext))
       {
+        // If a wad is an iwad, we don't want to send it to -file
+        if (k == loose_wad_index && FileMatchesIWAD(myargv[i]))
+        {
+          // We can only have one iwad
+          if (iwad) free(iwad);
+          iwad = strdup(myargv[i]);
+          break;
+        }
+
         (*(looses[k].list))[(*looses[k].count)++] = strdup(myargv[i]);
         break;
       }
@@ -1263,6 +1295,11 @@ static void DoLooseFiles(void)
     /*if (myargv[i][j-4] != '.')  // assume wad if no extension
       wads[wadcount++] = strdup(myargv[i]);*/
     skip[i] = true; // nuke that entry so it won't repeat later
+  }
+
+  if (iwad) {
+    M_AddParam("-iwad");
+    M_AddParam(iwad);
   }
 
   // Now, if we didn't find any loose files, we can just leave.
@@ -1325,6 +1362,7 @@ static void DoLooseFiles(void)
   free(lmps);
   free(dehs);
   free(skip);
+  if (iwad) free(iwad);
 }
 
 /* cph - MBF-like wad/deh/bex autoload code */
