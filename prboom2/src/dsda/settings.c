@@ -36,6 +36,7 @@ int dsda_track_attempts;
 int dsda_fine_sensitivity;
 int dsda_hide_horns;
 int dsda_skip_quit_prompt;
+int dsda_use_split_tracker;
 
 void dsda_InitSettings(void) {
   dsda_ChangeStrictMode();
@@ -137,6 +138,10 @@ dboolean dsda_HideHorns(void) {
 
 dboolean dsda_SkipQuitPrompt(void) {
   return dsda_skip_quit_prompt;
+}
+
+dboolean dsda_UseSplitTracker(void) {
+  return dsda_use_split_tracker && demorecording;
 }
 
 dboolean dsda_ExHud(void) {

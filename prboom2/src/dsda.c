@@ -33,6 +33,7 @@
 #include "dsda/command_display.h"
 #include "dsda/key_frame.h"
 #include "dsda/settings.h"
+#include "dsda/split_tracker.h"
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
@@ -330,6 +331,8 @@ void dsda_WatchLevelCompletion(void) {
   if (secret_count < totalsecret) dsda_100s = false;
   if (totalkills > 0) dsda_any_counted_monsters = true;
   if (totalsecret > 0) dsda_any_secrets = true;
+
+  dsda_RecordSplit();
 }
 
 dboolean dsda_IsWeapon(mobj_t* thing) {
@@ -397,6 +400,8 @@ static void dsda_ResetTracking(void) {
   dsda_weapon_collector = true;
 
   dsda_pacifist_note_shown = false;
+
+  dsda_ResetSplits();
 }
 
 void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {

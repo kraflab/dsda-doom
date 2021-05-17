@@ -18,6 +18,8 @@
 #ifndef __DSDA_SETTINGS__
 #define __DSDA_SETTINGS__
 
+#include "doomtype.h"
+
 #define UNSPECIFIED_COMPLEVEL -2
 
 extern int dsda_auto_key_frame_interval;
@@ -35,6 +37,7 @@ extern int dsda_fine_sensitivity;
 extern int dsda_hide_horns;
 extern int dsda_organized_saves;
 extern int dsda_skip_quit_prompt;
+extern int dsda_use_split_tracker;
 
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);
@@ -46,6 +49,7 @@ dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
 dboolean dsda_HideHorns(void);
 dboolean dsda_SkipQuitPrompt(void);
+dboolean dsda_UseSplitTracker(void);
 dboolean dsda_ExHud(void);
 dboolean dsda_CommandDisplay(void);
 dboolean dsda_CoordinateDisplay(void);
