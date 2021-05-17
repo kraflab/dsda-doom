@@ -3243,12 +3243,12 @@ void A_HealChase(mobj_t* actor)
 }
 
 //
-// A_Seek
+// A_SeekTracer
 // A parameterized seeker missile function.
 //   args[0]: direct-homing threshold angle (degrees, in fixed point)
 //   args[1]: maximum turn angle (degrees, in fixed point)
 //
-void A_Seek(mobj_t *actor)
+void A_SeekTracer(mobj_t *actor)
 {
   angle_t threshold, maxturnangle;
 
