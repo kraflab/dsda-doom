@@ -102,7 +102,7 @@ static void dsda_CreateSaveDir(void) {
   #if defined(_WIN32)
     mkdir(dsda_wad_save_dir);
   #else
-    mkdir(dsda_wad_save_dir, 0x733);
+    mkdir(dsda_wad_save_dir, 0733);
   #endif
 #endif
 
