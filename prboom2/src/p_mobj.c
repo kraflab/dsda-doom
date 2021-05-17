@@ -2232,7 +2232,7 @@ void P_ThrustMobj(mobj_t * mo, angle_t angle, fixed_t move)
     mo->momy += FixedMul(move, finesine[angle]);
 }
 
-dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax)
+dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax, dboolean usetracer)
 {
     int dir;
     int dist;
@@ -2240,14 +2240,17 @@ dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax)
     angle_t angle;
     mobj_t *target;
 
-    target = (mobj_t *) actor->special1.m;
+    target = (mobj_t *)(usetracer ? actor->tracer : actor->special1.m);
     if (target == NULL)
     {
         return (false);
     }
     if (!(target->flags & MF_SHOOTABLE))
     {                           // Target died
-        actor->special1.m = NULL;
+        if (usetracer)
+            actor->tracer = NULL;
+        else
+            actor->special1.m = NULL;
         return (false);
     }
     dir = P_FaceMobj(actor, target, &delta);

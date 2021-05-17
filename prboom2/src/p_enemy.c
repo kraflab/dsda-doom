@@ -3243,6 +3243,25 @@ void A_HealChase(mobj_t* actor)
 }
 
 //
+// A_Seek
+// A parameterized seeker missile function.
+//   args[0]: direct-homing threshold angle (degrees, in fixed point)
+//   args[1]: maximum turn angle (degrees, in fixed point)
+//
+void A_Seek(mobj_t *actor)
+{
+  angle_t threshold, maxturnangle;
+
+  if (!mbf21 || !actor)
+    return;
+
+  threshold    = FixedToAngle(actor->state->args[0]);
+  maxturnangle = FixedToAngle(actor->state->args[1]);
+
+  P_SeekerMissile(actor, threshold, maxturnangle, true);
+}
+
+//
 // A_JumpIfHealthBelow
 // Jumps to a state if caller's health is below the specified threshold.
 //   args[0]: State to jump to
@@ -3703,7 +3722,7 @@ void A_MummyAttack2(mobj_t * actor)
 
 void A_MummyFX1Seek(mobj_t * actor)
 {
-    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 20);
+    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 20, false);
 }
 
 void A_MummySoul(mobj_t * mummy)
@@ -4157,7 +4176,7 @@ void A_WhirlwindSeek(mobj_t * actor)
     {
         return;
     }
-    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 30);
+    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 30, false);
 }
 
 void A_HeadIceImpact(mobj_t * ice)
