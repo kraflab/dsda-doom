@@ -41,6 +41,12 @@
 - Set up a key binding to access
 - Command list: WIP
 
+#### Split Tracker
+- On intermission screen, compares current time to personal best
+- Currently map by map, will add total time comparison later
+- Currently starts fresh for each session, will store data later
+- Enable it in the settings
+
 #### Configuration Lump Support
 - Added COMPLVL lump support
   - text lump "vanilla", "boom", "mbf", or "mbf21"
