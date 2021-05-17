@@ -230,7 +230,6 @@ static const void *pm_registersong (const void *data, unsigned len)
 
   if (!midifile)
   {
-    lprintf (LO_WARN, "pm_registersong: Failed to load MIDI.\n");
     return NULL;
   }
 

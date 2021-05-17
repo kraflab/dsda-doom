@@ -150,7 +150,6 @@ static const void *mp_registersong (const void *data, unsigned len)
     {
       if (!MAD_RECOVERABLE (Stream.error))
       {
-        lprintf (LO_WARN, "mad_registersong failed: %s\n", mad_stream_errorstr (&Stream));
         return NULL;
       }
     }
@@ -163,7 +162,6 @@ static const void *mp_registersong (const void *data, unsigned len)
   // 80% to pass
   if (success < maxtry * 8 / 10)
   {
-    lprintf (LO_WARN, "mad_registersong failed\n");
     return NULL;
   }
 

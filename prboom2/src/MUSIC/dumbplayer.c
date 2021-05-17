@@ -168,7 +168,6 @@ static const void* db_registersong (const void *data, unsigned len)
   {
     dumbfile_close (dfil);
     dfil = NULL;
-    lprintf (LO_WARN, "db_registersong: couldn't load as tracker\n");
     return NULL;
   }
   // handle not used

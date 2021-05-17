@@ -264,14 +264,12 @@ static const void *vorb_registersong (const void *data, unsigned len)
 
   if (i != 0)
   {
-    lprintf (LO_WARN, "vorb_registersong: failed\n");
     return NULL;
   }
   i = ov_test_open (&vf);
 
   if (i != 0)
   {
-    lprintf (LO_WARN, "vorb_registersong: failed\n");
     ov_clear (&vf);
     return NULL;
   }

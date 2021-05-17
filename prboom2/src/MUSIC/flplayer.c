@@ -234,7 +234,6 @@ static const void *fl_registersong (const void *data, unsigned len)
 
   if (!midifile)
   {
-    lprintf (LO_WARN, "fl_registersong: Failed to load MIDI.\n");
     return NULL;
   }
 
