@@ -3262,6 +3262,38 @@ void A_Seek(mobj_t *actor)
 }
 
 //
+// A_FindTracer
+// Search for a valid tracer (seek target), if the calling actor doesn't already have one.
+//   args[0]: field-of-view to search in (degrees, in fixed point); if zero, will search in all directions
+//   args[1]: distance to search (map blocks, i.e. 128 units)
+//
+void A_FindTracer(mobj_t *actor)
+{
+  angle_t fov;
+  int dist;
+
+  if (!mbf21 || !actor || actor->tracer)
+    return;
+
+  fov  = FixedToAngle(actor->state->args[0]);
+  dist =             (actor->state->args[1]);
+
+  actor->tracer = P_RoughMonsterSearch(actor, fov, dist);
+}
+
+//
+// A_ClearTracer
+// Clear current tracer (seek target).
+//
+void A_ClearTracer(mobj_t *actor)
+{
+  if (!mbf21 || !actor)
+    return;
+
+  actor->tracer = NULL;
+}
+
+//
 // A_JumpIfHealthBelow
 // Jumps to a state if caller's health is below the specified threshold.
 //   args[0]: State to jump to

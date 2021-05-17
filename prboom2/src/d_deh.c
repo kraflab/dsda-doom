@@ -1494,6 +1494,8 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_NoiseAlert,          "A_NoiseAlert", 0},
   {A_HealChase,           "A_HealChase", 2},
   {A_Seek,                "A_Seek", 2},
+  {A_FindTracer,          "A_FindTracer", 2, {0, 10}},
+  {A_ClearTracer,         "A_ClearTracer", 0},
   {A_JumpIfHealthBelow,   "A_JumpIfHealthBelow", 2},
   {A_JumpIfTargetInSight, "A_JumpIfTargetInSight", 1},
   {A_JumpIfTargetCloser,  "A_JumpIfTargetCloser", 2},

@@ -130,6 +130,8 @@ void A_RadiusDamage(mobj_t *);
 void A_NoiseAlert(mobj_t *);
 void A_HealChase(mobj_t *);
 void A_Seek(mobj_t *);
+void A_FindTracer(mobj_t *);
+void A_ClearTracer(mobj_t *);
 void A_JumpIfHealthBelow(mobj_t *);
 void A_JumpIfTargetInSight(mobj_t *);
 void A_JumpIfTargetCloser(mobj_t *);
