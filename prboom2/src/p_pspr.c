@@ -1181,6 +1181,11 @@ void A_WeaponProjectile(player_t *player, pspdef_t *psp)
   mo->x += FixedMul(spawnofs_xy, finecosine[an]);
   mo->y += FixedMul(spawnofs_xy, finesine[an]);
   mo->z += spawnofs_z;
+
+  // set tracer to the player's autoaim target,
+  // so player seeker missiles prioritizing the
+  // baddie the player is actually aiming at. ;)
+  mo->tracer = linetarget;
 }
 
 //
