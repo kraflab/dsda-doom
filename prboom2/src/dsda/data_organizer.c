@@ -69,8 +69,10 @@ char* dsda_DetectDirectory(const char* env_key, const char* param) {
     default_directory = I_DoomExeDir();
 
   if ((i = M_CheckParm(param)) && i < myargc - 1) {
-    if (!stat(myargv[i + 1], &sbuf) && S_ISDIR(sbuf.st_mode))
+    if (!stat(myargv[i + 1], &sbuf) && S_ISDIR(sbuf.st_mode)) {
+      if (result) free(result);
       result = strdup(myargv[i + 1]);
+    }
     else
       lprintf(LO_ERROR, "Error: %s path does not exist; using %s\n", param, default_directory);
   }
