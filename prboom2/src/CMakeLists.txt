@@ -35,6 +35,8 @@ set(COMMON_SRC
     dsda/hud.h
     dsda/input.c
     dsda/input.h
+    dsda/intermission_display.c
+    dsda/intermission_display.h
     dsda/key_frame.c
     dsda/key_frame.h
     dsda/memory.c

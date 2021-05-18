@@ -39,7 +39,6 @@ typedef struct {
 } dsda_text_t;
 
 void dsda_RefreshHudText(dsda_text_t* hud_text);
-void dsda_DrawIntermissionTime(void);
 void dsda_InitHud(patchnum_t* font);
 void dsda_UpdateHud(void);
 void dsda_DrawHud(void);

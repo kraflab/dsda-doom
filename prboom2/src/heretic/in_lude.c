@@ -32,7 +32,7 @@
 #include "w_wad.h"
 #include "g_game.h"
 
-#include "dsda/hud.h"
+#include "dsda/intermission_display.h"
 
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
@@ -762,7 +762,7 @@ void IN_DrawSingleStats(void)
         skipintermission = false;
     }
 
-    dsda_DrawIntermissionTime();
+    dsda_DrawIntermissionDisplay();
 }
 
 //========================================================================

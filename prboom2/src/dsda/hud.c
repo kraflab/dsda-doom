@@ -25,11 +25,10 @@
 #include "dsda/settings.h"
 #include "dsda/command_display.h"
 #include "dsda/coordinate_display.h"
-#include "dsda/split_tracker.h"
+#include "dsda/intermission_display.h"
 #include "hud.h"
 
 #define DSDA_TEXT_X 2
-#define DSDA_INTERMISSION_TIME_Y 1
 #define DSDA_SPLIT_Y 12
 #define DSDA_SPLIT_LIFETIME 105
 #define DSDA_SPLIT_SIZE 80
@@ -64,7 +63,6 @@ dsda_split_text_t dsda_split;
 
 dsda_text_t dsda_exhud_timer;
 dsda_text_t dsda_exhud_max_totals;
-dsda_text_t dsda_intermission_time;
 
 void dsda_RefreshHudText(dsda_text_t* hud_text) {
   const char* s;
@@ -108,69 +106,10 @@ void dsda_InitHud(patchnum_t* font) {
     VPT_ALIGN_LEFT
   );
 
-  HUlib_initTextLine(
-    &dsda_intermission_time.text,
-    DSDA_TEXT_X,
-    DSDA_INTERMISSION_TIME_Y,
-    font,
-    HU_FONTSTART,
-    g_cr_gray,
-    VPT_ALIGN_LEFT
-  );
-
+  dsda_InitIntermissionDisplay(font);
   dsda_InitExHud(font);
   dsda_InitCommandDisplay(font);
   dsda_InitCoordinateDisplay(font);
-}
-
-void dsda_DrawIntermissionTime(void) {
-  char* s;
-  char delta[16];
-  char color;
-  dsda_split_t* split;
-
-  delta[0] = '\0';
-  color = 0x30 + g_cr_gray;
-  split = dsda_CurrentSplit();
-
-  if (split && !split->first_time) {
-    const char* sign;
-    int diff;
-
-    diff = split->leveltime.best_delta;
-    sign = diff >= 0 ? "+" : "-";
-    color = diff >= 0 ? 0x30 + g_cr_gray : 0x30 + g_cr_green;
-    diff = abs(diff);
-
-    if (split->leveltime.best_delta >= 2100) {
-      snprintf(
-        delta, sizeof(delta),
-        " (%s%d:%04.2f)",
-        sign, diff / 35 / 60, (float)(diff % (60 * 35)) / 35
-      );
-    }
-    else {
-      snprintf(
-        delta, sizeof(delta),
-        " (%s%04.2f)",
-        sign, (float)(diff % (60 * 35)) / 35
-      );
-    }
-  }
-
-  snprintf(
-    dsda_intermission_time.msg,
-    sizeof(dsda_intermission_time.msg),
-    "\x1b%c%d:%05.2f",
-    color, leveltime / 35 / 60,
-    (float)(leveltime % (60 * 35)) / 35
-  );
-
-  strcat(dsda_intermission_time.msg, delta);
-
-  dsda_RefreshHudText(&dsda_intermission_time);
-
-  HUlib_drawTextLine(&dsda_intermission_time.text, false);
 }
 
 static dboolean dsda_ExHudVisible(void) {
