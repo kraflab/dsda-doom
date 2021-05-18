@@ -1029,7 +1029,7 @@ default_t defaults[] =
   { "dsda_track_attempts", { &dsda_track_attempts }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int, ss_stat },
   { "dsda_hide_horns", { &dsda_hide_horns }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_organized_saves", { &dsda_organized_saves }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_organized_saves", { &dsda_organized_saves }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_command_display", { &dsda_command_display }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_command_history_size", { &dsda_command_history_size }, { 10 }, 1, 20, def_int, ss_stat },
   { "dsda_hide_empty_commands", { &dsda_hide_empty_commands }, { 1 }, 0, 1, def_bool, ss_stat },
