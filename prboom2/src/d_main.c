@@ -96,6 +96,7 @@
 
 #include "dsda/global.h"
 #include "dsda/save.h"
+#include "dsda/data_organizer.h"
 #include "dsda/settings.h"
 
 #include "heretic/mn_menu.h"
@@ -1030,7 +1031,9 @@ static void IdentifyVersion (void)
 {
   char *iwad;
 
-  dsda_InitSaveDir(); // why is this here?
+  // why is this here?
+  dsda_InitDataDir();
+  dsda_InitSaveDir();
 
   // locate the IWAD and determine game mode from it
 
