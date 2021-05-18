@@ -6,10 +6,15 @@
 
 #### Save Organization
 - New option to let dsda-doom organize your saves
-  - Save files will be separated based on the wad files you use
-  - The location will be old_place/save_files/iwad/pwad/...
-  - Directories are created automatically
+  - Save files will be stored in the data directory (see below)
 - There are now pages in the save / load screens, giving you more file slots
+
+#### Data Directory
+- Nested folder structure organizing persistent data used by dsda-doom
+- Example: `dsda-doom -iwad doom2 -file rush` will produce `dsda_doom_data/doom2/rush/`
+- You can change the root location with `-data path` or with the environment variable `DOOMDATADIR`
+- Directories are created automatically
+- Currently stores save files, eventually more fun things :^)
 
 #### Command Display
 - New option to display command history
