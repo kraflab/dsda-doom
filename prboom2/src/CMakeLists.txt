@@ -27,6 +27,8 @@ set(COMMON_SRC
     dsda/coordinate_display.h
     dsda/demo.c
     dsda/demo.h
+    dsda/exhud.c
+    dsda/exhud.h
     dsda/ghost.c
     dsda/ghost.h
     dsda/global.c
