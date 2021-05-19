@@ -3353,6 +3353,45 @@ void A_JumpIfTargetCloser(mobj_t* actor)
 }
 
 //
+// A_JumpIfTracerInSight
+// Jumps to a state if caller's tracer (seek target) is in line-of-sight.
+//   args[0]: State to jump to
+//
+void A_JumpIfTracerInSight(mobj_t* actor)
+{
+  int state;
+
+  if (!mbf21 || !actor || !actor->tracer)
+    return;
+
+  state = actor->state->args[0];
+
+  if (P_CheckSight(actor, actor->tracer))
+    P_SetMobjState(actor, state);
+}
+
+//
+// A_JumpIfTracerCloser
+// Jumps to a state if caller's tracer (seek target) is closer than the specified distance.
+//   args[0]: State to jump to
+//   args[1]: Distance threshold (fixed point)
+//
+void A_JumpIfTracerCloser(mobj_t* actor)
+{
+  int state, distance;
+
+  if (!mbf21 || !actor || !actor->tracer)
+    return;
+
+  state    = actor->state->args[0];
+  distance = actor->state->args[1];
+
+  if (distance > P_AproxDistance(actor->x - actor->tracer->x,
+                                 actor->y - actor->tracer->y))
+    P_SetMobjState(actor, state);
+}
+
+//
 // A_JumpIfFlagsSet
 // Jumps to a state if caller has the specified thing flags set.
 //   args[0]: State to jump to
