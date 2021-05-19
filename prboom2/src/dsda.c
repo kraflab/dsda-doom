@@ -77,7 +77,7 @@ int dsda_track_pacifist;
 int dsda_track_100k;
 
 // other
-char* dsda_demo_name_base;
+static char* dsda_demo_name_base;
 int dsda_max_kill_requirement;
 int dsda_session_attempts = 1;
 int dsda_total_attempts = 1;
@@ -358,6 +358,10 @@ void dsda_WatchWeaponFire(weapontype_t weapon) {
 
 void dsda_WatchSecret(void) {
   if (dsda_time_secrets) dsda_AddSplit(DSDA_SPLIT_SECRET);
+}
+
+char* dsda_DemoNameBase(void) {
+  return dsda_demo_name_base;
 }
 
 // from crispy - incrementing demo file names

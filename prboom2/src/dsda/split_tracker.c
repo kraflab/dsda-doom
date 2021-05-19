@@ -17,7 +17,9 @@
 
 #include <stdlib.h>
 
-#include "settings.h"
+#include "dsda.h"
+#include "dsda/settings.h"
+#include "dsda/data_organizer.h"
 
 #include "split_tracker.h"
 
@@ -25,6 +27,37 @@ static dsda_split_t* dsda_splits;
 static size_t dsda_splits_count;
 static int run_counter;
 static int current_split;
+static char* dsda_split_tracker_dir;
+static char* dsda_split_tracker_name;
+
+extern int gameskill, gamemap, gameepisode, leveltime, totalleveltimes;
+
+static char* dsda_SplitTrackerDir(void) {
+  if (!dsda_split_tracker_dir)
+    dsda_split_tracker_dir = dsda_DataDir();
+
+  return dsda_split_tracker_dir;
+}
+
+static char* dsda_SplitTrackerName(void) {
+  static char* dsda_split_tracker_name = NULL;
+
+  if (!dsda_split_tracker_name) {
+    int name_size;
+    char* name_base;
+
+    name_base = dsda_DemoNameBase();
+    name_size = strlen(name_base) + 24;
+    dsda_split_tracker_name = calloc(1, name_size);
+
+    snprintf(
+      dsda_split_tracker_name, "%s_%i_%i_%i_splits.txt",
+      name_size - 1, name_base, gameskill, gamemap, gameepisode
+    );
+  }
+
+  return dsda_split_tracker_name;
+}
 
 static void dsda_InitSplitTime(dsda_split_time_t* split_time) {
   split_time->current = 0;
@@ -45,8 +78,6 @@ static void dsda_TrackSplitTime(dsda_split_time_t* split_time, int current) {
   if (current < split_time->session_best || !split_time->session_best)
     split_time->session_best = current;
 }
-
-extern int gamemap, gameepisode, leveltime, totalleveltimes;
 
 void dsda_RecordSplit(void) {
   int i;
