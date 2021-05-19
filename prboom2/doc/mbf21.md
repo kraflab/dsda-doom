@@ -285,6 +285,37 @@ MBF21 defaults:
     - `state (uint)`: State to jump to on the calling actor when resurrecting a corpse
     - `sound (uint)`: Sound to play when resurrecting a corpse
 
+- **A_SeekTracer(threshold, maxturnangle)**
+  - Generic seeker missile function.
+  - Args:
+    - `threshold (fixed)`: If angle to target is lower than this, missile will 'snap' directly to face the target
+    - `maxturnangle (fixed)`: Maximum angle a missile will turn towards the target if angle is above the threshold
+  - Notes:
+    - When using this function, keep in mind that seek 'strength' also depends on how often this function is called -- e.g. calling `A_SeekTracer` every tic will result in a much more aggressive seek than calling it every 4 tics, even if the args are the same
+    - This function uses Heretic's seeker missile logic (P_SeekerMissile), rather than Doom's, with two notable changes:
+      - The actor's `tracer` pointer is used as the seek target, rather than Heretic's `special1` field
+      - On the z-axis, the missile will seek towards the vertical centerpoint of the seek target, rather than the bottom (resulting in much friendly behavior when seeking toward enemies on high ledges). Refer to the implementation for details.
+
+- **A_FindTracer(threshold, maxturnangle)**
+  - Searches for a valid tracer (seek target), if the calling actor doesn't already have one. Particularly useful for player missiles.
+  - Args:
+    - `fov (fixed)`: Field-of-view, relative to calling actor's angle, to search for targets in. If zero, the search will occur in all directions.
+    - `distance (int)`: Distance to search, in map blocks (128 units); if not set, defaults to 10. Setting this value too high may hurt performance, so don't get overzealous.
+  - Notes:
+    - This function is intended for use on player-fired missiles; it may not produce particularly useful results if used on a monster projectile.
+    - This function will no-op if the calling actor already has a tracer. To forcibly re-acquire a new tracer, call A_ClearTracer first.
+    - This function uses a variant of Hexen's blockmap search algorithm (P_RoughMonsterSearch); refer to the implementation for specifics, but it's identical to Hexen's except for the rules for picking a valid target (in order of evaluation):
+      - Actors without the SHOOTABLE flag are skipped
+      - Players are skipped in co-op multiplayer games
+      - The projectile's owner (target) is skipped
+      - Friendly monsters will be skipped if missile is fired by a player or another friendly monster
+      - If the `fov` arg is nonzero, actors outside of an `fov`-degree cone, relative to the missile's angle, are skipped
+      - Actors not in line-of-sight of the missile are skipped
+
+- **A_ClearTracer**
+  - Clears the calling actor's tracer (seek target) field.
+  - No Args.
+
 - **A_JumpIfHealthBelow(state, health)**
   - Jumps to a state if caller's health is below the specified threshold.
   - Args:
@@ -308,6 +339,22 @@ MBF21 defaults:
   - Notes:
     - This function uses the same approximate distance check as other functions in the game (P_AproxDistance).
     - The jump will only occur if distance is BELOW the given value -- e.g. `A_JumpIfTargetCloser(420, 69)` will jump to state 420 if distance is 68 or lower.
+
+- **A_JumpIfTracerInSight(state)**
+  - Jumps to a state if caller's tracer (seek target) is in line-of-sight.
+  - Args:
+    - `state (uint)`: State to jump to
+  - Notes:
+    - This function only considers line-of-sight, i.e. independent of calling actor's facing direction.
+
+- **A_JumpIfTracerCloser(state, distance)**
+  - Jumps to a state if caller's tracer (seek target) is closer than the specified distance.
+  - Args:
+    - `state (uint)`: State to jump to
+    - `distance (fixed)`: Distance threshold, in map units
+  - Notes:
+    - This function uses the same approximate distance check as other functions in the game (P_AproxDistance).
+    - The jump will only occur if distance is BELOW the given value -- e.g. `A_JumpIfTracerCloser(420, 69)` will jump to state 420 if distance is 68 or lower.
 
 - **A_JumpIfFlagsSet(state, flags, flags2)**
   - Jumps to a state if caller has the specified thing flags set.
@@ -343,6 +390,7 @@ MBF21 defaults:
   - Notes:
     - Unlike native Doom attack codepointers, this function will not consume ammo, trigger the Flash state, or play a sound.
     - The `pitch` arg uses the same approximated pitch calculation that Doom's monster aim / autoaim uses. Refer to the implementation for specifics.
+    - The spawned projectile's `tracer` pointer is set to the player's autoaim target, if available.
 
 - **A_WeaponBulletAttack(hspread, vspread, numbullets, damagebase, damagedice)**
   - Generic weapon bullet attack.
