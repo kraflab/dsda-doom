@@ -28,7 +28,7 @@ static size_t dsda_splits_count;
 static int run_counter;
 static int current_split;
 static char* dsda_split_tracker_dir;
-static char* dsda_split_tracker_name;
+static char* dsda_split_tracker_path;
 
 extern int gameskill, gamemap, gameepisode, leveltime, totalleveltimes;
 
@@ -39,24 +39,47 @@ static char* dsda_SplitTrackerDir(void) {
   return dsda_split_tracker_dir;
 }
 
-static char* dsda_SplitTrackerName(void) {
-  static char* dsda_split_tracker_name = NULL;
+static char* dsda_SplitTrackerPath(void) {
+  static char* dsda_split_tracker_path = NULL;
 
-  if (!dsda_split_tracker_name) {
-    int name_size;
+  if (!dsda_split_tracker_path) {
+    int length;
     char* name_base;
+    char* dir;
 
     name_base = dsda_DemoNameBase();
-    name_size = strlen(name_base) + 24;
-    dsda_split_tracker_name = calloc(1, name_size);
+    if (!name_base)
+      return NULL;
+
+    dir = dsda_SplitTrackerDir();
+
+    length = strlen(dir) + strlen(name_base) + 24;
+    dsda_split_tracker_path = malloc(length);
 
     snprintf(
-      dsda_split_tracker_name, "%s_%i_%i_%i_splits.txt",
-      name_size - 1, name_base, gameskill, gamemap, gameepisode
+      dsda_split_tracker_path, "%s/%s_%i_%i_%i_splits.txt",
+      length, dir, name_base, gameskill, gamemap, gameepisode
     );
   }
 
-  return dsda_split_tracker_name;
+  return dsda_split_tracker_path;
+}
+
+static void dsda_LoadSplits(void) {
+  char* path;
+  byte* buffer;
+  int read_result;
+
+  path = dsda_SplitTrackerPath();
+
+  if (!path)
+    return;
+
+  if (M_ReadFile(path, &buffer) != -1) {
+    // Parse
+
+    free(buffer);
+  }
 }
 
 static void dsda_InitSplitTime(dsda_split_time_t* split_time) {
@@ -83,6 +106,8 @@ void dsda_RecordSplit(void) {
   int i;
 
   if (!dsda_UseSplitTracker()) return;
+
+  dsda_LoadSplits();
 
   for (i = 0; i < dsda_splits_count; ++i)
     if (dsda_splits[i].episode == gameepisode && dsda_splits[i].map == gamemap) {
