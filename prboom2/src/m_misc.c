@@ -1026,7 +1026,7 @@ default_t defaults[] =
   { "dsda_auto_key_frame_depth", { &dsda_auto_key_frame_depth }, { 60 }, 0, 600, def_int, ss_stat },
   { "dsda_exhud", { &dsda_exhud }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_wipe_at_full_speed", { &dsda_wipe_at_full_speed }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_track_attempts", { &dsda_track_attempts }, { 1 }, 0, 1, def_bool, ss_stat },
+  { "dsda_show_demo_attempts", { &dsda_show_demo_attempts }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int, ss_stat },
   { "dsda_hide_horns", { &dsda_hide_horns }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_organized_saves", { &dsda_organized_saves }, { 1 }, 0, 1, def_bool, ss_stat },
@@ -1035,7 +1035,7 @@ default_t defaults[] =
   { "dsda_hide_empty_commands", { &dsda_hide_empty_commands }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_coordinate_display", { &dsda_coordinate_display }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_skip_quit_prompt", { &dsda_skip_quit_prompt }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_use_split_tracker", { &dsda_use_split_tracker }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_show_split_data", { &dsda_show_split_data }, { 1 }, 0, 1, def_bool, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

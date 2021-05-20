@@ -33,10 +33,13 @@ typedef struct {
   int map;
   int first_time;
   int run_counter;
+  int exits;
 } dsda_split_t;
 
 void dsda_RecordSplit(void);
 dsda_split_t* dsda_CurrentSplit(void);
+void dsda_WriteSplits(void);
 void dsda_ResetSplits(void);
+int dsda_DemoAttempts(void);
 
 #endif

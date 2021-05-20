@@ -18,6 +18,10 @@
 #ifndef __DSDA__
 #define __DSDA__
 
+#include "doomdef.h"
+#include "p_mobj.h"
+#include "d_player.h"
+
 void dsda_ReadCommandLine(void);
 void dsda_DisplayNotifications(void);
 void dsda_WatchCard(card_t card);
@@ -41,6 +45,7 @@ void dsda_WatchRecordDemo(const char* name);
 void dsda_WriteAnalysis(void);
 
 int dsda_MaxKillRequirement(void);
+char* dsda_DemoNameBase(void);
 char* dsda_NewDemoName(void);
 
 #endif

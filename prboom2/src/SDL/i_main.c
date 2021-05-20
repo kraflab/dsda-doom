@@ -78,6 +78,7 @@ typedef BOOL (WINAPI *SetAffinityFunc)(HANDLE hProcess, DWORD mask);
 #include "e6y.h"
 #include "dsda.h"
 #include "dsda/settings.h"
+#include "dsda/split_tracker.h"
 
 /* Most of the following has been rewritten by Lee Killough
  *
@@ -371,6 +372,7 @@ static void I_Quit (void)
     M_SaveDefaults ();
     I_DemoExShutdown();
     dsda_WriteAnalysis();
+    dsda_WriteSplits();
   }
 }
 

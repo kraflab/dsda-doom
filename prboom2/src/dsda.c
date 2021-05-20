@@ -77,10 +77,9 @@ int dsda_track_pacifist;
 int dsda_track_100k;
 
 // other
-char* dsda_demo_name_base;
+static char* dsda_demo_name_base;
 int dsda_max_kill_requirement;
 int dsda_session_attempts = 1;
-int dsda_total_attempts = 1;
 
 dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
@@ -118,8 +117,8 @@ void dsda_ReadCommandLine(void) {
 static int dsda_shown_attempt = 0;
 
 void dsda_DisplayNotifications(void) {
-  if (dsda_TrackAttempts() && dsda_session_attempts > dsda_shown_attempt) {
-    doom_printf("Attempt %d / %d", dsda_session_attempts, dsda_total_attempts);
+  if (dsda_ShowDemoAttempts() && dsda_session_attempts > dsda_shown_attempt) {
+    doom_printf("Attempt %d / %d", dsda_session_attempts, dsda_DemoAttempts());
 
     dsda_shown_attempt = dsda_session_attempts;
   }
@@ -360,6 +359,10 @@ void dsda_WatchSecret(void) {
   if (dsda_time_secrets) dsda_AddSplit(DSDA_SPLIT_SECRET);
 }
 
+char* dsda_DemoNameBase(void) {
+  return dsda_demo_name_base;
+}
+
 // from crispy - incrementing demo file names
 char* dsda_NewDemoName(void) {
   char* demo_name;
@@ -375,8 +378,6 @@ char* dsda_NewDemoName(void) {
     snprintf(demo_name, demo_name_size, "%s-%05d.lmp", dsda_demo_name_base, j);
     fclose (fp);
   }
-
-  dsda_total_attempts = j - 1;
 
   return demo_name;
 }
@@ -400,8 +401,6 @@ static void dsda_ResetTracking(void) {
   dsda_weapon_collector = true;
 
   dsda_pacifist_note_shown = false;
-
-  dsda_ResetSplits();
 }
 
 void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
