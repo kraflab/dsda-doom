@@ -93,6 +93,7 @@
 #include "dsda/input.h"
 #include "dsda/options.h"
 #include "dsda/tas.h"
+#include "dsda/split_tracker.h"
 #include "statdump.h"
 
 // ano - used for version 255+ demos, like EE or MBF
@@ -3553,6 +3554,7 @@ void G_BeginRecording (void)
 
   dsda_WriteToDemo(demostart, demo_p - demostart);
   dsda_ContinueKeyFrame();
+  dsda_ResetSplits();
 
   R_DemoEx_ResetMLook();
 
