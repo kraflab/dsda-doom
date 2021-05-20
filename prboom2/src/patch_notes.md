@@ -14,7 +14,7 @@
 - Example: `dsda-doom -iwad doom2 -file rush` will produce `dsda_doom_data/doom2/rush/`
 - You can change the root location with `-data path` or with the environment variable `DOOMDATADIR`
 - Directories are created automatically
-- Currently stores save files, eventually more fun things :^)
+- Currently stores save files, attempts, splits
 
 #### Command Display
 - New option to display command history
@@ -46,10 +46,9 @@
 - Set up a key binding to access
 - Command list: WIP
 
-#### Split Tracker
+#### Split Data
 - On intermission screen, compares current time to personal best
 - Currently map by map, will add total time comparison later
-- Currently starts fresh for each session, will store data later
 - Enable it in the settings
 
 #### Configuration Lump Support
