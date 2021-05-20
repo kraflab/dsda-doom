@@ -69,7 +69,7 @@ static char* dsda_SplitTrackerPath(void) {
 
     snprintf(
       dsda_split_tracker_path, length - 1, "%s/%s_%i_%i_%i_%s_splits.txt",
-      dir, name_base, gameskill, gamemap, gameepisode, params
+      dir, name_base, gameskill + 1, gameepisode, gamemap, params
     );
   }
 
