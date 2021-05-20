@@ -32,7 +32,7 @@ int dsda_exhud;
 int dsda_tas;
 int dsda_skip_next_wipe;
 int dsda_wipe_at_full_speed;
-int dsda_track_attempts;
+int dsda_show_demo_attempts;
 int dsda_fine_sensitivity;
 int dsda_hide_horns;
 int dsda_skip_quit_prompt;
@@ -140,7 +140,7 @@ dboolean dsda_SkipQuitPrompt(void) {
   return dsda_skip_quit_prompt;
 }
 
-dboolean dsda_UseSplitTracker(void) {
+dboolean dsda_TrackSplits(void) {
   return demorecording;
 }
 
@@ -160,8 +160,8 @@ dboolean dsda_CoordinateDisplay(void) {
   return dsda_coordinate_display && !dsda_StrictMode();
 }
 
-dboolean dsda_TrackAttempts(void) {
-  return dsda_track_attempts && demorecording;
+dboolean dsda_ShowDemoAttempts(void) {
+  return dsda_show_demo_attempts && demorecording;
 }
 
 dboolean dsda_MapPointCoordinates(void) {

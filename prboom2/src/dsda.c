@@ -117,7 +117,7 @@ void dsda_ReadCommandLine(void) {
 static int dsda_shown_attempt = 0;
 
 void dsda_DisplayNotifications(void) {
-  if (dsda_TrackAttempts() && dsda_session_attempts > dsda_shown_attempt) {
+  if (dsda_ShowDemoAttempts() && dsda_session_attempts > dsda_shown_attempt) {
     doom_printf("Attempt %d / %d", dsda_session_attempts, dsda_DemoAttempts());
 
     dsda_shown_attempt = dsda_session_attempts;

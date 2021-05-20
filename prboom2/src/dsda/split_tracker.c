@@ -178,7 +178,7 @@ static void dsda_TrackSplitTime(dsda_split_time_t* split_time, int current) {
 void dsda_RecordSplit(void) {
   int i;
 
-  if (!dsda_UseSplitTracker()) return;
+  if (!dsda_TrackSplits()) return;
 
   dsda_LoadSplits();
 
@@ -212,7 +212,7 @@ dsda_split_t* dsda_CurrentSplit(void) {
 }
 
 void dsda_ResetSplits(void) {
-  if (!dsda_UseSplitTracker()) return;
+  if (!dsda_TrackSplits()) return;
 
   dsda_LoadSplits();
   ++attempts;
