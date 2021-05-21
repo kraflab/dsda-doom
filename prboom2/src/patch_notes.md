@@ -48,7 +48,7 @@
 
 #### Split Data
 - On intermission screen, compares current time to personal best
-- Currently map by map, will add total time comparison later
+- Includes both IL comparison and movie comparison
 - Enable it in the settings
 
 #### Configuration Lump Support
