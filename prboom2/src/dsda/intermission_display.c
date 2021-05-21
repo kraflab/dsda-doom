@@ -28,6 +28,7 @@
 #define DSDA_INTERMISSION_TIME_Y 1
 
 static dsda_text_t dsda_intermission_time;
+static dsda_text_t dsda_intermission_total;
 
 void dsda_InitIntermissionDisplay(patchnum_t* font) {
   HUlib_initTextLine(
@@ -39,19 +40,27 @@ void dsda_InitIntermissionDisplay(patchnum_t* font) {
     g_cr_gray,
     VPT_ALIGN_LEFT
   );
+
+  HUlib_initTextLine(
+    &dsda_intermission_total.text,
+    DSDA_INTERMISSION_TIME_X,
+    DSDA_INTERMISSION_TIME_Y + 8,
+    font,
+    HU_FONTSTART,
+    g_cr_gray,
+    VPT_ALIGN_LEFT
+  );
 }
 
-extern int leveltime;
+extern int leveltime, totalleveltimes;
 
-void dsda_DrawIntermissionDisplay(void) {
+static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
   char* s;
   char delta[16];
   char color;
-  dsda_split_t* split;
 
   delta[0] = '\0';
   color = 0x30 + g_cr_gray;
-  split = dsda_CurrentSplit();
 
   if (split && !split->first_time) {
     const char* sign;
@@ -89,6 +98,63 @@ void dsda_DrawIntermissionDisplay(void) {
   strcat(dsda_intermission_time.msg, delta);
 
   dsda_RefreshHudText(&dsda_intermission_time);
+}
+
+static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
+  char* s;
+  char delta[16];
+  char color;
+
+  delta[0] = '\0';
+  color = 0x30 + g_cr_gray;
+
+  if (split && !split->first_time) {
+    const char* sign;
+    int diff;
+
+    diff = split->totalleveltimes.best_delta / 35;
+    sign = diff >= 0 ? "+" : "-";
+    color = diff >= 0 ? 0x30 + g_cr_gray : 0x30 + g_cr_green;
+    diff = abs(diff);
+
+    if (split->totalleveltimes.best_delta >= 60) {
+      snprintf(
+        delta, sizeof(delta),
+        " (%s%d:%02d)",
+        sign, diff / 60, diff % 60
+      );
+    }
+    else {
+      snprintf(
+        delta, sizeof(delta),
+        " (%s%d)",
+        sign, diff % 60
+      );
+    }
+  }
+
+  snprintf(
+    dsda_intermission_total.msg,
+    sizeof(dsda_intermission_total.msg),
+    "\x1b%c%d:%02d",
+    color, totalleveltimes / 35 / 60,
+    (totalleveltimes / 35) % 60
+  );
+
+  strcat(dsda_intermission_total.msg, delta);
+
+  dsda_RefreshHudText(&dsda_intermission_total);
+}
+
+void dsda_DrawIntermissionDisplay(void) {
+  char* s;
+  dsda_split_t* split;
+
+  split = dsda_CurrentSplit();
+
+  dsda_UpdateIntermissionTime(split);
+  dsda_UpdateIntermissionTotal(split);
 
   HUlib_drawTextLine(&dsda_intermission_time.text, false);
+  HUlib_drawTextLine(&dsda_intermission_total.text, false);
 }
