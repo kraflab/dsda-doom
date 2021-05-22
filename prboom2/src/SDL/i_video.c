@@ -1018,7 +1018,6 @@ void I_InitScreenResolution(void)
     screens[i].width = SCREENWIDTH;
     screens[i].height = SCREENHEIGHT;
     screens[i].byte_pitch = SCREENPITCH;
-    screens[i].short_pitch = SCREENPITCH / V_GetModePixelDepth(VID_MODE16);
     screens[i].int_pitch = SCREENPITCH / V_GetModePixelDepth(VID_MODE32);
   }
 
@@ -1026,7 +1025,6 @@ void I_InitScreenResolution(void)
   screens[4].width = SCREENWIDTH;
   screens[4].height = SCREENHEIGHT;
   screens[4].byte_pitch = SCREENPITCH;
-  screens[4].short_pitch = SCREENPITCH / V_GetModePixelDepth(VID_MODE16);
   screens[4].int_pitch = SCREENPITCH / V_GetModePixelDepth(VID_MODE32);
 
   I_InitBuffersRes();
@@ -1100,15 +1098,7 @@ video_mode_t I_GetModeFromString(const char *modestr)
 {
   video_mode_t mode;
 
-  if (!stricmp(modestr,"15")) {
-    mode = VID_MODE15;
-  } else if (!stricmp(modestr,"15bit")) {
-    mode = VID_MODE15;
-  } else if (!stricmp(modestr,"16")) {
-    mode = VID_MODE16;
-  } else if (!stricmp(modestr,"16bit")) {
-    mode = VID_MODE16;
-  } else if (!stricmp(modestr,"32")) {
+  if (!stricmp(modestr,"32")) {
     mode = VID_MODE32;
   } else if (!stricmp(modestr,"32bit")) {
     mode = VID_MODE32;
@@ -1319,7 +1309,6 @@ void I_UpdateVideoMode(void)
       screens[0].not_on_heap = true;
       screens[0].data = (unsigned char *) (screen->pixels);
       screens[0].byte_pitch = screen->pitch;
-      screens[0].short_pitch = screen->pitch / V_GetModePixelDepth(VID_MODE16);
       screens[0].int_pitch = screen->pitch / V_GetModePixelDepth(VID_MODE32);
     }
     else

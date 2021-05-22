@@ -324,12 +324,6 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
         dest += 64;
       }
     }
-  } else if (V_GetMode() == VID_MODE15) {
-    pitch = screens[scrn].short_pitch;
-    FILL_FLAT(unsigned short, pitch, VID_PAL15);
-  } else if (V_GetMode() == VID_MODE16) {
-    pitch = screens[scrn].short_pitch;
-    FILL_FLAT(unsigned short, pitch, VID_PAL16);
   } else if (V_GetMode() == VID_MODE32) {
     pitch = screens[scrn].int_pitch;
     FILL_FLAT(unsigned int, pitch, VID_PAL32);
@@ -383,7 +377,6 @@ void V_Init (void)
     screens[i].width = 0;
     screens[i].height = 0;
     screens[i].byte_pitch = 0;
-    screens[i].short_pitch = 0;
     screens[i].int_pitch = 0;
   }
 }
@@ -528,10 +521,8 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     R_SetDefaultDrawColumnVars(&dcvars);
 
     drawvars.byte_topleft = screens[scrn].data;
-    drawvars.short_topleft = (unsigned short *)screens[scrn].data;
     drawvars.int_topleft = (unsigned int *)screens[scrn].data;
     drawvars.byte_pitch = screens[scrn].byte_pitch;
-    drawvars.short_pitch = screens[scrn].short_pitch;
     drawvars.int_pitch = screens[scrn].int_pitch;
 
     if (flags & VPT_TRANS) {
@@ -707,8 +698,6 @@ static void FUNC_V_DrawNumPatchPrecise(float x, float y, int scrn, int lump,
   R_UnlockPatchNum(lump);
 }
 
-unsigned short *V_Palette15 = NULL;
-unsigned short *V_Palette16 = NULL;
 unsigned int *V_Palette32 = NULL;
 static int currentPaletteIndex = 0;
 
@@ -753,11 +742,7 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
   numPals = W_LumpLength(pplump) / (3 * 256);
 
   if (usegammaOnLastPaletteGeneration != usegamma) {
-    if (playpal_data->Palettes15) free(playpal_data->Palettes15);
-    if (playpal_data->Palettes16) free(playpal_data->Palettes16);
     if (playpal_data->Palettes32) free(playpal_data->Palettes32);
-    playpal_data->Palettes15 = NULL;
-    playpal_data->Palettes16 = NULL;
     playpal_data->Palettes32 = NULL;
     usegammaOnLastPaletteGeneration = usegamma;
   }
@@ -792,66 +777,6 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
     }
     V_Palette32 = playpal_data->Palettes32 + paletteNum*256*VID_NUMCOLORWEIGHTS;
   }
-  else if (mode == VID_MODE16) {
-    if (!playpal_data->Palettes16) {
-      // set short palette
-      playpal_data->Palettes16 = malloc(numPals*256*sizeof(short)*VID_NUMCOLORWEIGHTS);
-      for (p=0; p<numPals; p++) {
-        for (i=0; i<256; i++) {
-          r = gtable[pal[(256*p+i)*3+0]];
-          g = gtable[pal[(256*p+i)*3+1]];
-          b = gtable[pal[(256*p+i)*3+2]];
-
-          // ideally, we should always round up, but very bright colors
-          // overflow the blending adds, so they don't get rounded.
-          roundUpR = (r > dontRoundAbove) ? 0 : 0.5f;
-          roundUpG = (g > dontRoundAbove) ? 0 : 0.5f;
-          roundUpB = (b > dontRoundAbove) ? 0 : 0.5f;
-
-          for (w=0; w<VID_NUMCOLORWEIGHTS; w++) {
-            t = (float)(w)/(float)(VID_NUMCOLORWEIGHTS-1);
-            nr = (int)((r>>3)*t+roundUpR);
-            ng = (int)((g>>2)*t+roundUpG);
-            nb = (int)((b>>3)*t+roundUpB);
-            playpal_data->Palettes16[((p*256+i)*VID_NUMCOLORWEIGHTS)+w] = (
-              (nr<<11) | (ng<<5) | nb
-            );
-          }
-        }
-      }
-    }
-    V_Palette16 = playpal_data->Palettes16 + paletteNum*256*VID_NUMCOLORWEIGHTS;
-  }
-  else if (mode == VID_MODE15) {
-    if (!playpal_data->Palettes15) {
-      // set short palette
-      playpal_data->Palettes15 = malloc(numPals*256*sizeof(short)*VID_NUMCOLORWEIGHTS);
-      for (p=0; p<numPals; p++) {
-        for (i=0; i<256; i++) {
-          r = gtable[pal[(256*p+i)*3+0]];
-          g = gtable[pal[(256*p+i)*3+1]];
-          b = gtable[pal[(256*p+i)*3+2]];
-
-          // ideally, we should always round up, but very bright colors
-          // overflow the blending adds, so they don't get rounded.
-          roundUpR = (r > dontRoundAbove) ? 0 : 0.5f;
-          roundUpG = (g > dontRoundAbove) ? 0 : 0.5f;
-          roundUpB = (b > dontRoundAbove) ? 0 : 0.5f;
-
-          for (w=0; w<VID_NUMCOLORWEIGHTS; w++) {
-            t = (float)(w)/(float)(VID_NUMCOLORWEIGHTS-1);
-            nr = (int)((r>>3)*t+roundUpR);
-            ng = (int)((g>>3)*t+roundUpG);
-            nb = (int)((b>>3)*t+roundUpB);
-            playpal_data->Palettes15[((p*256+i)*VID_NUMCOLORWEIGHTS)+w] = (
-              (nr<<10) | (ng<<5) | nb
-            );
-          }
-        }
-      }
-    }
-    V_Palette15 = playpal_data->Palettes15 + paletteNum*256*VID_NUMCOLORWEIGHTS;
-  }
 
   W_UnlockLumpNum(pplump);
   W_UnlockLumpNum(gtlump);
@@ -859,8 +784,6 @@ void V_UpdateTrueColorPalette(video_mode_t mode) {
 
 void V_DestroyUnusedTrueColorPalettes(void) {
   dsda_FreeTrueColorPlayPal();
-  if (V_GetMode() != VID_MODE15) V_Palette15 = NULL;
-  if (V_GetMode() != VID_MODE16) V_Palette16 = NULL;
   if (V_GetMode() != VID_MODE32) V_Palette32 = NULL;
 }
 
@@ -880,7 +803,7 @@ void V_SetPalette(int pal)
 #endif
   } else {
     I_SetPalette(pal);
-    if (V_GetMode() == VID_MODE15 || V_GetMode() == VID_MODE16 || V_GetMode() == VID_MODE32) {
+    if (V_GetMode() == VID_MODE32) {
       V_UpdateTrueColorPalette(V_GetMode());
     }
   }
@@ -913,32 +836,6 @@ static void V_FillRect8(int scrn, int x, int y, int width, int height, byte colo
   }
 }
 
-static void V_FillRect15(int scrn, int x, int y, int width, int height, byte colour)
-{
-  unsigned short* dest = (unsigned short *)screens[scrn].data + x + y*screens[scrn].short_pitch;
-  int w;
-  short c = VID_PAL15(colour, VID_COLORWEIGHTMASK);
-  while (height--) {
-    for (w=0; w<width; w++) {
-      dest[w] = c;
-    }
-    dest += screens[scrn].short_pitch;
-  }
-}
-
-static void V_FillRect16(int scrn, int x, int y, int width, int height, byte colour)
-{
-  unsigned short* dest = (unsigned short *)screens[scrn].data + x + y*screens[scrn].short_pitch;
-  int w;
-  short c = VID_PAL16(colour, VID_COLORWEIGHTMASK);
-  while (height--) {
-    for (w=0; w<width; w++) {
-      dest[w] = c;
-    }
-    dest += screens[scrn].short_pitch;
-  }
-}
-
 static void V_FillRect32(int scrn, int x, int y, int width, int height, byte colour)
 {
   unsigned int* dest = (unsigned int *)screens[scrn].data + x + y*screens[scrn].int_pitch;
@@ -954,14 +851,10 @@ static void V_FillRect32(int scrn, int x, int y, int width, int height, byte col
 
 static void WRAP_V_DrawLine(fline_t* fl, int color);
 static void V_PlotPixel8(int scrn, int x, int y, byte color);
-static void V_PlotPixel15(int scrn, int x, int y, byte color);
-static void V_PlotPixel16(int scrn, int x, int y, byte color);
 static void V_PlotPixel32(int scrn, int x, int y, byte color);
 
 static void WRAP_V_DrawLineWu(fline_t* fl, int color);
 static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight);
-static void V_PlotPixelWu15(int scrn, int x, int y, byte color, int weight);
-static void V_PlotPixelWu16(int scrn, int x, int y, byte color, int weight);
 static void V_PlotPixelWu32(int scrn, int x, int y, byte color, int weight);
 
 #ifdef GL_DOOM
@@ -1056,36 +949,6 @@ void V_InitMode(video_mode_t mode) {
       V_DrawLineWu = WRAP_V_DrawLineWu;
       current_videomode = VID_MODE8;
       break;
-    case VID_MODE15:
-      lprintf(LO_INFO, "V_InitMode: using 15 bit video mode\n");
-      V_CopyRect = FUNC_V_CopyRect;
-      V_FillRect = V_FillRect15;
-      V_DrawNumPatch = FUNC_V_DrawNumPatch;
-      V_DrawNumPatchPrecise = FUNC_V_DrawNumPatchPrecise;
-      V_FillFlat = FUNC_V_FillFlat;
-      V_FillPatch = FUNC_V_FillPatch;
-      V_DrawBackground = FUNC_V_DrawBackground;
-      V_PlotPixel = V_PlotPixel15;
-      V_PlotPixelWu = V_PlotPixelWu15;
-      V_DrawLine = WRAP_V_DrawLine;
-      V_DrawLineWu = WRAP_V_DrawLineWu;
-      current_videomode = VID_MODE15;
-      break;
-    case VID_MODE16:
-      lprintf(LO_INFO, "V_InitMode: using 16 bit video mode\n");
-      V_CopyRect = FUNC_V_CopyRect;
-      V_FillRect = V_FillRect16;
-      V_DrawNumPatch = FUNC_V_DrawNumPatch;
-      V_DrawNumPatchPrecise = FUNC_V_DrawNumPatchPrecise;
-      V_FillFlat = FUNC_V_FillFlat;
-      V_FillPatch = FUNC_V_FillPatch;
-      V_DrawBackground = FUNC_V_DrawBackground;
-      V_PlotPixel = V_PlotPixel16;
-      V_PlotPixelWu = V_PlotPixelWu16;
-      V_DrawLine = WRAP_V_DrawLine;
-      V_DrawLineWu = WRAP_V_DrawLineWu;
-      current_videomode = VID_MODE16;
-      break;
     case VID_MODE32:
       lprintf(LO_INFO, "V_InitMode: using 32 bit video mode\n");
       V_CopyRect = FUNC_V_CopyRect;
@@ -1135,8 +998,6 @@ video_mode_t V_GetMode(void) {
 int V_GetModePixelDepth(video_mode_t mode) {
   switch (mode) {
     case VID_MODE8: return 1;
-    case VID_MODE15: return 2;
-    case VID_MODE16: return 2;
     case VID_MODE32: return 4;
     default: return 0;
   }
@@ -1148,8 +1009,6 @@ int V_GetModePixelDepth(video_mode_t mode) {
 int V_GetNumPixelBits(void) {
   switch (current_videomode) {
     case VID_MODE8: return 8;
-    case VID_MODE15: return 15;
-    case VID_MODE16: return 16;
     case VID_MODE32: return 32;
     default: return 0;
   }
@@ -1204,14 +1063,6 @@ void V_FreeScreens(void) {
 
 static void V_PlotPixel8(int scrn, int x, int y, byte color) {
   screens[scrn].data[x+screens[scrn].byte_pitch*y] = color;
-}
-
-static void V_PlotPixel15(int scrn, int x, int y, byte color) {
-  ((unsigned short *)screens[scrn].data)[x+screens[scrn].short_pitch*y] = VID_PAL15(color, VID_COLORWEIGHTMASK);
-}
-
-static void V_PlotPixel16(int scrn, int x, int y, byte color) {
-  ((unsigned short *)screens[scrn].data)[x+screens[scrn].short_pitch*y] = VID_PAL16(color, VID_COLORWEIGHTMASK);
 }
 
 static void V_PlotPixel32(int scrn, int x, int y, byte color) {
@@ -1336,28 +1187,7 @@ static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight)
   fg = (fg + bg) | 0x1f07c1f;
   V_PlotPixel(scrn, x, y, RGB32k[0][0][fg & (fg >> 15)]);
 }
-static void V_PlotPixelWu15(int scrn, int x, int y, byte color, int weight)
-{
-  const unsigned char *rgb = V_GetPlaypal() + color * 3;
 
-  byte r = (*(rgb + 0) * weight) >> wu_weightbits;
-  byte g = (*(rgb + 1) * weight) >> wu_weightbits;
-  byte b = (*(rgb + 2) * weight) >> wu_weightbits;
-
-  ((unsigned short *)screens[scrn].data)[x+screens[scrn].short_pitch*y] =
-    (unsigned short)RGB2COLOR(r, g, b);
-}
-static void V_PlotPixelWu16(int scrn, int x, int y, byte color, int weight)
-{
-  const unsigned char *rgb = V_GetPlaypal() + color * 3;
-
-  byte r = (*(rgb + 0) * weight) >> wu_weightbits;
-  byte g = (*(rgb + 1) * weight) >> wu_weightbits;
-  byte b = (*(rgb + 2) * weight) >> wu_weightbits;
-
-  ((unsigned short *)screens[scrn].data)[x+screens[scrn].short_pitch*y] =
-    (unsigned short)RGB2COLOR(r, g, b);
-}
 static void V_PlotPixelWu32(int scrn, int x, int y, byte color, int weight)
 {
   const unsigned char *rgb = V_GetPlaypal() + color * 3;

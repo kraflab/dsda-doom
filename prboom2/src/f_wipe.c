@@ -202,7 +202,6 @@ int wipe_StartScreen(void)
   wipe_scr_start.width = SCREENWIDTH;
   wipe_scr_start.height = SCREENHEIGHT;
   wipe_scr_start.byte_pitch = screens[0].byte_pitch;
-  wipe_scr_start.short_pitch = screens[0].short_pitch;
   wipe_scr_start.int_pitch = screens[0].int_pitch;
 
   //e6y: fixed slowdown at 1024x768 on some systems
@@ -232,7 +231,6 @@ int wipe_EndScreen(void)
   wipe_scr_end.width = SCREENWIDTH;
   wipe_scr_end.height = SCREENHEIGHT;
   wipe_scr_end.byte_pitch = screens[0].byte_pitch;
-  wipe_scr_end.short_pitch = screens[0].short_pitch;
   wipe_scr_end.int_pitch = screens[0].int_pitch;
 
   //e6y: fixed slowdown at 1024x768 on some systems

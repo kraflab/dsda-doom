@@ -45,8 +45,6 @@ typedef struct playpal_data_s {
 
   // Array of SDL_Color structs used for setting the 256-colour palette
   SDL_Color* colours;
-  unsigned short *Palettes15;
-  unsigned short *Palettes16;
   unsigned int *Palettes32;
 } dsda_playpal_t;
 
