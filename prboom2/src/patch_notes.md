@@ -92,6 +92,7 @@
 - Fixed solo net demo restart
 - Fixed powered dragon claw explosions with uncapped fps
 - Fixed an issue with dragging heretic onto the exe (should always work now)
+- Fixed a crash caused by levelstat going past 32 maps
 - Fixed msvc build (xaser)
 - Fixed macos launcher iwad directory mismatch (PBeGood4)
 - Fixed umapinfo custom episode select for doom2 (pr+)
