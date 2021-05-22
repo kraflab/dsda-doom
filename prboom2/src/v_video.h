@@ -139,7 +139,6 @@ typedef struct {
   int width;           // the width of the surface
   int height;          // the height of the surface, used when mallocing
   int byte_pitch;      // tha actual width of one line, used when mallocing
-  int short_pitch;     // tha actual width of one line, used when mallocing
   int int_pitch;       // tha actual width of one line, used when mallocing
 } screeninfo_t;
 

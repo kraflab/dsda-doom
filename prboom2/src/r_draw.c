@@ -139,10 +139,8 @@ static int fuzzpos = 0;
 
 draw_vars_t drawvars = {
   NULL, // byte_topleft
-  NULL, // short_topleft
   NULL, // int_topleft
   0, // byte_pitch
-  0, // short_pitch
   0, // int_pitch
   RDRAW_FILTER_POINT, // filterwall
   RDRAW_FILTER_POINT, // filterfloor
@@ -722,10 +720,8 @@ void R_InitBuffer(int width, int height)
   viewwindowy = width==SCREENWIDTH ? 0 : (SCREENHEIGHT-ST_SCALED_HEIGHT-height)>>1;
 
   drawvars.byte_topleft = screens[0].data + viewwindowy*screens[0].byte_pitch + viewwindowx;
-  drawvars.short_topleft = (unsigned short *)(screens[0].data) + viewwindowy*screens[0].short_pitch + viewwindowx;
   drawvars.int_topleft = (unsigned int *)(screens[0].data) + viewwindowy*screens[0].int_pitch + viewwindowx;
   drawvars.byte_pitch = screens[0].byte_pitch;
-  drawvars.short_pitch = screens[0].short_pitch;
   drawvars.int_pitch = screens[0].int_pitch;
 
   if (V_GetMode() == VID_MODE8) {

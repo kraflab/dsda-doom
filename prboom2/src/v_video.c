@@ -377,7 +377,6 @@ void V_Init (void)
     screens[i].width = 0;
     screens[i].height = 0;
     screens[i].byte_pitch = 0;
-    screens[i].short_pitch = 0;
     screens[i].int_pitch = 0;
   }
 }
@@ -522,10 +521,8 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     R_SetDefaultDrawColumnVars(&dcvars);
 
     drawvars.byte_topleft = screens[scrn].data;
-    drawvars.short_topleft = (unsigned short *)screens[scrn].data;
     drawvars.int_topleft = (unsigned int *)screens[scrn].data;
     drawvars.byte_pitch = screens[scrn].byte_pitch;
-    drawvars.short_pitch = screens[scrn].short_pitch;
     drawvars.int_pitch = screens[scrn].int_pitch;
 
     if (flags & VPT_TRANS) {
