@@ -86,20 +86,6 @@ void dsda_FreeTrueColorPlayPal(void) {
   mode = V_GetMode();
 
   for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i) {
-    if (mode != VID_MODE15) {
-      if (playpal_data[playpal_i].Palettes15)
-        free(playpal_data[playpal_i].Palettes15);
-
-      playpal_data[playpal_i].Palettes15 = NULL;
-    }
-
-    if (mode != VID_MODE16) {
-      if (playpal_data[playpal_i].Palettes16)
-        free(playpal_data[playpal_i].Palettes16);
-
-      playpal_data[playpal_i].Palettes16 = NULL;
-    }
-
     if (mode != VID_MODE32) {
       if (playpal_data[playpal_i].Palettes32)
         free(playpal_data[playpal_i].Palettes32);

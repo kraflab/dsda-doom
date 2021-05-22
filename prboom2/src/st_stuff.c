@@ -800,7 +800,7 @@ static void ST_doPaletteStuff(void)
 
     // have to redraw the entire status bar when the palette changes
     // in truecolor modes - POPE
-    if (V_GetMode() == VID_MODE15 || V_GetMode() == VID_MODE16 || V_GetMode() == VID_MODE32)
+    if (V_GetMode() == VID_MODE32)
       st_firsttime = true;
   }
 }
