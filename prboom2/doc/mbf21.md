@@ -207,7 +207,7 @@ MBF21 defaults:
 - For future-proofing, if more nonzero args are defined on a state than its action pointer expects (e.g. defining Args3 on a state that uses A_WeaponSound), an error will be thrown on startup.
 
 #### New DEHACKED Codepointers
-- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38), [PR](https://github.com/kraflab/dsda-doom/pull/40), [PR](https://github.com/kraflab/dsda-doom/pull/41), [PR](https://github.com/kraflab/dsda-doom/pull/43)
+- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38), [PR](https://github.com/kraflab/dsda-doom/pull/40), [PR](https://github.com/kraflab/dsda-doom/pull/41), [PR](https://github.com/kraflab/dsda-doom/pull/45)
 - All new MBF21 pointers use the new "Args" fields for params, rather than misc1/misc2 fields
 - Arg fields are listed in order in the docs below, e.g. for `A_SpawnObject`, `type` is Args1, `angle` is Args2, etc.
 - Although all args are integers internally, there are effectively the following types of args:
