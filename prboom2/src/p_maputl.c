@@ -681,48 +681,48 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
       }
     else
       {
-        mapystep = 0;
-        partial = FRACUNIT;
-        xstep = 256*FRACUNIT;
+      mapystep = 0;
+      partial = FRACUNIT;
+      xstep = 256*FRACUNIT;
       }
 
-  xintercept = mapx1 + FixedMul(partial, xstep);
+      xintercept = mapx1 + FixedMul(partial, xstep);
 
-  // Step through map blocks.
-  // Count is present to prevent a round off error
-  // from skipping the break.
+      // Step through map blocks.
+      // Count is present to prevent a round off error
+      // from skipping the break.
 
-  mapx = xt1;
-  mapy = yt1;
+      mapx = xt1;
+      mapy = yt1;
 
-  for (count = 0; count < 64; count++)
-    {
-      if (flags & PT_ADDLINES)
-        if (!P_BlockLinesIterator(mapx, mapy,PIT_AddLineIntercepts))
-          return false; // early out
+      for (count = 0; count < 64; count++)
+      {
+        if (flags & PT_ADDLINES)
+          if (!P_BlockLinesIterator(mapx, mapy,PIT_AddLineIntercepts))
+            return false; // early out
 
-      if (flags & PT_ADDTHINGS)
-        if (!P_BlockThingsIterator(mapx, mapy,PIT_AddThingIntercepts))
-          return false; // early out
+        if (flags & PT_ADDTHINGS)
+          if (!P_BlockThingsIterator(mapx, mapy,PIT_AddThingIntercepts))
+            return false; // early out
 
-      if (mapx == xt2 && mapy == yt2)
-        break;
+        if (mapx == xt2 && mapy == yt2)
+          break;
 
-      if ((yintercept >> FRACBITS) == mapy)
+        if ((yintercept >> FRACBITS) == mapy)
         {
           yintercept += ystep;
           mapx += mapxstep;
         }
-      else
-        if ((xintercept >> FRACBITS) == mapx)
+        else
+          if ((xintercept >> FRACBITS) == mapx)
           {
             xintercept += xstep;
             mapy += mapystep;
           }
-    }
+      }
 
-  // go through the sorted list
-  return P_TraverseIntercepts(trav, FRACUNIT);
+      // go through the sorted list
+      return P_TraverseIntercepts(trav, FRACUNIT);
 }
 
 //
@@ -733,7 +733,6 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
 static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
 {
   mobj_t *link;
-  mobj_t *master;
   angle_t angle, minang, maxang;
 
   // pre-calculate fov check stuff since it
@@ -753,13 +752,6 @@ static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
       continue;
     }
 
-    // skip other players in co-op
-    if (netgame && !deathmatch && link->player)
-    {
-      link = link->bnext;
-      continue;
-    }
-
     // skip the projectile's owner
     if (link == mo->target)
     {
@@ -767,9 +759,21 @@ static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
       continue;
     }
 
-    // skip friendly actors if owner is friendly (or a player)
-    if ((link->flags & MF_FRIEND) && mo->target != NULL &&
-      ((mo->target->flags & MF_FRIEND) || mo->target->player))
+    // skip friendly actors if owner is friendly,
+    // except for other players during deathmatch.
+    if (mo->target &&
+      (link->flags & mo->target->flags & MF_FRIEND) &&
+      (!deathmatch || !link->player))
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // likewise, skip non-friendly actors if owner is non-friendly
+    // (unless explicitly targeting another non-friendly, so infighting works)
+    if (mo->target &&
+      !((link->flags ^ mo->target->flags) & MF_FRIEND) &&
+      mo->target->target != link)
     {
       link = link->bnext;
       continue;
