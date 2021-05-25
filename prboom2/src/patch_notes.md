@@ -64,7 +64,7 @@
 - Map coordinates are protected with strict mode
 - Crosshair target color / lock are protected with strict mode
 - Advanced hud tracers are protected with strict mode
-- Updated to umapinfo rev 1.6 (pr+)
+- Updated to umapinfo rev 2 (pr+)
 - Changed demo overwrite default to off
 - Removed deprecated laggy sleep option
 - Removed various unwelcome / secret configuration options
@@ -80,6 +80,7 @@
 - Added option to disable the quit game prompt
 - Added option to disable sound cutoffs (pr+)
 - Added Fireb3rt advanced hud layout option (pr+)
+- Added autoload directories (pr+)
 - Fixed missing small screen border for heretic
 - Fixed zoomed in heretic weapon heights
 - Fixed heretic scrolling floors also scrolling the ceiling
@@ -104,3 +105,4 @@
 - Fixed issue with windows dpi virtualization (pr+)
 - Fixed umapinfo musinfo (pr+)
 - Fixed umapinfo endbunny / endgame fields (pr+)
+- Fixed an issue with boom autoswitch (pr+)
