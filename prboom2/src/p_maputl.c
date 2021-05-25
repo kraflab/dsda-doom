@@ -727,7 +727,7 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
 
 //
 // RoughBlockCheck
-// [XA] adapted from Hexen -- used by P_RoughMonsterSearch
+// [XA] adapted from Hexen -- used by P_RoughTargetSearch
 //
 
 static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
@@ -805,12 +805,13 @@ static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
 }
 
 //
-// P_RoughMonsterSearch
+// P_RoughTargetSearch
 // Searches though the surrounding mapblocks for monsters/players
+// based on Hexen's P_RoughMonsterSearch
 //
 // distance is in MAPBLOCKUNITS
 
-mobj_t *P_RoughMonsterSearch(mobj_t *mo, angle_t fov, int distance)
+mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance)
 {
   int blockX;
   int blockY;

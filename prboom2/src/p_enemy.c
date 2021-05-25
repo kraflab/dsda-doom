@@ -3278,7 +3278,7 @@ void A_FindTracer(mobj_t *actor)
   fov  = FixedToAngle(actor->state->args[0]);
   dist =             (actor->state->args[1]);
 
-  actor->tracer = P_RoughMonsterSearch(actor, fov, dist);
+  actor->tracer = P_RoughTargetSearch(actor, fov, dist);
 }
 
 //
