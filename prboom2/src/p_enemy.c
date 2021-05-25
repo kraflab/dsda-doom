@@ -3258,7 +3258,7 @@ void A_SeekTracer(mobj_t *actor)
   threshold    = FixedToAngle(actor->state->args[0]);
   maxturnangle = FixedToAngle(actor->state->args[1]);
 
-  P_SeekerMissile(actor, threshold, maxturnangle, true, true);
+  P_SeekerMissile(actor, &actor->tracer, threshold, maxturnangle, true);
 }
 
 //
@@ -3793,7 +3793,7 @@ void A_MummyAttack2(mobj_t * actor)
 
 void A_MummyFX1Seek(mobj_t * actor)
 {
-    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 20, false, false);
+    P_SeekerMissile(actor, &actor->special1.m, ANG1_X * 10, ANG1_X * 20, false);
 }
 
 void A_MummySoul(mobj_t * mummy)
@@ -4247,7 +4247,7 @@ void A_WhirlwindSeek(mobj_t * actor)
     {
         return;
     }
-    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 30, false, false);
+    P_SeekerMissile(actor, &actor->special1.m, ANG1_X * 10, ANG1_X * 30, false);
 }
 
 void A_HeadIceImpact(mobj_t * ice)
