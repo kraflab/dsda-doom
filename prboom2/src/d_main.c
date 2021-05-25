@@ -1448,7 +1448,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
 
 static const char *BaseName(const char *filename)
 {
-  char *basename;
+  const char *basename;
 
   basename = filename + strlen(filename) - 1;
 
@@ -1498,14 +1498,26 @@ static void AutoLoadWADs(const char *path)
     I_EndGlob(glob);
 }
 
+static const char *D_AutoLoadGameBase()
+{
+  return heretic ? "heretic-all" : "doom-all";
+}
+
+#define ALL_AUTOLOAD "all-all"
+
 // auto-loading of .wad files.
 
 static void D_AutoloadIWadDir()
 {
   char *autoload_dir;
 
-  // common auto-loaded files for all Doom flavors
-  autoload_dir = GetAutoloadDir("doom-all", true);
+  // common auto-loaded files for all games
+  autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
+  AutoLoadWADs(autoload_dir);
+  free(autoload_dir);
+
+  // common auto-loaded files for the game
+  autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
   AutoLoadWADs(autoload_dir);
   free(autoload_dir);
 
@@ -1554,12 +1566,17 @@ static void AutoLoadPatches(const char *path)
 
 // auto-loading of .deh files.
 
-static void D_AutoloadDehDir()
+static void D_AutoloadDehIWadDir()
 {
   char *autoload_dir;
 
-  // common auto-loaded files for all Doom flavors
-  autoload_dir = GetAutoloadDir("doom-all", true);
+  // common auto-loaded files for all games
+  autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
+  AutoLoadPatches(autoload_dir);
+  free(autoload_dir);
+
+  // common auto-loaded files for the game
+  autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
   AutoLoadPatches(autoload_dir);
   free(autoload_dir);
 
@@ -2013,7 +2030,7 @@ static void D_DoomMainSetup(void)
 
   // process deh files from autoload directory before deh in wads from -file parameter
 
-  D_AutoloadDehDir();
+  D_AutoloadDehIWadDir();
 
   if (!M_CheckParm ("-nodeh"))
     for (p = -1; (p = W_ListNumFromName("DEHACKED", p)) >= 0; )
