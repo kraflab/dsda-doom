@@ -166,12 +166,16 @@ static dboolean P_CheckRange(mobj_t *actor, fixed_t range)
 
 static dboolean P_CheckMeleeRange(mobj_t *actor)
 {
-  return P_CheckRange(
-    actor,
-    compatibility_level == doom_12_compatibility ?
-     MELEERANGE :
-     MELEERANGE - 20*FRACUNIT + actor->target->info->radius
-  );
+  int range;
+
+  if (mbf21 && actor->info->meleerange != NO_MELEERANGE)
+    range = actor->info->meleerange;
+  else if (compatibility_level == doom_12_compatibility)
+    range = MELEERANGE;
+  else
+    range = MELEERANGE - 20 * FRACUNIT + actor->target->info->radius;
+
+  return P_CheckRange(actor, range);
 }
 
 //
