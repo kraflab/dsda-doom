@@ -733,7 +733,6 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
 static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
 {
   mobj_t *link;
-  mobj_t *master;
   angle_t angle, minang, maxang;
 
   // pre-calculate fov check stuff since it
@@ -753,13 +752,6 @@ static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
       continue;
     }
 
-    // skip other players in co-op
-    if (netgame && !deathmatch && link->player)
-    {
-      link = link->bnext;
-      continue;
-    }
-
     // skip the projectile's owner
     if (link == mo->target)
     {
@@ -767,9 +759,11 @@ static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
       continue;
     }
 
-    // skip friendly actors if owner is friendly (or a player)
-    if ((link->flags & MF_FRIEND) && mo->target != NULL &&
-      ((mo->target->flags & MF_FRIEND) || mo->target->player))
+    // skip actors on the same "team", unless infighting or deathmatching
+    if (mo->target &&
+      !((link->flags ^ mo->target->flags) & MF_FRIEND) &&
+      mo->target->target != link &&
+      !(deathmatch && link->player && mo->target->player))
     {
       link = link->bnext;
       continue;

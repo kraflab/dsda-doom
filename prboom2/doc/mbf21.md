@@ -306,9 +306,11 @@ MBF21 defaults:
     - This function will no-op if the calling actor already has a tracer. To forcibly re-acquire a new tracer, call A_ClearTracer first.
     - This function uses a variant of Hexen's blockmap search algorithm (P_RoughMonsterSearch); refer to the implementation for specifics, but it's identical to Hexen's except for the rules for picking a valid target (in order of evaluation):
       - Actors without the SHOOTABLE flag are skipped
-      - Players are skipped in co-op multiplayer games
       - The projectile's owner (target) is skipped
-      - Friendly monsters will be skipped if missile is fired by a player or another friendly monster
+      - Actors on the same "team" are skipped (e.g. MF_FRIEND actors will not pick players or fellow MF_FRIENDs), with a few exceptions:
+        - If actors are infighting (i.e. candidate actor is projectile owner's target), actor will not be skipped
+        - Players will not be skipped in deathmatch
+          - This rule is to work around a weird quirk in MBF (namely, that players have MF_FRIEND set even in DM); ports with a robust "team" implementation may be able to do a smarter check here in general.
       - If the `fov` arg is nonzero, actors outside of an `fov`-degree cone, relative to the missile's angle, are skipped
       - Actors not in line-of-sight of the missile are skipped
 
