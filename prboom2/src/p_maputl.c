@@ -681,48 +681,48 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
       }
     else
       {
-      mapystep = 0;
-      partial = FRACUNIT;
-      xstep = 256*FRACUNIT;
+        mapystep = 0;
+        partial = FRACUNIT;
+        xstep = 256*FRACUNIT;
       }
 
-      xintercept = mapx1 + FixedMul(partial, xstep);
+  xintercept = mapx1 + FixedMul(partial, xstep);
 
-      // Step through map blocks.
-      // Count is present to prevent a round off error
-      // from skipping the break.
+  // Step through map blocks.
+  // Count is present to prevent a round off error
+  // from skipping the break.
 
-      mapx = xt1;
-      mapy = yt1;
+  mapx = xt1;
+  mapy = yt1;
 
-      for (count = 0; count < 64; count++)
-      {
-        if (flags & PT_ADDLINES)
-          if (!P_BlockLinesIterator(mapx, mapy,PIT_AddLineIntercepts))
-            return false; // early out
+  for (count = 0; count < 64; count++)
+    {
+      if (flags & PT_ADDLINES)
+        if (!P_BlockLinesIterator(mapx, mapy,PIT_AddLineIntercepts))
+          return false; // early out
 
-        if (flags & PT_ADDTHINGS)
-          if (!P_BlockThingsIterator(mapx, mapy,PIT_AddThingIntercepts))
-            return false; // early out
+      if (flags & PT_ADDTHINGS)
+        if (!P_BlockThingsIterator(mapx, mapy,PIT_AddThingIntercepts))
+          return false; // early out
 
-        if (mapx == xt2 && mapy == yt2)
-          break;
+      if (mapx == xt2 && mapy == yt2)
+        break;
 
-        if ((yintercept >> FRACBITS) == mapy)
+      if ((yintercept >> FRACBITS) == mapy)
         {
           yintercept += ystep;
           mapx += mapxstep;
         }
-        else
-          if ((xintercept >> FRACBITS) == mapx)
+      else
+        if ((xintercept >> FRACBITS) == mapx)
           {
             xintercept += xstep;
             mapy += mapystep;
           }
-      }
+    }
 
-      // go through the sorted list
-      return P_TraverseIntercepts(trav, FRACUNIT);
+  // go through the sorted list
+  return P_TraverseIntercepts(trav, FRACUNIT);
 }
 
 //
