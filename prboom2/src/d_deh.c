@@ -1065,7 +1065,7 @@ typedef struct
 // killough 8/9/98: make DEH_BLOCKMAX self-adjusting
 #define DEH_BLOCKMAX (sizeof(deh_blocks) / sizeof(*deh_blocks))  // size of array
 #define DEH_MAXKEYLEN 32 // as much of any key as we'll look at
-#define DEH_MOBJINFOMAX 31 // number of mobjinfo configuration keys
+#define DEH_MOBJINFOMAX 32 // number of mobjinfo configuration keys
 
 // Put all the block header values, and the function to be called when that
 // one is encountered, in this array:
@@ -1139,6 +1139,7 @@ static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
   "MBF21 Bits",          // .flags2
   "Rip sound",           // .ripsound
   "Fast speed",          // .altspeed
+  "Melee range",         // .meleerange
 };
 
 // Strings that are used to indicate flags ("Bits" in mobjinfo)
@@ -1489,7 +1490,7 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_SpawnObject,         "A_SpawnObject", 8},
   {A_MonsterProjectile,   "A_MonsterProjectile", 5},
   {A_MonsterBulletAttack, "A_MonsterBulletAttack", 5, {0, 0, 1, 3, 5}},
-  {A_MonsterMeleeAttack,  "A_MonsterMeleeAttack", 4, {3, 8, 0, MELEERANGE}},
+  {A_MonsterMeleeAttack,  "A_MonsterMeleeAttack", 4, {3, 8, 0, 0}},
   {A_RadiusDamage,        "A_RadiusDamage", 2},
   {A_NoiseAlert,          "A_NoiseAlert", 0},
   {A_HealChase,           "A_HealChase", 2},
@@ -1506,7 +1507,7 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_RemoveFlags,         "A_RemoveFlags", 2},
   {A_WeaponProjectile,    "A_WeaponProjectile", 5},
   {A_WeaponBulletAttack,  "A_WeaponBulletAttack", 5, {0, 0, 1, 5, 3}},
-  {A_WeaponMeleeAttack,   "A_WeaponMeleeAttack", 5, {2, 10, 1 * FRACUNIT, 0, MELEERANGE}},
+  {A_WeaponMeleeAttack,   "A_WeaponMeleeAttack", 5, {2, 10, 1 * FRACUNIT, 0, 0}},
   {A_WeaponSound,         "A_WeaponSound", 2},
   {A_WeaponAlert,         "A_WeaponAlert", 0},
   {A_WeaponJump,          "A_WeaponJump", 2},
@@ -1981,6 +1982,7 @@ static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
       return;
     case 29: mi->ripsound = (int)value; return;
     case 30: mi->altspeed = (int)value; return;
+    case 31: mi->meleerange = (int)value; return;
 
     default: return;
   }

@@ -132,6 +132,14 @@ In this example:
 - Add `Fast speed = X` in the Thing definition.
 - `X` has the same units as the normal `Speed` field.
 
+#### Melee range
+- [PR](https://github.com/kraflab/dsda-doom/pull/46)
+- Sets the range at which a monster will initiate a melee attack.
+- Also affects the range for vanilla melee attack codepointers, e.g. A_SargAttack, A_TroopAttack, etc.
+  - Similarly, adjusting the player mobj's melee range will adjust the range of A_Punch and A_Saw
+- Add `Melee range = X` in the Thing definition.
+- `X` is in fixed point, like the Radius and Height fields
+
 ## Weapons
 
 #### Weapon Flags
@@ -265,7 +273,7 @@ MBF21 defaults:
     - `damagebase (int)`: Base damage of attack; if not set, defaults to 3
     - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 8
     - `sound (uint)`: Sound to play if attack hits
-    - `range (fixed)`: Attack range; if not set, defaults to 64.0
+    - `range (fixed)`: Attack range; if not set, defaults to calling actor's melee range property
   - Notes:
     - Damage formula is: `damage = (damagebase * random(1, damagedice))`
 
@@ -415,7 +423,7 @@ MBF21 defaults:
     - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 10
     - `zerkfactor (fixed)`: Berserk damage multiplier; if not set, defaults to 1.0
     - `sound (uint)`: Sound to play if attack hits
-    - `range (fixed)`: Attack range; if not set, defaults to 64.0
+    - `range (fixed)`: Attack range; if not set, defaults to player mobj's melee range property
   - Notes:
     - Damage formula is: `damage = (damagebase * random(1, damagedice))`; this is then multiplied by `zerkfactor` if the player has Berserk.
 

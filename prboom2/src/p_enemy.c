@@ -166,12 +166,14 @@ static dboolean P_CheckRange(mobj_t *actor, fixed_t range)
 
 static dboolean P_CheckMeleeRange(mobj_t *actor)
 {
-  return P_CheckRange(
-    actor,
-    compatibility_level == doom_12_compatibility ?
-     MELEERANGE :
-     MELEERANGE - 20*FRACUNIT + actor->target->info->radius
-  );
+  int range;
+
+  range = actor->info->meleerange;
+
+  if (compatibility_level != doom_12_compatibility)
+    range += actor->target->info->radius - 20 * FRACUNIT;
+
+  return P_CheckRange(actor, range);
 }
 
 //
@@ -717,9 +719,9 @@ static void P_NewChaseDir(mobj_t *actor)
           actor->info->missilestate &&
           actor->type != MT_SKULL &&
           (
-            (!target->info->missilestate && dist < MELEERANGE*2) ||
+            (!target->info->missilestate && dist < target->info->meleerange*2) ||
             (
-              target->player && dist < MELEERANGE*3 &&
+              target->player && dist < target->player->mo->info->meleerange*3 &&
               weaponinfo[target->player->readyweapon].flags & WPF_FLEEMELEE
             )
           )
@@ -754,7 +756,7 @@ static dboolean P_IsVisible(mobj_t *actor, mobj_t *mo, dboolean allaround)
       angle_t an = R_PointToAngle2(actor->x, actor->y,
            mo->x, mo->y) - actor->angle;
       if (an > ANG90 && an < ANG270 &&
-    P_AproxDistance(mo->x-actor->x, mo->y-actor->y) > MELEERANGE)
+    P_AproxDistance(mo->x-actor->x, mo->y-actor->y) > WAKEUPRANGE)
   return false;
     }
   return P_CheckSight(actor, mo);
@@ -3171,7 +3173,7 @@ void A_MonsterBulletAttack(mobj_t *actor)
 //   args[0]: Base damage of attack (e.g. for 3d8, customize the 3); if not set, defaults to 3
 //   args[1]: Attack damage modulus (e.g. for 3d8, customize the 8); if not set, defaults to 8
 //   args[2]: Sound to play if attack hits
-//   args[3]: Range (fixed point); if not set, defaults to MELEERANGE (64.0)
+//   args[3]: Range (fixed point); if not set, defaults to monster's melee range
 //
 void A_MonsterMeleeAttack(mobj_t *actor)
 {
@@ -3186,8 +3188,13 @@ void A_MonsterMeleeAttack(mobj_t *actor)
   hitsound   = actor->state->args[2];
   range      = actor->state->args[3];
 
+  if (range == 0)
+    range = actor->info->meleerange;
+
+  range += actor->target->info->radius - 20 * FRACUNIT;
+
   A_FaceTarget(actor);
-  if (!P_CheckRange(actor, range + actor->target->info->radius))
+  if (!P_CheckRange(actor, range))
     return;
 
   S_StartSound(actor, hitsound);
@@ -4858,14 +4865,14 @@ dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
                 dist = P_AproxDistance(player->mo->x - actor->x,
                                        player->mo->y - actor->y);
                 // if real close, react anyway
-                if (dist > MELEERANGE)
+                if (dist > WAKEUPRANGE)
                     continue;   // behind back
             }
         }
         if (player->mo->flags & MF_SHADOW)
         {                       // Player is invisible
             if ((P_AproxDistance(player->mo->x - actor->x,
-                                 player->mo->y - actor->y) > 2 * MELEERANGE)
+                                 player->mo->y - actor->y) > SNEAKRANGE)
                 && P_AproxDistance(player->mo->momx, player->mo->momy)
                 < 5 * FRACUNIT)
             {                   // Player is sneaking - can't detect
