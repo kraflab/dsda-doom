@@ -3243,6 +3243,57 @@ void A_HealChase(mobj_t* actor)
 }
 
 //
+// A_SeekTracer
+// A parameterized seeker missile function.
+//   args[0]: direct-homing threshold angle (degrees, in fixed point)
+//   args[1]: maximum turn angle (degrees, in fixed point)
+//
+void A_SeekTracer(mobj_t *actor)
+{
+  angle_t threshold, maxturnangle;
+
+  if (!mbf21 || !actor)
+    return;
+
+  threshold    = FixedToAngle(actor->state->args[0]);
+  maxturnangle = FixedToAngle(actor->state->args[1]);
+
+  P_SeekerMissile(actor, &actor->tracer, threshold, maxturnangle, true);
+}
+
+//
+// A_FindTracer
+// Search for a valid tracer (seek target), if the calling actor doesn't already have one.
+//   args[0]: field-of-view to search in (degrees, in fixed point); if zero, will search in all directions
+//   args[1]: distance to search (map blocks, i.e. 128 units)
+//
+void A_FindTracer(mobj_t *actor)
+{
+  angle_t fov;
+  int dist;
+
+  if (!mbf21 || !actor || actor->tracer)
+    return;
+
+  fov  = FixedToAngle(actor->state->args[0]);
+  dist =             (actor->state->args[1]);
+
+  actor->tracer = P_RoughTargetSearch(actor, fov, dist);
+}
+
+//
+// A_ClearTracer
+// Clear current tracer (seek target).
+//
+void A_ClearTracer(mobj_t *actor)
+{
+  if (!mbf21 || !actor)
+    return;
+
+  actor->tracer = NULL;
+}
+
+//
 // A_JumpIfHealthBelow
 // Jumps to a state if caller's health is below the specified threshold.
 //   args[0]: State to jump to
@@ -3298,6 +3349,45 @@ void A_JumpIfTargetCloser(mobj_t* actor)
 
   if (distance > P_AproxDistance(actor->x - actor->target->x,
                                  actor->y - actor->target->y))
+    P_SetMobjState(actor, state);
+}
+
+//
+// A_JumpIfTracerInSight
+// Jumps to a state if caller's tracer (seek target) is in line-of-sight.
+//   args[0]: State to jump to
+//
+void A_JumpIfTracerInSight(mobj_t* actor)
+{
+  int state;
+
+  if (!mbf21 || !actor || !actor->tracer)
+    return;
+
+  state = actor->state->args[0];
+
+  if (P_CheckSight(actor, actor->tracer))
+    P_SetMobjState(actor, state);
+}
+
+//
+// A_JumpIfTracerCloser
+// Jumps to a state if caller's tracer (seek target) is closer than the specified distance.
+//   args[0]: State to jump to
+//   args[1]: Distance threshold (fixed point)
+//
+void A_JumpIfTracerCloser(mobj_t* actor)
+{
+  int state, distance;
+
+  if (!mbf21 || !actor || !actor->tracer)
+    return;
+
+  state    = actor->state->args[0];
+  distance = actor->state->args[1];
+
+  if (distance > P_AproxDistance(actor->x - actor->tracer->x,
+                                 actor->y - actor->tracer->y))
     P_SetMobjState(actor, state);
 }
 
@@ -3703,7 +3793,7 @@ void A_MummyAttack2(mobj_t * actor)
 
 void A_MummyFX1Seek(mobj_t * actor)
 {
-    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 20);
+    P_SeekerMissile(actor, &actor->special1.m, ANG1_X * 10, ANG1_X * 20, false);
 }
 
 void A_MummySoul(mobj_t * mummy)
@@ -4157,7 +4247,7 @@ void A_WhirlwindSeek(mobj_t * actor)
     {
         return;
     }
-    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 30);
+    P_SeekerMissile(actor, &actor->special1.m, ANG1_X * 10, ANG1_X * 30, false);
 }
 
 void A_HeadIceImpact(mobj_t * ice)

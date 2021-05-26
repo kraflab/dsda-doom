@@ -725,6 +725,190 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
   return P_TraverseIntercepts(trav, FRACUNIT);
 }
 
+//
+// RoughBlockCheck
+// [XA] adapted from Hexen -- used by P_RoughTargetSearch
+//
+
+static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
+{
+  mobj_t *link;
+  angle_t angle, minang, maxang;
+
+  // pre-calculate fov check stuff since it
+  // won't change during the blocklinks loop
+  if (fov > 0) {
+    minang = mo->angle - fov / 2;
+    maxang = mo->angle + fov / 2;
+  }
+
+  link = blocklinks[index];
+  while (link)
+  {
+    // skip non-shootable actors
+    if (!(link->flags & MF_SHOOTABLE))
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // skip the projectile's owner
+    if (link == mo->target)
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // skip actors on the same "team", unless infighting or deathmatching
+    if (mo->target &&
+      !((link->flags ^ mo->target->flags) & MF_FRIEND) &&
+      mo->target->target != link &&
+      !(deathmatch && link->player && mo->target->player))
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // skip actors outside of specified FOV
+    // [XA] code borrowed from EE; thanks Quas :D
+    if (fov > 0)
+    {
+      angle = R_PointToAngle2(mo->x, mo->y, link->x, link->y);
+      // if the angles are backward, compare differently
+      if((minang > maxang) ? angle < minang && angle > maxang
+                           : angle < minang || angle > maxang)
+      {
+        link = link->bnext;
+        continue;
+      }
+    }
+
+    // skip actors not in line of sight
+    if (!P_CheckSight(mo, link))
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // all good! return it.
+    return link;
+  }
+
+  // couldn't find a valid target
+  return NULL;
+}
+
+//
+// P_RoughTargetSearch
+// Searches though the surrounding mapblocks for monsters/players
+// based on Hexen's P_RoughMonsterSearch
+//
+// distance is in MAPBLOCKUNITS
+
+mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance)
+{
+  int blockX;
+  int blockY;
+  int startX, startY;
+  int blockIndex;
+  int firstStop;
+  int secondStop;
+  int thirdStop;
+  int finalStop;
+  int count;
+  mobj_t *target;
+
+  startX = (mo->x - bmaporgx) >> MAPBLOCKSHIFT;
+  startY = (mo->y - bmaporgy) >> MAPBLOCKSHIFT;
+
+  if (startX >= 0 && startX < bmapwidth && startY >= 0 && startY < bmapheight)
+  {
+    if (target = RoughBlockCheck(mo, startY*bmapwidth + startX, fov))
+    { // found a target right away
+      return target;
+    }
+  }
+  for (count = 1; count <= distance; count++)
+  {
+    blockX = startX - count;
+    blockY = startY - count;
+
+    if (blockY < 0)
+    {
+      blockY = 0;
+    }
+    else if (blockY >= bmapheight)
+    {
+      blockY = bmapheight - 1;
+    }
+    if (blockX < 0)
+    {
+      blockX = 0;
+    }
+    else if (blockX >= bmapwidth)
+    {
+      blockX = bmapwidth - 1;
+    }
+    blockIndex = blockY * bmapwidth + blockX;
+    firstStop = startX + count;
+    if (firstStop < 0)
+    {
+      continue;
+    }
+    if (firstStop >= bmapwidth)
+    {
+      firstStop = bmapwidth - 1;
+    }
+    secondStop = startY + count;
+    if (secondStop < 0)
+    {
+      continue;
+    }
+    if (secondStop >= bmapheight)
+    {
+      secondStop = bmapheight - 1;
+    }
+    thirdStop = secondStop * bmapwidth + blockX;
+    secondStop = secondStop * bmapwidth + firstStop;
+    firstStop += blockY * bmapwidth;
+    finalStop = blockIndex;
+
+    // Trace the first block section (along the top)
+    for (; blockIndex <= firstStop; blockIndex++)
+    {
+      if (target = RoughBlockCheck(mo, blockIndex, fov))
+      {
+        return target;
+      }
+    }
+    // Trace the second block section (right edge)
+    for (blockIndex--; blockIndex <= secondStop; blockIndex += bmapwidth)
+    {
+      if (target = RoughBlockCheck(mo, blockIndex, fov))
+      {
+        return target;
+      }
+    }
+    // Trace the third block section (bottom edge)
+    for (blockIndex -= bmapwidth; blockIndex >= thirdStop; blockIndex--)
+    {
+      if (target = RoughBlockCheck(mo, blockIndex, fov))
+      {
+        return target;
+      }
+    }
+    // Trace the final block section (left edge)
+    for (blockIndex++; blockIndex > finalStop; blockIndex -= bmapwidth)
+    {
+      if (target = RoughBlockCheck(mo, blockIndex, fov))
+      {
+        return target;
+      }
+    }
+  }
+  return NULL;
+}
+
 // MAES: support 512x512 blockmaps.
 int P_GetSafeBlockX(int coord)
 {

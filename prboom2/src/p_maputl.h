@@ -85,6 +85,9 @@ dboolean P_BlockThingsIterator(int x, int y, dboolean func(mobj_t *));
 dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
                        int flags, dboolean trav(intercept_t *));
 
+angle_t P_PointToAngle(fixed_t xo, fixed_t yo, fixed_t x, fixed_t y);
+mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance);
+
 // MAES: support 512x512 blockmaps.
 int P_GetSafeBlockX(int coord);
 int P_GetSafeBlockY(int coord);

@@ -1181,6 +1181,11 @@ void A_WeaponProjectile(player_t *player, pspdef_t *psp)
   mo->x += FixedMul(spawnofs_xy, finecosine[an]);
   mo->y += FixedMul(spawnofs_xy, finesine[an]);
   mo->z += spawnofs_z;
+
+  // set tracer to the player's autoaim target,
+  // so player seeker missiles prioritizing the
+  // baddie the player is actually aiming at. ;)
+  mo->tracer = linetarget;
 }
 
 //
@@ -2024,7 +2029,7 @@ void A_FireSkullRodPL2(player_t * player, pspdef_t * psp)
 
 void A_SkullRodPL2Seek(mobj_t * actor)
 {
-    P_SeekerMissile(actor, ANG1_X * 10, ANG1_X * 30);
+    P_SeekerMissile(actor, &actor->special1.m, ANG1_X * 10, ANG1_X * 30, false);
 }
 
 void A_AddPlayerRain(mobj_t * actor)
@@ -2156,7 +2161,7 @@ void A_PhoenixPuff(mobj_t * actor)
     mobj_t *puff;
     angle_t angle;
 
-    P_SeekerMissile(actor, ANG1_X * 5, ANG1_X * 10);
+    P_SeekerMissile(actor, &actor->special1.m, ANG1_X * 5, ANG1_X * 10, false);
     puff = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_PHOENIXPUFF);
     angle = actor->angle + ANG90;
     angle >>= ANGLETOFINESHIFT;

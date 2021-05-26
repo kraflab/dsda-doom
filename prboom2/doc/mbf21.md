@@ -207,7 +207,7 @@ MBF21 defaults:
 - For future-proofing, if more nonzero args are defined on a state than its action pointer expects (e.g. defining Args3 on a state that uses A_WeaponSound), an error will be thrown on startup.
 
 #### New DEHACKED Codepointers
-- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38), [PR](https://github.com/kraflab/dsda-doom/pull/40), [PR](https://github.com/kraflab/dsda-doom/pull/41)
+- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38), [PR](https://github.com/kraflab/dsda-doom/pull/40), [PR](https://github.com/kraflab/dsda-doom/pull/41), [PR](https://github.com/kraflab/dsda-doom/pull/45)
 - All new MBF21 pointers use the new "Args" fields for params, rather than misc1/misc2 fields
 - Arg fields are listed in order in the docs below, e.g. for `A_SpawnObject`, `type` is Args1, `angle` is Args2, etc.
 - Although all args are integers internally, there are effectively the following types of args:
@@ -285,6 +285,39 @@ MBF21 defaults:
     - `state (uint)`: State to jump to on the calling actor when resurrecting a corpse
     - `sound (uint)`: Sound to play when resurrecting a corpse
 
+- **A_SeekTracer(threshold, maxturnangle)**
+  - Generic seeker missile function.
+  - Args:
+    - `threshold (fixed)`: If angle to target is lower than this, missile will 'snap' directly to face the target
+    - `maxturnangle (fixed)`: Maximum angle a missile will turn towards the target if angle is above the threshold
+  - Notes:
+    - When using this function, keep in mind that seek 'strength' also depends on how often this function is called -- e.g. calling `A_SeekTracer` every tic will result in a much more aggressive seek than calling it every 4 tics, even if the args are the same
+    - This function uses Heretic's seeker missile logic (P_SeekerMissile), rather than Doom's, with two notable changes:
+      - The actor's `tracer` pointer is used as the seek target, rather than Heretic's `special1` field
+      - On the z-axis, the missile will seek towards the vertical centerpoint of the seek target, rather than the bottom (resulting in much friendly behavior when seeking toward enemies on high ledges). Refer to the implementation for details.
+
+- **A_FindTracer(fov, distance)**
+  - Searches for a valid tracer (seek target), if the calling actor doesn't already have one. Particularly useful for player missiles.
+  - Args:
+    - `fov (fixed)`: Field-of-view, relative to calling actor's angle, to search for targets in. If zero, the search will occur in all directions.
+    - `distance (int)`: Distance to search, in map blocks (128 units); if not set, defaults to 10. Setting this value too high may hurt performance, so don't get overzealous.
+  - Notes:
+    - This function is intended for use on player-fired missiles; it may not produce particularly useful results if used on a monster projectile.
+    - This function will no-op if the calling actor already has a tracer. To forcibly re-acquire a new tracer, call A_ClearTracer first.
+    - This function uses a variant of Hexen's blockmap search algorithm (P_RoughMonsterSearch); refer to the implementation for specifics, but it's identical to Hexen's except for the rules for picking a valid target (in order of evaluation):
+      - Actors without the SHOOTABLE flag are skipped
+      - The projectile's owner (target) is skipped
+      - Actors on the same "team" are skipped (e.g. MF_FRIEND actors will not pick players or fellow MF_FRIENDs), with a few exceptions:
+        - If actors are infighting (i.e. candidate actor is projectile owner's target), actor will not be skipped
+        - Players will not be skipped in deathmatch
+          - This rule is to work around a weird quirk in MBF (namely, that players have MF_FRIEND set even in DM); ports with a robust "team" implementation may be able to do a smarter check here in general.
+      - If the `fov` arg is nonzero, actors outside of an `fov`-degree cone, relative to the missile's angle, are skipped
+      - Actors not in line-of-sight of the missile are skipped
+
+- **A_ClearTracer**
+  - Clears the calling actor's tracer (seek target) field.
+  - No Args.
+
 - **A_JumpIfHealthBelow(state, health)**
   - Jumps to a state if caller's health is below the specified threshold.
   - Args:
@@ -308,6 +341,22 @@ MBF21 defaults:
   - Notes:
     - This function uses the same approximate distance check as other functions in the game (P_AproxDistance).
     - The jump will only occur if distance is BELOW the given value -- e.g. `A_JumpIfTargetCloser(420, 69)` will jump to state 420 if distance is 68 or lower.
+
+- **A_JumpIfTracerInSight(state)**
+  - Jumps to a state if caller's tracer (seek target) is in line-of-sight.
+  - Args:
+    - `state (uint)`: State to jump to
+  - Notes:
+    - This function only considers line-of-sight, i.e. independent of calling actor's facing direction.
+
+- **A_JumpIfTracerCloser(state, distance)**
+  - Jumps to a state if caller's tracer (seek target) is closer than the specified distance.
+  - Args:
+    - `state (uint)`: State to jump to
+    - `distance (fixed)`: Distance threshold, in map units
+  - Notes:
+    - This function uses the same approximate distance check as other functions in the game (P_AproxDistance).
+    - The jump will only occur if distance is BELOW the given value -- e.g. `A_JumpIfTracerCloser(420, 69)` will jump to state 420 if distance is 68 or lower.
 
 - **A_JumpIfFlagsSet(state, flags, flags2)**
   - Jumps to a state if caller has the specified thing flags set.
@@ -343,6 +392,7 @@ MBF21 defaults:
   - Notes:
     - Unlike native Doom attack codepointers, this function will not consume ammo, trigger the Flash state, or play a sound.
     - The `pitch` arg uses the same approximated pitch calculation that Doom's monster aim / autoaim uses. Refer to the implementation for specifics.
+    - The spawned projectile's `tracer` pointer is set to the player's autoaim target, if available.
 
 - **A_WeaponBulletAttack(hspread, vspread, numbullets, damagebase, damagedice)**
   - Generic weapon bullet attack.

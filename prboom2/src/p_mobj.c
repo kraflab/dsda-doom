@@ -2232,7 +2232,7 @@ void P_ThrustMobj(mobj_t * mo, angle_t angle, fixed_t move)
     mo->momy += FixedMul(move, finesine[angle]);
 }
 
-dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax)
+dboolean P_SeekerMissile(mobj_t * actor, mobj_t ** seekTarget, angle_t thresh, angle_t turnMax, dboolean seekcenter)
 {
     int dir;
     int dist;
@@ -2240,14 +2240,14 @@ dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax)
     angle_t angle;
     mobj_t *target;
 
-    target = (mobj_t *) actor->special1.m;
+    target = *seekTarget;
     if (target == NULL)
     {
         return (false);
     }
     if (!(target->flags & MF_SHOOTABLE))
     {                           // Target died
-        actor->special1.m = NULL;
+        *seekTarget = NULL;
         return (false);
     }
     dir = P_FaceMobj(actor, target, &delta);
@@ -2271,7 +2271,7 @@ dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax)
     actor->momx = FixedMul(actor->info->speed, finecosine[angle]);
     actor->momy = FixedMul(actor->info->speed, finesine[angle]);
     if (actor->z + actor->height < target->z ||
-        target->z + target->height < actor->z)
+        target->z + target->height < actor->z || seekcenter)
     {                           // Need to seek vertically
         dist = P_AproxDistance(target->x - actor->x, target->y - actor->y);
         dist = dist / actor->info->speed;
@@ -2279,7 +2279,7 @@ dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax)
         {
             dist = 1;
         }
-        actor->momz = (target->z - actor->z) / dist;
+        actor->momz = (target->z + (seekcenter ? target->height/2 : 0) - actor->z) / dist;
     }
     return (true);
 }
