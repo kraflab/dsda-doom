@@ -23,6 +23,7 @@
 #include "d_items.h"
 #include "p_inter.h"
 #include "p_spec.h"
+#include "p_map.h"
 #include "sounds.h"
 #include "d_main.h"
 #include "v_video.h"
@@ -260,7 +261,7 @@ static void dsda_InitDoom(void) {
     mobjinfo[i].splash_group = SG_DEFAULT;
     mobjinfo[i].ripsound = sfx_None;
     mobjinfo[i].altspeed = NO_ALTSPEED;
-    mobjinfo[i].meleerange = NO_MELEERANGE; // don't set directly to MELEERANGE, since default behavior has a compatibility fallback
+    mobjinfo[i].meleerange = MELEERANGE;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
@@ -404,7 +405,7 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].splash_group = SG_DEFAULT;
     mobjinfo[j].ripsound = heretic_sfx_None;
     mobjinfo[j].altspeed = NO_ALTSPEED;
-    mobjinfo[i].meleerange = NO_MELEERANGE; // don't set directly to MELEERANGE, since default behavior has a compatibility fallback
+    mobjinfo[j].meleerange = MELEERANGE;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
