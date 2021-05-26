@@ -723,7 +723,7 @@ void A_GunFlash(player_t *player, pspdef_t *psp)
 void A_Punch(player_t *player, pspdef_t *psp)
 {
   angle_t angle;
-  int t, slope, damage;
+  int t, slope, damage, range;
 
   CHECK_WEAPON_CODEPOINTER("A_Punch", player);
 
@@ -738,13 +738,15 @@ void A_Punch(player_t *player, pspdef_t *psp)
   t = P_Random(pr_punchangle);
   angle += (t - P_Random(pr_punchangle))<<18;
 
+  range = (mbf21 ? player->mo->info->meleerange : MELEERANGE);
+
   /* killough 8/2/98: make autoaiming prefer enemies */
   if (!mbf_features ||
-      (slope = P_AimLineAttack(player->mo, angle, MELEERANGE, MF_FRIEND),
+      (slope = P_AimLineAttack(player->mo, angle, range, MF_FRIEND),
        !linetarget))
-    slope = P_AimLineAttack(player->mo, angle, MELEERANGE, 0);
+    slope = P_AimLineAttack(player->mo, angle, range, 0);
 
-  P_LineAttack(player->mo, angle, MELEERANGE, slope, damage);
+  P_LineAttack(player->mo, angle, range, slope, damage);
 
   if (!linetarget)
     return;
@@ -764,7 +766,7 @@ void A_Punch(player_t *player, pspdef_t *psp)
 
 void A_Saw(player_t *player, pspdef_t *psp)
 {
-  int slope, damage;
+  int slope, damage, range;
   angle_t angle;
   int t;
 
@@ -776,14 +778,16 @@ void A_Saw(player_t *player, pspdef_t *psp)
   t = P_Random(pr_saw);
   angle += (t - P_Random(pr_saw))<<18;
 
-  /* Use meleerange + 1 so that the puff doesn't skip the flash
-   * killough 8/2/98: make autoaiming prefer enemies */
-  if (!mbf_features ||
-      (slope = P_AimLineAttack(player->mo, angle, MELEERANGE+1, MF_FRIEND),
-       !linetarget))
-    slope = P_AimLineAttack(player->mo, angle, MELEERANGE+1, 0);
+  // Use meleerange + 1 so that the puff doesn't skip the flash
+  range = (mbf21 ? player->mo->info->meleerange : MELEERANGE) + 1;
 
-  P_LineAttack(player->mo, angle, MELEERANGE+1, slope, damage);
+  /* killough 8/2/98: make autoaiming prefer enemies */
+  if (!mbf_features ||
+      (slope = P_AimLineAttack(player->mo, angle, range, MF_FRIEND),
+       !linetarget))
+    slope = P_AimLineAttack(player->mo, angle, range, 0);
+
+  P_LineAttack(player->mo, angle, range, slope, damage);
 
   if (!linetarget)
     {
@@ -1232,7 +1236,7 @@ void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
 //   args[1]: Attack damage modulus (e.g. for 2d10, customize the 10); if not set, defaults to 10
 //   args[2]: Berserk damage multiplier (fixed point); if not set, defaults to 1.0 (no change).
 //   args[3]: Sound to play if attack hits
-//   args[4]: Range (fixed point); if not set, defaults to MELEERANGE (64.0)
+//   args[4]: Range (fixed point); if not set, defaults to player mobj's melee range
 //
 void A_WeaponMeleeAttack(player_t *player, pspdef_t *psp)
 {
@@ -1250,6 +1254,9 @@ void A_WeaponMeleeAttack(player_t *player, pspdef_t *psp)
   zerkfactor = psp->state->args[2];
   hitsound   = psp->state->args[3];
   range      = psp->state->args[4];
+
+  if (range == 0)
+    range = player->mo->info->meleerange;
 
   damage = (P_Random(pr_mbf21) % damagemod + 1) * damagebase;
   if (player->powers[pw_strength])
