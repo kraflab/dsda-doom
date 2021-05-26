@@ -3329,7 +3329,7 @@ void A_JumpIfTargetInSight(mobj_t* actor)
 {
   int state;
 
-  if (!mbf21 || !actor)
+  if (!mbf21 || !actor || !actor->target)
     return;
 
   state = actor->state->args[0];
@@ -3348,7 +3348,7 @@ void A_JumpIfTargetCloser(mobj_t* actor)
 {
   int state, distance;
 
-  if (!mbf21 || !actor)
+  if (!mbf21 || !actor || !actor->target)
     return;
 
   state    = actor->state->args[0];
