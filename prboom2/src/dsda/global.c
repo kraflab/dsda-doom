@@ -23,6 +23,7 @@
 #include "d_items.h"
 #include "p_inter.h"
 #include "p_spec.h"
+#include "p_map.h"
 #include "sounds.h"
 #include "d_main.h"
 #include "v_video.h"
