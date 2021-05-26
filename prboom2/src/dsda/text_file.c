@@ -129,7 +129,7 @@ void dsda_ExportTextFile(void) {
   name = dsda_TextFileName();
 
   if (!name)
-    I_Error("Cannot export text file without demo playback");
+    return;
 
   file = fopen(name, "wb");
   free(name);
