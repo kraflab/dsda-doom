@@ -3175,7 +3175,7 @@ void A_MonsterBulletAttack(mobj_t *actor)
 //   args[0]: Base damage of attack (e.g. for 3d8, customize the 3); if not set, defaults to 3
 //   args[1]: Attack damage modulus (e.g. for 3d8, customize the 8); if not set, defaults to 8
 //   args[2]: Sound to play if attack hits
-//   args[3]: Range (fixed point); if not set, defaults to MELEERANGE (64.0)
+//   args[3]: Range (fixed point); if not set, defaults to monster's meleerange property (or MELEERANGE (64.0) if that's unset too)
 //
 void A_MonsterMeleeAttack(mobj_t *actor)
 {
@@ -3189,6 +3189,9 @@ void A_MonsterMeleeAttack(mobj_t *actor)
   damagemod  = actor->state->args[1];
   hitsound   = actor->state->args[2];
   range      = actor->state->args[3];
+
+  if (range == 0)
+    range = (actor->info->meleerange == NO_MELEERANGE) ? MELEERANGE : actor->info->meleerange;
 
   A_FaceTarget(actor);
   if (!P_CheckRange(actor, range + actor->target->info->radius))

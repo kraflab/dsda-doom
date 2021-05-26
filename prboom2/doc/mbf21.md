@@ -265,7 +265,7 @@ MBF21 defaults:
     - `damagebase (int)`: Base damage of attack; if not set, defaults to 3
     - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 8
     - `sound (uint)`: Sound to play if attack hits
-    - `range (fixed)`: Attack range; if not set, defaults to 64.0
+    - `range (fixed)`: Attack range; if not set, defaults to monster's meleerange property (or 64.0 if that's not set either)
   - Notes:
     - Damage formula is: `damage = (damagebase * random(1, damagedice))`
 
