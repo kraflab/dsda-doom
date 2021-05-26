@@ -70,6 +70,7 @@
 - Removed various unwelcome / secret configuration options
 - Removed option to turn demo footer off
 - Removed 15 & 16 bit renderers
+- Removed obsolete weapon toggle setting
 - Added default map name fallback to automap
 - Added comp_respawnfix alias for cross-port OPTIONS support (EE)
 - Added option to hide the heretic hud horns

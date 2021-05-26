@@ -352,8 +352,6 @@ extern int help_friends;
 
 extern int flashing_hom; // killough 10/98
 
-extern int doom_weapon_toggles;   // killough 10/98
-
 /* killough 7/19/98: whether monsters should fight against each other */
 extern int monster_infighting;
 

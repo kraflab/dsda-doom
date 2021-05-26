@@ -4165,13 +4165,13 @@ dboolean G_CheckDemoStatus (void)
       lprintf(LO_INFO, "Timed %u gametics in %u realtics = %-.1f frames per second\n",
                (unsigned) gametic,realtics,
                (unsigned) gametic * (double) TICRATE / realtics);
-      exit(0);
+      I_SafeExit(0);
     }
 
   if (demoplayback)
     {
       if (singledemo)
-        exit(0);  // killough
+        I_SafeExit(0);  // killough
 
       if (demolumpnum != -1) {
   // cph - unlock the demo lump
