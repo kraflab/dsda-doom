@@ -168,12 +168,10 @@ static dboolean P_CheckMeleeRange(mobj_t *actor)
 {
   int range;
 
-  if (mbf21 && actor->info->meleerange != NO_MELEERANGE)
-    range = actor->info->meleerange;
-  else if (compatibility_level == doom_12_compatibility)
-    range = MELEERANGE;
-  else
-    range = MELEERANGE - 20 * FRACUNIT + actor->target->info->radius;
+  range = actor->info->meleerange;
+
+  if (compatibility_level != doom_12_compatibility)
+    range -= 20 * FRACUNIT + actor->target->info->radius;
 
   return P_CheckRange(actor, range);
 }
@@ -3175,7 +3173,7 @@ void A_MonsterBulletAttack(mobj_t *actor)
 //   args[0]: Base damage of attack (e.g. for 3d8, customize the 3); if not set, defaults to 3
 //   args[1]: Attack damage modulus (e.g. for 3d8, customize the 8); if not set, defaults to 8
 //   args[2]: Sound to play if attack hits
-//   args[3]: Range (fixed point); if not set, defaults to monster's meleerange property (or MELEERANGE (64.0) if that's unset too)
+//   args[3]: Range (fixed point); if not set, defaults to monster's melee range
 //
 void A_MonsterMeleeAttack(mobj_t *actor)
 {
@@ -3191,10 +3189,12 @@ void A_MonsterMeleeAttack(mobj_t *actor)
   range      = actor->state->args[3];
 
   if (range == 0)
-    range = (actor->info->meleerange == NO_MELEERANGE) ? MELEERANGE : actor->info->meleerange;
+    range = actor->info->meleerange;
+
+  range -= 20 * FRACUNIT + actor->target->info->radius;
 
   A_FaceTarget(actor);
-  if (!P_CheckRange(actor, range + actor->target->info->radius))
+  if (!P_CheckRange(actor, range))
     return;
 
   S_StartSound(actor, hitsound);

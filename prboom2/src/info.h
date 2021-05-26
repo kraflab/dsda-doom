@@ -3091,7 +3091,6 @@ typedef struct
 } mobjinfo_t;
 
 #define NO_ALTSPEED -1
-#define NO_MELEERANGE -1
 
 typedef struct
 {
