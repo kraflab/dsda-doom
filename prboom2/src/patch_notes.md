@@ -51,6 +51,13 @@
 - Includes both IL comparison and movie comparison
 - Enable it in the settings
 
+#### Text File Exporter
+- Use `-export_text_file` alongside `-playdemo`, `-fastdemo`, or `-timedemo`
+- Creates a text file named the same as the demo (abcd.lmp yields abcd.txt)
+- Fills out basic dsda template with the information it has available
+- The iwad / pwad will be based on the `-iwad` and `-file` arguments
+- Set the author in the general settings (default is `Anonymous`)
+
 #### Configuration Lump Support
 - Added COMPLVL lump support
   - text lump "vanilla", "boom", "mbf", or "mbf21"
