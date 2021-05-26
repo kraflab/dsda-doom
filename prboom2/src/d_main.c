@@ -1492,7 +1492,7 @@ static void AutoLoadWADs(const char *path)
         {
             break;
         }
-        D_AddFile(filename,source_pwad);
+        D_AddFile(filename,source_auto_load);
     }
 
     I_EndGlob(glob);
@@ -1507,7 +1507,7 @@ static const char *D_AutoLoadGameBase()
 
 // auto-loading of .wad files.
 
-static void D_AutoloadIWadDir()
+void D_AutoloadIWadDir()
 {
   char *autoload_dir;
 
@@ -1529,17 +1529,15 @@ static void D_AutoloadIWadDir()
 
 static void D_AutoloadPWadDir()
 {
-  int p = M_CheckParm("-file");
-  if (p)
-  {
-    while (++p != myargc && myargv[p][0] != '-')
+  int i;
+  for (i = 0; i < numwadfiles; ++i)
+    if (wadfiles[i].src == source_pwad)
     {
       char *autoload_dir;
-      autoload_dir = GetAutoloadDir(BaseName(myargv[p]), false);
+      autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
       AutoLoadWADs(autoload_dir);
       free(autoload_dir);
     }
-  }
 }
 
 // Load all dehacked patches from the given directory.
@@ -1588,17 +1586,15 @@ static void D_AutoloadDehIWadDir()
 
 static void D_AutoloadDehPWadDir()
 {
-  int p = M_CheckParm("-file");
-  if (p)
-  {
-    while (++p != myargc && myargv[p][0] != '-')
+  int i;
+  for (i = 0; i < numwadfiles; ++i)
+    if (wadfiles[i].src == source_pwad)
     {
       char *autoload_dir;
-      autoload_dir = GetAutoloadDir(BaseName(myargv[p]), false);
+      autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
       AutoLoadPatches(autoload_dir);
       free(autoload_dir);
     }
-  }
 }
 
 //
@@ -1907,10 +1903,6 @@ static void D_DoomMainSetup(void)
     }
   }
 
-  // add wad files from autoload PWAD directories
-
-  D_AutoloadPWadDir();
-
   if (!(p = M_CheckParm("-playdemo")) || p >= myargc-1) {   /* killough */
     if ((p = M_CheckParm ("-fastdemo")) && p < myargc-1)    /* killough */
       fastdemo = true;             // run at fastest speed possible
@@ -1954,6 +1946,13 @@ static void D_DoomMainSetup(void)
     LauncherShow(demo_footer);
 #endif
   }
+
+  // add wad files from autoload PWAD directories
+
+  D_AutoloadPWadDir();
+
+
+  // 1/18/98 killough: Z_Init() call moved to i_main.c
 
   // CPhipps - move up netgame init
   //jff 9/3/98 use logical output routine
