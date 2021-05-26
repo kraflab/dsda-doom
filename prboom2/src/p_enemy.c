@@ -756,7 +756,7 @@ static dboolean P_IsVisible(mobj_t *actor, mobj_t *mo, dboolean allaround)
       angle_t an = R_PointToAngle2(actor->x, actor->y,
            mo->x, mo->y) - actor->angle;
       if (an > ANG90 && an < ANG270 &&
-    P_AproxDistance(mo->x-actor->x, mo->y-actor->y) > MELEERANGE)
+    P_AproxDistance(mo->x-actor->x, mo->y-actor->y) > WAKEUPRANGE)
   return false;
     }
   return P_CheckSight(actor, mo);
@@ -4865,14 +4865,14 @@ dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
                 dist = P_AproxDistance(player->mo->x - actor->x,
                                        player->mo->y - actor->y);
                 // if real close, react anyway
-                if (dist > MELEERANGE)
+                if (dist > WAKEUPRANGE)
                     continue;   // behind back
             }
         }
         if (player->mo->flags & MF_SHADOW)
         {                       // Player is invisible
             if ((P_AproxDistance(player->mo->x - actor->x,
-                                 player->mo->y - actor->y) > 2 * MELEERANGE)
+                                 player->mo->y - actor->y) > SNEAKRANGE)
                 && P_AproxDistance(player->mo->momx, player->mo->momy)
                 < 5 * FRACUNIT)
             {                   // Player is sneaking - can't detect
