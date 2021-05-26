@@ -135,6 +135,8 @@ In this example:
 #### Melee range
 - [PR](https://github.com/kraflab/dsda-doom/pull/46)
 - Sets the range at which a monster will initiate a melee attack.
+- Also affects the range for vanilla melee attack codepointers, e.g. A_SargAttack, A_TroopAttack, etc.
+  - Similarly, adjusting the player mobj's melee range will adjust the range of A_Punch and A_Saw
 - Add `Melee range = X` in the Thing definition.
 - `X` is in fixed point, like the Radius and Height fields
 
