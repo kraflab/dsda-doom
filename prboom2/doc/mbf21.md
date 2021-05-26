@@ -273,7 +273,7 @@ MBF21 defaults:
     - `damagebase (int)`: Base damage of attack; if not set, defaults to 3
     - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 8
     - `sound (uint)`: Sound to play if attack hits
-    - `range (fixed)`: Attack range; if not set, defaults to monster's meleerange property (or 64.0 if that's not set either)
+    - `range (fixed)`: Attack range; if not set, defaults to calling actor's melee range property
   - Notes:
     - Damage formula is: `damage = (damagebase * random(1, damagedice))`
 
@@ -423,7 +423,7 @@ MBF21 defaults:
     - `damagedice (int)`: Attack damage random multiplier; if not set, defaults to 10
     - `zerkfactor (fixed)`: Berserk damage multiplier; if not set, defaults to 1.0
     - `sound (uint)`: Sound to play if attack hits
-    - `range (fixed)`: Attack range; if not set, defaults to 64.0
+    - `range (fixed)`: Attack range; if not set, defaults to player mobj's melee range property
   - Notes:
     - Damage formula is: `damage = (damagebase * random(1, damagedice))`; this is then multiplied by `zerkfactor` if the player has Berserk.
 
