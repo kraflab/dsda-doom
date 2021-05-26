@@ -77,6 +77,7 @@ int dsda_track_pacifist;
 int dsda_track_100k;
 
 int dsda_last_leveltime;
+int dsda_last_gamemap;
 
 // other
 static char* dsda_demo_name_base;
@@ -333,6 +334,7 @@ void dsda_WatchLevelCompletion(void) {
   if (totalsecret > 0) dsda_any_secrets = true;
 
   dsda_last_leveltime = leveltime;
+  dsda_last_gamemap = gamemap;
 
   dsda_RecordSplit();
 }

@@ -27,8 +27,10 @@
 
 const char* dsda_player_name;
 
-extern int gamemap, startmap, gameepisode, gameskill,
-           totalleveltimes, dsda_last_leveltime, compatibility_level;
+extern int gameepisode, gameskill, totalleveltimes, compatibility_level,
+           dsda_last_leveltime, dsda_last_gamemap;
+
+int dsda_startmap;
 
 static char* dsda_TextFileName(void) {
   int p;
@@ -58,12 +60,43 @@ static char* dsda_TextFileName(void) {
   return name;
 }
 
+static int dsda_IL(void) {
+  return dsda_startmap == dsda_last_gamemap;
+}
+
+static const char* dsda_Movie(void) {
+  if (gamemode == commercial) {
+    if (dsda_startmap == 1 && dsda_last_gamemap == 10)
+      return "Episode 1";
+    if (dsda_startmap == 11 && dsda_last_gamemap == 20)
+      return "Episode 2";
+    if (dsda_startmap == 21 && dsda_last_gamemap == 30)
+      return "Episode 3";
+    if (dsda_startmap == 1 && dsda_last_gamemap == 30)
+      return "D2All";
+  }
+  else {
+    if (dsda_startmap == 1 && dsda_last_gamemap == 8) {
+      if (gameepisode == 1)
+        return "Episode 1";
+      if (gameepisode == 2)
+        return "Episode 2";
+      if (gameepisode == 3)
+        return "Episode 3";
+      if (gameepisode == 4)
+        return "Episode 4";
+    }
+  }
+
+  return NULL;
+}
+
 static char* dsda_TextFileTime(void) {
   char* text_file_time;
 
   text_file_time = malloc(16);
 
-  if (startmap == gamemap - 2)
+  if (dsda_IL())
     snprintf(
       text_file_time,
       16,
@@ -120,7 +153,21 @@ void dsda_ExportTextFile(void) {
   if (pwad)
     fprintf(file, "Pwad:      %s\n", pwad);
 
-  fprintf(file, "Map:       %s\n", MAPNAME(gameepisode, startmap + 1));
+  if (dsda_IL())
+    fprintf(file, "Map:       %s\n", MAPNAME(gameepisode, dsda_startmap));
+  else {
+    const char* movie;
+
+    movie = dsda_Movie();
+
+    if (movie)
+      fprintf(file, "Movie:     %s\n", movie);
+    else {
+      fprintf(file, "Movie:     %s", MAPNAME(gameepisode, dsda_startmap));
+      fprintf(file, " - %s\n",       MAPNAME(gameepisode, dsda_last_gamemap));
+    }
+  }
+
   fprintf(file, "Skill:     %i\n", gameskill + 1);
   fprintf(file, "Category:  %s\n", dsda_DetectCategory());
   fprintf(file, "Exe:       %s -complevel %i\n",
