@@ -823,7 +823,7 @@ mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance)
 
   if (startX >= 0 && startX < bmapwidth && startY >= 0 && startY < bmapheight)
   {
-    if (target = RoughBlockCheck(mo, startY*bmapwidth + startX, fov))
+    if ((target = RoughBlockCheck(mo, startY*bmapwidth + startX, fov)))
     { // found a target right away
       return target;
     }
@@ -876,7 +876,7 @@ mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance)
     // Trace the first block section (along the top)
     for (; blockIndex <= firstStop; blockIndex++)
     {
-      if (target = RoughBlockCheck(mo, blockIndex, fov))
+      if ((target = RoughBlockCheck(mo, blockIndex, fov)))
       {
         return target;
       }
@@ -884,7 +884,7 @@ mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance)
     // Trace the second block section (right edge)
     for (blockIndex--; blockIndex <= secondStop; blockIndex += bmapwidth)
     {
-      if (target = RoughBlockCheck(mo, blockIndex, fov))
+      if ((target = RoughBlockCheck(mo, blockIndex, fov)))
       {
         return target;
       }
@@ -892,7 +892,7 @@ mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance)
     // Trace the third block section (bottom edge)
     for (blockIndex -= bmapwidth; blockIndex >= thirdStop; blockIndex--)
     {
-      if (target = RoughBlockCheck(mo, blockIndex, fov))
+      if ((target = RoughBlockCheck(mo, blockIndex, fov)))
       {
         return target;
       }
@@ -900,7 +900,7 @@ mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance)
     // Trace the final block section (left edge)
     for (blockIndex++; blockIndex > finalStop; blockIndex -= bmapwidth)
     {
-      if (target = RoughBlockCheck(mo, blockIndex, fov))
+      if ((target = RoughBlockCheck(mo, blockIndex, fov)))
       {
         return target;
       }
