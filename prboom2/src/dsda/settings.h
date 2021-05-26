@@ -38,6 +38,7 @@ extern int dsda_hide_horns;
 extern int dsda_organized_saves;
 extern int dsda_skip_quit_prompt;
 extern int dsda_show_split_data;
+extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);

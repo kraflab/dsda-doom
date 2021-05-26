@@ -2981,6 +2981,12 @@ void G_InitNew(skill_t skill, int episode, int map)
     }
   }
 
+  {
+    extern int dsda_startmap;
+
+    dsda_startmap = map;
+  }
+
   G_SetFastParms(fastparm || skill == sk_nightmare);  // killough 4/10/98
 
   M_ClearRandom();

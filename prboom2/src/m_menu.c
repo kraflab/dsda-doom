@@ -2223,7 +2223,7 @@ static void M_DrawInstructions(void)
   // are changing an item or just sitting on it.
 
   if (setup_select) {
-    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_CHAT | S_RESET | S_FILE | S_CHOICE)) {
+    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_CHAT | S_RESET | S_FILE | S_CHOICE | S_NAME)) {
       case S_INPUT:
         M_DrawStringCentered(160, 20, g_menu_cr_select, "Press key or button for this action");
         break;
@@ -2251,6 +2251,9 @@ static void M_DrawInstructions(void)
       break;
     case S_CHOICE:
       M_DrawStringCentered(160, 20, g_menu_cr_select, "Press left or right to choose");
+      break;
+    case S_NAME:
+      M_DrawStringCentered(160, 20, g_menu_cr_select, "Type / edit author and Press ENTER");
       break;
     case S_RESET:
       break;
@@ -3371,6 +3374,7 @@ setup_menu_t dsda_gen_settings[] = {
   { "Show Coordinate Display (TAS)", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_coordinate_display" } },
   { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 16 * 8, { "dsda_skip_quit_prompt" } },
   { "Show Split Data", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "dsda_show_split_data" } },
+  { "Text File Author", S_NAME, m_null, G_X, G_Y + 18 * 8, { "dsda_player_name" } },
 
 #ifdef GL_DOOM
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },

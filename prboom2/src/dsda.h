@@ -43,6 +43,7 @@ void dsda_WatchNewGame(void);
 void dsda_WatchLevelReload(int* reloaded);
 void dsda_WatchRecordDemo(const char* name);
 void dsda_WriteAnalysis(void);
+const char* dsda_DetectCategory(void);
 
 int dsda_MaxKillRequirement(void);
 char* dsda_DemoNameBase(void);

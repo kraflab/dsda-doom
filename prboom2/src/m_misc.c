@@ -1033,6 +1033,7 @@ default_t defaults[] =
   { "dsda_coordinate_display", { &dsda_coordinate_display }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_skip_quit_prompt", { &dsda_skip_quit_prompt }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_show_split_data", { &dsda_show_split_data }, { 1 }, 0, 1, def_bool, ss_stat },
+  { "dsda_player_name", { 0, &dsda_player_name }, { 0, "Anonymous" }, UL, UL, def_str,ss_chat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},
