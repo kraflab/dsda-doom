@@ -331,9 +331,6 @@ default_t defaults[] =
   {"Game settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"default_skill",{&defaultskill},{3},1,5, // jff 3/24/98 allow default skill setting
    def_int,ss_none}, // selects default skill 1=TYTD 2=NTR 3=HMP 4=UV 5=NM
-  /* killough 10/98 - toggle between SG/SSG and Fist/Chainsaw */
-  {"doom_weapon_toggles",{&doom_weapon_toggles}, {1}, 0, 1,
-   def_bool, ss_weap },
   {"player_bobbing",{&default_player_bobbing},{1},0,1,         // phares 2/25/98
    def_bool,ss_weap, &player_bobbing},
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
