@@ -59,6 +59,8 @@ set(COMMON_SRC
     dsda/split_tracker.h
     dsda/tas.c
     dsda/tas.h
+    dsda/text_file.c
+    dsda/text_file.h
     dsda/time.c
     dsda/time.h
     dstrings.c
