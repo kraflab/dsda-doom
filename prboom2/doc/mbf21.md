@@ -132,6 +132,12 @@ In this example:
 - Add `Fast speed = X` in the Thing definition.
 - `X` has the same units as the normal `Speed` field.
 
+#### Melee range
+- [PR](https://github.com/kraflab/dsda-doom/pull/46)
+- Sets the range at which a monster will initiate a melee attack.
+- Add `Melee range = X` in the Thing definition.
+- `X` is in fixed point, like the Radius and Height fields
+
 ## Weapons
 
 #### Weapon Flags
