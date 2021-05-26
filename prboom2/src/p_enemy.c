@@ -171,7 +171,7 @@ static dboolean P_CheckMeleeRange(mobj_t *actor)
   range = actor->info->meleerange;
 
   if (compatibility_level != doom_12_compatibility)
-    range -= 20 * FRACUNIT + actor->target->info->radius;
+    range += actor->target->info->radius - 20 * FRACUNIT;
 
   return P_CheckRange(actor, range);
 }
@@ -3191,7 +3191,7 @@ void A_MonsterMeleeAttack(mobj_t *actor)
   if (range == 0)
     range = actor->info->meleerange;
 
-  range -= 20 * FRACUNIT + actor->target->info->radius;
+  range += actor->target->info->radius - 20 * FRACUNIT;
 
   A_FaceTarget(actor);
   if (!P_CheckRange(actor, range))
