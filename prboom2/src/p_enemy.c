@@ -719,9 +719,9 @@ static void P_NewChaseDir(mobj_t *actor)
           actor->info->missilestate &&
           actor->type != MT_SKULL &&
           (
-            (!target->info->missilestate && dist < MELEERANGE*2) ||
+            (!target->info->missilestate && dist < target->info->meleerange*2) ||
             (
-              target->player && dist < MELEERANGE*3 &&
+              target->player && dist < target->player->mo->info->meleerange*3 &&
               weaponinfo[target->player->readyweapon].flags & WPF_FLEEMELEE
             )
           )
