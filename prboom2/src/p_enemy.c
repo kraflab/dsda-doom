@@ -3324,15 +3324,22 @@ void A_JumpIfHealthBelow(mobj_t* actor)
 // A_JumpIfTargetInSight
 // Jumps to a state if caller's target is in line-of-sight.
 //   args[0]: State to jump to
+//   args[1]: Field-of-view to check (degrees, in fixed point); if zero, will check in all directions
 //
 void A_JumpIfTargetInSight(mobj_t* actor)
 {
   int state;
+  angle_t fov;
 
   if (!mbf21 || !actor || !actor->target)
     return;
 
-  state = actor->state->args[0];
+  state =             (actor->state->args[0]);
+  fov   = FixedToAngle(actor->state->args[1]);
+
+  // Check FOV first since it's faster
+  if (fov > 0 && !P_CheckFov(actor, actor->target, fov))
+    return;
 
   if (P_CheckSight(actor, actor->target))
     P_SetMobjState(actor, state);
@@ -3363,15 +3370,22 @@ void A_JumpIfTargetCloser(mobj_t* actor)
 // A_JumpIfTracerInSight
 // Jumps to a state if caller's tracer (seek target) is in line-of-sight.
 //   args[0]: State to jump to
+//   args[1]: Field-of-view to check (degrees, in fixed point); if zero, will check in all directions
 //
 void A_JumpIfTracerInSight(mobj_t* actor)
 {
+  angle_t fov;
   int state;
 
   if (!mbf21 || !actor || !actor->tracer)
     return;
 
-  state = actor->state->args[0];
+  state =             (actor->state->args[0]);
+  fov   = FixedToAngle(actor->state->args[1]);
+
+  // Check FOV first since it's faster
+  if (fov > 0 && !P_CheckFov(actor, actor->tracer, fov))
+    return;
 
   if (P_CheckSight(actor, actor->tracer))
     P_SetMobjState(actor, state);
