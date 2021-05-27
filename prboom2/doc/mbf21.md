@@ -1,12 +1,6 @@
-# MBF21 Current Status
+# MBF21 Developer Spec
 
-These are changes / features that are currently implemented.
-
-Tracked [here](https://trello.com/b/qyrnGsFs/mbf21).
-
-**This is NOT a spec.**
-
-This is proof-of-concept implemented in dsda-doom.
+The contents of this file are aimed at developers. A more streamlined spec for modders will follow.
 
 ## Sectors
 
