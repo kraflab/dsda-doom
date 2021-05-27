@@ -733,14 +733,6 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
 static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
 {
   mobj_t *link;
-  angle_t angle, minang, maxang;
-
-  // pre-calculate fov check stuff since it
-  // won't change during the blocklinks loop
-  if (fov > 0) {
-    minang = mo->angle - fov / 2;
-    maxang = mo->angle + fov / 2;
-  }
 
   link = blocklinks[index];
   while (link)
@@ -770,17 +762,10 @@ static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
     }
 
     // skip actors outside of specified FOV
-    // [XA] code borrowed from EE; thanks Quas :D
-    if (fov > 0)
+    if (fov > 0 && !P_CheckFov(mo, link, fov))
     {
-      angle = R_PointToAngle2(mo->x, mo->y, link->x, link->y);
-      // if the angles are backward, compare differently
-      if((minang > maxang) ? angle < minang && angle > maxang
-                           : angle < minang || angle > maxang)
-      {
-        link = link->bnext;
-        continue;
-      }
+      link = link->bnext;
+      continue;
     }
 
     // skip actors not in line of sight
