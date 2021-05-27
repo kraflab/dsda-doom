@@ -215,7 +215,7 @@ MBF21 defaults:
 - For future-proofing, if more nonzero args are defined on a state than its action pointer expects (e.g. defining Args3 on a state that uses A_WeaponSound), an error will be thrown on startup.
 
 #### New DEHACKED Codepointers
-- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38), [PR](https://github.com/kraflab/dsda-doom/pull/40), [PR](https://github.com/kraflab/dsda-doom/pull/41), [PR](https://github.com/kraflab/dsda-doom/pull/45)
+- [PR](https://github.com/kraflab/dsda-doom/pull/20), [PR](https://github.com/kraflab/dsda-doom/pull/38), [PR](https://github.com/kraflab/dsda-doom/pull/40), [PR](https://github.com/kraflab/dsda-doom/pull/41), [PR](https://github.com/kraflab/dsda-doom/pull/45), [PR](https://github.com/kraflab/dsda-doom/pull/49)
 - All new MBF21 pointers use the new "Args" fields for params, rather than misc1/misc2 fields
 - Arg fields are listed in order in the docs below, e.g. for `A_SpawnObject`, `type` is Args1, `angle` is Args2, etc.
 - Although all args are integers internally, there are effectively the following types of args:
@@ -338,8 +338,7 @@ MBF21 defaults:
   - Jumps to a state if caller's target is in line-of-sight.
   - Args:
     - `state (uint)`: State to jump to
-  - Notes:
-    - This function only considers line-of-sight, i.e. independent of calling actor's facing direction.
+    - `fov (fixed)`: Field-of-view, relative to calling actor's angle, to check for target in. If zero, the check will occur in all directions.
 
 - **A_JumpIfTargetCloser(state, distance)**
   - Jumps to a state if caller's target is closer than the specified distance.
@@ -354,8 +353,7 @@ MBF21 defaults:
   - Jumps to a state if caller's tracer (seek target) is in line-of-sight.
   - Args:
     - `state (uint)`: State to jump to
-  - Notes:
-    - This function only considers line-of-sight, i.e. independent of calling actor's facing direction.
+    - `fov (fixed)`: Field-of-view, relative to calling actor's angle, to check for tracer in. If zero, the check will occur in all directions.
 
 - **A_JumpIfTracerCloser(state, distance)**
   - Jumps to a state if caller's tracer (seek target) is closer than the specified distance.
