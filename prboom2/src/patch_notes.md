@@ -44,7 +44,17 @@
 #### Command Console
 - Added a console where you can enter various commands
 - Set up a key binding to access
-- Command list: WIP
+- Command list:
+  - `player.sethealth x`
+  - `player.setarmor x`
+  - `player.setx, sety, setz x`
+  - `player.roundx, roundy, roundxy`
+  - `command.lock C V`
+    - `C` is `MF`, `MB`, `SR`, or `SL`
+    - `V` is the value
+    - Locks part of tic command to the given value
+  - `command.unlock`
+- More to come, this is just a proof of concept
 
 #### Split Data
 - On intermission screen, compares current time to personal best
