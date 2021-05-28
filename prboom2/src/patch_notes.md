@@ -1,7 +1,7 @@
 ### v0.19.0
 
 #### MBF21 - Modder's Best Friend - A New Standard
-- See separate file for specification
+- See [specification](https://github.com/kraflab/mbf21/blob/master/README.md).
 - Changed default complevel to 21 (mbf21)
 
 #### Save Organization
@@ -102,6 +102,7 @@
 - Fixed powered dragon claw explosions with uncapped fps
 - Fixed an issue with dragging heretic onto the exe (should always work now)
 - Fixed a crash caused by levelstat going past 32 maps
+- Fixed timebomb key bind rendering
 - Fixed msvc build (xaser)
 - Fixed macos launcher iwad directory mismatch (PBeGood4)
 - Fixed umapinfo custom episode select for doom2 (pr+)
