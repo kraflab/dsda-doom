@@ -2580,7 +2580,7 @@ setup_menu_t heretic_keys_settings2[] = {
   { "USE TOME OF POWER", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_arti_tome },
   { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_arti_quartz },
   { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_arti_urn },
-  { "USE TIMEBOMB OF THE ANCIENTS", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_arti_bomb },
+  { "USE TIMEBOMB", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_arti_bomb },
   { "USE RING OF INVINCIBILITY", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_arti_ring },
   { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_arti_chaosdevice },
   { "USE SHADOWSPHERE", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_arti_shadowsphere },
