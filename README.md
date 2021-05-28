@@ -1,15 +1,17 @@
-# dsda-doom v0.18.0
+# dsda-doom v0.19
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning.
+
+### Patch Notes
+- [v0.19](./patch_notes/v0.19.md)
 
 ### Heretic Support (beta)
 - DSDA-Doom includes demo-compatible support for heretic (all the demos stored on dsda are in sync).
-- Not everything is a 1 to 1 match with vanilla heretic (similar to doom in prboom+) - some of this will be fixed and refined. The game should be identical _mechanically_.
 - Heretic game logic should be set automatically if you use `HERETIC.WAD` as the iwad. If it doesn't work, please use the `-heretic` commandline option. This flips a switch in the engine that determines all the core game data.
 - The prboom+ launcher doesn't work properly with heretic.
 - You do not need to (and can't) set the complevel when playing heretic. It is implicitly set to `0`, since heretic is based on doom v1.2.
 - Setting the "Status Bar and Menu Appearance" option to "not adjusted" will have no effect for heretic (it will default instead to "Doom format").
 - The "Apply multisampling" automap option is disabled for heretic.
-- The automap is partially supported. It's functional but does not have, for example, the parchment background. That being said, many of the extra features added in prboom+ also apply to the heretic automap. Automap colors are not configurable for heretic.
+- Automap colors are not configurable for heretic.
 - Some of the more advanced features are not implemented for heretic yet, and using them may cause crashes or other odd behaviour. This includes ghost players, key frames (working but not always in sync), and the analysis code.
 - Dehacked support for heretic isn't implemented yet.
 - Advanced hud is not implemented for heretic.
@@ -37,6 +39,7 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - You can bind (many) cheats.
 - You can cycle through alternate palettes (for testing purposes).
   The cycle starts with `PLAYPAL`, followed by `PLAYPAL1` to `PLAYPAL9`.
+- Also see patch notes.
 
 ### Changes
 - Smart Totals renamed to Max Totals and fixed to show kill constraint for max.
@@ -45,6 +48,7 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Mouse sensitivity: multiply your pr+ value by 1.6 in order to get the same result. This change was done to create a 1:1 relationship between mouse input and the turning value created in the game. See "Fine Sensitivity" in the settings below to handle fractions.
 - Vertical mouse movement and mouse strafing carry fractional values, so you eventually move even at a very slow input speed.
 - Mouse scales show integer values and have no limits.
+- Also see patch notes.
 
 ### New Settings
 - Strict Mode: disable TAS options while recording, unless using `-tas`.
@@ -55,6 +59,7 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - Wipe At Full Speed: always display the wipe animation at normal speed.
 - Track Demo Attempts: show the attempt count (session / total) when starting a demo.
 - Fine Sensitivity: hundredths of a point adjustment to horizontal mouse sensitivity.
+- Also see patch notes.
 
 ### Key Frames
 Key frames capture the game state at a given moment, similar to save files. By automatically recording key frames at fixed intervals, it is possible to "rewind" the game. This can be used during normal play, while recording (tas) demos, and during demo playback. You can also set a manual "quick key frame" at a specific point and rewind to that moment at any later time. When storing a key frame while recording, a backup file is created (`backup-ttt.kf`). You can continue a demo _from a key frame_ like so: `-record x.lmp -from_key_frame backup-1234.kf -complevel x`. While recording from a key frame, the demo restart key will return you to the original key frame, even if you have made other key frames later on.
