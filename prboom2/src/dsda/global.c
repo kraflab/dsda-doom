@@ -408,10 +408,6 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].meleerange = MELEERANGE;
   }
 
-  // don't want to reorganize info.c structure for a few tweaks...
-  mobjinfo[HERETIC_MT_SORCERER2].infighting_group = IG_WIZARD;
-  mobjinfo[HERETIC_MT_WIZARD].infighting_group = IG_WIZARD;
-
   // heretic doesn't use "clip" concept
   for (i = 0; i < NUMAMMO; ++i) clipammo[i] = 1;
 

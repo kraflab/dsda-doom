@@ -3004,7 +3004,6 @@ typedef enum {
 
 typedef enum {
   IG_DEFAULT,
-  IG_WIZARD,
   IG_END
 } infighting_group_t;
 
