@@ -120,31 +120,36 @@ static void dsda_InitWadDataDir(void) {
     char* start;
 
     start = strrchr(wadfiles[i].name, '/');
-    if (start && strlen(start) > 1) {
+    if (!start)
+      start = strrchr(wadfiles[i].name, '\\');
+
+    if (!start)
+      start = wadfiles[i].name;
+    else
       start++; // move past '/'
-      length = strlen(start) - 4;
 
-      if (length > 0 && !strcasecmp(start + length, ".wad")) {
-        int dir_index;
+    length = strlen(start) - 4;
 
-        if (wadfiles[i].src == 0)
-          dir_index = iwad_index;
-        else if (wadfiles[i].src == 3)
-          dir_index = pwad_index;
-        else
-          dir_index = -1;
+    if (length > 0 && !strcasecmp(start + length, ".wad")) {
+      int dir_index;
 
-        if (dir_index >= 0 && dir_index < DATA_DIR_LIMIT) {
-          dsda_data_dir_strings[dir_index] = malloc(length + 1);
-          strncpy(dsda_data_dir_strings[dir_index], start, length);
-          dsda_data_dir_strings[dir_index][length] = '\0';
+      if (wadfiles[i].src == 0)
+        dir_index = iwad_index;
+      else if (wadfiles[i].src == 3)
+        dir_index = pwad_index;
+      else
+        dir_index = -1;
 
-          for (start = dsda_data_dir_strings[dir_index]; *start; ++start)
-            *start = tolower(*start);
+      if (dir_index >= 0 && dir_index < DATA_DIR_LIMIT) {
+        dsda_data_dir_strings[dir_index] = malloc(length + 1);
+        strncpy(dsda_data_dir_strings[dir_index], start, length);
+        dsda_data_dir_strings[dir_index][length] = '\0';
 
-          if (dir_index == pwad_index)
-            pwad_index++;
-        }
+        for (start = dsda_data_dir_strings[dir_index]; *start; ++start)
+          *start = tolower(*start);
+
+        if (dir_index == pwad_index)
+          pwad_index++;
       }
     }
   }
