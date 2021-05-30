@@ -27,6 +27,7 @@
 #include "w_wad.h"
 #include "i_system.h"
 #include "z_zone.h"
+#include "e6y.h"
 
 #include "data_organizer.h"
 
@@ -117,16 +118,10 @@ static void dsda_InitWadDataDir(void) {
   dsda_data_dir_strings[0] = strdup(dsda_data_root);
 
   for (i = 0; i < numwadfiles; ++i) {
-    char* start;
+    const char* start;
+    char* result;
 
-    start = strrchr(wadfiles[i].name, '/');
-    if (!start)
-      start = strrchr(wadfiles[i].name, '\\');
-
-    if (!start)
-      start = wadfiles[i].name;
-    else
-      start++; // move past '/'
+    start = PathFindFileName(wadfiles[i].name);
 
     length = strlen(start) - 4;
 
@@ -145,8 +140,8 @@ static void dsda_InitWadDataDir(void) {
         strncpy(dsda_data_dir_strings[dir_index], start, length);
         dsda_data_dir_strings[dir_index][length] = '\0';
 
-        for (start = dsda_data_dir_strings[dir_index]; *start; ++start)
-          *start = tolower(*start);
+        for (result = dsda_data_dir_strings[dir_index]; *result; ++result)
+          *result = tolower(*result);
 
         if (dir_index == pwad_index)
           pwad_index++;
