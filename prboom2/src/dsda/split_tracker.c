@@ -20,6 +20,7 @@
 
 #include "m_misc.h"
 #include "lprintf.h"
+#include "e6y.h"
 
 #include "dsda.h"
 #include "dsda/settings.h"
@@ -49,13 +50,15 @@ static char* dsda_SplitTrackerPath(void) {
 
   if (!dsda_split_tracker_path) {
     int length;
-    char* name_base;
+    const char* name_base;
     char* dir;
     char params[4];
 
     name_base = dsda_DemoNameBase();
     if (!name_base)
       return NULL;
+
+    name_base = PathFindFileName(name_base);
 
     params[0] = respawnparm ? 'r' : 'x';
     params[1] = fastparm    ? 'f' : 'x';
