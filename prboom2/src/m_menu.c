@@ -3170,6 +3170,10 @@ static const char *gen_compstrings[] =
   "PrBoom 2.3.x",
   "PrBoom 2.4.0",
   "Latest PrBoom+",
+  "~",
+  "~",
+  "~",
+  "MBF21",
   NULL
 };
 
@@ -5023,6 +5027,8 @@ dboolean M_Responder (event_t* ev) {
             if ((ptr1->var.def->maxvalue != UL &&
                  value > ptr1->var.def->maxvalue))
               value = ptr1->var.def->maxvalue;
+            while (ptr1->selectstrings && ptr1->selectstrings[value][0] == '~')
+              value--;
             if (*ptr1->var.def->location.pi != value)
               S_StartSound(NULL,g_sfx_menu);
             *ptr1->var.def->location.pi = value;
@@ -5051,6 +5057,8 @@ dboolean M_Responder (event_t* ev) {
             if ((ptr1->var.def->maxvalue != UL &&
                  value > ptr1->var.def->maxvalue))
               value = ptr1->var.def->maxvalue;
+            while (ptr1->selectstrings && ptr1->selectstrings[value][0] == '~')
+              value++;
             if (*ptr1->var.def->location.pi != value)
               S_StartSound(NULL,g_sfx_menu);
             *ptr1->var.def->location.pi = value;
