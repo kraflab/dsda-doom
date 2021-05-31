@@ -422,6 +422,10 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
   if (!trans)
     flags &= ~VPT_TRANS;
 
+  // [FG] automatically center wide patches without horizontal offset
+  if (patch->width > 320 && patch->leftoffset == 0)
+    x -= (patch->width - 320) / 2;
+
   if (V_GetMode() == VID_MODE8 && !(flags & VPT_STRETCH_MASK)) {
     int             col;
     byte           *desttop = screens[scrn].data+y*screens[scrn].byte_pitch+x*V_GetPixelDepth();
