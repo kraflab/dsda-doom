@@ -138,13 +138,13 @@ void Heretic_F_TextWrite(void)
   int lump;
   int width;
 
+  // e6y: wide-res
+  V_FillBorder(-1, 0);
+
   //
   // erase the entire screen to a tiled background
   //
   V_DrawBackground(finaleflat, 0);
-
-  // e6y: wide-res
-  V_FillBorder(-1, 0);
 
   //
   // draw some of the text onto the screen

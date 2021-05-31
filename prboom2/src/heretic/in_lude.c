@@ -167,10 +167,9 @@ static void IN_DrawInterpic(void)
 
   snprintf(name, 9, "MAPE%d", gameepisode);
 
-  V_DrawNamePatch(0, 0, 0, DEH_String(name), CR_DEFAULT, VPT_STRETCH);
-
   // e6y: wide-res
   V_FillBorder(-1, 0);
+  V_DrawNamePatch(0, 0, 0, DEH_String(name), CR_DEFAULT, VPT_STRETCH);
 }
 
 static void IN_DrawBeenThere(int i)
@@ -573,10 +572,9 @@ void IN_Drawer(void)
 
 void IN_DrawStatBack(void)
 {
-    V_DrawBackground(DEH_String("FLOOR16"), 0);
-
     // e6y: wide-res
     V_FillBorder(-1, 0);
+    V_DrawBackground(DEH_String("FLOOR16"), 0);
 }
 
 //========================================================================

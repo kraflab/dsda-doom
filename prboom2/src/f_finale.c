@@ -306,8 +306,8 @@ void F_TextWrite (void)
   if (gamemapinfo && W_CheckNumForName(finaleflat) != -1 &&
       (W_CheckNumForName)(finaleflat, ns_flats) == -1)
   {
-    V_DrawNamePatch(0, 0, 0, finaleflat, CR_DEFAULT, VPT_STRETCH);
     V_FillBorder(-1, 0);
+    V_DrawNamePatch(0, 0, 0, finaleflat, CR_DEFAULT, VPT_STRETCH);
   }
   else
     V_DrawBackground(finaleflat, 0);
@@ -601,11 +601,11 @@ void F_CastDrawer (void)
   int                 lump;
   dboolean             flip;
 
+  // e6y: wide-res
+  V_FillBorder(-1, 0);
   // erase the entire screen to a background
   // CPhipps - patch drawing updated
   V_DrawNamePatch(0,0,0, bgcastcall, CR_DEFAULT, VPT_STRETCH); // Ty 03/30/98 bg texture extern
-  // e6y: wide-res
-  V_FillBorder(-1, 0);
 
   F_CastPrint (*(castorder[castnum].name));
 
@@ -692,6 +692,9 @@ void F_Drawer (void)
     F_TextWrite ();
   else
   {
+    // e6y: wide-res
+    V_FillBorder(-1, 0);
+
     switch (gameepisode)
     {
       // CPhipps - patch drawing updated
@@ -711,7 +714,5 @@ void F_Drawer (void)
            V_DrawNamePatch(0, 0, 0, "ENDPIC", CR_DEFAULT, VPT_STRETCH);
            break;
     }
-    // e6y: wide-res
-    V_FillBorder(-1, 0);
   }
 }
