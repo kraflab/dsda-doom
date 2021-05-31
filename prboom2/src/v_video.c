@@ -1522,7 +1522,6 @@ void SetRatio(int width, int height)
     patches_scaley = MIN(render_patches_scaley, patches_scaley);
   }
 
-  ST_SCALED_WIDTH = ST_WIDTH * patches_scalex;
   ST_SCALED_HEIGHT = g_st_height * patches_scaley;
 
   if (SCREENWIDTH < 320 || WIDE_SCREENWIDTH < 320 ||
@@ -1546,7 +1545,6 @@ void SetRatio(int width, int height)
     break;
   case patch_stretch_4x3:
     ST_SCALED_HEIGHT = g_st_height * WIDE_SCREENHEIGHT / 200;
-    ST_SCALED_WIDTH  = WIDE_SCREENWIDTH;
 
     ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
 
@@ -1555,7 +1553,6 @@ void SetRatio(int width, int height)
     break;
   case patch_stretch_full:
     ST_SCALED_HEIGHT = g_st_height * SCREENHEIGHT / 200;
-    ST_SCALED_WIDTH  = SCREENWIDTH;
 
     ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
     wide_offset2x = 0;
@@ -1569,6 +1566,9 @@ void SetRatio(int width, int height)
   SCREEN_320x200 =
     (SCREENWIDTH == 320) && (SCREENHEIGHT == 200) &&
     (WIDE_SCREENWIDTH == 320) && (WIDE_SCREENHEIGHT == 200);
+
+  // [FG] support widescreen status bar backgrounds
+  ST_SetScaledWidth();
 }
 
 void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flags)
