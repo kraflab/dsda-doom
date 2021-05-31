@@ -4222,12 +4222,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
 
   if (heretic)
   {
-    const byte* lump = W_CacheLumpNum(creditlump);
-
-    V_DrawRawScreen(lump);
-
-    W_UnlockLumpNum(creditlump);
-
+    V_DrawRawScreen("CREDIT");
     return;
   }
 

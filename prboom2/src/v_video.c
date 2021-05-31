@@ -1664,20 +1664,37 @@ void V_ChangeScreenResolution(void)
 
 // heretic
 
+#define HERETIC_RAW_SCREEN_SIZE 64000
+
 // heretic_note: is something already implemented to handle this?
-void V_DrawRawScreen(const byte *raw)
+void V_DrawRawScreen(const char *lump_name)
 {
-  V_DrawRawScreenSection(raw, 0, 200);
+  V_DrawRawScreenSection(lump_name, 0, 0, 200);
 }
 
-void V_DrawRawScreenSection(const byte *raw, int dest_y_offset, int dest_y_limit)
+void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y_offset, int dest_y_limit)
 {
   int i, j;
   float x_factor, y_factor;
   int x_offset;
+  const byte* raw;
 
   // e6y: wide-res
   V_FillBorder(-1, 0);
+
+  // custom widescreen assets are a different format
+  {
+    int lump;
+
+    lump = W_CheckNumForName(lump_name);
+    if (W_LumpLength(lump) != HERETIC_RAW_SCREEN_SIZE)
+    {
+      V_DrawNamePatch(0, 0, 0, lump_name, CR_DEFAULT, VPT_STRETCH);
+      return;
+    }
+  }
+
+  raw = W_CacheLumpName(lump_name) + source_offset;
 
   x_factor = (float)SCREENWIDTH / 320;
   y_factor = (float)SCREENHEIGHT / 200;
@@ -1699,6 +1716,8 @@ void V_DrawRawScreenSection(const byte *raw, int dest_y_offset, int dest_y_limit
 
       V_FillRect(0, x_offset + x, y, width, height, *raw);
     }
+
+  W_UnlockLumpName(lump_name);
 }
 
 void V_DrawShadowedNumPatch(int x, int y, int lump)

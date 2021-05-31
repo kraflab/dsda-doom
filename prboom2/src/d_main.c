@@ -572,10 +572,7 @@ static void D_PageDrawer(void)
 {
   if (heretic)
   {
-    const byte* lump = W_CacheLumpName(pagename);
-    V_DrawRawScreen(lump);
-    W_UnlockLumpName(pagename);
-
+    V_DrawRawScreen(pagename);
     return;
   }
 
