@@ -558,7 +558,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
       top =  (y < 0 || y > 200 ? (y * params->video->height) / 200 : params->video->y1lookup[y]);
 
       if (x + patch->width < 0 || x + patch->width > 320)
-        right = ( ((x + patch->width - 1) * params->video->width) / 320 );
+        right = ( ((x + patch->width) * params->video->width - 1) / 320 );
       else
         right = params->video->x2lookup[x + patch->width - 1];
 
