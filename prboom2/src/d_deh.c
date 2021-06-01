@@ -1782,13 +1782,13 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
     else if (last_i >= 10 && last_i < DEH_BLOCKMAX - 1) // restrict to BEX style lumps
     { // process that same line again with the last valid block code handler
       i = last_i;
-      dehfseek(filein->f, filepos, SEEK_SET);
+      dehfseek(filein, filepos);
     }
 
     deh_log("Processing function [%d] for %s\n", i, deh_blocks[i].key);
     deh_blocks[i].fptr(filein, inbuffer);  // call function
 
-    filepos = dehftell(filein->f);
+    filepos = dehftell(filein);
   }
 
   if (infile.lump)
