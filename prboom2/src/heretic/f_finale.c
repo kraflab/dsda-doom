@@ -138,13 +138,13 @@ void Heretic_F_TextWrite(void)
   int lump;
   int width;
 
+  // e6y: wide-res
+  V_FillBorder(-1, 0);
+
   //
   // erase the entire screen to a tiled background
   //
   V_DrawBackground(finaleflat, 0);
-
-  // e6y: wide-res
-  V_FillBorder(-1, 0);
 
   //
   // draw some of the text onto the screen
@@ -194,7 +194,6 @@ void Heretic_F_TextWrite(void)
 
 void F_DemonScroll(void)
 {
-  const byte *p1, *p2;
   static int yval = 0;
   static int nextscroll = 0;
 
@@ -203,28 +202,22 @@ void F_DemonScroll(void)
     return;
   }
 
-  p1 = W_CacheLumpName(DEH_String("FINAL1"));
-  p2 = W_CacheLumpName(DEH_String("FINAL2"));
-
   if (finalecount < 70)
   {
-    V_DrawRawScreen(p1);
+    V_DrawRawScreen(DEH_String("FINAL1"));
     nextscroll = finalecount;
   }
   else if (yval < 200)
   {
-    V_DrawRawScreenSection(p2 + (200 - yval) * 320, 0, yval);
-    V_DrawRawScreenSection(p1, yval, 200 - yval);
+    V_DrawRawScreenSection(DEH_String("FINAL2"), (200 - yval) * 320, 0, yval);
+    V_DrawRawScreenSection(DEH_String("FINAL1"), 0, yval, 200 - yval);
     yval++;
     nextscroll = finalecount + 3;
   }
   else
   {                           //else, we'll just sit here and wait, for now
-    V_DrawRawScreen(p2);
+    V_DrawRawScreen(DEH_String("FINAL2"));
   }
-
-  W_UnlockLumpName(DEH_String("FINAL1"));
-  W_UnlockLumpName(DEH_String("FINAL2"));
 }
 
 /*
@@ -241,14 +234,12 @@ void F_DrawUnderwater(void)
   {
     case 1:
       V_SetPlayPal(playpal_heretic_e2end);
-      V_DrawRawScreen(W_CacheLumpName(DEH_String("E2END")));
-      W_UnlockLumpName(DEH_String("E2END"));
+      V_DrawRawScreen(DEH_String("E2END"));
       V_SetPlayPal(playpal_default);
 
       break;
     case 2:
-      V_DrawRawScreen(W_CacheLumpName(DEH_String("TITLE")));
-      W_UnlockLumpName(DEH_String("TITLE"));
+      V_DrawRawScreen(DEH_String("TITLE"));
   }
 }
 
@@ -272,13 +263,11 @@ void Heretic_F_Drawer(void)
       case 1:
         if (gamemode == shareware)
         {
-          V_DrawRawScreen(W_CacheLumpName("ORDER"));
-          W_UnlockLumpName("ORDER");
+          V_DrawRawScreen("ORDER");
         }
         else
         {
-          V_DrawRawScreen(W_CacheLumpName("CREDIT"));
-          W_UnlockLumpName("CREDIT");
+          V_DrawRawScreen("CREDIT");
         }
         break;
       case 2:
@@ -289,8 +278,7 @@ void Heretic_F_Drawer(void)
         break;
       case 4:            // Just show credits screen for extended episodes
       case 5:
-        V_DrawRawScreen(W_CacheLumpName("CREDIT"));
-        W_UnlockLumpName("CREDIT");
+        V_DrawRawScreen("CREDIT");
         break;
     }
   }

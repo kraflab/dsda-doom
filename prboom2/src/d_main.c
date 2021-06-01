@@ -572,10 +572,7 @@ static void D_PageDrawer(void)
 {
   if (heretic)
   {
-    const byte* lump = W_CacheLumpName(pagename);
-    V_DrawRawScreen(lump);
-    W_UnlockLumpName(pagename);
-
+    V_DrawRawScreen(pagename);
     return;
   }
 
@@ -584,9 +581,9 @@ static void D_PageDrawer(void)
   // proff - added M_DrawCredits
   if (pagename)
   {
-    V_DrawNamePatch(0, 0, 0, pagename, CR_DEFAULT, VPT_STRETCH);
     // e6y: wide-res
     V_FillBorder(-1, 0);
+    V_DrawNamePatch(0, 0, 0, pagename, CR_DEFAULT, VPT_STRETCH);
   }
   else
     M_DrawCredits();

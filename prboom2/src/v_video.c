@@ -422,6 +422,10 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
   if (!trans)
     flags &= ~VPT_TRANS;
 
+  // [FG] automatically center wide patches without horizontal offset
+  if (patch->width > 320 && patch->leftoffset == 0)
+    x -= (patch->width - 320) / 2;
+
   if (V_GetMode() == VID_MODE8 && !(flags & VPT_STRETCH_MASK)) {
     int             col;
     byte           *desttop = screens[scrn].data+y*screens[scrn].byte_pitch+x*V_GetPixelDepth();
@@ -554,7 +558,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
       top =  (y < 0 || y > 200 ? (y * params->video->height) / 200 : params->video->y1lookup[y]);
 
       if (x + patch->width < 0 || x + patch->width > 320)
-        right = ( ((x + patch->width - 1) * params->video->width) / 320 );
+        right = ( ((x + patch->width) * params->video->width - 1) / 320 );
       else
         right = params->video->x2lookup[x + patch->width - 1];
 
@@ -1518,7 +1522,6 @@ void SetRatio(int width, int height)
     patches_scaley = MIN(render_patches_scaley, patches_scaley);
   }
 
-  ST_SCALED_WIDTH = ST_WIDTH * patches_scalex;
   ST_SCALED_HEIGHT = g_st_height * patches_scaley;
 
   if (SCREENWIDTH < 320 || WIDE_SCREENWIDTH < 320 ||
@@ -1542,7 +1545,6 @@ void SetRatio(int width, int height)
     break;
   case patch_stretch_4x3:
     ST_SCALED_HEIGHT = g_st_height * WIDE_SCREENHEIGHT / 200;
-    ST_SCALED_WIDTH  = WIDE_SCREENWIDTH;
 
     ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
 
@@ -1551,7 +1553,6 @@ void SetRatio(int width, int height)
     break;
   case patch_stretch_full:
     ST_SCALED_HEIGHT = g_st_height * SCREENHEIGHT / 200;
-    ST_SCALED_WIDTH  = SCREENWIDTH;
 
     ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
     wide_offset2x = 0;
@@ -1565,6 +1566,9 @@ void SetRatio(int width, int height)
   SCREEN_320x200 =
     (SCREENWIDTH == 320) && (SCREENHEIGHT == 200) &&
     (WIDE_SCREENWIDTH == 320) && (WIDE_SCREENHEIGHT == 200);
+
+  // [FG] support widescreen status bar backgrounds
+  ST_SetScaledWidth();
 }
 
 void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flags)
@@ -1660,17 +1664,37 @@ void V_ChangeScreenResolution(void)
 
 // heretic
 
+#define HERETIC_RAW_SCREEN_SIZE 64000
+
 // heretic_note: is something already implemented to handle this?
-void V_DrawRawScreen(const byte *raw)
+void V_DrawRawScreen(const char *lump_name)
 {
-  V_DrawRawScreenSection(raw, 0, 200);
+  V_DrawRawScreenSection(lump_name, 0, 0, 200);
 }
 
-void V_DrawRawScreenSection(const byte *raw, int dest_y_offset, int dest_y_limit)
+void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y_offset, int dest_y_limit)
 {
   int i, j;
   float x_factor, y_factor;
   int x_offset;
+  const byte* raw;
+
+  // e6y: wide-res
+  V_FillBorder(-1, 0);
+
+  // custom widescreen assets are a different format
+  {
+    int lump;
+
+    lump = W_CheckNumForName(lump_name);
+    if (W_LumpLength(lump) != HERETIC_RAW_SCREEN_SIZE)
+    {
+      V_DrawNamePatch(0, 0, 0, lump_name, CR_DEFAULT, VPT_STRETCH);
+      return;
+    }
+  }
+
+  raw = (const byte *) W_CacheLumpName(lump_name) + source_offset;
 
   x_factor = (float)SCREENWIDTH / 320;
   y_factor = (float)SCREENHEIGHT / 200;
@@ -1693,8 +1717,7 @@ void V_DrawRawScreenSection(const byte *raw, int dest_y_offset, int dest_y_limit
       V_FillRect(0, x_offset + x, y, width, height, *raw);
     }
 
-  // e6y: wide-res
-  V_FillBorder(-1, 0);
+  W_UnlockLumpName(lump_name);
 }
 
 void V_DrawShadowedNumPatch(int x, int y, int lump)

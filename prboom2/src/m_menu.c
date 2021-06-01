@@ -472,9 +472,9 @@ void M_DrawReadThis1(void)
   inhelpscreens = true;
   if (gamemode == shareware)
   {
-    V_DrawNamePatch(0, 0, 0, "HELP2", CR_DEFAULT, VPT_STRETCH);
     // e6y: wide-res
     V_FillBorder(-1, 0);
+    V_DrawNamePatch(0, 0, 0, "HELP2", CR_DEFAULT, VPT_STRETCH);
   }
   else
     M_DrawCredits();
@@ -4161,8 +4161,8 @@ void M_DrawHelp (void)
 
   if (helplump >= 0 && lumpinfo[helplump].source != source_iwad)
   {
-    V_DrawNumPatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
     V_FillBorder(-1, 0);
+    V_DrawNumPatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
   }
   else
   {
@@ -4222,20 +4222,15 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
 
   if (heretic)
   {
-    const byte* lump = W_CacheLumpNum(creditlump);
-
-    V_DrawRawScreen(lump);
-
-    W_UnlockLumpNum(creditlump);
-
+    V_DrawRawScreen("CREDIT");
     return;
   }
 
   inhelpscreens = true;
   if (creditlump >= 0 && lumpinfo[creditlump].source != source_iwad)
   {
-    V_DrawNumPatch(0, 0, 0, creditlump, CR_DEFAULT, VPT_STRETCH);
     V_FillBorder(-1, 0);
+    V_DrawNumPatch(0, 0, 0, creditlump, CR_DEFAULT, VPT_STRETCH);
   }
   else
   {

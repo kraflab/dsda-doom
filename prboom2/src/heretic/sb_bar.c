@@ -22,6 +22,7 @@
 #include "v_video.h"
 #include "r_main.h"
 #include "w_wad.h"
+#include "st_stuff.h"
 
 #include "dsda/settings.h"
 
@@ -111,6 +112,7 @@ void SB_Init(void)
 {
     int i;
     int startLump;
+    extern patchnum_t stbarbg;
     extern patchnum_t grnrock;
     extern patchnum_t brdr_t, brdr_b, brdr_l, brdr_r;
     extern patchnum_t brdr_tl, brdr_tr, brdr_bl, brdr_br;
@@ -125,6 +127,7 @@ void SB_Init(void)
     R_SetPatchNum(&brdr_tr, DEH_String("bordtr"));
     R_SetPatchNum(&brdr_bl, DEH_String("bordbl"));
     R_SetPatchNum(&brdr_br, DEH_String("bordbr"));
+    R_SetPatchNum(&stbarbg, DEH_String("BARBACK"));
 
     for (i = 0; i < 11; ++i)
     {
@@ -176,6 +179,9 @@ void SB_Init(void)
     }
     spinbooklump = W_GetNumForName(DEH_String("SPINBK0"));
     spinflylump = W_GetNumForName(DEH_String("SPFLY0"));
+
+    // [FG] support widescreen status bar backgrounds
+    ST_SetScaledWidth();
 }
 
 //---------------------------------------------------------------------------
