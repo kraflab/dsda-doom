@@ -1694,7 +1694,7 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
     }
   }
 
-  raw = W_CacheLumpName(lump_name) + source_offset;
+  raw = (const byte *) W_CacheLumpName(lump_name) + source_offset;
 
   x_factor = (float)SCREENWIDTH / 320;
   y_factor = (float)SCREENHEIGHT / 200;
