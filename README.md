@@ -1,4 +1,4 @@
-# dsda-doom v0.19.2
+# dsda-doom v0.19.3
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning.
 
 ### Patch Notes
