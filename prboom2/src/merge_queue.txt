@@ -1,9 +1,6 @@
-Checked up to: a396df06b483c92528794be3a2c605835914475c (May 27 2021)
+Checked up to: a6b9b41a0c99d44ae966fafcdc15998b0aee4986 (June 1 2021)
 
 Commits from upstream to go through:
-
-widescreen asset support:
-4869fe44e1315789a728b1cf1779d7e2955633bd
 
 default save name:
 5ef9e7509103303fc810ddd3414b4442d86ee540
