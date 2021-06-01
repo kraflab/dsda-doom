@@ -631,17 +631,44 @@ void F_BunnyScroll (void)
   char        name[10];
   int         stage;
   static int  laststage;
+  static int  p1offset, p2width;
+
+  if (finalecount == 0)
+  {
+    const rpatch_t *p1, *p2;
+    p1 = R_CachePatchName(pfub1);
+    p2 = R_CachePatchName(pfub2);
+
+    p2width = p2->width;
+    if (p1->width == 320)
+    {
+      // Unity or original PFUBs.
+      p1offset = (p2width - 320) / 2;
+    }
+    else
+    {
+      // Widescreen mod PFUBs.
+      p1offset = 0;
+    }
+
+    W_UnlockLumpName(pfub2);
+    W_UnlockLumpName(pfub1);
+  }
 
   {
     int scrolled = 320 - (finalecount-230)/2;
     if (scrolled <= 0) {
       V_DrawNamePatch(0, 0, 0, pfub2, CR_DEFAULT, VPT_STRETCH);
     } else if (scrolled >= 320) {
-      V_DrawNamePatch(0, 0, 0, pfub1, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(p1offset, 0, 0, pfub1, CR_DEFAULT, VPT_STRETCH);
+      if (p1offset > 0)
+        V_DrawNamePatch(-320, 0, 0, pfub2, CR_DEFAULT, VPT_STRETCH);
     } else {
-      V_DrawNamePatch(320-scrolled, 0, 0, pfub1, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(p1offset + 320 - scrolled, 0, 0, pfub1, CR_DEFAULT, VPT_STRETCH);
       V_DrawNamePatch(-scrolled, 0, 0, pfub2, CR_DEFAULT, VPT_STRETCH);
     }
+    if (p2width == 320)
+      V_FillBorder(-1, 0);
   }
 
   if (finalecount < 1130)
