@@ -2783,7 +2783,7 @@ static void deh_procMisc(DEHFILE *fpin, char *line) // done
       idkfa_armor_class = (int)value;
     else if (!deh_strcasecmp(key, deh_misc[14]))  // BFG Cells/Shot
     {
-      weaponinfo[MT_BFG].ammopershot = bfgcells = (int)value;
+      weaponinfo[wp_bfg].ammopershot = bfgcells = (int)value;
       bfgcells_modified = true;
     }
     else if (!deh_strcasecmp(key, deh_misc[15]))  // Monsters Infight
