@@ -479,6 +479,7 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 #define MF2_E4M6BOSS  LONGLONG(0x0000000200000000) // is an E4M6 boss
 #define MF2_E4M8BOSS  LONGLONG(0x0000000400000000) // is an E4M8 boss
 #define MF2_LONGMELEE LONGLONG(0x0000000800000000) // has long melee range (revenant)
+#define MF2_FULLVOLSOUNDS LONGLONG(0x0000001000000000) // full volume see / death sound
 
 #define AMMO_GWND_WIMPY 10
 #define AMMO_GWND_HEFTY 50

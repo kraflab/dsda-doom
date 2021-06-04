@@ -272,8 +272,8 @@ static void dsda_InitDoom(void) {
 
   mobjinfo[MT_VILE].flags2    = MF2_SHORTMRANGE | MF2_DMGIGNORED | MF2_NOTHRESHOLD;
   mobjinfo[MT_CYBORG].flags2  = MF2_NORADIUSDMG | MF2_HIGHERMPROB | MF2_RANGEHALF |
-                                MF2_BOSS | MF2_E2M8BOSS | MF2_E4M6BOSS;
-  mobjinfo[MT_SPIDER].flags2  = MF2_NORADIUSDMG | MF2_RANGEHALF | MF2_BOSS |
+                                MF2_FULLVOLSOUNDS | MF2_E2M8BOSS | MF2_E4M6BOSS;
+  mobjinfo[MT_SPIDER].flags2  = MF2_NORADIUSDMG | MF2_RANGEHALF | MF2_FULLVOLSOUNDS |
                                 MF2_E3M8BOSS | MF2_E4M8BOSS;
   mobjinfo[MT_SKULL].flags2   = MF2_RANGEHALF;
   mobjinfo[MT_FATSO].flags2   = MF2_MAP07BOSS1;
