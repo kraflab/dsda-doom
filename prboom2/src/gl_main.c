@@ -1265,9 +1265,9 @@ void gld_StartDrawScene(void)
 }
 
 //e6y
-static void gld_ProcessExtraAlpha(void)
+void gld_ProcessExtraAlpha(void)
 {
-  if (extra_alpha>0.0f)
+  if (extra_alpha>0.0f && !invul_method)
   {
     glDisable(GL_ALPHA_TEST);
     glColor4f(extra_red, extra_green, extra_blue, extra_alpha);
@@ -1323,12 +1323,6 @@ void gld_EndDrawScene(void)
   // Vortex: Black and white effect
   if (SceneInTexture)
   {
-    // below if scene is in texture
-    if (!invul_method)
-    {
-      gld_ProcessExtraAlpha();
-    }
-
     // Vortex: Restore original RT
     GLEXT_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
@@ -1393,11 +1387,6 @@ void gld_EndDrawScene(void)
     if (invul_method & INVUL_BW)
     {
       glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    }
-
-    if (!invul_method)
-    {
-      gld_ProcessExtraAlpha();
     }
   }
 
