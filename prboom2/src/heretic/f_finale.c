@@ -85,14 +85,21 @@ void Heretic_F_StartFinale(void)
   S_ChangeMusic(heretic_mus_cptd, true);
 }
 
+dboolean F_BlockingInput(void)
+{
+  return finalestage == 1 && gameepisode == 2;
+}
+
 dboolean Heretic_F_Responder(event_t * event)
 {
   if (event->type != ev_keydown)
   {
     return false;
   }
-  if (finalestage == 1 && gameepisode == 2)
+
+  if (F_BlockingInput())
   {                           // we're showing the water pic, make any key kick to demo mode
+    V_SetPlayPal(playpal_default);
     finalestage++;
     return true;
   }
@@ -235,7 +242,6 @@ void F_DrawUnderwater(void)
     case 1:
       V_SetPlayPal(playpal_heretic_e2end);
       V_DrawRawScreen(DEH_String("E2END"));
-      V_SetPlayPal(playpal_default);
 
       break;
     case 2:

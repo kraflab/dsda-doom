@@ -65,6 +65,7 @@
 #include "i_sound.h"
 #include "r_demo.h"
 #include "r_fps.h"
+#include "f_finale.h"
 #include "e6y.h"//e6y
 #include "dsda/global.h"
 #include "dsda/settings.h"
@@ -4510,6 +4511,9 @@ dboolean M_Responder (event_t* ev) {
     G_ScreenShot ();
     // Don't eat the keypress in this case. See sf bug #1843280.
   }
+
+  if (heretic && F_BlockingInput())
+    return false;
 
   // If there is no active menu displayed...
 
