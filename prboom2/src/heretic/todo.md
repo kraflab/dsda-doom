@@ -1,12 +1,12 @@
-### Heretic Support (phase 2)
-- [ ] Support ghosts
-- [ ] Support analysis
-- [ ] Support key frames
-- [x] Support E2END palette
-- [ ] Support dehacked
-- [x] Support cheats
+### Heretic Support
+- [ ] ghosts
+- [ ] analysis
+- [ ] key frames
+- [ ] E2END palette in 8 bit
+- [ ] dehacked
+- [ ] yellow eyes in bar with invuln
+- [ ] intermission map names (now entering)
 - [ ] rain1, rain2, special1.m, special2.m -> P_SetTarget
-- [x] Review r_* files for graphical differences
 
 ### File queue from crispy src/heretic:
 
