@@ -575,6 +575,16 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
       }
     }
 
+    //for recording or playback using "coop in single-player" mode
+    if (!M_CheckParm("-coop_in_single_player"))
+    {
+      p = M_CheckParmEx("-coop_in_single_player", params, paramscount);
+      if (p >= 0)
+      {
+        M_AddParam("-coop_in_single_player");
+      }
+    }
+
     if (!M_CheckParm("-emulate"))
     {
       p = M_CheckParmEx("-emulate", params, paramscount);
@@ -745,6 +755,13 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   if (M_CheckParm("-solo-net"))
   {
     sprintf(buf, "-solo-net ");
+    AddString(&files, buf);
+  }
+
+  //for recording or playback using "coop in single-player" mode
+  if (M_CheckParm("-coop_in_single_player"))
+  {
+    sprintf(buf, "-coop_in_single_player ");
     AddString(&files, buf);
   }
 

@@ -187,6 +187,8 @@ int             bytes_per_tic;
 dboolean boom_autoswitch;
 dboolean done_autoswitch;
 
+dboolean coop_in_single_player;
+
 // e6y
 // There is a new command-line switch "-shorttics".
 // This makes it possible to practice routes and tricks

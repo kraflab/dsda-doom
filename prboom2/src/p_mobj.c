@@ -1712,7 +1712,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // check for apropriate skill level
 
   /* jff "not single" thing flag */
-  if (!netgame && options & MTF_NOTSINGLE)
+  if (!coop_in_single_player && !netgame && options & MTF_NOTSINGLE)
     return NULL;
 
   //jff 3/30/98 implement "not deathmatch" thing flag
@@ -1722,7 +1722,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
   //jff 3/30/98 implement "not cooperative" thing flag
 
-  if (netgame && !deathmatch && options & MTF_NOTCOOP)
+  if ((coop_in_single_player || netgame) && !deathmatch && options & MTF_NOTCOOP)
     return NULL;
 
   // killough 11/98: simplify

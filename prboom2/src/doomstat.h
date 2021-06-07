@@ -173,6 +173,8 @@ extern  dboolean netgame;
 // An enum might handle altdeath/cooperative better.
 extern  dboolean deathmatch;
 
+extern dboolean coop_in_single_player;
+
 // ------------------------------------------
 // Internal parameters for sound rendering.
 // These have been taken from the DOS version,
