@@ -48,6 +48,8 @@
 #endif
 #include "e6y.h"//e6y
 
+#include "dsda/settings.h"
+
 //
 // SCREEN WIPE PACKAGE
 //
@@ -188,7 +190,7 @@ static int wipe_exitMelt(int ticks)
 
 int wipe_StartScreen(void)
 {
-  if(!render_wipescreen||wasWiped) return 0;//e6y
+  if(dsda_PendingSkipWipe() || wasWiped) return 0;//e6y
   wasWiped = true;//e6y
 
 #ifdef GL_DOOM
@@ -217,7 +219,7 @@ int wipe_StartScreen(void)
 
 int wipe_EndScreen(void)
 {
-  if(!render_wipescreen||!wasWiped) return 0;//e6y
+  if(dsda_PendingSkipWipe() || !wasWiped) return 0;//e6y
   wasWiped = false;//e6y
 
 #ifdef GL_DOOM

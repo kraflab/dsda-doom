@@ -68,6 +68,7 @@ int dsda_RealticClockRate(void);
 int dsda_AutoKeyFrameInterval(void);
 int dsda_AutoKeyFrameDepth(void);
 void dsda_SkipNextWipe(void);
+dboolean dsda_PendingSkipWipe(void);
 dboolean dsda_SkipWipe(void);
 
 #endif

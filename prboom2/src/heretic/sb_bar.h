@@ -21,6 +21,7 @@
 
 #include "d_event.h"
 
+void SB_Start(void);
 void SB_Init(void);
 void SB_Ticker(void);
 void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu);

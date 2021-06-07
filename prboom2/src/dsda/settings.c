@@ -220,6 +220,10 @@ void dsda_SkipNextWipe(void) {
   dsda_skip_next_wipe = 1;
 }
 
+dboolean dsda_PendingSkipWipe(void) {
+  return dsda_skip_next_wipe || !render_wipescreen;
+}
+
 dboolean dsda_SkipWipe(void) {
   if (dsda_skip_next_wipe) {
     dsda_skip_next_wipe = 0;

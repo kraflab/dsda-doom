@@ -1259,7 +1259,7 @@ static dboolean st_stopped = true;
 
 void ST_Start(void)
 {
-  if (heretic) return;
+  if (heretic) return SB_Start();
 
   if (!st_stopped)
     ST_Stop();
