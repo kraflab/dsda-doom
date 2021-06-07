@@ -576,12 +576,12 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
     }
 
     //for recording or playback using "coop in single-player" mode
-    if (!M_CheckParm("-coop_in_single_player"))
+    if (!M_CheckParm("-coop_spawns"))
     {
-      p = M_CheckParmEx("-coop_in_single_player", params, paramscount);
+      p = M_CheckParmEx("-coop_spawns", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-coop_in_single_player");
+        M_AddParam("-coop_spawns");
       }
     }
 
@@ -759,9 +759,9 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   }
 
   //for recording or playback using "coop in single-player" mode
-  if (M_CheckParm("-coop_in_single_player"))
+  if (M_CheckParm("-coop_spawns"))
   {
-    sprintf(buf, "-coop_in_single_player ");
+    sprintf(buf, "-coop_spawns ");
     AddString(&files, buf);
   }
 

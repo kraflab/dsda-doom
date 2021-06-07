@@ -187,7 +187,7 @@ int             bytes_per_tic;
 dboolean boom_autoswitch;
 dboolean done_autoswitch;
 
-dboolean coop_in_single_player;
+dboolean coop_spawns;
 
 // e6y
 // There is a new command-line switch "-shorttics".
