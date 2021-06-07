@@ -23,6 +23,7 @@
 #include "r_main.h"
 #include "w_wad.h"
 #include "st_stuff.h"
+#include "r_draw.h"
 
 #include "dsda/settings.h"
 
@@ -432,6 +433,10 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
     {
         if (SB_state == -1)
         {
+            // Applies palette to backfill
+            if (V_GetMode() == VID_MODE32)
+              R_FillBackScreen();
+
             V_DrawNumPatch(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);
             if (players[consoleplayer].cheats & CF_GODMODE)
             {
