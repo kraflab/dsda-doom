@@ -1,6 +1,9 @@
-Checked up to: a6b9b41a0c99d44ae966fafcdc15998b0aee4986 (June 1 2021)
+Checked up to: 56d2aa2ecd3deaf345896b0923354546886d8e74 (June 4 2021)
 
 Commits from upstream to go through:
+
+delete save game:
+fbcd834d2eb3b860176d5af1327503dd5cdb6e25
 
 default save name:
 5ef9e7509103303fc810ddd3414b4442d86ee540
