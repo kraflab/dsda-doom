@@ -769,10 +769,19 @@ void R_FillBackScreen (void)
     {
       int stbar_top = SCREENHEIGHT - ST_SCALED_HEIGHT;
 
-      V_FillFlat(grnrock.lumpnum, 1,
-        0, stbar_top, ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_NONE);
-      V_FillFlat(grnrock.lumpnum, 1,
-        SCREENWIDTH - ST_SCALED_OFFSETX, stbar_top, ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_NONE);
+      if (V_GetMode() == VID_MODEGL)
+        V_FillFlat(grnrock.lumpnum, 1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, VPT_NONE);
+      else
+      {
+        V_FillFlat(grnrock.lumpnum, 1,
+          0, stbar_top, ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_NONE);
+        V_FillFlat(grnrock.lumpnum, 1,
+          SCREENWIDTH - ST_SCALED_OFFSETX, stbar_top, ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_NONE);
+
+        // For custom huds, need to put the backfill inside the bar area (in the copy buffer)
+        V_FillFlat(grnrock.lumpnum, 0,
+          ST_SCALED_OFFSETX, stbar_top, SCREENWIDTH - 2 * ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_NONE);
+      }
 
       // heretic_note: I think this looks bad, so I'm skipping it...
       if (heretic) return;
