@@ -28,9 +28,6 @@ extern dboolean inventory;
 extern int SB_state;
 extern int playerkeys;
 
-// HERETIC_TODO: figure out if this should be removed or replaced
-extern dboolean BorderTopRefresh;
-
 #define TELEFOGHEIGHT (32*FRACUNIT)
 #define ANG1_X          0x01000000
 

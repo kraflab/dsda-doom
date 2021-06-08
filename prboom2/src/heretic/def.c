@@ -17,5 +17,3 @@
 #include "def.h"
 
 dboolean heretic = false;
-
-dboolean BorderTopRefresh;

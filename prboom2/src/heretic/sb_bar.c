@@ -512,11 +512,6 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
                     hitCenterFrame = true;
                 }
             }
-            BorderTopRefresh = true;
-        }
-        else
-        {
-            BorderTopRefresh = true;
         }
     }
 
@@ -527,11 +522,6 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
         {
             frame = (leveltime / 3) & 15;
             V_DrawNumPatch(300, 17, 0, spinbooklump + frame, CR_DEFAULT, VPT_STRETCH);
-            BorderTopRefresh = true;
-        }
-        else
-        {
-            BorderTopRefresh = true;
         }
     }
 }
