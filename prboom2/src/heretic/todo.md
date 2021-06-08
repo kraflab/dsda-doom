@@ -3,7 +3,6 @@
 - analysis
 - key frames
 - dehacked
-- yellow eyes in bar with invuln
 - intermission map names (now entering)
 - rain1, rain2, special1.m, special2.m -> P_SetTarget
 - morph for exhud
