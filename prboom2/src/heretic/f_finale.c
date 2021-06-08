@@ -259,7 +259,6 @@ void F_DrawUnderwater(void)
 
 void Heretic_F_Drawer(void)
 {
-  // UpdateState |= I_FULLSCRN;
   if (!finalestage)
     Heretic_F_TextWrite();
   else

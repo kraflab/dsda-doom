@@ -225,13 +225,11 @@ void MN_Drawer(void)
   //       MN_DrTextA(DEH_String("?"), 160 +
   //                  MN_TextAWidth(SlotText[quickload - 1]) / 2, 90);
   //     }
-  //     UpdateState |= I_FULLSCRN;
   //   }
   //   return;
   // }
   // else
   // {
-  //   UpdateState |= I_FULLSCRN;
   //   if (InfoType)
   //   {
   //     MN_DrawInfo();
