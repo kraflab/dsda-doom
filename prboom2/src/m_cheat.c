@@ -52,6 +52,7 @@
 
 #include "dsda/input.h"
 #include "dsda/settings.h"
+#include "heretic/sb_bar.h"
 
 #define plyr (players+consoleplayer)     /* the console player */
 
@@ -299,6 +300,8 @@ static void cheat_god()
     }
   else
     plyr->message = s_STSTR_DQDOFF; // Ty 03/27/98 - externalized
+
+  if (heretic) SB_Start();
 }
 
 // CPhipps - new health and armour cheat codes
