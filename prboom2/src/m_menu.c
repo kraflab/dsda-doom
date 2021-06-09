@@ -3319,11 +3319,7 @@ setup_menu_t gen_settings7[] =
   {"ALLOW VERTICAL AIMING"             ,S_YESNO     ,m_null,G_X2,G_Y+7*8, {"comperr_freeaim"}},
 
   {"<- PREV",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {gen_settings6}},
-#ifdef GL_DOOM
   {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {gen_settings8}},
-#else
-  {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_gen_settings}},
-#endif
   {0,S_SKIP|S_END,m_null}
 };
 
@@ -3334,8 +3330,7 @@ static const char *gltexfilters_anisotropics[] =
   {"Off", "2x", "4x", "8x", "16x", NULL};
 
 setup_menu_t gen_settings8[] = { // General Settings screen4
-#ifdef GL_DOOM
-  {"Texture Options",  S_SKIP|S_TITLE,m_null,G_X,G_Y+ 1*8},
+  {"GL Options",  S_SKIP|S_TITLE,m_null,G_X,G_Y+ 1*8},
   {"Texture Filter Mode",        S_CHOICE, m_null, G_X, G_Y+2 *8, {"gl_texture_filter"}, 0, M_ChangeTextureParams, gltexfilters},
   {"Sprite Filter Mode",        S_CHOICE, m_null, G_X, G_Y+3 *8, {"gl_sprite_filter"}, 0, M_ChangeTextureParams, gltexfilters},
   {"Patch Filter Mode",          S_CHOICE, m_null, G_X, G_Y+4 *8, {"gl_patch_filter"}, 0, M_ChangeTextureParams, gltexfilters},
@@ -3354,7 +3349,6 @@ setup_menu_t gen_settings8[] = { // General Settings screen4
 
   {"Allow Detail Textures",      S_YESNO,  m_null, G_X, G_Y+18*8, {"gl_allow_detail_textures"}, 0, M_ChangeUseDetail},
   {"Blend Animations",           S_YESNO,  m_null, G_X, G_Y+19*8, {"gl_blend_animations"}},
-#endif //GL_DOOM
 
   {"<- PREV",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {gen_settings7}},
   {"NEXT ->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {dsda_gen_settings}},
@@ -3381,11 +3375,7 @@ setup_menu_t dsda_gen_settings[] = {
   { "Show Split Data", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "dsda_show_split_data" } },
   { "Text File Author", S_NAME, m_null, G_X, G_Y + 18 * 8, { "dsda_player_name" } },
 
-#ifdef GL_DOOM
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },
-#else
-  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings7 } },
-#endif
   { 0, S_SKIP | S_END, m_null }
 };
 
