@@ -3467,8 +3467,8 @@ void PostProcessDeh(void)
   // sanity-check bfgcells and bfg ammopershot
   if (
     bfgcells_modified &&
-    weaponinfo[MT_BFG].intflags & WIF_ENABLEAPS &&
-    bfgcells != weaponinfo[MT_BFG].ammopershot
+    weaponinfo[wp_bfg].intflags & WIF_ENABLEAPS &&
+    bfgcells != weaponinfo[wp_bfg].ammopershot
   )
     I_Error("Mismatch between bfgcells and bfg ammo per shot modifications! Check your dehacked.");
 
