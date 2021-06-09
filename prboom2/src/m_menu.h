@@ -223,5 +223,8 @@ typedef struct menu_s
 #define MENU_CLEAR     -9
 
 void M_SetupNextMenu(menu_t *menudef);
+void M_DrawDelVerify(void);
+
+extern dboolean delete_verify;
 
 #endif
