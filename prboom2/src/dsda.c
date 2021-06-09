@@ -459,6 +459,7 @@ void dsda_WatchRecordDemo(const char* name) {
 
 void dsda_WriteAnalysis(void) {
   FILE *fstream = NULL;
+  const char* category = NULL;
 
   if (!dsda_analysis) return;
 
@@ -469,13 +470,7 @@ void dsda_WriteAnalysis(void) {
     return;
   }
 
-  if (dsda_reality) dsda_almost_reality = false;
-  if (!dsda_pacifist) dsda_stroller = false;
-  if (!dsda_any_weapons) dsda_weapon_collector = false;
-
-  dsda_nomo = nomonsters > 0;
-  dsda_respawn = respawnparm > 0;
-  dsda_fast = fastparm > 0;
+  category = dsda_DetectCategory();
 
   fprintf(fstream, "skill %d\n", gameskill + 1);
   fprintf(fstream, "nomonsters %d\n", dsda_nomo);
@@ -492,7 +487,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "weapon_collector %d\n", dsda_weapon_collector);
   fprintf(fstream, "tyson_weapons %d\n", dsda_tyson_weapons);
   fprintf(fstream, "turbo %d\n", dsda_turbo);
-  fprintf(fstream, "category %s\n", dsda_DetectCategory());
+  fprintf(fstream, "category %s\n", category);
 
   fclose(fstream);
 
@@ -504,6 +499,14 @@ const char* dsda_DetectCategory(void) {
   dboolean satisfies_respawn;
   dboolean satisfies_tyson;
   dboolean satisfies_100s;
+
+  if (dsda_reality) dsda_almost_reality = false;
+  if (!dsda_pacifist) dsda_stroller = false;
+  if (!dsda_any_weapons) dsda_weapon_collector = false;
+
+  dsda_nomo = nomonsters > 0;
+  dsda_respawn = respawnparm > 0;
+  dsda_fast = fastparm > 0;
 
   satisfies_max = (
     dsda_missed_monsters == 0 \
