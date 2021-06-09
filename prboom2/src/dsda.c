@@ -524,6 +524,7 @@ const char* dsda_DetectCategory(void) {
   satisfies_100s = dsda_any_secrets && dsda_100s;
 
   if (dsda_turbo) return "Other";
+  if (coop_spawns) return "Other";
 
   if (gameskill == sk_hard) {
     if (dsda_nomo && !dsda_respawn && !dsda_fast) {
