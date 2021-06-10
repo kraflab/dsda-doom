@@ -294,7 +294,7 @@ static void dsda_InitDoom(void) {
 
 static void dsda_InitHeretic(void) {
   int i, j;
-  heretic_mobjinfo_t* mobjinfo_p;
+  raven_mobjinfo_t* mobjinfo_p;
 
   dsda_AllocateMobjInfo(HERETIC_MT_ZERO, HERETIC_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
   dsda_SetStates(heretic_states, HERETIC_NUMSTATES);

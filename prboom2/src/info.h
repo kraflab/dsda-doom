@@ -3145,13 +3145,13 @@ typedef struct
     int activesound;
     int flags;
     int flags2;
-} heretic_mobjinfo_t;
+} raven_mobjinfo_t;
 
 // all the stuff - dynamically selected in global.c
 
 extern state_t heretic_states[HERETIC_NUMSTATES];
 extern const char *heretic_sprnames[];
-extern heretic_mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES];
+extern raven_mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES];
 
 extern state_t doom_states[NUMSTATES];
 extern const char *doom_sprnames[];
