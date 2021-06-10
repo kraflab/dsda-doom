@@ -22,27 +22,10 @@
 #include "p_local.h"
 #include "s_sound.h"
 
-// MACROS ------------------------------------------------------------------
-
-#define LOWERSPEED FRACUNIT*6
-#define RAISESPEED FRACUNIT*6
-#define WEAPONBOTTOM 128*FRACUNIT
-#define WEAPONTOP 32*FRACUNIT
-
-// TYPES -------------------------------------------------------------------
-
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 extern void P_ExplodeMissile(mobj_t * mo);
 extern void A_UnHideThing(mobj_t * actor);
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-extern fixed_t FloatBobOffsets[64];
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
@@ -212,112 +195,6 @@ static int WeaponManaUse[NUMCLASSES][NUMWEAPONS] = {
 };
 
 // CODE --------------------------------------------------------------------
-
-//---------------------------------------------------------------------------
-//
-// PROC P_SetPsprite
-//
-//---------------------------------------------------------------------------
-
-void P_SetPsprite(player_t * player, int position, statenum_t stnum)
-{
-    pspdef_t *psp;
-    state_t *state;
-
-    psp = &player->psprites[position];
-    do
-    {
-        if (!stnum)
-        {                       // Object removed itself.
-            psp->state = NULL;
-            break;
-        }
-        state = &states[stnum];
-        psp->state = state;
-        psp->tics = state->tics;        // could be 0
-        if (state->misc1)
-        {                       // Set coordinates.
-            psp->sx = state->misc1 << FRACBITS;
-        }
-        if (state->misc2)
-        {
-            psp->sy = state->misc2 << FRACBITS;
-        }
-        if (state->action)
-        {                       // Call action routine.
-            state->action(player, psp);
-            if (!psp->state)
-            {
-                break;
-            }
-        }
-        stnum = psp->state->nextstate;
-    }
-    while (!psp->tics);         // An initial state of 0 could cycle through.
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC P_SetPspriteNF
-//
-// Identical to P_SetPsprite, without calling the action function
-//---------------------------------------------------------------------------
-
-void P_SetPspriteNF(player_t * player, int position, statenum_t stnum)
-{
-    pspdef_t *psp;
-    state_t *state;
-
-    psp = &player->psprites[position];
-    do
-    {
-        if (!stnum)
-        {                       // Object removed itself.
-            psp->state = NULL;
-            break;
-        }
-        state = &states[stnum];
-        psp->state = state;
-        psp->tics = state->tics;        // could be 0
-        if (state->misc1)
-        {                       // Set coordinates.
-            psp->sx = state->misc1 << FRACBITS;
-        }
-        if (state->misc2)
-        {
-            psp->sy = state->misc2 << FRACBITS;
-        }
-        stnum = psp->state->nextstate;
-    }
-    while (!psp->tics);         // An initial state of 0 could cycle through.
-}
-
-/*
-=================
-=
-= P_CalcSwing
-=
-=================
-*/
-
-/*
-fixed_t	swingx, swingy;
-void P_CalcSwing (player_t *player)
-{
-	fixed_t	swing;
-	int		angle;
-
-// OPTIMIZE: tablify this
-
-	swing = player->bob;
-
-	angle = (FINEANGLES/70*leveltime)&FINEMASK;
-	swingx = FixedMul ( swing, finesine[angle]);
-
-	angle = (FINEANGLES/70*leveltime+FINEANGLES/2)&FINEMASK;
-	swingy = -FixedMul ( swingx, finesine[angle]);
-}
-*/
 
 //---------------------------------------------------------------------------
 //

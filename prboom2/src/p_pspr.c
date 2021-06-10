@@ -100,37 +100,38 @@ void P_SetPsprite(player_t *player, int position, statenum_t stnum)
 void P_SetPspritePtr(player_t *player, pspdef_t *psp, statenum_t stnum)
 {
   do
+  {
+    state_t *state;
+
+    if (!stnum)
     {
-      state_t *state;
-
-      if (!stnum)
-        {
-          // object removed itself
-          psp->state = NULL;
-          break;
-        }
-
-      state = &states[stnum];
-      psp->state = state;
-      psp->tics = state->tics;        // could be 0
-
-      if (state->misc1)
-        {
-          // coordinate set
-          psp->sx = state->misc1 << FRACBITS;
-          psp->sy = state->misc2 << FRACBITS;
-        }
-
-      // Call action routine.
-      // Modified handling.
-      if (state->action)
-        {
-          state->action(player, psp);
-          if (!psp->state)
-            break;
-        }
-      stnum = psp->state->nextstate;
+      // object removed itself
+      psp->state = NULL;
+      break;
     }
+
+    state = &states[stnum];
+    psp->state = state;
+    psp->tics = state->tics;        // could be 0
+
+    // hexen_note: it splits this into separate misc1 / misc2 checks
+    if (state->misc1)
+    {
+      // coordinate set
+      psp->sx = state->misc1 << FRACBITS;
+      psp->sy = state->misc2 << FRACBITS;
+    }
+
+    // Call action routine.
+    // Modified handling.
+    if (state->action)
+    {
+      state->action(player, psp);
+      if (!psp->state)
+        break;
+    }
+    stnum = psp->state->nextstate;
+  }
   while (!psp->tics);     // an initial state of 0 could cycle through
 }
 
@@ -2477,4 +2478,37 @@ void P_CloseWeapons(void)
     }
     spot = P_Random(pr_heretic) % MaceSpotCount;
     P_SpawnMobj(MaceSpots[spot].x, MaceSpots[spot].y, ONFLOORZ, HERETIC_MT_WMACE);
+}
+
+// hexen
+
+extern fixed_t FloatBobOffsets[64];
+
+void P_SetPspriteNF(player_t * player, int position, statenum_t stnum)
+{
+    pspdef_t *psp;
+    state_t *state;
+
+    psp = &player->psprites[position];
+    do
+    {
+        if (!stnum)
+        {                       // Object removed itself.
+            psp->state = NULL;
+            break;
+        }
+        state = &states[stnum];
+        psp->state = state;
+        psp->tics = state->tics;        // could be 0
+        if (state->misc1)
+        {                       // Set coordinates.
+            psp->sx = state->misc1 << FRACBITS;
+        }
+        if (state->misc2)
+        {
+            psp->sy = state->misc2 << FRACBITS;
+        }
+        stnum = psp->state->nextstate;
+    }
+    while (!psp->tics);         // An initial state of 0 could cycle through.
 }

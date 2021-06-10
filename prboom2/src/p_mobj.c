@@ -948,7 +948,7 @@ static void P_NightmareRespawn(mobj_t* mobj)
   P_RemoveMobj (mobj);
 }
 
-static fixed_t FloatBobOffsets[64] = {
+fixed_t FloatBobOffsets[64] = {
     0, 51389, 102283, 152192,
     200636, 247147, 291278, 332604,
     370727, 405280, 435929, 462380,
