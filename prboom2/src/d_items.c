@@ -437,8 +437,6 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
 
 // hexen
 
-#include "hexen/h2def.h"
-
 weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
   {                           // First Weapons
     {                          // Fighter First Weapon - Punch

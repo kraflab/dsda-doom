@@ -107,8 +107,6 @@ set(COMMON_SRC
     heretic/sb_bar.c
     heretic/sb_bar.h
     heretic/sounds.c
-    hexen/h2def.c
-    hexen/h2def.h
     hu_lib.c
     hu_lib.h
     hu_stuff.c

@@ -390,4 +390,32 @@ typedef enum {
 // heretic
 #define FRICTION_LOW 0xf900
 
+//hexen
+
+typedef enum
+{
+  PCLASS_FIGHTER,
+  PCLASS_CLERIC,
+  PCLASS_MAGE,
+  PCLASS_PIG,
+  NUMCLASSES
+} pclass_t;
+
+typedef enum
+{
+  MANA_1,
+  MANA_2,
+  NUMMANA,
+  MANA_BOTH,
+  MANA_NONE
+} manatype_t;
+
+#define MAX_MANA	200
+
+#define WPIECE1		1
+#define WPIECE2		2
+#define WPIECE3		4
+
+extern dboolean hexen;
+
 #endif          // __DOOMDEF__
