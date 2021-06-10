@@ -395,16 +395,6 @@ typedef enum
 
 typedef enum
 {
-    WP_FIRST,
-    WP_SECOND,
-    WP_THIRD,
-    WP_FOURTH,
-    NUMWEAPONS,
-    WP_NOCHANGE
-} weapontype_t;
-
-typedef enum
-{
     MANA_1,
     MANA_2,
     NUMMANA,

@@ -228,7 +228,13 @@ typedef enum {
   wp_beak,
 
   NUMWEAPONS,
-  wp_nochange              // No pending weapon change.
+  wp_nochange,             // No pending weapon change.
+
+  // hexen
+  wp_first = 0,
+  wp_second,
+  wp_third,
+  wp_fourth
 } weapontype_t;
 
 // Ammunition types defined.
