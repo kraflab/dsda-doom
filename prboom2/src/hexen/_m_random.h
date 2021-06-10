@@ -34,4 +34,3 @@ extern int rndindex;
 int P_SubRandom (void);
 
 #endif // HEXEN_M_RANDOM_H
-

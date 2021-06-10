@@ -119,7 +119,7 @@ void ST_Init(void)
 {
     byte *pal;
     byte *buffer;
-    
+
     using_graphical_startup = false;
 
     if (graphical_startup && !debugmode && !testcontrols)
@@ -307,4 +307,3 @@ byte *ST_LoadScreen(void)
     W_ReadLump(lump, buffer);
     return (buffer);
 }
-

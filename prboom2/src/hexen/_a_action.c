@@ -217,7 +217,7 @@ void A_PotteryCheck(mobj_t * actor)
                 continue;
             }
             pmo = players[i].mo;
-            if (P_CheckSight(actor, pmo) 
+            if (P_CheckSight(actor, pmo)
               && (abs((int)R_PointToAngle2(pmo->x, pmo->y, actor->x, actor->y)
                - (int)pmo->angle) <= ANG45))
             {                   // Previous state (pottery bit waiting state)
@@ -1235,10 +1235,10 @@ void A_FlameCheck(mobj_t * actor)
 //===========================================================================
 // Bat Spawner Variables
 //      special1        frequency counter
-//      special2        
+//      special2
 //      args[0]         frequency of spawn (1=fastest, 10=slowest)
 //      args[1]         spread angle (0..255)
-//      args[2]         
+//      args[2]
 //      args[3]         duration of bats (in octics)
 //      args[4]         turn amount per move (in degrees)
 //

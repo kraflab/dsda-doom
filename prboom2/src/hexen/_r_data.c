@@ -399,7 +399,7 @@ void R_InitTextures(void)
 
 //
 // precalculate whatever possible
-//              
+//
     for (i = 0; i < numtextures; i++)
     {
         R_GenerateLookup(i);
@@ -609,7 +609,7 @@ void R_PrecacheLevel(void)
 
 //
 // precache flats
-//      
+//
     flatpresent = Z_Malloc(numflats, PU_STATIC, NULL);
     memset(flatpresent, 0, numflats);
     for (i = 0; i < numsectors; i++)

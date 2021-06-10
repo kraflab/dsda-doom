@@ -75,7 +75,7 @@ boolean sendsave;               // send a save event next tic
 boolean usergame;               // ok to save / end game
 
 boolean timingdemo;             // if true, exit with report on completion
-int starttime;                  // for comparative timing purposes      
+int starttime;                  // for comparative timing purposes
 
 boolean viewactive;
 
@@ -231,7 +231,7 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
         || joybuttons[joybspeed];
 
     // haleyjd: removed externdriver crap
-    
+
     forward = side = look = arti = flyheight = 0;
 
 //
@@ -490,9 +490,9 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
 
             if (gamekeydown[key])
             {
-                cmd->buttons |= BT_CHANGE; 
-                cmd->buttons |= i<<BT_WEAPONSHIFT; 
-                break; 
+                cmd->buttons |= BT_CHANGE;
+                cmd->buttons |= i<<BT_WEAPONSHIFT;
+                break;
             }
         }
     }
@@ -682,7 +682,7 @@ void G_DoLoadLevel(void)
 {
     int i;
 
-    levelstarttic = gametic;    // for time calculation 
+    levelstarttic = gametic;    // for time calculation
     gamestate = GS_LEVEL;
     for (i = 0; i < maxplayers; i++)
     {
@@ -693,13 +693,13 @@ void G_DoLoadLevel(void)
 
     SN_StopAllSequences();
     P_SetupLevel(gameepisode, gamemap, 0, gameskill);
-    displayplayer = consoleplayer;      // view the guy you are playing   
+    displayplayer = consoleplayer;      // view the guy you are playing
     gameaction = ga_nothing;
     Z_CheckHeap();
 
 //
 // clear cmd building stuff
-// 
+//
 
     memset(gamekeydown, 0, sizeof(gamekeydown));
     joyxmove = joyymove = joystrafemove = joylook = 0;
@@ -771,7 +771,7 @@ static void SetMouseButtons(unsigned int buttons_mask)
 /*
 ===============================================================================
 =
-= G_Responder 
+= G_Responder
 =
 = get info needed to make ticcmd_ts for the players
 =
@@ -1248,9 +1248,9 @@ void G_PlayerReborn(int player)
 /*
 ====================
 =
-= G_CheckSpot 
+= G_CheckSpot
 =
-= Returns false if the player cannot be respawned at the given mapthing_t spot 
+= Returns false if the player cannot be respawned at the given mapthing_t spot
 = because something is occupying it
 ====================
 */
