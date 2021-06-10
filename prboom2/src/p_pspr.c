@@ -2482,7 +2482,16 @@ void P_CloseWeapons(void)
 
 // hexen
 
+#include "hexen/h2def.h"
+
 extern fixed_t FloatBobOffsets[64];
+
+static int WeaponManaUse[NUMCLASSES][HEXEN_NUMWEAPONS] = {
+    {0, 2, 3, 14},
+    {0, 1, 4, 18},
+    {0, 3, 5, 15},
+    {0, 0, 0, 0}
+};
 
 void P_SetPspriteNF(player_t * player, int position, statenum_t stnum)
 {
@@ -2511,4 +2520,12 @@ void P_SetPspriteNF(player_t * player, int position, statenum_t stnum)
         stnum = psp->state->nextstate;
     }
     while (!psp->tics);         // An initial state of 0 could cycle through.
+}
+
+void P_ActivateMorphWeapon(player_t * player)
+{
+    player->pendingweapon = wp_nochange;
+    player->psprites[ps_weapon].sy = WEAPONTOP;
+    player->readyweapon = wp_first;     // Snout is the first weapon
+    P_SetPsprite(player, ps_weapon, HEXEN_S_SNOUTREADY);
 }

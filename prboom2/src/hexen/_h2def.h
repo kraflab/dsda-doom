@@ -325,16 +325,6 @@ typedef struct
 
 //=============================================================================
 
-// ===== Player Class Types =====
-typedef enum
-{
-    PCLASS_FIGHTER,
-    PCLASS_CLERIC,
-    PCLASS_MAGE,
-    PCLASS_PIG,
-    NUMCLASSES
-} pclass_t;
-
 typedef enum
 {
     PST_LIVE,                   // playing
@@ -392,21 +382,6 @@ typedef enum
     ARMOR_AMULET,
     NUMARMOR
 } armortype_t;
-
-typedef enum
-{
-    MANA_1,
-    MANA_2,
-    NUMMANA,
-    MANA_BOTH,
-    MANA_NONE
-} manatype_t;
-
-#define MAX_MANA	200
-
-#define WPIECE1		1
-#define WPIECE2		2
-#define WPIECE3		4
 
 typedef struct
 {

@@ -234,7 +234,8 @@ typedef enum {
   wp_first = 0,
   wp_second,
   wp_third,
-  wp_fourth
+  wp_fourth,
+  HEXEN_NUMWEAPONS
 } weapontype_t;
 
 // Ammunition types defined.

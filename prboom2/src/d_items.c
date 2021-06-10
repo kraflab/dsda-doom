@@ -434,3 +434,210 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     WPF_NOFLAG
   }
 };
+
+// hexen
+
+#include "hexen/h2def.h"
+
+weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
+  {                           // First Weapons
+    {                          // Fighter First Weapon - Punch
+      MANA_NONE,                // mana
+      HEXEN_S_PUNCHUP,                // upstate
+      HEXEN_S_PUNCHDOWN,              // downstate
+      HEXEN_S_PUNCHREADY,             // readystate
+      HEXEN_S_PUNCHATK1_1,            // atkstate
+      HEXEN_S_PUNCHATK1_1,            // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      0,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Cleric First Weapon - Mace
+      MANA_NONE,                // mana
+      HEXEN_S_CMACEUP,                // upstate
+      HEXEN_S_CMACEDOWN,              // downstate
+      HEXEN_S_CMACEREADY,             // readystate
+      HEXEN_S_CMACEATK_1,             // atkstate
+      HEXEN_S_CMACEATK_1,             // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      0,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Mage First Weapon - Wand
+      MANA_NONE,
+      HEXEN_S_MWANDUP,                // upstate
+      HEXEN_S_MWANDDOWN,              // downstate
+      HEXEN_S_MWANDREADY,             // readystate
+      HEXEN_S_MWANDATK_1,             // atkstate
+      HEXEN_S_MWANDATK_1,             // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      0,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Pig - Snout
+      MANA_NONE,                // mana
+      HEXEN_S_SNOUTUP,                // upstate
+      HEXEN_S_SNOUTDOWN,              // downstate
+      HEXEN_S_SNOUTREADY,             // readystate
+      HEXEN_S_SNOUTATK1,              // atkstate
+      HEXEN_S_SNOUTATK1,              // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      0,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    }
+  },
+  {                           // Second Weapons
+    {                          // Fighter - Axe
+      MANA_NONE,                // mana
+      HEXEN_S_FAXEUP,                 // upstate
+      HEXEN_S_FAXEDOWN,               // downstate
+      HEXEN_S_FAXEREADY,              // readystate
+      HEXEN_S_FAXEATK_1,              // atkstate
+      HEXEN_S_FAXEATK_1,              // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      2,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Cleric - Serpent Staff
+      MANA_1,                   // mana
+      HEXEN_S_CSTAFFUP,               // upstate
+      HEXEN_S_CSTAFFDOWN,             // downstate
+      HEXEN_S_CSTAFFREADY,            // readystate
+      HEXEN_S_CSTAFFATK_1,            // atkstate
+      HEXEN_S_CSTAFFATK_1,            // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      1,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Mage - Cone of shards
+      MANA_1,                   // mana
+      HEXEN_S_CONEUP,                 // upstate
+      HEXEN_S_CONEDOWN,               // downstate
+      HEXEN_S_CONEREADY,              // readystate
+      HEXEN_S_CONEATK1_1,             // atkstate
+      HEXEN_S_CONEATK1_3,             // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      3,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Pig - Snout
+      MANA_NONE,                // mana
+      HEXEN_S_SNOUTUP,                // upstate
+      HEXEN_S_SNOUTDOWN,              // downstate
+      HEXEN_S_SNOUTREADY,             // readystate
+      HEXEN_S_SNOUTATK1,              // atkstate
+      HEXEN_S_SNOUTATK1,              // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      0,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    }
+  },
+  {                           // Third Weapons
+    {                          // Fighter - Hammer
+      MANA_NONE,                // mana
+      HEXEN_S_FHAMMERUP,              // upstate
+      HEXEN_S_FHAMMERDOWN,            // downstate
+      HEXEN_S_FHAMMERREADY,           // readystate
+      HEXEN_S_FHAMMERATK_1,           // atkstate
+      HEXEN_S_FHAMMERATK_1,           // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      3,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Cleric - Flame Strike
+      MANA_2,                   // mana
+      HEXEN_S_CFLAMEUP,               // upstate
+      HEXEN_S_CFLAMEDOWN,             // downstate
+      HEXEN_S_CFLAMEREADY1,           // readystate
+      HEXEN_S_CFLAMEATK_1,            // atkstate
+      HEXEN_S_CFLAMEATK_1,            // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      4,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Mage - Lightning
+      MANA_2,                   // mana
+      HEXEN_S_MLIGHTNINGUP,           // upstate
+      HEXEN_S_MLIGHTNINGDOWN,         // downstate
+      HEXEN_S_MLIGHTNINGREADY,        // readystate
+      HEXEN_S_MLIGHTNINGATK_1,        // atkstate
+      HEXEN_S_MLIGHTNINGATK_1,        // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      5,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Pig - Snout
+      MANA_NONE,                // mana
+      HEXEN_S_SNOUTUP,                // upstate
+      HEXEN_S_SNOUTDOWN,              // downstate
+      HEXEN_S_SNOUTREADY,             // readystate
+      HEXEN_S_SNOUTATK1,              // atkstate
+      HEXEN_S_SNOUTATK1,              // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      0,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    }
+  },
+  {                           // Fourth Weapons
+    {                          // Fighter - Rune Sword
+      MANA_BOTH,                // mana
+      HEXEN_S_FSWORDUP,               // upstate
+      HEXEN_S_FSWORDDOWN,             // downstate
+      HEXEN_S_FSWORDREADY,            // readystate
+      HEXEN_S_FSWORDATK_1,            // atkstate
+      HEXEN_S_FSWORDATK_1,            // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      14,                             // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Cleric - Holy Symbol
+      MANA_BOTH,                // mana
+      HEXEN_S_CHOLYUP,                // upstate
+      HEXEN_S_CHOLYDOWN,              // downstate
+      HEXEN_S_CHOLYREADY,             // readystate
+      HEXEN_S_CHOLYATK_1,             // atkstate
+      HEXEN_S_CHOLYATK_1,             // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      18,                             // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Mage - Staff
+      MANA_BOTH,                // mana
+      HEXEN_S_MSTAFFUP,               // upstate
+      HEXEN_S_MSTAFFDOWN,             // downstate
+      HEXEN_S_MSTAFFREADY,            // readystate
+      HEXEN_S_MSTAFFATK_1,            // atkstate
+      HEXEN_S_MSTAFFATK_1,            // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      15,                             // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    },
+    {                          // Pig - Snout
+      MANA_NONE,                // mana
+      HEXEN_S_SNOUTUP,                // upstate
+      HEXEN_S_SNOUTDOWN,              // downstate
+      HEXEN_S_SNOUTREADY,             // readystate
+      HEXEN_S_SNOUTATK1,              // atkstate
+      HEXEN_S_SNOUTATK1,              // holdatkstate
+      HEXEN_S_NULL,                   // flashstate
+      0,                              // ammopershot
+      0,                              // intflags
+      WPF_NOFLAG
+    }
+  }
+};
