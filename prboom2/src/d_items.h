@@ -78,6 +78,10 @@ extern weaponinfo_t doom_weaponinfo[NUMWEAPONS+2];
 extern weaponinfo_t wpnlev1info[NUMWEAPONS];
 extern weaponinfo_t wpnlev2info[NUMWEAPONS];
 
+// hexen
+
+extern weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES];
+
 // dynamically selected in global.c
 
 extern weaponinfo_t* weaponinfo;

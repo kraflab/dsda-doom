@@ -481,54 +481,16 @@ typedef struct
 
 typedef struct player_s
 {
-    mobj_t *mo;
-    playerstate_t playerstate;
-    ticcmd_t cmd;
-
-    pclass_t class;             // player class type
-
-    fixed_t viewz;              // focal origin above r.z
-    fixed_t viewheight;         // base height above floor for viewz
-    fixed_t deltaviewheight;    // squat speed
-    fixed_t bob;                // bounded/scaled total momentum
-
-    int flyheight;
-    int lookdir;
-    boolean centering;
-    int health;                 // only used between levels, mo->health
     // is used during levels
     int armorpoints[NUMARMOR];
 
-    inventory_t inventory[NUMINVENTORYSLOTS];
-    artitype_t readyArtifact;
-    int artifactCount;
-    int inventorySlotNum;
-    int powers[NUMPOWERS];
     int keys;
     int pieces;                 // Fourth Weapon pieces
-    signed int frags[MAXPLAYERS];       // kills of other players
-    weapontype_t readyweapon;
-    weapontype_t pendingweapon; // wp_nochange if not changing
-    boolean weaponowned[NUMWEAPONS];
     int mana[NUMMANA];
-    int attackdown, usedown;    // true if button down last tic
-    int cheats;                 // bit flags
-
-    int refire;                 // refired shots are less accurate
-
-    int killcount, itemcount, secretcount;      // for intermission
-    char message[80];           // hint messages
-    int messageTics;            // counter for showing messages
     short ultimateMessage;
     short yellowMessage;
-    int damagecount, bonuscount;        // for screen flashing
     int poisoncount;            // screen flash for poison damage
     mobj_t *poisoner;           // NULL for non-player mobjs
-    mobj_t *attacker;           // who did damage (NULL for floors)
-    int extralight;             // so gun flashes light up areas
-    int fixedcolormap;          // can be set to REDCOLORMAP, etc
-    int colormap;               // 0-3 for which color to draw player
-    pspdef_t psprites[NUMPSPRITES];     // view sprites (gun, etc)
     int morphTics;              // player is a pig if > 0
     unsigned int jumpTics;      // delay the next jump for a moment
     unsigned int worldTimer;    // total time the player's been playing

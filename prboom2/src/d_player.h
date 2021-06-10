@@ -233,6 +233,9 @@ typedef struct player_s
   int chickenPeck;            // chicken peck countdown
   mobj_t *rain1;              // active rain maker 1
   mobj_t *rain2;              // active rain maker 2
+
+  // hexen
+  pclass_t pclass;             // player class type
 } player_t;
 
 

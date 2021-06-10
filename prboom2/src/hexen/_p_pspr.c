@@ -29,21 +29,6 @@ extern void A_UnHideThing(mobj_t * actor);
 
 //---------------------------------------------------------------------------
 //
-// PROC P_PostMorphWeapon
-//
-//---------------------------------------------------------------------------
-
-void P_PostMorphWeapon(player_t * player, weapontype_t weapon)
-{
-    player->pendingweapon = WP_NOCHANGE;
-    player->readyweapon = weapon;
-    player->psprites[ps_weapon].sy = WEAPONBOTTOM;
-    P_SetPsprite(player, ps_weapon,
-                 WeaponInfo[weapon][player->class].upstate);
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC P_BringUpWeapon
 //
 // Starts bringing the pending weapon up from the bottom of the screen.
