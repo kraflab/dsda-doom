@@ -22,6 +22,7 @@
 #include "e6y.h"
 
 #include "dsda.h"
+#include "dsda/analysis.h"
 
 #include "text_file.h"
 

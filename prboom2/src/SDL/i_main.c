@@ -77,6 +77,7 @@ typedef BOOL (WINAPI *SetAffinityFunc)(HANDLE hProcess, DWORD mask);
 
 #include "e6y.h"
 #include "dsda.h"
+#include "dsda/analysis.h"
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
 #include "dsda/text_file.h"

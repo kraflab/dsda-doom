@@ -19,6 +19,8 @@ set(COMMON_SRC
     doomtype.h
     dsda.c
     dsda.h
+    dsda/analysis.c
+    dsda/analysis.h
     dsda/command_display.c
     dsda/command_display.h
     dsda/console.c
