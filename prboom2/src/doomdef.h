@@ -417,6 +417,8 @@ typedef enum {
 
 #define BLINKTHRESHOLD (4*32)
 
+extern dboolean heretic;
+
 //hexen
 
 typedef enum

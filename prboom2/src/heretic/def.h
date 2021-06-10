@@ -19,8 +19,6 @@
 
 #include "doomtype.h"
 
-extern dboolean heretic;
-
 extern int inv_ptr;
 extern int curpos;
 extern int ArtifactFlash;
