@@ -712,11 +712,11 @@ void DrawMainBar(void)
     }
 
     // Armor
-    if (oldarmor != CPlayer->armorpoints)
+    if (oldarmor != CPlayer->armorpoints[ARMOR_ARMOR])
     {
         V_DrawNumPatch(224,  171, 0, LumpARMCLEAR, CR_DEFAULT, VPT_STRETCH);
-        DrINumber(CPlayer->armorpoints, 228, 170);
-        oldarmor = CPlayer->armorpoints;
+        DrINumber(CPlayer->armorpoints[ARMOR_ARMOR], 228, 170);
+        oldarmor = CPlayer->armorpoints[ARMOR_ARMOR];
     }
 }
 

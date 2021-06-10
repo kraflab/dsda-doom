@@ -1163,7 +1163,7 @@ static void ST_createWidgets(void)
                     ST_ARMORX,
                     ST_ARMORY,
                     tallnum,
-                    &plyr->armorpoints,
+                    &plyr->armorpoints[ARMOR_ARMOR],
                     &st_statusbaron, &tallpercent);
 
   // keyboxes 0-2

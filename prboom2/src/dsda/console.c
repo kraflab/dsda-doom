@@ -111,7 +111,7 @@ static dboolean console_PlayerSetArmor(const char* args) {
     armortype = players[consoleplayer].armortype;
 
   if (arg_count) {
-    players[consoleplayer].armorpoints = armorpoints;
+    players[consoleplayer].armorpoints[ARMOR_ARMOR] = armorpoints;
 
     if (armortype == 0) armortype = 1;
     players[consoleplayer].armortype = armortype;

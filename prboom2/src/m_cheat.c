@@ -317,7 +317,7 @@ static void cheat_health()
 
 static void cheat_megaarmour()
 {
-  plyr->armorpoints = idfa_armor;      // Ty 03/09/98 - deh
+  plyr->armorpoints[ARMOR_ARMOR] = idfa_armor;      // Ty 03/09/98 - deh
   plyr->armortype = idfa_armor_class;  // Ty 03/09/98 - deh
   plyr->message = s_STSTR_BEHOLDX; // Ty 03/27/98 - externalized
 }
@@ -333,7 +333,7 @@ static void cheat_fa()
       plyr->backpack = true;
     }
 
-  plyr->armorpoints = idfa_armor;      // Ty 03/09/98 - deh
+  plyr->armorpoints[ARMOR_ARMOR] = idfa_armor;      // Ty 03/09/98 - deh
   plyr->armortype = idfa_armor_class;  // Ty 03/09/98 - deh
 
   // You can't own weapons that aren't in the game // phares 02/27/98

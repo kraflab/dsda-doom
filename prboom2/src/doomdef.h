@@ -423,6 +423,15 @@ extern dboolean heretic;
 
 typedef enum
 {
+    ARMOR_ARMOR,
+    ARMOR_SHIELD,
+    ARMOR_HELMET,
+    ARMOR_AMULET,
+    NUMARMOR
+} armortype_t;
+
+typedef enum
+{
   PCLASS_FIGHTER,
   PCLASS_CLERIC,
   PCLASS_MAGE,

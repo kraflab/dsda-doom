@@ -374,15 +374,6 @@ typedef enum
     NUMKEYS
 } keytype_t;
 
-typedef enum
-{
-    ARMOR_ARMOR,
-    ARMOR_SHIELD,
-    ARMOR_HELMET,
-    ARMOR_AMULET,
-    NUMARMOR
-} armortype_t;
-
 extern weaponinfo_t WeaponInfo[NUMWEAPONS][NUMCLASSES];
 
 typedef enum
@@ -470,9 +461,6 @@ typedef struct
 
 typedef struct player_s
 {
-    // is used during levels
-    int armorpoints[NUMARMOR];
-
     int keys;
     int pieces;                 // Fourth Weapon pieces
     int mana[NUMMANA];

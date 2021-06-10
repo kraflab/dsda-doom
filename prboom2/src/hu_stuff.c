@@ -1537,7 +1537,7 @@ void HU_widget_build_armor(void)
   int i;
   char *s;
   char armorstr[80]; //jff
-  int armor = plr->armorpoints;
+  int armor = plr->armorpoints[ARMOR_ARMOR];
   int armorbars = armor>100? 25 : armor/4;
 
   if (w_armor.val != -1 && w_armor.val == armor)
@@ -1591,7 +1591,7 @@ void HU_widget_build_armor_big(void)
 {
   char *s;
   char armorstr[80]; //jff
-  int armor = plr->armorpoints;
+  int armor = plr->armorpoints[ARMOR_ARMOR];
 
   if (w_armor_big.val != -1 && w_armor_big.val == armor)
     return;
@@ -2095,7 +2095,7 @@ void HU_widget_draw_medict_percent(void)
 
 void HU_widget_build_armor_percent(void)
 {
-  int armor = plr->armorpoints;
+  int armor = plr->armorpoints[ARMOR_ARMOR];
 
   if (w_armor_percent.val != -1 && w_armor_percent.val == armor)
     return;

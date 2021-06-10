@@ -311,10 +311,10 @@ dboolean P_GiveBody(player_t * player, int num)
 static dboolean P_GiveArmor(player_t *player, int armortype)
 {
   int hits = armortype*100;
-  if (player->armorpoints >= hits)
+  if (player->armorpoints[ARMOR_ARMOR] >= hits)
     return false;   // don't pick up
   player->armortype = armortype;
-  player->armorpoints = hits;
+  player->armorpoints[ARMOR_ARMOR] = hits;
   return true;
 }
 
@@ -430,7 +430,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       break;
 
     case SPR_BON2:
-      player->armorpoints++;          // can go over 100%
+      player->armorpoints[ARMOR_ARMOR]++;          // can go over 100%
       // e6y
       // Doom 1.2 does not do check of armor points on overflow.
       // If you set the "IDKFA Armor" to MAX_INT (DWORD at 0x00064B5A -> FFFFFF7F)
@@ -438,8 +438,8 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       // and you will die after reception of any damage since this moment.
       // It happens because the taken health damage depends from armor points
       // if they are present and becomes equal to very large value in this case
-      if (player->armorpoints > max_armor && compatibility_level != doom_12_compatibility)
-        player->armorpoints = max_armor;
+      if (player->armorpoints[ARMOR_ARMOR] > max_armor && compatibility_level != doom_12_compatibility)
+        player->armorpoints[ARMOR_ARMOR] = max_armor;
       // e6y
       // We always give armor type 1 for the armor bonuses;
       // dehacked only affects the GreenArmor.
@@ -1113,13 +1113,13 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
       else
         saved = player->armortype == 1 ? damage / 3 : damage / 2;
 
-      if (player->armorpoints <= saved)
+      if (player->armorpoints[ARMOR_ARMOR] <= saved)
       {
         // armor is used up
-        saved = player->armorpoints;
+        saved = player->armorpoints[ARMOR_ARMOR];
         player->armortype = 0;
       }
-      player->armorpoints -= saved;
+      player->armorpoints[ARMOR_ARMOR] -= saved;
       damage -= saved;
     }
 
@@ -1839,7 +1839,7 @@ dboolean P_ChickenMorphPlayer(player_t * player)
     chicken->player = player;
     player->health = chicken->health = MAXCHICKENHEALTH;
     player->mo = chicken;
-    player->armorpoints = player->armortype = 0;
+    player->armorpoints[ARMOR_ARMOR] = player->armortype = 0;
     player->powers[pw_invisibility] = 0;
     player->powers[pw_weaponlevel2] = 0;
     if (oldFlags2 & MF2_FLY)
