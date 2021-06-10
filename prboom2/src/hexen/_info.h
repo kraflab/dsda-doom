@@ -3171,16 +3171,6 @@ typedef enum
     NUMSTATES
 } statenum_t;
 
-typedef struct
-{
-    spritenum_t sprite;
-    int frame;
-    int tics;
-    void (*action) ();
-    statenum_t nextstate;
-    int misc1, misc2;
-} state_t;
-
 extern state_t states[NUMSTATES];
 extern const char *sprnames[];
 
