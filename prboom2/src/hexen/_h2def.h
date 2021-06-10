@@ -383,17 +383,6 @@ typedef enum
     NUMARMOR
 } armortype_t;
 
-typedef struct
-{
-    manatype_t mana;
-    int upstate;
-    int downstate;
-    int readystate;
-    int atkstate;
-    int holdatkstate;
-    int flashstate;
-} weaponinfo_t;
-
 extern weaponinfo_t WeaponInfo[NUMWEAPONS][NUMCLASSES];
 
 typedef enum
