@@ -118,6 +118,7 @@ int g_menu_cr_select;
 int g_menu_cr_disable;
 
 dboolean hexen = false;
+dboolean heretic = false;
 
 extern patchnum_t hu_font[HU_FONTSIZE];
 extern patchnum_t hu_font2[HU_FONTSIZE];

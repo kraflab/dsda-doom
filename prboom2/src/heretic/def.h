@@ -28,33 +28,6 @@ extern dboolean inventory;
 extern int SB_state;
 extern int playerkeys;
 
-#define TELEFOGHEIGHT (32*FRACUNIT)
-#define ANG1_X          0x01000000
-
-#define FOOTCLIPSIZE	10*FRACUNIT
-
-#define FLOOR_SOLID 0
-#define FLOOR_WATER 1
-#define FLOOR_LAVA 2
-#define FLOOR_SLUDGE 3
-
-#define USE_GWND_AMMO_1 1
-#define USE_GWND_AMMO_2 1
-#define USE_CBOW_AMMO_1 1
-#define USE_CBOW_AMMO_2 1
-#define USE_BLSR_AMMO_1 1
-#define USE_BLSR_AMMO_2 5
-#define USE_SKRD_AMMO_1 1
-#define USE_SKRD_AMMO_2 5
-#define USE_PHRD_AMMO_1 1
-#define USE_PHRD_AMMO_2 1
-#define USE_MACE_AMMO_1 1
-#define USE_MACE_AMMO_2 5
-
-#define TOCENTER -8
-
-#define BLINKTHRESHOLD (4*32)
-
 #include "dstrings.h"
 
 #endif

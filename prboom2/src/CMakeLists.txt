@@ -91,7 +91,6 @@ set(COMMON_SRC
     g_overflow.c
     g_overflow.h
     heretic/d_main.c
-    heretic/def.c
     heretic/def.h
     heretic/dstrings.h
     heretic/dstrings.c
