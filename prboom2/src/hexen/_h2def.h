@@ -463,7 +463,6 @@ typedef struct player_s
 {
     int keys;
     int pieces;                 // Fourth Weapon pieces
-    int mana[NUMMANA];
     short ultimateMessage;
     short yellowMessage;
     int poisoncount;            // screen flash for poison damage

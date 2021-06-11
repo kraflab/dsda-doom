@@ -29,36 +29,6 @@ extern void A_UnHideThing(mobj_t * actor);
 
 //---------------------------------------------------------------------------
 //
-// PROC P_BringUpWeapon
-//
-// Starts bringing the pending weapon up from the bottom of the screen.
-//
-//---------------------------------------------------------------------------
-
-void P_BringUpWeapon(player_t * player)
-{
-    statenum_t new;
-
-    if (player->pendingweapon == WP_NOCHANGE)
-    {
-        player->pendingweapon = player->readyweapon;
-    }
-    if (player->class == PCLASS_FIGHTER && player->pendingweapon == WP_SECOND
-        && player->mana[MANA_1])
-    {
-        new = S_FAXEUP_G;
-    }
-    else
-    {
-        new = WeaponInfo[player->pendingweapon][player->class].upstate;
-    }
-    player->pendingweapon = WP_NOCHANGE;
-    player->psprites[ps_weapon].sy = WEAPONBOTTOM;
-    P_SetPsprite(player, ps_weapon, new);
-}
-
-//---------------------------------------------------------------------------
-//
 // FUNC P_CheckMana
 //
 // Returns true if there is enough mana to shoot.  If not, selects the

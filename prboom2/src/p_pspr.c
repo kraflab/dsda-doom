@@ -155,7 +155,19 @@ static void P_BringUpWeapon(player_t *player)
   if (player->pendingweapon >= NUMWEAPONS)
     lprintf(LO_WARN, "P_BringUpWeapon: weaponinfo overrun has occurred.\n");
 
-  if (player->powers[pw_weaponlevel2])
+  if (player->pclass)
+  {
+    if (player->pclass == PCLASS_FIGHTER && player->pendingweapon == wp_second
+        && player->ammo[MANA_1])
+    {
+      newstate = HEXEN_S_FAXEUP_G;
+    }
+    else
+    {
+      newstate = hexen_weaponinfo[player->pendingweapon][player->pclass].upstate;
+    }
+  }
+  else if (player->powers[pw_weaponlevel2])
   {
     newstate = wpnlev2info[player->pendingweapon].upstate;
   }
@@ -167,7 +179,7 @@ static void P_BringUpWeapon(player_t *player)
   player->pendingweapon = wp_nochange;
   // killough 12/98: prevent pistol from starting visibly at bottom of screen:
   player->psprites[ps_weapon].sy =
-    mbf_features ? WEAPONBOTTOM+FRACUNIT*2 : WEAPONBOTTOM;
+    mbf_features ? WEAPONBOTTOM + FRACUNIT * 2 : WEAPONBOTTOM;
 
   P_SetPsprite(player, ps_weapon, newstate);
 }

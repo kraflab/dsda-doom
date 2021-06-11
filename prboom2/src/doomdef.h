@@ -254,7 +254,14 @@ typedef enum {
   am_mace,
 
   NUMAMMO,
-  am_noammo   // fist, chainsaw, staff, gauntlets
+  am_noammo,   // fist, chainsaw, staff, gauntlets
+
+  // hexen
+  MANA_1 = 0,
+  MANA_2,
+  NUMMANA,
+  MANA_BOTH,
+  MANA_NONE = am_noammo
 } ammotype_t;
 
 // Power up artifacts.
@@ -440,14 +447,7 @@ typedef enum
   NUMCLASSES
 } pclass_t;
 
-typedef enum
-{
-  MANA_1,
-  MANA_2,
-  NUMMANA,
-  MANA_BOTH,
-  MANA_NONE
-} manatype_t;
+typedef ammotype_t manatype_t;
 
 #define MAX_MANA	200
 
