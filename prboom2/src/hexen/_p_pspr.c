@@ -29,29 +29,6 @@ extern void A_UnHideThing(mobj_t * actor);
 
 //---------------------------------------------------------------------------
 //
-// PROC A_ReFire
-//
-// The player can re fire the weapon without lowering it entirely.
-//
-//---------------------------------------------------------------------------
-
-void A_ReFire(player_t * player, pspdef_t * psp)
-{
-    if ((player->cmd.buttons & BT_ATTACK)
-        && player->pendingweapon == WP_NOCHANGE && player->health)
-    {
-        player->refire++;
-        P_FireWeapon(player);
-    }
-    else
-    {
-        player->refire = 0;
-        P_CheckMana(player);
-    }
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC A_Lower
 //
 //---------------------------------------------------------------------------
