@@ -432,6 +432,7 @@ typedef enum
 
 typedef enum
 {
+  PCLASS_NULL,
   PCLASS_FIGHTER,
   PCLASS_CLERIC,
   PCLASS_MAGE,

@@ -439,7 +439,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
 
 weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
   {                           // First Weapons
-    {                          // Fighter First Weapon - Punch
+    [PCLASS_FIGHTER] = {       // Fighter First Weapon - Punch
       MANA_NONE,                // mana
       HEXEN_S_PUNCHUP,                // upstate
       HEXEN_S_PUNCHDOWN,              // downstate
@@ -489,7 +489,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
     }
   },
   {                           // Second Weapons
-    {                          // Fighter - Axe
+    [PCLASS_FIGHTER] = {       // Fighter - Axe
       MANA_NONE,                // mana
       HEXEN_S_FAXEUP,                 // upstate
       HEXEN_S_FAXEDOWN,               // downstate
@@ -539,7 +539,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
     }
   },
   {                           // Third Weapons
-    {                          // Fighter - Hammer
+    [PCLASS_FIGHTER] = {       // Fighter - Hammer
       MANA_NONE,                // mana
       HEXEN_S_FHAMMERUP,              // upstate
       HEXEN_S_FHAMMERDOWN,            // downstate
@@ -589,7 +589,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
     }
   },
   {                           // Fourth Weapons
-    {                          // Fighter - Rune Sword
+    [PCLASS_FIGHTER] = {       // Fighter - Rune Sword
       MANA_BOTH,                // mana
       HEXEN_S_FSWORDUP,               // upstate
       HEXEN_S_FSWORDDOWN,             // downstate
