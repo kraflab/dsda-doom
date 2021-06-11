@@ -111,45 +111,6 @@ void A_Raise(player_t * player, pspdef_t * psp)
     }
 }
 
-/*
-===============
-=
-= P_BulletSlope
-=
-= Sets a slope so a near miss is at aproximately the height of the
-= intended target
-=
-===============
-*/
-
-/*
-void P_BulletSlope (mobj_t *mo)
-{
-	angle_t		an;
-
-//
-// see which target is to be aimed at
-//
-	an = mo->angle;
-	bulletslope = P_AimLineAttack (mo, an, 16*64*FRACUNIT);
-	if (!linetarget)
-	{
-		an += 1<<26;
-		bulletslope = P_AimLineAttack (mo, an, 16*64*FRACUNIT);
-		if (!linetarget)
-		{
-			an -= 2<<26;
-			bulletslope = P_AimLineAttack (mo, an, 16*64*FRACUNIT);
-		}
-		if (!linetarget)
-		{
-			an += 1<<26;
-			bulletslope = (mo->player->lookdir<<FRACBITS)/173;
-		}
-	}
-}
-*/
-
 //
 // WEAPON ATTACKS
 //
@@ -1227,89 +1188,6 @@ void A_CFlameMissile(mobj_t * actor)
     }
 }
 
-/*
-void A_CFlameAttack(player_t *player, pspdef_t *psp)
-{
-	mobj_t *pmo;
-	angle_t angle;
-	int damage;
-	int i;
-	int an, an90;
-	fixed_t dist;
-	mobj_t *mo;
-
-	pmo = player->mo;
-	P_BulletSlope(pmo);
-	damage = 25+HITDICE(3);
-	angle = pmo->angle;
-	if(player->refire)
-	{
-		angle += P_SubRandom()<<17;
-	}
-	P_AimLineAttack(pmo, angle, CFLAMERANGE); // Correctly set linetarget
-	if(!linetarget)
-	{
-		angle += ANG1*2;
-		P_AimLineAttack(pmo, angle, CFLAMERANGE);
-		if(!linetarget)
-		{
-			angle -= ANG1*4;
-			P_AimLineAttack(pmo, angle, CFLAMERANGE);
-			if(!linetarget)
-			{
-				angle += ANG1*2;
-			}
-		}
-	}
-	if(linetarget)
-	{
-		PuffType = MT_FLAMEPUFF2;
-	}
-	else
-	{
-		PuffType = MT_FLAMEPUFF;
-	}
-	P_LineAttack(pmo, angle, CFLAMERANGE, bulletslope, damage);
-	if(linetarget)
-	{ // Hit something, so spawn the flame circle around the thing
-		dist = linetarget->radius+18*FRACUNIT;
-		for(i = 0; i < 4; i++)
-		{
-			an = (i*ANG45)>>ANGLETOFINESHIFT;
-			an90 = (i*ANG45+ANG90)>>ANGLETOFINESHIFT;
-			mo = P_SpawnMobj(linetarget->x+FixedMul(dist, finecosine[an]),
-				linetarget->y+FixedMul(dist, finesine[an]),
-				linetarget->z+5*FRACUNIT, MT_CIRCLEFLAME);
-			if(mo)
-			{
-				mo->angle = an<<ANGLETOFINESHIFT;
-				mo->target = pmo;
-				mo->momx = mo->special1.i = FixedMul(FLAMESPEED, finecosine[an]);
-				mo->momy = mo->special2.i = FixedMul(FLAMESPEED, finesine[an]);
-				mo->tics -= P_Random()&3;
-			}
-			mo = P_SpawnMobj(linetarget->x-FixedMul(dist, finecosine[an]),
-				linetarget->y-FixedMul(dist, finesine[an]),
-				linetarget->z+5*FRACUNIT, MT_CIRCLEFLAME);
-			if(mo)
-			{
-				mo->angle = ANG180+(an<<ANGLETOFINESHIFT);
-				mo->target = pmo;
-				mo->momx = mo->special1.i = FixedMul(-FLAMESPEED,
-					finecosine[an]);
-				mo->momy = mo->special2.i = FixedMul(-FLAMESPEED, finesine[an]);
-				mo->tics -= P_Random()&3;
-			}
-		}
-	}
-// Create a line of flames from the player to the flame puff
-	CFlameCreateFlames(player->mo);
-
-	player->mana[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
-	S_StartSound(player->mo, SFX_CLERIC_FLAME_FIRE);
-}
-*/
-
 //============================================================================
 //
 // A_CFlameRotate
@@ -1872,50 +1750,10 @@ void A_ShedShard(mobj_t * actor)
     }
 }
 
-//----------------------------------------------------------------------------
-//
-// PROC A_HideInCeiling
-//
-//----------------------------------------------------------------------------
-
-/*
-void A_HideInCeiling(mobj_t *actor)
-{
-	actor->z = actor->ceilingz+4*FRACUNIT;
-}
-*/
-
-//----------------------------------------------------------------------------
-//
-// PROC A_FloatPuff
-//
-//----------------------------------------------------------------------------
-
-/*
-void A_FloatPuff(mobj_t *puff)
-{
-	puff->momz += 1.8*FRACUNIT;
-}
-*/
-
 void A_Light0(player_t * player, pspdef_t * psp)
 {
     player->extralight = 0;
 }
-
-/*
-void A_Light1(player_t *player, pspdef_t *psp)
-{
-	player->extralight = 1;
-}
-*/
-
-/*
-void A_Light2(player_t *player, pspdef_t *psp)
-{
-	player->extralight = 2;
-}
-*/
 
 //------------------------------------------------------------------------
 //
