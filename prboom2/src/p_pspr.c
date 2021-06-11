@@ -704,7 +704,7 @@ void A_Lower(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_Lower", player);
 
-  if (player->chickenTics)
+  if (player->chickenTics || player->morphTics)
   {
       psp->sy = WEAPONBOTTOM;
   }
@@ -760,6 +760,18 @@ void A_Raise(player_t *player, pspdef_t *psp)
 
   if (player->powers[pw_weaponlevel2])
     newstate = wpnlev2info[player->readyweapon].readystate;
+  else if (player->pclass)
+  {
+    if (player->pclass == PCLASS_FIGHTER && player->readyweapon == wp_second
+        && player->ammo[MANA_1])
+    {
+      newstate = HEXEN_S_FAXEREADY_G;
+    }
+    else
+    {
+      newstate = hexen_weaponinfo[player->readyweapon][player->pclass].readystate;
+    }
+  }
   else
     newstate = weaponinfo[player->readyweapon].readystate;
 
