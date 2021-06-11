@@ -33,37 +33,6 @@ extern void A_UnHideThing(mobj_t * actor);
 
 //============================================================================
 //
-// A_SnoutAttack
-//
-//============================================================================
-
-void A_SnoutAttack(player_t * player, pspdef_t * psp)
-{
-    angle_t angle;
-    int damage;
-    int slope;
-
-    damage = 3 + (P_Random() & 3);
-    angle = player->mo->angle;
-    slope = P_AimLineAttack(player->mo, angle, MELEERANGE);
-    PuffType = MT_SNOUTPUFF;
-    PuffSpawned = NULL;
-    P_LineAttack(player->mo, angle, MELEERANGE, slope, damage);
-    S_StartSound(player->mo, SFX_PIG_ACTIVE1 + (P_Random() & 1));
-    if (linetarget)
-    {
-        AdjustPlayerAngle(player->mo);
-//              player->mo->angle = R_PointToAngle2(player->mo->x,
-//                      player->mo->y, linetarget->x, linetarget->y);
-        if (PuffSpawned)
-        {                       // Bit something
-            S_StartSound(player->mo, SFX_PIG_ATTACK);
-        }
-    }
-}
-
-//============================================================================
-//
 // A_FHammerAttack
 //
 //============================================================================

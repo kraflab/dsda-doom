@@ -255,7 +255,6 @@ void PIT_ThrustSpike(mobj_t * actor);
 
 boolean P_ChangeSector(sector_t * sector, int crunch);
 
-extern mobj_t *PuffSpawned;     // true if a puff was spawned
 extern mobj_t *linetarget;      // who got hit (or NULL)
 fixed_t P_AimLineAttack(mobj_t * t1, angle_t angle, fixed_t distance);
 

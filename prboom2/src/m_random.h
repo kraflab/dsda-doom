@@ -125,6 +125,7 @@ typedef enum {
   pr_defect,                  // #62  // Start new entries -- add new entries below
   pr_heretic,                 // #63
   pr_mbf21,                   // #64
+  pr_hexen,                   // #65
 
   // End of new entries
   NUMPRCLASS               // MUST be last item in list

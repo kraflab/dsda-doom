@@ -2703,3 +2703,28 @@ void AdjustPlayerAngle(mobj_t * pmo)
         pmo->angle = angle;
     }
 }
+
+mobj_t *PuffSpawned;
+
+void A_SnoutAttack(player_t * player, pspdef_t * psp)
+{
+    angle_t angle;
+    int damage;
+    int slope;
+
+    damage = 3 + (P_Random(pr_hexen) & 3);
+    angle = player->mo->angle;
+    slope = P_AimLineAttack(player->mo, angle, MELEERANGE, 0);
+    PuffType = HEXEN_MT_SNOUTPUFF;
+    PuffSpawned = NULL;
+    P_LineAttack(player->mo, angle, MELEERANGE, slope, damage);
+    S_StartSound(player->mo, hexen_sfx_pig_active1 + (P_Random(pr_hexen) & 1));
+    if (linetarget)
+    {
+        AdjustPlayerAngle(player->mo);
+        if (PuffSpawned)
+        {                       // Bit something
+            S_StartSound(player->mo, hexen_sfx_pig_attack);
+        }
+    }
+}
