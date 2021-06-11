@@ -120,6 +120,8 @@ int g_menu_cr_disable;
 dboolean hexen = false;
 dboolean heretic = false;
 
+// HEXEN_TODO: max_snd_dist = 2025
+
 extern patchnum_t hu_font[HU_FONTSIZE];
 extern patchnum_t hu_font2[HU_FONTSIZE];
 

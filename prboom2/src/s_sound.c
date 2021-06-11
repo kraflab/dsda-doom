@@ -125,7 +125,7 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup);
 
 
 // heretic
-#define MAX_SND_DIST 	1600
+int max_snd_dist = 1600;
 
 static byte* soundCurve;
 static int AmbChan = -1;
@@ -183,7 +183,7 @@ void S_Init(int sfxVolume, int musicVolume)
 
   if (!heretic) return;
 
-  soundCurve = Z_Malloc(MAX_SND_DIST, PU_STATIC, NULL);
+  soundCurve = Z_Malloc(max_snd_dist, PU_STATIC, NULL);
   S_SetSoundCurve(true);
 }
 
@@ -851,7 +851,7 @@ void S_SetSoundCurve(dboolean fullprocess)
   int limit;
   const byte* lump;
 
-  limit = fullprocess ? MAX_SND_DIST : 1;
+  limit = fullprocess ? max_snd_dist : 1;
   lump = (const byte *) W_CacheLumpName("SNDCURVE");
 
   for (i = 0; i < limit; i++)
@@ -963,7 +963,7 @@ static void Heretic_S_StartSound(void *_origin, int sound_id)
   dist = absx + absy - (absx > absy ? absy >> 1 : absx >> 1);
   dist >>= FRACBITS;
 
-  if (dist >= MAX_SND_DIST)
+  if (dist >= max_snd_dist)
     return; //sound is beyond the hearing range...
   if (dist < 0)
     dist = 0;
@@ -1180,7 +1180,7 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
     dist = absx + absy - (absx > absy ? absy >> 1 : absx >> 1);
     dist >>= FRACBITS;
 
-    if (dist >= MAX_SND_DIST)
+    if (dist >= max_snd_dist)
     {
       S_StopSound(origin);
       continue;
