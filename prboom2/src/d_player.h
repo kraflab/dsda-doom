@@ -235,7 +235,8 @@ typedef struct player_s
   mobj_t *rain2;              // active rain maker 2
 
   // hexen
-  pclass_t pclass;             // player class type
+  pclass_t pclass;            // player class type
+  int morphTics;              // player is a pig if > 0
 } player_t;
 
 

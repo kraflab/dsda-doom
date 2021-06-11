@@ -576,9 +576,20 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
   }
 
   // get out of attack state
-  if (player->mo->state == &states[g_s_play_atk1]
-      || player->mo->state == &states[g_s_play_atk2] )
-    P_SetMobjState(player->mo, g_s_play);
+  if (player->pclass)
+  {
+    if (player->mo->state >= &states[PStateAttack[player->pclass]]
+        && player->mo->state <= &states[PStateAttackEnd[player->pclass]])
+    {
+        P_SetMobjState(player->mo, PStateNormal[player->pclass]);
+    }
+  }
+  else
+  {
+    if (player->mo->state == &states[g_s_play_atk1]
+        || player->mo->state == &states[g_s_play_atk2] )
+      P_SetMobjState(player->mo, g_s_play);
+  }
 
   if (heretic)
   {
@@ -588,6 +599,10 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
     {
         S_StartSound(player->mo, heretic_sfx_stfcrk);
     }
+  }
+  else if (hexen)
+  {
+    // hexen does nothing here
   }
   else
     if (player->readyweapon == wp_chainsaw && psp->state == &states[S_SAW])
@@ -602,6 +617,8 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
     statenum_t newstate;
     if (player->powers[pw_weaponlevel2])
       newstate = wpnlev2info[player->readyweapon].downstate;
+    else if (player->pclass)
+      newstate = hexen_weaponinfo[player->readyweapon][player->pclass].downstate;
     else
       newstate = weaponinfo[player->readyweapon].downstate;
     P_SetPsprite(player, ps_weapon, newstate);
@@ -614,6 +631,7 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
   if (player->cmd.buttons & BT_ATTACK)
   {
     if (
+      hexen || // hexen_note: why is this different?
       !player->attackdown ||
       !(weaponinfo[player->readyweapon].flags & WPF_NOAUTOFIRE)
     )
@@ -627,10 +645,11 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
     player->attackdown = false;
 
   // bob the weapon based on movement speed
+  if (!player->morphTics)
   {
-    int angle = (128*leveltime) & FINEMASK;
+    int angle = (128 * leveltime) & FINEMASK;
     psp->sx = FRACUNIT + FixedMul(player->bob, finecosine[angle]);
-    angle &= FINEANGLES/2-1;
+    angle &= FINEANGLES / 2 - 1;
     psp->sy = WEAPONTOP + FixedMul(player->bob, finesine[angle]);
   }
 }

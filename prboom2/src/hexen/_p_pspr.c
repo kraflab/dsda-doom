@@ -29,56 +29,6 @@ extern void A_UnHideThing(mobj_t * actor);
 
 //---------------------------------------------------------------------------
 //
-// PROC A_WeaponReady
-//
-// The player can fire the weapon or change to another weapon at this time.
-//
-//---------------------------------------------------------------------------
-
-void A_WeaponReady(player_t * player, pspdef_t * psp)
-{
-    int angle;
-
-    // Change player from attack state
-    if (player->mo->state >= &states[PStateAttack[player->class]]
-        && player->mo->state <= &states[PStateAttackEnd[player->class]])
-    {
-        P_SetMobjState(player->mo, PStateNormal[player->class]);
-    }
-    // Put the weapon away if the player has a pending weapon or has
-    // died.
-    if (player->pendingweapon != WP_NOCHANGE || !player->health)
-    {
-        P_SetPsprite(player, ps_weapon,
-                     WeaponInfo[player->readyweapon][player->class].
-                     downstate);
-        return;
-    }
-
-    // Check for fire.
-    if (player->cmd.buttons & BT_ATTACK)
-    {
-        player->attackdown = true;
-        P_FireWeapon(player);
-        return;
-    }
-    else
-    {
-        player->attackdown = false;
-    }
-
-    if (!player->morphTics)
-    {
-        // Bob the weapon based on movement speed.
-        angle = (128 * leveltime) & FINEMASK;
-        psp->sx = FRACUNIT + FixedMul(player->bob, finecosine[angle]);
-        angle &= FINEANGLES / 2 - 1;
-        psp->sy = WEAPONTOP + FixedMul(player->bob, finesine[angle]);
-    }
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC A_ReFire
 //
 // The player can re fire the weapon without lowering it entirely.

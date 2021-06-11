@@ -467,7 +467,6 @@ typedef struct player_s
     short yellowMessage;
     int poisoncount;            // screen flash for poison damage
     mobj_t *poisoner;           // NULL for non-player mobjs
-    int morphTics;              // player is a pig if > 0
     unsigned int jumpTics;      // delay the next jump for a moment
     unsigned int worldTimer;    // total time the player's been playing
 } player_t;
