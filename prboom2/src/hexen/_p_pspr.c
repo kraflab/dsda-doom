@@ -29,36 +29,6 @@ extern void A_UnHideThing(mobj_t * actor);
 
 //---------------------------------------------------------------------------
 //
-// PROC P_FireWeapon
-//
-//---------------------------------------------------------------------------
-
-void P_FireWeapon(player_t * player)
-{
-    statenum_t attackState;
-
-    if (!P_CheckMana(player))
-    {
-        return;
-    }
-    P_SetMobjState(player->mo, PStateAttack[player->class]);    // S_PLAY_ATK1);
-    if (player->class == PCLASS_FIGHTER && player->readyweapon == WP_SECOND
-        && player->mana[MANA_1] > 0)
-    {                           // Glowing axe
-        attackState = S_FAXEATK_G1;
-    }
-    else
-    {
-        attackState = player->refire ?
-            WeaponInfo[player->readyweapon][player->class].holdatkstate
-            : WeaponInfo[player->readyweapon][player->class].atkstate;
-    }
-    P_SetPsprite(player, ps_weapon, attackState);
-    P_NoiseAlert(player->mo, player->mo);
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC P_DropWeapon
 //
 // The player died, so put the weapon away.

@@ -33,34 +33,6 @@ boolean onground;
 int newtorch;                   // used in the torch flicker effect.
 int newtorchdelta;
 
-int PStateNormal[NUMCLASSES] = {
-    S_FPLAY,
-    S_CPLAY,
-    S_MPLAY,
-    S_PIGPLAY
-};
-
-int PStateRun[NUMCLASSES] = {
-    S_FPLAY_RUN1,
-    S_CPLAY_RUN1,
-    S_MPLAY_RUN1,
-    S_PIGPLAY_RUN1
-};
-
-int PStateAttack[NUMCLASSES] = {
-    S_FPLAY_ATK1,
-    S_CPLAY_ATK1,
-    S_MPLAY_ATK1,
-    S_PIGPLAY_ATK1
-};
-
-int PStateAttackEnd[NUMCLASSES] = {
-    S_FPLAY_ATK2,
-    S_CPLAY_ATK3,
-    S_MPLAY_ATK2,
-    S_PIGPLAY_ATK1
-};
-
 int ArmorMax[NUMCLASSES] = { 20, 18, 16, 1 };
 
 /*

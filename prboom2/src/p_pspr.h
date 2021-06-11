@@ -157,6 +157,5 @@ void P_CloseWeapons(void);
 void P_AddMaceSpot(const mapthing_t * mthing);
 void P_DropWeapon(struct player_s * player);
 void P_UpdateBeak(struct player_s * player, pspdef_t * psp);
-dboolean Heretic_P_CheckAmmo(struct player_s * player);
 
 #endif

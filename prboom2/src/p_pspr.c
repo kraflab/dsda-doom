@@ -84,6 +84,35 @@ static const int recoil_values[] = {    // phares
   80  // wp_supershotgun
 };
 
+// hexen
+int PStateNormal[NUMCLASSES] = {
+  [PCLASS_FIGHTER] = HEXEN_S_FPLAY,
+                     HEXEN_S_CPLAY,
+                     HEXEN_S_MPLAY,
+                     HEXEN_S_PIGPLAY
+};
+
+int PStateRun[NUMCLASSES] = {
+  [PCLASS_FIGHTER] = HEXEN_S_FPLAY_RUN1,
+                     HEXEN_S_CPLAY_RUN1,
+                     HEXEN_S_MPLAY_RUN1,
+                     HEXEN_S_PIGPLAY_RUN1
+};
+
+int PStateAttack[NUMCLASSES] = {
+  [PCLASS_FIGHTER] = HEXEN_S_FPLAY_ATK1,
+                     HEXEN_S_CPLAY_ATK1,
+                     HEXEN_S_MPLAY_ATK1,
+                     HEXEN_S_PIGPLAY_ATK1
+};
+
+int PStateAttackEnd[NUMCLASSES] = {
+  [PCLASS_FIGHTER] = HEXEN_S_FPLAY_ATK2,
+                     HEXEN_S_CPLAY_ATK3,
+                     HEXEN_S_MPLAY_ATK2,
+                     HEXEN_S_PIGPLAY_ATK1
+};
+
 //
 // P_SetPsprite
 //
@@ -365,12 +394,16 @@ int P_WeaponPreferred(int w1, int w2)
 // (only in demo_compatibility mode -- killough 3/22/98)
 //
 
+static dboolean Heretic_P_CheckAmmo(struct player_s * player);
+static dboolean P_CheckMana(player_t * player);
+
 dboolean P_CheckAmmo(player_t *player)
 {
   ammotype_t ammo;
   int count;  // Regular
 
   if (heretic) return Heretic_P_CheckAmmo(player);
+  if (hexen) return P_CheckMana(player);
 
   ammo = weaponinfo[player->readyweapon].ammo;
   if (mbf21)
@@ -462,20 +495,39 @@ static void P_FireWeapon(player_t *player)
                                              : &weaponinfo[0];
     newstate = player->refire ? wpinfo[player->readyweapon].holdatkstate
                               : wpinfo[player->readyweapon].atkstate;
-    P_SetPsprite(player, ps_weapon, newstate);
-    P_NoiseAlert(player->mo, player->mo);
-    if (player->readyweapon == wp_gauntlets && !player->refire)
-    {                           // Play the sound for the initial gauntlet attack
-        S_StartSound(player->mo, heretic_sfx_gntuse);
+  }
+  else if (hexen)
+  {
+    P_SetMobjState(player->mo, PStateAttack[player->pclass]);
+    if (player->pclass == PCLASS_FIGHTER && player->readyweapon == wp_second
+        && player->ammo[MANA_1] > 0)
+    {                           // Glowing axe
+      newstate = HEXEN_S_FAXEATK_G1;
+    }
+    else
+    {
+      newstate = player->refire ?
+        hexen_weaponinfo[player->readyweapon][player->pclass].holdatkstate
+        : hexen_weaponinfo[player->readyweapon][player->pclass].atkstate;
     }
   }
   else
   {
     P_SetMobjState(player->mo, S_PLAY_ATK1);
     newstate = weaponinfo[player->readyweapon].atkstate;
-    P_SetPsprite(player, ps_weapon, newstate);
-    if (!(weaponinfo[player->readyweapon].flags & WPF_SILENT))
-      P_NoiseAlert(player->mo, player->mo);
+  }
+
+  P_SetPsprite(player, ps_weapon, newstate);
+  if (!(weaponinfo[player->readyweapon].flags & WPF_SILENT))
+    P_NoiseAlert(player->mo, player->mo);
+
+  // heretic_note: does the order matter? can we move it up?
+  if (heretic)
+  {
+    if (player->readyweapon == wp_gauntlets && !player->refire)
+    {                           // Play the sound for the initial gauntlet attack
+        S_StartSound(player->mo, heretic_sfx_gntuse);
+    }
   }
 }
 
@@ -2385,7 +2437,7 @@ void P_UpdateBeak(player_t * player, pspdef_t * psp)
     psp->sy = WEAPONTOP + (player->chickenPeck << (FRACBITS - 1));
 }
 
-dboolean Heretic_P_CheckAmmo(player_t * player)
+static dboolean Heretic_P_CheckAmmo(player_t * player)
 {
     ammotype_t ammo;
     weaponinfo_t *checkweaponinfo;
@@ -2549,7 +2601,7 @@ void P_PostMorphWeapon(player_t * player, weapontype_t weapon)
                  hexen_weaponinfo[weapon][player->pclass].upstate);
 }
 
-dboolean P_CheckMana(player_t * player)
+static dboolean P_CheckMana(player_t * player)
 {
     manatype_t mana;
     int count;
