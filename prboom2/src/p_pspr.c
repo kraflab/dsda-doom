@@ -2497,10 +2497,10 @@ void P_CloseWeapons(void)
 extern fixed_t FloatBobOffsets[64];
 
 static int WeaponManaUse[NUMCLASSES][HEXEN_NUMWEAPONS] = {
-    {0, 2, 3, 14},
-    {0, 1, 4, 18},
-    {0, 3, 5, 15},
-    {0, 0, 0, 0}
+    [PCLASS_FIGHTER] = {0, 2, 3, 14},
+                       {0, 1, 4, 18},
+                       {0, 3, 5, 15},
+                       {0, 0, 0, 0}
 };
 
 void P_SetPspriteNF(player_t * player, int position, statenum_t stnum)
@@ -2547,4 +2547,53 @@ void P_PostMorphWeapon(player_t * player, weapontype_t weapon)
     player->psprites[ps_weapon].sy = WEAPONBOTTOM;
     P_SetPsprite(player, ps_weapon,
                  hexen_weaponinfo[weapon][player->pclass].upstate);
+}
+
+dboolean P_CheckMana(player_t * player)
+{
+    manatype_t mana;
+    int count;
+
+    mana = hexen_weaponinfo[player->readyweapon][player->pclass].ammo;
+    count = WeaponManaUse[player->pclass][player->readyweapon];
+    if (mana == MANA_BOTH)
+    {
+        if (player->ammo[MANA_1] >= count && player->ammo[MANA_2] >= count)
+        {
+            return true;
+        }
+    }
+    else if (mana == MANA_NONE || player->ammo[mana] >= count)
+    {
+        return (true);
+    }
+
+    // out of mana, pick a weapon to change to
+    if (player->weaponowned[wp_third]
+        && player->ammo[MANA_2] >= WeaponManaUse[player->pclass][wp_third])
+    {
+        player->pendingweapon = wp_third;
+    }
+    else if (player->weaponowned[wp_second]
+             && player->ammo[MANA_1] >=
+             WeaponManaUse[player->pclass][wp_second])
+    {
+        player->pendingweapon = wp_second;
+    }
+    else if (player->weaponowned[wp_fourth]
+             && player->ammo[MANA_1] >=
+             WeaponManaUse[player->pclass][wp_fourth]
+             && player->ammo[MANA_2] >=
+             WeaponManaUse[player->pclass][wp_fourth])
+    {
+        player->pendingweapon = wp_fourth;
+    }
+    else
+    {
+        player->pendingweapon = wp_first;
+    }
+
+    P_SetPsprite(player, ps_weapon,
+                 hexen_weaponinfo[player->readyweapon][player->pclass].downstate);
+    return (false);
 }
