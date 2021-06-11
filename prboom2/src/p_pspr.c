@@ -543,6 +543,10 @@ void P_DropWeapon(player_t *player)
   {
     newstate = wpnlev2info[player->readyweapon].downstate;
   }
+  else if (player->pclass)
+  {
+    newstate = hexen_weaponinfo[player->readyweapon][player->pclass].downstate;
+  }
   else
   {
     newstate = weaponinfo[player->readyweapon].downstate;

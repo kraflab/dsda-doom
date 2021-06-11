@@ -29,20 +29,6 @@ extern void A_UnHideThing(mobj_t * actor);
 
 //---------------------------------------------------------------------------
 //
-// PROC P_DropWeapon
-//
-// The player died, so put the weapon away.
-//
-//---------------------------------------------------------------------------
-
-void P_DropWeapon(player_t * player)
-{
-    P_SetPsprite(player, ps_weapon,
-                 WeaponInfo[player->readyweapon][player->class].downstate);
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC A_WeaponReady
 //
 // The player can fire the weapon or change to another weapon at this time.
