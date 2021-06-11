@@ -33,31 +33,6 @@ extern void A_UnHideThing(mobj_t * actor);
 
 //============================================================================
 //
-//      AdjustPlayerAngle
-//
-//============================================================================
-
-#define MAX_ANGADJUST (5*ANG1)
-
-void AdjustPlayerAngle(mobj_t * pmo)
-{
-    angle_t angle;
-    int difference;
-
-    angle = R_PointToAngle2(pmo->x, pmo->y, linetarget->x, linetarget->y);
-    difference = (int) angle - (int) pmo->angle;
-    if (abs(difference) > MAX_ANGADJUST)
-    {
-        pmo->angle += difference > 0 ? MAX_ANGADJUST : -MAX_ANGADJUST;
-    }
-    else
-    {
-        pmo->angle = angle;
-    }
-}
-
-//============================================================================
-//
 // A_SnoutAttack
 //
 //============================================================================

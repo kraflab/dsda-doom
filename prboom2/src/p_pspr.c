@@ -2684,3 +2684,22 @@ static dboolean P_CheckMana(player_t * player)
                  hexen_weaponinfo[player->readyweapon][player->pclass].downstate);
     return (false);
 }
+
+#define MAX_ANGADJUST (5*ANG1)
+
+void AdjustPlayerAngle(mobj_t * pmo)
+{
+    angle_t angle;
+    int difference;
+
+    angle = R_PointToAngle2(pmo->x, pmo->y, linetarget->x, linetarget->y);
+    difference = (int) angle - (int) pmo->angle;
+    if (abs(difference) > MAX_ANGADJUST)
+    {
+        pmo->angle += difference > 0 ? MAX_ANGADJUST : -MAX_ANGADJUST;
+    }
+    else
+    {
+        pmo->angle = angle;
+    }
+}
