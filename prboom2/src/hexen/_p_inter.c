@@ -955,35 +955,35 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     switch (special->sprite)
     {
             // Items
-        case SPR_PTN1:         // Item_HealingPotion
+        case HEXEN_SPR_PTN1:         // Item_HealingPotion
             if (!P_GiveBody(player, 10))
             {
                 return;
             }
             P_SetMessage(player, TXT_ITEMHEALTH, false);
             break;
-        case SPR_ARM1:
+        case HEXEN_SPR_ARM1:
             if (!P_GiveArmor(player, ARMOR_ARMOR, -1))
             {
                 return;
             }
             P_SetMessage(player, TXT_ARMOR1, false);
             break;
-        case SPR_ARM2:
+        case HEXEN_SPR_ARM2:
             if (!P_GiveArmor(player, ARMOR_SHIELD, -1))
             {
                 return;
             }
             P_SetMessage(player, TXT_ARMOR2, false);
             break;
-        case SPR_ARM3:
+        case HEXEN_SPR_ARM3:
             if (!P_GiveArmor(player, ARMOR_HELMET, -1))
             {
                 return;
             }
             P_SetMessage(player, TXT_ARMOR3, false);
             break;
-        case SPR_ARM4:
+        case HEXEN_SPR_ARM4:
             if (!P_GiveArmor(player, ARMOR_AMULET, -1))
             {
                 return;
@@ -992,22 +992,22 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             break;
 
             // Keys
-        case SPR_KEY1:
-        case SPR_KEY2:
-        case SPR_KEY3:
-        case SPR_KEY4:
-        case SPR_KEY5:
-        case SPR_KEY6:
-        case SPR_KEY7:
-        case SPR_KEY8:
-        case SPR_KEY9:
-        case SPR_KEYA:
-        case SPR_KEYB:
-            if (!P_GiveKey(player, special->sprite - SPR_KEY1))
+        case HEXEN_SPR_KEY1:
+        case HEXEN_SPR_KEY2:
+        case HEXEN_SPR_KEY3:
+        case HEXEN_SPR_KEY4:
+        case HEXEN_SPR_KEY5:
+        case HEXEN_SPR_KEY6:
+        case HEXEN_SPR_KEY7:
+        case HEXEN_SPR_KEY8:
+        case HEXEN_SPR_KEY9:
+        case HEXEN_SPR_KEYA:
+        case HEXEN_SPR_KEYB:
+            if (!P_GiveKey(player, special->sprite - HEXEN_SPR_KEY1))
             {
                 return;
             }
-            P_SetMessage(player, TextKeyMessages[special->sprite - SPR_KEY1],
+            P_SetMessage(player, TextKeyMessages[special->sprite - HEXEN_SPR_KEY1],
                          true);
             sound = hexen_sfx_pickup_key;
 
@@ -1033,121 +1033,121 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             return;
 
             // Artifacts
-        case SPR_PTN2:
+        case HEXEN_SPR_PTN2:
             TryPickupArtifact(player, arti_health, special);
             return;
-        case SPR_SOAR:
+        case HEXEN_SPR_SOAR:
             TryPickupArtifact(player, arti_fly, special);
             return;
-        case SPR_INVU:
+        case HEXEN_SPR_INVU:
             TryPickupArtifact(player, arti_invulnerability, special);
             return;
-        case SPR_SUMN:
+        case HEXEN_SPR_SUMN:
             TryPickupArtifact(player, arti_summon, special);
             return;
-        case SPR_PORK:
+        case HEXEN_SPR_PORK:
             TryPickupArtifact(player, arti_egg, special);
             return;
-        case SPR_SPHL:
+        case HEXEN_SPR_SPHL:
             TryPickupArtifact(player, arti_superhealth, special);
             return;
-        case SPR_HRAD:
+        case HEXEN_SPR_HRAD:
             TryPickupArtifact(player, arti_healingradius, special);
             return;
-        case SPR_TRCH:
+        case HEXEN_SPR_TRCH:
             TryPickupArtifact(player, arti_torch, special);
             return;
-        case SPR_ATLP:
+        case HEXEN_SPR_ATLP:
             TryPickupArtifact(player, arti_teleport, special);
             return;
-        case SPR_TELO:
+        case HEXEN_SPR_TELO:
             TryPickupArtifact(player, arti_teleportother, special);
             return;
-        case SPR_PSBG:
+        case HEXEN_SPR_PSBG:
             TryPickupArtifact(player, arti_poisonbag, special);
             return;
-        case SPR_SPED:
+        case HEXEN_SPR_SPED:
             TryPickupArtifact(player, arti_speed, special);
             return;
-        case SPR_BMAN:
+        case HEXEN_SPR_BMAN:
             TryPickupArtifact(player, arti_boostmana, special);
             return;
-        case SPR_BRAC:
+        case HEXEN_SPR_BRAC:
             TryPickupArtifact(player, arti_boostarmor, special);
             return;
-        case SPR_BLST:
+        case HEXEN_SPR_BLST:
             TryPickupArtifact(player, arti_blastradius, special);
             return;
 
             // Puzzle artifacts
-        case SPR_ASKU:
+        case HEXEN_SPR_ASKU:
             TryPickupArtifact(player, arti_puzzskull, special);
             return;
-        case SPR_ABGM:
+        case HEXEN_SPR_ABGM:
             TryPickupArtifact(player, arti_puzzgembig, special);
             return;
-        case SPR_AGMR:
+        case HEXEN_SPR_AGMR:
             TryPickupArtifact(player, arti_puzzgemred, special);
             return;
-        case SPR_AGMG:
+        case HEXEN_SPR_AGMG:
             TryPickupArtifact(player, arti_puzzgemgreen1, special);
             return;
-        case SPR_AGG2:
+        case HEXEN_SPR_AGG2:
             TryPickupArtifact(player, arti_puzzgemgreen2, special);
             return;
-        case SPR_AGMB:
+        case HEXEN_SPR_AGMB:
             TryPickupArtifact(player, arti_puzzgemblue1, special);
             return;
-        case SPR_AGB2:
+        case HEXEN_SPR_AGB2:
             TryPickupArtifact(player, arti_puzzgemblue2, special);
             return;
-        case SPR_ABK1:
+        case HEXEN_SPR_ABK1:
             TryPickupArtifact(player, arti_puzzbook1, special);
             return;
-        case SPR_ABK2:
+        case HEXEN_SPR_ABK2:
             TryPickupArtifact(player, arti_puzzbook2, special);
             return;
-        case SPR_ASK2:
+        case HEXEN_SPR_ASK2:
             TryPickupArtifact(player, arti_puzzskull2, special);
             return;
-        case SPR_AFWP:
+        case HEXEN_SPR_AFWP:
             TryPickupArtifact(player, arti_puzzfweapon, special);
             return;
-        case SPR_ACWP:
+        case HEXEN_SPR_ACWP:
             TryPickupArtifact(player, arti_puzzcweapon, special);
             return;
-        case SPR_AMWP:
+        case HEXEN_SPR_AMWP:
             TryPickupArtifact(player, arti_puzzmweapon, special);
             return;
-        case SPR_AGER:
+        case HEXEN_SPR_AGER:
             TryPickupArtifact(player, arti_puzzgear1, special);
             return;
-        case SPR_AGR2:
+        case HEXEN_SPR_AGR2:
             TryPickupArtifact(player, arti_puzzgear2, special);
             return;
-        case SPR_AGR3:
+        case HEXEN_SPR_AGR3:
             TryPickupArtifact(player, arti_puzzgear3, special);
             return;
-        case SPR_AGR4:
+        case HEXEN_SPR_AGR4:
             TryPickupArtifact(player, arti_puzzgear4, special);
             return;
 
             // Mana
-        case SPR_MAN1:
+        case HEXEN_SPR_MAN1:
             if (!P_GiveMana(player, MANA_1, 15))
             {
                 return;
             }
             P_SetMessage(player, TXT_MANA_1, false);
             break;
-        case SPR_MAN2:
+        case HEXEN_SPR_MAN2:
             if (!P_GiveMana(player, MANA_2, 15))
             {
                 return;
             }
             P_SetMessage(player, TXT_MANA_2, false);
             break;
-        case SPR_MAN3:         // Double Mana Dodecahedron
+        case HEXEN_SPR_MAN3:         // Double Mana Dodecahedron
             if (!P_GiveMana(player, MANA_1, 20))
             {
                 if (!P_GiveMana(player, MANA_2, 20))
@@ -1163,61 +1163,61 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             break;
 
             // 2nd and 3rd Mage Weapons
-        case SPR_WMCS:         // Frost Shards
+        case HEXEN_SPR_WMCS:         // Frost Shards
             TryPickupWeapon(player, PCLASS_MAGE, WP_SECOND,
                             special, TXT_WEAPON_M2);
             return;
-        case SPR_WMLG:         // Arc of Death
+        case HEXEN_SPR_WMLG:         // Arc of Death
             TryPickupWeapon(player, PCLASS_MAGE, WP_THIRD,
                             special, TXT_WEAPON_M3);
             return;
 
             // 2nd and 3rd Fighter Weapons
-        case SPR_WFAX:         // Timon's Axe
+        case HEXEN_SPR_WFAX:         // Timon's Axe
             TryPickupWeapon(player, PCLASS_FIGHTER, WP_SECOND,
                             special, TXT_WEAPON_F2);
             return;
-        case SPR_WFHM:         // Hammer of Retribution
+        case HEXEN_SPR_WFHM:         // Hammer of Retribution
             TryPickupWeapon(player, PCLASS_FIGHTER, WP_THIRD,
                             special, TXT_WEAPON_F3);
             return;
 
             // 2nd and 3rd Cleric Weapons
-        case SPR_WCSS:         // Serpent Staff
+        case HEXEN_SPR_WCSS:         // Serpent Staff
             TryPickupWeapon(player, PCLASS_CLERIC, WP_SECOND,
                             special, TXT_WEAPON_C2);
             return;
-        case SPR_WCFM:         // Firestorm
+        case HEXEN_SPR_WCFM:         // Firestorm
             TryPickupWeapon(player, PCLASS_CLERIC, WP_THIRD,
                             special, TXT_WEAPON_C3);
             return;
 
             // Fourth Weapon Pieces
-        case SPR_WFR1:
+        case HEXEN_SPR_WFR1:
             TryPickupWeaponPiece(player, PCLASS_FIGHTER, WPIECE1, special);
             return;
-        case SPR_WFR2:
+        case HEXEN_SPR_WFR2:
             TryPickupWeaponPiece(player, PCLASS_FIGHTER, WPIECE2, special);
             return;
-        case SPR_WFR3:
+        case HEXEN_SPR_WFR3:
             TryPickupWeaponPiece(player, PCLASS_FIGHTER, WPIECE3, special);
             return;
-        case SPR_WCH1:
+        case HEXEN_SPR_WCH1:
             TryPickupWeaponPiece(player, PCLASS_CLERIC, WPIECE1, special);
             return;
-        case SPR_WCH2:
+        case HEXEN_SPR_WCH2:
             TryPickupWeaponPiece(player, PCLASS_CLERIC, WPIECE2, special);
             return;
-        case SPR_WCH3:
+        case HEXEN_SPR_WCH3:
             TryPickupWeaponPiece(player, PCLASS_CLERIC, WPIECE3, special);
             return;
-        case SPR_WMS1:
+        case HEXEN_SPR_WMS1:
             TryPickupWeaponPiece(player, PCLASS_MAGE, WPIECE1, special);
             return;
-        case SPR_WMS2:
+        case HEXEN_SPR_WMS2:
             TryPickupWeaponPiece(player, PCLASS_MAGE, WPIECE2, special);
             return;
-        case SPR_WMS3:
+        case HEXEN_SPR_WMS3:
             TryPickupWeaponPiece(player, PCLASS_MAGE, WPIECE3, special);
             return;
 
