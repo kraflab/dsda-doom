@@ -623,9 +623,9 @@ void P_XYMovement(mobj_t * mo)
         if (player)
         {
             if ((unsigned) ((player->mo->state - states)
-                            - PStateRun[player->class]) < 4)
+                            - PStateRun[player->pclass]) < 4)
             {
-                P_SetMobjState(player->mo, PStateNormal[player->class]);
+                P_SetMobjState(player->mo, PStateNormal[player->pclass]);
             }
         }
         mo->momx = 0;
@@ -785,7 +785,7 @@ void P_ZMovement(mobj_t * mo)
                              && !mo->player->morphTics)
                     {
                         S_StartSound(mo, hexen_sfx_player_land);
-                        switch (mo->player->class)
+                        switch (mo->player->pclass)
                         {
                             case PCLASS_FIGHTER:
                                 S_StartSound(mo, hexen_sfx_player_fighter_grunt);
@@ -1004,7 +1004,7 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj)
     else if (mo->momz < -GRAVITY * 12 && !mo->player->morphTics)
     {
         S_StartSound(mo, hexen_sfx_player_land);
-        switch (mo->player->class)
+        switch (mo->player->pclass)
         {
             case PCLASS_FIGHTER:
                 S_StartSound(mo, hexen_sfx_player_fighter_grunt);
@@ -1291,19 +1291,19 @@ void P_SpawnPlayer(mapthing_t * mthing)
     z = ONFLOORZ;
     if (randomclass && deathmatch)
     {
-        p->class = P_Random(pr_hexen) % 3;
-        if (p->class == PlayerClass[mthing->type - 1])
+        p->pclass = P_Random(pr_hexen) % 3;
+        if (p->pclass == PlayerClass[mthing->type - 1])
         {
-            p->class = (p->class + 1) % 3;
+            p->pclass = (p->pclass + 1) % 3;
         }
-        PlayerClass[mthing->type - 1] = p->class;
+        PlayerClass[mthing->type - 1] = p->pclass;
         SB_SetClassData();
     }
     else
     {
-        p->class = PlayerClass[mthing->type - 1];
+        p->pclass = PlayerClass[mthing->type - 1];
     }
-    switch (p->class)
+    switch (p->pclass)
     {
         case PCLASS_FIGHTER:
             mobj = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_FIGHTER);
@@ -1320,7 +1320,7 @@ void P_SpawnPlayer(mapthing_t * mthing)
     }
 
     // Set translation table data
-    if (p->class == PCLASS_FIGHTER
+    if (p->pclass == PCLASS_FIGHTER
         && (mthing->type == 1 || mthing->type == 3))
     {
         // The first type should be blue, and the third should be the

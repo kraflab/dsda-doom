@@ -1901,7 +1901,7 @@ dboolean PTR_UseTraverse(intercept_t * in)
         {
             if (usething->player)
             {
-                switch (usething->player->class)
+                switch (usething->player->pclass)
                 {
                     case PCLASS_FIGHTER:
                         sound = hexen_sfx_player_fighter_failed_use;
@@ -1928,7 +1928,7 @@ dboolean PTR_UseTraverse(intercept_t * in)
             pheight = usething->z + (usething->height / 2);
             if ((opentop < pheight) || (openbottom > pheight))
             {
-                switch (usething->player->class)
+                switch (usething->player->pclass)
                 {
                     case PCLASS_FIGHTER:
                         sound = hexen_sfx_player_fighter_failed_use;
@@ -2015,7 +2015,7 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
                 sound = hexen_sfx_None;
                 if (PuzzleItemUser->player)
                 {
-                    switch (PuzzleItemUser->player->class)
+                    switch (PuzzleItemUser->player->pclass)
                     {
                         case PCLASS_FIGHTER:
                             sound = hexen_sfx_puzzle_fail_fighter;

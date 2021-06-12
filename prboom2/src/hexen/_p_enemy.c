@@ -1522,7 +1522,7 @@ void A_Scream(mobj_t * actor)
             }
             else if (actor->health > -50)
             {                   // Normal death sound
-                switch (actor->player->class)
+                switch (actor->player->pclass)
                 {
                     case PCLASS_FIGHTER:
                         sound = hexen_sfx_player_fighter_normal_death;
@@ -1540,7 +1540,7 @@ void A_Scream(mobj_t * actor)
             }
             else if (actor->health > -100)
             {                   // Crazy death sound
-                switch (actor->player->class)
+                switch (actor->player->pclass)
                 {
                     case PCLASS_FIGHTER:
                         sound = hexen_sfx_player_fighter_crazy_death;
@@ -1558,7 +1558,7 @@ void A_Scream(mobj_t * actor)
             }
             else
             {                   // Extreme death sound
-                switch (actor->player->class)
+                switch (actor->player->pclass)
                 {
                     case PCLASS_FIGHTER:
                         sound = hexen_sfx_player_fighter_extreme1_death;
@@ -1783,7 +1783,7 @@ void A_SkullPop(mobj_t * actor)
     // Attach player mobj to bloody skull
     player = actor->player;
     actor->player = NULL;
-    actor->special1.i = player->class;
+    actor->special1.i = player->pclass;
     mo->player = player;
     mo->health = actor->health;
     mo->angle = actor->angle;

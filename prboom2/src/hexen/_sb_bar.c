@@ -1195,7 +1195,7 @@ void DrawMainBar(void)
         UpdateState |= I_STATBAR;
     }
     // Armor
-    temp = AutoArmorSave[CPlayer->class]
+    temp = AutoArmorSave[CPlayer->pclass]
         + CPlayer->armorpoints[ARMOR_ARMOR] +
         CPlayer->armorpoints[ARMOR_SHIELD] +
         CPlayer->armorpoints[ARMOR_HELMET] +
@@ -1288,7 +1288,7 @@ void DrawKeyBar(void)
         oldkeys = playerkeys;
         UpdateState |= I_STATBAR;
     }
-    temp = AutoArmorSave[CPlayer->class]
+    temp = AutoArmorSave[CPlayer->pclass]
         + CPlayer->armorpoints[ARMOR_ARMOR] +
         CPlayer->armorpoints[ARMOR_SHIELD] +
         CPlayer->armorpoints[ARMOR_HELMET] +
@@ -1302,14 +1302,14 @@ void DrawKeyBar(void)
                 continue;
             }
             if (CPlayer->armorpoints[i] <=
-                (ArmorIncrement[CPlayer->class][i] >> 2))
+                (ArmorIncrement[CPlayer->pclass][i] >> 2))
             {
                 V_DrawTLPatch(150 + 31 * i, 164,
                               W_CacheLumpNum(W_GetNumForName("armslot1") +
                                              i, PU_CACHE));
             }
             else if (CPlayer->armorpoints[i] <=
-                     (ArmorIncrement[CPlayer->class][i] >> 1))
+                     (ArmorIncrement[CPlayer->pclass][i] >> 1))
             {
                 V_DrawAltTLPatch(150 + 31 * i, 164,
                                  W_CacheLumpNum(W_GetNumForName("armslot1")
@@ -1646,7 +1646,7 @@ static void CheatWeaponsFunc(player_t * player, Cheat_t * cheat)
 
     for (i = 0; i < NUMARMOR; i++)
     {
-        player->armorpoints[i] = ArmorIncrement[player->class][i];
+        player->armorpoints[i] = ArmorIncrement[player->pclass][i];
     }
     for (i = 0; i < NUMWEAPONS; i++)
     {
@@ -1867,7 +1867,7 @@ static void CheatClassFunc2(player_t * player, Cheat_t * cheat)
         P_SetMessage(player, "INVALID PLAYER CLASS", true);
         return;
     }
-    player->class = class;
+    player->pclass = class;
     for (i = 0; i < NUMARMOR; i++)
     {
         player->armorpoints[i] = 0;

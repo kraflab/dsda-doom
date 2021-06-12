@@ -562,7 +562,7 @@ void R_ProjectSprite(mobj_t * thing)
     {
         if (thing->player)
         {
-            vis->class = thing->player->class;
+            vis->class = thing->player->pclass;
         }
         else
         {
@@ -732,7 +732,7 @@ void R_DrawPSprite(pspdef_t * psp)
         - (psp->sy - spritetopoffset[lump]);
     if (viewheight == SCREENHEIGHT)
     {
-        vis->texturemid -= PSpriteSY[viewplayer->class]
+        vis->texturemid -= PSpriteSY[viewplayer->pclass]
             [players[consoleplayer].readyweapon];
     }
     vis->x1 = x1 < 0 ? 0 : x1;
@@ -752,7 +752,7 @@ void R_DrawPSprite(pspdef_t * psp)
         vis->startfrac += vis->xiscale * (vis->x1 - x1);
     vis->patch = lump;
 
-    if (viewplayer->powers[pw_invulnerability] && viewplayer->class
+    if (viewplayer->powers[pw_invulnerability] && viewplayer->pclass
         == PCLASS_CLERIC)
     {
         vis->colormap = spritelights[MAXLIGHTSCALE - 1];

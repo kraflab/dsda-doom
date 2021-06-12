@@ -45,7 +45,7 @@ void A_FHammerThrow(player_t * player, pspdef_t * psp)
     {
         return;
     }
-    player->ammo[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
+    player->ammo[MANA_2] -= WeaponManaUse[player->pclass][player->readyweapon];
     mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_HAMMER_MISSILE);
     if (mo)
     {
@@ -63,8 +63,8 @@ void A_FSwordAttack(player_t * player, pspdef_t * psp)
 {
     mobj_t *pmo;
 
-    player->ammo[MANA_1] -= WeaponManaUse[player->class][player->readyweapon];
-    player->ammo[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
+    player->ammo[MANA_1] -= WeaponManaUse[player->pclass][player->readyweapon];
+    player->ammo[MANA_2] -= WeaponManaUse[player->pclass][player->readyweapon];
     pmo = player->mo;
     P_SPMAngleXYZ(pmo, pmo->x, pmo->y, pmo->z - 10 * FRACUNIT,
                   HEXEN_MT_FSWORD_MISSILE, pmo->angle + ANG45 / 4);
@@ -327,7 +327,7 @@ void A_MLightningAttack2(mobj_t * actor)
 void A_MLightningAttack(player_t * player, pspdef_t * psp)
 {
     A_MLightningAttack2(player->mo);
-    player->ammo[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
+    player->ammo[MANA_2] -= WeaponManaUse[player->pclass][player->readyweapon];
 }
 
 //============================================================================
@@ -421,8 +421,8 @@ void A_MStaffAttack(player_t * player, pspdef_t * psp)
     angle_t angle;
     mobj_t *pmo;
 
-    player->ammo[MANA_1] -= WeaponManaUse[player->class][player->readyweapon];
-    player->ammo[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
+    player->ammo[MANA_1] -= WeaponManaUse[player->pclass][player->readyweapon];
+    player->ammo[MANA_2] -= WeaponManaUse[player->pclass][player->readyweapon];
     pmo = player->mo;
     angle = pmo->angle;
 
@@ -696,7 +696,7 @@ void A_FAxeAttack(player_t * player, pspdef_t * psp)
     if (useMana == 2)
     {
         player->ammo[MANA_1] -=
-            WeaponManaUse[player->class][player->readyweapon];
+            WeaponManaUse[player->pclass][player->readyweapon];
         if (player->ammo[MANA_1] <= 0)
         {
             P_SetPsprite(player, ps_weapon, HEXEN_S_FAXEATK_5);
@@ -789,7 +789,7 @@ void A_CStaffCheck(player_t * player, pspdef_t * psp)
                 P_SetPsprite(player, ps_weapon, HEXEN_S_CSTAFFATK2_1);
             }
             player->ammo[MANA_1] -=
-                WeaponManaUse[player->class][player->readyweapon];
+                WeaponManaUse[player->pclass][player->readyweapon];
             break;
         }
         angle = pmo->angle - i * (ANG45 / 16);
@@ -807,7 +807,7 @@ void A_CStaffCheck(player_t * player, pspdef_t * psp)
                 P_SetPsprite(player, ps_weapon, HEXEN_S_CSTAFFATK2_1);
             }
             player->ammo[MANA_1] -=
-                WeaponManaUse[player->class][player->readyweapon];
+                WeaponManaUse[player->pclass][player->readyweapon];
             break;
         }
     }
@@ -824,7 +824,7 @@ void A_CStaffAttack(player_t * player, pspdef_t * psp)
     mobj_t *mo;
     mobj_t *pmo;
 
-    player->ammo[MANA_1] -= WeaponManaUse[player->class][player->readyweapon];
+    player->ammo[MANA_1] -= WeaponManaUse[player->pclass][player->readyweapon];
     pmo = player->mo;
     mo = P_SPMAngle(pmo, HEXEN_MT_CSTAFF_MISSILE, pmo->angle - (ANG45 / 15));
     if (mo)
@@ -908,7 +908,7 @@ void A_CFlameAttack(player_t * player, pspdef_t * psp)
         mo->special1.i = 2;
     }
 
-    player->ammo[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
+    player->ammo[MANA_2] -= WeaponManaUse[player->pclass][player->readyweapon];
     S_StartSound(player->mo, hexen_sfx_cleric_flame_fire);
 }
 
@@ -1086,8 +1086,8 @@ void A_CHolyAttack2(mobj_t * actor)
 
 void A_CHolyAttack(player_t * player, pspdef_t * psp)
 {
-    player->ammo[MANA_1] -= WeaponManaUse[player->class][player->readyweapon];
-    player->ammo[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
+    player->ammo[MANA_1] -= WeaponManaUse[player->pclass][player->readyweapon];
+    player->ammo[MANA_2] -= WeaponManaUse[player->pclass][player->readyweapon];
     P_SpawnPlayerMissile(player->mo, HEXEN_MT_HOLY_MISSILE);
     if (player == &players[consoleplayer])
     {
@@ -1428,7 +1428,7 @@ void A_FireConePL1(player_t * player, pspdef_t * psp)
     int conedone = false;
 
     pmo = player->mo;
-    player->ammo[MANA_1] -= WeaponManaUse[player->class][player->readyweapon];
+    player->ammo[MANA_1] -= WeaponManaUse[player->pclass][player->readyweapon];
     S_StartSound(pmo, hexen_sfx_mage_shards_fire);
 
     damage = 90 + (P_Random(pr_hexen) & 15);
