@@ -120,7 +120,7 @@ void P_AnimateSurfaces(void)
             if (ad->tics > 255)
             {                   // Random tics
                 ad->tics = (ad->tics >> 16)
-                    + P_Random() % ((ad->tics & 0xff00) >> 8);
+                    + P_Random(pr_hexen) % ((ad->tics & 0xff00) >> 8);
             }
             if (ad->type == ANIM_FLAT)
             {
@@ -226,8 +226,8 @@ static void P_LightningFlash(void)
         }
         return;
     }
-    LightningFlash = (P_Random() & 7) + 8;
-    flashLight = 200 + (P_Random() & 31);
+    LightningFlash = (P_Random(pr_hexen) & 7) + 8;
+    flashLight = 200 + (P_Random(pr_hexen) & 31);
     tempSec = sectors;
     tempLight = LightningLightLevels;
     foundSec = false;
@@ -274,19 +274,19 @@ static void P_LightningFlash(void)
     // Calculate the next lighting flash
     if (!NextLightningFlash)
     {
-        if (P_Random() < 50)
+        if (P_Random(pr_hexen) < 50)
         {                       // Immediate Quick flash
-            NextLightningFlash = (P_Random() & 15) + 16;
+            NextLightningFlash = (P_Random(pr_hexen) & 15) + 16;
         }
         else
         {
-            if (P_Random() < 128 && !(leveltime & 32))
+            if (P_Random(pr_hexen) < 128 && !(leveltime & 32))
             {
-                NextLightningFlash = ((P_Random() & 7) + 2) * 35;
+                NextLightningFlash = ((P_Random(pr_hexen) & 7) + 2) * 35;
             }
             else
             {
-                NextLightningFlash = ((P_Random() & 15) + 5) * 35;
+                NextLightningFlash = ((P_Random(pr_hexen) & 15) + 5) * 35;
             }
         }
     }
@@ -342,7 +342,7 @@ void P_InitLightning(void)
     }
     LightningLightLevels = (int *) Z_Malloc(secCount * sizeof(int), PU_LEVEL,
                                             NULL);
-    NextLightningFlash = ((P_Random() & 15) + 5) * 35;  // don't flash at level start
+    NextLightningFlash = ((P_Random(pr_hexen) & 15) + 5) * 35;  // don't flash at level start
 }
 
 //==========================================================================

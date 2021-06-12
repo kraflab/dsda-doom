@@ -18,7 +18,7 @@
 #define HEXEN_M_RANDOM_H
 
 // Most damage defined using HITDICE
-#define HITDICE(a) ((1+(P_Random()&7))*a)
+#define HITDICE(a) ((1+(P_Random(pr_hexen)&7))*a)
 
 int M_Random(void);
 // returns a number from 0 to 255
@@ -30,7 +30,7 @@ void M_ClearRandom(void);
 
 extern int rndindex;
 
-// Defined version of P_Random() - P_Random()
+// Defined version of P_Random(pr_hexen) - P_Random(pr_hexen)
 int P_SubRandom (void);
 
 #endif // HEXEN_M_RANDOM_H

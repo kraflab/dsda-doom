@@ -1449,7 +1449,7 @@ static int CmdRandom(void)
 
     high = Pop();
     low = Pop();
-    Push(low + (P_Random() % (high - low + 1)));
+    Push(low + (P_Random(pr_hexen) % (high - low + 1)));
     return SCRIPT_CONTINUE;
 }
 
@@ -1460,7 +1460,7 @@ static int CmdRandomDirect(void)
 
     low = ReadCodeInt();
     high = ReadCodeInt();
-    Push(low + (P_Random() % (high - low + 1)));
+    Push(low + (P_Random(pr_hexen) % (high - low + 1)));
     return SCRIPT_CONTINUE;
 }
 

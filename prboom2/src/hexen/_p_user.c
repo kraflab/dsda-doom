@@ -423,15 +423,15 @@ void P_MorphPlayerThink(player_t * player)
         return;
     }
     pmo = player->mo;
-    if (!(pmo->momx + pmo->momy) && P_Random() < 64)
+    if (!(pmo->momx + pmo->momy) && P_Random(pr_hexen) < 64)
     {                           // Snout sniff
         P_SetPspriteNF(player, ps_weapon, S_SNOUTATK2);
         S_StartSound(pmo, SFX_PIG_ACTIVE1);     // snort
         return;
     }
-    if (P_Random() < 48)
+    if (P_Random(pr_hexen) < 48)
     {
-        if (P_Random() < 128)
+        if (P_Random(pr_hexen) < 128)
         {
             S_StartSound(pmo, SFX_PIG_ACTIVE1);
         }
@@ -945,7 +945,7 @@ void P_ArtiTele(player_t * player)
     if (deathmatch)
     {
         selections = deathmatch_p - deathmatchstarts;
-        i = P_Random() % selections;
+        i = P_Random(pr_hexen) % selections;
         destX = deathmatchstarts[i].x << FRACBITS;
         destY = deathmatchstarts[i].y << FRACBITS;
         destAngle = ANG45 * (deathmatchstarts[i].angle / 45);
@@ -995,7 +995,7 @@ void P_TeleportToPlayerStarts(mobj_t * victim)
             continue;
         selections++;
     }
-    i = P_Random() % selections;
+    i = P_Random(pr_hexen) % selections;
     destX = playerstarts[0][i].x << FRACBITS;
     destY = playerstarts[0][i].y << FRACBITS;
     destAngle = ANG45 * (playerstarts[0][i].angle / 45);
@@ -1012,7 +1012,7 @@ void P_TeleportToDeathmatchStarts(mobj_t * victim)
     selections = deathmatch_p - deathmatchstarts;
     if (selections)
     {
-        i = P_Random() % selections;
+        i = P_Random(pr_hexen) % selections;
         destX = deathmatchstarts[i].x << FRACBITS;
         destY = deathmatchstarts[i].y << FRACBITS;
         destAngle = ANG45 * (deathmatchstarts[i].angle / 45);
@@ -1265,7 +1265,7 @@ boolean P_HealRadius(player_t * player)
                 }
                 break;
             case PCLASS_CLERIC:        // Radius heal
-                amount = 50 + (P_Random() % 50);
+                amount = 50 + (P_Random(pr_hexen) % 50);
                 if (P_GiveBody(mo->player, amount))
                 {
                     effective = true;
@@ -1273,7 +1273,7 @@ boolean P_HealRadius(player_t * player)
                 }
                 break;
             case PCLASS_MAGE:  // Radius mana boost
-                amount = 50 + (P_Random() % 50);
+                amount = 50 + (P_Random(pr_hexen) % 50);
                 if ((P_GiveMana(mo->player, MANA_1, amount)) ||
                     (P_GiveMana(mo->player, MANA_2, amount)))
                 {
@@ -1520,7 +1520,7 @@ boolean P_UseArtifact(player_t * player, artitype_t arti)
                 if (mo)
                 {
                     mo->angle =
-                        player->mo->angle + (((P_Random() & 7) - 4) << 24);
+                        player->mo->angle + (((P_Random(pr_hexen) & 7) - 4) << 24);
                     mo->momz =
                         4 * FRACUNIT + ((player->lookdir) << (FRACBITS - 4));
                     mo->z += player->lookdir << (FRACBITS - 4);
@@ -1528,7 +1528,7 @@ boolean P_UseArtifact(player_t * player, artitype_t arti)
                     mo->momx += player->mo->momx >> 1;
                     mo->momy += player->mo->momy >> 1;
                     mo->target = player->mo;
-                    mo->tics -= P_Random() & 3;
+                    mo->tics -= P_Random(pr_hexen) & 3;
                     P_CheckMissileSpawn(mo);
                 }
             }

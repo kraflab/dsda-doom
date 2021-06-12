@@ -1502,7 +1502,7 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
             P_SetMobjState(target, target->info->deathstate);
         }
     }
-    target->tics -= P_Random() & 3;
+    target->tics -= P_Random(pr_hexen) & 3;
 //      I_StartSound(&actor->r, actor->info->deathsound);
 }
 
@@ -1519,13 +1519,13 @@ void P_MinotaurSlam(mobj_t * source, mobj_t * target)
 
     angle = R_PointToAngle2(source->x, source->y, target->x, target->y);
     angle >>= ANGLETOFINESHIFT;
-    thrust = 16 * FRACUNIT + (P_Random() << 10);
+    thrust = 16 * FRACUNIT + (P_Random(pr_hexen) << 10);
     target->momx += FixedMul(thrust, finecosine[angle]);
     target->momy += FixedMul(thrust, finesine[angle]);
     P_DamageMobj(target, NULL, source, HITDICE(4));
     if (target->player)
     {
-        target->reactiontime = 14 + (P_Random() & 7);
+        target->reactiontime = 14 + (P_Random(pr_hexen) & 7);
     }
     source->args[0] = 0;        // Stop charging
 }
@@ -1628,7 +1628,7 @@ boolean P_MorphMonster(mobj_t * actor)
     S_StartSound(fog, SFX_TELEPORT);
     monster = P_SpawnMobj(x, y, z, MT_PIG);
     monster->special2.i = moType;
-    monster->special1.i = MORPHTICS + P_Random();
+    monster->special1.i = MORPHTICS + P_Random(pr_hexen);
     monster->flags |= (oldMonster.flags & MF_SHADOW);
     monster->target = oldMonster.target;
     monster->angle = oldMonster.angle;
@@ -1887,7 +1887,7 @@ void P_DamageMobj
                 {
                     if (target->player->poisoncount < 4)
                     {
-                        P_PoisonDamage(target->player, source, 15 + (P_Random() & 15), false);  // Don't play painsound
+                        P_PoisonDamage(target->player, source, 15 + (P_Random(pr_hexen) & 15), false);  // Don't play painsound
                         P_PoisonPlayer(target->player, source, 50);
                         S_StartSound(target, SFX_PLAYER_POISONCOUGH);
                     }
@@ -1918,7 +1918,7 @@ void P_DamageMobj
         thrust = damage * (FRACUNIT >> 3) * 150 / target->info->mass;
         // make fall forwards sometimes
         if ((damage < 40) && (damage > target->health)
-            && (target->z - inflictor->z > 64 * FRACUNIT) && (P_Random() & 1))
+            && (target->z - inflictor->z > 64 * FRACUNIT) && (P_Random(pr_hexen) & 1))
         {
             ang += ANG180;
             thrust *= 4;
@@ -2035,13 +2035,13 @@ void P_DamageMobj
         P_KillMobj(source, target);
         return;
     }
-    if ((P_Random() < target->info->painchance)
+    if ((P_Random(pr_hexen) < target->info->painchance)
         && !(target->flags & MF_SKULLFLY))
     {
         if (inflictor && (inflictor->type >= MT_LIGHTNING_FLOOR
                           && inflictor->type <= MT_LIGHTNING_ZAP))
         {
-            if (P_Random() < 96)
+            if (P_Random(pr_hexen) < 96)
             {
                 target->flags |= MF_JUSTHIT;    // fight back!
                 P_SetMobjState(target, target->info->painstate);
@@ -2049,7 +2049,7 @@ void P_DamageMobj
             else
             {                   // "electrocute" the target
                 target->frame |= FF_FULLBRIGHT;
-                if (target->flags & MF_COUNTKILL && P_Random() < 128
+                if (target->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
                     && !S_GetSoundPlayingInfo(target, SFX_PUPPYBEAT))
                 {
                     if ((target->type == MT_CENTAUR) ||
@@ -2067,7 +2067,7 @@ void P_DamageMobj
             P_SetMobjState(target, target->info->painstate);
             if (inflictor && inflictor->type == MT_POISONCLOUD)
             {
-                if (target->flags & MF_COUNTKILL && P_Random() < 128
+                if (target->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
                     && !S_GetSoundPlayingInfo(target, SFX_PUPPYBEAT))
                 {
                     if ((target->type == MT_CENTAUR) ||
@@ -2223,7 +2223,7 @@ void P_PoisonDamage(player_t * player, mobj_t * source, int damage,
         P_SetMobjState(target, target->info->painstate);
     }
 /*
-	if((P_Random() < target->info->painchance)
+	if((P_Random(pr_hexen) < target->info->painchance)
 		&& !(target->flags&MF_SKULLFLY))
 	{
 		target->flags |= MF_JUSTHIT; // fight back!

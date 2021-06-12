@@ -149,11 +149,11 @@ void A_PotteryExplode(mobj_t * actor)
     mobj_t *mo = NULL;
     int i;
 
-    for (i = (P_Random() & 3) + 3; i; i--)
+    for (i = (P_Random(pr_hexen) & 3) + 3; i; i--)
     {
         mo = P_SpawnMobj(actor->x, actor->y, actor->z, MT_POTTERYBIT1);
-        P_SetMobjState(mo, mo->info->spawnstate + (P_Random() % 5));
-        mo->momz = ((P_Random() & 7) + 5) * (3 * FRACUNIT / 4);
+        P_SetMobjState(mo, mo->info->spawnstate + (P_Random(pr_hexen) % 5));
+        mo->momz = ((P_Random(pr_hexen) & 7) + 5) * (3 * FRACUNIT / 4);
         mo->momx = P_SubRandom() << (FRACBITS - 6);
         mo->momy = P_SubRandom() << (FRACBITS - 6);
     }
@@ -179,8 +179,8 @@ void A_PotteryExplode(mobj_t * actor)
 
 void A_PotteryChooseBit(mobj_t * actor)
 {
-    P_SetMobjState(actor, actor->info->deathstate + (P_Random() % 5) + 1);
-    actor->tics = 256 + (P_Random() << 1);
+    P_SetMobjState(actor, actor->info->deathstate + (P_Random(pr_hexen) % 5) + 1);
+    actor->tics = 256 + (P_Random(pr_hexen) << 1);
 }
 
 //============================================================================
@@ -236,7 +236,7 @@ void A_PotteryCheck(mobj_t * actor)
 
 void A_CorpseBloodDrip(mobj_t * actor)
 {
-    if (P_Random() > 128)
+    if (P_Random(pr_hexen) > 128)
     {
         return;
     }
@@ -255,11 +255,11 @@ void A_CorpseExplode(mobj_t * actor)
     mobj_t *mo;
     int i;
 
-    for (i = (P_Random() & 3) + 3; i; i--)
+    for (i = (P_Random(pr_hexen) & 3) + 3; i; i--)
     {
         mo = P_SpawnMobj(actor->x, actor->y, actor->z, MT_CORPSEBIT);
-        P_SetMobjState(mo, mo->info->spawnstate + (P_Random() % 3));
-        mo->momz = ((P_Random() & 7) + 5) * (3 * FRACUNIT / 4);
+        P_SetMobjState(mo, mo->info->spawnstate + (P_Random(pr_hexen) % 3));
+        mo->momz = ((P_Random(pr_hexen) & 7) + 5) * (3 * FRACUNIT / 4);
         mo->momx = P_SubRandom() << (FRACBITS - 6);
         mo->momy = P_SubRandom() << (FRACBITS - 6);
     }
@@ -268,7 +268,7 @@ void A_CorpseExplode(mobj_t * actor)
     P_SetMobjState(mo, S_CORPSEBIT_4);
     if (mo)
     {
-        mo->momz = ((P_Random() & 7) + 5) * (3 * FRACUNIT / 4);
+        mo->momz = ((P_Random(pr_hexen) & 7) + 5) * (3 * FRACUNIT / 4);
         mo->momx = P_SubRandom() << (FRACBITS - 6);
         mo->momy = P_SubRandom() << (FRACBITS - 6);
         S_StartSound(mo, SFX_FIRED_DEATH);
@@ -287,20 +287,20 @@ void A_LeafSpawn(mobj_t * actor)
     mobj_t *mo;
     int i;
 
-    for (i = (P_Random() & 3) + 1; i; i--)
+    for (i = (P_Random(pr_hexen) & 3) + 1; i; i--)
     {
         // Official release of Hexen's source code relies on unspecified behavior
         // the in order of function's argument evaluation,
         // see ISO-IEC 9899-1999, [6.5.2.2.10]
-        mobjtype_t type = MT_LEAF1 + (P_Random() & 1);
-        fixed_t z = actor->z + (P_Random() << 14);
+        mobjtype_t type = MT_LEAF1 + (P_Random(pr_hexen) & 1);
+        fixed_t z = actor->z + (P_Random(pr_hexen) << 14);
         fixed_t y = actor->y + (P_SubRandom() << 14);
         fixed_t x = actor->x + (P_SubRandom() << 14);
 
         mo = P_SpawnMobj(x, y, z, type);
         if (mo)
         {
-            P_ThrustMobj(mo, actor->angle, (P_Random() << 9) + 3 * FRACUNIT);
+            P_ThrustMobj(mo, actor->angle, (P_Random(pr_hexen) << 9) + 3 * FRACUNIT);
             mo->target = actor;
             mo->special1.i = 0;
         }
@@ -315,11 +315,11 @@ void A_LeafSpawn(mobj_t * actor)
 
 void A_LeafThrust(mobj_t * actor)
 {
-    if (P_Random() > 96)
+    if (P_Random(pr_hexen) > 96)
     {
         return;
     }
-    actor->momz += (P_Random() << 9) + FRACUNIT;
+    actor->momz += (P_Random(pr_hexen) << 9) + FRACUNIT;
 }
 
 //============================================================================
@@ -336,19 +336,19 @@ void A_LeafCheck(mobj_t * actor)
         P_SetMobjState(actor, S_NULL);
         return;
     }
-    if (P_Random() > 64)
+    if (P_Random(pr_hexen) > 64)
     {
         if (!actor->momx && !actor->momy)
         {
             P_ThrustMobj(actor, actor->target->angle,
-                         (P_Random() << 9) + FRACUNIT);
+                         (P_Random(pr_hexen) << 9) + FRACUNIT);
         }
         return;
     }
     P_SetMobjState(actor, S_LEAF1_8);
-    actor->momz = (P_Random() << 9) + FRACUNIT;
+    actor->momz = (P_Random(pr_hexen) << 9) + FRACUNIT;
     P_ThrustMobj(actor, actor->target->angle,
-                 (P_Random() << 9) + 2 * FRACUNIT);
+                 (P_Random(pr_hexen) << 9) + 2 * FRACUNIT);
     actor->flags |= MF_MISSILE;
 }
 
@@ -428,7 +428,7 @@ void A_BridgeInit(mobj_t * actor)
     cx = actor->x;
     cy = actor->y;
     cz = actor->z;
-    startangle = P_Random();
+    startangle = P_Random(pr_hexen);
     actor->special1.i = 0;
 
     // Spawn triad into world
@@ -678,7 +678,7 @@ void A_FogSpawn(mobj_t * actor)
 
     actor->special1.i = actor->args[2];   // Reset frequency count
 
-    switch (P_Random() % 3)
+    switch (P_Random(pr_hexen) % 3)
     {
         case 0:
             mo = P_SpawnMobj(actor->x, actor->y, actor->z, MT_FOGPATCHS);
@@ -697,14 +697,14 @@ void A_FogSpawn(mobj_t * actor)
         if (delta == 0)
             delta = 1;
         mo->angle =
-            actor->angle + (((P_Random() % delta) - (delta >> 1)) << 24);
+            actor->angle + (((P_Random(pr_hexen) % delta) - (delta >> 1)) << 24);
         mo->target = actor;
         if (actor->args[0] < 1)
             actor->args[0] = 1;
-        mo->args[0] = (P_Random() % (actor->args[0])) + 1;      // Random speed
+        mo->args[0] = (P_Random(pr_hexen) % (actor->args[0])) + 1;      // Random speed
         mo->args[3] = actor->args[3];   // Set lifetime
         mo->args[4] = 1;        // Set to moving
-        mo->special2.i = P_Random() & 63;
+        mo->special2.i = P_Random(pr_hexen) & 63;
     }
 }
 
@@ -753,7 +753,7 @@ void A_PoisonBagInit(mobj_t * actor)
         return;
     }
     mo->momx = 1;               // missile objects must move to impact other objects
-    mo->special1.i = 24 + (P_Random() & 7);
+    mo->special1.i = 24 + (P_Random(pr_hexen) & 7);
     mo->special2.i = 0;
     mo->target = actor->target;
     mo->radius = 20 * FRACUNIT;
@@ -806,7 +806,7 @@ void A_PoisonBagDamage(mobj_t * actor)
 
 void A_PoisonShroom(mobj_t * actor)
 {
-    actor->tics = 128 + (P_Random() << 1);
+    actor->tics = 128 + (P_Random(pr_hexen) << 1);
 }
 
 //===========================================================================
@@ -916,12 +916,12 @@ void A_Quake(mobj_t * actor)
             // Check if in damage radius
             if ((dist < actor->args[2]) && (victim->z <= victim->floorz))
             {
-                if (P_Random() < 50)
+                if (P_Random(pr_hexen) < 50)
                 {
                     P_DamageMobj(victim, NULL, NULL, HITDICE(1));
                 }
                 // Thrust player around
-                an = victim->angle + ANG1 * P_Random();
+                an = victim->angle + ANG1 * P_Random(pr_hexen);
                 P_ThrustMobj(victim, an, richters << (FRACBITS - 1));
             }
         }
@@ -1031,13 +1031,13 @@ void P_SpawnDirt(mobj_t * actor, fixed_t radius)
     mobj_t *mo;
     angle_t angle;
 
-    angle = P_Random() << 5;    // <<24 >>19
+    angle = P_Random(pr_hexen) << 5;    // <<24 >>19
     x = actor->x + FixedMul(radius, finecosine[angle]);
     y = actor->y + FixedMul(radius, finesine[angle]);
 //      x = actor->x + (P_SubRandom()%radius)<<FRACBITS;
 //      y = actor->y + ((P_SubRandom()<<FRACBITS)%radius);
-    z = actor->z + (P_Random() << 9) + FRACUNIT;
-    switch (P_Random() % 6)
+    z = actor->z + (P_Random(pr_hexen) << 9) + FRACUNIT;
+    switch (P_Random(pr_hexen) % 6)
     {
         case 0:
             dtype = MT_DIRT1;
@@ -1061,7 +1061,7 @@ void P_SpawnDirt(mobj_t * actor, fixed_t radius)
     mo = P_SpawnMobj(x, y, z, dtype);
     if (mo)
     {
-        mo->momz = P_Random() << 10;
+        mo->momz = P_Random(pr_hexen) << 10;
     }
 }
 
@@ -1121,7 +1121,7 @@ void A_ThrustRaise(mobj_t * actor)
     }
 
     // Spawn some dirt
-    if (P_Random() < 40)
+    if (P_Random(pr_hexen) < 40)
         P_SpawnDirt(actor, actor->radius);
     actor->special2.i++;          // Increase raise speed
 }
@@ -1163,15 +1163,15 @@ void A_SoAExplode(mobj_t * actor)
 
     for (i = 0; i < 10; i++)
     {
-        r1 = P_Random();
-        r2 = P_Random();
-        r3 = P_Random();
+        r1 = P_Random(pr_hexen);
+        r2 = P_Random(pr_hexen);
+        r3 = P_Random(pr_hexen);
         mo = P_SpawnMobj(actor->x + ((r3 - 128) << 12),
                          actor->y + ((r2 - 128) << 12),
                          actor->z + (r1 * actor->height / 256),
                          MT_ZARMORCHUNK);
         P_SetMobjState(mo, mo->info->spawnstate + i);
-        mo->momz = ((P_Random() & 7) + 5) * FRACUNIT;
+        mo->momz = ((P_Random(pr_hexen) & 7) + 5) * FRACUNIT;
         mo->momx = P_SubRandom() << (FRACBITS - 6);
         mo->momy = P_SubRandom() << (FRACBITS - 6);
     }
@@ -1266,11 +1266,11 @@ void A_BatSpawn(mobj_t * actor)
     delta = actor->args[1];
     if (delta == 0)
         delta = 1;
-    angle = actor->angle + (((P_Random() % delta) - (delta >> 1)) << 24);
+    angle = actor->angle + (((P_Random(pr_hexen) % delta) - (delta >> 1)) << 24);
     mo = P_SpawnMissileAngle(actor, MT_BAT, angle, 0);
     if (mo)
     {
-        mo->args[0] = P_Random() & 63;  // floatbob index
+        mo->args[0] = P_Random(pr_hexen) & 63;  // floatbob index
         mo->args[4] = actor->args[4];   // turn degrees
         mo->special2.i = actor->args[3] << 3;     // Set lifetime
         mo->target = actor;
@@ -1289,7 +1289,7 @@ void A_BatMove(mobj_t * actor)
     }
     actor->special2.i -= 2;       // Called every 2 tics
 
-    if (P_Random() < 128)
+    if (P_Random(pr_hexen) < 128)
     {
         newangle = actor->angle + ANG1 * actor->args[4];
     }
@@ -1300,11 +1300,11 @@ void A_BatMove(mobj_t * actor)
 
     // Adjust momentum vector to new direction
     newangle >>= ANGLETOFINESHIFT;
-    speed = FixedMul(actor->info->speed, P_Random() << 10);
+    speed = FixedMul(actor->info->speed, P_Random(pr_hexen) << 10);
     actor->momx = FixedMul(speed, finecosine[newangle]);
     actor->momy = FixedMul(speed, finesine[newangle]);
 
-    if (P_Random() < 15)
+    if (P_Random(pr_hexen) < 15)
         S_StartSound(actor, SFX_BAT_SCREAM);
 
     // Handle Z movement

@@ -1310,7 +1310,7 @@ void G_DeathMatchSpawnPlayer(int playernum)
 
     for (j = 0; j < 20; j++)
     {
-        i = P_Random() % selections;
+        i = P_Random(pr_hexen) % selections;
         if (G_CheckSpot(playernum, &deathmatchstarts[i]))
         {
             deathmatchstarts[i].type = playernum + 1;

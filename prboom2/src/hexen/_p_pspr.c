@@ -48,7 +48,7 @@ void A_FHammerAttack(player_t * player, pspdef_t * psp)
     int slope;
     int i;
 
-    damage = 60 + (P_Random() & 63);
+    damage = 60 + (P_Random(pr_hexen) & 63);
     power = 10 * FRACUNIT;
     PuffType = MT_HAMMERPUFF;
     for (i = 0; i < 16; i++)
@@ -178,11 +178,11 @@ void A_FSwordFlames(mobj_t * actor)
     int i;
     int r1,r2,r3;
 
-    for (i = 1 + (P_Random() & 3); i; i--)
+    for (i = 1 + (P_Random(pr_hexen) & 3); i; i--)
     {
-        r1 = P_Random();
-        r2 = P_Random();
-        r3 = P_Random();
+        r1 = P_Random(pr_hexen);
+        r2 = P_Random(pr_hexen);
+        r3 = P_Random(pr_hexen);
         P_SpawnMobj(actor->x + ((r3 - 128) << 12), actor->y
                     + ((r2 - 128) << 12),
                     actor->z + ((r1 - 128) << 11), MT_FSWORD_FLAME);
@@ -218,7 +218,7 @@ void A_MWandAttack(player_t * player, pspdef_t * psp)
 void A_LightningReady(player_t * player, pspdef_t * psp)
 {
     A_WeaponReady(player, psp);
-    if (P_Random() < 160)
+    if (P_Random(pr_hexen) < 160)
     {
         S_StartSound(player->mo, SFX_MAGE_LIGHTNING_READY);
     }
@@ -251,7 +251,7 @@ void A_LightningClip(mobj_t * actor)
     if (actor->type == MT_LIGHTNING_FLOOR)
     {                           // floor lightning zig-zags, and forces the ceiling lightning to mimic
         cMo = actor->special2.m;
-        zigZag = P_Random();
+        zigZag = P_Random(pr_hexen);
         if ((zigZag > 128 && actor->special1.i < 2) || actor->special1.i < -2)
         {
             P_ThrustMobj(actor, actor->angle + ANG90, ZAGSPEED);
@@ -316,8 +316,8 @@ void A_LightningZap(mobj_t * actor)
     {
         deltaZ = -10 * FRACUNIT;
     }
-    r1 = P_Random();
-    r2 = P_Random();
+    r1 = P_Random(pr_hexen);
+    r2 = P_Random(pr_hexen);
     mo = P_SpawnMobj(actor->x + ((r2 - 128) * actor->radius / 256),
                      actor->y + ((r1 - 128) * actor->radius / 256),
                      actor->z + deltaZ, MT_LIGHTNING_ZAP);
@@ -337,8 +337,8 @@ void A_LightningZap(mobj_t * actor)
         }
     }
 /*
-	mo = P_SpawnMobj(actor->x+((P_Random()-128)*actor->radius/256),
-		actor->y+((P_Random()-128)*actor->radius/256),
+	mo = P_SpawnMobj(actor->x+((P_Random(pr_hexen)-128)*actor->radius/256),
+		actor->y+((P_Random(pr_hexen)-128)*actor->radius/256),
 		actor->z+deltaZ, MT_LIGHTNING_ZAP);
 	if(mo)
 	{
@@ -356,7 +356,7 @@ void A_LightningZap(mobj_t * actor)
 		}
 	}
 */
-    if (actor->type == MT_LIGHTNING_FLOOR && P_Random() < 160)
+    if (actor->type == MT_LIGHTNING_FLOOR && P_Random(pr_hexen) < 160)
     {
         S_StartSound(actor, SFX_MAGE_LIGHTNING_CONTINUOUS);
     }
@@ -575,7 +575,7 @@ void A_MStaffWeave(mobj_t * actor)
 
 void A_MStaffTrack(mobj_t * actor)
 {
-    if ((actor->special1.m == NULL) && (P_Random() < 50))
+    if ((actor->special1.m == NULL) && (P_Random(pr_hexen) < 50))
     {
         actor->special1.m = P_RoughMonsterSearch(actor, 10);
     }
@@ -632,7 +632,7 @@ void A_FPunchAttack(player_t * player, pspdef_t * psp)
     fixed_t power;
     int i;
 
-    damage = 40 + (P_Random() & 15);
+    damage = 40 + (P_Random(pr_hexen) & 15);
     power = 2 * FRACUNIT;
     PuffType = MT_PUNCHPUFF;
     for (i = 0; i < 16; i++)
@@ -712,8 +712,8 @@ void A_FAxeAttack(player_t * player, pspdef_t * psp)
     int useMana;
     int r;
 
-    r = P_Random();
-    damage = 40 + (r & 15) + (P_Random() & 7);
+    r = P_Random(pr_hexen);
+    damage = 40 + (r & 15) + (P_Random(pr_hexen) & 7);
     power = 0;
     if (player->mana[MANA_1] > 0)
     {
@@ -789,7 +789,7 @@ void A_CMaceAttack(player_t * player, pspdef_t * psp)
     int slope;
     int i;
 
-    damage = 25 + (P_Random() & 15);
+    damage = 25 + (P_Random(pr_hexen) & 15);
     PuffType = MT_HAMMERPUFF;
     for (i = 0; i < 16; i++)
     {
@@ -840,7 +840,7 @@ void A_CStaffCheck(player_t * player, pspdef_t * psp)
     int i;
 
     pmo = player->mo;
-    damage = 20 + (P_Random() & 15);
+    damage = 20 + (P_Random(pr_hexen) & 15);
     PuffType = MT_CSTAFFPUFF;
     for (i = 0; i < 3; i++)
     {
@@ -941,7 +941,7 @@ void A_CStaffMissileSlither(mobj_t * actor)
 
 void A_CStaffInitBlink(player_t * player, pspdef_t * psp)
 {
-    player->mo->special1.i = (P_Random() >> 1) + 20;
+    player->mo->special1.i = (P_Random(pr_hexen) >> 1) + 20;
 }
 
 //============================================================================
@@ -955,7 +955,7 @@ void A_CStaffCheckBlink(player_t * player, pspdef_t * psp)
     if (!--player->mo->special1.i)
     {
         P_SetPsprite(player, ps_weapon, S_CSTAFFBLINK1);
-        player->mo->special1.i = (P_Random() + 50) >> 2;
+        player->mo->special1.i = (P_Random(pr_hexen) + 50) >> 2;
     }
 }
 
@@ -1029,7 +1029,7 @@ void A_CFlameMissile(mobj_t * actor)
                 mo->momx = mo->special1.i =
                     FixedMul(FLAMESPEED, finecosine[an]);
                 mo->momy = mo->special2.i = FixedMul(FLAMESPEED, finesine[an]);
-                mo->tics -= P_Random() & 3;
+                mo->tics -= P_Random(pr_hexen) & 3;
             }
             mo = P_SpawnMobj(BlockingMobj->x - FixedMul(dist, finecosine[an]),
                              BlockingMobj->y - FixedMul(dist, finesine[an]),
@@ -1041,7 +1041,7 @@ void A_CFlameMissile(mobj_t * actor)
                 mo->momx = mo->special1.i = FixedMul(-FLAMESPEED,
                                                      finecosine[an]);
                 mo->momy = mo->special2.i = FixedMul(-FLAMESPEED, finesine[an]);
-                mo->tics -= P_Random() & 3;
+                mo->tics -= P_Random(pr_hexen) & 3;
             }
         }
         P_SetMobjState(actor, S_FLAMEPUFF2_1);
@@ -1106,18 +1106,18 @@ void A_CHolyAttack2(mobj_t * actor)
         switch (j)
         {                       // float bob index
             case 0:
-                mo->special2.i = P_Random() & 7;  // upper-left
+                mo->special2.i = P_Random(pr_hexen) & 7;  // upper-left
                 break;
             case 1:
-                mo->special2.i = 32 + (P_Random() & 7);   // upper-right
+                mo->special2.i = 32 + (P_Random(pr_hexen) & 7);   // upper-right
                 break;
             case 2:
-                mo->special2.i = (32 + (P_Random() & 7)) << 16;   // lower-left
+                mo->special2.i = (32 + (P_Random(pr_hexen) & 7)) << 16;   // lower-left
                 break;
             case 3:
-                r = P_Random();
+                r = P_Random(pr_hexen);
                 mo->special2.i =
-                    ((32 + (r & 7)) << 16) + 32 + (P_Random() & 7);
+                    ((32 + (r & 7)) << 16) + 32 + (P_Random(pr_hexen) & 7);
                 break;
         }
         mo->z = actor->z;
@@ -1267,7 +1267,7 @@ static void CHolySeekerMissile(mobj_t * actor, angle_t thresh,
         || actor->z > target->z + (target->height)
         || actor->z + actor->height < target->z)
     {
-        newZ = target->z + ((P_Random() * target->height) >> 8);
+        newZ = target->z + ((P_Random(pr_hexen) * target->height) >> 8);
         deltaZ = newZ - actor->z;
         if (abs(deltaZ) > 15 * FRACUNIT)
         {
@@ -1310,12 +1310,12 @@ static void CHolyWeave(mobj_t * actor)
                                FloatBobOffsets[weaveXY] << 2);
     newY = actor->y - FixedMul(finesine[angle],
                                FloatBobOffsets[weaveXY] << 2);
-    weaveXY = (weaveXY + (P_Random() % 5)) & 63;
+    weaveXY = (weaveXY + (P_Random(pr_hexen) % 5)) & 63;
     newX += FixedMul(finecosine[angle], FloatBobOffsets[weaveXY] << 2);
     newY += FixedMul(finesine[angle], FloatBobOffsets[weaveXY] << 2);
     P_TryMove(actor, newX, newY);
     actor->z -= FloatBobOffsets[weaveZ] << 1;
-    weaveZ = (weaveZ + (P_Random() % 5)) & 63;
+    weaveZ = (weaveZ + (P_Random(pr_hexen) % 5)) & 63;
     actor->z += FloatBobOffsets[weaveZ] << 1;
     actor->special2.i = weaveZ + (weaveXY << 16);
 }
@@ -1335,7 +1335,7 @@ void A_CHolySeek(mobj_t * actor)
         actor->momy >>= 2;
         actor->momz = 0;
         P_SetMobjState(actor, actor->info->deathstate);
-        actor->tics -= P_Random() & 3;
+        actor->tics -= P_Random(pr_hexen) & 3;
         return;
     }
     if (actor->special1.m)
@@ -1344,7 +1344,7 @@ void A_CHolySeek(mobj_t * actor)
                            actor->args[0] * ANG1 * 2);
         if (!((leveltime + 7) & 15))
         {
-            actor->args[0] = 5 + (P_Random() / 20);
+            actor->args[0] = 5 + (P_Random(pr_hexen) / 20);
         }
     }
     CHolyWeave(actor);
@@ -1458,7 +1458,7 @@ void A_CHolyTail(mobj_t * actor)
 void A_CHolyCheckScream(mobj_t * actor)
 {
     A_CHolySeek(actor);
-    if (P_Random() < 20)
+    if (P_Random(pr_hexen) < 20)
     {
         S_StartSound(actor, SFX_SPIRIT_ACTIVE);
     }
@@ -1502,7 +1502,7 @@ void A_FireConePL1(player_t * player, pspdef_t * psp)
     player->mana[MANA_1] -= WeaponManaUse[player->class][player->readyweapon];
     S_StartSound(pmo, SFX_MAGE_SHARDS_FIRE);
 
-    damage = 90 + (P_Random() & 15);
+    damage = 90 + (P_Random(pr_hexen) & 15);
     for (i = 0; i < 16; i++)
     {
         angle = pmo->angle + i * (ANG45 / 16);

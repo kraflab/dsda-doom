@@ -410,7 +410,7 @@ boolean PIT_CheckThing(mobj_t * thing)
                 {
                     tmthing->special1.m = thing;
                 }
-                if (P_Random() < 96)
+                if (P_Random(pr_hexen) < 96)
                 {
                     damage = 12;
                     if (thing->player || thing->flags2 & MF2_BOSS)
@@ -420,12 +420,12 @@ boolean PIT_CheckThing(mobj_t * thing)
                         tmthing->health -= 6;
                     }
                     P_DamageMobj(thing, tmthing, tmthing->target, damage);
-                    if (P_Random() < 128)
+                    if (P_Random(pr_hexen) < 128)
                     {
                         P_SpawnMobj(tmthing->x, tmthing->y, tmthing->z,
                                     MT_HOLY_PUFF);
                         S_StartSound(tmthing, SFX_SPIRIT_ATTACK);
-                        if (thing->flags & MF_COUNTKILL && P_Random() < 128
+                        if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
                             && !S_GetSoundPlayingInfo(thing, SFX_PUPPYBEAT))
                         {
                             if ((thing->type == MT_CENTAUR) ||
@@ -444,7 +444,7 @@ boolean PIT_CheckThing(mobj_t * thing)
             }
             return true;
         }
-        damage = ((P_Random() % 8) + 1) * tmthing->damage;
+        damage = ((P_Random(pr_hexen) % 8) + 1) * tmthing->damage;
         P_DamageMobj(thing, tmthing, tmthing, damage);
         tmthing->flags &= ~MF_SKULLFLY;
         tmthing->momx = tmthing->momy = tmthing->momz = 0;
@@ -523,7 +523,7 @@ boolean PIT_CheckThing(mobj_t * thing)
                     {
                         S_StartSound(tmthing, SFX_MAGE_LIGHTNING_ZAP);
                     }
-                    if (thing->flags & MF_COUNTKILL && P_Random() < 64
+                    if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 64
                         && !S_GetSoundPlayingInfo(thing, SFX_PUPPYBEAT))
                     {
                         if ((thing->type == MT_CENTAUR) ||
@@ -623,7 +623,7 @@ boolean PIT_CheckThing(mobj_t * thing)
                 P_RipperBlood(tmthing);
             }
             //S_StartSound(tmthing, sfx_ripslop);
-            damage = ((P_Random() & 3) + 2) * tmthing->damage;
+            damage = ((P_Random(pr_hexen) & 3) + 2) * tmthing->damage;
             P_DamageMobj(thing, tmthing, tmthing->target, damage);
             if (thing->flags2 & MF2_PUSHABLE
                 && !(tmthing->flags2 & MF2_CANNOTPUSH))
@@ -635,7 +635,7 @@ boolean PIT_CheckThing(mobj_t * thing)
             return (true);
         }
         // Do damage
-        damage = ((P_Random() % 8) + 1) * tmthing->damage;
+        damage = ((P_Random(pr_hexen) % 8) + 1) * tmthing->damage;
         if (damage)
         {
             if (!(thing->flags & MF_NOBLOOD) &&
@@ -645,7 +645,7 @@ boolean PIT_CheckThing(mobj_t * thing)
                 !(tmthing->type == MT_TELOTHER_FX2) &&
                 !(tmthing->type == MT_TELOTHER_FX3) &&
                 !(tmthing->type == MT_TELOTHER_FX4) &&
-                !(tmthing->type == MT_TELOTHER_FX5) && (P_Random() < 192))
+                !(tmthing->type == MT_TELOTHER_FX5) && (P_Random(pr_hexen) < 192))
             {
                 P_BloodSplatter(tmthing->x, tmthing->y, tmthing->z, thing);
             }
@@ -1783,7 +1783,7 @@ boolean PTR_ShootTraverse(intercept_t * in)
             {
                 P_BloodSplatter2(x, y, z, in->d.thing);
             }
-            if (P_Random() < 192)
+            if (P_Random(pr_hexen) < 192)
             {
                 P_BloodSplatter(x, y, z, in->d.thing);
             }

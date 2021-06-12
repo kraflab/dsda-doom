@@ -76,12 +76,12 @@ void T_Light(light_t * light)
             if (light->sector->lightlevel == light->value1)
             {
                 light->sector->lightlevel = light->value2;
-                light->count = (P_Random() & 7) + 1;
+                light->count = (P_Random(pr_hexen) & 7) + 1;
             }
             else
             {
                 light->sector->lightlevel = light->value1;
-                light->count = (P_Random() & 31) + 1;
+                light->count = (P_Random(pr_hexen) & 31) + 1;
             }
             break;
         case LITE_STROBE:
@@ -206,7 +206,7 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 light->value1 = arg1;   // upper lightlevel
                 light->value2 = arg2;   // lower lightlevel
                 sec->lightlevel = light->value1;
-                light->count = (P_Random() & 64) + 1;
+                light->count = (P_Random(pr_hexen) & 64) + 1;
                 break;
             case LITE_STROBE:
                 think = true;

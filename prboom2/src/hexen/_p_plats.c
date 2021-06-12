@@ -186,7 +186,7 @@ int EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount)
                 if (plat->high < sec->floorheight)
                     plat->high = sec->floorheight;
                 plat->wait = args[2];
-                plat->status = P_Random() & 1;
+                plat->status = P_Random(pr_hexen) & 1;
                 break;
         }
         P_AddActivePlat(plat);

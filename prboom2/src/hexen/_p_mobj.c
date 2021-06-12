@@ -125,7 +125,7 @@ void P_ExplodeMissile(mobj_t * mo)
 {
     mo->momx = mo->momy = mo->momz = 0;
     P_SetMobjState(mo, mobjinfo[mo->type].deathstate);
-    //mo->tics -= P_Random()&3;
+    //mo->tics -= P_Random(pr_hexen)&3;
     mo->flags &= ~MF_MISSILE;
 
     switch (mo->type)
@@ -470,7 +470,7 @@ void P_XYMovement(mobj_t * mo)
                             angle = R_PointToAngle2(BlockingMobj->x,
                                                     BlockingMobj->y, mo->x,
                                                     mo->y) +
-                                ANG1 * ((P_Random() % 16) - 8);
+                                ANG1 * ((P_Random(pr_hexen) % 16) - 8);
                             speed = P_AproxDistance(mo->momx, mo->momy);
                             speed = FixedMul(speed, 0.75 * FRACUNIT);
                             mo->angle = angle;
@@ -525,14 +525,14 @@ void P_XYMovement(mobj_t * mo)
                             // Drop through to sorcerer full reflection
                         case MT_SORCBOSS:
                             // Deflection
-                            if (P_Random() < 128)
+                            if (P_Random(pr_hexen) < 128)
                                 angle += ANG45;
                             else
                                 angle -= ANG45;
                             break;
                         default:
                             // Reflection
-                            angle += ANG1 * ((P_Random() % 16) - 8);
+                            angle += ANG1 * ((P_Random(pr_hexen) % 16) - 8);
                             break;
                     }
 
@@ -947,7 +947,7 @@ void P_BlasterMobjThinker(mobj_t * mobj)
             }
             if (changexy)
             {
-                if (mobj->type == MT_MWAND_MISSILE && (P_Random() < 128))
+                if (mobj->type == MT_MWAND_MISSILE && (P_Random(pr_hexen) < 128))
                 {
                     z = mobj->z - 8 * FRACUNIT;
                     if (z < mobj->floorz)
@@ -1171,7 +1171,7 @@ mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
     {
         mobj->reactiontime = info->reactiontime;
     }
-    mobj->lastlook = P_Random() % maxplayers;
+    mobj->lastlook = P_Random(pr_hexen) % maxplayers;
 
     // Set the state, but do not use P_SetMobjState, because action
     // routines can't be called yet.  If the spawnstate has an action
@@ -1201,7 +1201,7 @@ mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
         {
             space -= 40 * FRACUNIT;
             mobj->z =
-                ((space * P_Random()) >> 8) + mobj->floorz + 40 * FRACUNIT;
+                ((space * P_Random(pr_hexen)) >> 8) + mobj->floorz + 40 * FRACUNIT;
         }
         else
         {
@@ -1291,7 +1291,7 @@ void P_SpawnPlayer(mapthing_t * mthing)
     z = ONFLOORZ;
     if (randomclass && deathmatch)
     {
-        p->class = P_Random() % 3;
+        p->class = P_Random(pr_hexen) % 3;
         if (p->class == PlayerClass[mthing->type - 1])
         {
             p->class = (p->class + 1) % 3;
@@ -1565,12 +1565,12 @@ void P_SpawnMapThing(mapthing_t * mthing)
     mobj->args[4] = mthing->arg5;
     if (mobj->flags2 & MF2_FLOATBOB)
     {                           // Seed random starting index for bobbing motion
-        mobj->health = P_Random();
+        mobj->health = P_Random(pr_hexen);
         mobj->special1.i = mthing->height << FRACBITS;
     }
     if (mobj->tics > 0)
     {
-        mobj->tics = 1 + (P_Random() % mobj->tics);
+        mobj->tics = 1 + (P_Random(pr_hexen) % mobj->tics);
     }
 //      if(mobj->flags&MF_COUNTITEM)
 //      {
@@ -1777,7 +1777,7 @@ void P_SpawnBlood (fixed_t x, fixed_t y, fixed_t z, int damage)
 	z += (P_SubRandom()<<10);
 	th = P_SpawnMobj (x,y,z, MT_BLOOD);
 	th->momz = FRACUNIT*2;
-	th->tics -= P_Random()&3;
+	th->tics -= P_Random(pr_hexen)&3;
 
 	if (damage <= 12 && damage >= 9)
 		P_SetMobjState (th,S_BLOOD2);
@@ -1814,8 +1814,8 @@ void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator)
     mobj_t *mo;
     int r1, r2;
 
-    r1 = P_Random();
-    r2 = P_Random();
+    r1 = P_Random(pr_hexen);
+    r2 = P_Random(pr_hexen);
     mo = P_SpawnMobj(x + ((r2 - 128) << 11),
                      y + ((r1 - 128) << 11), z, MT_AXEBLOOD);
     mo->target = originator;
@@ -1839,7 +1839,7 @@ void P_RipperBlood(mobj_t * mo)
 //      th->flags |= MF_NOGRAVITY;
     th->momx = mo->momx >> 1;
     th->momy = mo->momy >> 1;
-    th->tics += P_Random() & 3;
+    th->tics += P_Random(pr_hexen) & 3;
 }
 
 //---------------------------------------------------------------------------
@@ -1922,7 +1922,7 @@ int P_HitFloor(mobj_t * thing)
                 mo->target = thing;
                 mo->momx = P_SubRandom() << 8;
                 mo->momy = P_SubRandom() << 8;
-                mo->momz = 2 * FRACUNIT + (P_Random() << 8);
+                mo->momz = 2 * FRACUNIT + (P_Random(pr_hexen) << 8);
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, MT_SPLASHBASE);
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
@@ -1939,7 +1939,7 @@ int P_HitFloor(mobj_t * thing)
             else
             {
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, MT_LAVASMOKE);
-                mo->momz = FRACUNIT + (P_Random() << 7);
+                mo->momz = FRACUNIT + (P_Random(pr_hexen) << 7);
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, MT_LAVASPLASH);
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
@@ -1965,7 +1965,7 @@ int P_HitFloor(mobj_t * thing)
                 mo->target = thing;
                 mo->momx = P_SubRandom() << 8;
                 mo->momy = P_SubRandom() << 8;
-                mo->momz = FRACUNIT + (P_Random() << 8);
+                mo->momz = FRACUNIT + (P_Random(pr_hexen) << 8);
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ,
                                  MT_SLUDGESPLASH);
                 if (thing->player)
@@ -1989,7 +1989,7 @@ int P_HitFloor(mobj_t * thing)
 
 boolean P_CheckMissileSpawn(mobj_t * missile)
 {
-    //missile->tics -= P_Random()&3;
+    //missile->tics -= P_Random(pr_hexen)&3;
 
     // move a little forward so an angle can be computed if it
     // immediately explodes
