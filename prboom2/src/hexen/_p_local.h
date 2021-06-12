@@ -237,7 +237,6 @@ mobj_t *P_RoughMonsterSearch(mobj_t * mo, int distance);
 extern dboolean floatok;         // if true, move would be ok if
 extern fixed_t tmfloorz, tmceilingz;    // within tmfloorz - tmceilingz
 extern int tmfloorpic;
-extern mobj_t *BlockingMobj;
 
 extern line_t *ceilingline;
 dboolean P_TestMobjLocation(mobj_t * mobj);

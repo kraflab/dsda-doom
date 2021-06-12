@@ -111,4 +111,8 @@ void CheckMissileImpact(mobj_t * mobj);
 
 void P_AppendSpecHit(line_t * ld);
 
+// hexen
+
+extern mobj_t *BlockingMobj;
+
 #endif // __P_MAP__

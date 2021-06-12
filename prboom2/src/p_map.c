@@ -2864,3 +2864,7 @@ void CheckMissileImpact(mobj_t * mobj)
         P_ShootSpecialLine(mobj->target, spechit[i]);
     }
 }
+
+// hexen
+
+mobj_t *BlockingMobj;

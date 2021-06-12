@@ -81,7 +81,6 @@ line_t *spechit[MAXSPECIALCROSS];
 int numspechit;
 
 mobj_t *onmobj;                 // generic global onmobj...used for landing on pods/players
-mobj_t *BlockingMobj;
 
 /*
 ===============================================================================
