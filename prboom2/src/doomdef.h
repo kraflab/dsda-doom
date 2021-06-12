@@ -294,17 +294,25 @@ typedef enum {
   pw_flight,
   pw_shield,
   pw_health2,
+
+  // hexen
+  pw_speed,
+  pw_minotaur,
+
   NUMPOWERS
 } powertype_t;
 
 // Power up durations (how many seconds till expiration).
 typedef enum {
-  INVULNTICS  = (30*TICRATE),
-  INVISTICS   = (60*TICRATE),
-  INFRATICS   = (120*TICRATE),
-  IRONTICS    = (60*TICRATE),
-  WPNLEV2TICS = (40*TICRATE),
-  FLIGHTTICS  = (60*TICRATE)
+  INVULNTICS   = (30*TICRATE),
+  INVISTICS    = (60*TICRATE),
+  INFRATICS    = (120*TICRATE),
+  IRONTICS     = (60*TICRATE),
+  WPNLEV2TICS  = (40*TICRATE),
+  FLIGHTTICS   = (60*TICRATE),
+  SPEEDTICS    = (45*TICRATE),
+  MORPHTICS    = (40*TICRATE),
+  MAULATORTICS = (25*TICRATE)
 } powerduration_t;
 
 // DOOM keyboard definition.
@@ -440,6 +448,8 @@ typedef enum {
 
 #define BLINKTHRESHOLD (4*32)
 
+// TODO_HEXEN: BLINKTHRESHOLD is (4*35)
+
 extern dboolean heretic;
 
 //hexen
@@ -449,6 +459,9 @@ extern dboolean heretic;
 #define AFLAG_MASK			0x3F
 #define AFLAG_SUICIDE		0x40
 #define AFLAG_JUMP			0x80
+
+// HEXEN_TODO: move somewhere else
+#define	SBARHEIGHT 39 // status bar height at bottom of screen
 
 typedef enum
 {
