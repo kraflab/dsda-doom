@@ -395,6 +395,14 @@ typedef struct mobj_s
     specialval_t special1;      // Special info
     specialval_t special2;      // Special info
 
+    // hexen
+    fixed_t floorpic;           // contacted sec floorpic
+    fixed_t floorclip;          // value to use for floor clipping
+    int archiveNum;             // Identity during archive
+    short tid;                  // thing identifier
+    byte special;               // special
+    byte args[5];               // special arguments
+
     // SEE WARNING ABOVE ABOUT POINTER FIELDS!!!
 } mobj_t;
 
