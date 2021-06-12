@@ -51,7 +51,7 @@ void A_FAxeAttack(player_t * player, pspdef_t * psp)
     for (i = 0; i < 16; i++)
     {
         angle = pmo->angle + i * (ANG45 / 16);
-        slope = P_AimLineAttack(pmo, angle, AXERANGE);
+        slope = P_AimLineAttack(pmo, angle, AXERANGE, 0);
         if (linetarget)
         {
             P_LineAttack(pmo, angle, AXERANGE, slope, damage);
@@ -64,7 +64,7 @@ void A_FAxeAttack(player_t * player, pspdef_t * psp)
             goto axedone;
         }
         angle = pmo->angle - i * (ANG45 / 16);
-        slope = P_AimLineAttack(pmo, angle, AXERANGE);
+        slope = P_AimLineAttack(pmo, angle, AXERANGE, 0);
         if (linetarget)
         {
             P_LineAttack(pmo, angle, AXERANGE, slope, damage);
@@ -81,7 +81,7 @@ void A_FAxeAttack(player_t * player, pspdef_t * psp)
     pmo->special1.m = NULL;
 
     angle = pmo->angle;
-    slope = P_AimLineAttack(pmo, angle, MELEERANGE);
+    slope = P_AimLineAttack(pmo, angle, MELEERANGE, 0);
     P_LineAttack(pmo, angle, MELEERANGE, slope, damage);
 
   axedone:
@@ -115,7 +115,7 @@ void A_CMaceAttack(player_t * player, pspdef_t * psp)
     for (i = 0; i < 16; i++)
     {
         angle = player->mo->angle + i * (ANG45 / 16);
-        slope = P_AimLineAttack(player->mo, angle, 2 * MELEERANGE);
+        slope = P_AimLineAttack(player->mo, angle, 2 * MELEERANGE, 0);
         if (linetarget)
         {
             P_LineAttack(player->mo, angle, 2 * MELEERANGE, slope, damage);
@@ -124,7 +124,7 @@ void A_CMaceAttack(player_t * player, pspdef_t * psp)
             goto macedone;
         }
         angle = player->mo->angle - i * (ANG45 / 16);
-        slope = P_AimLineAttack(player->mo, angle, 2 * MELEERANGE);
+        slope = P_AimLineAttack(player->mo, angle, 2 * MELEERANGE, 0);
         if (linetarget)
         {
             P_LineAttack(player->mo, angle, 2 * MELEERANGE, slope, damage);
@@ -137,7 +137,7 @@ void A_CMaceAttack(player_t * player, pspdef_t * psp)
     player->mo->special1.m = NULL;
 
     angle = player->mo->angle;
-    slope = P_AimLineAttack(player->mo, angle, MELEERANGE);
+    slope = P_AimLineAttack(player->mo, angle, MELEERANGE, 0);
     P_LineAttack(player->mo, angle, MELEERANGE, slope, damage);
   macedone:
     return;
@@ -164,7 +164,7 @@ void A_CStaffCheck(player_t * player, pspdef_t * psp)
     for (i = 0; i < 3; i++)
     {
         angle = pmo->angle + i * (ANG45 / 16);
-        slope = P_AimLineAttack(pmo, angle, 1.5 * MELEERANGE);
+        slope = P_AimLineAttack(pmo, angle, 1.5 * MELEERANGE, 0);
         if (linetarget)
         {
             P_LineAttack(pmo, angle, 1.5 * MELEERANGE, slope, damage);
@@ -183,7 +183,7 @@ void A_CStaffCheck(player_t * player, pspdef_t * psp)
             break;
         }
         angle = pmo->angle - i * (ANG45 / 16);
-        slope = P_AimLineAttack(player->mo, angle, 1.5 * MELEERANGE);
+        slope = P_AimLineAttack(player->mo, angle, 1.5 * MELEERANGE, 0);
         if (linetarget)
         {
             P_LineAttack(pmo, angle, 1.5 * MELEERANGE, slope, damage);
@@ -825,7 +825,7 @@ void A_FireConePL1(player_t * player, pspdef_t * psp)
     for (i = 0; i < 16; i++)
     {
         angle = pmo->angle + i * (ANG45 / 16);
-        P_AimLineAttack(pmo, angle, MELEERANGE);
+        P_AimLineAttack(pmo, angle, MELEERANGE, 0);
         if (linetarget)
         {
             pmo->flags2 |= MF2_ICEDAMAGE;
