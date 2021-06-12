@@ -2855,3 +2855,202 @@ void A_FSwordFlames(mobj_t * actor)
                     actor->z + ((r1 - 128) << 11), HEXEN_MT_FSWORD_FLAME);
     }
 }
+
+void A_MWandAttack(player_t * player, pspdef_t * psp)
+{
+    mobj_t *mo;
+
+    mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_MWAND_MISSILE);
+    if (mo)
+    {
+        mo->thinker.function = P_BlasterMobjThinker;
+    }
+    S_StartSound(player->mo, hexen_sfx_mage_wand_fire);
+}
+
+void A_LightningReady(player_t * player, pspdef_t * psp)
+{
+    A_WeaponReady(player, psp);
+    if (P_Random(pr_hexen) < 160)
+    {
+        S_StartSound(player->mo, hexen_sfx_mage_lightning_ready);
+    }
+}
+
+#define ZAGSPEED FRACUNIT
+
+void A_LightningClip(mobj_t * actor)
+{
+    mobj_t *cMo;
+    mobj_t *target = NULL;
+    int zigZag;
+
+    if (actor->type == HEXEN_MT_LIGHTNING_FLOOR)
+    {
+        actor->z = actor->floorz;
+        target = actor->special2.m->special1.m;
+    }
+    else if (actor->type == HEXEN_MT_LIGHTNING_CEILING)
+    {
+        actor->z = actor->ceilingz - actor->height;
+        target = actor->special1.m;
+    }
+    if (actor->type == HEXEN_MT_LIGHTNING_FLOOR)
+    {                           // floor lightning zig-zags, and forces the ceiling lightning to mimic
+        cMo = actor->special2.m;
+        zigZag = P_Random(pr_hexen);
+        if ((zigZag > 128 && actor->special1.i < 2) || actor->special1.i < -2)
+        {
+            P_ThrustMobj(actor, actor->angle + ANG90, ZAGSPEED);
+            if (cMo)
+            {
+                P_ThrustMobj(cMo, actor->angle + ANG90, ZAGSPEED);
+            }
+            actor->special1.i++;
+        }
+        else
+        {
+            P_ThrustMobj(actor, actor->angle - ANG90, ZAGSPEED);
+            if (cMo)
+            {
+                P_ThrustMobj(cMo, cMo->angle - ANG90, ZAGSPEED);
+            }
+            actor->special1.i--;
+        }
+    }
+    if (target)
+    {
+        if (target->health <= 0)
+        {
+            P_ExplodeMissile(actor);
+        }
+        else
+        {
+            actor->angle = R_PointToAngle2(actor->x, actor->y, target->x,
+                                           target->y);
+            actor->momx = 0;
+            actor->momy = 0;
+            P_ThrustMobj(actor, actor->angle, actor->info->speed >> 1);
+        }
+    }
+}
+
+void A_LightningZap(mobj_t * actor)
+{
+    mobj_t *mo;
+    fixed_t deltaZ;
+    int r1,r2;
+
+    A_LightningClip(actor);
+
+    actor->health -= 8;
+    if (actor->health <= 0)
+    {
+        P_SetMobjState(actor, actor->info->deathstate);
+        return;
+    }
+    if (actor->type == HEXEN_MT_LIGHTNING_FLOOR)
+    {
+        deltaZ = 10 * FRACUNIT;
+    }
+    else
+    {
+        deltaZ = -10 * FRACUNIT;
+    }
+    r1 = P_Random(pr_hexen);
+    r2 = P_Random(pr_hexen);
+    mo = P_SpawnMobj(actor->x + ((r2 - 128) * actor->radius / 256),
+                     actor->y + ((r1 - 128) * actor->radius / 256),
+                     actor->z + deltaZ, HEXEN_MT_LIGHTNING_ZAP);
+    if (mo)
+    {
+        mo->special2.m = actor;
+        mo->momx = actor->momx;
+        mo->momy = actor->momy;
+        mo->target = actor->target;
+        if (actor->type == HEXEN_MT_LIGHTNING_FLOOR)
+        {
+            mo->momz = 20 * FRACUNIT;
+        }
+        else
+        {
+            mo->momz = -20 * FRACUNIT;
+        }
+    }
+
+    if (actor->type == HEXEN_MT_LIGHTNING_FLOOR && P_Random(pr_hexen) < 160)
+    {
+        S_StartSound(actor, hexen_sfx_mage_lightning_continuous);
+    }
+}
+
+void A_MLightningAttack2(mobj_t * actor)
+{
+    mobj_t *fmo, *cmo;
+
+    fmo = P_SpawnPlayerMissile(actor, HEXEN_MT_LIGHTNING_FLOOR);
+    cmo = P_SpawnPlayerMissile(actor, HEXEN_MT_LIGHTNING_CEILING);
+    if (fmo)
+    {
+        fmo->special1.m = NULL;
+        fmo->special2.m = cmo;
+        A_LightningZap(fmo);
+    }
+    if (cmo)
+    {
+        cmo->special1.m = NULL;      // mobj that it will track
+        cmo->special2.m = fmo;
+        A_LightningZap(cmo);
+    }
+    S_StartSound(actor, hexen_sfx_mage_lightning_fire);
+}
+
+void A_MLightningAttack(player_t * player, pspdef_t * psp)
+{
+    A_MLightningAttack2(player->mo);
+    player->ammo[MANA_2] -= WeaponManaUse[player->pclass][player->readyweapon];
+}
+
+void A_ZapMimic(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    mo = actor->special2.m;
+    if (mo)
+    {
+        if (mo->state >= &states[mo->info->deathstate]
+            || mo->state == &states[HEXEN_S_FREETARGMOBJ])
+        {
+            P_ExplodeMissile(actor);
+        }
+        else
+        {
+            actor->momx = mo->momx;
+            actor->momy = mo->momy;
+        }
+    }
+}
+
+void A_LastZap(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_LIGHTNING_ZAP);
+    if (mo)
+    {
+        P_SetMobjState(mo, HEXEN_S_LIGHTNING_ZAP_X1);
+        mo->momz = 40 * FRACUNIT;
+    }
+}
+
+void A_LightningRemove(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    mo = actor->special2.m;
+    if (mo)
+    {
+        mo->special2.m = NULL;
+        P_ExplodeMissile(mo);
+    }
+}
