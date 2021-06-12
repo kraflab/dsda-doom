@@ -50,7 +50,7 @@ void ST_UpdateNetNotches(int notchPosition);
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 static const byte *bitmap = NULL;
 int graphical_startup = 0;
-static boolean using_graphical_startup;
+static dboolean using_graphical_startup;
 
 static const byte notchTable[] = {
     // plane 0

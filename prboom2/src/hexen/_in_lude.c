@@ -60,12 +60,12 @@ static void DrawHubText(void);
 
 // PUBLIC DATA DECLARATIONS ------------------------------------------------
 
-boolean intermission;
+dboolean intermission;
 char ClusterMessage[MAX_INTRMSN_MESSAGE_SIZE];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static boolean skipintermission;
+static dboolean skipintermission;
 static int interstate = 0;
 static int intertime = -1;
 static gametype_t gametype;
@@ -336,7 +336,7 @@ static void CheckForSkip(void)
 {
     int i;
     player_t *player;
-    static boolean triedToSkip;
+    static dboolean triedToSkip;
 
     for (i = 0, player = players; i < maxplayers; i++, player++)
     {
@@ -444,8 +444,8 @@ static void DrDeathTally(void)
     fixed_t xDelta, yDelta;
     fixed_t xStart, scale;
     int x, y;
-    boolean bold;
-    static boolean showTotals;
+    dboolean bold;
+    static dboolean showTotals;
     int temp;
 
     V_DrawPatch(TALLY_TOP_X, TALLY_TOP_Y,

@@ -35,7 +35,7 @@
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
-static boolean CheckedLockedDoor(mobj_t * mo, byte lock);
+static dboolean CheckedLockedDoor(mobj_t * mo, byte lock);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -381,10 +381,10 @@ int     P_FindMinSurroundingLight(sector_t *sector,int max)
 //
 //=========================================================================
 
-boolean EV_SectorSoundChange(byte * args)
+dboolean EV_SectorSoundChange(byte * args)
 {
     int secNum;
-    boolean rtn;
+    dboolean rtn;
 
     if (!args[0])
     {
@@ -406,7 +406,7 @@ boolean EV_SectorSoundChange(byte * args)
 //
 //============================================================================
 
-static boolean CheckedLockedDoor(mobj_t * mo, byte lock)
+static dboolean CheckedLockedDoor(mobj_t * mo, byte lock)
 {
     extern char *TextKeyMessages[11];
     char LockedBuffer[80];
@@ -437,7 +437,7 @@ static boolean CheckedLockedDoor(mobj_t * mo, byte lock)
 //
 //==========================================================================
 
-boolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
+dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
 {
     player_t *player;
     int i;
@@ -503,10 +503,10 @@ Events are operations triggered by using, crossing, or shooting special lines, o
 //
 //============================================================================
 
-boolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
+dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
                              int side, mobj_t * mo)
 {
-    boolean buttonSuccess;
+    dboolean buttonSuccess;
 
     buttonSuccess = false;
     switch (special)
@@ -842,13 +842,13 @@ boolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
 //
 //============================================================================
 
-boolean P_ActivateLine(line_t * line, mobj_t * mo, int side,
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side,
                        int activationType)
 {
     byte args[5];
     int lineActivation;
-    boolean repeat;
-    boolean buttonSuccess;
+    dboolean repeat;
+    dboolean buttonSuccess;
 
     lineActivation = GET_SPAC(line->flags);
     if (lineActivation != activationType)

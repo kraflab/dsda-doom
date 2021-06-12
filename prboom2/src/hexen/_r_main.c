@@ -528,7 +528,7 @@ void R_InitLightTables(void)
 ==============
 */
 
-boolean setsizeneeded;
+dboolean setsizeneeded;
 int setblocks, setdetail;
 
 void R_SetViewSize(int blocks, int detail)

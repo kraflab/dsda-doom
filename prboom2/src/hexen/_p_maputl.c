@@ -422,7 +422,7 @@ If the function returns false, exit with false without checking anything else.
 ===================
 */
 
-boolean P_BlockLinesIterator(int x, int y, boolean(*func) (line_t *))
+dboolean P_BlockLinesIterator(int x, int y, dboolean(*func) (line_t *))
 {
     int offset;
     short *list;
@@ -488,7 +488,7 @@ boolean P_BlockLinesIterator(int x, int y, boolean(*func) (line_t *))
 ==================
 */
 
-boolean P_BlockThingsIterator(int x, int y, boolean(*func) (mobj_t *))
+dboolean P_BlockThingsIterator(int x, int y, dboolean(*func) (mobj_t *))
 {
     mobj_t *mobj;
 
@@ -513,7 +513,7 @@ boolean P_BlockThingsIterator(int x, int y, boolean(*func) (mobj_t *))
 intercept_t intercepts[MAXINTERCEPTS], *intercept_p;
 
 divline_t trace;
-boolean earlyout;
+dboolean earlyout;
 int ptflags;
 
 /*
@@ -528,7 +528,7 @@ int ptflags;
 ==================
 */
 
-boolean PIT_AddLineIntercepts(line_t * ld)
+dboolean PIT_AddLineIntercepts(line_t * ld)
 {
     int s1, s2;
     fixed_t frac;
@@ -579,11 +579,11 @@ boolean PIT_AddLineIntercepts(line_t * ld)
 ==================
 */
 
-boolean PIT_AddThingIntercepts(mobj_t * thing)
+dboolean PIT_AddThingIntercepts(mobj_t * thing)
 {
     fixed_t x1, y1, x2, y2;
     int s1, s2;
-    boolean tracepositive;
+    dboolean tracepositive;
     divline_t dl;
     fixed_t frac;
 
@@ -637,7 +637,7 @@ boolean PIT_AddThingIntercepts(mobj_t * thing)
 ====================
 */
 
-boolean P_TraverseIntercepts(traverser_t func, fixed_t maxfrac)
+dboolean P_TraverseIntercepts(traverser_t func, fixed_t maxfrac)
 {
     int count;
     fixed_t dist;
@@ -689,8 +689,8 @@ boolean P_TraverseIntercepts(traverser_t func, fixed_t maxfrac)
 ==================
 */
 
-boolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
-                       int flags, boolean(*trav) (intercept_t *))
+dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
+                       int flags, dboolean(*trav) (intercept_t *))
 {
     fixed_t xt1, yt1, xt2, yt2;
     fixed_t xstep, ystep;

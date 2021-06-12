@@ -39,11 +39,11 @@ void P_SpawnSpecials(void);
 void P_UpdateSpecials(void);
 
 // when needed
-boolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
+dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
                              int side, mobj_t * mo);
-boolean P_ActivateLine(line_t * ld, mobj_t * mo, int side,
+dboolean P_ActivateLine(line_t * ld, mobj_t * mo, int side,
                        int activationType);
-//boolean P_UseSpecialLine ( mobj_t *thing, line_t *line);
+//dboolean P_UseSpecialLine ( mobj_t *thing, line_t *line);
 //void    P_ShootSpecialLine ( mobj_t *thing, line_t *line);
 //void    P_CrossSpecialLine (int linenum, int side, mobj_t *thing);
 
@@ -125,7 +125,7 @@ void T_Phase(phase_t * phase);
 void T_Light(light_t * light);
 void P_SpawnPhasedLight(sector_t * sector, int base, int index);
 void P_SpawnLightSequence(sector_t * sector, int indexStep);
-boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type);
+dboolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type);
 
 #if 0
 typedef struct
@@ -315,7 +315,7 @@ typedef struct
 #define VDOORSPEED FRACUNIT*2
 #define VDOORWAIT 150
 
-boolean EV_VerticalDoor(line_t * line, mobj_t * thing);
+dboolean EV_VerticalDoor(line_t * line, mobj_t * thing);
 int EV_DoDoor(line_t * line, byte * args, vldoor_e type);
 void T_VerticalDoor(vldoor_t * door);
 //void P_SpawnDoorCloseIn30(sector_t *sec);
@@ -461,11 +461,11 @@ int EV_DoFloor(line_t * line, byte * args, floor_e floortype);
 void T_MoveFloor(floormove_t * floor);
 void T_BuildPillar(pillar_t * pillar);
 void T_FloorWaggle(floorWaggle_t * waggle);
-int EV_BuildPillar(line_t * line, byte * args, boolean crush);
+int EV_BuildPillar(line_t * line, byte * args, dboolean crush);
 int EV_OpenPillar(line_t * line, byte * args);
-int EV_DoFloorAndCeiling(line_t * line, byte * args, boolean raise);
+int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise);
 int EV_FloorCrushStop(line_t * line, byte * args);
-boolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
+dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
                             int timer);
 
 //--------------------------------------------------------------------------
@@ -474,9 +474,9 @@ boolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
 //
 //--------------------------------------------------------------------------
 
-boolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle,
-                   boolean useFog);
-boolean EV_Teleport(int tid, mobj_t * thing, boolean fog);
+dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle,
+                   dboolean useFog);
+dboolean EV_Teleport(int tid, mobj_t * thing, dboolean fog);
 
 //--------------------------------------------------------------------------
 //
@@ -536,11 +536,11 @@ typedef struct
 } acsstore_t;
 
 void P_LoadACScripts(int lump);
-boolean P_StartACS(int number, int map, byte * args, mobj_t * activator,
+dboolean P_StartACS(int number, int map, byte * args, mobj_t * activator,
                    line_t * line, int side);
-boolean P_StartLockedACS(line_t * line, byte * args, mobj_t * mo, int side);
-boolean P_TerminateACS(int number, int map);
-boolean P_SuspendACS(int number, int map);
+dboolean P_StartLockedACS(line_t * line, byte * args, mobj_t * mo, int side);
+dboolean P_TerminateACS(int number, int map);
+dboolean P_SuspendACS(int number, int map);
 void T_InterpretACS(acs_t * script);
 void P_TagFinished(int tag);
 void P_PolyobjFinished(int po);
@@ -563,9 +563,9 @@ extern acsstore_t ACSStore[MAX_ACS_STORE + 1];  // +1 for termination marker
 
 extern mobjtype_t TranslateThingType[];
 
-boolean EV_ThingProjectile(byte * args, boolean gravity);
-boolean EV_ThingSpawn(byte * args, boolean fog);
-boolean EV_ThingActivate(int tid);
-boolean EV_ThingDeactivate(int tid);
-boolean EV_ThingRemove(int tid);
-boolean EV_ThingDestroy(int tid);
+dboolean EV_ThingProjectile(byte * args, dboolean gravity);
+dboolean EV_ThingSpawn(byte * args, dboolean fog);
+dboolean EV_ThingActivate(int tid);
+dboolean EV_ThingDeactivate(int tid);
+dboolean EV_ThingRemove(int tid);
+dboolean EV_ThingDestroy(int tid);

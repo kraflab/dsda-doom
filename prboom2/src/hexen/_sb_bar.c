@@ -53,8 +53,8 @@ static void DrawKeyBar(void);
 static void DrawWeaponPieces(void);
 static void DrawFullScreenStuff(void);
 static void DrawAnimatedIcons(void);
-static boolean HandleCheats(byte key);
-static boolean CheatAddKey(Cheat_t * cheat, byte key, boolean * eat);
+static dboolean HandleCheats(byte key);
+static dboolean CheatAddKey(Cheat_t * cheat, byte key, dboolean * eat);
 static void CheatGodFunc(player_t * player, Cheat_t * cheat);
 static void CheatNoClipFunc(player_t * player, Cheat_t * cheat);
 static void CheatWeaponsFunc(player_t * player, Cheat_t * cheat);
@@ -89,8 +89,8 @@ extern int AutoArmorSave[NUMCLASSES];
 
 // PUBLIC DATA DECLARATIONS ------------------------------------------------
 
-boolean DebugSound;             // Debug flag for displaying sound info
-boolean inventory;
+dboolean DebugSound;             // Debug flag for displaying sound info
+dboolean inventory;
 int curpos;
 int inv_ptr;
 int ArtifactFlash;
@@ -735,7 +735,7 @@ static int oldpieces = -1;
 static int oldweapon = -1;
 static int oldkeys = -1;
 
-extern boolean automapactive;
+extern dboolean automapactive;
 
 void SB_Drawer(void)
 {
@@ -810,7 +810,7 @@ void SB_Drawer(void)
 static void DrawAnimatedIcons(void)
 {
     int frame;
-    static boolean hitCenterFrame;
+    static dboolean hitCenterFrame;
 
     // Wings of wrath
     if (CPlayer->powers[pw_flight])
@@ -905,7 +905,7 @@ static void DrawAnimatedIcons(void)
 //
 //==========================================================================
 
-void SB_PaletteFlash(boolean forceChange)
+void SB_PaletteFlash(dboolean forceChange)
 {
     static int sb_palette = 0;
     int palette;
@@ -1498,7 +1498,7 @@ void Draw_LoadIcon(void)
 //
 //==========================================================================
 
-boolean SB_Responder(event_t * event)
+dboolean SB_Responder(event_t * event)
 {
     if (event->type == ev_keydown)
     {
@@ -1518,10 +1518,10 @@ boolean SB_Responder(event_t * event)
 //
 //==========================================================================
 
-static boolean HandleCheats(byte key)
+static dboolean HandleCheats(byte key)
 {
     int i;
-    boolean eat;
+    dboolean eat;
 
     if (gameskill == sk_nightmare)
     {                           // Can't cheat in nightmare mode
@@ -1569,7 +1569,7 @@ static boolean HandleCheats(byte key)
 //
 //==========================================================================
 
-static boolean CheatAddKey(Cheat_t * cheat, byte key, boolean * eat)
+static dboolean CheatAddKey(Cheat_t * cheat, byte key, dboolean * eat)
 {
 /*
     if (!cheat->pos)
@@ -1642,7 +1642,7 @@ static void CheatNoClipFunc(player_t * player, Cheat_t * cheat)
 static void CheatWeaponsFunc(player_t * player, Cheat_t * cheat)
 {
     int i;
-    //extern boolean *WeaponInShareware;
+    //extern dboolean *WeaponInShareware;
 
     for (i = 0; i < NUMARMOR; i++)
     {
@@ -1778,7 +1778,7 @@ static void CheatWarpFunc(player_t * player, Cheat_t * cheat)
 
 static void CheatPigFunc(player_t * player, Cheat_t * cheat)
 {
-    extern boolean P_UndoPlayerMorph(player_t * player);
+    extern dboolean P_UndoPlayerMorph(player_t * player);
 
     if (player->morphTics)
     {

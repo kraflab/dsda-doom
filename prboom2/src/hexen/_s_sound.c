@@ -36,7 +36,7 @@ void S_ShutDown(void);
 
 // If true, CD music playback is enabled (snd_musicdevice == SNDDEVICE_CD
 // and CD initialization succeeded).
-boolean cdmusic;
+dboolean cdmusic;
 
 // Track number of a track to play explicitly chosen by the
 // player using cheats. A value of zero means no track chosen:
@@ -70,7 +70,7 @@ extern musicinfo_t S_music[];
 
 static channel_t Channel[MAX_CHANNELS];
 static void *RegisteredSong;      //the current registered song.
-static boolean MusicPaused;
+static dboolean MusicPaused;
 static int Mus_Song = -1;
 static byte *Mus_SndPtr;
 static byte *SoundCurve;
@@ -100,7 +100,7 @@ void S_Start(void)
 //
 //==========================================================================
 
-static boolean ShouldRestartCDTrack(void)
+static dboolean ShouldRestartCDTrack(void)
 {
     return cd_track_end_time != 0 && I_GetTimeMS() > cd_track_end_time;
 }
@@ -111,7 +111,7 @@ static boolean ShouldRestartCDTrack(void)
 //
 //==========================================================================
 
-static boolean StartCDTrack(int track, boolean loop)
+static dboolean StartCDTrack(int track, dboolean loop)
 {
     // Already playing? If so, don't bother.
 
@@ -145,7 +145,7 @@ static boolean StartCDTrack(int track, boolean loop)
 //
 //==========================================================================
 
-void S_StartSong(int song, boolean loop)
+void S_StartSong(int song, dboolean loop)
 {
     char *songLump;
     int lumpnum;
@@ -205,9 +205,9 @@ void S_StartSong(int song, boolean loop)
 //
 //==========================================================================
 
-boolean S_StartCustomCDTrack(int tracknum)
+dboolean S_StartCustomCDTrack(int tracknum)
 {
-    boolean result;
+    dboolean result;
 
     result = StartCDTrack(tracknum, true);
 
@@ -241,7 +241,7 @@ int S_GetCurrentCDTrack(void)
 //
 //==========================================================================
 
-void S_StartSongName(const char *songLump, boolean loop)
+void S_StartSongName(const char *songLump, dboolean loop)
 {
     int lumpnum;
     int cdTrack;
@@ -537,7 +537,7 @@ void S_StartSoundAtVolume(mobj_t * origin, int sound_id, int volume)
 //
 //==========================================================================
 
-boolean S_StopSoundID(int sound_id, int priority)
+dboolean S_StopSoundID(int sound_id, int priority)
 {
     int i;
     int lp;                     //least priority
@@ -874,7 +874,7 @@ void S_GetChannelInfo(SoundInfo_t * s)
 //
 //==========================================================================
 
-boolean S_GetSoundPlayingInfo(mobj_t * mobj, int sound_id)
+dboolean S_GetSoundPlayingInfo(mobj_t * mobj, int sound_id)
 {
     int i;
 

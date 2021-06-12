@@ -38,7 +38,7 @@ result_e T_MovePlane(sector_t * sector, fixed_t speed,
                      fixed_t dest, int crush, int floorOrCeiling,
                      int direction)
 {
-    boolean flag;
+    dboolean flag;
     fixed_t lastpos;
 
     switch (floorOrCeiling)
@@ -403,9 +403,9 @@ int EV_DoFloor(line_t * line, byte * args, floor_e floortype)
 //
 //============================================================================
 
-int EV_DoFloorAndCeiling(line_t * line, byte * args, boolean raise)
+int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise)
 {
-    boolean floor, ceiling;
+    dboolean floor, ceiling;
     int secnum;
     sector_t *sec;
 
@@ -680,7 +680,7 @@ void T_BuildPillar(pillar_t * pillar)
 //
 //=========================================================================
 
-int EV_BuildPillar(line_t * line, byte * args, boolean crush)
+int EV_BuildPillar(line_t * line, byte * args, dboolean crush)
 {
     int secnum;
     sector_t *sec;
@@ -828,7 +828,7 @@ int EV_FloorCrushStop(line_t * line, byte * args)
 {
     thinker_t *think;
     floormove_t *floor;
-    boolean rtn;
+    dboolean rtn;
 
     rtn = 0;
     for (think = thinkercap.next; think != &thinkercap; think = think->next)
@@ -907,13 +907,13 @@ void T_FloorWaggle(floorWaggle_t * waggle)
 //
 //==========================================================================
 
-boolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
+dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
                             int timer)
 {
     int sectorIndex;
     sector_t *sector;
     floorWaggle_t *waggle;
-    boolean retCode;
+    dboolean retCode;
 
     retCode = false;
     sectorIndex = -1;

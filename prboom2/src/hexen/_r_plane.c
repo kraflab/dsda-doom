@@ -45,7 +45,7 @@ fixed_t Sky2ColumnOffset;
 int skyflatnum;
 int skytexturemid;
 fixed_t skyiscale;
-boolean DoubleSky;
+dboolean DoubleSky;
 planefunction_t floorfunc, ceilingfunc;
 
 // Opening

@@ -63,7 +63,7 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
 //
 //--------------------------------------------------------------------------
 
-void P_SetMessage(player_t * player, const char *message, boolean ultmsg)
+void P_SetMessage(player_t * player, const char *message, dboolean ultmsg)
 {
     if ((player->ultimateMessage || !messageson) && !ultmsg)
     {
@@ -90,7 +90,7 @@ void P_SetMessage(player_t * player, const char *message, boolean ultmsg)
 //
 //==========================================================================
 
-void P_SetYellowMessage(player_t * player, const char *message, boolean ultmsg)
+void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg)
 {
     if ((player->ultimateMessage || !messageson) && !ultmsg)
     {
@@ -146,7 +146,7 @@ void P_HideSpecialThing(mobj_t * thing)
 //
 //--------------------------------------------------------------------------
 
-boolean P_GiveMana(player_t * player, manatype_t mana, int count)
+dboolean P_GiveMana(player_t * player, manatype_t mana, int count)
 {
     int prevMana;
     //weapontype_t changeWeapon;
@@ -192,9 +192,9 @@ static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
                             weapontype_t weaponType, mobj_t * weapon,
                             const char *message)
 {
-    boolean remove;
-    boolean gaveMana;
-    boolean gaveWeapon;
+    dboolean remove;
+    dboolean gaveMana;
+    dboolean gaveWeapon;
 
     remove = true;
     if (player->class != weaponClass)
@@ -302,10 +302,10 @@ static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
 //--------------------------------------------------------------------------
 
 /*
-boolean P_GiveWeapon(player_t *player, pclass_t class, weapontype_t weapon)
+dboolean P_GiveWeapon(player_t *player, pclass_t class, weapontype_t weapon)
 {
-	boolean gaveMana;
-	boolean gaveWeapon;
+	dboolean gaveMana;
+	dboolean gaveWeapon;
 
 	if(player->class != class)
 	{ // player cannot use this weapon, take it anyway, and get mana
@@ -377,7 +377,7 @@ boolean P_GiveWeapon(player_t *player, pclass_t class, weapontype_t weapon)
 //===========================================================================
 
 /*
-boolean P_GiveWeaponPiece(player_t *player, pclass_t class, int piece)
+dboolean P_GiveWeaponPiece(player_t *player, pclass_t class, int piece)
 {
 	P_GiveMana(player, MANA_1, 20);
 	P_GiveMana(player, MANA_2, 20);
@@ -408,9 +408,9 @@ boolean P_GiveWeaponPiece(player_t *player, pclass_t class, int piece)
 static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
                                  int pieceValue, mobj_t * pieceMobj)
 {
-    boolean remove;
-    boolean checkAssembled;
-    boolean gaveWeapon;
+    dboolean remove;
+    dboolean checkAssembled;
+    dboolean gaveWeapon;
     int gaveMana;
     static const char *fourthWeaponText[] = {
         TXT_WEAPON_F4,
@@ -532,7 +532,7 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
 //
 //---------------------------------------------------------------------------
 
-boolean P_GiveBody(player_t * player, int num)
+dboolean P_GiveBody(player_t * player, int num)
 {
     int max;
 
@@ -562,7 +562,7 @@ boolean P_GiveBody(player_t * player, int num)
 //
 //---------------------------------------------------------------------------
 
-boolean P_GiveArmor(player_t * player, armortype_t armortype, int amount)
+dboolean P_GiveArmor(player_t * player, armortype_t armortype, int amount)
 {
     int hits;
     int totalArmor;
@@ -626,7 +626,7 @@ int P_GiveKey(player_t * player, keytype_t key)
 //
 //---------------------------------------------------------------------------
 
-boolean P_GivePower(player_t * player, powertype_t power)
+dboolean P_GivePower(player_t * player, powertype_t power)
 {
     if (power == pw_invulnerability)
     {
@@ -788,11 +788,11 @@ static void TryPickupArtifact(player_t * player, artitype_t artifactType,
 //
 //---------------------------------------------------------------------------
 
-boolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
+dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
 {
     int i;
     int j;
-    boolean slidePointer;
+    dboolean slidePointer;
 
     slidePointer = false;
     i = 0;
@@ -938,7 +938,7 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     player_t *player;
     fixed_t delta;
     int sound;
-    boolean respawn;
+    dboolean respawn;
 
     delta = special->z - toucher->z;
     if (delta > toucher->height || delta < -32 * FRACUNIT)
@@ -1539,7 +1539,7 @@ void P_MinotaurSlam(mobj_t * source, mobj_t * target)
 //
 //---------------------------------------------------------------------------
 
-boolean P_MorphPlayer(player_t * player)
+dboolean P_MorphPlayer(player_t * player)
 {
     mobj_t *pmo;
     mobj_t *fog;
@@ -1590,7 +1590,7 @@ boolean P_MorphPlayer(player_t * player)
 //
 //---------------------------------------------------------------------------
 
-boolean P_MorphMonster(mobj_t * actor)
+dboolean P_MorphMonster(mobj_t * actor)
 {
     mobj_t *master, *monster, *fog;
     mobjtype_t moType;
@@ -2159,7 +2159,7 @@ void P_PoisonPlayer(player_t * player, mobj_t * poisoner, int poison)
 //==========================================================================
 
 void P_PoisonDamage(player_t * player, mobj_t * source, int damage,
-                    boolean playPainSound)
+                    dboolean playPainSound)
 {
     mobj_t *target;
     mobj_t *inflictor;

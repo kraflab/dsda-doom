@@ -161,7 +161,7 @@ typedef struct
     int tag;                    // reference tag assigned in HereticEd
     int bbox[4];
     int validcount;
-    boolean crush;              // should the polyobj attempt to crush mobjs?
+    dboolean crush;              // should the polyobj attempt to crush mobjs?
     int seqType;
     fixed_t size;               // polyobj size (area of POLY_AREAUNIT == size of FRACUNIT)
     void *specialdata;          // pointer a thinker, if the poly is moving
@@ -253,7 +253,7 @@ typedef struct vissprite_s
     int patch;
     lighttable_t *colormap;
     int mobjflags;              // for color translation and shadow draw
-    boolean psprite;            // true if psprite
+    dboolean psprite;            // true if psprite
     int class;                  // player class (used in translation)
     fixed_t floorclip;
 } vissprite_t;
@@ -271,7 +271,7 @@ extern visplane_t *floorplane, *ceilingplane;
 
 typedef struct
 {
-    boolean rotate;             // if false use 0 for any position
+    dboolean rotate;             // if false use 0 for any position
     short lump[8];              // lump to use for view angles 0-7
     byte flip[8];               // flip (1 = flip) to use for view angles 0-7
 } spriteframe_t;
@@ -375,10 +375,10 @@ extern sector_t *frontsector, *backsector;
 extern int rw_x;
 extern int rw_stopx;
 
-extern boolean segtextured;
-extern boolean markfloor;       // false if the back side is the same plane
-extern boolean markceiling;
-extern boolean skymap;
+extern dboolean segtextured;
+extern dboolean markfloor;       // false if the back side is the same plane
+extern dboolean markceiling;
+extern dboolean skymap;
 
 extern drawseg_t drawsegs[MAXDRAWSEGS], *ds_p;
 
@@ -456,7 +456,7 @@ extern int *flattranslation;    // for global animation
 extern int *texturetranslation; // for global animation
 
 extern int firstspritelump, lastspritelump, numspritelumps;
-extern boolean LevelUseFullBright;
+extern dboolean LevelUseFullBright;
 
 byte *R_GetColumn(int tex, int col);
 void R_InitData(void);

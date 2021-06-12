@@ -107,14 +107,14 @@ void T_Light(light_t * light)
 //
 //============================================================================
 
-boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
+dboolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
 {
     light_t *light;
     sector_t *sec;
     int secNum;
     int arg1, arg2, arg3, arg4;
-    boolean think;
-    boolean rtn;
+    dboolean think;
+    dboolean rtn;
 
     /*
     Original code; redundant considering that a byte value is always

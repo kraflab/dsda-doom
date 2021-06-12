@@ -47,8 +47,8 @@
 //
 //==========================================================================
 
-boolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle,
-                   boolean useFog)
+dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle,
+                   dboolean useFog)
 {
     fixed_t oldx;
     fixed_t oldy;
@@ -149,7 +149,7 @@ boolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle,
 //
 //==========================================================================
 
-boolean EV_Teleport(int tid, mobj_t * thing, boolean fog)
+dboolean EV_Teleport(int tid, mobj_t * thing, dboolean fog)
 {
     int i;
     int count;

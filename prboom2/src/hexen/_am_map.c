@@ -35,7 +35,7 @@ static int grid = 0;
 
 static int leveljuststarted = 1;        // kluge until AM_LevelInit() is called
 
-boolean automapactive = false;
+dboolean automapactive = false;
 static int finit_width;// = SCREENWIDTH;
 static int finit_height;// = SCREENHEIGHT - SBARHEIGHT - (3 << crispy->hires);
 static int f_x, f_y;            // location of window on screen
@@ -82,10 +82,10 @@ static vertex_t oldplr;
 static int followplayer = 1;    // specifies whether to follow the player around
 
 static char cheat_kills[] = { 'k', 'i', 'l', 'l', 's' };
-static boolean ShowKills = 0;
+static dboolean ShowKills = 0;
 static unsigned ShowKillsCount = 0;
 
-extern boolean viewactive;
+extern dboolean viewactive;
 
 static byte antialias[NUMALIAS][8] = {
     {83, 84, 85, 86, 87, 88, 89, 90},
@@ -368,7 +368,7 @@ void AM_LevelInit(void)
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
 
-static boolean stopped = true;
+static dboolean stopped = true;
 
 void AM_Stop(void)
 {
@@ -420,7 +420,7 @@ void AM_maxOutWindowScale(void)
     AM_activateNewScale();
 }
 
-boolean AM_Responder(event_t * ev)
+dboolean AM_Responder(event_t * ev)
 {
     int rc;
     int key;
@@ -746,7 +746,7 @@ void AM_clearFB(int color)
 // faster reject and precalculated slopes.  If I need the speed, will
 // hash algorithm to the common cases.
 
-boolean AM_clipMline(mline_t * ml, fline_t * fl)
+dboolean AM_clipMline(mline_t * ml, fline_t * fl)
 {
     enum
     { LEFT = 1, RIGHT = 2, BOTTOM = 4, TOP = 8 };

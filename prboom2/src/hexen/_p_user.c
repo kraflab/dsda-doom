@@ -29,7 +29,7 @@ void P_PlayerNextArtifact(player_t * player);
 
 // Data
 
-boolean onground;
+dboolean onground;
 int newtorch;                   // used in the torch flicker effect.
 int newtorchdelta;
 
@@ -468,7 +468,7 @@ int P_GetPlayerNum(player_t * player)
 //
 //----------------------------------------------------------------------------
 
-boolean P_UndoPlayerMorph(player_t * player)
+dboolean P_UndoPlayerMorph(player_t * player)
 {
     mobj_t *fog;
     mobj_t *mo;
@@ -1225,7 +1225,7 @@ void P_BlastRadius(player_t * player)
 #define HEAL_RADIUS_DIST	255*FRACUNIT
 
 // Do class specific effect for everyone in radius
-boolean P_HealRadius(player_t * player)
+dboolean P_HealRadius(player_t * player)
 {
     mobj_t *mo;
     mobj_t *pmo = player->mo;
@@ -1416,7 +1416,7 @@ void P_PlayerUseArtifact(player_t * player, artitype_t arti)
 //
 //==========================================================================
 
-boolean P_UseArtifact(player_t * player, artitype_t arti)
+dboolean P_UseArtifact(player_t * player, artitype_t arti)
 {
     mobj_t *mo;
     angle_t angle;

@@ -21,10 +21,10 @@
 
 // OPTIMIZE: closed two sided lines as single sided
 
-boolean segtextured;            // true if any of the segs textures might be vis
-boolean markfloor;              // false if the back side is the same plane
-boolean markceiling;
-boolean maskedtexture;
+dboolean segtextured;            // true if any of the segs textures might be vis
+dboolean markfloor;              // false if the back side is the same plane
+dboolean markceiling;
+dboolean maskedtexture;
 int toptexture, bottomtexture, midtexture;
 
 

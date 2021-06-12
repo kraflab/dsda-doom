@@ -60,7 +60,7 @@
 void R_ExecuteSetViewSize(void);
 void D_ConnectNetGame(void);
 void D_CheckNetGame(void);
-boolean F_Responder(event_t * ev);
+dboolean F_Responder(event_t * ev);
 void I_StartupKeyboard(void);
 void I_StartupJoystick(void);
 void I_ShutdownKeyboard(void);
@@ -86,9 +86,9 @@ static void WarpCheck(void);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
-extern boolean automapactive;
-extern boolean MenuActive;
-extern boolean askforquit;
+extern dboolean automapactive;
+extern dboolean MenuActive;
+extern dboolean askforquit;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
@@ -96,20 +96,20 @@ GameMode_t gamemode;
 static const char *gamedescription;
 char *iwadfile;
 static char demolumpname[9];    // Demo lump to start playing.
-boolean nomonsters;             // checkparm of -nomonsters
-boolean respawnparm;            // checkparm of -respawn
-boolean randomclass;            // checkparm of -randclass
-boolean debugmode;              // checkparm of -debug
-boolean ravpic;                 // checkparm of -ravpic
-boolean cdrom = false;          // true if cd-rom mode active
-boolean cmdfrag;                // true if a CMD_FRAG packet should be sent out
-boolean artiskip;               // whether shift-enter skips an artifact
+dboolean nomonsters;             // checkparm of -nomonsters
+dboolean respawnparm;            // checkparm of -respawn
+dboolean randomclass;            // checkparm of -randclass
+dboolean debugmode;              // checkparm of -debug
+dboolean ravpic;                 // checkparm of -ravpic
+dboolean cdrom = false;          // true if cd-rom mode active
+dboolean cmdfrag;                // true if a CMD_FRAG packet should be sent out
+dboolean artiskip;               // whether shift-enter skips an artifact
 int maxzone = 0x800000;         // Maximum allocated for zone heap (8meg default)
 skill_t startskill;
 int startepisode;
 int startmap;
-boolean autostart;
-boolean advancedemo;
+dboolean autostart;
+dboolean advancedemo;
 FILE *debugfile;
 int UpdateState;
 int maxplayers = MAXPLAYERS;
@@ -233,7 +233,7 @@ static void D_SetDefaultSavePath(void)
 // a workaround.
 static void AdjustForMacIWAD(void)
 {
-    boolean adjust_music = false;
+    dboolean adjust_music = false;
 
     switch (snd_musicdevice)
     {
@@ -267,7 +267,7 @@ static void AdjustForMacIWAD(void)
 // Called to determine whether to grab the mouse pointer
 //
 
-static boolean D_GrabMouseCallback(void)
+static dboolean D_GrabMouseCallback(void)
 {
     // when menu is active or game is paused, release the mouse
 

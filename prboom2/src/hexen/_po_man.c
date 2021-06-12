@@ -42,10 +42,10 @@ static void RotatePt(int an, fixed_t * x, fixed_t * y, fixed_t startSpotX,
                      fixed_t startSpotY);
 static void UnLinkPolyobj(polyobj_t * po);
 static void LinkPolyobj(polyobj_t * po);
-static boolean CheckMobjBlocking(seg_t * seg, polyobj_t * po);
+static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po);
 static void InitBlockMap(void);
 static void IterFindPolySegs(int x, int y, seg_t ** segList);
-static void SpawnPolyobj(int index, int tag, boolean crush);
+static void SpawnPolyobj(int index, int tag, dboolean crush);
 static void TranslateToStartSpot(int tag, int originX, int originY);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
@@ -110,7 +110,7 @@ void T_RotatePoly(polyevent_t * pe)
 //
 //==========================================================================
 
-boolean EV_RotatePoly(line_t * line, byte * args, int direction, boolean
+dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean
                       overRide)
 {
     int mirror;
@@ -241,7 +241,7 @@ void T_MovePoly(polyevent_t * pe)
 //
 //==========================================================================
 
-boolean EV_MovePoly(line_t * line, byte * args, boolean timesEight, boolean
+dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean
                     overRide)
 {
     int mirror;
@@ -450,7 +450,7 @@ void T_PolyDoor(polydoor_t * pd)
 //
 //==========================================================================
 
-boolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
+dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
 {
     int mirror;
     int polyNum;
@@ -709,14 +709,14 @@ static void UpdateSegBBox(seg_t * seg)
 //
 //==========================================================================
 
-boolean PO_MovePolyobj(int num, int x, int y)
+dboolean PO_MovePolyobj(int num, int x, int y)
 {
     int count;
     seg_t **segList;
     seg_t **veryTempSeg;
     polyobj_t *po;
     vertex_t *prevPts;
-    boolean blocked;
+    dboolean blocked;
 
     if (!(po = GetPolyobj(num)))
     {
@@ -836,7 +836,7 @@ static void RotatePt(int an, fixed_t * x, fixed_t * y, fixed_t startSpotX,
 //
 //==========================================================================
 
-boolean PO_RotatePolyobj(int num, angle_t angle)
+dboolean PO_RotatePolyobj(int num, angle_t angle)
 {
     int count;
     seg_t **segList;
@@ -844,7 +844,7 @@ boolean PO_RotatePolyobj(int num, angle_t angle)
     vertex_t *prevPts;
     int an;
     polyobj_t *po;
-    boolean blocked;
+    dboolean blocked;
 
     if (!(po = GetPolyobj(num)))
     {
@@ -1042,14 +1042,14 @@ static void LinkPolyobj(polyobj_t * po)
 //
 //==========================================================================
 
-static boolean CheckMobjBlocking(seg_t * seg, polyobj_t * po)
+static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po)
 {
     mobj_t *mobj;
     int i, j;
     int left, right, top, bottom;
     int tmbbox[4];
     line_t *ld;
-    boolean blocked;
+    dboolean blocked;
 
     ld = seg->linedef;
 
@@ -1200,7 +1200,7 @@ static void IterFindPolySegs(int x, int y, seg_t ** segList)
 //
 //==========================================================================
 
-static void SpawnPolyobj(int index, int tag, boolean crush)
+static void SpawnPolyobj(int index, int tag, dboolean crush)
 {
     int i;
     int j;
@@ -1485,7 +1485,7 @@ void PO_Init(int lump)
 //
 //==========================================================================
 
-boolean PO_Busy(int polyobj)
+dboolean PO_Busy(int polyobj)
 {
     polyobj_t *poly;
 

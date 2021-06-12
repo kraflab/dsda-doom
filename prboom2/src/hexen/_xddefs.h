@@ -178,7 +178,7 @@ typedef PACKED_STRUCT (
 typedef PACKED_STRUCT (
 {
     char name[8];
-    boolean masked;
+    dboolean masked;
     short width;
     short height;
     int obsolete;

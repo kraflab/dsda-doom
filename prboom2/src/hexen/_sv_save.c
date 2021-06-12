@@ -119,7 +119,7 @@ static void AssertSegment(gameArchiveSegment_t segType);
 static void ClearSaveSlot(int slot);
 static void CopySaveSlot(int sourceSlot, int destSlot);
 static void CopyFile(char *sourceName, char *destName);
-static boolean ExistingFile(char *name);
+static dboolean ExistingFile(char *name);
 static void SV_OpenRead(char *fileName);
 static void SV_OpenWrite(char *fileName);
 static void SV_Close(void);
@@ -150,7 +150,7 @@ static int MobjCount;
 static mobj_t **MobjList;
 static mobj_t ***TargetPlayerAddrs;
 static int TargetPlayerCount;
-static boolean SavingPlayers;
+static dboolean SavingPlayers;
 static FILE *SavingFP;
 
 // CODE --------------------------------------------------------------------
@@ -374,7 +374,7 @@ static void StreamIn_player_t(player_t *str)
     // int lookdir;
     str->lookdir = SV_ReadLong();
 
-    // boolean centering;
+    // dboolean centering;
     str->centering = SV_ReadLong();
 
     // int health;
@@ -425,7 +425,7 @@ static void StreamIn_player_t(player_t *str)
     // weapontype_t pendingweapon;
     str->pendingweapon = SV_ReadLong();
 
-    // boolean weaponowned[NUMWEAPONS];
+    // dboolean weaponowned[NUMWEAPONS];
     for (i=0; i<NUMWEAPONS; ++i)
     {
         str->weaponowned[i] = SV_ReadLong();
@@ -543,7 +543,7 @@ static void StreamOut_player_t(player_t *str)
     // int lookdir;
     SV_WriteLong(str->lookdir);
 
-    // boolean centering;
+    // dboolean centering;
     SV_WriteLong(str->centering);
 
     // int health;
@@ -594,7 +594,7 @@ static void StreamOut_player_t(player_t *str)
     // weapontype_t pendingweapon;
     SV_WriteLong(str->pendingweapon);
 
-    // boolean weaponowned[NUMWEAPONS];
+    // dboolean weaponowned[NUMWEAPONS];
     for (i=0; i<NUMWEAPONS; ++i)
     {
         SV_WriteLong(str->weaponowned[i]);
@@ -898,7 +898,7 @@ static void StreamIn_mobj_t(mobj_t *str)
 static void StreamOutMobjSpecials(mobj_t *mobj)
 {
     unsigned int special1, special2;
-    boolean corpse;
+    dboolean corpse;
 
     corpse = (mobj->flags & MF_CORPSE) != 0;
     special1 = mobj->special1.i;
@@ -1800,7 +1800,7 @@ static void StreamIn_polydoor_t(polydoor_t *str)
     // podoortype_t type;
     str->type = SV_ReadLong();
 
-    // boolean close;
+    // dboolean close;
     str->close = SV_ReadLong();
 }
 
@@ -1837,7 +1837,7 @@ static void StreamOut_polydoor_t(polydoor_t *str)
     // podoortype_t type;
     SV_WriteLong(str->type);
 
-    // boolean close;
+    // dboolean close;
     SV_WriteLong(str->close);
 }
 
@@ -1982,7 +1982,7 @@ void SV_SaveGame(int slot, const char *description)
 //
 //==========================================================================
 
-void SV_SaveMap(boolean savePlayers)
+void SV_SaveMap(dboolean savePlayers)
 {
     char fileName[100];
 
@@ -2150,9 +2150,9 @@ void SV_MapTeleport(int map, int position)
     mobj_t *mobj;
     int inventoryPtr;
     int currentInvPos;
-    boolean rClass;
-    boolean playerWasReborn;
-    boolean oldWeaponowned[NUMWEAPONS];
+    dboolean rClass;
+    dboolean playerWasReborn;
+    dboolean oldWeaponowned[NUMWEAPONS];
     int oldKeys = 0;
     int oldPieces = 0;
     int bestWeapon;
@@ -2332,7 +2332,7 @@ int SV_GetRebornSlot(void)
 //
 //==========================================================================
 
-boolean SV_RebornSlotAvailable(void)
+dboolean SV_RebornSlotAvailable(void)
 {
     char fileName[100];
 
@@ -3323,7 +3323,7 @@ static void CopyFile(char *source_name, char *dest_name)
 //
 //==========================================================================
 
-static boolean ExistingFile(char *name)
+static dboolean ExistingFile(char *name)
 {
     FILE *fp;
 

@@ -196,7 +196,7 @@ int EV_DoDoor(line_t * line, byte * args, vldoor_e type)
 //      EV_VerticalDoor : open a door manually, no tag value
 //
 //==================================================================
-boolean EV_VerticalDoor(line_t * line, mobj_t * thing)
+dboolean EV_VerticalDoor(line_t * line, mobj_t * thing)
 {
     sector_t *sec;
     vldoor_t *door;

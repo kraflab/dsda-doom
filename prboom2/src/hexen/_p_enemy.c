@@ -108,7 +108,7 @@ void P_NoiseAlert(mobj_t * target, mobj_t * emmiter)
 //
 //----------------------------------------------------------------------------
 
-boolean P_CheckMeleeRange(mobj_t * actor)
+dboolean P_CheckMeleeRange(mobj_t * actor)
 {
     mobj_t *mo;
     fixed_t dist;
@@ -144,7 +144,7 @@ boolean P_CheckMeleeRange(mobj_t * actor)
 //
 //----------------------------------------------------------------------------
 
-boolean P_CheckMeleeRange2(mobj_t * actor)
+dboolean P_CheckMeleeRange2(mobj_t * actor)
 {
     mobj_t *mo;
     fixed_t dist;
@@ -180,7 +180,7 @@ boolean P_CheckMeleeRange2(mobj_t * actor)
 //
 //----------------------------------------------------------------------------
 
-boolean P_CheckMissileRange(mobj_t * actor)
+dboolean P_CheckMissileRange(mobj_t * actor)
 {
     fixed_t dist;
 
@@ -233,11 +233,11 @@ fixed_t yspeed[8] =
 extern line_t *spechit[MAXSPECIALCROSS];
 extern int numspechit;
 
-boolean P_Move(mobj_t * actor)
+dboolean P_Move(mobj_t * actor)
 {
     fixed_t tryx, tryy;
     line_t *ld;
-    boolean good;
+    dboolean good;
 
     if (actor->flags2 & MF2_BLASTED)
         return (true);
@@ -311,7 +311,7 @@ boolean P_Move(mobj_t * actor)
 //
 //----------------------------------------------------------------------------
 
-boolean P_TryWalk(mobj_t * actor)
+dboolean P_TryWalk(mobj_t * actor)
 {
     if (!P_Move(actor))
     {
@@ -461,7 +461,7 @@ void P_NewChaseDir(mobj_t * actor)
 #define MONS_LOOK_RANGE (16*64*FRACUNIT)
 #define MONS_LOOK_LIMIT 64
 
-boolean P_LookForMonsters(mobj_t * actor)
+dboolean P_LookForMonsters(mobj_t * actor)
 {
     int count;
     mobj_t *mo;
@@ -525,7 +525,7 @@ boolean P_LookForMonsters(mobj_t * actor)
 ================
 */
 
-boolean P_LookForPlayers(mobj_t * actor, boolean allaround)
+dboolean P_LookForPlayers(mobj_t * actor, dboolean allaround)
 {
     int c;
     int stop;
@@ -901,7 +901,7 @@ void A_UnSetReflective(mobj_t * actor)
 //
 //----------------------------------------------------------------------------
 
-boolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
+dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
 {
     mobj_t *fog;
     fixed_t x;
@@ -1110,7 +1110,7 @@ void A_MinotaurLook(mobj_t * actor);
 
 // Check the age of the minotaur and stomp it after MAULATORTICS of time
 // have passed. Returns false if killed.
-static boolean CheckMinotaurAge(mobj_t *mo)
+static dboolean CheckMinotaurAge(mobj_t *mo)
 {
     unsigned int starttime;
 
@@ -1644,7 +1644,7 @@ void A_Explode(mobj_t * actor)
 {
     int damage;
     int distance;
-    boolean damageSelf;
+    dboolean damageSelf;
 
     damage = 128;
     distance = 128;
@@ -1896,7 +1896,7 @@ void A_DeQueueCorpse(mobj_t * actor)
     }
 }
 
-void P_InitCreatureCorpseQueue(boolean corpseScan)
+void P_InitCreatureCorpseQueue(dboolean corpseScan)
 {
     thinker_t *think;
     mobj_t *mo;
@@ -3285,7 +3285,7 @@ void A_Demon2Death(mobj_t * actor)
 // Sink a mobj incrementally into the floor
 //
 
-boolean A_SinkMobj(mobj_t * actor)
+dboolean A_SinkMobj(mobj_t * actor)
 {
     if (actor->floorclip < actor->info->height)
     {
@@ -3309,7 +3309,7 @@ boolean A_SinkMobj(mobj_t * actor)
 // Raise a mobj incrementally from the floor to
 //
 
-boolean A_RaiseMobj(mobj_t * actor)
+dboolean A_RaiseMobj(mobj_t * actor)
 {
     int done = true;
 
