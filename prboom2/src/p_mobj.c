@@ -2350,14 +2350,44 @@ void P_BlasterMobjThinker(mobj_t * mobj)
                 P_ExplodeMissile(mobj);
                 return;
             }
-            if (changexy && (P_Random(pr_heretic) < 64))
+            if (changexy)
             {
-                z = mobj->z - 8 * FRACUNIT;
-                if (z < mobj->floorz)
+                if (hexen)
                 {
-                    z = mobj->floorz;
+                    if (mobj->type == HEXEN_MT_MWAND_MISSILE && (P_Random(pr_hexen) < 128))
+                    {
+                        z = mobj->z - 8 * FRACUNIT;
+                        if (z < mobj->floorz)
+                        {
+                            z = mobj->floorz;
+                        }
+                        P_SpawnMobj(mobj->x, mobj->y, z, HEXEN_MT_MWANDSMOKE);
+                    }
+                    else if (!--mobj->special1.i)
+                    {
+                        mobj_t *mo;
+                        mobj->special1.i = 4;
+                        z = mobj->z - 12 * FRACUNIT;
+                        if (z < mobj->floorz)
+                        {
+                            z = mobj->floorz;
+                        }
+                        mo = P_SpawnMobj(mobj->x, mobj->y, z, HEXEN_MT_CFLAMEFLOOR);
+                        if (mo)
+                        {
+                            mo->angle = mobj->angle;
+                        }
+                    }
                 }
-                P_SpawnMobj(mobj->x, mobj->y, z, HERETIC_MT_BLASTERSMOKE);
+                else if (P_Random(pr_heretic) < 64)
+                {
+                    z = mobj->z - 8 * FRACUNIT;
+                    if (z < mobj->floorz)
+                    {
+                        z = mobj->floorz;
+                    }
+                    P_SpawnMobj(mobj->x, mobj->y, z, HERETIC_MT_BLASTERSMOKE);
+                }
             }
         }
     }
