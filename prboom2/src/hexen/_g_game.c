@@ -1282,7 +1282,7 @@ boolean G_CheckSpot(int playernum, mapthing_t * mthing)
     mo = P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an],
                      ss->sector->floorheight + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     if (players[consoleplayer].viewz != 1)
-        S_StartSound(mo, SFX_TELEPORT); // don't start sound on first frame
+        S_StartSound(mo, hexen_sfx_teleport); // don't start sound on first frame
 
     return true;
 }
@@ -1520,7 +1520,7 @@ void G_Completed(int map, int position)
     if (gamemode == shareware && map > 4)
     {
         P_SetMessage(&players[consoleplayer], "ACCESS DENIED -- DEMO", true);
-        S_StartSound(NULL, SFX_CHAT);
+        S_StartSound(NULL, hexen_sfx_chat);
         return;
     }
 

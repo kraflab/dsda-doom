@@ -269,7 +269,7 @@ static void P_LightningFlash(void)
     if (foundSec)
     {
         Sky1Texture = P_GetMapSky2Texture(gamemap);     // set alternate sky
-        S_StartSound(NULL, SFX_THUNDER_CRASH);
+        S_StartSound(NULL, hexen_sfx_thunder_crash);
     }
     // Calculate the next lighting flash
     if (!NextLightningFlash)

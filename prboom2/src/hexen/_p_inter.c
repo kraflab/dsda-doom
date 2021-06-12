@@ -288,7 +288,7 @@ static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
     player->bonuscount += BONUSADD;
     if (player == &players[consoleplayer])
     {
-        S_StartSound(NULL, SFX_PICKUP_WEAPON);
+        S_StartSound(NULL, hexen_sfx_pickup_weapon);
         SB_PaletteFlash(false);
     }
 }
@@ -341,7 +341,7 @@ boolean P_GiveWeapon(player_t *player, pclass_t class, weapontype_t weapon)
 		player->pendingweapon = weapon;
 		if(player == &players[consoleplayer])
 		{
-			S_StartSound(NULL, SFX_PICKUP_WEAPON);
+			S_StartSound(NULL, hexen_sfx_pickup_weapon);
 		}
 		return(false);
 	}
@@ -393,7 +393,7 @@ boolean P_GiveWeaponPiece(player_t *player, pclass_t class, int piece)
 	if(player->pieces == 7)
 	{ // player has built the fourth weapon!
 		P_GiveWeapon(player, class, WP_FOURTH);
-		S_StartSound(player->mo, SFX_WEAPON_BUILD);
+		S_StartSound(player->mo, hexen_sfx_weapon_build);
 	}
 	return true;
 }
@@ -512,14 +512,14 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
     {
         P_SetMessage(player, fourthWeaponText[matchClass], false);
         // Play the build-sound full volume for all players
-        S_StartSound(NULL, SFX_WEAPON_BUILD);
+        S_StartSound(NULL, hexen_sfx_weapon_build);
     }
     else
     {
         P_SetMessage(player, weaponPieceText[matchClass], false);
         if (player == &players[consoleplayer])
         {
-            S_StartSound(NULL, SFX_PICKUP_WEAPON);
+            S_StartSound(NULL, hexen_sfx_pickup_weapon);
         }
     }
 }
@@ -765,12 +765,12 @@ static void TryPickupArtifact(player_t * player, artitype_t artifactType,
         if (artifactType < arti_firstpuzzitem)
         {
             SetDormantArtifact(artifact);
-            S_StartSound(artifact, SFX_PICKUP_ARTIFACT);
+            S_StartSound(artifact, hexen_sfx_pickup_artifact);
             P_SetMessage(player, artifactMessages[artifactType], false);
         }
         else
         {                       // Puzzle item
-            S_StartSound(NULL, SFX_PICKUP_ITEM);
+            S_StartSound(NULL, hexen_sfx_pickup_item);
             P_SetMessage(player, artifactMessages[artifactType], true);
             if (!netgame || deathmatch)
             {                   // Remove puzzle items if not cooperative netplay
@@ -898,7 +898,7 @@ void A_RestoreArtifact(mobj_t * arti)
 {
     arti->flags |= MF_SPECIAL;
     P_SetMobjState(arti, arti->info->spawnstate);
-    S_StartSound(arti, SFX_RESPAWN);
+    S_StartSound(arti, hexen_sfx_respawn);
 }
 
 //---------------------------------------------------------------------------
@@ -912,7 +912,7 @@ void A_RestoreArtifact(mobj_t * arti)
 void A_RestoreSpecialThing1(mobj_t * thing)
 {
     thing->flags2 &= ~MF2_DONTDRAW;
-    S_StartSound(thing, SFX_RESPAWN);
+    S_StartSound(thing, hexen_sfx_respawn);
 }
 
 //---------------------------------------------------------------------------
@@ -949,7 +949,7 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     {                           // Toucher is dead
         return;
     }
-    sound = SFX_PICKUP_ITEM;
+    sound = hexen_sfx_pickup_item;
     player = toucher->player;
     respawn = true;
     switch (special->sprite)
@@ -1009,7 +1009,7 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             }
             P_SetMessage(player, TextKeyMessages[special->sprite - SPR_KEY1],
                          true);
-            sound = SFX_PICKUP_KEY;
+            sound = hexen_sfx_pickup_key;
 
             // Check and process the special now in case the key doesn't
             // get removed for coop netplay
@@ -1351,15 +1351,15 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
             switch (target->player->class)
             {
                 case PCLASS_FIGHTER:
-                    S_StartSound(target, SFX_PLAYER_FIGHTER_BURN_DEATH);
+                    S_StartSound(target, hexen_sfx_player_fighter_burn_death);
                     P_SetMobjState(target, HEXEN_S_PLAY_F_FDTH1);
                     return;
                 case PCLASS_CLERIC:
-                    S_StartSound(target, SFX_PLAYER_CLERIC_BURN_DEATH);
+                    S_StartSound(target, hexen_sfx_player_cleric_burn_death);
                     P_SetMobjState(target, HEXEN_S_PLAY_C_FDTH1);
                     return;
                 case PCLASS_MAGE:
-                    S_StartSound(target, SFX_PLAYER_MAGE_BURN_DEATH);
+                    S_StartSound(target, hexen_sfx_player_mage_burn_death);
                     P_SetMobjState(target, HEXEN_S_PLAY_M_FDTH1);
                     return;
                 default:
@@ -1397,15 +1397,15 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
             switch (target->type)
             {
                 case HEXEN_MT_FIGHTER_BOSS:
-                    S_StartSound(target, SFX_PLAYER_FIGHTER_BURN_DEATH);
+                    S_StartSound(target, hexen_sfx_player_fighter_burn_death);
                     P_SetMobjState(target, HEXEN_S_PLAY_F_FDTH1);
                     return;
                 case HEXEN_MT_CLERIC_BOSS:
-                    S_StartSound(target, SFX_PLAYER_CLERIC_BURN_DEATH);
+                    S_StartSound(target, hexen_sfx_player_cleric_burn_death);
                     P_SetMobjState(target, HEXEN_S_PLAY_C_FDTH1);
                     return;
                 case HEXEN_MT_MAGE_BOSS:
-                    S_StartSound(target, SFX_PLAYER_MAGE_BURN_DEATH);
+                    S_StartSound(target, hexen_sfx_player_mage_burn_death);
                     P_SetMobjState(target, HEXEN_S_PLAY_M_FDTH1);
                     return;
                 default:
@@ -1416,7 +1416,7 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
         {
             P_SetMobjState(target, HEXEN_S_ZTREEDES_X1);
             target->height = 24 * FRACUNIT;
-            S_StartSound(target, SFX_TREE_EXPLODE);
+            S_StartSound(target, hexen_sfx_tree_explode);
             return;
         }
     }
@@ -1566,7 +1566,7 @@ boolean P_MorphPlayer(player_t * player)
     oldFlags2 = pmo->flags2;
     P_SetMobjState(pmo, HEXEN_S_FREETARGMOBJ);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
-    S_StartSound(fog, SFX_TELEPORT);
+    S_StartSound(fog, hexen_sfx_teleport);
     beastMo = P_SpawnMobj(x, y, z, HEXEN_MT_PIGPLAYER);
     beastMo->special1.i = player->readyweapon;
     beastMo->angle = angle;
@@ -1625,7 +1625,7 @@ boolean P_MorphMonster(mobj_t * actor)
     P_RemoveMobjFromTIDList(actor);
     P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
-    S_StartSound(fog, SFX_TELEPORT);
+    S_StartSound(fog, hexen_sfx_teleport);
     monster = P_SpawnMobj(x, y, z, HEXEN_MT_PIG);
     monster->special2.i = moType;
     monster->special1.i = MORPHTICS + P_Random(pr_hexen);
@@ -1889,7 +1889,7 @@ void P_DamageMobj
                     {
                         P_PoisonDamage(target->player, source, 15 + (P_Random(pr_hexen) & 15), false);  // Don't play painsound
                         P_PoisonPlayer(target->player, source, 50);
-                        S_StartSound(target, SFX_PLAYER_POISONCOUGH);
+                        S_StartSound(target, hexen_sfx_player_poisoncough);
                     }
                     return;
                 }
@@ -2050,13 +2050,13 @@ void P_DamageMobj
             {                   // "electrocute" the target
                 target->frame |= FF_FULLBRIGHT;
                 if (target->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
-                    && !S_GetSoundPlayingInfo(target, SFX_PUPPYBEAT))
+                    && !S_GetSoundPlayingInfo(target, hexen_sfx_puppybeat))
                 {
                     if ((target->type == HEXEN_MT_CENTAUR) ||
                         (target->type == HEXEN_MT_CENTAURLEADER) ||
                         (target->type == HEXEN_MT_ETTIN))
                     {
-                        S_StartSound(target, SFX_PUPPYBEAT);
+                        S_StartSound(target, hexen_sfx_puppybeat);
                     }
                 }
             }
@@ -2068,13 +2068,13 @@ void P_DamageMobj
             if (inflictor && inflictor->type == HEXEN_MT_POISONCLOUD)
             {
                 if (target->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
-                    && !S_GetSoundPlayingInfo(target, SFX_PUPPYBEAT))
+                    && !S_GetSoundPlayingInfo(target, hexen_sfx_puppybeat))
                 {
                     if ((target->type == HEXEN_MT_CENTAUR) ||
                         (target->type == HEXEN_MT_CENTAURLEADER) ||
                         (target->type == HEXEN_MT_ETTIN))
                     {
-                        S_StartSound(target, SFX_PUPPYBEAT);
+                        S_StartSound(target, hexen_sfx_puppybeat);
                     }
                 }
             }
@@ -2128,7 +2128,7 @@ void P_FallingDamage(player_t * player)
     {                           // No-death threshold
         damage = player->mo->health - 1;
     }
-    S_StartSound(player->mo, SFX_PLAYER_LAND);
+    S_StartSound(player->mo, hexen_sfx_player_land);
     P_DamageMobj(player->mo, NULL, NULL, damage);
 }
 

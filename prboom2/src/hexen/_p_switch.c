@@ -26,23 +26,23 @@
 //
 //==================================================================
 switchlist_t alphSwitchListDemo[] = {
-    {"SW_1_UP", "SW_1_DN", SFX_SWITCH1},
-    {"SW_2_UP", "SW_2_DN", SFX_SWITCH1},
-    {"SW52_OFF", "SW52_ON", SFX_SWITCH2},
+    {"SW_1_UP", "SW_1_DN", hexen_sfx_switch1},
+    {"SW_2_UP", "SW_2_DN", hexen_sfx_switch1},
+    {"SW52_OFF", "SW52_ON", hexen_sfx_switch2},
     {"\0", "\0", 0}
 };
 
 switchlist_t alphSwitchListFull[] = {
-    {"SW_1_UP", "SW_1_DN", SFX_SWITCH1},
-    {"SW_2_UP", "SW_2_DN", SFX_SWITCH1},
-    {"VALVE1", "VALVE2", SFX_VALVE_TURN},
-    {"SW51_OFF", "SW51_ON", SFX_SWITCH2},
-    {"SW52_OFF", "SW52_ON", SFX_SWITCH2},
-    {"SW53_UP", "SW53_DN", SFX_ROPE_PULL},
-    {"PUZZLE5", "PUZZLE9", SFX_SWITCH1},
-    {"PUZZLE6", "PUZZLE10", SFX_SWITCH1},
-    {"PUZZLE7", "PUZZLE11", SFX_SWITCH1},
-    {"PUZZLE8", "PUZZLE12", SFX_SWITCH1},
+    {"SW_1_UP", "SW_1_DN", hexen_sfx_switch1},
+    {"SW_2_UP", "SW_2_DN", hexen_sfx_switch1},
+    {"VALVE1", "VALVE2", hexen_sfx_valve_turn},
+    {"SW51_OFF", "SW51_ON", hexen_sfx_switch2},
+    {"SW52_OFF", "SW52_ON", hexen_sfx_switch2},
+    {"SW53_UP", "SW53_DN", hexen_sfx_rope_pull},
+    {"PUZZLE5", "PUZZLE9", hexen_sfx_switch1},
+    {"PUZZLE6", "PUZZLE10", hexen_sfx_switch1},
+    {"PUZZLE7", "PUZZLE11", hexen_sfx_switch1},
+    {"PUZZLE8", "PUZZLE12", hexen_sfx_switch1},
     {"\0", "\0", 0}
 };
 

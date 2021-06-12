@@ -424,15 +424,15 @@ boolean PIT_CheckThing(mobj_t * thing)
                     {
                         P_SpawnMobj(tmthing->x, tmthing->y, tmthing->z,
                                     HEXEN_MT_HOLY_PUFF);
-                        S_StartSound(tmthing, SFX_SPIRIT_ATTACK);
+                        S_StartSound(tmthing, hexen_sfx_spirit_attack);
                         if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
-                            && !S_GetSoundPlayingInfo(thing, SFX_PUPPYBEAT))
+                            && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
                         {
                             if ((thing->type == HEXEN_MT_CENTAUR) ||
                                 (thing->type == HEXEN_MT_CENTAURLEADER) ||
                                 (thing->type == HEXEN_MT_ETTIN))
                             {
-                                S_StartSound(thing, SFX_PUPPYBEAT);
+                                S_StartSound(thing, hexen_sfx_puppybeat);
                             }
                         }
                     }
@@ -519,18 +519,18 @@ boolean PIT_CheckThing(mobj_t * thing)
                         P_DamageMobj(thing, tmthing, tmthing->target, 3);
                     }
                     if (!(S_GetSoundPlayingInfo(tmthing,
-                                                SFX_MAGE_LIGHTNING_ZAP)))
+                                                hexen_sfx_mage_lightning_zap)))
                     {
-                        S_StartSound(tmthing, SFX_MAGE_LIGHTNING_ZAP);
+                        S_StartSound(tmthing, hexen_sfx_mage_lightning_zap);
                     }
                     if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 64
-                        && !S_GetSoundPlayingInfo(thing, SFX_PUPPYBEAT))
+                        && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
                     {
                         if ((thing->type == HEXEN_MT_CENTAUR) ||
                             (thing->type == HEXEN_MT_CENTAURLEADER) ||
                             (thing->type == HEXEN_MT_ETTIN))
                         {
-                            S_StartSound(thing, SFX_PUPPYBEAT);
+                            S_StartSound(thing, hexen_sfx_puppybeat);
                         }
                     }
                 }
@@ -1863,12 +1863,12 @@ void P_LineAttack(mobj_t * t1, angle_t angle, fixed_t distance, fixed_t slope,
         switch (PuffType)
         {
             case HEXEN_MT_PUNCHPUFF:
-                S_StartSound(t1, SFX_FIGHTER_PUNCH_MISS);
+                S_StartSound(t1, hexen_sfx_fighter_punch_miss);
                 break;
             case HEXEN_MT_HAMMERPUFF:
             case HEXEN_MT_AXEPUFF:
             case HEXEN_MT_AXEPUFF_GLOW:
-                S_StartSound(t1, SFX_FIGHTER_HAMMER_MISS);
+                S_StartSound(t1, hexen_sfx_fighter_hammer_miss);
                 break;
             case HEXEN_MT_FLAMEPUFF:
                 P_SpawnPuff(x2, y2, shootz + FixedMul(slope, distance));
@@ -1904,19 +1904,19 @@ boolean PTR_UseTraverse(intercept_t * in)
                 switch (usething->player->class)
                 {
                     case PCLASS_FIGHTER:
-                        sound = SFX_PLAYER_FIGHTER_FAILED_USE;
+                        sound = hexen_sfx_player_fighter_failed_use;
                         break;
                     case PCLASS_CLERIC:
-                        sound = SFX_PLAYER_CLERIC_FAILED_USE;
+                        sound = hexen_sfx_player_cleric_failed_use;
                         break;
                     case PCLASS_MAGE:
-                        sound = SFX_PLAYER_MAGE_FAILED_USE;
+                        sound = hexen_sfx_player_mage_failed_use;
                         break;
                     case PCLASS_PIG:
-                        sound = SFX_PIG_ACTIVE1;
+                        sound = hexen_sfx_pig_active1;
                         break;
                     default:
-                        sound = SFX_NONE;
+                        sound = hexen_sfx_None;
                         break;
                 }
                 S_StartSound(usething, sound);
@@ -1931,19 +1931,19 @@ boolean PTR_UseTraverse(intercept_t * in)
                 switch (usething->player->class)
                 {
                     case PCLASS_FIGHTER:
-                        sound = SFX_PLAYER_FIGHTER_FAILED_USE;
+                        sound = hexen_sfx_player_fighter_failed_use;
                         break;
                     case PCLASS_CLERIC:
-                        sound = SFX_PLAYER_CLERIC_FAILED_USE;
+                        sound = hexen_sfx_player_cleric_failed_use;
                         break;
                     case PCLASS_MAGE:
-                        sound = SFX_PLAYER_MAGE_FAILED_USE;
+                        sound = hexen_sfx_player_mage_failed_use;
                         break;
                     case PCLASS_PIG:
-                        sound = SFX_PIG_ACTIVE1;
+                        sound = hexen_sfx_pig_active1;
                         break;
                     default:
-                        sound = SFX_NONE;
+                        sound = hexen_sfx_None;
                         break;
                 }
                 S_StartSound(usething, sound);
@@ -2012,22 +2012,22 @@ boolean PTR_PuzzleItemTraverse(intercept_t * in)
             P_LineOpening(in->d.line);
             if (openrange <= 0)
             {
-                sound = SFX_NONE;
+                sound = hexen_sfx_None;
                 if (PuzzleItemUser->player)
                 {
                     switch (PuzzleItemUser->player->class)
                     {
                         case PCLASS_FIGHTER:
-                            sound = SFX_PUZZLE_FAIL_FIGHTER;
+                            sound = hexen_sfx_puzzle_fail_fighter;
                             break;
                         case PCLASS_CLERIC:
-                            sound = SFX_PUZZLE_FAIL_CLERIC;
+                            sound = hexen_sfx_puzzle_fail_cleric;
                             break;
                         case PCLASS_MAGE:
-                            sound = SFX_PUZZLE_FAIL_MAGE;
+                            sound = hexen_sfx_puzzle_fail_mage;
                             break;
                         default:
-                            sound = SFX_NONE;
+                            sound = hexen_sfx_None;
                             break;
                     }
                 }
@@ -2250,7 +2250,7 @@ boolean PIT_ChangeSector(mobj_t * thing)
                 P_SetMobjState(thing, HEXEN_S_GIBS1);
                 thing->height = 0;
                 thing->radius = 0;
-                S_StartSound(thing, SFX_PLAYER_FALLING_SPLAT);
+                S_StartSound(thing, hexen_sfx_player_falling_splat);
             }
         }
         return true;            // keep checking

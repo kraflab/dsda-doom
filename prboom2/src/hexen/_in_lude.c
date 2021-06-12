@@ -475,7 +475,7 @@ static void DrDeathTally(void)
     if (intertime >= TALLY_EFFECT_TICKS && showTotals == false)
     {
         showTotals = true;
-        S_StartSound(NULL, SFX_PLATFORM_STOP);
+        S_StartSound(NULL, hexen_sfx_platform_stop);
     }
     y = yPos >> FRACBITS;
     for (i = 0; i < maxplayers; i++)

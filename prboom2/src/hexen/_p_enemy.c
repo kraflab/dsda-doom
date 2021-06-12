@@ -790,7 +790,7 @@ void A_Chase(mobj_t * actor)
         }
         else if (actor->type == HEXEN_MT_PIG)
         {
-            S_StartSound(actor, SFX_PIG_ACTIVE1 + (P_Random(pr_hexen) & 1));
+            S_StartSound(actor, hexen_sfx_pig_active1 + (P_Random(pr_hexen) & 1));
         }
         else if (actor->flags2 & MF2_BOSS)
         {
@@ -959,7 +959,7 @@ boolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
     memcpy(mo->args, oldMonster.args, 5);
     P_InsertMobjIntoTIDList(mo, oldMonster.tid);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
-    S_StartSound(fog, SFX_TELEPORT);
+    S_StartSound(fog, hexen_sfx_teleport);
     return (true);
 }
 
@@ -1012,7 +1012,7 @@ void A_PigAttack(mobj_t * actor)
     if (P_CheckMeleeRange(actor))
     {
         P_DamageMobj(actor->target, actor, actor, 2 + (P_Random(pr_hexen) & 1));
-        S_StartSound(actor, SFX_PIG_ATTACK);
+        S_StartSound(actor, hexen_sfx_pig_attack);
     }
 }
 
@@ -1315,7 +1315,7 @@ void A_MinotaurAtk1(mobj_t * actor)
     if (!actor->target)
         return;
 
-    S_StartSound(actor, SFX_MAULATOR_HAMMER_SWING);
+    S_StartSound(actor, hexen_sfx_maulator_hammer_swing);
     if (P_CheckMeleeRange(actor))
     {
         P_DamageMobj(actor->target, actor, actor, HITDICE(4));
@@ -1413,7 +1413,7 @@ void A_MinotaurAtk2(mobj_t * actor)
     if (!actor->target)
         return;
 
-    S_StartSound(actor, SFX_MAULATOR_HAMMER_SWING);
+    S_StartSound(actor, hexen_sfx_maulator_hammer_swing);
     if (P_CheckMeleeRange(actor))
     {
         P_DamageMobj(actor->target, actor, actor, HITDICE(3));
@@ -1462,7 +1462,7 @@ void A_MinotaurAtk3(mobj_t * actor)
         mo = P_SpawnMissile(actor, actor->target, HEXEN_MT_MNTRFX2);
         if (mo != NULL)
         {
-            S_StartSound(mo, SFX_MAULATOR_HAMMER_HIT);
+            S_StartSound(mo, hexen_sfx_maulator_hammer_hit);
         }
     }
     if (P_Random(pr_hexen) < 192 && actor->special2.i == 0)
@@ -1518,23 +1518,23 @@ void A_Scream(mobj_t * actor)
             // Handle the different player death screams
             if (actor->momz <= -39 * FRACUNIT)
             {                   // Falling splat
-                sound = SFX_PLAYER_FALLING_SPLAT;
+                sound = hexen_sfx_player_falling_splat;
             }
             else if (actor->health > -50)
             {                   // Normal death sound
                 switch (actor->player->class)
                 {
                     case PCLASS_FIGHTER:
-                        sound = SFX_PLAYER_FIGHTER_NORMAL_DEATH;
+                        sound = hexen_sfx_player_fighter_normal_death;
                         break;
                     case PCLASS_CLERIC:
-                        sound = SFX_PLAYER_CLERIC_NORMAL_DEATH;
+                        sound = hexen_sfx_player_cleric_normal_death;
                         break;
                     case PCLASS_MAGE:
-                        sound = SFX_PLAYER_MAGE_NORMAL_DEATH;
+                        sound = hexen_sfx_player_mage_normal_death;
                         break;
                     default:
-                        sound = SFX_NONE;
+                        sound = hexen_sfx_None;
                         break;
                 }
             }
@@ -1543,16 +1543,16 @@ void A_Scream(mobj_t * actor)
                 switch (actor->player->class)
                 {
                     case PCLASS_FIGHTER:
-                        sound = SFX_PLAYER_FIGHTER_CRAZY_DEATH;
+                        sound = hexen_sfx_player_fighter_crazy_death;
                         break;
                     case PCLASS_CLERIC:
-                        sound = SFX_PLAYER_CLERIC_CRAZY_DEATH;
+                        sound = hexen_sfx_player_cleric_crazy_death;
                         break;
                     case PCLASS_MAGE:
-                        sound = SFX_PLAYER_MAGE_CRAZY_DEATH;
+                        sound = hexen_sfx_player_mage_crazy_death;
                         break;
                     default:
-                        sound = SFX_NONE;
+                        sound = hexen_sfx_None;
                         break;
                 }
             }
@@ -1561,16 +1561,16 @@ void A_Scream(mobj_t * actor)
                 switch (actor->player->class)
                 {
                     case PCLASS_FIGHTER:
-                        sound = SFX_PLAYER_FIGHTER_EXTREME1_DEATH;
+                        sound = hexen_sfx_player_fighter_extreme1_death;
                         break;
                     case PCLASS_CLERIC:
-                        sound = SFX_PLAYER_CLERIC_EXTREME1_DEATH;
+                        sound = hexen_sfx_player_cleric_extreme1_death;
                         break;
                     case PCLASS_MAGE:
-                        sound = SFX_PLAYER_MAGE_EXTREME1_DEATH;
+                        sound = hexen_sfx_player_mage_extreme1_death;
                         break;
                     default:
-                        sound = SFX_NONE;
+                        sound = hexen_sfx_None;
                         break;
                 }
                 sound += P_Random(pr_hexen) % 3;        // Three different extreme deaths
@@ -1803,7 +1803,7 @@ void A_CheckSkullFloor(mobj_t * actor)
     if (actor->z <= actor->floorz)
     {
         P_SetMobjState(actor, HEXEN_S_BLOODYSKULLX1);
-        S_StartSound(actor, SFX_DRIP);
+        S_StartSound(actor, hexen_sfx_drip);
     }
 }
 
@@ -2171,7 +2171,7 @@ void A_SerpentHumpDecide(mobj_t * actor)
         else
         {
             P_SetMobjState(actor, HEXEN_S_SERPENT_HUMP1);
-            S_StartSound(actor, SFX_SERPENT_ACTIVE);
+            S_StartSound(actor, hexen_sfx_serpent_active);
         }
     }
 }
@@ -2184,7 +2184,7 @@ void A_SerpentHumpDecide(mobj_t * actor)
 
 void A_SerpentBirthScream(mobj_t * actor)
 {
-    S_StartSound(actor, SFX_SERPENT_BIRTH);
+    S_StartSound(actor, hexen_sfx_serpent_birth);
 }
 
 //============================================================================
@@ -2195,7 +2195,7 @@ void A_SerpentBirthScream(mobj_t * actor)
 
 void A_SerpentDiveSound(mobj_t * actor)
 {
-    S_StartSound(actor, SFX_SERPENT_ACTIVE);
+    S_StartSound(actor, hexen_sfx_serpent_active);
 }
 
 //============================================================================
@@ -2367,7 +2367,7 @@ void A_SerpentMeleeAttack(mobj_t * actor)
     if (P_CheckMeleeRange(actor))
     {
         P_DamageMobj(actor->target, actor, actor, HITDICE(5));
-        S_StartSound(actor, SFX_SERPENT_MELEEHIT);
+        S_StartSound(actor, hexen_sfx_serpent_meleehit);
     }
     if (P_Random(pr_hexen) < 96)
     {
@@ -2535,7 +2535,7 @@ void A_CentaurAttack2(mobj_t * actor)
         return;
     }
     P_SpawnMissile(actor, actor->target, HEXEN_MT_CENTAUR_FX);
-    S_StartSound(actor, SFX_CENTAURLEADER_ATTACK);
+    S_StartSound(actor, hexen_sfx_centaurleader_attack);
 }
 
 //============================================================================
@@ -2717,7 +2717,7 @@ void A_BishopDoBlur(mobj_t * actor)
     {                           // Thrust forward
         P_ThrustMobj(actor, actor->angle, 11 * FRACUNIT);
     }
-    S_StartSound(actor, SFX_BISHOP_BLUR);
+    S_StartSound(actor, hexen_sfx_bishop_blur);
 }
 
 //============================================================================
@@ -2886,12 +2886,12 @@ static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
             if (P_CheckMeleeRange(actor))
             {
                 P_DamageMobj(actor->target, actor, actor, HITDICE(10));
-                S_StartSound(actor, SFX_DRAGON_ATTACK);
+                S_StartSound(actor, hexen_sfx_dragon_attack);
             }
             else if (P_Random(pr_hexen) < 128 && P_CheckMissileRange(actor))
             {
                 P_SpawnMissile(actor, target, HEXEN_MT_DRAGON_FX);
-                S_StartSound(actor, SFX_DRAGON_ATTACK);
+                S_StartSound(actor, hexen_sfx_dragon_attack);
             }
             actor->target = oldTarget;
         }
@@ -2990,12 +2990,12 @@ void A_DragonFlight(mobj_t * actor)
             && P_CheckMeleeRange(actor))
         {
             P_DamageMobj(actor->target, actor, actor, HITDICE(8));
-            S_StartSound(actor, SFX_DRAGON_ATTACK);
+            S_StartSound(actor, hexen_sfx_dragon_attack);
         }
         else if (abs((int) actor->angle - (int) angle) <= ANG1 * 20)
         {
             P_SetMobjState(actor, actor->info->missilestate);
-            S_StartSound(actor, SFX_DRAGON_ATTACK);
+            S_StartSound(actor, hexen_sfx_dragon_attack);
         }
     }
     else
@@ -3015,7 +3015,7 @@ void A_DragonFlap(mobj_t * actor)
     A_DragonFlight(actor);
     if (P_Random(pr_hexen) < 240)
     {
-        S_StartSound(actor, SFX_DRAGON_WINGFLAP);
+        S_StartSound(actor, hexen_sfx_dragon_wingflap);
     }
     else
     {
@@ -3130,7 +3130,7 @@ void A_DemonAttack2(mobj_t * actor)
     if (mo)
     {
         mo->z += 30 * FRACUNIT;
-        S_StartSound(actor, SFX_DEMON_MISSILE_FIRE);
+        S_StartSound(actor, hexen_sfx_demon_missile_fire);
     }
 }
 
@@ -3400,7 +3400,7 @@ void A_WraithMissile(mobj_t * actor)
     mo = P_SpawnMissile(actor, actor->target, HEXEN_MT_WRAITHFX1);
     if (mo)
     {
-        S_StartSound(actor, SFX_WRAITH_MISSILE_FIRE);
+        S_StartSound(actor, hexen_sfx_wraith_missile_fire);
     }
 }
 
@@ -3629,7 +3629,7 @@ void A_FiredAttack(mobj_t * actor)
     mobj_t *mo;
     mo = P_SpawnMissile(actor, actor->target, HEXEN_MT_FIREDEMON_FX6);
     if (mo)
-        S_StartSound(actor, SFX_FIRED_ATTACK);
+        S_StartSound(actor, hexen_sfx_fired_attack);
 }
 
 void A_SmBounce(mobj_t * actor)
@@ -4071,7 +4071,7 @@ void A_SorcBallOrbit(mobj_t * actor)
 
                 if (actor->type == HEXEN_MT_SORCBALL1 && P_Random(pr_hexen) < 200)
                 {
-                    S_StartSound(NULL, SFX_SORCERER_SPELLCAST);
+                    S_StartSound(NULL, hexen_sfx_sorcerer_spellcast);
                     actor->special2.i = SORCFX4_RAPIDFIRE_TIME;
                     actor->args[4] = 128;
                     parent->args[3] = SORC_FIRING_SPELL;
@@ -4110,7 +4110,7 @@ void A_SorcBallOrbit(mobj_t * actor)
     {
         parent->args[1]++;      // Bump rotation counter
         // Completed full rotation - make woosh sound
-        S_StartSound(actor, SFX_SORCERER_BALLWOOSH);
+        S_StartSound(actor, hexen_sfx_sorcerer_ballwoosh);
     }
     actor->special1.i = angle;    // Set previous angle
     x = parent->x + FixedMul(dist, finecosine[angle]);
@@ -4227,7 +4227,7 @@ void A_CastSorcererSpell(mobj_t * actor)
     fixed_t z;
     mobj_t *parent = actor->target;
 
-    S_StartSound(NULL, SFX_SORCERER_SPELLCAST);
+    S_StartSound(NULL, hexen_sfx_sorcerer_spellcast);
 
     // Put sorcerer into throw spell animation
     if (parent->health > 0)
@@ -4538,7 +4538,7 @@ void A_SorcFX4Check(mobj_t * actor)
 
 void A_SorcBallPop(mobj_t * actor)
 {
-    S_StartSound(NULL, SFX_SORCERER_BALLPOP);
+    S_StartSound(NULL, hexen_sfx_sorcerer_ballpop);
     actor->flags &= ~MF_NOGRAVITY;
     actor->flags2 |= MF2_LOGRAV;
     actor->momx = ((P_Random(pr_hexen) % 10) - 5) << FRACBITS;
@@ -4563,10 +4563,10 @@ void A_BounceCheck(mobj_t * actor)
                 case HEXEN_MT_SORCBALL1:
                 case HEXEN_MT_SORCBALL2:
                 case HEXEN_MT_SORCBALL3:
-                    S_StartSound(NULL, SFX_SORCERER_BIGBALLEXPLODE);
+                    S_StartSound(NULL, hexen_sfx_sorcerer_bigballexplode);
                     break;
                 case HEXEN_MT_SORCFX1:
-                    S_StartSound(NULL, SFX_SORCERER_HEADSCREAM);
+                    S_StartSound(NULL, hexen_sfx_sorcerer_headscream);
                     break;
                 default:
                     break;
@@ -4790,7 +4790,7 @@ void A_FreezeDeath(mobj_t * actor)
     actor->flags |= MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD;
     actor->flags2 |= MF2_PUSHABLE | MF2_TELESTOMP | MF2_PASSMOBJ | MF2_SLIDE;
     actor->height <<= 2;
-    S_StartSound(actor, SFX_FREEZE_DEATH);
+    S_StartSound(actor, hexen_sfx_freeze_death);
 
     if (actor->player)
     {
@@ -4862,7 +4862,7 @@ void A_FreezeDeathChunks(mobj_t * actor)
         actor->tics = 105;
         return;
     }
-    S_StartSound(actor, SFX_FREEZE_SHATTER);
+    S_StartSound(actor, hexen_sfx_freeze_shatter);
 
     for (i = 12 + (P_Random(pr_hexen) & 15); i >= 0; i--)
     {
@@ -4984,7 +4984,7 @@ void A_KoraxChase(mobj_t * actor)
     }
     else if (P_Random(pr_hexen) < 30)
     {
-        S_StartSound(NULL, SFX_KORAX_ACTIVE);
+        S_StartSound(NULL, hexen_sfx_korax_active);
     }
 
     // Teleport away
@@ -5010,7 +5010,7 @@ void A_KoraxStep(mobj_t * actor)
 
 void A_KoraxStep2(mobj_t * actor)
 {
-    S_StartSound(NULL, SFX_KORAX_STEP);
+    S_StartSound(NULL, hexen_sfx_korax_step);
     A_Chase(actor);
 }
 
@@ -5093,33 +5093,33 @@ void A_KoraxMissile(mobj_t * actor)
     int type = P_Random(pr_hexen) % 6;
     int sound = 0;
 
-    S_StartSound(actor, SFX_KORAX_ATTACK);
+    S_StartSound(actor, hexen_sfx_korax_attack);
 
     switch (type)
     {
         case 0:
             type = HEXEN_MT_WRAITHFX1;
-            sound = SFX_WRAITH_MISSILE_FIRE;
+            sound = hexen_sfx_wraith_missile_fire;
             break;
         case 1:
             type = HEXEN_MT_DEMONFX1;
-            sound = SFX_DEMON_MISSILE_FIRE;
+            sound = hexen_sfx_demon_missile_fire;
             break;
         case 2:
             type = HEXEN_MT_DEMON2FX1;
-            sound = SFX_DEMON_MISSILE_FIRE;
+            sound = hexen_sfx_demon_missile_fire;
             break;
         case 3:
             type = HEXEN_MT_FIREDEMON_FX6;
-            sound = SFX_FIRED_ATTACK;
+            sound = hexen_sfx_fired_attack;
             break;
         case 4:
             type = HEXEN_MT_CENTAUR_FX;
-            sound = SFX_CENTAURLEADER_ATTACK;
+            sound = hexen_sfx_centaurleader_attack;
             break;
         case 5:
             type = HEXEN_MT_SERPENTFX;
-            sound = SFX_CENTAURLEADER_ATTACK;
+            sound = hexen_sfx_centaurleader_attack;
             break;
     }
 
@@ -5142,7 +5142,7 @@ void A_KoraxCommand(mobj_t * actor)
     angle_t ang;
     int numcommands;
 
-    S_StartSound(actor, SFX_KORAX_COMMAND);
+    S_StartSound(actor, hexen_sfx_korax_command);
 
     // Shoot stream of lightning to ceiling
     ang = (actor->angle - ANG90) >> ANGLETOFINESHIFT;
@@ -5382,7 +5382,7 @@ void A_KSpiritRoam(mobj_t * actor)
 {
     if (actor->health-- <= 0)
     {
-        S_StartSound(actor, SFX_SPIRIT_DIE);
+        S_StartSound(actor, hexen_sfx_spirit_die);
         P_SetMobjState(actor, HEXEN_S_KSPIRIT_DEATH1);
     }
     else
@@ -5395,7 +5395,7 @@ void A_KSpiritRoam(mobj_t * actor)
         A_KSpiritWeave(actor);
         if (P_Random(pr_hexen) < 50)
         {
-            S_StartSound(NULL, SFX_SPIRIT_ACTIVE);
+            S_StartSound(NULL, hexen_sfx_spirit_active);
         }
     }
 }

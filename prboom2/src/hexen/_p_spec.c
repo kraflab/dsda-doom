@@ -424,7 +424,7 @@ static boolean CheckedLockedDoor(mobj_t * mo, byte lock)
         M_snprintf(LockedBuffer, sizeof(LockedBuffer),
                    "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
         P_SetMessage(mo->player, LockedBuffer, true);
-        S_StartSound(mo, SFX_DOOR_LOCKED);
+        S_StartSound(mo, hexen_sfx_door_locked);
         return false;
     }
     return true;
@@ -468,11 +468,11 @@ boolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
                 {
                     if (arti < arti_firstpuzzitem)
                     {
-                        S_StartSound(NULL, SFX_ARTIFACT_USE);
+                        S_StartSound(NULL, hexen_sfx_artifact_use);
                     }
                     else
                     {
-                        S_StartSound(NULL, SFX_PUZZLE_SUCCESS);
+                        S_StartSound(NULL, hexen_sfx_puzzle_success);
                     }
                     ArtifactFlash = 4;
                 }
@@ -1005,7 +1005,7 @@ void P_PlayerOnSpecialFlat(player_t * player, int floorType)
             if (!(leveltime & 31))
             {
                 P_DamageMobj(player->mo, &LavaInflictor, NULL, 10);
-                S_StartSound(player->mo, SFX_LAVA_SIZZLE);
+                S_StartSound(player->mo, hexen_sfx_lava_sizzle);
             }
             break;
         default:

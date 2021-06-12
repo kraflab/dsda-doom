@@ -75,7 +75,7 @@ void A_FSwordAttack(player_t * player, pspdef_t * psp)
                   HEXEN_MT_FSWORD_MISSILE, pmo->angle - ANG45 / 8);
     P_SPMAngleXYZ(pmo, pmo->x, pmo->y, pmo->z + 10 * FRACUNIT,
                   HEXEN_MT_FSWORD_MISSILE, pmo->angle - ANG45 / 4);
-    S_StartSound(pmo, SFX_FIGHTER_SWORD_FIRE);
+    S_StartSound(pmo, hexen_sfx_fighter_sword_fire);
 }
 
 //============================================================================
@@ -93,7 +93,7 @@ void A_FSwordAttack2(mobj_t * actor)
     P_SpawnMissileAngle(actor, HEXEN_MT_FSWORD_MISSILE, angle, 0);
     P_SpawnMissileAngle(actor, HEXEN_MT_FSWORD_MISSILE, angle - ANG45 / 8, 0);
     P_SpawnMissileAngle(actor, HEXEN_MT_FSWORD_MISSILE, angle - ANG45 / 4, 0);
-    S_StartSound(actor, SFX_FIGHTER_SWORD_FIRE);
+    S_StartSound(actor, hexen_sfx_fighter_sword_fire);
 }
 
 //============================================================================
@@ -133,7 +133,7 @@ void A_MWandAttack(player_t * player, pspdef_t * psp)
     {
         mo->thinker.function = P_BlasterMobjThinker;
     }
-    S_StartSound(player->mo, SFX_MAGE_WAND_FIRE);
+    S_StartSound(player->mo, hexen_sfx_mage_wand_fire);
 }
 
 // ===== Mage Lightning Weapon =====
@@ -149,7 +149,7 @@ void A_LightningReady(player_t * player, pspdef_t * psp)
     A_WeaponReady(player, psp);
     if (P_Random(pr_hexen) < 160)
     {
-        S_StartSound(player->mo, SFX_MAGE_LIGHTNING_READY);
+        S_StartSound(player->mo, hexen_sfx_mage_lightning_ready);
     }
 }
 
@@ -287,7 +287,7 @@ void A_LightningZap(mobj_t * actor)
 */
     if (actor->type == HEXEN_MT_LIGHTNING_FLOOR && P_Random(pr_hexen) < 160)
     {
-        S_StartSound(actor, SFX_MAGE_LIGHTNING_CONTINUOUS);
+        S_StartSound(actor, hexen_sfx_mage_lightning_continuous);
     }
 }
 
@@ -315,7 +315,7 @@ void A_MLightningAttack2(mobj_t * actor)
         cmo->special2.m = fmo;
         A_LightningZap(cmo);
     }
-    S_StartSound(actor, SFX_MAGE_LIGHTNING_FIRE);
+    S_StartSound(actor, hexen_sfx_mage_lightning_fire);
 }
 
 //============================================================================
@@ -429,7 +429,7 @@ void A_MStaffAttack(player_t * player, pspdef_t * psp)
     MStaffSpawn(pmo, angle);
     MStaffSpawn(pmo, angle - ANG1 * 5);
     MStaffSpawn(pmo, angle + ANG1 * 5);
-    S_StartSound(player->mo, SFX_MAGE_STAFF_FIRE);
+    S_StartSound(player->mo, hexen_sfx_mage_staff_fire);
     if (player == &players[consoleplayer])
     {
         player->damagecount = 0;
@@ -543,7 +543,7 @@ void A_MStaffAttack2(mobj_t * actor)
     MStaffSpawn2(actor, angle);
     MStaffSpawn2(actor, angle - ANG1 * 5);
     MStaffSpawn2(actor, angle + ANG1 * 5);
-    S_StartSound(actor, SFX_MAGE_STAFF_FIRE);
+    S_StartSound(actor, hexen_sfx_mage_staff_fire);
 }
 
 //============================================================================
@@ -617,7 +617,7 @@ void A_FPunchAttack(player_t * player, pspdef_t * psp)
     {
         pmo->special1.i = 0;
         P_SetPsprite(player, ps_weapon, HEXEN_S_PUNCHATK2_1);
-        S_StartSound(pmo, SFX_FIGHTER_GRUNT);
+        S_StartSound(pmo, hexen_sfx_fighter_grunt);
     }
     return;
 }
@@ -836,7 +836,7 @@ void A_CStaffAttack(player_t * player, pspdef_t * psp)
     {
         mo->special2.i = 0;
     }
-    S_StartSound(player->mo, SFX_CLERIC_CSTAFF_FIRE);
+    S_StartSound(player->mo, hexen_sfx_cleric_cstaff_fire);
 }
 
 //============================================================================
@@ -909,7 +909,7 @@ void A_CFlameAttack(player_t * player, pspdef_t * psp)
     }
 
     player->mana[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
-    S_StartSound(player->mo, SFX_CLERIC_FLAME_FIRE);
+    S_StartSound(player->mo, hexen_sfx_cleric_flame_fire);
 }
 
 //============================================================================
@@ -924,7 +924,7 @@ void A_CFlamePuff(mobj_t * actor)
     actor->momx = 0;
     actor->momy = 0;
     actor->momz = 0;
-    S_StartSound(actor, SFX_CLERIC_FLAME_EXPLODE);
+    S_StartSound(actor, hexen_sfx_cleric_flame_explode);
 }
 
 //============================================================================
@@ -941,7 +941,7 @@ void A_CFlameMissile(mobj_t * actor)
     mobj_t *mo;
 
     A_UnHideThing(actor);
-    S_StartSound(actor, SFX_CLERIC_FLAME_EXPLODE);
+    S_StartSound(actor, hexen_sfx_cleric_flame_explode);
     if (BlockingMobj && BlockingMobj->flags & MF_SHOOTABLE)
     {                           // Hit something, so spawn the flame circle around the thing
         dist = BlockingMobj->radius + 18 * FRACUNIT;
@@ -1006,7 +1006,7 @@ void A_CFlameRotate(mobj_t * actor)
 void A_CHolyAttack3(mobj_t * actor)
 {
     P_SpawnMissile(actor, actor->target, HEXEN_MT_HOLY_MISSILE);
-    S_StartSound(actor, SFX_CHOLY_FIRE);
+    S_StartSound(actor, hexen_sfx_choly_fire);
 }
 
 
@@ -1096,7 +1096,7 @@ void A_CHolyAttack(player_t * player, pspdef_t * psp)
         I_SetPalette((byte *) W_CacheLumpNum(W_GetNumForName("playpal"),
                                              PU_CACHE) + STARTHOLYPAL * 768);
     }
-    S_StartSound(player->mo, SFX_CHOLY_FIRE);
+    S_StartSound(player->mo, hexen_sfx_choly_fire);
 }
 
 //============================================================================
@@ -1389,7 +1389,7 @@ void A_CHolyCheckScream(mobj_t * actor)
     A_CHolySeek(actor);
     if (P_Random(pr_hexen) < 20)
     {
-        S_StartSound(actor, SFX_SPIRIT_ACTIVE);
+        S_StartSound(actor, hexen_sfx_spirit_active);
     }
     if (!actor->special1.m)
     {
@@ -1429,7 +1429,7 @@ void A_FireConePL1(player_t * player, pspdef_t * psp)
 
     pmo = player->mo;
     player->mana[MANA_1] -= WeaponManaUse[player->class][player->readyweapon];
-    S_StartSound(pmo, SFX_MAGE_SHARDS_FIRE);
+    S_StartSound(pmo, hexen_sfx_mage_shards_fire);
 
     damage = 90 + (P_Random(pr_hexen) & 15);
     for (i = 0; i < 16; i++)

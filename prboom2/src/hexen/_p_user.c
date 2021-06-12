@@ -426,18 +426,18 @@ void P_MorphPlayerThink(player_t * player)
     if (!(pmo->momx + pmo->momy) && P_Random(pr_hexen) < 64)
     {                           // Snout sniff
         P_SetPspriteNF(player, ps_weapon, HEXEN_S_SNOUTATK2);
-        S_StartSound(pmo, SFX_PIG_ACTIVE1);     // snort
+        S_StartSound(pmo, hexen_sfx_pig_active1);     // snort
         return;
     }
     if (P_Random(pr_hexen) < 48)
     {
         if (P_Random(pr_hexen) < 128)
         {
-            S_StartSound(pmo, SFX_PIG_ACTIVE1);
+            S_StartSound(pmo, hexen_sfx_pig_active1);
         }
         else
         {
-            S_StartSound(pmo, SFX_PIG_ACTIVE2);
+            S_StartSound(pmo, hexen_sfx_pig_active2);
         }
     }
 }
@@ -556,7 +556,7 @@ boolean P_UndoPlayerMorph(player_t * player)
     angle >>= ANGLETOFINESHIFT;
     fog = P_SpawnMobj(x + 20 * finecosine[angle],
                       y + 20 * finesine[angle], z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
-    S_StartSound(fog, SFX_TELEPORT);
+    S_StartSound(fog, hexen_sfx_teleport);
     P_PostMorphWeapon(player, weapon);
     return (true);
 }
@@ -685,27 +685,27 @@ void P_PlayerThink(player_t * player)
             if (player->mo->momz <= -35 * FRACUNIT
                 && player->mo->momz >= -40 * FRACUNIT && !player->morphTics
                 && !S_GetSoundPlayingInfo(player->mo,
-                                          SFX_PLAYER_FIGHTER_FALLING_SCREAM))
+                                          hexen_sfx_player_fighter_falling_scream))
             {
-                S_StartSound(player->mo, SFX_PLAYER_FIGHTER_FALLING_SCREAM);
+                S_StartSound(player->mo, hexen_sfx_player_fighter_falling_scream);
             }
             break;
         case PCLASS_CLERIC:
             if (player->mo->momz <= -35 * FRACUNIT
                 && player->mo->momz >= -40 * FRACUNIT && !player->morphTics
                 && !S_GetSoundPlayingInfo(player->mo,
-                                          SFX_PLAYER_CLERIC_FALLING_SCREAM))
+                                          hexen_sfx_player_cleric_falling_scream))
             {
-                S_StartSound(player->mo, SFX_PLAYER_CLERIC_FALLING_SCREAM);
+                S_StartSound(player->mo, hexen_sfx_player_cleric_falling_scream);
             }
             break;
         case PCLASS_MAGE:
             if (player->mo->momz <= -35 * FRACUNIT
                 && player->mo->momz >= -40 * FRACUNIT && !player->morphTics
                 && !S_GetSoundPlayingInfo(player->mo,
-                                          SFX_PLAYER_MAGE_FALLING_SCREAM))
+                                          hexen_sfx_player_mage_falling_scream))
             {
-                S_StartSound(player->mo, SFX_PLAYER_MAGE_FALLING_SCREAM);
+                S_StartSound(player->mo, hexen_sfx_player_mage_falling_scream);
             }
             break;
         default:
@@ -1167,7 +1167,7 @@ void P_BlastRadius(player_t * player)
     thinker_t *think;
     fixed_t dist;
 
-    S_StartSound(pmo, SFX_ARTIFACT_BLAST);
+    S_StartSound(pmo, hexen_sfx_artifact_blast);
     P_NoiseAlert(player->mo, player->mo);
 
     for (think = thinkercap.next; think != &thinkercap; think = think->next)
@@ -1261,7 +1261,7 @@ boolean P_HealRadius(player_t * player)
                     (P_GiveArmor(mo->player, ARMOR_AMULET, 1)))
                 {
                     effective = true;
-                    S_StartSound(mo, SFX_MYSTICINCANT);
+                    S_StartSound(mo, hexen_sfx_mysticincant);
                 }
                 break;
             case PCLASS_CLERIC:        // Radius heal
@@ -1269,7 +1269,7 @@ boolean P_HealRadius(player_t * player)
                 if (P_GiveBody(mo->player, amount))
                 {
                     effective = true;
-                    S_StartSound(mo, SFX_MYSTICINCANT);
+                    S_StartSound(mo, hexen_sfx_mysticincant);
                 }
                 break;
             case PCLASS_MAGE:  // Radius mana boost
@@ -1278,7 +1278,7 @@ boolean P_HealRadius(player_t * player)
                     (P_GiveMana(mo->player, MANA_2, amount)))
                 {
                     effective = true;
-                    S_StartSound(mo, SFX_MYSTICINCANT);
+                    S_StartSound(mo, hexen_sfx_mysticincant);
                 }
                 break;
             case PCLASS_PIG:
@@ -1390,11 +1390,11 @@ void P_PlayerUseArtifact(player_t * player, artitype_t arti)
                 {
                     if (arti < arti_firstpuzzitem)
                     {
-                        S_StartSound(NULL, SFX_ARTIFACT_USE);
+                        S_StartSound(NULL, hexen_sfx_artifact_use);
                     }
                     else
                     {
-                        S_StartSound(NULL, SFX_PUZZLE_SUCCESS);
+                        S_StartSound(NULL, hexen_sfx_puzzle_success);
                     }
                     ArtifactFlash = 4;
                 }

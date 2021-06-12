@@ -133,10 +133,10 @@ void P_ExplodeMissile(mobj_t * mo)
         case HEXEN_MT_SORCBALL1:
         case HEXEN_MT_SORCBALL2:
         case HEXEN_MT_SORCBALL3:
-            S_StartSound(NULL, SFX_SORCERER_BIGBALLEXPLODE);
+            S_StartSound(NULL, hexen_sfx_sorcerer_bigballexplode);
             break;
         case HEXEN_MT_SORCFX1:
-            S_StartSound(NULL, SFX_SORCERER_HEADSCREAM);
+            S_StartSound(NULL, hexen_sfx_sorcerer_headscream);
             break;
         default:
             if (mo->info->deathsound)
@@ -784,17 +784,17 @@ void P_ZMovement(mobj_t * mo)
                     else if (mo->momz < -GRAVITY * 12
                              && !mo->player->morphTics)
                     {
-                        S_StartSound(mo, SFX_PLAYER_LAND);
+                        S_StartSound(mo, hexen_sfx_player_land);
                         switch (mo->player->class)
                         {
                             case PCLASS_FIGHTER:
-                                S_StartSound(mo, SFX_PLAYER_FIGHTER_GRUNT);
+                                S_StartSound(mo, hexen_sfx_player_fighter_grunt);
                                 break;
                             case PCLASS_CLERIC:
-                                S_StartSound(mo, SFX_PLAYER_CLERIC_GRUNT);
+                                S_StartSound(mo, hexen_sfx_player_cleric_grunt);
                                 break;
                             case PCLASS_MAGE:
-                                S_StartSound(mo, SFX_PLAYER_MAGE_GRUNT);
+                                S_StartSound(mo, hexen_sfx_player_mage_grunt);
                                 break;
                             default:
                                 break;
@@ -803,7 +803,7 @@ void P_ZMovement(mobj_t * mo)
                     else if ((P_GetThingFloorType(mo) < FLOOR_LIQUID) &&
                              (!mo->player->morphTics))
                     {
-                        S_StartSound(mo, SFX_PLAYER_LAND);
+                        S_StartSound(mo, hexen_sfx_player_land);
                     }
                     // haleyjd: removed externdriver crap
                     mo->player->centering = true;
@@ -1003,17 +1003,17 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj)
     }
     else if (mo->momz < -GRAVITY * 12 && !mo->player->morphTics)
     {
-        S_StartSound(mo, SFX_PLAYER_LAND);
+        S_StartSound(mo, hexen_sfx_player_land);
         switch (mo->player->class)
         {
             case PCLASS_FIGHTER:
-                S_StartSound(mo, SFX_PLAYER_FIGHTER_GRUNT);
+                S_StartSound(mo, hexen_sfx_player_fighter_grunt);
                 break;
             case PCLASS_CLERIC:
-                S_StartSound(mo, SFX_PLAYER_CLERIC_GRUNT);
+                S_StartSound(mo, hexen_sfx_player_cleric_grunt);
                 break;
             case PCLASS_MAGE:
-                S_StartSound(mo, SFX_PLAYER_MAGE_GRUNT);
+                S_StartSound(mo, hexen_sfx_player_mage_grunt);
                 break;
             default:
                 break;
@@ -1021,7 +1021,7 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj)
     }
     else if (!mo->player->morphTics)
     {
-        S_StartSound(mo, SFX_PLAYER_LAND);
+        S_StartSound(mo, hexen_sfx_player_land);
     }
     // haleyjd: removed externdriver crap
     mo->player->centering = true;
@@ -1914,7 +1914,7 @@ int P_HitFloor(mobj_t * thing)
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASHBASE);
                 if (mo)
                     mo->floorclip += SMALLSPLASHCLIP;
-                S_StartSound(mo, SFX_AMBIENT10);        // small drip
+                S_StartSound(mo, hexen_sfx_ambient10);        // small drip
             }
             else
             {
@@ -1926,7 +1926,7 @@ int P_HitFloor(mobj_t * thing)
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASHBASE);
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
-                S_StartSound(mo, SFX_WATER_SPLASH);
+                S_StartSound(mo, hexen_sfx_water_splash);
             }
             return (FLOOR_WATER);
         case FLOOR_LAVA:
@@ -1944,7 +1944,7 @@ int P_HitFloor(mobj_t * thing)
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
             }
-            S_StartSound(mo, SFX_LAVA_SIZZLE);
+            S_StartSound(mo, hexen_sfx_lava_sizzle);
             if (thing->player && leveltime & 31)
             {
                 P_DamageMobj(thing, &LavaInflictor, NULL, 5);
@@ -1971,7 +1971,7 @@ int P_HitFloor(mobj_t * thing)
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
             }
-            S_StartSound(mo, SFX_SLUDGE_GLOOP);
+            S_StartSound(mo, hexen_sfx_sludge_gloop);
             return (FLOOR_SLUDGE);
     }
     return (FLOOR_SOLID);
