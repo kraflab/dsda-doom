@@ -2371,54 +2371,6 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     return (P_CheckMissileSpawn(th) ? th : NULL);
 }
 
-//===========================================================================
-//
-// P_SPMAngleXYZ
-//
-//===========================================================================
-
-mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
-                      fixed_t z, mobjtype_t type, angle_t angle)
-{
-    mobj_t *th;
-    angle_t an;
-    fixed_t slope;
-
-//
-// see which target is to be aimed at
-//
-    an = angle;
-    slope = P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-    if (!linetarget)
-    {
-        an += 1 << 26;
-        slope = P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-        if (!linetarget)
-        {
-            an -= 2 << 26;
-            slope = P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-        }
-        if (!linetarget)
-        {
-            an = angle;
-            slope = ((source->player->lookdir) << FRACBITS) / 173;
-        }
-    }
-    z += 4 * 8 * FRACUNIT + ((source->player->lookdir) << FRACBITS) / 173;
-    z -= source->floorclip;
-    th = P_SpawnMobj(x, y, z, type);
-//      if(th->info->seesound)
-//      {
-//              S_StartSound(th, th->info->seesound);
-//      }
-    th->target = source;
-    th->angle = an;
-    th->momx = FixedMul(th->info->speed, finecosine[an >> ANGLETOFINESHIFT]);
-    th->momy = FixedMul(th->info->speed, finesine[an >> ANGLETOFINESHIFT]);
-    th->momz = FixedMul(th->info->speed, slope);
-    return (P_CheckMissileSpawn(th) ? th : NULL);
-}
-
 mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
                             mobj_t * source, mobj_t * dest, mobjtype_t type)
 {

@@ -540,4 +540,9 @@ dboolean Heretic_P_SetMobjState(mobj_t * mobj, statenum_t state);
 void P_FloorBounceMissile(mobj_t * mo);
 void Heretic_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z);
 
+// hexen
+
+mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
+                      fixed_t z, mobjtype_t type, angle_t angle);
+
 #endif
