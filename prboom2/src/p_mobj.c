@@ -2279,7 +2279,10 @@ dboolean P_SeekerMissile(mobj_t * actor, mobj_t ** seekTarget, angle_t thresh, a
         {
             dist = 1;
         }
-        actor->momz = (target->z + (seekcenter ? target->height/2 : 0) - actor->z) / dist;
+        if (hexen)
+          actor->momz = (target->z + (target->height >> 1) - (actor->z + (actor->height >> 1))) / dist;
+        else
+          actor->momz = (target->z + (seekcenter ? target->height/2 : 0) - actor->z) / dist;
     }
     return (true);
 }

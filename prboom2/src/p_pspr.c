@@ -3054,3 +3054,115 @@ void A_LightningRemove(mobj_t * actor)
         P_ExplodeMissile(mo);
     }
 }
+
+void MStaffSpawn(mobj_t * pmo, angle_t angle)
+{
+    mobj_t *mo;
+
+    mo = P_SPMAngle(pmo, HEXEN_MT_MSTAFF_FX2, angle);
+    if (mo)
+    {
+        mo->target = pmo;
+        mo->special1.m = P_RoughTargetSearch(mo, 0, 10);
+    }
+}
+
+// HEXEN_TODO: I_SetPalette stuff
+
+void A_MStaffAttack(player_t * player, pspdef_t * psp)
+{
+    angle_t angle;
+    mobj_t *pmo;
+
+    player->ammo[MANA_1] -= WeaponManaUse[player->pclass][player->readyweapon];
+    player->ammo[MANA_2] -= WeaponManaUse[player->pclass][player->readyweapon];
+    pmo = player->mo;
+    angle = pmo->angle;
+
+    MStaffSpawn(pmo, angle);
+    MStaffSpawn(pmo, angle - ANG1 * 5);
+    MStaffSpawn(pmo, angle + ANG1 * 5);
+    S_StartSound(player->mo, hexen_sfx_mage_staff_fire);
+    if (player == &players[consoleplayer])
+    {
+        player->damagecount = 0;
+        player->bonuscount = 0;
+        // I_SetPalette((byte *) W_CacheLumpNum(W_GetNumForName("playpal"),
+        //                                      PU_CACHE) +
+        //              STARTSCOURGEPAL * 768);
+    }
+}
+
+void A_MStaffPalette(player_t * player, pspdef_t * psp)
+{
+    int pal;
+
+    if (player == &players[consoleplayer])
+    {
+        // pal = STARTSCOURGEPAL + psp->state - (&states[HEXEN_S_MSTAFFATK_2]);
+        // if (pal == STARTSCOURGEPAL + 3)
+        // {                       // reset back to original playpal
+        //     pal = 0;
+        // }
+        // I_SetPalette((byte *) W_CacheLumpNum(W_GetNumForName("playpal"),
+        //                                      PU_CACHE) + pal * 768);
+    }
+}
+
+void A_MStaffWeave(mobj_t * actor)
+{
+    fixed_t newX, newY;
+    int weaveXY, weaveZ;
+    int angle;
+
+    weaveXY = actor->special2.i >> 16;
+    weaveZ = actor->special2.i & 0xFFFF;
+    angle = (actor->angle + ANG90) >> ANGLETOFINESHIFT;
+    newX = actor->x - FixedMul(finecosine[angle],
+                               FloatBobOffsets[weaveXY] << 2);
+    newY = actor->y - FixedMul(finesine[angle],
+                               FloatBobOffsets[weaveXY] << 2);
+    weaveXY = (weaveXY + 6) & 63;
+    newX += FixedMul(finecosine[angle], FloatBobOffsets[weaveXY] << 2);
+    newY += FixedMul(finesine[angle], FloatBobOffsets[weaveXY] << 2);
+    P_TryMove(actor, newX, newY, 0);
+    actor->z -= FloatBobOffsets[weaveZ] << 1;
+    weaveZ = (weaveZ + 3) & 63;
+    actor->z += FloatBobOffsets[weaveZ] << 1;
+    if (actor->z <= actor->floorz)
+    {
+        actor->z = actor->floorz + FRACUNIT;
+    }
+    actor->special2.i = weaveZ + (weaveXY << 16);
+}
+
+void A_MStaffTrack(mobj_t * actor)
+{
+    if ((actor->special1.m == NULL) && (P_Random(pr_hexen) < 50))
+    {
+        actor->special1.m = P_RoughTargetSearch(actor, 0, 10);
+    }
+    P_SeekerMissile(actor, &actor->special1.m, ANG1 * 2, ANG1 * 10, false);
+}
+
+void MStaffSpawn2(mobj_t * actor, angle_t angle)
+{
+    mobj_t *mo;
+
+    mo = P_SpawnMissileAngle(actor, HEXEN_MT_MSTAFF_FX2, angle, 0);
+    if (mo)
+    {
+        mo->target = actor;
+        mo->special1.m = P_RoughTargetSearch(mo, 0, 10);
+    }
+}
+
+void A_MStaffAttack2(mobj_t * actor)
+{
+    angle_t angle;
+    angle = actor->angle;
+    MStaffSpawn2(actor, angle);
+    MStaffSpawn2(actor, angle - ANG1 * 5);
+    MStaffSpawn2(actor, angle + ANG1 * 5);
+    S_StartSound(actor, hexen_sfx_mage_staff_fire);
+}
