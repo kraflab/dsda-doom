@@ -282,6 +282,10 @@ extern  mapthing_t *deathmatch_p;
 // Player spawn spots.
 extern  mapthing_t playerstarts[];
 
+// HEXEN_TODO: playerstarts
+// #define MAX_PLAYER_STARTS 8
+// extern mapthing_t playerstarts[MAX_PLAYER_STARTS][MAXPLAYERS];
+
 // Intermission stats.
 // Parameters for world map / intermission.
 extern wbstartstruct_t wminfo;

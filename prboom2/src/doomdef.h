@@ -465,11 +465,11 @@ extern dboolean heretic;
 
 typedef enum
 {
-    ARMOR_ARMOR,
-    ARMOR_SHIELD,
-    ARMOR_HELMET,
-    ARMOR_AMULET,
-    NUMARMOR
+  ARMOR_ARMOR,
+  ARMOR_SHIELD,
+  ARMOR_HELMET,
+  ARMOR_AMULET,
+  NUMARMOR
 } armortype_t;
 
 typedef enum
@@ -489,6 +489,49 @@ typedef ammotype_t manatype_t;
 #define WPIECE1		1
 #define WPIECE2		2
 #define WPIECE3		4
+
+enum
+{
+  SEQ_PLATFORM,
+  SEQ_PLATFORM_HEAVY,         // same script as a normal platform
+  SEQ_PLATFORM_METAL,
+  SEQ_PLATFORM_CREAK,         // same script as a normal platform
+  SEQ_PLATFORM_SILENCE,
+  SEQ_PLATFORM_LAVA,
+  SEQ_PLATFORM_WATER,
+  SEQ_PLATFORM_ICE,
+  SEQ_PLATFORM_EARTH,
+  SEQ_PLATFORM_METAL2,
+  SEQ_DOOR_STONE,
+  SEQ_DOOR_HEAVY,
+  SEQ_DOOR_METAL,
+  SEQ_DOOR_CREAK,
+  SEQ_DOOR_SILENCE,
+  SEQ_DOOR_LAVA,
+  SEQ_DOOR_WATER,
+  SEQ_DOOR_ICE,
+  SEQ_DOOR_EARTH,
+  SEQ_DOOR_METAL2,
+  SEQ_ESOUND_WIND,
+  SEQ_NUMSEQ
+};
+
+typedef enum
+{
+  SEQTYPE_STONE,
+  SEQTYPE_HEAVY,
+  SEQTYPE_METAL,
+  SEQTYPE_CREAK,
+  SEQTYPE_SILENCE,
+  SEQTYPE_LAVA,
+  SEQTYPE_WATER,
+  SEQTYPE_ICE,
+  SEQTYPE_EARTH,
+  SEQTYPE_METAL2,
+  SEQTYPE_NUMSEQ
+} seqtype_t;
+
+#define MAX_INTRMSN_MESSAGE_SIZE 1024
 
 extern dboolean hexen;
 

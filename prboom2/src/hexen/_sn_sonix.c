@@ -57,6 +57,20 @@ typedef enum
     SS_CMD_END
 } sscmds_t;
 
+typedef struct seqnode_s seqnode_t;
+struct seqnode_s
+{
+  int *sequencePtr;
+  int sequence;
+  mobj_t *mobj;
+  int currentSoundID;
+  int delayTics;
+  int volume;
+  int stopSound;
+  seqnode_t *prev;
+  seqnode_t *next;
+};
+
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------

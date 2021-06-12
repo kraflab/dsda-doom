@@ -257,7 +257,6 @@ typedef struct player_s
   fixed_t prev_viewz;
   angle_t prev_viewangle;
   angle_t prev_viewpitch;
-  fixed_t jumpTics;      // delay the next jump for a moment
 
   // heretic
   int flyheight;
@@ -276,6 +275,13 @@ typedef struct player_s
   // hexen
   pclass_t pclass;            // player class type
   int morphTics;              // player is a pig if > 0
+  int pieces;                 // Fourth Weapon pieces
+  short ultimateMessage;
+  short yellowMessage;
+  int poisoncount;            // screen flash for poison damage
+  mobj_t *poisoner;           // NULL for non-player mobjs
+  unsigned int jumpTics;      // delay the next jump for a moment
+  unsigned int worldTimer;    // total time the player's been playing
 } player_t;
 
 
