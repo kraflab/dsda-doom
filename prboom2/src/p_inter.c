@@ -1981,13 +1981,6 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
 
 // hexen
 
-
-//==========================================================================
-//
-// P_FallingDamage
-//
-//==========================================================================
-
 void P_FallingDamage(player_t * player)
 {
     int damage;
