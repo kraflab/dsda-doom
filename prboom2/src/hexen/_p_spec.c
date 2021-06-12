@@ -82,7 +82,7 @@ mobj_t LavaInflictor;
 void P_InitLava(void)
 {
     memset(&LavaInflictor, 0, sizeof(mobj_t));
-    LavaInflictor.type = MT_CIRCLEFLAME;
+    LavaInflictor.type = HEXEN_MT_CIRCLEFLAME;
     LavaInflictor.flags2 = MF2_FIREDAMAGE | MF2_NODMGTHRUST;
 }
 

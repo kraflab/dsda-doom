@@ -1280,7 +1280,7 @@ boolean G_CheckSpot(int playernum, mapthing_t * mthing)
     an = ((unsigned) ANG45 * (mthing->angle / 45)) >> ANGLETOFINESHIFT;
 
     mo = P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an],
-                     ss->sector->floorheight + TELEFOGHEIGHT, MT_TFOG);
+                     ss->sector->floorheight + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     if (players[consoleplayer].viewz != 1)
         S_StartSound(mo, SFX_TELEPORT); // don't start sound on first frame
 

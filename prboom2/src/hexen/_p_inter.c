@@ -869,11 +869,11 @@ static void SetDormantArtifact(mobj_t * arti)
     arti->flags &= ~MF_SPECIAL;
     if (deathmatch && !(arti->flags2 & MF2_DROPPED))
     {
-        if (arti->type == MT_ARTIINVULNERABILITY)
+        if (arti->type == HEXEN_MT_ARTIINVULNERABILITY)
         {
             P_SetMobjState(arti, S_DORMANTARTI3_1);
         }
-        else if (arti->type == MT_SUMMONMAULATOR || arti->type == MT_ARTIFLY)
+        else if (arti->type == HEXEN_MT_SUMMONMAULATOR || arti->type == HEXEN_MT_ARTIFLY)
         {
             P_SetMobjState(arti, S_DORMANTARTI2_1);
         }
@@ -1259,7 +1259,7 @@ mobj_t *ActiveMinotaur(player_t * master)
         if (think->function != P_MobjThinker)
             continue;
         mo = (mobj_t *) think;
-        if (mo->type != MT_MINOTAUR)
+        if (mo->type != HEXEN_MT_MINOTAUR)
             continue;
         if (mo->health <= 0)
             continue;
@@ -1293,10 +1293,10 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
     target->flags |= MF_CORPSE | MF_DROPOFF;
     target->flags2 &= ~MF2_PASSMOBJ;
     target->height >>= 2;
-    if ((target->flags & MF_COUNTKILL || target->type == MT_ZBELL)
+    if ((target->flags & MF_COUNTKILL || target->type == HEXEN_MT_ZBELL)
         && target->special)
     {                           // Initiate monster death actions
-        if (target->type == MT_SORCBOSS)
+        if (target->type == HEXEN_MT_SORCBOSS)
         {
             P_StartACS(target->special, 0, dummyArgs, target, NULL, 0);
         }
@@ -1391,20 +1391,20 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
     }
     if (target->flags2 & MF2_FIREDAMAGE)
     {
-        if (target->type == MT_FIGHTER_BOSS
-            || target->type == MT_CLERIC_BOSS || target->type == MT_MAGE_BOSS)
+        if (target->type == HEXEN_MT_FIGHTER_BOSS
+            || target->type == HEXEN_MT_CLERIC_BOSS || target->type == HEXEN_MT_MAGE_BOSS)
         {
             switch (target->type)
             {
-                case MT_FIGHTER_BOSS:
+                case HEXEN_MT_FIGHTER_BOSS:
                     S_StartSound(target, SFX_PLAYER_FIGHTER_BURN_DEATH);
                     P_SetMobjState(target, S_PLAY_F_FDTH1);
                     return;
-                case MT_CLERIC_BOSS:
+                case HEXEN_MT_CLERIC_BOSS:
                     S_StartSound(target, SFX_PLAYER_CLERIC_BURN_DEATH);
                     P_SetMobjState(target, S_PLAY_C_FDTH1);
                     return;
-                case MT_MAGE_BOSS:
+                case HEXEN_MT_MAGE_BOSS:
                     S_StartSound(target, SFX_PLAYER_MAGE_BURN_DEATH);
                     P_SetMobjState(target, S_PLAY_M_FDTH1);
                     return;
@@ -1412,7 +1412,7 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
                     break;
             }
         }
-        else if (target->type == MT_TREEDESTRUCTIBLE)
+        else if (target->type == HEXEN_MT_TREEDESTRUCTIBLE)
         {
             P_SetMobjState(target, S_ZTREEDES_X1);
             target->height = 24 * FRACUNIT;
@@ -1425,41 +1425,41 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
         target->flags |= MF_ICECORPSE;
         switch (target->type)
         {
-            case MT_BISHOP:
+            case HEXEN_MT_BISHOP:
                 P_SetMobjState(target, S_BISHOP_ICE);
                 return;
-            case MT_CENTAUR:
-            case MT_CENTAURLEADER:
+            case HEXEN_MT_CENTAUR:
+            case HEXEN_MT_CENTAURLEADER:
                 P_SetMobjState(target, S_CENTAUR_ICE);
                 return;
-            case MT_DEMON:
-            case MT_DEMON2:
+            case HEXEN_MT_DEMON:
+            case HEXEN_MT_DEMON2:
                 P_SetMobjState(target, S_DEMON_ICE);
                 return;
-            case MT_SERPENT:
-            case MT_SERPENTLEADER:
+            case HEXEN_MT_SERPENT:
+            case HEXEN_MT_SERPENTLEADER:
                 P_SetMobjState(target, S_SERPENT_ICE);
                 return;
-            case MT_WRAITH:
-            case MT_WRAITHB:
+            case HEXEN_MT_WRAITH:
+            case HEXEN_MT_WRAITHB:
                 P_SetMobjState(target, S_WRAITH_ICE);
                 return;
-            case MT_ETTIN:
+            case HEXEN_MT_ETTIN:
                 P_SetMobjState(target, S_ETTIN_ICE1);
                 return;
-            case MT_FIREDEMON:
+            case HEXEN_MT_FIREDEMON:
                 P_SetMobjState(target, S_FIRED_ICE1);
                 return;
-            case MT_FIGHTER_BOSS:
+            case HEXEN_MT_FIGHTER_BOSS:
                 P_SetMobjState(target, S_FIGHTER_ICE);
                 return;
-            case MT_CLERIC_BOSS:
+            case HEXEN_MT_CLERIC_BOSS:
                 P_SetMobjState(target, S_CLERIC_ICE);
                 return;
-            case MT_MAGE_BOSS:
+            case HEXEN_MT_MAGE_BOSS:
                 P_SetMobjState(target, S_MAGE_ICE);
                 return;
-            case MT_PIG:
+            case HEXEN_MT_PIG:
                 P_SetMobjState(target, S_PIG_ICE);
                 return;
             default:
@@ -1468,7 +1468,7 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
         }
     }
 
-    if (target->type == MT_MINOTAUR)
+    if (target->type == HEXEN_MT_MINOTAUR)
     {
         master = target->special1.m;
         if (master->health > 0)
@@ -1479,7 +1479,7 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
             }
         }
     }
-    else if (target->type == MT_TREEDESTRUCTIBLE)
+    else if (target->type == HEXEN_MT_TREEDESTRUCTIBLE)
     {
         target->height = 24 * FRACUNIT;
     }
@@ -1490,7 +1490,7 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
     }
     else
     {                           // Normal death
-        if ((target->type == MT_FIREDEMON) &&
+        if ((target->type == HEXEN_MT_FIREDEMON) &&
             (target->z <= target->floorz + 2 * FRACUNIT) &&
             (target->info->xdeathstate))
         {
@@ -1565,9 +1565,9 @@ boolean P_MorphPlayer(player_t * player)
     angle = pmo->angle;
     oldFlags2 = pmo->flags2;
     P_SetMobjState(pmo, S_FREETARGMOBJ);
-    fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, MT_TFOG);
+    fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     S_StartSound(fog, SFX_TELEPORT);
-    beastMo = P_SpawnMobj(x, y, z, MT_PIGPLAYER);
+    beastMo = P_SpawnMobj(x, y, z, HEXEN_MT_PIGPLAYER);
     beastMo->special1.i = player->readyweapon;
     beastMo->angle = angle;
     beastMo->player = player;
@@ -1608,11 +1608,11 @@ boolean P_MorphMonster(mobj_t * actor)
     moType = actor->type;
     switch (moType)
     {
-        case MT_PIG:
+        case HEXEN_MT_PIG:
             return (false);
-        case MT_FIGHTER_BOSS:
-        case MT_CLERIC_BOSS:
-        case MT_MAGE_BOSS:
+        case HEXEN_MT_FIGHTER_BOSS:
+        case HEXEN_MT_CLERIC_BOSS:
+        case HEXEN_MT_MAGE_BOSS:
             return (false);
         default:
             break;
@@ -1624,9 +1624,9 @@ boolean P_MorphMonster(mobj_t * actor)
     z = oldMonster.z;
     P_RemoveMobjFromTIDList(actor);
     P_SetMobjState(actor, S_FREETARGMOBJ);
-    fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, MT_TFOG);
+    fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     S_StartSound(fog, SFX_TELEPORT);
-    monster = P_SpawnMobj(x, y, z, MT_PIG);
+    monster = P_SpawnMobj(x, y, z, HEXEN_MT_PIG);
     monster->special2.i = moType;
     monster->special1.i = MORPHTICS + P_Random(pr_hexen);
     monster->flags |= (oldMonster.flags & MF_SHADOW);
@@ -1638,7 +1638,7 @@ boolean P_MorphMonster(mobj_t * actor)
     memcpy(monster->args, oldMonster.args, 5);
 
     // check for turning off minotaur power for active icon
-    if (moType == MT_MINOTAUR)
+    if (moType == HEXEN_MT_MINOTAUR)
     {
         master = oldMonster.special1.m;
         if (master->health > 0)
@@ -1773,9 +1773,9 @@ void P_DamageMobj
             switch (inflictor->type)
             {
                     // These inflictors aren't foiled by invulnerability
-                case MT_HOLY_FX:
-                case MT_POISONCLOUD:
-                case MT_FIREBOMB:
+                case HEXEN_MT_HOLY_FX:
+                case HEXEN_MT_POISONCLOUD:
+                case HEXEN_MT_FIREBOMB:
                     break;
                 default:
                     return;
@@ -1814,7 +1814,7 @@ void P_DamageMobj
     {
         switch (inflictor->type)
         {
-            case MT_EGGFX:
+            case HEXEN_MT_EGGFX:
                 if (player)
                 {
                     P_MorphPlayer(player);
@@ -1824,31 +1824,31 @@ void P_DamageMobj
                     P_MorphMonster(target);
                 }
                 return;         // Always return
-            case MT_TELOTHER_FX1:
-            case MT_TELOTHER_FX2:
-            case MT_TELOTHER_FX3:
-            case MT_TELOTHER_FX4:
-            case MT_TELOTHER_FX5:
+            case HEXEN_MT_TELOTHER_FX1:
+            case HEXEN_MT_TELOTHER_FX2:
+            case HEXEN_MT_TELOTHER_FX3:
+            case HEXEN_MT_TELOTHER_FX4:
+            case HEXEN_MT_TELOTHER_FX5:
                 if ((target->flags & MF_COUNTKILL) &&
-                    (target->type != MT_SERPENT) &&
-                    (target->type != MT_SERPENTLEADER) &&
+                    (target->type != HEXEN_MT_SERPENT) &&
+                    (target->type != HEXEN_MT_SERPENTLEADER) &&
                     (!(target->flags2 & MF2_BOSS)))
                 {
                     P_TeleportOther(target);
                 }
                 return;
-            case MT_MINOTAUR:
+            case HEXEN_MT_MINOTAUR:
                 if (inflictor->flags & MF_SKULLFLY)
                 {               // Slam only when in charge mode
                     P_MinotaurSlam(inflictor, target);
                     return;
                 }
                 break;
-            case MT_BISH_FX:
+            case HEXEN_MT_BISH_FX:
                 // Bishops are just too nasty
                 damage >>= 1;
                 break;
-            case MT_SHARDFX1:
+            case HEXEN_MT_SHARDFX1:
                 switch (inflictor->special2.i)
                 {
                     case 3:
@@ -1864,7 +1864,7 @@ void P_DamageMobj
                         break;
                 }
                 break;
-            case MT_CSTAFF_MISSILE:
+            case HEXEN_MT_CSTAFF_MISSILE:
                 // Cleric Serpent Staff does poison damage
                 if (target->player)
                 {
@@ -1872,17 +1872,17 @@ void P_DamageMobj
                     damage >>= 1;
                 }
                 break;
-            case MT_ICEGUY_FX2:
+            case HEXEN_MT_ICEGUY_FX2:
                 damage >>= 1;
                 break;
-            case MT_POISONDART:
+            case HEXEN_MT_POISONDART:
                 if (target->player)
                 {
                     P_PoisonPlayer(target->player, source, 20);
                     damage >>= 1;
                 }
                 break;
-            case MT_POISONCLOUD:
+            case HEXEN_MT_POISONCLOUD:
                 if (target->player)
                 {
                     if (target->player->poisoncount < 4)
@@ -1898,7 +1898,7 @@ void P_DamageMobj
                     return;
                 }
                 break;
-            case MT_FSWORD_MISSILE:
+            case HEXEN_MT_FSWORD_MISSILE:
                 if (target->player)
                 {
                     damage -= damage >> 2;
@@ -2017,7 +2017,7 @@ void P_DamageMobj
                 target->flags2 |= MF2_ICEDAMAGE;
             }
         }
-        if (source && (source->type == MT_MINOTAUR))
+        if (source && (source->type == HEXEN_MT_MINOTAUR))
         {                       // Minotaur's kills go to his master
             master = source->special1.m;
             // Make sure still alive and not a pointer to fighter head
@@ -2038,8 +2038,8 @@ void P_DamageMobj
     if ((P_Random(pr_hexen) < target->info->painchance)
         && !(target->flags & MF_SKULLFLY))
     {
-        if (inflictor && (inflictor->type >= MT_LIGHTNING_FLOOR
-                          && inflictor->type <= MT_LIGHTNING_ZAP))
+        if (inflictor && (inflictor->type >= HEXEN_MT_LIGHTNING_FLOOR
+                          && inflictor->type <= HEXEN_MT_LIGHTNING_ZAP))
         {
             if (P_Random(pr_hexen) < 96)
             {
@@ -2052,9 +2052,9 @@ void P_DamageMobj
                 if (target->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
                     && !S_GetSoundPlayingInfo(target, SFX_PUPPYBEAT))
                 {
-                    if ((target->type == MT_CENTAUR) ||
-                        (target->type == MT_CENTAURLEADER) ||
-                        (target->type == MT_ETTIN))
+                    if ((target->type == HEXEN_MT_CENTAUR) ||
+                        (target->type == HEXEN_MT_CENTAURLEADER) ||
+                        (target->type == HEXEN_MT_ETTIN))
                     {
                         S_StartSound(target, SFX_PUPPYBEAT);
                     }
@@ -2065,14 +2065,14 @@ void P_DamageMobj
         {
             target->flags |= MF_JUSTHIT;        // fight back!
             P_SetMobjState(target, target->info->painstate);
-            if (inflictor && inflictor->type == MT_POISONCLOUD)
+            if (inflictor && inflictor->type == HEXEN_MT_POISONCLOUD)
             {
                 if (target->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
                     && !S_GetSoundPlayingInfo(target, SFX_PUPPYBEAT))
                 {
-                    if ((target->type == MT_CENTAUR) ||
-                        (target->type == MT_CENTAURLEADER) ||
-                        (target->type == MT_ETTIN))
+                    if ((target->type == HEXEN_MT_CENTAUR) ||
+                        (target->type == HEXEN_MT_CENTAURLEADER) ||
+                        (target->type == HEXEN_MT_ETTIN))
                     {
                         S_StartSound(target, SFX_PUPPYBEAT);
                     }
@@ -2082,13 +2082,13 @@ void P_DamageMobj
     }
     target->reactiontime = 0;   // we're awake now...
     if (!target->threshold && source && !(source->flags2 & MF2_BOSS)
-        && !(target->type == MT_BISHOP) && !(target->type == MT_MINOTAUR))
+        && !(target->type == HEXEN_MT_BISHOP) && !(target->type == HEXEN_MT_MINOTAUR))
     {
         // Target actor is not intent on another actor,
         // so make him chase after source
-        if ((target->type == MT_CENTAUR && source->type == MT_CENTAURLEADER)
-            || (target->type == MT_CENTAURLEADER
-                && source->type == MT_CENTAUR))
+        if ((target->type == HEXEN_MT_CENTAUR && source->type == HEXEN_MT_CENTAURLEADER)
+            || (target->type == HEXEN_MT_CENTAURLEADER
+                && source->type == HEXEN_MT_CENTAUR))
         {
             return;
         }

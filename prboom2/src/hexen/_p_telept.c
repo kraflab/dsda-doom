@@ -105,12 +105,12 @@ boolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle,
     if (useFog)
     {
         fogDelta = thing->flags & MF_MISSILE ? 0 : TELEFOGHEIGHT;
-        fog = P_SpawnMobj(oldx, oldy, oldz + fogDelta, MT_TFOG);
+        fog = P_SpawnMobj(oldx, oldy, oldz + fogDelta, HEXEN_MT_TFOG);
         S_StartSound(fog, SFX_TELEPORT);
         an = angle >> ANGLETOFINESHIFT;
         fog = P_SpawnMobj(x + 20 * finecosine[an],
                           y + 20 * finesine[an], thing->z + fogDelta,
-                          MT_TFOG);
+                          HEXEN_MT_TFOG);
         S_StartSound(fog, SFX_TELEPORT);
         if (thing->player && !thing->player->powers[pw_speed])
         {                       // Freeze player for about .5 sec

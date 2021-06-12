@@ -955,7 +955,7 @@ static mobj_t *RoughBlockCheck(mobj_t * mo, int index)
                     link = link->bnext;
                     continue;
                 }
-                if ((link->type == MT_MINOTAUR) &&
+                if ((link->type == HEXEN_MT_MINOTAUR) &&
                     (link->special1.m == mo))
                 {
                     link = link->bnext;
@@ -973,7 +973,7 @@ static mobj_t *RoughBlockCheck(mobj_t * mo, int index)
             }
             link = link->bnext;
         }
-        else if (mo->type == MT_MINOTAUR)       // looking around minotaur
+        else if (mo->type == HEXEN_MT_MINOTAUR)       // looking around minotaur
         {
             master = mo->special1.m;
             if ((link->flags & MF_COUNTKILL) ||
@@ -989,7 +989,7 @@ static mobj_t *RoughBlockCheck(mobj_t * mo, int index)
                     link = link->bnext;
                     continue;
                 }
-                if ((link->type == MT_MINOTAUR) &&
+                if ((link->type == HEXEN_MT_MINOTAUR) &&
                     (link->special1.m == mo->special1.m))
                 {
                     link = link->bnext;
@@ -1007,7 +1007,7 @@ static mobj_t *RoughBlockCheck(mobj_t * mo, int index)
             }
             link = link->bnext;
         }
-        else if (mo->type == MT_MSTAFF_FX2)     // bloodscourge
+        else if (mo->type == HEXEN_MT_MSTAFF_FX2)     // bloodscourge
         {
             if ((link->flags & MF_COUNTKILL ||
                  (link->player && link != mo->target))

@@ -365,7 +365,7 @@ boolean PIT_CheckThing(mobj_t * thing)
     BlockingMobj = thing;
     if (tmthing->flags2 & MF2_PASSMOBJ)
     {                           // check if a mobj passed over/under another object
-        if (tmthing->type == MT_BISHOP && thing->type == MT_BISHOP)
+        if (tmthing->type == HEXEN_MT_BISHOP && thing->type == HEXEN_MT_BISHOP)
         {                       // don't let bishops fly over other bishops
             return false;
         }
@@ -383,7 +383,7 @@ boolean PIT_CheckThing(mobj_t * thing)
     // Check for skulls slamming into things
     if (tmthing->flags & MF_SKULLFLY)
     {
-        if (tmthing->type == MT_MINOTAUR)
+        if (tmthing->type == HEXEN_MT_MINOTAUR)
         {
             // Slamming minotaurs shouldn't move non-creatures
             if (!(thing->flags & MF_COUNTKILL))
@@ -391,7 +391,7 @@ boolean PIT_CheckThing(mobj_t * thing)
                 return (false);
             }
         }
-        else if (tmthing->type == MT_HOLY_FX)
+        else if (tmthing->type == HEXEN_MT_HOLY_FX)
         {
             if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
             {
@@ -423,14 +423,14 @@ boolean PIT_CheckThing(mobj_t * thing)
                     if (P_Random(pr_hexen) < 128)
                     {
                         P_SpawnMobj(tmthing->x, tmthing->y, tmthing->z,
-                                    MT_HOLY_PUFF);
+                                    HEXEN_MT_HOLY_PUFF);
                         S_StartSound(tmthing, SFX_SPIRIT_ATTACK);
                         if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
                             && !S_GetSoundPlayingInfo(thing, SFX_PUPPYBEAT))
                         {
-                            if ((thing->type == MT_CENTAUR) ||
-                                (thing->type == MT_CENTAURLEADER) ||
-                                (thing->type == MT_ETTIN))
+                            if ((thing->type == HEXEN_MT_CENTAUR) ||
+                                (thing->type == HEXEN_MT_CENTAURLEADER) ||
+                                (thing->type == HEXEN_MT_ETTIN))
                             {
                                 S_StartSound(thing, SFX_PUPPYBEAT);
                             }
@@ -496,8 +496,8 @@ boolean PIT_CheckThing(mobj_t * thing)
                 return false;
             }
         }
-        if (tmthing->type == MT_LIGHTNING_FLOOR
-            || tmthing->type == MT_LIGHTNING_CEILING)
+        if (tmthing->type == HEXEN_MT_LIGHTNING_FLOOR
+            || tmthing->type == HEXEN_MT_LIGHTNING_CEILING)
         {
             if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
             {
@@ -509,8 +509,8 @@ boolean PIT_CheckThing(mobj_t * thing)
                 if ((!thing->player && !(thing->flags2 & MF2_BOSS))
                     || !(leveltime & 1))
                 {
-                    if (thing->type == MT_CENTAUR
-                        || thing->type == MT_CENTAURLEADER)
+                    if (thing->type == HEXEN_MT_CENTAUR
+                        || thing->type == HEXEN_MT_CENTAURLEADER)
                     {           // Lightning does more damage to centaurs
                         P_DamageMobj(thing, tmthing, tmthing->target, 9);
                     }
@@ -526,9 +526,9 @@ boolean PIT_CheckThing(mobj_t * thing)
                     if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 64
                         && !S_GetSoundPlayingInfo(thing, SFX_PUPPYBEAT))
                     {
-                        if ((thing->type == MT_CENTAUR) ||
-                            (thing->type == MT_CENTAURLEADER) ||
-                            (thing->type == MT_ETTIN))
+                        if ((thing->type == HEXEN_MT_CENTAUR) ||
+                            (thing->type == HEXEN_MT_CENTAURLEADER) ||
+                            (thing->type == HEXEN_MT_ETTIN))
                         {
                             S_StartSound(thing, SFX_PUPPYBEAT);
                         }
@@ -539,7 +539,7 @@ boolean PIT_CheckThing(mobj_t * thing)
                 {
                     return false;
                 }
-                if (tmthing->type == MT_LIGHTNING_FLOOR)
+                if (tmthing->type == HEXEN_MT_LIGHTNING_FLOOR)
                 {
                     if (tmthing->special2.m
                         && !tmthing->special2.m->special1.m)
@@ -554,7 +554,7 @@ boolean PIT_CheckThing(mobj_t * thing)
             }
             return true;        // lightning zaps through all sprites
         }
-        else if (tmthing->type == MT_LIGHTNING_ZAP)
+        else if (tmthing->type == HEXEN_MT_LIGHTNING_ZAP)
         {
             mobj_t *lmo;
 
@@ -563,7 +563,7 @@ boolean PIT_CheckThing(mobj_t * thing)
                 lmo = tmthing->special2.m;
                 if (lmo)
                 {
-                    if (lmo->type == MT_LIGHTNING_FLOOR)
+                    if (lmo->type == HEXEN_MT_LIGHTNING_FLOOR)
                     {
                         if (lmo->special2.m
                             && !lmo->special2.m->special1.m)
@@ -582,15 +582,15 @@ boolean PIT_CheckThing(mobj_t * thing)
                 }
             }
         }
-        else if (tmthing->type == MT_MSTAFF_FX2 && thing != tmthing->target)
+        else if (tmthing->type == HEXEN_MT_MSTAFF_FX2 && thing != tmthing->target)
         {
             if (!thing->player && !(thing->flags2 & MF2_BOSS))
             {
                 switch (thing->type)
                 {
-                    case MT_FIGHTER_BOSS:      // these not flagged boss
-                    case MT_CLERIC_BOSS:       // so they can be blasted
-                    case MT_MAGE_BOSS:
+                    case HEXEN_MT_FIGHTER_BOSS:      // these not flagged boss
+                    case HEXEN_MT_CLERIC_BOSS:       // so they can be blasted
+                    case HEXEN_MT_MAGE_BOSS:
                         break;
                     default:
                         P_DamageMobj(thing, tmthing, tmthing->target, 10);
@@ -641,11 +641,11 @@ boolean PIT_CheckThing(mobj_t * thing)
             if (!(thing->flags & MF_NOBLOOD) &&
                 !(thing->flags2 & MF2_REFLECTIVE) &&
                 !(thing->flags2 & MF2_INVULNERABLE) &&
-                !(tmthing->type == MT_TELOTHER_FX1) &&
-                !(tmthing->type == MT_TELOTHER_FX2) &&
-                !(tmthing->type == MT_TELOTHER_FX3) &&
-                !(tmthing->type == MT_TELOTHER_FX4) &&
-                !(tmthing->type == MT_TELOTHER_FX5) && (P_Random(pr_hexen) < 192))
+                !(tmthing->type == HEXEN_MT_TELOTHER_FX1) &&
+                !(tmthing->type == HEXEN_MT_TELOTHER_FX2) &&
+                !(tmthing->type == HEXEN_MT_TELOTHER_FX3) &&
+                !(tmthing->type == HEXEN_MT_TELOTHER_FX4) &&
+                !(tmthing->type == HEXEN_MT_TELOTHER_FX5) && (P_Random(pr_hexen) < 192))
             {
                 P_BloodSplatter(tmthing->x, tmthing->y, tmthing->z, thing);
             }
@@ -1060,7 +1060,7 @@ boolean P_TryMove(mobj_t * thing, fixed_t x, fixed_t y)
         floatok = true;
         if (!(thing->flags & MF_TELEPORT)
             && tmceilingz - thing->z < thing->height
-            && thing->type != MT_LIGHTNING_CEILING
+            && thing->type != HEXEN_MT_LIGHTNING_CEILING
             && !(thing->flags2 & MF2_FLY))
         {                       // mobj must lower itself to fit
             goto pushline;
@@ -1080,8 +1080,8 @@ boolean P_TryMove(mobj_t * thing, fixed_t x, fixed_t y)
             }
         }
         if (!(thing->flags & MF_TELEPORT)
-            // The Minotaur floor fire (MT_MNTRFX2) can step up any amount
-            && thing->type != MT_MNTRFX2 && thing->type != MT_LIGHTNING_FLOOR
+            // The Minotaur floor fire (HEXEN_MT_MNTRFX2) can step up any amount
+            && thing->type != HEXEN_MT_MNTRFX2 && thing->type != HEXEN_MT_LIGHTNING_FLOOR
             && tmfloorz - thing->z > 24 * FRACUNIT)
         {
             goto pushline;
@@ -1779,7 +1779,7 @@ boolean PTR_ShootTraverse(intercept_t * in)
         if (!(in->d.thing->flags & MF_NOBLOOD) &&
             !(in->d.thing->flags2 & MF2_INVULNERABLE))
         {
-            if (PuffType == MT_AXEPUFF || PuffType == MT_AXEPUFF_GLOW)
+            if (PuffType == HEXEN_MT_AXEPUFF || PuffType == HEXEN_MT_AXEPUFF_GLOW)
             {
                 P_BloodSplatter2(x, y, z, in->d.thing);
             }
@@ -1788,7 +1788,7 @@ boolean PTR_ShootTraverse(intercept_t * in)
                 P_BloodSplatter(x, y, z, in->d.thing);
             }
         }
-        if (PuffType == MT_FLAMEPUFF2)
+        if (PuffType == HEXEN_MT_FLAMEPUFF2)
         {                       // Cleric FlameStrike does fire damage
             P_DamageMobj(th, &LavaInflictor, shootthing, la_damage);
         }
@@ -1862,15 +1862,15 @@ void P_LineAttack(mobj_t * t1, angle_t angle, fixed_t distance, fixed_t slope,
     {
         switch (PuffType)
         {
-            case MT_PUNCHPUFF:
+            case HEXEN_MT_PUNCHPUFF:
                 S_StartSound(t1, SFX_FIGHTER_PUNCH_MISS);
                 break;
-            case MT_HAMMERPUFF:
-            case MT_AXEPUFF:
-            case MT_AXEPUFF_GLOW:
+            case HEXEN_MT_HAMMERPUFF:
+            case HEXEN_MT_AXEPUFF:
+            case HEXEN_MT_AXEPUFF_GLOW:
                 S_StartSound(t1, SFX_FIGHTER_HAMMER_MISS);
                 break;
-            case MT_FLAMEPUFF:
+            case HEXEN_MT_FLAMEPUFF:
                 P_SpawnPuff(x2, y2, shootz + FixedMul(slope, distance));
                 break;
             default:
@@ -2275,7 +2275,7 @@ boolean PIT_ChangeSector(mobj_t * thing)
             (!(thing->flags2 & MF2_INVULNERABLE)))
         {
             mo = P_SpawnMobj(thing->x, thing->y, thing->z + thing->height / 2,
-                             MT_BLOOD);
+                             HEXEN_MT_BLOOD);
             mo->momx = P_SubRandom() << 12;
             mo->momy = P_SubRandom() << 12;
         }

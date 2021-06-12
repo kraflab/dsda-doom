@@ -46,7 +46,7 @@ void A_FHammerThrow(player_t * player, pspdef_t * psp)
         return;
     }
     player->mana[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
-    mo = P_SpawnPlayerMissile(player->mo, MT_HAMMER_MISSILE);
+    mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_HAMMER_MISSILE);
     if (mo)
     {
         mo->special1.i = 0;
@@ -67,14 +67,14 @@ void A_FSwordAttack(player_t * player, pspdef_t * psp)
     player->mana[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
     pmo = player->mo;
     P_SPMAngleXYZ(pmo, pmo->x, pmo->y, pmo->z - 10 * FRACUNIT,
-                  MT_FSWORD_MISSILE, pmo->angle + ANG45 / 4);
+                  HEXEN_MT_FSWORD_MISSILE, pmo->angle + ANG45 / 4);
     P_SPMAngleXYZ(pmo, pmo->x, pmo->y, pmo->z - 5 * FRACUNIT,
-                  MT_FSWORD_MISSILE, pmo->angle + ANG45 / 8);
-    P_SPMAngleXYZ(pmo, pmo->x, pmo->y, pmo->z, MT_FSWORD_MISSILE, pmo->angle);
+                  HEXEN_MT_FSWORD_MISSILE, pmo->angle + ANG45 / 8);
+    P_SPMAngleXYZ(pmo, pmo->x, pmo->y, pmo->z, HEXEN_MT_FSWORD_MISSILE, pmo->angle);
     P_SPMAngleXYZ(pmo, pmo->x, pmo->y, pmo->z + 5 * FRACUNIT,
-                  MT_FSWORD_MISSILE, pmo->angle - ANG45 / 8);
+                  HEXEN_MT_FSWORD_MISSILE, pmo->angle - ANG45 / 8);
     P_SPMAngleXYZ(pmo, pmo->x, pmo->y, pmo->z + 10 * FRACUNIT,
-                  MT_FSWORD_MISSILE, pmo->angle - ANG45 / 4);
+                  HEXEN_MT_FSWORD_MISSILE, pmo->angle - ANG45 / 4);
     S_StartSound(pmo, SFX_FIGHTER_SWORD_FIRE);
 }
 
@@ -88,11 +88,11 @@ void A_FSwordAttack2(mobj_t * actor)
 {
     angle_t angle = actor->angle;
 
-    P_SpawnMissileAngle(actor, MT_FSWORD_MISSILE, angle + ANG45 / 4, 0);
-    P_SpawnMissileAngle(actor, MT_FSWORD_MISSILE, angle + ANG45 / 8, 0);
-    P_SpawnMissileAngle(actor, MT_FSWORD_MISSILE, angle, 0);
-    P_SpawnMissileAngle(actor, MT_FSWORD_MISSILE, angle - ANG45 / 8, 0);
-    P_SpawnMissileAngle(actor, MT_FSWORD_MISSILE, angle - ANG45 / 4, 0);
+    P_SpawnMissileAngle(actor, HEXEN_MT_FSWORD_MISSILE, angle + ANG45 / 4, 0);
+    P_SpawnMissileAngle(actor, HEXEN_MT_FSWORD_MISSILE, angle + ANG45 / 8, 0);
+    P_SpawnMissileAngle(actor, HEXEN_MT_FSWORD_MISSILE, angle, 0);
+    P_SpawnMissileAngle(actor, HEXEN_MT_FSWORD_MISSILE, angle - ANG45 / 8, 0);
+    P_SpawnMissileAngle(actor, HEXEN_MT_FSWORD_MISSILE, angle - ANG45 / 4, 0);
     S_StartSound(actor, SFX_FIGHTER_SWORD_FIRE);
 }
 
@@ -114,7 +114,7 @@ void A_FSwordFlames(mobj_t * actor)
         r3 = P_Random(pr_hexen);
         P_SpawnMobj(actor->x + ((r3 - 128) << 12), actor->y
                     + ((r2 - 128) << 12),
-                    actor->z + ((r1 - 128) << 11), MT_FSWORD_FLAME);
+                    actor->z + ((r1 - 128) << 11), HEXEN_MT_FSWORD_FLAME);
     }
 }
 
@@ -128,7 +128,7 @@ void A_MWandAttack(player_t * player, pspdef_t * psp)
 {
     mobj_t *mo;
 
-    mo = P_SpawnPlayerMissile(player->mo, MT_MWAND_MISSILE);
+    mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_MWAND_MISSILE);
     if (mo)
     {
         mo->thinker.function = P_BlasterMobjThinker;
@@ -167,17 +167,17 @@ void A_LightningClip(mobj_t * actor)
     mobj_t *target = NULL;
     int zigZag;
 
-    if (actor->type == MT_LIGHTNING_FLOOR)
+    if (actor->type == HEXEN_MT_LIGHTNING_FLOOR)
     {
         actor->z = actor->floorz;
         target = actor->special2.m->special1.m;
     }
-    else if (actor->type == MT_LIGHTNING_CEILING)
+    else if (actor->type == HEXEN_MT_LIGHTNING_CEILING)
     {
         actor->z = actor->ceilingz - actor->height;
         target = actor->special1.m;
     }
-    if (actor->type == MT_LIGHTNING_FLOOR)
+    if (actor->type == HEXEN_MT_LIGHTNING_FLOOR)
     {                           // floor lightning zig-zags, and forces the ceiling lightning to mimic
         cMo = actor->special2.m;
         zigZag = P_Random(pr_hexen);
@@ -237,7 +237,7 @@ void A_LightningZap(mobj_t * actor)
         P_SetMobjState(actor, actor->info->deathstate);
         return;
     }
-    if (actor->type == MT_LIGHTNING_FLOOR)
+    if (actor->type == HEXEN_MT_LIGHTNING_FLOOR)
     {
         deltaZ = 10 * FRACUNIT;
     }
@@ -249,14 +249,14 @@ void A_LightningZap(mobj_t * actor)
     r2 = P_Random(pr_hexen);
     mo = P_SpawnMobj(actor->x + ((r2 - 128) * actor->radius / 256),
                      actor->y + ((r1 - 128) * actor->radius / 256),
-                     actor->z + deltaZ, MT_LIGHTNING_ZAP);
+                     actor->z + deltaZ, HEXEN_MT_LIGHTNING_ZAP);
     if (mo)
     {
         mo->special2.m = actor;
         mo->momx = actor->momx;
         mo->momy = actor->momy;
         mo->target = actor->target;
-        if (actor->type == MT_LIGHTNING_FLOOR)
+        if (actor->type == HEXEN_MT_LIGHTNING_FLOOR)
         {
             mo->momz = 20 * FRACUNIT;
         }
@@ -268,14 +268,14 @@ void A_LightningZap(mobj_t * actor)
 /*
 	mo = P_SpawnMobj(actor->x+((P_Random(pr_hexen)-128)*actor->radius/256),
 		actor->y+((P_Random(pr_hexen)-128)*actor->radius/256),
-		actor->z+deltaZ, MT_LIGHTNING_ZAP);
+		actor->z+deltaZ, HEXEN_MT_LIGHTNING_ZAP);
 	if(mo)
 	{
 		mo->special2.m = actor;
 		mo->momx = actor->momx;
 		mo->momy = actor->momy;
 		mo->target = actor->target;
-		if(actor->type == MT_LIGHTNING_FLOOR)
+		if(actor->type == HEXEN_MT_LIGHTNING_FLOOR)
 		{
 			mo->momz = 16*FRACUNIT;
 		}
@@ -285,7 +285,7 @@ void A_LightningZap(mobj_t * actor)
 		}
 	}
 */
-    if (actor->type == MT_LIGHTNING_FLOOR && P_Random(pr_hexen) < 160)
+    if (actor->type == HEXEN_MT_LIGHTNING_FLOOR && P_Random(pr_hexen) < 160)
     {
         S_StartSound(actor, SFX_MAGE_LIGHTNING_CONTINUOUS);
     }
@@ -301,8 +301,8 @@ void A_MLightningAttack2(mobj_t * actor)
 {
     mobj_t *fmo, *cmo;
 
-    fmo = P_SpawnPlayerMissile(actor, MT_LIGHTNING_FLOOR);
-    cmo = P_SpawnPlayerMissile(actor, MT_LIGHTNING_CEILING);
+    fmo = P_SpawnPlayerMissile(actor, HEXEN_MT_LIGHTNING_FLOOR);
+    cmo = P_SpawnPlayerMissile(actor, HEXEN_MT_LIGHTNING_CEILING);
     if (fmo)
     {
         fmo->special1.m = NULL;
@@ -366,7 +366,7 @@ void A_LastZap(mobj_t * actor)
 {
     mobj_t *mo;
 
-    mo = P_SpawnMobj(actor->x, actor->y, actor->z, MT_LIGHTNING_ZAP);
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_LIGHTNING_ZAP);
     if (mo)
     {
         P_SetMobjState(mo, S_LIGHTNING_ZAP_X1);
@@ -402,7 +402,7 @@ void MStaffSpawn(mobj_t * pmo, angle_t angle)
 {
     mobj_t *mo;
 
-    mo = P_SPMAngle(pmo, MT_MSTAFF_FX2, angle);
+    mo = P_SPMAngle(pmo, HEXEN_MT_MSTAFF_FX2, angle);
     if (mo)
     {
         mo->target = pmo;
@@ -522,7 +522,7 @@ void MStaffSpawn2(mobj_t * actor, angle_t angle)
 {
     mobj_t *mo;
 
-    mo = P_SpawnMissileAngle(actor, MT_MSTAFF_FX2, angle, 0);
+    mo = P_SpawnMissileAngle(actor, HEXEN_MT_MSTAFF_FX2, angle, 0);
     if (mo)
     {
         mo->target = actor;
@@ -563,7 +563,7 @@ void A_FPunchAttack(player_t * player, pspdef_t * psp)
 
     damage = 40 + (P_Random(pr_hexen) & 15);
     power = 2 * FRACUNIT;
-    PuffType = MT_PUNCHPUFF;
+    PuffType = HEXEN_MT_PUNCHPUFF;
     for (i = 0; i < 16; i++)
     {
         angle = pmo->angle + i * (ANG45 / 16);
@@ -575,7 +575,7 @@ void A_FPunchAttack(player_t * player, pspdef_t * psp)
             {
                 damage <<= 1;
                 power = 6 * FRACUNIT;
-                PuffType = MT_HAMMERPUFF;
+                PuffType = HEXEN_MT_HAMMERPUFF;
             }
             P_LineAttack(pmo, angle, 2 * MELEERANGE, slope, damage);
             if (linetarget->flags & MF_COUNTKILL || linetarget->player)
@@ -594,7 +594,7 @@ void A_FPunchAttack(player_t * player, pspdef_t * psp)
             {
                 damage <<= 1;
                 power = 6 * FRACUNIT;
-                PuffType = MT_HAMMERPUFF;
+                PuffType = HEXEN_MT_HAMMERPUFF;
             }
             P_LineAttack(pmo, angle, 2 * MELEERANGE, slope, damage);
             if (linetarget->flags & MF_COUNTKILL || linetarget->player)
@@ -648,12 +648,12 @@ void A_FAxeAttack(player_t * player, pspdef_t * psp)
     {
         damage <<= 1;
         power = 6 * FRACUNIT;
-        PuffType = MT_AXEPUFF_GLOW;
+        PuffType = HEXEN_MT_AXEPUFF_GLOW;
         useMana = 1;
     }
     else
     {
-        PuffType = MT_AXEPUFF;
+        PuffType = HEXEN_MT_AXEPUFF;
         useMana = 0;
     }
     for (i = 0; i < 16; i++)
@@ -719,7 +719,7 @@ void A_CMaceAttack(player_t * player, pspdef_t * psp)
     int i;
 
     damage = 25 + (P_Random(pr_hexen) & 15);
-    PuffType = MT_HAMMERPUFF;
+    PuffType = HEXEN_MT_HAMMERPUFF;
     for (i = 0; i < 16; i++)
     {
         angle = player->mo->angle + i * (ANG45 / 16);
@@ -770,7 +770,7 @@ void A_CStaffCheck(player_t * player, pspdef_t * psp)
 
     pmo = player->mo;
     damage = 20 + (P_Random(pr_hexen) & 15);
-    PuffType = MT_CSTAFFPUFF;
+    PuffType = HEXEN_MT_CSTAFFPUFF;
     for (i = 0; i < 3; i++)
     {
         angle = pmo->angle + i * (ANG45 / 16);
@@ -826,12 +826,12 @@ void A_CStaffAttack(player_t * player, pspdef_t * psp)
 
     player->mana[MANA_1] -= WeaponManaUse[player->class][player->readyweapon];
     pmo = player->mo;
-    mo = P_SPMAngle(pmo, MT_CSTAFF_MISSILE, pmo->angle - (ANG45 / 15));
+    mo = P_SPMAngle(pmo, HEXEN_MT_CSTAFF_MISSILE, pmo->angle - (ANG45 / 15));
     if (mo)
     {
         mo->special2.i = 32;
     }
-    mo = P_SPMAngle(pmo, MT_CSTAFF_MISSILE, pmo->angle + (ANG45 / 15));
+    mo = P_SPMAngle(pmo, HEXEN_MT_CSTAFF_MISSILE, pmo->angle + (ANG45 / 15));
     if (mo)
     {
         mo->special2.i = 0;
@@ -901,7 +901,7 @@ void A_CFlameAttack(player_t * player, pspdef_t * psp)
 {
     mobj_t *mo;
 
-    mo = P_SpawnPlayerMissile(player->mo, MT_CFLAME_MISSILE);
+    mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_CFLAME_MISSILE);
     if (mo)
     {
         mo->thinker.function = P_BlasterMobjThinker;
@@ -950,7 +950,7 @@ void A_CFlameMissile(mobj_t * actor)
             an = (i * ANG45) >> ANGLETOFINESHIFT;
             mo = P_SpawnMobj(BlockingMobj->x + FixedMul(dist, finecosine[an]),
                              BlockingMobj->y + FixedMul(dist, finesine[an]),
-                             BlockingMobj->z + 5 * FRACUNIT, MT_CIRCLEFLAME);
+                             BlockingMobj->z + 5 * FRACUNIT, HEXEN_MT_CIRCLEFLAME);
             if (mo)
             {
                 mo->angle = an << ANGLETOFINESHIFT;
@@ -962,7 +962,7 @@ void A_CFlameMissile(mobj_t * actor)
             }
             mo = P_SpawnMobj(BlockingMobj->x - FixedMul(dist, finecosine[an]),
                              BlockingMobj->y - FixedMul(dist, finesine[an]),
-                             BlockingMobj->z + 5 * FRACUNIT, MT_CIRCLEFLAME);
+                             BlockingMobj->z + 5 * FRACUNIT, HEXEN_MT_CIRCLEFLAME);
             if (mo)
             {
                 mo->angle = ANG180 + (an << ANGLETOFINESHIFT);
@@ -1005,7 +1005,7 @@ void A_CFlameRotate(mobj_t * actor)
 
 void A_CHolyAttack3(mobj_t * actor)
 {
-    P_SpawnMissile(actor, actor->target, MT_HOLY_MISSILE);
+    P_SpawnMissile(actor, actor->target, HEXEN_MT_HOLY_MISSILE);
     S_StartSound(actor, SFX_CHOLY_FIRE);
 }
 
@@ -1027,7 +1027,7 @@ void A_CHolyAttack2(mobj_t * actor)
 
     for (j = 0; j < 4; j++)
     {
-        mo = P_SpawnMobj(actor->x, actor->y, actor->z, MT_HOLY_FX);
+        mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_HOLY_FX);
         if (!mo)
         {
             continue;
@@ -1065,11 +1065,11 @@ void A_CHolyAttack2(mobj_t * actor)
             mo->flags |= MF_NOCLIP | MF_SKULLFLY;
             mo->flags &= ~MF_MISSILE;
         }
-        tail = P_SpawnMobj(mo->x, mo->y, mo->z, MT_HOLY_TAIL);
+        tail = P_SpawnMobj(mo->x, mo->y, mo->z, HEXEN_MT_HOLY_TAIL);
         tail->special2.m = mo;      // parent
         for (i = 1; i < 3; i++)
         {
-            next = P_SpawnMobj(mo->x, mo->y, mo->z, MT_HOLY_TAIL);
+            next = P_SpawnMobj(mo->x, mo->y, mo->z, HEXEN_MT_HOLY_TAIL);
             P_SetMobjState(next, next->info->spawnstate + 1);
             tail->special1.m = next;
             tail = next;
@@ -1088,7 +1088,7 @@ void A_CHolyAttack(player_t * player, pspdef_t * psp)
 {
     player->mana[MANA_1] -= WeaponManaUse[player->class][player->readyweapon];
     player->mana[MANA_2] -= WeaponManaUse[player->class][player->readyweapon];
-    P_SpawnPlayerMissile(player->mo, MT_HOLY_MISSILE);
+    P_SpawnPlayerMissile(player->mo, HEXEN_MT_HOLY_MISSILE);
     if (player == &players[consoleplayer])
     {
         player->damagecount = 0;
@@ -1405,7 +1405,7 @@ void A_CHolyCheckScream(mobj_t * actor)
 
 void A_CHolySpawnPuff(mobj_t * actor)
 {
-    P_SpawnMobj(actor->x, actor->y, actor->z, MT_HOLY_MISSILE_PUFF);
+    P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_HOLY_MISSILE_PUFF);
 }
 
 //----------------------------------------------------------------------------
@@ -1449,7 +1449,7 @@ void A_FireConePL1(player_t * player, pspdef_t * psp)
     // didn't find any creatures, so fire projectiles
     if (!conedone)
     {
-        mo = P_SpawnPlayerMissile(pmo, MT_SHARDFX1);
+        mo = P_SpawnPlayerMissile(pmo, HEXEN_MT_SHARDFX1);
         if (mo)
         {
             mo->special1.i = SHARDSPAWN_LEFT | SHARDSPAWN_DOWN | SHARDSPAWN_UP
@@ -1475,7 +1475,7 @@ void A_ShedShard(mobj_t * actor)
     // every so many calls, spawn a new missile in it's set directions
     if (spawndir & SHARDSPAWN_LEFT)
     {
-        mo = P_SpawnMissileAngleSpeed(actor, MT_SHARDFX1,
+        mo = P_SpawnMissileAngleSpeed(actor, HEXEN_MT_SHARDFX1,
                                       actor->angle + (ANG45 / 9), 0,
                                       (20 + 2 * spermcount) << FRACBITS);
         if (mo)
@@ -1489,7 +1489,7 @@ void A_ShedShard(mobj_t * actor)
     }
     if (spawndir & SHARDSPAWN_RIGHT)
     {
-        mo = P_SpawnMissileAngleSpeed(actor, MT_SHARDFX1,
+        mo = P_SpawnMissileAngleSpeed(actor, HEXEN_MT_SHARDFX1,
                                       actor->angle - (ANG45 / 9), 0,
                                       (20 + 2 * spermcount) << FRACBITS);
         if (mo)
@@ -1503,7 +1503,7 @@ void A_ShedShard(mobj_t * actor)
     }
     if (spawndir & SHARDSPAWN_UP)
     {
-        mo = P_SpawnMissileAngleSpeed(actor, MT_SHARDFX1, actor->angle,
+        mo = P_SpawnMissileAngleSpeed(actor, HEXEN_MT_SHARDFX1, actor->angle,
                                       0, (15 + 2 * spermcount) << FRACBITS);
         if (mo)
         {
@@ -1521,7 +1521,7 @@ void A_ShedShard(mobj_t * actor)
     }
     if (spawndir & SHARDSPAWN_DOWN)
     {
-        mo = P_SpawnMissileAngleSpeed(actor, MT_SHARDFX1, actor->angle,
+        mo = P_SpawnMissileAngleSpeed(actor, HEXEN_MT_SHARDFX1, actor->angle,
                                       0, (15 + 2 * spermcount) << FRACBITS);
         if (mo)
         {

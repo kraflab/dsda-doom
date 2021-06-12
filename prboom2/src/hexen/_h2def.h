@@ -215,7 +215,7 @@ typedef struct mobj_s
     // teleporting
     int threshold;              // if > 0, the target will be chased
     // no matter what (even if shot)
-    struct player_s *player;    // only valid if type == MT_PLAYER
+    struct player_s *player;    // only valid if type == HEXEN_MT_PLAYER
     int lastlook;               // player number last looked for
     fixed_t floorclip;          // value to use for floor clipping
     int archiveNum;             // Identity during archive

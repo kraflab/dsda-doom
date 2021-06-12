@@ -722,25 +722,25 @@ static void StreamInMobjSpecials(mobj_t *mobj)
     switch (mobj->type)
     {
             // Just special1
-        case MT_BISH_FX:
-        case MT_HOLY_FX:
-        case MT_DRAGON:
-        case MT_THRUSTFLOOR_UP:
-        case MT_THRUSTFLOOR_DOWN:
-        case MT_MINOTAUR:
-        case MT_SORCFX1:
+        case HEXEN_MT_BISH_FX:
+        case HEXEN_MT_HOLY_FX:
+        case HEXEN_MT_DRAGON:
+        case HEXEN_MT_THRUSTFLOOR_UP:
+        case HEXEN_MT_THRUSTFLOOR_DOWN:
+        case HEXEN_MT_MINOTAUR:
+        case HEXEN_MT_SORCFX1:
             SetMobjPtr(&mobj->special1.m, special1);
             break;
 
             // Just special2
-        case MT_LIGHTNING_FLOOR:
-        case MT_LIGHTNING_ZAP:
+        case HEXEN_MT_LIGHTNING_FLOOR:
+        case HEXEN_MT_LIGHTNING_ZAP:
             SetMobjPtr(&mobj->special2.m, special2);
             break;
 
             // Both special1 and special2
-        case MT_HOLY_TAIL:
-        case MT_LIGHTNING_CEILING:
+        case HEXEN_MT_HOLY_TAIL:
+        case HEXEN_MT_LIGHTNING_CEILING:
             SetMobjPtr(&mobj->special1.m, special1);
             SetMobjPtr(&mobj->special2.m, special2);
             break;
@@ -907,14 +907,14 @@ static void StreamOutMobjSpecials(mobj_t *mobj)
     switch (mobj->type)
     {
             // Just special1
-        case MT_BISH_FX:
-        case MT_HOLY_FX:
-        case MT_DRAGON:
-        case MT_THRUSTFLOOR_UP:
-        case MT_THRUSTFLOOR_DOWN:
-        case MT_MINOTAUR:
-        case MT_SORCFX1:
-        case MT_MSTAFF_FX2:
+        case HEXEN_MT_BISH_FX:
+        case HEXEN_MT_HOLY_FX:
+        case HEXEN_MT_DRAGON:
+        case HEXEN_MT_THRUSTFLOOR_UP:
+        case HEXEN_MT_THRUSTFLOOR_DOWN:
+        case HEXEN_MT_MINOTAUR:
+        case HEXEN_MT_SORCFX1:
+        case HEXEN_MT_MSTAFF_FX2:
             if (corpse)
             {
                 special1 = MOBJ_NULL;
@@ -926,8 +926,8 @@ static void StreamOutMobjSpecials(mobj_t *mobj)
             break;
 
             // Just special2
-        case MT_LIGHTNING_FLOOR:
-        case MT_LIGHTNING_ZAP:
+        case HEXEN_MT_LIGHTNING_FLOOR:
+        case HEXEN_MT_LIGHTNING_ZAP:
             if (corpse)
             {
                 special2 = MOBJ_NULL;
@@ -939,8 +939,8 @@ static void StreamOutMobjSpecials(mobj_t *mobj)
             break;
 
             // Both special1 and special2
-        case MT_HOLY_TAIL:
-        case MT_LIGHTNING_CEILING:
+        case HEXEN_MT_HOLY_TAIL:
+        case HEXEN_MT_LIGHTNING_CEILING:
             if (corpse)
             {
                 special1 = MOBJ_NULL;
@@ -954,7 +954,7 @@ static void StreamOutMobjSpecials(mobj_t *mobj)
             break;
 
             // Miscellaneous
-        case MT_KORAX:
+        case HEXEN_MT_KORAX:
             special1 = 0; // Searching index
             break;
 
@@ -2240,7 +2240,7 @@ void SV_MapTeleport(int map, int position)
             memset(players[i].frags, 0, sizeof(players[i].frags));
             mobj = P_SpawnMobj(playerstarts[0][i].x << 16,
                                playerstarts[0][i].y << 16, 0,
-                               MT_PLAYER_FIGHTER);
+                               HEXEN_MT_PLAYER_FIGHTER);
             players[i].mo = mobj;
             G_DeathMatchSpawnPlayer(i);
             P_RemoveMobj(mobj);

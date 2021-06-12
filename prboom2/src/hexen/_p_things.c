@@ -39,115 +39,115 @@ static boolean DeactivateThing(mobj_t * mobj);
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 mobjtype_t TranslateThingType[] = {
-    MT_MAPSPOT,                 // T_NONE
-    MT_CENTAUR,                 // T_CENTAUR
-    MT_CENTAURLEADER,           // T_CENTAURLEADER
-    MT_DEMON,                   // T_DEMON
-    MT_ETTIN,                   // T_ETTIN
-    MT_FIREDEMON,               // T_FIREGARGOYLE
-    MT_SERPENT,                 // T_WATERLURKER
-    MT_SERPENTLEADER,           // T_WATERLURKERLEADER
-    MT_WRAITH,                  // T_WRAITH
-    MT_WRAITHB,                 // T_WRAITHBURIED
-    MT_FIREBALL1,               // T_FIREBALL1
-    MT_MANA1,                   // T_MANA1
-    MT_MANA2,                   // T_MANA2
-    MT_SPEEDBOOTS,              // T_ITEMBOOTS
-    MT_ARTIEGG,                 // T_ITEMEGG
-    MT_ARTIFLY,                 // T_ITEMFLIGHT
-    MT_SUMMONMAULATOR,          // T_ITEMSUMMON
-    MT_TELEPORTOTHER,           // T_ITEMTPORTOTHER
-    MT_ARTITELEPORT,            // T_ITEMTELEPORT
-    MT_BISHOP,                  // T_BISHOP
-    MT_ICEGUY,                  // T_ICEGOLEM
-    MT_BRIDGE,                  // T_BRIDGE
-    MT_BOOSTARMOR,              // T_DRAGONSKINBRACERS
-    MT_HEALINGBOTTLE,           // T_ITEMHEALTHPOTION
-    MT_HEALTHFLASK,             // T_ITEMHEALTHFLASK
-    MT_ARTISUPERHEAL,           // T_ITEMHEALTHFULL
-    MT_BOOSTMANA,               // T_ITEMBOOSTMANA
-    MT_FW_AXE,                  // T_FIGHTERAXE
-    MT_FW_HAMMER,               // T_FIGHTERHAMMER
-    MT_FW_SWORD1,               // T_FIGHTERSWORD1
-    MT_FW_SWORD2,               // T_FIGHTERSWORD2
-    MT_FW_SWORD3,               // T_FIGHTERSWORD3
-    MT_CW_SERPSTAFF,            // T_CLERICSTAFF
-    MT_CW_HOLY1,                // T_CLERICHOLY1
-    MT_CW_HOLY2,                // T_CLERICHOLY2
-    MT_CW_HOLY3,                // T_CLERICHOLY3
-    MT_MW_CONE,                 // T_MAGESHARDS
-    MT_MW_STAFF1,               // T_MAGESTAFF1
-    MT_MW_STAFF2,               // T_MAGESTAFF2
-    MT_MW_STAFF3,               // T_MAGESTAFF3
-    MT_EGGFX,                   // T_MORPHBLAST
-    MT_ROCK1,                   // T_ROCK1
-    MT_ROCK2,                   // T_ROCK2
-    MT_ROCK3,                   // T_ROCK3
-    MT_DIRT1,                   // T_DIRT1
-    MT_DIRT2,                   // T_DIRT2
-    MT_DIRT3,                   // T_DIRT3
-    MT_DIRT4,                   // T_DIRT4
-    MT_DIRT5,                   // T_DIRT5
-    MT_DIRT6,                   // T_DIRT6
-    MT_ARROW,                   // T_ARROW
-    MT_DART,                    // T_DART
-    MT_POISONDART,              // T_POISONDART
-    MT_RIPPERBALL,              // T_RIPPERBALL
-    MT_SGSHARD1,                // T_STAINEDGLASS1
-    MT_SGSHARD2,                // T_STAINEDGLASS2
-    MT_SGSHARD3,                // T_STAINEDGLASS3
-    MT_SGSHARD4,                // T_STAINEDGLASS4
-    MT_SGSHARD5,                // T_STAINEDGLASS5
-    MT_SGSHARD6,                // T_STAINEDGLASS6
-    MT_SGSHARD7,                // T_STAINEDGLASS7
-    MT_SGSHARD8,                // T_STAINEDGLASS8
-    MT_SGSHARD9,                // T_STAINEDGLASS9
-    MT_SGSHARD0,                // T_STAINEDGLASS0
-    MT_PROJECTILE_BLADE,        // T_BLADE
-    MT_ICESHARD,                // T_ICESHARD
-    MT_FLAME_SMALL,             // T_FLAME_SMALL
-    MT_FLAME_LARGE,             // T_FLAME_LARGE
-    MT_ARMOR_1,                 // T_MESHARMOR
-    MT_ARMOR_2,                 // T_FALCONSHIELD
-    MT_ARMOR_3,                 // T_PLATINUMHELM
-    MT_ARMOR_4,                 // T_AMULETOFWARDING
-    MT_ARTIPOISONBAG,           // T_ITEMFLECHETTE
-    MT_ARTITORCH,               // T_ITEMTORCH
-    MT_BLASTRADIUS,             // T_ITEMREPULSION
-    MT_MANA3,                   // T_MANA3
-    MT_ARTIPUZZSKULL,           // T_PUZZSKULL
-    MT_ARTIPUZZGEMBIG,          // T_PUZZGEMBIG
-    MT_ARTIPUZZGEMRED,          // T_PUZZGEMRED
-    MT_ARTIPUZZGEMGREEN1,       // T_PUZZGEMGREEN1
-    MT_ARTIPUZZGEMGREEN2,       // T_PUZZGEMGREEN2
-    MT_ARTIPUZZGEMBLUE1,        // T_PUZZGEMBLUE1
-    MT_ARTIPUZZGEMBLUE2,        // T_PUZZGEMBLUE2
-    MT_ARTIPUZZBOOK1,           // T_PUZZBOOK1
-    MT_ARTIPUZZBOOK2,           // T_PUZZBOOK2
-    MT_KEY1,                    // T_METALKEY
-    MT_KEY2,                    // T_SMALLMETALKEY
-    MT_KEY3,                    // T_AXEKEY
-    MT_KEY4,                    // T_FIREKEY
-    MT_KEY5,                    // T_GREENKEY
-    MT_KEY6,                    // T_MACEKEY
-    MT_KEY7,                    // T_SILVERKEY
-    MT_KEY8,                    // T_RUSTYKEY
-    MT_KEY9,                    // T_HORNKEY
-    MT_KEYA,                    // T_SERPENTKEY
-    MT_WATER_DRIP,              // T_WATERDRIP
-    MT_FLAME_SMALL_TEMP,        // T_TEMPSMALLFLAME
-    MT_FLAME_SMALL,             // T_PERMSMALLFLAME
-    MT_FLAME_LARGE_TEMP,        // T_TEMPLARGEFLAME
-    MT_FLAME_LARGE,             // T_PERMLARGEFLAME
-    MT_DEMON_MASH,              // T_DEMON_MASH
-    MT_DEMON2_MASH,             // T_DEMON2_MASH
-    MT_ETTIN_MASH,              // T_ETTIN_MASH
-    MT_CENTAUR_MASH,            // T_CENTAUR_MASH
-    MT_THRUSTFLOOR_UP,          // T_THRUSTSPIKEUP
-    MT_THRUSTFLOOR_DOWN,        // T_THRUSTSPIKEDOWN
-    MT_WRAITHFX4,               // T_FLESH_DRIP1
-    MT_WRAITHFX5,               // T_FLESH_DRIP2
-    MT_WRAITHFX2                // T_SPARK_DRIP
+    HEXEN_MT_MAPSPOT,                 // T_NONE
+    HEXEN_MT_CENTAUR,                 // T_CENTAUR
+    HEXEN_MT_CENTAURLEADER,           // T_CENTAURLEADER
+    HEXEN_MT_DEMON,                   // T_DEMON
+    HEXEN_MT_ETTIN,                   // T_ETTIN
+    HEXEN_MT_FIREDEMON,               // T_FIREGARGOYLE
+    HEXEN_MT_SERPENT,                 // T_WATERLURKER
+    HEXEN_MT_SERPENTLEADER,           // T_WATERLURKERLEADER
+    HEXEN_MT_WRAITH,                  // T_WRAITH
+    HEXEN_MT_WRAITHB,                 // T_WRAITHBURIED
+    HEXEN_MT_FIREBALL1,               // T_FIREBALL1
+    HEXEN_MT_MANA1,                   // T_MANA1
+    HEXEN_MT_MANA2,                   // T_MANA2
+    HEXEN_MT_SPEEDBOOTS,              // T_ITEMBOOTS
+    HEXEN_MT_ARTIEGG,                 // T_ITEMEGG
+    HEXEN_MT_ARTIFLY,                 // T_ITEMFLIGHT
+    HEXEN_MT_SUMMONMAULATOR,          // T_ITEMSUMMON
+    HEXEN_MT_TELEPORTOTHER,           // T_ITEMTPORTOTHER
+    HEXEN_MT_ARTITELEPORT,            // T_ITEMTELEPORT
+    HEXEN_MT_BISHOP,                  // T_BISHOP
+    HEXEN_MT_ICEGUY,                  // T_ICEGOLEM
+    HEXEN_MT_BRIDGE,                  // T_BRIDGE
+    HEXEN_MT_BOOSTARMOR,              // T_DRAGONSKINBRACERS
+    HEXEN_MT_HEALINGBOTTLE,           // T_ITEMHEALTHPOTION
+    HEXEN_MT_HEALTHFLASK,             // T_ITEMHEALTHFLASK
+    HEXEN_MT_ARTISUPERHEAL,           // T_ITEMHEALTHFULL
+    HEXEN_MT_BOOSTMANA,               // T_ITEMBOOSTMANA
+    HEXEN_MT_FW_AXE,                  // T_FIGHTERAXE
+    HEXEN_MT_FW_HAMMER,               // T_FIGHTERHAMMER
+    HEXEN_MT_FW_SWORD1,               // T_FIGHTERSWORD1
+    HEXEN_MT_FW_SWORD2,               // T_FIGHTERSWORD2
+    HEXEN_MT_FW_SWORD3,               // T_FIGHTERSWORD3
+    HEXEN_MT_CW_SERPSTAFF,            // T_CLERICSTAFF
+    HEXEN_MT_CW_HOLY1,                // T_CLERICHOLY1
+    HEXEN_MT_CW_HOLY2,                // T_CLERICHOLY2
+    HEXEN_MT_CW_HOLY3,                // T_CLERICHOLY3
+    HEXEN_MT_MW_CONE,                 // T_MAGESHARDS
+    HEXEN_MT_MW_STAFF1,               // T_MAGESTAFF1
+    HEXEN_MT_MW_STAFF2,               // T_MAGESTAFF2
+    HEXEN_MT_MW_STAFF3,               // T_MAGESTAFF3
+    HEXEN_MT_EGGFX,                   // T_MORPHBLAST
+    HEXEN_MT_ROCK1,                   // T_ROCK1
+    HEXEN_MT_ROCK2,                   // T_ROCK2
+    HEXEN_MT_ROCK3,                   // T_ROCK3
+    HEXEN_MT_DIRT1,                   // T_DIRT1
+    HEXEN_MT_DIRT2,                   // T_DIRT2
+    HEXEN_MT_DIRT3,                   // T_DIRT3
+    HEXEN_MT_DIRT4,                   // T_DIRT4
+    HEXEN_MT_DIRT5,                   // T_DIRT5
+    HEXEN_MT_DIRT6,                   // T_DIRT6
+    HEXEN_MT_ARROW,                   // T_ARROW
+    HEXEN_MT_DART,                    // T_DART
+    HEXEN_MT_POISONDART,              // T_POISONDART
+    HEXEN_MT_RIPPERBALL,              // T_RIPPERBALL
+    HEXEN_MT_SGSHARD1,                // T_STAINEDGLASS1
+    HEXEN_MT_SGSHARD2,                // T_STAINEDGLASS2
+    HEXEN_MT_SGSHARD3,                // T_STAINEDGLASS3
+    HEXEN_MT_SGSHARD4,                // T_STAINEDGLASS4
+    HEXEN_MT_SGSHARD5,                // T_STAINEDGLASS5
+    HEXEN_MT_SGSHARD6,                // T_STAINEDGLASS6
+    HEXEN_MT_SGSHARD7,                // T_STAINEDGLASS7
+    HEXEN_MT_SGSHARD8,                // T_STAINEDGLASS8
+    HEXEN_MT_SGSHARD9,                // T_STAINEDGLASS9
+    HEXEN_MT_SGSHARD0,                // T_STAINEDGLASS0
+    HEXEN_MT_PROJECTILE_BLADE,        // T_BLADE
+    HEXEN_MT_ICESHARD,                // T_ICESHARD
+    HEXEN_MT_FLAME_SMALL,             // T_FLAME_SMALL
+    HEXEN_MT_FLAME_LARGE,             // T_FLAME_LARGE
+    HEXEN_MT_ARMOR_1,                 // T_MESHARMOR
+    HEXEN_MT_ARMOR_2,                 // T_FALCONSHIELD
+    HEXEN_MT_ARMOR_3,                 // T_PLATINUMHELM
+    HEXEN_MT_ARMOR_4,                 // T_AMULETOFWARDING
+    HEXEN_MT_ARTIPOISONBAG,           // T_ITEMFLECHETTE
+    HEXEN_MT_ARTITORCH,               // T_ITEMTORCH
+    HEXEN_MT_BLASTRADIUS,             // T_ITEMREPULSION
+    HEXEN_MT_MANA3,                   // T_MANA3
+    HEXEN_MT_ARTIPUZZSKULL,           // T_PUZZSKULL
+    HEXEN_MT_ARTIPUZZGEMBIG,          // T_PUZZGEMBIG
+    HEXEN_MT_ARTIPUZZGEMRED,          // T_PUZZGEMRED
+    HEXEN_MT_ARTIPUZZGEMGREEN1,       // T_PUZZGEMGREEN1
+    HEXEN_MT_ARTIPUZZGEMGREEN2,       // T_PUZZGEMGREEN2
+    HEXEN_MT_ARTIPUZZGEMBLUE1,        // T_PUZZGEMBLUE1
+    HEXEN_MT_ARTIPUZZGEMBLUE2,        // T_PUZZGEMBLUE2
+    HEXEN_MT_ARTIPUZZBOOK1,           // T_PUZZBOOK1
+    HEXEN_MT_ARTIPUZZBOOK2,           // T_PUZZBOOK2
+    HEXEN_MT_KEY1,                    // T_METALKEY
+    HEXEN_MT_KEY2,                    // T_SMALLMETALKEY
+    HEXEN_MT_KEY3,                    // T_AXEKEY
+    HEXEN_MT_KEY4,                    // T_FIREKEY
+    HEXEN_MT_KEY5,                    // T_GREENKEY
+    HEXEN_MT_KEY6,                    // T_MACEKEY
+    HEXEN_MT_KEY7,                    // T_SILVERKEY
+    HEXEN_MT_KEY8,                    // T_RUSTYKEY
+    HEXEN_MT_KEY9,                    // T_HORNKEY
+    HEXEN_MT_KEYA,                    // T_SERPENTKEY
+    HEXEN_MT_WATER_DRIP,              // T_WATERDRIP
+    HEXEN_MT_FLAME_SMALL_TEMP,        // T_TEMPSMALLFLAME
+    HEXEN_MT_FLAME_SMALL,             // T_PERMSMALLFLAME
+    HEXEN_MT_FLAME_LARGE_TEMP,        // T_TEMPLARGEFLAME
+    HEXEN_MT_FLAME_LARGE,             // T_PERMLARGEFLAME
+    HEXEN_MT_DEMON_MASH,              // T_DEMON_MASH
+    HEXEN_MT_DEMON2_MASH,             // T_DEMON2_MASH
+    HEXEN_MT_ETTIN_MASH,              // T_ETTIN_MASH
+    HEXEN_MT_CENTAUR_MASH,            // T_CENTAUR_MASH
+    HEXEN_MT_THRUSTFLOOR_UP,          // T_THRUSTSPIKEUP
+    HEXEN_MT_THRUSTFLOOR_DOWN,        // T_THRUSTSPIKEDOWN
+    HEXEN_MT_WRAITHFX4,               // T_FLESH_DRIP1
+    HEXEN_MT_WRAITHFX5,               // T_FLESH_DRIP2
+    HEXEN_MT_WRAITHFX2                // T_SPARK_DRIP
 };
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -259,7 +259,7 @@ boolean EV_ThingSpawn(byte * args, boolean fog)
             if (fog == true)
             {
                 fogMobj = P_SpawnMobj(mobj->x, mobj->y,
-                                      mobj->z + TELEFOGHEIGHT, MT_TFOG);
+                                      mobj->z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
                 S_StartSound(fogMobj, SFX_TELEPORT);
             }
             newMobj->flags2 |= MF2_DROPPED;     // Don't respawn
@@ -337,7 +337,7 @@ boolean EV_ThingRemove(int tid)
     searcher = -1;
     while ((mobj = P_FindMobjFromTID(tid, &searcher)) != NULL)
     {
-        if (mobj->type == MT_BRIDGE)
+        if (mobj->type == HEXEN_MT_BRIDGE)
         {
             A_BridgeRemove(mobj);
             return true;
@@ -411,24 +411,24 @@ static boolean ActivateThing(mobj_t * mobj)
     }
     switch (mobj->type)
     {
-        case MT_ZTWINEDTORCH:
-        case MT_ZTWINEDTORCH_UNLIT:
+        case HEXEN_MT_ZTWINEDTORCH:
+        case HEXEN_MT_ZTWINEDTORCH_UNLIT:
             P_SetMobjState(mobj, S_ZTWINEDTORCH_1);
             S_StartSound(mobj, SFX_IGNITE);
             break;
-        case MT_ZWALLTORCH:
-        case MT_ZWALLTORCH_UNLIT:
+        case HEXEN_MT_ZWALLTORCH:
+        case HEXEN_MT_ZWALLTORCH_UNLIT:
             P_SetMobjState(mobj, S_ZWALLTORCH1);
             S_StartSound(mobj, SFX_IGNITE);
             break;
-        case MT_ZGEMPEDESTAL:
+        case HEXEN_MT_ZGEMPEDESTAL:
             P_SetMobjState(mobj, S_ZGEMPEDESTAL2);
             break;
-        case MT_ZWINGEDSTATUENOSKULL:
+        case HEXEN_MT_ZWINGEDSTATUENOSKULL:
             P_SetMobjState(mobj, S_ZWINGEDSTATUENOSKULL2);
             break;
-        case MT_THRUSTFLOOR_UP:
-        case MT_THRUSTFLOOR_DOWN:
+        case HEXEN_MT_THRUSTFLOOR_UP:
+        case HEXEN_MT_THRUSTFLOOR_DOWN:
             if (mobj->args[0] == 0)
             {
                 S_StartSound(mobj, SFX_THRUSTSPIKE_LOWER);
@@ -439,31 +439,31 @@ static boolean ActivateThing(mobj_t * mobj)
                     P_SetMobjState(mobj, S_THRUSTRAISE1);
             }
             break;
-        case MT_ZFIREBULL:
-        case MT_ZFIREBULL_UNLIT:
+        case HEXEN_MT_ZFIREBULL:
+        case HEXEN_MT_ZFIREBULL_UNLIT:
             P_SetMobjState(mobj, S_ZFIREBULL_BIRTH);
             S_StartSound(mobj, SFX_IGNITE);
             break;
-        case MT_ZBELL:
+        case HEXEN_MT_ZBELL:
             if (mobj->health > 0)
             {
                 P_DamageMobj(mobj, NULL, NULL, 10);     // 'ring' the bell
             }
             break;
-        case MT_ZCAULDRON:
-        case MT_ZCAULDRON_UNLIT:
+        case HEXEN_MT_ZCAULDRON:
+        case HEXEN_MT_ZCAULDRON_UNLIT:
             P_SetMobjState(mobj, S_ZCAULDRON1);
             S_StartSound(mobj, SFX_IGNITE);
             break;
-        case MT_FLAME_SMALL:
+        case HEXEN_MT_FLAME_SMALL:
             S_StartSound(mobj, SFX_IGNITE);
             P_SetMobjState(mobj, S_FLAME_SMALL1);
             break;
-        case MT_FLAME_LARGE:
+        case HEXEN_MT_FLAME_LARGE:
             S_StartSound(mobj, SFX_IGNITE);
             P_SetMobjState(mobj, S_FLAME_LARGE1);
             break;
-        case MT_BAT_SPAWNER:
+        case HEXEN_MT_BAT_SPAWNER:
             P_SetMobjState(mobj, S_SPAWNBATS1);
             break;
         default:
@@ -493,16 +493,16 @@ static boolean DeactivateThing(mobj_t * mobj)
     }
     switch (mobj->type)
     {
-        case MT_ZTWINEDTORCH:
-        case MT_ZTWINEDTORCH_UNLIT:
+        case HEXEN_MT_ZTWINEDTORCH:
+        case HEXEN_MT_ZTWINEDTORCH_UNLIT:
             P_SetMobjState(mobj, S_ZTWINEDTORCH_UNLIT);
             break;
-        case MT_ZWALLTORCH:
-        case MT_ZWALLTORCH_UNLIT:
+        case HEXEN_MT_ZWALLTORCH:
+        case HEXEN_MT_ZWALLTORCH_UNLIT:
             P_SetMobjState(mobj, S_ZWALLTORCH_U);
             break;
-        case MT_THRUSTFLOOR_UP:
-        case MT_THRUSTFLOOR_DOWN:
+        case HEXEN_MT_THRUSTFLOOR_UP:
+        case HEXEN_MT_THRUSTFLOOR_DOWN:
             if (mobj->args[0] == 1)
             {
                 S_StartSound(mobj, SFX_THRUSTSPIKE_RAISE);
@@ -512,21 +512,21 @@ static boolean DeactivateThing(mobj_t * mobj)
                     P_SetMobjState(mobj, S_THRUSTLOWER);
             }
             break;
-        case MT_ZFIREBULL:
-        case MT_ZFIREBULL_UNLIT:
+        case HEXEN_MT_ZFIREBULL:
+        case HEXEN_MT_ZFIREBULL_UNLIT:
             P_SetMobjState(mobj, S_ZFIREBULL_DEATH);
             break;
-        case MT_ZCAULDRON:
-        case MT_ZCAULDRON_UNLIT:
+        case HEXEN_MT_ZCAULDRON:
+        case HEXEN_MT_ZCAULDRON_UNLIT:
             P_SetMobjState(mobj, S_ZCAULDRON_U);
             break;
-        case MT_FLAME_SMALL:
+        case HEXEN_MT_FLAME_SMALL:
             P_SetMobjState(mobj, S_FLAME_SDORM1);
             break;
-        case MT_FLAME_LARGE:
+        case HEXEN_MT_FLAME_LARGE:
             P_SetMobjState(mobj, S_FLAME_LDORM1);
             break;
-        case MT_BAT_SPAWNER:
+        case HEXEN_MT_BAT_SPAWNER:
             P_SetMobjState(mobj, S_SPAWNBATS_OFF);
             break;
         default:

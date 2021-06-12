@@ -298,7 +298,7 @@ void P_DeathThink(player_t * player)
     P_MovePsprites(player);
 
     onground = (player->mo->z <= player->mo->floorz);
-    if (player->mo->type == MT_BLOODYSKULL || player->mo->type == MT_ICECHUNK)
+    if (player->mo->type == HEXEN_MT_BLOODYSKULL || player->mo->type == HEXEN_MT_ICECHUNK)
     {                           // Flying bloody skull or flying ice chunk
         player->viewheight = 6 * FRACUNIT;
         player->deltaviewheight = 0;
@@ -497,13 +497,13 @@ boolean P_UndoPlayerMorph(player_t * player)
     switch (PlayerClass[playerNum])
     {
         case PCLASS_FIGHTER:
-            mo = P_SpawnMobj(x, y, z, MT_PLAYER_FIGHTER);
+            mo = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_FIGHTER);
             break;
         case PCLASS_CLERIC:
-            mo = P_SpawnMobj(x, y, z, MT_PLAYER_CLERIC);
+            mo = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_CLERIC);
             break;
         case PCLASS_MAGE:
-            mo = P_SpawnMobj(x, y, z, MT_PLAYER_MAGE);
+            mo = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_MAGE);
             break;
         default:
             I_Error("P_UndoPlayerMorph:  Unknown player class %d\n",
@@ -555,7 +555,7 @@ boolean P_UndoPlayerMorph(player_t * player)
     player->class = PlayerClass[playerNum];
     angle >>= ANGLETOFINESHIFT;
     fog = P_SpawnMobj(x + 20 * finecosine[angle],
-                      y + 20 * finesine[angle], z + TELEFOGHEIGHT, MT_TFOG);
+                      y + 20 * finesine[angle], z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     S_StartSound(fog, SFX_TELEPORT);
     P_PostMorphWeapon(player, weapon);
     return (true);
@@ -633,7 +633,7 @@ void P_PlayerThink(player_t * player)
             mobj_t *speedMo;
             int playerNum;
 
-            speedMo = P_SpawnMobj(pmo->x, pmo->y, pmo->z, MT_PLAYER_SPEED);
+            speedMo = P_SpawnMobj(pmo->x, pmo->y, pmo->z, HEXEN_MT_PLAYER_SPEED);
             if (speedMo)
             {
                 speedMo->angle = pmo->angle;
@@ -975,7 +975,7 @@ void P_ArtiTeleportOther(player_t * player)
 {
     mobj_t *mo;
 
-    mo = P_SpawnPlayerMissile(player->mo, MT_TELOTHER_FX1);
+    mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_TELOTHER_FX1);
     if (mo)
     {
         mo->target = player->mo;
@@ -1100,12 +1100,12 @@ void P_BlastMobj(mobj_t * source, mobj_t * victim, fixed_t strength)
         {
             switch (victim->type)
             {
-                case MT_SORCBALL1:     // don't blast sorcerer balls
-                case MT_SORCBALL2:
-                case MT_SORCBALL3:
+                case HEXEN_MT_SORCBALL1:     // don't blast sorcerer balls
+                case HEXEN_MT_SORCBALL2:
+                case HEXEN_MT_SORCBALL3:
                     return;
                     break;
-                case MT_MSTAFF_FX2:    // Reflect to originator
+                case HEXEN_MT_MSTAFF_FX2:    // Reflect to originator
                     victim->special1.m = victim->target;
                     victim->target = source;
                     break;
@@ -1113,7 +1113,7 @@ void P_BlastMobj(mobj_t * source, mobj_t * victim, fixed_t strength)
                     break;
             }
         }
-        if (victim->type == MT_HOLY_FX)
+        if (victim->type == HEXEN_MT_HOLY_FX)
         {
             if (victim->special1.m == source)
             {
@@ -1130,7 +1130,7 @@ void P_BlastMobj(mobj_t * source, mobj_t * victim, fixed_t strength)
         x = victim->x + FixedMul(victim->radius + FRACUNIT, finecosine[ang]);
         y = victim->y + FixedMul(victim->radius + FRACUNIT, finesine[ang]);
         z = victim->z - victim->floorclip + (victim->height >> 1);
-        mo = P_SpawnMobj(x, y, z, MT_BLASTEFFECT);
+        mo = P_SpawnMobj(x, y, z, HEXEN_MT_BLASTEFFECT);
         if (mo)
         {
             mo->momx = victim->momx;
@@ -1181,8 +1181,8 @@ void P_BlastRadius(player_t * player)
         {                       // Not a valid monster
             continue;
         }
-        if ((mo->type == MT_POISONCLOUD) ||     // poison cloud
-            (mo->type == MT_HOLY_FX) || // holy fx
+        if ((mo->type == HEXEN_MT_POISONCLOUD) ||     // poison cloud
+            (mo->type == HEXEN_MT_HOLY_FX) || // holy fx
             (mo->flags & MF_ICECORPSE)) // frozen corpse
         {
             // Let these special cases go
@@ -1200,15 +1200,15 @@ void P_BlastRadius(player_t * player)
         {
             continue;           // no dormant creatures
         }
-        if ((mo->type == MT_WRAITHB) && (mo->flags2 & MF2_DONTDRAW))
+        if ((mo->type == HEXEN_MT_WRAITHB) && (mo->flags2 & MF2_DONTDRAW))
         {
             continue;           // no underground wraiths
         }
-        if ((mo->type == MT_SPLASHBASE) || (mo->type == MT_SPLASH))
+        if ((mo->type == HEXEN_MT_SPLASHBASE) || (mo->type == HEXEN_MT_SPLASH))
         {
             continue;
         }
-        if (mo->type == MT_SERPENT || mo->type == MT_SERPENTLEADER)
+        if (mo->type == HEXEN_MT_SERPENT || mo->type == HEXEN_MT_SERPENTLEADER)
         {
             continue;
         }
@@ -1457,11 +1457,11 @@ boolean P_UseArtifact(player_t * player, artitype_t arti)
             break;
         case arti_egg:
             mo = player->mo;
-            P_SpawnPlayerMissile(mo, MT_EGGFX);
-            P_SPMAngle(mo, MT_EGGFX, mo->angle - (ANG45 / 6));
-            P_SPMAngle(mo, MT_EGGFX, mo->angle + (ANG45 / 6));
-            P_SPMAngle(mo, MT_EGGFX, mo->angle - (ANG45 / 3));
-            P_SPMAngle(mo, MT_EGGFX, mo->angle + (ANG45 / 3));
+            P_SpawnPlayerMissile(mo, HEXEN_MT_EGGFX);
+            P_SPMAngle(mo, HEXEN_MT_EGGFX, mo->angle - (ANG45 / 6));
+            P_SPMAngle(mo, HEXEN_MT_EGGFX, mo->angle + (ANG45 / 6));
+            P_SPMAngle(mo, HEXEN_MT_EGGFX, mo->angle - (ANG45 / 3));
+            P_SPMAngle(mo, HEXEN_MT_EGGFX, mo->angle + (ANG45 / 3));
             break;
         case arti_fly:
             if (!P_GivePower(player, pw_flight))
@@ -1474,7 +1474,7 @@ boolean P_UseArtifact(player_t * player, artitype_t arti)
             }
             break;
         case arti_summon:
-            mo = P_SpawnPlayerMissile(player->mo, MT_SUMMON_FX);
+            mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_SUMMON_FX);
             if (mo)
             {
                 mo->target = player->mo;
@@ -1495,7 +1495,7 @@ boolean P_UseArtifact(player_t * player, artitype_t arti)
                 mo = P_SpawnMobj(player->mo->x + 16 * finecosine[angle],
                                  player->mo->y + 24 * finesine[angle],
                                  player->mo->z - player->mo->floorclip +
-                                 8 * FRACUNIT, MT_POISONBAG);
+                                 8 * FRACUNIT, HEXEN_MT_POISONBAG);
                 if (mo)
                 {
                     mo->target = player->mo;
@@ -1506,7 +1506,7 @@ boolean P_UseArtifact(player_t * player, artitype_t arti)
                 mo = P_SpawnMobj(player->mo->x + 16 * finecosine[angle],
                                  player->mo->y + 24 * finesine[angle],
                                  player->mo->z - player->mo->floorclip +
-                                 8 * FRACUNIT, MT_FIREBOMB);
+                                 8 * FRACUNIT, HEXEN_MT_FIREBOMB);
                 if (mo)
                 {
                     mo->target = player->mo;
@@ -1516,7 +1516,7 @@ boolean P_UseArtifact(player_t * player, artitype_t arti)
             {
                 mo = P_SpawnMobj(player->mo->x, player->mo->y,
                                  player->mo->z - player->mo->floorclip +
-                                 35 * FRACUNIT, MT_THROWINGBOMB);
+                                 35 * FRACUNIT, HEXEN_MT_THROWINGBOMB);
                 if (mo)
                 {
                     mo->angle =

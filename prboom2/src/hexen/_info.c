@@ -3130,7 +3130,7 @@ state_t states[NUMSTATES] = {
 
 mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
 
-    {                           // MT_MAPSPOT
+    {                           // HEXEN_MT_MAPSPOT
      9001,                      // doomednum
      S_MAPSPOT,                 // spawnstate
      1000,                      // spawnhealth
@@ -3157,7 +3157,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MAPSPOTGRAVITY
+    {                           // HEXEN_MT_MAPSPOTGRAVITY
      9013,                      // doomednum
      S_MAPSPOT,                 // spawnstate
      1000,                      // spawnhealth
@@ -3184,7 +3184,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_DONTDRAW               // flags2
      },
 
-    {                           // MT_FIREBALL1
+    {                           // HEXEN_MT_FIREBALL1
      -1,                        // doomednum
      S_FIREBALL1_1,             // spawnstate
      1000,                      // spawnhealth
@@ -3211,7 +3211,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
 
-    {                           // MT_ARROW
+    {                           // HEXEN_MT_ARROW
      -1,                        // doomednum
      S_ARROW_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -3238,7 +3238,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_DART
+    {                           // HEXEN_MT_DART
      -1,                        // doomednum
      S_DART_1,                  // spawnstate
      1000,                      // spawnhealth
@@ -3265,7 +3265,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_POISONDART
+    {                           // HEXEN_MT_POISONDART
      -1,                        // doomednum
      S_POISONDART_1,            // spawnstate
      1000,                      // spawnhealth
@@ -3292,7 +3292,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_RIPPERBALL
+    {                           // HEXEN_MT_RIPPERBALL
      -1,                        // doomednum
      S_RIPPERBALL_1,            // spawnstate
      1000,                      // spawnhealth
@@ -3319,7 +3319,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_RIP   // flags2
      },
 
-    {                           // MT_PROJECTILE_BLADE
+    {                           // HEXEN_MT_PROJECTILE_BLADE
      -1,                        // doomednum
      S_PRJ_BLADE1,              // spawnstate
      1000,                      // spawnhealth
@@ -3346,7 +3346,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_ICESHARD
+    {                           // HEXEN_MT_ICESHARD
      -1,                        // doomednum
      S_ICESHARD1,               // spawnstate
      1000,                      // spawnhealth
@@ -3373,7 +3373,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_ICEDAMAGE     // flags2
      },
 
-    {                           // MT_FLAME_SMALL_TEMP
+    {                           // HEXEN_MT_FLAME_SMALL_TEMP
      10500,                     // doomednum
      S_FLAME_TSMALL1,           // spawnstate
      1000,                      // spawnhealth
@@ -3400,7 +3400,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FLAME_LARGE_TEMP
+    {                           // HEXEN_MT_FLAME_LARGE_TEMP
      10502,                     // doomednum
      S_FLAME_TLARGE1,           // spawnstate
      1000,                      // spawnhealth
@@ -3427,7 +3427,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FLAME_SMALL
+    {                           // HEXEN_MT_FLAME_SMALL
      10501,                     // doomednum
      S_FLAME_SMALL1,            // spawnstate
      1000,                      // spawnhealth
@@ -3454,7 +3454,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_DONTDRAW      // flags2
      },
 
-    {                           // MT_FLAME_LARGE
+    {                           // HEXEN_MT_FLAME_LARGE
      10503,                     // doomednum
      S_FLAME_LARGE1,            // spawnstate
      1000,                      // spawnhealth
@@ -3481,7 +3481,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_DONTDRAW      // flags2
      },
 
-    {                           // MT_HEALINGBOTTLE
+    {                           // HEXEN_MT_HEALINGBOTTLE
      81,                        // doomednum
      S_ITEM_PTN1_1,             // spawnstate
      1000,                      // spawnhealth
@@ -3508,7 +3508,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_HEALTHFLASK
+    {                           // HEXEN_MT_HEALTHFLASK
      82,                        // doomednum
      S_ARTI_PTN2_1,             // spawnstate
      1000,                      // spawnhealth
@@ -3535,7 +3535,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_ARTIFLY
+    {                           // HEXEN_MT_ARTIFLY
      83,                        // doomednum
      S_ARTI_SOAR1,              // spawnstate
      1000,                      // spawnhealth
@@ -3562,7 +3562,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_ARTIINVULNERABILITY
+    {                           // HEXEN_MT_ARTIINVULNERABILITY
      84,                        // doomednum
      S_ARTI_INVU1,              // spawnstate
      1000,                      // spawnhealth
@@ -3589,7 +3589,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_SUMMONMAULATOR
+    {                           // HEXEN_MT_SUMMONMAULATOR
      86,                        // doomednum
      S_ARTI_SUMMON,             // spawnstate
      1000,                      // spawnhealth
@@ -3616,7 +3616,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_SUMMON_FX
+    {                           // HEXEN_MT_SUMMON_FX
      -1,                        // doomednum
      S_SUMMON_FX1_1,            // spawnstate
      1000,                      // spawnhealth
@@ -3643,7 +3643,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_THRUSTFLOOR_UP
+    {                           // HEXEN_MT_THRUSTFLOOR_UP
      10091,                     // doomednum
      S_THRUSTINIT2_1,           // spawnstate
      1000,                      // spawnhealth
@@ -3670,7 +3670,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_THRUSTFLOOR_DOWN
+    {                           // HEXEN_MT_THRUSTFLOOR_DOWN
      10090,                     // doomednum
      S_THRUSTINIT1_1,           // spawnstate
      1000,                      // spawnhealth
@@ -3697,7 +3697,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP | MF2_DONTDRAW      // flags2
      },
 
-    {                           // MT_TELEPORTOTHER
+    {                           // HEXEN_MT_TELEPORTOTHER
      10040,                     // doomednum
      S_ARTI_TELOTHER1,          // spawnstate
      1000,                      // spawnhealth
@@ -3724,7 +3724,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_TELOTHER_FX1
+    {                           // HEXEN_MT_TELOTHER_FX1
      -1,                        // doomednum
      S_TELO_FX1,                // spawnstate
      1000,                      // spawnhealth
@@ -3751,7 +3751,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_TELOTHER_FX2
+    {                           // HEXEN_MT_TELOTHER_FX2
      -1,                        // doomednum
      S_TELO_FX2_1,              // spawnstate
      1000,                      // spawnhealth
@@ -3778,7 +3778,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_TELOTHER_FX3
+    {                           // HEXEN_MT_TELOTHER_FX3
      -1,                        // doomednum
      S_TELO_FX3_1,              // spawnstate
      1000,                      // spawnhealth
@@ -3805,7 +3805,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_TELOTHER_FX4
+    {                           // HEXEN_MT_TELOTHER_FX4
      -1,                        // doomednum
      S_TELO_FX4_1,              // spawnstate
      1000,                      // spawnhealth
@@ -3832,7 +3832,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_TELOTHER_FX5
+    {                           // HEXEN_MT_TELOTHER_FX5
      -1,                        // doomednum
      S_TELO_FX5_1,              // spawnstate
      1000,                      // spawnhealth
@@ -3859,7 +3859,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_DIRT1
+    {                           // HEXEN_MT_DIRT1
      -1,                        // doomednum
      S_DIRT1_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -3886,7 +3886,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_DIRT2
+    {                           // HEXEN_MT_DIRT2
      -1,                        // doomednum
      S_DIRT2_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -3913,7 +3913,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_DIRT3
+    {                           // HEXEN_MT_DIRT3
      -1,                        // doomednum
      S_DIRT3_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -3940,7 +3940,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_DIRT4
+    {                           // HEXEN_MT_DIRT4
      -1,                        // doomednum
      S_DIRT4_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -3967,7 +3967,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
 
-    {                           // MT_DIRT5
+    {                           // HEXEN_MT_DIRT5
      -1,                        // doomednum
      S_DIRT5_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -3994,7 +3994,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
 
-    {                           // MT_DIRT6
+    {                           // HEXEN_MT_DIRT6
      -1,                        // doomednum
      S_DIRT6_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -4021,7 +4021,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
 
-    {                           // MT_DIRTCLUMP
+    {                           // HEXEN_MT_DIRTCLUMP
      -1,                        // doomednum
      S_DIRTCLUMP1,              // spawnstate
      1000,                      // spawnhealth
@@ -4048,7 +4048,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_ROCK1
+    {                           // HEXEN_MT_ROCK1
      -1,                        // doomednum
      S_ROCK1_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -4075,7 +4075,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_ROCK2
+    {                           // HEXEN_MT_ROCK2
      -1,                        // doomednum
      S_ROCK2_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -4102,7 +4102,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_ROCK3
+    {                           // HEXEN_MT_ROCK3
      -1,                        // doomednum
      S_ROCK3_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -4129,7 +4129,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FOGSPAWNER
+    {                           // HEXEN_MT_FOGSPAWNER
      10000,                     // doomednum
      S_SPAWNFOG1,               // spawnstate
      1000,                      // spawnhealth
@@ -4156,7 +4156,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_DONTDRAW | MF2_FLOATBOB        // flags2
      },
 
-    {                           // MT_FOGPATCHS
+    {                           // HEXEN_MT_FOGPATCHS
      10001,                     // doomednum
      S_FOGPATCHS1,              // spawnstate
      1000,                      // spawnhealth
@@ -4183,7 +4183,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FOGPATCHM
+    {                           // HEXEN_MT_FOGPATCHM
      10002,                     // doomednum
      S_FOGPATCHM1,              // spawnstate
      1000,                      // spawnhealth
@@ -4210,7 +4210,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FOGPATCHL
+    {                           // HEXEN_MT_FOGPATCHL
      10003,                     // doomednum
      S_FOGPATCHL1,              // spawnstate
      1000,                      // spawnhealth
@@ -4237,7 +4237,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_QUAKE_FOCUS
+    {                           // HEXEN_MT_QUAKE_FOCUS
      -1,                        // doomednum
      S_QUAKE_ACTIVE1,           // spawnstate
      1000,                      // spawnhealth
@@ -4264,7 +4264,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_DONTDRAW               // flags2
      },
 
-    {                           // MT_SGSHARD1
+    {                           // HEXEN_MT_SGSHARD1
      -1,                        // doomednum
      S_SGSHARD1_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4291,7 +4291,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SGSHARD2
+    {                           // HEXEN_MT_SGSHARD2
      -1,                        // doomednum
      S_SGSHARD2_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4318,7 +4318,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SGSHARD3
+    {                           // HEXEN_MT_SGSHARD3
      -1,                        // doomednum
      S_SGSHARD3_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4345,7 +4345,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SGSHARD4
+    {                           // HEXEN_MT_SGSHARD4
      -1,                        // doomednum
      S_SGSHARD4_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4372,7 +4372,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SGSHARD5
+    {                           // HEXEN_MT_SGSHARD5
      -1,                        // doomednum
      S_SGSHARD5_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4399,7 +4399,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SGSHARD6
+    {                           // HEXEN_MT_SGSHARD6
      -1,                        // doomednum
      S_SGSHARD6_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4426,7 +4426,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SGSHARD7
+    {                           // HEXEN_MT_SGSHARD7
      -1,                        // doomednum
      S_SGSHARD7_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4453,7 +4453,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SGSHARD8
+    {                           // HEXEN_MT_SGSHARD8
      -1,                        // doomednum
      S_SGSHARD8_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4480,7 +4480,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SGSHARD9
+    {                           // HEXEN_MT_SGSHARD9
      -1,                        // doomednum
      S_SGSHARD9_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4507,7 +4507,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SGSHARD0
+    {                           // HEXEN_MT_SGSHARD0
      -1,                        // doomednum
      S_SGSHARD0_1,              // spawnstate
      1000,                      // spawnhealth
@@ -4534,7 +4534,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_ARTIEGG
+    {                           // HEXEN_MT_ARTIEGG
      30,                        // doomednum
      S_ARTI_EGGC1,              // spawnstate
      1000,                      // spawnhealth
@@ -4561,7 +4561,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_EGGFX
+    {                           // HEXEN_MT_EGGFX
      -1,                        // doomednum
      S_EGGFX1,                  // spawnstate
      1000,                      // spawnhealth
@@ -4588,7 +4588,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_ARTISUPERHEAL
+    {                           // HEXEN_MT_ARTISUPERHEAL
      32,                        // doomednum
      S_ARTI_SPHL1,              // spawnstate
      1000,                      // spawnhealth
@@ -4615,7 +4615,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_ZWINGEDSTATUENOSKULL
+    {                           // HEXEN_MT_ZWINGEDSTATUENOSKULL
      9011,                      // doomednum
      S_ZWINGEDSTATUENOSKULL,    // spawnstate
      1000,                      // spawnhealth
@@ -4642,7 +4642,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZGEMPEDESTAL
+    {                           // HEXEN_MT_ZGEMPEDESTAL
      9012,                      // doomednum
      S_ZGEMPEDESTAL1,           // spawnstate
      1000,                      // spawnhealth
@@ -4669,7 +4669,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZSKULL
+    {                           // HEXEN_MT_ARTIPUZZSKULL
      9002,                      // doomednum
      S_ARTIPUZZSKULL,           // spawnstate
      1000,                      // spawnhealth
@@ -4696,7 +4696,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEMBIG
+    {                           // HEXEN_MT_ARTIPUZZGEMBIG
      9003,                      // doomednum
      S_ARTIPUZZGEMBIG,          // spawnstate
      1000,                      // spawnhealth
@@ -4723,7 +4723,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEMRED
+    {                           // HEXEN_MT_ARTIPUZZGEMRED
      9004,                      // doomednum
      S_ARTIPUZZGEMRED,          // spawnstate
      1000,                      // spawnhealth
@@ -4750,7 +4750,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEMGREEN1
+    {                           // HEXEN_MT_ARTIPUZZGEMGREEN1
      9005,                      // doomednum
      S_ARTIPUZZGEMGREEN1,       // spawnstate
      1000,                      // spawnhealth
@@ -4777,7 +4777,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEMGREEN2
+    {                           // HEXEN_MT_ARTIPUZZGEMGREEN2
      9009,                      // doomednum
      S_ARTIPUZZGEMGREEN2,       // spawnstate
      1000,                      // spawnhealth
@@ -4804,7 +4804,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEMBLUE1
+    {                           // HEXEN_MT_ARTIPUZZGEMBLUE1
      9006,                      // doomednum
      S_ARTIPUZZGEMBLUE1,        // spawnstate
      1000,                      // spawnhealth
@@ -4831,7 +4831,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEMBLUE2
+    {                           // HEXEN_MT_ARTIPUZZGEMBLUE2
      9010,                      // doomednum
      S_ARTIPUZZGEMBLUE2,        // spawnstate
      1000,                      // spawnhealth
@@ -4858,7 +4858,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZBOOK1
+    {                           // HEXEN_MT_ARTIPUZZBOOK1
      9007,                      // doomednum
      S_ARTIPUZZBOOK1,           // spawnstate
      1000,                      // spawnhealth
@@ -4885,7 +4885,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZBOOK2
+    {                           // HEXEN_MT_ARTIPUZZBOOK2
      9008,                      // doomednum
      S_ARTIPUZZBOOK2,           // spawnstate
      1000,                      // spawnhealth
@@ -4912,7 +4912,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZSKULL2
+    {                           // HEXEN_MT_ARTIPUZZSKULL2
      9014,                      // doomednum
      S_ARTIPUZZSKULL2,          // spawnstate
      1000,                      // spawnhealth
@@ -4939,7 +4939,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZFWEAPON
+    {                           // HEXEN_MT_ARTIPUZZFWEAPON
      9015,                      // doomednum
      S_ARTIPUZZFWEAPON,         // spawnstate
      1000,                      // spawnhealth
@@ -4966,7 +4966,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZCWEAPON
+    {                           // HEXEN_MT_ARTIPUZZCWEAPON
      9016,                      // doomednum
      S_ARTIPUZZCWEAPON,         // spawnstate
      1000,                      // spawnhealth
@@ -4993,7 +4993,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZMWEAPON
+    {                           // HEXEN_MT_ARTIPUZZMWEAPON
      9017,                      // doomednum
      S_ARTIPUZZMWEAPON,         // spawnstate
      1000,                      // spawnhealth
@@ -5020,7 +5020,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEAR
+    {                           // HEXEN_MT_ARTIPUZZGEAR
      9018,                      // doomednum
      S_ARTIPUZZGEAR_1,          // spawnstate
      1000,                      // spawnhealth
@@ -5047,7 +5047,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEAR2
+    {                           // HEXEN_MT_ARTIPUZZGEAR2
      9019,                      // doomednum
      S_ARTIPUZZGEAR2_1,         // spawnstate
      1000,                      // spawnhealth
@@ -5074,7 +5074,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEAR3
+    {                           // HEXEN_MT_ARTIPUZZGEAR3
      9020,                      // doomednum
      S_ARTIPUZZGEAR3_1,         // spawnstate
      1000,                      // spawnhealth
@@ -5101,7 +5101,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTIPUZZGEAR4
+    {                           // HEXEN_MT_ARTIPUZZGEAR4
      9021,                      // doomednum
      S_ARTIPUZZGEAR4_1,         // spawnstate
      1000,                      // spawnhealth
@@ -5128,7 +5128,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARTITORCH
+    {                           // HEXEN_MT_ARTITORCH
      33,                        // doomednum
      S_ARTI_TRCH1,              // spawnstate
      1000,                      // spawnhealth
@@ -5155,7 +5155,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_FIREBOMB
+    {                           // HEXEN_MT_FIREBOMB
      -1,                        // doomednum
      S_FIREBOMB1,               // spawnstate
      1000,                      // spawnhealth
@@ -5182,7 +5182,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FIREDAMAGE             // flags2
      },
 
-    {                           // MT_ARTITELEPORT
+    {                           // HEXEN_MT_ARTITELEPORT
      36,                        // doomednum
      S_ARTI_ATLP1,              // spawnstate
      1000,                      // spawnhealth
@@ -5209,7 +5209,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_ARTIPOISONBAG
+    {                           // HEXEN_MT_ARTIPOISONBAG
      8000,                      // doomednum
      S_ARTI_PSBG1,              // spawnstate
      1000,                      // spawnhealth
@@ -5236,7 +5236,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_POISONBAG
+    {                           // HEXEN_MT_POISONBAG
      -1,                        // doomednum
      S_POISONBAG1,              // spawnstate
      1000,                      // spawnhealth
@@ -5263,7 +5263,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_POISONCLOUD
+    {                           // HEXEN_MT_POISONCLOUD
      -1,                        // doomednum
      S_POISONCLOUD1,            // spawnstate
      1000,                      // spawnhealth
@@ -5290,7 +5290,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NODMGTHRUST            // flags2
      },
 
-    {                           // MT_THROWINGBOMB
+    {                           // HEXEN_MT_THROWINGBOMB
      -1,                        // doomednum
      S_THROWINGBOMB1,           // spawnstate
      48,                        // spawnhealth
@@ -5317,7 +5317,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORBOUNCE | MF2_FIREDAMAGE   // flags2
      },
 
-    {                           // MT_SPEEDBOOTS
+    {                           // HEXEN_MT_SPEEDBOOTS
      8002,                      // doomednum
      S_ARTI_BOOTS1,             // spawnstate
      1000,                      // spawnhealth
@@ -5344,7 +5344,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_BOOSTMANA
+    {                           // HEXEN_MT_BOOSTMANA
      8003,                      // doomednum
      S_ARTI_MANA,               // spawnstate
      1000,                      // spawnhealth
@@ -5371,7 +5371,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_BOOSTARMOR
+    {                           // HEXEN_MT_BOOSTARMOR
      8041,                      // doomednum
      S_ARTI_ARMOR1,             // spawnstate
      1000,                      // spawnhealth
@@ -5398,7 +5398,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_BLASTRADIUS
+    {                           // HEXEN_MT_BLASTRADIUS
      10110,                     // doomednum
      S_ARTI_BLAST1,             // spawnstate
      1000,                      // spawnhealth
@@ -5425,7 +5425,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_HEALRADIUS
+    {                           // HEXEN_MT_HEALRADIUS
      10120,                     // doomednum
      S_ARTI_HEALRAD1,           // spawnstate
      1000,                      // spawnhealth
@@ -5452,7 +5452,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_SPLASH
+    {                           // HEXEN_MT_SPLASH
      -1,                        // doomednum
      S_SPLASH1,                 // spawnstate
      1000,                      // spawnhealth
@@ -5479,7 +5479,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV | MF2_CANNOTPUSH       // flags2
      },
 
-    {                           // MT_SPLASHBASE
+    {                           // HEXEN_MT_SPLASHBASE
      -1,                        // doomednum
      S_SPLASHBASE1,             // spawnstate
      1000,                      // spawnhealth
@@ -5506,7 +5506,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_LAVASPLASH
+    {                           // HEXEN_MT_LAVASPLASH
      -1,                        // doomednum
      S_LAVASPLASH1,             // spawnstate
      1000,                      // spawnhealth
@@ -5533,7 +5533,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_LAVASMOKE
+    {                           // HEXEN_MT_LAVASMOKE
      -1,                        // doomednum
      S_LAVASMOKE1,              // spawnstate
      1000,                      // spawnhealth
@@ -5560,7 +5560,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_SLUDGECHUNK
+    {                           // HEXEN_MT_SLUDGECHUNK
      -1,                        // doomednum
      S_SLUDGECHUNK1,            // spawnstate
      1000,                      // spawnhealth
@@ -5587,7 +5587,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV | MF2_CANNOTPUSH       // flags2
      },
 
-    {                           // MT_SLUDGESPLASH
+    {                           // HEXEN_MT_SLUDGESPLASH
      -1,                        // doomednum
      S_SLUDGESPLASH1,           // spawnstate
      1000,                      // spawnhealth
@@ -5614,7 +5614,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC0
+    {                           // HEXEN_MT_MISC0
      5,                         // doomednum
      S_ZWINGEDSTATUE1,          // spawnstate
      1000,                      // spawnhealth
@@ -5641,7 +5641,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC1
+    {                           // HEXEN_MT_MISC1
      6,                         // doomednum
      S_ZROCK1_1,                // spawnstate
      1000,                      // spawnhealth
@@ -5668,7 +5668,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC2
+    {                           // HEXEN_MT_MISC2
      7,                         // doomednum
      S_ZROCK2_1,                // spawnstate
      1000,                      // spawnhealth
@@ -5695,7 +5695,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC3
+    {                           // HEXEN_MT_MISC3
      9,                         // doomednum
      S_ZROCK3_1,                // spawnstate
      1000,                      // spawnhealth
@@ -5722,7 +5722,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC4
+    {                           // HEXEN_MT_MISC4
      15,                        // doomednum
      S_ZROCK4_1,                // spawnstate
      1000,                      // spawnhealth
@@ -5749,7 +5749,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC5
+    {                           // HEXEN_MT_MISC5
      17,                        // doomednum
      S_ZCHANDELIER1,            // spawnstate
      1000,                      // spawnhealth
@@ -5776,7 +5776,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC6
+    {                           // HEXEN_MT_MISC6
      8063,                      // doomednum
      S_ZCHANDELIER_U,           // spawnstate
      1000,                      // spawnhealth
@@ -5803,7 +5803,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC7
+    {                           // HEXEN_MT_MISC7
      24,                        // doomednum
      S_ZTREEDEAD1,              // spawnstate
      1000,                      // spawnhealth
@@ -5830,7 +5830,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC8
+    {                           // HEXEN_MT_MISC8
      25,                        // doomednum
      S_ZTREE,                   // spawnstate
      1000,                      // spawnhealth
@@ -5857,7 +5857,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TREEDESTRUCTIBLE
+    {                           // HEXEN_MT_TREEDESTRUCTIBLE
      8062,                      // doomednum
      S_ZTREEDESTRUCTIBLE1,      // spawnstate
      70,                        // spawnhealth
@@ -5884,7 +5884,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC9
+    {                           // HEXEN_MT_MISC9
      26,                        // doomednum
      S_ZTREESWAMP182_1,         // spawnstate
      1000,                      // spawnhealth
@@ -5911,7 +5911,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC10
+    {                           // HEXEN_MT_MISC10
      27,                        // doomednum
      S_ZTREESWAMP172_1,         // spawnstate
      1000,                      // spawnhealth
@@ -5938,7 +5938,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC11
+    {                           // HEXEN_MT_MISC11
      28,                        // doomednum
      S_ZSTUMPBURNED1,           // spawnstate
      1000,                      // spawnhealth
@@ -5965,7 +5965,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC12
+    {                           // HEXEN_MT_MISC12
      29,                        // doomednum
      S_ZSTUMPBARE1,             // spawnstate
      1000,                      // spawnhealth
@@ -5992,7 +5992,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC13
+    {                           // HEXEN_MT_MISC13
      37,                        // doomednum
      S_ZSTUMPSWAMP1_1,          // spawnstate
      1000,                      // spawnhealth
@@ -6019,7 +6019,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC14
+    {                           // HEXEN_MT_MISC14
      38,                        // doomednum
      S_ZSTUMPSWAMP2_1,          // spawnstate
      1000,                      // spawnhealth
@@ -6046,7 +6046,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC15
+    {                           // HEXEN_MT_MISC15
      39,                        // doomednum
      S_ZSHROOMLARGE1_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6073,7 +6073,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC16
+    {                           // HEXEN_MT_MISC16
      40,                        // doomednum
      S_ZSHROOMLARGE2_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6100,7 +6100,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC17
+    {                           // HEXEN_MT_MISC17
      41,                        // doomednum
      S_ZSHROOMLARGE3_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6127,7 +6127,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC18
+    {                           // HEXEN_MT_MISC18
      42,                        // doomednum
      S_ZSHROOMSMALL1_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6154,7 +6154,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC19
+    {                           // HEXEN_MT_MISC19
      44,                        // doomednum
      S_ZSHROOMSMALL2_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6181,7 +6181,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC20
+    {                           // HEXEN_MT_MISC20
      45,                        // doomednum
      S_ZSHROOMSMALL3_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6208,7 +6208,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC21
+    {                           // HEXEN_MT_MISC21
      46,                        // doomednum
      S_ZSHROOMSMALL4_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6235,7 +6235,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC22
+    {                           // HEXEN_MT_MISC22
      47,                        // doomednum
      S_ZSHROOMSMALL5_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6262,7 +6262,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC23
+    {                           // HEXEN_MT_MISC23
      48,                        // doomednum
      S_ZSTALAGMITEPILLAR1,      // spawnstate
      1000,                      // spawnhealth
@@ -6289,7 +6289,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC24
+    {                           // HEXEN_MT_MISC24
      49,                        // doomednum
      S_ZSTALAGMITELARGE1,       // spawnstate
      1000,                      // spawnhealth
@@ -6316,7 +6316,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC25
+    {                           // HEXEN_MT_MISC25
      50,                        // doomednum
      S_ZSTALAGMITEMEDIUM1,      // spawnstate
      1000,                      // spawnhealth
@@ -6343,7 +6343,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC26
+    {                           // HEXEN_MT_MISC26
      51,                        // doomednum
      S_ZSTALAGMITESMALL1,       // spawnstate
      1000,                      // spawnhealth
@@ -6370,7 +6370,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC27
+    {                           // HEXEN_MT_MISC27
      52,                        // doomednum
      S_ZSTALACTITELARGE1,       // spawnstate
      1000,                      // spawnhealth
@@ -6397,7 +6397,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC28
+    {                           // HEXEN_MT_MISC28
      56,                        // doomednum
      S_ZSTALACTITEMEDIUM1,      // spawnstate
      1000,                      // spawnhealth
@@ -6424,7 +6424,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC29
+    {                           // HEXEN_MT_MISC29
      57,                        // doomednum
      S_ZSTALACTITESMALL1,       // spawnstate
      1000,                      // spawnhealth
@@ -6451,7 +6451,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC30
+    {                           // HEXEN_MT_MISC30
      58,                        // doomednum
      S_ZMOSSCEILING1_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6478,7 +6478,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC31
+    {                           // HEXEN_MT_MISC31
      59,                        // doomednum
      S_ZMOSSCEILING2_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6505,7 +6505,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC32
+    {                           // HEXEN_MT_MISC32
      60,                        // doomednum
      S_ZSWAMPVINE1,             // spawnstate
      1000,                      // spawnhealth
@@ -6532,7 +6532,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC33
+    {                           // HEXEN_MT_MISC33
      61,                        // doomednum
      S_ZCORPSEKABOB1,           // spawnstate
      1000,                      // spawnhealth
@@ -6559,7 +6559,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC34
+    {                           // HEXEN_MT_MISC34
      62,                        // doomednum
      S_ZCORPSESLEEPING1,        // spawnstate
      1000,                      // spawnhealth
@@ -6586,7 +6586,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC35
+    {                           // HEXEN_MT_MISC35
      63,                        // doomednum
      S_ZTOMBSTONERIP1,          // spawnstate
      1000,                      // spawnhealth
@@ -6613,7 +6613,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC36
+    {                           // HEXEN_MT_MISC36
      64,                        // doomednum
      S_ZTOMBSTONESHANE1,        // spawnstate
      1000,                      // spawnhealth
@@ -6640,7 +6640,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC37
+    {                           // HEXEN_MT_MISC37
      65,                        // doomednum
      S_ZTOMBSTONEBIGCROSS1,     // spawnstate
      1000,                      // spawnhealth
@@ -6667,7 +6667,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC38
+    {                           // HEXEN_MT_MISC38
      66,                        // doomednum
      S_ZTOMBSTONEBRIANR1,       // spawnstate
      1000,                      // spawnhealth
@@ -6694,7 +6694,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC39
+    {                           // HEXEN_MT_MISC39
      67,                        // doomednum
      S_ZTOMBSTONECROSSCIRCLE1,  // spawnstate
      1000,                      // spawnhealth
@@ -6721,7 +6721,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC40
+    {                           // HEXEN_MT_MISC40
      68,                        // doomednum
      S_ZTOMBSTONESMALLCROSS1,   // spawnstate
      1000,                      // spawnhealth
@@ -6748,7 +6748,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC41
+    {                           // HEXEN_MT_MISC41
      69,                        // doomednum
      S_ZTOMBSTONEBRIANP1,       // spawnstate
      1000,                      // spawnhealth
@@ -6775,7 +6775,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC42
+    {                           // HEXEN_MT_MISC42
      71,                        // doomednum
      S_CORPSEHANGING_1,         // spawnstate
      1000,                      // spawnhealth
@@ -6802,7 +6802,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC43
+    {                           // HEXEN_MT_MISC43
      72,                        // doomednum
      S_ZSTATUEGARGOYLEGREENTALL_1,      // spawnstate
      1000,                      // spawnhealth
@@ -6829,7 +6829,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC44
+    {                           // HEXEN_MT_MISC44
      73,                        // doomednum
      S_ZSTATUEGARGOYLEBLUETALL_1,       // spawnstate
      1000,                      // spawnhealth
@@ -6856,7 +6856,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC45
+    {                           // HEXEN_MT_MISC45
      74,                        // doomednum
      S_ZSTATUEGARGOYLEGREENSHORT_1,     // spawnstate
      1000,                      // spawnhealth
@@ -6883,7 +6883,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC46
+    {                           // HEXEN_MT_MISC46
      76,                        // doomednum
      S_ZSTATUEGARGOYLEBLUESHORT_1,      // spawnstate
      1000,                      // spawnhealth
@@ -6910,7 +6910,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC47
+    {                           // HEXEN_MT_MISC47
      8044,                      // doomednum
      S_ZSTATUEGARGOYLESTRIPETALL_1,     // spawnstate
      1000,                      // spawnhealth
@@ -6937,7 +6937,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC48
+    {                           // HEXEN_MT_MISC48
      8045,                      // doomednum
      S_ZSTATUEGARGOYLEDARKREDTALL_1,    // spawnstate
      1000,                      // spawnhealth
@@ -6964,7 +6964,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC49
+    {                           // HEXEN_MT_MISC49
      8046,                      // doomednum
      S_ZSTATUEGARGOYLEREDTALL_1,        // spawnstate
      1000,                      // spawnhealth
@@ -6991,7 +6991,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC50
+    {                           // HEXEN_MT_MISC50
      8047,                      // doomednum
      S_ZSTATUEGARGOYLETANTALL_1,        // spawnstate
      1000,                      // spawnhealth
@@ -7018,7 +7018,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC51
+    {                           // HEXEN_MT_MISC51
      8048,                      // doomednum
      S_ZSTATUEGARGOYLERUSTTALL_1,       // spawnstate
      1000,                      // spawnhealth
@@ -7045,7 +7045,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC52
+    {                           // HEXEN_MT_MISC52
      8049,                      // doomednum
      S_ZSTATUEGARGOYLEDARKREDSHORT_1,   // spawnstate
      1000,                      // spawnhealth
@@ -7072,7 +7072,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC53
+    {                           // HEXEN_MT_MISC53
      8050,                      // doomednum
      S_ZSTATUEGARGOYLEREDSHORT_1,       // spawnstate
      1000,                      // spawnhealth
@@ -7099,7 +7099,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC54
+    {                           // HEXEN_MT_MISC54
      8051,                      // doomednum
      S_ZSTATUEGARGOYLETANSHORT_1,       // spawnstate
      1000,                      // spawnhealth
@@ -7126,7 +7126,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC55
+    {                           // HEXEN_MT_MISC55
      8052,                      // doomednum
      S_ZSTATUEGARGOYLERUSTSHORT_1,      // spawnstate
      1000,                      // spawnhealth
@@ -7153,7 +7153,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC56
+    {                           // HEXEN_MT_MISC56
      77,                        // doomednum
      S_ZBANNERTATTERED_1,       // spawnstate
      1000,                      // spawnhealth
@@ -7180,7 +7180,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC57
+    {                           // HEXEN_MT_MISC57
      78,                        // doomednum
      S_ZTREELARGE1,             // spawnstate
      1000,                      // spawnhealth
@@ -7207,7 +7207,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC58
+    {                           // HEXEN_MT_MISC58
      79,                        // doomednum
      S_ZTREELARGE2,             // spawnstate
      1000,                      // spawnhealth
@@ -7234,7 +7234,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC59
+    {                           // HEXEN_MT_MISC59
      80,                        // doomednum
      S_ZTREEGNARLED1,           // spawnstate
      1000,                      // spawnhealth
@@ -7261,7 +7261,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC60
+    {                           // HEXEN_MT_MISC60
      87,                        // doomednum
      S_ZTREEGNARLED2,           // spawnstate
      1000,                      // spawnhealth
@@ -7288,7 +7288,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC61
+    {                           // HEXEN_MT_MISC61
      88,                        // doomednum
      S_ZLOG,                    // spawnstate
      1000,                      // spawnhealth
@@ -7315,7 +7315,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC62
+    {                           // HEXEN_MT_MISC62
      89,                        // doomednum
      S_ZSTALACTITEICELARGE,     // spawnstate
      1000,                      // spawnhealth
@@ -7342,7 +7342,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC63
+    {                           // HEXEN_MT_MISC63
      90,                        // doomednum
      S_ZSTALACTITEICEMEDIUM,    // spawnstate
      1000,                      // spawnhealth
@@ -7369,7 +7369,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC64
+    {                           // HEXEN_MT_MISC64
      91,                        // doomednum
      S_ZSTALACTITEICESMALL,     // spawnstate
      1000,                      // spawnhealth
@@ -7396,7 +7396,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC65
+    {                           // HEXEN_MT_MISC65
      92,                        // doomednum
      S_ZSTALACTITEICETINY,      // spawnstate
      1000,                      // spawnhealth
@@ -7423,7 +7423,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC66
+    {                           // HEXEN_MT_MISC66
      93,                        // doomednum
      S_ZSTALAGMITEICELARGE,     // spawnstate
      1000,                      // spawnhealth
@@ -7450,7 +7450,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC67
+    {                           // HEXEN_MT_MISC67
      94,                        // doomednum
      S_ZSTALAGMITEICEMEDIUM,    // spawnstate
      1000,                      // spawnhealth
@@ -7477,7 +7477,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC68
+    {                           // HEXEN_MT_MISC68
      95,                        // doomednum
      S_ZSTALAGMITEICESMALL,     // spawnstate
      1000,                      // spawnhealth
@@ -7504,7 +7504,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC69
+    {                           // HEXEN_MT_MISC69
      96,                        // doomednum
      S_ZSTALAGMITEICETINY,      // spawnstate
      1000,                      // spawnhealth
@@ -7531,7 +7531,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC70
+    {                           // HEXEN_MT_MISC70
      97,                        // doomednum
      S_ZROCKBROWN1,             // spawnstate
      1000,                      // spawnhealth
@@ -7558,7 +7558,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC71
+    {                           // HEXEN_MT_MISC71
      98,                        // doomednum
      S_ZROCKBROWN2,             // spawnstate
      1000,                      // spawnhealth
@@ -7585,7 +7585,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC72
+    {                           // HEXEN_MT_MISC72
      99,                        // doomednum
      S_ZROCKBLACK,              // spawnstate
      1000,                      // spawnhealth
@@ -7612,7 +7612,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC73
+    {                           // HEXEN_MT_MISC73
      100,                       // doomednum
      S_ZRUBBLE1,                // spawnstate
      1000,                      // spawnhealth
@@ -7639,7 +7639,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC74
+    {                           // HEXEN_MT_MISC74
      101,                       // doomednum
      S_ZRUBBLE2,                // spawnstate
      1000,                      // spawnhealth
@@ -7666,7 +7666,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC75
+    {                           // HEXEN_MT_MISC75
      102,                       // doomednum
      S_ZRUBBLE3,                // spawnstate
      1000,                      // spawnhealth
@@ -7693,7 +7693,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC76
+    {                           // HEXEN_MT_MISC76
      103,                       // doomednum
      S_ZVASEPILLAR,             // spawnstate
      1000,                      // spawnhealth
@@ -7720,7 +7720,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_POTTERY1
+    {                           // HEXEN_MT_POTTERY1
      104,                       // doomednum
      S_ZPOTTERY1,               // spawnstate
      15,                        // spawnhealth
@@ -7747,7 +7747,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_SLIDE | MF2_PUSHABLE | MF2_TELESTOMP | MF2_PASSMOBJ    // flags2
      },
 
-    {                           // MT_POTTERY2
+    {                           // HEXEN_MT_POTTERY2
      105,                       // doomednum
      S_ZPOTTERY2,               // spawnstate
      15,                        // spawnhealth
@@ -7774,7 +7774,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_SLIDE | MF2_PUSHABLE | MF2_TELESTOMP | MF2_PASSMOBJ    // flags2
      },
 
-    {                           // MT_POTTERY3
+    {                           // HEXEN_MT_POTTERY3
      106,                       // doomednum
      S_ZPOTTERY3,               // spawnstate
      15,                        // spawnhealth
@@ -7801,7 +7801,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_SLIDE | MF2_PUSHABLE | MF2_TELESTOMP | MF2_PASSMOBJ    // flags2
      },
 
-    {                           // MT_POTTERYBIT1
+    {                           // HEXEN_MT_POTTERYBIT1
      -1,                        // doomednum
      S_POTTERYBIT_1,            // spawnstate
      1000,                      // spawnhealth
@@ -7828,7 +7828,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_MISC77
+    {                           // HEXEN_MT_MISC77
      108,                       // doomednum
      S_ZCORPSELYNCHED1,         // spawnstate
      1000,                      // spawnhealth
@@ -7855,7 +7855,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZLYNCHED_NOHEART
+    {                           // HEXEN_MT_ZLYNCHED_NOHEART
      109,                       // doomednum
      S_ZCORPSELYNCHED2,         // spawnstate
      1000,                      // spawnhealth
@@ -7882,7 +7882,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC78
+    {                           // HEXEN_MT_MISC78
      110,                       // doomednum
      S_ZCORPSESITTING,          // spawnstate
      30,                        // spawnhealth
@@ -7909,7 +7909,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_CORPSEBIT
+    {                           // HEXEN_MT_CORPSEBIT
      -1,                        // doomednum
      S_CORPSEBIT_1,             // spawnstate
      1000,                      // spawnhealth
@@ -7936,7 +7936,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_TELESTOMP              // flags2
      },
 
-    {                           // MT_CORPSEBLOODDRIP
+    {                           // HEXEN_MT_CORPSEBLOODDRIP
      -1,                        // doomednum
      S_CORPSEBLOODDRIP,         // spawnstate
      1000,                      // spawnhealth
@@ -7963,7 +7963,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_LOGRAV                 // flags2
      },
 
-    {                           // MT_BLOODPOOL
+    {                           // HEXEN_MT_BLOODPOOL
      111,                       // doomednum
      S_BLOODPOOL,               // spawnstate
      1000,                      // spawnhealth
@@ -7990,7 +7990,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC79
+    {                           // HEXEN_MT_MISC79
      119,                       // doomednum
      S_ZCANDLE1,                // spawnstate
      1000,                      // spawnhealth
@@ -8017,7 +8017,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC80
+    {                           // HEXEN_MT_MISC80
      113,                       // doomednum
      S_ZLEAFSPAWNER,            // spawnstate
      1000,                      // spawnhealth
@@ -8044,7 +8044,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_DONTDRAW               // flags2
      },
 
-    {                           // MT_LEAF1
+    {                           // HEXEN_MT_LEAF1
      -1,                        // doomednum
      S_LEAF1_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -8071,7 +8071,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
 
-    {                           // MT_LEAF2
+    {                           // HEXEN_MT_LEAF2
      -1,                        // doomednum
      S_LEAF2_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -8098,7 +8098,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
 
-    {                           // MT_ZTWINEDTORCH
+    {                           // HEXEN_MT_ZTWINEDTORCH
      116,                       // doomednum
      S_ZTWINEDTORCH_1,          // spawnstate
      1000,                      // spawnhealth
@@ -8125,7 +8125,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZTWINEDTORCH_UNLIT
+    {                           // HEXEN_MT_ZTWINEDTORCH_UNLIT
      117,                       // doomednum
      S_ZTWINEDTORCH_UNLIT,      // spawnstate
      1000,                      // spawnhealth
@@ -8152,7 +8152,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_BRIDGE
+    {                           // HEXEN_MT_BRIDGE
      118,                       // doomednum
      S_BRIDGE1,                 // spawnstate
      1000,                      // spawnhealth
@@ -8179,7 +8179,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_DONTDRAW               // flags2
      },
 
-    {                           // MT_BRIDGEBALL
+    {                           // HEXEN_MT_BRIDGEBALL
      -1,                        // doomednum
      S_BBALL1,                  // spawnstate
      1000,                      // spawnhealth
@@ -8206,7 +8206,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_ZWALLTORCH
+    {                           // HEXEN_MT_ZWALLTORCH
      54,                        // doomednum
      S_ZWALLTORCH1,             // spawnstate
      1000,                      // spawnhealth
@@ -8233,7 +8233,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZWALLTORCH_UNLIT
+    {                           // HEXEN_MT_ZWALLTORCH_UNLIT
      55,                        // doomednum
      S_ZWALLTORCH_U,            // spawnstate
      1000,                      // spawnhealth
@@ -8260,7 +8260,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZBARREL
+    {                           // HEXEN_MT_ZBARREL
      8100,                      // doomednum
      S_ZBARREL1,                // spawnstate
      1000,                      // spawnhealth
@@ -8287,7 +8287,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZSHRUB1
+    {                           // HEXEN_MT_ZSHRUB1
      8101,                      // doomednum
      S_ZSHRUB1,                 // spawnstate
      20,                        // spawnhealth
@@ -8314,7 +8314,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZSHRUB2
+    {                           // HEXEN_MT_ZSHRUB2
      8102,                      // doomednum
      S_ZSHRUB2,                 // spawnstate
      10,                        // spawnhealth
@@ -8341,7 +8341,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZBUCKET
+    {                           // HEXEN_MT_ZBUCKET
      8103,                      // doomednum
      S_ZBUCKET1,                // spawnstate
      1000,                      // spawnhealth
@@ -8368,7 +8368,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZPOISONSHROOM
+    {                           // HEXEN_MT_ZPOISONSHROOM
      8104,                      // doomednum
      S_ZPOISONSHROOM1,          // spawnstate
      30,                        // spawnhealth
@@ -8395,7 +8395,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZFIREBULL
+    {                           // HEXEN_MT_ZFIREBULL
      8042,                      // doomednum
      S_ZFIREBULL1,              // spawnstate
      1000,                      // spawnhealth
@@ -8422,7 +8422,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZFIREBULL_UNLIT
+    {                           // HEXEN_MT_ZFIREBULL_UNLIT
      8043,                      // doomednum
      S_ZFIREBULL_U,             // spawnstate
      1000,                      // spawnhealth
@@ -8449,7 +8449,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_FIRETHING
+    {                           // HEXEN_MT_FIRETHING
      8060,                      // doomednum
      S_ZFIRETHING1,             // spawnstate
      1000,                      // spawnhealth
@@ -8476,7 +8476,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_BRASSTORCH
+    {                           // HEXEN_MT_BRASSTORCH
      8061,                      // doomednum
      S_ZBRASSTORCH1,            // spawnstate
      1000,                      // spawnhealth
@@ -8503,7 +8503,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZSUITOFARMOR
+    {                           // HEXEN_MT_ZSUITOFARMOR
      8064,                      // doomednum
      S_ZSUITOFARMOR,            // spawnstate
      60,                        // spawnhealth
@@ -8530,7 +8530,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZARMORCHUNK
+    {                           // HEXEN_MT_ZARMORCHUNK
      -1,                        // doomednum
      S_ZARMORCHUNK1,            // spawnstate
      1000,                      // spawnhealth
@@ -8557,7 +8557,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZBELL
+    {                           // HEXEN_MT_ZBELL
      8065,                      // doomednum
      S_ZBELL,                   // spawnstate
      5,                         // spawnhealth
@@ -8584,7 +8584,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZBLUE_CANDLE
+    {                           // HEXEN_MT_ZBLUE_CANDLE
      8066,                      // doomednum
      S_ZBLUE_CANDLE1,           // spawnstate
      1000,                      // spawnhealth
@@ -8611,7 +8611,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZIRON_MAIDEN
+    {                           // HEXEN_MT_ZIRON_MAIDEN
      8067,                      // doomednum
      S_ZIRON_MAIDEN,            // spawnstate
      1000,                      // spawnhealth
@@ -8638,7 +8638,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZXMAS_TREE
+    {                           // HEXEN_MT_ZXMAS_TREE
      8068,                      // doomednum
      S_ZXMAS_TREE,              // spawnstate
      20,                        // spawnhealth
@@ -8665,7 +8665,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZCAULDRON
+    {                           // HEXEN_MT_ZCAULDRON
      8069,                      // doomednum
      S_ZCAULDRON1,              // spawnstate
      1000,                      // spawnhealth
@@ -8692,7 +8692,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZCAULDRON_UNLIT
+    {                           // HEXEN_MT_ZCAULDRON_UNLIT
      8070,                      // doomednum
      S_ZCAULDRON_U,             // spawnstate
      1000,                      // spawnhealth
@@ -8719,7 +8719,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZCHAINBIT32
+    {                           // HEXEN_MT_ZCHAINBIT32
      8071,                      // doomednum
      S_ZCHAINBIT32,             // spawnstate
      1000,                      // spawnhealth
@@ -8746,7 +8746,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZCHAINBIT64
+    {                           // HEXEN_MT_ZCHAINBIT64
      8072,                      // doomednum
      S_ZCHAINBIT64,             // spawnstate
      1000,                      // spawnhealth
@@ -8773,7 +8773,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZCHAINEND_HEART
+    {                           // HEXEN_MT_ZCHAINEND_HEART
      8073,                      // doomednum
      S_ZCHAINEND_HEART,         // spawnstate
      1000,                      // spawnhealth
@@ -8800,7 +8800,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZCHAINEND_HOOK1
+    {                           // HEXEN_MT_ZCHAINEND_HOOK1
      8074,                      // doomednum
      S_ZCHAINEND_HOOK1,         // spawnstate
      1000,                      // spawnhealth
@@ -8827,7 +8827,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZCHAINEND_HOOK2
+    {                           // HEXEN_MT_ZCHAINEND_HOOK2
      8075,                      // doomednum
      S_ZCHAINEND_HOOK2,         // spawnstate
      1000,                      // spawnhealth
@@ -8854,7 +8854,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZCHAINEND_SPIKE
+    {                           // HEXEN_MT_ZCHAINEND_SPIKE
      8076,                      // doomednum
      S_ZCHAINEND_SPIKE,         // spawnstate
      1000,                      // spawnhealth
@@ -8881,7 +8881,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ZCHAINEND_SKULL
+    {                           // HEXEN_MT_ZCHAINEND_SKULL
      8077,                      // doomednum
      S_ZCHAINEND_SKULL,         // spawnstate
      1000,                      // spawnhealth
@@ -8908,7 +8908,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT1
+    {                           // HEXEN_MT_TABLE_SHIT1
      8500,                      // doomednum
      S_TABLE_SHIT1,             // spawnstate
      1000,                      // spawnhealth
@@ -8935,7 +8935,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT2
+    {                           // HEXEN_MT_TABLE_SHIT2
      8501,                      // doomednum
      S_TABLE_SHIT2,             // spawnstate
      1000,                      // spawnhealth
@@ -8962,7 +8962,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT3
+    {                           // HEXEN_MT_TABLE_SHIT3
      8502,                      // doomednum
      S_TABLE_SHIT3,             // spawnstate
      1000,                      // spawnhealth
@@ -8989,7 +8989,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT4
+    {                           // HEXEN_MT_TABLE_SHIT4
      8503,                      // doomednum
      S_TABLE_SHIT4,             // spawnstate
      1000,                      // spawnhealth
@@ -9016,7 +9016,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT5
+    {                           // HEXEN_MT_TABLE_SHIT5
      8504,                      // doomednum
      S_TABLE_SHIT5,             // spawnstate
      1000,                      // spawnhealth
@@ -9043,7 +9043,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT6
+    {                           // HEXEN_MT_TABLE_SHIT6
      8505,                      // doomednum
      S_TABLE_SHIT6,             // spawnstate
      1000,                      // spawnhealth
@@ -9070,7 +9070,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT7
+    {                           // HEXEN_MT_TABLE_SHIT7
      8506,                      // doomednum
      S_TABLE_SHIT7,             // spawnstate
      1000,                      // spawnhealth
@@ -9097,7 +9097,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT8
+    {                           // HEXEN_MT_TABLE_SHIT8
      8507,                      // doomednum
      S_TABLE_SHIT8,             // spawnstate
      1000,                      // spawnhealth
@@ -9124,7 +9124,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT9
+    {                           // HEXEN_MT_TABLE_SHIT9
      8508,                      // doomednum
      S_TABLE_SHIT9,             // spawnstate
      1000,                      // spawnhealth
@@ -9151,7 +9151,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TABLE_SHIT10
+    {                           // HEXEN_MT_TABLE_SHIT10
      8509,                      // doomednum
      S_TABLE_SHIT10,            // spawnstate
      1000,                      // spawnhealth
@@ -9178,7 +9178,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TFOG
+    {                           // HEXEN_MT_TFOG
      -1,                        // doomednum
      S_TFOG1,                   // spawnstate
      1000,                      // spawnhealth
@@ -9205,7 +9205,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MISC81
+    {                           // HEXEN_MT_MISC81
      140,                       // doomednum
      S_TELESMOKE1,              // spawnstate
      1000,                      // spawnhealth
@@ -9232,7 +9232,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_TELEPORTMAN
+    {                           // HEXEN_MT_TELEPORTMAN
      14,                        // doomednum
      S_NULL,                    // spawnstate
      1000,                      // spawnhealth
@@ -9259,7 +9259,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_PUNCHPUFF
+    {                           // HEXEN_MT_PUNCHPUFF
      -1,                        // doomednum
      S_PUNCHPUFF1,              // spawnstate
      1000,                      // spawnhealth
@@ -9286,7 +9286,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_FW_AXE
+    {                           // HEXEN_MT_FW_AXE
      8010,                      // doomednum
      S_AXE,                     // spawnstate
      1000,                      // spawnhealth
@@ -9313,7 +9313,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_AXEPUFF
+    {                           // HEXEN_MT_AXEPUFF
      -1,                        // doomednum
      S_HAMMERPUFF1,             // spawnstate
      1000,                      // spawnhealth
@@ -9340,7 +9340,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_AXEPUFF_GLOW
+    {                           // HEXEN_MT_AXEPUFF_GLOW
      -1,                        // doomednum
      S_AXEPUFF_GLOW1,           // spawnstate
      1000,                      // spawnhealth
@@ -9367,7 +9367,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_AXEBLOOD
+    {                           // HEXEN_MT_AXEBLOOD
      -1,                        // doomednum
      S_AXEBLOOD1,               // spawnstate
      1000,                      // spawnhealth
@@ -9394,7 +9394,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_CANNOTPUSH    // flags2
      },
 
-    {                           // MT_FW_HAMMER
+    {                           // HEXEN_MT_FW_HAMMER
      123,                       // doomednum
      S_HAMM,                    // spawnstate
      1000,                      // spawnhealth
@@ -9421,7 +9421,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_HAMMER_MISSILE
+    {                           // HEXEN_MT_HAMMER_MISSILE
      -1,                        // doomednum
      S_HAMMER_MISSILE_1,        // spawnstate
      1000,                      // spawnhealth
@@ -9448,7 +9448,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FIREDAMAGE  // flags2
      },
 
-    {                           // MT_HAMMERPUFF
+    {                           // HEXEN_MT_HAMMERPUFF
      -1,                        // doomednum
      S_HAMMERPUFF1,             // spawnstate
      1000,                      // spawnhealth
@@ -9475,7 +9475,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_FSWORD_MISSILE
+    {                           // HEXEN_MT_FSWORD_MISSILE
      -1,                        // doomednum
      S_FSWORD_MISSILE1,         // spawnstate
      1000,                      // spawnhealth
@@ -9502,7 +9502,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
 
-    {                           // MT_FSWORD_FLAME
+    {                           // HEXEN_MT_FSWORD_FLAME
      -1,                        // doomednum
      S_FSWORD_FLAME1,           // spawnstate
      1000,                      // spawnhealth
@@ -9529,7 +9529,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_CW_SERPSTAFF
+    {                           // HEXEN_MT_CW_SERPSTAFF
      10,                        // doomednum
      S_CSTAFF,                  // spawnstate
      1000,                      // spawnhealth
@@ -9556,7 +9556,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_CSTAFF_MISSILE
+    {                           // HEXEN_MT_CSTAFF_MISSILE
      -1,                        // doomednum
      S_CSTAFF_MISSILE1,         // spawnstate
      1000,                      // spawnhealth
@@ -9583,7 +9583,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
 
-    {                           // MT_CSTAFFPUFF
+    {                           // HEXEN_MT_CSTAFFPUFF
      -1,                        // doomednum
      S_CSTAFFPUFF1,             // spawnstate
      1000,                      // spawnhealth
@@ -9610,7 +9610,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_CW_FLAME
+    {                           // HEXEN_MT_CW_FLAME
      8009,                      // doomednum
      S_CFLAME1,                 // spawnstate
      1000,                      // spawnhealth
@@ -9637,7 +9637,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_CFLAMEFLOOR
+    {                           // HEXEN_MT_CFLAMEFLOOR
      -1,                        // doomednum
      S_CFLAMEFLOOR1,            // spawnstate
      1000,                      // spawnhealth
@@ -9664,7 +9664,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_FLAMEPUFF
+    {                           // HEXEN_MT_FLAMEPUFF
      -1,                        // doomednum
      S_FLAMEPUFF1,              // spawnstate
      1000,                      // spawnhealth
@@ -9691,7 +9691,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_FLAMEPUFF2
+    {                           // HEXEN_MT_FLAMEPUFF2
      -1,                        // doomednum
      S_FLAMEPUFF2_1,            // spawnstate
      1000,                      // spawnhealth
@@ -9718,7 +9718,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_CIRCLEFLAME
+    {                           // HEXEN_MT_CIRCLEFLAME
      -1,                        // doomednum
      S_CIRCLE_FLAME1,           // spawnstate
      1000,                      // spawnhealth
@@ -9745,7 +9745,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
 
-    {                           // MT_CFLAME_MISSILE
+    {                           // HEXEN_MT_CFLAME_MISSILE
      -1,                        // doomednum
      S_CFLAME_MISSILE1,         // spawnstate
      1000,                      // spawnhealth
@@ -9772,7 +9772,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_DONTDRAW | MF2_FIREDAMAGE   // flags2
      },
 
-    {                           // MT_HOLY_FX
+    {                           // HEXEN_MT_HOLY_FX
      -1,                        // doomednum
      S_HOLY_FX1,                // spawnstate
      105,                       // spawnhealth
@@ -9799,7 +9799,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_SEEKERMISSILE | MF2_RIP | MF2_IMPACT | MF2_PCROSS     // flags2
      },
 
-    {                           // MT_HOLY_TAIL
+    {                           // HEXEN_MT_HOLY_TAIL
      -1,                        // doomednum
      S_HOLY_TAIL1,              // spawnstate
      1000,                      // spawnhealth
@@ -9826,7 +9826,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_HOLY_PUFF
+    {                           // HEXEN_MT_HOLY_PUFF
      -1,                        // doomednum
      S_HOLY_PUFF1,              // spawnstate
      1000,                      // spawnhealth
@@ -9853,7 +9853,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_HOLY_MISSILE
+    {                           // HEXEN_MT_HOLY_MISSILE
      -1,                        // doomednum
      S_HOLY_MISSILE1,           // spawnstate
      1000,                      // spawnhealth
@@ -9880,7 +9880,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_HOLY_MISSILE_PUFF
+    {                           // HEXEN_MT_HOLY_MISSILE_PUFF
      -1,                        // doomednum
      S_HOLY_MISSILE_P1,         // spawnstate
      1000,                      // spawnhealth
@@ -9907,7 +9907,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_MWANDPUFF
+    {                           // HEXEN_MT_MWANDPUFF
      -1,                        // doomednum
      S_MWANDPUFF1,              // spawnstate
      1000,                      // spawnhealth
@@ -9934,7 +9934,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_CANNOTPUSH | MF2_NODMGTHRUST  // flags2
      },
 
-    {                           // MT_MWANDSMOKE
+    {                           // HEXEN_MT_MWANDSMOKE
      -1,                        // doomednum
      S_MWANDSMOKE1,             // spawnstate
      1000,                      // spawnhealth
@@ -9961,7 +9961,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_CANNOTPUSH | MF2_NODMGTHRUST  // flags2
      },
 
-    {                           // MT_MWAND_MISSILE
+    {                           // HEXEN_MT_MWAND_MISSILE
      -1,                        // doomednum
      S_MWAND_MISSILE1,          // spawnstate
      1000,                      // spawnhealth
@@ -9988,7 +9988,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_RIP | MF2_IMPACT | MF2_PCROSS | MF2_NODMGTHRUST | MF2_CANNOTPUSH      // flags2
      },
 
-    {                           // MT_MW_LIGHTNING
+    {                           // HEXEN_MT_MW_LIGHTNING
      8040,                      // doomednum
      S_MW_LIGHTNING1,           // spawnstate
      1000,                      // spawnhealth
@@ -10015,7 +10015,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_LIGHTNING_CEILING
+    {                           // HEXEN_MT_LIGHTNING_CEILING
      -1,                        // doomednum
      S_LIGHTNING_CEILING1,      // spawnstate
      144,                       // spawnhealth
@@ -10042,7 +10042,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
 
-    {                           // MT_LIGHTNING_FLOOR
+    {                           // HEXEN_MT_LIGHTNING_FLOOR
      -1,                        // doomednum
      S_LIGHTNING_FLOOR1,        // spawnstate
      144,                       // spawnhealth
@@ -10069,7 +10069,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
 
-    {                           // MT_LIGHTNING_ZAP
+    {                           // HEXEN_MT_LIGHTNING_ZAP
      -1,                        // doomednum
      S_LIGHTNING_ZAP1,          // spawnstate
      1000,                      // spawnhealth
@@ -10096,7 +10096,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MSTAFF_FX
+    {                           // HEXEN_MT_MSTAFF_FX
      -1,                        // doomednum
      S_MSTAFF_FX1_1,            // spawnstate
      1000,                      // spawnhealth
@@ -10123,7 +10123,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FIREDAMAGE | MF2_RIP | MF2_IMPACT | MF2_PCROSS        // flags2
      },
 
-    {                           // MT_MSTAFF_FX2
+    {                           // HEXEN_MT_MSTAFF_FX2
      -1,                        // doomednum
      S_MSTAFF_FX2_1,            // spawnstate
      1000,                      // spawnhealth
@@ -10150,7 +10150,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FIREDAMAGE | MF2_IMPACT | MF2_PCROSS | MF2_SEEKERMISSILE      // flags2
      },
 
-    {                           // MT_FW_SWORD1
+    {                           // HEXEN_MT_FW_SWORD1
      12,                        // doomednum
      S_FSWORD1,                 // spawnstate
      1000,                      // spawnhealth
@@ -10177,7 +10177,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_FW_SWORD2
+    {                           // HEXEN_MT_FW_SWORD2
      13,                        // doomednum
      S_FSWORD2,                 // spawnstate
      1000,                      // spawnhealth
@@ -10204,7 +10204,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_FW_SWORD3
+    {                           // HEXEN_MT_FW_SWORD3
      16,                        // doomednum
      S_FSWORD3,                 // spawnstate
      1000,                      // spawnhealth
@@ -10231,7 +10231,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_CW_HOLY1
+    {                           // HEXEN_MT_CW_HOLY1
      18,                        // doomednum
      S_CHOLY1,                  // spawnstate
      1000,                      // spawnhealth
@@ -10258,7 +10258,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_CW_HOLY2
+    {                           // HEXEN_MT_CW_HOLY2
      19,                        // doomednum
      S_CHOLY2,                  // spawnstate
      1000,                      // spawnhealth
@@ -10285,7 +10285,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_CW_HOLY3
+    {                           // HEXEN_MT_CW_HOLY3
      20,                        // doomednum
      S_CHOLY3,                  // spawnstate
      1000,                      // spawnhealth
@@ -10312,7 +10312,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_MW_STAFF1
+    {                           // HEXEN_MT_MW_STAFF1
      21,                        // doomednum
      S_MSTAFF1,                 // spawnstate
      1000,                      // spawnhealth
@@ -10339,7 +10339,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_MW_STAFF2
+    {                           // HEXEN_MT_MW_STAFF2
      22,                        // doomednum
      S_MSTAFF2,                 // spawnstate
      1000,                      // spawnhealth
@@ -10366,7 +10366,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_MW_STAFF3
+    {                           // HEXEN_MT_MW_STAFF3
      23,                        // doomednum
      S_MSTAFF3,                 // spawnstate
      1000,                      // spawnhealth
@@ -10393,7 +10393,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_SNOUTPUFF
+    {                           // HEXEN_MT_SNOUTPUFF
      -1,                        // doomednum
      S_PUNCHPUFF1,              // spawnstate
      1000,                      // spawnhealth
@@ -10420,7 +10420,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MW_CONE
+    {                           // HEXEN_MT_MW_CONE
      53,                        // doomednum
      S_COS1,                    // spawnstate
      1000,                      // spawnhealth
@@ -10447,7 +10447,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_SHARDFX1
+    {                           // HEXEN_MT_SHARDFX1
      -1,                        // doomednum
      S_SHARDFX1_1,              // spawnstate
      1000,                      // spawnhealth
@@ -10474,7 +10474,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_ICEDAMAGE   // flags2
      },
 
-    {                           // MT_BLOOD
+    {                           // HEXEN_MT_BLOOD
      -1,                        // doomednum
      S_BLOOD1,                  // spawnstate
      1000,                      // spawnhealth
@@ -10501,7 +10501,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_BLOODSPLATTER
+    {                           // HEXEN_MT_BLOODSPLATTER
      -1,                        // doomednum
      S_BLOODSPLATTER1,          // spawnstate
      1000,                      // spawnhealth
@@ -10528,7 +10528,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_CANNOTPUSH    // flags2
      },
 
-    {                           // MT_GIBS
+    {                           // HEXEN_MT_GIBS
      -1,                        // doomednum
      S_GIBS1,                   // spawnstate
      1000,                      // spawnhealth
@@ -10555,7 +10555,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_PLAYER_FIGHTER
+    {                           // HEXEN_MT_PLAYER_FIGHTER
      -1,                        // doomednum
      S_FPLAY,                   // spawnstate
      100,                       // spawnhealth
@@ -10582,7 +10582,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_WINDTHRUST | MF2_FLOORCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
 
-    {                           // MT_BLOODYSKULL
+    {                           // HEXEN_MT_BLOODYSKULL
      -1,                        // doomednum
      S_BLOODYSKULL1,            // spawnstate
      1000,                      // spawnhealth
@@ -10609,7 +10609,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_LOGRAV | MF2_CANNOTPUSH        // flags2
      },
 
-    {                           // MT_PLAYER_SPEED
+    {                           // HEXEN_MT_PLAYER_SPEED
      -1,                        // doomednum
      S_PLAYER_SPEED1,           // spawnstate
      1000,                      // spawnhealth
@@ -10636,7 +10636,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ICECHUNK
+    {                           // HEXEN_MT_ICECHUNK
      -1,                        // doomednum
      S_ICECHUNK1,               // spawnstate
      1000,                      // spawnhealth
@@ -10663,7 +10663,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_LOGRAV | MF2_CANNOTPUSH | MF2_FLOORCLIP        // flags2
      },
 
-    {                           // MT_PLAYER_CLERIC
+    {                           // HEXEN_MT_PLAYER_CLERIC
      -1,                        // doomednum
      S_CPLAY,                   // spawnstate
      100,                       // spawnhealth
@@ -10690,7 +10690,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_WINDTHRUST | MF2_FLOORCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
 
-    {                           // MT_PLAYER_MAGE
+    {                           // HEXEN_MT_PLAYER_MAGE
      -1,                        // doomednum
      S_MPLAY,                   // spawnstate
      100,                       // spawnhealth
@@ -10717,7 +10717,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_WINDTHRUST | MF2_FLOORCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
 
-    {                           // MT_PIGPLAYER
+    {                           // HEXEN_MT_PIGPLAYER
      -1,                        // doomednum
      S_PIGPLAY,                 // spawnstate
      100,                       // spawnhealth
@@ -10744,7 +10744,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_WINDTHRUST | MF2_SLIDE | MF2_PASSMOBJ | MF2_FLOORCLIP | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
 
-    {                           // MT_PIG
+    {                           // HEXEN_MT_PIG
      -1,                        // doomednum
      S_PIG_LOOK1,               // spawnstate
      25,                        // spawnhealth
@@ -10771,7 +10771,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_WINDTHRUST | MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP       // flags2
      },
 
-    {                           // MT_CENTAUR
+    {                           // HEXEN_MT_CENTAUR
      107,                       // doomednum
      S_CENTAUR_LOOK1,           // spawnstate
      200,                       // spawnhealth
@@ -10798,7 +10798,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP   // flags2
      },
 
-    {                           // MT_CENTAURLEADER
+    {                           // HEXEN_MT_CENTAURLEADER
      115,                       // doomednum
      S_CENTAUR_LOOK1,           // spawnstate
      250,                       // spawnhealth
@@ -10825,7 +10825,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP   // flags2
      },
 
-    {                           // MT_CENTAUR_FX
+    {                           // HEXEN_MT_CENTAUR_FX
      -1,                        // doomednum
      S_CENTAUR_FX1,             // spawnstate
      1000,                      // spawnhealth
@@ -10852,7 +10852,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
 
-    {                           // MT_CENTAUR_SHIELD
+    {                           // HEXEN_MT_CENTAUR_SHIELD
      -1,                        // doomednum
      S_CENTAUR_SHIELD1,         // spawnstate
      1000,                      // spawnhealth
@@ -10879,7 +10879,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_CENTAUR_SWORD
+    {                           // HEXEN_MT_CENTAUR_SWORD
      -1,                        // doomednum
      S_CENTAUR_SWORD1,          // spawnstate
      1000,                      // spawnhealth
@@ -10906,7 +10906,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_DEMON
+    {                           // HEXEN_MT_DEMON
      31,                        // doomednum
      S_DEMN_LOOK1,              // spawnstate
      250,                       // spawnhealth
@@ -10933,7 +10933,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_TELESTOMP  // flags2
      },
 
-    {                           // MT_DEMONCHUNK1
+    {                           // HEXEN_MT_DEMONCHUNK1
      -1,                        // doomednum
      S_DEMONCHUNK1_1,           // spawnstate
      1000,                      // spawnhealth
@@ -10960,7 +10960,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMONCHUNK2
+    {                           // HEXEN_MT_DEMONCHUNK2
      -1,                        // doomednum
      S_DEMONCHUNK2_1,           // spawnstate
      1000,                      // spawnhealth
@@ -10987,7 +10987,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMONCHUNK3
+    {                           // HEXEN_MT_DEMONCHUNK3
      -1,                        // doomednum
      S_DEMONCHUNK3_1,           // spawnstate
      1000,                      // spawnhealth
@@ -11014,7 +11014,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMONCHUNK4
+    {                           // HEXEN_MT_DEMONCHUNK4
      -1,                        // doomednum
      S_DEMONCHUNK4_1,           // spawnstate
      1000,                      // spawnhealth
@@ -11041,7 +11041,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMONCHUNK5
+    {                           // HEXEN_MT_DEMONCHUNK5
      -1,                        // doomednum
      S_DEMONCHUNK5_1,           // spawnstate
      1000,                      // spawnhealth
@@ -11068,7 +11068,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMONFX1
+    {                           // HEXEN_MT_DEMONFX1
      -1,                        // doomednum
      S_DEMONFX_MOVE1,           // spawnstate
      1000,                      // spawnhealth
@@ -11095,7 +11095,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FIREDAMAGE  // flags2
      },
 
-    {                           // MT_DEMON2
+    {                           // HEXEN_MT_DEMON2
      8080,                      // doomednum
      S_DEMN2_LOOK1,             // spawnstate
      250,                       // spawnhealth
@@ -11122,7 +11122,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_TELESTOMP  // flags2
      },
 
-    {                           // MT_DEMON2CHUNK1
+    {                           // HEXEN_MT_DEMON2CHUNK1
      -1,                        // doomednum
      S_DEMON2CHUNK1_1,          // spawnstate
      1000,                      // spawnhealth
@@ -11149,7 +11149,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMON2CHUNK2
+    {                           // HEXEN_MT_DEMON2CHUNK2
      -1,                        // doomednum
      S_DEMON2CHUNK2_1,          // spawnstate
      1000,                      // spawnhealth
@@ -11176,7 +11176,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMON2CHUNK3
+    {                           // HEXEN_MT_DEMON2CHUNK3
      -1,                        // doomednum
      S_DEMON2CHUNK3_1,          // spawnstate
      1000,                      // spawnhealth
@@ -11203,7 +11203,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMON2CHUNK4
+    {                           // HEXEN_MT_DEMON2CHUNK4
      -1,                        // doomednum
      S_DEMON2CHUNK4_1,          // spawnstate
      1000,                      // spawnhealth
@@ -11230,7 +11230,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMON2CHUNK5
+    {                           // HEXEN_MT_DEMON2CHUNK5
      -1,                        // doomednum
      S_DEMON2CHUNK5_1,          // spawnstate
      1000,                      // spawnhealth
@@ -11257,7 +11257,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_DEMON2FX1
+    {                           // HEXEN_MT_DEMON2FX1
      -1,                        // doomednum
      S_DEMON2FX_MOVE1,          // spawnstate
      1000,                      // spawnhealth
@@ -11284,7 +11284,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FIREDAMAGE  // flags2
      },
 
-    {                           // MT_WRAITHB
+    {                           // HEXEN_MT_WRAITHB
      10011,                     // doomednum
      S_WRAITH_LOOK1,            // spawnstate
      150,                       // spawnhealth
@@ -11311,7 +11311,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP | MF2_DONTDRAW // flags2
      },
 
-    {                           // MT_WRAITH
+    {                           // HEXEN_MT_WRAITH
      34,                        // doomednum
      S_WRAITH_INIT1,            // spawnstate
      150,                       // spawnhealth
@@ -11338,7 +11338,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP        // flags2
      },
 
-    {                           // MT_WRAITHFX1
+    {                           // HEXEN_MT_WRAITHFX1
      -1,                        // doomednum
      S_WRTHFX_MOVE1,            // spawnstate
      1000,                      // spawnhealth
@@ -11365,7 +11365,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FLOORCLIP | MF2_FIREDAMAGE  // flags2
      },
 
-    {                           // MT_WRAITHFX2
+    {                           // HEXEN_MT_WRAITHFX2
      -1,                        // doomednum
      S_WRTHFX_SIZZLE1,          // spawnstate
      1000,                      // spawnhealth
@@ -11392,7 +11392,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_WRAITHFX3
+    {                           // HEXEN_MT_WRAITHFX3
      -1,                        // doomednum
      S_WRTHFX_DROP1,            // spawnstate
      1000,                      // spawnhealth
@@ -11419,7 +11419,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_WRAITHFX4
+    {                           // HEXEN_MT_WRAITHFX4
      -1,                        // doomednum
      S_WRTHFX_ADROP1,           // spawnstate
      1000,                      // spawnhealth
@@ -11446,7 +11446,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_WRAITHFX5
+    {                           // HEXEN_MT_WRAITHFX5
      -1,                        // doomednum
      S_WRTHFX_BDROP1,           // spawnstate
      1000,                      // spawnhealth
@@ -11473,7 +11473,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_MINOTAUR
+    {                           // HEXEN_MT_MINOTAUR
      9,                         // doomednum
      S_MNTR_SPAWN1,             // spawnstate
      2500,                      // spawnhealth
@@ -11500,7 +11500,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP        // flags2
      },
 
-    {                           // MT_MNTRFX1
+    {                           // HEXEN_MT_MNTRFX1
      -1,                        // doomednum
      S_MNTRFX1_1,               // spawnstate
      1000,                      // spawnhealth
@@ -11527,7 +11527,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
 
-    {                           // MT_MNTRFX2
+    {                           // HEXEN_MT_MNTRFX2
      -1,                        // doomednum
      S_MNTRFX2_1,               // spawnstate
      1000,                      // spawnhealth
@@ -11554,7 +11554,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
 
-    {                           // MT_MNTRFX3
+    {                           // HEXEN_MT_MNTRFX3
      -1,                        // doomednum
      S_MNTRFX3_1,               // spawnstate
      1000,                      // spawnhealth
@@ -11581,7 +11581,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
 
-    {                           // MT_MNTRSMOKE
+    {                           // HEXEN_MT_MNTRSMOKE
      -1,                        // doomednum
      S_MINOSMOKE1,              // spawnstate
      1000,                      // spawnhealth
@@ -11608,7 +11608,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_MNTRSMOKEEXIT
+    {                           // HEXEN_MT_MNTRSMOKEEXIT
      -1,                        // doomednum
      S_MINOSMOKEX1,             // spawnstate
      1000,                      // spawnhealth
@@ -11635,7 +11635,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_SERPENT
+    {                           // HEXEN_MT_SERPENT
      121,                       // doomednum
      S_SERPENT_LOOK1,           // spawnstate
      90,                        // spawnhealth
@@ -11662,7 +11662,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_PASSMOBJ | MF2_DONTDRAW | MF2_CANTLEAVEFLOORPIC | MF2_NONSHOOTABLE | MF2_MCROSS        // flags2
      },
 
-    {                           // MT_SERPENTLEADER
+    {                           // HEXEN_MT_SERPENTLEADER
      120,                       // doomednum
      S_SERPENT_LOOK1,           // spawnstate
      90,                        // spawnhealth
@@ -11689,7 +11689,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_PASSMOBJ | MF2_DONTDRAW | MF2_CANTLEAVEFLOORPIC | MF2_NONSHOOTABLE | MF2_MCROSS        // flags2
      },
 
-    {                           // MT_SERPENTFX
+    {                           // HEXEN_MT_SERPENTFX
      -1,                        // doomednum
      S_SERPENT_FX1,             // spawnstate
      1000,                      // spawnhealth
@@ -11716,7 +11716,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_SERPENT_HEAD
+    {                           // HEXEN_MT_SERPENT_HEAD
      -1,                        // doomednum
      S_SERPENT_HEAD1,           // spawnstate
      1000,                      // spawnhealth
@@ -11743,7 +11743,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_LOGRAV                 // flags2
      },
 
-    {                           // MT_SERPENT_GIB1
+    {                           // HEXEN_MT_SERPENT_GIB1
      -1,                        // doomednum
      S_SERPENT_GIB1_1,          // spawnstate
      1000,                      // spawnhealth
@@ -11770,7 +11770,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_SERPENT_GIB2
+    {                           // HEXEN_MT_SERPENT_GIB2
      -1,                        // doomednum
      S_SERPENT_GIB2_1,          // spawnstate
      1000,                      // spawnhealth
@@ -11797,7 +11797,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_SERPENT_GIB3
+    {                           // HEXEN_MT_SERPENT_GIB3
      -1,                        // doomednum
      S_SERPENT_GIB3_1,          // spawnstate
      1000,                      // spawnhealth
@@ -11824,7 +11824,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_BISHOP
+    {                           // HEXEN_MT_BISHOP
      114,                       // doomednum
      S_BISHOP_LOOK1,            // spawnstate
      130,                       // spawnhealth
@@ -11851,7 +11851,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP        // flags2
      },
 
-    {                           // MT_BISHOP_PUFF
+    {                           // HEXEN_MT_BISHOP_PUFF
      -1,                        // doomednum
      S_BISHOP_PUFF1,            // spawnstate
      1000,                      // spawnhealth
@@ -11878,7 +11878,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_BISHOPBLUR
+    {                           // HEXEN_MT_BISHOPBLUR
      -1,                        // doomednum
      S_BISHOPBLUR1,             // spawnstate
      1000,                      // spawnhealth
@@ -11905,7 +11905,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_BISHOPPAINBLUR
+    {                           // HEXEN_MT_BISHOPPAINBLUR
      -1,                        // doomednum
      S_BISHOPPAINBLUR1,         // spawnstate
      1000,                      // spawnhealth
@@ -11932,7 +11932,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_BISH_FX
+    {                           // HEXEN_MT_BISH_FX
      -1,                        // doomednum
      S_BISHFX1_1,               // spawnstate
      1000,                      // spawnhealth
@@ -11959,7 +11959,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_SEEKERMISSILE // flags2
      },
 
-    {                           // MT_DRAGON
+    {                           // HEXEN_MT_DRAGON
      254,                       // doomednum
      S_DRAGON_LOOK1,            // spawnstate
      640,                       // spawnhealth
@@ -11986,7 +11986,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_PASSMOBJ | MF2_BOSS    // flags2
      },
 
-    {                           // MT_DRAGON_FX
+    {                           // HEXEN_MT_DRAGON_FX
      -1,                        // doomednum
      S_DRAGON_FX1_1,            // spawnstate
      1000,                      // spawnhealth
@@ -12013,7 +12013,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
 
-    {                           // MT_DRAGON_FX2
+    {                           // HEXEN_MT_DRAGON_FX2
      -1,                        // doomednum
      S_DRAGON_FX2_1,            // spawnstate
      1000,                      // spawnhealth
@@ -12040,7 +12040,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FIREDAMAGE | MF2_DONTDRAW     // flags2
      },
 
-    {                           // MT_ARMOR_1
+    {                           // HEXEN_MT_ARMOR_1
      8005,                      // doomednum
      S_ARMOR_1,                 // spawnstate
      1000,                      // spawnhealth
@@ -12067,7 +12067,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARMOR_2
+    {                           // HEXEN_MT_ARMOR_2
      8006,                      // doomednum
      S_ARMOR_2,                 // spawnstate
      1000,                      // spawnhealth
@@ -12094,7 +12094,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARMOR_3
+    {                           // HEXEN_MT_ARMOR_3
      8007,                      // doomednum
      S_ARMOR_3,                 // spawnstate
      1000,                      // spawnhealth
@@ -12121,7 +12121,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ARMOR_4
+    {                           // HEXEN_MT_ARMOR_4
      8008,                      // doomednum
      S_ARMOR_4,                 // spawnstate
      1000,                      // spawnhealth
@@ -12148,7 +12148,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_MANA1
+    {                           // HEXEN_MT_MANA1
      122,                       // doomednum
      S_MANA1_1,                 // spawnstate
      10,                        // spawnhealth
@@ -12175,7 +12175,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_MANA2
+    {                           // HEXEN_MT_MANA2
      124,                       // doomednum
      S_MANA2_1,                 // spawnstate
      10,                        // spawnhealth
@@ -12202,7 +12202,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_MANA3
+    {                           // HEXEN_MT_MANA3
      8004,                      // doomednum
      S_MANA3_1,                 // spawnstate
      20,                        // spawnhealth
@@ -12229,7 +12229,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOATBOB               // flags2
      },
 
-    {                           // MT_KEY1
+    {                           // HEXEN_MT_KEY1
      8030,                      // doomednum
      S_KEY1,                    // spawnstate
      1000,                      // spawnhealth
@@ -12256,7 +12256,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEY2
+    {                           // HEXEN_MT_KEY2
      8031,                      // doomednum
      S_KEY2,                    // spawnstate
      1000,                      // spawnhealth
@@ -12283,7 +12283,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEY3
+    {                           // HEXEN_MT_KEY3
      8032,                      // doomednum
      S_KEY3,                    // spawnstate
      1000,                      // spawnhealth
@@ -12310,7 +12310,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEY4
+    {                           // HEXEN_MT_KEY4
      8033,                      // doomednum
      S_KEY4,                    // spawnstate
      1000,                      // spawnhealth
@@ -12337,7 +12337,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEY5
+    {                           // HEXEN_MT_KEY5
      8034,                      // doomednum
      S_KEY5,                    // spawnstate
      1000,                      // spawnhealth
@@ -12364,7 +12364,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEY6
+    {                           // HEXEN_MT_KEY6
      8035,                      // doomednum
      S_KEY6,                    // spawnstate
      1000,                      // spawnhealth
@@ -12391,7 +12391,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEY7
+    {                           // HEXEN_MT_KEY7
      8036,                      // doomednum
      S_KEY7,                    // spawnstate
      1000,                      // spawnhealth
@@ -12418,7 +12418,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEY8
+    {                           // HEXEN_MT_KEY8
      8037,                      // doomednum
      S_KEY8,                    // spawnstate
      1000,                      // spawnhealth
@@ -12445,7 +12445,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEY9
+    {                           // HEXEN_MT_KEY9
      8038,                      // doomednum
      S_KEY9,                    // spawnstate
      1000,                      // spawnhealth
@@ -12472,7 +12472,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEYA
+    {                           // HEXEN_MT_KEYA
      8039,                      // doomednum
      S_KEYA,                    // spawnstate
      1000,                      // spawnhealth
@@ -12499,7 +12499,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_KEYB
+    {                           // HEXEN_MT_KEYB
      8200,                      // doomednum
      S_KEYB,                    // spawnstate
      1000,                      // spawnhealth
@@ -12526,7 +12526,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_SOUNDWIND
+    {                           // HEXEN_MT_SOUNDWIND
      1410,                      // doomednum
      S_SND_WIND1,               // spawnstate
      1000,                      // spawnhealth
@@ -12553,7 +12553,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_SOUNDWATERFALL
+    {                           // HEXEN_MT_SOUNDWATERFALL
      41,                        // doomednum
      S_SND_WATERFALL,           // spawnstate
      1000,                      // spawnhealth
@@ -12580,7 +12580,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0                          // flags2
      },
 
-    {                           // MT_ETTIN
+    {                           // HEXEN_MT_ETTIN
      10030,                     // doomednum
      S_ETTIN_LOOK1,             // spawnstate
      175,                       // spawnhealth
@@ -12607,7 +12607,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP  // flags2
      },
 
-    {                           // MT_ETTIN_MACE
+    {                           // HEXEN_MT_ETTIN_MACE
      -1,                        // doomednum
      S_ETTIN_MACE1,             // spawnstate
      1000,                      // spawnhealth
@@ -12634,7 +12634,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_FIREDEMON
+    {                           // HEXEN_MT_FIREDEMON
      10060,                     // doomednum
      S_FIRED_SPAWN1,            // spawnstate
      80,                        // spawnhealth
@@ -12661,7 +12661,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_INVULNERABLE | MF2_MCROSS | MF2_TELESTOMP        // flags2
      },
 
-    {                           // MT_FIREDEMON_SPLOTCH1
+    {                           // HEXEN_MT_FIREDEMON_SPLOTCH1
      -1,                        // doomednum
      S_FIRED_CORPSE1,           // spawnstate
      1000,                      // spawnhealth
@@ -12688,7 +12688,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_FIREDEMON_SPLOTCH2
+    {                           // HEXEN_MT_FIREDEMON_SPLOTCH2
      -1,                        // doomednum
      S_FIRED_CORPSE4,           // spawnstate
      1000,                      // spawnhealth
@@ -12715,7 +12715,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
      },
 
-    {                           // MT_FIREDEMON_FX1
+    {                           // HEXEN_MT_FIREDEMON_FX1
      -1,                        // doomednum
      S_FIRED_RDROP1,            // spawnstate
      1000,                      // spawnhealth
@@ -12742,7 +12742,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FIREDEMON_FX2
+    {                           // HEXEN_MT_FIREDEMON_FX2
      -1,                        // doomednum
      S_FIRED_RDROP2,            // spawnstate
      1000,                      // spawnhealth
@@ -12769,7 +12769,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FIREDEMON_FX3
+    {                           // HEXEN_MT_FIREDEMON_FX3
      -1,                        // doomednum
      S_FIRED_RDROP3,            // spawnstate
      1000,                      // spawnhealth
@@ -12796,7 +12796,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FIREDEMON_FX4
+    {                           // HEXEN_MT_FIREDEMON_FX4
      -1,                        // doomednum
      S_FIRED_RDROP4,            // spawnstate
      1000,                      // spawnhealth
@@ -12823,7 +12823,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FIREDEMON_FX5
+    {                           // HEXEN_MT_FIREDEMON_FX5
      -1,                        // doomednum
      S_FIRED_RDROP5,            // spawnstate
      1000,                      // spawnhealth
@@ -12850,7 +12850,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FIREDEMON_FX6
+    {                           // HEXEN_MT_FIREDEMON_FX6
      -1,                        // doomednum
      S_FIRED_FX6_1,             // spawnstate
      1000,                      // spawnhealth
@@ -12877,7 +12877,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FLOORCLIP | MF2_FIREDAMAGE  // flags2
      },
 
-    {                           // MT_ICEGUY
+    {                           // HEXEN_MT_ICEGUY
      8020,                      // doomednum
      S_ICEGUY_LOOK,             // spawnstate
      120,                       // spawnhealth
@@ -12904,7 +12904,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_PASSMOBJ | MF2_PUSHWALL | MF2_ICEDAMAGE | MF2_MCROSS | MF2_TELESTOMP   // flags2
      },
 
-    {                           // MT_ICEGUY_FX
+    {                           // HEXEN_MT_ICEGUY_FX
      -1,                        // doomednum
      S_ICEGUY_FX1,              // spawnstate
      1000,                      // spawnhealth
@@ -12931,7 +12931,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_ICEDAMAGE     // flags2
      },
 
-    {                           // MT_ICEFX_PUFF
+    {                           // HEXEN_MT_ICEFX_PUFF
      -1,                        // doomednum
      S_ICEFX_PUFF1,             // spawnstate
      1000,                      // spawnhealth
@@ -12958,7 +12958,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_ICEGUY_FX2
+    {                           // HEXEN_MT_ICEGUY_FX2
      -1,                        // doomednum
      S_ICEGUY_FX2_1,            // spawnstate
      1000,                      // spawnhealth
@@ -12985,7 +12985,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV | MF2_ICEDAMAGE        // flags2
      },
 
-    {                           // MT_ICEGUY_BIT
+    {                           // HEXEN_MT_ICEGUY_BIT
      -1,                        // doomednum
      S_ICEGUY_BIT1,             // spawnstate
      1000,                      // spawnhealth
@@ -13012,7 +13012,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
 
-    {                           // MT_ICEGUY_WISP1
+    {                           // HEXEN_MT_ICEGUY_WISP1
      -1,                        // doomednum
      S_ICEGUY_WISP1_1,          // spawnstate
      1000,                      // spawnhealth
@@ -13039,7 +13039,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_ICEGUY_WISP2
+    {                           // HEXEN_MT_ICEGUY_WISP2
      -1,                        // doomednum
      S_ICEGUY_WISP2_1,          // spawnstate
      1000,                      // spawnhealth
@@ -13066,7 +13066,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_FIGHTER_BOSS
+    {                           // HEXEN_MT_FIGHTER_BOSS
      10100,                     // doomednum
      S_FIGHTER,                 // spawnstate
      800,                       // spawnhealth
@@ -13093,7 +13093,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
      },
 
-    {                           // MT_CLERIC_BOSS
+    {                           // HEXEN_MT_CLERIC_BOSS
      10101,                     // doomednum
      S_CLERIC,                  // spawnstate
      800,                       // spawnhealth
@@ -13120,7 +13120,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
      },
 
-    {                           // MT_MAGE_BOSS
+    {                           // HEXEN_MT_MAGE_BOSS
      10102,                     // doomednum
      S_MAGE,                    // spawnstate
      800,                       // spawnhealth
@@ -13147,7 +13147,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
      },
 
-    {                           // MT_SORCBOSS
+    {                           // HEXEN_MT_SORCBOSS
      10080,                     // doomednum
      S_SORC_SPAWN1,             // spawnstate
      5000,                      // spawnhealth
@@ -13174,7 +13174,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_BOSS | MF2_MCROSS        // flags2
      },
 
-    {                           // MT_SORCBALL1
+    {                           // HEXEN_MT_SORCBALL1
      -1,                        // doomednum
      S_SORCBALL1_1,             // spawnstate
      1000,                      // spawnhealth
@@ -13201,7 +13201,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SORCBALL2
+    {                           // HEXEN_MT_SORCBALL2
      -1,                        // doomednum
      S_SORCBALL2_1,             // spawnstate
      1000,                      // spawnhealth
@@ -13228,7 +13228,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SORCBALL3
+    {                           // HEXEN_MT_SORCBALL3
      -1,                        // doomednum
      S_SORCBALL3_1,             // spawnstate
      1000,                      // spawnhealth
@@ -13255,7 +13255,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SORCFX1
+    {                           // HEXEN_MT_SORCFX1
      -1,                        // doomednum
      S_SORCFX1_1,               // spawnstate
      1000,                      // spawnhealth
@@ -13282,7 +13282,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
 
-    {                           // MT_SORCFX2
+    {                           // HEXEN_MT_SORCFX2
      -1,                        // doomednum
      S_SORCFX2_SPLIT1,          // spawnstate
      1000,                      // spawnhealth
@@ -13309,7 +13309,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_SORCFX2_T1
+    {                           // HEXEN_MT_SORCFX2_T1
      -1,                        // doomednum
      S_SORCFX2T1,               // spawnstate
      1000,                      // spawnhealth
@@ -13336,7 +13336,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_SORCFX3
+    {                           // HEXEN_MT_SORCFX3
      -1,                        // doomednum
      S_SORCFX3_1,               // spawnstate
      1000,                      // spawnhealth
@@ -13363,7 +13363,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_SORCFX3_EXPLOSION
+    {                           // HEXEN_MT_SORCFX3_EXPLOSION
      -1,                        // doomednum
      S_SORCFX3_EXP1,            // spawnstate
      1000,                      // spawnhealth
@@ -13390,7 +13390,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_SORCFX4
+    {                           // HEXEN_MT_SORCFX4
      -1,                        // doomednum
      S_SORCFX4_1,               // spawnstate
      1000,                      // spawnhealth
@@ -13417,7 +13417,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_SORCSPARK1
+    {                           // HEXEN_MT_SORCSPARK1
      -1,                        // doomednum
      S_SORCSPARK1,              // spawnstate
      1000,                      // spawnhealth
@@ -13444,7 +13444,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
 
-    {                           // MT_BLASTEFFECT
+    {                           // HEXEN_MT_BLASTEFFECT
      -1,                        // doomednum
      S_BLASTEFFECT1,            // spawnstate
      1000,                      // spawnhealth
@@ -13471,7 +13471,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_WATER_DRIP
+    {                           // HEXEN_MT_WATER_DRIP
      -1,                        // doomednum
      S_WATERDRIP1,              // spawnstate
      1000,                      // spawnhealth
@@ -13498,7 +13498,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_LOGRAV | MF2_NOTELEPORT        // flags2
      },
 
-    {                           // MT_KORAX
+    {                           // HEXEN_MT_KORAX
      10200,                     // doomednum
      S_KORAX_LOOK1,             // spawnstate
      5000,                      // spawnhealth
@@ -13525,7 +13525,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP | MF2_BOSS       // flags2
      },
 
-    {                           // MT_KORAX_SPIRIT1
+    {                           // HEXEN_MT_KORAX_SPIRIT1
      -1,                        // doomednum
      S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
@@ -13552,7 +13552,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_KORAX_SPIRIT2
+    {                           // HEXEN_MT_KORAX_SPIRIT2
      -1,                        // doomednum
      S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
@@ -13579,7 +13579,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_KORAX_SPIRIT3
+    {                           // HEXEN_MT_KORAX_SPIRIT3
      -1,                        // doomednum
      S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
@@ -13606,7 +13606,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_KORAX_SPIRIT4
+    {                           // HEXEN_MT_KORAX_SPIRIT4
      -1,                        // doomednum
      S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
@@ -13633,7 +13633,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_KORAX_SPIRIT5
+    {                           // HEXEN_MT_KORAX_SPIRIT5
      -1,                        // doomednum
      S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
@@ -13660,7 +13660,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_KORAX_SPIRIT6
+    {                           // HEXEN_MT_KORAX_SPIRIT6
      -1,                        // doomednum
      S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
@@ -13687,7 +13687,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_DEMON_MASH
+    {                           // HEXEN_MT_DEMON_MASH
      -1,                        // doomednum
      S_DEMN_LOOK1,              // spawnstate
      250,                       // spawnhealth
@@ -13714,7 +13714,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
      },
 
-    {                           // MT_DEMON2_MASH
+    {                           // HEXEN_MT_DEMON2_MASH
      -1,                        // doomednum
      S_DEMN2_LOOK1,             // spawnstate
      250,                       // spawnhealth
@@ -13741,7 +13741,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
      },
 
-    {                           // MT_ETTIN_MASH
+    {                           // HEXEN_MT_ETTIN_MASH
      -1,                        // doomednum
      S_ETTIN_LOOK1,             // spawnstate
      175,                       // spawnhealth
@@ -13768,7 +13768,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
      },
 
-    {                           // MT_CENTAUR_MASH
+    {                           // HEXEN_MT_CENTAUR_MASH
      -1,                        // doomednum
      S_CENTAUR_LOOK1,           // spawnstate
      200,                       // spawnhealth
@@ -13795,7 +13795,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
      },
 
-    {                           // MT_KORAX_BOLT
+    {                           // HEXEN_MT_KORAX_BOLT
      -1,                        // doomednum
      S_KBOLT1,                  // spawnstate
      1000,                      // spawnhealth
@@ -13822,7 +13822,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_NOTELEPORT             // flags2
      },
 
-    {                           // MT_BAT_SPAWNER
+    {                           // HEXEN_MT_BAT_SPAWNER
      10225,                     // doomednum
      S_SPAWNBATS1,              // spawnstate
      1000,                      // spawnhealth
@@ -13849,7 +13849,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      MF2_DONTDRAW               // flags2
      },
 
-    {                           // MT_BAT
+    {                           // HEXEN_MT_BAT
      -1,                        // doomednum
      S_BAT1,                    // spawnstate
      1000,                      // spawnhealth
