@@ -95,4 +95,8 @@ void P_MinotaurSlam(mobj_t * source, mobj_t * target);
 dboolean P_AutoUseChaosDevice(player_t * player);
 void P_AutoUseHealth(player_t * player, int saveHealth);
 
+// hexen
+
+void P_FallingDamage(player_t * player);
+
 #endif

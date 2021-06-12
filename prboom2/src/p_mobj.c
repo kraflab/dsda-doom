@@ -808,7 +808,7 @@ floater:
   {
     // hit the floor
 
-    if (heretic)
+    if (raven)
     {
       if (mo->flags & MF_MISSILE)
       {
@@ -818,14 +818,32 @@ floater:
           P_FloorBounceMissile(mo);
           return;
         }
-        else if (mo->type == HERETIC_MT_MNTRFX2)
+        else if (mo->type == HERETIC_MT_MNTRFX2 ||
+                 mo->type == HEXEN_MT_MNTRFX2 ||
+                 mo->type == HEXEN_MT_LIGHTNING_FLOOR)
         {                   // Minotaur floor fire can go up steps
+          return;
+        }
+        else if (mo->type == HEXEN_MT_HOLY_FX)
+        {                   // The spirit struck the ground
+          mo->momz = 0;
+          P_HitFloor(mo);
           return;
         }
         else
         {
+          if (hexen)
+            P_HitFloor(mo);
           P_ExplodeMissile(mo);
           return;
+        }
+      }
+
+      if (hexen && mo->flags & MF_COUNTKILL)   // Blasted mobj falling
+      {
+        if (mo->momz < -(23 * FRACUNIT))
+        {
+          P_DamageMobj(mo, NULL, NULL, 10000);
         }
       }
 
@@ -867,6 +885,8 @@ floater:
     )
       mo->momz = -mo->momz; // the skull slammed into something
 
+    // HEXEN_TODO: this is here instead of below - does it matter?
+    // mo->z = mo->floorz;
     if (mo->momz < 0)
     {
       /* killough 11/98: touchy objects explode on impact */
@@ -874,6 +894,14 @@ floater:
         P_DamageMobj(mo, NULL, NULL, mo->health);
       else
       {
+        if (mo->flags2 & MF2_ICEDAMAGE && mo->momz < -GRAVITY * 8)
+        {
+          mo->tics = 1;
+          mo->momx = 0;
+          mo->momy = 0;
+          mo->momz = 0;
+          return;
+        }
         // heretic_note: probably not necessary?
         if (!heretic && mo->player)
             mo->player->jumpTics = 7;
@@ -905,9 +933,44 @@ floater:
             S_StartSound(mo, heretic_sfx_plroof);
             mo->player->centering = true;
           }
+          else if (hexen)
+          {
+            if (mo->momz < -23 * FRACUNIT)
+            {
+              P_FallingDamage(mo->player);
+              P_NoiseAlert(mo, mo);
+            }
+            else if (mo->momz < -GRAVITY * 12 && !mo->player->morphTics)
+            {
+              S_StartSound(mo, hexen_sfx_player_land);
+              switch (mo->player->pclass)
+              {
+                case PCLASS_FIGHTER:
+                  S_StartSound(mo, hexen_sfx_player_fighter_grunt);
+                  break;
+                case PCLASS_CLERIC:
+                  S_StartSound(mo, hexen_sfx_player_cleric_grunt);
+                  break;
+                case PCLASS_MAGE:
+                  S_StartSound(mo, hexen_sfx_player_mage_grunt);
+                  break;
+                default:
+                  break;
+              }
+            }
+            else if (P_GetThingFloorType(mo) < FLOOR_LIQUID && !mo->player->morphTics)
+            {
+              S_StartSound(mo, hexen_sfx_player_land);
+            }
+            mo->player->centering = true;
+          }
           //e6y: compatibility optioned
           else if (comp[comp_sound] || (mo->health > 0)) /* cph - prevent "oof" when dead */
             S_StartSound (mo, sfx_oof);
+        }
+        else if (mo->type >= HEXEN_MT_POTTERY1 && mo->type <= HEXEN_MT_POTTERY3)
+        {
+          P_DamageMobj(mo, NULL, NULL, 25);
         }
       }
       mo->momz = 0;
@@ -924,13 +987,13 @@ floater:
 	     compatibility_level <= doom2_19_compatibility)
       mo->momz = -mo->momz; // the skull slammed into something
 
-    if (mo->info->crashstate && (mo->flags & MF_CORPSE))
+    if (mo->info->crashstate && (mo->flags & MF_CORPSE) && !(mo->flags2 & MF2_ICEDAMAGE))
     {
       P_SetMobjState(mo, mo->info->crashstate);
       return;
     }
 
-    if (!heretic && (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP))
+    if (!raven && (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP))
     {
       P_ExplodeMissile (mo);
       return;
@@ -966,6 +1029,15 @@ floater:
 
     mo->z = mo->ceilingz - mo->height;
 
+    if (hexen && mo->flags2 & MF2_FLOORBOUNCE)
+    {
+      if (mo->info->seesound)
+      {
+        S_StartSound(mo, mo->info->seesound);
+      }
+      return;
+    }
+
     /* cph 2001/04/15 -
      * We might have hit a ceiling but had downward momentum (e.g. ceiling is
      *  lowering on us), so for old demos we must still do the buggy
@@ -974,14 +1046,22 @@ floater:
     if (comp[comp_soul] && mo->flags & MF_SKULLFLY)
       mo->momz = -mo->momz; // the skull slammed into something
 
-    if ((mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP))
+    if ((mo->flags & MF_MISSILE) && (hexen || !(mo->flags & MF_NOCLIP)))
     {
-      if (heretic && mo->subsector->sector->ceilingpic == skyflatnum)
+      if (mo->type == HEXEN_MT_LIGHTNING_CEILING)
       {
-        if (mo->type == HERETIC_MT_BLOODYSKULL)
+        return;
+      }
+      if (raven && mo->subsector->sector->ceilingpic == skyflatnum)
+      {
+        if (mo->type == g_skullpop_mt)
         {
           mo->momx = mo->momy = 0;
           mo->momz = -FRACUNIT;
+        }
+        else if (mo->type == HEXEN_MT_HOLY_FX)
+        {
+          P_ExplodeMissile(mo);
         }
         else
         {

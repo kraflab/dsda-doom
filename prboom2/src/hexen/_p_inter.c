@@ -2104,36 +2104,6 @@ void P_DamageMobj
 
 //==========================================================================
 //
-// P_FallingDamage
-//
-//==========================================================================
-
-void P_FallingDamage(player_t * player)
-{
-    int damage;
-    int mom;
-    int dist;
-
-    mom = abs(player->mo->momz);
-    dist = FixedMul(mom, 16 * FRACUNIT / 23);
-
-    if (mom >= 63 * FRACUNIT)
-    {                           // automatic death
-        P_DamageMobj(player->mo, NULL, NULL, 10000);
-        return;
-    }
-    damage = ((FixedMul(dist, dist) / 10) >> FRACBITS) - 24;
-    if (player->mo->momz > -39 * FRACUNIT && damage > player->mo->health
-        && player->mo->health != 1)
-    {                           // No-death threshold
-        damage = player->mo->health - 1;
-    }
-    S_StartSound(player->mo, hexen_sfx_player_land);
-    P_DamageMobj(player->mo, NULL, NULL, damage);
-}
-
-//==========================================================================
-//
 // P_PoisonPlayer - Sets up all data concerning poisoning
 //
 //==========================================================================
