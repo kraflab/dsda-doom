@@ -2497,12 +2497,23 @@ void P_RipperBlood(mobj_t * mo)
 
 // hexen
 
+mobj_t *P_SpawnMissileAngleSpeed(mobj_t * source, mobjtype_t type,
+                                 angle_t angle, fixed_t momz, fixed_t speed)
+{
+    fixed_t z;
+    mobj_t *mo;
 
-//===========================================================================
-//
-// P_SPMAngleXYZ
-//
-//===========================================================================
+    z = source->z;
+    z -= source->floorclip;
+    mo = P_SpawnMobj(source->x, source->y, z, type);
+    mo->target = source;        // Originator
+    mo->angle = angle;
+    angle >>= ANGLETOFINESHIFT;
+    mo->momx = FixedMul(speed, finecosine[angle]);
+    mo->momy = FixedMul(speed, finesine[angle]);
+    mo->momz = momz;
+    return (P_CheckMissileSpawn(mo) ? mo : NULL);
+}
 
 mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
                       fixed_t z, mobjtype_t type, angle_t angle)

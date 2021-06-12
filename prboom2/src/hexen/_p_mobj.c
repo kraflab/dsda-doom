@@ -2098,39 +2098,6 @@ mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type,
     return (P_CheckMissileSpawn(mo) ? mo : NULL);
 }
 
-//---------------------------------------------------------------------------
-//
-// FUNC P_SpawnMissileAngleSpeed
-//
-// Returns NULL if the missile exploded immediately, otherwise returns
-// a mobj_t pointer to the missile.
-//
-//---------------------------------------------------------------------------
-
-mobj_t *P_SpawnMissileAngleSpeed(mobj_t * source, mobjtype_t type,
-                                 angle_t angle, fixed_t momz, fixed_t speed)
-{
-    fixed_t z;
-    mobj_t *mo;
-
-    z = source->z;
-    z -= source->floorclip;
-    mo = P_SpawnMobj(source->x, source->y, z, type);
-    if (mo->info->seesound)
-    {
-        //S_StartSound(mo, mo->info->seesound);
-    }
-    mo->target = source;        // Originator
-    mo->angle = angle;
-    angle >>= ANGLETOFINESHIFT;
-    mo->momx = FixedMul(speed, finecosine[angle]);
-    mo->momy = FixedMul(speed, finesine[angle]);
-    mo->momz = momz;
-    return (P_CheckMissileSpawn(mo) ? mo : NULL);
-}
-
-
-
 /*
 ================
 =
