@@ -115,4 +115,6 @@ void P_AppendSpecHit(line_t * ld);
 
 extern mobj_t *BlockingMobj;
 
+void P_BounceWall(mobj_t * mo);
+
 #endif // __P_MAP__

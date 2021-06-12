@@ -202,7 +202,7 @@ static void P_XYMovement (mobj_t* mo)
       mo->flags &= ~MF_SKULLFLY;
       mo->momz = 0;
 
-      if (heretic)
+      if (raven)
         new_state = mo->info->seestate;
       else
         new_state = mo->info->spawnstate;
@@ -262,6 +262,8 @@ static void P_XYMovement (mobj_t* mo)
   do
   {
     fixed_t ptryx, ptryy;
+    angle_t angle;
+
     // killough 8/9/98: fix bug in original Doom source:
     // Large negative displacements were never considered.
     // This explains the tendency for Mancubus fireballs
@@ -335,38 +337,155 @@ static void P_XYMovement (mobj_t* mo)
         else
           mo->momx = mo->momy = 0;
       }
-      else
-        if (player || mo->flags2 & MF2_SLIDE)   // try to slide along it
-          P_SlideMove(mo);
-        else if (mo->flags & MF_MISSILE)
+      else if (player || mo->flags2 & MF2_SLIDE) // try to slide along it
+      {
+        if (!hexen || BlockingMobj == NULL)
         {
-          // explode a missile
-
-          if (ceilingline &&
-              ceilingline->backsector &&
-              ceilingline->backsector->ceilingpic == skyflatnum)
+          P_SlideMove(mo);
+        }
+        else
+        {
+          if (P_TryMove(mo, mo->x, ptryy, 0))
           {
-            if (mo->type == HERETIC_MT_BLOODYSKULL)
+            mo->momx = 0;
+          }
+          else if (P_TryMove(mo, ptryx, mo->y, 0))
+          {
+            mo->momy = 0;
+          }
+          else
+          {
+            mo->momx = mo->momy = 0;
+          }
+        }
+      }
+      else if (mo->flags & MF_MISSILE)
+      {
+        if (hexen && mo->flags2 & MF2_FLOORBOUNCE)
+        {
+          if (BlockingMobj)
+          {
+            if ((BlockingMobj->flags2 & MF2_REFLECTIVE) ||
+                ((!BlockingMobj->player) &&
+                 (!(BlockingMobj->flags & MF_COUNTKILL))))
             {
-                mo->momx = mo->momy = 0;
-                mo->momz = -FRACUNIT;
-                return;
-            }
-            else if (demo_compatibility ||  // killough
-                     mo->z > ceilingline->backsector->ceilingheight)
-            {
-              // Hack to prevent missiles exploding
-              // against the sky.
-              // Does not handle sky floors.
+              fixed_t speed;
 
-              P_RemoveMobj (mo);
+              angle = R_PointToAngle2(BlockingMobj->x, BlockingMobj->y, mo->x, mo->y) +
+                      ANG1 * ((P_Random(pr_hexen) % 16) - 8);
+              speed = P_AproxDistance(mo->momx, mo->momy);
+              speed = FixedMul(speed, 0.75 * FRACUNIT);
+              mo->angle = angle;
+              angle >>= ANGLETOFINESHIFT;
+              mo->momx = FixedMul(speed, finecosine[angle]);
+              mo->momy = FixedMul(speed, finesine[angle]);
+              if (mo->info->seesound)
+              {
+                S_StartSound(mo, mo->info->seesound);
+              }
               return;
             }
+            else
+            { // Struck a player/creature
+              P_ExplodeMissile(mo);
+            }
           }
-          P_ExplodeMissile (mo);
+          else
+          { // Struck a wall
+            P_BounceWall(mo);
+            switch (mo->type)
+            {
+              case HEXEN_MT_SORCBALL1:
+              case HEXEN_MT_SORCBALL2:
+              case HEXEN_MT_SORCBALL3:
+              case HEXEN_MT_SORCFX1:
+                break;
+              default:
+                if (mo->info->seesound)
+                {
+                  S_StartSound(mo, mo->info->seesound);
+                }
+                break;
+            }
+            return;
+          }
         }
-        else // whatever else it is, it is now standing still in (x,y)
-          mo->momx = mo->momy = 0;
+
+        if (hexen && BlockingMobj && (BlockingMobj->flags2 & MF2_REFLECTIVE))
+        {
+          angle = R_PointToAngle2(BlockingMobj->x,
+                                  BlockingMobj->y, mo->x, mo->y);
+
+          // Change angle for delflection/reflection
+          switch (BlockingMobj->type)
+          {
+            case HEXEN_MT_CENTAUR:
+            case HEXEN_MT_CENTAURLEADER:
+              if (abs((int) angle - (int) BlockingMobj->angle) >> 24 > 45)
+                goto explode;
+              if (mo->type == HEXEN_MT_HOLY_FX)
+                goto explode;
+              // Drop through to sorcerer full reflection
+            case HEXEN_MT_SORCBOSS:
+              // Deflection
+              if (P_Random(pr_hexen) < 128)
+                angle += ANG45;
+              else
+                angle -= ANG45;
+              break;
+            default:
+              // Reflection
+              angle += ANG1 * ((P_Random(pr_hexen) % 16) - 8);
+              break;
+          }
+
+          // Reflect the missile along angle
+          mo->angle = angle;
+          angle >>= ANGLETOFINESHIFT;
+          mo->momx = FixedMul(mo->info->speed >> 1, finecosine[angle]);
+          mo->momy = FixedMul(mo->info->speed >> 1, finesine[angle]);
+          if (mo->flags2 & MF2_SEEKERMISSILE)
+          {
+            mo->special1.m = mo->target;
+          }
+          mo->target = BlockingMobj;
+          return;
+        }
+
+      explode:
+        // explode a missile
+        if (ceilingline &&
+            ceilingline->backsector &&
+            ceilingline->backsector->ceilingpic == skyflatnum)
+        {
+          if (raven && mo->type == g_skullpop_mt)
+          {
+            mo->momx = mo->momy = 0;
+            mo->momz = -FRACUNIT;
+            return;
+          }
+          else if (mo->type == HEXEN_MT_HOLY_FX)
+          {
+            P_ExplodeMissile(mo);
+            return;
+          }
+          else if (demo_compatibility ||  // killough
+                   mo->z > ceilingline->backsector->ceilingheight)
+          {
+            // Hack to prevent missiles exploding
+            // against the sky.
+            // Does not handle sky floors.
+
+            P_RemoveMobj(mo);
+            return;
+          }
+        }
+        P_ExplodeMissile(mo);
+      }
+      else // whatever else it is, it is now standing still in (x,y)
+      {
+        mo->momx = mo->momy = 0;
+      }
     }
   } while (xmove || ymove);
 
@@ -377,7 +496,8 @@ static void P_XYMovement (mobj_t* mo)
   if (mo->z > mo->floorz &&
       !(mo->flags & MF_FLY) &&
       !(mo->flags2 & MF2_FLY) &&
-      !(mo->flags2 & MF2_ONMOBJ))
+      !(mo->flags2 & MF2_ONMOBJ) &&
+      mo->type != HEXEN_MT_BLASTEFFECT)
     return;
 
   /* killough 8/11/98: add bouncers
@@ -433,10 +553,18 @@ static void P_XYMovement (mobj_t* mo)
       }
       else
       {
-        if ((unsigned)(player->mo->state - states - g_s_play_run1) < 4)
+        int runstate;
+
+        runstate = hexen ? PStateRun[player->pclass] : g_s_play_run1;
+        if ((unsigned)(player->mo->state - states - runstate) < 4)
         {
-          if (heretic || player->mo == mo || compatibility_level >= lxdoom_1_compatibility)
-            P_SetMobjState(player->mo, g_s_play);
+          if (raven || player->mo == mo || compatibility_level >= lxdoom_1_compatibility)
+          {
+            int playstate;
+
+            playstate = hexen ? PStateNormal[player->pclass] : g_s_play;
+            P_SetMobjState(player->mo, playstate);
+          }
         }
       }
     }
@@ -446,7 +574,7 @@ static void P_XYMovement (mobj_t* mo)
     /* killough 10/98: kill any bobbing momentum too (except in voodoo dolls)
      * cph - DEMOSYNC - needs compatibility check?
      */
-    if (!heretic && player && player->mo == mo)
+    if (!raven && player && player->mo == mo)
       player->momx = player->momy = 0;
   }
   else
@@ -477,7 +605,7 @@ static void P_XYMovement (mobj_t* mo)
         mo->momx = FixedMul(mo->momx, FRICTION_FLY);
         mo->momy = FixedMul(mo->momy, FRICTION_FLY);
       }
-      else if (special == g_special_friction_low)
+      else if (hexen ? P_GetThingFloorType(mo) == FLOOR_ICE : special == g_special_friction_low)
       {
         mo->momx = FixedMul(mo->momx, FRICTION_LOW);
         mo->momy = FixedMul(mo->momy, FRICTION_LOW);
