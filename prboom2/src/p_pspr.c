@@ -3166,3 +3166,73 @@ void A_MStaffAttack2(mobj_t * actor)
     MStaffSpawn2(actor, angle + ANG1 * 5);
     S_StartSound(actor, hexen_sfx_mage_staff_fire);
 }
+
+void A_FPunchAttack(player_t * player, pspdef_t * psp)
+{
+    angle_t angle;
+    int damage;
+    int slope;
+    mobj_t *pmo = player->mo;
+    fixed_t power;
+    int i;
+
+    damage = 40 + (P_Random(pr_hexen) & 15);
+    power = 2 * FRACUNIT;
+    PuffType = HEXEN_MT_PUNCHPUFF;
+    for (i = 0; i < 16; i++)
+    {
+        angle = pmo->angle + i * (ANG45 / 16);
+        slope = P_AimLineAttack(pmo, angle, 2 * MELEERANGE, 0);
+        if (linetarget)
+        {
+            player->mo->special1.i++;
+            if (pmo->special1.i == 3)
+            {
+                damage <<= 1;
+                power = 6 * FRACUNIT;
+                PuffType = HEXEN_MT_HAMMERPUFF;
+            }
+            P_LineAttack(pmo, angle, 2 * MELEERANGE, slope, damage);
+            if (linetarget->flags & MF_COUNTKILL || linetarget->player)
+            {
+                P_ThrustMobj(linetarget, angle, power);
+            }
+            AdjustPlayerAngle(pmo);
+            goto punchdone;
+        }
+        angle = pmo->angle - i * (ANG45 / 16);
+        slope = P_AimLineAttack(pmo, angle, 2 * MELEERANGE, 0);
+        if (linetarget)
+        {
+            pmo->special1.i++;
+            if (pmo->special1.i == 3)
+            {
+                damage <<= 1;
+                power = 6 * FRACUNIT;
+                PuffType = HEXEN_MT_HAMMERPUFF;
+            }
+            P_LineAttack(pmo, angle, 2 * MELEERANGE, slope, damage);
+            if (linetarget->flags & MF_COUNTKILL || linetarget->player)
+            {
+                P_ThrustMobj(linetarget, angle, power);
+            }
+            AdjustPlayerAngle(pmo);
+            goto punchdone;
+        }
+    }
+    // didn't find any creatures, so try to strike any walls
+    pmo->special1.i = 0;
+
+    angle = pmo->angle;
+    slope = P_AimLineAttack(pmo, angle, MELEERANGE, 0);
+    P_LineAttack(pmo, angle, MELEERANGE, slope, damage);
+
+  punchdone:
+    if (pmo->special1.i == 3)
+    {
+        pmo->special1.i = 0;
+        P_SetPsprite(player, ps_weapon, HEXEN_S_PUNCHATK2_1);
+        S_StartSound(pmo, hexen_sfx_fighter_grunt);
+    }
+    return;
+}
