@@ -3623,3 +3623,256 @@ void A_CHolyAttack(player_t * player, pspdef_t * psp)
     }
     S_StartSound(player->mo, hexen_sfx_choly_fire);
 }
+
+void A_CHolyPalette(player_t * player, pspdef_t * psp)
+{
+    int pal;
+
+    if (player == &players[consoleplayer])
+    {
+        // pal = STARTHOLYPAL + psp->state - (&states[HEXEN_S_CHOLYATK_6]);
+        // if (pal == STARTHOLYPAL + 3)
+        // {                       // reset back to original playpal
+        //     pal = 0;
+        // }
+        // I_SetPalette((byte *) W_CacheLumpNum(W_GetNumForName("playpal"),
+        //                                      PU_CACHE) + pal * 768);
+    }
+}
+
+static void CHolyFindTarget(mobj_t * actor)
+{
+    mobj_t *target;
+
+    target = P_RoughTargetSearch(actor, 0, 6);
+    if (target != NULL)
+    {
+        actor->special1.m = target;
+        actor->flags |= MF_NOCLIP | MF_SKULLFLY;
+        actor->flags &= ~MF_MISSILE;
+    }
+}
+
+static void CHolySeekerMissile(mobj_t * actor, angle_t thresh,
+                               angle_t turnMax)
+{
+    int dir;
+    int dist;
+    angle_t delta;
+    angle_t angle;
+    mobj_t *target;
+    fixed_t newZ;
+    fixed_t deltaZ;
+
+    target = actor->special1.m;
+    if (target == NULL)
+    {
+        return;
+    }
+    if (!(target->flags & MF_SHOOTABLE)
+        || (!(target->flags & MF_COUNTKILL) && !target->player))
+    {                           // Target died/target isn't a player or creature
+        actor->special1.m = NULL;
+        actor->flags &= ~(MF_NOCLIP | MF_SKULLFLY);
+        actor->flags |= MF_MISSILE;
+        CHolyFindTarget(actor);
+        return;
+    }
+    dir = P_FaceMobj(actor, target, &delta);
+    if (delta > thresh)
+    {
+        delta >>= 1;
+        if (delta > turnMax)
+        {
+            delta = turnMax;
+        }
+    }
+    if (dir)
+    {                           // Turn clockwise
+        actor->angle += delta;
+    }
+    else
+    {                           // Turn counter clockwise
+        actor->angle -= delta;
+    }
+    angle = actor->angle >> ANGLETOFINESHIFT;
+    actor->momx = FixedMul(actor->info->speed, finecosine[angle]);
+    actor->momy = FixedMul(actor->info->speed, finesine[angle]);
+    if (!(leveltime & 15)
+        || actor->z > target->z + (target->height)
+        || actor->z + actor->height < target->z)
+    {
+        newZ = target->z + ((P_Random(pr_hexen) * target->height) >> 8);
+        deltaZ = newZ - actor->z;
+        if (abs(deltaZ) > 15 * FRACUNIT)
+        {
+            if (deltaZ > 0)
+            {
+                deltaZ = 15 * FRACUNIT;
+            }
+            else
+            {
+                deltaZ = -15 * FRACUNIT;
+            }
+        }
+        dist = P_AproxDistance(target->x - actor->x, target->y - actor->y);
+        dist = dist / actor->info->speed;
+        if (dist < 1)
+        {
+            dist = 1;
+        }
+        actor->momz = deltaZ / dist;
+    }
+    return;
+}
+
+static void CHolyWeave(mobj_t * actor)
+{
+    fixed_t newX, newY;
+    int weaveXY, weaveZ;
+    int angle;
+
+    weaveXY = actor->special2.i >> 16;
+    weaveZ = actor->special2.i & 0xFFFF;
+    angle = (actor->angle + ANG90) >> ANGLETOFINESHIFT;
+    newX = actor->x - FixedMul(finecosine[angle],
+                               FloatBobOffsets[weaveXY] << 2);
+    newY = actor->y - FixedMul(finesine[angle],
+                               FloatBobOffsets[weaveXY] << 2);
+    weaveXY = (weaveXY + (P_Random(pr_hexen) % 5)) & 63;
+    newX += FixedMul(finecosine[angle], FloatBobOffsets[weaveXY] << 2);
+    newY += FixedMul(finesine[angle], FloatBobOffsets[weaveXY] << 2);
+    P_TryMove(actor, newX, newY, 0);
+    actor->z -= FloatBobOffsets[weaveZ] << 1;
+    weaveZ = (weaveZ + (P_Random(pr_hexen) % 5)) & 63;
+    actor->z += FloatBobOffsets[weaveZ] << 1;
+    actor->special2.i = weaveZ + (weaveXY << 16);
+}
+
+void A_CHolySeek(mobj_t * actor)
+{
+    actor->health--;
+    if (actor->health <= 0)
+    {
+        actor->momx >>= 2;
+        actor->momy >>= 2;
+        actor->momz = 0;
+        P_SetMobjState(actor, actor->info->deathstate);
+        actor->tics -= P_Random(pr_hexen) & 3;
+        return;
+    }
+    if (actor->special1.m)
+    {
+        CHolySeekerMissile(actor, actor->args[0] * ANG1,
+                           actor->args[0] * ANG1 * 2);
+        if (!((leveltime + 7) & 15))
+        {
+            actor->args[0] = 5 + (P_Random(pr_hexen) / 20);
+        }
+    }
+    CHolyWeave(actor);
+}
+
+static void CHolyTailFollow(mobj_t * actor, fixed_t dist)
+{
+    mobj_t *child;
+    int an;
+    fixed_t oldDistance, newDistance;
+
+    child = actor->special1.m;
+    if (child)
+    {
+        an = R_PointToAngle2(actor->x, actor->y, child->x,
+                             child->y) >> ANGLETOFINESHIFT;
+        oldDistance =
+            P_AproxDistance(child->x - actor->x, child->y - actor->y);
+        if (
+          P_TryMove(
+            child,
+            actor->x + FixedMul(dist, finecosine[an]),
+            actor->y + FixedMul(dist, finesine[an]),
+            0
+          )
+        )
+        {
+            newDistance = P_AproxDistance(child->x - actor->x,
+                                          child->y - actor->y) - FRACUNIT;
+            if (oldDistance < FRACUNIT)
+            {
+                if (child->z < actor->z)
+                {
+                    child->z = actor->z - dist;
+                }
+                else
+                {
+                    child->z = actor->z + dist;
+                }
+            }
+            else
+            {
+                child->z = actor->z + FixedMul(FixedDiv(newDistance,
+                                                        oldDistance),
+                                               child->z - actor->z);
+            }
+        }
+        CHolyTailFollow(child, dist - FRACUNIT);
+    }
+}
+
+static void CHolyTailRemove(mobj_t * actor)
+{
+    mobj_t *child;
+
+    child = actor->special1.m;
+    if (child)
+    {
+        CHolyTailRemove(child);
+    }
+    P_RemoveMobj(actor);
+}
+
+void A_CHolyTail(mobj_t * actor)
+{
+    mobj_t *parent;
+
+    parent = actor->special2.m;
+
+    if (parent)
+    {
+        if (parent->state >= &states[parent->info->deathstate])
+        {                       // Ghost removed, so remove all tail parts
+            CHolyTailRemove(actor);
+            return;
+        }
+        else if (
+          P_TryMove(
+            actor,
+            parent->x - FixedMul(14 * FRACUNIT, finecosine[parent->angle >> ANGLETOFINESHIFT]),
+            parent->y - FixedMul(14 * FRACUNIT, finesine[parent->angle >> ANGLETOFINESHIFT]),
+            0
+          )
+        )
+        {
+            actor->z = parent->z - 5 * FRACUNIT;
+        }
+        CHolyTailFollow(actor, 10 * FRACUNIT);
+    }
+}
+
+void A_CHolyCheckScream(mobj_t * actor)
+{
+    A_CHolySeek(actor);
+    if (P_Random(pr_hexen) < 20)
+    {
+        S_StartSound(actor, hexen_sfx_spirit_active);
+    }
+    if (!actor->special1.m)
+    {
+        CHolyFindTarget(actor);
+    }
+}
+
+void A_CHolySpawnPuff(mobj_t * actor)
+{
+    P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_HOLY_MISSILE_PUFF);
+}
