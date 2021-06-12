@@ -74,7 +74,6 @@ static void CheatQuickenFunc3(player_t * player, Cheat_t * cheat);
 static void CheatClassFunc1(player_t * player, Cheat_t * cheat);
 static void CheatClassFunc2(player_t * player, Cheat_t * cheat);
 static void CheatInitFunc(player_t * player, Cheat_t * cheat);
-static void CheatVersionFunc(player_t * player, Cheat_t * cheat);
 static void CheatDebugFunc(player_t * player, Cheat_t * cheat);
 static void CheatScriptFunc1(player_t * player, Cheat_t * cheat);
 static void CheatScriptFunc2(player_t * player, Cheat_t * cheat);
@@ -196,8 +195,6 @@ cheatseq_t CheatClass2Seq = CHEAT("shadowcaster", 1);
 
 cheatseq_t CheatInitSeq = CHEAT("init", 0);
 
-cheatseq_t CheatVersionSeq = CHEAT("mrjones", 0);
-
 cheatseq_t CheatDebugSeq = CHEAT("where", 0);
 
 cheatseq_t CheatScriptSeq1 = CHEAT("puke", 0);
@@ -234,7 +231,6 @@ static Cheat_t Cheats[] = {
     {CheatClassFunc1, &CheatClass1Seq},
     {CheatClassFunc2, &CheatClass2Seq},
     {CheatInitFunc, &CheatInitSeq},
-    {CheatVersionFunc, &CheatVersionSeq},
     {CheatDebugFunc, &CheatDebugSeq},
     {CheatScriptFunc1, &CheatScriptSeq1},
     {CheatScriptFunc2, &CheatScriptSeq2},
@@ -328,7 +324,6 @@ void SB_Init(void)
 	SET_CHEAT(CheatQuickenSeq3, "quickenquickenquicken");
 	SET_CHEAT(CheatClass1Seq, "plipo");
 	SET_CHEAT(CheatClass2Seq, "plipo");
-	SET_CHEAT(CheatVersionSeq, "pmacarther");
 	SET_CHEAT(CheatDebugSeq, "jsumwalt");
 	SET_CHEAT(CheatScriptSeq1, "mwagabaza");
 	SET_CHEAT(CheatScriptSeq2, "mwagabaza");
@@ -1280,7 +1275,7 @@ void DrawKeyBar(void)
     if (oldkeys != CPlayer->keys)
     {
         xPosition = 46;
-        for (i = 0; i < NUMKEYS && xPosition <= 126; i++)
+        for (i = 0; i < NUMCARDS && xPosition <= 126; i++)
         {
             if (CPlayer->keys & (1 << i))
             {
@@ -1880,11 +1875,6 @@ static void CheatClassFunc2(player_t * player, Cheat_t * cheat)
     SB_SetClassData();
     SB_state = -1;
     UpdateState |= I_FULLSCRN;
-}
-
-static void CheatVersionFunc(player_t * player, Cheat_t * cheat)
-{
-    P_SetMessage(player, HEXEN_VERSIONTEXT, true);
 }
 
 static void CheatDebugFunc(player_t * player, Cheat_t * cheat)

@@ -74,7 +74,12 @@ typedef enum
   ga_completed,
   ga_victory,
   ga_worlddone,
-  ga_screenshot
+  ga_screenshot,
+
+  // hexen
+  ga_initnew,
+  ga_leavemap,
+  ga_singlereborn
 } gameaction_t;
 
 

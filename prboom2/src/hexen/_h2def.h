@@ -48,33 +48,6 @@
 #include "d_loop.h"
 #include "net_defs.h"
 
-#define HEXEN_VERSION 110
-#define HEXEN_VERSION_TEXT "v1.1"
-
-// if rangecheck is undefined, most parameter validation debugging code
-// will not be compiled
-#ifndef NORANGECHECKING
-#define RANGECHECK
-#endif
-
-// Past distributions
-//#ifndef VER_ID
-//#define VER_ID "DVL"
-//#endif
-//#define HEXEN_VERSIONTEXT "ID V1.2"
-//#define HEXEN_VERSIONTEXT "RETAIL STORE BETA"               // 9/26/95
-//#define HEXEN_VERSIONTEXT "DVL BETA 10 05 95" // Used for GT for testing
-//#define HEXEN_VERSIONTEXT "DVL BETA 10 07 95" // Just an update for Romero
-//#define HEXEN_VERSIONTEXT "FINAL 1.0 (10 13 95)" // Just an update for Romero
-//#ifdef RANGECHECK
-//#define HEXEN_VERSIONTEXT "Version 1.1 +R "__DATE__" ("VER_ID")"
-//#else
-//#define HEXEN_VERSIONTEXT "Version 1.1 "__DATE__" ("VER_ID")"
-//#endif
-#define HEXEN_VERSIONTEXT ((gamemode == shareware) ? \
-                           "DEMO 10 16 95" : \
-                           "VERSION 1.1 MAR 22 1996 (BCP)")
-
 // all exterior data is defined here
 #include "xddefs.h"
 
@@ -92,65 +65,6 @@
 ===============================================================================
 */
 
-//#define NUMARTIFCTS   28
-#define MAXPLAYERS	8
-
-#define	BT_ATTACK		1
-#define	BT_USE			2
-#define	BT_CHANGE		4       // if true, the next 3 bits hold weapon num
-#define	BT_WEAPONMASK	(8+16+32)
-#define	BT_WEAPONSHIFT	3
-
-#define BT_SPECIAL		128     // game events, not really buttons
-#define	BTS_SAVEMASK	(4+8+16)
-#define	BTS_SAVESHIFT	2
-#define	BT_SPECIALMASK	3
-#define	BTS_PAUSE		1       // pause the game
-#define	BTS_SAVEGAME	2       // save the game at each console
-// savegame slot numbers occupy the second byte of buttons
-
-// The top 3 bits of the artifact field in the ticcmd_t struct are used
-//              as additional flags
-#define AFLAG_MASK			0x3F
-#define AFLAG_SUICIDE		0x40
-#define AFLAG_JUMP			0x80
-
-typedef enum
-{
-    GS_LEVEL,
-    GS_INTERMISSION,
-    GS_FINALE,
-    GS_DEMOSCREEN
-} gamestate_t;
-
-typedef enum
-{
-    ga_nothing,
-    ga_loadlevel,
-    ga_initnew,
-    ga_newgame,
-    ga_loadgame,
-    ga_savegame,
-    ga_playdemo,
-    ga_completed,
-    ga_leavemap,
-    ga_singlereborn,
-    ga_victory,
-    ga_worlddone,
-    ga_screenshot
-} gameaction_t;
-
-typedef enum
-{
-    wipe_0,
-    wipe_1,
-    wipe_2,
-    wipe_3,
-    wipe_4,
-    NUMWIPES,
-    wipe_random
-} wipe_t;
-
 /*
 ===============================================================================
 
@@ -158,15 +72,6 @@ typedef enum
 
 ===============================================================================
 */
-
-// think_t is a function pointer to a routine to handle an actor
-typedef void (*think_t) ();
-
-typedef struct thinker_s
-{
-    struct thinker_s *prev, *next;
-    think_t function;
-} thinker_t;
 
 struct player_s;
 
@@ -176,70 +81,6 @@ typedef union
     struct mobj_s *m;
     struct player_s *p;
 } specialval_t;
-
-// each sector has a degenmobj_t in it's center for sound origin purposes
-typedef struct
-{
-    thinker_t thinker;          // not used for anything
-    fixed_t x, y, z;
-} degenmobj_t;
-
-//
-// frame flags
-//
-#define	FF_FULLBRIGHT	0x8000  // flag in thing->frame
-#define FF_FRAMEMASK	0x7fff
-
-//=============================================================================
-
-typedef enum
-{
-    PST_LIVE,                   // playing
-    PST_DEAD,                   // dead on the ground
-    PST_REBORN                  // ready to restart
-} playerstate_t;
-
-// psprites are scaled shapes directly on the view screen
-// coordinates are given for a 320*200 view screen
-typedef enum
-{
-    ps_weapon,
-    ps_flash,
-    NUMPSPRITES
-} psprnum_t;
-
-typedef struct
-{
-    state_t *state;             // a NULL state means not active
-    int tics;
-    fixed_t sx, sy;
-} pspdef_t;
-
-/* Old Heretic key type
-typedef enum
-{
-	key_yellow,
-	key_green,
-	key_blue,
-	NUMKEYS
-} keytype_t;
-*/
-
-typedef enum
-{
-    KEY_1,
-    KEY_2,
-    KEY_3,
-    KEY_4,
-    KEY_5,
-    KEY_6,
-    KEY_7,
-    KEY_8,
-    KEY_9,
-    KEY_A,
-    KEY_B,
-    NUMKEYS
-} keytype_t;
 
 extern weaponinfo_t WeaponInfo[NUMWEAPONS][NUMCLASSES];
 

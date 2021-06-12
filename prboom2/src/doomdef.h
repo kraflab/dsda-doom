@@ -129,6 +129,8 @@ extern int SCREEN_320x200;
 // The maximum number of players, multiplayer/networking.
 #define MAXPLAYERS       4
 
+// HEXEN_TODO: MAXPLAYERS is 8
+
 // killough 2/28/98: A ridiculously large number
 // of players, the most you'll ever need in a demo
 // or savegame. This is used to prevent problems, in
@@ -195,12 +197,26 @@ typedef enum {
   it_blueskull,
   it_yellowskull,
   it_redskull,
-  NUMCARDS,
+  DOOM_NUMCARDS,
 
   // heretic
   key_blue = 0,
   key_yellow,
   key_green,
+
+  // hexen
+  key_1 = 0,
+  key_2,
+  key_3,
+  key_4,
+  key_5,
+  key_6,
+  key_7,
+  key_8,
+  key_9,
+  key_a,
+  key_b,
+  NUMCARDS
 } card_t;
 
 // The defined weapons, including a marker
@@ -427,6 +443,12 @@ typedef enum {
 extern dboolean heretic;
 
 //hexen
+
+// The top 3 bits of the artifact field in the ticcmd_t struct are used
+//              as additional flags
+#define AFLAG_MASK			0x3F
+#define AFLAG_SUICIDE		0x40
+#define AFLAG_JUMP			0x80
 
 typedef enum
 {

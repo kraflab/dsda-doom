@@ -307,7 +307,7 @@ static patchnum_t shortnum[10];
 
 // 3 key-cards, 3 skulls, 3 card/skull combos
 // jff 2/24/98 extend number of patches by three skull/card combos
-static patchnum_t keys[NUMCARDS+3];
+static patchnum_t keys[DOOM_NUMCARDS+3];
 
 // face status patches
 static patchnum_t faces[ST_NUMFACES];
@@ -993,7 +993,7 @@ static void ST_loadGraphics(dboolean doload)
   R_SetPatchNum(&tallpercent,"STTPRCNT");
 
   // key cards
-  for (i=0;i<NUMCARDS+3;i++)  //jff 2/23/98 show both keys too
+  for (i=0;i<DOOM_NUMCARDS+3;i++)  //jff 2/23/98 show both keys too
     {
       sprintf(namebuf, "STKEYS%d", i);
       R_SetPatchNum(&keys[i], namebuf);
