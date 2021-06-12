@@ -344,7 +344,7 @@ void A_ZapMimic(mobj_t * actor)
     if (mo)
     {
         if (mo->state >= &states[mo->info->deathstate]
-            || mo->state == &states[S_FREETARGMOBJ])
+            || mo->state == &states[HEXEN_S_FREETARGMOBJ])
         {
             P_ExplodeMissile(actor);
         }
@@ -369,7 +369,7 @@ void A_LastZap(mobj_t * actor)
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_LIGHTNING_ZAP);
     if (mo)
     {
-        P_SetMobjState(mo, S_LIGHTNING_ZAP_X1);
+        P_SetMobjState(mo, HEXEN_S_LIGHTNING_ZAP_X1);
         mo->momz = 40 * FRACUNIT;
     }
 }
@@ -452,7 +452,7 @@ void A_MStaffPalette(player_t * player, pspdef_t * psp)
 
     if (player == &players[consoleplayer])
     {
-        pal = STARTSCOURGEPAL + psp->state - (&states[S_MSTAFFATK_2]);
+        pal = STARTSCOURGEPAL + psp->state - (&states[HEXEN_S_MSTAFFATK_2]);
         if (pal == STARTSCOURGEPAL + 3)
         {                       // reset back to original playpal
             pal = 0;
@@ -616,7 +616,7 @@ void A_FPunchAttack(player_t * player, pspdef_t * psp)
     if (pmo->special1.i == 3)
     {
         pmo->special1.i = 0;
-        P_SetPsprite(player, ps_weapon, S_PUNCHATK2_1);
+        P_SetPsprite(player, ps_weapon, HEXEN_S_PUNCHATK2_1);
         S_StartSound(pmo, SFX_FIGHTER_GRUNT);
     }
     return;
@@ -699,7 +699,7 @@ void A_FAxeAttack(player_t * player, pspdef_t * psp)
             WeaponManaUse[player->class][player->readyweapon];
         if (player->mana[MANA_1] <= 0)
         {
-            P_SetPsprite(player, ps_weapon, S_FAXEATK_5);
+            P_SetPsprite(player, ps_weapon, HEXEN_S_FAXEATK_5);
         }
     }
     return;
@@ -786,7 +786,7 @@ void A_CStaffCheck(player_t * player, pspdef_t * psp)
                 newLife = player->health + (damage >> 3);
                 newLife = newLife > 100 ? 100 : newLife;
                 pmo->health = player->health = newLife;
-                P_SetPsprite(player, ps_weapon, S_CSTAFFATK2_1);
+                P_SetPsprite(player, ps_weapon, HEXEN_S_CSTAFFATK2_1);
             }
             player->mana[MANA_1] -=
                 WeaponManaUse[player->class][player->readyweapon];
@@ -804,7 +804,7 @@ void A_CStaffCheck(player_t * player, pspdef_t * psp)
                 newLife = player->health + (damage >> 4);
                 newLife = newLife > 100 ? 100 : newLife;
                 pmo->health = player->health = newLife;
-                P_SetPsprite(player, ps_weapon, S_CSTAFFATK2_1);
+                P_SetPsprite(player, ps_weapon, HEXEN_S_CSTAFFATK2_1);
             }
             player->mana[MANA_1] -=
                 WeaponManaUse[player->class][player->readyweapon];
@@ -883,7 +883,7 @@ void A_CStaffCheckBlink(player_t * player, pspdef_t * psp)
 {
     if (!--player->mo->special1.i)
     {
-        P_SetPsprite(player, ps_weapon, S_CSTAFFBLINK1);
+        P_SetPsprite(player, ps_weapon, HEXEN_S_CSTAFFBLINK1);
         player->mo->special1.i = (P_Random(pr_hexen) + 50) >> 2;
     }
 }
@@ -973,7 +973,7 @@ void A_CFlameMissile(mobj_t * actor)
                 mo->tics -= P_Random(pr_hexen) & 3;
             }
         }
-        P_SetMobjState(actor, S_FLAMEPUFF2_1);
+        P_SetMobjState(actor, HEXEN_S_FLAMEPUFF2_1);
     }
 }
 
@@ -1111,7 +1111,7 @@ void A_CHolyPalette(player_t * player, pspdef_t * psp)
 
     if (player == &players[consoleplayer])
     {
-        pal = STARTHOLYPAL + psp->state - (&states[S_CHOLYATK_6]);
+        pal = STARTHOLYPAL + psp->state - (&states[HEXEN_S_CHOLYATK_6]);
         if (pal == STARTHOLYPAL + 3)
         {                       // reset back to original playpal
             pal = 0;

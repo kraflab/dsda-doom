@@ -413,19 +413,19 @@ static boolean ActivateThing(mobj_t * mobj)
     {
         case HEXEN_MT_ZTWINEDTORCH:
         case HEXEN_MT_ZTWINEDTORCH_UNLIT:
-            P_SetMobjState(mobj, S_ZTWINEDTORCH_1);
+            P_SetMobjState(mobj, HEXEN_S_ZTWINEDTORCH_1);
             S_StartSound(mobj, SFX_IGNITE);
             break;
         case HEXEN_MT_ZWALLTORCH:
         case HEXEN_MT_ZWALLTORCH_UNLIT:
-            P_SetMobjState(mobj, S_ZWALLTORCH1);
+            P_SetMobjState(mobj, HEXEN_S_ZWALLTORCH1);
             S_StartSound(mobj, SFX_IGNITE);
             break;
         case HEXEN_MT_ZGEMPEDESTAL:
-            P_SetMobjState(mobj, S_ZGEMPEDESTAL2);
+            P_SetMobjState(mobj, HEXEN_S_ZGEMPEDESTAL2);
             break;
         case HEXEN_MT_ZWINGEDSTATUENOSKULL:
-            P_SetMobjState(mobj, S_ZWINGEDSTATUENOSKULL2);
+            P_SetMobjState(mobj, HEXEN_S_ZWINGEDSTATUENOSKULL2);
             break;
         case HEXEN_MT_THRUSTFLOOR_UP:
         case HEXEN_MT_THRUSTFLOOR_DOWN:
@@ -434,14 +434,14 @@ static boolean ActivateThing(mobj_t * mobj)
                 S_StartSound(mobj, SFX_THRUSTSPIKE_LOWER);
                 mobj->flags2 &= ~MF2_DONTDRAW;
                 if (mobj->args[1])
-                    P_SetMobjState(mobj, S_BTHRUSTRAISE1);
+                    P_SetMobjState(mobj, HEXEN_S_BTHRUSTRAISE1);
                 else
-                    P_SetMobjState(mobj, S_THRUSTRAISE1);
+                    P_SetMobjState(mobj, HEXEN_S_THRUSTRAISE1);
             }
             break;
         case HEXEN_MT_ZFIREBULL:
         case HEXEN_MT_ZFIREBULL_UNLIT:
-            P_SetMobjState(mobj, S_ZFIREBULL_BIRTH);
+            P_SetMobjState(mobj, HEXEN_S_ZFIREBULL_BIRTH);
             S_StartSound(mobj, SFX_IGNITE);
             break;
         case HEXEN_MT_ZBELL:
@@ -452,19 +452,19 @@ static boolean ActivateThing(mobj_t * mobj)
             break;
         case HEXEN_MT_ZCAULDRON:
         case HEXEN_MT_ZCAULDRON_UNLIT:
-            P_SetMobjState(mobj, S_ZCAULDRON1);
+            P_SetMobjState(mobj, HEXEN_S_ZCAULDRON1);
             S_StartSound(mobj, SFX_IGNITE);
             break;
         case HEXEN_MT_FLAME_SMALL:
             S_StartSound(mobj, SFX_IGNITE);
-            P_SetMobjState(mobj, S_FLAME_SMALL1);
+            P_SetMobjState(mobj, HEXEN_S_FLAME_SMALL1);
             break;
         case HEXEN_MT_FLAME_LARGE:
             S_StartSound(mobj, SFX_IGNITE);
-            P_SetMobjState(mobj, S_FLAME_LARGE1);
+            P_SetMobjState(mobj, HEXEN_S_FLAME_LARGE1);
             break;
         case HEXEN_MT_BAT_SPAWNER:
-            P_SetMobjState(mobj, S_SPAWNBATS1);
+            P_SetMobjState(mobj, HEXEN_S_SPAWNBATS1);
             break;
         default:
             return false;
@@ -495,11 +495,11 @@ static boolean DeactivateThing(mobj_t * mobj)
     {
         case HEXEN_MT_ZTWINEDTORCH:
         case HEXEN_MT_ZTWINEDTORCH_UNLIT:
-            P_SetMobjState(mobj, S_ZTWINEDTORCH_UNLIT);
+            P_SetMobjState(mobj, HEXEN_S_ZTWINEDTORCH_UNLIT);
             break;
         case HEXEN_MT_ZWALLTORCH:
         case HEXEN_MT_ZWALLTORCH_UNLIT:
-            P_SetMobjState(mobj, S_ZWALLTORCH_U);
+            P_SetMobjState(mobj, HEXEN_S_ZWALLTORCH_U);
             break;
         case HEXEN_MT_THRUSTFLOOR_UP:
         case HEXEN_MT_THRUSTFLOOR_DOWN:
@@ -507,27 +507,27 @@ static boolean DeactivateThing(mobj_t * mobj)
             {
                 S_StartSound(mobj, SFX_THRUSTSPIKE_RAISE);
                 if (mobj->args[1])
-                    P_SetMobjState(mobj, S_BTHRUSTLOWER);
+                    P_SetMobjState(mobj, HEXEN_S_BTHRUSTLOWER);
                 else
-                    P_SetMobjState(mobj, S_THRUSTLOWER);
+                    P_SetMobjState(mobj, HEXEN_S_THRUSTLOWER);
             }
             break;
         case HEXEN_MT_ZFIREBULL:
         case HEXEN_MT_ZFIREBULL_UNLIT:
-            P_SetMobjState(mobj, S_ZFIREBULL_DEATH);
+            P_SetMobjState(mobj, HEXEN_S_ZFIREBULL_DEATH);
             break;
         case HEXEN_MT_ZCAULDRON:
         case HEXEN_MT_ZCAULDRON_UNLIT:
-            P_SetMobjState(mobj, S_ZCAULDRON_U);
+            P_SetMobjState(mobj, HEXEN_S_ZCAULDRON_U);
             break;
         case HEXEN_MT_FLAME_SMALL:
-            P_SetMobjState(mobj, S_FLAME_SDORM1);
+            P_SetMobjState(mobj, HEXEN_S_FLAME_SDORM1);
             break;
         case HEXEN_MT_FLAME_LARGE:
-            P_SetMobjState(mobj, S_FLAME_LDORM1);
+            P_SetMobjState(mobj, HEXEN_S_FLAME_LDORM1);
             break;
         case HEXEN_MT_BAT_SPAWNER:
-            P_SetMobjState(mobj, S_SPAWNBATS_OFF);
+            P_SetMobjState(mobj, HEXEN_S_SPAWNBATS_OFF);
             break;
         default:
             return false;

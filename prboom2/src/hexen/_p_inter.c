@@ -134,7 +134,7 @@ void P_HideSpecialThing(mobj_t * thing)
 {
     thing->flags &= ~MF_SPECIAL;
     thing->flags2 |= MF2_DONTDRAW;
-    P_SetMobjState(thing, S_HIDESPECIAL1);
+    P_SetMobjState(thing, HEXEN_S_HIDESPECIAL1);
 }
 
 //--------------------------------------------------------------------------
@@ -177,7 +177,7 @@ boolean P_GiveMana(player_t * player, manatype_t mana, int count)
     if (player->class == PCLASS_FIGHTER && player->readyweapon == WP_SECOND
         && mana == MANA_1 && prevMana <= 0)
     {
-        P_SetPsprite(player, ps_weapon, S_FAXEREADY_G);
+        P_SetPsprite(player, ps_weapon, HEXEN_S_FAXEREADY_G);
     }
     return (true);
 }
@@ -871,20 +871,20 @@ static void SetDormantArtifact(mobj_t * arti)
     {
         if (arti->type == HEXEN_MT_ARTIINVULNERABILITY)
         {
-            P_SetMobjState(arti, S_DORMANTARTI3_1);
+            P_SetMobjState(arti, HEXEN_S_DORMANTARTI3_1);
         }
         else if (arti->type == HEXEN_MT_SUMMONMAULATOR || arti->type == HEXEN_MT_ARTIFLY)
         {
-            P_SetMobjState(arti, S_DORMANTARTI2_1);
+            P_SetMobjState(arti, HEXEN_S_DORMANTARTI2_1);
         }
         else
         {
-            P_SetMobjState(arti, S_DORMANTARTI1_1);
+            P_SetMobjState(arti, HEXEN_S_DORMANTARTI1_1);
         }
     }
     else
     {                           // Don't respawn
-        P_SetMobjState(arti, S_DEADARTI1);
+        P_SetMobjState(arti, HEXEN_S_DEADARTI1);
     }
 }
 
@@ -1352,15 +1352,15 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
             {
                 case PCLASS_FIGHTER:
                     S_StartSound(target, SFX_PLAYER_FIGHTER_BURN_DEATH);
-                    P_SetMobjState(target, S_PLAY_F_FDTH1);
+                    P_SetMobjState(target, HEXEN_S_PLAY_F_FDTH1);
                     return;
                 case PCLASS_CLERIC:
                     S_StartSound(target, SFX_PLAYER_CLERIC_BURN_DEATH);
-                    P_SetMobjState(target, S_PLAY_C_FDTH1);
+                    P_SetMobjState(target, HEXEN_S_PLAY_C_FDTH1);
                     return;
                 case PCLASS_MAGE:
                     S_StartSound(target, SFX_PLAYER_MAGE_BURN_DEATH);
-                    P_SetMobjState(target, S_PLAY_M_FDTH1);
+                    P_SetMobjState(target, HEXEN_S_PLAY_M_FDTH1);
                     return;
                 default:
                     break;
@@ -1373,16 +1373,16 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
             switch (target->player->class)
             {
                 case PCLASS_FIGHTER:
-                    P_SetMobjState(target, S_FPLAY_ICE);
+                    P_SetMobjState(target, HEXEN_S_FPLAY_ICE);
                     return;
                 case PCLASS_CLERIC:
-                    P_SetMobjState(target, S_CPLAY_ICE);
+                    P_SetMobjState(target, HEXEN_S_CPLAY_ICE);
                     return;
                 case PCLASS_MAGE:
-                    P_SetMobjState(target, S_MPLAY_ICE);
+                    P_SetMobjState(target, HEXEN_S_MPLAY_ICE);
                     return;
                 case PCLASS_PIG:
-                    P_SetMobjState(target, S_PIG_ICE);
+                    P_SetMobjState(target, HEXEN_S_PIG_ICE);
                     return;
                 default:
                     break;
@@ -1398,15 +1398,15 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
             {
                 case HEXEN_MT_FIGHTER_BOSS:
                     S_StartSound(target, SFX_PLAYER_FIGHTER_BURN_DEATH);
-                    P_SetMobjState(target, S_PLAY_F_FDTH1);
+                    P_SetMobjState(target, HEXEN_S_PLAY_F_FDTH1);
                     return;
                 case HEXEN_MT_CLERIC_BOSS:
                     S_StartSound(target, SFX_PLAYER_CLERIC_BURN_DEATH);
-                    P_SetMobjState(target, S_PLAY_C_FDTH1);
+                    P_SetMobjState(target, HEXEN_S_PLAY_C_FDTH1);
                     return;
                 case HEXEN_MT_MAGE_BOSS:
                     S_StartSound(target, SFX_PLAYER_MAGE_BURN_DEATH);
-                    P_SetMobjState(target, S_PLAY_M_FDTH1);
+                    P_SetMobjState(target, HEXEN_S_PLAY_M_FDTH1);
                     return;
                 default:
                     break;
@@ -1414,7 +1414,7 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
         }
         else if (target->type == HEXEN_MT_TREEDESTRUCTIBLE)
         {
-            P_SetMobjState(target, S_ZTREEDES_X1);
+            P_SetMobjState(target, HEXEN_S_ZTREEDES_X1);
             target->height = 24 * FRACUNIT;
             S_StartSound(target, SFX_TREE_EXPLODE);
             return;
@@ -1426,41 +1426,41 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
         switch (target->type)
         {
             case HEXEN_MT_BISHOP:
-                P_SetMobjState(target, S_BISHOP_ICE);
+                P_SetMobjState(target, HEXEN_S_BISHOP_ICE);
                 return;
             case HEXEN_MT_CENTAUR:
             case HEXEN_MT_CENTAURLEADER:
-                P_SetMobjState(target, S_CENTAUR_ICE);
+                P_SetMobjState(target, HEXEN_S_CENTAUR_ICE);
                 return;
             case HEXEN_MT_DEMON:
             case HEXEN_MT_DEMON2:
-                P_SetMobjState(target, S_DEMON_ICE);
+                P_SetMobjState(target, HEXEN_S_DEMON_ICE);
                 return;
             case HEXEN_MT_SERPENT:
             case HEXEN_MT_SERPENTLEADER:
-                P_SetMobjState(target, S_SERPENT_ICE);
+                P_SetMobjState(target, HEXEN_S_SERPENT_ICE);
                 return;
             case HEXEN_MT_WRAITH:
             case HEXEN_MT_WRAITHB:
-                P_SetMobjState(target, S_WRAITH_ICE);
+                P_SetMobjState(target, HEXEN_S_WRAITH_ICE);
                 return;
             case HEXEN_MT_ETTIN:
-                P_SetMobjState(target, S_ETTIN_ICE1);
+                P_SetMobjState(target, HEXEN_S_ETTIN_ICE1);
                 return;
             case HEXEN_MT_FIREDEMON:
-                P_SetMobjState(target, S_FIRED_ICE1);
+                P_SetMobjState(target, HEXEN_S_FIRED_ICE1);
                 return;
             case HEXEN_MT_FIGHTER_BOSS:
-                P_SetMobjState(target, S_FIGHTER_ICE);
+                P_SetMobjState(target, HEXEN_S_FIGHTER_ICE);
                 return;
             case HEXEN_MT_CLERIC_BOSS:
-                P_SetMobjState(target, S_CLERIC_ICE);
+                P_SetMobjState(target, HEXEN_S_CLERIC_ICE);
                 return;
             case HEXEN_MT_MAGE_BOSS:
-                P_SetMobjState(target, S_MAGE_ICE);
+                P_SetMobjState(target, HEXEN_S_MAGE_ICE);
                 return;
             case HEXEN_MT_PIG:
-                P_SetMobjState(target, S_PIG_ICE);
+                P_SetMobjState(target, HEXEN_S_PIG_ICE);
                 return;
             default:
                 target->flags &= ~MF_ICECORPSE;
@@ -1564,7 +1564,7 @@ boolean P_MorphPlayer(player_t * player)
     z = pmo->z;
     angle = pmo->angle;
     oldFlags2 = pmo->flags2;
-    P_SetMobjState(pmo, S_FREETARGMOBJ);
+    P_SetMobjState(pmo, HEXEN_S_FREETARGMOBJ);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     S_StartSound(fog, SFX_TELEPORT);
     beastMo = P_SpawnMobj(x, y, z, HEXEN_MT_PIGPLAYER);
@@ -1623,7 +1623,7 @@ boolean P_MorphMonster(mobj_t * actor)
     y = oldMonster.y;
     z = oldMonster.z;
     P_RemoveMobjFromTIDList(actor);
-    P_SetMobjState(actor, S_FREETARGMOBJ);
+    P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     S_StartSound(fog, SFX_TELEPORT);
     monster = P_SpawnMobj(x, y, z, HEXEN_MT_PIG);
@@ -2095,7 +2095,7 @@ void P_DamageMobj
         target->target = source;
         target->threshold = BASETHRESHOLD;
         if (target->state == &states[target->info->spawnstate]
-            && target->info->seestate != S_NULL)
+            && target->info->seestate != HEXEN_S_NULL)
         {
             P_SetMobjState(target, target->info->seestate);
         }

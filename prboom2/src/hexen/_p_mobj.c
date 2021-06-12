@@ -71,9 +71,9 @@ boolean P_SetMobjState(mobj_t * mobj, statenum_t state)
 {
     state_t *st;
 
-    if (state == S_NULL)
+    if (state == HEXEN_S_NULL)
     {                           // Remove mobj
-        mobj->state = (state_t *) S_NULL;
+        mobj->state = (state_t *) HEXEN_S_NULL;
         P_RemoveMobj(mobj);
         return (false);
     }
@@ -101,9 +101,9 @@ boolean P_SetMobjStateNF(mobj_t * mobj, statenum_t state)
 {
     state_t *st;
 
-    if (state == S_NULL)
+    if (state == HEXEN_S_NULL)
     {                           // Remove mobj
-        mobj->state = (state_t *) S_NULL;
+        mobj->state = (state_t *) HEXEN_S_NULL;
         P_RemoveMobj(mobj);
         return (false);
     }
@@ -187,7 +187,7 @@ void P_FloorBounceMissile(mobj_t * mo)
             mo->momz = FixedMul(mo->momz, -0.3 * FRACUNIT);
             if (abs(mo->momz) < (FRACUNIT / 2))
             {
-                P_SetMobjState(mo, S_NULL);
+                P_SetMobjState(mo, HEXEN_S_NULL);
                 return;
             }
             break;
@@ -1595,7 +1595,7 @@ void P_SpawnMapThing(mapthing_t * mthing)
         mobj->flags2 |= MF2_DORMANT;
         if (mobj->type == HEXEN_MT_ICEGUY)
         {
-            P_SetMobjState(mobj, S_ICEGUY_DORMANT);
+            P_SetMobjState(mobj, HEXEN_S_ICEGUY_DORMANT);
         }
         mobj->tics = -1;
     }
@@ -1780,9 +1780,9 @@ void P_SpawnBlood (fixed_t x, fixed_t y, fixed_t z, int damage)
 	th->tics -= P_Random(pr_hexen)&3;
 
 	if (damage <= 12 && damage >= 9)
-		P_SetMobjState (th,S_BLOOD2);
+		P_SetMobjState (th,HEXEN_S_BLOOD2);
 	else if (damage < 9)
-		P_SetMobjState (th,S_BLOOD3);
+		P_SetMobjState (th,HEXEN_S_BLOOD3);
 }
 */
 

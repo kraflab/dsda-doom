@@ -2245,9 +2245,9 @@ boolean PIT_ChangeSector(mobj_t * thing)
         }
         else
         {
-            if (thing->state != &states[S_GIBS1])
+            if (thing->state != &states[HEXEN_S_GIBS1])
             {
-                P_SetMobjState(thing, S_GIBS1);
+                P_SetMobjState(thing, HEXEN_S_GIBS1);
                 thing->height = 0;
                 thing->radius = 0;
                 S_StartSound(thing, SFX_PLAYER_FALLING_SPLAT);

@@ -933,7 +933,7 @@ boolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
     oldMonster = *actor;        // Save pig vars
 
     P_RemoveMobjFromTIDList(actor);
-    P_SetMobjState(actor, S_FREETARGMOBJ);
+    P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     mo = P_SpawnMobj(x, y, z, moType);
 
     if (P_TestMobjLocation(mo) == false)
@@ -1235,11 +1235,11 @@ void A_MinotaurLook(mobj_t * actor)
 
     if (actor->target)
     {
-        P_SetMobjStateNF(actor, S_MNTR_WALK1);
+        P_SetMobjStateNF(actor, HEXEN_S_MNTR_WALK1);
     }
     else
     {
-        P_SetMobjStateNF(actor, S_MNTR_ROAM1);
+        P_SetMobjStateNF(actor, HEXEN_S_MNTR_ROAM1);
     }
 }
 
@@ -1262,7 +1262,7 @@ void A_MinotaurChase(mobj_t * actor)
     if (!actor->target || (actor->target->health <= 0) ||
         !(actor->target->flags & MF_SHOOTABLE))
     {                           // look for a new target
-        P_SetMobjState(actor, S_MNTR_LOOK1);
+        P_SetMobjState(actor, HEXEN_S_MNTR_LOOK1);
         return;
     }
 
@@ -1348,7 +1348,7 @@ void A_MinotaurDecide(mobj_t * actor)
         && dist > 1 * 64 * FRACUNIT && P_Random(pr_hexen) < 230)
     {                           // Charge attack
         // Don't call the state function right away
-        P_SetMobjStateNF(actor, S_MNTR_ATK4_1);
+        P_SetMobjStateNF(actor, HEXEN_S_MNTR_ATK4_1);
         actor->flags |= MF_SKULLFLY;
         A_FaceTarget(actor);
         angle = actor->angle >> ANGLETOFINESHIFT;
@@ -1359,7 +1359,7 @@ void A_MinotaurDecide(mobj_t * actor)
     else if (target->z == target->floorz
              && dist < 9 * 64 * FRACUNIT && P_Random(pr_hexen) < 100)
     {                           // Floor fire attack
-        P_SetMobjState(actor, S_MNTR_ATK3_1);
+        P_SetMobjState(actor, HEXEN_S_MNTR_ATK3_1);
         actor->special2.i = 0;
     }
     else
@@ -1467,7 +1467,7 @@ void A_MinotaurAtk3(mobj_t * actor)
     }
     if (P_Random(pr_hexen) < 192 && actor->special2.i == 0)
     {
-        P_SetMobjState(actor, S_MNTR_ATK3_4);
+        P_SetMobjState(actor, HEXEN_S_MNTR_ATK3_4);
         actor->special2.i = 1;
     }
 }
@@ -1802,7 +1802,7 @@ void A_CheckSkullFloor(mobj_t * actor)
 {
     if (actor->z <= actor->floorz)
     {
-        P_SetMobjState(actor, S_BLOODYSKULLX1);
+        P_SetMobjState(actor, HEXEN_S_BLOODYSKULLX1);
         S_StartSound(actor, SFX_DRIP);
     }
 }
@@ -1817,7 +1817,7 @@ void A_CheckSkullDone(mobj_t * actor)
 {
     if (actor->special2.i == 666)
     {
-        P_SetMobjState(actor, S_BLOODYSKULLX2);
+        P_SetMobjState(actor, HEXEN_S_BLOODYSKULLX2);
     }
 }
 
@@ -1831,7 +1831,7 @@ void A_CheckBurnGone(mobj_t * actor)
 {
     if (actor->special2.i == 666)
     {
-        P_SetMobjState(actor, S_PLAY_FDTH20);
+        P_SetMobjState(actor, HEXEN_S_PLAY_FDTH20);
     }
 }
 
@@ -2154,7 +2154,7 @@ void A_SerpentHumpDecide(mobj_t * actor)
         }
         else if (P_Random(pr_hexen) < 40)
         {                       // Missile attack
-            P_SetMobjState(actor, S_SERPENT_SURFACE1);
+            P_SetMobjState(actor, HEXEN_S_SERPENT_SURFACE1);
             return;
         }
     }
@@ -2166,11 +2166,11 @@ void A_SerpentHumpDecide(mobj_t * actor)
     {                           // The hump shouldn't occur when within melee range
         if (actor->type == HEXEN_MT_SERPENTLEADER && P_Random(pr_hexen) < 128)
         {
-            P_SetMobjState(actor, S_SERPENT_SURFACE1);
+            P_SetMobjState(actor, HEXEN_S_SERPENT_SURFACE1);
         }
         else
         {
-            P_SetMobjState(actor, S_SERPENT_HUMP1);
+            P_SetMobjState(actor, HEXEN_S_SERPENT_HUMP1);
             S_StartSound(actor, SFX_SERPENT_ACTIVE);
         }
     }
@@ -2276,7 +2276,7 @@ void A_SerpentWalk(mobj_t * actor)
         {
             S_StartSound(actor, actor->info->attacksound);
         }
-        P_SetMobjState(actor, S_SERPENT_ATK1);
+        P_SetMobjState(actor, HEXEN_S_SERPENT_ATK1);
         return;
     }
 //
@@ -2313,23 +2313,23 @@ void A_SerpentCheckForAttack(mobj_t * actor)
     {
         if (!P_CheckMeleeRange(actor))
         {
-            P_SetMobjState(actor, S_SERPENT_ATK1);
+            P_SetMobjState(actor, HEXEN_S_SERPENT_ATK1);
             return;
         }
     }
     if (P_CheckMeleeRange2(actor))
     {
-        P_SetMobjState(actor, S_SERPENT_WALK1);
+        P_SetMobjState(actor, HEXEN_S_SERPENT_WALK1);
     }
     else if (P_CheckMeleeRange(actor))
     {
         if (P_Random(pr_hexen) < 32)
         {
-            P_SetMobjState(actor, S_SERPENT_WALK1);
+            P_SetMobjState(actor, HEXEN_S_SERPENT_WALK1);
         }
         else
         {
-            P_SetMobjState(actor, S_SERPENT_ATK1);
+            P_SetMobjState(actor, HEXEN_S_SERPENT_ATK1);
         }
     }
 }
@@ -2348,7 +2348,7 @@ void A_SerpentChooseAttack(mobj_t * actor)
     }
     if (actor->type == HEXEN_MT_SERPENTLEADER)
     {
-        P_SetMobjState(actor, S_SERPENT_MISSILE1);
+        P_SetMobjState(actor, HEXEN_S_SERPENT_MISSILE1);
     }
 }
 
@@ -2495,11 +2495,11 @@ void A_SerpentHeadCheck(mobj_t * actor)
         if (P_GetThingFloorType(actor) >= FLOOR_LIQUID)
         {
             P_HitFloor(actor);
-            P_SetMobjState(actor, S_NULL);
+            P_SetMobjState(actor, HEXEN_S_NULL);
         }
         else
         {
-            P_SetMobjState(actor, S_SERPENT_HEAD_X1);
+            P_SetMobjState(actor, HEXEN_S_SERPENT_HEAD_X1);
         }
     }
 }
@@ -2626,7 +2626,7 @@ void A_BishopAttack2(mobj_t * actor)
     if (!actor->target || !actor->special1.i)
     {
         actor->special1.i = 0;
-        P_SetMobjState(actor, S_BISHOP_WALK1);
+        P_SetMobjState(actor, HEXEN_S_BISHOP_WALK1);
         return;
     }
     mo = P_SpawnMissile(actor, actor->target, HEXEN_MT_BISH_FX);
@@ -2692,7 +2692,7 @@ void A_BishopDecide(mobj_t * actor)
     }
     else
     {
-        P_SetMobjState(actor, S_BISHOP_BLUR1);
+        P_SetMobjState(actor, HEXEN_S_BISHOP_BLUR1);
     }
 }
 
@@ -2736,11 +2736,11 @@ void A_BishopSpawnBlur(mobj_t * actor)
         actor->momy = 0;
         if (P_Random(pr_hexen) > 96)
         {
-            P_SetMobjState(actor, S_BISHOP_WALK1);
+            P_SetMobjState(actor, HEXEN_S_BISHOP_WALK1);
         }
         else
         {
-            P_SetMobjState(actor, S_BISHOP_ATK1);
+            P_SetMobjState(actor, HEXEN_S_BISHOP_ATK1);
         }
     }
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_BISHOPBLUR);
@@ -2794,7 +2794,7 @@ void A_BishopPainBlur(mobj_t * actor)
 
     if (P_Random(pr_hexen) < 64)
     {
-        P_SetMobjState(actor, S_BISHOP_BLUR1);
+        P_SetMobjState(actor, HEXEN_S_BISHOP_BLUR1);
         return;
     }
 
@@ -3076,7 +3076,7 @@ void A_DragonPain(mobj_t * actor)
     A_Pain(actor);
     if (!actor->special1.i)
     {                           // no destination spot yet
-        P_SetMobjState(actor, S_DRAGON_INIT);
+        P_SetMobjState(actor, HEXEN_S_DRAGON_INIT);
     }
 }
 
@@ -3090,7 +3090,7 @@ void A_DragonCheckCrash(mobj_t * actor)
 {
     if (actor->z <= actor->floorz)
     {
-        P_SetMobjState(actor, S_DRAGON_CRASH1);
+        P_SetMobjState(actor, HEXEN_S_DRAGON_CRASH1);
     }
 }
 
@@ -3373,7 +3373,7 @@ void A_WraithRaise(mobj_t * actor)
     if (A_RaiseMobj(actor))
     {
         // Reached it's target height
-        P_SetMobjState(actor, S_WRAITH_CHASE1);
+        P_SetMobjState(actor, HEXEN_S_WRAITH_CHASE1);
     }
 
     P_SpawnDirt(actor, actor->radius);
@@ -3527,7 +3527,7 @@ void A_WraithChase(mobj_t * actor)
     actor->special1.i = (weaveindex + 2) & 63;
 //      if (actor->floorclip > 0)
 //      {
-//              P_SetMobjState(actor, S_WRAITH_RAISE2);
+//              P_SetMobjState(actor, HEXEN_S_WRAITH_RAISE2);
 //              return;
 //      }
     A_Chase(actor);
@@ -4067,7 +4067,7 @@ void A_SorcBallOrbit(mobj_t * actor)
             {
                 // Put sorcerer into special throw spell anim
                 if (parent->health > 0)
-                    P_SetMobjStateNF(parent, S_SORC_ATTACK1);
+                    P_SetMobjStateNF(parent, HEXEN_S_SORC_ATTACK1);
 
                 if (actor->type == HEXEN_MT_SORCBALL1 && P_Random(pr_hexen) < 200)
                 {
@@ -4092,7 +4092,7 @@ void A_SorcBallOrbit(mobj_t * actor)
                     parent->args[3] = SORC_STOPPED;
                     // Back to orbit balls
                     if (parent->health > 0)
-                        P_SetMobjStateNF(parent, S_SORC_ATTACK4);
+                        P_SetMobjStateNF(parent, HEXEN_S_SORC_ATTACK4);
                 }
                 else
                 {
@@ -4231,7 +4231,7 @@ void A_CastSorcererSpell(mobj_t * actor)
 
     // Put sorcerer into throw spell animation
     if (parent->health > 0)
-        P_SetMobjStateNF(parent, S_SORC_ATTACK4);
+        P_SetMobjStateNF(parent, HEXEN_S_SORC_ATTACK4);
 
     switch (spell)
     {
@@ -4414,7 +4414,7 @@ void A_SorcFX2Split(mobj_t * actor)
         mo->target = actor->target;
         mo->args[0] = 0;        // CW
         mo->special1.i = actor->angle;    // Set angle
-        P_SetMobjStateNF(mo, S_SORCFX2_ORBIT1);
+        P_SetMobjStateNF(mo, HEXEN_S_SORCFX2_ORBIT1);
     }
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_SORCFX2);
     if (mo)
@@ -4422,9 +4422,9 @@ void A_SorcFX2Split(mobj_t * actor)
         mo->target = actor->target;
         mo->args[0] = 1;        // CCW
         mo->special1.i = actor->angle;    // Set angle
-        P_SetMobjStateNF(mo, S_SORCFX2_ORBIT1);
+        P_SetMobjStateNF(mo, HEXEN_S_SORCFX2_ORBIT1);
     }
-    P_SetMobjStateNF(actor, S_NULL);
+    P_SetMobjStateNF(actor, HEXEN_S_NULL);
 }
 
 
@@ -4495,10 +4495,10 @@ void A_SpawnBishop(mobj_t * actor)
     {
         if (!P_TestMobjLocation(mo))
         {
-            P_SetMobjState(mo, S_NULL);
+            P_SetMobjState(mo, HEXEN_S_NULL);
         }
     }
-    P_SetMobjState(actor, S_NULL);
+    P_SetMobjState(actor, HEXEN_S_NULL);
 }
 
 /*
@@ -4841,7 +4841,7 @@ void A_IceCheckHeadDone(mobj_t * actor)
 {
     if (actor->special2.i == 666)
     {
-        P_SetMobjState(actor, S_ICECHUNK_HEAD2);
+        P_SetMobjState(actor, HEXEN_S_ICECHUNK_HEAD2);
     }
 }
 
@@ -4902,7 +4902,7 @@ void A_FreezeDeathChunks(mobj_t * actor)
     {                           // attach the player's view to a chunk of ice
         mo = P_SpawnMobj(actor->x, actor->y, actor->z + VIEWHEIGHT,
                          HEXEN_MT_ICECHUNK);
-        P_SetMobjState(mo, S_ICECHUNK_HEAD);
+        P_SetMobjState(mo, HEXEN_S_ICECHUNK_HEAD);
         mo->momz = FixedDiv(mo->z - actor->z, actor->height) << 2;
         mo->momx = P_SubRandom() << (FRACBITS - 7);
         mo->momy = P_SubRandom() << (FRACBITS - 7);
@@ -4916,7 +4916,7 @@ void A_FreezeDeathChunks(mobj_t * actor)
         mo->player->lookdir = 0;
     }
     P_RemoveMobjFromTIDList(actor);
-    P_SetMobjState(actor, S_FREETARGMOBJ);
+    P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     actor->flags2 |= MF2_DONTDRAW;
 }
 
@@ -5080,11 +5080,11 @@ void A_KoraxDecide(mobj_t * actor)
 {
     if (P_Random(pr_hexen) < 220)
     {
-        P_SetMobjState(actor, S_KORAX_MISSILE1);
+        P_SetMobjState(actor, HEXEN_S_KORAX_MISSILE1);
     }
     else
     {
-        P_SetMobjState(actor, S_KORAX_COMMAND1);
+        P_SetMobjState(actor, HEXEN_S_KORAX_COMMAND1);
     }
 }
 
@@ -5383,7 +5383,7 @@ void A_KSpiritRoam(mobj_t * actor)
     if (actor->health-- <= 0)
     {
         S_StartSound(actor, SFX_SPIRIT_DIE);
-        P_SetMobjState(actor, S_KSPIRIT_DEATH1);
+        P_SetMobjState(actor, HEXEN_S_KSPIRIT_DEATH1);
     }
     else
     {
@@ -5405,7 +5405,7 @@ void A_KBolt(mobj_t * actor)
     // Countdown lifetime
     if (actor->special1.i-- <= 0)
     {
-        P_SetMobjState(actor, S_NULL);
+        P_SetMobjState(actor, HEXEN_S_NULL);
     }
 }
 

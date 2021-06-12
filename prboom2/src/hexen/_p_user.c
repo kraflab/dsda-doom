@@ -425,7 +425,7 @@ void P_MorphPlayerThink(player_t * player)
     pmo = player->mo;
     if (!(pmo->momx + pmo->momy) && P_Random(pr_hexen) < 64)
     {                           // Snout sniff
-        P_SetPspriteNF(player, ps_weapon, S_SNOUTATK2);
+        P_SetPspriteNF(player, ps_weapon, HEXEN_S_SNOUTATK2);
         S_StartSound(pmo, SFX_PIG_ACTIVE1);     // snort
         return;
     }
@@ -492,7 +492,7 @@ boolean P_UndoPlayerMorph(player_t * player)
     oldFlags = pmo->flags;
     oldFlags2 = pmo->flags2;
     oldBeast = pmo->type;
-    P_SetMobjState(pmo, S_FREETARGMOBJ);
+    P_SetMobjState(pmo, HEXEN_S_FREETARGMOBJ);
     playerNum = P_GetPlayerNum(player);
     switch (PlayerClass[playerNum])
     {

@@ -265,7 +265,7 @@ void A_CorpseExplode(mobj_t * actor)
     }
     // Spawn a skull
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_CORPSEBIT);
-    P_SetMobjState(mo, S_CORPSEBIT_4);
+    P_SetMobjState(mo, HEXEN_S_CORPSEBIT_4);
     if (mo)
     {
         mo->momz = ((P_Random(pr_hexen) & 7) + 5) * (3 * FRACUNIT / 4);
@@ -333,7 +333,7 @@ void A_LeafCheck(mobj_t * actor)
     actor->special1.i++;
     if (actor->special1.i >= 20)
     {
-        P_SetMobjState(actor, S_NULL);
+        P_SetMobjState(actor, HEXEN_S_NULL);
         return;
     }
     if (P_Random(pr_hexen) > 64)
@@ -345,7 +345,7 @@ void A_LeafCheck(mobj_t * actor)
         }
         return;
     }
-    P_SetMobjState(actor, S_LEAF1_8);
+    P_SetMobjState(actor, HEXEN_S_LEAF1_8);
     actor->momz = (P_Random(pr_hexen) << 9) + FRACUNIT;
     P_ThrustMobj(actor, actor->target->angle,
                  (P_Random(pr_hexen) << 9) + 2 * FRACUNIT);
@@ -408,7 +408,7 @@ void A_BridgeOrbit(mobj_t * actor)
 {
     if (actor->target->special1.i)
     {
-        P_SetMobjState(actor, S_NULL);
+        P_SetMobjState(actor, HEXEN_S_NULL);
     }
     actor->args[0] += 3;
     actor->x = actor->target->x + orbitTableX[actor->args[0]];
@@ -453,7 +453,7 @@ void A_BridgeRemove(mobj_t * actor)
 {
     actor->special1.i = true;     // Removing the bridge
     actor->flags &= ~MF_SOLID;
-    P_SetMobjState(actor, S_FREE_BRIDGE1);
+    P_SetMobjState(actor, HEXEN_S_FREE_BRIDGE1);
 }
 
 
@@ -623,7 +623,7 @@ void A_Summon(mobj_t * actor)
     {
         if (P_TestMobjLocation(mo) == false || !actor->special1.m)
         {                       // Didn't fit - change back to artifact
-            P_SetMobjState(mo, S_NULL);
+            P_SetMobjState(mo, HEXEN_S_NULL);
             mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_SUMMONMAULATOR);
             if (mo)
                 mo->flags2 |= MF2_DROPPED;
@@ -771,7 +771,7 @@ void A_PoisonBagCheck(mobj_t * actor)
 {
     if (!--actor->special1.i)
     {
-        P_SetMobjState(actor, S_POISONCLOUD_X1);
+        P_SetMobjState(actor, HEXEN_S_POISONCLOUD_X1);
     }
     else
     {
@@ -819,9 +819,9 @@ void A_CheckThrowBomb(mobj_t * actor)
 {
     if (abs(actor->momx) < 1.5 * FRACUNIT && abs(actor->momy) < 1.5 * FRACUNIT
         && actor->momz < 2 * FRACUNIT
-        && actor->state == &states[S_THROWINGBOMB6])
+        && actor->state == &states[HEXEN_S_THROWINGBOMB6])
     {
-        P_SetMobjState(actor, S_THROWINGBOMB7);
+        P_SetMobjState(actor, HEXEN_S_THROWINGBOMB7);
         actor->z = actor->floorz;
         actor->momz = 0;
         actor->flags2 &= ~MF2_FLOORBOUNCE;
@@ -932,7 +932,7 @@ void A_Quake(mobj_t * actor)
         {
             localQuakeHappening[playnum] = false;
         }
-        P_SetMobjState(actor, S_NULL);
+        P_SetMobjState(actor, HEXEN_S_NULL);
     }
 }
 
@@ -1108,9 +1108,9 @@ void A_ThrustRaise(mobj_t * actor)
     {                           // Reached it's target height
         actor->args[0] = 1;
         if (actor->args[1])
-            P_SetMobjStateNF(actor, S_BTHRUSTINIT2_1);
+            P_SetMobjStateNF(actor, HEXEN_S_BTHRUSTINIT2_1);
         else
-            P_SetMobjStateNF(actor, S_THRUSTINIT2_1);
+            P_SetMobjStateNF(actor, HEXEN_S_THRUSTINIT2_1);
     }
 
     // Lose the dirt clump
@@ -1132,9 +1132,9 @@ void A_ThrustLower(mobj_t * actor)
     {
         actor->args[0] = 0;
         if (actor->args[1])
-            P_SetMobjStateNF(actor, S_BTHRUSTINIT1_1);
+            P_SetMobjStateNF(actor, HEXEN_S_BTHRUSTINIT1_1);
         else
-            P_SetMobjStateNF(actor, S_THRUSTINIT1_1);
+            P_SetMobjStateNF(actor, HEXEN_S_THRUSTINIT1_1);
     }
 }
 
@@ -1227,7 +1227,7 @@ void A_FlameCheck(mobj_t * actor)
 {
     if (!actor->args[0]--)      // Called every 8 tics
     {
-        P_SetMobjState(actor, S_NULL);
+        P_SetMobjState(actor, HEXEN_S_NULL);
     }
 }
 
