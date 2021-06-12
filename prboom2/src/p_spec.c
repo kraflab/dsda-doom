@@ -3824,7 +3824,7 @@ struct
     { "END", -1 }
 };
 
-static mobj_t LavaInflictor;
+mobj_t LavaInflictor;
 
 void P_AddAmbientSfx(int sequence)
 {

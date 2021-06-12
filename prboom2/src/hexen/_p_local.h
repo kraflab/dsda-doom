@@ -117,17 +117,6 @@ void ResetBlasted(mobj_t * mo);
 
 // ***** P_MOBJ *****
 
-// Any floor type >= FLOOR_LIQUID will floorclip sprites
-enum
-{
-    FLOOR_SOLID,
-    FLOOR_ICE,
-    FLOOR_LIQUID,
-    FLOOR_WATER,
-    FLOOR_LAVA,
-    FLOOR_SLUDGE
-};
-
 #define ONFLOORZ INT_MIN
 #define ONCEILINGZ INT_MAX
 #define FLOATRANDZ (INT_MAX-1)

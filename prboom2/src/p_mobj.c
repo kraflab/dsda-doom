@@ -78,7 +78,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
   dboolean ret;                               // return value
   statenum_t* tempstate = NULL;               // for use with recursion
 
-  if (heretic) return Heretic_P_SetMobjState(mobj, state);
+  if (raven) return Heretic_P_SetMobjState(mobj, state);
 
   seenstate = seenstate_tab;
   i = state;
@@ -146,7 +146,7 @@ void P_ExplodeMissile (mobj_t* mo)
 
   P_SetMobjState (mo, mobjinfo[mo->type].deathstate);
 
-  if (!heretic)
+  if (!raven)
   {
     mo->tics -= P_Random(pr_explode) & 3;
 
@@ -156,8 +156,21 @@ void P_ExplodeMissile (mobj_t* mo)
 
   mo->flags &= ~MF_MISSILE;
 
-  if (mo->info->deathsound)
-    S_StartSound (mo, mo->info->deathsound);
+  switch (mo->type)
+  {
+    case HEXEN_MT_SORCBALL1:
+    case HEXEN_MT_SORCBALL2:
+    case HEXEN_MT_SORCBALL3:
+      S_StartSound(NULL, hexen_sfx_sorcerer_bigballexplode);
+      break;
+    case HEXEN_MT_SORCFX1:
+      S_StartSound(NULL, hexen_sfx_sorcerer_headscream);
+      break;
+    default:
+      if (mo->info->deathsound)
+        S_StartSound(mo, mo->info->deathsound);
+      break;
+  }
 }
 
 
@@ -2441,8 +2454,72 @@ dboolean Heretic_P_SetMobjState(mobj_t * mobj, statenum_t state)
 
 void P_FloorBounceMissile(mobj_t * mo)
 {
-    mo->momz = -mo->momz;
-    P_SetMobjState(mo, mobjinfo[mo->type].deathstate);
+    if (hexen)
+    {
+        if (P_HitFloor(mo) >= FLOOR_LIQUID)
+        {
+            switch (mo->type)
+            {
+                case HEXEN_MT_SORCFX1:
+                case HEXEN_MT_SORCBALL1:
+                case HEXEN_MT_SORCBALL2:
+                case HEXEN_MT_SORCBALL3:
+                    break;
+                default:
+                    P_RemoveMobj(mo);
+                    return;
+            }
+        }
+        switch (mo->type)
+        {
+            case HEXEN_MT_SORCFX1:
+                mo->momz = -mo->momz;       // no energy absorbed
+                break;
+            case HEXEN_MT_SGSHARD1:
+            case HEXEN_MT_SGSHARD2:
+            case HEXEN_MT_SGSHARD3:
+            case HEXEN_MT_SGSHARD4:
+            case HEXEN_MT_SGSHARD5:
+            case HEXEN_MT_SGSHARD6:
+            case HEXEN_MT_SGSHARD7:
+            case HEXEN_MT_SGSHARD8:
+            case HEXEN_MT_SGSHARD9:
+            case HEXEN_MT_SGSHARD0:
+                mo->momz = FixedMul(mo->momz, -0.3 * FRACUNIT);
+                if (abs(mo->momz) < (FRACUNIT / 2))
+                {
+                    P_SetMobjState(mo, HEXEN_S_NULL);
+                    return;
+                }
+                break;
+            default:
+                mo->momz = FixedMul(mo->momz, -0.7 * FRACUNIT);
+                break;
+        }
+        mo->momx = 2 * mo->momx / 3;
+        mo->momy = 2 * mo->momy / 3;
+        if (mo->info->seesound)
+        {
+            switch (mo->type)
+            {
+                case HEXEN_MT_SORCBALL1:
+                case HEXEN_MT_SORCBALL2:
+                case HEXEN_MT_SORCBALL3:
+                    if (!mo->args[0])
+                        S_StartSound(mo, mo->info->seesound);
+                    break;
+                default:
+                    S_StartSound(mo, mo->info->seesound);
+                    break;
+            }
+            S_StartSound(mo, mo->info->seesound);
+        }
+    }
+    else
+    {
+      mo->momz = -mo->momz;
+      P_SetMobjState(mo, mobjinfo[mo->type].deathstate);
+    }
 }
 
 void Heretic_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z)
@@ -2496,6 +2573,13 @@ void P_RipperBlood(mobj_t * mo)
 }
 
 // hexen
+
+#define MAX_TID_COUNT 200
+
+extern mobj_t LavaInflictor;
+
+static int TIDList[MAX_TID_COUNT + 1];  // +1 for termination marker
+static mobj_t *TIDMobj[MAX_TID_COUNT];
 
 mobj_t *P_SpawnMissileAngleSpeed(mobj_t * source, mobjtype_t type,
                                  angle_t angle, fixed_t momz, fixed_t speed)

@@ -418,6 +418,8 @@ typedef enum {
 #define ORIG_FRICTION_FACTOR   2048        // original value
 #define FRICTION_FLY           0xeb00
 
+extern dboolean raven;
+
 // heretic
 
 #define FRICTION_LOW 0xf900
@@ -426,10 +428,15 @@ typedef enum {
 
 #define FOOTCLIPSIZE	10*FRACUNIT
 
-#define FLOOR_SOLID 0
-#define FLOOR_WATER 1
-#define FLOOR_LAVA 2
-#define FLOOR_SLUDGE 3
+// Any floor type >= FLOOR_LIQUID will floorclip sprites (hexen)
+typedef enum {
+  FLOOR_SOLID,
+  FLOOR_ICE,
+  FLOOR_LIQUID,
+  FLOOR_WATER,
+  FLOOR_LAVA,
+  FLOOR_SLUDGE
+} floortype_t;
 
 #define USE_GWND_AMMO_1 1
 #define USE_GWND_AMMO_2 1

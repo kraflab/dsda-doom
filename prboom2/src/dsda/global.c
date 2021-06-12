@@ -119,6 +119,7 @@ int g_menu_cr_disable;
 
 dboolean hexen = false;
 dboolean heretic = false;
+dboolean raven = false;
 
 // HEXEN_TODO: max_snd_dist = 2025
 
@@ -440,6 +441,7 @@ static dboolean dsda_AutoDetectHeretic(void)
 
 void dsda_InitGlobal(void) {
   heretic = M_CheckParm("-heretic") || dsda_AutoDetectHeretic();
+  raven = heretic || hexen;
 
   heretic ? dsda_InitHeretic() : dsda_InitDoom();
 }
