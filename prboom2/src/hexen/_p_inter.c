@@ -159,7 +159,7 @@ dboolean P_GiveMana(player_t * player, manatype_t mana, int count)
     {
         I_Error("P_GiveMana: bad type %i", mana);
     }
-    if (player->mana[mana] == MAX_MANA)
+    if (player->ammo[mana] == MAX_MANA)
     {
         return (false);
     }
@@ -167,12 +167,12 @@ dboolean P_GiveMana(player_t * player, manatype_t mana, int count)
     {                           // extra mana in baby mode and nightmare mode
         count += count >> 1;
     }
-    prevMana = player->mana[mana];
+    prevMana = player->ammo[mana];
 
-    player->mana[mana] += count;
-    if (player->mana[mana] > MAX_MANA)
+    player->ammo[mana] += count;
+    if (player->ammo[mana] > MAX_MANA)
     {
-        player->mana[mana] = MAX_MANA;
+        player->ammo[mana] = MAX_MANA;
     }
     if (player->class == PCLASS_FIGHTER && player->readyweapon == WP_SECOND
         && mana == MANA_1 && prevMana <= 0)

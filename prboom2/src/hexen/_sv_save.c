@@ -431,10 +431,10 @@ static void StreamIn_player_t(player_t *str)
         str->weaponowned[i] = SV_ReadLong();
     }
 
-    // int mana[NUMMANA];
+    // int ammo[NUMMANA];
     for (i=0; i<NUMMANA; ++i)
     {
-        str->mana[i] = SV_ReadLong();
+        str->ammo[i] = SV_ReadLong();
     }
 
     // int attackdown, usedown;
@@ -600,10 +600,10 @@ static void StreamOut_player_t(player_t *str)
         SV_WriteLong(str->weaponowned[i]);
     }
 
-    // int mana[NUMMANA];
+    // int ammo[NUMMANA];
     for (i=0; i<NUMMANA; ++i)
     {
-        SV_WriteLong(str->mana[i]);
+        SV_WriteLong(str->ammo[i]);
     }
 
     // int attackdown, usedown;
@@ -2262,8 +2262,8 @@ void SV_MapTeleport(int map, int position)
                     players[i].weaponowned[j] = true;
                 }
             }
-            players[i].mana[MANA_1] = 25;
-            players[i].mana[MANA_2] = 25;
+            players[i].ammo[MANA_1] = 25;
+            players[i].ammo[MANA_2] = 25;
             if (bestWeapon)
             {                   // Bring up the best weapon
                 players[i].pendingweapon = bestWeapon;

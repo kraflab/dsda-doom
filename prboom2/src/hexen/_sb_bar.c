@@ -1090,7 +1090,7 @@ void DrawMainBar(void)
         }
     }
     // Mana
-    temp = CPlayer->mana[0];
+    temp = CPlayer->ammo[0];
     if (oldmana1 != temp)
     {
         V_DrawPatch(77, 178, PatchMANACLEAR);
@@ -1107,7 +1107,7 @@ void DrawMainBar(void)
         oldmana1 = temp;
         UpdateState |= I_STATBAR;
     }
-    temp = CPlayer->mana[1];
+    temp = CPlayer->ammo[1];
     if (oldmana2 != temp)
     {
         V_DrawPatch(109, 178, PatchMANACLEAR);
@@ -1170,7 +1170,7 @@ void DrawMainBar(void)
         V_DrawPatch(77, 164, manaPatch1);
         V_DrawPatch(110, 164, manaPatch2);
         V_DrawPatch(94, 164, manaVialPatch1);
-        for (i = 165; i < 187 - (22 * CPlayer->mana[0]) / MAX_MANA; i++)
+        for (i = 165; i < 187 - (22 * CPlayer->ammo[0]) / MAX_MANA; i++)
         {
          for (j = 0; j <= crispy->hires; j++)
           for (k = 0; k <= crispy->hires; k++)
@@ -1181,7 +1181,7 @@ void DrawMainBar(void)
           }
         }
         V_DrawPatch(102, 164, manaVialPatch2);
-        for (i = 165; i < 187 - (22 * CPlayer->mana[1]) / MAX_MANA; i++)
+        for (i = 165; i < 187 - (22 * CPlayer->ammo[1]) / MAX_MANA; i++)
         {
          for (j = 0; j <= crispy->hires; j++)
           for (k = 0; k <= crispy->hires; k++)
@@ -1654,7 +1654,7 @@ static void CheatWeaponsFunc(player_t * player, Cheat_t * cheat)
     }
     for (i = 0; i < NUMMANA; i++)
     {
-        player->mana[i] = MAX_MANA;
+        player->ammo[i] = MAX_MANA;
     }
     P_SetMessage(player, TXT_CHEATWEAPONS, true);
 }
@@ -1819,8 +1819,8 @@ static void CheatIDKFAFunc(player_t * player, Cheat_t * cheat)
     // overflowed the array. We must set the following fields to zero as
     // well:
 
-    player->mana[0] = 0;
-    player->mana[1] = 0;
+    player->ammo[0] = 0;
+    player->ammo[1] = 0;
     player->attackdown = 0;
     player->usedown = 0;
 

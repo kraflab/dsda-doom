@@ -1418,8 +1418,8 @@ void G_DoReborn(int playernum)
                 players[playernum].weaponowned[i] = true;
             }
         }
-        players[playernum].mana[MANA_1] = 25;
-        players[playernum].mana[MANA_2] = 25;
+        players[playernum].ammo[MANA_1] = 25;
+        players[playernum].ammo[MANA_2] = 25;
         if (bestWeapon)
         {                       // Bring up the best weapon
             players[playernum].pendingweapon = bestWeapon;
