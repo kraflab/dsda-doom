@@ -14,23 +14,6 @@
 // GNU General Public License for more details.
 //
 
-
-// HEADER FILES ------------------------------------------------------------
-
-#include "h2def.h"
-#include "m_random.h"
-#include "p_local.h"
-#include "s_sound.h"
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-extern void P_ExplodeMissile(mobj_t * mo);
-extern void A_UnHideThing(mobj_t * actor);
-
-//
-// WEAPON ATTACKS
-//
-
 //============================================================================
 //
 // A_MWandAttack
@@ -178,26 +161,7 @@ void A_LightningZap(mobj_t * actor)
             mo->momz = -20 * FRACUNIT;
         }
     }
-/*
-	mo = P_SpawnMobj(actor->x+((P_Random(pr_hexen)-128)*actor->radius/256),
-		actor->y+((P_Random(pr_hexen)-128)*actor->radius/256),
-		actor->z+deltaZ, HEXEN_MT_LIGHTNING_ZAP);
-	if(mo)
-	{
-		mo->special2.m = actor;
-		mo->momx = actor->momx;
-		mo->momy = actor->momy;
-		mo->target = actor->target;
-		if(actor->type == HEXEN_MT_LIGHTNING_FLOOR)
-		{
-			mo->momz = 16*FRACUNIT;
-		}
-		else
-		{
-			mo->momz = -16*FRACUNIT;
-		}
-	}
-*/
+
     if (actor->type == HEXEN_MT_LIGHTNING_FLOOR && P_Random(pr_hexen) < 160)
     {
         S_StartSound(actor, hexen_sfx_mage_lightning_continuous);
@@ -641,8 +605,7 @@ void A_CMaceAttack(player_t * player, pspdef_t * psp)
         {
             P_LineAttack(player->mo, angle, 2 * MELEERANGE, slope, damage);
             AdjustPlayerAngle(player->mo);
-//                      player->mo->angle = R_PointToAngle2(player->mo->x,
-//                              player->mo->y, linetarget->x, linetarget->y);
+
             goto macedone;
         }
         angle = player->mo->angle - i * (ANG45 / 16);
@@ -651,8 +614,7 @@ void A_CMaceAttack(player_t * player, pspdef_t * psp)
         {
             P_LineAttack(player->mo, angle, 2 * MELEERANGE, slope, damage);
             AdjustPlayerAngle(player->mo);
-//                      player->mo->angle = R_PointToAngle2(player->mo->x,
-//                              player->mo->y, linetarget->x, linetarget->y);
+
             goto macedone;
         }
     }
