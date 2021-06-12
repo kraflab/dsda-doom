@@ -1352,7 +1352,9 @@ void P_SpawnPlayer(mapthing_t * mthing)
     P_SetupPsprites(p);
     if (deathmatch)
     {                           // Give all keys in death match mode
-        p->keys = 2047;
+        int i;
+        for (i = 0; i < NUMCARDS; ++i)
+          p->cards[i] = true;
     }
 }
 

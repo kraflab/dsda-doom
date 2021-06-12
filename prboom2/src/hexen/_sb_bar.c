@@ -1272,12 +1272,12 @@ void DrawKeyBar(void)
     int xPosition;
     int temp;
 
-    if (oldkeys != CPlayer->keys)
+    if (oldkeys != playerkeys)
     {
         xPosition = 46;
         for (i = 0; i < NUMCARDS && xPosition <= 126; i++)
         {
-            if (CPlayer->keys & (1 << i))
+            if (playerkeys & (1 << i))
             {
                 V_DrawPatch(xPosition, 164,
                             W_CacheLumpNum(W_GetNumForName("keyslot1") + i,
@@ -1285,7 +1285,7 @@ void DrawKeyBar(void)
                 xPosition += 20;
             }
         }
-        oldkeys = CPlayer->keys;
+        oldkeys = playerkeys;
         UpdateState |= I_STATBAR;
     }
     temp = AutoArmorSave[CPlayer->class]
@@ -1674,7 +1674,9 @@ static void CheatHealthFunc(player_t * player, Cheat_t * cheat)
 
 static void CheatKeysFunc(player_t * player, Cheat_t * cheat)
 {
-    player->keys = 2047;
+    int i;
+    for (i = 0; i < NUMCARDS; ++i)
+      player->cards[i] = true;
     P_SetMessage(player, TXT_CHEATKEYS, true);
 }
 

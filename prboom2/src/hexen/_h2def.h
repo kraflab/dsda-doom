@@ -169,7 +169,6 @@ typedef struct
 
 typedef struct player_s
 {
-    int keys;
     int pieces;                 // Fourth Weapon pieces
     short ultimateMessage;
     short yellowMessage;

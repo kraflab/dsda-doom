@@ -419,7 +419,7 @@ static dboolean CheckedLockedDoor(mobj_t * mo, byte lock)
     {
         return true;
     }
-    if (!(mo->player->keys & (1 << (lock - 1))))
+    if (!mo->player->cards[lock - 1])
     {
         M_snprintf(LockedBuffer, sizeof(LockedBuffer),
                    "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);

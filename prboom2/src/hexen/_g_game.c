@@ -1164,7 +1164,8 @@ void G_PlayerExitMap(int playerNumber)
         if (P_GetMapCluster(gamemap) != P_GetMapCluster(LeaveMap))
         {                       // Entering new cluster
             // Strip all keys
-            player->keys = 0;
+            for (i = 0; i < NUMCARDS; ++i)
+              player->cards[i] = 0;
 
             // Strip flight artifact
             for (i = 0; i < 25; i++)
@@ -1333,7 +1334,7 @@ void G_DoReborn(int playernum)
 {
     int i;
     dboolean oldWeaponowned[NUMWEAPONS];
-    int oldKeys;
+    dboolean oldKeys[NUMCARDS];
     int oldPieces;
     dboolean foundSpot;
     int bestWeapon;
@@ -1365,7 +1366,8 @@ void G_DoReborn(int playernum)
         }
 
         // Cooperative net-play, retain keys and weapons
-        oldKeys = players[playernum].keys;
+        for (i = 0; i < NUMCARDS; ++i)
+          oldKeys[i] = players[playernum].cards[i];
         oldPieces = players[playernum].pieces;
         for (i = 0; i < NUMWEAPONS; i++)
         {
@@ -1405,7 +1407,8 @@ void G_DoReborn(int playernum)
         }
 
         // Restore keys and weapons
-        players[playernum].keys = oldKeys;
+        for (i = 0; i < NUMCARDS; ++i)
+          players[playernum].cards[i] = oldKeys[i];
         players[playernum].pieces = oldPieces;
         for (bestWeapon = 0, i = 0; i < NUMWEAPONS; i++)
         {

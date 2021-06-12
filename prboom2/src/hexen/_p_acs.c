@@ -686,7 +686,7 @@ dboolean P_StartLockedACS(line_t * line, byte * args, mobj_t * mo, int side)
     }
     if (lock)
     {
-        if (!(mo->player->keys & (1 << (lock - 1))))
+        if (!mo->player->cards[lock - 1])
         {
             M_snprintf(LockedBuffer, sizeof(LockedBuffer),
                        "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);

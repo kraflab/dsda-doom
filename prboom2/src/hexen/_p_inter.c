@@ -609,12 +609,12 @@ dboolean P_GiveArmor(player_t * player, armortype_t armortype, int amount)
 
 int P_GiveKey(player_t * player, keytype_t key)
 {
-    if (player->keys & (1 << key))
+    if (player->cards[key])
     {
         return false;
     }
     player->bonuscount += BONUSADD;
-    player->keys |= 1 << key;
+    player->cards[key] = true;
     return true;
 }
 
