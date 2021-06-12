@@ -197,7 +197,7 @@ boolean EV_ThingProjectile(byte * args, boolean gravity)
         newMobj->momx = FixedMul(speed, finecosine[fineAngle]);
         newMobj->momy = FixedMul(speed, finesine[fineAngle]);
         newMobj->momz = vspeed;
-        newMobj->flags2 |= MF2_DROPPED; // Don't respawn
+        newMobj->flags |= MF_DROPPED; // Don't respawn
         if (gravity == true)
         {
             newMobj->flags &= ~MF_NOGRAVITY;
@@ -262,7 +262,7 @@ boolean EV_ThingSpawn(byte * args, boolean fog)
                                       mobj->z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
                 S_StartSound(fogMobj, hexen_sfx_teleport);
             }
-            newMobj->flags2 |= MF2_DROPPED;     // Don't respawn
+            newMobj->flags |= MF_DROPPED;     // Don't respawn
             if (newMobj->flags2 & MF2_FLOATBOB)
             {
                 newMobj->special1.i = newMobj->z - newMobj->floorz;

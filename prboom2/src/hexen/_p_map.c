@@ -1115,7 +1115,7 @@ boolean P_TryMove(mobj_t * thing, fixed_t x, fixed_t y)
 
     P_SetThingPosition(thing);
 
-    if (thing->flags2 & MF2_FLOORCLIP)
+    if (thing->flags2 & MF2_FOOTCLIP)
     {
         if (thing->z == thing->subsector->sector->floorheight
             && P_GetThingFloorType(thing) >= FLOOR_LIQUID)
@@ -2257,7 +2257,7 @@ boolean PIT_ChangeSector(mobj_t * thing)
     }
 
     // crunch dropped items
-    if (thing->flags2 & MF2_DROPPED)
+    if (thing->flags & MF_DROPPED)
     {
         P_RemoveMobj(thing);
         return true;            // keep checking

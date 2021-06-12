@@ -230,6 +230,13 @@
 // fly mode is active
 #define MF_FLY             LONGLONG(0x0000020000000000)
 
+// hexen
+#define	MF_ALTSHADOW	LONGLONG(0x0000040000000000) // alternate translucent draw
+#define	MF_ICECORPSE	LONGLONG(0x0000080000000000) // a frozen corpse (for blasting)
+
+// HEXEN_TODO:
+// hexen redefines MF_TRANSLATION to doom's (MF_TRANSLATION | MF_UNUSED2)
+
 #define ALIVE(thing) ((thing->health > 0) && ((thing->flags & (MF_COUNTKILL | MF_CORPSE | MF_RESSURECTED)) == MF_COUNTKILL))
 
 // killough 9/15/98: Same, but internal flags, not intended for .deh
@@ -480,6 +487,20 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 #define MF2_E4M8BOSS  LONGLONG(0x0000000400000000) // is an E4M8 boss
 #define MF2_LONGMELEE LONGLONG(0x0000000800000000) // has long melee range (revenant)
 #define MF2_FULLVOLSOUNDS LONGLONG(0x0000001000000000) // full volume see / death sound
+
+// hexen
+#define MF2_BLASTED	          LONGLONG(0x0000002000000000) // missile will pass through ghosts
+#define MF2_IMPACT            LONGLONG(0x0000004000000000) // an MF_MISSILE mobj can activate SPAC_IMPACT
+#define MF2_PUSHWALL          LONGLONG(0x0000008000000000) // mobj can push walls
+#define MF2_MCROSS            LONGLONG(0x0000010000000000) // can activate monster cross lines
+#define MF2_PCROSS            LONGLONG(0x0000020000000000) // can activate projectile cross lines
+#define MF2_CANTLEAVEFLOORPIC LONGLONG(0x0000040000000000) // stay within a certain floor type
+#define MF2_NONSHOOTABLE      LONGLONG(0x0000080000000000) // mobj is totally non-shootable, but still considered solid
+#define MF2_INVULNERABLE      LONGLONG(0x0000100000000000) // mobj is invulnerable
+#define MF2_DORMANT           LONGLONG(0x0000200000000000) // thing is dormant
+#define MF2_ICEDAMAGE         LONGLONG(0x0000400000000000) // does ice damage
+#define MF2_SEEKERMISSILE     LONGLONG(0x0000800000000000) // is a seeker (for reflection)
+#define MF2_REFLECTIVE        LONGLONG(0x0001000000000000) // reflects missiles
 
 #define AMMO_GWND_WIMPY 10
 #define AMMO_GWND_HEFTY 50

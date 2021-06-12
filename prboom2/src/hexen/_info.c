@@ -3667,7 +3667,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_SOLID,                  // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_THRUSTFLOOR_DOWN
@@ -3694,7 +3694,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      0,                         // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP | MF2_DONTDRAW      // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP | MF2_DONTDRAW      // flags2
      },
 
     {                           // HEXEN_MT_TELEPORTOTHER
@@ -10579,7 +10579,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_PICKUP | MF_NOTDMATCH,   // flags
-     MF2_WINDTHRUST | MF2_FLOORCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
+     MF2_WINDTHRUST | MF2_FOOTCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
 
     {                           // HEXEN_MT_BLOODYSKULL
@@ -10660,7 +10660,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF,        // flags
-     MF2_LOGRAV | MF2_CANNOTPUSH | MF2_FLOORCLIP        // flags2
+     MF2_LOGRAV | MF2_CANNOTPUSH | MF2_FOOTCLIP        // flags2
      },
 
     {                           // HEXEN_MT_PLAYER_CLERIC
@@ -10687,7 +10687,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_PICKUP | MF_NOTDMATCH,   // flags
-     MF2_WINDTHRUST | MF2_FLOORCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
+     MF2_WINDTHRUST | MF2_FOOTCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
 
     {                           // HEXEN_MT_PLAYER_MAGE
@@ -10714,7 +10714,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_PICKUP | MF_NOTDMATCH,   // flags
-     MF2_WINDTHRUST | MF2_FLOORCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
+     MF2_WINDTHRUST | MF2_FOOTCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
 
     {                           // HEXEN_MT_PIGPLAYER
@@ -10741,7 +10741,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_NOTDMATCH,       // flags
-     MF2_WINDTHRUST | MF2_SLIDE | MF2_PASSMOBJ | MF2_FLOORCLIP | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
+     MF2_WINDTHRUST | MF2_SLIDE | MF2_PASSMOBJ | MF2_FOOTCLIP | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
 
     {                           // HEXEN_MT_PIG
@@ -10768,7 +10768,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_pig_active1,           // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_WINDTHRUST | MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP       // flags2
+     MF2_WINDTHRUST | MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP       // flags2
      },
 
     {                           // HEXEN_MT_CENTAUR
@@ -10795,7 +10795,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_centaur_active,        // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP   // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP   // flags2
      },
 
     {                           // HEXEN_MT_CENTAURLEADER
@@ -10822,7 +10822,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_centaur_active,        // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP   // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP   // flags2
      },
 
     {                           // HEXEN_MT_CENTAUR_FX
@@ -10930,7 +10930,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_demon_active,          // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_TELESTOMP  // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_TELESTOMP  // flags2
      },
 
     {                           // HEXEN_MT_DEMONCHUNK1
@@ -10957,7 +10957,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMONCHUNK2
@@ -10984,7 +10984,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMONCHUNK3
@@ -11011,7 +11011,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMONCHUNK4
@@ -11038,7 +11038,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMONCHUNK5
@@ -11065,7 +11065,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMONFX1
@@ -11119,7 +11119,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_demon_active,          // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_TELESTOMP  // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_TELESTOMP  // flags2
      },
 
     {                           // HEXEN_MT_DEMON2CHUNK1
@@ -11146,7 +11146,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMON2CHUNK2
@@ -11173,7 +11173,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMON2CHUNK3
@@ -11200,7 +11200,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMON2CHUNK4
@@ -11227,7 +11227,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMON2CHUNK5
@@ -11254,7 +11254,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_DEMON2FX1
@@ -11308,7 +11308,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      10,                        // damage
      hexen_sfx_wraith_active,         // activesound
      MF_DROPOFF | MF_NOGRAVITY | MF_FLOAT | MF_COUNTKILL,       // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP | MF2_DONTDRAW // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP | MF2_DONTDRAW // flags2
      },
 
     {                           // HEXEN_MT_WRAITH
@@ -11335,7 +11335,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      10,                        // damage
      hexen_sfx_wraith_active,         // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_DROPOFF | MF_NOGRAVITY | MF_FLOAT,     // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP        // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP        // flags2
      },
 
     {                           // HEXEN_MT_WRAITHFX1
@@ -11362,7 +11362,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      5,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_DROPOFF | MF_MISSILE,    // flags
-     MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FLOORCLIP | MF2_FIREDAMAGE  // flags2
+     MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FOOTCLIP | MF2_FIREDAMAGE  // flags2
      },
 
     {                           // HEXEN_MT_WRAITHFX2
@@ -11389,7 +11389,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF,        // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_WRAITHFX3
@@ -11416,7 +11416,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_WRAITHFX4
@@ -11497,7 +11497,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      7,                         // damage
      hexen_sfx_maulator_active,       // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_SHADOW,        // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP        // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP        // flags2
      },
 
     {                           // HEXEN_MT_MNTRFX1
@@ -12604,7 +12604,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      3,                         // damage
      hexen_sfx_ettin_active,          // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_FLOORCLIP | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP  // flags2
+     MF2_FOOTCLIP | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP  // flags2
      },
 
     {                           // HEXEN_MT_ETTIN_MACE
@@ -12631,7 +12631,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_DROPOFF | MF_CORPSE,    // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_FIREDEMON
@@ -12658,7 +12658,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      1,                         // damage
      hexen_sfx_fired_active,          // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_DROPOFF | MF_NOGRAVITY | MF_FLOAT,     // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_INVULNERABLE | MF2_MCROSS | MF2_TELESTOMP        // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_INVULNERABLE | MF2_MCROSS | MF2_TELESTOMP        // flags2
      },
 
     {                           // HEXEN_MT_FIREDEMON_SPLOTCH1
@@ -12685,7 +12685,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_DROPOFF | MF_CORPSE,    // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_FIREDEMON_SPLOTCH2
@@ -12712,7 +12712,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_DROPOFF | MF_CORPSE,    // flags
-     MF2_NOTELEPORT | MF2_FLOORCLIP     // flags2
+     MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
 
     {                           // HEXEN_MT_FIREDEMON_FX1
@@ -12874,7 +12874,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      1,                         // damage
      hexen_sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_DROPOFF | MF_MISSILE,    // flags
-     MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FLOORCLIP | MF2_FIREDAMAGE  // flags2
+     MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FOOTCLIP | MF2_FIREDAMAGE  // flags2
      },
 
     {                           // HEXEN_MT_ICEGUY
@@ -13090,7 +13090,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
      },
 
     {                           // HEXEN_MT_CLERIC_BOSS
@@ -13117,7 +13117,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
      },
 
     {                           // HEXEN_MT_MAGE_BOSS
@@ -13144,7 +13144,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
      },
 
     {                           // HEXEN_MT_SORCBOSS
@@ -13171,7 +13171,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      9,                         // damage
      hexen_sfx_sorcerer_active,       // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_NOBLOOD,       // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_BOSS | MF2_MCROSS        // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_BOSS | MF2_MCROSS        // flags2
      },
 
     {                           // HEXEN_MT_SORCBALL1
@@ -13522,7 +13522,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      15,                        // damage
      hexen_sfx_korax_active,          // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
-     MF2_FLOORCLIP | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP | MF2_BOSS       // flags2
+     MF2_FOOTCLIP | MF2_PUSHWALL | MF2_MCROSS | MF2_TELESTOMP | MF2_BOSS       // flags2
      },
 
     {                           // HEXEN_MT_KORAX_SPIRIT1
@@ -13711,7 +13711,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_demon_active,          // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_ALTSHADOW | MF_NOBLOOD,        // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
      },
 
     {                           // HEXEN_MT_DEMON2_MASH
@@ -13738,7 +13738,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_demon_active,          // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_ALTSHADOW | MF_NOBLOOD,        // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
      },
 
     {                           // HEXEN_MT_ETTIN_MASH
@@ -13765,7 +13765,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      3,                         // damage
      hexen_sfx_ettin_active,          // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_ALTSHADOW | MF_NOBLOOD,        // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
      },
 
     {                           // HEXEN_MT_CENTAUR_MASH
@@ -13792,7 +13792,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_centaur_active,        // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_ALTSHADOW | MF_NOBLOOD,        // flags
-     MF2_FLOORCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_MCROSS | MF2_PUSHWALL | MF2_BLASTED     // flags2
      },
 
     {                           // HEXEN_MT_KORAX_BOLT

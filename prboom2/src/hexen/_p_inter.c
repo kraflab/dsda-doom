@@ -275,7 +275,7 @@ static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
 
     if (remove)
     {
-        if (deathmatch && !(weapon->flags2 & MF2_DROPPED))
+        if (deathmatch && !(weapon->flags & MF_DROPPED))
         {
             P_HideSpecialThing(weapon);
         }
@@ -481,7 +481,7 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
     }
     if (remove)
     {
-        if (deathmatch && !(pieceMobj->flags2 & MF2_DROPPED))
+        if (deathmatch && !(pieceMobj->flags & MF_DROPPED))
         {
             P_HideSpecialThing(pieceMobj);
         }
@@ -867,7 +867,7 @@ boolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
 static void SetDormantArtifact(mobj_t * arti)
 {
     arti->flags &= ~MF_SPECIAL;
-    if (deathmatch && !(arti->flags2 & MF2_DROPPED))
+    if (deathmatch && !(arti->flags & MF_DROPPED))
     {
         if (arti->type == HEXEN_MT_ARTIINVULNERABILITY)
         {
@@ -1230,7 +1230,7 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
                              0, toucher);
         special->special = 0;
     }
-    if (deathmatch && respawn && !(special->flags2 & MF2_DROPPED))
+    if (deathmatch && respawn && !(special->flags & MF_DROPPED))
     {
         P_HideSpecialThing(special);
     }

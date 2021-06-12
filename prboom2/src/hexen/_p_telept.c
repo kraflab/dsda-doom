@@ -118,7 +118,7 @@ boolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle,
         }
         thing->angle = angle;
     }
-    if (thing->flags2 & MF2_FLOORCLIP)
+    if (thing->flags2 & MF2_FOOTCLIP)
     {
         if (thing->z == thing->subsector->sector->floorheight
             && P_GetThingFloorType(thing) > FLOOR_SOLID)

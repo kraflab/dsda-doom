@@ -1604,7 +1604,7 @@ void P_DropItem(mobj_t *source, mobjtype_t type, int special, int chance)
 	mo->momx = P_SubRandom()<<8;
 	mo->momy = P_SubRandom()<<8;
 	mo->momz = FRACUNIT*5+(P_Random(pr_hexen)<<10);
-	mo->flags2 |= MF2_DROPPED;
+	mo->flags |= MF_DROPPED;
 	mo->health = special;
 }
 */
@@ -4907,7 +4907,7 @@ void A_FreezeDeathChunks(mobj_t * actor)
         mo->momx = P_SubRandom() << (FRACBITS - 7);
         mo->momy = P_SubRandom() << (FRACBITS - 7);
         mo->flags2 |= MF2_ICEDAMAGE;    // used to force blue palette
-        mo->flags2 &= ~MF2_FLOORCLIP;
+        mo->flags2 &= ~MF2_FOOTCLIP;
         mo->player = actor->player;
         actor->player = NULL;
         mo->health = actor->health;

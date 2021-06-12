@@ -626,7 +626,7 @@ void A_Summon(mobj_t * actor)
             P_SetMobjState(mo, HEXEN_S_NULL);
             mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_SUMMONMAULATOR);
             if (mo)
-                mo->flags2 |= MF2_DROPPED;
+                mo->flags |= MF_DROPPED;
             return;
         }
 
@@ -1085,7 +1085,7 @@ void A_ThrustInitUp(mobj_t * actor)
     actor->args[0] = 1;         // Mark as up
     actor->floorclip = 0;
     actor->flags = MF_SOLID;
-    actor->flags2 = MF2_NOTELEPORT | MF2_FLOORCLIP;
+    actor->flags2 = MF2_NOTELEPORT | MF2_FOOTCLIP;
     actor->special1.m = NULL;
 }
 
@@ -1096,7 +1096,7 @@ void A_ThrustInitDn(mobj_t * actor)
     actor->args[0] = 0;         // Mark as down
     actor->floorclip = actor->info->height;
     actor->flags = 0;
-    actor->flags2 = MF2_NOTELEPORT | MF2_FLOORCLIP | MF2_DONTDRAW;
+    actor->flags2 = MF2_NOTELEPORT | MF2_FOOTCLIP | MF2_DONTDRAW;
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_DIRTCLUMP);
     actor->special1.m = mo;
 }
