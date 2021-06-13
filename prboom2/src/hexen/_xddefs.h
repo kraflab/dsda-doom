@@ -131,23 +131,6 @@ typedef PACKED_STRUCT (
     unsigned short children[2]; // if NF_SUBSECTOR its a subsector
 }) mapnode_t;
 
-typedef PACKED_STRUCT (
-{
-    short tid;
-    short x;
-    short y;
-    short height;
-    short angle;
-    short type;
-    short options;
-    byte special;
-    byte arg1;
-    byte arg2;
-    byte arg3;
-    byte arg4;
-    byte arg5;
-}) mapthing_t;
-
 //--------------------------------------------------------------------------
 //
 // Texture definition

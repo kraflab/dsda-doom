@@ -1383,40 +1383,70 @@ static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
 
 static void P_LoadThings (int lump)
 {
-  int  i, numthings = W_LumpLength (lump) / sizeof(mapthing_t);
-  const mapthing_t *data = W_CacheLumpNum (lump);
-
+  int  i, numthings;
+  const mapthing_t *data;
+  const doom_mapthing_t *doom_data;
   mobj_t *mobj;
   int mobjcount = 0;
-  mobj_t **mobjlist = malloc(numthings * sizeof(mobjlist[0]));
+  mobj_t **mobjlist;
+
+  numthings = W_LumpLength (lump) / (hexen ? sizeof(mapthing_t) : sizeof(doom_mapthing_t));
+  data = W_CacheLumpNum(lump);
+  doom_data = (doom_mapthing_t*) data;
+  mobjlist = malloc(numthings * sizeof(mobjlist[0]));
 
   if ((!data) || (!numthings))
     I_Error("P_LoadThings: no things in level");
 
   for (i=0; i<numthings; i++)
-    {
-      mapthing_t mt = data[i];
+  {
+    mapthing_t mt;
 
+    if (hexen)
+    {
+      mt = data[i];
+
+      mt.tid = LittleShort(mt.tid);
       mt.x = LittleShort(mt.x);
       mt.y = LittleShort(mt.y);
+      mt.height = LittleShort(mt.height);
       mt.angle = LittleShort(mt.angle);
       mt.type = LittleShort(mt.type);
       mt.options = LittleShort(mt.options);
-
-      if (!P_IsDoomnumAllowed(mt.type))
-        continue;
-
-      // Although all resources of the Wolf SS have been removed
-      // off the BFG Edition, there is still one left in MAP33.
-      // Replace with a Former Human instead.
-      if (bfgedition && singleplayer && mt.type == 84)
-        mt.type = 3004;
-
-      // Do spawn all other stuff.
-      mobj = P_SpawnMapThing(&mt, i);
-      if (mobj && mobj->info->speed == 0)
-        mobjlist[mobjcount++] = mobj;
     }
+    else
+    {
+      doom_mapthing_t dmt = doom_data[i];
+
+      mt.x = LittleShort(dmt.x);
+      mt.y = LittleShort(dmt.y);
+      mt.angle = LittleShort(dmt.angle);
+      mt.type = LittleShort(dmt.type);
+      mt.options = LittleShort(dmt.options);
+      mt.tid = 0;
+      mt.height = 0;
+      mt.special = 0;
+      mt.arg1 = 0;
+      mt.arg2 = 0;
+      mt.arg3 = 0;
+      mt.arg4 = 0;
+      mt.arg5 = 0;
+    }
+
+    if (!P_IsDoomnumAllowed(mt.type))
+      continue;
+
+    // Although all resources of the Wolf SS have been removed
+    // off the BFG Edition, there is still one left in MAP33.
+    // Replace with a Former Human instead.
+    if (bfgedition && singleplayer && mt.type == 84)
+      mt.type = 3004;
+
+    // Do spawn all other stuff.
+    mobj = P_SpawnMapThing(&mt, i);
+    if (mobj && mobj->info->speed == 0)
+      mobjlist[mobjcount++] = mobj;
+  }
 
   W_UnlockLumpNum(lump); // cph - release the data
 
