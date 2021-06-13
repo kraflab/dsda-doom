@@ -542,10 +542,14 @@ void Heretic_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z);
 
 // hexen
 
+mobj_t *P_SpawnMissileXYZ(fixed_t x, fixed_t y, fixed_t z,
+                          mobj_t * source, mobj_t * dest, mobjtype_t type);
 mobj_t *P_SpawnMissileAngleSpeed(mobj_t * source, mobjtype_t type,
                                  angle_t angle, fixed_t momz, fixed_t speed);
 mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
                       fixed_t z, mobjtype_t type, angle_t angle);
+mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
+                            mobj_t * source, mobj_t * dest, mobjtype_t type);
 void P_CreateTIDList(void);
 void P_RemoveMobjFromTIDList(mobj_t * mobj);
 void P_InsertMobjIntoTIDList(mobj_t * mobj, int tid);

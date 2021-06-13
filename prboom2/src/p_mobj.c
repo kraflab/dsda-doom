@@ -2406,7 +2406,7 @@ void P_SpawnBlood(fixed_t x,fixed_t y,fixed_t z,int damage)
 
 dboolean P_CheckMissileSpawn (mobj_t* th)
 {
-  if (!heretic) {
+  if (!raven) {
     th->tics -= P_Random(pr_missile)&3;
     if (th->tics < 1)
       th->tics = 1;
@@ -2455,27 +2455,36 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
 
   switch (type)
   {
-      case HERETIC_MT_MNTRFX1:       // Minotaur swing attack missile
-          z = source->z + 40 * FRACUNIT;
-          break;
-      case HERETIC_MT_MNTRFX2:       // Minotaur floor fire missile
-          z = ONFLOORZ;
-          break;
-      case HERETIC_MT_SRCRFX1:       // Sorcerer Demon fireball
-          z = source->z + 48 * FRACUNIT;
-          break;
-      case HERETIC_MT_KNIGHTAXE:     // Knight normal axe
-      case HERETIC_MT_REDAXE:        // Knight red power axe
-          z = source->z + 36 * FRACUNIT;
-          break;
-      default:
-          z = source->z + 32 * FRACUNIT;
-          break;
+    case HERETIC_MT_MNTRFX1:       // Minotaur swing attack missile
+    case HEXEN_MT_MNTRFX1:         // Minotaur swing attack missile
+    case HEXEN_MT_ICEGUY_FX:
+    case HEXEN_MT_HOLY_MISSILE:
+      z = source->z + 40 * FRACUNIT;
+      break;
+    case HERETIC_MT_MNTRFX2:       // Minotaur floor fire missile
+      z = ONFLOORZ;
+      break;
+    case HEXEN_MT_MNTRFX2:         // Minotaur floor fire missile
+      z = ONFLOORZ + source->floorclip;
+      break;
+    case HERETIC_MT_SRCRFX1:       // Sorcerer Demon fireball
+      z = source->z + 48 * FRACUNIT;
+      break;
+    case HERETIC_MT_KNIGHTAXE:     // Knight normal axe
+    case HERETIC_MT_REDAXE:        // Knight red power axe
+      z = source->z + 36 * FRACUNIT;
+      break;
+    case HEXEN_MT_CENTAUR_FX:
+      z = source->z + 45 * FRACUNIT;
+      break;
+    default:
+      z = source->z + 32 * FRACUNIT;
+      break;
   }
-  if (source->flags2 & MF2_FEETARECLIPPED)
-  {
-      z -= FOOTCLIPSIZE;
-  }
+  if (hexen)
+    z -= source->floorclip;
+  else if (source->flags2 & MF2_FEETARECLIPPED)
+    z -= FOOTCLIPSIZE;
 
   th = P_SpawnMobj(source->x, source->y, z, type);
 
@@ -2505,7 +2514,7 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
 
   th->momz = (dest->z - source->z) / dist;
 
-  if (!heretic)
+  if (!raven)
   {
     P_CheckMissileSpawn(th);
     return th;
@@ -2520,7 +2529,7 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
 // Tries to aim at a nearby monster
 //
 
-mobj_t* P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
+mobj_t* P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type)
 {
   mobj_t *th;
   fixed_t x, y, z, slope = 0;
@@ -2533,51 +2542,91 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
   if (comperr(comperr_freeaim))
     slope = finetangent[(ANG90 - source->pitch) >> ANGLETOFINESHIFT];
   else
-    {
-      // killough 8/2/98: prefer autoaiming at enemies
-      uint_64_t mask = mbf_features ? MF_FRIEND : 0;
-
-      do
   {
-    slope = P_AimLineAttack(source, an, 16*64*FRACUNIT, mask);
-    if (!linetarget)
-      slope = P_AimLineAttack(source, an += 1<<26, 16*64*FRACUNIT, mask);
-    if (!linetarget)
-      slope = P_AimLineAttack(source, an -= 2<<26, 16*64*FRACUNIT, mask);
-    if (!linetarget) {
-      an = source->angle;
-      slope = 0;
+    // killough 8/2/98: prefer autoaiming at enemies
+    uint_64_t mask = mbf_features ? MF_FRIEND : 0;
 
-      if (heretic) slope = ((source->player->lookdir) << FRACBITS) / 173;
+    do
+    {
+      slope = P_AimLineAttack(source, an, 16 * 64 * FRACUNIT, mask);
+      if (!linetarget)
+        slope = P_AimLineAttack(source, an += 1 << 26, 16 * 64 * FRACUNIT, mask);
+      if (!linetarget)
+        slope = P_AimLineAttack(source, an -= 2 << 26, 16 * 64 * FRACUNIT, mask);
+      if (!linetarget) {
+        an = source->angle;
+        slope = 0;
+
+        if (raven) slope = ((source->player->lookdir) << FRACBITS) / 173;
+      }
     }
+    while (mask && (mask=0, !linetarget));  // killough 8/2/98
   }
-      while (mask && (mask=0, !linetarget));  // killough 8/2/98
-    }
 
   x = source->x;
   y = source->y;
-  z = source->z + 4*8*FRACUNIT;
 
-  if (heretic) {
-    z += ((source->player->lookdir) << FRACBITS) / 173;
+  if (type == HEXEN_MT_LIGHTNING_FLOOR)
+  {
+    z = ONFLOORZ;
+    slope = 0;
+  }
+  else if (type == HEXEN_MT_LIGHTNING_CEILING)
+  {
+    z = ONCEILINGZ;
+    slope = 0;
+  }
+  else
+  {
+    z = source->z + 4 * 8 * FRACUNIT;
 
-    if (source->flags2 & MF2_FEETARECLIPPED)
-    {
+    if (raven) {
+      z += ((source->player->lookdir) << FRACBITS) / 173;
+
+      if (hexen)
+      {
+        z -= source->floorclip;
+      }
+      else if (source->flags2 & MF2_FEETARECLIPPED)
+      {
         z -= FOOTCLIPSIZE;
+      }
     }
   }
 
   // heretic global MissileMobj
-  MissileMobj = th = P_SpawnMobj (x,y,z, type);
+  MissileMobj = th = P_SpawnMobj(x, y, z, type);
 
-  if (th->info->seesound)
-    S_StartSound (th, th->info->seesound);
+  if (!hexen && th->info->seesound)
+    S_StartSound(th, th->info->seesound);
 
   P_SetTarget(&th->target, source);
   th->angle = an;
-  th->momx = FixedMul(th->info->speed,finecosine[an>>ANGLETOFINESHIFT]);
-  th->momy = FixedMul(th->info->speed,finesine[an>>ANGLETOFINESHIFT]);
-  th->momz = FixedMul(th->info->speed,slope);
+  th->momx = FixedMul(th->info->speed, finecosine[an>>ANGLETOFINESHIFT]);
+  th->momy = FixedMul(th->info->speed, finesine[an>>ANGLETOFINESHIFT]);
+  th->momz = FixedMul(th->info->speed, slope);
+
+  if (hexen)
+  {
+    if (th->type == HEXEN_MT_MWAND_MISSILE || th->type == HEXEN_MT_CFLAME_MISSILE)
+    {                           // Ultra-fast ripper spawning missile
+      th->x += (th->momx >> 3);
+      th->y += (th->momy >> 3);
+      th->z += (th->momz >> 3);
+    }
+    else
+    {                           // Normal missile
+      th->x += (th->momx >> 1);
+      th->y += (th->momy >> 1);
+      th->z += (th->momz >> 1);
+    }
+    if (!P_TryMove(th, th->x, th->y, false))
+    {                           // Exploded immediately
+      P_ExplodeMissile(th);
+      return (NULL);
+    }
+    return (th);
+  }
 
   // heretic - return missile if it's ok
   return P_CheckMissileSpawn(th) ? th : NULL;
@@ -2712,7 +2761,12 @@ mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type, angle_t angle, fix
     switch (type)
     {
         case HERETIC_MT_MNTRFX1:       // Minotaur swing attack missile
+        case HEXEN_MT_MNTRFX1:         // Minotaur swing attack missile
+        case HEXEN_MT_MSTAFF_FX2:
             z = source->z + 40 * FRACUNIT;
+            break;
+        case HEXEN_MT_MNTRFX2:       // Minotaur floor fire missile
+            z = ONFLOORZ + source->floorclip;
             break;
         case HERETIC_MT_MNTRFX2:       // Minotaur floor fire missile
             z = ONFLOORZ;
@@ -2720,14 +2774,23 @@ mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type, angle_t angle, fix
         case HERETIC_MT_SRCRFX1:       // Sorcerer Demon fireball
             z = source->z + 48 * FRACUNIT;
             break;
+        case HEXEN_MT_ICEGUY_FX2:    // Secondary Projectiles of the Ice Guy
+            z = source->z + 3 * FRACUNIT;
+            break;
         default:
             z = source->z + 32 * FRACUNIT;
             break;
     }
-    if (source->flags2 & MF2_FEETARECLIPPED)
+
+    if (hexen)
+    {
+        z -= source->floorclip;
+    }
+    else if (source->flags2 & MF2_FEETARECLIPPED)
     {
         z -= FOOTCLIPSIZE;
     }
+
     mo = P_SpawnMobj(source->x, source->y, z, type);
     if (mo->info->seesound)
     {
@@ -2828,9 +2891,9 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     angle_t an;
     fixed_t x, y, z, slope;
 
-//
-// see which target is to be aimed at
-//
+    //
+    // see which target is to be aimed at
+    //
     an = angle;
     slope = P_AimLineAttack(source, an, 16 * 64 * FRACUNIT, 0);
     if (!linetarget)
@@ -2852,12 +2915,16 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     y = source->y;
     z = source->z + 4 * 8 * FRACUNIT +
         ((source->player->lookdir) << FRACBITS) / 173;
-    if (source->flags2 & MF2_FEETARECLIPPED)
+    if (hexen)
+    {
+        z -= source->floorclip;
+    }
+    else if (source->flags2 & MF2_FEETARECLIPPED)
     {
         z -= FOOTCLIPSIZE;
     }
     th = P_SpawnMobj(x, y, z, type);
-    if (th->info->seesound)
+    if (!hexen && th->info->seesound)
     {
         S_StartSound(th, th->info->seesound);
     }
@@ -3413,4 +3480,70 @@ static int Hexen_P_HitFloor(mobj_t * thing)
             return (FLOOR_SLUDGE);
     }
     return (FLOOR_SOLID);
+}
+
+mobj_t *P_SpawnMissileXYZ(fixed_t x, fixed_t y, fixed_t z,
+                          mobj_t * source, mobj_t * dest, mobjtype_t type)
+{
+    mobj_t *th;
+    angle_t an;
+    int dist;
+
+    z -= source->floorclip;
+    th = P_SpawnMobj(x, y, z, type);
+    if (th->info->seesound)
+    {
+        S_StartSound(th, th->info->seesound);
+    }
+    th->target = source;        // Originator
+    an = R_PointToAngle2(source->x, source->y, dest->x, dest->y);
+    if (dest->flags & MF_SHADOW)
+    {                           // Invisible target
+        an += P_SubRandom() << 21;
+    }
+    th->angle = an;
+    an >>= ANGLETOFINESHIFT;
+    th->momx = FixedMul(th->info->speed, finecosine[an]);
+    th->momy = FixedMul(th->info->speed, finesine[an]);
+    dist = P_AproxDistance(dest->x - source->x, dest->y - source->y);
+    dist = dist / th->info->speed;
+    if (dist < 1)
+    {
+        dist = 1;
+    }
+    th->momz = (dest->z - source->z) / dist;
+    return (P_CheckMissileSpawn(th) ? th : NULL);
+}
+
+mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
+                            mobj_t * source, mobj_t * dest, mobjtype_t type)
+{
+    mobj_t *th;
+    angle_t an;
+    int dist;
+
+    z -= source->floorclip;
+    th = P_SpawnMobj(x, y, z, type);
+    if (th->info->seesound)
+    {
+        S_StartSound(th, th->info->seesound);
+    }
+    th->target = source;        // Originator
+    an = R_PointToAngle2(x, y, dest->x, dest->y);
+    if (dest->flags & MF_SHADOW)
+    {                           // Invisible target
+        an += P_SubRandom() << 21;
+    }
+    th->angle = an;
+    an >>= ANGLETOFINESHIFT;
+    th->momx = FixedMul(th->info->speed, finecosine[an]);
+    th->momy = FixedMul(th->info->speed, finesine[an]);
+    dist = P_AproxDistance(dest->x - x, dest->y - y);
+    dist = dist / th->info->speed;
+    if (dist < 1)
+    {
+        dist = 1;
+    }
+    th->momz = (dest->z - z + (30 * FRACUNIT)) / dist;
+    return (P_CheckMissileSpawn(th) ? th : NULL);
 }

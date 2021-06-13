@@ -459,7 +459,7 @@ static void dsda_InitHexen(void) {
   //
   // g_telefog_height = TELEFOGHEIGHT;
   // g_thrust_factor = 150;
-  // g_fuzzy_aim_shift = 21;
+  g_fuzzy_aim_shift = 21;
   // g_special_friction_low = 15;
   //
   // g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
