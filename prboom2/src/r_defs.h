@@ -180,6 +180,9 @@ typedef struct
 #ifdef GL_DOOM
   int fakegroup[2];
 #endif
+
+  // hexen
+  seqtype_t seqType;          // stone, metal, heavy, etc...
 } sector_t;
 
 //

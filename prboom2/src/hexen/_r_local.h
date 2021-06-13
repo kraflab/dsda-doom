@@ -66,26 +66,6 @@ struct line_s;
 
 typedef struct
 {
-    fixed_t floorheight, ceilingheight;
-    short floorpic, ceilingpic;
-    short lightlevel;
-    short special, tag;
-
-    int soundtraversed;         // 0 = untraversed, 1,2 = sndlines -1
-    mobj_t *soundtarget;        // thing that made a sound (or null)
-    seqtype_t seqType;          // stone, metal, heavy, etc...
-
-    int blockbox[4];            // mapblock bounding box for height changes
-    degenmobj_t soundorg;       // for any sounds played by the sector
-    int validcount;             // if == validcount, already checked
-    mobj_t *thinglist;          // list of mobjs in sector
-    void *specialdata;          // thinker_t for reversable actions
-    int linecount;
-    struct line_s **lines;      // [linecount] size
-} sector_t;
-
-typedef struct
-{
     fixed_t textureoffset;      // add this to the calculated texture col
     fixed_t rowoffset;          // add this to the calculated texture top
     short toptexture, bottomtexture, midtexture;
