@@ -2869,6 +2869,8 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     return (P_CheckMissileSpawn(th) ? th : NULL);
 }
 
+static int Hexen_P_HitFloor(mobj_t * thing);
+
 int P_HitFloor(mobj_t * thing)
 {
     mobj_t *mo;
@@ -2877,6 +2879,9 @@ int P_HitFloor(mobj_t * thing)
     {                           // don't splash if landing on the edge above water/lava/etc....
         return (FLOOR_SOLID);
     }
+
+    if (hexen) return Hexen_P_HitFloor(thing);
+
     switch (P_GetThingFloorType(thing))
     {
         case FLOOR_WATER:
@@ -2908,7 +2913,14 @@ int P_HitFloor(mobj_t * thing)
 
 int P_GetThingFloorType(mobj_t * thing)
 {
-  return (TerrainTypes[thing->subsector->sector->floorpic]);
+    if (hexen && thing->floorpic)
+    {
+        return (TerrainTypes[thing->floorpic]);
+    }
+    else
+    {
+        return (TerrainTypes[thing->subsector->sector->floorpic]);
+    }
 }
 
 // Returns 1 if 'source' needs to turn clockwise, or 0 if 'source' needs
@@ -3081,11 +3093,11 @@ void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator)
 {
     mobj_t *mo;
 
-    mo = P_SpawnMobj(x, y, z, HERETIC_MT_BLOODSPLATTER);
+    mo = P_SpawnMobj(x, y, z, g_mt_bloodsplatter);
     P_SetTarget(&mo->target, originator);
-    mo->momx = P_SubRandom() << 9;
-    mo->momy = P_SubRandom() << 9;
-    mo->momz = FRACUNIT * 2;
+    mo->momx = P_SubRandom() << g_bloodsplatter_shift;
+    mo->momy = P_SubRandom() << g_bloodsplatter_shift;
+    mo->momz = FRACUNIT * g_bloodsplatter_weight;
 }
 
 void P_RipperBlood(mobj_t * mo)
@@ -3096,8 +3108,8 @@ void P_RipperBlood(mobj_t * mo)
     x = mo->x + (P_SubRandom() << 12);
     y = mo->y + (P_SubRandom() << 12);
     z = mo->z + (P_SubRandom() << 12);
-    th = P_SpawnMobj(x, y, z, HERETIC_MT_BLOOD);
-    th->flags |= MF_NOGRAVITY;
+    th = P_SpawnMobj(x, y, z, g_mt_blood);
+    if (!hexen) th->flags |= MF_NOGRAVITY;
     th->momx = mo->momx >> 1;
     th->momy = mo->momy >> 1;
     th->tics += P_Random(pr_heretic) & 3;
@@ -3290,4 +3302,115 @@ mobj_t *P_FindMobjFromTID(int tid, int *searchPosition)
     }
     *searchPosition = -1;
     return NULL;
+}
+
+void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator)
+{
+    mobj_t *mo;
+    int r1, r2;
+
+    r1 = P_Random(pr_hexen);
+    r2 = P_Random(pr_hexen);
+    mo = P_SpawnMobj(x + ((r2 - 128) << 11),
+                     y + ((r1 - 128) << 11), z, HEXEN_MT_AXEBLOOD);
+    mo->target = originator;
+}
+
+#define SMALLSPLASHCLIP 12<<FRACBITS;
+
+static int Hexen_P_HitFloor(mobj_t * thing)
+{
+    mobj_t *mo;
+    int smallsplash = false;
+
+    if (thing->floorz != thing->subsector->sector->floorheight)
+    {                           // don't splash if landing on the edge above water/lava/etc....
+        return (FLOOR_SOLID);
+    }
+
+    // Things that don't splash go here
+    switch (thing->type)
+    {
+        case HEXEN_MT_LEAF1:
+        case HEXEN_MT_LEAF2:
+        case HEXEN_MT_SPLASH:
+        case HEXEN_MT_SLUDGECHUNK:
+            return (FLOOR_SOLID);
+        default:
+            break;
+    }
+
+    // Small splash for small masses
+    if (thing->info->mass < 10)
+        smallsplash = true;
+
+    switch (P_GetThingFloorType(thing))
+    {
+        case FLOOR_WATER:
+            if (smallsplash)
+            {
+                mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASHBASE);
+                if (mo)
+                    mo->floorclip += SMALLSPLASHCLIP;
+                S_StartSound(mo, hexen_sfx_ambient10);        // small drip
+            }
+            else
+            {
+                mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASH);
+                mo->target = thing;
+                mo->momx = P_SubRandom() << 8;
+                mo->momy = P_SubRandom() << 8;
+                mo->momz = 2 * FRACUNIT + (P_Random(pr_hexen) << 8);
+                mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASHBASE);
+                if (thing->player)
+                    P_NoiseAlert(thing, thing);
+                S_StartSound(mo, hexen_sfx_water_splash);
+            }
+            return (FLOOR_WATER);
+        case FLOOR_LAVA:
+            if (smallsplash)
+            {
+                mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_LAVASPLASH);
+                if (mo)
+                    mo->floorclip += SMALLSPLASHCLIP;
+            }
+            else
+            {
+                mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_LAVASMOKE);
+                mo->momz = FRACUNIT + (P_Random(pr_hexen) << 7);
+                mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_LAVASPLASH);
+                if (thing->player)
+                    P_NoiseAlert(thing, thing);
+            }
+            S_StartSound(mo, hexen_sfx_lava_sizzle);
+            if (thing->player && leveltime & 31)
+            {
+                P_DamageMobj(thing, &LavaInflictor, NULL, 5);
+            }
+            return (FLOOR_LAVA);
+        case FLOOR_SLUDGE:
+            if (smallsplash)
+            {
+                mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ,
+                                 HEXEN_MT_SLUDGESPLASH);
+                if (mo)
+                    mo->floorclip += SMALLSPLASHCLIP;
+            }
+            else
+            {
+                mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ,
+                                 HEXEN_MT_SLUDGECHUNK);
+                mo->target = thing;
+                mo->momx = P_SubRandom() << 8;
+                mo->momy = P_SubRandom() << 8;
+                mo->momz = FRACUNIT + (P_Random(pr_hexen) << 8);
+                mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ,
+                                 HEXEN_MT_SLUDGESPLASH);
+                if (thing->player)
+                    P_NoiseAlert(thing, thing);
+            }
+            S_StartSound(mo, hexen_sfx_sludge_gloop);
+            return (FLOOR_SLUDGE);
+    }
+    return (FLOOR_SOLID);
 }

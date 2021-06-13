@@ -76,6 +76,10 @@ int g_s_play_run1;
 int g_s_play;
 int g_s_null;
 
+int g_mt_bloodsplatter;
+int g_bloodsplatter_shift;
+int g_bloodsplatter_weight;
+
 int g_sfx_sawup;
 int g_sfx_telept;
 int g_sfx_stnmov;
@@ -332,6 +336,10 @@ static void dsda_InitHeretic(void) {
   g_s_play = HERETIC_S_PLAY;
   g_s_null = HERETIC_S_NULL;
 
+  g_mt_bloodsplatter = HERETIC_MT_BLOODSPLATTER;
+  g_bloodsplatter_shift = 9;
+  g_bloodsplatter_weight = 2;
+
   g_sfx_sawup = heretic_sfx_gntact;
   g_sfx_telept = heretic_sfx_telept;
   g_sfx_stnmov = heretic_sfx_dormov;
@@ -424,6 +432,86 @@ static void dsda_InitHeretic(void) {
   maxammo[3] = 200; // skull rod
   maxammo[4] = 20;  // phoenix rod
   maxammo[5] = 150; // mace
+}
+
+static void dsda_InitHexen(void) {
+  // int i, j;
+  // raven_mobjinfo_t* mobjinfo_p;
+  //
+  // dsda_AllocateMobjInfo(HERETIC_MT_ZERO, HERETIC_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
+  // dsda_SetStates(heretic_states, HERETIC_NUMSTATES);
+  // dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
+  // dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
+  // dsda_SetMusic(heretic_S_music, HERETIC_NUMMUSIC);
+  //
+  // demostates = heretic_demostates;
+  //
+  // weaponinfo = wpnlev1info;
+  //
+  // g_mt_player = HERETIC_MT_PLAYER;
+  // g_mt_tfog = HERETIC_MT_TFOG;
+  g_mt_blood = HEXEN_MT_BLOOD;
+  // g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
+  //
+  // g_wp_fist = wp_staff;
+  // g_wp_chainsaw = wp_gauntlets;
+  // g_wp_pistol = wp_goldwand;
+  //
+  // g_telefog_height = TELEFOGHEIGHT;
+  // g_thrust_factor = 150;
+  // g_fuzzy_aim_shift = 21;
+  // g_special_friction_low = 15;
+  //
+  // g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
+  // g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
+  // g_s_play_run1 = HERETIC_S_PLAY_RUN1;
+  // g_s_play = HERETIC_S_PLAY;
+  // g_s_null = HERETIC_S_NULL;
+  //
+  g_mt_bloodsplatter = HEXEN_MT_BLOODSPLATTER;
+  g_bloodsplatter_shift = 10;
+  g_bloodsplatter_weight = 3;
+  //
+  // g_sfx_sawup = heretic_sfx_gntact;
+  // g_sfx_telept = heretic_sfx_telept;
+  // g_sfx_stnmov = heretic_sfx_dormov;
+  // g_sfx_stnmov_plats = heretic_sfx_stnmov;
+  // g_sfx_swtchn = heretic_sfx_switch;
+  // g_sfx_swtchx = heretic_sfx_switch;
+  // g_sfx_dorcls = heretic_sfx_doropn;
+  // g_sfx_doropn = heretic_sfx_doropn;
+  // g_sfx_pstart = heretic_sfx_pstart;
+  // g_sfx_pstop = heretic_sfx_pstop;
+  // g_sfx_itemup = heretic_sfx_itemup;
+  // g_sfx_pistol = heretic_sfx_gldhit;
+  // g_sfx_oof = heretic_sfx_plroof;
+  // g_sfx_menu = heretic_sfx_dorcls;
+  //
+  // g_door_normal = vld_normal;
+  // g_door_raise_in_5_mins = vld_raiseIn5Mins;
+  // g_door_open = vld_open;
+  //
+  // g_st_height = 42;
+  // g_border_offset = 4;
+  // g_mf_translucent = MF_SHADOW;
+  // g_mf_shadow = 0; // doesn't exist in heretic
+  //
+  // g_cr_gray = CR_TAN;
+  // g_cr_green = CR_YELLOW;
+  // g_cr_gold = CR_ORANGE;
+  // g_cr_red = CR_GOLD;
+  // g_cr_blue = CR_BROWN;
+  //
+  // g_menu_flat = "FLOOR30";
+  // g_menu_font = hu_font2;
+  // g_menu_save_page_size = 5;
+  // g_menu_font_spacing = 0;
+  // g_menu_cr_title = g_cr_gold;
+  // g_menu_cr_set = g_cr_green;
+  // g_menu_cr_item = g_cr_red;
+  // g_menu_cr_hilite = g_cr_blue;
+  // g_menu_cr_select = g_cr_gray;
+  // g_menu_cr_disable = g_cr_gray;
 }
 
 static dboolean dsda_AutoDetectHeretic(void)

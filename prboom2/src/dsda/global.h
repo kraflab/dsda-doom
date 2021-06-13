@@ -40,6 +40,10 @@ extern int g_s_play_run1;
 extern int g_s_play;
 extern int g_s_null;
 
+extern int g_mt_bloodsplatter;
+extern int g_bloodsplatter_shift;
+extern int g_bloodsplatter_weight;
+
 extern int g_sfx_telept;
 extern int g_sfx_sawup;
 extern int g_sfx_stnmov;
