@@ -546,5 +546,9 @@ mobj_t *P_SpawnMissileAngleSpeed(mobj_t * source, mobjtype_t type,
                                  angle_t angle, fixed_t momz, fixed_t speed);
 mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
                       fixed_t z, mobjtype_t type, angle_t angle);
+void P_CreateTIDList(void);
+void P_RemoveMobjFromTIDList(mobj_t * mobj);
+void P_InsertMobjIntoTIDList(mobj_t * mobj, int tid);
+mobj_t *P_FindMobjFromTID(int tid, int *searchPosition);
 
 #endif

@@ -1543,8 +1543,22 @@ int        iquetail;
 
 void P_RemoveMobj (mobj_t* mobj)
 {
-  if (heretic) // so short, just putting it here
+  if (raven) // so short, just putting it here
   {
+    if (hexen)
+    {
+      // Remove from creature queue
+      if (mobj->flags & MF_COUNTKILL && mobj->flags & MF_CORPSE)
+      {
+        A_DeQueueCorpse(mobj);
+      }
+
+      if (mobj->tid)
+      {                           // Remove from TID list
+        P_RemoveMobjFromTIDList(mobj);
+      }
+    }
+
     P_UnsetThingPosition(mobj);
     if (sector_list)
     {
@@ -2963,4 +2977,95 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj)
         S_StartSound(mo, hexen_sfx_player_land);
     }
     mo->player->centering = true;
+}
+
+void P_CreateTIDList(void)
+{
+    int i;
+    mobj_t *mobj;
+    thinker_t *t;
+
+    i = 0;
+    for (t = thinkercap.next; t != &thinkercap; t = t->next)
+    {                           // Search all current thinkers
+        if (t->function != P_MobjThinker)
+        {                       // Not a mobj thinker
+            continue;
+        }
+        mobj = (mobj_t *) t;
+        if (mobj->tid != 0)
+        {                       // Add to list
+            if (i == MAX_TID_COUNT)
+            {
+                I_Error("P_CreateTIDList: MAX_TID_COUNT (%d) exceeded.",
+                        MAX_TID_COUNT);
+            }
+            TIDList[i] = mobj->tid;
+            TIDMobj[i++] = mobj;
+        }
+    }
+    // Add termination marker
+    TIDList[i] = 0;
+}
+
+void P_InsertMobjIntoTIDList(mobj_t * mobj, int tid)
+{
+    int i;
+    int index;
+
+    index = -1;
+    for (i = 0; TIDList[i] != 0; i++)
+    {
+        if (TIDList[i] == -1)
+        {                       // Found empty slot
+            index = i;
+            break;
+        }
+    }
+    if (index == -1)
+    {                           // Append required
+        if (i == MAX_TID_COUNT)
+        {
+            I_Error("P_InsertMobjIntoTIDList: MAX_TID_COUNT (%d)"
+                    "exceeded.", MAX_TID_COUNT);
+        }
+        index = i;
+        TIDList[index + 1] = 0;
+    }
+    mobj->tid = tid;
+    TIDList[index] = tid;
+    TIDMobj[index] = mobj;
+}
+
+void P_RemoveMobjFromTIDList(mobj_t * mobj)
+{
+    int i;
+
+    for (i = 0; TIDList[i] != 0; i++)
+    {
+        if (TIDMobj[i] == mobj)
+        {
+            TIDList[i] = -1;
+            TIDMobj[i] = NULL;
+            mobj->tid = 0;
+            return;
+        }
+    }
+    mobj->tid = 0;
+}
+
+mobj_t *P_FindMobjFromTID(int tid, int *searchPosition)
+{
+    int i;
+
+    for (i = *searchPosition + 1; TIDList[i] != 0; i++)
+    {
+        if (TIDList[i] == tid)
+        {
+            *searchPosition = i;
+            return TIDMobj[i];
+        }
+    }
+    *searchPosition = -1;
+    return NULL;
 }
