@@ -47,6 +47,7 @@
 #include "info.h"
 #include "g_game.h"
 #include "p_inter.h"
+#include "p_user.h"
 #include "lprintf.h"
 #include "r_demo.h"
 #include "g_overflow.h"
@@ -339,7 +340,7 @@ static void P_XYMovement (mobj_t* mo)
       }
       else if (player || mo->flags2 & MF2_SLIDE) // try to slide along it
       {
-        if (!hexen || BlockingMobj == NULL)
+        if (BlockingMobj == NULL)
         {
           P_SlideMove(mo);
         }
@@ -411,7 +412,7 @@ static void P_XYMovement (mobj_t* mo)
           }
         }
 
-        if (hexen && BlockingMobj && (BlockingMobj->flags2 & MF2_REFLECTIVE))
+        if (BlockingMobj && (BlockingMobj->flags2 & MF2_REFLECTIVE))
         {
           angle = R_PointToAngle2(BlockingMobj->x,
                                   BlockingMobj->y, mo->x, mo->y);
@@ -1192,6 +1193,8 @@ fixed_t FloatBobOffsets[64] = {
 // P_MobjThinker
 //
 
+static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj);
+
 void P_MobjThinker (mobj_t* mobj)
 {
   // killough 11/98:
@@ -1209,6 +1212,7 @@ void P_MobjThinker (mobj_t* mobj)
   mobj->PrevZ = mobj->z;
 
   // momentum movement
+  BlockingMobj = NULL;
   if (mobj->momx | mobj->momy || mobj->flags & MF_SKULLFLY)
   {
     P_XYMovement(mobj);
@@ -1216,12 +1220,17 @@ void P_MobjThinker (mobj_t* mobj)
     if (mobj->thinker.function != P_MobjThinker) // cph - Must've been removed
       return;       // killough - mobj was removed
   }
+  else if (mobj->flags2 & MF2_BLASTED)
+  {                           // Reset to not blasted when momentums are gone
+    ResetBlasted(mobj);
+  }
 
   if (mobj->flags2 & MF2_FLOATBOB)
   {                           // Floating item bobbing motion
-      mobj->z = mobj->floorz + FloatBobOffsets[(mobj->health++) & 63];
+      mobj->z = mobj->floorz +
+                (hexen ? mobj->special1.i : 0) + FloatBobOffsets[(mobj->health++) & 63];
   }
-  else if (mobj->z != mobj->floorz || mobj->momz)
+  else if (mobj->z != mobj->floorz || mobj->momz || BlockingMobj)
   {
     if (mobj->flags2 & MF2_PASSMOBJ)
     {
@@ -1229,32 +1238,59 @@ void P_MobjThinker (mobj_t* mobj)
 
       if (!(onmo = P_CheckOnmobj(mobj)))
       {
-          P_ZMovement(mobj);
+        P_ZMovement(mobj);
+        if (hexen && mobj->player && mobj->flags & MF2_ONMOBJ)
+        {
+          mobj->flags2 &= ~MF2_ONMOBJ;
+        }
       }
       else
       {
-          if (mobj->player && mobj->momz < 0)
+        if (mobj->player)
+        {
+          if (hexen)
           {
+            if (mobj->momz < -GRAVITY * 8 && !(mobj->flags2 & MF2_FLY))
+            {
+              PlayerLandedOnThing(mobj, onmo);
+            }
+            if (onmo->z + onmo->height - mobj->z <= 24 * FRACUNIT)
+            {
+              mobj->player->viewheight -= onmo->z + onmo->height - mobj->z;
+              mobj->player->deltaviewheight = (VIEWHEIGHT - mobj->player->viewheight) >> 3;
+              mobj->z = onmo->z + onmo->height;
               mobj->flags2 |= MF2_ONMOBJ;
               mobj->momz = 0;
+            }
+            else
+            {           // hit the bottom of the blocking mobj
+              mobj->momz = 0;
+            }
           }
-          if (mobj->player && (onmo->player || onmo->type == HERETIC_MT_POD))
+          else
           {
+            if (mobj->momz < 0)
+            {
+              mobj->flags2 |= MF2_ONMOBJ;
+              mobj->momz = 0;
+            }
+            if (onmo->player || onmo->type == HERETIC_MT_POD)
+            {
               mobj->momx = onmo->momx;
               mobj->momy = onmo->momy;
               if (onmo->z < onmo->floorz)
               {
-                  mobj->z += onmo->floorz - onmo->z;
-                  if (onmo->player)
-                  {
-                      onmo->player->viewheight -=
-                          onmo->floorz - onmo->z;
-                      onmo->player->deltaviewheight =
-                          (VIEWHEIGHT - onmo->player->viewheight) >> 3;
-                  }
-                  onmo->z = onmo->floorz;
+                mobj->z += onmo->floorz - onmo->z;
+                if (onmo->player)
+                {
+                  onmo->player->viewheight -= onmo->floorz - onmo->z;
+                  onmo->player->deltaviewheight = (VIEWHEIGHT - onmo->player->viewheight) >> 3;
+                }
+                onmo->z = onmo->floorz;
               }
+            }
           }
+        }
       }
     }
     else
@@ -1262,8 +1298,8 @@ void P_MobjThinker (mobj_t* mobj)
     if (mobj->thinker.function != P_MobjThinker) // cph - Must've been removed
       return;       // killough - mobj was removed
   }
-  // heretic_note: are the intflags irrelevant when compatibility is enabled?
-  else if (!heretic && !(mobj->momx | mobj->momy) && !sentient(mobj))
+  // raven_note: are the intflags irrelevant when compatibility is enabled?
+  else if (!raven && !(mobj->momx | mobj->momy) && !sentient(mobj))
   {                                  // non-sentient objects at rest
     mobj->intflags |= MIF_ARMED;     // arm a mine which has come to rest
 

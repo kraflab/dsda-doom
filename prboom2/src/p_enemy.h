@@ -144,7 +144,6 @@ void A_RemoveFlags(mobj_t *);
 // heretic
 
 void A_UnHideThing(mobj_t * actor);
-void P_NoiseAlert(mobj_t * target, mobj_t * emmiter);
 void P_InitMonsters(void);
 void P_AddBossSpot(fixed_t x, fixed_t y, angle_t angle);
 void P_Massacre(void);
