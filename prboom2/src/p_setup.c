@@ -1392,7 +1392,7 @@ static void P_LoadThings (int lump)
 
   numthings = W_LumpLength (lump) / (hexen ? sizeof(mapthing_t) : sizeof(doom_mapthing_t));
   data = W_CacheLumpNum(lump);
-  doom_data = (doom_mapthing_t*) data;
+  doom_data = (const doom_mapthing_t*) data;
   mobjlist = malloc(numthings * sizeof(mobjlist[0]));
 
   if ((!data) || (!numthings))
