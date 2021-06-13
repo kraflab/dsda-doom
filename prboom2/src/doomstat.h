@@ -175,6 +175,8 @@ extern  dboolean deathmatch;
 
 extern dboolean coop_spawns;
 
+extern dboolean randomclass;
+
 // ------------------------------------------
 // Internal parameters for sound rendering.
 // These have been taken from the DOS version,
@@ -273,6 +275,8 @@ extern  int       upmove;
 // Alive? Disconnected?
 extern  dboolean   playeringame[MAXPLAYERS];
 extern  dboolean   realplayeringame[MAXPLAYERS];
+
+extern pclass_t PlayerClass[MAXPLAYERS];
 
 extern  mapthing_t *deathmatchstarts;     // killough
 extern  size_t     num_deathmatchstarts; // killough

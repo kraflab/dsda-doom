@@ -83,7 +83,6 @@ dboolean deathmatch;             // only if started as net death
 dboolean netgame;                // only true if packets are broadcast
 dboolean playeringame[MAXPLAYERS];
 player_t players[MAXPLAYERS];
-pclass_t PlayerClass[MAXPLAYERS];
 
 // Position indicator for cooperative net-play reborn
 int RebornPosition;

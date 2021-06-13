@@ -98,7 +98,6 @@ char *iwadfile;
 static char demolumpname[9];    // Demo lump to start playing.
 dboolean nomonsters;             // checkparm of -nomonsters
 dboolean respawnparm;            // checkparm of -respawn
-dboolean randomclass;            // checkparm of -randclass
 dboolean debugmode;              // checkparm of -debug
 dboolean ravpic;                 // checkparm of -ravpic
 dboolean cdrom = false;          // true if cd-rom mode active

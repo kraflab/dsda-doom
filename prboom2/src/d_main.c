@@ -123,6 +123,8 @@ dboolean nomonsters;     // working -nomonsters
 dboolean respawnparm;    // working -respawn
 dboolean fastparm;       // working -fast
 
+dboolean randomclass;
+
 dboolean singletics = false; // debug flag to cancel adaptiveness
 
 //jff 1/22/98 parms for disabling music and sound

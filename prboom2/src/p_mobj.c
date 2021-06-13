@@ -1767,7 +1767,42 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   x    = mthing->x << FRACBITS;
   y    = mthing->y << FRACBITS;
   z    = ONFLOORZ;
-  mobj = P_SpawnMobj (x,y,z, g_mt_player);
+
+  if (hexen)
+  {
+    if (randomclass && deathmatch)
+    {
+      p->pclass = P_Random(pr_hexen) % 3;
+      if (p->pclass == PlayerClass[mthing->type - 1])
+      {
+        p->pclass = (p->pclass + 1) % 3;
+      }
+      PlayerClass[mthing->type - 1] = p->pclass;
+      // HEXEN_TODO: SB_SetClassData
+      // SB_SetClassData();
+    }
+    else
+    {
+      p->pclass = PlayerClass[mthing->type - 1];
+    }
+    switch (p->pclass)
+    {
+      case PCLASS_FIGHTER:
+        mobj = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_FIGHTER);
+        break;
+      case PCLASS_CLERIC:
+        mobj = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_CLERIC);
+        break;
+      case PCLASS_MAGE:
+        mobj = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_MAGE);
+        break;
+      default:
+        I_Error("P_SpawnPlayer: Unknown class type");
+        return;
+    }
+  }
+  else
+    mobj = P_SpawnMobj(x,y,z, g_mt_player);
 
   if (deathmatch)
     mobj->index = TracerGetDeathmatchStart(n);
@@ -1776,8 +1811,24 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
 
 
   // set color translations for player sprites
-
-  mobj->flags |= playernumtotrans[n]<<MF_TRANSSHIFT;
+  if (hexen)
+  {
+    if (p->pclass == PCLASS_FIGHTER && (mthing->type == 1 || mthing->type == 3))
+    {
+      // The first type should be blue, and the third should be the
+      // Fighter's original gold color
+      if (mthing->type == 1)
+      {
+        mobj->flags |= MF_TRANSLATION2;
+      }
+    }
+    else if (mthing->type > 1)
+    {                           // Set color translation bits for player sprites
+      mobj->flags |= (mthing->type - 1) << MF_TRANSSHIFT;
+    }
+  }
+  else
+    mobj->flags |= playernumtotrans[n]<<MF_TRANSSHIFT;
 
   mobj->angle      = ANG45 * (mthing->angle/45);
   mobj->player     = p;
@@ -1790,7 +1841,9 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   p->message       = NULL;
   p->damagecount   = 0;
   p->bonuscount    = 0;
+  p->poisoncount   = 0;
   p->chickenTics   = 0;
+  p->morphTics     = 0;
   p->rain1         = NULL;
   p->rain2         = NULL;
   p->extralight    = 0;
@@ -1815,12 +1868,13 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   else if (p == &players[consoleplayer])
     playerkeys = 0;
 
-  if (mthing->type-1 == consoleplayer)
-    {
+  if (mthing->type - 1 == consoleplayer)
+  {
     ST_Start(); // wake up the status bar
     HU_Start(); // wake up the heads up text
-    }
-    R_SmoothPlaying_Reset(p); // e6y
+  }
+
+  R_SmoothPlaying_Reset(p); // e6y
 }
 
 /*
