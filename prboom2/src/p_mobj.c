@@ -1999,14 +1999,17 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   	}
   }
 
-  if (mthing->type == PO_ANCHOR_TYPE)
-  {                           // Polyobj Anchor Pt.
-    return NULL;
-  }
-  else if (mthing->type == PO_SPAWN_TYPE || mthing->type == PO_SPAWNCRUSH_TYPE)
-  {                           // Polyobj Anchor Pt.
-    po_NumPolyobjs++;
-    return NULL;
+  if (hexen)
+  {
+    if (mthing->type == PO_ANCHOR_TYPE)
+    {                           // Polyobj Anchor Pt.
+      return NULL;
+    }
+    else if (mthing->type == PO_SPAWN_TYPE || mthing->type == PO_SPAWNCRUSH_TYPE)
+    {                           // Polyobj Anchor Pt.
+      po_NumPolyobjs++;
+      return NULL;
+    }
   }
 
   // check for players specially
