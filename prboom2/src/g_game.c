@@ -1670,7 +1670,7 @@ void G_DeathMatchSpawnPlayer (int playernum)
     }
 
   // no good spot, so the player will probably get stuck
-  P_SpawnPlayer (playernum, &playerstarts[playernum]);
+  P_SpawnPlayer (playernum, &playerstarts[0][playernum]);
 }
 
 //
@@ -1695,23 +1695,23 @@ void G_DoReborn (int playernum)
           return;
         }
 
-      if (G_CheckSpot (playernum, &playerstarts[playernum]) )
+      if (G_CheckSpot (playernum, &playerstarts[0][playernum]) )
         {
-          P_SpawnPlayer (playernum, &playerstarts[playernum]);
+          P_SpawnPlayer (playernum, &playerstarts[0][playernum]);
           return;
         }
 
       // try to spawn at one of the other players spots
       for (i=0 ; i<MAXPLAYERS ; i++)
         {
-          if (G_CheckSpot (playernum, &playerstarts[i]) )
+          if (G_CheckSpot (playernum, &playerstarts[0][i]) )
             {
-              P_SpawnPlayer (playernum, &playerstarts[i]);
+              P_SpawnPlayer (playernum, &playerstarts[0][i]);
               return;
             }
           // he's going to be inside something.  Too bad.
         }
-      P_SpawnPlayer (playernum, &playerstarts[playernum]);
+      P_SpawnPlayer (playernum, &playerstarts[0][playernum]);
     }
 }
 

@@ -468,4 +468,43 @@ typedef struct visplane
   unsigned short top[3];
 } visplane_t;
 
+// hexen
+
+typedef struct
+{
+  int numsegs;
+  seg_t **segs;
+  degenmobj_t startSpot;
+  vertex_t *originalPts;      // used as the base for the rotations
+  vertex_t *prevPts;          // use to restore the old point values
+  angle_t angle;
+  int tag;                    // reference tag assigned in HereticEd
+  int bbox[4];
+  int validcount;
+  dboolean crush;              // should the polyobj attempt to crush mobjs?
+  int seqType;
+  fixed_t size;               // polyobj size (area of POLY_AREAUNIT == size of FRACUNIT)
+  void *specialdata;          // pointer a thinker, if the poly is moving
+} polyobj_t;
+
+typedef struct polyblock_s
+{
+  polyobj_t *polyobj;
+  struct polyblock_s *prev;
+  struct polyblock_s *next;
+} polyblock_t;
+
+enum
+{
+  PO_ANCHOR_TYPE = 3000,
+  PO_SPAWN_TYPE,
+  PO_SPAWNCRUSH_TYPE
+};
+
+#define PO_LINE_START 1         // polyobj line start special
+#define PO_LINE_EXPLICIT 5
+
+extern polyobj_t *polyobjs;     // list of all poly-objects on the level
+extern int po_NumPolyobjs;
+
 #endif

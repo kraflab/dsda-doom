@@ -177,6 +177,15 @@ typedef enum {
 #define MTF_FRIEND            128
 #define MTF_RESERVED          256
 
+// hexen
+#define MTF_DORMANT       16
+#define MTF_FIGHTER       32
+#define MTF_CLERIC        64
+#define MTF_MAGE         128
+#define MTF_GSINGLE      256
+#define MTF_GCOOP        512
+#define MTF_GDEATHMATCH 1024
+
 typedef enum {
   sk_none=-1, //jff 3/24/98 create unpicked skill setting
   sk_baby=0,

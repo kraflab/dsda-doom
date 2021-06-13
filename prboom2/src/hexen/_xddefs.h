@@ -148,18 +148,6 @@ typedef PACKED_STRUCT (
     byte arg5;
 }) mapthing_t;
 
-#define MTF_EASY		1
-#define MTF_NORMAL		2
-#define MTF_HARD		4
-#define MTF_AMBUSH		8
-#define MTF_DORMANT		16
-#define MTF_FIGHTER		32
-#define MTF_CLERIC		64
-#define MTF_MAGE		128
-#define MTF_GSINGLE		256
-#define MTF_GCOOP		512
-#define MTF_GDEATHMATCH	1024
-
 //--------------------------------------------------------------------------
 //
 // Texture definition

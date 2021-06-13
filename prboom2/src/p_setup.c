@@ -185,7 +185,7 @@ mapthing_t *deathmatchstarts;      // killough
 size_t     num_deathmatchstarts;   // killough
 
 mapthing_t *deathmatch_p;
-mapthing_t playerstarts[MAXPLAYERS];
+mapthing_t playerstarts[MAX_PLAYER_STARTS][MAXPLAYERS];
 
 static int current_episode = -1;
 static int current_map = -1;

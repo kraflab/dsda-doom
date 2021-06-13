@@ -932,6 +932,8 @@ int P_GetSafeBlockY(int coord)
 
 extern fixed_t bulletslope;
 
+// HEXEN_TODO: what does the playerstarts change do to this emulation?
+
 intercepts_overrun_t intercepts_overrun[] =
 {
   {4,   NULL,                          false},

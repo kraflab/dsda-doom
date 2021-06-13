@@ -328,19 +328,6 @@ typedef struct
     dboolean close;
 } polydoor_t;
 
-enum
-{
-    PO_ANCHOR_TYPE = 3000,
-    PO_SPAWN_TYPE,
-    PO_SPAWNCRUSH_TYPE
-};
-
-#define PO_LINE_START 1         // polyobj line start special
-#define PO_LINE_EXPLICIT 5
-
-extern polyobj_t *polyobjs;     // list of all poly-objects on the level
-extern int po_NumPolyobjs;
-
 void T_PolyDoor(polydoor_t * pd);
 void T_RotatePoly(polyevent_t * pe);
 dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean

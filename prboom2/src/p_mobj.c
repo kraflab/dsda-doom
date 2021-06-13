@@ -1911,10 +1911,14 @@ dboolean P_IsDoomnumAllowed(int doomnum)
 // already be in host byte order.
 //
 
+// HEXEN_TODO: move to po_man.c
+polyobj_t *polyobjs;
+int po_NumPolyobjs;
+
 mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 {
   int     i;
-  //int     bit;
+  unsigned int spawnMask;
   mobj_t* mobj;
   fixed_t x;
   fixed_t y;
@@ -1922,18 +1926,26 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   int options = mthing->options; /* cph 2001/07/07 - make writable copy */
   short thingtype = mthing->type;
   int iden_num = 0;
+  static unsigned int classFlags[] = {
+    MTF_FIGHTER,
+    MTF_CLERIC,
+    MTF_MAGE
+  };
 
   // killough 2/26/98: Ignore type-0 things as NOPs
   // phares 5/14/98: Ignore Player 5-8 starts (for now)
 
-  switch(thingtype)
+  if (!hexen)
   {
-    case 0:
-    case DEN_PLAYER5:
-    case DEN_PLAYER6:
-    case DEN_PLAYER7:
-    case DEN_PLAYER8:
-      return NULL;
+    switch(thingtype)
+    {
+      case 0:
+      case DEN_PLAYER5:
+      case DEN_PLAYER6:
+      case DEN_PLAYER7:
+      case DEN_PLAYER8:
+        return NULL;
+    }
   }
 
   // killough 11/98: clear flags unused by Doom
@@ -1945,7 +1957,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // then simply ignore all upper bits.
 
   if (
-    demo_compatibility ||
+    (!hexen && demo_compatibility) ||
     (compatibility_level >= lxdoom_1_compatibility && options & MTF_RESERVED)
   )
   {
@@ -1987,10 +1999,22 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   	}
   }
 
+  if (mthing->type == PO_ANCHOR_TYPE)
+  {                           // Polyobj Anchor Pt.
+    return NULL;
+  }
+  else if (mthing->type == PO_SPAWN_TYPE || mthing->type == PO_SPAWNCRUSH_TYPE)
+  {                           // Polyobj Anchor Pt.
+    po_NumPolyobjs++;
+    return NULL;
+  }
+
   // check for players specially
 
   if (thingtype <= 4 && thingtype > 0)  // killough 2/26/98 -- fix crashes
   {
+    int start = 0;
+
     // killough 7/19/98: Marine's best friend :)
     if (
       !netgame &&
@@ -2022,18 +2046,21 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       goto spawnit;
     }
 
+    if (hexen)
+      start = mthing->arg1;
+
     // save spots for respawning in coop games
-    playerstarts[thingtype - 1] = *mthing;
+    playerstarts[start][thingtype - 1] = *mthing;
     /* cph 2006/07/24 - use the otherwise-unused options field to flag that
      * this start is present (so we know which elements of the array are filled
      * in, in effect). Also note that the call below to P_SpawnPlayer must use
      * the playerstarts version with this field set */
-    playerstarts[thingtype - 1].options = 1;
+    playerstarts[start][thingtype - 1].options = 1;
 
     TracerAddPlayerStart(thingtype - 1, index);
 
-    if (!deathmatch)
-      P_SpawnPlayer(thingtype - 1, &playerstarts[thingtype - 1]);
+    if (!deathmatch && !mthing->arg1)
+      P_SpawnPlayer(thingtype - 1, &playerstarts[start][thingtype - 1]);
     return NULL;
   }
 
@@ -2055,21 +2082,72 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     }
   }
 
+  if (hexen)
+  {
+    // Check for player starts 5 to 8
+    if (mthing->type >= 9100 && mthing->type <= 9103)
+    {
+      mapthing_t *player_start;
+      int player;
+
+      player = 4 + mthing->type - 9100;
+
+      player_start = &playerstarts[mthing->arg1][player];
+      memcpy(player_start, mthing, sizeof(mapthing_t));
+      player_start->type = player + 1;
+
+      if (!deathmatch && !player_start->arg1)
+      {
+        P_SpawnPlayer(thingtype - 1, player_start);
+      }
+      return NULL;
+    }
+
+    if (mthing->type >= 1400 && mthing->type < 1410)
+    {
+      R_PointInSubsector(
+        mthing->x << FRACBITS,
+        mthing->y << FRACBITS
+      )->sector->seqType = mthing->type - 1400;
+      return NULL;
+    }
+
+    // Check current game type with spawn flags
+    if (netgame == false)
+    {
+      spawnMask = MTF_GSINGLE;
+    }
+    else if (deathmatch)
+    {
+      spawnMask = MTF_GDEATHMATCH;
+    }
+    else
+    {
+      spawnMask = MTF_GCOOP;
+    }
+    if (!(options & spawnMask))
+    {
+      return NULL;
+    }
+  }
+  else
+  {
+    /* jff "not single" thing flag */
+    if (!coop_spawns && !netgame && options & MTF_NOTSINGLE)
+      return NULL;
+
+    //jff 3/30/98 implement "not deathmatch" thing flag
+
+    if (netgame && deathmatch && options & MTF_NOTDM)
+      return NULL;
+
+    //jff 3/30/98 implement "not cooperative" thing flag
+
+    if ((coop_spawns || netgame) && !deathmatch && options & MTF_NOTCOOP)
+      return NULL;
+  }
+
   // check for apropriate skill level
-
-  /* jff "not single" thing flag */
-  if (!coop_spawns && !netgame && options & MTF_NOTSINGLE)
-    return NULL;
-
-  //jff 3/30/98 implement "not deathmatch" thing flag
-
-  if (netgame && deathmatch && options & MTF_NOTDM)
-    return NULL;
-
-  //jff 3/30/98 implement "not cooperative" thing flag
-
-  if ((coop_spawns || netgame) && !deathmatch && options & MTF_NOTCOOP)
-    return NULL;
 
   // killough 11/98: simplify
   if (gameskill == sk_baby || gameskill == sk_easy ?
@@ -2079,11 +2157,38 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       !(options & MTF_NORMAL))
     return NULL;
 
-  if (!heretic && thingtype >= 14100 && thingtype <= 14164)
+  if (!raven && thingtype >= 14100 && thingtype <= 14164)
   {
     // Use the ambient number
     iden_num = thingtype - 14100; // Mus change
     thingtype = 14164;            // MT_MUSICSOURCE
+  }
+
+  if (hexen)
+  {
+    // Check current character classes with spawn flags
+    if (netgame == false)
+    {                           // Single player
+      if ((options & classFlags[PlayerClass[0]]) == 0)
+      {                       // Not for current class
+        return NULL;
+      }
+    }
+    else if (deathmatch == false)
+    {                           // Cooperative
+      spawnMask = 0;
+      for (i = 0; i < MAXPLAYERS; i++)
+      {
+        if (playeringame[i])
+        {
+          spawnMask |= classFlags[PlayerClass[i]];
+        }
+      }
+      if ((options & spawnMask) == 0)
+      {
+        return NULL;
+      }
+    }
   }
 
   // find which type to spawn
@@ -2127,19 +2232,45 @@ spawnit:
     z = ONCEILINGZ;
   else if (mobjinfo[i].flags2 & MF2_SPAWNFLOAT)
     z = FLOATRANDZ;
+  else if (hexen && mobjinfo[i].flags2 & MF2_FLOATBOB)
+    z = mthing->height << FRACBITS;
   else
     z = ONFLOORZ;
 
+  if (i == HEXEN_MT_ZLYNCHED_NOHEART)
+    P_SpawnMobj(x, y, ONFLOORZ, HEXEN_MT_BLOODPOOL);
+
   mobj = P_SpawnMobj (x, y, z, i);
+
   mobj->spawnpoint = *mthing; // heretic_note: this is only done with totalkills++ in heretic
   mobj->index = index;//e6y
   mobj->iden_nums = iden_num;
 
   InitThingsHealthTracer(mobj);
 
+  if (hexen)
+  {
+    if (z == ONFLOORZ)
+    {
+      mobj->z += mthing->height << FRACBITS;
+    }
+    else if (z == ONCEILINGZ)
+    {
+      mobj->z -= mthing->height << FRACBITS;
+    }
+    mobj->tid = mthing->tid;
+    mobj->special = mthing->special;
+    mobj->args[0] = mthing->arg1;
+    mobj->args[1] = mthing->arg2;
+    mobj->args[2] = mthing->arg3;
+    mobj->args[3] = mthing->arg4;
+    mobj->args[4] = mthing->arg5;
+  }
+
   if (mobj->flags2 & MF2_FLOATBOB)
   {                           // Seed random starting index for bobbing motion
     mobj->health = P_Random(pr_heretic);
+    if (hexen) mobj->special1.i = mthing->height << FRACBITS;
   }
 
   if (mobj->tics > 0)
@@ -2160,11 +2291,36 @@ spawnit:
   if (mobj->flags & MF_COUNTITEM)
     totalitems++;
 
-  mobj->angle = ANG45 * (mthing->angle / 45);
+  if (hexen)
+  {
+    if (mobj->flags & MF_COUNTKILL)
+    {
+      // Quantize angle to 45 degree increments
+      mobj->angle = ANG45 * (mthing->angle / 45);
+    }
+    else
+    {
+      // Scale angle correctly (source is 0..359)
+      mobj->angle = ((mthing->angle << 8) / 360) << 24;
+    }
+  }
+  else
+    mobj->angle = ANG45 * (mthing->angle / 45);
+
   if (options & MTF_AMBUSH)
     mobj->flags |= MF_AMBUSH;
 
-  if (heretic) return mobj; // check below irrelevant
+  if (hexen && mthing->options & MTF_DORMANT)
+  {
+      mobj->flags2 |= MF2_DORMANT;
+      if (mobj->type == HEXEN_MT_ICEGUY)
+      {
+        P_SetMobjState(mobj, HEXEN_S_ICEGUY_DORMANT);
+      }
+      mobj->tics = -1;
+  }
+
+  if (raven) return mobj; // check below irrelevant
 
   // RjY
   // Print a warning when a solid hanging body is used in a sector where

@@ -149,31 +149,6 @@ typedef struct
     sector_t *backsector;       // NULL for one sided lines
 } seg_t;
 
-// ===== Polyobj data =====
-typedef struct
-{
-    int numsegs;
-    seg_t **segs;
-    degenmobj_t startSpot;
-    vertex_t *originalPts;      // used as the base for the rotations
-    vertex_t *prevPts;          // use to restore the old point values
-    angle_t angle;
-    int tag;                    // reference tag assigned in HereticEd
-    int bbox[4];
-    int validcount;
-    dboolean crush;              // should the polyobj attempt to crush mobjs?
-    int seqType;
-    fixed_t size;               // polyobj size (area of POLY_AREAUNIT == size of FRACUNIT)
-    void *specialdata;          // pointer a thinker, if the poly is moving
-} polyobj_t;
-
-typedef struct polyblock_s
-{
-    polyobj_t *polyobj;
-    struct polyblock_s *prev;
-    struct polyblock_s *next;
-} polyblock_t;
-
 typedef struct subsector_s
 {
     sector_t *sector;
