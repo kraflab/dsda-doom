@@ -14,46 +14,6 @@
 // GNU General Public License for more details.
 //
 
-//===========================================================================
-//
-// PlayerLandedOnThing
-//
-//===========================================================================
-
-static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj)
-{
-    mo->player->deltaviewheight = mo->momz >> 3;
-    if (mo->momz < -23 * FRACUNIT)
-    {
-        P_FallingDamage(mo->player);
-        P_NoiseAlert(mo, mo);
-    }
-    else if (mo->momz < -GRAVITY * 12 && !mo->player->morphTics)
-    {
-        S_StartSound(mo, hexen_sfx_player_land);
-        switch (mo->player->pclass)
-        {
-            case PCLASS_FIGHTER:
-                S_StartSound(mo, hexen_sfx_player_fighter_grunt);
-                break;
-            case PCLASS_CLERIC:
-                S_StartSound(mo, hexen_sfx_player_cleric_grunt);
-                break;
-            case PCLASS_MAGE:
-                S_StartSound(mo, hexen_sfx_player_mage_grunt);
-                break;
-            default:
-                break;
-        }
-    }
-    else if (!mo->player->morphTics)
-    {
-        S_StartSound(mo, hexen_sfx_player_land);
-    }
-    // haleyjd: removed externdriver crap
-    mo->player->centering = true;
-}
-
 //----------------------------------------------------------------------------
 //
 // PROC P_MobjThinker

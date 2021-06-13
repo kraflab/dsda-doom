@@ -2874,3 +2874,36 @@ mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
     th->momz = FixedMul(th->info->speed, slope);
     return (P_CheckMissileSpawn(th) ? th : NULL);
 }
+
+static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj)
+{
+    mo->player->deltaviewheight = mo->momz >> 3;
+    if (mo->momz < -23 * FRACUNIT)
+    {
+        P_FallingDamage(mo->player);
+        P_NoiseAlert(mo, mo);
+    }
+    else if (mo->momz < -GRAVITY * 12 && !mo->player->morphTics)
+    {
+        S_StartSound(mo, hexen_sfx_player_land);
+        switch (mo->player->pclass)
+        {
+            case PCLASS_FIGHTER:
+                S_StartSound(mo, hexen_sfx_player_fighter_grunt);
+                break;
+            case PCLASS_CLERIC:
+                S_StartSound(mo, hexen_sfx_player_cleric_grunt);
+                break;
+            case PCLASS_MAGE:
+                S_StartSound(mo, hexen_sfx_player_mage_grunt);
+                break;
+            default:
+                break;
+        }
+    }
+    else if (!mo->player->morphTics)
+    {
+        S_StartSound(mo, hexen_sfx_player_land);
+    }
+    mo->player->centering = true;
+}
