@@ -1414,7 +1414,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   mobj->height = info->height;                                      // phares
   mobj->flags  = info->flags;
   mobj->flags2 = info->flags2;
-  if (heretic) mobj->damage = info->damage;
+  if (raven) mobj->damage = info->damage;
 
   /* killough 8/23/98: no friends, bouncers, or touchy things in old demos */
   if (!mbf_features)
@@ -1428,6 +1428,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   if (gameskill != sk_nightmare)
     mobj->reactiontime = info->reactiontime;
 
+  // HEXEN_TODO: MAXPLAYERS affects this
   mobj->lastlook = P_Random (pr_lastlook) % MAXPLAYERS;
 
   // do not set the state with P_SetMobjState,
@@ -1457,7 +1458,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   {
       mobj->z = mobj->ceilingz - mobj->height;
   }
-  else if (heretic && z == FLOATRANDZ)
+  else if (raven && z == FLOATRANDZ)
   {
     fixed_t space;
 
@@ -1473,20 +1474,40 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
       mobj->z = mobj->floorz;
     }
   }
+  else if (hexen && mobj->flags2 & MF2_FLOATBOB)
+  {
+    mobj->z = mobj->floorz + z;     // artifact z passed in as height
+  }
   else
   {
     mobj->z = z;
   }
 
-  if (mobj->flags2 & MF2_FOOTCLIP
-      && P_GetThingFloorType(mobj) != FLOOR_SOLID
-      && mobj->floorz == mobj->subsector->sector->floorheight)
+  if (hexen)
   {
-      mobj->flags2 |= MF2_FEETARECLIPPED;
+    if (mobj->flags2 & MF2_FOOTCLIP
+        && P_GetThingFloorType(mobj) >= FLOOR_LIQUID
+        && mobj->z == mobj->subsector->sector->floorheight)
+    {
+      mobj->floorclip = 10 * FRACUNIT;
+    }
+    else
+    {
+      mobj->floorclip = 0;
+    }
   }
   else
   {
-      mobj->flags2 &= ~MF2_FEETARECLIPPED;
+    if (mobj->flags2 & MF2_FOOTCLIP
+        && P_GetThingFloorType(mobj) != FLOOR_SOLID
+        && mobj->floorz == mobj->subsector->sector->floorheight)
+    {
+        mobj->flags2 |= MF2_FEETARECLIPPED;
+    }
+    else
+    {
+        mobj->flags2 &= ~MF2_FEETARECLIPPED;
+    }
   }
 
   mobj->PrevX = mobj->x;
