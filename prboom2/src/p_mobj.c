@@ -2355,7 +2355,7 @@ void P_SpawnPuff(fixed_t x,fixed_t y,fixed_t z)
   mobj_t* th;
   int t;
 
-  if (heretic) return Heretic_P_SpawnPuff(x, y, z);
+  if (raven) return Heretic_P_SpawnPuff(x, y, z);
 
   // killough 5/5/98: remove dependence on order of evaluation:
   t = P_Random(pr_spawnpuff);
@@ -3044,13 +3044,19 @@ void P_FloorBounceMissile(mobj_t * mo)
     }
 }
 
+extern mobj_t *PuffSpawned;
+
 void Heretic_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z)
 {
     mobj_t *puff;
 
     z += (P_SubRandom() << 10);
     puff = P_SpawnMobj(x, y, z, PuffType);
-    if (puff->info->attacksound)
+    if (hexen && linetarget && puff->info->seesound)
+    {                           // Hit thing sound
+        S_StartSound(puff, puff->info->seesound);
+    }
+    else if (puff->info->attacksound)
     {
         S_StartSound(puff, puff->info->attacksound);
     }
@@ -3058,14 +3064,17 @@ void Heretic_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z)
     {
         case HERETIC_MT_BEAKPUFF:
         case HERETIC_MT_STAFFPUFF:
+        case HEXEN_MT_PUNCHPUFF:
             puff->momz = FRACUNIT;
             break;
         case HERETIC_MT_GAUNTLETPUFF1:
         case HERETIC_MT_GAUNTLETPUFF2:
+        case HEXEN_MT_HAMMERPUFF:
             puff->momz = (fixed_t)(.8 * FRACUNIT);
         default:
             break;
     }
+    PuffSpawned = puff;
 }
 
 void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator)
