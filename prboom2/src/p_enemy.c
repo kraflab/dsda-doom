@@ -88,8 +88,7 @@ void P_ZBumpCheck(mobj_t *);                                        // phares
 //
 // killough 5/5/98: reformatted, cleaned up
 
-static void P_RecursiveSound(sector_t *sec, int soundblocks,
-           mobj_t *soundtarget)
+static void P_RecursiveSound(sector_t *sec, int soundblocks, mobj_t *soundtarget)
 {
   int i;
 
@@ -102,26 +101,26 @@ static void P_RecursiveSound(sector_t *sec, int soundblocks,
   P_SetTarget(&sec->soundtarget, soundtarget);
 
   for (i=0; i<sec->linecount; i++)
-    {
-      sector_t *other;
-      line_t *check = sec->lines[i];
+  {
+    sector_t *other;
+    line_t *check = sec->lines[i];
 
-      if (!(check->flags & ML_TWOSIDED))
-        continue;
+    if (!(check->flags & ML_TWOSIDED))
+      continue;
 
-      P_LineOpening(check);
+    P_LineOpening(check);
 
-      if (openrange <= 0)
-        continue;       // closed door
+    if (openrange <= 0)
+      continue;       // closed door
 
-      other=sides[check->sidenum[sides[check->sidenum[0]].sector==sec]].sector;
+    other=sides[check->sidenum[sides[check->sidenum[0]].sector==sec]].sector;
 
-      if (!(check->flags & ML_SOUNDBLOCK))
-        P_RecursiveSound(other, soundblocks, soundtarget);
-      else
-        if (!soundblocks)
-          P_RecursiveSound(other, 1, soundtarget);
-    }
+    if (!(check->flags & ML_SOUNDBLOCK))
+      P_RecursiveSound(other, soundblocks, soundtarget);
+    else
+      if (!soundblocks)
+        P_RecursiveSound(other, 1, soundtarget);
+  }
 }
 
 //
@@ -152,7 +151,7 @@ static dboolean P_CheckRange(mobj_t *actor, fixed_t range)
     P_AproxDistance(pl->x-actor->x, pl->y-actor->y) < range &&
     P_CheckSight(actor, actor->target) &&
     ( // finite height!
-      !heretic ||
+      !raven ||
       (
         pl->z <= actor->z + actor->height &&
         actor->z <= pl->z + pl->height
@@ -4994,4 +4993,34 @@ void P_InitCreatureCorpseQueue(dboolean corpseScan)
                 break;
         }
     }
+}
+
+dboolean P_CheckMeleeRange2(mobj_t * actor)
+{
+    mobj_t *mo;
+    fixed_t dist;
+
+    if (!actor->target)
+    {
+        return (false);
+    }
+    mo = actor->target;
+    dist = P_AproxDistance(mo->x - actor->x, mo->y - actor->y);
+    if (dist >= MELEERANGE * 2 || dist < MELEERANGE)
+    {
+        return (false);
+    }
+    if (!P_CheckSight(actor, mo))
+    {
+        return (false);
+    }
+    if (mo->z > actor->z + actor->height)
+    {                           // Target is higher than the attacker
+        return (false);
+    }
+    else if (actor->z > mo->z + mo->height)
+    {                           // Attacker is higher
+        return (false);
+    }
+    return (true);
 }
