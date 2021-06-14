@@ -43,6 +43,7 @@ extern int g_s_null;
 extern int g_mt_bloodsplatter;
 extern int g_bloodsplatter_shift;
 extern int g_bloodsplatter_weight;
+extern int g_mons_look_range;
 
 extern int g_sfx_telept;
 extern int g_sfx_sawup;

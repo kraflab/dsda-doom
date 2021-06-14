@@ -79,6 +79,7 @@ int g_s_null;
 int g_mt_bloodsplatter;
 int g_bloodsplatter_shift;
 int g_bloodsplatter_weight;
+int g_mons_look_range;
 
 int g_sfx_sawup;
 int g_sfx_telept;
@@ -339,6 +340,7 @@ static void dsda_InitHeretic(void) {
   g_mt_bloodsplatter = HERETIC_MT_BLOODSPLATTER;
   g_bloodsplatter_shift = 9;
   g_bloodsplatter_weight = 2;
+  g_mons_look_range = 20 * 64 * FRACUNIT;
 
   g_sfx_sawup = heretic_sfx_gntact;
   g_sfx_telept = heretic_sfx_telept;
@@ -471,6 +473,7 @@ static void dsda_InitHexen(void) {
   g_mt_bloodsplatter = HEXEN_MT_BLOODSPLATTER;
   g_bloodsplatter_shift = 10;
   g_bloodsplatter_weight = 3;
+  g_mons_look_range = 16 * 64 * FRACUNIT;
   //
   // g_sfx_sawup = heretic_sfx_gntact;
   // g_sfx_telept = heretic_sfx_telept;

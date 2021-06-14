@@ -823,7 +823,7 @@ static dboolean P_LookForPlayers(mobj_t *actor, dboolean allaround)
   player_t *player;
   int stop, stopc, c;
 
-  if (heretic) return Heretic_P_LookForPlayers(actor, allaround);
+  if (raven) return Heretic_P_LookForPlayers(actor, allaround);
 
   if (actor->flags & MF_FRIEND)
     {  // killough 9/9/98: friendly monsters go about players differently
@@ -4793,7 +4793,6 @@ void Heretic_A_BossDeath(mobj_t * actor)
     EV_DoFloor(&dummyLine, lowerFloor);
 }
 
-#define MONS_LOOK_RANGE (20*64*FRACUNIT)
 #define MONS_LOOK_LIMIT 64
 
 // Not proxied by P_LookForMonsters - this is post-death brawling
@@ -4819,8 +4818,7 @@ dboolean Heretic_P_LookForMonsters(mobj_t * actor)
         {                       // Not a valid monster
             continue;
         }
-        if (P_AproxDistance(actor->x - mo->x, actor->y - mo->y)
-            > MONS_LOOK_RANGE)
+        if (P_AproxDistance(actor->x - mo->x, actor->y - mo->y) > g_mons_look_range)
         {                       // Out of range
             continue;
         }
@@ -4835,6 +4833,14 @@ dboolean Heretic_P_LookForMonsters(mobj_t * actor)
         if (!P_CheckSight(actor, mo))
         {                       // Out of sight
             continue;
+        }
+        if (actor->type == HEXEN_MT_MINOTAUR)
+        {
+            if ((mo->type == HEXEN_MT_MINOTAUR) &&
+                (mo->target != actor->special1.p->mo))
+            {
+                continue;
+            }
         }
         // Found a target monster
         P_SetTarget(&actor->target, mo);
@@ -4898,6 +4904,14 @@ dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
                 return (false);
             }
         }
+        if (actor->type == HEXEN_MT_MINOTAUR)
+        {
+            if (actor->special1.p == player)
+            {
+                continue;       // Don't target master
+            }
+        }
+
         P_SetTarget(&actor->target, player->mo);
         return (true);
     }
