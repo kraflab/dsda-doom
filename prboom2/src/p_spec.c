@@ -4314,3 +4314,10 @@ void P_SpawnLineSpecials(void)
                 break;
         }
 }
+
+// hexen
+
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType)
+{
+  return true;
+}

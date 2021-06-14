@@ -279,6 +279,21 @@ typedef struct {
   short options;
 } PACKEDATTR doom_mapthing_t;
 
+// hexen
+
+#define ML_REPEAT_SPECIAL	0x0200  // special is repeatable
+#define ML_SPAC_SHIFT		10
+#define ML_SPAC_MASK		0x1c00
+#define GET_SPAC(flags) ((flags&ML_SPAC_MASK)>>ML_SPAC_SHIFT)
+
+// Special activation types
+#define SPAC_CROSS		0       // when player crosses line
+#define SPAC_USE		1       // when player uses line
+#define SPAC_MCROSS		2       // when monster crosses line
+#define SPAC_IMPACT		3       // when projectile hits line
+#define SPAC_PUSH		4       // when player/monster pushes line
+#define SPAC_PCROSS		5       // when projectile crosses line
+
 #ifdef _MSC_VER
 #pragma pack(pop)
 #endif //_MSC_VER

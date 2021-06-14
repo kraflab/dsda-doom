@@ -347,6 +347,8 @@ static dboolean P_Move(mobj_t *actor, dboolean dropoff) /* killough 9/12/98 */
   int friction = ORIG_FRICTION;
   int speed;
 
+  if (actor->flags2 & MF2_BLASTED)
+    return true;
   if (actor->movedir == DI_NODIR)
     return false;
 
@@ -376,75 +378,75 @@ static dboolean P_Move(mobj_t *actor, dboolean dropoff) /* killough 9/12/98 */
   // Let normal momentum carry them, instead of steptoeing them across ice.
 
   if (try_ok && friction > ORIG_FRICTION)
-    {
-      actor->x = origx;
-      actor->y = origy;
-      movefactor *= FRACUNIT / ORIG_FRICTION_FACTOR / 4;
-      actor->momx += FixedMul(deltax, movefactor);
-      actor->momy += FixedMul(deltay, movefactor);
-    }
+  {
+    actor->x = origx;
+    actor->y = origy;
+    movefactor *= FRACUNIT / ORIG_FRICTION_FACTOR / 4;
+    actor->momx += FixedMul(deltax, movefactor);
+    actor->momy += FixedMul(deltay, movefactor);
+  }
 
   if (!try_ok)
-    {      // open any specials
-      int good;
+  {      // open any specials
+    int good;
 
-      if (actor->flags & MF_FLOAT && floatok)
-        {
-          if (actor->z < tmfloorz)          // must adjust height
-            actor->z += FLOATSPEED;
-          else
-            actor->z -= FLOATSPEED;
+    if (actor->flags & MF_FLOAT && floatok)
+    {
+      if (actor->z < tmfloorz)          // must adjust height
+        actor->z += FLOATSPEED;
+      else
+        actor->z -= FLOATSPEED;
 
-          actor->flags |= MF_INFLOAT;
+      actor->flags |= MF_INFLOAT;
 
-    return true;
-        }
-
-      if (!numspechit)
-        return false;
-
-      actor->movedir = DI_NODIR;
-
-      /* if the special is not a door that can be opened, return false
-       *
-       * killough 8/9/98: this is what caused monsters to get stuck in
-       * doortracks, because it thought that the monster freed itself
-       * by opening a door, even if it was moving towards the doortrack,
-       * and not the door itself.
-       *
-       * killough 9/9/98: If a line blocking the monster is activated,
-       * return true 90% of the time. If a line blocking the monster is
-       * not activated, but some other line is, return false 90% of the
-       * time. A bit of randomness is needed to ensure it's free from
-       * lockups, but for most cases, it returns the correct result.
-       *
-       * Do NOT simply return false 1/4th of the time (causes monsters to
-       * back out when they shouldn't, and creates secondary stickiness).
-       */
-
-      for (good = false; numspechit--; )
-        if (P_UseSpecialLine(actor, spechit[numspechit], 0, false))
-          good |= spechit[numspechit] == blockline ? 1 : 2;
-
-      if (heretic) return good > 0;
-
-      /* cph - compatibility maze here
-       * Boom v2.01 and orig. Doom return "good"
-       * Boom v2.02 and LxDoom return good && (P_Random(pr_trywalk)&3)
-       * MBF plays even more games
-       */
-      if (!good || comp[comp_doorstuck]) return good;
-      if (!mbf_features)
-        return (P_Random(pr_trywalk)&3); /* jff 8/13/98 */
-      else /* finally, MBF code */
-        return ((P_Random(pr_opendoor) >= 230) ^ (good & 1));
+      return true;
     }
+
+    if (!numspechit)
+      return false;
+
+    actor->movedir = DI_NODIR;
+
+    /* if the special is not a door that can be opened, return false
+     *
+     * killough 8/9/98: this is what caused monsters to get stuck in
+     * doortracks, because it thought that the monster freed itself
+     * by opening a door, even if it was moving towards the doortrack,
+     * and not the door itself.
+     *
+     * killough 9/9/98: If a line blocking the monster is activated,
+     * return true 90% of the time. If a line blocking the monster is
+     * not activated, but some other line is, return false 90% of the
+     * time. A bit of randomness is needed to ensure it's free from
+     * lockups, but for most cases, it returns the correct result.
+     *
+     * Do NOT simply return false 1/4th of the time (causes monsters to
+     * back out when they shouldn't, and creates secondary stickiness).
+     */
+
+    for (good = false; numspechit--; )
+      if (P_UseSpecialLine(actor, spechit[numspechit], 0, false))
+        good |= spechit[numspechit] == blockline ? 1 : 2;
+
+    if (raven) return good > 0;
+
+    /* cph - compatibility maze here
+     * Boom v2.01 and orig. Doom return "good"
+     * Boom v2.02 and LxDoom return good && (P_Random(pr_trywalk)&3)
+     * MBF plays even more games
+     */
+    if (!good || comp[comp_doorstuck]) return good;
+    if (!mbf_features)
+      return (P_Random(pr_trywalk)&3); /* jff 8/13/98 */
+    else /* finally, MBF code */
+      return ((P_Random(pr_opendoor) >= 230) ^ (good & 1));
+  }
   else
     actor->flags &= ~MF_INFLOAT;
 
   /* killough 11/98: fall more slowly, under gravity, if felldown==true */
   if (!(actor->flags & MF_FLOAT) && (!felldown || !mbf_features)) {
-    if (heretic && actor->z > actor->floorz)
+    if (raven && actor->z > actor->floorz)
     {
       P_HitFloor(actor);
     }

@@ -1199,4 +1199,8 @@ dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing);
 dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dboolean bossaction);
 void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing);
 
+// hexen
+
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType);
+
 #endif

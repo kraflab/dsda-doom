@@ -282,6 +282,7 @@ P_UseSpecialLine
   dboolean		bossaction)
 {
   if (heretic) return Heretic_P_UseSpecialLine(thing, line, side, bossaction);
+  if (hexen) return P_ActivateLine(line, thing, side, SPAC_USE);
 
   // e6y
   // b.m. side test was broken in boom201
