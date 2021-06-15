@@ -6041,3 +6041,66 @@ void A_SerpentHeadCheck(mobj_t * actor)
         }
     }
 }
+
+void A_CentaurAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, P_Random(pr_hexen) % 7 + 3);
+    }
+}
+
+void A_CentaurAttack2(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    P_SpawnMissile(actor, actor->target, HEXEN_MT_CENTAUR_FX);
+    S_StartSound(actor, hexen_sfx_centaurleader_attack);
+}
+
+void A_CentaurDropStuff(mobj_t * actor)
+{
+    mobj_t *mo;
+    angle_t angle;
+
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_CENTAUR_SHIELD);
+    if (mo)
+    {
+        angle = actor->angle + ANG90;
+        mo->momz = FRACUNIT * 8 + (P_Random(pr_hexen) << 10);
+        mo->momx = FixedMul(((P_Random(pr_hexen) - 128) << 11) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul(((P_Random(pr_hexen) - 128) << 11) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_CENTAUR_SWORD);
+    if (mo)
+    {
+        angle = actor->angle - ANG90;
+        mo->momz = FRACUNIT * 8 + (P_Random(pr_hexen) << 10);
+        mo->momx = FixedMul(((P_Random(pr_hexen) - 128) << 11) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul(((P_Random(pr_hexen) - 128) << 11) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+}
+
+void A_CentaurDefend(mobj_t * actor)
+{
+    A_FaceTarget(actor);
+    if (P_CheckMeleeRange(actor) && P_Random(pr_hexen) < 32)
+    {
+        A_UnSetInvulnerable(actor);
+        P_SetMobjState(actor, actor->info->meleestate);
+    }
+}
