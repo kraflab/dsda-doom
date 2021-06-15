@@ -6663,3 +6663,55 @@ void A_Demon2Death(mobj_t * actor)
         mo->target = actor;
     }
 }
+
+dboolean A_SinkMobj(mobj_t * actor)
+{
+    if (actor->floorclip < actor->info->height)
+    {
+        switch (actor->type)
+        {
+            case HEXEN_MT_THRUSTFLOOR_DOWN:
+            case HEXEN_MT_THRUSTFLOOR_UP:
+                actor->floorclip += 6 * FRACUNIT;
+                break;
+            default:
+                actor->floorclip += FRACUNIT;
+                break;
+        }
+        return false;
+    }
+    return true;
+}
+
+dboolean A_RaiseMobj(mobj_t * actor)
+{
+    int done = true;
+
+    // Raise a mobj from the ground
+    if (actor->floorclip > 0)
+    {
+        switch (actor->type)
+        {
+            case HEXEN_MT_WRAITHB:
+                actor->floorclip -= 2 * FRACUNIT;
+                break;
+            case HEXEN_MT_THRUSTFLOOR_DOWN:
+            case HEXEN_MT_THRUSTFLOOR_UP:
+                actor->floorclip -= actor->special2.i * FRACUNIT;
+                break;
+            default:
+                actor->floorclip -= 2 * FRACUNIT;
+                break;
+        }
+        if (actor->floorclip <= 0)
+        {
+            actor->floorclip = 0;
+            done = true;
+        }
+        else
+        {
+            done = false;
+        }
+    }
+    return done;                // Reached target height
+}
