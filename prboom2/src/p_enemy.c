@@ -5051,3 +5051,139 @@ dboolean P_CheckMeleeRange2(mobj_t * actor)
     }
     return (true);
 }
+
+void A_SetInvulnerable(mobj_t * actor)
+{
+    actor->flags2 |= MF2_INVULNERABLE;
+}
+
+void A_UnSetInvulnerable(mobj_t * actor)
+{
+    actor->flags2 &= ~MF2_INVULNERABLE;
+}
+
+void A_SetReflective(mobj_t * actor)
+{
+    actor->flags2 |= MF2_REFLECTIVE;
+
+    if ((actor->type == HEXEN_MT_CENTAUR) || (actor->type == HEXEN_MT_CENTAURLEADER))
+    {
+        A_SetInvulnerable(actor);
+    }
+}
+
+void A_UnSetReflective(mobj_t * actor)
+{
+    actor->flags2 &= ~MF2_REFLECTIVE;
+
+    if ((actor->type == HEXEN_MT_CENTAUR) || (actor->type == HEXEN_MT_CENTAURLEADER))
+    {
+        A_UnSetInvulnerable(actor);
+    }
+}
+
+dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
+{
+    mobj_t *fog;
+    fixed_t x;
+    fixed_t y;
+    fixed_t z;
+    mobjtype_t moType;
+    mobj_t *mo;
+    mobj_t oldMonster;
+
+    actor->special1.i -= tics;
+    if (actor->special1.i > 0)
+    {
+        return (false);
+    }
+    moType = actor->special2.i;
+    switch (moType)
+    {
+        case HEXEN_MT_WRAITHB:       // These must remain morphed
+        case HEXEN_MT_SERPENT:
+        case HEXEN_MT_SERPENTLEADER:
+        case HEXEN_MT_MINOTAUR:
+            return (false);
+        default:
+            break;
+    }
+    x = actor->x;
+    y = actor->y;
+    z = actor->z;
+    oldMonster = *actor;        // Save pig vars
+
+    P_RemoveMobjFromTIDList(actor);
+    P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
+    mo = P_SpawnMobj(x, y, z, moType);
+
+    if (P_TestMobjLocation(mo) == false)
+    {                           // Didn't fit
+        P_RemoveMobj(mo);
+        mo = P_SpawnMobj(x, y, z, oldMonster.type);
+        mo->angle = oldMonster.angle;
+        mo->flags = oldMonster.flags;
+        mo->health = oldMonster.health;
+        mo->target = oldMonster.target;
+        mo->special = oldMonster.special;
+        mo->special1.i = 5 * 35;  // Next try in 5 seconds
+        mo->special2.i = moType;
+        mo->tid = oldMonster.tid;
+        memcpy(mo->args, oldMonster.args, 5);
+        P_InsertMobjIntoTIDList(mo, oldMonster.tid);
+        return (false);
+    }
+    mo->angle = oldMonster.angle;
+    mo->target = oldMonster.target;
+    mo->tid = oldMonster.tid;
+    mo->special = oldMonster.special;
+    memcpy(mo->args, oldMonster.args, 5);
+    P_InsertMobjIntoTIDList(mo, oldMonster.tid);
+    fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
+    S_StartSound(fog, hexen_sfx_teleport);
+    return (true);
+}
+
+void A_PigLook(mobj_t * actor)
+{
+    if (P_UpdateMorphedMonster(actor, 10))
+    {
+        return;
+    }
+    A_Look(actor);
+}
+
+void A_PigChase(mobj_t * actor)
+{
+    if (P_UpdateMorphedMonster(actor, 3))
+    {
+        return;
+    }
+    A_Chase(actor);
+}
+
+void A_PigAttack(mobj_t * actor)
+{
+    if (P_UpdateMorphedMonster(actor, 18))
+    {
+        return;
+    }
+    if (!actor->target)
+    {
+        return;
+    }
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, 2 + (P_Random(pr_hexen) & 1));
+        S_StartSound(actor, hexen_sfx_pig_attack);
+    }
+}
+
+void A_PigPain(mobj_t * actor)
+{
+    A_Pain(actor);
+    if (actor->z <= actor->floorz)
+    {
+        actor->momz = 3.5 * FRACUNIT;
+    }
+}
