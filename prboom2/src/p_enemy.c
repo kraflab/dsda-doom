@@ -5042,6 +5042,8 @@ dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
 
 // hexen
 
+extern fixed_t FloatBobOffsets[64];
+
 // Corpse queue for monsters - this should be saved out
 #define CORPSEQUEUESIZE	64
 mobj_t *corpseQueue[CORPSEQUEUESIZE];
@@ -6102,5 +6104,165 @@ void A_CentaurDefend(mobj_t * actor)
     {
         A_UnSetInvulnerable(actor);
         P_SetMobjState(actor, actor->info->meleestate);
+    }
+}
+
+void A_BishopAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    S_StartSound(actor, actor->info->attacksound);
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(4));
+        return;
+    }
+    actor->special1.i = (P_Random(pr_hexen) & 3) + 5;
+}
+
+void A_BishopAttack2(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    if (!actor->target || !actor->special1.i)
+    {
+        actor->special1.i = 0;
+        P_SetMobjState(actor, HEXEN_S_BISHOP_WALK1);
+        return;
+    }
+    mo = P_SpawnMissile(actor, actor->target, HEXEN_MT_BISH_FX);
+    if (mo)
+    {
+        mo->special1.m = actor->target;
+        mo->special2.i = 16;      // High word == x/y, Low word == z
+    }
+    actor->special1.i--;
+}
+
+void A_BishopMissileWeave(mobj_t * actor)
+{
+    fixed_t newX, newY;
+    int weaveXY, weaveZ;
+    int angle;
+
+    weaveXY = actor->special2.i >> 16;
+    weaveZ = actor->special2.i & 0xFFFF;
+    angle = (actor->angle + ANG90) >> ANGLETOFINESHIFT;
+    newX = actor->x - FixedMul(finecosine[angle],
+                               FloatBobOffsets[weaveXY] << 1);
+    newY = actor->y - FixedMul(finesine[angle],
+                               FloatBobOffsets[weaveXY] << 1);
+    weaveXY = (weaveXY + 2) & 63;
+    newX += FixedMul(finecosine[angle], FloatBobOffsets[weaveXY] << 1);
+    newY += FixedMul(finesine[angle], FloatBobOffsets[weaveXY] << 1);
+    P_TryMove(actor, newX, newY, false);
+    actor->z -= FloatBobOffsets[weaveZ];
+    weaveZ = (weaveZ + 2) & 63;
+    actor->z += FloatBobOffsets[weaveZ];
+    actor->special2.i = weaveZ + (weaveXY << 16);
+}
+
+void A_BishopMissileSeek(mobj_t * actor)
+{
+    P_SeekerMissile(actor, &actor->special1.m, ANG1 * 2, ANG1 * 3, false);
+}
+
+void A_BishopDecide(mobj_t * actor)
+{
+    if (P_Random(pr_hexen) < 220)
+    {
+        return;
+    }
+    else
+    {
+        P_SetMobjState(actor, HEXEN_S_BISHOP_BLUR1);
+    }
+}
+
+void A_BishopDoBlur(mobj_t * actor)
+{
+    actor->special1.i = (P_Random(pr_hexen) & 3) + 3;     // Random number of blurs
+    if (P_Random(pr_hexen) < 120)
+    {
+        P_ThrustMobj(actor, actor->angle + ANG90, 11 * FRACUNIT);
+    }
+    else if (P_Random(pr_hexen) > 125)
+    {
+        P_ThrustMobj(actor, actor->angle - ANG90, 11 * FRACUNIT);
+    }
+    else
+    {                           // Thrust forward
+        P_ThrustMobj(actor, actor->angle, 11 * FRACUNIT);
+    }
+    S_StartSound(actor, hexen_sfx_bishop_blur);
+}
+
+void A_BishopSpawnBlur(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    if (!--actor->special1.i)
+    {
+        actor->momx = 0;
+        actor->momy = 0;
+        if (P_Random(pr_hexen) > 96)
+        {
+            P_SetMobjState(actor, HEXEN_S_BISHOP_WALK1);
+        }
+        else
+        {
+            P_SetMobjState(actor, HEXEN_S_BISHOP_ATK1);
+        }
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_BISHOPBLUR);
+    if (mo)
+    {
+        mo->angle = actor->angle;
+    }
+}
+
+void A_BishopChase(mobj_t * actor)
+{
+    actor->z -= FloatBobOffsets[actor->special2.i] >> 1;
+    actor->special2.i = (actor->special2.i + 4) & 63;
+    actor->z += FloatBobOffsets[actor->special2.i] >> 1;
+}
+
+void A_BishopPuff(mobj_t * actor)
+{
+    mobj_t *mo;
+
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 40 * FRACUNIT,
+                     HEXEN_MT_BISHOP_PUFF);
+    if (mo)
+    {
+        mo->momz = FRACUNIT / 2;
+    }
+}
+
+void A_BishopPainBlur(mobj_t * actor)
+{
+    mobj_t *mo;
+    int r1,r2,r3;
+
+    if (P_Random(pr_hexen) < 64)
+    {
+        P_SetMobjState(actor, HEXEN_S_BISHOP_BLUR1);
+        return;
+    }
+
+    r1 = P_SubRandom();
+    r2 = P_SubRandom();
+    r3 = P_SubRandom();
+
+    mo = P_SpawnMobj(actor->x + (r3 << 12), actor->y
+                     + (r2 << 12),
+                     actor->z + (r1 << 11),
+                     HEXEN_MT_BISHOPPAINBLUR);
+    if (mo)
+    {
+        mo->angle = actor->angle;
     }
 }
