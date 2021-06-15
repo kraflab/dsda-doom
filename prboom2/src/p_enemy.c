@@ -5218,3 +5218,220 @@ void FaceMovementDirection(mobj_t * actor)
             break;
     }
 }
+
+//----------------------------------------------------------------------------
+//
+// Minotaur variables
+//
+//      special1                pointer to player that spawned it (mobj_t)
+//      special2                internal to minotaur AI
+//      args[0]                 args[0]-args[3] together make up minotaur start time
+//      args[1]                 |
+//      args[2]                 |
+//      args[3]                 V
+//      args[4]                 charge duration countdown
+//----------------------------------------------------------------------------
+
+void A_MinotaurFade0(mobj_t * actor)
+{
+    actor->flags &= ~MF_ALTSHADOW;
+    actor->flags |= MF_SHADOW;
+}
+
+void A_MinotaurFade1(mobj_t * actor)
+{
+    // Second level of transparency
+    actor->flags &= ~MF_SHADOW;
+    actor->flags |= MF_ALTSHADOW;
+}
+
+void A_MinotaurFade2(mobj_t * actor)
+{
+    // Make fully visible
+    actor->flags &= ~MF_SHADOW;
+    actor->flags &= ~MF_ALTSHADOW;
+}
+
+void A_MinotaurLook(mobj_t * actor);
+
+// Check the age of the minotaur and stomp it after MAULATORTICS of time
+// have passed. Returns false if killed.
+static dboolean CheckMinotaurAge(mobj_t *mo)
+{
+    unsigned int starttime;
+
+    // The start time is stored in the mobj_t structure, but it is stored
+    // in little endian format. For Vanilla savegame compatibility we must
+    // swap it to the native endianness.
+    memcpy(&starttime, mo->args, sizeof(unsigned int));
+
+    if (leveltime - LittleLong(starttime) >= MAULATORTICS)
+    {
+        P_DamageMobj(mo, NULL, NULL, 10000);
+        return false;
+    }
+
+    return true;
+}
+
+void A_MinotaurRoam(mobj_t * actor)
+{
+    actor->flags &= ~MF_SHADOW; // In case pain caused him to
+    actor->flags &= ~MF_ALTSHADOW;      // skip his fade in.
+
+    if (!CheckMinotaurAge(actor))
+    {
+        return;
+    }
+
+    if (P_Random(pr_hexen) < 30)
+        A_MinotaurLook(actor);  // adjust to closest target
+
+    if (P_Random(pr_hexen) < 6)
+    {
+        //Choose new direction
+        actor->movedir = P_Random(pr_hexen) % 8;
+        FaceMovementDirection(actor);
+    }
+    if (!P_Move(actor, false))
+    {
+        // Turn
+        if (P_Random(pr_hexen) & 1)
+            actor->movedir = (actor->movedir + 1) % 8;
+        else
+            actor->movedir = (actor->movedir + 7) % 8;
+        FaceMovementDirection(actor);
+    }
+}
+
+#define MINOTAUR_LOOK_DIST		(16*54*FRACUNIT)
+
+void A_MinotaurLook(mobj_t * actor)
+{
+    mobj_t *mo = NULL;
+    player_t *player;
+    thinker_t *think;
+    fixed_t dist;
+    int i;
+    mobj_t *master = actor->special1.m;
+
+    actor->target = NULL;
+    if (deathmatch)             // Quick search for players
+    {
+        for (i = 0; i < MAXPLAYERS; i++)
+        {
+            if (!playeringame[i])
+                continue;
+            player = &players[i];
+            mo = player->mo;
+            if (mo == master)
+                continue;
+            if (mo->health <= 0)
+                continue;
+            dist = P_AproxDistance(actor->x - mo->x, actor->y - mo->y);
+            if (dist > MINOTAUR_LOOK_DIST)
+                continue;
+            actor->target = mo;
+            break;
+        }
+    }
+
+    if (!actor->target)         // Near player monster search
+    {
+        if (master && (master->health > 0) && (master->player))
+            mo = P_RoughTargetSearch(master, 0, 20);
+        else
+            mo = P_RoughTargetSearch(actor, 0, 20);
+        actor->target = mo;
+    }
+
+    if (!actor->target)         // Normal monster search
+    {
+        for (think = thinkercap.next; think != &thinkercap;
+             think = think->next)
+        {
+            if (think->function != P_MobjThinker)
+                continue;
+            mo = (mobj_t *) think;
+            if (!(mo->flags & MF_COUNTKILL))
+                continue;
+            if (mo->health <= 0)
+                continue;
+            if (!(mo->flags & MF_SHOOTABLE))
+                continue;
+            dist = P_AproxDistance(actor->x - mo->x, actor->y - mo->y);
+            if (dist > MINOTAUR_LOOK_DIST)
+                continue;
+            if ((mo == master) || (mo == actor))
+                continue;
+            if ((mo->type == HEXEN_MT_MINOTAUR) &&
+                (mo->special1.m == actor->special1.m))
+                continue;
+            actor->target = mo;
+            break;              // Found mobj to attack
+        }
+    }
+
+    if (actor->target)
+    {
+        P_SetMobjStateNF(actor, HEXEN_S_MNTR_WALK1);
+    }
+    else
+    {
+        P_SetMobjStateNF(actor, HEXEN_S_MNTR_ROAM1);
+    }
+}
+
+void A_MinotaurChase(mobj_t * actor)
+{
+    actor->flags &= ~MF_SHADOW; // In case pain caused him to
+    actor->flags &= ~MF_ALTSHADOW;      // skip his fade in.
+
+    if (!CheckMinotaurAge(actor))
+    {
+        return;
+    }
+
+    if (P_Random(pr_hexen) < 30)
+        A_MinotaurLook(actor);  // adjust to closest target
+
+    if (!actor->target || (actor->target->health <= 0) ||
+        !(actor->target->flags & MF_SHOOTABLE))
+    {                           // look for a new target
+        P_SetMobjState(actor, HEXEN_S_MNTR_LOOK1);
+        return;
+    }
+
+    FaceMovementDirection(actor);
+    actor->reactiontime = 0;
+
+    // Melee attack
+    if (actor->info->meleestate && P_CheckMeleeRange(actor))
+    {
+        if (actor->info->attacksound)
+        {
+            S_StartSound(actor, actor->info->attacksound);
+        }
+        P_SetMobjState(actor, actor->info->meleestate);
+        return;
+    }
+
+    // Missile attack
+    if (actor->info->missilestate && P_CheckMissileRange(actor))
+    {
+        P_SetMobjState(actor, actor->info->missilestate);
+        return;
+    }
+
+    // chase towards target
+    if (!P_Move(actor, false))
+    {
+        P_NewChaseDir(actor);
+    }
+
+    // Active sound
+    if (actor->info->activesound && P_Random(pr_hexen) < 6)
+    {
+        S_StartSound(actor, actor->info->activesound);
+    }
+}
