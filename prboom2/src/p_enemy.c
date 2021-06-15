@@ -1122,7 +1122,7 @@ void A_Look(mobj_t *actor)
     int sound;
     sound = actor->info->seesound;
 
-    if (!heretic)
+    if (!raven)
       switch (sound)
       {
         case sfx_posit1:
@@ -1197,13 +1197,13 @@ void A_Chase(mobj_t *actor)
     }
   }
 
-  if (heretic && gameskill == sk_nightmare)
+  if (raven && gameskill == sk_nightmare)
   {                           // Monsters move faster in nightmare mode
-      actor->tics -= actor->tics / 2;
-      if (actor->tics < 3)
-      {
-          actor->tics = 3;
-      }
+    actor->tics -= actor->tics / 2;
+    if (actor->tics < 3)
+    {
+      actor->tics = 3;
+    }
   }
 
   /* turn towards movement direction if not there yet
@@ -1246,7 +1246,7 @@ void A_Chase(mobj_t *actor)
     P_SetMobjState(actor, actor->info->meleestate);
     /* killough 8/98: remember an attack
     * cph - DEMOSYNC? */
-    if (!actor->info->missilestate && !heretic)
+    if (!actor->info->missilestate && !raven)
       actor->flags |= MF_JUSTHIT;
     return;
   }
@@ -1318,7 +1318,6 @@ void A_Chase(mobj_t *actor)
     actor->strafecount--;
 
   // chase towards player
-  // HERETIC_NOTE: Quite sure P_SmartMove == P_Move for heretic
   if (--actor->movecount < 0 || !P_SmartMove(actor))
     P_NewChaseDir(actor);
 
@@ -1327,15 +1326,27 @@ void A_Chase(mobj_t *actor)
   {
     if (actor->type == HERETIC_MT_WIZARD && P_Random(pr_heretic) < 128)
     {
-        S_StartSound(actor, actor->info->seesound);
+      S_StartSound(actor, actor->info->seesound);
     }
     else if (actor->type == HERETIC_MT_SORCERER2)
     {
-        S_StartSound(NULL, actor->info->activesound);
+      S_StartSound(NULL, actor->info->activesound);
+    }
+    else if (actor->type == HEXEN_MT_BISHOP && P_Random(pr_hexen) < 128)
+    {
+      S_StartSound(actor, actor->info->seesound);
+    }
+    else if (actor->type == HEXEN_MT_PIG)
+    {
+      S_StartSound(actor, hexen_sfx_pig_active1 + (P_Random(pr_hexen) & 1));
+    }
+    else if (hexen && actor->flags2 & MF2_BOSS)
+    {
+      S_StartSound(NULL, actor->info->activesound);
     }
     else
     {
-        S_StartSound(actor, actor->info->activesound);
+      S_StartSound(actor, actor->info->activesound);
     }
   }
 }
