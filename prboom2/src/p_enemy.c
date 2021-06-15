@@ -6500,3 +6500,166 @@ void A_DragonCheckCrash(mobj_t * actor)
         P_SetMobjState(actor, HEXEN_S_DRAGON_CRASH1);
     }
 }
+
+void A_DemonAttack1(mobj_t * actor)
+{
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(2));
+    }
+}
+
+void A_DemonAttack2(mobj_t * actor)
+{
+    mobj_t *mo;
+    int fireBall;
+
+    if (actor->type == HEXEN_MT_DEMON)
+    {
+        fireBall = HEXEN_MT_DEMONFX1;
+    }
+    else
+    {
+        fireBall = HEXEN_MT_DEMON2FX1;
+    }
+    mo = P_SpawnMissile(actor, actor->target, fireBall);
+    if (mo)
+    {
+        mo->z += 30 * FRACUNIT;
+        S_StartSound(actor, hexen_sfx_demon_missile_fire);
+    }
+}
+
+void A_DemonDeath(mobj_t * actor)
+{
+    mobj_t *mo;
+    angle_t angle;
+
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMONCHUNK1);
+    if (mo)
+    {
+        angle = actor->angle + ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMONCHUNK2);
+    if (mo)
+    {
+        angle = actor->angle - ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMONCHUNK3);
+    if (mo)
+    {
+        angle = actor->angle - ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMONCHUNK4);
+    if (mo)
+    {
+        angle = actor->angle - ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMONCHUNK5);
+    if (mo)
+    {
+        angle = actor->angle - ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+}
+
+void A_Demon2Death(mobj_t * actor)
+{
+    mobj_t *mo;
+    angle_t angle;
+
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMON2CHUNK1);
+    if (mo)
+    {
+        angle = actor->angle + ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMON2CHUNK2);
+    if (mo)
+    {
+        angle = actor->angle - ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMON2CHUNK3);
+    if (mo)
+    {
+        angle = actor->angle - ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMON2CHUNK4);
+    if (mo)
+    {
+        angle = actor->angle - ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+    mo = P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                     HEXEN_MT_DEMON2CHUNK5);
+    if (mo)
+    {
+        angle = actor->angle - ANG90;
+        mo->momz = 8 * FRACUNIT;
+        mo->momx = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finecosine[angle >> ANGLETOFINESHIFT]);
+        mo->momy = FixedMul((P_Random(pr_hexen) << 10) + FRACUNIT,
+                            finesine[angle >> ANGLETOFINESHIFT]);
+        mo->target = actor;
+    }
+}
