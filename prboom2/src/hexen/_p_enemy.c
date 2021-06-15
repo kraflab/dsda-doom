@@ -15,35 +15,6 @@
 //
 
 //============================================================================
-// Ettin AI
-//============================================================================
-
-void A_EttinAttack(mobj_t * actor)
-{
-    if (P_CheckMeleeRange(actor))
-    {
-        P_DamageMobj(actor->target, actor, actor, HITDICE(2));
-    }
-}
-
-
-void A_DropMace(mobj_t * actor)
-{
-    mobj_t *mo;
-
-    mo = P_SpawnMobj(actor->x, actor->y,
-                     actor->z + (actor->height >> 1), HEXEN_MT_ETTIN_MACE);
-    if (mo)
-    {
-        mo->momx = (P_Random(pr_hexen) - 128) << 11;
-        mo->momy = (P_Random(pr_hexen) - 128) << 11;
-        mo->momz = FRACUNIT * 10 + (P_Random(pr_hexen) << 10);
-        mo->target = actor;
-    }
-}
-
-
-//============================================================================
 // Fire Demon AI
 //
 // special1                     index into floatbob
