@@ -170,7 +170,7 @@ void A_BishopMissileWeave(mobj_t * actor)
     weaveXY = (weaveXY + 2) & 63;
     newX += FixedMul(finecosine[angle], FloatBobOffsets[weaveXY] << 1);
     newY += FixedMul(finesine[angle], FloatBobOffsets[weaveXY] << 1);
-    P_TryMove(actor, newX, newY);
+    P_TryMove(actor, newX, newY, false);
     actor->z -= FloatBobOffsets[weaveZ];
     weaveZ = (weaveZ + 2) & 63;
     actor->z += FloatBobOffsets[weaveZ];
@@ -1215,7 +1215,7 @@ void A_FiredChase(mobj_t * actor)
     // Normal movement
     if (!actor->special2.i)
     {
-        if (--actor->movecount < 0 || !P_Move(actor))
+        if (--actor->movecount < 0 || !P_Move(actor, false))
         {
             P_NewChaseDir(actor);
         }
@@ -2220,7 +2220,7 @@ void A_FastChase(mobj_t * actor)
 //
     if (!actor->special2.i)
     {
-        if (--actor->movecount < 0 || !P_Move(actor))
+        if (--actor->movecount < 0 || !P_Move(actor, false))
         {
             P_NewChaseDir(actor);
         }
@@ -2816,7 +2816,7 @@ void A_KSpiritWeave(mobj_t * actor)
     weaveXY = (weaveXY + (P_Random(pr_hexen) % 5)) & 63;
     newX += FixedMul(finecosine[angle], FloatBobOffsets[weaveXY] << 2);
     newY += FixedMul(finesine[angle], FloatBobOffsets[weaveXY] << 2);
-    P_TryMove(actor, newX, newY);
+    P_TryMove(actor, newX, newY, false);
     actor->z -= FloatBobOffsets[weaveZ] << 1;
     weaveZ = (weaveZ + (P_Random(pr_hexen) % 5)) & 63;
     actor->z += FloatBobOffsets[weaveZ] << 1;

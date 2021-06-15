@@ -1410,9 +1410,9 @@ void P_SlideMove(mobj_t * mo)
     if (bestslidefrac == FRACUNIT + 1)
     {                           // the move must have hit the middle, so stairstep
       stairstep:
-        if (!P_TryMove(mo, mo->x, mo->y + mo->momy))
+        if (!P_TryMove(mo, mo->x, mo->y + mo->momy, false))
         {
-            P_TryMove(mo, mo->x + mo->momx, mo->y);
+            P_TryMove(mo, mo->x + mo->momx, mo->y, false);
         }
         return;
     }
@@ -1422,7 +1422,7 @@ void P_SlideMove(mobj_t * mo)
     {
         newx = FixedMul(mo->momx, bestslidefrac);
         newy = FixedMul(mo->momy, bestslidefrac);
-        if (!P_TryMove(mo, mo->x + newx, mo->y + newy))
+        if (!P_TryMove(mo, mo->x + newx, mo->y + newy, false))
             goto stairstep;
     }
 
@@ -1443,7 +1443,7 @@ void P_SlideMove(mobj_t * mo)
     mo->momx = tmxmove;
     mo->momy = tmymove;
 
-    if (!P_TryMove(mo, mo->x + tmxmove, mo->y + tmymove))
+    if (!P_TryMove(mo, mo->x + tmxmove, mo->y + tmymove, false))
     {
         goto retry;
     }
