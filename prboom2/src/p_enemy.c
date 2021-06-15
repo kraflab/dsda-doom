@@ -6266,3 +6266,237 @@ void A_BishopPainBlur(mobj_t * actor)
         mo->angle = actor->angle;
     }
 }
+
+static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
+{
+    int dir;
+    int dist;
+    angle_t delta;
+    angle_t angle;
+    mobj_t *target;
+    int search;
+    int i;
+    int bestArg;
+    angle_t bestAngle;
+    angle_t angleToSpot, angleToTarget;
+    mobj_t *mo;
+
+    target = actor->special1.m;
+    if (target == NULL)
+    {
+        return;
+    }
+    dir = P_FaceMobj(actor, target, &delta);
+    if (delta > thresh)
+    {
+        delta >>= 1;
+        if (delta > turnMax)
+        {
+            delta = turnMax;
+        }
+    }
+    if (dir)
+    {                           // Turn clockwise
+        actor->angle += delta;
+    }
+    else
+    {                           // Turn counter clockwise
+        actor->angle -= delta;
+    }
+    angle = actor->angle >> ANGLETOFINESHIFT;
+    actor->momx = FixedMul(actor->info->speed, finecosine[angle]);
+    actor->momy = FixedMul(actor->info->speed, finesine[angle]);
+    if (actor->z + actor->height < target->z
+        || target->z + target->height < actor->z)
+    {
+        dist = P_AproxDistance(target->x - actor->x, target->y - actor->y);
+        dist = dist / actor->info->speed;
+        if (dist < 1)
+        {
+            dist = 1;
+        }
+        actor->momz = (target->z - actor->z) / dist;
+    }
+    else
+    {
+        dist = P_AproxDistance(target->x - actor->x, target->y - actor->y);
+        dist = dist / actor->info->speed;
+    }
+    if (target->flags & MF_SHOOTABLE && P_Random(pr_hexen) < 64)
+    {                           // attack the destination mobj if it's attackable
+        mobj_t *oldTarget;
+
+        if (abs((int) actor->angle - (int) R_PointToAngle2(actor->x, actor->y,
+                                               target->x,
+                                               target->y)) < ANG45 / 2)
+        {
+            oldTarget = actor->target;
+            actor->target = target;
+            if (P_CheckMeleeRange(actor))
+            {
+                P_DamageMobj(actor->target, actor, actor, HITDICE(10));
+                S_StartSound(actor, hexen_sfx_dragon_attack);
+            }
+            else if (P_Random(pr_hexen) < 128 && P_CheckMissileRange(actor))
+            {
+                P_SpawnMissile(actor, target, HEXEN_MT_DRAGON_FX);
+                S_StartSound(actor, hexen_sfx_dragon_attack);
+            }
+            actor->target = oldTarget;
+        }
+    }
+    if (dist < 4)
+    {                           // Hit the target thing
+        if (actor->target && P_Random(pr_hexen) < 200)
+        {
+            bestArg = -1;
+            bestAngle = ANGLE_MAX;
+            angleToTarget = R_PointToAngle2(actor->x, actor->y,
+                                            actor->target->x,
+                                            actor->target->y);
+            for (i = 0; i < 5; i++)
+            {
+                if (!target->args[i])
+                {
+                    continue;
+                }
+                search = -1;
+                mo = P_FindMobjFromTID(target->args[i], &search);
+                angleToSpot = R_PointToAngle2(actor->x, actor->y,
+                                              mo->x, mo->y);
+                if (abs((int) angleToSpot - (int) angleToTarget) < bestAngle)
+                {
+                    bestAngle = abs((int) angleToSpot - (int) angleToTarget);
+                    bestArg = i;
+                }
+            }
+            if (bestArg != -1)
+            {
+                search = -1;
+                actor->special1.m =
+                    P_FindMobjFromTID(target->args[bestArg], &search);
+            }
+        }
+        else
+        {
+            do
+            {
+                i = (P_Random(pr_hexen) >> 2) % 5;
+            }
+            while (!target->args[i]);
+            search = -1;
+            actor->special1.m =
+                P_FindMobjFromTID(target->args[i], &search);
+        }
+    }
+}
+
+void A_DragonInitFlight(mobj_t * actor)
+{
+    int search;
+
+    search = -1;
+    do
+    {                           // find the first tid identical to the dragon's tid
+        actor->special1.m = P_FindMobjFromTID(actor->tid, &search);
+        if (search == -1)
+        {
+            P_SetMobjState(actor, actor->info->spawnstate);
+            return;
+        }
+    }
+    while (actor->special1.m == actor);
+    P_RemoveMobjFromTIDList(actor);
+}
+
+void A_DragonFlight(mobj_t * actor)
+{
+    angle_t angle;
+
+    DragonSeek(actor, 4 * ANG1, 8 * ANG1);
+    if (actor->target)
+    {
+        if (!(actor->target->flags & MF_SHOOTABLE))
+        {                       // target died
+            actor->target = NULL;
+            return;
+        }
+        angle = R_PointToAngle2(actor->x, actor->y, actor->target->x,
+                                actor->target->y);
+        if (abs((int) actor->angle - (int) angle) < ANG45 / 2
+            && P_CheckMeleeRange(actor))
+        {
+            P_DamageMobj(actor->target, actor, actor, HITDICE(8));
+            S_StartSound(actor, hexen_sfx_dragon_attack);
+        }
+        else if (abs((int) actor->angle - (int) angle) <= ANG1 * 20)
+        {
+            P_SetMobjState(actor, actor->info->missilestate);
+            S_StartSound(actor, hexen_sfx_dragon_attack);
+        }
+    }
+    else
+    {
+        P_LookForPlayers(actor, true);
+    }
+}
+
+void A_DragonFlap(mobj_t * actor)
+{
+    A_DragonFlight(actor);
+    if (P_Random(pr_hexen) < 240)
+    {
+        S_StartSound(actor, hexen_sfx_dragon_wingflap);
+    }
+    else
+    {
+        S_StartSound(actor, actor->info->activesound);
+    }
+}
+
+void A_DragonAttack(mobj_t * actor)
+{
+    P_SpawnMissile(actor, actor->target, HEXEN_MT_DRAGON_FX);
+}
+
+void A_DragonFX2(mobj_t * actor)
+{
+    mobj_t *mo;
+    int i;
+    int r1,r2,r3;
+    int delay;
+
+    delay = 16 + (P_Random(pr_hexen) >> 3);
+    for (i = 1 + (P_Random(pr_hexen) & 3); i; i--)
+    {
+        r1 = P_Random(pr_hexen);
+        r2 = P_Random(pr_hexen);
+        r3 = P_Random(pr_hexen);
+        mo = P_SpawnMobj(actor->x + ((r3 - 128) << 14),
+                         actor->y + ((r2 - 128) << 14),
+                         actor->z + ((r1 - 128) << 12),
+                         HEXEN_MT_DRAGON_FX2);
+        if (mo)
+        {
+            mo->tics = delay + (P_Random(pr_hexen) & 3) * i * 2;
+            mo->target = actor->target;
+        }
+    }
+}
+
+void A_DragonPain(mobj_t * actor)
+{
+    A_Pain(actor);
+    if (!actor->special1.i)
+    {                           // no destination spot yet
+        P_SetMobjState(actor, HEXEN_S_DRAGON_INIT);
+    }
+}
+
+void A_DragonCheckCrash(mobj_t * actor)
+{
+    if (actor->z <= actor->floorz)
+    {
+        P_SetMobjState(actor, HEXEN_S_DRAGON_CRASH1);
+    }
+}

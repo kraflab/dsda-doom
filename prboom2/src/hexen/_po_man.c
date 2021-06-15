@@ -148,7 +148,7 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean
     }
     else
     {
-        pe->dist = ANG_MAX - 1;
+        pe->dist = ANGLE_MAX - 1;
     }
     pe->speed = (args[1] * direction * (ANG90 / 64)) >> 3;
     poly->specialdata = pe;
@@ -180,7 +180,7 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean
         }
         else
         {
-            pe->dist = ANG_MAX - 1;
+            pe->dist = ANGLE_MAX - 1;
         }
         poly = GetPolyobj(polyNum);
         if (poly != NULL)
@@ -355,7 +355,7 @@ void T_PolyDoor(polydoor_t * pd)
                         pd->dist = pd->totalDist;
                         pd->close = true;
                         pd->tics = pd->waitTics;
-                        pd->direction = (ANG_MAX >> ANGLETOFINESHIFT) -
+                        pd->direction = (ANGLE_MAX >> ANGLETOFINESHIFT) -
                             pd->direction;
                         pd->xSpeed = -pd->xSpeed;
                         pd->ySpeed = -pd->ySpeed;
@@ -381,7 +381,7 @@ void T_PolyDoor(polydoor_t * pd)
                 else
                 {               // open back up
                     pd->dist = pd->totalDist - pd->dist;
-                    pd->direction = (ANG_MAX >> ANGLETOFINESHIFT) -
+                    pd->direction = (ANGLE_MAX >> ANGLETOFINESHIFT) -
                         pd->direction;
                     pd->xSpeed = -pd->xSpeed;
                     pd->ySpeed = -pd->ySpeed;
