@@ -4321,3 +4321,8 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType
 {
   return true;
 }
+
+dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
+{
+  return true;
+}
