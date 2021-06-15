@@ -2323,12 +2323,17 @@ void A_SkullPop(mobj_t *actor)
   player_t *player;
   int sfx_id;
 
-  if (!heretic && (demorecording || demoplayback))
+  if (!raven && (demorecording || demoplayback))
     return;
 
-  if (!heretic) {
+  if (!raven) {
     sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_gibdth]) < 0 ? sfx_pldeth : sfx_gibdth);
     S_StartSound(actor, sfx_id);
+  }
+
+  if (hexen && !actor->player)
+  {
+    return;
   }
 
   actor->flags &= ~MF_SOLID;
@@ -2340,6 +2345,8 @@ void A_SkullPop(mobj_t *actor)
   // Attach player mobj to bloody skull
   player = actor->player;
   actor->player = NULL;
+  if (hexen)
+    actor->special1.i = player->pclass;
   mo->player = player;
   mo->health = actor->health;
   mo->angle = actor->angle;
@@ -4114,6 +4121,11 @@ void P_Massacre(void)
         mo = (mobj_t *) think;
         if ((mo->flags & MF_COUNTKILL) && (mo->health > 0))
         {
+            if (hexen)
+            {
+              mo->flags2 &= ~(MF2_NONSHOOTABLE + MF2_INVULNERABLE);
+              mo->flags |= MF_SHOOTABLE;
+            }
             P_DamageMobj(mo, NULL, NULL, 10000);
         }
     }
@@ -4748,7 +4760,9 @@ void A_CheckSkullFloor(mobj_t * actor)
 {
     if (actor->z <= actor->floorz)
     {
-        P_SetMobjState(actor, HERETIC_S_BLOODYSKULLX1);
+        P_SetMobjState(actor, g_s_bloodyskullx1);
+        if (hexen)
+          S_StartSound(actor, hexen_sfx_drip);
     }
 }
 
@@ -4756,7 +4770,7 @@ void A_CheckSkullDone(mobj_t * actor)
 {
     if (actor->special2.i == 666)
     {
-        P_SetMobjState(actor, HERETIC_S_BLOODYSKULLX2);
+        P_SetMobjState(actor, g_s_bloodyskullx2);
     }
 }
 
@@ -4764,7 +4778,7 @@ void A_CheckBurnGone(mobj_t * actor)
 {
     if (actor->special2.i == 666)
     {
-        P_SetMobjState(actor, HERETIC_S_PLAY_FDTH20);
+        P_SetMobjState(actor, g_s_play_fdth20);
     }
 }
 
@@ -4776,6 +4790,14 @@ void A_FreeTargMobj(mobj_t * mo)
     mo->flags |= MF_CORPSE | MF_DROPOFF | MF_NOGRAVITY;
     mo->flags2 &= ~(MF2_PASSMOBJ | MF2_LOGRAV);
     mo->player = NULL;
+
+    // hexen_note: can we do this in heretic too?
+    if (hexen)
+    {
+      mo->flags &= ~(MF_COUNTKILL);
+      mo->flags2 |= MF2_DONTDRAW;
+      mo->health = -1000;         // Don't resurrect
+    }
 }
 
 extern int bodyqueslot, bodyquesize;

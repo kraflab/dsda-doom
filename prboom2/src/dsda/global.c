@@ -60,6 +60,9 @@ int g_mt_player;
 int g_mt_tfog;
 int g_mt_blood;
 int g_skullpop_mt;
+int g_s_bloodyskullx1;
+int g_s_bloodyskullx2;
+int g_s_play_fdth20;
 
 int g_wp_fist;
 int g_wp_chainsaw;
@@ -338,6 +341,9 @@ static void dsda_InitHeretic(void) {
   g_mt_tfog = HERETIC_MT_TFOG;
   g_mt_blood = HERETIC_MT_BLOOD;
   g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
+  g_s_bloodyskullx1 = HERETIC_S_BLOODYSKULLX1;
+  g_s_bloodyskullx2 = HERETIC_S_BLOODYSKULLX2;
+  g_s_play_fdth20 = HERETIC_S_PLAY_FDTH20;
 
   g_wp_fist = wp_staff;
   g_wp_chainsaw = wp_gauntlets;
@@ -487,7 +493,10 @@ static void dsda_InitHexen(void) {
   // g_mt_player = HERETIC_MT_PLAYER;
   // g_mt_tfog = HERETIC_MT_TFOG;
   g_mt_blood = HEXEN_MT_BLOOD;
-  // g_skullpop_mt = HERETIC_MT_BLOODYSKULL;
+  g_skullpop_mt = HEXEN_MT_BLOODYSKULL;
+  g_s_bloodyskullx1 = HEXEN_S_BLOODYSKULLX1;
+  g_s_bloodyskullx2 = HEXEN_S_BLOODYSKULLX2;
+  g_s_play_fdth20 = HEXEN_S_PLAY_FDTH20;
   //
   // g_wp_fist = wp_staff;
   // g_wp_chainsaw = wp_gauntlets;
