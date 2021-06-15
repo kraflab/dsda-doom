@@ -5628,3 +5628,385 @@ void Hexen_A_Scream(mobj_t * actor)
         S_StartSound(actor, actor->info->deathsound);
     }
 }
+
+void A_SerpentUnHide(mobj_t * actor)
+{
+    actor->flags2 &= ~MF2_DONTDRAW;
+    actor->floorclip = 24 * FRACUNIT;
+}
+
+void A_SerpentHide(mobj_t * actor)
+{
+    actor->flags2 |= MF2_DONTDRAW;
+    actor->floorclip = 0;
+}
+
+void A_SerpentChase(mobj_t * actor)
+{
+    int delta;
+    int oldX, oldY, oldFloor;
+
+    if (actor->reactiontime)
+    {
+        actor->reactiontime--;
+    }
+
+    // Modify target threshold
+    if (actor->threshold)
+    {
+        actor->threshold--;
+    }
+
+    if (gameskill == sk_nightmare)
+    {                           // Monsters move faster in nightmare mode
+        actor->tics -= actor->tics / 2;
+        if (actor->tics < 3)
+        {
+            actor->tics = 3;
+        }
+    }
+
+    //
+    // turn towards movement direction if not there yet
+    //
+    if (actor->movedir < 8)
+    {
+        actor->angle &= (7 << 29);
+        delta = actor->angle - (actor->movedir << 29);
+        if (delta > 0)
+        {
+            actor->angle -= ANG90 / 2;
+        }
+        else if (delta < 0)
+        {
+            actor->angle += ANG90 / 2;
+        }
+    }
+
+    if (!actor->target || !(actor->target->flags & MF_SHOOTABLE))
+    {                           // look for a new target
+        if (P_LookForPlayers(actor, true))
+        {                       // got a new target
+            return;
+        }
+        P_SetMobjState(actor, actor->info->spawnstate);
+        return;
+    }
+
+    //
+    // don't attack twice in a row
+    //
+    if (actor->flags & MF_JUSTATTACKED)
+    {
+        actor->flags &= ~MF_JUSTATTACKED;
+        if (gameskill != sk_nightmare)
+            P_NewChaseDir(actor);
+        return;
+    }
+
+    //
+    // check for melee attack
+    //
+    if (actor->info->meleestate && P_CheckMeleeRange(actor))
+    {
+        if (actor->info->attacksound)
+        {
+            S_StartSound(actor, actor->info->attacksound);
+        }
+        P_SetMobjState(actor, actor->info->meleestate);
+        return;
+    }
+
+    //
+    // possibly choose another target
+    //
+    if (netgame && !actor->threshold && !P_CheckSight(actor, actor->target))
+    {
+        if (P_LookForPlayers(actor, true))
+            return;             // got a new target
+    }
+
+    //
+    // chase towards player
+    //
+    oldX = actor->x;
+    oldY = actor->y;
+    oldFloor = actor->subsector->sector->floorpic;
+    if (--actor->movecount < 0 || !P_Move(actor, false))
+    {
+        P_NewChaseDir(actor);
+    }
+    if (actor->subsector->sector->floorpic != oldFloor)
+    {
+        P_TryMove(actor, oldX, oldY, 0);
+        P_NewChaseDir(actor);
+    }
+
+    //
+    // make active sound
+    //
+    if (actor->info->activesound && P_Random(pr_hexen) < 3)
+    {
+        S_StartSound(actor, actor->info->activesound);
+    }
+}
+
+void A_SerpentRaiseHump(mobj_t * actor)
+{
+    actor->floorclip -= 4 * FRACUNIT;
+}
+
+void A_SerpentLowerHump(mobj_t * actor)
+{
+    actor->floorclip += 4 * FRACUNIT;
+}
+
+void A_SerpentHumpDecide(mobj_t * actor)
+{
+    if (actor->type == HEXEN_MT_SERPENTLEADER)
+    {
+        if (P_Random(pr_hexen) > 30)
+        {
+            return;
+        }
+        else if (P_Random(pr_hexen) < 40)
+        {                       // Missile attack
+            P_SetMobjState(actor, HEXEN_S_SERPENT_SURFACE1);
+            return;
+        }
+    }
+    else if (P_Random(pr_hexen) > 3)
+    {
+        return;
+    }
+    if (!P_CheckMeleeRange(actor))
+    {                           // The hump shouldn't occur when within melee range
+        if (actor->type == HEXEN_MT_SERPENTLEADER && P_Random(pr_hexen) < 128)
+        {
+            P_SetMobjState(actor, HEXEN_S_SERPENT_SURFACE1);
+        }
+        else
+        {
+            P_SetMobjState(actor, HEXEN_S_SERPENT_HUMP1);
+            S_StartSound(actor, hexen_sfx_serpent_active);
+        }
+    }
+}
+
+void A_SerpentBirthScream(mobj_t * actor)
+{
+    S_StartSound(actor, hexen_sfx_serpent_birth);
+}
+
+void A_SerpentDiveSound(mobj_t * actor)
+{
+    S_StartSound(actor, hexen_sfx_serpent_active);
+}
+
+void A_SerpentWalk(mobj_t * actor)
+{
+    int delta;
+
+    if (actor->reactiontime)
+    {
+        actor->reactiontime--;
+    }
+
+    // Modify target threshold
+    if (actor->threshold)
+    {
+        actor->threshold--;
+    }
+
+    if (gameskill == sk_nightmare)
+    {                           // Monsters move faster in nightmare mode
+        actor->tics -= actor->tics / 2;
+        if (actor->tics < 3)
+        {
+            actor->tics = 3;
+        }
+    }
+
+    //
+    // turn towards movement direction if not there yet
+    //
+    if (actor->movedir < 8)
+    {
+        actor->angle &= (7 << 29);
+        delta = actor->angle - (actor->movedir << 29);
+        if (delta > 0)
+        {
+            actor->angle -= ANG90 / 2;
+        }
+        else if (delta < 0)
+        {
+            actor->angle += ANG90 / 2;
+        }
+    }
+
+    if (!actor->target || !(actor->target->flags & MF_SHOOTABLE))
+    {                           // look for a new target
+        if (P_LookForPlayers(actor, true))
+        {                       // got a new target
+            return;
+        }
+        P_SetMobjState(actor, actor->info->spawnstate);
+        return;
+    }
+
+    //
+    // don't attack twice in a row
+    //
+    if (actor->flags & MF_JUSTATTACKED)
+    {
+        actor->flags &= ~MF_JUSTATTACKED;
+        if (gameskill != sk_nightmare)
+            P_NewChaseDir(actor);
+        return;
+    }
+
+    //
+    // check for melee attack
+    //
+    if (actor->info->meleestate && P_CheckMeleeRange(actor))
+    {
+        if (actor->info->attacksound)
+        {
+            S_StartSound(actor, actor->info->attacksound);
+        }
+        P_SetMobjState(actor, HEXEN_S_SERPENT_ATK1);
+        return;
+    }
+    //
+    // possibly choose another target
+    //
+    if (netgame && !actor->threshold && !P_CheckSight(actor, actor->target))
+    {
+        if (P_LookForPlayers(actor, true))
+            return;             // got a new target
+    }
+
+    //
+    // chase towards player
+    //
+    if (--actor->movecount < 0 || !P_Move(actor, false))
+    {
+        P_NewChaseDir(actor);
+    }
+}
+
+void A_SerpentCheckForAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    if (actor->type == HEXEN_MT_SERPENTLEADER)
+    {
+        if (!P_CheckMeleeRange(actor))
+        {
+            P_SetMobjState(actor, HEXEN_S_SERPENT_ATK1);
+            return;
+        }
+    }
+    if (P_CheckMeleeRange2(actor))
+    {
+        P_SetMobjState(actor, HEXEN_S_SERPENT_WALK1);
+    }
+    else if (P_CheckMeleeRange(actor))
+    {
+        if (P_Random(pr_hexen) < 32)
+        {
+            P_SetMobjState(actor, HEXEN_S_SERPENT_WALK1);
+        }
+        else
+        {
+            P_SetMobjState(actor, HEXEN_S_SERPENT_ATK1);
+        }
+    }
+}
+
+void A_SerpentChooseAttack(mobj_t * actor)
+{
+    if (!actor->target || P_CheckMeleeRange(actor))
+    {
+        return;
+    }
+    if (actor->type == HEXEN_MT_SERPENTLEADER)
+    {
+        P_SetMobjState(actor, HEXEN_S_SERPENT_MISSILE1);
+    }
+}
+
+void A_SerpentMeleeAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+    if (P_CheckMeleeRange(actor))
+    {
+        P_DamageMobj(actor->target, actor, actor, HITDICE(5));
+        S_StartSound(actor, hexen_sfx_serpent_meleehit);
+    }
+    if (P_Random(pr_hexen) < 96)
+    {
+        A_SerpentCheckForAttack(actor);
+    }
+}
+
+void A_SerpentMissileAttack(mobj_t * actor)
+{
+    if (!actor->target)
+    {
+        return;
+    }
+
+    P_SpawnMissile(actor, actor->target, HEXEN_MT_SERPENTFX);
+}
+
+void A_SerpentHeadPop(mobj_t * actor)
+{
+    P_SpawnMobj(actor->x, actor->y, actor->z + 45 * FRACUNIT,
+                HEXEN_MT_SERPENT_HEAD);
+}
+
+void A_SerpentSpawnGibs(mobj_t * actor)
+{
+    mobj_t *mo;
+    int r1, r2;
+
+    r1 = P_Random(pr_hexen);
+    r2 = P_Random(pr_hexen);
+    mo = P_SpawnMobj(actor->x + ((r2 - 128) << 12),
+                     actor->y + ((r1 - 128) << 12),
+                     actor->floorz + FRACUNIT, HEXEN_MT_SERPENT_GIB1);
+    if (mo)
+    {
+        mo->momx = (P_Random(pr_hexen) - 128) << 6;
+        mo->momy = (P_Random(pr_hexen) - 128) << 6;
+        mo->floorclip = 6 * FRACUNIT;
+    }
+    r1 = P_Random(pr_hexen);
+    r2 = P_Random(pr_hexen);
+    mo = P_SpawnMobj(actor->x + ((r2 - 128) << 12),
+                     actor->y + ((r1 - 128) << 12),
+                     actor->floorz + FRACUNIT, HEXEN_MT_SERPENT_GIB2);
+    if (mo)
+    {
+        mo->momx = (P_Random(pr_hexen) - 128) << 6;
+        mo->momy = (P_Random(pr_hexen) - 128) << 6;
+        mo->floorclip = 6 * FRACUNIT;
+    }
+    r1 = P_Random(pr_hexen);
+    r2 = P_Random(pr_hexen);
+    mo = P_SpawnMobj(actor->x + ((r2 - 128) << 12),
+                     actor->y + ((r1 - 128) << 12),
+                     actor->floorz + FRACUNIT, HEXEN_MT_SERPENT_GIB3);
+    if (mo)
+    {
+        mo->momx = (P_Random(pr_hexen) - 128) << 6;
+        mo->momy = (P_Random(pr_hexen) - 128) << 6;
+        mo->floorclip = 6 * FRACUNIT;
+    }
+}
