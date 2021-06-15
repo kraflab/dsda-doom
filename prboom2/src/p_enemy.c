@@ -5187,3 +5187,34 @@ void A_PigPain(mobj_t * actor)
         actor->momz = 3.5 * FRACUNIT;
     }
 }
+
+void FaceMovementDirection(mobj_t * actor)
+{
+    switch (actor->movedir)
+    {
+        case DI_EAST:
+            actor->angle = 0 << 24;
+            break;
+        case DI_NORTHEAST:
+            actor->angle = 32 << 24;
+            break;
+        case DI_NORTH:
+            actor->angle = 64 << 24;
+            break;
+        case DI_NORTHWEST:
+            actor->angle = 96 << 24;
+            break;
+        case DI_WEST:
+            actor->angle = 128 << 24;
+            break;
+        case DI_SOUTHWEST:
+            actor->angle = 160 << 24;
+            break;
+        case DI_SOUTH:
+            actor->angle = 192 << 24;
+            break;
+        case DI_SOUTHEAST:
+            actor->angle = 224 << 24;
+            break;
+    }
+}
