@@ -2067,40 +2067,6 @@ dboolean PIT_RadiusAttack(mobj_t * thing)
 }
 
 /*
-=================
-=
-= P_RadiusAttack
-=
-= Source is the creature that caused the explosion at spot
-=================
-*/
-
-void P_RadiusAttack(mobj_t * spot, mobj_t * source, int damage, int distance,
-                    dboolean damageSource)
-{
-    int x, y, xl, xh, yl, yh;
-    fixed_t dist;
-
-    dist = (distance + MAXRADIUS) << FRACBITS;
-    yh = (spot->y + dist - bmaporgy) >> MAPBLOCKSHIFT;
-    yl = (spot->y - dist - bmaporgy) >> MAPBLOCKSHIFT;
-    xh = (spot->x + dist - bmaporgx) >> MAPBLOCKSHIFT;
-    xl = (spot->x - dist - bmaporgx) >> MAPBLOCKSHIFT;
-    bombspot = spot;
-    bombsource = source;
-    bombdamage = damage;
-    bombdistance = distance;
-    DamageSource = damageSource;
-    for (y = yl; y <= yh; y++)
-    {
-        for (x = xl; x <= xh; x++)
-        {
-            P_BlockThingsIterator(x, y, PIT_RadiusAttack);
-        }
-    }
-}
-
-/*
 ==============================================================================
 
 						SECTOR HEIGHT CHANGING

@@ -2021,7 +2021,7 @@ void A_VileAttack(mobj_t *actor)
   // move the fire between the vile and the player
   fire->x = actor->target->x - FixedMul (24*FRACUNIT, finecosine[an]);
   fire->y = actor->target->y - FixedMul (24*FRACUNIT, finesine[an]);
-  P_RadiusAttack(fire, actor, 70, 70);
+  P_RadiusAttack(fire, actor, 70, 70, true);
 }
 
 //
@@ -2370,26 +2370,97 @@ void A_Fall(mobj_t *actor)
 void A_Explode(mobj_t *thingy)
 {
   int damage;
+  int distance;
+  dboolean damageSelf;
 
   damage = 128;
+  distance = 128;
+  damageSelf = true;
   switch (thingy->type)
   {
     case HERETIC_MT_FIREBOMB:      // Time Bombs
+    case HEXEN_MT_FIREBOMB:        // Time Bombs
       thingy->z += 32 * FRACUNIT;
       thingy->flags &= ~MF_SHADOW;
       break;
     case HERETIC_MT_MNTRFX2:       // Minotaur floor fire
       damage = 24;
+      distance = damage;
       break;
     case HERETIC_MT_SOR2FX1:       // D'Sparil missile
       damage = 80 + (P_Random(pr_heretic) & 31);
+      distance = damage;
+      break;
+    case HEXEN_MT_MNTRFX2:       // Minotaur floor fire
+      damage = 24;
+      break;
+    case HEXEN_MT_BISHOP:        // Bishop radius death
+      damage = 25 + (P_Random(pr_hexen) & 15);
+      break;
+    case HEXEN_MT_HAMMER_MISSILE:        // Fighter Hammer
+      damage = 128;
+      damageSelf = false;
+      break;
+    case HEXEN_MT_FSWORD_MISSILE:        // Fighter Runesword
+      damage = 64;
+      damageSelf = false;
+      break;
+    case HEXEN_MT_CIRCLEFLAME:   // Cleric Flame secondary flames
+      damage = 20;
+      damageSelf = false;
+      break;
+    case HEXEN_MT_SORCBALL1:     // Sorcerer balls
+    case HEXEN_MT_SORCBALL2:
+    case HEXEN_MT_SORCBALL3:
+      distance = 255;
+      damage = 255;
+      thingy->args[0] = 1; // don't play bounce
+      break;
+    case HEXEN_MT_SORCFX1:       // Sorcerer spell 1
+      damage = 30;
+      break;
+    case HEXEN_MT_SORCFX4:       // Sorcerer spell 4
+      damage = 20;
+      break;
+    case HEXEN_MT_TREEDESTRUCTIBLE:
+      damage = 10;
+      break;
+    case HEXEN_MT_DRAGON_FX2:
+      damage = 80;
+      damageSelf = false;
+      break;
+    case HEXEN_MT_MSTAFF_FX:
+      damage = 64;
+      distance = 192;
+      damageSelf = false;
+      break;
+    case HEXEN_MT_MSTAFF_FX2:
+      damage = 80;
+      distance = 192;
+      damageSelf = false;
+      break;
+    case HEXEN_MT_POISONCLOUD:
+      damage = 4;
+      distance = 40;
+      break;
+    case HEXEN_MT_ZXMAS_TREE:
+    case HEXEN_MT_ZSHRUB2:
+      damage = 30;
+      distance = 64;
       break;
     default:
       break;
   }
 
-  P_RadiusAttack(thingy, thingy->target, damage, damage);
-  if (heretic) P_HitFloor(thingy);
+  P_RadiusAttack(thingy, thingy->target, damage, distance, damageSelf);
+  if (
+    heretic ||
+    (
+      hexen &&
+      thingy->z <= thingy->floorz + (distance << FRACBITS) &&
+      thingy->type != HEXEN_MT_POISONCLOUD
+    )
+  ) P_HitFloor(thingy);
 }
 
 //
@@ -2870,7 +2941,7 @@ void A_Detonate(mobj_t *mo)
       !prboom_comp[PC_APPLY_MBF_CODEPOINTERS_TO_ANY_COMPLEVEL].state)
     return;
 
-  P_RadiusAttack(mo, mo->target, mo->info->damage, mo->info->damage);
+  P_RadiusAttack(mo, mo->target, mo->info->damage, mo->info->damage, true);
 }
 
 //
@@ -3230,7 +3301,7 @@ void A_RadiusDamage(mobj_t *actor)
   if (!mbf21 || !actor->state)
     return;
 
-  P_RadiusAttack(actor, actor->target, actor->state->args[0], actor->state->args[1]);
+  P_RadiusAttack(actor, actor->target, actor->state->args[0], actor->state->args[1], true);
 }
 
 //
@@ -4432,6 +4503,10 @@ void P_DropItem(mobj_t * source, mobjtype_t type, int special, int chance)
 void A_NoBlocking(mobj_t * actor)
 {
     actor->flags &= ~MF_SOLID;
+
+    if (hexen)
+      return;
+
     // Check for monsters dropping things
     switch (actor->type)
     {
@@ -4654,7 +4729,7 @@ void A_VolcBallImpact(mobj_t * ball)
         ball->z += 28 * FRACUNIT;
         //ball->momz = 3*FRACUNIT;
     }
-    P_RadiusAttack(ball, ball->target, 25, 25);
+    P_RadiusAttack(ball, ball->target, 25, 25, true);
     for (i = 0; i < 4; i++)
     {
         tiny = P_SpawnMobj(ball->x, ball->y, ball->z, HERETIC_MT_VOLCANOTBLAST);
