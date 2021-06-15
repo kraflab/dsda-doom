@@ -7906,3 +7906,184 @@ void A_BounceCheck(mobj_t * actor)
         }
     }
 }
+
+#define CLASS_BOSS_STRAFE_RANGE	64*10*FRACUNIT
+
+void A_FastChase(mobj_t * actor)
+{
+    int delta;
+    fixed_t dist;
+    angle_t ang;
+    mobj_t *target;
+
+    if (actor->reactiontime)
+    {
+        actor->reactiontime--;
+    }
+
+    // Modify target threshold
+    if (actor->threshold)
+    {
+        actor->threshold--;
+    }
+
+    if (gameskill == sk_nightmare)
+    {                           // Monsters move faster in nightmare mode
+        actor->tics -= actor->tics / 2;
+        if (actor->tics < 3)
+        {
+            actor->tics = 3;
+        }
+    }
+
+    //
+    // turn towards movement direction if not there yet
+    //
+    if (actor->movedir < 8)
+    {
+        actor->angle &= (7 << 29);
+        delta = actor->angle - (actor->movedir << 29);
+        if (delta > 0)
+        {
+            actor->angle -= ANG90 / 2;
+        }
+        else if (delta < 0)
+        {
+            actor->angle += ANG90 / 2;
+        }
+    }
+
+    if (!actor->target || !(actor->target->flags & MF_SHOOTABLE))
+    {                           // look for a new target
+        if (P_LookForPlayers(actor, true))
+        {                       // got a new target
+            return;
+        }
+        P_SetMobjState(actor, actor->info->spawnstate);
+        return;
+    }
+
+    //
+    // don't attack twice in a row
+    //
+    if (actor->flags & MF_JUSTATTACKED)
+    {
+        actor->flags &= ~MF_JUSTATTACKED;
+        if (gameskill != sk_nightmare)
+            P_NewChaseDir(actor);
+        return;
+    }
+
+    // Strafe
+    if (actor->special2.i > 0)
+    {
+        actor->special2.i--;
+    }
+    else
+    {
+        target = actor->target;
+        actor->special2.i = 0;
+        actor->momx = actor->momy = 0;
+        dist = P_AproxDistance(actor->x - target->x, actor->y - target->y);
+        if (dist < CLASS_BOSS_STRAFE_RANGE)
+        {
+            if (P_Random(pr_hexen) < 100)
+            {
+                ang = R_PointToAngle2(actor->x, actor->y,
+                                      target->x, target->y);
+                if (P_Random(pr_hexen) < 128)
+                    ang += ANG90;
+                else
+                    ang -= ANG90;
+                ang >>= ANGLETOFINESHIFT;
+                actor->momx = FixedMul(13 * FRACUNIT, finecosine[ang]);
+                actor->momy = FixedMul(13 * FRACUNIT, finesine[ang]);
+                actor->special2.i = 3;    // strafe time
+            }
+        }
+    }
+
+    //
+    // check for missile attack
+    //
+    if (actor->info->missilestate)
+    {
+        if (gameskill < sk_nightmare && actor->movecount)
+            goto nomissile;
+        if (!P_CheckMissileRange(actor))
+            goto nomissile;
+        P_SetMobjState(actor, actor->info->missilestate);
+        actor->flags |= MF_JUSTATTACKED;
+        return;
+    }
+  nomissile:
+
+    //
+    // possibly choose another target
+    //
+    if (netgame && !actor->threshold && !P_CheckSight(actor, actor->target))
+    {
+        if (P_LookForPlayers(actor, true))
+            return;             // got a new target
+    }
+
+    //
+    // chase towards player
+    //
+    if (!actor->special2.i)
+    {
+        if (--actor->movecount < 0 || !P_Move(actor, false))
+        {
+            P_NewChaseDir(actor);
+        }
+    }
+}
+
+void A_FighterAttack(mobj_t * actor)
+{
+    extern void A_FSwordAttack2(mobj_t * actor);
+
+    if (!actor->target)
+        return;
+    A_FSwordAttack2(actor);
+}
+
+void A_ClericAttack(mobj_t * actor)
+{
+    extern void A_CHolyAttack3(mobj_t * actor);
+
+    if (!actor->target)
+        return;
+    A_CHolyAttack3(actor);
+}
+
+void A_MageAttack(mobj_t * actor)
+{
+    extern void A_MStaffAttack2(mobj_t * actor);
+
+    if (!actor->target)
+        return;
+    A_MStaffAttack2(actor);
+}
+
+void A_ClassBossHealth(mobj_t * actor)
+{
+    if (netgame && !deathmatch) // co-op only
+    {
+        if (!actor->special1.i)
+        {
+            actor->health *= 5;
+            actor->special1.i = true;     // has been initialized
+        }
+    }
+}
+
+void A_CheckFloor(mobj_t * actor)
+{
+    if (actor->z <= actor->floorz)
+    {
+        actor->z = actor->floorz;
+        actor->flags2 &= ~MF2_LOGRAV;
+        P_SetMobjState(actor, actor->info->deathstate);
+    }
+}
