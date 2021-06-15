@@ -1194,7 +1194,7 @@ extern int *TerrainTypes;
 void P_InitAmbientSound(void);
 void P_AmbientSound(void);
 void P_AddAmbientSfx(int sequence);
-dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle);
+dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolean useFog);
 dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing);
 dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dboolean bossaction);
 void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing);

@@ -14,8 +14,9 @@
 // GNU General Public License for more details.
 //
 
-#include "p_mobj.h"
 #include "m_random.h"
+
+#include "a_action.h"
 
 int orbitTableX[256] = {
     983025, 982725, 981825, 980340, 978255, 975600, 972330, 968490,

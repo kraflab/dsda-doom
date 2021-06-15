@@ -35,6 +35,7 @@
 #ifndef __M_RANDOM__
 #define __M_RANDOM__
 
+#include "m_fixed.h"
 #include "doomtype.h"
 
 // killough 1/19/98: rewritten to use to use a better random number generator

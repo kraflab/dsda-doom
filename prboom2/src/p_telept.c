@@ -353,7 +353,7 @@ int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
 
 #include "heretic/def.h"
 
-dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle)
+dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolean useFog)
 {
     fixed_t oldx;
     fixed_t oldy;
@@ -480,7 +480,7 @@ dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
                 {               // Wrong sector
                     continue;
                 }
-                return (P_Teleport(thing, m->x, m->y, m->angle));
+                return (P_Teleport(thing, m->x, m->y, m->angle, true));
             }
         }
     }

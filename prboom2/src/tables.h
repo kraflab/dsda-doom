@@ -61,6 +61,7 @@
 #define ANG180  0x80000000
 #define ANG270  0xc0000000
 #define ANG1      (ANG45/45)
+#define ANG60     (ANG180 / 3)
 #define ANGLE_MAX 0xffffffff
 #ifndef M_PI
 #define M_PI    3.14159265358979323846

@@ -927,7 +927,7 @@ void P_ArtiTele(player_t * player)
         destY = playerstarts[0][0].y << FRACBITS;
         destAngle = ANG45 * (playerstarts[0][0].angle / 45);
     }
-    P_Teleport(player->mo, destX, destY, destAngle);
+    P_Teleport(player->mo, destX, destY, destAngle, true);
     S_StartSound(NULL, heretic_sfx_wpnup);      // Full volume laugh
 }
 
