@@ -2274,11 +2274,15 @@ void A_PainDie(mobj_t *actor)
   A_PainShootSkull(actor, actor->angle+ANG270);
 }
 
+void Heretic_A_Scream(mobj_t *actor);
+void Hexen_A_Scream(mobj_t *actor);
+
 void A_Scream(mobj_t *actor)
 {
   int sound;
 
   if (heretic) return Heretic_A_Scream(actor);
+  if (hexen) return Hexen_A_Scream(actor);
 
   switch (actor->info->deathsound)
     {
@@ -5443,5 +5447,87 @@ void A_MinotaurChase(mobj_t * actor)
     if (actor->info->activesound && P_Random(pr_hexen) < 6)
     {
         S_StartSound(actor, actor->info->activesound);
+    }
+}
+
+void Hexen_A_Scream(mobj_t * actor)
+{
+    int sound;
+
+    S_StopSound(actor);
+    if (actor->player)
+    {
+        if (actor->player->morphTics)
+        {
+            S_StartSound(actor, actor->info->deathsound);
+        }
+        else
+        {
+            // Handle the different player death screams
+            if (actor->momz <= -39 * FRACUNIT)
+            {                   // Falling splat
+                sound = hexen_sfx_player_falling_splat;
+            }
+            else if (actor->health > -50)
+            {                   // Normal death sound
+                switch (actor->player->pclass)
+                {
+                    case PCLASS_FIGHTER:
+                        sound = hexen_sfx_player_fighter_normal_death;
+                        break;
+                    case PCLASS_CLERIC:
+                        sound = hexen_sfx_player_cleric_normal_death;
+                        break;
+                    case PCLASS_MAGE:
+                        sound = hexen_sfx_player_mage_normal_death;
+                        break;
+                    default:
+                        sound = hexen_sfx_None;
+                        break;
+                }
+            }
+            else if (actor->health > -100)
+            {                   // Crazy death sound
+                switch (actor->player->pclass)
+                {
+                    case PCLASS_FIGHTER:
+                        sound = hexen_sfx_player_fighter_crazy_death;
+                        break;
+                    case PCLASS_CLERIC:
+                        sound = hexen_sfx_player_cleric_crazy_death;
+                        break;
+                    case PCLASS_MAGE:
+                        sound = hexen_sfx_player_mage_crazy_death;
+                        break;
+                    default:
+                        sound = hexen_sfx_None;
+                        break;
+                }
+            }
+            else
+            {                   // Extreme death sound
+                switch (actor->player->pclass)
+                {
+                    case PCLASS_FIGHTER:
+                        sound = hexen_sfx_player_fighter_extreme1_death;
+                        break;
+                    case PCLASS_CLERIC:
+                        sound = hexen_sfx_player_cleric_extreme1_death;
+                        break;
+                    case PCLASS_MAGE:
+                        sound = hexen_sfx_player_mage_extreme1_death;
+                        break;
+                    default:
+                        sound = hexen_sfx_None;
+                        break;
+                }
+                sound += P_Random(pr_hexen) % 3;        // Three different extreme deaths
+            }
+            S_StartSound(actor, sound);
+        }
+    }
+    else
+    {
+        S_StartSound(actor, actor->info->deathsound);
     }
 }
