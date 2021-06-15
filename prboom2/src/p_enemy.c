@@ -6010,3 +6010,34 @@ void A_SerpentSpawnGibs(mobj_t * actor)
         mo->floorclip = 6 * FRACUNIT;
     }
 }
+
+void A_FloatGib(mobj_t * actor)
+{
+    actor->floorclip -= FRACUNIT;
+}
+
+void A_SinkGib(mobj_t * actor)
+{
+    actor->floorclip += FRACUNIT;
+}
+
+void A_DelayGib(mobj_t * actor)
+{
+    actor->tics -= P_Random(pr_hexen) >> 2;
+}
+
+void A_SerpentHeadCheck(mobj_t * actor)
+{
+    if (actor->z <= actor->floorz)
+    {
+        if (P_GetThingFloorType(actor) >= FLOOR_LIQUID)
+        {
+            P_HitFloor(actor);
+            P_SetMobjState(actor, HEXEN_S_NULL);
+        }
+        else
+        {
+            P_SetMobjState(actor, HEXEN_S_SERPENT_HEAD_X1);
+        }
+    }
+}
