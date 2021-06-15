@@ -81,6 +81,23 @@ int g_bloodsplatter_shift;
 int g_bloodsplatter_weight;
 int g_mons_look_range;
 
+int g_mntr_charge_speed;
+int g_mntr_atk1_sfx;
+int g_mntr_decide_range;
+int g_mntr_charge_rng;
+int g_mntr_fire_rng;
+int g_mntr_charge_state;
+int g_mntr_fire_state;
+int g_mntr_charge_puff;
+int g_mntr_atk2_sfx;
+int g_mntr_atk2_dice;
+int g_mntr_atk2_missile;
+int g_mntr_atk3_sfx;
+int g_mntr_atk3_dice;
+int g_mntr_atk3_missile;
+int g_mntr_atk3_state;
+int g_mntr_fire;
+
 int g_sfx_sawup;
 int g_sfx_telept;
 int g_sfx_stnmov;
@@ -342,6 +359,23 @@ static void dsda_InitHeretic(void) {
   g_bloodsplatter_weight = 2;
   g_mons_look_range = 20 * 64 * FRACUNIT;
 
+  g_mntr_atk1_sfx = heretic_sfx_stfpow;
+  g_mntr_charge_speed = 13 * FRACUNIT;
+  g_mntr_decide_range = 8;
+  g_mntr_charge_rng = 150;
+  g_mntr_charge_state = HERETIC_S_MNTR_ATK4_1;
+  g_mntr_fire_rng = 220;
+  g_mntr_fire_state = HERETIC_S_MNTR_ATK3_1;
+  g_mntr_charge_puff = HERETIC_MT_PHOENIXPUFF;
+  g_mntr_atk2_sfx = heretic_sfx_minat2;
+  g_mntr_atk2_dice = 5;
+  g_mntr_atk2_missile = HERETIC_MT_MNTRFX1;
+  g_mntr_atk3_sfx = heretic_sfx_minat1;
+  g_mntr_atk3_dice = 5;
+  g_mntr_atk3_missile = HERETIC_MT_MNTRFX2;
+  g_mntr_atk3_state = HERETIC_S_MNTR_ATK3_4;
+  g_mntr_fire = HERETIC_MT_MNTRFX3;
+
   g_sfx_sawup = heretic_sfx_gntact;
   g_sfx_telept = heretic_sfx_telept;
   g_sfx_stnmov = heretic_sfx_dormov;
@@ -474,6 +508,23 @@ static void dsda_InitHexen(void) {
   g_bloodsplatter_shift = 10;
   g_bloodsplatter_weight = 3;
   g_mons_look_range = 16 * 64 * FRACUNIT;
+
+  g_mntr_atk1_sfx = hexen_sfx_maulator_hammer_swing;
+  g_mntr_charge_speed = 23 * FRACUNIT;
+  g_mntr_decide_range = 16;
+  g_mntr_charge_rng = 230;
+  g_mntr_charge_state = HEXEN_S_MNTR_ATK4_1;
+  g_mntr_fire_rng = 100;
+  g_mntr_fire_state = HEXEN_S_MNTR_ATK3_1;
+  g_mntr_charge_puff = HEXEN_MT_PUNCHPUFF;
+  g_mntr_atk2_sfx = hexen_sfx_maulator_hammer_swing;
+  g_mntr_atk2_dice = 3;
+  g_mntr_atk2_missile = HEXEN_MT_MNTRFX1;
+  g_mntr_atk3_sfx = hexen_sfx_maulator_hammer_hit;
+  g_mntr_atk3_dice = 3;
+  g_mntr_atk3_missile = HEXEN_MT_MNTRFX2;
+  g_mntr_atk3_state = HEXEN_S_MNTR_ATK3_4;
+  g_mntr_fire = HEXEN_MT_MNTRFX3;
   //
   // g_sfx_sawup = heretic_sfx_gntact;
   // g_sfx_telept = heretic_sfx_telept;

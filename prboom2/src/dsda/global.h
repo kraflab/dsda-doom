@@ -45,6 +45,23 @@ extern int g_bloodsplatter_shift;
 extern int g_bloodsplatter_weight;
 extern int g_mons_look_range;
 
+extern int g_mntr_charge_speed;
+extern int g_mntr_atk1_sfx;
+extern int g_mntr_decide_range;
+extern int g_mntr_charge_rng;
+extern int g_mntr_fire_rng;
+extern int g_mntr_charge_state;
+extern int g_mntr_fire_state;
+extern int g_mntr_charge_puff;
+extern int g_mntr_atk2_sfx;
+extern int g_mntr_atk2_dice;
+extern int g_mntr_atk2_missile;
+extern int g_mntr_atk3_sfx;
+extern int g_mntr_atk3_dice;
+extern int g_mntr_atk3_missile;
+extern int g_mntr_atk3_state;
+extern int g_mntr_fire;
+
 extern int g_sfx_telept;
 extern int g_sfx_sawup;
 extern int g_sfx_stnmov;
