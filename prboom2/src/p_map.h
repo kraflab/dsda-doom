@@ -116,5 +116,6 @@ void P_AppendSpecHit(line_t * ld);
 extern mobj_t *BlockingMobj;
 
 void P_BounceWall(mobj_t * mo);
+dboolean P_UsePuzzleItem(player_t * player, int itemType);
 
 #endif // __P_MAP__

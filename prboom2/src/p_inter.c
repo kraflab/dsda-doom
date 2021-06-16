@@ -2154,3 +2154,17 @@ dboolean Hexen_P_GiveArmor(player_t * player, armortype_t armortype, int amount)
     }
     return true;
 }
+
+void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg)
+{
+    if (player->ultimateMessage && !ultmsg)
+    {
+        return;
+    }
+    player->message = message;
+    player->yellowMessage = true;
+    if (ultmsg)
+    {
+        player->ultimateMessage = true;
+    }
+}

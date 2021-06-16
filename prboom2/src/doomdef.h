@@ -435,7 +435,7 @@ extern dboolean raven;
 #define TELEFOGHEIGHT (32*FRACUNIT)
 #define ANG1_X          0x01000000
 
-#define FOOTCLIPSIZE	10*FRACUNIT
+#define FOOTCLIPSIZE 10*FRACUNIT
 
 // Any floor type >= FLOOR_LIQUID will floorclip sprites (hexen)
 typedef enum {
@@ -472,12 +472,12 @@ extern dboolean heretic;
 
 // The top 3 bits of the artifact field in the ticcmd_t struct are used
 //              as additional flags
-#define AFLAG_MASK			0x3F
-#define AFLAG_SUICIDE		0x40
-#define AFLAG_JUMP			0x80
+#define AFLAG_MASK    0x3F
+#define AFLAG_SUICIDE 0x40
+#define AFLAG_JUMP    0x80
 
 // HEXEN_TODO: move somewhere else
-#define	SBARHEIGHT 39 // status bar height at bottom of screen
+#define SBARHEIGHT 39 // status bar height at bottom of screen
 
 typedef enum
 {
@@ -500,11 +500,11 @@ typedef enum
 
 typedef ammotype_t manatype_t;
 
-#define MAX_MANA	200
+#define MAX_MANA 200
 
-#define WPIECE1		1
-#define WPIECE2		2
-#define WPIECE3		4
+#define WPIECE1 1
+#define WPIECE2 2
+#define WPIECE3 4
 
 enum
 {
@@ -548,6 +548,24 @@ typedef enum
 } seqtype_t;
 
 #define MAX_INTRMSN_MESSAGE_SIZE 1024
+
+// Puzzle artifacts
+
+#define TXT_ARTIPUZZSKULL      "YORICK'S SKULL"
+#define TXT_ARTIPUZZGEMBIG     "HEART OF D'SPARIL"
+#define TXT_ARTIPUZZGEMRED     "RUBY PLANET"
+#define TXT_ARTIPUZZGEMGREEN1  "EMERALD PLANET"
+#define TXT_ARTIPUZZGEMGREEN2  "EMERALD PLANET"
+#define TXT_ARTIPUZZGEMBLUE1   "SAPPHIRE PLANET"
+#define TXT_ARTIPUZZGEMBLUE2   "SAPPHIRE PLANET"
+#define TXT_ARTIPUZZBOOK1      "DAEMON CODEX"
+#define TXT_ARTIPUZZBOOK2      "LIBER OSCURA"
+#define TXT_ARTIPUZZSKULL2     "FLAME MASK"
+#define TXT_ARTIPUZZFWEAPON    "GLAIVE SEAL"
+#define TXT_ARTIPUZZCWEAPON    "HOLY RELIC"
+#define TXT_ARTIPUZZMWEAPON    "SIGIL OF THE MAGUS"
+#define TXT_ARTIPUZZGEAR       "CLOCK GEAR"
+#define TXT_USEPUZZLEFAILED    "YOU CANNOT USE THIS HERE"
 
 extern dboolean hexen;
 

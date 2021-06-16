@@ -76,31 +76,6 @@ void P_SetMessage(player_t * player, const char *message, dboolean ultmsg)
 
 //==========================================================================
 //
-// P_SetYellowMessage
-//
-//==========================================================================
-
-void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg)
-{
-    if ((player->ultimateMessage || !messageson) && !ultmsg)
-    {
-        return;
-    }
-    M_StringCopy(player->message, message, sizeof(player->message));
-    player->messageTics = 5 * MESSAGETICS;      // Bold messages last longer
-    player->yellowMessage = true;
-    if (ultmsg)
-    {
-        player->ultimateMessage = true;
-    }
-    if (player == &players[consoleplayer])
-    {
-        BorderTopRefresh = true;
-    }
-}
-
-//==========================================================================
-//
 // P_ClearMessage
 //
 //==========================================================================

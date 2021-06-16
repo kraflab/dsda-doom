@@ -2958,3 +2958,8 @@ void P_BounceWall(mobj_t * mo)
     mo->momx = FixedMul(movelen, finecosine[deltaangle]);
     mo->momy = FixedMul(movelen, finesine[deltaangle]);
 }
+
+dboolean P_UsePuzzleItem(player_t * player, int itemType)
+{
+    return true;
+}
