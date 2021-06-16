@@ -101,5 +101,6 @@ void P_FallingDamage(player_t * player);
 void P_PoisonDamage(player_t * player, mobj_t * source, int damage, dboolean playPainSound);
 dboolean Hexen_P_GiveArmor(player_t *player, armortype_t armortype, int amount);
 dboolean P_GiveMana(player_t * player, manatype_t mana, int count);
+void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg);
 
 #endif
