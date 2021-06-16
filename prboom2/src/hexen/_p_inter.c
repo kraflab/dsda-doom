@@ -24,16 +24,6 @@
 
 #define BONUSADD 6
 
-int ArmorIncrement[NUMCLASSES][NUMARMOR] = {
-    {25 * FRACUNIT, 20 * FRACUNIT, 15 * FRACUNIT, 5 * FRACUNIT},
-    {10 * FRACUNIT, 25 * FRACUNIT, 5 * FRACUNIT, 20 * FRACUNIT},
-    {5 * FRACUNIT, 15 * FRACUNIT, 10 * FRACUNIT, 25 * FRACUNIT},
-    {0, 0, 0, 0}
-};
-
-int AutoArmorSave[NUMCLASSES] =
-    { 15 * FRACUNIT, 10 * FRACUNIT, 5 * FRACUNIT, 0 };
-
 const char *TextKeyMessages[] = {
     TXT_KEY_STEEL,
     TXT_KEY_CAVE,
@@ -135,51 +125,6 @@ void P_HideSpecialThing(mobj_t * thing)
     thing->flags &= ~MF_SPECIAL;
     thing->flags2 |= MF2_DONTDRAW;
     P_SetMobjState(thing, HEXEN_S_HIDESPECIAL1);
-}
-
-//--------------------------------------------------------------------------
-//
-// FUNC P_GiveMana
-//
-// Returns true if the player accepted the mana, false if it was
-// refused (player has MAX_MANA).
-//
-//--------------------------------------------------------------------------
-
-dboolean P_GiveMana(player_t * player, manatype_t mana, int count)
-{
-    int prevMana;
-    //weapontype_t changeWeapon;
-
-    if (mana == MANA_NONE || mana == MANA_BOTH)
-    {
-        return (false);
-    }
-    if ((unsigned int) mana > NUMMANA)
-    {
-        I_Error("P_GiveMana: bad type %i", mana);
-    }
-    if (player->ammo[mana] == MAX_MANA)
-    {
-        return (false);
-    }
-    if (gameskill == sk_baby || gameskill == sk_nightmare)
-    {                           // extra mana in baby mode and nightmare mode
-        count += count >> 1;
-    }
-    prevMana = player->ammo[mana];
-
-    player->ammo[mana] += count;
-    if (player->ammo[mana] > MAX_MANA)
-    {
-        player->ammo[mana] = MAX_MANA;
-    }
-    if (player->pclass == PCLASS_FIGHTER && player->readyweapon == WP_SECOND
-        && mana == MANA_1 && prevMana <= 0)
-    {
-        P_SetPsprite(player, ps_weapon, HEXEN_S_FAXEREADY_G);
-    }
-    return (true);
 }
 
 //==========================================================================
@@ -556,53 +501,6 @@ dboolean P_GiveBody(player_t * player, int num)
 
 //---------------------------------------------------------------------------
 //
-// FUNC P_GiveArmor
-//
-// Returns false if the armor is worse than the current armor.
-//
-//---------------------------------------------------------------------------
-
-dboolean P_GiveArmor(player_t * player, armortype_t armortype, int amount)
-{
-    int hits;
-    int totalArmor;
-
-    extern int ArmorMax[NUMCLASSES];
-
-    if (amount == -1)
-    {
-        hits = ArmorIncrement[player->pclass][armortype];
-        if (player->armorpoints[armortype] >= hits)
-        {
-            return false;
-        }
-        else
-        {
-            player->armorpoints[armortype] = hits;
-        }
-    }
-    else
-    {
-        hits = amount * 5 * FRACUNIT;
-        totalArmor = player->armorpoints[ARMOR_ARMOR]
-            + player->armorpoints[ARMOR_SHIELD]
-            + player->armorpoints[ARMOR_HELMET]
-            + player->armorpoints[ARMOR_AMULET]
-            + AutoArmorSave[player->pclass];
-        if (totalArmor < ArmorMax[player->pclass] * 5 * FRACUNIT)
-        {
-            player->armorpoints[armortype] += hits;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-//---------------------------------------------------------------------------
-//
 // PROC P_GiveKey
 //
 //---------------------------------------------------------------------------
@@ -963,28 +861,28 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             P_SetMessage(player, TXT_ITEMHEALTH, false);
             break;
         case HEXEN_SPR_ARM1:
-            if (!P_GiveArmor(player, ARMOR_ARMOR, -1))
+            if (!Hexen_P_GiveArmor(player, ARMOR_ARMOR, -1))
             {
                 return;
             }
             P_SetMessage(player, TXT_ARMOR1, false);
             break;
         case HEXEN_SPR_ARM2:
-            if (!P_GiveArmor(player, ARMOR_SHIELD, -1))
+            if (!Hexen_P_GiveArmor(player, ARMOR_SHIELD, -1))
             {
                 return;
             }
             P_SetMessage(player, TXT_ARMOR2, false);
             break;
         case HEXEN_SPR_ARM3:
-            if (!P_GiveArmor(player, ARMOR_HELMET, -1))
+            if (!Hexen_P_GiveArmor(player, ARMOR_HELMET, -1))
             {
                 return;
             }
             P_SetMessage(player, TXT_ARMOR3, false);
             break;
         case HEXEN_SPR_ARM4:
-            if (!P_GiveArmor(player, ARMOR_AMULET, -1))
+            if (!Hexen_P_GiveArmor(player, ARMOR_AMULET, -1))
             {
                 return;
             }

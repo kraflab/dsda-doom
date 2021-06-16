@@ -1944,3 +1944,70 @@ void P_TeleportOther(mobj_t * victim)
         P_TeleportToDeathmatchStarts(victim);
     }
 }
+
+#define HEAL_RADIUS_DIST	255*FRACUNIT
+
+// Do class specific effect for everyone in radius
+dboolean P_HealRadius(player_t * player)
+{
+    mobj_t *mo;
+    mobj_t *pmo = player->mo;
+    thinker_t *think;
+    fixed_t dist;
+    int effective = false;
+    int amount;
+
+    for (think = thinkercap.next; think != &thinkercap; think = think->next)
+    {
+        if (think->function != P_MobjThinker)
+        {                       // Not a mobj thinker
+            continue;
+        }
+        mo = (mobj_t *) think;
+
+        if (!mo->player)
+            continue;
+        if (mo->health <= 0)
+            continue;
+        dist = P_AproxDistance(pmo->x - mo->x, pmo->y - mo->y);
+        if (dist > HEAL_RADIUS_DIST)
+        {                       // Out of range
+            continue;
+        }
+
+        switch (player->pclass)
+        {
+            case PCLASS_FIGHTER:       // Radius armor boost
+                if ((Hexen_P_GiveArmor(mo->player, ARMOR_ARMOR, 1)) ||
+                    (Hexen_P_GiveArmor(mo->player, ARMOR_SHIELD, 1)) ||
+                    (Hexen_P_GiveArmor(mo->player, ARMOR_HELMET, 1)) ||
+                    (Hexen_P_GiveArmor(mo->player, ARMOR_AMULET, 1)))
+                {
+                    effective = true;
+                    S_StartSound(mo, hexen_sfx_mysticincant);
+                }
+                break;
+            case PCLASS_CLERIC:        // Radius heal
+                amount = 50 + (P_Random(pr_hexen) % 50);
+                if (P_GiveBody(mo->player, amount))
+                {
+                    effective = true;
+                    S_StartSound(mo, hexen_sfx_mysticincant);
+                }
+                break;
+            case PCLASS_MAGE:  // Radius mana boost
+                amount = 50 + (P_Random(pr_hexen) % 50);
+                if ((P_GiveMana(mo->player, MANA_1, amount)) ||
+                    (P_GiveMana(mo->player, MANA_2, amount)))
+                {
+                    effective = true;
+                    S_StartSound(mo, hexen_sfx_mysticincant);
+                }
+                break;
+            case PCLASS_PIG:
+            default:
+                break;
+        }
+    }
+    return (effective);
+}
