@@ -431,35 +431,38 @@ void P_DeathThink (player_t* player)
   // fall to the ground
 
   onground = (player->mo->z <= player->mo->floorz);
-  if (player->mo->type == g_skullpop_mt)
+  if (player->mo->type == g_skullpop_mt || player->mo->type == HEXEN_MT_ICECHUNK)
   {
     // Flying bloody skull
     player->viewheight = 6*FRACUNIT;
     player->deltaviewheight = 0;
     if (onground)
     {
-      if (heretic && player->lookdir < 60)
+      if (raven)
       {
-        int lookDelta;
+        if (player->lookdir < 60)
+        {
+          int lookDelta;
 
-        lookDelta = (60 - player->lookdir) / 8;
-        if (lookDelta < 1 && (leveltime & 1))
-        {
-            lookDelta = 1;
+          lookDelta = (60 - player->lookdir) / 8;
+          if (lookDelta < 1 && (leveltime & 1))
+          {
+              lookDelta = 1;
+          }
+          else if (lookDelta > 6)
+          {
+              lookDelta = 6;
+          }
+          player->lookdir += lookDelta;
         }
-        else if (lookDelta > 6)
-        {
-            lookDelta = 6;
-        }
-        player->lookdir += lookDelta;
       }
-      else if (!heretic && (int)player->mo->pitch > -(int)ANG1*19)
+      else if ((int)player->mo->pitch > -(int)ANG1*19)
       {
         player->mo->pitch -= ((int)ANG1*19 - player->mo->pitch) / 8;
       }
     }
   }
-  else
+  else if (!(player->mo->flags2 & MF2_ICEDAMAGE))
   {
     if (player->viewheight > 6*FRACUNIT)
       player->viewheight -= FRACUNIT;
@@ -487,34 +490,70 @@ void P_DeathThink (player_t* player)
 
   if (player->attacker && player->attacker != player->mo)
   {
-    angle = R_PointToAngle2(player->mo->x,
-                            player->mo->y,
-                            player->attacker->x,
-                            player->attacker->y);
-
-    delta = angle - player->mo->angle;
-
-    if (delta < ANG5 || delta > (unsigned)-ANG5)
+    if (hexen)
     {
-      // Looking at killer,
-      //  so fade damage flash down.
-
-      player->mo->angle = angle;
-
-      if (player->damagecount)
-        player->damagecount--;
+      int dir = P_FaceMobj(player->mo, player->attacker, &delta);
+      if (delta < ANG1 * 10)
+      {                       // Looking at killer, so fade damage and poison counters
+        if (player->damagecount)
+        {
+          player->damagecount--;
+        }
+        if (player->poisoncount)
+        {
+          player->poisoncount--;
+        }
+      }
+      delta = delta / 8;
+      if (delta > ANG1 * 5)
+      {
+        delta = ANG1 * 5;
+      }
+      if (dir)
+      {                       // Turn clockwise
+        player->mo->angle += delta;
+      }
+      else
+      {                       // Turn counter clockwise
+        player->mo->angle -= delta;
+      }
     }
-    else if (delta < ANG180)
-      player->mo->angle += ANG5;
     else
-      player->mo->angle -= ANG5;
+    {
+      angle = R_PointToAngle2(player->mo->x,
+                              player->mo->y,
+                              player->attacker->x,
+                              player->attacker->y);
+
+      delta = angle - player->mo->angle;
+
+      if (delta < ANG5 || delta > (unsigned)-ANG5)
+      {
+        // Looking at killer,
+        //  so fade damage flash down.
+
+        player->mo->angle = angle;
+
+        if (player->damagecount)
+          player->damagecount--;
+      }
+      else if (delta < ANG180)
+        player->mo->angle += ANG5;
+      else
+        player->mo->angle -= ANG5;
+    }
   }
-  else if (player->damagecount)
-    player->damagecount--;
+  else if (player->damagecount || player->poisoncount)
+  {
+    if (player->damagecount)
+      player->damagecount--;
+    else
+      player->poisoncount--;
+  }
 
   if (player->cmd.buttons & BT_USE)
   {
-    if (heretic)
+    if (raven)
     {
       if (player == &players[consoleplayer])
       {
@@ -524,6 +563,16 @@ void P_DeathThink (player_t* player)
         newtorch = 0;
         newtorchdelta = 0;
       }
+
+      if (hexen)
+      {
+        player->mo->special1.i = player->pclass;
+        if (player->mo->special1.i > 2)
+        {
+          player->mo->special1.i = 0;
+        }
+      }
+
       // Let the mobj know the player has entered the reborn state.  Some
       // mobjs need to know when it's ok to remove themselves.
       player->mo->special2.i = 666;
