@@ -1205,7 +1205,12 @@ void P_ArtiTele(player_t * player)
         destAngle = ANG45 * (playerstarts[0][0].angle / 45);
     }
     P_Teleport(player->mo, destX, destY, destAngle, true);
-    S_StartSound(NULL, heretic_sfx_wpnup);      // Full volume laugh
+    if (player->morphTics)
+    {                           // Teleporting away will undo any morph effects (pig)
+      P_UndoPlayerMorph(player);
+    }
+    if (heretic)
+      S_StartSound(NULL, heretic_sfx_wpnup);      // Full volume laugh
 }
 
 void P_PlayerNextArtifact(player_t * player)
@@ -1861,4 +1866,81 @@ dboolean P_UndoPlayerMorph(player_t * player)
     S_StartSound(fog, hexen_sfx_teleport);
     P_PostMorphWeapon(player, weapon);
     return (true);
+}
+
+void P_ArtiTeleportOther(player_t * player)
+{
+    mobj_t *mo;
+
+    mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_TELOTHER_FX1);
+    if (mo)
+    {
+        mo->target = player->mo;
+    }
+}
+
+
+void P_TeleportToPlayerStarts(mobj_t * victim)
+{
+    int i, selections = 0;
+    fixed_t destX, destY;
+    angle_t destAngle;
+
+    for (i = 0; i < MAXPLAYERS; i++)
+    {
+        if (!playeringame[i])
+            continue;
+        selections++;
+    }
+    i = P_Random(pr_hexen) % selections;
+    destX = playerstarts[0][i].x << FRACBITS;
+    destY = playerstarts[0][i].y << FRACBITS;
+    destAngle = ANG45 * (playerstarts[0][i].angle / 45);
+    P_Teleport(victim, destX, destY, destAngle, true);
+}
+
+void P_TeleportToDeathmatchStarts(mobj_t * victim)
+{
+    int i, selections;
+    fixed_t destX, destY;
+    angle_t destAngle;
+
+    selections = deathmatch_p - deathmatchstarts;
+    if (selections)
+    {
+        i = P_Random(pr_hexen) % selections;
+        destX = deathmatchstarts[i].x << FRACBITS;
+        destY = deathmatchstarts[i].y << FRACBITS;
+        destAngle = ANG45 * (deathmatchstarts[i].angle / 45);
+        P_Teleport(victim, destX, destY, destAngle, true);
+    }
+    else
+    {
+        P_TeleportToPlayerStarts(victim);
+    }
+}
+
+void P_TeleportOther(mobj_t * victim)
+{
+    if (victim->player)
+    {
+        if (deathmatch)
+            P_TeleportToDeathmatchStarts(victim);
+        else
+            P_TeleportToPlayerStarts(victim);
+    }
+    else
+    {
+        // If death action, run it upon teleport
+        if (victim->flags & MF_COUNTKILL && victim->special)
+        {
+            P_RemoveMobjFromTIDList(victim);
+            P_ExecuteLineSpecial(victim->special, victim->args,
+                                 NULL, 0, victim);
+            victim->special = 0;
+        }
+
+        // Send all monsters to deathmatch spots
+        P_TeleportToDeathmatchStarts(victim);
+    }
 }
