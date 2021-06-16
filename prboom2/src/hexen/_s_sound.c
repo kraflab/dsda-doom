@@ -870,29 +870,6 @@ void S_GetChannelInfo(SoundInfo_t * s)
 
 //==========================================================================
 //
-// S_GetSoundPlayingInfo
-//
-//==========================================================================
-
-dboolean S_GetSoundPlayingInfo(mobj_t * mobj, int sound_id)
-{
-    int i;
-
-    for (i = 0; i < snd_Channels; i++)
-    {
-        if (Channel[i].sound_id == sound_id && Channel[i].mo == mobj)
-        {
-            if (I_SoundIsPlaying(Channel[i].handle))
-            {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-//==========================================================================
-//
 // S_SetMusicVolume
 //
 //==========================================================================

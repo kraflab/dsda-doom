@@ -2004,3 +2004,69 @@ void P_FallingDamage(player_t * player)
     S_StartSound(player->mo, hexen_sfx_player_land);
     P_DamageMobj(player->mo, NULL, NULL, damage);
 }
+
+void P_PoisonDamage(player_t * player, mobj_t * source, int damage,
+                    dboolean playPainSound)
+{
+    mobj_t *target;
+    mobj_t *inflictor;
+
+    target = player->mo;
+    inflictor = source;
+    if (target->health <= 0)
+    {
+        return;
+    }
+    if (target->flags2 & MF2_INVULNERABLE && damage < 10000)
+    {                           // mobj is invulnerable
+        return;
+    }
+    if (gameskill == sk_baby)
+    {
+        // Take half damage in trainer mode
+        damage >>= 1;
+    }
+    if (damage < 1000 && ((player->cheats & CF_GODMODE)
+                          || player->powers[pw_invulnerability]))
+    {
+        return;
+    }
+    if (damage >= player->health
+        && ((gameskill == sk_baby) || deathmatch) && !player->morphTics)
+    {                           // Try to use some inventory health
+        P_AutoUseHealth(player, damage - player->health + 1);
+    }
+    player->health -= damage;   // mirror mobj health here for Dave
+    if (player->health < 0)
+    {
+        player->health = 0;
+    }
+    player->attacker = source;
+
+    //
+    // do the damage
+    //
+    target->health -= damage;
+    if (target->health <= 0)
+    {                           // Death
+        target->special1.i = damage;
+        if (inflictor && !player->morphTics)
+        {                       // Check for flame death
+            if ((inflictor->flags2 & MF2_FIREDAMAGE)
+                && (target->health > -50) && (damage > 25))
+            {
+                target->flags2 |= MF2_FIREDAMAGE;
+            }
+            if (inflictor->flags2 & MF2_ICEDAMAGE)
+            {
+                target->flags2 |= MF2_ICEDAMAGE;
+            }
+        }
+        P_KillMobj(source, target);
+        return;
+    }
+    if (!(leveltime & 63) && playPainSound)
+    {
+        P_SetMobjState(target, target->info->painstate);
+    }
+}

@@ -1207,3 +1207,25 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
     channels[i].priority = priority;
   }
 }
+
+// hexen
+
+dboolean S_GetSoundPlayingInfo(void * origin, int sound_id)
+{
+    int i;
+    sfxinfo_t *sfx;
+
+    sfx = &S_sfx[sound_id];
+
+    for (i = 0; i < numChannels; i++)
+    {
+        if (channels[i].sfxinfo == sfx && channels[i].origin == origin)
+        {
+            if (I_SoundIsPlaying(channels[i].handle))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}

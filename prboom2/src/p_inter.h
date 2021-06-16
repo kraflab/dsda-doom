@@ -98,5 +98,6 @@ void P_AutoUseHealth(player_t * player, int saveHealth);
 // hexen
 
 void P_FallingDamage(player_t * player);
+void P_PoisonDamage(player_t * player, mobj_t * source, int damage, dboolean playPainSound);
 
 #endif

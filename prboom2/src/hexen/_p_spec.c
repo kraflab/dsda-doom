@@ -987,32 +987,6 @@ void P_PlayerInSpecialSector(player_t * player)
     }
 }
 
-//============================================================================
-//
-// P_PlayerOnSpecialFlat
-//
-//============================================================================
-
-void P_PlayerOnSpecialFlat(player_t * player, int floorType)
-{
-    if (player->mo->z != player->mo->floorz)
-    {                           // Player is not touching the floor
-        return;
-    }
-    switch (floorType)
-    {
-        case FLOOR_LAVA:
-            if (!(leveltime & 31))
-            {
-                P_DamageMobj(player->mo, &LavaInflictor, NULL, 10);
-                S_StartSound(player->mo, hexen_sfx_lava_sizzle);
-            }
-            break;
-        default:
-            break;
-    }
-}
-
 //----------------------------------------------------------------------------
 //
 // PROC P_UpdateSpecials

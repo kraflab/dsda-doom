@@ -106,4 +106,8 @@ extern int idmusnum;
 
 void S_SetSoundCurve(dboolean fullprocess);
 
+// hexen
+
+dboolean S_GetSoundPlayingInfo(void * mobj, int sound_id);
+
 #endif

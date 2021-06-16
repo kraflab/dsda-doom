@@ -589,10 +589,14 @@ void P_DeathThink (player_t* player)
 // P_PlayerThink
 //
 
+void P_MorphPlayerThink(player_t * player);
+dboolean P_UndoPlayerMorph(player_t * player);
+
 void P_PlayerThink (player_t* player)
 {
   ticcmd_t*    cmd;
   weapontype_t newweapon;
+  int floorType;
 
   if (movement_smooth)
   {
@@ -623,6 +627,23 @@ void P_PlayerThink (player_t* player)
     player->mo->flags &= ~MF_JUSTATTACKED;
   }
 
+  // HEXEN_TODO: message stuff
+  // messageTics is above the rest of the counters so that messages will
+  //              go away, even in death.
+  // player->messageTics--;      // Can go negative
+  // if (!player->messageTics || player->messageTics == -1)
+  // {                           // Refresh the screen when a message goes away
+  //     player->ultimateMessage = false;        // clear out any chat messages.
+  //     player->yellowMessage = false;
+  //     if (player == &players[consoleplayer])
+  //     {
+  //         BorderTopRefresh = true;
+  //     }
+  // }
+
+  if (hexen)
+    player->worldTimer++;
+
   if (player->playerstate == PST_DEAD)
   {
     P_DeathThink(player);
@@ -631,13 +652,19 @@ void P_PlayerThink (player_t* player)
 
   if (player->chickenTics)
   {
-      P_ChickenPlayerThink(player);
+    P_ChickenPlayerThink(player);
   }
 
   if (player->jumpTics)
   {
-      player->jumpTics--;
+    player->jumpTics--;
   }
+
+  if (player->morphTics)
+  {
+    P_MorphPlayerThink(player);
+  }
+
   // Move around.
   // Reactiontime is used to prevent movement
   //  for a bit after a teleport.
@@ -645,7 +672,56 @@ void P_PlayerThink (player_t* player)
   if (player->mo->reactiontime)
     player->mo->reactiontime--;
   else
+  {
     P_MovePlayer(player);
+
+    if (hexen)
+    {
+      mobj_t *pmo = player->mo;
+      if (player->powers[pw_speed] && !(leveltime & 1)
+          && P_AproxDistance(pmo->momx, pmo->momy) > 12 * FRACUNIT)
+      {
+        mobj_t *speedMo;
+        int playerNum;
+
+        speedMo = P_SpawnMobj(pmo->x, pmo->y, pmo->z, HEXEN_MT_PLAYER_SPEED);
+        if (speedMo)
+        {
+          speedMo->angle = pmo->angle;
+          playerNum = P_GetPlayerNum(player);
+          if (player->pclass == PCLASS_FIGHTER)
+          {
+            // The first type should be blue, and the
+            // third should be the Fighter's original gold color
+            if (playerNum == 0)
+            {
+              speedMo->flags |= 2 << MF_TRANSSHIFT;
+            }
+            else if (playerNum != 2)
+            {
+              speedMo->flags |= playerNum << MF_TRANSSHIFT;
+            }
+          }
+          else if (playerNum)
+          {               // Set color translation bits for player sprites
+            speedMo->flags |= playerNum << MF_TRANSSHIFT;
+          }
+          speedMo->target = pmo;
+          speedMo->special1.i = player->pclass;
+          if (speedMo->special1.i > 2)
+          {
+            speedMo->special1.i = 0;
+          }
+          speedMo->sprite = pmo->sprite;
+          speedMo->floorclip = pmo->floorclip;
+          if (player == &players[consoleplayer])
+          {
+            speedMo->flags2 |= MF2_DONTDRAW;
+          }
+        }
+      }
+    }
+  }
 
   P_SetPitch(player);
 
@@ -657,26 +733,97 @@ void P_PlayerThink (player_t* player)
   if (player->mo->subsector->sector->special)
     P_PlayerInSpecialSector(player);
 
-  if (cmd->arti)
-  {                           // Use an artifact
-    if (cmd->arti == 0xff)
+  if (hexen)
+  {
+    if ((floorType = P_GetThingFloorType(player->mo)) != FLOOR_SOLID)
     {
-      P_PlayerNextArtifact(player);
+      P_PlayerOnSpecialFlat(player, floorType);
     }
-    else
+
+    switch (player->pclass)
     {
-      P_PlayerUseArtifact(player, cmd->arti);
+      case PCLASS_FIGHTER:
+        if (player->mo->momz <= -35 * FRACUNIT
+            && player->mo->momz >= -40 * FRACUNIT && !player->morphTics
+            && !S_GetSoundPlayingInfo(player->mo,
+                                      hexen_sfx_player_fighter_falling_scream))
+        {
+          S_StartSound(player->mo, hexen_sfx_player_fighter_falling_scream);
+        }
+        break;
+      case PCLASS_CLERIC:
+        if (player->mo->momz <= -35 * FRACUNIT
+            && player->mo->momz >= -40 * FRACUNIT && !player->morphTics
+            && !S_GetSoundPlayingInfo(player->mo,
+                                      hexen_sfx_player_cleric_falling_scream))
+        {
+          S_StartSound(player->mo, hexen_sfx_player_cleric_falling_scream);
+        }
+        break;
+      case PCLASS_MAGE:
+        if (player->mo->momz <= -35 * FRACUNIT
+            && player->mo->momz >= -40 * FRACUNIT && !player->morphTics
+            && !S_GetSoundPlayingInfo(player->mo,
+                                      hexen_sfx_player_mage_falling_scream))
+        {
+          S_StartSound(player->mo, hexen_sfx_player_mage_falling_scream);
+        }
+        break;
+      default:
+        break;
+    }
+
+    if (cmd->arti)
+    {                           // Use an artifact
+      if ((cmd->arti & AFLAG_JUMP) && onground && !player->jumpTics)
+      {
+        if (player->morphTics)
+        {
+          player->mo->momz = 6 * FRACUNIT;
+        }
+        else
+        {
+          player->mo->momz = 9 * FRACUNIT;
+        }
+        player->mo->flags2 &= ~MF2_ONMOBJ;
+        player->jumpTics = 18;
+      }
+      else if (cmd->arti & AFLAG_SUICIDE)
+      {
+        P_DamageMobj(player->mo, NULL, NULL, 10000);
+      }
+      if (cmd->arti == NUMARTIFACTS)
+      {                       // use one of each artifact (except puzzle artifacts)
+        int i;
+
+        for (i = 1; i < hexen_arti_firstpuzzitem; i++)
+        {
+          P_PlayerUseArtifact(player, i);
+        }
+      }
+      else
+      {
+        P_PlayerUseArtifact(player, cmd->arti & AFLAG_MASK);
+      }
+    }
+  }
+  else
+  {
+    if (cmd->arti)
+    {                           // Use an artifact
+      if (cmd->arti == 0xff)
+      {
+        P_PlayerNextArtifact(player);
+      }
+      else
+      {
+        P_PlayerUseArtifact(player, cmd->arti);
+      }
     }
   }
 
-  // heretic_note: is this needed or a defense mechanism?
-  // if (cmd->buttons & BT_SPECIAL)
-  // {                           // A special event has no other buttons
-  //     cmd->buttons = 0;
-  // }
-
   // Check for weapon change.
-  if (cmd->buttons & BT_CHANGE)
+  if (cmd->buttons & BT_CHANGE && !player->morphTics)
   {
     // The actual changing of the weapon is done
     //  when the weapon psprite can do it
@@ -694,21 +841,24 @@ void P_PlayerThink (player_t* player)
       if (!prboom_comp[PC_ALLOW_SSG_DIRECT].state)
         newweapon = (cmd->buttons & BT_WEAPONMASK_OLD)>>BT_WEAPONSHIFT;
 
-      if (
-        newweapon == g_wp_fist && player->weaponowned[g_wp_chainsaw]
-        && (
-          player->readyweapon != g_wp_chainsaw ||
-          (!heretic && !player->powers[pw_strength])
+      if (!hexen)
+      {
+        if (
+          newweapon == g_wp_fist && player->weaponowned[g_wp_chainsaw]
+          && (
+            player->readyweapon != g_wp_chainsaw ||
+            (!heretic && !player->powers[pw_strength])
+          )
         )
-      )
-        newweapon = g_wp_chainsaw;
+          newweapon = g_wp_chainsaw;
 
-      if (!heretic &&
-          gamemode == commercial &&
-          newweapon == wp_shotgun &&
-          player->weaponowned[wp_supershotgun] &&
-          player->readyweapon != wp_supershotgun)
-        newweapon = wp_supershotgun;
+        if (!heretic &&
+            gamemode == commercial &&
+            newweapon == wp_shotgun &&
+            player->weaponowned[wp_supershotgun] &&
+            player->readyweapon != wp_supershotgun)
+          newweapon = wp_supershotgun;
+      }
     }
 
     // killough 2/8/98, 3/22/98 -- end of weapon selection changes
@@ -750,6 +900,15 @@ void P_PlayerThink (player_t* player)
     }
   }
 
+  // Morph counter
+  if (player->morphTics)
+  {
+    if (!--player->morphTics)
+    {                       // Attempt to undo the pig
+      P_UndoPlayerMorph(player);
+    }
+  }
+
   // cycle psprites
   P_MovePsprites (player);
 
@@ -763,7 +922,56 @@ void P_PlayerThink (player_t* player)
   // killough 1/98: Make idbeholdx toggle:
 
   if (player->powers[pw_invulnerability] > 0) // killough
-    player->powers[pw_invulnerability]--;
+  {
+    if (player->pclass == PCLASS_CLERIC)
+    {
+      if (!(leveltime & 7) && player->mo->flags & MF_SHADOW
+          && !(player->mo->flags2 & MF2_DONTDRAW))
+      {
+        player->mo->flags &= ~MF_SHADOW;
+        if (!(player->mo->flags & MF_ALTSHADOW))
+        {
+          player->mo->flags2 |= MF2_DONTDRAW | MF2_NONSHOOTABLE;
+        }
+      }
+      if (!(leveltime & 31))
+      {
+        if (player->mo->flags2 & MF2_DONTDRAW)
+        {
+          if (!(player->mo->flags & MF_SHADOW))
+          {
+            player->mo->flags |= MF_SHADOW | MF_ALTSHADOW;
+          }
+          else
+          {
+            player->mo->flags2 &=
+                ~(MF2_DONTDRAW | MF2_NONSHOOTABLE);
+          }
+        }
+        else
+        {
+          player->mo->flags |= MF_SHADOW;
+          player->mo->flags &= ~MF_ALTSHADOW;
+        }
+      }
+    }
+
+    if (!(--player->powers[pw_invulnerability]))
+    {
+      player->mo->flags2 &= ~(MF2_INVULNERABLE | MF2_REFLECTIVE);
+      if (player->pclass == PCLASS_CLERIC)
+      {
+        player->mo->flags2 &= ~(MF2_DONTDRAW | MF2_NONSHOOTABLE);
+        player->mo->flags &= ~(MF_SHADOW | MF_ALTSHADOW);
+      }
+    }
+  }
+
+  if (player->powers[pw_minotaur])
+    player->powers[pw_minotaur]--;
+
+  if (player->powers[pw_speed])
+    player->powers[pw_speed]--;
 
   if (player->powers[pw_invisibility] > 0)    // killough
     if (! --player->powers[pw_invisibility] )
@@ -775,11 +983,10 @@ void P_PlayerThink (player_t* player)
   if (player->powers[pw_ironfeet] > 0)        // killough
     player->powers[pw_ironfeet]--;
 
-  if (player->powers[pw_flight])
+  if (player->powers[pw_flight] && (!hexen || netgame))
   {
     if (!--player->powers[pw_flight])
     {
-      // haleyjd: removed externdriver crap
       if (player->mo->z != player->mo->floorz)
       {
           player->centering = true;
@@ -789,6 +996,7 @@ void P_PlayerThink (player_t* player)
       player->mo->flags &= ~MF_NOGRAVITY;
     }
   }
+
   if (player->powers[pw_weaponlevel2])
   {
     if (!--player->powers[pw_weaponlevel2])
@@ -817,16 +1025,26 @@ void P_PlayerThink (player_t* player)
   if (player->bonuscount)
     player->bonuscount--;
 
+  if (player->poisoncount && !(leveltime & 15))
+  {
+    player->poisoncount -= 5;
+    if (player->poisoncount < 0)
+    {
+      player->poisoncount = 0;
+    }
+    P_PoisonDamage(player, player->poisoner, 1, true);
+  }
+
   // Handling colormaps.
   // killough 3/20/98: reformat to terse C syntax
-  if (!heretic)
+  if (!raven)
     player->fixedcolormap = dsda_PowerPalette() &&
       (player->powers[pw_invulnerability] > 4*32 ||
       player->powers[pw_invulnerability] & 8) ? INVERSECOLORMAP :
       player->powers[pw_infrared] > 4*32 || player->powers[pw_infrared] & 8;
   else
   {
-    if (player->powers[pw_invulnerability])
+    if (!hexen && player->powers[pw_invulnerability])
     {
       if (player->powers[pw_invulnerability] > BLINKTHRESHOLD
           || (player->powers[pw_invulnerability] & 8))
