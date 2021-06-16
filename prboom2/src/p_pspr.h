@@ -158,9 +158,14 @@ void P_AddMaceSpot(const mapthing_t * mthing);
 void P_DropWeapon(struct player_s * player);
 void P_UpdateBeak(struct player_s * player, pspdef_t * psp);
 
+// hexen
+
 extern int PStateNormal[NUMCLASSES];
 extern int PStateRun[NUMCLASSES];
 extern int PStateAttack[NUMCLASSES];
 extern int PStateAttackEnd[NUMCLASSES];
+
+void P_SetPspriteNF(struct player_s * player, int position, statenum_t stnum);
+void P_PostMorphWeapon(struct player_s * player, weapontype_t weapon);
 
 #endif

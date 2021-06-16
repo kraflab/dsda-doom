@@ -36,6 +36,7 @@
 #include "doomstat.h"
 #include "d_event.h"
 #include "r_main.h"
+#include "lprintf.h"
 #include "p_map.h"
 #include "p_maputl.h"
 #include "p_enemy.h"
@@ -1521,4 +1522,125 @@ void P_BlastRadius(player_t * player)
         }
         P_BlastMobj(pmo, mo, BLAST_FULLSTRENGTH);
     }
+}
+
+void P_MorphPlayerThink(player_t * player)
+{
+    mobj_t *pmo;
+
+    if (player->morphTics & 15)
+    {
+        return;
+    }
+    pmo = player->mo;
+    if (!(pmo->momx + pmo->momy) && P_Random(pr_hexen) < 64)
+    {                           // Snout sniff
+        P_SetPspriteNF(player, ps_weapon, HEXEN_S_SNOUTATK2);
+        S_StartSound(pmo, hexen_sfx_pig_active1);     // snort
+        return;
+    }
+    if (P_Random(pr_hexen) < 48)
+    {
+        if (P_Random(pr_hexen) < 128)
+        {
+            S_StartSound(pmo, hexen_sfx_pig_active1);
+        }
+        else
+        {
+            S_StartSound(pmo, hexen_sfx_pig_active2);
+        }
+    }
+}
+
+dboolean P_UndoPlayerMorph(player_t * player)
+{
+    mobj_t *fog;
+    mobj_t *mo;
+    mobj_t *pmo;
+    fixed_t x;
+    fixed_t y;
+    fixed_t z;
+    angle_t angle;
+    int playerNum;
+    weapontype_t weapon;
+    int oldFlags;
+    int oldFlags2;
+    int oldBeast;
+
+    pmo = player->mo;
+    x = pmo->x;
+    y = pmo->y;
+    z = pmo->z;
+    angle = pmo->angle;
+    weapon = pmo->special1.i;
+    oldFlags = pmo->flags;
+    oldFlags2 = pmo->flags2;
+    oldBeast = pmo->type;
+    P_SetMobjState(pmo, HEXEN_S_FREETARGMOBJ);
+    playerNum = P_GetPlayerNum(player);
+    switch (PlayerClass[playerNum])
+    {
+        case PCLASS_FIGHTER:
+            mo = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_FIGHTER);
+            break;
+        case PCLASS_CLERIC:
+            mo = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_CLERIC);
+            break;
+        case PCLASS_MAGE:
+            mo = P_SpawnMobj(x, y, z, HEXEN_MT_PLAYER_MAGE);
+            break;
+        default:
+            I_Error("P_UndoPlayerMorph:  Unknown player class %d\n",
+                    player->pclass);
+            return false;
+    }
+    if (P_TestMobjLocation(mo) == false)
+    {                           // Didn't fit
+        P_RemoveMobj(mo);
+        mo = P_SpawnMobj(x, y, z, oldBeast);
+        mo->angle = angle;
+        mo->health = player->health;
+        mo->special1.i = weapon;
+        mo->player = player;
+        mo->flags = oldFlags;
+        mo->flags2 = oldFlags2;
+        player->mo = mo;
+        player->morphTics = 2 * 35;
+        return (false);
+    }
+    if (player->pclass == PCLASS_FIGHTER)
+    {
+        // The first type should be blue, and the third should be the
+        // Fighter's original gold color
+        if (playerNum == 0)
+        {
+            mo->flags |= 2 << MF_TRANSSHIFT;
+        }
+        else if (playerNum != 2)
+        {
+            mo->flags |= playerNum << MF_TRANSSHIFT;
+        }
+    }
+    else if (playerNum)
+    {                           // Set color translation bits for player sprites
+        mo->flags |= playerNum << MF_TRANSSHIFT;
+    }
+    mo->angle = angle;
+    mo->player = player;
+    mo->reactiontime = 18;
+    if (oldFlags2 & MF2_FLY)
+    {
+        mo->flags2 |= MF2_FLY;
+        mo->flags |= MF_NOGRAVITY;
+    }
+    player->morphTics = 0;
+    player->health = mo->health = MAXHEALTH;
+    player->mo = mo;
+    player->pclass = PlayerClass[playerNum];
+    angle >>= ANGLETOFINESHIFT;
+    fog = P_SpawnMobj(x + 20 * finecosine[angle],
+                      y + 20 * finesine[angle], z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
+    S_StartSound(fog, hexen_sfx_teleport);
+    P_PostMorphWeapon(player, weapon);
+    return (true);
 }
