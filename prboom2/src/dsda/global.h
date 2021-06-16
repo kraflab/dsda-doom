@@ -65,6 +65,8 @@ extern int g_mntr_atk3_missile;
 extern int g_mntr_atk3_state;
 extern int g_mntr_fire;
 
+extern int g_arti_fly;
+
 extern int g_sfx_telept;
 extern int g_sfx_sawup;
 extern int g_sfx_stnmov;

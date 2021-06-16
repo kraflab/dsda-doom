@@ -69,6 +69,9 @@ dboolean onground; // whether player is on ground or in air
 int newtorch;      // used in the torch flicker effect.
 int newtorchdelta;
 
+// hexen
+int ArmorMax[NUMCLASSES] = { [PCLASS_FIGHTER] = 20, 18, 16, 1 };
+
 angle_t P_PlayerPitch(player_t* player)
 {
   return player->mo->pitch - (angle_t)(player->lookdir * ANG1 / M_PI);
@@ -108,6 +111,11 @@ void P_Thrust(player_t* player,angle_t angle,fixed_t move)
   {
       player->mo->momx += FixedMul(move >> 2, finecosine[angle]);
       player->mo->momy += FixedMul(move >> 2, finesine[angle]);
+  }
+  else if (hexen && P_GetThingFloorType(player->mo) == FLOOR_ICE)      // Friction_Low
+  {
+      player->mo->momx += FixedMul(move >> 1, finecosine[angle]);
+      player->mo->momy += FixedMul(move >> 1, finesine[angle]);
   }
   else
   {
@@ -207,7 +215,7 @@ void P_CalcHeight (player_t* player)
     player->bob = FRACUNIT / 2;
   }
 
-  if ((!onground && !heretic) || player->cheats & CF_NOMOMENTUM)
+  if ((!onground && !raven) || player->cheats & CF_NOMOMENTUM)
   {
     player->viewz = player->mo->z + VIEWHEIGHT;
 
@@ -247,7 +255,7 @@ void P_CalcHeight (player_t* player)
     }
   }
 
-  if (player->chickenTics)
+  if (player->chickenTics || player->morphTics)
   {
     player->viewz = player->mo->z + player->viewheight - (20 * FRACUNIT);
   }
@@ -256,11 +264,12 @@ void P_CalcHeight (player_t* player)
     player->viewz = player->mo->z + player->viewheight + bob;
   }
 
-  if (player->mo->flags2 & MF2_FEETARECLIPPED
-      && player->playerstate != PST_DEAD
-      && player->mo->z <= player->mo->floorz)
+  if (player->playerstate != PST_DEAD && player->mo->z <= player->mo->floorz)
   {
-    player->viewz -= FOOTCLIPSIZE;
+    if (player->mo->floorclip)
+      player->viewz -= player->mo->floorclip;
+    else if (player->mo->flags2 & MF2_FEETARECLIPPED)
+      player->viewz -= FOOTCLIPSIZE;
   }
 
   if (player->viewz > player->mo->ceilingz - 4 * FRACUNIT)
@@ -1155,10 +1164,21 @@ void Heretic_P_MovePlayer(player_t * player)
     }
     else
     {                           // Normal speed
-        if (cmd->forwardmove && (onground || player->mo->flags2 & MF2_FLY))
-            P_Thrust(player, player->mo->angle, cmd->forwardmove * 2048);
-        if (cmd->sidemove && (onground || player->mo->flags2 & MF2_FLY))
-            P_Thrust(player, player->mo->angle - ANG90, cmd->sidemove * 2048);
+        if (cmd->forwardmove)
+        {
+          if (onground || player->mo->flags2 & MF2_FLY)
+              P_Thrust(player, player->mo->angle, cmd->forwardmove * 2048);
+          else if (hexen) // air control!
+              P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
+        }
+
+        if (cmd->sidemove)
+        {
+          if (onground || player->mo->flags2 & MF2_FLY)
+              P_Thrust(player, player->mo->angle - ANG90, cmd->sidemove * 2048);
+          else if (hexen) // air control!
+              P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
+        }
     }
 
     if (cmd->forwardmove || cmd->sidemove)
@@ -1172,7 +1192,14 @@ void Heretic_P_MovePlayer(player_t * player)
         }
         else
         {
-            if (player->mo->state == &states[HERETIC_S_PLAY])
+            if (hexen)
+            {
+                if (player->mo->state == &states[PStateNormal[player->pclass]])
+                {
+                    P_SetMobjState(player->mo, PStateRun[player->pclass]);
+                }
+            }
+            else if (player->mo->state == &states[HERETIC_S_PLAY])
             {
                 P_SetMobjState(player->mo, HERETIC_S_PLAY_RUN1);
             }
@@ -1229,6 +1256,10 @@ void Heretic_P_MovePlayer(player_t * player)
             {
                 player->mo->flags2 |= MF2_FLY;
                 player->mo->flags |= MF_NOGRAVITY;
+                if (hexen && player->mo->momz <= -39 * FRACUNIT)
+                {               // stop falling scream
+                    S_StopSound(player->mo);
+                }
             }
         }
         else

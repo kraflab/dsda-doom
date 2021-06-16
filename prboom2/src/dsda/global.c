@@ -101,6 +101,8 @@ int g_mntr_atk3_missile;
 int g_mntr_atk3_state;
 int g_mntr_fire;
 
+int g_arti_fly;
+
 int g_sfx_sawup;
 int g_sfx_telept;
 int g_sfx_stnmov;
@@ -382,6 +384,8 @@ static void dsda_InitHeretic(void) {
   g_mntr_atk3_state = HERETIC_S_MNTR_ATK3_4;
   g_mntr_fire = HERETIC_MT_MNTRFX3;
 
+  g_arti_fly = arti_fly;
+
   g_sfx_sawup = heretic_sfx_gntact;
   g_sfx_telept = heretic_sfx_telept;
   g_sfx_stnmov = heretic_sfx_dormov;
@@ -505,7 +509,7 @@ static void dsda_InitHexen(void) {
   // g_telefog_height = TELEFOGHEIGHT;
   // g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
-  // g_special_friction_low = 15;
+  g_special_friction_low = IGNORE_VALUE;
   //
   // g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
   // g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
@@ -534,6 +538,8 @@ static void dsda_InitHexen(void) {
   g_mntr_atk3_missile = HEXEN_MT_MNTRFX2;
   g_mntr_atk3_state = HEXEN_S_MNTR_ATK3_4;
   g_mntr_fire = HEXEN_MT_MNTRFX3;
+
+  g_arti_fly = hexen_arti_fly;
   //
   // g_sfx_sawup = heretic_sfx_gntact;
   // g_sfx_telept = heretic_sfx_telept;
