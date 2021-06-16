@@ -114,7 +114,7 @@ typedef enum
     NUMARTIFACTS,
 
     // hexen
-    hexen_arti_none = 0,
+    hexen_arti_none = arti_none,
     hexen_arti_invulnerability,
     hexen_arti_health,
     hexen_arti_superhealth,
