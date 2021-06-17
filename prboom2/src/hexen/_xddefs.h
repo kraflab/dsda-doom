@@ -18,65 +18,6 @@
 #ifndef __XDDEFS__
 #define __XDDEFS__
 
-#include "doomtype.h"
-#include "v_patch.h"
-
-//--------------------------------------------------------------------------
-//
-// Map level types
-//
-//--------------------------------------------------------------------------
-
-typedef PACKED_STRUCT (
-{
-    short floorheight;
-    short ceilingheight;
-    char floorpic[8];
-    char ceilingpic[8];
-    short lightlevel;
-    short special;
-    short tag;
-}) mapsector_t;
-
-typedef PACKED_STRUCT (
-{
-    short numsegs;
-    short firstseg;             // segs are stored sequentially
-}) mapsubsector_t;
-
-typedef PACKED_STRUCT (
-{
-    short v1;
-    short v2;
-    short angle;
-    short linedef;
-    short side;
-    short offset;
-}) mapseg_t;
-
-#define	NF_SUBSECTOR	0x8000
-typedef PACKED_STRUCT (
-{
-    short x, y, dx, dy;         // partition line
-    short bbox[2][4];           // bounding box for each child
-    unsigned short children[2]; // if NF_SUBSECTOR its a subsector
-}) mapnode_t;
-
-//--------------------------------------------------------------------------
-//
-// Texture definition
-//
-//--------------------------------------------------------------------------
-
-typedef PACKED_STRUCT (
-{
-    short originx;
-    short originy;
-    short patch;
-    short stepdir;
-    short colormap;
-}) mappatch_t;
-
 typedef PACKED_STRUCT (
 {
     char name[8];
