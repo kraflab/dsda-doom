@@ -383,7 +383,7 @@ void R_InitTables(void)
 //
     for (i = 0; i < FINEANGLES / 2; i++)
     {
-        a = (i - FINEANGLES / 4 + 0.5) * PI * 2 / FINEANGLES;
+        a = (i - FINEANGLES / 4 + 0.5) * HEXEN_PI * 2 / FINEANGLES;
         fv = FRACUNIT * tan(a);
         t = fv;
         finetangent[i] = t;
@@ -395,7 +395,7 @@ void R_InitTables(void)
     for (i = 0; i < 5 * FINEANGLES / 4; i++)
     {
 // OPTIMIZE: mirror...
-        a = (i + 0.5) * PI * 2 / FINEANGLES;
+        a = (i + 0.5) * HEXEN_PI * 2 / FINEANGLES;
         t = FRACUNIT * sin(a);
         finesine[i] = t;
     }

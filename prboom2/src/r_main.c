@@ -75,6 +75,8 @@ int r_have_internal_hires = false;
 // Fineangles in the SCREENWIDTH wide window.
 #define FIELDOFVIEW 2048
 
+#define HEXEN_PI 3.141592657
+
 // killough: viewangleoffset is a legacy from the pre-v1.2 days, when Doom
 // had Left/Mid/Right viewing. +/-ANG90 offsets were placed here on each
 // node, by d_net.c, to set up a L/M/R session.
@@ -390,6 +392,8 @@ static void R_InitLightTables (void)
   // killough 4/4/98: dynamic colormaps
   c_zlight = malloc(sizeof(*c_zlight) * numcolormaps);
   c_scalelight = malloc(sizeof(*c_scalelight) * numcolormaps);
+
+  // HEXEN_TODO: does hexen require render_doom_lightmaps?
 
   LIGHTLEVELS   = (render_doom_lightmaps ? 16 : 32);
   LIGHTSEGSHIFT = (render_doom_lightmaps ? 4 : 3);

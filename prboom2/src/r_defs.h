@@ -329,12 +329,17 @@ typedef struct ssline_s
 //  (all or some) sides of a convex BSP leaf.
 //
 
+struct polyobj_s;
+
 typedef struct subsector_s
 {
   sector_t *sector;
   // e6y: support for extended nodes
   // 'int' instead of 'short'
   int numlines, firstline;
+
+  // hexen
+  struct polyobj_s *poly;
 } subsector_t;
 
 
@@ -480,7 +485,7 @@ typedef struct visplane
 
 // hexen
 
-typedef struct
+typedef struct polyobj_s
 {
   int numsegs;
   seg_t **segs;
