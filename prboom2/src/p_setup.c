@@ -95,6 +95,92 @@ ssline_t *sslines;
 
 byte     *map_subsectors;
 
+// hexen
+#define MAPINFO_SCRIPT_NAME "MAPINFO"
+#define MCMD_SKY1 1
+#define MCMD_SKY2 2
+#define MCMD_LIGHTNING 3
+#define MCMD_FADETABLE 4
+#define MCMD_DOUBLESKY 5
+#define MCMD_CLUSTER 6
+#define MCMD_WARPTRANS 7
+#define MCMD_NEXT 8
+#define MCMD_CDTRACK 9
+#define MCMD_CD_STARTTRACK 10
+#define MCMD_CD_END1TRACK 11
+#define MCMD_CD_END2TRACK 12
+#define MCMD_CD_END3TRACK 13
+#define MCMD_CD_INTERTRACK 14
+#define MCMD_CD_TITLETRACK 15
+
+#define UNKNOWN_MAP_NAME "DEVELOPMENT MAP"
+#define DEFAULT_SKY_NAME "SKY1"
+#define DEFAULT_SONG_LUMP "DEFSONG"
+#define DEFAULT_FADE_TABLE "COLORMAP"
+
+typedef struct mapInfo_s
+{
+    short cluster;
+    short warpTrans;
+    short nextMap;
+    short cdTrack;
+    char name[32];
+    short sky1Texture;
+    short sky2Texture;
+    fixed_t sky1ScrollDelta;
+    fixed_t sky2ScrollDelta;
+    dboolean doubleSky;
+    dboolean lightning;
+    int fadetable;
+    char songLump[10];
+} mapInfo_t;
+
+int MapCount;
+
+static mapInfo_t MapInfo[99];
+
+static const char *MapCmdNames[] = {
+    "SKY1",
+    "SKY2",
+    "DOUBLESKY",
+    "LIGHTNING",
+    "FADETABLE",
+    "CLUSTER",
+    "WARPTRANS",
+    "NEXT",
+    "CDTRACK",
+    "CD_START_TRACK",
+    "CD_END1_TRACK",
+    "CD_END2_TRACK",
+    "CD_END3_TRACK",
+    "CD_INTERMISSION_TRACK",
+    "CD_TITLE_TRACK",
+    NULL
+};
+
+static int MapCmdIDs[] = {
+    MCMD_SKY1,
+    MCMD_SKY2,
+    MCMD_DOUBLESKY,
+    MCMD_LIGHTNING,
+    MCMD_FADETABLE,
+    MCMD_CLUSTER,
+    MCMD_WARPTRANS,
+    MCMD_NEXT,
+    MCMD_CDTRACK,
+    MCMD_CD_STARTTRACK,
+    MCMD_CD_END1TRACK,
+    MCMD_CD_END2TRACK,
+    MCMD_CD_END3TRACK,
+    MCMD_CD_INTERTRACK,
+    MCMD_CD_TITLETRACK
+};
+
+static int cd_NonLevelTracks[6];        // Non-level specific song cd track numbers
+
+static int QualifyMap(int map);
+// end hexen
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // figgi 08/21/00 -- constants and globals for glBsp support
 #define GL_VERT_OFFSET  4
