@@ -61,6 +61,8 @@
 #include "v_video.h"
 #include "lprintf.h"
 
+// HEXEN_TODO: MAXVISPLANES is 1280 - maybe only 128 hash slots will be slow?
+
 #define MAXVISPLANES 128    /* must be a power of 2 */
 
 static visplane_t *visplanes[MAXVISPLANES];   // killough

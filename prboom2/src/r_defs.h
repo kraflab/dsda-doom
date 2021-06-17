@@ -418,6 +418,11 @@ typedef struct vissprite_s
 
   // killough 3/27/98: height sector for underwater/fake ceiling support
   int heightsec;
+
+  // hexen
+  dboolean psprite;            // true if psprite
+  int pclass;                  // player class (used in translation)
+  fixed_t floorclip;
 } vissprite_t;
 
 //
