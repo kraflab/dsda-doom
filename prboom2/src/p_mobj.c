@@ -2090,19 +2090,20 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     // Check for player starts 5 to 8
     if (mthing->type >= 9100 && mthing->type <= 9103)
     {
-      mapthing_t *player_start;
-      int player;
-
-      player = 4 + mthing->type - 9100;
-
-      player_start = &playerstarts[mthing->arg1][player];
-      memcpy(player_start, mthing, sizeof(mapthing_t));
-      player_start->type = player + 1;
-
-      if (!deathmatch && !player_start->arg1)
-      {
-        P_SpawnPlayer(thingtype - 1, player_start);
-      }
+      // HEXEN_TODO: player starts 5 to 8
+      // mapthing_t *player_start;
+      // int player;
+      //
+      // player = 4 + mthing->type - 9100;
+      //
+      // player_start = &playerstarts[mthing->arg1][player];
+      // memcpy(player_start, mthing, sizeof(mapthing_t));
+      // player_start->type = player + 1;
+      //
+      // if (!deathmatch && !player_start->arg1)
+      // {
+      //   P_SpawnPlayer(thingtype - 1, player_start);
+      // }
       return NULL;
     }
 
