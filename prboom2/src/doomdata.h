@@ -59,7 +59,8 @@ enum {
   ML_NODES,             // BSP nodes
   ML_SECTORS,           // Sectors, from editing
   ML_REJECT,            // LUT, sector-sector visibility
-  ML_BLOCKMAP           // LUT, motion clipping, walls/grid element
+  ML_BLOCKMAP,          // LUT, motion clipping, walls/grid element
+  ML_BEHAVIOR
 };
 
 #ifdef _MSC_VER // proff: This is the same as __attribute__ ((packed)) in GNUC
@@ -86,6 +87,19 @@ typedef struct {
 // A LineDef, as used for editing, and as input to the BSP builder.
 
 typedef struct {
+    unsigned short v1;
+    unsigned short v2;
+    unsigned short flags;
+    byte special;
+    byte arg1;
+    byte arg2;
+    byte arg3;
+    byte arg4;
+    byte arg5;
+    unsigned short sidenum[2];
+} PACKEDATTR hexen_maplinedef_t;
+
+typedef struct {
   unsigned short v1;
   unsigned short v2;
   unsigned short flags;
@@ -95,7 +109,7 @@ typedef struct {
   // use the unsigned value and special case the -1
   // sidenum[1] will be -1 (NO_INDEX) if one sided
   unsigned short sidenum[2];
-} PACKEDATTR maplinedef_t;
+} PACKEDATTR doom_maplinedef_t;
 
 #define NO_INDEX ((unsigned short)-1)
 

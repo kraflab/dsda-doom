@@ -251,6 +251,13 @@ typedef struct line_s
     RF_ISOLATED =32,     // Isolated line
   } r_flags;
   degenmobj_t soundorg;  // sound origin for switches/buttons
+
+  // hexen
+  byte arg1;
+  byte arg2;
+  byte arg3;
+  byte arg4;
+  byte arg5;
 } line_t;
 
 // phares 3/14/98

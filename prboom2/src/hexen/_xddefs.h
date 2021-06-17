@@ -27,53 +27,6 @@
 //
 //--------------------------------------------------------------------------
 
-// lump order in a map wad
-enum
-{
-    ML_LABEL,
-    ML_THINGS,
-    ML_LINEDEFS,
-    ML_SIDEDEFS,
-    ML_VERTEXES,
-    ML_SEGS,
-    ML_SSECTORS,
-    ML_NODES,
-    ML_SECTORS,
-    ML_REJECT,
-    ML_BLOCKMAP,
-    ML_BEHAVIOR
-};
-
-typedef PACKED_STRUCT (
-{
-    short x;
-    short y;
-})  mapvertex_t;
-
-typedef PACKED_STRUCT (
-{
-    short textureoffset;
-    short rowoffset;
-    char toptexture[8];
-    char bottomtexture[8];
-    char midtexture[8];
-    short sector;               // on viewer's side
-}) mapsidedef_t;
-
-typedef PACKED_STRUCT (
-{
-    short v1;
-    short v2;
-    short flags;
-    byte special;
-    byte arg1;
-    byte arg2;
-    byte arg3;
-    byte arg4;
-    byte arg5;
-    short sidenum[2];           // sidenum[1] will be -1 if one sided
-}) maplinedef_t;
-
 typedef PACKED_STRUCT (
 {
     short floorheight;

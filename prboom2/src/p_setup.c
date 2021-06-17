@@ -1590,21 +1590,50 @@ static void P_LoadLineDefs (int lump)
   const byte *data; // cph - const*
   int  i;
 
-  numlines = W_LumpLength (lump) / sizeof(maplinedef_t);
+  numlines = W_LumpLength (lump) / (hexen ? sizeof(hexen_maplinedef_t) : sizeof(doom_maplinedef_t));
   lines = calloc_IfSameLevel(lines, numlines, sizeof(line_t));
   data = W_CacheLumpNum (lump); // cph - wad lump handling updated
 
   for (i=0; i<numlines; i++)
     {
-      const maplinedef_t *mld = (const maplinedef_t *) data + i;
       line_t *ld = lines+i;
       vertex_t *v1, *v2;
 
-      ld->flags = (unsigned short)LittleShort(mld->flags);
-      ld->special = LittleShort(mld->special);
-      ld->tag = LittleShort(mld->tag);
-      v1 = ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
-      v2 = ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
+      if (hexen)
+      {
+        const hexen_maplinedef_t *mld = (const hexen_maplinedef_t *) data + i;
+
+        ld->flags = (unsigned short)LittleShort(mld->flags);
+        ld->special = mld->special; // just a byte in hexen
+        ld->tag = 0;
+        ld->arg1 = mld->arg1;
+        ld->arg2 = mld->arg2;
+        ld->arg3 = mld->arg3;
+        ld->arg4 = mld->arg4;
+        ld->arg5 = mld->arg5;
+        v1 = ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
+        v2 = ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
+        ld->sidenum[0] = LittleShort(mld->sidenum[0]);
+        ld->sidenum[1] = LittleShort(mld->sidenum[1]);
+      }
+      else
+      {
+        const doom_maplinedef_t *mld = (const doom_maplinedef_t *) data + i;
+
+        ld->flags = (unsigned short)LittleShort(mld->flags);
+        ld->special = LittleShort(mld->special);
+        ld->tag = LittleShort(mld->tag);
+        ld->arg1 = 0;
+        ld->arg2 = 0;
+        ld->arg3 = 0;
+        ld->arg4 = 0;
+        ld->arg5 = 0;
+        v1 = ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
+        v2 = ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
+        ld->sidenum[0] = LittleShort(mld->sidenum[0]);
+        ld->sidenum[1] = LittleShort(mld->sidenum[1]);
+      }
+
       ld->dx = v2->x - v1->x;
       ld->dy = v2->y - v1->y;
 #ifdef GL_DOOM
@@ -1648,8 +1677,6 @@ static void P_LoadLineDefs (int lump)
       ld->soundorg.y = ld->bbox[BOXTOP] / 2 + ld->bbox[BOXBOTTOM] / 2;
 
       ld->iLineID=i; // proff 04/05/2000: needed for OpenGL
-      ld->sidenum[0] = LittleShort(mld->sidenum[0]);
-      ld->sidenum[1] = LittleShort(mld->sidenum[1]);
 
       {
         /* cph 2006/09/30 - fix sidedef errors right away.
