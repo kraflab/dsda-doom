@@ -58,7 +58,7 @@ void P_Ticker(void)
     {
         return;
     }
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         if (playeringame[i])
         {

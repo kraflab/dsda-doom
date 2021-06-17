@@ -1782,7 +1782,7 @@ static int CmdEndPrintBold(void)
 {
     int i;
 
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         if (playeringame[i])
         {
@@ -1824,7 +1824,7 @@ static int CmdPlayerCount(void)
     int count;
 
     count = 0;
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         count += playeringame[i];
     }

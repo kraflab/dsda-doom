@@ -414,7 +414,7 @@ static void StreamIn_player_t(player_t *str)
     str->pieces = SV_ReadLong();
 
     // signed int frags[MAXPLAYERS];
-    for (i=0; i<maxplayers; ++i)
+    for (i=0; i<MAXPLAYERS; ++i)
     {
         str->frags[i] = SV_ReadLong();
     }
@@ -583,7 +583,7 @@ static void StreamOut_player_t(player_t *str)
     SV_WriteLong(str->pieces);
 
     // signed int frags[MAXPLAYERS];
-    for (i=0; i<maxplayers; ++i)
+    for (i=0; i<MAXPLAYERS; ++i)
     {
         SV_WriteLong(str->frags[i]);
     }
@@ -2081,7 +2081,7 @@ void SV_LoadGame(int slot)
     AssertSegment(ASEG_END);
 
     // Save player structs
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         playerBackup[i] = players[i];
     }
@@ -2097,7 +2097,7 @@ void SV_LoadGame(int slot)
     // Restore player structs
     inv_ptr = 0;
     curpos = 0;
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         mobj = players[i].mo;
         players[i] = playerBackup[i];
@@ -2172,7 +2172,7 @@ void SV_MapTeleport(int map, int position)
     // Store player structs for later
     rClass = randomclass;
     randomclass = false;
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         playerBackup[i] = players[i];
     }
@@ -2196,7 +2196,7 @@ void SV_MapTeleport(int map, int position)
         G_InitNew(gameskill, gameepisode, gamemap);
 
         // Destroy all freshly spawned players
-        for (i = 0; i < maxplayers; i++)
+        for (i = 0; i < MAXPLAYERS; i++)
         {
             if (playeringame[i])
             {
@@ -2207,7 +2207,7 @@ void SV_MapTeleport(int map, int position)
 
     // Restore player structs
     targetPlayerMobj = NULL;
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         if (!playeringame[i])
         {
@@ -2288,7 +2288,7 @@ void SV_MapTeleport(int map, int position)
     }
 
     // Destroy all things touching players
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         if (playeringame[i])
         {
@@ -2404,11 +2404,11 @@ static void ArchivePlayers(void)
     int i;
 
     SV_WriteLong(ASEG_PLAYERS);
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         SV_WriteByte(playeringame[i]);
     }
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         if (!playeringame[i])
         {
@@ -2430,11 +2430,11 @@ static void UnarchivePlayers(void)
     int i;
 
     AssertSegment(ASEG_PLAYERS);
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         playeringame[i] = SV_ReadByte();
     }
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         if (!playeringame[i])
         {
@@ -2969,7 +2969,7 @@ static void ArchiveMisc(void)
     int ix;
 
     SV_WriteLong(ASEG_MISC);
-    for (ix = 0; ix < maxplayers; ix++)
+    for (ix = 0; ix < MAXPLAYERS; ix++)
     {
         SV_WriteLong(localQuakeHappening[ix]);
     }
@@ -2986,7 +2986,7 @@ static void UnarchiveMisc(void)
     int ix;
 
     AssertSegment(ASEG_MISC);
-    for (ix = 0; ix < maxplayers; ix++)
+    for (ix = 0; ix < MAXPLAYERS; ix++)
     {
         localQuakeHappening[ix] = SV_ReadLong();
     }

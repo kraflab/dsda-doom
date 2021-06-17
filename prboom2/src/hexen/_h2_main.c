@@ -111,7 +111,7 @@ dboolean autostart;
 dboolean advancedemo;
 FILE *debugfile;
 int UpdateState;
-int maxplayers = MAXPLAYERS;
+int MAXPLAYERS = MAXPLAYERS;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -304,7 +304,7 @@ void D_IdentifyVersion(void)
         W_CheckNumForName("MAP05") == -1 )
     {
 	gamemode = shareware;
-	maxplayers = 4;
+	MAXPLAYERS = 4;
     }
 
     // The v1.0 IWAD file is missing a bunch of lumps that can cause the game

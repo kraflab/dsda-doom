@@ -94,7 +94,7 @@ void A_PotteryCheck(mobj_t * actor)
     }
     else
     {
-        for (i = 0; i < maxplayers; i++)
+        for (i = 0; i < MAXPLAYERS; i++)
         {
             if (!playeringame[i])
             {

@@ -357,12 +357,12 @@ void SB_SetClassData(void)
     if (!netgame)
     {                           // single player game uses red life gem (the second gem)
         PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegem")
-                                      + maxplayers * class + 1, PU_STATIC);
+                                      + MAXPLAYERS * class + 1, PU_STATIC);
     }
     else
     {
         PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegem")
-                                      + maxplayers * class + consoleplayer,
+                                      + MAXPLAYERS * class + consoleplayer,
                                       PU_STATIC);
     }
     SB_state = -1;
@@ -1051,7 +1051,7 @@ void DrawMainBar(void)
     if (deathmatch)
     {
         temp = 0;
-        for (i = 0; i < maxplayers; i++)
+        for (i = 0; i < MAXPLAYERS; i++)
         {
             temp += CPlayer->frags[i];
         }
@@ -1386,7 +1386,7 @@ void DrawFullScreenStuff(void)
     if (deathmatch)
     {
         temp = 0;
-        for (i = 0; i < maxplayers; i++)
+        for (i = 0; i < MAXPLAYERS; i++)
         {
             if (playeringame[i])
             {

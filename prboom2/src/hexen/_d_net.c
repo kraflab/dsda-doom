@@ -74,7 +74,7 @@ static void RunTic(ticcmd_t *cmds, dboolean *ingame)
 
     // Check for player quits.
 
-    for (i = 0; i < maxplayers; ++i)
+    for (i = 0; i < MAXPLAYERS; ++i)
     {
         if (!demoplayback && playeringame[i] && !ingame[i])
         {
@@ -125,7 +125,7 @@ static void LoadGameSettings(net_gamesettings_t *settings)
                "because there is a client recording a Vanilla demo.\n");
     }
 
-    for (i=0; i<maxplayers; ++i)
+    for (i=0; i<MAXPLAYERS; ++i)
     {
         playeringame[i] = i < settings->num_players;
         PlayerClass[i] = settings->player_classes[i];
@@ -183,7 +183,7 @@ static void InitConnectData(net_connect_data_t *connect_data)
                              && !M_ParmExists("-longtics");
 
     connect_data->drone = false;
-    connect_data->max_players = maxplayers;
+    connect_data->max_players = MAXPLAYERS;
 
     //!
     // @category net

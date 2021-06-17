@@ -106,7 +106,7 @@ void IN_Start(void)
     skipintermission = false;
     intertime = 0;
     AM_Stop();
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         players[i].messageTics = 0;
         players[i].message[0] = 0;
@@ -208,13 +208,13 @@ static void InitStats(void)
         posnum = 0;
         playercount = 0;
         slaughtercount = 0;
-        for (i = 0; i < maxplayers; i++)
+        for (i = 0; i < MAXPLAYERS; i++)
         {
             totalFrags[i] = 0;
             if (playeringame[i])
             {
                 playercount++;
-                for (j = 0; j < maxplayers; j++)
+                for (j = 0; j < MAXPLAYERS; j++)
                 {
                     if (playeringame[j])
                     {
@@ -338,7 +338,7 @@ static void CheckForSkip(void)
     player_t *player;
     static dboolean triedToSkip;
 
-    for (i = 0, player = players; i < maxplayers; i++, player++)
+    for (i = 0, player = players; i < MAXPLAYERS; i++, player++)
     {
         if (playeringame[i])
         {
@@ -478,10 +478,10 @@ static void DrDeathTally(void)
         S_StartSound(NULL, hexen_sfx_platform_stop);
     }
     y = yPos >> FRACBITS;
-    for (i = 0; i < maxplayers; i++)
+    for (i = 0; i < MAXPLAYERS; i++)
     {
         xPos = xStart;
-        for (j = 0; j < maxplayers; j++, xPos += xDelta)
+        for (j = 0; j < MAXPLAYERS; j++, xPos += xDelta)
         {
             x = xPos >> FRACBITS;
             bold = (i == consoleplayer || j == consoleplayer);
