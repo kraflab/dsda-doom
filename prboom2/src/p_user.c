@@ -1459,7 +1459,7 @@ void Heretic_P_MovePlayer(player_t * player)
         {
           if (onground || player->mo->flags2 & MF2_FLY)
               P_Thrust(player, player->mo->angle, cmd->forwardmove * 2048);
-          else if (hexen) // air control!
+          else if (hexen) // air control?
               P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
         }
 
@@ -1467,7 +1467,7 @@ void Heretic_P_MovePlayer(player_t * player)
         {
           if (onground || player->mo->flags2 & MF2_FLY)
               P_Thrust(player, player->mo->angle - ANG90, cmd->sidemove * 2048);
-          else if (hexen) // air control!
+          else if (hexen) // air control?
               P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
         }
     }
