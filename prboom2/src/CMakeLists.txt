@@ -108,6 +108,7 @@ set(COMMON_SRC
     heretic/sounds.c
     hexen/a_action.c
     hexen/a_action.h
+    hexen/info.c
     hexen/p_acs.c
     hexen/p_acs.h
     hexen/p_things.c

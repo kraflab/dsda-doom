@@ -6697,8 +6697,8 @@ typedef struct
     int mass;
     int damage;
     int activesound;
-    int flags;
-    int flags2;
+    uint_64_t flags;
+    uint_64_t flags2;
 } raven_mobjinfo_t;
 
 // all the stuff - dynamically selected in global.c
@@ -6706,6 +6706,10 @@ typedef struct
 extern state_t heretic_states[HERETIC_NUMSTATES];
 extern const char *heretic_sprnames[];
 extern raven_mobjinfo_t heretic_mobjinfo[HERETIC_NUMMOBJTYPES];
+
+extern state_t hexen_states[HEXEN_NUMSTATES];
+extern const char *hexen_sprnames[];
+extern raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES];
 
 extern state_t doom_states[NUMSTATES];
 extern const char *doom_sprnames[];
