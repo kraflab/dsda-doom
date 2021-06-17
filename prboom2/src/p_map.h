@@ -117,5 +117,6 @@ extern mobj_t *BlockingMobj;
 
 void P_BounceWall(mobj_t * mo);
 dboolean P_UsePuzzleItem(player_t * player, int itemType);
+void PIT_ThrustSpike(mobj_t * actor);
 
 #endif // __P_MAP__

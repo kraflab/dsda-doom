@@ -14,13 +14,18 @@
 // GNU General Public License for more details.
 //
 
-#ifndef __HEXEN_A_ACTION__
-#define __HEXEN_A_ACTION__
+#ifndef __HEXEN_P_THINGS__
+#define __HEXEN_P_THINGS__
 
-#include "p_mobj.h"
+#include "info.h"
 
-dboolean A_LocalQuake(byte * args, mobj_t * victim);
-void P_SpawnDirt(mobj_t * actor, fixed_t radius);
-void A_BridgeRemove(mobj_t * actor);
+dboolean EV_ThingProjectile(byte * args, dboolean gravity);
+dboolean EV_ThingSpawn(byte * args, dboolean fog);
+dboolean EV_ThingActivate(int tid);
+dboolean EV_ThingDeactivate(int tid);
+dboolean EV_ThingRemove(int tid);
+dboolean EV_ThingDestroy(int tid);
+
+extern mobjtype_t TranslateThingType[];
 
 #endif

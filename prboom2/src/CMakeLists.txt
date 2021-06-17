@@ -110,6 +110,8 @@ set(COMMON_SRC
     hexen/a_action.h
     hexen/p_acs.c
     hexen/p_acs.h
+    hexen/p_things.c
+    hexen/p_things.h
     hu_lib.c
     hu_lib.h
     hu_stuff.c

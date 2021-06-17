@@ -193,56 +193,6 @@ dboolean P_TeleportMove(mobj_t * thing, fixed_t x, fixed_t y)
     return true;
 }
 
-
-dboolean PIT_ThrustStompThing(mobj_t * thing)
-{
-    fixed_t blockdist;
-
-    if (!(thing->flags & MF_SHOOTABLE))
-        return true;
-
-    blockdist = thing->radius + tsthing->radius;
-    if (abs(thing->x - tsthing->x) >= blockdist ||
-        abs(thing->y - tsthing->y) >= blockdist ||
-        (thing->z > tsthing->z + tsthing->height))
-        return true;            // didn't hit it
-
-    if (thing == tsthing)
-        return true;            // don't clip against self
-
-    P_DamageMobj(thing, tsthing, tsthing, 10001);
-    tsthing->args[1] = 1;       // Mark thrust thing as bloody
-
-    return true;
-}
-
-
-
-void PIT_ThrustSpike(mobj_t * actor)
-{
-    int xl, xh, yl, yh, bx, by;
-    int x0, x2, y0, y2;
-
-    tsthing = actor;
-
-    x0 = actor->x - actor->info->radius;
-    x2 = actor->x + actor->info->radius;
-    y0 = actor->y - actor->info->radius;
-    y2 = actor->y + actor->info->radius;
-
-    xl = (x0 - bmaporgx - MAXRADIUS) >> MAPBLOCKSHIFT;
-    xh = (x2 - bmaporgx + MAXRADIUS) >> MAPBLOCKSHIFT;
-    yl = (y0 - bmaporgy - MAXRADIUS) >> MAPBLOCKSHIFT;
-    yh = (y2 - bmaporgy + MAXRADIUS) >> MAPBLOCKSHIFT;
-
-    // stomp on any things contacted
-    for (bx = xl; bx <= xh; bx++)
-        for (by = yl; by <= yh; by++)
-            P_BlockThingsIterator(bx, by, PIT_ThrustStompThing);
-}
-
-
-
 /*
 ===============================================================================
 

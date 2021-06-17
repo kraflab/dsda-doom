@@ -2748,6 +2748,15 @@ void A_ContMobjSound(mobj_t * actor)
         case HERETIC_MT_MUMMYFX1:
             S_StartSound(actor, heretic_sfx_mumhed);
             break;
+        case HEXEN_MT_SERPENTFX:
+            S_StartSound(actor, hexen_sfx_serpentfx_continuous);
+            break;
+        case HEXEN_MT_HAMMER_MISSILE:
+            S_StartSound(actor, hexen_sfx_fighter_hammer_continuous);
+            break;
+        case HEXEN_MT_QUAKE_FOCUS:
+            S_StartSound(actor, hexen_sfx_earthquake);
+            break;
         default:
             break;
     }

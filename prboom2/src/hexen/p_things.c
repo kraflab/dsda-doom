@@ -14,29 +14,20 @@
 // GNU General Public License for more details.
 //
 
-
-// HEADER FILES ------------------------------------------------------------
-
-#include "h2def.h"
-#include "p_local.h"
+#include "doomdef.h"
+#include "doomstat.h"
+#include "p_mobj.h"
 #include "s_sound.h"
+#include "sounds.h"
+#include "p_map.h"
+#include "p_inter.h"
 
-// MACROS ------------------------------------------------------------------
+#include "hexen/a_action.h"
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
+#include "p_things.h"
 
 static dboolean ActivateThing(mobj_t * mobj);
 static dboolean DeactivateThing(mobj_t * mobj);
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 mobjtype_t TranslateThingType[] = {
     HEXEN_MT_MAPSPOT,                 // T_NONE
@@ -150,16 +141,6 @@ mobjtype_t TranslateThingType[] = {
     HEXEN_MT_WRAITHFX2                // T_SPARK_DRIP
 };
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-// EV_ThingProjectile
-//
-//==========================================================================
-
 dboolean EV_ThingProjectile(byte * args, dboolean gravity)
 {
     int tid;
@@ -210,12 +191,6 @@ dboolean EV_ThingProjectile(byte * args, dboolean gravity)
     }
     return success;
 }
-
-//==========================================================================
-//
-// EV_ThingSpawn
-//
-//==========================================================================
 
 dboolean EV_ThingSpawn(byte * args, dboolean fog)
 {
@@ -273,12 +248,6 @@ dboolean EV_ThingSpawn(byte * args, dboolean fog)
     return success;
 }
 
-//==========================================================================
-//
-// EV_ThingActivate
-//
-//==========================================================================
-
 dboolean EV_ThingActivate(int tid)
 {
     mobj_t *mobj;
@@ -297,12 +266,6 @@ dboolean EV_ThingActivate(int tid)
     return success;
 }
 
-//==========================================================================
-//
-// EV_ThingDeactivate
-//
-//==========================================================================
-
 dboolean EV_ThingDeactivate(int tid)
 {
     mobj_t *mobj;
@@ -320,12 +283,6 @@ dboolean EV_ThingDeactivate(int tid)
     }
     return success;
 }
-
-//==========================================================================
-//
-// EV_ThingRemove
-//
-//==========================================================================
 
 dboolean EV_ThingRemove(int tid)
 {
@@ -348,12 +305,6 @@ dboolean EV_ThingRemove(int tid)
     return success;
 }
 
-//==========================================================================
-//
-// EV_ThingDestroy
-//
-//==========================================================================
-
 dboolean EV_ThingDestroy(int tid)
 {
     mobj_t *mobj;
@@ -372,30 +323,6 @@ dboolean EV_ThingDestroy(int tid)
     }
     return success;
 }
-
-//==========================================================================
-//
-// EV_ThingMove
-//
-// arg[0] = tid
-// arg[1] = speed
-// arg[2] = angle (255 = use mobj angle)
-// arg[3] = distance (pixels>>2)
-//
-//==========================================================================
-
-/*
-dboolean EV_ThingMove(byte *args)
-{
-	return false;
-}
-*/
-
-//==========================================================================
-//
-// ActivateThing
-//
-//==========================================================================
 
 static dboolean ActivateThing(mobj_t * mobj)
 {
@@ -472,12 +399,6 @@ static dboolean ActivateThing(mobj_t * mobj)
     }
     return true;
 }
-
-//==========================================================================
-//
-// DeactivateThing
-//
-//==========================================================================
 
 static dboolean DeactivateThing(mobj_t * mobj)
 {

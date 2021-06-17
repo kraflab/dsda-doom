@@ -4636,6 +4636,9 @@ void A_ESound(mobj_t * mo)
         case HERETIC_MT_SOUNDWIND:
             sound = heretic_sfx_wind;
             break;
+        case HEXEN_MT_SOUNDWIND:
+            sound = hexen_sfx_wind;
+            break;
         default:
             break;
     }

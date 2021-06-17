@@ -156,5 +156,8 @@ dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround);
 
 void P_InitCreatureCorpseQueue(dboolean corpseScan);
 void A_DeQueueCorpse(mobj_t * actor);
+dboolean A_RaiseMobj(mobj_t * actor);
+dboolean A_SinkMobj(mobj_t * actor);
+void A_NoBlocking(mobj_t * actor);
 
 #endif // __P_ENEMY__
