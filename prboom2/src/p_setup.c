@@ -3239,3 +3239,148 @@ static void InitMapInfo(void)
     SC_Close();
     MapCount = mapMax;
 }
+
+int P_GetMapCluster(int map)
+{
+    return MapInfo[QualifyMap(map)].cluster;
+}
+
+int P_GetMapCDTrack(int map)
+{
+    return MapInfo[QualifyMap(map)].cdTrack;
+}
+
+int P_GetMapWarpTrans(int map)
+{
+    return MapInfo[QualifyMap(map)].warpTrans;
+}
+
+int P_GetMapNextMap(int map)
+{
+    return MapInfo[QualifyMap(map)].nextMap;
+}
+
+int P_TranslateMap(int map)
+{
+    int i;
+
+    for (i = 1; i < 99; i++)    // Make this a macro
+    {
+        if (MapInfo[i].warpTrans == map)
+        {
+            return i;
+        }
+    }
+    // Not found
+    return -1;
+}
+
+int P_GetMapSky1Texture(int map)
+{
+    return MapInfo[QualifyMap(map)].sky1Texture;
+}
+
+int P_GetMapSky2Texture(int map)
+{
+    return MapInfo[QualifyMap(map)].sky2Texture;
+}
+
+char *P_GetMapName(int map)
+{
+    return MapInfo[QualifyMap(map)].name;
+}
+
+fixed_t P_GetMapSky1ScrollDelta(int map)
+{
+    return MapInfo[QualifyMap(map)].sky1ScrollDelta;
+}
+
+fixed_t P_GetMapSky2ScrollDelta(int map)
+{
+    return MapInfo[QualifyMap(map)].sky2ScrollDelta;
+}
+
+dboolean P_GetMapDoubleSky(int map)
+{
+    return MapInfo[QualifyMap(map)].doubleSky;
+}
+
+dboolean P_GetMapLightning(int map)
+{
+    return MapInfo[QualifyMap(map)].lightning;
+}
+
+dboolean P_GetMapFadeTable(int map)
+{
+    return MapInfo[QualifyMap(map)].fadetable;
+}
+
+char *P_GetMapSongLump(int map)
+{
+    if (!strcasecmp(MapInfo[QualifyMap(map)].songLump, DEFAULT_SONG_LUMP))
+    {
+        return NULL;
+    }
+    else
+    {
+        return MapInfo[QualifyMap(map)].songLump;
+    }
+}
+
+void P_PutMapSongLump(int map, char *lumpName)
+{
+    if (map < 1 || map > MapCount)
+    {
+        return;
+    }
+    M_StringCopy(MapInfo[map].songLump, lumpName,
+                 sizeof(MapInfo[map].songLump));
+}
+
+int P_GetCDStartTrack(void)
+{
+    return cd_NonLevelTracks[MCMD_CD_STARTTRACK - MCMD_CD_STARTTRACK];
+}
+
+int P_GetCDEnd1Track(void)
+{
+    return cd_NonLevelTracks[MCMD_CD_END1TRACK - MCMD_CD_STARTTRACK];
+}
+
+int P_GetCDEnd2Track(void)
+{
+    return cd_NonLevelTracks[MCMD_CD_END2TRACK - MCMD_CD_STARTTRACK];
+}
+
+int P_GetCDEnd3Track(void)
+{
+    return cd_NonLevelTracks[MCMD_CD_END3TRACK - MCMD_CD_STARTTRACK];
+}
+
+int P_GetCDIntermissionTrack(void)
+{
+    return cd_NonLevelTracks[MCMD_CD_INTERTRACK - MCMD_CD_STARTTRACK];
+}
+
+int P_GetCDTitleTrack(void)
+{
+    return cd_NonLevelTracks[MCMD_CD_TITLETRACK - MCMD_CD_STARTTRACK];
+}
+
+static int QualifyMap(int map)
+{
+    return (map < 1 || map > MapCount) ? 0 : map;
+}
+
+// Special early initializer needed to start sound before R_Init()
+void InitMapMusicInfo(void)
+{
+    int i;
+
+    for (i = 0; i < 99; i++)
+    {
+        M_StringCopy(MapInfo[i].songLump, DEFAULT_SONG_LUMP,
+                     sizeof(MapInfo[i].songLump));
+    }
+    MapCount = 98;
+}
