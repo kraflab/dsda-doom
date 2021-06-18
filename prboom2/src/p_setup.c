@@ -2666,8 +2666,13 @@ void P_CheckLevelWadStructure(const char *mapname)
     }
   }
 
+  if (hexen)
+  {
+    return;
+  }
+
   // refuse to load Hexen-format maps, avoid segfaults
-  i = lumpnum + ML_BLOCKMAP + 1;
+  i = lumpnum + ML_BEHAVIOR;
   if (P_CheckLumpsForSameSource(lumpnum, i))
   {
     if (!strncasecmp(lumpinfo[i].name, "BEHAVIOR", 8))
