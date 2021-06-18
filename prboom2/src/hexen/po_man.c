@@ -14,32 +14,31 @@
 // GNU General Public License for more details.
 //
 
-
-// HEADER FILES ------------------------------------------------------------
-
-#include "h2def.h"
-#include "i_system.h"
+#include "doomdef.h"
+#include "p_mobj.h"
+#include "r_defs.h"
+#include "r_main.h"
+#include "lprintf.h"
+#include "w_wad.h"
+#include "p_setup.h"
 #include "m_bbox.h"
-#include "i_swap.h"
-#include "p_local.h"
-#include "r_local.h"
+#include "p_tick.h"
+#include "p_inter.h"
+#include "p_map.h"
+#include "p_maputl.h"
 
-// MACROS ------------------------------------------------------------------
+#include "hexen/p_acs.h"
+#include "hexen/sn_sonix.h"
+
+#include "po_man.h"
 
 #define PO_MAXPOLYSEGS 64
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
 static polyobj_t *GetPolyobj(int polyNum);
 static int GetPolyobjMirror(int poly);
 static void ThrustMobj(mobj_t * mobj, seg_t * seg, polyobj_t * po);
 static void UpdateSegBBox(seg_t * seg);
-static void RotatePt(int an, fixed_t * x, fixed_t * y, fixed_t startSpotX,
-                     fixed_t startSpotY);
+static void RotatePt(int an, fixed_t * x, fixed_t * y, fixed_t startSpotX, fixed_t startSpotY);
 static void UnLinkPolyobj(polyobj_t * po);
 static void LinkPolyobj(polyobj_t * po);
 static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po);
@@ -48,29 +47,13 @@ static void IterFindPolySegs(int x, int y, seg_t ** segList);
 static void SpawnPolyobj(int index, int tag, dboolean crush);
 static void TranslateToStartSpot(int tag, int originX, int originY);
 
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 polyblock_t **PolyBlockMap;
 polyobj_t *polyobjs;            // list of all poly-objects on the level
 int po_NumPolyobjs;
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static int PolySegCount;
 static fixed_t PolyStartX;
 static fixed_t PolyStartY;
-
-// CODE --------------------------------------------------------------------
-
-// ===== Polyobj Event Code =====
-
-//==========================================================================
-//
-// T_RotatePoly
-//
-//==========================================================================
 
 void T_RotatePoly(polyevent_t * pe)
 {
@@ -104,14 +87,7 @@ void T_RotatePoly(polyevent_t * pe)
     }
 }
 
-//==========================================================================
-//
-// EV_RotatePoly
-//
-//==========================================================================
-
-dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean
-                      overRide)
+dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overRide)
 {
     int mirror;
     int polyNum;
@@ -131,7 +107,7 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean
     {
         I_Error("EV_RotatePoly:  Invalid polyobj num: %d\n", polyNum);
     }
-    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVSPEC, 0);
+    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
     P_AddThinker(&pe->thinker);
     pe->thinker.function = T_RotatePoly;
     pe->polyobj = polyNum;
@@ -162,7 +138,7 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean
         {                       // mirroring poly is already in motion
             break;
         }
-        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVSPEC, 0);
+        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
         P_AddThinker(&pe->thinker);
         pe->thinker.function = T_RotatePoly;
         poly->specialdata = pe;
@@ -200,12 +176,6 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean
     return true;
 }
 
-//==========================================================================
-//
-// T_MovePoly
-//
-//==========================================================================
-
 void T_MovePoly(polyevent_t * pe)
 {
     int absSpeed;
@@ -235,14 +205,7 @@ void T_MovePoly(polyevent_t * pe)
     }
 }
 
-//==========================================================================
-//
-// EV_MovePoly
-//
-//==========================================================================
-
-dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean
-                    overRide)
+dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean overRide)
 {
     int mirror;
     int polyNum;
@@ -263,7 +226,7 @@ dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean
     {
         I_Error("EV_MovePoly:  Invalid polyobj num: %d\n", polyNum);
     }
-    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVSPEC, 0);
+    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
     P_AddThinker(&pe->thinker);
     pe->thinker.function = T_MovePoly;
     pe->polyobj = polyNum;
@@ -293,7 +256,7 @@ dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean
         {                       // mirroring poly is already in motion
             break;
         }
-        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVSPEC, 0);
+        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
         P_AddThinker(&pe->thinker);
         pe->thinker.function = T_MovePoly;
         pe->polyobj = mirror;
@@ -317,12 +280,6 @@ dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean
     }
     return true;
 }
-
-//==========================================================================
-//
-// T_PolyDoor
-//
-//==========================================================================
 
 void T_PolyDoor(polydoor_t * pd)
 {
@@ -444,12 +401,6 @@ void T_PolyDoor(polydoor_t * pd)
     }
 }
 
-//==========================================================================
-//
-// EV_OpenPolyDoor
-//
-//==========================================================================
-
 dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
 {
     int mirror;
@@ -471,7 +422,7 @@ dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
     {
         I_Error("EV_OpenPolyDoor:  Invalid polyobj num: %d\n", polyNum);
     }
-    pd = Z_Malloc(sizeof(polydoor_t), PU_LEVSPEC, 0);
+    pd = Z_Malloc(sizeof(polydoor_t), PU_LEVEL, 0);
     memset(pd, 0, sizeof(polydoor_t));
     P_AddThinker(&pd->thinker);
     pd->thinker.function = T_PolyDoor;
@@ -510,7 +461,7 @@ dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
         {                       // mirroring poly is already in motion
             break;
         }
-        pd = Z_Malloc(sizeof(polydoor_t), PU_LEVSPEC, 0);
+        pd = Z_Malloc(sizeof(polydoor_t), PU_LEVEL, 0);
         memset(pd, 0, sizeof(polydoor_t));
         P_AddThinker(&pd->thinker);
         pd->thinker.function = T_PolyDoor;
@@ -545,14 +496,6 @@ dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
     return true;
 }
 
-// ===== Higher Level Poly Interface code =====
-
-//==========================================================================
-//
-// GetPolyobj
-//
-//==========================================================================
-
 static polyobj_t *GetPolyobj(int polyNum)
 {
     int i;
@@ -567,12 +510,6 @@ static polyobj_t *GetPolyobj(int polyNum)
     return NULL;
 }
 
-//==========================================================================
-//
-// GetPolyobjMirror
-//
-//==========================================================================
-
 static int GetPolyobjMirror(int poly)
 {
     int i;
@@ -586,12 +523,6 @@ static int GetPolyobjMirror(int poly)
     }
     return 0;
 }
-
-//==========================================================================
-//
-// ThrustMobj
-//
-//==========================================================================
 
 static void ThrustMobj(mobj_t * mobj, seg_t * seg, polyobj_t * po)
 {
@@ -646,12 +577,6 @@ static void ThrustMobj(mobj_t * mobj, seg_t * seg, polyobj_t * po)
     }
 }
 
-//==========================================================================
-//
-// UpdateSegBBox
-//
-//==========================================================================
-
 static void UpdateSegBBox(seg_t * seg)
 {
     line_t *line;
@@ -702,12 +627,6 @@ static void UpdateSegBBox(seg_t * seg)
         }
     }
 }
-
-//==========================================================================
-//
-// PO_MovePolyobj
-//
-//==========================================================================
 
 dboolean PO_MovePolyobj(int num, int x, int y)
 {
@@ -806,12 +725,6 @@ dboolean PO_MovePolyobj(int num, int x, int y)
     return true;
 }
 
-//==========================================================================
-//
-// RotatePt
-//
-//==========================================================================
-
 static void RotatePt(int an, fixed_t * x, fixed_t * y, fixed_t startSpotX,
                      fixed_t startSpotY)
 {
@@ -829,12 +742,6 @@ static void RotatePt(int an, fixed_t * x, fixed_t * y, fixed_t startSpotX,
     gyt = FixedMul(try, finecosine[an]);
     *y = (gyt + gxt) + startSpotY;
 }
-
-//==========================================================================
-//
-// PO_RotatePolyobj
-//
-//==========================================================================
 
 dboolean PO_RotatePolyobj(int num, angle_t angle)
 {
@@ -912,12 +819,6 @@ dboolean PO_RotatePolyobj(int num, angle_t angle)
     return true;
 }
 
-//==========================================================================
-//
-// UnLinkPolyobj
-//
-//==========================================================================
-
 static void UnLinkPolyobj(polyobj_t * po)
 {
     polyblock_t *link;
@@ -946,12 +847,6 @@ static void UnLinkPolyobj(polyobj_t * po)
         }
     }
 }
-
-//==========================================================================
-//
-// LinkPolyobj
-//
-//==========================================================================
 
 static void LinkPolyobj(polyobj_t * po)
 {
@@ -1036,12 +931,6 @@ static void LinkPolyobj(polyobj_t * po)
     }
 }
 
-//==========================================================================
-//
-// CheckMobjBlocking
-//
-//==========================================================================
-
 static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po)
 {
     mobj_t *mobj;
@@ -1102,12 +991,6 @@ static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po)
     return blocked;
 }
 
-//==========================================================================
-//
-// InitBlockMap
-//
-//==========================================================================
-
 static void InitBlockMap(void)
 {
     int i;
@@ -1148,23 +1031,8 @@ static void InitBlockMap(void)
                 topY = (*segList)->v1->y;
             }
         }
-//    area = ((rightX >> FRACBITS) - (leftX >> FRACBITS)) *
-//        ((topY >> FRACBITS) - (bottomY >> FRACBITS));
-
-//    fprintf(stdaux, "Area of Polyobj[%d]: %d\n", polyobjs[i].tag, area);
-//    fprintf(stdaux, "\t[%d]\n[%d]\t\t[%d]\n\t[%d]\n", topY>>FRACBITS,
-//              leftX>>FRACBITS,
-//      rightX>>FRACBITS, bottomY>>FRACBITS);
     }
 }
-
-//==========================================================================
-//
-// IterFindPolySegs
-//
-//              Passing NULL for segList will cause IterFindPolySegs to
-//      count the number of segs in the polyobj
-//==========================================================================
 
 static void IterFindPolySegs(int x, int y, seg_t ** segList)
 {
@@ -1192,13 +1060,6 @@ static void IterFindPolySegs(int x, int y, seg_t ** segList)
     }
     I_Error("IterFindPolySegs:  Non-closed Polyobj located.\n");
 }
-
-
-//==========================================================================
-//
-// SpawnPolyobj
-//
-//==========================================================================
 
 static void SpawnPolyobj(int index, int tag, dboolean crush)
 {
@@ -1321,12 +1182,6 @@ static void SpawnPolyobj(int index, int tag, dboolean crush)
     }
 }
 
-//==========================================================================
-//
-// TranslateToStartSpot
-//
-//==========================================================================
-
 static void TranslateToStartSpot(int tag, int originX, int originY)
 {
     seg_t **tempSeg;
@@ -1410,35 +1265,29 @@ static void TranslateToStartSpot(int tag, int originX, int originY)
     sub->poly = po;
 }
 
-//==========================================================================
-//
-// PO_Init
-//
-//==========================================================================
-
 void PO_Init(int lump)
 {
-    byte *data;
+    const byte *data;
     int i;
     mapthing_t spawnthing;
-    mapthing_t *mt;
+    const mapthing_t *mt;
     int numthings;
     int polyIndex;
 
     polyobjs = Z_Malloc(po_NumPolyobjs * sizeof(polyobj_t), PU_LEVEL, 0);
     memset(polyobjs, 0, po_NumPolyobjs * sizeof(polyobj_t));
 
-    data = W_CacheLumpNum(lump, PU_STATIC);
+    data = W_CacheLumpNum(lump);
     numthings = W_LumpLength(lump) / sizeof(mapthing_t);
-    mt = (mapthing_t *) data;
+    mt = (const mapthing_t *) data;
     polyIndex = 0;              // index polyobj number
     // Find the startSpot points, and spawn each polyobj
     for (i = 0; i < numthings; i++, mt++)
     {
-        spawnthing.x = SHORT(mt->x);
-        spawnthing.y = SHORT(mt->y);
-        spawnthing.angle = SHORT(mt->angle);
-        spawnthing.type = SHORT(mt->type);
+        spawnthing.x = LittleShort(mt->x);
+        spawnthing.y = LittleShort(mt->y);
+        spawnthing.angle = LittleShort(mt->angle);
+        spawnthing.type = LittleShort(mt->type);
 
         // 3001 = no crush, 3002 = crushing
         if (spawnthing.type == PO_SPAWN_TYPE
@@ -1451,13 +1300,13 @@ void PO_Init(int lump)
             polyIndex++;
         }
     }
-    mt = (mapthing_t *) data;
+    mt = (const mapthing_t *) data;
     for (i = 0; i < numthings; i++, mt++)
     {
-        spawnthing.x = SHORT(mt->x);
-        spawnthing.y = SHORT(mt->y);
-        spawnthing.angle = SHORT(mt->angle);
-        spawnthing.type = SHORT(mt->type);
+        spawnthing.x = LittleShort(mt->x);
+        spawnthing.y = LittleShort(mt->y);
+        spawnthing.angle = LittleShort(mt->angle);
+        spawnthing.type = LittleShort(mt->type);
         if (spawnthing.type == PO_ANCHOR_TYPE)
         {                       // Polyobj Anchor Pt.
             TranslateToStartSpot(spawnthing.angle,
@@ -1465,7 +1314,7 @@ void PO_Init(int lump)
                                  spawnthing.y << FRACBITS);
         }
     }
-    W_ReleaseLumpNum(lump);
+    W_UnlockLumpNum(lump);
     // check for a startspot without an anchor point
     for (i = 0; i < po_NumPolyobjs; i++)
     {
@@ -1478,12 +1327,6 @@ void PO_Init(int lump)
     }
     InitBlockMap();
 }
-
-//==========================================================================
-//
-// PO_Busy
-//
-//==========================================================================
 
 dboolean PO_Busy(int polyobj)
 {

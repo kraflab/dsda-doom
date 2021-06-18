@@ -294,7 +294,7 @@ int EV_DoFloor(line_t * line, byte * args, floor_e floortype)
         //      new floor thinker
         //
         rtn = 1;
-        floor = Z_Malloc(sizeof(*floor), PU_LEVSPEC, 0);
+        floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
         memset(floor, 0, sizeof(*floor));
         P_AddThinker(&floor->thinker);
         sec->specialdata = floor;
@@ -516,7 +516,7 @@ static void ProcessStairSector(sector_t * sec, int type, int height,
     // new floor thinker
     //
     height += StepDelta;
-    floor = Z_Malloc(sizeof(*floor), PU_LEVSPEC, 0);
+    floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
     memset(floor, 0, sizeof(*floor));
     P_AddThinker(&floor->thinker);
     sec->specialdata = floor;
@@ -710,7 +710,7 @@ int EV_BuildPillar(line_t * line, byte * args, dboolean crush)
             newHeight = sec->floorheight + (args[2] << FRACBITS);
         }
 
-        pillar = Z_Malloc(sizeof(*pillar), PU_LEVSPEC, 0);
+        pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, 0);
         sec->specialdata = pillar;
         P_AddThinker(&pillar->thinker);
         pillar->thinker.function = T_BuildPillar;
@@ -772,7 +772,7 @@ int EV_OpenPillar(line_t * line, byte * args)
             continue;
         }
         rtn = 1;
-        pillar = Z_Malloc(sizeof(*pillar), PU_LEVSPEC, 0);
+        pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, 0);
         sec->specialdata = pillar;
         P_AddThinker(&pillar->thinker);
         pillar->thinker.function = T_BuildPillar;
@@ -925,7 +925,7 @@ dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
             continue;
         }
         retCode = true;
-        waggle = Z_Malloc(sizeof(*waggle), PU_LEVSPEC, 0);
+        waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, 0);
         sector->specialdata = waggle;
         waggle->thinker.function = T_FloorWaggle;
         waggle->sector = sector;

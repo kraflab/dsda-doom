@@ -60,6 +60,7 @@
 #include "dsda.h"
 
 #include "hexen/p_anim.h"
+#include "hexen/po_man.h"
 #include "hexen/sn_sonix.h"
 
 #include "config.h"
@@ -2988,10 +2989,10 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   P_LoadThings(lumpnum+ML_THINGS);
 
-  // HEXEN_TODO: PO_Init / P_LoadACScripts
+  // HEXEN_TODO: P_LoadACScripts
   if (hexen)
   {
-    // PO_Init(lumpnum + ML_THINGS);       // Initialize the polyobjs
+    PO_Init(lumpnum + ML_THINGS);       // Initialize the polyobjs
     // P_LoadACScripts(lumpnum + ML_BEHAVIOR);     // ACS object code
   }
 

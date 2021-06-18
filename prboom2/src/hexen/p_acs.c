@@ -25,3 +25,8 @@ void CheckACSPresent(int number)
 {
   return;
 }
+
+void P_PolyobjFinished(int po)
+{
+  return;
+}

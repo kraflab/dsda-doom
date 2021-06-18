@@ -1911,10 +1911,6 @@ dboolean P_IsDoomnumAllowed(int doomnum)
 // already be in host byte order.
 //
 
-// HEXEN_TODO: move to po_man.c
-polyobj_t *polyobjs;
-int po_NumPolyobjs;
-
 mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 {
   int     i;

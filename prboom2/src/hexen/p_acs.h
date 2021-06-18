@@ -22,5 +22,6 @@
 
 dboolean P_StartACS(int number, int map, byte * args, mobj_t * activator, line_t * line, int side);
 void CheckACSPresent(int number);
+void P_PolyobjFinished(int po);
 
 #endif

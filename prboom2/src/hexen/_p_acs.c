@@ -523,7 +523,7 @@ static void StartOpenACS(int number, int infoIndex, int offset)
 {
     acs_t *script;
 
-    script = Z_Malloc(sizeof(acs_t), PU_LEVSPEC, 0);
+    script = Z_Malloc(sizeof(acs_t), PU_LEVEL, 0);
     memset(script, 0, sizeof(acs_t));
     script->number = number;
 
@@ -605,7 +605,7 @@ dboolean P_StartACS(int number, int map, byte * args, mobj_t * activator,
     {                           // Script is already executing
         return false;
     }
-    script = Z_Malloc(sizeof(acs_t), PU_LEVSPEC, 0);
+    script = Z_Malloc(sizeof(acs_t), PU_LEVEL, 0);
     memset(script, 0, sizeof(acs_t));
     script->number = number;
     script->infoIndex = infoIndex;

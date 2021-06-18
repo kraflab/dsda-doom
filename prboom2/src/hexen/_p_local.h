@@ -142,16 +142,6 @@ mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
 mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
                             mobj_t * source, mobj_t * dest, mobjtype_t type);
 
-// ***** P_ENEMY *****
-
-void P_NoiseAlert(mobj_t * target, mobj_t * emmiter);
-int P_Massacre(void);
-dboolean A_RaiseMobj(mobj_t * actor);
-dboolean A_SinkMobj(mobj_t * actor);
-void A_NoBlocking(mobj_t * actor);
-dboolean P_LookForMonsters(mobj_t * actor);
-
-
 // ***** P_MAPUTL *****
 
 typedef struct
@@ -232,15 +222,6 @@ void P_LineAttack(mobj_t * t1, angle_t angle, fixed_t distance, fixed_t slope,
 void P_RadiusAttack(mobj_t * spot, mobj_t * source, int damage, int distance,
                     dboolean damageSource);
 
-// ***** P_SETUP *****
-
-extern byte *rejectmatrix;      // for fast sight rejection
-extern short *blockmaplump;     // offsets in blockmap are from here
-extern short *blockmap;
-extern int bmapwidth, bmapheight;       // in mapblocks
-extern fixed_t bmaporgx, bmaporgy;      // origin of block map
-extern mobj_t **blocklinks;     // for thing chains
-
 // ***** P_INTER *****
 
 extern int clipmana[NUMMANA];
@@ -268,65 +249,11 @@ dboolean AM_Responder(event_t * ev);
 void AM_Ticker(void);
 void AM_Drawer(void);
 
-// ***** A_ACTION *****
-dboolean A_LocalQuake(byte * args, mobj_t * victim);
-void P_SpawnDirt(mobj_t * actor, fixed_t radius);
-void A_BridgeRemove(mobj_t * actor);
-
 // ***** SB_BAR *****
 
 extern int SB_state;
 extern int ArtifactFlash;
 void SB_PaletteFlash(dboolean forceChange);
-
-// ===== PO_MAN =====
-
-typedef enum
-{
-    PODOOR_NONE,
-    PODOOR_SLIDE,
-    PODOOR_SWING,
-} podoortype_t;
-
-typedef struct
-{
-    thinker_t thinker;
-    int polyobj;
-    int speed;
-    unsigned int dist;
-    int angle;
-    fixed_t xSpeed;             // for sliding walls
-    fixed_t ySpeed;
-} polyevent_t;
-
-typedef struct
-{
-    thinker_t thinker;
-    int polyobj;
-    int speed;
-    int dist;
-    int totalDist;
-    int direction;
-    fixed_t xSpeed, ySpeed;
-    int tics;
-    int waitTics;
-    podoortype_t type;
-    dboolean close;
-} polydoor_t;
-
-void T_PolyDoor(polydoor_t * pd);
-void T_RotatePoly(polyevent_t * pe);
-dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean
-                      overRide);
-void T_MovePoly(polyevent_t * pe);
-dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean
-                    overRide);
-dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type);
-
-dboolean PO_MovePolyobj(int num, int x, int y);
-dboolean PO_RotatePolyobj(int num, angle_t angle);
-void PO_Init(int lump);
-dboolean PO_Busy(int polyobj);
 
 #include "p_spec.h"
 
