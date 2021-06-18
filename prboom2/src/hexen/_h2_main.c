@@ -654,22 +654,6 @@ static void HandleArgs(void)
     W_ParseCommandLine();
 
     //!
-    // @category obscure
-    // @vanilla
-    // @arg <path>
-    //
-    // Development option to specify path to level scripts.
-    //
-
-    p = M_CheckParmWithArgs("-scripts", 1);
-
-    if (p)
-    {
-        sc_FileScripts = true;
-        sc_ScriptsDir = myargv[p+1];
-    }
-
-    //!
     // @category game
     // @arg <skill>
     // @vanilla

@@ -202,7 +202,7 @@ void SN_InitSequenceScript(void)
     {
         SequenceData[i] = NULL;
     }
-    SC_Open(SS_SCRIPT_NAME);
+    SC_OpenLump(SS_SCRIPT_NAME);
     while (SC_GetString())
     {
         if (*sc_String == ':')

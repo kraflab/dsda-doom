@@ -48,7 +48,6 @@ int sc_Number;
 int sc_Line;
 dboolean sc_End;
 dboolean sc_Crossed;
-dboolean sc_FileScripts = false;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -90,8 +89,6 @@ void SC_OpenLumpByNum(int lump)
 
 static void OpenScript(void)
 {
-  ScriptBuffer = W_CacheLumpNum(ScriptLump);
-  ScriptSize = W_LumpLength(ScriptLump);
   ScriptBuffer = W_CacheLumpNum(ScriptLump);
   ScriptSize = W_LumpLength(ScriptLump);
 
@@ -435,6 +432,6 @@ static void CheckOpen(void)
 {
   if (ScriptOpen == false)
   {
-    I_Error("SC_ call before SC_Open().");
+    I_Error("SC_ call before SC_Open*().");
   }
 }

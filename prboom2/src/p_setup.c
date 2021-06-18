@@ -3140,7 +3140,6 @@ static void InitMapInfo(void)
     info->fadetable = W_GetNumForName(DEFAULT_FADE_TABLE);
     M_StringCopy(info->name, UNKNOWN_MAP_NAME, sizeof(info->name));
 
-    // HEXEN_TODO: just SC_Open (file possible)
     SC_OpenLump(MAPINFO_SCRIPT_NAME);
     while (SC_GetString())
     {

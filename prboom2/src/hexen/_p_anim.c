@@ -365,7 +365,7 @@ void P_InitFTAnims(void)
     fd = 0;
     ad = AnimDefs;
     AnimDefCount = 0;
-    SC_Open(ANIM_SCRIPT_NAME);
+    SC_OpenLump(ANIM_SCRIPT_NAME);
     while (SC_GetString())
     {
         if (AnimDefCount == MAX_ANIM_DEFS)
