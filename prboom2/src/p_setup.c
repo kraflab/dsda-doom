@@ -1014,6 +1014,9 @@ static void P_LoadSectors (int lump)
       // [kb] For R_WiggleFix
       ss->cachedheight = 0;
       ss->scaleindex = 0;
+
+      // hexen
+      ss->seqType = SEQTYPE_STONE;    // default seqType
     }
 
   W_UnlockLumpNum(lump); // cph - release the data
@@ -1499,6 +1502,7 @@ static void P_LoadThings (int lump)
       mt.angle = LittleShort(mt.angle);
       mt.type = LittleShort(mt.type);
       mt.options = LittleShort(mt.options);
+      // special & args are bytes - don't need to convert anything
     }
     else
     {
@@ -1532,6 +1536,12 @@ static void P_LoadThings (int lump)
     mobj = P_SpawnMapThing(&mt, i);
     if (mobj && mobj->info->speed == 0)
       mobjlist[mobjcount++] = mobj;
+  }
+
+  if (hexen)
+  {
+    P_CreateTIDList();
+    P_InitCreatureCorpseQueue(false);   // false = do NOT scan for corpses
   }
 
   W_UnlockLumpNum(lump); // cph - release the data
@@ -1734,25 +1744,29 @@ static void P_LoadLineDefs2(int lump)
   int i = numlines;
   register line_t *ld = lines;
   for (;i--;ld++)
+  {
+    ld->frontsector = sides[ld->sidenum[0]].sector; //e6y: Can't be NO_INDEX here
+    ld->backsector  = ld->sidenum[1]!=NO_INDEX ? sides[ld->sidenum[1]].sector : 0;
+
+    if (!raven)
     {
-      ld->frontsector = sides[ld->sidenum[0]].sector; //e6y: Can't be NO_INDEX here
-      ld->backsector  = ld->sidenum[1]!=NO_INDEX ? sides[ld->sidenum[1]].sector : 0;
       switch (ld->special)
-        {                       // killough 4/11/98: handle special types
-          int lump, j;
+      {                       // killough 4/11/98: handle special types
+        int lump, j;
 
         case 260:               // killough 4/11/98: translucent 2s textures
-            transparentpresent = true;//e6y
-            lump = sides[*ld->sidenum].special; // translucency from sidedef
-            if (!ld->tag)                       // if tag==0,
-              ld->tranlump = lump;              // affect this linedef only
-            else
-              for (j=0;j<numlines;j++)          // if tag!=0,
-                if (lines[j].tag == ld->tag)    // affect all matching linedefs
-                  lines[j].tranlump = lump;
-            break;
-        }
+          transparentpresent = true;//e6y
+          lump = sides[*ld->sidenum].special; // translucency from sidedef
+          if (!ld->tag)                       // if tag==0,
+            ld->tranlump = lump;              // affect this linedef only
+          else
+            for (j=0;j<numlines;j++)          // if tag!=0,
+              if (lines[j].tag == ld->tag)    // affect all matching linedefs
+                lines[j].tranlump = lump;
+          break;
+      }
     }
+  }
 }
 
 //
@@ -1776,28 +1790,30 @@ static void P_LoadSideDefs2(int lump)
   int  i;
 
   for (i=0; i<numsides; i++)
-    {
-      register const mapsidedef_t *msd = (const mapsidedef_t *) data + i;
-      register side_t *sd = sides + i;
-      register sector_t *sec;
+  {
+    register const mapsidedef_t *msd = (const mapsidedef_t *) data + i;
+    register side_t *sd = sides + i;
+    register sector_t *sec;
 
-      sd->textureoffset = LittleShort(msd->textureoffset)<<FRACBITS;
-      sd->rowoffset = LittleShort(msd->rowoffset)<<FRACBITS;
+    sd->textureoffset = LittleShort(msd->textureoffset)<<FRACBITS;
+    sd->rowoffset = LittleShort(msd->rowoffset)<<FRACBITS;
 
-      { /* cph 2006/09/30 - catch out-of-range sector numbers; use sector 0 instead */
-        unsigned short sector_num = LittleShort(msd->sector);
-        if (sector_num >= numsectors) {
-          lprintf(LO_WARN,"P_LoadSideDefs2: sidedef %i has out-of-range sector num %u\n", i, sector_num);
-          sector_num = 0;
-        }
-        sd->sector = sec = &sectors[sector_num];
+    { /* cph 2006/09/30 - catch out-of-range sector numbers; use sector 0 instead */
+      unsigned short sector_num = LittleShort(msd->sector);
+      if (sector_num >= numsectors) {
+        lprintf(LO_WARN,"P_LoadSideDefs2: sidedef %i has out-of-range sector num %u\n", i, sector_num);
+        sector_num = 0;
       }
+      sd->sector = sec = &sectors[sector_num];
+    }
 
-      // killough 4/4/98: allow sidedef texture names to be overloaded
-      // killough 4/11/98: refined to allow colormaps to work as wall
-      // textures if invalid as colormaps but valid as textures.
+    // killough 4/4/98: allow sidedef texture names to be overloaded
+    // killough 4/11/98: refined to allow colormaps to work as wall
+    // textures if invalid as colormaps but valid as textures.
+    if (!raven)
+    {
       switch (sd->special)
-        {
+      {
         case 242:                       // variable colormap via 242 linedef
           sd->bottomtexture =
             (sec->bottommap =   R_ColormapNumForName(msd->bottomtexture)) < 0 ?
@@ -1835,8 +1851,15 @@ static void P_LoadSideDefs2(int lump)
           sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
           sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
           break;
-        }
+      }
     }
+    else
+    {
+      sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
+      sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
+      sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
+    }
+  }
 
   W_UnlockLumpNum(lump); // cph - release the lump
 }
@@ -2244,43 +2267,43 @@ static void P_LoadBlockMap (int lump)
   if (M_CheckParm("-blockmap") || W_LumpLength(lump)<8 || (count = W_LumpLength(lump)/2) >= 0x10000) //e6y
     P_CreateBlockMap();
   else
+  {
+    long i;
+    // cph - const*, wad lump handling updated
+    const short *wadblockmaplump = W_CacheLumpNum(lump);
+    blockmaplump = malloc_IfSameLevel(blockmaplump, sizeof(*blockmaplump) * count);
+
+    // killough 3/1/98: Expand wad blockmap into larger internal one,
+    // by treating all offsets except -1 as unsigned and zero-extending
+    // them. This potentially doubles the size of blockmaps allowed,
+    // because Doom originally considered the offsets as always signed.
+
+    blockmaplump[0] = LittleShort(wadblockmaplump[0]);
+    blockmaplump[1] = LittleShort(wadblockmaplump[1]);
+    blockmaplump[2] = (long)(LittleShort(wadblockmaplump[2])) & 0xffff;
+    blockmaplump[3] = (long)(LittleShort(wadblockmaplump[3])) & 0xffff;
+
+    for (i=4 ; i<count ; i++)
     {
-      long i;
-      // cph - const*, wad lump handling updated
-      const short *wadblockmaplump = W_CacheLumpNum(lump);
-      blockmaplump = malloc_IfSameLevel(blockmaplump, sizeof(*blockmaplump) * count);
-
-      // killough 3/1/98: Expand wad blockmap into larger internal one,
-      // by treating all offsets except -1 as unsigned and zero-extending
-      // them. This potentially doubles the size of blockmaps allowed,
-      // because Doom originally considered the offsets as always signed.
-
-      blockmaplump[0] = LittleShort(wadblockmaplump[0]);
-      blockmaplump[1] = LittleShort(wadblockmaplump[1]);
-      blockmaplump[2] = (long)(LittleShort(wadblockmaplump[2])) & 0xffff;
-      blockmaplump[3] = (long)(LittleShort(wadblockmaplump[3])) & 0xffff;
-
-      for (i=4 ; i<count ; i++)
-        {
-          short t = LittleShort(wadblockmaplump[i]);          // killough 3/1/98
-          blockmaplump[i] = t == -1 ? -1l : (long) t & 0xffff;
-        }
-
-      W_UnlockLumpNum(lump); // cph - unlock the lump
-
-      bmaporgx = blockmaplump[0]<<FRACBITS;
-      bmaporgy = blockmaplump[1]<<FRACBITS;
-      bmapwidth = blockmaplump[2];
-      bmapheight = blockmaplump[3];
-
-      // haleyjd 03/04/10: check for blockmap problems
-      // http://www.doomworld.com/idgames/index.php?id=12935
-      if (!P_VerifyBlockMap(count))
-      {
-        lprintf(LO_INFO, "P_LoadBlockMap: erroneous BLOCKMAP lump may cause crashes.\n");
-        lprintf(LO_INFO, "P_LoadBlockMap: use \"-blockmap\" command line switch for rebuilding\n");
-      }
+      short t = LittleShort(wadblockmaplump[i]);          // killough 3/1/98
+      blockmaplump[i] = t == -1 ? -1l : (long) t & 0xffff;
     }
+
+    W_UnlockLumpNum(lump); // cph - unlock the lump
+
+    bmaporgx = blockmaplump[0]<<FRACBITS;
+    bmaporgy = blockmaplump[1]<<FRACBITS;
+    bmapwidth = blockmaplump[2];
+    bmapheight = blockmaplump[3];
+
+    // haleyjd 03/04/10: check for blockmap problems
+    // http://www.doomworld.com/idgames/index.php?id=12935
+    if (!P_VerifyBlockMap(count))
+    {
+      lprintf(LO_INFO, "P_LoadBlockMap: erroneous BLOCKMAP lump may cause crashes.\n");
+      lprintf(LO_INFO, "P_LoadBlockMap: use \"-blockmap\" command line switch for rebuilding\n");
+    }
+  }
 
   // clear out mobj chains - CPhipps - use calloc
   blocklinks = calloc_IfSameLevel(blocklinks, bmapwidth * bmapheight, sizeof(*blocklinks));
@@ -2364,14 +2387,14 @@ static int P_GroupLines (void)
 
   // count number of lines in each sector
   for (i=0,li=lines; i<numlines; i++, li++)
+  {
+    li->frontsector->linecount++;
+    if (li->backsector && li->backsector != li->frontsector)
     {
-      li->frontsector->linecount++;
-      if (li->backsector && li->backsector != li->frontsector)
-        {
-          li->backsector->linecount++;
-          total++;
-        }
+      li->backsector->linecount++;
+      total++;
     }
+  }
 
   {  // allocate line tables for each sector
     line_t **linebuffer = Z_Malloc(total*sizeof(line_t *), PU_LEVEL, 0);
