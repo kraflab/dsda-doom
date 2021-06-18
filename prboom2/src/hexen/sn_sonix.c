@@ -14,34 +14,32 @@
 // GNU General Public License for more details.
 //
 
-
-// HEADER FILES ------------------------------------------------------------
-
 #include <string.h>
+
+#include "doomdef.h"
 #include "m_random.h"
-#include "h2def.h"
-#include "i_system.h"
-#include "i_sound.h"
 #include "s_sound.h"
+#include "sounds.h"
+#include "p_mobj.h"
+#include "lprintf.h"
+#include "sc_man.h"
 
-// MACROS ------------------------------------------------------------------
+#include "sn_sonix.h"
 
-#define SS_MAX_SCRIPTS	64
-#define SS_TEMPBUFFER_SIZE	1024
+#define SS_MAX_SCRIPTS 64
+#define SS_TEMPBUFFER_SIZE 1024
 #define SS_SEQUENCE_NAME_LENGTH 32
 
-#define SS_SCRIPT_NAME "SNDSEQ"
-#define SS_STRING_PLAY			"play"
+#define SS_SCRIPT_NAME          "SNDSEQ"
+#define SS_STRING_PLAY          "play"
 #define SS_STRING_PLAYUNTILDONE "playuntildone"
-#define SS_STRING_PLAYTIME		"playtime"
-#define SS_STRING_PLAYREPEAT	"playrepeat"
-#define SS_STRING_DELAY			"delay"
-#define SS_STRING_DELAYRAND		"delayrand"
-#define SS_STRING_VOLUME		"volume"
-#define SS_STRING_END			"end"
-#define SS_STRING_STOPSOUND		"stopsound"
-
-// TYPES -------------------------------------------------------------------
+#define SS_STRING_PLAYTIME      "playtime"
+#define SS_STRING_PLAYREPEAT    "playrepeat"
+#define SS_STRING_DELAY         "delay"
+#define SS_STRING_DELAYRAND     "delayrand"
+#define SS_STRING_VOLUME        "volume"
+#define SS_STRING_END           "end"
+#define SS_STRING_STOPSOUND     "stopsound"
 
 typedef enum
 {
@@ -71,22 +69,8 @@ struct seqnode_s
   seqnode_t *next;
 };
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
 static void VerifySequencePtr(int *base, int *ptr);
 static int GetSoundOffset(char *name);
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-extern sfxinfo_t S_sfx[];
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static struct
 {
@@ -144,16 +128,6 @@ static int *SequenceData[SS_MAX_SCRIPTS];
 int ActiveSequences;
 seqnode_t *SequenceListHead;
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-// VerifySequencePtr
-//
-//   Verifies the integrity of the temporary ptr, and ensures that the ptr
-//              isn't exceeding the size of the temporary buffer
-//==========================================================================
-
 static void VerifySequencePtr(int *base, int *ptr)
 {
     if (ptr - base > SS_TEMPBUFFER_SIZE)
@@ -162,19 +136,13 @@ static void VerifySequencePtr(int *base, int *ptr)
     }
 }
 
-//==========================================================================
-//
-// GetSoundOffset
-//
-//==========================================================================
-
 static int GetSoundOffset(char *name)
 {
     int i;
 
     for (i = 0; i < NUMSFX; i++)
     {
-        if (!strcasecmp(name, S_sfx[i].tagname))
+        if (!strcasecmp(name, S_sfx[i].name))
         {
             return i;
         }
@@ -182,12 +150,6 @@ static int GetSoundOffset(char *name)
     SC_ScriptError("GetSoundOffset:  Unknown sound name\n");
     return 0;
 }
-
-//==========================================================================
-//
-// SN_InitSequenceScript
-//
-//==========================================================================
 
 void SN_InitSequenceScript(void)
 {
@@ -321,12 +283,6 @@ void SN_InitSequenceScript(void)
     }
 }
 
-//==========================================================================
-//
-//  SN_StartSequence
-//
-//==========================================================================
-
 void SN_StartSequence(mobj_t * mobj, int sequence)
 {
     seqnode_t *node;
@@ -356,12 +312,6 @@ void SN_StartSequence(mobj_t * mobj, int sequence)
     return;
 }
 
-//==========================================================================
-//
-//  SN_StartSequenceName
-//
-//==========================================================================
-
 void SN_StartSequenceName(mobj_t * mobj, char *name)
 {
     int i;
@@ -375,12 +325,6 @@ void SN_StartSequenceName(mobj_t * mobj, char *name)
         }
     }
 }
-
-//==========================================================================
-//
-//  SN_StopSequence
-//
-//==========================================================================
 
 void SN_StopSequence(mobj_t * mobj)
 {
@@ -413,16 +357,11 @@ void SN_StopSequence(mobj_t * mobj)
     }
 }
 
-//==========================================================================
-//
-//  SN_UpdateActiveSequences
-//
-//==========================================================================
-
 void SN_UpdateActiveSequences(void)
 {
     seqnode_t *node;
     dboolean sndPlaying;
+    extern dboolean paused;
 
     if (!ActiveSequences || paused)
     {                           // No sequences currently playing/game is paused
@@ -490,12 +429,6 @@ void SN_UpdateActiveSequences(void)
     }
 }
 
-//==========================================================================
-//
-//  SN_StopAllSequences
-//
-//==========================================================================
-
 void SN_StopAllSequences(void)
 {
     seqnode_t *node;
@@ -507,24 +440,11 @@ void SN_StopAllSequences(void)
     }
 }
 
-//==========================================================================
-//
-//  SN_GetSequenceOffset
-//
-//==========================================================================
-
 int SN_GetSequenceOffset(int sequence, int *sequencePtr)
 {
     return (sequencePtr -
             SequenceData[SequenceTranslate[sequence].scriptNum]);
 }
-
-//==========================================================================
-//
-//  SN_ChangeNodeData
-//
-//      nodeNum zero is the first node
-//==========================================================================
 
 void SN_ChangeNodeData(int nodeNum, int seqOffset, int delayTics, int volume,
                        int currentSoundID)

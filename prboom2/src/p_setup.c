@@ -59,6 +59,8 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "hexen/sn_sonix.h"
+
 #include "config.h"
 #ifdef HAVE_LIBZ
 #include <zlib.h>
@@ -3081,8 +3083,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     // Check if the level is a lightning level
     // HEXEN_TODO: P_InitLightning
     // P_InitLightning();
-    // HEXEN_TODO: SN_StopAllSequences
-    // SN_StopAllSequences();
+    SN_StopAllSequences();
   }
 }
 
