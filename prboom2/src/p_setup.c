@@ -3086,12 +3086,17 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   }
 }
 
+static void InitMapInfo(void);
+
 //
 // P_Init
 //
 void P_Init (void)
 {
+  InitMapInfo();
   P_InitSwitchList();
+  // HEXEN_TODO: P_InitFTAnims
+  // P_InitFTAnims();
   P_InitPicAnims();
   P_InitTerrainTypes();
   P_InitLava();
@@ -3110,6 +3115,8 @@ static void InitMapInfo(void)
     mapInfo_t *info;
     char songMulch[10];
     const char *default_sky_name = DEFAULT_SKY_NAME;
+
+    if (!hexen) return;
 
     mapMax = 1;
 

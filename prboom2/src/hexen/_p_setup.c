@@ -280,23 +280,6 @@ static int QualifyMap(int map)
     return (map < 1 || map > MapCount) ? 0 : map;
 }
 
-//==========================================================================
-//
-// P_Init
-//
-//==========================================================================
-
-void P_Init(void)
-{
-    InitMapInfo();
-    P_InitSwitchList();
-    P_InitFTAnims();            // Init flat and texture animations
-    P_InitTerrainTypes();
-    P_InitLava();
-    R_InitSprites(sprnames);
-}
-
-
 // Special early initializer needed to start sound before R_Init()
 void InitMapMusicInfo(void)
 {
@@ -309,17 +292,3 @@ void InitMapMusicInfo(void)
     }
     MapCount = 98;
 }
-
-/*
-void My_Debug(void)
-{
-	int i;
-
-	printf("My debug stuff ----------------------\n");
-	printf("gamemap=%d\n",gamemap);
-	for (i=0; i<10; i++)
-	{
-		printf("i=%d  songlump=%s\n",i,MapInfo[i].songLump);
-	}
-}
-*/
