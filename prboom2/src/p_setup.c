@@ -2824,10 +2824,10 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   //    W_Reload ();     killough 1/31/98: W_Reload obsolete
 
   // find map name
-  if (gamemode == commercial)
+  if (gamemode == commercial || hexen)
   {
-    sprintf(lumpname, "map%02d", map);           // killough 1/24/98: simplify
-    sprintf(gl_lumpname, "gl_map%02d", map);    // figgi
+    sprintf(lumpname, "MAP%02d", map);           // killough 1/24/98: simplify
+    sprintf(gl_lumpname, "GL_MAP%02d", map);    // figgi
   }
   else
   {
@@ -2965,6 +2965,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   bodyqueslot = 0;
 
+  po_NumPolyobjs = 0; // hexen
+
   /* cph - reset all multiplayer starts */
   memset(playerstarts,0,sizeof(playerstarts));
   deathmatch_p = deathmatchstarts;
@@ -2974,11 +2976,26 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   P_MapStart();
 
-  P_InitAmbientSound();
-  P_InitMonsters();
-  P_OpenWeapons();
+  if (heretic)
+  {
+    P_InitAmbientSound();
+    P_InitMonsters();
+    P_OpenWeapons();
+  }
+
   P_LoadThings(lumpnum+ML_THINGS);
-  P_CloseWeapons();
+
+  // HEXEN_TODO: PO_Init / P_LoadACScripts
+  if (hexen)
+  {
+    // PO_Init(lumpnum + ML_THINGS);       // Initialize the polyobjs
+    // P_LoadACScripts(lumpnum + ML_BEHAVIOR);     // ACS object code
+  }
+
+  if (heretic)
+  {
+    P_CloseWeapons();
+  }
 
   // if deathmatch, randomly spawn the active players
   if (deathmatch)
@@ -3021,6 +3038,22 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   P_MapEnd();
 
+  // HEXEN_TODO: colormaps
+  if (hexen)
+  {
+    // Load colormap and set the fullbright flag
+    // i = P_GetMapFadeTable(gamemap);
+    // W_ReadLump(i, colormaps);
+    // if (i == W_GetNumForName("COLORMAP"))
+    // {
+    //   LevelUseFullBright = true;
+    // }
+    // else
+    // {                           // Probably fog ... don't use fullbright sprites
+    //   LevelUseFullBright = false;
+    // }
+  }
+
   // preload graphics
   if (precache)
     R_PrecacheLevel();
@@ -3042,6 +3075,15 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   //e6y
   P_SyncWalkcam(true, true);
   R_SmoothPlaying_Reset(NULL);
+
+  if (hexen)
+  {
+    // Check if the level is a lightning level
+    // HEXEN_TODO: P_InitLightning
+    // P_InitLightning();
+    // HEXEN_TODO: SN_StopAllSequences
+    // SN_StopAllSequences();
+  }
 }
 
 //
