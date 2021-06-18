@@ -59,6 +59,7 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "hexen/p_anim.h"
 #include "hexen/sn_sonix.h"
 
 #include "config.h"
@@ -3081,8 +3082,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   if (hexen)
   {
     // Check if the level is a lightning level
-    // HEXEN_TODO: P_InitLightning
-    // P_InitLightning();
+    P_InitLightning();
     SN_StopAllSequences();
   }
 }
@@ -3096,8 +3096,7 @@ void P_Init (void)
 {
   InitMapInfo();
   P_InitSwitchList();
-  // HEXEN_TODO: P_InitFTAnims
-  // P_InitFTAnims();
+  P_InitFTAnims();
   P_InitPicAnims();
   P_InitTerrainTypes();
   P_InitLava();

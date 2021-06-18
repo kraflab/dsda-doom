@@ -122,8 +122,8 @@ static const animdef_t heretic_animdefs[] = {
 
 // heretic
 #define	MAXLINEANIMS		64*256
-static short numlinespecials;
-static line_t *linespeciallist[MAXLINEANIMS];
+short numlinespecials;
+line_t *linespeciallist[MAXLINEANIMS];
 
 //e6y
 void MarkAnimatedTextures(void)

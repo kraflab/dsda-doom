@@ -111,6 +111,8 @@ set(COMMON_SRC
     hexen/info.c
     hexen/p_acs.c
     hexen/p_acs.h
+    hexen/p_anim.c
+    hexen/p_anim.h
     hexen/p_things.c
     hexen/p_things.h
     hexen/sn_sonix.c

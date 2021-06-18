@@ -14,33 +14,32 @@
 // GNU General Public License for more details.
 //
 
-
-// HEADER FILES ------------------------------------------------------------
-
-#include "h2def.h"
+#include "doomdef.h"
+#include "doomstat.h"
 #include "m_random.h"
-#include "i_system.h"
-#include "p_local.h"
 #include "s_sound.h"
-
-// MACROS ------------------------------------------------------------------
+#include "sounds.h"
+#include "r_defs.h"
+#include "r_state.h"
+#include "sc_man.h"
+#include "lprintf.h"
+#include "w_wad.h"
+#include "p_setup.h"
 
 #define ANIM_SCRIPT_NAME "ANIMDEFS"
 #define MAX_ANIM_DEFS 20
 #define MAX_FRAME_DEFS 96
 #define ANIM_FLAT 0
 #define ANIM_TEXTURE 1
-#define SCI_FLAT "flat"
+#define SCI_FLAT    "flat"
 #define SCI_TEXTURE "texture"
-#define SCI_PIC "pic"
-#define SCI_TICS "tics"
-#define SCI_RAND "rand"
+#define SCI_PIC     "pic"
+#define SCI_TICS    "tics"
+#define SCI_RAND    "rand"
 
 #define LIGHTNING_SPECIAL 	198
 #define LIGHTNING_SPECIAL2 	199
 #define SKYCHANGE_SPECIAL 	200
-
-// TYPES -------------------------------------------------------------------
 
 typedef struct
 {
@@ -58,26 +57,16 @@ typedef struct
     int endFrameDef;
 } animDef_t;
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
 static void P_LightningFlash(void);
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
 extern fixed_t Sky1ColumnOffset;
 extern fixed_t Sky2ColumnOffset;
 extern dboolean DoubleSky;
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
+extern short numlinespecials;
+extern line_t *linespeciallist[];
 
 fixed_t Sky1ScrollDelta;
 fixed_t Sky2ScrollDelta;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static animDef_t AnimDefs[MAX_ANIM_DEFS];
 static frameDef_t FrameDefs[MAX_FRAME_DEFS];
@@ -86,14 +75,6 @@ static dboolean LevelHasLightning;
 static int NextLightningFlash;
 static int LightningFlash;
 static int *LightningLightLevels;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-// P_AnimateSurfaces
-//
-//==========================================================================
 
 void P_AnimateSurfaces(void)
 {
@@ -172,12 +153,6 @@ void P_AnimateSurfaces(void)
         }
     }
 }
-
-//==========================================================================
-//
-// P_LightningFlash
-//
-//==========================================================================
 
 static void P_LightningFlash(void)
 {
@@ -292,22 +267,10 @@ static void P_LightningFlash(void)
     }
 }
 
-//==========================================================================
-//
-// P_ForceLightning
-//
-//==========================================================================
-
 void P_ForceLightning(void)
 {
     NextLightningFlash = 0;
 }
-
-//==========================================================================
-//
-// P_InitLightning
-//
-//==========================================================================
 
 void P_InitLightning(void)
 {
@@ -345,14 +308,6 @@ void P_InitLightning(void)
     NextLightningFlash = ((P_Random(pr_hexen) & 15) + 5) * 35;  // don't flash at level start
 }
 
-//==========================================================================
-//
-// P_InitFTAnims
-//
-// Initialize flat and texture animation lists.
-//
-//==========================================================================
-
 void P_InitFTAnims(void)
 {
     int base;
@@ -361,6 +316,8 @@ void P_InitFTAnims(void)
     animDef_t *ad;
     dboolean ignore;
     dboolean done;
+
+    if (!hexen) return;
 
     fd = 0;
     ad = AnimDefs;

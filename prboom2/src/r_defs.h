@@ -527,4 +527,10 @@ enum
 extern polyobj_t *polyobjs;     // list of all poly-objects on the level
 extern int po_NumPolyobjs;
 
+extern int Sky1Texture;
+extern int Sky2Texture;
+extern fixed_t Sky1ColumnOffset;
+extern fixed_t Sky2ColumnOffset;
+extern dboolean DoubleSky;
+
 #endif

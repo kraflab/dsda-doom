@@ -36,18 +36,6 @@
 extern fixed_t Sky1ScrollDelta;
 extern fixed_t Sky2ScrollDelta;
 
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-int Sky1Texture;
-int Sky2Texture;
-fixed_t Sky1ColumnOffset;
-fixed_t Sky2ColumnOffset;
-int skyflatnum;
-int skytexturemid;
-fixed_t skyiscale;
-dboolean DoubleSky;
-planefunction_t floorfunc, ceilingfunc;
-
 // Opening
 visplane_t visplanes[MAXVISPLANES], *lastvisplane;
 visplane_t *floorplane, *ceilingplane;

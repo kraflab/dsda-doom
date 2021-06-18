@@ -61,6 +61,14 @@
 #include "v_video.h"
 #include "lprintf.h"
 
+int Sky1Texture;
+int Sky2Texture;
+fixed_t Sky1ColumnOffset;
+fixed_t Sky2ColumnOffset;
+dboolean DoubleSky;
+// HEXEN_TODO: planefunction_t
+// planefunction_t floorfunc, ceilingfunc;
+
 // HEXEN_TODO: MAXVISPLANES is 1280 - maybe only 128 hash slots will be slow?
 
 #define MAXVISPLANES 128    /* must be a power of 2 */
