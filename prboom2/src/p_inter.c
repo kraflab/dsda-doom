@@ -1981,6 +1981,32 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
 
 // hexen
 
+#define	TXT_KEY_STEEL		"STEEL KEY"
+#define	TXT_KEY_CAVE		"CAVE KEY"
+#define	TXT_KEY_AXE			"AXE KEY"
+#define	TXT_KEY_FIRE		"FIRE KEY"
+#define	TXT_KEY_EMERALD		"EMERALD KEY"
+#define	TXT_KEY_DUNGEON		"DUNGEON KEY"
+#define	TXT_KEY_SILVER		"SILVER KEY"
+#define	TXT_KEY_RUSTED		"RUSTED KEY"
+#define	TXT_KEY_HORN		"HORN KEY"
+#define	TXT_KEY_SWAMP		"SWAMP KEY"
+#define TXT_KEY_CASTLE		"CASTLE KEY"
+
+const char *TextKeyMessages[] = {
+    TXT_KEY_STEEL,
+    TXT_KEY_CAVE,
+    TXT_KEY_AXE,
+    TXT_KEY_FIRE,
+    TXT_KEY_EMERALD,
+    TXT_KEY_DUNGEON,
+    TXT_KEY_SILVER,
+    TXT_KEY_RUSTED,
+    TXT_KEY_HORN,
+    TXT_KEY_SWAMP,
+    TXT_KEY_CASTLE
+};
+
 int ArmorIncrement[NUMCLASSES][NUMARMOR] = {
     [PCLASS_FIGHTER] = {25 * FRACUNIT, 20 * FRACUNIT, 15 * FRACUNIT, 5 * FRACUNIT},
                        {10 * FRACUNIT, 25 * FRACUNIT, 5 * FRACUNIT, 20 * FRACUNIT},

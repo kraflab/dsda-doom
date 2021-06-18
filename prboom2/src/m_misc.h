@@ -123,6 +123,7 @@ typedef struct default_s
 #define UL (-123456789) /* magic number for no min or max for parameter */
 
 dboolean M_StringCopy(char *dest, const char *src, size_t dest_size);
+dboolean M_StringConcat(char *dest, const char *src, size_t dest_size);
 
 int M_StrToInt(const char *s, int *l);
 int M_StrToFloat(const char *s, float *f);

@@ -1791,6 +1791,23 @@ dboolean M_StringCopy(char *dest, const char *src, size_t dest_size)
     return src[len] == '\0';
 }
 
+// Safe string concat function that works like OpenBSD's strlcat().
+// Returns true if string not truncated.
+
+dboolean M_StringConcat(char *dest, const char *src, size_t dest_size)
+{
+    size_t offset;
+
+    offset = strlen(dest);
+    if (offset > dest_size)
+    {
+        offset = dest_size;
+    }
+
+    return M_StringCopy(dest + offset, src, dest_size - offset);
+}
+
+
 int M_StrToInt(const char *s, int *l)
 {
   return (

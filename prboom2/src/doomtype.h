@@ -175,4 +175,6 @@ enum patch_translation_e {
   VPT_NOOFFSET = 1024,
 };
 
+#define arrlen(array) (sizeof(array) / sizeof(*array))
+
 #endif

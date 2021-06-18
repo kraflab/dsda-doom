@@ -4319,6 +4319,15 @@ void P_SpawnLineSpecials(void)
 
 // hexen
 
+#define MAX_TAGGED_LINES 64
+
+static struct
+{
+    line_t *line;
+    int lineTag;
+} TaggedLines[MAX_TAGGED_LINES];
+static int TaggedLineCount;
+
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType)
 {
   return true;
@@ -4347,4 +4356,34 @@ void P_PlayerOnSpecialFlat(player_t * player, int floorType)
         default:
             break;
     }
+}
+
+line_t *P_FindLine(int lineTag, int *searchPosition)
+{
+    int i;
+
+    for (i = *searchPosition + 1; i < TaggedLineCount; i++)
+    {
+        if (TaggedLines[i].lineTag == lineTag)
+        {
+            *searchPosition = i;
+            return TaggedLines[i].line;
+        }
+    }
+    *searchPosition = -1;
+    return NULL;
+}
+
+int P_FindSectorFromTag(int tag, int start)
+{
+    int i;
+
+    for (i = start + 1; i < numsectors; i++)
+    {
+        if (sectors[i].tag == tag)
+        {
+            return i;
+        }
+    }
+    return -1;
 }

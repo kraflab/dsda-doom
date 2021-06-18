@@ -25,8 +25,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_TAGGED_LINES 64
-
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -61,13 +59,6 @@ struct
 };
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-static struct
-{
-    line_t *line;
-    int lineTag;
-} TaggedLines[MAX_TAGGED_LINES];
-static int TaggedLineCount;
 
 mobj_t LavaInflictor;
 
@@ -327,26 +318,6 @@ int     P_FindSectorFromLineTag(line_t  *line,int start)
 }
 */
 
-//=========================================================================
-//
-// P_FindSectorFromTag
-//
-//=========================================================================
-
-int P_FindSectorFromTag(int tag, int start)
-{
-    int i;
-
-    for (i = start + 1; i < numsectors; i++)
-    {
-        if (sectors[i].tag == tag)
-        {
-            return i;
-        }
-    }
-    return -1;
-}
-
 //==================================================================
 //
 //      Find minimum light from an adjacent sector
@@ -421,7 +392,7 @@ static dboolean CheckedLockedDoor(mobj_t * mo, byte lock)
     }
     if (!mo->player->cards[lock - 1])
     {
-        M_snprintf(LockedBuffer, sizeof(LockedBuffer),
+        doom_snprintf(LockedBuffer, sizeof(LockedBuffer),
                    "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
         P_SetMessage(mo->player, LockedBuffer, true);
         S_StartSound(mo, hexen_sfx_door_locked);
@@ -1152,26 +1123,4 @@ void P_SpawnSpecials(void)
 
     // Initialize flat and texture animations
     P_InitFTAnims();
-}
-
-//==========================================================================
-//
-// P_FindLine
-//
-//==========================================================================
-
-line_t *P_FindLine(int lineTag, int *searchPosition)
-{
-    int i;
-
-    for (i = *searchPosition + 1; i < TaggedLineCount; i++)
-    {
-        if (TaggedLines[i].lineTag == lineTag)
-        {
-            *searchPosition = i;
-            return TaggedLines[i].line;
-        }
-    }
-    *searchPosition = -1;
-    return NULL;
 }

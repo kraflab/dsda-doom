@@ -312,7 +312,7 @@ void SN_StartSequence(mobj_t * mobj, int sequence)
     return;
 }
 
-void SN_StartSequenceName(mobj_t * mobj, char *name)
+void SN_StartSequenceName(mobj_t * mobj, const char *name)
 {
     int i;
 

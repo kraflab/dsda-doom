@@ -24,20 +24,6 @@
 
 #define BONUSADD 6
 
-const char *TextKeyMessages[] = {
-    TXT_KEY_STEEL,
-    TXT_KEY_CAVE,
-    TXT_KEY_AXE,
-    TXT_KEY_FIRE,
-    TXT_KEY_EMERALD,
-    TXT_KEY_DUNGEON,
-    TXT_KEY_SILVER,
-    TXT_KEY_RUSTED,
-    TXT_KEY_HORN,
-    TXT_KEY_SWAMP,
-    TXT_KEY_CASTLE
-};
-
 static void SetDormantArtifact(mobj_t * arti);
 static void TryPickupArtifact(player_t * player, artitype_t artifactType,
                               mobj_t * artifact);

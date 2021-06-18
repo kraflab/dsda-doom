@@ -1204,5 +1204,7 @@ void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing);
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType);
 dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
 void P_PlayerOnSpecialFlat(player_t * player, int floorType);
+line_t *P_FindLine(int lineTag, int *searchPosition);
+int P_FindSectorFromTag(int tag, int start);
 
 #endif

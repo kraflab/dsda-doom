@@ -1229,3 +1229,17 @@ dboolean S_GetSoundPlayingInfo(void * origin, int sound_id)
     }
     return false;
 }
+
+int S_GetSoundID(const char *name)
+{
+    int i;
+
+    for (i = 0; i < NUMSFX; i++)
+    {
+        if (!strcmp(S_sfx[i].name, name))
+        {
+            return i;
+        }
+    }
+    return 0;
+}
