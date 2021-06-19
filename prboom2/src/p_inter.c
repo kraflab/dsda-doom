@@ -1298,6 +1298,7 @@ void A_RestoreSpecialThing2(mobj_t * thing)
 void P_SetMessage(player_t * player, const char *message, dboolean ultmsg)
 {
     player->message = message;
+    player->yellowMessage = false;
 }
 
 void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
@@ -2228,14 +2229,6 @@ dboolean Hexen_P_GiveArmor(player_t * player, armortype_t armortype, int amount)
 
 void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg)
 {
-    if (player->ultimateMessage && !ultmsg)
-    {
-        return;
-    }
     player->message = message;
     player->yellowMessage = true;
-    if (ultmsg)
-    {
-        player->ultimateMessage = true;
-    }
 }

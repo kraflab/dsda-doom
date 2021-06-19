@@ -22,8 +22,6 @@
 #include "p_local.h"
 #include "s_sound.h"
 
-#define BONUSADD 6
-
 static void SetDormantArtifact(mobj_t * arti);
 static void TryPickupArtifact(player_t * player, artitype_t artifactType,
                               mobj_t * artifact);
@@ -32,48 +30,6 @@ static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
                             const char *message);
 static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
                                  int pieceValue, mobj_t * pieceMobj);
-
-//--------------------------------------------------------------------------
-//
-// PROC P_SetMessage
-//
-//--------------------------------------------------------------------------
-
-void P_SetMessage(player_t * player, const char *message, dboolean ultmsg)
-{
-    if ((player->ultimateMessage || !messageson) && !ultmsg)
-    {
-        return;
-    }
-
-    M_StringCopy(player->message, message, sizeof(player->message));
-//    strupr(player->message);
-    player->messageTics = MESSAGETICS;
-    player->yellowMessage = false;
-    if (ultmsg)
-    {
-        player->ultimateMessage = true;
-    }
-    if (player == &players[consoleplayer])
-    {
-        BorderTopRefresh = true;
-    }
-}
-
-//==========================================================================
-//
-// P_ClearMessage
-//
-//==========================================================================
-
-void P_ClearMessage(player_t * player)
-{
-    player->messageTics = 0;
-    if (player == &players[consoleplayer])
-    {
-        BorderTopRefresh = true;
-    }
-}
 
 //----------------------------------------------------------------------------
 //

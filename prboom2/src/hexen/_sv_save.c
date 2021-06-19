@@ -2214,7 +2214,7 @@ void SV_MapTeleport(int map, int position)
             continue;
         }
         players[i] = playerBackup[i];
-        P_ClearMessage(&players[i]);
+        ClearMessage();
         players[i].attacker = NULL;
         players[i].poisoner = NULL;
 
@@ -2442,7 +2442,7 @@ static void UnarchivePlayers(void)
         }
         PlayerClass[i] = SV_ReadByte();
         StreamIn_player_t(&players[i]);
-        P_ClearMessage(&players[i]);
+        ClearMessage();
     }
 }
 

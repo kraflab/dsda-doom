@@ -2991,3 +2991,8 @@ int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int
 
   return true;
 }
+
+void ClearMessage(void)
+{
+  message_counter = 0;
+}

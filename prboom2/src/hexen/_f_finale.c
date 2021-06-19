@@ -80,7 +80,7 @@ void F_StartFinale(void)
     gamestate = GS_FINALE;
     viewactive = false;
     automapactive = false;
-    P_ClearMessage(&players[consoleplayer]);
+    ClearMessage();
 
     FinaleStage = 0;
     FinaleCount = 0;

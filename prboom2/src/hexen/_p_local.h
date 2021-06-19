@@ -228,7 +228,6 @@ extern int clipmana[NUMMANA];
 
 void P_SetMessage(player_t * player, const char *message, dboolean ultmsg);
 void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg);
-void P_ClearMessage(player_t * player);
 void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher);
 void P_DamageMobj(mobj_t * target, mobj_t * inflictor, mobj_t * source,
                   int damage);

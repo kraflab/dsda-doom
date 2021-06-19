@@ -641,7 +641,7 @@ static void DrawFilesMenu(void)
 // clear out the quicksave/quickload stuff
     quicksave = 0;
     quickload = 0;
-    P_ClearMessage(&players[consoleplayer]);
+    ClearMessage();
 }
 
 //---------------------------------------------------------------------------
@@ -916,7 +916,7 @@ static void SCLoadGame(int option)
     if (quickload == -1)
     {
         quickload = option + 1;
-        P_ClearMessage(&players[consoleplayer]);
+        ClearMessage();
     }
 }
 
@@ -965,7 +965,7 @@ static void SCSaveGame(int option)
     if (quicksave == -1)
     {
         quicksave = option + 1;
-        P_ClearMessage(&players[consoleplayer]);
+        ClearMessage();
     }
 }
 
@@ -1262,7 +1262,7 @@ dboolean MN_Responder(event_t * event)
                     I_Quit();
                     return false;
                 case 2:
-                    P_ClearMessage(&players[consoleplayer]);
+                    ClearMessage();
                     askforquit = false;
                     typeofask = 0;
                     paused = false;
@@ -1768,7 +1768,7 @@ void MN_DeactivateMenu(void)
         paused = false;
     }
     S_StartSound(NULL, hexen_sfx_platform_stop);
-    P_ClearMessage(&players[consoleplayer]);
+    ClearMessage();
 }
 
 //---------------------------------------------------------------------------
