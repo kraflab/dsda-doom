@@ -14,38 +14,6 @@
 // GNU General Public License for more details.
 //
 
-// Search thinker list for minotaur
-mobj_t *ActiveMinotaur(player_t * master)
-{
-    mobj_t *mo;
-    player_t *plr;
-    thinker_t *think;
-    unsigned int *starttime;
-
-    for (think = thinkercap.next; think != &thinkercap; think = think->next)
-    {
-        if (think->function != P_MobjThinker)
-            continue;
-        mo = (mobj_t *) think;
-        if (mo->type != HEXEN_MT_MINOTAUR)
-            continue;
-        if (mo->health <= 0)
-            continue;
-        if (!(mo->flags & MF_COUNTKILL))
-            continue;           // for morphed minotaurs
-        if (mo->flags & MF_CORPSE)
-            continue;
-        starttime = (unsigned int *) mo->args;
-        if ((leveltime - *starttime) >= MAULATORTICS)
-            continue;
-        plr = mo->special1.m->player;
-        if (plr == master)
-            return (mo);
-    }
-    return (NULL);
-}
-
-
 //---------------------------------------------------------------------------
 //
 // PROC P_KillMobj
