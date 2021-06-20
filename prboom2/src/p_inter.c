@@ -1298,7 +1298,7 @@ void A_RestoreArtifact(mobj_t * arti)
 {
     arti->flags |= MF_SPECIAL;
     P_SetMobjState(arti, arti->info->spawnstate);
-    S_StartSound(arti, heretic_sfx_respawn);
+    S_StartSound(arti, g_sfx_respawn);
 }
 
 void A_RestoreSpecialThing1(mobj_t * thing)
@@ -1308,7 +1308,7 @@ void A_RestoreSpecialThing1(mobj_t * thing)
         P_RepositionMace(thing);
     }
     thing->flags2 &= ~MF2_DONTDRAW;
-    S_StartSound(thing, heretic_sfx_respawn);
+    S_StartSound(thing, g_sfx_respawn);
 }
 
 void A_RestoreSpecialThing2(mobj_t * thing)
@@ -1663,7 +1663,9 @@ void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
 dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
 {
     int i;
+    dboolean slidePointer;
 
+    slidePointer = false;
     i = 0;
     while (player->inventory[i].type != arti && i < player->inventorySlotNum)
     {
@@ -1671,13 +1673,37 @@ dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
     }
     if (i == player->inventorySlotNum)
     {
+        if (hexen && arti < hexen_arti_firstpuzzitem)
+        {
+            i = 0;
+            while (player->inventory[i].type < hexen_arti_firstpuzzitem
+                   && i < player->inventorySlotNum)
+            {
+                i++;
+            }
+            if (i != player->inventorySlotNum)
+            {
+                int j;
+                for (j = player->inventorySlotNum; j > i; j--)
+                {
+                    player->inventory[j].count =
+                        player->inventory[j - 1].count;
+                    player->inventory[j].type = player->inventory[j - 1].type;
+                    slidePointer = true;
+                }
+            }
+        }
         player->inventory[i].count = 1;
         player->inventory[i].type = arti;
         player->inventorySlotNum++;
     }
     else
     {
-        if (player->inventory[i].count >= 16)
+        if (hexen && arti >= hexen_arti_firstpuzzitem && netgame && !deathmatch)
+        {                       // Can't carry more than 1 puzzle item in coop netplay
+            return false;
+        }
+        if (player->inventory[i].count >= g_arti_limit)
         {                       // Player already has 16 of this item
             return (false);
         }
@@ -1686,6 +1712,15 @@ dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
     if (player->artifactCount == 0)
     {
         player->readyArtifact = arti;
+    }
+    else if (player == &players[consoleplayer] && slidePointer && i <= inv_ptr)
+    {
+        inv_ptr++;
+        curpos++;
+        if (curpos > 6)
+        {
+            curpos = 6;
+        }
     }
     player->artifactCount++;
     if (mo && (mo->flags & MF_COUNTITEM))

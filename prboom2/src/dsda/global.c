@@ -103,6 +103,7 @@ int g_mntr_atk3_state;
 int g_mntr_fire;
 
 int g_arti_fly;
+int g_arti_limit;
 
 int g_sfx_sawup;
 int g_sfx_telept;
@@ -118,6 +119,7 @@ int g_sfx_itemup;
 int g_sfx_pistol;
 int g_sfx_oof;
 int g_sfx_menu;
+int g_sfx_respawn;
 
 int g_door_normal;
 int g_door_raise_in_5_mins;
@@ -387,6 +389,7 @@ static void dsda_InitHeretic(void) {
   g_mntr_fire = HERETIC_MT_MNTRFX3;
 
   g_arti_fly = arti_fly;
+  g_arti_limit = 16;
 
   g_sfx_sawup = heretic_sfx_gntact;
   g_sfx_telept = heretic_sfx_telept;
@@ -402,6 +405,7 @@ static void dsda_InitHeretic(void) {
   g_sfx_pistol = heretic_sfx_gldhit;
   g_sfx_oof = heretic_sfx_plroof;
   g_sfx_menu = heretic_sfx_dorcls;
+  g_sfx_respawn = heretic_sfx_respawn;
 
   g_door_normal = vld_normal;
   g_door_raise_in_5_mins = vld_raiseIn5Mins;
@@ -543,6 +547,7 @@ static void dsda_InitHexen(void) {
   g_mntr_fire = HEXEN_MT_MNTRFX3;
 
   g_arti_fly = hexen_arti_fly;
+  g_arti_limit = 25;
   //
   // g_sfx_sawup = heretic_sfx_gntact;
   // g_sfx_telept = heretic_sfx_telept;
@@ -558,6 +563,7 @@ static void dsda_InitHexen(void) {
   // g_sfx_pistol = heretic_sfx_gldhit;
   // g_sfx_oof = heretic_sfx_plroof;
   // g_sfx_menu = heretic_sfx_dorcls;
+  g_sfx_respawn = hexen_sfx_respawn;
   //
   // g_door_normal = vld_normal;
   // g_door_raise_in_5_mins = vld_raiseIn5Mins;
