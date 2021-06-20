@@ -95,6 +95,9 @@ fixed_t   tmfloorz;   // floor you'd hit if free to fall
 fixed_t   tmceilingz; // ceiling of sector you're in
 fixed_t   tmdropoffz; // dropoff on other side of line you're crossing
 
+// hexen
+int tmfloorpic;
+
 // keep track of the line that lowers the ceiling,
 // so missiles don't explode against sky hack walls
 

@@ -68,7 +68,6 @@ dboolean floatok;                // if true, move would be ok if
                                                         // within tmfloorz - tmceilingz
 
 fixed_t tmfloorz, tmceilingz, tmdropoffz;
-int tmfloorpic;
 
 // keep track of the line that lowers the ceiling, so missiles don't explode
 // against sky hack walls

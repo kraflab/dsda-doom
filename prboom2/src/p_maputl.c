@@ -187,6 +187,8 @@ sector_t *openbacksector;  // made global
 
 void P_LineOpening(const line_t *linedef)
 {
+  extern int tmfloorpic;
+
   if (linedef->sidenum[1] == NO_INDEX)      // single sided line
     {
       openrange = 0;
@@ -205,11 +207,13 @@ void P_LineOpening(const line_t *linedef)
     {
       openbottom = openfrontsector->floorheight;
       lowfloor = openbacksector->floorheight;
+      tmfloorpic = openfrontsector->floorpic;
     }
   else
     {
       openbottom = openbacksector->floorheight;
       lowfloor = openfrontsector->floorheight;
+      tmfloorpic = openbacksector->floorpic;
     }
   openrange = opentop - openbottom;
 }
@@ -370,6 +374,42 @@ dboolean P_BlockLinesIterator(int x, int y, dboolean func(line_t*))
   if (x<0 || y<0 || x>=bmapwidth || y>=bmapheight)
     return true;
   offset = y*bmapwidth+x;
+
+  // HEXEN_TODO: always initialize polyblockmap and drop this condition?
+  if (hexen)
+  {
+    int i;
+    seg_t **tempSeg;
+    polyblock_t *polyLink;
+    extern polyblock_t **PolyBlockMap;
+
+    polyLink = PolyBlockMap[offset];
+    while (polyLink)
+    {
+      if (polyLink->polyobj)
+      {
+        if (polyLink->polyobj->validcount != validcount)
+        {
+          polyLink->polyobj->validcount = validcount;
+          tempSeg = polyLink->polyobj->segs;
+          for (i = 0; i < polyLink->polyobj->numsegs; i++, tempSeg++)
+          {
+            if ((*tempSeg)->linedef->validcount == validcount)
+            {
+              continue;
+            }
+            (*tempSeg)->linedef->validcount = validcount;
+            if (!func((*tempSeg)->linedef))
+            {
+              return false;
+            }
+          }
+        }
+      }
+      polyLink = polyLink->next;
+    }
+  }
+
   offset = *(blockmap+offset);
   list = blockmaplump+offset;     // original was reading         // phares
                                   // delmiting 0 as linedef 0     // phares
@@ -730,9 +770,13 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
 // [XA] adapted from Hexen -- used by P_RoughTargetSearch
 //
 
+static mobj_t *Hexen_RoughBlockCheck(mobj_t * mo, int index);
+
 static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
 {
   mobj_t *link;
+
+  if (hexen) return Hexen_RoughBlockCheck(mo, index);
 
   link = blocklinks[index];
   while (link)
@@ -960,3 +1004,143 @@ intercepts_overrun_t intercepts_overrun[] =
   {4,   &bmapheight,                   false},
   {0,   NULL,                          false},
 };
+
+// hexen
+
+static mobj_t *Hexen_RoughBlockCheck(mobj_t * mo, int index)
+{
+    mobj_t *link;
+    mobj_t *master;
+    angle_t angle;
+
+    link = blocklinks[index];
+    while (link)
+    {
+        if (mo->player)         // Minotaur looking around player
+        {
+            if ((link->flags & MF_COUNTKILL) ||
+                (link->player && (link != mo)))
+            {
+                if (!(link->flags & MF_SHOOTABLE))
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if (link->flags2 & MF2_DORMANT)
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if ((link->type == HEXEN_MT_MINOTAUR) &&
+                    (link->special1.m == mo))
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if (netgame && !deathmatch && link->player)
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if (P_CheckSight(mo, link))
+                {
+                    return link;
+                }
+            }
+            link = link->bnext;
+        }
+        else if (mo->type == HEXEN_MT_MINOTAUR)       // looking around minotaur
+        {
+            master = mo->special1.m;
+            if ((link->flags & MF_COUNTKILL) ||
+                (link->player && (link != master)))
+            {
+                if (!(link->flags & MF_SHOOTABLE))
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if (link->flags2 & MF2_DORMANT)
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if ((link->type == HEXEN_MT_MINOTAUR) &&
+                    (link->special1.m == mo->special1.m))
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if (netgame && !deathmatch && link->player)
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if (P_CheckSight(mo, link))
+                {
+                    return link;
+                }
+            }
+            link = link->bnext;
+        }
+        else if (mo->type == HEXEN_MT_MSTAFF_FX2)     // bloodscourge
+        {
+            if ((link->flags & MF_COUNTKILL ||
+                 (link->player && link != mo->target))
+                && !(link->flags2 & MF2_DORMANT))
+            {
+                if (!(link->flags & MF_SHOOTABLE))
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if (netgame && !deathmatch && link->player)
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                else if (P_CheckSight(mo, link))
+                {
+                    master = mo->target;
+                    angle = R_PointToAngle2(master->x, master->y,
+                                            link->x, link->y) - master->angle;
+                    angle >>= 24;
+                    if (angle > 226 || angle < 30)
+                    {
+                        return link;
+                    }
+                }
+            }
+            link = link->bnext;
+        }
+        else                    // spirits
+        {
+            if ((link->flags & MF_COUNTKILL ||
+                 (link->player && link != mo->target))
+                && !(link->flags2 & MF2_DORMANT))
+            {
+                if (!(link->flags & MF_SHOOTABLE))
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if (netgame && !deathmatch && link->player)
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                if (link == mo->target)
+                {
+                    link = link->bnext;
+                    continue;
+                }
+                else if (P_CheckSight(mo, link))
+                {
+                    return link;
+                }
+            }
+            link = link->bnext;
+        }
+    }
+    return NULL;
+}
