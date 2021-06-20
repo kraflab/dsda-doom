@@ -2012,11 +2012,19 @@ void P_MinotaurSlam(mobj_t * source, mobj_t * target)
     thrust = 16 * FRACUNIT + (P_Random(pr_heretic) << 10);
     target->momx += FixedMul(thrust, finecosine[angle]);
     target->momy += FixedMul(thrust, finesine[angle]);
-    P_DamageMobj(target, NULL, NULL, HITDICE(6));
+    if (hexen)
+    {
+        P_DamageMobj(target, NULL, source, HITDICE(4));
+    }
+    else
+    {
+        P_DamageMobj(target, NULL, NULL, HITDICE(6));
+    }
     if (target->player)
     {
         target->reactiontime = 14 + (P_Random(pr_heretic) & 7);
     }
+    source->args[0] = 0;        // Stop charging
 }
 
 void P_TouchWhirlwind(mobj_t * target)
