@@ -95,13 +95,17 @@ fixed_t   tmfloorz;   // floor you'd hit if free to fall
 fixed_t   tmceilingz; // ceiling of sector you're in
 fixed_t   tmdropoffz; // dropoff on other side of line you're crossing
 
+// heretic
+int tmflags;
+
 // hexen
 int tmfloorpic;
+mobj_t *BlockingMobj;
 
 // keep track of the line that lowers the ceiling,
 // so missiles don't explode against sky hack walls
 
-line_t    *ceilingline;
+line_t        *ceilingline;
 line_t        *blockline;    /* killough 8/11/98: blocking linedef */
 line_t        *floorline;    /* killough 8/1/98: Highest touched floor */
 static int    tmunstuck;     /* killough 8/1/98: whether to allow unsticking */
@@ -306,6 +310,7 @@ dboolean P_TeleportMove (mobj_t* thing,fixed_t x,fixed_t y, dboolean boss)
   // kill anything occupying the position
 
   tmthing = thing;
+  tmflags = thing->flags;
 
   tmx = x;
   tmy = y;
@@ -325,6 +330,7 @@ dboolean P_TeleportMove (mobj_t* thing,fixed_t x,fixed_t y, dboolean boss)
 
   tmfloorz = tmdropoffz = newsubsec->sector->floorheight;
   tmceilingz = newsubsec->sector->ceilingheight;
+  tmfloorpic = newsubsec->sector->floorpic;
 
   validcount++;
   numspechit = 0;
@@ -419,6 +425,8 @@ static int untouched(line_t *ld)
 // Adjusts tmfloorz and tmceilingz as lines are contacted
 //
 
+static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj);
+
 static // killough 3/26/98: make static
 dboolean PIT_CheckLine (line_t* ld)
 {
@@ -448,11 +456,19 @@ dboolean PIT_CheckLine (line_t* ld)
     {
       if (tmthing->flags & MF_MISSILE)
       {                       // Missiles can trigger impact specials
-          if (ld->special)
-          {
-              P_AppendSpecHit(ld);
-          }
+        if (ld->special)
+        {
+          P_AppendSpecHit(ld);
+        }
       }
+    }
+    else if (hexen)
+    {
+      if (tmthing->flags2 & MF2_BLASTED)
+      {
+        P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
+      }
+      CheckForPushSpecial(ld, 0, tmthing);
     }
     blockline = ld;
     return tmunstuck && !untouched(ld) &&
@@ -465,7 +481,17 @@ dboolean PIT_CheckLine (line_t* ld)
     // explicitly blocking everything
     // or blocking player
     if (ld->flags & ML_BLOCKING || (mbf21 && tmthing->player && ld->flags & ML_BLOCKPLAYERS))
+    {
+      if (hexen)
+      {
+        if (tmthing->flags2 & MF2_BLASTED)
+        {
+          P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
+        }
+        CheckForPushSpecial(ld, 0, tmthing);
+      }
       return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
+    }
 
     // killough 8/9/98: monster-blockers don't affect friends
     if (
@@ -476,7 +502,13 @@ dboolean PIT_CheckLine (line_t* ld)
       ) &&
       tmthing->type != HERETIC_MT_POD
     )
+    {
+      if (tmthing->flags2 & MF2_BLASTED)
+      {
+        P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
+      }
       return false; // block monsters only
+    }
   }
 
   // set openrange, opentop, openbottom
@@ -2637,7 +2669,6 @@ void P_MapEnd(void) {
 
 // heretic
 
-int tmflags;
 mobj_t *onmobj; // generic global onmobj...used for landing on pods/players
 
 dboolean P_TestMobjLocation(mobj_t * mobj)
@@ -2876,8 +2907,6 @@ void CheckMissileImpact(mobj_t * mobj)
 
 // hexen
 
-mobj_t *BlockingMobj;
-
 dboolean PTR_BounceTraverse(intercept_t * in)
 {
     line_t *li;
@@ -3011,4 +3040,19 @@ void PIT_ThrustSpike(mobj_t * actor)
     for (bx = xl; bx <= xh; bx++)
         for (by = yl; by <= yh; by++)
             P_BlockThingsIterator(bx, by, PIT_ThrustStompThing);
+}
+
+static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj)
+{
+    if (line->special)
+    {
+        if (mobj->flags2 & MF2_PUSHWALL)
+        {
+            P_ActivateLine(line, mobj, side, SPAC_PUSH);
+        }
+        else if (mobj->flags2 & MF2_IMPACT)
+        {
+            P_ActivateLine(line, mobj, side, SPAC_IMPACT);
+        }
+    }
 }
