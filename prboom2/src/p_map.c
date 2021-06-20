@@ -1124,6 +1124,7 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
   subsector_t*  newsubsec;
 
   tmthing = thing;
+  tmflags = thing->flags;
 
   tmx = x;
   tmy = y;
@@ -1148,10 +1149,11 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
 
   tmfloorz = tmdropoffz = newsubsec->sector->floorheight;
   tmceilingz = newsubsec->sector->ceilingheight;
+  tmfloorpic = newsubsec->sector->floorpic;
   validcount++;
   numspechit = 0;
 
-  if ( tmthing->flags & MF_NOCLIP )
+  if (tmflags & MF_NOCLIP && (!hexen || !(tmflags & MF_SKULLFLY)))
     return true;
 
   // Check things first, possibly picking things up.
@@ -1165,11 +1167,19 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
   yl = P_GetSafeBlockY(tmbbox[BOXBOTTOM] - bmaporgy - MAXRADIUS);
   yh = P_GetSafeBlockY(tmbbox[BOXTOP] - bmaporgy + MAXRADIUS);
 
+  BlockingMobj = NULL;
 
   for (bx=xl ; bx<=xh ; bx++)
     for (by=yl ; by<=yh ; by++)
       if (!P_BlockThingsIterator(bx,by,PIT_CheckThing))
         return false;
+
+  if (hexen && tmflags & MF_NOCLIP)
+  {
+      return true;
+  }
+
+  BlockingMobj = NULL;
 
   // check lines
 
