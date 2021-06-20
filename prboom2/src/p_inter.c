@@ -286,9 +286,13 @@ dboolean P_GiveBody(player_t * player, int num)
     int max;
 
     max = maxhealth;
-    if (heretic && player->chickenTics)
+    if (player->chickenTics)
     {
         max = MAXCHICKENHEALTH;
+    }
+    if (player->morphTics)
+    {
+        max = MAXMORPHHEALTH;
     }
     if (player->health >= max)
     {
@@ -347,32 +351,51 @@ dboolean P_GivePower(player_t *player, int power)
   static const int tics[NUMPOWERS] = {
     INVULNTICS, 1 /* strength */, INVISTICS,
     IRONTICS, 1 /* allmap */, INFRATICS,
-    WPNLEV2TICS, FLIGHTTICS, 1 /* shield */, 1 /* health2 */
+    WPNLEV2TICS, FLIGHTTICS, 1 /* shield */, 1 /* health2 */,
+    SPEEDTICS, MAULATORTICS
    };
 
-  if (heretic && tics[power] > 1 && power != pw_ironfeet && player->powers[power] > BLINKTHRESHOLD) return false;
+  if (
+    raven &&
+    tics[power] > 1 &&
+    power != pw_ironfeet && power != pw_minotaur &&
+    player->powers[power] > BLINKTHRESHOLD
+  ) return false;
 
   switch (power)
-    {
-      case pw_invisibility:
-        player->mo->flags |= MF_SHADOW;
-        break;
-      case pw_allmap:
-        if (player->powers[pw_allmap])
-          return false;
-        break;
-      case pw_strength:
-        P_GiveBody(player,100);
-        break;
-      case pw_flight:
-        player->mo->flags2 |= MF2_FLY;
-        player->mo->flags |= MF_NOGRAVITY;
-        if (player->mo->z <= player->mo->floorz)
+  {
+    case pw_invulnerability:
+      if (hexen)
+      {
+        player->mo->flags2 |= MF2_INVULNERABLE;
+        if (player->pclass == PCLASS_MAGE)
         {
-            player->flyheight = 10;     // thrust the player in the air a bit
+            player->mo->flags2 |= MF2_REFLECTIVE;
         }
-        break;
-    }
+      }
+      break;
+    case pw_invisibility:
+      player->mo->flags |= MF_SHADOW;
+      break;
+    case pw_allmap:
+      if (player->powers[pw_allmap])
+        return false;
+      break;
+    case pw_strength:
+      P_GiveBody(player,100);
+      break;
+    case pw_flight:
+      player->mo->flags2 |= MF2_FLY;
+      player->mo->flags |= MF_NOGRAVITY;
+      if (player->mo->z <= player->mo->floorz)
+      {
+          player->flyheight = 10;     // thrust the player in the air a bit
+      }
+      break;
+  }
+
+  if (hexen && player->powers[power])
+    return false;
 
   // Unless player has infinite duration cheat, set duration (killough)
 
@@ -2458,4 +2481,15 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
             S_StartSound(NULL, hexen_sfx_pickup_weapon);
         }
     }
+}
+
+int P_GiveKey(player_t * player, card_t key)
+{
+    if (player->cards[key])
+    {
+        return false;
+    }
+    player->bonuscount += BONUSADD;
+    player->cards[key] = true;
+    return true;
 }

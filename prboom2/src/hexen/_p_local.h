@@ -35,8 +35,6 @@
 #define TOCENTER -8
 #define FLOATSPEED (FRACUNIT*4)
 
-#define MAXHEALTH 100
-#define MAXMORPHHEALTH 30
 #define VIEWHEIGHT (48*FRACUNIT)
 
 // mapblocks are used to check movement against lines and things

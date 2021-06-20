@@ -97,6 +97,8 @@ void P_AutoUseHealth(player_t * player, int saveHealth);
 
 // hexen
 
+#define MAXMORPHHEALTH 30
+
 void P_FallingDamage(player_t * player);
 void P_PoisonDamage(player_t * player, mobj_t * source, int damage, dboolean playPainSound);
 dboolean Hexen_P_GiveArmor(player_t *player, armortype_t armortype, int amount);
