@@ -401,7 +401,7 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     if (gamekeydown[key_arti_all] && !cmd->arti)
     {
         gamekeydown[key_arti_all] = false;     // Use one of each artifact
-        cmd->arti = NUMARTIFACTS;
+        cmd->arti = HEXEN_NUMARTIFACTS;
     }
     else if (gamekeydown[key_arti_health] && !cmd->arti
              && (players[consoleplayer].mo->health < MAXHEALTH))

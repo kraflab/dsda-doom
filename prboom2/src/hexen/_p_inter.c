@@ -14,96 +14,6 @@
 // GNU General Public License for more details.
 //
 
-
-#include "h2def.h"
-#include "m_misc.h"
-#include "m_random.h"
-#include "i_system.h"
-#include "p_local.h"
-#include "s_sound.h"
-
-static void SetDormantArtifact(mobj_t * arti);
-static void TryPickupArtifact(player_t * player, artitype_t artifactType,
-                              mobj_t * artifact);
-
-//==========================================================================
-//
-// TryPickupArtifact
-//
-//==========================================================================
-
-static void TryPickupArtifact(player_t * player, artitype_t artifactType,
-                              mobj_t * artifact)
-{
-    static const char *artifactMessages[NUMARTIFACTS] = {
-        NULL,
-        TXT_ARTIINVULNERABILITY,
-        TXT_ARTIHEALTH,
-        TXT_ARTISUPERHEALTH,
-        TXT_ARTIHEALINGRADIUS,
-        TXT_ARTISUMMON,
-        TXT_ARTITORCH,
-        TXT_ARTIEGG,
-        TXT_ARTIFLY,
-        TXT_ARTIBLASTRADIUS,
-        TXT_ARTIPOISONBAG,
-        TXT_ARTITELEPORTOTHER,
-        TXT_ARTISPEED,
-        TXT_ARTIBOOSTMANA,
-        TXT_ARTIBOOSTARMOR,
-        TXT_ARTITELEPORT,
-        TXT_ARTIPUZZSKULL,
-        TXT_ARTIPUZZGEMBIG,
-        TXT_ARTIPUZZGEMRED,
-        TXT_ARTIPUZZGEMGREEN1,
-        TXT_ARTIPUZZGEMGREEN2,
-        TXT_ARTIPUZZGEMBLUE1,
-        TXT_ARTIPUZZGEMBLUE2,
-        TXT_ARTIPUZZBOOK1,
-        TXT_ARTIPUZZBOOK2,
-        TXT_ARTIPUZZSKULL2,
-        TXT_ARTIPUZZFWEAPON,
-        TXT_ARTIPUZZCWEAPON,
-        TXT_ARTIPUZZMWEAPON,
-        TXT_ARTIPUZZGEAR,       // All gear pickups use the same text
-        TXT_ARTIPUZZGEAR,
-        TXT_ARTIPUZZGEAR,
-        TXT_ARTIPUZZGEAR
-    };
-
-    if (gamemode == shareware)
-    {
-        artifactMessages[hexen_arti_blastradius] = TXT_ARTITELEPORT;
-        artifactMessages[hexen_arti_teleport] = TXT_ARTIBLASTRADIUS;
-    }
-
-    if (P_GiveArtifact(player, artifactType, artifact))
-    {
-        if (artifact->special)
-        {
-            P_ExecuteLineSpecial(artifact->special, artifact->args,
-                                 NULL, 0, NULL);
-            artifact->special = 0;
-        }
-        player->bonuscount += BONUSADD;
-        if (artifactType < hexen_arti_firstpuzzitem)
-        {
-            SetDormantArtifact(artifact);
-            S_StartSound(artifact, hexen_sfx_pickup_artifact);
-            P_SetMessage(player, artifactMessages[artifactType], false);
-        }
-        else
-        {                       // Puzzle item
-            S_StartSound(NULL, hexen_sfx_pickup_item);
-            P_SetMessage(player, artifactMessages[artifactType], true);
-            if (!netgame || deathmatch)
-            {                   // Remove puzzle items if not cooperative netplay
-                P_RemoveMobj(artifact);
-            }
-        }
-    }
-}
-
 //---------------------------------------------------------------------------
 //
 // FUNC P_GiveArtifact
@@ -177,39 +87,6 @@ dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
     }
     player->artifactCount++;
     return (true);
-}
-
-//==========================================================================
-//
-// SetDormantArtifact
-//
-// Removes the MF_SPECIAL flag and initiates the artifact pickup
-// animation.
-//
-//==========================================================================
-
-static void SetDormantArtifact(mobj_t * arti)
-{
-    arti->flags &= ~MF_SPECIAL;
-    if (deathmatch && !(arti->flags & MF_DROPPED))
-    {
-        if (arti->type == HEXEN_MT_ARTIINVULNERABILITY)
-        {
-            P_SetMobjState(arti, HEXEN_S_DORMANTARTI3_1);
-        }
-        else if (arti->type == HEXEN_MT_SUMMONMAULATOR || arti->type == HEXEN_MT_ARTIFLY)
-        {
-            P_SetMobjState(arti, HEXEN_S_DORMANTARTI2_1);
-        }
-        else
-        {
-            P_SetMobjState(arti, HEXEN_S_DORMANTARTI1_1);
-        }
-    }
-    else
-    {                           // Don't respawn
-        P_SetMobjState(arti, HEXEN_S_DEADARTI1);
-    }
 }
 
 //---------------------------------------------------------------------------

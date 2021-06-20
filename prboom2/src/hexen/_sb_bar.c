@@ -1727,7 +1727,7 @@ static void CheatPuzzleFunc(player_t * player, Cheat_t * cheat)
 {
     int i;
 
-    for (i = hexen_arti_firstpuzzitem; i < NUMARTIFACTS; i++)
+    for (i = hexen_arti_firstpuzzitem; i < HEXEN_NUMARTIFACTS; i++)
     {
         P_GiveArtifact(player, i, NULL);
     }
