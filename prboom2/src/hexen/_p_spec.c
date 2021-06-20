@@ -425,7 +425,7 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
     for (i = 0; i < player->artifactCount; i++)
     {
         arti = player->inventory[i].type;
-        type = arti - arti_firstpuzzitem;
+        type = arti - hexen_arti_firstpuzzitem;
         if (type < 0)
             continue;
         if (type == line->arg1)
@@ -437,7 +437,7 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
                 P_PlayerRemoveArtifact(player, i);
                 if (player == &players[consoleplayer])
                 {
-                    if (arti < arti_firstpuzzitem)
+                    if (arti < hexen_arti_firstpuzzitem)
                     {
                         S_StartSound(NULL, hexen_sfx_artifact_use);
                     }

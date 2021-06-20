@@ -703,23 +703,23 @@ char patcharti[][10] = {
     {"ARTIBMAN"},               // boost mana
     {"ARTIBRAC"},               // boost armor
     {"ARTIATLP"},               // teleport
-    {"ARTISKLL"},               // arti_puzzskull
-    {"ARTIBGEM"},               // arti_puzzgembig
-    {"ARTIGEMR"},               // arti_puzzgemred
-    {"ARTIGEMG"},               // arti_puzzgemgreen1
-    {"ARTIGMG2"},               // arti_puzzgemgreen2
-    {"ARTIGEMB"},               // arti_puzzgemblue1
-    {"ARTIGMB2"},               // arti_puzzgemblue2
-    {"ARTIBOK1"},               // arti_puzzbook1
-    {"ARTIBOK2"},               // arti_puzzbook2
-    {"ARTISKL2"},               // arti_puzzskull2
-    {"ARTIFWEP"},               // arti_puzzfweapon
-    {"ARTICWEP"},               // arti_puzzcweapon
-    {"ARTIMWEP"},               // arti_puzzmweapon
-    {"ARTIGEAR"},               // arti_puzzgear1
-    {"ARTIGER2"},               // arti_puzzgear2
-    {"ARTIGER3"},               // arti_puzzgear3
-    {"ARTIGER4"},               // arti_puzzgear4
+    {"ARTISKLL"},               // hexen_arti_puzzskull
+    {"ARTIBGEM"},               // hexen_arti_puzzgembig
+    {"ARTIGEMR"},               // hexen_arti_puzzgemred
+    {"ARTIGEMG"},               // hexen_arti_puzzgemgreen1
+    {"ARTIGMG2"},               // hexen_arti_puzzgemgreen2
+    {"ARTIGEMB"},               // hexen_arti_puzzgemblue1
+    {"ARTIGMB2"},               // hexen_arti_puzzgemblue2
+    {"ARTIBOK1"},               // hexen_arti_puzzbook1
+    {"ARTIBOK2"},               // hexen_arti_puzzbook2
+    {"ARTISKL2"},               // hexen_arti_puzzskull2
+    {"ARTIFWEP"},               // hexen_arti_puzzfweapon
+    {"ARTICWEP"},               // hexen_arti_puzzcweapon
+    {"ARTIMWEP"},               // hexen_arti_puzzmweapon
+    {"ARTIGEAR"},               // hexen_arti_puzzgear1
+    {"ARTIGER2"},               // hexen_arti_puzzgear2
+    {"ARTIGER3"},               // hexen_arti_puzzgear3
+    {"ARTIGER4"},               // hexen_arti_puzzgear4
 };
 
 int SB_state = -1;
@@ -1234,7 +1234,7 @@ void DrawInventoryBar(void)
     {
         //V_DrawPatch(50+i*31, 160, W_CacheLumpName("ARTIBOX", PU_CACHE));
         if (CPlayer->inventorySlotNum > x + i
-            && CPlayer->inventory[x + i].type != arti_none)
+            && CPlayer->inventory[x + i].type != hexen_arti_none)
         {
             V_DrawPatch(50 + i * 31, 163,
                         W_CacheLumpName(patcharti
@@ -1417,7 +1417,7 @@ void DrawFullScreenStuff(void)
             V_DrawTLPatch(50 + i * 31, 168, W_CacheLumpName("ARTIBOX",
                                                             PU_CACHE));
             if (CPlayer->inventorySlotNum > x + i
-                && CPlayer->inventory[x + i].type != arti_none)
+                && CPlayer->inventory[x + i].type != hexen_arti_none)
             {
                 V_DrawPatch(49 + i * 31, 167,
                             W_CacheLumpName(patcharti
@@ -1713,7 +1713,7 @@ static void CheatArtifactAllFunc(player_t * player, Cheat_t * cheat)
     int i;
     int j;
 
-    for (i = arti_none + 1; i < arti_firstpuzzitem; i++)
+    for (i = hexen_arti_none + 1; i < hexen_arti_firstpuzzitem; i++)
     {
         for (j = 0; j < 25; j++)
         {
@@ -1727,7 +1727,7 @@ static void CheatPuzzleFunc(player_t * player, Cheat_t * cheat)
 {
     int i;
 
-    for (i = arti_firstpuzzitem; i < NUMARTIFACTS; i++)
+    for (i = hexen_arti_firstpuzzitem; i < NUMARTIFACTS; i++)
     {
         P_GiveArtifact(player, i, NULL);
     }

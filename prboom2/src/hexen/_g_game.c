@@ -361,7 +361,7 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     {
         if (gamekeydown[key_speed] && artiskip)
         {
-            if (players[consoleplayer].inventory[inv_ptr].type != arti_none)
+            if (players[consoleplayer].inventory[inv_ptr].type != hexen_arti_none)
             {                   // Skip an artifact
                 gamekeydown[key_useartifact] = false;
                 P_PlayerNextArtifact(&players[consoleplayer]);
@@ -407,38 +407,38 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
              && (players[consoleplayer].mo->health < MAXHEALTH))
     {
         gamekeydown[key_arti_health] = false;
-        cmd->arti = arti_health;
+        cmd->arti = hexen_arti_health;
     }
     else if (gamekeydown[key_arti_poisonbag] && !cmd->arti)
     {
         gamekeydown[key_arti_poisonbag] = false;
-        cmd->arti = arti_poisonbag;
+        cmd->arti = hexen_arti_poisonbag;
     }
     else if (gamekeydown[key_arti_blastradius] && !cmd->arti)
     {
         gamekeydown[key_arti_blastradius] = false;
-        cmd->arti = arti_blastradius;
+        cmd->arti = hexen_arti_blastradius;
     }
     else if (gamekeydown[key_arti_teleport] && !cmd->arti)
     {
         gamekeydown[key_arti_teleport] = false;
-        cmd->arti = arti_teleport;
+        cmd->arti = hexen_arti_teleport;
     }
     else if (gamekeydown[key_arti_teleportother] && !cmd->arti)
     {
         gamekeydown[key_arti_teleportother] = false;
-        cmd->arti = arti_teleportother;
+        cmd->arti = hexen_arti_teleportother;
     }
     else if (gamekeydown[key_arti_egg] && !cmd->arti)
     {
         gamekeydown[key_arti_egg] = false;
-        cmd->arti = arti_egg;
+        cmd->arti = hexen_arti_egg;
     }
     else if (gamekeydown[key_arti_invulnerability] && !cmd->arti
              && !players[consoleplayer].powers[pw_invulnerability])
     {
         gamekeydown[key_arti_invulnerability] = false;
-        cmd->arti = arti_invulnerability;
+        cmd->arti = hexen_arti_invulnerability;
     }
 
 //
@@ -1170,7 +1170,7 @@ void G_PlayerExitMap(int playerNumber)
             for (i = 0; i < 25; i++)
             {
                 player->powers[pw_flight] = 0;
-                P_PlayerUseArtifact(player, arti_fly);
+                P_PlayerUseArtifact(player, hexen_arti_fly);
             }
             player->powers[pw_flight] = 0;
         }

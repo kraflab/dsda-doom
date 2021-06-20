@@ -73,8 +73,8 @@ static void TryPickupArtifact(player_t * player, artitype_t artifactType,
 
     if (gamemode == shareware)
     {
-        artifactMessages[arti_blastradius] = TXT_ARTITELEPORT;
-        artifactMessages[arti_teleport] = TXT_ARTIBLASTRADIUS;
+        artifactMessages[hexen_arti_blastradius] = TXT_ARTITELEPORT;
+        artifactMessages[hexen_arti_teleport] = TXT_ARTIBLASTRADIUS;
     }
 
     if (P_GiveArtifact(player, artifactType, artifact))
@@ -86,7 +86,7 @@ static void TryPickupArtifact(player_t * player, artitype_t artifactType,
             artifact->special = 0;
         }
         player->bonuscount += BONUSADD;
-        if (artifactType < arti_firstpuzzitem)
+        if (artifactType < hexen_arti_firstpuzzitem)
         {
             SetDormantArtifact(artifact);
             S_StartSound(artifact, hexen_sfx_pickup_artifact);
@@ -126,10 +126,10 @@ dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
     }
     if (i == player->inventorySlotNum)
     {
-        if (arti < arti_firstpuzzitem)
+        if (arti < hexen_arti_firstpuzzitem)
         {
             i = 0;
-            while (player->inventory[i].type < arti_firstpuzzitem
+            while (player->inventory[i].type < hexen_arti_firstpuzzitem
                    && i < player->inventorySlotNum)
             {
                 i++;
@@ -151,7 +151,7 @@ dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo)
     }
     else
     {
-        if (arti >= arti_firstpuzzitem && netgame && !deathmatch)
+        if (arti >= hexen_arti_firstpuzzitem && netgame && !deathmatch)
         {                       // Can't carry more than 1 puzzle item in coop netplay
             return false;
         }
@@ -359,102 +359,102 @@ void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
 
             // Artifacts
         case HEXEN_SPR_PTN2:
-            TryPickupArtifact(player, arti_health, special);
+            TryPickupArtifact(player, hexen_arti_health, special);
             return;
         case HEXEN_SPR_SOAR:
-            TryPickupArtifact(player, arti_fly, special);
+            TryPickupArtifact(player, hexen_arti_fly, special);
             return;
         case HEXEN_SPR_INVU:
-            TryPickupArtifact(player, arti_invulnerability, special);
+            TryPickupArtifact(player, hexen_arti_invulnerability, special);
             return;
         case HEXEN_SPR_SUMN:
-            TryPickupArtifact(player, arti_summon, special);
+            TryPickupArtifact(player, hexen_arti_summon, special);
             return;
         case HEXEN_SPR_PORK:
-            TryPickupArtifact(player, arti_egg, special);
+            TryPickupArtifact(player, hexen_arti_egg, special);
             return;
         case HEXEN_SPR_SPHL:
-            TryPickupArtifact(player, arti_superhealth, special);
+            TryPickupArtifact(player, hexen_arti_superhealth, special);
             return;
         case HEXEN_SPR_HRAD:
-            TryPickupArtifact(player, arti_healingradius, special);
+            TryPickupArtifact(player, hexen_arti_healingradius, special);
             return;
         case HEXEN_SPR_TRCH:
-            TryPickupArtifact(player, arti_torch, special);
+            TryPickupArtifact(player, hexen_arti_torch, special);
             return;
         case HEXEN_SPR_ATLP:
-            TryPickupArtifact(player, arti_teleport, special);
+            TryPickupArtifact(player, hexen_arti_teleport, special);
             return;
         case HEXEN_SPR_TELO:
-            TryPickupArtifact(player, arti_teleportother, special);
+            TryPickupArtifact(player, hexen_arti_teleportother, special);
             return;
         case HEXEN_SPR_PSBG:
-            TryPickupArtifact(player, arti_poisonbag, special);
+            TryPickupArtifact(player, hexen_arti_poisonbag, special);
             return;
         case HEXEN_SPR_SPED:
-            TryPickupArtifact(player, arti_speed, special);
+            TryPickupArtifact(player, hexen_arti_speed, special);
             return;
         case HEXEN_SPR_BMAN:
-            TryPickupArtifact(player, arti_boostmana, special);
+            TryPickupArtifact(player, hexen_arti_boostmana, special);
             return;
         case HEXEN_SPR_BRAC:
-            TryPickupArtifact(player, arti_boostarmor, special);
+            TryPickupArtifact(player, hexen_arti_boostarmor, special);
             return;
         case HEXEN_SPR_BLST:
-            TryPickupArtifact(player, arti_blastradius, special);
+            TryPickupArtifact(player, hexen_arti_blastradius, special);
             return;
 
             // Puzzle artifacts
         case HEXEN_SPR_ASKU:
-            TryPickupArtifact(player, arti_puzzskull, special);
+            TryPickupArtifact(player, hexen_arti_puzzskull, special);
             return;
         case HEXEN_SPR_ABGM:
-            TryPickupArtifact(player, arti_puzzgembig, special);
+            TryPickupArtifact(player, hexen_arti_puzzgembig, special);
             return;
         case HEXEN_SPR_AGMR:
-            TryPickupArtifact(player, arti_puzzgemred, special);
+            TryPickupArtifact(player, hexen_arti_puzzgemred, special);
             return;
         case HEXEN_SPR_AGMG:
-            TryPickupArtifact(player, arti_puzzgemgreen1, special);
+            TryPickupArtifact(player, hexen_arti_puzzgemgreen1, special);
             return;
         case HEXEN_SPR_AGG2:
-            TryPickupArtifact(player, arti_puzzgemgreen2, special);
+            TryPickupArtifact(player, hexen_arti_puzzgemgreen2, special);
             return;
         case HEXEN_SPR_AGMB:
-            TryPickupArtifact(player, arti_puzzgemblue1, special);
+            TryPickupArtifact(player, hexen_arti_puzzgemblue1, special);
             return;
         case HEXEN_SPR_AGB2:
-            TryPickupArtifact(player, arti_puzzgemblue2, special);
+            TryPickupArtifact(player, hexen_arti_puzzgemblue2, special);
             return;
         case HEXEN_SPR_ABK1:
-            TryPickupArtifact(player, arti_puzzbook1, special);
+            TryPickupArtifact(player, hexen_arti_puzzbook1, special);
             return;
         case HEXEN_SPR_ABK2:
-            TryPickupArtifact(player, arti_puzzbook2, special);
+            TryPickupArtifact(player, hexen_arti_puzzbook2, special);
             return;
         case HEXEN_SPR_ASK2:
-            TryPickupArtifact(player, arti_puzzskull2, special);
+            TryPickupArtifact(player, hexen_arti_puzzskull2, special);
             return;
         case HEXEN_SPR_AFWP:
-            TryPickupArtifact(player, arti_puzzfweapon, special);
+            TryPickupArtifact(player, hexen_arti_puzzfweapon, special);
             return;
         case HEXEN_SPR_ACWP:
-            TryPickupArtifact(player, arti_puzzcweapon, special);
+            TryPickupArtifact(player, hexen_arti_puzzcweapon, special);
             return;
         case HEXEN_SPR_AMWP:
-            TryPickupArtifact(player, arti_puzzmweapon, special);
+            TryPickupArtifact(player, hexen_arti_puzzmweapon, special);
             return;
         case HEXEN_SPR_AGER:
-            TryPickupArtifact(player, arti_puzzgear1, special);
+            TryPickupArtifact(player, hexen_arti_puzzgear1, special);
             return;
         case HEXEN_SPR_AGR2:
-            TryPickupArtifact(player, arti_puzzgear2, special);
+            TryPickupArtifact(player, hexen_arti_puzzgear2, special);
             return;
         case HEXEN_SPR_AGR3:
-            TryPickupArtifact(player, arti_puzzgear3, special);
+            TryPickupArtifact(player, hexen_arti_puzzgear3, special);
             return;
         case HEXEN_SPR_AGR4:
-            TryPickupArtifact(player, arti_puzzgear4, special);
+            TryPickupArtifact(player, hexen_arti_puzzgear4, special);
             return;
 
             // Mana
@@ -996,12 +996,12 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
     normalCount = superCount = 0;
     for (i = 0; i < player->inventorySlotNum; i++)
     {
-        if (player->inventory[i].type == arti_health)
+        if (player->inventory[i].type == hexen_arti_health)
         {
             normalSlot = i;
             normalCount = player->inventory[i].count;
         }
-        else if (player->inventory[i].type == arti_superhealth)
+        else if (player->inventory[i].type == hexen_arti_superhealth)
         {
             superSlot = i;
             superCount = player->inventory[i].count;
