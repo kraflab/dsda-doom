@@ -57,6 +57,8 @@
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
 
+#include "hexen/p_acs.h"
+
 // Ty 03/07/98 - add deh externals
 // Maximums and such were hardcoded values.  Need to externalize those for
 // dehacked support (and future flexibility).  Most var names came from the key
@@ -755,6 +757,9 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 //
 // KillMobj
 //
+
+static mobj_t *ActiveMinotaur(player_t * master);
+
 // killough 11/98: make static
 static void P_KillMobj(mobj_t *source, mobj_t *target)
 {
@@ -788,6 +793,22 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
     totallive--;
 
   dsda_WatchDeath(target);
+
+  // hexen
+  if ((target->flags & MF_COUNTKILL || target->type == HEXEN_MT_ZBELL)
+      && target->special)
+  {                           // Initiate monster death actions
+      if (target->type == HEXEN_MT_SORCBOSS)
+      {
+          byte dummyArgs[3] = {0, 0, 0};
+          P_StartACS(target->special, 0, dummyArgs, target, NULL, 0);
+      }
+      else
+      {
+          P_ExecuteLineSpecial(target->special, target->args,
+                               NULL, 0, target);
+      }
+  }
 
   if (source && source->player)
   {
@@ -894,23 +915,185 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
     // heretic
     if (target->flags2 & MF2_FIREDAMAGE)
     {                       // Player flame death
-        P_SetMobjState(target, HERETIC_S_PLAY_FDTH1);
-        return;
+      switch (target->player->pclass)
+      {
+        case PCLASS_NULL: // heretic
+          P_SetMobjState(target, HERETIC_S_PLAY_FDTH1);
+          return;
+        case PCLASS_FIGHTER:
+          S_StartSound(target, hexen_sfx_player_fighter_burn_death);
+          P_SetMobjState(target, HEXEN_S_PLAY_F_FDTH1);
+          return;
+        case PCLASS_CLERIC:
+          S_StartSound(target, hexen_sfx_player_cleric_burn_death);
+          P_SetMobjState(target, HEXEN_S_PLAY_C_FDTH1);
+          return;
+        case PCLASS_MAGE:
+          S_StartSound(target, hexen_sfx_player_mage_burn_death);
+          P_SetMobjState(target, HEXEN_S_PLAY_M_FDTH1);
+          return;
+        default:
+          break;
+      }
+    }
+
+    // hexen
+    if (target->flags2 & MF2_ICEDAMAGE)
+    {                       // Player ice death
+      target->flags &= ~(7 << MF_TRANSSHIFT);     //no translation
+      target->flags |= MF_ICECORPSE;
+      switch (target->player->pclass)
+      {
+        case PCLASS_FIGHTER:
+          P_SetMobjState(target, HEXEN_S_FPLAY_ICE);
+          return;
+        case PCLASS_CLERIC:
+          P_SetMobjState(target, HEXEN_S_CPLAY_ICE);
+          return;
+        case PCLASS_MAGE:
+          P_SetMobjState(target, HEXEN_S_MPLAY_ICE);
+          return;
+        case PCLASS_PIG:
+          P_SetMobjState(target, HEXEN_S_PIG_ICE);
+          return;
+        default:
+            break;
+      }
     }
 
     if (target->player == &players[consoleplayer] && (automapmode & am_active))
       AM_Stop();    // don't die in auto map; switch view prior to dying
   }
 
-  xdeath_limit = heretic ? (target->info->spawnhealth >> 1) : target->info->spawnhealth;
-  if (target->health < -xdeath_limit && target->info->xdeathstate)
-    P_SetMobjState (target, target->info->xdeathstate);
+  if (hexen)
+  {
+    if (target->flags2 & MF2_FIREDAMAGE)
+    {
+      if (target->type == HEXEN_MT_FIGHTER_BOSS
+          || target->type == HEXEN_MT_CLERIC_BOSS
+          || target->type == HEXEN_MT_MAGE_BOSS)
+      {
+        switch (target->type)
+        {
+          case HEXEN_MT_FIGHTER_BOSS:
+            S_StartSound(target, hexen_sfx_player_fighter_burn_death);
+            P_SetMobjState(target, HEXEN_S_PLAY_F_FDTH1);
+            return;
+          case HEXEN_MT_CLERIC_BOSS:
+            S_StartSound(target, hexen_sfx_player_cleric_burn_death);
+            P_SetMobjState(target, HEXEN_S_PLAY_C_FDTH1);
+            return;
+          case HEXEN_MT_MAGE_BOSS:
+            S_StartSound(target, hexen_sfx_player_mage_burn_death);
+            P_SetMobjState(target, HEXEN_S_PLAY_M_FDTH1);
+            return;
+          default:
+            break;
+        }
+      }
+      else if (target->type == HEXEN_MT_TREEDESTRUCTIBLE)
+      {
+        P_SetMobjState(target, HEXEN_S_ZTREEDES_X1);
+        target->height = 24 * FRACUNIT;
+        S_StartSound(target, hexen_sfx_tree_explode);
+        return;
+      }
+    }
+    if (target->flags2 & MF2_ICEDAMAGE)
+    {
+      target->flags |= MF_ICECORPSE;
+      switch (target->type)
+      {
+        case HEXEN_MT_BISHOP:
+          P_SetMobjState(target, HEXEN_S_BISHOP_ICE);
+          return;
+        case HEXEN_MT_CENTAUR:
+        case HEXEN_MT_CENTAURLEADER:
+          P_SetMobjState(target, HEXEN_S_CENTAUR_ICE);
+          return;
+        case HEXEN_MT_DEMON:
+        case HEXEN_MT_DEMON2:
+          P_SetMobjState(target, HEXEN_S_DEMON_ICE);
+          return;
+        case HEXEN_MT_SERPENT:
+        case HEXEN_MT_SERPENTLEADER:
+          P_SetMobjState(target, HEXEN_S_SERPENT_ICE);
+          return;
+        case HEXEN_MT_WRAITH:
+        case HEXEN_MT_WRAITHB:
+          P_SetMobjState(target, HEXEN_S_WRAITH_ICE);
+          return;
+        case HEXEN_MT_ETTIN:
+          P_SetMobjState(target, HEXEN_S_ETTIN_ICE1);
+          return;
+        case HEXEN_MT_FIREDEMON:
+          P_SetMobjState(target, HEXEN_S_FIRED_ICE1);
+          return;
+        case HEXEN_MT_FIGHTER_BOSS:
+          P_SetMobjState(target, HEXEN_S_FIGHTER_ICE);
+          return;
+        case HEXEN_MT_CLERIC_BOSS:
+          P_SetMobjState(target, HEXEN_S_CLERIC_ICE);
+          return;
+        case HEXEN_MT_MAGE_BOSS:
+          P_SetMobjState(target, HEXEN_S_MAGE_ICE);
+          return;
+        case HEXEN_MT_PIG:
+          P_SetMobjState(target, HEXEN_S_PIG_ICE);
+          return;
+        default:
+          target->flags &= ~MF_ICECORPSE;
+          break;
+      }
+    }
+
+    if (target->type == HEXEN_MT_MINOTAUR)
+    {
+      mobj_t *master = target->special1.m;
+      if (master->health > 0)
+      {
+        if (!ActiveMinotaur(master->player))
+        {
+          master->player->powers[pw_minotaur] = 0;
+        }
+      }
+    }
+    else if (target->type == HEXEN_MT_TREEDESTRUCTIBLE)
+    {
+      target->height = 24 * FRACUNIT;
+    }
+    if (target->health < -(target->info->spawnhealth >> 1)
+        && target->info->xdeathstate)
+    {                           // Extreme death
+      P_SetMobjState(target, target->info->xdeathstate);
+    }
+    else
+    {                           // Normal death
+      if ((target->type == HEXEN_MT_FIREDEMON) &&
+          (target->z <= target->floorz + 2 * FRACUNIT) &&
+          (target->info->xdeathstate))
+      {
+        // This is to fix the imps' staying in fall state
+        P_SetMobjState(target, target->info->xdeathstate);
+      }
+      else
+      {
+        P_SetMobjState(target, target->info->deathstate);
+      }
+    }
+  }
   else
-    P_SetMobjState (target, target->info->deathstate);
+  {
+    xdeath_limit = heretic ? (target->info->spawnhealth >> 1) : target->info->spawnhealth;
+    if (target->health < -xdeath_limit && target->info->xdeathstate)
+      P_SetMobjState (target, target->info->xdeathstate);
+    else
+      P_SetMobjState (target, target->info->deathstate);
+  }
 
   target->tics -= P_Random(pr_killtics)&3;
 
-  if (heretic) return;
+  if (raven) return;
 
   if (target->tics < 1)
     target->tics = 1;
@@ -2944,7 +3127,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
 }
 
 // Search thinker list for minotaur
-mobj_t *ActiveMinotaur(player_t * master)
+static mobj_t *ActiveMinotaur(player_t * master)
 {
     mobj_t *mo;
     player_t *plr;
