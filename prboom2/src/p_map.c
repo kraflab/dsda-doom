@@ -591,6 +591,9 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
   if (thing == tmthing)
     return true;
 
+  if (hexen)
+    BlockingMobj = thing;
+
   /* killough 11/98:
    *
    * TOUCHY flag, for mines or other objects which die on contact with solids.
@@ -624,8 +627,17 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     {                       // don't let imps/wizards fly over other imps/wizards
       return false;
     }
-    if (tmthing->z > thing->z + thing->height
-        && !(thing->flags & MF_SPECIAL))
+
+    if (tmthing->type == HEXEN_MT_BISHOP && thing->type == HEXEN_MT_BISHOP)
+    {                       // don't let bishops fly over other bishops
+      return false;
+    }
+
+    if (
+      (hexen ? tmthing->z >= thing->z + thing->height
+             : tmthing->z >  thing->z + thing->height)
+      && !(thing->flags & MF_SPECIAL)
+    )
     {
       return (true);
     }
@@ -644,14 +656,78 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     // Determine damage amount, and the skull comes to a dead stop.
 
     int new_state;
-    int damage = ((P_Random(pr_skullfly)%8)+1)*tmthing->info->damage;
+    int damage;
+
+    if (tmthing->type == HEXEN_MT_MINOTAUR)
+    {
+      // Slamming minotaurs shouldn't move non-creatures
+      if (!(thing->flags & MF_COUNTKILL))
+      {
+        return (false);
+      }
+    }
+    else if (tmthing->type == HEXEN_MT_HOLY_FX)
+    {
+      if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
+      {
+        if (netgame && !deathmatch && thing->player)
+        {               // don't attack other co-op players
+          return true;
+        }
+        if (thing->flags2 & MF2_REFLECTIVE
+            && (thing->player || thing->flags2 & MF2_BOSS))
+        {
+          tmthing->special1.m = tmthing->target;
+          tmthing->target = thing;
+          return true;
+        }
+        if (thing->flags & MF_COUNTKILL || thing->player)
+        {
+          tmthing->special1.m = thing;
+        }
+        if (P_Random(pr_hexen) < 96)
+        {
+          damage = 12;
+          if (thing->player || thing->flags2 & MF2_BOSS)
+          {
+            damage = 3;
+            // ghost burns out faster when attacking players/bosses
+            tmthing->health -= 6;
+          }
+          P_DamageMobj(thing, tmthing, tmthing->target, damage);
+          if (P_Random(pr_hexen) < 128)
+          {
+            P_SpawnMobj(tmthing->x, tmthing->y, tmthing->z,
+                        HEXEN_MT_HOLY_PUFF);
+            S_StartSound(tmthing, hexen_sfx_spirit_attack);
+            if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
+                && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
+            {
+              if ((thing->type == HEXEN_MT_CENTAUR) ||
+                  (thing->type == HEXEN_MT_CENTAURLEADER) ||
+                  (thing->type == HEXEN_MT_ETTIN))
+              {
+                S_StartSound(thing, hexen_sfx_puppybeat);
+              }
+            }
+          }
+        }
+        if (thing->health <= 0)
+        {
+          tmthing->special1.i = 0;
+        }
+      }
+      return true;
+    }
+
+    damage = ((P_Random(pr_skullfly) % 8) + 1) * tmthing->info->damage;
 
     P_DamageMobj (thing, tmthing, tmthing, damage);
 
     tmthing->flags &= ~MF_SKULLFLY;
     tmthing->momx = tmthing->momy = tmthing->momz = 0;
 
-    if (heretic)
+    if (raven)
       new_state = tmthing->info->seestate;
     else
       new_state = tmthing->info->spawnstate;
@@ -661,12 +737,36 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     return false;   // stop moving
   }
 
+  // Check for blasted thing running into another
+  if (tmthing->flags2 & MF2_BLASTED && thing->flags & MF_SHOOTABLE)
+  {
+    if (!(thing->flags2 & MF2_BOSS) && (thing->flags & MF_COUNTKILL))
+    {
+      thing->momx += tmthing->momx;
+      thing->momy += tmthing->momy;
+      if ((thing->momx + thing->momy) > 3 * FRACUNIT)
+      {
+          damage = (tmthing->info->mass / 100) + 1;
+          P_DamageMobj(thing, tmthing, tmthing, damage);
+          damage = (thing->info->mass / 100) + 1;
+          P_DamageMobj(tmthing, thing, thing, damage >> 2);
+      }
+      return (false);
+    }
+  }
+
   // missiles can hit other things
   // killough 8/10/98: bouncing non-solid things can hit other things too
 
   if (tmthing->flags & MF_MISSILE ||
      (tmthing->flags & MF_BOUNCES && !(tmthing->flags & MF_SOLID)))
   {
+    // Check for a non-shootable mobj
+    if (thing->flags2 & MF2_NONSHOOTABLE)
+    {
+        return true;
+    }
+
     // Check for passing through a ghost
     if ((thing->flags & MF_SHADOW) && (tmthing->flags2 & MF2_THRUGHOST))
     {
@@ -680,6 +780,122 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
 
     if (tmthing->z + tmthing->height < thing->z)
       return true;    // underneath
+
+    if (hexen && tmthing->flags2 & MF2_FLOORBOUNCE)
+    {
+      if (tmthing->target == thing || !(thing->flags & MF_SOLID))
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    if (tmthing->type == HEXEN_MT_LIGHTNING_FLOOR
+        || tmthing->type == HEXEN_MT_LIGHTNING_CEILING)
+    {
+      if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
+      {
+        if (thing->info->mass != INT_MAX)
+        {
+          thing->momx += tmthing->momx >> 4;
+          thing->momy += tmthing->momy >> 4;
+        }
+        if ((!thing->player && !(thing->flags2 & MF2_BOSS))
+            || !(leveltime & 1))
+        {
+          if (thing->type == HEXEN_MT_CENTAUR
+              || thing->type == HEXEN_MT_CENTAURLEADER)
+          {           // Lightning does more damage to centaurs
+            P_DamageMobj(thing, tmthing, tmthing->target, 9);
+          }
+          else
+          {
+            P_DamageMobj(thing, tmthing, tmthing->target, 3);
+          }
+          if (!(S_GetSoundPlayingInfo(tmthing,
+                                      hexen_sfx_mage_lightning_zap)))
+          {
+            S_StartSound(tmthing, hexen_sfx_mage_lightning_zap);
+          }
+          if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 64
+              && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
+          {
+            if ((thing->type == HEXEN_MT_CENTAUR) ||
+                (thing->type == HEXEN_MT_CENTAURLEADER) ||
+                (thing->type == HEXEN_MT_ETTIN))
+            {
+              S_StartSound(thing, hexen_sfx_puppybeat);
+            }
+          }
+        }
+        tmthing->health--;
+        if (tmthing->health <= 0 || thing->health <= 0)
+        {
+          return false;
+        }
+        if (tmthing->type == HEXEN_MT_LIGHTNING_FLOOR)
+        {
+          if (tmthing->special2.m
+              && !tmthing->special2.m->special1.m)
+          {
+            tmthing->special2.m->special1.m = thing;
+          }
+        }
+        else if (!tmthing->special1.m)
+        {
+          tmthing->special1.m = thing;
+        }
+      }
+      return true;        // lightning zaps through all sprites
+    }
+    else if (tmthing->type == HEXEN_MT_LIGHTNING_ZAP)
+    {
+      mobj_t *lmo;
+
+      if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
+      {
+        lmo = tmthing->special2.m;
+        if (lmo)
+        {
+          if (lmo->type == HEXEN_MT_LIGHTNING_FLOOR)
+          {
+            if (lmo->special2.m
+                && !lmo->special2.m->special1.m)
+            {
+              lmo->special2.m->special1.m = thing;
+            }
+          }
+          else if (!lmo->special1.m)
+          {
+            lmo->special1.m = thing;
+          }
+          if (!(leveltime & 3))
+          {
+            lmo->health--;
+          }
+        }
+      }
+    }
+    else if (tmthing->type == HEXEN_MT_MSTAFF_FX2 && thing != tmthing->target)
+    {
+      if (!thing->player && !(thing->flags2 & MF2_BOSS))
+      {
+        switch (thing->type)
+        {
+          case HEXEN_MT_FIGHTER_BOSS:      // these not flagged boss
+          case HEXEN_MT_CLERIC_BOSS:       // so they can be blasted
+          case HEXEN_MT_MAGE_BOSS:
+            break;
+          default:
+            P_DamageMobj(thing, tmthing, tmthing->target, 10);
+            return true;
+            break;
+        }
+      }
+    }
 
     if (tmthing->target && P_ProjectileImmune(thing, tmthing->target))
     {
@@ -717,13 +933,15 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
 
     if (tmthing->flags2 & MF2_RIP)
     {
-      if (heretic)
+      if (raven)
       {
-        if (!(thing->flags & MF_NOBLOOD))
+        if (!(thing->flags & MF_NOBLOOD) &&
+            !(thing->flags2 & MF2_REFLECTIVE) &&
+            !(thing->flags2 & MF2_INVULNERABLE))
         {                   // Ok to spawn some blood
           P_RipperBlood(tmthing);
         }
-        S_StartSound(tmthing, heretic_sfx_ripslop);
+        if (heretic) S_StartSound(tmthing, heretic_sfx_ripslop);
         damage = ((P_Random(pr_heretic) & 3) + 2) * tmthing->damage;
       }
       else
@@ -747,13 +965,25 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
 
     // damage / explode
 
-    damage = heretic ? tmthing->damage : tmthing->info->damage;
+    damage = raven ? tmthing->damage : tmthing->info->damage;
     damage = ((P_Random(pr_damage) % 8) + 1) * damage;
-    if (heretic && damage && !(thing->flags & MF_NOBLOOD) && P_Random(pr_heretic) < 192)
+    if (
+      raven &&
+      damage &&
+      !(thing->flags & MF_NOBLOOD) &&
+      !(thing->flags2 & MF2_REFLECTIVE) &&
+      !(thing->flags2 & MF2_INVULNERABLE) &&
+      !(tmthing->type == HEXEN_MT_TELOTHER_FX1) &&
+      !(tmthing->type == HEXEN_MT_TELOTHER_FX2) &&
+      !(tmthing->type == HEXEN_MT_TELOTHER_FX3) &&
+      !(tmthing->type == HEXEN_MT_TELOTHER_FX4) &&
+      !(tmthing->type == HEXEN_MT_TELOTHER_FX5) &&
+      P_Random(pr_heretic) < 192
+    )
     {
       P_BloodSplatter(tmthing->x, tmthing->y, tmthing->z, thing);
     }
-    if (!heretic || damage)
+    if (!raven || damage)
       P_DamageMobj(thing, tmthing, tmthing->target, damage);
 
     // don't traverse any more
@@ -771,7 +1001,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
   if (thing->flags & MF_SPECIAL)
   {
     uint_64_t solid = thing->flags & MF_SOLID;
-    if (tmthing->flags & MF_PICKUP)
+    if (tmthing->flags & MF_PICKUP) // hexen_note: can probably use tmflags here?
       P_TouchSpecialThing(thing, tmthing); // can remove thing
     return !solid;
   }
