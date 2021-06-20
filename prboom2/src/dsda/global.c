@@ -102,6 +102,8 @@ int g_mntr_atk3_missile;
 int g_mntr_atk3_state;
 int g_mntr_fire;
 
+int g_arti_health;
+int g_arti_superhealth;
 int g_arti_fly;
 int g_arti_limit;
 
@@ -388,6 +390,8 @@ static void dsda_InitHeretic(void) {
   g_mntr_atk3_state = HERETIC_S_MNTR_ATK3_4;
   g_mntr_fire = HERETIC_MT_MNTRFX3;
 
+  g_arti_health = arti_health;
+  g_arti_superhealth = arti_superhealth;
   g_arti_fly = arti_fly;
   g_arti_limit = 16;
 
@@ -546,6 +550,8 @@ static void dsda_InitHexen(void) {
   g_mntr_atk3_state = HEXEN_S_MNTR_ATK3_4;
   g_mntr_fire = HEXEN_MT_MNTRFX3;
 
+  g_arti_health = hexen_arti_health;
+  g_arti_superhealth = hexen_arti_superhealth;
   g_arti_fly = hexen_arti_fly;
   g_arti_limit = 25;
   //

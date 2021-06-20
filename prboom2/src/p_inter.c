@@ -2174,24 +2174,19 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
 {
     int i;
     int count;
-    int normalCount;
-    int normalSlot;
-    int superCount;
-    int superSlot;
-
-    normalCount = 0;
-    superCount = 0;
-    normalSlot = 0;
-    superSlot = 0;
+    int normalCount = 0;
+    int normalSlot = 0;
+    int superCount = 0;
+    int superSlot = 0;
 
     for (i = 0; i < player->inventorySlotNum; i++)
     {
-        if (player->inventory[i].type == arti_health)
+        if (player->inventory[i].type == g_arti_health)
         {
             normalSlot = i;
             normalCount = player->inventory[i].count;
         }
-        else if (player->inventory[i].type == arti_superhealth)
+        else if (player->inventory[i].type == g_arti_superhealth)
         {
             superSlot = i;
             superCount = player->inventory[i].count;

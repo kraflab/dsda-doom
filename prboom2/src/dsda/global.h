@@ -66,6 +66,8 @@ extern int g_mntr_atk3_missile;
 extern int g_mntr_atk3_state;
 extern int g_mntr_fire;
 
+extern int g_arti_health;
+extern int g_arti_superhealth;
 extern int g_arti_fly;
 extern int g_arti_limit;
 
