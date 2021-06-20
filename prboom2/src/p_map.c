@@ -1547,26 +1547,29 @@ dboolean P_ThingHeightClip (mobj_t* thing)
   thing->floorz = tmfloorz;
   thing->ceilingz = tmceilingz;
   thing->dropoffz = tmdropoffz;    /* killough 11/98: remember dropoffs */
+  thing->floorpic = tmfloorpic;
 
   if (onfloor)
-    {
-
+  {
     // walking monsters rise and fall with the floor
-
-    thing->z = thing->floorz;
+    if (
+      !hexen ||
+      (thing->z - thing->floorz < 9 * FRACUNIT) ||
+      (thing->flags & MF_NOGRAVITY)
+    )
+      thing->z = thing->floorz;
 
     /* killough 11/98: Possibly upset balance of objects hanging off ledges */
-      if (thing->intflags & MIF_FALLING && thing->gear >= MAXGEAR)
-  thing->gear = 0;
-    }
+    if (thing->intflags & MIF_FALLING && thing->gear >= MAXGEAR)
+      thing->gear = 0;
+  }
   else
-    {
-
-  // don't adjust a floating monster unless forced to
+  {
+    // don't adjust a floating monster unless forced to
 
     if (thing->z+thing->height > thing->ceilingz)
       thing->z = thing->ceilingz - thing->height;
-    }
+  }
 
   return thing->ceilingz - thing->floorz >= thing->height;
 }
@@ -2996,6 +2999,7 @@ mobj_t *P_CheckOnmobj(mobj_t * thing)
 //
     tmfloorz = tmdropoffz = newsubsec->sector->floorheight;
     tmceilingz = newsubsec->sector->ceilingheight;
+    tmfloorpic = newsubsec->sector->floorpic;
 
     validcount++;
     numspechit = 0;
