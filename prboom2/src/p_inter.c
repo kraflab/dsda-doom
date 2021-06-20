@@ -46,6 +46,7 @@
 #include "p_enemy.h"
 #include "p_spec.h"
 #include "p_pspr.h"
+#include "p_user.h"
 #include "hu_tracers.h"
 
 #ifdef __GNUG__
@@ -104,6 +105,17 @@ static weapontype_t GetAmmoChange[] = {
     wp_phoenixrod,
     wp_mace
 };
+
+// hexen
+int ArmorIncrement[NUMCLASSES][NUMARMOR] = {
+    [PCLASS_FIGHTER] = {25 * FRACUNIT, 20 * FRACUNIT, 15 * FRACUNIT, 5 * FRACUNIT},
+                       {10 * FRACUNIT, 25 * FRACUNIT, 5 * FRACUNIT, 20 * FRACUNIT},
+                       {5 * FRACUNIT, 15 * FRACUNIT, 10 * FRACUNIT, 25 * FRACUNIT},
+                       {0, 0, 0, 0}
+};
+
+int AutoArmorSave[NUMCLASSES] =
+    { [PCLASS_FIGHTER] = 15 * FRACUNIT, 10 * FRACUNIT, 5 * FRACUNIT, 0 };
 
 //
 // P_GiveAmmo
@@ -1145,6 +1157,8 @@ static dboolean P_InfightingImmune(mobj_t *target, mobj_t *source)
     mobjinfo[target->type].infighting_group == mobjinfo[source->type].infighting_group;
 }
 
+static dboolean P_MorphMonster(mobj_t * actor);
+
 void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 {
   player_t *player;
@@ -1155,7 +1169,54 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     return; // shouldn't happen...
 
   if (target->health <= 0)
+  {
+    // hexen
+    if (inflictor && inflictor->flags2 & MF2_ICEDAMAGE)
+    {
+        return;
+    }
+    else if (target->flags & MF_ICECORPSE)  // frozen
+    {
+        target->tics = 1;
+        target->momx = target->momy = 0;
+    }
     return;
+  }
+
+  // hexen has a different order of checks
+  if (hexen)
+  {
+    if ((target->flags2 & MF2_INVULNERABLE) && damage < 10000)
+    {                           // mobj is invulnerable
+      if (target->player)
+        return;             // for player, no exceptions
+      if (inflictor)
+      {
+        switch (inflictor->type)
+        {
+              // These inflictors aren't foiled by invulnerability
+          case HEXEN_MT_HOLY_FX:
+          case HEXEN_MT_POISONCLOUD:
+          case HEXEN_MT_FIREBOMB:
+            break;
+          default:
+            return;
+        }
+      }
+      else
+      {
+        return;
+      }
+    }
+    if (target->player)
+    {
+      if (damage < 1000 && ((target->player->cheats & CF_GODMODE)
+                            || target->player->powers[pw_invulnerability]))
+      {
+        return;
+      }
+    }
+  }
 
   if (target->flags & MF_SKULLFLY)
   {
@@ -1163,12 +1224,18 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     target->momx = target->momy = target->momz = 0;
   }
 
+  if (target->flags2 & MF2_DORMANT)
+  {
+    // Invulnerable, and won't wake up
+    return;
+  }
+
   player = target->player;
   if (player && gameskill == sk_baby)
     damage >>= 1;   // take half damage in trainer mode
 
   // Special damage types
-  if (heretic && inflictor)
+  if (raven && inflictor)
     switch (inflictor->type)
     {
       case HERETIC_MT_EGGFX:
@@ -1243,6 +1310,96 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
           }
         }
         break;
+      case HEXEN_MT_EGGFX:
+        if (player)
+        {
+          P_MorphPlayer(player);
+        }
+        else
+        {
+          P_MorphMonster(target);
+        }
+        return;         // Always return
+      case HEXEN_MT_TELOTHER_FX1:
+      case HEXEN_MT_TELOTHER_FX2:
+      case HEXEN_MT_TELOTHER_FX3:
+      case HEXEN_MT_TELOTHER_FX4:
+      case HEXEN_MT_TELOTHER_FX5:
+        if ((target->flags & MF_COUNTKILL) &&
+            (target->type != HEXEN_MT_SERPENT) &&
+            (target->type != HEXEN_MT_SERPENTLEADER) &&
+            (!(target->flags2 & MF2_BOSS)))
+        {
+          P_TeleportOther(target);
+        }
+        return;
+      case HEXEN_MT_MINOTAUR:
+        if (inflictor->flags & MF_SKULLFLY)
+        {               // Slam only when in charge mode
+          P_MinotaurSlam(inflictor, target);
+          return;
+        }
+        break;
+      case HEXEN_MT_BISH_FX:
+        // Bishops are just too nasty
+        damage >>= 1;
+        break;
+      case HEXEN_MT_SHARDFX1:
+        switch (inflictor->special2.i)
+        {
+          case 3:
+            damage <<= 3;
+            break;
+          case 2:
+            damage <<= 2;
+            break;
+          case 1:
+            damage <<= 1;
+            break;
+          default:
+            break;
+        }
+        break;
+      case HEXEN_MT_CSTAFF_MISSILE:
+        // Cleric Serpent Staff does poison damage
+        if (target->player)
+        {
+          P_PoisonPlayer(target->player, source, 20);
+          damage >>= 1;
+        }
+        break;
+      case HEXEN_MT_ICEGUY_FX2:
+        damage >>= 1;
+        break;
+      case HEXEN_MT_POISONDART:
+        if (target->player)
+        {
+          P_PoisonPlayer(target->player, source, 20);
+          damage >>= 1;
+        }
+        break;
+      case HEXEN_MT_POISONCLOUD:
+        if (target->player)
+        {
+          if (target->player->poisoncount < 4)
+          {
+            P_PoisonDamage(target->player, source, 15 + (P_Random(pr_hexen) & 15), false);  // Don't play painsound
+            P_PoisonPlayer(target->player, source, 50);
+            S_StartSound(target, hexen_sfx_player_poisoncough);
+          }
+          return;
+        }
+        else if (!(target->flags & MF_COUNTKILL))
+        {               // only damage monsters/players with the poison cloud
+          return;
+        }
+        break;
+      case HEXEN_MT_FSWORD_MISSILE:
+        if (target->player)
+        {
+          damage -= damage >> 2;
+        }
+        break;
       default:
         break;
     }
@@ -1253,7 +1410,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 
   if (
     inflictor &&
-    !(target->flags & MF_NOCLIP) &&
+    !(target->flags & MF_NOCLIP) && // hexen_note: not done in hexen, does it matter?
     !(
       source &&
       source->player &&
@@ -1305,38 +1462,88 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   if (player)
   {
     // end of game hell hack
-    if (!heretic && target->subsector->sector->special == 11 && damage >= target->health)
+    if (!raven && target->subsector->sector->special == 11 && damage >= target->health)
       damage = target->health - 1;
 
     // Below certain threshold,
     // ignore damage in GOD mode, or with INVUL power.
     // killough 3/26/98: make god mode 100% god mode in non-compat mode
 
-    if ((damage < 1000 || (!comp[comp_god] && (player->cheats&CF_GODMODE))) &&
-        (player->cheats&CF_GODMODE || player->powers[pw_invulnerability]))
+    if (
+      !hexen &&
+      (damage < 1000 || (!comp[comp_god] && (player->cheats & CF_GODMODE))) &&
+      (player->cheats & CF_GODMODE || player->powers[pw_invulnerability])
+    )
       return;
 
-    if (player->armortype)
+    if (hexen)
     {
+      int i;
       int saved;
-
-      if (heretic)
-        saved = player->armortype == 1 ? (damage >> 1) : (damage >> 1) + (damage >> 2);
-      else
-        saved = player->armortype == 1 ? damage / 3 : damage / 2;
-
-      if (player->armorpoints[ARMOR_ARMOR] <= saved)
-      {
-        // armor is used up
-        saved = player->armorpoints[ARMOR_ARMOR];
-        player->armortype = 0;
+      fixed_t savedPercent = AutoArmorSave[player->pclass]
+                             + player->armorpoints[ARMOR_ARMOR]
+                             + player->armorpoints[ARMOR_SHIELD]
+                             + player->armorpoints[ARMOR_HELMET]
+                             + player->armorpoints[ARMOR_AMULET];
+      if (savedPercent)
+      {                       // armor absorbed some damage
+        if (savedPercent > 100 * FRACUNIT)
+        {
+          savedPercent = 100 * FRACUNIT;
+        }
+        for (i = 0; i < NUMARMOR; i++)
+        {
+          if (player->armorpoints[i])
+          {
+            player->armorpoints[i] -= FixedDiv(
+              FixedMul(damage << FRACBITS, ArmorIncrement[player->pclass][i]),
+              300 * FRACUNIT
+            );
+            if (player->armorpoints[i] < 2 * FRACUNIT)
+            {
+              player->armorpoints[i] = 0;
+            }
+          }
+        }
+        saved = FixedDiv(
+          FixedMul(damage << FRACBITS, savedPercent),
+          100 * FRACUNIT
+        );
+        if (saved > savedPercent * 2)
+        {
+          saved = savedPercent * 2;
+        }
+        damage -= saved >> FRACBITS;
       }
-      player->armorpoints[ARMOR_ARMOR] -= saved;
-      damage -= saved;
+    }
+    else
+    {
+      if (player->armortype)
+      {
+        int saved;
+
+        if (heretic)
+          saved = player->armortype == 1 ? (damage >> 1) : (damage >> 1) + (damage >> 2);
+        else
+          saved = player->armortype == 1 ? damage / 3 : damage / 2;
+
+        if (player->armorpoints[ARMOR_ARMOR] <= saved)
+        {
+          // armor is used up
+          saved = player->armorpoints[ARMOR_ARMOR];
+          player->armortype = 0;
+        }
+        player->armorpoints[ARMOR_ARMOR] -= saved;
+        damage -= saved;
+      }
     }
 
-    if (heretic && damage >= player->health
-        && ((gameskill == sk_baby) || deathmatch) && !player->chickenTics)
+    if (
+      raven &&
+      damage >= player->health &&
+      (gameskill == sk_baby || deathmatch) &&
+      !player->chickenTics && !player->morphTics
+    )
     {                       // Try to use some inventory health
       P_AutoUseHealth(player, damage - player->health + 1);
     }
@@ -1353,6 +1560,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 
     if (heretic && player == &players[consoleplayer])
     {
+      // HEXEN_TODO: SB_PaletteFlash
+      // SB_PaletteFlash(false);
       SB_PaletteFlash();
     }
   }
@@ -1382,6 +1591,45 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
         {
           target->flags2 |= MF2_FIREDAMAGE;
         }
+      }
+    }
+    else if (hexen)
+    {
+      if (inflictor)
+      {                       // check for special fire damage or ice damage deaths
+        if (inflictor->flags2 & MF2_FIREDAMAGE)
+        {
+          if (player && !player->morphTics)
+          {               // Check for flame death
+            if (target->health > -50 && damage > 25)
+            {
+              target->flags2 |= MF2_FIREDAMAGE;
+            }
+          }
+          else
+          {
+            target->flags2 |= MF2_FIREDAMAGE;
+          }
+        }
+        else if (inflictor->flags2 & MF2_ICEDAMAGE)
+        {
+          target->flags2 |= MF2_ICEDAMAGE;
+        }
+      }
+      if (source && (source->type == HEXEN_MT_MINOTAUR))
+      {                       // Minotaur's kills go to his master
+        mobj_t *master = source->special1.m;
+        // Make sure still alive and not a pointer to fighter head
+        if (master->player && (master->player->mo == master))
+        {
+          source = master;
+        }
+      }
+      if (source && (source->player) &&
+          (source->player->readyweapon == wp_fourth))
+      {
+        // Always extreme death from fourth weapon
+        target->health = -5000;
       }
     }
 
@@ -1416,12 +1664,52 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   if (P_Random (pr_painchance) < target->info->painchance &&
       !(target->flags & MF_SKULLFLY)) //killough 11/98: see below
   {
-    if (mbf_features)
-      justhit = true;
+    if (inflictor && (inflictor->type >= HEXEN_MT_LIGHTNING_FLOOR
+                      && inflictor->type <= HEXEN_MT_LIGHTNING_ZAP))
+    {
+      if (P_Random(pr_hexen) < 96)
+      {
+        target->flags |= MF_JUSTHIT;    // fight back!
+        P_SetMobjState(target, target->info->painstate);
+      }
+      else
+      {                   // "electrocute" the target
+        target->frame |= FF_FULLBRIGHT;
+        if (target->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
+            && !S_GetSoundPlayingInfo(target, hexen_sfx_puppybeat))
+        {
+          if ((target->type == HEXEN_MT_CENTAUR) ||
+              (target->type == HEXEN_MT_CENTAURLEADER) ||
+              (target->type == HEXEN_MT_ETTIN))
+          {
+            S_StartSound(target, hexen_sfx_puppybeat);
+          }
+        }
+      }
+    }
     else
-      target->flags |= MF_JUSTHIT;    // fight back!
+    {
+      if (mbf_features)
+        justhit = true;
+      else
+        target->flags |= MF_JUSTHIT;    // fight back!
 
-    P_SetMobjState(target, target->info->painstate);
+      P_SetMobjState(target, target->info->painstate);
+
+      if (inflictor && inflictor->type == HEXEN_MT_POISONCLOUD)
+      {
+        if (target->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
+            && !S_GetSoundPlayingInfo(target, hexen_sfx_puppybeat))
+        {
+          if ((target->type == HEXEN_MT_CENTAUR) ||
+              (target->type == HEXEN_MT_CENTAURLEADER) ||
+              (target->type == HEXEN_MT_ETTIN))
+          {
+            S_StartSound(target, hexen_sfx_puppybeat);
+          }
+        }
+      }
+    }
   }
 
   target->reactiontime = 0;           // we're awake now...
@@ -1435,7 +1723,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     (!target->threshold || target->flags2 & MF2_NOTHRESHOLD) &&
     ((source->flags ^ target->flags) & MF_FRIEND || monster_infighting || !mbf_features) &&
     !(
-      heretic && (
+      raven && (
         source->flags2 & MF2_BOSS ||
         (target->type == HERETIC_MT_SORCERER2 && source->type == HERETIC_MT_WIZARD)
       )
@@ -2302,16 +2590,6 @@ const char *TextKeyMessages[] = {
     TXT_KEY_SWAMP,
     TXT_KEY_CASTLE
 };
-
-int ArmorIncrement[NUMCLASSES][NUMARMOR] = {
-    [PCLASS_FIGHTER] = {25 * FRACUNIT, 20 * FRACUNIT, 15 * FRACUNIT, 5 * FRACUNIT},
-                       {10 * FRACUNIT, 25 * FRACUNIT, 5 * FRACUNIT, 20 * FRACUNIT},
-                       {5 * FRACUNIT, 15 * FRACUNIT, 10 * FRACUNIT, 25 * FRACUNIT},
-                       {0, 0, 0, 0}
-};
-
-int AutoArmorSave[NUMCLASSES] =
-    { [PCLASS_FIGHTER] = 15 * FRACUNIT, 10 * FRACUNIT, 5 * FRACUNIT, 0 };
 
 void P_FallingDamage(player_t * player)
 {
@@ -3206,7 +3484,7 @@ dboolean P_MorphPlayer(player_t * player)
     return (true);
 }
 
-dboolean P_MorphMonster(mobj_t * actor)
+static dboolean P_MorphMonster(mobj_t * actor)
 {
     mobj_t *master, *monster, *fog;
     mobjtype_t moType;

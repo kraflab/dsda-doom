@@ -90,15 +90,6 @@ extern int PStateRun[NUMCLASSES];
 extern int PStateAttack[NUMCLASSES];
 extern int PStateAttackEnd[NUMCLASSES];
 
-void P_PlayerThink(player_t * player);
-void P_Thrust(player_t * player, angle_t angle, fixed_t move);
-void P_PlayerRemoveArtifact(player_t * player, int slot);
-void P_PlayerUseArtifact(player_t * player, artitype_t arti);
-dboolean P_UseArtifact(player_t * player, artitype_t arti);
-int P_GetPlayerNum(player_t * player);
-void P_TeleportOther(mobj_t * victim);
-void ResetBlasted(mobj_t * mo);
-
 // ***** P_MOBJ *****
 
 #define ONFLOORZ INT_MIN
@@ -223,22 +214,6 @@ void P_RadiusAttack(mobj_t * spot, mobj_t * source, int damage, int distance,
 // ***** P_INTER *****
 
 extern int clipmana[NUMMANA];
-
-void P_SetMessage(player_t * player, const char *message, dboolean ultmsg);
-void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg);
-void P_TouchSpecialThing(mobj_t * special, mobj_t * toucher);
-void P_DamageMobj(mobj_t * target, mobj_t * inflictor, mobj_t * source,
-                  int damage);
-void P_FallingDamage(player_t * player);
-void P_PoisonPlayer(player_t * player, mobj_t * poisoner, int poison);
-void P_PoisonDamage(player_t * player, mobj_t * source, int damage,
-                    dboolean playPainSound);
-dboolean P_GiveMana(player_t * player, manatype_t mana, int count);
-dboolean P_GiveArtifact(player_t * player, artitype_t arti, mobj_t * mo);
-dboolean P_GiveArmor(player_t * player, armortype_t armortype, int amount);
-dboolean P_GiveBody(player_t * player, int num);
-dboolean P_GivePower(player_t * player, powertype_t power);
-dboolean P_MorphPlayer(player_t * player);
 
 // ***** AM_MAP *****
 

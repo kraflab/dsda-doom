@@ -60,5 +60,6 @@ void Heretic_P_MovePlayer(player_t * player);
 // hexen
 
 void ResetBlasted(mobj_t * mo);
+void P_TeleportOther(mobj_t * victim);
 
 #endif  /* __P_USER__ */

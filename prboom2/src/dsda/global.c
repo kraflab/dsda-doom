@@ -517,7 +517,7 @@ static void dsda_InitHexen(void) {
   // g_wp_pistol = wp_goldwand;
   //
   // g_telefog_height = TELEFOGHEIGHT;
-  // g_thrust_factor = 150;
+  g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
   g_special_friction_low = IGNORE_VALUE;
   //
@@ -525,7 +525,7 @@ static void dsda_InitHexen(void) {
   // g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
   // g_s_play_run1 = HERETIC_S_PLAY_RUN1;
   // g_s_play = HERETIC_S_PLAY;
-  // g_s_null = HERETIC_S_NULL;
+  g_s_null = HEXEN_S_NULL;
   //
   g_mt_bloodsplatter = HEXEN_MT_BLOODSPLATTER;
   g_bloodsplatter_shift = 10;
@@ -596,6 +596,9 @@ static void dsda_InitHexen(void) {
   // g_menu_cr_hilite = g_cr_blue;
   // g_menu_cr_select = g_cr_gray;
   // g_menu_cr_disable = g_cr_gray;
+
+  mobjinfo[HEXEN_MT_CENTAUR].infighting_group = IG_CENTAUR;
+  mobjinfo[HEXEN_MT_CENTAURLEADER].infighting_group = IG_CENTAUR;
 }
 
 static dboolean dsda_AutoDetectHeretic(void)
