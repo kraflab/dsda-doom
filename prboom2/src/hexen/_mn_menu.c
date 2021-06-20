@@ -1499,7 +1499,8 @@ dboolean MN_Responder(event_t * event)
             {
                 usegamma = 0;
             }
-            SB_PaletteFlash(true);  // force change
+            // HEXEN_TODO: SB_PaletteFlash
+            // SB_PaletteFlash(true);  // force change
             P_SetMessage(&players[consoleplayer], GammaText[usegamma],
                          false);
             return true;

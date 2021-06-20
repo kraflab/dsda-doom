@@ -1231,8 +1231,8 @@ void G_PlayerReborn(int player)
     p->usedown = p->attackdown = true;  // don't do anything immediately
     p->playerstate = PST_LIVE;
     p->health = MAXHEALTH;
-    p->readyweapon = p->pendingweapon = WP_FIRST;
-    p->weaponowned[WP_FIRST] = true;
+    p->readyweapon = p->pendingweapon = wp_first;
+    p->weaponowned[wp_first] = true;
     p->messageTics = 0;
     p->lookdir = 0;
     localQuakeHappening[player] = false;

@@ -44,6 +44,7 @@
 
 #include "p_inter.h"
 #include "p_enemy.h"
+#include "p_spec.h"
 #include "hu_tracers.h"
 
 #ifdef __GNUG__
@@ -1753,7 +1754,7 @@ void P_HideSpecialThing(mobj_t * thing)
 {
     thing->flags &= ~MF_SPECIAL;
     thing->flags2 |= MF2_DONTDRAW;
-    P_SetMobjState(thing, HERETIC_S_HIDESPECIAL1);
+    P_SetMobjState(thing, g_hide_state);
 }
 
 void P_MinotaurSlam(mobj_t * source, mobj_t * target)
@@ -2231,4 +2232,230 @@ void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg)
 {
     player->message = message;
     player->yellowMessage = true;
+}
+
+static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
+                            weapontype_t weaponType, mobj_t * weapon,
+                            const char *message)
+{
+    dboolean remove;
+    dboolean gaveMana;
+    dboolean gaveWeapon;
+
+    remove = true;
+    if (player->pclass != weaponClass)
+    {                           // Wrong class, but try to pick up for mana
+        if (netgame && !deathmatch)
+        {                       // Can't pick up weapons for other classes in coop netplay
+            return;
+        }
+        if (weaponType == wp_second)
+        {
+            if (!P_GiveMana(player, MANA_1, 25))
+            {
+                return;
+            }
+        }
+        else
+        {
+            if (!P_GiveMana(player, MANA_2, 25))
+            {
+                return;
+            }
+        }
+    }
+    else if (netgame && !deathmatch)
+    {                           // Cooperative net-game
+        if (player->weaponowned[weaponType])
+        {
+            return;
+        }
+        player->weaponowned[weaponType] = true;
+        if (weaponType == wp_second)
+        {
+            P_GiveMana(player, MANA_1, 25);
+        }
+        else
+        {
+            P_GiveMana(player, MANA_2, 25);
+        }
+        player->pendingweapon = weaponType;
+        remove = false;
+    }
+    else
+    {                           // Deathmatch or single player game
+        if (weaponType == wp_second)
+        {
+            gaveMana = P_GiveMana(player, MANA_1, 25);
+        }
+        else
+        {
+            gaveMana = P_GiveMana(player, MANA_2, 25);
+        }
+        if (player->weaponowned[weaponType])
+        {
+            gaveWeapon = false;
+        }
+        else
+        {
+            gaveWeapon = true;
+            player->weaponowned[weaponType] = true;
+            if (weaponType > player->readyweapon)
+            {                   // Only switch to more powerful weapons
+                player->pendingweapon = weaponType;
+            }
+        }
+        if (!(gaveWeapon || gaveMana))
+        {                       // Player didn't need the weapon or any mana
+            return;
+        }
+    }
+
+    P_SetMessage(player, message, false);
+    if (weapon->special)
+    {
+        P_ExecuteLineSpecial(weapon->special, weapon->args,
+                             NULL, 0, player->mo);
+        weapon->special = 0;
+    }
+
+    if (remove)
+    {
+        if (deathmatch && !(weapon->flags & MF_DROPPED))
+        {
+            P_HideSpecialThing(weapon);
+        }
+        else
+        {
+            P_RemoveMobj(weapon);
+        }
+    }
+
+    player->bonuscount += BONUSADD;
+    if (player == &players[consoleplayer])
+    {
+        S_StartSound(NULL, hexen_sfx_pickup_weapon);
+        // HEXEN_TODO: SB_PaletteFlash
+        // SB_PaletteFlash(false);
+    }
+}
+
+static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
+                                 int pieceValue, mobj_t * pieceMobj)
+{
+    dboolean remove;
+    dboolean checkAssembled;
+    dboolean gaveWeapon;
+    int gaveMana;
+    static const char *fourthWeaponText[] = {
+        TXT_WEAPON_F4,
+        TXT_WEAPON_C4,
+        TXT_WEAPON_M4
+    };
+    static const char *weaponPieceText[] = {
+        TXT_QUIETUS_PIECE,
+        TXT_WRAITHVERGE_PIECE,
+        TXT_BLOODSCOURGE_PIECE
+    };
+    static int pieceValueTrans[] = {
+        0,                      // 0: never
+        WPIECE1 | WPIECE2 | WPIECE3,    // WPIECE1 (1)
+        WPIECE2 | WPIECE3,      // WPIECE2 (2)
+        0,                      // 3: never
+        WPIECE3                 // WPIECE3 (4)
+    };
+
+    remove = true;
+    checkAssembled = true;
+    gaveWeapon = false;
+    if (player->pclass != matchClass)
+    {                           // Wrong class, but try to pick up for mana
+        if (netgame && !deathmatch)
+        {                       // Can't pick up wrong-class weapons in coop netplay
+            return;
+        }
+        checkAssembled = false;
+        gaveMana = P_GiveMana(player, MANA_1, 20) +
+            P_GiveMana(player, MANA_2, 20);
+        if (!gaveMana)
+        {                       // Didn't need the mana, so don't pick it up
+            return;
+        }
+    }
+    else if (netgame && !deathmatch)
+    {                           // Cooperative net-game
+        if (player->pieces & pieceValue)
+        {                       // Already has the piece
+            return;
+        }
+        pieceValue = pieceValueTrans[pieceValue];
+        P_GiveMana(player, MANA_1, 20);
+        P_GiveMana(player, MANA_2, 20);
+        remove = false;
+    }
+    else
+    {                           // Deathmatch or single player game
+        gaveMana = P_GiveMana(player, MANA_1, 20) +
+            P_GiveMana(player, MANA_2, 20);
+        if (player->pieces & pieceValue)
+        {                       // Already has the piece, check if mana needed
+            if (!gaveMana)
+            {                   // Didn't need the mana, so don't pick it up
+                return;
+            }
+            checkAssembled = false;
+        }
+    }
+
+    // Pick up the weapon piece
+    if (pieceMobj->special)
+    {
+        P_ExecuteLineSpecial(pieceMobj->special, pieceMobj->args,
+                             NULL, 0, player->mo);
+        pieceMobj->special = 0;
+    }
+    if (remove)
+    {
+        if (deathmatch && !(pieceMobj->flags & MF_DROPPED))
+        {
+            P_HideSpecialThing(pieceMobj);
+        }
+        else
+        {
+            P_RemoveMobj(pieceMobj);
+        }
+    }
+    player->bonuscount += BONUSADD;
+    if (player == &players[consoleplayer])
+    {
+      // HEXEN_TODO: SB_PaletteFlash
+      // SB_PaletteFlash(false);
+    }
+
+    // Check if fourth weapon assembled
+    if (checkAssembled)
+    {
+        player->pieces |= pieceValue;
+        if (player->pieces == (WPIECE1 | WPIECE2 | WPIECE3))
+        {
+            gaveWeapon = true;
+            player->weaponowned[wp_fourth] = true;
+            player->pendingweapon = wp_fourth;
+        }
+    }
+
+    if (gaveWeapon)
+    {
+        P_SetMessage(player, fourthWeaponText[matchClass], false);
+        // Play the build-sound full volume for all players
+        S_StartSound(NULL, hexen_sfx_weapon_build);
+    }
+    else
+    {
+        P_SetMessage(player, weaponPieceText[matchClass], false);
+        if (player == &players[consoleplayer])
+        {
+            S_StartSound(NULL, hexen_sfx_pickup_weapon);
+        }
+    }
 }

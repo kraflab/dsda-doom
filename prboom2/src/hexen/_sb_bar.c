@@ -1127,14 +1127,14 @@ void DrawMainBar(void)
     if (oldweapon != CPlayer->readyweapon || manaPatch1 || manaPatch2
         || manaVialPatch1)
     {                           // Update mana graphics based upon mana count/weapon type
-        if (CPlayer->readyweapon == WP_FIRST)
+        if (CPlayer->readyweapon == wp_first)
         {
             manaPatch1 = PatchMANADIM1;
             manaPatch2 = PatchMANADIM2;
             manaVialPatch1 = PatchMANAVIALDIM1;
             manaVialPatch2 = PatchMANAVIALDIM2;
         }
-        else if (CPlayer->readyweapon == WP_SECOND)
+        else if (CPlayer->readyweapon == wp_second)
         {
             if (!manaPatch1)
             {
@@ -1144,7 +1144,7 @@ void DrawMainBar(void)
             manaPatch2 = PatchMANADIM2;
             manaVialPatch2 = PatchMANAVIALDIM2;
         }
-        else if (CPlayer->readyweapon == WP_THIRD)
+        else if (CPlayer->readyweapon == wp_third)
         {
             manaPatch1 = PatchMANADIM1;
             manaVialPatch1 = PatchMANAVIALDIM1;
@@ -1824,7 +1824,7 @@ static void CheatIDKFAFunc(player_t * player, Cheat_t * cheat)
     player->attackdown = 0;
     player->usedown = 0;
 
-    player->pendingweapon = WP_FIRST;
+    player->pendingweapon = wp_first;
     P_SetMessage(player, TXT_CHEATIDKFA, true);
 }
 
@@ -1873,7 +1873,7 @@ static void CheatClassFunc2(player_t * player, Cheat_t * cheat)
         player->armorpoints[i] = 0;
     }
     PlayerClass[consoleplayer] = class;
-    P_PostMorphWeapon(player, WP_FIRST);
+    P_PostMorphWeapon(player, wp_first);
     SB_SetClassData();
     SB_state = -1;
     UpdateState |= I_FULLSCRN;
