@@ -2191,6 +2191,12 @@ void P_ShootSpecialLine
 ( mobj_t*       thing,
   line_t*       line )
 {
+  if (hexen)
+  {
+    P_ActivateLine(line, thing, 0, SPAC_IMPACT);
+    return;
+  }
+
   //jff 02/04/98 add check here for generalized linedef
   if (!demo_compatibility)
   {

@@ -2030,8 +2030,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     line_t *li = in->d.line;
 
     if (li->special)
-      hexen ? P_ActivateLine(li, shootthing, 0, SPAC_IMPACT)
-            : P_ShootSpecialLine (shootthing, li);
+      P_ShootSpecialLine (shootthing, li);
 
     if (li->flags & ML_TWOSIDED)
     {  // crosses a two sided (really 2s) line
