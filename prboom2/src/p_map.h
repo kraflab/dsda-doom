@@ -113,6 +113,7 @@ void P_AppendSpecHit(line_t * ld);
 
 // hexen
 
+extern int tmfloorpic;
 extern mobj_t *BlockingMobj;
 
 void P_BounceWall(mobj_t * mo);

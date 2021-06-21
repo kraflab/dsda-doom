@@ -21,6 +21,16 @@
 
 #include "d_event.h"
 
+#define STARTREDPALS     1
+#define STARTBONUSPALS   9
+#define STARTPOISONPALS 13
+#define STARTICEPAL     21
+#define STARTHOLYPAL    22
+#define STARTSCOURGEPAL 25
+#define NUMREDPALS       8
+#define NUMBONUSPALS     4
+#define NUMPOISONPALS    8
+
 void SB_Start(void);
 void SB_Init(void);
 void SB_Ticker(void);

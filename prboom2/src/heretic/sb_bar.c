@@ -32,11 +32,6 @@
 
 #include "sb_bar.h"
 
-#define STARTREDPALS            1
-#define STARTBONUSPALS          9
-#define NUMREDPALS              8
-#define NUMBONUSPALS            4
-
 // Private Functions
 
 static void ShadeLine(int x, int y, int height, int shade);

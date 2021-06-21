@@ -238,6 +238,7 @@ const char *map_things_appearance_list[map_things_appearance_max] =
 // pulls out to 0.5x in 1 second
 #define M_ZOOMOUT       ((int) ((float)FRACUNIT / (1.00f + F_PANINC / 200.0f)))
 
+// HEXEN_TODO: PLAYERRADIUS is 16*FRACUNIT
 #define PLAYERRADIUS    (16*(1<<MAPBITS)) // e6y
 
 // translates between frame-buffer and map distances
