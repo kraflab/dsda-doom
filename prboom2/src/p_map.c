@@ -1592,10 +1592,6 @@ static mobj_t*   slidemo;
 static fixed_t   tmxmove;
 static fixed_t   tmymove;
 
-// hexen
-static fixed_t secondslidefrac;
-static line_t* secondslideline;
-
 //
 // P_HitSlideLine
 // Adjusts the xmove / ymove
@@ -1643,30 +1639,30 @@ void P_HitSlideLine (line_t* ld)
   }
 
   if (ld->slopetype == ST_HORIZONTAL)
-    {
+  {
     if (icyfloor && (D_abs(tmymove) > D_abs(tmxmove)))
-      {
+    {
       tmxmove /= 2; // absorb half the momentum
       tmymove = -tmymove/2;
       S_StartSound(slidemo,sfx_oof); // oooff!
-      }
+    }
     else
       tmymove = 0; // no more movement in the Y direction
     return;
-    }
+  }
 
   if (ld->slopetype == ST_VERTICAL)
-    {
+  {
     if (icyfloor && (D_abs(tmxmove) > D_abs(tmymove)))
-      {
+    {
       tmxmove = -tmxmove/2; // absorb half the momentum
       tmymove /= 2;
       S_StartSound(slidemo,sfx_oof); // oooff!                      //   ^
-      }                                                             //   |
+    }                                                               //   |
     else                                                            // phares
       tmxmove = 0; // no more movement in the X direction
     return;
-    }
+  }
 
   // The wall is angled. Bounce if the angle of approach is         // phares
   // less than 45 degrees.                                          // phares
@@ -1688,27 +1684,25 @@ void P_HitSlideLine (line_t* ld)
   deltaangle = moveangle-lineangle;                                 //   V
   movelen = P_AproxDistance (tmxmove, tmymove);
   if (icyfloor && (deltaangle > ANG45) && (deltaangle < ANG90+ANG45))
-    {
+  {
     moveangle = lineangle - deltaangle;
     movelen /= 2; // absorb
     S_StartSound(slidemo,sfx_oof); // oooff!
     moveangle >>= ANGLETOFINESHIFT;
     tmxmove = FixedMul (movelen, finecosine[moveangle]);
     tmymove = FixedMul (movelen, finesine[moveangle]);
-    }                                                               //   ^
+  }                                                                 //   ^
   else                                                              //   |
-    {                                                               // phares
+  {                                                                 // phares
     if (deltaangle > ANG180)
       deltaangle += ANG180;
-
-    //  I_Error ("SlideLine: ang>ANG180");
 
     lineangle >>= ANGLETOFINESHIFT;
     deltaangle >>= ANGLETOFINESHIFT;
     newlen = FixedMul (movelen, finecosine[deltaangle]);
     tmxmove = FixedMul (newlen, finecosine[lineangle]);
     tmymove = FixedMul (newlen, finesine[lineangle]);
-    }                                                               // phares
+  }                                                                 // phares
 }
 
 
@@ -1726,11 +1720,11 @@ dboolean PTR_SlideTraverse (intercept_t* in)
   li = in->d.line;
 
   if ( ! (li->flags & ML_TWOSIDED) )
-    {
+  {
     if (P_PointOnLineSide (slidemo->x, slidemo->y, li))
       return true; // don't hit the back side
     goto isblocking;
-    }
+  }
 
   // set openrange, opentop, openbottom.
   // These define a 'window' from one sector to another across a line
@@ -1756,10 +1750,10 @@ dboolean PTR_SlideTraverse (intercept_t* in)
 isblocking:
 
   if (in->frac < bestslidefrac)
-    {
+  {
     bestslidefrac = in->frac;
     bestslideline = li;
-    }
+  }
 
   return false; // stop
 }
@@ -1783,103 +1777,102 @@ void P_SlideMove(mobj_t *mo)
   slidemo = mo; // the object that's sliding
 
   do
-    {
-      fixed_t leadx, leady, trailx, traily;
+  {
+    fixed_t leadx, leady, trailx, traily;
 
-      if (!--hitcount)
-  goto stairstep;   // don't loop forever
+    if (!--hitcount)
+      goto stairstep;   // don't loop forever
 
-      // trace along the three leading corners
+    // trace along the three leading corners
 
-      if (mo->momx > 0)
-  leadx = mo->x + mo->radius, trailx = mo->x - mo->radius;
-      else
-  leadx = mo->x - mo->radius, trailx = mo->x + mo->radius;
+    if (mo->momx > 0)
+      leadx = mo->x + mo->radius, trailx = mo->x - mo->radius;
+    else
+      leadx = mo->x - mo->radius, trailx = mo->x + mo->radius;
 
-      if (mo->momy > 0)
-  leady = mo->y + mo->radius, traily = mo->y - mo->radius;
-      else
-  leady = mo->y - mo->radius, traily = mo->y + mo->radius;
+    if (mo->momy > 0)
+      leady = mo->y + mo->radius, traily = mo->y - mo->radius;
+    else
+      leady = mo->y - mo->radius, traily = mo->y + mo->radius;
 
-      bestslidefrac = FRACUNIT+1;
+    bestslidefrac = FRACUNIT+1;
 
-      P_PathTraverse(leadx, leady, leadx+mo->momx, leady+mo->momy,
-         PT_ADDLINES, PTR_SlideTraverse);
-      P_PathTraverse(trailx, leady, trailx+mo->momx, leady+mo->momy,
-         PT_ADDLINES, PTR_SlideTraverse);
-      P_PathTraverse(leadx, traily, leadx+mo->momx, traily+mo->momy,
-         PT_ADDLINES, PTR_SlideTraverse);
+    P_PathTraverse(leadx, leady, leadx+mo->momx, leady+mo->momy,
+                   PT_ADDLINES, PTR_SlideTraverse);
+    P_PathTraverse(trailx, leady, trailx+mo->momx, leady+mo->momy,
+                   PT_ADDLINES, PTR_SlideTraverse);
+    P_PathTraverse(leadx, traily, leadx+mo->momx, traily+mo->momy,
+                   PT_ADDLINES, PTR_SlideTraverse);
 
       // move up to the wall
 
-      if (bestslidefrac == FRACUNIT+1)
-  {
-    // the move must have hit the middle, so stairstep
+    if (bestslidefrac == FRACUNIT+1)
+    {
+      // the move must have hit the middle, so stairstep
 
-  stairstep:
+    stairstep:
 
-    /* killough 3/15/98: Allow objects to drop off ledges
-     *
-     * phares 5/4/98: kill momentum if you can't move at all
-     * This eliminates player bobbing if pressed against a wall
-     * while on ice.
-     *
-     * killough 10/98: keep buggy code around for old Boom demos
-     *
-     * cph 2000/09//23: buggy code was only in Boom v2.01
-     */
+      /* killough 3/15/98: Allow objects to drop off ledges
+       *
+       * phares 5/4/98: kill momentum if you can't move at all
+       * This eliminates player bobbing if pressed against a wall
+       * while on ice.
+       *
+       * killough 10/98: keep buggy code around for old Boom demos
+       *
+       * cph 2000/09//23: buggy code was only in Boom v2.01
+       */
 
-    if (!P_TryMove(mo, mo->x, mo->y + mo->momy, true))
-      if (!P_TryMove(mo, mo->x + mo->momx, mo->y, true))
-        if (compatibility_level == boom_201_compatibility)
-    mo->momx = mo->momy = 0;
+      if (!P_TryMove(mo, mo->x, mo->y + mo->momy, true))
+        if (!P_TryMove(mo, mo->x + mo->momx, mo->y, true))
+          if (compatibility_level == boom_201_compatibility)
+            mo->momx = mo->momy = 0;
 
-    break;
-  }
+      break;
+    }
 
-      // fudge a bit to make sure it doesn't hit
+    // fudge a bit to make sure it doesn't hit
 
-      if ((bestslidefrac -= 0x800) > 0)
-  {
-    fixed_t newx = FixedMul(mo->momx, bestslidefrac);
-    fixed_t newy = FixedMul(mo->momy, bestslidefrac);
+    if ((bestslidefrac -= 0x800) > 0)
+    {
+      fixed_t newx = FixedMul(mo->momx, bestslidefrac);
+      fixed_t newy = FixedMul(mo->momy, bestslidefrac);
 
-    // killough 3/15/98: Allow objects to drop off ledges
+      // killough 3/15/98: Allow objects to drop off ledges
 
-    if (!P_TryMove(mo, mo->x+newx, mo->y+newy, true))
-      goto stairstep;
-  }
+      if (!P_TryMove(mo, mo->x+newx, mo->y+newy, true))
+        goto stairstep;
+    }
 
-      // Now continue along the wall.
-      // First calculate remainder.
+    // Now continue along the wall.
+    // First calculate remainder.
 
-      bestslidefrac = FRACUNIT-(bestslidefrac+0x800);
+    bestslidefrac = FRACUNIT-(bestslidefrac+0x800);
 
-      if (bestslidefrac > FRACUNIT)
-  bestslidefrac = FRACUNIT;
+    if (bestslidefrac > FRACUNIT)
+      bestslidefrac = FRACUNIT;
 
-      if (bestslidefrac <= 0)
-  break;
+    if (bestslidefrac <= 0)
+      break;
 
-      tmxmove = FixedMul(mo->momx, bestslidefrac);
-      tmymove = FixedMul(mo->momy, bestslidefrac);
+    tmxmove = FixedMul(mo->momx, bestslidefrac);
+    tmymove = FixedMul(mo->momy, bestslidefrac);
 
-      P_HitSlideLine(bestslideline); // clip the moves
+    P_HitSlideLine(bestslideline); // clip the moves
 
-      mo->momx = tmxmove;
-      mo->momy = tmymove;
+    mo->momx = tmxmove;
+    mo->momy = tmymove;
 
-      /* killough 10/98: affect the bobbing the same way (but not voodoo dolls)
-       * cph - DEMOSYNC? */
-      // heretic_note: probably not necessary?
-      if (!heretic && mo->player && mo->player->mo == mo)
-  {
-    if (D_abs(mo->player->momx) > D_abs(tmxmove))
-      mo->player->momx = tmxmove;
-    if (D_abs(mo->player->momy) > D_abs(tmymove))
-      mo->player->momy = tmymove;
-  }
-    }  // killough 3/15/98: Allow objects to drop off ledges:
+    /* killough 10/98: affect the bobbing the same way (but not voodoo dolls)
+     * cph - DEMOSYNC? */
+    if (!raven && mo->player && mo->player->mo == mo)
+    {
+      if (D_abs(mo->player->momx) > D_abs(tmxmove))
+        mo->player->momx = tmxmove;
+      if (D_abs(mo->player->momy) > D_abs(tmymove))
+        mo->player->momy = tmymove;
+    }
+  }  // killough 3/15/98: Allow objects to drop off ledges:
   while (!P_TryMove(mo, mo->x+tmxmove, mo->y+tmymove, true));
 }
 
@@ -3183,8 +3176,6 @@ dboolean PTR_BounceTraverse(intercept_t * in)
   bounceblocking:
     if (in->frac < bestslidefrac)
     {
-        secondslidefrac = bestslidefrac;
-        secondslideline = bestslideline;
         bestslidefrac = in->frac;
         bestslideline = li;
     }
