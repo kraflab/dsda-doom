@@ -281,14 +281,14 @@ P_UseSpecialLine
   int           side,
   dboolean		bossaction)
 {
-  if (heretic) return Heretic_P_UseSpecialLine(thing, line, side, bossaction);
-  if (hexen) return P_ActivateLine(line, thing, side, SPAC_USE);
-
   // e6y
   // b.m. side test was broken in boom201
   if ((demoplayback ? (demover != 201) : (compatibility_level != boom_201_compatibility)))
-  if (side) //jff 6/1/98 fix inadvertent deletion of side test
-    return false;
+    if (side) //jff 6/1/98 fix inadvertent deletion of side test
+      return false;
+
+  if (heretic) return Heretic_P_UseSpecialLine(thing, line, side, bossaction);
+  if (hexen) return P_ActivateLine(line, thing, side, SPAC_USE);
 
   //jff 02/04/98 add check here for generalized floor/ceil mover
   if (!demo_compatibility)

@@ -2275,20 +2275,75 @@ dboolean PTR_UseTraverse (intercept_t* in)
   int side;
 
   if (!in->d.line->special)
-    {
+  {
+    int sound;
+
     P_LineOpening (in->d.line);
+
     if (openrange <= 0)
+    {
+      if (hexen && usething->player)
       {
-      if (!heretic) S_StartSound (usething, sfx_noway);
+        switch (usething->player->pclass)
+        {
+          case PCLASS_FIGHTER:
+            sound = hexen_sfx_player_fighter_failed_use;
+            break;
+          case PCLASS_CLERIC:
+            sound = hexen_sfx_player_cleric_failed_use;
+            break;
+          case PCLASS_MAGE:
+            sound = hexen_sfx_player_mage_failed_use;
+            break;
+          case PCLASS_PIG:
+            sound = hexen_sfx_pig_active1;
+            break;
+          default:
+            sound = hexen_sfx_None;
+            break;
+        }
+        S_StartSound(usething, sound);
+      }
+      else if (!heretic)
+      {
+        S_StartSound (usething, sfx_noway);
+      }
 
       // can't use through a wall
       return false;
+    }
+
+    if (hexen && usething->player)
+    {
+      fixed_t pheight = usething->z + (usething->height / 2);
+      if ((opentop < pheight) || (openbottom > pheight))
+      {
+        switch (usething->player->pclass)
+        {
+          case PCLASS_FIGHTER:
+            sound = hexen_sfx_player_fighter_failed_use;
+            break;
+          case PCLASS_CLERIC:
+            sound = hexen_sfx_player_cleric_failed_use;
+            break;
+          case PCLASS_MAGE:
+            sound = hexen_sfx_player_mage_failed_use;
+            break;
+          case PCLASS_PIG:
+            sound = hexen_sfx_pig_active1;
+            break;
+          default:
+            sound = hexen_sfx_None;
+            break;
+        }
+        S_StartSound(usething, sound);
       }
+    }
 
     // not a special line, but keep checking
 
     return true;
-    }
+  }
 
   side = 0;
   if (P_PointOnLineSide (usething->x, usething->y, in->d.line) == 1)
