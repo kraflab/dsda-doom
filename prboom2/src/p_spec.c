@@ -2560,46 +2560,51 @@ void P_UpdateSpecials (void)
   anim_t*     anim;
   int         pic;
   int         i;
-  // Downcount level timer, exit level if elapsed
-  if (levelTimer == true)
-  {
-    levelTimeCount--;
-    if (!levelTimeCount)
-      G_ExitLevel();
-  }
 
-  // Check frag counters, if frag limit reached, exit level // Ty 03/18/98
-  //  Seems like the total frags should be kept in a simple
-  //  array somewhere, but until they are...
-  if (levelFragLimit == true)  // we used -frags so compare count
+  // hexen_note: possibly not needed?
+  if (!hexen)
   {
-    int k,m,fragcount,exitflag=false;
-    for (k=0;k<MAXPLAYERS;k++)
+    // Downcount level timer, exit level if elapsed
+    if (levelTimer == true)
     {
-      if (!playeringame[k]) continue;
-      fragcount = 0;
-      for (m=0;m<MAXPLAYERS;m++)
-      {
-        if (!playeringame[m]) continue;
-          fragcount += (m!=k)?  players[k].frags[m] : -players[k].frags[m];
-      }
-      if (fragcount >= levelFragLimitCount) exitflag = true;
-      if (exitflag == true) break; // skip out of the loop--we're done
+      levelTimeCount--;
+      if (!levelTimeCount)
+        G_ExitLevel();
     }
-    if (exitflag == true)
-      G_ExitLevel();
-  }
 
-  // Animate flats and textures globally
-  for (anim = anims ; anim < lastanim ; anim++)
-  {
-    for (i=anim->basepic ; i<anim->basepic+anim->numpics ; i++)
+    // Check frag counters, if frag limit reached, exit level // Ty 03/18/98
+    //  Seems like the total frags should be kept in a simple
+    //  array somewhere, but until they are...
+    if (levelFragLimit == true)  // we used -frags so compare count
     {
-      pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
-      if (anim->istexture)
-        texturetranslation[i] = pic;
-      else
-        flattranslation[i] = pic;
+      int k,m,fragcount,exitflag=false;
+      for (k=0;k<MAXPLAYERS;k++)
+      {
+        if (!playeringame[k]) continue;
+        fragcount = 0;
+        for (m=0;m<MAXPLAYERS;m++)
+        {
+          if (!playeringame[m]) continue;
+            fragcount += (m!=k)?  players[k].frags[m] : -players[k].frags[m];
+        }
+        if (fragcount >= levelFragLimitCount) exitflag = true;
+        if (exitflag == true) break; // skip out of the loop--we're done
+      }
+      if (exitflag == true)
+        G_ExitLevel();
+    }
+
+    // Animate flats and textures globally
+    for (anim = anims ; anim < lastanim ; anim++)
+    {
+      for (i=anim->basepic ; i<anim->basepic+anim->numpics ; i++)
+      {
+        pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
+        if (anim->istexture)
+          texturetranslation[i] = pic;
+        else
+          flattranslation[i] = pic;
+      }
     }
   }
 
@@ -2647,6 +2652,7 @@ void P_UpdateSpecials (void)
               buttonlist[i].btexture;
             break;
         }
+        if (!hexen)
         {
           /* don't take the address of the switch's sound origin,
            * unless in a compatibility mode. */

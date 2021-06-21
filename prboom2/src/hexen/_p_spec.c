@@ -365,46 +365,6 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
     return buttonSuccess;
 }
 
-//----------------------------------------------------------------------------
-//
-// PROC P_UpdateSpecials
-//
-//----------------------------------------------------------------------------
-
-void P_UpdateSpecials(void)
-{
-    int i;
-
-    // Handle buttons
-    for (i = 0; i < MAXBUTTONS; i++)
-    {
-        if (buttonlist[i].btimer)
-        {
-            buttonlist[i].btimer--;
-            if (!buttonlist[i].btimer)
-            {
-                switch (buttonlist[i].where)
-                {
-                    case SWTCH_TOP:
-                        sides[buttonlist[i].line->sidenum[0]].toptexture =
-                            buttonlist[i].btexture;
-                        break;
-                    case SWTCH_MIDDLE:
-                        sides[buttonlist[i].line->sidenum[0]].midtexture =
-                            buttonlist[i].btexture;
-                        break;
-                    case SWTCH_BOTTOM:
-                        sides[buttonlist[i].line->sidenum[0]].bottomtexture =
-                            buttonlist[i].btexture;
-                        break;
-                }
-                //S_StartSound((mobj_t *)&buttonlist[i].soundorg, sfx_switch);
-                memset(&buttonlist[i], 0, sizeof(button_t));
-            }
-        }
-    }
-}
-
 /*
 ==============================================================================
 
