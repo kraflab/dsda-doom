@@ -2376,11 +2376,16 @@ void P_ShootSpecialLine
 //
 // Changed to ignore sector types the engine does not recognize
 //
+
+static void Heretic_P_PlayerInSpecialSector(player_t * player);
+static void Hexen_P_PlayerInSpecialSector(player_t * player);
+
 void P_PlayerInSpecialSector (player_t* player)
 {
   sector_t*   sector;
 
   if (heretic) return Heretic_P_PlayerInSpecialSector(player);
+  if (hexen) return Hexen_P_PlayerInSpecialSector(player);
 
   sector = player->mo->subsector->sector;
 
@@ -4196,7 +4201,7 @@ void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing)
 
 #include "p_user.h"
 
-void Heretic_P_PlayerInSpecialSector(player_t * player)
+static void Heretic_P_PlayerInSpecialSector(player_t * player)
 {
     sector_t *sector;
     static int pushTab[5] = {
@@ -4531,4 +4536,97 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side,
         P_ChangeSwitchTexture(line, repeat);
     }
     return true;
+}
+
+static void Hexen_P_PlayerInSpecialSector(player_t * player)
+{
+    sector_t *sector;
+    static int pushTab[3] = {
+        2048 * 5,
+        2048 * 10,
+        2048 * 25
+    };
+
+    sector = player->mo->subsector->sector;
+    if (player->mo->z != sector->floorheight)
+    {                           // Player is not touching the floor
+        return;
+    }
+    switch (sector->special)
+    {
+        case 9:                // SecretArea
+            player->secretcount++;
+            sector->special = 0;
+            break;
+
+        case 201:
+        case 202:
+        case 203:              // Scroll_North_xxx
+            P_Thrust(player, ANG90, pushTab[sector->special - 201]);
+            break;
+        case 204:
+        case 205:
+        case 206:              // Scroll_East_xxx
+            P_Thrust(player, 0, pushTab[sector->special - 204]);
+            break;
+        case 207:
+        case 208:
+        case 209:              // Scroll_South_xxx
+            P_Thrust(player, ANG270, pushTab[sector->special - 207]);
+            break;
+        case 210:
+        case 211:
+        case 212:              // Scroll_West_xxx
+            P_Thrust(player, ANG180, pushTab[sector->special - 210]);
+            break;
+        case 213:
+        case 214:
+        case 215:              // Scroll_NorthWest_xxx
+            P_Thrust(player, ANG90 + ANG45, pushTab[sector->special - 213]);
+            break;
+        case 216:
+        case 217:
+        case 218:              // Scroll_NorthEast_xxx
+            P_Thrust(player, ANG45, pushTab[sector->special - 216]);
+            break;
+        case 219:
+        case 220:
+        case 221:              // Scroll_SouthEast_xxx
+            P_Thrust(player, ANG270 + ANG45, pushTab[sector->special - 219]);
+            break;
+        case 222:
+        case 223:
+        case 224:              // Scroll_SouthWest_xxx
+            P_Thrust(player, ANG180 + ANG45, pushTab[sector->special - 222]);
+            break;
+
+        case 40:
+        case 41:
+        case 42:
+        case 43:
+        case 44:
+        case 45:
+        case 46:
+        case 47:
+        case 48:
+        case 49:
+        case 50:
+        case 51:
+            // Wind specials are handled in (P_mobj):P_XYMovement
+            break;
+
+        case 26:               // Stairs_Special1
+        case 27:               // Stairs_Special2
+            // Used in (P_floor):ProcessStairSector
+            break;
+
+        case 198:              // Lightning Special
+        case 199:              // Lightning Flash special
+        case 200:              // Sky2
+            // Used in (R_plane):R_Drawplanes
+            break;
+        default:
+            I_Error("P_PlayerInSpecialSector: "
+                    "unknown special %i", sector->special);
+    }
 }

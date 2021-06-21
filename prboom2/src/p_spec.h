@@ -1186,7 +1186,6 @@ mobj_t* P_GetPushThing(int);                                // phares 3/23/98
 void P_InitTerrainTypes(void);
 void P_InitLava(void);
 void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing);
-void Heretic_P_PlayerInSpecialSector(player_t * player);
 void P_SpawnLineSpecials(void);
 
 extern int *TerrainTypes;
