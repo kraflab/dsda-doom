@@ -3824,14 +3824,23 @@ struct
 {
     const char *name;
     int type;
-} TerrainTypeDefs[] =
+} TerrainTypeDefs[2][6] =
 {
+  {
     { "FLTWAWA1", FLOOR_WATER },
     { "FLTFLWW1", FLOOR_WATER },
     { "FLTLAVA1", FLOOR_LAVA },
     { "FLATHUH1", FLOOR_LAVA },
     { "FLTSLUD1", FLOOR_SLUDGE },
     { "END", -1 }
+  },
+  {
+    { "X_005", FLOOR_WATER },
+    { "X_001", FLOOR_LAVA },
+    { "X_009", FLOOR_SLUDGE },
+    { "F_033", FLOOR_ICE },
+    { "END", -1 }
+  }
 };
 
 mobj_t LavaInflictor;
@@ -3918,10 +3927,10 @@ void P_AmbientSound(void)
 
 void P_InitLava(void)
 {
-    if (!heretic) return;
+    if (!raven) return;
 
     memset(&LavaInflictor, 0, sizeof(mobj_t));
-    LavaInflictor.type = HERETIC_MT_PHOENIXFX2;
+    LavaInflictor.type = g_lava_type;
     LavaInflictor.flags2 = MF2_FIREDAMAGE | MF2_NODMGTHRUST;
 }
 
@@ -3931,17 +3940,17 @@ void P_InitTerrainTypes(void)
     int lump;
     int size;
 
-    if (!heretic) return;
+    if (!raven) return;
 
     size = (numflats + 1) * sizeof(int);
     TerrainTypes = Z_Malloc(size, PU_STATIC, 0);
     memset(TerrainTypes, 0, size);
-    for (i = 0; TerrainTypeDefs[i].type != -1; i++)
+    for (i = 0; TerrainTypeDefs[hexen][i].type != -1; i++)
     {
-        lump = (W_CheckNumForName)(TerrainTypeDefs[i].name, ns_flats);
+        lump = (W_CheckNumForName)(TerrainTypeDefs[hexen][i].name, ns_flats);
         if (lump != -1)
         {
-            TerrainTypes[lump - firstflat] = TerrainTypeDefs[i].type;
+            TerrainTypes[lump - firstflat] = TerrainTypeDefs[hexen][i].type;
         }
     }
 }

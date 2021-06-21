@@ -84,6 +84,7 @@ int g_bloodsplatter_shift;
 int g_bloodsplatter_weight;
 int g_mons_look_range;
 int g_hide_state;
+int g_lava_type;
 
 int g_mntr_charge_speed;
 int g_mntr_atk1_sfx;
@@ -372,6 +373,7 @@ static void dsda_InitHeretic(void) {
   g_bloodsplatter_weight = 2;
   g_mons_look_range = 20 * 64 * FRACUNIT;
   g_hide_state = HERETIC_S_HIDESPECIAL1;
+  g_lava_type = HERETIC_MT_PHOENIXFX2;
 
   g_mntr_atk1_sfx = heretic_sfx_stfpow;
   g_mntr_charge_speed = 13 * FRACUNIT;
@@ -532,6 +534,7 @@ static void dsda_InitHexen(void) {
   g_bloodsplatter_weight = 3;
   g_mons_look_range = 16 * 64 * FRACUNIT;
   g_hide_state = HEXEN_S_HIDESPECIAL1;
+  g_lava_type = HEXEN_MT_CIRCLEFLAME;
 
   g_mntr_atk1_sfx = hexen_sfx_maulator_hammer_swing;
   g_mntr_charge_speed = 23 * FRACUNIT;
