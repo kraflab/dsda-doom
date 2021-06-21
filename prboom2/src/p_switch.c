@@ -53,6 +53,20 @@ const switchlist_t heretic_alphSwitchList[] = {
   { "",        "",     0 }
 };
 
+const switchlist_t hexen_alphSwitchList[] = {
+    {"SW_1_UP", "SW_1_DN", hexen_sfx_switch1},
+    {"SW_2_UP", "SW_2_DN", hexen_sfx_switch1},
+    {"VALVE1", "VALVE2", hexen_sfx_valve_turn},
+    {"SW51_OFF", "SW51_ON", hexen_sfx_switch2},
+    {"SW52_OFF", "SW52_ON", hexen_sfx_switch2},
+    {"SW53_UP", "SW53_DN", hexen_sfx_rope_pull},
+    {"PUZZLE5", "PUZZLE9", hexen_sfx_switch1},
+    {"PUZZLE6", "PUZZLE10", hexen_sfx_switch1},
+    {"PUZZLE7", "PUZZLE11", hexen_sfx_switch1},
+    {"PUZZLE8", "PUZZLE12", hexen_sfx_switch1},
+    {"\0", "\0", 0}
+};
+
 // killough 2/8/98: Remove switch limit
 
 static int *switchlist;                           // killough
@@ -60,6 +74,8 @@ static int max_numswitches;                       // killough
 static int numswitches;                           // killough
 
 button_t  buttonlist[MAXBUTTONS];
+
+const switchlist_t *alphSwitchList;         //jff 3/23/98 pointer to switch table
 
 //
 // P_InitSwitchList()
@@ -86,11 +102,14 @@ void P_InitSwitchList(void)
   int i, index = 0;
   int episode = (gamemode == registered || gamemode==retail) ?
                  2 : gamemode == commercial ? 3 : 1;
-  const switchlist_t *alphSwitchList;         //jff 3/23/98 pointer to switch table
 
   if (heretic)
   {
     alphSwitchList = heretic_alphSwitchList;
+  }
+  else if (hexen)
+  {
+    alphSwitchList = hexen_alphSwitchList;
   }
   else
   {
@@ -105,7 +124,9 @@ void P_InitSwitchList(void)
     if (index+1 >= max_numswitches)
       switchlist = realloc(switchlist, sizeof *switchlist *
           (max_numswitches = max_numswitches ? max_numswitches*2 : 8));
-    if (LittleShort(alphSwitchList[i].episode) <= episode) //jff 5/11/98 endianess
+
+    // hexen overrides the episode field with a sound index
+    if (hexen || LittleShort(alphSwitchList[i].episode) <= episode) //jff 5/11/98 endianess
     {
       int texture1, texture2;
 
@@ -118,10 +139,12 @@ void P_InitSwitchList(void)
       if (texture1 == -1)
         lprintf(LO_WARN, "P_InitSwitchList: unknown texture %s\n",
             alphSwitchList[i].name1);
+
       texture2 = R_CheckTextureNumForName(alphSwitchList[i].name2);
       if (texture2 == -1)
         lprintf(LO_WARN, "P_InitSwitchList: unknown texture %s\n",
             alphSwitchList[i].name2);
+
       if (texture1 != -1 && texture2 != -1) {
         switchlist[index++] = texture1;
         switchlist[index++] = texture2;
@@ -129,7 +152,7 @@ void P_InitSwitchList(void)
     }
   }
 
-  numswitches = index/2;
+  numswitches = index / 2;
   switchlist[index] = -1;
   if (lump != -1) W_UnlockLumpNum(lump);
 }
@@ -152,7 +175,7 @@ static void P_StartButton
 {
   int           i;
 
-  if (!heretic)
+  if (!raven)
     // See if button is already pressed
     for (i = 0;i < MAXBUTTONS;i++)
       if (buttonlist[i].btimer && buttonlist[i].line == line)
@@ -198,23 +221,30 @@ void P_ChangeSwitchTexture
   tmid = &sides[line->sidenum[0]].midtexture;
   tbot = &sides[line->sidenum[0]].bottomtexture;
 
-  sound = g_sfx_swtchn;
-  /* use the sound origin of the linedef (its midpoint)
-   * unless in a compatibility mode */
-  soundorg = (mobj_t *)&line->soundorg;
-  if (comp[comp_sound] || compatibility_level < prboom_6_compatibility) {
-    /* usually NULL, unless there is another button already pressed in,
-     * in which case it's the sound origin of that button press... */
-    soundorg = buttonlist->soundorg;
+  if (hexen)
+  {
+    soundorg = (mobj_t *)&line->frontsector->soundorg;
+  }
+  else
+  {
+    sound = g_sfx_swtchn;
+    /* use the sound origin of the linedef (its midpoint)
+     * unless in a compatibility mode */
+    soundorg = (mobj_t *)&line->soundorg;
+    if (comp[comp_sound] || compatibility_level < prboom_6_compatibility) {
+      /* usually NULL, unless there is another button already pressed in,
+       * in which case it's the sound origin of that button press... */
+      soundorg = buttonlist->soundorg;
+    }
   }
 
   /* don't zero line->special until after exit switch test */
-  if (!useAgain)
+  if (!hexen && !useAgain)
     line->special = 0;
 
   /* search for a texture to change */
   texture = NULL; position = 0;
-  for (i = 0;i < numswitches*2;i++) { /* this could be more efficient... */
+  for (i = 0; i < numswitches * 2; i++) { /* this could be more efficient... */
     if (switchlist[i] == *ttop) {
       texture = ttop; position = top; break;
     } else if (switchlist[i] == *tmid) {
@@ -226,6 +256,10 @@ void P_ChangeSwitchTexture
   if (texture == NULL)
     return; /* no switch texture was found to change */
   *texture = switchlist[i^1];
+
+  // hexen has sound id in episode field
+  if (hexen)
+    sound = alphSwitchList[i / 2].episode;
 
   S_StartSound(soundorg, sound);
 

@@ -81,45 +81,6 @@ void P_ForceLightning(void);
 /*
 ===============================================================================
 
-							P_SWITCH
-
-===============================================================================
-*/
-typedef struct
-{
-    char name1[9];
-    char name2[9];
-    int soundID;
-} switchlist_t;
-
-typedef enum
-{
-    SWTCH_TOP,
-    SWTCH_MIDDLE,
-    SWTCH_BOTTOM
-} bwhere_e;
-
-typedef struct
-{
-    line_t *line;
-    bwhere_e where;
-    int btexture;
-    int btimer;
-    mobj_t *soundorg;
-} button_t;
-
-#define MAXSWITCHES 50          // max # of wall switches in a level
-#define MAXBUTTONS 16           // 4 players, 4 buttons each at once, max.
-#define BUTTONTIME 35           // 1 second
-
-extern button_t buttonlist[MAXBUTTONS];
-
-void P_ChangeSwitchTexture(line_t * line, int useAgain);
-void P_InitSwitchList(void);
-
-/*
-===============================================================================
-
 							P_PLATS
 
 ===============================================================================
