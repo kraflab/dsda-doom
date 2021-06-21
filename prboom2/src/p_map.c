@@ -1915,7 +1915,7 @@ dboolean PTR_AimTraverse (intercept_t* in)
   fixed_t dist;
 
   if (in->isaline)
-    {
+  {
     li = in->d.line;
 
     if ( !(li->flags & ML_TWOSIDED) )
@@ -1935,25 +1935,25 @@ dboolean PTR_AimTraverse (intercept_t* in)
     // e6y: emulation of missed back side on two-sided lines.
     // backsector can be NULL if overrun_missedbackside_emulate is 1
     if (!li->backsector || li->frontsector->floorheight != li->backsector->floorheight)
-      {
+    {
       slope = FixedDiv (openbottom - shootz , dist);
       if (slope > bottomslope)
         bottomslope = slope;
-      }
+    }
 
     // e6y: emulation of missed back side on two-sided lines.
     if (!li->backsector || li->frontsector->ceilingheight != li->backsector->ceilingheight)
-      {
+    {
       slope = FixedDiv (opentop - shootz , dist);
       if (slope < topslope)
         topslope = slope;
-      }
+    }
 
     if (topslope <= bottomslope)
       return false;   // stop
 
     return true;    // shot continues
-    }
+  }
 
   // shoot a thing
 
@@ -1966,6 +1966,11 @@ dboolean PTR_AimTraverse (intercept_t* in)
 
   if (th->type == HERETIC_MT_POD)
     return true;    // Can't auto-aim at pods
+
+  if (hexen && th->player && netgame && !deathmatch)
+  {                           // don't aim at fellow co-op players
+      return true;
+  }
 
   /* killough 7/19/98, 8/2/98:
    * friends don't aim at friends (except players), at least not first
@@ -2021,34 +2026,35 @@ dboolean PTR_ShootTraverse (intercept_t* in)
   fixed_t thingbottomslope;
 
   if (in->isaline)
-    {
+  {
     line_t *li = in->d.line;
 
     if (li->special)
-      P_ShootSpecialLine (shootthing, li);
+      hexen ? P_ActivateLine(li, shootthing, 0, SPAC_IMPACT)
+            : P_ShootSpecialLine (shootthing, li);
 
     if (li->flags & ML_TWOSIDED)
-  {  // crosses a two sided (really 2s) line
-    P_LineOpening (li);
-    dist = FixedMul(attackrange, in->frac);
+    {  // crosses a two sided (really 2s) line
+      P_LineOpening (li);
+      dist = FixedMul(attackrange, in->frac);
 
-    // killough 11/98: simplify
+      // killough 11/98: simplify
 
-    // e6y: emulation of missed back side on two-sided lines.
-    // backsector can be NULL if overrun_missedbackside_emulate is 1
-    if (!li->backsector)
-    {
-      if ((slope = FixedDiv(openbottom - shootz , dist)) <= aimslope &&
-          (slope = FixedDiv(opentop - shootz , dist)) >= aimslope)
-        return true;      // shot continues
+      // e6y: emulation of missed back side on two-sided lines.
+      // backsector can be NULL if overrun_missedbackside_emulate is 1
+      if (!li->backsector)
+      {
+        if ((slope = FixedDiv(openbottom - shootz , dist)) <= aimslope &&
+            (slope = FixedDiv(opentop - shootz , dist)) >= aimslope)
+          return true;      // shot continues
+      }
+      else
+        if ((li->frontsector->floorheight==li->backsector->floorheight ||
+             (slope = FixedDiv(openbottom - shootz , dist)) <= aimslope) &&
+            (li->frontsector->ceilingheight==li->backsector->ceilingheight ||
+             (slope = FixedDiv (opentop - shootz , dist)) >= aimslope))
+          return true;      // shot continues
     }
-    else
-    if ((li->frontsector->floorheight==li->backsector->floorheight ||
-         (slope = FixedDiv(openbottom - shootz , dist)) <= aimslope) &&
-        (li->frontsector->ceilingheight==li->backsector->ceilingheight ||
-         (slope = FixedDiv (opentop - shootz , dist)) >= aimslope))
-      return true;      // shot continues
-  }
 
     // hit line
     // position a bit closer
@@ -2059,7 +2065,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     z = shootz + FixedMul (aimslope, FixedMul(frac, attackrange));
 
     if (li->frontsector->ceilingpic == skyflatnum)
-      {
+    {
       // don't shoot the sky!
 
       if (z > li->frontsector->ceilingheight)
@@ -2072,9 +2078,9 @@ dboolean PTR_ShootTraverse (intercept_t* in)
         // fix bullet-eaters -- killough:
         // WARNING: Almost all demos will lose sync without this
         // demo_compatibility flag check!!! killough 1/18/98
-      if (demo_compatibility || li->backsector->ceilingheight < z)
-        return false;
-      }
+        if (demo_compatibility || li->backsector->ceilingheight < z)
+          return false;
+    }
 
     // Spawn bullet puffs.
 
@@ -2083,7 +2089,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     // don't go any farther
 
     return false;
-    }
+  }
 
   // shoot a thing
 
@@ -2129,7 +2135,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
   }
   else
   {
-    if (heretic || in->d.thing->flags & MF_NOBLOOD)
+    if (raven || in->d.thing->flags & MF_NOBLOOD)
       P_SpawnPuff (x,y,z);
     else
       P_SpawnBlood (x,y,z, la_damage);
@@ -2137,11 +2143,32 @@ dboolean PTR_ShootTraverse (intercept_t* in)
 
   if (la_damage)
   {
-    if (heretic && !(in->d.thing->flags & MF_NOBLOOD) && P_Random(pr_heretic) < 192)
+    if (
+      raven &&
+      !(in->d.thing->flags & MF_NOBLOOD) &&
+      !(in->d.thing->flags2 & MF2_INVULNERABLE)
+    )
     {
-      P_BloodSplatter(x, y, z, in->d.thing);
+      if (PuffType == HEXEN_MT_AXEPUFF || PuffType == HEXEN_MT_AXEPUFF_GLOW)
+      {
+        P_BloodSplatter2(x, y, z, in->d.thing);
+      }
+      if (P_Random(pr_heretic) < 192)
+      {
+        P_BloodSplatter(x, y, z, in->d.thing);
+      }
     }
-    P_DamageMobj(th, shootthing, shootthing, la_damage);
+
+    if (PuffType == HEXEN_MT_FLAMEPUFF2)
+    {                       // Cleric FlameStrike does fire damage
+      extern mobj_t LavaInflictor;
+
+      P_DamageMobj(th, &LavaInflictor, shootthing, la_damage);
+    }
+    else
+    {
+      P_DamageMobj(th, shootthing, shootthing, la_damage);
+    }
   }
 
   // don't go any farther
@@ -2192,13 +2219,9 @@ fixed_t P_AimLineAttack(mobj_t* t1,angle_t angle,fixed_t distance, uint_64_t mas
 // that will leave linetarget set.
 //
 
-void P_LineAttack
-(mobj_t* t1,
- angle_t angle,
- fixed_t distance,
- fixed_t slope,
- int     damage)
-  {
+void P_LineAttack(mobj_t* t1, angle_t angle, fixed_t distance, fixed_t slope,
+                  int damage)
+{
   fixed_t x2;
   fixed_t y2;
 
@@ -2208,15 +2231,37 @@ void P_LineAttack
   x2 = t1->x + (distance>>FRACBITS)*finecosine[angle];
   y2 = t1->y + (distance>>FRACBITS)*finesine[angle];
   shootz = t1->z + (t1->height>>1) + 8*FRACUNIT;
-  if (t1->flags2 & MF2_FEETARECLIPPED)
+  if (hexen)
+  {
+    shootz -= t1->floorclip;
+  }
+  else if (t1->flags2 & MF2_FEETARECLIPPED)
   {
     shootz -= FOOTCLIPSIZE;
   }
   attackrange = distance;
   aimslope = slope;
 
-  P_PathTraverse(t1->x,t1->y,x2,y2,PT_ADDLINES|PT_ADDTHINGS,PTR_ShootTraverse);
+  if (P_PathTraverse(t1->x,t1->y,x2,y2,PT_ADDLINES|PT_ADDTHINGS,PTR_ShootTraverse))
+  {
+    switch (PuffType)
+    {
+      case HEXEN_MT_PUNCHPUFF:
+        S_StartSound(t1, hexen_sfx_fighter_punch_miss);
+        break;
+      case HEXEN_MT_HAMMERPUFF:
+      case HEXEN_MT_AXEPUFF:
+      case HEXEN_MT_AXEPUFF_GLOW:
+        S_StartSound(t1, hexen_sfx_fighter_hammer_miss);
+        break;
+      case HEXEN_MT_FLAMEPUFF:
+        P_SpawnPuff(x2, y2, shootz + FixedMul(slope, distance));
+        break;
+      default:
+        break;
+    }
   }
+}
 
 
 //
