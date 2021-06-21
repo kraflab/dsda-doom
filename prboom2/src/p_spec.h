@@ -1200,6 +1200,49 @@ void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing);
 
 // hexen
 
+// p_lights
+
+typedef enum
+{
+    LITE_RAISEBYVALUE,
+    LITE_LOWERBYVALUE,
+    LITE_CHANGETOVALUE,
+    LITE_FADE,
+    LITE_GLOW,
+    LITE_FLICKER,
+    LITE_STROBE
+} lighttype_t;
+
+typedef struct
+{
+    thinker_t thinker;
+    sector_t *sector;
+    lighttype_t type;
+    int value1;
+    int value2;
+    int tics1;
+    int tics2;
+    int count;
+} light_t;
+
+typedef struct
+{
+    thinker_t thinker;
+    sector_t *sector;
+    int index;
+    int base;
+} phase_t;
+
+#define LIGHT_SEQUENCE_START    2
+#define LIGHT_SEQUENCE          3
+#define LIGHT_SEQUENCE_ALT      4
+
+void T_Phase(phase_t * phase);
+void T_Light(light_t * light);
+void P_SpawnPhasedLight(sector_t * sector, int base, int index);
+void P_SpawnLightSequence(sector_t * sector, int indexStep);
+dboolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type);
+
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType);
 dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
 void P_PlayerOnSpecialFlat(player_t * player, int floorType);
