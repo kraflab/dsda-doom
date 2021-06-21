@@ -3332,11 +3332,6 @@ void P_BounceWall(mobj_t * mo)
     mo->momy = FixedMul(movelen, finesine[deltaangle]);
 }
 
-dboolean P_UsePuzzleItem(player_t * player, int itemType)
-{
-    return true;
-}
-
 dboolean PIT_ThrustStompThing(mobj_t * thing)
 {
     fixed_t blockdist;
@@ -3552,4 +3547,105 @@ static dboolean Hexen_P_TryMove(mobj_t* thing, fixed_t x, fixed_t y)
         }
     }
     return false;
+}
+
+#define USE_PUZZLE_ITEM_SPECIAL 129
+
+static mobj_t *PuzzleItemUser;
+static int PuzzleItemType;
+static dboolean PuzzleActivated;
+
+#include "hexen/p_acs.h"
+
+dboolean PTR_PuzzleItemTraverse(intercept_t * in)
+{
+    mobj_t *mobj;
+    byte args[3];
+    int sound;
+
+    if (in->isaline)
+    {                           // Check line
+        if (in->d.line->special != USE_PUZZLE_ITEM_SPECIAL)
+        {
+            P_LineOpening(in->d.line);
+            if (openrange <= 0)
+            {
+                sound = hexen_sfx_None;
+                if (PuzzleItemUser->player)
+                {
+                    switch (PuzzleItemUser->player->pclass)
+                    {
+                        case PCLASS_FIGHTER:
+                            sound = hexen_sfx_puzzle_fail_fighter;
+                            break;
+                        case PCLASS_CLERIC:
+                            sound = hexen_sfx_puzzle_fail_cleric;
+                            break;
+                        case PCLASS_MAGE:
+                            sound = hexen_sfx_puzzle_fail_mage;
+                            break;
+                        default:
+                            sound = hexen_sfx_None;
+                            break;
+                    }
+                }
+                S_StartSound(PuzzleItemUser, sound);
+                return false;   // can't use through a wall
+            }
+            return true;        // Continue searching
+        }
+        if (P_PointOnLineSide(PuzzleItemUser->x, PuzzleItemUser->y,
+                              in->d.line) == 1)
+        {                       // Don't use back sides
+            return false;
+        }
+        if (PuzzleItemType != in->d.line->arg1)
+        {                       // Item type doesn't match
+            return false;
+        }
+
+        // Construct an args[] array that would contain the values from
+        // the line that would be passed by Vanilla Hexen.
+        args[0] = in->d.line->arg3;
+        args[1] = in->d.line->arg4;
+        args[2] = in->d.line->arg5;
+
+        P_StartACS(in->d.line->arg2, 0, args, PuzzleItemUser, in->d.line, 0);
+        in->d.line->special = 0;
+        PuzzleActivated = true;
+        return false;           // Stop searching
+    }
+    // Check thing
+    mobj = in->d.thing;
+    if (mobj->special != USE_PUZZLE_ITEM_SPECIAL)
+    {                           // Wrong special
+        return true;
+    }
+    if (PuzzleItemType != mobj->args[0])
+    {                           // Item type doesn't match
+        return true;
+    }
+
+    P_StartACS(mobj->args[1], 0, &mobj->args[2], PuzzleItemUser, NULL, 0);
+    mobj->special = 0;
+    PuzzleActivated = true;
+    return false;               // Stop searching
+}
+
+dboolean P_UsePuzzleItem(player_t * player, int itemType)
+{
+    int angle;
+    fixed_t x1, y1, x2, y2;
+
+    PuzzleItemType = itemType;
+    PuzzleItemUser = player->mo;
+    PuzzleActivated = false;
+    angle = player->mo->angle >> ANGLETOFINESHIFT;
+    x1 = player->mo->x;
+    y1 = player->mo->y;
+    x2 = x1 + (USERANGE >> FRACBITS) * finecosine[angle];
+    y2 = y1 + (USERANGE >> FRACBITS) * finesine[angle];
+    P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES | PT_ADDTHINGS,
+                   PTR_PuzzleItemTraverse);
+    return PuzzleActivated;
 }
