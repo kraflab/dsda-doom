@@ -2574,59 +2574,94 @@ dboolean PIT_ChangeSector (mobj_t* thing)
   // crunch bodies to giblets
 
   if (thing->health <= 0)
+  {
+    if (hexen)
     {
-    if (!heretic) P_SetMobjState (thing, S_GIBS);
+      if ((thing->flags & MF_CORPSE))
+      {
+        if (thing->flags & MF_NOBLOOD)
+        {
+          P_RemoveMobj(thing);
+        }
+        else
+        {
+          if (thing->state != &states[HEXEN_S_GIBS1])
+          {
+            P_SetMobjState(thing, HEXEN_S_GIBS1);
+            thing->height = 0;
+            thing->radius = 0;
+            S_StartSound(thing, hexen_sfx_player_falling_splat);
+          }
+        }
+        return true;            // keep checking
+      }
+    }
+    else
+    {
+      if (!heretic) P_SetMobjState (thing, S_GIBS);
 
-    if (compatibility_level != doom_12_compatibility)
-    {
-      thing->flags &= ~MF_SOLID;
+      if (compatibility_level != doom_12_compatibility)
+      {
+        thing->flags &= ~MF_SOLID;
+      }
+      thing->height = 0;
+      thing->radius = 0;
+      return true; // keep checking
     }
-    thing->height = 0;
-    thing->radius = 0;
-    return true; // keep checking
-    }
+  }
 
   // crunch dropped items
 
   if (thing->flags & MF_DROPPED)
-    {
+  {
     P_RemoveMobj (thing);
 
     // keep checking
     return true;
-    }
+  }
 
   /* killough 11/98: kill touchy things immediately */
   if (thing->flags & MF_TOUCHY &&
       (thing->intflags & MIF_ARMED || sentient(thing)))
-    {
-      P_DamageMobj(thing, NULL, NULL, thing->health);  // kill object
-      return true;   // keep checking
-    }
+  {
+    P_DamageMobj(thing, NULL, NULL, thing->health);  // kill object
+    return true;   // keep checking
+  }
 
   if (! (thing->flags & MF_SHOOTABLE) )
-    {
+  {
     // assume it is bloody gibs or something
     return true;
-    }
+  }
 
   nofit = true;
 
-  if (crushchange && !(leveltime&3)) {
+  if (crushchange && !(leveltime & 3)) {
     int t;
-    P_DamageMobj(thing,NULL,NULL,10);
-    dsda_WatchCrush(thing, 10);
+    int damage = hexen ? crushchange : 10;
 
-    // spray blood in a random direction
-    mo = P_SpawnMobj (thing->x,
-                      thing->y,
-                      thing->z + thing->height/2, g_mt_blood);
+    P_DamageMobj(thing, NULL, NULL, damage);
+    dsda_WatchCrush(thing, damage);
 
-    /* killough 8/10/98: remove dependence on order of evaluation */
-    t = P_Random(pr_crush);
-    mo->momx = (t - P_Random (pr_crush))<<12;
-    t = P_Random(pr_crush);
-    mo->momy = (t - P_Random (pr_crush))<<12;
+    if (
+      !hexen ||
+      (
+        !(thing->flags & MF_NOBLOOD) &&
+        !(thing->flags2 & MF2_INVULNERABLE)
+      )
+    )
+    {
+      // spray blood in a random direction
+      mo = P_SpawnMobj (thing->x,
+                        thing->y,
+                        thing->z + thing->height / 2, g_mt_blood);
+
+      /* killough 8/10/98: remove dependence on order of evaluation */
+      t = P_Random(pr_crush);
+      mo->momx = (t - P_Random (pr_crush)) << 12;
+      t = P_Random(pr_crush);
+      mo->momy = (t - P_Random (pr_crush)) << 12;
+    }
   }
 
   // keep checking (crush other things)
