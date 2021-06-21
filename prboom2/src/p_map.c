@@ -2460,17 +2460,31 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   if (P_SplashImmune(thing, bombspot))
     return true;
 
-  // Boss spider and cyborg
-  // take no damage from concussion.
+  if (hexen)
+  {
+    if (!DamageSource && thing == bombsource)
+    {                           // don't damage the source of the explosion
+      return true;
+    }
+    if (D_abs((thing->z - bombspot->z) >> FRACBITS) > 2 * bombdistance)
+    {                           // too high/low
+      return true;
+    }
+  }
+  else
+  {
+    // Boss spider and cyborg
+    // take no damage from concussion.
 
-  // killough 8/10/98: allow grenades to hurt anyone, unless
-  // fired by Cyberdemons, in which case it won't hurt Cybers.
+    // killough 8/10/98: allow grenades to hurt anyone, unless
+    // fired by Cyberdemons, in which case it won't hurt Cybers.
 
-  if (bombspot->flags & MF_BOUNCES ?
-      thing->type == MT_CYBORG && bombsource->type == MT_CYBORG :
-      thing->flags2 & (MF2_NORADIUSDMG | MF2_BOSS) &&
-      !(bombspot->flags2 & MF2_FORCERADIUSDMG))
-    return true;
+    if (bombspot->flags & MF_BOUNCES ?
+        thing->type == MT_CYBORG && bombsource->type == MT_CYBORG :
+        thing->flags2 & (MF2_NORADIUSDMG | MF2_BOSS) &&
+        !(bombspot->flags2 & MF2_FORCERADIUSDMG))
+      return true;
+  }
 
   dx = D_abs(thing->x - bombspot->x);
   dy = D_abs(thing->y - bombspot->y);
@@ -2479,24 +2493,29 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   dist = (dist - thing->radius) >> FRACBITS;
 
   if (dist < 0)
-  dist = 0;
+    dist = 0;
 
   if (dist >= bombdistance)
     return true;  // out of range
 
   if ( P_CheckSight (thing, bombspot) )
-    {
+  {
     // must be in direct path
 
     // [XA] independent damage/distance calculation.
     //      same formula as eternity; thanks Quas :P
-    if (bombdamage == bombdistance)
+    if (!hexen && bombdamage == bombdistance)
       damage = bombdamage - dist;
     else
       damage = (bombdamage * (bombdistance - dist) / bombdistance) + 1;
 
-    P_DamageMobj (thing, bombspot, bombsource, damage);
+    if (hexen && thing->player)
+    {
+      damage >>= 2;
     }
+
+    P_DamageMobj (thing, bombspot, bombsource, damage);
+  }
 
   return true;
 }
