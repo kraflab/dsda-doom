@@ -36,15 +36,12 @@
 
 #include <stdarg.h>
 
-typedef enum                /* Logical output levels */
+typedef enum
 {
-  LO_INFO=1,                /* One of these is used in each physical output    */
-  LO_CONFIRM=2,             /* call. Which are output, or echoed to console    */
-  LO_WARN=4,                /* if output redirected is determined by the       */
-  LO_ERROR=8,               /* global masks: cons_output_mask,cons_error_mask. */
-  LO_FATAL=16,
-  LO_DEBUG=32,
-  LO_ALWAYS=64,
+  LO_INFO=1,
+  LO_WARN=2,
+  LO_ERROR=4,
+  LO_DEBUG=8,
 } OutputLevels;
 
 #ifndef __GNUC__
@@ -52,8 +49,9 @@ typedef enum                /* Logical output levels */
 #endif
 
 extern int lprintf(OutputLevels pri, const char *fmt, ...) __attribute__((format(printf,2,3)));
-extern int cons_output_mask;
-extern int cons_error_mask;
+
+void I_EnableVerboseLogging(void);
+void I_DisableAllLogging(void);
 
 /* killough 3/20/98: add const
  * killough 4/25/98: add gcc attributes

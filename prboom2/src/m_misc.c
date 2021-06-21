@@ -1485,7 +1485,7 @@ void M_LoadDefaults (void)
     doom_snprintf(defaultfile, len+1, "%s/" BOOM_CFG, exedir);
   }
 
-  lprintf (LO_CONFIRM, " default file: %s\n",defaultfile);
+  lprintf (LO_INFO, " default file: %s\n",defaultfile);
 
   // read the file in, overriding any set defaults
 

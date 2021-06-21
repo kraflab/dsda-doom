@@ -355,7 +355,7 @@ void G_SetSpeed(void)
     scale = BETWEEN(10, 400, scale);
 
     //jff 9/3/98 use logical output routine
-    lprintf (LO_CONFIRM,"turbo scale: %i%%\n",scale);
+    lprintf (LO_INFO,"turbo scale: %i%%\n",scale);
     forwardmove[0] = forwardmove_normal[0]*scale/100;
     forwardmove[1] = forwardmove_normal[1]*scale/100;
     sidemove[0] = sidemove[0]*scale/100;

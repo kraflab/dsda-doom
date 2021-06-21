@@ -384,7 +384,8 @@ void RejectOverrun(int rejectlump, const byte **rejectmatrix, int totallines)
       }
     }
 
-    lprintf(LO_WARN, "P_LoadReject: REJECT too short (%u<%u) - padded\n", length, required);
+    if (length)
+      lprintf(LO_WARN, "P_LoadReject: REJECT too short (%u<%u) - padded\n", length, required);
   }
 }
 

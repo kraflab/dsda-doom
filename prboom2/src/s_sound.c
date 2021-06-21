@@ -150,7 +150,7 @@ void S_Init(int sfxVolume, int musicVolume)
   {
     int i;
 
-    lprintf(LO_CONFIRM, "S_Init: default sfx volume %d\n", sfxVolume);
+    lprintf(LO_INFO, "S_Init: default sfx volume %d\n", sfxVolume);
 
     // Whatever these did with DMX, these are rather dummies now.
     I_SetChannels();

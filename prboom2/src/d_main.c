@@ -927,7 +927,7 @@ void AddIWAD(const char *iwad)
     return;
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_CONFIRM,"IWAD found: %s\n",iwad); //jff 4/20/98 print only if found
+  lprintf(LO_INFO,"IWAD found: %s\n",iwad); //jff 4/20/98 print only if found
   CheckIWAD(iwad,&gamemode,&haswolflevels);
 
   /* jff 8/23/98 set gamemission global appropriately in all cases
@@ -1120,7 +1120,7 @@ static void FindResponseFile (void)
             I_Error("No such response file: %s",fname);
         }
         //jff 9/3/98 use logical output routine
-        lprintf(LO_CONFIRM,"Found response file %s\n",fname);
+        lprintf(LO_INFO,"Found response file %s\n",fname);
         free(fname);
         // proff 04/05/2000: Added check for empty rsp file
         if (size<=0)
@@ -1190,10 +1190,10 @@ static void FindResponseFile (void)
 
         // DISPLAY ARGS
         //jff 9/3/98 use logical output routine
-        lprintf(LO_CONFIRM,"%d command-line args:\n",myargc);
+        lprintf(LO_INFO,"%d command-line args:\n",myargc);
         for (index=1;index<myargc;index++)
           //jff 9/3/98 use logical output routine
-          lprintf(LO_CONFIRM,"%s\n",myargv[index]);
+          lprintf(LO_INFO,"%s\n",myargv[index]);
         break;
       }
 }
@@ -1381,36 +1381,6 @@ const char *wad_files[MAXLOADFILES], *deh_files[MAXLOADFILES];
 
 // CPhipps - misc screen stuff
 int desired_screenwidth, desired_screenheight;
-
-static void L_SetupConsoleMasks(void) {
-  int p;
-  int i;
-  const char *cena="ICWEFDA",*pos;  //jff 9/3/98 use this for parsing console masks // CPhipps - const char*'s
-
-  //jff 9/3/98 get mask for console output filter
-  if ((p = M_CheckParm ("-cout"))) {
-    lprintf(LO_DEBUG, "mask for stdout console output: ");
-    if (++p != myargc && *myargv[p] != '-')
-      for (i=0,cons_output_mask=0;(size_t)i<strlen(myargv[p]);i++)
-        if ((pos = strchr(cena,toupper(myargv[p][i])))) {
-          cons_output_mask |= (1<<(pos-cena));
-          lprintf(LO_DEBUG, "%c", toupper(myargv[p][i]));
-        }
-    lprintf(LO_DEBUG, "\n");
-  }
-
-  //jff 9/3/98 get mask for redirected console error filter
-  if ((p = M_CheckParm ("-cerr"))) {
-    lprintf(LO_DEBUG, "mask for stderr console output: ");
-    if (++p != myargc && *myargv[p] != '-')
-      for (i=0,cons_error_mask=0;(size_t)i<strlen(myargv[p]);i++)
-        if ((pos = strchr(cena,toupper(myargv[p][i])))) {
-          cons_error_mask |= (1<<(pos-cena));
-          lprintf(LO_DEBUG, "%c", toupper(myargv[p][i]));
-        }
-    lprintf(LO_DEBUG, "\n");
-  }
-}
 
 // Calculate the path to the directory for autoloaded WADs/DEHs.
 // Creates the directory as necessary.
@@ -1614,7 +1584,11 @@ static void D_DoomMainSetup(void)
 {
   int p,slot;
 
-  L_SetupConsoleMasks();
+  if (M_CheckParm("-verbose"))
+    I_EnableVerboseLogging();
+
+  if (M_CheckParm("-quiet"))
+    I_DisableAllLogging();
 
   setbuf(stdout,NULL);
 
@@ -1715,7 +1689,7 @@ static void D_DoomMainSetup(void)
     }
 
     /* cphipps - the main display. This shows the build date, copyright, and game type */
-    lprintf(LO_ALWAYS,PACKAGE_NAME" (built %s), playing: %s\n"
+    lprintf(LO_INFO,PACKAGE_NAME" (built %s), playing: %s\n"
       PACKAGE_NAME" is released under the GNU General Public license v2.0.\n"
       "You are welcome to redistribute it under certain conditions.\n"
       "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n",
@@ -1724,7 +1698,7 @@ static void D_DoomMainSetup(void)
 
   if (devparm)
     //jff 9/3/98 use logical output routine
-    lprintf(LO_CONFIRM,"%s",D_DEVSTR);
+    lprintf(LO_INFO,"%s",D_DEVSTR);
 
   // turbo option
   if ((p=M_CheckParm ("-turbo")))
@@ -1740,7 +1714,7 @@ static void D_DoomMainSetup(void)
     if (scale > 400)
       scale = 400;
     //jff 9/3/98 use logical output routine
-    lprintf (LO_CONFIRM,"turbo scale: %i%%\n",scale);
+    lprintf (LO_INFO,"turbo scale: %i%%\n",scale);
     forwardmove[0] = forwardmove[0]*scale/100;
     forwardmove[1] = forwardmove[1]*scale/100;
     sidemove[0] = sidemove[0]*scale/100;
@@ -1773,12 +1747,12 @@ static void D_DoomMainSetup(void)
   {
     int time = atoi(myargv[p+1]);
     //jff 9/3/98 use logical output routine
-    lprintf(LO_CONFIRM,"Levels will end after %d minute%s.\n", time, time>1 ? "s" : "");
+    lprintf(LO_INFO,"Levels will end after %d minute%s.\n", time, time>1 ? "s" : "");
   }
 
   if ((p = M_CheckParm ("-avg")) && p < myargc-1 && deathmatch)
     //jff 9/3/98 use logical output routine
-    lprintf(LO_CONFIRM,"Austin Virtual Gaming: Levels will end after 20 minutes\n");
+    lprintf(LO_INFO,"Austin Virtual Gaming: Levels will end after 20 minutes\n");
 
   if ((p = M_CheckParm ("-warp")) ||      // killough 5/2/98
        (p = M_CheckParm ("-wart")))
@@ -1933,7 +1907,7 @@ static void D_DoomMainSetup(void)
     AddDefaultExtension(file,".lmp");     // killough
     D_AddFile (file,source_lmp);
     //jff 9/3/98 use logical output routine
-    lprintf(LO_CONFIRM,"Playing demo %s\n",file);
+    lprintf(LO_INFO,"Playing demo %s\n",file);
     if ((p = M_CheckParm ("-ffmap")) && p < myargc-1) {
       ffmap = atoi(myargv[p+1]);
     }
@@ -2317,7 +2291,7 @@ void GetFirstMap(int *ep, int *map)
       }
     }
     //jff 9/3/98 use logical output routine
-    lprintf(LO_CONFIRM,"Auto-warping to first %slevel: %s\n",
+    lprintf(LO_INFO,"Auto-warping to first %slevel: %s\n",
       newlevel ? "new " : "", name);  // Ty 10/04/98 - new level test
   }
 }

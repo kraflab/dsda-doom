@@ -55,8 +55,8 @@
 #include "e6y.h"//e6y
 #include "i_capture.h"
 
-int cons_error_mask = -1-LO_INFO; /* all but LO_INFO when redir'd */
-int cons_output_mask = -1;        /* all output enabled */
+int cons_stdout_mask = LO_INFO;
+int cons_stderr_mask = LO_WARN | LO_ERROR;
 
 /* cphipps - enlarged message buffer and made non-static
  * We still have to be careful here, this function can be called after exit
@@ -74,18 +74,32 @@ int lprintf(OutputLevels pri, const char *s, ...)
   doom_vsnprintf(msg,sizeof(msg),s,v);    /* print message in buffer  */
   va_end(v);
 
-  if (lvl&cons_output_mask)               /* mask output as specified */
-  {
 #ifdef _WIN32
-    // do not crash with unicode dirs
-    if (fileno(stdout) != -1)
+  // do not crash with unicode dirs
+  if (fileno(stdout) != -1)
 #endif
-    r=fprintf(stdout,"%s",msg);
-  }
-  if (!isatty(1) && lvl&cons_error_mask)  /* if stdout redirected     */
-    r=fprintf(stderr,"%s",msg);           /* select output at console */
+  if (lvl & cons_stdout_mask)
+    r = fprintf(stdout,"%s",msg);
+
+#ifdef _WIN32
+  // do not crash with unicode dirs
+  if (fileno(stderr) != -1)
+#endif
+  if (lvl & cons_stderr_mask)
+    r = fprintf(stderr,"%s",msg);
 
   return r;
+}
+
+void I_EnableVerboseLogging(void)
+{
+  cons_stdout_mask = LO_INFO | LO_DEBUG;
+}
+
+void I_DisableAllLogging(void)
+{
+  cons_stdout_mask = 0;
+  cons_stderr_mask = 0;
 }
 
 /*
