@@ -1205,11 +1205,16 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
 // Attempt to move to a new position,
 // crossing special lines unless MF_TELEPORT is set.
 //
+
+static dboolean Hexen_P_TryMove(mobj_t* thing, fixed_t x, fixed_t y);
+
 dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
                   dboolean dropoff) // killough 3/15/98: allow dropoff as option
 {
   fixed_t oldx;
   fixed_t oldy;
+
+  if (hexen) return Hexen_P_TryMove(thing, x, y);
 
   felldown = floatok = false;               // killough 11/98
 
@@ -3299,4 +3304,161 @@ static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj)
             P_ActivateLine(line, mobj, side, SPAC_IMPACT);
         }
     }
+}
+
+static dboolean Hexen_P_TryMove(mobj_t* thing, fixed_t x, fixed_t y)
+{
+    fixed_t oldx, oldy;
+    int side, oldside;
+    line_t *ld;
+
+    floatok = false;
+    if (!P_CheckPosition(thing, x, y))
+    {                           // Solid wall or thing
+        if (!BlockingMobj || BlockingMobj->player || !thing->player)
+        {
+            goto pushline;
+        }
+        else if (BlockingMobj->z + BlockingMobj->height - thing->z
+                 > 24 * FRACUNIT
+                 || (BlockingMobj->subsector->sector->ceilingheight
+                     - (BlockingMobj->z + BlockingMobj->height) <
+                     thing->height)
+                 || (tmceilingz - (BlockingMobj->z + BlockingMobj->height) <
+                     thing->height))
+        {
+            goto pushline;
+        }
+    }
+    if (!(thing->flags & MF_NOCLIP))
+    {
+        if (tmceilingz - tmfloorz < thing->height)
+        {                       // Doesn't fit
+            goto pushline;
+        }
+        floatok = true;
+        if (!(thing->flags & MF_TELEPORT)
+            && tmceilingz - thing->z < thing->height
+            && thing->type != HEXEN_MT_LIGHTNING_CEILING
+            && !(thing->flags2 & MF2_FLY))
+        {                       // mobj must lower itself to fit
+            goto pushline;
+        }
+        if (thing->flags2 & MF2_FLY)
+        {
+            if (thing->z + thing->height > tmceilingz)
+            {
+                thing->momz = -8 * FRACUNIT;
+                goto pushline;
+            }
+            else if (thing->z < tmfloorz
+                     && tmfloorz - tmdropoffz > 24 * FRACUNIT)
+            {
+                thing->momz = 8 * FRACUNIT;
+                goto pushline;
+            }
+        }
+        if (!(thing->flags & MF_TELEPORT)
+            // The Minotaur floor fire (HEXEN_MT_MNTRFX2) can step up any amount
+            && thing->type != HEXEN_MT_MNTRFX2 && thing->type != HEXEN_MT_LIGHTNING_FLOOR
+            && tmfloorz - thing->z > 24 * FRACUNIT)
+        {
+            goto pushline;
+        }
+        if (!(thing->flags & (MF_DROPOFF | MF_FLOAT)) &&
+            (tmfloorz - tmdropoffz > 24 * FRACUNIT) &&
+            !(thing->flags2 & MF2_BLASTED))
+        {                       // Can't move over a dropoff unless it's been blasted
+            return (false);
+        }
+        if (thing->flags2 & MF2_CANTLEAVEFLOORPIC
+            && (tmfloorpic != thing->subsector->sector->floorpic
+                || tmfloorz - thing->z != 0))
+        {                       // must stay within a sector of a certain floor type
+            return false;
+        }
+    }
+
+    //
+    // the move is ok, so link the thing into its new position
+    //
+    P_UnsetThingPosition(thing);
+
+    oldx = thing->x;
+    oldy = thing->y;
+    thing->floorz = tmfloorz;
+    thing->ceilingz = tmceilingz;
+    thing->floorpic = tmfloorpic;
+    thing->x = x;
+    thing->y = y;
+
+    P_SetThingPosition(thing);
+
+    if (thing->flags2 & MF2_FOOTCLIP)
+    {
+        if (thing->z == thing->subsector->sector->floorheight
+            && P_GetThingFloorType(thing) >= FLOOR_LIQUID)
+        {
+            thing->floorclip = 10 * FRACUNIT;
+        }
+        else
+        {
+            thing->floorclip = 0;
+        }
+    }
+
+    //
+    // if any special lines were hit, do the effect
+    //
+    if (!(thing->flags & (MF_TELEPORT | MF_NOCLIP)))
+    {
+        while (numspechit > 0)
+        {
+            numspechit--;
+            // see if the line was crossed
+            ld = spechit[numspechit];
+            side = P_PointOnLineSide(thing->x, thing->y, ld);
+            oldside = P_PointOnLineSide(oldx, oldy, ld);
+            if (side != oldside)
+            {
+                if (ld->special)
+                {
+                    if (thing->player)
+                    {
+                        P_ActivateLine(ld, thing, oldside, SPAC_CROSS);
+                    }
+                    else if (thing->flags2 & MF2_MCROSS)
+                    {
+                        P_ActivateLine(ld, thing, oldside, SPAC_MCROSS);
+                    }
+                    else if (thing->flags2 & MF2_PCROSS)
+                    {
+                        P_ActivateLine(ld, thing, oldside, SPAC_PCROSS);
+                    }
+                }
+            }
+        }
+    }
+    return true;
+
+  pushline:
+    if (!(thing->flags & (MF_TELEPORT | MF_NOCLIP)))
+    {
+        int numSpecHitTemp;
+
+        if (tmthing->flags2 & MF2_BLASTED)
+        {
+            P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
+        }
+        numSpecHitTemp = numspechit;
+        while (numSpecHitTemp > 0)
+        {
+            numSpecHitTemp--;
+            // see if the line was crossed
+            ld = spechit[numSpecHitTemp];
+            side = P_PointOnLineSide(thing->x, thing->y, ld);
+            CheckForPushSpecial(ld, side, thing);
+        }
+    }
+    return false;
 }
