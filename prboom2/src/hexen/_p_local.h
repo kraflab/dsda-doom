@@ -90,47 +90,6 @@ extern int PStateRun[NUMCLASSES];
 extern int PStateAttack[NUMCLASSES];
 extern int PStateAttackEnd[NUMCLASSES];
 
-// ***** P_MOBJ *****
-
-#define ONFLOORZ INT_MIN
-#define ONCEILINGZ INT_MAX
-#define FLOATRANDZ (INT_MAX-1)
-#define FROMCEILINGZ128 (INT_MAX-2)
-
-extern mobjtype_t PuffType;
-extern mobj_t *MissileMobj;
-
-mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type);
-void P_RemoveMobj(mobj_t * th);
-dboolean P_SetMobjState(mobj_t * mobj, statenum_t state);
-dboolean P_SetMobjStateNF(mobj_t * mobj, statenum_t state);
-void P_ThrustMobj(mobj_t * mo, angle_t angle, fixed_t move);
-int P_FaceMobj(mobj_t * source, mobj_t * target, angle_t * delta);
-dboolean P_SeekerMissile(mobj_t * actor, angle_t thresh, angle_t turnMax);
-void P_MobjThinker(mobj_t * mobj);
-void P_BlasterMobjThinker(mobj_t * mobj);
-void P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z);
-void P_SpawnBlood(fixed_t x, fixed_t y, fixed_t z, int damage);
-void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
-void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
-void P_RipperBlood(mobj_t * mo);
-int P_GetThingFloorType(mobj_t * thing);
-int P_HitFloor(mobj_t * thing);
-dboolean P_CheckMissileSpawn(mobj_t * missile);
-mobj_t *P_SpawnMissile(mobj_t * source, mobj_t * dest, mobjtype_t type);
-mobj_t *P_SpawnMissileXYZ(fixed_t x, fixed_t y, fixed_t z,
-                          mobj_t * source, mobj_t * dest, mobjtype_t type);
-mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type,
-                            angle_t angle, fixed_t momz);
-mobj_t *P_SpawnMissileAngleSpeed(mobj_t * source, mobjtype_t type,
-                                 angle_t angle, fixed_t momz, fixed_t speed);
-mobj_t *P_SpawnPlayerMissile(mobj_t * source, mobjtype_t type);
-mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle);
-mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
-                      fixed_t z, mobjtype_t type, angle_t angle);
-mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
-                            mobj_t * source, mobj_t * dest, mobjtype_t type);
-
 // ***** P_MAPUTL *****
 
 typedef struct

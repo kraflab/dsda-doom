@@ -555,5 +555,6 @@ void P_CreateTIDList(void);
 void P_RemoveMobjFromTIDList(mobj_t * mobj);
 void P_InsertMobjIntoTIDList(mobj_t * mobj, int tid);
 mobj_t *P_FindMobjFromTID(int tid, int *searchPosition);
+void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
 
 #endif
