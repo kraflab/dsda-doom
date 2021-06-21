@@ -4404,3 +4404,92 @@ int P_FindSectorFromTag(int tag, int start)
     }
     return -1;
 }
+
+dboolean EV_SectorSoundChange(byte * args)
+{
+    int secNum;
+    dboolean rtn;
+
+    if (!args[0])
+    {
+        return false;
+    }
+    secNum = -1;
+    rtn = false;
+    while ((secNum = P_FindSectorFromTag(args[0], secNum)) >= 0)
+    {
+        sectors[secNum].seqType = args[1];
+        rtn = true;
+    }
+    return rtn;
+}
+
+static dboolean CheckedLockedDoor(mobj_t * mo, byte lock)
+{
+    extern char *TextKeyMessages[11];
+    char LockedBuffer[80];
+
+    if (!mo->player)
+    {
+        return false;
+    }
+    if (!lock)
+    {
+        return true;
+    }
+    if (!mo->player->cards[lock - 1])
+    {
+        doom_snprintf(LockedBuffer, sizeof(LockedBuffer),
+                   "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
+        P_SetMessage(mo->player, LockedBuffer, true);
+        S_StartSound(mo, hexen_sfx_door_locked);
+        return false;
+    }
+    return true;
+}
+
+dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
+{
+    player_t *player;
+    int i;
+    int type;
+    artitype_t arti;
+
+    if (!mo)
+        return false;
+    player = mo->player;
+    if (!player)
+        return false;
+
+    // Search player's inventory for puzzle items
+    for (i = 0; i < player->artifactCount; i++)
+    {
+        arti = player->inventory[i].type;
+        type = arti - hexen_arti_firstpuzzitem;
+        if (type < 0)
+            continue;
+        if (type == line->arg1)
+        {
+            // A puzzle item was found for the line
+            if (P_UseArtifact(player, arti))
+            {
+                // A puzzle item was found for the line
+                P_PlayerRemoveArtifact(player, i);
+                if (player == &players[consoleplayer])
+                {
+                    if (arti < hexen_arti_firstpuzzitem)
+                    {
+                        S_StartSound(NULL, hexen_sfx_artifact_use);
+                    }
+                    else
+                    {
+                        S_StartSound(NULL, hexen_sfx_puzzle_success);
+                    }
+                    ArtifactFlash = 4;
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
