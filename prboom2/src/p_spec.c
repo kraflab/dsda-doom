@@ -4345,11 +4345,6 @@ static struct
 } TaggedLines[MAX_TAGGED_LINES];
 static int TaggedLineCount;
 
-dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType)
-{
-  return true;
-}
-
 dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
 {
   return true;
@@ -4492,4 +4487,48 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
         }
     }
     return false;
+}
+
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side,
+                       int activationType)
+{
+    byte args[5];
+    int lineActivation;
+    dboolean repeat;
+    dboolean buttonSuccess;
+
+    lineActivation = GET_SPAC(line->flags);
+    if (lineActivation != activationType)
+    {
+        return false;
+    }
+    if (!mo->player && !(mo->flags & MF_MISSILE))
+    {
+        if (lineActivation != SPAC_MCROSS)
+        {                       // currently, monsters can only activate the MCROSS activation type
+            return false;
+        }
+        if (line->flags & ML_SECRET)
+            return false;       // never open secret doors
+    }
+    repeat = (line->flags & ML_REPEAT_SPECIAL) != 0;
+
+    // Construct args[] array to contain the arguments from the line, as we
+    // cannot rely on struct field ordering and layout.
+    args[0] = line->arg1;
+    args[1] = line->arg2;
+    args[2] = line->arg3;
+    args[3] = line->arg4;
+    args[4] = line->arg5;
+    buttonSuccess = P_ExecuteLineSpecial(line->special, args, line, side, mo);
+    if (!repeat && buttonSuccess)
+    {                           // clear the special on non-retriggerable lines
+        line->special = 0;
+    }
+    if ((lineActivation == SPAC_USE || lineActivation == SPAC_IMPACT)
+        && buttonSuccess)
+    {
+        P_ChangeSwitchTexture(line, repeat);
+    }
+    return true;
 }
