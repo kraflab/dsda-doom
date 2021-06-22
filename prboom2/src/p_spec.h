@@ -1337,6 +1337,9 @@ int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e sta
 void T_BuildPillar(pillar_t * pillar);
 int EV_BuildPillar(line_t * line, byte * args, dboolean crush);
 int EV_OpenPillar(line_t * line, byte * args);
+int EV_FloorCrushStop(line_t * line, byte * args);
+void T_FloorWaggle(floorWaggle_t * waggle);
+dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset, int timer);
 
 //
 

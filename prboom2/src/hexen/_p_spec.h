@@ -132,16 +132,3 @@ int EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount);
 void P_AddActivePlat(plat_t * plat);
 void P_RemoveActivePlat(plat_t * plat);
 void EV_StopPlat(line_t * line, byte * args);
-
-/*
-===============================================================================
-
-							P_FLOOR
-
-===============================================================================
-*/
-
-void T_FloorWaggle(floorWaggle_t * waggle);
-int EV_FloorCrushStop(line_t * line, byte * args);
-dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
-                            int timer);
