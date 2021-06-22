@@ -520,6 +520,21 @@ typedef enum
   //new types for stair builders
   buildStair,
   genBuildStair,
+
+  // hexen - can probably merge
+  FLEV_LOWERFLOOR,            // lower floor to highest surrounding floor
+  FLEV_LOWERFLOORTOLOWEST,    // lower floor to lowest surrounding floor
+  FLEV_LOWERFLOORBYVALUE,
+  FLEV_RAISEFLOOR,            // raise floor to lowest surrounding CEILING
+  FLEV_RAISEFLOORTONEAREST,   // raise floor to next highest surrounding floor
+  FLEV_RAISEFLOORBYVALUE,
+  FLEV_RAISEFLOORCRUSH,
+  FLEV_RAISEBUILDSTEP,        // One step of a staircase
+  FLEV_RAISEBYVALUETIMES8,
+  FLEV_LOWERBYVALUETIMES8,
+  FLEV_LOWERTIMES8INSTANT,
+  FLEV_RAISETIMES8INSTANT,
+  FLEV_MOVETOVALUETIMES8,
 } floor_e;
 
 typedef enum
@@ -734,7 +749,7 @@ typedef struct
 {
   thinker_t thinker;
   floor_e type;
-  dboolean crush;
+  int crush;
   sector_t* sector;
   int direction;
   int newspecial;
@@ -743,6 +758,15 @@ typedef struct
   fixed_t floordestheight;
   fixed_t speed;
 
+  // hexen
+  int delayCount;
+  int delayTotal;
+  fixed_t stairsDelayHeight;
+  fixed_t stairsDelayHeightDelta;
+  fixed_t resetHeight;
+  short resetDelay;
+  short resetDelayCount;
+  byte textureChange;
 } floormove_t;
 
 typedef struct
@@ -1271,6 +1295,44 @@ dboolean Hexen_EV_Teleport(int tid, mobj_t * thing, dboolean fog);
 
 int Hexen_EV_DoDoor(line_t * line, byte * args, vldoor_e type);
 dboolean Hexen_EV_VerticalDoor(line_t * line, mobj_t * thing);
+
+// p_floor
+
+typedef struct
+{
+  thinker_t thinker;
+  sector_t *sector;
+  int ceilingSpeed;
+  int floorSpeed;
+  int floordest;
+  int ceilingdest;
+  int direction;
+  int crush;
+} pillar_t;
+
+typedef struct
+{
+  thinker_t thinker;
+  sector_t *sector;
+  fixed_t originalHeight;
+  fixed_t accumulator;
+  fixed_t accDelta;
+  fixed_t targetScale;
+  fixed_t scale;
+  fixed_t scaleDelta;
+  int ticker;
+  int state;
+} floorWaggle_t;
+
+typedef enum
+{
+  STAIRS_NORMAL,
+  STAIRS_SYNC,
+  STAIRS_PHASED
+} stairs_e;
+
+int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype);
+int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise);
 
 //
 

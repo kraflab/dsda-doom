@@ -253,9 +253,13 @@ result_e T_MovePlane
 // jff 02/08/98 all cases with labels beginning with gen added to support
 // generalized line type behaviors.
 
+static void Hexen_T_MoveFloor(floormove_t * floor);
+
 void T_MoveFloor(floormove_t* floor)
 {
   result_e      res;
+
+  if (hexen) return Hexen_T_MoveFloor(floor);
 
   res = T_MovePlane       // move the floor
   (
@@ -1169,4 +1173,226 @@ int EV_DoElevator
     }
   }
   return rtn;
+}
+
+// hexen
+
+#include "hexen/p_acs.h"
+#include "hexen/sn_sonix.h"
+
+static void Hexen_T_MoveFloor(floormove_t * floor)
+{
+    result_e res;
+
+    if (floor->resetDelayCount)
+    {
+        floor->resetDelayCount--;
+        if (!floor->resetDelayCount)
+        {
+            floor->floordestheight = floor->resetHeight;
+            floor->direction = -floor->direction;
+            floor->resetDelay = 0;
+            floor->delayCount = 0;
+            floor->delayTotal = 0;
+        }
+    }
+    if (floor->delayCount)
+    {
+        floor->delayCount--;
+        if (!floor->delayCount && floor->textureChange)
+        {
+            floor->sector->floorpic += floor->textureChange;
+        }
+        return;
+    }
+
+    res = T_MovePlane(floor->sector, floor->speed,
+                      floor->floordestheight, floor->crush, 0,
+                      floor->direction);
+
+    if (floor->type == FLEV_RAISEBUILDSTEP)
+    {
+        if ((floor->direction == 1 && floor->sector->floorheight >=
+             floor->stairsDelayHeight) || (floor->direction == -1 &&
+                                           floor->sector->floorheight <=
+                                           floor->stairsDelayHeight))
+        {
+            floor->delayCount = floor->delayTotal;
+            floor->stairsDelayHeight += floor->stairsDelayHeightDelta;
+        }
+    }
+    if (res == pastdest)
+    {
+        SN_StopSequence((mobj_t *) & floor->sector->soundorg);
+        if (floor->delayTotal)
+        {
+            floor->delayTotal = 0;
+        }
+        if (floor->resetDelay)
+        {
+            return;
+        }
+        floor->sector->floordata = NULL;
+        if (floor->textureChange)
+        {
+            floor->sector->floorpic -= floor->textureChange;
+        }
+        P_TagFinished(floor->sector->tag);
+        P_RemoveThinker(&floor->thinker);
+    }
+}
+
+int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype)
+{
+    int secnum;
+    int rtn;
+    sector_t *sec;
+    floormove_t *floor = NULL;
+
+    secnum = -1;
+    rtn = 0;
+    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    {
+        sec = &sectors[secnum];
+
+        //      ALREADY MOVING?  IF SO, KEEP GOING...
+        if (sec->floordata)
+            continue;
+
+        //
+        //      new floor thinker
+        //
+        rtn = 1;
+        floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+        memset(floor, 0, sizeof(*floor));
+        P_AddThinker(&floor->thinker);
+        sec->floordata = floor;
+        floor->thinker.function = T_MoveFloor;
+        floor->type = floortype;
+        floor->crush = 0;
+        floor->speed = args[1] * (FRACUNIT / 8);
+        if (floortype == FLEV_LOWERTIMES8INSTANT ||
+            floortype == FLEV_RAISETIMES8INSTANT)
+        {
+            floor->speed = 2000 << FRACBITS;
+        }
+        switch (floortype)
+        {
+            case FLEV_LOWERFLOOR:
+                floor->direction = -1;
+                floor->sector = sec;
+                floor->floordestheight = P_FindHighestFloorSurrounding(sec);
+                break;
+            case FLEV_LOWERFLOORTOLOWEST:
+                floor->direction = -1;
+                floor->sector = sec;
+                floor->floordestheight = P_FindLowestFloorSurrounding(sec);
+                break;
+            case FLEV_LOWERFLOORBYVALUE:
+                floor->direction = -1;
+                floor->sector = sec;
+                floor->floordestheight = floor->sector->floorheight -
+                    args[2] * FRACUNIT;
+                break;
+            case FLEV_LOWERTIMES8INSTANT:
+            case FLEV_LOWERBYVALUETIMES8:
+                floor->direction = -1;
+                floor->sector = sec;
+                floor->floordestheight = floor->sector->floorheight -
+                    args[2] * FRACUNIT * 8;
+                break;
+            case FLEV_RAISEFLOORCRUSH:
+                floor->crush = args[2]; // arg[2] = crushing value
+                floor->direction = 1;
+                floor->sector = sec;
+                floor->floordestheight = sec->ceilingheight - 8 * FRACUNIT;
+                break;
+            case FLEV_RAISEFLOOR:
+                floor->direction = 1;
+                floor->sector = sec;
+                floor->floordestheight = P_FindLowestCeilingSurrounding(sec);
+                if (floor->floordestheight > sec->ceilingheight)
+                    floor->floordestheight = sec->ceilingheight;
+                break;
+            case FLEV_RAISEFLOORTONEAREST:
+                floor->direction = 1;
+                floor->sector = sec;
+                floor->floordestheight =
+                    P_FindNextHighestFloor(sec, sec->floorheight);
+                break;
+            case FLEV_RAISEFLOORBYVALUE:
+                floor->direction = 1;
+                floor->sector = sec;
+                floor->floordestheight = floor->sector->floorheight +
+                    args[2] * FRACUNIT;
+                break;
+            case FLEV_RAISETIMES8INSTANT:
+            case FLEV_RAISEBYVALUETIMES8:
+                floor->direction = 1;
+                floor->sector = sec;
+                floor->floordestheight = floor->sector->floorheight +
+                    args[2] * FRACUNIT * 8;
+                break;
+            case FLEV_MOVETOVALUETIMES8:
+                floor->sector = sec;
+                floor->floordestheight = args[2] * FRACUNIT * 8;
+                if (args[3])
+                {
+                    floor->floordestheight = -floor->floordestheight;
+                }
+                if (floor->floordestheight > floor->sector->floorheight)
+                {
+                    floor->direction = 1;
+                }
+                else if (floor->floordestheight < floor->sector->floorheight)
+                {
+                    floor->direction = -1;
+                }
+                else
+                {               // already at lowest position
+                    rtn = 0;
+                }
+                break;
+            default:
+                rtn = 0;
+                break;
+        }
+    }
+    if (rtn)
+    {
+        SN_StartSequence((mobj_t *) & floor->sector->soundorg,
+                         SEQ_PLATFORM + floor->sector->seqType);
+    }
+    return rtn;
+}
+
+int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise)
+{
+    dboolean floor, ceiling;
+    int secnum;
+    sector_t *sec;
+
+    if (raise)
+    {
+        floor = Hexen_EV_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
+        secnum = -1;
+        while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+        {
+            sec = &sectors[secnum];
+            sec->floordata = NULL;
+        }
+        ceiling = Hexen_EV_DoCeiling(line, args, CLEV_RAISEBYVALUE);
+    }
+    else
+    {
+        floor = Hexen_EV_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
+        secnum = -1;
+        while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+        {
+            sec = &sectors[secnum];
+            sec->floordata = NULL;
+        }
+        ceiling = Hexen_EV_DoCeiling(line, args, CLEV_LOWERBYVALUE);
+    }
+    return (floor | ceiling);
 }
