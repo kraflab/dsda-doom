@@ -2680,11 +2680,15 @@ void P_UpdateSpecials (void)
 //  scan for specials that spawn thinkers
 //
 
+static void Hexen_P_SpawnSpecials(void);
+
 // Parses command line parameters.
 void P_SpawnSpecials (void)
 {
   sector_t*   sector;
   int         i;
+
+  if (hexen) return Hexen_P_SpawnSpecials();
 
   // See if -timer needs to be used.
   levelTimer = false;
@@ -4969,4 +4973,75 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
             break;
     }
     return buttonSuccess;
+}
+
+static void Hexen_P_SpawnSpecials(void)
+{
+    sector_t *sector;
+    int i;
+
+    //
+    //      Init special SECTORs
+    //
+    sector = sectors;
+    for (i = 0; i < numsectors; i++, sector++)
+    {
+        if (!sector->special)
+            continue;
+        switch (sector->special)
+        {
+            case 1:            // Phased light
+                // Hardcoded base, use sector->lightlevel as the index
+                P_SpawnPhasedLight(sector, 80, -1);
+                break;
+            case 2:            // Phased light sequence start
+                P_SpawnLightSequence(sector, 1);
+                break;
+                // Specials 3 & 4 are used by the phased light sequences
+        }
+    }
+
+
+    //
+    //      Init line EFFECTs
+    //
+    numlinespecials = 0;
+    TaggedLineCount = 0;
+    for (i = 0; i < numlines; i++)
+    {
+        switch (lines[i].special)
+        {
+            case 100:          // Scroll_Texture_Left
+            case 101:          // Scroll_Texture_Right
+            case 102:          // Scroll_Texture_Up
+            case 103:          // Scroll_Texture_Down
+                linespeciallist[numlinespecials] = &lines[i];
+                numlinespecials++;
+                break;
+            case 121:          // Line_SetIdentification
+                if (lines[i].arg1)
+                {
+                    if (TaggedLineCount == MAX_TAGGED_LINES)
+                    {
+                        I_Error("P_SpawnSpecials: MAX_TAGGED_LINES "
+                                "(%d) exceeded.", MAX_TAGGED_LINES);
+                    }
+                    TaggedLines[TaggedLineCount].line = &lines[i];
+                    TaggedLines[TaggedLineCount++].lineTag = lines[i].arg1;
+                }
+                lines[i].special = 0;
+                break;
+        }
+    }
+
+    //
+    //      Init other misc stuff
+    //
+    P_RemoveAllActiveCeilings();
+    P_RemoveAllActivePlats();
+    for (i = 0; i < MAXBUTTONS; i++)
+        memset(&buttonlist[i], 0, sizeof(button_t));
+
+    // Initialize flat and texture animations
+    P_InitFTAnims();
 }
