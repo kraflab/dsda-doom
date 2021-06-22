@@ -36,14 +36,14 @@ void T_PlatRaise(plat_t * plat)
         case PLAT_UP:
             res = T_MovePlane(plat->sector, plat->speed,
                               plat->high, plat->crush, 0, 1);
-            if (res == RES_CRUSHED && (!plat->crush))
+            if (res == crushed && (!plat->crush))
             {
                 plat->count = plat->wait;
                 plat->status = PLAT_DOWN;
                 SN_StartSequence((mobj_t *) & plat->sector->soundorg,
                                  SEQ_PLATFORM + plat->sector->seqType);
             }
-            else if (res == RES_PASTDEST)
+            else if (res == pastdest)
             {
                 plat->count = plat->wait;
                 plat->status = PLAT_WAITING;
@@ -63,7 +63,7 @@ void T_PlatRaise(plat_t * plat)
             res =
                 T_MovePlane(plat->sector, plat->speed, plat->low, false, 0,
                             -1);
-            if (res == RES_PASTDEST)
+            if (res == pastdest)
             {
                 plat->count = plat->wait;
                 plat->status = PLAT_WAITING;

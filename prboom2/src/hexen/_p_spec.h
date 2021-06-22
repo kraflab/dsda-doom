@@ -167,52 +167,6 @@ typedef struct
 dboolean EV_VerticalDoor(line_t * line, mobj_t * thing);
 int EV_DoDoor(line_t * line, byte * args, vldoor_e type);
 void T_VerticalDoor(vldoor_t * door);
-//void P_SpawnDoorCloseIn30(sector_t *sec);
-//void P_SpawnDoorRaiseIn5Mins(sector_t *sec, int secnum);
-
-/*
-===============================================================================
-
-							P_CEILNG
-
-===============================================================================
-*/
-typedef enum
-{
-    CLEV_LOWERTOFLOOR,
-    CLEV_RAISETOHIGHEST,
-    CLEV_LOWERANDCRUSH,
-    CLEV_CRUSHANDRAISE,
-    CLEV_LOWERBYVALUE,
-    CLEV_RAISEBYVALUE,
-    CLEV_CRUSHRAISEANDSTAY,
-    CLEV_MOVETOVALUETIMES8
-} ceiling_e;
-
-typedef struct
-{
-    thinker_t thinker;
-    sector_t *sector;
-    ceiling_e type;
-    fixed_t bottomheight, topheight;
-    fixed_t speed;
-    int crush;
-    int direction;              // 1 = up, 0 = waiting, -1 = down
-    int tag;                    // ID
-    int olddirection;
-} ceiling_t;
-
-#define CEILSPEED FRACUNIT
-#define CEILWAIT 150
-#define MAXCEILINGS 30
-
-extern ceiling_t *activeceilings[MAXCEILINGS];
-
-int EV_DoCeiling(line_t * line, byte * args, ceiling_e type);
-void T_MoveCeiling(ceiling_t * ceiling);
-void P_AddActiveCeiling(ceiling_t * c);
-void P_RemoveActiveCeiling(ceiling_t * c);
-int EV_CeilingCrushStop(line_t * line, byte * args);
 
 /*
 ===============================================================================
@@ -286,13 +240,6 @@ typedef struct
 } floorWaggle_t;
 
 #define FLOORSPEED FRACUNIT
-
-typedef enum
-{
-    RES_OK,
-    RES_CRUSHED,
-    RES_PASTDEST
-} result_e;
 
 typedef enum
 {

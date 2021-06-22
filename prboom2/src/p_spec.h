@@ -445,6 +445,15 @@ typedef enum
   genCrusher,
   genSilentCrusher,
 
+  // hexen - can probably be merged
+  CLEV_LOWERTOFLOOR,
+  CLEV_RAISETOHIGHEST,
+  CLEV_LOWERANDCRUSH,
+  CLEV_CRUSHANDRAISE,
+  CLEV_LOWERBYVALUE,
+  CLEV_RAISEBYVALUE,
+  CLEV_CRUSHRAISEANDSTAY,
+  CLEV_MOVETOVALUETIMES8,
 } ceiling_e;
 
 // p_floor
@@ -691,7 +700,7 @@ typedef struct
   fixed_t topheight;
   fixed_t speed;
   fixed_t oldspeed;
-  dboolean crush;
+  int crush;
 
   //jff 02/04/98 add these to support ceiling changers
   int newspecial;
@@ -1241,6 +1250,13 @@ void T_Light(light_t * light);
 void P_SpawnPhasedLight(sector_t * sector, int base, int index);
 void P_SpawnLightSequence(sector_t * sector, int indexStep);
 dboolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type);
+
+// p_ceilng
+
+int Hexen_EV_CeilingCrushStop(line_t * line, byte * args);
+int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type);
+
+//
 
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType);
 dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);

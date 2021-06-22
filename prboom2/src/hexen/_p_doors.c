@@ -72,7 +72,7 @@ void T_VerticalDoor(vldoor_t * door)
             res = T_MovePlane(door->sector, door->speed,
                               door->sector->floorheight, false, 1,
                               door->direction);
-            if (res == RES_PASTDEST)
+            if (res == pastdest)
             {
                 SN_StopSequence((mobj_t *) & door->sector->soundorg);
                 switch (door->type)
@@ -91,7 +91,7 @@ void T_VerticalDoor(vldoor_t * door)
                         break;
                 }
             }
-            else if (res == RES_CRUSHED)
+            else if (res == crushed)
             {
                 switch (door->type)
                 {
@@ -106,7 +106,7 @@ void T_VerticalDoor(vldoor_t * door)
         case 1:                // UP
             res = T_MovePlane(door->sector, door->speed,
                               door->topheight, false, 1, door->direction);
-            if (res == RES_PASTDEST)
+            if (res == pastdest)
             {
                 SN_StopSequence((mobj_t *) & door->sector->soundorg);
                 switch (door->type)

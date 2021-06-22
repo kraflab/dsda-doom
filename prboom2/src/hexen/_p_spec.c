@@ -144,22 +144,22 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
             buttonSuccess = EV_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
             break;
         case 40:               // Ceiling Lower by Value
-            buttonSuccess = EV_DoCeiling(line, args, CLEV_LOWERBYVALUE);
+            buttonSuccess = Hexen_EV_DoCeiling(line, args, CLEV_LOWERBYVALUE);
             break;
         case 41:               // Ceiling Raise by Value
-            buttonSuccess = EV_DoCeiling(line, args, CLEV_RAISEBYVALUE);
+            buttonSuccess = Hexen_EV_DoCeiling(line, args, CLEV_RAISEBYVALUE);
             break;
         case 42:               // Ceiling Crush and Raise
-            buttonSuccess = EV_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
+            buttonSuccess = Hexen_EV_DoCeiling(line, args, CLEV_CRUSHANDRAISE);
             break;
         case 43:               // Ceiling Lower and Crush
-            buttonSuccess = EV_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
+            buttonSuccess = Hexen_EV_DoCeiling(line, args, CLEV_LOWERANDCRUSH);
             break;
         case 44:               // Ceiling Crush Stop
-            buttonSuccess = EV_CeilingCrushStop(line, args);
+            buttonSuccess = Hexen_EV_CeilingCrushStop(line, args);
             break;
         case 45:               // Ceiling Crush Raise and Stay
-            buttonSuccess = EV_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
+            buttonSuccess = Hexen_EV_DoCeiling(line, args, CLEV_CRUSHRAISEANDSTAY);
             break;
         case 46:               // Floor Crush Stop
             buttonSuccess = EV_FloorCrushStop(line, args);
@@ -194,7 +194,7 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
             buttonSuccess = EV_DoFloor(line, args, FLEV_MOVETOVALUETIMES8);
             break;
         case 69:               // Ceiling Move to Value * 8
-            buttonSuccess = EV_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
+            buttonSuccess = Hexen_EV_DoCeiling(line, args, CLEV_MOVETOVALUETIMES8);
             break;
         case 70:               // Teleport
             if (side == 0)
