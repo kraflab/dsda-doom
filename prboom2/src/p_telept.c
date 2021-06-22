@@ -388,7 +388,10 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolea
         {
             thing->z = thing->floorz;
             player->viewz = thing->z + player->viewheight;
-            player->lookdir = 0;
+            if (useFog)
+            {
+                player->lookdir = 0;
+            }
         }
         if (demo_smoothturns && player == &players[displayplayer])
         {
@@ -408,34 +411,59 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolea
         thing->z = thing->floorz;
     }
     // Spawn teleport fog at source and destination
-    fogDelta = thing->flags & MF_MISSILE ? 0 : TELEFOGHEIGHT;
-    fog = P_SpawnMobj(oldx, oldy, oldz + fogDelta, HERETIC_MT_TFOG);
-    S_StartSound(fog, heretic_sfx_telept);
-    an = angle >> ANGLETOFINESHIFT;
-    fog = P_SpawnMobj(x + 20 * finecosine[an],
-                      y + 20 * finesine[an], thing->z + fogDelta, HERETIC_MT_TFOG);
-    S_StartSound(fog, heretic_sfx_telept);
-    if (thing->player && !thing->player->powers[pw_weaponlevel2])
-    {                           // Freeze player for about .5 sec
-        thing->reactiontime = 18;
-    }
-    thing->angle = angle;
-    if (thing->flags2 & MF2_FOOTCLIP
-        && P_GetThingFloorType(thing) != FLOOR_SOLID)
+    if (useFog)
     {
-        thing->flags2 |= MF2_FEETARECLIPPED;
+        fogDelta = thing->flags & MF_MISSILE ? 0 : TELEFOGHEIGHT;
+        fog = P_SpawnMobj(oldx, oldy, oldz + fogDelta, g_mt_tfog);
+        S_StartSound(fog, g_sfx_telept);
+        an = angle >> ANGLETOFINESHIFT;
+        fog = P_SpawnMobj(x + 20 * finecosine[an],
+                          y + 20 * finesine[an], thing->z + fogDelta, g_mt_tfog);
+        S_StartSound(fog, g_sfx_telept);
+        if (thing->player &&
+            !thing->player->powers[pw_weaponlevel2] &&
+            !thing->player->powers[pw_speed])
+        {                           // Freeze player for about .5 sec
+            thing->reactiontime = 18;
+        }
+        thing->angle = angle;
     }
-    else if (thing->flags2 & MF2_FEETARECLIPPED)
+
+    if (hexen)
     {
-        thing->flags2 &= ~MF2_FEETARECLIPPED;
+        if (thing->flags2 & MF2_FOOTCLIP)
+        {
+            if (thing->z == thing->subsector->sector->floorheight
+                && P_GetThingFloorType(thing) > FLOOR_SOLID)
+            {
+                thing->floorclip = 10 * FRACUNIT;
+            }
+            else
+            {
+                thing->floorclip = 0;
+            }
+        }
     }
+    else
+    {
+        if (thing->flags2 & MF2_FOOTCLIP
+            && P_GetThingFloorType(thing) != FLOOR_SOLID)
+        {
+            thing->flags2 |= MF2_FEETARECLIPPED;
+        }
+        else if (thing->flags2 & MF2_FEETARECLIPPED)
+        {
+            thing->flags2 &= ~MF2_FEETARECLIPPED;
+        }
+    }
+
     if (thing->flags & MF_MISSILE)
     {
         angle >>= ANGLETOFINESHIFT;
         thing->momx = FixedMul(thing->info->speed, finecosine[angle]);
         thing->momy = FixedMul(thing->info->speed, finesine[angle]);
     }
-    else
+    else if (useFog)
     {
         thing->momx = thing->momy = thing->momz = 0;
     }
@@ -485,4 +513,49 @@ dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
         }
     }
     return (false);
+}
+
+// hexen
+
+#include "m_random.h"
+#include "lprintf.h"
+
+dboolean Hexen_EV_Teleport(int tid, mobj_t * thing, dboolean fog)
+{
+    int i;
+    int count;
+    mobj_t *mo;
+    int searcher;
+
+    if (!thing)
+    {                           // Teleport function called with an invalid mobj
+        return false;
+    }
+    if (thing->flags2 & MF2_NOTELEPORT)
+    {
+        return false;
+    }
+    count = 0;
+    searcher = -1;
+    while (P_FindMobjFromTID(tid, &searcher) != NULL)
+    {
+        count++;
+    }
+    if (count == 0)
+    {
+        return false;
+    }
+    count = 1 + (P_Random(pr_hexen) % count);
+    searcher = -1;
+    mo = NULL;
+
+    for (i = 0; i < count; i++)
+    {
+        mo = P_FindMobjFromTID(tid, &searcher);
+    }
+    if (mo == NULL)
+    {
+        I_Error("Can't find teleport mapspot\n");
+    }
+    return P_Teleport(thing, mo->x, mo->y, mo->angle, fog);
 }

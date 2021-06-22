@@ -263,28 +263,3 @@ int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise);
 int EV_FloorCrushStop(line_t * line, byte * args);
 dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
                             int timer);
-
-//--------------------------------------------------------------------------
-//
-// p_telept
-//
-//--------------------------------------------------------------------------
-
-dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle,
-                   dboolean useFog);
-dboolean EV_Teleport(int tid, mobj_t * thing, dboolean fog);
-
-//--------------------------------------------------------------------------
-//
-// p_things
-//
-//--------------------------------------------------------------------------
-
-extern mobjtype_t TranslateThingType[];
-
-dboolean EV_ThingProjectile(byte * args, dboolean gravity);
-dboolean EV_ThingSpawn(byte * args, dboolean fog);
-dboolean EV_ThingActivate(int tid);
-dboolean EV_ThingDeactivate(int tid);
-dboolean EV_ThingRemove(int tid);
-dboolean EV_ThingDestroy(int tid);

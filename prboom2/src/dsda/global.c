@@ -507,7 +507,7 @@ static void dsda_InitHexen(void) {
   // weaponinfo = wpnlev1info;
   //
   // g_mt_player = HERETIC_MT_PLAYER;
-  // g_mt_tfog = HERETIC_MT_TFOG;
+  g_mt_tfog = HEXEN_MT_TFOG;
   g_mt_blood = HEXEN_MT_BLOOD;
   g_skullpop_mt = HEXEN_MT_BLOODYSKULL;
   g_s_bloodyskullx1 = HEXEN_S_BLOODYSKULLX1;
@@ -559,7 +559,7 @@ static void dsda_InitHexen(void) {
   g_arti_limit = 25;
   //
   // g_sfx_sawup = heretic_sfx_gntact;
-  // g_sfx_telept = heretic_sfx_telept;
+  g_sfx_telept = hexen_sfx_teleport;
   // g_sfx_stnmov = heretic_sfx_dormov;
   // g_sfx_stnmov_plats = heretic_sfx_stnmov;
   // g_sfx_swtchn = heretic_sfx_switch;

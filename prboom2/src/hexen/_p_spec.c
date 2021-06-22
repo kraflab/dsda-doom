@@ -199,13 +199,13 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 70:               // Teleport
             if (side == 0)
             {                   // Only teleport when crossing the front side of a line
-                buttonSuccess = EV_Teleport(args[0], mo, true);
+                buttonSuccess = Hexen_EV_Teleport(args[0], mo, true);
             }
             break;
         case 71:               // Teleport, no fog
             if (side == 0)
             {                   // Only teleport when crossing the front side of a line
-                buttonSuccess = EV_Teleport(args[0], mo, false);
+                buttonSuccess = Hexen_EV_Teleport(args[0], mo, false);
             }
             break;
         case 72:               // Thrust Mobj

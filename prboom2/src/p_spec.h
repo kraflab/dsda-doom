@@ -1256,6 +1256,10 @@ dboolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type);
 int Hexen_EV_CeilingCrushStop(line_t * line, byte * args);
 int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type);
 
+// p_telept
+
+dboolean Hexen_EV_Teleport(int tid, mobj_t * thing, dboolean fog);
+
 //
 
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType);
