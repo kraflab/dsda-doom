@@ -151,7 +151,7 @@ result_e T_MovePlane
             if (flag == true)
             {
         /* jff 1/25/98 fix floor crusher */
-              if (comp[comp_floors]) {
+              if (!hexen && comp[comp_floors]) {
 
                 //e6y: warning about potential desynch
                 if (crush == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
@@ -204,7 +204,7 @@ result_e T_MovePlane
 
             if (flag == true)
             {
-              if (crush == true)
+              if (!hexen && crush == true)
                 return crushed;
               sector->ceilingheight = lastpos;
               P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
