@@ -141,18 +141,7 @@ void EV_StopPlat(line_t * line, byte * args);
 ===============================================================================
 */
 
-result_e T_MovePlane(sector_t * sector, fixed_t speed,
-                     fixed_t dest, int crush, int floorOrCeiling,
-                     int direction);
-
-int EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e type);
-int EV_DoFloor(line_t * line, byte * args, floor_e floortype);
-void T_MoveFloor(floormove_t * floor);
-void T_BuildPillar(pillar_t * pillar);
 void T_FloorWaggle(floorWaggle_t * waggle);
-int EV_BuildPillar(line_t * line, byte * args, dboolean crush);
-int EV_OpenPillar(line_t * line, byte * args);
-int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise);
 int EV_FloorCrushStop(line_t * line, byte * args);
 dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
                             int timer);
