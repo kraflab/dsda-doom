@@ -1396,3 +1396,178 @@ int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise)
     }
     return (floor | ceiling);
 }
+
+#define STAIR_SECTOR_TYPE       26
+#define STAIR_QUEUE_SIZE        32
+
+struct
+{
+    sector_t *sector;
+    int type;
+    int height;
+} StairQueue[STAIR_QUEUE_SIZE];
+
+static int QueueHead;
+static int QueueTail;
+
+static int StepDelta;
+static int Direction;
+static int Speed;
+static int Texture;
+static int StartDelay;
+static int StartDelayDelta;
+static int TextureChange;
+static int StartHeight;
+
+static void QueueStairSector(sector_t * sec, int type, int height)
+{
+    if ((QueueTail + 1) % STAIR_QUEUE_SIZE == QueueHead)
+    {
+        I_Error("BuildStairs:  Too many branches located.\n");
+    }
+    StairQueue[QueueTail].sector = sec;
+    StairQueue[QueueTail].type = type;
+    StairQueue[QueueTail].height = height;
+
+    QueueTail = (QueueTail + 1) % STAIR_QUEUE_SIZE;
+}
+
+static sector_t *DequeueStairSector(int *type, int *height)
+{
+    sector_t *sec;
+
+    if (QueueHead == QueueTail)
+    {                           // queue is empty
+        return NULL;
+    }
+    *type = StairQueue[QueueHead].type;
+    *height = StairQueue[QueueHead].height;
+    sec = StairQueue[QueueHead].sector;
+    QueueHead = (QueueHead + 1) % STAIR_QUEUE_SIZE;
+
+    return sec;
+}
+
+static void ProcessStairSector(sector_t * sec, int type, int height,
+                               stairs_e stairsType, int delay, int resetDelay)
+{
+    int i;
+    sector_t *tsec;
+    floormove_t *floor;
+
+    //
+    // new floor thinker
+    //
+    height += StepDelta;
+    floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+    memset(floor, 0, sizeof(*floor));
+    P_AddThinker(&floor->thinker);
+    sec->floordata = floor;
+    floor->thinker.function = T_MoveFloor;
+    floor->type = FLEV_RAISEBUILDSTEP;
+    floor->direction = Direction;
+    floor->sector = sec;
+    floor->floordestheight = height;
+    switch (stairsType)
+    {
+        case STAIRS_NORMAL:
+            floor->speed = Speed;
+            if (delay)
+            {
+                floor->delayTotal = delay;
+                floor->stairsDelayHeight = sec->floorheight + StepDelta;
+                floor->stairsDelayHeightDelta = StepDelta;
+            }
+            floor->resetDelay = resetDelay;
+            floor->resetDelayCount = resetDelay;
+            floor->resetHeight = sec->floorheight;
+            break;
+        case STAIRS_SYNC:
+            floor->speed = FixedMul(Speed, FixedDiv(height - StartHeight,
+                                                    StepDelta));
+            floor->resetDelay = delay;  //arg4
+            floor->resetDelayCount = delay;
+            floor->resetHeight = sec->floorheight;
+            break;
+        default:
+            break;
+    }
+    SN_StartSequence((mobj_t *) & sec->soundorg, SEQ_PLATFORM + sec->seqType);
+    //
+    // Find next sector to raise
+    // Find nearby sector with sector special equal to type
+    //
+    for (i = 0; i < sec->linecount; i++)
+    {
+        if (!((sec->lines[i])->flags & ML_TWOSIDED))
+        {
+            continue;
+        }
+        tsec = (sec->lines[i])->frontsector;
+        if (tsec->special == type + STAIR_SECTOR_TYPE && !tsec->floordata
+            && tsec->floorpic == Texture && tsec->validcount != validcount)
+        {
+            QueueStairSector(tsec, type ^ 1, height);
+            tsec->validcount = validcount;
+            //tsec->special = 0;
+        }
+        tsec = (sec->lines[i])->backsector;
+        if (tsec->special == type + STAIR_SECTOR_TYPE && !tsec->floordata
+            && tsec->floorpic == Texture && tsec->validcount != validcount)
+        {
+            QueueStairSector(tsec, type ^ 1, height);
+            tsec->validcount = validcount;
+            //tsec->special = 0;
+        }
+    }
+}
+
+int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e stairsType)
+{
+    int secnum;
+    int height;
+    int delay;
+    int resetDelay;
+    sector_t *sec;
+    sector_t *qSec;
+    int type;
+
+    // Set global stairs variables
+    TextureChange = 0;
+    Direction = direction;
+    StepDelta = Direction * (args[2] * FRACUNIT);
+    Speed = args[1] * (FRACUNIT / 8);
+    resetDelay = args[4];
+    delay = args[3];
+    if (stairsType == STAIRS_PHASED)
+    {
+        StartDelayDelta = args[3];
+        StartDelay = StartDelayDelta;
+        resetDelay = StartDelayDelta;
+        delay = 0;
+        TextureChange = args[4];
+    }
+
+    secnum = -1;
+
+    validcount++;
+    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    {
+        sec = &sectors[secnum];
+
+        Texture = sec->floorpic;
+        StartHeight = sec->floorheight;
+
+        // ALREADY MOVING?  IF SO, KEEP GOING...
+        if (sec->floordata)
+            continue;
+
+        QueueStairSector(sec, 0, sec->floorheight);
+        sec->special = 0;
+    }
+    while ((qSec = DequeueStairSector(&type, &height)) != NULL)
+    {
+        ProcessStairSector(qSec, type, height, stairsType, delay, resetDelay);
+    }
+    return (1);
+}

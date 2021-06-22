@@ -1333,6 +1333,7 @@ typedef enum
 
 int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype);
 int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise);
+int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e stairsType);
 
 //
 

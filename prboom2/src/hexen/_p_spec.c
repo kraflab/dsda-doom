@@ -117,10 +117,10 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
             buttonSuccess = Hexen_EV_DoFloor(line, args, FLEV_RAISEFLOORTONEAREST);
             break;
         case 26:               // Stairs Build Down Normal
-            buttonSuccess = EV_BuildStairs(line, args, -1, STAIRS_NORMAL);
+            buttonSuccess = Hexen_EV_BuildStairs(line, args, -1, STAIRS_NORMAL);
             break;
         case 27:               // Build Stairs Up Normal
-            buttonSuccess = EV_BuildStairs(line, args, 1, STAIRS_NORMAL);
+            buttonSuccess = Hexen_EV_BuildStairs(line, args, 1, STAIRS_NORMAL);
             break;
         case 28:               // Floor Raise and Crush
             buttonSuccess = Hexen_EV_DoFloor(line, args, FLEV_RAISEFLOORCRUSH);
@@ -132,10 +132,10 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
             buttonSuccess = EV_OpenPillar(line, args);
             break;
         case 31:               // Stairs Build Down Sync
-            buttonSuccess = EV_BuildStairs(line, args, -1, STAIRS_SYNC);
+            buttonSuccess = Hexen_EV_BuildStairs(line, args, -1, STAIRS_SYNC);
             break;
         case 32:               // Build Stairs Up Sync
-            buttonSuccess = EV_BuildStairs(line, args, 1, STAIRS_SYNC);
+            buttonSuccess = Hexen_EV_BuildStairs(line, args, 1, STAIRS_SYNC);
             break;
         case 35:               // Raise Floor by Value Times 8
             buttonSuccess = Hexen_EV_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
