@@ -30,8 +30,6 @@
 #define PRIORITY_MAX_ADJUST 10
 #define DIST_ADJUST (MAX_SND_DIST/PRIORITY_MAX_ADJUST)
 
-#define DEFAULT_ARCHIVEPATH     "o:\\sound\\archive\\"
-
 void S_ShutDown(void);
 
 // If true, CD music playback is enabled (snd_musicdevice == SNDDEVICE_CD
@@ -57,14 +55,6 @@ static int cd_track_end_time = 0;
 ===============================================================================
 */
 
-//static channel_t channel[MAX_CHANNELS];
-
-//static int rs; //the current registered song.
-//int mus_song = -1;
-//int mus_lumpnum;
-//void *mus_sndptr;
-//byte *soundCurve;
-
 extern sfxinfo_t S_sfx[];
 extern musicinfo_t S_music[];
 
@@ -78,8 +68,6 @@ static byte *SoundCurve;
 int snd_MaxVolume = 10;                // maximum volume for sound
 int snd_MusicVolume = 10;              // maximum volume for music
 int snd_Channels = 16;
-
-// int AmbChan;
 
 //==========================================================================
 //
@@ -275,12 +263,7 @@ void S_StartSongName(const char *songLump, dboolean loop)
         {
             cdTrack = P_GetCDEnd3Track();
         }
-/*	Uncomment this, if Kevin writes a specific song for startup
-		else if(!strcmp(songLump, "start"))
-		{
-			cdTrack = P_GetCDStartTrack();
-		}
-*/
+
         if (cdTrack != 0)
         {
             cd_custom_track = 0;
@@ -389,13 +372,7 @@ void S_StartSoundAtVolume(mobj_t * origin, int sound_id, int volume)
     }
     priority = S_sfx[sound_id].priority;
     priority *= (PRIORITY_MAX_ADJUST - (dist / DIST_ADJUST));
-    #if 0
-    // TODO
-    if (!S_StopSoundID(sound_id, priority))
-    {
-        return;                 // other sounds have greater priority
-    }
-    #endif
+
     for (i = 0; i < snd_Channels; i++)
     {
         if (origin->player)
@@ -462,7 +439,6 @@ void S_StartSoundAtVolume(mobj_t * origin, int sound_id, int volume)
     if (origin == listener)
     {
         sep = 128;
-//              vol = (volume*(snd_MaxVolume+1)*8)>>7;
     }
     else
     {
@@ -475,7 +451,6 @@ void S_StartSoundAtVolume(mobj_t * origin, int sound_id, int volume)
             sep = -sep;
         if (sep > 192)
             sep = 512 - sep;
-//              vol = SoundCurve[dist];
     }
 
     // if the sfxinfo_t is marked as 'can be pitch shifted'
@@ -732,7 +707,6 @@ void S_UpdateSounds(mobj_t * listener)
             {
                 dist = 0;
             }
-            //vol = SoundCurve[dist];
             vol =
                 (SoundCurve[dist] * (snd_MaxVolume * 8) *
                  Channel[i].volume) >> 14;
@@ -769,7 +743,6 @@ void S_Init(void)
 {
     I_SetOPLDriverVer(opl_doom2_1_666);
     SoundCurve = W_CacheLumpName("SNDCURVE", PU_STATIC);
-//      SoundCurve = Z_Malloc(MAX_SND_DIST, PU_STATIC, NULL);
 
     if (snd_Channels > 8)
     {
