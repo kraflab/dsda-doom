@@ -121,6 +121,56 @@ dboolean P_SightBlockLinesIterator(int x, int y)
 
   offset = y*bmapwidth+x;
 
+  // HEXEN_TODO: always initialize polyblockmap and drop this condition?
+  if (hexen)
+  {
+    polyblock_t *polyLink;
+    seg_t **segList;
+    int i;
+    extern polyblock_t **PolyBlockMap;
+
+    polyLink = PolyBlockMap[offset];
+    while (polyLink)
+    {
+      if (polyLink->polyobj)
+      {                       // only check non-empty links
+        if (polyLink->polyobj->validcount != validcount)
+        {
+          segList = polyLink->polyobj->segs;
+          for (i = 0; i < polyLink->polyobj->numsegs; i++, segList++)
+          {
+            ld = (*segList)->linedef;
+            if (ld->validcount == validcount)
+            {
+              continue;
+            }
+            ld->validcount = validcount;
+            s1 = P_PointOnDivlineSide(ld->v1->x, ld->v1->y, &trace);
+            s2 = P_PointOnDivlineSide(ld->v2->x, ld->v2->y, &trace);
+            if (s1 == s2)
+              continue;       // line isn't crossed
+            P_MakeDivline(ld, &dl);
+            s1 = P_PointOnDivlineSide(trace.x, trace.y, &dl);
+            s2 = P_PointOnDivlineSide(trace.x + trace.dx,
+                                      trace.y + trace.dy, &dl);
+            if (s1 == s2)
+              continue;       // line isn't crossed
+
+            // try to early out the check
+            if (!ld->backsector)
+              return false;   // stop checking
+
+            // store the line for later intersection testing
+            intercept_p->d.line = ld;
+            intercept_p++;
+          }
+          polyLink->polyobj->validcount = validcount;
+        }
+      }
+      polyLink = polyLink->next;
+    }
+  }
+
   offset = *(blockmap+offset);
 
   for (list = blockmaplump+offset; *list != -1; list++)
@@ -891,7 +941,7 @@ dboolean P_CheckSight(mobj_t *t1, mobj_t *t2)
 // used in tandem.
 //
 // Adapted from Eternity, so big thanks to Quasar
-// 
+//
 dboolean P_CheckFov(mobj_t *t1, mobj_t *t2, angle_t fov)
 {
   angle_t angle, minang, maxang;
