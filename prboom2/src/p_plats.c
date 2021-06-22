@@ -57,9 +57,13 @@ platlist_t *activeplats;       // killough 2/14/98: made global again
 // jff 02/08/98 all cases with labels beginning with gen added to support
 // generalized line type behaviors.
 
+static void Hexen_T_PlatRaise(plat_t * plat);
+
 void T_PlatRaise(plat_t* plat)
 {
   result_e      res;
+
+  if (hexen) return Hexen_T_PlatRaise(plat);
 
   // handle plat moving, up, down, waiting, or in stasis,
   switch(plat->status)
@@ -465,4 +469,170 @@ void P_RemoveAllActivePlats(void)
     free(activeplats);
     activeplats = next;
   }
+}
+
+// hexen
+
+static void Hexen_T_PlatRaise(plat_t * plat)
+{
+    result_e res;
+
+    switch (plat->status)
+    {
+        case up:
+            res = T_MovePlane(plat->sector, plat->speed,
+                              plat->high, plat->crush, 0, 1);
+            if (res == crushed && (!plat->crush))
+            {
+                plat->count = plat->wait;
+                plat->status = down;
+                SN_StartSequence((mobj_t *) & plat->sector->soundorg,
+                                 SEQ_PLATFORM + plat->sector->seqType);
+            }
+            else if (res == pastdest)
+            {
+                plat->count = plat->wait;
+                plat->status = waiting;
+                SN_StopSequence((mobj_t *) & plat->sector->soundorg);
+                switch (plat->type)
+                {
+                    case PLAT_DOWNWAITUPSTAY:
+                    case PLAT_DOWNBYVALUEWAITUPSTAY:
+                        P_RemoveActivePlat(plat);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            break;
+        case down:
+            res =
+                T_MovePlane(plat->sector, plat->speed, plat->low, false, 0,
+                            -1);
+            if (res == pastdest)
+            {
+                plat->count = plat->wait;
+                plat->status = waiting;
+                switch (plat->type)
+                {
+                    case PLAT_UPWAITDOWNSTAY:
+                    case PLAT_UPBYVALUEWAITDOWNSTAY:
+                        P_RemoveActivePlat(plat);
+                        break;
+                    default:
+                        break;
+                }
+                SN_StopSequence((mobj_t *) & plat->sector->soundorg);
+            }
+            break;
+        case waiting:
+            if (!--plat->count)
+            {
+                if (plat->sector->floorheight == plat->low)
+                    plat->status = up;
+                else
+                    plat->status = down;
+                SN_StartSequence((mobj_t *) & plat->sector->soundorg,
+                                 SEQ_PLATFORM + plat->sector->seqType);
+            }
+    }
+}
+
+int Hexen_EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount)
+{
+    plat_t *plat;
+    int secnum;
+    int rtn;
+    sector_t *sec;
+
+    secnum = -1;
+    rtn = 0;
+
+    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    {
+        sec = &sectors[secnum];
+        if (sec->floordata)
+            continue;
+
+        //
+        // Find lowest & highest floors around sector
+        //
+        rtn = 1;
+        plat = Z_Malloc(sizeof(*plat), PU_LEVEL, 0);
+        memset(plat, 0, sizeof(*plat));
+        P_AddThinker(&plat->thinker);
+
+        plat->type = type;
+        plat->sector = sec;
+        plat->sector->floordata = plat;
+        plat->thinker.function = T_PlatRaise;
+        plat->crush = false;
+        plat->tag = args[0];
+        plat->speed = args[1] * (FRACUNIT / 8);
+        switch (type)
+        {
+            case PLAT_DOWNWAITUPSTAY:
+                plat->low = P_FindLowestFloorSurrounding(sec) + 8 * FRACUNIT;
+                if (plat->low > sec->floorheight)
+                    plat->low = sec->floorheight;
+                plat->high = sec->floorheight;
+                plat->wait = args[2];
+                plat->status = down;
+                break;
+            case PLAT_DOWNBYVALUEWAITUPSTAY:
+                plat->low = sec->floorheight - args[3] * 8 * FRACUNIT;
+                if (plat->low > sec->floorheight)
+                    plat->low = sec->floorheight;
+                plat->high = sec->floorheight;
+                plat->wait = args[2];
+                plat->status = down;
+                break;
+            case PLAT_UPWAITDOWNSTAY:
+                plat->high = P_FindHighestFloorSurrounding(sec);
+                if (plat->high < sec->floorheight)
+                    plat->high = sec->floorheight;
+                plat->low = sec->floorheight;
+                plat->wait = args[2];
+                plat->status = up;
+                break;
+            case PLAT_UPBYVALUEWAITDOWNSTAY:
+                plat->high = sec->floorheight + args[3] * 8 * FRACUNIT;
+                if (plat->high < sec->floorheight)
+                    plat->high = sec->floorheight;
+                plat->low = sec->floorheight;
+                plat->wait = args[2];
+                plat->status = up;
+                break;
+            case PLAT_PERPETUALRAISE:
+                plat->low = P_FindLowestFloorSurrounding(sec) + 8 * FRACUNIT;
+                if (plat->low > sec->floorheight)
+                    plat->low = sec->floorheight;
+                plat->high = P_FindHighestFloorSurrounding(sec);
+                if (plat->high < sec->floorheight)
+                    plat->high = sec->floorheight;
+                plat->wait = args[2];
+                plat->status = P_Random(pr_hexen) & 1;
+                break;
+        }
+        P_AddActivePlat(plat);
+        SN_StartSequence((mobj_t *) & sec->soundorg,
+                         SEQ_PLATFORM + sec->seqType);
+    }
+    return rtn;
+}
+
+// hexen_note: why set the tags? not sure if this is correct
+void Hexen_EV_StopPlat(line_t * line, byte * args)
+{
+    platlist_t *pl;
+    for (pl = activeplats; pl; pl = pl->next)
+    {
+        pl->plat->tag = args[0];
+
+        if (pl->plat->tag != 0)
+        {
+            P_RemoveActivePlat(pl->plat);
+            return;
+        }
+    }
 }

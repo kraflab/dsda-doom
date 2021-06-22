@@ -77,15 +77,3 @@ void P_AnimateSurfaces(void);
 void P_InitFTAnims(void);
 void P_InitLightning(void);
 void P_ForceLightning(void);
-
-/*
-===============================================================================
-
-							P_PLATS
-
-===============================================================================
-*/
-
-void T_PlatRaise(plat_t * plat);
-int EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount);
-void EV_StopPlat(line_t * line, byte * args);

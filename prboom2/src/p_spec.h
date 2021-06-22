@@ -1347,6 +1347,11 @@ int EV_FloorCrushStop(line_t * line, byte * args);
 void T_FloorWaggle(floorWaggle_t * waggle);
 dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset, int timer);
 
+// p_plats
+
+int Hexen_EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount);
+void Hexen_EV_StopPlat(line_t * line, byte * args);
+
 //
 
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType);
