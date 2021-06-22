@@ -86,49 +86,6 @@ void P_ForceLightning(void);
 ===============================================================================
 */
 
-typedef enum
-{
-    PLAT_UP,
-    PLAT_DOWN,
-    PLAT_WAITING,
-//      PLAT_IN_STASIS
-} plat_e;
-
-typedef enum
-{
-    PLAT_PERPETUALRAISE,
-    PLAT_DOWNWAITUPSTAY,
-    PLAT_DOWNBYVALUEWAITUPSTAY,
-    PLAT_UPWAITDOWNSTAY,
-    PLAT_UPBYVALUEWAITDOWNSTAY,
-    //PLAT_RAISEANDCHANGE,
-    //PLAT_RAISETONEARESTANDCHANGE
-} plattype_e;
-
-typedef struct
-{
-    thinker_t thinker;
-    sector_t *sector;
-    fixed_t speed;
-    fixed_t low;
-    fixed_t high;
-    int wait;
-    int count;
-    plat_e status;
-    plat_e oldstatus;
-    int crush;
-    int tag;
-    plattype_e type;
-} plat_t;
-
-#define PLATWAIT 3
-#define PLATSPEED FRACUNIT
-#define MAXPLATS 30*256
-
-extern plat_t *activeplats[MAXPLATS];
-
 void T_PlatRaise(plat_t * plat);
 int EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount);
-void P_AddActivePlat(plat_t * plat);
-void P_RemoveActivePlat(plat_t * plat);
 void EV_StopPlat(line_t * line, byte * args);

@@ -388,6 +388,12 @@ typedef enum
   genPerpetual,
   toggleUpDn,   //jff 3/14/98 added to support instant toggle type
 
+  // hexen - can probably be merged
+  PLAT_PERPETUALRAISE,
+  PLAT_DOWNWAITUPSTAY,
+  PLAT_DOWNBYVALUEWAITUPSTAY,
+  PLAT_UPWAITDOWNSTAY,
+  PLAT_UPBYVALUEWAITDOWNSTAY,
 } plattype_e;
 
 // p_doors
@@ -521,7 +527,7 @@ typedef enum
   buildStair,
   genBuildStair,
 
-  // hexen - can probably merge
+  // hexen - can probably be merged
   FLEV_LOWERFLOOR,            // lower floor to highest surrounding floor
   FLEV_LOWERFLOORTOLOWEST,    // lower floor to lowest surrounding floor
   FLEV_LOWERFLOORBYVALUE,
@@ -671,7 +677,7 @@ typedef struct
   int count;
   plat_e status;
   plat_e oldstatus;
-  dboolean crush;
+  int crush;
   int tag;
   plattype_e type;
 

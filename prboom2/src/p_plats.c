@@ -41,6 +41,9 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "hexen/p_acs.h"
+#include "hexen/sn_sonix.h"
+
 platlist_t *activeplats;       // killough 2/14/98: made global again
 
 //
@@ -440,6 +443,7 @@ void P_RemoveActivePlat(plat_t* plat)
 {
   platlist_t *list = plat->list;
   plat->sector->floordata = NULL; //jff 2/23/98 multiple thinkers
+  P_TagFinished(plat->sector->tag);
   P_RemoveThinker(&plat->thinker);
   if ((*list->prev = list->next))
     list->next->prev = list->prev;
