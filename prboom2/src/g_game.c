@@ -4467,3 +4467,22 @@ static dboolean InventoryMoveRight(void)
     }
     return true;
 }
+
+// hexen
+
+int LeaveMap;
+static int LeavePosition;
+
+void G_Completed(int map, int position)
+{
+    if (gamemode == shareware && map > 4)
+    {
+        P_SetMessage(&players[consoleplayer], "ACCESS DENIED -- DEMO", true);
+        S_StartSound(NULL, hexen_sfx_chat);
+        return;
+    }
+
+    gameaction = ga_completed;
+    LeaveMap = map;
+    LeavePosition = position;
+}

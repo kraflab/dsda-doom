@@ -1495,42 +1495,6 @@ void G_DoTeleportNewMap(void)
     RebornPosition = LeavePosition;
 }
 
-/*
-dboolean secretexit;
-void G_ExitLevel (void)
-{
-	secretexit = false;
-	gameaction = ga_completed;
-}
-void G_SecretExitLevel (void)
-{
-	secretexit = true;
-	gameaction = ga_completed;
-}
-*/
-
-//==========================================================================
-//
-// G_Completed
-//
-// Starts intermission routine, which is used only during hub exits,
-// and DeathMatch games.
-//==========================================================================
-
-void G_Completed(int map, int position)
-{
-    if (gamemode == shareware && map > 4)
-    {
-        P_SetMessage(&players[consoleplayer], "ACCESS DENIED -- DEMO", true);
-        S_StartSound(NULL, hexen_sfx_chat);
-        return;
-    }
-
-    gameaction = ga_completed;
-    LeaveMap = map;
-    LeavePosition = position;
-}
-
 void G_DoCompleted(void)
 {
     int i;

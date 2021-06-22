@@ -140,4 +140,8 @@ extern dboolean done_autoswitch;
 #define singleplayer (!demorecording && !demoplayback && !democontinue && !netgame)
 #define comperr(i) (default_comperr[i] && !demorecording && !demoplayback && !democontinue && !netgame)
 
+// hexen
+
+void G_Completed(int map, int position);
+
 #endif
