@@ -40,6 +40,8 @@
 #include "e6y.h"
 #include "s_advsound.h"
 
+#include "hexen/p_anim.h"
+
 int leveltime;
 
 static dboolean newthinkerpresent;
@@ -292,6 +294,7 @@ void P_Ticker (void)
 
   P_RunThinkers();
   P_UpdateSpecials();
+  P_AnimateSurfaces();
   P_RespawnSpecials();
   P_AmbientSound();
   P_MapEnd();

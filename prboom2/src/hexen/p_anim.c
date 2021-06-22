@@ -82,6 +82,9 @@ void P_AnimateSurfaces(void)
     animDef_t *ad;
     line_t *line;
 
+    if (!hexen)
+        return;
+
     // Animate flats and textures
     for (i = 0; i < AnimDefCount; i++)
     {
