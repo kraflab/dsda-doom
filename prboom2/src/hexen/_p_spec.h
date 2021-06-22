@@ -136,41 +136,6 @@ void EV_StopPlat(line_t * line, byte * args);
 /*
 ===============================================================================
 
-							P_DOORS
-
-===============================================================================
-*/
-typedef enum
-{
-    DREV_NORMAL,
-    DREV_CLOSE30THENOPEN,
-    DREV_CLOSE,
-    DREV_OPEN,
-    DREV_RAISEIN5MINS,
-} vldoor_e;
-
-typedef struct
-{
-    thinker_t thinker;
-    sector_t *sector;
-    vldoor_e type;
-    fixed_t topheight;
-    fixed_t speed;
-    int direction;              // 1 = up, 0 = waiting at top, -1 = down
-    int topwait;                // tics to wait at the top (keep in case a door going down is reset)
-    int topcountdown;           // when it reaches 0, start going down
-} vldoor_t;
-
-#define VDOORSPEED FRACUNIT*2
-#define VDOORWAIT 150
-
-dboolean EV_VerticalDoor(line_t * line, mobj_t * thing);
-int EV_DoDoor(line_t * line, byte * args, vldoor_e type);
-void T_VerticalDoor(vldoor_t * door);
-
-/*
-===============================================================================
-
 							P_FLOOR
 
 ===============================================================================

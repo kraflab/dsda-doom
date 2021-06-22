@@ -63,26 +63,26 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
             buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SLIDE);
             break;
         case 10:               // Door Close
-            buttonSuccess = EV_DoDoor(line, args, DREV_CLOSE);
+            buttonSuccess = Hexen_EV_DoDoor(line, args, DREV_CLOSE);
             break;
         case 11:               // Door Open
             if (!args[0])
             {
-                buttonSuccess = EV_VerticalDoor(line, mo);
+                buttonSuccess = Hexen_EV_VerticalDoor(line, mo);
             }
             else
             {
-                buttonSuccess = EV_DoDoor(line, args, DREV_OPEN);
+                buttonSuccess = Hexen_EV_DoDoor(line, args, DREV_OPEN);
             }
             break;
         case 12:               // Door Raise
             if (!args[0])
             {
-                buttonSuccess = EV_VerticalDoor(line, mo);
+                buttonSuccess = Hexen_EV_VerticalDoor(line, mo);
             }
             else
             {
-                buttonSuccess = EV_DoDoor(line, args, DREV_NORMAL);
+                buttonSuccess = Hexen_EV_DoDoor(line, args, DREV_NORMAL);
             }
             break;
         case 13:               // Door Locked_Raise
@@ -90,11 +90,11 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
             {
                 if (!args[0])
                 {
-                    buttonSuccess = EV_VerticalDoor(line, mo);
+                    buttonSuccess = Hexen_EV_VerticalDoor(line, mo);
                 }
                 else
                 {
-                    buttonSuccess = EV_DoDoor(line, args, DREV_NORMAL);
+                    buttonSuccess = Hexen_EV_DoDoor(line, args, DREV_NORMAL);
                 }
             }
             break;

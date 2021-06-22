@@ -419,7 +419,14 @@ typedef enum
   vld_close30ThenOpen,
   vld_close,
   vld_open,
-  vld_raiseIn5Mins
+  vld_raiseIn5Mins,
+
+  // hexen - can probably be merged
+  DREV_NORMAL,
+  DREV_CLOSE30THENOPEN,
+  DREV_CLOSE,
+  DREV_OPEN,
+  DREV_RAISEIN5MINS,
 } vldoor_e;
 
 // p_ceilng
@@ -1259,6 +1266,11 @@ int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type);
 // p_telept
 
 dboolean Hexen_EV_Teleport(int tid, mobj_t * thing, dboolean fog);
+
+// p_doors
+
+int Hexen_EV_DoDoor(line_t * line, byte * args, vldoor_e type);
+dboolean Hexen_EV_VerticalDoor(line_t * line, mobj_t * thing);
 
 //
 
