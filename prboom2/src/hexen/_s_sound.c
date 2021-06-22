@@ -32,21 +32,6 @@
 
 void S_ShutDown(void);
 
-// If true, CD music playback is enabled (snd_musicdevice == SNDDEVICE_CD
-// and CD initialization succeeded).
-dboolean cdmusic;
-
-// Track number of a track to play explicitly chosen by the
-// player using cheats. A value of zero means no track chosen:
-static int cd_custom_track = 0;
-
-// Currently playing track:
-static int cd_current_track = 0;
-
-// Time (MS) at which the currently-playing CD track will finish playing
-// and should be looped. Zero if we are not currently playing a track:
-static int cd_track_end_time = 0;
-
 /*
 ===============================================================================
 
@@ -83,52 +68,6 @@ void S_Start(void)
 
 //==========================================================================
 //
-// Returns true if we are playing a looping CD track and it is time to
-// restart it.
-//
-//==========================================================================
-
-static dboolean ShouldRestartCDTrack(void)
-{
-    return cd_track_end_time != 0 && I_GetTimeMS() > cd_track_end_time;
-}
-
-//==========================================================================
-//
-// Start playing a CD track. Returns true for success.
-//
-//==========================================================================
-
-static dboolean StartCDTrack(int track, dboolean loop)
-{
-    // Already playing? If so, don't bother.
-
-    if (track == cd_current_track && !ShouldRestartCDTrack())
-    {
-        return true;
-    }
-
-    if (I_CDMusPlay(track))
-    {
-        return false;
-    }
-
-    cd_current_track = track;
-
-    if (loop)
-    {
-        cd_track_end_time = I_GetTimeMS() + 1000 * I_CDMusTrackLength(track);
-    }
-    else
-    {
-        cd_track_end_time = 0;
-    }
-
-    return true;
-}
-
-//==========================================================================
-//
 // S_StartSong
 //
 //==========================================================================
@@ -140,87 +79,31 @@ void S_StartSong(int song, dboolean loop)
     int length;
     int track;
 
-    // If we're in CD music mode, play a CD track, instead:
-    if (cdmusic)
-    {
-        // Default to the player-chosen track
-        if (cd_custom_track != 0)
-        {
-            track = cd_custom_track;
-        }
-        else
-        {
-            track = P_GetMapCDTrack(gamemap);
-        }
-
-        StartCDTrack(track, loop);
+    if (song == Mus_Song)
+    {                       // don't replay an old song
+        return;
     }
-    else
+    if (RegisteredSong)
     {
-        if (song == Mus_Song)
-        {                       // don't replay an old song
-            return;
-        }
-        if (RegisteredSong)
-        {
-            I_StopSong();
-            I_UnRegisterSong(RegisteredSong);
-            RegisteredSong = 0;
-        }
-        songLump = P_GetMapSongLump(song);
-        if (!songLump)
-        {
-            return;
-        }
-
-        lumpnum = W_GetNumForName(songLump);
-        Mus_SndPtr = W_CacheLumpNum(lumpnum, PU_STATIC);
-        length = W_LumpLength(lumpnum);
-
-        RegisteredSong = I_RegisterSong(Mus_SndPtr, length);
-        I_PlaySong(RegisteredSong, loop);
-        Mus_Song = song;
-
-        W_ReleaseLumpNum(lumpnum);
+        I_StopSong();
+        I_UnRegisterSong(RegisteredSong);
+        RegisteredSong = 0;
     }
-}
-
-//==========================================================================
-//
-// Play a custom-chosen music track selected by the player.
-//
-// Returns true for success.
-//
-//==========================================================================
-
-dboolean S_StartCustomCDTrack(int tracknum)
-{
-    dboolean result;
-
-    result = StartCDTrack(tracknum, true);
-
-    if (result)
+    songLump = P_GetMapSongLump(song);
+    if (!songLump)
     {
-        cd_custom_track = tracknum;
+        return;
     }
 
-    return result;
-}
+    lumpnum = W_GetNumForName(songLump);
+    Mus_SndPtr = W_CacheLumpNum(lumpnum, PU_STATIC);
+    length = W_LumpLength(lumpnum);
 
-//==========================================================================
-//
-// Get the currently-playing CD track; returns -1 if not playing.
-//
-//==========================================================================
+    RegisteredSong = I_RegisterSong(Mus_SndPtr, length);
+    I_PlaySong(RegisteredSong, loop);
+    Mus_Song = song;
 
-int S_GetCurrentCDTrack(void)
-{
-    if (!cdmusic || cd_current_track == 0)
-    {
-        return -1;
-    }
-
-    return cd_current_track;
+    W_ReleaseLumpNum(lumpnum);
 }
 
 //==========================================================================
@@ -232,62 +115,28 @@ int S_GetCurrentCDTrack(void)
 void S_StartSongName(const char *songLump, dboolean loop)
 {
     int lumpnum;
-    int cdTrack;
     int length;
 
     if (!songLump)
     {
         return;
     }
-    if (cdmusic)
+
+    if (RegisteredSong)
     {
-        cdTrack = 0;
-
-        if (!strcmp(songLump, "hexen"))
-        {
-            cdTrack = P_GetCDTitleTrack();
-        }
-        else if (!strcmp(songLump, "hub"))
-        {
-            cdTrack = P_GetCDIntermissionTrack();
-        }
-        else if (!strcmp(songLump, "hall"))
-        {
-            cdTrack = P_GetCDEnd1Track();
-        }
-        else if (!strcmp(songLump, "orb"))
-        {
-            cdTrack = P_GetCDEnd2Track();
-        }
-        else if (!strcmp(songLump, "chess") && cd_custom_track == 0)
-        {
-            cdTrack = P_GetCDEnd3Track();
-        }
-
-        if (cdTrack != 0)
-        {
-            cd_custom_track = 0;
-            StartCDTrack(cdTrack, loop);
-        }
+        I_StopSong();
+        I_UnRegisterSong(RegisteredSong);
+        RegisteredSong = NULL;
     }
-    else
-    {
-        if (RegisteredSong)
-        {
-            I_StopSong();
-            I_UnRegisterSong(RegisteredSong);
-            RegisteredSong = NULL;
-        }
 
-        lumpnum = W_GetNumForName(songLump);
-        Mus_SndPtr = W_CacheLumpNum(lumpnum, PU_MUSIC);
-        length = W_LumpLength(lumpnum);
+    lumpnum = W_GetNumForName(songLump);
+    Mus_SndPtr = W_CacheLumpNum(lumpnum, PU_MUSIC);
+    length = W_LumpLength(lumpnum);
 
-        RegisteredSong = I_RegisterSong(Mus_SndPtr, length);
-        I_PlaySong(RegisteredSong, loop);
-        W_ReleaseLumpNum(lumpnum);
-        Mus_Song = -1;
-    }
+    RegisteredSong = I_RegisterSong(Mus_SndPtr, length);
+    I_PlaySong(RegisteredSong, loop);
+    W_ReleaseLumpNum(lumpnum);
+    Mus_Song = -1;
 }
 
 //==========================================================================
@@ -610,14 +459,7 @@ void S_SoundLink(mobj_t * oldactor, mobj_t * newactor)
 
 void S_PauseSound(void)
 {
-    if (cdmusic)
-    {
-        I_CDMusStop();
-    }
-    else
-    {
-        I_PauseSong();
-    }
+    I_PauseSong();
 }
 
 //==========================================================================
@@ -628,14 +470,7 @@ void S_PauseSound(void)
 
 void S_ResumeSound(void)
 {
-    if (cdmusic)
-    {
-        I_CDMusResume();
-    }
-    else
-    {
-        I_ResumeSong();
-    }
+    I_ResumeSong();
 }
 
 //==========================================================================
@@ -654,13 +489,6 @@ void S_UpdateSounds(mobj_t * listener)
     int absy;
 
     I_UpdateSound();
-
-    // If we are looping a CD track, we need to check if it has
-    // finished playing and needs to restart.
-    if (cdmusic && ShouldRestartCDTrack())
-    {
-        StartCDTrack(cd_current_track, true);
-    }
 
     if (snd_MaxVolume == 0)
     {
@@ -759,32 +587,6 @@ void S_Init(void)
     }
 
     I_PrecacheSounds(S_sfx, NUMSFX);
-
-    // Attempt to setup CD music
-    if (snd_musicdevice == SNDDEVICE_CD)
-    {
-        ST_Message("    Attempting to initialize CD Music: ");
-        if (!cdrom)
-        {
-            cdmusic = (I_CDMusInit() != -1);
-        }
-        else
-        {
-            // The user is trying to use the cdrom for both game and music
-            cdmusic = false;
-        }
-
-        if (cdmusic)
-        {
-            ST_Message("initialized.\n");
-        }
-        else
-        {
-            ST_Message("failed.\n");
-        }
-
-        I_CDMusPrintStartup();
-    }
 }
 
 //==========================================================================
@@ -829,28 +631,15 @@ void S_GetChannelInfo(SoundInfo_t * s)
 
 void S_SetMusicVolume(void)
 {
-    if (cdmusic)
-    {
-        I_CDMusSetVolume(snd_MusicVolume * 16); // 0-255
-    }
-    else
-    {
-        I_SetMusicVolume(snd_MusicVolume * 8);
-    }
+    I_SetMusicVolume(snd_MusicVolume * 8);
     if (snd_MusicVolume == 0)
     {
-        if (!cdmusic)
-        {
-            I_PauseSong();
-        }
+        I_PauseSong();
         MusicPaused = true;
     }
     else if (MusicPaused)
     {
-        if (!cdmusic)
-        {
-            I_ResumeSong();
-        }
+        I_ResumeSong();
         MusicPaused = false;
     }
 }
@@ -866,10 +655,6 @@ void S_ShutDown(void)
     I_StopSong();
     I_UnRegisterSong(RegisteredSong);
     I_ShutdownSound();
-    if (cdmusic)
-    {
-        I_CDMusStop();
-    }
 }
 
 //==========================================================================
