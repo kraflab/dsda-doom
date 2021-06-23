@@ -110,5 +110,6 @@ void S_SetSoundCurve(dboolean fullprocess);
 
 dboolean S_GetSoundPlayingInfo(void * mobj, int sound_id);
 int S_GetSoundID(const char *name);
+void S_InitScript(void);
 
 #endif

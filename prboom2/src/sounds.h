@@ -74,6 +74,9 @@ struct sfxinfo_struct {
 
   // heretic - total number of channels a sound type may occupy
   int numchannels;
+
+  // hexen
+  const char *tagname;
 };
 
 //
