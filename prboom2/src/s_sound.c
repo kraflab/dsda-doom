@@ -81,6 +81,9 @@ typedef struct
 
   // heretic
   int priority;
+
+  // hexen
+  int volume;
 } channel_t;
 
 // the set of channels available
@@ -127,14 +130,15 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup);
 
 // heretic
 int max_snd_dist = 1600;
+int dist_adjust = 160;
 
 static byte* soundCurve;
 static int AmbChan = -1;
 
 static void Heretic_S_StopSound(void *_origin);
 static void Heretic_S_UpdateSounds(mobj_t *listener);
-static void Heretic_S_StartSound(void *_origin, int sound_id);
 static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
+static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
 
 // Initializes sound stuff, including volume
 // Sets channels, SFX and music volume,
@@ -183,6 +187,17 @@ void S_Init(int sfxVolume, int musicVolume)
   }
 
   if (!heretic) return;
+
+  if (hexen)
+  {
+    max_snd_dist = 2025;
+    dist_adjust = 202;
+  }
+  else
+  {
+    max_snd_dist = 1600;
+    dist_adjust = 160;
+  }
 
   soundCurve = Z_Malloc(max_snd_dist, PU_STATIC, NULL);
   S_SetSoundCurve(true);
@@ -288,9 +303,12 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
 {
   int sep, pitch, priority, cnum, is_pickup;
   sfxinfo_t *sfx;
-  mobj_t *origin = (mobj_t *) origin_p;
+  mobj_t *origin;
 
   if (heretic) return Heretic_S_StartSoundAtVolume(origin_p, sfx_id, volume);
+  if (hexen) return Hexen_S_StartSoundAtVolume(origin_p, sfx_id, volume);
+
+  origin = (mobj_t *) origin_p;
 
   //jff 1/22/98 return if sound is not enabled
   if (!snd_card || nosfxparm)
@@ -388,7 +406,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
 
 void S_StartSound(void *origin, int sfx_id)
 {
-  if (heretic) return Heretic_S_StartSound(origin, sfx_id);
+  if (raven) return Hexen_S_StartSoundAtVolume(origin, sfx_id, 127);
 
   S_StartSoundAtVolume(origin, sfx_id, snd_SfxVolume);
 }
@@ -950,7 +968,8 @@ static dboolean S_StopSoundInfo(sfxinfo_t* sfx, int priority)
   return false; // don't replace any sounds
 }
 
-static void Heretic_S_StartSound(void *_origin, int sound_id)
+// This is essentially Heretic's S_StartSound AND Hexen's S_StartSoundAtVolume
+static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
 {
   sfxinfo_t *sfx;
   mobj_t *origin;
@@ -994,7 +1013,7 @@ static void Heretic_S_StartSound(void *_origin, int sound_id)
     dist = 0;
 
   priority = sfx->priority;
-  priority *= (10 - (dist / 160));
+  priority *= (10 - (dist / dist_adjust));
 
   if (!S_StopSoundInfo(sfx, priority))
     return; // other sounds have greater priority
@@ -1061,7 +1080,10 @@ static void Heretic_S_StartSound(void *_origin, int sound_id)
   if (sfx->lumpnum <= 0)
     sfx->lumpnum = I_GetSfxLumpNum(sfx);
 
-  vol = soundCurve[dist];
+  if (heretic)
+    vol = soundCurve[dist];
+  else
+    vol = (soundCurve[dist] * volume * (snd_SfxVolume + 1) * 8) >> 14;
 
   if (origin == listener)
     sep = 128;
@@ -1082,7 +1104,8 @@ static void Heretic_S_StartSound(void *_origin, int sound_id)
   channels[i].origin = origin;
   channels[i].sfxinfo = sfx;
   channels[i].priority = priority;
-  if (sound_id >= heretic_sfx_wind)
+  channels[i].volume = vol;
+  if (heretic && sound_id >= heretic_sfx_wind)
     AmbChan = i;
 }
 

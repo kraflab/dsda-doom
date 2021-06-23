@@ -154,8 +154,6 @@ dboolean hexen = false;
 dboolean heretic = false;
 dboolean raven = false;
 
-// HEXEN_TODO: max_snd_dist = 2025
-
 extern patchnum_t hu_font[HU_FONTSIZE];
 extern patchnum_t hu_font2[HU_FONTSIZE];
 

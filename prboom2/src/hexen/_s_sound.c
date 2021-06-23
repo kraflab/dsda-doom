@@ -27,9 +27,6 @@
 #include "sounds.h"
 #include "s_sound.h"
 
-#define PRIORITY_MAX_ADJUST 10
-#define DIST_ADJUST (MAX_SND_DIST/PRIORITY_MAX_ADJUST)
-
 void S_ShutDown(void);
 
 /*
@@ -54,17 +51,6 @@ int snd_MaxVolume = 10;                // maximum volume for sound
 int snd_MusicVolume = 10;              // maximum volume for music
 int snd_Channels = 16;
 
-//==========================================================================
-//
-// S_StartSound
-//
-//==========================================================================
-
-void S_StartSound(mobj_t * origin, int sound_id)
-{
-    S_StartSoundAtVolume(origin, sound_id, 127);
-}
-
 static mobj_t *GetSoundListener(void)
 {
     static degenmobj_t dummy_listener;
@@ -83,170 +69,6 @@ static mobj_t *GetSoundListener(void)
         dummy_listener.z = 0;
 
         return (mobj_t *) &dummy_listener;
-    }
-}
-
-//==========================================================================
-//
-// S_StartSoundAtVolume
-//
-//==========================================================================
-
-void S_StartSoundAtVolume(mobj_t * origin, int sound_id, int volume)
-{
-    mobj_t *listener;
-    int dist, vol;
-    int i;
-    int priority;
-    int sep;
-    int angle;
-    int absx;
-    int absy;
-
-    static int sndcount = 0;
-    int chan;
-
-    if (sound_id == 0 || snd_MaxVolume == 0)
-        return;
-
-    listener = GetSoundListener();
-
-    if (origin == NULL)
-    {
-        origin = listener;
-    }
-    if (volume == 0)
-    {
-        return;
-    }
-
-    // calculate the distance before other stuff so that we can throw out
-    // sounds that are beyond the hearing range.
-    absx = abs(origin->x - listener->x);
-    absy = abs(origin->y - listener->y);
-    dist = absx + absy - (absx > absy ? absy >> 1 : absx >> 1);
-    dist >>= FRACBITS;
-    if (dist >= MAX_SND_DIST)
-    {
-        return;                 // sound is beyond the hearing range...
-    }
-    if (dist < 0)
-    {
-        dist = 0;
-    }
-    priority = S_sfx[sound_id].priority;
-    priority *= (PRIORITY_MAX_ADJUST - (dist / DIST_ADJUST));
-
-    for (i = 0; i < snd_Channels; i++)
-    {
-        if (origin->player)
-        {
-            i = snd_Channels;
-            break;              // let the player have more than one sound.
-        }
-        if (origin == Channel[i].mo)
-        {                       // only allow other mobjs one sound
-            S_StopSound(Channel[i].mo);
-            break;
-        }
-    }
-    if (i >= snd_Channels)
-    {
-        for (i = 0; i < snd_Channels; i++)
-        {
-            if (Channel[i].mo == NULL)
-            {
-                break;
-            }
-        }
-        if (i >= snd_Channels)
-        {
-            // look for a lower priority sound to replace.
-            sndcount++;
-            if (sndcount >= snd_Channels)
-            {
-                sndcount = 0;
-            }
-            for (chan = 0; chan < snd_Channels; chan++)
-            {
-                i = (sndcount + chan) % snd_Channels;
-                if (priority >= Channel[i].priority)
-                {
-                    chan = -1;  //denote that sound should be replaced.
-                    break;
-                }
-            }
-            if (chan != -1)
-            {
-                return;         //no free channels.
-            }
-            else                //replace the lower priority sound.
-            {
-                if (Channel[i].handle)
-                {
-                    if (I_SoundIsPlaying(Channel[i].handle))
-                    {
-                        I_StopSound(Channel[i].handle);
-                    }
-                    if (S_sfx[Channel[i].sound_id].usefulness > 0)
-                    {
-                        S_sfx[Channel[i].sound_id].usefulness--;
-                    }
-                }
-            }
-        }
-    }
-
-    Channel[i].mo = origin;
-
-    vol = (SoundCurve[dist] * (snd_MaxVolume * 8) * volume) >> 14;
-    if (origin == listener)
-    {
-        sep = 128;
-    }
-    else
-    {
-        angle = R_PointToAngle2(listener->x,
-                                listener->y,
-                                Channel[i].mo->x, Channel[i].mo->y);
-        angle = (angle - viewangle) >> 24;
-        sep = angle * 2 - 128;
-        if (sep < 64)
-            sep = -sep;
-        if (sep > 192)
-            sep = 512 - sep;
-    }
-
-    // if the sfxinfo_t is marked as 'can be pitch shifted'
-    if (S_sfx[sound_id].pitch)
-    {
-        Channel[i].pitch = (byte) (NORM_PITCH + (M_Random() & 7) - (M_Random() & 7));
-    }
-    else
-    {
-        Channel[i].pitch = NORM_PITCH;
-    }
-
-    if (S_sfx[sound_id].lumpnum == 0)
-    {
-        S_sfx[sound_id].lumpnum = I_GetSfxLumpNum(&S_sfx[sound_id]);
-    }
-
-    Channel[i].handle = I_StartSound(&S_sfx[sound_id],
-                                     i,
-                                     vol,
-                                     sep,
-                                     Channel[i].pitch);
-    Channel[i].sound_id = sound_id;
-    Channel[i].priority = priority;
-    Channel[i].volume = volume;
-    if (S_sfx[sound_id].usefulness < 0)
-    {
-        S_sfx[sound_id].usefulness = 1;
-    }
-    else
-    {
-        S_sfx[sound_id].usefulness++;
     }
 }
 
