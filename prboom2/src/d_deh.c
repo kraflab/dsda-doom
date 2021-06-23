@@ -1548,7 +1548,7 @@ static actionf_t deh_codeptr[NUMSTATES];
 
 // haleyjd: support for BEX SPRITES, SOUNDS, and MUSIC
 char *deh_spritenames[NUMSPRITES + 1];
-char *deh_musicnames[NUMMUSIC + 1];
+char *deh_musicnames[DOOM_NUMMUSIC + 1];
 char *deh_soundnames[NUMSFX + 1];
 
 void D_BuildBEXTables(void)
@@ -2846,7 +2846,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
   // http://www.doomworld.com/idgames/index.php?id=6480
   static dboolean sprnames_state[NUMSPRITES+1];
   static dboolean S_sfx_state[NUMSFX];
-  static dboolean S_music_state[NUMMUSIC];
+  static dboolean S_music_state[DOOM_NUMMUSIC];
 
   // Ty 04/11/98 - Included file may have NOTEXT skip flag set
   if (includenotext) // flag to skip included deh-style text

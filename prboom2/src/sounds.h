@@ -167,7 +167,7 @@ typedef enum {
   mus_read_m,
   mus_dm2ttl,
   mus_dm2int,
-  NUMMUSIC,
+  DOOM_NUMMUSIC,
 
   // heretic
   heretic_mus_e1m1 = mus_e1m1,
@@ -230,37 +230,13 @@ typedef enum {
   HERETIC_NUMMUSIC,
 
   // hexen
-  hexen_mus_e1m1 = mus_e1m1,
-  hexen_mus_e1m2,
-  hexen_mus_e1m3,
-  hexen_mus_e1m4,
-  hexen_mus_e1m5,
-  hexen_mus_e1m6,
-  hexen_mus_e1m7,
-  hexen_mus_e1m8,
-  hexen_mus_e1m9,
-  hexen_mus_e2m1,
-  hexen_mus_e2m2,
-  hexen_mus_e2m3,
-  hexen_mus_e2m4,
-  hexen_mus_e2m5,
-  hexen_mus_e2m6,
-  hexen_mus_e2m7,
-  hexen_mus_e2m8,
-  hexen_mus_e2m9,
-  hexen_mus_e3m1,
-  hexen_mus_e3m2,
-  hexen_mus_e3m3,
-  hexen_mus_e3m4,
-  hexen_mus_e3m5,
-  hexen_mus_e3m6,
-  hexen_mus_e3m7,
-  hexen_mus_e3m8,
-  hexen_mus_e3m9,
-  hexen_mus_e4m1,
-  hexen_mus_titl,
-  hexen_mus_intr,
-  hexen_mus_cptd,
+  hexen_mus_map = mus_e1m1,
+  hexen_mus_hexen = hexen_mus_map + 99, // hexen mapinfo supports up to 99 entries
+  hexen_mus_hub,
+  hexen_mus_hall,
+  hexen_mus_orb,
+  hexen_mus_chess,
+
   HEXEN_NUMMUSIC
 } musicenum_t;
 

@@ -196,7 +196,7 @@ static void dsda_InitDoom(void) {
   dsda_SetStates(doom_states, NUMSTATES);
   dsda_SetSpriteNames(doom_sprnames, NUMSPRITES);
   dsda_SetSfx(doom_S_sfx, NUMSFX);
-  dsda_SetMusic(doom_S_music, NUMMUSIC);
+  dsda_SetMusic(doom_S_music, DOOM_NUMMUSIC);
 
   demostates = doom_demostates;
 

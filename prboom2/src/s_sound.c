@@ -48,6 +48,7 @@
 #include "w_wad.h"
 #include "lprintf.h"
 #include "sc_man.h"
+#include "p_setup.h"
 #include "e6y.h"
 
 #include "dsda/memory.h"
@@ -243,7 +244,7 @@ void S_Start(void)
     mnum = idmusnum; //jff 3/17/98 reload IDMUS music if not -1
   else
     if (gamemode == commercial)
-      mnum = mus_runnin + WRAP(gamemap - 1, NUMMUSIC - mus_runnin);
+      mnum = mus_runnin + WRAP(gamemap - 1, DOOM_NUMMUSIC - mus_runnin);
     else
       {
         static const int spmus[] =     // Song - Who? - Where?
@@ -564,7 +565,7 @@ void S_ChangeMusic(int musicnum, int looping)
   // current music which should play
   musicnum_current = musicnum;
   musinfo.current_item = -1;
-  S_music[NUMMUSIC].lumpnum = -1;
+  S_music[num_music].lumpnum = -1;
 
   //jff 1/22/98 return if music is not enabled
   if (!mus_card || nomusicparm)
@@ -583,15 +584,30 @@ void S_ChangeMusic(int musicnum, int looping)
 
   // get lumpnum if neccessary
   if (!music->lumpnum)
+  {
+    if (hexen && musicnum < hexen_mus_hub)
+    {
+      const char* songLump;
+
+      songLump = P_GetMapSongLump(musicnum);
+      if (!songLump)
+      {
+        return;
+      }
+
+      music->lumpnum = W_GetNumForName(songLump);
+    }
+    else
     {
       char namebuf[9];
       const char* format;
 
-      format = heretic ? "%s" : "d_%s";
+      format = raven ? "%s" : "d_%s";
 
       sprintf(namebuf, format, music->name);
       music->lumpnum = W_GetNumForName(namebuf);
     }
+  }
 
   // load & register it
   music->data = W_CacheLumpNum(music->lumpnum);
@@ -1242,4 +1258,34 @@ int S_GetSoundID(const char *name)
         }
     }
     return 0;
+}
+
+void S_StartSongName(const char *songLump, dboolean loop)
+{
+    int musicnum;
+
+    // lazy shortcut hack - this is a unique character
+    switch (songLump[1])
+    {
+      case 'e':
+        musicnum = hexen_mus_hexen;
+        break;
+      case 'u':
+        musicnum = hexen_mus_hub;
+        break;
+      case 'a':
+        musicnum = hexen_mus_hall;
+        break;
+      case 'r':
+        musicnum = hexen_mus_orb;
+        break;
+      case 'h':
+        musicnum = hexen_mus_chess;
+        break;
+      default:
+        musicnum = hexen_mus_hub;
+        break;
+    }
+
+    S_ChangeMusic(musicnum, loop);
 }

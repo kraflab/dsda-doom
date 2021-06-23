@@ -68,79 +68,6 @@ void S_Start(void)
 
 //==========================================================================
 //
-// S_StartSong
-//
-//==========================================================================
-
-void S_StartSong(int song, dboolean loop)
-{
-    char *songLump;
-    int lumpnum;
-    int length;
-    int track;
-
-    if (song == Mus_Song)
-    {                       // don't replay an old song
-        return;
-    }
-    if (RegisteredSong)
-    {
-        I_StopSong();
-        I_UnRegisterSong(RegisteredSong);
-        RegisteredSong = 0;
-    }
-    songLump = P_GetMapSongLump(song);
-    if (!songLump)
-    {
-        return;
-    }
-
-    lumpnum = W_GetNumForName(songLump);
-    Mus_SndPtr = W_CacheLumpNum(lumpnum, PU_STATIC);
-    length = W_LumpLength(lumpnum);
-
-    RegisteredSong = I_RegisterSong(Mus_SndPtr, length);
-    I_PlaySong(RegisteredSong, loop);
-    Mus_Song = song;
-
-    W_ReleaseLumpNum(lumpnum);
-}
-
-//==========================================================================
-//
-// S_StartSongName
-//
-//==========================================================================
-
-void S_StartSongName(const char *songLump, dboolean loop)
-{
-    int lumpnum;
-    int length;
-
-    if (!songLump)
-    {
-        return;
-    }
-
-    if (RegisteredSong)
-    {
-        I_StopSong();
-        I_UnRegisterSong(RegisteredSong);
-        RegisteredSong = NULL;
-    }
-
-    lumpnum = W_GetNumForName(songLump);
-    Mus_SndPtr = W_CacheLumpNum(lumpnum, PU_MUSIC);
-    length = W_LumpLength(lumpnum);
-
-    RegisteredSong = I_RegisterSong(Mus_SndPtr, length);
-    I_PlaySong(RegisteredSong, loop);
-    W_ReleaseLumpNum(lumpnum);
-    Mus_Song = -1;
-}
-
-//==========================================================================
-//
 // S_StartSound
 //
 //==========================================================================
@@ -411,27 +338,6 @@ void S_StopSound(mobj_t * origin)
             Channel[i].mo = NULL;
         }
     }
-}
-
-//==========================================================================
-//
-// S_StopAllSound
-//
-//==========================================================================
-
-void S_StopAllSound(void)
-{
-    int i;
-
-    //stop all sounds
-    for (i = 0; i < snd_Channels; i++)
-    {
-        if (Channel[i].handle)
-        {
-            S_StopSound(Channel[i].mo);
-        }
-    }
-    memset(Channel, 0, 8 * sizeof(channel_t));
 }
 
 //==========================================================================
