@@ -29,40 +29,6 @@
 
 //==========================================================================
 //
-// S_GetChannelInfo
-//
-//==========================================================================
-
-void S_GetChannelInfo(SoundInfo_t * s)
-{
-    int i;
-    ChanInfo_t *c;
-
-    s->channelCount = snd_Channels;
-    s->musicVolume = snd_MusicVolume;
-    s->soundVolume = snd_MaxVolume;
-    for (i = 0; i < snd_Channels; i++)
-    {
-        c = &s->chan[i];
-        c->id = Channel[i].sound_id;
-        c->priority = Channel[i].priority;
-        c->name = S_sfx[c->id].name;
-        c->mo = Channel[i].mo;
-
-        if (c->mo != NULL)
-        {
-            c->distance = P_AproxDistance(c->mo->x - viewx, c->mo->y - viewy)
-                >> FRACBITS;
-        }
-        else
-        {
-            c->distance = 0;
-        }
-    }
-}
-
-//==========================================================================
-//
 // S_InitScript
 //
 //==========================================================================

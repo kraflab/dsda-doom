@@ -42,7 +42,6 @@ typedef struct Cheat_s
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
-static void DrawSoundInfo(void);
 static void DrINumber(signed int val, int x, int y);
 static void DrRedINumber(signed int val, int x, int y);
 static void DrBNumber(signed int val, int x, int y);
@@ -617,71 +616,6 @@ static void ShadeChain(void)
 
 //==========================================================================
 //
-// DrawSoundInfo
-//
-// Displays sound debugging information.
-//
-//==========================================================================
-
-static void DrawSoundInfo(void)
-{
-    int i;
-    SoundInfo_t s;
-    ChanInfo_t *c;
-    char text[32];
-    int x;
-    int y;
-    int xPos[7] = { 1, 75, 112, 156, 200, 230, 260 };
-
-    if (leveltime & 16)
-    {
-        MN_DrTextA("*** SOUND DEBUG INFO ***", xPos[0], 20);
-    }
-    S_GetChannelInfo(&s);
-    if (s.channelCount == 0)
-    {
-        return;
-    }
-    x = 0;
-    MN_DrTextA("NAME", xPos[x++], 30);
-    MN_DrTextA("MO.T", xPos[x++], 30);
-    MN_DrTextA("MO.X", xPos[x++], 30);
-    MN_DrTextA("MO.Y", xPos[x++], 30);
-    MN_DrTextA("ID", xPos[x++], 30);
-    MN_DrTextA("PRI", xPos[x++], 30);
-    MN_DrTextA("DIST", xPos[x++], 30);
-    for (i = 0; i < s.channelCount; i++)
-    {
-        c = &s.chan[i];
-        x = 0;
-        y = 40 + i * 10;
-        if (c->mo == NULL)
-        {                       // Channel is unused
-            MN_DrTextA("------", xPos[0], y);
-            continue;
-        }
-        doom_snprintf(text, sizeof(text), "%s", c->name);
-        M_ForceUppercase(text);
-        MN_DrTextA(text, xPos[x++], y);
-        doom_snprintf(text, sizeof(text), "%d", c->mo->type);
-        MN_DrTextA(text, xPos[x++], y);
-        doom_snprintf(text, sizeof(text), "%d", c->mo->x >> FRACBITS);
-        MN_DrTextA(text, xPos[x++], y);
-        doom_snprintf(text, sizeof(text), "%d", c->mo->y >> FRACBITS);
-        MN_DrTextA(text, xPos[x++], y);
-        doom_snprintf(text, sizeof(text), "%d", (int) c->id);
-        MN_DrTextA(text, xPos[x++], y);
-        doom_snprintf(text, sizeof(text), "%d", c->priority);
-        MN_DrTextA(text, xPos[x++], y);
-        doom_snprintf(text, sizeof(text), "%d", c->distance);
-        MN_DrTextA(text, xPos[x++], y);
-    }
-    UpdateState |= I_FULLSCRN;
-    BorderNeedRefresh = true;
-}
-
-//==========================================================================
-//
 // SB_Drawer
 //
 //==========================================================================
@@ -739,11 +673,6 @@ extern dboolean automapactive;
 
 void SB_Drawer(void)
 {
-    // Sound info debug stuff
-    if (DebugSound == true)
-    {
-        DrawSoundInfo();
-    }
     CPlayer = &players[consoleplayer];
     if (viewheight == SCREENHEIGHT && !automapactive)
     {
