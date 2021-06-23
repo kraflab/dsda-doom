@@ -228,24 +228,31 @@ void S_Start(void)
   // start new music for the level
   mus_paused = 0;
 
-  if (gamemapinfo && gamemapinfo->music[0])
+  if (hexen)
   {
-	  int muslump = W_CheckNumForName(gamemapinfo->music);
-	  if (muslump >= 0)
-	  {
-		  musinfo.items[0] = muslump;
-		  S_ChangeMusInfoMusic(muslump, true);
-		  return;
-	  }
-	  // If the mapinfo defined music cannot be found, try the default for the given map.
+    mnum = gamemap;
   }
-
-  if (idmusnum!=-1)
-    mnum = idmusnum; //jff 3/17/98 reload IDMUS music if not -1
   else
-    if (gamemode == commercial)
-      mnum = mus_runnin + WRAP(gamemap - 1, DOOM_NUMMUSIC - mus_runnin);
+  {
+    if (gamemapinfo && gamemapinfo->music[0])
+    {
+  	  int muslump = W_CheckNumForName(gamemapinfo->music);
+  	  if (muslump >= 0)
+  	  {
+  		  musinfo.items[0] = muslump;
+  		  S_ChangeMusInfoMusic(muslump, true);
+  		  return;
+  	  }
+  	  // If the mapinfo defined music cannot be found, try the default for the given map.
+    }
+
+    if (idmusnum!=-1)
+      mnum = idmusnum; //jff 3/17/98 reload IDMUS music if not -1
     else
+    {
+      if (gamemode == commercial)
+        mnum = mus_runnin + WRAP(gamemap - 1, DOOM_NUMMUSIC - mus_runnin);
+      else
       {
         static const int spmus[] =     // Song - Who? - Where?
         {
@@ -268,6 +275,8 @@ void S_Start(void)
         else
           mnum = spmus[WRAP(gamemap - 1, 9)];
       }
+    }
+  }
 
   memset(&musinfo, 0, sizeof(musinfo));
   musinfo.items[0] = -1;

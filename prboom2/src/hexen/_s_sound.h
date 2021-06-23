@@ -48,9 +48,7 @@ typedef struct
 extern int snd_MaxVolume;
 extern int snd_MusicVolume;
 extern int snd_Channels;
-extern dboolean cdmusic;
 
-void S_Start(void);
 void S_StartSound(mobj_t * origin, int sound_id);
 int S_GetSoundID(char *name);
 void S_StartSoundAtVolume(mobj_t * origin, int sound_id, int volume);
