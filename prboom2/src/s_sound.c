@@ -51,6 +51,8 @@
 #include "p_setup.h"
 #include "e6y.h"
 
+#include "hexen/sn_sonix.h"
+
 #include "dsda/memory.h"
 
 // when to clip out sounds
@@ -493,10 +495,12 @@ void S_ResumeSound(void)
 //
 void S_UpdateSounds(void* listener_p)
 {
-  mobj_t *listener = (mobj_t*) listener_p;
+  mobj_t *listener;
   int cnum;
 
-  if (heretic) return Heretic_S_UpdateSounds(listener_p);
+  if (raven) return Heretic_S_UpdateSounds(listener_p);
+
+  listener = (mobj_t*) listener_p;
 
   //jff 1/22/98 return if sound is not enabled
   if (!snd_card || nosfxparm)
@@ -1088,7 +1092,7 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   channels[i].origin = origin;
   channels[i].sfxinfo = sfx;
   channels[i].priority = priority;
-  channels[i].volume = vol;
+  channels[i].volume = volume;
   if (heretic && sound_id >= heretic_sfx_wind)
     AmbChan = i;
 }
@@ -1114,7 +1118,7 @@ static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume
 
   sfx = &S_sfx[sound_id];
 
-  volume = (volume * snd_SfxVolume * 8) >> 7;
+  volume = (volume * (snd_SfxVolume + 1) * 8) >> 7;
 
   // no priority checking, as ambient sounds would be the LOWEST.
   for (i = 0; i < numChannels; i++)
@@ -1181,6 +1185,12 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
   if (snd_SfxVolume == 0)
     return;
 
+  if (hexen)
+  {
+    // Update any Sequences
+    SN_UpdateActiveSequences();
+  }
+
   for (i = 0; i < numChannels; i++)
   {
     mobj_t* origin;
@@ -1221,7 +1231,7 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
       dist = 0;
 
     // calculate the volume based upon the distance from the sound origin.
-    vol = soundCurve[dist];
+    vol = (soundCurve[dist] * snd_SfxVolume * 8 * channels[i].volume) >> 14;
 
     angle = R_PointToAngle2(listener->x, listener->y, origin->x, origin->y);
     if (angle <= listener->angle)
@@ -1235,7 +1245,8 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
     // TODO: Pitch shifting.
     I_UpdateSoundParams(channels[i].handle, vol, sep, channels[i].pitch);
     priority = channels[i].sfxinfo->priority;
-    priority *= (10 - (dist >> 8));
+    // heretic_note: divides by 256 instead of the dist_adjust
+    priority *= (10 - (dist / dist_adjust));
     channels[i].priority = priority;
   }
 }
