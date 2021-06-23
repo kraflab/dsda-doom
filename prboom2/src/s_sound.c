@@ -186,21 +186,21 @@ void S_Init(int sfxVolume, int musicVolume)
     mus_paused = 0;
   }
 
-  if (!heretic) return;
-
-  if (hexen)
+  if (raven)
   {
-    max_snd_dist = 2025;
-    dist_adjust = 202;
-  }
-  else
-  {
-    max_snd_dist = 1600;
-    dist_adjust = 160;
-  }
+    int lump;
+    int length;
 
-  soundCurve = Z_Malloc(max_snd_dist, PU_STATIC, NULL);
-  S_SetSoundCurve(true);
+    lump = W_GetNumForName("SNDCURVE");
+    length = W_LumpLength(lump);
+
+    max_snd_dist = length;
+    dist_adjust = max_snd_dist / 10;
+
+    soundCurve = Z_Malloc(max_snd_dist, PU_STATIC, NULL);
+    memcpy(soundCurve, (const byte *) W_CacheLumpNum(lump), max_snd_dist);
+    W_UnlockLumpNum(lump);
+  }
 }
 
 void S_Stop(void)
@@ -415,7 +415,7 @@ void S_StopSound(void *origin)
 {
   int cnum;
 
-  if (heretic) return Heretic_S_StopSound(origin);
+  if (raven) return Heretic_S_StopSound(origin);
 
   //jff 1/22/98 return if sound is not enabled
   if (!snd_card || nosfxparm)
@@ -757,7 +757,7 @@ void S_StopChannel(int cnum)
       c->sfxinfo = 0;
 
       // heretic_note: do this for doom too?
-      if (heretic) c->handle = 0;
+      if (raven) c->handle = 0;
     }
 }
 
@@ -887,19 +887,6 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup)
 }
 
 // heretic
-
-void S_SetSoundCurve(dboolean fullprocess)
-{
-  int i;
-  int limit;
-  const byte* lump;
-
-  limit = fullprocess ? max_snd_dist : 1;
-  lump = (const byte *) W_CacheLumpName("SNDCURVE");
-
-  for (i = 0; i < limit; i++)
-    soundCurve[i] = (*(lump + i) * (snd_SfxVolume * 8)) >> 7;
-}
 
 static mobj_t* GetSoundListener(void)
 {
@@ -1080,10 +1067,7 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   if (sfx->lumpnum <= 0)
     sfx->lumpnum = I_GetSfxLumpNum(sfx);
 
-  if (heretic)
-    vol = soundCurve[dist];
-  else
-    vol = (soundCurve[dist] * volume * (snd_SfxVolume + 1) * 8) >> 14;
+  vol = (soundCurve[dist] * volume * snd_SfxVolume * 8) >> 14;
 
   if (origin == listener)
     sep = 128;
@@ -1130,7 +1114,7 @@ static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume
 
   sfx = &S_sfx[sound_id];
 
-  volume = (volume * (snd_SfxVolume + 1) * 8) >> 7;
+  volume = (volume * snd_SfxVolume * 8) >> 7;
 
   // no priority checking, as ambient sounds would be the LOWEST.
   for (i = 0; i < numChannels; i++)
