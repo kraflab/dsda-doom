@@ -75,10 +75,6 @@ static fixed_t scale_ftom;
 static player_t *plr;           // the player represented by an arrow
 static vertex_t oldplr;
 
-//static patch_t *marknums[10]; // numbers used for marking by the automap
-//static mpoint_t markpoints[AM_NUMMARKPOINTS]; // where the points are
-//static int markpointnum = 0; // next point to be assigned
-
 static int followplayer = 1;    // specifies whether to follow the player around
 
 static char cheat_kills[] = { 'k', 'i', 'l', 'l', 's' };
@@ -93,18 +89,10 @@ static byte antialias[NUMALIAS][8] = {
     {107, 108, 109, 110, 111, 112, 89, 90}
 };
 
-/*
-static byte *aliasmax[NUMALIAS] = {
-	&antialias[0][7], &antialias[1][7], &antialias[2][7]
-};*/
-
 static byte *maplump;           // pointer to the raw data for the automap background.
 static short mapystart = 0;     // y-value for the start of the map bitmap...used in
                                                                                 //the parallax stuff.
 static short mapxstart = 0;     //x-value for the bitmap.
-
-//byte screens[][SCREENWIDTH*SCREENHEIGHT];
-//void V_MarkRect (int x, int y, int width, int height);
 
 // Functions
 
@@ -113,25 +101,6 @@ void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
 
 void AM_DrawDeathmatchStats(void);
 static void DrawWorldTimer(void);
-
-// Calculates the slope and slope according to the x-axis of a line
-// segment in map coordinates (with the upright y-axis n' all) so
-// that it can be used with the brain-dead drawing stuff.
-
-// Ripped out for Heretic
-/*
-void AM_getIslope(mline_t *ml, islope_t *is)
-{
-  int dx, dy;
-
-  dy = ml->a.y - ml->b.y;
-  dx = ml->b.x - ml->a.x;
-  if (!dy) is->islp = (dx<0?-INT_MAX:INT_MAX);
-  else is->islp = FixedDiv(dx, dy);
-  if (!dx) is->slp = (dy<0?-INT_MAX:INT_MAX);
-  else is->slp = FixedDiv(dy, dx);
-}
-*/
 
 void AM_activateNewScale(void)
 {
@@ -176,17 +145,6 @@ void AM_restoreScaleAndLoc(void)
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
 
-// adds a marker at the current location
-
-/*
-void AM_addMark(void)
-{
-  markpoints[markpointnum].x = m_x + m_w/2;
-  markpoints[markpointnum].y = m_y + m_h/2;
-  markpointnum = (markpointnum + 1) % AM_NUMMARKPOINTS;
-
-}
-*/
 void AM_findMinMaxBoundaries(void)
 {
     int i;
@@ -311,7 +269,6 @@ void AM_initVariables(void)
 
     // load in the location of keys, if in baby mode
 
-//      memset(KeyPoints, 0, sizeof(vertex_t)*3);
     if (gameskill == sk_baby)
     {
         for (think = thinkercap.next; think != &thinkercap;
@@ -323,25 +280,12 @@ void AM_initVariables(void)
             }
         }
     }
-
-    // inform the status bar of the change
-//c  ST_Responder(&st_notify);
 }
 
 void AM_loadPics(void)
 {
     maplump = W_CacheLumpName("AUTOPAGE", PU_STATIC);
 }
-
-
-/*
-void AM_clearMarks(void)
-{
-  int i;
-  for (i=0;i<AM_NUMMARKPOINTS;i++) markpoints[i].x = -1; // means empty
-  markpointnum = 0;
-}
-*/
 
 // should be called at the start of every level
 // right now, i figure it out myself
@@ -358,9 +302,6 @@ void AM_LevelInit(void)
     f_h = finit_height;
     mapxstart = mapystart = 0;
 
-
-//  AM_clearMarks();
-
     AM_findMinMaxBoundaries();
     scale_mtof = FixedDiv(min_scale_mtof, (int) (0.7 * FRACUNIT));
     if (scale_mtof > max_scale_mtof)
@@ -372,11 +313,7 @@ static dboolean stopped = true;
 
 void AM_Stop(void)
 {
-    //static event_t st_notify = { 0, ev_keyup, AM_MSGEXITED };
-
-//  AM_unloadPics();
     automapactive = false;
-//  ST_Responder(&st_notify);
     stopped = true;
     BorderNeedRefresh = true;
 }
@@ -604,57 +541,15 @@ void AM_doFollowPlayer(void)
 {
     if (f_oldloc.x != plr->mo->x || f_oldloc.y != plr->mo->y)
     {
-//  m_x = FTOM(MTOF(plr->mo->x - m_w/2));
-//  m_y = FTOM(MTOF(plr->mo->y - m_h/2));
-//  m_x = plr->mo->x - m_w/2;
-//  m_y = plr->mo->y - m_h/2;
         m_x = FTOM(MTOF(plr->mo->x)) - m_w / 2;
         m_y = FTOM(MTOF(plr->mo->y)) - m_h / 2;
         m_x2 = m_x + m_w;
         m_y2 = m_y + m_h;
 
-        // do the parallax parchment scrolling.
-/*
-	 dmapx = (MTOF(plr->mo->x)-MTOF(f_oldloc.x)); //fixed point
-	 dmapy = (MTOF(f_oldloc.y)-MTOF(plr->mo->y));
-
-	 if(f_oldloc.x == INT_MAX) //to eliminate an error when the user first
-		dmapx=0;  //goes into the automap.
-	 mapxstart += dmapx;
-	 mapystart += dmapy;
-
-  	 while(mapxstart >= finit_width)
-			mapxstart -= finit_width;
-    while(mapxstart < 0)
-			mapxstart += finit_width;
-    while(mapystart >= finit_height)
-			mapystart -= finit_height;
-    while(mapystart < 0)
-			mapystart += finit_height;
-*/
         f_oldloc.x = plr->mo->x;
         f_oldloc.y = plr->mo->y;
     }
 }
-
-// Ripped out for Heretic
-/*
-void AM_updateLightLev(void)
-{
-  static nexttic = 0;
-//static int litelevels[] = { 0, 3, 5, 6, 6, 7, 7, 7 };
-  static int litelevels[] = { 0, 4, 7, 10, 12, 14, 15, 15 };
-  static int litelevelscnt = 0;
-
-  // Change light level
-  if (amclock>nexttic)
-  {
-    lightlev = litelevels[litelevelscnt++];
-    if (litelevelscnt == sizeof(litelevels)/sizeof(int)) litelevelscnt = 0;
-    nexttic = amclock + 6 - (amclock % 6);
-  }
-}
-*/
 
 void AM_Ticker(void)
 {
@@ -674,9 +569,6 @@ void AM_Ticker(void)
     // Change x,y location
     if (m_paninc.x || m_paninc.y)
         AM_changeWindowLoc();
-    // Update light level
-// AM_updateLightLev();
-
 }
 
 void AM_clearFB(int color)
@@ -692,8 +584,7 @@ void AM_clearFB(int color)
 
         oldplr.x = plr->mo->x;
         oldplr.y = plr->mo->y;
-//              if(f_oldloc.x == INT_MAX) //to eliminate an error when the user first
-//                      dmapx=0;  //goes into the automap.
+
         mapxstart += dmapx >> 1;
         mapystart += dmapy >> 1;
 
@@ -708,21 +599,7 @@ void AM_clearFB(int color)
     }
     else
     {
-        // The released Hexen source does this here, but this causes a bug
-        // where the map background keeps moving when we reach the map
-        // boundaries. This is instead done in AM_changeWindowLoc.
-        /*
-        mapxstart += (MTOF(m_paninc.x) >> 1);
-        mapystart -= (MTOF(m_paninc.y) >> 1);
-        if (mapxstart >= (finit_width >> crispy->hires))
-            mapxstart -= (finit_width >> crispy->hires);
-        if (mapxstart < 0)
-            mapxstart += (finit_width >> crispy->hires);
-        if (mapystart >= (finit_height >> crispy->hires))
-            mapystart -= (finit_height >> crispy->hires);
-        if (mapystart < 0)
-            mapystart += (finit_height >> crispy->hires);
-        */
+
     }
 
     //blit the automap background to the screen.
@@ -737,9 +614,6 @@ void AM_clearFB(int color)
         if (j >= (finit_height >> crispy->hires) * (finit_width >> crispy->hires))
             j = 0;
     }
-
-//       memcpy(I_VideoBuffer, maplump, finit_width*finit_height);
-//  memset(fb, color, f_w*f_h);
 }
 
 // Based on Cohen-Sutherland clipping algorithm but with a slightly
@@ -1303,7 +1177,7 @@ void AM_drawPlayers(void)
 
     if (!netgame)
     {
-        AM_drawLineCharacter(player_arrow, NUMPLYRLINES, 0, plr->mo->angle,
+        AM_drawLineCharacter(hexen_player_arrow, HEXEN_NUMPLYRLINES, 0, plr->mo->angle,
                              WHITE, plr->mo->x, plr->mo->y);
         return;
     }
@@ -1319,7 +1193,7 @@ void AM_drawPlayers(void)
         if (!playeringame[i])
             continue;
         color = their_colors[their_color];
-        AM_drawLineCharacter(player_arrow, NUMPLYRLINES, 0, p->mo->angle,
+        AM_drawLineCharacter(hexen_player_arrow, HEXEN_NUMPLYRLINES, 0, p->mo->angle,
                              color, p->mo->x, p->mo->y);
     }
 }
@@ -1342,53 +1216,6 @@ void AM_drawThings(int colors, int colorrange)
     }
 }
 
-/*
-void AM_drawMarks(void)
-{
-  int i, fx, fy, w, h;
-
-  for (i=0;i<AM_NUMMARKPOINTS;i++)
-  {
-    if (markpoints[i].x != -1)
-    {
-      w = SHORT(marknums[i]->width);
-      h = SHORT(marknums[i]->height);
-      fx = CXMTOF(markpoints[i].x);
-      fy = CYMTOF(markpoints[i].y);
-      if (fx >= f_x && fx <= f_w - w && fy >= f_y && fy <= f_h - h)
-  			V_DrawPatch(fx, fy, marknums[i]);
-    }
-  }
-}
-*/
-/*
-void AM_drawkeys(void)
-{
-	if(KeyPoints[0].x != 0 || KeyPoints[0].y != 0)
-	{
-		AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, YELLOWKEY,
-			KeyPoints[0].x, KeyPoints[0].y);
-	}
-	if(KeyPoints[1].x != 0 || KeyPoints[1].y != 0)
-	{
-		AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, GREENKEY,
-			KeyPoints[1].x, KeyPoints[1].y);
-	}
-	if(KeyPoints[2].x != 0 || KeyPoints[2].y != 0)
-	{
-		AM_drawLineCharacter(keysquare, NUMKEYSQUARELINES, 0, 0, BLUEKEY,
-			KeyPoints[2].x, KeyPoints[2].y);
-	}
-}
-*/
-
-/*
-void AM_drawCrosshair(int color)
-{
-  fb[(f_w*(f_h+1))/2] = color; // single point for now
-}
-*/
-
 void AM_Drawer(void)
 {
     if (!automapactive)
@@ -1405,18 +1232,11 @@ void AM_Drawer(void)
     if (cheating == 2)
         AM_drawThings(THINGCOLORS, THINGRANGE);
 
-//  AM_drawCrosshair(XHAIRCOLORS);
-//  AM_drawMarks();
-//      if(gameskill == sk_baby) AM_drawkeys();
-
     MN_DrTextA(P_GetMapName(gamemap), 38, 144);
     if (ShowKills && netgame && deathmatch)
     {
         AM_DrawDeathmatchStats();
     }
-//  I_Update();
-//  V_MarkRect(f_x, f_y, f_w, f_h);
-
 }
 
 //===========================================================================

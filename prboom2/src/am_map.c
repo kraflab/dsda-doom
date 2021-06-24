@@ -259,6 +259,22 @@ typedef struct
     mpoint_t a, b;
 } mline_t;
 
+#define R ((8*PLAYERRADIUS)/7)
+mline_t hexen_player_arrow[] = {
+  { { -R+R/4, 0 }, { 0, 0} }, // center line.
+  { { -R+R/4, R/8 }, { R, 0} }, // blade
+  { { -R+R/4, -R/8 }, { R, 0 } },
+  { { -R+R/4, -R/4 }, { -R+R/4, R/4 } }, // crosspiece
+  { { -R+R/8, -R/4 }, { -R+R/8, R/4 } },
+  { { -R+R/8, -R/4 }, { -R+R/4, -R/4} }, //crosspiece connectors
+  { { -R+R/8, R/4 }, { -R+R/4, R/4} },
+  { { -R-R/4, R/8 }, { -R-R/4, -R/8 } }, //pommel
+  { { -R-R/4, R/8 }, { -R+R/8, R/8 } },
+  { { -R-R/4, -R/8}, { -R+R/8, -R/8 } }
+};
+#undef R
+#define HEXEN_NUMPLYRLINES (sizeof(hexen_player_arrow)/sizeof(mline_t))
+
 //
 // The vector graphics for the automap.
 //  A line drawing of the player pointing right,
