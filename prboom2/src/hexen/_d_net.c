@@ -238,7 +238,6 @@ static dboolean StartupProgress(int now_ready, int total)
 
     while (ready < now_ready)
     {
-        ST_NetProgress();
         ++ready;
     }
 
@@ -273,7 +272,6 @@ void D_CheckNetGame(void)
     if (netgame)
     {
         StartupProgress(settings.num_players, settings.num_players);
-        ST_NetDone();
     }
 }
 

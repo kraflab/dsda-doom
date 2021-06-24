@@ -486,16 +486,10 @@ void D_DoomMain(void)
     S_Init();
     S_Start();
 
-    ST_Message("ST_Init: Init startup screen.\n");
-    ST_Init();
-
     // Show version message now, so it's visible during R_Init()
     ST_Message("R_Init: Init Hexen refresh daemon");
     R_Init();
     ST_Message("\n");
-
-    //if (M_CheckParm("-net"))
-    //    ST_NetProgress();       // Console player found
 
     ST_Message("P_Init: Init Playloop state.\n");
     P_Init();
@@ -509,8 +503,6 @@ void D_DoomMain(void)
 
     ST_Message("SB_Init: Loading patches.\n");
     SB_Init();
-
-    ST_Done();
 
     if (autostart)
     {
