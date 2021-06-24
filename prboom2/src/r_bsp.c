@@ -780,6 +780,20 @@ static void R_Subsector(int num)
 #endif
   }
 
+  // hexen
+  if (sub->poly)
+  {                           // Render the polyobj in the subsector first
+    int polyCount;
+    seg_t **polySeg;
+
+    polyCount = sub->poly->numsegs;
+    polySeg = sub->poly->segs;
+    while (polyCount--)
+    {
+      R_AddLine(*polySeg++);
+    }
+  }
+
   count = sub->numlines;
   line = &segs[sub->firstline];
   while (count--)
