@@ -1087,7 +1087,14 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
     sep = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
   }
 
-  channels[i].pitch = (byte) (NORM_PITCH + (M_Random() & 7) - (M_Random() & 7));
+  if (!hexen || sfx->pitch)
+  {
+    channels[i].pitch = (byte) (NORM_PITCH + (M_Random() & 7) - (M_Random() & 7));
+  }
+  else
+  {
+    channels[i].pitch = NORM_PITCH;
+  }
   channels[i].handle = I_StartSound(sound_id, i, vol, sep, channels[i].pitch, priority);
   channels[i].origin = origin;
   channels[i].sfxinfo = sfx;
