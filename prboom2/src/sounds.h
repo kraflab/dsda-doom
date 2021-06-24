@@ -973,6 +973,9 @@ typedef enum {
 
 // all the stuff - dynamically selected in global.c
 
+extern sfxinfo_t hexen_S_sfx[];
+extern musicinfo_t hexen_S_music[];
+
 extern sfxinfo_t heretic_S_sfx[];
 extern musicinfo_t heretic_S_music[];
 
