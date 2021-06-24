@@ -226,7 +226,7 @@ const lighttable_t** GetLightTable(int lightlevel)
 
   /* cph - ...what is this for? adding contrast to rooms?
    * It looks crap in outdoor areas */
-  if (fake_contrast && curline)
+  if (fake_contrast && curline && !hexen)
   {
     if (curline->v1->y == curline->v2->y)
     {
