@@ -112,7 +112,7 @@ int *screenheightarray;  // change to MAX_* // dropoff overflow
 spritedef_t *sprites;
 int numsprites;
 
-#define MAX_SPRITE_FRAMES 29          /* Macroized -- killough 1/25/98 */
+#define MAX_SPRITE_FRAMES 30          /* Macroized -- killough 1/25/98 */
 
 static spriteframe_t sprtemp[MAX_SPRITE_FRAMES];
 static int maxframe;
@@ -535,6 +535,34 @@ static void R_DrawVisSprite(vissprite_t *vis)
   dcvars.colormap = vis->colormap;
   dcvars.nextcolormap = dcvars.colormap; // for filtering -- POPE
 
+  // HEXEN_TODO: colfunc: No idea how to merge this right now...
+  // if (vis->mobjflags & (MF_SHADOW | MF_ALTSHADOW))
+  // {
+  //     if (vis->mobjflags & MF_TRANSLATION)
+  //     {
+  //         colfunc = R_DrawTranslatedTLColumn;
+  //         dc_translation = translationtables - 256
+  //             + vis->pclass * ((MAXPLAYERS - 1) * 256) +
+  //             ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT - 8));
+  //     }
+  //     else if (vis->mobjflags & MF_SHADOW)
+  //     {                       // Draw using shadow column function
+  //         colfunc = tlcolfunc;
+  //     }
+  //     else
+  //     {
+  //         colfunc = R_DrawAltTLColumn;
+  //     }
+  // }
+  // else if (vis->mobjflags & MF_TRANSLATION)
+  // {
+  //     // Draw using translated column function
+  //     colfunc = R_DrawTranslatedColumn;
+  //     dc_translation = translationtables - 256
+  //         + vis->pclass * ((MAXPLAYERS - 1) * 256) +
+  //         ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT - 8));
+  // }
+
   // killough 4/11/98: rearrange and handle translucent sprites
   // mixed with translucent/non-translucenct 2s normals
 
@@ -620,6 +648,8 @@ void R_SetClipPlanes(void)
 // R_ProjectSprite
 // Generates a vissprite for a thing if it might be visible.
 //
+
+dboolean LevelUseFullBright = true;
 
 static void R_ProjectSprite (mobj_t* thing, int lightlevel)
 {
@@ -820,6 +850,21 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
   }
   else if (hexen)
   {
+    if (thing->flags & MF_TRANSLATION)
+    {
+      if (thing->player)
+      {
+        vis->pclass = thing->player->pclass;
+      }
+      else
+      {
+        vis->pclass = thing->special1.i;
+      }
+      if (vis->pclass > 2)
+      {
+        vis->pclass = 0;
+      }
+    }
     // foot clipping
     vis->floorclip = thing->floorclip;
   }
@@ -855,7 +900,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
       vis->colormap = NULL;             // shadow draw
   else if (fixedcolormap)
     vis->colormap = fixedcolormap;      // fixed map
-  else if (thing->frame & FF_FULLBRIGHT)
+  else if (LevelUseFullBright && thing->frame & FF_FULLBRIGHT)
     vis->colormap = fullcolormap;     // full bright  // killough 3/20/98
   else
     {      // diminished light
@@ -959,7 +1004,8 @@ static void R_ApplyWeaponBob (fixed_t *sx, dboolean bobx, fixed_t *sy, dboolean 
 //
 
 // heretic
-static int PSpriteSY[NUMWEAPONS] = {
+static int PSpriteSY[NUMCLASSES][NUMWEAPONS] = {
+  {
     0,                          // staff
     5 * FRACUNIT,               // goldwand
     15 * FRACUNIT,              // crossbow
@@ -969,6 +1015,11 @@ static int PSpriteSY[NUMWEAPONS] = {
     15 * FRACUNIT,              // mace
     15 * FRACUNIT,              // gauntlets
     15 * FRACUNIT               // beak
+  },
+  {0, -12 * FRACUNIT, -10 * FRACUNIT, 10 * FRACUNIT}, // Fighter
+  {-8 * FRACUNIT, 10 * FRACUNIT, 10 * FRACUNIT, 0}, // Cleric
+  {9 * FRACUNIT, 20 * FRACUNIT, 20 * FRACUNIT, 20 * FRACUNIT}, // Mage
+  {10 * FRACUNIT, 10 * FRACUNIT, 10 * FRACUNIT, 10 * FRACUNIT} // Pig
 };
 
 static void R_DrawPSprite (pspdef_t *psp)
@@ -1045,14 +1096,15 @@ static void R_DrawPSprite (pspdef_t *psp)
   // store information in a vissprite
   vis = &avis;
   vis->mobjflags = MF_PLAYERSPRITE;
+  vis->pclass = 0;
   vis->floorclip = 0;
    // killough 12/98: fix psprite positioning problem
   vis->texturemid = (BASEYCENTER<<FRACBITS) /* +  FRACUNIT/2 */ -
                     (psp_sy-topoffset);
 
-  if (viewheight == SCREENHEIGHT && heretic)
+  if (viewheight == SCREENHEIGHT && raven)
   {
-    vis->texturemid -= PSpriteSY[players[consoleplayer].readyweapon];
+    vis->texturemid -= PSpriteSY[viewplayer->pclass][players[consoleplayer].readyweapon];
   }
 
   // Move the weapon down for 1280x1024.
@@ -1090,6 +1142,25 @@ static void R_DrawPSprite (pspdef_t *psp)
     else
     {
       vis->colormap = NULL;                    // shadow draw
+    }
+  }
+  else if (viewplayer->powers[pw_invulnerability] && viewplayer->pclass == PCLASS_CLERIC)
+  {
+    vis->colormap = spritelights[MAXLIGHTSCALE - 1];
+    if (viewplayer->powers[pw_invulnerability] > 4 * 32)
+    {
+      if (viewplayer->mo->flags2 & MF2_DONTDRAW)
+      {                   // don't draw the psprite
+        vis->mobjflags |= MF_SHADOW;
+      }
+      else if (viewplayer->mo->flags & MF_SHADOW)
+      {
+        vis->mobjflags |= MF_ALTSHADOW;
+      }
+    }
+    else if (viewplayer->powers[pw_invulnerability] & 8)
+    {
+      vis->mobjflags |= MF_SHADOW;
     }
   }
   else if (fixedcolormap)
