@@ -929,7 +929,7 @@ static void G_DoLoadLevel (void)
   //  we look for an actual index, instead of simply
   //  setting one.
 
-  skyflatnum = R_FlatNumForName ( SKYFLATNAME );
+  skyflatnum = R_FlatNumForName(g_skyflatname);
 
   if (gamemapinfo && gamemapinfo->skytexture[0])
   {

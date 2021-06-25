@@ -150,6 +150,8 @@ int g_menu_cr_hilite;
 int g_menu_cr_select;
 int g_menu_cr_disable;
 
+const char* g_skyflatname;
+
 dboolean hexen = false;
 dboolean heretic = false;
 dboolean raven = false;
@@ -260,6 +262,8 @@ static void dsda_InitDoom(void) {
   g_menu_cr_hilite = CR_ORANGE;
   g_menu_cr_select = CR_GRAY;
   g_menu_cr_disable = CR_GRAY;
+
+  g_skyflatname = "F_SKY1";
 
   // convert doom mobj types to shared type
   for (i = 0; i < NUMMOBJTYPES; ++i) {
@@ -437,6 +441,8 @@ static void dsda_InitHeretic(void) {
   g_menu_cr_select = g_cr_gray;
   g_menu_cr_disable = g_cr_gray;
 
+  g_skyflatname = "F_SKY1";
+
   // convert heretic mobj types to shared type
   for (i = 0; i < HERETIC_NUMMOBJTYPES - HERETIC_MT_ZERO; ++i) {
     mobjinfo_p = &heretic_mobjinfo[i];
@@ -597,6 +603,8 @@ static void dsda_InitHexen(void) {
   // g_menu_cr_hilite = g_cr_blue;
   // g_menu_cr_select = g_cr_gray;
   // g_menu_cr_disable = g_cr_gray;
+
+  g_skyflatname = "F_SKY";
 
   mobjinfo[HEXEN_MT_CENTAUR].infighting_group = IG_CENTAUR;
   mobjinfo[HEXEN_MT_CENTAURLEADER].infighting_group = IG_CENTAUR;

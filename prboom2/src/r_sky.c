@@ -61,6 +61,7 @@ void R_InitSkyMap(void)
   if (!GetMouseLook())
   {
     skystretch = false;
+    // HERETIC_TODO: this is set to 200, but something else is missing...
     skytexturemid = 100*FRACUNIT;
     if (viewwidth != 0)
     {
@@ -120,4 +121,22 @@ void R_InitSkyMap(void)
       skytexturemid = 100*FRACUNIT;
     }
   }
+}
+
+// hexen
+
+#include "p_setup.h"
+
+void R_InitSky(int map)
+{
+    extern fixed_t Sky1ScrollDelta;
+    extern fixed_t Sky2ScrollDelta;
+
+    Sky1Texture = P_GetMapSky1Texture(map);
+    Sky2Texture = P_GetMapSky2Texture(map);
+    Sky1ScrollDelta = P_GetMapSky1ScrollDelta(map);
+    Sky2ScrollDelta = P_GetMapSky2ScrollDelta(map);
+    Sky1ColumnOffset = 0;
+    Sky2ColumnOffset = 0;
+    DoubleSky = P_GetMapDoubleSky(map);
 }

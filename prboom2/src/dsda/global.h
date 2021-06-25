@@ -103,6 +103,8 @@ extern int g_cr_gold; // 5
 extern int g_cr_red; // 6
 extern int g_cr_blue; // 7
 
+extern const char* g_skyflatname;
+
 extern dboolean heretic;
 
 void dsda_InitGlobal(void);
