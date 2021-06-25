@@ -315,6 +315,11 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
   visplane_t *check;
   unsigned hash;                      // killough
 
+  if (hexen && special < 150)
+  {
+    special = 0;
+  }
+
   if (picnum == skyflatnum || picnum & PL_SKYFLAT)
     height = lightlevel = 0;         // killough 7/19/98: most skies map together
 
@@ -409,6 +414,101 @@ static void R_DoDrawPlane(visplane_t *pl)
   R_SetDefaultDrawColumnVars(&dcvars);
 
   if (pl->minx <= pl->maxx) {
+    // HEXEN_TODO: Skies
+    // if (pl->picnum == skyflatnum)
+    // {                       // Sky flat
+    //     #define SKYTEXTUREMIDSHIFTED 200
+    //
+    //     byte *source;
+    //     byte *source2;
+    //     int offset;
+    //     int skyTexture;
+    //     int offset2;
+    //     int skyTexture2;
+    //
+    //     if (DoubleSky)
+    //     {                   // Render 2 layers, sky 1 in front
+    //         offset = Sky1ColumnOffset >> 16;
+    //         skyTexture = texturetranslation[Sky1Texture];
+    //         offset2 = Sky2ColumnOffset >> 16;
+    //         skyTexture2 = texturetranslation[Sky2Texture];
+    //         for (x = pl->minx; x <= pl->maxx; x++)
+    //         {
+    //             dc_yl = pl->top[x];
+    //             dc_yh = pl->bottom[x];
+    //             if (dc_yl <= dc_yh)
+    //             {
+    //                 count = dc_yh - dc_yl;
+    //                 if (count < 0)
+    //                 {
+    //                     return;
+    //                 }
+    //                 angle = (viewangle + xtoviewangle[x])
+    //                     >> ANGLETOSKYSHIFT;
+    //                 source = R_GetColumn(skyTexture, angle + offset);
+    //                 source2 = R_GetColumn(skyTexture2, angle + offset2);
+    //                 dest = ylookup[dc_yl] + columnofs[x];
+    //                 frac = SKYTEXTUREMIDSHIFTED * FRACUNIT + (dc_yl - centery) * fracstep;
+    //                 do
+    //                 {
+    //                     if (source[frac >> FRACBITS])
+    //                     {
+    //                         *dest = source[frac >> FRACBITS];
+    //                         frac += fracstep;
+    //                     }
+    //                     else
+    //                     {
+    //                         *dest = source2[frac >> FRACBITS];
+    //                         frac += fracstep;
+    //                     }
+    //                     dest += SCREENWIDTH;
+    //                 }
+    //                 while (count--);
+    //             }
+    //         }
+    //         continue;       // Next visplane
+    //     }
+    //     else
+    //     {                   // Render single layer
+    //         if (pl->special == 200)
+    //         {               // Use sky 2
+    //             offset = Sky2ColumnOffset >> 16;
+    //             skyTexture = texturetranslation[Sky2Texture];
+    //         }
+    //         else
+    //         {               // Use sky 1
+    //             offset = Sky1ColumnOffset >> 16;
+    //             skyTexture = texturetranslation[Sky1Texture];
+    //         }
+    //         for (x = pl->minx; x <= pl->maxx; x++)
+    //         {
+    //             dc_yl = pl->top[x];
+    //             dc_yh = pl->bottom[x];
+    //             if (dc_yl <= dc_yh)
+    //             {
+    //                 count = dc_yh - dc_yl;
+    //                 if (count < 0)
+    //                 {
+    //                     return;
+    //                 }
+    //                 angle = (viewangle + xtoviewangle[x])
+    //                     >> ANGLETOSKYSHIFT;
+    //                 source = R_GetColumn(skyTexture, angle + offset);
+    //                 dest = ylookup[dc_yl] + columnofs[x];
+    //                 frac = SKYTEXTUREMIDSHIFTED * FRACUNIT + (dc_yl - centery) * fracstep;
+    //                 do
+    //                 {
+    //                     *dest = source[frac >> FRACBITS];
+    //                     dest += SCREENWIDTH;
+    //                     frac += fracstep;
+    //                 }
+    //                 while (count--);
+    //             }
+    //         }
+    //         continue;       // Next visplane
+    //     }
+    // }
+
     if (pl->picnum == skyflatnum || pl->picnum & PL_SKYFLAT) { // sky flat
       int texture;
       const rpatch_t *tex_patch;
@@ -519,6 +619,68 @@ static void R_DoDrawPlane(visplane_t *pl)
           case 4:            // Scroll_EastLavaDamage
             dsvars.source = dsvars.source +
               (((63 - ((leveltime >> 1) & 63)) << 3) & 63);
+            break;
+        }
+      }
+      else if (hexen)
+      {
+        int scrollOffset = leveltime >> 1 & 63;
+
+        switch (pl->special)
+        {                       // Handle scrolling flats
+          case 201:
+          case 202:
+          case 203:          // Scroll_North_xxx
+            dsvars.source = dsvars.source + ((scrollOffset
+                                       << (pl->special - 201) & 63) << 6);
+            break;
+          case 204:
+          case 205:
+          case 206:          // Scroll_East_xxx
+            dsvars.source = dsvars.source + ((63 - scrollOffset)
+                                      << (pl->special - 204) & 63);
+            break;
+          case 207:
+          case 208:
+          case 209:          // Scroll_South_xxx
+            dsvars.source = dsvars.source + (((63 - scrollOffset)
+                                       << (pl->special - 207) & 63) << 6);
+            break;
+          case 210:
+          case 211:
+          case 212:          // Scroll_West_xxx
+            dsvars.source = dsvars.source + (scrollOffset
+                                      << (pl->special - 210) & 63);
+            break;
+          case 213:
+          case 214:
+          case 215:          // Scroll_NorthWest_xxx
+            dsvars.source = dsvars.source + (scrollOffset
+                                      << (pl->special - 213) & 63) +
+                ((scrollOffset << (pl->special - 213) & 63) << 6);
+            break;
+          case 216:
+          case 217:
+          case 218:          // Scroll_NorthEast_xxx
+            dsvars.source = dsvars.source + ((63 - scrollOffset)
+                                      << (pl->special - 216) & 63) +
+                ((scrollOffset << (pl->special - 216) & 63) << 6);
+            break;
+          case 219:
+          case 220:
+          case 221:          // Scroll_SouthEast_xxx
+            dsvars.source = dsvars.source + ((63 - scrollOffset)
+                                      << (pl->special - 219) & 63) +
+                (((63 - scrollOffset) << (pl->special - 219) & 63) << 6);
+            break;
+          case 222:
+          case 223:
+          case 224:          // Scroll_SouthWest_xxx
+            dsvars.source = dsvars.source + (scrollOffset
+                                      << (pl->special - 222) & 63) +
+                (((63 - scrollOffset) << (pl->special - 222) & 63) << 6);
+            break;
+          default:
             break;
         }
       }
