@@ -420,7 +420,6 @@ typedef struct vissprite_s
   int heightsec;
 
   // hexen
-  dboolean psprite;            // true if psprite
   int pclass;                  // player class (used in translation)
   fixed_t floorclip;
 } vissprite_t;

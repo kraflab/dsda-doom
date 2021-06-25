@@ -96,6 +96,9 @@ typedef struct draw_column_vars_s
   int                 drawingmasked;
   enum sloped_edge_type_e edgetype;
   unsigned int        flags; //e6y: for detect patches ind colfunc()
+
+  // heretic
+  int baseclip;
 } draw_column_vars_t;
 
 void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars);

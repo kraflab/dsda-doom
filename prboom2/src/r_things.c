@@ -476,6 +476,9 @@ void R_DrawMaskedColumn(
       if (dcvars->yl <= mceilingclip[dcvars->x])
         dcvars->yl = mceilingclip[dcvars->x]+1;
 
+      if (dcvars->yh >= dcvars->baseclip && dcvars->baseclip != -1)
+        dcvars->yh = dcvars->baseclip;
+
       // killough 3/2/98, 3/27/98: Failsafe against overflow/crash:
       if (dcvars->yl <= dcvars->yh && dcvars->yh < viewheight)
         {
@@ -569,6 +572,12 @@ static void R_DrawVisSprite(vissprite_t *vis)
     dcvars.iscale = pspriteiyscale;
     dcvars.texturemid += FixedMul(((centery - viewheight/2)<<FRACBITS), dcvars.iscale);
     sprtopscreen += (viewheight/2 - centery)<<FRACBITS;
+  }
+
+  if (vis->floorclip && !(vis->mobjflags & MF_PLAYERSPRITE))
+  {
+    fixed_t sprbotscreen = FixedMul(LittleShort(patch->height) << FRACBITS, spryscale);
+    dcvars.baseclip = (sprbotscreen - FixedMul(vis->floorclip, spryscale)) >> FRACBITS;
   }
 
   for (dcvars.x=vis->x1 ; dcvars.x<=vis->x2 ; dcvars.x++, frac += vis->xiscale)
@@ -798,7 +807,28 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
 // proff 11/06/98: Changed for high-res
   vis->scale = FixedDiv(projectiony, tz);
   vis->gzt = gzt;                          // killough 3/27/98
-  vis->texturemid = vis->gzt - viewz;
+
+  if (heretic)
+  {
+    if (thing->flags2 & MF2_FEETARECLIPPED
+        && vis->gz <= thing->subsector->sector->floorheight)
+    {
+      vis->floorclip = 10 << FRACBITS;
+    }
+    else
+      vis->floorclip = 0;
+  }
+  else if (hexen)
+  {
+    // foot clipping
+    vis->floorclip = thing->floorclip;
+  }
+  else
+  {
+    vis->floorclip = 0;
+  }
+
+  vis->texturemid = vis->gzt - viewz - vis->floorclip;
   vis->x1 = x1 < 0 ? 0 : x1;
   vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;
   iscale = FixedDiv (FRACUNIT, xscale);
@@ -1015,6 +1045,7 @@ static void R_DrawPSprite (pspdef_t *psp)
   // store information in a vissprite
   vis = &avis;
   vis->mobjflags = MF_PLAYERSPRITE;
+  vis->floorclip = 0;
    // killough 12/98: fix psprite positioning problem
   vis->texturemid = (BASEYCENTER<<FRACBITS) /* +  FRACUNIT/2 */ -
                     (psp_sy-topoffset);
