@@ -922,7 +922,7 @@ void R_SetupFreelook(void)
     int i;
 
     centery = viewheight / 2;
-    if (heretic || GetMouseLook())
+    if (raven || GetMouseLook())
     {
       dy = FixedMul(focallengthy, finetangent[(ANG90-viewpitch)>>ANGLETOFINESHIFT]);
       centery += dy >> FRACBITS;
@@ -1079,6 +1079,9 @@ void R_ClearStats(void)
 //
 // R_RenderView
 //
+
+extern int localQuakeHappening[MAXPLAYERS];
+
 void R_RenderPlayerView (player_t* player)
 {
   dboolean automap = (automapmode & am_active) && !(automapmode & am_overlay);
@@ -1130,8 +1133,18 @@ void R_RenderPlayerView (player_t* player)
   }
 #endif
 
-  // The head node is the last node output.
-  R_RenderBSPNode (numnodes-1);
+  // Make displayed player invisible locally
+  if (localQuakeHappening[displayplayer] && gamestate == GS_LEVEL)
+  {
+    players[displayplayer].mo->flags2 |= MF2_DONTDRAW;
+    R_RenderBSPNode(numnodes - 1);  // head node is the last node output
+    players[displayplayer].mo->flags2 &= ~MF2_DONTDRAW;
+  }
+  else
+  {
+    // The head node is the last node output.
+    R_RenderBSPNode(numnodes - 1);
+  }
 
 #ifdef HAVE_NET
   NetUpdate ();

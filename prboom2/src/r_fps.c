@@ -33,6 +33,7 @@
  */
 
 #include "doomstat.h"
+#include "m_random.h"
 #include "r_defs.h"
 #include "r_state.h"
 #include "p_spec.h"
@@ -94,6 +95,8 @@ static interpolation_t *curipos;
 static dboolean NoInterpolateView;
 static dboolean didInterp;
 dboolean WasRenderedInTryRunTics;
+
+extern int localQuakeHappening[MAXPLAYERS];
 
 void R_InterpolateView(player_t *player, fixed_t frac)
 {
@@ -174,6 +177,16 @@ void R_InterpolateView(player_t *player, fixed_t frac)
       viewangle = R_SmoothPlaying_Get(player) + viewangleoffset;
       viewpitch = P_PlayerPitch(player) + viewpitchoffset;
     }
+  }
+
+  // HEXEN_TODO: quake probably doesn't play well with uncapped
+  if (localQuakeHappening[displayplayer] && !paused)
+  {
+    int intensity = localQuakeHappening[displayplayer];
+    viewx += ((M_Random() % (intensity << 2))
+              - (intensity << 1)) << FRACBITS;
+    viewy += ((M_Random() % (intensity << 2))
+              - (intensity << 1)) << FRACBITS;
   }
 
   if (!paused && movement_smooth)
