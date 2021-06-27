@@ -119,7 +119,7 @@ void SB_Init(void)
     extern patchnum_t brdr_tl, brdr_tr, brdr_bl, brdr_br;
 
     // magic globals that ends up in the background
-    R_SetFloorNum(&grnrock, "FLOOR30");
+    R_SetFloorNum(&grnrock, "FLOOR30"); // hexen_note: F_022
     R_SetPatchNum(&brdr_t, DEH_String("bordt"));
     R_SetPatchNum(&brdr_b, DEH_String("bordb"));
     R_SetPatchNum(&brdr_l, DEH_String("bordl"));

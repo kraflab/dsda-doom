@@ -583,7 +583,7 @@ static void dsda_InitHexen(void) {
   // g_door_open = vld_open;
   //
   g_st_height = 39;
-  // g_border_offset = 4;
+  g_border_offset = 4;
   // g_mf_translucent = MF_SHADOW;
   // g_mf_shadow = 0; // doesn't exist in heretic
   //

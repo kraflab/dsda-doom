@@ -514,6 +514,25 @@ void R_InitTranslationTables (void)
 #define MAXTRANS 3
   byte transtocolour[MAXTRANS];
 
+  if (hexen)
+  {
+    int lumpnum = W_GetNumForName("trantbl0");
+    translationtables = Z_Malloc(256 * 3 * (MAXPLAYERS - 1), PU_STATIC, 0);
+
+    // HEXEN_TODO: player color translation table?
+    for (i = 0; i < MAXPLAYERS; i++)
+      playernumtotrans[i] = i;
+
+    for (i = 0; i < 3 * (MAXPLAYERS - 1); i++)
+    {
+        const byte* transLump = W_CacheLumpNum(lumpnum + i);
+        memcpy(translationtables + i * 256, transLump, 256);
+        W_UnlockLumpNum(lumpnum + i);
+    }
+
+    return;
+  }
+
   // killough 5/2/98:
   // Remove dependency of colormaps aligned on 256-byte boundary
 
@@ -527,20 +546,20 @@ void R_InitTranslationTables (void)
     playernumtotrans[i] = 0;
     if (wantcolour != 0x70) // Not green, would like translation
       for (j=0; j<MAXTRANS; j++)
-  if (transtocolour[j] == 255) {
-    transtocolour[j] = wantcolour; playernumtotrans[i] = j+1; break;
-  }
+        if (transtocolour[j] == 255) {
+          transtocolour[j] = wantcolour; playernumtotrans[i] = j+1; break;
+        }
   }
 
   // translate just the 16 green colors
   for (i=0; i<256; i++)
     if (i >= 0x70 && i<= 0x7f)
-      {
-  // CPhipps - configurable player colours
-        translationtables[i] = colormaps[0][((i&0xf)<<9) + transtocolour[0]];
-        translationtables[i+256] = colormaps[0][((i&0xf)<<9) + transtocolour[1]];
-        translationtables[i+512] = colormaps[0][((i&0xf)<<9) + transtocolour[2]];
-      }
+    {
+      // CPhipps - configurable player colours
+      translationtables[i] = colormaps[0][((i&0xf)<<9) + transtocolour[0]];
+      translationtables[i+256] = colormaps[0][((i&0xf)<<9) + transtocolour[1]];
+      translationtables[i+512] = colormaps[0][((i&0xf)<<9) + transtocolour[2]];
+    }
     else  // Keep all other colors as is.
       translationtables[i]=translationtables[i+256]=translationtables[i+512]=i;
 }
