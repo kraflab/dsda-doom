@@ -152,7 +152,7 @@ static yahpt_t YAHspot[3][9] = {
 static const char *NameForMap(int map)
 {
     const char *name = LevelNames[(gameepisode - 1) * 9 + map - 1];
-    name = DEH_String(name);
+    name = name;
     if (strlen(name) < 7)
     {
         return "";
@@ -170,14 +170,14 @@ static void IN_DrawInterpic(void)
 
   // e6y: wide-res
   V_FillBorder(-1, 0);
-  V_DrawNamePatch(0, 0, 0, DEH_String(name), CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(0, 0, 0, name, CR_DEFAULT, VPT_STRETCH);
 }
 
 static void IN_DrawBeenThere(int i)
 {
   V_DrawNamePatch(
     YAHspot[gameepisode - 1][i].x, YAHspot[gameepisode - 1][i].y, 0,
-    DEH_String("IN_X"), CR_DEFAULT, VPT_STRETCH
+    "IN_X", CR_DEFAULT, VPT_STRETCH
   );
 }
 
@@ -185,7 +185,7 @@ static void IN_DrawGoingThere(int i)
 {
   V_DrawNamePatch(
     YAHspot[gameepisode - 1][i].x, YAHspot[gameepisode - 1][i].y, 0,
-    DEH_String("IN_YAH"), CR_DEFAULT, VPT_STRETCH
+    "IN_YAH", CR_DEFAULT, VPT_STRETCH
   );
 }
 
@@ -193,15 +193,15 @@ static void IN_InitLumps(void)
 {
   int i, base;
 
-  base = W_GetNumForName(DEH_String("FONTB16"));
+  base = W_GetNumForName("FONTB16");
   for (i = 0; i < 10; i++)
   {
       FontBNumbers[i] = base + i;
   }
 
-  FontBLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
-  patchFaceOkayBase = W_GetNumForName(DEH_String("FACEA0"));
-  patchFaceDeadBase = W_GetNumForName(DEH_String("FACEB0"));
+  FontBLump = W_GetNumForName("FONTB_S") + 1;
+  patchFaceOkayBase = W_GetNumForName("FACEA0");
+  patchFaceDeadBase = W_GetNumForName("FACEB0");
 }
 
 static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
@@ -575,7 +575,7 @@ void IN_DrawStatBack(void)
 {
     // e6y: wide-res
     V_FillBorder(-1, 0);
-    V_DrawBackground(DEH_String("FLOOR16"), 0);
+    V_DrawBackground("FLOOR16", 0);
 }
 
 //========================================================================
@@ -592,8 +592,8 @@ void IN_DrawOldLevel(void)
 
     x = 160 - MN_TextBWidth(level_name) / 2;
     IN_DrTextB(level_name, x, 3);
-    x = 160 - MN_TextAWidth(DEH_String("FINISHED")) / 2;
-    MN_DrTextA(DEH_String("FINISHED"), x, 25);
+    x = 160 - MN_TextAWidth("FINISHED") / 2;
+    MN_DrTextA("FINISHED", x, 25);
 
     if (prevmap == 9)
     {
@@ -635,8 +635,8 @@ void IN_DrawYAH(void)
     int i;
     int x;
 
-    x = 160 - MN_TextAWidth(DEH_String("NOW ENTERING:")) / 2;
-    MN_DrTextA(DEH_String("NOW ENTERING:"), x, 10);
+    x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
+    MN_DrTextA("NOW ENTERING:", x, 10);
     x = 160 - MN_TextBWidth(level_name) / 2;
     IN_DrTextB(level_name, x, 20);
 
@@ -678,14 +678,14 @@ void IN_DrawSingleStats(void)
         yoffset = 20;
     }
 
-    IN_DrTextB(DEH_String("KILLS"), 50, 65 - yoffset);
-    IN_DrTextB(DEH_String("ITEMS"), 50, 90 - yoffset);
-    IN_DrTextB(DEH_String("SECRETS"), 50, 115 - yoffset);
+    IN_DrTextB("KILLS", 50, 65 - yoffset);
+    IN_DrTextB("ITEMS", 50, 90 - yoffset);
+    IN_DrTextB("SECRETS", 50, 115 - yoffset);
 
     x = 160 - MN_TextBWidth(prev_level_name) / 2;
     IN_DrTextB(prev_level_name, x, 3);
-    x = 160 - MN_TextAWidth(DEH_String("FINISHED")) / 2;
-    MN_DrTextA(DEH_String("FINISHED"), x, 25);
+    x = 160 - MN_TextAWidth("FINISHED") / 2;
+    MN_DrTextA("FINISHED", x, 25);
 
     if (intertime < 30)
     {
@@ -698,7 +698,7 @@ void IN_DrawSingleStats(void)
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].killcount, 200, 65 - yoffset, 3);
-    V_DrawShadowedNamePatch(237, 65 - yoffset, DEH_String("FONTB15"));
+    V_DrawShadowedNamePatch(237, 65 - yoffset, "FONTB15");
     IN_DrawNumber(totalkills, 248, 65 - yoffset, 3);
     if (intertime < 60)
     {
@@ -710,7 +710,7 @@ void IN_DrawSingleStats(void)
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].itemcount, 200, 90 - yoffset, 3);
-    V_DrawShadowedNamePatch(237, 90 - yoffset, DEH_String("FONTB15"));
+    V_DrawShadowedNamePatch(237, 90 - yoffset, "FONTB15");
     IN_DrawNumber(totalitems, 248, 90 - yoffset, 3);
     if (intertime < 90)
     {
@@ -722,7 +722,7 @@ void IN_DrawSingleStats(void)
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].secretcount, 200, 115 - yoffset, 3);
-    V_DrawShadowedNamePatch(237, 115 - yoffset, DEH_String("FONTB15"));
+    V_DrawShadowedNamePatch(237, 115 - yoffset, "FONTB15");
     IN_DrawNumber(totalsecret, 248, 115 - yoffset, 3);
     if (intertime < 150)
     {
@@ -737,25 +737,25 @@ void IN_DrawSingleStats(void)
     // [crispy] ignore "now entering" if it's the final intermission
     if (gamemode != retail || gameepisode <= 3 || finalintermission)
     {
-        IN_DrTextB(DEH_String("TIME"), 85, 150);
+        IN_DrTextB("TIME", 85, 150);
         IN_DrawTime(155, 150, hours, minutes, seconds);
 
         // [crispy] Show total time on intermission
-        IN_DrTextB(DEH_String("TOTAL"), 85, 170);
+        IN_DrTextB("TOTAL", 85, 170);
         IN_DrawTime(155, 170, totalHours, totalMinutes, totalSeconds);
     }
     else
     {
         // [crispy] show the level time for Ep.4 and up
-        IN_DrTextB(DEH_String("TIME"), 85, 120);
+        IN_DrTextB("TIME", 85, 120);
         IN_DrawTime(155, 120, hours, minutes, seconds);
 
         // [crispy] Show total time on intermission
-        IN_DrTextB(DEH_String("TOTAL"), 85, 140);
+        IN_DrTextB("TOTAL", 85, 140);
         IN_DrawTime(155, 140, totalHours, totalMinutes, totalSeconds);
 
-        x = 160 - MN_TextAWidth(DEH_String("NOW ENTERING:")) / 2;
-        MN_DrTextA(DEH_String("NOW ENTERING:"), x, 160);
+        x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
+        MN_DrTextA("NOW ENTERING:", x, 160);
         x = 160 - MN_TextBWidth(next_level_name) / 2;
         IN_DrTextB(next_level_name, x, 170);
         skipintermission = false;
@@ -779,13 +779,13 @@ void IN_DrawCoopStats(void)
 
     static int sounds;
 
-    IN_DrTextB(DEH_String("KILLS"), 95, 35);
-    IN_DrTextB(DEH_String("BONUS"), 155, 35);
-    IN_DrTextB(DEH_String("SECRET"), 232, 35);
+    IN_DrTextB("KILLS", 95, 35);
+    IN_DrTextB("BONUS", 155, 35);
+    IN_DrTextB("SECRET", 232, 35);
     x = 160 - MN_TextBWidth(level_name) / 2;
     IN_DrTextB(level_name, x, 3);
-    x = 160 - MN_TextAWidth(DEH_String("FINISHED")) / 2;
-    MN_DrTextA(DEH_String("FINISHED"), x, 25);
+    x = 160 - MN_TextAWidth("FINISHED") / 2;
+    MN_DrTextA("FINISHED", x, 25);
 
     ypos = 50;
     for (i = 0; i < MAXPLAYERS; i++)
@@ -805,11 +805,11 @@ void IN_DrawCoopStats(void)
                 sounds++;
             }
             IN_DrawNumber(killPercent[i], 85, ypos + 10, 3);
-            V_DrawShadowedNamePatch(121, ypos + 10, DEH_String("FONTB05"));
+            V_DrawShadowedNamePatch(121, ypos + 10, "FONTB05");
             IN_DrawNumber(bonusPercent[i], 160, ypos + 10, 3);
-            V_DrawShadowedNamePatch(196, ypos + 10, DEH_String("FONTB05"));
+            V_DrawShadowedNamePatch(196, ypos + 10, "FONTB05");
             IN_DrawNumber(secretPercent[i], 237, ypos + 10, 3);
-            V_DrawShadowedNamePatch(273, ypos + 10, DEH_String("FONTB05"));
+            V_DrawShadowedNamePatch(273, ypos + 10, "FONTB05");
             ypos += 37;
         }
     }
@@ -834,11 +834,11 @@ void IN_DrawDMStats(void)
     xpos = 90;
     ypos = 55;
 
-    IN_DrTextB(DEH_String("TOTAL"), 265, 30);
-    MN_DrTextA(DEH_String("VICTIMS"), 140, 8);
+    IN_DrTextB("TOTAL", 265, 30);
+    MN_DrTextA("VICTIMS", 140, 8);
     for (i = 0; i < 7; i++)
     {
-        MN_DrTextA(DEH_String(KillersText[i]), 10, 80 + 9 * i);
+        MN_DrTextA(KillersText[i], 10, 80 + 9 * i);
     }
     if (intertime < 20)
     {
@@ -923,7 +923,7 @@ void IN_DrawTime(int x, int y, int h, int m, int s)
     if (h)
     {
         IN_DrawNumber(h, x, y, 2);
-        IN_DrTextB(DEH_String(":"), x + 26, y);
+        IN_DrTextB(":", x + 26, y);
     }
     x += 34;
     if (h || m > 9)
@@ -936,7 +936,7 @@ void IN_DrawTime(int x, int y, int h, int m, int s)
     }
     x += 34;
     {
-        IN_DrTextB(DEH_String(":"), x - 8, y);
+        IN_DrTextB(":", x - 8, y);
         IN_DrawNumber(s, x, y, 2);
     }
 }
@@ -1032,7 +1032,7 @@ void IN_DrawNumber(int val, int x, int y, int digits)
         V_DrawShadowedNamePatch(
           xpos + 6 - R_NamePatchWidth("FONTB13") / 2 - 12 * (realdigits),
           y,
-          DEH_String("FONTB13")
+          "FONTB13"
         );
     }
 }

@@ -1826,21 +1826,21 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMHEALTH), false);
+            P_SetMessage(player, HERETIC_TXT_ITEMHEALTH, false);
             break;
         case HERETIC_SPR_SHLD:         // Item_Shield1
             if (!P_GiveArmor(player, 1))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMSHIELD1), false);
+            P_SetMessage(player, HERETIC_TXT_ITEMSHIELD1, false);
             break;
         case HERETIC_SPR_SHD2:         // Item_Shield2
             if (!P_GiveArmor(player, 2))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMSHIELD2), false);
+            P_SetMessage(player, HERETIC_TXT_ITEMSHIELD2, false);
             break;
         case HERETIC_SPR_BAGH:         // Item_BagOfHolding
             if (!player->backpack)
@@ -1856,21 +1856,21 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             P_GiveAmmo(player, am_crossbow, AMMO_CBOW_WIMPY);
             P_GiveAmmo(player, am_skullrod, AMMO_SKRD_WIMPY);
             P_GiveAmmo(player, am_phoenixrod, AMMO_PHRD_WIMPY);
-            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMBAGOFHOLDING), false);
+            P_SetMessage(player, HERETIC_TXT_ITEMBAGOFHOLDING, false);
             break;
         case HERETIC_SPR_SPMP:         // Item_SuperMap
             if (!P_GivePower(player, pw_allmap))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_ITEMSUPERMAP), false);
+            P_SetMessage(player, HERETIC_TXT_ITEMSUPERMAP, false);
             break;
 
             // Keys
         case HERETIC_SPR_BKYY:         // Key_Blue
             if (!player->cards[key_blue])
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_GOTBLUEKEY), false);
+                P_SetMessage(player, HERETIC_TXT_GOTBLUEKEY, false);
             }
             P_GiveCard(player, key_blue);
             sound = heretic_sfx_keyup;
@@ -1882,7 +1882,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
         case HERETIC_SPR_CKYY:         // Key_Yellow
             if (!player->cards[key_yellow])
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_GOTYELLOWKEY), false);
+                P_SetMessage(player, HERETIC_TXT_GOTYELLOWKEY, false);
             }
             sound = heretic_sfx_keyup;
             P_GiveCard(player, key_yellow);
@@ -1894,7 +1894,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
         case HERETIC_SPR_AKYY:         // Key_Green
             if (!player->cards[key_green])
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_GOTGREENKEY), false);
+                P_SetMessage(player, HERETIC_TXT_GOTGREENKEY, false);
             }
             sound = heretic_sfx_keyup;
             P_GiveCard(player, key_green);
@@ -1908,70 +1908,70 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
         case HERETIC_SPR_PTN2:         // Arti_HealingPotion
             if (P_GiveArtifact(player, arti_health, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIHEALTH), false);
+                P_SetMessage(player, HERETIC_TXT_ARTIHEALTH, false);
                 P_SetDormantArtifact(special);
             }
             return;
         case HERETIC_SPR_SOAR:         // Arti_Fly
             if (P_GiveArtifact(player, arti_fly, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIFLY), false);
+                P_SetMessage(player, HERETIC_TXT_ARTIFLY, false);
                 P_SetDormantArtifact(special);
             }
             return;
         case HERETIC_SPR_INVU:         // Arti_Invulnerability
             if (P_GiveArtifact(player, arti_invulnerability, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIINVULNERABILITY), false);
+                P_SetMessage(player, HERETIC_TXT_ARTIINVULNERABILITY, false);
                 P_SetDormantArtifact(special);
             }
             return;
         case HERETIC_SPR_PWBK:         // Arti_TomeOfPower
             if (P_GiveArtifact(player, arti_tomeofpower, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTITOMEOFPOWER), false);
+                P_SetMessage(player, HERETIC_TXT_ARTITOMEOFPOWER, false);
                 P_SetDormantArtifact(special);
             }
             return;
         case HERETIC_SPR_INVS:         // Arti_Invisibility
             if (P_GiveArtifact(player, arti_invisibility, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIINVISIBILITY), false);
+                P_SetMessage(player, HERETIC_TXT_ARTIINVISIBILITY, false);
                 P_SetDormantArtifact(special);
             }
             return;
         case HERETIC_SPR_EGGC:         // Arti_Egg
             if (P_GiveArtifact(player, arti_egg, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIEGG), false);
+                P_SetMessage(player, HERETIC_TXT_ARTIEGG, false);
                 P_SetDormantArtifact(special);
             }
             return;
         case HERETIC_SPR_SPHL:         // Arti_SuperHealth
             if (P_GiveArtifact(player, arti_superhealth, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTISUPERHEALTH), false);
+                P_SetMessage(player, HERETIC_TXT_ARTISUPERHEALTH, false);
                 P_SetDormantArtifact(special);
             }
             return;
         case HERETIC_SPR_TRCH:         // Arti_Torch
             if (P_GiveArtifact(player, arti_torch, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTITORCH), false);
+                P_SetMessage(player, HERETIC_TXT_ARTITORCH, false);
                 P_SetDormantArtifact(special);
             }
             return;
         case HERETIC_SPR_FBMB:         // Arti_FireBomb
             if (P_GiveArtifact(player, arti_firebomb, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTIFIREBOMB), false);
+                P_SetMessage(player, HERETIC_TXT_ARTIFIREBOMB, false);
                 P_SetDormantArtifact(special);
             }
             return;
         case HERETIC_SPR_ATLP:         // Arti_Teleport
             if (P_GiveArtifact(player, arti_teleport, special))
             {
-                P_SetMessage(player, DEH_String(HERETIC_TXT_ARTITELEPORT), false);
+                P_SetMessage(player, HERETIC_TXT_ARTITELEPORT, false);
                 P_SetDormantArtifact(special);
             }
             return;
@@ -1982,84 +1982,84 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOGOLDWAND1), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOGOLDWAND1, false);
             break;
         case HERETIC_SPR_AMG2:         // Ammo_GoldWandHefty
             if (!P_GiveAmmo(player, am_goldwand, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOGOLDWAND2), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOGOLDWAND2, false);
             break;
         case HERETIC_SPR_AMM1:         // Ammo_MaceWimpy
             if (!P_GiveAmmo(player, am_mace, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOMACE1), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOMACE1, false);
             break;
         case HERETIC_SPR_AMM2:         // Ammo_MaceHefty
             if (!P_GiveAmmo(player, am_mace, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOMACE2), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOMACE2, false);
             break;
         case HERETIC_SPR_AMC1:         // Ammo_CrossbowWimpy
             if (!P_GiveAmmo(player, am_crossbow, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOCROSSBOW1), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOCROSSBOW1, false);
             break;
         case HERETIC_SPR_AMC2:         // Ammo_CrossbowHefty
             if (!P_GiveAmmo(player, am_crossbow, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOCROSSBOW2), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOCROSSBOW2, false);
             break;
         case HERETIC_SPR_AMB1:         // Ammo_BlasterWimpy
             if (!P_GiveAmmo(player, am_blaster, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOBLASTER1), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOBLASTER1, false);
             break;
         case HERETIC_SPR_AMB2:         // Ammo_BlasterHefty
             if (!P_GiveAmmo(player, am_blaster, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOBLASTER2), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOBLASTER2, false);
             break;
         case HERETIC_SPR_AMS1:         // Ammo_SkullRodWimpy
             if (!P_GiveAmmo(player, am_skullrod, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOSKULLROD1), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOSKULLROD1, false);
             break;
         case HERETIC_SPR_AMS2:         // Ammo_SkullRodHefty
             if (!P_GiveAmmo(player, am_skullrod, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOSKULLROD2), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOSKULLROD2, false);
             break;
         case HERETIC_SPR_AMP1:         // Ammo_PhoenixRodWimpy
             if (!P_GiveAmmo(player, am_phoenixrod, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOPHOENIXROD1), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOPHOENIXROD1, false);
             break;
         case HERETIC_SPR_AMP2:         // Ammo_PhoenixRodHefty
             if (!P_GiveAmmo(player, am_phoenixrod, special->health))
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_AMMOPHOENIXROD2), false);
+            P_SetMessage(player, HERETIC_TXT_AMMOPHOENIXROD2, false);
             break;
 
             // Weapons
@@ -2068,7 +2068,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNMACE), false);
+            P_SetMessage(player, HERETIC_TXT_WPNMACE, false);
             sound = heretic_sfx_wpnup;
             break;
         case HERETIC_SPR_WBOW:         // Weapon_Crossbow
@@ -2076,7 +2076,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNCROSSBOW), false);
+            P_SetMessage(player, HERETIC_TXT_WPNCROSSBOW, false);
             sound = heretic_sfx_wpnup;
             break;
         case HERETIC_SPR_WBLS:         // Weapon_Blaster
@@ -2084,7 +2084,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNBLASTER), false);
+            P_SetMessage(player, HERETIC_TXT_WPNBLASTER, false);
             sound = heretic_sfx_wpnup;
             break;
         case HERETIC_SPR_WSKL:         // Weapon_SkullRod
@@ -2092,7 +2092,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNSKULLROD), false);
+            P_SetMessage(player, HERETIC_TXT_WPNSKULLROD, false);
             sound = heretic_sfx_wpnup;
             break;
         case HERETIC_SPR_WPHX:         // Weapon_PhoenixRod
@@ -2100,7 +2100,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNPHOENIXROD), false);
+            P_SetMessage(player, HERETIC_TXT_WPNPHOENIXROD, false);
             sound = heretic_sfx_wpnup;
             break;
         case HERETIC_SPR_WGNT:         // Weapon_Gauntlets
@@ -2108,7 +2108,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             {
                 return;
             }
-            P_SetMessage(player, DEH_String(HERETIC_TXT_WPNGAUNTLETS), false);
+            P_SetMessage(player, HERETIC_TXT_WPNGAUNTLETS, false);
             sound = heretic_sfx_wpnup;
             break;
         default:

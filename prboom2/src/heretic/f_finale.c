@@ -58,30 +58,30 @@ void Heretic_F_StartFinale(void)
   switch (gameepisode)
   {
     case 1:
-      finaleflat = DEH_String("FLOOR25");
-      finaletext = DEH_String(HERETIC_E1TEXT);
+      finaleflat = "FLOOR25";
+      finaletext = HERETIC_E1TEXT;
       break;
     case 2:
-      finaleflat = DEH_String("FLATHUH1");
-      finaletext = DEH_String(HERETIC_E2TEXT);
+      finaleflat = "FLATHUH1";
+      finaletext = HERETIC_E2TEXT;
       break;
     case 3:
-      finaleflat = DEH_String("FLTWAWA2");
-      finaletext = DEH_String(HERETIC_E3TEXT);
+      finaleflat = "FLTWAWA2";
+      finaletext = HERETIC_E3TEXT;
       break;
     case 4:
-      finaleflat = DEH_String("FLOOR28");
-      finaletext = DEH_String(HERETIC_E4TEXT);
+      finaleflat = "FLOOR28";
+      finaletext = HERETIC_E4TEXT;
       break;
     case 5:
-      finaleflat = DEH_String("FLOOR08");
-      finaletext = DEH_String(HERETIC_E5TEXT);
+      finaleflat = "FLOOR08";
+      finaletext = HERETIC_E5TEXT;
       break;
   }
 
   finalestage = 0;
   finalecount = 0;
-  FontABaseLump = W_GetNumForName(DEH_String("FONTA_S")) + 1;
+  FontABaseLump = W_GetNumForName("FONTA_S") + 1;
   S_ChangeMusic(heretic_mus_cptd, true);
 }
 
@@ -211,19 +211,19 @@ void F_DemonScroll(void)
 
   if (finalecount < 70)
   {
-    V_DrawRawScreen(DEH_String("FINAL1"));
+    V_DrawRawScreen("FINAL1");
     nextscroll = finalecount;
   }
   else if (yval < 200)
   {
-    V_DrawRawScreenSection(DEH_String("FINAL2"), (200 - yval) * 320, 0, yval);
-    V_DrawRawScreenSection(DEH_String("FINAL1"), 0, yval, 200 - yval);
+    V_DrawRawScreenSection("FINAL2", (200 - yval) * 320, 0, yval);
+    V_DrawRawScreenSection("FINAL1", 0, yval, 200 - yval);
     yval++;
     nextscroll = finalecount + 3;
   }
   else
   {                           //else, we'll just sit here and wait, for now
-    V_DrawRawScreen(DEH_String("FINAL2"));
+    V_DrawRawScreen("FINAL2");
   }
 }
 
@@ -241,11 +241,11 @@ void F_DrawUnderwater(void)
   {
     case 1:
       V_SetPlayPal(playpal_heretic_e2end);
-      V_DrawRawScreen(DEH_String("E2END"));
+      V_DrawRawScreen("E2END");
 
       break;
     case 2:
-      V_DrawRawScreen(DEH_String("TITLE"));
+      V_DrawRawScreen("TITLE");
   }
 }
 

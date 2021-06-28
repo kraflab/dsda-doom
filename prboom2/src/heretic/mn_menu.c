@@ -43,8 +43,8 @@ static int MenuTime;
 
 static void MN_InitFonts(void)
 {
-  FontABaseLump = W_GetNumForName(DEH_String("FONTA_S")) + 1;
-  FontBBaseLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
+  FontABaseLump = W_GetNumForName("FONTA_S") + 1;
+  FontBBaseLump = W_GetNumForName("FONTB_S") + 1;
 }
 
 extern menu_t MainDef;
@@ -67,7 +67,7 @@ void M_DrawThermo(int x, int y, int thermWidth, int thermDot);
 void MN_Init(void)
 {
   MN_InitFonts();
-  SkullBaseLump = W_GetNumForName(DEH_String("M_SKL00"));
+  SkullBaseLump = W_GetNumForName("M_SKL00");
 
   // override doom menu parameters
 
@@ -193,12 +193,12 @@ void MN_Drawer(void)
   {
     const char *text = currentMenu->menuitems[i].alttext;
     if (text)
-      MN_DrTextB(DEH_String(text), x, y);
+      MN_DrTextB(text, x, y);
     y += ITEM_HEIGHT;
   }
 
   y = currentMenu->y + (itemOn * ITEM_HEIGHT) + SELECTOR_YOFFSET;
-  selName = DEH_String(MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
+  selName = (MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
   V_DrawNamePatch(x + SELECTOR_XOFFSET, y, 0, selName, CR_DEFAULT, VPT_STRETCH);
   // MenuItem_t *item;
   // const char *message;
@@ -208,21 +208,21 @@ void MN_Drawer(void)
   // {
   //   if (askforquit)
   //   {
-  //     message = DEH_String(QuitEndMsg[typeofask - 1]);
+  //     message = QuitEndMsg[typeofask - 1];
   //
   //     MN_DrTextA(message, 160 - MN_TextAWidth(message) / 2, 80);
   //     if (typeofask == 3)
   //     {
   //       MN_DrTextA(SlotText[quicksave - 1], 160 -
   //                  MN_TextAWidth(SlotText[quicksave - 1]) / 2, 90);
-  //       MN_DrTextA(DEH_String("?"), 160 +
+  //       MN_DrTextA("?", 160 +
   //                  MN_TextAWidth(SlotText[quicksave - 1]) / 2, 90);
   //     }
   //     if (typeofask == 4)
   //     {
   //       MN_DrTextA(SlotText[quickload - 1], 160 -
   //                  MN_TextAWidth(SlotText[quickload - 1]) / 2, 90);
-  //       MN_DrTextA(DEH_String("?"), 160 +
+  //       MN_DrTextA("?", 160 +
   //                  MN_TextAWidth(SlotText[quickload - 1]) / 2, 90);
   //     }
   //   }
@@ -250,7 +250,7 @@ void MN_Drawer(void)
   //   {
   //     if (item->type != ITT_EMPTY && item->text)
   //     {
-  //       MN_DrTextB(DEH_String(item->text), x, y);
+  //       MN_DrTextB(item->text, x, y);
   //     }
   //
   //     y += ITEM_HEIGHT;
@@ -258,7 +258,7 @@ void MN_Drawer(void)
   //   }
   //
   //   y = CurrentMenu->y + (CurrentItPos * ITEM_HEIGHT) + SELECTOR_YOFFSET;
-  //   selName = DEH_String(MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
+  //   selName = (MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
   //   V_DrawPatch(x + SELECTOR_XOFFSET, y,
   //               W_CacheLumpName(selName, PU_CACHE));
   // }
@@ -269,7 +269,7 @@ void MN_DrawMainMenu(void)
   int frame;
 
   frame = (MenuTime / 3) % 18;
-  V_DrawNamePatch(88, 0, 0, DEH_String("M_HTIC"), CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(88, 0, 0, "M_HTIC", CR_DEFAULT, VPT_STRETCH);
   V_DrawNumPatch(40, 10, 0, SkullBaseLump + (17 - frame), CR_DEFAULT, VPT_STRETCH);
   V_DrawNumPatch(232, 10, 0, SkullBaseLump + frame, CR_DEFAULT, VPT_STRETCH);
 }
@@ -278,11 +278,11 @@ void MN_DrawOptions(void)
 {
     if (showMessages)
     {
-        MN_DrTextB(DEH_String("ON"), 196, OptionsDef.y + 3 * ITEM_HEIGHT);
+        MN_DrTextB("ON", 196, OptionsDef.y + 3 * ITEM_HEIGHT);
     }
     else
     {
-        MN_DrTextB(DEH_String("OFF"), 196, OptionsDef.y + 3 * ITEM_HEIGHT);
+        MN_DrTextB("OFF", 196, OptionsDef.y + 3 * ITEM_HEIGHT);
     }
     MN_DrawSlider(OptionsDef.x - 8, OptionsDef.y + ITEM_HEIGHT * SCREENSIZE_INDEX, 9, screenSize);
 }
@@ -327,7 +327,7 @@ static void MN_DrawFileSlots(int x, int y)
 
   for (i = 0; i < g_menu_save_page_size; i++)
   {
-    V_DrawNamePatch(x, y, 0, DEH_String("M_FSLOT"), CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(x, y, 0, "M_FSLOT", CR_DEFAULT, VPT_STRETCH);
     MN_DrTextA(savegamestrings[i], x + 5, y + 5);
     y += ITEM_HEIGHT;
   }
@@ -339,7 +339,7 @@ void MN_DrawLoad(void)
 {
   const char *title;
 
-  title = DEH_String("LOAD GAME");
+  title = "LOAD GAME";
 
   MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
   MN_DrawFileSlots(LoadDef.x, LoadDef.y);
@@ -355,7 +355,7 @@ void MN_DrawSave(void)
 {
   const char *title;
 
-  title = DEH_String("SAVE GAME");
+  title = "SAVE GAME";
 
   MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
   MN_DrawFileSlots(SaveDef.x, SaveDef.y);
@@ -495,19 +495,19 @@ void MN_DrawSlider(int x, int y, int width, int slot)
 
   width = (width > SLIDER_LIMIT) ? SLIDER_LIMIT : width;
 
-  V_DrawNamePatch(x, y, 0, DEH_String("M_SLDLT"), CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(x, y, 0, "M_SLDLT", CR_DEFAULT, VPT_STRETCH);
 
   for (x2 = x + 32, count = SLIDER_PATCH_COUNT; count--; x2 += 8)
   {
     const char* name;
 
-    name = DEH_String(slider_img & 1 ? "M_SLDMD1" : "M_SLDMD2");
+    name = (slider_img & 1 ? "M_SLDMD1" : "M_SLDMD2");
     slider_img ^= 1;
 
     V_DrawNamePatch(x2, y, 0, name, CR_DEFAULT, VPT_STRETCH);
   }
 
-  V_DrawNamePatch(x2, y, 0, DEH_String("M_SLDRT"), CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(x2, y, 0, "M_SLDRT", CR_DEFAULT, VPT_STRETCH);
 
   // [crispy] print the value
   snprintf(num, 4, "%3d", slot);
@@ -521,5 +521,5 @@ void MN_DrawSlider(int x, int y, int width, int slot)
 
   slot_x = x + 36 + (SLIDER_WIDTH - 8) * slot / (width - 1);
 
-  V_DrawNamePatch(slot_x, y + 7, 0, DEH_String("M_SLDKB"), CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(slot_x, y + 7, 0, "M_SLDKB", CR_DEFAULT, VPT_STRETCH);
 }

@@ -24,17 +24,17 @@
 
 static void Heretic_D_DrawTitle(const char *_x)
 {
-  D_SetPage(DEH_String("TITLE"), 350, heretic_mus_titl);
+  D_SetPage("TITLE", 350, heretic_mus_titl);
 }
 
 static void Heretic_D_DrawCredits(const char *_x)
 {
-  D_SetPage(DEH_String("CREDIT"), 200, 0);
+  D_SetPage("CREDIT", 200, 0);
 }
 
 static void Heretic_D_DrawOrder(const char *_x)
 {
-  D_SetPage(DEH_String("ORDER"), 200, 0);
+  D_SetPage("ORDER", 200, 0);
 }
 
 const demostate_t heretic_demostates[][4] =

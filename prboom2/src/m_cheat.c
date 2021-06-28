@@ -968,7 +968,7 @@ static void cheat_reset_health(void)
   {
     plyr->health = plyr->mo->health = MAXHEALTH;
   }
-  plyr->message = DEH_String("FULL HEALTH");
+  plyr->message = "FULL HEALTH";
 }
 
 static void cheat_artifact(char buf[3])
@@ -995,24 +995,24 @@ static void cheat_artifact(char buf[3])
         P_GiveArtifact(plyr, i, NULL);
       }
     }
-    plyr->message = DEH_String("YOU GOT IT");
+    plyr->message = "YOU GOT IT";
   }
   else if (type > arti_none && type < NUMARTIFACTS && count > 0 && count < 10)
   {
     if (gamemode == shareware && (type == arti_superhealth || type == arti_teleport))
     {
-      plyr->message = DEH_String("BAD INPUT");
+      plyr->message = "BAD INPUT";
       return;
     }
     for (i = 0; i < count; i++)
     {
       P_GiveArtifact(plyr, type, NULL);
     }
-    plyr->message = DEH_String("YOU GOT IT");
+    plyr->message = "YOU GOT IT";
   }
   else
   { // Bad input
-    plyr->message = DEH_String("BAD INPUT");
+    plyr->message = "BAD INPUT";
   }
 }
 
@@ -1023,12 +1023,12 @@ static void cheat_tome(void)
   if (plyr->powers[pw_weaponlevel2])
   {
     plyr->powers[pw_weaponlevel2] = 0;
-    plyr->message = DEH_String("POWER OFF");
+    plyr->message = "POWER OFF";
   }
   else
   {
     P_UseArtifact(plyr, arti_tomeofpower);
-    plyr->message = DEH_String("POWER ON");
+    plyr->message = "POWER ON";
   }
 }
 
@@ -1041,12 +1041,12 @@ static void cheat_chicken(void)
   {
     if (P_UndoPlayerChicken(plyr))
     {
-        plyr->message = DEH_String("CHICKEN OFF");
+        plyr->message = "CHICKEN OFF";
     }
   }
   else if (P_ChickenMorphPlayer(plyr))
   {
-    plyr->message = DEH_String("CHICKEN ON");
+    plyr->message = "CHICKEN ON";
   }
   P_MapEnd();
 }

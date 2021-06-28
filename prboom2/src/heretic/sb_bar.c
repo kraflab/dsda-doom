@@ -244,66 +244,66 @@ void SB_Init(void)
 
     // magic globals that ends up in the background
     R_SetFloorNum(&grnrock, "FLOOR30"); // hexen_note: F_022
-    R_SetPatchNum(&brdr_t, DEH_String("bordt"));
-    R_SetPatchNum(&brdr_b, DEH_String("bordb"));
-    R_SetPatchNum(&brdr_l, DEH_String("bordl"));
-    R_SetPatchNum(&brdr_r, DEH_String("bordr"));
-    R_SetPatchNum(&brdr_tl, DEH_String("bordtl"));
-    R_SetPatchNum(&brdr_tr, DEH_String("bordtr"));
-    R_SetPatchNum(&brdr_bl, DEH_String("bordbl"));
-    R_SetPatchNum(&brdr_br, DEH_String("bordbr"));
-    R_SetPatchNum(&stbarbg, DEH_String("BARBACK"));
+    R_SetPatchNum(&brdr_t, "bordt");
+    R_SetPatchNum(&brdr_b, "bordb");
+    R_SetPatchNum(&brdr_l, "bordl");
+    R_SetPatchNum(&brdr_r, "bordr");
+    R_SetPatchNum(&brdr_tl, "bordtl");
+    R_SetPatchNum(&brdr_tr, "bordtr");
+    R_SetPatchNum(&brdr_bl, "bordbl");
+    R_SetPatchNum(&brdr_br, "bordbr");
+    R_SetPatchNum(&stbarbg, "BARBACK");
 
     for (i = 0; i < 11; ++i)
     {
-      lumparti[i] = (W_CheckNumForName)(DEH_String(heretic_namearti[i]), ns_sprites);
+      lumparti[i] = (W_CheckNumForName)(heretic_namearti[i], ns_sprites);
     }
 
-    LumpLTFACE = W_GetNumForName(DEH_String("LTFACE"));
-    LumpRTFACE = W_GetNumForName(DEH_String("RTFACE"));
-    LumpBARBACK = W_GetNumForName(DEH_String("BARBACK"));
-    LumpINVBAR = W_GetNumForName(DEH_String("INVBAR"));
-    LumpCHAIN = W_GetNumForName(DEH_String("CHAIN"));
+    LumpLTFACE = W_GetNumForName("LTFACE");
+    LumpRTFACE = W_GetNumForName("RTFACE");
+    LumpBARBACK = W_GetNumForName("BARBACK");
+    LumpINVBAR = W_GetNumForName("INVBAR");
+    LumpCHAIN = W_GetNumForName("CHAIN");
     if (deathmatch)
     {
-        LumpSTATBAR = W_GetNumForName(DEH_String("STATBAR"));
+        LumpSTATBAR = W_GetNumForName("STATBAR");
     }
     else
     {
-        LumpSTATBAR = W_GetNumForName(DEH_String("LIFEBAR"));
+        LumpSTATBAR = W_GetNumForName("LIFEBAR");
     }
     if (!netgame)
     {                           // single player game uses red life gem
-        LumpLIFEGEM = W_GetNumForName(DEH_String("LIFEGEM2"));
+        LumpLIFEGEM = W_GetNumForName("LIFEGEM2");
     }
     else
     {
-        LumpLIFEGEM = W_GetNumForName(DEH_String("LIFEGEM0") + consoleplayer);
+        LumpLIFEGEM = W_GetNumForName("LIFEGEM0" + consoleplayer);
     }
-    LumpLTFCTOP = W_GetNumForName(DEH_String("LTFCTOP"));
-    LumpRTFCTOP = W_GetNumForName(DEH_String("RTFCTOP"));
-    LumpSELECTBOX = W_GetNumForName(DEH_String("SELECTBOX"));
-    LumpINVLFGEM1 = W_GetNumForName(DEH_String("INVGEML1"));
-    LumpINVLFGEM2 = W_GetNumForName(DEH_String("INVGEML2"));
-    LumpINVRTGEM1 = W_GetNumForName(DEH_String("INVGEMR1"));
-    LumpINVRTGEM2 = W_GetNumForName(DEH_String("INVGEMR2"));
-    LumpBLACKSQ = W_GetNumForName(DEH_String("BLACKSQ"));
-    LumpARMCLEAR = W_GetNumForName(DEH_String("ARMCLEAR"));
-    LumpCHAINBACK = W_GetNumForName(DEH_String("CHAINBACK"));
-    startLump = W_GetNumForName(DEH_String("IN0"));
+    LumpLTFCTOP = W_GetNumForName("LTFCTOP");
+    LumpRTFCTOP = W_GetNumForName("RTFCTOP");
+    LumpSELECTBOX = W_GetNumForName("SELECTBOX");
+    LumpINVLFGEM1 = W_GetNumForName("INVGEML1");
+    LumpINVLFGEM2 = W_GetNumForName("INVGEML2");
+    LumpINVRTGEM1 = W_GetNumForName("INVGEMR1");
+    LumpINVRTGEM2 = W_GetNumForName("INVGEMR2");
+    LumpBLACKSQ = W_GetNumForName("BLACKSQ");
+    LumpARMCLEAR = W_GetNumForName("ARMCLEAR");
+    LumpCHAINBACK = W_GetNumForName("CHAINBACK");
+    startLump = W_GetNumForName("IN0");
     for (i = 0; i < 10; i++)
     {
         LumpINumbers[i] = startLump + i;
     }
-    LumpNEGATIVE = W_GetNumForName(DEH_String("NEGNUM"));
-    FontBNumBase = W_GetNumForName(DEH_String("FONTB16"));
-    startLump = W_GetNumForName(DEH_String("SMALLIN0"));
+    LumpNEGATIVE = W_GetNumForName("NEGNUM");
+    FontBNumBase = W_GetNumForName("FONTB16");
+    startLump = W_GetNumForName("SMALLIN0");
     for (i = 0; i < 10; i++)
     {
         LumpSmNumbers[i] = startLump + i;
     }
-    spinbooklump = W_GetNumForName(DEH_String("SPINBK0"));
-    spinflylump = W_GetNumForName(DEH_String("SPFLY0"));
+    spinbooklump = W_GetNumForName("SPINBK0");
+    spinflylump = W_GetNumForName("SPFLY0");
 
     // [FG] support widescreen status bar backgrounds
     ST_SetScaledWidth();
@@ -377,7 +377,7 @@ static void DrINumber(signed int val, int x, int y)
     {
         if (val < -9)
         {
-            V_DrawNamePatch(x + 1, y + 1, 0, DEH_String("LAME"), CR_DEFAULT, VPT_STRETCH);
+            V_DrawNamePatch(x + 1, y + 1, 0, "LAME", CR_DEFAULT, VPT_STRETCH);
         }
         else
         {
@@ -571,8 +571,8 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
                 V_DrawNumPatch(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);
                 if (players[consoleplayer].cheats & CF_GODMODE)
                 {
-                    V_DrawNamePatch(16, 167, 0, DEH_String("GOD1"), CR_DEFAULT, VPT_STRETCH);
-                    V_DrawNamePatch(287, 167, 0, DEH_String("GOD2"), CR_DEFAULT, VPT_STRETCH);
+                    V_DrawNamePatch(16, 167, 0, "GOD1", CR_DEFAULT, VPT_STRETCH);
+                    V_DrawNamePatch(287, 167, 0, "GOD2", CR_DEFAULT, VPT_STRETCH);
                 }
             }
             else
@@ -774,7 +774,7 @@ void DrawMainBar(void)
     {
         V_DrawNumPatch(180,  161, 0, LumpBLACKSQ, CR_DEFAULT, VPT_STRETCH);
 
-        temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
+        temp = W_GetNumForName("useartia") + ArtifactFlash - 1;
 
         V_DrawNumPatch(182, 161, 0, temp, CR_DEFAULT, VPT_STRETCH);
         ArtifactFlash--;
@@ -835,15 +835,15 @@ void DrawMainBar(void)
     {
         if (CPlayer->cards[key_yellow])
         {
-            V_DrawNamePatch(153, 164, 0, DEH_String("ykeyicon"), CR_DEFAULT, VPT_STRETCH);
+            V_DrawNamePatch(153, 164, 0, "ykeyicon", CR_DEFAULT, VPT_STRETCH);
         }
         if (CPlayer->cards[key_green])
         {
-            V_DrawNamePatch(153, 172, 0, DEH_String("gkeyicon"), CR_DEFAULT, VPT_STRETCH);
+            V_DrawNamePatch(153, 172, 0, "gkeyicon", CR_DEFAULT, VPT_STRETCH);
         }
         if (CPlayer->cards[key_blue])
         {
-            V_DrawNamePatch(153, 180, 0, DEH_String("bkeyicon"), CR_DEFAULT, VPT_STRETCH);
+            V_DrawNamePatch(153, 180, 0, "bkeyicon", CR_DEFAULT, VPT_STRETCH);
         }
         oldkeys = playerkeys;
     }
@@ -856,7 +856,7 @@ void DrawMainBar(void)
         {
             DrINumber(temp, 109, 162);
             V_DrawNamePatch(
-              111, 172, 0, DEH_String(ammopic[CPlayer->readyweapon - 1]), CR_DEFAULT, VPT_STRETCH
+              111, 172, 0, ammopic[CPlayer->readyweapon - 1], CR_DEFAULT, VPT_STRETCH
             );
         }
         oldammo = temp;
@@ -945,7 +945,7 @@ void DrawFullScreenStuff(void)
         if (CPlayer->readyArtifact > 0)
         {
             lump = lumparti[CPlayer->readyArtifact];
-            V_DrawTLNamePatch(286, 170, DEH_String("ARTIBOX"));
+            V_DrawTLNamePatch(286, 170, "ARTIBOX");
             V_DrawNumPatch(sb_full_arti_x, sb_full_arti_y, 0, lump, CR_DEFAULT, VPT_STRETCH);
             if (heretic || CPlayer->inventory[inv_ptr].count > 1)
             {
@@ -958,7 +958,7 @@ void DrawFullScreenStuff(void)
         x = inv_ptr - curpos;
         for (i = 0; i < 7; i++)
         {
-            V_DrawTLNamePatch(50 + i * 31, 168, DEH_String("ARTIBOX"));
+            V_DrawTLNamePatch(50 + i * 31, 168, "ARTIBOX");
             if (CPlayer->inventorySlotNum > x + i
                 && CPlayer->inventory[x + i].type != arti_none)
             {

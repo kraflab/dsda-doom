@@ -243,5 +243,3 @@
 					"that it is not within you to\n"\
 					"surrender without a fight. eyes\n"\
 					"wide, you go to meet your fate."
-
-const char *DEH_String(const char *s);
