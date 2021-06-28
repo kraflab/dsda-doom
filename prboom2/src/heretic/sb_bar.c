@@ -186,6 +186,16 @@ static int sb_inv_arti_count_y;
 static int sb_inv_select_y;
 static int sb_inv_gem_x;
 static int sb_inv_gem_y;
+static int sb_full_arti_x;
+static int sb_full_arti_y;
+static int sb_full_arti_count_x;
+static int sb_full_inv_arti_x;
+static int sb_full_inv_arti_y;
+static int sb_full_inv_arti_count_x;
+static int sb_full_inv_arti_count_y;
+static int sb_full_inv_select_y;
+static int sb_full_inv_gem_xl;
+static int sb_full_inv_gem_xr;
 
 void SB_Start(void)
 {
@@ -220,6 +230,16 @@ void SB_Init(void)
     sb_inv_select_y = 189;
     sb_inv_gem_x = 38;
     sb_inv_gem_y = 159;
+    sb_full_arti_x = 286;
+    sb_full_arti_y = 170;
+    sb_full_arti_count_x = 307;
+    sb_full_inv_arti_x = 50;
+    sb_full_inv_arti_y = 168;
+    sb_full_inv_arti_count_x = 69;
+    sb_full_inv_arti_count_y = 190;
+    sb_full_inv_select_y = 197;
+    sb_full_inv_gem_xl = 38;
+    sb_full_inv_gem_xr = 269;
 
     // magic globals that ends up in the background
     R_SetFloorNum(&grnrock, "FLOOR30"); // hexen_note: F_022
@@ -923,8 +943,11 @@ void DrawFullScreenStuff(void)
         {
             lump = lumparti[CPlayer->readyArtifact];
             V_DrawTLNamePatch(286, 170, DEH_String("ARTIBOX"));
-            V_DrawNumPatch(286, 170, 0, lump, CR_DEFAULT, VPT_STRETCH);
-            DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307, 192);
+            V_DrawNumPatch(sb_full_arti_x, sb_full_arti_y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+            if (heretic || CPlayer->inventory[inv_ptr].count > 1)
+            {
+                DrSmallNumber(CPlayer->inventory[inv_ptr].count, sb_full_arti_count_x, 192);
+            }
         }
     }
     else
@@ -937,20 +960,26 @@ void DrawFullScreenStuff(void)
                 && CPlayer->inventory[x + i].type != arti_none)
             {
                 lump = lumparti[CPlayer->inventory[x + i].type];
-                V_DrawNumPatch(50 + i * 31, 168, 0, lump, CR_DEFAULT, VPT_STRETCH);
-                DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31, 190);
+                V_DrawNumPatch(sb_full_inv_arti_x + i * 31, sb_full_inv_arti_y, 0,
+                               lump, CR_DEFAULT, VPT_STRETCH);
+                if (heretic || CPlayer->inventory[x + i].count > 1)
+                {
+                    DrSmallNumber(CPlayer->inventory[x + i].count,
+                                  sb_full_inv_arti_count_x + i * 31, sb_full_inv_arti_count_y);
+                }
             }
         }
-        V_DrawNumPatch(50 + curpos * 31,  197, 0, LumpSELECTBOX, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(50 + curpos * 31, sb_full_inv_select_y, 0,
+                       LumpSELECTBOX, CR_DEFAULT, VPT_STRETCH);
         if (x != 0)
         {
             lump = !(leveltime & 4) ? LumpINVLFGEM1 : LumpINVLFGEM2;
-            V_DrawNumPatch(38, 167, 0, lump, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(sb_full_inv_gem_xl, 167, 0, lump, CR_DEFAULT, VPT_STRETCH);
         }
         if (CPlayer->inventorySlotNum - x > 7)
         {
             lump = !(leveltime & 4) ? LumpINVRTGEM1 : LumpINVRTGEM2;
-            V_DrawNumPatch(269, 167, 0, lump, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(sb_full_inv_gem_xr, 167, 0, lump, CR_DEFAULT, VPT_STRETCH);
         }
     }
 }
@@ -1000,6 +1029,16 @@ static void Hexen_SB_Init(void)
     sb_inv_select_y = 163;
     sb_inv_gem_x = 42;
     sb_inv_gem_y = 163;
+    sb_full_arti_x = 284;
+    sb_full_arti_y = 169;
+    sb_full_arti_count_x = 302;
+    sb_full_inv_arti_x = 49;
+    sb_full_inv_arti_y = 167;
+    sb_full_inv_arti_count_x = 66;
+    sb_full_inv_arti_count_y = 188;
+    sb_full_inv_select_y = 167;
+    sb_full_inv_gem_xl = 40;
+    sb_full_inv_gem_xr = 268;
 
     for (i = 0; i < 33; ++i)
     {
