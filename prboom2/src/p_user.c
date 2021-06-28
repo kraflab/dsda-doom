@@ -635,10 +635,6 @@ void P_PlayerThink (player_t* player)
   // {                           // Refresh the screen when a message goes away
   //     player->ultimateMessage = false;        // clear out any chat messages.
   //     player->yellowMessage = false;
-  //     if (player == &players[consoleplayer])
-  //     {
-  //         BorderTopRefresh = true;
-  //     }
   // }
 
   if (hexen)
