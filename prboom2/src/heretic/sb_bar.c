@@ -196,7 +196,7 @@ void SB_Ticker(void)
     int delta;
     int curHealth;
 
-    if (leveltime & 1 && !(paused || (!demoplayback && menuactive && !netgame)))
+    if (heretic && leveltime & 1 && !(paused || (!demoplayback && menuactive && !netgame)))
     {
         ChainWiggle = P_Random(pr_heretic) & 1;
     }
@@ -212,9 +212,9 @@ void SB_Ticker(void)
         {
             delta = 1;
         }
-        else if (delta > 8)
+        else if (delta > g_sb_ticker_delta_cap)
         {
-            delta = 8;
+            delta = g_sb_ticker_delta_cap;
         }
         HealthMarker -= delta;
     }
@@ -225,9 +225,9 @@ void SB_Ticker(void)
         {
             delta = 1;
         }
-        else if (delta > 8)
+        else if (delta > g_sb_ticker_delta_cap)
         {
-            delta = 8;
+            delta = g_sb_ticker_delta_cap;
         }
         HealthMarker += delta;
     }

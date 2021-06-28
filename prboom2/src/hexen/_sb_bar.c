@@ -188,50 +188,6 @@ void SB_SetClassData(void)
 
 //==========================================================================
 //
-// SB_Ticker
-//
-//==========================================================================
-
-void SB_Ticker(void)
-{
-    int delta;
-    int curHealth;
-
-    curHealth = players[consoleplayer].mo->health;
-    if (curHealth < 0)
-    {
-        curHealth = 0;
-    }
-    if (curHealth < HealthMarker)
-    {
-        delta = (HealthMarker - curHealth) >> 2;
-        if (delta < 1)
-        {
-            delta = 1;
-        }
-        else if (delta > 6)
-        {
-            delta = 6;
-        }
-        HealthMarker -= delta;
-    }
-    else if (curHealth > HealthMarker)
-    {
-        delta = (curHealth - HealthMarker) >> 2;
-        if (delta < 1)
-        {
-            delta = 1;
-        }
-        else if (delta > 6)
-        {
-            delta = 6;
-        }
-        HealthMarker += delta;
-    }
-}
-
-//==========================================================================
-//
 // DrINumber
 //
 // Draws a three digit number.
