@@ -175,6 +175,10 @@ static int hexen_lumparti[33];
 
 static int *lumparti;
 
+// game config
+static int sb_ticker_delta_cap;
+static int sb_icon_y;
+
 void SB_Start(void)
 {
   SB_state = -1;
@@ -198,6 +202,8 @@ void SB_Init(void)
     if (hexen) return Hexen_SB_Init();
 
     lumparti = heretic_lumparti;
+    sb_ticker_delta_cap = 8;
+    sb_icon_y = 17;
 
     // magic globals that ends up in the background
     R_SetFloorNum(&grnrock, "FLOOR30"); // hexen_note: F_022
@@ -293,9 +299,9 @@ void SB_Ticker(void)
         {
             delta = 1;
         }
-        else if (delta > g_sb_ticker_delta_cap)
+        else if (delta > sb_ticker_delta_cap)
         {
-            delta = g_sb_ticker_delta_cap;
+            delta = sb_ticker_delta_cap;
         }
         HealthMarker -= delta;
     }
@@ -306,9 +312,9 @@ void SB_Ticker(void)
         {
             delta = 1;
         }
-        else if (delta > g_sb_ticker_delta_cap)
+        else if (delta > sb_ticker_delta_cap)
         {
-            delta = g_sb_ticker_delta_cap;
+            delta = sb_ticker_delta_cap;
         }
         HealthMarker += delta;
     }
@@ -967,6 +973,8 @@ static void Hexen_SB_Init(void)
     int startLump;
 
     lumparti = hexen_lumparti;
+    sb_ticker_delta_cap = 6;
+    sb_icon_y = 19;
 
     for (i = 0; i < 33; ++i)
     {
@@ -1158,11 +1166,11 @@ static void DrawAnimatedIcons(void)
             {
                 if (hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawNumPatch(20, g_sb_icon_y, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
+                    V_DrawNumPatch(20, sb_icon_y, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
                 }
                 else
                 {
-                    V_DrawNumPatch(20, g_sb_icon_y, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
+                    V_DrawNumPatch(20, sb_icon_y, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
                     hitCenterFrame = false;
                 }
             }
@@ -1170,12 +1178,12 @@ static void DrawAnimatedIcons(void)
             {
                 if (!hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawNumPatch(20, g_sb_icon_y, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
+                    V_DrawNumPatch(20, sb_icon_y, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
                     hitCenterFrame = false;
                 }
                 else
                 {
-                    V_DrawNumPatch(20, g_sb_icon_y, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
+                    V_DrawNumPatch(20, sb_icon_y, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
                     hitCenterFrame = true;
                 }
             }
@@ -1188,7 +1196,7 @@ static void DrawAnimatedIcons(void)
             || !(CPlayer->powers[pw_weaponlevel2] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawNumPatch(300, g_sb_icon_y, 0, spinbooklump + frame, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(300, sb_icon_y, 0, spinbooklump + frame, CR_DEFAULT, VPT_STRETCH);
         }
     }
 
@@ -1199,7 +1207,7 @@ static void DrawAnimatedIcons(void)
             || !(CPlayer->powers[pw_speed] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawNumPatch(60, g_sb_icon_y, 0, SpinSpeedLump + frame, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(60, sb_icon_y, 0, SpinSpeedLump + frame, CR_DEFAULT, VPT_STRETCH);
         }
     }
 
@@ -1210,7 +1218,7 @@ static void DrawAnimatedIcons(void)
             || !(CPlayer->powers[pw_invulnerability] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawNumPatch(260, g_sb_icon_y, 0, SpinDefenseLump + frame, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(260, sb_icon_y, 0, SpinDefenseLump + frame, CR_DEFAULT, VPT_STRETCH);
         }
     }
 
@@ -1221,7 +1229,7 @@ static void DrawAnimatedIcons(void)
             || !(CPlayer->powers[pw_minotaur] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawNumPatch(300, g_sb_icon_y, 0, SpinMinotaurLump + frame, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(300, sb_icon_y, 0, SpinMinotaurLump + frame, CR_DEFAULT, VPT_STRETCH);
         }
     }
 }
