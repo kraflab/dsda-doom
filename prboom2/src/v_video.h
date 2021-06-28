@@ -308,5 +308,6 @@ void V_DrawShadowedNumPatch(int x, int y, int lump);
 void V_DrawShadowedNamePatch(int x, int y, const char* name);
 void V_DrawTLNumPatch(int x, int y, int lump);
 void V_DrawTLNamePatch(int x, int y, const char* name);
+void V_DrawAltTLNumPatch(int x, int y, int lump);
 
 #endif

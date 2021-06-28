@@ -43,6 +43,14 @@ static void DrawMainBar(void);
 static void DrawInventoryBar(void);
 static void DrawFullScreenStuff(void);
 
+static void Hexen_SB_Init(void);
+static void Hexen_DrINumber(signed int val, int x, int y);
+static void Hexen_DrSmallNumber(int val, int x, int y);
+static void DrRedINumber(signed int val, int x, int y);
+static void DrawKeyBar(void);
+static void DrawWeaponPieces(void);
+static void DrawAnimatedIcons(void);
+
 // Public Data
 
 dboolean inventory;
@@ -83,7 +91,7 @@ int FontBNumBase;
 int spinbooklump;
 int spinflylump;
 
-char namearti[][10] = {
+static char heretic_namearti[][10] = {
     {"ARTIBOX"},                // none
     {"ARTIINVU"},               // invulnerability
     {"ARTIINVS"},               // invisibility
@@ -96,7 +104,76 @@ char namearti[][10] = {
     {"ARTISOAR"},               // fly
     {"ARTIATLP"}                // teleport
 };
-int lumparti[11];
+static int heretic_lumparti[11];
+
+// hexen
+extern int ArmorIncrement[NUMCLASSES][NUMARMOR];
+extern int AutoArmorSave[NUMCLASSES];
+
+static int SpinMinotaurLump;
+static int SpinSpeedLump;
+static int SpinDefenseLump;
+
+static int LumpH2BAR;
+static int LumpH2TOP;
+static int LumpLFEDGE;
+static int LumpRTEDGE;
+static int LumpARTICLEAR;
+static int LumpMANACLEAR;
+static int LumpKILLS;
+static int LumpMANAVIAL1;
+static int LumpMANAVIAL2;
+static int LumpMANAVIALDIM1;
+static int LumpMANAVIALDIM2;
+static int LumpMANADIM1;
+static int LumpMANADIM2;
+static int LumpMANABRIGHT1;
+static int LumpMANABRIGHT2;
+static int LumpKEYBAR;
+static int LumpWEAPONSLOT;
+static int LumpWEAPONFULL;
+static int LumpPIECE1;
+static int LumpPIECE2;
+static int LumpPIECE3;
+
+static char hexen_namearti[][10] = {
+    {"ARTIBOX"},                // none
+    {"ARTIINVU"},               // invulnerability
+    {"ARTIPTN2"},               // health
+    {"ARTISPHL"},               // superhealth
+    {"ARTIHRAD"},               // healing radius
+    {"ARTISUMN"},               // summon maulator
+    {"ARTITRCH"},               // torch
+    {"ARTIPORK"},               // egg
+    {"ARTISOAR"},               // fly
+    {"ARTIBLST"},               // blast radius
+    {"ARTIPSBG"},               // poison bag
+    {"ARTITELO"},               // teleport other
+    {"ARTISPED"},               // speed
+    {"ARTIBMAN"},               // boost mana
+    {"ARTIBRAC"},               // boost armor
+    {"ARTIATLP"},               // teleport
+    {"ARTISKLL"},               // hexen_arti_puzzskull
+    {"ARTIBGEM"},               // hexen_arti_puzzgembig
+    {"ARTIGEMR"},               // hexen_arti_puzzgemred
+    {"ARTIGEMG"},               // hexen_arti_puzzgemgreen1
+    {"ARTIGMG2"},               // hexen_arti_puzzgemgreen2
+    {"ARTIGEMB"},               // hexen_arti_puzzgemblue1
+    {"ARTIGMB2"},               // hexen_arti_puzzgemblue2
+    {"ARTIBOK1"},               // hexen_arti_puzzbook1
+    {"ARTIBOK2"},               // hexen_arti_puzzbook2
+    {"ARTISKL2"},               // hexen_arti_puzzskull2
+    {"ARTIFWEP"},               // hexen_arti_puzzfweapon
+    {"ARTICWEP"},               // hexen_arti_puzzcweapon
+    {"ARTIMWEP"},               // hexen_arti_puzzmweapon
+    {"ARTIGEAR"},               // hexen_arti_puzzgear1
+    {"ARTIGER2"},               // hexen_arti_puzzgear2
+    {"ARTIGER3"},               // hexen_arti_puzzgear3
+    {"ARTIGER4"},               // hexen_arti_puzzgear4
+};
+static int hexen_lumparti[33];
+
+static int *lumparti;
 
 void SB_Start(void)
 {
@@ -118,6 +195,10 @@ void SB_Init(void)
     extern patchnum_t brdr_t, brdr_b, brdr_l, brdr_r;
     extern patchnum_t brdr_tl, brdr_tr, brdr_bl, brdr_br;
 
+    if (hexen) return Hexen_SB_Init();
+
+    lumparti = heretic_lumparti;
+
     // magic globals that ends up in the background
     R_SetFloorNum(&grnrock, "FLOOR30"); // hexen_note: F_022
     R_SetPatchNum(&brdr_t, DEH_String("bordt"));
@@ -132,7 +213,7 @@ void SB_Init(void)
 
     for (i = 0; i < 11; ++i)
     {
-      lumparti[i] = (W_CheckNumForName)(DEH_String(namearti[i]), ns_sprites);
+      lumparti[i] = (W_CheckNumForName)(DEH_String(heretic_namearti[i]), ns_sprites);
     }
 
     LumpLTFACE = W_GetNumForName(DEH_String("LTFACE"));
@@ -246,6 +327,8 @@ static void DrINumber(signed int val, int x, int y)
     int lump;
     int oldval;
 
+    if (hexen) return Hexen_DrINumber(val, x, y);
+
     oldval = val;
     if (val < 0)
     {
@@ -326,6 +409,8 @@ static void DrBNumber(signed int val, int x, int y)
 static void DrSmallNumber(int val, int x, int y)
 {
     int lump;
+
+    if (hexen) return Hexen_DrSmallNumber(val, x, y);
 
     if (val == 1)
     {
@@ -410,11 +495,12 @@ static int oldhealth = -1;
 static int oldlife = -1;
 static int oldkeys = -1;
 
+static int oldmana1 = -1;
+static int oldmana2 = -1;
+static int oldpieces = -1;
+
 void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 {
-    int frame;
-    static dboolean hitCenterFrame;
-
     if (refresh || fullmenu || V_GetMode() == VID_MODEGL) SB_state = -1;
 
     if (!statusbaron)
@@ -437,12 +523,20 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
             if (V_GetMode() != VID_MODE8)
               R_FillBackScreen();
 
-            V_DrawNumPatch(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);
-            if (players[consoleplayer].cheats & CF_GODMODE)
+            if (heretic)
             {
-                V_DrawNamePatch(16, 167, 0, DEH_String("GOD1"), CR_DEFAULT, VPT_STRETCH);
-                V_DrawNamePatch(287, 167, 0, DEH_String("GOD2"), CR_DEFAULT, VPT_STRETCH);
+                V_DrawNumPatch(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);
+                if (players[consoleplayer].cheats & CF_GODMODE)
+                {
+                    V_DrawNamePatch(16, 167, 0, DEH_String("GOD1"), CR_DEFAULT, VPT_STRETCH);
+                    V_DrawNamePatch(287, 167, 0, DEH_String("GOD2"), CR_DEFAULT, VPT_STRETCH);
+                }
             }
+            else
+            {
+                V_DrawNumPatch(0, 134, 0, LumpH2BAR, CR_DEFAULT, VPT_STRETCH);
+            }
+
             oldhealth = -1;
         }
         DrawCommonBar();
@@ -451,21 +545,45 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
             if (SB_state != 0)
             {
                 // Main interface
-                V_DrawNumPatch(34, 160, 0, LumpSTATBAR, CR_DEFAULT, VPT_STRETCH);
+                if (heretic)
+                {
+                    V_DrawNumPatch(34, 160, 0, LumpSTATBAR, CR_DEFAULT, VPT_STRETCH);
+                }
+                else
+                {
+                  if (!(automapmode & am_active))
+                  {
+                      V_DrawNumPatch(38, 162, 0, LumpSTATBAR, CR_DEFAULT, VPT_STRETCH);
+                  }
+                  else
+                  {
+                      V_DrawNumPatch(38, 162, 0, LumpKEYBAR, CR_DEFAULT, VPT_STRETCH);
+                  }
+                }
                 oldarti = 0;
                 oldammo = -1;
+                oldmana1 = -1;
+                oldmana2 = -1;
                 oldarmor = -1;
+                oldpieces = -1;
                 oldweapon = -1;
                 oldfrags = -9999;       //can't use -1, 'cuz of negative frags
                 oldlife = -1;
                 oldkeys = -1;
             }
-            DrawMainBar();
+            if (heretic || !(automapmode & am_active))
+            {
+                DrawMainBar();
+            }
+            else if (hexen)
+            {
+                DrawKeyBar();
+            }
             SB_state = 0;
         }
         else
         {
-            if (SB_state != 1)
+            if (heretic && SB_state != 1)
             {
                 V_DrawNumPatch(34, 160, 0, LumpINVBAR, CR_DEFAULT, VPT_STRETCH);
             }
@@ -474,51 +592,7 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
         }
     }
     SB_PaletteFlash(false);
-
-    // Flight icons
-    if (CPlayer->powers[pw_flight])
-    {
-        if (CPlayer->powers[pw_flight] > BLINKTHRESHOLD
-            || !(CPlayer->powers[pw_flight] & 16))
-        {
-            frame = (leveltime / 3) & 15;
-            if (CPlayer->mo->flags2 & MF2_FLY)
-            {
-                if (hitCenterFrame && (frame != 15 && frame != 0))
-                {
-                    V_DrawNumPatch(20, 17, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
-                }
-                else
-                {
-                    V_DrawNumPatch(20, 17, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
-                    hitCenterFrame = false;
-                }
-            }
-            else
-            {
-                if (!hitCenterFrame && (frame != 15 && frame != 0))
-                {
-                    V_DrawNumPatch(20, 17, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
-                    hitCenterFrame = false;
-                }
-                else
-                {
-                    V_DrawNumPatch(20, 17, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
-                    hitCenterFrame = true;
-                }
-            }
-        }
-    }
-
-    if (CPlayer->powers[pw_weaponlevel2] && !CPlayer->chickenTics)
-    {
-        if (CPlayer->powers[pw_weaponlevel2] > BLINKTHRESHOLD
-            || !(CPlayer->powers[pw_weaponlevel2] & 16))
-        {
-            frame = (leveltime / 3) & 15;
-            V_DrawNumPatch(300, 17, 0, spinbooklump + frame, CR_DEFAULT, VPT_STRETCH);
-        }
-    }
+    DrawAnimatedIcons();
 }
 
 // sets the new palette based upon current values of player->damagecount
@@ -864,4 +938,353 @@ dboolean SB_Responder(event_t * ev)
   //       }
   //   }
   return M_CheatResponder(ev);
+}
+
+// hexen
+
+static void Hexen_SB_Init(void)
+{
+    int i;
+    int startLump;
+
+    lumparti = hexen_lumparti;
+
+    for (i = 0; i < 33; ++i)
+    {
+      lumparti[i] = (W_CheckNumForName)(hexen_namearti[i], ns_sprites);
+    }
+
+    LumpH2BAR = W_GetNumForName("H2BAR");
+    LumpH2TOP = W_GetNumForName("H2TOP");
+    LumpINVBAR = W_GetNumForName("INVBAR");
+    LumpLFEDGE = W_GetNumForName("LFEDGE");
+    LumpRTEDGE = W_GetNumForName("RTEDGE");
+    LumpSTATBAR = W_GetNumForName("STATBAR");
+    LumpKEYBAR = W_GetNumForName("KEYBAR");
+    LumpSELECTBOX = W_GetNumForName("SELECTBOX");
+    LumpARTICLEAR = W_GetNumForName("ARTICLS");
+    LumpARMCLEAR = W_GetNumForName("ARMCLS");
+    LumpMANACLEAR = W_GetNumForName("MANACLS");
+    LumpMANAVIAL1 = W_GetNumForName("MANAVL1");
+    LumpMANAVIAL2 = W_GetNumForName("MANAVL2");
+    LumpMANAVIALDIM1 = W_GetNumForName("MANAVL1D");
+    LumpMANAVIALDIM2 = W_GetNumForName("MANAVL2D");
+    LumpMANADIM1 = W_GetNumForName("MANADIM1");
+    LumpMANADIM2 = W_GetNumForName("MANADIM2");
+    LumpMANABRIGHT1 = W_GetNumForName("MANABRT1");
+    LumpMANABRIGHT2 = W_GetNumForName("MANABRT2");
+    LumpINVLFGEM1 = W_GetNumForName("invgeml1");
+    LumpINVLFGEM2 = W_GetNumForName("invgeml2");
+    LumpINVRTGEM1 = W_GetNumForName("invgemr1");
+    LumpINVRTGEM2 = W_GetNumForName("invgemr2");
+
+    startLump = W_GetNumForName("IN0");
+    for (i = 0; i < 10; i++)
+    {
+        LumpINumbers[i] = startLump + i;
+    }
+    LumpNEGATIVE = W_GetNumForName("NEGNUM");
+    FontBNumBase = W_GetNumForName("FONTB16");
+    startLump = W_GetNumForName("SMALLIN0");
+    for (i = 0; i < 10; i++)
+    {
+        LumpSmNumbers[i] = startLump + i;
+    }
+    spinflylump = W_GetNumForName("SPFLY0");
+    SpinMinotaurLump = W_GetNumForName("SPMINO0");
+    SpinSpeedLump = W_GetNumForName("SPBOOT0");
+    SpinDefenseLump = W_GetNumForName("SPSHLD0");
+
+    if (deathmatch)
+    {
+        LumpKILLS = W_GetNumForName("KILLS");
+    }
+    SB_SetClassData();
+}
+
+void SB_SetClassData(void)
+{
+    int class;
+
+    class = PlayerClass[consoleplayer]; // original player class (not pig)
+    LumpWEAPONSLOT = W_GetNumForName("wpslot0") + class;
+    LumpWEAPONFULL = W_GetNumForName("wpfull0") + class;
+    LumpPIECE1 = W_GetNumForName("wpiecef1") + class;
+    LumpPIECE2 = W_GetNumForName("wpiecef2") + class;
+    LumpPIECE3 = W_GetNumForName("wpiecef3") + class;
+    LumpCHAIN = W_GetNumForName("chain") + class;
+    if (!netgame)
+    {                           // single player game uses red life gem (the second gem)
+        LumpLIFEGEM = W_GetNumForName("lifegem") + HEXEN_MAXPLAYERS * class + 1;
+    }
+    else
+    {
+        LumpLIFEGEM = W_GetNumForName("lifegem") + HEXEN_MAXPLAYERS * class + consoleplayer;
+    }
+    SB_state = -1;
+}
+
+static void Hexen_DrINumber(signed int val, int x, int y)
+{
+    int lump;
+    int oldval;
+
+    oldval = val;
+    if (val < 0)
+    {
+        val = -val;
+        if (val > 99)
+        {
+            val = 99;
+        }
+        if (val > 9)
+        {
+            lump = LumpINumbers[val / 10];
+            V_DrawNumPatch(x + 8, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(x, y, 0, LumpNEGATIVE, CR_DEFAULT, VPT_STRETCH);
+        }
+        else
+        {
+            V_DrawNumPatch(x + 8, y, 0, LumpNEGATIVE, CR_DEFAULT, VPT_STRETCH);
+        }
+        val = val % 10;
+        lump = LumpINumbers[val];
+        V_DrawNumPatch(x + 16, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        return;
+    }
+    if (val > 99)
+    {
+        lump = LumpINumbers[val / 100];
+        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+    }
+    val = val % 100;
+    if (val > 9 || oldval > 99)
+    {
+        lump = LumpINumbers[val / 10];
+        V_DrawNumPatch(x + 8, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+    }
+    val = val % 10;
+    lump = LumpINumbers[val];
+    V_DrawNumPatch(x + 16, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+}
+
+static void Hexen_DrSmallNumber(int val, int x, int y)
+{
+    int lump;
+
+    if (val <= 0)
+    {
+        return;
+    }
+    if (val > 999)
+    {
+        val %= 1000;
+    }
+    if (val > 99)
+    {
+        lump = LumpSmNumbers[val / 100];
+        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        lump = LumpSmNumbers[(val % 100) / 10];
+        V_DrawNumPatch(x + 4, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+    }
+    else if (val > 9)
+    {
+        lump = LumpSmNumbers[val / 10];
+        V_DrawNumPatch(x + 4, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+    }
+    val %= 10;
+    lump = LumpSmNumbers[val];
+    V_DrawNumPatch(x + 8, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+}
+
+static void DrRedINumber(signed int val, int x, int y)
+{
+    int lump;
+    int oldval;
+
+    oldval = val;
+    if (val < 0)
+    {
+        val = 0;
+    }
+    if (val > 99)
+    {
+        lump = W_GetNumForName("inred0") + val / 100;
+        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+    }
+    val = val % 100;
+    if (val > 9 || oldval > 99)
+    {
+        lump = W_GetNumForName("inred0") + val / 10;
+        V_DrawNumPatch(x + 8, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+    }
+    val = val % 10;
+    lump = W_GetNumForName("inred0") + val;
+    V_DrawNumPatch(x + 16, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+}
+
+static void DrawAnimatedIcons(void)
+{
+    int frame;
+    static dboolean hitCenterFrame;
+
+    // Flight icons
+    if (CPlayer->powers[pw_flight])
+    {
+        if (CPlayer->powers[pw_flight] > BLINKTHRESHOLD
+            || !(CPlayer->powers[pw_flight] & 16))
+        {
+            frame = (leveltime / 3) & 15;
+            if (CPlayer->mo->flags2 & MF2_FLY)
+            {
+                if (hitCenterFrame && (frame != 15 && frame != 0))
+                {
+                    V_DrawNumPatch(20, g_sb_icon_y, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
+                }
+                else
+                {
+                    V_DrawNumPatch(20, g_sb_icon_y, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
+                    hitCenterFrame = false;
+                }
+            }
+            else
+            {
+                if (!hitCenterFrame && (frame != 15 && frame != 0))
+                {
+                    V_DrawNumPatch(20, g_sb_icon_y, 0, spinflylump + frame, CR_DEFAULT, VPT_STRETCH);
+                    hitCenterFrame = false;
+                }
+                else
+                {
+                    V_DrawNumPatch(20, g_sb_icon_y, 0, spinflylump + 15, CR_DEFAULT, VPT_STRETCH);
+                    hitCenterFrame = true;
+                }
+            }
+        }
+    }
+
+    if (CPlayer->powers[pw_weaponlevel2] && !CPlayer->chickenTics)
+    {
+        if (CPlayer->powers[pw_weaponlevel2] > BLINKTHRESHOLD
+            || !(CPlayer->powers[pw_weaponlevel2] & 16))
+        {
+            frame = (leveltime / 3) & 15;
+            V_DrawNumPatch(300, g_sb_icon_y, 0, spinbooklump + frame, CR_DEFAULT, VPT_STRETCH);
+        }
+    }
+
+    // Speed Boots
+    if (CPlayer->powers[pw_speed])
+    {
+        if (CPlayer->powers[pw_speed] > BLINKTHRESHOLD
+            || !(CPlayer->powers[pw_speed] & 16))
+        {
+            frame = (leveltime / 3) & 15;
+            V_DrawNumPatch(60, g_sb_icon_y, 0, SpinSpeedLump + frame, CR_DEFAULT, VPT_STRETCH);
+        }
+    }
+
+    // Defensive power
+    if (hexen && CPlayer->powers[pw_invulnerability])
+    {
+        if (CPlayer->powers[pw_invulnerability] > BLINKTHRESHOLD
+            || !(CPlayer->powers[pw_invulnerability] & 16))
+        {
+            frame = (leveltime / 3) & 15;
+            V_DrawNumPatch(260, g_sb_icon_y, 0, SpinDefenseLump + frame, CR_DEFAULT, VPT_STRETCH);
+        }
+    }
+
+    // Minotaur Active
+    if (CPlayer->powers[pw_minotaur])
+    {
+        if (CPlayer->powers[pw_minotaur] > BLINKTHRESHOLD
+            || !(CPlayer->powers[pw_minotaur] & 16))
+        {
+            frame = (leveltime / 3) & 15;
+            V_DrawNumPatch(300, g_sb_icon_y, 0, SpinMinotaurLump + frame, CR_DEFAULT, VPT_STRETCH);
+        }
+    }
+}
+
+void DrawKeyBar(void)
+{
+    int i;
+    int xPosition;
+    int temp;
+
+    if (oldkeys != playerkeys)
+    {
+        xPosition = 46;
+        for (i = 0; i < NUMCARDS && xPosition <= 126; i++)
+        {
+            if (playerkeys & (1 << i))
+            {
+                V_DrawNumPatch(xPosition, 164, 0,
+                               W_GetNumForName("keyslot1") + i, CR_DEFAULT, VPT_STRETCH);
+                xPosition += 20;
+            }
+        }
+        oldkeys = playerkeys;
+    }
+    temp = AutoArmorSave[CPlayer->pclass]
+        + CPlayer->armorpoints[ARMOR_ARMOR] +
+        CPlayer->armorpoints[ARMOR_SHIELD] +
+        CPlayer->armorpoints[ARMOR_HELMET] +
+        CPlayer->armorpoints[ARMOR_AMULET];
+    if (oldarmor != temp)
+    {
+        for (i = 0; i < NUMARMOR; i++)
+        {
+            if (!CPlayer->armorpoints[i])
+            {
+                continue;
+            }
+            if (CPlayer->armorpoints[i] <=
+                (ArmorIncrement[CPlayer->pclass][i] >> 2))
+            {
+                V_DrawTLNumPatch(150 + 31 * i, 164, W_GetNumForName("armslot1") + i);
+            }
+            else if (CPlayer->armorpoints[i] <=
+                     (ArmorIncrement[CPlayer->pclass][i] >> 1))
+            {
+                V_DrawAltTLNumPatch(150 + 31 * i, 164, W_GetNumForName("armslot1") + i);
+            }
+            else
+            {
+                V_DrawNumPatch(150 + 31 * i, 164, 0,
+                               W_GetNumForName("armslot1") + i, CR_DEFAULT, VPT_STRETCH);
+            }
+        }
+        oldarmor = temp;
+    }
+}
+
+static int PieceX[NUMCLASSES][3] = {
+    [PCLASS_FIGHTER] = {190, 225, 234},
+                       {190, 212, 225},
+                       {190, 205, 224},
+                       {0, 0, 0}                   // Pig is never used
+};
+
+static void DrawWeaponPieces(void)
+{
+    if (CPlayer->pieces == 7)
+    {
+        V_DrawNumPatch(190, 162, 0, LumpWEAPONFULL, CR_DEFAULT, VPT_STRETCH);
+        return;
+    }
+    V_DrawNumPatch(190, 162, 0, LumpWEAPONSLOT, CR_DEFAULT, VPT_STRETCH);
+    if (CPlayer->pieces & WPIECE1)
+    {
+        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][0], 162, 0, LumpPIECE1, CR_DEFAULT, VPT_STRETCH);
+    }
+    if (CPlayer->pieces & WPIECE2)
+    {
+        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][1], 162, 0, LumpPIECE2, CR_DEFAULT, VPT_STRETCH);
+    }
+    if (CPlayer->pieces & WPIECE3)
+    {
+        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][2], 162, 0, LumpPIECE3, CR_DEFAULT, VPT_STRETCH);
+    }
 }

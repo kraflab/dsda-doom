@@ -128,7 +128,7 @@ extern int SCREEN_320x200;
 
 // The maximum number of players, multiplayer/networking.
 #define MAXPLAYERS       4
-
+#define HEXEN_MAXPLAYERS 8
 // HEXEN_TODO: MAXPLAYERS is 8
 
 // killough 2/28/98: A ridiculously large number

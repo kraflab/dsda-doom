@@ -1740,6 +1740,11 @@ void V_DrawTLNamePatch(int x, int y, const char* name)
   V_DrawNamePatch(x, y, 0, name, CR_DEFAULT, VPT_STRETCH);
 }
 
+void V_DrawAltTLNumPatch(int x, int y, int lump)
+{
+  V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+}
+
 // void V_DrawShadowedPatch(int x, int y, patch_t *patch)
 // {
 //     int count, col;

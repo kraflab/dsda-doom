@@ -50,6 +50,7 @@ extern int g_mons_look_range;
 extern int g_hide_state;
 extern int g_lava_type;
 extern int g_sb_ticker_delta_cap;
+extern int g_sb_icon_y;
 
 extern int g_mntr_charge_speed;
 extern int g_mntr_atk1_sfx;
