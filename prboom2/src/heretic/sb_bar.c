@@ -178,6 +178,14 @@ static int *lumparti;
 // game config
 static int sb_ticker_delta_cap;
 static int sb_icon_y;
+static int sb_inv_bar_x;
+static int sb_inv_bar_y;
+static int sb_inv_arti_y;
+static int sb_inv_arti_count_x;
+static int sb_inv_arti_count_y;
+static int sb_inv_select_y;
+static int sb_inv_gem_x;
+static int sb_inv_gem_y;
 
 void SB_Start(void)
 {
@@ -204,6 +212,14 @@ void SB_Init(void)
     lumparti = heretic_lumparti;
     sb_ticker_delta_cap = 8;
     sb_icon_y = 17;
+    sb_inv_bar_x = 34;
+    sb_inv_bar_y = 160;
+    sb_inv_arti_y = 160;
+    sb_inv_arti_count_x = 69;
+    sb_inv_arti_count_y = 182;
+    sb_inv_select_y = 189;
+    sb_inv_gem_x = 38;
+    sb_inv_gem_y = 159;
 
     // magic globals that ends up in the background
     R_SetFloorNum(&grnrock, "FLOOR30"); // hexen_note: F_022
@@ -846,29 +862,30 @@ void DrawInventoryBar(void)
     int lump;
 
     x = inv_ptr - curpos;
-    V_DrawNumPatch(34,  160, 0, LumpINVBAR, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNumPatch(sb_inv_bar_x, sb_inv_bar_y, 0, LumpINVBAR, CR_DEFAULT, VPT_STRETCH);
     for (i = 0; i < 7; i++)
     {
         if (CPlayer->inventorySlotNum > x + i
             && CPlayer->inventory[x + i].type != arti_none)
         {
             V_DrawNumPatch(
-              50 + i * 31, 160, 0,
+              50 + i * 31, sb_inv_arti_y, 0,
               lumparti[CPlayer->inventory[x + i].type], CR_DEFAULT, VPT_STRETCH
             );
-            DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31, 182);
+            DrSmallNumber(CPlayer->inventory[x + i].count,
+                          sb_inv_arti_count_x + i * 31, sb_inv_arti_count_y);
         }
     }
-    V_DrawNumPatch(50 + curpos * 31,  189, 0, LumpSELECTBOX, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNumPatch(50 + curpos * 31,  sb_inv_select_y, 0, LumpSELECTBOX, CR_DEFAULT, VPT_STRETCH);
     if (x != 0)
     {
         lump = !(leveltime & 4) ? LumpINVLFGEM1 : LumpINVLFGEM2;
-        V_DrawNumPatch(38, 159, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(sb_inv_gem_x, sb_inv_gem_y, 0, lump, CR_DEFAULT, VPT_STRETCH);
     }
     if (CPlayer->inventorySlotNum - x > 7)
     {
         lump = !(leveltime & 4) ? LumpINVRTGEM1 : LumpINVRTGEM2;
-        V_DrawNumPatch(269, 159, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(269, sb_inv_gem_y, 0, lump, CR_DEFAULT, VPT_STRETCH);
     }
 }
 
@@ -975,6 +992,14 @@ static void Hexen_SB_Init(void)
     lumparti = hexen_lumparti;
     sb_ticker_delta_cap = 6;
     sb_icon_y = 19;
+    sb_inv_bar_x = 38;
+    sb_inv_bar_y = 162;
+    sb_inv_arti_y = 163;
+    sb_inv_arti_count_x = 68;
+    sb_inv_arti_count_y = 185;
+    sb_inv_select_y = 163;
+    sb_inv_gem_x = 42;
+    sb_inv_gem_y = 163;
 
     for (i = 0; i < 33; ++i)
     {

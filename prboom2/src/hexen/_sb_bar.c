@@ -222,46 +222,6 @@ void DrawMainBar(void)
 
 //==========================================================================
 //
-// DrawInventoryBar
-//
-//==========================================================================
-
-void DrawInventoryBar(void)
-{
-    int i;
-    int x;
-
-    x = inv_ptr - curpos;
-    V_DrawNumPatch(38, 162, 0, LumpINVBAR, CR_DEFAULT, VPT_STRETCH);
-    for (i = 0; i < 7; i++)
-    {
-        if (CPlayer->inventorySlotNum > x + i
-            && CPlayer->inventory[x + i].type != hexen_arti_none)
-        {
-            V_DrawNumPatch(50 + i * 31, 163, 0,
-                           lumparti[CPlayer->inventory[x + i].type], CR_DEFAULT, VPT_STRETCH);
-            if (CPlayer->inventory[x + i].count > 1)
-            {
-                DrSmallNumber(CPlayer->inventory[x + i].count, 68 + i * 31,
-                              185);
-            }
-        }
-    }
-    V_DrawNumPatch(50 + curpos * 31, 163, 0, LumpSELECTBOX, CR_DEFAULT, VPT_STRETCH);
-    if (x != 0)
-    {
-        V_DrawNumPatch(42, 163, 0, !(leveltime & 4) ? LumpINVLFGEM1 :
-                    LumpINVLFGEM2, CR_DEFAULT, VPT_STRETCH);
-    }
-    if (CPlayer->inventorySlotNum - x > 7)
-    {
-        V_DrawNumPatch(269, 163, 0, !(leveltime & 4) ? LumpINVRTGEM1 :
-                    LumpINVRTGEM2, CR_DEFAULT, VPT_STRETCH);
-    }
-}
-
-//==========================================================================
-//
 // DrawFullScreenStuff
 //
 //==========================================================================
