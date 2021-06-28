@@ -16,37 +16,6 @@
 
 //==========================================================================
 //
-// DrawCommonBar
-//
-//==========================================================================
-
-void DrawCommonBar(void)
-{
-    int healthPos;
-
-    V_DrawNumPatch(0, 134, 0, LumpH2TOP, CR_DEFAULT, VPT_STRETCH);
-
-    if (oldhealth != HealthMarker)
-    {
-        oldhealth = HealthMarker;
-        healthPos = HealthMarker;
-        if (healthPos < 0)
-        {
-            healthPos = 0;
-        }
-        if (healthPos > 100)
-        {
-            healthPos = 100;
-        }
-        V_DrawNumPatch(28 + (((healthPos * 196) / 100) % 9), 193, 0, LumpCHAIN, CR_DEFAULT, VPT_STRETCH);
-        V_DrawNumPatch(7 + ((healthPos * 11) / 5), 193, 0, LumpLIFEGEM, CR_DEFAULT, VPT_STRETCH);
-        V_DrawNumPatch(0, 193, 0, LumpLFEDGE, CR_DEFAULT, VPT_STRETCH);
-        V_DrawNumPatch(277, 193, 0, LumpRTEDGE, CR_DEFAULT, VPT_STRETCH);
-    }
-}
-
-//==========================================================================
-//
 // DrawMainBar
 //
 //==========================================================================

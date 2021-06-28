@@ -661,13 +661,19 @@ void SB_PaletteFlash(dboolean forceChange)
 
 void DrawCommonBar(void)
 {
-    int chainY;
     int healthPos;
 
     if (!dsda_HideHorns())
     {
-      V_DrawNumPatch(0,  148, 0, LumpLTFCTOP, CR_DEFAULT, VPT_STRETCH);
-      V_DrawNumPatch(290,  148, 0, LumpRTFCTOP, CR_DEFAULT, VPT_STRETCH);
+      if (heretic)
+      {
+          V_DrawNumPatch(0,  148, 0, LumpLTFCTOP, CR_DEFAULT, VPT_STRETCH);
+          V_DrawNumPatch(290,  148, 0, LumpRTFCTOP, CR_DEFAULT, VPT_STRETCH);
+      }
+      else
+      {
+          V_DrawNumPatch(0, 134, 0, LumpH2TOP, CR_DEFAULT, VPT_STRETCH);
+      }
     }
 
     if (oldhealth != HealthMarker)
@@ -682,15 +688,28 @@ void DrawCommonBar(void)
         {
             healthPos = 100;
         }
-        healthPos = (healthPos * 256) / 100;
-        chainY =
-            (HealthMarker == CPlayer->mo->health) ? 191 : 191 + ChainWiggle;
-        V_DrawNumPatch(0,  190, 0, LumpCHAINBACK, CR_DEFAULT, VPT_STRETCH);
-        V_DrawNumPatch(2 + (healthPos % 17),  chainY, 0, LumpCHAIN, CR_DEFAULT, VPT_STRETCH);
-        V_DrawNumPatch(17 + healthPos,  chainY, 0, LumpLIFEGEM, CR_DEFAULT, VPT_STRETCH);
-        V_DrawNumPatch(0,  190, 0, LumpLTFACE, CR_DEFAULT, VPT_STRETCH);
-        V_DrawNumPatch(276,  190, 0, LumpRTFACE, CR_DEFAULT, VPT_STRETCH);
-        ShadeChain();
+
+        if (heretic)
+        {
+            int chainY;
+
+            healthPos = (healthPos * 256) / 100;
+            chainY =
+                (HealthMarker == CPlayer->mo->health) ? 191 : 191 + ChainWiggle;
+            V_DrawNumPatch(0,  190, 0, LumpCHAINBACK, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(2 + (healthPos % 17),  chainY, 0, LumpCHAIN, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(17 + healthPos,  chainY, 0, LumpLIFEGEM, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(0,  190, 0, LumpLTFACE, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(276,  190, 0, LumpRTFACE, CR_DEFAULT, VPT_STRETCH);
+            ShadeChain();
+        }
+        else
+        {
+            V_DrawNumPatch(28 + (((healthPos * 196) / 100) % 9), 193, 0, LumpCHAIN, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(7 + ((healthPos * 11) / 5), 193, 0, LumpLIFEGEM, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(0, 193, 0, LumpLFEDGE, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatch(277, 193, 0, LumpRTEDGE, CR_DEFAULT, VPT_STRETCH);
+        }
     }
 }
 
