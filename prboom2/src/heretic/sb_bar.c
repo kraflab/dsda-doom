@@ -50,6 +50,7 @@ static void DrRedINumber(signed int val, int x, int y);
 static void DrawKeyBar(void);
 static void DrawWeaponPieces(void);
 static void DrawAnimatedIcons(void);
+static void Hexen_DrawMainBar(void);
 
 // Public Data
 
@@ -766,6 +767,8 @@ void DrawMainBar(void)
     int i;
     int temp;
 
+    if (hexen) return Hexen_DrawMainBar();
+
     // Ready artifact
     if (ArtifactFlash)
     {
@@ -1377,5 +1380,190 @@ static void DrawWeaponPieces(void)
     if (CPlayer->pieces & WPIECE3)
     {
         V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][2], 162, 0, LumpPIECE3, CR_DEFAULT, VPT_STRETCH);
+    }
+}
+
+static void Hexen_DrawMainBar(void)
+{
+    int i, j, k;
+    int temp;
+    int manaLump1, manaLump2;
+    int manaVialLump1, manaVialLump2;
+
+    manaLump1 = 0;
+    manaLump2 = 0;
+    manaVialLump1 = 0;
+    manaVialLump2 = 0;
+
+    // Ready artifact
+    if (ArtifactFlash)
+    {
+        V_DrawNumPatch(144, 160, 0, LumpARTICLEAR, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(148, 164, 0,
+                       W_GetNumForName("useartia") + ArtifactFlash - 1, CR_DEFAULT, VPT_STRETCH);
+        ArtifactFlash--;
+        oldarti = -1;           // so that the correct artifact fills in after the flash
+    }
+    else if (oldarti != CPlayer->readyArtifact
+             || oldartiCount != CPlayer->inventory[inv_ptr].count)
+    {
+        V_DrawNumPatch(144, 160, 0, LumpARTICLEAR, CR_DEFAULT, VPT_STRETCH);
+        if (CPlayer->readyArtifact > 0)
+        {
+            V_DrawNumPatch(143, 163, 0,
+                           lumparti[CPlayer->readyArtifact], CR_DEFAULT, VPT_STRETCH);
+            if (CPlayer->inventory[inv_ptr].count > 1)
+            {
+                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 162, 184);
+            }
+        }
+        oldarti = CPlayer->readyArtifact;
+        oldartiCount = CPlayer->inventory[inv_ptr].count;
+    }
+
+    // Frags
+    if (deathmatch)
+    {
+        temp = 0;
+        for (i = 0; i < MAXPLAYERS; i++)
+        {
+            temp += CPlayer->frags[i];
+        }
+        if (temp != oldfrags)
+        {
+            V_DrawNumPatch(38, 162, 0, LumpKILLS, CR_DEFAULT, VPT_STRETCH);
+            DrINumber(temp, 40, 176);
+            oldfrags = temp;
+        }
+    }
+    else
+    {
+        temp = HealthMarker;
+        if (temp < 0)
+        {
+            temp = 0;
+        }
+        else if (temp > 100)
+        {
+            temp = 100;
+        }
+        if (oldlife != temp)
+        {
+            oldlife = temp;
+            V_DrawNumPatch(41, 178, 0, LumpARMCLEAR, CR_DEFAULT, VPT_STRETCH);
+            if (temp >= 25)
+            {
+                DrINumber(temp, 40, 176);
+            }
+            else
+            {
+                DrRedINumber(temp, 40, 176);
+            }
+        }
+    }
+    // Mana
+    temp = CPlayer->ammo[0];
+    if (oldmana1 != temp)
+    {
+        V_DrawNumPatch(77, 178, 0, LumpMANACLEAR, CR_DEFAULT, VPT_STRETCH);
+        DrSmallNumber(temp, 79, 181);
+        manaVialLump1 = -1; // force a vial update
+        if (temp == 0)
+        {                       // Draw Dim Mana icon
+            manaLump1 = LumpMANADIM1;
+        }
+        else if (oldmana1 == 0)
+        {
+            manaLump1 = LumpMANABRIGHT1;
+        }
+        oldmana1 = temp;
+    }
+    temp = CPlayer->ammo[1];
+    if (oldmana2 != temp)
+    {
+        V_DrawNumPatch(109, 178, 0, LumpMANACLEAR, CR_DEFAULT, VPT_STRETCH);
+        DrSmallNumber(temp, 111, 181);
+        manaVialLump1 = -1; // force a vial update
+        if (temp == 0)
+        {                       // Draw Dim Mana icon
+            manaLump2 = LumpMANADIM2;
+        }
+        else if (oldmana2 == 0)
+        {
+            manaLump2 = LumpMANABRIGHT2;
+        }
+        oldmana2 = temp;
+    }
+    if (oldweapon != CPlayer->readyweapon || manaLump1 || manaLump2
+        || manaVialLump1)
+    {                           // Update mana graphics based upon mana count/weapon type
+        if (CPlayer->readyweapon == wp_first)
+        {
+            manaLump1 = LumpMANADIM1;
+            manaLump2 = LumpMANADIM2;
+            manaVialLump1 = LumpMANAVIALDIM1;
+            manaVialLump2 = LumpMANAVIALDIM2;
+        }
+        else if (CPlayer->readyweapon == wp_second)
+        {
+            if (!manaLump1)
+            {
+                manaLump1 = LumpMANABRIGHT1;
+            }
+            manaVialLump1 = LumpMANAVIAL1;
+            manaLump2 = LumpMANADIM2;
+            manaVialLump2 = LumpMANAVIALDIM2;
+        }
+        else if (CPlayer->readyweapon == wp_third)
+        {
+            manaLump1 = LumpMANADIM1;
+            manaVialLump1 = LumpMANAVIALDIM1;
+            if (!manaLump2)
+            {
+                manaLump2 = LumpMANABRIGHT2;
+            }
+            manaVialLump2 = LumpMANAVIAL2;
+        }
+        else
+        {
+            manaVialLump1 = LumpMANAVIAL1;
+            manaVialLump2 = LumpMANAVIAL2;
+            if (!manaLump1)
+            {
+                manaLump1 = LumpMANABRIGHT1;
+            }
+            if (!manaLump2)
+            {
+                manaLump2 = LumpMANABRIGHT2;
+            }
+        }
+        V_DrawNumPatch(77, 164, 0, manaLump1, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(110, 164, 0, manaLump2, CR_DEFAULT, VPT_STRETCH);
+
+        V_DrawNumPatch(94, 164, 0, manaVialLump1, CR_DEFAULT, VPT_STRETCH);
+        V_FillRect(0, 95, 165, 3, 22 - (22 * CPlayer->ammo[0]) / MAX_MANA, 0);
+
+        V_DrawNumPatch(102, 164, 0, manaVialLump2, CR_DEFAULT, VPT_STRETCH);
+        V_FillRect(0, 103, 165, 3, 22 - (22 * CPlayer->ammo[1]) / MAX_MANA, 0);
+
+        oldweapon = CPlayer->readyweapon;
+    }
+    // Armor
+    temp = AutoArmorSave[CPlayer->pclass]
+        + CPlayer->armorpoints[ARMOR_ARMOR] +
+        CPlayer->armorpoints[ARMOR_SHIELD] +
+        CPlayer->armorpoints[ARMOR_HELMET] +
+        CPlayer->armorpoints[ARMOR_AMULET];
+    if (oldarmor != temp)
+    {
+        oldarmor = temp;
+        V_DrawNumPatch(255, 178, 0, LumpARMCLEAR, CR_DEFAULT, VPT_STRETCH);
+        DrINumber(FixedDiv(temp, 5 * FRACUNIT) >> FRACBITS, 250, 176);
+    }
+    // Weapon Pieces
+    if (oldpieces != CPlayer->pieces)
+    {
+        DrawWeaponPieces();
+        oldpieces = CPlayer->pieces;
     }
 }
