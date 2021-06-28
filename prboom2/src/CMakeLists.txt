@@ -93,7 +93,6 @@ set(COMMON_SRC
     heretic/d_main.c
     heretic/def.h
     heretic/dstrings.h
-    heretic/dstrings.c
     heretic/f_finale.h
     heretic/f_finale.c
     heretic/info.c
