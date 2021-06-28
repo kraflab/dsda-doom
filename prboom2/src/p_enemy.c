@@ -7089,6 +7089,8 @@ void A_FiredSplotch(mobj_t * actor)
     }
 }
 
+#include "heretic/sb_bar.h"
+
 void A_FreezeDeath(mobj_t * actor)
 {
     int r = P_Random(pr_hexen);
@@ -7105,8 +7107,7 @@ void A_FreezeDeath(mobj_t * actor)
         actor->player->bonuscount = 0;
         if (actor->player == &players[consoleplayer])
         {
-            // HEXEN_TODO: SB_PaletteFlash
-            // SB_PaletteFlash(false);
+            SB_PaletteFlash(false);
         }
     }
     else if (actor->flags & MF_COUNTKILL && actor->special)

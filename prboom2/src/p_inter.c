@@ -1558,11 +1558,9 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     if (player->damagecount > 100)
       player->damagecount = 100;  // teleport stomp does 10k points...
 
-    if (heretic && player == &players[consoleplayer])
+    if (raven && player == &players[consoleplayer])
     {
-      // HEXEN_TODO: SB_PaletteFlash
-      // SB_PaletteFlash(false);
-      SB_PaletteFlash();
+      SB_PaletteFlash(false);
     }
   }
 
@@ -2132,7 +2130,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     if (player == &players[consoleplayer])
     {
         S_StartSound(NULL, sound);
-        SB_PaletteFlash();
+        SB_PaletteFlash(false);
     }
 }
 
@@ -2862,8 +2860,7 @@ static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
     if (player == &players[consoleplayer])
     {
         S_StartSound(NULL, hexen_sfx_pickup_weapon);
-        // HEXEN_TODO: SB_PaletteFlash
-        // SB_PaletteFlash(false);
+        SB_PaletteFlash(false);
     }
 }
 
@@ -2955,8 +2952,7 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
     player->bonuscount += BONUSADD;
     if (player == &players[consoleplayer])
     {
-      // HEXEN_TODO: SB_PaletteFlash
-      // SB_PaletteFlash(false);
+      SB_PaletteFlash(false);
     }
 
     // Check if fourth weapon assembled
@@ -3188,8 +3184,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             if (player == &players[consoleplayer])
             {
                 S_StartSound(NULL, sound);
-                // HEXEN_TODO: SB_PaletteFlash
-                // SB_PaletteFlash(false);
+                SB_PaletteFlash(false);
             }
             return;
 
@@ -3403,8 +3398,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     if (player == &players[consoleplayer])
     {
         S_StartSound(NULL, sound);
-        // HEXEN_TODO: SB_PaletteFlash
-        // SB_PaletteFlash(false);
+        SB_PaletteFlash(false);
     }
 }
 

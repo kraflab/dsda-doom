@@ -419,7 +419,7 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 
     if (!statusbaron)
     {
-        SB_PaletteFlash();
+        SB_PaletteFlash(false);
         return;
     }
 
@@ -473,7 +473,7 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
             SB_state = 1;
         }
     }
-    SB_PaletteFlash();
+    SB_PaletteFlash(false);
 
     // Flight icons
     if (CPlayer->powers[pw_flight])
@@ -523,14 +523,29 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 
 // sets the new palette based upon current values of player->damagecount
 // and player->bonuscount
-void SB_PaletteFlash(void)
+void SB_PaletteFlash(dboolean forceChange)
 {
     static int sb_palette = 0;
     int palette;
 
+    if (forceChange)
+    {
+        sb_palette = -1;
+    }
+
     CPlayer = &players[consoleplayer];
 
-    if (CPlayer->damagecount)
+    if (CPlayer->poisoncount)
+    {
+        palette = 0;
+        palette = (CPlayer->poisoncount + 7) >> 3;
+        if (palette >= NUMPOISONPALS)
+        {
+            palette = NUMPOISONPALS - 1;
+        }
+        palette += STARTPOISONPALS;
+    }
+    else if (CPlayer->damagecount)
     {
         palette = (CPlayer->damagecount + 7) >> 3;
         if (palette >= NUMREDPALS)
@@ -547,6 +562,10 @@ void SB_PaletteFlash(void)
             palette = NUMBONUSPALS - 1;
         }
         palette += STARTBONUSPALS;
+    }
+    else if (CPlayer->mo->flags2 & MF2_ICEDAMAGE)
+    {                       // Frozen player
+        palette = STARTICEPAL;
     }
     else
     {

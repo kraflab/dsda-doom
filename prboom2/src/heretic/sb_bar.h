@@ -36,6 +36,6 @@ void SB_Init(void);
 void SB_Ticker(void);
 void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu);
 dboolean SB_Responder(event_t *ev);
-void SB_PaletteFlash(void);
+void SB_PaletteFlash(dboolean forceChange);
 
 #endif
