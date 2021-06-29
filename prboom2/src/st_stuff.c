@@ -468,7 +468,7 @@ static void ST_refreshBackground(void)
 //  intercept cheats.
 dboolean ST_Responder(event_t *ev)
 {
-  if (heretic) return SB_Responder(ev);
+  if (raven) return SB_Responder(ev);
 
   // Filter automap on/off.
   if (ev->type == ev_keyup && (ev->data1 & 0xffff0000) == AM_MSGHEADER)
@@ -770,7 +770,7 @@ static void ST_updateWidgets(void)
 
 void ST_Ticker(void)
 {
-  if (heretic) return SB_Ticker();
+  if (raven) return SB_Ticker();
 
   st_clock++;
   st_randomnumber = M_Random();
@@ -937,7 +937,7 @@ void ST_SetResolution(void)
 
 void ST_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 {
-  if (heretic) return SB_Drawer(statusbaron, refresh, fullmenu);
+  if (raven) return SB_Drawer(statusbaron, refresh, fullmenu);
 
   /* cph - let status bar on be controlled
    * completely by the call from D_Display
@@ -1259,7 +1259,7 @@ static dboolean st_stopped = true;
 
 void ST_Start(void)
 {
-  if (heretic) return SB_Start();
+  if (raven) return SB_Start();
 
   if (!st_stopped)
     ST_Stop();
@@ -1278,7 +1278,7 @@ static void ST_Stop(void)
 
 void ST_Init(void)
 {
-  if (heretic) return SB_Init();
+  if (raven) return SB_Init();
 
   veryfirsttime = 0;
   ST_loadData();
