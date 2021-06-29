@@ -192,6 +192,33 @@ static void AM_SetColors(void)
     mapcolor_sngl_p = &heretic_mapcolor_sngl;
     mapcolor_plyr_p = heretic_mapcolor_plyr;
   }
+  else if (hexen)
+  {
+    mapcolor_back_p = &hexen_mapcolor_back;
+    mapcolor_grid_p = &hexen_mapcolor_grid;
+    mapcolor_wall_p = &hexen_mapcolor_wall;
+    mapcolor_fchg_p = &hexen_mapcolor_fchg;
+    mapcolor_cchg_p = &hexen_mapcolor_cchg;
+    mapcolor_clsd_p = &hexen_mapcolor_clsd;
+    mapcolor_rkey_p = &hexen_mapcolor_rkey;
+    mapcolor_bkey_p = &hexen_mapcolor_bkey;
+    mapcolor_ykey_p = &hexen_mapcolor_ykey;
+    mapcolor_rdor_p = &hexen_mapcolor_rdor;
+    mapcolor_bdor_p = &hexen_mapcolor_bdor;
+    mapcolor_ydor_p = &hexen_mapcolor_ydor;
+    mapcolor_tele_p = &hexen_mapcolor_tele;
+    mapcolor_secr_p = &hexen_mapcolor_secr;
+    mapcolor_exit_p = &hexen_mapcolor_exit;
+    mapcolor_unsn_p = &hexen_mapcolor_unsn;
+    mapcolor_flat_p = &hexen_mapcolor_flat;
+    mapcolor_sprt_p = &hexen_mapcolor_sprt;
+    mapcolor_item_p = &hexen_mapcolor_item;
+    mapcolor_frnd_p = &hexen_mapcolor_frnd;
+    mapcolor_enemy_p = &hexen_mapcolor_enemy;
+    mapcolor_hair_p = &hexen_mapcolor_hair;
+    mapcolor_sngl_p = &hexen_mapcolor_sngl;
+    mapcolor_plyr_p = hexen_mapcolor_plyr;
+  }
   else
   {
     mapcolor_back_p = &mapcolor_back;
