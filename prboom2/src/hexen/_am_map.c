@@ -75,7 +75,7 @@ static fixed_t scale_mtof = INITSCALEMTOF;
 static fixed_t scale_ftom;
 
 static player_t *plr;           // the player represented by an arrow
-static vertex_t oldplr;
+static mpoint_t oldplr;
 
 static int followplayer = 1;    // specifies whether to follow the player around
 
@@ -1061,7 +1061,7 @@ void AM_drawWalls(void)
         l.b.y = lines[i].v2->y;
         if (cheating || (lines[i].flags & ML_MAPPED))
         {
-            if ((lines[i].flags & LINE_NEVERSEE) && !cheating)
+            if ((lines[i].flags & ML_DONTDRAW) && !cheating)
                 continue;
             if (!lines[i].backsector)
             {
@@ -1106,7 +1106,7 @@ void AM_drawWalls(void)
         }
         else if (plr->powers[pw_allmap])
         {
-            if (!(lines[i].flags & LINE_NEVERSEE))
+            if (!(lines[i].flags & ML_DONTDRAW))
                 AM_drawMline(&l, GRAYS + 3);
         }
     }
