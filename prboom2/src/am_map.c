@@ -333,7 +333,7 @@ mline_t hexen_player_arrow[] = {
 //   starting from the middle.
 //
 #define R ((8*PLAYERRADIUS)/7)
-mline_t player_arrow[] =
+mline_t doom_player_arrow[] =
 {
   { { -R+R/8, 0 }, { R, 0 } }, // -----
   { { R, 0 }, { R-R/2, R/4 } },  // ----->
@@ -344,7 +344,10 @@ mline_t player_arrow[] =
   { { -R+3*R/8, 0 }, { -R+R/8, -R/4 } }
 };
 #undef R
-#define NUMPLYRLINES (sizeof(player_arrow)/sizeof(mline_t))
+#define NUMPLYRLINES (sizeof(doom_player_arrow)/sizeof(mline_t))
+
+static int numplyrlines;
+static mline_t *player_arrow;
 
 #define R ((8*PLAYERRADIUS)/7)
 mline_t cheat_player_arrow[] =
@@ -739,6 +742,17 @@ static void AM_initVariables(void)
 {
   int pnum;
   static event_t st_notify = { ev_keyup, AM_MSGENTERED, 0, 0 };
+
+  if (hexen)
+  {
+    numplyrlines = HEXEN_NUMPLYRLINES;
+    player_arrow = hexen_player_arrow;
+  }
+  else
+  {
+    numplyrlines = NUMPLYRLINES;
+    player_arrow = doom_player_arrow;
+  }
 
   automapmode |= am_active;
 
@@ -1900,7 +1914,7 @@ static void AM_drawPlayers(void)
     if (ddt_cheating)
       AM_drawLineCharacter(cheat_player_arrow, NUMCHEATPLYRLINES, scale, viewangle, (*mapcolor_sngl_p), pt.x, pt.y);
     else
-      AM_drawLineCharacter(player_arrow, NUMPLYRLINES, scale, viewangle, (*mapcolor_sngl_p), pt.x, pt.y);
+      AM_drawLineCharacter(player_arrow, numplyrlines, scale, viewangle, (*mapcolor_sngl_p), pt.x, pt.y);
     return;
   }
 
@@ -1919,7 +1933,7 @@ static void AM_drawPlayers(void)
       else
         AM_SetMPointFloatValue(&pt);
 
-      AM_drawLineCharacter (player_arrow, NUMPLYRLINES, scale, angle,
+      AM_drawLineCharacter (player_arrow, numplyrlines, scale, angle,
           p->powers[pw_invisibility] ? 246 /* *close* to black */
           : mapcolor_plyr_p[i], //jff 1/6/98 use default color
           pt.x, pt.y);
