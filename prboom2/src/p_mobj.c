@@ -50,13 +50,14 @@
 #include "p_user.h"
 #include "lprintf.h"
 #include "r_demo.h"
+#include "p_enemy.h"
+#include "p_spec.h"
 #include "g_overflow.h"
 #include "e6y.h"//e6y
 #include "dsda.h"
 
 #include "heretic/def.h"
-#include "p_enemy.h"
-#include "p_spec.h"
+#include "heretic/sb_bar.h"
 
 // heretic_note: static NUMSTATES arrays here - probably fine?
 // NUMSTATES > HERETIC_NUMSTATES
@@ -1778,8 +1779,7 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
         p->pclass = (p->pclass + 1) % 3;
       }
       PlayerClass[mthing->type - 1] = p->pclass;
-      // HEXEN_TODO: SB_SetClassData
-      // SB_SetClassData();
+      SB_SetClassData();
     }
     else
     {

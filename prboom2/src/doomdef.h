@@ -476,9 +476,6 @@ extern dboolean heretic;
 #define AFLAG_SUICIDE 0x40
 #define AFLAG_JUMP    0x80
 
-// HEXEN_TODO: move somewhere else
-#define SBARHEIGHT 39 // status bar height at bottom of screen
-
 typedef enum
 {
   ARMOR_ARMOR,

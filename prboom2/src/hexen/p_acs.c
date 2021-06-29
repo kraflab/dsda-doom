@@ -744,7 +744,6 @@ static dboolean TagBusy(int tag)
     sectorIndex = -1;
     while ((sectorIndex = P_FindSectorFromTag(tag, sectorIndex)) >= 0)
     {
-        // HEXEN_TODO: this needs to be updated if there are more later
         if (sectors[sectorIndex].floordata ||
             sectors[sectorIndex].ceilingdata ||
             sectors[sectorIndex].lightingdata)

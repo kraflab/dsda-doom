@@ -30,6 +30,8 @@
 
 #define NUMALIAS 3              // Number of antialiased lines.
 
+#define SBARHEIGHT 39 // status bar height at bottom of screen
+
 int cheating = 0;
 static int grid = 0;
 
