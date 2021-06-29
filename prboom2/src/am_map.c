@@ -1050,7 +1050,7 @@ dboolean AM_Responder
     /* Ty 03/27/98 - *not* externalized
      * cph 2001/11/20 - use doom_printf so we don't have our own buffer */
     doom_printf("%s %d", s_AMSTR_MARKEDSPOT, markpointnum);
-    if (!heretic) AM_addMark();
+    if (!raven) AM_addMark();
 
     return true;
   }
@@ -1427,7 +1427,7 @@ static void AM_drawMline
   if (AM_clipMline(ml, &fl))
   {
     // draws it on frame buffer using fb coords
-    if (!heretic && map_use_multisamling)
+    if (!raven && map_use_multisamling)
       V_DrawLineWu(&fl, color);
     else
       V_DrawLine(&fl, color);
@@ -1546,6 +1546,14 @@ static int AM_DoorColor(int type)
 {
   if (heretic && type > 34) return -1;
 
+  if (hexen)
+  {
+    if (type == 13 || type == 83)
+      return 2;
+
+    return -1;
+  }
+
   if (GenLockedBase <= type && type< GenDoorBase)
   {
     type -= GenLockedBase;
@@ -1662,12 +1670,18 @@ static void AM_drawWalls(void)
         (
           (*mapcolor_exit_p) &&
           (
-            lines[i].special==11 ||
-            lines[i].special==52 ||
-            lines[i].special==197 ||
-            lines[i].special==51  ||
-            lines[i].special==124 ||
-            lines[i].special==198
+            (hexen && (lines[i].special == 74 || lines[i].special == 75)) ||
+            (
+              !hexen &&
+              (
+                lines[i].special==11 ||
+                lines[i].special==52 ||
+                lines[i].special==197 ||
+                lines[i].special==51  ||
+                lines[i].special==124 ||
+                lines[i].special==198
+              )
+            )
           )
         ) {
           AM_drawMline(&l, (*mapcolor_exit_p)); /* exit line */
@@ -1700,14 +1714,20 @@ static void AM_drawWalls(void)
         // jff 1/10/98 add color change for all teleporter types
         if
         (
-            (*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) &&
+          (*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) &&
+          (
+            (hexen && (lines[i].special == 70 || lines[i].special == 71)) ||
             (
-              lines[i].special == 39 ||
+              !hexen &&
               (
-                !heretic &&
-                (lines[i].special == 97 || lines[i].special == 125 || lines[i].special == 126)
+                lines[i].special == 39 ||
+                (
+                  !heretic &&
+                  (lines[i].special == 97 || lines[i].special == 125 || lines[i].special == 126)
+                )
               )
             )
+          )
         )
         { // teleporters
           AM_drawMline(&l, (*mapcolor_tele_p));
@@ -2512,7 +2532,7 @@ void M_ChangeMapTextured(void)
 
 void M_ChangeMapMultisamling(void)
 {
-  if (!heretic && map_use_multisamling && V_GetMode() != VID_MODEGL)
+  if (!raven && map_use_multisamling && V_GetMode() != VID_MODEGL)
   {
     V_InitFlexTranTable();
   }

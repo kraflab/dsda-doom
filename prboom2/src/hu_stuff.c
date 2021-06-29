@@ -2446,6 +2446,9 @@ void HU_Drawer(void)
       int time = leveltime / TICRATE;
       int ttime = (totalleveltimes + leveltime) / TICRATE;
 
+      if (hexen)
+        ttime = players[consoleplayer].worldTimer / TICRATE;
+
       sprintf(str, "Monsters: \x1b%c%d/%d", '0' + hudcolor_mapstat_value,
         players[consoleplayer].killcount - players[consoleplayer].maxkilldiscount,
         totalkills);
@@ -2478,7 +2481,7 @@ void HU_Drawer(void)
         HUlib_addCharToTextLine(&w_map_time, *(s++));
       HUlib_drawTextLine(&w_map_time, false);
 
-      if (totalleveltimes > 0)
+      if (hexen || totalleveltimes > 0)
       {
         sprintf(str, "%02d:%02d:%02d", ttime/3600, (ttime%3600)/60, ttime%60);
         HUlib_clearTextLine(&w_map_totaltime);
