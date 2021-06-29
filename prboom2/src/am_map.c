@@ -765,9 +765,9 @@ static void AM_initVariables(void)
 
   // find player to center on initially
   if (!playeringame[pnum = consoleplayer])
-  for (pnum=0;pnum<MAXPLAYERS;pnum++)
-    if (playeringame[pnum])
-  break;
+    for (pnum=0;pnum<MAXPLAYERS;pnum++)
+      if (playeringame[pnum])
+        break;
 
   plr = &players[pnum];
   m_x = (plr->mo->x >> FRACTOMAPBITS) - m_w/2;//e6y
