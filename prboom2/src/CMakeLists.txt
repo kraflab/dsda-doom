@@ -108,6 +108,8 @@ set(COMMON_SRC
     hexen/a_action.c
     hexen/a_action.h
     hexen/info.c
+    hexen/f_finale.c
+    hexen/f_finale.h
     hexen/p_acs.c
     hexen/p_acs.h
     hexen/p_anim.c
