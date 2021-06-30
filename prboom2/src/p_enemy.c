@@ -3516,7 +3516,7 @@ void A_JumpIfTracerCloser(mobj_t* actor)
 void A_JumpIfFlagsSet(mobj_t* actor)
 {
   int state;
-  unsigned int flags, flags2;
+  uint_64_t flags, flags2;
 
   if (!mbf21 || !actor)
     return;
@@ -3538,7 +3538,7 @@ void A_JumpIfFlagsSet(mobj_t* actor)
 //
 void A_AddFlags(mobj_t* actor)
 {
-  unsigned int flags, flags2;
+  uint_64_t flags, flags2;
 
   if (!mbf21 || !actor)
     return;
@@ -3558,7 +3558,7 @@ void A_AddFlags(mobj_t* actor)
 //
 void A_RemoveFlags(mobj_t* actor)
 {
-  unsigned int flags, flags2;
+  uint_64_t flags, flags2;
 
   if (!mbf21 || !actor)
     return;

@@ -1289,14 +1289,14 @@ static const char *deh_state[] = // CPhipps - static const*
   "Codep Frame",      // pointer to first use of action (actionf_t)
   "Unknown 1",        // .misc1 (long)
   "Unknown 2",        // .misc2 (long)
-  "Args1",            // .args[0] (long)
-  "Args2",            // .args[1] (long)
-  "Args3",            // .args[2] (long)
-  "Args4",            // .args[3] (long)
-  "Args5",            // .args[4] (long)
-  "Args6",            // .args[5] (long)
-  "Args7",            // .args[6] (long)
-  "Args8",            // .args[7] (long)
+  "Args1",            // .args[0] (statearg_t)
+  "Args2",            // .args[1] (statearg_t)
+  "Args3",            // .args[2] (statearg_t)
+  "Args4",            // .args[3] (statearg_t)
+  "Args5",            // .args[4] (statearg_t)
+  "Args6",            // .args[5] (statearg_t)
+  "Args7",            // .args[6] (statearg_t)
+  "Args8",            // .args[7] (statearg_t)
   "MBF21 Bits",       // .flags
 };
 
@@ -2227,50 +2227,50 @@ static void deh_procFrame(DEHFILE *fpin, char *line)
     }
     else if (!deh_strcasecmp(key, deh_state[7]))  // Args1
     {
-      deh_log(" - args[0] = %ld\n", (long)value);
-      states[indexnum].args[0] = (long)value; // long
+      deh_log(" - args[0] = %lld\n", (statearg_t)value);
+      states[indexnum].args[0] = (statearg_t)value;
       defined_codeptr_args[indexnum] |= (1 << 0);
     }
     else if (!deh_strcasecmp(key, deh_state[8]))  // Args2
     {
-      deh_log(" - args[1] = %ld\n", (long)value);
-      states[indexnum].args[1] = (long)value; // long
+      deh_log(" - args[1] = %lld\n", (statearg_t)value);
+      states[indexnum].args[1] = (statearg_t)value;
       defined_codeptr_args[indexnum] |= (1 << 1);
     }
     else if (!deh_strcasecmp(key, deh_state[9]))  // Args3
     {
-      deh_log(" - args[2] = %ld\n", (long)value);
-      states[indexnum].args[2] = (long)value; // long
+      deh_log(" - args[2] = %lld\n", (statearg_t)value);
+      states[indexnum].args[2] = (statearg_t)value;
       defined_codeptr_args[indexnum] |= (1 << 2);
     }
     else if (!deh_strcasecmp(key, deh_state[10]))  // Args4
     {
-      deh_log(" - args[3] = %ld\n", (long)value);
-      states[indexnum].args[3] = (long)value; // long
+      deh_log(" - args[3] = %lld\n", (statearg_t)value);
+      states[indexnum].args[3] = (statearg_t)value;
       defined_codeptr_args[indexnum] |= (1 << 3);
     }
     else if (!deh_strcasecmp(key, deh_state[11]))  // Args5
     {
-      deh_log(" - args[4] = %ld\n", (long)value);
-      states[indexnum].args[4] = (long)value; // long
+      deh_log(" - args[4] = %lld\n", (statearg_t)value);
+      states[indexnum].args[4] = (statearg_t)value;
       defined_codeptr_args[indexnum] |= (1 << 4);
     }
     else if (!deh_strcasecmp(key, deh_state[12]))  // Args6
     {
-      deh_log(" - args[5] = %ld\n", (long)value);
-      states[indexnum].args[5] = (long)value; // long
+      deh_log(" - args[5] = %lld\n", (statearg_t)value);
+      states[indexnum].args[5] = (statearg_t)value;
       defined_codeptr_args[indexnum] |= (1 << 5);
     }
     else if (!deh_strcasecmp(key, deh_state[13]))  // Args7
     {
-      deh_log(" - args[6] = %ld\n", (long)value);
-      states[indexnum].args[6] = (long)value; // long
+      deh_log(" - args[6] = %lld\n", (statearg_t)value);
+      states[indexnum].args[6] = (statearg_t)value;
       defined_codeptr_args[indexnum] |= (1 << 6);
     }
     else if (!deh_strcasecmp(key, deh_state[14]))  // Args8
     {
-      deh_log(" - args[7] = %ld\n", (long)value);
-      states[indexnum].args[7] = (long)value; // long
+      deh_log(" - args[7] = %lld\n", (statearg_t)value);
+      states[indexnum].args[7] = (statearg_t)value;
       defined_codeptr_args[indexnum] |= (1 << 7);
     }
     else if (!deh_strcasecmp(key, deh_state[15]))  // MBF21 Bits
