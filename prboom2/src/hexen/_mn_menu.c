@@ -534,13 +534,11 @@ void MN_Drawer(void)
                 MN_DrTextA("?", 160 +
                            MN_TextAWidth(SlotText[quicksave - 1]) / 2, 90);
             }
-            UpdateState |= I_FULLSCRN;
         }
         return;
     }
     else
     {
-        UpdateState |= I_FULLSCRN;
         if (InfoType)
         {
             MN_DrawInfo();
@@ -1301,7 +1299,6 @@ dboolean MN_Responder(event_t * event)
             askforquit = false;
             typeofask = 0;
             paused = false;
-            UpdateState |= I_FULLSCRN;
             BorderNeedRefresh = true;
             return true;
         }
@@ -1319,7 +1316,6 @@ dboolean MN_Responder(event_t * event)
             SCScreenSize(LEFT_DIR);
             S_StartSound(NULL, hexen_sfx_pickup_key);
             BorderNeedRefresh = true;
-            UpdateState |= I_FULLSCRN;
             return (true);
         }
         else if (key == key_menu_incscreen)
@@ -1331,7 +1327,6 @@ dboolean MN_Responder(event_t * event)
             SCScreenSize(RIGHT_DIR);
             S_StartSound(NULL, hexen_sfx_pickup_key);
             BorderNeedRefresh = true;
-            UpdateState |= I_FULLSCRN;
             return (true);
         }
         else if (key == key_menu_help)           // F1 (help screen)

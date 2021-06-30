@@ -110,7 +110,6 @@ int startmap;
 dboolean autostart;
 dboolean advancedemo;
 FILE *debugfile;
-int UpdateState;
 int MAXPLAYERS = MAXPLAYERS;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -558,7 +557,6 @@ void D_DoomMain(void)
 
     if (gameaction != ga_loadgame)
     {
-        UpdateState |= I_FULLSCRN;
         BorderNeedRefresh = true;
         if (autostart || netgame)
         {
@@ -882,7 +880,6 @@ static void DrawAndBlit(void)
                 R_RenderPlayerView(&players[displayplayer]);
             }
             CT_Drawer();
-            UpdateState |= I_FULLVIEW;
             SB_Drawer();
             break;
         case GS_INTERMISSION:
@@ -981,7 +978,6 @@ static void PageDrawer(void)
     {
         V_DrawPatch(4, 160, W_CacheLumpName("ADVISOR", PU_CACHE));
     }
-    UpdateState |= I_FULLSCRN;
 }
 
 //==========================================================================
@@ -1026,7 +1022,6 @@ void H2_DoAdvanceDemo(void)
             break;
         case 2:
             BorderNeedRefresh = true;
-            UpdateState |= I_FULLSCRN;
             G_DeferedPlayDemo("demo1");
             break;
         case 3:
@@ -1036,7 +1031,6 @@ void H2_DoAdvanceDemo(void)
             break;
         case 4:
             BorderNeedRefresh = true;
-            UpdateState |= I_FULLSCRN;
             G_DeferedPlayDemo("demo2");
             break;
         case 5:
@@ -1046,7 +1040,6 @@ void H2_DoAdvanceDemo(void)
             break;
         case 6:
             BorderNeedRefresh = true;
-            UpdateState |= I_FULLSCRN;
             G_DeferedPlayDemo("demo3");
             break;
     }
