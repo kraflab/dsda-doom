@@ -1236,6 +1236,42 @@ static const struct deh_flag_s deh_mobjflags[] = {
   { NULL }
 };
 
+static const struct deh_flag_s deh_mobjflags_standard[] = {
+  {"SPECIAL",      MF_SPECIAL}, // call  P_Specialthing when touched
+  {"SOLID",        MF_SOLID}, // block movement
+  {"SHOOTABLE",    MF_SHOOTABLE}, // can be hit
+  {"NOSECTOR",     MF_NOSECTOR}, // invisible but touchable
+  {"NOBLOCKMAP",   MF_NOBLOCKMAP}, // inert but displayable
+  {"AMBUSH",       MF_AMBUSH}, // deaf monster
+  {"JUSTHIT",      MF_JUSTHIT}, // will try to attack right back
+  {"JUSTATTACKED", MF_JUSTATTACKED}, // take at least 1 step before attacking
+  {"SPAWNCEILING", MF_SPAWNCEILING}, // initially hang from ceiling
+  {"NOGRAVITY",    MF_NOGRAVITY}, // don't apply gravity during play
+  {"DROPOFF",      MF_DROPOFF}, // can jump from high places
+  {"PICKUP",       MF_PICKUP}, // will pick up items
+  {"NOCLIP",       MF_NOCLIP}, // goes through walls
+  {"SLIDE",        MF_SLIDE}, // keep info about sliding along walls
+  {"FLOAT",        MF_FLOAT}, // allow movement to any height
+  {"TELEPORT",     MF_TELEPORT}, // don't cross lines or look at heights
+  {"MISSILE",      MF_MISSILE}, // don't hit same species, explode on block
+  {"DROPPED",      MF_DROPPED}, // dropped, not spawned (like ammo clip)
+  {"SHADOW",       MF_SHADOW}, // use fuzzy draw like spectres
+  {"NOBLOOD",      MF_NOBLOOD}, // puffs instead of blood when shot
+  {"CORPSE",       MF_CORPSE}, // so it will slide down steps when dead
+  {"INFLOAT",      MF_INFLOAT}, // float but not to target height
+  {"COUNTKILL",    MF_COUNTKILL}, // count toward the kills total
+  {"COUNTITEM",    MF_COUNTITEM}, // count toward the items total
+  {"SKULLFLY",     MF_SKULLFLY}, // special handling for flying skulls
+  {"NOTDMATCH",    MF_NOTDMATCH}, // do not spawn in deathmatch
+  {"TRANSLATION1", MF_TRANSLATION1}, // use translation table for color (players)
+  {"TRANSLATION2", MF_TRANSLATION2}, // use translation table for color (players)
+  {"TOUCHY",       MF_TOUCHY}, // dies on contact with solid objects (MBF)
+  {"BOUNCES",      MF_BOUNCES}, // bounces off floors, ceilings and maybe walls (MBF)
+  {"FRIEND",       MF_FRIEND}, // a friend of the player(s) (MBF)
+  {"TRANSLUCENT",  MF_TRANSLUCENT}, // apply translucency to sprite (BOOM)
+  { NULL }
+};
+
 static const struct deh_flag_s deh_mobjflags_mbf21[] = {
   {"LOGRAV",         MF2_LOGRAV}, // low gravity
   {"SHORTMRANGE",    MF2_SHORTMRANGE}, // short missile range
@@ -3500,12 +3536,12 @@ void PostProcessDeh(void)
       // Flags specifications aren't cross-port consistent -> must translate / mask bits
       if (bexptr_match->cptr == A_AddFlags || bexptr_match->cptr == A_RemoveFlags)
       {
-        states[i].args[0] = deh_translate_bits(states[i].args[0], deh_mobjflags);
+        states[i].args[0] = deh_translate_bits(states[i].args[0], deh_mobjflags_standard);
         states[i].args[1] = deh_translate_bits(states[i].args[1], deh_mobjflags_mbf21);
       }
       else if (bexptr_match->cptr == A_JumpIfFlagsSet)
       {
-        states[i].args[1] = deh_translate_bits(states[i].args[1], deh_mobjflags);
+        states[i].args[1] = deh_translate_bits(states[i].args[1], deh_mobjflags_standard);
         states[i].args[2] = deh_translate_bits(states[i].args[2], deh_mobjflags_mbf21);
       }
     }
