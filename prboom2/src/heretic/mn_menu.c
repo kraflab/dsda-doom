@@ -37,6 +37,7 @@
 extern int g_menu_save_page_size;
 
 static int FontABaseLump;
+static int FontAYellowBaseLump;
 static int FontBBaseLump;
 static int SkullBaseLump;
 static int MenuTime;
@@ -44,6 +45,7 @@ static int MenuTime;
 static void MN_InitFonts(void)
 {
   FontABaseLump = W_GetNumForName("FONTA_S") + 1;
+  if (hexen) FontAYellowBaseLump = W_GetNumForName("FONTAY_S") + 1;
   FontBBaseLump = W_GetNumForName("FONTB_S") + 1;
 }
 
@@ -522,4 +524,27 @@ void MN_DrawSlider(int x, int y, int width, int slot)
   slot_x = x + 36 + (SLIDER_WIDTH - 8) * slot / (width - 1);
 
   V_DrawNamePatch(slot_x, y + 7, 0, "M_SLDKB", CR_DEFAULT, VPT_STRETCH);
+}
+
+// hexen
+
+void MN_DrTextAYellow(const char *text, int x, int y)
+{
+    char c;
+    int lump;
+
+    while ((c = *text++) != 0)
+    {
+      c = toupper(c);
+      if (c < 33)
+      {
+        x += 5;
+      }
+      else
+      {
+        lump = FontAYellowBaseLump + c - 33;
+        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        x += R_NumPatchWidth(lump) - 1;
+      }
+    }
 }

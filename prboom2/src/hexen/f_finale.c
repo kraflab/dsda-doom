@@ -279,8 +279,7 @@ void Hexen_F_Drawer(void)
     }
 }
 
-// HEXEN_TODO: this is actually in in_lude
-char ClusterMessage[MAX_INTRMSN_MESSAGE_SIZE];
+extern char ClusterMessage[MAX_INTRMSN_MESSAGE_SIZE];
 
 static char *GetFinaleText(int sequence)
 {

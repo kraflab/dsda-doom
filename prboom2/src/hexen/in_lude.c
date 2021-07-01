@@ -14,23 +14,27 @@
 // GNU General Public License for more details.
 //
 
-#include <ctype.h>
-
-#include "h2def.h"
+#include "doomstat.h"
+#include "d_event.h"
 #include "s_sound.h"
+#include "sounds.h"
 #include "i_system.h"
 #include "i_video.h"
-#include "m_misc.h"
-#include "p_local.h"
 #include "v_video.h"
-#include "i_swap.h"
+#include "lprintf.h"
+#include "w_wad.h"
+#include "g_game.h"
+#include "p_setup.h"
 
-// MACROS ------------------------------------------------------------------
+#include "dsda/intermission_display.h"
+
+#include "heretic/mn_menu.h"
+#include "hexen/sn_sonix.h"
+
+#include "in_lude.h"
 
 #define	TEXTSPEED 3
 #define	TEXTWAIT 140
-
-// TYPES -------------------------------------------------------------------
 
 typedef enum
 {
@@ -39,16 +43,9 @@ typedef enum
     DEATHMATCH
 } gametype_t;
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
 static void WaitStop(void);
 static void Stop(void);
 static void LoadPics(void);
-static void UnloadPics(void);
 static void CheckForSkip(void);
 static void InitStats(void);
 static void DrDeathTally(void);
@@ -56,14 +53,8 @@ static void DrNumber(int val, int x, int y, int wrapThresh);
 static void DrNumberBold(int val, int x, int y, int wrapThresh);
 static void DrawHubText(void);
 
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DECLARATIONS ------------------------------------------------
-
-dboolean intermission;
+static dboolean intermission;
 char ClusterMessage[MAX_INTRMSN_MESSAGE_SIZE];
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static dboolean skipintermission;
 static int interstate = 0;
@@ -71,34 +62,22 @@ static int intertime = -1;
 static gametype_t gametype;
 static int cnt;
 static int slaughterboy;        // in DM, the player with the most kills
-static patch_t *patchINTERPIC;
-static patch_t *FontBNumbers[10];
-static patch_t *FontBNegative;
-static patch_t *FontBSlash;
-static patch_t *FontBPercent;
 static int FontABaseLump;
-static int FontBLump;
-static int FontBLumpBase;
 
 static signed int totalFrags[MAXPLAYERS];
 
 static int HubCount;
 static char *HubText;
 
-// CODE --------------------------------------------------------------------
-
-//========================================================================
-//
-// IN_Start
-//
-//========================================================================
+extern int SB_state;
+extern dboolean BorderNeedRefresh;
 
 extern void AM_Stop(void);
 
-void IN_Start(void)
+void Hexen_IN_Start(wbstartstruct_t* wbstartstruct)
 {
     int i;
-    I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
+    V_SetPalette(0);
     InitStats();
     LoadPics();
     intermission = true;
@@ -106,52 +85,24 @@ void IN_Start(void)
     skipintermission = false;
     intertime = 0;
     AM_Stop();
-    for (i = 0; i < MAXPLAYERS; i++)
-    {
-        players[i].messageTics = 0;
-        players[i].message[0] = 0;
-    }
     SN_StopAllSequences();
 }
 
-//========================================================================
-//
-// WaitStop
-//
-//========================================================================
-
-void WaitStop(void)
+static void WaitStop(void)
 {
     if (!--cnt)
     {
         Stop();
-//              gamestate = GS_LEVEL;
-//              G_DoLoadLevel();
         gameaction = ga_leavemap;
-//              G_WorldDone();
     }
 }
-
-//========================================================================
-//
-// Stop
-//
-//========================================================================
 
 static void Stop(void)
 {
     intermission = false;
-    UnloadPics();
     SB_state = -1;
     BorderNeedRefresh = true;
 }
-
-//========================================================================
-//
-// InitStats
-//
-//      Initializes the stats for single player mode
-//========================================================================
 
 static const char *ClusMsgLumpNames[] = {
     "clus1msg",
@@ -192,8 +143,8 @@ static void InitStats(void)
                 {
                     I_Error("Cluster message too long (%s)", msgLumpName);
                 }
-                W_ReadLump(msgLump, ClusterMessage);
-                ClusterMessage[msgSize] = 0;    // Append terminator
+                memcpy(ClusterMessage, W_CacheLumpNum(msgLump), msgSize);
+                ClusterMessage[msgSize] = '\0';    // Append terminator
                 HubText = ClusterMessage;
                 HubCount = strlen(HubText) * TEXTSPEED + TEXTWAIT;
                 S_StartSongName("hub", true);
@@ -243,66 +194,17 @@ static void InitStats(void)
     }
 }
 
-//========================================================================
-//
-// LoadPics
-//
-//========================================================================
-
 static void LoadPics(void)
 {
     int i;
 
     if (HubCount || gametype == DEATHMATCH)
     {
-        patchINTERPIC = W_CacheLumpName("INTERPIC", PU_STATIC);
-        FontBLumpBase = W_GetNumForName("FONTB16");
-        for (i = 0; i < 10; i++)
-        {
-            FontBNumbers[i] = W_CacheLumpNum(FontBLumpBase + i, PU_STATIC);
-        }
-        FontBLump = W_GetNumForName("FONTB_S") + 1;
-        FontBNegative = W_CacheLumpName("FONTB13", PU_STATIC);
         FontABaseLump = W_GetNumForName("FONTA_S") + 1;
-
-        FontBSlash = W_CacheLumpName("FONTB15", PU_STATIC);
-        FontBPercent = W_CacheLumpName("FONTB05", PU_STATIC);
     }
 }
 
-//========================================================================
-//
-// UnloadPics
-//
-//========================================================================
-
-static void UnloadPics(void)
-{
-    int i;
-
-    if (HubCount || gametype == DEATHMATCH)
-    {
-        W_ReleaseLumpName("INTERPIC");
-
-        patchINTERPIC = W_CacheLumpName("INTERPIC", PU_STATIC);
-        FontBLumpBase = W_GetNumForName("FONTB16");
-        for (i = 0; i < 10; i++)
-        {
-            W_ReleaseLumpNum(FontBLumpBase + i);
-        }
-        W_ReleaseLumpName("FONTB13");
-        W_ReleaseLumpName("FONTB15");
-        W_ReleaseLumpName("FONTB05");
-    }
-}
-
-//========================================================================
-//
-// IN_Ticker
-//
-//========================================================================
-
-void IN_Ticker(void)
+void Hexen_IN_Ticker(void)
 {
     if (!intermission)
     {
@@ -321,16 +223,8 @@ void IN_Ticker(void)
         interstate = 1;
         cnt = 10;
         skipintermission = false;
-        //S_StartSound(NULL, sfx_dorcls);
     }
 }
-
-//========================================================================
-//
-// CheckForSkip
-//
-//      Check to see if any player hit a key
-//========================================================================
 
 static void CheckForSkip(void)
 {
@@ -386,13 +280,7 @@ static void CheckForSkip(void)
     }
 }
 
-//========================================================================
-//
-// IN_Drawer
-//
-//========================================================================
-
-void IN_Drawer(void)
+void Hexen_IN_Drawer(void)
 {
     if (!intermission)
     {
@@ -402,7 +290,7 @@ void IN_Drawer(void)
     {
         return;
     }
-    V_CopyScaledBuffer(I_VideoBuffer, (byte *) patchINTERPIC, ORIGWIDTH * ORIGHEIGHT);
+    V_DrawRawScreen("INTERPIC");
 
     if (gametype == SINGLE)
     {
@@ -410,18 +298,13 @@ void IN_Drawer(void)
         {
             DrawHubText();
         }
+        dsda_DrawIntermissionDisplay();
     }
     else
     {
         DrDeathTally();
     }
 }
-
-//========================================================================
-//
-// DrDeathTally
-//
-//========================================================================
 
 #define TALLY_EFFECT_TICKS 20
 #define TALLY_FINAL_X_DELTA (23*FRACUNIT)
@@ -447,10 +330,8 @@ static void DrDeathTally(void)
     static dboolean showTotals;
     int temp;
 
-    V_DrawPatch(TALLY_TOP_X, TALLY_TOP_Y,
-                W_CacheLumpName("tallytop", PU_CACHE));
-    V_DrawPatch(TALLY_LEFT_X, TALLY_LEFT_Y,
-                W_CacheLumpName("tallylft", PU_CACHE));
+    V_DrawNamePatch(TALLY_TOP_X, TALLY_TOP_Y, 0, "tallytop", CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(TALLY_LEFT_X, TALLY_LEFT_Y, 0, "tallylft", CR_DEFAULT, VPT_STRETCH);
     if (intertime < TALLY_EFFECT_TICKS)
     {
         showTotals = false;
@@ -518,12 +399,6 @@ static void DrDeathTally(void)
     }
 }
 
-//==========================================================================
-//
-// DrNumber
-//
-//==========================================================================
-
 static void DrNumber(int val, int x, int y, int wrapThresh)
 {
     char buff[8] = "XX";
@@ -535,12 +410,6 @@ static void DrNumber(int val, int x, int y, int wrapThresh)
     }
     MN_DrTextA(buff, x - MN_TextAWidth(buff) / 2, y);
 }
-
-//==========================================================================
-//
-// DrNumberBold
-//
-//==========================================================================
 
 static void DrNumberBold(int val, int x, int y, int wrapThresh)
 {
@@ -554,19 +423,14 @@ static void DrNumberBold(int val, int x, int y, int wrapThresh)
     MN_DrTextAYellow(buff, x - MN_TextAWidth(buff) / 2, y);
 }
 
-//===========================================================================
-//
-// DrawHubText
-//
-//===========================================================================
-
 static void DrawHubText(void)
 {
     int count;
     char *ch;
     int c;
     int cx, cy;
-    patch_t *w;
+    int lump;
+    int width;
 
     cy = 5;
     cx = 10;
@@ -599,12 +463,13 @@ static void DrawHubText(void)
             cx += 5;
             continue;
         }
-        w = W_CacheLumpNum(FontABaseLump + c - 33, PU_CACHE);
-        if (cx + SHORT(w->width) > SCREENWIDTH)
+        lump = FontABaseLump + c - 33;
+        width = R_NumPatchWidth(lump);
+        if (cx + width > SCREENWIDTH)
         {
             break;
         }
-        V_DrawPatch(cx, cy, w);
-        cx += SHORT(w->width);
+        V_DrawNumPatch(cx, cy, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        cx += width;
     }
 }

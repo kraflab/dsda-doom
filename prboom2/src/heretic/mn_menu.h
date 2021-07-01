@@ -38,4 +38,8 @@ int MN_TextAWidth(const char *text);
 void MN_DrTextB(const char *text, int x, int y);
 int MN_TextBWidth(const char *text);
 
+// hexen
+
+void MN_DrTextAYellow(const char *text, int x, int y);
+
 #endif
