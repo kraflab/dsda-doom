@@ -14,30 +14,8 @@
 // GNU General Public License for more details.
 //
 
-
-// HEADER FILES ------------------------------------------------------------
-
-#include <ctype.h>
-#include "h2def.h"
-#include "doomkeys.h"
-#include "i_input.h"
-#include "i_system.h"
-#include "i_swap.h"
-#include "i_video.h"
-#include "m_controls.h"
-#include "m_misc.h"
-#include "p_local.h"
-#include "r_local.h"
-#include "s_sound.h"
-#include "v_video.h"
-
-// MACROS ------------------------------------------------------------------
-
 #define LEFT_DIR 0
 #define RIGHT_DIR 1
-#define ITEM_HEIGHT 20
-#define SELECTOR_XOFFSET (-28)
-#define SELECTOR_YOFFSET (-1)
 #define SLOTTEXTLEN	16
 #define ASCII_CURSOR '['
 
@@ -118,7 +96,6 @@ static void MN_DrawInfo(void);
 static void DrawLoadMenu(void);
 static void DrawSaveMenu(void);
 static void DrawSlider(Menu_t * menu, int item, int width, int slot);
-void MN_LoadSlotText(void);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -134,10 +111,6 @@ dboolean mn_SuicideConsole;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static int FontABaseLump;
-static int FontAYellowBaseLump;
-static int FontBBaseLump;
-static int MauloBaseLump;
 static Menu_t *CurrentMenu;
 static int CurrentItPos;
 static int MenuPClass;
@@ -293,107 +266,7 @@ static Menu_t *Menus[] = {
     &SaveMenu
 };
 
-// [crispy] intermediate gamma levels
-static const char *GammaText[] = {
-    TXT_GAMMA_LEVEL_OFF,
-    TXT_GAMMA_LEVEL_05,
-    TXT_GAMMA_LEVEL_1,
-    TXT_GAMMA_LEVEL_15,
-    TXT_GAMMA_LEVEL_2,
-    TXT_GAMMA_LEVEL_25,
-    TXT_GAMMA_LEVEL_3,
-    TXT_GAMMA_LEVEL_35,
-    TXT_GAMMA_LEVEL_4
-};
-
 // CODE --------------------------------------------------------------------
-
-//---------------------------------------------------------------------------
-//
-// PROC MN_Init
-//
-//---------------------------------------------------------------------------
-
-void MN_Init(void)
-{
-    InitFonts();
-    MenuActive = false;
-//      messageson = true;              // Set by defaults in .CFG
-    MauloBaseLump = W_GetNumForName("FBULA0");  // ("M_SKL00");
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC MN_DrTextB
-//
-// Draw text using font B.
-//
-//---------------------------------------------------------------------------
-
-void MN_DrTextB(const char *text, int x, int y)
-{
-    char c;
-    patch_t *p;
-
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            x += 8;
-        }
-        else
-        {
-            p = W_CacheLumpNum(FontBBaseLump + c - 33, PU_CACHE);
-            V_DrawPatch(x, y, p);
-            x += SHORT(p->width) - 1;
-        }
-    }
-}
-
-//---------------------------------------------------------------------------
-//
-// FUNC MN_TextBWidth
-//
-// Returns the pixel width of a string using font B.
-//
-//---------------------------------------------------------------------------
-
-int MN_TextBWidth(const char *text)
-{
-    char c;
-    int width;
-    patch_t *p;
-
-    width = 0;
-    while ((c = *text++) != 0)
-    {
-        if (c < 33)
-        {
-            width += 5;
-        }
-        else
-        {
-            p = W_CacheLumpNum(FontBBaseLump + c - 33, PU_CACHE);
-            width += SHORT(p->width) - 1;
-        }
-    }
-    return (width);
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC MN_Ticker
-//
-//---------------------------------------------------------------------------
-
-void MN_Ticker(void)
-{
-    if (MenuActive == false)
-    {
-        return;
-    }
-    MenuTime++;
-}
 
 //---------------------------------------------------------------------------
 //
@@ -474,24 +347,6 @@ void MN_Drawer(void)
     }
 }
 
-//---------------------------------------------------------------------------
-//
-// PROC DrawMainMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawMainMenu(void)
-{
-    int frame;
-
-    frame = (MenuTime / 5) % 7;
-    V_DrawPatch(88, 0, W_CacheLumpName("M_HTIC", PU_CACHE));
-// Old Gold skull positions: (40, 10) and (232, 10)
-    V_DrawPatch(37, 80, W_CacheLumpNum(MauloBaseLump + (frame + 2) % 7,
-                                       PU_CACHE));
-    V_DrawPatch(278, 80, W_CacheLumpNum(MauloBaseLump + frame, PU_CACHE));
-}
-
 //==========================================================================
 //
 // DrawClassMenu
@@ -518,143 +373,6 @@ static void DrawClassMenu(void)
     V_DrawPatch(174 + 24, 8 + 12,
                 W_CacheLumpNum(W_GetNumForName(walkLumpName[class])
                                + ((MenuTime >> 3) & 3), PU_CACHE));
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawSkillMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawSkillMenu(void)
-{
-    MN_DrTextB("CHOOSE SKILL LEVEL:", 74, 16);
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawFilesMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawFilesMenu(void)
-{
-// clear out the quicksave/quickload stuff
-    quicksave = 0;
-    quickload = 0;
-    ClearMessage();
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawLoadMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawLoadMenu(void)
-{
-    MN_DrTextB("LOAD GAME", 160 - MN_TextBWidth("LOAD GAME") / 2, 10);
-    if (!slottextloaded)
-    {
-        MN_LoadSlotText();
-    }
-    DrawFileSlots(&LoadMenu);
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawSaveMenu
-//
-//---------------------------------------------------------------------------
-
-static void DrawSaveMenu(void)
-{
-    MN_DrTextB("SAVE GAME", 160 - MN_TextBWidth("SAVE GAME") / 2, 10);
-    if (!slottextloaded)
-    {
-        MN_LoadSlotText();
-    }
-    DrawFileSlots(&SaveMenu);
-}
-
-static dboolean ReadDescriptionForSlot(int slot, char *description)
-{
-    FILE *fp;
-    dboolean found;
-    char name[100];
-    char versionText[HXS_VERSION_TEXT_LENGTH];
-
-    doom_snprintf(name, sizeof(name), "%shex%d.hxs", SavePath, slot);
-
-    fp = fopen(name, "rb");
-
-    if (fp == NULL)
-    {
-        return false;
-    }
-
-    found = fread(description, HXS_DESCRIPTION_LENGTH, 1, fp) == 1
-         && fread(versionText, HXS_VERSION_TEXT_LENGTH, 1, fp) == 1;
-
-    found = found && strcmp(versionText, HXS_VERSION_TEXT) == 0;
-
-    fclose(fp);
-
-    return found;
-}
-
-//===========================================================================
-//
-// MN_LoadSlotText
-//
-// For each slot, looks for save games and reads the description field.
-//
-//===========================================================================
-
-void MN_LoadSlotText(void)
-{
-    char description[HXS_DESCRIPTION_LENGTH];
-    int slot;
-
-    for (slot = 0; slot < 6; slot++)
-    {
-        if (ReadDescriptionForSlot(slot, description))
-        {
-            memcpy(SlotText[slot], description, SLOTTEXTLEN);
-            SlotStatus[slot] = 1;
-        }
-        else
-        {
-            memset(SlotText[slot], 0, SLOTTEXTLEN);
-            SlotStatus[slot] = 0;
-        }
-    }
-    slottextloaded = true;
-}
-
-//---------------------------------------------------------------------------
-//
-// PROC DrawFileSlots
-//
-//---------------------------------------------------------------------------
-
-static void DrawFileSlots(Menu_t * menu)
-{
-    int i;
-    int x;
-    int y;
-
-    x = menu->x;
-    y = menu->y;
-    for (i = 0; i < 6; i++)
-    {
-        V_DrawPatch(x, y, W_CacheLumpName("M_FSLOT", PU_CACHE));
-        if (SlotStatus[i])
-        {
-            MN_DrTextA(SlotText[i], x + 5, y + 5);
-        }
-        y += ITEM_HEIGHT;
-    }
 }
 
 //---------------------------------------------------------------------------

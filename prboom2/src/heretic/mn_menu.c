@@ -69,7 +69,15 @@ void M_DrawThermo(int x, int y, int thermWidth, int thermDot);
 void MN_Init(void)
 {
   MN_InitFonts();
-  SkullBaseLump = W_GetNumForName("M_SKL00");
+
+  if (heretic)
+  {
+    SkullBaseLump = W_GetNumForName("M_SKL00");
+  }
+  else
+  {
+    SkullBaseLump = W_GetNumForName("FBULA0");
+  }
 
   // override doom menu parameters
 
@@ -266,14 +274,33 @@ void MN_Drawer(void)
   // }
 }
 
+static void Hexen_MN_DrawMainMenu(void);
+
 void MN_DrawMainMenu(void)
 {
   int frame;
+
+  if (hexen) return Hexen_MN_DrawMainMenu();
 
   frame = (MenuTime / 3) % 18;
   V_DrawNamePatch(88, 0, 0, "M_HTIC", CR_DEFAULT, VPT_STRETCH);
   V_DrawNumPatch(40, 10, 0, SkullBaseLump + (17 - frame), CR_DEFAULT, VPT_STRETCH);
   V_DrawNumPatch(232, 10, 0, SkullBaseLump + frame, CR_DEFAULT, VPT_STRETCH);
+}
+
+static void Hexen_MN_DrawMainMenu(void)
+{
+  int frame;
+
+  frame = (MenuTime / 5) % 7;
+  V_DrawNamePatch(88, 0, 0, "M_HTIC", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNumPatch(37, 80, 0, SkullBaseLump + (frame + 2) % 7, CR_DEFAULT, VPT_STRETCH);
+  V_DrawNumPatch(278, 80, 0, SkullBaseLump + frame, CR_DEFAULT, VPT_STRETCH);
+}
+
+void MN_DrawSkillMenu(void)
+{
+    MN_DrTextB("CHOOSE SKILL LEVEL:", 74, 16);
 }
 
 void MN_DrawOptions(void)
