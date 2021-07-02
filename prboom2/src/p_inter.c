@@ -106,17 +106,6 @@ static weapontype_t GetAmmoChange[] = {
     wp_mace
 };
 
-// hexen
-int ArmorIncrement[NUMCLASSES][NUMARMOR] = {
-    [PCLASS_FIGHTER] = {25 * FRACUNIT, 20 * FRACUNIT, 15 * FRACUNIT, 5 * FRACUNIT},
-                       {10 * FRACUNIT, 25 * FRACUNIT, 5 * FRACUNIT, 20 * FRACUNIT},
-                       {5 * FRACUNIT, 15 * FRACUNIT, 10 * FRACUNIT, 25 * FRACUNIT},
-                       {0, 0, 0, 0}
-};
-
-int AutoArmorSave[NUMCLASSES] =
-    { [PCLASS_FIGHTER] = 15 * FRACUNIT, 10 * FRACUNIT, 5 * FRACUNIT, 0 };
-
 //
 // P_GiveAmmo
 // Num is the number of clip loads,
@@ -1480,7 +1469,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     {
       int i;
       int saved;
-      fixed_t savedPercent = AutoArmorSave[player->pclass]
+      fixed_t savedPercent = pclass[player->pclass].auto_armor_save
                              + player->armorpoints[ARMOR_ARMOR]
                              + player->armorpoints[ARMOR_SHIELD]
                              + player->armorpoints[ARMOR_HELMET]
@@ -1496,7 +1485,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
           if (player->armorpoints[i])
           {
             player->armorpoints[i] -= FixedDiv(
-              FixedMul(damage << FRACBITS, ArmorIncrement[player->pclass][i]),
+              FixedMul(damage << FRACBITS, pclass[player->pclass].armor_increment[i]),
               300 * FRACUNIT
             );
             if (player->armorpoints[i] < 2 * FRACUNIT)
@@ -2723,7 +2712,7 @@ dboolean Hexen_P_GiveArmor(player_t * player, armortype_t armortype, int amount)
 
     if (amount == -1)
     {
-        hits = ArmorIncrement[player->pclass][armortype];
+        hits = pclass[player->pclass].armor_increment[armortype];
         if (player->armorpoints[armortype] >= hits)
         {
             return false;
@@ -2740,7 +2729,7 @@ dboolean Hexen_P_GiveArmor(player_t * player, armortype_t armortype, int amount)
             + player->armorpoints[ARMOR_SHIELD]
             + player->armorpoints[ARMOR_HELMET]
             + player->armorpoints[ARMOR_AMULET]
-            + AutoArmorSave[player->pclass];
+            + pclass[player->pclass].auto_armor_save;
         if (totalArmor < ArmorMax[player->pclass] * 5 * FRACUNIT)
         {
             player->armorpoints[armortype] += hits;

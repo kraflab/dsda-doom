@@ -107,10 +107,6 @@ static char heretic_namearti[][10] = {
 };
 static int heretic_lumparti[11];
 
-// hexen
-extern int ArmorIncrement[NUMCLASSES][NUMARMOR];
-extern int AutoArmorSave[NUMCLASSES];
-
 static int SpinMinotaurLump;
 static int SpinSpeedLump;
 static int SpinDefenseLump;
@@ -1321,8 +1317,8 @@ void DrawKeyBar(void)
         }
         oldkeys = playerkeys;
     }
-    temp = AutoArmorSave[CPlayer->pclass]
-        + CPlayer->armorpoints[ARMOR_ARMOR] +
+    temp = pclass[CPlayer->pclass].auto_armor_save +
+        CPlayer->armorpoints[ARMOR_ARMOR] +
         CPlayer->armorpoints[ARMOR_SHIELD] +
         CPlayer->armorpoints[ARMOR_HELMET] +
         CPlayer->armorpoints[ARMOR_AMULET];
@@ -1334,13 +1330,11 @@ void DrawKeyBar(void)
             {
                 continue;
             }
-            if (CPlayer->armorpoints[i] <=
-                (ArmorIncrement[CPlayer->pclass][i] >> 2))
+            if (CPlayer->armorpoints[i] <= (pclass[CPlayer->pclass].armor_increment[i] >> 2))
             {
                 V_DrawTLNumPatch(150 + 31 * i, 164, W_GetNumForName("armslot1") + i);
             }
-            else if (CPlayer->armorpoints[i] <=
-                     (ArmorIncrement[CPlayer->pclass][i] >> 1))
+            else if (CPlayer->armorpoints[i] <= (pclass[CPlayer->pclass].armor_increment[i] >> 1))
             {
                 V_DrawAltTLNumPatch(150 + 31 * i, 164, W_GetNumForName("armslot1") + i);
             }
@@ -1549,8 +1543,8 @@ static void Hexen_DrawMainBar(void)
         oldweapon = CPlayer->readyweapon;
     }
     // Armor
-    temp = AutoArmorSave[CPlayer->pclass]
-        + CPlayer->armorpoints[ARMOR_ARMOR] +
+    temp = pclass[CPlayer->pclass].auto_armor_save +
+        CPlayer->armorpoints[ARMOR_ARMOR] +
         CPlayer->armorpoints[ARMOR_SHIELD] +
         CPlayer->armorpoints[ARMOR_HELMET] +
         CPlayer->armorpoints[ARMOR_AMULET];

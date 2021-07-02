@@ -35,6 +35,7 @@
 #ifndef __D_PLAYER__
 #define __D_PLAYER__
 
+#include "dsda/pclass.h"
 
 // The player data structure depends on a number
 // of other structs: items (internal inventory),

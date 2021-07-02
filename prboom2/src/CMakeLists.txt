@@ -53,6 +53,8 @@ set(COMMON_SRC
     dsda/options.h
     dsda/palette.c
     dsda/palette.h
+    dsda/pclass.c
+    dsda/pclass.h
     dsda/save.c
     dsda/save.h
     dsda/settings.c
