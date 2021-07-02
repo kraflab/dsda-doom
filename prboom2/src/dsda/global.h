@@ -37,10 +37,6 @@ extern int g_thrust_factor;
 extern int g_fuzzy_aim_shift;
 extern int g_special_friction_low;
 
-extern int g_s_play_atk1;
-extern int g_s_play_atk2;
-extern int g_s_play_run1;
-extern int g_s_play;
 extern int g_s_null;
 
 extern int g_mt_bloodsplatter;

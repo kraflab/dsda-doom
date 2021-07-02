@@ -84,35 +84,6 @@ static const int recoil_values[] = {    // phares
   80  // wp_supershotgun
 };
 
-// hexen
-int PStateNormal[NUMCLASSES] = {
-  [PCLASS_FIGHTER] = HEXEN_S_FPLAY,
-                     HEXEN_S_CPLAY,
-                     HEXEN_S_MPLAY,
-                     HEXEN_S_PIGPLAY
-};
-
-int PStateRun[NUMCLASSES] = {
-  [PCLASS_FIGHTER] = HEXEN_S_FPLAY_RUN1,
-                     HEXEN_S_CPLAY_RUN1,
-                     HEXEN_S_MPLAY_RUN1,
-                     HEXEN_S_PIGPLAY_RUN1
-};
-
-int PStateAttack[NUMCLASSES] = {
-  [PCLASS_FIGHTER] = HEXEN_S_FPLAY_ATK1,
-                     HEXEN_S_CPLAY_ATK1,
-                     HEXEN_S_MPLAY_ATK1,
-                     HEXEN_S_PIGPLAY_ATK1
-};
-
-int PStateAttackEnd[NUMCLASSES] = {
-  [PCLASS_FIGHTER] = HEXEN_S_FPLAY_ATK2,
-                     HEXEN_S_CPLAY_ATK3,
-                     HEXEN_S_MPLAY_ATK2,
-                     HEXEN_S_PIGPLAY_ATK1
-};
-
 //
 // P_SetPsprite
 //
@@ -485,12 +456,12 @@ static void P_FireWeapon(player_t *player)
 
   dsda_WatchWeaponFire(player->readyweapon);
 
-  // heretic_note: these can probably be combined in a clean way
+  P_SetMobjState(player->mo, pclass[player->pclass].fire_weapon_state);
+
   if (heretic)
   {
     weaponinfo_t *wpinfo;
 
-    P_SetMobjState(player->mo, HERETIC_S_PLAY_ATK2);
     wpinfo = player->powers[pw_weaponlevel2] ? &wpnlev2info[0]
                                              : &weaponinfo[0];
     newstate = player->refire ? wpinfo[player->readyweapon].holdatkstate
@@ -498,7 +469,6 @@ static void P_FireWeapon(player_t *player)
   }
   else if (hexen)
   {
-    P_SetMobjState(player->mo, PStateAttack[player->pclass]);
     if (player->pclass == PCLASS_FIGHTER && player->readyweapon == wp_second
         && player->ammo[MANA_1] > 0)
     {                           // Glowing axe
@@ -513,7 +483,6 @@ static void P_FireWeapon(player_t *player)
   }
   else
   {
-    P_SetMobjState(player->mo, S_PLAY_ATK1);
     newstate = weaponinfo[player->readyweapon].atkstate;
   }
 
@@ -576,20 +545,9 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
   }
 
   // get out of attack state
-  if (player->pclass)
-  {
-    if (player->mo->state >= &states[PStateAttack[player->pclass]]
-        && player->mo->state <= &states[PStateAttackEnd[player->pclass]])
-    {
-        P_SetMobjState(player->mo, PStateNormal[player->pclass]);
-    }
-  }
-  else
-  {
-    if (player->mo->state == &states[g_s_play_atk1]
-        || player->mo->state == &states[g_s_play_atk2] )
-      P_SetMobjState(player->mo, g_s_play);
-  }
+  if (player->mo->state >= &states[pclass[player->pclass].attack_state]
+      && player->mo->state <= &states[pclass[player->pclass].attack_end_state])
+    P_SetMobjState(player->mo, pclass[player->pclass].normal_state);
 
   if (heretic)
   {

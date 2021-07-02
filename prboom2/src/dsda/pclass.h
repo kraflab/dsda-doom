@@ -25,9 +25,16 @@ typedef struct dsda_pclass_s {
   int armor_increment[NUMARMOR];
   int auto_armor_save;
   int armor_max;
+
   fixed_t forwardmove[2];
   fixed_t sidemove[2];
   fixed_t max_player_move;
+
+  int normal_state;
+  int run_state;
+  int fire_weapon_state;
+  int attack_state;
+  int attack_end_state;
 } dsda_pclass_t;
 
 extern dsda_pclass_t pclass[NUMCLASSES];

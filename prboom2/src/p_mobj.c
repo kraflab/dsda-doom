@@ -555,17 +555,11 @@ static void P_XYMovement (mobj_t* mo)
       }
       else
       {
-        int runstate;
-
-        runstate = hexen ? PStateRun[player->pclass] : g_s_play_run1;
-        if ((unsigned)(player->mo->state - states - runstate) < 4)
+        if ((unsigned)(player->mo->state - states - pclass[player->pclass].run_state) < 4)
         {
           if (raven || player->mo == mo || compatibility_level >= lxdoom_1_compatibility)
           {
-            int playstate;
-
-            playstate = hexen ? PStateNormal[player->pclass] : g_s_play;
-            P_SetMobjState(player->mo, playstate);
+            P_SetMobjState(player->mo, pclass[player->pclass].normal_state);
           }
         }
       }

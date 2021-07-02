@@ -1476,16 +1476,9 @@ void Heretic_P_MovePlayer(player_t * player)
         }
         else
         {
-            if (hexen)
+            if (player->mo->state == &states[pclass[player->pclass].normal_state])
             {
-                if (player->mo->state == &states[PStateNormal[player->pclass]])
-                {
-                    P_SetMobjState(player->mo, PStateRun[player->pclass]);
-                }
-            }
-            else if (player->mo->state == &states[HERETIC_S_PLAY])
-            {
-                P_SetMobjState(player->mo, HERETIC_S_PLAY_RUN1);
+                P_SetMobjState(player->mo, pclass[player->pclass].run_state);
             }
         }
     }

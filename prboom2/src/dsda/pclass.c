@@ -15,6 +15,8 @@
 //	DSDA Player Class
 //
 
+#include "info.h"
+
 #include "pclass.h"
 
 dsda_pclass_t pclass[NUMCLASSES] = {
@@ -22,6 +24,7 @@ dsda_pclass_t pclass[NUMCLASSES] = {
     .armor_increment = { 0 },
     .auto_armor_save = 0,
     .armor_max = 0,
+
     .forwardmove = { 0x19, 0x32 },
     .sidemove = { 0x18, 0x28 },
     .max_player_move = 0x32,
@@ -31,35 +34,82 @@ dsda_pclass_t pclass[NUMCLASSES] = {
     .armor_increment = { 25 * FRACUNIT, 20 * FRACUNIT, 15 * FRACUNIT, 5 * FRACUNIT },
     .auto_armor_save = 15 * FRACUNIT,
     .armor_max = 100 * FRACUNIT,
+
     .forwardmove = { 0x1D, 0x3C },
     .sidemove = { 0x1B, 0x3B },
     .max_player_move = 0x3C,
+
+    .normal_state = HEXEN_S_FPLAY,
+    .run_state = HEXEN_S_FPLAY_RUN1,
+    .fire_weapon_state = HEXEN_S_FPLAY_ATK1,
+    .attack_state = HEXEN_S_FPLAY_ATK1,
+    .attack_end_state = HEXEN_S_FPLAY_ATK2,
   },
 
   [PCLASS_CLERIC] = {
     .armor_increment = { 10 * FRACUNIT, 25 * FRACUNIT, 5 * FRACUNIT, 20 * FRACUNIT },
     .auto_armor_save = 10 * FRACUNIT,
     .armor_max = 90 * FRACUNIT,
+
     .forwardmove = { 0x19, 0x32 },
     .sidemove = { 0x18, 0x28 },
     .max_player_move = 0x32,
+
+    .normal_state = HEXEN_S_CPLAY,
+    .run_state = HEXEN_S_CPLAY_RUN1,
+    .fire_weapon_state = HEXEN_S_CPLAY_ATK1,
+    .attack_state = HEXEN_S_CPLAY_ATK1,
+    .attack_end_state = HEXEN_S_CPLAY_ATK3,
   },
 
   [PCLASS_MAGE] = {
     .armor_increment = { 5 * FRACUNIT, 15 * FRACUNIT, 10 * FRACUNIT, 25 * FRACUNIT },
     .auto_armor_save = 5 * FRACUNIT,
     .armor_max = 80 * FRACUNIT,
+
     .forwardmove = { 0x16, 0x2E },
     .sidemove = { 0x15, 0x25 },
     .max_player_move = 0x2D,
+
+    .normal_state = HEXEN_S_MPLAY,
+    .run_state = HEXEN_S_MPLAY_RUN1,
+    .fire_weapon_state = HEXEN_S_MPLAY_ATK1,
+    .attack_state = HEXEN_S_MPLAY_ATK1,
+    .attack_end_state = HEXEN_S_MPLAY_ATK2,
   },
 
   [PCLASS_PIG] = {
     .armor_increment = { 0 },
     .auto_armor_save = 0,
     .armor_max = 5 * FRACUNIT,
+
     .forwardmove = { 0x18, 0x31 },
     .sidemove = { 0x17, 0x27 },
     .max_player_move = 0x31,
+
+    .normal_state = HEXEN_S_PIGPLAY,
+    .run_state = HEXEN_S_PIGPLAY_RUN1,
+    .fire_weapon_state = HEXEN_S_PIGPLAY_ATK1,
+    .attack_state = HEXEN_S_PIGPLAY_ATK1,
+    .attack_end_state = HEXEN_S_PIGPLAY_ATK1,
   },
 };
+
+void dsda_ResetNullPClass(void) {
+  if (heretic)
+  {
+    pclass[PCLASS_NULL].normal_state = HERETIC_S_PLAY;
+    pclass[PCLASS_NULL].run_state = HERETIC_S_PLAY_RUN1;
+    pclass[PCLASS_NULL].fire_weapon_state = HERETIC_S_PLAY_ATK2;
+    pclass[PCLASS_NULL].attack_state = HERETIC_S_PLAY_ATK1;
+    pclass[PCLASS_NULL].attack_end_state = HERETIC_S_PLAY_ATK2;
+  }
+  else
+  {
+    pclass[PCLASS_NULL].normal_state = S_PLAY;
+    pclass[PCLASS_NULL].run_state = S_PLAY_RUN1;
+    pclass[PCLASS_NULL].fire_weapon_state = S_PLAY_ATK1;
+    pclass[PCLASS_NULL].attack_state = S_PLAY_ATK1;
+    pclass[PCLASS_NULL].attack_end_state = S_PLAY_ATK2;
+  }
+}

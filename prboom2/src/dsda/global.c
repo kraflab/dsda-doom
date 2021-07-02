@@ -73,10 +73,6 @@ int g_thrust_factor;
 int g_fuzzy_aim_shift;
 int g_special_friction_low;
 
-int g_s_play_atk1;
-int g_s_play_atk2;
-int g_s_play_run1;
-int g_s_play;
 int g_s_null;
 
 int g_mt_bloodsplatter;
@@ -216,10 +212,6 @@ static void dsda_InitDoom(void) {
   g_fuzzy_aim_shift = 20;
   g_special_friction_low = IGNORE_VALUE;
 
-  g_s_play_atk1 = S_PLAY_ATK1;
-  g_s_play_atk2 = S_PLAY_ATK2;
-  g_s_play_run1 = S_PLAY_RUN1;
-  g_s_play = S_PLAY;
   g_s_null = S_NULL;
 
   g_sfx_sawup = sfx_sawup;
@@ -364,10 +356,6 @@ static void dsda_InitHeretic(void) {
   g_fuzzy_aim_shift = 21;
   g_special_friction_low = 15;
 
-  g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
-  g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
-  g_s_play_run1 = HERETIC_S_PLAY_RUN1;
-  g_s_play = HERETIC_S_PLAY;
   g_s_null = HERETIC_S_NULL;
 
   g_mt_bloodsplatter = HERETIC_MT_BLOODSPLATTER;
@@ -526,11 +514,7 @@ static void dsda_InitHexen(void) {
   g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
   g_special_friction_low = IGNORE_VALUE;
-  //
-  // g_s_play_atk1 = HERETIC_S_PLAY_ATK1;
-  // g_s_play_atk2 = HERETIC_S_PLAY_ATK2;
-  // g_s_play_run1 = HERETIC_S_PLAY_RUN1;
-  // g_s_play = HERETIC_S_PLAY;
+
   g_s_null = HEXEN_S_NULL;
   //
   g_mt_bloodsplatter = HEXEN_MT_BLOODSPLATTER;
@@ -623,9 +607,13 @@ static dboolean dsda_AutoDetectHeretic(void)
   return false;
 }
 
+extern void dsda_ResetNullPClass(void);
+
 void dsda_InitGlobal(void) {
   heretic = M_CheckParm("-heretic") || dsda_AutoDetectHeretic();
   raven = heretic || hexen;
 
   heretic ? dsda_InitHeretic() : dsda_InitDoom();
+
+  dsda_ResetNullPClass();
 }
