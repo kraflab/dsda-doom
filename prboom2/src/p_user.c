@@ -70,9 +70,6 @@ dboolean onground; // whether player is on ground or in air
 int newtorch;      // used in the torch flicker effect.
 int newtorchdelta;
 
-// hexen
-int ArmorMax[NUMCLASSES] = { [PCLASS_FIGHTER] = 20, 18, 16, 1 };
-
 angle_t P_PlayerPitch(player_t* player)
 {
   return player->mo->pitch - (angle_t)(player->lookdir * ANG1 / M_PI);

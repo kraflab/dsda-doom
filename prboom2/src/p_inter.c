@@ -2708,8 +2708,6 @@ dboolean Hexen_P_GiveArmor(player_t * player, armortype_t armortype, int amount)
     int hits;
     int totalArmor;
 
-    extern int ArmorMax[NUMCLASSES];
-
     if (amount == -1)
     {
         hits = pclass[player->pclass].armor_increment[armortype];
@@ -2730,7 +2728,7 @@ dboolean Hexen_P_GiveArmor(player_t * player, armortype_t armortype, int amount)
             + player->armorpoints[ARMOR_HELMET]
             + player->armorpoints[ARMOR_AMULET]
             + pclass[player->pclass].auto_armor_save;
-        if (totalArmor < ArmorMax[player->pclass] * 5 * FRACUNIT)
+        if (totalArmor < pclass[player->pclass].armor_max)
         {
             player->armorpoints[armortype] += hits;
         }

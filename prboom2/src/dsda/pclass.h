@@ -22,8 +22,9 @@
 #include "doomdef.h"
 
 typedef struct dsda_pclass_s {
-  int auto_armor_save;
   int armor_increment[NUMARMOR];
+  int auto_armor_save;
+  int armor_max;
   fixed_t forwardmove[2];
   fixed_t sidemove[2];
   fixed_t max_player_move;
