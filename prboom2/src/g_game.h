@@ -86,7 +86,7 @@ int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap);
 extern dboolean democontinue;
 extern char democontinuename[];
 void G_CheckDemoContinue(void);
-void G_SetSpeed(void);
+void G_SetSpeed(dboolean force);
 
 //e6y
 #define RDH_SAFE 0x00000001

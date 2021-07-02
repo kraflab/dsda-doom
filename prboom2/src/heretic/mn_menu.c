@@ -42,6 +42,8 @@ static int FontBBaseLump;
 static int SkullBaseLump;
 static int MenuTime;
 
+dboolean mn_SuicideConsole;
+
 static void MN_InitFonts(void)
 {
   FontABaseLump = W_GetNumForName("FONTA_S") + 1;

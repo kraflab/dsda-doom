@@ -484,7 +484,7 @@ int G_GotoNextLevel(void)
 
 void M_ChangeSpeed(void)
 {
-  G_SetSpeed();
+  G_SetSpeed(true);
 }
 
 void M_ChangeMouseLook(void)

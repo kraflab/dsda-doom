@@ -107,7 +107,6 @@ extern dboolean gamekeydown[256];        // The NUMKEYS macro is local to g_game
 dboolean MenuActive;
 int InfoType;
 int messageson = true;
-dboolean mn_SuicideConsole;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

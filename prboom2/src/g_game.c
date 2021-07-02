@@ -334,19 +334,28 @@ static inline signed char fudgef(signed char b)
   return b;
 }
 
-void G_SetSpeed(void)
+void G_SetSpeed(dboolean reset)
 {
   int p;
+  dsda_pclass_t *player_class;
+  static dsda_pclass_t *last_player_class = NULL;
+
+  player_class = &pclass[players[consoleplayer].pclass];
+
+  if (last_player_class == player_class && !reset)
+    return;
+
+  last_player_class = player_class;
 
   if(dsda_AlwaysSR50())
   {
-    sidemove[0] = sidemove_strafe50[0];
-    sidemove[1] = sidemove_strafe50[1];
+    sidemove[0] = player_class->forwardmove[0];
+    sidemove[1] = player_class->forwardmove[1];
   }
   else
   {
-    sidemove[0] = sidemove_normal[0];
-    sidemove[1] = sidemove_normal[1];
+    sidemove[0] = player_class->sidemove[0];
+    sidemove[1] = player_class->sidemove[1];
   }
 
   if ((p = M_CheckParm ("-turbo")))
@@ -356,8 +365,8 @@ void G_SetSpeed(void)
 
     //jff 9/3/98 use logical output routine
     lprintf (LO_INFO,"turbo scale: %i%%\n",scale);
-    forwardmove[0] = forwardmove_normal[0]*scale/100;
-    forwardmove[1] = forwardmove_normal[1]*scale/100;
+    forwardmove[0] = player_class->forwardmove[0]*scale/100;
+    forwardmove[1] = player_class->forwardmove[1]*scale/100;
     sidemove[0] = sidemove[0]*scale/100;
     sidemove[1] = sidemove[1]*scale/100;
   }
@@ -367,12 +376,11 @@ static dboolean WeaponSelectable(weapontype_t weapon)
 {
   if (heretic)
   {
-    if (weapon == wp_beak)
-    {
-      return false;
-    }
-
-    return players[consoleplayer].weaponowned[weapon];
+    return weapon != wp_beak && players[consoleplayer].weaponowned[weapon];
+  }
+  else if (hexen)
+  {
+    return weapon < HEXEN_NUMWEAPONS && players[consoleplayer].weaponowned[weapon];
   }
 
   if (gamemode == shareware)
@@ -440,6 +448,11 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   int forward;
   int side;
   int newweapon;                                          // phares
+
+  dsda_pclass_t *player_class = &pclass[players[consoleplayer].pclass];
+
+  G_SetSpeed(false);
+
   /* cphipps - remove needless I_BaseTiccmd call, just set the ticcmd to zero */
   memset(cmd,0,sizeof*cmd);
   cmd->consistancy = consistancy[consoleplayer][maketic%BACKUPTICS];
@@ -483,27 +496,27 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   // let movement keys cancel each other out
 
   if (strafe)
-    {
-      if (dsda_InputActive(dsda_input_turnright))
-        side += sidemove[speed];
-      if (dsda_InputActive(dsda_input_turnleft))
-        side -= sidemove[speed];
-      if (joyxmove > 0)
-        side += sidemove[speed];
-      if (joyxmove < 0)
-        side -= sidemove[speed];
-    }
+  {
+    if (dsda_InputActive(dsda_input_turnright))
+      side += sidemove[speed];
+    if (dsda_InputActive(dsda_input_turnleft))
+      side -= sidemove[speed];
+    if (joyxmove > 0)
+      side += sidemove[speed];
+    if (joyxmove < 0)
+      side -= sidemove[speed];
+  }
   else
-    {
-      if (dsda_InputActive(dsda_input_turnright))
-        cmd->angleturn -= angleturn[tspeed];
-      if (dsda_InputActive(dsda_input_turnleft))
-        cmd->angleturn += angleturn[tspeed];
-      if (joyxmove > 0)
-        cmd->angleturn -= angleturn[tspeed];
-      if (joyxmove < 0)
-        cmd->angleturn += angleturn[tspeed];
-    }
+  {
+    if (dsda_InputActive(dsda_input_turnright))
+      cmd->angleturn -= angleturn[tspeed];
+    if (dsda_InputActive(dsda_input_turnleft))
+      cmd->angleturn += angleturn[tspeed];
+    if (joyxmove > 0)
+      cmd->angleturn -= angleturn[tspeed];
+    if (joyxmove < 0)
+      cmd->angleturn += angleturn[tspeed];
+  }
 
   if (dsda_InputActive(dsda_input_forward))
     forward += forwardmove[speed];
@@ -518,7 +531,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (dsda_InputActive(dsda_input_strafeleft))
     side -= sidemove[speed];
 
-  if (heretic)
+  if (raven)
   {
     int lspeed;
     int look, arti;
@@ -584,50 +597,134 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       }
       else
       {
-        cmd->arti = players[consoleplayer].inventory[inv_ptr].type;
+        cmd->arti |= players[consoleplayer].inventory[inv_ptr].type & AFLAG_MASK;
       }
     }
-    if (dsda_InputTickActivated(dsda_input_arti_tome) && !cmd->arti
-        && !players[consoleplayer].powers[pw_weaponlevel2])
+
+    if (hexen)
     {
-      cmd->arti = arti_tomeofpower;
+      extern int mn_SuicideConsole;
+
+      if (dsda_InputActive(dsda_input_jump))
+      {
+        cmd->arti |= AFLAG_JUMP;
+      }
+
+      if (mn_SuicideConsole)
+      {
+          cmd->arti |= AFLAG_SUICIDE;
+          mn_SuicideConsole = false;
+      }
+
+      if (!cmd->arti)
+      {
+        if (dsda_InputTickActivated(dsda_input_hexen_arti_icon))
+        {
+          cmd->arti = hexen_arti_invulnerability;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_quartz) &&
+                 players[consoleplayer].mo->health < MAXHEALTH)
+        {
+          cmd->arti = hexen_arti_health;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_urn))
+        {
+          cmd->arti = hexen_arti_superhealth;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_incant))
+        {
+          cmd->arti = hexen_arti_healingradius;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_summon))
+        {
+          cmd->arti = hexen_arti_summon;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_torch))
+        {
+          cmd->arti = hexen_arti_torch;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_porkalator))
+        {
+          cmd->arti = hexen_arti_egg;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_wings))
+        {
+          cmd->arti = hexen_arti_fly;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_disk))
+        {
+          cmd->arti = hexen_arti_blastradius;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_flechette))
+        {
+          cmd->arti = hexen_arti_poisonbag;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_banishment))
+        {
+          cmd->arti = hexen_arti_teleportother;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_boots))
+        {
+          cmd->arti = hexen_arti_speed;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_krater))
+        {
+          cmd->arti = hexen_arti_boostmana;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_bracers))
+        {
+          cmd->arti = hexen_arti_boostarmor;
+        }
+        else if (dsda_InputTickActivated(dsda_input_hexen_arti_chaosdevice))
+        {
+          cmd->arti = hexen_arti_teleport;
+        }
+      }
     }
-    else if (dsda_InputTickActivated(dsda_input_arti_quartz) && !cmd->arti
-        && (players[consoleplayer].mo->health < MAXHEALTH))
+    else
     {
-      cmd->arti = arti_health;
-    }
-    else if (dsda_InputTickActivated(dsda_input_arti_urn) && !cmd->arti)
-    {
-      cmd->arti = arti_superhealth;
-    }
-    else if (dsda_InputTickActivated(dsda_input_arti_bomb) && !cmd->arti)
-    {
-      cmd->arti = arti_firebomb;
-    }
-    else if (dsda_InputTickActivated(dsda_input_arti_ring) && !cmd->arti)
-    {
-      cmd->arti = arti_invulnerability;
-    }
-    else if (dsda_InputTickActivated(dsda_input_arti_chaosdevice) && !cmd->arti)
-    {
-      cmd->arti = arti_teleport;
-    }
-    else if (dsda_InputTickActivated(dsda_input_arti_shadowsphere) && !cmd->arti)
-    {
-      cmd->arti = arti_invisibility;
-    }
-    else if (dsda_InputTickActivated(dsda_input_arti_wings) && !cmd->arti)
-    {
-      cmd->arti = arti_fly;
-    }
-    else if (dsda_InputTickActivated(dsda_input_arti_torch) && !cmd->arti)
-    {
-      cmd->arti = arti_torch;
-    }
-    else if (dsda_InputTickActivated(dsda_input_arti_morph) && !cmd->arti)
-    {
-      cmd->arti = arti_egg;
+      if (dsda_InputTickActivated(dsda_input_arti_tome) && !cmd->arti
+          && !players[consoleplayer].powers[pw_weaponlevel2])
+      {
+        cmd->arti = arti_tomeofpower;
+      }
+      else if (dsda_InputTickActivated(dsda_input_arti_quartz) && !cmd->arti
+          && (players[consoleplayer].mo->health < MAXHEALTH))
+      {
+        cmd->arti = arti_health;
+      }
+      else if (dsda_InputTickActivated(dsda_input_arti_urn) && !cmd->arti)
+      {
+        cmd->arti = arti_superhealth;
+      }
+      else if (dsda_InputTickActivated(dsda_input_arti_bomb) && !cmd->arti)
+      {
+        cmd->arti = arti_firebomb;
+      }
+      else if (dsda_InputTickActivated(dsda_input_arti_ring) && !cmd->arti)
+      {
+        cmd->arti = arti_invulnerability;
+      }
+      else if (dsda_InputTickActivated(dsda_input_arti_chaosdevice) && !cmd->arti)
+      {
+        cmd->arti = arti_teleport;
+      }
+      else if (dsda_InputTickActivated(dsda_input_arti_shadowsphere) && !cmd->arti)
+      {
+        cmd->arti = arti_invisibility;
+      }
+      else if (dsda_InputTickActivated(dsda_input_arti_wings) && !cmd->arti)
+      {
+        cmd->arti = arti_fly;
+      }
+      else if (dsda_InputTickActivated(dsda_input_arti_torch) && !cmd->arti)
+      {
+        cmd->arti = arti_torch;
+      }
+      else if (dsda_InputTickActivated(dsda_input_arti_morph) && !cmd->arti)
+      {
+        cmd->arti = arti_egg;
+      }
     }
 
     if (players[consoleplayer].playerstate == PST_LIVE)
@@ -645,18 +742,18 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     cmd->lookfly |= flyheight << 4;
   }
 
-    // buttons
+  // buttons
   cmd->chatchar = HU_dequeueChatChar();
 
   if (dsda_InputActive(dsda_input_fire))
     cmd->buttons |= BT_ATTACK;
 
   if (dsda_InputActive(dsda_input_use) || dsda_InputTickActivated(dsda_input_use))
-    {
-      cmd->buttons |= BT_USE;
-      // clear double clicks if hit use button
-      dclicks = 0;
-    }
+  {
+    cmd->buttons |= BT_USE;
+    // clear double clicks if hit use button
+    dclicks = 0;
+  }
 
   // Toggle between the top 2 favorite weapons.                   // phares
   // If not currently aiming one of these, switch to              // phares
@@ -672,21 +769,29 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   // Make Boom insert only a single weapon change command on autoswitch.
   if ((!demo_compatibility && players[consoleplayer].attackdown && // killough
        !P_CheckAmmo(&players[consoleplayer]) && !(done_autoswitch && boom_autoswitch)) ||
-       dsda_InputActive(dsda_input_toggleweapon))
+       (!hexen && dsda_InputActive(dsda_input_toggleweapon)))
   {
     newweapon = P_SwitchWeapon(&players[consoleplayer]);           // phares
     done_autoswitch = true;
   }
   else
-    {                                 // phares 02/26/98: Added gamemode checks
-      if (next_weapon)
-      {
-        newweapon = G_NextWeapon(next_weapon);
-        next_weapon = 0;
-      }
-      else
-      {
-        // HERETIC_TODO: fix this
+  {                                 // phares 02/26/98: Added gamemode checks
+    if (next_weapon && players[consoleplayer].morphTics == 0)
+    {
+      newweapon = G_NextWeapon(next_weapon);
+    }
+    else if (hexen)
+    {
+      newweapon =
+        dsda_InputActive(dsda_input_weapon1) ? wp_first :    // killough 5/2/98: reformatted
+        dsda_InputActive(dsda_input_weapon2) ? wp_second :
+        dsda_InputActive(dsda_input_weapon3) ? wp_third :
+        dsda_InputActive(dsda_input_weapon4) ? wp_fourth :
+        wp_nochange;
+    }
+    else
+    {
+      // HERETIC_TODO: fix this
       newweapon =
         dsda_InputActive(dsda_input_weapon1) ? wp_fist :    // killough 5/2/98: reformatted
         dsda_InputActive(dsda_input_weapon2) ? wp_pistol :
@@ -698,64 +803,63 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dsda_InputActive(dsda_input_weapon8) ? wp_chainsaw :
         (!demo_compatibility && dsda_InputActive(dsda_input_weapon9) && gamemode == commercial) ? wp_supershotgun :
         wp_nochange;
-      }
-
-      // killough 3/22/98: For network and demo consistency with the
-      // new weapons preferences, we must do the weapons switches here
-      // instead of in p_user.c. But for old demos we must do it in
-      // p_user.c according to the old rules. Therefore demo_compatibility
-      // determines where the weapons switch is made.
-
-      // killough 2/8/98:
-      // Allow user to switch to fist even if they have chainsaw.
-      // Switch to fist or chainsaw based on preferences.
-      // Switch to shotgun or SSG based on preferences.
-
-      if (!demo_compatibility)
-        {
-          const player_t *player = &players[consoleplayer];
-
-          // only select chainsaw from '1' if it's owned, it's
-          // not already in use, and the player prefers it or
-          // the fist is already in use, or the player does not
-          // have the berserker strength.
-
-          if (newweapon==wp_fist && player->weaponowned[wp_chainsaw] &&
-              player->readyweapon!=wp_chainsaw &&
-              (player->readyweapon==wp_fist ||
-               !player->powers[pw_strength] ||
-               P_WeaponPreferred(wp_chainsaw, wp_fist)))
-            newweapon = wp_chainsaw;
-
-          // Select SSG from '3' only if it's owned and the player
-          // does not have a shotgun, or if the shotgun is already
-          // in use, or if the SSG is not already in use and the
-          // player prefers it.
-
-          if (newweapon == wp_shotgun && gamemode == commercial &&
-              player->weaponowned[wp_supershotgun] &&
-              (!player->weaponowned[wp_shotgun] ||
-               player->readyweapon == wp_shotgun ||
-               (player->readyweapon != wp_supershotgun &&
-                P_WeaponPreferred(wp_supershotgun, wp_shotgun))))
-            newweapon = wp_supershotgun;
-        }
-      // killough 2/8/98, 3/22/98 -- end of weapon selection changes
-      //}
     }
+
+    // killough 3/22/98: For network and demo consistency with the
+    // new weapons preferences, we must do the weapons switches here
+    // instead of in p_user.c. But for old demos we must do it in
+    // p_user.c according to the old rules. Therefore demo_compatibility
+    // determines where the weapons switch is made.
+
+    // killough 2/8/98:
+    // Allow user to switch to fist even if they have chainsaw.
+    // Switch to fist or chainsaw based on preferences.
+    // Switch to shotgun or SSG based on preferences.
+
+    if (!demo_compatibility)
+    {
+      const player_t *player = &players[consoleplayer];
+
+      // only select chainsaw from '1' if it's owned, it's
+      // not already in use, and the player prefers it or
+      // the fist is already in use, or the player does not
+      // have the berserker strength.
+
+      if (newweapon==wp_fist && player->weaponowned[wp_chainsaw] &&
+          player->readyweapon!=wp_chainsaw &&
+          (player->readyweapon==wp_fist ||
+           !player->powers[pw_strength] ||
+           P_WeaponPreferred(wp_chainsaw, wp_fist)))
+        newweapon = wp_chainsaw;
+
+      // Select SSG from '3' only if it's owned and the player
+      // does not have a shotgun, or if the shotgun is already
+      // in use, or if the SSG is not already in use and the
+      // player prefers it.
+
+      if (newweapon == wp_shotgun && gamemode == commercial &&
+          player->weaponowned[wp_supershotgun] &&
+          (!player->weaponowned[wp_shotgun] ||
+           player->readyweapon == wp_shotgun ||
+           (player->readyweapon != wp_supershotgun &&
+            P_WeaponPreferred(wp_supershotgun, wp_shotgun))))
+        newweapon = wp_supershotgun;
+    }
+  }
+
+  next_weapon = 0;
 
   if (newweapon != wp_nochange && players[consoleplayer].chickenTics == 0)
-    {
-      cmd->buttons |= BT_CHANGE;
-      cmd->buttons |= newweapon<<BT_WEAPONSHIFT;
-    }
+  {
+    cmd->buttons |= BT_CHANGE;
+    cmd->buttons |= newweapon<<BT_WEAPONSHIFT;
+  }
 
   // mouse
 
   if (mouse_doubleclick_as_use) {//e6y
-
-  // forward double click
-  if (dsda_InputMouseBActive(dsda_input_forward) != dclickstate && dclicktime > 1 )
+    // forward double click
+    if (dsda_InputMouseBActive(dsda_input_forward) != dclickstate && dclicktime > 1 )
     {
       dclickstate = dsda_InputMouseBActive(dsda_input_forward);
       if (dclickstate)
@@ -768,17 +872,16 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       else
         dclicktime = 0;
     }
-  else
-    if ((dclicktime += ticdup) > 20)
+    else
+      if ((dclicktime += ticdup) > 20)
       {
         dclicks = 0;
         dclickstate = 0;
       }
 
-  // strafe double click
-
-  bstrafe = dsda_InputMouseBActive(dsda_input_strafe) || dsda_InputJoyBActive(dsda_input_strafe);
-  if (bstrafe != dclickstate2 && dclicktime2 > 1 )
+    // strafe double click
+    bstrafe = dsda_InputMouseBActive(dsda_input_strafe) || dsda_InputJoyBActive(dsda_input_strafe);
+    if (bstrafe != dclickstate2 && dclicktime2 > 1 )
     {
       dclickstate2 = bstrafe;
       if (dclickstate2)
@@ -791,19 +894,19 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       else
         dclicktime2 = 0;
     }
-  else
-    if ((dclicktime2 += ticdup) > 20)
+    else
+      if ((dclicktime2 += ticdup) > 20)
       {
         dclicks2 = 0;
         dclickstate2 = 0;
       }
-
-  }//e6y: end if (mouse_doubleclick_as_use)
+  }
 
   if(!movement_mousenovert)
   {
     forward += mousey;
   }
+
   if (strafe)
   {
     static double mousestrafe_carry = 0;
@@ -829,32 +932,39 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   motion_blur.curr_speed_pow2 = 0;
 #endif
 
-  if (forward > MAXPLMOVE)
-    forward = MAXPLMOVE;
-  else if (forward < -MAXPLMOVE)
-    forward = -MAXPLMOVE;
-  if (side > MAXPLMOVE)
-    side = MAXPLMOVE;
-  else if (side < -MAXPLMOVE)
-    side = -MAXPLMOVE;
+  if (forward > player_class->max_player_move)
+    forward = player_class->max_player_move;
+  else if (forward < -player_class->max_player_move)
+    forward = -player_class->max_player_move;
+
+  if (side > player_class->max_player_move)
+    side = player_class->max_player_move;
+  else if (side < -player_class->max_player_move)
+    side = -player_class->max_player_move;
 
   //e6y
   if (dsda_AlwaysSR50())
   {
     if (!speed)
     {
-      if (side > sidemove_strafe50[0])
-        side = sidemove_strafe50[0];
-      else if (side < -sidemove_strafe50[0])
-        side = -sidemove_strafe50[0];
+      if (side > player_class->forwardmove[0])
+        side = player_class->forwardmove[0];
+      else if (side < -player_class->forwardmove[0])
+        side = -player_class->forwardmove[0];
     }
     else if(!movement_strafe50onturns && !strafe && cmd->angleturn)
     {
-      if (side > sidemove_normal[1])
-        side = sidemove_normal[1];
-      else if (side < -sidemove_normal[1])
-        side = -sidemove_normal[1];
+      if (side > player_class->sidemove[1])
+        side = player_class->sidemove[1];
+      else if (side < -player_class->sidemove[1])
+        side = -player_class->sidemove[1];
     }
+  }
+
+  if (players[consoleplayer].powers[pw_speed] && !players[consoleplayer].morphTics)
+  {                           // Adjust for a player with a speed artifact
+      forward = (3 * forward) >> 1;
+      side = (3 * side) >> 1;
   }
 
   if (stroller) side = 0;
@@ -4228,6 +4338,8 @@ void P_WalkTicker()
 
   if (!walkcamera.type || menuactive)
     return;
+
+  G_SetSpeed(false);
 
   strafe = dsda_InputActive(dsda_input_strafe);
   speed = autorun || dsda_InputActive(dsda_input_speed); // phares
