@@ -113,21 +113,6 @@ static int LeavePosition;
 
 //#define MAXPLMOVE       0x32 // Old Heretic Max move
 
-fixed_t MaxPlayerMove[NUMCLASSES] = { 0x3C, 0x32, 0x2D, 0x31 };
-fixed_t forwardmove[NUMCLASSES][2] = {
-    {0x1D, 0x3C},
-    {0x19, 0x32},
-    {0x16, 0x2E},
-    {0x18, 0x31}
-};
-
-fixed_t sidemove[NUMCLASSES][2] = {
-    {0x1B, 0x3B},
-    {0x18, 0x28},
-    {0x15, 0x25},
-    {0x17, 0x27}
-};
-
 fixed_t angleturn[3] = { 640, 1280, 320 };      // + slow turn
 
 static int *weapon_keys[] =

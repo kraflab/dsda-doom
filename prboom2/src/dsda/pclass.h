@@ -18,11 +18,15 @@
 #ifndef __DSDA_PCLASS__
 #define __DSDA_PCLASS__
 
+#include "m_fixed.h"
 #include "doomdef.h"
 
 typedef struct dsda_pclass_s {
   int auto_armor_save;
   int armor_increment[NUMARMOR];
+  fixed_t forwardmove[2];
+  fixed_t sidemove[2];
+  fixed_t max_player_move;
 } dsda_pclass_t;
 
 extern dsda_pclass_t pclass[NUMCLASSES];
