@@ -269,14 +269,13 @@ extern  int   gametic;
 extern  dboolean realframe;
 
 // Bookkeeping on players - state.
-extern  player_t  players[MAXPLAYERS];
+extern  player_t  players[MAX_MAXPLAYERS];
 extern  int       upmove;
 
 // Alive? Disconnected?
-extern  dboolean   playeringame[MAXPLAYERS];
-extern  dboolean   realplayeringame[MAXPLAYERS];
+extern  dboolean   playeringame[MAX_MAXPLAYERS];
 
-extern pclass_t PlayerClass[MAXPLAYERS];
+extern pclass_t PlayerClass[MAX_MAXPLAYERS];
 
 extern  mapthing_t *deathmatchstarts;     // killough
 extern  size_t     num_deathmatchstarts; // killough

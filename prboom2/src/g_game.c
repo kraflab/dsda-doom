@@ -162,9 +162,9 @@ dboolean         noblit;        // for comparative timing purposes
 int             starttime;     // for comparative timing purposes
 dboolean         deathmatch;    // only if started as net death
 dboolean         netgame;       // only true if packets are broadcast
-dboolean         playeringame[MAXPLAYERS];
-player_t        players[MAXPLAYERS];
-pclass_t        PlayerClass[MAXPLAYERS];
+dboolean         playeringame[MAX_MAXPLAYERS];
+player_t        players[MAX_MAXPLAYERS];
+pclass_t        PlayerClass[MAX_MAXPLAYERS];
 int             upmove;
 int             consoleplayer; // player taking events and displaying
 int             displayplayer; // view being displayed
@@ -289,6 +289,12 @@ int lookheld;
 static dboolean InventoryMoveLeft(void);
 static dboolean InventoryMoveRight(void);
 // end heretic
+
+// hexen
+#include "hexen/p_acs.h"
+
+int RebornPosition;
+// end hexen
 
 typedef enum
 {
@@ -4006,7 +4012,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       //   0x20 = -respawn
       //   0x10 = -longtics
       //   0x02 = -nomonsters
-      if (heretic)
+      if (raven)
       {
         if (*demo_p & DEMOHEADER_RESPAWN)
           respawnparm = true;
@@ -4022,9 +4028,9 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
         // file size test;
         // DOOM_old and HERETIC don't use maps>9;
         // 2 at 4,6 means playerclass=mage -> not DOOM_old or HERETIC;
-        if ((size >= 8 && (size - 8) % 4 != 0 && !heretic) ||
-            (map > 9) ||
-            (size >= 6 && (*(header_p + 4) == 2 || *(header_p + 6) == 2)))
+        if ((size >= 8 && (size - 8) % 4 != 0 && !raven) ||
+            (map > 9 && !hexen) ||
+            (size >= 6 && (*(header_p + 4) == 2 || *(header_p + 6) == 2) && !hexen))
         {
           I_Error("Unrecognised demo format.");
         }
@@ -4133,26 +4139,42 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   lprintf(LO_INFO, "G_DoPlayDemo: playing demo with %s compatibility\n",
     comp_lev_str[compatibility_level]);
 
+  for (i = 0; i < MAX_MAXPLAYERS; i++)
+    playeringame[i] = 0;
+
   if (demo_compatibility || demover < 200) //e6y  // only 4 players can exist in old demos
   {
-    //e6y: check for overrun
-    if (CheckForOverrun(header_p, demo_p, size, 4, failonerror))
-      return NULL;
+    if (hexen)
+    {
+      //e6y: check for overrun
+      if (CheckForOverrun(header_p, demo_p, size, HEXEN_MAXPLAYERS, failonerror))
+        return NULL;
 
-    for (i = 0; i < 4; i++)  // intentionally hard-coded 4 -- killough
-      playeringame[i] = *demo_p++;
-    for (; i < MAXPLAYERS; i++)
-      playeringame[i] = 0;
+      for (i = 0; i < HEXEN_MAXPLAYERS; i++)
+      {
+        playeringame[i] = (*demo_p++) != 0;
+        PlayerClass[i] = *demo_p++;
+      }
+    }
+    else
+    {
+      //e6y: check for overrun
+      if (CheckForOverrun(header_p, demo_p, size, DOOM_MAXPLAYERS, failonerror))
+        return NULL;
+
+      for (i = 0; i < DOOM_MAXPLAYERS; i++)
+        playeringame[i] = *demo_p++;
+    }
   }
   else
   {
     //e6y: check for overrun
-    if (CheckForOverrun(header_p, demo_p, size, MAXPLAYERS, failonerror))
+    if (CheckForOverrun(header_p, demo_p, size, DOOM_MAXPLAYERS, failonerror))
       return NULL;
 
-    for (i=0 ; i < MAXPLAYERS; i++)
+    for (i=0 ; i < DOOM_MAXPLAYERS; i++)
       playeringame[i] = *demo_p++;
-    demo_p += MIN_MAXPLAYERS - MAXPLAYERS;
+    demo_p += MIN_MAXPLAYERS - DOOM_MAXPLAYERS;
   }
 
   if (playeringame[1])
@@ -4164,11 +4186,14 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   if (!(params & RDH_SKIP_HEADER))
   {
     if (gameaction != ga_loadgame) { /* killough 12/98: support -loadgame */
+      if (hexen)
+        G_StartNewInit();
+
       G_InitNew(skill, episode, map);
     }
   }
 
-  for (i = 0; i < MAXPLAYERS; i++)         // killough 4/24/98
+  for (i = 0; i < MAX_MAXPLAYERS; i++)         // killough 4/24/98
     players[i].cheats = 0;
 
   // e6y
@@ -4177,13 +4202,13 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     const byte *p = demo_p;
 
     bytes_per_tic = (longtics ? 5 : 4);
-    if (heretic) bytes_per_tic += 2;
+    if (raven) bytes_per_tic += 2;
     demo_playerscount = 0;
     demo_tics_count = 0;
     demo_curr_tic = 0;
     strcpy(demo_len_st, "-");
 
-    for (i = 0; i < MAXPLAYERS; i++)
+    for (i = 0; i < MAX_MAXPLAYERS; i++)
     {
       if (playeringame[i])
       {
@@ -4253,52 +4278,52 @@ dboolean G_CheckDemoStatus (void)
   P_ChecksumFinal();
 
   if (demorecording)
-    {
-      byte end_marker = DEMOMARKER;
+  {
+    byte end_marker = DEMOMARKER;
 
-      demorecording = false;
-      dsda_WriteToDemo(&end_marker, 1);
+    demorecording = false;
+    dsda_WriteToDemo(&end_marker, 1);
 
-      //e6y
-      G_WriteDemoFooter();
+    //e6y
+    G_WriteDemoFooter();
 
-      dsda_WriteDemoToFile();
+    dsda_WriteDemoToFile();
 
-      lprintf(LO_INFO, "G_CheckDemoStatus: Demo recorded\n");
+    lprintf(LO_INFO, "G_CheckDemoStatus: Demo recorded\n");
 
-      return false;  // killough
-    }
+    return false;  // killough
+  }
 
   if (timingdemo)
-    {
-      int endtime = I_GetTime_RealTime ();
-      // killough -- added fps information and made it work for longer demos:
-      unsigned realtics = endtime-starttime;
+  {
+    int endtime = I_GetTime_RealTime ();
+    // killough -- added fps information and made it work for longer demos:
+    unsigned realtics = endtime-starttime;
 
-      M_SaveDefaults();
+    M_SaveDefaults();
 
-      lprintf(LO_INFO, "Timed %u gametics in %u realtics = %-.1f frames per second\n",
-               (unsigned) gametic,realtics,
-               (unsigned) gametic * (double) TICRATE / realtics);
-      I_SafeExit(0);
-    }
+    lprintf(LO_INFO, "Timed %u gametics in %u realtics = %-.1f frames per second\n",
+             (unsigned) gametic,realtics,
+             (unsigned) gametic * (double) TICRATE / realtics);
+    I_SafeExit(0);
+  }
 
   if (demoplayback)
-    {
-      if (singledemo)
-        I_SafeExit(0);  // killough
+  {
+    if (singledemo)
+      I_SafeExit(0);  // killough
 
-      if (demolumpnum != -1) {
-  // cph - unlock the demo lump
-  W_UnlockLumpNum(demolumpnum);
-  demolumpnum = -1;
-      }
-      G_ReloadDefaults();    // killough 3/1/98
-      netgame = false;       // killough 3/29/98
-      deathmatch = false;
-      D_AdvanceDemo ();
-      return true;
+    if (demolumpnum != -1) {
+      // cph - unlock the demo lump
+      W_UnlockLumpNum(demolumpnum);
+      demolumpnum = -1;
     }
+    G_ReloadDefaults();    // killough 3/1/98
+    netgame = false;       // killough 3/29/98
+    deathmatch = false;
+    D_AdvanceDemo ();
+    return true;
+  }
   return false;
 }
 
@@ -4593,4 +4618,14 @@ void G_Completed(int map, int position)
     gameaction = ga_completed;
     LeaveMap = map;
     LeavePosition = position;
+}
+
+void G_StartNewInit(void)
+{
+    // HEXEN_TODO: SV
+    // SV_InitBaseSlot();
+    // SV_ClearRebornSlot();
+    P_ACSInitNewGame();
+    // Default the player start spot group to 0
+    RebornPosition = 0;
 }
