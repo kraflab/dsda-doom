@@ -3153,7 +3153,7 @@ void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p)
   }
   cmd->buttons = (unsigned char)(*(*data_p)++);
 
-  if (heretic)
+  if (raven)
   {
     cmd->lookfly = (unsigned char)(*(*data_p)++);
     cmd->arti = (unsigned char)(*(*data_p)++);
@@ -3217,7 +3217,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
     }
     *p++ = cmd->buttons;
 
-    if (heretic)
+    if (raven)
     {
       *p++ = cmd->lookfly;
       *p++ = cmd->arti;
