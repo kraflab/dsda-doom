@@ -3620,7 +3620,7 @@ void G_BeginRecording (void)
 
     for (; i<MIN_MAXPLAYERS; i++)
       *demo_p++ = 0;
-  } else if (!heretic) { // cph - write old v1.9 demos (might even sync)
+  } else if (!raven) { // cph - write old v1.9 demos (might even sync)
     unsigned char v = 109;
     longtics = M_CheckParm("-longtics");
     if (longtics)
@@ -3650,7 +3650,7 @@ void G_BeginRecording (void)
     *demo_p++ = consoleplayer;
     for (i=0; i<4; i++)  // intentionally hard-coded 4 -- killough
       *demo_p++ = playeringame[i];
-  } else { // versionless heretic
+  } else { // versionless raven
     *demo_p++ = gameskill;
     *demo_p++ = gameepisode;
     *demo_p++ = gamemap;
@@ -3669,8 +3669,20 @@ void G_BeginRecording (void)
       *demo_p |= DEMOHEADER_NOMONSTERS;
     demo_p++;
 
-    for (i = 1; i < MAXPLAYERS; i++)
-      *demo_p++ = playeringame[i];
+    if (heretic)
+    {
+      for (i = 1; i < DOOM_MAXPLAYERS; i++)
+        *demo_p++ = playeringame[i];
+    }
+    else
+    {
+      *demo_p++ = PlayerClass[0];
+      for (i = 1; i < HEXEN_MAXPLAYERS; i++)
+      {
+        *demo_p++ = playeringame[i];
+        *demo_p++ = PlayerClass[i];
+      }
+    }
   }
 
   dsda_WriteToDemo(demostart, demo_p - demostart);
