@@ -212,10 +212,6 @@ fixed_t sidemove[2]    = {0x18, 0x28};
 fixed_t angleturn[3]   = {640, 1280, 320};  // + slow turn
 fixed_t flyspeed[2]    = {1*256, 3*256};
 
-fixed_t forwardmove_normal[2] = {0x19, 0x32};
-fixed_t sidemove_normal[2]    = {0x18, 0x28};
-fixed_t sidemove_strafe50[2]  = {0x19, 0x32};
-
 static int     turnheld;       // for accelerative turning
 
 // Set to -1 or +1 to switch to the previous or next weapon.

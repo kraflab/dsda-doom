@@ -727,12 +727,6 @@ static void HandleArgs(void)
 
     demoextend = (!M_ParmExists("-nodemoextend"));
     //[crispy] make demoextend the default
-
-    if (M_ParmExists("-testcontrols"))
-    {
-        autostart = true;
-        testcontrols = true;
-    }
 }
 
 //==========================================================================
@@ -891,11 +885,6 @@ static void DrawAndBlit(void)
         case GS_DEMOSCREEN:
             PageDrawer();
             break;
-    }
-
-    if (testcontrols)
-    {
-        V_DrawMouseSpeedBox(testcontrols_mousespeed);
     }
 
     if (paused && !MenuActive && !askforquit)

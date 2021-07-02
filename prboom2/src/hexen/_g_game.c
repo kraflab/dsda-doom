@@ -14,153 +14,17 @@
 // GNU General Public License for more details.
 //
 
-
-#include <string.h>
-#include "m_random.h"
-#include "h2def.h"
-#include "s_sound.h"
-#include "doomkeys.h"
-#include "i_input.h"
-#include "i_video.h"
-#include "i_system.h"
-#include "i_timer.h"
-#include "m_argv.h"
-#include "m_controls.h"
-#include "m_misc.h"
-#include "p_local.h"
-#include "v_video.h"
-
-#define AM_STARTKEY	9
-
-// External functions
-
-extern void R_InitSky(int map);
-extern void P_PlayerNextArtifact(player_t * player);
-
-// Functions
-
-dboolean G_CheckDemoStatus(void);
-void G_ReadDemoTiccmd(ticcmd_t * cmd);
-void G_WriteDemoTiccmd(ticcmd_t * cmd);
-
-void G_DoReborn(int playernum);
-
-void G_DoLoadLevel(void);
-void G_DoInitNew(void);
-void G_DoNewGame(void);
-void G_DoPlayDemo(void);
-void G_DoTeleportNewMap(void);
-void G_DoCompleted(void);
-void G_DoVictory(void);
-void G_DoWorldDone(void);
-void G_DoSaveGame(void);
-void G_DoSingleReborn(void);
-
-void H2_PageTicker(void);
-void H2_AdvanceDemo(void);
-
-extern dboolean mn_SuicideConsole;
-
-gameaction_t gameaction;
-gamestate_t gamestate;
-skill_t gameskill;
-//dboolean         respawnmonsters;
-int gameepisode;
-int gamemap;
 int prevmap;
-
-dboolean paused;
-dboolean sendpause;              // send a pause event next tic
-dboolean sendsave;               // send a save event next tic
-dboolean usergame;               // ok to save / end game
-
-dboolean timingdemo;             // if true, exit with report on completion
-int starttime;                  // for comparative timing purposes
-
-dboolean viewactive;
-
-dboolean deathmatch;             // only if started as net death
-dboolean netgame;                // only true if packets are broadcast
-dboolean playeringame[MAXPLAYERS];
-player_t players[MAXPLAYERS];
 
 // Position indicator for cooperative net-play reborn
 int RebornPosition;
 
-int consoleplayer;              // player taking events and displaying
-int displayplayer;              // view being displayed
-int levelstarttic;              // gametic at level start
-
-char *demoname;
-dboolean demorecording;
-dboolean longtics;               // specify high resolution turning in demos
-dboolean lowres_turn;
-dboolean shortticfix;            // calculate lowres turning like doom
-dboolean demoplayback;
-dboolean demoextend;
-byte *demobuffer, *demo_p, *demoend;
-dboolean singledemo;             // quit after playing a demo from cmdline
-
-dboolean precache = true;        // if true, load all graphics at start
-
-// TODO: Hexen uses 16-bit shorts for consistancy?
-byte consistancy[MAXPLAYERS][BACKUPTICS];
-
-int mouseSensitivity = 5;
-
 int LeaveMap;
 static int LeavePosition;
-
-//#define MAXPLMOVE       0x32 // Old Heretic Max move
-
-fixed_t angleturn[3] = { 640, 1280, 320 };      // + slow turn
-
-static int *weapon_keys[] =
-{
-    &key_weapon1,
-    &key_weapon2,
-    &key_weapon3,
-    &key_weapon4,
-};
-
-static int next_weapon = 0;
-
-#define NUMKEYS 256
-dboolean gamekeydown[NUMKEYS];
-int turnheld;                   // for accelerative turning
-int lookheld;
-
-
-dboolean mousearray[MAX_MOUSE_BUTTONS + 1];
-dboolean *mousebuttons = &mousearray[1];
-        // allow [-1]
-int mousex, mousey;             // mouse values are used once
-int dclicktime, dclickstate, dclicks;
-int dclicktime2, dclickstate2, dclicks2;
-
-#define MAX_JOY_BUTTONS 20
-
-int joyxmove, joyymove;         // joystick values are repeated
-int joystrafemove;
-int joylook;
-dboolean joyarray[MAX_JOY_BUTTONS + 1];
-dboolean *joybuttons = &joyarray[1];     // allow [-1]
-
-int savegameslot;
-char savedescription[32];
-
-int vanilla_demo_limit = 1;
-
-int inventoryTics;
-
-// haleyjd: removed externdriver crap
 
 static skill_t TempSkill;
 static int TempEpisode;
 static int TempMap;
-
-dboolean testcontrols = false;
-int testcontrols_mousespeed;
 
 //=============================================================================
 
@@ -201,11 +65,6 @@ void G_DoLoadLevel(void)
     sendpause = sendsave = paused = false;
     memset(mousearray, 0, sizeof(mousearray));
     memset(joyarray, 0, sizeof(joyarray));
-
-    if (testcontrols)
-    {
-        P_SetMessage(&players[consoleplayer], "PRESS ESCAPE TO QUIT.", false);
-    }
 }
 
 static void SetJoyButtons(unsigned int buttons_mask)
@@ -318,11 +177,6 @@ dboolean G_Responder(event_t * ev)
         {                       // Automap ate the event
             return (true);
         }
-    }
-
-    if (ev->type == ev_mouse)
-    {
-        testcontrols_mousespeed = abs(ev->data2);
     }
 
     if (ev->type == ev_keydown && ev->data1 == key_prevweapon)
