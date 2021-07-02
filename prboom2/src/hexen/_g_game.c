@@ -14,8 +14,6 @@
 // GNU General Public License for more details.
 //
 
-int prevmap;
-
 // Position indicator for cooperative net-play reborn
 int RebornPosition;
 
@@ -484,17 +482,6 @@ void G_PlayerExitMap(int playerNumber)
 
     player = &players[playerNumber];
 
-//      if(deathmatch)
-//      {
-//              // Strip all but one of each type of artifact
-//              for(i = 0; i < player->inventorySlotNum; i++)
-//              {
-//                      player->inventory[i].count = 1;
-//              }
-//              player->artifactCount = player->inventorySlotNum;
-//      }
-//      else
-
     // Strip all current powers (retain flight)
     flightPower = player->powers[pw_flight];
     memset(player->powers, 0, sizeof(player->powers));
@@ -649,10 +636,6 @@ void G_DeathMatchSpawnPlayer(int playernum)
     int selections;
 
     selections = deathmatch_p - deathmatchstarts;
-
-    // This check has been moved to p_setup.c:P_LoadThings()
-    //if (selections < 8)
-    //      I_Error ("Only %i deathmatch spots, 8 required", selections);
 
     for (j = 0; j < 20; j++)
     {
@@ -869,44 +852,6 @@ void G_DoCompleted(void)
         gamestate = GS_INTERMISSION;
         IN_Start();
     }
-
-/*
-	int i;
-	static int afterSecret[3] = { 7, 5, 5 };
-
-	gameaction = ga_nothing;
-	if(G_CheckDemoStatus())
-	{
-		return;
-	}
-	for(i = 0; i < MAXPLAYERS; i++)
-	{
-		if(playeringame[i])
-		{
-			G_PlayerFinishLevel(i);
-		}
-	}
-	prevmap = gamemap;
-	if(secretexit == true)
-	{
-		gamemap = 9;
-	}
-	else if(gamemap == 9)
-	{ // Finished secret level
-		gamemap = afterSecret[gameepisode-1];
-	}
-	else if(gamemap == 8)
-	{
-		gameaction = ga_victory;
-		return;
-	}
-	else
-	{
-		gamemap++;
-	}
-	gamestate = GS_INTERMISSION;
-	IN_Start();
-*/
 }
 
 //============================================================================
@@ -1118,14 +1063,6 @@ void G_InitNew(skill_t skill, int episode, int map)
     // Initialize the sky
     R_InitSky(map);
 
-    // Give one null ticcmd_t
-    //gametic = 0;
-    //maketic = 1;
-    //for (i=0 ; i<MAXPLAYERS ; i++)
-    //      nettics[i] = 1; // one null event for this gametic
-    //memset (localcmds,0,sizeof(localcmds));
-    //memset (netcmds,0,sizeof(netcmds));
-
     G_DoLoadLevel();
 }
 
@@ -1234,16 +1171,6 @@ void G_WriteDemoTiccmd(ticcmd_t * cmd)
 
     if (demo_p > demoend - 16)
     {
-        // [crispy] unconditionally disable savegame and demo limits
-        /*
-        if (vanilla_demo_limit)
-        {
-            // no more space
-            G_CheckDemoStatus();
-            return;
-        }
-        else
-        */
         {
             // Vanilla demo limit disabled: unlimited
             // demo lengths!
