@@ -25,69 +25,6 @@ also see P_SpawnPlayer in P_Things
 
 //==========================================================================
 //
-// G_PlayerExitMap
-//
-// Called when the player leaves a map.
-//
-//==========================================================================
-
-void G_PlayerExitMap(int playerNumber)
-{
-    int i;
-    player_t *player;
-    int flightPower;
-
-    player = &players[playerNumber];
-
-    // Strip all current powers (retain flight)
-    flightPower = player->powers[pw_flight];
-    memset(player->powers, 0, sizeof(player->powers));
-    player->powers[pw_flight] = flightPower;
-
-    if (deathmatch)
-    {
-        player->powers[pw_flight] = 0;
-    }
-    else
-    {
-        if (P_GetMapCluster(gamemap) != P_GetMapCluster(LeaveMap))
-        {                       // Entering new cluster
-            // Strip all keys
-            for (i = 0; i < NUMCARDS; ++i)
-              player->cards[i] = 0;
-
-            // Strip flight artifact
-            for (i = 0; i < 25; i++)
-            {
-                player->powers[pw_flight] = 0;
-                P_PlayerUseArtifact(player, hexen_arti_fly);
-            }
-            player->powers[pw_flight] = 0;
-        }
-    }
-
-    if (player->morphTics)
-    {
-        player->readyweapon = player->mo->special1.i;     // Restore weapon
-        player->morphTics = 0;
-    }
-    player->messageTics = 0;
-    player->lookdir = 0;
-    player->mo->flags &= ~MF_SHADOW;    // Remove invisibility
-    player->extralight = 0;     // Remove weapon flashes
-    player->fixedcolormap = 0;  // Remove torch
-    player->damagecount = 0;    // No palette changes
-    player->bonuscount = 0;
-    player->poisoncount = 0;
-    if (player == &players[consoleplayer])
-    {
-        SB_state = -1;          // refresh the status bar
-        viewangleoffset = 0;
-    }
-}
-
-//==========================================================================
-//
 // G_PlayerReborn
 //
 // Called after a player dies.  Almost everything is cleared and
