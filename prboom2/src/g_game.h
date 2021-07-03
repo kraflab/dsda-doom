@@ -142,6 +142,7 @@ extern dboolean done_autoswitch;
 
 // hexen
 
+void G_TeleportNewMap(int map, int position);
 void G_Completed(int map, int position);
 void G_StartNewInit(void);
 

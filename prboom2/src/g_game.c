@@ -140,7 +140,7 @@ static int demolength; // check for overrun (missing DEMOMARKER)
 //e6y static
 const byte *demo_p;
 const byte *demo_continue_p = NULL;
-static short    consistancy[MAXPLAYERS][BACKUPTICS];
+static short    consistancy[MAX_MAXPLAYERS][BACKUPTICS];
 
 gameaction_t    gameaction;
 gamestate_t     gamestate;
@@ -300,6 +300,9 @@ int RebornPosition;
 
 int LeaveMap;
 static int LeavePosition;
+
+void G_DoTeleportNewMap(void);
+void G_DoSingleReborn(void);
 // end hexen
 
 typedef enum
@@ -1312,141 +1315,152 @@ void G_Ticker (void)
   }
   P_MapStart();
   // do player reborns if needed
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i = 0; i < MAX_MAXPLAYERS; i++)
     if (playeringame[i] && players[i].playerstate == PST_REBORN)
-      G_DoReborn (i);
+      G_DoReborn(i);
   P_MapEnd();
 
   // do things to change the game state
   while (gameaction != ga_nothing)
+  {
+    switch (gameaction)
     {
-      switch (gameaction)
-        {
-        case ga_loadlevel:
-    // force players to be initialized on level reload
-    for (i=0 ; i<MAXPLAYERS ; i++)
-      players[i].playerstate = PST_REBORN;
-          G_DoLoadLevel ();
-          break;
-        case ga_newgame:
-          G_DoNewGame ();
-          break;
-        case ga_loadgame:
-          G_DoLoadGame ();
-          break;
-        case ga_savegame:
-          G_DoSaveGame (false);
-          break;
-        case ga_playdemo:
-          G_DoPlayDemo ();
-          break;
-        case ga_completed:
-          G_DoCompleted ();
-          break;
-        case ga_victory:
-          F_StartFinale ();
-          break;
-        case ga_worlddone:
-          G_DoWorldDone ();
-          break;
-        case ga_screenshot:
-          M_ScreenShot ();
-          gameaction = ga_nothing;
-          break;
-        case ga_nothing:
-          break;
-        }
+      case ga_loadlevel:
+        // force players to be initialized on level reload
+        if (!hexen)
+          for (i = 0; i < MAXPLAYERS; i++)
+            players[i].playerstate = PST_REBORN;
+        G_DoLoadLevel();
+        break;
+      case ga_newgame:
+        G_DoNewGame();
+        break;
+      case ga_loadgame:
+        G_DoLoadGame();
+        break;
+      case ga_savegame:
+        G_DoSaveGame(false);
+        break;
+      case ga_playdemo:
+        G_DoPlayDemo();
+        break;
+      case ga_completed:
+        G_DoCompleted();
+        break;
+      case ga_victory:
+        F_StartFinale();
+        break;
+      case ga_worlddone:
+        G_DoWorldDone();
+        break;
+      case ga_screenshot:
+        M_ScreenShot();
+        gameaction = ga_nothing;
+        break;
+      case ga_singlereborn:
+        G_DoSingleReborn();
+        break;
+      case ga_leavemap:
+        G_DoTeleportNewMap();
+        break;
+      case ga_nothing:
+        break;
     }
+  }
 
   if (paused & 2 || (!demoplayback && menuactive && !netgame))
     basetic++;  // For revenant tracers and RNG -- we must maintain sync
   else {
     // get commands, check consistancy, and build new consistancy check
-    int buf = (gametic/ticdup)%BACKUPTICS;
+    int buf = (gametic / ticdup) % BACKUPTICS;
 
     dsda_UpdateAutoKeyFrames();
 
-    for (i=0 ; i<MAXPLAYERS ; i++) {
+    for (i = 0; i < MAX_MAXPLAYERS; i++)
+    {
       if (playeringame[i])
+      {
+        ticcmd_t *cmd = &players[i].cmd;
+
+        memcpy(cmd, &netcmds[i][buf], sizeof *cmd);
+
+        if (dsda_KeyFrameRestored())
+          dsda_JoinDemoCmd(cmd);
+
+        //e6y
+        if (democontinue)
+          G_ReadDemoContinueTiccmd(cmd);
+
+        if (demoplayback)
+          G_ReadDemoTiccmd(cmd);
+        if (demorecording)
+          G_WriteDemoTiccmd(cmd);
+
+        // check for turbo cheats
+        // killough 2/14/98, 2/20/98 -- only warn in netgames and demos
+        // HEXEN_TODO: generalize and move turbo checking into dsda code
+        if (!hexen &&
+            (netgame || demoplayback) &&
+            cmd->forwardmove > TURBOTHRESHOLD &&
+            !(gametic & 31) && ((gametic >> 5) & 3) == i)
         {
-          ticcmd_t *cmd = &players[i].cmd;
-
-          memcpy(cmd, &netcmds[i][buf], sizeof *cmd);
-
-          if (dsda_KeyFrameRestored())
-            dsda_JoinDemoCmd(cmd);
-
-          //e6y
-          if (democontinue)
-            G_ReadDemoContinueTiccmd (cmd);
-
-          if (demoplayback)
-            G_ReadDemoTiccmd (cmd);
-          if (demorecording)
-            G_WriteDemoTiccmd (cmd);
-
-          // check for turbo cheats
-          // killough 2/14/98, 2/20/98 -- only warn in netgames and demos
-
-          if ((netgame || demoplayback) && cmd->forwardmove > TURBOTHRESHOLD &&
-              !(gametic&31) && ((gametic>>5)&3) == i )
-            {
-        extern char *player_names[];
-        /* cph - don't use sprintf, use doom_printf */
-              doom_printf ("%s is turbo!", player_names[i]);
-            }
-
-          if (netgame && !netdemo && !(gametic%ticdup) )
-            {
-              if (gametic > BACKUPTICS
-                  && consistancy[i][buf] != cmd->consistancy)
-                I_Error("G_Ticker: Consistency failure (%i should be %i)",
-            cmd->consistancy, consistancy[i][buf]);
-              if (players[i].mo)
-                consistancy[i][buf] = players[i].mo->x;
-              else
-                consistancy[i][buf] = 0; // killough 2/14/98
-            }
+            extern char *player_names[];
+            /* cph - don't use sprintf, use doom_printf */
+            doom_printf ("%s is turbo!", player_names[i]);
         }
+
+        if (netgame && !netdemo && !(gametic % ticdup) )
+        {
+          if (gametic > BACKUPTICS
+              && consistancy[i][buf] != cmd->consistancy)
+            I_Error("G_Ticker: Consistency failure (%i should be %i)",
+                    cmd->consistancy, consistancy[i][buf]);
+          if (players[i].mo)
+            consistancy[i][buf] = players[i].mo->x;
+          else
+            consistancy[i][buf] = 0; // killough 2/14/98
+        }
+      }
     }
 
     dsda_InputFlushTick();
     dsda_WatchCommand();
 
     // check for special buttons
-    for (i=0; i<MAXPLAYERS; i++) {
+    for (i = 0; i < MAX_MAXPLAYERS; i++)
+    {
       if (playeringame[i])
+      {
+        if (players[i].cmd.buttons & BT_SPECIAL)
         {
-          if (players[i].cmd.buttons & BT_SPECIAL)
-            {
-              switch (players[i].cmd.buttons & BT_SPECIALMASK)
-                {
-                case BTS_PAUSE:
-                  paused ^= 1;
-                  if (paused)
-                    S_PauseSound ();
-                  else
-                    S_ResumeSound ();
-                  break;
+          switch (players[i].cmd.buttons & BT_SPECIALMASK)
+          {
+            case BTS_PAUSE:
+              paused ^= 1;
+              if (paused)
+                S_PauseSound();
+              else
+                S_ResumeSound();
+              break;
 
-                case BTS_SAVEGAME:
-                  if (!savedescription[0])
-                    strcpy(savedescription, "NET GAME");
-                  savegameslot =
-                    (players[i].cmd.buttons & BTS_SAVEMASK)>>BTS_SAVESHIFT;
-                  gameaction = ga_savegame;
-                  break;
+            case BTS_SAVEGAME:
+              if (!savedescription[0])
+                strcpy(savedescription, "NET GAME");
+              savegameslot =
+                (players[i].cmd.buttons & BTS_SAVEMASK) >> BTS_SAVESHIFT;
+              gameaction = ga_savegame;
+              break;
 
-      // CPhipps - Restart the level
-    case BTS_RESTARTLEVEL:
-                  if (demoplayback || (compatibility_level < lxdoom_1_compatibility))
-                    break;     // CPhipps - Ignore in demos or old games
-      gameaction = ga_loadlevel;
-      break;
-                }
-        players[i].cmd.buttons = 0;
-            }
+            // CPhipps - Restart the level
+            case BTS_RESTARTLEVEL:
+              if (demoplayback || (compatibility_level < lxdoom_1_compatibility))
+                break;     // CPhipps - Ignore in demos or old games
+              gameaction = ga_loadlevel;
+              break;
+          }
+          players[i].cmd.buttons = 0;
         }
+      }
     }
 
     // turn inventory off after a certain amount of time
@@ -1463,12 +1477,12 @@ void G_Ticker (void)
   // cph - if the gamestate changed, we may need to clean up the old gamestate
   if (gamestate != prevgamestate) {
     switch (prevgamestate) {
-    case GS_LEVEL:
-      break;
-    case GS_INTERMISSION:
-      WI_End();
-    default:
-      break;
+      case GS_LEVEL:
+        break;
+      case GS_INTERMISSION:
+        WI_End();
+      default:
+        break;
     }
     prevgamestate = gamestate;
   }
@@ -1481,28 +1495,28 @@ void G_Ticker (void)
 
   // do main actions
   switch (gamestate)
-    {
+  {
     case GS_LEVEL:
-      P_Ticker ();
+      P_Ticker();
       P_WalkTicker();
       mlooky = 0;
       AM_Ticker();
-      ST_Ticker ();
-      HU_Ticker ();
+      ST_Ticker();
+      HU_Ticker();
       break;
 
     case GS_INTERMISSION:
-       WI_Ticker ();
+      WI_Ticker();
       break;
 
     case GS_FINALE:
-      F_Ticker ();
+      F_Ticker();
       break;
 
     case GS_DEMOSCREEN:
-      D_PageTicker ();
+      D_PageTicker();
       break;
-    }
+  }
 }
 
 //
@@ -4699,4 +4713,28 @@ void G_StartNewInit(void)
     P_ACSInitNewGame();
     // Default the player start spot group to 0
     RebornPosition = 0;
+}
+
+void G_TeleportNewMap(int map, int position)
+{
+    gameaction = ga_leavemap;
+    LeaveMap = map;
+    LeavePosition = position;
+}
+
+void G_DoTeleportNewMap(void)
+{
+    // HEXEN_TODO: SV
+    // SV_MapTeleport(LeaveMap, LeavePosition);
+    gamestate = GS_LEVEL;
+    gameaction = ga_nothing;
+    RebornPosition = LeavePosition;
+}
+
+void G_DoSingleReborn(void)
+{
+    gameaction = ga_nothing;
+    // HEXEN_TODO: SV
+    // SV_LoadGame(SV_GetRebornSlot());
+    SB_SetClassData();
 }
