@@ -14,53 +14,6 @@
 // GNU General Public License for more details.
 //
 
-// Position indicator for cooperative net-play reborn
-int RebornPosition;
-
-int LeaveMap;
-static int LeavePosition;
-
-//=============================================================================
-
-/*
-==============
-=
-= G_DoLoadLevel
-=
-==============
-*/
-
-void G_DoLoadLevel(void)
-{
-    int i;
-
-    levelstarttic = gametic;    // for time calculation
-    gamestate = GS_LEVEL;
-    for (i = 0; i < MAXPLAYERS; i++)
-    {
-        if (playeringame[i] && players[i].playerstate == PST_DEAD)
-            players[i].playerstate = PST_REBORN;
-        memset(players[i].frags, 0, sizeof(players[i].frags));
-    }
-
-    SN_StopAllSequences();
-    P_SetupLevel(gameepisode, gamemap, 0, gameskill);
-    displayplayer = consoleplayer;      // view the guy you are playing
-    gameaction = ga_nothing;
-    Z_CheckHeap();
-
-//
-// clear cmd building stuff
-//
-
-    memset(gamekeydown, 0, sizeof(gamekeydown));
-    joyxmove = joyymove = joystrafemove = joylook = 0;
-    mousex = mousey = 0;
-    sendpause = sendsave = paused = false;
-    memset(mousearray, 0, sizeof(mousearray));
-    memset(joyarray, 0, sizeof(joyarray));
-}
-
 /*
 ===============================================================================
 =

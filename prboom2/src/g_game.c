@@ -293,8 +293,13 @@ static dboolean InventoryMoveRight(void);
 // hexen
 #include "heretic/sb_bar.h"
 #include "hexen/p_acs.h"
+#include "hexen/sn_sonix.h"
 
+// Position indicator for cooperative net-play reborn
 int RebornPosition;
+
+int LeaveMap;
+static int LeavePosition;
 // end hexen
 
 typedef enum
@@ -1044,7 +1049,11 @@ static void G_DoLoadLevel (void)
 
   skyflatnum = R_FlatNumForName(g_skyflatname);
 
-  if (gamemapinfo && gamemapinfo->skytexture[0])
+  if (hexen)
+  {
+    skytexture = Sky1Texture;
+  }
+  else if (gamemapinfo && gamemapinfo->skytexture[0])
   {
     skytexture = R_TextureNumForName(gamemapinfo->skytexture);
   }
@@ -1064,17 +1073,18 @@ static void G_DoLoadLevel (void)
   else if (gamemode == commercial)
     // || gamemode == pack_tnt   //jff 3/27/98 sorry guys pack_tnt,pack_plut
     // || gamemode == pack_plut) //aren't gamemodes, this was matching retail
-    {
-      skytexture = R_TextureNumForName ("SKY3");
-      if (gamemap < 12)
-        skytexture = R_TextureNumForName ("SKY1");
-      else
-        if (gamemap < 21)
-          skytexture = R_TextureNumForName ("SKY2");
-    }
+  {
+    skytexture = R_TextureNumForName ("SKY3");
+    if (gamemap < 12)
+      skytexture = R_TextureNumForName ("SKY1");
+    else
+      if (gamemap < 21)
+        skytexture = R_TextureNumForName ("SKY2");
+  }
   else //jff 3/27/98 and lets not forget about DOOM and Ultimate DOOM huh?
+  {
     switch (gameepisode)
-      {
+    {
       case 1:
         skytexture = R_TextureNumForName ("SKY1");
         break;
@@ -1087,7 +1097,8 @@ static void G_DoLoadLevel (void)
       case 4: // Special Edition sky
         skytexture = R_TextureNumForName ("SKY4");
         break;
-      }//jff 3/27/98 end sky setting fix
+    }//jff 3/27/98 end sky setting fix
+  }
 
   // [RH] Set up details about sky rendering
   R_InitSkyMap ();
@@ -1106,18 +1117,21 @@ static void G_DoLoadLevel (void)
 
   gamestate = GS_LEVEL;
 
-  for (i=0 ; i<MAXPLAYERS ; i++)
-    {
-      if (playeringame[i] && players[i].playerstate == PST_DEAD)
-        players[i].playerstate = PST_REBORN;
-      memset (players[i].frags,0,sizeof(players[i].frags));
-    }
+  for (i = 0; i < MAX_MAXPLAYERS; i++)
+  {
+    if (playeringame[i] && players[i].playerstate == PST_DEAD)
+      players[i].playerstate = PST_REBORN;
+    memset(players[i].frags, 0, sizeof(players[i].frags));
+  }
 
   // initialize the msecnode_t freelist.                     phares 3/25/98
   // any nodes in the freelist are gone by now, cleared
   // by Z_FreeTag() when the previous level ended or player
   // died.
   P_FreeSecNodeList();
+
+  if (hexen)
+    SN_StopAllSequences();
 
   P_SetupLevel (gameepisode, gamemap, 0, gameskill);
   if (!demoplayback) // Don't switch views if playing a demo
@@ -1139,14 +1153,14 @@ static void G_DoLoadLevel (void)
   // Move to end of function to minimize noise -- killough 2/22/98:
 
   if (timingdemo)
-    {
-      static int first=1;
-      if (first)
-        {
-          starttime = I_GetTime_RealTime ();
-          first=0;
-        }
-    }
+  {
+    static int first=1;
+    if (first)
+      {
+        starttime = I_GetTime_RealTime ();
+        first=0;
+      }
+  }
 }
 
 
@@ -4651,9 +4665,6 @@ static dboolean InventoryMoveRight(void)
 }
 
 // hexen
-
-int LeaveMap;
-static int LeavePosition;
 
 void G_Completed(int map, int position)
 {
