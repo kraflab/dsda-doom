@@ -16,55 +16,6 @@
 
 //==========================================================================
 //
-// G_PlayerReborn
-//
-// Called after a player dies.  Almost everything is cleared and
-// initialized.
-//
-//==========================================================================
-
-void G_PlayerReborn(int player)
-{
-    player_t *p;
-    int frags[MAXPLAYERS];
-    int killcount, itemcount, secretcount;
-    unsigned int worldTimer;
-
-    memcpy(frags, players[player].frags, sizeof(frags));
-    killcount = players[player].killcount;
-    itemcount = players[player].itemcount;
-    secretcount = players[player].secretcount;
-    worldTimer = players[player].worldTimer;
-
-    p = &players[player];
-    memset(p, 0, sizeof(*p));
-
-    memcpy(players[player].frags, frags, sizeof(players[player].frags));
-    players[player].killcount = killcount;
-    players[player].itemcount = itemcount;
-    players[player].secretcount = secretcount;
-    players[player].worldTimer = worldTimer;
-    players[player].pclass = PlayerClass[player];
-
-    p->usedown = p->attackdown = true;  // don't do anything immediately
-    p->playerstate = PST_LIVE;
-    p->health = MAXHEALTH;
-    p->readyweapon = p->pendingweapon = wp_first;
-    p->weaponowned[wp_first] = true;
-    p->messageTics = 0;
-    p->lookdir = 0;
-    localQuakeHappening[player] = false;
-    if (p == &players[consoleplayer])
-    {
-        SB_state = -1;          // refresh the status bar
-        inv_ptr = 0;            // reset the inventory pointer
-        curpos = 0;
-        viewangleoffset = 0;
-    }
-}
-
-//==========================================================================
-//
 // G_DoReborn
 //
 //==========================================================================

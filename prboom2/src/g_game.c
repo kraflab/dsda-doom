@@ -1611,12 +1611,15 @@ void G_PlayerReborn (int player)
   int itemcount;
   int secretcount;
   int maxkilldiscount; //e6y
+  unsigned int worldTimer;
+  extern int localQuakeHappening[MAXPLAYERS];
 
   memcpy (frags, players[player].frags, sizeof frags);
   killcount = players[player].killcount;
   itemcount = players[player].itemcount;
   secretcount = players[player].secretcount;
   maxkilldiscount = players[player].maxkilldiscount; //e6y
+  worldTimer = players[player].worldTimer;
 
   p = &players[player];
 
@@ -1632,23 +1635,37 @@ void G_PlayerReborn (int player)
   players[player].itemcount = itemcount;
   players[player].secretcount = secretcount;
   players[player].maxkilldiscount = maxkilldiscount; //e6y
+  players[player].worldTimer = worldTimer;
+  players[player].pclass = PlayerClass[player];
 
   p->usedown = p->attackdown = true;  // don't do anything immediately
   p->playerstate = PST_LIVE;
   p->health = initial_health;  // Ty 03/12/98 - use dehacked values
-  p->readyweapon = p->pendingweapon = g_wp_pistol;
-  p->weaponowned[g_wp_fist] = true;
-  p->weaponowned[g_wp_pistol] = true;
-  if (heretic)
-    p->ammo[am_goldwand] = 50;
+
+  if (hexen)
+  {
+    p->readyweapon = p->pendingweapon = wp_first;
+    p->weaponowned[wp_first] = true;
+  }
   else
-    p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  {
+    p->readyweapon = p->pendingweapon = g_wp_pistol;
+    p->weaponowned[g_wp_fist] = true;
+    p->weaponowned[g_wp_pistol] = true;
+    if (heretic)
+      p->ammo[am_goldwand] = 50;
+    else
+      p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  }
+
   p->lookdir = 0;
+  localQuakeHappening[player] = false;
   if (p == &players[consoleplayer])
   {
     SB_state = -1;          // refresh the status bar
     inv_ptr = 0;            // reset the inventory pointer
     curpos = 0;
+    viewangleoffset = 0;
   }
 
   for (i=0 ; i<NUMAMMO ; i++)
