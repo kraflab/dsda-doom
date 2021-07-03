@@ -20,10 +20,6 @@ int RebornPosition;
 int LeaveMap;
 static int LeavePosition;
 
-static skill_t TempSkill;
-static int TempEpisode;
-static int TempMap;
-
 //=============================================================================
 
 /*
@@ -776,7 +772,7 @@ void G_StartNewGame(skill_t skill)
     {
         realMap = 1;
     }
-    G_InitNew(TempSkill, 1, realMap);
+    G_InitNew(d_skill, 1, realMap);
 }
 
 //==========================================================================
@@ -954,7 +950,7 @@ void G_DoSaveGame(void)
 
 void G_DeferredNewGame(skill_t skill)
 {
-    TempSkill = skill;
+    d_skill = skill;
     gameaction = ga_newgame;
 }
 
@@ -966,7 +962,7 @@ void G_DeferredNewGame(skill_t skill)
 
 void G_DoNewGame(void)
 {
-    G_StartNewGame(TempSkill);
+    G_StartNewGame(d_skill);
     gameaction = ga_nothing;
 }
 
@@ -982,15 +978,15 @@ void G_DoNewGame(void)
 
 void G_DeferedInitNew(skill_t skill, int episode, int map)
 {
-    TempSkill = skill;
-    TempEpisode = episode;
-    TempMap = map;
+    d_skill = skill;
+    d_episode = episode;
+    d_map = map;
     gameaction = ga_initnew;
 }
 
 void G_DoInitNew(void)
 {
     SV_InitBaseSlot();
-    G_InitNew(TempSkill, TempEpisode, TempMap);
+    G_InitNew(d_skill, d_episode, d_map);
     gameaction = ga_nothing;
 }
