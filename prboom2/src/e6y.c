@@ -457,6 +457,10 @@ int G_GotoNextLevel(void)
       epsd = next / 10;
       map = next % 10;
     }
+    else if (hexen)
+    {
+      // HEXEN_TODO: go to next level
+    }
     else if (gamemode == commercial)
     {
       epsd = 1;
@@ -786,7 +790,7 @@ void e6y_G_DoCompleted(void)
 
   memset(&stats[numlevels], 0, sizeof(timetable_t));
 
-  if (gamemode==commercial)
+  if (gamemode==commercial || hexen)
     sprintf(stats[numlevels].map,"MAP%02i",gamemap);
   else
     sprintf(stats[numlevels].map,"E%iM%i",gameepisode,gamemap);

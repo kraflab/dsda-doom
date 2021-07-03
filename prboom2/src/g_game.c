@@ -2247,7 +2247,7 @@ static uint_64_t G_Signature(void)
     for (episode = gamemode==retail ? 4 :
      gamemode==shareware ? 1 : 3; episode; episode--)
       for (map = 9; map; map--)
-  sprintf(name, "E%dM%d", episode, map), s = G_UpdateSignature(s, name);
+        sprintf(name, "E%dM%d", episode, map), s = G_UpdateSignature(s, name);
   }
   return s;
 }

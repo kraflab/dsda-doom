@@ -301,6 +301,10 @@ static const char* HU_Title(void)
         return LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
       }
     }
+    else if (hexen)
+    {
+      // HEXEN_TODO: HU_Title
+    }
     else
     {
       switch (gamemode)

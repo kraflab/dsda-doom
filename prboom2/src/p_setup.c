@@ -3024,7 +3024,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   }
 
   // killough 3/26/98: Spawn icon landings:
-  if (gamemode==commercial)
+  if (gamemode == commercial && !hexen)
     P_SpawnBrainTargets();
 
   if (gamemode != shareware)

@@ -1304,7 +1304,7 @@ void P_TrueUnArchiveThinkers(void) {
   free(mobj_p);    // free translation table
 
   // killough 3/26/98: Spawn icon landings:
-  if (gamemode == commercial)
+  if (gamemode == commercial && !hexen)
   {
     // P_SpawnBrainTargets overwrites brain.targeton and brain.easy with zero.
     struct brain_s brain_tmp = brain; // saving
