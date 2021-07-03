@@ -77,7 +77,6 @@ typedef enum
   ga_screenshot,
 
   // hexen
-  ga_initnew,
   ga_leavemap,
   ga_singlereborn
 } gameaction_t;

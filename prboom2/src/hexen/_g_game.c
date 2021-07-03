@@ -300,9 +300,6 @@ void G_Ticker(void)
             case ga_loadlevel:
                 G_DoLoadLevel();
                 break;
-            case ga_initnew:
-                G_DoInitNew();
-                break;
             case ga_newgame:
                 G_DoNewGame();
                 break;
@@ -758,25 +755,6 @@ void G_ScreenShot(void)
 
 //==========================================================================
 //
-// G_StartNewGame
-//
-//==========================================================================
-
-void G_StartNewGame(skill_t skill)
-{
-    int realMap;
-
-    G_StartNewInit();
-    realMap = P_TranslateMap(1);
-    if (realMap == -1)
-    {
-        realMap = 1;
-    }
-    G_InitNew(d_skill, 1, realMap);
-}
-
-//==========================================================================
-//
 // G_TeleportNewMap
 //
 // Only called by the warp cheat code.  Works just like normal map to map
@@ -940,53 +918,4 @@ void G_DoSaveGame(void)
     gameaction = ga_nothing;
     savedescription[0] = 0;
     P_SetMessage(&players[consoleplayer], TXT_GAMESAVED, true);
-}
-
-//==========================================================================
-//
-// G_DeferredNewGame
-//
-//==========================================================================
-
-void G_DeferredNewGame(skill_t skill)
-{
-    d_skill = skill;
-    gameaction = ga_newgame;
-}
-
-//==========================================================================
-//
-// G_DoNewGame
-//
-//==========================================================================
-
-void G_DoNewGame(void)
-{
-    G_StartNewGame(d_skill);
-    gameaction = ga_nothing;
-}
-
-/*
-====================
-=
-= G_InitNew
-=
-= Can be called by the startup code or the menu task
-= consoleplayer, displayplayer, playeringame[] should be set
-====================
-*/
-
-void G_DeferedInitNew(skill_t skill, int episode, int map)
-{
-    d_skill = skill;
-    d_episode = episode;
-    d_map = map;
-    gameaction = ga_initnew;
-}
-
-void G_DoInitNew(void)
-{
-    SV_InitBaseSlot();
-    G_InitNew(d_skill, d_episode, d_map);
-    gameaction = ga_nothing;
 }

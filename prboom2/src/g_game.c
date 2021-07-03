@@ -2891,6 +2891,8 @@ void G_ReloadDefaults(void)
 void G_DoNewGame (void)
 {
   extern int solo_net;
+  int realMap = d_map;
+  int realEpisode = d_episode;
 
   // e6y: allow new level's music to be loaded
   idmusnum = -1;
@@ -2898,7 +2900,19 @@ void G_DoNewGame (void)
   G_ReloadDefaults();            // killough 3/1/98
   netgame = solo_net;
   deathmatch = false;
-  G_InitNew (d_skill, d_episode, d_map);
+
+  if (hexen)
+  {
+    G_StartNewInit();
+    realMap = P_TranslateMap(d_map);
+    if (realMap == -1)
+    {
+        realMap = 1;
+    }
+    realEpisode = 1;
+  }
+
+  G_InitNew (d_skill, realEpisode, realMap);
   gameaction = ga_nothing;
 
   dsda_WatchNewGame();
@@ -4650,10 +4664,21 @@ void G_Completed(int map, int position)
     LeavePosition = position;
 }
 
+// HEXEN_TODO: use this for init cheat (don't reset world (?))
+dboolean partial_reset = false;
+
 void G_StartNewInit(void)
 {
     // HEXEN_TODO: SV
     // SV_InitBaseSlot();
+
+    if (partial_reset)
+    {
+      partial_reset = false;
+      return;
+    }
+
+    // HEXEN_TODO: SV
     // SV_ClearRebornSlot();
     P_ACSInitNewGame();
     // Default the player start spot group to 0
