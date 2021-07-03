@@ -941,29 +941,38 @@ void AddIWAD(const char *iwad)
       M_AddParam("-heretic");
   }
 
+  if (i >= 9 && !strnicmp(iwad + i - 9, "hexen.wad", 9))
+  {
+    if (!M_CheckParm("-hexen"))
+      M_AddParam("-hexen");
+
+    gamemode = commercial;
+    haswolflevels = false;
+  }
+
   switch(gamemode)
   {
-  case retail:
-  case registered:
-  case shareware:
-    gamemission = doom;
-    if (i>=8 && !strnicmp(iwad+i-8,"chex.wad",8))
-      gamemission = chex;
-    break;
-  case commercial:
-    gamemission = doom2;
-    if (i>=10 && !strnicmp(iwad+i-10,"doom2f.wad",10))
-      language=french;
-    else if (i>=7 && !strnicmp(iwad+i-7,"tnt.wad",7))
-      gamemission = pack_tnt;
-    else if (i>=12 && !strnicmp(iwad+i-12,"plutonia.wad",12))
-      gamemission = pack_plut;
-    else if (i>=8 && !strnicmp(iwad+i-8,"hacx.wad",8))
-      gamemission = hacx;
-    break;
-  default:
-    gamemission = none;
-    break;
+    case retail:
+    case registered:
+    case shareware:
+      gamemission = doom;
+      if (i>=8 && !strnicmp(iwad+i-8,"chex.wad",8))
+        gamemission = chex;
+      break;
+    case commercial:
+      gamemission = doom2;
+      if (i>=10 && !strnicmp(iwad+i-10,"doom2f.wad",10))
+        language=french;
+      else if (i>=7 && !strnicmp(iwad+i-7,"tnt.wad",7))
+        gamemission = pack_tnt;
+      else if (i>=12 && !strnicmp(iwad+i-12,"plutonia.wad",12))
+        gamemission = pack_plut;
+      else if (i>=8 && !strnicmp(iwad+i-8,"hacx.wad",8))
+        gamemission = hacx;
+      break;
+    default:
+      gamemission = none;
+      break;
   }
   if (gamemode == indetermined)
     //jff 9/3/98 use logical output routine
@@ -1615,6 +1624,19 @@ static void D_DoomMainSetup(void)
   IdentifyVersion();
 
   dsda_InitGlobal();
+
+  if (hexen)
+  {
+    if (W_CheckNumForName("MAP05") < 0)
+    {
+    	gamemode = shareware;
+    	g_maxplayers = 4;
+    }
+    else if (W_CheckNumForName("CLUS1MSG") < 0)
+    {
+      I_Error("The Hexen v1.0 IWAD is not supported.");
+    }
+  }
 
   D_BuildBEXTables(); // haleyjd
 
