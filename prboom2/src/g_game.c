@@ -2916,6 +2916,11 @@ void G_SetFastParms(int fast_pending)
   static int fast = 0;            // remembers fast state
   int i;
 
+  if (hexen)
+  {
+    return;
+  }
+
   if (heretic)
   {
     for (i = 0; MonsterMissileInfo[i].type != -1; i++)
@@ -3029,10 +3034,10 @@ void G_InitNew(skill_t skill, int episode, int map)
     compatibility_level == finaldoom_compatibility;
 
   if (paused)
-    {
-      paused = false;
-      S_ResumeSound();
-    }
+  {
+    paused = false;
+    S_ResumeSound();
+  }
 
   if (skill > sk_nightmare)
     skill = sk_nightmare;
@@ -3051,6 +3056,13 @@ void G_InitNew(skill_t skill, int episode, int map)
         map = 1;
       if (map > 9)
         map = 9;
+    }
+    else if (hexen)
+    {
+      if (map < 1)
+        map = 1;
+      if (map > 99)
+        map = 99;
     }
     else
     {
@@ -3106,11 +3118,14 @@ void G_InitNew(skill_t skill, int episode, int map)
 
   M_ClearRandom();
 
-  respawnmonsters = (!heretic && skill == sk_nightmare) || respawnparm;
+  respawnmonsters = (!raven && skill == sk_nightmare) || respawnparm;
 
   // force players to be initialized upon first level load
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i = 0; i < MAX_MAXPLAYERS; i++)
+  {
     players[i].playerstate = PST_REBORN;
+    players[i].worldTimer = 0;
+  }
 
   usergame = true;                // will be set false if a demo
   paused = false;
@@ -3124,6 +3139,9 @@ void G_InitNew(skill_t skill, int episode, int map)
 
   //jff 4/16/98 force marks on automap cleared every new level start
   AM_clearMarks();
+
+  if (hexen)
+    R_InitSky(map);
 
   G_DoLoadLevel ();
 }
