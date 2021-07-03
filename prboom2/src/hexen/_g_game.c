@@ -312,11 +312,6 @@ void G_DoReborn(int playernum)
     }
 }
 
-void G_ScreenShot(void)
-{
-    gameaction = ga_screenshot;
-}
-
 void G_DoCompleted(void)
 {
     int i;
@@ -345,29 +340,4 @@ void G_DoCompleted(void)
         gamestate = GS_INTERMISSION;
         IN_Start();
     }
-}
-
-//============================================================================
-//
-// G_WorldDone
-//
-//============================================================================
-
-void G_WorldDone(void)
-{
-    gameaction = ga_worlddone;
-}
-
-//============================================================================
-//
-// G_DoWorldDone
-//
-//============================================================================
-
-void G_DoWorldDone(void)
-{
-    gamestate = GS_LEVEL;
-    G_DoLoadLevel();
-    gameaction = ga_nothing;
-    viewactive = true;
 }
