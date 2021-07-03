@@ -2316,7 +2316,7 @@ void G_DoLoadGame(void)
   int savegame_compatibility = -1;
   //e6y: numeric version number of package should be zero before initializing from savegame
   unsigned int packageversion = 0;
-  char maplump[8];
+  const char *maplump;
   int time, ttime;
 
   name = dsda_SaveGameName(savegameslot, demoplayback);
@@ -2436,10 +2436,7 @@ void G_DoLoadGame(void)
     I_Error ("G_DoLoadGame: Bad savegame");
 
   /* Print some information about the save game */
-  if (gamemode == commercial)
-    sprintf(maplump, "MAP%02d", gamemap);
-  else
-    sprintf(maplump, "E%dM%d", gameepisode, gamemap);
+  maplump = MAPNAME(gameepisode, gamemap);
   time = leveltime / TICRATE;
   ttime = (totalleveltimes + leveltime) / TICRATE;
 
@@ -2517,7 +2514,7 @@ static void G_DoSaveGame (dboolean menu)
   int  i;
   //e6y: numeric version number of package
   unsigned int packageversion = GetPackageVersion();
-  char maplump[8];
+  const char *maplump;
   int time, ttime;
 
   gameaction = ga_nothing; // cph - cancel savegame at top of this function,
@@ -2621,10 +2618,7 @@ static void G_DoSaveGame (dboolean menu)
          : "Game save failed!"); // CPhipps - not externalised
 
   /* Print some information about the save game */
-  if (gamemode == commercial)
-    sprintf(maplump, "MAP%02d", gamemap);
-  else
-    sprintf(maplump, "E%dM%d", gameepisode, gamemap);
+  maplump = MAPNAME(gameepisode, gamemap);
   time = leveltime / TICRATE;
   ttime = (totalleveltimes + leveltime) / TICRATE;
 
