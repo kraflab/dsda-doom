@@ -287,10 +287,10 @@ void P_Ticker (void)
 
   P_MapStart();
                // not if this is an intermission screen
-  if(gamestate==GS_LEVEL)
-  for (i=0; i<MAXPLAYERS; i++)
-    if (playeringame[i])
-      P_PlayerThink(&players[i]);
+  if (gamestate == GS_LEVEL)
+    for (i = 0; i < g_maxplayers; i++)
+      if (playeringame[i])
+        P_PlayerThink(&players[i]);
 
   P_RunThinkers();
   P_UpdateSpecials();

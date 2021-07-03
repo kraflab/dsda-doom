@@ -79,7 +79,7 @@ void checksum_gamestate(int tic) {
 
     /* based on "ArchivePlayers" */
     MD5Init(&md5ctx);
-    for (i=0 ; i<MAXPLAYERS ; i++) {
+    for (i=0 ; i<g_maxplayers ; i++) {
         if (!playeringame[i]) continue;
 
         doom_snprintf (buffer, sizeof(buffer), "%d", players[i].health);

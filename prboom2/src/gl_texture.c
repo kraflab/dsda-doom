@@ -250,7 +250,7 @@ static GLTexture *gld_AddNewGLTexItem(int num, int count, GLTexture ***items)
     //if (gl_boom_colormaps)
     {
       GLTexture *texture = (*items)[num];
-      int dims[3] = {(CR_LIMIT+MAXPLAYERS), (PLAYERCOLORMAP_COUNT), numcolormaps};
+      int dims[3] = {(CR_LIMIT+MAX_MAXPLAYERS), (PLAYERCOLORMAP_COUNT), numcolormaps};
       texture->glTexExID = NewIntDynArray(3, dims);
     }
   }
@@ -1285,7 +1285,7 @@ static void gld_CleanTexItems(int count, GLTexture ***items)
     if ((*items)[i])
     {
       int cm, n;
-      for (j=0; j<(CR_LIMIT+MAXPLAYERS); j++)
+      for (j=0; j<(CR_LIMIT+MAX_MAXPLAYERS); j++)
       {
         for (n=0; n<PLAYERCOLORMAP_COUNT; n++)
         {

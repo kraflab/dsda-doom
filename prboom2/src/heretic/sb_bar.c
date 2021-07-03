@@ -796,7 +796,7 @@ void DrawMainBar(void)
     if (deathmatch)
     {
         temp = 0;
-        for (i = 0; i < MAXPLAYERS; i++)
+        for (i = 0; i < g_maxplayers; i++)
         {
             temp += CPlayer->frags[i];
         }
@@ -927,7 +927,7 @@ void DrawFullScreenStuff(void)
     if (deathmatch)
     {
         temp = 0;
-        for (i = 0; i < MAXPLAYERS; i++)
+        for (i = 0; i < g_maxplayers; i++)
         {
             if (playeringame[i])
             {
@@ -1105,11 +1105,11 @@ void SB_SetClassData(void)
     LumpCHAIN = W_GetNumForName("chain") + class;
     if (!netgame)
     {                           // single player game uses red life gem (the second gem)
-        LumpLIFEGEM = W_GetNumForName("lifegem") + HEXEN_MAXPLAYERS * class + 1;
+        LumpLIFEGEM = W_GetNumForName("lifegem") + g_maxplayers * class + 1;
     }
     else
     {
-        LumpLIFEGEM = W_GetNumForName("lifegem") + HEXEN_MAXPLAYERS * class + consoleplayer;
+        LumpLIFEGEM = W_GetNumForName("lifegem") + g_maxplayers * class + consoleplayer;
     }
     SB_state = -1;
 }
@@ -1419,7 +1419,7 @@ static void Hexen_DrawMainBar(void)
     if (deathmatch)
     {
         temp = 0;
-        for (i = 0; i < MAXPLAYERS; i++)
+        for (i = 0; i < g_maxplayers; i++)
         {
             temp += CPlayer->frags[i];
         }

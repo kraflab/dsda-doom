@@ -103,7 +103,7 @@ void dsda_UpdateExHud(void) {
     kill_percent_count = 0;
     max_kill_requirement = dsda_MaxKillRequirement();
 
-    for (i = 0; i < MAXPLAYERS; i++) {
+    for (i = 0; i < g_maxplayers; i++) {
       if (playeringame[i]) {
         color = i == displayplayer ? 0x30 + g_cr_green : 0x30 + g_cr_gray;
         if (playerscount==0) {

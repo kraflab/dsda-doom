@@ -99,16 +99,16 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
 
   save_p = savebuffer = malloc(savegamesize);
 
-  CheckSaveGame(5 + MIN_MAXPLAYERS);
+  CheckSaveGame(5 + FUTURE_MAXPLAYERS);
   *save_p++ = compatibility_level;
   *save_p++ = gameskill;
   *save_p++ = gameepisode;
   *save_p++ = gamemap;
 
-  for (i = 0; i < MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
     *save_p++ = playeringame[i];
 
-  for (; i < MIN_MAXPLAYERS; i++)
+  for (; i < FUTURE_MAXPLAYERS; i++)
     *save_p++ = 0;
 
   *save_p++ = idmusnum;
@@ -188,9 +188,9 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   gamemap = *save_p++;
   gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
 
-  for (i = 0; i < MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
     playeringame[i] = *save_p++;
-  save_p += MIN_MAXPLAYERS - MAXPLAYERS;
+  save_p += FUTURE_MAXPLAYERS - g_maxplayers;
 
   idmusnum = *save_p++;
   if (idmusnum == 255) idmusnum = -1;

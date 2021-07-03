@@ -127,17 +127,13 @@ extern int WIDE_SCREENHEIGHT;
 extern int SCREEN_320x200;
 
 // The maximum number of players, multiplayer/networking.
-#define MAXPLAYERS       4
-#define DOOM_MAXPLAYERS  4
-#define HEXEN_MAXPLAYERS 8
 #define MAX_MAXPLAYERS   8
-// HEXEN_TODO: MAXPLAYERS is 8
 
 // killough 2/28/98: A ridiculously large number
 // of players, the most you'll ever need in a demo
 // or savegame. This is used to prevent problems, in
 // case more players in a game are supported later.
-#define MIN_MAXPLAYERS 32
+#define FUTURE_MAXPLAYERS 32
 
 // phares 5/14/98:
 // DOOM Editor Numbers (aka doomednum in mobj_t)

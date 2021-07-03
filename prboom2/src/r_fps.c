@@ -96,7 +96,7 @@ static dboolean NoInterpolateView;
 static dboolean didInterp;
 dboolean WasRenderedInTryRunTics;
 
-extern int localQuakeHappening[MAXPLAYERS];
+extern int localQuakeHappening[MAX_MAXPLAYERS];
 
 void R_InterpolateView(player_t *player, fixed_t frac)
 {

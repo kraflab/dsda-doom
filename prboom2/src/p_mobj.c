@@ -1423,8 +1423,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   if (gameskill != sk_nightmare)
     mobj->reactiontime = info->reactiontime;
 
-  // HEXEN_TODO: MAXPLAYERS affects this
-  mobj->lastlook = P_Random (pr_lastlook) % MAXPLAYERS;
+  mobj->lastlook = P_Random (pr_lastlook) % g_maxplayers;
 
   // do not set the state with P_SetMobjState,
   // because action routines can not be called yet
@@ -1725,7 +1724,7 @@ void P_RespawnSpecials (void)
 //  between levels.
 //
 
-extern byte playernumtotrans[MAXPLAYERS];
+extern byte playernumtotrans[MAX_MAXPLAYERS];
 
 void P_SpawnPlayer (int n, const mapthing_t* mthing)
 {
@@ -2080,20 +2079,19 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     // Check for player starts 5 to 8
     if (mthing->type >= 9100 && mthing->type <= 9103)
     {
-      // HEXEN_TODO: player starts 5 to 8
-      // mapthing_t *player_start;
-      // int player;
-      //
-      // player = 4 + mthing->type - 9100;
-      //
-      // player_start = &playerstarts[mthing->arg1][player];
-      // memcpy(player_start, mthing, sizeof(mapthing_t));
-      // player_start->type = player + 1;
-      //
-      // if (!deathmatch && !player_start->arg1)
-      // {
-      //   P_SpawnPlayer(thingtype - 1, player_start);
-      // }
+      mapthing_t *player_start;
+      int player;
+
+      player = 4 + mthing->type - 9100;
+
+      player_start = &playerstarts[mthing->arg1][player];
+      memcpy(player_start, mthing, sizeof(mapthing_t));
+      player_start->type = player + 1;
+
+      if (!deathmatch && !player_start->arg1)
+      {
+        P_SpawnPlayer(thingtype - 1, player_start);
+      }
       return NULL;
     }
 
@@ -2171,7 +2169,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     else if (deathmatch == false)
     {                           // Cooperative
       spawnMask = 0;
-      for (i = 0; i < MAXPLAYERS; i++)
+      for (i = 0; i < g_maxplayers; i++)
       {
         if (playeringame[i])
         {

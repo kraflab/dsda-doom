@@ -276,7 +276,7 @@ mapthing_t *deathmatchstarts;      // killough
 size_t     num_deathmatchstarts;   // killough
 
 mapthing_t *deathmatch_p;
-mapthing_t playerstarts[MAX_PLAYER_STARTS][MAXPLAYERS];
+mapthing_t playerstarts[MAX_PLAYER_STARTS][MAX_MAXPLAYERS];
 
 static int current_episode = -1;
 static int current_map = -1;
@@ -2805,7 +2805,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   totallive = totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
   wminfo.partime = 180;
 
-  for (i=0; i<MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
   {
     players[i].killcount = players[i].secretcount = players[i].itemcount = 0;
     players[i].maxkilldiscount = 0;//e6y
@@ -2975,7 +2975,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   /* cph - reset all multiplayer starts */
   memset(playerstarts,0,sizeof(playerstarts));
   deathmatch_p = deathmatchstarts;
-  for (i = 0; i < MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
     players[i].mo = NULL;
   TracerClearStarts();
 
@@ -3004,7 +3004,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // if deathmatch, randomly spawn the active players
   if (deathmatch)
   {
-    for (i=0; i<MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
       if (playeringame[i])
         {
           players[i].mo = NULL; // not needed? - done before P_LoadThings
@@ -3013,7 +3013,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   }
   else // if !deathmatch, check all necessary player starts actually exist
   {
-    for (i=0; i<MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
       if (playeringame[i] && !players[i].mo)
         I_Error("P_SetupLevel: missing player %d start\n", i+1);
   }

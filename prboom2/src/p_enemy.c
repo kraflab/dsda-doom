@@ -826,42 +826,42 @@ static dboolean P_LookForPlayers(mobj_t *actor, dboolean allaround)
   if (raven) return Heretic_P_LookForPlayers(actor, allaround);
 
   if (actor->flags & MF_FRIEND)
-    {  // killough 9/9/98: friendly monsters go about players differently
-      int anyone;
+  {  // killough 9/9/98: friendly monsters go about players differently
+    int anyone;
 
-      // Go back to a player, no matter whether it's visible or not
-      for (anyone=0; anyone<=1; anyone++)
-  for (c=0; c<MAXPLAYERS; c++)
-    if (playeringame[c] && players[c].playerstate==PST_LIVE &&
-        (anyone || P_IsVisible(actor, players[c].mo, allaround)))
-      {
-        P_SetTarget(&actor->target, players[c].mo);
+    // Go back to a player, no matter whether it's visible or not
+    for (anyone=0; anyone<=1; anyone++)
+      for (c=0; c<g_maxplayers; c++)
+        if (playeringame[c] && players[c].playerstate==PST_LIVE &&
+            (anyone || P_IsVisible(actor, players[c].mo, allaround)))
+        {
+          P_SetTarget(&actor->target, players[c].mo);
 
-        // killough 12/98:
-        // get out of refiring loop, to avoid hitting player accidentally
+          // killough 12/98:
+          // get out of refiring loop, to avoid hitting player accidentally
 
-        if (actor->info->missilestate)
-    {
-      P_SetMobjState(actor, actor->info->seestate);
-      actor->flags &= ~MF_JUSTHIT;
-    }
+          if (actor->info->missilestate)
+          {
+            P_SetMobjState(actor, actor->info->seestate);
+            actor->flags &= ~MF_JUSTHIT;
+          }
 
-        return true;
-      }
+          return true;
+        }
 
-      return false;
-    }
+    return false;
+  }
 
-  // Change mask of 3 to (MAXPLAYERS-1) -- killough 2/15/98:
-  stop = (actor->lastlook-1)&(MAXPLAYERS-1);
+  // Change mask of 3 to (g_maxplayers-1) -- killough 2/15/98:
+  stop = (actor->lastlook-1)&(g_maxplayers-1);
 
   c = 0;
 
   stopc = !mbf_features &&
     !demo_compatibility && monsters_remember ?
-    MAXPLAYERS : 2;       // killough 9/9/98
+    g_maxplayers : 2;       // killough 9/9/98
 
-  for (;; actor->lastlook = (actor->lastlook+1)&(MAXPLAYERS-1))
+  for (;; actor->lastlook = (actor->lastlook+1)&(g_maxplayers-1))
     {
       if (!playeringame[actor->lastlook])
   continue;
@@ -2493,12 +2493,12 @@ void A_BossDeath(mobj_t *mo)
 	  if (gamemapinfo->numbossactions < 0) return;
 
 	  // make sure there is a player alive for victory
-	  for (i=0; i<MAXPLAYERS; i++)
-		if (playeringame[i] && players[i].health > 0)
-		  break;
+	  for (i = 0; i < g_maxplayers; i++)
+  		if (playeringame[i] && players[i].health > 0)
+  		  break;
 
-	  if (i==MAXPLAYERS)
-		return;     // no one left alive, so do not end game
+	  if (i == g_maxplayers)
+		  return;     // no one left alive, so do not end game
 
 	  for (i = 0; i < gamemapinfo->numbossactions; i++)
 	  {
@@ -2617,11 +2617,11 @@ void A_BossDeath(mobj_t *mo)
     }
 
   // make sure there is a player alive for victory
-  for (i=0; i<MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
     if (playeringame[i] && players[i].health > 0)
       break;
 
-  if (i==MAXPLAYERS)
+  if (i == g_maxplayers)
     return;     // no one left alive, so do not end game
 
     // scan the remaining thinkers to see
@@ -5437,7 +5437,7 @@ void A_MinotaurLook(mobj_t * actor)
     actor->target = NULL;
     if (deathmatch)             // Quick search for players
     {
-        for (i = 0; i < MAXPLAYERS; i++)
+        for (i = 0; i < g_maxplayers; i++)
         {
             if (!playeringame[i])
                 continue;

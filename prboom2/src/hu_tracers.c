@@ -284,7 +284,7 @@ typedef struct {
 } PACKEDATTR tracer_mapthing_t;
 
 static tracer_mapthing_t *deathmatchstarts_indexes = NULL;
-static tracer_mapthing_t playerstarts_indexes[MAXPLAYERS];
+static tracer_mapthing_t playerstarts_indexes[MAX_MAXPLAYERS];
 int num_deathmatchstarts_indexes = 0;
 
 void TracerAddDeathmatchStart(int num, int index)
@@ -328,7 +328,7 @@ int TracerGetDeathmatchStart(int index)
 
 int TracerGetPlayerStart(int index)
 {
-  if (index >= MAXPLAYERS)
+  if (index >= MAX_MAXPLAYERS)
     I_Error("TracerGetDeathmatchStart: index out of bounds");
 
   return playerstarts_indexes[index].index;
@@ -338,7 +338,7 @@ void TracerClearStarts(void)
 {
   int i;
 
-  for (i = 0; i < MAXPLAYERS; i++)
+  for (i = 0; i < MAX_MAXPLAYERS; i++)
   {
     playerstarts_indexes[i].index = 0;
   }

@@ -284,7 +284,7 @@ extern  mapthing_t *deathmatch_p;
 
 // Player spawn spots.
 #define MAX_PLAYER_STARTS 8
-extern  mapthing_t playerstarts[MAX_PLAYER_STARTS][MAXPLAYERS];
+extern  mapthing_t playerstarts[MAX_PLAYER_STARTS][MAX_MAXPLAYERS];
 
 // Intermission stats.
 // Parameters for world map / intermission.

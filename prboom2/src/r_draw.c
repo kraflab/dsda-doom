@@ -506,7 +506,7 @@ void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars) {
 // Could be read from a lump instead.
 //
 
-byte playernumtotrans[MAXPLAYERS];
+byte playernumtotrans[MAX_MAXPLAYERS];
 
 void R_InitTranslationTables (void)
 {
@@ -517,13 +517,13 @@ void R_InitTranslationTables (void)
   if (hexen)
   {
     int lumpnum = W_GetNumForName("trantbl0");
-    translationtables = Z_Malloc(256 * 3 * (MAXPLAYERS - 1), PU_STATIC, 0);
+    translationtables = Z_Malloc(256 * 3 * (g_maxplayers - 1), PU_STATIC, 0);
 
     // HEXEN_TODO: player color translation table?
-    for (i = 0; i < MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
       playernumtotrans[i] = i;
 
-    for (i = 0; i < 3 * (MAXPLAYERS - 1); i++)
+    for (i = 0; i < 3 * (g_maxplayers - 1); i++)
     {
         const byte* transLump = W_CacheLumpNum(lumpnum + i);
         memcpy(translationtables + i * 256, transLump, 256);
@@ -541,7 +541,7 @@ void R_InitTranslationTables (void)
 
   for (i=0; i<MAXTRANS; i++) transtocolour[i] = 255;
 
-  for (i=0; i<MAXPLAYERS; i++) {
+  for (i = 0; i < g_maxplayers; i++) {
     byte wantcolour = mapcolor_plyr[i];
     playernumtotrans[i] = 0;
     if (wantcolour != 0x70) // Not green, would like translation

@@ -188,7 +188,7 @@ typedef struct player_s
   dboolean           backpack;
 
   // Frags, kills of other players.
-  int                 frags[MAXPLAYERS];
+  int                 frags[MAX_MAXPLAYERS];
   weapontype_t        readyweapon;
 
   // Is wp_nochange if not changing.
@@ -329,7 +329,7 @@ typedef struct
   // index of this player in game
   int         pnum;
 
-  wbplayerstruct_t    plyr[MAXPLAYERS];
+  wbplayerstruct_t    plyr[MAX_MAXPLAYERS];
 
   // CPhipps - total game time for completed levels so far
   int         totaltimes;

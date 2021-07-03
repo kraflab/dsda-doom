@@ -64,7 +64,7 @@ static int cnt;
 static int slaughterboy;        // in DM, the player with the most kills
 static int FontABaseLump;
 
-static signed int totalFrags[MAXPLAYERS];
+static signed int totalFrags[MAX_MAXPLAYERS];
 
 static int HubCount;
 static char *HubText;
@@ -159,13 +159,13 @@ static void InitStats(void)
         posnum = 0;
         playercount = 0;
         slaughtercount = 0;
-        for (i = 0; i < MAXPLAYERS; i++)
+        for (i = 0; i < g_maxplayers; i++)
         {
             totalFrags[i] = 0;
             if (playeringame[i])
             {
                 playercount++;
-                for (j = 0; j < MAXPLAYERS; j++)
+                for (j = 0; j < g_maxplayers; j++)
                 {
                     if (playeringame[j])
                     {
@@ -232,7 +232,7 @@ static void CheckForSkip(void)
     player_t *player;
     static dboolean triedToSkip;
 
-    for (i = 0, player = players; i < MAXPLAYERS; i++, player++)
+    for (i = 0, player = players; i < g_maxplayers; i++, player++)
     {
         if (playeringame[i])
         {
@@ -358,10 +358,10 @@ static void DrDeathTally(void)
         S_StartSound(NULL, hexen_sfx_platform_stop);
     }
     y = yPos >> FRACBITS;
-    for (i = 0; i < MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
         xPos = xStart;
-        for (j = 0; j < MAXPLAYERS; j++, xPos += xDelta)
+        for (j = 0; j < g_maxplayers; j++, xPos += xDelta)
         {
             x = xPos >> FRACBITS;
             bold = (i == consoleplayer || j == consoleplayer);

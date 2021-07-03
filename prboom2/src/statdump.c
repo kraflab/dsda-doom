@@ -120,7 +120,7 @@ static int GetNumPlayers(const wbstartstruct_t *stats)
     int i;
     int num_players = 0;
 
-    for (i=0; i<MAXPLAYERS; ++i)
+    for (i = 0; i < g_maxplayers; ++i)
     {
         if (stats->plyr[i].in)
         {
@@ -196,7 +196,7 @@ static void PrintFragsTable(FILE *stream, const wbstartstruct_t *stats)
 
     fprintf(stream, "\t\t");
 
-    for (x=0; x<MAXPLAYERS; ++x)
+    for (x = 0; x < g_maxplayers; ++x)
     {
 
         if (!stats->plyr[x].in)
@@ -213,7 +213,7 @@ static void PrintFragsTable(FILE *stream, const wbstartstruct_t *stats)
 
     /* Print table */
 
-    for (y=0; y<MAXPLAYERS; ++y)
+    for (y = 0; y < g_maxplayers; ++y)
     {
         if (!stats->plyr[y].in)
         {
@@ -222,7 +222,7 @@ static void PrintFragsTable(FILE *stream, const wbstartstruct_t *stats)
 
         fprintf(stream, "\t%s\t|", player_colors[y]);
 
-        for (x=0; x<MAXPLAYERS; ++x)
+        for (x = 0; x < g_maxplayers; ++x)
         {
             if (!stats->plyr[x].in)
             {
@@ -280,7 +280,7 @@ static void PrintStats(FILE *stream, const wbstartstruct_t *stats)
     fprintf(stream, " (par: %i:%02i)\n", partime / 60, partime % 60);
     fprintf(stream, "\n");
 
-    for (i=0; i<MAXPLAYERS; ++i)
+    for (i = 0; i < g_maxplayers; ++i)
     {
         if (stats->plyr[i].in)
         {

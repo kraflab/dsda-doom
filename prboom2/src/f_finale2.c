@@ -111,7 +111,7 @@ void FMI_Ticker(void)
 {
 	int i;
 	if (!demo_compatibility) WI_checkForAccelerate();  // killough 3/28/98: check for acceleration
-	else for (i = 0; i < MAXPLAYERS; i++)	if (players[i].cmd.buttons) goto next_level;      // go on to the next level
+	else for (i = 0; i < g_maxplayers; i++)	if (players[i].cmd.buttons) goto next_level;      // go on to the next level
 
   // advance animation
 	finalecount++;

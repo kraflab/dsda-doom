@@ -754,7 +754,7 @@ static void ST_updateWidgets(void)
   st_fragson = deathmatch && st_statusbaron;
   st_fragscount = 0;
 
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i = 0; i < g_maxplayers; i++)
     {
       if (i != displayplayer)            // killough 3/7/98
         st_fragscount += plyr->frags[i];

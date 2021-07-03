@@ -108,7 +108,7 @@ typedef struct
 
   //e6y: support for Boom colormaps
   GLuint ***glTexExID;
-  unsigned int texflags[CR_LIMIT+MAXPLAYERS][PLAYERCOLORMAP_COUNT];
+  unsigned int texflags[CR_LIMIT+MAX_MAXPLAYERS][PLAYERCOLORMAP_COUNT];
   GLuint *texid_p;
   unsigned int *texflags_p;
 

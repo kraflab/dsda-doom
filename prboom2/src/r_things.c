@@ -542,7 +542,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
   //     {
   //         colfunc = R_DrawTranslatedTLColumn;
   //         dc_translation = translationtables - 256
-  //             + vis->pclass * ((MAXPLAYERS - 1) * 256) +
+  //             + vis->pclass * ((g_maxplayers - 1) * 256) +
   //             ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT - 8));
   //     }
   //     else if (vis->mobjflags & MF_SHADOW)
@@ -559,7 +559,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
   //     // Draw using translated column function
   //     colfunc = R_DrawTranslatedColumn;
   //     dc_translation = translationtables - 256
-  //         + vis->pclass * ((MAXPLAYERS - 1) * 256) +
+  //         + vis->pclass * ((g_maxplayers - 1) * 256) +
   //         ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT - 8));
   // }
 

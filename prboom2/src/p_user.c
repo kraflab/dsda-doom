@@ -1102,7 +1102,7 @@ int P_GetPlayerNum(player_t * player)
 {
     int i;
 
-    for (i = 0; i < MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
         if (player == &players[i])
         {
@@ -1890,7 +1890,7 @@ void P_TeleportToPlayerStarts(mobj_t * victim)
     fixed_t destX, destY;
     angle_t destAngle;
 
-    for (i = 0; i < MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
         if (!playeringame[i])
             continue;

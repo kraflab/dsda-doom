@@ -804,7 +804,7 @@ void e6y_G_DoCompleted(void)
   stats[numlevels].stat[TT_TOTALITEM]   = totalitems;
   stats[numlevels].stat[TT_TOTALSECRET] = totalsecret;
 
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i = 0; i < g_maxplayers; i++)
   {
     if (playeringame[i])
     {
@@ -846,14 +846,14 @@ void e6y_WriteStats(void)
   memset(&max, 0, sizeof(timetable_t));
 
   playerscount = 0;
-  for (i=0; i<MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
     if (playeringame[i])
       playerscount++;
 
   for (level=0;level<numlevels;level++)
   {
     memset(&tmp, 0, sizeof(tmpdata_t));
-    for (i=0 ; i<MAXPLAYERS ; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
       if (playeringame[i])
       {

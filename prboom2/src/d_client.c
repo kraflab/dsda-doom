@@ -75,7 +75,7 @@
 static dboolean   server;
 static int       remotetic; // Tic expected from the remote
 static int       remotesend; // Tic expected by the remote
-ticcmd_t         netcmds[MAXPLAYERS][BACKUPTICS];
+ticcmd_t         netcmds[MAX_MAXPLAYERS][BACKUPTICS];
 static ticcmd_t* localcmds;
 static unsigned          numqueuedpackets;
 static packet_header_t** queuedpacket;
@@ -161,7 +161,7 @@ void D_InitNetGame (void)
   localcmds = netcmds[displayplayer = consoleplayer];
   for (i=0; i<numplayers; i++)
     playeringame[i] = true;
-  for (; i<MAXPLAYERS; i++)
+  for (; i < g_maxplayers; i++)
     playeringame[i] = false;
   if (!playeringame[consoleplayer]) I_Error("D_InitNetGame: consoleplayer not in game");
 }
@@ -180,7 +180,7 @@ void D_InitNetGame (void)
 
   for (i=0; i<doomcom->numplayers; i++)
     playeringame[i] = true;
-  for (; i<MAXPLAYERS; i++)
+  for (; i < g_maxplayers; i++)
     playeringame[i] = false;
 
   consoleplayer = displayplayer = doomcom->consoleplayer;
@@ -254,7 +254,7 @@ void NetUpdate(void)
         case PKT_DOWN: // Server downed
           {
             int j;
-            for (j=0; j<MAXPLAYERS; j++)
+            for (j = 0; j < g_maxplayers; j++)
               if (j != consoleplayer) playeringame[j] = false;
             server = false;
             doom_printf("Server is down\nAll other players are no longer in the game\n");

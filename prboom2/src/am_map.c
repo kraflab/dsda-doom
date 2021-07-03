@@ -765,7 +765,7 @@ static void AM_initVariables(void)
 
   // find player to center on initially
   if (!playeringame[pnum = consoleplayer])
-    for (pnum=0;pnum<MAXPLAYERS;pnum++)
+    for (pnum = 0; pnum < g_maxplayers; pnum++)
       if (playeringame[pnum])
         break;
 
@@ -1938,7 +1938,7 @@ static void AM_drawPlayers(void)
     return;
   }
 
-  for (i=0;i<MAXPLAYERS;i++) {
+  for (i = 0; i < g_maxplayers; i++) {
     player_t* p = &players[i];
 
     if ( (deathmatch && !demoplayback) && p != plr)
@@ -2143,7 +2143,7 @@ static void AM_DrawNiceThings(void)
   gld_ClearNiceThings();
 
   // draw players
-  for (i = 0; i < MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
   {
     if ((deathmatch && !demoplayback) && &players[i] != plr)
       continue;

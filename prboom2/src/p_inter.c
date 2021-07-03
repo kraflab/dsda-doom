@@ -853,7 +853,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
             else
             {
               unsigned int player;
-              for (player = 0; player<MAXPLAYERS; player++)
+              for (player = 0; player < g_maxplayers; player++)
               {
                 if (playeringame[player])
                 {
@@ -880,14 +880,14 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
             //  and do it uniformly between the active players
             unsigned int activeplayers = 0, player, i;
 
-            for (player = 0; player<MAXPLAYERS; player++)
+            for (player = 0; player < g_maxplayers; player++)
               if (playeringame[player])
                 activeplayers++;
 
             if (activeplayers) {
               player = P_Random(pr_friends) % activeplayers;
 
-              for (i=0; i<MAXPLAYERS; i++)
+              for (i = 0; i < g_maxplayers; i++)
                 if (playeringame[i])
                   if (!player--)
                   {

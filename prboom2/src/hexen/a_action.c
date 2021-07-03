@@ -155,7 +155,7 @@ void A_PotteryCheck(mobj_t * actor)
     }
     else
     {
-        for (i = 0; i < MAXPLAYERS; i++)
+        for (i = 0; i < g_maxplayers; i++)
         {
             if (!playeringame[i])
             {
@@ -601,7 +601,7 @@ dboolean A_LocalQuake(byte * args, mobj_t * actor)
     return (success);
 }
 
-int localQuakeHappening[MAXPLAYERS];
+int localQuakeHappening[MAX_MAXPLAYERS];
 
 void A_Quake(mobj_t * actor)
 {
@@ -614,7 +614,7 @@ void A_Quake(mobj_t * actor)
 
     if (actor->args[1]-- > 0)
     {
-        for (playnum = 0; playnum < MAXPLAYERS; playnum++)
+        for (playnum = 0; playnum < g_maxplayers; playnum++)
         {
             player = &players[playnum];
             if (!playeringame[playnum])
@@ -643,7 +643,7 @@ void A_Quake(mobj_t * actor)
     }
     else
     {
-        for (playnum = 0; playnum < MAXPLAYERS; playnum++)
+        for (playnum = 0; playnum < g_maxplayers; playnum++)
         {
             localQuakeHappening[playnum] = false;
         }

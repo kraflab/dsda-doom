@@ -179,14 +179,14 @@ void dsda_ExportGhostFrame(void) {
   if (gametic == 0) {
     int count = 0;
 
-    for (i = 0; i < MAXPLAYERS; ++i) if (playeringame[i]) ++count;
+    for (i = 0; i < g_maxplayers; ++i) if (playeringame[i]) ++count;
 
     fwrite(&count, sizeof(int), 1, dsda_ghost_export);
 
     return;
   }
 
-  for (i = 0; i < MAXPLAYERS; ++i) {
+  for (i = 0; i < g_maxplayers; ++i) {
     if (!playeringame[i]) break;
 
     player = players[i].mo;

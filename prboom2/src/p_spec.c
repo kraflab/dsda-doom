@@ -2474,13 +2474,13 @@ void P_PlayerInSpecialSector (player_t* player)
           P_DamageMobj(player->mo, NULL, NULL, 10000);
           break;
         case 2:
-          for (i = 0; i < MAXPLAYERS; i++)
+          for (i = 0; i < g_maxplayers; i++)
             if (playeringame[i])
               P_DamageMobj(players[i].mo, NULL, NULL, 10000);
           G_ExitLevel();
           break;
         case 3:
-          for (i = 0; i < MAXPLAYERS; i++)
+          for (i = 0; i < g_maxplayers; i++)
             if (playeringame[i])
               P_DamageMobj(players[i].mo, NULL, NULL, 10000);
           G_SecretExitLevel();
@@ -2578,11 +2578,11 @@ void P_UpdateSpecials (void)
     if (levelFragLimit == true)  // we used -frags so compare count
     {
       int k,m,fragcount,exitflag=false;
-      for (k=0;k<MAXPLAYERS;k++)
+      for (k = 0; k < g_maxplayers; k++)
       {
         if (!playeringame[k]) continue;
         fragcount = 0;
-        for (m=0;m<MAXPLAYERS;m++)
+        for (m = 0; m < g_maxplayers; m++)
         {
           if (!playeringame[m]) continue;
             fragcount += (m!=k)?  players[k].frags[m] : -players[k].frags[m];

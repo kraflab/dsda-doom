@@ -271,9 +271,9 @@ typedef struct timetable_s
 {
   char map[16];
 
-  int kill[MAXPLAYERS];
-  int item[MAXPLAYERS];
-  int secret[MAXPLAYERS];
+  int kill[MAX_MAXPLAYERS];
+  int item[MAX_MAXPLAYERS];
+  int secret[MAX_MAXPLAYERS];
 
   int stat[TT_MAX];
 } timetable_t;

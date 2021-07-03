@@ -174,7 +174,7 @@ void dsda_WatchResurrection(mobj_t* target) {
     ) || target->dsda_extension.spawned_by_icon
   ) return;
 
-  for (i = 0; i < MAXPLAYERS; ++i) {
+  for (i = 0; i < g_maxplayers; ++i) {
     if (!playeringame[i] || players[i].killcount == 0) continue;
 
     if (players[i].killcount > 0) {
@@ -230,7 +230,7 @@ void dsda_WatchCommand(void) {
   int i;
   ticcmd_t* cmd;
 
-  for (i = 0; i < MAXPLAYERS; ++i) {
+  for (i = 0; i < g_maxplayers; ++i) {
     if (!playeringame[i]) continue;
 
     cmd = &players[i].cmd;
@@ -288,7 +288,7 @@ void dsda_WatchLevelCompletion(void) {
     }
   }
 
-  for (i = 0; i < MAXPLAYERS; ++i) {
+  for (i = 0; i < g_maxplayers; ++i) {
     if (!playeringame[i]) continue;
 
     kill_count += players[i].killcount;

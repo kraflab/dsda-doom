@@ -142,7 +142,7 @@ typedef struct {
 
 extern draw_vars_t drawvars;
 
-extern byte playernumtotrans[MAXPLAYERS]; // CPhipps - what translation table for what player
+extern byte playernumtotrans[MAX_MAXPLAYERS]; // CPhipps - what translation table for what player
 extern byte       *translationtables;
 
 R_DrawColumn_f R_GetDrawColumnFunc(enum column_pipeline_e type,

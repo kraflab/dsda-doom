@@ -251,7 +251,7 @@ void F_Ticker(void)
     WI_checkForAccelerate();  // killough 3/28/98: check for acceleration
   else
     if (gamemode == commercial && finalecount > 50) // check for skipping
-      for (i=0; i<MAXPLAYERS; i++)
+      for (i = 0; i < g_maxplayers; i++)
         if (players[i].cmd.buttons)
           goto next_level;      // go on to the next level
 

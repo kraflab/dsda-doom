@@ -89,9 +89,9 @@ static int totalSeconds;
 
 static int slaughterboy;        // in DM, the player with the most kills
 
-static int killPercent[MAXPLAYERS];
-static int bonusPercent[MAXPLAYERS];
-static int secretPercent[MAXPLAYERS];
+static int killPercent[MAX_MAXPLAYERS];
+static int bonusPercent[MAX_MAXPLAYERS];
+static int secretPercent[MAX_MAXPLAYERS];
 
 static int FontBNumbers[10];
 
@@ -99,9 +99,9 @@ static int FontBLump;
 static int patchFaceOkayBase;
 static int patchFaceDeadBase;
 
-static signed int totalFrags[MAXPLAYERS];
-static fixed_t dSlideX[MAXPLAYERS];
-static fixed_t dSlideY[MAXPLAYERS];
+static signed int totalFrags[MAX_MAXPLAYERS];
+static fixed_t dSlideX[MAX_MAXPLAYERS];
+static fixed_t dSlideY[MAX_MAXPLAYERS];
 
 static const char *KillersText[] = { "K", "I", "L", "L", "E", "R", "S" };
 
@@ -302,10 +302,10 @@ void IN_InitStats(void)
     else if (netgame && !deathmatch)
     {
         gametype = COOPERATIVE;
-        memset(killPercent, 0, MAXPLAYERS * sizeof(int));
-        memset(bonusPercent, 0, MAXPLAYERS * sizeof(int));
-        memset(secretPercent, 0, MAXPLAYERS * sizeof(int));
-        for (i = 0; i < MAXPLAYERS; i++)
+        memset(killPercent, 0, MAX_MAXPLAYERS * sizeof(int));
+        memset(bonusPercent, 0, MAX_MAXPLAYERS * sizeof(int));
+        memset(secretPercent, 0, MAX_MAXPLAYERS * sizeof(int));
+        for (i = 0; i < g_maxplayers; i++)
         {
             if (playeringame[i])
             {
@@ -333,13 +333,13 @@ void IN_InitStats(void)
         posnum = 0;
         playercount = 0;
         slaughtercount = 0;
-        for (i = 0; i < MAXPLAYERS; i++)
+        for (i = 0; i < g_maxplayers; i++)
         {
             totalFrags[i] = 0;
             if (playeringame[i])
             {
                 playercount++;
-                for (j = 0; j < MAXPLAYERS; j++)
+                for (j = 0; j < g_maxplayers; j++)
                 {
                     if (playeringame[j])
                     {
@@ -467,7 +467,7 @@ void IN_CheckForSkip(void)
     int i;
     player_t *player;
 
-    for (i = 0, player = players; i < MAXPLAYERS; i++, player++)
+    for (i = 0, player = players; i < g_maxplayers; i++, player++)
     {
         if (playeringame[i])
         {
@@ -788,7 +788,7 @@ void IN_DrawCoopStats(void)
     MN_DrTextA("FINISHED", x, 25);
 
     ypos = 50;
-    for (i = 0; i < MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
         if (playeringame[i])
         {
@@ -842,7 +842,7 @@ void IN_DrawDMStats(void)
     }
     if (intertime < 20)
     {
-        for (i = 0; i < MAXPLAYERS; i++)
+        for (i = 0; i < g_maxplayers; i++)
         {
             if (playeringame[i])
             {
@@ -871,7 +871,7 @@ void IN_DrawDMStats(void)
         S_StartSound(NULL, heretic_sfx_wpnup);
         sounds++;
     }
-    for (i = 0; i < MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
         if (playeringame[i])
         {
@@ -886,7 +886,7 @@ void IN_DrawDMStats(void)
                 V_DrawTLNumPatch(xpos, 18, patchFaceDeadBase + i);
             }
             kpos = 86;
-            for (j = 0; j < MAXPLAYERS; j++)
+            for (j = 0; j < g_maxplayers; j++)
             {
                 if (playeringame[j])
                 {

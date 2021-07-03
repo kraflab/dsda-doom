@@ -1122,7 +1122,7 @@ static void G_DoLoadLevel (void)
 
   gamestate = GS_LEVEL;
 
-  for (i = 0; i < MAX_MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
   {
     if (playeringame[i] && players[i].playerstate == PST_DEAD)
       players[i].playerstate = PST_REBORN;
@@ -1193,7 +1193,7 @@ dboolean G_Responder (event_t* ev)
       gamestate == GS_LEVEL)
   {
     do                                          // spy mode
-      if (++displayplayer >= MAXPLAYERS)
+      if (++displayplayer >= g_maxplayers)
         displayplayer = 0;
     while (!playeringame[displayplayer] && displayplayer!=consoleplayer);
 
@@ -1317,7 +1317,7 @@ void G_Ticker (void)
   }
   P_MapStart();
   // do player reborns if needed
-  for (i = 0; i < MAX_MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
     if (playeringame[i] && players[i].playerstate == PST_REBORN)
       G_DoReborn(i);
   P_MapEnd();
@@ -1330,7 +1330,7 @@ void G_Ticker (void)
       case ga_loadlevel:
         // force players to be initialized on level reload
         if (!hexen)
-          for (i = 0; i < MAXPLAYERS; i++)
+          for (i = 0; i < g_maxplayers; i++)
             players[i].playerstate = PST_REBORN;
         G_DoLoadLevel();
         break;
@@ -1378,7 +1378,7 @@ void G_Ticker (void)
 
     dsda_UpdateAutoKeyFrames();
 
-    for (i = 0; i < MAX_MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
       if (playeringame[i])
       {
@@ -1429,7 +1429,7 @@ void G_Ticker (void)
     dsda_WatchCommand();
 
     // check for special buttons
-    for (i = 0; i < MAX_MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
       if (playeringame[i])
       {
@@ -1589,7 +1589,7 @@ void G_ChangedPlayerColour(int pn, int cl)
   // Rebuild colour translation tables accordingly
   R_InitTranslationTables();
   // Change translations on existing player mobj's
-  for (i=0; i<MAXPLAYERS; i++) {
+  for (i = 0; i < g_maxplayers; i++) {
     if ((gamestate == GS_LEVEL) && playeringame[i] && (players[i].mo != NULL)) {
       players[i].mo->flags &= ~MF_TRANSLATION;
       players[i].mo->flags |= ((uint_64_t)playernumtotrans[i]) << MF_TRANSSHIFT;
@@ -1607,13 +1607,13 @@ void G_PlayerReborn (int player)
 {
   player_t *p;
   int i;
-  int frags[MAXPLAYERS];
+  int frags[MAX_MAXPLAYERS];
   int killcount;
   int itemcount;
   int secretcount;
   int maxkilldiscount; //e6y
   unsigned int worldTimer;
-  extern int localQuakeHappening[MAXPLAYERS];
+  extern int localQuakeHappening[MAX_MAXPLAYERS];
 
   memcpy (frags, players[player].frags, sizeof frags);
   killcount = players[player].killcount;
@@ -1814,9 +1814,9 @@ void G_DeathMatchSpawnPlayer (int playernum)
 {
   int j, selections = deathmatch_p - deathmatchstarts;
 
-  if (selections < MAXPLAYERS)
+  if (selections < g_maxplayers)
     I_Error("G_DeathMatchSpawnPlayer: Only %i deathmatch spots, %d required",
-    selections, MAXPLAYERS);
+    selections, g_maxplayers);
 
   for (j=0 ; j<20 ; j++)
     {
@@ -1865,7 +1865,7 @@ void G_DoReborn (int playernum)
         }
 
       // try to spawn at one of the other players spots
-      for (i=0 ; i<MAXPLAYERS ; i++)
+      for (i = 0; i < g_maxplayers; i++)
         {
           if (G_CheckSpot (playernum, &playerstarts[0][i]) )
             {
@@ -1934,7 +1934,7 @@ void G_DoCompleted (void)
 
   gameaction = ga_nothing;
 
-  for (i=0; i<MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
     if (playeringame[i])
       G_PlayerFinishLevel(i);        // take away cards and stuff
 
@@ -1964,7 +1964,7 @@ void G_DoCompleted (void)
       // episode change
       if (wminfo.nextep != wminfo.epsd)
       {
-        for (i = 0; i < MAXPLAYERS; i++)
+        for (i = 0; i < g_maxplayers; i++)
           players[i].didsecret = false;
       }
       wminfo.didsecret = players[consoleplayer].didsecret;
@@ -1990,7 +1990,7 @@ void G_DoCompleted (void)
       {
       // cph - Remove ExM8 special case, so it gets summary screen displayed
       case 9:
-        for (i=0 ; i<MAXPLAYERS ; i++)
+        for (i = 0; i < g_maxplayers; i++)
           players[i].didsecret = true;
         break;
       }
@@ -2091,7 +2091,7 @@ frommapinfo:
   wminfo.maxfrags = 0;
   wminfo.pnum = consoleplayer;
 
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i = 0; i < g_maxplayers; i++)
     {
       wminfo.plyr[i].in = playeringame[i];
       wminfo.plyr[i].skills = players[i].killcount;
@@ -2439,9 +2439,9 @@ void G_DoLoadGame(void)
   gamemap = *save_p++;
   gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
 
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i = 0; i < g_maxplayers; i++)
     playeringame[i] = *save_p++;
-  save_p += MIN_MAXPLAYERS-MAXPLAYERS;         // killough 2/28/98
+  save_p += FUTURE_MAXPLAYERS - g_maxplayers;         // killough 2/28/98
 
   idmusnum = *save_p++;           // jff 3/17/98 restore idmus music
   if (idmusnum==255) idmusnum=-1; // jff 3/18/98 account for unsigned byte
@@ -2619,7 +2619,7 @@ static void G_DoSaveGame (dboolean menu)
     *save_p++ = 0;
   }
 
-  CheckSaveGame(dsda_GameOptionSize()+MIN_MAXPLAYERS+14+strlen(NEWFORMATSIG)+sizeof packageversion);
+  CheckSaveGame(dsda_GameOptionSize()+FUTURE_MAXPLAYERS+14+strlen(NEWFORMATSIG)+sizeof packageversion);
 
   //e6y: saving of the version number of package
   strcpy((char*)save_p, NEWFORMATSIG);
@@ -2633,10 +2633,10 @@ static void G_DoSaveGame (dboolean menu)
   *save_p++ = gameepisode;
   *save_p++ = gamemap;
 
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i = 0; i < g_maxplayers; i++)
     *save_p++ = playeringame[i];
 
-  for (;i<MIN_MAXPLAYERS;i++)         // killough 2/28/98
+  for (;i<FUTURE_MAXPLAYERS;i++)         // killough 2/28/98
     *save_p++ = 0;
 
   *save_p++ = idmusnum;               // jff 3/17/98 save idmus state
@@ -2898,7 +2898,7 @@ void G_ReloadDefaults(void)
   netdemo = false;
 
   // killough 2/21/98:
-  memset(playeringame+1, 0, sizeof(*playeringame)*(MAXPLAYERS-1));
+  memset(playeringame + 1, 0, sizeof(*playeringame) * (MAX_MAXPLAYERS - 1));
 
   consoleplayer = 0;
 
@@ -3193,7 +3193,7 @@ void G_InitNew(skill_t skill, int episode, int map)
   respawnmonsters = (!raven && skill == sk_nightmare) || respawnparm;
 
   // force players to be initialized upon first level load
-  for (i = 0; i < MAX_MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
   {
     players[i].playerstate = PST_REBORN;
     players[i].worldTimer = 0;
@@ -3661,14 +3661,14 @@ void G_BeginRecording (void)
 
     demo_p = G_WriteOptions(demo_p); // killough 3/1/98: Save game options
 
-    for (i=0 ; i<MAXPLAYERS ; i++)
+    for (i = 0; i < g_maxplayers; i++)
       *demo_p++ = playeringame[i];
 
     // killough 2/28/98:
-    // We always store at least MIN_MAXPLAYERS bytes in demo, to
+    // We always store at least FUTURE_MAXPLAYERS bytes in demo, to
     // support enhancements later w/o losing demo compatibility
 
-    for (; i<MIN_MAXPLAYERS; i++)
+    for (; i < FUTURE_MAXPLAYERS; i++)
       *demo_p++ = 0;
 
   // FIXME } else if (compatibility_level >= boom_compatibility_compatibility) { //e6y
@@ -3701,14 +3701,14 @@ void G_BeginRecording (void)
 
     demo_p = G_WriteOptions(demo_p); // killough 3/1/98: Save game options
 
-    for (i=0 ; i<MAXPLAYERS ; i++)
+    for (i = 0; i < g_maxplayers; i++)
       *demo_p++ = playeringame[i];
 
     // killough 2/28/98:
-    // We always store at least MIN_MAXPLAYERS bytes in demo, to
+    // We always store at least FUTURE_MAXPLAYERS bytes in demo, to
     // support enhancements later w/o losing demo compatibility
 
-    for (; i<MIN_MAXPLAYERS; i++)
+    for (; i < FUTURE_MAXPLAYERS; i++)
       *demo_p++ = 0;
   } else if (!raven) { // cph - write old v1.9 demos (might even sync)
     unsigned char v = 109;
@@ -3761,13 +3761,13 @@ void G_BeginRecording (void)
 
     if (heretic)
     {
-      for (i = 1; i < DOOM_MAXPLAYERS; i++)
+      for (i = 1; i < g_maxplayers; i++)
         *demo_p++ = playeringame[i];
     }
     else
     {
       *demo_p++ = PlayerClass[0];
-      for (i = 1; i < HEXEN_MAXPLAYERS; i++)
+      for (i = 1; i < g_maxplayers; i++)
       {
         *demo_p++ = playeringame[i];
         *demo_p++ = PlayerClass[i];
@@ -4241,7 +4241,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   lprintf(LO_INFO, "G_DoPlayDemo: playing demo with %s compatibility\n",
     comp_lev_str[compatibility_level]);
 
-  for (i = 0; i < MAX_MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
     playeringame[i] = 0;
 
   if (demo_compatibility || demover < 200) //e6y  // only 4 players can exist in old demos
@@ -4249,10 +4249,10 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     if (hexen)
     {
       //e6y: check for overrun
-      if (CheckForOverrun(header_p, demo_p, size, HEXEN_MAXPLAYERS, failonerror))
+      if (CheckForOverrun(header_p, demo_p, size, g_maxplayers, failonerror))
         return NULL;
 
-      for (i = 0; i < HEXEN_MAXPLAYERS; i++)
+      for (i = 0; i < g_maxplayers; i++)
       {
         playeringame[i] = (*demo_p++) != 0;
         PlayerClass[i] = *demo_p++;
@@ -4261,22 +4261,22 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     else
     {
       //e6y: check for overrun
-      if (CheckForOverrun(header_p, demo_p, size, DOOM_MAXPLAYERS, failonerror))
+      if (CheckForOverrun(header_p, demo_p, size, g_maxplayers, failonerror))
         return NULL;
 
-      for (i = 0; i < DOOM_MAXPLAYERS; i++)
+      for (i = 0; i < g_maxplayers; i++)
         playeringame[i] = *demo_p++;
     }
   }
   else
   {
     //e6y: check for overrun
-    if (CheckForOverrun(header_p, demo_p, size, DOOM_MAXPLAYERS, failonerror))
+    if (CheckForOverrun(header_p, demo_p, size, g_maxplayers, failonerror))
       return NULL;
 
-    for (i=0 ; i < DOOM_MAXPLAYERS; i++)
+    for (i=0 ; i < g_maxplayers; i++)
       playeringame[i] = *demo_p++;
-    demo_p += MIN_MAXPLAYERS - DOOM_MAXPLAYERS;
+    demo_p += FUTURE_MAXPLAYERS - g_maxplayers;
   }
 
   if (playeringame[1])
@@ -4295,7 +4295,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     }
   }
 
-  for (i = 0; i < MAX_MAXPLAYERS; i++)         // killough 4/24/98
+  for (i = 0; i < g_maxplayers; i++)         // killough 4/24/98
     players[i].cheats = 0;
 
   // e6y
@@ -4310,7 +4310,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     demo_curr_tic = 0;
     strcpy(demo_len_st, "-");
 
-    for (i = 0; i < MAX_MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
       if (playeringame[i])
       {
@@ -4825,7 +4825,7 @@ static void Hexen_G_DoCompleted(void)
 
     gameaction = ga_nothing;
 
-    for (i = 0; i < HEXEN_MAXPLAYERS; i++)
+    for (i = 0; i < g_maxplayers; i++)
     {
         if (playeringame[i])
         {
@@ -4901,7 +4901,7 @@ void Hexen_G_DoReborn(int playernum)
         else
         {
             // Try to spawn at one of the other player start spots
-            for (i = 0; i < MAXPLAYERS; i++)
+            for (i = 0; i < g_maxplayers; i++)
             {
                 if (G_CheckSpot(playernum, &playerstarts[RebornPosition][i]))
                 {               // Found an open start spot

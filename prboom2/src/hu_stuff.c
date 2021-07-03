@@ -129,7 +129,7 @@ const char* player_names[] =
 };
 
 //jff 3/17/98 translate player colmap to text color ranges
-int plyrcoltran[MAXPLAYERS]={CR_GREEN,CR_GRAY,CR_BROWN,CR_RED};
+int plyrcoltran[MAX_MAXPLAYERS]={CR_GREEN,CR_GRAY,CR_BROWN,CR_RED,CR_GREEN,CR_GRAY,CR_BROWN,CR_RED};
 
 char chat_char;                 // remove later.
 static player_t*  plr;
@@ -145,7 +145,7 @@ patchnum_t hu_font_hud[HU_FONTSIZE];
 static hu_textline_t  w_title;
 static hu_stext_t     w_message;
 static hu_itext_t     w_chat;
-static hu_itext_t     w_inputbuffer[MAXPLAYERS];
+static hu_itext_t     w_inputbuffer[MAX_MAXPLAYERS];
 static hu_textline_t  w_coordx; //jff 2/16/98 new coord widget for automap
 static hu_textline_t  w_coordy; //jff 3/3/98 split coord widgets automap
 static hu_textline_t  w_coordz; //jff 3/3/98 split coord widgets automap
@@ -179,7 +179,7 @@ static hu_textline_t  w_ammo_icon;
 static hu_textline_t  w_keys_icon;
 
 static dboolean    always_off = false;
-static char       chat_dest[MAXPLAYERS];
+static char       chat_dest[MAX_MAXPLAYERS];
 dboolean           chat_on;
 static dboolean    message_on;
 static dboolean    message_list; //2/26/98 enable showing list of messages
@@ -236,7 +236,7 @@ extern int map_level_stat;
 //
 const char* shiftxform;
 
-static custom_message_t custom_message[MAXPLAYERS];
+static custom_message_t custom_message[MAX_MAXPLAYERS];
 static custom_message_t *custom_message_p;
 void HU_init_crosshair(void);
 
@@ -981,7 +981,7 @@ void HU_Start(void)
   );
 
   // create the inputbuffer widgets, one per player
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i=0 ; i<MAX_MAXPLAYERS ; i++)
     HUlib_initIText
     (
       &w_inputbuffer[i],
@@ -1763,7 +1763,7 @@ void HU_widget_build_keys(void)
       char numbuf[32];
 
       // scan thru players
-      for (k=0;k<MAXPLAYERS;k++)
+      for (k=0;k<g_maxplayers;k++)
       {
         // skip players not in game
         if (!playeringame[k])
@@ -1772,7 +1772,7 @@ void HU_widget_build_keys(void)
         fragcount = 0;
         // compute number of times they've fragged each player
         // minus number of times they've been fragged by them
-        for (m=0;m<MAXPLAYERS;m++)
+        for (m=0;m<g_maxplayers;m++)
         {
           if (!playeringame[m]) continue;
           fragcount += (m!=k)?  players[k].frags[m] : -players[k].frags[m];
@@ -1968,7 +1968,7 @@ void HU_widget_build_monsec(void)
     fullitemcount = 0;
     fullsecretcount = 0;
     max_kill_requirement = dsda_MaxKillRequirement();
-    for (i=0 ; i<MAXPLAYERS ; i++)
+    for (i=0 ; i<g_maxplayers ; i++)
     {
       if (playeringame[i])
       {
@@ -2672,7 +2672,7 @@ void HU_Ticker(void)
   }
 
   // centered messages
-  for (i = 0; i < MAXPLAYERS; i++)
+  for (i = 0; i < g_maxplayers; i++)
   {
     if (custom_message[i].ticks > 0)
       custom_message[i].ticks--;
@@ -2698,7 +2698,7 @@ void HU_Ticker(void)
   // check for incoming chat characters
   if (netgame)
   {
-    for (i=0; i<MAXPLAYERS; i++)
+    for (i=0; i<g_maxplayers; i++)
     {
       if (!playeringame[i])
         continue;
@@ -2814,7 +2814,7 @@ dboolean HU_Responder(event_t *ev)
   c = ev->type == ev_keydown ? ev->data1 : 0;
 
   numplayers = 0;
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i=0 ; i<g_maxplayers ; i++)
     numplayers += playeringame[i];
 
   if (ev->data1 == key_shift)
@@ -2872,7 +2872,7 @@ dboolean HU_Responder(event_t *ev)
       }
       else if (numplayers > 2)
       {
-        for (i=0; i<MAXPLAYERS ; i++)
+        for (i=0; i<g_maxplayers ; i++)
         {
           if (dsda_InputActivated(dsda_input_chat_dest0 + i))
           {
@@ -2965,7 +2965,7 @@ int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int
 {
   custom_message_t item;
 
-  if (plr < 0 || plr >= MAXPLAYERS || !msg || ticks < 0 ||
+  if (plr < 0 || plr >= g_maxplayers || !msg || ticks < 0 ||
       sfx < 0 || sfx >= num_sfx || cm < 0 || cm >= CR_LIMIT)
   {
     return false;

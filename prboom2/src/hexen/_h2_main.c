@@ -110,7 +110,6 @@ int startmap;
 dboolean autostart;
 dboolean advancedemo;
 FILE *debugfile;
-int MAXPLAYERS = MAXPLAYERS;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -153,7 +152,7 @@ void D_BindVariables(void)
     M_BindMapControls();
     M_BindMenuControls();
     M_BindWeaponControls();
-    M_BindChatControls(MAXPLAYERS);
+    M_BindChatControls();
     M_BindHereticControls();
     M_BindHexenControls();
 
@@ -302,8 +301,8 @@ void D_IdentifyVersion(void)
     if (W_CheckNumForName("SKY1") == -1 &&
         W_CheckNumForName("MAP05") == -1 )
     {
-	gamemode = shareware;
-	MAXPLAYERS = 4;
+    	gamemode = shareware;
+    	g_maxplayers = 4;
     }
 
     // The v1.0 IWAD file is missing a bunch of lumps that can cause the game

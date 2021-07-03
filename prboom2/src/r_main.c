@@ -1080,7 +1080,7 @@ void R_ClearStats(void)
 // R_RenderView
 //
 
-extern int localQuakeHappening[MAXPLAYERS];
+extern int localQuakeHappening[MAX_MAXPLAYERS];
 
 void R_RenderPlayerView (player_t* player)
 {

@@ -63,8 +63,8 @@ void P_ArchivePlayers (void)
 {
   int i;
 
-  CheckSaveGame(sizeof(player_t) * MAXPLAYERS); // killough
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  CheckSaveGame(sizeof(player_t) * g_maxplayers); // killough
+  for (i = 0; i < g_maxplayers; i++)
     if (playeringame[i])
       {
         int      j;
@@ -88,7 +88,7 @@ void P_UnArchivePlayers (void)
 {
   int i;
 
-  for (i=0 ; i<MAXPLAYERS ; i++)
+  for (i = 0; i < g_maxplayers; i++)
     if (playeringame[i])
       {
         int j;
