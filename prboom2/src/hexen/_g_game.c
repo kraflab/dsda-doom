@@ -14,15 +14,6 @@
 // GNU General Public License for more details.
 //
 
-/*
-==============================================================================
-
-						PLAYER STRUCTURE FUNCTIONS
-
-also see P_SpawnPlayer in P_Things
-==============================================================================
-*/
-
 //==========================================================================
 //
 // G_PlayerReborn
@@ -70,80 +61,6 @@ void G_PlayerReborn(int player)
         curpos = 0;
         viewangleoffset = 0;
     }
-}
-
-/*
-====================
-=
-= G_CheckSpot
-=
-= Returns false if the player cannot be respawned at the given mapthing_t spot
-= because something is occupying it
-====================
-*/
-
-void P_SpawnPlayer(mapthing_t * mthing);
-
-dboolean G_CheckSpot(int playernum, mapthing_t * mthing)
-{
-    fixed_t x, y;
-    subsector_t *ss;
-    unsigned an;
-    mobj_t *mo;
-
-    x = mthing->x << FRACBITS;
-    y = mthing->y << FRACBITS;
-
-    players[playernum].mo->flags2 &= ~MF2_PASSMOBJ;
-    if (!P_CheckPosition(players[playernum].mo, x, y))
-    {
-        players[playernum].mo->flags2 |= MF2_PASSMOBJ;
-        return false;
-    }
-    players[playernum].mo->flags2 |= MF2_PASSMOBJ;
-
-// spawn a teleport fog
-    ss = R_PointInSubsector(x, y);
-    an = ((unsigned) ANG45 * (mthing->angle / 45)) >> ANGLETOFINESHIFT;
-
-    mo = P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an],
-                     ss->sector->floorheight + TELEFOGHEIGHT, HEXEN_MT_TFOG);
-    if (players[consoleplayer].viewz != 1)
-        S_StartSound(mo, hexen_sfx_teleport); // don't start sound on first frame
-
-    return true;
-}
-
-/*
-====================
-=
-= G_DeathMatchSpawnPlayer
-=
-= Spawns a player at one of the random death match spots
-= called at level load and each death
-====================
-*/
-
-void G_DeathMatchSpawnPlayer(int playernum)
-{
-    int i, j;
-    int selections;
-
-    selections = deathmatch_p - deathmatchstarts;
-
-    for (j = 0; j < 20; j++)
-    {
-        i = P_Random(pr_hexen) % selections;
-        if (G_CheckSpot(playernum, &deathmatchstarts[i]))
-        {
-            deathmatchstarts[i].type = playernum + 1;
-            P_SpawnPlayer(&deathmatchstarts[i]);
-            return;
-        }
-    }
-
-// no good spot, so the player will probably get stuck
-    P_SpawnPlayer(&playerstarts[0][playernum]);
 }
 
 //==========================================================================

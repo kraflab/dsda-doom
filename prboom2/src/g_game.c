@@ -1681,7 +1681,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
   x = mthing->x << FRACBITS;
   y = mthing->y << FRACBITS;
 
-  if (heretic)
+  if (raven)
   {
     unsigned an;
     mobj_t *mo;
@@ -1699,10 +1699,10 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     an = ((unsigned) ANG45 * (mthing->angle / 45)) >> ANGLETOFINESHIFT;
 
     mo = P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an],
-                     ss->sector->floorheight + TELEFOGHEIGHT, HERETIC_MT_TFOG);
+                     ss->sector->floorheight + TELEFOGHEIGHT, g_mt_tfog);
 
     if (players[consoleplayer].viewz != 1)
-      S_StartSound(mo, heretic_sfx_telept);   // don't start sound on first frame
+      S_StartSound(mo, g_sfx_telept);   // don't start sound on first frame
 
     return true;
   }
