@@ -304,6 +304,7 @@ static int LeavePosition;
 void G_DoTeleportNewMap(void);
 void G_DoSingleReborn(void);
 static void Hexen_G_DoCompleted(void);
+static void Hexen_G_DoReborn(int playernum);
 // end hexen
 
 typedef enum
@@ -1838,6 +1839,9 @@ void G_DeathMatchSpawnPlayer (int playernum)
 
 void G_DoReborn (int playernum)
 {
+  if (hexen)
+    return Hexen_G_DoReborn(playernum);
+
   if (!netgame)
     gameaction = ga_loadlevel;      // reload the level from scratch
   else
@@ -4845,5 +4849,98 @@ static void Hexen_G_DoCompleted(void)
     {
         gamestate = GS_INTERMISSION;
         WI_Start(&wminfo);
+    }
+}
+
+void Hexen_G_DoReborn(int playernum)
+{
+    int i;
+    dboolean oldWeaponowned[HEXEN_NUMWEAPONS];
+    dboolean oldKeys[NUMCARDS];
+    int oldPieces;
+    dboolean foundSpot;
+    int bestWeapon;
+
+    if (!netgame)
+    {
+        // HEXEN_TODO: SV
+        // if (SV_RebornSlotAvailable())
+        // {                       // Use the reborn code if the slot is available
+        //     gameaction = ga_singlereborn;
+        // }
+        // else
+        {                       // Start a new game if there's no reborn info
+            gameaction = ga_newgame;
+        }
+    }
+    else
+    {                           // Net-game
+        players[playernum].mo->player = NULL;   // Dissassociate the corpse
+
+        if (deathmatch)
+        {                       // Spawn at random spot if in death match
+            G_DeathMatchSpawnPlayer(playernum);
+            return;
+        }
+
+        // Cooperative net-play, retain keys and weapons
+        for (i = 0; i < NUMCARDS; ++i)
+          oldKeys[i] = players[playernum].cards[i];
+        oldPieces = players[playernum].pieces;
+        for (i = 0; i < HEXEN_NUMWEAPONS; i++)
+        {
+            oldWeaponowned[i] = players[playernum].weaponowned[i];
+        }
+
+        foundSpot = false;
+        if (G_CheckSpot(playernum, &playerstarts[RebornPosition][playernum]))
+        {                       // Appropriate player start spot is open
+            P_SpawnPlayer(playernum, &playerstarts[RebornPosition][playernum]);
+            foundSpot = true;
+        }
+        else
+        {
+            // Try to spawn at one of the other player start spots
+            for (i = 0; i < MAXPLAYERS; i++)
+            {
+                if (G_CheckSpot(playernum, &playerstarts[RebornPosition][i]))
+                {               // Found an open start spot
+
+                    // Fake as other player
+                    playerstarts[RebornPosition][i].type = playernum + 1;
+                    P_SpawnPlayer(playernum, &playerstarts[RebornPosition][i]);
+
+                    // Restore proper player type
+                    playerstarts[RebornPosition][i].type = i + 1;
+
+                    foundSpot = true;
+                    break;
+                }
+            }
+        }
+
+        if (foundSpot == false)
+        {                       // Player's going to be inside something
+            P_SpawnPlayer(playernum, &playerstarts[RebornPosition][playernum]);
+        }
+
+        // Restore keys and weapons
+        for (i = 0; i < NUMCARDS; ++i)
+          players[playernum].cards[i] = oldKeys[i];
+        players[playernum].pieces = oldPieces;
+        for (bestWeapon = 0, i = 0; i < HEXEN_NUMWEAPONS; i++)
+        {
+            if (oldWeaponowned[i])
+            {
+                bestWeapon = i;
+                players[playernum].weaponowned[i] = true;
+            }
+        }
+        players[playernum].ammo[MANA_1] = 25;
+        players[playernum].ammo[MANA_2] = 25;
+        if (bestWeapon)
+        {                       // Bring up the best weapon
+            players[playernum].pendingweapon = bestWeapon;
+        }
     }
 }
