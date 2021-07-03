@@ -33,6 +33,8 @@
 #include "lprintf.h"
 #include "e6y.h"
 
+#include "heretic/sb_bar.h"
+
 #include "dsda/demo.h"
 #include "dsda/options.h"
 #include "dsda/settings.h"
@@ -242,6 +244,16 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
     S_ChangeMusInfoMusic(musinfo.current_item, true);
 
   RecalculateDrawnSubsectors();
+
+  if (hexen)
+  {
+    if (!netgame)
+    {                           // Copy the base slot to the reborn slot
+      // HEXEN_TODO: SV
+      // SV_UpdateRebornSlot();
+    }
+    SB_SetClassData();
+  }
 
   if (setsizeneeded) R_ExecuteSetViewSize();
 

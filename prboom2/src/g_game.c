@@ -291,6 +291,7 @@ static dboolean InventoryMoveRight(void);
 // end heretic
 
 // hexen
+#include "heretic/sb_bar.h"
 #include "hexen/p_acs.h"
 
 int RebornPosition;
@@ -2446,6 +2447,16 @@ void G_DoLoadGame(void)
 
   // done
   Z_Free (savebuffer);
+
+  if (hexen)
+  {
+    if (!netgame)
+    {                           // Copy the base slot to the reborn slot
+      // HEXEN_TODO: SV
+      // SV_UpdateRebornSlot();
+    }
+    SB_SetClassData();
+  }
 
   if (setsizeneeded)
     R_ExecuteSetViewSize ();
