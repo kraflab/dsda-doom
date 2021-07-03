@@ -61,60 +61,6 @@ void G_DoLoadLevel(void)
     memset(joyarray, 0, sizeof(joyarray));
 }
 
-static void SetJoyButtons(unsigned int buttons_mask)
-{
-    int i;
-
-    for (i=0; i<MAX_JOY_BUTTONS; ++i)
-    {
-        int button_on = (buttons_mask & (1 << i)) != 0;
-
-        // Detect button press:
-
-        if (!joybuttons[i] && button_on)
-        {
-            // Weapon cycling:
-
-            if (i == joybprevweapon)
-            {
-                next_weapon = -1;
-            }
-            else if (i == joybnextweapon)
-            {
-                next_weapon = 1;
-            }
-        }
-
-        joybuttons[i] = button_on;
-    }
-}
-
-static void SetMouseButtons(unsigned int buttons_mask)
-{
-    int i;
-
-    for (i=0; i<MAX_MOUSE_BUTTONS; ++i)
-    {
-        unsigned int button_on = (buttons_mask & (1 << i)) != 0;
-
-        // Detect button press:
-
-        if (!mousebuttons[i] && button_on)
-        {
-            if (i == mousebprevweapon)
-            {
-                next_weapon = -1;
-            }
-            else if (i == mousebnextweapon)
-            {
-                next_weapon = 1;
-            }
-        }
-
-        mousebuttons[i] = button_on;
-    }
-}
-
 /*
 ===============================================================================
 =
