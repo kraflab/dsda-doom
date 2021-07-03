@@ -303,6 +303,7 @@ static int LeavePosition;
 
 void G_DoTeleportNewMap(void);
 void G_DoSingleReborn(void);
+static void Hexen_G_DoCompleted(void);
 // end hexen
 
 typedef enum
@@ -1906,6 +1907,9 @@ void G_SecretExitLevel (void)
 void G_DoCompleted (void)
 {
   int i;
+
+  if (hexen)
+    return Hexen_G_DoCompleted();
 
   gameaction = ga_nothing;
 
@@ -4791,5 +4795,38 @@ void G_PlayerExitMap(int playerNumber)
     {
         SB_state = -1;          // refresh the status bar
         viewangleoffset = 0;
+    }
+}
+
+static void Hexen_G_DoCompleted(void)
+{
+    int i;
+
+    gameaction = ga_nothing;
+
+    for (i = 0; i < HEXEN_MAXPLAYERS; i++)
+    {
+        if (playeringame[i])
+        {
+            G_PlayerExitMap(i);
+        }
+    }
+
+    if (automapmode & am_active)
+      AM_Stop();
+
+    // HEXEN_TODO: level stat tracking doesn't really have meaning
+    // e6y_G_DoCompleted();
+    // dsda_WatchLevelCompletion();
+
+    if (LeaveMap == -1 && LeavePosition == -1)
+    {
+        gameaction = ga_victory;
+        return;
+    }
+    else
+    {
+        gamestate = GS_INTERMISSION;
+        WI_Start(&wminfo);
     }
 }

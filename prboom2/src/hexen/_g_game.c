@@ -248,33 +248,3 @@ void G_DoReborn(int playernum)
         }
     }
 }
-
-void G_DoCompleted(void)
-{
-    int i;
-
-    gameaction = ga_nothing;
-
-    // quit demo unless -demoextend
-    if (!demoextend && G_CheckDemoStatus())
-    {
-        return;
-    }
-    for (i = 0; i < MAXPLAYERS; i++)
-    {
-        if (playeringame[i])
-        {
-            G_PlayerExitMap(i);
-        }
-    }
-    if (LeaveMap == -1 && LeavePosition == -1)
-    {
-        gameaction = ga_victory;
-        return;
-    }
-    else
-    {
-        gamestate = GS_INTERMISSION;
-        IN_Start();
-    }
-}
