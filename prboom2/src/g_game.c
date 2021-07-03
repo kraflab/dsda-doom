@@ -1258,27 +1258,27 @@ dboolean G_Responder (event_t* ev)
       return true;    // eat key down events
 
     case ev_mousemotion:
+    {
+      double value;
+
+      value = dsda_FineSensitivity(mouseSensitivity_horiz) * AccelerateMouse(ev->data2);
+      mousex += G_CarryDouble(carry_mousex, value);
+      if(GetMouseLook())
       {
-        double value;
-
-        value = dsda_FineSensitivity(mouseSensitivity_horiz) * AccelerateMouse(ev->data2);
-        mousex += G_CarryDouble(carry_mousex, value);
-        if(GetMouseLook())
-        {
-          value = (double) mouseSensitivity_mlook * AccelerateMouse(ev->data3);
-          if (movement_mouseinvert)
-            mlooky += G_CarryDouble(carry_mousey, value);
-          else
-            mlooky -= G_CarryDouble(carry_mousey, value);
-        }
+        value = (double) mouseSensitivity_mlook * AccelerateMouse(ev->data3);
+        if (movement_mouseinvert)
+          mlooky += G_CarryDouble(carry_mousey, value);
         else
-        {
-          value = (double) mouseSensitivity_vert * AccelerateMouse(ev->data3) / 8;
-          mousey += G_CarryDouble(carry_vertmouse, value);
-        }
-
-        return true;    // eat events
+          mlooky -= G_CarryDouble(carry_mousey, value);
       }
+      else
+      {
+        value = (double) mouseSensitivity_vert * AccelerateMouse(ev->data3) / 8;
+        mousey += G_CarryDouble(carry_vertmouse, value);
+      }
+
+      return true;    // eat events
+    }
 
     case ev_joystick:
       joyxmove = ev->data2;
