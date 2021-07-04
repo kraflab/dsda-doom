@@ -169,7 +169,8 @@ const char *const standard_iwads[]=
   "bfgdoom2.wad",
   "bfgdoom.wad",
 
-  "heretic.wad"
+  "heretic.wad",
+  "hexen.wad"
 };
 //e6y static
 const int nstandard_iwads = sizeof standard_iwads/sizeof*standard_iwads;
@@ -1491,7 +1492,9 @@ static void AutoLoadWADs(const char *path)
 
 static const char *D_AutoLoadGameBase()
 {
-  return heretic ? "heretic-all" : "doom-all";
+  return hexen ? "hexen-all" :
+         heretic ? "heretic-all" :
+         "doom-all";
 }
 
 #define ALL_AUTOLOAD "all-all"

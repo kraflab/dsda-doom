@@ -880,7 +880,7 @@ static void L_FillGameList(void)
   // "freedoom2.wad", "freedoom1.wad", "freedm.wad"
   // "hacx.wad", "chex.wad"
   // "bfgdoom2.wad", "bfgdoom.wad"
-  // "heretic.wad"
+  // "heretic.wad", "hexen.wad"
   const char *IWADTypeNames[] =
   {
     "DOOM 2: French Version",
@@ -902,7 +902,8 @@ static void L_FillGameList(void)
     "DOOM 2: BFG Edition",
     "DOOM 1: BFG Edition",
 
-    "Heretic"
+    "Heretic",
+    "Hexen"
   };
 
   for (i = 0; (size_t)i < launcher.filescount; i++)

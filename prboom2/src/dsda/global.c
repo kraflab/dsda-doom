@@ -657,13 +657,32 @@ static dboolean dsda_AutoDetectHeretic(void)
   return false;
 }
 
+static dboolean dsda_AutoDetectHexen(void)
+{
+  int i, length;
+  i = M_CheckParm("-iwad");
+  if (i && (++i < myargc)) {
+    length = strlen(myargv[i]);
+    if (length >= 11 && !strnicmp(myargv[i] + length - 11, "heretic.wad", 11))
+      return true;
+  }
+
+  return false;
+}
+
 extern void dsda_ResetNullPClass(void);
 
 void dsda_InitGlobal(void) {
   heretic = M_CheckParm("-heretic") || dsda_AutoDetectHeretic();
+  hexen = M_CheckParm("-hexen") || dsda_AutoDetectHexen();
   raven = heretic || hexen;
 
-  heretic ? dsda_InitHeretic() : dsda_InitDoom();
+  if (hexen)
+    dsda_InitHexen();
+  else if (heretic)
+    dsda_InitHeretic();
+  else
+    dsda_InitDoom();
 
   dsda_ResetNullPClass();
 }
