@@ -420,7 +420,18 @@ void D_Display (fixed_t frac)
 
   // draw pause pic
   if (paused && (menuactive != mnact_full)) {
-    if (heretic)
+    if (hexen)
+    {
+      if (!netgame)
+      {
+        V_DrawNamePatch(160, viewwindowy + 5, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
+      }
+      else
+      {
+        V_DrawNamePatch(160, 70, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
+      }
+    }
+    else if (heretic)
       MN_DrawPause();
     else
       // Simplified the "logic" here and no need for x-coord caching - POPE
