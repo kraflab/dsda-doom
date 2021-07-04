@@ -87,7 +87,7 @@ static int dsda_WadCompatibilityLevel(void) {
 int dsda_CompatibilityLevel(void) {
   int i, level;
 
-  if (heretic) return doom_12_compatibility;
+  if (raven) return doom_12_compatibility;
 
   i = M_CheckParm("-complevel");
 

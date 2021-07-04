@@ -2988,6 +2988,11 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     P_OpenWeapons();
   }
 
+  if (hexen)
+  {
+    PO_AllocateBlockMap();
+  }
+
   P_LoadThings(lumpnum+ML_THINGS);
 
   if (hexen)

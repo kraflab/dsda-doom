@@ -1852,8 +1852,6 @@ static void D_DoomMainSetup(void)
     //jff 9/3/98 use logical output routine
     lprintf(LO_INFO,"Austin Virtual Gaming: Levels will end after 20 minutes\n");
 
-  HandleWarp();
-
   //jff 1/22/98 add command line parms to disable sound and music
   {
     int nosound = M_CheckParm("-nosound");
@@ -2173,6 +2171,9 @@ static void D_DoomMainSetup(void)
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"\nP_Init: Init Playloop state.\n");
   P_Init();
+
+  // Must be after P_Init
+  HandleWarp();
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"I_Init: Setting up machine state.\n");

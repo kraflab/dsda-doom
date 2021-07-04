@@ -375,13 +375,13 @@ void HU_Init(void)
   {
     if ('0'<=j && j<='9')
     {
-      if (heretic)
+      if (raven)
         sprintf(buffer, "FONTA%.2d",j - 32);
       else
         sprintf(buffer, "STCFN%.3d",j);
       R_SetPatchNum(&hu_font[i], buffer);
 
-      if (!heretic)
+      if (!raven)
       {
         sprintf(buffer, "STTNUM%.1d",j-48);
         R_SetPatchNum(&hu_font_hud[i], buffer);
@@ -389,19 +389,19 @@ void HU_Init(void)
     }
     else if ('A'<=j && j<='Z')
     {
-      if (heretic)
+      if (raven)
         sprintf(buffer, "FONTA%.2d",j - 32);
       else
         sprintf(buffer, "STCFN%.3d",j);
       R_SetPatchNum(&hu_font[i], buffer);
     }
-    else if (!heretic && j < 97)
+    else if (!raven && j < 97)
     {
       sprintf(buffer, "STCFN%.3d",j);
       R_SetPatchNum(&hu_font[i], buffer);
       //jff 2/23/98 make all font chars defined, useful or not
     }
-    else if (heretic && j < 91)
+    else if (raven && j < 91)
     {
       sprintf(buffer, "FONTA%.2d", j - 32);
       R_SetPatchNum(&hu_font[i], buffer);
@@ -419,7 +419,7 @@ void HU_Init(void)
     }
   }
 
-  if (!heretic)
+  if (!raven)
   {
     // these patches require cm to rgb translation
     for (i = 33; i < 96; i++)
@@ -442,7 +442,7 @@ void HU_Init(void)
     R_SetPatchNum(&hu_msgbg[i], buffer);
   }
 
-  if (!heretic)
+  if (!raven)
   {
     // CPhipps - load patches for keys and double keys
     for (i=0; i<6; i++) {
@@ -1003,7 +1003,7 @@ void HU_Start(void)
   // now allow the heads-up display to run
   headsupactive = true;
 
-  if (!heretic) HU_LoadHUDDefs();
+  if (!raven) HU_LoadHUDDefs();
 
   HU_MoveHud(true);
 
@@ -1249,7 +1249,7 @@ void HU_MoveHud(int force)
   static int ohud_num = -1;
 
   //jff 3/4/98 move displays around on F5 changing hud_distributed
-  if (!heretic && (huds_count > 0) && (force || hud_num != ohud_num))
+  if (!raven && (huds_count > 0) && (force || hud_num != ohud_num))
   {
     int i;
 
@@ -2502,7 +2502,7 @@ void HU_Drawer(void)
   // killough 2/21/98: really allow new hud stuff to be turned off COMPLETELY
   if
   (
-    !heretic &&
+    !raven &&
     hud_num > 0 &&                   // hud optioned on
     hud_displayed &&                 // hud on from fullscreen key
     viewheight==SCREENHEIGHT &&      // fullscreen mode is active

@@ -307,7 +307,7 @@ int I_GetSfxLumpNum(sfxinfo_t *sfx)
     sfx = sfx->link;
 
   // Different prefix for PC speaker sound effects for doom.
-  format = heretic ? "%s" : snd_pcspeaker ? "dp%s" : "ds%s";
+  format = raven ? "%s" : snd_pcspeaker ? "dp%s" : "ds%s";
 
   sprintf(namebuf, format, sfx->name);
   return W_CheckNumForName(namebuf); //e6y: make missing sounds non-fatal

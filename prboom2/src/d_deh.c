@@ -1591,7 +1591,7 @@ void D_BuildBEXTables(void)
 {
   int i;
 
-  if (heretic) return;
+  if (raven) return;
 
   // moved from ProcessDehFile, then we don't need the static int i
   for (i = 0; i < EXTRASTATES; i++)  // remember what they start as for deh xref
@@ -2546,7 +2546,7 @@ static void deh_procWeapon(DEHFILE *fpin, char *line)
     }
     if (!deh_strcasecmp(key, deh_weapon[0]))  // Ammo type
     {
-      if (!heretic && value == 5) value = am_noammo;
+      if (!raven && value == 5) value = am_noammo;
       weaponinfo[indexnum].ammo = (ammotype_t)value;
     }
     else if (!deh_strcasecmp(key, deh_weapon[1]))  // Deselect frame

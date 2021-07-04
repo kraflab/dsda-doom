@@ -991,6 +991,17 @@ static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po)
     return blocked;
 }
 
+// HEXEN_TODO: hexen called malloc each map and never freed it
+void PO_AllocateBlockMap(void)
+{
+  if (!PolyBlockMap)
+  {
+    PolyBlockMap = Z_Malloc(bmapwidth * bmapheight * sizeof(polyblock_t *), PU_LEVEL, 0);
+  }
+  memset(PolyBlockMap, 0, bmapwidth * bmapheight * sizeof(polyblock_t *));
+}
+
+
 static void InitBlockMap(void)
 {
     int i;
@@ -999,9 +1010,7 @@ static void InitBlockMap(void)
     int leftX, rightX;
     int topY, bottomY;
 
-    PolyBlockMap = Z_Malloc(bmapwidth * bmapheight * sizeof(polyblock_t *),
-                            PU_LEVEL, 0);
-    memset(PolyBlockMap, 0, bmapwidth * bmapheight * sizeof(polyblock_t *));
+    PO_AllocateBlockMap();
 
     for (i = 0; i < po_NumPolyobjs; i++)
     {
