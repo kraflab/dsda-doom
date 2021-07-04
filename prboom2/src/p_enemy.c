@@ -3062,7 +3062,7 @@ void A_SpawnObject(mobj_t *actor)
   if (mo->flags & (MF_MISSILE | MF_BOUNCES))
   {
     // if spawner is also a missile, copy 'em
-    if (actor->flags & (MF_MISSILE | MF_BOUNCES))
+    if (actor->info->flags & (MF_MISSILE | MF_BOUNCES))
     {
       P_SetTarget(&mo->target, actor->target);
       P_SetTarget(&mo->tracer, actor->tracer);
