@@ -104,6 +104,8 @@ extern int idmusnum;
 
 // heretic
 
+#include "doomtype.h"
+
 void S_SetSoundCurve(dboolean fullprocess);
 
 // hexen

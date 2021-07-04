@@ -37,6 +37,7 @@
 const demostate_t (*demostates)[4];
 extern const demostate_t doom_demostates[][4];
 extern const demostate_t heretic_demostates[][4];
+extern const demostate_t hexen_demostates[][4];
 
 state_t* states;
 int num_states;
@@ -500,7 +501,7 @@ static void dsda_InitHexen(void) {
   // dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
   // dsda_SetMusic(heretic_S_music, HERETIC_NUMMUSIC);
   //
-  // demostates = heretic_demostates;
+  demostates = hexen_demostates;
   //
   // weaponinfo = wpnlev1info;
   //

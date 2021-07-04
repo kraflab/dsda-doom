@@ -112,6 +112,7 @@ set(COMMON_SRC
     hexen/info.c
     hexen/f_finale.c
     hexen/f_finale.h
+    hexen/h2_main.c
     hexen/in_lude.c
     hexen/in_lude.h
     hexen/p_acs.c
