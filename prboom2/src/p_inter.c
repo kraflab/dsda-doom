@@ -1403,7 +1403,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     !(
       source &&
       source->player &&
-      weaponinfo[source->player->readyweapon].flags & WPF_NOTHRUST
+      (hexen || weaponinfo[source->player->readyweapon].flags & WPF_NOTHRUST)
     ) &&
     !(inflictor->flags2 & MF2_NODMGTHRUST)
   )

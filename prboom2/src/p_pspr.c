@@ -487,7 +487,7 @@ static void P_FireWeapon(player_t *player)
   }
 
   P_SetPsprite(player, ps_weapon, newstate);
-  if (!(weaponinfo[player->readyweapon].flags & WPF_SILENT))
+  if (!hexen && !(weaponinfo[player->readyweapon].flags & WPF_SILENT))
     P_NoiseAlert(player->mo, player->mo);
 
   // heretic_note: does the order matter? can we move it up?
