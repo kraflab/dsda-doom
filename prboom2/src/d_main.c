@@ -101,6 +101,8 @@
 
 #include "heretic/mn_menu.h"
 
+#include "hexen/sn_sonix.h"
+
 // NSM
 #include "i_capture.h"
 
@@ -1582,6 +1584,55 @@ static void D_AutoloadDehPWadDir()
     }
 }
 
+static void HandleWarp(void)
+{
+  int p;
+
+  if ((p = M_CheckParm ("-warp")) ||      // killough 5/2/98
+       (p = M_CheckParm ("-wart")))
+       // Ty 08/29/98 - moved this check later so we can have -warp alone: && p < myargc-1)
+  {
+    startmap = 0; // Ty 08/29/98 - allow "-warp x" to go to first map in wad(s)
+    autostart = true; // Ty 08/29/98 - move outside the decision tree
+
+    if (hexen)
+    {
+      if (p < myargc - 1)
+        startmap = P_TranslateMap(atoi(myargv[p + 1]));
+      else
+        startmap = P_TranslateMap(1);
+      if (startmap == -1)
+      {                       // Couldn't find real map number
+        I_Error("-warp: Invalid map number.\n");
+      }
+    }
+    else if (gamemode == commercial)
+    {
+      if (p < myargc-1)
+        startmap = atoi(myargv[p+1]);   // Ty 08/29/98 - add test if last parm
+    }
+    else    // 1/25/98 killough: fix -warp xxx from crashing Doom 1 / UD
+    {
+      if (p < myargc-1)
+      {
+        int episode, map;
+        if (sscanf(myargv[p+1], "%d", &episode) == 1)
+        {
+          startepisode = episode;
+          startmap = 1;
+          if (p < myargc-2 && sscanf(myargv[p+2], "%d", &map) == 1)
+          {
+            startmap = map;
+          }
+        }
+      }
+    }
+  }
+  // Ty 08/29/98 - later we'll check for startmap=0 and autostart=true
+  // as a special case that -warp * was used.  Actually -warp with any
+  // non-numeric will do that but we'll only document "*"
+}
+
 //
 // D_DoomMainSetup
 //
@@ -1659,44 +1710,45 @@ static void D_DoomMainSetup(void)
       deathmatch = 1;
 
   {
-    switch ( gamemode ) {
-    case retail:
-      switch (gamemission)
-      {
-        case chex:
-          doomverstr = "Chex(R) Quest";
-          break;
-        default:
-          doomverstr = "The Ultimate DOOM";
-          break;
-      }
-      break;
-    case shareware:
-      doomverstr = "DOOM Shareware";
-      break;
-    case registered:
-      doomverstr = "DOOM Registered";
-      break;
-    case commercial:  // Ty 08/27/98 - fixed gamemode vs gamemission
-      switch (gamemission)
-      {
-        case pack_plut:
-          doomverstr = "Final DOOM - The Plutonia Experiment";
-          break;
-        case pack_tnt:
-          doomverstr = "Final DOOM - TNT: Evilution";
-          break;
-        case hacx:
-          doomverstr = "HACX - Twitch 'n Kill";
-          break;
-        default:
-          doomverstr = "DOOM 2: Hell on Earth";
-          break;
-      }
-      break;
-    default:
-      doomverstr = "Public DOOM";
-      break;
+    switch ( gamemode )
+    {
+      case retail:
+        switch (gamemission)
+        {
+          case chex:
+            doomverstr = "Chex(R) Quest";
+            break;
+          default:
+            doomverstr = "The Ultimate DOOM";
+            break;
+        }
+        break;
+      case shareware:
+        doomverstr = "DOOM Shareware";
+        break;
+      case registered:
+        doomverstr = "DOOM Registered";
+        break;
+      case commercial:  // Ty 08/27/98 - fixed gamemode vs gamemission
+        switch (gamemission)
+        {
+          case pack_plut:
+            doomverstr = "Final DOOM - The Plutonia Experiment";
+            break;
+          case pack_tnt:
+            doomverstr = "Final DOOM - TNT: Evilution";
+            break;
+          case hacx:
+            doomverstr = "HACX - Twitch 'n Kill";
+            break;
+          default:
+            doomverstr = "DOOM 2: Hell on Earth";
+            break;
+        }
+        break;
+      default:
+        doomverstr = "Public DOOM";
+        break;
     }
 
     if (bfgedition)
@@ -1722,27 +1774,6 @@ static void D_DoomMainSetup(void)
     //jff 9/3/98 use logical output routine
     lprintf(LO_INFO,"%s",D_DEVSTR);
 
-  // turbo option
-  if ((p=M_CheckParm ("-turbo")))
-  {
-    int scale = 200;
-    extern int forwardmove[2];
-    extern int sidemove[2];
-
-    if (p<myargc-1)
-      scale = atoi(myargv[p+1]);
-    if (scale < 10)
-      scale = 10;
-    if (scale > 400)
-      scale = 400;
-    //jff 9/3/98 use logical output routine
-    lprintf (LO_INFO,"turbo scale: %i%%\n",scale);
-    forwardmove[0] = forwardmove[0]*scale/100;
-    forwardmove[1] = forwardmove[1]*scale/100;
-    sidemove[0] = sidemove[0]*scale/100;
-    sidemove[1] = sidemove[1]*scale/100;
-  }
-
   modifiedgame = false;
 
   // get skill / episode / map from parms
@@ -1765,6 +1796,8 @@ static void D_DoomMainSetup(void)
     autostart = true;
   }
 
+  randomclass = (M_CheckParm("-randclass") != 0);
+
   if ((p = M_CheckParm ("-timer")) && p < myargc-1 && deathmatch)
   {
     int time = atoi(myargv[p+1]);
@@ -1776,37 +1809,7 @@ static void D_DoomMainSetup(void)
     //jff 9/3/98 use logical output routine
     lprintf(LO_INFO,"Austin Virtual Gaming: Levels will end after 20 minutes\n");
 
-  if ((p = M_CheckParm ("-warp")) ||      // killough 5/2/98
-       (p = M_CheckParm ("-wart")))
-       // Ty 08/29/98 - moved this check later so we can have -warp alone: && p < myargc-1)
-  {
-    startmap = 0; // Ty 08/29/98 - allow "-warp x" to go to first map in wad(s)
-    autostart = true; // Ty 08/29/98 - move outside the decision tree
-    if (gamemode == commercial)
-    {
-      if (p < myargc-1)
-        startmap = atoi(myargv[p+1]);   // Ty 08/29/98 - add test if last parm
-    }
-    else    // 1/25/98 killough: fix -warp xxx from crashing Doom 1 / UD
-    {
-      if (p < myargc-1)
-      {
-        int episode, map;
-        if (sscanf(myargv[p+1], "%d", &episode) == 1)
-        {
-          startepisode = episode;
-          startmap = 1;
-          if (p < myargc-2 && sscanf(myargv[p+2], "%d", &map) == 1)
-          {
-            startmap = map;
-          }
-        }
-      }
-    }
-  }
-  // Ty 08/29/98 - later we'll check for startmap=0 and autostart=true
-  // as a special case that -warp * was used.  Actually -warp with any
-  // non-numeric will do that but we'll only document "*"
+  HandleWarp();
 
   //jff 1/22/98 add command line parms to disable sound and music
   {
@@ -2108,6 +2111,13 @@ static void D_DoomMainSetup(void)
   lprintf(LO_INFO,"M_Init: Init miscellaneous info.\n");
   M_Init();
 
+  if (hexen)
+  {
+    InitMapMusicInfo();
+    S_InitScript();
+    SN_InitSequenceScript();
+  }
+
 #ifdef HAVE_NET
   // CPhipps - now wait for netgame start
   D_CheckNetGame();
@@ -2209,22 +2219,26 @@ static void D_DoomMainSetup(void)
     slot = atoi(myargv[slot]);        // killough 3/16/98: add slot info
     G_LoadGame(slot, true);           // killough 5/15/98: add command flag // cph - no filename
   }
-  else
-    if (!singledemo) {                  /* killough 12/98 */
-      if (autostart || netgame)
+  else if (!singledemo)               // killough 12/98
+  {
+    if (autostart || netgame)
+    {
+      // sets first map and first episode if unknown
+      if (autostart)
       {
-        // sets first map and first episode if unknown
-        if (autostart)
-        {
-          GetFirstMap(&startepisode, &startmap);
-        }
-        G_InitNew(startskill, startepisode, startmap);
-        if (demorecording)
-          G_BeginRecording();
+        GetFirstMap(&startepisode, &startmap);
       }
-      else
-        D_StartTitle();                 // start up intro loop
+      if (hexen)
+      {
+        G_StartNewInit();
+      }
+      G_InitNew(startskill, startepisode, startmap);
+      if (demorecording)
+        G_BeginRecording();
     }
+    else
+      D_StartTitle();                 // start up intro loop
+  }
 
   // do not try to interpolate during timedemo
   M_ChangeUncappedFrameRate();
@@ -2261,7 +2275,15 @@ void GetFirstMap(int *ep, int *map)
   {
     *ep = 1;
     *map = 1; // default E1M1 or MAP01
-    if (gamemode == commercial)
+    if (hexen)
+    {
+      *map = P_TranslateMap(1);
+      if (*map == -1)
+      {                       // Couldn't find real map number
+        I_Error("Unable to autostart.\n");
+      }
+    }
+    else if (gamemode == commercial)
     {
       for (i=1;!done && i<33;i++)  // Ty 09/13/98 - add use of !done
       {
