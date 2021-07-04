@@ -1656,6 +1656,8 @@ static void HandleClass(void)
   int p;
   int player_class = PCLASS_FIGHTER;
 
+  if (!hexen) return;
+
   p = M_CheckParm("-class");
   if (p && p < myargc - 1)
     player_class = atoi(myargv[p + 1]) + PCLASS_FIGHTER;
