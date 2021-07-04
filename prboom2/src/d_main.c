@@ -1633,6 +1633,29 @@ static void HandleWarp(void)
   // non-numeric will do that but we'll only document "*"
 }
 
+static void HandleClass(void)
+{
+  int p;
+  int player_class = PCLASS_FIGHTER;
+
+  p = M_CheckParm("-class");
+  if (p && p < myargc - 1)
+    player_class = atoi(myargv[p + 1]) + PCLASS_FIGHTER;
+
+  if (
+    player_class != PCLASS_FIGHTER &&
+    player_class != PCLASS_CLERIC &&
+    player_class != PCLASS_MAGE
+  )
+    player_class = PCLASS_FIGHTER;
+
+  PlayerClass[0] = player_class;
+  for (p = 1; p < MAX_MAXPLAYERS; p++)
+    PlayerClass[p] = PCLASS_FIGHTER;
+
+  randomclass = (M_CheckParm("-randclass") != 0);
+}
+
 //
 // D_DoomMainSetup
 //
@@ -1796,7 +1819,7 @@ static void D_DoomMainSetup(void)
     autostart = true;
   }
 
-  randomclass = (M_CheckParm("-randclass") != 0);
+  HandleClass();
 
   if ((p = M_CheckParm ("-timer")) && p < myargc-1 && deathmatch)
   {
