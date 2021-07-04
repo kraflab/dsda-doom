@@ -663,7 +663,7 @@ static dboolean dsda_AutoDetectHexen(void)
   i = M_CheckParm("-iwad");
   if (i && (++i < myargc)) {
     length = strlen(myargv[i]);
-    if (length >= 11 && !strnicmp(myargv[i] + length - 11, "heretic.wad", 11))
+    if (length >= 9 && !strnicmp(myargv[i] + length - 9, "hexen.wad", 9))
       return true;
   }
 
