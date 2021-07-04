@@ -577,9 +577,13 @@ void D_PageTicker(void)
 //
 static void D_PageDrawer(void)
 {
-  if (heretic)
+  if (raven)
   {
     V_DrawRawScreen(pagename);
+    if (hexen && demosequence == 1)
+    {
+      V_DrawNamePatch(4, 160, 0, "ADVISOR", CR_DEFAULT, VPT_STRETCH);
+    }
     return;
   }
 

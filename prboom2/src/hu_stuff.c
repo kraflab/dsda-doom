@@ -2657,6 +2657,8 @@ void HU_Ticker(void)
     if ((plr->message && !message_nottobefuckedwith)
         || (plr->message && message_dontfuckwithme))
     {
+      // HEXEN_TODO: yellow message variant
+
       //post the message to the message widget
       HUlib_addMessageToSText(&w_message, 0, plr->message);
       //jff 2/26/98 add message to refresh text widget too

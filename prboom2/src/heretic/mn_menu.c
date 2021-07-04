@@ -409,6 +409,8 @@ void MN_DrawPause(void)
 
   title = "PAUSE";
   MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
+
+  // HEXEN_TODO: "PAUSED" lump
 }
 
 void MN_DrTextA(const char *text, int x, int y)
