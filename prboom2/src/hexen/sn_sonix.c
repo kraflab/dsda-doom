@@ -329,9 +329,11 @@ void SN_StartSequenceName(mobj_t * mobj, const char *name)
 void SN_StopSequence(mobj_t * mobj)
 {
     seqnode_t *node;
+    seqnode_t *next_node;
 
-    for (node = SequenceListHead; node; node = node->next)
+    for (node = SequenceListHead; node; node = next_node)
     {
+        next_node = node->next;
         if (node->mobj == mobj)
         {
             S_StopSound(mobj);
@@ -360,6 +362,7 @@ void SN_StopSequence(mobj_t * mobj)
 void SN_UpdateActiveSequences(void)
 {
     seqnode_t *node;
+    seqnode_t *next_node;
     dboolean sndPlaying;
     extern dboolean paused;
 
@@ -367,8 +370,9 @@ void SN_UpdateActiveSequences(void)
     {                           // No sequences currently playing/game is paused
         return;
     }
-    for (node = SequenceListHead; node; node = node->next)
+    for (node = SequenceListHead; node; node = next_node)
     {
+        next_node = node->next;
         if (node->delayTics)
         {
             node->delayTics--;
@@ -432,9 +436,11 @@ void SN_UpdateActiveSequences(void)
 void SN_StopAllSequences(void)
 {
     seqnode_t *node;
+    seqnode_t *next_node;
 
-    for (node = SequenceListHead; node; node = node->next)
+    for (node = SequenceListHead; node; node = next_node)
     {
+        next_node = node->next;
         node->stopSound = 0;    // don't play any stop sounds
         SN_StopSequence(node->mobj);
     }
