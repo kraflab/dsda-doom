@@ -1151,6 +1151,8 @@ static void P_NightmareRespawn(mobj_t* mobj)
   if (mo->type == HERETIC_MT_CHICKEN)
     mo->special2.i = HERETIC_MT_ZERO;
 
+  // HEXEN_TODO: any issue in respawn types?
+
   if (mthing->options & MTF_AMBUSH)
     mo->flags |= MF_AMBUSH;
 

@@ -492,21 +492,21 @@ static void dsda_InitHeretic(void) {
 }
 
 static void dsda_InitHexen(void) {
-  // int i, j;
-  // raven_mobjinfo_t* mobjinfo_p;
-  //
-  // dsda_AllocateMobjInfo(HERETIC_MT_ZERO, HERETIC_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
-  // dsda_SetStates(heretic_states, HERETIC_NUMSTATES);
-  // dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
-  // dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
-  // dsda_SetMusic(heretic_S_music, HERETIC_NUMMUSIC);
-  //
+  int i, j;
+  raven_mobjinfo_t* mobjinfo_p;
+
+  dsda_AllocateMobjInfo(HEXEN_MT_ZERO, HEXEN_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
+  dsda_SetStates(hexen_states, HEXEN_NUMSTATES);
+  dsda_SetSpriteNames(hexen_sprnames, HEXEN_NUMSPRITES);
+  dsda_SetSfx(hexen_S_sfx, HEXEN_NUMSFX);
+  dsda_SetMusic(hexen_S_music, HEXEN_NUMMUSIC);
+
   demostates = hexen_demostates;
-  //
+
   // weaponinfo = wpnlev1info;
-  //
+
   g_maxplayers = 8;
-  //
+
   // g_mt_player = HERETIC_MT_PLAYER;
   g_mt_tfog = HEXEN_MT_TFOG;
   g_mt_blood = HEXEN_MT_BLOOD;
@@ -514,18 +514,18 @@ static void dsda_InitHexen(void) {
   g_s_bloodyskullx1 = HEXEN_S_BLOODYSKULLX1;
   g_s_bloodyskullx2 = HEXEN_S_BLOODYSKULLX2;
   g_s_play_fdth20 = HEXEN_S_PLAY_FDTH20;
-  //
+
   // g_wp_fist = wp_staff;
   // g_wp_chainsaw = wp_gauntlets;
   // g_wp_pistol = wp_goldwand;
-  //
-  // g_telefog_height = TELEFOGHEIGHT;
+
+  g_telefog_height = TELEFOGHEIGHT;
   g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
   g_special_friction_low = IGNORE_VALUE;
 
   g_s_null = HEXEN_S_NULL;
-  //
+
   g_mt_bloodsplatter = HEXEN_MT_BLOODSPLATTER;
   g_bloodsplatter_shift = 10;
   g_bloodsplatter_weight = 3;
@@ -570,34 +570,75 @@ static void dsda_InitHexen(void) {
   // g_sfx_oof = heretic_sfx_plroof;
   // g_sfx_menu = heretic_sfx_dorcls;
   g_sfx_respawn = hexen_sfx_respawn;
-  //
+
   // g_door_normal = vld_normal;
   // g_door_raise_in_5_mins = vld_raiseIn5Mins;
   // g_door_open = vld_open;
-  //
+
   g_st_height = 39;
   g_border_offset = 4;
-  // g_mf_translucent = MF_SHADOW;
-  // g_mf_shadow = 0; // doesn't exist in heretic
-  //
-  // g_cr_gray = CR_TAN;
-  // g_cr_green = CR_YELLOW;
-  // g_cr_gold = CR_ORANGE;
-  // g_cr_red = CR_GOLD;
-  // g_cr_blue = CR_BROWN;
-  //
-  // g_menu_flat = "FLOOR30";
-  // g_menu_font = hu_font2;
-  // g_menu_save_page_size = 5;
-  // g_menu_font_spacing = 0;
-  // g_menu_cr_title = g_cr_gold;
-  // g_menu_cr_set = g_cr_green;
-  // g_menu_cr_item = g_cr_red;
-  // g_menu_cr_hilite = g_cr_blue;
-  // g_menu_cr_select = g_cr_gray;
-  // g_menu_cr_disable = g_cr_gray;
+  g_mf_translucent = MF_SHADOW; // HEXEN_TODO: how does ALTSHADOW fit in?
+  g_mf_shadow = 0; // doesn't exist in hexen
+
+  g_cr_gray = CR_TAN;
+  g_cr_green = CR_YELLOW;
+  g_cr_gold = CR_ORANGE;
+  g_cr_red = CR_GOLD;
+  g_cr_blue = CR_BROWN;
+
+  g_menu_flat = "F_022";
+  g_menu_font = hu_font2;
+  g_menu_save_page_size = 5;
+  g_menu_font_spacing = 0;
+  g_menu_cr_title = g_cr_gold;
+  g_menu_cr_set = g_cr_green;
+  g_menu_cr_item = g_cr_red;
+  g_menu_cr_hilite = g_cr_blue;
+  g_menu_cr_select = g_cr_gray;
+  g_menu_cr_disable = g_cr_gray;
 
   g_skyflatname = "F_SKY";
+
+  // convert hexen mobj types to shared type
+  for (i = 0; i < HEXEN_NUMMOBJTYPES - HEXEN_MT_ZERO; ++i) {
+    mobjinfo_p = &hexen_mobjinfo[i];
+
+    j = i + HEXEN_MT_ZERO;
+    mobjinfo[j].doomednum    = mobjinfo_p->doomednum;
+    mobjinfo[j].spawnstate   = mobjinfo_p->spawnstate;
+    mobjinfo[j].spawnhealth  = mobjinfo_p->spawnhealth;
+    mobjinfo[j].seestate     = mobjinfo_p->seestate;
+    mobjinfo[j].seesound     = mobjinfo_p->seesound;
+    mobjinfo[j].reactiontime = mobjinfo_p->reactiontime;
+    mobjinfo[j].attacksound  = mobjinfo_p->attacksound;
+    mobjinfo[j].painstate    = mobjinfo_p->painstate;
+    mobjinfo[j].painchance   = mobjinfo_p->painchance;
+    mobjinfo[j].painsound    = mobjinfo_p->painsound;
+    mobjinfo[j].meleestate   = mobjinfo_p->meleestate;
+    mobjinfo[j].missilestate = mobjinfo_p->missilestate;
+    mobjinfo[j].deathstate   = mobjinfo_p->deathstate;
+    mobjinfo[j].xdeathstate  = mobjinfo_p->xdeathstate;
+    mobjinfo[j].deathsound   = mobjinfo_p->deathsound;
+    mobjinfo[j].speed        = mobjinfo_p->speed;
+    mobjinfo[j].radius       = mobjinfo_p->radius;
+    mobjinfo[j].height       = mobjinfo_p->height;
+    mobjinfo[j].mass         = mobjinfo_p->mass;
+    mobjinfo[j].damage       = mobjinfo_p->damage;
+    mobjinfo[j].activesound  = mobjinfo_p->activesound;
+    mobjinfo[j].flags        = mobjinfo_p->flags;
+    mobjinfo[j].raisestate   = 0; // not in hexen
+    mobjinfo[j].droppeditem  = 0; // not in hexen
+    mobjinfo[j].crashstate   = mobjinfo_p->crashstate;
+    mobjinfo[j].flags2       = mobjinfo_p->flags2;
+
+    // mbf21
+    mobjinfo[j].infighting_group = IG_DEFAULT;
+    mobjinfo[j].projectile_group = PG_DEFAULT;
+    mobjinfo[j].splash_group = SG_DEFAULT;
+    mobjinfo[j].ripsound = hexen_sfx_None;
+    mobjinfo[j].altspeed = NO_ALTSPEED;
+    mobjinfo[j].meleerange = MELEERANGE;
+  }
 
   mobjinfo[HEXEN_MT_CENTAUR].infighting_group = IG_CENTAUR;
   mobjinfo[HEXEN_MT_CENTAURLEADER].infighting_group = IG_CENTAUR;
