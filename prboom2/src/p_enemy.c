@@ -3059,7 +3059,7 @@ void A_SpawnObject(mobj_t *actor)
   mo->momz = vel_z;
 
   // if spawned object is a missile, set target+tracer
-  if (mo->flags & (MF_MISSILE | MF_BOUNCES))
+  if (mo->info->flags & (MF_MISSILE | MF_BOUNCES))
   {
     // if spawner is also a missile, copy 'em
     if (actor->info->flags & (MF_MISSILE | MF_BOUNCES))
