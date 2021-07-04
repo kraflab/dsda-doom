@@ -795,6 +795,7 @@ static void R_Subsector(int num)
       (*polySeg)->v1->py = (*polySeg)->v1->y;
       (*polySeg)->v2->px = (*polySeg)->v2->x;
       (*polySeg)->v2->py = (*polySeg)->v2->y;
+      (*polySeg)->pangle = (*polySeg)->angle;
       R_AddLine(*polySeg++);
     }
   }
