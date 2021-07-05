@@ -554,26 +554,18 @@ static void dsda_InitHexen(void) {
   g_arti_superhealth = hexen_arti_superhealth;
   g_arti_fly = hexen_arti_fly;
   g_arti_limit = 25;
-  //
-  // g_sfx_sawup = heretic_sfx_gntact;
-  g_sfx_telept = hexen_sfx_teleport;
-  // g_sfx_stnmov = heretic_sfx_dormov;
-  // g_sfx_stnmov_plats = heretic_sfx_stnmov;
-  // g_sfx_swtchn = heretic_sfx_switch;
-  // g_sfx_swtchx = heretic_sfx_switch;
-  // g_sfx_dorcls = heretic_sfx_doropn;
-  // g_sfx_doropn = heretic_sfx_doropn;
-  // g_sfx_pstart = heretic_sfx_pstart;
-  // g_sfx_pstop = heretic_sfx_pstop;
-  // g_sfx_itemup = heretic_sfx_itemup;
-  // g_sfx_pistol = heretic_sfx_gldhit;
-  // g_sfx_oof = heretic_sfx_plroof;
-  // g_sfx_menu = heretic_sfx_dorcls;
-  g_sfx_respawn = hexen_sfx_respawn;
 
-  // g_door_normal = vld_normal;
-  // g_door_raise_in_5_mins = vld_raiseIn5Mins;
-  // g_door_open = vld_open;
+  g_sfx_telept = hexen_sfx_teleport;
+  g_sfx_stnmov = hexen_sfx_door_light_close;
+  g_sfx_swtchn = hexen_sfx_fighter_hammer_hitwall;
+  g_sfx_swtchx = hexen_sfx_fighter_hammer_hitwall;
+  g_sfx_dorcls = hexen_sfx_door_light_close;
+  g_sfx_doropn = hexen_sfx_door_open;
+  g_sfx_itemup = hexen_sfx_pickup_key;
+  g_sfx_pistol = hexen_sfx_fighter_hammer_hitwall;
+  g_sfx_oof = hexen_sfx_player_fighter_grunt;
+  g_sfx_menu = hexen_sfx_door_light_close;
+  g_sfx_respawn = hexen_sfx_respawn;
 
   g_st_height = 39;
   g_border_offset = 4;

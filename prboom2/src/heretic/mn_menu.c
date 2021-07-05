@@ -78,7 +78,7 @@ void MN_Init(void)
   }
   else
   {
-    SkullBaseLump = W_GetNumForName("FBULA0");
+    SkullBaseLump = (W_CheckNumForName)("FBULA0", ns_sprites);
   }
 
   // override doom menu parameters

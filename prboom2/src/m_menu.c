@@ -471,7 +471,11 @@ void M_FinishHelp(int choice)        // killough 10/98
 void M_DrawReadThis1(void)
 {
   inhelpscreens = true;
-  if (gamemode == shareware)
+  if (hexen)
+  {
+    V_DrawRawScreen("HELP2");
+  }
+  else if (gamemode == shareware)
   {
     // e6y: wide-res
     V_FillBorder(-1, 0);
@@ -712,6 +716,8 @@ static void M_VerifyNightmare(int ch)
     return;
 
   G_DeferedInitNew(nightmare,EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
+  if (hexen)
+    SB_SetClassData();
   M_ClearMenus ();
 }
 
@@ -725,6 +731,8 @@ void M_ChooseSkill(int choice)
   if (EpiMenuEpi[epiChoice] == -1 || EpiMenuMap[epiChoice] == -1) return;  // There is no map to start here.
 
   G_DeferedInitNew(choice, EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
+  if (hexen)
+    SB_SetClassData();
   M_ClearMenus ();
 }
 
