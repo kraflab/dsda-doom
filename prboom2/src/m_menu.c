@@ -75,6 +75,7 @@
 #include "dsda/save.h"
 #include "dsda/console.h"
 #include "heretic/mn_menu.h"
+#include "heretic/sb_bar.h"
 #ifdef _WIN32
 #include "e6y_launcher.h"
 #endif
