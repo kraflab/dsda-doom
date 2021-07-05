@@ -379,6 +379,8 @@ void MN_DrawEpisode(void)
 
 void MN_DrawSkillMenu(void)
 {
+    if (heretic) return;
+
     MN_DrTextB("CHOOSE SKILL LEVEL:", 74, 16);
 }
 

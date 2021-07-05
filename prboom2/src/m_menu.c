@@ -664,7 +664,7 @@ menu_t NewDef =
 
 void M_DrawNewGame(void)
 {
-  if (raven) return;
+  if (raven) return MN_DrawSkillMenu();
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(96, 14, 0, "M_NEWG", CR_DEFAULT, VPT_STRETCH);
