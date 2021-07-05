@@ -40,6 +40,8 @@ int MN_TextBWidth(const char *text);
 
 // hexen
 
+void MN_DrawEpisode(void);
+void MN_UpdateClass(int choice);
 void MN_DrTextAYellow(const char *text, int x, int y);
 void MN_DrawSkillMenu(void);
 

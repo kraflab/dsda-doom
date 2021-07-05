@@ -590,7 +590,7 @@ void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char 
 
 void M_DrawEpisode(void)
 {
-  if (raven) return;
+  if (raven) return MN_DrawEpisode();
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(54, EpiDef.y - 25, 0, "M_EPISOD", CR_DEFAULT, VPT_STRETCH);
@@ -615,6 +615,8 @@ void M_Episode(int choice)
     }
   }
   epiChoice = choice;
+  if (hexen) // hack hexen class as "episode menu"
+    MN_UpdateClass(epiChoice);
   M_SetupNextMenu(&NewDef);
 }
 
@@ -701,7 +703,7 @@ void M_NewGame(int choice)
   }
 
   // Chex Quest disabled the episode select screen, as did Doom II.
-  if (((gamemode == commercial || gamemission == chex) && !EpiCustom) || EpiDef.numitems == 1)
+  if ((((gamemode == commercial && !hexen) || gamemission == chex) && !EpiCustom) || EpiDef.numitems == 1)
     M_SetupNextMenu(&NewDef);
   else
   {

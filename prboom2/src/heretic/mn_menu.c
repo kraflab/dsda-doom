@@ -86,12 +86,6 @@ void MN_Init(void)
   MainDef.x = 110;
   MainDef.y = 56;
 
-  EpiDef.x = 80;
-  EpiDef.y = 50;
-
-  NewDef.x = 38;
-  NewDef.y = 30;
-
   OptionsDef.x = 88;
   OptionsDef.y = 16;
 
@@ -112,37 +106,96 @@ void MN_Init(void)
   SaveDef.y = 30;
   SaveDef.numitems = g_menu_save_page_size;
 
-  EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
-  EpisodeMenu[1].alttext = "HELL'S MAW";
-  EpisodeMenu[2].alttext = "THE DOME OF D'SPARIL";
-  EpisodeMenu[3].alttext = "THE OSSUARY";
-  EpisodeMenu[4].alttext = "THE STAGNANT DEMESNE";
-
-  NewGameMenu[0].alttext = "THOU NEEDETH A WET-NURSE";
-  NewGameMenu[1].alttext = "YELLOWBELLIES-R-US";
-  NewGameMenu[2].alttext = "BRINGEST THEM ONETH";
-  NewGameMenu[3].alttext = "THOU ART A SMITE-MEISTER";
-  NewGameMenu[4].alttext = "BLACK PLAGUE POSSESSES THEE";
-
-  SoundMenu[0].alttext = "SFX VOLUME";
-  SoundMenu[2].alttext = "MUSIC VOLUME";
-
-  if (gamemode == retail)
+  if (heretic)
   {
-    EpiMenuEpi[3] = 4;
-    EpiMenuEpi[4] = 5;
-    EpiMenuMap[3] = 1;
-    EpiMenuMap[4] = 1;
-    EpiDef.numitems = 5;
-    EpiDef.y -= ITEM_HEIGHT;
+    EpiDef.x = 80;
+    EpiDef.y = 50;
+
+    NewDef.x = 38;
+    NewDef.y = 30;
+
+    EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
+    EpisodeMenu[1].alttext = "HELL'S MAW";
+    EpisodeMenu[2].alttext = "THE DOME OF D'SPARIL";
+    EpisodeMenu[3].alttext = "THE OSSUARY";
+    EpisodeMenu[4].alttext = "THE STAGNANT DEMESNE";
+
+    NewGameMenu[0].alttext = "THOU NEEDETH A WET-NURSE";
+    NewGameMenu[1].alttext = "YELLOWBELLIES-R-US";
+    NewGameMenu[2].alttext = "BRINGEST THEM ONETH";
+    NewGameMenu[3].alttext = "THOU ART A SMITE-MEISTER";
+    NewGameMenu[4].alttext = "BLACK PLAGUE POSSESSES THEE";
+
+    if (gamemode == retail)
+    {
+      EpiMenuEpi[3] = 4;
+      EpiMenuEpi[4] = 5;
+      EpiMenuMap[3] = 1;
+      EpiMenuMap[4] = 1;
+      EpiDef.numitems = 5;
+      EpiDef.y -= ITEM_HEIGHT;
+    }
+    else
+    {
+      EpiMenuEpi[3] = -1;
+      EpiMenuEpi[4] = -1;
+      EpiMenuMap[3] = -1;
+      EpiMenuMap[4] = -1;
+      EpiDef.numitems = 3;
+    }
   }
   else
   {
-    EpiMenuEpi[3] = -1;
-    EpiMenuEpi[4] = -1;
-    EpiMenuMap[3] = -1;
-    EpiMenuMap[4] = -1;
+    EpiDef.x = 66;
+    EpiDef.y = 66;
+
+    NewDef.x = 120;
+    NewDef.y = 44;
+
+    EpisodeMenu[0].alttext = "FIGHTER";
+    EpisodeMenu[1].alttext = "CLERIC";
+    EpisodeMenu[2].alttext = "MAGE";
+
+    EpiMenuEpi[1] = 1;
+    EpiMenuEpi[2] = 1;
+
     EpiDef.numitems = 3;
+  }
+
+  SoundMenu[0].alttext = "SFX VOLUME";
+  SoundMenu[2].alttext = "MUSIC VOLUME";
+}
+
+void MN_UpdateClass(int choice)
+{
+  PlayerClass[consoleplayer] = choice + 1;
+
+  switch (PlayerClass[consoleplayer])
+  {
+    case PCLASS_FIGHTER:
+      NewDef.x = 120;
+      NewGameMenu[0].alttext = "SQUIRE";
+      NewGameMenu[1].alttext = "KNIGHT";
+      NewGameMenu[2].alttext = "WARRIOR";
+      NewGameMenu[3].alttext = "BERSERKER";
+      NewGameMenu[4].alttext = "TITAN";
+      break;
+    case PCLASS_CLERIC:
+      NewDef.x = 116;
+      NewGameMenu[0].alttext = "ALTAR BOY";
+      NewGameMenu[1].alttext = "ACOLYTE";
+      NewGameMenu[2].alttext = "PRIEST";
+      NewGameMenu[3].alttext = "CARDINAL";
+      NewGameMenu[4].alttext = "POPE";
+      break;
+    case PCLASS_MAGE:
+      NewDef.x = 112;
+      NewGameMenu[0].alttext = "APPRENTICE";
+      NewGameMenu[1].alttext = "ENCHANTER";
+      NewGameMenu[2].alttext = "SORCERER";
+      NewGameMenu[3].alttext = "WARLOCK";
+      NewGameMenu[4].alttext = "ARCHIMAGE";
+      break;
   }
 }
 
@@ -298,6 +351,30 @@ static void Hexen_MN_DrawMainMenu(void)
   V_DrawNamePatch(88, 0, 0, "M_HTIC", CR_DEFAULT, VPT_STRETCH);
   V_DrawNumPatch(37, 80, 0, SkullBaseLump + (frame + 2) % 7, CR_DEFAULT, VPT_STRETCH);
   V_DrawNumPatch(278, 80, 0, SkullBaseLump + frame, CR_DEFAULT, VPT_STRETCH);
+}
+
+// Class menu is in the episode slot for hexen
+void MN_DrawEpisode(void)
+{
+  pclass_t class;
+  static const char *boxLumpName[3] = {
+    "m_fbox",
+    "m_cbox",
+    "m_mbox"
+  };
+  static const char *walkLumpName[3] = {
+    "m_fwalk1",
+    "m_cwalk1",
+    "m_mwalk1"
+  };
+
+  if (heretic) return;
+
+  MN_DrTextB("CHOOSE CLASS:", 34, 24);
+  class = (pclass_t) itemOn;
+  V_DrawNamePatch(174, 8, 0, boxLumpName[class], CR_DEFAULT, VPT_STRETCH);
+  V_DrawNumPatch(174 + 24, 8 + 12, 0, W_GetNumForName(walkLumpName[class]) + ((MenuTime >> 3) & 3),
+                 CR_DEFAULT, VPT_STRETCH);
 }
 
 void MN_DrawSkillMenu(void)
