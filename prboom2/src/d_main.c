@@ -1719,19 +1719,6 @@ static void D_DoomMainSetup(void)
 
   dsda_InitGlobal();
 
-  if (hexen)
-  {
-    if (W_CheckNumForName("MAP05") < 0)
-    {
-    	gamemode = shareware;
-    	g_maxplayers = 4;
-    }
-    else if (W_CheckNumForName("CLUS1MSG") < 0)
-    {
-      I_Error("The Hexen v1.0 IWAD is not supported.");
-    }
-  }
-
   D_BuildBEXTables(); // haleyjd
 
   // e6y: DEH files preloaded in wrong order
@@ -2005,6 +1992,21 @@ static void D_DoomMainSetup(void)
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"W_Init: Init WADfiles.\n");
   W_Init(); // CPhipps - handling of wadfiles init changed
+
+  if (hexen)
+  {
+    if (W_CheckNumForName("MAP05") < 0)
+    {
+      I_Error("The Hexen IWAD shareware is not supported.");
+      gamemode = shareware;
+      g_maxplayers = 4;
+    }
+    else if (W_CheckNumForName("CLUS1MSG") < 0)
+    {
+      I_Error("The Hexen v1.0 IWAD is not supported.");
+    }
+  }
+
 
   lprintf(LO_INFO, "G_ReloadDefaults: Checking OPTIONS.\n");
   G_ReloadDefaults();
