@@ -357,7 +357,7 @@ menu_t MainDef =
 
 void M_DrawMainMenu(void)
 {
-  if (heretic) return MN_DrawMainMenu();
+  if (raven) return MN_DrawMainMenu();
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(94, 2, 0, "M_DOOM", CR_DEFAULT, VPT_STRETCH);
@@ -585,7 +585,7 @@ void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char 
 
 void M_DrawEpisode(void)
 {
-  if (heretic) return;
+  if (raven) return;
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(54, EpiDef.y - 25, 0, "M_EPISOD", CR_DEFAULT, VPT_STRETCH);
@@ -657,7 +657,7 @@ menu_t NewDef =
 
 void M_DrawNewGame(void)
 {
-  if (heretic) return;
+  if (raven) return;
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(96, 14, 0, "M_NEWG", CR_DEFAULT, VPT_STRETCH);
@@ -803,7 +803,7 @@ void M_DrawLoad(void)
 {
   int i;
 
-  if (heretic) return MN_DrawLoad();
+  if (raven) return MN_DrawLoad();
 
   //jff 3/15/98 use symbolic load position
   // CPhipps - patch drawing updated
@@ -959,7 +959,7 @@ void M_DrawSave(void)
 {
   int i;
 
-  if (heretic) return MN_DrawSave();
+  if (raven) return MN_DrawSave();
 
   //jff 3/15/98 use symbolic load position
   // CPhipps - patch drawing updated
@@ -1093,7 +1093,7 @@ char msgNames[2][9]  = {"M_MSGOFF","M_MSGON"};
 
 void M_DrawOptions(void)
 {
-  if (heretic) return MN_DrawOptions();
+  if (raven) return MN_DrawOptions();
 
   // CPhipps - patch drawing updated
   // proff/nicolas 09/20/98 -- changed for hi-res
@@ -1154,7 +1154,7 @@ static void M_QuitResponse(int ch)
     return;
 
   //e6y: Optional removal of a quit sound
-  if (!heretic && !netgame && showendoom && !nosfxparm && snd_card)
+  if (!raven && !netgame && showendoom && !nosfxparm && snd_card)
   {
     int i;
 
@@ -1237,7 +1237,7 @@ menu_t SoundDef =
 
 void M_DrawSound(void)
 {
-  if (heretic) return MN_DrawSound();
+  if (raven) return MN_DrawSound();
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 38, 0, "M_SVOL", CR_DEFAULT, VPT_STRETCH);
@@ -1343,7 +1343,7 @@ menu_t MouseDef =
 
 void M_DrawMouse(void)
 {
-  if (heretic) return MN_DrawMouse();
+  if (raven) return MN_DrawMouse();
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 15, 0, "M_MSENS", CR_DEFAULT, VPT_STRETCH);//e6y
@@ -1812,7 +1812,7 @@ menu_t GeneralDef =                                           // killough 10/98
 
 void M_DrawSetup(void)
 {
-  if (heretic) return MN_DrawSetup();
+  if (raven) return MN_DrawSetup();
 
   // CPhipps - patch drawing updated
   M_DrawTitle(124, 15, "M_SETUP", CR_DEFAULT, "SETUP", g_cr_gold);
@@ -1882,7 +1882,7 @@ static void M_DrawItem(const setup_menu_t* s)
 
     // proff/nicolas 09/20/98 -- changed for hi-res
     // CPhipps - Patch drawing updated, reformatted
-    if (!heretic)
+    if (!raven)
       V_DrawNamePatch(
         x, y, 0,
         ResetButtonName[(flags & (S_HILITE|S_SELECT)) ? whichSkull : 0],
@@ -4248,7 +4248,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
 {
   const int creditlump = W_CheckNumForName("CREDIT");
 
-  if (heretic)
+  if (raven)
   {
     V_DrawRawScreen("CREDIT");
     return;
@@ -5771,7 +5771,7 @@ void M_StartControlPanel (void)
   // e6y
   // We need to remove the fourth episode for pre-ultimate complevels.
   // It is located here instead of M_Init() because of TNTCOMP cheat.
-  if (!heretic && !EpiCustom)
+  if (!raven && !EpiCustom)
   {
     EpiDef.numitems = ep_end;
     if (gamemode != commercial
@@ -5809,7 +5809,7 @@ void M_Drawer (void)
     char* p;
     int y;
 
-    if (heretic) return MN_DrawMessage(messageString);
+    if (raven) return MN_DrawMessage(messageString);
 
     /* cph - strdup string to writable memory */
     ms = strdup(messageString);
@@ -5839,7 +5839,7 @@ void M_Drawer (void)
     if (currentMenu->routine)
       currentMenu->routine();     // call Draw routine
 
-    if (heretic) return MN_Drawer();
+    if (raven) return MN_Drawer();
 
     // DRAW MENU
 
@@ -5918,7 +5918,7 @@ void M_Ticker (void)
     skullAnimCounter = 8;
   }
 
-  if (heretic) return MN_Ticker();
+  if (raven) return MN_Ticker();
 }
 
 /////////////////////////////
@@ -5962,7 +5962,7 @@ void M_DrawThermo(int x,int y,int thermWidth,int thermDot )
   char num[4];
   int horizScaler; //Used to allow more thermo range for mouse sensitivity.
 
-  if (heretic) return MN_DrawSlider(x, y, thermWidth, thermDot);
+  if (raven) return MN_DrawSlider(x, y, thermWidth, thermDot);
 
   /*
    * Modification By Barry Mead to allow the Thermometer to have vastly
@@ -6152,7 +6152,7 @@ void M_InitHelpScreen(void)
 //
 void M_Init(void)
 {
-  if (heretic) MN_Init();
+  if (raven) MN_Init();
 
   M_InitDefaults();                // killough 11/98
   currentMenu = &MainDef;
