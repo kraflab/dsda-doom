@@ -3766,11 +3766,11 @@ void G_BeginRecording (void)
     }
     else
     {
-      *demo_p++ = PlayerClass[0];
+      *demo_p++ = PlayerClass[0] - 1;
       for (i = 1; i < g_maxplayers; i++)
       {
         *demo_p++ = playeringame[i];
-        *demo_p++ = PlayerClass[i];
+        *demo_p++ = PlayerClass[i] - 1;
       }
     }
   }
@@ -4255,7 +4255,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       for (i = 0; i < g_maxplayers; i++)
       {
         playeringame[i] = (*demo_p++) != 0;
-        PlayerClass[i] = *demo_p++;
+        PlayerClass[i] = *demo_p++ + 1;
       }
     }
     else
