@@ -360,6 +360,9 @@ void G_SetSpeed(dboolean reset)
 
   last_player_class = player_class;
 
+  forwardmove[0] = player_class->forwardmove[0];
+  forwardmove[1] = player_class->forwardmove[1];
+
   if(dsda_AlwaysSR50())
   {
     sidemove[0] = player_class->forwardmove[0];
