@@ -1768,10 +1768,10 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   {
     if (randomclass && deathmatch)
     {
-      p->pclass = P_Random(pr_hexen) % 3;
+      p->pclass = 1 + P_Random(pr_hexen) % 3;
       if (p->pclass == PlayerClass[mthing->type - 1])
       {
-        p->pclass = (p->pclass + 1) % 3;
+        p->pclass = 1 + ((p->pclass + 1) % 3);
       }
       PlayerClass[mthing->type - 1] = p->pclass;
       SB_SetClassData();

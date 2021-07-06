@@ -2859,11 +2859,13 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
     dboolean gaveWeapon;
     int gaveMana;
     static const char *fourthWeaponText[] = {
+        0,
         TXT_WEAPON_F4,
         TXT_WEAPON_C4,
         TXT_WEAPON_M4
     };
     static const char *weaponPieceText[] = {
+        0,
         TXT_QUIETUS_PIECE,
         TXT_WRAITHVERGE_PIECE,
         TXT_BLOODSCOURGE_PIECE
