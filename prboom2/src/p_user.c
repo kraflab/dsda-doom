@@ -346,18 +346,6 @@ void P_MovePlayer (player_t* player)
     mo->momz = upmove << 8;
   }
 
-  if (comperr(comperr_allowjump))
-  {
-    if (upmove > 0 && onground && player == &players[consoleplayer] && !(player->mo->flags & MF_FLY))
-    {
-      if (!player->jumpTics)
-      {
-        mo->momz = (7 + default_comperr[comperr_allowjump]) * FRACUNIT;
-        player->jumpTics = 18;
-      }
-    }
-  }
-
   // killough 10/98:
   //
   // We must apply thrust to the player and bobbing separately, to avoid
@@ -390,20 +378,6 @@ void P_MovePlayer (player_t* player)
         {
           P_Bob(player,mo->angle-ANG90,cmd->sidemove*bobfactor);
           P_SideThrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
-        }
-      }
-      else if (comperr(comperr_allowjump))
-      {
-        if (!onground)
-        {
-          if (cmd->forwardmove)
-          {
-            P_Thrust(player, mo->angle, FRACUNIT >> 8);
-          }
-          if (cmd->sidemove)
-          {
-            P_Thrust(player, mo->angle, FRACUNIT >> 8);
-          }
         }
       }
       if (mo->state == states+S_PLAY)
