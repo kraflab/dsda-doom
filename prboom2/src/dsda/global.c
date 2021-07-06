@@ -58,6 +58,7 @@ int num_music;
 weaponinfo_t* weaponinfo;
 
 int g_maxplayers = 4;
+int g_viewheight = 41 * FRACUNIT;
 
 int g_mt_player;
 int g_mt_tfog;
@@ -202,6 +203,7 @@ static void dsda_InitDoom(void) {
   weaponinfo = doom_weaponinfo;
 
   g_maxplayers = 4;
+  g_viewheight = 41 * FRACUNIT;
 
   g_mt_player = MT_PLAYER;
   g_mt_tfog = MT_TFOG;
@@ -345,6 +347,7 @@ static void dsda_InitHeretic(void) {
   weaponinfo = wpnlev1info;
 
   g_maxplayers = 4;
+  g_viewheight = 41 * FRACUNIT;
 
   g_mt_player = HERETIC_MT_PLAYER;
   g_mt_tfog = HERETIC_MT_TFOG;
@@ -506,6 +509,7 @@ static void dsda_InitHexen(void) {
   // weaponinfo = wpnlev1info;
 
   g_maxplayers = 8;
+  g_viewheight = 48 * FRACUNIT;
 
   // g_mt_player = HERETIC_MT_PLAYER;
   g_mt_tfog = HEXEN_MT_TFOG;

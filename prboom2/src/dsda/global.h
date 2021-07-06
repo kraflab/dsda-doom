@@ -21,6 +21,7 @@
 #include "doomtype.h"
 
 extern int g_maxplayers;
+extern int g_viewheight;
 
 extern int g_mt_player;
 extern int g_mt_tfog;

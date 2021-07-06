@@ -7190,7 +7190,7 @@ void A_FreezeDeathChunks(mobj_t * actor)
     }
     if (actor->player)
     {                           // attach the player's view to a chunk of ice
-        mo = P_SpawnMobj(actor->x, actor->y, actor->z + VIEWHEIGHT,
+        mo = P_SpawnMobj(actor->x, actor->y, actor->z + g_viewheight,
                          HEXEN_MT_ICECHUNK);
         P_SetMobjState(mo, HEXEN_S_ICECHUNK_HEAD);
         mo->momz = FixedDiv(mo->z - actor->z, actor->height) << 2;

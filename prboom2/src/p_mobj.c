@@ -766,7 +766,7 @@ static void P_ZMovement (mobj_t* mo)
       mo->z < mo->floorz)
   {
     mo->player->viewheight -= mo->floorz - mo->z;
-    mo->player->deltaviewheight = (VIEWHEIGHT - mo->player->viewheight) >> 3;
+    mo->player->deltaviewheight = (g_viewheight - mo->player->viewheight) >> 3;
   }
 
   // adjust altitude
@@ -1254,7 +1254,7 @@ void P_MobjThinker (mobj_t* mobj)
             if (onmo->z + onmo->height - mobj->z <= 24 * FRACUNIT)
             {
               mobj->player->viewheight -= onmo->z + onmo->height - mobj->z;
-              mobj->player->deltaviewheight = (VIEWHEIGHT - mobj->player->viewheight) >> 3;
+              mobj->player->deltaviewheight = (g_viewheight - mobj->player->viewheight) >> 3;
               mobj->z = onmo->z + onmo->height;
               mobj->flags2 |= MF2_ONMOBJ;
               mobj->momz = 0;
@@ -1281,7 +1281,7 @@ void P_MobjThinker (mobj_t* mobj)
                 if (onmo->player)
                 {
                   onmo->player->viewheight -= onmo->floorz - onmo->z;
-                  onmo->player->deltaviewheight = (VIEWHEIGHT - onmo->player->viewheight) >> 3;
+                  onmo->player->deltaviewheight = (g_viewheight - onmo->player->viewheight) >> 3;
                 }
                 onmo->z = onmo->floorz;
               }
@@ -1843,7 +1843,7 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   p->rain2         = NULL;
   p->extralight    = 0;
   p->fixedcolormap = 0;
-  p->viewheight    = VIEWHEIGHT;
+  p->viewheight    = g_viewheight;
 
   p->momx = p->momy = 0;   // killough 10/98: initialize bobbing to 0.
 
