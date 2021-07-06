@@ -47,7 +47,7 @@
 // M_Random
 // Returns a 0-255 number
 //
-static const unsigned char rndtable[256] = { // 1/19/98 killough -- made const
+static const unsigned char doom_rndtable[256] = { // 1/19/98 killough -- made const
     0,   8, 109, 220, 222, 241, 149, 107,  75, 248, 254, 140,  16,  66 ,
     74,  21, 211,  47,  80, 242, 154,  27, 205, 128, 161,  89,  77,  36 ,
     95, 110,  85,  48, 212, 140, 211, 249,  22,  79, 200,  50,  28, 188 ,
@@ -69,7 +69,6 @@ static const unsigned char rndtable[256] = { // 1/19/98 killough -- made const
     120, 163, 236, 249
 };
 
-// HEXEN_TODO: handle alternate rng table
 static const unsigned char hexen_rndtable[256] = {
     201, 1, 243, 19, 18, 42, 183, 203, 101, 123, 154, 137, 34, 118, 10, 216,
     135, 246, 0, 107, 133, 229, 35, 113, 177, 211, 110, 17, 139, 84, 251, 235,
@@ -88,6 +87,8 @@ static const unsigned char hexen_rndtable[256] = {
     69, 188, 115, 76, 63, 100, 49, 111, 153, 80, 38, 57, 174, 224, 71, 231,
     23, 25, 48, 218, 120, 147, 208, 36, 226, 223, 193, 238, 157, 204, 146, 31
 };
+
+static const unsigned char *rndtable = doom_rndtable;
 
 rng_t rng;     // the random number state
 
@@ -204,4 +205,11 @@ int P_SubRandom (void)
 {
     int r = P_Random(pr_heretic);
     return r - P_Random(pr_heretic);
+}
+
+// hexen
+
+void P_UseHexenRNG(void)
+{
+  rndtable = hexen_rndtable;
 }
