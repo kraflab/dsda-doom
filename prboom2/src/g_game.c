@@ -634,16 +634,16 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
       if (!cmd->arti)
       {
-        if (dsda_InputTickActivated(dsda_input_hexen_arti_icon))
+        if (dsda_InputTickActivated(dsda_input_arti_ring))
         {
           cmd->arti = hexen_arti_invulnerability;
         }
-        else if (dsda_InputTickActivated(dsda_input_hexen_arti_quartz) &&
+        else if (dsda_InputTickActivated(dsda_input_arti_quartz) &&
                  players[consoleplayer].mo->health < MAXHEALTH)
         {
           cmd->arti = hexen_arti_health;
         }
-        else if (dsda_InputTickActivated(dsda_input_hexen_arti_urn))
+        else if (dsda_InputTickActivated(dsda_input_arti_urn))
         {
           cmd->arti = hexen_arti_superhealth;
         }
@@ -655,15 +655,15 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         {
           cmd->arti = hexen_arti_summon;
         }
-        else if (dsda_InputTickActivated(dsda_input_hexen_arti_torch))
+        else if (dsda_InputTickActivated(dsda_input_arti_torch))
         {
           cmd->arti = hexen_arti_torch;
         }
-        else if (dsda_InputTickActivated(dsda_input_hexen_arti_porkalator))
+        else if (dsda_InputTickActivated(dsda_input_arti_morph))
         {
           cmd->arti = hexen_arti_egg;
         }
-        else if (dsda_InputTickActivated(dsda_input_hexen_arti_wings))
+        else if (dsda_InputTickActivated(dsda_input_arti_wings))
         {
           cmd->arti = hexen_arti_fly;
         }
@@ -691,7 +691,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         {
           cmd->arti = hexen_arti_boostarmor;
         }
-        else if (dsda_InputTickActivated(dsda_input_hexen_arti_chaosdevice))
+        else if (dsda_InputTickActivated(dsda_input_arti_chaosdevice))
         {
           cmd->arti = hexen_arti_teleport;
         }

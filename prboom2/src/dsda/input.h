@@ -161,21 +161,14 @@ typedef enum {
   dsda_input_console,
   dsda_input_coordinate_display,
   dsda_input_jump,
-  dsda_input_hexen_arti_icon,
-  dsda_input_hexen_arti_quartz,
-  dsda_input_hexen_arti_urn,
   dsda_input_hexen_arti_incant,
   dsda_input_hexen_arti_summon,
-  dsda_input_hexen_arti_torch,
-  dsda_input_hexen_arti_porkalator,
-  dsda_input_hexen_arti_wings,
   dsda_input_hexen_arti_disk,
   dsda_input_hexen_arti_flechette,
   dsda_input_hexen_arti_banishment,
   dsda_input_hexen_arti_boots,
   dsda_input_hexen_arti_krater,
   dsda_input_hexen_arti_bracers,
-  dsda_input_hexen_arti_chaosdevice,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
