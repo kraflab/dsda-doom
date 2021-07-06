@@ -1918,6 +1918,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   short thingtype = mthing->type;
   int iden_num = 0;
   static unsigned int classFlags[] = {
+    0, // null class
     MTF_FIGHTER,
     MTF_CLERIC,
     MTF_MAGE
