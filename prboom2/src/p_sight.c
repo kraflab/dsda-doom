@@ -121,7 +121,6 @@ dboolean P_SightBlockLinesIterator(int x, int y)
 
   offset = y*bmapwidth+x;
 
-  // HEXEN_TODO: always initialize polyblockmap and drop this condition?
   if (hexen)
   {
     polyblock_t *polyLink;

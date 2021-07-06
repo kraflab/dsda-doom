@@ -375,7 +375,6 @@ dboolean P_BlockLinesIterator(int x, int y, dboolean func(line_t*))
     return true;
   offset = y*bmapwidth+x;
 
-  // HEXEN_TODO: always initialize polyblockmap and drop this condition?
   if (hexen)
   {
     int i;
