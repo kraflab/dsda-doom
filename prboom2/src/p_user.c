@@ -328,7 +328,7 @@ void P_MovePlayer (player_t* player)
   ticcmd_t *cmd;
   mobj_t *mo;
 
-  if (heretic) return Heretic_P_MovePlayer(player);
+  if (raven) return Heretic_P_MovePlayer(player);
 
   cmd = &player->cmd;
   mo = player->mo;
