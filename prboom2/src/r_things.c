@@ -542,7 +542,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
   //     {
   //         colfunc = R_DrawTranslatedTLColumn;
   //         dc_translation = translationtables - 256
-  //             + vis->pclass * ((g_maxplayers - 1) * 256) +
+  //             + (vis->pclass - 1) * ((g_maxplayers - 1) * 256) +
   //             ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT - 8));
   //     }
   //     else if (vis->mobjflags & MF_SHADOW)
@@ -559,7 +559,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
   //     // Draw using translated column function
   //     colfunc = R_DrawTranslatedColumn;
   //     dc_translation = translationtables - 256
-  //         + vis->pclass * ((g_maxplayers - 1) * 256) +
+  //         + (vis->pclass - 1) * ((g_maxplayers - 1) * 256) +
   //         ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT - 8));
   // }
 
@@ -860,9 +860,9 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
       {
         vis->pclass = thing->special1.i;
       }
-      if (vis->pclass > 2)
+      if (vis->pclass > 3)
       {
-        vis->pclass = 0;
+        vis->pclass = 1;
       }
     }
     // foot clipping
