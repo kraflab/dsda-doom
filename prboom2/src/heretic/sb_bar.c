@@ -1109,7 +1109,7 @@ void SB_SetClassData(void)
 {
     int class;
 
-    class = PlayerClass[consoleplayer]; // original player class (not pig)
+    class = PlayerClass[consoleplayer] - 1; // original player class (not pig)
     LumpWEAPONSLOT = W_GetNumForName("wpslot0") + class;
     LumpWEAPONFULL = W_GetNumForName("wpfull0") + class;
     LumpPIECE1 = W_GetNumForName("wpiecef1") + class;
@@ -1378,15 +1378,15 @@ static void DrawWeaponPieces(void)
     V_DrawNumPatch(190, 162, 0, LumpWEAPONSLOT, CR_DEFAULT, VPT_STRETCH);
     if (CPlayer->pieces & WPIECE1)
     {
-        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][0], 162, 0, LumpPIECE1, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer] - 1][0], 162, 0, LumpPIECE1, CR_DEFAULT, VPT_STRETCH);
     }
     if (CPlayer->pieces & WPIECE2)
     {
-        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][1], 162, 0, LumpPIECE2, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer] - 1][1], 162, 0, LumpPIECE2, CR_DEFAULT, VPT_STRETCH);
     }
     if (CPlayer->pieces & WPIECE3)
     {
-        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][2], 162, 0, LumpPIECE3, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer] - 1][2], 162, 0, LumpPIECE3, CR_DEFAULT, VPT_STRETCH);
     }
 }
 

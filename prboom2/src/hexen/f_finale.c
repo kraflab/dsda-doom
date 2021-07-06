@@ -129,10 +129,10 @@ static void TextWrite(void)
         {
             V_DrawNamePatch(20, 0, 0, "chessall", CR_DEFAULT, VPT_STRETCH);
         }
-        else if (PlayerClass[consoleplayer])
+        else if (PlayerClass[consoleplayer] > 1)
         {
             V_DrawNumPatch(60, 0, 0,
-                           W_GetNumForName("chessc") + PlayerClass[consoleplayer] - 1,
+                           W_GetNumForName("chessc") + PlayerClass[consoleplayer] - 2,
                            CR_DEFAULT, VPT_STRETCH);
         }
     }
@@ -247,10 +247,10 @@ static void DrawPic(void)
         {
             V_DrawNamePatch(20, 0, 0, "chessall", CR_DEFAULT, VPT_STRETCH);
         }
-        else if (PlayerClass[consoleplayer])
+        else if (PlayerClass[consoleplayer] > 1)
         {
             V_DrawNumPatch(60, 0, 0,
-                           W_GetNumForName("chessc") + PlayerClass[consoleplayer] - 1,
+                           W_GetNumForName("chessc") + PlayerClass[consoleplayer] - 2,
                            CR_DEFAULT, VPT_STRETCH);
         }
     }
