@@ -2403,7 +2403,7 @@ setup_menu_t keys_settings1[] =  // Key Binding screen strings
   {"AUTORUN"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_autorun},
   {"180 TURN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+12*8,{0},dsda_input_reverse},
   {"USE"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,{0},dsda_input_use},
-  {"JUMP/FLY UP" ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_flyup},
+  {"FLY UP"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_flyup},
   {"FLY DOWN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_flydown},
   {"MOUSE LOOK"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_mlook},
   {"NO VERTICAL MOUSE",S_INPUT,m_scrn,KB_X,KB_Y+17*8,{0},dsda_input_novert},
