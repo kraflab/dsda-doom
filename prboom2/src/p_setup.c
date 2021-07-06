@@ -3047,20 +3047,21 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   P_MapEnd();
 
-  // HEXEN_TODO: colormaps
   if (hexen)
   {
+    extern dboolean LevelUseFullBright;
+
     // Load colormap and set the fullbright flag
-    // i = P_GetMapFadeTable(gamemap);
-    // W_ReadLump(i, colormaps);
-    // if (i == W_GetNumForName("COLORMAP"))
-    // {
-    //   LevelUseFullBright = true;
-    // }
-    // else
-    // {                           // Probably fog ... don't use fullbright sprites
-    //   LevelUseFullBright = false;
-    // }
+    i = P_GetMapFadeTable(gamemap);
+    colormaps[0] = (const lighttable_t *) W_CacheLumpNum(i);
+    if (i == W_GetNumForName("COLORMAP"))
+    {
+      LevelUseFullBright = true;
+    }
+    else
+    {                           // Probably fog ... don't use fullbright sprites
+      LevelUseFullBright = false;
+    }
   }
 
   // preload graphics

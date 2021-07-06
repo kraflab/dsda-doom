@@ -379,9 +379,18 @@ static void R_InitSpriteLumps(void)
 static void R_InitColormaps(void)
 {
   int i;
-  firstcolormaplump = W_GetNumForName("C_START");
-  lastcolormaplump  = W_GetNumForName("C_END");
-  numcolormaps = lastcolormaplump - firstcolormaplump;
+  if (hexen)
+  {
+    firstcolormaplump = -1;
+    lastcolormaplump = -1;
+    numcolormaps = 1;
+  }
+  else
+  {
+    firstcolormaplump = W_GetNumForName("C_START");
+    lastcolormaplump  = W_GetNumForName("C_END");
+    numcolormaps = lastcolormaplump - firstcolormaplump;
+  }
   colormaps = Z_Malloc(sizeof(*colormaps) * numcolormaps, PU_STATIC, 0);
   colormaps[0] = (const lighttable_t *)W_CacheLumpName("COLORMAP");
   for (i=1; i<numcolormaps; i++)
