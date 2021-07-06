@@ -2348,8 +2348,9 @@ setup_menu_t keys_settings5[];
 setup_menu_t keys_settings6[];
 setup_menu_t keys_settings7[];
 setup_menu_t keys_settings8[];
-setup_menu_t heretic_keys_settings1[];
-setup_menu_t heretic_keys_settings2[];
+setup_menu_t raven_keys_settings[];
+setup_menu_t heretic_keys_settings[];
+setup_menu_t hexen_keys_settings[];
 setup_menu_t dsda_keys_settings[];
 
 // The table which gets you from one screen table to the next.
@@ -2364,8 +2365,9 @@ setup_menu_t* keys_settings[] =
   keys_settings6,
   keys_settings7,
   keys_settings8,
-  heretic_keys_settings1,
-  heretic_keys_settings2,
+  raven_keys_settings,
+  heretic_keys_settings,
+  hexen_keys_settings,
   dsda_keys_settings,
   NULL
 };
@@ -2601,29 +2603,30 @@ setup_menu_t keys_settings8[] =
   { "Chicken", S_INPUT, m_scrn, KB_X, KB_Y + 18 * 8, { 0 }, dsda_input_chicken },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
-  { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { heretic_keys_settings1 } },
+  { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { raven_keys_settings } },
 
   // Final entry
   { 0, S_SKIP | S_END, m_null }
 };
 
-setup_menu_t heretic_keys_settings1[] = {
-  { "HERETIC MOVEMENT", S_SKIP | S_TITLE, m_null, KB_X, KB_Y },
+setup_menu_t raven_keys_settings[] = {
+  { "RAVEN MOVEMENT", S_SKIP | S_TITLE, m_null, KB_X, KB_Y },
   { "LOOK UP", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_lookup },
   { "LOOK DOWN", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_lookdown },
   { "LOOK CENTER", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_lookcenter },
   { "FLY UP", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_flyup },
   { "FLY DOWN", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_flydown },
   { "FLY CENTER", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_flycenter },
+  { "JUMP", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_jump },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings8 } },
-  { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { heretic_keys_settings2 } },
+  { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { heretic_keys_settings } },
 
   // Final entry
   { 0, S_SKIP | S_END, m_null }
 };
 
-setup_menu_t heretic_keys_settings2[] = {
+setup_menu_t heretic_keys_settings[] = {
   { "HERETIC INVENTORY", S_SKIP | S_TITLE, m_null, KB_X, KB_Y },
   { "USE ARTIFACT", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_use_artifact },
   { "USE TOME OF POWER", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_arti_tome },
@@ -2635,11 +2638,39 @@ setup_menu_t heretic_keys_settings2[] = {
   { "USE SHADOWSPHERE", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_arti_shadowsphere },
   { "USE WINGS OF WRATH", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_arti_wings },
   { "USE TORCH", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_arti_torch },
-  { "USER MORPH OVUM", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_arti_morph },
+  { "USE MORPH OVUM", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_arti_morph },
   { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, { 0 }, dsda_input_invleft },
   { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, { 0 }, dsda_input_invright },
 
-  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings1 } },
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { raven_keys_settings } },
+  { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { hexen_keys_settings } },
+
+  // Final entry
+  { 0, S_SKIP | S_END, m_null }
+};
+
+setup_menu_t hexen_keys_settings[] = {
+  { "HEXEN INVENTORY", S_SKIP | S_TITLE, m_null, KB_X, KB_Y },
+  { "USE ARTIFACT", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_use_artifact },
+  { "USE ICON OF THE DEFENDER", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_hexen_arti_icon },
+  { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_hexen_arti_quartz },
+  { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_hexen_arti_urn },
+  { "USE MYSTIC AMBIT INCANT", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_hexen_arti_incant },
+  { "USE DARK SERVANT", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_hexen_arti_summon },
+  { "USE TORCH", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_hexen_arti_torch },
+  { "USE PORKALATOR", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_hexen_arti_porkalator },
+  { "USE WINGS OF WRATH", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_hexen_arti_wings },
+  { "USE DISC OF REPULSION", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_hexen_arti_disk },
+  { "USE FLECHETTE", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_hexen_arti_flechette },
+  { "USE BANISHMENT DEVICE", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, { 0 }, dsda_input_hexen_arti_banishment },
+  { "USE BOOTS OF SPEED", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, { 0 }, dsda_input_hexen_arti_boots },
+  { "USE KRATER OF MIGHT", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_hexen_arti_krater },
+  { "USE DRAGONSKIN BRACERS", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, { 0 }, dsda_input_hexen_arti_bracers },
+  { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_hexen_arti_chaosdevice },
+  { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_invleft },
+  { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, KB_Y + 18 * 8, { 0 }, dsda_input_invright },
+
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings } },
   { "NEXT ->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { dsda_keys_settings } },
 
   // Final entry
@@ -2658,7 +2689,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Open Console", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_console },
   { "Toggle Coord. Display", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_coordinate_display },
 
-  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { heretic_keys_settings2 } },
+  { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
   { 0, S_SKIP | S_END, m_null }
 };
 
