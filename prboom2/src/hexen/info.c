@@ -11477,7 +11477,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      },
 
     {                           // HEXEN_MT_MINOTAUR
-     9,                         // doomednum
+     -1,                        // doomednum
      HEXEN_S_MNTR_SPAWN1,             // spawnstate
      2500,                      // spawnhealth
      HEXEN_S_MNTR_WALK1,              // seestate
