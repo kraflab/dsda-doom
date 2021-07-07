@@ -230,5 +230,5 @@ dboolean dsda_SkipWipe(void) {
     return true;
   }
 
-  return !render_wipescreen;
+  return !render_wipescreen || hexen;
 }
