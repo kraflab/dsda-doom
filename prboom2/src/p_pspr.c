@@ -1247,7 +1247,7 @@ void A_WeaponProjectile(player_t *player, pspdef_t *psp)
   // set tracer to the player's autoaim target,
   // so player seeker missiles prioritizing the
   // baddie the player is actually aiming at. ;)
-  mo->tracer = linetarget;
+  P_SetTarget(&mo->tracer, linetarget);
 }
 
 //
