@@ -294,6 +294,7 @@ static dboolean InventoryMoveRight(void);
 #include "heretic/sb_bar.h"
 #include "hexen/p_acs.h"
 #include "hexen/sn_sonix.h"
+#include "hexen/sv_save.h"
 
 // Position indicator for cooperative net-play reborn
 int RebornPosition;
@@ -4752,8 +4753,7 @@ void G_TeleportNewMap(int map, int position)
 
 void G_DoTeleportNewMap(void)
 {
-    // HEXEN_TODO: SV
-    // SV_MapTeleport(LeaveMap, LeavePosition);
+    SV_MapTeleport(LeaveMap, LeavePosition);
     gamestate = GS_LEVEL;
     gameaction = ga_nothing;
     RebornPosition = LeavePosition;

@@ -126,6 +126,8 @@ set(COMMON_SRC
     hexen/sn_sonix.c
     hexen/sn_sonix.h
     hexen/sounds.c
+    hexen/sv_save.c
+    hexen/sv_save.h
     hu_lib.c
     hu_lib.h
     hu_stuff.c
