@@ -47,6 +47,7 @@
 #include "lprintf.h"
 #include "m_argv.h"
 #include "g_game.h"
+#include "p_tick.h"
 #include "g_overflow.h"
 #include "hu_tracers.h"
 #include "e6y.h"//e6y
@@ -677,8 +678,8 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
         if (thing->flags2 & MF2_REFLECTIVE
             && (thing->player || thing->flags2 & MF2_BOSS))
         {
-          tmthing->special1.m = tmthing->target;
-          tmthing->target = thing;
+          P_SetTarget(&tmthing->special1.m, tmthing->target);
+          P_SetTarget(&tmthing->target, thing);
           return true;
         }
         if (thing->flags & MF_COUNTKILL || thing->player)

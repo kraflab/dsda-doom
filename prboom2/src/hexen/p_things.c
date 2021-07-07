@@ -21,6 +21,7 @@
 #include "sounds.h"
 #include "p_map.h"
 #include "p_inter.h"
+#include "p_tick.h"
 
 #include "hexen/a_action.h"
 
@@ -173,7 +174,7 @@ dboolean EV_ThingProjectile(byte * args, dboolean gravity)
         {
             S_StartSound(newMobj, newMobj->info->seesound);
         }
-        newMobj->target = mobj; // Originator
+        P_SetTarget(&newMobj->target, mobj); // Originator
         newMobj->angle = angle;
         newMobj->momx = FixedMul(speed, finecosine[fineAngle]);
         newMobj->momy = FixedMul(speed, finesine[fineAngle]);

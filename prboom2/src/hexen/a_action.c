@@ -24,6 +24,7 @@
 #include "p_maputl.h"
 #include "p_inter.h"
 #include "p_enemy.h"
+#include "p_tick.h"
 
 #include "hexen/p_things.h"
 
@@ -267,7 +268,7 @@ void A_LeafSpawn(mobj_t * actor)
         if (mo)
         {
             P_ThrustMobj(mo, actor->angle, (P_Random(pr_hexen) << 9) + 3 * FRACUNIT);
-            mo->target = actor;
+            P_SetTarget(&mo->target, actor);
             mo->special1.i = 0;
         }
     }
@@ -333,15 +334,15 @@ void A_BridgeInit(mobj_t * actor)
     // Spawn triad into world
     ball1 = P_SpawnMobj(cx, cy, cz, HEXEN_MT_BRIDGEBALL);
     ball1->args[0] = startangle;
-    ball1->target = actor;
+    P_SetTarget(&ball1->target, actor);
 
     ball2 = P_SpawnMobj(cx, cy, cz, HEXEN_MT_BRIDGEBALL);
     ball2->args[0] = (startangle + 85) & 255;
-    ball2->target = actor;
+    P_SetTarget(&ball2->target, actor);
 
     ball3 = P_SpawnMobj(cx, cy, cz, HEXEN_MT_BRIDGEBALL);
     ball3->args[0] = (startangle + 170) & 255;
-    ball3->target = actor;
+    P_SetTarget(&ball3->target, actor);
 
     A_BridgeOrbit(ball1);
     A_BridgeOrbit(ball2);
@@ -456,7 +457,7 @@ void A_FogSpawn(mobj_t * actor)
             delta = 1;
         mo->angle =
             actor->angle + (((P_Random(pr_hexen) % delta) - (delta >> 1)) << 24);
-        mo->target = actor;
+        P_SetTarget(&mo->target, actor);
         if (actor->args[0] < 1)
             actor->args[0] = 1;
         mo->args[0] = (P_Random(pr_hexen) % (actor->args[0])) + 1;      // Random speed
@@ -506,7 +507,7 @@ void A_PoisonBagInit(mobj_t * actor)
     mo->momx = 1;               // missile objects must move to impact other objects
     mo->special1.i = 24 + (P_Random(pr_hexen) & 7);
     mo->special2.i = 0;
-    mo->target = actor->target;
+    P_SetTarget(&mo->target, actor->target);
     mo->radius = 20 * FRACUNIT;
     mo->height = 30 * FRACUNIT;
     mo->flags &= ~MF_NOCLIP;
@@ -662,7 +663,7 @@ void A_TeloSpawnA(mobj_t * actor)
     {
         mo->special1.i = TELEPORT_LIFE;   // Lifetime countdown
         mo->angle = actor->angle;
-        mo->target = actor->target;
+        P_SetTarget(&mo->target, actor->target);
         mo->momx = actor->momx >> 1;
         mo->momy = actor->momy >> 1;
         mo->momz = actor->momz >> 1;
@@ -678,7 +679,7 @@ void A_TeloSpawnB(mobj_t * actor)
     {
         mo->special1.i = TELEPORT_LIFE;   // Lifetime countdown
         mo->angle = actor->angle;
-        mo->target = actor->target;
+        P_SetTarget(&mo->target, actor->target);
         mo->momx = actor->momx >> 1;
         mo->momy = actor->momy >> 1;
         mo->momz = actor->momz >> 1;
@@ -694,7 +695,7 @@ void A_TeloSpawnC(mobj_t * actor)
     {
         mo->special1.i = TELEPORT_LIFE;   // Lifetime countdown
         mo->angle = actor->angle;
-        mo->target = actor->target;
+        P_SetTarget(&mo->target, actor->target);
         mo->momx = actor->momx >> 1;
         mo->momy = actor->momy >> 1;
         mo->momz = actor->momz >> 1;
@@ -710,7 +711,7 @@ void A_TeloSpawnD(mobj_t * actor)
     {
         mo->special1.i = TELEPORT_LIFE;   // Lifetime countdown
         mo->angle = actor->angle;
-        mo->target = actor->target;
+        P_SetTarget(&mo->target, actor->target);
         mo->momx = actor->momx >> 1;
         mo->momy = actor->momy >> 1;
         mo->momz = actor->momz >> 1;
@@ -904,7 +905,7 @@ void A_BatSpawn(mobj_t * actor)
         mo->args[0] = P_Random(pr_hexen) & 63;  // floatbob index
         mo->args[4] = actor->args[4];   // turn degrees
         mo->special2.i = actor->args[3] << 3;     // Set lifetime
-        mo->target = actor;
+        P_SetTarget(&mo->target, actor);
     }
 }
 

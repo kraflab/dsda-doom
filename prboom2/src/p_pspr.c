@@ -2925,7 +2925,7 @@ void A_LightningZap(mobj_t * actor)
         mo->special2.m = actor;
         mo->momx = actor->momx;
         mo->momy = actor->momy;
-        mo->target = actor->target;
+        P_SetTarget(&mo->target, actor->target);
         if (actor->type == HEXEN_MT_LIGHTNING_FLOOR)
         {
             mo->momz = 20 * FRACUNIT;
@@ -3020,7 +3020,7 @@ void MStaffSpawn(mobj_t * pmo, angle_t angle)
     mo = P_SPMAngle(pmo, HEXEN_MT_MSTAFF_FX2, angle);
     if (mo)
     {
-        mo->target = pmo;
+        P_SetTarget(&mo->target, pmo);
         mo->special1.m = P_RoughTargetSearch(mo, 0, 10);
     }
 }
@@ -3110,7 +3110,7 @@ void MStaffSpawn2(mobj_t * actor, angle_t angle)
     mo = P_SpawnMissileAngle(actor, HEXEN_MT_MSTAFF_FX2, angle, 0);
     if (mo)
     {
-        mo->target = actor;
+        P_SetTarget(&mo->target, actor);
         mo->special1.m = P_RoughTargetSearch(mo, 0, 10);
     }
 }
@@ -3465,7 +3465,7 @@ void A_CFlameMissile(mobj_t * actor)
             if (mo)
             {
                 mo->angle = an << ANGLETOFINESHIFT;
-                mo->target = actor->target;
+                P_SetTarget(&mo->target, actor->target);
                 mo->momx = mo->special1.i =
                     FixedMul(FLAMESPEED, finecosine[an]);
                 mo->momy = mo->special2.i = FixedMul(FLAMESPEED, finesine[an]);
@@ -3477,7 +3477,7 @@ void A_CFlameMissile(mobj_t * actor)
             if (mo)
             {
                 mo->angle = ANG180 + (an << ANGLETOFINESHIFT);
-                mo->target = actor->target;
+                P_SetTarget(&mo->target, actor->target);
                 mo->momx = mo->special1.i = FixedMul(-FLAMESPEED,
                                                      finecosine[an]);
                 mo->momy = mo->special2.i = FixedMul(-FLAMESPEED, finesine[an]);
@@ -3541,7 +3541,7 @@ void A_CHolyAttack2(mobj_t * actor)
         mo->z = actor->z;
         mo->angle = actor->angle + (ANG45 + ANG45 / 2) - ANG45 * j;
         P_ThrustMobj(mo, mo->angle, mo->info->speed);
-        mo->target = actor->target;
+        P_SetTarget(&mo->target, actor->target);
         mo->args[0] = 10;       // initial turn value
         mo->args[1] = 0;        // initial look angle
         if (deathmatch)
@@ -3876,7 +3876,7 @@ void A_FireConePL1(player_t * player, pspdef_t * psp)
             mo->special1.i = SHARDSPAWN_LEFT | SHARDSPAWN_DOWN | SHARDSPAWN_UP
                 | SHARDSPAWN_RIGHT;
             mo->special2.i = 3;   // Set sperm count (levels of reproductivity)
-            mo->target = pmo;
+            P_SetTarget(&mo->target, pmo);
             mo->args[0] = 3;    // Mark Initial shard as super damage
         }
     }
@@ -3904,7 +3904,7 @@ void A_ShedShard(mobj_t * actor)
             mo->special1.i = SHARDSPAWN_LEFT;
             mo->special2.i = spermcount;
             mo->momz = actor->momz;
-            mo->target = actor->target;
+            P_SetTarget(&mo->target, actor->target);
             mo->args[0] = (spermcount == 3) ? 2 : 0;
         }
     }
@@ -3918,7 +3918,7 @@ void A_ShedShard(mobj_t * actor)
             mo->special1.i = SHARDSPAWN_RIGHT;
             mo->special2.i = spermcount;
             mo->momz = actor->momz;
-            mo->target = actor->target;
+            P_SetTarget(&mo->target, actor->target);
             mo->args[0] = (spermcount == 3) ? 2 : 0;
         }
     }
@@ -3936,7 +3936,7 @@ void A_ShedShard(mobj_t * actor)
             else
                 mo->special1.i = SHARDSPAWN_UP;
             mo->special2.i = spermcount;
-            mo->target = actor->target;
+            P_SetTarget(&mo->target, actor->target);
             mo->args[0] = (spermcount == 3) ? 2 : 0;
         }
     }
@@ -3954,7 +3954,7 @@ void A_ShedShard(mobj_t * actor)
             else
                 mo->special1.i = SHARDSPAWN_DOWN;
             mo->special2.i = spermcount;
-            mo->target = actor->target;
+            P_SetTarget(&mo->target, actor->target);
             mo->args[0] = (spermcount == 3) ? 2 : 0;
         }
     }

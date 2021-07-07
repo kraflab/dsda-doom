@@ -45,6 +45,7 @@
 #include "r_demo.h"
 #include "r_fps.h"
 #include "g_game.h"
+#include "p_tick.h"
 #include "e6y.h"//e6y
 
 #include "dsda/settings.h"
@@ -673,7 +674,7 @@ void P_PlayerThink (player_t* player)
           {               // Set color translation bits for player sprites
             speedMo->flags |= playerNum << MF_TRANSSHIFT;
           }
-          speedMo->target = pmo;
+          P_SetTarget(&speedMo->target, pmo);
           speedMo->special1.i = player->pclass;
           if (speedMo->special1.i > 2)
           {
@@ -1611,8 +1612,8 @@ void P_BlastMobj(mobj_t * source, mobj_t * victim, fixed_t strength)
                     return;
                     break;
                 case HEXEN_MT_MSTAFF_FX2:    // Reflect to originator
-                    victim->special1.m = victim->target;
-                    victim->target = source;
+                    P_SetTarget(&victim->special1.m, victim->target);
+                    P_SetTarget(&victim->target, source);
                     break;
                 default:
                     break;
@@ -1622,8 +1623,8 @@ void P_BlastMobj(mobj_t * source, mobj_t * victim, fixed_t strength)
         {
             if (victim->special1.m == source)
             {
-                victim->special1.m = victim->target;
-                victim->target = source;
+                P_SetTarget(&victim->special1.m, victim->target);
+                P_SetTarget(&victim->target, source);
             }
         }
         victim->momx = FixedMul(BLAST_SPEED, finecosine[angle]);
@@ -1853,7 +1854,7 @@ void P_ArtiTeleportOther(player_t * player)
     mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_TELOTHER_FX1);
     if (mo)
     {
-        mo->target = player->mo;
+        P_SetTarget(&mo->target, player->mo);
     }
 }
 
@@ -2051,8 +2052,8 @@ static dboolean Hexen_P_UseArtifact(player_t * player, artitype_t arti)
             mo = P_SpawnPlayerMissile(player->mo, HEXEN_MT_SUMMON_FX);
             if (mo)
             {
-                mo->target = player->mo;
-                mo->special1.m = (player->mo);
+                P_SetTarget(&mo->target, player->mo);
+                P_SetTarget(&mo->special1.m, player->mo);
                 mo->momz = 5 * FRACUNIT;
             }
             break;
@@ -2072,7 +2073,7 @@ static dboolean Hexen_P_UseArtifact(player_t * player, artitype_t arti)
                                  8 * FRACUNIT, HEXEN_MT_POISONBAG);
                 if (mo)
                 {
-                    mo->target = player->mo;
+                    P_SetTarget(&mo->target, player->mo);
                 }
             }
             else if (player->pclass == PCLASS_MAGE)
@@ -2083,7 +2084,7 @@ static dboolean Hexen_P_UseArtifact(player_t * player, artitype_t arti)
                                  8 * FRACUNIT, HEXEN_MT_FIREBOMB);
                 if (mo)
                 {
-                    mo->target = player->mo;
+                    P_SetTarget(&mo->target, player->mo);
                 }
             }
             else                // PCLASS_FIGHTER, obviously (also pig, not so obviously)
@@ -2101,7 +2102,7 @@ static dboolean Hexen_P_UseArtifact(player_t * player, artitype_t arti)
                     P_ThrustMobj(mo, mo->angle, mo->info->speed);
                     mo->momx += player->mo->momx >> 1;
                     mo->momy += player->mo->momy >> 1;
-                    mo->target = player->mo;
+                    P_SetTarget(&mo->target, player->mo);
                     mo->tics -= P_Random(pr_hexen) & 3;
                     P_CheckMissileSpawn(mo);
                 }

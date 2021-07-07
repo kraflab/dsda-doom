@@ -3507,7 +3507,7 @@ static dboolean P_MorphMonster(mobj_t * actor)
     monster->special2.i = moType;
     monster->special1.i = MORPHTICS + P_Random(pr_hexen);
     monster->flags |= (oldMonster.flags & MF_SHADOW);
-    monster->target = oldMonster.target;
+    P_SetTarget(&monster->target, oldMonster.target);
     monster->angle = oldMonster.angle;
     monster->tid = oldMonster.tid;
     monster->special = oldMonster.special;

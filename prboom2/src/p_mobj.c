@@ -448,9 +448,9 @@ static void P_XYMovement (mobj_t* mo)
           mo->momy = FixedMul(mo->info->speed >> 1, finesine[angle]);
           if (mo->flags2 & MF2_SEEKERMISSILE)
           {
-            mo->special1.m = mo->target;
+            P_SetTarget(&mo->special1.m, mo->target);
           }
-          mo->target = BlockingMobj;
+          P_SetTarget(&mo->target, BlockingMobj);
           return;
         }
 
@@ -3187,7 +3187,7 @@ mobj_t *P_SpawnMissileAngleSpeed(mobj_t * source, mobjtype_t type,
     z = source->z;
     z -= source->floorclip;
     mo = P_SpawnMobj(source->x, source->y, z, type);
-    mo->target = source;        // Originator
+    P_SetTarget(&mo->target, source); // Originator
     mo->angle = angle;
     angle >>= ANGLETOFINESHIFT;
     mo->momx = FixedMul(speed, finecosine[angle]);
@@ -3226,7 +3226,7 @@ mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
     z += 4 * 8 * FRACUNIT + ((source->player->lookdir) << FRACBITS) / 173;
     z -= source->floorclip;
     th = P_SpawnMobj(x, y, z, type);
-    th->target = source;
+    P_SetTarget(&th->target, source);
     th->angle = an;
     th->momx = FixedMul(th->info->speed, finecosine[an >> ANGLETOFINESHIFT]);
     th->momy = FixedMul(th->info->speed, finesine[an >> ANGLETOFINESHIFT]);
@@ -3367,7 +3367,7 @@ void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator)
     r2 = P_Random(pr_hexen);
     mo = P_SpawnMobj(x + ((r2 - 128) << 11),
                      y + ((r1 - 128) << 11), z, HEXEN_MT_AXEBLOOD);
-    mo->target = originator;
+    P_SetTarget(&mo->target, originator);
 }
 
 #define SMALLSPLASHCLIP 12<<FRACBITS;
@@ -3411,7 +3411,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
             else
             {
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASH);
-                mo->target = thing;
+                P_SetTarget(&mo->target, thing);
                 mo->momx = P_SubRandom() << 8;
                 mo->momy = P_SubRandom() << 8;
                 mo->momz = 2 * FRACUNIT + (P_Random(pr_hexen) << 8);
@@ -3454,7 +3454,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
             {
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ,
                                  HEXEN_MT_SLUDGECHUNK);
-                mo->target = thing;
+                P_SetTarget(&mo->target, thing);
                 mo->momx = P_SubRandom() << 8;
                 mo->momy = P_SubRandom() << 8;
                 mo->momz = FRACUNIT + (P_Random(pr_hexen) << 8);
@@ -3482,7 +3482,7 @@ mobj_t *P_SpawnMissileXYZ(fixed_t x, fixed_t y, fixed_t z,
     {
         S_StartSound(th, th->info->seesound);
     }
-    th->target = source;        // Originator
+    P_SetTarget(&th->target, source); // Originator
     an = R_PointToAngle2(source->x, source->y, dest->x, dest->y);
     if (dest->flags & MF_SHADOW)
     {                           // Invisible target
@@ -3515,7 +3515,7 @@ mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
     {
         S_StartSound(th, th->info->seesound);
     }
-    th->target = source;        // Originator
+    P_SetTarget(&th->target, source); // Originator
     an = R_PointToAngle2(x, y, dest->x, dest->y);
     if (dest->flags & MF_SHADOW)
     {                           // Invisible target
