@@ -604,7 +604,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
 
   if (vis->floorclip && !(vis->mobjflags & MF_PLAYERSPRITE))
   {
-    fixed_t sprbotscreen = FixedMul(LittleShort(patch->height) << FRACBITS, spryscale);
+    fixed_t sprbotscreen = sprtopscreen + FixedMul(LittleShort(patch->height) << FRACBITS, spryscale);
     dcvars.baseclip = (sprbotscreen - FixedMul(vis->floorclip, spryscale)) >> FRACBITS;
   }
 
