@@ -100,6 +100,7 @@
 #include "dsda/settings.h"
 
 #include "heretic/mn_menu.h"
+#include "heretic/sb_bar.h"
 
 #include "hexen/sn_sonix.h"
 
@@ -231,9 +232,8 @@ static void D_Wipe(void)
   //e6y
   if (!render_wipescreen || dsda_SkipWipe())
   {
-    extern int SB_state;
     // If there's no screen wipe, we still need to refresh the status bar
-    SB_state = -1;
+    SB_Start();
     return;
   }
 

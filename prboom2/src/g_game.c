@@ -1563,7 +1563,7 @@ static void G_PlayerFinishLevel(int player)
   playerkeys = 0;
   if (p == &players[consoleplayer])
   {
-    SB_state = -1;          // refresh the status bar
+    SB_Start();          // refresh the status bar
   }
 
   memset(p->powers, 0, sizeof p->powers);
@@ -1667,7 +1667,7 @@ void G_PlayerReborn (int player)
   localQuakeHappening[player] = false;
   if (p == &players[consoleplayer])
   {
-    SB_state = -1;          // refresh the status bar
+    SB_Start();             // refresh the status bar
     inv_ptr = 0;            // reset the inventory pointer
     curpos = 0;
     viewangleoffset = 0;
@@ -4817,7 +4817,7 @@ void G_PlayerExitMap(int playerNumber)
     player->poisoncount = 0;
     if (player == &players[consoleplayer])
     {
-        SB_state = -1;          // refresh the status bar
+        SB_Start();          // refresh the status bar
         viewangleoffset = 0;
     }
 }

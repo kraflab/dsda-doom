@@ -360,7 +360,7 @@ static void cheat_k()
       }
 
   // heretic - reset status bar
-  SB_state = -1;
+  SB_Start();
 }
 
 static void cheat_kfa()

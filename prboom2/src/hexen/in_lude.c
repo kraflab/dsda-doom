@@ -29,6 +29,8 @@
 #include "dsda/intermission_display.h"
 
 #include "heretic/mn_menu.h"
+#include "heretic/sb_bar.h"
+
 #include "hexen/sn_sonix.h"
 
 #include "in_lude.h"
@@ -69,7 +71,6 @@ static signed int totalFrags[MAX_MAXPLAYERS];
 static int HubCount;
 static char *HubText;
 
-extern int SB_state;
 extern dboolean BorderNeedRefresh;
 
 extern void AM_Stop(void);
@@ -100,7 +101,7 @@ static void WaitStop(void)
 static void Stop(void)
 {
     intermission = false;
-    SB_state = -1;
+    SB_Start();
     BorderNeedRefresh = true;
 }
 

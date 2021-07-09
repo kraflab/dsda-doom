@@ -37,6 +37,7 @@
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
 #include "heretic/mn_menu.h"
+#include "heretic/sb_bar.h"
 
 #include "in_lude.h"
 
@@ -260,7 +261,7 @@ void IN_WaitStop(void)
 void IN_Stop(void)
 {
     intermission = false;
-    SB_state = -1;
+    SB_Start();
     BorderNeedRefresh = true;
 }
 
