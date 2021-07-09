@@ -1887,6 +1887,13 @@ static void D_DoomMainSetup(void)
   //e6y: some stuff from command-line should be initialised before ProcessDehFile()
   e6y_InitCommandLine();
 
+  // Automatic pistol start when advancing from one level to the next. At the
+  // beginning of each level, the player's health is reset to 100, their
+  // armor to 0 and their inventory is reduced to the following: pistol,
+  // fists and 50 bullets.
+
+  pistolstart = M_CheckParm("-pistolstart");
+
   // CPhipps - autoloading of wads
   // Designed to be general, instead of specific to boomlump.wad
   // Some people might find this useful
