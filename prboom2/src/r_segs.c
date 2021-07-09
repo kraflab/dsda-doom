@@ -841,6 +841,9 @@ void R_StoreWallRange(const int start, const int stop)
 
         // killough 4/17/98: draw floors if different light levels
         || backsector->floorlightsec != frontsector->floorlightsec
+
+        // hexen flowing water
+        || backsector->special != frontsector->special
         ;
 
       markceiling = worldhigh != worldtop

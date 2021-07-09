@@ -155,7 +155,7 @@ static void R_RecalcLineFlags(line_t *linedef)
       sizeof(frontsector->ceiling_xoffs) + sizeof(frontsector->ceiling_yoffs) +
       sizeof(frontsector->ceilingpic) + sizeof(frontsector->floorpic) +
       sizeof(frontsector->lightlevel) + sizeof(frontsector->floorlightsec) +
-      sizeof(frontsector->ceilinglightsec))) {
+      sizeof(frontsector->ceilinglightsec) + sizeof(frontsector->special))) {
       linedef->r_flags = 0; return;
     } else
       linedef->r_flags = RF_IGNORE;
