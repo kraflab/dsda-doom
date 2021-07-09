@@ -1662,6 +1662,12 @@ void V_ChangeScreenResolution(void)
 #endif
 }
 
+void V_FillRectStretch(int scrn, int x, int y, int width, int height, byte color)
+{
+  V_GetWideRect(&x, &y, &width, &height, VPT_STRETCH);
+  V_FillRect(scrn, x, y, width, height, color);
+}
+
 // heretic
 
 #define HERETIC_RAW_SCREEN_SIZE 64000
