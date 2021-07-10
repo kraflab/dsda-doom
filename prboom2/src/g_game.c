@@ -4839,9 +4839,8 @@ static void Hexen_G_DoCompleted(void)
     if (automapmode & am_active)
       AM_Stop();
 
-    // HEXEN_TODO: level stat tracking doesn't really have meaning
-    // e6y_G_DoCompleted();
-    // dsda_WatchLevelCompletion();
+    e6y_G_DoCompleted();
+    dsda_WatchLevelCompletion();
 
     if (LeaveMap == -1 && LeavePosition == -1)
     {
