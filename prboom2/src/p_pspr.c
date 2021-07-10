@@ -2660,6 +2660,7 @@ void AdjustPlayerAngle(mobj_t * pmo)
     {
         pmo->angle = angle;
     }
+    R_SmoothPlaying_Reset(pmo->player);
 }
 
 mobj_t *PuffSpawned;
