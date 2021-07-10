@@ -107,7 +107,7 @@ void dsda_DisplayNotifications(void) {
 
 void dsda_DisplayNotification(const char* msg) {
   S_StartSound(0, sfx_radio);
-  doom_printf(msg);
+  doom_printf("%s", msg);
 }
 
 void dsda_WatchCard(card_t card) {
