@@ -12557,7 +12557,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      },
 
     {                           // HEXEN_MT_SOUNDWATERFALL
-     41,                        // doomednum
+     -1,                        // doomednum
      HEXEN_S_SND_WATERFALL,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
