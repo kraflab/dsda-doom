@@ -881,8 +881,7 @@ floater:
     )
       mo->momz = -mo->momz; // the skull slammed into something
 
-    // HEXEN_TODO: this is here instead of below - does it matter?
-    // mo->z = mo->floorz;
+    if (hexen) mo->z = mo->floorz;
     if (mo->momz < 0)
     {
       /* killough 11/98: touchy objects explode on impact */
@@ -971,7 +970,7 @@ floater:
       }
       mo->momz = 0;
     }
-    mo->z = mo->floorz;
+    if (!hexen) mo->z = mo->floorz;
 
     /* cph 2001/04/15 -
      * This is the buggy lost-soul bouncing code referenced above.
