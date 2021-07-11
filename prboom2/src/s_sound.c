@@ -1265,6 +1265,10 @@ dboolean S_GetSoundPlayingInfo(void * origin, int sound_id)
     int i;
     sfxinfo_t *sfx;
 
+    //jff 1/22/98 return if sound is not enabled
+    if (!snd_card || nosfxparm)
+        return false;
+
     sfx = &S_sfx[sound_id];
 
     for (i = 0; i < numChannels; i++)
