@@ -6493,7 +6493,7 @@ void A_DragonFX2(mobj_t * actor)
 void A_DragonPain(mobj_t * actor)
 {
     A_Pain(actor);
-    if (!actor->special1.i)
+    if (!actor->special1.m)
     {                           // no destination spot yet
         P_SetMobjState(actor, HEXEN_S_DRAGON_INIT);
     }
