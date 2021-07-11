@@ -1011,7 +1011,7 @@ int Hexen_EV_DoDoor(line_t * line, byte * args, vldoor_e type)
     while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
     {
         sec = &sectors[secnum];
-        if (sec->ceilingdata)
+        if (sec->floordata || sec->ceilingdata)
         {
             continue;
         }
@@ -1063,7 +1063,7 @@ dboolean Hexen_EV_VerticalDoor(line_t * line, mobj_t * thing)
 
     // if the sector has an active thinker, use it
     sec = sides[line->sidenum[side ^ 1]].sector;
-    if (sec->ceilingdata)
+    if (sec->floordata || sec->ceilingdata)
     {
         return false;
     }

@@ -579,7 +579,7 @@ int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type)
     while ((secnum = P_FindSectorFromTag(arg[0], secnum)) >= 0)
     {
         sec = &sectors[secnum];
-        if (sec->ceilingdata)
+        if (sec->floordata || sec->ceilingdata)
             continue;
 
         //

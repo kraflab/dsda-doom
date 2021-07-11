@@ -1256,7 +1256,7 @@ int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype)
         sec = &sectors[secnum];
 
         //      ALREADY MOVING?  IF SO, KEEP GOING...
-        if (sec->floordata)
+        if (sec->floordata || sec->ceilingdata)
             continue;
 
         //
@@ -1504,7 +1504,7 @@ static void ProcessStairSector(sector_t * sec, int type, int height,
             continue;
         }
         tsec = (sec->lines[i])->frontsector;
-        if (tsec->special == type + STAIR_SECTOR_TYPE && !tsec->floordata
+        if (tsec->special == type + STAIR_SECTOR_TYPE && !tsec->floordata && !tsec->ceilingdata
             && tsec->floorpic == Texture && tsec->validcount != validcount)
         {
             QueueStairSector(tsec, type ^ 1, height);
@@ -1512,7 +1512,7 @@ static void ProcessStairSector(sector_t * sec, int type, int height,
             //tsec->special = 0;
         }
         tsec = (sec->lines[i])->backsector;
-        if (tsec->special == type + STAIR_SECTOR_TYPE && !tsec->floordata
+        if (tsec->special == type + STAIR_SECTOR_TYPE && !tsec->floordata && !tsec->ceilingdata
             && tsec->floorpic == Texture && tsec->validcount != validcount)
         {
             QueueStairSector(tsec, type ^ 1, height);
@@ -1559,7 +1559,7 @@ int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e sta
         StartHeight = sec->floorheight;
 
         // ALREADY MOVING?  IF SO, KEEP GOING...
-        if (sec->floordata)
+        if (sec->floordata || sec->ceilingdata)
             continue;
 
         QueueStairSector(sec, 0, sec->floorheight);
@@ -1605,7 +1605,7 @@ int EV_BuildPillar(line_t * line, byte * args, dboolean crush)
     while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
     {
         sec = &sectors[secnum];
-        if (sec->floordata)
+        if (sec->floordata || sec->ceilingdata)
             continue;           // already moving
         if (sec->floorheight == sec->ceilingheight)
         {                       // pillar is already closed
@@ -1672,7 +1672,7 @@ int EV_OpenPillar(line_t * line, byte * args)
     while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
     {
         sec = &sectors[secnum];
-        if (sec->floordata)
+        if (sec->floordata || sec->ceilingdata)
             continue;           // already moving
         if (sec->floorheight != sec->ceilingheight)
         {                       // pillar isn't closed
@@ -1818,7 +1818,7 @@ dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
     while ((sectorIndex = P_FindSectorFromTag(tag, sectorIndex)) >= 0)
     {
         sector = &sectors[sectorIndex];
-        if (sector->floordata)
+        if (sector->floordata || sector->ceilingdata)
         {                       // Already busy with another thinker
             continue;
         }

@@ -551,7 +551,7 @@ int Hexen_EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount)
     while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
     {
         sec = &sectors[secnum];
-        if (sec->floordata)
+        if (sec->floordata || sec->ceilingdata)
             continue;
 
         //
