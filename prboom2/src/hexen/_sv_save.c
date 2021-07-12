@@ -291,52 +291,6 @@ static void UnarchiveMobjs(void)
 
 //==========================================================================
 //
-// GetMobjNum
-//
-//==========================================================================
-
-static int GetMobjNum(mobj_t * mobj)
-{
-    if (mobj == NULL)
-    {
-        return MOBJ_NULL;
-    }
-    if (mobj->player)
-    {
-        return MOBJ_XX_PLAYER;
-    }
-    return mobj->archiveNum;
-}
-
-//==========================================================================
-//
-// SetMobjPtr
-//
-//==========================================================================
-
-static void SetMobjPtr(mobj_t **ptr, unsigned int archiveNum)
-{
-    if (archiveNum == MOBJ_NULL)
-    {
-        *ptr = NULL;
-    }
-    else if (archiveNum == MOBJ_XX_PLAYER)
-    {
-        if (TargetPlayerCount == MAX_TARGET_PLAYERS)
-        {
-            I_Error("RestoreMobj: exceeded MAX_TARGET_PLAYERS");
-        }
-        TargetPlayerAddrs[TargetPlayerCount++] = ptr;
-        *ptr = NULL;
-    }
-    else
-    {
-        *ptr = MobjList[archiveNum];
-    }
-}
-
-//==========================================================================
-//
 // Thinker types list.
 //
 // This is used by ArchiveThinkers and UnarchiveThinkers, below.

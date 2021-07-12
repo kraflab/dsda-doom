@@ -108,8 +108,6 @@ extern int curpos;
 // static void UnarchiveMisc(void);
 // static void SetMobjArchiveNums(void);
 // static void RemoveAllThinkers(void);
-// static int GetMobjNum(mobj_t * mobj);
-// static void SetMobjPtr(mobj_t **ptr, unsigned int archiveNum);
 // static void RestoreSSThinker(ssthinker_t * sst);
 // static void RestorePlatRaise(plat_t * plat);
 // static void RestoreMoveCeiling(ceiling_t * ceiling);
@@ -241,6 +239,40 @@ static void SV_OpenWrite(int map)
   ma_p->size = 1024;
   ma_p->buffer = malloc(ma_p->size);
   buffer_p = ma_p->buffer;
+}
+
+static int GetMobjNum(mobj_t * mobj)
+{
+    if (mobj == NULL)
+    {
+        return MOBJ_NULL;
+    }
+    if (mobj->player)
+    {
+        return MOBJ_XX_PLAYER;
+    }
+    return mobj->archiveNum;
+}
+
+static void SetMobjPtr(mobj_t **ptr, unsigned int archiveNum)
+{
+    if (archiveNum == MOBJ_NULL)
+    {
+        *ptr = NULL;
+    }
+    else if (archiveNum == MOBJ_XX_PLAYER)
+    {
+        if (TargetPlayerCount == MAX_TARGET_PLAYERS)
+        {
+            I_Error("RestoreMobj: exceeded MAX_TARGET_PLAYERS");
+        }
+        TargetPlayerAddrs[TargetPlayerCount++] = ptr;
+        *ptr = NULL;
+    }
+    else
+    {
+        *ptr = MobjList[archiveNum];
+    }
 }
 
 static void StreamInMobjSpecials(mobj_t *mobj)
