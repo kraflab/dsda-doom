@@ -15,36 +15,6 @@
 //
 
 //
-// thinker_t
-//
-
-static void StreamIn_thinker_t(thinker_t *str)
-{
-    // struct thinker_s *prev, *next;
-    // Pointers are discarded:
-    str->prev = SV_ReadPtr();
-    str->prev = NULL;
-    str->next = SV_ReadPtr();
-    str->next = NULL;
-
-    // think_t function;
-    // Function pointer is discarded:
-    str->function = SV_ReadPtr();
-    str->function = NULL;
-}
-
-static void StreamOut_thinker_t(thinker_t *str)
-{
-    // struct thinker_s *prev, *next;
-    SV_WritePtr(str->prev);
-    SV_WritePtr(str->next);
-
-    // think_t function;
-    SV_WritePtr(&str->function);
-}
-
-
-//
 // mobj_t
 //
 
@@ -92,9 +62,6 @@ static void StreamInMobjSpecials(mobj_t *mobj)
 static void StreamIn_mobj_t(mobj_t *str)
 {
     unsigned int i;
-
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
 
     // fixed_t x, y, z;
     str->x = SV_ReadLong();
@@ -311,9 +278,6 @@ static void StreamOut_mobj_t(mobj_t *str)
 {
     int i;
 
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // fixed_t x, y, z;
     SV_WriteLong(str->x);
     SV_WriteLong(str->y);
@@ -452,9 +416,6 @@ static void StreamIn_floormove_t(floormove_t *str)
 {
     int i;
 
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // sector_t *sector;
     i = SV_ReadLong();
     str->sector = sectors + i;
@@ -507,9 +468,6 @@ static void StreamIn_floormove_t(floormove_t *str)
 
 static void StreamOut_floormove_t(floormove_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
 
@@ -568,9 +526,6 @@ static void StreamIn_plat_t(plat_t *str)
 {
     int i;
 
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // sector_t *sector;
     i = SV_ReadLong();
     str->sector = sectors + i;
@@ -608,9 +563,6 @@ static void StreamIn_plat_t(plat_t *str)
 
 static void StreamOut_plat_t(plat_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
 
@@ -654,9 +606,6 @@ static void StreamIn_ceiling_t(ceiling_t *str)
 {
     int i;
 
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // sector_t *sector;
     i = SV_ReadLong();
     str->sector = sectors + i;
@@ -686,9 +635,6 @@ static void StreamIn_ceiling_t(ceiling_t *str)
 
 static void StreamOut_ceiling_t(ceiling_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
 
@@ -724,9 +670,6 @@ static void StreamIn_light_t(light_t *str)
 {
     int i;
 
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // sector_t *sector;
     i = SV_ReadLong();
     str->sector = sectors + i;
@@ -752,9 +695,6 @@ static void StreamIn_light_t(light_t *str)
 
 static void StreamOut_light_t(light_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
 
@@ -786,9 +726,6 @@ static void StreamIn_vldoor_t(vldoor_t *str)
 {
     int i;
 
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // sector_t *sector;
     i = SV_ReadLong();
     str->sector = &sectors[i];
@@ -814,9 +751,6 @@ static void StreamIn_vldoor_t(vldoor_t *str)
 
 static void StreamOut_vldoor_t(vldoor_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
 
@@ -848,9 +782,6 @@ static void StreamIn_phase_t(phase_t *str)
 {
     int i;
 
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // sector_t *sector;
     i = SV_ReadLong();
     str->sector = &sectors[i];
@@ -864,9 +795,6 @@ static void StreamIn_phase_t(phase_t *str)
 
 static void StreamOut_phase_t(phase_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
 
@@ -885,9 +813,6 @@ static void StreamOut_phase_t(phase_t *str)
 static void StreamIn_acs_t(acs_t *str)
 {
     int i;
-
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
 
     // mobj_t *activator;
     i = SV_ReadLong();
@@ -938,9 +863,6 @@ static void StreamIn_acs_t(acs_t *str)
 static void StreamOut_acs_t(acs_t *str)
 {
     int i;
-
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
 
     // mobj_t *activator;
     SV_WriteLong(GetMobjNum(str->activator));
@@ -993,9 +915,6 @@ static void StreamOut_acs_t(acs_t *str)
 
 static void StreamIn_polyevent_t(polyevent_t *str)
 {
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // int polyobj;
     str->polyobj = SV_ReadLong();
 
@@ -1017,9 +936,6 @@ static void StreamIn_polyevent_t(polyevent_t *str)
 
 static void StreamOut_polyevent_t(polyevent_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // int polyobj;
     SV_WriteLong(str->polyobj);
 
@@ -1048,9 +964,6 @@ static void StreamIn_pillar_t(pillar_t *str)
 {
     int i;
 
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // sector_t *sector;
     i = SV_ReadLong();
     str->sector = &sectors[i];
@@ -1076,9 +989,6 @@ static void StreamIn_pillar_t(pillar_t *str)
 
 static void StreamOut_pillar_t(pillar_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
 
@@ -1108,9 +1018,6 @@ static void StreamOut_pillar_t(pillar_t *str)
 
 static void StreamIn_polydoor_t(polydoor_t *str)
 {
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // int polyobj;
     str->polyobj = SV_ReadLong();
 
@@ -1145,9 +1052,6 @@ static void StreamIn_polydoor_t(polydoor_t *str)
 
 static void StreamOut_polydoor_t(polydoor_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // int polyobj;
     SV_WriteLong(str->polyobj);
 
@@ -1189,9 +1093,6 @@ static void StreamIn_floorWaggle_t(floorWaggle_t *str)
 {
     int i;
 
-    // thinker_t thinker;
-    StreamIn_thinker_t(&str->thinker);
-
     // sector_t *sector;
     i = SV_ReadLong();
     str->sector = &sectors[i];
@@ -1223,9 +1124,6 @@ static void StreamIn_floorWaggle_t(floorWaggle_t *str)
 
 static void StreamOut_floorWaggle_t(floorWaggle_t *str)
 {
-    // thinker_t thinker;
-    StreamOut_thinker_t(&str->thinker);
-
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
 
