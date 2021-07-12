@@ -2470,6 +2470,7 @@ void G_DoLoadGame(void)
 
   // dearchive all the modifications
   P_MapStart();
+  P_UnArchiveACS();
   P_UnArchivePlayers ();
   P_UnArchiveWorld ();
   P_TrueUnArchiveThinkers();

@@ -66,5 +66,6 @@ void CheckSaveGame(size_t,const char*, int);              /* killough */
 // hexen
 
 void P_ArchiveACS(void);
+void P_UnArchiveACS(void);
 
 #endif

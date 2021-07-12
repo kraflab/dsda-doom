@@ -232,6 +232,7 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   basetic = gametic - *save_p++;
 
   P_MapStart();
+  P_UnArchiveACS();
   P_UnArchivePlayers();
   P_UnArchiveWorld();
   P_TrueUnArchiveThinkers();

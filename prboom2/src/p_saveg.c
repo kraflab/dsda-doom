@@ -1347,3 +1347,12 @@ void P_ArchiveACS(void)
   //   }
   // }
 }
+
+void P_UnArchiveACS(void)
+{
+  int i, j;
+
+  if (!hexen) return;
+
+  // opposite of archive
+}
