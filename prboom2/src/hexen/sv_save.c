@@ -82,15 +82,10 @@ typedef struct
     sector_t *sector;
 } ssthinker_t;
 
-const char *SavePath = "hexndata/";
-
-int vanilla_savegame_limit = 1;
-
 static int MobjCount;
 static mobj_t **MobjList;
 static mobj_t ***TargetPlayerAddrs;
 static int TargetPlayerCount;
-static FILE *SavingFP;
 
 extern int inv_ptr;
 extern int curpos;
@@ -119,22 +114,134 @@ extern int curpos;
 // static void RestorePlatRaise(plat_t * plat);
 // static void RestoreMoveCeiling(ceiling_t * ceiling);
 // static void AssertSegment(gameArchiveSegment_t segType);
-// static void CopySaveSlot(int sourceSlot, int destSlot);
-// static void CopyFile(char *sourceName, char *destName);
-// static dboolean ExistingFile(char *name);
-// static void SV_OpenRead(char *fileName);
-// static void SV_OpenWrite(char *fileName);
-// static void SV_Close(void);
-// static void SV_Read(void *buffer, int size);
-// static byte SV_ReadByte(void);
-// static uint16_t SV_ReadWord(void);
-// static uint32_t SV_ReadLong(void);
-// static void *SV_ReadPtr(void);
-// static void SV_Write(const void *buffer, int size);
-// static void SV_WriteByte(byte val);
-// static void SV_WriteWord(unsigned short val);
-// static void SV_WriteLong(unsigned int val);
-// static void SV_WritePtr(void *ptr);
+
+typedef struct
+{
+  size_t size;
+  byte *buffer;
+} map_archive_t;
+
+static map_archive_t map_archive[MAX_MAPS];
+static map_archive_t *ma_p;
+static byte *buffer_p;
+
+static dboolean MapArchiveExists(int map)
+{
+  return (map_archive[map].buffer != NULL);
+}
+
+static void FreeMapArchive(void)
+{
+  int map;
+
+  for (map = 0; map < MAX_MAPS; ++map)
+    if (map_archive[map].buffer)
+    {
+      free(map_archive[map].buffer);
+      map_archive[map].buffer = NULL;
+    }
+}
+
+static void CheckBuffer(size_t size)
+{
+  size_t delta = buffer_p - ma_p->buffer;
+
+  if (delta + size > ma_p->size)
+  {
+    ma_p->size += 1024;
+    ma_p->buffer = realloc(ma_p->buffer, ma_p->size);
+    buffer_p = ma_p->buffer + delta;
+  }
+}
+
+static void SV_Read(void *buffer, size_t size)
+{
+  if (buffer_p - ma_p->buffer + size > ma_p->size)
+  {
+    I_Error("Invalid map archive in SV_Read");
+  }
+
+  memcpy(buffer, buffer_p, size);
+  buffer_p += size;
+}
+
+static byte SV_ReadByte(void)
+{
+    byte result;
+    SV_Read(&result, sizeof(byte));
+    return result;
+}
+
+static unsigned short SV_ReadWord(void)
+{
+    unsigned short result;
+    SV_Read(&result, sizeof(unsigned short));
+    return result;
+}
+
+static int SV_ReadLong(void)
+{
+    int result;
+    SV_Read(&result, sizeof(int));
+    return result;
+}
+
+static void *SV_ReadPtr(void)
+{
+    return (void *) (intptr_t) SV_ReadLong();
+}
+
+static void SV_Write(const void *buffer, size_t size)
+{
+    CheckBuffer(size);
+    memcpy(buffer_p, buffer, size);
+    buffer_p += size;
+}
+
+static void SV_WriteByte(byte val)
+{
+    SV_Write(&val, sizeof(byte));
+}
+
+static void SV_WriteWord(unsigned short val)
+{
+    SV_Write(&val, sizeof(unsigned short));
+}
+
+static void SV_WriteLong(unsigned int val)
+{
+    SV_Write(&val, sizeof(unsigned int));
+}
+
+static void SV_WritePtr(void *val)
+{
+    unsigned int ptr;
+
+    // Write a pointer value. In Vanilla Hexen pointers are 32-bit but
+    // nowadays they might be larger. Whatever value we write here isn't
+    // going to be much use when we reload the game.
+
+    ptr = (unsigned int)(intptr_t) val;
+    SV_WriteLong(ptr & 0xffffffff);
+}
+
+static void SV_OpenRead(int map)
+{
+  ma_p = &map_archive[map];
+  buffer_p = ma_p->buffer;
+}
+
+static void SV_OpenWrite(int map)
+{
+  ma_p = &map_archive[map];
+  if (ma_p->buffer)
+  {
+    free(ma_p->buffer);
+  }
+  ma_p->size = 1024;
+  ma_p->buffer = malloc(ma_p->size);
+  buffer_p = ma_p->buffer;
+}
 
 static void StreamInMobjSpecials(mobj_t *mobj)
 {
@@ -1119,25 +1226,6 @@ static void StreamOut_floorWaggle_t(floorWaggle_t *str)
 
     // int state;
     SV_WriteLong(str->state);
-}
-
-static byte *map_archive[MAX_MAPS];
-
-static dboolean MapArchiveExists(int map)
-{
-  return (map_archive[map] != NULL);
-}
-
-static void FreeMapArchive(void)
-{
-  int map;
-
-  for (map = 0; map < MAX_MAPS; ++map)
-    if (map_archive[map])
-    {
-      free(map_archive[map]);
-      map_archive[map] = NULL;
-    }
 }
 
 void SV_Init(void)

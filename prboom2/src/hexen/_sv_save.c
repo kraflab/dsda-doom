@@ -22,11 +22,8 @@
 
 void SV_SaveMap(void)
 {
-    char fileName[100];
-
-    // Open the output file
-    doom_snprintf(fileName, sizeof(fileName), "%shex6%02d.hxs", SavePath, gamemap);
-    SV_OpenWrite(fileName);
+    // Initialize the output buffer
+    SV_OpenWrite(gamemap);
 
     // Place a header marker
     SV_WriteLong(ASEG_MAP_HEADER);
@@ -47,9 +44,6 @@ void SV_SaveMap(void)
 
     // Place a termination marker
     SV_WriteLong(ASEG_END);
-
-    // Close the output file
-    SV_Close();
 }
 
 //==========================================================================
@@ -60,19 +54,14 @@ void SV_SaveMap(void)
 
 void SV_LoadMap(void)
 {
-    char fileName[100];
-
     // Load a base level
     G_InitNew(gameskill, gameepisode, gamemap);
 
     // Remove all thinkers
     RemoveAllThinkers();
 
-    // Create the name
-    doom_snprintf(fileName, sizeof(fileName), "%shex6%02d.hxs", SavePath, gamemap);
-
-    // Load the file
-    SV_OpenRead(fileName);
+    // Initialize the input buffer
+    SV_OpenRead(gamemap);
 
     AssertSegment(ASEG_MAP_HEADER);
 
@@ -91,7 +80,6 @@ void SV_LoadMap(void)
 
     // Free mobj list and save buffer
     Z_Free(MobjList);
-    SV_Close();
 }
 
 //==========================================================================
@@ -828,122 +816,4 @@ static void AssertSegment(gameArchiveSegment_t segType)
         I_Error("Corrupt save game: Segment [%d] failed alignment check",
                 segType);
     }
-}
-
-//==========================================================================
-//
-// SV_Open
-//
-//==========================================================================
-
-static void SV_OpenRead(char *fileName)
-{
-    SavingFP = fopen(fileName, "rb");
-
-    // Should never happen, only if hex6.hxs cannot ever be created.
-    if (SavingFP == NULL)
-    {
-        I_Error("Could not load savegame %s", fileName);
-    }
-}
-
-static void SV_OpenWrite(char *fileName)
-{
-    SavingFP = fopen(fileName, "wb");
-}
-
-//==========================================================================
-//
-// SV_Close
-//
-//==========================================================================
-
-static void SV_Close(void)
-{
-    if (SavingFP)
-    {
-        fclose(SavingFP);
-    }
-}
-
-//==========================================================================
-//
-// SV_Read
-//
-//==========================================================================
-
-static void SV_Read(void *buffer, int size)
-{
-    int retval = fread(buffer, 1, size, SavingFP);
-    if (retval != size)
-    {
-        I_Error("Incomplete read in SV_Read: Expected %d, got %d bytes",
-            size, retval);
-    }
-}
-
-static byte SV_ReadByte(void)
-{
-    byte result;
-    SV_Read(&result, sizeof(byte));
-    return result;
-}
-
-static uint16_t SV_ReadWord(void)
-{
-    uint16_t result;
-    SV_Read(&result, sizeof(unsigned short));
-    return SHORT(result);
-}
-
-static uint32_t SV_ReadLong(void)
-{
-    uint32_t result;
-    SV_Read(&result, sizeof(int));
-    return LONG(result);
-}
-
-static void *SV_ReadPtr(void)
-{
-    return (void *) (intptr_t) SV_ReadLong();
-}
-
-//==========================================================================
-//
-// SV_Write
-//
-//==========================================================================
-
-static void SV_Write(const void *buffer, int size)
-{
-    fwrite(buffer, size, 1, SavingFP);
-}
-
-static void SV_WriteByte(byte val)
-{
-    fwrite(&val, sizeof(byte), 1, SavingFP);
-}
-
-static void SV_WriteWord(unsigned short val)
-{
-    val = SHORT(val);
-    fwrite(&val, sizeof(unsigned short), 1, SavingFP);
-}
-
-static void SV_WriteLong(unsigned int val)
-{
-    val = LONG(val);
-    fwrite(&val, sizeof(int), 1, SavingFP);
-}
-
-static void SV_WritePtr(void *val)
-{
-    long ptr;
-
-    // Write a pointer value. In Vanilla Hexen pointers are 32-bit but
-    // nowadays they might be larger. Whatever value we write here isn't
-    // going to be much use when we reload the game.
-
-    ptr = (long)(intptr_t) val;
-    SV_WriteLong((unsigned int) (ptr & 0xffffffff));
 }
