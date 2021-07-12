@@ -253,7 +253,6 @@ typedef struct
 {
     int i;
     struct mobj_s *m;
-    struct player_s *p; // HEXEN_TODO: can we remove this?
 } specialval_t;
 
 // Map Object definition.
