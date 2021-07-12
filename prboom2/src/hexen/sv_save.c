@@ -14,6 +14,8 @@
 // GNU General Public License for more details.
 //
 
+#include <stdint.h>
+
 #include "doomstat.h"
 #include "p_tick.h"
 #include "p_setup.h"
