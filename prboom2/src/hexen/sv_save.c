@@ -243,11 +243,5 @@ void SV_MapTeleport(int map, int position)
         P_CheckACSStore();
     }
 
-    // For single play, save immediately into the reborn slot
-    if (!netgame)
-    {
-        SV_SaveGame(REBORN_SLOT, REBORN_DESCRIPTION);
-    }
-
     P_MapEnd();
 }

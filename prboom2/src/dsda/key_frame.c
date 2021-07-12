@@ -247,11 +247,6 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
 
   if (hexen)
   {
-    if (!netgame)
-    {                           // Copy the base slot to the reborn slot
-      // HEXEN_TODO: SV
-      // SV_UpdateRebornSlot();
-    }
     SB_SetClassData();
   }
 

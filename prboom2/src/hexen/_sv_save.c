@@ -2089,58 +2089,6 @@ void SV_LoadGame(int slot)
 
 //==========================================================================
 //
-// SV_UpdateRebornSlot
-//
-// Copies the base slot to the reborn slot.
-//
-//==========================================================================
-
-void SV_UpdateRebornSlot(void)
-{
-    ClearSaveSlot(REBORN_SLOT);
-    CopySaveSlot(BASE_SLOT, REBORN_SLOT);
-}
-
-//==========================================================================
-//
-// SV_ClearRebornSlot
-//
-//==========================================================================
-
-void SV_ClearRebornSlot(void)
-{
-    ClearSaveSlot(REBORN_SLOT);
-}
-
-//==========================================================================
-//
-// SV_GetRebornSlot
-//
-//==========================================================================
-
-int SV_GetRebornSlot(void)
-{
-    return (REBORN_SLOT);
-}
-
-//==========================================================================
-//
-// SV_RebornSlotAvailable
-//
-// Returns true if the reborn slot is available.
-//
-//==========================================================================
-
-dboolean SV_RebornSlotAvailable(void)
-{
-    char fileName[100];
-
-    doom_snprintf(fileName, sizeof(fileName), "%shex%d.hxs", SavePath, REBORN_SLOT);
-    return ExistingFile(fileName);
-}
-
-//==========================================================================
-//
 // SV_LoadMap
 //
 //==========================================================================
