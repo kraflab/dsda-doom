@@ -21,10 +21,12 @@
 #include "p_mobj.h"
 #include "p_map.h"
 #include "g_game.h"
+#include "r_state.h"
 #include "hu_stuff.h"
 #include "lprintf.h"
 
 #include "hexen/p_acs.h"
+#include "hexen/po_man.h"
 
 #include "sv_save.h"
 
