@@ -20,43 +20,10 @@
 
 static void StreamInMobjSpecials(mobj_t *mobj)
 {
-    unsigned int special1, special2;
-
-    special1 = SV_ReadLong();
-    special2 = SV_ReadLong();
-
-    mobj->special1.i = special1;
-    mobj->special2.i = special2;
-
-    switch (mobj->type)
-    {
-            // Just special1
-        case HEXEN_MT_BISH_FX:
-        case HEXEN_MT_HOLY_FX:
-        case HEXEN_MT_DRAGON:
-        case HEXEN_MT_THRUSTFLOOR_UP:
-        case HEXEN_MT_THRUSTFLOOR_DOWN:
-        case HEXEN_MT_MINOTAUR:
-        case HEXEN_MT_SORCFX1:
-            SetMobjPtr(&mobj->special1.m, special1);
-            break;
-
-            // Just special2
-        case HEXEN_MT_LIGHTNING_FLOOR:
-        case HEXEN_MT_LIGHTNING_ZAP:
-            SetMobjPtr(&mobj->special2.m, special2);
-            break;
-
-            // Both special1 and special2
-        case HEXEN_MT_HOLY_TAIL:
-        case HEXEN_MT_LIGHTNING_CEILING:
-            SetMobjPtr(&mobj->special1.m, special1);
-            SetMobjPtr(&mobj->special2.m, special2);
-            break;
-
-        default:
-            break;
-    }
+    mobj->special1.i = SV_ReadLong();
+    SetMobjPtr(&mobj->special1.m, SV_ReadLong());
+    mobj->special2.i = SV_ReadLong();
+    SetMobjPtr(&mobj->special2.m, SV_ReadLong());
 }
 
 static void StreamIn_mobj_t(mobj_t *str)
@@ -203,75 +170,14 @@ static void StreamIn_mobj_t(mobj_t *str)
 
 static void StreamOutMobjSpecials(mobj_t *mobj)
 {
-    unsigned int special1, special2;
     dboolean corpse;
 
     corpse = (mobj->flags & MF_CORPSE) != 0;
-    special1 = mobj->special1.i;
-    special2 = mobj->special2.i;
 
-    switch (mobj->type)
-    {
-            // Just special1
-        case HEXEN_MT_BISH_FX:
-        case HEXEN_MT_HOLY_FX:
-        case HEXEN_MT_DRAGON:
-        case HEXEN_MT_THRUSTFLOOR_UP:
-        case HEXEN_MT_THRUSTFLOOR_DOWN:
-        case HEXEN_MT_MINOTAUR:
-        case HEXEN_MT_SORCFX1:
-        case HEXEN_MT_MSTAFF_FX2:
-            if (corpse)
-            {
-                special1 = MOBJ_NULL;
-            }
-            else
-            {
-                special1 = GetMobjNum(mobj->special1.m);
-            }
-            break;
-
-            // Just special2
-        case HEXEN_MT_LIGHTNING_FLOOR:
-        case HEXEN_MT_LIGHTNING_ZAP:
-            if (corpse)
-            {
-                special2 = MOBJ_NULL;
-            }
-            else
-            {
-                special2 = GetMobjNum(mobj->special2.m);
-            }
-            break;
-
-            // Both special1 and special2
-        case HEXEN_MT_HOLY_TAIL:
-        case HEXEN_MT_LIGHTNING_CEILING:
-            if (corpse)
-            {
-                special1 = MOBJ_NULL;
-                special2 = MOBJ_NULL;
-            }
-            else
-            {
-                special1 = GetMobjNum(mobj->special1.m);
-                special2 = GetMobjNum(mobj->special2.m);
-            }
-            break;
-
-            // Miscellaneous
-        case HEXEN_MT_KORAX:
-            special1 = 0; // Searching index
-            break;
-
-        default:
-            break;
-    }
-
-    // Write special values to savegame file.
-
-    SV_WriteLong(special1);
-    SV_WriteLong(special2);
+    SV_WriteLong(mobj->type == HEXEN_MT_KORAX ? 0 : mobj->special1.i);
+    SV_WriteLong(corpse ? MOBJ_NULL : GetMobjNum(mobj->special1.m));
+    SV_WriteLong(mobj->special2.i);
+    SV_WriteLong(corpse ? MOBJ_NULL : GetMobjNum(mobj->special2.m));
 }
 
 static void StreamOut_mobj_t(mobj_t *str)
@@ -1158,11 +1064,9 @@ static void StreamOut_floorWaggle_t(floorWaggle_t *str)
 //
 //==========================================================================
 
-void SV_SaveMap(dboolean savePlayers)
+void SV_SaveMap(void)
 {
     char fileName[100];
-
-    SavingPlayers = savePlayers;
 
     // Open the output file
     doom_snprintf(fileName, sizeof(fileName), "%shex6%02d.hxs", SavePath, gamemap);
@@ -1354,7 +1258,7 @@ static void UnarchiveWorld(void)
 // SetMobjArchiveNums
 //
 // Sets the archive numbers in all mobj structs.  Also sets the MobjCount
-// global.  Ignores player mobjs if SavingPlayers is false.
+// global.  Ignores player mobjs.
 //
 //==========================================================================
 
@@ -1370,7 +1274,7 @@ static void SetMobjArchiveNums(void)
         if (thinker->function == P_MobjThinker)
         {
             mobj = (mobj_t *) thinker;
-            if (mobj->player && !SavingPlayers)
+            if (mobj->player)
             {                   // Skipping player mobjs
                 continue;
             }
@@ -1400,7 +1304,7 @@ static void ArchiveMobjs(void)
         {                       // Not a mobj thinker
             continue;
         }
-        if (((mobj_t *) thinker)->player && !SavingPlayers)
+        if (((mobj_t *) thinker)->player)
         {                       // Skipping player mobjs
             continue;
         }
@@ -1464,7 +1368,7 @@ static int GetMobjNum(mobj_t * mobj)
     {
         return MOBJ_NULL;
     }
-    if (mobj->player && !SavingPlayers)
+    if (mobj->player)
     {
         return MOBJ_XX_PLAYER;
     }

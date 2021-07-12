@@ -89,7 +89,6 @@ static int MobjCount;
 static mobj_t **MobjList;
 static mobj_t ***TargetPlayerAddrs;
 static int TargetPlayerCount;
-static dboolean SavingPlayers;
 static FILE *SavingFP;
 
 extern int inv_ptr;
@@ -137,7 +136,7 @@ static void SV_WriteWord(unsigned short val);
 static void SV_WriteLong(unsigned int val);
 static void SV_WritePtr(void *ptr);
 
-void SV_SaveMap(dboolean savePlayers)
+void SV_SaveMap(void)
 {
   return;
 }
@@ -179,7 +178,7 @@ void SV_MapTeleport(int map, int position)
     {
         if (P_GetMapCluster(gamemap) == P_GetMapCluster(map))
         {                       // Same cluster - save map without saving player mobjs
-            SV_SaveMap(false);
+            SV_SaveMap();
         }
         else
         {                       // Entering new cluster - clear base slot
