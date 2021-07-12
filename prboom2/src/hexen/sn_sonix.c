@@ -55,20 +55,6 @@ typedef enum
     SS_CMD_END
 } sscmds_t;
 
-typedef struct seqnode_s seqnode_t;
-struct seqnode_s
-{
-  int *sequencePtr;
-  int sequence;
-  mobj_t *mobj;
-  int currentSoundID;
-  int delayTics;
-  int volume;
-  int stopSound;
-  seqnode_t *prev;
-  seqnode_t *next;
-};
-
 static void VerifySequencePtr(int *base, int *ptr);
 static int GetSoundOffset(char *name);
 
