@@ -119,7 +119,6 @@ extern int curpos;
 // static void RestorePlatRaise(plat_t * plat);
 // static void RestoreMoveCeiling(ceiling_t * ceiling);
 // static void AssertSegment(gameArchiveSegment_t segType);
-// static void ClearSaveSlot(int slot);
 // static void CopySaveSlot(int sourceSlot, int destSlot);
 // static void CopyFile(char *sourceName, char *destName);
 // static dboolean ExistingFile(char *name);
@@ -1180,8 +1179,8 @@ void SV_MapTeleport(int map, int position)
             SV_SaveMap();
         }
         else
-        {                       // Entering new cluster - clear base slot
-            ClearSaveSlot(BASE_SLOT);
+        {                       // Entering new cluster - clear map archive
+            SV_Init();
         }
     }
 
