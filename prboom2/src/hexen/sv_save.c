@@ -34,7 +34,6 @@
 #define MOBJ_NULL -1
 #define MOBJ_XX_PLAYER -2
 #define MAX_MAPS 99
-#define BASE_SLOT 6
 
 typedef enum
 {
