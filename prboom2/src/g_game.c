@@ -2651,6 +2651,8 @@ static void G_DoSaveGame (dboolean menu)
   // killough 11/98: save revenant tracer state
   *save_p++ = (gametic-basetic) & 255;
 
+  P_ArchiveACS();
+
   P_ArchivePlayers();
 
   // phares 9/13/98: Move mobj_t->index out of P_ArchiveThinkers so the

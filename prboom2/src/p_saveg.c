@@ -1318,3 +1318,32 @@ void P_TrueUnArchiveThinkers(void) {
     }
   }
 }
+
+// hexen
+
+// HEXEN_TODO: P_ArchiveACS
+void P_ArchiveACS(void)
+{
+  int i, j;
+
+  if (!hexen) return;
+
+  // CheckSaveGame(...);
+  //
+  // for (i = 0; i < MAX_ACS_WORLD_VARS; ++i)
+  // {
+  //   SV_WriteLong(WorldVars[i]);
+  // }
+  //
+  // for (i = 0; i < MAX_ACS_STORE + 1; ++i)
+  // {
+  //   SV_WriteLong(ACSStore[i].map);
+  //
+  //   SV_WriteLong(ACSStore[i].script);
+  //
+  //   for (j=0; j<4; ++j)
+  //   {
+  //       SV_WriteByte(ACSStore[i].args[j]);
+  //   }
+  // }
+}

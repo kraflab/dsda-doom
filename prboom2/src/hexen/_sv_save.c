@@ -37,24 +37,6 @@ static void StreamIn_acsstore_t(acsstore_t *str)
     }
 }
 
-static void StreamOut_acsstore_t(acsstore_t *str)
-{
-    int i;
-
-    // int map;
-    SV_WriteLong(str->map);
-
-    // int script;
-    SV_WriteLong(str->script);
-
-    // byte args[4];
-    for (i=0; i<4; ++i)
-    {
-        SV_WriteByte(str->args[i]);
-    }
-}
-
-
 //
 // ticcmd_t
 // (this is based on the Vanilla definition of the struct)
@@ -1772,67 +1754,6 @@ static void StreamOut_floorWaggle_t(floorWaggle_t *str)
 
     // int state;
     SV_WriteLong(str->state);
-}
-
-
-//==========================================================================
-//
-// SV_SaveGame
-//
-//==========================================================================
-
-void SV_SaveGame(int slot, const char *description)
-{
-    char fileName[100];
-    char versionText[HXS_VERSION_TEXT_LENGTH];
-    unsigned int i;
-
-    // Open the output file
-    doom_snprintf(fileName, sizeof(fileName), "%shex6.hxs", SavePath);
-    SV_OpenWrite(fileName);
-
-    // Write game save description
-    SV_Write(description, HXS_DESCRIPTION_LENGTH);
-
-    // Write version info
-    memset(versionText, 0, HXS_VERSION_TEXT_LENGTH);
-    M_StringCopy(versionText, HXS_VERSION_TEXT, HXS_VERSION_TEXT_LENGTH);
-    SV_Write(versionText, HXS_VERSION_TEXT_LENGTH);
-
-    // Place a header marker
-    SV_WriteLong(ASEG_GAME_HEADER);
-
-    // Write current map and difficulty
-    SV_WriteByte(gamemap);
-    SV_WriteByte(gameskill);
-
-    // Write global script info
-    for (i = 0; i < MAX_ACS_WORLD_VARS; ++i)
-    {
-        SV_WriteLong(WorldVars[i]);
-    }
-
-    for (i = 0; i < MAX_ACS_STORE + 1; ++i)
-    {
-        StreamOut_acsstore_t(&ACSStore[i]);
-    }
-
-    ArchivePlayers();
-
-    // Place a termination marker
-    SV_WriteLong(ASEG_END);
-
-    // Close the output file
-    SV_Close();
-
-    // Save out the current map
-    SV_SaveMap(true);           // true = save player info
-
-    // Clear all save files at destination slot
-    ClearSaveSlot(slot);
-
-    // Copy base slot to destination slot
-    CopySaveSlot(BASE_SLOT, slot);
 }
 
 //==========================================================================

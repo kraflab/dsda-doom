@@ -157,11 +157,6 @@ static dboolean ExistingFile(char *name)
   return false;
 }
 
-void SV_SaveGame(int slot, const char *description)
-{
-  return;
-}
-
 void SV_MapTeleport(int map, int position)
 {
     int i;
