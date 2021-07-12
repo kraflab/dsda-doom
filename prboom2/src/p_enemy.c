@@ -4961,8 +4961,13 @@ dboolean Heretic_P_LookForMonsters(mobj_t * actor)
         }
         if (actor->type == HEXEN_MT_MINOTAUR)
         {
+            // hexen_note: this is supposed to be mo->target != actor->special1.p->mo
+            // - hexen never actually set p (player_t *), so it's m (mobj_t *) (union)
+            // - mo is the first entry in player_t
+            // - thinker_t is the first entry in mobj_t, whose first entry is the previous thinker
+            // - this resolves to actor->special1.m->thinker.prev
             if ((mo->type == HEXEN_MT_MINOTAUR) &&
-                (mo->target != actor->special1.p->mo))
+                (mo->target != actor->special1.m->thinker.prev))
             {
                 continue;
             }
@@ -5031,7 +5036,8 @@ dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
         }
         if (actor->type == HEXEN_MT_MINOTAUR)
         {
-            if (actor->special1.p == player)
+            // hexen_note: minotaur was intended to store the player_t* but doesn't
+            if (actor->special1.m == player)
             {
                 continue;       // Don't target master
             }
