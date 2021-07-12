@@ -4967,7 +4967,7 @@ dboolean Heretic_P_LookForMonsters(mobj_t * actor)
             // - thinker_t is the first entry in mobj_t, whose first entry is the previous thinker
             // - this resolves to actor->special1.m->thinker.prev
             if ((mo->type == HEXEN_MT_MINOTAUR) &&
-                (mo->target != actor->special1.m->thinker.prev))
+                (mo->target != (mobj_t *) actor->special1.m->thinker.prev))
             {
                 continue;
             }
@@ -5037,7 +5037,7 @@ dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
         if (actor->type == HEXEN_MT_MINOTAUR)
         {
             // hexen_note: minotaur was intended to store the player_t* but doesn't
-            if (actor->special1.m == player)
+            if (actor->special1.m == (mobj_t *) player)
             {
                 continue;       // Don't target master
             }
