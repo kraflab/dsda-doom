@@ -4722,8 +4722,7 @@ dboolean partial_reset = false;
 
 void G_StartNewInit(void)
 {
-    // HEXEN_TODO: SV
-    // SV_InitBaseSlot();
+    SV_Init();
 
     if (partial_reset)
     {

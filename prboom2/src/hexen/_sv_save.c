@@ -96,17 +96,6 @@ void SV_LoadMap(void)
 
 //==========================================================================
 //
-// SV_InitBaseSlot
-//
-//==========================================================================
-
-void SV_InitBaseSlot(void)
-{
-    ClearSaveSlot(BASE_SLOT);
-}
-
-//==========================================================================
-//
 // ArchiveWorld
 //
 //==========================================================================
@@ -839,29 +828,6 @@ static void AssertSegment(gameArchiveSegment_t segType)
         I_Error("Corrupt save game: Segment [%d] failed alignment check",
                 segType);
     }
-}
-
-//==========================================================================
-//
-// ClearSaveSlot
-//
-// Deletes all save game files associated with a slot number.
-//
-//==========================================================================
-
-static void ClearSaveSlot(int slot)
-{
-    int i;
-    char fileName[100];
-
-    for (i = 0; i < MAX_MAPS; i++)
-    {
-        doom_snprintf(fileName, sizeof(fileName),
-                   "%shex%d%02d.hxs", SavePath, slot, i);
-        remove(fileName);
-    }
-    doom_snprintf(fileName, sizeof(fileName), "%shex%d.hxs", SavePath, slot);
-    remove(fileName);
 }
 
 //==========================================================================

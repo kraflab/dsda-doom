@@ -1129,17 +1129,29 @@ static dboolean MapArchiveExists(int map)
   return (map_archive[map] != NULL);
 }
 
+static void FreeMapArchive(void)
+{
+  int map;
+
+  for (map = 0; map < MAX_MAPS; ++map)
+    if (map_archive[map])
+    {
+      free(map_archive[map]);
+      map_archive[map] = NULL;
+    }
+}
+
+void SV_Init(void)
+{
+  FreeMapArchive();
+}
+
 void SV_SaveMap(void)
 {
   return;
 }
 
 void SV_LoadMap(void)
-{
-  return;
-}
-
-static void ClearSaveSlot(int slot)
 {
   return;
 }
