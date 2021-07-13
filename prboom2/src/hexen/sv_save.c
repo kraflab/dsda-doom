@@ -84,12 +84,6 @@ typedef struct
     size_t size;
 } thinkInfo_t;
 
-typedef struct
-{
-    thinker_t thinker;
-    sector_t *sector;
-} ssthinker_t;
-
 static int MobjCount;
 static mobj_t **MobjList;
 static mobj_t ***TargetPlayerAddrs;
@@ -1437,9 +1431,24 @@ static void UnarchiveMobjs(void)
     P_InitCreatureCorpseQueue(true);    // true = scan for corpses
 }
 
-static void RestoreSSThinker(ssthinker_t *sst)
+static void RestoreFloorWaggle(floorWaggle_t *th)
 {
-    sst->sector->floordata = sst->sector->ceilingdata = sst->thinker.function;
+  th->sector->floordata = th->thinker.function;
+}
+
+static void RestoreBuildPillar(pillar_t *th)
+{
+  th->sector->floordata = th->thinker.function;
+}
+
+static void RestoreVerticalDoor(vldoor_t *th)
+{
+  th->sector->ceilingdata = th->thinker.function;
+}
+
+static void RestoreMoveFloor(floormove_t *th)
+{
+  th->sector->floordata = th->thinker.function;
 }
 
 static void RestorePlatRaise(plat_t *plat)
@@ -1457,102 +1466,102 @@ static void RestoreMoveCeiling(ceiling_t *ceiling)
 
 static thinkInfo_t ThinkerInfo[] = {
     {
-     TC_MOVE_FLOOR,
-     T_MoveFloor,
-     StreamOut_floormove_t,
-     StreamIn_floormove_t,
-     RestoreSSThinker,
-     sizeof(floormove_t)
+      TC_MOVE_FLOOR,
+      T_MoveFloor,
+      StreamOut_floormove_t,
+      StreamIn_floormove_t,
+      RestoreMoveFloor,
+      sizeof(floormove_t)
     },
     {
-     TC_PLAT_RAISE,
-     T_PlatRaise,
-     StreamOut_plat_t,
-     StreamIn_plat_t,
-     RestorePlatRaise,
-     sizeof(plat_t)
+      TC_PLAT_RAISE,
+      T_PlatRaise,
+      StreamOut_plat_t,
+      StreamIn_plat_t,
+      RestorePlatRaise,
+      sizeof(plat_t)
     },
     {
-     TC_MOVE_CEILING,
-     T_MoveCeiling,
-     StreamOut_ceiling_t,
-     StreamIn_ceiling_t,
-     RestoreMoveCeiling,
-     sizeof(ceiling_t)
+      TC_MOVE_CEILING,
+      T_MoveCeiling,
+      StreamOut_ceiling_t,
+      StreamIn_ceiling_t,
+      RestoreMoveCeiling,
+      sizeof(ceiling_t)
     },
     {
-     TC_LIGHT,
-     T_Light,
-     StreamOut_light_t,
-     StreamIn_light_t,
-     NULL,
-     sizeof(light_t)
+      TC_LIGHT,
+      T_Light,
+      StreamOut_light_t,
+      StreamIn_light_t,
+      NULL,
+      sizeof(light_t)
     },
     {
-     TC_VERTICAL_DOOR,
-     T_VerticalDoor,
-     StreamOut_vldoor_t,
-     StreamIn_vldoor_t,
-     RestoreSSThinker,
-     sizeof(vldoor_t)
+      TC_VERTICAL_DOOR,
+      T_VerticalDoor,
+      StreamOut_vldoor_t,
+      StreamIn_vldoor_t,
+      RestoreVerticalDoor,
+      sizeof(vldoor_t)
     },
     {
-     TC_PHASE,
-     T_Phase,
-     StreamOut_phase_t,
-     StreamIn_phase_t,
-     NULL,
-     sizeof(phase_t)
+      TC_PHASE,
+      T_Phase,
+      StreamOut_phase_t,
+      StreamIn_phase_t,
+      NULL,
+      sizeof(phase_t)
     },
     {
-     TC_INTERPRET_ACS,
-     T_InterpretACS,
-     StreamOut_acs_t,
-     StreamIn_acs_t,
-     NULL,
-     sizeof(acs_t)
+      TC_INTERPRET_ACS,
+      T_InterpretACS,
+      StreamOut_acs_t,
+      StreamIn_acs_t,
+      NULL,
+      sizeof(acs_t)
     },
     {
-     TC_ROTATE_POLY,
-     T_RotatePoly,
-     StreamOut_polyevent_t,
-     StreamIn_polyevent_t,
-     NULL,
-     sizeof(polyevent_t)
+      TC_ROTATE_POLY,
+      T_RotatePoly,
+      StreamOut_polyevent_t,
+      StreamIn_polyevent_t,
+      NULL,
+      sizeof(polyevent_t)
     },
     {
-     TC_BUILD_PILLAR,
-     T_BuildPillar,
-     StreamOut_pillar_t,
-     StreamIn_pillar_t,
-     RestoreSSThinker,
-     sizeof(pillar_t)
+      TC_BUILD_PILLAR,
+      T_BuildPillar,
+      StreamOut_pillar_t,
+      StreamIn_pillar_t,
+      RestoreBuildPillar,
+      sizeof(pillar_t)
     },
     {
-     TC_MOVE_POLY,
-     T_MovePoly,
-     StreamOut_polyevent_t,
-     StreamIn_polyevent_t,
-     NULL,
-     sizeof(polyevent_t)
+      TC_MOVE_POLY,
+      T_MovePoly,
+      StreamOut_polyevent_t,
+      StreamIn_polyevent_t,
+      NULL,
+      sizeof(polyevent_t)
     },
     {
-     TC_POLY_DOOR,
-     T_PolyDoor,
-     StreamOut_polydoor_t,
-     StreamIn_polydoor_t,
-     NULL,
-     sizeof(polydoor_t)
+      TC_POLY_DOOR,
+      T_PolyDoor,
+      StreamOut_polydoor_t,
+      StreamIn_polydoor_t,
+      NULL,
+      sizeof(polydoor_t)
     },
     {
-     TC_FLOOR_WAGGLE,
-     T_FloorWaggle,
-     StreamOut_floorWaggle_t,
-     StreamIn_floorWaggle_t,
-     RestoreSSThinker,
-     sizeof(floorWaggle_t)
+      TC_FLOOR_WAGGLE,
+      T_FloorWaggle,
+      StreamOut_floorWaggle_t,
+      StreamIn_floorWaggle_t,
+      RestoreFloorWaggle,
+      sizeof(floorWaggle_t)
     },
-    { TC_NULL, NULL, NULL, NULL, NULL, 0},
+    { TC_NULL, NULL, NULL, NULL, NULL, 0 },
 };
 
 static void ArchiveThinkers(void)
