@@ -251,7 +251,7 @@ static void SetMobjPtr(mobj_t **ptr, unsigned int archiveNum)
     }
     else
     {
-        *ptr = MobjList[archiveNum];
+        P_SetTarget(ptr, MobjList[archiveNum]);
     }
 }
 
