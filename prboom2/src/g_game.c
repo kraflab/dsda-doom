@@ -4848,7 +4848,7 @@ void Hexen_G_DoReborn(int playernum)
 
     if (!netgame)
     {
-        gameaction = ga_newgame;
+        gameaction = ga_loadlevel;
     }
     else
     {                           // Net-game
