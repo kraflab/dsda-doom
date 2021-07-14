@@ -170,6 +170,13 @@ static int SV_ReadLong(void)
     return result;
 }
 
+static uint_64_t SV_ReadFlags(void)
+{
+    uint_64_t result;
+    SV_Read(&result, sizeof(uint_64_t));
+    return result;
+}
+
 static void *SV_ReadPtr(void)
 {
     return (void *) (intptr_t) SV_ReadLong();
@@ -195,6 +202,11 @@ static void SV_WriteWord(unsigned short val)
 static void SV_WriteLong(unsigned int val)
 {
     SV_Write(&val, sizeof(unsigned int));
+}
+
+static void SV_WriteFlags(uint_64_t val)
+{
+    SV_Write(&val, sizeof(uint_64_t));
 }
 
 static void SV_WritePtr(void *val)
@@ -349,10 +361,10 @@ static void StreamIn_mobj_t(mobj_t *str)
     str->damage = SV_ReadLong();
 
     // int flags;
-    str->flags = SV_ReadLong();
+    str->flags = SV_ReadFlags();
 
     // int flags2;
-    str->flags2 = SV_ReadLong();
+    str->flags2 = SV_ReadFlags();
 
     // specialval_t special1;
     // specialval_t special2;
@@ -496,10 +508,10 @@ static void StreamOut_mobj_t(mobj_t *str)
     SV_WriteLong(str->damage);
 
     // int flags;
-    SV_WriteLong(str->flags);
+    SV_WriteFlags(str->flags);
 
     // int flags2;
-    SV_WriteLong(str->flags2);
+    SV_WriteFlags(str->flags2);
 
     // specialval_t special1;
     // specialval_t special2;
