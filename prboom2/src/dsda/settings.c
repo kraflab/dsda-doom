@@ -211,7 +211,7 @@ int dsda_AutoKeyFrameInterval(void) {
 }
 
 int dsda_AutoKeyFrameDepth(void) {
-  if (dsda_StrictMode()) return 0;
+  if (dsda_StrictMode() || hexen) return 0;
 
   return dsda_auto_key_frame_depth;
 }
