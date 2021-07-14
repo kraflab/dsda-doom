@@ -412,6 +412,8 @@ static void StreamIn_mobj_t(mobj_t *str)
     {
         str->args[i] = SV_ReadByte();
     }
+
+    str->friction = ORIG_FRICTION;
 }
 
 static void StreamOutMobjSpecials(mobj_t *mobj)
