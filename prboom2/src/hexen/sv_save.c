@@ -120,6 +120,12 @@ static void FreeMapArchive(void)
     }
 }
 
+static dboolean SV_IsMobjThinker(thinker_t *th)
+{
+  return th->function == P_MobjThinker ||
+         (th->function == P_RemoveThinkerDelayed && th->references);
+}
+
 static void CheckBuffer(size_t size)
 {
   size_t delta = buffer_p - ma_p->buffer;
@@ -266,6 +272,9 @@ static void StreamInMobjSpecials(mobj_t *mobj)
 static void StreamIn_mobj_t(mobj_t *str)
 {
     unsigned int i;
+
+    // "is the mobj marked for deletion?"
+    str->index = SV_ReadByte();
 
     // fixed_t x, y, z;
     str->x = SV_ReadLong();
@@ -420,6 +429,9 @@ static void StreamOutMobjSpecials(mobj_t *mobj)
 static void StreamOut_mobj_t(mobj_t *str)
 {
     int i;
+
+    // store "marked for deletion" flag
+    SV_WriteByte(str->thinker.function == P_RemoveThinkerDelayed);
 
     // fixed_t x, y, z;
     SV_WriteLong(str->x);
@@ -1357,7 +1369,7 @@ static void SetMobjArchiveNums(void)
     for (thinker = thinkercap.next; thinker != &thinkercap;
          thinker = thinker->next)
     {
-        if (thinker->function == P_MobjThinker)
+        if (SV_IsMobjThinker(thinker))
         {
             mobj = (mobj_t *) thinker;
             if (mobj->player)
@@ -1380,7 +1392,7 @@ static void ArchiveMobjs(void)
     for (thinker = thinkercap.next; thinker != &thinkercap;
          thinker = thinker->next)
     {
-        if (thinker->function != P_MobjThinker)
+        if (!SV_IsMobjThinker(thinker))
         {                       // Not a mobj thinker
             continue;
         }
@@ -1420,6 +1432,17 @@ static void UnarchiveMobjs(void)
 
         // Restore broken pointers.
         mobj->info = &mobjinfo[mobj->type];
+
+        // "marked for deletion"
+        if (mobj->index)
+        {
+          mobj->index = -1;
+          mobj->thinker.function = P_RemoveThinkerDelayed;
+          P_AddThinker(&mobj->thinker);
+
+          continue;
+        }
+
         P_SetThingPosition(mobj);
         mobj->floorz = mobj->subsector->sector->floorheight;
         mobj->ceilingz = mobj->subsector->sector->ceilingheight;
@@ -1685,9 +1708,10 @@ static void RemoveAllThinkers(void)
     while (thinker != &thinkercap)
     {
         nextThinker = thinker->next;
-        if (thinker->function == P_MobjThinker)
+        if (SV_IsMobjThinker(thinker))
         {
             P_RemoveMobj((mobj_t *) thinker);
+            P_RemoveThinkerDelayed(thinker); // fix mobj leak
         }
         else
         {
