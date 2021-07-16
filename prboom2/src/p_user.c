@@ -1522,7 +1522,7 @@ void Heretic_P_MovePlayer(player_t * player)
     }
     else if (fly > 0)
     {
-        P_PlayerUseArtifact(player, arti_fly);
+        P_PlayerUseArtifact(player, g_arti_fly);
     }
     if (player->mo->flags2 & MF2_FLY)
     {
