@@ -82,5 +82,17 @@ RSpec.describe 'sync' do
         it { is_expected.to eq('12:57') }
       end
     end
+
+    # hexen
+    context 'hexen' do
+      let(:iwad) { "HEXEN.WAD" }
+      let(:extra) { "-hexen" }
+
+      context "e1 sk4 max in 45:37 by PVS" do
+        let(:lmp) { "me1c4537.lmp" }
+
+        it { is_expected.to eq("45:37") }
+      end
+    end
   end
 end
