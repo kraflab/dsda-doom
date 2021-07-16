@@ -114,8 +114,18 @@ void P_SetPspritePtr(player_t *player, pspdef_t *psp, statenum_t stnum)
     psp->state = state;
     psp->tics = state->tics;        // could be 0
 
-    // hexen_note: it splits this into separate misc1 / misc2 checks
-    if (state->misc1)
+    if (hexen)
+    {
+      if (state->misc1)
+      {                       // Set coordinates.
+        psp->sx = state->misc1 << FRACBITS;
+      }
+      if (state->misc2)
+      {
+        psp->sy = state->misc2 << FRACBITS;
+      }
+    }
+    else if (state->misc1)
     {
       // coordinate set
       psp->sx = state->misc1 << FRACBITS;
