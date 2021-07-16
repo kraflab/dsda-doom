@@ -4809,6 +4809,8 @@ static void Hexen_G_DoCompleted(void)
 {
     int i;
 
+    totalleveltimes = players[consoleplayer].worldTimer;
+
     gameaction = ga_nothing;
 
     for (i = 0; i < g_maxplayers; i++)
