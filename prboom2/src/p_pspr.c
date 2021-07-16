@@ -3365,6 +3365,7 @@ void A_CStaffCheck(player_t * player, pspdef_t * psp)
             break;
         }
     }
+    R_SmoothPlaying_Reset(player); // e6y
 }
 
 void A_CStaffAttack(player_t * player, pspdef_t * psp)
