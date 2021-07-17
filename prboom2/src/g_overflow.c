@@ -156,7 +156,7 @@ static void InterceptsMemoryOverrun(int location, int value)
 
 void InterceptsOverrun(int num_intercepts, intercept_t *intercept)
 {
-  if (num_intercepts > MAXINTERCEPTS_ORIGINAL && demo_compatibility && PROCESS(OVERFLOW_INTERCEPT))
+  if (!hexen && num_intercepts > MAXINTERCEPTS_ORIGINAL && demo_compatibility && PROCESS(OVERFLOW_INTERCEPT))
   {
     ShowOverflowWarning(OVERFLOW_INTERCEPT, false, "");
 
