@@ -215,7 +215,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
 {
   int numspechit = *(params->numspechit);
 
-  if (demo_compatibility && numspechit > 8)
+  if (!hexen && demo_compatibility && numspechit > 8)
   {
     line_t **spechit = *(params->spechit);
 
@@ -355,7 +355,7 @@ void RejectOverrun(int rejectlump, const byte **rejectmatrix, int totallines)
     W_UnlockLumpNum(rejectlump);
     rejectlump = -1;
 
-    if (demo_compatibility && PROCESS(OVERFLOW_REJECT))
+    if (!hexen && demo_compatibility && PROCESS(OVERFLOW_REJECT))
     {
       ShowOverflowWarning(OVERFLOW_REJECT, (required - length > 16) || (length%4 != 0), "");
 
