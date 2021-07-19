@@ -3264,7 +3264,7 @@ void A_FAxeAttack(player_t * player, pspdef_t * psp)
         }
     }
     // didn't find any creatures, so try to strike any walls
-    pmo->special1.m = NULL;
+    pmo->special1.i = 0;
 
     angle = pmo->angle;
     slope = P_AimLineAttack(pmo, angle, MELEERANGE, 0);
@@ -3314,7 +3314,7 @@ void A_CMaceAttack(player_t * player, pspdef_t * psp)
         }
     }
     // didn't find any creatures, so try to strike any walls
-    player->mo->special1.m = NULL;
+    player->mo->special1.i = 0;
 
     angle = player->mo->angle;
     slope = P_AimLineAttack(player->mo, angle, MELEERANGE, 0);
