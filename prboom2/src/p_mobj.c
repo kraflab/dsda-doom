@@ -1338,9 +1338,20 @@ void P_MobjThinker (mobj_t* mobj)
 
     // you can cycle through multiple states in a tic
 
-    if (!mobj->tics)
-      if (!P_SetMobjState(mobj, mobj->state->nextstate))
-        return;     // freed itself
+    // raven's cycle code is only here (i.e., not in every call to P_SetMobjState)
+    // not sure about ramifications of moving loop inside all state calls
+    if (raven)
+    {
+      while (!mobj->tics)
+        if (!P_SetMobjState(mobj, mobj->state->nextstate))
+          return;     // freed itself
+    }
+    else
+    {
+      if (!mobj->tics)
+        if (!P_SetMobjState(mobj, mobj->state->nextstate))
+          return;     // freed itself
+    }
   }
   else
   {
