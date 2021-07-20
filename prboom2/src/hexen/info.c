@@ -11500,7 +11500,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      7,                         // damage
      hexen_sfx_maulator_active,       // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_SHADOW,        // flags
-     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP | MF2_DMGIGNORED        // flags2
+     MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP        // flags2
      },
 
     {                           // HEXEN_MT_MNTRFX1
@@ -11851,7 +11851,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      0,                         // damage
      hexen_sfx_bishop_active,         // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL | MF_FLOAT | MF_NOGRAVITY | MF_NOBLOOD,     // flags
-     MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP | MF2_DMGIGNORED        // flags2
+     MF2_PASSMOBJ | MF2_PUSHWALL | MF2_TELESTOMP        // flags2
      },
 
     {                           // HEXEN_MT_BISHOP_PUFF
