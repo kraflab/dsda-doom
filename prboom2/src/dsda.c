@@ -28,7 +28,6 @@
 #include "am_map.h"
 
 #include "dsda/analysis.h"
-#include "dsda/mobj_extension.h"
 #include "dsda/ghost.h"
 #include "dsda/hud.h"
 #include "dsda/command_display.h"
@@ -132,11 +131,11 @@ void dsda_WatchCard(card_t card) {
 
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage) {
   if (
-    ((source && source->player) || (inflictor && inflictor->dsda_extension.player_damaged_barrel)) \
+    ((source && source->player) || (inflictor && inflictor->intflags & MIF_PLAYER_DAMAGED_BARREL)) \
     && damage != TELEFRAG_DAMAGE
   ) {
     if (target->type == MT_BARREL)
-      target->dsda_extension.player_damaged_barrel = true;
+      target->intflags |= MIF_PLAYER_DAMAGED_BARREL;
     else if (!target->player)
       dsda_pacifist = false;
   }
@@ -161,7 +160,7 @@ void dsda_WatchDeath(mobj_t* thing) {
 
 void dsda_WatchKill(player_t* player, mobj_t* target) {
   player->killcount++;
-  if (target->dsda_extension.spawned_by_icon) player->maxkilldiscount++;
+  if (target->intflags & MIF_SPAWNED_BY_ICON) player->maxkilldiscount++;
 }
 
 void dsda_WatchResurrection(mobj_t* target) {
@@ -171,7 +170,7 @@ void dsda_WatchResurrection(mobj_t* target) {
     (
       (target->flags ^ MF_COUNTKILL) &
       (MF_FRIEND | MF_COUNTKILL)
-    ) || target->dsda_extension.spawned_by_icon
+    ) || target->intflags & MIF_SPAWNED_BY_ICON
   ) return;
 
   for (i = 0; i < g_maxplayers; ++i) {
@@ -213,7 +212,7 @@ void dsda_WatchSpawn(mobj_t* spawned) {
 }
 
 void dsda_WatchIconSpawn(mobj_t* spawned) {
-  spawned->dsda_extension.spawned_by_icon = true;
+  spawned->intflags |= MIF_SPAWNED_BY_ICON;
 
   // Fix count from dsda_WatchSpawn
   // We can't know inside P_SpawnMobj what the source is
@@ -276,7 +275,7 @@ void dsda_WatchLevelCompletion(void) {
     // max rules: everything dead that affects kill counter except icon spawns
     if (
       !((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)) \
-      && !mobj->dsda_extension.spawned_by_icon \
+      && !(mobj->intflags & MIF_SPAWNED_BY_ICON) \
       && mobj->health > 0
     ) {
       ++dsda_missed_monsters;

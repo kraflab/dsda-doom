@@ -50,8 +50,6 @@
 // Needs precompiled tables/data structures.
 #include "info.h"
 
-#include "dsda/mobj_extension.h"
-
 //
 // NOTES: mobj_t
 //
@@ -246,6 +244,8 @@ enum {
   MIF_FALLING = 1,      // Object is falling
   MIF_ARMED = 2,        // Object is armed (for MF_TOUCHY objects)
   MIF_SCROLLING = 4,    // Object is affected by scroller / pusher / puller
+  MIF_PLAYER_DAMAGED_BARREL = 8,
+  MIF_SPAWNED_BY_ICON = 16,
 };
 
 // heretic
@@ -386,8 +386,6 @@ typedef struct mobj_s
     short patch_width;
 
     int iden_nums;		// hi word stores thing num, low word identifier num
-
-    dsda_mobj_extension_t dsda_extension;
 
     // heretic
     int damage;                 // For missiles
