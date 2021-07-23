@@ -6560,7 +6560,6 @@ typedef enum {
 
 typedef enum {
   IG_DEFAULT,
-  IG_CENTAUR,
   IG_END
 } infighting_group_t;
 

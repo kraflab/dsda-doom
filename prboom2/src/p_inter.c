@@ -1714,7 +1714,9 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
         source->flags2 & MF2_BOSS ||
         (target->type == HERETIC_MT_SORCERER2 && source->type == HERETIC_MT_WIZARD) ||
         target->type == HEXEN_MT_BISHOP ||
-        target->type == HEXEN_MT_MINOTAUR
+        target->type == HEXEN_MT_MINOTAUR ||
+        (target->type == HEXEN_MT_CENTAUR && source->type == HEXEN_MT_CENTAURLEADER) ||
+        (target->type == HEXEN_MT_CENTAURLEADER && source->type == HEXEN_MT_CENTAUR)
       )
     ) &&
     !P_InfightingImmune(target, source)

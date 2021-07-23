@@ -636,9 +636,6 @@ static void dsda_InitHexen(void) {
     mobjinfo[j].meleerange = MELEERANGE;
   }
 
-  mobjinfo[HEXEN_MT_CENTAUR].infighting_group = IG_CENTAUR;
-  mobjinfo[HEXEN_MT_CENTAURLEADER].infighting_group = IG_CENTAUR;
-
   {
     extern void P_UseHexenRNG(void);
 
