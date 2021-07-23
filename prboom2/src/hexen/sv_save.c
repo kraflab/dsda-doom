@@ -375,11 +375,11 @@ static void StreamIn_mobj_t(mobj_t *str)
     // int health;
     str->health = SV_ReadLong();
 
-    // int movedir;
-    str->movedir = SV_ReadLong();
+    // short movedir;
+    str->movedir = SV_ReadWord();
 
-    // int movecount;
-    str->movecount = SV_ReadLong();
+    // short movecount;
+    str->movecount = SV_ReadWord();
 
     // struct mobj_s *target;
     i = SV_ReadLong();
@@ -522,10 +522,10 @@ static void StreamOut_mobj_t(mobj_t *str)
     SV_WriteLong(str->health);
 
     // int movedir;
-    SV_WriteLong(str->movedir);
+    SV_WriteWord(str->movedir);
 
     // int movecount;
-    SV_WriteLong(str->movecount);
+    SV_WriteWord(str->movecount);
 
     // struct mobj_s *target;
     if ((str->flags & MF_CORPSE) != 0)
