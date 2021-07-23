@@ -4277,6 +4277,17 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     demo_p += FUTURE_MAXPLAYERS - g_maxplayers;
   }
 
+  {
+    int p = M_CheckParm("-consoleplayer");
+
+    if (p && (p + 1 < myargc)) {
+      consoleplayer = atoi(myargv[p + 1]);
+
+      if (consoleplayer < 0 || consoleplayer >= g_maxplayers || !playeringame[consoleplayer])
+        consoleplayer = 0;
+    }
+  }
+
   if (playeringame[1])
   {
     netgame = true;
