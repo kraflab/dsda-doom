@@ -992,7 +992,13 @@ void WI_initShowNextLoc(void)
       WI_loadData();
     }
   }
-  else if ((gamemode != commercial) && (gamemap == 8)) {
+  else if (
+    gamemode != commercial &&
+    (
+      gamemap == 8 ||
+      (gamemission == chex && gamemap == 5)
+    )
+  ) {
     G_WorldDone();
     return;
   }

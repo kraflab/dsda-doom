@@ -1975,25 +1975,10 @@ void G_DoCompleted (void)
 
   if (gamemode != commercial) // kilough 2/7/98
   {
-    // Chex Quest ends after 5 levels, rather than 8.
-    if (gamemission == chex)
+    if (gamemap == 9)
     {
-      if (gamemap == 5)
-      {
-        gameaction = ga_victory;
-        return;
-      }
-    }
-    else
-    {
-      switch(gamemap)
-      {
-      // cph - Remove ExM8 special case, so it gets summary screen displayed
-      case 9:
-        for (i = 0; i < g_maxplayers; i++)
-          players[i].didsecret = true;
-        break;
-      }
+      for (i = 0; i < g_maxplayers; i++)
+        players[i].didsecret = true;
     }
   }
 
@@ -2190,6 +2175,8 @@ void G_WorldDone (void)
          F_StartFinale ();
   else if (gamemap == 8)
     gameaction = ga_victory; // cph - after ExM8 summary screen, show victory stuff
+  else if (gamemap == 5 && gamemission == chex)
+    gameaction = ga_victory;
 }
 
 void G_DoWorldDone (void)
