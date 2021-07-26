@@ -4871,6 +4871,7 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_strict_mode))
     {
       dsda_strict_mode = !dsda_strict_mode;
+      dsda_ChangeStrictMode();
       doom_printf("Strict Mode %s", dsda_strict_mode ? "on" : "off");
     }
 
