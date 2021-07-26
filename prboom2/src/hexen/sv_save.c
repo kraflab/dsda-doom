@@ -1932,6 +1932,9 @@ void SV_MapTeleport(int map, int position)
     int oldPieces = 0;
     int bestWeapon;
 
+    memset(oldKeys, 0, sizeof(oldKeys));
+    memset(oldWeaponowned, 0, sizeof(oldWeaponowned));
+
     if (!deathmatch)
     {
         if (P_GetMapCluster(gamemap) == P_GetMapCluster(map))
