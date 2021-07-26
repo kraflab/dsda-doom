@@ -578,7 +578,6 @@ int EV_VerticalDoor
   door = sec->ceilingdata;
   if (demo_compatibility) {
     if (!door) door = sec->floordata;
-    if (!door) door = sec->lightingdata;
   }
   /* If this is a repeatable line, and the door is already moving, then we can just reverse the current action. Note that in prboom 2.3.0 I erroneously removed the if-this-is-repeatable check, hence the prboom_4_compatibility clause below (foolishly assumed that already moving implies repeatable - but it could be moving due to another switch, e.g. lv19-509) */
   if (door &&

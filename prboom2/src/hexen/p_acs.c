@@ -745,8 +745,7 @@ static dboolean TagBusy(int tag)
     while ((sectorIndex = P_FindSectorFromTag(tag, sectorIndex)) >= 0)
     {
         if (sectors[sectorIndex].floordata ||
-            sectors[sectorIndex].ceilingdata ||
-            sectors[sectorIndex].lightingdata)
+            sectors[sectorIndex].ceilingdata)
         {
             return true;
         }

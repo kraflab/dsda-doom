@@ -1119,7 +1119,7 @@ dboolean P_CanUnlockGenDoor
 dboolean PUREFUNC P_SectorActive(special_e t, const sector_t *sec)
 {
   if (demo_compatibility)  // return whether any thinker is active
-    return sec->floordata != NULL || sec->ceilingdata != NULL || sec->lightingdata != NULL;
+    return sec->floordata != NULL || sec->ceilingdata != NULL;
   else
     switch (t)             // return whether thinker of same type is active
     {
@@ -1128,7 +1128,7 @@ dboolean PUREFUNC P_SectorActive(special_e t, const sector_t *sec)
       case ceiling_special:
         return sec->ceilingdata != NULL;
       case lighting_special:
-        return sec->lightingdata != NULL;
+        return false;
     }
   return true; // don't know which special, must be active, shouldn't be here
 }
