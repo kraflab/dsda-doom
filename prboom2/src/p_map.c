@@ -716,6 +716,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
         if (thing->health <= 0)
         {
           tmthing->special1.i = 0;
+          tmthing->special1.m = NULL;
         }
       }
       return true;
