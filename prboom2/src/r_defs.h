@@ -237,6 +237,7 @@ typedef struct line_s
   sector_t *frontsector; // Front and back sector.
   sector_t *backsector;
   int validcount;        // if == validcount, already checked
+  int validcount2;
   void *specialdata;     // thinker_t for reversable actions
   int tranlump;          // killough 4/11/98: translucency filter, -1 == none
   int firsttag,nexttag;  // killough 4/17/98: improves searches for tags.
@@ -499,6 +500,7 @@ typedef struct polyobj_s
   int tag;                    // reference tag assigned in HereticEd
   int bbox[4];
   int validcount;
+  int validcount2;
   dboolean crush;              // should the polyobj attempt to crush mobjs?
   int seqType;
   fixed_t size;               // polyobj size (area of POLY_AREAUNIT == size of FRACUNIT)

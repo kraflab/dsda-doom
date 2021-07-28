@@ -76,6 +76,7 @@ extern int wide_offset2y;
 // proff 11/06/98: Added for high-res
 extern fixed_t  projectiony;
 extern int      validcount;
+extern int      validcount2;
 // e6y: Added for more precise flats drawing
 extern fixed_t viewfocratio;
 

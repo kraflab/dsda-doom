@@ -438,6 +438,83 @@ dboolean P_BlockLinesIterator(int x, int y, dboolean func(line_t*))
   return true;  // everything was checked
 }
 
+// MBF's P_SetThingPosition code injects an increment to validcount
+// There is a bug in P_CheckPosition where the validcount is not
+// incremented at the correct time. The bug is exposed in MBF.
+// Under most cases, this is irrelevant, but sometimes it matters.
+// Ripper projectiles in mbf21, heretic, and hexen require decoupling.
+dboolean P_BlockLinesIterator2(int x, int y, dboolean func(line_t*))
+{
+  int        offset;
+  const int  *list;   // killough 3/1/98: for removal of blockmap limit
+
+  if (x<0 || y<0 || x>=bmapwidth || y>=bmapheight)
+    return true;
+  offset = y*bmapwidth+x;
+
+  if (hexen)
+  {
+    int i;
+    seg_t **tempSeg;
+    polyblock_t *polyLink;
+    extern polyblock_t **PolyBlockMap;
+
+    polyLink = PolyBlockMap[offset];
+    while (polyLink)
+    {
+      if (polyLink->polyobj)
+      {
+        if (polyLink->polyobj->validcount2 != validcount2)
+        {
+          polyLink->polyobj->validcount2 = validcount2;
+          tempSeg = polyLink->polyobj->segs;
+          for (i = 0; i < polyLink->polyobj->numsegs; i++, tempSeg++)
+          {
+            if ((*tempSeg)->linedef->validcount2 == validcount2)
+            {
+              continue;
+            }
+            (*tempSeg)->linedef->validcount2 = validcount2;
+            if (!func((*tempSeg)->linedef))
+            {
+              return false;
+            }
+          }
+        }
+      }
+      polyLink = polyLink->next;
+    }
+  }
+
+  offset = *(blockmap+offset);
+  list = blockmaplump+offset;     // original was reading         // phares
+                                  // delmiting 0 as linedef 0     // phares
+
+  // killough 1/31/98: for compatibility we need to use the old method.
+  // Most demos go out of sync, and maybe other problems happen, if we
+  // don't consider linedef 0. For safety this should be qualified.
+
+  // killough 2/22/98: demo_compatibility check
+  // In mbf21, skip if all blocklists start w/ 0 (fixes btsx e2 map 20)
+  if ((!demo_compatibility && !mbf21) || (mbf21 && skipblstart))
+    list++;     // skip 0 starting delimiter                      // phares
+  for ( ; *list != -1 ; list++)                                   // phares
+    {
+      line_t *ld;
+#ifdef RANGECHECK
+      if(*list < 0 || *list >= numlines)
+        I_Error("P_BlockLinesIterator2: index >= numlines");
+#endif
+      ld = &lines[*list];
+      if (ld->validcount2 == validcount2)
+        continue;       // line has already been checked
+      ld->validcount2 = validcount2;
+      if (!func(ld))
+        return false;
+    }
+  return true;  // everything was checked
+}
+
 //
 // P_BlockThingsIterator
 //
