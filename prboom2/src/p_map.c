@@ -1190,8 +1190,6 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
   yl = P_GetSafeBlockY(tmbbox[BOXBOTTOM] - bmaporgy);
   yh = P_GetSafeBlockY(tmbbox[BOXTOP] - bmaporgy);
 
-  // heretic - this must be incremented before iterating over the lines
-  validcount++;
   for (bx=xl ; bx<=xh ; bx++)
     for (by=yl ; by<=yh ; by++)
       if (!P_BlockLinesIterator (bx,by,PIT_CheckLine))
@@ -2997,7 +2995,7 @@ void P_CreateSecNodeList(mobj_t* thing,fixed_t x,fixed_t y)
   tmbbox[BOXRIGHT]  = x + tmthing->radius;
   tmbbox[BOXLEFT]   = x - tmthing->radius;
 
-  validcount++; // used to make sure we only process a line once
+  validcount2++; // used to make sure we only process a line once
 
   xl = P_GetSafeBlockX(tmbbox[BOXLEFT] - bmaporgx);
   xh = P_GetSafeBlockX(tmbbox[BOXRIGHT] - bmaporgx);
@@ -3006,7 +3004,7 @@ void P_CreateSecNodeList(mobj_t* thing,fixed_t x,fixed_t y)
 
   for (bx=xl ; bx<=xh ; bx++)
     for (by=yl ; by<=yh ; by++)
-      P_BlockLinesIterator(bx,by,PIT_GetSectors);
+      P_BlockLinesIterator2(bx,by,PIT_GetSectors);
 
   // Add the sector of the (x,y) point to sector_list.
 

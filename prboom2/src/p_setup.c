@@ -2717,6 +2717,7 @@ void P_InitSubsectorsLines(void)
     {
       if (!seg->linedef) continue;
       seg->linedef->validcount = 0;
+      seg->linedef->validcount2 = 0;
     }
 
     for (seg = segs + subsectors[num].firstline; seg < seg_last; seg++)
@@ -2745,6 +2746,7 @@ void P_InitSubsectorsLines(void)
     {
       if (!seg->linedef) continue;
       seg->linedef->validcount = 0;
+      seg->linedef->validcount2 = 0;
     }
 
     for (seg = segs + subsectors[num].firstline; seg < seg_last; seg++)
@@ -2776,6 +2778,7 @@ void P_InitSubsectorsLines(void)
   for (num = 0; num < numlines; num++)
   {
     lines[num].validcount = 0;
+    lines[num].validcount2 = 0;
   }
 }
 

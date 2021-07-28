@@ -84,6 +84,7 @@ int r_have_internal_hires = false;
 int viewangleoffset;
 int viewpitchoffset;
 int validcount = 1;         // increment every time a check is made
+int validcount2 = 1;
 const lighttable_t *fixedcolormap;
 int      centerx, centery;
 // e6y: wide-res
