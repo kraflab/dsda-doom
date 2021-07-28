@@ -1190,6 +1190,13 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
   yl = P_GetSafeBlockY(tmbbox[BOXBOTTOM] - bmaporgy);
   yh = P_GetSafeBlockY(tmbbox[BOXTOP] - bmaporgy);
 
+  // Fixes a vanilla bug where this is incremented in the wrong place
+  // Prevents edge cases where lines aren't checked when they should be
+  if (mbf21)
+  {
+    validcount++;
+  }
+
   for (bx=xl ; bx<=xh ; bx++)
     for (by=yl ; by<=yh ; by++)
       if (!P_BlockLinesIterator (bx,by,PIT_CheckLine))
