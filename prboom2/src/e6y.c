@@ -406,8 +406,11 @@ int G_GotoNextLevel(void)
   };
   int epsd;
   int map = -1;
-
   int changed = false;
+
+  if (hexen)
+    return false;
+
   if (gamemapinfo != NULL)
   {
     const char *n;
@@ -456,10 +459,6 @@ int G_GotoNextLevel(void)
       int next = heretic_next[BETWEEN(0, 5, epsd)][BETWEEN(0, 8, map)];
       epsd = next / 10;
       map = next % 10;
-    }
-    else if (hexen)
-    {
-      // HEXEN_TODO: go to next level
     }
     else if (gamemode == commercial)
     {
