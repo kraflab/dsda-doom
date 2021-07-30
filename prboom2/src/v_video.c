@@ -1530,7 +1530,7 @@ void SetRatio(int width, int height)
     render_stretch_hud = patch_stretch_full;
   }
 
-  if (heretic && render_stretch_hud == 0)
+  if (raven && render_stretch_hud == 0)
   {
     render_stretch_hud++;
   }
