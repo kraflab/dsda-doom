@@ -519,7 +519,6 @@ void R_InitTranslationTables (void)
     int lumpnum = W_GetNumForName("trantbl0");
     translationtables = Z_Malloc(256 * 3 * (g_maxplayers - 1), PU_STATIC, 0);
 
-    // HEXEN_TODO: player color translation table?
     for (i = 0; i < g_maxplayers; i++)
       playernumtotrans[i] = i;
 
