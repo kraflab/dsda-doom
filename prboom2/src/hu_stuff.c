@@ -51,6 +51,7 @@
 #include "m_misc.h"
 #include "r_main.h"
 #include "lprintf.h"
+#include "p_setup.h"
 #include "e6y.h" //e6y
 #include "dsda.h"
 #include "dsda/hud.h"
@@ -304,7 +305,7 @@ static const char* HU_Title(void)
     }
     else if (hexen)
     {
-      // HEXEN_TODO: HU_Title
+      return P_GetMapName(gamemap);
     }
     else
     {
@@ -535,8 +536,8 @@ void HU_Start(void)
   HUlib_initTextLine
   (
     &w_title,
-    heretic ? 20 : HU_TITLEX,
-    heretic ? 145 : HU_TITLEY,
+    raven ? 20 : HU_TITLEX,
+    raven ? heretic ? 145 : 144 : HU_TITLEY,
     hu_font,
     HU_FONTSTART,
     hudcolor_titl,
