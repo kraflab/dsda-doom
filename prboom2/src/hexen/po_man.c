@@ -991,13 +991,10 @@ static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po)
     return blocked;
 }
 
-// HEXEN_TODO: allocating this twice per level setup:
-// - once to put an empty map in place for thing placement
-// - again when calling InitBlockMap
-// Should update to not call Z_Malloc the second time...
-void PO_AllocateBlockMap(void)
+void PO_ResetBlockMap(dboolean allocate)
 {
-  PolyBlockMap = Z_Malloc(bmapwidth * bmapheight * sizeof(polyblock_t *), PU_LEVEL, 0);
+  if (allocate)
+    PolyBlockMap = Z_Malloc(bmapwidth * bmapheight * sizeof(polyblock_t *), PU_LEVEL, 0);
   memset(PolyBlockMap, 0, bmapwidth * bmapheight * sizeof(polyblock_t *));
 }
 
@@ -1009,7 +1006,7 @@ static void InitBlockMap(void)
     int leftX, rightX;
     int topY, bottomY;
 
-    PO_AllocateBlockMap();
+    PO_ResetBlockMap(false);
 
     for (i = 0; i < po_NumPolyobjs; i++)
     {

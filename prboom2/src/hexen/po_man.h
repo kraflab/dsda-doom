@@ -64,6 +64,6 @@ dboolean PO_RotatePolyobj(int num, angle_t angle);
 void PO_Init(int lump);
 dboolean PO_Busy(int polyobj);
 
-void PO_AllocateBlockMap(void);
+void PO_ResetBlockMap(dboolean allocate);
 
 #endif

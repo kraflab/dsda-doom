@@ -2993,7 +2993,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   if (hexen)
   {
-    PO_AllocateBlockMap();
+    PO_ResetBlockMap(true);
   }
 
   P_LoadThings(lumpnum+ML_THINGS);
