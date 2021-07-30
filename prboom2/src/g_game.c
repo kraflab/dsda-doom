@@ -4734,7 +4734,6 @@ void G_DoTeleportNewMap(void)
     RebornPosition = LeavePosition;
 }
 
-// HEXEN_TODO: should be merged with G_PlayerFinishLevel?
 void G_PlayerExitMap(int playerNumber)
 {
     int i;
