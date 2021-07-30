@@ -186,6 +186,7 @@ static dboolean    message_list; //2/26/98 enable showing list of messages
 dboolean           message_dontfuckwithme;
 static dboolean    message_nottobefuckedwith;
 static int        message_counter;
+static int        yellow_message;
 extern int        showMessages;
 static dboolean    headsupactive = false;
 
@@ -511,6 +512,7 @@ void HU_Start(void)
   message_on = false;
   message_dontfuckwithme = false;
   message_nottobefuckedwith = false;
+  yellow_message = false;
   chat_on = false;
 
   // create the message widget
@@ -2643,6 +2645,7 @@ void HU_Ticker(void)
   {
     message_on = false;
     message_nottobefuckedwith = false;
+    yellow_message = false;
   }
   if (bsdown && bscounter++ > 9) {
     HUlib_keyInIText(&w_chat, KEYD_BACKSPACE);
@@ -2657,8 +2660,6 @@ void HU_Ticker(void)
     if ((plr->message && !message_nottobefuckedwith)
         || (plr->message && message_dontfuckwithme))
     {
-      // HEXEN_TODO: yellow message variant
-
       //post the message to the message widget
       HUlib_addMessageToSText(&w_message, 0, plr->message);
       //jff 2/26/98 add message to refresh text widget too
@@ -2674,6 +2675,9 @@ void HU_Ticker(void)
       message_nottobefuckedwith = message_dontfuckwithme;
       // clear the flag that "Messages Off" is being posted
       message_dontfuckwithme = 0;
+
+      yellow_message = plr->yellowMessage;
+      // hexen_note: use FONTAY_S for yellow messages (new font, y_message, etc)
     }
   }
 
@@ -2731,6 +2735,7 @@ void HU_Ticker(void)
               message_nottobefuckedwith = true;
               message_on = true;
               message_counter = HU_MSGTIMEOUT;
+              yellow_message = false;
               if ( gamemode == commercial )
                 S_StartSound(0, sfx_radio);
               else
@@ -3004,4 +3009,5 @@ int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int
 void ClearMessage(void)
 {
   message_counter = 0;
+  yellow_message = false;
 }
