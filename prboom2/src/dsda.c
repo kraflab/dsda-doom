@@ -38,7 +38,6 @@
 
 #define TELEFRAG_DAMAGE 10000
 #define STROLLER_THRESHOLD 25
-#define TURBO_THRESHOLD 50
 
 // command-line toggles
 int dsda_track_pacifist;
@@ -228,11 +227,13 @@ int dsda_MaxKillRequirement() {
 void dsda_WatchCommand(void) {
   int i;
   ticcmd_t* cmd;
+  dsda_pclass_t *player_class;
 
   for (i = 0; i < g_maxplayers; ++i) {
     if (!playeringame[i]) continue;
 
     cmd = &players[i].cmd;
+    player_class = &pclass[players[i].pclass];
 
     if (cmd->buttons & BT_USE && dsda_time_use)
       dsda_AddSplit(DSDA_SPLIT_USE);
@@ -240,7 +241,10 @@ void dsda_WatchCommand(void) {
     if (cmd->sidemove != 0 || abs(cmd->forwardmove) > STROLLER_THRESHOLD)
       dsda_stroller = false;
 
-    if (abs(cmd->sidemove) > TURBO_THRESHOLD || abs(cmd->forwardmove) > TURBO_THRESHOLD)
+    if (
+      abs(cmd->sidemove) > player_class->turbo_threshold ||
+      abs(cmd->forwardmove) > player_class->turbo_threshold
+    )
       dsda_turbo = true;
   }
 

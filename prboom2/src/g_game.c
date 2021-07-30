@@ -203,7 +203,6 @@ int shorttics;
 //
 
 #define MAXPLMOVE   (forwardmove[1])
-#define TURBOTHRESHOLD  0x32
 #define SLOWTURNTICS  6
 #define QUICKREVERSE (short)32768 // 180 degree reverse                    // phares
 
@@ -948,15 +947,15 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   motion_blur.curr_speed_pow2 = 0;
 #endif
 
-  if (forward > player_class->max_player_move)
-    forward = player_class->max_player_move;
-  else if (forward < -player_class->max_player_move)
-    forward = -player_class->max_player_move;
+  if (forward > MAXPLMOVE)
+    forward = MAXPLMOVE;
+  else if (forward < -MAXPLMOVE)
+    forward = -MAXPLMOVE;
 
-  if (side > player_class->max_player_move)
-    side = player_class->max_player_move;
-  else if (side < -player_class->max_player_move)
-    side = -player_class->max_player_move;
+  if (side > MAXPLMOVE)
+    side = MAXPLMOVE;
+  else if (side < -MAXPLMOVE)
+    side = -MAXPLMOVE;
 
   //e6y
   if (dsda_AlwaysSR50())
@@ -1397,19 +1396,6 @@ void G_Ticker (void)
           G_ReadDemoTiccmd(cmd);
         if (demorecording)
           G_WriteDemoTiccmd(cmd);
-
-        // check for turbo cheats
-        // killough 2/14/98, 2/20/98 -- only warn in netgames and demos
-        // HEXEN_TODO: generalize and move turbo checking into dsda code
-        if (!hexen &&
-            (netgame || demoplayback) &&
-            cmd->forwardmove > TURBOTHRESHOLD &&
-            !(gametic & 31) && ((gametic >> 5) & 3) == i)
-        {
-            extern char *player_names[];
-            /* cph - don't use sprintf, use doom_printf */
-            doom_printf ("%s is turbo!", player_names[i]);
-        }
 
         if (netgame && !netdemo && !(gametic % ticdup) )
         {
