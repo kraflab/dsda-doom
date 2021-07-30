@@ -47,6 +47,7 @@
 /* cph 2006/07/23 - needs direct access to thinkercap */
 #include "p_tick.h"
 #include "w_wad.h"
+#include "p_setup.h"
 
 #include "heretic/def.h"
 
@@ -412,6 +413,11 @@ static dboolean cannot_clev(int epsd, int map)
     (gamemission == pack_nerve && map > 9)
   ) return true;
 
+  if (hexen)
+  {
+    map = P_TranslateMap(map);
+  }
+
   // Catch invalid maps.
   next = MAPNAME(epsd, map);
   if (W_CheckNumForName(next) == -1)
@@ -433,15 +439,15 @@ static void cheat_clev(char buf[3])
   struct MapEntry* entry;
 
   if (gamemode == commercial)
-    {
-      epsd = 1; //jff was 0, but espd is 1-based
-      map = (buf[0] - '0')*10 + buf[1] - '0';
-    }
+  {
+    epsd = 1; //jff was 0, but espd is 1-based
+    map = (buf[0] - '0') * 10 + buf[1] - '0';
+  }
   else
-    {
-      epsd = buf[0] - '0';
-      map = buf[1] - '0';
-    }
+  {
+    epsd = buf[0] - '0';
+    map = buf[1] - '0';
+  }
 
   // First check if we have a mapinfo entry for the requested level. If this is present the remaining checks should be skipped.
   entry = G_LookupMapinfo(epsd, map);
