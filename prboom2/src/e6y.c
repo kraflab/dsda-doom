@@ -71,6 +71,7 @@
 #include "i_system.h"
 #include "p_maputl.h"
 #include "p_map.h"
+#include "p_setup.h"
 #include "i_video.h"
 #include "info.h"
 #include "r_main.h"
@@ -409,7 +410,7 @@ int G_GotoNextLevel(void)
   int changed = false;
 
   if (hexen)
-    return false;
+    map = P_GetMapNextMap(gamemap);
 
   if (gamemapinfo != NULL)
   {
