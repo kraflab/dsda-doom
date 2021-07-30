@@ -232,8 +232,7 @@
 #define	MF_ALTSHADOW	LONGLONG(0x0000040000000000) // alternate translucent draw
 #define	MF_ICECORPSE	LONGLONG(0x0000080000000000) // a frozen corpse (for blasting)
 
-// HEXEN_TODO:
-// hexen redefines MF_TRANSLATION to doom's (MF_TRANSLATION | MF_UNUSED2)
+// hexen_note: MF_TRANSLATION covers doom's (MF_TRANSLATION | MF_UNUSED2)
 
 #define ALIVE(thing) ((thing->health > 0) && ((thing->flags & (MF_COUNTKILL | MF_CORPSE | MF_RESSURECTED)) == MF_COUNTKILL))
 
