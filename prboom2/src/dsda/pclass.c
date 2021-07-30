@@ -27,6 +27,7 @@ dsda_pclass_t pclass[NUMCLASSES] = {
 
     .forwardmove = { 0x19, 0x32 },
     .sidemove = { 0x18, 0x28 },
+    .stroller_threshold = 0x19,
     .turbo_threshold = 0x32,
   },
 
@@ -37,6 +38,7 @@ dsda_pclass_t pclass[NUMCLASSES] = {
 
     .forwardmove = { 0x1D, 0x3C },
     .sidemove = { 0x1B, 0x3B },
+    .stroller_threshold = 0x1D,
     .turbo_threshold = 0x3C,
 
     .normal_state = HEXEN_S_FPLAY,
@@ -53,6 +55,7 @@ dsda_pclass_t pclass[NUMCLASSES] = {
 
     .forwardmove = { 0x19, 0x32 },
     .sidemove = { 0x18, 0x28 },
+    .stroller_threshold = 0x19,
     .turbo_threshold = 0x32,
 
     .normal_state = HEXEN_S_CPLAY,
@@ -69,6 +72,7 @@ dsda_pclass_t pclass[NUMCLASSES] = {
 
     .forwardmove = { 0x16, 0x2E },
     .sidemove = { 0x15, 0x25 },
+    .stroller_threshold = 0x16,
     .turbo_threshold = 0x2D,
 
     .normal_state = HEXEN_S_MPLAY,
@@ -85,6 +89,7 @@ dsda_pclass_t pclass[NUMCLASSES] = {
 
     .forwardmove = { 0x18, 0x31 },
     .sidemove = { 0x17, 0x27 },
+    .stroller_threshold = 0x18,
     .turbo_threshold = 0x31,
 
     .normal_state = HEXEN_S_PIGPLAY,

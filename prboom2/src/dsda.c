@@ -37,7 +37,6 @@
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
-#define STROLLER_THRESHOLD 25
 
 // command-line toggles
 int dsda_track_pacifist;
@@ -238,7 +237,7 @@ void dsda_WatchCommand(void) {
     if (cmd->buttons & BT_USE && dsda_time_use)
       dsda_AddSplit(DSDA_SPLIT_USE);
 
-    if (cmd->sidemove != 0 || abs(cmd->forwardmove) > STROLLER_THRESHOLD)
+    if (cmd->sidemove != 0 || abs(cmd->forwardmove) > player_class->stroller_threshold)
       dsda_stroller = false;
 
     if (
