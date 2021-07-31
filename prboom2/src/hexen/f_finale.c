@@ -186,7 +186,7 @@ static void TextWrite(void)
     }
 }
 
-// HEXEN_TODO: dynamic palette editing
+// hexen_note: dynamic palette editing
 static void InitializeFade(dboolean fadeIn)
 {
     // unsigned i;

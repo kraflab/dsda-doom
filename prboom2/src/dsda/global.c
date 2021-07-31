@@ -573,7 +573,7 @@ static void dsda_InitHexen(void) {
 
   g_st_height = 39;
   g_border_offset = 4;
-  g_mf_translucent = MF_SHADOW; // HEXEN_TODO: how does ALTSHADOW fit in?
+  g_mf_translucent = MF_SHADOW; // hexen_note: how does ALTSHADOW fit in?
   g_mf_shadow = 0; // doesn't exist in hexen
 
   g_cr_gray = CR_TAN;

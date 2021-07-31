@@ -412,7 +412,7 @@ static void R_DoDrawPlane(visplane_t *pl)
   R_SetDefaultDrawColumnVars(&dcvars);
 
   if (pl->minx <= pl->maxx) {
-    // HEXEN_TODO: Skies
+    // hexen_note: Skies
     // if (pl->picnum == skyflatnum)
     // {                       // Sky flat
     //     #define SKYTEXTUREMIDSHIFTED 200

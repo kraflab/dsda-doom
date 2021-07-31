@@ -535,7 +535,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
   dcvars.colormap = vis->colormap;
   dcvars.nextcolormap = dcvars.colormap; // for filtering -- POPE
 
-  // HEXEN_TODO: colfunc: No idea how to merge this right now...
+  // hexen_note: colfunc: No idea how to merge this right now...
   // if (vis->mobjflags & (MF_SHADOW | MF_ALTSHADOW))
   // {
   //     if (vis->mobjflags & MF_TRANSLATION)
