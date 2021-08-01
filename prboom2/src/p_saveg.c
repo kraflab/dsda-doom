@@ -48,6 +48,7 @@
 #include "e6y.h"//e6y
 
 #include "hexen/p_acs.h"
+#include "hexen/po_man.h"
 #include "hexen/sv_save.h"
 
 #include "dsda/msecnode.h"
@@ -1357,12 +1358,50 @@ void P_UnArchiveACS(void)
 
 void P_ArchivePolyobjs(void)
 {
+  int i;
+
   if (!hexen) return;
+
+  CheckSaveGame(po_NumPolyobjs * (sizeof(angle_t) + 2 * sizeof(fixed_t)));
+
+  for (i = 0; i < po_NumPolyobjs; i++)
+  {
+    memcpy(save_p, &polyobjs[i].angle, sizeof(polyobjs[i].angle));
+    save_p += sizeof(polyobjs[i].angle);
+
+    memcpy(save_p, &polyobjs[i].startSpot.x, sizeof(polyobjs[i].startSpot.x));
+    save_p += sizeof(polyobjs[i].startSpot.x);
+
+    memcpy(save_p, &polyobjs[i].startSpot.y, sizeof(polyobjs[i].startSpot.y));
+    save_p += sizeof(polyobjs[i].startSpot.y);
+  }
 }
 
 void P_UnArchivePolyobjs(void)
 {
+  int i;
+  angle_t angle;
+  fixed_t deltaX;
+  fixed_t deltaY;
+
   if (!hexen) return;
+
+  for (i = 0; i < po_NumPolyobjs; i++)
+  {
+    memcpy(&angle, save_p, sizeof(angle));
+    save_p += sizeof(angle);
+
+    memcpy(&deltaX, save_p, sizeof(deltaX));
+    save_p += sizeof(deltaX);
+
+    memcpy(&deltaY, save_p, sizeof(deltaY));
+    save_p += sizeof(deltaY);
+
+    PO_RotatePolyobj(polyobjs[i].tag, angle);
+    deltaX -= polyobjs[i].startSpot.x;
+    deltaY -= polyobjs[i].startSpot.y;
+    PO_MovePolyobj(polyobjs[i].tag, deltaX, deltaY);
+  }
 }
 
 void P_ArchiveScripts(void)
