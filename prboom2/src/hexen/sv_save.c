@@ -28,6 +28,7 @@
 #include "r_main.h"
 #include "p_maputl.h"
 #include "p_enemy.h"
+#include "p_saveg.h"
 #include "hu_stuff.h"
 #include "lprintf.h"
 
@@ -117,7 +118,46 @@ static void FreeMapArchive(void)
     {
       free(map_archive[map].buffer);
       map_archive[map].buffer = NULL;
+      map_archive[map].size = 0;
     }
+}
+
+void SV_StoreMapArchive(byte **buffer)
+{
+  int i;
+
+  for (i = 0; i < MAX_MAPS; ++i)
+  {
+    CheckSaveGame(map_archive[i].size + sizeof(map_archive[i].size));
+
+    memcpy(*buffer, &map_archive[i].size, sizeof(map_archive[i].size));
+    *buffer += sizeof(map_archive[i].size);
+
+    if (map_archive[i].size)
+    {
+      memcpy(*buffer, map_archive[i].buffer, map_archive[i].size);
+      *buffer += map_archive[i].size;
+    }
+  }
+}
+
+void SV_RestoreMapArchive(byte **buffer)
+{
+  int i;
+
+  FreeMapArchive();
+
+  for (i = 0; i < MAX_MAPS; ++i)
+  {
+    memcpy(&map_archive[i].size, *buffer, sizeof(map_archive[i].size));
+    *buffer += sizeof(map_archive[i].size);
+
+    if (map_archive[i].size)
+    {
+      memcpy(map_archive[i].buffer, *buffer, map_archive[i].size);
+      *buffer += map_archive[i].size;
+    }
+  }
 }
 
 static dboolean SV_IsMobjThinker(thinker_t *th)
@@ -130,7 +170,7 @@ static void CheckBuffer(size_t size)
 {
   size_t delta = buffer_p - ma_p->buffer;
 
-  if (delta + size > ma_p->size)
+  while (delta + size > ma_p->size)
   {
     ma_p->size += 1024;
     ma_p->buffer = realloc(ma_p->buffer, ma_p->size);

@@ -47,6 +47,9 @@
 #include "hu_tracers.h"
 #include "e6y.h"//e6y
 
+#include "hexen/p_acs.h"
+#include "hexen/sv_save.h"
+
 #include "dsda/msecnode.h"
 
 #define MARKED_FOR_DELETION -2
@@ -1320,38 +1323,74 @@ void P_TrueUnArchiveThinkers(void) {
 
 // hexen
 
-// HEXEN_TODO: P_ArchiveACS
 void P_ArchiveACS(void)
 {
-  int i, j;
+  size_t size;
 
   if (!hexen) return;
 
-  // CheckSaveGame(...);
-  //
-  // for (i = 0; i < MAX_ACS_WORLD_VARS; ++i)
-  // {
-  //   SV_WriteLong(WorldVars[i]);
-  // }
-  //
-  // for (i = 0; i < MAX_ACS_STORE + 1; ++i)
-  // {
-  //   SV_WriteLong(ACSStore[i].map);
-  //
-  //   SV_WriteLong(ACSStore[i].script);
-  //
-  //   for (j=0; j<4; ++j)
-  //   {
-  //       SV_WriteByte(ACSStore[i].args[j]);
-  //   }
-  // }
+  size = sizeof(*WorldVars) * MAX_ACS_WORLD_VARS;
+  CheckSaveGame(size);
+  memcpy(save_p, WorldVars, size);
+  save_p += size;
+
+  size = sizeof(*ACSStore) * (MAX_ACS_STORE + 1);
+  CheckSaveGame(size);
+  memcpy(save_p, ACSStore, size);
+  save_p += size;
 }
 
 void P_UnArchiveACS(void)
 {
-  int i, j;
+  size_t size;
 
   if (!hexen) return;
 
-  // opposite of archive
+  size = sizeof(*WorldVars) * MAX_ACS_WORLD_VARS;
+  memcpy(WorldVars, save_p, size);
+  save_p += size;
+
+  size = sizeof(*ACSStore) * (MAX_ACS_STORE + 1);
+  memcpy(ACSStore, save_p, size);
+  save_p += size;
+}
+
+void P_ArchivePolyobjs(void)
+{
+  if (!hexen) return;
+}
+
+void P_UnArchivePolyobjs(void)
+{
+  if (!hexen) return;
+}
+
+void P_ArchiveScripts(void)
+{
+  if (!hexen) return;
+}
+
+void P_UnArchiveScripts(void)
+{
+  if (!hexen) return;
+}
+
+void P_ArchiveSounds(void)
+{
+  if (!hexen) return;
+}
+
+void P_UnArchiveSounds(void)
+{
+  if (!hexen) return;
+}
+
+void P_ArchiveMisc(void)
+{
+  if (!hexen) return;
+}
+
+void P_UnArchiveMisc(void)
+{
+  if (!hexen) return;
 }

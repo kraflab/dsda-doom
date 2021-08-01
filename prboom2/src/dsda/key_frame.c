@@ -151,6 +151,10 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
   P_ArchivePlayers();
   P_ThinkerToIndex();
   P_ArchiveWorld();
+  P_ArchivePolyobjs();
+  P_ArchiveScripts();
+  P_ArchiveSounds();
+  P_ArchiveMisc();
   P_TrueArchiveThinkers();
   P_IndexToThinker();
   P_ArchiveRNG();
@@ -235,6 +239,10 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   P_UnArchiveACS();
   P_UnArchivePlayers();
   P_UnArchiveWorld();
+  P_UnArchivePolyobjs();
+  P_UnArchiveScripts();
+  P_UnArchiveSounds();
+  P_UnArchiveMisc();
   P_TrueUnArchiveThinkers();
   P_UnArchiveRNG();
   P_UnArchiveMap();
