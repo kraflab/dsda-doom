@@ -625,23 +625,23 @@ void P_TrueArchiveThinkers(void) {
   // save off the current thinkers (memory size calculation -- killough)
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
     if (!th->function)
-      {
-        platlist_t *pl;
-        ceilinglist_t *cl;     //jff 2/22/98 need this for ceilings too now
-        for (pl=activeplats; pl; pl=pl->next)
-          if (pl->plat == (plat_t *) th)   // killough 2/14/98
-            {
-              size += 4+sizeof(plat_t);
-              goto end;
-            }
-        for (cl=activeceilings; cl; cl=cl->next) // search for activeceiling
-          if (cl->ceiling == (ceiling_t *) th)   //jff 2/22/98
-            {
-              size += 4+sizeof(ceiling_t);
-              goto end;
-            }
-      end:;
-      }
+    {
+      platlist_t *pl;
+      ceilinglist_t *cl;     //jff 2/22/98 need this for ceilings too now
+      for (pl=activeplats; pl; pl=pl->next)
+        if (pl->plat == (plat_t *) th)   // killough 2/14/98
+          {
+            size += 4+sizeof(plat_t);
+            goto end;
+          }
+      for (cl=activeceilings; cl; cl=cl->next) // search for activeceiling
+        if (cl->ceiling == (ceiling_t *) th)   //jff 2/22/98
+          {
+            size += 4+sizeof(ceiling_t);
+            goto end;
+          }
+    end:;
+    }
     else
       size +=
         th->function==T_MoveCeiling  ? 4+sizeof(ceiling_t)     :
@@ -664,251 +664,251 @@ void P_TrueArchiveThinkers(void) {
   // save off the current thinkers
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next) {
     if (!th->function)
-      {
-        platlist_t *pl;
-        ceilinglist_t *cl;    //jff 2/22/98 add iter variable for ceilings
+    {
+      platlist_t *pl;
+      ceilinglist_t *cl;    //jff 2/22/98 add iter variable for ceilings
 
-        // killough 2/8/98: fix plat original height bug.
-        // Since acv==NULL, this could be a plat in stasis.
-        // so check the active plats list, and save this
-        // plat (jff: or ceiling) even if it is in stasis.
+      // killough 2/8/98: fix plat original height bug.
+      // Since acv==NULL, this could be a plat in stasis.
+      // so check the active plats list, and save this
+      // plat (jff: or ceiling) even if it is in stasis.
 
-        for (pl=activeplats; pl; pl=pl->next)
-          if (pl->plat == (plat_t *) th)      // killough 2/14/98
-            goto plat;
+      for (pl=activeplats; pl; pl=pl->next)
+        if (pl->plat == (plat_t *) th)      // killough 2/14/98
+          goto plat;
 
-        for (cl=activeceilings; cl; cl=cl->next)
-          if (cl->ceiling == (ceiling_t *) th)      //jff 2/22/98
-            goto ceiling;
+      for (cl=activeceilings; cl; cl=cl->next)
+        if (cl->ceiling == (ceiling_t *) th)      //jff 2/22/98
+          goto ceiling;
 
-        continue;
-      }
+      continue;
+    }
 
     if (th->function == T_MoveCeiling)
-      {
-        ceiling_t *ceiling;
-      ceiling:                               // killough 2/14/98
-        *save_p++ = tc_true_ceiling;
-        PADSAVEP();
-        ceiling = (ceiling_t *)save_p;
-        memcpy (ceiling, th, sizeof(*ceiling));
-        save_p += sizeof(*ceiling);
-        ceiling->sector = (sector_t *)(intptr_t)(ceiling->sector->iSectorID);
-        continue;
-      }
+    {
+      ceiling_t *ceiling;
+    ceiling:                               // killough 2/14/98
+      *save_p++ = tc_true_ceiling;
+      PADSAVEP();
+      ceiling = (ceiling_t *)save_p;
+      memcpy (ceiling, th, sizeof(*ceiling));
+      save_p += sizeof(*ceiling);
+      ceiling->sector = (sector_t *)(intptr_t)(ceiling->sector->iSectorID);
+      continue;
+    }
 
     if (th->function == T_VerticalDoor)
-      {
-        vldoor_t *door;
-        *save_p++ = tc_true_door;
-        PADSAVEP();
-        door = (vldoor_t *) save_p;
-        memcpy (door, th, sizeof *door);
-        save_p += sizeof(*door);
-        door->sector = (sector_t *)(intptr_t)(door->sector->iSectorID);
-        //jff 1/31/98 archive line remembered by door as well
-        door->line = (line_t *) (door->line ? door->line-lines : -1);
-        continue;
-      }
+    {
+      vldoor_t *door;
+      *save_p++ = tc_true_door;
+      PADSAVEP();
+      door = (vldoor_t *) save_p;
+      memcpy (door, th, sizeof *door);
+      save_p += sizeof(*door);
+      door->sector = (sector_t *)(intptr_t)(door->sector->iSectorID);
+      //jff 1/31/98 archive line remembered by door as well
+      door->line = (line_t *) (door->line ? door->line-lines : -1);
+      continue;
+    }
 
     if (th->function == T_MoveFloor)
-      {
-        floormove_t *floor;
-        *save_p++ = tc_true_floor;
-        PADSAVEP();
-        floor = (floormove_t *)save_p;
-        memcpy (floor, th, sizeof(*floor));
-        save_p += sizeof(*floor);
-        floor->sector = (sector_t *)(intptr_t)(floor->sector->iSectorID);
-        continue;
-      }
+    {
+      floormove_t *floor;
+      *save_p++ = tc_true_floor;
+      PADSAVEP();
+      floor = (floormove_t *)save_p;
+      memcpy (floor, th, sizeof(*floor));
+      save_p += sizeof(*floor);
+      floor->sector = (sector_t *)(intptr_t)(floor->sector->iSectorID);
+      continue;
+    }
 
     if (th->function == T_PlatRaise)
-      {
-        plat_t *plat;
-      plat:   // killough 2/14/98: added fix for original plat height above
-        *save_p++ = tc_true_plat;
-        PADSAVEP();
-        plat = (plat_t *)save_p;
-        memcpy (plat, th, sizeof(*plat));
-        save_p += sizeof(*plat);
-        plat->sector = (sector_t *)(intptr_t)(plat->sector->iSectorID);
-        continue;
-      }
+    {
+      plat_t *plat;
+    plat:   // killough 2/14/98: added fix for original plat height above
+      *save_p++ = tc_true_plat;
+      PADSAVEP();
+      plat = (plat_t *)save_p;
+      memcpy (plat, th, sizeof(*plat));
+      save_p += sizeof(*plat);
+      plat->sector = (sector_t *)(intptr_t)(plat->sector->iSectorID);
+      continue;
+    }
 
     if (th->function == T_LightFlash)
-      {
-        lightflash_t *flash;
-        *save_p++ = tc_true_flash;
-        PADSAVEP();
-        flash = (lightflash_t *)save_p;
-        memcpy (flash, th, sizeof(*flash));
-        save_p += sizeof(*flash);
-        flash->sector = (sector_t *)(intptr_t)(flash->sector->iSectorID);
-        continue;
-      }
+    {
+      lightflash_t *flash;
+      *save_p++ = tc_true_flash;
+      PADSAVEP();
+      flash = (lightflash_t *)save_p;
+      memcpy (flash, th, sizeof(*flash));
+      save_p += sizeof(*flash);
+      flash->sector = (sector_t *)(intptr_t)(flash->sector->iSectorID);
+      continue;
+    }
 
     if (th->function == T_StrobeFlash)
-      {
-        strobe_t *strobe;
-        *save_p++ = tc_true_strobe;
-        PADSAVEP();
-        strobe = (strobe_t *)save_p;
-        memcpy (strobe, th, sizeof(*strobe));
-        save_p += sizeof(*strobe);
-        strobe->sector = (sector_t *)(intptr_t)(strobe->sector->iSectorID);
-        continue;
-      }
+    {
+      strobe_t *strobe;
+      *save_p++ = tc_true_strobe;
+      PADSAVEP();
+      strobe = (strobe_t *)save_p;
+      memcpy (strobe, th, sizeof(*strobe));
+      save_p += sizeof(*strobe);
+      strobe->sector = (sector_t *)(intptr_t)(strobe->sector->iSectorID);
+      continue;
+    }
 
     if (th->function == T_Glow)
-      {
-        glow_t *glow;
-        *save_p++ = tc_true_glow;
-        PADSAVEP();
-        glow = (glow_t *)save_p;
-        memcpy (glow, th, sizeof(*glow));
-        save_p += sizeof(*glow);
-        glow->sector = (sector_t *)(intptr_t)(glow->sector->iSectorID);
-        continue;
-      }
+    {
+      glow_t *glow;
+      *save_p++ = tc_true_glow;
+      PADSAVEP();
+      glow = (glow_t *)save_p;
+      memcpy (glow, th, sizeof(*glow));
+      save_p += sizeof(*glow);
+      glow->sector = (sector_t *)(intptr_t)(glow->sector->iSectorID);
+      continue;
+    }
 
     // killough 10/4/98: save flickers
     if (th->function == T_FireFlicker)
-      {
-        fireflicker_t *flicker;
-        *save_p++ = tc_true_flicker;
-        PADSAVEP();
-        flicker = (fireflicker_t *)save_p;
-        memcpy (flicker, th, sizeof(*flicker));
-        save_p += sizeof(*flicker);
-        flicker->sector = (sector_t *)(intptr_t)(flicker->sector->iSectorID);
-        continue;
-      }
+    {
+      fireflicker_t *flicker;
+      *save_p++ = tc_true_flicker;
+      PADSAVEP();
+      flicker = (fireflicker_t *)save_p;
+      memcpy (flicker, th, sizeof(*flicker));
+      save_p += sizeof(*flicker);
+      flicker->sector = (sector_t *)(intptr_t)(flicker->sector->iSectorID);
+      continue;
+    }
 
     //jff 2/22/98 new case for elevators
     if (th->function == T_MoveElevator)
-      {
-        elevator_t *elevator;         //jff 2/22/98
-        *save_p++ = tc_true_elevator;
-        PADSAVEP();
-        elevator = (elevator_t *)save_p;
-        memcpy (elevator, th, sizeof(*elevator));
-        save_p += sizeof(*elevator);
-        elevator->sector = (sector_t *)(intptr_t)(elevator->sector->iSectorID);
-        continue;
-      }
+    {
+      elevator_t *elevator;         //jff 2/22/98
+      *save_p++ = tc_true_elevator;
+      PADSAVEP();
+      elevator = (elevator_t *)save_p;
+      memcpy (elevator, th, sizeof(*elevator));
+      save_p += sizeof(*elevator);
+      elevator->sector = (sector_t *)(intptr_t)(elevator->sector->iSectorID);
+      continue;
+    }
 
     // killough 3/7/98: Scroll effect thinkers
     if (th->function == T_Scroll)
-      {
-        *save_p++ = tc_true_scroll;
-        PADSAVEP();
-        memcpy (save_p, th, sizeof(scroll_t));
-        save_p += sizeof(scroll_t);
-        continue;
-      }
+    {
+      *save_p++ = tc_true_scroll;
+      PADSAVEP();
+      memcpy (save_p, th, sizeof(scroll_t));
+      save_p += sizeof(scroll_t);
+      continue;
+    }
 
     // phares 3/22/98: Push/Pull effect thinkers
 
     if (th->function == T_Pusher)
-      {
-        *save_p++ = tc_true_pusher;
-        PADSAVEP();
-        memcpy (save_p, th, sizeof(pusher_t));
-        save_p += sizeof(pusher_t);
-        continue;
-      }
+    {
+      *save_p++ = tc_true_pusher;
+      PADSAVEP();
+      memcpy (save_p, th, sizeof(pusher_t));
+      save_p += sizeof(pusher_t);
+      continue;
+    }
 
     if (th->function == T_Friction)
-      {
-        *save_p++ = tc_true_friction;
-        PADSAVEP();
-        memcpy (save_p, th, sizeof(friction_t));
-        save_p += sizeof(friction_t);
-        continue;
-      }
+    {
+      *save_p++ = tc_true_friction;
+      PADSAVEP();
+      memcpy (save_p, th, sizeof(friction_t));
+      save_p += sizeof(friction_t);
+      continue;
+    }
 
     if (P_IsMobjThinker(th))
+    {
+      mobj_t *mobj;
+
+      *save_p++ = tc_true_mobj;
+      PADSAVEP();
+      mobj = (mobj_t *)save_p;
+
+      //e6y
+      memcpy (mobj, th, sizeof(*mobj));
+      save_p += sizeof(*mobj);
+
+      mobj->state = (state_t *)(mobj->state - states);
+
+      // Example:
+      // - Archvile is attacking a lost soul
+      // - The lost soul dies before the attack hits
+      // - The lost soul is marked for deletion
+      // - The archvile will still attack the spot where the lost soul was
+      // - We need to save such objects and remember they are marked for deletion
+      if (mobj->thinker.function == P_RemoveThinkerDelayed)
+        mobj->index = MARKED_FOR_DELETION;
+
+      // killough 2/14/98: convert pointers into indices.
+      // Fixes many savegame problems, by properly saving
+      // target and tracer fields. Note: we store NULL if
+      // the thinker pointed to by these fields is not a
+      // mobj thinker.
+
+      if (mobj->target)
+        mobj->target =
+          P_IsMobjThinker(&mobj->target->thinker) ?
+          (mobj_t *) mobj->target->thinker.prev : NULL;
+
+      if (mobj->tracer)
+        mobj->tracer =
+          P_IsMobjThinker(&mobj->tracer->thinker) ?
+          (mobj_t *) mobj->tracer->thinker.prev : NULL;
+
+      // killough 2/14/98: new field: save last known enemy. Prevents
+      // monsters from going to sleep after killing monsters and not
+      // seeing player anymore.
+
+      if (mobj->lastenemy)
+        mobj->lastenemy =
+          P_IsMobjThinker(&mobj->lastenemy->thinker) ?
+          (mobj_t *) mobj->lastenemy->thinker.prev : NULL;
+
+
+      // killough 2/14/98: end changes
+
+      if (heretic)
       {
-        mobj_t *mobj;
-
-        *save_p++ = tc_true_mobj;
-        PADSAVEP();
-        mobj = (mobj_t *)save_p;
-
-        //e6y
-        memcpy (mobj, th, sizeof(*mobj));
-        save_p += sizeof(*mobj);
-
-        mobj->state = (state_t *)(mobj->state - states);
-
-        // Example:
-        // - Archvile is attacking a lost soul
-        // - The lost soul dies before the attack hits
-        // - The lost soul is marked for deletion
-        // - The archvile will still attack the spot where the lost soul was
-        // - We need to save such objects and remember they are marked for deletion
-        if (mobj->thinker.function == P_RemoveThinkerDelayed)
-          mobj->index = MARKED_FOR_DELETION;
-
-        // killough 2/14/98: convert pointers into indices.
-        // Fixes many savegame problems, by properly saving
-        // target and tracer fields. Note: we store NULL if
-        // the thinker pointed to by these fields is not a
-        // mobj thinker.
-
-        if (mobj->target)
-          mobj->target =
-            P_IsMobjThinker(&mobj->target->thinker) ?
-            (mobj_t *) mobj->target->thinker.prev : NULL;
-
-        if (mobj->tracer)
-          mobj->tracer =
-            P_IsMobjThinker(&mobj->tracer->thinker) ?
-            (mobj_t *) mobj->tracer->thinker.prev : NULL;
-
-        // killough 2/14/98: new field: save last known enemy. Prevents
-        // monsters from going to sleep after killing monsters and not
-        // seeing player anymore.
-
-        if (mobj->lastenemy)
-          mobj->lastenemy =
-            P_IsMobjThinker(&mobj->lastenemy->thinker) ?
-            (mobj_t *) mobj->lastenemy->thinker.prev : NULL;
-
-
-        // killough 2/14/98: end changes
-
-        if (heretic)
+        switch (mobj->type)
         {
-          switch (mobj->type)
-          {
-            case HERETIC_MT_MACEFX4:     // A_DeathBallImpact
-            case HERETIC_MT_WHIRLWIND:   // A_WhirlwindSeek
-            case HERETIC_MT_MUMMYFX1:    // A_MummyFX1Seek
-            case HERETIC_MT_HORNRODFX2:  // A_SkullRodPL2Seek
-            case HERETIC_MT_PHOENIXFX1:  // A_PhoenixPuff
-              if (mobj->special1.m)
-              {
-                mobj->special1.m =
-                  P_IsMobjThinker(&mobj->special1.m->thinker) ?
-                  (mobj_t *) mobj->special1.m->thinker.prev : NULL;
-              }
-              break;
-            case HERETIC_MT_POD:
-              if (mobj->special2.m)
-              {
-                mobj->special2.m =
-                  P_IsMobjThinker(&mobj->special2.m->thinker) ?
-                  (mobj_t *) mobj->special2.m->thinker.prev : NULL;
-              }
-              break;
-          }
+          case HERETIC_MT_MACEFX4:     // A_DeathBallImpact
+          case HERETIC_MT_WHIRLWIND:   // A_WhirlwindSeek
+          case HERETIC_MT_MUMMYFX1:    // A_MummyFX1Seek
+          case HERETIC_MT_HORNRODFX2:  // A_SkullRodPL2Seek
+          case HERETIC_MT_PHOENIXFX1:  // A_PhoenixPuff
+            if (mobj->special1.m)
+            {
+              mobj->special1.m =
+                P_IsMobjThinker(&mobj->special1.m->thinker) ?
+                (mobj_t *) mobj->special1.m->thinker.prev : NULL;
+            }
+            break;
+          case HERETIC_MT_POD:
+            if (mobj->special2.m)
+            {
+              mobj->special2.m =
+                P_IsMobjThinker(&mobj->special2.m->thinker) ?
+                (mobj_t *) mobj->special2.m->thinker.prev : NULL;
+            }
+            break;
         }
-
-        if (mobj->player)
-          mobj->player = (player_t *)((mobj->player-players) + 1);
       }
+
+      if (mobj->player)
+        mobj->player = (player_t *)((mobj->player-players) + 1);
+    }
   }
 
   // add a terminating marker
