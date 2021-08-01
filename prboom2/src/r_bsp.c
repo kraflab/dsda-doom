@@ -790,7 +790,7 @@ static void R_Subsector(int num)
     polySeg = sub->poly->segs;
     while (polyCount--)
     {
-      // HEXEN_TODO: find some way to do this only on update?
+      // hexen_note: find some way to do this only on update?
       (*polySeg)->v1->px = (*polySeg)->v1->x;
       (*polySeg)->v1->py = (*polySeg)->v1->y;
       (*polySeg)->v2->px = (*polySeg)->v2->x;
