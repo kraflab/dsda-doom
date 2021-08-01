@@ -240,7 +240,7 @@ void SB_Init(void)
     sb_full_inv_gem_xr = 269;
 
     // magic globals that ends up in the background
-    R_SetFloorNum(&grnrock, "FLOOR30"); // hexen_note: F_022
+    R_SetFloorNum(&grnrock, "FLOOR30");
     R_SetPatchNum(&brdr_t, "bordt");
     R_SetPatchNum(&brdr_b, "bordb");
     R_SetPatchNum(&brdr_l, "bordl");
