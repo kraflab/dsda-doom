@@ -4701,7 +4701,6 @@ void G_Completed(int map, int position)
     LeavePosition = position;
 }
 
-// HEXEN_TODO: use this for init cheat (don't reset world (?))
 dboolean partial_reset = false;
 
 void G_StartNewInit(void)

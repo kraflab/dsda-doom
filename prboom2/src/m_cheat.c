@@ -106,6 +106,9 @@ static void cheat_tome();
 static void cheat_chicken();
 static void cheat_artifact();
 
+// hexen
+static void cheat_init();
+
 //-----------------------------------------------------------------------------
 //
 // List of cheat codes, functions, and special argument indicators.
@@ -212,6 +215,9 @@ cheatseq_t cheat[] = {
   CHEAT("engage", NULL, cht_never | not_menu, cheat_clev, -2),
   CHEAT("ravmap", NULL, not_dm, cheat_ddt, 0),
   CHEAT("cockadoodledoo", NULL, cht_never, cheat_chicken, 0),
+
+  // hexen
+  CHEAT("init", NULL, cht_never, cheat_init, 0),
 
   // end-of-list marker
   {NULL}
@@ -1055,4 +1061,17 @@ static void cheat_chicken(void)
     plyr->message = "CHICKEN ON";
   }
   P_MapEnd();
+}
+
+static void cheat_init(void)
+{
+  extern dboolean partial_reset;
+
+  partial_reset = true;
+
+  if (!hexen) return;
+
+  G_DeferedInitNew(gameskill, gameepisode, gamemap);
+
+  P_SetMessage(plyr, "LEVEL WARP", true);
 }
