@@ -48,6 +48,8 @@ side_t    *sidedef;
 line_t    *linedef;
 sector_t  *frontsector;
 sector_t  *backsector;
+sector_t  *poly_frontsector;
+dboolean   poly_add_line;
 drawseg_t *ds_p;
 
 // killough 4/7/98: indicates doors closed wrt automap bugfix:
@@ -786,6 +788,8 @@ static void R_Subsector(int num)
     int polyCount;
     seg_t **polySeg;
 
+    poly_add_line = true;
+    poly_frontsector = sub->sector;
     polyCount = sub->poly->numsegs;
     polySeg = sub->poly->segs;
     while (polyCount--)
@@ -798,6 +802,8 @@ static void R_Subsector(int num)
       (*polySeg)->pangle = (*polySeg)->angle;
       R_AddLine(*polySeg++);
     }
+    poly_add_line = false;
+    poly_frontsector = NULL;
   }
 
   count = sub->numlines;
