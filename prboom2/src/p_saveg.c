@@ -1406,12 +1406,34 @@ void P_UnArchivePolyobjs(void)
 
 void P_ArchiveScripts(void)
 {
+  size_t size;
+
   if (!hexen) return;
+
+  size = sizeof(*ACSInfo) * ACScriptCount;
+  CheckSaveGame(size);
+  memcpy(save_p, ACSInfo, size);
+  save_p += size;
+
+  size = sizeof(*MapVars) * MAX_ACS_MAP_VARS;
+  CheckSaveGame(size);
+  memcpy(save_p, MapVars, size);
+  save_p += size;
 }
 
 void P_UnArchiveScripts(void)
 {
+  size_t size;
+
   if (!hexen) return;
+
+  size = sizeof(*ACSInfo) * ACScriptCount;
+  memcpy(ACSInfo, save_p, size);
+  save_p += size;
+
+  size = sizeof(*MapVars) * MAX_ACS_MAP_VARS;
+  memcpy(MapVars, save_p, size);
+  save_p += size;
 }
 
 void P_ArchiveSounds(void)
