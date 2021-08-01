@@ -609,6 +609,13 @@ typedef enum {
   tc_true_pusher,
   tc_true_flicker,
   tc_true_friction,
+  tc_true_acs,
+  tc_true_waggle,
+  tc_true_light,
+  tc_true_phase,
+  tc_true_pillar,
+  tc_true_poly,
+  tc_true_polydoor,
   tc_true_end
 } true_thinkerclass_t;
 
@@ -656,6 +663,14 @@ void P_TrueArchiveThinkers(void) {
         th->function==T_Pusher       ? 4+sizeof(pusher_t)      :
         th->function==T_FireFlicker  ? 4+sizeof(fireflicker_t) :
         th->function==T_Friction     ? 4+sizeof(friction_t)    :
+        th->function==T_Light        ? 4+sizeof(light_t)       :
+        th->function==T_Phase        ? 4+sizeof(phase_t)       :
+        th->function==T_InterpretACS ? 4+sizeof(acs_t)         :
+        th->function==T_BuildPillar  ? 4+sizeof(pillar_t)      :
+        th->function==T_FloorWaggle  ? 4+sizeof(floorWaggle_t) :
+        th->function==T_RotatePoly   ? 4+sizeof(polyevent_t)   :
+        th->function==T_MovePoly     ? 4+sizeof(polyevent_t)   :
+        th->function==T_PolyDoor     ? 4+sizeof(polydoor_t)    :
         P_IsMobjThinker(th)          ? 4+sizeof(mobj_t)        :
       0;
 
