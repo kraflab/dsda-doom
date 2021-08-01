@@ -843,6 +843,24 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
+    if (th->function == T_InterpretACS)
+    {
+      acs_t *acs;
+      *save_p++ = tc_true_acs;
+      PADSAVEP();
+      acs = (acs_t *)save_p;
+      memcpy (save_p, th, sizeof(acs_t));
+      save_p += sizeof(acs_t);
+
+      if (acs->activator)
+        acs->activator =
+          P_IsMobjThinker(&acs->activator->thinker) ?
+          (mobj_t *) acs->activator->thinker.prev : NULL;
+      acs->line = (line_t *) (acs->line ? acs->line - lines : -1);
+
+      continue;
+    }
+
     if (P_IsMobjThinker(th))
     {
       mobj_t *mobj;
