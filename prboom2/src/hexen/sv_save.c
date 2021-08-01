@@ -32,6 +32,7 @@
 #include "hu_stuff.h"
 #include "lprintf.h"
 
+#include "hexen/a_action.h"
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
 #include "hexen/sn_sonix.h"
@@ -92,7 +93,6 @@ static int TargetPlayerCount;
 
 extern int inv_ptr;
 extern int curpos;
-extern int localQuakeHappening[MAX_MAXPLAYERS];
 
 typedef struct
 {

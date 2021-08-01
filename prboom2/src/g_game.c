@@ -291,6 +291,7 @@ static dboolean InventoryMoveRight(void);
 
 // hexen
 #include "heretic/sb_bar.h"
+#include "hexen/a_action.h"
 #include "hexen/p_acs.h"
 #include "hexen/sn_sonix.h"
 #include "hexen/sv_save.h"
@@ -1599,7 +1600,6 @@ void G_PlayerReborn (int player)
   int secretcount;
   int maxkilldiscount; //e6y
   unsigned int worldTimer;
-  extern int localQuakeHappening[MAX_MAXPLAYERS];
 
   memcpy (frags, players[player].frags, sizeof frags);
   killcount = players[player].killcount;

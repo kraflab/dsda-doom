@@ -60,6 +60,8 @@
 #include "e6y.h"//e6y
 #include "xs_Float.h"
 
+#include "hexen/a_action.h"
+
 // e6y
 // Now they are variables. Depends from render_doom_lightmaps variable.
 // Unify colour maping logic by cph is removed, because of bugs.
@@ -1080,8 +1082,6 @@ void R_ClearStats(void)
 //
 // R_RenderView
 //
-
-extern int localQuakeHappening[MAX_MAXPLAYERS];
 
 void R_RenderPlayerView (player_t* player)
 {

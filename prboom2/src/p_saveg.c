@@ -47,6 +47,7 @@
 #include "hu_tracers.h"
 #include "e6y.h"//e6y
 
+#include "hexen/a_action.h"
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
 #include "hexen/sv_save.h"
@@ -1448,10 +1449,23 @@ void P_UnArchiveSounds(void)
 
 void P_ArchiveMisc(void)
 {
+  size_t size;
+
   if (!hexen) return;
+
+  size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
+  CheckSaveGame(size);
+  memcpy(save_p, localQuakeHappening, size);
+  save_p += size;
 }
 
 void P_UnArchiveMisc(void)
 {
+  size_t size;
+
   if (!hexen) return;
+
+  size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
+  memcpy(localQuakeHappening, save_p, size);
+  save_p += size;
 }
