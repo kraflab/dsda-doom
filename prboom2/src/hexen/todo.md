@@ -3,7 +3,7 @@
 - analysis
 - key frames
 - dehacked
-- special1.m, special2.m -> P_SetTarget
+- special1.m, special2.m, acs.activator -> P_SetTarget
 - morph for exhud
 - sky code
 - save new thinkers
