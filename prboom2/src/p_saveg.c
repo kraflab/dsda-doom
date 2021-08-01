@@ -609,11 +609,11 @@ typedef enum {
   tc_true_pusher,
   tc_true_flicker,
   tc_true_friction,
-  tc_true_acs,
-  tc_true_waggle,
   tc_true_light,
   tc_true_phase,
+  tc_true_acs,
   tc_true_pillar,
+  tc_true_waggle,
   tc_true_poly,
   tc_true_polydoor,
   tc_true_end
