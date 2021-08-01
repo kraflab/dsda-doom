@@ -273,11 +273,6 @@ void P_UnArchiveWorld (void)
 // Thinkers
 //
 
-typedef enum {
-  tc_end,
-  tc_mobj
-} thinkerclass_t;
-
 // phares 9/13/98: Moved this code outside of P_ArchiveThinkers so the
 // thinker indices could be used by the code that saves sector info.
 
@@ -340,22 +335,6 @@ int P_GetMobj(mobj_t* mi, size_t s)
     I_Error("Corrupt savegame");
   return i;
 }
-
-enum {
-  tc_ceiling,
-  tc_door,
-  tc_floor,
-  tc_plat,
-  tc_flash,
-  tc_strobe,
-  tc_glow,
-  tc_elevator,    //jff 2/22/98 new elevator type thinker
-  tc_scroll,      // killough 3/7/98: new scroll effect thinker
-  tc_pusher,      // phares 3/22/98:  new push/pull effect thinker
-  tc_flicker,     // killough 10/4/98
-  tc_endspecials,
-  tc_friction // store friction for cl 9
-} specials_e;
 
 //
 // Things to handle:
