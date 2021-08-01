@@ -50,6 +50,7 @@
 #include "hexen/a_action.h"
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
+#include "hexen/sn_sonix.h"
 #include "hexen/sv_save.h"
 
 #include "dsda/msecnode.h"
@@ -1439,12 +1440,114 @@ void P_UnArchiveScripts(void)
 
 void P_ArchiveSounds(void)
 {
+  seqnode_t *node;
+  sector_t *sec;
+  int difference;
+  int i;
+
   if (!hexen) return;
+
+  CheckSaveGame(sizeof(ActiveSequences) + ActiveSequences * (6 * sizeof(int) + 1));
+
+  memcpy(save_p, &ActiveSequences, sizeof(ActiveSequences));
+  save_p += sizeof(ActiveSequences);
+
+  for (node = SequenceListHead; node; node = node->next)
+  {
+    memcpy(save_p, &node->sequence, sizeof(node->sequence));
+    save_p += sizeof(node->sequence);
+
+    memcpy(save_p, &node->delayTics, sizeof(node->delayTics));
+    save_p += sizeof(node->delayTics);
+
+    memcpy(save_p, &node->volume, sizeof(node->volume));
+    save_p += sizeof(node->volume);
+
+    difference = SN_GetSequenceOffset(node->sequence, node->sequencePtr);
+    memcpy(save_p, &difference, sizeof(difference));
+    save_p += sizeof(difference);
+
+    memcpy(save_p, &node->currentSoundID, sizeof(node->currentSoundID));
+    save_p += sizeof(node->currentSoundID);
+
+    for (i = 0; i < po_NumPolyobjs; i++)
+    {
+      if (node->mobj == (mobj_t *) &polyobjs[i].startSpot)
+      {
+        break;
+      }
+    }
+
+    if (i == po_NumPolyobjs)
+    {                       // Sound is attached to a sector, not a polyobj
+      sec = R_PointInSubsector(node->mobj->x, node->mobj->y)->sector;
+      difference = (int) (sec - sectors);
+      *save_p++ = 0;   // 0 -- sector sound origin
+    }
+    else
+    {
+      difference = i;
+      *save_p++ = 1;   // 1 -- polyobj sound origin
+    }
+
+    memcpy(save_p, &difference, sizeof(difference));
+    save_p += sizeof(difference);
+  }
 }
 
 void P_UnArchiveSounds(void)
 {
+  int i;
+  int numSequences;
+  int sequence;
+  int delayTics;
+  int volume;
+  int seqOffset;
+  int soundID;
+  byte polySnd;
+  int secNum;
+  mobj_t *sndMobj;
+
   if (!hexen) return;
+
+  memcpy(&numSequences, save_p, sizeof(numSequences));
+  save_p += sizeof(numSequences);
+
+  i = 0;
+  while (i < numSequences)
+  {
+    memcpy(&sequence, save_p, sizeof(sequence));
+    save_p += sizeof(sequence);
+
+    memcpy(&delayTics, save_p, sizeof(delayTics));
+    save_p += sizeof(delayTics);
+
+    memcpy(&volume, save_p, sizeof(volume));
+    save_p += sizeof(volume);
+
+    memcpy(&seqOffset, save_p, sizeof(seqOffset));
+    save_p += sizeof(seqOffset);
+
+    memcpy(&soundID, save_p, sizeof(soundID));
+    save_p += sizeof(soundID);
+
+    polySnd = *save_p++;
+
+    memcpy(&secNum, save_p, sizeof(secNum));
+    save_p += sizeof(secNum);
+
+    if (!polySnd)
+    {
+      sndMobj = (mobj_t *) &sectors[secNum].soundorg;
+    }
+    else
+    {
+      sndMobj = (mobj_t *) &polyobjs[secNum].startSpot;
+    }
+    SN_StartSequence(sndMobj, sequence);
+    SN_ChangeNodeData(i, seqOffset, delayTics, volume, soundID);
+    i++;
+  }
 }
 
 void P_ArchiveMisc(void)
