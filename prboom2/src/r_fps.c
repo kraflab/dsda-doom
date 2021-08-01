@@ -179,14 +179,23 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     }
   }
 
-  // HEXEN_TODO: quake probably doesn't play well with uncapped
   if (localQuakeHappening[displayplayer] && !paused)
   {
-    int intensity = localQuakeHappening[displayplayer];
-    viewx += ((M_Random() % (intensity << 2))
-              - (intensity << 1)) << FRACBITS;
-    viewy += ((M_Random() % (intensity << 2))
-              - (intensity << 1)) << FRACBITS;
+    static int x_displacement;
+    static int y_displacement;
+    static int last_leveltime = -1;
+
+    if (leveltime != last_leveltime)
+    {
+      int intensity = localQuakeHappening[displayplayer];
+
+      x_displacement = ((M_Random() % (intensity << 2)) - (intensity << 1)) << FRACBITS;
+      y_displacement = ((M_Random() % (intensity << 2)) - (intensity << 1)) << FRACBITS;
+      last_leveltime = leveltime;
+    }
+
+    viewx += x_displacement;
+    viewy += y_displacement;
   }
 
   if (!paused && movement_smooth)
