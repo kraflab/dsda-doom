@@ -970,17 +970,17 @@ void P_TrueUnArchiveThinkers(void) {
 
   // remove all the current thinkers
   for (th = thinkercap.next; th != &thinkercap; )
+  {
+    thinker_t *next = th->next;
+    if (P_IsMobjThinker(th))
     {
-      thinker_t *next = th->next;
-      if (P_IsMobjThinker(th))
-      {
-        P_RemoveMobj ((mobj_t *) th);
-        P_RemoveThinkerDelayed(th); // fix mobj leak
-      }
-      else
-        Z_Free (th);
-      th = next;
+      P_RemoveMobj ((mobj_t *) th);
+      P_RemoveThinkerDelayed(th); // fix mobj leak
     }
+    else
+      Z_Free (th);
+    th = next;
+  }
   P_InitThinkers ();
 
   // killough 2/14/98: count number of thinkers by skipping through them
@@ -990,7 +990,8 @@ void P_TrueUnArchiveThinkers(void) {
     sp = save_p;
     mobj_count = 0;
 
-    while ((tc = *save_p++) != tc_true_end) {
+    while ((tc = *save_p++) != tc_true_end)
+    {
       if (tc == tc_true_mobj) mobj_count++;
       PADSAVEP();
       save_p +=
@@ -1246,6 +1247,7 @@ void P_TrueUnArchiveThinkers(void) {
   // killough 11/98: use P_SetNewTarget() to set fields
 
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
+  {
     if (P_IsMobjThinker(th)) {
       P_SetNewTarget(&((mobj_t *) th)->target,
         mobj_p[P_GetMobj(((mobj_t *)th)->target, mobj_count + 1)]);
@@ -1282,6 +1284,7 @@ void P_TrueUnArchiveThinkers(void) {
         th->references--;
       }
     }
+  }
 
   {  // killough 9/14/98: restore soundtargets
     int i;
