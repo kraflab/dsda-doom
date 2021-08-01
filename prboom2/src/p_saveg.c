@@ -843,6 +843,18 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
+    if (th->function == T_Light)
+    {
+      light_t *light;
+      *save_p++ = tc_true_light;
+      light = (light_t *)save_p;
+      PADSAVEP();
+      memcpy (save_p, th, sizeof(light_t));
+      save_p += sizeof(light_t);
+      light->sector = (sector_t *)(intptr_t)(light->sector->iSectorID);
+      continue;
+    }
+
     if (th->function == T_InterpretACS)
     {
       acs_t *acs;
