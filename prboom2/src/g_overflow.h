@@ -83,7 +83,7 @@ typedef struct
 {
     int len;
     void *addr;
-    dboolean int16_array;
+    void *addr2;
 } intercepts_overrun_t;
 
 extern intercepts_overrun_t intercepts_overrun[];
