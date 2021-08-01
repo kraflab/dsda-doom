@@ -183,7 +183,11 @@ void P_InitPicAnims (void)
   int         lump = -1;
   //  Init animation
 
-  if (hexen) return;
+  if (hexen)
+  {
+    MarkAnimatedTextures();//e6y
+    return;
+  }
 
   if (heretic)
   {
