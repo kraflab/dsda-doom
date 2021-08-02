@@ -861,8 +861,8 @@ void P_TrueArchiveThinkers(void) {
       *save_p++ = tc_true_phase;
       phase = (phase_t *)save_p;
       PADSAVEP();
-      memcpy (save_p, th, sizeof(light_t));
-      save_p += sizeof(light_t);
+      memcpy (save_p, th, sizeof(phase_t));
+      save_p += sizeof(phase_t);
       phase->sector = (sector_t *)(intptr_t)(phase->sector->iSectorID);
       continue;
     }
