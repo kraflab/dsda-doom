@@ -910,6 +910,15 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
+    if (th->function == T_RotatePoly)
+    {
+      *save_p++ = tc_true_poly_rotate;
+      PADSAVEP();
+      memcpy (save_p, th, sizeof(polyevent_t));
+      save_p += sizeof(polyevent_t);
+      continue;
+    }
+
     if (P_IsMobjThinker(th))
     {
       mobj_t *mobj;
