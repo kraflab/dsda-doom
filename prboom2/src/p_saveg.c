@@ -885,6 +885,18 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
+    if (th->function == T_BuildPillar)
+    {
+      pillar_t *pillar;
+      *save_p++ = tc_true_pillar;
+      pillar = (pillar_t *)save_p;
+      PADSAVEP();
+      memcpy (save_p, th, sizeof(pillar_t));
+      save_p += sizeof(pillar_t);
+      pillar->sector = (sector_t *)(intptr_t)(pillar->sector->iSectorID);
+      continue;
+    }
+
     if (P_IsMobjThinker(th))
     {
       mobj_t *mobj;
