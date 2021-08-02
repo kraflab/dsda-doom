@@ -1454,6 +1454,12 @@ void P_TrueUnArchiveThinkers(void) {
 
   free(mobj_p);    // free translation table
 
+  if (hexen)
+  {
+    P_CreateTIDList();
+    P_InitCreatureCorpseQueue(true);    // true = scan for corpses
+  }
+
   // killough 3/26/98: Spawn icon landings:
   if (gamemode == commercial && !hexen)
   {
