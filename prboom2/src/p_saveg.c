@@ -1066,19 +1066,27 @@ void P_TrueUnArchiveThinkers(void) {
       if (tc == tc_true_mobj) mobj_count++;
       PADSAVEP();
       save_p +=
-        tc == tc_true_ceiling  ? sizeof(ceiling_t)     :
-        tc == tc_true_door     ? sizeof(vldoor_t)      :
-        tc == tc_true_floor    ? sizeof(floormove_t)   :
-        tc == tc_true_plat     ? sizeof(plat_t)        :
-        tc == tc_true_flash    ? sizeof(lightflash_t)  :
-        tc == tc_true_strobe   ? sizeof(strobe_t)      :
-        tc == tc_true_glow     ? sizeof(glow_t)        :
-        tc == tc_true_elevator ? sizeof(elevator_t)    :
-        tc == tc_true_scroll   ? sizeof(scroll_t)      :
-        tc == tc_true_pusher   ? sizeof(pusher_t)      :
-        tc == tc_true_flicker  ? sizeof(fireflicker_t) :
-        tc == tc_true_friction ? sizeof(friction_t)    :
-        tc == tc_true_mobj     ? sizeof(mobj_t)        :
+        tc == tc_true_ceiling     ? sizeof(ceiling_t)     :
+        tc == tc_true_door        ? sizeof(vldoor_t)      :
+        tc == tc_true_floor       ? sizeof(floormove_t)   :
+        tc == tc_true_plat        ? sizeof(plat_t)        :
+        tc == tc_true_flash       ? sizeof(lightflash_t)  :
+        tc == tc_true_strobe      ? sizeof(strobe_t)      :
+        tc == tc_true_glow        ? sizeof(glow_t)        :
+        tc == tc_true_elevator    ? sizeof(elevator_t)    :
+        tc == tc_true_scroll      ? sizeof(scroll_t)      :
+        tc == tc_true_pusher      ? sizeof(pusher_t)      :
+        tc == tc_true_flicker     ? sizeof(fireflicker_t) :
+        tc == tc_true_friction    ? sizeof(friction_t)    :
+        tc == tc_true_light       ? sizeof(light_t)       :
+        tc == tc_true_phase       ? sizeof(phase_t)       :
+        tc == tc_true_acs         ? sizeof(acs_t)         :
+        tc == tc_true_pillar      ? sizeof(pillar_t)      :
+        tc == tc_true_waggle      ? sizeof(floorWaggle_t) :
+        tc == tc_true_poly_rotate ? sizeof(polyevent_t)   :
+        tc == tc_true_poly_move   ? sizeof(polyevent_t)   :
+        tc == tc_true_poly_door   ? sizeof(polydoor_t)    :
+        tc == tc_true_mobj        ? sizeof(mobj_t)        :
       0;
     }
 
