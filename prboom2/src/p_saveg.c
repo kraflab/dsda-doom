@@ -852,8 +852,8 @@ void P_TrueArchiveThinkers(void) {
     {
       light_t *light;
       *save_p++ = tc_true_light;
-      light = (light_t *)save_p;
       PADSAVEP();
+      light = (light_t *)save_p;
       memcpy (save_p, th, sizeof(light_t));
       save_p += sizeof(light_t);
       light->sector = (sector_t *)(intptr_t)(light->sector->iSectorID);
@@ -864,8 +864,8 @@ void P_TrueArchiveThinkers(void) {
     {
       phase_t *phase;
       *save_p++ = tc_true_phase;
-      phase = (phase_t *)save_p;
       PADSAVEP();
+      phase = (phase_t *)save_p;
       memcpy (save_p, th, sizeof(phase_t));
       save_p += sizeof(phase_t);
       phase->sector = (sector_t *)(intptr_t)(phase->sector->iSectorID);
@@ -891,8 +891,8 @@ void P_TrueArchiveThinkers(void) {
     {
       pillar_t *pillar;
       *save_p++ = tc_true_pillar;
-      pillar = (pillar_t *)save_p;
       PADSAVEP();
+      pillar = (pillar_t *)save_p;
       memcpy (save_p, th, sizeof(pillar_t));
       save_p += sizeof(pillar_t);
       pillar->sector = (sector_t *)(intptr_t)(pillar->sector->iSectorID);
@@ -903,8 +903,8 @@ void P_TrueArchiveThinkers(void) {
     {
       floorWaggle_t *floor_waggle;
       *save_p++ = tc_true_waggle;
-      floor_waggle = (floorWaggle_t *)save_p;
       PADSAVEP();
+      floor_waggle = (floorWaggle_t *)save_p;
       memcpy (save_p, th, sizeof(floorWaggle_t));
       save_p += sizeof(floorWaggle_t);
       floor_waggle->sector = (sector_t *)(intptr_t)(floor_waggle->sector->iSectorID);
