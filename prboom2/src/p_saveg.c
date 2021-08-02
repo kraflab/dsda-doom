@@ -285,6 +285,16 @@ static dboolean P_IsMobjThinker(thinker_t* thinker)
          (thinker->function == P_RemoveThinkerDelayed && thinker->references);
 }
 
+static void P_ReplaceMobjWithIndex(mobj_t **mobj)
+{
+  if (*mobj)
+  {
+    *mobj = P_IsMobjThinker(&(*mobj)->thinker) ?
+            (mobj_t *) (*mobj)->thinker.prev   :
+            NULL;
+  }
+}
+
 void P_ThinkerToIndex(void)
 {
   thinker_t *th;
@@ -877,10 +887,7 @@ void P_TrueArchiveThinkers(void) {
       memcpy (save_p, th, sizeof(acs_t));
       save_p += sizeof(acs_t);
 
-      if (acs->activator)
-        acs->activator =
-          P_IsMobjThinker(&acs->activator->thinker) ?
-          (mobj_t *) acs->activator->thinker.prev : NULL;
+      P_ReplaceMobjWithIndex(&acs->activator);
       acs->line = (line_t *) (acs->line ? acs->line - lines : -1);
 
       continue;
@@ -966,25 +973,14 @@ void P_TrueArchiveThinkers(void) {
       // the thinker pointed to by these fields is not a
       // mobj thinker.
 
-      if (mobj->target)
-        mobj->target =
-          P_IsMobjThinker(&mobj->target->thinker) ?
-          (mobj_t *) mobj->target->thinker.prev : NULL;
-
-      if (mobj->tracer)
-        mobj->tracer =
-          P_IsMobjThinker(&mobj->tracer->thinker) ?
-          (mobj_t *) mobj->tracer->thinker.prev : NULL;
+      P_ReplaceMobjWithIndex(&mobj->target);
+      P_ReplaceMobjWithIndex(&mobj->tracer);
 
       // killough 2/14/98: new field: save last known enemy. Prevents
       // monsters from going to sleep after killing monsters and not
       // seeing player anymore.
 
-      if (mobj->lastenemy)
-        mobj->lastenemy =
-          P_IsMobjThinker(&mobj->lastenemy->thinker) ?
-          (mobj_t *) mobj->lastenemy->thinker.prev : NULL;
-
+      P_ReplaceMobjWithIndex(&mobj->lastenemy);
 
       // killough 2/14/98: end changes
 
@@ -997,20 +993,10 @@ void P_TrueArchiveThinkers(void) {
           case HERETIC_MT_MUMMYFX1:    // A_MummyFX1Seek
           case HERETIC_MT_HORNRODFX2:  // A_SkullRodPL2Seek
           case HERETIC_MT_PHOENIXFX1:  // A_PhoenixPuff
-            if (mobj->special1.m)
-            {
-              mobj->special1.m =
-                P_IsMobjThinker(&mobj->special1.m->thinker) ?
-                (mobj_t *) mobj->special1.m->thinker.prev : NULL;
-            }
+            P_ReplaceMobjWithIndex(&mobj->special1.m);
             break;
           case HERETIC_MT_POD:
-            if (mobj->special2.m)
-            {
-              mobj->special2.m =
-                P_IsMobjThinker(&mobj->special2.m->thinker) ?
-                (mobj_t *) mobj->special2.m->thinker.prev : NULL;
-            }
+            P_ReplaceMobjWithIndex(&mobj->special2.m);
             break;
         }
       }
@@ -1032,10 +1018,7 @@ void P_TrueArchiveThinkers(void) {
       mobj_t *target = sectors[i].soundtarget;
       // Fix crash on reload when a soundtarget points to a removed corpse
       // (prboom bug #1590350)
-      if (target && P_IsMobjThinker(&target->thinker))
-        target = (mobj_t *) target->thinker.prev;
-      else
-        target = NULL;
+      P_ReplaceMobjWithIndex(&target);
       memcpy(save_p, &target, sizeof target);
       save_p += sizeof target;
     }
