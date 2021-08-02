@@ -928,6 +928,15 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
+    if (th->function == T_PolyDoor)
+    {
+      *save_p++ = tc_true_poly_door;
+      PADSAVEP();
+      memcpy (save_p, th, sizeof(polydoor_t));
+      save_p += sizeof(polydoor_t);
+      continue;
+    }
+
     if (P_IsMobjThinker(th))
     {
       mobj_t *mobj;
