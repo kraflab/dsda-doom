@@ -6,8 +6,7 @@
 - special1.m, special2.m, acs.activator -> P_SetTarget
 - morph for exhud
 - sky code
-- save new thinkers
-- save files
+- test save files
 - render_doom_lightmaps
 - MStaff palette
 - ALTSHADOW
