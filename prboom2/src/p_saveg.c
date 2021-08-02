@@ -356,22 +356,6 @@ void P_IndexToThinker(void)
     th->prev = prev;
 }
 
-//
-// Things to handle:
-//
-// T_MoveCeiling, (ceiling_t: sector_t * swizzle), - active list
-// T_VerticalDoor, (vldoor_t: sector_t * swizzle),
-// T_MoveFloor, (floormove_t: sector_t * swizzle),
-// T_LightFlash, (lightflash_t: sector_t * swizzle),
-// T_StrobeFlash, (strobe_t: sector_t *),
-// T_Glow, (glow_t: sector_t *),
-// T_PlatRaise, (plat_t: sector_t *), - active list
-// T_MoveElevator, (plat_t: sector_t *), - active list      // jff 2/22/98
-// T_Scroll                                                 // killough 3/7/98
-// T_Pusher                                                 // phares 3/22/98
-// T_FireFlicker                                            // killough 10/4/98
-//
-
 // killough 2/16/98: save/restore random number generator state information
 
 void P_ArchiveRNG(void)
