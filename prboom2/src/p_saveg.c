@@ -978,21 +978,10 @@ void P_TrueArchiveThinkers(void) {
 
       // killough 2/14/98: end changes
 
-      if (heretic)
+      if (raven)
       {
-        switch (mobj->type)
-        {
-          case HERETIC_MT_MACEFX4:     // A_DeathBallImpact
-          case HERETIC_MT_WHIRLWIND:   // A_WhirlwindSeek
-          case HERETIC_MT_MUMMYFX1:    // A_MummyFX1Seek
-          case HERETIC_MT_HORNRODFX2:  // A_SkullRodPL2Seek
-          case HERETIC_MT_PHOENIXFX1:  // A_PhoenixPuff
-            P_ReplaceMobjWithIndex(&mobj->special1.m);
-            break;
-          case HERETIC_MT_POD:
-            P_ReplaceMobjWithIndex(&mobj->special2.m);
-            break;
-        }
+        P_ReplaceMobjWithIndex(&mobj->special1.m);
+        P_ReplaceMobjWithIndex(&mobj->special2.m);
       }
 
       if (mobj->player)
@@ -1432,21 +1421,10 @@ void P_TrueUnArchiveThinkers(void) {
       P_ReplaceIndexWithMobj(&((mobj_t *) th)->tracer, mobj_p, mobj_count);
       P_ReplaceIndexWithMobj(&((mobj_t *) th)->lastenemy, mobj_p, mobj_count);
 
-      if (heretic)
+      if (raven)
       {
-        switch (((mobj_t *) th)->type)
-        {
-          case HERETIC_MT_MACEFX4:     // A_DeathBallImpact
-          case HERETIC_MT_WHIRLWIND:   // A_WhirlwindSeek
-          case HERETIC_MT_MUMMYFX1:    // A_MummyFX1Seek
-          case HERETIC_MT_HORNRODFX2:  // A_SkullRodPL2Seek
-          case HERETIC_MT_PHOENIXFX1:  // A_PhoenixPuff
-            P_ReplaceIndexWithMobj(&((mobj_t *) th)->special1.m, mobj_p, mobj_count);
-            break;
-          case HERETIC_MT_POD:
-            P_ReplaceIndexWithMobj(&((mobj_t *) th)->special2.m, mobj_p, mobj_count);
-            break;
-        }
+        P_ReplaceIndexWithMobj(&((mobj_t *) th)->special1.m, mobj_p, mobj_count);
+        P_ReplaceIndexWithMobj(&((mobj_t *) th)->special2.m, mobj_p, mobj_count);
       }
 
       // restore references now that targets are set
