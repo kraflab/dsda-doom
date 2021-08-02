@@ -1275,6 +1275,18 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
+      case tc_true_phase:
+        PADSAVEP();
+        {
+          phase_t *phase = Z_Malloc(sizeof(*phase), PU_LEVEL, NULL);
+          memcpy(phase, save_p, sizeof(*phase));
+          save_p += sizeof(*phase);
+          phase->sector = &sectors[(size_t)phase->sector];
+          phase->thinker.function = T_Phase;
+          P_AddThinker(&phase->thinker);
+          break;
+        }
+
       case tc_true_mobj:
         PADSAVEP();
         {
