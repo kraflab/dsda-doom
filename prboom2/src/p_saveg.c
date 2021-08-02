@@ -1263,6 +1263,18 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
+      case tc_true_light:
+        PADSAVEP();
+        {
+          light_t *light = Z_Malloc(sizeof(*light), PU_LEVEL, NULL);
+          memcpy(light, save_p, sizeof(*light));
+          save_p += sizeof(*light);
+          light->sector = &sectors[(size_t)light->sector];
+          light->thinker.function = T_Light;
+          P_AddThinker(&light->thinker);
+          break;
+        }
+
       case tc_true_mobj:
         PADSAVEP();
         {
