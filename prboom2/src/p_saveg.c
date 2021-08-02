@@ -295,6 +295,40 @@ static void P_ReplaceMobjWithIndex(mobj_t **mobj)
   }
 }
 
+/*
+ * killough 11/98
+ *
+ * Same as P_SetTarget() in p_tick.c, except that the target is nullified
+ * first, so that no old target's reference count is decreased (when loading
+ * savegames, old targets are indices, not really pointers to targets).
+ */
+
+static void P_SetNewTarget(mobj_t **mop, mobj_t *targ)
+{
+  *mop = NULL;
+  P_SetTarget(mop, targ);
+}
+
+// savegame file stores ints in the corresponding * field; this function
+// safely casts them back to int.
+int P_GetMobj(mobj_t* mi, size_t s)
+{
+  size_t i = (size_t)mi;
+  if (i >= s)
+    I_Error("Corrupt savegame");
+  return i;
+}
+
+static void P_ReplaceIndexWithMobj(mobj_t **mobj, mobj_t **mobj_p, int mobj_count)
+{
+  P_SetNewTarget(
+    mobj,
+    mobj_p[
+      P_GetMobj(*mobj, mobj_count + 1)
+    ]
+  );
+}
+
 void P_ThinkerToIndex(void)
 {
   thinker_t *th;
@@ -320,30 +354,6 @@ void P_IndexToThinker(void)
 
   for (th = thinkercap.next ; th != &thinkercap ; prev=th, th=th->next)
     th->prev = prev;
-}
-
-/*
- * killough 11/98
- *
- * Same as P_SetTarget() in p_tick.c, except that the target is nullified
- * first, so that no old target's reference count is decreased (when loading
- * savegames, old targets are indices, not really pointers to targets).
- */
-
-static void P_SetNewTarget(mobj_t **mop, mobj_t *targ)
-{
-  *mop = NULL;
-  P_SetTarget(mop, targ);
-}
-
-// savegame file stores ints in the corresponding * field; this function
-// safely casts them back to int.
-int P_GetMobj(mobj_t* mi, size_t s)
-{
-  size_t i = (size_t)mi;
-  if (i >= s)
-    I_Error("Corrupt savegame");
-  return i;
 }
 
 //
@@ -1326,14 +1336,9 @@ void P_TrueUnArchiveThinkers(void) {
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
   {
     if (P_IsMobjThinker(th)) {
-      P_SetNewTarget(&((mobj_t *) th)->target,
-        mobj_p[P_GetMobj(((mobj_t *)th)->target, mobj_count + 1)]);
-
-      P_SetNewTarget(&((mobj_t *) th)->tracer,
-        mobj_p[P_GetMobj(((mobj_t *)th)->tracer, mobj_count + 1)]);
-
-      P_SetNewTarget(&((mobj_t *) th)->lastenemy,
-        mobj_p[P_GetMobj(((mobj_t *)th)->lastenemy, mobj_count + 1)]);
+      P_ReplaceIndexWithMobj(&((mobj_t *) th)->target, mobj_p, mobj_count);
+      P_ReplaceIndexWithMobj(&((mobj_t *) th)->tracer, mobj_p, mobj_count);
+      P_ReplaceIndexWithMobj(&((mobj_t *) th)->lastenemy, mobj_p, mobj_count);
 
       if (heretic)
       {
@@ -1344,12 +1349,10 @@ void P_TrueUnArchiveThinkers(void) {
           case HERETIC_MT_MUMMYFX1:    // A_MummyFX1Seek
           case HERETIC_MT_HORNRODFX2:  // A_SkullRodPL2Seek
           case HERETIC_MT_PHOENIXFX1:  // A_PhoenixPuff
-            P_SetNewTarget(&((mobj_t *) th)->special1.m,
-              mobj_p[P_GetMobj(((mobj_t *)th)->special1.m, mobj_count + 1)]);
+            P_ReplaceIndexWithMobj(&((mobj_t *) th)->special1.m, mobj_p, mobj_count);
             break;
           case HERETIC_MT_POD:
-            P_SetNewTarget(&((mobj_t *) th)->special2.m,
-              mobj_p[P_GetMobj(((mobj_t *)th)->special2.m, mobj_count + 1)]);
+            P_ReplaceIndexWithMobj(&((mobj_t *) th)->special2.m, mobj_p, mobj_count);
             break;
         }
       }
@@ -1367,11 +1370,10 @@ void P_TrueUnArchiveThinkers(void) {
     int i;
     for (i = 0; i < numsectors; i++)
     {
-      mobj_t *target;
-      memcpy(&target, save_p, sizeof target);
-      save_p += sizeof target;
+      memcpy(&sectors[i].soundtarget, save_p, sizeof sectors[i].soundtarget);
+      save_p += sizeof sectors[i].soundtarget;
       // Must verify soundtarget. See P_TrueArchiveThinkers.
-      P_SetNewTarget(&sectors[i].soundtarget, mobj_p[P_GetMobj(target, mobj_count + 1)]);
+      P_ReplaceIndexWithMobj(&sectors[i].soundtarget, mobj_p, mobj_count);
     }
   }
 
