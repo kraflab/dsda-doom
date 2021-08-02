@@ -1287,6 +1287,18 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
+      case tc_true_acs:
+        PADSAVEP();
+        {
+          acs_t *acs = Z_Malloc(sizeof(*acs), PU_LEVEL, NULL);
+          memcpy(acs, save_p, sizeof(*acs));
+          save_p += sizeof(*acs);
+          acs->line = (intptr_t) acs->line != -1 ? &lines[(size_t) acs->line] : NULL;
+          acs->thinker.function = T_InterpretACS;
+          P_AddThinker(&acs->thinker);
+          break;
+        }
+
       case tc_true_mobj:
         PADSAVEP();
         {
@@ -1351,7 +1363,12 @@ void P_TrueUnArchiveThinkers(void) {
 
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
   {
-    if (P_IsMobjThinker(th)) {
+    if (th->function == T_InterpretACS)
+    {
+      P_ReplaceIndexWithMobj(&((acs_t *) th)->activator, mobj_p, mobj_count);
+    }
+    else if (P_IsMobjThinker(th))
+    {
       P_ReplaceIndexWithMobj(&((mobj_t *) th)->target, mobj_p, mobj_count);
       P_ReplaceIndexWithMobj(&((mobj_t *) th)->tracer, mobj_p, mobj_count);
       P_ReplaceIndexWithMobj(&((mobj_t *) th)->lastenemy, mobj_p, mobj_count);
