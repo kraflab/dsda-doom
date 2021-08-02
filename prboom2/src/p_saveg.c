@@ -614,8 +614,9 @@ typedef enum {
   tc_true_acs,
   tc_true_pillar,
   tc_true_waggle,
-  tc_true_poly,
-  tc_true_polydoor,
+  tc_true_poly_rotate,
+  tc_true_poly_move,
+  tc_true_poly_door,
   tc_true_end
 } true_thinkerclass_t;
 
