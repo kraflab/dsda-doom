@@ -3,6 +3,6 @@
 - analysis
 - key frames
 - dehacked
-- rain1, rain2, special1.m, special2.m -> P_SetTarget
+- rain1, rain2 -> P_SetTarget
 - morph for exhud
 - sky code

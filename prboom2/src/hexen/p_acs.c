@@ -514,7 +514,7 @@ dboolean P_StartACS(int number, int map, byte * args, mobj_t * activator,
     memset(script, 0, sizeof(acs_t));
     script->number = number;
     script->infoIndex = infoIndex;
-    script->activator = activator;
+    P_SetTarget(&script->activator, activator);
     script->line = line;
     script->side = side;
     script->ip = ACSInfo[infoIndex].offset;

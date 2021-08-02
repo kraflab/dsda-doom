@@ -400,11 +400,11 @@ void A_Summon(mobj_t * actor)
         master = actor->special1.m;
         if (master->flags & MF_CORPSE)
         {                       // Master dead
-            mo->special1.m = NULL;   // No master
+            P_SetTarget(&mo->special1.m, NULL);   // No master
         }
         else
         {
-            mo->special1.m = actor->special1.m;     // Pointer to master (mobj_t *)
+            P_SetTarget(&mo->special1.m, actor->special1.m);     // Pointer to master (mobj_t *)
             P_GivePower(master->player, pw_minotaur);
         }
 
@@ -744,7 +744,7 @@ void A_ThrustInitUp(mobj_t * actor)
     actor->floorclip = 0;
     actor->flags = MF_SOLID;
     actor->flags2 = MF2_NOTELEPORT | MF2_FOOTCLIP;
-    actor->special1.m = NULL;
+    P_SetTarget(&actor->special1.m, NULL);
 }
 
 void A_ThrustInitDn(mobj_t * actor)
@@ -756,7 +756,7 @@ void A_ThrustInitDn(mobj_t * actor)
     actor->flags = 0;
     actor->flags2 = MF2_NOTELEPORT | MF2_FOOTCLIP | MF2_DONTDRAW;
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_DIRTCLUMP);
-    actor->special1.m = mo;
+    P_SetTarget(&actor->special1.m, mo);
 }
 
 
@@ -775,7 +775,7 @@ void A_ThrustRaise(mobj_t * actor)
     if ((actor->floorclip < actor->height) && actor->special1.m)
     {
         P_RemoveMobj(actor->special1.m);
-        actor->special1.m = NULL;
+        P_SetTarget(&actor->special1.m, NULL);
     }
 
     // Spawn some dirt

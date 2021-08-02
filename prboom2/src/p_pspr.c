@@ -1936,7 +1936,7 @@ void A_FireMacePL2(player_t * player, pspdef_t * psp)
         mo->momz = 2 * FRACUNIT + ((player->lookdir) << (FRACBITS - 5));
         if (linetarget)
         {
-            mo->special1.m = linetarget;
+            P_SetTarget(&mo->special1.m, linetarget);
         }
     }
     S_StartSound(player->mo, heretic_sfx_lobsht);
@@ -1962,7 +1962,7 @@ void A_DeathBallImpact(mobj_t * ball)
         {
             if (!(target->flags & MF_SHOOTABLE))
             {                   // Target died
-                ball->special1.m = NULL;
+                P_SetTarget(&ball->special1.m, NULL);
             }
             else
             {                   // Seek
@@ -1979,7 +1979,7 @@ void A_DeathBallImpact(mobj_t * ball)
                 P_AimLineAttack(ball, angle, 10 * 64 * FRACUNIT, 0);
                 if (linetarget && ball->target != linetarget)
                 {
-                    ball->special1.m = linetarget;
+                    P_SetTarget(&ball->special1.m, linetarget);
                     angle = R_PointToAngle2(ball->x, ball->y,
                                             linetarget->x, linetarget->y);
                     newAngle = true;
@@ -2097,7 +2097,7 @@ void A_FireSkullRodPL2(player_t * player, pspdef_t * psp)
     }
     if (linetarget)
     {
-        MissileMobj->special1.m = linetarget;
+        P_SetTarget(&MissileMobj->special1.m, linetarget);
     }
     S_StartSound(MissileMobj, heretic_sfx_hrnpow);
 }
@@ -2933,7 +2933,7 @@ void A_LightningZap(mobj_t * actor)
                      actor->z + deltaZ, HEXEN_MT_LIGHTNING_ZAP);
     if (mo)
     {
-        mo->special2.m = actor;
+        P_SetTarget(&mo->special2.m, actor);
         mo->momx = actor->momx;
         mo->momy = actor->momy;
         P_SetTarget(&mo->target, actor->target);
@@ -2961,14 +2961,14 @@ void A_MLightningAttack2(mobj_t * actor)
     cmo = P_SpawnPlayerMissile(actor, HEXEN_MT_LIGHTNING_CEILING);
     if (fmo)
     {
-        fmo->special1.m = NULL;
-        fmo->special2.m = cmo;
+        P_SetTarget(&fmo->special1.m, NULL);
+        P_SetTarget(&fmo->special2.m, cmo);
         A_LightningZap(fmo);
     }
     if (cmo)
     {
-        cmo->special1.m = NULL;      // mobj that it will track
-        cmo->special2.m = fmo;
+        P_SetTarget(&cmo->special1.m, NULL);      // mobj that it will track
+        P_SetTarget(&cmo->special2.m, fmo);
         A_LightningZap(cmo);
     }
     S_StartSound(actor, hexen_sfx_mage_lightning_fire);
@@ -3019,7 +3019,7 @@ void A_LightningRemove(mobj_t * actor)
     mo = actor->special2.m;
     if (mo)
     {
-        mo->special2.m = NULL;
+        P_SetTarget(&mo->special2.m, NULL);
         P_ExplodeMissile(mo);
     }
 }
@@ -3032,7 +3032,7 @@ void MStaffSpawn(mobj_t * pmo, angle_t angle)
     if (mo)
     {
         P_SetTarget(&mo->target, pmo);
-        mo->special1.m = P_RoughTargetSearch(mo, 0, 10);
+        P_SetTarget(&mo->special1.m, P_RoughTargetSearch(mo, 0, 10));
     }
 }
 
@@ -3109,7 +3109,7 @@ void A_MStaffTrack(mobj_t * actor)
 {
     if ((actor->special1.m == NULL) && (P_Random(pr_hexen) < 50))
     {
-        actor->special1.m = P_RoughTargetSearch(actor, 0, 10);
+        P_SetTarget(&actor->special1.m, P_RoughTargetSearch(actor, 0, 10));
     }
     P_SeekerMissile(actor, &actor->special1.m, ANG1 * 2, ANG1 * 10, false);
 }
@@ -3122,7 +3122,7 @@ void MStaffSpawn2(mobj_t * actor, angle_t angle)
     if (mo)
     {
         P_SetTarget(&mo->target, actor);
-        mo->special1.m = P_RoughTargetSearch(mo, 0, 10);
+        P_SetTarget(&mo->special1.m, P_RoughTargetSearch(mo, 0, 10));
     }
 }
 
@@ -3562,20 +3562,20 @@ void A_CHolyAttack2(mobj_t * actor)
         }
         if (linetarget)
         {
-            mo->special1.m = linetarget;
+            P_SetTarget(&mo->special1.m, linetarget);
             mo->flags |= MF_NOCLIP | MF_SKULLFLY;
             mo->flags &= ~MF_MISSILE;
         }
         tail = P_SpawnMobj(mo->x, mo->y, mo->z, HEXEN_MT_HOLY_TAIL);
-        tail->special2.m = mo;      // parent
+        P_SetTarget(&tail->special2.m, mo);      // parent
         for (i = 1; i < 3; i++)
         {
             next = P_SpawnMobj(mo->x, mo->y, mo->z, HEXEN_MT_HOLY_TAIL);
             P_SetMobjState(next, next->info->spawnstate + 1);
-            tail->special1.m = next;
+            P_SetTarget(&tail->special1.m, next);
             tail = next;
         }
-        tail->special1.m = NULL;     // last tail bit
+        P_SetTarget(&tail->special1.m, NULL);     // last tail bit
     }
 }
 
@@ -3617,7 +3617,7 @@ static void CHolyFindTarget(mobj_t * actor)
     target = P_RoughTargetSearch(actor, 0, 6);
     if (target != NULL)
     {
-        actor->special1.m = target;
+        P_SetTarget(&actor->special1.m, target);
         actor->flags |= MF_NOCLIP | MF_SKULLFLY;
         actor->flags &= ~MF_MISSILE;
     }
@@ -3642,7 +3642,7 @@ static void CHolySeekerMissile(mobj_t * actor, angle_t thresh,
     if (!(target->flags & MF_SHOOTABLE)
         || (!(target->flags & MF_COUNTKILL) && !target->player))
     {                           // Target died/target isn't a player or creature
-        actor->special1.m = NULL;
+        P_SetTarget(&actor->special1.m, NULL);
         actor->flags &= ~(MF_NOCLIP | MF_SKULLFLY);
         actor->flags |= MF_MISSILE;
         CHolyFindTarget(actor);

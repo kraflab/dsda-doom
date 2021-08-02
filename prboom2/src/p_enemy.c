@@ -1589,7 +1589,7 @@ void A_HeadAttack(mobj_t * actor)
     if (mo != NULL)
     {
       mo->z -= 32 * FRACUNIT;
-      mo->special1.m = target;
+      P_SetTarget(&mo->special1.m, target);
       mo->special2.i = 50;  // Timer for active sound
       mo->health = 20 * TICRATE;       // Duration
       S_StartSound(actor, heretic_sfx_hedat3);
@@ -3902,7 +3902,7 @@ void A_MummyAttack2(mobj_t * actor)
 
     if (mo != NULL)
     {
-        mo->special1.m = actor->target;
+        P_SetTarget(&mo->special1.m, actor->target);
     }
 }
 
@@ -4620,7 +4620,7 @@ void A_MakePod(mobj_t * actor)
     P_ThrustMobj(mo, P_Random(pr_heretic) << 24, (fixed_t) (4.5 * FRACUNIT));
     S_StartSound(mo, heretic_sfx_newpod);
     actor->special1.i++;          // Increment generated pod count
-    mo->special2.m = actor;       // Link the generator to the pod
+    P_SetTarget(&mo->special2.m, actor);       // Link the generator to the pod
     return;
 }
 
@@ -6147,7 +6147,7 @@ void A_BishopAttack2(mobj_t * actor)
     mo = P_SpawnMissile(actor, actor->target, HEXEN_MT_BISH_FX);
     if (mo)
     {
-        mo->special1.m = actor->target;
+        P_SetTarget(&mo->special1.m, actor->target);
         mo->special2.i = 16;      // High word == x/y, Low word == z
     }
     actor->special1.i--;
@@ -6385,8 +6385,10 @@ static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
             if (bestArg != -1)
             {
                 search = -1;
-                actor->special1.m =
-                    P_FindMobjFromTID(target->args[bestArg], &search);
+                P_SetTarget(
+                  &actor->special1.m,
+                  P_FindMobjFromTID(target->args[bestArg], &search)
+                );
             }
         }
         else
@@ -6397,8 +6399,10 @@ static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
             }
             while (!target->args[i]);
             search = -1;
-            actor->special1.m =
-                P_FindMobjFromTID(target->args[i], &search);
+            P_SetTarget(
+              &actor->special1.m,
+              P_FindMobjFromTID(target->args[i], &search)
+            );
         }
     }
 }
@@ -6410,7 +6414,10 @@ void A_DragonInitFlight(mobj_t * actor)
     search = -1;
     do
     {                           // find the first tid identical to the dragon's tid
-        actor->special1.m = P_FindMobjFromTID(actor->tid, &search);
+        P_SetTarget(
+          &actor->special1.m,
+          P_FindMobjFromTID(actor->tid, &search)
+        );
         if (search == -1)
         {
             P_SetMobjState(actor, actor->info->spawnstate);
@@ -7672,7 +7679,7 @@ void A_SorcOffense1(mobj_t * actor)
     if (mo)
     {
         P_SetTarget(&mo->target, parent);
-        mo->special1.m = parent->target;
+        P_SetTarget(&mo->special1.m, parent->target);
         mo->args[4] = BOUNCE_TIME_UNIT;
         mo->args[3] = 15;       // Bounce time in seconds
     }
@@ -7680,7 +7687,7 @@ void A_SorcOffense1(mobj_t * actor)
     if (mo)
     {
         P_SetTarget(&mo->target, parent);
-        mo->special1.m = parent->target;
+        P_SetTarget(&mo->special1.m, parent->target);
         mo->args[4] = BOUNCE_TIME_UNIT;
         mo->args[3] = 15;       // Bounce time in seconds
     }
@@ -8237,22 +8244,22 @@ void KSpiritInit(mobj_t * spirit, mobj_t * korax)
 
     spirit->health = KORAX_SPIRIT_LIFETIME;
 
-    spirit->special1.m = korax;     // Swarm around korax
+    P_SetTarget(&spirit->special1.m, korax);     // Swarm around korax
     spirit->special2.i = 32 + (P_Random(pr_hexen) & 7);   // Float bob index
     spirit->args[0] = 10;       // initial turn value
     spirit->args[1] = 0;        // initial look angle
 
     // Spawn a tail for spirit
     tail = P_SpawnMobj(spirit->x, spirit->y, spirit->z, HEXEN_MT_HOLY_TAIL);
-    tail->special2.m = spirit;      // parent
+    P_SetTarget(&tail->special2.m, spirit);      // parent
     for (i = 1; i < 3; i++)
     {
         next = P_SpawnMobj(spirit->x, spirit->y, spirit->z, HEXEN_MT_HOLY_TAIL);
         P_SetMobjState(next, next->info->spawnstate + 1);
-        tail->special1.m = next;
+        P_SetTarget(&tail->special1.m, next);
         tail = next;
     }
-    tail->special1.m = NULL;         // last tail bit
+    P_SetTarget(&tail->special1.m, NULL);         // last tail bit
 }
 
 void A_KoraxDecide(mobj_t * actor)

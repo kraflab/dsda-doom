@@ -684,7 +684,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
         }
         if (thing->flags & MF_COUNTKILL || thing->player)
         {
-          tmthing->special1.m = thing;
+          P_SetTarget(&tmthing->special1.m, thing);
         }
         if (P_Random(pr_hexen) < 96)
         {
@@ -716,7 +716,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
         if (thing->health <= 0)
         {
           tmthing->special1.i = 0;
-          tmthing->special1.m = NULL;
+          P_SetTarget(&tmthing->special1.m, NULL);
         }
       }
       return true;
@@ -843,12 +843,12 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
           if (tmthing->special2.m
               && !tmthing->special2.m->special1.m)
           {
-            tmthing->special2.m->special1.m = thing;
+            P_SetTarget(&tmthing->special2.m->special1.m, thing);
           }
         }
         else if (!tmthing->special1.m)
         {
-          tmthing->special1.m = thing;
+          P_SetTarget(&tmthing->special1.m, thing);
         }
       }
       return true;        // lightning zaps through all sprites
@@ -867,12 +867,12 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
             if (lmo->special2.m
                 && !lmo->special2.m->special1.m)
             {
-              lmo->special2.m->special1.m = thing;
+              P_SetTarget(&lmo->special2.m->special1.m, thing);
             }
           }
           else if (!lmo->special1.m)
           {
-            lmo->special1.m = thing;
+            P_SetTarget(&lmo->special1.m, thing);
           }
           if (!(leveltime & 3))
           {
