@@ -855,6 +855,18 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
+    if (th->function == T_Phase)
+    {
+      phase_t *phase;
+      *save_p++ = tc_true_phase;
+      phase = (phase_t *)save_p;
+      PADSAVEP();
+      memcpy (save_p, th, sizeof(light_t));
+      save_p += sizeof(light_t);
+      phase->sector = (sector_t *)(intptr_t)(phase->sector->iSectorID);
+      continue;
+    }
+
     if (th->function == T_InterpretACS)
     {
       acs_t *acs;
