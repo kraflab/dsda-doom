@@ -1312,6 +1312,19 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
+      case tc_true_waggle:
+        PADSAVEP();
+        {
+          floorWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
+          memcpy(waggle, save_p, sizeof(*waggle));
+          save_p += sizeof(*waggle);
+          waggle->sector = &sectors[(size_t)waggle->sector];
+          waggle->sector->floordata = waggle;
+          waggle->thinker.function = T_FloorWaggle;
+          P_AddThinker(&waggle->thinker);
+          break;
+        }
+
       case tc_true_mobj:
         PADSAVEP();
         {
