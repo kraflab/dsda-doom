@@ -897,6 +897,18 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
+    if (th->function == T_FloorWaggle)
+    {
+      floorWaggle_t *floor_waggle;
+      *save_p++ = tc_true_waggle;
+      floor_waggle = (floorWaggle_t *)save_p;
+      PADSAVEP();
+      memcpy (save_p, th, sizeof(floorWaggle_t));
+      save_p += sizeof(floorWaggle_t);
+      floor_waggle->sector = (sector_t *)(intptr_t)(floor_waggle->sector->iSectorID);
+      continue;
+    }
+
     if (P_IsMobjThinker(th))
     {
       mobj_t *mobj;
