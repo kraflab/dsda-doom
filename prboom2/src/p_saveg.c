@@ -1299,6 +1299,19 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
+      case tc_true_pillar:
+        PADSAVEP();
+        {
+          pillar_t *pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, NULL);
+          memcpy(pillar, save_p, sizeof(*pillar));
+          save_p += sizeof(*pillar);
+          pillar->sector = &sectors[(size_t)pillar->sector];
+          pillar->sector->floordata = pillar;
+          pillar->thinker.function = T_BuildPillar;
+          P_AddThinker(&pillar->thinker);
+          break;
+        }
+
       case tc_true_mobj:
         PADSAVEP();
         {
