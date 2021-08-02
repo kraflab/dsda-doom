@@ -1325,6 +1325,17 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
+      case tc_true_poly_rotate:
+        PADSAVEP();
+        {
+          polyevent_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
+          memcpy(poly, save_p, sizeof(*poly));
+          save_p += sizeof(*poly);
+          poly->thinker.function = T_RotatePoly;
+          P_AddThinker(&poly->thinker);
+          break;
+        }
+
       case tc_true_mobj:
         PADSAVEP();
         {
