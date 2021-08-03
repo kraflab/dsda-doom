@@ -976,6 +976,7 @@ void gld_SetPalette(int palette)
     {
       if (palette <= 8)
       {
+        // doom [0] 226 1 1
         extra_red = 1.0f;
         extra_green = 0.0f;
         extra_blue = 0.0f;
