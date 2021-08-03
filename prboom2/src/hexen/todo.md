@@ -1,6 +1,5 @@
 ### Hexen Support (Beta)
 - test save files
-- opengl weapon palettes
 
 ### Hexen Support (Final)
 - ghosts

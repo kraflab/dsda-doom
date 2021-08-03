@@ -981,23 +981,59 @@ void gld_SetPalette(int palette)
         extra_blue=0.0f;
         extra_alpha=(float)palette/10.0f;
       }
-      else
-        if (palette<=12)
+      else if (palette<=12)
+      {
+        palette=palette-8;
+        extra_red=(float)palette*1.0f;
+        extra_green=(float)palette*0.8f;
+        extra_blue=(float)palette*0.1f;
+        extra_alpha=(float)palette/11.0f;
+      }
+      else if (!hexen && palette==13)
+      {
+        extra_red=0.4f;
+        extra_green=1.0f;
+        extra_blue=0.0f;
+        extra_alpha=0.2f;
+      }
+      else if (hexen)
+      {
+        if (palette <= 20)
         {
-          palette=palette-8;
-          extra_red=(float)palette*1.0f;
-          extra_green=(float)palette*0.8f;
-          extra_blue=(float)palette*0.1f;
-          extra_alpha=(float)palette/11.0f;
+          // hexen [0] = 35 74 29
+          palette = palette - 12;
+          extra_red = 0.5f;
+          extra_green = 1.0f;
+          extra_blue = 0.4f;
+          extra_alpha = (float) palette / 27.f;
         }
-        else
-          if (palette==13)
-          {
-            extra_red=0.4f;
-            extra_green=1.0f;
-            extra_blue=0.0f;
-            extra_alpha=0.2f;
-          }
+        else if (palette == 21)
+        {
+          // hexen [0] = 1 1 113
+          extra_red = 0.0f;
+          extra_green = 0.0f;
+          extra_blue = 1.0f;
+          extra_alpha = 0.4f;
+        }
+        else if (palette <= 24)
+        {
+          // hexen [...] = 66, 51, 36
+          palette = 24 - palette;
+          extra_red = 1.0f;
+          extra_green = 1.0f;
+          extra_blue = 1.0f;
+          extra_alpha = 0.14f + 0.06f * palette;
+        }
+        else if (palette <= 27)
+        {
+          // hexen [0] = 76 56 1
+          palette = 27 - palette;
+          extra_red = 1.0f;
+          extra_green = 0.7f;
+          extra_blue = 0.0f;
+          extra_alpha = 0.14f + 0.06f * palette;
+        }
+      }
     }
     if (extra_red>1.0f)
       extra_red=1.0f;
