@@ -1,6 +1,6 @@
 ### Hexen Support (Beta)
 - test save files
-- MStaff palette
+- opengl weapon palettes
 
 ### Hexen Support (Final)
 - ghosts
