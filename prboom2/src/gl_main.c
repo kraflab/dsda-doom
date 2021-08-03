@@ -984,11 +984,12 @@ void gld_SetPalette(int palette)
       }
       else if (palette<=12)
       {
-        palette=palette-8;
-        extra_red=(float)palette*1.0f;
-        extra_green=(float)palette*0.8f;
-        extra_blue=(float)palette*0.1f;
-        extra_alpha=(float)palette/11.0f;
+        // doom [0] 108 94 35
+        palette = palette - 8;
+        extra_red = 1.0f;
+        extra_green = 0.9f;
+        extra_blue = 0.3f;
+        extra_alpha = (float) palette / 10.0f;
       }
       else if (!hexen && palette==13)
       {
