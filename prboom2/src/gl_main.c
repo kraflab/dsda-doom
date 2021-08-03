@@ -972,7 +972,7 @@ void gld_SetPalette(int palette)
     pal[transparent_pal_index*4+3]=0;
     GLEXT_glColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGBA, 256, GL_RGBA, GL_UNSIGNED_BYTE, pal);
   } else {
-    if (palette>0)
+    if (palette > 0)
     {
       if (palette <= 8)
       {
@@ -982,7 +982,7 @@ void gld_SetPalette(int palette)
         extra_blue = 0.0f;
         extra_alpha = (float) palette / 9.0f;
       }
-      else if (palette<=12)
+      else if (palette <= 12)
       {
         // doom [0] 108 94 35
         palette = palette - 8;
@@ -991,12 +991,12 @@ void gld_SetPalette(int palette)
         extra_blue = 0.3f;
         extra_alpha = (float) palette / 10.0f;
       }
-      else if (!hexen && palette==13)
+      else if (!hexen && palette == 13)
       {
-        extra_red=0.4f;
-        extra_green=1.0f;
-        extra_blue=0.0f;
-        extra_alpha=0.2f;
+        extra_red = 0.4f;
+        extra_green = 1.0f;
+        extra_blue = 0.0f;
+        extra_alpha = 0.2f;
       }
       else if (hexen)
       {
@@ -1037,14 +1037,14 @@ void gld_SetPalette(int palette)
         }
       }
     }
-    if (extra_red>1.0f)
-      extra_red=1.0f;
-    if (extra_green>1.0f)
-      extra_green=1.0f;
-    if (extra_blue>1.0f)
-      extra_blue=1.0f;
-    if (extra_alpha>1.0f)
-      extra_alpha=1.0f;
+    if (extra_red > 1.0f)
+      extra_red = 1.0f;
+    if (extra_green > 1.0f)
+      extra_green = 1.0f;
+    if (extra_blue > 1.0f)
+      extra_blue = 1.0f;
+    if (extra_alpha > 1.0f)
+      extra_alpha = 1.0f;
   }
 }
 
