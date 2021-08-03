@@ -1,6 +1,5 @@
 ### Hexen Support (Beta)
 - test save files
-- render_doom_lightmaps
 - MStaff palette
 
 ### Hexen Support (Final)

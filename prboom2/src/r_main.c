@@ -396,7 +396,7 @@ static void R_InitLightTables (void)
   c_zlight = malloc(sizeof(*c_zlight) * numcolormaps);
   c_scalelight = malloc(sizeof(*c_scalelight) * numcolormaps);
 
-  // HEXEN_TODO: does hexen require render_doom_lightmaps?
+  // hexen_note: does hexen require render_doom_lightmaps?
 
   LIGHTLEVELS   = (render_doom_lightmaps ? 16 : 32);
   LIGHTSEGSHIFT = (render_doom_lightmaps ? 4 : 3);
