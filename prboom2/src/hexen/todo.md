@@ -3,7 +3,6 @@
 - render_doom_lightmaps
 - MStaff palette
 - opengl floorclip
-- opengl hexen scrollers
 
 ### Hexen Support (Final)
 - ghosts

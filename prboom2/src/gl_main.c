@@ -2193,6 +2193,68 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
             break;
         }
       }
+      else if (hexen)
+      {
+        int scrollOffset = leveltime >> 1 & 63;
+
+        switch (plane->special)
+        {                       // Handle scrolling flats
+          case 201:
+          case 202:
+          case 203:          // Scroll_North_xxx
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.voffs = (float) (scrollOffset << (plane->special - 201) & 63) / 64;
+            break;
+          case 204:
+          case 205:
+          case 206:          // Scroll_East_xxx
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.uoffs = (float) ((63 - scrollOffset) << (plane->special - 204) & 63) / 64;
+            break;
+          case 207:
+          case 208:
+          case 209:          // Scroll_South_xxx
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.voffs = (float) ((63 - scrollOffset) << (plane->special - 207) & 63) / 64;
+            break;
+          case 210:
+          case 211:
+          case 212:          // Scroll_West_xxx
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.uoffs = (float) (scrollOffset << (plane->special - 210) & 63) / 64;
+            break;
+          case 213:
+          case 214:
+          case 215:          // Scroll_NorthWest_xxx
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.voffs = (float) (scrollOffset << (plane->special - 213) & 63) / 64;
+            flat.uoffs = (float) (scrollOffset << (plane->special - 213) & 63) / 64;
+            break;
+          case 216:
+          case 217:
+          case 218:          // Scroll_NorthEast_xxx
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.voffs = (float) (scrollOffset << (plane->special - 216) & 63) / 64;
+            flat.uoffs = (float) ((63 - scrollOffset) << (plane->special - 216) & 63) / 64;
+            break;
+          case 219:
+          case 220:
+          case 221:          // Scroll_SouthEast_xxx
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.voffs = (float) ((63 - scrollOffset) << (plane->special - 219) & 63) / 64;
+            flat.uoffs = (float) ((63 - scrollOffset) << (plane->special - 219) & 63) / 64;
+            break;
+          case 222:
+          case 223:
+          case 224:          // Scroll_SouthWest_xxx
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.voffs = (float) ((63 - scrollOffset) << (plane->special - 222) & 63) / 64;
+            flat.uoffs = (float) (scrollOffset << (plane->special - 222) & 63) / 64;
+            break;
+          default:
+            break;
+        }
+      }
     }
   }
   else // if it is a ceiling ...
