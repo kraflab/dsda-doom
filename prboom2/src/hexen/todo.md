@@ -2,7 +2,6 @@
 - test save files
 - render_doom_lightmaps
 - MStaff palette
-- opengl floorclip
 
 ### Hexen Support (Final)
 - ghosts
@@ -15,3 +14,4 @@
 - polyseg vertex optimization
 - palette fade code
 - yellow message variant
+- opengl floorclip
