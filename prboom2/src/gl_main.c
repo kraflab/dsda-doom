@@ -974,12 +974,12 @@ void gld_SetPalette(int palette)
   } else {
     if (palette>0)
     {
-      if (palette<=8)
+      if (palette <= 8)
       {
-        extra_red=(float)palette/2.0f;
-        extra_green=0.0f;
-        extra_blue=0.0f;
-        extra_alpha=(float)palette/10.0f;
+        extra_red = 1.0f;
+        extra_green = 0.0f;
+        extra_blue = 0.0f;
+        extra_alpha = (float) palette / 9.0f;
       }
       else if (palette<=12)
       {
