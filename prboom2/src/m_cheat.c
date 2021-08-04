@@ -1096,11 +1096,11 @@ static void cheat_init(void)
 {
   extern dboolean partial_reset;
 
-  partial_reset = true;
-
   if (!hexen) return;
 
-  G_DeferedInitNew(gameskill, gameepisode, gamemap);
+  partial_reset = true;
+
+  G_DeferedInitNew(gameskill, gameepisode, P_GetMapWarpTrans(gamemap));
 
   P_SetMessage(plyr, "LEVEL WARP", true);
 }
