@@ -562,7 +562,6 @@ void P_DeathThink (player_t* player)
 //
 
 void P_MorphPlayerThink(player_t * player);
-dboolean P_UndoPlayerMorph(player_t * player);
 
 void P_PlayerThink (player_t* player)
 {

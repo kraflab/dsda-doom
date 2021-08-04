@@ -1060,19 +1060,34 @@ static void cheat_tome(void)
 
 static void cheat_chicken(void)
 {
-  if (!heretic) return;
+  if (!raven) return;
 
   P_MapStart();
-  if (plyr->chickenTics)
+  if (heretic)
   {
-    if (P_UndoPlayerChicken(plyr))
+    if (plyr->chickenTics)
     {
-        plyr->message = "CHICKEN OFF";
+      if (P_UndoPlayerChicken(plyr))
+      {
+          plyr->message = "CHICKEN OFF";
+      }
+    }
+    else if (P_ChickenMorphPlayer(plyr))
+    {
+      plyr->message = "CHICKEN ON";
     }
   }
-  else if (P_ChickenMorphPlayer(plyr))
+  else
   {
-    plyr->message = "CHICKEN ON";
+    if (plyr->morphTics)
+    {
+      P_UndoPlayerMorph(plyr);
+    }
+    else
+    {
+      P_MorphPlayer(plyr);
+    }
+    plyr->message = "SQUEAL!!";
   }
   P_MapEnd();
 }
