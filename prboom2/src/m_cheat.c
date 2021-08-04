@@ -217,7 +217,21 @@ cheatseq_t cheat[] = {
   CHEAT("cockadoodledoo", NULL, cht_never, cheat_chicken, 0),
 
   // hexen
+  CHEAT("satan", NULL, cht_never, cheat_god, 0),
+  CHEAT("clubmed", NULL, cht_never, cheat_reset_health, 0),
+  CHEAT("butcher", NULL, cht_never, cheat_massacre, 0),
+  CHEAT("nra", NULL, cht_never, cheat_fa, 0),
+  // CHEAT("indiana", NULL, cht_never, cheat_inventory, 0),
+  CHEAT("locksmith", NULL, cht_never, cheat_k, 0),
+  // CHEAT("sherlock", NULL, cht_never, cheat_puzzle, 0),
+  CHEAT("casper", NULL, cht_never, cheat_noclip, 0),
+  // CHEAT("shadowcaster", NULL, cht_never, cheat_class, -2),
+  CHEAT("visit", NULL, cht_never | not_menu, cheat_clev, -2),
   CHEAT("init", NULL, cht_never, cheat_init, 0),
+  // CHEAT("puke", NULL, cht_never, cheat_script, -2),
+  CHEAT("mapsco", NULL, not_dm, cheat_ddt, 0),
+  CHEAT("deliverance", NULL, cht_never, cheat_chicken, 0),
+  // CHEAT("conan", NULL, cht_never, cheat_conan, 0),
 
   // end-of-list marker
   {NULL}
