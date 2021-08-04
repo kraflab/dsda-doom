@@ -347,27 +347,45 @@ static void cheat_fa()
 {
   int i;
 
-  if (!plyr->backpack)
+  if (hexen)
+  {
+    for (i = 0; i < NUMARMOR; i++)
+    {
+        plyr->armorpoints[i] = pclass[plyr->pclass].armor_increment[i];
+    }
+    for (i = 0; i < HEXEN_NUMWEAPONS; i++)
+    {
+        plyr->weaponowned[i] = true;
+    }
+    for (i = 0; i < NUMMANA; i++)
+    {
+        plyr->ammo[i] = MAX_MANA;
+    }
+  }
+  else
+  {
+    if (!plyr->backpack)
     {
       for (i=0 ; i<NUMAMMO ; i++)
         plyr->maxammo[i] *= 2;
       plyr->backpack = true;
     }
 
-  plyr->armorpoints[ARMOR_ARMOR] = idfa_armor;      // Ty 03/09/98 - deh
-  plyr->armortype = idfa_armor_class;  // Ty 03/09/98 - deh
+    plyr->armorpoints[ARMOR_ARMOR] = idfa_armor;      // Ty 03/09/98 - deh
+    plyr->armortype = idfa_armor_class;  // Ty 03/09/98 - deh
 
-  // You can't own weapons that aren't in the game // phares 02/27/98
-  for (i=0;i<NUMWEAPONS;i++)
-    if (!(((i == wp_plasma || i == wp_bfg) && gamemode == shareware) ||
-          (i == wp_supershotgun && gamemode != commercial)))
-      plyr->weaponowned[i] = true;
+    // You can't own weapons that aren't in the game // phares 02/27/98
+    for (i=0;i<NUMWEAPONS;i++)
+      if (!(((i == wp_plasma || i == wp_bfg) && gamemode == shareware) ||
+            (i == wp_supershotgun && gamemode != commercial)))
+        plyr->weaponowned[i] = true;
 
-  for (i=0;i<NUMAMMO;i++)
-    if (i!=am_cell || gamemode!=shareware)
-      plyr->ammo[i] = plyr->maxammo[i];
+    for (i=0;i<NUMAMMO;i++)
+      if (i!=am_cell || gamemode!=shareware)
+        plyr->ammo[i] = plyr->maxammo[i];
 
-  plyr->message = s_STSTR_FAADDED;
+    plyr->message = s_STSTR_FAADDED;
+  }
 }
 
 static void cheat_k()
