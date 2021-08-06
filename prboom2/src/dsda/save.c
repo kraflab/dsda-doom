@@ -29,8 +29,43 @@ int dsda_organized_saves;
 static char* dsda_base_save_dir;
 static char* dsda_wad_save_dir;
 
-void dsda_ArchiveAll(void)
-{
+#define TRACKING_SIZE sizeof(int)
+
+static void dsda_ArchiveInternal(void) {
+  extern int dsda_max_kill_requirement;
+  int internal_size = sizeof(dsda_max_kill_requirement);
+
+  CheckSaveGame(sizeof(internal_size));
+  memcpy(save_p, &internal_size, sizeof(internal_size));
+  save_p += sizeof(internal_size);
+
+  CheckSaveGame(sizeof(dsda_max_kill_requirement));
+  memcpy(save_p, &dsda_max_kill_requirement, sizeof(dsda_max_kill_requirement));
+  save_p += sizeof(dsda_max_kill_requirement);
+}
+
+static void dsda_UnArchiveInternal(void) {
+  extern int dsda_max_kill_requirement;
+  int internal_size;
+
+  CheckSaveGame(sizeof(internal_size));
+  memcpy(&internal_size, save_p, sizeof(internal_size));
+  save_p += sizeof(internal_size);
+
+  if (internal_size > 0)
+  {
+    CheckSaveGame(sizeof(dsda_max_kill_requirement));
+    memcpy(&dsda_max_kill_requirement, save_p, sizeof(dsda_max_kill_requirement));
+    save_p += sizeof(dsda_max_kill_requirement);
+  }
+
+  if (internal_size > TRACKING_SIZE)
+  {
+    save_p += internal_size - TRACKING_SIZE;
+  }
+}
+
+void dsda_ArchiveAll(void) {
   P_ArchiveACS();
   P_ArchivePlayers();
   P_ThinkerToIndex();
@@ -43,10 +78,11 @@ void dsda_ArchiveAll(void)
   P_IndexToThinker();
   P_ArchiveRNG();
   P_ArchiveMap();
+
+  dsda_ArchiveInternal();
 }
 
-void dsda_UnArchiveAll(void)
-{
+void dsda_UnArchiveAll(void) {
   P_MapStart();
   P_UnArchiveACS();
   P_UnArchivePlayers();
@@ -59,6 +95,8 @@ void dsda_UnArchiveAll(void)
   P_UnArchiveRNG();
   P_UnArchiveMap();
   P_MapEnd();
+
+  dsda_UnArchiveInternal();
 }
 
 void dsda_InitSaveDir(void) {

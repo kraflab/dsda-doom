@@ -1828,80 +1828,80 @@ static dboolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sf
   int bx, by;
 
   if (actor->movedir != DI_NODIR)
+  {
+    // check for corpses to raise
+    viletryx =
+      actor->x + actor->info->speed*xspeed[actor->movedir];
+    viletryy =
+      actor->y + actor->info->speed*yspeed[actor->movedir];
+
+    xl = P_GetSafeBlockX(viletryx - bmaporgx - MAXRADIUS*2);
+    xh = P_GetSafeBlockX(viletryx - bmaporgx + MAXRADIUS*2);
+    yl = P_GetSafeBlockY(viletryy - bmaporgy - MAXRADIUS*2);
+    yh = P_GetSafeBlockY(viletryy - bmaporgy + MAXRADIUS*2);
+
+    vileobj = actor;
+    viletryradius = radius;
+    for (bx=xl ; bx<=xh ; bx++)
     {
-      // check for corpses to raise
-      viletryx =
-        actor->x + actor->info->speed*xspeed[actor->movedir];
-      viletryy =
-        actor->y + actor->info->speed*yspeed[actor->movedir];
-
-      xl = P_GetSafeBlockX(viletryx - bmaporgx - MAXRADIUS*2);
-      xh = P_GetSafeBlockX(viletryx - bmaporgx + MAXRADIUS*2);
-      yl = P_GetSafeBlockY(viletryy - bmaporgy - MAXRADIUS*2);
-      yh = P_GetSafeBlockY(viletryy - bmaporgy + MAXRADIUS*2);
-
-      vileobj = actor;
-      viletryradius = radius;
-      for (bx=xl ; bx<=xh ; bx++)
+      for (by=yl ; by<=yh ; by++)
+      {
+        // Call PIT_VileCheck to check
+        // whether object is a corpse
+        // that canbe raised.
+        if (!P_BlockThingsIterator(bx,by,PIT_VileCheck))
         {
-          for (by=yl ; by<=yh ; by++)
-            {
-              // Call PIT_VileCheck to check
-              // whether object is a corpse
-              // that canbe raised.
-              if (!P_BlockThingsIterator(bx,by,PIT_VileCheck))
-                {
-      mobjinfo_t *info;
+          mobjinfo_t *info;
 
-                  // got one!
-                  mobj_t* temp = actor->target;
-                  actor->target = corpsehit;
-                  A_FaceTarget(actor);
-                  actor->target = temp;
+          // got one!
+          mobj_t* temp = actor->target;
+          actor->target = corpsehit;
+          A_FaceTarget(actor);
+          actor->target = temp;
 
-                  P_SetMobjState(actor, healstate);
-                  S_StartSound(corpsehit, healsound);
-                  info = corpsehit->info;
+          P_SetMobjState(actor, healstate);
+          S_StartSound(corpsehit, healsound);
+          info = corpsehit->info;
 
-                  P_SetMobjState(corpsehit,info->raisestate);
+          P_SetMobjState(corpsehit,info->raisestate);
 
-                  if (comp[comp_vile])                              // phares
-                    corpsehit->height <<= 2;                        //   |
-                  else                                              //   V
-                    {
-                      corpsehit->height = info->height; // fix Ghost bug
-                      corpsehit->radius = info->radius; // fix Ghost bug
-                    }                                               // phares
+          if (comp[comp_vile])                              // phares
+            corpsehit->height <<= 2;                        //   |
+          else                                              //   V
+          {
+            corpsehit->height = info->height; // fix Ghost bug
+            corpsehit->radius = info->radius; // fix Ghost bug
+          }                                                 // phares
 
-      /* killough 7/18/98:
-       * friendliness is transferred from AV to raised corpse
-       */
-      corpsehit->flags =
-        (info->flags & ~MF_FRIEND) | (actor->flags & MF_FRIEND);
-      corpsehit->flags = corpsehit->flags | MF_RESSURECTED;//e6y
+          /* killough 7/18/98:
+          * friendliness is transferred from AV to raised corpse
+          */
+          corpsehit->flags =
+            (info->flags & ~MF_FRIEND) | (actor->flags & MF_FRIEND);
+          corpsehit->flags = corpsehit->flags | MF_RESSURECTED;//e6y
 
-      dsda_WatchResurrection(corpsehit);
+          dsda_WatchResurrection(corpsehit);
 
-		  if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
-		    totallive++;
+          if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+            totallive++;
 
-                  corpsehit->health = info->spawnhealth;
-      P_SetTarget(&corpsehit->target, NULL);  // killough 11/98
+          corpsehit->health = info->spawnhealth;
+          P_SetTarget(&corpsehit->target, NULL);  // killough 11/98
 
-      if (mbf_features)
-        {         /* kilough 9/9/98 */
-          P_SetTarget(&corpsehit->lastenemy, NULL);
-          corpsehit->flags &= ~MF_JUSTHIT;
+          if (mbf_features)
+          {         /* kilough 9/9/98 */
+            P_SetTarget(&corpsehit->lastenemy, NULL);
+            corpsehit->flags &= ~MF_JUSTHIT;
+          }
+
+          /* killough 8/29/98: add to appropriate thread */
+          P_UpdateThinker(&corpsehit->thinker);
+
+          return true;
         }
-
-      /* killough 8/29/98: add to appropriate thread */
-      P_UpdateThinker(&corpsehit->thinker);
-
-                  return true;
-                }
-            }
-        }
+      }
     }
+  }
   return false;
 }
 
