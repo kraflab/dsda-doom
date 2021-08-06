@@ -236,7 +236,6 @@ cheatseq_t cheat[] = {
   CHEAT("puke", NULL, cht_never, cheat_script, -2),
   CHEAT("mapsco", NULL, not_dm, cheat_ddt, 0),
   CHEAT("deliverance", NULL, cht_never, cheat_chicken, 0),
-  // CHEAT("conan", NULL, cht_never, cheat_conan, 0),
 
   // end-of-list marker
   {NULL}
