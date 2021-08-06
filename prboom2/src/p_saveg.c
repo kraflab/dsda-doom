@@ -112,6 +112,9 @@ void P_UnArchivePlayers (void)
         players[i].rain1 = NULL;
         players[i].rain2 = NULL;
 
+        // hexen_note: poisoner not reloaded
+        players[i].poisoner = NULL;
+
         for (j=0 ; j<NUMPSPRITES ; j++)
           if (players[i]. psprites[j].state)
             players[i]. psprites[j].state =
