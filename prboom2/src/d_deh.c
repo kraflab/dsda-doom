@@ -1702,6 +1702,8 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
   DEHFILE infile, *filein = &infile;    // killough 10/98
   char inbuffer[DEH_BUFFERMAX];  // Place to put the primary infostring
   const char *file_or_lump;
+  static unsigned last_block;
+  static long filepos;
 
   if (!defined_codeptr_args)
     defined_codeptr_args = calloc(NUMSTATES, sizeof(*defined_codeptr_args));
@@ -1753,12 +1755,12 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
 
   // loop until end of file
 
+  last_block = DEH_BLOCKMAX - 1;
+  filepos = 0;
   while (dehfgets(inbuffer,sizeof(inbuffer),filein))
   {
     dboolean match;
     unsigned i;
-    static unsigned last_i = DEH_BLOCKMAX-1;
-    static long filepos = 0;
 
     lfstrip(inbuffer);
     deh_log("Line='%s'\n", inbuffer);
@@ -1815,10 +1817,10 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
       }
 
     if (match) // inbuffer matches a valid block code name
-      last_i = i;
-    else if (last_i >= 10 && last_i < DEH_BLOCKMAX - 1) // restrict to BEX style lumps
+      last_block = i;
+    else if (last_block >= 10 && last_block < DEH_BLOCKMAX - 1) // restrict to BEX style lumps
     { // process that same line again with the last valid block code handler
-      i = last_i;
+      i = last_block;
       dehfseek(filein, filepos);
     }
 
