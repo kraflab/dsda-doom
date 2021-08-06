@@ -1,6 +1,5 @@
 ### Hexen Support (Beta)
 - test save files
-- cheats
 
 ### Hexen Support (Final)
 - ghosts
