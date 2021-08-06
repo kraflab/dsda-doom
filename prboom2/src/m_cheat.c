@@ -109,6 +109,7 @@ static void cheat_artifact();
 // hexen
 static void cheat_inventory();
 static void cheat_puzzle();
+static void cheat_class();
 static void cheat_init();
 
 //-----------------------------------------------------------------------------
@@ -227,7 +228,7 @@ cheatseq_t cheat[] = {
   CHEAT("locksmith", NULL, cht_never, cheat_k, 0),
   CHEAT("sherlock", NULL, cht_never, cheat_puzzle, 0),
   CHEAT("casper", NULL, cht_never, cheat_noclip, 0),
-  // CHEAT("shadowcaster", NULL, cht_never, cheat_class, -2),
+  CHEAT("shadowcaster", NULL, cht_never, cheat_class, -1),
   CHEAT("visit", NULL, cht_never | not_menu, cheat_clev, -2),
   CHEAT("init", NULL, cht_never, cheat_init, 0),
   // CHEAT("puke", NULL, cht_never, cheat_script, -2),
@@ -1154,4 +1155,34 @@ static void cheat_puzzle(void)
     P_GiveArtifact(plyr, i, NULL);
   }
   P_SetMessage(plyr, "ALL PUZZLE ITEMS", true);
+}
+
+static void cheat_class(char buf[2])
+{
+  int i;
+  int new_class;
+
+  if (!hexen) return;
+
+  if (plyr->morphTics)
+  {                           // don't change class if the player is morphed
+      return;
+  }
+
+  new_class = 1 + (buf[0] - '0');
+  if (new_class > PCLASS_MAGE || new_class < PCLASS_FIGHTER)
+  {
+    P_SetMessage(plyr, "INVALID PLAYER CLASS", true);
+    return;
+  }
+  plyr->pclass = new_class;
+  for (i = 0; i < NUMARMOR; i++)
+  {
+    plyr->armorpoints[i] = 0;
+  }
+  PlayerClass[consoleplayer] = new_class;
+  P_PostMorphWeapon(plyr, wp_first);
+  SB_SetClassData();
+  SB_Start();
+  P_SetMessage(plyr, "CLASS CHANGED", true);
 }
