@@ -108,6 +108,7 @@ static void cheat_artifact();
 
 // hexen
 static void cheat_inventory();
+static void cheat_puzzle();
 static void cheat_init();
 
 //-----------------------------------------------------------------------------
@@ -224,7 +225,7 @@ cheatseq_t cheat[] = {
   CHEAT("nra", NULL, cht_never, cheat_fa, 0),
   CHEAT("indiana", NULL, cht_never, cheat_inventory, 0),
   CHEAT("locksmith", NULL, cht_never, cheat_k, 0),
-  // CHEAT("sherlock", NULL, cht_never, cheat_puzzle, 0),
+  CHEAT("sherlock", NULL, cht_never, cheat_puzzle, 0),
   CHEAT("casper", NULL, cht_never, cheat_noclip, 0),
   // CHEAT("shadowcaster", NULL, cht_never, cheat_class, -2),
   CHEAT("visit", NULL, cht_never | not_menu, cheat_clev, -2),
@@ -1138,4 +1139,15 @@ static void cheat_inventory(void)
     }
   }
   P_SetMessage(plyr, "ALL ARTIFACTS", true);
+}
+
+static void cheat_puzzle(void)
+{
+  int i, j;
+
+  for (i = hexen_arti_firstpuzzitem; i < HEXEN_NUMARTIFACTS; i++)
+  {
+    P_GiveArtifact(plyr, i, NULL);
+  }
+  P_SetMessage(plyr, "ALL PUZZLE ITEMS", true);
 }
