@@ -2442,18 +2442,8 @@ void G_DoLoadGame(void)
   basetic = gametic - *save_p++;
 
   // dearchive all the modifications
-  P_MapStart();
-  P_UnArchiveACS();
-  P_UnArchivePlayers ();
-  P_UnArchiveWorld ();
-  P_UnArchivePolyobjs();
-  P_TrueUnArchiveThinkers();
-  P_UnArchiveScripts();
-  P_UnArchiveSounds();
-  P_UnArchiveMisc();
-  P_UnArchiveRNG ();    // killough 1/18/98: load RNG information
-  P_UnArchiveMap ();    // killough 1/22/98: load automap information
-  P_MapEnd();
+  dsda_UnArchiveAll();
+
   R_ActivateSectorInterpolations();//e6y
   R_SmoothPlaying_Reset(NULL); // e6y
 
@@ -2629,30 +2619,7 @@ static void G_DoSaveGame (dboolean menu)
   // killough 11/98: save revenant tracer state
   *save_p++ = (gametic-basetic) & 255;
 
-  P_ArchiveACS();
-
-  P_ArchivePlayers();
-
-  // phares 9/13/98: Move mobj_t->index out of P_ArchiveThinkers so the
-  // indices can be used by P_ArchiveWorld when the sectors are saved.
-  // This is so we can save the index of the mobj_t of the thinker that
-  // caused a sound, referenced by sector_t->soundtarget.
-  P_ThinkerToIndex();
-
-  P_ArchiveWorld();
-  P_ArchivePolyobjs();
-  P_TrueArchiveThinkers();
-  P_ArchiveScripts();
-  P_ArchiveSounds();
-  P_ArchiveMisc();
-
-  // phares 9/13/98: Move index->mobj_t out of P_ArchiveThinkers, simply
-  // for symmetry with the P_ThinkerToIndex call above.
-
-  P_IndexToThinker();
-
-  P_ArchiveRNG();    // killough 1/18/98: save RNG information
-  P_ArchiveMap();    // killough 1/22/98: save automap information
+  dsda_ArchiveAll();
 
   *save_p++ = 0xe6;   // consistancy marker
 

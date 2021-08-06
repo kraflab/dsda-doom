@@ -19,6 +19,8 @@
 
 #include "lprintf.h"
 #include "z_zone.h"
+#include "p_saveg.h"
+#include "p_map.h"
 
 #include "dsda/data_organizer.h"
 #include "save.h"
@@ -26,6 +28,38 @@
 int dsda_organized_saves;
 static char* dsda_base_save_dir;
 static char* dsda_wad_save_dir;
+
+void dsda_ArchiveAll(void)
+{
+  P_ArchiveACS();
+  P_ArchivePlayers();
+  P_ThinkerToIndex();
+  P_ArchiveWorld();
+  P_ArchivePolyobjs();
+  P_TrueArchiveThinkers();
+  P_ArchiveScripts();
+  P_ArchiveSounds();
+  P_ArchiveMisc();
+  P_IndexToThinker();
+  P_ArchiveRNG();
+  P_ArchiveMap();
+}
+
+void dsda_UnArchiveAll(void)
+{
+  P_MapStart();
+  P_UnArchiveACS();
+  P_UnArchivePlayers();
+  P_UnArchiveWorld();
+  P_UnArchivePolyobjs();
+  P_TrueUnArchiveThinkers();
+  P_UnArchiveScripts();
+  P_UnArchiveSounds();
+  P_UnArchiveMisc();
+  P_UnArchiveRNG();
+  P_UnArchiveMap();
+  P_MapEnd();
+}
 
 void dsda_InitSaveDir(void) {
   dsda_base_save_dir = dsda_DetectDirectory("DOOMSAVEDIR", "-save");

@@ -37,6 +37,7 @@
 
 #include "dsda/demo.h"
 #include "dsda/options.h"
+#include "dsda/save.h"
 #include "dsda/settings.h"
 #include "key_frame.h"
 
@@ -147,18 +148,7 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
   CheckSaveGame(1);
   *save_p++ = (gametic - basetic) & 255;
 
-  P_ArchiveACS();
-  P_ArchivePlayers();
-  P_ThinkerToIndex();
-  P_ArchiveWorld();
-  P_ArchivePolyobjs();
-  P_TrueArchiveThinkers();
-  P_ArchiveScripts();
-  P_ArchiveSounds();
-  P_ArchiveMisc();
-  P_IndexToThinker();
-  P_ArchiveRNG();
-  P_ArchiveMap();
+  dsda_ArchiveAll();
 
   if (*buffer != NULL) free(*buffer);
 
@@ -235,18 +225,8 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
 
   basetic = gametic - *save_p++;
 
-  P_MapStart();
-  P_UnArchiveACS();
-  P_UnArchivePlayers();
-  P_UnArchiveWorld();
-  P_UnArchivePolyobjs();
-  P_TrueUnArchiveThinkers();
-  P_UnArchiveScripts();
-  P_UnArchiveSounds();
-  P_UnArchiveMisc();
-  P_UnArchiveRNG();
-  P_UnArchiveMap();
-  P_MapEnd();
+  dsda_UnArchiveAll();
+
   R_ActivateSectorInterpolations();
   R_SmoothPlaying_Reset(NULL);
 

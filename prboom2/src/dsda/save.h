@@ -18,6 +18,8 @@
 #ifndef __DSDA_SAVE__
 #define __DSDA_SAVE__
 
+void dsda_ArchiveAll(void);
+void dsda_UnArchiveAll(void);
 void dsda_InitSaveDir(void);
 char* dsda_SaveGameName(int slot, int demo_save);
 
