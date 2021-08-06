@@ -1134,12 +1134,24 @@ static void cheat_init(void)
 static void cheat_inventory(void)
 {
   int i, j;
+  int start, end;
 
-  if (!hexen) return;
+  if (!raven) return;
 
-  for (i = hexen_arti_none + 1; i < hexen_arti_firstpuzzitem; i++)
+  if (heretic)
   {
-    for (j = 0; j < 25; j++)
+    start = arti_none + 1;
+    end = NUMARTIFACTS;
+  }
+  else
+  {
+    start = hexen_arti_none + 1;
+    end = hexen_arti_firstpuzzitem;
+  }
+
+  for (i = start; i < end; i++)
+  {
+    for (j = 0; j < g_arti_limit; j++)
     {
       P_GiveArtifact(plyr, i, NULL);
     }
