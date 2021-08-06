@@ -59,9 +59,6 @@
 
 byte *save_p;
 
-// Pads save_p to a 4-byte boundary
-//  so that the load/save works on SGI&Gecko.
-#define PADSAVEP()    do { save_p += (4 - ((intptr_t) save_p & 3)) & 3; } while (0)
 //
 // P_ArchivePlayers
 //
@@ -76,7 +73,6 @@ void P_ArchivePlayers (void)
         int      j;
         player_t *dest;
 
-        PADSAVEP();
         dest = (player_t *) save_p;
         memcpy(dest, &players[i], sizeof(player_t));
         save_p += sizeof(player_t);
@@ -98,8 +94,6 @@ void P_UnArchivePlayers (void)
     if (playeringame[i])
       {
         int j;
-
-        PADSAVEP();
 
         memcpy(&players[i], save_p, sizeof(player_t));
         save_p += sizeof(player_t);
@@ -151,8 +145,6 @@ void P_ArchiveWorld (void)
     }
 
   CheckSaveGame(size); // killough
-
-  PADSAVEP();                // killough 3/22/98
 
   put = (short *)save_p;
 
@@ -216,8 +208,6 @@ void P_UnArchiveWorld (void)
   sector_t     *sec;
   line_t       *li;
   short        *get;
-
-  PADSAVEP();                // killough 3/22/98
 
   get = (short *) save_p;
 
@@ -712,7 +702,6 @@ void P_TrueArchiveThinkers(void) {
       ceiling_t *ceiling;
     ceiling:                               // killough 2/14/98
       *save_p++ = tc_true_ceiling;
-      PADSAVEP();
       ceiling = (ceiling_t *)save_p;
       memcpy (ceiling, th, sizeof(*ceiling));
       save_p += sizeof(*ceiling);
@@ -724,7 +713,6 @@ void P_TrueArchiveThinkers(void) {
     {
       vldoor_t *door;
       *save_p++ = tc_true_door;
-      PADSAVEP();
       door = (vldoor_t *) save_p;
       memcpy (door, th, sizeof *door);
       save_p += sizeof(*door);
@@ -738,7 +726,6 @@ void P_TrueArchiveThinkers(void) {
     {
       floormove_t *floor;
       *save_p++ = tc_true_floor;
-      PADSAVEP();
       floor = (floormove_t *)save_p;
       memcpy (floor, th, sizeof(*floor));
       save_p += sizeof(*floor);
@@ -751,7 +738,6 @@ void P_TrueArchiveThinkers(void) {
       plat_t *plat;
     plat:   // killough 2/14/98: added fix for original plat height above
       *save_p++ = tc_true_plat;
-      PADSAVEP();
       plat = (plat_t *)save_p;
       memcpy (plat, th, sizeof(*plat));
       save_p += sizeof(*plat);
@@ -763,7 +749,6 @@ void P_TrueArchiveThinkers(void) {
     {
       lightflash_t *flash;
       *save_p++ = tc_true_flash;
-      PADSAVEP();
       flash = (lightflash_t *)save_p;
       memcpy (flash, th, sizeof(*flash));
       save_p += sizeof(*flash);
@@ -775,7 +760,6 @@ void P_TrueArchiveThinkers(void) {
     {
       strobe_t *strobe;
       *save_p++ = tc_true_strobe;
-      PADSAVEP();
       strobe = (strobe_t *)save_p;
       memcpy (strobe, th, sizeof(*strobe));
       save_p += sizeof(*strobe);
@@ -787,7 +771,6 @@ void P_TrueArchiveThinkers(void) {
     {
       glow_t *glow;
       *save_p++ = tc_true_glow;
-      PADSAVEP();
       glow = (glow_t *)save_p;
       memcpy (glow, th, sizeof(*glow));
       save_p += sizeof(*glow);
@@ -800,7 +783,6 @@ void P_TrueArchiveThinkers(void) {
     {
       fireflicker_t *flicker;
       *save_p++ = tc_true_flicker;
-      PADSAVEP();
       flicker = (fireflicker_t *)save_p;
       memcpy (flicker, th, sizeof(*flicker));
       save_p += sizeof(*flicker);
@@ -813,7 +795,6 @@ void P_TrueArchiveThinkers(void) {
     {
       elevator_t *elevator;         //jff 2/22/98
       *save_p++ = tc_true_elevator;
-      PADSAVEP();
       elevator = (elevator_t *)save_p;
       memcpy (elevator, th, sizeof(*elevator));
       save_p += sizeof(*elevator);
@@ -825,7 +806,6 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_Scroll)
     {
       *save_p++ = tc_true_scroll;
-      PADSAVEP();
       memcpy (save_p, th, sizeof(scroll_t));
       save_p += sizeof(scroll_t);
       continue;
@@ -836,7 +816,6 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_Pusher)
     {
       *save_p++ = tc_true_pusher;
-      PADSAVEP();
       memcpy (save_p, th, sizeof(pusher_t));
       save_p += sizeof(pusher_t);
       continue;
@@ -845,7 +824,6 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_Friction)
     {
       *save_p++ = tc_true_friction;
-      PADSAVEP();
       memcpy (save_p, th, sizeof(friction_t));
       save_p += sizeof(friction_t);
       continue;
@@ -855,7 +833,6 @@ void P_TrueArchiveThinkers(void) {
     {
       light_t *light;
       *save_p++ = tc_true_light;
-      PADSAVEP();
       light = (light_t *)save_p;
       memcpy (save_p, th, sizeof(light_t));
       save_p += sizeof(light_t);
@@ -867,7 +844,6 @@ void P_TrueArchiveThinkers(void) {
     {
       phase_t *phase;
       *save_p++ = tc_true_phase;
-      PADSAVEP();
       phase = (phase_t *)save_p;
       memcpy (save_p, th, sizeof(phase_t));
       save_p += sizeof(phase_t);
@@ -879,7 +855,6 @@ void P_TrueArchiveThinkers(void) {
     {
       acs_t *acs;
       *save_p++ = tc_true_acs;
-      PADSAVEP();
       acs = (acs_t *)save_p;
       memcpy (save_p, th, sizeof(acs_t));
       save_p += sizeof(acs_t);
@@ -894,7 +869,6 @@ void P_TrueArchiveThinkers(void) {
     {
       pillar_t *pillar;
       *save_p++ = tc_true_pillar;
-      PADSAVEP();
       pillar = (pillar_t *)save_p;
       memcpy (save_p, th, sizeof(pillar_t));
       save_p += sizeof(pillar_t);
@@ -906,7 +880,6 @@ void P_TrueArchiveThinkers(void) {
     {
       floorWaggle_t *floor_waggle;
       *save_p++ = tc_true_waggle;
-      PADSAVEP();
       floor_waggle = (floorWaggle_t *)save_p;
       memcpy (save_p, th, sizeof(floorWaggle_t));
       save_p += sizeof(floorWaggle_t);
@@ -917,7 +890,6 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_RotatePoly)
     {
       *save_p++ = tc_true_poly_rotate;
-      PADSAVEP();
       memcpy (save_p, th, sizeof(polyevent_t));
       save_p += sizeof(polyevent_t);
       continue;
@@ -926,7 +898,6 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_MovePoly)
     {
       *save_p++ = tc_true_poly_move;
-      PADSAVEP();
       memcpy (save_p, th, sizeof(polyevent_t));
       save_p += sizeof(polyevent_t);
       continue;
@@ -935,7 +906,6 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_PolyDoor)
     {
       *save_p++ = tc_true_poly_door;
-      PADSAVEP();
       memcpy (save_p, th, sizeof(polydoor_t));
       save_p += sizeof(polydoor_t);
       continue;
@@ -946,7 +916,6 @@ void P_TrueArchiveThinkers(void) {
       mobj_t *mobj;
 
       *save_p++ = tc_true_mobj;
-      PADSAVEP();
       mobj = (mobj_t *)save_p;
 
       //e6y
@@ -1056,7 +1025,6 @@ void P_TrueUnArchiveThinkers(void) {
     while ((tc = *save_p++) != tc_true_end)
     {
       if (tc == tc_true_mobj) mobj_count++;
-      PADSAVEP();
       save_p +=
         tc == tc_true_ceiling     ? sizeof(ceiling_t)     :
         tc == tc_true_door        ? sizeof(vldoor_t)      :
@@ -1095,7 +1063,6 @@ void P_TrueUnArchiveThinkers(void) {
   while ((tc = *save_p++) != tc_true_end)
     switch (tc) {
       case tc_true_ceiling:
-        PADSAVEP();
         {
           ceiling_t *ceiling = Z_Malloc (sizeof(*ceiling), PU_LEVEL, NULL);
           memcpy (ceiling, save_p, sizeof(*ceiling));
@@ -1112,7 +1079,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_door:
-        PADSAVEP();
         {
           vldoor_t *door = Z_Malloc (sizeof(*door), PU_LEVEL, NULL);
           memcpy (door, save_p, sizeof(*door));
@@ -1129,7 +1095,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_floor:
-        PADSAVEP();
         {
           floormove_t *floor = Z_Malloc (sizeof(*floor), PU_LEVEL, NULL);
           memcpy (floor, save_p, sizeof(*floor));
@@ -1142,7 +1107,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_plat:
-        PADSAVEP();
         {
           plat_t *plat = Z_Malloc (sizeof(*plat), PU_LEVEL, NULL);
           memcpy (plat, save_p, sizeof(*plat));
@@ -1159,7 +1123,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_flash:
-        PADSAVEP();
         {
           lightflash_t *flash = Z_Malloc (sizeof(*flash), PU_LEVEL, NULL);
           memcpy (flash, save_p, sizeof(*flash));
@@ -1171,7 +1134,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_strobe:
-        PADSAVEP();
         {
           strobe_t *strobe = Z_Malloc (sizeof(*strobe), PU_LEVEL, NULL);
           memcpy (strobe, save_p, sizeof(*strobe));
@@ -1183,7 +1145,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_glow:
-        PADSAVEP();
         {
           glow_t *glow = Z_Malloc (sizeof(*glow), PU_LEVEL, NULL);
           memcpy (glow, save_p, sizeof(*glow));
@@ -1195,7 +1156,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_flicker:           // killough 10/4/98
-        PADSAVEP();
         {
           fireflicker_t *flicker = Z_Malloc (sizeof(*flicker), PU_LEVEL, NULL);
           memcpy (flicker, save_p, sizeof(*flicker));
@@ -1208,7 +1168,6 @@ void P_TrueUnArchiveThinkers(void) {
 
         //jff 2/22/98 new case for elevators
       case tc_true_elevator:
-        PADSAVEP();
         {
           elevator_t *elevator = Z_Malloc (sizeof(*elevator), PU_LEVEL, NULL);
           memcpy (elevator, save_p, sizeof(*elevator));
@@ -1222,7 +1181,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_scroll:       // killough 3/7/98: scroll effect thinkers
-        PADSAVEP();
         {
           scroll_t *scroll = Z_Malloc (sizeof(scroll_t), PU_LEVEL, NULL);
           memcpy (scroll, save_p, sizeof(scroll_t));
@@ -1233,7 +1191,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_pusher:   // phares 3/22/98: new Push/Pull effect thinkers
-        PADSAVEP();
         {
           pusher_t *pusher = Z_Malloc (sizeof(pusher_t), PU_LEVEL, NULL);
           memcpy (pusher, save_p, sizeof(pusher_t));
@@ -1245,7 +1202,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_friction:
-        PADSAVEP();
         {
           friction_t *friction = Z_Malloc (sizeof(friction_t), PU_LEVEL, NULL);
           memcpy (friction, save_p, sizeof(friction_t));
@@ -1256,7 +1212,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_light:
-        PADSAVEP();
         {
           light_t *light = Z_Malloc(sizeof(*light), PU_LEVEL, NULL);
           memcpy(light, save_p, sizeof(*light));
@@ -1268,7 +1223,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_phase:
-        PADSAVEP();
         {
           phase_t *phase = Z_Malloc(sizeof(*phase), PU_LEVEL, NULL);
           memcpy(phase, save_p, sizeof(*phase));
@@ -1280,7 +1234,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_acs:
-        PADSAVEP();
         {
           acs_t *acs = Z_Malloc(sizeof(*acs), PU_LEVEL, NULL);
           memcpy(acs, save_p, sizeof(*acs));
@@ -1292,7 +1245,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_pillar:
-        PADSAVEP();
         {
           pillar_t *pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, NULL);
           memcpy(pillar, save_p, sizeof(*pillar));
@@ -1305,7 +1257,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_waggle:
-        PADSAVEP();
         {
           floorWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
           memcpy(waggle, save_p, sizeof(*waggle));
@@ -1318,7 +1269,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_poly_rotate:
-        PADSAVEP();
         {
           polyevent_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
           memcpy(poly, save_p, sizeof(*poly));
@@ -1329,7 +1279,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_poly_move:
-        PADSAVEP();
         {
           polyevent_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
           memcpy(poly, save_p, sizeof(*poly));
@@ -1340,7 +1289,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_poly_door:
-        PADSAVEP();
         {
           polydoor_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
           memcpy(poly, save_p, sizeof(*poly));
@@ -1351,7 +1299,6 @@ void P_TrueUnArchiveThinkers(void) {
         }
 
       case tc_true_mobj:
-        PADSAVEP();
         {
           mobj_t *mobj = Z_Malloc(sizeof(mobj_t), PU_LEVEL, NULL);
 
