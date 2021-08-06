@@ -48,6 +48,7 @@
 #include "p_tick.h"
 #include "w_wad.h"
 #include "p_setup.h"
+#include "lprintf.h"
 
 #include "heretic/def.h"
 
@@ -111,6 +112,7 @@ static void cheat_inventory();
 static void cheat_puzzle();
 static void cheat_class();
 static void cheat_init();
+static void cheat_script();
 
 //-----------------------------------------------------------------------------
 //
@@ -231,7 +233,7 @@ cheatseq_t cheat[] = {
   CHEAT("shadowcaster", NULL, cht_never, cheat_class, -1),
   CHEAT("visit", NULL, cht_never | not_menu, cheat_clev, -2),
   CHEAT("init", NULL, cht_never, cheat_init, 0),
-  // CHEAT("puke", NULL, cht_never, cheat_script, -2),
+  CHEAT("puke", NULL, cht_never, cheat_script, -2),
   CHEAT("mapsco", NULL, not_dm, cheat_ddt, 0),
   CHEAT("deliverance", NULL, cht_never, cheat_chicken, 0),
   // CHEAT("conan", NULL, cht_never, cheat_conan, 0),
@@ -1115,6 +1117,8 @@ static void cheat_chicken(void)
 
 // hexen
 
+#include "hexen/p_acs.h"
+
 static void cheat_init(void)
 {
   extern dboolean partial_reset;
@@ -1185,4 +1189,28 @@ static void cheat_class(char buf[2])
   SB_SetClassData();
   SB_Start();
   P_SetMessage(plyr, "CLASS CHANGED", true);
+}
+
+static void cheat_script(char buf[3])
+{
+  int script;
+  byte script_args[3];
+  int tens, ones;
+  static char textBuffer[40];
+
+  tens = buf[0] - '0';
+  ones = buf[1] - '0';
+  script = tens * 10 + ones;
+  if (script < 1)
+      return;
+  if (script > 99)
+      return;
+  script_args[0] = script_args[1] = script_args[2] = 0;
+
+  if (P_StartACS(script, 0, script_args, plyr->mo, NULL, 0))
+  {
+    doom_snprintf(textBuffer, sizeof(textBuffer),
+                  "RUNNING SCRIPT %.2d", script);
+    P_SetMessage(plyr, textBuffer, true);
+  }
 }
