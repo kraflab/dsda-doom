@@ -299,6 +299,9 @@ void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flag
 
 int V_BestColor(const unsigned char *palette, int r, int g, int b);
 
+// [FG] colored blood and gibs
+int V_BloodColor(int blood);
+
 #ifdef GL_DOOM
 #include "gl_struct.h"
 #endif

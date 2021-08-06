@@ -50,6 +50,7 @@
 #include "w_wad.h"
 #include "m_argv.h"
 #include "m_misc.h"
+#include "v_video.h"
 #include "e6y.h"//e6y
 
 // CPhipps - modify to use logical output routine
@@ -2045,7 +2046,7 @@ static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
     case 31: mi->meleerange = (int)value; return;
 
     // misc
-    case 32: mi->bloodcolor = (int)value; return;
+    case 32: mi->bloodcolor = V_BloodColor((int)value); return;
 
     default: return;
   }
