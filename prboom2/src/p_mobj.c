@@ -2367,7 +2367,7 @@ void P_SpawnPuff(fixed_t x,fixed_t y,fixed_t z)
 //
 // P_SpawnBlood
 //
-void P_SpawnBlood(fixed_t x,fixed_t y,fixed_t z,int damage)
+void P_SpawnBlood(fixed_t x, fixed_t y, fixed_t z, int damage, mobj_t *bleeder)
 {
   mobj_t* th;
   // killough 5/5/98: remove dependence on order of evaluation:
@@ -2376,6 +2376,7 @@ void P_SpawnBlood(fixed_t x,fixed_t y,fixed_t z,int damage)
   th = P_SpawnMobj(x,y,z, MT_BLOOD);
   th->momz = FRACUNIT*2;
   th->tics -= P_Random(pr_spawnblood)&3;
+  th->color = bleeder->info->bloodcolor;
 
   if (th->tics < 1)
     th->tics = 1;
@@ -3165,7 +3166,7 @@ void P_BloodSplatter(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator)
     mo->momz = FRACUNIT * g_bloodsplatter_weight;
 }
 
-void P_RipperBlood(mobj_t * mo)
+void P_RipperBlood(mobj_t * mo, mobj_t * bleeder)
 {
     mobj_t *th;
     fixed_t x, y, z;
@@ -3178,6 +3179,7 @@ void P_RipperBlood(mobj_t * mo)
     th->momx = mo->momx >> 1;
     th->momy = mo->momy >> 1;
     th->tics += P_Random(pr_heretic) & 3;
+    th->color = bleeder->info->bloodcolor;
 }
 
 // hexen

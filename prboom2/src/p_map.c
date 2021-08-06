@@ -941,7 +941,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
             !(thing->flags2 & MF2_REFLECTIVE) &&
             !(thing->flags2 & MF2_INVULNERABLE))
         {                   // Ok to spawn some blood
-          P_RipperBlood(tmthing);
+          P_RipperBlood(tmthing, thing);
         }
         if (heretic) S_StartSound(tmthing, heretic_sfx_ripslop);
         damage = ((P_Random(pr_heretic) & 3) + 2) * tmthing->damage;
@@ -950,7 +950,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
       {
         damage = ((P_Random(pr_mbf21) & 3) + 2) * tmthing->info->damage;
         if (!(thing->flags & MF_NOBLOOD))
-          P_SpawnBlood(tmthing->x, tmthing->y, tmthing->z, damage);
+          P_SpawnBlood(tmthing->x, tmthing->y, tmthing->z, damage, thing);
         if (tmthing->info->ripsound)
           S_StartSound(tmthing, tmthing->info->ripsound);
       }
@@ -2144,7 +2144,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     if (raven || in->d.thing->flags & MF_NOBLOOD)
       P_SpawnPuff (x,y,z);
     else
-      P_SpawnBlood (x,y,z, la_damage);
+      P_SpawnBlood (x,y,z, la_damage, th);
   }
 
   if (la_damage)
@@ -2612,6 +2612,7 @@ dboolean PIT_ChangeSector (mobj_t* thing)
       }
       thing->height = 0;
       thing->radius = 0;
+      thing->color = thing->info->bloodcolor;
       return true; // keep checking
     }
   }
@@ -2661,6 +2662,7 @@ dboolean PIT_ChangeSector (mobj_t* thing)
       mo = P_SpawnMobj (thing->x,
                         thing->y,
                         thing->z + thing->height / 2, g_mt_blood);
+      mo->color = thing->info->bloodcolor;
 
       /* killough 8/10/98: remove dependence on order of evaluation */
       t = P_Random(pr_crush);
