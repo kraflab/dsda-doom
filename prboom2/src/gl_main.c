@@ -152,6 +152,9 @@ GLfloat cm2RGB[CR_LIMIT + 1][4] =
   {1.00f ,0.50f, 0.25f, 1.00f}, //CR_ORANGE
   {1.00f ,1.00f, 0.00f, 1.00f}, //CR_YELLOW
   {0.50f ,0.50f, 1.00f, 1.00f}, //CR_BLUE2
+  {0.00f ,0.00f, 0.00f, 1.00f}, //CR_BLACK
+  {0.50f ,0.00f, 0.50f, 1.00f}, //CR_PURPLE
+  {1.00f ,1.00f, 1.00f, 1.00f}, //CR_WHITE
   {1.00f ,1.00f, 1.00f, 1.00f}, //CR_LIMIT
 };
 

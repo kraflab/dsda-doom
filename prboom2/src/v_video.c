@@ -124,6 +124,9 @@ static const crdef_t crdefs[] = {
   {"CRORANGE", &colrngs[CR_ORANGE]},
   {"CRYELLOW", &colrngs[CR_YELLOW]},
   {"CRBLUE2",  &colrngs[CR_BLUE2]},
+  {"CRBLACK",  &colrngs[CR_BLACK]},
+  {"CRPURPLE", &colrngs[CR_PURPLE]},
+  {"CRWHITE",  &colrngs[CR_WHITE]},
   {NULL}
 };
 
