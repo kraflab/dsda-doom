@@ -567,22 +567,29 @@ static void R_DrawVisSprite(vissprite_t *vis)
   // mixed with translucent/non-translucenct 2s normals
 
   if (!dcvars.colormap)   // NULL colormap = shadow draw
+  {
     colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_FUZZ, filter, filterz);    // killough 3/14/98
+  }
+  else if (vis->color)
+  {
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, filter, filterz);
+    dcvars.translation = colrngs[vis->color];
+  }
+  else if (vis->mobjflags & MF_TRANSLATION)
+  {
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, filter, filterz);
+    dcvars.translation = translationtables - 256 +
+      ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
+  }
+  else if (vis->mobjflags & g_mf_translucent && general_translucency) // phares
+  {
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, filter, filterz);
+    tranmap = main_tranmap;       // killough 4/11/98
+  }
   else
-    if (vis->mobjflags & MF_TRANSLATION)
-      {
-        colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, filter, filterz);
-        dcvars.translation = translationtables - 256 +
-          ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
-      }
-    else
-      if (vis->mobjflags & g_mf_translucent && general_translucency) // phares
-        {
-          colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, filter, filterz);
-          tranmap = main_tranmap;       // killough 4/11/98
-        }
-      else
-        colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, filter, filterz); // killough 3/14/98, 4/11/98
+  {
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, filter, filterz); // killough 3/14/98, 4/11/98
+  }
 
 // proff 11/06/98: Changed for high-res
   dcvars.iscale = FixedDiv (FRACUNIT, vis->scale);
@@ -877,6 +884,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
   vis->x1 = x1 < 0 ? 0 : x1;
   vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;
   iscale = FixedDiv (FRACUNIT, xscale);
+  vis->color = thing->color;
 
   if (flip)
     {

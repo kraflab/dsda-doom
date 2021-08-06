@@ -422,6 +422,9 @@ typedef struct vissprite_s
   // hexen
   int pclass;                  // player class (used in translation)
   fixed_t floorclip;
+
+  // misc
+  int color;
 } vissprite_t;
 
 //

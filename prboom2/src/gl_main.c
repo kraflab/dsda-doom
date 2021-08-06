@@ -2747,7 +2747,10 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     sprite.light = gld_CalcLightLevel(lightlevel+(extralight<<5));
     sprite.fogdensity = gld_CalcFogDensity(thing->subsector->sector, lightlevel, GLDIT_SPRITE);
   }
-  sprite.cm = CR_LIMIT + (int)((thing->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT));
+  if (thing->color)
+    sprite.cm = thing->color;
+  else
+    sprite.cm = CR_LIMIT + (int)((thing->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT));
   sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true);
   if (!sprite.gltexture)
     goto unlock_patch;
