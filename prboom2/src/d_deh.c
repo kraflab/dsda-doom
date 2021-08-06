@@ -1084,7 +1084,6 @@ typedef struct
 // killough 8/9/98: make DEH_BLOCKMAX self-adjusting
 #define DEH_BLOCKMAX (sizeof(deh_blocks) / sizeof(*deh_blocks))  // size of array
 #define DEH_MAXKEYLEN 32 // as much of any key as we'll look at
-#define DEH_MOBJINFOMAX 32 // number of mobjinfo configuration keys
 
 // Put all the block header values, and the function to be called when that
 // one is encountered, in this array:
@@ -1123,7 +1122,7 @@ static dboolean includenotext = false;
 // * things are base zero but dehacked considers them to start at #1. ***
 // CPhipps - static const
 
-static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
+static const char *deh_mobjinfo[] =
 {
   "ID #",                // .doomednum
   "Initial frame",       // .spawnstate
@@ -1159,6 +1158,11 @@ static const char *deh_mobjinfo[DEH_MOBJINFOMAX] =
   "Rip sound",           // .ripsound
   "Fast speed",          // .altspeed
   "Melee range",         // .meleerange
+
+  // misc
+  "Blood color",         // .bloodcolor
+
+  NULL
 };
 
 // Strings that are used to indicate flags ("Bits" in mobjinfo)
@@ -2040,6 +2044,9 @@ static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
     case 30: mi->altspeed = (int)value; return;
     case 31: mi->meleerange = (int)value; return;
 
+    // misc
+    case 32: mi->bloodcolor = (int)value; return;
+
     default: return;
   }
 }
@@ -2102,7 +2109,7 @@ static void deh_procThing(DEHFILE *fpin, char *line)
       continue;
     }
 
-    for (ix = 0; ix < DEH_MOBJINFOMAX; ix++) {
+    for (ix = 0; deh_mobjinfo[ix]; ix++) {
       if (deh_strcasecmp(key, deh_mobjinfo[ix])) continue;
 
       if (!deh_strcasecmp(key, "MBF21 Bits")) {
