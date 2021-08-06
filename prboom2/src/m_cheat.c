@@ -107,6 +107,7 @@ static void cheat_chicken();
 static void cheat_artifact();
 
 // hexen
+static void cheat_inventory();
 static void cheat_init();
 
 //-----------------------------------------------------------------------------
@@ -221,7 +222,7 @@ cheatseq_t cheat[] = {
   CHEAT("clubmed", NULL, cht_never, cheat_reset_health, 0),
   CHEAT("butcher", NULL, cht_never, cheat_massacre, 0),
   CHEAT("nra", NULL, cht_never, cheat_fa, 0),
-  // CHEAT("indiana", NULL, cht_never, cheat_inventory, 0),
+  CHEAT("indiana", NULL, cht_never, cheat_inventory, 0),
   CHEAT("locksmith", NULL, cht_never, cheat_k, 0),
   // CHEAT("sherlock", NULL, cht_never, cheat_puzzle, 0),
   CHEAT("casper", NULL, cht_never, cheat_noclip, 0),
@@ -1110,6 +1111,8 @@ static void cheat_chicken(void)
   P_MapEnd();
 }
 
+// hexen
+
 static void cheat_init(void)
 {
   extern dboolean partial_reset;
@@ -1121,4 +1124,18 @@ static void cheat_init(void)
   G_DeferedInitNew(gameskill, gameepisode, P_GetMapWarpTrans(gamemap));
 
   P_SetMessage(plyr, "LEVEL WARP", true);
+}
+
+static void cheat_inventory(void)
+{
+  int i, j;
+
+  for (i = hexen_arti_none + 1; i < hexen_arti_firstpuzzitem; i++)
+  {
+    for (j = 0; j < 25; j++)
+    {
+      P_GiveArtifact(plyr, i, NULL);
+    }
+  }
+  P_SetMessage(plyr, "ALL ARTIFACTS", true);
 }
