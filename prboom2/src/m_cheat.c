@@ -1198,6 +1198,8 @@ static void cheat_script(char buf[3])
   int tens, ones;
   static char textBuffer[40];
 
+  if (!hexen) return;
+
   tens = buf[0] - '0';
   ones = buf[1] - '0';
   script = tens * 10 + ones;
