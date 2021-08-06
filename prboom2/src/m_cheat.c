@@ -1012,6 +1012,10 @@ static void cheat_reset_health(void)
   {
     plyr->health = plyr->mo->health = MAXCHICKENHEALTH;
   }
+  else if (hexen && plyr->morphTics)
+  {
+    plyr->health = plyr->mo->health = MAXMORPHHEALTH;
+  }
   else
   {
     plyr->health = plyr->mo->health = MAXHEALTH;
