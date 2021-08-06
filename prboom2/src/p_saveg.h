@@ -38,6 +38,8 @@
 #pragma interface
 #endif
 
+#include "doomtype.h"
+
 /* Persistent storage/archiving.
  * These are the load / save game routines. */
 void P_ArchivePlayers(void);
