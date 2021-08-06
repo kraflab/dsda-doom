@@ -1131,6 +1131,8 @@ static void cheat_inventory(void)
 {
   int i, j;
 
+  if (!hexen) return;
+
   for (i = hexen_arti_none + 1; i < hexen_arti_firstpuzzitem; i++)
   {
     for (j = 0; j < 25; j++)
@@ -1144,6 +1146,8 @@ static void cheat_inventory(void)
 static void cheat_puzzle(void)
 {
   int i, j;
+
+  if (!hexen) return;
 
   for (i = hexen_arti_firstpuzzitem; i < HEXEN_NUMARTIFACTS; i++)
   {
