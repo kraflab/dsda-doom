@@ -2270,7 +2270,7 @@ static void G_LoadGameErr(const char *msg)
 
 // CPhipps - size of version header
 #define VERSIONSIZE   16
-#define SAVEVERSION "DSDA-DOOM 1"
+#define SAVEVERSION "DSDA-DOOM 2"
 
 const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
 { "Doom v1.2", "Doom v1.666", "Doom/Doom2 v1.9", "Ultimate Doom/Doom95", "Final Doom",
