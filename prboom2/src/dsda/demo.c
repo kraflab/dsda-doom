@@ -129,3 +129,56 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd) {
   )
     cmd->buttons |= BT_JOIN;
 }
+
+// Strip off the defunct extended header (if we understand it) or abort (if we don't)
+const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size) {
+  // 9 = 6 (signature) + 1 (version) + 2 (extension count)
+  if (demo_p - header_p + 9 > size)
+    return NULL;
+
+  if (strncmp((const char *)demo_p, "PR+UM", 5) != 0)
+  {
+    I_Error("G_ReadDemoHeader: Unknown demo format");
+  }
+
+  demo_p += 6;
+
+  // the defunct format had only version 1
+  if (*demo_p++ != 1)
+  {
+    I_Error("G_ReadDemoHeader: Unknown demo format");
+  }
+
+  // the defunct format had only one extension (in two bytes)
+  if (*demo_p++ != 1 || *demo_p++ != 0)
+  {
+    I_Error("G_ReadDemoHeader: Unknown demo format");
+  }
+
+  if (demo_p - header_p + 1 > size)
+    return NULL;
+
+  // the defunct extension had length 8
+  if (*demo_p++ != 8)
+  {
+    I_Error("G_ReadDemoHeader: Unknown demo format");
+  }
+
+  if (demo_p - header_p + 8 > size)
+    return NULL;
+
+  if (strncmp((const char *)demo_p, "UMAPINFO", 8))
+  {
+    I_Error("G_ReadDemoHeader: Unknown demo format");
+  }
+
+  demo_p += 8;
+
+  // the defunct extension stored the map lump (unused)
+  if (demo_p - header_p + 8 > size)
+    return NULL;
+
+  demo_p += 8;
+
+  return demo_p;
+}
