@@ -448,6 +448,8 @@ void gld_Init(int width, int height)
   gld_ResetLastTexture();
 
   I_AtExit(gld_CleanMemory, true); //e6y
+
+  glsl_Init(); // elim - Required for fuzz shader, even if lighting mode not set to "shaders"
 }
 
 void gld_InitCommandLine(void)
@@ -894,10 +896,12 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   // when invisibility is about to go
   if (/*(viewplayer->mo->flags & MF_SHADOW) && */!vis->colormap)
   {
+    glsl_SetFuzzShaderActive();
+    glsl_SetFuzzTextureDimensions((float)gltexture->realtexwidth, (float)gltexture->realtexheight);
     glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
     glAlphaFunc(GL_GEQUAL,0.1f);
-    //glColor4f(0.2f,0.2f,0.2f,(float)tran_filter_pct/100.0f);
-    glColor4f(0.2f,0.2f,0.2f,0.33f);
+    glColor4f(0.2f,0.2f,0.2f,(float)tran_filter_pct/100.0f);
+    glColor4f(0.2f,0.2f,0.2f,0.01f);
   }
   else
   {
@@ -915,9 +919,10 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   if(!vis->colormap)
   {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL,0.5f);
+    glAlphaFunc(GL_GEQUAL,0.3f);
   }
   glColor3f(1.0f,1.0f,1.0f);
+  glsl_SetFuzzShaderInactive();
 }
 
 void gld_FillBlock(int x, int y, int width, int height, int col)
@@ -1198,6 +1203,9 @@ void gld_Clear(void)
 void gld_StartDrawScene(void)
 {
   extern int screenblocks;
+
+  // Progress fuzz time seed
+  glsl_SetFuzzTime(leveltime);
 
   gld_MultisamplingSet();
 
@@ -2386,6 +2394,8 @@ static void gld_DrawSprite(GLSprite *sprite)
   {
     if(sprite->flags & g_mf_shadow)
     {
+      glsl_SetFuzzShaderActive();
+      glsl_SetFuzzTextureDimensions((float)sprite->gltexture->width, (float)sprite->gltexture->height);
       glGetIntegerv(GL_BLEND_SRC, &blend_src);
       glGetIntegerv(GL_BLEND_DST, &blend_dst);
       glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
@@ -2462,6 +2472,7 @@ static void gld_DrawSprite(GLSprite *sprite)
   {
     glBlendFunc(blend_src, blend_dst);
     glAlphaFunc(GL_GEQUAL, gl_mask_sprite_threshold_f);
+    glsl_SetFuzzShaderInactive();
   }
 }
 
