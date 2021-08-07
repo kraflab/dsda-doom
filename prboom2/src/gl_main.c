@@ -1205,7 +1205,7 @@ void gld_StartDrawScene(void)
   extern int screenblocks;
 
   // Progress fuzz time seed
-  glsl_SetFuzzTime(leveltime);
+  glsl_SetFuzzTime(gametic);
 
   gld_MultisamplingSet();
 
