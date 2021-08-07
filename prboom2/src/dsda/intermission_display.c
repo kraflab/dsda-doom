@@ -71,7 +71,7 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
     color = diff >= 0 ? 0x30 + g_cr_gray : 0x30 + g_cr_green;
     diff = abs(diff);
 
-    if (split->leveltime.best_delta >= 2100) {
+    if (diff >= 2100) {
       snprintf(
         delta, sizeof(delta),
         " (%s%d:%04.2f)",
@@ -117,7 +117,7 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
     color = diff >= 0 ? 0x30 + g_cr_gray : 0x30 + g_cr_green;
     diff = abs(diff);
 
-    if (split->totalleveltimes.best_delta >= 60) {
+    if (diff >= 60) {
       snprintf(
         delta, sizeof(delta),
         " (%s%d:%02d)",
