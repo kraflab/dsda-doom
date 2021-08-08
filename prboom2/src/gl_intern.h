@@ -567,22 +567,30 @@ typedef struct GLShader_s
   GLhandleARB hShader;
   GLhandleARB hVertProg;
   GLhandleARB hFragProg;
-
-  int lightlevel_index;
 } GLShader;
 
 extern GLShader *sh_main;
 
 int glsl_Init(void);
 void glsl_SetActiveShader(GLShader *shader);
+void glsl_SetFuzzShaderActive();
+void glsl_SetFuzzShaderInactive();
 void glsl_SetLightLevel(float lightlevel);
+void glsl_SetFuzzTime(int time);
+void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight);
+void glsl_SetFuzzTextureDimensions(float texwidth, float texheight);
 int glsl_IsActive(void);
 
 #else
 
 #define glsl_Init() 0
 #define glsl_SetActiveShader(shader)
+#define glsl_SetFuzzShaderActive()
+#define glsl_SetFuzzShaderInactive()
 #define glsl_SetLightLevel(lightlevel)
+#define glsl_SetFuzzTime(time);
+#define glsl_SetFuzzScreenResolution(screenwidth, screenheight);
+#define glsl_SetFuzzTextureDimensions(texwidth, texheight);
 
 #endif // USE_SHADERS
 

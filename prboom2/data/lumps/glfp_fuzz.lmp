@@ -1,0 +1,29 @@
+#version 120
+
+uniform sampler2D tex;
+uniform vec2 tex_d; // Texture dimensions 
+uniform vec2 screen_res;
+uniform int time;
+
+float random(vec2 n) 
+{ 
+	return fract(sin(dot(n.xy, vec2(12.9898, 78.233))) * 143758.5453);
+}
+
+void main()
+{
+  // Ensure texture coord is identical for each texel in the screenspace pixel
+  float x = floor(tex_d.x * gl_TexCoord[0].x) / tex_d.x;
+  float y = floor(tex_d.y * gl_TexCoord[0].y) / tex_d.y;
+  vec2 uv = vec2(x, y);
+
+  float ftime = float(time) / 1000;
+  float brightness = random(uv + ftime);
+
+  // Blend mode is 1 - src_alpha, so lighten pixels a bit since the lighter they are,
+  // the more translucent they'll become
+  brightness = min(1.0, brightness + 0.65);
+  brightness = mix(0.4, 1.0, brightness * brightness);
+
+  gl_FragColor = vec4(vec3(brightness), texture2D(tex, uv).w);
+}

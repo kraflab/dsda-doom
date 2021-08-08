@@ -52,11 +52,65 @@
 #include "lprintf.h"
 #include "e6y.h"
 #include "r_things.h"
+#include "doomdef.h"
+
+// Lighting shader uniform bindings
+typedef struct shdr_light_unif_s
+{
+  int lightlevel_index; // float
+} shdr_light_unif_t;
+
+// Fuzz shader uniform bindings
+typedef struct shdr_fuzz_unif_s
+{
+  int screen_resolution_index; // vec2
+  int tex_d_index;             // vec2
+  int time_index;              // float
+} shdr_fuzz_unif_t;
 
 GLShader *sh_main = NULL;
+shdr_light_unif_t light_unifs;
+GLShader *sh_fuzz = NULL;
+shdr_fuzz_unif_t fuzz_unifs;
 static GLShader *active_shader = NULL;
 
 static GLShader* gld_LoadShader(const char *vpname, const char *fpname);
+
+void get_light_shader_bindings()
+{
+  if (sh_main)
+  {
+    int idx;
+
+    light_unifs.lightlevel_index = GLEXT_glGetUniformLocationARB(sh_main->hShader, "lightlevel");
+  
+    GLEXT_glUseProgramObjectARB(sh_main->hShader);
+  
+    idx = GLEXT_glGetUniformLocationARB(sh_main->hShader, "tex");
+    GLEXT_glUniform1iARB(idx, 0);
+  
+    GLEXT_glUseProgramObjectARB(0);
+  }
+}
+
+void get_fuzz_shader_bindings()
+{
+  if (sh_fuzz)
+  {
+    int idx;
+
+    fuzz_unifs.screen_resolution_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "screen_res");
+    fuzz_unifs.tex_d_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "tex_d");
+    fuzz_unifs.time_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "time");
+
+    GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
+
+    idx = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "tex");
+    GLEXT_glUniform1iARB(idx, 0);
+
+    GLEXT_glUseProgramObjectARB(0);
+  }
+}
 
 int glsl_Init(void)
 {
@@ -73,10 +127,17 @@ int glsl_Init(void)
     else
     {
       sh_main = gld_LoadShader("glvp", "glfp");
+      get_light_shader_bindings();
+
+      sh_fuzz = gld_LoadShader("glvp", "glfp_fuzz");
+      get_fuzz_shader_bindings();
+      glsl_SetFuzzScreenResolution((float)SCREENWIDTH, (float)SCREENHEIGHT);
+
+      lprintf(LO_INFO,"GLSL_INIT\n");
     }
   }
 
-  return (sh_main != NULL);
+  return (sh_main != NULL) && (sh_fuzz != NULL);
 }
 
 static int ReadLump(const char *filename, const char *lumpname, unsigned char **buffer)
@@ -181,15 +242,6 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
     if (linked)
     {
       lprintf(LO_INFO, "gld_LoadShader: Shader \"%s+%s\" compiled OK: %s\n", vpname, fpname, buffer);
-
-      shader->lightlevel_index = GLEXT_glGetUniformLocationARB(shader->hShader, "lightlevel");
-
-      GLEXT_glUseProgramObjectARB(shader->hShader);
-
-      idx = GLEXT_glGetUniformLocationARB(shader->hShader, "tex");
-      GLEXT_glUniform1iARB(idx, 0);
-
-      GLEXT_glUseProgramObjectARB(0);
     }
     else
     {
@@ -218,11 +270,111 @@ void glsl_SetActiveShader(GLShader *shader)
   }
 }
 
+void glsl_SetFuzzShaderActive()
+{
+  if (active_shader != sh_fuzz)
+  {
+    GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
+    active_shader = sh_fuzz;  
+  }
+}
+
+void glsl_SetFuzzShaderInactive()
+{
+  if (active_shader == sh_fuzz)
+  {
+    GLEXT_glUseProgramObjectARB(0);
+    active_shader = NULL;
+  }
+}
+
 void glsl_SetLightLevel(float lightlevel)
 {
   if (sh_main)
   {
-    GLEXT_glUniform1fARB(sh_main->lightlevel_index, lightlevel);
+    GLEXT_glUniform1fARB(light_unifs.lightlevel_index, lightlevel);
+  }
+}
+
+void glsl_SetFuzzTime(int time)
+{
+  GLShader* prev_active_shader;
+  prev_active_shader = NULL;
+
+  if (sh_fuzz)
+  {
+    if (active_shader != sh_fuzz)
+    {        
+      prev_active_shader = active_shader;
+      glsl_SetFuzzShaderActive();
+    }
+    else
+    {
+      prev_active_shader = sh_fuzz;
+    }
+
+    //lprintf(LO_INFO,"fuzz time: %i\n", time);
+    GLEXT_glUniform1iARB(fuzz_unifs.time_index, time);
+
+    if (prev_active_shader != sh_fuzz)
+    {
+      glsl_SetFuzzShaderInactive();
+      glsl_SetActiveShader(prev_active_shader);
+    }
+  }
+}
+
+void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight)
+{
+  GLShader* prev_active_shader;
+  prev_active_shader = NULL;
+
+  if (sh_fuzz)
+  {
+    if (active_shader != sh_fuzz)
+    {        
+      prev_active_shader = active_shader;
+      glsl_SetFuzzShaderActive();
+    }
+    else
+    {
+      prev_active_shader = sh_fuzz;
+    }
+
+    GLEXT_glUniform2fARB(fuzz_unifs.screen_resolution_index, screenwidth, screenheight);
+
+    if (prev_active_shader != sh_fuzz)
+    {
+      glsl_SetFuzzShaderInactive();
+      glsl_SetActiveShader(prev_active_shader);
+    }
+  }
+}
+
+void glsl_SetFuzzTextureDimensions(float texwidth, float texheight)
+{
+  GLShader* prev_active_shader;
+  prev_active_shader = NULL;
+
+  if (sh_fuzz)
+  {
+    if (active_shader != sh_fuzz)
+    {        
+      prev_active_shader = active_shader;
+      glsl_SetFuzzShaderActive();
+    }
+    else
+    {
+      prev_active_shader = sh_fuzz;
+    }
+
+    GLEXT_glUniform2fARB(fuzz_unifs.tex_d_index, texwidth, texheight);
+
+    if (prev_active_shader != sh_fuzz)
+    {
+      glsl_SetFuzzShaderInactive();
+      glsl_SetActiveShader(prev_active_shader);
+    }
   }
 }
 
