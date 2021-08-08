@@ -541,7 +541,7 @@ static int oldpieces = -1;
 
 void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 {
-    if (refresh || fullmenu || V_GetMode() == VID_MODEGL) SB_state = -1;
+    if (refresh || fullmenu || V_IsOpenGLMode()) SB_state = -1;
 
     if (!statusbaron)
     {
@@ -559,10 +559,6 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
     {
         if (SB_state == -1)
         {
-            // Applies palette to backfill
-            if (V_GetMode() == VID_MODE32)
-              R_FillBackScreen();
-
             if (heretic)
             {
                 V_DrawNumPatch(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);

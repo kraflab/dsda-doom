@@ -120,10 +120,8 @@ typedef struct {
 } draw_span_vars_t;
 
 typedef struct {
-  byte           *byte_topleft;
-  unsigned int   *int_topleft;
-  int   byte_pitch;
-  int   int_pitch;
+  byte           *topleft;
+  int   pitch;
 
   enum draw_filter_type_e filterwall;
   enum draw_filter_type_e filterfloor;

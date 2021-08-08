@@ -251,7 +251,6 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
 {
   byte *src;
   byte *dest;
-  int pixel_depth = V_GetPixelDepth();
 
   if (flags & VPT_STRETCH_MASK)
   {
@@ -275,14 +274,14 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
     I_Error ("V_CopyRect: Bad arguments");
 #endif
 
-  src = screens[srcscrn].data + screens[srcscrn].byte_pitch * y + x * pixel_depth;
-  dest = screens[destscrn].data + screens[destscrn].byte_pitch * y + x * pixel_depth;
+  src = screens[srcscrn].data + screens[srcscrn].pitch * y + x;
+  dest = screens[destscrn].data + screens[destscrn].pitch * y + x;
 
   for ( ; height>0 ; height--)
     {
-      memcpy (dest, src, width * pixel_depth);
-      src += screens[srcscrn].byte_pitch;
-      dest += screens[destscrn].byte_pitch;
+      memcpy (dest, src, width);
+      src += screens[srcscrn].pitch;
+      dest += screens[destscrn].pitch;
     }
 }
 
@@ -326,10 +325,10 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
   // killough 4/17/98:
   data = W_CacheLumpNum(lump);
 
-  if (V_GetMode() == VID_MODE8) {
+  {
     const byte *src, *src_p;
     byte *dest, *dest_p;
-    pitch = screens[scrn].byte_pitch;
+    pitch = screens[scrn].pitch;
 
     for (sy = y ; sy < y + height; sy += 64)
     {
@@ -350,9 +349,6 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
         dest += 64;
       }
     }
-  } else if (V_GetMode() == VID_MODE32) {
-    pitch = screens[scrn].int_pitch;
-    FILL_FLAT(unsigned int, pitch, VID_PAL32);
   }
 
   W_UnlockLumpNum(lump);
@@ -402,8 +398,7 @@ void V_Init (void)
     screens[i].not_on_heap = false;
     screens[i].width = 0;
     screens[i].height = 0;
-    screens[i].byte_pitch = 0;
-    screens[i].int_pitch = 0;
+    screens[i].pitch = 0;
   }
 }
 
@@ -452,9 +447,9 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
   if (patch->width > 320 && patch->leftoffset == 0)
     x -= (patch->width - 320) / 2;
 
-  if (V_GetMode() == VID_MODE8 && !(flags & VPT_STRETCH_MASK)) {
+  if (!(flags & VPT_STRETCH_MASK)) {
     int             col;
-    byte           *desttop = screens[scrn].data+y*screens[scrn].byte_pitch+x*V_GetPixelDepth();
+    byte           *desttop = screens[scrn].data+y*screens[scrn].pitch+x;
     int    w = patch->width;
 
     if (y<0 || y+patch->height > ((flags & VPT_STRETCH) ? 200 :  SCREENHEIGHT)) {
@@ -482,7 +477,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
         // killough 2/21/98: Unrolled and performance-tuned
 
         const byte *source = column->pixels + post->topdelta;
-        byte *dest = desttop + post->topdelta*screens[scrn].byte_pitch;
+        byte *dest = desttop + post->topdelta*screens[scrn].pitch;
         int count = post->length;
 
         if (!(flags & VPT_TRANS)) {
@@ -492,19 +487,19 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
               s0 = source[0];
               s1 = source[1];
               dest[0] = s0;
-              dest[screens[scrn].byte_pitch] = s1;
-              dest += screens[scrn].byte_pitch*2;
+              dest[screens[scrn].pitch] = s1;
+              dest += screens[scrn].pitch*2;
               s0 = source[2];
               s1 = source[3];
               source += 4;
               dest[0] = s0;
-              dest[screens[scrn].byte_pitch] = s1;
-              dest += screens[scrn].byte_pitch*2;
+              dest[screens[scrn].pitch] = s1;
+              dest += screens[scrn].pitch*2;
             } while ((count-=4)>=0);
           if (count+=4)
             do {
               *dest = *source++;
-              dest += screens[scrn].byte_pitch;
+              dest += screens[scrn].pitch;
             } while (--count);
         } else {
           // CPhipps - merged translation code here
@@ -516,21 +511,21 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
               s0 = trans[s0];
               s1 = trans[s1];
               dest[0] = s0;
-              dest[screens[scrn].byte_pitch] = s1;
-              dest += screens[scrn].byte_pitch*2;
+              dest[screens[scrn].pitch] = s1;
+              dest += screens[scrn].pitch*2;
               s0 = source[2];
               s1 = source[3];
               s0 = trans[s0];
               s1 = trans[s1];
               source += 4;
               dest[0] = s0;
-              dest[screens[scrn].byte_pitch] = s1;
-              dest += screens[scrn].byte_pitch*2;
+              dest[screens[scrn].pitch] = s1;
+              dest += screens[scrn].pitch*2;
             } while ((count-=4)>=0);
           if (count+=4)
             do {
               *dest = trans[*source++];
-              dest += screens[scrn].byte_pitch;
+              dest += screens[scrn].pitch;
             } while (--count);
         }
       }
@@ -550,10 +545,8 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 
     R_SetDefaultDrawColumnVars(&dcvars);
 
-    drawvars.byte_topleft = screens[scrn].data;
-    drawvars.int_topleft = (unsigned int *)screens[scrn].data;
-    drawvars.byte_pitch = screens[scrn].byte_pitch;
-    drawvars.int_pitch = screens[scrn].int_pitch;
+    drawvars.topleft = screens[scrn].data;
+    drawvars.pitch = screens[scrn].pitch;
 
     if (flags & VPT_TRANS) {
       colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, drawvars.filterpatch, RDRAW_FILTER_NONE);
@@ -728,94 +721,7 @@ static void FUNC_V_DrawNumPatchPrecise(float x, float y, int scrn, int lump,
   R_UnlockPatchNum(lump);
 }
 
-unsigned int *V_Palette32 = NULL;
 static int currentPaletteIndex = 0;
-
-//
-// V_UpdateTrueColorPalette
-//
-void V_UpdateTrueColorPalette(video_mode_t mode) {
-  int i, w, p;
-  byte r,g,b;
-  int nr,ng,nb;
-  float t;
-  int paletteNum;
-  int pplump;
-  int gtlump;
-  const byte *pal;
-  const byte *gtable;
-  int numPals;
-  const float dontRoundAbove = 220;
-  float roundUpR, roundUpG, roundUpB;
-  dsda_playpal_t* playpal_data;
-  static int usegammaOnLastPaletteGeneration = -1;
-
-  paletteNum = (V_GetMode() == VID_MODEGL ? 0 : currentPaletteIndex);
-
-  playpal_data = dsda_PlayPalData();
-  pplump = W_CheckNumForName(playpal_data->lump_name);
-
-  // V_UpdateTrueColorPalette can be called as part of the gamma setting before
-  // we've loaded any wads, which prevents us from reading the palette - POPE
-  if (pplump < 0)
-    return;
-
-  gtlump = (W_CheckNumForName)("GAMMATBL", ns_prboom);
-  pal = W_CacheLumpNum(pplump);
-
-  // opengl doesn't use the gamma
-  gtable =
-    (const byte *) W_CacheLumpNum(gtlump) +
-    (V_GetMode() == VID_MODEGL ? 0 : 256 * (usegamma))
-  ;
-
-  numPals = W_LumpLength(pplump) / (3 * 256);
-
-  if (usegammaOnLastPaletteGeneration != usegamma) {
-    if (playpal_data->Palettes32) free(playpal_data->Palettes32);
-    playpal_data->Palettes32 = NULL;
-    usegammaOnLastPaletteGeneration = usegamma;
-  }
-
-  if (mode == VID_MODE32) {
-    if (!playpal_data->Palettes32) {
-      // set int palette
-      playpal_data->Palettes32 = malloc(numPals*256*sizeof(int)*VID_NUMCOLORWEIGHTS);
-      for (p=0; p<numPals; p++) {
-        for (i=0; i<256; i++) {
-          r = gtable[pal[(256*p+i)*3+0]];
-          g = gtable[pal[(256*p+i)*3+1]];
-          b = gtable[pal[(256*p+i)*3+2]];
-
-          // ideally, we should always round up, but very bright colors
-          // overflow the blending adds, so they don't get rounded.
-          roundUpR = (r > dontRoundAbove) ? 0 : 0.5f;
-          roundUpG = (g > dontRoundAbove) ? 0 : 0.5f;
-          roundUpB = (b > dontRoundAbove) ? 0 : 0.5f;
-
-          for (w=0; w<VID_NUMCOLORWEIGHTS; w++) {
-            t = (float)(w)/(float)(VID_NUMCOLORWEIGHTS-1);
-            nr = (int)(r*t+roundUpR);
-            ng = (int)(g*t+roundUpG);
-            nb = (int)(b*t+roundUpB);
-            playpal_data->Palettes32[((p*256+i)*VID_NUMCOLORWEIGHTS)+w] = (
-              (nr<<16) | (ng<<8) | nb
-            );
-          }
-        }
-      }
-    }
-    V_Palette32 = playpal_data->Palettes32 + paletteNum*256*VID_NUMCOLORWEIGHTS;
-  }
-
-  W_UnlockLumpNum(pplump);
-  W_UnlockLumpNum(gtlump);
-}
-
-void V_DestroyUnusedTrueColorPalettes(void) {
-  dsda_FreeTrueColorPlayPal();
-  if (V_GetMode() != VID_MODE32) V_Palette32 = NULL;
-}
 
 //
 // V_SetPalette
@@ -827,15 +733,12 @@ void V_SetPalette(int pal)
 {
   currentPaletteIndex = pal;
 
-  if (V_GetMode() == VID_MODEGL) {
+  if (V_IsOpenGLMode()) {
 #ifdef GL_DOOM
     gld_SetPalette(pal);
 #endif
   } else {
     I_SetPalette(pal);
-    if (V_GetMode() == VID_MODE32) {
-      V_UpdateTrueColorPalette(V_GetMode());
-    }
   }
 }
 
@@ -845,7 +748,7 @@ void V_SetPlayPal(int playpal_index)
   R_UpdatePlayPal();
   V_SetPalette(currentPaletteIndex);
 
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
 #ifdef GL_DOOM
     gld_FlushTextures();
@@ -859,33 +762,18 @@ void V_SetPlayPal(int playpal_index)
 // CPhipps - New function to fill a rectangle with a given colour
 static void V_FillRect8(int scrn, int x, int y, int width, int height, byte colour)
 {
-  byte* dest = screens[scrn].data + x + y*screens[scrn].byte_pitch;
+  byte* dest = screens[scrn].data + x + y*screens[scrn].pitch;
   while (height--) {
     memset(dest, colour, width);
-    dest += screens[scrn].byte_pitch;
-  }
-}
-
-static void V_FillRect32(int scrn, int x, int y, int width, int height, byte colour)
-{
-  unsigned int* dest = (unsigned int *)screens[scrn].data + x + y*screens[scrn].int_pitch;
-  int w;
-  int c = VID_PAL32(colour, VID_COLORWEIGHTMASK);
-  while (height--) {
-    for (w=0; w<width; w++) {
-      dest[w] = c;
-    }
-    dest += screens[scrn].int_pitch;
+    dest += screens[scrn].pitch;
   }
 }
 
 static void WRAP_V_DrawLine(fline_t* fl, int color);
 static void V_PlotPixel8(int scrn, int x, int y, byte color);
-static void V_PlotPixel32(int scrn, int x, int y, byte color);
 
 static void WRAP_V_DrawLineWu(fline_t* fl, int color);
 static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight);
-static void V_PlotPixelWu32(int scrn, int x, int y, byte color, int weight);
 
 #ifdef GL_DOOM
 static void WRAP_gld_FillRect(int scrn, int x, int y, int width, int height, byte colour)
@@ -945,7 +833,7 @@ static void NULL_DrawLine(fline_t* fl, int color) {}
 static void NULL_DrawLineWu(fline_t* fl, int color) {}
 
 const char *default_videomode;
-static video_mode_t current_videomode = VID_MODE8;
+static video_mode_t current_videomode = VID_MODESW;
 
 V_CopyRect_f V_CopyRect = NULL_CopyRect;
 V_FillRect_f V_FillRect = NULL_FillRect;
@@ -964,8 +852,8 @@ V_DrawLineWu_f V_DrawLineWu = NULL_DrawLineWu;
 //
 void V_InitMode(video_mode_t mode) {
   switch (mode) {
-    case VID_MODE8:
-      lprintf(LO_INFO, "V_InitMode: using 8 bit video mode\n");
+    case VID_MODESW:
+      lprintf(LO_INFO, "V_InitMode: using software video mode\n");
       V_CopyRect = FUNC_V_CopyRect;
       V_FillRect = V_FillRect8;
       V_DrawNumPatch = FUNC_V_DrawNumPatch;
@@ -977,22 +865,7 @@ void V_InitMode(video_mode_t mode) {
       V_PlotPixelWu = V_PlotPixelWu8;
       V_DrawLine = WRAP_V_DrawLine;
       V_DrawLineWu = WRAP_V_DrawLineWu;
-      current_videomode = VID_MODE8;
-      break;
-    case VID_MODE32:
-      lprintf(LO_INFO, "V_InitMode: using 32 bit video mode\n");
-      V_CopyRect = FUNC_V_CopyRect;
-      V_FillRect = V_FillRect32;
-      V_DrawNumPatch = FUNC_V_DrawNumPatch;
-      V_DrawNumPatchPrecise = FUNC_V_DrawNumPatchPrecise;
-      V_FillFlat = FUNC_V_FillFlat;
-      V_FillPatch = FUNC_V_FillPatch;
-      V_DrawBackground = FUNC_V_DrawBackground;
-      V_PlotPixel = V_PlotPixel32;
-      V_PlotPixelWu = V_PlotPixelWu32;
-      V_DrawLine = WRAP_V_DrawLine;
-      V_DrawLineWu = WRAP_V_DrawLineWu;
-      current_videomode = VID_MODE32;
+      current_videomode = VID_MODESW;
       break;
 #ifdef GL_DOOM
     case VID_MODEGL:
@@ -1015,40 +888,12 @@ void V_InitMode(video_mode_t mode) {
   R_FilterInit();
 }
 
-//
-// V_GetMode
-//
-video_mode_t V_GetMode(void) {
-  return current_videomode;
+dboolean V_IsSoftwareMode(void) {
+  return current_videomode == VID_MODESW;
 }
 
-//
-// V_GetModePixelDepth
-//
-int V_GetModePixelDepth(video_mode_t mode) {
-  switch (mode) {
-    case VID_MODE8: return 1;
-    case VID_MODE32: return 4;
-    default: return 0;
-  }
-}
-
-//
-// V_GetNumPixelBits
-//
-int V_GetNumPixelBits(void) {
-  switch (current_videomode) {
-    case VID_MODE8: return 8;
-    case VID_MODE32: return 32;
-    default: return 0;
-  }
-}
-
-//
-// V_GetPixelDepth
-//
-int V_GetPixelDepth(void) {
-  return V_GetModePixelDepth(current_videomode);
+dboolean V_IsOpenGLMode(void) {
+  return current_videomode == VID_MODEGL;
 }
 
 //
@@ -1056,9 +901,9 @@ int V_GetPixelDepth(void) {
 //
 void V_AllocScreen(screeninfo_t *scrn) {
   if (!scrn->not_on_heap)
-    if ((scrn->byte_pitch * scrn->height) > 0)
+    if ((scrn->pitch * scrn->height) > 0)
       //e6y: Clear the screen to black.
-      scrn->data = calloc(scrn->byte_pitch*scrn->height, 1);
+      scrn->data = calloc(scrn->pitch*scrn->height, 1);
 }
 
 //
@@ -1092,11 +937,7 @@ void V_FreeScreens(void) {
 }
 
 static void V_PlotPixel8(int scrn, int x, int y, byte color) {
-  screens[scrn].data[x+screens[scrn].byte_pitch*y] = color;
-}
-
-static void V_PlotPixel32(int scrn, int x, int y, byte color) {
-  ((unsigned int *)screens[scrn].data)[x+screens[scrn].int_pitch*y] = VID_PAL32(color, VID_COLORWEIGHTMASK);
+  screens[scrn].data[x+screens[scrn].pitch*y] = color;
 }
 
 #define PUTDOT(xx,yy,cc) V_PlotPixel(0,xx,yy,(byte)cc)
@@ -1208,7 +1049,7 @@ extern SDL_Surface *screen;
 //
 static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight)
 {
-  unsigned int bg_color = screens[scrn].data[x+screens[scrn].byte_pitch*y];
+  unsigned int bg_color = screens[scrn].data[x+screens[scrn].pitch*y];
   unsigned int *fg2rgb = Col2RGB8[weight];
   unsigned int *bg2rgb = Col2RGB8[64 - weight];
   unsigned int fg = fg2rgb[color];
@@ -1216,18 +1057,6 @@ static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight)
 
   fg = (fg + bg) | 0x1f07c1f;
   V_PlotPixel(scrn, x, y, RGB32k[0][0][fg & (fg >> 15)]);
-}
-
-static void V_PlotPixelWu32(int scrn, int x, int y, byte color, int weight)
-{
-  const unsigned char *rgb = V_GetPlaypal() + color * 3;
-
-  byte r = (*(rgb + 0) * weight) >> wu_weightbits;
-  byte g = (*(rgb + 1) * weight) >> wu_weightbits;
-  byte b = (*(rgb + 2) * weight) >> wu_weightbits;
-
-  ((unsigned int *)screens[scrn].data)[x+screens[scrn].int_pitch*y] =
-    (unsigned int)RGB2COLOR(r, g, b);
 }
 
 //
@@ -1669,7 +1498,7 @@ void V_ToggleFullscreen(void)
   I_UpdateVideoMode();
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_PreprocessLevel();
   }
@@ -1681,7 +1510,7 @@ void V_ChangeScreenResolution(void)
   I_UpdateVideoMode();
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_PreprocessLevel();
   }

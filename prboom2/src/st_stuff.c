@@ -442,10 +442,6 @@ static void ST_refreshBackground(void)
     {
       flags = VPT_ALIGN_BOTTOM;
 
-      // Applies palette to backfill
-      if (V_GetMode() == VID_MODE32)
-        R_FillBackScreen();
-
       V_DrawNumPatch(ST_X, y, BG, stbarbg.lumpnum, CR_DEFAULT, flags);
       if (!deathmatch)
       {
@@ -832,11 +828,6 @@ static void ST_doPaletteStuff(void)
 
   if (palette != st_palette) {
     V_SetPalette(st_palette = palette); // CPhipps - use new palette function
-
-    // have to redraw the entire status bar when the palette changes
-    // in truecolor modes - POPE
-    if (V_GetMode() == VID_MODE32)
-      st_firsttime = true;
   }
 }
 
@@ -948,7 +939,7 @@ void ST_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
   ST_doPaletteStuff();  // Do red-/gold-shifts from damage/items
 
   if (statusbaron) {
-    if (st_firsttime || (V_GetMode() == VID_MODEGL))
+    if (st_firsttime || (V_IsOpenGLMode()))
     {
       /* If just after ST_Start(), refresh all */
       st_firsttime = false;

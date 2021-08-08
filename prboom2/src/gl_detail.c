@@ -95,7 +95,7 @@ void M_ChangeUseDetail(void)
 {
   render_usedetail = false;
 
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     render_usedetail = gl_allow_detail_textures;
     gld_EnableDetail(true);

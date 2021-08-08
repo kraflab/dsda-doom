@@ -82,7 +82,7 @@ result_e T_MovePlane
                             // from moving thru each other
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_UpdateSplitData(sector);
   }

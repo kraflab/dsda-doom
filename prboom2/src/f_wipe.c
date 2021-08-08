@@ -80,13 +80,13 @@ static int wipe_initMelt(int ticks)
 {
   int i;
 
-  if (V_GetMode() != VID_MODEGL)
+  if (V_IsSoftwareMode())
   {
     // copy start screen to main screen
     for(i=0;i<SCREENHEIGHT;i++)
-    memcpy(wipe_scr.data+i*wipe_scr.byte_pitch,
-           wipe_scr_start.data+i*wipe_scr_start.byte_pitch,
-           SCREENWIDTH*V_GetPixelDepth());
+    memcpy(wipe_scr.data+i*wipe_scr.pitch,
+           wipe_scr_start.data+i*wipe_scr_start.pitch,
+           SCREENWIDTH);
   }
 
   // setup initial column positions (y<0 => not ready to scroll yet)
@@ -108,7 +108,6 @@ static int wipe_doMelt(int ticks)
 {
   dboolean done = true;
   int i;
-  const int depth = V_GetPixelDepth();
 
   while (ticks--) {
     for (i=0;i<(SCREENWIDTH);i++) {
@@ -130,25 +129,23 @@ static int wipe_doMelt(int ticks)
         if (y_lookup[i]+dy >= SCREENHEIGHT)
           dy = SCREENHEIGHT - y_lookup[i];
 
-       if (V_GetMode() != VID_MODEGL) {
-        s = wipe_scr_end.data    + (y_lookup[i]*wipe_scr_end.byte_pitch+(i*depth));
-        d = wipe_scr.data        + (y_lookup[i]*wipe_scr.byte_pitch+(i*depth));
+       if (V_IsSoftwareMode()) {
+        s = wipe_scr_end.data    + (y_lookup[i]*wipe_scr_end.pitch+i);
+        d = wipe_scr.data        + (y_lookup[i]*wipe_scr.pitch+i);
         for (j=dy;j;j--) {
-          for (k=0; k<depth; k++)
-            d[k] = s[k];
-          d += wipe_scr.byte_pitch;
-          s += wipe_scr_end.byte_pitch;
+          d[0] = s[0];
+          d += wipe_scr.pitch;
+          s += wipe_scr_end.pitch;
         }
        }
         y_lookup[i] += dy;
-       if (V_GetMode() != VID_MODEGL) {
-        s = wipe_scr_start.data  + (i*depth);
-        d = wipe_scr.data        + (y_lookup[i]*wipe_scr.byte_pitch+(i*depth));
+       if (V_IsSoftwareMode()) {
+        s = wipe_scr_start.data  + i;
+        d = wipe_scr.data        + (y_lookup[i]*wipe_scr.pitch+i);
         for (j=SCREENHEIGHT-y_lookup[i];j;j--) {
-          for (k=0; k<depth; k++)
-            d[k] = s[k];
-          d += wipe_scr.byte_pitch;
-          s += wipe_scr_end.byte_pitch;
+          d[0] = s[0];
+          d += wipe_scr.pitch;
+          s += wipe_scr_end.pitch;
         }
        }
         done = false;
@@ -156,7 +153,7 @@ static int wipe_doMelt(int ticks)
     }
   }
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_wipe_doMelt(ticks, y_lookup);
   }
@@ -169,7 +166,7 @@ static int wipe_doMelt(int ticks)
 static int wipe_exitMelt(int ticks)
 {
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_wipe_exitMelt(ticks);
     return 0;
@@ -194,7 +191,7 @@ int wipe_StartScreen(void)
   wasWiped = true;//e6y
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_wipe_StartScreen();
     return 0;
@@ -203,12 +200,11 @@ int wipe_StartScreen(void)
 
   wipe_scr_start.width = SCREENWIDTH;
   wipe_scr_start.height = SCREENHEIGHT;
-  wipe_scr_start.byte_pitch = screens[0].byte_pitch;
-  wipe_scr_start.int_pitch = screens[0].int_pitch;
+  wipe_scr_start.pitch = screens[0].pitch;
 
   //e6y: fixed slowdown at 1024x768 on some systems
-  if (!(wipe_scr_start.byte_pitch % 1024))
-    wipe_scr_start.byte_pitch += 32;
+  if (!(wipe_scr_start.pitch % 1024))
+    wipe_scr_start.pitch += 32;
 
   wipe_scr_start.not_on_heap = false;
   V_AllocScreen(&wipe_scr_start);
@@ -223,7 +219,7 @@ int wipe_EndScreen(void)
   wasWiped = false;//e6y
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_wipe_EndScreen();
     return 0;
@@ -232,12 +228,11 @@ int wipe_EndScreen(void)
 
   wipe_scr_end.width = SCREENWIDTH;
   wipe_scr_end.height = SCREENHEIGHT;
-  wipe_scr_end.byte_pitch = screens[0].byte_pitch;
-  wipe_scr_end.int_pitch = screens[0].int_pitch;
+  wipe_scr_end.pitch = screens[0].pitch;
 
   //e6y: fixed slowdown at 1024x768 on some systems
-  if (!(wipe_scr_end.byte_pitch % 1024))
-    wipe_scr_end.byte_pitch += 32;
+  if (!(wipe_scr_end.pitch % 1024))
+    wipe_scr_end.pitch += 32;
 
   wipe_scr_end.not_on_heap = false;
   V_AllocScreen(&wipe_scr_end);

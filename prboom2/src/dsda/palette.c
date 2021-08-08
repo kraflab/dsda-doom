@@ -79,22 +79,6 @@ void dsda_FreePlayPal(void) {
     }
 }
 
-void dsda_FreeTrueColorPlayPal(void) {
-  int playpal_i;
-  video_mode_t mode;
-
-  mode = V_GetMode();
-
-  for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i) {
-    if (mode != VID_MODE32) {
-      if (playpal_data[playpal_i].Palettes32)
-        free(playpal_data[playpal_i].Palettes32);
-
-      playpal_data[playpal_i].Palettes32 = NULL;
-    }
-  }
-}
-
 // Moved from r_patch.c
 void dsda_InitPlayPal(void) {
   int playpal_i;

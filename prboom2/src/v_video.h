@@ -141,8 +141,7 @@ typedef struct {
                        // data never set to NULL. Used i.e. with SDL doublebuffer.
   int width;           // the width of the surface
   int height;          // the height of the surface, used when mallocing
-  int byte_pitch;      // tha actual width of one line, used when mallocing
-  int int_pitch;       // tha actual width of one line, used when mallocing
+  int pitch;      // tha actual width of one line, used when mallocing
 } screeninfo_t;
 
 #define NUM_SCREENS 6
@@ -159,17 +158,9 @@ extern int          usegamma;
 #define VID_COLORWEIGHTMASK (VID_NUMCOLORWEIGHTS-1)
 #define VID_COLORWEIGHTBITS 6
 
-// Palette for converting from 8 bit color to 32 bit. Also
-// contains the weighted versions of each palette color for filtering
-// operations
-extern unsigned int *V_Palette32;
-
-#define VID_PAL32(color, weight) V_Palette32[ (color)*VID_NUMCOLORWEIGHTS + (weight) ]
-
 // The available bit-depth modes
 typedef enum {
-  VID_MODE8,
-  VID_MODE32,
+  VID_MODESW,
   VID_MODEGL,
   VID_MODEMAX
 } video_mode_t;
@@ -179,10 +170,8 @@ extern const char *default_videomode;
 void V_InitMode(video_mode_t mode);
 
 // video mode query interface
-video_mode_t V_GetMode(void);
-int V_GetModePixelDepth(video_mode_t mode);
-int V_GetNumPixelBits(void);
-int V_GetPixelDepth(void);
+dboolean V_IsSoftwareMode(void);
+dboolean V_IsOpenGLMode(void);
 
 //jff 4/24/98 loads color translation lumps
 void V_InitColorTranslation(void);
@@ -246,7 +235,6 @@ extern V_FillPatch_f V_FillPatch;
 typedef void (*V_DrawBackground_f)(const char* flatname, int scrn);
 extern V_DrawBackground_f V_DrawBackground;
 
-void V_DestroyUnusedTrueColorPalettes(void);
 // CPhipps - function to set the palette to palette number pal.
 void V_SetPalette(int pal);
 void V_SetPlayPal(int playpal_index);
