@@ -56,17 +56,22 @@ extern int totalleveltimes;
 
 void dsda_UpdateExHud(void) {
   char* s;
+  int total_time;
+
+  total_time = hexen ?
+               players[consoleplayer].worldTimer :
+               totalleveltimes + leveltime;
 
   // Timer - from hu_stuff.c
-  if (totalleveltimes)
+  if (total_time != leveltime)
     snprintf(
       dsda_exhud_timer.msg,
       sizeof(dsda_exhud_timer.msg),
       "\x1b%ctime \x1b%c%d:%02d \x1b%c%d:%05.2f ",
       g_cr_gray + 0x30,
       g_cr_gold + 0x30,
-      (totalleveltimes + leveltime) / 35 / 60,
-      ((totalleveltimes + leveltime) % (60 * 35)) / 35,
+      total_time / 35 / 60,
+      (total_time % (60 * 35)) / 35,
       g_cr_green + 0x30,
       leveltime / 35 / 60,
       (float)(leveltime % (60 * 35)) / 35
