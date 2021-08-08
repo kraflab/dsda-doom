@@ -581,7 +581,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
     dcvars.translation = translationtables - 256 +
       ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
   }
-  else if (vis->mobjflags & g_mf_translucent && general_translucency) // phares
+  else if (vis->mobjflags & g_mf_translucent) // phares
   {
     colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, filter, filterz);
     tranmap = main_tranmap;       // killough 4/11/98

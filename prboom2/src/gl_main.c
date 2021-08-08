@@ -1953,7 +1953,7 @@ void gld_AddWall(seg_t *seg)
       wall.vt = (float)((-top + ceiling_height) >> FRACBITS)/(float)wall.gltexture->realtexheight;
       wall.vb = (float)((-bottom + ceiling_height) >> FRACBITS)/(float)wall.gltexture->realtexheight;
 
-      if (seg->linedef->tranlump >= 0 && general_translucency)
+      if (seg->linedef->tranlump >= 0)
         wall.alpha=(float)tran_filter_pct/100.0f;
       gld_AddDrawWallItem((wall.alpha == 1.0f ? GLDIT_MWALL : GLDIT_TWALL), &wall);
       wall.alpha=1.0f;

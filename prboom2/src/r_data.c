@@ -551,8 +551,7 @@ void R_InitData(void)
   R_InitFlats();
   lprintf(LO_INFO, "Sprites ");
   R_InitSpriteLumps();
-  if (default_translucency)             // killough 3/1/98
-    R_InitTranMap(1);                   // killough 2/21/98, 3/6/98
+  R_InitTranMap(1);                   // killough 2/21/98, 3/6/98
   R_InitColormaps();                    // killough 3/20/98
 }
 

@@ -1978,9 +1978,6 @@ static void D_DoomMainSetup(void)
     free(file);
   }
 
-  // internal translucency set to config file value               // phares
-  general_translucency = default_translucency;                    // phares
-
   //e6y
   {
     int demo_footer = CheckDemoExDemo();

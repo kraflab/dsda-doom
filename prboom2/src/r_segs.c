@@ -268,7 +268,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
   // killough 4/11/98: draw translucent 2s normal textures
 
   colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, drawvars.filterwall, drawvars.filterz);
-  if (curline->linedef->tranlump >= 0 && general_translucency)
+  if (curline->linedef->tranlump >= 0)
     {
       colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, drawvars.filterwall, drawvars.filterz);
       tranmap = main_tranmap;
@@ -391,7 +391,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
       }
 
   // Except for main_tranmap, mark others purgable at this point
-  if (curline->linedef->tranlump > 0 && general_translucency)
+  if (curline->linedef->tranlump > 0)
     W_UnlockLumpNum(curline->linedef->tranlump-1); // cph - unlock it
 
   R_UnlockTextureCompositePatchNum(texnum);

@@ -81,9 +81,6 @@ extern complevel_t compatibility_level, default_compatibility_level;
 // v1.1-like pitched sounds
 extern int pitched_sounds;        // killough
 
-extern int     default_translucency; // config file says           // phares
-extern dboolean general_translucency; // true if translucency is ok // phares
-
 extern int demo_insurance;      // killough 4/5/98
 
 // -------------------------------------------
