@@ -170,10 +170,8 @@ extern const char *default_videomode;
 void V_InitMode(video_mode_t mode);
 
 // video mode query interface
-video_mode_t V_GetMode(void);
-int V_GetModePixelDepth(video_mode_t mode);
-int V_GetNumPixelBits(void);
-int V_GetPixelDepth(void);
+dboolean V_IsSoftwareMode(void);
+dboolean V_IsOpenGLMode(void);
 
 //jff 4/24/98 loads color translation lumps
 void V_InitColorTranslation(void);

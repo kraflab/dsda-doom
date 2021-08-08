@@ -598,7 +598,7 @@ void R_FillBackScreen (void)
     int only_stbar;
 
 #ifdef GL_DOOM
-    if (V_GetMode() == VID_MODEGL)
+    if (V_IsOpenGLMode())
     {
       only_stbar = (automap ? screenblocks >= 10 : screenblocks == 10);
     }
@@ -612,7 +612,7 @@ void R_FillBackScreen (void)
     {
       int stbar_top = SCREENHEIGHT - ST_SCALED_HEIGHT;
 
-      if (V_GetMode() == VID_MODEGL)
+      if (V_IsOpenGLMode())
         V_FillFlat(grnrock.lumpnum, 1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, VPT_NONE);
       else
       {
@@ -673,10 +673,10 @@ void R_FillBackScreen (void)
 
 void R_VideoErase(int x, int y, int count)
 {
-  if (V_GetMode() != VID_MODEGL)
-    memcpy(screens[0].data+y*screens[0].pitch+x*V_GetPixelDepth(),
-           screens[1].data+y*screens[1].pitch+x*V_GetPixelDepth(),
-           count*V_GetPixelDepth());   // LFB copy.
+  if (V_IsSoftwareMode())
+    memcpy(screens[0].data+y*screens[0].pitch+x,
+           screens[1].data+y*screens[1].pitch+x,
+           count);   // LFB copy.
 }
 
 //
@@ -689,7 +689,7 @@ void R_DrawViewBorder(void)
 {
   int top, side, i;
 
-  if (V_GetMode() == VID_MODEGL) {
+  if (V_IsOpenGLMode()) {
     // proff 11/99: we don't have a backscreen in OpenGL from where we can copy this
     R_FillBackScreen();
     return;

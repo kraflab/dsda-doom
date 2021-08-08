@@ -251,7 +251,6 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
 {
   byte *src;
   byte *dest;
-  int pixel_depth = V_GetPixelDepth();
 
   if (flags & VPT_STRETCH_MASK)
   {
@@ -275,12 +274,12 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
     I_Error ("V_CopyRect: Bad arguments");
 #endif
 
-  src = screens[srcscrn].data + screens[srcscrn].pitch * y + x * pixel_depth;
-  dest = screens[destscrn].data + screens[destscrn].pitch * y + x * pixel_depth;
+  src = screens[srcscrn].data + screens[srcscrn].pitch * y + x;
+  dest = screens[destscrn].data + screens[destscrn].pitch * y + x;
 
   for ( ; height>0 ; height--)
     {
-      memcpy (dest, src, width * pixel_depth);
+      memcpy (dest, src, width);
       src += screens[srcscrn].pitch;
       dest += screens[destscrn].pitch;
     }
@@ -450,7 +449,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 
   if (!(flags & VPT_STRETCH_MASK)) {
     int             col;
-    byte           *desttop = screens[scrn].data+y*screens[scrn].pitch+x*V_GetPixelDepth();
+    byte           *desttop = screens[scrn].data+y*screens[scrn].pitch+x;
     int    w = patch->width;
 
     if (y<0 || y+patch->height > ((flags & VPT_STRETCH) ? 200 :  SCREENHEIGHT)) {
@@ -734,7 +733,7 @@ void V_SetPalette(int pal)
 {
   currentPaletteIndex = pal;
 
-  if (V_GetMode() == VID_MODEGL) {
+  if (V_IsOpenGLMode()) {
 #ifdef GL_DOOM
     gld_SetPalette(pal);
 #endif
@@ -749,7 +748,7 @@ void V_SetPlayPal(int playpal_index)
   R_UpdatePlayPal();
   V_SetPalette(currentPaletteIndex);
 
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
 #ifdef GL_DOOM
     gld_FlushTextures();
@@ -889,38 +888,12 @@ void V_InitMode(video_mode_t mode) {
   R_FilterInit();
 }
 
-//
-// V_GetMode
-//
-video_mode_t V_GetMode(void) {
-  return current_videomode;
+dboolean V_IsSoftwareMode(void) {
+  return current_videomode == VID_MODESW;
 }
 
-//
-// V_GetModePixelDepth
-//
-int V_GetModePixelDepth(video_mode_t mode) {
-  switch (mode) {
-    case VID_MODESW: return 1;
-    default: return 0;
-  }
-}
-
-//
-// V_GetNumPixelBits
-//
-int V_GetNumPixelBits(void) {
-  switch (current_videomode) {
-    case VID_MODESW: return 8;
-    default: return 0;
-  }
-}
-
-//
-// V_GetPixelDepth
-//
-int V_GetPixelDepth(void) {
-  return V_GetModePixelDepth(current_videomode);
+dboolean V_IsOpenGLMode(void) {
+  return current_videomode == VID_MODEGL;
 }
 
 //
@@ -1525,7 +1498,7 @@ void V_ToggleFullscreen(void)
   I_UpdateVideoMode();
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_PreprocessLevel();
   }
@@ -1537,7 +1510,7 @@ void V_ChangeScreenResolution(void)
   I_UpdateVideoMode();
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_PreprocessLevel();
   }

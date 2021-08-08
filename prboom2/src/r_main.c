@@ -689,7 +689,7 @@ void R_BuildModelViewMatrix(void)
   yaw = 270.0f - (float)(viewangle>>ANGLETOFINESHIFT) * 360.0f / FINEANGLES;
   yaw *= (float)M_PI / 180.0f;
   pitch = 0;
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     pitch = (float)(viewpitch>>ANGLETOFINESHIFT) * 360.0f / FINEANGLES;
     pitch *= (float)M_PI / 180.0f;
@@ -918,7 +918,7 @@ subsector_t *R_PointInSubsector(fixed_t x, fixed_t y)
 
 void R_SetupFreelook(void)
 {
-  if (V_GetMode() != VID_MODEGL)
+  if (V_IsSoftwareMode())
   {
     fixed_t InvZtoScale;
     fixed_t dy;
@@ -956,7 +956,7 @@ void R_SetupMatrix(void)
   R_SetupViewport();
 
   #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     extern int gl_nearclip;
     r_nearclip = gl_nearclip;
@@ -1039,7 +1039,7 @@ static void R_SetupFrame (player_t *player)
 
   R_SetClipPlanes();
 
-  if (V_GetMode() == VID_MODEGL || hudadd_crosshair)
+  if (V_IsOpenGLMode() || hudadd_crosshair)
     R_SetupMatrix();
 
   validcount++;
@@ -1062,7 +1062,7 @@ void R_ShowStats(void)
     renderer_fps = 1000 * FPS_FrameCount / (tick - FPS_SavedTick);
     if (rendering_stats)
     {
-      doom_printf((V_GetMode() == VID_MODEGL)
+      doom_printf((V_IsOpenGLMode())
                   ?"Frame rate %d fps\nWalls %d, Flats %d, Sprites %d"
                   :"Frame rate %d fps\nSegs %d, Visplanes %d, Sprites %d",
       renderer_fps, rendered_segs, rendered_visplanes, rendered_vissprites);
@@ -1097,7 +1097,7 @@ void R_RenderPlayerView (player_t* player)
   R_ClearPlanes ();
   R_ClearSprites ();
 
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
 #ifdef GL_DOOM
     // proff 11/99: clear buffers
@@ -1124,7 +1124,7 @@ void R_RenderPlayerView (player_t* player)
 #endif
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL) {
+  if (V_IsOpenGLMode()) {
     {
       angle_t a1 = gld_FrustumAngle();
       gld_clipper_Clear();
@@ -1151,7 +1151,7 @@ void R_RenderPlayerView (player_t* player)
   NetUpdate ();
 #endif
 
-  if (V_GetMode() != VID_MODEGL)
+  if (V_IsSoftwareMode())
     R_DrawPlanes();
 
   R_ResetColumnBuffer();
@@ -1161,7 +1161,7 @@ void R_RenderPlayerView (player_t* player)
   NetUpdate ();
 #endif
 
-  if (V_GetMode() != VID_MODEGL) {
+  if (V_IsSoftwareMode()) {
     R_DrawMasked ();
     R_ResetColumnBuffer();
   }
@@ -1171,7 +1171,7 @@ void R_RenderPlayerView (player_t* player)
   NetUpdate ();
 #endif
 
-  if (V_GetMode() == VID_MODEGL && !automap) {
+  if (V_IsOpenGLMode() && !automap) {
 #ifdef GL_DOOM
     // proff 11/99: draw the scene
     gld_DrawScene(player);

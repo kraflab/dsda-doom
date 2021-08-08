@@ -422,7 +422,7 @@ static void createPatch(int id) {
   // Width of M_THERMM patch is 9, but Doom interprets it as 8-columns lump
   // during drawing. It is not a problem for software mode and GL_NEAREST,
   // but looks wrong with filtering. So I need to patch it during loading.
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     if (!strncasecmp(lumpinfo[id].name, "M_THERMM", 8) && patch->width > 8)
     {

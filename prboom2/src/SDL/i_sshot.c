@@ -57,7 +57,7 @@ int renderH;
 
 void I_UpdateRenderSize(void)
 {
-	if (V_GetMode() == VID_MODEGL)
+	if (V_IsOpenGLMode())
 	{
 		renderW = SCREENWIDTH;
 		renderH = SCREENHEIGHT;
@@ -112,7 +112,7 @@ unsigned char *I_GrabScreen(void)
   I_UpdateRenderSize();
 
   #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     return gld_ReadScreen();
   }

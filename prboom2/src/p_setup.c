@@ -1552,7 +1552,7 @@ static void P_LoadThings (int lump)
   W_UnlockLumpNum(lump); // cph - release the data
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     no_overlapped_sprites = true;
     qsort(mobjlist, mobjcount, sizeof(mobjlist[0]), dicmp_sprite_by_pos);
@@ -3072,7 +3072,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     R_PrecacheLevel();
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     // e6y
     // Do not preprocess GL data during skipping,

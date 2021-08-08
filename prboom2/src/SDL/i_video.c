@@ -429,7 +429,7 @@ static void I_UploadNewPalette(int pal, int force)
   static size_t num_pals;
   dsda_playpal_t* playpal_data;
 
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
     return;
 
   playpal_data = dsda_PlayPalData();
@@ -515,7 +515,7 @@ void I_FinishUpdate (void)
 #endif
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL) {
+  if (V_IsOpenGLMode()) {
     // proff 04/05/2000: swap OpenGL buffers
     gld_Finish();
     return;
@@ -537,7 +537,7 @@ void I_FinishUpdate (void)
       h=screen->h;
       for (; h>0; h--)
       {
-        memcpy(dest,src,SCREENWIDTH*V_GetPixelDepth()); //e6y
+        memcpy(dest,src,SCREENWIDTH); //e6y
         dest+=screen->pitch;
         src+=screens[0].pitch;
       }
@@ -870,7 +870,7 @@ void I_CalculateRes(int width, int height)
 // if the requested mode can't be set correctly.
 // For example glboom.exe -geom 1025x768 -nowindow will set 1024x768.
 // It affects only fullscreen modes.
-  if (V_GetMode() == VID_MODEGL) {
+  if (V_IsOpenGLMode()) {
     if ( desired_fullscreen )
     {
       I_ClosestResolution(&width, &height);
@@ -897,8 +897,8 @@ void I_CalculateRes(int width, int height)
     {
       unsigned int mintime = 100;
       int w = (width+15) & ~15;
-      pitch1 = w * V_GetPixelDepth();
-      pitch2 = w * V_GetPixelDepth() + 32;
+      pitch1 = w;
+      pitch2 = w + 32;
 
       count1 = I_TestCPUCacheMisses(pitch1, SCREENHEIGHT, mintime);
       count2 = I_TestCPUCacheMisses(pitch2, SCREENHEIGHT, mintime);
@@ -1121,7 +1121,7 @@ void I_UpdateVideoMode(void)
     I_CaptureFinish();
 
 #ifdef GL_DOOM
-    if (V_GetMode() == VID_MODEGL)
+    if (V_IsOpenGLMode())
     {
       gld_CleanMemory();
       // hires patches
@@ -1150,14 +1150,14 @@ void I_UpdateVideoMode(void)
   screen_multiply = render_screen_multiply;
 
   // Initialize SDL with this graphics mode
-  if (V_GetMode() == VID_MODEGL) {
+  if (V_IsOpenGLMode()) {
     init_flags = SDL_WINDOW_OPENGL;
   }
 
   // Fullscreen desktop for software renderer only - DTIED
   if (desired_fullscreen)
   {
-    if (V_GetMode() == VID_MODEGL || exclusive_fullscreen)
+    if (V_IsOpenGLMode() || exclusive_fullscreen)
       init_flags |= SDL_WINDOW_FULLSCREEN;
     else
       init_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -1167,11 +1167,11 @@ void I_UpdateVideoMode(void)
   // running.  This feature is disabled on OS X, as it adds an ugly
   // scroll handle to the corner of the screen.
 #ifndef MACOSX
-  if (!desired_fullscreen && V_GetMode() != VID_MODEGL)
+  if (!desired_fullscreen && V_IsSoftwareMode())
     init_flags |= SDL_WINDOW_RESIZABLE;
 #endif
 
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
 #ifdef GL_DOOM
     SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 0 );
@@ -1244,7 +1244,7 @@ void I_UpdateVideoMode(void)
     // [FG] force integer scales
     SDL_RenderSetIntegerScale(sdl_renderer, integer_scaling);
 
-    screen = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, V_GetNumPixelBits(), 0, 0, 0, 0);
+    screen = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 8, 0, 0, 0, 0);
     buffer = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 32, 0, 0, 0, 0);
     SDL_FillRect(buffer, NULL, 0);
 
@@ -1283,18 +1283,18 @@ void I_UpdateVideoMode(void)
   windowid = SDL_GetWindowID(sdl_window);
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     SDL_GL_SetSwapInterval(((render_vsync && !novsync) ? 1 : 0));
   }
 #endif
 
 #ifdef GL_DOOM
-  /*if (V_GetMode() == VID_MODEGL)
+  /*if (V_IsOpenGLMode())
     gld_MultisamplingCheck();*/
 #endif
 
-  if (V_GetMode() != VID_MODEGL)
+  if (V_IsSoftwareMode())
   {
     lprintf(LO_INFO, "I_UpdateVideoMode: 0x%x, %s, %s\n", init_flags, screen && screen->pixels ? "SDL buffer" : "own buffer", screen && SDL_MUSTLOCK(screen) ? "lock-and-copy": "direct access");
 
@@ -1326,7 +1326,7 @@ void I_UpdateVideoMode(void)
   AM_SetResolution();
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     int temp;
     lprintf(LO_INFO,"SDL OpenGL PixelFormat:\n");
@@ -1362,7 +1362,7 @@ void I_UpdateVideoMode(void)
     gld_Init(SCREENWIDTH, SCREENHEIGHT);
   }
 
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     M_ChangeFOV();
     deh_changeCompTranslucency();
@@ -1489,7 +1489,7 @@ static void UpdateFocus(void)
   }
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     if (gl_hardware_gamma)
     {

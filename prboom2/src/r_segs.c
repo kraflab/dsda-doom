@@ -649,7 +649,7 @@ void R_StoreWallRange(const int start, const int stop)
     curline->linedef->flags |= ML_MAPPED;
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     // proff 11/99: the rest of the calculations is not needed for OpenGL
     ds_p++->curline = curline;

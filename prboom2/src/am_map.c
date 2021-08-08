@@ -1909,7 +1909,7 @@ static void AM_drawPlayers(void)
   fixed_t scale;
 
 #if defined(HAVE_LIBSDL2_IMAGE) && defined(GL_DOOM)
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     if (map_things_appearance == map_things_appearance_icon)
       return;
@@ -2245,7 +2245,7 @@ static void AM_drawThings(void)
   mobj_t* t;
 
 #if defined(HAVE_LIBSDL2_IMAGE) && defined(GL_DOOM)
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     if (map_things_appearance == map_things_appearance_icon)
     {
@@ -2381,7 +2381,7 @@ static void AM_drawMarks(void)
   char namebuf[16] = "AMMNUM0";
 
 #if defined(HAVE_LIBSDL2_IMAGE) && defined(GL_DOOM)
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     if (map_things_appearance == map_things_appearance_icon)
       return;
@@ -2411,7 +2411,7 @@ static void AM_drawMarks(void)
         p.fy = CYMTOF_F(p.fy) - (float)markpoints[i].h * SCREENHEIGHT / 200.0f / 2.0f;
       }
 
-      if (V_GetMode() == VID_MODEGL ?
+      if (V_IsOpenGLMode() ?
           p.y < f_y + f_h && p.y + markpoints[i].h * SCREENHEIGHT / 200 >= f_y :
           p.y < f_y + f_h && p.y >= f_y)
       {
@@ -2522,7 +2522,7 @@ void M_ChangeMapGridSize(void)
 void M_ChangeMapTextured(void)
 {
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_ProcessTexturedMap();
   }
@@ -2531,7 +2531,7 @@ void M_ChangeMapTextured(void)
 
 void M_ChangeMapMultisamling(void)
 {
-  if (!raven && map_use_multisamling && V_GetMode() != VID_MODEGL)
+  if (!raven && map_use_multisamling && V_IsSoftwareMode())
   {
     V_InitFlexTranTable();
   }
@@ -2546,7 +2546,7 @@ void M_ChangeMapMultisamling(void)
 void AM_drawSubsectors(void)
 {
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_MapDrawSubsectors(plr, f_x, f_y, m_x, m_y, f_w, f_h, scale_mtof);
   }
@@ -2587,7 +2587,7 @@ static void AM_setFrameVariables(void)
     am_frame.bbox[BOXTOP] = m_y2;
   }
 
-  am_frame.precise = (V_GetMode() == VID_MODEGL);
+  am_frame.precise = (V_IsOpenGLMode());
 }
 
 //
@@ -2618,7 +2618,7 @@ void AM_Drawer (void)
   AM_setFrameVariables();
 
 #ifdef GL_DOOM
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     // do not use multisampling in automap mode if map_use_multisamling 0
     gld_MultisamplingSet();
@@ -2641,7 +2641,7 @@ void AM_Drawer (void)
   AM_drawCrosshair((*mapcolor_hair_p));   //jff 1/7/98 default crosshair color
 
 #if defined(GL_DOOM)
-  if (V_GetMode() == VID_MODEGL)
+  if (V_IsOpenGLMode())
   {
     gld_DrawMapLines();
     M_ArrayClear(&map_lines);
