@@ -28,8 +28,6 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#define GETDESTCOLOR(col) (col)
-
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLATED)
 #define GETCOL_MAPPED(col) (translation[(col)])
 #else
@@ -239,7 +237,7 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
     if (dcvars->texheight == 128) {
       #define FIXEDT_128MASK ((127<<FRACBITS)|0xffff)
       while(count--) {
-        *dest = GETDESTCOLOR(GETCOL(frac & FIXEDT_128MASK, (frac+FRACUNIT) & FIXEDT_128MASK));
+        *dest = GETCOL(frac & FIXEDT_128MASK, (frac+FRACUNIT) & FIXEDT_128MASK);
         INCY(y);
         dest += 4;
         frac += fracstep;
@@ -247,7 +245,7 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
     } else if (dcvars->texheight == 0) {
       /* cph - another special case */
       while (count--) {
-        *dest = GETDESTCOLOR(GETCOL(frac, (frac+FRACUNIT)));
+        *dest = GETCOL(frac, (frac+FRACUNIT));
         INCY(y);
         dest += 4;
         frac += fracstep;
@@ -257,17 +255,17 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
       if (! (dcvars->texheight & heightmask) ) { // power of 2 -- killough
         fixed_t fixedt_heightmask = (heightmask<<FRACBITS)|0xffff;
         while ((count-=2)>=0) { // texture height is a power of 2 -- killough
-          *dest = GETDESTCOLOR(GETCOL(frac & fixedt_heightmask, (frac+FRACUNIT) & fixedt_heightmask));
+          *dest = GETCOL(frac & fixedt_heightmask, (frac+FRACUNIT) & fixedt_heightmask);
           INCY(y);
           dest += 4;
           frac += fracstep;
-          *dest = GETDESTCOLOR(GETCOL(frac & fixedt_heightmask, (frac+FRACUNIT) & fixedt_heightmask));
+          *dest = GETCOL(frac & fixedt_heightmask, (frac+FRACUNIT) & fixedt_heightmask);
           INCY(y);
           dest += 4;
           frac += fracstep;
         }
         if (count & 1)
-          *dest = GETDESTCOLOR(GETCOL(frac & fixedt_heightmask, (frac+FRACUNIT) & fixedt_heightmask));
+          *dest = GETCOL(frac & fixedt_heightmask, (frac+FRACUNIT) & fixedt_heightmask);
           INCY(y);
       } else {
         fixed_t nextfrac = 0;
@@ -295,7 +293,7 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
 
           // heightmask is the Tutti-Frutti fix -- killough
 
-          *dest = GETDESTCOLOR(GETCOL(frac, nextfrac));
+          *dest = GETCOL(frac, nextfrac);
           INCY(y);
           dest += 4;
           INCFRAC(frac);
@@ -309,7 +307,6 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
 #endif // (!(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ))
 }
 
-#undef GETDESTCOLOR
 #undef GETCOL_MAPPED
 #undef GETCOL_DEPTH
 #undef GETCOL

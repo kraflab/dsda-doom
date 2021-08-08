@@ -33,18 +33,9 @@
 //
 
 #if (R_DRAWSPAN_PIPELINE & RDC_DITHERZ)
-  #define GETDEPTHMAP(col) dither_colormaps[filter_getDitheredPixelLevel(x1, y, fracz)][(col)]
+  #define GETCOL(col) dither_colormaps[filter_getDitheredPixelLevel(x1, y, fracz)][(col)]
 #else
-  #define GETDEPTHMAP(col) colormap[(col)]
-#endif
-
-#define GETCOL_POINT(col) GETDEPTHMAP(col)
-#define GETCOL_LINEAR(col) GETDEPTHMAP(col)
-
-#if (R_DRAWSPAN_PIPELINE & RDC_BILINEAR)
- #define GETCOL(col) GETCOL_LINEAR(col)
-#else
- #define GETCOL(col) GETCOL_POINT(col)
+  #define GETCOL(col) colormap[(col)]
 #endif
 
 static void R_DRAWSPAN_FUNCNAME(draw_span_vars_t *dsvars)
@@ -109,9 +100,6 @@ static void R_DRAWSPAN_FUNCNAME(draw_span_vars_t *dsvars)
   }
 }
 
-#undef GETDEPTHMAP
-#undef GETCOL_LINEAR
-#undef GETCOL_POINT
 #undef GETCOL
 #undef R_DRAWSPAN_PIPELINE
 #undef R_DRAWSPAN_FUNCNAME
