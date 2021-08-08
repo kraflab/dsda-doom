@@ -54,6 +54,10 @@ void dsda_InitIntermissionDisplay(patchnum_t* font) {
 
 extern int leveltime, totalleveltimes;
 
+static int dsda_SplitComparisonDelta(dsda_split_time_t* split_time) {
+  return split_time->ref ? split_time->ref_delta : split_time->best_delta;
+}
+
 static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
   char* s;
   char delta[16];
@@ -66,12 +70,12 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
     const char* sign;
     int diff;
 
-    diff = split->leveltime.best_delta;
+    diff = dsda_SplitComparisonDelta(&split->leveltime);
     sign = diff >= 0 ? "+" : "-";
     color = diff >= 0 ? 0x30 + g_cr_gray : 0x30 + g_cr_green;
     diff = abs(diff);
 
-    if (split->leveltime.best_delta >= 2100) {
+    if (diff >= 2100) {
       snprintf(
         delta, sizeof(delta),
         " (%s%d:%04.2f)",
@@ -112,12 +116,12 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
     const char* sign;
     int diff;
 
-    diff = split->totalleveltimes.best_delta / 35;
+    diff = dsda_SplitComparisonDelta(&split->totalleveltimes) / 35;
     sign = diff >= 0 ? "+" : "-";
     color = diff >= 0 ? 0x30 + g_cr_gray : 0x30 + g_cr_green;
     diff = abs(diff);
 
-    if (split->totalleveltimes.best_delta >= 60) {
+    if (diff >= 60) {
       snprintf(
         delta, sizeof(delta),
         " (%s%d:%02d)",

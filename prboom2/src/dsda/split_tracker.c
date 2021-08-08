@@ -85,6 +85,8 @@ static void dsda_InitSplitTime(dsda_split_time_t* split_time) {
   split_time->best_delta = 0;
   split_time->session_best = 0;
   split_time->session_best_delta = 0;
+  split_time->ref = 0;
+  split_time->ref_delta = 0;
 }
 
 static void dsda_LoadSplits(void) {
@@ -102,7 +104,7 @@ static void dsda_LoadSplits(void) {
     return;
 
   if (M_ReadFile(path, &buffer) != -1) {
-    int episode, map, tics, total_tics, exits, count, i;
+    int episode, map, tics, total_tics, exits, count, i, ref_tics, ref_total_tics;
     char* line;
 
     line = strtok(buffer, "\n");
@@ -113,8 +115,13 @@ static void dsda_LoadSplits(void) {
     }
 
     while (line) {
-      count = sscanf(line, "%i %i %i %i %i", &episode, &map, &tics, &total_tics, &exits);
-      if (count != 5)
+      ref_tics = ref_total_tics = 0;
+      count = sscanf(
+        line, "%i %i %i %i %i %i %i",
+        &episode, &map, &tics, &total_tics, &exits,
+        &ref_tics, &ref_total_tics
+      );
+      if (count < 5)
         break;
 
       i = dsda_splits_count;
@@ -126,6 +133,8 @@ static void dsda_LoadSplits(void) {
       dsda_splits[i].map = map;
       dsda_splits[i].leveltime.best = tics;
       dsda_splits[i].totalleveltimes.best = total_tics;
+      dsda_splits[i].leveltime.ref = ref_tics;
+      dsda_splits[i].totalleveltimes.ref = ref_total_tics;
       dsda_splits[i].exits = exits;
       dsda_splits[i].run_counter = 0;
 
@@ -153,12 +162,14 @@ void dsda_WriteSplits(void) {
 
   for (i = 0; i < dsda_splits_count; ++i) {
     p += sprintf(
-      p, "%i %i %i %i %i\n",
+      p, "%i %i %i %i %i %i %i\n",
       dsda_splits[i].episode,
       dsda_splits[i].map,
       dsda_splits[i].leveltime.best,
       dsda_splits[i].totalleveltimes.best,
-      dsda_splits[i].exits
+      dsda_splits[i].exits,
+      dsda_splits[i].leveltime.ref,
+      dsda_splits[i].totalleveltimes.ref
     );
   }
 
@@ -170,6 +181,7 @@ static void dsda_TrackSplitTime(dsda_split_time_t* split_time, int current) {
   split_time->current = current;
   split_time->best_delta = current - split_time->best;
   split_time->session_best_delta = current - split_time->session_best;
+  split_time->ref_delta = current - split_time->ref;
 
   if (current < split_time->best || !split_time->best)
     split_time->best = current;

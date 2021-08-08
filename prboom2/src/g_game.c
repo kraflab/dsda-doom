@@ -3502,6 +3502,7 @@ void G_BeginRecording (void)
         case mbf21_compatibility:
              v = 221;
              longtics = 1;
+             shorttics = !M_CheckParm("-longtics");
              break;
         default: I_Error("G_BeginRecording: PrBoom compatibility level unrecognised?");
       }

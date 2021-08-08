@@ -24,6 +24,8 @@ typedef struct {
   int best_delta;
   int session_best;
   int session_best_delta;
+  int ref;
+  int ref_delta;
 } dsda_split_time_t;
 
 typedef struct {
