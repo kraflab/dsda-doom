@@ -2984,6 +2984,10 @@ int P_GiveKey(player_t * player, card_t key)
     }
     player->bonuscount += BONUSADD;
     player->cards[key] = true;
+
+    if (player == &players[consoleplayer])
+      playerkeys |= 1 << key;
+
     return true;
 }
 
