@@ -54,6 +54,12 @@
 #include "r_things.h"
 #include "doomdef.h"
 
+// Lighting shader uniform bindings
+typedef struct shdr_light_unif_s
+{
+  int lightlevel_index; // float
+} shdr_light_unif_t;
+
 // Fuzz shader uniform bindings
 typedef struct shdr_fuzz_unif_s
 {
@@ -63,6 +69,7 @@ typedef struct shdr_fuzz_unif_s
 } shdr_fuzz_unif_t;
 
 GLShader *sh_main = NULL;
+shdr_light_unif_t light_unifs;
 GLShader *sh_fuzz = NULL;
 shdr_fuzz_unif_t fuzz_unifs;
 static GLShader *active_shader = NULL;
@@ -75,7 +82,7 @@ void get_light_shader_bindings()
   {
     int idx;
 
-    sh_main->lightlevel_index = GLEXT_glGetUniformLocationARB(sh_main->hShader, "lightlevel");
+    light_unifs.lightlevel_index = GLEXT_glGetUniformLocationARB(sh_main->hShader, "lightlevel");
   
     GLEXT_glUseProgramObjectARB(sh_main->hShader);
   
@@ -95,8 +102,6 @@ void get_fuzz_shader_bindings()
     fuzz_unifs.screen_resolution_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "screen_res");
     fuzz_unifs.tex_d_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "tex_d");
     fuzz_unifs.time_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "time");
-    lprintf(LO_INFO, "fuzz loc screen_res: %d\n", fuzz_unifs.screen_resolution_index);
-    lprintf(LO_INFO, "fuzz loc time: %d\n", fuzz_unifs.time_index);
 
     GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
 
@@ -132,7 +137,7 @@ int glsl_Init(void)
     }
   }
 
-  return (sh_main != NULL);
+  return (sh_main != NULL) && (sh_fuzz != NULL);
 }
 
 static int ReadLump(const char *filename, const char *lumpname, unsigned char **buffer)
@@ -234,20 +239,6 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
     GLEXT_glGetObjectParameterivARB(shader->hShader, GL_OBJECT_LINK_STATUS_ARB, &linked);
 
-    //if (linked)
-    //{
-    //  lprintf(LO_INFO, "gld_LoadShader: Shader \"%s+%s\" compiled OK: %s\n", vpname, fpname, buffer);
-
-    //  shader->lightlevel_index = GLEXT_glGetUniformLocationARB(shader->hShader, "lightlevel");
-
-    //  GLEXT_glUseProgramObjectARB(shader->hShader);
-
-    //  idx = GLEXT_glGetUniformLocationARB(shader->hShader, "tex");
-    //  GLEXT_glUniform1iARB(idx, 0);
-
-    //  GLEXT_glUseProgramObjectARB(0);
-    //}
-    //else
     if (linked)
     {
       lprintf(LO_INFO, "gld_LoadShader: Shader \"%s+%s\" compiled OK: %s\n", vpname, fpname, buffer);
@@ -301,7 +292,7 @@ void glsl_SetLightLevel(float lightlevel)
 {
   if (sh_main)
   {
-    GLEXT_glUniform1fARB(sh_main->lightlevel_index, lightlevel);
+    GLEXT_glUniform1fARB(light_unifs.lightlevel_index, lightlevel);
   }
 }
 

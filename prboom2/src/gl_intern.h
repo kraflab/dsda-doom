@@ -567,8 +567,6 @@ typedef struct GLShader_s
   GLhandleARB hShader;
   GLhandleARB hVertProg;
   GLhandleARB hFragProg;
-
-  int lightlevel_index;
 } GLShader;
 
 extern GLShader *sh_main;
