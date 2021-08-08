@@ -38,13 +38,6 @@ jobs:
             package_name: "linux_gcc"
           }
         - {
-            name: "Linux Clang",
-            os: ubuntu-20.04,
-            build_type: "Release",
-            extra_options: "-DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++",
-            package_name: "linux_clang"
-          }
-        - {
             name: "macOS Clang",
             os: macos-10.15,
             build_type: "Release",
@@ -87,30 +80,3 @@ jobs:
         else
           cmake --build . -- --jobs=2 --keep-going
         fi
-
-    - name: Create Package
-      shell: bash
-      run: |
-        cd build
-        mkdir package
-        if [[ "${{ runner.os }}" == 'Windows' ]]; then
-          cp ${{ matrix.config.build_type }}/dsda-doom.exe dsda-doom.wad package
-        elif [[ "${{ runner.os }}" == 'macOS' ]]; then
-          cp -R Launcher.app package
-        else
-          cp dsda-doom dsda-doom.wad package
-        fi
-        cp config.h package
-
-    - name: Upload Package
-      uses: actions/upload-artifact@v1
-      with:
-        path: build/package
-        name: ${{ matrix.config.package_name }}
-
-    - name: List Build Directory
-      if: always()
-      shell: bash
-      run: |
-        git status
-        ls -lR build
