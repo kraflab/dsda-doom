@@ -1289,11 +1289,6 @@ void I_UpdateVideoMode(void)
   }
 #endif
 
-#ifdef GL_DOOM
-  /*if (V_IsOpenGLMode())
-    gld_MultisamplingCheck();*/
-#endif
-
   if (V_IsSoftwareMode())
   {
     lprintf(LO_INFO, "I_UpdateVideoMode: 0x%x, %s, %s\n", init_flags, screen && screen->pixels ? "SDL buffer" : "own buffer", screen && SDL_MUSTLOCK(screen) ? "lock-and-copy": "direct access");
