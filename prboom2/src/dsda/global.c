@@ -583,19 +583,19 @@ static void dsda_InitHexen(void) {
   g_mf_shadow = 0; // doesn't exist in hexen
 
   g_cr_gray = CR_TAN;
-  g_cr_green = CR_YELLOW;
+  g_cr_green = CR_GREEN;
   g_cr_gold = CR_ORANGE;
-  g_cr_red = CR_GOLD;
-  g_cr_blue = CR_BROWN;
+  g_cr_red = CR_YELLOW;
+  g_cr_blue = CR_GOLD;
 
-  g_menu_flat = "F_022";
+  g_menu_flat = "F_032";
   g_menu_font = hu_font2;
   g_menu_save_page_size = 5;
   g_menu_font_spacing = 0;
-  g_menu_cr_title = g_cr_gold;
-  g_menu_cr_set = g_cr_green;
+  g_menu_cr_title = 2;
+  g_menu_cr_set = g_cr_blue;
   g_menu_cr_item = g_cr_red;
-  g_menu_cr_hilite = g_cr_blue;
+  g_menu_cr_hilite = g_cr_gold;
   g_menu_cr_select = g_cr_gray;
   g_menu_cr_disable = g_cr_gray;
 
