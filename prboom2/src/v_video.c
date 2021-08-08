@@ -722,58 +722,7 @@ static void FUNC_V_DrawNumPatchPrecise(float x, float y, int scrn, int lump,
   R_UnlockPatchNum(lump);
 }
 
-unsigned int *V_Palette32 = NULL;
 static int currentPaletteIndex = 0;
-
-//
-// V_UpdateTrueColorPalette
-//
-void V_UpdateTrueColorPalette(video_mode_t mode) {
-  int i, w, p;
-  byte r,g,b;
-  int nr,ng,nb;
-  float t;
-  int paletteNum;
-  int pplump;
-  int gtlump;
-  const byte *pal;
-  const byte *gtable;
-  int numPals;
-  const float dontRoundAbove = 220;
-  float roundUpR, roundUpG, roundUpB;
-  dsda_playpal_t* playpal_data;
-  static int usegammaOnLastPaletteGeneration = -1;
-
-  paletteNum = (V_GetMode() == VID_MODEGL ? 0 : currentPaletteIndex);
-
-  playpal_data = dsda_PlayPalData();
-  pplump = W_CheckNumForName(playpal_data->lump_name);
-
-  // V_UpdateTrueColorPalette can be called as part of the gamma setting before
-  // we've loaded any wads, which prevents us from reading the palette - POPE
-  if (pplump < 0)
-    return;
-
-  gtlump = (W_CheckNumForName)("GAMMATBL", ns_prboom);
-  pal = W_CacheLumpNum(pplump);
-
-  // opengl doesn't use the gamma
-  gtable =
-    (const byte *) W_CacheLumpNum(gtlump) +
-    (V_GetMode() == VID_MODEGL ? 0 : 256 * (usegamma))
-  ;
-
-  numPals = W_LumpLength(pplump) / (3 * 256);
-
-  if (usegammaOnLastPaletteGeneration != usegamma) {
-    if (playpal_data->Palettes32) free(playpal_data->Palettes32);
-    playpal_data->Palettes32 = NULL;
-    usegammaOnLastPaletteGeneration = usegamma;
-  }
-
-  W_UnlockLumpNum(pplump);
-  W_UnlockLumpNum(gtlump);
-}
 
 //
 // V_SetPalette
