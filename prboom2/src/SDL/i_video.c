@@ -539,7 +539,7 @@ void I_FinishUpdate (void)
       {
         memcpy(dest,src,SCREENWIDTH*V_GetPixelDepth()); //e6y
         dest+=screen->pitch;
-        src+=screens[0].byte_pitch;
+        src+=screens[0].pitch;
       }
 
       SDL_UnlockSurface(screen);
@@ -1004,29 +1004,26 @@ void I_InitScreenResolution(void)
 #ifndef GL_DOOM
   if (mode == VID_MODEGL)
   {
-    mode = (video_mode_t)I_GetModeFromString(default_videomode = "8bit");
+    mode = (video_mode_t)I_GetModeFromString(default_videomode = "Software");
   }
 #endif
 
   V_InitMode(mode);
 
   I_CalculateRes(w, h);
-  V_DestroyUnusedTrueColorPalettes();
   V_FreeScreens();
 
   // set first three to standard values
   for (i=0; i<3; i++) {
     screens[i].width = SCREENWIDTH;
     screens[i].height = SCREENHEIGHT;
-    screens[i].byte_pitch = SCREENPITCH;
-    screens[i].int_pitch = SCREENPITCH / V_GetModePixelDepth(VID_MODE32);
+    screens[i].pitch = SCREENPITCH;
   }
 
   // statusbar
   screens[4].width = SCREENWIDTH;
   screens[4].height = SCREENHEIGHT;
-  screens[4].byte_pitch = SCREENPITCH;
-  screens[4].int_pitch = SCREENPITCH / V_GetModePixelDepth(VID_MODE32);
+  screens[4].pitch = SCREENPITCH;
 
   I_InitBuffersRes();
 
@@ -1099,16 +1096,12 @@ video_mode_t I_GetModeFromString(const char *modestr)
 {
   video_mode_t mode;
 
-  if (!stricmp(modestr,"32")) {
-    mode = VID_MODE32;
-  } else if (!stricmp(modestr,"32bit")) {
-    mode = VID_MODE32;
-  } else if (!stricmp(modestr,"gl")) {
+  if (!stricmp(modestr,"gl")) {
     mode = VID_MODEGL;
   } else if (!stricmp(modestr,"OpenGL")) {
     mode = VID_MODEGL;
   } else {
-    mode = VID_MODE8;
+    mode = VID_MODESW;
   }
 
   return mode;
@@ -1310,8 +1303,7 @@ void I_UpdateVideoMode(void)
     {
       screens[0].not_on_heap = true;
       screens[0].data = (unsigned char *) (screen->pixels);
-      screens[0].byte_pitch = screen->pitch;
-      screens[0].int_pitch = screen->pitch / V_GetModePixelDepth(VID_MODE32);
+      screens[0].pitch = screen->pitch;
     }
     else
     {

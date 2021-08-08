@@ -52,7 +52,6 @@ dsda_playpal_t* dsda_PlayPalData(void);
 void dsda_CyclePlayPal(void);
 void dsda_SetPlayPal(int index);
 void dsda_FreePlayPal(void);
-void dsda_FreeTrueColorPlayPal(void);
 void dsda_InitPlayPal(void);
 
 #endif

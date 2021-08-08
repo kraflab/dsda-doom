@@ -141,8 +141,7 @@ typedef struct {
                        // data never set to NULL. Used i.e. with SDL doublebuffer.
   int width;           // the width of the surface
   int height;          // the height of the surface, used when mallocing
-  int byte_pitch;      // tha actual width of one line, used when mallocing
-  int int_pitch;       // tha actual width of one line, used when mallocing
+  int pitch;      // tha actual width of one line, used when mallocing
 } screeninfo_t;
 
 #define NUM_SCREENS 6
@@ -168,8 +167,7 @@ extern unsigned int *V_Palette32;
 
 // The available bit-depth modes
 typedef enum {
-  VID_MODE8,
-  VID_MODE32,
+  VID_MODESW,
   VID_MODEGL,
   VID_MODEMAX
 } video_mode_t;
@@ -246,7 +244,6 @@ extern V_FillPatch_f V_FillPatch;
 typedef void (*V_DrawBackground_f)(const char* flatname, int scrn);
 extern V_DrawBackground_f V_DrawBackground;
 
-void V_DestroyUnusedTrueColorPalettes(void);
 // CPhipps - function to set the palette to palette number pal.
 void V_SetPalette(int pal);
 void V_SetPlayPal(int playpal_index);

@@ -3187,7 +3187,7 @@ setup_menu_t* gen_settings[] =
 #define G_X2 284
 
 static const char *videomodes[] = {
-  "8bit", "32bit",
+  "Software",
 #ifdef GL_DOOM
   "OpenGL",
 #endif
