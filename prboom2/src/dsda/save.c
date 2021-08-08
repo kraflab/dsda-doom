@@ -48,13 +48,11 @@ static void dsda_UnArchiveInternal(void) {
   extern int dsda_max_kill_requirement;
   int internal_size;
 
-  CheckSaveGame(sizeof(internal_size));
   memcpy(&internal_size, save_p, sizeof(internal_size));
   save_p += sizeof(internal_size);
 
   if (internal_size > 0)
   {
-    CheckSaveGame(sizeof(dsda_max_kill_requirement));
     memcpy(&dsda_max_kill_requirement, save_p, sizeof(dsda_max_kill_requirement));
     save_p += sizeof(dsda_max_kill_requirement);
   }
