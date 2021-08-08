@@ -853,7 +853,7 @@ V_DrawLineWu_f V_DrawLineWu = NULL_DrawLineWu;
 void V_InitMode(video_mode_t mode) {
   switch (mode) {
     case VID_MODESW:
-      lprintf(LO_INFO, "V_InitMode: using 8 bit video mode\n");
+      lprintf(LO_INFO, "V_InitMode: using software video mode\n");
       V_CopyRect = FUNC_V_CopyRect;
       V_FillRect = V_FillRect8;
       V_DrawNumPatch = FUNC_V_DrawNumPatch;
