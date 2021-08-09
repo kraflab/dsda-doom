@@ -1,8 +1,37 @@
-# dsda-doom v0.19.7
+# dsda-doom v0.20.0
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning. For builds, discussions, and bug reports, check out the release thread on [doomworld](https://www.doomworld.com/forum/topic/118074/).
 
 ### Patch Notes
+- [v0.20](./patch_notes/v0.20.md)
 - [v0.19](./patch_notes/v0.19.md)
+
+#### Hexen Support (Beta)
+- DSDA-Doom includes demo-compatible support for hexen.
+  - Use -iwad HEXEN.WAD (-file HEXDD.WAD for the expansion)
+    - Or drag wads onto the exe
+  - You can force hexen engine behaviour with `-hexen` (shouldn't be necessary)
+  - Probably doesn't work with the windows launcher (same as heretic)
+- Don't need to supply complevel (hexen is complevel 0 by necessity)
+- There are a variety of sound and graphical oddities - the ones I've looked into are consistent with chocolate hexen (hexen itself is a bit more hacky - that's just how it is).
+- Cheat codes are implemented
+  - `indiana` is also available for heretic
+  - Codes from doom and heretic can be used as well (some won't make sense though)
+- Notes / Todo
+  - Hexen has a kind of "auto save" feature that creates checkpoints when you transition between maps within a cluster. This is not implemented.
+  - Hexen cross-map memory is incomplete - you can break scripts or other things when changing maps, given the right circumstances. None of these quirks are fixed. They're required for demo compatibility.
+  - Hexen stores cross-map memory in save files - in dsda-doom this data is stored in memory, and when you save the game it will also save the cross-map memory in your save file.
+  - Setting the "Status Bar and Menu Appearance" option to "not adjusted" will have no effect for hexen (it will default instead to "Doom format")
+  - The "Apply multisampling" automap option is disabled for hexen
+  - Automap colors are not configurable for hexen
+  - Some of the more advanced features are not implemented for hexen yet, and using them may cause crashes or other odd behaviour. This includes ghost players, key frames (working but not always in sync), and the analysis code
+  - Advanced hud is not implemented for hexen
+  - Some menus extend over the hud. This will be cleaned up later
+  - Palette translations for ex hud / settings fonts are not great right now
+  - Monster counter doesn't work as expected, due to cluster format (ex hud / levelstat)
+  - Hexen-style skies aren't implemented yet (layering, etc)
+  - The ALTSHADOW thing flag isn't affecting the rendering
+  - Dynamic fade palettes aren't being used
+  - The yellow message variant isn't implemented
 
 ### Heretic Support (beta)
 - DSDA-Doom includes demo-compatible support for heretic (all the demos stored on dsda are in sync).
