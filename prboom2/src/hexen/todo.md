@@ -1,6 +1,3 @@
-### Hexen Support (Beta)
-- test save files
-
 ### Hexen Support (Final)
 - ghosts
 - analysis
