@@ -1,8 +1,8 @@
-.TH PRBOOM-PLUS 6 "2011-06-27"
+.TH DSDA-DOOM 6 "2011-06-27"
 .SH NAME
-prboom-plus \- PrBoom+, a version of Doom for Unix, Linux and Windows systems
+dsda-doom \- DSDA-Doom, a version of Doom for Unix, Linux and Windows systems
 .SH SYNOPSIS
-.B prboom-plus
+.B dsda-doom
 [options] [values|files]
 .SH DESCRIPTION
 .B PrBoom
@@ -17,17 +17,20 @@ is a Doom source port developed from the original PrBoom project.
 It adds uncapped framerate, variable gamespeed, re-record, walkcam, chasecam,
 full mouselook, FOV and other features without loss of compatibility
 with original Doom.
+.B DSDA-Doom
+is a fork of PrBoom+ with extra tooling for demo recording and playback,
+with a focus on speedrunning.
 .SH GAME OPTIONS
 .TP
 .BI \-complevel\  lvl
-This sets the compatibility mode that PrBoom+ runs in. If you need to change
+This sets the compatibility mode that DSDA-Doom runs in. If you need to change
 this, see \fBREADME.compat\fP.
 .TP
 \fB\-loadgame\fP { \fI0,1,2,3,4,5,6,7\fR }
-Instructs PrBoom+ to load the specified saved game immediately.
+Instructs DSDA-Doom to load the specified saved game immediately.
 .TP
 \fB\-warp\fP { \fImap\fR | \fIepis\fR \fIlevel\fR }
-Tells PrBoom+ to begin a new game immediately. For Doom 1 or The Ultimate Doom,
+Tells DSDA-Doom to begin a new game immediately. For Doom 1 or The Ultimate Doom,
 you must specify the \fIepis\fRode and \fIlevel\fR number to begin at
 (\fIepis\fR is \fB1\fP for Knee-Deep in the Dead, \fB2\fP for Shores of Hell,
 \fB3\fP for Inferno, \fB4\fP for Thy flesh Consumed; \fIlevel\fR is between
@@ -36,20 +39,20 @@ you must specify the \fIepis\fRode and \fIlevel\fR number to begin at
 German Doom 2).
 .TP
 .BI \-skill\  n
-Tells PrBoom+ to begin the game
+Tells DSDA-Doom to begin the game
 at skill level \fIn\fR (\fB1\fP for I'm Too Young To Die; \fB2\fP for Hey, Not Too Rough;
 \fB3\fP for Hurt Me Plenty; \fB4\fP for Ultra-Violent; \fB5\fP for Nightmare!).
 .TP
 .BI \-respawn
-Tells PrBoom+ that monsters that die should respawn (come back to life)
+Tells DSDA-Doom that monsters that die should respawn (come back to life)
 after a while. Not for the inexperienced.
 .TP
 .BI \-fast
-Tells PrBoom+ to make all the monsters move and
+Tells DSDA-Doom to make all the monsters move and
 react faster. Not for the inexperienced.
 .TP
 .BI \-nomonsters
-Tells PrBoom+ to include no monsters in the game.
+Tells DSDA-Doom to include no monsters in the game.
 .TP
 .BI \-nocheats
 Disable applying cheats from dehacked files.
@@ -57,7 +60,7 @@ Disable applying cheats from dehacked files.
 .TP
 .BI \-iwad\  iwadname
 Specifies the location of the IWAD file, typically doom.wad or doom2.wad
-(or doom2f.wad). This tells PrBoom+ where the main .wad file that came
+(or doom2f.wad). This tells DSDA-Doom where the main .wad file that came
 with the version of Doom that you own is.
 .TP
 .BI \-file\  wad1\ \&...
@@ -67,11 +70,11 @@ graphics. PWAD files are widely available for download; try
 http://www.doomworld.com/idgames/ for starters.
 .TP
 .BI \-deh\  deh_file
-Tells PrBoom+ to load the dehacked patch \fIdeh_file\fR.
+Tells DSDA-Doom to load the dehacked patch \fIdeh_file\fR.
 .SH DEMO (LMP) OPTIONS
 .TP
 .BI \-record\  demofile
-Instructs PrBoom+ to begin recording a demo, to be stored in \fIdemofile.lmp\fR.
+Instructs DSDA-Doom to begin recording a demo, to be stored in \fIdemofile.lmp\fR.
 You should specify \fBgame options\fR to specify which level and skill
 to record at.
 .TP
@@ -87,11 +90,11 @@ Record a movie file, it requires external command-line encoding tools,
 oggenc2 (ogg vorbis audio encoder), x264 (h264 video encoder) and
 mkvmerge (mkv muxer).
 It is meant to be used with \-timedemo, e.g.
-"prboom-plus \-timedemo anydemo.lmp \-viddump filename.mkv".
+"dsda-doom \-timedemo anydemo.lmp \-viddump filename.mkv".
 .TP
 .BI \-fastdemo\  demofile
 Play the recorded demo \fIdemofile.lmp\fR as fast as possible. Useful for
-benchmarking PrBoom+, as compared to other versions of Doom.
+benchmarking DSDA-Doom, as compared to other versions of Doom.
 .TP
 .BI \-ffmap\  num
 Fast forward the demo (play at max speed) until reaching map \fInum\fR
@@ -187,18 +190,18 @@ default "dos622" memory layout causes a desynch.
 \fB\-net\fP \fIhostname\fR[:\fIport\fR]
 Specifies that a TCP/IP network game is to be started. \fIhostname\fR is
 the name of the machine on which the network game server is running
-(\fBprboom-plus-game-server\fP). For more information about this, see
-.BR prboom-plus-game-server (6)
-and the \fBREADME\fP that came with PrBoom+. \fIport\fR is the
+(\fBdsda-doom-game-server\fP). For more information about this, see
+.BR dsda-doom-game-server (6)
+and the \fBREADME.md\fP that came with DSDA-Doom. \fIport\fR is the
 port number on the remote machine to which to connect; if not specified,
 the default of \fB5030\fP (which is the default for
-.BR prboom-plus-game-server (6)
+.BR dsda-doom-game-server (6)
 ) is assumed. 
-The server will configure your PrBoom+ settings, so that all the players
+The server will configure your DSDA-Doom settings, so that all the players
 have the same game settings (skill, map etc).
 .PP
 Also, the server may specify additional PWAD files to play with; if you
-do not have the required .WAD file, PrBoom+ will ask the server for a download
+do not have the required .WAD file, DSDA-Doom will ask the server for a download
 path, and attempt to use 
 .BR wget(1)
 and if necessary 
@@ -209,7 +212,7 @@ to download and extract the required WAD.
 Specifies the local port to use to communicate with the server in a netgame.
 .TP
 .BI \-deathmatch
-No longer used. Tells PrBoom+ to begin a deathmatch game, but this is
+No longer used. Tells DSDA-Doom to begin a deathmatch game, but this is
 overridden by the server's settings. Only works for single play (!).
 .TP
 .BI \-altdeath
@@ -231,11 +234,11 @@ game; some demos are recorded like this.
 .SH VIDEO OPTIONS
 .TP
 .BI \-width\  w
-Specifies the width of the PrBoom+ window, in pixels. Default is \fB320\fP,
+Specifies the width of the DSDA-Doom window, in pixels. Default is \fB320\fP,
 the width must be greater than 320.
 .TP
 .BI \-height\  h
-Specifies the height of the PrBoom+ window, in pixels. Default is \fB200\fP,
+Specifies the height of the DSDA-Doom window, in pixels. Default is \fB200\fP,
 the height must be greater than 200.
 .TP
 .BI \-viewangle\  n
@@ -250,10 +253,10 @@ These options toggle fullscreen mode. The default is fullscreen.
 .TP
 .BI \-window,\ \-nowindow
 This pair of options also toggle fullscreen mode. They only take effect
-for this PrBoom+ session and do not alter your configuration file.
+for this DSDA-Doom+ session and do not alter your configuration file.
 .TP
 .BI \-noaccel
-For PrBoom+, this prevents it using the MITShm server extension for passing
+For DSDA-Doom, this prevents it using the MITShm server extension for passing
 the screen data to the X server. This option may be required if the X server
 is not local. For lsdoom, this tells lsdoom not to use the accelerated
 graphics functions that SVGALib provides even when they are supported for
@@ -263,7 +266,7 @@ your video card (normally this is autodetected).
 Specifies the scale factor by which to enlarge the window. The default,
 \fB-1\fP, displays the normal 320x200 pixel Doom screen (or whatever size
 is specified by the \fB-width\fP and \fB-height\fP parameters or in the
-config file for PrBoom+).  If this window is too small, try using \fB-2\fP
+config file for DSDA-Doom).  If this window is too small, try using \fB-2\fP
 or \fB-3\fP to enlarge the window.
 .TP
 .BI \-nodraw
@@ -303,7 +306,7 @@ Disables playing of music in the game.
 Disables joystick support.
 .TP
 .BI \-nomouse
-Prevents the mouse being grabbed by the PrBoom+ window.
+Prevents the mouse being grabbed by the DSDA-Doom window.
 .TP
 .BI \-shorttics
 Forces the same mouse behaviour as when recording (i.e. the converse of
@@ -312,15 +315,15 @@ Forces the same mouse behaviour as when recording (i.e. the converse of
 .TP
 .BI \-config\  myconf
 Loads an alternative configuration file, named \fImyconf\fR. The default is 
-.BR prboom-plus.cfg (5),
-taken from the same directory as PrBoom+ was run from.
+.BR dsda-doom.cfg (5),
+taken from the same directory as DSDA-Doom was run from.
 .TP
 .BI \-save\  savedir
-Causes PrBoom+ to save games in the directory specified by \fIsavedir\fR
-instead of \fB~/.prboom-plus/\fP.
+Causes DSDA-Doom to save games in the directory specified by \fIsavedir\fR
+instead of \fB~/.dsda-doom/\fP.
 .TP
 .BI \-shotdir\  shotdir
-Causes PrBoom+ to save screenshots in \fIshotdir\fR instead of the current
+Causes DSDA-Doom to save screenshots in \fIshotdir\fR instead of the current
 directory.
 .SH DEBUGGING/PROFILING OPTIONS
 .TP
@@ -331,7 +334,7 @@ PWADs.
 .TP
 .BI \-debugfile\  debug_file
 Causes some debugging information, mainly network info, to be
-written to the named file as PrBoom+ runs.
+written to the named file as DSDA-Doom runs.
 .TP
 .BI \-nodrawers
 Causes no rendering to be done. The only conceivable use of this is (a)
@@ -348,14 +351,14 @@ Causes diagnostics related to bex and dehacked file processing to be written
 to the names file.
 .TP
 .BI \-blockmap
-Use if PrBoom-Plus reports a buggy blockmap.
+Use if dsda-doom reports a buggy blockmap.
 .SH SEE ALSO
-.BR prboom-plus.cfg (5),
-.BR prboom-plus-game-server (6)
+.BR dsda-doom.cfg (5),
+.BR dsda-doom-game-server (6)
 .PP
-For more information, see the \fBREADME\fP that came with PrBoom+, the Boom
+For more information, see the \fBREADME.md\fP that came with DSDA-Doom, the Boom
 documentation, and your original Doom documentation.
 .PP
 Doom is a registered trademark of id software (http://www.idsoftware.com/).
 .SH AUTHORS
-See the file \fBAUTHORS\fP included with the PrBoom+ distribution.
+See the file \fBAUTHORS\fP included with the DSDA-Doom distribution.
