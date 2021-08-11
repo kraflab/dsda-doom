@@ -1,22 +1,22 @@
-.TH PRBOOM-PLUS.CFG 5 "2011-06-27"
+.TH DSDA-DOOM.CFG 5 "2011-06-27"
 .SH NAME
-prboom-plus.cfg \- Configuration file for PrBoom+
+dsda-doom.cfg \- Configuration file for DSDA-Doom
 .SH USAGE
-When a version of PrBoom+ is
+When a version of DSDA-Doom is
 run, it  searches for this configuration file to modify its default settings.
-Every time PrBoom+ exits, it rewrites the configuration file, updating any
+Every time DSDA-Doom exits, it rewrites the configuration file, updating any
 settings that have been changed using the in-game menus.
 .PP
-PrBoom+ expects the config file to be \fB~/.prboom-plus/prboom-plus.cfg\fP.
+DSDA-Doom expects the config file to be \fB~/.dsda-doom/dsda-doom.cfg\fP.
 Alternatively, it can be made to look elsewhere by using a command-line
 parameter:
 .PP
-.B prboom-plus
+.B dsda-doom
 .RB [\| \-config 
 .IR myconf \|]
 .RB
 .SH FORMAT
-\fBprboom-plus.cfg\fP consists of a number of variables and values. Each
+\fBdsda-doom.cfg\fP consists of a number of variables and values. Each
 line is of the following format:
 .PP
 {
@@ -30,7 +30,7 @@ line is of the following format:
 Any line beginning with a non-alphabetic character is treated as a comment
 and ignored; for future compatibility you should start comments with a
 \fB#\fP, \fB;\fP or \fB[\fP. 
-Note however that when PrBoom+ rewrites prboom-plus.cfg it does not preserve user
+Note however that when DSDA-Doom rewrites dsda-doom.cfg it does not preserve user
 added comments.
 .PP
 Any line beginning with an alphabetic character is treated as a variable-value
@@ -39,24 +39,24 @@ The first word (sequence of non-whitespace characters) is the variable name,
 and everything after the following block of whitespace is taken to be the
 value assigned to the variable.
 .PP
-Variables not recognised by PrBoom+, or which are given an invalid value
+Variables not recognised by DSDA-Doom, or which are given an invalid value
 or a value of an inappropriate type, are ignored. Warning messages are
 given where relevant.
 .PP
-The variables recognised by PrBoom+ are described per-section in the following
-sections. The sections are informal however; when PrBoom+ rewrites the
+The variables recognised by DSDA-Doom are described per-section in the following
+sections. The sections are informal however; when DSDA-Doom rewrites the
 config file it writes in section headings and puts variables into the relevant
 sections, but when reading these are ignored.
 .SH MISC SETTINGS
 .TP
 .B compatibility_level
-PrBoom+ is capable of behaving in a way compatible with earlier versions
+DSDA-Doom is capable of behaving in a way compatible with earlier versions
 of Doom and Boom/PrBoom[+]. The value given here selects the version to be
 compatible with when doing new games/demos. See \fBREADME.compat\fP for
 details.
 .TP
 .B realtic_clock_rate
-Selects the speed that PrBoom+ runs at, as a percentage of normal game speed.
+Selects the speed that DSDA-Doom runs at, as a percentage of normal game speed.
 Leave at \fB0\fP unless you want to experiment. Note that it is considered 
 `cheating' to use this at any setting below or above \fB0\fP.
 .TP
@@ -84,19 +84,19 @@ for colours, \fB2\fP for non-ASCII characters to be displayed, and \fB4\fP
 for the last line to be skipped so the top line doesn't scroll off screen.
 .TP
 .B level_precache
-If set, when loading a new level PrBoom+ precaches all the graphics the
+If set, when loading a new level DSDA-Doom precaches all the graphics the
 level is likely to need in memory. This makes it much slower to load the
 level, but reduces disk activity and slowdowns reading data during play.
 Most systems are fast enough that precaching is not needed.
 .SH FILES SETTINGS
 .TP
 .BR wadfile_1,\ \fBwadfile_2\fP
-The names of 2 .wad files to be automatically loaded when PrBoom+ is started.
+The names of 2 .wad files to be automatically loaded when DSDA-Doom is started.
 A blank string means unused.
 .TP
 .BR dehfile_1,\ \fBdehfile_2\fP
 The names of 2 patch files (.deh or .bex) to be automatically loaded when
-PrBoom+ is started (empty string for none).
+DSDA-Doom is started (empty string for none).
 .SH GAME SETTINGS
 .TP
 .B default_skill
@@ -150,7 +150,7 @@ Distance within which friends will generally stay.
 Whether dogs will jump.
 .TP
 .B sts_always_red
-PrBoom+ can make the colour of the text displays on the status bar reflect
+DSDA-Doom can make the colour of the text displays on the status bar reflect
 your current status (\fBred\fP=low, \fByellow\fP=average, \fBgreen\fP=good,
 \fBblue\fP=super-charged). This option if set selects the traditional
 Doom behavior of always-red status bar display; set to \fB0\fP to allow
@@ -161,13 +161,13 @@ See above, this makes just the percent signs always gray, instead of
 changing colour.
 .TP
 .B sts_traditional_keys
-Doom and Boom have two types of keys; PrBoom+ will normally display both
+Doom and Boom have two types of keys; DSDA-Doom will normally display both
 keys of a given colour if you have both. This option, if enabled, instead
-makes PrBoom+ only ever display one key of each colour, in the same way
+makes DSDA-Doom only ever display one key of each colour, in the same way
 Doom did.
 .TP
 .B traditional_menu
-Changes PrBoom+'s menu ordering to be the same as original Doom if enabled.
+Changes DSDA-Doom's menu ordering to be the same as original Doom if enabled.
 .TP
 .B show_messages
 When enabled, text messages are displayed in the top left corner of the
@@ -204,12 +204,12 @@ Sound effects volume. This is best adjusted in the game.
 Music volume. This is best adjusted in the game. 
 .TP
 .B mus_pause_opt
-Selects what PrBoom+ does to the music when a games is paused. \fB0\fP=stop
+Selects what DSDA-Doom does to the music when a games is paused. \fB0\fP=stop
 the music, \fB1\fP=pause the music (stop it playing, but when resumed resume
 it at the same place - not implemented), \fB2\fP=continue playing.
 .TP
 .BR sounddev ,\  snd_channels ,\  soundsrv ,\  musicsrv
-These variables are no longer used by PrBoom+, but are kept for compatibility
+These variables are no longer used by DSDA-Doom, but are kept for compatibility
 reasons.
 .SH COMPATIBILITY SETTINGS
 These are settings that let you choose whether the normal game mechanics
@@ -218,12 +218,12 @@ Doom game are emulated.
 .SH VIDEO SETTINGS
 .TP 
 .BR screen_width ,\  screen_height
-For versions of PrBoom+ which support high-res, these specify the default
-screen or window size for PrBoom+. These settings are ignored and preserved by
-versions of PrBoom+ which do not do high-res (they assume 320x200).
+For versions of DSDA-Doom which support high-res, these specify the default
+screen or window size for DSDA-Doom. These settings are ignored and preserved by
+versions of DSDA-Doom which do not do high-res (they assume 320x200).
 .TP
 .B use_fullscreen
-If set, this causes PrBoom+ to try to go full screen. Depending on your
+If set, this causes DSDA-Doom to try to go full screen. Depending on your
 video driver and mode, this may include changing screen resolution to 
 better match the game's screen resolution.
 .TP
@@ -233,14 +233,14 @@ than the normal method, but on others this makes problems, so you have to
 try out which setting works best.
 .TP
 .B translucency
-Causes PrBoom+ to display certain objects as translucent.
+Causes DSDA-Doom to display certain objects as translucent.
 .TP
 .B tran_filter_pct
 Selects how translucent objects are when they are translucent. Play with
 this and see for yourself.
 .TP
 .B screenblocks
-Selects a reduced screen size inside the PrBoom+ window (the player's view
+Selects a reduced screen size inside the DSDA-Doom window (the player's view
 is surrounded by a border). Normally this is undesirable, but it can help
 speed up the game. Can be changed in the game with the +/- keys, this
 variable is just to preserve that setting.
@@ -289,21 +289,21 @@ If \fB0\fP, disables drawing skies, which may be needed with some problematic
 Experimental option, possibly faster but less reliable. 
 .SH MOUSE SETTINGS
 .PP
-This section specifies settings for using a mouse with PrBoom+. There are
+This section specifies settings for using a mouse with DSDA-Doom. There are
 several settings that control button bindings (what action each button
 causes in the game); these are easiest set from the in-game menus, these
 config entries are to preserve the settings between games.
 .TP
 .B use_mouse
-Enable or disable the use of a mouse with PrBoom+.
+Enable or disable the use of a mouse with DSDA-Doom.
 .TP
 .BR mouse_sensitivity_horiz ,\  mouse_sensitivity_vert
-Sets the sensitivity of the mouse in PrBoom+. Easier set from the in-game
+Sets the sensitivity of the mouse in DSDA-Doom. Easier set from the in-game
 menus.
 .SH KEY BINDINGS
 .PP
-These specify the keys that trigger various actions in PrBoom+. The codes
-used for keys are internal to PrBoom+, though many keys are represented
+These specify the keys that trigger various actions in DSDA-Doom. The codes
+used for keys are internal to DSDA-Doom, though many keys are represented
 by their ASCII codes. It is easiest to modify these via the in-game menus
 (OPTIONS->SETUP->KEY BINDINGS). These config file entries preserve the
 settings from this menu between game sessions.
@@ -331,18 +331,18 @@ within the game.
 .PP
 These are settings related to the heads-up display, that is messages received 
 while playing and the heads-up display of your current status obtained by 
-pressing + while the view is full-screen in PrBoom+. See the Boom documentation
+pressing + while the view is full-screen in DSDA-Doom. See the Boom documentation
 for details. All controlled best from within the game.
 .SH WEAPON PREFERENCES
 .PP
 Here are the settings from the Weapons menu in the game 
 (OPTIONS->SETUP->WEAPONS). 
 .SH SEE ALSO
-.BR prboom-plus (6),
-.BR prboom-plus-game-server (6),
-PrBoom+'s documentation (including the Boom and MBF documentation)
+.BR dsda-doom (6),
+.BR dsda-doom-game-server (6),
+DSDA-Doom's documentation (including the Boom and MBF documentation)
 and your Doom documentation.
 .SH AUTHORS
-See the file \fBAUTHORS\fP included with PrBoom+ for a list of contributors
-to PrBoom+.
+See the file \fBAUTHORS\fP included with DSDA-Doom for a list of contributors
+to DSDA-Doom.
 This config file reference written by Colin Phipps (cph@moria.org.uk).
