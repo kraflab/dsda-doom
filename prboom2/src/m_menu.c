@@ -2688,6 +2688,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Toggle Strict Mode", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_strict_mode },
   { "Open Console", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_console },
   { "Toggle Coord. Display", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_coordinate_display },
+  { "Fake AVJ", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_avj },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
   { 0, S_SKIP | S_END, m_null }

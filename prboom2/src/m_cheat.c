@@ -982,6 +982,13 @@ dboolean M_CheatResponder(event_t *ev)
     }
   }
 
+  if (M_CheatAllowed(cht_never) && dsda_InputActivated(dsda_input_avj))
+  {
+    plyr->mo->momz = 1000 * FRACUNIT / plyr->mo->info->mass;
+
+    return true;
+  }
+
   return false;
 }
 

@@ -760,6 +760,8 @@ default_t defaults[] =
     dsda_input_console, { 0, -1, -1 } },
   { "input_coordinate_display", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_coordinate_display, { 0, -1, -1 } },
+  { "input_avj", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_avj, { 0, -1, -1 } },
 
   { "input_jump", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_jump, { 0, -1, -1 } },
