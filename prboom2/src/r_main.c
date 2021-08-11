@@ -1091,6 +1091,10 @@ void R_RenderPlayerView (player_t* player)
 
   R_SetupFrame (player);
 
+  // Framerate-independent fuzz progression
+  static int fuzzgametic = 0;
+  static int savedfuzzpos = 0;
+
   // Clear buffers.
   R_ClearClipSegs ();
   R_ClearDrawSegs ();
@@ -1115,6 +1119,17 @@ void R_RenderPlayerView (player_t* player)
       unsigned char color=(gametic % 20) < 9 ? 0xb0 : 0;
       V_FillRect(0, viewwindowx, viewwindowy, viewwidth, viewheight, color);
       R_DrawViewBorder();
+    }
+
+    // Only progress software fuzz offset if the gametic has progressed
+    if (fuzzgametic != gametic)
+    {
+      fuzzgametic = gametic;
+      savedfuzzpos = R_GetFuzzPos();
+    }
+    else
+    {
+      R_SetFuzzPos(savedfuzzpos);
     }
   }
 
