@@ -1016,6 +1016,16 @@ static char *FindIWADFile(void)
 {
   int   i;
   char  * iwad  = NULL;
+  char *dash;
+
+  if ((dash = strrchr(myargv[0], '-')))
+  {
+    dash++;
+    if (!strnicmp(dash, "heretic", 7))
+      return I_FindFile("heretic.wad", ".wad");
+    else if (!strnicmp(dash, "hexen", 5))
+      return I_FindFile("hexen.wad", ".wad");
+  }
 
   i = M_CheckParm("-iwad");
   if (i && (++i < myargc)) {
