@@ -655,10 +655,6 @@ static void dsda_InitHexen(void) {
 static dboolean dsda_AutoDetectHeretic(void)
 {
   int i, length;
-  char *dash;
-  if ((dash = strrchr(myargv[0], '-')))
-    if (!strnicmp(++dash, "heretic", 7))
-      return true;
   i = M_CheckParm("-iwad");
   if (i && (++i < myargc)) {
     length = strlen(myargv[i]);
@@ -672,10 +668,6 @@ static dboolean dsda_AutoDetectHeretic(void)
 static dboolean dsda_AutoDetectHexen(void)
 {
   int i, length;
-  char *dash;
-  if ((dash = strrchr(myargv[0], '-')))
-    if (!strnicmp(++dash, "hexen", 5))
-      return true;
   i = M_CheckParm("-iwad");
   if (i && (++i < myargc)) {
     length = strlen(myargv[i]);
