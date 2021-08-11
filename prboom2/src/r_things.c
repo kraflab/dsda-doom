@@ -681,6 +681,11 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
   fixed_t tz, tz2;
   int width;
 
+  if (thing->flags2 & MF2_DONTDRAW)
+  {
+    return;
+  }
+
 #ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
