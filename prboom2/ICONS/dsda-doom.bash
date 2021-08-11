@@ -1,6 +1,6 @@
-# bash completion for PrBoom+                              -*- shell-script -*-
+# bash completion for DSDA-Doom                            -*- shell-script -*-
 
-_prboom_plus()
+_dsda_doom()
 {
     local cur prev words cword
     _init_completion || return
@@ -46,6 +46,6 @@ _prboom_plus()
     fi
 } &&
 
-complete -F _prboom_plus dsda-doom
+complete -F _dsda_doom dsda-doom
 
 # ex: ts=4 sw=4 et filetype=sh

@@ -24,16 +24,16 @@ IDI_ICON1               ICON    DISCARDABLE     "dsda-doom.ico"
 #ifdef USE_WINDOWS_LAUNCHER
 
 #ifdef _MSC_VER
-1                       24      MOVEABLE PURE   "prboom-plus.exe.manifest"
+1                       24      MOVEABLE PURE   "dsda-doom.exe.manifest"
 #else
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST  "prboom-plus.exe.manifest"
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST  "dsda-doom.exe.manifest"
 #endif
 
 IDD_LAUNCHERSERVERDIALOG DIALOGEX 0, 0, 187, 245
 STYLE DS_SYSMODAL | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP |
     WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT | WS_EX_APPWINDOW
-CAPTION "PrBoom-Plus Launcher"
+CAPTION "DSDA-Doom Launcher"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,72,224,50,14
