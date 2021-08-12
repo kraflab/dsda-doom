@@ -4876,7 +4876,7 @@ dboolean M_Responder (event_t* ev) {
       dsda_ToggleSetting(dsda_strict_mode);
     }
 
-    if (dsda_InputActivated(dsda_input_mlook)) // mouse look
+    if (dsda_InputActivated(dsda_input_mlook))
     {
       dsda_ToggleSetting(dsda_mouselook);
     }
