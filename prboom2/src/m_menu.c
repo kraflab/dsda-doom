@@ -4861,14 +4861,12 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_command_display) && !dsda_StrictMode())
     {
-      dsda_command_display = !dsda_command_display;
-      doom_printf("Command Display %s", dsda_command_display ? "on" : "off");
+      dsda_ToggleSetting(dsda_command_display);
     }
 
     if (dsda_InputActivated(dsda_input_coordinate_display) && !dsda_StrictMode())
     {
-      dsda_coordinate_display = !dsda_coordinate_display;
-      doom_printf("Coordinate Display %s", dsda_coordinate_display ? "on" : "off");
+      dsda_ToggleSetting(dsda_coordinate_display);
     }
 
     if (dsda_InputActivated(dsda_input_strict_mode))

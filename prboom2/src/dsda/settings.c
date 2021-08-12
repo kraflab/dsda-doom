@@ -31,9 +31,11 @@
 dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode, dsda_ChangeStrictMode },
   [dsda_novert] = { 0, 0, "Vertical Mouse Movement", NULL, NULL, true },
-  [dsda_mouselook] = { 0, 0, "Mouselook", M_ChangeMouseLook, M_ChangeMouseLook },
+  [dsda_mouselook] = { 0, 0, "Mouselook", M_ChangeMouseLook, M_ChangeMouseLook, false, true },
   [dsda_autorun] = { 0, 0, "Auto Run", NULL, NULL, false, true },
   [dsda_show_messages] = { 0, 0, NULL, NULL, M_ChangeMessages, false, true },
+  [dsda_command_display] = { 0, 0, "Command Display", NULL, NULL, false, true },
+  [dsda_coordinate_display] = { 0, 0, "Coordinate Display", NULL, NULL, false, true },
 };
 
 int dsda_auto_key_frame_interval;
@@ -210,11 +212,11 @@ dboolean dsda_ExHud(void) {
 }
 
 dboolean dsda_CommandDisplay(void) {
-  return dsda_command_display && !dsda_StrictMode();
+  return dsda_setting[dsda_command_display].transient_value && !dsda_StrictMode();
 }
 
 dboolean dsda_CoordinateDisplay(void) {
-  return dsda_coordinate_display && !dsda_StrictMode();
+  return dsda_setting[dsda_coordinate_display].transient_value && !dsda_StrictMode();
 }
 
 dboolean dsda_ShowDemoAttempts(void) {

@@ -41,8 +41,6 @@ static dsda_text_t dsda_vx_display;
 static dsda_text_t dsda_vy_display;
 static char dsda_velocity_color;
 
-int dsda_coordinate_display;
-
 static void dsda_BreakDownCoordinate(int* x, int* base, int* frac) {
   *base = *x >> FRACBITS;
   *frac = *x & 0xffff;
