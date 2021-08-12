@@ -177,7 +177,6 @@ dboolean         singledemo;           // quit after playing a demo from cmdline
 wbstartstruct_t wminfo;               // parms for world map / intermission
 dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
 byte            *savebuffer;
-int             autorun = false;      // always running?          // phares
 int             totalleveltimes;      // CPhipps - total time for all completed levels
 int             longtics;
 int             bytes_per_tic;
@@ -472,7 +471,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   strafe = dsda_InputActive(dsda_input_strafe);
   //e6y: the "RUN" key inverts the autorun state
-  speed = (dsda_InputActive(dsda_input_speed) ? !autorun : autorun); // phares
+  speed = (dsda_InputActive(dsda_input_speed) ? !dsda_AutoRun() : dsda_AutoRun()); // phares
 
   forward = side = 0;
 
@@ -4191,7 +4190,7 @@ void P_WalkTicker()
   G_SetSpeed(false);
 
   strafe = dsda_InputActive(dsda_input_strafe);
-  speed = autorun || dsda_InputActive(dsda_input_speed); // phares
+  speed = dsda_AutoRun() || dsda_InputActive(dsda_input_speed); // phares
 
   forward = side = 0;
   angturn = 0;

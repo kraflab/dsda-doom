@@ -346,7 +346,7 @@ default_t defaults[] =
    def_bool,ss_stat},
   {"show_messages",{&showMessages},{1},0,1,
    def_bool,ss_none}, // enables message display
-  {"autorun",{&autorun},{1},0,1,  // killough 3/6/98: preserve autorun across games
+  {"autorun",{(int *)&dsda_setting[dsda_autorun]},{1},0,1,  // killough 3/6/98: preserve autorun across games
    def_bool,ss_none},
 
   {"Dehacked settings",{NULL},{0},UL,UL,def_none,ss_none},

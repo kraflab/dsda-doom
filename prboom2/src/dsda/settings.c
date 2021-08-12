@@ -32,6 +32,7 @@ dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode },
   [dsda_novert] = { 0, 0, "Vertical Mouse Movement", NULL, true },
   [dsda_mouselook] = { 0, 0, "Mouselook", M_ChangeMouseLook },
+  [dsda_autorun] = { 0, 0, "Auto Run", NULL, false, true },
 };
 
 int dsda_auto_key_frame_interval;
@@ -63,6 +64,9 @@ void dsda_ResetTransient(dsda_setting_t* setting) {
 
 void dsda_ToggleSetting(dsda_setting_identifier_t id) {
   dsda_setting[id].transient_value = !dsda_setting[id].transient_value;
+
+  if (dsda_setting[id].persist_changes)
+    dsda_setting[id].persistant_value = dsda_setting[id].transient_value;
 
   if (dsda_setting[id].initializer)
     dsda_setting[id].initializer();
@@ -153,6 +157,10 @@ void dsda_SetTas(void) {
 
 double dsda_FineSensitivity(int base) {
   return (double) base + (double) dsda_fine_sensitivity / 100;
+}
+
+dboolean dsda_AutoRun(void) {
+  return dsda_setting[dsda_autorun].transient_value;
 }
 
 dboolean dsda_MouseLook(void) {

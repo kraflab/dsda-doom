@@ -4887,8 +4887,7 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_autorun))
     {
-      autorun = !autorun;
-      return true;
+      dsda_ToggleSetting(dsda_autorun);
     }
 
     if (dsda_InputActivated(dsda_input_messages))
