@@ -30,6 +30,7 @@ typedef enum {
   dsda_show_messages,
   dsda_command_display,
   dsda_coordinate_display,
+  dsda_exhud,
   DSDA_SETTING_IDENTIFIER_COUNT
 } dsda_setting_identifier_t;
 
@@ -48,7 +49,6 @@ extern dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT];
 extern int dsda_auto_key_frame_interval;
 extern int dsda_auto_key_frame_depth;
 extern int dsda_cycle_ghost_colors;
-extern int dsda_exhud;
 extern int dsda_command_history_size;
 extern int dsda_hide_empty_commands;
 extern int dsda_show_demo_attempts;

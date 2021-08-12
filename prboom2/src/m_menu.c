@@ -2673,6 +2673,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Open Console", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_console },
   { "Toggle Coord. Display", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_coordinate_display },
   { "Fake Archvile Jump", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_avj },
+  { "Toggle Extended HUD", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_exhud },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
   { 0, S_SKIP | S_END, m_null }
@@ -3420,7 +3421,7 @@ setup_menu_t dsda_gen_settings[] = {
   { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "dsda_cycle_ghost_colors" } },
   { "Automatic Key Frame Interval (s)", S_NUM, m_null, G_X, G_Y + 4 * 8, { "dsda_auto_key_frame_interval" } },
   { "Automatic Key Frame Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 5 * 8, { "dsda_auto_key_frame_depth" } },
-  { "Use Extended Hud", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "dsda_exhud" } },
+  { "Use Extended Hud", S_YESNO, m_dsda, G_X, G_Y + 6 * 8, { "dsda_exhud" } },
   { "Wipe At Full Speed", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "dsda_wipe_at_full_speed" } },
   { "Show Demo Attempts", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "dsda_show_demo_attempts" } },
   { "Fine Sensitivity", S_NUM, m_null, G_X, G_Y + 9 * 8, { "dsda_fine_sensitivity" } },
@@ -4367,6 +4368,7 @@ static toggle_input_t toggle_inputs[] = {
   { dsda_input_messages, dsda_show_messages, true },
   { dsda_input_command_display, dsda_command_display, false },
   { dsda_input_coordinate_display, dsda_coordinate_display, false },
+  { dsda_input_exhud, dsda_exhud, true },
   { -1 }
 };
 

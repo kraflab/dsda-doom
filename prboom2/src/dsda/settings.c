@@ -36,12 +36,12 @@ dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_show_messages] = { 0, 0, NULL, NULL, M_ChangeMessages, false, true },
   [dsda_command_display] = { 0, 0, "Command Display", NULL, NULL, false, true },
   [dsda_coordinate_display] = { 0, 0, "Coordinate Display", NULL, NULL, false, true },
+  [dsda_exhud] = { 0, 0, NULL, NULL, NULL, false, true },
 };
 
 int dsda_auto_key_frame_interval;
 int dsda_auto_key_frame_depth;
 int dsda_cycle_ghost_colors;
-int dsda_exhud;
 int dsda_tas;
 int dsda_skip_next_wipe;
 int dsda_wipe_at_full_speed;
@@ -208,7 +208,7 @@ dboolean dsda_ShowSplitData(void) {
 }
 
 dboolean dsda_ExHud(void) {
-  return dsda_exhud;
+  return dsda_setting[dsda_exhud].transient_value;
 }
 
 dboolean dsda_CommandDisplay(void) {
