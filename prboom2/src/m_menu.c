@@ -102,8 +102,6 @@ extern int g_menu_cr_disable;
 int mouseSensitivity_horiz; // has default   //  killough
 int mouseSensitivity_vert;  // has default
 
-int showMessages;    // Show messages has default, 0 = off, 1 = on
-
 int hide_setup=1; // killough 5/15/98
 
 // Blocky mode, has default, 0 = high, 1 = normal
@@ -199,7 +197,7 @@ void M_ReadThis(int choice);
 void M_ReadThis2(int choice);
 void M_QuitDOOM(int choice);
 
-void M_ChangeMessages(int choice);
+void M_ToggleMessages(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
@@ -1059,7 +1057,7 @@ menuitem_t OptionsMenu[]=
   {1,"M_GENERL", M_General, 'g', "GENERAL"},      // killough 10/98
   {1,"M_SETUP",  M_Setup,   's', "SETUP"},        // phares 3/21/98
   {1,"M_ENDGAM", M_EndGame,'e',  "END GAME"},
-  {1,"M_MESSG",  M_ChangeMessages,'m', "MESSAGES:"},
+  {1,"M_MESSG",  M_ToggleMessages,'m', "MESSAGES:"},
   /*    {1,"M_DETAIL",  M_ChangeDetail,'g'},  unused -- killough */
   {2,"M_SCRNSZ", M_SizeDisplay,'s', "SCREEN SIZE"},
   {-1,"",0},
@@ -1097,12 +1095,12 @@ void M_DrawOptions(void)
   {
     M_WriteText(OptionsDef.x + M_StringWidth("MESSAGES: "),
       OptionsDef.y+8-(M_StringHeight("ONOFF")/2)+LINEHEIGHT*messages,
-      showMessages ? "ON" : "OFF", CR_DEFAULT);
+      dsda_ShowMessages() ? "ON" : "OFF", CR_DEFAULT);
   }
   else
   {
     V_DrawNamePatch(OptionsDef.x + 120, OptionsDef.y+LINEHEIGHT*messages, 0,
-      msgNames[showMessages], CR_DEFAULT, VPT_STRETCH);
+      msgNames[dsda_ShowMessages()], CR_DEFAULT, VPT_STRETCH);
   }
 
   M_DrawThermo(OptionsDef.x,OptionsDef.y+LINEHEIGHT*(scrnsize+1),
@@ -1508,13 +1506,16 @@ void M_EndGame(int choice)
 //    Toggle messages on/off
 //
 
-void M_ChangeMessages(int choice)
+void M_ToggleMessages(int choice)
 {
   // warning: unused parameter `int choice'
   choice = 0;
-  showMessages = 1 - showMessages;
+  dsda_ToggleSetting(dsda_show_messages);
+}
 
-  if (!showMessages)
+void M_ChangeMessages(void)
+{
+  if (!dsda_ShowMessages())
     players[consoleplayer].message = s_MSGOFF; // Ty 03/27/98 - externalized
   else
     players[consoleplayer].message = s_MSGON ; // Ty 03/27/98 - externalized
@@ -4892,9 +4893,7 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_messages))
     {
-      M_ChangeMessages(0);
-      S_StartSound(NULL,g_sfx_swtchn);
-      return true;
+      dsda_ToggleSetting(dsda_show_messages);
     }
 
     if (dsda_InputActivated(dsda_input_hud))   // heads-up mode

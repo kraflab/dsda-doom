@@ -281,7 +281,6 @@ static void D_Wipe(void)
 // wipegamestate can be set to -1 to force a wipe on the next draw
 gamestate_t    wipegamestate = GS_DEMOSCREEN;
 extern dboolean setsizeneeded;
-extern int     showMessages;
 
 void D_Display (fixed_t frac)
 {

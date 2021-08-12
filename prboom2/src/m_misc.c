@@ -277,7 +277,6 @@ extern int realtic_clock_rate;         // killough 4/13/98: adjustable timer
 extern int tran_filter_pct;            // killough 2/21/98
 
 extern int screenblocks;
-extern int showMessages;
 
 #ifndef DJGPP
 int         mus_pause_opt; // 0 = kill music, 1 = pause, 2 = continue
@@ -344,7 +343,7 @@ default_t defaults[] =
    def_bool,ss_stat}, // disables doubled card and skull key display on status bar
   {"sts_armorcolor_type",{&sts_armorcolor_type},{1},0,1, //  armor color depends on type
    def_bool,ss_stat},
-  {"show_messages",{&showMessages},{1},0,1,
+  {"show_messages",{(int *)&dsda_setting[dsda_show_messages]},{1},0,1,
    def_bool,ss_none}, // enables message display
   {"autorun",{(int *)&dsda_setting[dsda_autorun]},{1},0,1,  // killough 3/6/98: preserve autorun across games
    def_bool,ss_none},

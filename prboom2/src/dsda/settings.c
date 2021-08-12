@@ -17,22 +17,23 @@
 
 #include "doomstat.h"
 #include "m_argv.h"
+#include "m_menu.h"
 #include "e6y.h"
 #include "r_things.h"
 #include "w_wad.h"
 #include "g_game.h"
 #include "lprintf.h"
-#include "e6y.h"
 
 #include "dsda/key_frame.h"
 
 #include "settings.h"
 
 dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
-  [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode },
-  [dsda_novert] = { 0, 0, "Vertical Mouse Movement", NULL, true },
-  [dsda_mouselook] = { 0, 0, "Mouselook", M_ChangeMouseLook },
-  [dsda_autorun] = { 0, 0, "Auto Run", NULL, false, true },
+  [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode, dsda_ChangeStrictMode },
+  [dsda_novert] = { 0, 0, "Vertical Mouse Movement", NULL, NULL, true },
+  [dsda_mouselook] = { 0, 0, "Mouselook", M_ChangeMouseLook, M_ChangeMouseLook },
+  [dsda_autorun] = { 0, 0, "Auto Run", NULL, NULL, false, true },
+  [dsda_show_messages] = { 0, 0, NULL, NULL, M_ChangeMessages, false, true },
 };
 
 int dsda_auto_key_frame_interval;
@@ -68,16 +69,17 @@ void dsda_ToggleSetting(dsda_setting_identifier_t id) {
   if (dsda_setting[id].persist_changes)
     dsda_setting[id].persistant_value = dsda_setting[id].transient_value;
 
-  if (dsda_setting[id].initializer)
-    dsda_setting[id].initializer();
+  if (dsda_setting[id].updater)
+    dsda_setting[id].updater();
 
-  doom_printf(
-    "%s %s",
-    dsda_setting[id].name,
-    dsda_setting[id].transient_value ?
-      dsda_setting[id].invert_text ? "off" : "on" :
-      dsda_setting[id].invert_text ? "on"  : "off"
-  );
+  if (dsda_setting[id].name)
+    doom_printf(
+      "%s %s",
+      dsda_setting[id].name,
+      dsda_setting[id].transient_value ?
+        dsda_setting[id].invert_text ? "off" : "on" :
+        dsda_setting[id].invert_text ? "on"  : "off"
+    );
 }
 
 static int dsda_WadCompatibilityLevel(void) {
@@ -157,6 +159,10 @@ void dsda_SetTas(void) {
 
 double dsda_FineSensitivity(int base) {
   return (double) base + (double) dsda_fine_sensitivity / 100;
+}
+
+dboolean dsda_ShowMessages(void) {
+  return dsda_setting[dsda_show_messages].transient_value;
 }
 
 dboolean dsda_AutoRun(void) {

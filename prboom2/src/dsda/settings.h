@@ -27,6 +27,7 @@ typedef enum {
   dsda_novert,
   dsda_mouselook,
   dsda_autorun,
+  dsda_show_messages,
   DSDA_SETTING_IDENTIFIER_COUNT
 } dsda_setting_identifier_t;
 
@@ -35,6 +36,7 @@ typedef struct {
   int transient_value;
   const char* name;
   void (*initializer)(void);
+  void (*updater)(void);
   int invert_text;
   int persist_changes;
 } dsda_setting_t;
@@ -65,6 +67,7 @@ int dsda_CompatibilityLevel(void);
 void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);
 double dsda_FineSensitivity(int base);
+dboolean dsda_ShowMessages(void);
 dboolean dsda_AutoRun(void);
 dboolean dsda_MouseLook(void);
 dboolean dsda_NoVert(void);
