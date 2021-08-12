@@ -57,6 +57,8 @@
 
 #include "e6y.h"
 
+#include "dsda/settings.h"
+
 typedef struct
 {
   int mode;
@@ -352,9 +354,7 @@ void gld_DrawSkyCaps(void)
 {
   if (SkyBox.type && SkyBox.wall.gltexture)
   {
-    dboolean mlook = GetMouseLook();
-
-    if (mlook)
+    if (dsda_MouseLook())
     {
       gld_BindTexture(SkyBox.wall.gltexture, 0);
 

@@ -25,6 +25,7 @@
 typedef enum {
   dsda_strict_mode,
   dsda_novert,
+  dsda_mouselook,
   DSDA_SETTING_IDENTIFIER_COUNT
 } dsda_setting_identifier_t;
 
@@ -62,6 +63,7 @@ int dsda_CompatibilityLevel(void);
 void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);
 double dsda_FineSensitivity(int base);
+dboolean dsda_MouseLook(void);
 dboolean dsda_NoVert(void);
 dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);

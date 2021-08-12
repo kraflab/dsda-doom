@@ -290,7 +290,7 @@ void P_SetPitch(player_t *player)
   {
     if (!(demoplayback || democontinue))
     {
-      if (GetMouseLook())
+      if (dsda_MouseLook())
       {
         if (!mo->reactiontime && (!(automapmode & am_active) || (automapmode & am_overlay)))
         {

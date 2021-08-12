@@ -60,6 +60,8 @@
 #include "e6y.h"//e6y
 #include "xs_Float.h"
 
+#include "dsda/settings.h"
+
 #include "hexen/a_action.h"
 
 // e6y
@@ -925,7 +927,7 @@ void R_SetupFreelook(void)
     int i;
 
     centery = viewheight / 2;
-    if (raven || GetMouseLook())
+    if (raven || dsda_MouseLook())
     {
       dy = FixedMul(focallengthy, finetangent[(ANG90-viewpitch)>>ANGLETOFINESHIFT]);
       centery += dy >> FRACBITS;

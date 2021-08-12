@@ -1096,7 +1096,7 @@ default_t defaults[] =
   {"sprites_doom_order", {&sprites_doom_order}, {DOOM_ORDER_STATIC},0,DOOM_ORDER_LAST - 1,
    def_int,ss_stat},
 
-  {"movement_mouselook", {&movement_mouselook},  {0},0,1,
+  {"movement_mouselook", {(int *)&dsda_setting[dsda_mouselook]},  {0},0,1,
    def_bool,ss_stat},
   {"movement_mousenovert", {(int *)&dsda_setting[dsda_novert]},  {0},0,1,
    def_bool,ss_stat},

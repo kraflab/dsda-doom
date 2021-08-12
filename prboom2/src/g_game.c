@@ -1268,7 +1268,7 @@ dboolean G_Responder (event_t* ev)
 
       value = dsda_FineSensitivity(mouseSensitivity_horiz) * AccelerateMouse(ev->data2);
       mousex += G_CarryDouble(carry_mousex, value);
-      if(GetMouseLook())
+      if (dsda_MouseLook())
       {
         value = (double) mouseSensitivity_mlook * AccelerateMouse(ev->data3);
         if (movement_mouseinvert)
@@ -4256,7 +4256,7 @@ void P_WalkTicker()
     angturn -= mousex; /* mead now have enough dynamic range 2-10-00 */
 
   walkcamera.angle += ((angturn / 8) << ANGLETOFINESHIFT);
-  if(GetMouseLook())
+  if (dsda_MouseLook())
   {
     walkcamera.pitch += ((mlooky / 8) << ANGLETOFINESHIFT);
     CheckPitch((signed int *) &walkcamera.pitch);

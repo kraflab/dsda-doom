@@ -3283,7 +3283,7 @@ setup_menu_t gen_settings3[] = { // General Settings screen2
   {"Mouse",                       S_SKIP|S_TITLE,m_null, G_X, G_Y+11*8},
   {"Dbl-Click As Use",            S_YESNO, m_null, G_X, G_Y+12*8, {"mouse_doubleclick_as_use"}},
   {"Carry Fractional Tics",       S_YESNO, m_null, G_X, G_Y+13*8, {"mouse_carrytics"}},
-  {"Enable Mouselook",            S_YESNO, m_null, G_X, G_Y+14*8, {"movement_mouselook"}, 0, M_ChangeMouseLook},
+  {"Enable Mouselook",            S_YESNO, m_dsda, G_X, G_Y+14*8, {"movement_mouselook"}, 0 },
   {"No Vertical Mouse",           S_YESNO, m_dsda, G_X, G_Y+15*8, {"movement_mousenovert"}},
   {"Invert Mouse",                S_YESNO, m_null, G_X, G_Y+16*8, {"movement_mouseinvert"}, 0, M_ChangeMouseInvert},
   {"Max View Pitch",              S_NUM,   m_null, G_X, G_Y+17*8, {"movement_maxviewpitch"}, 0, M_ChangeMaxViewPitch},
@@ -4891,11 +4891,7 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_mlook)) // mouse look
     {
-      movement_mouselook = !movement_mouselook;
-      M_ChangeMouseLook();
-      doom_printf("Mouselook %s", movement_mouselook ? "on" : "off");
-      // Don't eat the keypress in this case.
-      // return true;
+      dsda_ToggleSetting(dsda_mouselook);
     }
 
     if (dsda_InputActivated(dsda_input_novert))

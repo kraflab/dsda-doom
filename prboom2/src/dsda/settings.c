@@ -22,6 +22,7 @@
 #include "w_wad.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "e6y.h"
 
 #include "dsda/key_frame.h"
 
@@ -30,6 +31,7 @@
 dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode },
   [dsda_novert] = { 0, 0, "Vertical Mouse Movement", NULL, true },
+  [dsda_mouselook] = { 0, 0, "Mouselook", M_ChangeMouseLook },
 };
 
 int dsda_auto_key_frame_interval;
@@ -151,6 +153,10 @@ void dsda_SetTas(void) {
 
 double dsda_FineSensitivity(int base) {
   return (double) base + (double) dsda_fine_sensitivity / 100;
+}
+
+dboolean dsda_MouseLook(void) {
+  return dsda_setting[dsda_mouselook].transient_value;
 }
 
 dboolean dsda_NoVert(void) {
