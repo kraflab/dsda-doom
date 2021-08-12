@@ -205,6 +205,14 @@ static dboolean console_CommandUnlock(const char* args) {
   return true;
 }
 
+static dboolean console_Exit(const char* args) {
+  extern void M_ClearMenus(void);
+
+  M_ClearMenus();
+
+  return true;
+}
+
 typedef dboolean (*console_command_t)(const char*);
 
 typedef struct {
@@ -223,6 +231,8 @@ static console_command_entry_t console_commands[] = {
   { "player.roundxy", console_PlayerRoundXY },
   { "command.lock", console_CommandLock },
   { "command.unlock", console_CommandUnlock },
+  { "exit", console_Exit },
+  { "quit", console_Exit },
   { NULL }
 };
 
