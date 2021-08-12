@@ -159,28 +159,32 @@ void dsda_SetTas(void) {
   dsda_tas = true;
 }
 
+static int dsda_Transient(dsda_setting_identifier_t id) {
+  return dsda_setting[id].transient_value;
+}
+
 double dsda_FineSensitivity(int base) {
   return (double) base + (double) dsda_fine_sensitivity / 100;
 }
 
 dboolean dsda_ShowMessages(void) {
-  return dsda_setting[dsda_show_messages].transient_value;
+  return dsda_Transient(dsda_show_messages);
 }
 
 dboolean dsda_AutoRun(void) {
-  return dsda_setting[dsda_autorun].transient_value;
+  return dsda_Transient(dsda_autorun);
 }
 
 dboolean dsda_MouseLook(void) {
-  return dsda_setting[dsda_mouselook].transient_value;
+  return dsda_Transient(dsda_mouselook);
 }
 
 dboolean dsda_NoVert(void) {
-  return dsda_setting[dsda_novert].transient_value;
+  return dsda_Transient(dsda_novert);
 }
 
 dboolean dsda_StrictMode(void) {
-  return dsda_setting[dsda_strict_mode].transient_value && demorecording && !dsda_tas;
+  return dsda_Transient(dsda_strict_mode) && demorecording && !dsda_tas;
 }
 
 dboolean dsda_CycleGhostColors(void) {
@@ -208,15 +212,15 @@ dboolean dsda_ShowSplitData(void) {
 }
 
 dboolean dsda_ExHud(void) {
-  return dsda_setting[dsda_exhud].transient_value;
+  return dsda_Transient(dsda_exhud);
 }
 
 dboolean dsda_CommandDisplay(void) {
-  return dsda_setting[dsda_command_display].transient_value && !dsda_StrictMode();
+  return dsda_Transient(dsda_command_display) && !dsda_StrictMode();
 }
 
 dboolean dsda_CoordinateDisplay(void) {
-  return dsda_setting[dsda_coordinate_display].transient_value && !dsda_StrictMode();
+  return dsda_Transient(dsda_coordinate_display) && !dsda_StrictMode();
 }
 
 dboolean dsda_ShowDemoAttempts(void) {
