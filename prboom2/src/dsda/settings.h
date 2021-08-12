@@ -22,13 +22,33 @@
 
 #define UNSPECIFIED_COMPLEVEL -2
 
+typedef enum {
+  dsda_strict_mode,
+  dsda_novert,
+  dsda_mouselook,
+  dsda_autorun,
+  dsda_show_messages,
+  dsda_command_display,
+  dsda_coordinate_display,
+  dsda_exhud,
+  DSDA_SETTING_IDENTIFIER_COUNT
+} dsda_setting_identifier_t;
+
+typedef struct {
+  int persistent_value;
+  int transient_value;
+  const char* name;
+  void (*initializer)(void);
+  void (*updater)(void);
+  int invert_text;
+  int persist_changes;
+} dsda_setting_t;
+
+extern dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT];
+
 extern int dsda_auto_key_frame_interval;
 extern int dsda_auto_key_frame_depth;
-extern int dsda_strict_mode;
 extern int dsda_cycle_ghost_colors;
-extern int dsda_exhud;
-extern int dsda_command_display;
-extern int dsda_coordinate_display;
 extern int dsda_command_history_size;
 extern int dsda_hide_empty_commands;
 extern int dsda_show_demo_attempts;
@@ -41,10 +61,16 @@ extern int dsda_show_split_data;
 extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);
+void dsda_ResetTransient(dsda_setting_t* setting);
+void dsda_ToggleSetting(dsda_setting_identifier_t id);
 int dsda_CompatibilityLevel(void);
 void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);
 double dsda_FineSensitivity(int base);
+dboolean dsda_ShowMessages(void);
+dboolean dsda_AutoRun(void);
+dboolean dsda_MouseLook(void);
+dboolean dsda_NoVert(void);
 dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);

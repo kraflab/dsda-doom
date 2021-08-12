@@ -41,6 +41,8 @@
 #include "r_main.h"
 #include "e6y.h"
 
+#include "dsda/settings.h"
+
 //
 // sky mapping
 //
@@ -58,7 +60,7 @@ fixed_t freelookviewheight;
 //
 void R_InitSkyMap(void)
 {
-  if (!GetMouseLook())
+  if (!dsda_MouseLook())
   {
     skystretch = false;
     // HERETIC_TODO: this is set to 200, but something else is missing...

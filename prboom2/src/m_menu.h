@@ -134,6 +134,7 @@ extern dboolean menu_background;
  *
  * The setup_group enum is used to show which 'groups' keys fall into so
  * that you can bind a key differently in each 'group'.
+ * It also applies behaviour to other types of settings.
  */
 
 typedef enum {
@@ -141,6 +142,8 @@ typedef enum {
   m_scrn,       // A key can not be assigned to more than one action
   m_map,        // in the same group. A key can be assigned to one
   m_menu,       // action in one group, and another action in another.
+
+  m_dsda,       // use dsda setting logic
 } setup_group;
 
 /****************************
@@ -224,6 +227,7 @@ typedef struct menu_s
 
 void M_SetupNextMenu(menu_t *menudef);
 void M_DrawDelVerify(void);
+void M_ChangeMessages(void);
 
 extern dboolean delete_verify;
 

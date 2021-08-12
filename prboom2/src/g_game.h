@@ -103,7 +103,6 @@ void doom_printf(const char *, ...) __attribute__((format(printf,1,2)));
 
 extern int  key_forward;
 extern int  key_backward;
-extern int  autorun;           // always running?                   // phares
 
 extern int  defaultskill;      //jff 3/24/98 default skill
 extern dboolean haswolflevels;  //jff 4/18/98 wolf levels present
