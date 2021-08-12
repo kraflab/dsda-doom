@@ -35,7 +35,7 @@ typedef enum {
 } dsda_setting_identifier_t;
 
 typedef struct {
-  int persistant_value;
+  int persistent_value;
   int transient_value;
   const char* name;
   void (*initializer)(void);

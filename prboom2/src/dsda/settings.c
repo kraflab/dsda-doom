@@ -60,7 +60,7 @@ void dsda_InitSettings(void) {
 }
 
 void dsda_ResetTransient(dsda_setting_t* setting) {
-  setting->transient_value = setting->persistant_value;
+  setting->transient_value = setting->persistent_value;
   if (setting->initializer)
     setting->initializer();
 }
@@ -69,7 +69,7 @@ void dsda_ToggleSetting(dsda_setting_identifier_t id) {
   dsda_setting[id].transient_value = !dsda_setting[id].transient_value;
 
   if (dsda_setting[id].persist_changes)
-    dsda_setting[id].persistant_value = dsda_setting[id].transient_value;
+    dsda_setting[id].persistent_value = dsda_setting[id].transient_value;
 
   if (dsda_setting[id].updater)
     dsda_setting[id].updater();
