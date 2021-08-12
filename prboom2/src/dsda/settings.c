@@ -26,9 +26,12 @@
 
 #include "settings.h"
 
+dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
+  [dsda_strict_mode] = { 0, 0, dsda_ChangeStrictMode }
+};
+
 int dsda_auto_key_frame_interval;
 int dsda_auto_key_frame_depth;
-int dsda_strict_mode;
 int dsda_cycle_ghost_colors;
 int dsda_exhud;
 int dsda_tas;
@@ -41,7 +44,24 @@ int dsda_skip_quit_prompt;
 int dsda_show_split_data;
 
 void dsda_InitSettings(void) {
-  dsda_ChangeStrictMode();
+  int i;
+
+  for (i = 0; i < DSDA_SETTING_IDENTIFIER_COUNT; i++) {
+    dsda_ResetTransient(&dsda_setting[i]);
+  }
+}
+
+void dsda_ResetTransient(dsda_setting_t* setting) {
+  setting->transient_value = setting->persistant_value;
+  if (setting->initializer)
+    setting->initializer();
+}
+
+void dsda_ToggleSetting(dsda_setting_identifier_t id) {
+  dsda_setting[id].transient_value = !dsda_setting[id].transient_value;
+
+  if (dsda_setting[id].initializer)
+    dsda_setting[id].initializer();
 }
 
 static int dsda_WadCompatibilityLevel(void) {
@@ -124,7 +144,7 @@ double dsda_FineSensitivity(int base) {
 }
 
 dboolean dsda_StrictMode(void) {
-  return dsda_strict_mode && demorecording && !dsda_tas;
+  return dsda_setting[dsda_strict_mode].transient_value && demorecording && !dsda_tas;
 }
 
 dboolean dsda_CycleGhostColors(void) {

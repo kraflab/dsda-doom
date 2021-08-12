@@ -22,9 +22,21 @@
 
 #define UNSPECIFIED_COMPLEVEL -2
 
+typedef enum {
+  dsda_strict_mode,
+  DSDA_SETTING_IDENTIFIER_COUNT
+} dsda_setting_identifier_t;
+
+typedef struct {
+  int persistant_value;
+  int transient_value;
+  void (*initializer)(void);
+} dsda_setting_t;
+
+extern dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT];
+
 extern int dsda_auto_key_frame_interval;
 extern int dsda_auto_key_frame_depth;
-extern int dsda_strict_mode;
 extern int dsda_cycle_ghost_colors;
 extern int dsda_exhud;
 extern int dsda_command_display;
@@ -41,6 +53,8 @@ extern int dsda_show_split_data;
 extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);
+void dsda_ResetTransient(dsda_setting_t* setting);
+void dsda_ToggleSetting(dsda_setting_identifier_t id);
 int dsda_CompatibilityLevel(void);
 void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);

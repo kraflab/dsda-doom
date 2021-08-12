@@ -129,23 +129,6 @@ dboolean messageNeedsInput; // timed message = no input from user
 
 void (*messageRoutine)(int response);
 
-/* killough 8/15/98: when changes are allowed to sync-critical variables */
-static int allow_changes(void)
-{
- return !(demoplayback || demorecording || netgame);
-}
-
-static void M_UpdateCurrent(default_t* def)
-{
-  /* cph - requires rewrite of m_misc.c */
-  if (def->current) {
-    if (allow_changes())  /* killough 8/15/98 */
-  *def->current = *def->location.pi;
-    else if (*def->current != *def->location.pi)
-  warn_about_changes(S_LEVWARN); /* killough 8/15/98 */
-  }
-}
-
 int warning_about_changes, print_warning_about_changes;
 
 /* cphipps - M_DrawBackground renamed and moved to v_video.c */
@@ -3432,7 +3415,7 @@ setup_menu_t gen_settings8[] = { // General Settings screen4
 
 setup_menu_t dsda_gen_settings[] = {
   { "DSDA-Doom Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Strict Mode", S_YESNO, m_null, G_X, G_Y + 2 * 8, { "dsda_strict_mode" }, 0, dsda_ChangeStrictMode },
+  { "Strict Mode", S_YESNO, m_dsda, G_X, G_Y + 2 * 8, { "dsda_strict_mode" }, 0, dsda_ChangeStrictMode },
   { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "dsda_cycle_ghost_colors" } },
   { "Automatic Key Frame Interval (s)", S_NUM, m_null, G_X, G_Y + 4 * 8, { "dsda_auto_key_frame_interval" } },
   { "Automatic Key Frame Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 5 * 8, { "dsda_auto_key_frame_depth" } },
@@ -3742,6 +3725,43 @@ static setup_menu_t **setup_screens[] =
   gen_settings,      // killough 10/98
 };
 
+/* killough 8/15/98: when changes are allowed to sync-critical variables */
+static int allow_changes(void)
+{
+ return !(demoplayback || demorecording || netgame);
+}
+
+static void M_UpdateCurrent(default_t* def)
+{
+  /* cph - requires rewrite of m_misc.c */
+  if (def->current)
+  {
+    if (allow_changes())  /* killough 8/15/98 */
+      *def->current = *def->location.pi;
+    else if (*def->current != *def->location.pi)
+      warn_about_changes(S_LEVWARN); /* killough 8/15/98 */
+  }
+}
+
+static void M_SettingUpdated(setup_menu_t *setting, int update_current)
+{
+  if (update_current)
+  {
+    if (setting->m_flags & (S_LEVWARN | S_PRGWARN))
+      warn_about_changes(setting->m_flags & (S_LEVWARN | S_PRGWARN));
+    else
+      M_UpdateCurrent(setting->var.def);
+  }
+
+  if (setting->m_group == m_dsda)
+  {
+    dsda_ResetTransient((dsda_setting_t *) setting->var.def->location.pi);
+  }
+
+  if (setting->action)
+    setting->action();
+}
+
 // phares 4/19/98:
 // M_ResetDefaults() resets all values for a setup screen to default values
 //
@@ -3797,8 +3817,7 @@ static void M_ResetDefaults(void)
             else
               *dp->location.pi = dp->defaultvalue.i;
 
-            if (p->action)
-              p->action();
+            M_SettingUpdated(p, false);
 
             goto end;
           }
@@ -4867,9 +4886,8 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_strict_mode))
     {
-      dsda_strict_mode = !dsda_strict_mode;
-      dsda_ChangeStrictMode();
-      doom_printf("Strict Mode %s", dsda_strict_mode ? "on" : "off");
+      dsda_ToggleSetting(dsda_strict_mode);
+      doom_printf("Strict Mode %s", dsda_StrictMode() ? "on" : "off");
     }
 
     if (dsda_InputActivated(dsda_input_mlook)) // mouse look
@@ -4990,21 +5008,7 @@ dboolean M_Responder (event_t* ev) {
         if (action == MENU_ENTER) {
           *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
 
-          // phares 4/14/98:
-          // If not in demoplayback, demorecording, or netgame,
-          // and there's a second variable in var2, set that
-          // as well
-
-          // killough 8/15/98: add warning messages
-
-          if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
-            warn_about_changes(ptr1->m_flags &    // killough 10/98
-             (S_LEVWARN | S_PRGWARN));
-          else
-            M_UpdateCurrent(ptr1->var.def);
-
-          if (ptr1->action)      // killough 10/98
-            ptr1->action();
+          M_SettingUpdated(ptr1, true);
 
           //e6y
           #ifdef GL_DOOM
@@ -5028,8 +5032,7 @@ dboolean M_Responder (event_t* ev) {
             return true; // ignore
           *ptr1->var.def->location.pi = ch;
         }
-        if (ptr1->action)      // killough 10/98
-          ptr1->action();
+        M_SettingUpdated(ptr1, false);
         M_SelectDone(ptr1);                      // phares 4/17/98
         return true;
       }
@@ -5062,17 +5065,7 @@ dboolean M_Responder (event_t* ev) {
               else {
                 *ptr1->var.def->location.pi = value;
 
-                /* killough 8/9/98: fix numeric vars
-                 * killough 8/15/98: add warning message
-                 */
-                if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
-                  warn_about_changes(ptr1->m_flags &
-                   (S_LEVWARN | S_PRGWARN));
-                else
-                  M_UpdateCurrent(ptr1->var.def);
-
-                if (ptr1->action)      // killough 10/98
-                  ptr1->action();
+                M_SettingUpdated(ptr1, true);
               }
             }
             M_SelectDone(ptr1);     // phares 4/17/98
@@ -5160,21 +5153,7 @@ dboolean M_Responder (event_t* ev) {
           }
         }
         if (action == MENU_ENTER) {
-          // phares 4/14/98:
-          // If not in demoplayback, demorecording, or netgame,
-          // and there's a second variable in var2, set that
-          // as well
-
-          // killough 8/15/98: add warning messages
-
-          if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
-            warn_about_changes(ptr1->m_flags &    // killough 10/98
-             (S_LEVWARN | S_PRGWARN));
-          else
-            M_UpdateCurrent(ptr1->var.def);
-
-          if (ptr1->action)      // killough 10/98
-            ptr1->action();
+          M_SettingUpdated(ptr1, true);
           M_SelectDone(ptr1);                           // phares 4/17/98
         }
         return true;
