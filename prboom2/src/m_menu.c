@@ -4599,13 +4599,7 @@ dboolean M_Responder (event_t* ev) {
   // If there is no active menu displayed...
 
   if (!menuactive) {                                           // phares
-    if (dsda_InputActivated(dsda_input_autorun))               //  V
-    {
-      autorun = !autorun;
-      return true;
-    }
-
-    if (ch == KEYD_F1)
+    if (ch == KEYD_F1)                                         //  V
     {
       M_StartControlPanel ();
 
@@ -4652,14 +4646,6 @@ dboolean M_Responder (event_t* ev) {
     {
       S_StartSound(NULL,g_sfx_swtchn);
       M_EndGame(0);
-      return true;
-    }
-
-    // Toggle messages
-    if (dsda_InputActivated(dsda_input_messages))
-    {
-      M_ChangeMessages(0);
-      S_StartSound(NULL,g_sfx_swtchn);
       return true;
     }
 
@@ -4897,6 +4883,19 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_novert))
     {
       dsda_ToggleSetting(dsda_novert);
+    }
+
+    if (dsda_InputActivated(dsda_input_autorun))
+    {
+      autorun = !autorun;
+      return true;
+    }
+
+    if (dsda_InputActivated(dsda_input_messages))
+    {
+      M_ChangeMessages(0);
+      S_StartSound(NULL,g_sfx_swtchn);
+      return true;
     }
 
     if (dsda_InputActivated(dsda_input_hud))   // heads-up mode
