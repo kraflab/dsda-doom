@@ -373,7 +373,7 @@ void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
 
   dsda_ResetTracking();
 
-  AM_ResetIDDTcheat();
+  dsda_ResetRevealMap();
   G_CheckDemoStatus();
 
   demo_name = dsda_NewDemoName();

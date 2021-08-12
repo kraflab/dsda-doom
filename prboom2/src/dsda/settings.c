@@ -201,6 +201,18 @@ dboolean dsda_WipeAtFullSpeed(void) {
   return dsda_wipe_at_full_speed;
 }
 
+int dsda_reveal_map;
+
+int dsda_RevealAutomap(void) {
+  if (dsda_StrictMode()) return 0;
+
+  return dsda_reveal_map;
+}
+
+void dsda_ResetRevealMap(void) {
+  dsda_reveal_map = 0;
+}
+
 int dsda_RealticClockRate(void) {
   if (dsda_StrictMode()) return 100;
 

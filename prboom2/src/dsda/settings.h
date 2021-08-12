@@ -64,6 +64,8 @@ dboolean dsda_PainPalette(void);
 dboolean dsda_BonusPalette(void);
 dboolean dsda_PowerPalette(void);
 dboolean dsda_WipeAtFullSpeed(void);
+int dsda_RevealAutomap(void);
+void dsda_ResetRevealMap(void);
 int dsda_RealticClockRate(void);
 int dsda_AutoKeyFrameInterval(void);
 int dsda_AutoKeyFrameDepth(void);
