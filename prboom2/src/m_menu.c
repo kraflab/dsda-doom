@@ -4353,6 +4353,36 @@ static inline int GetButtons(const unsigned int max, int data)
   return -1;
 }
 
+typedef struct {
+  int input;
+  int setting;
+  int allowed_in_strict_mode;
+} toggle_input_t;
+
+static toggle_input_t toggle_inputs[] = {
+  { dsda_input_strict_mode, dsda_strict_mode, true },
+  { dsda_input_novert, dsda_novert, true },
+  { dsda_input_mlook, dsda_mouselook, true },
+  { dsda_input_autorun, dsda_autorun, true },
+  { dsda_input_messages, dsda_show_messages, true },
+  { dsda_input_command_display, dsda_command_display, false },
+  { dsda_input_coordinate_display, dsda_coordinate_display, false },
+  { -1 }
+};
+
+static void M_HandleToggles(void)
+{
+  toggle_input_t* toggle;
+
+  for (toggle = toggle_inputs; toggle->input != -1; toggle++) {
+    if (
+      dsda_InputActivated(toggle->input) &&
+      (toggle->allowed_in_strict_mode || !dsda_StrictMode())
+    )
+      dsda_ToggleSetting(toggle->setting);
+  }
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // M_Responder
@@ -4859,40 +4889,7 @@ dboolean M_Responder (event_t* ev) {
     }
 #endif
 
-    if (dsda_InputActivated(dsda_input_command_display) && !dsda_StrictMode())
-    {
-      dsda_ToggleSetting(dsda_command_display);
-    }
-
-    if (dsda_InputActivated(dsda_input_coordinate_display) && !dsda_StrictMode())
-    {
-      dsda_ToggleSetting(dsda_coordinate_display);
-    }
-
-    if (dsda_InputActivated(dsda_input_strict_mode))
-    {
-      dsda_ToggleSetting(dsda_strict_mode);
-    }
-
-    if (dsda_InputActivated(dsda_input_mlook))
-    {
-      dsda_ToggleSetting(dsda_mouselook);
-    }
-
-    if (dsda_InputActivated(dsda_input_novert))
-    {
-      dsda_ToggleSetting(dsda_novert);
-    }
-
-    if (dsda_InputActivated(dsda_input_autorun))
-    {
-      dsda_ToggleSetting(dsda_autorun);
-    }
-
-    if (dsda_InputActivated(dsda_input_messages))
-    {
-      dsda_ToggleSetting(dsda_show_messages);
-    }
+    M_HandleToggles();
 
     if (dsda_InputActivated(dsda_input_hud))   // heads-up mode
     {
