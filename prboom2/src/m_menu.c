@@ -3284,7 +3284,7 @@ setup_menu_t gen_settings3[] = { // General Settings screen2
   {"Dbl-Click As Use",            S_YESNO, m_null, G_X, G_Y+12*8, {"mouse_doubleclick_as_use"}},
   {"Carry Fractional Tics",       S_YESNO, m_null, G_X, G_Y+13*8, {"mouse_carrytics"}},
   {"Enable Mouselook",            S_YESNO, m_null, G_X, G_Y+14*8, {"movement_mouselook"}, 0, M_ChangeMouseLook},
-  {"No Vertical Mouse",           S_YESNO, m_null, G_X, G_Y+15*8, {"movement_mousenovert"}},
+  {"No Vertical Mouse",           S_YESNO, m_dsda, G_X, G_Y+15*8, {"movement_mousenovert"}},
   {"Invert Mouse",                S_YESNO, m_null, G_X, G_Y+16*8, {"movement_mouseinvert"}, 0, M_ChangeMouseInvert},
   {"Max View Pitch",              S_NUM,   m_null, G_X, G_Y+17*8, {"movement_maxviewpitch"}, 0, M_ChangeMaxViewPitch},
   {"Mouse Strafe Divisor",        S_NUM,   m_null, G_X, G_Y+18*8, {"movement_mousestrafedivisor"}},
@@ -3415,7 +3415,7 @@ setup_menu_t gen_settings8[] = { // General Settings screen4
 
 setup_menu_t dsda_gen_settings[] = {
   { "DSDA-Doom Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Strict Mode", S_YESNO, m_dsda, G_X, G_Y + 2 * 8, { "dsda_strict_mode" }, 0, dsda_ChangeStrictMode },
+  { "Strict Mode", S_YESNO, m_dsda, G_X, G_Y + 2 * 8, { "dsda_strict_mode" }, 0 },
   { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "dsda_cycle_ghost_colors" } },
   { "Automatic Key Frame Interval (s)", S_NUM, m_null, G_X, G_Y + 4 * 8, { "dsda_auto_key_frame_interval" } },
   { "Automatic Key Frame Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 5 * 8, { "dsda_auto_key_frame_depth" } },
@@ -4887,7 +4887,6 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_strict_mode))
     {
       dsda_ToggleSetting(dsda_strict_mode);
-      doom_printf("Strict Mode %s", dsda_StrictMode() ? "on" : "off");
     }
 
     if (dsda_InputActivated(dsda_input_mlook)) // mouse look
@@ -4901,10 +4900,7 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_novert))
     {
-      movement_mousenovert = !movement_mousenovert;
-      doom_printf("Vertical Mouse Movement %s", movement_mousenovert ? "off" : "on");
-      // Don't eat the keypress in this case.
-      // return true;
+      dsda_ToggleSetting(dsda_novert);
     }
 
     if (dsda_InputActivated(dsda_input_hud))   // heads-up mode

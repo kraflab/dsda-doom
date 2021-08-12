@@ -20,6 +20,7 @@
 #include "e6y.h"
 #include "r_things.h"
 #include "w_wad.h"
+#include "g_game.h"
 #include "lprintf.h"
 
 #include "dsda/key_frame.h"
@@ -27,7 +28,8 @@
 #include "settings.h"
 
 dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
-  [dsda_strict_mode] = { 0, 0, dsda_ChangeStrictMode }
+  [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode },
+  [dsda_novert] = { 0, 0, "Vertical Mouse Movement", NULL, true },
 };
 
 int dsda_auto_key_frame_interval;
@@ -62,6 +64,14 @@ void dsda_ToggleSetting(dsda_setting_identifier_t id) {
 
   if (dsda_setting[id].initializer)
     dsda_setting[id].initializer();
+
+  doom_printf(
+    "%s %s",
+    dsda_setting[id].name,
+    dsda_setting[id].transient_value ?
+      dsda_setting[id].invert_text ? "off" : "on" :
+      dsda_setting[id].invert_text ? "on"  : "off"
+  );
 }
 
 static int dsda_WadCompatibilityLevel(void) {
@@ -141,6 +151,10 @@ void dsda_SetTas(void) {
 
 double dsda_FineSensitivity(int base) {
   return (double) base + (double) dsda_fine_sensitivity / 100;
+}
+
+dboolean dsda_NoVert(void) {
+  return dsda_setting[dsda_novert].transient_value;
 }
 
 dboolean dsda_StrictMode(void) {

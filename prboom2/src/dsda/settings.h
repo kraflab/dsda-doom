@@ -24,13 +24,16 @@
 
 typedef enum {
   dsda_strict_mode,
+  dsda_novert,
   DSDA_SETTING_IDENTIFIER_COUNT
 } dsda_setting_identifier_t;
 
 typedef struct {
   int persistant_value;
   int transient_value;
+  const char* name;
   void (*initializer)(void);
+  int invert_text;
 } dsda_setting_t;
 
 extern dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT];
@@ -59,6 +62,7 @@ int dsda_CompatibilityLevel(void);
 void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);
 double dsda_FineSensitivity(int base);
+dboolean dsda_NoVert(void);
 dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);

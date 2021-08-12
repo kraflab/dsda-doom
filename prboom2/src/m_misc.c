@@ -1098,7 +1098,7 @@ default_t defaults[] =
 
   {"movement_mouselook", {&movement_mouselook},  {0},0,1,
    def_bool,ss_stat},
-  {"movement_mousenovert", {&movement_mousenovert},  {0},0,1,
+  {"movement_mousenovert", {(int *)&dsda_setting[dsda_novert]},  {0},0,1,
    def_bool,ss_stat},
   {"movement_maxviewpitch", {&movement_maxviewpitch},  {90},0,90,
    def_int,ss_stat},
@@ -1659,6 +1659,8 @@ void M_LoadDefaults (void)
 
   free(strparm);
   free(cfgline);
+
+  dsda_InitSettings();
 
   //jff 3/4/98 redundant range checks for hud deleted here
   /* proff 2001/7/1 - added prboom.wad as last entry so it's always loaded and
