@@ -277,7 +277,6 @@ extern int realtic_clock_rate;         // killough 4/13/98: adjustable timer
 extern int tran_filter_pct;            // killough 2/21/98
 
 extern int screenblocks;
-extern int showMessages;
 
 #ifndef DJGPP
 int         mus_pause_opt; // 0 = kill music, 1 = pause, 2 = continue
@@ -344,9 +343,9 @@ default_t defaults[] =
    def_bool,ss_stat}, // disables doubled card and skull key display on status bar
   {"sts_armorcolor_type",{&sts_armorcolor_type},{1},0,1, //  armor color depends on type
    def_bool,ss_stat},
-  {"show_messages",{&showMessages},{1},0,1,
+  {"show_messages",{(int *)&dsda_setting[dsda_show_messages]},{1},0,1,
    def_bool,ss_none}, // enables message display
-  {"autorun",{&autorun},{1},0,1,  // killough 3/6/98: preserve autorun across games
+  {"autorun",{(int *)&dsda_setting[dsda_autorun]},{1},0,1,  // killough 3/6/98: preserve autorun across games
    def_bool,ss_none},
 
   {"Dehacked settings",{NULL},{0},UL,UL,def_none,ss_none},
@@ -762,6 +761,8 @@ default_t defaults[] =
     dsda_input_coordinate_display, { 0, -1, -1 } },
   { "input_avj", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_avj, { 0, -1, -1 } },
+  { "input_exhud", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_exhud, { 0, -1, -1 } },
 
   { "input_jump", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_jump, { 0, -1, -1 } },
@@ -1036,20 +1037,20 @@ default_t defaults[] =
    def_int,ss_stat},
 
   { "DSDA-Doom settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "dsda_strict_mode", { &dsda_strict_mode }, { 1 }, 0, 1, def_bool, ss_stat },
+  { "dsda_strict_mode", { (int *) &dsda_setting[dsda_strict_mode] }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_cycle_ghost_colors", { &dsda_cycle_ghost_colors }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_auto_key_frame_interval", { &dsda_auto_key_frame_interval }, { 1 }, 1, 600, def_int, ss_stat },
   { "dsda_auto_key_frame_depth", { &dsda_auto_key_frame_depth }, { 60 }, 0, 600, def_int, ss_stat },
-  { "dsda_exhud", { &dsda_exhud }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_exhud", { (int *) &dsda_setting[dsda_exhud] }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_wipe_at_full_speed", { &dsda_wipe_at_full_speed }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_show_demo_attempts", { &dsda_show_demo_attempts }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int, ss_stat },
   { "dsda_hide_horns", { &dsda_hide_horns }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_organized_saves", { &dsda_organized_saves }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_command_display", { &dsda_command_display }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_command_display", { (int *) &dsda_setting[dsda_command_display] }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_command_history_size", { &dsda_command_history_size }, { 10 }, 1, 20, def_int, ss_stat },
   { "dsda_hide_empty_commands", { &dsda_hide_empty_commands }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_coordinate_display", { &dsda_coordinate_display }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_coordinate_display", { (int *) &dsda_setting[dsda_coordinate_display] }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_skip_quit_prompt", { &dsda_skip_quit_prompt }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_show_split_data", { &dsda_show_split_data }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_player_name", { 0, &dsda_player_name }, { 0, "Anonymous" }, UL, UL, def_str,ss_chat },
@@ -1096,9 +1097,9 @@ default_t defaults[] =
   {"sprites_doom_order", {&sprites_doom_order}, {DOOM_ORDER_STATIC},0,DOOM_ORDER_LAST - 1,
    def_int,ss_stat},
 
-  {"movement_mouselook", {&movement_mouselook},  {0},0,1,
+  {"movement_mouselook", {(int *)&dsda_setting[dsda_mouselook]},  {0},0,1,
    def_bool,ss_stat},
-  {"movement_mousenovert", {&movement_mousenovert},  {0},0,1,
+  {"movement_mousenovert", {(int *)&dsda_setting[dsda_novert]},  {0},0,1,
    def_bool,ss_stat},
   {"movement_maxviewpitch", {&movement_maxviewpitch},  {90},0,90,
    def_int,ss_stat},
@@ -1659,6 +1660,8 @@ void M_LoadDefaults (void)
 
   free(strparm);
   free(cfgline);
+
+  dsda_InitSettings();
 
   //jff 3/4/98 redundant range checks for hud deleted here
   /* proff 2001/7/1 - added prboom.wad as last entry so it's always loaded and

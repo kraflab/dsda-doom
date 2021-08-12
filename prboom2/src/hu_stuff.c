@@ -188,7 +188,6 @@ dboolean           message_dontfuckwithme;
 static dboolean    message_nottobefuckedwith;
 static int        message_counter;
 static int        yellow_message;
-extern int        showMessages;
 static dboolean    headsupactive = false;
 
 //jff 2/16/98 hud supported automap colors added
@@ -2654,7 +2653,7 @@ void HU_Ticker(void)
 
   // if messages on, or "Messages Off" is being displayed
   // this allows the notification of turning messages off to be seen
-  if (showMessages || message_dontfuckwithme)
+  if (dsda_ShowMessages() || message_dontfuckwithme)
   {
     // display message if necessary
     if ((plr->message && !message_nottobefuckedwith)

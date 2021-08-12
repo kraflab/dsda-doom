@@ -1234,7 +1234,7 @@ void gld_StartDrawScene(void)
     !frame_fixedcolormap && !boom_cm;
 
 //e6y
-  mlook_or_fov = GetMouseLook() || (render_fov != FOV90);
+  mlook_or_fov = dsda_MouseLook() || (render_fov != FOV90);
   if(!mlook_or_fov)
   {
     pitch = 0.0f;
