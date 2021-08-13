@@ -56,6 +56,7 @@
 // CPhipps - modify to use logical output routine
 #include "lprintf.h"
 
+#include "dsda/sfx.h"
 #include "dsda/sprite.h"
 #include "dsda/state.h"
 
@@ -1554,7 +1555,6 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
 
 // haleyjd: support for BEX SOUNDS and MUSIC
 char *deh_musicnames[DOOM_NUMMUSIC + 1];
-char *deh_soundnames[NUMSFX + 1];
 
 void D_BuildBEXTables(void)
 {
@@ -1565,15 +1565,6 @@ void D_BuildBEXTables(void)
   for (i = 1; i < num_music; i++)
     deh_musicnames[i] = strdup(S_music[i].name);
   deh_musicnames[0] = deh_musicnames[num_music] = NULL;
-
-  for (i = 1; i < num_sfx; i++) {
-    if (S_sfx[i].name != NULL) {
-      deh_soundnames[i] = strdup(S_sfx[i].name);
-    } else { // This is possible due to how DEHEXTRA has turned S_sfx into a sparse array
-      deh_soundnames[i] = NULL;
-    }
-  }
-  deh_soundnames[0] = deh_soundnames[num_sfx] = NULL;
 }
 
 int deh_maxhealth;
@@ -2391,14 +2382,17 @@ static void deh_procSounds(DEHFILE *fpin, char *line)
   char inbuffer[DEH_BUFFERMAX];
   uint_64_t value;      // All deh values are ints or longs
   int indexnum;
+  sfxinfo_t *deh_sfx;
 
   strncpy(inbuffer, line, DEH_BUFFERMAX - 1);
 
   // killough 8/98: allow hex numbers in input:
   sscanf(inbuffer, "%s %i", key, &indexnum);
   deh_log("Processing Sounds at index %d: %s\n", indexnum, key);
-  if (indexnum < 0 || indexnum >= num_sfx)
-    deh_log("Bad sound number %d of %d\n", indexnum, num_sfx);
+  if (indexnum < 0)
+    deh_log("Sound number must be positive (%d)\n", indexnum);
+
+  deh_sfx = dsda_GetDehSFX(indexnum);
 
   while (!dehfeof(fpin) && *inbuffer && (*inbuffer != ' '))
   {
@@ -2414,15 +2408,15 @@ static void deh_procSounds(DEHFILE *fpin, char *line)
     if (!deh_strcasecmp(key, "Offset"))
       ; // ignored
     else if (!deh_strcasecmp(key, "Zero/One"))
-      S_sfx[indexnum].singularity = (int)value;
+      deh_sfx->singularity = (int)value;
     else if (!deh_strcasecmp(key, "Value"))
-      S_sfx[indexnum].priority = (int)value;
+      deh_sfx->priority = (int)value;
     else if (!deh_strcasecmp(key, "Zero 1"))
       ; // ignored
     else if (!deh_strcasecmp(key, "Zero 2"))
-      S_sfx[indexnum].pitch = (int)value;
+      deh_sfx->pitch = (int)value;
     else if (!deh_strcasecmp(key, "Zero 3"))
-      S_sfx[indexnum].volume = (int)value;
+      deh_sfx->volume = (int)value;
     else if (!deh_strcasecmp(key, "Zero 4"))
       ; // ignored
     else if (!deh_strcasecmp(key, "Neg. One 1"))
@@ -2846,7 +2840,6 @@ static void deh_procText(DEHFILE *fpin, char *line)
   // BOSSBOS2  BOS2BOSS;   RUNNINSTALKS  STALKSRUNNIN
   // It corrects buggy behaviour on "All Hell is Breaking Loose" TC
   // http://www.doomworld.com/idgames/index.php?id=6480
-  static dboolean S_sfx_state[NUMSFX];
   static dboolean S_music_state[DOOM_NUMMUSIC];
 
   // Ty 04/11/98 - Included file may have NOTEXT skip flag set
@@ -2901,27 +2894,18 @@ static void deh_procText(DEHFILE *fpin, char *line)
     usedlen = (fromlen < tolen) ? fromlen : tolen;
     if (fromlen != tolen)
       deh_log("Warning: Mismatched lengths from=%d, to=%d, used %d\n", fromlen, tolen, usedlen);
-    // Try sound effects entries - see sounds.c
-    for (i = 1; i < num_sfx; i++)
+
+    i = dsda_GetDehSFXIndex(inbuffer, (size_t) fromlen);
+    if (i >= 0)
     {
-      // skip empty dummy entries in S_sfx[]
-      if (!S_sfx[i].name) continue;
-      // avoid short prefix erroneous match
-      if (strlen(S_sfx[i].name) != (size_t)fromlen) continue;
-      if (!strnicmp(S_sfx[i].name, inbuffer, fromlen) && !S_sfx_state[i])
-      {
-        deh_log("Changing name of sfx from %s to %*s\n",
-                S_sfx[i].name, usedlen, &inbuffer[fromlen]);
+      deh_log("Changing name of sfx from %s to %*s\n",
+              S_sfx[i].name, usedlen, &inbuffer[fromlen]);
 
-        S_sfx[i].name = strdup(&inbuffer[fromlen]);
+      S_sfx[i].name = strdup(&inbuffer[fromlen]);
 
-        //e6y: flag the SFX as changed
-        S_sfx_state[i] = true;
-
-        found = TRUE;
-        break;  // only one matches, quit early
-      }
+      found = TRUE;
     }
+
     if (!found)  // not yet
     {
       // Try music name entries - see sounds.c
@@ -3201,7 +3185,7 @@ static void deh_procBexSounds(DEHFILE *fpin, char *line)
   uint_64_t value;    // All deh values are ints or longs
   char *strval;  // holds the string value of the line
   char candidate[7];
-  int  rover;
+  int  match;
   size_t len;
 
   deh_log("Processing sound name substitution\n");
@@ -3232,17 +3216,11 @@ static void deh_procBexSounds(DEHFILE *fpin, char *line)
       continue;
     }
 
-    rover = 1;
-    while (deh_soundnames[rover])
+    match = dsda_GetOriginalSFXIndex(key);
+    if (match >= 0)
     {
-      if (!strncasecmp(deh_soundnames[rover], key, 6))
-      {
-        deh_log("Substituting '%s' for sound '%s'\n", candidate, deh_soundnames[rover]);
-
-        S_sfx[rover].name = strdup(candidate);
-        break;
-      }
-      rover++;
+      deh_log("Substituting '%s' for sound '%s'\n", candidate, key);
+      S_sfx[match].name = strdup(candidate);
     }
   }
 }
@@ -3499,4 +3477,5 @@ void PostProcessDeh(void)
 
   dsda_FreeDehStates();
   dsda_FreeDehSprites();
+  dsda_FreeDehSFX();
 }

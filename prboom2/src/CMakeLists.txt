@@ -59,6 +59,8 @@ set(COMMON_SRC
     dsda/save.h
     dsda/settings.c
     dsda/settings.h
+    dsda/sfx.c
+    dsda/sfx.h
     dsda/split_tracker.c
     dsda/split_tracker.h
     dsda/sprite.c
