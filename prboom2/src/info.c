@@ -55,15 +55,8 @@ void A_Stop();
 // ********************************************************************
 // Sprite names
 // ********************************************************************
-// This is the list of sprite 4-character prefixes.  They are searched
-// through, with a NULL entry terminating the list.  In DOOM originally
-// this NULL entry was missing, and coincidentally the next thing in
-// memory was the dummy state_t[] entry that started with zero bytes.
-// killough 1/17/98: add an explicit NULL entry.
-// NUMSPRITES is an enum from info.h where all these are listed
-// as SPR_xxxx
 
-const char *doom_sprnames[NUMSPRITES+1] = {
+const char *doom_sprnames[] = {
   "TROO","SHTG","PUNG","PISG","PISF","SHTF","SHT2","CHGG","CHGF","MISG",
   "MISF","SAWG","PLSG","PLSF","BFGG","BFGF","BLUD","PUFF","BAL1","BAL2",
   "PLSS","PLSE","MISL","BFS1","BFE1","BFE2","TFOG","IFOG","PLAY","POSS",
@@ -97,8 +90,6 @@ const char *doom_sprnames[NUMSPRITES+1] = {
   "SP70", "SP71", "SP72", "SP73", "SP74", "SP75", "SP76", "SP77", "SP78", "SP79",
   "SP80", "SP81", "SP82", "SP83", "SP84", "SP85", "SP86", "SP87", "SP88", "SP89",
   "SP90", "SP91", "SP92", "SP93", "SP94", "SP95", "SP96", "SP97", "SP98", "SP99",
-
-  NULL
 };
 
 // ********************************************************************

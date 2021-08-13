@@ -2619,7 +2619,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
 
   // decide which patch to use for sprite relative to player
 #ifdef RANGECHECK
-  if ((unsigned) thing->sprite >= (unsigned)numsprites)
+  if ((unsigned) thing->sprite >= (unsigned)num_sprites)
     I_Error ("R_ProjectSprite: Invalid sprite number %i", thing->sprite);
 #endif
 

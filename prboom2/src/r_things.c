@@ -110,7 +110,6 @@ int *screenheightarray;  // change to MAX_* // dropoff overflow
 // variables used to look up and range check thing_t sprites patches
 
 spritedef_t *sprites;
-int numsprites;
 
 #define MAX_SPRITE_FRAMES 30          /* Macroized -- killough 1/25/98 */
 
@@ -235,13 +234,7 @@ static void R_InitSpriteDefs(const char * const * namelist)
   if (!numentries || !*namelist)
     return;
 
-  // count the number of sprite names
-  for (i=0; namelist[i]; i++)
-    ;
-
-  numsprites = i;
-
-  sprites = Z_Calloc(numsprites, sizeof(*sprites), PU_STATIC, NULL);
+  sprites = Z_Calloc(num_sprites, sizeof(*sprites), PU_STATIC, NULL);
 
   // Create hash table based on just the first four letters of each sprite
   // killough 1/31/98
@@ -261,13 +254,18 @@ static void R_InitSpriteDefs(const char * const * namelist)
   // scan all the lump names for each of the names,
   //  noting the highest frame letter.
 
-  for (i=0 ; i<numsprites ; i++)
+  for (i=0 ; i<num_sprites ; i++)
     {
       int k;
       int rot;
-      const char *spritename = namelist[i];
-      int j = hash[R_SpriteNameHash(spritename) % numentries].index;
+      const char *spritename;
+      int j;
 
+      spritename = namelist[i];
+      if (!spritename)
+        continue;
+
+      j = hash[R_SpriteNameHash(spritename) % numentries].index;
       if (j >= 0)
         {
           memset(sprtemp, -1, sizeof(sprtemp));
@@ -731,7 +729,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
 
     // decide which patch to use for sprite relative to player
 #ifdef RANGECHECK
-  if ((unsigned) thing->sprite >= (unsigned)numsprites)
+  if ((unsigned) thing->sprite >= (unsigned)num_sprites)
     I_Error ("R_ProjectSprite: Invalid sprite number %i", thing->sprite);
 #endif
 
@@ -1052,7 +1050,7 @@ static void R_DrawPSprite (pspdef_t *psp)
   // decide which patch to use
 
 #ifdef RANGECHECK
-  if ( (unsigned)psp->state->sprite >= (unsigned)numsprites)
+  if ( (unsigned)psp->state->sprite >= (unsigned)num_sprites)
     I_Error ("R_ProjectSprite: Invalid sprite number %i", psp->state->sprite);
 #endif
 
