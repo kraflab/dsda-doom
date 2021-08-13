@@ -1707,9 +1707,7 @@ typedef enum
   S_PLAY_GDIE7,
   S_PLAY_GDIE8,
   S_PLAY_GDIE9,
-
-  EXTRASTATES = 1089, // extra dehacked states
-  NUMSTATES = 4000,  /* Counter of how many there are */
+  DOOM_NUMSTATES,
 
   // heretic
   HERETIC_S_NULL = 0,
@@ -6716,7 +6714,7 @@ extern state_t hexen_states[HEXEN_NUMSTATES];
 extern const char *hexen_sprnames[];
 extern raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES];
 
-extern state_t doom_states[NUMSTATES];
+extern state_t doom_states[DOOM_NUMSTATES];
 extern const char *doom_sprnames[];
 extern doom_mobjinfo_t doom_mobjinfo[NUMMOBJTYPES];
 
