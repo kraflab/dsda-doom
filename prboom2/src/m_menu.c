@@ -5884,6 +5884,7 @@ void M_Drawer (void)
 
 void M_ClearMenus (void)
 {
+  currentMenu = &MainDef;
   menuactive = mnact_inactive;
   print_warning_about_changes = 0;     // killough 8/15/98
   default_verify = 0;                  // killough 10/98
