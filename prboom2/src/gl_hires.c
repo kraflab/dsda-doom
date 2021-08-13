@@ -1366,7 +1366,8 @@ int gld_PrecacheGUIPatches(void)
   const char ** patch_p;
   int count, total;
 
-  if (!gl_texture_external_hires)
+  // RAVEN_TODO: gld_PrecacheGUIPatches
+  if (!gl_texture_external_hires || raven)
     return 0;
 
   gld_ProgressStart();
