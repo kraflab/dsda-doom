@@ -73,7 +73,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
 
   // killough 4/9/98: remember states seen, to detect cycles:
 
-  static statenum_t seenstate_tab[NUMSTATES]; // fast transition table
+  extern statenum_t* seenstate_tab;           // fast transition table
   statenum_t *seenstate;                      // pointer to table
   static int recursion;                       // detects recursion
   statenum_t i;                               // initial state
@@ -87,7 +87,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
   ret = true;
 
   if (recursion++)                            // if recursion detected,
-    seenstate = tempstate = calloc(NUMSTATES, sizeof(statenum_t)); // allocate state table
+    seenstate = tempstate = calloc(num_states, sizeof(statenum_t)); // allocate state table
 
   do
     {
