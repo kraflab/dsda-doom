@@ -32,6 +32,7 @@
 
 #include "global.h"
 
+#include "dsda/sfx.h"
 #include "dsda/sprite.h"
 #include "dsda/state.h"
 
@@ -47,8 +48,6 @@ int num_mobj_types;
 int mobj_types_zero;
 int mobj_types_max;
 
-sfxinfo_t* S_sfx;
-int num_sfx;
 musicinfo_t* S_music;
 int num_music;
 
@@ -165,11 +164,6 @@ static void dsda_AllocateMobjInfo(int zero, int max, int count) {
   memset(mobjinfo, 0, sizeof(mobjinfo_t) * num_mobj_types);
 }
 
-static void dsda_SetSfx(sfxinfo_t* sfx_list, int count) {
-  S_sfx = sfx_list;
-  num_sfx = count;
-}
-
 static void dsda_SetMusic(musicinfo_t* music_list, int count) {
   S_music = music_list;
   num_music = count;
@@ -182,7 +176,7 @@ static void dsda_InitDoom(void) {
   dsda_AllocateMobjInfo(0, NUMMOBJTYPES, NUMMOBJTYPES);
   dsda_InitializeStates(doom_states, DOOM_NUMSTATES);
   dsda_InitializeSprites(doom_sprnames, DOOM_NUMSPRITES);
-  dsda_SetSfx(doom_S_sfx, NUMSFX);
+  dsda_InitializeSFX(doom_S_sfx, DOOM_NUMSFX);
   dsda_SetMusic(doom_S_music, DOOM_NUMMUSIC);
 
   demostates = doom_demostates;
@@ -329,7 +323,7 @@ static void dsda_InitHeretic(void) {
   dsda_AllocateMobjInfo(HERETIC_MT_ZERO, HERETIC_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
   dsda_InitializeStates(heretic_states, HERETIC_NUMSTATES);
   dsda_InitializeSprites(heretic_sprnames, HERETIC_NUMSPRITES);
-  dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
+  dsda_InitializeSFX(heretic_S_sfx, HERETIC_NUMSFX);
   dsda_SetMusic(heretic_S_music, HERETIC_NUMMUSIC);
 
   demostates = heretic_demostates;
@@ -494,7 +488,7 @@ static void dsda_InitHexen(void) {
   dsda_AllocateMobjInfo(HEXEN_MT_ZERO, HEXEN_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
   dsda_InitializeStates(hexen_states, HEXEN_NUMSTATES);
   dsda_InitializeSprites(hexen_sprnames, HEXEN_NUMSPRITES);
-  dsda_SetSfx(hexen_S_sfx, HEXEN_NUMSFX);
+  dsda_InitializeSFX(hexen_S_sfx, HEXEN_NUMSFX);
   dsda_SetMusic(hexen_S_music, HEXEN_NUMMUSIC);
 
   demostates = hexen_demostates;

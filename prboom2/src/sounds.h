@@ -572,7 +572,7 @@ typedef enum {
   sfx_fre198,
   sfx_fre199,
 
-  NUMSFX,
+  DOOM_NUMSFX,
 
   // heretic
   heretic_sfx_None = 0,
