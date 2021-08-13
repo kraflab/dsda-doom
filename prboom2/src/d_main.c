@@ -1008,20 +1008,26 @@ void AddIWAD(const char *iwad)
  * CPhipps  - static, proper prototype
  *    - 12/1999 - rewritten to use I_FindFile
  */
+static inline dboolean CheckExeSuffix(const char *suffix)
+{
+  char *dash;
+
+  if ((dash = strrchr(myargv[0], '-')))
+    if (!stricmp(dash, suffix))
+      return true;
+
+  return false;
+}
+
 static char *FindIWADFile(void)
 {
   int   i;
   char  * iwad  = NULL;
-  char *dash;
 
-  if ((dash = strrchr(myargv[0], '-')))
-  {
-    dash++;
-    if (!strnicmp(dash, "heretic", 7))
-      return I_FindFile("heretic.wad", ".wad");
-    else if (!strnicmp(dash, "hexen", 5))
-      return I_FindFile("hexen.wad", ".wad");
-  }
+  if (M_CheckParm("-heretic") || CheckExeSuffix("-heretic"))
+    return I_FindFile("heretic.wad", ".wad");
+  else if (M_CheckParm("-hexen") || CheckExeSuffix("-hexen"))
+    return I_FindFile("hexen.wad", ".wad");
 
   i = M_CheckParm("-iwad");
   if (i && (++i < myargc)) {
