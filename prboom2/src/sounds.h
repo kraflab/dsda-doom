@@ -66,9 +66,6 @@ struct sfxinfo_struct {
   // sound data
   void *data;
 
-  // this field was related to caching (now meaningless)
-  int usefulness;
-
   // lump number of sfx
   int lumpnum;
 
