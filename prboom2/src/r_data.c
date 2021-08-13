@@ -660,7 +660,7 @@ void R_PrecacheLevel(void)
     return;
 
   {
-    int size = numflats > numsprites  ? numflats : numsprites;
+    int size = numflats > num_sprites  ? numflats : num_sprites;
     hitlist = malloc(numtextures > size ? numtextures : size);
   }
 
@@ -711,7 +711,7 @@ void R_PrecacheLevel(void)
       }
 
   // Precache sprites.
-  memset(hitlist, 0, numsprites);
+  memset(hitlist, 0, num_sprites);
 
   {
     thinker_t *th = NULL;
@@ -720,7 +720,7 @@ void R_PrecacheLevel(void)
         hitlist[((mobj_t *)th)->sprite] = 1;
   }
 
-  for (i=numsprites; --i >= 0;)
+  for (i=num_sprites; --i >= 0;)
     if (hitlist[i])
       {
         int j = sprites[i].numframes;

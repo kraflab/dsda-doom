@@ -56,6 +56,7 @@
 // CPhipps - modify to use logical output routine
 #include "lprintf.h"
 
+#include "dsda/sprite.h"
 #include "dsda/state.h"
 
 #define TRUE 1
@@ -1373,16 +1374,6 @@ static const char *deh_sfxinfo[] = // CPhipps - static const*
 // MUSICINFO is not supported in Dehacked.  Ignored here.
 // * music entries are base zero but have a dummy #0
 
-// SPRITE - Dehacked block name = "Sprite"
-// Usage = Sprite nn
-// Sprite redirection by offset into the text area - unsupported by BOOM
-// * sprites are base zero and dehacked uses it that way.
-
-// static const char *deh_sprite[] = // CPhipps - static const*
-// {
-//   "Offset"      // supposed to be the offset into the text section
-// };
-
 // AMMO - Dehacked block name = "Ammo"
 // usage = Ammo n (name)
 // Ammo information for the few types of ammo
@@ -1583,8 +1574,7 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {NULL,              "A_NULL"},  // Ty 05/16/98
 };
 
-// haleyjd: support for BEX SPRITES, SOUNDS, and MUSIC
-char *deh_spritenames[NUMSPRITES + 1];
+// haleyjd: support for BEX SOUNDS and MUSIC
 char *deh_musicnames[DOOM_NUMMUSIC + 1];
 char *deh_soundnames[NUMSFX + 1];
 
@@ -1593,10 +1583,6 @@ void D_BuildBEXTables(void)
   int i;
 
   if (raven) return;
-
-  for (i = 0; i < num_sprites; i++)
-    deh_spritenames[i] = strdup(sprnames[i]);
-  deh_spritenames[num_sprites] = NULL;
 
   for (i = 1; i < num_music; i++)
     deh_musicnames[i] = strdup(S_music[i].name);
@@ -2883,7 +2869,6 @@ static void deh_procText(DEHFILE *fpin, char *line)
   // BOSSBOS2  BOS2BOSS;   RUNNINSTALKS  STALKSRUNNIN
   // It corrects buggy behaviour on "All Hell is Breaking Loose" TC
   // http://www.doomworld.com/idgames/index.php?id=6480
-  static dboolean sprnames_state[NUMSPRITES+1];
   static dboolean S_sfx_state[NUMSFX];
   static dboolean S_music_state[DOOM_NUMMUSIC];
 
@@ -2917,31 +2902,20 @@ static void deh_procText(DEHFILE *fpin, char *line)
   // Future: this will be from a separate [SPRITES] block.
   if (fromlen == 4 && tolen == 4)
   {
-    i = 0;
-    while (sprnames[i])  // null terminated list in info.c //jff 3/19/98
-    {                                                      //check pointer
-      if (!strnicmp(sprnames[i], inbuffer, fromlen) && !sprnames_state[i])         //not first char
-      {
-        deh_log("Changing name of sprite at index %d from %s to %*s\n",
-                i, sprnames[i], tolen, &inbuffer[fromlen]);
-        // Ty 03/18/98 - not using strdup because length is fixed
+    i = dsda_GetDehSpriteIndex(inbuffer);
 
-        // killough 10/98: but it's an array of pointers, so we must
-        // use strdup unless we redeclare sprnames and change all else
-        {
-          // CPhipps - fix constness problem
-          char *s;
-          sprnames[i] = s = strdup(sprnames[i]);
+    if (i >= 0)
+    {
+      char *s;
 
-          //e6y: flag the sprite as changed
-          sprnames_state[i] = true;
+      deh_log("Changing name of sprite at index %d from %s to %*s\n",
+              i, sprnames[i], tolen, &inbuffer[fromlen]);
 
-          strncpy(s, &inbuffer[fromlen], tolen);
-        }
-        found = TRUE;
-        break;  // only one will match--quit early
-      }
-      ++i;  // next array element
+      // CPhipps - fix constness problem
+      sprnames[i] = s = strdup(sprnames[i]);
+      strncpy(s, &inbuffer[fromlen], tolen);
+
+      found = TRUE;
     }
   }
 
@@ -3204,7 +3178,7 @@ static void deh_procBexSprites(DEHFILE *fpin, char *line)
   uint_64_t value;    // All deh values are ints or longs
   char *strval;  // holds the string value of the line
   char candidate[5];
-  int  rover;
+  int  match;
 
   deh_log("Processing sprite name substitution\n");
 
@@ -3233,17 +3207,11 @@ static void deh_procBexSprites(DEHFILE *fpin, char *line)
       continue;
     }
 
-    rover = 0;
-    while (deh_spritenames[rover])
+    match = dsda_GetOriginalSpriteIndex(key);
+    if (match >= 0)
     {
-      if (!strncasecmp(deh_spritenames[rover], key, 4))
-      {
-        deh_log("Substituting '%s' for sprite '%s'\n", candidate, deh_spritenames[rover]);
-
-        sprnames[rover] = strdup(candidate);
-        break;
-      }
-      rover++;
+      deh_log("Substituting '%s' for sprite '%s'\n", candidate, key);
+      sprnames[match] = strdup(candidate);
     }
   }
 }
@@ -3553,4 +3521,5 @@ void PostProcessDeh(void)
   }
 
   dsda_FreeDehStates();
+  dsda_FreeDehSprites();
 }
