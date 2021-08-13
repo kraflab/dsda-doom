@@ -1349,28 +1349,6 @@ static const struct deh_flag_s deh_stateflags_mbf21[] = {
   { NULL }
 };
 
-// SFXINFO_STRUCT - Dehacked block name = "Sounds"
-// Sound effects, typically not changed (redirected, and new sfx put
-// into the pwad, but not changed here.  Can you tell that Gregdidn't
-// know what they were for, mostly?  Can you tell that I don't either?
-// Mostly I just put these into the same slots as they are in the struct.
-// This may not be supported in our -deh option if it doesn't make sense by then.
-
-// * sounds are base zero but have a dummy #0
-
-static const char *deh_sfxinfo[] = // CPhipps - static const*
-{
-  "Offset",     // pointer to a name string, changed in text
-  "Zero/One",   // .singularity (int, one at a time flag)
-  "Value",      // .priority
-  "Zero 1",     // .link (sfxinfo_t*) referenced sound if linked
-  "Zero 2",     // .pitch
-  "Zero 3",     // .volume
-  "Zero 4",     // .data (SAMPLE*) sound data
-  "Neg. One 1", // .usefulness
-  "Neg. One 2"  // .lumpnum
-};
-
 // MUSICINFO is not supported in Dehacked.  Ignored here.
 // * music entries are base zero but have a dummy #0
 
@@ -2432,26 +2410,25 @@ static void deh_procSounds(DEHFILE *fpin, char *line)
       deh_log("Bad data pair in '%s'\n", inbuffer);
       continue;
     }
-    if (!deh_strcasecmp(key, deh_sfxinfo[0]))  // Offset
-      /* nop */ ;  // we don't know what this is, I don't think
-    else if (!deh_strcasecmp(key, deh_sfxinfo[1]))  // Zero/One
+
+    if (!deh_strcasecmp(key, "Offset"))
+      ; // ignored
+    else if (!deh_strcasecmp(key, "Zero/One"))
       S_sfx[indexnum].singularity = (int)value;
-    else if (!deh_strcasecmp(key, deh_sfxinfo[2]))  // Value
+    else if (!deh_strcasecmp(key, "Value"))
       S_sfx[indexnum].priority = (int)value;
-    else if (!deh_strcasecmp(key, deh_sfxinfo[3]))  // Zero 1
-      //S_sfx[indexnum].link = (sfxinfo_t *)value;
-      ; // .link - don't set pointers from DeHackEd
-    else if (!deh_strcasecmp(key, deh_sfxinfo[4]))  // Zero 2
+    else if (!deh_strcasecmp(key, "Zero 1"))
+      ; // ignored
+    else if (!deh_strcasecmp(key, "Zero 2"))
       S_sfx[indexnum].pitch = (int)value;
-    else if (!deh_strcasecmp(key, deh_sfxinfo[5]))  // Zero 3
+    else if (!deh_strcasecmp(key, "Zero 3"))
       S_sfx[indexnum].volume = (int)value;
-    else if (!deh_strcasecmp(key, deh_sfxinfo[6]))  // Zero 4
-      //S_sfx[indexnum].data = (void *) value; // killough 5/3/98: changed cast
-      ; // .data - don't set pointers from DeHackEd
-    else if (!deh_strcasecmp(key, deh_sfxinfo[7]))  // Neg. One 1
-      S_sfx[indexnum].usefulness = (int)value;
-    else if (!deh_strcasecmp(key, deh_sfxinfo[8]))  // Neg. One 2
-      S_sfx[indexnum].lumpnum = (int)value;
+    else if (!deh_strcasecmp(key, "Zero 4"))
+      ; // ignored
+    else if (!deh_strcasecmp(key, "Neg. One 1"))
+      ; // ignored
+    else if (!deh_strcasecmp(key, "Neg. One 2"))
+      ; // ignored
     else
       deh_log("Invalid sound string index for '%s'\n", key);
   }
