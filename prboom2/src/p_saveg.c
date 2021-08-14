@@ -1341,7 +1341,7 @@ void P_TrueUnArchiveThinkers(void) {
           mobj->thinker.function = P_MobjThinker;
           P_AddThinker (&mobj->thinker);
 
-          if (mobj->type == HERETIC_MT_BLASTERFX1)
+          if (heretic && mobj->type == HERETIC_MT_BLASTERFX1)
             mobj->thinker.function = P_BlasterMobjThinker;
 
           if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL | MF_CORPSE)))
