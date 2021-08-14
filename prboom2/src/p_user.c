@@ -404,7 +404,7 @@ void P_DeathThink (player_t* player)
   // fall to the ground
 
   onground = (player->mo->z <= player->mo->floorz);
-  if (player->mo->type == g_skullpop_mt || player->mo->type == HEXEN_MT_ICECHUNK)
+  if (player->mo->type == g_skullpop_mt || (hexen && player->mo->type == HEXEN_MT_ICECHUNK))
   {
     // Flying bloody skull
     player->viewheight = 6*FRACUNIT;
