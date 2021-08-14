@@ -50,6 +50,8 @@ static void dsda_EnsureCapacity(int limit) {
     sfx_state = realloc(sfx_state, num_sfx * sizeof(*sfx_state));
     memset(sfx_state + old_num_sfx, 0,
       (num_sfx - old_num_sfx) * sizeof(*sfx_state));
+
+    dsda_ResetSFX(old_num_sfx, num_sfx);
   }
 }
 
