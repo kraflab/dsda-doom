@@ -136,7 +136,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
 
 void P_ExplodeMissile (mobj_t* mo)
 {
-  if (mo->type == HERETIC_MT_WHIRLWIND)
+  if (heretic && mo->type == HERETIC_MT_WHIRLWIND)
   {
     if (++mo->special2.i < 60)
     {
@@ -158,20 +158,28 @@ void P_ExplodeMissile (mobj_t* mo)
 
   mo->flags &= ~MF_MISSILE;
 
-  switch (mo->type)
+  if (!hexen)
   {
-    case HEXEN_MT_SORCBALL1:
-    case HEXEN_MT_SORCBALL2:
-    case HEXEN_MT_SORCBALL3:
-      S_StartSound(NULL, hexen_sfx_sorcerer_bigballexplode);
-      break;
-    case HEXEN_MT_SORCFX1:
-      S_StartSound(NULL, hexen_sfx_sorcerer_headscream);
-      break;
-    default:
-      if (mo->info->deathsound)
-        S_StartSound(mo, mo->info->deathsound);
-      break;
+    if (mo->info->deathsound)
+      S_StartSound(mo, mo->info->deathsound);
+  }
+  else
+  {
+    switch (mo->type)
+    {
+      case HEXEN_MT_SORCBALL1:
+      case HEXEN_MT_SORCBALL2:
+      case HEXEN_MT_SORCBALL3:
+        S_StartSound(NULL, hexen_sfx_sorcerer_bigballexplode);
+        break;
+      case HEXEN_MT_SORCFX1:
+        S_StartSound(NULL, hexen_sfx_sorcerer_headscream);
+        break;
+      default:
+        if (mo->info->deathsound)
+          S_StartSound(mo, mo->info->deathsound);
+        break;
+    }
   }
 }
 
@@ -466,7 +474,7 @@ static void P_XYMovement (mobj_t* mo)
             mo->momz = -FRACUNIT;
             return;
           }
-          else if (mo->type == HEXEN_MT_HOLY_FX)
+          else if (hexen && mo->type == HEXEN_MT_HOLY_FX)
           {
             P_ExplodeMissile(mo);
             return;
@@ -499,7 +507,7 @@ static void P_XYMovement (mobj_t* mo)
       !(mo->flags & MF_FLY) &&
       !(mo->flags2 & MF2_FLY) &&
       !(mo->flags2 & MF2_ONMOBJ) &&
-      mo->type != HEXEN_MT_BLASTEFFECT)
+      (!hexen || mo->type != HEXEN_MT_BLASTEFFECT))
     return;
 
   /* killough 8/11/98: add bouncers
@@ -814,13 +822,17 @@ floater:
           P_FloorBounceMissile(mo);
           return;
         }
-        else if (mo->type == HERETIC_MT_MNTRFX2 ||
-                 mo->type == HEXEN_MT_MNTRFX2 ||
-                 mo->type == HEXEN_MT_LIGHTNING_FLOOR)
+        else if (
+          raven && (
+            mo->type == HERETIC_MT_MNTRFX2 ||
+            mo->type == HEXEN_MT_MNTRFX2 ||
+            mo->type == HEXEN_MT_LIGHTNING_FLOOR
+          )
+        )
         {                   // Minotaur floor fire can go up steps
           return;
         }
-        else if (mo->type == HEXEN_MT_HOLY_FX)
+        else if (hexen && mo->type == HEXEN_MT_HOLY_FX)
         {                   // The spirit struck the ground
           mo->momz = 0;
           P_HitFloor(mo);
@@ -963,7 +975,7 @@ floater:
           else if (comp[comp_sound] || (mo->health > 0)) /* cph - prevent "oof" when dead */
             S_StartSound (mo, sfx_oof);
         }
-        else if (mo->type >= HEXEN_MT_POTTERY1 && mo->type <= HEXEN_MT_POTTERY3)
+        else if (hexen && mo->type >= HEXEN_MT_POTTERY1 && mo->type <= HEXEN_MT_POTTERY3)
         {
           P_DamageMobj(mo, NULL, NULL, 25);
         }
@@ -1043,7 +1055,7 @@ floater:
 
     if ((mo->flags & MF_MISSILE) && (hexen || !(mo->flags & MF_NOCLIP)))
     {
-      if (mo->type == HEXEN_MT_LIGHTNING_CEILING)
+      if (hexen && mo->type == HEXEN_MT_LIGHTNING_CEILING)
       {
         return;
       }
@@ -1147,10 +1159,10 @@ static void P_NightmareRespawn(mobj_t* mobj)
   // the chicken's return type is stored in special2.i
   // that value didn't exist in doom so is left uninitialized on respawn
   // we have to set this to the MT zero value for heretic
-  if (mo->type == HERETIC_MT_CHICKEN)
+  if (heretic && mo->type == HERETIC_MT_CHICKEN)
     mo->special2.i = HERETIC_MT_ZERO;
 
-  if (mo->type == HEXEN_MT_PIG)
+  if (hexen && mo->type == HEXEN_MT_PIG)
     mo->special2.i = HEXEN_MT_ZERO;
 
   if (mthing->options & MTF_AMBUSH)
@@ -2225,7 +2237,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // spawn it
 spawnit:
 
-  if (i == HERETIC_MT_WMACE)
+  if (heretic && i == HERETIC_MT_WMACE)
   {
     P_AddMaceSpot(mthing);
     return NULL;
@@ -2243,7 +2255,7 @@ spawnit:
   else
     z = ONFLOORZ;
 
-  if (i == HEXEN_MT_ZLYNCHED_NOHEART)
+  if (hexen && i == HEXEN_MT_ZLYNCHED_NOHEART)
     P_SpawnMobj(x, y, ONFLOORZ, HEXEN_MT_BLOODPOOL);
 
   mobj = P_SpawnMobj (x, y, z, i);
@@ -2443,38 +2455,46 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
   angle_t an;
   int     dist;
 
-  switch (type)
+  if (!raven)
   {
-    case HERETIC_MT_MNTRFX1:       // Minotaur swing attack missile
-    case HEXEN_MT_MNTRFX1:         // Minotaur swing attack missile
-    case HEXEN_MT_ICEGUY_FX:
-    case HEXEN_MT_HOLY_MISSILE:
-      z = source->z + 40 * FRACUNIT;
-      break;
-    case HERETIC_MT_MNTRFX2:       // Minotaur floor fire missile
-      z = ONFLOORZ;
-      break;
-    case HEXEN_MT_MNTRFX2:         // Minotaur floor fire missile
-      z = ONFLOORZ + source->floorclip;
-      break;
-    case HERETIC_MT_SRCRFX1:       // Sorcerer Demon fireball
-      z = source->z + 48 * FRACUNIT;
-      break;
-    case HERETIC_MT_KNIGHTAXE:     // Knight normal axe
-    case HERETIC_MT_REDAXE:        // Knight red power axe
-      z = source->z + 36 * FRACUNIT;
-      break;
-    case HEXEN_MT_CENTAUR_FX:
-      z = source->z + 45 * FRACUNIT;
-      break;
-    default:
-      z = source->z + 32 * FRACUNIT;
-      break;
+    z = source->z + 32 * FRACUNIT;
   }
-  if (hexen)
-    z -= source->floorclip;
-  else if (source->flags2 & MF2_FEETARECLIPPED)
-    z -= FOOTCLIPSIZE;
+  else
+  {
+    switch (type)
+    {
+      case HERETIC_MT_MNTRFX1:       // Minotaur swing attack missile
+      case HEXEN_MT_MNTRFX1:         // Minotaur swing attack missile
+      case HEXEN_MT_ICEGUY_FX:
+      case HEXEN_MT_HOLY_MISSILE:
+        z = source->z + 40 * FRACUNIT;
+        break;
+      case HERETIC_MT_MNTRFX2:       // Minotaur floor fire missile
+        z = ONFLOORZ;
+        break;
+      case HEXEN_MT_MNTRFX2:         // Minotaur floor fire missile
+        z = ONFLOORZ + source->floorclip;
+        break;
+      case HERETIC_MT_SRCRFX1:       // Sorcerer Demon fireball
+        z = source->z + 48 * FRACUNIT;
+        break;
+      case HERETIC_MT_KNIGHTAXE:     // Knight normal axe
+      case HERETIC_MT_REDAXE:        // Knight red power axe
+        z = source->z + 36 * FRACUNIT;
+        break;
+      case HEXEN_MT_CENTAUR_FX:
+        z = source->z + 45 * FRACUNIT;
+        break;
+      default:
+        z = source->z + 32 * FRACUNIT;
+        break;
+    }
+
+    if (hexen)
+      z -= source->floorclip;
+    else if (source->flags2 & MF2_FEETARECLIPPED)
+      z -= FOOTCLIPSIZE;
+  }
 
   th = P_SpawnMobj(source->x, source->y, z, type);
 
@@ -2556,21 +2576,26 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type)
   x = source->x;
   y = source->y;
 
-  if (type == HEXEN_MT_LIGHTNING_FLOOR)
+  if (!raven)
   {
-    z = ONFLOORZ;
-    slope = 0;
-  }
-  else if (type == HEXEN_MT_LIGHTNING_CEILING)
-  {
-    z = ONCEILINGZ;
-    slope = 0;
+    z = source->z + 4 * 8 * FRACUNIT;
   }
   else
   {
-    z = source->z + 4 * 8 * FRACUNIT;
+    if (type == HEXEN_MT_LIGHTNING_FLOOR)
+    {
+      z = ONFLOORZ;
+      slope = 0;
+    }
+    else if (type == HEXEN_MT_LIGHTNING_CEILING)
+    {
+      z = ONCEILINGZ;
+      slope = 0;
+    }
+    else
+    {
+      z = source->z + 4 * 8 * FRACUNIT;
 
-    if (raven) {
       z += ((source->player->lookdir) << FRACBITS) / 173;
 
       if (hexen)
