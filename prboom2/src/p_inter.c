@@ -1209,7 +1209,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 
   if (target->flags & MF_SKULLFLY)
   {
-    if (target->type == HERETIC_MT_MINOTAUR) return;
+    if (heretic && target->type == HERETIC_MT_MINOTAUR) return;
     target->momx = target->momy = target->momz = 0;
   }
 
@@ -1651,8 +1651,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   if (P_Random (pr_painchance) < target->info->painchance &&
       !(target->flags & MF_SKULLFLY)) //killough 11/98: see below
   {
-    if (inflictor && (inflictor->type >= HEXEN_MT_LIGHTNING_FLOOR
-                      && inflictor->type <= HEXEN_MT_LIGHTNING_ZAP))
+    if (hexen && inflictor && inflictor->type >= HEXEN_MT_LIGHTNING_FLOOR &&
+                              inflictor->type <= HEXEN_MT_LIGHTNING_ZAP)
     {
       if (P_Random(pr_hexen) < 96)
       {
@@ -1683,7 +1683,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 
       P_SetMobjState(target, target->info->painstate);
 
-      if (inflictor && inflictor->type == HEXEN_MT_POISONCLOUD)
+      if (hexen && inflictor && inflictor->type == HEXEN_MT_POISONCLOUD)
       {
         if (target->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
             && !S_GetSoundPlayingInfo(target, hexen_sfx_puppybeat))
