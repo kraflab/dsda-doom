@@ -45,7 +45,7 @@
 //MUSINFO lump
 //
 
-#define MAX_MUS_ENTRIES 64
+#define MAX_MUS_ENTRIES 65
 
 typedef struct musinfo_s
 {

@@ -71,14 +71,14 @@ void S_ParseMusInfo(const char *mapid)
 
     /* don't restart music that is already playing */
     if (mus_playing &&
-        mus_playing->lumpnum == S_music[num_music].lumpnum) {
-        load_muslump = S_music[num_music].lumpnum;
+        mus_playing->lumpnum == S_music[mus_musinfo].lumpnum) {
+        load_muslump = S_music[mus_musinfo].lumpnum;
     }
 
     memset(&musinfo, 0, sizeof(musinfo));
     musinfo.items[0] = itemzero;
     musinfo.current_item = load_muslump;
-    S_music[num_music].lumpnum = load_muslump;
+    S_music[mus_musinfo].lumpnum = load_muslump;
 
     SC_OpenLump("MUSINFO");
 

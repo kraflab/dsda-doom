@@ -1738,8 +1738,6 @@ static void D_DoomMainSetup(void)
 
   dsda_InitGlobal();
 
-  D_BuildBEXTables(); // haleyjd
-
   // e6y: DEH files preloaded in wrong order
   // http://sourceforge.net/tracker/index.php?func=detail&aid=1418158&group_id=148658&atid=772943
   // The dachaked stuff has been moved below an autoload
