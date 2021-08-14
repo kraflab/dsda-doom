@@ -77,7 +77,7 @@ musicinfo_t heretic_S_music[] = {
     { "MUS_INTR", 0 },
     { "MUS_CPTD", 0 },
 
-    { 0 } // for S_music[num_music].lumpnum = -1; ?
+    { 0 } // for S_music[mus_musinfo].lumpnum = -1; ?
 };
 
 sfxinfo_t heretic_S_sfx[] = {

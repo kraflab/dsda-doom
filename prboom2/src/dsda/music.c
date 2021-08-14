@@ -25,6 +25,7 @@
 
 musicinfo_t* S_music;
 int num_music;
+int mus_musinfo;
 static char** deh_musicnames;
 static byte* music_state;
 
@@ -84,6 +85,7 @@ void dsda_InitializeMusic(const musicinfo_t* source, int count) {
   extern int raven;
 
   num_music = count;
+  mus_musinfo = num_music;
 
   S_music = malloc(num_music * sizeof(*S_music));
   memcpy(S_music, source, num_music * sizeof(*S_music));
