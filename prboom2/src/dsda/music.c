@@ -69,26 +69,30 @@ int dsda_GetOriginalMusicIndex(const char* key) {
     if (!strncasecmp(deh_musicnames[i], key, 6))
       return i;
 
+  return -1;
+
   // is it a number?
-  for (c = key; *c; c++)
-    if (!isdigit(*c))
-      return -1;
-
-  i = atoi(key);
-  dsda_EnsureCapacity(i);
-
-  return i;
+  // for (c = key; *c; c++)
+  //   if (!isdigit(*c))
+  //     return -1;
+  //
+  // i = atoi(key);
+  // dsda_EnsureCapacity(i);
+  //
+  // return i;
 }
 
-void dsda_InitializeMusic(const musicinfo_t* source, int count) {
+void dsda_InitializeMusic(musicinfo_t* source, int count) {
   int i;
   extern int raven;
 
   num_music = count;
   mus_musinfo = num_music;
 
-  S_music = malloc(num_music * sizeof(*S_music));
-  memcpy(S_music, source, num_music * sizeof(*S_music));
+  S_music = source;
+
+  // S_music = malloc(num_music * sizeof(*S_music));
+  // memcpy(S_music, source, num_music * sizeof(*S_music));
 
   if (raven) return;
 

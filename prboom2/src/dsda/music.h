@@ -22,7 +22,7 @@
 
 int dsda_GetDehMusicIndex(const char* key, size_t length);
 int dsda_GetOriginalMusicIndex(const char* key);
-void dsda_InitializeMusic(const musicinfo_t* source, int count);
+void dsda_InitializeMusic(musicinfo_t* source, int count);
 void dsda_FreeDehMusic(void);
 
 #endif
