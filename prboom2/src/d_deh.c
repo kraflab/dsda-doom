@@ -56,6 +56,7 @@
 // CPhipps - modify to use logical output routine
 #include "lprintf.h"
 
+#include "dsda/music.h"
 #include "dsda/sfx.h"
 #include "dsda/sprite.h"
 #include "dsda/state.h"
@@ -1350,9 +1351,6 @@ static const struct deh_flag_s deh_stateflags_mbf21[] = {
   { NULL }
 };
 
-// MUSICINFO is not supported in Dehacked.  Ignored here.
-// * music entries are base zero but have a dummy #0
-
 // AMMO - Dehacked block name = "Ammo"
 // usage = Ammo n (name)
 // Ammo information for the few types of ammo
@@ -1553,20 +1551,6 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {NULL,              "A_NULL"},  // Ty 05/16/98
 };
 
-// haleyjd: support for BEX SOUNDS and MUSIC
-char *deh_musicnames[DOOM_NUMMUSIC + 1];
-
-void D_BuildBEXTables(void)
-{
-  int i;
-
-  if (raven) return;
-
-  for (i = 1; i < num_music; i++)
-    deh_musicnames[i] = strdup(S_music[i].name);
-  deh_musicnames[0] = deh_musicnames[num_music] = NULL;
-}
-
 int deh_maxhealth;
 int deh_max_soul;
 int deh_mega_health;
@@ -1690,8 +1674,6 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
 
   lprintf(LO_INFO, "Loading DEH %s %s\n", file_or_lump, filename);
   deh_log("\nLoading DEH %s %s\n\n", file_or_lump, filename);
-
-  // move deh_codeptr initialisation to D_BuildBEXTables
 
   // loop until end of file
 
@@ -2834,14 +2816,6 @@ static void deh_procText(DEHFILE *fpin, char *line)
   dboolean found = FALSE;  // to allow early exit once found
   char* line2 = NULL;   // duplicate line for rerouting
 
-  // e6y
-  // Correction for DEHs which swap the values of two strings. For example:
-  // Text 4 4  Text 4 4;   Text 6 6      Text 6 6
-  // BOSSBOS2  BOS2BOSS;   RUNNINSTALKS  STALKSRUNNIN
-  // It corrects buggy behaviour on "All Hell is Breaking Loose" TC
-  // http://www.doomworld.com/idgames/index.php?id=6480
-  static dboolean S_music_state[DOOM_NUMMUSIC];
-
   // Ty 04/11/98 - Included file may have NOTEXT skip flag set
   if (includenotext) // flag to skip included deh-style text
   {
@@ -2905,29 +2879,19 @@ static void deh_procText(DEHFILE *fpin, char *line)
 
       found = TRUE;
     }
-
-    if (!found)  // not yet
+    else
     {
-      // Try music name entries - see sounds.c
-      for (i = 1; i < num_music; i++)
+      i = dsda_GetDehMusicIndex(inbuffer, (size_t) fromlen);
+      if (i >= 0)
       {
-        // avoid short prefix erroneous match
-        if (strlen(S_music[i].name) != (size_t)fromlen) continue;
-        if (!strnicmp(S_music[i].name, inbuffer, fromlen) && !S_music_state[i])
-        {
-          deh_log("Changing name of music from %s to %*s\n",
-                  S_music[i].name, usedlen, &inbuffer[fromlen]);
+        deh_log("Changing name of music from %s to %*s\n",
+                S_music[i].name, usedlen, &inbuffer[fromlen]);
 
-          S_music[i].name = strdup(&inbuffer[fromlen]);
+        S_music[i].name = strdup(&inbuffer[fromlen]);
 
-          //e6y: flag the music as changed
-          S_music_state[i] = true;
-
-          found = TRUE;
-          break;  // only one matches, quit early
-        }
+        found = TRUE;
       }
-    }  // end !found test
+    }
   }
 
   if (!found) // Nothing we want to handle here--see if strings can deal with it.
@@ -3233,7 +3197,7 @@ static void deh_procBexMusic(DEHFILE *fpin, char *line)
   uint_64_t value;    // All deh values are ints or longs
   char *strval;  // holds the string value of the line
   char candidate[7];
-  int  rover;
+  int  match;
   size_t len;
 
   deh_log("Processing music name substitution\n");
@@ -3264,17 +3228,11 @@ static void deh_procBexMusic(DEHFILE *fpin, char *line)
       continue;
     }
 
-    rover = 1;
-    while (deh_musicnames[rover])
+    match = dsda_GetOriginalMusicIndex(key);
+    if (match >= 0)
     {
-      if (!strncasecmp(deh_musicnames[rover], key, 6))
-      {
-        deh_log("Substituting '%s' for music '%s'\n", candidate, deh_musicnames[rover]);
-
-        S_music[rover].name = strdup(candidate);
-        break;
-      }
-      rover++;
+      deh_log("Substituting '%s' for music '%s'\n", candidate, key);
+      S_music[match].name = strdup(candidate);
     }
   }
 }
@@ -3478,4 +3436,5 @@ void PostProcessDeh(void)
   dsda_FreeDehStates();
   dsda_FreeDehSprites();
   dsda_FreeDehSFX();
+  dsda_FreeDehMusic();
 }
