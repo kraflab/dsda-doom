@@ -501,7 +501,7 @@ dboolean PIT_CheckLine (line_t* ld)
         ld->flags & ML_BLOCKMONSTERS ||
         (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT))
       ) &&
-      tmthing->type != HERETIC_MT_POD
+      (!heretic || tmthing->type != HERETIC_MT_POD)
     )
     {
       if (tmthing->flags2 & MF2_BLASTED)
@@ -659,67 +659,70 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     int new_state;
     int damage;
 
-    if (tmthing->type == HEXEN_MT_MINOTAUR)
+    if (hexen)
     {
-      // Slamming minotaurs shouldn't move non-creatures
-      if (!(thing->flags & MF_COUNTKILL))
+      if (tmthing->type == HEXEN_MT_MINOTAUR)
       {
-        return (false);
+        // Slamming minotaurs shouldn't move non-creatures
+        if (!(thing->flags & MF_COUNTKILL))
+        {
+          return (false);
+        }
       }
-    }
-    else if (tmthing->type == HEXEN_MT_HOLY_FX)
-    {
-      if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
+      else if (tmthing->type == HEXEN_MT_HOLY_FX)
       {
-        if (netgame && !deathmatch && thing->player)
-        {               // don't attack other co-op players
-          return true;
-        }
-        if (thing->flags2 & MF2_REFLECTIVE
-            && (thing->player || thing->flags2 & MF2_BOSS))
+        if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
         {
-          P_SetTarget(&tmthing->special1.m, tmthing->target);
-          P_SetTarget(&tmthing->target, thing);
-          return true;
-        }
-        if (thing->flags & MF_COUNTKILL || thing->player)
-        {
-          P_SetTarget(&tmthing->special1.m, thing);
-        }
-        if (P_Random(pr_hexen) < 96)
-        {
-          damage = 12;
-          if (thing->player || thing->flags2 & MF2_BOSS)
-          {
-            damage = 3;
-            // ghost burns out faster when attacking players/bosses
-            tmthing->health -= 6;
+          if (netgame && !deathmatch && thing->player)
+          {               // don't attack other co-op players
+            return true;
           }
-          P_DamageMobj(thing, tmthing, tmthing->target, damage);
-          if (P_Random(pr_hexen) < 128)
+          if (thing->flags2 & MF2_REFLECTIVE
+              && (thing->player || thing->flags2 & MF2_BOSS))
           {
-            P_SpawnMobj(tmthing->x, tmthing->y, tmthing->z,
-                        HEXEN_MT_HOLY_PUFF);
-            S_StartSound(tmthing, hexen_sfx_spirit_attack);
-            if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
-                && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
+            P_SetTarget(&tmthing->special1.m, tmthing->target);
+            P_SetTarget(&tmthing->target, thing);
+            return true;
+          }
+          if (thing->flags & MF_COUNTKILL || thing->player)
+          {
+            P_SetTarget(&tmthing->special1.m, thing);
+          }
+          if (P_Random(pr_hexen) < 96)
+          {
+            damage = 12;
+            if (thing->player || thing->flags2 & MF2_BOSS)
             {
-              if ((thing->type == HEXEN_MT_CENTAUR) ||
-                  (thing->type == HEXEN_MT_CENTAURLEADER) ||
-                  (thing->type == HEXEN_MT_ETTIN))
+              damage = 3;
+              // ghost burns out faster when attacking players/bosses
+              tmthing->health -= 6;
+            }
+            P_DamageMobj(thing, tmthing, tmthing->target, damage);
+            if (P_Random(pr_hexen) < 128)
+            {
+              P_SpawnMobj(tmthing->x, tmthing->y, tmthing->z,
+                          HEXEN_MT_HOLY_PUFF);
+              S_StartSound(tmthing, hexen_sfx_spirit_attack);
+              if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
+                  && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
               {
-                S_StartSound(thing, hexen_sfx_puppybeat);
+                if ((thing->type == HEXEN_MT_CENTAUR) ||
+                    (thing->type == HEXEN_MT_CENTAURLEADER) ||
+                    (thing->type == HEXEN_MT_ETTIN))
+                {
+                  S_StartSound(thing, hexen_sfx_puppybeat);
+                }
               }
             }
           }
+          if (thing->health <= 0)
+          {
+            tmthing->special1.i = 0;
+            P_SetTarget(&tmthing->special1.m, NULL);
+          }
         }
-        if (thing->health <= 0)
-        {
-          tmthing->special1.i = 0;
-          P_SetTarget(&tmthing->special1.m, NULL);
-        }
+        return true;
       }
-      return true;
     }
 
     damage = ((P_Random(pr_skullfly) % 8) + 1) * tmthing->info->damage;
@@ -783,118 +786,121 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     if (tmthing->z + tmthing->height < thing->z)
       return true;    // underneath
 
-    if (hexen && tmthing->flags2 & MF2_FLOORBOUNCE)
+    if (hexen)
     {
-      if (tmthing->target == thing || !(thing->flags & MF_SOLID))
+      if (tmthing->flags2 & MF2_FLOORBOUNCE)
       {
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    }
-
-    if (tmthing->type == HEXEN_MT_LIGHTNING_FLOOR
-        || tmthing->type == HEXEN_MT_LIGHTNING_CEILING)
-    {
-      if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
-      {
-        if (thing->info->mass != INT_MAX)
+        if (tmthing->target == thing || !(thing->flags & MF_SOLID))
         {
-          thing->momx += tmthing->momx >> 4;
-          thing->momy += tmthing->momy >> 4;
+          return true;
         }
-        if ((!thing->player && !(thing->flags2 & MF2_BOSS))
-            || !(leveltime & 1))
-        {
-          if (thing->type == HEXEN_MT_CENTAUR
-              || thing->type == HEXEN_MT_CENTAURLEADER)
-          {           // Lightning does more damage to centaurs
-            P_DamageMobj(thing, tmthing, tmthing->target, 9);
-          }
-          else
-          {
-            P_DamageMobj(thing, tmthing, tmthing->target, 3);
-          }
-          if (!(S_GetSoundPlayingInfo(tmthing,
-                                      hexen_sfx_mage_lightning_zap)))
-          {
-            S_StartSound(tmthing, hexen_sfx_mage_lightning_zap);
-          }
-          if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 64
-              && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
-          {
-            if ((thing->type == HEXEN_MT_CENTAUR) ||
-                (thing->type == HEXEN_MT_CENTAURLEADER) ||
-                (thing->type == HEXEN_MT_ETTIN))
-            {
-              S_StartSound(thing, hexen_sfx_puppybeat);
-            }
-          }
-        }
-        tmthing->health--;
-        if (tmthing->health <= 0 || thing->health <= 0)
+        else
         {
           return false;
         }
-        if (tmthing->type == HEXEN_MT_LIGHTNING_FLOOR)
-        {
-          if (tmthing->special2.m
-              && !tmthing->special2.m->special1.m)
-          {
-            P_SetTarget(&tmthing->special2.m->special1.m, thing);
-          }
-        }
-        else if (!tmthing->special1.m)
-        {
-          P_SetTarget(&tmthing->special1.m, thing);
-        }
       }
-      return true;        // lightning zaps through all sprites
-    }
-    else if (tmthing->type == HEXEN_MT_LIGHTNING_ZAP)
-    {
-      mobj_t *lmo;
 
-      if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
+      if (tmthing->type == HEXEN_MT_LIGHTNING_FLOOR
+          || tmthing->type == HEXEN_MT_LIGHTNING_CEILING)
       {
-        lmo = tmthing->special2.m;
-        if (lmo)
+        if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
         {
-          if (lmo->type == HEXEN_MT_LIGHTNING_FLOOR)
+          if (thing->info->mass != INT_MAX)
           {
-            if (lmo->special2.m
-                && !lmo->special2.m->special1.m)
+            thing->momx += tmthing->momx >> 4;
+            thing->momy += tmthing->momy >> 4;
+          }
+          if ((!thing->player && !(thing->flags2 & MF2_BOSS))
+              || !(leveltime & 1))
+          {
+            if (thing->type == HEXEN_MT_CENTAUR
+                || thing->type == HEXEN_MT_CENTAURLEADER)
+            {           // Lightning does more damage to centaurs
+              P_DamageMobj(thing, tmthing, tmthing->target, 9);
+            }
+            else
             {
-              P_SetTarget(&lmo->special2.m->special1.m, thing);
+              P_DamageMobj(thing, tmthing, tmthing->target, 3);
+            }
+            if (!(S_GetSoundPlayingInfo(tmthing,
+                                        hexen_sfx_mage_lightning_zap)))
+            {
+              S_StartSound(tmthing, hexen_sfx_mage_lightning_zap);
+            }
+            if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 64
+                && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
+            {
+              if ((thing->type == HEXEN_MT_CENTAUR) ||
+                  (thing->type == HEXEN_MT_CENTAURLEADER) ||
+                  (thing->type == HEXEN_MT_ETTIN))
+              {
+                S_StartSound(thing, hexen_sfx_puppybeat);
+              }
             }
           }
-          else if (!lmo->special1.m)
+          tmthing->health--;
+          if (tmthing->health <= 0 || thing->health <= 0)
           {
-            P_SetTarget(&lmo->special1.m, thing);
+            return false;
           }
-          if (!(leveltime & 3))
+          if (tmthing->type == HEXEN_MT_LIGHTNING_FLOOR)
           {
-            lmo->health--;
+            if (tmthing->special2.m
+                && !tmthing->special2.m->special1.m)
+            {
+              P_SetTarget(&tmthing->special2.m->special1.m, thing);
+            }
+          }
+          else if (!tmthing->special1.m)
+          {
+            P_SetTarget(&tmthing->special1.m, thing);
+          }
+        }
+        return true;        // lightning zaps through all sprites
+      }
+      else if (tmthing->type == HEXEN_MT_LIGHTNING_ZAP)
+      {
+        mobj_t *lmo;
+
+        if (thing->flags & MF_SHOOTABLE && thing != tmthing->target)
+        {
+          lmo = tmthing->special2.m;
+          if (lmo)
+          {
+            if (lmo->type == HEXEN_MT_LIGHTNING_FLOOR)
+            {
+              if (lmo->special2.m
+                  && !lmo->special2.m->special1.m)
+              {
+                P_SetTarget(&lmo->special2.m->special1.m, thing);
+              }
+            }
+            else if (!lmo->special1.m)
+            {
+              P_SetTarget(&lmo->special1.m, thing);
+            }
+            if (!(leveltime & 3))
+            {
+              lmo->health--;
+            }
           }
         }
       }
-    }
-    else if (tmthing->type == HEXEN_MT_MSTAFF_FX2 && thing != tmthing->target)
-    {
-      if (!thing->player && !(thing->flags2 & MF2_BOSS))
+      else if (tmthing->type == HEXEN_MT_MSTAFF_FX2 && thing != tmthing->target)
       {
-        switch (thing->type)
+        if (!thing->player && !(thing->flags2 & MF2_BOSS))
         {
-          case HEXEN_MT_FIGHTER_BOSS:      // these not flagged boss
-          case HEXEN_MT_CLERIC_BOSS:       // so they can be blasted
-          case HEXEN_MT_MAGE_BOSS:
-            break;
-          default:
-            P_DamageMobj(thing, tmthing, tmthing->target, 10);
-            return true;
-            break;
+          switch (thing->type)
+          {
+            case HEXEN_MT_FIGHTER_BOSS:      // these not flagged boss
+            case HEXEN_MT_CLERIC_BOSS:       // so they can be blasted
+            case HEXEN_MT_MAGE_BOSS:
+              break;
+            default:
+              P_DamageMobj(thing, tmthing, tmthing->target, 10);
+              return true;
+              break;
+          }
         }
       }
     }
@@ -1286,7 +1292,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
 
     if (
       !(thing->flags & MF_TELEPORT) &&
-      thing->type != HERETIC_MT_MNTRFX2 &&
+      (!heretic || thing->type != HERETIC_MT_MNTRFX2) &&
       tmfloorz - thing->z > 24*FRACUNIT
     )
     {
@@ -1971,7 +1977,7 @@ dboolean PTR_AimTraverse (intercept_t* in)
   if (!(th->flags&MF_SHOOTABLE))
     return true;    // corpse or something
 
-  if (th->type == HERETIC_MT_POD)
+  if (heretic && th->type == HERETIC_MT_POD)
     return true;    // Can't auto-aim at pods
 
   if (hexen && th->player && netgame && !deathmatch)
@@ -2165,7 +2171,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
       }
     }
 
-    if (PuffType == HEXEN_MT_FLAMEPUFF2)
+    if (hexen && PuffType == HEXEN_MT_FLAMEPUFF2)
     {                       // Cleric FlameStrike does fire damage
       extern mobj_t LavaInflictor;
 
@@ -2250,21 +2256,24 @@ void P_LineAttack(mobj_t* t1, angle_t angle, fixed_t distance, fixed_t slope,
 
   if (P_PathTraverse(t1->x,t1->y,x2,y2,PT_ADDLINES|PT_ADDTHINGS,PTR_ShootTraverse))
   {
-    switch (PuffType)
+    if (hexen)
     {
-      case HEXEN_MT_PUNCHPUFF:
-        S_StartSound(t1, hexen_sfx_fighter_punch_miss);
-        break;
-      case HEXEN_MT_HAMMERPUFF:
-      case HEXEN_MT_AXEPUFF:
-      case HEXEN_MT_AXEPUFF_GLOW:
-        S_StartSound(t1, hexen_sfx_fighter_hammer_miss);
-        break;
-      case HEXEN_MT_FLAMEPUFF:
-        P_SpawnPuff(x2, y2, shootz + FixedMul(slope, distance));
-        break;
-      default:
-        break;
+      switch (PuffType)
+      {
+        case HEXEN_MT_PUNCHPUFF:
+          S_StartSound(t1, hexen_sfx_fighter_punch_miss);
+          break;
+        case HEXEN_MT_HAMMERPUFF:
+        case HEXEN_MT_AXEPUFF:
+        case HEXEN_MT_AXEPUFF_GLOW:
+          S_StartSound(t1, hexen_sfx_fighter_hammer_miss);
+          break;
+        case HEXEN_MT_FLAMEPUFF:
+          P_SpawnPuff(x2, y2, shootz + FixedMul(slope, distance));
+          break;
+        default:
+          break;
+      }
     }
   }
 }
@@ -2549,7 +2558,7 @@ void P_RadiusAttack(mobj_t* spot,mobj_t* source, int damage, int distance, dbool
   xh = P_GetSafeBlockX(spot->x + dist - bmaporgx);
   xl = P_GetSafeBlockX(spot->x - dist - bmaporgx);
   bombspot = spot;
-  if (spot->type == HERETIC_MT_POD && spot->target)
+  if (heretic && spot->type == HERETIC_MT_POD && spot->target)
   {
     bombsource = spot->target;
   }
