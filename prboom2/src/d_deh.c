@@ -1601,6 +1601,8 @@ void deh_applyCompatibility(void)
     maxhealthbonus = maxhealth * 2;
   }
 
+  if (raven) return;
+
   if (!edited_mobjinfo_bits[MT_SKULL])
   {
     if (compatibility_level == doom_12_compatibility)
