@@ -56,6 +56,7 @@
 // CPhipps - modify to use logical output routine
 #include "lprintf.h"
 
+#include "dsda/mobjinfo.h"
 #include "dsda/music.h"
 #include "dsda/sfx.h"
 #include "dsda/sprite.h"
@@ -1128,7 +1129,7 @@ static dboolean includenotext = false;
 // * things are base zero but dehacked considers them to start at #1. ***
 // CPhipps - static const
 
-static const char *deh_mobjinfo[] =
+static const char *deh_mobjinfo_fields[] =
 {
   "ID #",                // .doomednum
   "Initial frame",       // .spawnstate
@@ -1558,10 +1559,10 @@ int deh_mega_health;
 dboolean IsDehMaxHealth = false;
 dboolean IsDehMaxSoul = false;
 dboolean IsDehMegaHealth = false;
-dboolean DEH_mobjinfo_bits[NUMMOBJTYPES] = {0};
 
 void deh_changeCompTranslucency(void)
 {
+  extern byte* edited_mobjinfo_bits;
   int i;
   int predefined_translucency[] = {
     MT_FIRE, MT_SMOKE, MT_FATSHOT, MT_BRUISERSHOT, MT_SPAWNFIRE,
@@ -1571,7 +1572,7 @@ void deh_changeCompTranslucency(void)
 
   for (i = 0; (size_t)i < sizeof(predefined_translucency) / sizeof(predefined_translucency[0]); i++)
   {
-    if (!DEH_mobjinfo_bits[predefined_translucency[i]])
+    if (!edited_mobjinfo_bits[predefined_translucency[i]])
     {
       if (comp[comp_translucency])
         mobjinfo[predefined_translucency[i]].flags &= ~MF_TRANSLUCENT;
@@ -1583,6 +1584,7 @@ void deh_changeCompTranslucency(void)
 
 void deh_applyCompatibility(void)
 {
+  extern byte* edited_mobjinfo_bits;
   int comp_max = (compatibility_level == doom_12_compatibility ? 199 : 200);
 
   max_soul = (IsDehMaxSoul ? deh_max_soul : comp_max);
@@ -1599,7 +1601,9 @@ void deh_applyCompatibility(void)
     maxhealthbonus = maxhealth * 2;
   }
 
-  if (!DEH_mobjinfo_bits[MT_SKULL])
+  if (raven) return;
+
+  if (!edited_mobjinfo_bits[MT_SKULL])
   {
     if (compatibility_level == doom_12_compatibility)
       mobjinfo[MT_SKULL].flags |= (MF_COUNTKILL);
@@ -1991,6 +1995,7 @@ static void deh_procThing(DEHFILE *fpin, char *line)
   int indexnum;
   int ix;
   char *strval;
+  dsda_deh_mobjinfo_t deh_mobjinfo;
 
   strncpy(inbuffer, line, DEH_BUFFERMAX - 1);
   deh_log("Thing line: '%s'\n", inbuffer);
@@ -2002,6 +2007,8 @@ static void deh_procThing(DEHFILE *fpin, char *line)
   // Note that the mobjinfo[] array is base zero, but object numbers
   // in the dehacked file start with one.  Grumble.
   --indexnum;
+
+  deh_mobjinfo = dsda_GetDehMobjInfo(indexnum);
 
   // now process the stuff
   // Note that for Things we can look up the key and use its offset
@@ -2030,8 +2037,8 @@ static void deh_procThing(DEHFILE *fpin, char *line)
       continue;
     }
 
-    for (ix = 0; deh_mobjinfo[ix]; ix++) {
-      if (deh_strcasecmp(key, deh_mobjinfo[ix])) continue;
+    for (ix = 0; deh_mobjinfo_fields[ix]; ix++) {
+      if (deh_strcasecmp(key, deh_mobjinfo_fields[ix])) continue;
 
       if (!deh_strcasecmp(key, "MBF21 Bits")) {
         if (bGetData == 1)
@@ -2055,7 +2062,7 @@ static void deh_procThing(DEHFILE *fpin, char *line)
           }
         }
 
-        mobjinfo[indexnum].flags2 = value;
+        deh_mobjinfo.info->flags2 = value;
       }
       else if (deh_strcasecmp(key, "Bits")) {
         // standard value set
@@ -2077,8 +2084,8 @@ static void deh_procThing(DEHFILE *fpin, char *line)
         // No more desync on HACX demos.
 
         value = getConvertedDEHBits(value);
-        mobjinfo[indexnum].flags = value;
-        DEH_mobjinfo_bits[indexnum] = true; //e6y: changed by DEH
+        deh_mobjinfo.info->flags = value;
+        *deh_mobjinfo.edited_bits = true; //e6y: changed by DEH
       }
       else
       {
@@ -2109,8 +2116,8 @@ static void deh_procThing(DEHFILE *fpin, char *line)
         deh_log("Bits = 0x%08lX%08lX\n",
                 (unsigned long)(value>>32) & 0xffffffff,
                 (unsigned long)value & 0xffffffff);
-        mobjinfo[indexnum].flags = value; // e6y
-        DEH_mobjinfo_bits[indexnum] = true; //e6y: changed by DEH
+        deh_mobjinfo.info->flags = value; // e6y
+        *deh_mobjinfo.edited_bits = true; //e6y: changed by DEH
       }
 
       deh_log("Assigned 0x%08lx%08lx to %s(%d) at index %d\n",
@@ -3437,4 +3444,5 @@ void PostProcessDeh(void)
   dsda_FreeDehSprites();
   dsda_FreeDehSFX();
   dsda_FreeDehMusic();
+  dsda_FreeDehMobjInfo();
 }
