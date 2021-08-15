@@ -28,9 +28,23 @@ int num_sprites;
 static char** deh_spritenames;
 static byte* sprnames_state;
 
+static void dsda_PrepAllocation(void) {
+  static int first_allocation = true;
+
+  if (first_allocation) {
+    const char** source = sprnames;
+
+    first_allocation = false;
+    sprnames = malloc(num_sprites * sizeof(*sprnames));
+    memcpy(sprnames, source, num_sprites * sizeof(*sprnames));
+  }
+}
+
 static void dsda_EnsureCapacity(int limit) {
   while (limit >= num_sprites) {
     int old_num_sprites = num_sprites;
+
+    dsda_PrepAllocation();
 
     num_sprites *= 2;
 
@@ -80,8 +94,7 @@ void dsda_InitializeSprites(const char** source, int count) {
 
   num_sprites = count;
 
-  sprnames = malloc(num_sprites * sizeof(*sprnames));
-  memcpy(sprnames, source, num_sprites * sizeof(*sprnames));
+  sprnames = source;
 
   if (raven) return;
 

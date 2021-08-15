@@ -38,9 +38,23 @@ static void dsda_ResetSFX(int from, int to) {
   }
 }
 
+static void dsda_PrepAllocation(void) {
+  static int first_allocation = true;
+
+  if (first_allocation) {
+    sfxinfo_t* source = S_sfx;
+
+    first_allocation = false;
+    S_sfx = malloc(num_sfx * sizeof(*S_sfx));
+    memcpy(S_sfx, source, num_sfx * sizeof(*S_sfx));
+  }
+}
+
 static void dsda_EnsureCapacity(int limit) {
   while (limit >= num_sfx) {
     int old_num_sfx = num_sfx;
+
+    dsda_PrepAllocation();
 
     num_sfx *= 2;
 
@@ -97,14 +111,13 @@ sfxinfo_t* dsda_GetDehSFX(int index) {
   return &S_sfx[index];
 }
 
-void dsda_InitializeSFX(const sfxinfo_t* source, int count) {
+void dsda_InitializeSFX(sfxinfo_t* source, int count) {
   int i;
   extern int raven;
 
   num_sfx = count;
 
-  S_sfx = malloc(num_sfx * sizeof(*S_sfx));
-  memcpy(S_sfx, source, num_sfx * sizeof(*S_sfx));
+  S_sfx = source;
 
   if (raven) return;
 

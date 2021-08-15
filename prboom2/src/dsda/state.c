@@ -37,9 +37,23 @@ static void dsda_ResetStates(int from, int to) {
   }
 }
 
+static void dsda_PrepAllocation(void) {
+  static int first_allocation = true;
+
+  if (first_allocation) {
+    state_t* source = states;
+
+    first_allocation = false;
+    states = malloc(num_states * sizeof(*states));
+    memcpy(states, source, num_states * sizeof(*states));
+  }
+}
+
 static void dsda_EnsureCapacity(int limit) {
   while (limit >= num_states) {
     int old_num_states = num_states;
+
+    dsda_PrepAllocation();
 
     num_states *= 2;
 
@@ -80,8 +94,7 @@ void dsda_InitializeStates(state_t* source, int count) {
 
   num_states = count;
 
-  states = malloc(num_states * sizeof(*states));
-  memcpy(states, source, num_states * sizeof(*states));
+  states = source;
 
   if (raven) return;
 
