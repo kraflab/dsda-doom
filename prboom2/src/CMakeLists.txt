@@ -47,6 +47,8 @@ set(COMMON_SRC
     dsda/key_frame.h
     dsda/memory.c
     dsda/memory.h
+    dsda/mobjinfo.c
+    dsda/mobjinfo.h
     dsda/msecnode.c
     dsda/msecnode.h
     dsda/music.c
