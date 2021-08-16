@@ -474,7 +474,7 @@ function(AddGameExecutable TARGET SOURCES)
         )
     endif()
 
-    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
     if(OPENGL_FOUND AND OPENGL_GLU_FOUND)
         target_compile_definitions(${TARGET} PRIVATE
@@ -534,7 +534,7 @@ if(BUILD_SERVER AND SDL2_NET_FOUND)
         RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
     )
     ApplySDL2NetOptions(dsda-doom-game-server)
-    install(TARGETS dsda-doom-game-server COMPONENT "Game server executable" RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+    install(TARGETS dsda-doom-game-server COMPONENT "Game server executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 endif()
 
 
