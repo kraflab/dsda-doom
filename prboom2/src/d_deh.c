@@ -1570,6 +1570,8 @@ void deh_changeCompTranslucency(void)
     MT_TFOG, MT_IFOG, MT_MISC12, MT_INV, MT_INS, MT_MEGA
   };
 
+  if (raven) return;
+
   for (i = 0; (size_t)i < sizeof(predefined_translucency) / sizeof(predefined_translucency[0]); i++)
   {
     if (!edited_mobjinfo_bits[predefined_translucency[i]])

@@ -83,6 +83,8 @@ void dsda_InitializeMobjInfo(int zero, int max, int count) {
   edited_mobjinfo_bits = calloc(num_mobj_types, sizeof(*edited_mobjinfo_bits));
 }
 
+// Changing the renderer causes a reset that accesses this list,
+//   so we can't free it.
 void dsda_FreeDehMobjInfo(void) {
-  free(edited_mobjinfo_bits);
+  // free(edited_mobjinfo_bits);
 }
