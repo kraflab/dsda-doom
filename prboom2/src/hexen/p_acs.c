@@ -691,6 +691,8 @@ void P_TagFinished(int tag)
 {
     int i;
 
+    if (!hexen) return;
+
     if (TagBusy(tag) == true)
     {
         return;
