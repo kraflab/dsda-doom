@@ -1371,7 +1371,7 @@ void gld_Precache(void)
   gld_ProgressStart();
 
   {
-    size_t size = numflats > numsprites  ? numflats : numsprites;
+    size_t size = numflats > num_sprites  ? numflats : num_sprites;
     hitlist = Z_Malloc((size_t)numtextures > size ? (size_t)numtextures : size,PU_LEVEL,0);
   }
 
@@ -1517,7 +1517,7 @@ void gld_Precache(void)
     }
 
   // Precache sprites.
-  memset(hitlist, 0, numsprites);
+  memset(hitlist, 0, num_sprites);
 
   if (thinkercap.next)
   {
@@ -1531,13 +1531,13 @@ void gld_Precache(void)
 
   hit = 0;
   hitcount = 0;
-  for (i = 0; i < numsprites; i++)
+  for (i = 0; i < num_sprites; i++)
   {
     if (hitlist[i])
       hitcount += 7 * sprites[i].numframes;
   }
 
-  for (i=numsprites; --i >= 0;)
+  for (i=num_sprites; --i >= 0;)
     if (hitlist[i])
       {
         int j = sprites[i].numframes;

@@ -281,7 +281,6 @@ static void D_Wipe(void)
 // wipegamestate can be set to -1 to force a wipe on the next draw
 gamestate_t    wipegamestate = GS_DEMOSCREEN;
 extern dboolean setsizeneeded;
-extern int     showMessages;
 
 void D_Display (fixed_t frac)
 {
@@ -494,9 +493,6 @@ static const char *auto_shot_fname;
 
 static void D_DoomLoop(void)
 {
-  if (quickstart_window_ms > 0)
-    I_uSleep(quickstart_window_ms * 1000);
-
   for (;;)
   {
     WasRenderedInTryRunTics = false;
@@ -1012,20 +1008,26 @@ void AddIWAD(const char *iwad)
  * CPhipps  - static, proper prototype
  *    - 12/1999 - rewritten to use I_FindFile
  */
+static inline dboolean CheckExeSuffix(const char *suffix)
+{
+  char *dash;
+
+  if ((dash = strrchr(myargv[0], '-')))
+    if (!stricmp(dash, suffix))
+      return true;
+
+  return false;
+}
+
 static char *FindIWADFile(void)
 {
   int   i;
   char  * iwad  = NULL;
-  char *dash;
 
-  if ((dash = strrchr(myargv[0], '-')))
-  {
-    dash++;
-    if (!strnicmp(dash, "heretic", 7))
-      return I_FindFile("heretic.wad", ".wad");
-    else if (!strnicmp(dash, "hexen", 5))
-      return I_FindFile("hexen.wad", ".wad");
-  }
+  if (M_CheckParm("-heretic") || CheckExeSuffix("-heretic"))
+    return I_FindFile("heretic.wad", ".wad");
+  else if (M_CheckParm("-hexen") || CheckExeSuffix("-hexen"))
+    return I_FindFile("hexen.wad", ".wad");
 
   i = M_CheckParm("-iwad");
   if (i && (++i < myargc)) {
@@ -1735,8 +1737,6 @@ static void D_DoomMainSetup(void)
   IdentifyVersion();
 
   dsda_InitGlobal();
-
-  D_BuildBEXTables(); // haleyjd
 
   // e6y: DEH files preloaded in wrong order
   // http://sourceforge.net/tracker/index.php?func=detail&aid=1418158&group_id=148658&atid=772943

@@ -373,7 +373,7 @@ void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
 
   dsda_ResetTracking();
 
-  AM_ResetIDDTcheat();
+  dsda_ResetRevealMap();
   G_CheckDemoStatus();
 
   demo_name = dsda_NewDemoName();
@@ -400,7 +400,11 @@ void dsda_WatchLevelReload(int* reloaded) {
 
 void dsda_WatchRecordDemo(const char* name) {
   size_t base_size;
-  if (dsda_demo_name_base != NULL) return;
+
+  if (dsda_demo_name_base != NULL) {
+    dsda_InitSettings();
+    return;
+  }
 
   base_size = strlen(name) - 3;
   dsda_demo_name_base = malloc(base_size);

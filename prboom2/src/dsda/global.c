@@ -32,28 +32,18 @@
 
 #include "global.h"
 
+#include "dsda/mobjinfo.h"
+#include "dsda/music.h"
+#include "dsda/sfx.h"
+#include "dsda/sprite.h"
+#include "dsda/state.h"
+
 #define IGNORE_VALUE -1
 
 const demostate_t (*demostates)[4];
 extern const demostate_t doom_demostates[][4];
 extern const demostate_t heretic_demostates[][4];
 extern const demostate_t hexen_demostates[][4];
-
-state_t* states;
-int num_states;
-
-const char** sprnames;
-int num_sprites;
-
-mobjinfo_t* mobjinfo;
-int num_mobj_types;
-int mobj_types_zero;
-int mobj_types_max;
-
-sfxinfo_t* S_sfx;
-int num_sfx;
-musicinfo_t* S_music;
-int num_music;
 
 weaponinfo_t* weaponinfo;
 
@@ -159,44 +149,15 @@ dboolean raven = false;
 extern patchnum_t hu_font[HU_FONTSIZE];
 extern patchnum_t hu_font2[HU_FONTSIZE];
 
-static void dsda_AllocateMobjInfo(int zero, int max, int count) {
-  num_mobj_types = count;
-  mobj_types_zero = zero;
-  mobj_types_max = max;
-
-  mobjinfo = malloc(sizeof(mobjinfo_t) * num_mobj_types);
-  memset(mobjinfo, 0, sizeof(mobjinfo_t) * num_mobj_types);
-}
-
-static void dsda_SetStates(state_t* state_list, int count) {
-  states = state_list;
-  num_states = count;
-}
-
-static void dsda_SetSpriteNames(const char** sprite_name_list, int count) {
-  sprnames = sprite_name_list;
-  num_sprites = count;
-}
-
-static void dsda_SetSfx(sfxinfo_t* sfx_list, int count) {
-  S_sfx = sfx_list;
-  num_sfx = count;
-}
-
-static void dsda_SetMusic(musicinfo_t* music_list, int count) {
-  S_music = music_list;
-  num_music = count;
-}
-
 static void dsda_InitDoom(void) {
   int i;
   doom_mobjinfo_t* mobjinfo_p;
 
-  dsda_AllocateMobjInfo(0, NUMMOBJTYPES, NUMMOBJTYPES);
-  dsda_SetStates(doom_states, NUMSTATES);
-  dsda_SetSpriteNames(doom_sprnames, NUMSPRITES);
-  dsda_SetSfx(doom_S_sfx, NUMSFX);
-  dsda_SetMusic(doom_S_music, DOOM_NUMMUSIC);
+  dsda_InitializeMobjInfo(DOOM_MT_ZERO, DOOM_NUMMOBJTYPES, DOOM_NUMMOBJTYPES);
+  dsda_InitializeStates(doom_states, DOOM_NUMSTATES);
+  dsda_InitializeSprites(doom_sprnames, DOOM_NUMSPRITES);
+  dsda_InitializeSFX(doom_S_sfx, DOOM_NUMSFX);
+  dsda_InitializeMusic(doom_S_music, DOOM_NUMMUSIC);
 
   demostates = doom_demostates;
 
@@ -265,7 +226,7 @@ static void dsda_InitDoom(void) {
   g_skyflatname = "F_SKY1";
 
   // convert doom mobj types to shared type
-  for (i = 0; i < NUMMOBJTYPES; ++i) {
+  for (i = 0; i < DOOM_NUMMOBJTYPES; ++i) {
     mobjinfo_p = &doom_mobjinfo[i];
 
     mobjinfo[i].doomednum    = mobjinfo_p->doomednum;
@@ -339,11 +300,11 @@ static void dsda_InitHeretic(void) {
   int i, j;
   raven_mobjinfo_t* mobjinfo_p;
 
-  dsda_AllocateMobjInfo(HERETIC_MT_ZERO, HERETIC_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
-  dsda_SetStates(heretic_states, HERETIC_NUMSTATES);
-  dsda_SetSpriteNames(heretic_sprnames, HERETIC_NUMSPRITES);
-  dsda_SetSfx(heretic_S_sfx, HERETIC_NUMSFX);
-  dsda_SetMusic(heretic_S_music, HERETIC_NUMMUSIC);
+  dsda_InitializeMobjInfo(HERETIC_MT_ZERO, HERETIC_NUMMOBJTYPES, HERETIC_NUMMOBJTYPES);
+  dsda_InitializeStates(heretic_states, HERETIC_NUMSTATES);
+  dsda_InitializeSprites(heretic_sprnames, HERETIC_NUMSPRITES);
+  dsda_InitializeSFX(heretic_S_sfx, HERETIC_NUMSFX);
+  dsda_InitializeMusic(heretic_S_music, HERETIC_NUMMUSIC);
 
   demostates = heretic_demostates;
 
@@ -504,11 +465,11 @@ static void dsda_InitHexen(void) {
   int i, j;
   raven_mobjinfo_t* mobjinfo_p;
 
-  dsda_AllocateMobjInfo(HEXEN_MT_ZERO, HEXEN_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
-  dsda_SetStates(hexen_states, HEXEN_NUMSTATES);
-  dsda_SetSpriteNames(hexen_sprnames, HEXEN_NUMSPRITES);
-  dsda_SetSfx(hexen_S_sfx, HEXEN_NUMSFX);
-  dsda_SetMusic(hexen_S_music, HEXEN_NUMMUSIC);
+  dsda_InitializeMobjInfo(HEXEN_MT_ZERO, HEXEN_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
+  dsda_InitializeStates(hexen_states, HEXEN_NUMSTATES);
+  dsda_InitializeSprites(hexen_sprnames, HEXEN_NUMSPRITES);
+  dsda_InitializeSFX(hexen_S_sfx, HEXEN_NUMSFX);
+  dsda_InitializeMusic(hexen_S_music, HEXEN_NUMMUSIC);
 
   demostates = hexen_demostates;
 

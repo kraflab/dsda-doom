@@ -352,7 +352,7 @@ void gld_Init(int width, int height)
   lprintf(LO_INFO,"GL_VENDOR: %s\n",glGetString(GL_VENDOR));
   lprintf(LO_INFO,"GL_RENDERER: %s\n",glGetString(GL_RENDERER));
   lprintf(LO_INFO,"GL_VERSION: %s\n",glGetString(GL_VERSION));
-  lprintf(LO_INFO,"GL_EXTENSIONS:\n");
+  lprintf(LO_DEBUG,"GL_EXTENSIONS:\n");
   {
     char ext_name[256];
     const char *extensions = (const char*)glGetString(GL_EXTENSIONS);
@@ -373,7 +373,7 @@ void gld_Init(int width, int height)
         len = MIN(len, sizeof(ext_name)-1);
         memset(ext_name, 0, sizeof(ext_name));
         strncpy(ext_name, rover, len);
-        lprintf(LO_INFO,"\t%s\n", ext_name);
+        lprintf(LO_DEBUG,"\t%s\n", ext_name);
       }
       rover = p;
       while (*rover && *rover == ' ')
@@ -474,8 +474,6 @@ void gld_ResetTexturedAutomap(void)
 
 void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my, int fw, int fh, fixed_t scale)
 {
-  extern int ddt_cheating;
-
   static subsector_t **visible_subsectors = NULL;
   static int visible_subsectors_size = 0;
   int visible_subsectors_count;
@@ -496,7 +494,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   }
 
   visible_subsectors_count = 0;
-  if (ddt_cheating)
+  if (dsda_RevealAutomap())
   {
     visible_subsectors_count = numsubsectors;
   }
@@ -517,7 +515,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
     visible_subsectors_count = 0;
     for (i = 0; i < numsubsectors; i++)
     {
-      if (map_subsectors[i] || ddt_cheating)
+      if (map_subsectors[i] || dsda_RevealAutomap())
       {
         visible_subsectors[visible_subsectors_count++] = &subsectors[i];
       }
@@ -1234,7 +1232,7 @@ void gld_StartDrawScene(void)
     !frame_fixedcolormap && !boom_cm;
 
 //e6y
-  mlook_or_fov = GetMouseLook() || (render_fov != FOV90);
+  mlook_or_fov = dsda_MouseLook() || (render_fov != FOV90);
   if(!mlook_or_fov)
   {
     pitch = 0.0f;
@@ -2621,7 +2619,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
 
   // decide which patch to use for sprite relative to player
 #ifdef RANGECHECK
-  if ((unsigned) thing->sprite >= (unsigned)numsprites)
+  if ((unsigned) thing->sprite >= (unsigned)num_sprites)
     I_Error ("R_ProjectSprite: Invalid sprite number %i", thing->sprite);
 #endif
 

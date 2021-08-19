@@ -20,6 +20,7 @@
 #include "w_wad.h"
 #include "v_video.h"
 #include "m_menu.h"
+#include "dsda/settings.h"
 #include "heretic/dstrings.h"
 #include "heretic/mn_menu.h"
 
@@ -210,7 +211,6 @@ void MN_Ticker(void)
 
 extern menu_t* currentMenu;
 extern short itemOn;
-extern int showMessages;
 extern int screenSize;
 
 void MN_DrawMessage(const char* messageString)
@@ -386,7 +386,7 @@ void MN_DrawSkillMenu(void)
 
 void MN_DrawOptions(void)
 {
-    if (showMessages)
+    if (dsda_ShowMessages())
     {
         MN_DrTextB("ON", 196, OptionsDef.y + 3 * ITEM_HEIGHT);
     }

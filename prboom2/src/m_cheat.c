@@ -599,9 +599,9 @@ static void cheat_massacre()    // jff 2/01/98 kill all monsters
 // killough 3/26/98: emulate Doom better
 static void cheat_ddt()
 {
-  extern int ddt_cheating;
+  extern int dsda_reveal_map;
   if (automapmode & am_active)
-    ddt_cheating = (ddt_cheating+1) % 3;
+    dsda_reveal_map = (dsda_reveal_map+1) % 3;
 }
 
 // killough 2/7/98: HOM autodetection
@@ -980,6 +980,13 @@ dboolean M_CheatResponder(event_t *ev)
 
       return true;
     }
+  }
+
+  if (M_CheatAllowed(cht_never) && dsda_InputActivated(dsda_input_avj))
+  {
+    plyr->mo->momz = 1000 * FRACUNIT / plyr->mo->info->mass;
+
+    return true;
   }
 
   return false;

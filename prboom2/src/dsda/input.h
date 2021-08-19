@@ -169,6 +169,8 @@ typedef enum {
   dsda_input_hexen_arti_boots,
   dsda_input_hexen_arti_krater,
   dsda_input_hexen_arti_bracers,
+  dsda_input_avj,
+  dsda_input_exhud,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

@@ -111,8 +111,6 @@ extern int hudadd_crosshair_lock_target;
 extern int movement_strafe50;
 extern int movement_shorttics;
 extern int movement_strafe50onturns;
-extern int movement_mouselook;
-extern int movement_mousenovert;
 extern int movement_mouseinvert;
 extern int movement_maxviewpitch;
 extern int movement_mousestrafedivisor;
@@ -124,7 +122,6 @@ extern int render_paperitems;
 extern int render_wipescreen;
 extern int mouse_acceleration;
 extern int demo_overwriteexisting;
-extern int quickstart_window_ms;
 
 extern int render_fov;
 extern int render_aspect;
@@ -202,7 +199,6 @@ void M_MouseAccel(int choice);
 void CheckPitch(signed int *pitch);
 void I_Init2(void);
 
-dboolean GetMouseLook(void);
 dboolean HaveMouseLook(void);
 
 extern float viewPitch;

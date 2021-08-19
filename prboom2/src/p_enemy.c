@@ -1324,19 +1324,19 @@ void A_Chase(mobj_t *actor)
   // make active sound
   if (actor->info->activesound && P_Random(pr_see) < 3)
   {
-    if (actor->type == HERETIC_MT_WIZARD && P_Random(pr_heretic) < 128)
+    if (heretic && actor->type == HERETIC_MT_WIZARD && P_Random(pr_heretic) < 128)
     {
       S_StartSound(actor, actor->info->seesound);
     }
-    else if (actor->type == HERETIC_MT_SORCERER2)
+    else if (heretic && actor->type == HERETIC_MT_SORCERER2)
     {
       S_StartSound(NULL, actor->info->activesound);
     }
-    else if (actor->type == HEXEN_MT_BISHOP && P_Random(pr_hexen) < 128)
+    else if (hexen && actor->type == HEXEN_MT_BISHOP && P_Random(pr_hexen) < 128)
     {
       S_StartSound(actor, actor->info->seesound);
     }
-    else if (actor->type == HEXEN_MT_PIG)
+    else if (hexen && actor->type == HEXEN_MT_PIG)
     {
       S_StartSound(actor, hexen_sfx_pig_active1 + (P_Random(pr_hexen) & 1));
     }
@@ -2383,80 +2383,84 @@ void A_Explode(mobj_t *thingy)
   damage = 128;
   distance = 128;
   damageSelf = true;
-  switch (thingy->type)
+
+  if (raven)
   {
-    case HERETIC_MT_FIREBOMB:      // Time Bombs
-    case HEXEN_MT_FIREBOMB:        // Time Bombs
-      thingy->z += 32 * FRACUNIT;
-      thingy->flags &= ~MF_SHADOW;
-      break;
-    case HERETIC_MT_MNTRFX2:       // Minotaur floor fire
-      damage = 24;
-      distance = damage;
-      break;
-    case HERETIC_MT_SOR2FX1:       // D'Sparil missile
-      damage = 80 + (P_Random(pr_heretic) & 31);
-      distance = damage;
-      break;
-    case HEXEN_MT_MNTRFX2:       // Minotaur floor fire
-      damage = 24;
-      break;
-    case HEXEN_MT_BISHOP:        // Bishop radius death
-      damage = 25 + (P_Random(pr_hexen) & 15);
-      break;
-    case HEXEN_MT_HAMMER_MISSILE:        // Fighter Hammer
-      damage = 128;
-      damageSelf = false;
-      break;
-    case HEXEN_MT_FSWORD_MISSILE:        // Fighter Runesword
-      damage = 64;
-      damageSelf = false;
-      break;
-    case HEXEN_MT_CIRCLEFLAME:   // Cleric Flame secondary flames
-      damage = 20;
-      damageSelf = false;
-      break;
-    case HEXEN_MT_SORCBALL1:     // Sorcerer balls
-    case HEXEN_MT_SORCBALL2:
-    case HEXEN_MT_SORCBALL3:
-      distance = 255;
-      damage = 255;
-      thingy->args[0] = 1; // don't play bounce
-      break;
-    case HEXEN_MT_SORCFX1:       // Sorcerer spell 1
-      damage = 30;
-      break;
-    case HEXEN_MT_SORCFX4:       // Sorcerer spell 4
-      damage = 20;
-      break;
-    case HEXEN_MT_TREEDESTRUCTIBLE:
-      damage = 10;
-      break;
-    case HEXEN_MT_DRAGON_FX2:
-      damage = 80;
-      damageSelf = false;
-      break;
-    case HEXEN_MT_MSTAFF_FX:
-      damage = 64;
-      distance = 192;
-      damageSelf = false;
-      break;
-    case HEXEN_MT_MSTAFF_FX2:
-      damage = 80;
-      distance = 192;
-      damageSelf = false;
-      break;
-    case HEXEN_MT_POISONCLOUD:
-      damage = 4;
-      distance = 40;
-      break;
-    case HEXEN_MT_ZXMAS_TREE:
-    case HEXEN_MT_ZSHRUB2:
-      damage = 30;
-      distance = 64;
-      break;
-    default:
-      break;
+    switch (thingy->type)
+    {
+      case HERETIC_MT_FIREBOMB:      // Time Bombs
+      case HEXEN_MT_FIREBOMB:        // Time Bombs
+        thingy->z += 32 * FRACUNIT;
+        thingy->flags &= ~MF_SHADOW;
+        break;
+      case HERETIC_MT_MNTRFX2:       // Minotaur floor fire
+        damage = 24;
+        distance = damage;
+        break;
+      case HERETIC_MT_SOR2FX1:       // D'Sparil missile
+        damage = 80 + (P_Random(pr_heretic) & 31);
+        distance = damage;
+        break;
+      case HEXEN_MT_MNTRFX2:       // Minotaur floor fire
+        damage = 24;
+        break;
+      case HEXEN_MT_BISHOP:        // Bishop radius death
+        damage = 25 + (P_Random(pr_hexen) & 15);
+        break;
+      case HEXEN_MT_HAMMER_MISSILE:        // Fighter Hammer
+        damage = 128;
+        damageSelf = false;
+        break;
+      case HEXEN_MT_FSWORD_MISSILE:        // Fighter Runesword
+        damage = 64;
+        damageSelf = false;
+        break;
+      case HEXEN_MT_CIRCLEFLAME:   // Cleric Flame secondary flames
+        damage = 20;
+        damageSelf = false;
+        break;
+      case HEXEN_MT_SORCBALL1:     // Sorcerer balls
+      case HEXEN_MT_SORCBALL2:
+      case HEXEN_MT_SORCBALL3:
+        distance = 255;
+        damage = 255;
+        thingy->args[0] = 1; // don't play bounce
+        break;
+      case HEXEN_MT_SORCFX1:       // Sorcerer spell 1
+        damage = 30;
+        break;
+      case HEXEN_MT_SORCFX4:       // Sorcerer spell 4
+        damage = 20;
+        break;
+      case HEXEN_MT_TREEDESTRUCTIBLE:
+        damage = 10;
+        break;
+      case HEXEN_MT_DRAGON_FX2:
+        damage = 80;
+        damageSelf = false;
+        break;
+      case HEXEN_MT_MSTAFF_FX:
+        damage = 64;
+        distance = 192;
+        damageSelf = false;
+        break;
+      case HEXEN_MT_MSTAFF_FX2:
+        damage = 80;
+        distance = 192;
+        damageSelf = false;
+        break;
+      case HEXEN_MT_POISONCLOUD:
+        damage = 4;
+        distance = 40;
+        break;
+      case HEXEN_MT_ZXMAS_TREE:
+      case HEXEN_MT_ZSHRUB2:
+        damage = 30;
+        distance = 64;
+        break;
+      default:
+        break;
+    }
   }
 
   P_RadiusAttack(thingy, thingy->target, damage, distance, damageSelf);

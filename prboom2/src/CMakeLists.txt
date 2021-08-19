@@ -47,8 +47,12 @@ set(COMMON_SRC
     dsda/key_frame.h
     dsda/memory.c
     dsda/memory.h
+    dsda/mobjinfo.c
+    dsda/mobjinfo.h
     dsda/msecnode.c
     dsda/msecnode.h
+    dsda/music.c
+    dsda/music.h
     dsda/options.c
     dsda/options.h
     dsda/palette.c
@@ -59,8 +63,14 @@ set(COMMON_SRC
     dsda/save.h
     dsda/settings.c
     dsda/settings.h
+    dsda/sfx.c
+    dsda/sfx.h
     dsda/split_tracker.c
     dsda/split_tracker.h
+    dsda/sprite.c
+    dsda/sprite.h
+    dsda/state.c
+    dsda/state.h
     dsda/tas.c
     dsda/tas.h
     dsda/text_file.c
@@ -459,12 +469,12 @@ function(AddGameExecutable TARGET SOURCES)
             LINK_FLAGS "/MANIFEST:NO"
         )
         add_custom_command(TARGET ${TARGET} POST_BUILD
-            COMMAND "mt.exe" -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\..\\ICONS\\prboom-plus.exe.manifest\" -outputresource:\"$<TARGET_FILE:dsda-doom>\"\;\#1
+            COMMAND "mt.exe" -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\..\\ICONS\\dsda-doom.exe.manifest\" -outputresource:\"$<TARGET_FILE:dsda-doom>\"\;\#1
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${WAD_DATA_PATH} $<TARGET_FILE_DIR:dsda-doom>
         )
     endif()
 
-    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
     if(OPENGL_FOUND AND OPENGL_GLU_FOUND)
         target_compile_definitions(${TARGET} PRIVATE
@@ -524,7 +534,7 @@ if(BUILD_SERVER AND SDL2_NET_FOUND)
         RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
     )
     ApplySDL2NetOptions(dsda-doom-game-server)
-    install(TARGETS dsda-doom-game-server COMPONENT "Game server executable" RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+    install(TARGETS dsda-doom-game-server COMPONENT "Game server executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 endif()
 
 

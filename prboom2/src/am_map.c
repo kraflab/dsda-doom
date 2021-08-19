@@ -61,6 +61,7 @@
 #include "d_main.h"
 
 #include "dsda/input.h"
+#include "dsda/settings.h"
 
 //jff 1/7/98 default automap colors added
 int mapcolor_back;    // map background
@@ -389,8 +390,6 @@ mline_t thintriangle_guy[] =
 };
 #undef R
 #define NUMTHINTRIANGLEGUYLINES (sizeof(thintriangle_guy)/sizeof(mline_t))
-
-int ddt_cheating = 0;         // killough 2/7/98: make global, rename to ddt_*
 
 static int leveljuststarted = 1;       // kluge until AM_LevelInit() is called
 
@@ -1626,9 +1625,9 @@ static void AM_drawWalls(void)
     }
 
     // if line has been seen or IDDT has been used
-    if (ddt_cheating || (lines[i].flags & ML_MAPPED))
+    if (dsda_RevealAutomap() || (lines[i].flags & ML_MAPPED))
     {
-      if ((lines[i].flags & ML_DONTDRAW) && !ddt_cheating)
+      if ((lines[i].flags & ML_DONTDRAW) && !dsda_RevealAutomap())
         continue;
       {
         /* cph - show keyed doors and lines */
@@ -1778,7 +1777,7 @@ static void AM_drawWalls(void)
         {
           AM_drawMline(&l, (*mapcolor_cchg_p)); // ceiling level change
         }
-        else if ((*mapcolor_flat_p) && ddt_cheating)
+        else if ((*mapcolor_flat_p) && dsda_RevealAutomap())
         {
           AM_drawMline(&l, (*mapcolor_flat_p)); //2S lines that appear only in IDDT
         }
@@ -1930,7 +1929,7 @@ static void AM_drawPlayers(void)
     else
       AM_SetMPointFloatValue(&pt);
 
-    if (ddt_cheating)
+    if (dsda_RevealAutomap())
       AM_drawLineCharacter(cheat_player_arrow, NUMCHEATPLYRLINES, scale, viewangle, (*mapcolor_sngl_p), pt.x, pt.y);
     else
       AM_drawLineCharacter(player_arrow, numplyrlines, scale, viewangle, (*mapcolor_sngl_p), pt.x, pt.y);
@@ -2031,7 +2030,7 @@ static void AM_ProcessNiceThing(mobj_t* mobj, angle_t angle, fixed_t x, fixed_t 
     {SPR_BFS1, am_icon_bullet, 12, 0, 119, 255, 111},
     {SPR_BFE1, am_icon_bullet, 12, 0, 119, 255, 111},
 
-    {NUMSPRITES}
+    {DOOM_NUMSPRITES}
   };
 
   need_shadow = true;
@@ -2085,7 +2084,7 @@ static void AM_ProcessNiceThing(mobj_t* mobj, angle_t angle, fixed_t x, fixed_t 
   else
   {
     i = 0;
-    while (icons[i].sprite < NUMSPRITES)
+    while (icons[i].sprite < DOOM_NUMSPRITES)
     {
       if (mobj->sprite == icons[i].sprite)
       {
@@ -2160,7 +2159,7 @@ static void AM_DrawNiceThings(void)
   }
 
   // walls
-  if (ddt_cheating == 2)
+  if (dsda_RevealAutomap() == 2)
   {
     // for all sectors
     for (i = 0; i < numsectors; i++)
@@ -2255,7 +2254,7 @@ static void AM_drawThings(void)
   }
 #endif
 
-  if (ddt_cheating != 2)
+  if (dsda_RevealAutomap() != 2)
     return;
 
   // for all sectors
@@ -2656,10 +2655,4 @@ void AM_Drawer (void)
 #endif
 
   AM_drawMarks();
-}
-
-// [crispy] reset IDDT cheat when re-starting map during demo recording
-void AM_ResetIDDTcheat(void)
-{
-  ddt_cheating = 0;
 }

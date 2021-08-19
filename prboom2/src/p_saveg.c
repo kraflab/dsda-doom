@@ -131,66 +131,85 @@ void P_ArchiveWorld (void)
   // killough 3/22/98: fix bug caused by hoisting save_p too early
   // killough 10/98: adjust size for changes below
   size_t size =
-    (sizeof(short)*5 + sizeof sec->floorheight + sizeof sec->ceilingheight)
-    * numsectors + sizeof(short)*3*numlines + 4 + 2;
+    (
+      sizeof(short) * 5 +
+      sizeof(sec->floorheight) +
+      sizeof(sec->ceilingheight) +
+      sizeof(sec->seqType)
+    ) * numsectors +
+    (
+      sizeof(short) * 3 +
+      sizeof(li->arg1) * 5
+    ) * numlines +
+    sizeof(musinfo.current_item);
 
-  for (i=0; i<numlines; i++)
-    {
-      if (lines[i].sidenum[0] != NO_INDEX)
-        size +=
-    sizeof(short)*3 + sizeof si->textureoffset + sizeof si->rowoffset;
-      if (lines[i].sidenum[1] != NO_INDEX)
-  size +=
-    sizeof(short)*3 + sizeof si->textureoffset + sizeof si->rowoffset;
-    }
+  for (i = 0; i < numlines; i++)
+  {
+    if (lines[i].sidenum[0] != NO_INDEX)
+      size += sizeof(short) * 3 + sizeof si->textureoffset + sizeof si->rowoffset;
+
+    if (lines[i].sidenum[1] != NO_INDEX)
+      size += sizeof(short) * 3 + sizeof si->textureoffset + sizeof si->rowoffset;
+  }
 
   CheckSaveGame(size); // killough
 
-  put = (short *)save_p;
+  put = (short *) save_p;
 
   // do sectors
-  for (i=0, sec = sectors ; i<numsectors ; i++,sec++)
-    {
-      // killough 10/98: save full floor & ceiling heights, including fraction
-      memcpy(put, &sec->floorheight, sizeof sec->floorheight);
-      put = (void *)((char *) put + sizeof sec->floorheight);
-      memcpy(put, &sec->ceilingheight, sizeof sec->ceilingheight);
-      put = (void *)((char *) put + sizeof sec->ceilingheight);
+  for (i = 0, sec = sectors; i < numsectors; i++, sec++)
+  {
+    // killough 10/98: save full floor & ceiling heights, including fraction
+    memcpy(put, &sec->floorheight, sizeof(sec->floorheight));
+    put = (void *)((char *) put + sizeof(sec->floorheight));
+    memcpy(put, &sec->ceilingheight, sizeof(sec->ceilingheight));
+    put = (void *)((char *) put + sizeof(sec->ceilingheight));
 
-      *put++ = sec->floorpic;
-      *put++ = sec->ceilingpic;
-      *put++ = sec->lightlevel;
-      *put++ = sec->special;            // needed?   yes -- transfer types
-      *put++ = sec->tag;                // needed?   need them -- killough
-    }
+    *put++ = sec->floorpic;
+    *put++ = sec->ceilingpic;
+    *put++ = sec->lightlevel;
+    *put++ = sec->special;            // needed?   yes -- transfer types
+    *put++ = sec->tag;                // needed?   need them -- killough
+
+    memcpy(put, &sec->seqType, sizeof(sec->seqType));
+    put = (void *)((char *) put + sizeof(sec->seqType));
+  }
 
   // do lines
-  for (i=0, li = lines ; i<numlines ; i++,li++)
-    {
-      int j;
+  for (i = 0, li = lines; i < numlines; i++, li++)
+  {
+    int j;
 
-      *put++ = li->flags;
-      *put++ = li->special;
-      *put++ = li->tag;
+    *put++ = li->flags;
+    *put++ = li->special;
+    *put++ = li->tag;
 
-      for (j=0; j<2; j++)
-        if (li->sidenum[j] != NO_INDEX)
-          {
-      si = &sides[li->sidenum[j]];
+    save_p = (byte *) put;
+    *save_p++ = li->arg1;
+    *save_p++ = li->arg2;
+    *save_p++ = li->arg3;
+    *save_p++ = li->arg4;
+    *save_p++ = li->arg5;
+    put = (short *) save_p;
 
-      // killough 10/98: save full sidedef offsets,
-      // preserving fractional scroll offsets
+    for (j = 0; j < 2; j++)
+      if (li->sidenum[j] != NO_INDEX)
+      {
+        si = &sides[li->sidenum[j]];
 
-      memcpy(put, &si->textureoffset, sizeof si->textureoffset);
-      put = (void *)((char *) put + sizeof si->textureoffset);
-      memcpy(put, &si->rowoffset, sizeof si->rowoffset);
-      put = (void *)((char *) put + sizeof si->rowoffset);
+        // killough 10/98: save full sidedef offsets,
+        // preserving fractional scroll offsets
 
-            *put++ = si->toptexture;
-            *put++ = si->bottomtexture;
-            *put++ = si->midtexture;
-          }
-    }
+        memcpy(put, &si->textureoffset, sizeof si->textureoffset);
+        put = (void *)((char *) put + sizeof si->textureoffset);
+        memcpy(put, &si->rowoffset, sizeof si->rowoffset);
+        put = (void *)((char *) put + sizeof si->rowoffset);
+
+        *put++ = si->toptexture;
+        *put++ = si->bottomtexture;
+        *put++ = si->midtexture;
+      }
+  }
 
   *put++ = musinfo.current_item;
 
@@ -212,50 +231,63 @@ void P_UnArchiveWorld (void)
   get = (short *) save_p;
 
   // do sectors
-  for (i=0, sec = sectors ; i<numsectors ; i++,sec++)
-    {
-      // killough 10/98: load full floor & ceiling heights, including fractions
+  for (i = 0, sec = sectors; i < numsectors; i++, sec++)
+  {
+    // killough 10/98: load full floor & ceiling heights, including fractions
 
-      memcpy(&sec->floorheight, get, sizeof sec->floorheight);
-      get = (void *)((char *) get + sizeof sec->floorheight);
-      memcpy(&sec->ceilingheight, get, sizeof sec->ceilingheight);
-      get = (void *)((char *) get + sizeof sec->ceilingheight);
+    memcpy(&sec->floorheight, get, sizeof(sec->floorheight));
+    get = (void *)((char *) get + sizeof(sec->floorheight));
+    memcpy(&sec->ceilingheight, get, sizeof(sec->ceilingheight));
+    get = (void *)((char *) get + sizeof(sec->ceilingheight));
 
-      sec->floorpic = *get++;
-      sec->ceilingpic = *get++;
-      sec->lightlevel = *get++;
-      sec->special = *get++;
-      sec->tag = *get++;
-      sec->ceilingdata = 0; //jff 2/22/98 now three thinker fields, not two
-      sec->floordata = 0;
-      sec->soundtarget = 0;
-    }
+    sec->floorpic = *get++;
+    sec->ceilingpic = *get++;
+    sec->lightlevel = *get++;
+    sec->special = *get++;
+    sec->tag = *get++;
+
+    memcpy(&sec->seqType, get, sizeof(sec->seqType));
+    get = (void *)((char *) get + sizeof(sec->seqType));
+
+    sec->ceilingdata = 0; //jff 2/22/98 now three thinker fields, not two
+    sec->floordata = 0;
+    sec->soundtarget = 0;
+  }
 
   // do lines
-  for (i=0, li = lines ; i<numlines ; i++,li++)
-    {
-      int j;
+  for (i = 0, li = lines; i < numlines; i++, li++)
+  {
+    int j;
 
-      li->flags = *get++;
-      li->special = *get++;
-      li->tag = *get++;
-      for (j=0 ; j<2 ; j++)
-        if (li->sidenum[j] != NO_INDEX)
-          {
-            side_t *si = &sides[li->sidenum[j]];
+    li->flags = *get++;
+    li->special = *get++;
+    li->tag = *get++;
 
-      // killough 10/98: load full sidedef offsets, including fractions
+    save_p = (byte *) get;
+    li->arg1 = *save_p++;
+    li->arg2 = *save_p++;
+    li->arg3 = *save_p++;
+    li->arg4 = *save_p++;
+    li->arg5 = *save_p++;
+    get = (short *) save_p;
 
-      memcpy(&si->textureoffset, get, sizeof si->textureoffset);
-      get = (void *)((char *) get + sizeof si->textureoffset);
-      memcpy(&si->rowoffset, get, sizeof si->rowoffset);
-      get = (void *)((char *) get + sizeof si->rowoffset);
+    for (j = 0; j < 2; j++)
+      if (li->sidenum[j] != NO_INDEX)
+      {
+        side_t *si = &sides[li->sidenum[j]];
 
-            si->toptexture = *get++;
-            si->bottomtexture = *get++;
-            si->midtexture = *get++;
-          }
-    }
+        // killough 10/98: load full sidedef offsets, including fractions
+
+        memcpy(&si->textureoffset, get, sizeof(si->textureoffset));
+        get = (void *)((char *) get + sizeof(si->textureoffset));
+        memcpy(&si->rowoffset, get, sizeof(si->rowoffset));
+        get = (void *)((char *) get + sizeof(si->rowoffset));
+
+        si->toptexture = *get++;
+        si->bottomtexture = *get++;
+        si->midtexture = *get++;
+      }
+  }
 
   musinfo.current_item = *get++;
 
@@ -1341,7 +1373,7 @@ void P_TrueUnArchiveThinkers(void) {
           mobj->thinker.function = P_MobjThinker;
           P_AddThinker (&mobj->thinker);
 
-          if (mobj->type == HERETIC_MT_BLASTERFX1)
+          if (heretic && mobj->type == HERETIC_MT_BLASTERFX1)
             mobj->thinker.function = P_BlasterMobjThinker;
 
           if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL | MF_CORPSE)))

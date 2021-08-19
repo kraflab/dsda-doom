@@ -101,6 +101,8 @@ typedef struct {
 // Identifiers for all music in game.
 //
 
+extern int mus_musinfo;
+
 typedef enum {
   mus_None,
   mus_e1m1,
@@ -170,6 +172,7 @@ typedef enum {
   mus_read_m,
   mus_dm2ttl,
   mus_dm2int,
+  DOOM_MUSINFO,
   DOOM_NUMMUSIC,
 
   // heretic
@@ -230,6 +233,7 @@ typedef enum {
   heretic_mus_titl,
   heretic_mus_intr,
   heretic_mus_cptd,
+  HERETIC_MUSINFO,
   HERETIC_NUMMUSIC,
 
   // hexen
@@ -239,7 +243,7 @@ typedef enum {
   hexen_mus_hall,
   hexen_mus_orb,
   hexen_mus_chess,
-
+  HEXEN_MUSINFO,
   HEXEN_NUMMUSIC
 } musicenum_t;
 
@@ -572,7 +576,7 @@ typedef enum {
   sfx_fre198,
   sfx_fre199,
 
-  NUMSFX,
+  DOOM_NUMSFX,
 
   // heretic
   heretic_sfx_None = 0,

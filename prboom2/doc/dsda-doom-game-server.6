@@ -1,8 +1,8 @@
-.TH prboom-plus-game-server 6 "2011-06-27"
+.TH dsda-doom-game-server 6 "2011-06-27"
 .SH NAME
-prboom-plus-game-server \- Server for network games of PrBoom+.
+dsda-doom-game-server \- Server for network games of DSDA-Doom.
 .SH SYNOPSIS
-.B prboom-plus-game-server
+.B dsda-doom-game-server
 [\| \-adfnrv \|] [\| \-e \fIepis\fR \|] [\| \-l \fIlevel\fR \|] [\| \-t \fIticdup\fR \|]
 .BR
 [\| \-x \fIxtics\fR \|] [\| \-p \fIport\fR \|] [\| \-s \fIskill\fR \|] [\| \-N \fIplayers\fR \|]
@@ -19,17 +19,20 @@ is a version of the first-person shooter game Doom, originally released by iD so
 is a Doom source port developed from the original PrBoom project.
 It includes, amongst other things, the ability to play with several players 
 connected by a TCP/IP network.
+.B DSDA-Doom
+is a fork of PrBoom+ with extra tooling for demo recording and playback,
+with a focus on speedrunning.
 .PP
 To start a network game (often abbreviated to `netgame'), first the server 
-is started. \fBprboom-plus-game-server\fP accepts various parameters to control
+is started. \fBdsda-doom-game-server\fP accepts various parameters to control
 the type of game (the skill level, number of players, level to play, optional
 WAD file(s) to load, etc).
 .PP
 Then each player that wishes to participate runs 
-.B prboom-plus \-net
+.B dsda-doom \-net
 .IR hostname , 
 where \fIhostname\fR is the name of the machine on which the server is 
-running. Each copy of PrBoom+ retrieves information about the game from
+running. Each copy of DSDA-Doom retrieves information about the game from
 the server, and when the specified number of players have joined, the game 
 begins.
 
@@ -72,8 +75,8 @@ Respawn mode. If you don't know what this is, you don't want to ;-).
 .TP
 .BI \-c\  conffilename
 Specifies a configuration file to read which sets parameters for the
-game. This is in the same format as the PrBoom+ configuration file (in
-fact, you can ask it to read your normal PrBoom+ configuration file if
+game. This is in the same format as the DSDA-Doom configuration file (in
+fact, you can ask it to read your normal DSDA-Doom configuration file if
 you want). Only certain settings are acknowledged: default_skill,
 default_compatibility_level, the compatibility options and some of the
 game settings (use \-v to have the server print the options as it
@@ -82,9 +85,9 @@ recognises them).
 \fB\-w\fP \fIwadname\fR[,\fIdl_url\fR]
 Specifies a WAD file to play. This is added to the internal list that the 
 server keeps. When a client connects, the server sends the list of WADs; 
-PrBoom+ will then add this to the list of WADs specified on its command
+DSDA-Doom will then add this to the list of WADs specified on its command
 line.
-Optionally, an url to the file can be given too; if when PrBoom+ connects
+Optionally, an url to the file can be given too; if when DSDA-Doom connects
 it cannot find the named WAD, it will attempt to retrieve the file 
 from the given url, extracting it if necessary.
 .TP
@@ -97,22 +100,22 @@ will help on networks with high packet loss, but will use more bandwidth.
 .TP
 .BI \-p\  port
 Tells 
-.B prboom\-plus\-server
+.B dsda\-doom\-game\-server
 what port number to communicate via (default \fB5030\fP). 
 Note that if you change this from the default, then all the clients will 
 also need to specify this number when they try to connect (the default 
-programmed into PrBoom+ is also \fB5030\fP).
+programmed into DSDA-Doom is also \fB5030\fP).
 .TP
 .B \-v
 Increases verbosity level; causes more diagnostics to be printed, the more 
 times \fB\-v\fP is specified.
 .SH SEE ALSO
-.BR prboom-plus (6),
-.BR prboom-plus.cfg (5)
+.BR dsda-doom (6),
+.BR dsda-doom.cfg (5)
 .PP
-For more information, see the \fBREADME\fP that came with PrBoom+.
+For more information, see the \fBREADME.md\fP that came with DSDA-Doom.
 .PP
 Doom is a registered trademark of id software (http://www.idsoftware.com/).
 .SH AUTHORS
-See the file \fBAUTHORS\fP included with the PrBoom+ distribution.
+See the file \fBAUTHORS\fP included with the DSDA-Doom distribution.
 This man page was written by Colin Phipps (cph@moria.org.uk).

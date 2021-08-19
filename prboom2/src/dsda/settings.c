@@ -17,20 +17,31 @@
 
 #include "doomstat.h"
 #include "m_argv.h"
+#include "m_menu.h"
 #include "e6y.h"
 #include "r_things.h"
 #include "w_wad.h"
+#include "g_game.h"
 #include "lprintf.h"
 
 #include "dsda/key_frame.h"
 
 #include "settings.h"
 
+dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
+  [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode, dsda_ChangeStrictMode },
+  [dsda_novert] = { 0, 0, "Vertical Mouse Movement", NULL, NULL, true },
+  [dsda_mouselook] = { 0, 0, "Mouselook", M_ChangeMouseLook, M_ChangeMouseLook, false, true },
+  [dsda_autorun] = { 0, 0, "Auto Run", NULL, NULL, false, true },
+  [dsda_show_messages] = { 0, 0, NULL, NULL, M_ChangeMessages, false, true },
+  [dsda_command_display] = { 0, 0, "Command Display", NULL, NULL, false, true },
+  [dsda_coordinate_display] = { 0, 0, "Coordinate Display", NULL, NULL, false, true },
+  [dsda_exhud] = { 0, 0, NULL, NULL, NULL, false, true },
+};
+
 int dsda_auto_key_frame_interval;
 int dsda_auto_key_frame_depth;
-int dsda_strict_mode;
 int dsda_cycle_ghost_colors;
-int dsda_exhud;
 int dsda_tas;
 int dsda_skip_next_wipe;
 int dsda_wipe_at_full_speed;
@@ -41,7 +52,36 @@ int dsda_skip_quit_prompt;
 int dsda_show_split_data;
 
 void dsda_InitSettings(void) {
-  dsda_ChangeStrictMode();
+  int i;
+
+  for (i = 0; i < DSDA_SETTING_IDENTIFIER_COUNT; i++) {
+    dsda_ResetTransient(&dsda_setting[i]);
+  }
+}
+
+void dsda_ResetTransient(dsda_setting_t* setting) {
+  setting->transient_value = setting->persistent_value;
+  if (setting->initializer)
+    setting->initializer();
+}
+
+void dsda_ToggleSetting(dsda_setting_identifier_t id) {
+  dsda_setting[id].transient_value = !dsda_setting[id].transient_value;
+
+  if (dsda_setting[id].persist_changes)
+    dsda_setting[id].persistent_value = dsda_setting[id].transient_value;
+
+  if (dsda_setting[id].updater)
+    dsda_setting[id].updater();
+
+  if (dsda_setting[id].name)
+    doom_printf(
+      "%s %s",
+      dsda_setting[id].name,
+      dsda_setting[id].transient_value ?
+        dsda_setting[id].invert_text ? "off" : "on" :
+        dsda_setting[id].invert_text ? "on"  : "off"
+    );
 }
 
 static int dsda_WadCompatibilityLevel(void) {
@@ -119,12 +159,32 @@ void dsda_SetTas(void) {
   dsda_tas = true;
 }
 
+static int dsda_Transient(dsda_setting_identifier_t id) {
+  return dsda_setting[id].transient_value;
+}
+
 double dsda_FineSensitivity(int base) {
   return (double) base + (double) dsda_fine_sensitivity / 100;
 }
 
+dboolean dsda_ShowMessages(void) {
+  return dsda_Transient(dsda_show_messages);
+}
+
+dboolean dsda_AutoRun(void) {
+  return dsda_Transient(dsda_autorun);
+}
+
+dboolean dsda_MouseLook(void) {
+  return dsda_Transient(dsda_mouselook);
+}
+
+dboolean dsda_NoVert(void) {
+  return dsda_Transient(dsda_novert);
+}
+
 dboolean dsda_StrictMode(void) {
-  return dsda_strict_mode && demorecording && !dsda_tas;
+  return dsda_Transient(dsda_strict_mode) && demorecording && !dsda_tas;
 }
 
 dboolean dsda_CycleGhostColors(void) {
@@ -152,15 +212,15 @@ dboolean dsda_ShowSplitData(void) {
 }
 
 dboolean dsda_ExHud(void) {
-  return dsda_exhud;
+  return dsda_Transient(dsda_exhud);
 }
 
 dboolean dsda_CommandDisplay(void) {
-  return dsda_command_display && !dsda_StrictMode();
+  return dsda_Transient(dsda_command_display) && !dsda_StrictMode();
 }
 
 dboolean dsda_CoordinateDisplay(void) {
-  return dsda_coordinate_display && !dsda_StrictMode();
+  return dsda_Transient(dsda_coordinate_display) && !dsda_StrictMode();
 }
 
 dboolean dsda_ShowDemoAttempts(void) {
@@ -199,6 +259,18 @@ dboolean dsda_ShowHealthBars(void) {
 
 dboolean dsda_WipeAtFullSpeed(void) {
   return dsda_wipe_at_full_speed;
+}
+
+int dsda_reveal_map;
+
+int dsda_RevealAutomap(void) {
+  if (dsda_StrictMode()) return 0;
+
+  return dsda_reveal_map;
+}
+
+void dsda_ResetRevealMap(void) {
+  dsda_reveal_map = 0;
 }
 
 int dsda_RealticClockRate(void) {
