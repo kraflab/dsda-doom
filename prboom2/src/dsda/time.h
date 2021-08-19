@@ -23,10 +23,12 @@ typedef enum {
   dsda_timer_tic,
   dsda_timer_realtime,
   dsda_timer_memory,
+  dsda_timer_fps,
   DSDA_TIMER_COUNT
 } dsda_timer_t;
 
 void dsda_StartTimer(int timer);
 unsigned long long dsda_ElapsedTime(int timer);
+void dsda_LimitFPS(void);
 
 #endif

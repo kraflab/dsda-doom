@@ -98,6 +98,7 @@
 #include "dsda/save.h"
 #include "dsda/data_organizer.h"
 #include "dsda/settings.h"
+#include "dsda/time.h"
 
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
@@ -471,6 +472,8 @@ void D_Display (fixed_t frac)
   if ( (paused && !walkcamera.type) || (!window_focused) ) {
     I_uSleep(5000);
   }
+
+  dsda_LimitFPS();
 
   I_EndDisplay();
 }
