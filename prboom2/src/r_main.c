@@ -1087,15 +1087,14 @@ void R_ClearStats(void)
 
 void R_RenderPlayerView (player_t* player)
 {
+  // Framerate-independent fuzz progression
+  static int fuzzgametic = 0;
+  static int savedfuzzpos = 0;
   dboolean automap = (automapmode & am_active) && !(automapmode & am_overlay);
 
   r_frame_count++;
 
   R_SetupFrame (player);
-
-  // Framerate-independent fuzz progression
-  static int fuzzgametic = 0;
-  static int savedfuzzpos = 0;
 
   // Clear buffers.
   R_ClearClipSegs ();
