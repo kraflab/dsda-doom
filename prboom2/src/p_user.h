@@ -55,7 +55,7 @@ void P_PlayerNextArtifact(player_t * player);
 dboolean P_UseArtifact(player_t * player, artitype_t arti);
 void P_ChickenPlayerThink(player_t * player);
 dboolean P_UndoPlayerChicken(player_t * player);
-void Heretic_P_MovePlayer(player_t * player);
+void Raven_P_MovePlayer(player_t * player);
 
 // hexen
 

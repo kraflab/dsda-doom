@@ -823,7 +823,7 @@ static dboolean P_LookForPlayers(mobj_t *actor, dboolean allaround)
   player_t *player;
   int stop, stopc, c;
 
-  if (raven) return Heretic_P_LookForPlayers(actor, allaround);
+  if (raven) return Raven_P_LookForPlayers(actor, allaround);
 
   if (actor->flags & MF_FRIEND)
   {  // killough 9/9/98: friendly monsters go about players differently
@@ -4983,7 +4983,7 @@ dboolean Heretic_P_LookForMonsters(mobj_t * actor)
     return (false);
 }
 
-dboolean Heretic_P_LookForPlayers(mobj_t * actor, dboolean allaround)
+dboolean Raven_P_LookForPlayers(mobj_t * actor, dboolean allaround)
 {
     int c;
     int stop;

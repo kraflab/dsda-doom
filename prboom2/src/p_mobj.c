@@ -80,7 +80,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
   dboolean ret;                               // return value
   statenum_t* tempstate = NULL;               // for use with recursion
 
-  if (raven) return Heretic_P_SetMobjState(mobj, state);
+  if (raven) return Raven_P_SetMobjState(mobj, state);
 
   seenstate = seenstate_tab;
   i = state;
@@ -2356,7 +2356,7 @@ void P_SpawnPuff(fixed_t x,fixed_t y,fixed_t z)
   mobj_t* th;
   int t;
 
-  if (raven) return Heretic_P_SpawnPuff(x, y, z);
+  if (raven) return Raven_P_SpawnPuff(x, y, z);
 
   // killough 5/5/98: remove dependence on order of evaluation:
   t = P_Random(pr_spawnpuff);
@@ -3055,7 +3055,7 @@ int P_FaceMobj(mobj_t * source, mobj_t * target, angle_t * delta)
     }
 }
 
-dboolean Heretic_P_SetMobjState(mobj_t * mobj, statenum_t state)
+dboolean Raven_P_SetMobjState(mobj_t * mobj, statenum_t state)
 {
     state_t *st;
 
@@ -3149,7 +3149,7 @@ void P_FloorBounceMissile(mobj_t * mo)
 
 extern mobj_t *PuffSpawned;
 
-void Heretic_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z)
+void Raven_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z)
 {
     mobj_t *puff;
 

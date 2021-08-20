@@ -329,7 +329,7 @@ void P_MovePlayer (player_t* player)
   ticcmd_t *cmd;
   mobj_t *mo;
 
-  if (raven) return Heretic_P_MovePlayer(player);
+  if (raven) return Raven_P_MovePlayer(player);
 
   cmd = &player->cmd;
   mo = player->mo;
@@ -1386,7 +1386,7 @@ dboolean P_UseArtifact(player_t * player, artitype_t arti)
     return (true);
 }
 
-void Heretic_P_MovePlayer(player_t * player)
+void Raven_P_MovePlayer(player_t * player)
 {
     int look;
     int fly;
