@@ -1001,7 +1001,10 @@ void M_SaveSelect(int choice)
   saveSlot = choice;
   strcpy(saveOldString,savegamestrings[choice]);
   if (!strcmp(savegamestrings[choice],s_EMPTYSTRING)) // Ty 03/27/98 - externalized
-    savegamestrings[choice][0] = 0;
+  {
+    strncpy(savegamestrings[choice], MAPNAME(gameepisode, gamemap), SAVESTRINGSIZE);
+    savegamestrings[choice][SAVESTRINGSIZE - 1] = 0;
+  }
   saveCharIndex = strlen(savegamestrings[choice]);
 }
 
@@ -4548,7 +4551,14 @@ dboolean M_Responder (event_t* ev) {
     {
       if (saveCharIndex > 0)
       {
-        saveCharIndex--;
+        if (!strncmp(savegamestrings[saveSlot], MAPNAME(gameepisode, gamemap), SAVESTRINGSIZE))
+        {
+          saveCharIndex = 0;
+        }
+        else
+        {
+          saveCharIndex--;
+        }
         savegamestrings[saveSlot][saveCharIndex] = 0;
       }
     }

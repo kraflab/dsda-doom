@@ -2,9 +2,6 @@ Checked up to: b0845a4792feef370ea71a11c3678a90d5cef3c1 (Aug 16 2021)
 
 Commits from upstream to go through:
 
-default save name:
-5ef9e7509103303fc810ddd3414b4442d86ee540
-
 melee crosshair:
 b2503fa073298ead6b10a74ca5d0f0ca2d9b27d2
 70fe9a30eff96321f3d42f5f966bf52193840c5a
