@@ -87,7 +87,7 @@ void dsda_InitializeMusic(musicinfo_t* source, int count) {
   extern int raven;
 
   num_music = count;
-  mus_musinfo = num_music;
+  mus_musinfo = num_music - 1;
 
   S_music = source;
 
