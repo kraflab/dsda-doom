@@ -132,8 +132,6 @@ int glsl_Init(void)
       sh_fuzz = gld_LoadShader("glvp", "glfp_fuzz");
       get_fuzz_shader_bindings();
       glsl_SetFuzzScreenResolution((float)SCREENWIDTH, (float)SCREENHEIGHT);
-
-      lprintf(LO_INFO,"GLSL_INIT\n");
     }
   }
 

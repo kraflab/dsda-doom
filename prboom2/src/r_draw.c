@@ -727,3 +727,13 @@ void R_DrawViewBorder(void)
   for (i = top+viewheight; i < (SCREENHEIGHT - ST_SCALED_HEIGHT); i++)
     R_VideoErase (0, i, SCREENWIDTH);
 }
+
+void R_SetFuzzPos(int fp)
+{
+  fuzzpos = fp;
+}
+
+int R_GetFuzzPos()
+{
+  return fuzzpos;
+}

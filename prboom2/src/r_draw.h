@@ -171,4 +171,7 @@ void R_DrawViewBorder(void);
 // column drawing.
 void R_ResetColumnBuffer(void);
 
+void R_SetFuzzPos(int fuzzpos);
+int R_GetFuzzPos();
+
 #endif

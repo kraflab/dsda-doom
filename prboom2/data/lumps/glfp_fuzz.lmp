@@ -22,8 +22,8 @@ void main()
 
   // Blend mode is 1 - src_alpha, so lighten pixels a bit since the lighter they are,
   // the more translucent they'll become
-  brightness = min(1.0, brightness + 0.65);
-  brightness = mix(0.4, 1.0, brightness * brightness);
+  brightness = min(1.0, brightness + 0.55);
+  brightness = mix(0.475, 0.925, brightness * brightness);
 
   gl_FragColor = vec4(vec3(brightness), texture2D(tex, uv).w);
 }
