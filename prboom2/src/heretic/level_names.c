@@ -68,7 +68,13 @@ const char *LevelNames[] = {
     "E5M8:  FIELD OF JUDGEMENT",
     "E5M9:  SKEIN OF D'SPARIL",
     // EPISODE 6: unnamed
-    "E6M1:  ",
-    "E6M2:  ",
-    "E6M3:  ",
+    "E6M1:  UNKNOWN",
+    "E6M2:  UNKNOWN",
+    "E6M3:  UNKNOWN",
+    "E6M4:  UNKNOWN",
+    "E6M5:  UNKNOWN",
+    "E6M6:  UNKNOWN",
+    "E6M7:  UNKNOWN",
+    "E6M8:  UNKNOWN",
+    "E6M9:  UNKNOWN",
 };
