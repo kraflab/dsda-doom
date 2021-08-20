@@ -17,6 +17,8 @@
 
 #include <time.h>
 
+#include "i_system.h"
+
 #include "time.h"
 
 // [XA] MSVC hack: need to implement a handful of functions here.
@@ -79,4 +81,36 @@ unsigned long long dsda_ElapsedTime(int timer) {
 
   return (now.tv_nsec - dsda_time[timer].tv_nsec) / 1000 +
          (now.tv_sec - dsda_time[timer].tv_sec) * 1000000;
+}
+
+static void dsda_Throttle(int timer, unsigned long long target_time) {
+  unsigned long long elapsed_time;
+  unsigned long long remaining_time;
+
+  while (1) {
+    elapsed_time = dsda_ElapsedTime(timer);
+
+    if (elapsed_time >= target_time) {
+      dsda_StartTimer(timer);
+      return;
+    }
+
+    remaining_time = target_time - elapsed_time;
+    if (remaining_time >= 1000)
+      I_uSleep(remaining_time);
+  }
+}
+
+int dsda_subframes;
+
+void dsda_LimitFPS(void) {
+  extern int movement_smooth;
+
+  if (movement_smooth && dsda_subframes) {
+    unsigned long long target_time;
+
+    target_time = 1000000 / (dsda_subframes * 35);
+
+    dsda_Throttle(dsda_timer_fps, target_time);
+  }
 }
