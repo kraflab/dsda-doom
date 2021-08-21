@@ -16,7 +16,10 @@ When you define a new index, the game allocates new entities up to that value. T
 
 #### Thing
 
-No defaults.
+| Field       | Value    |
+|-------------|----------|
+| Fast speed  | -1       |
+| Melee range | 64.0     |
 
 #### Sprite
 
