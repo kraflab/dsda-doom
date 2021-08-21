@@ -8,11 +8,11 @@ When you define a new index, the game allocates new entities up to that value. T
 
 #### State
 
-| Field     | Value                   |
-|-----------|-------------------------|
-| sprite    | (invisible placeholder) |
-| tics      | -1                      |
-| nextstate | (this index)            |
+| Field      | Value                   |
+|------------|-------------------------|
+| Sprite     | (invisible placeholder) |
+| Tics       | -1                      |
+| Next state | (this index)            |
 
 #### Thing
 
@@ -29,9 +29,9 @@ No defaults.
 
 | Field    | Value |
 |----------|-------|
-| priority | 127   |
-| pitch    | -1    |
-| volume   | -1    |
+| Priority | 127   |
+| Pitch    | -1    |
+| Volume   | -1    |
 
 ### Defining Things / States / Sounds
 
