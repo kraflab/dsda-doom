@@ -3197,7 +3197,7 @@ setup_menu_t gen_settings1[] = { // General Settings screen1
   {"Vertical Sync",                  S_YESNO,            m_null, G_X, G_Y+ 8*8, {"render_vsync"}, 0, M_ChangeVideoMode},
   {"Translucency filter percentage", S_NUM,              m_null, G_X, G_Y+ 9*8, {"tran_filter_pct"}, 0, M_Trans},
   {"Uncapped Framerate",             S_YESNO,            m_null, G_X, G_Y+10*8, {"uncapped_framerate"}, 0, M_ChangeUncappedFrameRate},
-  {"Subframe Limit",                 S_NUM,              m_null, G_X, G_Y+11*8, {"dsda_subframes"}},
+  {"Render Limit Per Tic",           S_NUM,              m_null, G_X, G_Y+11*8, {"dsda_subframes"}},
 
   {"Sound & Music",                  S_SKIP|S_TITLE,     m_null, G_X, G_Y+12*8},
   {"Number of Sound Channels",       S_NUM|S_PRGWARN,    m_null, G_X, G_Y+13*8, {"snd_channels"}},
