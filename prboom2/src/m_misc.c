@@ -395,6 +395,7 @@ default_t defaults[] =
    def_bool,ss_none},
   {"exclusive_fullscreen",{&exclusive_fullscreen},{0},0,1, // [FG] mode-changing fullscreen
   def_bool,ss_none},
+  {"gl_exclusive_fullscreen",{&gl_exclusive_fullscreen},{1},0,1,def_bool,ss_none},
   {"render_vsync",{&render_vsync},{1},0,1,
    def_bool,ss_none},
   {"tran_filter_pct",{&tran_filter_pct},{66},0,100,         // killough 2/21/98

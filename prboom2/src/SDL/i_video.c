@@ -115,6 +115,7 @@ extern void M_QuitDOOM(int choice);
 int use_fullscreen;
 int desired_fullscreen;
 int exclusive_fullscreen;
+int gl_exclusive_fullscreen;
 int render_vsync;
 int render_screen_multiply;
 int integer_scaling;
@@ -136,6 +137,11 @@ extern int     usemouse;        // config file var
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
 
 video_mode_t I_GetModeFromString(const char *modestr);
+
+static int I_ExclusiveFullscreen(void)
+{
+  return V_IsOpenGLMode() ? gl_exclusive_fullscreen : exclusive_fullscreen;
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
@@ -708,7 +714,7 @@ static void I_FillScreenResolutionsList(void)
       if (i > count - 1)
       {
         // no hard-coded resolutions for mode-changing fullscreen
-        if (exclusive_fullscreen)
+        if (I_ExclusiveFullscreen())
           continue;
 
         mode.w = canonicals[i - count].w;
@@ -772,8 +778,8 @@ static void I_FillScreenResolutionsList(void)
 }
 
 // e6y
-// GLBoom use this function for trying to set the closest supported resolution if the requested mode can't be set correctly.
-// For example glboom.exe -geom 1025x768 -nowindow will set 1024x768.
+// Function for trying to set the closest supported resolution if the requested mode can't be set correctly.
+// For example dsda-doom.exe -geom 1025x768 -nowindow will set 1024x768.
 // It should be used only for fullscreen modes.
 static void I_ClosestResolution (int *width, int *height)
 {
@@ -865,16 +871,12 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
 // Calculates the screen resolution, possibly using the supplied guide
 void I_CalculateRes(int width, int height)
 {
-// e6y
-// GLBoom will try to set the closest supported resolution
-// if the requested mode can't be set correctly.
-// For example glboom.exe -geom 1025x768 -nowindow will set 1024x768.
-// It affects only fullscreen modes.
+  if (desired_fullscreen && I_ExclusiveFullscreen())
+  {
+    I_ClosestResolution(&width, &height);
+  }
+
   if (V_IsOpenGLMode()) {
-    if ( desired_fullscreen )
-    {
-      I_ClosestResolution(&width, &height);
-    }
     SCREENWIDTH = width;
     SCREENHEIGHT = height;
     SCREENPITCH = SCREENWIDTH;
@@ -882,10 +884,6 @@ void I_CalculateRes(int width, int height)
     unsigned int count1, count2;
     int pitch1, pitch2;
 
-    if (desired_fullscreen && exclusive_fullscreen)
-    {
-      I_ClosestResolution(&width, &height);
-    }
     SCREENWIDTH = width;//(width+15) & ~15;
     SCREENHEIGHT = height;
 
@@ -1156,7 +1154,7 @@ void I_UpdateVideoMode(void)
 
   if (desired_fullscreen)
   {
-    if (exclusive_fullscreen)
+    if (I_ExclusiveFullscreen())
       init_flags |= SDL_WINDOW_FULLSCREEN;
     else
       init_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
