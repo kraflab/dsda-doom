@@ -3254,9 +3254,9 @@ setup_menu_t gen_settings2[] = { // General Settings screen2
   {"Enable Joystick",                  S_YESNO, m_null, G_X, G_Y+ 3*8, {"use_joystick"}},
 
   {"Files Preloaded at Game Startup",  S_SKIP|S_TITLE, m_null, G_X, G_Y + 5*8},
-  {"WAD # 1",                          S_FILE, m_null, GF_X, G_Y+ 6*8, {"wadfile_1"}},
+  {"WAD #1",                           S_FILE, m_null, GF_X, G_Y+ 6*8, {"wadfile_1"}},
   {"WAD #2",                           S_FILE, m_null, GF_X, G_Y+ 7*8, {"wadfile_2"}},
-  {"DEH/BEX # 1",                      S_FILE, m_null, GF_X, G_Y+ 8*8, {"dehfile_1"}},
+  {"DEH/BEX #1",                       S_FILE, m_null, GF_X, G_Y+ 8*8, {"dehfile_1"}},
   {"DEH/BEX #2",                       S_FILE, m_null, GF_X, G_Y+ 9*8, {"dehfile_2"}},
 
   {"Miscellaneous",                    S_SKIP|S_TITLE,  m_null, G_X, G_Y+11*8},
