@@ -191,6 +191,10 @@ dboolean dsda_CycleGhostColors(void) {
   return dsda_cycle_ghost_colors;
 }
 
+dboolean dsda_WeaponAttackAlignment(void) {
+  return weapon_attack_alignment && !hexen && !dsda_StrictMode();
+}
+
 dboolean dsda_AlwaysSR50(void) {
   return movement_strafe50 && !dsda_StrictMode();
 }

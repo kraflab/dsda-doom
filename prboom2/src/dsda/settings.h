@@ -74,6 +74,7 @@ dboolean dsda_MouseLook(void);
 dboolean dsda_NoVert(void);
 dboolean dsda_StrictMode(void);
 dboolean dsda_CycleGhostColors(void);
+dboolean dsda_WeaponAttackAlignment(void);
 dboolean dsda_AlwaysSR50(void);
 dboolean dsda_HideHorns(void);
 dboolean dsda_SkipQuitPrompt(void);

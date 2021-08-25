@@ -44,6 +44,8 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda/settings.h"
+
 #define BASEYCENTER 100
 
 static int *clipbot = NULL; // killough 2/8/98: // dropoff overflow
@@ -1068,7 +1070,7 @@ static void R_DrawPSprite (pspdef_t *psp)
   flip = (dboolean)(sprframe->flip & 1);
 
   // [crispy] center the weapon sprite horizontally and vertically
-  if (weapon_attack_alignment && viewplayer->attackdown && !psp->state->misc1)
+  if (dsda_WeaponAttackAlignment() && viewplayer->attackdown && !psp->state->misc1)
   {
       const weaponinfo_t *const winfo = &weaponinfo[viewplayer->readyweapon];
       const int state = viewplayer->psprites[ps_weapon].state - states;
