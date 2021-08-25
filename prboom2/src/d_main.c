@@ -1027,15 +1027,18 @@ static char *FindIWADFile(void)
   int   i;
   char  * iwad  = NULL;
 
-  if (M_CheckParm("-heretic") || CheckExeSuffix("-heretic"))
-    return I_FindFile("heretic.wad", ".wad");
-  else if (M_CheckParm("-hexen") || CheckExeSuffix("-hexen"))
-    return I_FindFile("hexen.wad", ".wad");
-
   i = M_CheckParm("-iwad");
-  if (i && (++i < myargc)) {
+  if (i && (++i < myargc))
+  {
     iwad = I_FindFile(myargv[i], ".wad");
-  } else {
+  }
+  else
+  {
+    if (M_CheckParm("-heretic") || CheckExeSuffix("-heretic"))
+      return I_FindFile("heretic.wad", ".wad");
+    else if (M_CheckParm("-hexen") || CheckExeSuffix("-hexen"))
+      return I_FindFile("hexen.wad", ".wad");
+
     for (i=0; !iwad && i<nstandard_iwads; i++)
       iwad = I_FindFile(standard_iwads[i], ".wad");
   }
