@@ -779,6 +779,11 @@ void P_PlayerThink (player_t* player)
     }
   }
 
+  if (raven && cmd->buttons & BT_SPECIAL)
+  {
+    cmd->buttons = 0;
+  }
+
   // Check for weapon change.
   if (cmd->buttons & BT_CHANGE && !player->morphTics)
   {

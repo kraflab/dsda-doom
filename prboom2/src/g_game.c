@@ -1443,7 +1443,7 @@ void G_Ticker (void)
               gameaction = ga_loadlevel;
               break;
           }
-          players[i].cmd.buttons = 0;
+          if (!raven) players[i].cmd.buttons = 0;
         }
       }
     }
