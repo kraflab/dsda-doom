@@ -138,6 +138,7 @@ int render_paperitems;
 int render_wipescreen;
 int mouse_acceleration;
 int demo_overwriteexisting;
+int quickstart_window_ms;
 
 int showendoom;
 
