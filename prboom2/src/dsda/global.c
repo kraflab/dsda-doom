@@ -28,6 +28,7 @@
 #include "d_main.h"
 #include "v_video.h"
 #include "hu_stuff.h"
+#include "lprintf.h"
 #include "heretic/def.h"
 
 #include "global.h"
@@ -143,6 +144,7 @@ int g_menu_cr_disable;
 const char* g_skyflatname;
 
 dboolean hexen = false;
+dboolean hexen_format = false;
 dboolean heretic = false;
 dboolean raven = false;
 
@@ -637,6 +639,18 @@ static dboolean dsda_AutoDetectHexen(void)
   }
 
   return false;
+}
+
+void dsda_DetectMapFormat(void) {
+  if (W_CheckNumForName("BEHAVIOR") >= 0) {
+    if (!hexen)
+      I_Error("Hexen map format is only supported in Hexen!");
+
+    hexen_format = true;
+  }
+  else {
+    hexen_format = false;
+  }
 }
 
 extern void dsda_ResetNullPClass(void);

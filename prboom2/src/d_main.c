@@ -2165,6 +2165,8 @@ static void D_DoomMainSetup(void)
 
   PostProcessDeh();
 
+  dsda_DetectMapFormat();
+
   V_InitColorTranslation(); //jff 4/24/98 load color translation lumps
 
   // killough 2/22/98: copyright / "modified game" / SPA banners removed
