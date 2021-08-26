@@ -54,7 +54,7 @@ dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
 void dsda_ResetMapVariables(void);
 
-int p;
+static int p;
 
 int dsda_getGhostIndex()
 {
