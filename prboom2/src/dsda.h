@@ -47,4 +47,6 @@ int dsda_MaxKillRequirement(void);
 char* dsda_DemoNameBase(void);
 char* dsda_NewDemoName(void);
 
+int dsda_getGhostIndex();
+
 #endif

@@ -81,6 +81,7 @@
 #include "hu_tracers.h"
 #include "dsda.h"
 #include "dsda/settings.h"
+#include "dsda/ghost.h"
 #ifdef GL_DOOM
 #include "gl_struct.h"
 #include "gl_intern.h"
@@ -366,6 +367,8 @@ void G_SkipDemoCheck(void)
 
 int G_ReloadLevel(void)
 {
+  dsda_InitGhostImport(dsda_getGhostIndex());
+
   int result = false;
 
   if ((gamestate == GS_LEVEL) &&

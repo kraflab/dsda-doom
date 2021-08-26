@@ -54,9 +54,14 @@ dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
 void dsda_ResetMapVariables(void);
 
-void dsda_ReadCommandLine(void) {
-  int p;
+int p;
 
+int dsda_getGhostIndex()
+{
+  return p;
+}
+
+void dsda_ReadCommandLine(void) {
   dsda_track_pacifist = M_CheckParm("-track_pacifist");
   dsda_track_100k = M_CheckParm("-track_100k");
   dsda_analysis = M_CheckParm("-analysis");
