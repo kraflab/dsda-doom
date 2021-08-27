@@ -1973,8 +1973,7 @@ bottomtexture:
       }
       else
       {
-        if (bs->floorpic == skyflatnum &&// fs->floorpic != skyflatnum &&
-          bottomtexture == NO_TEXTURE && midtexture == NO_TEXTURE)
+        if (bottomtexture == NO_TEXTURE && midtexture == NO_TEXTURE)
         {
           wall.ytop=(float)max_floor/MAP_SCALE;
           gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
