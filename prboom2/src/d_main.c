@@ -419,8 +419,10 @@ void D_Display (fixed_t frac)
       R_DrawViewBorder();
     HU_Drawer();
 
+#ifdef GL_DOOM
     if (V_IsOpenGLMode())
       gld_ProcessExtraAlpha();
+#endif
   }
 
   isborderstate      = isborder;
