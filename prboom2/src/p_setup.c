@@ -1545,9 +1545,13 @@ static void P_LoadThings (int lump)
       mobjlist[mobjcount++] = mobj;
   }
 
-  if (map_format.hexen)
+  if (map_format.acs)
   {
     P_CreateTIDList();
+  }
+
+  if (hexen)
+  {
     P_InitCreatureCorpseQueue(false);   // false = do NOT scan for corpses
   }
 
@@ -2978,16 +2982,20 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     P_OpenWeapons();
   }
 
-  if (map_format.hexen)
+  if (map_format.polyobjs)
   {
     PO_ResetBlockMap(true);
   }
 
   P_LoadThings(lumpnum+ML_THINGS);
 
-  if (map_format.hexen)
+  if (map_format.polyobjs)
   {
     PO_Init(lumpnum + ML_THINGS);       // Initialize the polyobjs
+  }
+
+  if (map_format.acs)
+  {
     P_LoadACScripts(lumpnum + ML_BEHAVIOR);     // ACS object code
   }
 
@@ -3037,7 +3045,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   P_MapEnd();
 
-  if (map_format.hexen)
+  if (map_format.mapinfo)
   {
     extern dboolean LevelUseFullBright;
 
@@ -3076,10 +3084,13 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   P_SyncWalkcam(true, true);
   R_SmoothPlaying_Reset(NULL);
 
-  if (map_format.hexen)
+  if (map_format.mapinfo)
   {
-    // Check if the level is a lightning level
     P_InitLightning();
+  }
+
+  if (map_format.sndseq)
+  {
     SN_StopAllSequences();
   }
 }
@@ -3113,7 +3124,7 @@ static void InitMapInfo(void)
     char songMulch[10];
     const char *default_sky_name = DEFAULT_SKY_NAME;
 
-    if (!map_format.hexen) return;
+    if (!map_format.mapinfo) return;
 
     mapMax = 1;
 

@@ -22,6 +22,10 @@
 
 typedef struct {
   dboolean hexen;
+  dboolean polyobjs;
+  dboolean acs;
+  dboolean mapinfo;
+  dboolean sndseq;
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;
