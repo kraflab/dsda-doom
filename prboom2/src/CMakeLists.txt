@@ -45,6 +45,8 @@ set(COMMON_SRC
     dsda/intermission_display.h
     dsda/key_frame.c
     dsda/key_frame.h
+    dsda/map_format.c
+    dsda/map_format.h
     dsda/memory.c
     dsda/memory.h
     dsda/mobjinfo.c

@@ -35,6 +35,7 @@
 #define __LPRINTF__
 
 #include <stdarg.h>
+#include <stddef.h>
 
 typedef enum
 {

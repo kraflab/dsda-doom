@@ -61,6 +61,7 @@
 #include "d_main.h"
 
 #include "dsda/input.h"
+#include "dsda/map_format.h"
 #include "dsda/settings.h"
 
 //jff 1/7/98 default automap colors added
@@ -1527,89 +1528,6 @@ static void AM_drawGrid(int color)
 }
 
 //
-// AM_DoorColor()
-//
-// Returns the 'color' or key needed for a door linedef type
-//
-// Passed the type of linedef, returns:
-//   -1 if not a keyed door
-//    0 if a red key required
-//    1 if a blue key required
-//    2 if a yellow key required
-//    3 if a multiple keys required
-//
-// jff 4/3/98 add routine to get color of generalized keyed door
-//
-static int AM_DoorColor(int type)
-{
-  if (hexen_format)
-  {
-    if (type == 13 || type == 83)
-      return 2;
-
-    return -1;
-  }
-
-  if (heretic && type > 34) return -1;
-
-  if (GenLockedBase <= type && type< GenDoorBase)
-  {
-    type -= GenLockedBase;
-    type = (type & LockedKey) >> LockedKeyShift;
-    if (!type || type==7)
-      return 3;  //any or all keys
-    else return (type-1)%3;
-  }
-  switch (type)  // closed keyed door
-  {
-    case 26: case 32: case 99: case 133:
-      /*bluekey*/
-      return 1;
-    case 27: case 34: case 136: case 137:
-      /*yellowkey*/
-      return 2;
-    case 28: case 33: case 134: case 135:
-      /*redkey*/
-      return 0;
-    default:
-      return -1; //not a keyed door
-  }
-}
-
-static dboolean AM_IsExitLine(int i)
-{
-  if (hexen_format)
-  {
-    return lines[i].special == 74 || lines[i].special == 75;
-  }
-
-  return lines[i].special==11  ||
-         lines[i].special==52  ||
-         lines[i].special==197 ||
-         lines[i].special==51  ||
-         lines[i].special==124 ||
-         lines[i].special==198;
-}
-
-static dboolean AM_IsTeleportLine(int i)
-{
-  if (hexen_format)
-  {
-    return lines[i].special == 70 || lines[i].special == 71;
-  }
-
-  if (heretic)
-  {
-    return lines[i].special == 39;
-  }
-
-  return lines[i].special == 39  ||
-         lines[i].special == 97  ||
-         lines[i].special == 125 ||
-         lines[i].special == 126;
-}
-
-//
 // Determines visible lines, draws them.
 // This is LineDef based, not LineSeg based.
 //
@@ -1667,7 +1585,7 @@ static void AM_drawWalls(void)
         int amd;
         if (((*mapcolor_bdor_p) || (*mapcolor_ydor_p) || (*mapcolor_rdor_p)) &&
             !(lines[i].flags & ML_SECRET) &&    /* non-secret */
-          (amd = AM_DoorColor(lines[i].special)) != -1
+          (amd = dsda_DoorType(i)) != -1
         )
         {
           {
@@ -1697,7 +1615,7 @@ static void AM_drawWalls(void)
           }
         }
       }
-      if ((*mapcolor_exit_p) && AM_IsExitLine(i))
+      if ((*mapcolor_exit_p) && dsda_IsExitLine(i))
       { /* jff 4/23/98 add exit lines to automap */
         AM_drawMline(&l, (*mapcolor_exit_p));
         continue;
@@ -1727,7 +1645,7 @@ static void AM_drawWalls(void)
       else /* now for 2S lines */
       {
         // jff 1/10/98 add color change for all teleporter types
-        if ((*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) && AM_IsTeleportLine(i))
+        if ((*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) && dsda_IsTeleportLine(i))
         { // teleporters
           AM_drawMline(&l, (*mapcolor_tele_p));
         }

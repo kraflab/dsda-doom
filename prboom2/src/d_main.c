@@ -97,6 +97,7 @@
 #include "dsda/global.h"
 #include "dsda/save.h"
 #include "dsda/data_organizer.h"
+#include "dsda/map_format.h"
 #include "dsda/settings.h"
 #include "dsda/time.h"
 

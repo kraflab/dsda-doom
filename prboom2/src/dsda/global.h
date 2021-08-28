@@ -107,6 +107,5 @@ extern const char* g_skyflatname;
 extern dboolean heretic;
 
 void dsda_InitGlobal(void);
-void dsda_DetectMapFormat(void);
 
 #endif

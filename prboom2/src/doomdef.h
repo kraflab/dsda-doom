@@ -563,6 +563,5 @@ typedef enum
 #define TXT_USEPUZZLEFAILED    "YOU CANNOT USE THIS HERE"
 
 extern dboolean hexen;
-extern dboolean hexen_format;
 
 #endif          // __DOOMDEF__
