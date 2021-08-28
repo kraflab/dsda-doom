@@ -26,6 +26,7 @@ typedef struct {
   dboolean acs;
   dboolean mapinfo;
   dboolean sndseq;
+  dboolean sndinfo;
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;

@@ -1642,7 +1642,7 @@ static void HandleWarp(void)
     startmap = 0; // Ty 08/29/98 - allow "-warp x" to go to first map in wad(s)
     autostart = true; // Ty 08/29/98 - move outside the decision tree
 
-    if (hexen)
+    if (map_format.mapinfo)
     {
       if (p < myargc - 1)
         startmap = P_TranslateMap(atoi(myargv[p + 1]));
@@ -2189,10 +2189,18 @@ static void D_DoomMainSetup(void)
   lprintf(LO_INFO,"M_Init: Init miscellaneous info.\n");
   M_Init();
 
-  if (hexen)
+  if (map_format.mapinfo)
   {
     InitMapMusicInfo();
+  }
+
+  if (map_format.sndinfo)
+  {
     S_InitScript();
+  }
+
+  if (map_format.sndseq)
+  {
     SN_InitSequenceScript();
   }
 
@@ -2309,7 +2317,7 @@ static void D_DoomMainSetup(void)
       {
         GetFirstMap(&startepisode, &startmap);
       }
-      if (hexen)
+      if (map_format.mapinfo)
       {
         G_StartNewInit();
       }
@@ -2356,7 +2364,7 @@ void GetFirstMap(int *ep, int *map)
   {
     *ep = 1;
     *map = 1; // default E1M1 or MAP01
-    if (hexen)
+    if (map_format.mapinfo)
     {
       *map = P_TranslateMap(1);
       if (*map == -1)
