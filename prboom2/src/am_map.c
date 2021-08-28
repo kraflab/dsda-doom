@@ -1542,15 +1542,15 @@ static void AM_drawGrid(int color)
 //
 static int AM_DoorColor(int type)
 {
-  if (heretic && type > 34) return -1;
-
-  if (hexen)
+  if (hexen_format)
   {
     if (type == 13 || type == 83)
       return 2;
 
     return -1;
   }
+
+  if (heretic && type > 34) return -1;
 
   if (GenLockedBase <= type && type< GenDoorBase)
   {
@@ -1574,6 +1574,39 @@ static int AM_DoorColor(int type)
     default:
       return -1; //not a keyed door
   }
+}
+
+static dboolean AM_IsExitLine(int i)
+{
+  if (hexen_format)
+  {
+    return lines[i].special == 74 || lines[i].special == 75;
+  }
+
+  return lines[i].special==11  ||
+         lines[i].special==52  ||
+         lines[i].special==197 ||
+         lines[i].special==51  ||
+         lines[i].special==124 ||
+         lines[i].special==198;
+}
+
+static dboolean AM_IsTeleportLine(int i)
+{
+  if (hexen_format)
+  {
+    return lines[i].special == 70 || lines[i].special == 71;
+  }
+
+  if (heretic)
+  {
+    return lines[i].special == 39;
+  }
+
+  return lines[i].special == 39  ||
+         lines[i].special == 97  ||
+         lines[i].special == 125 ||
+         lines[i].special == 126;
 }
 
 //
@@ -1664,27 +1697,11 @@ static void AM_drawWalls(void)
           }
         }
       }
-      if /* jff 4/23/98 add exit lines to automap */
-        (
-          (*mapcolor_exit_p) &&
-          (
-            (hexen && (lines[i].special == 74 || lines[i].special == 75)) ||
-            (
-              !hexen &&
-              (
-                lines[i].special==11 ||
-                lines[i].special==52 ||
-                lines[i].special==197 ||
-                lines[i].special==51  ||
-                lines[i].special==124 ||
-                lines[i].special==198
-              )
-            )
-          )
-        ) {
-          AM_drawMline(&l, (*mapcolor_exit_p)); /* exit line */
-          continue;
-        }
+      if ((*mapcolor_exit_p) && AM_IsExitLine(i))
+      { /* jff 4/23/98 add exit lines to automap */
+        AM_drawMline(&l, (*mapcolor_exit_p));
+        continue;
+      }
 
       if (!lines[i].backsector)
       {
@@ -1710,23 +1727,7 @@ static void AM_drawWalls(void)
       else /* now for 2S lines */
       {
         // jff 1/10/98 add color change for all teleporter types
-        if
-        (
-          (*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) &&
-          (
-            (hexen && (lines[i].special == 70 || lines[i].special == 71)) ||
-            (
-              !hexen &&
-              (
-                lines[i].special == 39 ||
-                (
-                  !heretic &&
-                  (lines[i].special == 97 || lines[i].special == 125 || lines[i].special == 126)
-                )
-              )
-            )
-          )
-        )
+        if ((*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) && AM_IsTeleportLine(i))
         { // teleporters
           AM_drawMline(&l, (*mapcolor_tele_p));
         }
