@@ -2676,6 +2676,21 @@ void P_CheckLevelWadStructure(const char *mapname)
       I_Error("P_SetupLevel: Level wad structure is incomplete. There is no %s lump.", ml_labels[i]);
     }
   }
+
+  // we may be running a wad that has multiple formats
+  // if we are not in "hexen mode" then we need to abort
+  // eventually, we can add support for per-map format swapping
+  if (!map_format.hexen)
+  {
+    i = lumpnum + ML_BEHAVIOR;
+    if (P_CheckLumpsForSameSource(lumpnum, i))
+    {
+      if (!strncasecmp(lumpinfo[i].name, "BEHAVIOR", 8))
+      {
+        I_Error("P_SetupLevel: %s: Hexen format not supported", mapname);
+      }
+    }
+  }
 }
 
 void P_InitSubsectorsLines(void)

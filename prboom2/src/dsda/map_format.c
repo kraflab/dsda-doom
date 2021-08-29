@@ -112,10 +112,13 @@ dboolean dsda_IsTeleportLine(int index) {
 }
 
 void dsda_DetectMapFormat(void) {
-  if (W_CheckNumForName("BEHAVIOR") >= 0) {
-    if (!hexen)
-      I_Error("Hexen map format is only supported in Hexen!");
+  // if (W_CheckNumForName("BEHAVIOR") >= 0) {
+  //   if (!hexen)
+  //     I_Error("Hexen map format is only supported in Hexen!");
 
+  // Can't just look for BEHAVIOR lumps, because some wads have vanilla and non-vanilla maps
+  // Need proper per-map format swapping
+  if (hexen) {
     map_format.hexen = true;
     map_format.polyobjs = true;
     map_format.acs = true;
