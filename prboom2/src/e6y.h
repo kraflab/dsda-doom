@@ -103,6 +103,7 @@ extern int hudadd_maxtotals;
 extern int hudadd_demoprogressbar;
 extern int hudadd_crosshair;
 extern int hudadd_crosshair_scale;
+extern int hudadd_crosshair_hide;
 extern int hudadd_crosshair_color;
 extern int hudadd_crosshair_health;
 extern int hudadd_crosshair_target;

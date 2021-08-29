@@ -978,6 +978,8 @@ default_t defaults[] =
    def_bool,ss_stat},
   {"hudadd_crosshair_scale", {&hudadd_crosshair_scale},  {0},0,1,
    def_bool,ss_stat},
+  {"hudadd_crosshair_hide", {&hudadd_crosshair_hide},  {1},0,1,
+   def_bool,ss_stat},
   {"hudadd_crosshair_color", {&hudadd_crosshair_color},  {3},0,9,
    def_int,ss_stat},
   {"hudadd_crosshair_health", {&hudadd_crosshair_health},  {0},0,1,

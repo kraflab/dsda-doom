@@ -2302,10 +2302,15 @@ void HU_draw_crosshair(void)
 
   crosshair.target_sprite = -1;
 
-  if (!crosshair_nam[hudadd_crosshair] || crosshair.lump == -1 ||
-    custom_message_p->ticks > 0 || automapmode & am_active ||
-    menuactive != mnact_inactive || paused ||
-    plr->readyweapon == wp_chainsaw || plr->readyweapon == wp_fist)
+  if (
+    !crosshair_nam[hudadd_crosshair] ||
+    crosshair.lump == -1 ||
+    (custom_message_p->ticks > 0 && hudadd_crosshair_hide) ||
+    automapmode & am_active ||
+    menuactive != mnact_inactive ||
+    paused ||
+    plr->readyweapon == wp_chainsaw ||
+    plr->readyweapon == wp_fist)
   {
     return;
   }
