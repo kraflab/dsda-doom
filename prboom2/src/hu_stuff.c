@@ -2308,9 +2308,8 @@ void HU_draw_crosshair(void)
     (custom_message_p->ticks > 0 && hudadd_crosshair_hide) ||
     automapmode & am_active ||
     menuactive != mnact_inactive ||
-    paused ||
-    plr->readyweapon == wp_chainsaw ||
-    plr->readyweapon == wp_fist)
+    paused
+  )
   {
     return;
   }
