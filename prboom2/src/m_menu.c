@@ -993,6 +993,25 @@ static void M_DoSave(int slot)
 //
 // User wants to save. Start string input for M_Responder
 //
+static inline dboolean IsMapName(char *str)
+{
+    if (strlen(str) == 4 &&
+        str[0] == 'E' && isdigit(str[1]) &&
+        str[2] == 'M' && isdigit(str[3]))
+    {
+        return true;
+    }
+
+    if (strlen(str) == 5 &&
+        str[0] == 'M' && str[1] == 'A' && str[2] == 'P' &&
+        isdigit(str[3]) && isdigit(str[4]))
+    {
+        return true;
+    }
+
+    return false;
+}
+
 void M_SaveSelect(int choice)
 {
   // we are going to be intercepting all chars
@@ -1000,7 +1019,8 @@ void M_SaveSelect(int choice)
 
   saveSlot = choice;
   strcpy(saveOldString,savegamestrings[choice]);
-  if (!strcmp(savegamestrings[choice],s_EMPTYSTRING)) // Ty 03/27/98 - externalized
+  if (!strcmp(savegamestrings[choice],s_EMPTYSTRING) || // Ty 03/27/98 - externalized
+      IsMapName(savegamestrings[choice]))
   {
     strncpy(savegamestrings[choice], MAPNAME(gameepisode, gamemap), SAVESTRINGSIZE);
     savegamestrings[choice][SAVESTRINGSIZE - 1] = 0;
