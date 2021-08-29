@@ -2226,8 +2226,10 @@ void HU_widget_draw_gkeys(void)
   HUlib_drawTextLine(&w_keys_icon, false);
 }
 
-const char *crosshair_nam[HU_CROSSHAIRS]= { NULL, "CROSS1", "CROSS2", "CROSS3" };
-const char *crosshair_str[HU_CROSSHAIRS]= { "none", "cross", "angle", "dot" };
+const char *crosshair_nam[HU_CROSSHAIRS] =
+  { NULL, "CROSS1", "CROSS2", "CROSS3", "CROSS4", "CROSS5", "CROSS6", "CROSS7" };
+const char *crosshair_str[HU_CROSSHAIRS] =
+  { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big" };
 crosshair_t crosshair;
 
 void HU_init_crosshair(void)

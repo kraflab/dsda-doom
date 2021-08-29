@@ -29,6 +29,10 @@ prboom2/data/graphics/boxur.ppm -text svneol=unset#application/octet-stream
 prboom2/data/graphics/cross1.ppm -text
 prboom2/data/graphics/cross2.ppm -text
 prboom2/data/graphics/cross3.ppm -text
+prboom2/data/graphics/cross4.ppm -text
+prboom2/data/graphics/cross5.ppm -text
+prboom2/data/graphics/cross6.ppm -text
+prboom2/data/graphics/cross7.ppm -text
 prboom2/data/graphics/dig033.ppm -text
 prboom2/data/graphics/dig034.ppm -text
 prboom2/data/graphics/dig035.ppm -text

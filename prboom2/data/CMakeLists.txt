@@ -203,6 +203,10 @@ set(GRAPHICS
     graphics/cross1.ppm
     graphics/cross2.ppm
     graphics/cross3.ppm
+    graphics/cross4.ppm
+    graphics/cross5.ppm
+    graphics/cross6.ppm
+    graphics/cross7.ppm
 )
 
 set(FLATS

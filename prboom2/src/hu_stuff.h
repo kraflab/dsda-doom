@@ -55,7 +55,7 @@
 
 #define HU_MSGTIMEOUT   (4*TICRATE)
 
-#define HU_CROSSHAIRS	4
+#define HU_CROSSHAIRS	8
 extern const char *crosshair_nam[HU_CROSSHAIRS];
 extern const char *crosshair_str[HU_CROSSHAIRS];
 
