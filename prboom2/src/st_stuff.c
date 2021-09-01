@@ -791,15 +791,26 @@ static void ST_doPaletteStuff(void)
 
   if (cnt)
     {
-      palette = (cnt+7)>>3;
-      if (palette >= NUMREDPALS)
-        palette = NUMREDPALS-1;
+      // In Chex Quest, the player never sees red.  Instead, the
+      // radiation suit palette is used to tint the screen green,
+      // as though the player is being covered in goo by an
+      // attacking flemoid.
+      if (gamemission == chex)
+      {
+        palette = RADIATIONPAL;
+      }
+      else
+      {
+        palette = (cnt+7)>>3;
+        if (palette >= NUMREDPALS)
+          palette = NUMREDPALS-1;
 
-      /* cph 2006/08/06 - if in the menu, reduce the red tint - navigating to
-       * load a game can be tricky if the screen is all red */
-      if (menuactive) palette >>=1;
+        /* cph 2006/08/06 - if in the menu, reduce the red tint - navigating to
+         * load a game can be tricky if the screen is all red */
+        if (menuactive) palette >>=1;
 
-      palette += STARTREDPALS;
+        palette += STARTREDPALS;
+      }
     }
   else
     if (dsda_BonusPalette() && plyr->bonuscount)
@@ -814,17 +825,6 @@ static void ST_doPaletteStuff(void)
         palette = RADIATIONPAL;
       else
         palette = 0;
-
-  // In Chex Quest, the player never sees red.  Instead, the
-  // radiation suit palette is used to tint the screen green,
-  // as though the player is being covered in goo by an
-  // attacking flemoid.
-
-  if (dsda_PowerPalette() && gamemission == chex
-    && palette >= STARTREDPALS && palette < STARTREDPALS + NUMREDPALS)
-  {
-    palette = RADIATIONPAL;
-  }
 
   if (palette != st_palette) {
     V_SetPalette(st_palette = palette); // CPhipps - use new palette function
