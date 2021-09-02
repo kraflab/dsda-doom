@@ -26,6 +26,8 @@
 #include "w_wad.h"
 #include "p_setup.h"
 
+#include "dsda/map_format.h"
+
 #define ANIM_SCRIPT_NAME "ANIMDEFS"
 #define MAX_ANIM_DEFS 20
 #define MAX_FRAME_DEFS 96
@@ -82,7 +84,7 @@ void P_AnimateSurfaces(void)
     animDef_t *ad;
     line_t *line;
 
-    if (!hexen)
+    if (!map_format.animdefs)
         return;
 
     // Animate flats and textures
@@ -320,7 +322,7 @@ void P_InitFTAnims(void)
     dboolean ignore;
     dboolean done;
 
-    if (!hexen) return;
+    if (!map_format.animdefs) return;
 
     fd = 0;
     ad = AnimDefs;

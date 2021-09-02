@@ -42,6 +42,8 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda/map_format.h"
+
 ///////////////////////////////////////////////////////////////
 //
 // Door action routines, called once per tick
@@ -64,7 +66,7 @@ void T_VerticalDoor (vldoor_t* door)
 {
   result_e  res;
 
-  if (hexen) return Hexen_T_VerticalDoor(door);
+  if (map_format.hexen) return Hexen_T_VerticalDoor(door);
 
   // Is the door waiting, going up, or going down?
   switch(door->direction)

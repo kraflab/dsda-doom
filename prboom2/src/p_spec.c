@@ -64,6 +64,7 @@
 #include "dsda.h"
 
 #include "dsda/global.h"
+#include "dsda/map_format.h"
 
 //
 //      source animation definition
@@ -2389,7 +2390,7 @@ void P_PlayerInSpecialSector (player_t* player)
   sector_t*   sector;
 
   if (heretic) return Heretic_P_PlayerInSpecialSector(player);
-  if (hexen) return Hexen_P_PlayerInSpecialSector(player);
+  if (map_format.hexen) return Hexen_P_PlayerInSpecialSector(player);
 
   sector = player->mo->subsector->sector;
 

@@ -91,6 +91,7 @@
 #include "dsda/save.h"
 #include "dsda/settings.h"
 #include "dsda/input.h"
+#include "dsda/map_format.h"
 #include "dsda/options.h"
 #include "dsda/tas.h"
 #include "dsda/split_tracker.h"
@@ -1056,7 +1057,7 @@ static void G_DoLoadLevel (void)
 
   skyflatnum = R_FlatNumForName(g_skyflatname);
 
-  if (hexen)
+  if (map_format.mapinfo)
   {
     skytexture = Sky1Texture;
   }
@@ -1159,7 +1160,7 @@ static void G_DoLoadLevel (void)
   // died.
   P_FreeSecNodeList();
 
-  if (hexen)
+  if (map_format.sndseq)
     SN_StopAllSequences();
 
   P_SetupLevel (gameepisode, gamemap, 0, gameskill);
@@ -2936,7 +2937,7 @@ void G_DoNewGame (void)
   netgame = solo_net;
   deathmatch = false;
 
-  if (hexen)
+  if (map_format.mapinfo)
   {
     G_StartNewInit();
     realMap = P_TranslateMap(d_map);
@@ -3106,7 +3107,7 @@ void G_InitNew(skill_t skill, int episode, int map)
       if (map > 9)
         map = 9;
     }
-    else if (hexen)
+    else if (map_format.hexen)
     {
       if (map < 1)
         map = 1;
@@ -3189,7 +3190,7 @@ void G_InitNew(skill_t skill, int episode, int map)
   //jff 4/16/98 force marks on automap cleared every new level start
   AM_clearMarks();
 
-  if (hexen)
+  if (map_format.mapinfo)
     R_InitSky(map);
 
   G_DoLoadLevel ();
@@ -3880,7 +3881,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
         // DOOM_old and HERETIC don't use maps>9;
         // 2 at 4,6 means playerclass=mage -> not DOOM_old or HERETIC;
         if ((size >= 8 && (size - 8) % 4 != 0 && !raven) ||
-            (map > 9 && !hexen) ||
+            (map > 9 && !map_format.hexen) ||
             (size >= 6 && (*(header_p + 4) == 2 || *(header_p + 6) == 2) && !hexen))
         {
           I_Error("Unrecognised demo format.");
@@ -4038,7 +4039,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   if (!(params & RDH_SKIP_HEADER))
   {
     if (gameaction != ga_loadgame) { /* killough 12/98: support -loadgame */
-      if (hexen)
+      if (map_format.mapinfo)
         G_StartNewInit();
 
       G_InitNew(skill, episode, map);

@@ -46,6 +46,8 @@
 #include "g_overflow.h"
 #include "e6y.h"//e6y
 
+#include "dsda/map_format.h"
+
 //
 // P_AproxDistance
 // Gives an estimation of distance (not exact)
@@ -375,7 +377,7 @@ dboolean P_BlockLinesIterator(int x, int y, dboolean func(line_t*))
     return true;
   offset = y*bmapwidth+x;
 
-  if (hexen)
+  if (map_format.polyobjs)
   {
     int i;
     seg_t **tempSeg;
@@ -452,7 +454,7 @@ dboolean P_BlockLinesIterator2(int x, int y, dboolean func(line_t*))
     return true;
   offset = y*bmapwidth+x;
 
-  if (hexen)
+  if (map_format.polyobjs)
   {
     int i;
     seg_t **tempSeg;
