@@ -95,15 +95,11 @@ dboolean dsda_IsTeleportLine(int index) {
   int special = lines[index].special;
 
   if (map_format.hexen)
-  {
     return special == 70 ||
            special == 71;
-  }
 
   if (heretic)
-  {
     return special == 39;
-  }
 
   return special == 39  ||
          special == 97  ||
