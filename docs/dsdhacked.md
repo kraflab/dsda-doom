@@ -2,6 +2,8 @@
 
 DSDA-Doom supports "unlimited" states, sprites, sounds, and things in dehacked (until you run out of memory / reach 2^32). This is an extension of mbf21, which vastly increased the demand for raised limits in dehacked. This document is a specification of the behaviour.
 
+Use `Doom version = 2021` in your dehacked file to signal that you are using dsdhacked indices. This allows ports to adapt the data to their specific internal tables. Otherwise your file may be interpreted differently in different ports.
+
 ### Defaults
 
 When you define a new index, the game allocates new entities up to that value. The data is filled with default values, listed here. Anything not specifically mentioned is set to zero / null.
