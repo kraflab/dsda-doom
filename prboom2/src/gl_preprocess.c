@@ -863,10 +863,7 @@ static void gld_PreprocessSectors(void)
   levelinfo=fopen("levelinfo.txt","a");
   if (levelinfo)
   {
-    if (gamemode==commercial || hexen)
-      fprintf(levelinfo,"MAP%02i\n",gamemap);
-    else
-      fprintf(levelinfo,"E%iM%i\n",gameepisode,gamemap);
+    fprintf(levelinfo, MAPNAME(gameepisode, gamemap));
   }
 #endif
 

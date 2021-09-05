@@ -42,6 +42,8 @@
 #include "hexen/p_acs.h"
 #include "hexen/sn_sonix.h"
 
+#include "dsda/map_format.h"
+
 // the list of ceilings moving currently, including crushers
 ceilinglist_t *activeceilings;
 
@@ -69,7 +71,7 @@ void T_MoveCeiling (ceiling_t* ceiling)
 {
   result_e  res;
 
-  if (hexen) return Hexen_T_MoveCeiling(ceiling);
+  if (map_format.hexen) return Hexen_T_MoveCeiling(ceiling);
 
   switch(ceiling->direction)
   {

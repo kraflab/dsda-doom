@@ -37,6 +37,8 @@
 #endif
 #include "doomstat.h"
 
+#include "dsda/map_format.h"
+
 // Game Mode - identify IWAD as shareware, retail etc.
 GameMode_t gamemode = indetermined;
 GameMission_t   gamemission = doom;
@@ -102,7 +104,7 @@ char *MAPNAME(int e, int m)
 {
   static char name[9];
 
-  if (gamemode == commercial || hexen)
+  if (gamemode == commercial || map_format.hexen)
     snprintf(name, sizeof(name), "MAP%02d", m);
   else
     snprintf(name, sizeof(name), "E%dM%d", e, m);

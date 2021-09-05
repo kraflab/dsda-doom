@@ -31,6 +31,8 @@
 #include "hexen/po_man.h"
 #include "hexen/sn_sonix.h"
 
+#include "dsda/map_format.h"
+
 #include "p_acs.h"
 
 #define MAX_SCRIPT_ARGS 3
@@ -691,7 +693,7 @@ void P_TagFinished(int tag)
 {
     int i;
 
-    if (!hexen) return;
+    if (!map_format.acs) return;
 
     if (TagBusy(tag) == true)
     {

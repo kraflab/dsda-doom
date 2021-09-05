@@ -42,6 +42,7 @@
 #include "g_overflow.h"
 #include "e6y.h" //e6y
 
+#include "dsda/map_format.h"
 
 /*
 ==============================================================================
@@ -121,7 +122,7 @@ dboolean P_SightBlockLinesIterator(int x, int y)
 
   offset = y*bmapwidth+x;
 
-  if (hexen)
+  if (map_format.polyobjs)
   {
     polyblock_t *polyLink;
     seg_t **segList;

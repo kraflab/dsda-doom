@@ -44,6 +44,8 @@
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "p_tick.h"
 
+#include "dsda/map_format.h"
+
 //
 // Graphics.
 // DOOM graphics for walls and sprites
@@ -379,6 +381,7 @@ static void R_InitSpriteLumps(void)
 static void R_InitColormaps(void)
 {
   int i;
+  // MAP_FORMAT_TODO: not sure about this
   if (hexen)
   {
     firstcolormaplump = -1;
@@ -691,7 +694,7 @@ void R_PrecacheLevel(void)
   //  a wall texture, with an episode dependend
   //  name.
 
-  if (hexen)
+  if (map_format.doublesky)
   {
     hitlist[Sky1Texture] = 1;
     hitlist[Sky2Texture] = 1;

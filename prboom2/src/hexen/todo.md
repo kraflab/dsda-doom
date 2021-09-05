@@ -10,3 +10,6 @@
 - palette fade code
 - yellow message variant
 - opengl floorclip
+
+### Notes
+- floor type / friction -> hexen format?

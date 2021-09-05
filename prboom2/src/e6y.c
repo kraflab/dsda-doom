@@ -90,6 +90,8 @@
 #include "d_deh.h"
 #include "e6y.h"
 
+#include "dsda/map_format.h"
+
 dboolean wasWiped = false;
 
 int secretfound;
@@ -408,7 +410,7 @@ int G_GotoNextLevel(void)
   int map = -1;
   int changed = false;
 
-  if (hexen)
+  if (map_format.mapinfo)
     map = P_GetMapNextMap(gamemap);
 
   if (gamemapinfo != NULL)
@@ -785,10 +787,7 @@ void e6y_G_DoCompleted(void)
 
   memset(&stats[numlevels], 0, sizeof(timetable_t));
 
-  if (gamemode==commercial || hexen)
-    sprintf(stats[numlevels].map,"MAP%02i",gamemap);
-  else
-    sprintf(stats[numlevels].map,"E%iM%i",gameepisode,gamemap);
+  strcpy(stats[numlevels].map, MAPNAME(gameepisode, gamemap));
 
   if (secretexit)
   {

@@ -64,6 +64,7 @@
 #include "dsda.h"
 
 #include "dsda/global.h"
+#include "dsda/map_format.h"
 
 //
 //      source animation definition
@@ -183,7 +184,7 @@ void P_InitPicAnims (void)
   int         lump = -1;
   //  Init animation
 
-  if (hexen)
+  if (map_format.animdefs)
   {
     MarkAnimatedTextures();//e6y
     return;
@@ -2195,7 +2196,7 @@ void P_ShootSpecialLine
 ( mobj_t*       thing,
   line_t*       line )
 {
-  if (hexen)
+  if (map_format.hexen)
   {
     P_ActivateLine(line, thing, 0, SPAC_IMPACT);
     return;
@@ -2388,8 +2389,8 @@ void P_PlayerInSpecialSector (player_t* player)
 {
   sector_t*   sector;
 
+  if (map_format.hexen) return Hexen_P_PlayerInSpecialSector(player);
   if (heretic) return Heretic_P_PlayerInSpecialSector(player);
-  if (hexen) return Hexen_P_PlayerInSpecialSector(player);
 
   sector = player->mo->subsector->sector;
 
@@ -2597,7 +2598,11 @@ void P_UpdateSpecials (void)
       if (exitflag == true)
         G_ExitLevel();
     }
+  }
 
+  // MAP_FORMAT_TODO: needs investigation
+  if (!map_format.animdefs)
+  {
     // Animate flats and textures globally
     for (anim = anims ; anim < lastanim ; anim++)
     {
@@ -2612,7 +2617,7 @@ void P_UpdateSpecials (void)
     }
   }
 
-  if (heretic)
+  if (heretic && !map_format.hexen)
   {
     line_t *line;
 
@@ -2692,7 +2697,7 @@ void P_SpawnSpecials (void)
   sector_t*   sector;
   int         i;
 
-  if (hexen) return Hexen_P_SpawnSpecials();
+  if (map_format.hexen) return Hexen_P_SpawnSpecials();
 
   // See if -timer needs to be used.
   levelTimer = false;

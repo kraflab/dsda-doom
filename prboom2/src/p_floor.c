@@ -43,6 +43,8 @@
 #include "g_overflow.h"
 #include "e6y.h"//e6y
 
+#include "dsda/map_format.h"
+
 //e6y
 #define STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE 10
 
@@ -259,7 +261,7 @@ void T_MoveFloor(floormove_t* floor)
 {
   result_e      res;
 
-  if (hexen) return Hexen_T_MoveFloor(floor);
+  if (map_format.hexen) return Hexen_T_MoveFloor(floor);
 
   res = T_MovePlane       // move the floor
   (

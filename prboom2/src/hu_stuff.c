@@ -55,6 +55,7 @@
 #include "e6y.h" //e6y
 #include "dsda.h"
 #include "dsda/hud.h"
+#include "dsda/map_format.h"
 #include "dsda/settings.h"
 #include "g_overflow.h"
 
@@ -302,7 +303,7 @@ static const char* HU_Title(void)
         return LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
       }
     }
-    else if (hexen)
+    else if (map_format.mapinfo)
     {
       return P_GetMapName(gamemap);
     }

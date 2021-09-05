@@ -54,7 +54,9 @@
 #include "p_spec.h"
 #include "g_overflow.h"
 #include "e6y.h"//e6y
+
 #include "dsda.h"
+#include "dsda/map_format.h"
 
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
@@ -1571,11 +1573,11 @@ void P_RemoveMobj (mobj_t* mobj)
       {
         A_DeQueueCorpse(mobj);
       }
+    }
 
-      if (mobj->tid)
-      {                           // Remove from TID list
-        P_RemoveMobjFromTIDList(mobj);
-      }
+    if (map_format.acs && mobj->tid)
+    {
+      P_RemoveMobjFromTIDList(mobj);
     }
 
     P_UnsetThingPosition(mobj);
@@ -1605,6 +1607,11 @@ void P_RemoveMobj (mobj_t* mobj)
     if (iquehead == iquetail)
       iquetail = (iquetail+1)&(ITEMQUESIZE-1);
     }
+
+  if (map_format.acs && mobj->tid)
+  {
+    P_RemoveMobjFromTIDList(mobj);
+  }
 
   // unlink from sector and block lists
 
@@ -1972,7 +1979,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // then simply ignore all upper bits.
 
   if (
-    (!hexen && demo_compatibility) ||
+    (!map_format.hexen && demo_compatibility) ||
     (compatibility_level >= lxdoom_1_compatibility && options & MTF_RESERVED)
   )
   {
@@ -2014,8 +2021,9 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   	}
   }
 
-  if (hexen)
+  if (map_format.polyobjs)
   {
+    // MAP_FORMAT_TODO: PO types vary between games
     if (mthing->type == PO_ANCHOR_TYPE)
     {                           // Polyobj Anchor Pt.
       return NULL;
@@ -2064,7 +2072,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       goto spawnit;
     }
 
-    if (hexen)
+    if (map_format.hexen)
       start = mthing->arg1;
 
     // save spots for respawning in coop games
@@ -2082,6 +2090,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     return NULL;
   }
 
+  // MAP_FORMAT_TODO: need to verify heretic types
   if (heretic)
   {
     // Ambient sound sequences
@@ -2100,8 +2109,10 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     }
   }
 
-  if (hexen)
+  if (map_format.hexen)
   {
+    // MAP_FORMAT_TODO: need to check these types
+
     // Check for player starts 5 to 8
     if (mthing->type >= 9100 && mthing->type <= 9103)
     {
@@ -2266,7 +2277,7 @@ spawnit:
 
   InitThingsHealthTracer(mobj);
 
-  if (hexen)
+  if (map_format.hexen)
   {
     if (z == ONFLOORZ)
     {
@@ -2309,7 +2320,7 @@ spawnit:
   if (mobj->flags & MF_COUNTITEM)
     totalitems++;
 
-  if (hexen)
+  if (map_format.hexen)
   {
     if (mobj->flags & MF_COUNTKILL)
     {
@@ -2328,8 +2339,9 @@ spawnit:
   if (options & MTF_AMBUSH)
     mobj->flags |= MF_AMBUSH;
 
-  if (hexen && mthing->options & MTF_DORMANT)
+  if (map_format.hexen && mthing->options & MTF_DORMANT)
   {
+      // MAP_FORMAT_TODO: DORMANT flag
       mobj->flags2 |= MF2_DORMANT;
       if (mobj->type == HEXEN_MT_ICEGUY)
       {

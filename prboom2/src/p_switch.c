@@ -41,6 +41,7 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda/map_format.h"
 
 //==================================================================
 //
@@ -103,6 +104,7 @@ void P_InitSwitchList(void)
   int episode = (gamemode == registered || gamemode==retail) ?
                  2 : gamemode == commercial ? 3 : 1;
 
+  // MAP_FORMAT_TODO: switch list?
   if (heretic)
   {
     alphSwitchList = heretic_alphSwitchList;
@@ -321,8 +323,8 @@ P_UseSpecialLine
     if (side) //jff 6/1/98 fix inadvertent deletion of side test
       return false;
 
+  if (map_format.hexen) return P_ActivateLine(line, thing, side, SPAC_USE);
   if (heretic) return Heretic_P_UseSpecialLine(thing, line, side, bossaction);
-  if (hexen) return P_ActivateLine(line, thing, side, SPAC_USE);
 
   //jff 02/04/98 add check here for generalized floor/ceil mover
   if (!demo_compatibility)

@@ -51,10 +51,11 @@
 #include "lprintf.h"
 
 #include "heretic/def.h"
+#include "heretic/sb_bar.h"
 
 #include "dsda/input.h"
+#include "dsda/map_format.h"
 #include "dsda/settings.h"
-#include "heretic/sb_bar.h"
 
 #define plyr (players+consoleplayer)     /* the console player */
 
@@ -450,7 +451,7 @@ static dboolean cannot_clev(int epsd, int map)
     (gamemission == pack_nerve && map > 9)
   ) return true;
 
-  if (hexen)
+  if (map_format.mapinfo)
   {
     map = P_TranslateMap(map);
   }
@@ -1116,7 +1117,7 @@ static void cheat_init(void)
 {
   extern dboolean partial_reset;
 
-  if (!hexen) return;
+  if (!map_format.mapinfo) return;
 
   partial_reset = true;
 
@@ -1203,7 +1204,7 @@ static void cheat_script(char buf[3])
   int tens, ones;
   static char textBuffer[40];
 
-  if (!hexen) return;
+  if (!map_format.acs) return;
 
   tens = buf[0] - '0';
   ones = buf[1] - '0';

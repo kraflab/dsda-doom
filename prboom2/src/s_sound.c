@@ -53,6 +53,7 @@
 
 #include "hexen/sn_sonix.h"
 
+#include "dsda/map_format.h"
 #include "dsda/memory.h"
 
 // when to clip out sounds
@@ -245,7 +246,7 @@ void S_Start(void)
   // start new music for the level
   mus_paused = 0;
 
-  if (hexen)
+  if (map_format.mapinfo)
   {
     mnum = gamemap;
   }
@@ -616,7 +617,7 @@ void S_ChangeMusic(int musicnum, int looping)
   // get lumpnum if neccessary
   if (!music->lumpnum)
   {
-    if (hexen && musicnum < hexen_mus_hub)
+    if (map_format.mapinfo && musicnum < hexen_mus_hub)
     {
       const char* songLump;
 
@@ -1192,7 +1193,7 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
   if (snd_SfxVolume == 0)
     return;
 
-  if (hexen)
+  if (map_format.sndseq)
   {
     // Update any Sequences
     SN_UpdateActiveSequences();

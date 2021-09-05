@@ -72,6 +72,7 @@
 #include "hu_stuff.h"
 #include "e6y.h"//e6y
 
+#include "dsda/map_format.h"
 #include "dsda/settings.h"
 
 // All OpenGL extentions will be disabled in gl_compatibility mode
@@ -2221,25 +2222,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
       flat.uoffs=0.0f;
       flat.voffs=0.0f;
 
-      if (heretic)
-      {
-        switch (plane->special)
-        {
-          case 20:
-          case 21:
-          case 22:
-          case 23:
-          case 24:           // Scroll_East
-            flat.flags |= GLFLAT_HAVE_OFFSET;
-            flat.uoffs = (float) ((63 - ((leveltime >> 1) & 63)) << (plane->special - 20) & 63) / 64;
-            break;
-          case 4:            // Scroll_EastLavaDamage
-            flat.flags |= GLFLAT_HAVE_OFFSET;
-            flat.uoffs = (float) (((63 - ((leveltime >> 1) & 63)) << 3) & 63) / 64;
-            break;
-        }
-      }
-      else if (hexen)
+      if (map_format.hexen)
       {
         int scrollOffset = leveltime >> 1 & 63;
 
@@ -2298,6 +2281,24 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
             flat.uoffs = (float) (scrollOffset << (plane->special - 222) & 63) / 64;
             break;
           default:
+            break;
+        }
+      }
+      else if (heretic)
+      {
+        switch (plane->special)
+        {
+          case 20:
+          case 21:
+          case 22:
+          case 23:
+          case 24:           // Scroll_East
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.uoffs = (float) ((63 - ((leveltime >> 1) & 63)) << (plane->special - 20) & 63) / 64;
+            break;
+          case 4:            // Scroll_EastLavaDamage
+            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.uoffs = (float) (((63 - ((leveltime >> 1) & 63)) << 3) & 63) / 64;
             break;
         }
       }

@@ -41,6 +41,8 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda/map_format.h"
+
 #include "hexen/p_acs.h"
 #include "hexen/sn_sonix.h"
 
@@ -63,7 +65,7 @@ void T_PlatRaise(plat_t* plat)
 {
   result_e      res;
 
-  if (hexen) return Hexen_T_PlatRaise(plat);
+  if (map_format.hexen) return Hexen_T_PlatRaise(plat);
 
   // handle plat moving, up, down, waiting, or in stasis,
   switch(plat->status)

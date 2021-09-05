@@ -1576,10 +1576,7 @@ void gld_Precache(void)
   {
     char map[8];
 
-    if (gamemode == commercial || hexen)
-      sprintf(map, "MAP%02i", gamemap);
-    else
-      sprintf(map, "E%iM%i", gameepisode, gamemap);
+    strcpy(map, MAPNAME(gameepisode, gamemap));
 
     lprintf(LO_INFO, "gld_Precache: %s done in %d ms\n", map, SDL_GetTicks() - tics);
   }
