@@ -53,6 +53,7 @@
 #include "hexen/sn_sonix.h"
 #include "hexen/sv_save.h"
 
+#include "dsda/map_format.h"
 #include "dsda/msecnode.h"
 
 #define MARKED_FOR_DELETION -2
@@ -1436,9 +1437,13 @@ void P_TrueUnArchiveThinkers(void) {
 
   free(mobj_p);    // free translation table
 
-  if (hexen)
+  if (map_format.acs)
   {
     P_CreateTIDList();
+  }
+
+  if (hexen)
+  {
     P_InitCreatureCorpseQueue(true);    // true = scan for corpses
   }
 
@@ -1464,7 +1469,7 @@ void P_ArchiveACS(void)
 {
   size_t size;
 
-  if (!hexen) return;
+  if (!map_format.acs) return;
 
   size = sizeof(*WorldVars) * MAX_ACS_WORLD_VARS;
   CheckSaveGame(size);
@@ -1481,7 +1486,7 @@ void P_UnArchiveACS(void)
 {
   size_t size;
 
-  if (!hexen) return;
+  if (!map_format.acs) return;
 
   size = sizeof(*WorldVars) * MAX_ACS_WORLD_VARS;
   memcpy(WorldVars, save_p, size);
@@ -1496,7 +1501,7 @@ void P_ArchivePolyobjs(void)
 {
   int i;
 
-  if (!hexen) return;
+  if (!map_format.polyobjs) return;
 
   CheckSaveGame(po_NumPolyobjs * (sizeof(angle_t) + 2 * sizeof(fixed_t)));
 
@@ -1520,7 +1525,7 @@ void P_UnArchivePolyobjs(void)
   fixed_t deltaX;
   fixed_t deltaY;
 
-  if (!hexen) return;
+  if (!map_format.polyobjs) return;
 
   for (i = 0; i < po_NumPolyobjs; i++)
   {
@@ -1544,7 +1549,7 @@ void P_ArchiveScripts(void)
 {
   size_t size;
 
-  if (!hexen) return;
+  if (!map_format.acs) return;
 
   size = sizeof(*ACSInfo) * ACScriptCount;
   CheckSaveGame(size);
@@ -1561,7 +1566,7 @@ void P_UnArchiveScripts(void)
 {
   size_t size;
 
-  if (!hexen) return;
+  if (!map_format.acs) return;
 
   size = sizeof(*ACSInfo) * ACScriptCount;
   memcpy(ACSInfo, save_p, size);
@@ -1579,7 +1584,7 @@ void P_ArchiveSounds(void)
   int difference;
   int i;
 
-  if (!hexen) return;
+  if (!map_format.sndseq) return;
 
   CheckSaveGame(sizeof(ActiveSequences) + ActiveSequences * (6 * sizeof(int) + 1));
 
@@ -1642,7 +1647,7 @@ void P_UnArchiveSounds(void)
   int secNum;
   mobj_t *sndMobj;
 
-  if (!hexen) return;
+  if (!map_format.sndseq) return;
 
   memcpy(&numSequences, save_p, sizeof(numSequences));
   save_p += sizeof(numSequences);
