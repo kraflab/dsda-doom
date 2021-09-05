@@ -1057,7 +1057,7 @@ static void G_DoLoadLevel (void)
 
   skyflatnum = R_FlatNumForName(g_skyflatname);
 
-  if (map_format.mapinfo)
+  if (map_format.doublesky)
   {
     skytexture = Sky1Texture;
   }
@@ -3190,7 +3190,7 @@ void G_InitNew(skill_t skill, int episode, int map)
   //jff 4/16/98 force marks on automap cleared every new level start
   AM_clearMarks();
 
-  if (map_format.mapinfo)
+  if (map_format.doublesky)
     R_InitSky(map);
 
   G_DoLoadLevel ();
