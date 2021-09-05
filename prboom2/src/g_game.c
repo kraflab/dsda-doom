@@ -3107,7 +3107,7 @@ void G_InitNew(skill_t skill, int episode, int map)
       if (map > 9)
         map = 9;
     }
-    else if (map_format.hexen)
+    else if (map_format.map99)
     {
       if (map < 1)
         map = 1;
@@ -3881,7 +3881,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
         // DOOM_old and HERETIC don't use maps>9;
         // 2 at 4,6 means playerclass=mage -> not DOOM_old or HERETIC;
         if ((size >= 8 && (size - 8) % 4 != 0 && !raven) ||
-            (map > 9 && !map_format.hexen) ||
+            (map > 9 && !hexen) ||
             (size >= 6 && (*(header_p + 4) == 2 || *(header_p + 6) == 2) && !hexen))
         {
           I_Error("Unrecognised demo format.");

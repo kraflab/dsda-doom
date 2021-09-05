@@ -123,6 +123,7 @@ void dsda_DetectMapFormat(void) {
     map_format.sndinfo = true;
     map_format.animdefs = true;
     map_format.doublesky = true;
+    map_format.map99 = true;
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
   }
@@ -135,6 +136,7 @@ void dsda_DetectMapFormat(void) {
     map_format.sndinfo = false;
     map_format.animdefs = false;
     map_format.doublesky = false;
+    map_format.map99 = false;
     map_format.mapthing_size = sizeof(doom_mapthing_t);
     map_format.maplinedef_size = sizeof(doom_maplinedef_t);
   }

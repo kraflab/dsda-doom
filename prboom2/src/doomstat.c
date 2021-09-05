@@ -104,7 +104,7 @@ char *MAPNAME(int e, int m)
 {
   static char name[9];
 
-  if (gamemode == commercial || map_format.hexen)
+  if (gamemode == commercial || map_format.map99)
     snprintf(name, sizeof(name), "MAP%02d", m);
   else
     snprintf(name, sizeof(name), "E%dM%d", e, m);
