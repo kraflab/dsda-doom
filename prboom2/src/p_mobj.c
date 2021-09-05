@@ -225,7 +225,7 @@ static void P_XYMovement (mobj_t* mo)
   }
 
   special = mo->subsector->sector->special;
-  if (mo->flags2 & MF2_WINDTHRUST)
+  if (mo->flags2 & MF2_WINDTHRUST) // map_format.hexen or heretic
   {
     switch (special)
     {

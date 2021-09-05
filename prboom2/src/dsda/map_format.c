@@ -121,8 +121,10 @@ static void dsda_MigrateMobjInfo(void) {
       mobjinfo[i].flags2 &= MF2_PCROSS;
   }
 
-  if (!raven)
+  if (!raven) {
     mobjinfo[MT_SKULL].flags2 &= MF2_MCROSS;
+    mobjinfo[MT_PLAYER].flags2 &= MF2_WINDTHRUST;
+  }
 }
 
 void dsda_ApplyMapFormat(void) {
