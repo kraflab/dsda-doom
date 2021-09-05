@@ -61,6 +61,8 @@
 #include "v_video.h"
 #include "lprintf.h"
 
+#include "dsda/map_format.h"
+
 int Sky1Texture;
 int Sky2Texture;
 fixed_t Sky1ColumnOffset;
@@ -311,7 +313,7 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
   visplane_t *check;
   unsigned hash;                      // killough
 
-  if (hexen && special < 150)
+  if (map_format.hexen && special < 150)
   {
     special = 0;
   }
@@ -600,25 +602,7 @@ static void R_DoDrawPlane(visplane_t *pl)
 
       dsvars.source = W_CacheLumpNum(firstflat + flattranslation[pl->picnum]);
 
-      if (heretic)
-      {
-        switch (pl->special)
-        {
-          case 20:
-          case 21:
-          case 22:
-          case 23:
-          case 24:           // Scroll_East
-            dsvars.source = dsvars.source +
-              ((63 - ((leveltime >> 1) & 63)) << (pl->special - 20) & 63);
-            break;
-          case 4:            // Scroll_EastLavaDamage
-            dsvars.source = dsvars.source +
-              (((63 - ((leveltime >> 1) & 63)) << 3) & 63);
-            break;
-        }
-      }
-      else if (hexen)
+      if (map_format.hexen)
       {
         int scrollOffset = leveltime >> 1 & 63;
 
@@ -677,6 +661,24 @@ static void R_DoDrawPlane(visplane_t *pl)
                 (((63 - scrollOffset) << (pl->special - 222) & 63) << 6);
             break;
           default:
+            break;
+        }
+      }
+      else if (heretic)
+      {
+        switch (pl->special)
+        {
+          case 20:
+          case 21:
+          case 22:
+          case 23:
+          case 24:           // Scroll_East
+            dsvars.source = dsvars.source +
+              ((63 - ((leveltime >> 1) & 63)) << (pl->special - 20) & 63);
+            break;
+          case 4:            // Scroll_EastLavaDamage
+            dsvars.source = dsvars.source +
+              (((63 - ((leveltime >> 1) & 63)) << 3) & 63);
             break;
         }
       }
