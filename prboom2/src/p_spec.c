@@ -1250,7 +1250,6 @@ dboolean PUREFUNC P_WasSecret(const sector_t *sec)
   return (sec->oldspecial==9 || (sec->oldspecial&SECRET_MASK));
 }
 
-// MAP_FORMAT_TODO: MF2_MCROSS / MF2_PCROSS
 static void HexenFormat_P_CrossSpecialLine(line_t *line, int side, mobj_t *thing)
 {
   if (thing->player)

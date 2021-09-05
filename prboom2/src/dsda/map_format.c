@@ -107,7 +107,25 @@ dboolean dsda_IsTeleportLine(int index) {
          special == 126;
 }
 
-void dsda_DetectMapFormat(void) {
+// Migrate some non-hexen data to hexen format
+static void dsda_MigrateMobjInfo(void) {
+  int i;
+
+  if (hexen || !map_format.hexen) return;
+
+  for (i = mobj_types_zero; i < num_mobj_types; ++i) {
+    if (mobjinfo[i].flags & MF_COUNTKILL)
+      mobjinfo[i].flags2 &= MF2_MCROSS;
+
+    if (mobjinfo[i].flags & MF_MISSILE)
+      mobjinfo[i].flags2 &= MF2_PCROSS;
+  }
+
+  if (!raven)
+    mobjinfo[MT_SKULL].flags2 &= MF2_MCROSS;
+}
+
+void dsda_ApplyMapFormat(void) {
   // if (W_CheckNumForName("BEHAVIOR") >= 0) {
   //   if (!hexen)
   //     I_Error("Hexen map format is only supported in Hexen!");
@@ -140,4 +158,6 @@ void dsda_DetectMapFormat(void) {
     map_format.mapthing_size = sizeof(doom_mapthing_t);
     map_format.maplinedef_size = sizeof(doom_maplinedef_t);
   }
+
+  dsda_MigrateMobjInfo();
 }
