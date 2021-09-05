@@ -3463,6 +3463,7 @@ static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj)
     }
 }
 
+// MAP_FORMAT_TODO: line activations in here
 static dboolean Hexen_P_TryMove(mobj_t* thing, fixed_t x, fixed_t y)
 {
     fixed_t oldx, oldy;
