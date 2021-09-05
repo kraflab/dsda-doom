@@ -1250,6 +1250,22 @@ dboolean PUREFUNC P_WasSecret(const sector_t *sec)
   return (sec->oldspecial==9 || (sec->oldspecial&SECRET_MASK));
 }
 
+// MAP_FORMAT_TODO: MF2_MCROSS / MF2_PCROSS
+static void HexenFormat_P_CrossSpecialLine(line_t *line, int side, mobj_t *thing)
+{
+  if (thing->player)
+  {
+    P_ActivateLine(line, thing, side, SPAC_CROSS);
+  }
+  else if (thing->flags2 & MF2_MCROSS)
+  {
+    P_ActivateLine(line, thing, side, SPAC_MCROSS);
+  }
+  else if (thing->flags2 & MF2_PCROSS)
+  {
+    P_ActivateLine(line, thing, side, SPAC_PCROSS);
+  }
+}
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -1276,6 +1292,7 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossacti
 {
   int         ok;
 
+  if (map_format.hexen) return HexenFormat_P_CrossSpecialLine(line, side, thing);
   if (heretic) return Heretic_P_CrossSpecialLine(line, side, thing);
 
   //  Things that should never trigger lines
