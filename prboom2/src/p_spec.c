@@ -4687,8 +4687,7 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 4:                // Poly Move
             buttonSuccess = EV_MovePoly(line, args, false, false);
             break;
-        case 5:                // Poly Explicit Line:  Only used in initialization
-            break;
+        // 5: PO_LINE_EXPLICIT
         case 6:                // Poly Move Times 8
             buttonSuccess = EV_MovePoly(line, args, true, false);
             break;
@@ -4698,6 +4697,7 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 8:                // Poly Door Slide
             buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SLIDE);
             break;
+        // 9: LS_NOP Line_Horizon
         case 10:               // Door Close
             buttonSuccess = Hexen_EV_DoDoor(line, args, DREV_CLOSE);
             break;
@@ -4734,6 +4734,12 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
                 }
             }
             break;
+        // 14: LS_Door_Animated
+        // 15: LS_Autosave
+        // 16: LS_NOP Transfer_WallLight
+        // 17: LS_Thing_Raise
+        // 18: LS_StartConversation
+        // 19: LS_Thing_Stop
         case 20:               // Floor Lower by Value
             buttonSuccess = Hexen_EV_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
             break;
@@ -4773,12 +4779,17 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 32:               // Build Stairs Up Sync
             buttonSuccess = Hexen_EV_BuildStairs(line, args, 1, STAIRS_SYNC);
             break;
+        // 33: LS_ForceField
+        // 34: LS_ClearForceField
         case 35:               // Raise Floor by Value Times 8
             buttonSuccess = Hexen_EV_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
             break;
         case 36:               // Lower Floor by Value Times 8
             buttonSuccess = Hexen_EV_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
             break;
+        // 37: LS_Floor_MoveToValue
+        // 38: LS_Ceiling_Waggle
+        // 39: LS_Teleport_ZombieChanger
         case 40:               // Ceiling Lower by Value
             buttonSuccess = Hexen_EV_DoCeiling(line, args, CLEV_LOWERBYVALUE);
             break;
@@ -4800,6 +4811,19 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 46:               // Floor Crush Stop
             buttonSuccess = EV_FloorCrushStop(line, args);
             break;
+        // 47: LS_Ceiling_MoveToValue
+        // 48: LS_NOP Sector_Attach3dMidtex
+        // 49: LS_GlassBreak
+        // 50: LS_NOP ExtraFloor_LightOnly
+        // 51: LS_Sector_SetLink
+        // 52: LS_Scroll_Wall
+        // 53: LS_Line_SetTextureOffset
+        // 54: LS_Sector_ChangeFlags
+        // 55: LS_Line_SetBlocking
+        // 56: LS_Line_SetTextureScale
+        // 57: LS_NOP Sector_SetPortal
+        // 58: LS_NOP Sector_CopyScroller
+        // 59: LS_Polyobj_OR_MoveToSpot
         case 60:               // Plat Perpetual Raise
             buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
             break;
@@ -4890,6 +4914,10 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
                 }
             }
             break;
+        // 76: LS_TeleportOther
+        // 77: LS_TeleportGroup
+        // 78: LS_TeleportInSector
+        // 79: LS_Thing_SetConversation
         case 80:               // ACS_Execute
             buttonSuccess =
                 P_StartACS(args[0], args[1], &args[2], mo, line, side);
@@ -4903,6 +4931,12 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 83:               // ACS_LockedExecute
             buttonSuccess = P_StartLockedACS(line, args, mo, side);
             break;
+        // 84: LS_ACS_ExecuteWithResult
+        // 85: LS_ACS_LockedExecuteDoor
+        // 86: LS_Polyobj_MoveToSpot
+        // 87: LS_Polyobj_Stop
+        // 88: LS_Polyobj_MoveTo
+        // 89: LS_Polyobj_OR_MoveTo
         case 90:               // Poly Rotate Left Override
             buttonSuccess = EV_RotatePoly(line, args, 1, true);
             break;
@@ -4924,6 +4958,15 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 96:               // Raise Floor and Ceiling
             buttonSuccess = EV_DoFloorAndCeiling(line, args, true);
             break;
+        // 100: Scroll_Texture_Left
+        // 101: Scroll_Texture_Right
+        // 102: Scroll_Texture_Up
+        // 103: Scroll_Texture_Down
+        // 104: LS_Ceiling_CrushAndRaiseSilentDist
+        // 105: LS_Door_WaitRaise
+        // 106: LS_Door_WaitClose
+        // 107: LS_Line_SetPortalTarget
+        // 108: LS_NOP
         case 109:              // Force Lightning
             buttonSuccess = true;
             P_ForceLightning();
@@ -4949,9 +4992,20 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 116:              // Light Strobe
             buttonSuccess = EV_SpawnLight(line, args, LITE_STROBE);
             break;
+        // 117: LS_Light_Stop
+        // 118: LS_NOP Plane_Copy
+        // 119: LS_Thing_Damage
         case 120:              // Quake Tremor
             buttonSuccess = A_LocalQuake(args, mo);
             break;
+        // 121: Line_SetIdentification
+        // 122: LS_NOP
+        // 123: LS_NOP
+        // 124: LS_NOP
+        // 125: LS_Thing_Move
+        // 126: LS_NOP
+        // 127: LS_Thing_SetSpecial
+        // 128: LS_ThrustThingZ
         case 129:              // UsePuzzleItem
             buttonSuccess = EV_LineSearchForPuzzleItem(line, args, mo);
             break;
@@ -4983,18 +5037,125 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
             buttonSuccess = EV_StartFloorWaggle(args[0], args[1],
                                                 args[2], args[3], args[4]);
             break;
+        // 139: LS_Thing_SpawnFacing
         case 140:              // Sector_SoundChange
             buttonSuccess = EV_SectorSoundChange(args);
             break;
-
-            // Line specials only processed during level initialization
-            // 100: Scroll_Texture_Left
-            // 101: Scroll_Texture_Right
-            // 102: Scroll_Texture_Up
-            // 103: Scroll_Texture_Down
-            // 121: Line_SetIdentification
-
-            // Inert Line specials
+        // 141: LS_NOP
+        // 142: LS_NOP
+        // 143: LS_NOP
+        // 144: LS_NOP
+        // 145: LS_NOP Player_SetTeam
+        // 146: LS_NOP
+        // 147: LS_NOP
+        // 148: LS_NOP
+        // 149: LS_NOP
+        // 150: LS_NOP
+        // 151: LS_NOP
+        // 152: LS_NOP Team_Score
+        // 153: LS_NOP Team_GivePoints
+        // 154: LS_Teleport_NoStop
+        // 155: LS_NOP
+        // 156: LS_NOP
+        // 157: LS_NOP SetGlobalFogParameter
+        // 158: LS_FS_Execute
+        // 159: LS_NOP Sector_SetPlaneReflection
+        // 160: LS_NOP Sector_Set3DFloor
+        // 161: LS_NOP Sector_SetContents
+        // 162: LS_NOP Reserved Doom64 branch
+        // 163: LS_NOP Reserved Doom64 branch
+        // 164: LS_NOP Reserved Doom64 branch
+        // 165: LS_NOP Reserved Doom64 branch
+        // 166: LS_NOP Reserved Doom64 branch
+        // 167: LS_NOP Reserved Doom64 branch
+        // 168: LS_Ceiling_CrushAndRaiseDist
+        // 169: LS_Generic_Crusher2
+        // 170: LS_Sector_SetCeilingScale2
+        // 171: LS_Sector_SetFloorScale2
+        // 172: LS_Plat_UpNearestWaitDownStay
+        // 173: LS_NoiseAlert
+        // 174: LS_SendToCommunicator
+        // 175: LS_Thing_ProjectileIntercept
+        // 176: LS_Thing_ChangeTID
+        // 177: LS_Thing_Hate
+        // 178: LS_Thing_ProjectileAimed
+        // 179: LS_ChangeSkill
+        // 180: LS_Thing_SetTranslation
+        // 181: LS_NOP Plane_Align
+        // 182: LS_NOP Line_Mirror
+        // 183: LS_Line_AlignCeiling
+        // 184: LS_Line_AlignFloor
+        // 185: LS_Sector_SetRotation
+        // 186: LS_Sector_SetCeilingPanning
+        // 187: LS_Sector_SetFloorPanning
+        // 188: LS_Sector_SetCeilingScale
+        // 189: LS_Sector_SetFloorScale
+        // 190: LS_NOP Static_Init
+        // 191: LS_SetPlayerProperty
+        // 192: LS_Ceiling_LowerToHighestFloor
+        // 193: LS_Ceiling_LowerInstant
+        // 194: LS_Ceiling_RaiseInstant
+        // 195: LS_Ceiling_CrushRaiseAndStayA
+        // 196: LS_Ceiling_CrushAndRaiseA
+        // 197: LS_Ceiling_CrushAndRaiseSilentA
+        // 198: LS_Ceiling_RaiseByValueTimes8
+        // 199: LS_Ceiling_LowerByValueTimes8
+        // 200: LS_Generic_Floor
+        // 201: LS_Generic_Ceiling
+        // 202: LS_Generic_Door
+        // 203: LS_Generic_Lift
+        // 204: LS_Generic_Stairs
+        // 205: LS_Generic_Crusher
+        // 206: LS_Plat_DownWaitUpStayLip
+        // 207: LS_Plat_PerpetualRaiseLip
+        // 208: LS_TranslucentLine
+        // 209: LS_NOP Transfer_Heights
+        // 210: LS_NOP Transfer_FloorLight
+        // 211: LS_NOP Transfer_CeilingLight
+        // 212: LS_Sector_SetColor
+        // 213: LS_Sector_SetFade
+        // 214: LS_Sector_SetDamage
+        // 215: LS_Teleport_Line
+        // 216: LS_Sector_SetGravity
+        // 217: LS_Stairs_BuildUpDoom
+        // 218: LS_Sector_SetWind
+        // 219: LS_Sector_SetFriction
+        // 220: LS_Sector_SetCurrent
+        // 221: LS_Scroll_Texture_Both
+        // 222: LS_NOP Scroll_Texture_Model
+        // 223: LS_Scroll_Floor
+        // 224: LS_Scroll_Ceiling
+        // 225: LS_NOP Scroll_Texture_Offsets
+        // 226: LS_ACS_ExecuteAlways
+        // 227: LS_PointPush_SetForce
+        // 228: LS_Plat_RaiseAndStayTx0
+        // 229: LS_Thing_SetGoal
+        // 230: LS_Plat_UpByValueStayTx
+        // 231: LS_Plat_ToggleCeiling
+        // 232: LS_Light_StrobeDoom
+        // 233: LS_Light_MinNeighbor
+        // 234: LS_Light_MaxNeighbor
+        // 235: LS_Floor_TransferTrigger
+        // 236: LS_Floor_TransferNumeric
+        // 237: LS_ChangeCamera
+        // 238: LS_Floor_RaiseToLowestCeiling
+        // 239: LS_Floor_RaiseByValueTxTy
+        // 240: LS_Floor_RaiseByTexture
+        // 241: LS_Floor_LowerToLowestTxTy
+        // 242: LS_Floor_LowerToHighest
+        // 243: LS_Exit_Normal
+        // 244: LS_Exit_Secret
+        // 245: LS_Elevator_RaiseToNearest
+        // 246: LS_Elevator_MoveToFloor
+        // 247: LS_Elevator_LowerToNearest
+        // 248: LS_HealThing
+        // 249: LS_Door_CloseWaitOpen
+        // 250: LS_Floor_Donut
+        // 251: LS_FloorAndCeiling_LowerRaise
+        // 252: LS_Ceiling_RaiseToNearest
+        // 253: LS_Ceiling_LowerToLowest
+        // 254: LS_Ceiling_LowerToFloor
+        // 255: LS_Ceiling_CrushRaiseAndStaySilA
         default:
             break;
     }
