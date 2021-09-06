@@ -168,6 +168,7 @@ const char *const standard_iwads[]=
 
   "hacx.wad",
   "chex.wad",
+  "rekkrsa.wad",
 
   "bfgdoom2.wad",
   "bfgdoom.wad",
@@ -848,8 +849,7 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
 {
   if ( !access (iwadname,R_OK) )
   {
-    int ud=0,rg=0,sw=0,cm=0,sc=0,hx=0,cq=0;
-    dboolean noiwad=0;
+    int ud=0,rg=0,sw=0,cm=0,sc=0,hx=0;
     FILE* fp;
 
     // Identify IWAD correctly
@@ -865,7 +865,7 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
 
         if (strncmp(header.identification, "IWAD", 4)) // missing IWAD tag in header
         {
-          noiwad++;
+          lprintf(LO_WARN,"CheckIWAD: IWAD tag %s not present\n", iwadname);
         }
 
         // read IWAD directory
@@ -910,14 +910,8 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
             bfgedition++;
           if (!strncmp(fileinfo[length].name,"HACX",4))
             hx++;
-          if (!strncmp(fileinfo[length].name,"W94_1",5) ||
-              !strncmp(fileinfo[length].name,"POSSH0M0",8))
-            cq++;
         }
         free(fileinfo);
-
-        if (noiwad && !bfgedition && cq < 2)
-          I_Error("CheckIWAD: IWAD tag %s not present", iwadname);
 
       }
     }
