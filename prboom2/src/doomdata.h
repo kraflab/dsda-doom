@@ -308,6 +308,11 @@ typedef struct {
 #define SPAC_PUSH		4       // when player/monster pushes line
 #define SPAC_PCROSS		5       // when projectile crosses line
 
+// extensions
+#define ML_MONSTERSCANACTIVATE 0x2000 // Monsters and players can activate
+#define ML_BLOCK_PLAYERS       0x4000 // Blocks players
+#define ML_BLOCKEVERYTHING     0x8000 // Blocks everything
+
 #ifdef _MSC_VER
 #pragma pack(pop)
 #endif //_MSC_VER
