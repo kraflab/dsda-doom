@@ -7,6 +7,7 @@
 - P_ExecuteLineSpecial ~170 specials
 
 ### Sectors
+- Abstract sector special masks
 - Pending
 
 ### Things to Check
