@@ -192,17 +192,28 @@ int P_GetFriction(const mobj_t *mo, int *frictionfactor)
   }
   else
   {
-  if (!(mo->flags & (MF_NOCLIP|MF_NOGRAVITY))
-      && (mbf_features || (mo->player && !compatibility)) &&
-      variable_friction)
-    for (m = mo->touching_sectorlist; m; m = m->m_tnext)
-      if ((sec = m->m_sector)->special & FRICTION_MASK &&
-    (sec->friction < friction || friction == ORIG_FRICTION) &&
-    (mo->z <= sec->floorheight ||
-     (sec->heightsec != -1 &&
-      mo->z <= sectors[sec->heightsec].floorheight &&
-      mbf_features)))
-  friction = sec->friction, movefactor = sec->movefactor;
+    if (
+      !(mo->flags & (MF_NOCLIP | MF_NOGRAVITY)) &&
+      (mbf_features || (mo->player && !compatibility)) &&
+      variable_friction
+    )
+      for (m = mo->touching_sectorlist; m; m = m->m_tnext)
+        if (
+          (sec = m->m_sector)->special & FRICTION_MASK &&
+          (sec->friction < friction || friction == ORIG_FRICTION) &&
+          (
+            mo->z <= sec->floorheight ||
+            (
+              sec->heightsec != -1 &&
+              mo->z <= sectors[sec->heightsec].floorheight &&
+              mbf_features
+            )
+          )
+        )
+        {
+          friction = sec->friction;
+          movefactor = sec->movefactor;
+        }
   }
 
   if (frictionfactor)
