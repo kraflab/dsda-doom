@@ -992,7 +992,6 @@ static void P_LoadSectors (int lump)
       ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
       ss->lightlevel = LittleShort(ms->lightlevel);
       ss->special = LittleShort(ms->special);
-      ss->oldspecial = LittleShort(ms->special);
       ss->tag = LittleShort(ms->tag);
       ss->thinglist = NULL;
       ss->touching_thinglist = NULL;            // phares 3/14/98

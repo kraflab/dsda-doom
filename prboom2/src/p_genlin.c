@@ -120,8 +120,7 @@ manual_floor:
     floor->sector = sec;
     floor->texture = sec->floorpic;
     floor->newspecial = sec->special;
-    //jff 3/14/98 transfer old special field too
-    floor->oldspecial = sec->oldspecial;
+    P_TransferSectorFlags(&floor->flags, sec->flags);
     floor->type = genFloor;
 
     // set the speed of motion
@@ -203,14 +202,12 @@ manual_floor:
           {
             case FChgZero:  // zero type
               floor->newspecial = 0;
-              //jff 3/14/98 change old field too
-              floor->oldspecial = 0;
+              P_ResetSectorTransferFlags(&floor->flags);
               floor->type = genFloorChg0;
               break;
             case FChgTyp:   // copy type
               floor->newspecial = sec->special;
-              //jff 3/14/98 change old field too
-              floor->oldspecial = sec->oldspecial;
+              P_TransferSectorFlags(&floor->flags, sec->flags);
               floor->type = genFloorChgT;
               break;
             case FChgTxt:   // leave type be
@@ -228,14 +225,12 @@ manual_floor:
         {
           case FChgZero:    // zero type
             floor->newspecial = 0;
-            //jff 3/14/98 change old field too
-            floor->oldspecial = 0;
+            P_ResetSectorTransferFlags(&floor->flags);
             floor->type = genFloorChg0;
             break;
           case FChgTyp:     // copy type
             floor->newspecial = line->frontsector->special;
-            //jff 3/14/98 change old field too
-            floor->oldspecial = line->frontsector->oldspecial;
+            P_TransferSectorFlags(&floor->flags, line->frontsector->flags);
             floor->type = genFloorChgT;
             break;
           case FChgTxt:     // leave type be
@@ -325,8 +320,7 @@ manual_ceiling:
     ceiling->sector = sec;
     ceiling->texture = sec->ceilingpic;
     ceiling->newspecial = sec->special;
-    //jff 3/14/98 change old field too
-    ceiling->oldspecial = sec->oldspecial;
+    P_TransferSectorFlags(&ceiling->flags, sec->flags);
     ceiling->tag = sec->tag;
     ceiling->type = genCeiling;
 
@@ -412,14 +406,12 @@ manual_ceiling:
           {
             case CChgZero:  // type is zeroed
               ceiling->newspecial = 0;
-              //jff 3/14/98 change old field too
-              ceiling->oldspecial = 0;
+              P_ResetSectorTransferFlags(&ceiling->flags);
               ceiling->type = genCeilingChg0;
               break;
             case CChgTyp:   // type is copied
               ceiling->newspecial = sec->special;
-              //jff 3/14/98 change old field too
-              ceiling->oldspecial = sec->oldspecial;
+              P_TransferSectorFlags(&ceiling->flags, sec->flags);
               ceiling->type = genCeilingChgT;
               break;
             case CChgTxt:   // type is left alone
@@ -437,14 +429,12 @@ manual_ceiling:
         {
           case CChgZero:    // type is zeroed
             ceiling->newspecial = 0;
-            //jff 3/14/98 change old field too
-            ceiling->oldspecial = 0;
+            P_ResetSectorTransferFlags(&ceiling->flags);
             ceiling->type = genCeilingChg0;
             break;
           case CChgTyp:     // type is copied
             ceiling->newspecial = line->frontsector->special;
-            //jff 3/14/98 change old field too
-            ceiling->oldspecial = line->frontsector->oldspecial;
+            P_TransferSectorFlags(&ceiling->flags, line->frontsector->flags);
             ceiling->type = genCeilingChgT;
             break;
           case CChgTxt:     // type is left alone

@@ -1220,6 +1220,45 @@ int P_CheckTag(line_t *line)
   return 0;       // zero tag not allowed
 }
 
+void P_TransferSectorFlags(unsigned int *dest, unsigned int source)
+{
+  *dest &= ~SECF_TRANSFERMASK;
+  *dest |= source & SECF_TRANSFERMASK;
+}
+
+void P_ResetSectorTransferFlags(unsigned int *flags)
+{
+  *flags &= ~SECF_TRANSFERMASK;
+}
+
+static void P_AddSectorSecret(sector_t *sector)
+{
+  totalsecret++;
+  sector->flags |= SECF_SECRET | SECF_WASSECRET;
+}
+
+static void P_CollectSecretCommon(sector_t *sector, player_t *player)
+{
+  player->secretcount++;
+  sector->flags &= ~SECF_SECRET;
+
+  dsda_WatchSecret();
+}
+
+static void P_CollectSecretVanilla(sector_t *sector, player_t *player)
+{
+  sector->special = 0;
+  P_CollectSecretCommon(sector, player);
+}
+
+static void P_CollectSecretBoom(sector_t *sector, player_t *player)
+{
+  sector->special &= ~SECRET_MASK;
+  if (sector->special < 32) // if all extended bits clear,
+    sector->special = 0;    // sector is not special anymore
+
+  P_CollectSecretCommon(sector, player);
+}
 
 //
 // P_IsSecret()
@@ -1232,7 +1271,7 @@ int P_CheckTag(line_t *line)
 //
 dboolean PUREFUNC P_IsSecret(const sector_t *sec)
 {
-  return (sec->special==9 || (sec->special&SECRET_MASK));
+  return (sec->flags & SECF_SECRET) != 0;
 }
 
 
@@ -1247,7 +1286,7 @@ dboolean PUREFUNC P_IsSecret(const sector_t *sec)
 //
 dboolean PUREFUNC P_WasSecret(const sector_t *sec)
 {
-  return (sec->oldspecial==9 || (sec->oldspecial&SECRET_MASK));
+  return (sec->flags & SECF_WASSECRET) != 0;
 }
 
 static void HexenFormat_P_CrossSpecialLine(line_t *line, int side, mobj_t *thing)
@@ -2448,17 +2487,14 @@ void P_PlayerInSpecialSector (player_t* player)
         break;
 
       case 9:
-        // Tally player in secret sector, clear secret special
-        player->secretcount++;
-        sector->special = 0;
+        P_CollectSecretVanilla(sector, player);
+
         //e6y
         if (hudadd_secretarea)
         {
           int sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_secret]) < 0 ? sfx_itmbk : sfx_secret);
           SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
         }
-
-        dsda_WatchSecret();
 
         break;
 
@@ -2536,18 +2572,14 @@ void P_PlayerInSpecialSector (player_t* player)
     }
     if (sector->special&SECRET_MASK)
     {
-      player->secretcount++;
-      sector->special &= ~SECRET_MASK;
-      if (sector->special<32) // if all extended bits clear,
-        sector->special=0;    // sector is not special anymore
+      P_CollectSecretBoom(sector, player);
+
       //e6y
       if (hudadd_secretarea)
       {
         int sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_secret]) < 0 ? sfx_itmbk : sfx_secret);
         SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
       }
-
-      dsda_WatchSecret();
     }
 
     // phares 3/19/98:
@@ -2708,7 +2740,7 @@ void P_UpdateSpecials (void)
 void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
 {
   if (sector->special & SECRET_MASK) //jff 3/15/98 count extended
-    totalsecret++;                   // secret sectors too
+    P_AddSectorSecret(sector);
 
   switch ((demo_compatibility && !prboom_comp[PC_TRUNCATED_SECTOR_SPECIALS].state) ?
           sector->special : sector->special & 31)
@@ -2744,7 +2776,7 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
     case 9:
       // secret sector
       if (sector->special < 32) //jff 3/14/98 bits don't count unless not
-        totalsecret++;          // a generalized sector type
+        P_AddSectorSecret(sector);
       break;
 
     case 10:
@@ -4436,16 +4468,13 @@ static void Heretic_P_PlayerInSpecialSector(player_t * player)
             }
             break;
         case 9:                // SecretArea
-            player->secretcount++;
-            sector->special = 0;
+            P_CollectSecretVanilla(sector, player);
 
             //e6y
             if (hudadd_secretarea)
             {
               SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, heretic_sfx_chat);
             }
-
-            dsda_WatchSecret();
 
             break;
         case 11:               // Exit_SuperDamage (DOOM E1M8 finale)
@@ -4739,8 +4768,7 @@ static void Hexen_P_PlayerInSpecialSector(player_t * player)
     switch (sector->special)
     {
         case 9:                // SecretArea
-            player->secretcount++;
-            sector->special = 0;
+            P_CollectSecretVanilla(sector, player);
             break;
 
         case 201:

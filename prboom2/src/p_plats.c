@@ -278,8 +278,7 @@ manual_plat://e6y
         plat->wait = 0;
         plat->status = up;
         sec->special = 0;
-        //jff 3/14/98 clear old field as well
-        sec->oldspecial = 0;
+        P_ResetSectorTransferFlags(&sec->flags);
 
         S_StartSound((mobj_t *)&sec->soundorg,g_sfx_stnmov_plats);
         break;
