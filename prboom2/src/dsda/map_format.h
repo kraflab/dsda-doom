@@ -19,6 +19,7 @@
 #define __DSDA_MAP_FORMAT__
 
 #include "doomtype.h"
+#include "r_defs.h"
 
 typedef struct {
   dboolean hexen;
@@ -30,6 +31,7 @@ typedef struct {
   dboolean animdefs;
   dboolean doublesky;
   dboolean map99;
+  void (*init_sector_special)(sector_t*, int);
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;

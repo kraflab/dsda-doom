@@ -2705,6 +2705,75 @@ void P_UpdateSpecials (void)
 //  scan for specials that spawn thinkers
 //
 
+void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
+{
+  if (sector->special & SECRET_MASK) //jff 3/15/98 count extended
+    totalsecret++;                   // secret sectors too
+
+  switch ((demo_compatibility && !prboom_comp[PC_TRUNCATED_SECTOR_SPECIALS].state) ?
+          sector->special : sector->special & 31)
+  {
+    case 1:
+      // random off
+      P_SpawnLightFlash(sector);
+      break;
+
+    case 2:
+      // strobe fast
+      P_SpawnStrobeFlash(sector, FASTDARK, 0);
+      break;
+
+    case 3:
+      // strobe slow
+      P_SpawnStrobeFlash(sector, SLOWDARK, 0);
+      break;
+
+    case 4:
+      // strobe fast/death slime
+      P_SpawnStrobeFlash(sector, FASTDARK, 0);
+      if (heretic)
+        sector->special = 4;
+      else
+        sector->special |= 3 << DAMAGE_SHIFT; //jff 3/14/98 put damage bits in
+      break;
+
+    case 8:
+      // glowing light
+      P_SpawnGlowingLight(sector);
+      break;
+    case 9:
+      // secret sector
+      if (sector->special < 32) //jff 3/14/98 bits don't count unless not
+        totalsecret++;          // a generalized sector type
+      break;
+
+    case 10:
+      // door close in 30 seconds
+      P_SpawnDoorCloseIn30(sector);
+      break;
+
+    case 12:
+      // sync strobe slow
+      P_SpawnStrobeFlash(sector, SLOWDARK, 1);
+      break;
+
+    case 13:
+      // sync strobe fast
+      P_SpawnStrobeFlash(sector, FASTDARK, 1);
+      break;
+
+    case 14:
+      // door raise in 5 minutes
+      P_SpawnDoorRaiseIn5Mins(sector, i);
+      break;
+
+    case 17:
+      // fire flickering
+      P_SpawnFireFlicker(sector);
+      break;
+  }
+}
+
 static void Hexen_P_SpawnSpecials(void);
 
 // Parses command line parameters.
@@ -2713,7 +2782,7 @@ void P_SpawnSpecials (void)
   sector_t*   sector;
   int         i;
 
-  if (map_format.hexen) return Hexen_P_SpawnSpecials();
+  if (hexen) return Hexen_P_SpawnSpecials();
 
   // See if -timer needs to be used.
   levelTimer = false;
@@ -2746,80 +2815,11 @@ void P_SpawnSpecials (void)
     levelFragLimitCount = frags;
   }
 
-
-  //  Init special sectors.
+  // Init special sectors.
   sector = sectors;
-  for (i=0 ; i<numsectors ; i++, sector++)
-  {
-    if (!sector->special)
-      continue;
-
-    if (sector->special&SECRET_MASK) //jff 3/15/98 count extended
-      totalsecret++;                 // secret sectors too
-
-    switch ((demo_compatibility && !prboom_comp[PC_TRUNCATED_SECTOR_SPECIALS].state) ?
-      sector->special : sector->special&31)
-    {
-      case 1:
-        // random off
-        P_SpawnLightFlash (sector);
-        break;
-
-      case 2:
-        // strobe fast
-        P_SpawnStrobeFlash(sector,FASTDARK,0);
-        break;
-
-      case 3:
-        // strobe slow
-        P_SpawnStrobeFlash(sector,SLOWDARK,0);
-        break;
-
-      case 4:
-        // strobe fast/death slime
-        P_SpawnStrobeFlash(sector,FASTDARK,0);
-        if (heretic)
-          sector->special = 4;
-        else
-          sector->special |= 3<<DAMAGE_SHIFT; //jff 3/14/98 put damage bits in
-        break;
-
-      case 8:
-        // glowing light
-        P_SpawnGlowingLight(sector);
-        break;
-      case 9:
-        // secret sector
-        if (sector->special<32) //jff 3/14/98 bits don't count unless not
-          totalsecret++;        // a generalized sector type
-        break;
-
-      case 10:
-        // door close in 30 seconds
-        P_SpawnDoorCloseIn30 (sector);
-        break;
-
-      case 12:
-        // sync strobe slow
-        P_SpawnStrobeFlash (sector, SLOWDARK, 1);
-        break;
-
-      case 13:
-        // sync strobe fast
-        P_SpawnStrobeFlash (sector, FASTDARK, 1);
-        break;
-
-      case 14:
-        // door raise in 5 minutes
-        P_SpawnDoorRaiseIn5Mins (sector, i);
-        break;
-
-      case 17:
-        // fire flickering
-        P_SpawnFireFlicker(sector);
-        break;
-    }
-  }
+  for (i = 0; i < numsectors; i++, sector++)
+    if (sector->special)
+      map_format.init_sector_special(sector, i);
 
   if (heretic) P_SpawnLineSpecials();
 
