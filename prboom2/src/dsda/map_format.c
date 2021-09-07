@@ -129,6 +129,7 @@ static void dsda_MigrateMobjInfo(void) {
 
 void dsda_ApplyMapFormat(void) {
   extern void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i);
+  extern void P_SpawnZDoomSectorSpecial(sector_t *sector, int i);
 
   // if (W_CheckNumForName("BEHAVIOR") >= 0) {
   //   if (!hexen)
@@ -136,7 +137,21 @@ void dsda_ApplyMapFormat(void) {
 
   // Can't just look for BEHAVIOR lumps, because some wads have vanilla and non-vanilla maps
   // Need proper per-map format swapping
-  if (hexen) {
+  if (false) { // in-hexen zdoom format
+    map_format.hexen = true;
+    map_format.polyobjs = false;
+    map_format.acs = false;
+    map_format.mapinfo = false;
+    map_format.sndseq = false;
+    map_format.sndinfo = false;
+    map_format.animdefs = false;
+    map_format.doublesky = false;
+    map_format.map99 = false;
+    map_format.init_sector_special = P_SpawnZDoomSectorSpecial;
+    map_format.mapthing_size = sizeof(mapthing_t);
+    map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
+  }
+  else if (hexen) {
     map_format.hexen = true;
     map_format.polyobjs = true;
     map_format.acs = true;

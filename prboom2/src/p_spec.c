@@ -2774,6 +2774,159 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
   }
 }
 
+void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
+{
+  I_Error("P_SpawnZDoomSectorSpecial is not implemented yet :^)");
+  // // [RH] All secret sectors are marked with a BOOM-ish bitfield
+  // if (sector->special & SECRET_MASK)
+  // {
+  //   sector->Flags |= SECF_SECRET | SECF_WASSECRET;
+  //   level.total_secrets++;
+  // }
+  // if (sector->special & FRICTION_MASK)
+  // {
+  //   sector->Flags |= SECF_FRICTION;
+  // }
+  // if (sector->special & PUSH_MASK)
+  // {
+  //   sector->Flags |= SECF_PUSH;
+  // }
+  // if ((sector->special & DAMAGE_MASK) == 0x100)
+  // {
+  //   P_SetupSectorDamage(sector, 5, 32, 0, NAME_Fire, 0);
+  // }
+  // else if ((sector->special & DAMAGE_MASK) == 0x200)
+  // {
+  //   P_SetupSectorDamage(sector, 10, 32, 0, NAME_Slime, 0);
+  // }
+  // else if ((sector->special & DAMAGE_MASK) == 0x300)
+  // {
+  //   P_SetupSectorDamage(sector, 20, 32, 5, NAME_Slime, 0);
+  // }
+  // sector->special &= 0xff;
+  //
+  // // [RH] Normal DOOM special or BOOM specialized?
+  // bool keepspecial = false;
+  // P_SpawnLights(sector);
+  // switch (sector->special)
+  // {
+  // case dLight_Strobe_Hurt:
+  //   P_SetupSectorDamage(sector, 20, 32, 5, NAME_Slime, 0);
+  //   break;
+  //
+  // case dDamage_Hellslime:
+  //   P_SetupSectorDamage(sector, 10, 32, 0, NAME_Slime, 0);
+  //   break;
+  //
+  // case dDamage_Nukage:
+  //   P_SetupSectorDamage(sector, 5, 32, 0, NAME_Slime, 0);
+  //   break;
+  //
+  // case dSector_DoorCloseIn30:
+  //   new DDoor(sector, DDoor::doorWaitClose, 2, 0, 0, 30 * TICRATE);
+  //   break;
+  //
+  // case dDamage_End:
+  //   P_SetupSectorDamage(sector, 20, 32, 256, NAME_None, SECF_ENDGODMODE|SECF_ENDLEVEL);
+  //   break;
+  //
+  // case dSector_DoorRaiseIn5Mins:
+  //   new DDoor (sector, DDoor::doorWaitRaise, 2, TICRATE*30/7, 0, 5*60*TICRATE);
+  //   break;
+  //
+  // case dFriction_Low:
+  //   sector->friction = FRICTION_LOW;
+  //   sector->movefactor = 0x269/65536.;
+  //   sector->Flags |= SECF_FRICTION;
+  //   break;
+  //
+  // case dDamage_SuperHellslime:
+  //   P_SetupSectorDamage(sector, 20, 32, 5, NAME_Slime, 0);
+  //   break;
+  //
+  // case dDamage_LavaWimpy:
+  //   P_SetupSectorDamage(sector, 5, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
+  //   break;
+  //
+  // case dDamage_LavaHefty:
+  //   P_SetupSectorDamage(sector, 8, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
+  //   break;
+  //
+  // case dScroll_EastLavaDamage:
+  //   P_SetupSectorDamage(sector, 5, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
+  //   P_CreateScroller(EScroll::sc_floor, -4., 0, -1, int(sector - sectors), 0);
+  //   keepspecial = true;
+  //   break;
+  //
+  // case hDamage_Sludge:
+  //   P_SetupSectorDamage(sector, 4, 32, 0, NAME_Slime, 0);
+  //   break;
+  //
+  // case sLight_Strobe_Hurt:
+  //   P_SetupSectorDamage(sector, 5, 32, 0, NAME_Slime, 0);
+  //   break;
+  //
+  // case sDamage_Hellslime:
+  //   P_SetupSectorDamage(sector, 2, 32, 0, NAME_Slime, SECF_HAZARD);
+  //   break;
+  //
+  // case Damage_InstantDeath:
+  //   // Strife's instant death sector
+  //   P_SetupSectorDamage(sector, TELEFRAG_DAMAGE, 1, 256, NAME_InstantDeath, 0);
+  //   break;
+  //
+  // case sDamage_SuperHellslime:
+  //   P_SetupSectorDamage(sector, 4, 32, 0, NAME_Slime, SECF_HAZARD);
+  //   break;
+  //
+  // case Sector_Hidden:
+  //   sector->MoreFlags |= SECF_HIDDEN;
+  //   break;
+  //
+  // case Sector_Heal:
+  //   // CoD's healing sector
+  //   P_SetupSectorDamage(sector, -1, 32, 0, NAME_None, 0);
+  //   break;
+  //
+  // case Sky2:
+  //   sector->sky = PL_SKYFLAT;
+  //   break;
+  //
+  // default:
+  //   if (sector->special >= Scroll_North_Slow &&
+  //     sector->special <= Scroll_SouthWest_Fast)
+  //   { // Hexen scroll special
+  //     static const SBYTE hexenScrollies[24][2] =
+  //     {
+  //       {  0,  1 }, {  0,  2 }, {  0,  4 },
+  //       { -1,  0 }, { -2,  0 }, { -4,  0 },
+  //       {  0, -1 }, {  0, -2 }, {  0, -4 },
+  //       {  1,  0 }, {  2,  0 }, {  4,  0 },
+  //       {  1,  1 }, {  2,  2 }, {  4,  4 },
+  //       { -1,  1 }, { -2,  2 }, { -4,  4 },
+  //       { -1, -1 }, { -2, -2 }, { -4, -4 },
+  //       {  1, -1 }, {  2, -2 }, {  4, -4 }
+  //     };
+  //
+  //
+  //     int i = sector->special - Scroll_North_Slow;
+  //     double dx = hexenScrollies[i][0] / 2.;
+  //     double dy = hexenScrollies[i][1] / 2.;
+  //     P_CreateScroller(EScroll::sc_floor, dx, dy, -1, int(sector-sectors), 0);
+  //   }
+  //   else if (sector->special >= Carry_East5 &&
+  //         sector->special <= Carry_East35)
+  //   { // Heretic scroll special
+  //     // Only east scrollers also scroll the texture
+  //     P_CreateScroller(EScroll::sc_floor,
+  //       -0.5 * (1 << ((sector->special & 0xff) - Carry_East5)), 0, -1, int(sector-sectors), 0);
+  //   }
+  //   keepspecial = true;
+  //   break;
+  // }
+  // if (!keepspecial) sector->special = 0;
+}
+
 static void Hexen_P_SpawnSpecials(void);
 
 // Parses command line parameters.
