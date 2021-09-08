@@ -2806,6 +2806,11 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
   }
 }
 
+#define ZDOOM_DAMAGE_MASK   0x0300
+#define ZDOOM_SECRET_MASK   0x0400
+#define ZDOOM_FRICTION_MASK 0x0800
+#define ZDOOM_PUSH_MASK     0x1000
+
 void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
 {
   I_Error("P_SpawnZDoomSectorSpecial is not implemented yet :^)");
