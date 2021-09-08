@@ -293,8 +293,7 @@ void T_MoveFloor(floormove_t* floor)
         case genFloorChgT:
         case genFloorChg0:
           floor->sector->special = floor->newspecial;
-          //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial;
+          P_TransferSectorFlags(&floor->sector->flags, floor->flags);
           //fall thru
         case genFloorChg:
           floor->sector->floorpic = floor->texture;
@@ -309,15 +308,13 @@ void T_MoveFloor(floormove_t* floor)
       {
         case lowerAndChange:
           floor->sector->special = floor->newspecial;
-          //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial; // heretic_note: here and elsewhere, not in heretic
+          P_TransferSectorFlags(&floor->sector->flags, floor->flags);
           floor->sector->floorpic = floor->texture;
           break;
         case genFloorChgT:
         case genFloorChg0:
           floor->sector->special = floor->newspecial;
-          //jff add to fix bug in special transfers from changes
-          floor->sector->oldspecial = floor->oldspecial;
+          P_TransferSectorFlags(&floor->sector->flags, floor->flags);
           //fall thru
         case genFloorChg:
           floor->sector->floorpic = floor->texture;
@@ -596,8 +593,7 @@ manual_floor://e6y
         floor->floordestheight = floor->sector->floorheight + 24 * FRACUNIT;
         sec->floorpic = line->frontsector->floorpic;
         sec->special = line->frontsector->special;
-        //jff 3/14/98 transfer both old and new special
-        sec->oldspecial = line->frontsector->oldspecial;
+        P_TransferSectorFlags(&sec->flags, line->frontsector->flags);
         break;
 
       case raiseToTexture:
@@ -652,8 +648,7 @@ manual_floor://e6y
         // in case no surrounding sector is at floordestheight
         // --> should not affect compatibility <--
         floor->newspecial = sec->special;
-        //jff 3/14/98 transfer both old and new special
-        floor->oldspecial = sec->oldspecial;
+        P_TransferSectorFlags(&floor->flags, sec->flags);
 
         //jff 5/23/98 use model subroutine to unify fixes and handling
         sec = P_FindModelFloorSector(floor->floordestheight,sec->iSectorID);
@@ -661,8 +656,7 @@ manual_floor://e6y
         {
           floor->texture = sec->floorpic;
           floor->newspecial = sec->special;
-          //jff 3/14/98 transfer both old and new special
-          floor->oldspecial = sec->oldspecial;
+          P_TransferSectorFlags(&floor->flags, sec->flags);
         }
         break;
       default:
@@ -708,7 +702,7 @@ int EV_DoChange
       case trigChangeOnly:
         sec->floorpic = line->frontsector->floorpic;
         sec->special = line->frontsector->special;
-        sec->oldspecial = line->frontsector->oldspecial;
+        P_TransferSectorFlags(&sec->flags, line->frontsector->flags);
         break;
       case numChangeOnly:
         secm = P_FindModelFloorSector(sec->floorheight,secnum);
@@ -716,7 +710,7 @@ int EV_DoChange
         {
           sec->floorpic = secm->floorpic;
           sec->special = secm->special;
-          sec->oldspecial = secm->oldspecial;
+          P_TransferSectorFlags(&sec->flags, secm->flags);
         }
         break;
       default:

@@ -101,6 +101,9 @@ typedef struct
 #define NULL_SECTOR                0x00000008
 #define MISSING_TOPTEXTURES        0x00000010
 #define MISSING_BOTTOMTEXTURES     0x00000020
+#define SECF_SECRET                0x00000040
+#define SECF_WASSECRET             0x00000080
+#define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET)
 
 typedef struct
 {
@@ -164,7 +167,7 @@ typedef struct
   short ceilingpic;
   short lightlevel;
   short special;
-  short oldspecial;      //jff 2/16/98 remembers if sector WAS secret (automap)
+  short ignored; // save removal for next save compatibility break
   short tag;
 
   // [kb] For R_FixWiggle

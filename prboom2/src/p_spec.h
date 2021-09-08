@@ -732,7 +732,7 @@ typedef struct
 
   //jff 02/04/98 add these to support ceiling changers
   int newspecial;
-  int oldspecial; //jff 3/14/98 add to fix bug in change transfers
+  unsigned int flags;
   short texture;
 
   // 1 = up, 0 = waiting, -1 = down
@@ -759,7 +759,7 @@ typedef struct
   sector_t* sector;
   int direction;
   int newspecial;
-  int oldspecial;   //jff 3/14/98 add to fix bug in change transfers
+  unsigned int flags;
   short texture;
   fixed_t floordestheight;
   fixed_t speed;
@@ -1359,5 +1359,8 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line, int side,
 void P_PlayerOnSpecialFlat(player_t * player, int floorType);
 line_t *P_FindLine(int lineTag, int *searchPosition);
 int P_FindSectorFromTag(int tag, int start);
+
+void P_TransferSectorFlags(unsigned int *dest, unsigned int source);
+void P_ResetSectorTransferFlags(unsigned int *flags);
 
 #endif
