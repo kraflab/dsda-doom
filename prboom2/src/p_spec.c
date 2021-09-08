@@ -2813,13 +2813,9 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
 
 void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
 {
-  I_Error("P_SpawnZDoomSectorSpecial is not implemented yet :^)");
-  // // [RH] All secret sectors are marked with a BOOM-ish bitfield
-  // if (sector->special & SECRET_MASK)
-  // {
-  //   sector->Flags |= SECF_SECRET | SECF_WASSECRET;
-  //   level.total_secrets++;
-  // }
+  // [RH] All secret sectors are marked with a BOOM-ish bitfield
+  if (sector->special & ZDOOM_SECRET_MASK)
+    P_AddSectorSecret(sector);
   // if (sector->special & FRICTION_MASK)
   // {
   //   sector->Flags |= SECF_FRICTION;
