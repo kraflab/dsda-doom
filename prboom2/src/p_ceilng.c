@@ -200,7 +200,6 @@ void T_MoveCeiling (ceiling_t* ceiling)
           case genCeilingChgT:
           case genCeilingChg0:
             ceiling->sector->special = ceiling->newspecial;
-            //jff add to fix bug in special transfers from changes
             P_TransferSectorFlags(&ceiling->sector->flags, ceiling->flags);
             // fallthrough
           case genCeilingChg:
