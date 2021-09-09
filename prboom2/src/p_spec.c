@@ -2806,20 +2806,11 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
   }
 }
 
-#define ZDOOM_DAMAGE_MASK   0x0300
-#define ZDOOM_SECRET_MASK   0x0400
-#define ZDOOM_FRICTION_MASK 0x0800
-#define ZDOOM_PUSH_MASK     0x1000
-
 void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
 {
-  // [RH] All secret sectors are marked with a BOOM-ish bitfield
   if (sector->special & ZDOOM_SECRET_MASK)
     P_AddSectorSecret(sector);
-  // if (sector->special & FRICTION_MASK)
-  // {
-  //   sector->Flags |= SECF_FRICTION;
-  // }
+
   // if (sector->special & PUSH_MASK)
   // {
   //   sector->Flags |= SECF_PUSH;
@@ -3425,7 +3416,7 @@ void T_Friction(friction_t *f)
     // Be sure the special sector type is still turned on. If so, proceed.
     // Else, bail out; the sector type has been changed on us.
 
-    if (!(sec->special & FRICTION_MASK))
+    if (!(sec->special & map_format.friction_mask))
         return;
 
     // Assign the friction value to players on the floor, non-floating,
