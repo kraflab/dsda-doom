@@ -1362,6 +1362,7 @@ int P_FindSectorFromTag(int tag, int start);
 
 void P_TransferSectorFlags(unsigned int *dest, unsigned int source);
 void P_ResetSectorTransferFlags(unsigned int *flags);
+void P_ClearNonGeneralizedSectorSpecial(sector_t *sector);
 
 #define ZDOOM_DAMAGE_MASK   0x0300
 #define ZDOOM_SECRET_MASK   0x0400

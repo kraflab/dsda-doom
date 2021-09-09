@@ -1231,6 +1231,15 @@ void P_ResetSectorTransferFlags(unsigned int *flags)
   *flags &= ~SECF_TRANSFERMASK;
 }
 
+void P_ClearNonGeneralizedSectorSpecial(sector_t *sector)
+{
+  // nothing special about it during gameplay
+  if (heretic)
+    sector->special = 0;
+  else
+    sector->special &= ~31; //jff 3/14/98 clear non-generalized sector type
+}
+
 static void P_AddSectorSecret(sector_t *sector)
 {
   totalsecret++;
