@@ -664,7 +664,7 @@ void P_SpawnPhasedLight(sector_t * sector, int base, int index)
     sector->lightlevel = phase->base + PhaseTable[phase->index];
     phase->thinker.function = T_Phase;
 
-    sector->special = 0;
+    P_ClearNonGeneralizedSectorSpecial(sector);
 }
 
 void P_SpawnLightSequence(sector_t * sector, int indexStep)

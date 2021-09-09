@@ -1234,7 +1234,7 @@ void P_ResetSectorTransferFlags(unsigned int *flags)
 void P_ClearNonGeneralizedSectorSpecial(sector_t *sector)
 {
   // nothing special about it during gameplay
-  if (heretic)
+  if (raven)
     sector->special = 0;
   else
     sector->special &= ~31; //jff 3/14/98 clear non-generalized sector type

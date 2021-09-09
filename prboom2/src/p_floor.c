@@ -1561,7 +1561,7 @@ int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e sta
             continue;
 
         QueueStairSector(sec, 0, sec->floorheight);
-        sec->special = 0;
+        P_ClearNonGeneralizedSectorSpecial(sec);
     }
     while ((qSec = DequeueStairSector(&type, &height)) != NULL)
     {
