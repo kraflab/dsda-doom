@@ -269,7 +269,7 @@ void S_Start(void)
     else
     {
       if (gamemode == commercial)
-        mnum = mus_runnin + WRAP(gamemap - 1, DOOM_NUMMUSIC - mus_runnin);
+        mnum = mus_runnin + WRAP(gamemap - 1, DOOM_MUSINFO - mus_runnin);
       else
       {
         static const int spmus[] =     // Song - Who? - Where?
