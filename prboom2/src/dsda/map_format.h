@@ -32,6 +32,7 @@ typedef struct {
   dboolean doublesky;
   dboolean map99;
   short friction_mask;
+  short push_mask;
   void (*init_sector_special)(sector_t*, int);
   size_t mapthing_size;
   size_t maplinedef_size;

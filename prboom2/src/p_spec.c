@@ -2811,10 +2811,6 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   if (sector->special & ZDOOM_SECRET_MASK)
     P_AddSectorSecret(sector);
 
-  // if (sector->special & PUSH_MASK)
-  // {
-  //   sector->Flags |= SECF_PUSH;
-  // }
   // if ((sector->special & DAMAGE_MASK) == 0x100)
   // {
   //   P_SetupSectorDamage(sector, 5, 32, 0, NAME_Fire, 0);
@@ -3720,7 +3716,7 @@ void T_Pusher(pusher_t *p)
     // Be sure the special sector type is still turned on. If so, proceed.
     // Else, bail out; the sector type has been changed on us.
 
-    if (!(sec->special & PUSH_MASK))
+    if (!(sec->special & map_format.push_mask))
         return;
 
     // For constant pushers (wind/current) there are 3 situations:

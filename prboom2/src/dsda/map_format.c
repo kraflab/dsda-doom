@@ -148,6 +148,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.doublesky = false;
     map_format.map99 = false;
     map_format.friction_mask = ZDOOM_FRICTION_MASK;
+    map_format.push_mask = ZDOOM_PUSH_MASK;
     map_format.init_sector_special = P_SpawnZDoomSectorSpecial;
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
@@ -163,6 +164,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.doublesky = true;
     map_format.map99 = true;
     map_format.friction_mask = 0; // not used
+    map_format.push_mask = 0; // not used
     map_format.init_sector_special = NULL; // not used
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
@@ -178,6 +180,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.doublesky = false;
     map_format.map99 = false;
     map_format.friction_mask = FRICTION_MASK;
+    map_format.push_mask = PUSH_MASK;
     map_format.init_sector_special = P_SpawnCompatibleSectorSpecial;
     map_format.mapthing_size = sizeof(doom_mapthing_t);
     map_format.maplinedef_size = sizeof(doom_maplinedef_t);
