@@ -51,7 +51,9 @@
 #include "g_overflow.h"
 #include "hu_tracers.h"
 #include "e6y.h"//e6y
+
 #include "dsda.h"
+#include "dsda/map_format.h"
 
 #include "heretic/def.h"
 
