@@ -1364,6 +1364,116 @@ void P_TransferSectorFlags(unsigned int *dest, unsigned int source);
 void P_ResetSectorTransferFlags(unsigned int *flags);
 void P_ClearNonGeneralizedSectorSpecial(sector_t *sector);
 
+typedef enum {
+  zs_light_phased            = 1,
+  zs_light_sequence_start    = 2,
+  zs_light_sequence_special1 = 3,
+  zs_light_sequence_special2 = 4,
+
+  zs_stairs_special1 = 26,
+  zs_stairs_special2 = 27,
+
+  zs_wind_east_weak    = 40,
+  zs_wind_east_medium  = 41,
+  zs_wind_east_strong  = 42,
+  zs_wind_north_weak   = 43,
+  zs_wind_north_medium = 44,
+  zs_wind_north_strong = 45,
+  zs_wind_south_weak   = 46,
+  zs_wind_south_medium = 47,
+  zs_wind_south_strong = 48,
+  zs_wind_west_weak    = 49,
+  zs_wind_west_medium  = 50,
+  zs_wind_west_strong  = 51,
+
+  zs_d_light_flicker               = 65,
+  zs_d_light_strobe_fast           = 66,
+  zs_d_light_strobe_slow           = 67,
+  zs_d_light_strobe_hurt           = 68,
+  zs_d_damage_hellslime            = 69,
+
+  zs_d_damage_nukage               = 71,
+  zs_d_light_glow                  = 72,
+
+  zs_d_sector_door_close_in_30     = 74,
+  zs_d_damage_end                  = 75,
+  zs_d_light_strobe_slow_sync      = 76,
+  zs_d_light_strobe_fast_sync      = 77,
+  zs_d_sector_door_raise_in_5_mins = 78,
+  zs_d_friction_low                = 79,
+  zs_d_damage_super_hellslime      = 80,
+  zs_d_light_fire_flicker          = 81,
+  zs_d_damage_lava_wimpy           = 82,
+  zs_d_damage_lava_hefty           = 83,
+  zs_d_scroll_east_lava_damage     = 84,
+  zs_h_damage_sludge               = 85,
+
+  zs_sector_outside                = 87,
+
+  zs_s_light_strobe_hurt      = 104,
+  zs_s_damage_hellslime       = 105,
+  zs_damage_instant_death     = 115,
+  zs_s_damage_super_hellslime = 116,
+  zs_scroll_strife_current    = 118,
+
+  zs_sector_hidden = 195,
+  zs_sector_heal   = 196,
+
+  zs_light_outdoor_lightning = 197,
+  zs_light_indoor_lightning1 = 198,
+  zs_light_indoor_lightning2 = 199,
+
+  zs_sky2 = 200,
+
+  // hexen-type scrollers
+  zs_scroll_north_slow       = 201,
+  zs_scroll_north_medium     = 202,
+  zs_scroll_north_fast       = 203,
+  zs_scroll_east_slow        = 204,
+  zs_scroll_east_medium      = 205,
+  zs_scroll_east_fast        = 206,
+  zs_scroll_south_slow       = 207,
+  zs_scroll_south_medium     = 208,
+  zs_scroll_south_fast       = 209,
+  zs_scroll_west_slow        = 210,
+  zs_scroll_west_medium      = 211,
+  zs_scroll_west_fast        = 212,
+  zs_scroll_northwest_slow   = 213,
+  zs_scroll_northwest_medium = 214,
+  zs_scroll_northwest_fast   = 215,
+  zs_scroll_northeast_slow   = 216,
+  zs_scroll_northeast_medium = 217,
+  zs_scroll_northeast_fast   = 218,
+  zs_scroll_southeast_slow   = 219,
+  zs_scroll_southeast_medium = 220,
+  zs_scroll_southeast_fast   = 221,
+  zs_scroll_southwest_slow   = 222,
+  zs_scroll_southwest_medium = 223,
+  zs_scroll_southwest_fast   = 224,
+
+  // heretic-type scrollers
+  zs_carry_east5   = 225,
+  zs_carry_east10  = 226,
+  zs_carry_east25  = 227,
+  zs_carry_east30  = 228,
+  zs_carry_east35  = 229,
+  zs_carry_north5  = 230,
+  zs_carry_north10 = 231,
+  zs_carry_north25 = 232,
+  zs_carry_north30 = 233,
+  zs_carry_north35 = 234,
+  zs_carry_south5  = 235,
+  zs_carry_south10 = 236,
+  zs_carry_south25 = 237,
+  zs_carry_south30 = 238,
+  zs_carry_south35 = 239,
+  zs_carry_west5   = 240,
+  zs_carry_west10  = 241,
+  zs_carry_west25  = 242,
+  zs_carry_west30  = 243,
+  zs_carry_west35  = 244
+} zdoom_sectorspecial_t;
+
 #define ZDOOM_DAMAGE_MASK   0x0300
 #define ZDOOM_SECRET_MASK   0x0400
 #define ZDOOM_FRICTION_MASK 0x0800

@@ -2856,91 +2856,90 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   // P_SpawnLights(sector);
   // switch (sector->special)
   // {
-  // case dLight_Strobe_Hurt:
+  // case zs_d_light_strobe_hurt:
   //   P_SetupSectorDamage(sector, 20, 32, 5, NAME_Slime, 0);
   //   break;
   //
-  // case dDamage_Hellslime:
+  // case zs_d_damage_hellslime:
   //   P_SetupSectorDamage(sector, 10, 32, 0, NAME_Slime, 0);
   //   break;
   //
-  // case dDamage_Nukage:
+  // case zs_d_damage_nukage:
   //   P_SetupSectorDamage(sector, 5, 32, 0, NAME_Slime, 0);
   //   break;
   //
-  // case dSector_DoorCloseIn30:
+  // case zs_d_sector_door_close_in_30:
   //   new DDoor(sector, DDoor::doorWaitClose, 2, 0, 0, 30 * TICRATE);
   //   break;
   //
-  // case dDamage_End:
+  // case zs_d_damage_end:
   //   P_SetupSectorDamage(sector, 20, 32, 256, NAME_None, SECF_ENDGODMODE|SECF_ENDLEVEL);
   //   break;
   //
-  // case dSector_DoorRaiseIn5Mins:
+  // case zs_d_sector_door_raise_in_5_mins:
   //   new DDoor (sector, DDoor::doorWaitRaise, 2, TICRATE*30/7, 0, 5*60*TICRATE);
   //   break;
   //
-  // case dFriction_Low:
+  // case zs_d_friction_low:
   //   sector->friction = FRICTION_LOW;
   //   sector->movefactor = 0x269/65536.;
   //   sector->Flags |= SECF_FRICTION;
   //   break;
   //
-  // case dDamage_SuperHellslime:
+  // case zs_d_damage_super_hellslime:
   //   P_SetupSectorDamage(sector, 20, 32, 5, NAME_Slime, 0);
   //   break;
   //
-  // case dDamage_LavaWimpy:
+  // case zs_d_damage_lava_wimpy:
   //   P_SetupSectorDamage(sector, 5, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
   //   break;
   //
-  // case dDamage_LavaHefty:
+  // case zs_d_damage_lava_hefty:
   //   P_SetupSectorDamage(sector, 8, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
   //   break;
   //
-  // case dScroll_EastLavaDamage:
+  // case zs_d_scroll_east_lava_damage:
   //   P_SetupSectorDamage(sector, 5, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
   //   P_CreateScroller(EScroll::sc_floor, -4., 0, -1, int(sector - sectors), 0);
   //   keepspecial = true;
   //   break;
   //
-  // case hDamage_Sludge:
+  // case zs_h_damage_sludge:
   //   P_SetupSectorDamage(sector, 4, 32, 0, NAME_Slime, 0);
   //   break;
   //
-  // case sLight_Strobe_Hurt:
+  // case zs_s_light_strobe_hurt:
   //   P_SetupSectorDamage(sector, 5, 32, 0, NAME_Slime, 0);
   //   break;
   //
-  // case sDamage_Hellslime:
+  // case zs_s_damage_hellslime:
   //   P_SetupSectorDamage(sector, 2, 32, 0, NAME_Slime, SECF_HAZARD);
   //   break;
   //
-  // case Damage_InstantDeath:
+  // case zs_damage_instant_death:
   //   // Strife's instant death sector
   //   P_SetupSectorDamage(sector, TELEFRAG_DAMAGE, 1, 256, NAME_InstantDeath, 0);
   //   break;
   //
-  // case sDamage_SuperHellslime:
+  // case zs_s_damage_super_hellslime:
   //   P_SetupSectorDamage(sector, 4, 32, 0, NAME_Slime, SECF_HAZARD);
   //   break;
   //
-  // case Sector_Hidden:
+  // case zs_sector_hidden:
   //   sector->MoreFlags |= SECF_HIDDEN;
   //   break;
   //
-  // case Sector_Heal:
-  //   // CoD's healing sector
+  // case zs_sector_heal:
   //   P_SetupSectorDamage(sector, -1, 32, 0, NAME_None, 0);
   //   break;
   //
-  // case Sky2:
+  // case zs_sky2:
   //   sector->sky = PL_SKYFLAT;
   //   break;
   //
   // default:
-  //   if (sector->special >= Scroll_North_Slow &&
-  //     sector->special <= Scroll_SouthWest_Fast)
+  //   if (sector->special >= zs_scroll_north_slow &&
+  //     sector->special <= zs_scroll_southwest_fast)
   //   { // Hexen scroll special
   //     static const SBYTE hexenScrollies[24][2] =
   //     {
@@ -2955,17 +2954,17 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //     };
   //
   //
-  //     int i = sector->special - Scroll_North_Slow;
+  //     int i = sector->special - zs_scroll_north_slow;
   //     double dx = hexenScrollies[i][0] / 2.;
   //     double dy = hexenScrollies[i][1] / 2.;
   //     P_CreateScroller(EScroll::sc_floor, dx, dy, -1, int(sector-sectors), 0);
   //   }
-  //   else if (sector->special >= Carry_East5 &&
-  //         sector->special <= Carry_East35)
+  //   else if (sector->special >= zs_carry_east5 &&
+  //         sector->special <= zs_carry_east35)
   //   { // Heretic scroll special
   //     // Only east scrollers also scroll the texture
   //     P_CreateScroller(EScroll::sc_floor,
-  //       -0.5 * (1 << ((sector->special & 0xff) - Carry_East5)), 0, -1, int(sector-sectors), 0);
+  //       -0.5 * (1 << ((sector->special & 0xff) - zs_carry_east5)), 0, -1, int(sector-sectors), 0);
   //   }
   //   keepspecial = true;
   //   break;
