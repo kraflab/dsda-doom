@@ -2575,6 +2575,28 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
 
 void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
 {
+  switch (sector->special & ZDOOM_DAMAGE_MASK)
+  {
+    case 0: // no damage
+      break;
+    case 0x100: // 5% per 31 ticks
+      if (!player->powers[pw_ironfeet])
+        if (!(leveltime & 0x1f))
+          P_DamageMobj(player->mo, NULL, NULL, 5);
+      break;
+    case 0x200: // 10% per 31 ticks
+      if (!player->powers[pw_ironfeet])
+        if (!(leveltime & 0x1f))
+          P_DamageMobj(player->mo, NULL, NULL, 10);
+      break;
+    case 0x300: // 20% per 31 ticks
+      // take damage even with suit
+      if (!player->powers[pw_ironfeet] || P_Random(pr_slimehurt) < 5)
+        if (!(leveltime & 0x1f))
+          P_DamageMobj(player->mo, NULL, NULL, 20);
+      break;
+  }
+
   if (sector->special & ZDOOM_SECRET_MASK)
   {
     P_CollectSecretZDoom(sector, player);
@@ -2827,20 +2849,8 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   if (sector->special & ZDOOM_SECRET_MASK)
     P_AddSectorSecret(sector);
 
-  // if ((sector->special & DAMAGE_MASK) == 0x100)
-  // {
-  //   P_SetupSectorDamage(sector, 5, 32, 0, NAME_Fire, 0);
-  // }
-  // else if ((sector->special & DAMAGE_MASK) == 0x200)
-  // {
-  //   P_SetupSectorDamage(sector, 10, 32, 0, NAME_Slime, 0);
-  // }
-  // else if ((sector->special & DAMAGE_MASK) == 0x300)
-  // {
-  //   P_SetupSectorDamage(sector, 20, 32, 5, NAME_Slime, 0);
-  // }
-  // sector->special &= 0xff;
-  //
+  sector->special &= 0x1fff;
+
   // // [RH] Normal DOOM special or BOOM specialized?
   // bool keepspecial = false;
   // P_SpawnLights(sector);
