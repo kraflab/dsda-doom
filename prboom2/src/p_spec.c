@@ -1269,6 +1269,12 @@ static void P_CollectSecretBoom(sector_t *sector, player_t *player)
   P_CollectSecretCommon(sector, player);
 }
 
+static void P_CollectSecretZDoom(sector_t *sector, player_t *player)
+{
+  sector->special &= ~ZDOOM_SECRET_MASK;
+  P_CollectSecretCommon(sector, player);
+}
+
 //
 // P_IsSecret()
 //
@@ -2576,7 +2582,10 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
 
 void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
 {
-
+  if (sector->special & ZDOOM_SECRET_MASK)
+  {
+    P_CollectSecretZDoom(sector, player);
+  }
 }
 
 //
