@@ -1251,6 +1251,13 @@ static void P_CollectSecretCommon(sector_t *sector, player_t *player)
   player->secretcount++;
   sector->flags &= ~SECF_SECRET;
 
+  if (hudadd_secretarea)
+  {
+    int sfx_id = raven ? g_sfx_secret :
+                 I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;
+    SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
+  }
+
   dsda_WatchSecret();
 }
 
@@ -2478,13 +2485,6 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
       case 9:
         P_CollectSecretVanilla(sector, player);
 
-        //e6y
-        if (hudadd_secretarea)
-        {
-          int sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_secret]) < 0 ? sfx_itmbk : sfx_secret);
-          SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
-        }
-
         break;
 
       case 11:
@@ -2562,13 +2562,6 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
     if (sector->special&SECRET_MASK)
     {
       P_CollectSecretBoom(sector, player);
-
-      //e6y
-      if (hudadd_secretarea)
-      {
-        int sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_secret]) < 0 ? sfx_itmbk : sfx_secret);
-        SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
-      }
     }
 
     // phares 3/19/98:
@@ -4474,12 +4467,6 @@ void P_PlayerInHereticSector(player_t * player, sector_t * sector)
             break;
         case 9:                // SecretArea
             P_CollectSecretVanilla(sector, player);
-
-            //e6y
-            if (hudadd_secretarea)
-            {
-              SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, heretic_sfx_chat);
-            }
 
             break;
         case 11:               // Exit_SuperDamage (DOOM E1M8 finale)

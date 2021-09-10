@@ -86,6 +86,7 @@ extern int g_sfx_pistol;
 extern int g_sfx_oof;
 extern int g_sfx_menu;
 extern int g_sfx_respawn;
+extern int g_sfx_secret;
 
 extern int g_door_normal;
 extern int g_door_raise_in_5_mins;
