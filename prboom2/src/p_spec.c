@@ -2588,8 +2588,8 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
 // Changed to ignore sector types the engine does not recognize
 //
 
-void Heretic_P_PlayerInSpecialSector(player_t * player, sector_t * sector);
-void Hexen_P_PlayerInSpecialSector(player_t * player, sector_t * sector);
+void P_PlayerInHereticSector(player_t * player, sector_t * sector);
+void P_PlayerInHexenSector(player_t * player, sector_t * sector);
 
 void P_PlayerInSpecialSector (player_t* player)
 {
@@ -4423,7 +4423,7 @@ void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing)
 
 #include "p_user.h"
 
-void Heretic_P_PlayerInSpecialSector(player_t * player, sector_t * sector)
+void P_PlayerInHereticSector(player_t * player, sector_t * sector)
 {
     static int pushTab[5] = {
         2048 * 5,
@@ -4747,7 +4747,7 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side,
     return true;
 }
 
-void Hexen_P_PlayerInSpecialSector(player_t * player, sector_t * sector)
+void P_PlayerInHexenSector(player_t * player, sector_t * sector)
 {
     static int pushTab[3] = {
         2048 * 5,
