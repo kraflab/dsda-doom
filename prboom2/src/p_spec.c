@@ -2436,34 +2436,8 @@ void P_ShootSpecialLine
   }
 }
 
-
-//
-// P_PlayerInSpecialSector()
-//
-// Called every tick frame
-//  that the player origin is in a special sector
-//
-// Changed to ignore sector types the engine does not recognize
-//
-
-static void Heretic_P_PlayerInSpecialSector(player_t * player);
-static void Hexen_P_PlayerInSpecialSector(player_t * player);
-
-void P_PlayerInSpecialSector (player_t* player)
+void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
 {
-  sector_t*   sector;
-
-  if (map_format.hexen) return Hexen_P_PlayerInSpecialSector(player);
-  if (heretic) return Heretic_P_PlayerInSpecialSector(player);
-
-  sector = player->mo->subsector->sector;
-
-  // Falling, not all the way down yet?
-  // Sector specials don't apply in mid-air
-  if (player->mo->z != sector->floorheight)
-    return;
-
-  // Has hit ground.
   //jff add if to handle old vs generalized types
   if (sector->special<32) // regular sector specials
   {
@@ -2598,6 +2572,37 @@ void P_PlayerInSpecialSector (player_t* player)
     // handled by Thinkers.
 
   }
+}
+
+void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
+{
+
+}
+
+//
+// P_PlayerInSpecialSector()
+//
+// Called every tick frame
+//  that the player origin is in a special sector
+//
+// Changed to ignore sector types the engine does not recognize
+//
+
+void Heretic_P_PlayerInSpecialSector(player_t * player, sector_t * sector);
+void Hexen_P_PlayerInSpecialSector(player_t * player, sector_t * sector);
+
+void P_PlayerInSpecialSector (player_t* player)
+{
+  sector_t*   sector;
+
+  sector = player->mo->subsector->sector;
+
+  // Falling, not all the way down yet?
+  // Sector specials don't apply in mid-air
+  if (player->mo->z != sector->floorheight)
+    return;
+
+  map_format.player_in_special_sector(player, sector);
 }
 
 //
@@ -4418,9 +4423,8 @@ void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing)
 
 #include "p_user.h"
 
-static void Heretic_P_PlayerInSpecialSector(player_t * player)
+void Heretic_P_PlayerInSpecialSector(player_t * player, sector_t * sector)
 {
-    sector_t *sector;
     static int pushTab[5] = {
         2048 * 5,
         2048 * 10,
@@ -4429,11 +4433,6 @@ static void Heretic_P_PlayerInSpecialSector(player_t * player)
         2048 * 35
     };
 
-    sector = player->mo->subsector->sector;
-    if (player->mo->z != sector->floorheight)
-    {                           // Player is not touching the floor
-        return;
-    }
     switch (sector->special)
     {
         case 7:                // Damage_Sludge
@@ -4748,20 +4747,14 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side,
     return true;
 }
 
-static void Hexen_P_PlayerInSpecialSector(player_t * player)
+void Hexen_P_PlayerInSpecialSector(player_t * player, sector_t * sector)
 {
-    sector_t *sector;
     static int pushTab[3] = {
         2048 * 5,
         2048 * 10,
         2048 * 25
     };
 
-    sector = player->mo->subsector->sector;
-    if (player->mo->z != sector->floorheight)
-    {                           // Player is not touching the floor
-        return;
-    }
     switch (sector->special)
     {
         case 9:                // SecretArea

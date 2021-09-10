@@ -34,6 +34,7 @@ typedef struct {
   short friction_mask;
   short push_mask;
   void (*init_sector_special)(sector_t*, int);
+  void (*player_in_special_sector)(player_t*, sector_t*);
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;
