@@ -2593,6 +2593,27 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
     case zs_h_damage_sludge:
       P_ApplySectorDamage(player, 4, 0);
       break;
+    case zs_d_damage_lava_wimpy:
+      if (!(leveltime & 0x1f))
+      {
+        P_DamageMobj(player->mo, NULL, NULL, 5);
+        // P_HitFloor(player->mo); MAP_FORMAT_TODO: floor / &LavaInflictor
+      }
+      break;
+    case zs_d_damage_lava_hefty:
+      if (!(leveltime & 0x1f))
+      {
+        P_DamageMobj(player->mo, NULL, NULL, 8);
+        // P_HitFloor(player->mo); MAP_FORMAT_TODO: floor / &LavaInflictor
+      }
+      break;
+    case zs_d_scroll_east_lava_damage:
+      if (!(leveltime & 0x1f))
+      {
+        P_DamageMobj(player->mo, NULL, NULL, 5);
+        // P_HitFloor(player->mo); MAP_FORMAT_TODO: floor / &LavaInflictor
+      }
+      break;
     case zs_s_damage_hellslime:
       P_ApplySectorHazard(player, 2, 0);
       break;
@@ -2777,6 +2798,41 @@ void P_UpdateSpecials (void)
 //////////////////////////////////////////////////////////////////////
 
 //
+// Add_Scroller()
+//
+// Add a generalized scroller to the thinker list.
+//
+// type: the enumerated type of scrolling: floor, ceiling, floor carrier,
+//   wall, floor carrier & scroller
+//
+// (dx,dy): the direction and speed of the scrolling or its acceleration
+//
+// control: the sector whose heights control this scroller's effect
+//   remotely, or -1 if no control sector
+//
+// affectee: the index of the affected object (sector or sidedef)
+//
+// accel: non-zero if this is an accelerative effect
+//
+
+static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
+                         int control, int affectee, int accel)
+{
+  scroll_t *s = Z_Malloc(sizeof *s, PU_LEVEL, 0);
+  s->thinker.function = T_Scroll;
+  s->type = type;
+  s->dx = dx;
+  s->dy = dy;
+  s->accel = accel;
+  s->vdx = s->vdy = 0;
+  if ((s->control = control) != -1)
+    s->last_height =
+      sectors[control].floorheight + sectors[control].ceilingheight;
+  s->affectee = affectee;
+  P_AddThinker(&s->thinker);
+}
+
+//
 // P_SpawnSpecials
 // After the map has been loaded,
 //  scan for specials that spawn thinkers
@@ -2861,8 +2917,8 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   // // [RH] Normal DOOM special or BOOM specialized?
   // bool keepspecial = false;
   // P_SpawnLights(sector);
-  // switch (sector->special)
-  // {
+  switch (sector->special & 0xff)
+  {
   // case zs_d_sector_door_close_in_30:
   //   new DDoor(sector, DDoor::doorWaitClose, 2, 0, 0, 30 * TICRATE);
   //   break;
@@ -2877,20 +2933,12 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //   sector->Flags |= SECF_FRICTION;
   //   break;
   //
-  // case zs_d_damage_lava_wimpy:
-  //   P_SetupSectorDamage(sector, 5, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
-  //   break;
-  //
-  // case zs_d_damage_lava_hefty:
-  //   P_SetupSectorDamage(sector, 8, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
-  //   break;
-  //
-  // case zs_d_scroll_east_lava_damage:
-  //   P_SetupSectorDamage(sector, 5, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
-  //   P_CreateScroller(EScroll::sc_floor, -4., 0, -1, int(sector - sectors), 0);
-  //   keepspecial = true;
-  //   break;
-  //
+    case zs_d_scroll_east_lava_damage:
+      Add_Scroller(sc_floor, -4, 0, 1, sector - sectors, 0);
+      // MAP_FORMAT_TODO: special exception to move player (but not other things)
+      // -> check where heretic does it
+      break;
+
   // case zs_sector_hidden:
   //   sector->MoreFlags |= SECF_HIDDEN;
   //   break;
@@ -2899,7 +2947,7 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //   sector->sky = PL_SKYFLAT;
   //   break;
   //
-  // default:
+    default:
   //   if (sector->special >= zs_scroll_north_slow &&
   //     sector->special <= zs_scroll_southwest_fast)
   //   { // Hexen scroll special
@@ -2929,8 +2977,8 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //       -0.5 * (1 << ((sector->special & 0xff) - zs_carry_east5)), 0, -1, int(sector-sectors), 0);
   //   }
   //   keepspecial = true;
-  //   break;
-  // }
+      break;
+  }
   // if (!keepspecial) sector->special = 0;
 }
 
@@ -3171,41 +3219,6 @@ void T_Scroll(scroll_t *s)
     case sc_carry_ceiling:       // to be added later
       break;
     }
-}
-
-//
-// Add_Scroller()
-//
-// Add a generalized scroller to the thinker list.
-//
-// type: the enumerated type of scrolling: floor, ceiling, floor carrier,
-//   wall, floor carrier & scroller
-//
-// (dx,dy): the direction and speed of the scrolling or its acceleration
-//
-// control: the sector whose heights control this scroller's effect
-//   remotely, or -1 if no control sector
-//
-// affectee: the index of the affected object (sector or sidedef)
-//
-// accel: non-zero if this is an accelerative effect
-//
-
-static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
-                         int control, int affectee, int accel)
-{
-  scroll_t *s = Z_Malloc(sizeof *s, PU_LEVEL, 0);
-  s->thinker.function = T_Scroll;
-  s->type = type;
-  s->dx = dx;
-  s->dy = dy;
-  s->accel = accel;
-  s->vdx = s->vdy = 0;
-  if ((s->control = control) != -1)
-    s->last_height =
-      sectors[control].floorheight + sectors[control].ceilingheight;
-  s->affectee = affectee;
-  P_AddThinker(&s->thinker);
 }
 
 // Adds wall scroller. Scroll amount is rotated with respect to wall's
