@@ -168,7 +168,6 @@ typedef struct
   short ceilingpic;
   short lightlevel;
   short special;
-  short ignored; // save removal for next save compatibility break
   short tag;
 
   // [kb] For R_FixWiggle
