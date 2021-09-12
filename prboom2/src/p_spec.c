@@ -2980,7 +2980,6 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
       }
       break;
   }
-  // if (!keepspecial) sector->special = 0;
 }
 
 static void Hexen_P_SpawnSpecials(void);
