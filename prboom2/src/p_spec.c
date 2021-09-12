@@ -2449,60 +2449,69 @@ void P_ShootSpecialLine
   }
 }
 
+static void P_ApplySectorDamage(player_t *player, int damage, int leak)
+{
+  if (!player->powers[pw_ironfeet] || (leak && P_Random(pr_slimehurt) < leak))
+    if (!(leveltime & 0x1f))
+      P_DamageMobj(player->mo, NULL, NULL, damage);
+}
+
+static void P_ApplySectorDamageEndLevel(player_t *player)
+{
+  if (comp[comp_god])
+    player->cheats &= ~CF_GODMODE;
+
+  if (!(leveltime & 0x1f))
+    P_DamageMobj(player->mo, NULL, NULL, 20);
+
+  if (player->health <= 10)
+    G_ExitLevel();
+}
+
+static void P_ApplyGeneralizedSectorDamage(player_t *player, int bits)
+{
+  switch (bits & 3)
+  {
+    case 0:
+      break;
+    case 1:
+      P_ApplySectorDamage(player, 5, 0);
+      break;
+    case 2:
+      P_ApplySectorDamage(player, 10, 0);
+      break;
+    case 3:
+      P_ApplySectorDamage(player, 20, 5);
+      break;
+  }
+}
+
 void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
 {
   //jff add if to handle old vs generalized types
-  if (sector->special<32) // regular sector specials
+  if (sector->special < 32) // regular sector specials
   {
     switch (sector->special)
-      {
+    {
       case 5:
-        // 5/10 unit damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 10);
+        P_ApplySectorDamage(player, 10, 0);
         break;
-
       case 7:
-        // 2/5 unit damage per 31 ticks
-        if (!player->powers[pw_ironfeet])
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 5);
+        P_ApplySectorDamage(player, 5, 0);
         break;
-
       case 16:
-        // 10/20 unit damage per 31 ticks
       case 4:
-        // 10/20 unit damage plus blinking light (light already spawned)
-        if (!player->powers[pw_ironfeet]
-            || (P_Random(pr_slimehurt)<5) ) // even with suit, take damage
-        {
-          if (!(leveltime&0x1f))
-            P_DamageMobj (player->mo, NULL, NULL, 20);
-        }
+        P_ApplySectorDamage(player, 20, 5);
         break;
-
       case 9:
         P_CollectSecretVanilla(sector, player);
-
         break;
-
       case 11:
-        // Exit on health < 11, take 10/20 damage per 31 ticks
-        if (comp[comp_god]) /* killough 2/21/98: add compatibility switch */
-          player->cheats &= ~CF_GODMODE; // on godmode cheat clearing
-                                         // does not affect invulnerability
-        if (!(leveltime&0x1f))
-          P_DamageMobj (player->mo, NULL, NULL, 20);
-
-        if (player->health <= 10)
-          G_ExitLevel();
+        P_ApplySectorDamageEndLevel(player);
         break;
-
       default:
-        //jff 1/24/98 Don't exit as DOOM2 did, just ignore
         break;
-      };
+    }
   }
   else //jff 3/14/98 handle extended sector types for secrets and damage
   {
@@ -2535,30 +2544,9 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
     }
     else
     {
-      switch ((sector->special&DAMAGE_MASK)>>DAMAGE_SHIFT)
-      {
-        case 0: // no damage
-          break;
-        case 1: // 2/5 damage per 31 ticks
-          if (!player->powers[pw_ironfeet])
-            if (!(leveltime&0x1f))
-              P_DamageMobj (player->mo, NULL, NULL, 5);
-          break;
-        case 2: // 5/10 damage per 31 ticks
-          if (!player->powers[pw_ironfeet])
-            if (!(leveltime&0x1f))
-              P_DamageMobj (player->mo, NULL, NULL, 10);
-          break;
-        case 3: // 10/20 damage per 31 ticks
-          if (!player->powers[pw_ironfeet]
-              || (P_Random(pr_slimehurt)<5))  // take damage even with suit
-          {
-            if (!(leveltime&0x1f))
-              P_DamageMobj (player->mo, NULL, NULL, 20);
-          }
-          break;
-      }
+      P_ApplyGeneralizedSectorDamage(player, (sector->special & DAMAGE_MASK) >> DAMAGE_SHIFT);
     }
+
     if (sector->special&SECRET_MASK)
     {
       P_CollectSecretBoom(sector, player);
@@ -2575,25 +2563,31 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
 
 void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
 {
-  switch (sector->special & ZDOOM_DAMAGE_MASK)
+  P_ApplyGeneralizedSectorDamage(player, (sector->special & ZDOOM_DAMAGE_MASK) >> 8);
+
+  switch (sector->special & 0xff)
   {
-    case 0: // no damage
+    case zs_s_light_strobe_hurt:
+    case zs_d_damage_nukage:
+      P_ApplySectorDamage(player, 5, 0);
       break;
-    case 0x100: // 5% per 31 ticks
-      if (!player->powers[pw_ironfeet])
-        if (!(leveltime & 0x1f))
-          P_DamageMobj(player->mo, NULL, NULL, 5);
+    case zs_d_damage_hellslime:
+      P_ApplySectorDamage(player, 10, 0);
       break;
-    case 0x200: // 10% per 31 ticks
-      if (!player->powers[pw_ironfeet])
-        if (!(leveltime & 0x1f))
-          P_DamageMobj(player->mo, NULL, NULL, 10);
+    case zs_d_light_strobe_hurt:
+    case zs_d_damage_super_hellslime:
+      P_ApplySectorDamage(player, 20, 5);
       break;
-    case 0x300: // 20% per 31 ticks
-      // take damage even with suit
-      if (!player->powers[pw_ironfeet] || P_Random(pr_slimehurt) < 5)
-        if (!(leveltime & 0x1f))
-          P_DamageMobj(player->mo, NULL, NULL, 20);
+    case zs_d_damage_end:
+      P_ApplySectorDamageEndLevel(player);
+      break;
+    case zs_damage_instant_death:
+      P_DamageMobj(player->mo, NULL, NULL, 10000);
+      break;
+    case zs_h_damage_sludge:
+      P_ApplySectorDamage(player, 4, 0);
+      break;
+    default:
       break;
   }
 
@@ -2856,24 +2850,8 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   // P_SpawnLights(sector);
   // switch (sector->special)
   // {
-  // case zs_d_light_strobe_hurt:
-  //   P_SetupSectorDamage(sector, 20, 32, 5, NAME_Slime, 0);
-  //   break;
-  //
-  // case zs_d_damage_hellslime:
-  //   P_SetupSectorDamage(sector, 10, 32, 0, NAME_Slime, 0);
-  //   break;
-  //
-  // case zs_d_damage_nukage:
-  //   P_SetupSectorDamage(sector, 5, 32, 0, NAME_Slime, 0);
-  //   break;
-  //
   // case zs_d_sector_door_close_in_30:
   //   new DDoor(sector, DDoor::doorWaitClose, 2, 0, 0, 30 * TICRATE);
-  //   break;
-  //
-  // case zs_d_damage_end:
-  //   P_SetupSectorDamage(sector, 20, 32, 256, NAME_None, SECF_ENDGODMODE|SECF_ENDLEVEL);
   //   break;
   //
   // case zs_d_sector_door_raise_in_5_mins:
@@ -2884,10 +2862,6 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //   sector->friction = FRICTION_LOW;
   //   sector->movefactor = 0x269/65536.;
   //   sector->Flags |= SECF_FRICTION;
-  //   break;
-  //
-  // case zs_d_damage_super_hellslime:
-  //   P_SetupSectorDamage(sector, 20, 32, 5, NAME_Slime, 0);
   //   break;
   //
   // case zs_d_damage_lava_wimpy:
@@ -2904,23 +2878,9 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //   keepspecial = true;
   //   break;
   //
-  // case zs_h_damage_sludge:
-  //   P_SetupSectorDamage(sector, 4, 32, 0, NAME_Slime, 0);
-  //   break;
-  //
-  // case zs_s_light_strobe_hurt:
-  //   P_SetupSectorDamage(sector, 5, 32, 0, NAME_Slime, 0);
-  //   break;
-  //
   // case zs_s_damage_hellslime:
   //   P_SetupSectorDamage(sector, 2, 32, 0, NAME_Slime, SECF_HAZARD);
   //   break;
-  //
-  // case zs_damage_instant_death:
-  //   // Strife's instant death sector
-  //   P_SetupSectorDamage(sector, TELEFRAG_DAMAGE, 1, 256, NAME_InstantDeath, 0);
-  //   break;
-  //
   // case zs_s_damage_super_hellslime:
   //   P_SetupSectorDamage(sector, 4, 32, 0, NAME_Slime, SECF_HAZARD);
   //   break;
