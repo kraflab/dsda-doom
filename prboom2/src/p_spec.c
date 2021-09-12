@@ -2938,11 +2938,10 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
       // MAP_FORMAT_TODO: special exception to move player (but not other things)
       // -> check where heretic does it
       break;
+    case zs_sector_hidden:
+      sector->flags |= SECF_HIDDEN;
+      break;
 
-  // case zs_sector_hidden:
-  //   sector->MoreFlags |= SECF_HIDDEN;
-  //   break;
-  //
   // case zs_sky2:
   //   sector->sky = PL_SKYFLAT;
   //   break;

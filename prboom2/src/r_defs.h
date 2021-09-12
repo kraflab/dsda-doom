@@ -103,6 +103,7 @@ typedef struct
 #define MISSING_BOTTOMTEXTURES     0x00000020
 #define SECF_SECRET                0x00000040
 #define SECF_WASSECRET             0x00000080
+#define SECF_HIDDEN                0x00000100
 #define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET)
 
 typedef struct

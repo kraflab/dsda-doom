@@ -11,6 +11,7 @@
 - Sector special spawning
 - Custom scrollers in thing movement
 - Friction effect in P_Thrust?
+- Replace map_subsectors with SECF_HIDDEN
 
 ### Things to Check
 - floor type / friction -> hexen format?
