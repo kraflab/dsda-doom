@@ -2597,21 +2597,21 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
       if (!(leveltime & 0x1f))
       {
         P_DamageMobj(player->mo, NULL, NULL, 5);
-        // P_HitFloor(player->mo); MAP_FORMAT_TODO: floor / &LavaInflictor
+        // P_HitFloor(player->mo);
       }
       break;
     case zs_d_damage_lava_hefty:
       if (!(leveltime & 0x1f))
       {
         P_DamageMobj(player->mo, NULL, NULL, 8);
-        // P_HitFloor(player->mo); MAP_FORMAT_TODO: floor / &LavaInflictor
+        // P_HitFloor(player->mo);
       }
       break;
     case zs_d_scroll_east_lava_damage:
       if (!(leveltime & 0x1f))
       {
         P_DamageMobj(player->mo, NULL, NULL, 5);
-        // P_HitFloor(player->mo); MAP_FORMAT_TODO: floor / &LavaInflictor
+        // P_HitFloor(player->mo);
       }
       break;
     case zs_s_damage_hellslime:

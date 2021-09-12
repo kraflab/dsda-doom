@@ -14,6 +14,8 @@
 - Replace map_subsectors with SECF_HIDDEN
 - zs_sky2 uses PL_SKYFLAT but the representation is not compatible
 - zs_d_friction_low reset by P_SpawnFriction
+- zs_d_damage_lava_wimpy, zs_d_damage_lava_hefty, zs_d_scroll_east_lava_damage
+  - floor impact effect + lava inflictor
 
 ### Things to Check
 - floor type / friction -> hexen format?
