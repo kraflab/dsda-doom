@@ -13,6 +13,7 @@
 - Friction effect in P_Thrust?
 - Replace map_subsectors with SECF_HIDDEN
 - zs_sky2 uses PL_SKYFLAT but the representation is not compatible
+- zs_d_friction_low reset by P_SpawnFriction
 
 ### Things to Check
 - floor type / friction -> hexen format?

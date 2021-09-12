@@ -2926,15 +2926,12 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //   break;
   //
     case zs_d_friction_low:
-      // MAP_FORMAT_TODO: this will be reset in P_SpawnFriction currently
       sector->friction = FRICTION_LOW;
       sector->movefactor = 0x269;
       sector->special &= ZDOOM_FRICTION_MASK;
       break;
     case zs_d_scroll_east_lava_damage:
       Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0);
-      // MAP_FORMAT_TODO: special exception to move player (but not other things)
-      // -> check where heretic does it
       break;
     case zs_sector_hidden:
       sector->flags |= SECF_HIDDEN;
