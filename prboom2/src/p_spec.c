@@ -2934,7 +2934,7 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //   break;
   //
     case zs_d_scroll_east_lava_damage:
-      Add_Scroller(sc_floor, -4, 0, 1, sector - sectors, 0);
+      Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0);
       // MAP_FORMAT_TODO: special exception to move player (but not other things)
       // -> check where heretic does it
       break;
