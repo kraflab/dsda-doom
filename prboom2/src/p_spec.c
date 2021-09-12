@@ -2914,8 +2914,6 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
 
   sector->special &= 0x1fff;
 
-  // // [RH] Normal DOOM special or BOOM specialized?
-  // bool keepspecial = false;
   // P_SpawnLights(sector);
   switch (sector->special & 0xff)
   {
