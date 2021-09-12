@@ -2940,6 +2940,7 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
       break;
     case zs_sector_hidden:
       sector->flags |= SECF_HIDDEN;
+      sector->special &= ~0xff;
       break;
     case zs_sky2:
       // sector->sky = PL_SKYFLAT;
