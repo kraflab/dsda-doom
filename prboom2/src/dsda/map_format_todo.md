@@ -7,8 +7,10 @@
 - P_ExecuteLineSpecial ~170 specials
 
 ### Sectors
-- Abstract sector special masks
-- Pending
+- Player in special sector
+- Sector special spawning
+- Custom scrollers in thing movement
+- Friction effect in P_Thrust?
 
 ### Things to Check
 - floor type / friction -> hexen format?
