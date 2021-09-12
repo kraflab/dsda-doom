@@ -2587,6 +2587,8 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
     case zs_h_damage_sludge:
       P_ApplySectorDamage(player, 4, 0);
       break;
+    case zs_sector_heal:
+      P_GiveBody(player, 1);
     default:
       break;
   }
@@ -2887,10 +2889,6 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //
   // case zs_sector_hidden:
   //   sector->MoreFlags |= SECF_HIDDEN;
-  //   break;
-  //
-  // case zs_sector_heal:
-  //   P_SetupSectorDamage(sector, -1, 32, 0, NAME_None, 0);
   //   break;
   //
   // case zs_sky2:
