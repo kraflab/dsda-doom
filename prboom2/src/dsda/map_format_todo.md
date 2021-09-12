@@ -12,6 +12,7 @@
 - Custom scrollers in thing movement
 - Friction effect in P_Thrust?
 - Replace map_subsectors with SECF_HIDDEN
+- zs_sky2 uses PL_SKYFLAT but the representation is not compatible
 
 ### Things to Check
 - floor type / friction -> hexen format?

@@ -2941,11 +2941,10 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
     case zs_sector_hidden:
       sector->flags |= SECF_HIDDEN;
       break;
-
-  // case zs_sky2:
-  //   sector->sky = PL_SKYFLAT;
-  //   break;
-  //
+    case zs_sky2:
+      // sector->sky = PL_SKYFLAT;
+      sector->special &= ~0xff;
+      break;
     default:
       if (sector->special >= zs_scroll_north_slow &&
           sector->special <= zs_scroll_southwest_fast)
