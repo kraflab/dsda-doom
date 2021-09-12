@@ -2917,6 +2917,25 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   // P_SpawnLights(sector);
   switch (sector->special & 0xff)
   {
+    case zs_d_scroll_east_lava_damage:
+      Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0);
+      // fall through!
+    case zs_s_light_strobe_hurt:
+    case zs_d_damage_nukage:
+    case zs_d_damage_hellslime:
+    case zs_d_light_strobe_hurt:
+    case zs_d_damage_super_hellslime:
+    case zs_d_damage_end:
+    case zs_damage_instant_death:
+    case zs_h_damage_sludge:
+    case zs_d_damage_lava_wimpy:
+    case zs_d_damage_lava_hefty:
+    case zs_s_damage_hellslime:
+    case zs_s_damage_super_hellslime:
+    case zs_sector_heal:
+      // these specials override generalized damage in zdoom
+      sector->special &= ~ZDOOM_DAMAGE_MASK;
+      break;
     case zs_d_sector_door_close_in_30:
       P_SpawnDoorCloseIn30(sector);
       sector->special &= ~0xff;
@@ -2929,9 +2948,6 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
       sector->friction = FRICTION_LOW;
       sector->movefactor = 0x269;
       sector->special &= ZDOOM_FRICTION_MASK;
-      break;
-    case zs_d_scroll_east_lava_damage:
-      Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0);
       break;
     case zs_sector_hidden:
       sector->flags |= SECF_HIDDEN;
