@@ -51,6 +51,8 @@ set(COMMON_SRC
     dsda/memory.h
     dsda/mobjinfo.c
     dsda/mobjinfo.h
+    dsda/mouse.c
+    dsda/mouse.h
     dsda/msecnode.c
     dsda/msecnode.h
     dsda/music.c

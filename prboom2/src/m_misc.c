@@ -1056,6 +1056,7 @@ default_t defaults[] =
   { "dsda_skip_quit_prompt", { &dsda_skip_quit_prompt }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_show_split_data", { &dsda_show_split_data }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_player_name", { 0, &dsda_player_name }, { 0, "Anonymous" }, UL, UL, def_str,ss_chat },
+  { "dsda_quickstart_cache_tics", { &dsda_quickstart_cache_tics }, { 0 }, 0, 35, def_int, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

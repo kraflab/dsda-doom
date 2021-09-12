@@ -3458,6 +3458,7 @@ setup_menu_t dsda_gen_settings[] = {
   { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 16 * 8, { "dsda_skip_quit_prompt" } },
   { "Show Split Data", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "dsda_show_split_data" } },
   { "Text File Author", S_NAME, m_null, G_X, G_Y + 18 * 8, { "dsda_player_name" } },
+  { "Quickstart Cache Tics", S_NUM, m_null, G_X, G_Y + 19 * 8, { "dsda_quickstart_cache_tics" } },
 
   { "<- PREV", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { gen_settings8 } },
   { 0, S_SKIP | S_END, m_null }

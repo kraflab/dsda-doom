@@ -92,6 +92,7 @@
 #include "dsda/settings.h"
 #include "dsda/input.h"
 #include "dsda/map_format.h"
+#include "dsda/mouse.h"
 #include "dsda/options.h"
 #include "dsda/tas.h"
 #include "dsda/split_tracker.h"
@@ -987,6 +988,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   cmd->forwardmove += fudgef((signed char)forward);
   cmd->sidemove += side;
+
+  dsda_ApplyQuickstartMouseCache(cmd);
 
   if ((demorecording && !longtics) || shorttics)
   {

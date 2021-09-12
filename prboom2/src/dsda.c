@@ -32,6 +32,7 @@
 #include "dsda/hud.h"
 #include "dsda/command_display.h"
 #include "dsda/key_frame.h"
+#include "dsda/mouse.h"
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
 #include "dsda.h"
@@ -372,6 +373,7 @@ void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
   ++dsda_session_attempts;
 
   dsda_ResetTracking();
+  dsda_QueueQuickstart();
 
   dsda_ResetRevealMap();
   G_CheckDemoStatus();
