@@ -2917,14 +2917,14 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   // P_SpawnLights(sector);
   switch (sector->special & 0xff)
   {
-  // case zs_d_sector_door_close_in_30:
-  //   new DDoor(sector, DDoor::doorWaitClose, 2, 0, 0, 30 * TICRATE);
-  //   break;
-  //
-  // case zs_d_sector_door_raise_in_5_mins:
-  //   new DDoor (sector, DDoor::doorWaitRaise, 2, TICRATE*30/7, 0, 5*60*TICRATE);
-  //   break;
-  //
+    case zs_d_sector_door_close_in_30:
+      P_SpawnDoorCloseIn30(sector);
+      sector->special &= ~0xff;
+      break;
+    case zs_d_sector_door_raise_in_5_mins:
+      P_SpawnDoorRaiseIn5Mins(sector, i);
+      sector->special &= ~0xff;
+      break;
     case zs_d_friction_low:
       sector->friction = FRICTION_LOW;
       sector->movefactor = 0x269;
