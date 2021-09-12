@@ -122,7 +122,7 @@ static const animdef_t heretic_animdefs[] = {
 };
 
 // heretic
-#define	MAXLINEANIMS		64*256
+#define MAXLINEANIMS 64*256
 short numlinespecials;
 line_t *linespeciallist[MAXLINEANIMS];
 
@@ -1492,7 +1492,7 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossacti
     ok = 0;
     switch(line->special)
     {
-	  // teleporters are blocked for boss actions.
+      // teleporters are blocked for boss actions.
       case 39:      // teleport trigger
       case 97:      // teleport retrigger
       case 125:     // teleport monsteronly trigger
@@ -1510,11 +1510,11 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossacti
       case 267:
       case 268:
       case 269:
-		  if (bossaction) return;
+        if (bossaction) return;
 
-	  case 4:       // raise door
-	  case 10:      // plat down-wait-up-stay trigger
-	  case 88:      // plat down-wait-up-stay retrigger
+      case 4:       // raise door
+      case 10:      // plat down-wait-up-stay trigger
+      case 88:      // plat down-wait-up-stay retrigger
         ok = 1;
         break;
     }
