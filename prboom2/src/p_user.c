@@ -987,6 +987,13 @@ void P_PlayerThink (player_t* player)
   if (player->bonuscount)
     player->bonuscount--;
 
+  if (player->hazardcount)
+  {
+    player->hazardcount--;
+    if (!(leveltime & 0x1f) && player->hazardcount > 16 * TICRATE)
+      P_DamageMobj(player->mo, NULL, NULL, 5);
+  }
+
   if (player->poisoncount && !(leveltime & 15))
   {
     player->poisoncount -= 5;

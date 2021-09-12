@@ -282,6 +282,9 @@ typedef struct player_s
   mobj_t *poisoner;           // NULL for non-player mobjs
   unsigned int jumpTics;      // delay the next jump for a moment
   unsigned int worldTimer;    // total time the player's been playing
+
+  // zdoom
+  int hazardcount;
 } player_t;
 
 

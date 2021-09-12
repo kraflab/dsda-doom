@@ -2486,6 +2486,12 @@ static void P_ApplyGeneralizedSectorDamage(player_t *player, int bits)
   }
 }
 
+static void P_ApplySectorHazard(player_t *player, int hazard, int leak)
+{
+  if (!player->powers[pw_ironfeet] || (leak && P_Random(pr_slimehurt) < leak))
+    player->hazardcount += hazard;
+}
+
 void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
 {
   //jff add if to handle old vs generalized types
@@ -2587,6 +2593,11 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
     case zs_h_damage_sludge:
       P_ApplySectorDamage(player, 4, 0);
       break;
+    case zs_s_damage_hellslime:
+      P_ApplySectorHazard(player, 2, 0);
+      break;
+    case zs_s_damage_super_hellslime:
+      P_ApplySectorHazard(player, 4, 0);
     case zs_sector_heal:
       P_GiveBody(player, 1);
     default:
@@ -2878,13 +2889,6 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //   P_SetupSectorDamage(sector, 5, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
   //   P_CreateScroller(EScroll::sc_floor, -4., 0, -1, int(sector - sectors), 0);
   //   keepspecial = true;
-  //   break;
-  //
-  // case zs_s_damage_hellslime:
-  //   P_SetupSectorDamage(sector, 2, 32, 0, NAME_Slime, SECF_HAZARD);
-  //   break;
-  // case zs_s_damage_super_hellslime:
-  //   P_SetupSectorDamage(sector, 4, 32, 0, NAME_Slime, SECF_HAZARD);
   //   break;
   //
   // case zs_sector_hidden:
