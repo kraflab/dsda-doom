@@ -2948,35 +2948,36 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   //   break;
   //
     default:
-  //   if (sector->special >= zs_scroll_north_slow &&
-  //     sector->special <= zs_scroll_southwest_fast)
-  //   { // Hexen scroll special
-  //     static const SBYTE hexenScrollies[24][2] =
-  //     {
-  //       {  0,  1 }, {  0,  2 }, {  0,  4 },
-  //       { -1,  0 }, { -2,  0 }, { -4,  0 },
-  //       {  0, -1 }, {  0, -2 }, {  0, -4 },
-  //       {  1,  0 }, {  2,  0 }, {  4,  0 },
-  //       {  1,  1 }, {  2,  2 }, {  4,  4 },
-  //       { -1,  1 }, { -2,  2 }, { -4,  4 },
-  //       { -1, -1 }, { -2, -2 }, { -4, -4 },
-  //       {  1, -1 }, {  2, -2 }, {  4, -4 }
-  //     };
-  //
-  //
-  //     int i = sector->special - zs_scroll_north_slow;
-  //     double dx = hexenScrollies[i][0] / 2.;
-  //     double dy = hexenScrollies[i][1] / 2.;
-  //     P_CreateScroller(EScroll::sc_floor, dx, dy, -1, int(sector-sectors), 0);
-  //   }
-  //   else if (sector->special >= zs_carry_east5 &&
-  //         sector->special <= zs_carry_east35)
-  //   { // Heretic scroll special
-  //     // Only east scrollers also scroll the texture
-  //     P_CreateScroller(EScroll::sc_floor,
-  //       -0.5 * (1 << ((sector->special & 0xff) - zs_carry_east5)), 0, -1, int(sector-sectors), 0);
-  //   }
-  //   keepspecial = true;
+      if (sector->special >= zs_scroll_north_slow &&
+          sector->special <= zs_scroll_southwest_fast)
+      { // Hexen scroll special
+        static const fixed_t hexenScrollies[24][2] =
+        {
+          {  0,  1 }, {  0,  2 }, {  0,  4 },
+          { -1,  0 }, { -2,  0 }, { -4,  0 },
+          {  0, -1 }, {  0, -2 }, {  0, -4 },
+          {  1,  0 }, {  2,  0 }, {  4,  0 },
+          {  1,  1 }, {  2,  2 }, {  4,  4 },
+          { -1,  1 }, { -2,  2 }, { -4,  4 },
+          { -1, -1 }, { -2, -2 }, { -4, -4 },
+          {  1, -1 }, {  2, -2 }, {  4, -4 }
+        };
+
+        int i;
+        fixed_t dx, dy;
+
+        i = sector->special - zs_scroll_north_slow;
+        dx = FixedDiv(hexenScrollies[i][0] << FRACBITS, 2);
+        dy = FixedDiv(hexenScrollies[i][1] << FRACBITS, 2);
+        Add_Scroller(sc_floor, dx, dy, -1, sector - sectors, 0);
+      }
+      else if (sector->special >= zs_carry_east5 &&
+            sector->special <= zs_carry_east35)
+      { // Heretic scroll special
+        // Only east scrollers also scroll the texture
+        fixed_t dx = FixedDiv((1 << ((sector->special & 0xff) - zs_carry_east5)) << FRACBITS, 2);
+        Add_Scroller(sc_floor, dx, 0, -1, sector - sectors, 0);
+      }
       break;
   }
   // if (!keepspecial) sector->special = 0;
