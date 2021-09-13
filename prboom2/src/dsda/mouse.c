@@ -20,8 +20,6 @@
 int dsda_quickstart_cache_tics;
 static int quickstart_queued;
 
-extern int leveltime, totalleveltimes;
-
 void dsda_ApplyQuickstartMouseCache(ticcmd_t* cmd) {
   static signed short angleturn_cache[35];
   static unsigned int angleturn_cache_index;
