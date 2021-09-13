@@ -1233,11 +1233,8 @@ void P_ResetSectorTransferFlags(unsigned int *flags)
 
 void P_ClearNonGeneralizedSectorSpecial(sector_t *sector)
 {
-  // nothing special about it during gameplay
-  if (raven)
-    sector->special = 0;
-  else
-    sector->special &= ~31; //jff 3/14/98 clear non-generalized sector type
+  // jff 3/14/98 clear non-generalized sector type
+  sector->special &= map_format.generalized_mask;
 }
 
 static void P_AddSectorSecret(sector_t *sector)
@@ -2573,14 +2570,12 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
 
   switch (sector->special & 0xff)
   {
-    case zs_s_light_strobe_hurt:
     case zs_d_damage_nukage:
       P_ApplySectorDamage(player, 5, 0);
       break;
     case zs_d_damage_hellslime:
       P_ApplySectorDamage(player, 10, 0);
       break;
-    case zs_d_light_strobe_hurt:
     case zs_d_damage_super_hellslime:
       P_ApplySectorDamage(player, 20, 5);
       break;
@@ -2907,6 +2902,54 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
   }
 }
 
+void P_SpawnZdoomLights(sector_t *sector)
+{
+  switch (sector->special)
+  {
+    case zs_light_phased:
+      P_SpawnPhasedLight(sector, 80, -1);
+      break;
+    case zs_light_sequence_start:
+      P_SpawnLightSequence(sector, 1);
+      break;
+    case zs_d_light_flicker:
+      P_SpawnLightFlash(sector);
+      break;
+    case zs_d_light_strobe_fast:
+      P_SpawnStrobeFlash(sector, FASTDARK, 0);
+      break;
+    case zs_d_light_strobe_slow:
+      P_SpawnStrobeFlash(sector, SLOWDARK, 0);
+      break;
+    case zs_d_light_strobe_hurt:
+      P_SpawnStrobeFlash(sector, FASTDARK, 0);
+      sector->special |= ZDOOM_DAMAGE_20P;
+      break;
+    case zs_d_light_glow:
+      P_SpawnGlowingLight(sector);
+      break;
+    case zs_d_light_strobe_slow_sync:
+      P_SpawnStrobeFlash(sector, SLOWDARK, 1);
+      break;
+    case zs_d_light_strobe_fast_sync:
+      P_SpawnStrobeFlash(sector, FASTDARK, 1);
+      break;
+    case zs_d_light_fire_flicker:
+      P_SpawnFireFlicker(sector);
+      break;
+    case zs_d_scroll_east_lava_damage:
+      P_SpawnStrobeFlash(sector, FASTDARK, 0);
+      sector->special |= zs_d_scroll_east_lava_damage;
+      break;
+    case zs_s_light_strobe_hurt:
+      P_SpawnStrobeFlash(sector, FASTDARK, 0);
+      sector->special |= ZDOOM_DAMAGE_05P;
+      break;
+    default:
+      break;
+  }
+}
+
 void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
 {
   if (sector->special & ZDOOM_SECRET_MASK)
@@ -2914,7 +2957,8 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
 
   sector->special &= 0x1fff;
 
-  // P_SpawnLights(sector);
+  P_SpawnZdoomLights(sector);
+
   switch (sector->special & 0xff)
   {
     case zs_d_scroll_east_lava_damage:

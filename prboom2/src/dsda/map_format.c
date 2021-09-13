@@ -154,6 +154,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.map99 = false;
     map_format.friction_mask = ZDOOM_FRICTION_MASK;
     map_format.push_mask = ZDOOM_PUSH_MASK;
+    map_format.generalized_mask = ~0xff;
     map_format.init_sector_special = P_SpawnZDoomSectorSpecial;
     map_format.player_in_special_sector = P_PlayerInZDoomSector;
     map_format.mapthing_size = sizeof(mapthing_t);
@@ -172,6 +173,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.friction_mask = 0; // not used
     map_format.push_mask = 0; // not used
     map_format.init_sector_special = NULL; // not used
+    map_format.generalized_mask = 0; // no generalized specials
     map_format.player_in_special_sector = P_PlayerInHexenSector;
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
@@ -188,6 +190,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.map99 = false;
     map_format.friction_mask = FRICTION_MASK;
     map_format.push_mask = PUSH_MASK;
+    map_format.generalized_mask = heretic ? 0 : ~31;
     map_format.init_sector_special = P_SpawnCompatibleSectorSpecial;
     map_format.player_in_special_sector = heretic ?
                                           P_PlayerInHereticSector :

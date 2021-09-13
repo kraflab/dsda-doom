@@ -33,6 +33,7 @@ typedef struct {
   dboolean map99;
   short friction_mask;
   short push_mask;
+  short generalized_mask;
   void (*init_sector_special)(sector_t*, int);
   void (*player_in_special_sector)(player_t*, sector_t*);
   size_t mapthing_size;
