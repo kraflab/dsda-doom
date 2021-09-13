@@ -7,7 +7,6 @@
 - P_ExecuteLineSpecial ~170 specials
 
 ### Sectors
-- Player in special sector
 - Sector special spawning
 - Custom scrollers in thing movement
 - Friction effect in P_Thrust?
