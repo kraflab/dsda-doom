@@ -516,7 +516,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
     visible_subsectors_count = 0;
     for (i = 0; i < numsubsectors; i++)
     {
-      if (map_subsectors[i] || dsda_RevealAutomap())
+      if ((map_subsectors[i] && !(subsectors[i].sector->flags & SECF_HIDDEN)) || dsda_RevealAutomap())
       {
         visible_subsectors[visible_subsectors_count++] = &subsectors[i];
       }
