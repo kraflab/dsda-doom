@@ -136,6 +136,9 @@ void dsda_ApplyMapFormat(void) {
   extern void P_PlayerInHereticSector(player_t * player, sector_t * sector);
   extern void P_PlayerInHexenSector(player_t * player, sector_t * sector);
 
+  extern void P_SpawnCompatibleFriction(line_t *l);
+  extern void P_SpawnZDoomFriction(line_t *l);
+
   // if (W_CheckNumForName("BEHAVIOR") >= 0) {
   //   if (!hexen)
   //     I_Error("Hexen map format is only supported in Hexen!");
@@ -157,6 +160,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.generalized_mask = ~0xff;
     map_format.init_sector_special = P_SpawnZDoomSectorSpecial;
     map_format.player_in_special_sector = P_PlayerInZDoomSector;
+    map_format.spawn_friction = P_SpawnZDoomFriction;
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
   }
@@ -175,6 +179,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.init_sector_special = NULL; // not used
     map_format.generalized_mask = 0; // no generalized specials
     map_format.player_in_special_sector = P_PlayerInHexenSector;
+    map_format.spawn_friction = NULL; // not used
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
   }
@@ -195,6 +200,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.player_in_special_sector = heretic ?
                                           P_PlayerInHereticSector :
                                           P_PlayerInCompatibleSector;
+    map_format.spawn_friction = P_SpawnCompatibleFriction;
     map_format.mapthing_size = sizeof(doom_mapthing_t);
     map_format.maplinedef_size = sizeof(doom_maplinedef_t);
   }
