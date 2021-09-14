@@ -306,8 +306,11 @@ static void cheat_god()
 
       // spawn a teleport fog
       an = plyr->mo->angle >> ANGLETOFINESHIFT;
-      P_SpawnMobj(plyr->mo->x+20*finecosine[an], plyr->mo->y+20*finesine[an], plyr->mo->z, MT_TFOG);
-      S_StartSound(plyr, sfx_slop);
+      P_SpawnMobj(plyr->mo->x + 20*finecosine[an],
+                  plyr->mo->y + 20*finesine[an],
+                  plyr->mo->z + g_telefog_height,
+                  g_mt_tfog);
+      if (!raven) S_StartSound(plyr, sfx_slop);
       P_MapEnd();
     }
   plyr->cheats ^= CF_GODMODE;
