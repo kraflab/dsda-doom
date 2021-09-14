@@ -310,7 +310,7 @@ static void cheat_god()
                   plyr->mo->y + 20*finesine[an],
                   plyr->mo->z + g_telefog_height,
                   g_mt_tfog);
-      if (!raven) S_StartSound(plyr, sfx_slop);
+      S_StartSound(plyr, g_sfx_revive);
       P_MapEnd();
     }
   plyr->cheats ^= CF_GODMODE;

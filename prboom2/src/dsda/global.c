@@ -114,6 +114,7 @@ int g_sfx_oof;
 int g_sfx_menu;
 int g_sfx_respawn;
 int g_sfx_secret;
+int g_sfx_revive;
 
 int g_door_normal;
 int g_door_raise_in_5_mins;
@@ -198,6 +199,7 @@ static void dsda_InitDoom(void) {
   g_sfx_oof = sfx_oof;
   g_sfx_menu = sfx_pstop;
   g_sfx_secret = sfx_secret;
+  g_sfx_revive = sfx_slop;
 
   g_door_normal = normal;
   g_door_raise_in_5_mins = raiseIn5Mins;
@@ -379,6 +381,7 @@ static void dsda_InitHeretic(void) {
   g_sfx_menu = heretic_sfx_dorcls;
   g_sfx_respawn = heretic_sfx_respawn;
   g_sfx_secret = heretic_sfx_chat;
+  g_sfx_revive = heretic_sfx_telept;
 
   g_door_normal = vld_normal;
   g_door_raise_in_5_mins = vld_raiseIn5Mins;
@@ -541,6 +544,7 @@ static void dsda_InitHexen(void) {
   g_sfx_menu = hexen_sfx_door_light_close;
   g_sfx_respawn = hexen_sfx_respawn;
   g_sfx_secret = hexen_sfx_chat;
+  g_sfx_revive = hexen_sfx_teleport;
 
   g_st_height = 39;
   g_border_offset = 4;
