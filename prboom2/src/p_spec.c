@@ -3555,52 +3555,52 @@ static void P_SpawnFriction(void)
   int i;
   line_t *l = lines;
 
-  for (i = 0 ; i < numlines ; i++,l++)
+  for (i = 0; i < numlines; i++, l++)
     if (l->special == 223)
-      {
-        int length = P_AproxDistance(l->dx,l->dy)>>FRACBITS;
-        int friction = (0x1EB8*length)/0x80 + 0xD000;
-        int movefactor, s;
+    {
+      int length = P_AproxDistance(l->dx, l->dy) >> FRACBITS;
+      int friction = (0x1EB8 * length) / 0x80 + 0xD000;
+      int movefactor, s;
 
-        // The following check might seem odd. At the time of movement,
-        // the move distance is multiplied by 'friction/0x10000', so a
-        // higher friction value actually means 'less friction'.
+      // The following check might seem odd. At the time of movement,
+      // the move distance is multiplied by 'friction/0x10000', so a
+      // higher friction value actually means 'less friction'.
 
-        if (friction > ORIG_FRICTION)       // ice
-          movefactor = ((0x10092 - friction)*(0x70))/0x158;
-        else
-          movefactor = ((friction - 0xDB34)*(0xA))/0x80;
+      if (friction > ORIG_FRICTION)       // ice
+        movefactor = ((0x10092 - friction) * (0x70)) / 0x158;
+      else
+        movefactor = ((friction - 0xDB34) * (0xA)) / 0x80;
 
-        if (mbf_features)
-          { // killough 8/28/98: prevent odd situations
-            if (friction > FRACUNIT)
-              friction = FRACUNIT;
-            if (friction < 0)
-              friction = 0;
-            if (movefactor < 32)
-              movefactor = 32;
-          }
-
-        for (s = -1; (s = P_FindSectorFromLineTag(l,s)) >= 0 ; )
-          {
-            // killough 8/28/98:
-            //
-            // Instead of spawning thinkers, which are slow and expensive,
-            // modify the sector's own friction values. Friction should be
-            // a property of sectors, not objects which reside inside them.
-            // Original code scanned every object in every friction sector
-            // on every tic, adjusting its friction, putting unnecessary
-            // drag on CPU. New code adjusts friction of sector only once
-            // at level startup, and then uses this friction value.
-
-            //e6y: boom's friction code for boom compatibility
-            if (!demo_compatibility && !mbf_features && !prboom_comp[PC_PRBOOM_FRICTION].state)
-              Add_Friction(friction,movefactor,s);
-
-            sectors[s].friction = friction;
-            sectors[s].movefactor = movefactor;
-          }
+      if (mbf_features)
+      { // killough 8/28/98: prevent odd situations
+        if (friction > FRACUNIT)
+          friction = FRACUNIT;
+        if (friction < 0)
+          friction = 0;
+        if (movefactor < 32)
+          movefactor = 32;
       }
+
+      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+      {
+        // killough 8/28/98:
+        //
+        // Instead of spawning thinkers, which are slow and expensive,
+        // modify the sector's own friction values. Friction should be
+        // a property of sectors, not objects which reside inside them.
+        // Original code scanned every object in every friction sector
+        // on every tic, adjusting its friction, putting unnecessary
+        // drag on CPU. New code adjusts friction of sector only once
+        // at level startup, and then uses this friction value.
+
+        //e6y: boom's friction code for boom compatibility
+        if (!demo_compatibility && !mbf_features && !prboom_comp[PC_PRBOOM_FRICTION].state)
+          Add_Friction(friction, movefactor, s);
+
+        sectors[s].friction = friction;
+        sectors[s].movefactor = movefactor;
+      }
+    }
 }
 
 //
