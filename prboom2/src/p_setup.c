@@ -1023,6 +1023,10 @@ static void P_LoadSectors (int lump)
 
       // hexen
       ss->seqType = SEQTYPE_STONE;    // default seqType
+
+      // killough 8/28/98: initialize all sectors to normal friction
+      ss->friction = ORIG_FRICTION;
+      ss->movefactor = ORIG_FRICTION_FACTOR;
     }
 
   W_UnlockLumpNum(lump); // cph - release the data

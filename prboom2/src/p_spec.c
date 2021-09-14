@@ -3555,13 +3555,6 @@ static void P_SpawnFriction(void)
   int i;
   line_t *l = lines;
 
-  // killough 8/28/98: initialize all sectors to normal friction first
-  for (i = 0; i < numsectors; i++)
-    {
-      sectors[i].friction = ORIG_FRICTION;
-      sectors[i].movefactor = ORIG_FRICTION_FACTOR;
-    }
-
   for (i = 0 ; i < numlines ; i++,l++)
     if (l->special == 223)
       {
