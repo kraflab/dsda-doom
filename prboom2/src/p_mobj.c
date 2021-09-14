@@ -2127,7 +2127,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
       if (!deathmatch && !player_start->arg1)
       {
-        P_SpawnPlayer(thingtype - 1, player_start);
+        P_SpawnPlayer(player_start->type - 1, player_start);
       }
       return NULL;
     }
