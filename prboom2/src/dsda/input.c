@@ -192,8 +192,8 @@ dboolean dsda_InputDeactivated(int identifier) {
       deactivated = true;
 
   return
-    !gamekeys[input->mouseb].on &&
-    !gamekeys[input->joyb].on &&
+    !mousebuttons[input->mouseb].on &&
+    !joybuttons[input->joyb].on &&
     (
       deactivated ||
       mousebuttons[input->mouseb].deactivated_at == dsda_input_counter ||
