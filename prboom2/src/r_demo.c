@@ -1060,113 +1060,108 @@ static int G_ReadDemoFooter(const char *filename)
 
   demoex_filename[0] = 0;
 
-  if (demo_demoex_filename && *demo_demoex_filename)
-  {
-    strncpy(demoex_filename, demo_demoex_filename, PATH_MAX-1);
-  }
-  else
-  {
-    const char* tmp_dir;
-    char* tmp_path = NULL;
-    const char* template_format = "%sdsda-doom-demoex-XXXXXX";
+  buffer = G_GetDemoFooter(filename, &demoex_p, &size);
 
-    tmp_dir = I_GetTempDir();
-    if (tmp_dir && *tmp_dir != '\0')
+  if (buffer)
+  {
+    //the demo has an additional information itself
+    size_t i;
+    waddata_t waddata;
+
+    if (demo_demoex_filename && *demo_demoex_filename)
     {
-      tmp_path = malloc(strlen(tmp_dir) + 2);
-      strcpy(tmp_path, tmp_dir);
-      if (!HasTrailingSlash(tmp_dir))
-      {
-        strcat(tmp_path, "/");
-      }
-
-      doom_snprintf(demoex_filename, sizeof(demoex_filename), template_format, tmp_path);
-#ifdef HAVE_MKSTEMP
-      if (mkstemp(demoex_filename) == -1)
-      {
-        demoex_filename[0] = 0;
-      }
-#else
-      mktemp(demoex_filename);
-#endif
-
-      free(tmp_path);
-    }
-  }
-
-  if (!demoex_filename[0])
-  {
-    lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file");
-  }
-  else
-  {
-    AddDefaultExtension(demoex_filename, ".wad");
-
-    buffer = G_GetDemoFooter(filename, &demoex_p, &size);
-    if (buffer)
-    {
-      //the demo has an additional information itself
-      size_t i;
-      waddata_t waddata;
-
-      if (!CheckWadBufIntegrity(demoex_p, size))
-      {
-        lprintf(LO_ERROR, "G_ReadDemoFooter: demo footer is corrupted\n");
-      }
-      else
-      //write an additional info from a demo to demoex.wad
-      if (!M_WriteFile(demoex_filename, demoex_p, size))
-      {
-        lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file %s\n", demoex_filename);
-      }
-      else
-      {
-        //add demoex.wad to the wads list
-        D_AddFile(demoex_filename, source_auto_load);
-
-        //cache demoex.wad for immediately getting its data with W_CacheLumpName
-        W_Init();
-
-        WadDataInit(&waddata);
-
-        //enumerate and save all auto-loaded files and demo for future use
-        for (i = 0; i < numwadfiles; i++)
-        {
-          if (
-            wadfiles[i].src == source_auto_load ||
-            wadfiles[i].src == source_pre ||
-            wadfiles[i].src == source_lmp)
-          {
-            WadDataAddItem(&waddata, wadfiles[i].name, wadfiles[i].src, 0);
-          }
-        }
-
-        //get needed wads and dehs from demoex.wad
-        //restore all critical params like -spechit x
-        R_DemoEx_GetParams(buffer, &waddata);
-
-        //replace old wadfiles with the new ones
-        if (waddata.numwadfiles)
-        {
-          for (i = 0; (size_t)i < waddata.numwadfiles; i++)
-          {
-            if (waddata.wadfiles[i].src == source_iwad)
-            {
-              W_ReleaseAllWads();
-              WadDataToWadFiles(&waddata);
-              result = true;
-              break;
-            }
-          }
-        }
-        WadDataFree(&waddata);
-      }
-      free(buffer);
+      strncpy(demoex_filename, demo_demoex_filename, PATH_MAX-1);
     }
     else
     {
-      demoex_filename[0] = 0;
+      const char* tmp_dir;
+      char* tmp_path = NULL;
+      const char* template_format = "%sdsda-doom-demoex-XXXXXX";
+
+      tmp_dir = I_GetTempDir();
+      if (tmp_dir && *tmp_dir != '\0')
+      {
+        tmp_path = malloc(strlen(tmp_dir) + 2);
+        strcpy(tmp_path, tmp_dir);
+        if (!HasTrailingSlash(tmp_dir))
+        {
+          strcat(tmp_path, "/");
+        }
+
+        doom_snprintf(demoex_filename, sizeof(demoex_filename), template_format, tmp_path);
+#ifdef HAVE_MKSTEMP
+        if (mkstemp(demoex_filename) == -1)
+        {
+          demoex_filename[0] = 0;
+        }
+#else
+        mktemp(demoex_filename);
+#endif
+
+        free(tmp_path);
+      }
     }
+
+    if (!demoex_filename[0])
+    {
+      lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file");
+    }
+
+    AddDefaultExtension(demoex_filename, ".wad");
+
+    if (!CheckWadBufIntegrity(demoex_p, size))
+    {
+      lprintf(LO_ERROR, "G_ReadDemoFooter: demo footer is corrupted\n");
+    }
+    else
+    //write an additional info from a demo to demoex.wad
+    if (!M_WriteFile(demoex_filename, demoex_p, size))
+    {
+      lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file %s\n", demoex_filename);
+    }
+    else
+    {
+      //add demoex.wad to the wads list
+      D_AddFile(demoex_filename, source_auto_load);
+
+      //cache demoex.wad for immediately getting its data with W_CacheLumpName
+      W_Init();
+
+      WadDataInit(&waddata);
+
+      //enumerate and save all auto-loaded files and demo for future use
+      for (i = 0; i < numwadfiles; i++)
+      {
+        if (
+          wadfiles[i].src == source_auto_load ||
+          wadfiles[i].src == source_pre ||
+          wadfiles[i].src == source_lmp)
+        {
+          WadDataAddItem(&waddata, wadfiles[i].name, wadfiles[i].src, 0);
+        }
+      }
+
+      //get needed wads and dehs from demoex.wad
+      //restore all critical params like -spechit x
+      R_DemoEx_GetParams(buffer, &waddata);
+
+      //replace old wadfiles with the new ones
+      if (waddata.numwadfiles)
+      {
+        for (i = 0; (size_t)i < waddata.numwadfiles; i++)
+        {
+          if (waddata.wadfiles[i].src == source_iwad)
+          {
+            W_ReleaseAllWads();
+            WadDataToWadFiles(&waddata);
+            result = true;
+            break;
+          }
+        }
+      }
+      WadDataFree(&waddata);
+    }
+    free(buffer);
   }
 
   return result;
