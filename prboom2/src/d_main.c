@@ -2216,6 +2216,9 @@ static void D_DoomMainSetup(void)
   // Must be after P_Init
   HandleWarp();
 
+  // Must be after HandleWarp
+  e6y_HandleSkip();
+
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"I_Init: Setting up machine state.\n");
   I_Init();

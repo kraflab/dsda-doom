@@ -262,7 +262,7 @@ prboom_comp_t prboom_comp[PC_MAX] = {
   {0x00000000, 0x02050104, 0, "-reset_monsterspawner_params_after_loading"},
 };
 
-void e6y_InitCommandLine(void)
+void e6y_HandleSkip(void)
 {
   int p;
 
@@ -278,8 +278,15 @@ void e6y_InitCommandLine(void)
 
   if ((IsDemoPlayback() || IsDemoContinue()) && (startmap > 1 || demo_skiptics))
     G_SkipDemoStart();
+}
+
+void e6y_InitCommandLine(void)
+{
+  int p;
+
   if ((p = M_CheckParm("-avidemo")) && (p < myargc-1))
     avi_shot_fname = myargv[p + 1];
+
   stats_level = M_CheckParm("-levelstat");
 
   if ((stroller = M_CheckParm("-stroller")))
@@ -357,9 +364,18 @@ void G_SkipDemoCheck(void)
 {
   if (doSkip && gametic > 0)
   {
-    if (((startmap <= 1) &&
-         (demo_skiptics > 0 ? gametic > demo_skiptics : demo_curr_tic >= demo_tics_count)) ||
-        (demo_warp && gametic - levelstarttic > demo_skiptics))
+    if (
+      (
+        startmap <= 1 &&
+        (
+          demo_skiptics > 0 ?
+            gametic > demo_skiptics :
+            demo_curr_tic - demo_skiptics >= demo_tics_count
+        )
+      ) ||
+      (
+        demo_warp && gametic - levelstarttic > demo_skiptics)
+      )
      {
        G_SkipDemoStop();
      }

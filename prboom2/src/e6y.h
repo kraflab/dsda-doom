@@ -163,6 +163,7 @@ extern char hud_centermsg[80];
 void e6y_assert(const char *format, ...);
 
 void ParamsMatchingCheck();
+void e6y_HandleSkip(void);
 void e6y_InitCommandLine(void);
 
 void P_WalkTicker ();
