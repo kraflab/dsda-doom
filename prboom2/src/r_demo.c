@@ -847,6 +847,16 @@ void I_DemoExShutdown(void)
     {
       lprintf(LO_DEBUG, "I_DemoExShutdown: %s\n", strerror(errno));
     }
+
+    // remove original temp file too
+    if (strlen(demoex_filename) > 4) // tempfile.wad -> tempfile
+    {
+      demoex_filename[strlen(demoex_filename) - 3] = 0;
+      if (unlink(demoex_filename) != 0)
+      {
+        lprintf(LO_DEBUG, "I_DemoExShutdown: %s\n", strerror(errno));
+      }
+    }
   }
 }
 
@@ -1074,6 +1084,7 @@ static int G_ReadDemoFooter(const char *filename)
     }
     else
     {
+      int tmp_fd;
       const char* tmp_dir;
       char* tmp_path = NULL;
       const char* template_format = "%sdsda-doom-demoex-XXXXXX";
@@ -1090,13 +1101,19 @@ static int G_ReadDemoFooter(const char *filename)
 
         doom_snprintf(demoex_filename, sizeof(demoex_filename), template_format, tmp_path);
 #ifdef HAVE_MKSTEMP
-        if (mkstemp(demoex_filename) == -1)
+        if ((tmp_fd = mkstemp(demoex_filename)) == -1)
+#else
+        if ((tmp_fd = mktemp(demoex_filename)) == 0)
+#endif
         {
           demoex_filename[0] = 0;
         }
-#else
-        mktemp(demoex_filename);
-#endif
+
+        // don't leave file open
+        if (demoex_filename[0])
+        {
+          close(tmp_fd);
+        }
 
         free(tmp_path);
       }
