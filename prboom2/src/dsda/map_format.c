@@ -136,6 +136,9 @@ void dsda_ApplyMapFormat(void) {
   extern void P_PlayerInHereticSector(player_t * player, sector_t * sector);
   extern void P_PlayerInHexenSector(player_t * player, sector_t * sector);
 
+  extern void P_SpawnCompatibleScroller(line_t *l, int i);
+  extern void P_SpawnZDoomScroller(line_t *l, int i);
+
   extern void P_SpawnCompatibleFriction(line_t *l);
   extern void P_SpawnZDoomFriction(line_t *l);
 
@@ -146,6 +149,7 @@ void dsda_ApplyMapFormat(void) {
   // Can't just look for BEHAVIOR lumps, because some wads have vanilla and non-vanilla maps
   // Need proper per-map format swapping
   if (false) { // in-hexen zdoom format
+    map_format.zdoom = true;
     map_format.hexen = true;
     map_format.polyobjs = false;
     map_format.acs = false;
@@ -160,11 +164,13 @@ void dsda_ApplyMapFormat(void) {
     map_format.generalized_mask = ~0xff;
     map_format.init_sector_special = P_SpawnZDoomSectorSpecial;
     map_format.player_in_special_sector = P_PlayerInZDoomSector;
+    map_format.spawn_scroller = P_SpawnZDoomScroller;
     map_format.spawn_friction = P_SpawnZDoomFriction;
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
   }
   else if (hexen) {
+    map_format.zdoom = false;
     map_format.hexen = true;
     map_format.polyobjs = true;
     map_format.acs = true;
@@ -179,11 +185,13 @@ void dsda_ApplyMapFormat(void) {
     map_format.init_sector_special = NULL; // not used
     map_format.generalized_mask = 0; // no generalized specials
     map_format.player_in_special_sector = P_PlayerInHexenSector;
+    map_format.spawn_scroller = NULL; // not used
     map_format.spawn_friction = NULL; // not used
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
   }
   else {
+    map_format.zdoom = false;
     map_format.hexen = false;
     map_format.polyobjs = false;
     map_format.acs = false;
@@ -200,6 +208,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.player_in_special_sector = heretic ?
                                           P_PlayerInHereticSector :
                                           P_PlayerInCompatibleSector;
+    map_format.spawn_scroller = P_SpawnCompatibleScroller;
     map_format.spawn_friction = P_SpawnCompatibleFriction;
     map_format.mapthing_size = sizeof(doom_mapthing_t);
     map_format.maplinedef_size = sizeof(doom_maplinedef_t);

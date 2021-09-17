@@ -3357,116 +3357,294 @@ static void Add_WallScroller(fixed_t dx, fixed_t dy, const line_t *l,
 // (This is so scrolling floors and objects on them can move at same speed.)
 #define CARRYFACTOR ((fixed_t)(FRACUNIT*.09375))
 
+void P_SpawnCompatibleScroller(line_t *l, int i)
+{
+  fixed_t dx = l->dx >> SCROLL_SHIFT;  // direction and speed of scrolling
+  fixed_t dy = l->dy >> SCROLL_SHIFT;
+  int control = -1, accel = 0;         // no control sector or acceleration
+  int special = l->special;
+
+  if (demo_compatibility && special != 48) return; //e6y
+
+  // killough 3/7/98: Types 245-249 are same as 250-254 except that the
+  // first side's sector's heights cause scrolling when they change, and
+  // this linedef controls the direction and speed of the scrolling. The
+  // most complicated linedef since donuts, but powerful :)
+  //
+  // killough 3/15/98: Add acceleration. Types 214-218 are the same but
+  // are accelerative.
+
+  if (special >= 245 && special <= 249)         // displacement scrollers
+  {
+    special += 250 - 245;
+    control = sides[*l->sidenum].sector->iSectorID;
+  }
+  else if (special >= 214 && special <= 218)    // accelerative scrollers
+  {
+    accel = 1;
+    special += 250 - 214;
+    control = sides[*l->sidenum].sector->iSectorID;
+  }
+
+  switch (special)
+  {
+    register int s;
+
+    case 250:   // scroll effect ceiling
+      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+        Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
+      break;
+
+    case 251:   // scroll effect floor
+    case 253:   // scroll and carry objects on floor
+      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+        Add_Scroller(sc_floor, -dx, dy, control, s, accel);
+      if (special != 253)
+        break;
+      // fallthrough
+
+    case 252: // carry objects on floor
+      dx = FixedMul(dx, CARRYFACTOR);
+      dy = FixedMul(dy, CARRYFACTOR);
+      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+        Add_Scroller(sc_carry, dx, dy, control, s, accel);
+      break;
+
+      // killough 3/1/98: scroll wall according to linedef
+      // (same direction and speed as scrolling floors)
+    case 254:
+      if (l->tag == 0 && comperr(comperr_zerotag))
+      {
+        Add_WallScroller(dx, dy, l, control, accel);
+      }
+      else
+      {
+        for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
+          if (s != i)
+            Add_WallScroller(dx, dy, lines + s, control, accel);
+      }
+      break;
+
+    case 255:    // killough 3/2/98: scroll according to sidedef offsets
+      s = lines[i].sidenum[0];
+      Add_Scroller(sc_side, -sides[s].textureoffset,
+                   sides[s].rowoffset, -1, s, accel);
+      break;
+
+    case 1024: // special 255 with tag control
+    case 1025:
+    case 1026:
+      if (l->tag == 0)
+        I_Error("Line %d is missing a tag!", i);
+
+      if (special > 1024)
+        control = sides[*l->sidenum].sector->iSectorID;
+
+      if (special == 1026)
+        accel = 1;
+
+      s = lines[i].sidenum[0];
+      dx = -sides[s].textureoffset / 8;
+      dy = sides[s].rowoffset / 8;
+      for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
+        if (s != i)
+          Add_Scroller(sc_side, dx, dy, control, lines[s].sidenum[0], accel);
+
+      break;
+
+    case 48:                  // scroll first side
+      Add_Scroller(sc_side,  FRACUNIT, 0, -1, lines[i].sidenum[0], accel);
+      break;
+
+    case 85:                  // jff 1/30/98 2-way scroll
+      Add_Scroller(sc_side, -FRACUNIT, 0, -1, lines[i].sidenum[0], accel);
+      break;
+  }
+}
+
+void P_SpawnZDoomScroller(line_t *l, int i)
+{
+  // double dx;	// direction and speed of scrolling
+	// double dy;
+	// int control = -1, accel = 0;		// no control sector or acceleration
+	// int special = l->special;
+  //
+	// // killough 3/7/98: Types 245-249 are same as 250-254 except that the
+	// // first side's sector's heights cause scrolling when they change, and
+	// // this linedef controls the direction and speed of the scrolling. The
+	// // most complicated linedef since donuts, but powerful :)
+	// //
+	// // killough 3/15/98: Add acceleration. Types 214-218 are the same but
+	// // are accelerative.
+  //
+	// // [RH] Assume that it's a scroller and zero the line's special.
+	// l->special = 0;
+  //
+	// dx = dy = 0;	// Shut up, GCC
+  //
+	// if (special == zl_scroll_ceiling ||
+	// 	special == zl_scroll_floor ||
+	// 	special == zl_scroll_texture_model)
+	// {
+	// 	if (l->args[1] & 3)
+	// 	{
+	// 		// if 1, then displacement
+	// 		// if 2, then accelerative (also if 3)
+	// 		control = int(l->sidedef[0]->sector - sectors);
+	// 		if (l->args[1] & 2)
+	// 			accel = 1;
+	// 	}
+	// 	if (special == zl_scroll_texture_model ||
+	// 		l->args[1] & 4)
+	// 	{
+	// 		// The line housing the special controls the
+	// 		// direction and speed of scrolling.
+	// 		dx = l->Delta().X / 32.;
+	// 		dy = l->Delta().Y / 32.;
+	// 	}
+	// 	else
+	// 	{
+	// 		// The speed and direction are parameters to the special.
+	// 		dx = (l->args[3] - 128) / 32.;
+	// 		dy = (l->args[4] - 128) / 32.;
+	// 	}
+	// }
+  //
+	// switch (special)
+	// {
+	// 	int s;
+  //
+  // 	case zl_scroll_ceiling:
+  // 	{
+  // 		FSectorTagIterator itr(l->args[0]);
+  // 		while ((s = itr.Next()) >= 0)
+  // 		{
+  // 			new DScroller(EScroll::sc_ceiling, -dx, dy, control, s, accel);
+  // 		}
+  // 		for (unsigned j = 0; j < copyscrollers.Size(); j++)
+  // 		{
+  // 			line_t *line = &lines[copyscrollers[j]];
+  //
+  // 			if (line->args[0] == l->args[0] && (line->args[1] & 1))
+  // 			{
+  // 				new DScroller(EScroll::sc_ceiling, -dx, dy, control, int(line->frontsector - sectors), accel);
+  // 			}
+  // 		}
+  // 		break;
+  // 	}
+  //
+  // 	case zl_scroll_floor:
+  // 		if (l->args[2] != 1)
+  // 		{ // scroll the floor texture
+  // 			FSectorTagIterator itr(l->args[0]);
+  // 			while ((s = itr.Next()) >= 0)
+  // 			{
+  // 				new DScroller (EScroll::sc_floor, -dx, dy, control, s, accel);
+  // 			}
+  // 			for(unsigned j = 0;j < copyscrollers.Size(); j++)
+  // 			{
+  // 				line_t *line = &lines[copyscrollers[j]];
+  //
+  // 				if (line->args[0] == l->args[0] && (line->args[1] & 2))
+  // 				{
+  // 					new DScroller (EScroll::sc_floor, -dx, dy, control, int(line->frontsector-sectors), accel);
+  // 				}
+  // 			}
+  // 		}
+  //
+  // 		if (l->args[2] > 0)
+  // 		{ // carry objects on the floor
+  // 			FSectorTagIterator itr(l->args[0]);
+  // 			while ((s = itr.Next()) >= 0)
+  // 			{
+  // 				new DScroller (EScroll::sc_carry, dx, dy, control, s, accel);
+  // 			}
+  // 			for(unsigned j = 0;j < copyscrollers.Size(); j++)
+  // 			{
+  // 				line_t *line = &lines[copyscrollers[j]];
+  //
+  // 				if (line->args[0] == l->args[0] && (line->args[1] & 4))
+  // 				{
+  // 					new DScroller (EScroll::sc_carry, dx, dy, control, int(line->frontsector-sectors), accel);
+  // 				}
+  // 			}
+  // 		}
+  // 		break;
+  //
+  // 	// killough 3/1/98: scroll wall according to linedef
+  // 	// (same direction and speed as scrolling floors)
+  // 	case zl_scroll_texture_model:
+  // 	{
+  // 		FLineIdIterator itr(l->args[0]);
+  // 		while ((s = itr.Next()) >= 0)
+  // 		{
+  // 			if (s != i)
+  // 				new DScroller(dx, dy, lines + s, control, accel);
+  // 		}
+  // 		break;
+  // 	}
+  //
+  // 	case zl_scroll_texture_offsets:
+  // 		// killough 3/2/98: scroll according to sidedef offsets
+  // 		s = int(lines[i].sidedef[0] - sides);
+  // 		new DScroller (EScroll::sc_side, -sides[s].GetTextureXOffset(side_t::mid),
+  // 			sides[s].GetTextureYOffset(side_t::mid), -1, s, accel, SCROLLTYPE(l->args[0]));
+  // 		break;
+  //
+  // 	case zl_scroll_texture_left:
+  // 		l->special = special;	// Restore the special, for compat_useblocking's benefit.
+  // 		s = int(lines[i].sidedef[0] - sides);
+  // 		new DScroller (EScroll::sc_side, l->args[0] / 64., 0,
+  // 					   -1, s, accel, SCROLLTYPE(l->args[1]));
+  // 		break;
+  //
+  // 	case zl_scroll_texture_right:
+  // 		l->special = special;
+  // 		s = int(lines[i].sidedef[0] - sides);
+  // 		new DScroller (EScroll::sc_side, -l->args[0] / 64., 0,
+  // 					   -1, s, accel, SCROLLTYPE(l->args[1]));
+  // 		break;
+  //
+  // 	case zl_scroll_texture_up:
+  // 		l->special = special;
+  // 		s = int(lines[i].sidedef[0] - sides);
+  // 		new DScroller (EScroll::sc_side, 0, l->args[0] / 64.,
+  // 					   -1, s, accel, SCROLLTYPE(l->args[1]));
+  // 		break;
+  //
+  // 	case zl_scroll_texture_down:
+  // 		l->special = special;
+  // 		s = int(lines[i].sidedef[0] - sides);
+  // 		new DScroller (EScroll::sc_side, 0, -l->args[0] / 64.,
+  // 					   -1, s, accel, SCROLLTYPE(l->args[1]));
+  // 		break;
+  //
+  // 	case zl_scroll_texture_both:
+  // 		s = int(lines[i].sidedef[0] - sides);
+  // 		if (l->args[0] == 0) {
+  // 			dx = (l->args[1] - l->args[2]) / 64.;
+  // 			dy = (l->args[4] - l->args[3]) / 64.;
+  // 			new DScroller (EScroll::sc_side, dx, dy, -1, s, accel);
+  // 		}
+  // 		break;
+  //
+  // 	default:
+  // 		// [RH] It wasn't a scroller after all, so restore the special.
+  // 		l->special = special;
+  // 		break;
+	// }
+}
+
 // Initialize the scrollers
 static void P_SpawnScrollers(void)
 {
   int i;
   line_t *l = lines;
 
-  for (i=0;i<numlines;i++,l++)
-    {
-      fixed_t dx = l->dx >> SCROLL_SHIFT;  // direction and speed of scrolling
-      fixed_t dy = l->dy >> SCROLL_SHIFT;
-      int control = -1, accel = 0;         // no control sector or acceleration
-      int special = l->special;
-      if (demo_compatibility && special!=48) continue;//e6y
+  // MAP_FORMAT_TODO: zl_sector_copy_scroller handling
 
-      // killough 3/7/98: Types 245-249 are same as 250-254 except that the
-      // first side's sector's heights cause scrolling when they change, and
-      // this linedef controls the direction and speed of the scrolling. The
-      // most complicated linedef since donuts, but powerful :)
-      //
-      // killough 3/15/98: Add acceleration. Types 214-218 are the same but
-      // are accelerative.
-
-      if (special >= 245 && special <= 249)         // displacement scrollers
-        {
-          special += 250-245;
-          control = sides[*l->sidenum].sector->iSectorID;
-        }
-      else
-        if (special >= 214 && special <= 218)       // accelerative scrollers
-          {
-            accel = 1;
-            special += 250-214;
-            control = sides[*l->sidenum].sector->iSectorID;
-          }
-
-      switch (special)
-        {
-          register int s;
-
-        case 250:   // scroll effect ceiling
-          for (s=-1; (s = P_FindSectorFromLineTag(l,s)) >= 0;)
-            Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
-          break;
-
-        case 251:   // scroll effect floor
-        case 253:   // scroll and carry objects on floor
-          for (s=-1; (s = P_FindSectorFromLineTag(l,s)) >= 0;)
-            Add_Scroller(sc_floor, -dx, dy, control, s, accel);
-          if (special != 253)
-            break;
-          // fallthrough
-
-        case 252: // carry objects on floor
-          dx = FixedMul(dx,CARRYFACTOR);
-          dy = FixedMul(dy,CARRYFACTOR);
-          for (s=-1; (s = P_FindSectorFromLineTag(l,s)) >= 0;)
-            Add_Scroller(sc_carry, dx, dy, control, s, accel);
-          break;
-
-          // killough 3/1/98: scroll wall according to linedef
-          // (same direction and speed as scrolling floors)
-        case 254:
-          if (l->tag == 0 && comperr(comperr_zerotag))
-          {
-            Add_WallScroller(dx, dy, l, control, accel);
-          }
-          else
-          {
-            for (s=-1; (s = P_FindLineFromLineTag(l,s)) >= 0;)
-              if (s != i)
-                Add_WallScroller(dx, dy, lines+s, control, accel);
-          }
-          break;
-
-        case 255:    // killough 3/2/98: scroll according to sidedef offsets
-          s = lines[i].sidenum[0];
-          Add_Scroller(sc_side, -sides[s].textureoffset,
-                       sides[s].rowoffset, -1, s, accel);
-          break;
-
-        case 1024: // special 255 with tag control
-        case 1025:
-        case 1026:
-          if (l->tag == 0)
-            I_Error("Line %d is missing a tag!", i);
-
-          if (special > 1024)
-            control = sides[*l->sidenum].sector->iSectorID;
-
-          if (special == 1026)
-            accel = 1;
-
-          s = lines[i].sidenum[0];
-          dx = -sides[s].textureoffset / 8;
-          dy = sides[s].rowoffset / 8;
-          for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
-            if (s != i)
-              Add_Scroller(sc_side, dx, dy, control, lines[s].sidenum[0], accel);
-
-          break;
-
-        case 48:                  // scroll first side
-          Add_Scroller(sc_side,  FRACUNIT, 0, -1, lines[i].sidenum[0], accel);
-          break;
-
-        case 85:                  // jff 1/30/98 2-way scroll
-          Add_Scroller(sc_side, -FRACUNIT, 0, -1, lines[i].sidenum[0], accel);
-          break;
-        }
-    }
+  for (i = 0; i < numlines; i++, l++)
+    map_format.spawn_scroller(l, i);
 }
 
 // e6y

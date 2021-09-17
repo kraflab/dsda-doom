@@ -22,6 +22,7 @@
 #include "r_defs.h"
 
 typedef struct {
+  dboolean zdoom;
   dboolean hexen;
   dboolean polyobjs;
   dboolean acs;
@@ -36,6 +37,7 @@ typedef struct {
   short generalized_mask;
   void (*init_sector_special)(sector_t*, int);
   void (*player_in_special_sector)(player_t*, sector_t*);
+  void (*spawn_scroller)(line_t*, int);
   void (*spawn_friction)(line_t*);
   size_t mapthing_size;
   size_t maplinedef_size;
