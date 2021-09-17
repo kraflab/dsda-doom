@@ -2430,6 +2430,7 @@ dboolean P_ChickenMorph(mobj_t * actor)
     chicken->flags |= ghost;
     P_SetTarget(&chicken->target, target);
     chicken->angle = angle;
+    dsda_WatchMorph(chicken);
     return (true);
 }
 
@@ -3521,6 +3522,7 @@ static dboolean P_MorphMonster(mobj_t * actor)
     monster->special = oldMonster.special;
     P_InsertMobjIntoTIDList(monster, oldMonster.tid);
     memcpy(monster->args, oldMonster.args, 5);
+    dsda_WatchMorph(monster);
 
     // check for turning off minotaur power for active icon
     if (moType == HEXEN_MT_MINOTAUR)

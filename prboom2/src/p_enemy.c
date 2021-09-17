@@ -3784,6 +3784,7 @@ dboolean P_UpdateChicken(mobj_t * actor, int tics)
     oldChicken = *actor;
     P_SetMobjState(actor, HERETIC_S_FREETARGMOBJ);
     mo = P_SpawnMobj(x, y, z, moType);
+    dsda_WatchUnMorph(mo);
     if (P_TestMobjLocation(mo) == false)
     {                           // Didn't fit
         P_RemoveMobj(mo);
@@ -3794,6 +3795,7 @@ dboolean P_UpdateChicken(mobj_t * actor, int tics)
         P_SetTarget(&mo->target, oldChicken.target);
         mo->special1.i = 5 * 35;  // Next try in 5 seconds
         mo->special2.i = moType;
+        dsda_WatchMorph(mo);
         return (false);
     }
     mo->angle = oldChicken.angle;
@@ -5245,7 +5247,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
     P_RemoveMobjFromTIDList(actor);
     P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     mo = P_SpawnMobj(x, y, z, moType);
-
+    dsda_WatchUnMorph(mo);
     if (P_TestMobjLocation(mo) == false)
     {                           // Didn't fit
         P_RemoveMobj(mo);
@@ -5260,6 +5262,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
         mo->tid = oldMonster.tid;
         memcpy(mo->args, oldMonster.args, 5);
         P_InsertMobjIntoTIDList(mo, oldMonster.tid);
+        dsda_WatchMorph(mo);
         return (false);
     }
     mo->angle = oldMonster.angle;

@@ -210,6 +210,18 @@ void dsda_WatchSpawn(mobj_t* spawned) {
     ++dsda_max_kill_requirement;
 }
 
+void dsda_WatchMorph(mobj_t* morphed) {
+  // Fix count from dsda_WatchSpawn
+  if (!((morphed->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+    --dsda_max_kill_requirement;
+}
+
+void dsda_WatchUnMorph(mobj_t* morphed) {
+  // Fix count from dsda_WatchSpawn
+  if (!((morphed->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+    --dsda_max_kill_requirement;
+}
+
 void dsda_WatchIconSpawn(mobj_t* spawned) {
   spawned->intflags |= MIF_SPAWNED_BY_ICON;
 
