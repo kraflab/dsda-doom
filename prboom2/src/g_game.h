@@ -92,7 +92,6 @@ void G_SetSpeed(dboolean force);
 #define RDH_SAFE 0x00000001
 #define RDH_SKIP_HEADER 0x00000002
 const byte* G_ReadDemoHeaderEx(const byte* demo_p, size_t size, unsigned int params);
-const byte* G_ReadDemoHeader(const byte* demo_p, size_t size);
 void G_CalculateDemoParams(const byte *demo_p);
 
 // killough 1/18/98: Doom-style printf;   killough 4/25/98: add gcc attributes

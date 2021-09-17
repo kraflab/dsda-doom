@@ -3724,11 +3724,6 @@ static dboolean CheckForOverrun(const byte *start_p, const byte *current_p, size
   return false;
 }
 
-const byte* G_ReadDemoHeader(const byte *demo_p, size_t size)
-{
-  return G_ReadDemoHeaderEx(demo_p, size, 0);
-}
-
 const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int params)
 {
   skill_t skill;
