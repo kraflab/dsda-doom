@@ -64,6 +64,7 @@
 #include "dsda.h"
 
 #include "dsda/global.h"
+#include "dsda/line_special.h"
 #include "dsda/map_format.h"
 
 //
@@ -3045,6 +3046,40 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   }
 }
 
+// Check for undefined parameters that are non-zero and output messages for them.
+// We don't report for specials we don't understand.
+static void P_ValidateLineSpecials(void)
+{
+  int i;
+  line_t *l;
+
+  if (!map_format.zdoom) return;
+
+  for (i = 0, l = lines; i < numlines; i++, l++)
+  {
+    zl_linespecial_t *spec = dsda_GetLineSpecialInfo(l->special);
+
+    if (spec)
+  	{
+  		int arg;
+      byte *args = &l->arg1; // MAP_FORMAT_TODO: arrayify line args
+
+      for (arg = spec->map_args; arg < LINE_ARG_COUNT; ++arg)
+  		{
+  			if (args[arg])
+  			{
+  				lprintf(LO_WARN, "Line %d (type %d:%s), arg %u is %d (should be 0)\n",
+  					               i, l->special, spec->name, arg + 1, args[arg]);
+  			}
+  		}
+  	}
+    else
+    {
+      lprintf(LO_WARN, "Unknown line special %d\n", l->special);
+    }
+  }
+}
+
 static void Hexen_P_SpawnSpecials(void);
 
 // Parses command line parameters.
@@ -3106,6 +3141,7 @@ void P_SpawnSpecials (void)
 
   P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
+  P_ValidateLineSpecials();
   P_SpawnScrollers(); // killough 3/7/98: Add generalized scrollers
 
   // e6y

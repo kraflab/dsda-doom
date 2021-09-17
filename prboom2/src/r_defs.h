@@ -263,6 +263,8 @@ typedef struct line_s
   byte arg5;
 } line_t;
 
+#define LINE_ARG_COUNT 5
+
 // phares 3/14/98
 //
 // Sector list node showing all sectors an object appears in.
