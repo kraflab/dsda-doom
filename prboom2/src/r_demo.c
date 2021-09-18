@@ -1087,7 +1087,7 @@ static int G_ReadDemoFooter(const char *filename)
       int tmp_fd;
       const char* tmp_dir;
       char* tmp_path = NULL;
-      const char* template_format = "%sdsda-doom-demoex-XXXXXX";
+      const char* template_format = "%sdsda-doom-demoex2-XXXXXX";
 
       tmp_dir = I_GetTempDir();
       if (tmp_dir && *tmp_dir != '\0')
