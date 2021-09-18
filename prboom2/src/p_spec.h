@@ -1359,6 +1359,7 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line, int side,
 void P_PlayerOnSpecialFlat(player_t * player, int floorType);
 line_t *P_FindLine(int lineTag, int *searchPosition);
 int P_FindSectorFromTag(int tag, int start);
+int P_FindLineFromTag(int tag, int start);
 
 void P_TransferSectorFlags(unsigned int *dest, unsigned int source);
 void P_ResetSectorTransferFlags(unsigned int *flags);
