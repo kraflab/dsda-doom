@@ -120,6 +120,9 @@ void W_DoneCache(void)
 
 void W_InitCache(void)
 {
+  // Wipe any existing cache
+  W_DoneCache();
+
   // set up caching
   cachelump = calloc(numlumps, sizeof *cachelump);
   if (!cachelump)
