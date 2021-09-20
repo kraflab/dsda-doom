@@ -4160,55 +4160,68 @@ void P_SpawnCompatiblePusher(line_t *l)
   }
 }
 
+static void CalculatePushVector(line_t *l, int magnitude, int angle, fixed_t *dx, fixed_t *dy)
+{
+  if (l->arg4)
+  {
+    *dx = l->dx;
+    *dy = l->dy;
+    return;
+  }
+
+  angle = angle * (ANG180 >> 7); // 256 is 360
+  angle >>= ANGLETOFINESHIFT;
+  magnitude <<= FRACBITS;
+
+  *dx = FixedMul(magnitude, finecosine[angle]);
+  *dy = FixedMul(magnitude, finesine[angle]);
+}
+
 void P_SpawnZDoomPusher(line_t *l)
 {
-  // switch (l->special)
-  // {
-  //   case Sector_SetWind: // wind
-  //     FSectorTagIterator itr(l->args[0]);
-  //     while ((s = itr.Next()) >= 0)
-  //       new DPusher(DPusher::p_wind, l->args[3] ? l : NULL, l->args[1], l->args[2], NULL, s);
-  //     l->special = 0;
-  //     break;
-  //   case Sector_SetCurrent: // current
-  //     FSectorTagIterator itr(l->args[0]);
-  //     while ((s = itr.Next()) >= 0)
-  //       new DPusher(DPusher::p_current, l->args[3] ? l : NULL, l->args[1], l->args[2], NULL, s);
-  //     l->special = 0;
-  //     break;
-  //   case PointPush_SetForce: // push/pull
-  //     if (l->args[0])
-  //     {  // [RH] Find thing by sector
-  //       FSectorTagIterator itr(l->args[0]);
-  //       while ((s = itr.Next()) >= 0)
-  //       {
-  //         AActor *thing = P_GetPushThing (s);
-  //         if (thing) {  // No MT_P* means no effect
-  //           // [RH] Allow narrowing it down by tid
-  //           if (!l->args[1] || l->args[1] == thing->tid)
-  //             new DPusher (DPusher::p_push, l->args[3] ? l : NULL, l->args[2],
-  //                    0, thing, s);
-  //         }
-  //       }
-  //     }
-  //     else
-  //     {  // [RH] Find thing by tid
-  //       AActor *thing;
-  //       FActorIterator iterator (l->args[1]);
-  //
-  //       while ( (thing = iterator.Next ()) )
-  //       {
-  //         if (thing->GetClass()->TypeName == NAME_PointPusher ||
-  //           thing->GetClass()->TypeName == NAME_PointPuller)
-  //         {
-  //           new DPusher (DPusher::p_push, l->args[3] ? l : NULL, l->args[2],
-  //                  0, thing, int(thing->Sector - sectors));
-  //         }
-  //       }
-  //     }
-  //     l->special = 0;
-  //     break;
-  // }
+  int s;
+  mobj_t* thing;
+  fixed_t dx, dy;
+
+  switch (l->special)
+  {
+    case zl_sector_set_wind: // wind
+      CalculatePushVector(l, l->arg2, l->arg3, &dx, &dy);
+      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+        Add_Pusher(p_wind, dx, dy, NULL, s);
+      l->special = 0;
+      break;
+    case zl_sector_set_current: // current
+      CalculatePushVector(l, l->arg2, l->arg3, &dx, &dy);
+      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+        Add_Pusher(p_current, dx, dy, NULL, s);
+      l->special = 0;
+      break;
+    case zl_point_push_set_force: // push/pull
+      CalculatePushVector(l, l->arg3, 0, &dx, &dy);
+      if (l->arg1)
+      {  // [RH] Find thing by sector
+        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+        {
+          thing = P_GetPushThing(s);
+          if (thing) // No MT_P* means no effect
+          {
+            // [RH] Allow narrowing it down by tid
+            if (!l->arg2 || l->arg2 == thing->tid)
+              Add_Pusher(p_push, dx, dy, thing, s);
+          }
+        }
+      }
+      else
+      {  // [RH] Find thing by tid
+        for (s = -1; (thing = P_FindMobjFromTID(l->arg2, &s)) != NULL;)
+          // MAP_FORMAT_TODO: push / pull type
+          if (thing->type == MT_PUSH || thing->type == MT_PULL)
+            Add_Pusher(p_push, dx, dy, thing, thing->subsector->sector->iSectorID);
+      }
+      l->special = 0;
+      break;
+  }
 }
 
 static void P_SpawnPushers(void)
