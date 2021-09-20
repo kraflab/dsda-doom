@@ -4134,33 +4134,90 @@ mobj_t* P_GetPushThing(int s)
 // Initialize the sectors where pushers are present
 //
 
+void P_SpawnCompatiblePusher(line_t *l)
+{
+  register int s;
+  mobj_t* thing;
+
+  switch(l->special)
+  {
+    case 224: // wind
+      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+        Add_Pusher(p_wind, l->dx, l->dy, NULL, s);
+      break;
+    case 225: // current
+      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+        Add_Pusher(p_current, l->dx, l->dy, NULL, s);
+      break;
+    case 226: // push/pull
+      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+      {
+        thing = P_GetPushThing(s);
+        if (thing) // No MT_P* means no effect
+          Add_Pusher(p_push, l->dx, l->dy, thing, s);
+      }
+      break;
+  }
+}
+
+void P_SpawnZDoomPusher(line_t *l)
+{
+  // switch (l->special)
+  // {
+  //   case Sector_SetWind: // wind
+  //     FSectorTagIterator itr(l->args[0]);
+  //     while ((s = itr.Next()) >= 0)
+  //       new DPusher(DPusher::p_wind, l->args[3] ? l : NULL, l->args[1], l->args[2], NULL, s);
+  //     l->special = 0;
+  //     break;
+  //   case Sector_SetCurrent: // current
+  //     FSectorTagIterator itr(l->args[0]);
+  //     while ((s = itr.Next()) >= 0)
+  //       new DPusher(DPusher::p_current, l->args[3] ? l : NULL, l->args[1], l->args[2], NULL, s);
+  //     l->special = 0;
+  //     break;
+  //   case PointPush_SetForce: // push/pull
+  //     if (l->args[0])
+  //     {  // [RH] Find thing by sector
+  //       FSectorTagIterator itr(l->args[0]);
+  //       while ((s = itr.Next()) >= 0)
+  //       {
+  //         AActor *thing = P_GetPushThing (s);
+  //         if (thing) {  // No MT_P* means no effect
+  //           // [RH] Allow narrowing it down by tid
+  //           if (!l->args[1] || l->args[1] == thing->tid)
+  //             new DPusher (DPusher::p_push, l->args[3] ? l : NULL, l->args[2],
+  //                    0, thing, s);
+  //         }
+  //       }
+  //     }
+  //     else
+  //     {  // [RH] Find thing by tid
+  //       AActor *thing;
+  //       FActorIterator iterator (l->args[1]);
+  //
+  //       while ( (thing = iterator.Next ()) )
+  //       {
+  //         if (thing->GetClass()->TypeName == NAME_PointPusher ||
+  //           thing->GetClass()->TypeName == NAME_PointPuller)
+  //         {
+  //           new DPusher (DPusher::p_push, l->args[3] ? l : NULL, l->args[2],
+  //                  0, thing, int(thing->Sector - sectors));
+  //         }
+  //       }
+  //     }
+  //     l->special = 0;
+  //     break;
+  // }
+}
+
 static void P_SpawnPushers(void)
 {
     int i;
     line_t *l = lines;
-    register int s;
-    mobj_t* thing;
 
-    for (i = 0 ; i < numlines ; i++,l++)
-        switch(l->special)
-            {
-          case 224: // wind
-            for (s = -1; (s = P_FindSectorFromLineTag(l,s)) >= 0 ; )
-                Add_Pusher(p_wind,l->dx,l->dy,NULL,s);
-            break;
-          case 225: // current
-            for (s = -1; (s = P_FindSectorFromLineTag(l,s)) >= 0 ; )
-                Add_Pusher(p_current,l->dx,l->dy,NULL,s);
-            break;
-          case 226: // push/pull
-            for (s = -1; (s = P_FindSectorFromLineTag(l,s)) >= 0 ; )
-                {
-                thing = P_GetPushThing(s);
-                if (thing) // No MT_P* means no effect
-                    Add_Pusher(p_push,l->dx,l->dy,thing,s);
-                }
-            break;
-            }
+    for (i = 0; i < numlines; i++, l++)
+      map_format.spawn_pusher(l);
 }
 
 //
