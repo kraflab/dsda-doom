@@ -403,6 +403,10 @@ const byte *dsda_ReadOptions21(const byte *demo_p) {
   for (i = 0; i < count; i++)
     comp[mbf21_comp_translation[i]] = *demo_p++;
 
+  // comp_voodooscroller
+  if (count < 24)
+    comp[mbf21_comp_translation[23]] = 1;
+
   G_Compatibility();
 
   return demo_p;
