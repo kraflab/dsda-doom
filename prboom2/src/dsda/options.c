@@ -95,7 +95,8 @@ static const dsda_options_t default_mbf_options = {
   // .comp_maxhealth = 0,
   // .comp_translucency = 0,
   // .comp_ledgeblock = 0,
-  // .comp_friendlyspawn = 1
+  // .comp_friendlyspawn = 1,
+  // .comp_voodooscroller = 1,
 };
 
 static const dsda_options_t default_latest_options = {
@@ -141,7 +142,8 @@ static const dsda_options_t default_latest_options = {
   .comp_maxhealth = 0,
   .comp_translucency = 0,
   .comp_ledgeblock = 1,
-  .comp_friendlyspawn = 1
+  .comp_friendlyspawn = 1,
+  .comp_voodooscroller = 0,
 };
 
 static dsda_options_t mbf_options;
@@ -189,6 +191,7 @@ static dsda_option_t option_list[] = {
   { "comp_soul", &mbf_options.comp_soul, 0, 1 },
   { "comp_ledgeblock", &mbf_options.comp_ledgeblock, 0, 1 },
   { "comp_friendlyspawn", &mbf_options.comp_friendlyspawn, 0, 1 },
+  { "comp_voodooscroller", &mbf_options.comp_voodooscroller, 0, 1 },
   { 0 }
 };
 
@@ -278,7 +281,7 @@ const dsda_options_t* dsda_Options(void) {
   return dsda_MBFOptions();
 }
 
-#define MBF21_COMP_TOTAL 23
+#define MBF21_COMP_TOTAL 24
 
 static int mbf21_comp_translation[MBF21_COMP_TOTAL] = {
   comp_telefrag,
@@ -304,6 +307,7 @@ static int mbf21_comp_translation[MBF21_COMP_TOTAL] = {
   comp_soul,
   comp_ledgeblock,
   comp_friendlyspawn,
+  comp_voodooscroller,
 };
 
 // killough 5/2/98: number of bytes reserved for saving options

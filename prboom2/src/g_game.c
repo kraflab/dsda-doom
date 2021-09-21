@@ -2773,8 +2773,8 @@ void G_Compatibility(void)
     { boom_compatibility, mbf21_compatibility },
     // comp_friendlyspawn - A_Spawn new mobj inherits friendliness
     { prboom_1_compatibility, mbf21_compatibility },
-    // comp_placeholder_31 - Not defined yet
-    { 255, 255 },
+    // comp_voodooscroller - Voodoo dolls on slow scrollers move too slowly
+    { mbf21_compatibility, mbf21_compatibility },
     // comp_placeholder_32 - Not defined yet
     { 255, 255 }
   };
@@ -2917,6 +2917,7 @@ void G_ReloadDefaults(void)
     comp[comp_translucency] = options->comp_translucency;
     comp[comp_ledgeblock] = options->comp_ledgeblock;
     comp[comp_friendlyspawn] = options->comp_friendlyspawn;
+    comp[comp_voodooscroller] = options->comp_voodooscroller;
   }
 
   G_Compatibility();
