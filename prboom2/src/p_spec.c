@@ -3089,6 +3089,237 @@ static void P_ValidateLineSpecials(void)
   }
 }
 
+void P_SpawnCompatibleExtra(line_t *l, int i)
+{
+  int s, sec;
+
+  switch (l->special)
+  {
+    // killough 3/7/98:
+    // support for drawn heights coming from different sector
+    case 242:
+      sec = sides[*l->sidenum].sector->iSectorID;
+      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
+        sectors[s].heightsec = sec;
+      break;
+
+    // killough 3/16/98: Add support for setting
+    // floor lighting independently (e.g. lava)
+    case 213:
+      sec = sides[*l->sidenum].sector->iSectorID;
+      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
+        sectors[s].floorlightsec = sec;
+      break;
+
+    // killough 4/11/98: Add support for setting
+    // ceiling lighting independently
+    case 261:
+      sec = sides[*l->sidenum].sector->iSectorID;
+      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
+        sectors[s].ceilinglightsec = sec;
+      break;
+
+      // killough 10/98:
+      //
+      // Support for sky textures being transferred from sidedefs.
+      // Allows scrolling and other effects (but if scrolling is
+      // used, then the same sector tag needs to be used for the
+      // sky sector, the sky-transfer linedef, and the scroll-effect
+      // linedef). Still requires user to use F_SKY1 for the floor
+      // or ceiling texture, to distinguish floor and ceiling sky.
+
+    case 271:   // Regular sky
+    case 272:   // Same, only flipped
+      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
+        sectors[s].sky = i | PL_SKYFLAT;
+      break;
+  }
+}
+
+void P_SpawnZDoomExtra(line_t *l, int i)
+{
+  // switch (lines[i].special)
+  // {
+  //   int s;
+  //   sector_t *sec;
+  //
+  // // killough 3/7/98:
+  // // support for drawn heights coming from different sector
+  // case Transfer_Heights:
+  //   {
+  //     sec = lines[i].frontsector;
+  //     if (lines[i].args[1] & 2)
+  //     {
+  //       sec->MoreFlags |= SECF_FAKEFLOORONLY;
+  //     }
+  //     if (lines[i].args[1] & 4)
+  //     {
+  //       sec->MoreFlags |= SECF_CLIPFAKEPLANES;
+  //     }
+  //     if (lines[i].args[1] & 8)
+  //     {
+  //       sec->MoreFlags |= SECF_UNDERWATER;
+  //     }
+  //     else if (forcewater)
+  //     {
+  //       sec->MoreFlags |= SECF_FORCEDUNDERWATER;
+  //     }
+  //     if (lines[i].args[1] & 16)
+  //     {
+  //       sec->MoreFlags |= SECF_IGNOREHEIGHTSEC;
+  //     }
+  //     if (lines[i].args[1] & 32)
+  //     {
+  //       sec->MoreFlags |= SECF_NOFAKELIGHT;
+  //     }
+  //     FSectorTagIterator itr(lines[i].args[0]);
+  //     while ((s = itr.Next()) >= 0)
+  //     {
+  //       sectors[s].heightsec = sec;
+  //       sec->e->FakeFloor.Sectors.Push(&sectors[s]);
+  //       sectors[s].AdjustFloorClip();
+  //     }
+  //     break;
+  //   }
+  //
+  // // killough 3/16/98: Add support for setting
+  // // floor lighting independently (e.g. lava)
+  // case Transfer_FloorLight:
+  //   new DLightTransfer (lines[i].frontsector, lines[i].args[0], true);
+  //   break;
+  //
+  // // killough 4/11/98: Add support for setting
+  // // ceiling lighting independently
+  // case Transfer_CeilingLight:
+  //   new DLightTransfer (lines[i].frontsector, lines[i].args[0], false);
+  //   break;
+  //
+  // // [Graf Zahl] Add support for setting lighting
+  // // per wall independently
+  // case Transfer_WallLight:
+  //   new DWallLightTransfer (lines[i].frontsector, lines[i].args[0], lines[i].args[1]);
+  //   break;
+  //
+  // case Sector_Attach3dMidtex:
+  //   P_Attach3dMidtexLinesToSector(lines[i].frontsector, lines[i].args[0], lines[i].args[1], !!lines[i].args[2]);
+  //   break;
+  //
+  // case Sector_SetLink:
+  //   if (lines[i].args[0] == 0)
+  //   {
+  //     P_AddSectorLinks(lines[i].frontsector, lines[i].args[1], lines[i].args[2], lines[i].args[3]);
+  //   }
+  //   break;
+  //
+  // case Sector_SetPortal:
+  //   // arg 0 = sector tag
+  //   // arg 1 = type
+  //   //  - 0: normal (handled here)
+  //   //  - 1: copy (handled by the portal they copy)
+  //   //  - 2: EE-style skybox (handled by the camera object)
+  //   //  - 3: EE-style flat portal (GZDoom HW renderer only for now)
+  //   //  - 4: EE-style horizon portal (GZDoom HW renderer only for now)
+  //   //  - 5: copy portal to line (GZDoom HW renderer only for now)
+  //   //  - 6: linked portal
+  //   //  other values reserved for later use
+  //   // arg 2 = 0:floor, 1:ceiling, 2:both
+  //   // arg 3 = 0: anchor, 1: reference line
+  //   // arg 4 = for the anchor only: alpha
+  //   if ((lines[i].args[1] == 0 || lines[i].args[1] == 6) && lines[i].args[3] == 0)
+  //   {
+  //     P_SpawnPortal(&lines[i], lines[i].args[0], lines[i].args[2], lines[i].args[4], lines[i].args[1]);
+  //   }
+  //   else if (lines[i].args[1] == 3 || lines[i].args[1] == 4)
+  //   {
+  //     line_t *line = &lines[i];
+  //     unsigned pnum = P_GetPortal(line->args[1] == 3 ? PORTS_PLANE : PORTS_HORIZON, line->args[2], line->frontsector, NULL, { 0,0 });
+  //     CopyPortal(line->args[0], line->args[2], pnum, 0, true);
+  //   }
+  //   break;
+  //
+  // case Line_SetPortal:
+  //   P_SpawnLinePortal(&lines[i]);
+  //   break;
+  //
+  // // [RH] ZDoom Static_Init settings
+  // case Static_Init:
+  //   switch (lines[i].args[1])
+  //   {
+  //   case Init_Gravity:
+  //     {
+  //       double grav = lines[i].Delta().Length() / 100.;
+  //       FSectorTagIterator itr(lines[i].args[0]);
+  //       while ((s = itr.Next()) >= 0)
+  //         sectors[s].gravity = grav;
+  //     }
+  //     break;
+  //
+  //   //case Init_Color:
+  //   // handled in P_LoadSideDefs2()
+  //
+  //   case Init_Damage:
+  //     {
+  //       int damage = int(lines[i].Delta().Length());
+  //       FSectorTagIterator itr(lines[i].args[0]);
+  //       while ((s = itr.Next()) >= 0)
+  //       {
+  //         sector_t *sec = &sectors[s];
+  //         sec->damageamount = damage;
+  //         sec->damagetype = NAME_None;
+  //         if (sec->damageamount < 20)
+  //         {
+  //           sec->leakydamage = 0;
+  //           sec->damageinterval = 32;
+  //         }
+  //         else if (sec->damageamount < 50)
+  //         {
+  //           sec->leakydamage = 5;
+  //           sec->damageinterval = 32;
+  //         }
+  //         else
+  //         {
+  //           sec->leakydamage = 256;
+  //           sec->damageinterval = 1;
+  //         }
+  //       }
+  //     }
+  //     break;
+  //
+  //   case Init_SectorLink:
+  //     if (lines[i].args[3] == 0)
+  //       P_AddSectorLinksByID(lines[i].frontsector, lines[i].args[0], lines[i].args[2]);
+  //     break;
+  //
+  //   // killough 10/98:
+  //   //
+  //   // Support for sky textures being transferred from sidedefs.
+  //   // Allows scrolling and other effects (but if scrolling is
+  //   // used, then the same sector tag needs to be used for the
+  //   // sky sector, the sky-transfer linedef, and the scroll-effect
+  //   // linedef). Still requires user to use F_SKY1 for the floor
+  //   // or ceiling texture, to distinguish floor and ceiling sky.
+  //
+  //   case Init_TransferSky:
+  //     {
+  //       FSectorTagIterator itr(lines[i].args[0]);
+  //       while ((s = itr.Next()) >= 0)
+  //          sectors[s].sky = (i + 1) | PL_SKYFLAT;
+  //       break;
+  //     }
+  //   }
+  //   break;
+  // }
+}
+
+static void P_SpawnExtras(void)
+{
+  int i;
+  line_t *l;
+
+  for (i = 0, l = lines; i < numlines; i++, l++)
+    map_format.spawn_extra(l, i);
+}
+
 static void Hexen_P_SpawnSpecials(void);
 
 // Parses command line parameters.
@@ -3174,59 +3405,8 @@ void P_SpawnSpecials (void)
   }
 
   P_SpawnFriction();  // phares 3/12/98: New friction model using linedefs
-
   P_SpawnPushers();   // phares 3/20/98: New pusher model using linedefs
-
-  for (i=0; i<numlines; i++)
-    switch (lines[i].special)
-    {
-      int s, sec;
-
-      // killough 3/7/98:
-      // support for drawn heights coming from different sector
-      case 242:
-        sec = sides[*lines[i].sidenum].sector->iSectorID;
-        for (s = -1; (s = P_FindSectorFromLineTag(lines+i,s)) >= 0;)
-          sectors[s].heightsec = sec;
-        break;
-
-      // killough 3/16/98: Add support for setting
-      // floor lighting independently (e.g. lava)
-      case 213:
-        sec = sides[*lines[i].sidenum].sector->iSectorID;
-        for (s = -1; (s = P_FindSectorFromLineTag(lines+i,s)) >= 0;)
-          sectors[s].floorlightsec = sec;
-        break;
-
-      // killough 4/11/98: Add support for setting
-      // ceiling lighting independently
-      case 261:
-        sec = sides[*lines[i].sidenum].sector->iSectorID;
-        for (s = -1; (s = P_FindSectorFromLineTag(lines+i,s)) >= 0;)
-          sectors[s].ceilinglightsec = sec;
-        break;
-
-        // killough 10/98:
-        //
-        // Support for sky textures being transferred from sidedefs.
-        // Allows scrolling and other effects (but if scrolling is
-        // used, then the same sector tag needs to be used for the
-        // sky sector, the sky-transfer linedef, and the scroll-effect
-        // linedef). Still requires user to use F_SKY1 for the floor
-        // or ceiling texture, to distinguish floor and ceiling sky.
-
-      case 271:   // Regular sky
-      case 272:   // Same, only flipped
-        /* e6y: It was the bad idea
-        // e6y: sky property-transfer linedef types should be applied only for MBF and above
-        if (compatibility_level >= mbf_compatibility ||
-          prboom_comp[PC_ALLOW_SKY_TRANSFER_IN_BOOM].state)
-        {*/
-          for (s = -1; (s = P_FindSectorFromLineTag(lines+i,s)) >= 0;)
-            sectors[s].sky = i | PL_SKYFLAT;
-        //}
-        break;
-   }
+  P_SpawnExtras();
 }
 
 // killough 2/28/98:

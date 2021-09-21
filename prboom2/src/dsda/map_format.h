@@ -40,6 +40,7 @@ typedef struct {
   void (*spawn_scroller)(line_t*, int);
   void (*spawn_friction)(line_t*);
   void (*spawn_pusher)(line_t*);
+  void (*spawn_extra)(line_t*, int);
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;
