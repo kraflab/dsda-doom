@@ -3407,6 +3407,8 @@ void P_SpawnSpecials (void)
   P_SpawnFriction();  // phares 3/12/98: New friction model using linedefs
   P_SpawnPushers();   // phares 3/20/98: New pusher model using linedefs
   P_SpawnExtras();
+
+  // MAP_FORMAT_TODO: Start "Open" scripts
 }
 
 // killough 2/28/98:
