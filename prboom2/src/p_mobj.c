@@ -544,7 +544,8 @@ static void P_XYMovement (mobj_t* mo)
       !(player->cmd.forwardmove | player->cmd.sidemove) ||
       (
         player->mo != mo &&
-        compatibility_level >= lxdoom_1_compatibility
+        compatibility_level >= lxdoom_1_compatibility &&
+        (comp[comp_voodooscroller] || !(mo->intflags & MIF_SCROLLING))
       )
     )
   )
