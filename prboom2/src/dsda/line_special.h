@@ -12,18 +12,18 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Line Special
+// DSDA Line Special
 //
 
 #ifndef __DSDA_LINE_SPECIAL__
 #define __DSDA_LINE_SPECIAL__
 
 typedef struct {
-	const char *name;
-	int number;
-	signed char min_args;
-	signed char max_args;
-	unsigned char map_args;
+  const char *name;
+  int number;
+  signed char min_args;
+  signed char max_args;
+  unsigned char map_args;
 } zl_linespecial_t;
 
 typedef enum {
