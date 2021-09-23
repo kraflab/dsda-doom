@@ -3140,7 +3140,7 @@ void P_SpawnZDoomExtra(line_t *l, int i)
 {
   int s, sec;
 
-  switch (lines[i].special)
+  switch (l->special)
   {
     // killough 3/7/98:
     // support for drawn heights coming from different sector
