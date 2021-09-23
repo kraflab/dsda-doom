@@ -18,6 +18,17 @@
 #ifndef __DSDA_LINE_SPECIAL__
 #define __DSDA_LINE_SPECIAL__
 
+typedef enum {
+  zi_init_gravity     = 0,
+  zi_init_color       = 1,
+  zi_init_damage      = 2,
+  zi_init_sector_link = 3,
+
+  zi_init_ed_sector    = 253,
+  zi_init_ed_line      = 254,
+  zi_init_transfer_sky = 255
+} zi_staticinit_t;
+
 typedef struct {
   const char *name;
   int number;
@@ -172,6 +183,7 @@ typedef enum {
   zl_team_give_points = 153,
   zl_teleport_no_stop = 154,
 
+  zl_line_set_portal             = 156,
   zl_set_global_fog_parameter    = 157,
   zl_fs_execute                  = 158,
   zl_sector_set_plane_reflection = 159,
