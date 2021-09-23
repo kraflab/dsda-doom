@@ -7,7 +7,12 @@
 - P_ExecuteLineSpecial ~170 specials
 
 ### Sectors
-- Sector special spawning
+- "Open" scripts in P_SpawnSpecials
+- SCROLLTYPE
+- Scroller copying
+- Push / pull type abstraction
+- Sector damage
+- Sector gravity
 - Custom scrollers in thing movement
 - Friction effect in P_Thrust?
 - zs_sky2 uses PL_SKYFLAT but the representation is not compatible
