@@ -3089,6 +3089,25 @@ static void P_ValidateLineSpecials(void)
   }
 }
 
+static void P_SpawnVanillaExtras(void)
+{
+  int i;
+
+  // allow MBF sky transfers in all complevels
+  if (!heretic)
+    for (i = 0; i < numlines; ++i)
+      switch (lines[i].special)
+      {
+        int s;
+
+        case 271:   // Regular sky
+        case 272:   // Same, only flipped
+          for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
+            sectors[s].sky = i | PL_SKYFLAT;
+        break;
+      }
+}
+
 void P_SpawnCompatibleExtra(line_t *l, int i)
 {
   int s, sec;
@@ -3287,15 +3306,9 @@ static void P_SpawnExtras(void)
     map_format.spawn_extra(l, i);
 }
 
-static void Hexen_P_SpawnSpecials(void);
-
-// Parses command line parameters.
-void P_SpawnSpecials (void)
+static void P_EvaluateDeathmatchParams(void)
 {
-  sector_t*   sector;
-  int         i;
-
-  if (hexen) return Hexen_P_SpawnSpecials();
+  int i;
 
   // See if -timer needs to be used.
   levelTimer = false;
@@ -3327,49 +3340,50 @@ void P_SpawnSpecials (void)
     levelFragLimit = true;
     levelFragLimitCount = frags;
   }
+}
 
-  // Init special sectors.
+static void P_InitSectorSpecials(void)
+{
+  int i;
+  sector_t* sector;
+
   sector = sectors;
   for (i = 0; i < numsectors; i++, sector++)
     if (sector->special)
       map_format.init_sector_special(sector, i);
+}
+
+static void P_InitButtons(void)
+{
+  int i;
+
+  for (i = 0;i < MAXBUTTONS;i++)
+    memset(&buttonlist[i],0,sizeof(button_t));
+}
+
+static void Hexen_P_SpawnSpecials(void);
+
+// Parses command line parameters.
+void P_SpawnSpecials (void)
+{
+  if (hexen) return Hexen_P_SpawnSpecials();
+
+  P_EvaluateDeathmatchParams();
+
+  P_InitSectorSpecials();
 
   if (heretic) P_SpawnLineSpecials();
 
   P_RemoveAllActiveCeilings();  // jff 2/22/98 use killough's scheme
-
   P_RemoveAllActivePlats();     // killough
 
-  for (i = 0;i < MAXBUTTONS;i++)
-    memset(&buttonlist[i],0,sizeof(button_t));
-
-  // P_InitTagLists() must be called before P_FindSectorFromLineTag()
-  // or P_FindLineFromLineTag() can be called.
-
+  P_InitButtons();
   P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
   P_ValidateLineSpecials();
   P_SpawnScrollers(); // killough 3/7/98: Add generalized scrollers
 
-  // e6y
-  if (demo_compatibility)
-  {
-    // allow MBF sky transfers in all complevels
-    if (!heretic)
-      for (i = 0; i < numlines; ++i)
-        switch (lines[i].special)
-        {
-          int s;
-
-          case 271:   // Regular sky
-          case 272:   // Same, only flipped
-            for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-              sectors[s].sky = i | PL_SKYFLAT;
-          break;
-        }
-
-    return;
-  }
+  if (demo_compatibility) return P_SpawnVanillaExtras();
 
   P_SpawnFriction();  // phares 3/12/98: New friction model using linedefs
   P_SpawnPushers();   // phares 3/20/98: New pusher model using linedefs
