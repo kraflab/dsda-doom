@@ -1166,8 +1166,6 @@ void P_ShootSpecialLine
 ( mobj_t* thing,
   line_t* line );
 
-void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, dboolean noplayercheck);
-
 void P_PlayerInSpecialSector
 ( player_t* player );
 
@@ -1230,7 +1228,6 @@ mobj_t* P_GetPushThing(int);                                // phares 3/23/98
 
 void P_InitTerrainTypes(void);
 void P_InitLava(void);
-void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing);
 void P_SpawnLineSpecials(void);
 
 extern int *TerrainTypes;

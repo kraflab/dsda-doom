@@ -314,8 +314,8 @@ typedef struct {
 #define ML_BLOCK_PLAYERS       0x4000 // Blocks players
 #define ML_BLOCKEVERYTHING     0x8000 // Blocks everything
 
-#define SPAC_UseThrough 6
-#define SPAC_AnyCross 7
+#define SPAC_USETHROUGH 6
+#define SPAC_ANYCROSS 7
 
 #ifdef _MSC_VER
 #pragma pack(pop)

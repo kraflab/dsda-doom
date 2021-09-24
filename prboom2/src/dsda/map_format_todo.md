@@ -19,6 +19,9 @@
 - zs_d_damage_lava_wimpy, zs_d_damage_lava_hefty, zs_d_scroll_east_lava_damage
   - floor impact effect + lava inflictor
 
+### Setup
+- Look at special / flag handling in loaders in p_setup.cpp
+
 ### Things to Check
 - floor type / friction -> hexen format?
 - CheckForPushSpecial / MF2_PUSHWALL

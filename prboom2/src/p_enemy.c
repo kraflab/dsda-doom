@@ -51,7 +51,9 @@
 #include "hu_stuff.h"
 #include "lprintf.h"
 #include "e6y.h"//e6y
+
 #include "dsda.h"
+#include "dsda/map_format.h"
 
 static mobj_t *current_actor;
 
@@ -2530,7 +2532,7 @@ void A_BossDeath(mobj_t *mo)
 			  junk.tag = (short)gamemapinfo->bossactions[i].tag;
 			  // use special semantics for line activation to block problem types.
 			  if (!P_UseSpecialLine(mo, &junk, 0, true))
-				  P_CrossSpecialLine(&junk, 0, mo, true);
+				  map_format.cross_special_line(&junk, 0, mo, true);
 		  }
 	  }
 
@@ -3097,7 +3099,7 @@ void A_LineEffect(mobj_t *mo)
     return;
   junk.tag = (short)mo->state->misc2;
   if (!P_UseSpecialLine(mo, &junk, 0, false))
-    P_CrossSpecialLine(&junk, 0, mo, false);
+    map_format.cross_special_line(&junk, 0, mo, false);
   mo->state->misc1 = junk.special;
   mo->player = oldplayer;
 }

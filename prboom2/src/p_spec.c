@@ -1327,7 +1327,7 @@ dboolean PUREFUNC P_WasSecret(const sector_t *sec)
   return (sec->flags & SECF_WASSECRET) != 0;
 }
 
-static void HexenFormat_P_CrossSpecialLine(line_t *line, int side, mobj_t *thing)
+void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
 {
   if (thing->player)
   {
@@ -1364,12 +1364,9 @@ static void HexenFormat_P_CrossSpecialLine(line_t *line, int side, mobj_t *thing
 //  crossed. Change is qualified by demo_compatibility.
 //
 // CPhipps - take a line_t pointer instead of a line number, as in MBF
-void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
+void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
 {
-  int         ok;
-
-  if (map_format.hexen) return HexenFormat_P_CrossSpecialLine(line, side, thing);
-  if (heretic) return Heretic_P_CrossSpecialLine(line, side, thing);
+  int ok;
 
   //  Things that should never trigger lines
   //
@@ -2272,6 +2269,32 @@ void P_CrossSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossacti
             //jff 1/29/98 end of added WR linedef types
         }
       break;
+  }
+}
+
+void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
+{
+  if (thing->player)
+  {
+    P_ActivateLine(line, thing, side, SPAC_CROSS);
+  }
+  else if (thing->flags2 & MF2_MCROSS)
+  {
+    P_ActivateLine(line, thing, side, SPAC_MCROSS);
+  }
+  else if (thing->flags2 & MF2_PCROSS)
+  {
+    P_ActivateLine(line, thing, side, SPAC_PCROSS);
+  }
+  else if (line->special == zl_teleport ||
+           line->special == zl_teleport_no_fog ||
+           line->special == zl_teleport_line)
+  {	// [RH] Just a little hack for BOOM compatibility
+    P_ActivateLine(line, thing, side, SPAC_MCROSS);
+  }
+  else
+  {
+    P_ActivateLine(line, thing, side, SPAC_ANYCROSS);
   }
 }
 
@@ -4683,7 +4706,7 @@ void P_InitTerrainTypes(void)
     }
 }
 
-void Heretic_P_CrossSpecialLine(line_t * line, int side, mobj_t * thing)
+void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean bossaction)
 {
     if (!thing->player)
     {                           // Check if trigger allowed by non-player mobj

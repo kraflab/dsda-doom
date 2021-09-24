@@ -148,6 +148,11 @@ void dsda_ApplyMapFormat(void) {
   extern void P_SpawnCompatibleExtra(line_t *l, int i);
   extern void P_SpawnZDoomExtra(line_t *l, int i);
 
+  extern void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+  extern void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+  extern void P_CrossHereticSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+  extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+
   // if (W_CheckNumForName("BEHAVIOR") >= 0) {
   //   if (!hexen)
   //     I_Error("Hexen map format is only supported in Hexen!");
@@ -174,6 +179,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.spawn_friction = P_SpawnZDoomFriction;
     map_format.spawn_pusher = P_SpawnZDoomPusher;
     map_format.spawn_extra = P_SpawnZDoomExtra;
+    map_format.cross_special_line = P_CrossZDoomSpecialLine;
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
   }
@@ -197,6 +203,7 @@ void dsda_ApplyMapFormat(void) {
     map_format.spawn_friction = NULL; // not used
     map_format.spawn_pusher = NULL; // not used
     map_format.spawn_extra = NULL; // not used
+    map_format.cross_special_line = P_CrossHexenSpecialLine;
     map_format.mapthing_size = sizeof(mapthing_t);
     map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
   }
@@ -222,6 +229,9 @@ void dsda_ApplyMapFormat(void) {
     map_format.spawn_friction = P_SpawnCompatibleFriction;
     map_format.spawn_pusher = P_SpawnCompatiblePusher;
     map_format.spawn_extra = P_SpawnCompatibleExtra;
+    map_format.cross_special_line = heretic ?
+                                    P_CrossHereticSpecialLine :
+                                    P_CrossCompatibleSpecialLine;
     map_format.mapthing_size = sizeof(doom_mapthing_t);
     map_format.maplinedef_size = sizeof(doom_maplinedef_t);
   }

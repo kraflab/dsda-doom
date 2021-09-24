@@ -41,6 +41,7 @@ typedef struct {
   void (*spawn_friction)(line_t*);
   void (*spawn_pusher)(line_t*);
   void (*spawn_extra)(line_t*, int);
+  void (*cross_special_line)(line_t *, int, mobj_t *, dboolean);
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;

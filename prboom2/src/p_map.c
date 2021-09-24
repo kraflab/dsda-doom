@@ -1414,10 +1414,9 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
     while (numspechit--)
       if (spechit[numspechit]->special)  // see if the line was crossed
       {
-        int oldside;
-        if ((oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit])) !=
-            P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
-          P_CrossSpecialLine(spechit[numspechit], oldside, thing, false);
+        int oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit]);
+        if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
+          map_format.cross_special_line(spechit[numspechit], oldside, thing, false);
       }
 
   return true;
