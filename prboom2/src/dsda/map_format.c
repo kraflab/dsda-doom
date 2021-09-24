@@ -127,114 +127,140 @@ static void dsda_MigrateMobjInfo(void) {
   }
 }
 
+extern void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i);
+extern void P_SpawnZDoomSectorSpecial(sector_t *sector, int i);
+
+extern void P_PlayerInCompatibleSector(player_t *player, sector_t *sector);
+extern void P_PlayerInZDoomSector(player_t *player, sector_t *sector);
+extern void P_PlayerInHereticSector(player_t * player, sector_t * sector);
+extern void P_PlayerInHexenSector(player_t * player, sector_t * sector);
+
+extern void P_SpawnCompatibleScroller(line_t *l, int i);
+extern void P_SpawnZDoomScroller(line_t *l, int i);
+
+extern void P_SpawnCompatibleFriction(line_t *l);
+extern void P_SpawnZDoomFriction(line_t *l);
+
+extern void P_SpawnCompatiblePusher(line_t *l);
+extern void P_SpawnZDoomPusher(line_t *l);
+
+extern void P_SpawnCompatibleExtra(line_t *l, int i);
+extern void P_SpawnZDoomExtra(line_t *l, int i);
+
+extern void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+extern void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+extern void P_CrossHereticSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+
+static const map_format_t zdoom_in_hexen_map_format = {
+  .zdoom = true,
+  .hexen = true,
+  .polyobjs = false,
+  .acs = false,
+  .mapinfo = false,
+  .sndseq = false,
+  .sndinfo = false,
+  .animdefs = false,
+  .doublesky = false,
+  .map99 = false,
+  .friction_mask = ZDOOM_FRICTION_MASK,
+  .push_mask = ZDOOM_PUSH_MASK,
+  .generalized_mask = ~0xff,
+  .init_sector_special = P_SpawnZDoomSectorSpecial,
+  .player_in_special_sector = P_PlayerInZDoomSector,
+  .spawn_scroller = P_SpawnZDoomScroller,
+  .spawn_friction = P_SpawnZDoomFriction,
+  .spawn_pusher = P_SpawnZDoomPusher,
+  .spawn_extra = P_SpawnZDoomExtra,
+  .cross_special_line = P_CrossZDoomSpecialLine,
+  .mapthing_size = sizeof(mapthing_t),
+  .maplinedef_size = sizeof(hexen_maplinedef_t),
+};
+
+static const map_format_t hexen_map_format = {
+  .zdoom = false,
+  .hexen = true,
+  .polyobjs = true,
+  .acs = true,
+  .mapinfo = true,
+  .sndseq = true,
+  .sndinfo = true,
+  .animdefs = true,
+  .doublesky = true,
+  .map99 = true,
+  .friction_mask = 0, // not used
+  .push_mask = 0, // not used
+  .init_sector_special = NULL, // not used
+  .generalized_mask = 0, // not used
+  .player_in_special_sector = P_PlayerInHexenSector,
+  .spawn_scroller = NULL, // not used
+  .spawn_friction = NULL, // not used
+  .spawn_pusher = NULL, // not used
+  .spawn_extra = NULL, // not used
+  .cross_special_line = P_CrossHexenSpecialLine,
+  .mapthing_size = sizeof(mapthing_t),
+  .maplinedef_size = sizeof(hexen_maplinedef_t),
+};
+
+static const map_format_t heretic_map_format = {
+  .zdoom = false,
+  .hexen = false,
+  .polyobjs = false,
+  .acs = false,
+  .mapinfo = false,
+  .sndseq = false,
+  .sndinfo = false,
+  .animdefs = false,
+  .doublesky = false,
+  .map99 = false,
+  .friction_mask = FRICTION_MASK,
+  .push_mask = PUSH_MASK,
+  .generalized_mask = 0,
+  .init_sector_special = P_SpawnCompatibleSectorSpecial,
+  .player_in_special_sector = P_PlayerInHereticSector,
+  .spawn_scroller = P_SpawnCompatibleScroller,
+  .spawn_friction = P_SpawnCompatibleFriction,
+  .spawn_pusher = P_SpawnCompatiblePusher,
+  .spawn_extra = P_SpawnCompatibleExtra,
+  .cross_special_line = P_CrossHereticSpecialLine,
+  .mapthing_size = sizeof(doom_mapthing_t),
+  .maplinedef_size = sizeof(doom_maplinedef_t),
+};
+
+static const map_format_t doom_map_format = {
+  .zdoom = false,
+  .hexen = false,
+  .polyobjs = false,
+  .acs = false,
+  .mapinfo = false,
+  .sndseq = false,
+  .sndinfo = false,
+  .animdefs = false,
+  .doublesky = false,
+  .map99 = false,
+  .friction_mask = FRICTION_MASK,
+  .push_mask = PUSH_MASK,
+  .generalized_mask = ~31,
+  .init_sector_special = P_SpawnCompatibleSectorSpecial,
+  .player_in_special_sector = P_PlayerInCompatibleSector,
+  .spawn_scroller = P_SpawnCompatibleScroller,
+  .spawn_friction = P_SpawnCompatibleFriction,
+  .spawn_pusher = P_SpawnCompatiblePusher,
+  .spawn_extra = P_SpawnCompatibleExtra,
+  .cross_special_line = P_CrossCompatibleSpecialLine,
+  .mapthing_size = sizeof(doom_mapthing_t),
+  .maplinedef_size = sizeof(doom_maplinedef_t),
+};
+
 void dsda_ApplyMapFormat(void) {
-  extern void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i);
-  extern void P_SpawnZDoomSectorSpecial(sector_t *sector, int i);
-
-  extern void P_PlayerInCompatibleSector(player_t *player, sector_t *sector);
-  extern void P_PlayerInZDoomSector(player_t *player, sector_t *sector);
-  extern void P_PlayerInHereticSector(player_t * player, sector_t * sector);
-  extern void P_PlayerInHexenSector(player_t * player, sector_t * sector);
-
-  extern void P_SpawnCompatibleScroller(line_t *l, int i);
-  extern void P_SpawnZDoomScroller(line_t *l, int i);
-
-  extern void P_SpawnCompatibleFriction(line_t *l);
-  extern void P_SpawnZDoomFriction(line_t *l);
-
-  extern void P_SpawnCompatiblePusher(line_t *l);
-  extern void P_SpawnZDoomPusher(line_t *l);
-
-  extern void P_SpawnCompatibleExtra(line_t *l, int i);
-  extern void P_SpawnZDoomExtra(line_t *l, int i);
-
-  extern void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
-  extern void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
-  extern void P_CrossHereticSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
-  extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
-
-  // if (W_CheckNumForName("BEHAVIOR") >= 0) {
-  //   if (!hexen)
-  //     I_Error("Hexen map format is only supported in Hexen!");
-
-  // Can't just look for BEHAVIOR lumps, because some wads have vanilla and non-vanilla maps
-  // Need proper per-map format swapping
-  if (false) { // in-hexen zdoom format
-    map_format.zdoom = true;
-    map_format.hexen = true;
-    map_format.polyobjs = false;
-    map_format.acs = false;
-    map_format.mapinfo = false;
-    map_format.sndseq = false;
-    map_format.sndinfo = false;
-    map_format.animdefs = false;
-    map_format.doublesky = false;
-    map_format.map99 = false;
-    map_format.friction_mask = ZDOOM_FRICTION_MASK;
-    map_format.push_mask = ZDOOM_PUSH_MASK;
-    map_format.generalized_mask = ~0xff;
-    map_format.init_sector_special = P_SpawnZDoomSectorSpecial;
-    map_format.player_in_special_sector = P_PlayerInZDoomSector;
-    map_format.spawn_scroller = P_SpawnZDoomScroller;
-    map_format.spawn_friction = P_SpawnZDoomFriction;
-    map_format.spawn_pusher = P_SpawnZDoomPusher;
-    map_format.spawn_extra = P_SpawnZDoomExtra;
-    map_format.cross_special_line = P_CrossZDoomSpecialLine;
-    map_format.mapthing_size = sizeof(mapthing_t);
-    map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
-  }
-  else if (hexen) {
-    map_format.zdoom = false;
-    map_format.hexen = true;
-    map_format.polyobjs = true;
-    map_format.acs = true;
-    map_format.mapinfo = true;
-    map_format.sndseq = true;
-    map_format.sndinfo = true;
-    map_format.animdefs = true;
-    map_format.doublesky = true;
-    map_format.map99 = true;
-    map_format.friction_mask = 0; // not used
-    map_format.push_mask = 0; // not used
-    map_format.init_sector_special = NULL; // not used
-    map_format.generalized_mask = 0; // no generalized specials
-    map_format.player_in_special_sector = P_PlayerInHexenSector;
-    map_format.spawn_scroller = NULL; // not used
-    map_format.spawn_friction = NULL; // not used
-    map_format.spawn_pusher = NULL; // not used
-    map_format.spawn_extra = NULL; // not used
-    map_format.cross_special_line = P_CrossHexenSpecialLine;
-    map_format.mapthing_size = sizeof(mapthing_t);
-    map_format.maplinedef_size = sizeof(hexen_maplinedef_t);
-  }
-  else {
-    map_format.zdoom = false;
-    map_format.hexen = false;
-    map_format.polyobjs = false;
-    map_format.acs = false;
-    map_format.mapinfo = false;
-    map_format.sndseq = false;
-    map_format.sndinfo = false;
-    map_format.animdefs = false;
-    map_format.doublesky = false;
-    map_format.map99 = false;
-    map_format.friction_mask = FRICTION_MASK;
-    map_format.push_mask = PUSH_MASK;
-    map_format.generalized_mask = heretic ? 0 : ~31;
-    map_format.init_sector_special = P_SpawnCompatibleSectorSpecial;
-    map_format.player_in_special_sector = heretic ?
-                                          P_PlayerInHereticSector :
-                                          P_PlayerInCompatibleSector;
-    map_format.spawn_scroller = P_SpawnCompatibleScroller;
-    map_format.spawn_friction = P_SpawnCompatibleFriction;
-    map_format.spawn_pusher = P_SpawnCompatiblePusher;
-    map_format.spawn_extra = P_SpawnCompatibleExtra;
-    map_format.cross_special_line = heretic ?
-                                    P_CrossHereticSpecialLine :
-                                    P_CrossCompatibleSpecialLine;
-    map_format.mapthing_size = sizeof(doom_mapthing_t);
-    map_format.maplinedef_size = sizeof(doom_maplinedef_t);
-  }
+  if (false) // in-hexen zdoom format
+    map_format = zdoom_in_hexen_map_format;
+  else if (hexen)
+    map_format = hexen_map_format;
+  else if (heretic)
+    map_format = heretic_map_format;
+  else
+    map_format = doom_map_format;
 
   dsda_MigrateMobjInfo();
 }
