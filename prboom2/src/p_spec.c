@@ -5202,6 +5202,124 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
     return false;
 }
 
+dboolean P_TestActivateLine(line_t *line, mobj_t *mo, int side, int activationType)
+{
+  int lineActivation;
+
+  // convert to flag-based from single-valued
+  lineActivation = 1 << GET_SPAC(line->flags);
+  activationType = 1 << activationType;
+
+  if (lineActivation & SPACF_USETHROUGH)
+  {
+    lineActivation |= SPACF_USE;
+  }
+  else if (
+    line->special == zl_teleport &&
+    lineActivation & SPACF_CROSS &&
+    activationType == SPACF_PCROSS &&
+    mo && mo->flags & MF_MISSILE
+  )
+  { // Let missiles use regular player teleports
+    lineActivation |= SPACF_PCROSS;
+  }
+
+  // BOOM's generalized line types that allow monster use can actually be
+  // activated by anything except projectiles.
+  if (lineActivation & SPACF_ANYCROSS)
+  {
+    lineActivation |= SPACF_CROSS | SPACF_MCROSS;
+  }
+
+  if (!(lineActivation & activationType))
+  {
+    if (activationType != SPACF_MCROSS || lineActivation != SPACF_CROSS)
+    {
+      return false;
+    }
+  }
+
+  if (activationType == SPACF_ANYCROSS && lineActivation & activationType)
+  {
+    return true;
+  }
+
+  if (
+    mo && !mo->player &&
+    !(mo->flags & MF_MISSILE) &&
+    !(line->flags & ML_MONSTERSCANACTIVATE) &&
+    (activationType != SPACF_MCROSS || !(lineActivation & SPACF_MCROSS))
+  )
+  {
+    dboolean noway = true;
+
+    // [RH] monsters' ability to activate this line depends on its type
+    // In Hexen, only MCROSS lines could be activated by monsters. With
+    // lax activation checks, monsters can also activate certain lines
+    // even without them being marked as monster activate-able. This is
+    // the default for non-Hexen maps in Hexen format.
+    if (!map_format.lax_monster_activation)
+    {
+      return false;
+    }
+
+    if ((activationType == SPACF_USE || activationType == SPACF_PUSH) && line->flags & ML_SECRET)
+      return false;    // never open secret doors
+
+    switch (activationType)
+    {
+      case SPACF_USE:
+      case SPACF_PUSH:
+        switch (line->special)
+        {
+          case zl_door_raise:
+            if (line->arg1 == 0 && line->arg2 < 64)
+              noway = false;
+            break;
+          case zl_teleport:
+          case zl_teleport_no_fog:
+            noway = false;
+        }
+        break;
+
+      case SPACF_MCROSS:
+        if (!(lineActivation & SPACF_MCROSS))
+        {
+          switch (line->special)
+          {
+            case zl_door_raise:
+              if (line->arg2 >= 64)
+                break;
+            case zl_teleport:
+            case zl_teleport_no_fog:
+            case zl_teleport_line:
+            case zl_plat_down_wait_up_stay_lip:
+            case zl_plat_down_wait_up_stay:
+              noway = false;
+          }
+        }
+        else
+          noway = false;
+        break;
+
+      default:
+        noway = false;
+    }
+    return !noway;
+  }
+
+  if (
+    activationType == SPACF_MCROSS &&
+    !(lineActivation & SPACF_MCROSS) &&
+    !(line->flags & ML_MONSTERSCANACTIVATE)
+  )
+  {
+    return false;
+  }
+
+  return true;
+}
+
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side,
                        int activationType)
 {

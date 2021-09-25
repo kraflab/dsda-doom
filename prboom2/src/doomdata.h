@@ -317,6 +317,15 @@ typedef struct {
 #define SPAC_USETHROUGH 6
 #define SPAC_ANYCROSS 7
 
+#define SPACF_CROSS      0x01
+#define SPACF_USE        0x02
+#define SPACF_MCROSS     0x04
+#define SPACF_IMPACT     0x08
+#define SPACF_PUSH       0x10
+#define SPACF_PCROSS     0x20
+#define SPACF_USETHROUGH 0x40
+#define SPACF_ANYCROSS   0x80
+
 #ifdef _MSC_VER
 #pragma pack(pop)
 #endif //_MSC_VER

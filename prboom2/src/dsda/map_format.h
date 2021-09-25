@@ -32,6 +32,7 @@ typedef struct {
   dboolean animdefs;
   dboolean doublesky;
   dboolean map99;
+  dboolean lax_monster_activation;
   short friction_mask;
   short push_mask;
   short generalized_mask;
