@@ -1162,10 +1162,6 @@ dboolean P_UseSpecialLine
   int   side,
 	dboolean noplayercheck);
 
-void P_ShootSpecialLine
-( mobj_t* thing,
-  line_t* line );
-
 void P_PlayerInSpecialSector
 ( player_t* player );
 

@@ -152,6 +152,9 @@ extern void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dbool
 extern void P_CrossHereticSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
 extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
 
+extern void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line);
+extern void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -173,6 +176,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .spawn_pusher = P_SpawnZDoomPusher,
   .spawn_extra = P_SpawnZDoomExtra,
   .cross_special_line = P_CrossZDoomSpecialLine,
+  .shoot_special_line = P_ShootHexenSpecialLine,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -198,6 +202,7 @@ static const map_format_t hexen_map_format = {
   .spawn_pusher = NULL, // not used
   .spawn_extra = NULL, // not used
   .cross_special_line = P_CrossHexenSpecialLine,
+  .shoot_special_line = P_ShootHexenSpecialLine,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -223,6 +228,7 @@ static const map_format_t heretic_map_format = {
   .spawn_pusher = P_SpawnCompatiblePusher,
   .spawn_extra = P_SpawnCompatibleExtra,
   .cross_special_line = P_CrossHereticSpecialLine,
+  .shoot_special_line = P_ShootCompatibleSpecialLine,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };
@@ -248,6 +254,7 @@ static const map_format_t doom_map_format = {
   .spawn_pusher = P_SpawnCompatiblePusher,
   .spawn_extra = P_SpawnCompatibleExtra,
   .cross_special_line = P_CrossCompatibleSpecialLine,
+  .shoot_special_line = P_ShootCompatibleSpecialLine,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };

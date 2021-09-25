@@ -2055,7 +2055,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     line_t *li = in->d.line;
 
     if (li->special)
-      P_ShootSpecialLine (shootthing, li);
+      map_format.shoot_special_line(shootthing, li);
 
     if (li->flags & ML_TWOSIDED)
     {  // crosses a two sided (really 2s) line
@@ -3326,7 +3326,7 @@ void CheckMissileImpact(mobj_t * mobj)
     }
     for (i = numspechit - 1; i >= 0; i--)
     {
-        P_ShootSpecialLine(mobj->target, spechit[i]);
+        map_format.shoot_special_line(mobj->target, spechit[i]);
     }
 }
 

@@ -2308,16 +2308,9 @@ void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
 // of the line, should the sector already be in motion when the line is
 // impacted. Change is qualified by demo_compatibility.
 //
-void P_ShootSpecialLine
-( mobj_t*       thing,
-  line_t*       line )
-{
-  if (map_format.hexen)
-  {
-    P_ActivateLine(line, thing, 0, SPAC_IMPACT);
-    return;
-  }
 
+void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
+{
   //jff 02/04/98 add check here for generalized linedef
   if (!demo_compatibility)
   {
@@ -2486,6 +2479,11 @@ void P_ShootSpecialLine
         }
       break;
   }
+}
+
+void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line)
+{
+  P_ActivateLine(line, thing, 0, SPAC_IMPACT);
 }
 
 static void P_ApplySectorDamage(player_t *player, int damage, int leak)
