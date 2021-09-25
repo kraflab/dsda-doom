@@ -155,6 +155,9 @@ extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dbool
 extern void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line);
 extern void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line);
 
+extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activationType);
+extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, int activationType);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -170,6 +173,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .friction_mask = ZDOOM_FRICTION_MASK,
   .push_mask = ZDOOM_PUSH_MASK,
   .generalized_mask = ~0xff,
+  .switch_activation = SPACF_USE | SPACF_IMPACT | SPACF_PUSH,
   .init_sector_special = P_SpawnZDoomSectorSpecial,
   .player_in_special_sector = P_PlayerInZDoomSector,
   .spawn_scroller = P_SpawnZDoomScroller,
@@ -178,6 +182,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .spawn_extra = P_SpawnZDoomExtra,
   .cross_special_line = P_CrossZDoomSpecialLine,
   .shoot_special_line = P_ShootHexenSpecialLine,
+  .test_activate_line = P_TestActivateZDoomLine,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -197,6 +202,7 @@ static const map_format_t hexen_map_format = {
   .friction_mask = 0, // not used
   .push_mask = 0, // not used
   .generalized_mask = 0, // not used
+  .switch_activation = SPACF_USE | SPACF_IMPACT,
   .init_sector_special = NULL, // not used
   .player_in_special_sector = P_PlayerInHexenSector,
   .spawn_scroller = NULL, // not used
@@ -205,6 +211,7 @@ static const map_format_t hexen_map_format = {
   .spawn_extra = NULL, // not used
   .cross_special_line = P_CrossHexenSpecialLine,
   .shoot_special_line = P_ShootHexenSpecialLine,
+  .test_activate_line = P_TestActivateHexenLine,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -224,6 +231,7 @@ static const map_format_t heretic_map_format = {
   .friction_mask = FRICTION_MASK,
   .push_mask = PUSH_MASK,
   .generalized_mask = 0,
+  .switch_activation = 0, // not used
   .init_sector_special = P_SpawnCompatibleSectorSpecial,
   .player_in_special_sector = P_PlayerInHereticSector,
   .spawn_scroller = P_SpawnCompatibleScroller,
@@ -232,6 +240,7 @@ static const map_format_t heretic_map_format = {
   .spawn_extra = P_SpawnCompatibleExtra,
   .cross_special_line = P_CrossHereticSpecialLine,
   .shoot_special_line = P_ShootCompatibleSpecialLine,
+  .test_activate_line = NULL, // not used
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };
@@ -251,6 +260,7 @@ static const map_format_t doom_map_format = {
   .friction_mask = FRICTION_MASK,
   .push_mask = PUSH_MASK,
   .generalized_mask = ~31,
+  .switch_activation = 0, // not used
   .init_sector_special = P_SpawnCompatibleSectorSpecial,
   .player_in_special_sector = P_PlayerInCompatibleSector,
   .spawn_scroller = P_SpawnCompatibleScroller,
@@ -259,6 +269,7 @@ static const map_format_t doom_map_format = {
   .spawn_extra = P_SpawnCompatibleExtra,
   .cross_special_line = P_CrossCompatibleSpecialLine,
   .shoot_special_line = P_ShootCompatibleSpecialLine,
+  .test_activate_line = NULL, // not used
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };
