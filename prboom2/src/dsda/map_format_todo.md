@@ -23,5 +23,6 @@
 - Look at special / flag handling in loaders in p_setup.cpp
 
 ### Things to Check
+- P_UpdateSpecials
 - floor type / friction -> hexen format?
 - CheckForPushSpecial / MF2_PUSHWALL
