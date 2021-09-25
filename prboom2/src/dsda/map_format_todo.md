@@ -2,7 +2,6 @@
 - ML_BLOCK_PLAYERS
 - ML_BLOCKEVERYTHING
 - SPAC_UseThrough
-- SPAC_AnyCross
 - P_ExecuteLineSpecial ~170 specials
 
 ### Sectors

@@ -315,7 +315,7 @@ typedef struct {
 #define ML_BLOCKEVERYTHING     0x8000 // Blocks everything
 
 #define SPAC_USETHROUGH 6
-#define SPAC_ANYCROSS 7
+#define SPAC_PTOUCH     7
 
 #define SPACF_CROSS      0x01
 #define SPACF_USE        0x02
@@ -324,7 +324,7 @@ typedef struct {
 #define SPACF_PUSH       0x10
 #define SPACF_PCROSS     0x20
 #define SPACF_USETHROUGH 0x40
-#define SPACF_ANYCROSS   0x80
+#define SPACF_PTOUCH     0x80
 
 #ifdef _MSC_VER
 #pragma pack(pop)

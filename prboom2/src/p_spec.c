@@ -2292,10 +2292,6 @@ void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
   { // [RH] Just a little hack for BOOM compatibility
     P_ActivateLine(line, thing, side, SPAC_MCROSS);
   }
-  else
-  {
-    P_ActivateLine(line, thing, side, SPAC_ANYCROSS);
-  }
 }
 
 //
@@ -5210,6 +5206,12 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activat
   lineActivation = 1 << GET_SPAC(line->flags);
   activationType = 1 << activationType;
 
+  // PTOUCH is a composite
+  if (lineActivation & SPACF_PTOUCH)
+  {
+    lineActivation = SPACF_IMPACT | SPACF_PCROSS;
+  }
+
   if (lineActivation & SPACF_USETHROUGH)
   {
     lineActivation |= SPACF_USE;
@@ -5224,24 +5226,12 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activat
     lineActivation |= SPACF_PCROSS;
   }
 
-  // BOOM's generalized line types that allow monster use can actually be
-  // activated by anything except projectiles.
-  if (lineActivation & SPACF_ANYCROSS)
-  {
-    lineActivation |= SPACF_CROSS | SPACF_MCROSS;
-  }
-
   if (!(lineActivation & activationType))
   {
     if (activationType != SPACF_MCROSS || lineActivation != SPACF_CROSS)
     {
       return false;
     }
-  }
-
-  if (activationType == SPACF_ANYCROSS && lineActivation & activationType)
-  {
-    return true;
   }
 
   if (
