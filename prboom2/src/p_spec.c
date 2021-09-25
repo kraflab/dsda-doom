@@ -2677,9 +2677,6 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
 // Changed to ignore sector types the engine does not recognize
 //
 
-void P_PlayerInHereticSector(player_t * player, sector_t * sector);
-void P_PlayerInHexenSector(player_t * player, sector_t * sector);
-
 void P_PlayerInSpecialSector (player_t* player)
 {
   sector_t*   sector;
