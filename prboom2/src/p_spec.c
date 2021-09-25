@@ -2289,7 +2289,7 @@ void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
   else if (line->special == zl_teleport ||
            line->special == zl_teleport_no_fog ||
            line->special == zl_teleport_line)
-  {	// [RH] Just a little hack for BOOM compatibility
+  { // [RH] Just a little hack for BOOM compatibility
     P_ActivateLine(line, thing, side, SPAC_MCROSS);
   }
   else
