@@ -158,6 +158,11 @@ extern void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line);
 extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activationType);
 extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, int activationType);
 
+extern void P_PostProcessCompatibleLineSpecial(line_t *ld);
+extern void P_PostProcessHereticLineSpecial(line_t *ld);
+extern void P_PostProcessHexenLineSpecial(line_t *ld);
+extern void P_PostProcessZDoomLineSpecial(line_t *ld);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -183,6 +188,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .cross_special_line = P_CrossZDoomSpecialLine,
   .shoot_special_line = P_ShootHexenSpecialLine,
   .test_activate_line = P_TestActivateZDoomLine,
+  .post_process_line_special = P_PostProcessZDoomLineSpecial,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -212,6 +218,7 @@ static const map_format_t hexen_map_format = {
   .cross_special_line = P_CrossHexenSpecialLine,
   .shoot_special_line = P_ShootHexenSpecialLine,
   .test_activate_line = P_TestActivateHexenLine,
+  .post_process_line_special = P_PostProcessHexenLineSpecial,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -241,6 +248,7 @@ static const map_format_t heretic_map_format = {
   .cross_special_line = P_CrossHereticSpecialLine,
   .shoot_special_line = P_ShootCompatibleSpecialLine,
   .test_activate_line = NULL, // not used
+  .post_process_line_special = P_PostProcessHereticLineSpecial,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };
@@ -270,6 +278,7 @@ static const map_format_t doom_map_format = {
   .cross_special_line = P_CrossCompatibleSpecialLine,
   .shoot_special_line = P_ShootCompatibleSpecialLine,
   .test_activate_line = NULL, // not used
+  .post_process_line_special = P_PostProcessCompatibleLineSpecial,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };

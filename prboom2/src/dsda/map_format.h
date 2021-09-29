@@ -46,6 +46,7 @@ typedef struct {
   void (*cross_special_line)(line_t *, int, mobj_t *, dboolean);
   void (*shoot_special_line)(mobj_t *, line_t *);
   dboolean (*test_activate_line)(line_t *, mobj_t *, int, int);
+  void (*post_process_line_special)(line_t *);
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;

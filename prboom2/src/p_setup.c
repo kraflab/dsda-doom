@@ -59,6 +59,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/line_special.h"
 #include "dsda/map_format.h"
 
 #include "hexen/p_acs.h"
@@ -1750,6 +1751,80 @@ static void P_LoadLineDefs (int lump)
   W_UnlockLumpNum(lump); // cph - release the lump
 }
 
+void P_PostProcessCompatibleLineSpecial(line_t *ld)
+{
+  switch (ld->special)
+  {                         // killough 4/11/98: handle special types
+    int lump, j;
+
+    case 260:               // killough 4/11/98: translucent 2s textures
+      transparentpresent = true; //e6y
+      lump = sides[*ld->sidenum].special; // translucency from sidedef
+      if (!ld->tag)                       // if tag==0,
+        ld->tranlump = lump;              // affect this linedef only
+      else
+        for (j=0;j<numlines;j++)          // if tag!=0,
+          if (lines[j].tag == ld->tag)    // affect all matching linedefs
+            lines[j].tranlump = lump;
+      break;
+  }
+}
+
+void P_PostProcessHereticLineSpecial(line_t *ld)
+{
+  // nothing in heretic
+}
+
+void P_PostProcessHexenLineSpecial(line_t *ld)
+{
+  // nothing in hexen
+}
+
+void P_PostProcessZDoomLineSpecial(line_t *ld)
+{
+  switch (ld->special)
+  {                           // killough 4/11/98: handle special types
+    case zl_translucent_line: // killough 4/11/98: translucent 2s textures
+      // [RH] Second arg controls how opaque it is.
+      // if (alpha == SHRT_MIN)
+      // {
+      //   alpha = ld->args[1];
+      //   additive = !!ld->args[2];
+      // }
+      // else if (alpha < 0)
+      // {
+      //   alpha = -alpha;
+      //   additive = true;
+      // }
+      //
+      // double dalpha = alpha / 255.;
+      // if (!ld->args[0])
+      // {
+      //   ld->alpha = dalpha;
+      //   if (additive)
+      //   {
+      //     ld->flags |= ML_ADDTRANS;
+      //   }
+      // }
+      // else
+      // {
+      //   for (j = 0; j < numlines; j++)
+      //   {
+      //     if (tagManager.LineHasID(j, ld->args[0]))
+      //     {
+      //       lines[j].alpha = dalpha;
+      //       if (additive)
+      //       {
+      //         lines[j].flags |= ML_ADDTRANS;
+      //       }
+      //     }
+      //   }
+      // }
+      ld->special = 0;
+      break;
+  }
+}
+
 // killough 4/4/98: delay using sidedefs until they are loaded
 // killough 5/3/98: reformatted, cleaned up
 
@@ -1757,29 +1832,13 @@ static void P_LoadLineDefs2(int lump)
 {
   int i = numlines;
   register line_t *ld = lines;
-  for (;i--;ld++)
+
+  for (; i--; ld++)
   {
     ld->frontsector = sides[ld->sidenum[0]].sector; //e6y: Can't be NO_INDEX here
-    ld->backsector  = ld->sidenum[1]!=NO_INDEX ? sides[ld->sidenum[1]].sector : 0;
+    ld->backsector  = ld->sidenum[1] != NO_INDEX ? sides[ld->sidenum[1]].sector : 0;
 
-    if (!raven)
-    {
-      switch (ld->special)
-      {                       // killough 4/11/98: handle special types
-        int lump, j;
-
-        case 260:               // killough 4/11/98: translucent 2s textures
-          transparentpresent = true;//e6y
-          lump = sides[*ld->sidenum].special; // translucency from sidedef
-          if (!ld->tag)                       // if tag==0,
-            ld->tranlump = lump;              // affect this linedef only
-          else
-            for (j=0;j<numlines;j++)          // if tag!=0,
-              if (lines[j].tag == ld->tag)    // affect all matching linedefs
-                lines[j].tranlump = lump;
-          break;
-      }
-    }
+    map_format.post_process_line_special(ld);
   }
 }
 
