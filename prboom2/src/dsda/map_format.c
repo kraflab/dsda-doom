@@ -163,6 +163,11 @@ extern void P_PostProcessHereticLineSpecial(line_t *ld);
 extern void P_PostProcessHexenLineSpecial(line_t *ld);
 extern void P_PostProcessZDoomLineSpecial(line_t *ld);
 
+extern void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
+extern void P_PostProcessHereticSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
+extern void P_PostProcessHexenSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
+extern void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -189,6 +194,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .shoot_special_line = P_ShootHexenSpecialLine,
   .test_activate_line = P_TestActivateZDoomLine,
   .post_process_line_special = P_PostProcessZDoomLineSpecial,
+  .post_process_sidedef_special = P_PostProcessZDoomSidedefSpecial,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -219,6 +225,7 @@ static const map_format_t hexen_map_format = {
   .shoot_special_line = P_ShootHexenSpecialLine,
   .test_activate_line = P_TestActivateHexenLine,
   .post_process_line_special = P_PostProcessHexenLineSpecial,
+  .post_process_sidedef_special = P_PostProcessHexenSidedefSpecial,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -249,6 +256,7 @@ static const map_format_t heretic_map_format = {
   .shoot_special_line = P_ShootCompatibleSpecialLine,
   .test_activate_line = NULL, // not used
   .post_process_line_special = P_PostProcessHereticLineSpecial,
+  .post_process_sidedef_special = P_PostProcessHereticSidedefSpecial,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };
@@ -279,6 +287,7 @@ static const map_format_t doom_map_format = {
   .shoot_special_line = P_ShootCompatibleSpecialLine,
   .test_activate_line = NULL, // not used
   .post_process_line_special = P_PostProcessCompatibleLineSpecial,
+  .post_process_sidedef_special = P_PostProcessCompatibleSidedefSpecial,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };
