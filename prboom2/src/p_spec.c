@@ -3069,6 +3069,17 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   }
 }
 
+static void P_TransferLineArgs(line_t *l, byte *args)
+{
+  // Construct args[] array to contain the arguments from the line, as we
+  // cannot rely on struct field ordering and layout.
+  args[0] = l->arg1;
+  args[1] = l->arg2;
+  args[2] = l->arg3;
+  args[3] = l->arg4;
+  args[4] = l->arg5;
+}
+
 // Check for undefined parameters that are non-zero and output messages for them.
 // We don't report for specials we don't understand.
 static void P_ValidateLineSpecials(void)
@@ -3085,7 +3096,9 @@ static void P_ValidateLineSpecials(void)
     if (spec)
     {
       int arg;
-      byte *args = &l->arg1; // MAP_FORMAT_TODO: arrayify line args
+      byte args[5];
+
+      P_TransferLineArgs(l, args);
 
       for (arg = spec->map_args; arg < LINE_ARG_COUNT; ++arg)
       {
@@ -5349,13 +5362,8 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType
   lineActivation = 1 << GET_SPAC(line->flags);
   repeat = (line->flags & ML_REPEAT_SPECIAL) != 0;
 
-  // Construct args[] array to contain the arguments from the line, as we
-  // cannot rely on struct field ordering and layout.
-  args[0] = line->arg1;
-  args[1] = line->arg2;
-  args[2] = line->arg3;
-  args[3] = line->arg4;
-  args[4] = line->arg5;
+  P_TransferLineArgs(line, args);
+
   buttonSuccess = P_ExecuteLineSpecial(line->special, args, line, side, mo);
 
   if (!repeat && buttonSuccess)
