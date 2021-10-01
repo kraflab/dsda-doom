@@ -945,53 +945,54 @@ static dboolean P_LookForMonsters(mobj_t *actor, dboolean allaround)
   // Search for new enemy
 
   if (cap->cnext != cap)        // Empty list? bail out early
-    {
-      int x = P_GetSafeBlockX(actor->x - bmaporgx);
-      int y = P_GetSafeBlockY(actor->y - bmaporgy);
-      int d;
-
-      current_actor = actor;
-      current_allaround = allaround;
-
-      // Search first in the immediate vicinity.
-
-      if (!P_BlockThingsIterator(x, y, PIT_FindTarget))
-  return true;
-
-      for (d=1; d<5; d++)
   {
-    int i = 1 - d;
-    do
-      if (!P_BlockThingsIterator(x+i, y-d, PIT_FindTarget) ||
-    !P_BlockThingsIterator(x+i, y+d, PIT_FindTarget))
-        return true;
-    while (++i < d);
-    do
-      if (!P_BlockThingsIterator(x-d, y+i, PIT_FindTarget) ||
-    !P_BlockThingsIterator(x+d, y+i, PIT_FindTarget))
-        return true;
-    while (--i + d >= 0);
-  }
+    int x = P_GetSafeBlockX(actor->x - bmaporgx);
+    int y = P_GetSafeBlockY(actor->y - bmaporgy);
+    int d;
 
-      {   // Random number of monsters, to prevent patterns from forming
-  int n = (P_Random(pr_friends) & 31) + 15;
+    current_actor = actor;
+    current_allaround = allaround;
 
-  for (th = cap->cnext; th != cap; th = th->cnext)
-    if (--n < 0)
-      {
-        // Only a subset of the monsters were searched. Move all of
-        // the ones which were searched so far, to the end of the list.
+    // Search first in the immediate vicinity.
 
-        (cap->cnext->cprev = cap->cprev)->cnext = cap->cnext;
-        (cap->cprev = th->cprev)->cnext = cap;
-        (th->cprev = cap)->cnext = th;
-        break;
-     }
-    else
-      if (!PIT_FindTarget((mobj_t *) th))   // If target sighted
-        return true;
-      }
+    if (!P_BlockThingsIterator(x, y, PIT_FindTarget))
+      return true;
+
+    for (d = 1; d < 5; d++)
+    {
+      int i = 1 - d;
+      do
+        if (!P_BlockThingsIterator(x + i, y - d, PIT_FindTarget) ||
+            !P_BlockThingsIterator(x + i, y + d, PIT_FindTarget))
+          return true;
+      while (++i < d);
+
+      do
+        if (!P_BlockThingsIterator(x - d, y + i, PIT_FindTarget) ||
+            !P_BlockThingsIterator(x + d, y + i, PIT_FindTarget))
+          return true;
+      while (--i + d >= 0);
     }
+
+    {   // Random number of monsters, to prevent patterns from forming
+      int n = (P_Random(pr_friends) & 31) + 15;
+
+      for (th = cap->cnext; th != cap; th = th->cnext)
+        if (--n < 0)
+        {
+          // Only a subset of the monsters were searched. Move all of
+          // the ones which were searched so far, to the end of the list.
+
+          (cap->cnext->cprev = cap->cprev)->cnext = cap->cnext;
+          (cap->cprev = th->cprev)->cnext = cap;
+          (th->cprev = cap)->cnext = th;
+          break;
+       }
+        else
+          if (!PIT_FindTarget((mobj_t *) th))   // If target sighted
+            return true;
+    }
+  }
 
   return false;  // No monster found
 }
