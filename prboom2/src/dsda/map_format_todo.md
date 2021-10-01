@@ -5,7 +5,6 @@
 - P_ExecuteLineSpecial ~170 specials
 
 ### Sectors
-- "Open" scripts in P_SpawnSpecials
 - SCROLLTYPE
 - Scroller copying
 - Push / pull type abstraction
