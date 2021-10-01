@@ -1610,6 +1610,28 @@ static void P_LoadThings (int lump)
 //
 // killough 5/3/98: reformatted, cleaned up
 
+static void P_TranslateLineFlags(unsigned short *flags)
+{
+  unsigned short result;
+
+  if (!map_format.zdoom) return;
+
+  result = *flags & 0x1fff;
+
+  // from zdoom-in-hexen to dsda-doom
+
+  if (*flags & ZML_BLOCKPLAYERS)
+    result |= ML_BLOCKPLAYERS;
+
+  if (*flags & ZML_MONSTERSCANACTIVATE)
+    result |= ML_MONSTERSCANACTIVATE;
+
+  if (*flags & ZML_BLOCKEVERYTHING)
+    result |= ML_BLOCKEVERYTHING;
+
+  *flags = result;
+}
+
 static void P_LoadLineDefs (int lump)
 {
   const byte *data; // cph - const*
@@ -1629,6 +1651,7 @@ static void P_LoadLineDefs (int lump)
         const hexen_maplinedef_t *mld = (const hexen_maplinedef_t *) data + i;
 
         ld->flags = (unsigned short)LittleShort(mld->flags);
+        P_TranslateLineFlags(&ld->flags);
         ld->special = mld->special; // just a byte in hexen
         ld->tag = 0;
         ld->arg1 = mld->arg1;

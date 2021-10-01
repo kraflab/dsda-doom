@@ -310,9 +310,14 @@ typedef struct {
 
 // extensions
 
-#define ML_MONSTERSCANACTIVATE 0x2000 // Monsters and players can activate
-#define ML_BLOCK_PLAYERS       0x4000 // Blocks players
-#define ML_BLOCKEVERYTHING     0x8000 // Blocks everything
+// ZML map values are converted to ML internal values
+#define ZML_MONSTERSCANACTIVATE 0x2000 // Monsters and players can activate
+#define ZML_BLOCKPLAYERS        0x4000 // Blocks players
+#define ZML_BLOCKEVERYTHING     0x8000 // Blocks everything
+
+// ML_BLOCKPLAYERS is above
+#define ML_MONSTERSCANACTIVATE 0x4000
+#define ML_BLOCKEVERYTHING     0x8000
 
 #define SPAC_USETHROUGH 6
 #define SPAC_PTOUCH     7
