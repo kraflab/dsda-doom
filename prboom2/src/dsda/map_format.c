@@ -115,14 +115,14 @@ static void dsda_MigrateMobjInfo(void) {
 
   for (i = mobj_types_zero; i < num_mobj_types; ++i) {
     if (mobjinfo[i].flags & MF_COUNTKILL)
-      mobjinfo[i].flags2 |= MF2_MCROSS;
+      mobjinfo[i].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
 
     if (mobjinfo[i].flags & MF_MISSILE)
-      mobjinfo[i].flags2 |= MF2_PCROSS;
+      mobjinfo[i].flags2 |= MF2_PCROSS | MF2_IMPACT;
   }
 
   if (!raven) {
-    mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS;
+    mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
     mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST;
   }
 }
