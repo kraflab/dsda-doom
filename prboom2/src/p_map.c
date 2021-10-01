@@ -605,7 +605,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
   if (thing == tmthing)
     return true;
 
-  if (hexen)
+  if (map_format.hexen)
     BlockingMobj = thing;
 
   /* killough 11/98:
@@ -1234,6 +1234,48 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
 
 static dboolean Hexen_P_TryMove(mobj_t* thing, fixed_t x, fixed_t y);
 
+void P_CheckCompatibleImpact(mobj_t *thing)
+{
+  // nothing in doom
+}
+
+void P_CheckHereticImpact(mobj_t *thing)
+{
+  int i;
+
+  if (!numspechit || !(thing->flags & MF_MISSILE) || !thing->target || !thing->target->player)
+  {
+    return;
+  }
+
+  for (i = numspechit - 1; i >= 0; i--)
+  {
+    map_format.shoot_special_line(thing->target, spechit[i]);
+  }
+}
+
+void P_CheckZDoomImpact(mobj_t *thing)
+{
+  if (!(thing->flags & (MF_TELEPORT | MF_NOCLIP)))
+  {
+    int i, side;
+    line_t *ld;
+
+    if (tmthing->flags2 & MF2_BLASTED)
+    {
+      P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
+    }
+
+    for (i = numspechit - 1; i >= 0; i--)
+    {
+      // see if the line was crossed
+      ld = spechit[i];
+      side = P_PointOnLineSide(thing->x, thing->y, ld);
+      CheckForPushSpecial(ld, side, thing);
+    }
+  }
+}
+
 dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
                   dboolean dropoff) // killough 3/15/98: allow dropoff as option
 {
@@ -1246,7 +1288,8 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
 
   if (!P_CheckPosition(thing, x, y))
   {                           // Solid wall or thing
-    CheckMissileImpact(thing);
+    if (heretic || !BlockingMobj || BlockingMobj->player || !thing->player)
+      map_format.check_impact(thing);
     return false;
   }
 
@@ -1282,7 +1325,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
       )
     )
     {
-      CheckMissileImpact(thing);
+      map_format.check_impact(thing);
       return tmunstuck
         && !(ceilingline && untouched(ceilingline))
         && !(  floorline && untouched(  floorline));
@@ -1293,12 +1336,14 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
       if (thing->z + thing->height > tmceilingz)
       {
         thing->momz = -8 * FRACUNIT;
+        map_format.check_impact(thing);
         return false;
       }
       else if (thing->z < tmfloorz
                && tmfloorz - tmdropoffz > 24 * FRACUNIT)
       {
         thing->momz = 8 * FRACUNIT;
+        map_format.check_impact(thing);
         return false;
       }
     }
@@ -1309,15 +1354,15 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
       tmfloorz - thing->z > 24*FRACUNIT
     )
     {
-      CheckMissileImpact(thing);
+      map_format.check_impact(thing);
       return tmunstuck
         && !(ceilingline && untouched(ceilingline))
         && !(  floorline && untouched(  floorline));
     }
 
-    if ((thing->flags & MF_MISSILE) && tmfloorz > thing->z)
+    if (heretic && tmfloorz > thing->z)
     {
-      CheckMissileImpact(thing);
+      map_format.check_impact(thing);
     }
 
     /* killough 3/15/98: Allow certain objects to drop off
@@ -3310,24 +3355,6 @@ void P_AppendSpecHit(line_t * ld)
     spechit_overrun_param.line = ld;
     SpechitOverrun(&spechit_overrun_param);
   }
-}
-
-void CheckMissileImpact(mobj_t * mobj)
-{
-    int i;
-
-    if (!heretic || !numspechit || !(mobj->flags & MF_MISSILE) || !mobj->target)
-    {
-        return;
-    }
-    if (!mobj->target->player)
-    {
-        return;
-    }
-    for (i = numspechit - 1; i >= 0; i--)
-    {
-        map_format.shoot_special_line(mobj->target, spechit[i]);
-    }
 }
 
 // hexen

@@ -49,6 +49,7 @@ typedef struct {
   void (*post_process_line_special)(line_t *);
   void (*post_process_sidedef_special)(side_t *, const mapsidedef_t *, sector_t *, int);
   void (*animate_surfaces)(void);
+  void (*check_impact)(mobj_t *);
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;
