@@ -18,4 +18,3 @@
 
 ### Things to Check
 - floor type / friction -> hexen format?
-- CheckForPushSpecial

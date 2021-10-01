@@ -476,7 +476,7 @@ dboolean PIT_CheckLine (line_t* ld)
         }
       }
     }
-    else if (hexen)
+    else if (map_format.hexen)
     {
       if (tmthing->flags2 & MF2_BLASTED)
       {
@@ -496,7 +496,7 @@ dboolean PIT_CheckLine (line_t* ld)
     // or blocking player
     if (ld->flags & ML_BLOCKING || (mbf21 && tmthing->player && ld->flags & ML_BLOCKPLAYERS))
     {
-      if (hexen)
+      if (map_format.hexen)
       {
         if (tmthing->flags2 & MF2_BLASTED)
         {
