@@ -508,11 +508,12 @@ dboolean PIT_CheckLine (line_t* ld)
     }
 
     // killough 8/9/98: monster-blockers don't affect friends
+    // MAP_FORMAT_TODO: clean up ML_BLOCKLANDMONSTERS check
     if (
       !(tmthing->flags & MF_FRIEND || tmthing->player) &&
       (
         ld->flags & ML_BLOCKMONSTERS ||
-        (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT))
+        (mbf21 && !map_format.zdoom && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT))
       ) &&
       (!heretic || tmthing->type != HERETIC_MT_POD)
     )
