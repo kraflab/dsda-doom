@@ -17,6 +17,5 @@
   - floor impact effect + lava inflictor
 
 ### Things to Check
-- P_UpdateSpecials
 - floor type / friction -> hexen format?
 - CheckForPushSpecial / MF2_PUSHWALL

@@ -78,14 +78,45 @@ static int NextLightningFlash;
 static int LightningFlash;
 static int *LightningLightLevels;
 
-void P_AnimateSurfaces(void)
+void P_AnimateCompatibleSurfaces(void)
+{
+  // nothing in doom
+}
+
+void P_AnimateHereticSurfaces(void)
+{
+  int i;
+  line_t *line;
+
+  // Update scrolling texture offsets
+  for (i = 0; i < numlinespecials; i++)
+  {
+      line = linespeciallist[i];
+      switch (line->special)
+      {
+          case 48:           // Effect_Scroll_Left
+              sides[line->sidenum[0]].textureoffset += FRACUNIT;
+              break;
+          case 99:           // Effect_Scroll_Right
+              sides[line->sidenum[0]].textureoffset -= FRACUNIT;
+              break;
+      }
+  }
+}
+
+void P_AnimateZDoomSurfaces(void)
+{
+  // MAP_FORMAT_TODO: P_AnimateZDoomSurfaces
+  // The linespeciallist stuff isn't relevant (using doom scrollers)
+  // AnimDef stuff will come later
+  // Skies / lightning as well
+}
+
+void P_AnimateHexenSurfaces(void)
 {
     int i;
     animDef_t *ad;
     line_t *line;
-
-    if (!map_format.animdefs)
-        return;
 
     // Animate flats and textures
     for (i = 0; i < AnimDefCount; i++)
@@ -157,6 +188,11 @@ void P_AnimateSurfaces(void)
             NextLightningFlash--;
         }
     }
+}
+
+void P_AnimateSurfaces(void)
+{
+  map_format.animate_surfaces();
 }
 
 static void P_LightningFlash(void)

@@ -2759,26 +2759,6 @@ void P_UpdateSpecials (void)
     }
   }
 
-  if (heretic && !map_format.hexen)
-  {
-    line_t *line;
-
-    // Update scrolling texture offsets
-    for (i = 0; i < numlinespecials; i++)
-    {
-        line = linespeciallist[i];
-        switch (line->special)
-        {
-            case 48:           // Effect_Scroll_Left
-                sides[line->sidenum[0]].textureoffset += FRACUNIT;
-                break;
-            case 99:           // Effect_Scroll_Right
-                sides[line->sidenum[0]].textureoffset -= FRACUNIT;
-                break;
-        }
-    }
-  }
-
   // Check buttons (retriggerable switches) and change texture on timeout
   for (i = 0; i < MAXBUTTONS; i++)
     if (buttonlist[i].btimer)

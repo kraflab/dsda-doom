@@ -168,6 +168,11 @@ extern void P_PostProcessHereticSidedefSpecial(side_t *sd, const mapsidedef_t *m
 extern void P_PostProcessHexenSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
 extern void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
 
+extern void P_AnimateCompatibleSurfaces(void);
+extern void P_AnimateHereticSurfaces(void);
+extern void P_AnimateHexenSurfaces(void);
+extern void P_AnimateZDoomSurfaces(void);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -195,6 +200,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .test_activate_line = P_TestActivateZDoomLine,
   .post_process_line_special = P_PostProcessZDoomLineSpecial,
   .post_process_sidedef_special = P_PostProcessZDoomSidedefSpecial,
+  .animate_surfaces = P_AnimateZDoomSurfaces,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -226,6 +232,7 @@ static const map_format_t hexen_map_format = {
   .test_activate_line = P_TestActivateHexenLine,
   .post_process_line_special = P_PostProcessHexenLineSpecial,
   .post_process_sidedef_special = P_PostProcessHexenSidedefSpecial,
+  .animate_surfaces = P_AnimateHexenSurfaces,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -257,6 +264,7 @@ static const map_format_t heretic_map_format = {
   .test_activate_line = NULL, // not used
   .post_process_line_special = P_PostProcessHereticLineSpecial,
   .post_process_sidedef_special = P_PostProcessHereticSidedefSpecial,
+  .animate_surfaces = P_AnimateHereticSurfaces,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };
@@ -288,6 +296,7 @@ static const map_format_t doom_map_format = {
   .test_activate_line = NULL, // not used
   .post_process_line_special = P_PostProcessCompatibleLineSpecial,
   .post_process_sidedef_special = P_PostProcessCompatibleSidedefSpecial,
+  .animate_surfaces = P_AnimateCompatibleSurfaces,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };

@@ -48,6 +48,7 @@ typedef struct {
   dboolean (*test_activate_line)(line_t *, mobj_t *, int, int);
   void (*post_process_line_special)(line_t *);
   void (*post_process_sidedef_special)(side_t *, const mapsidedef_t *, sector_t *, int);
+  void (*animate_surfaces)(void);
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;
