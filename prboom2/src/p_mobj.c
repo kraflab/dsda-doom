@@ -1326,7 +1326,8 @@ void P_MobjThinker (mobj_t* mobj)
       mobj->intflags &= ~MIF_FALLING, mobj->gear = 0;  // Reset torque
   }
 
-  if (mbf21)
+  // MAP_FORMAT_TODO: extract "mobj in special sector" method
+  if (mbf21 && !map_format.hexen)
   {
     sector_t* sector = mobj->subsector->sector;
 
