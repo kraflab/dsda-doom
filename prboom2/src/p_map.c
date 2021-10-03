@@ -3494,11 +3494,11 @@ static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj)
     {
         if (mobj->flags2 & MF2_PUSHWALL)
         {
-            P_ActivateLine(line, mobj, side, SPAC_PUSH);
+            P_ActivateLine(line, mobj, side, ML_SPAC_PUSH);
         }
         else if (mobj->flags2 & MF2_IMPACT)
         {
-            P_ActivateLine(line, mobj, side, SPAC_IMPACT);
+            P_ActivateLine(line, mobj, side, ML_SPAC_IMPACT);
         }
     }
 }
@@ -3622,15 +3622,15 @@ static dboolean Hexen_P_TryMove(mobj_t* thing, fixed_t x, fixed_t y)
                 {
                     if (thing->player)
                     {
-                        P_ActivateLine(ld, thing, oldside, SPAC_CROSS);
+                        P_ActivateLine(ld, thing, oldside, ML_SPAC_CROSS);
                     }
                     else if (thing->flags2 & MF2_MCROSS)
                     {
-                        P_ActivateLine(ld, thing, oldside, SPAC_MCROSS);
+                        P_ActivateLine(ld, thing, oldside, ML_SPAC_MCROSS);
                     }
                     else if (thing->flags2 & MF2_PCROSS)
                     {
-                        P_ActivateLine(ld, thing, oldside, SPAC_PCROSS);
+                        P_ActivateLine(ld, thing, oldside, ML_SPAC_PCROSS);
                     }
                 }
             }

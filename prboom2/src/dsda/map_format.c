@@ -155,8 +155,8 @@ extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dbool
 extern void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line);
 extern void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line);
 
-extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activationType);
-extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, int activationType);
+extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned int activationType);
+extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned int activationType);
 
 extern void P_PostProcessCompatibleLineSpecial(line_t *ld);
 extern void P_PostProcessHereticLineSpecial(line_t *ld);
@@ -177,6 +177,9 @@ extern void P_CheckCompatibleImpact(mobj_t *);
 extern void P_CheckHereticImpact(mobj_t *);
 extern void P_CheckZDoomImpact(mobj_t *);
 
+extern void P_TranslateHexenLineFlags(unsigned int *);
+extern void P_TranslateZDoomLineFlags(unsigned int *);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -192,7 +195,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .friction_mask = ZDOOM_FRICTION_MASK,
   .push_mask = ZDOOM_PUSH_MASK,
   .generalized_mask = ~0xff,
-  .switch_activation = SPACF_USE | SPACF_IMPACT | SPACF_PUSH,
+  .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT | ML_SPAC_PUSH,
   .init_sector_special = P_SpawnZDoomSectorSpecial,
   .player_in_special_sector = P_PlayerInZDoomSector,
   .spawn_scroller = P_SpawnZDoomScroller,
@@ -206,6 +209,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .post_process_sidedef_special = P_PostProcessZDoomSidedefSpecial,
   .animate_surfaces = P_AnimateZDoomSurfaces,
   .check_impact = P_CheckZDoomImpact,
+  .translate_line_flags = P_TranslateZDoomLineFlags,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -225,7 +229,7 @@ static const map_format_t hexen_map_format = {
   .friction_mask = 0, // not used
   .push_mask = 0, // not used
   .generalized_mask = 0, // not used
-  .switch_activation = SPACF_USE | SPACF_IMPACT,
+  .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT,
   .init_sector_special = NULL, // not used
   .player_in_special_sector = P_PlayerInHexenSector,
   .spawn_scroller = NULL, // not used
@@ -239,6 +243,7 @@ static const map_format_t hexen_map_format = {
   .post_process_sidedef_special = P_PostProcessHexenSidedefSpecial,
   .animate_surfaces = P_AnimateHexenSurfaces,
   .check_impact = NULL, // not used
+  .translate_line_flags = P_TranslateHexenLineFlags,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };

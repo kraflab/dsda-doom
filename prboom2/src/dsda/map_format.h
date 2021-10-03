@@ -36,7 +36,7 @@ typedef struct {
   short friction_mask;
   short push_mask;
   short generalized_mask;
-  byte switch_activation;
+  unsigned int switch_activation;
   void (*init_sector_special)(sector_t*, int);
   void (*player_in_special_sector)(player_t*, sector_t*);
   void (*spawn_scroller)(line_t*, int);
@@ -45,11 +45,12 @@ typedef struct {
   void (*spawn_extra)(line_t*, int);
   void (*cross_special_line)(line_t *, int, mobj_t *, dboolean);
   void (*shoot_special_line)(mobj_t *, line_t *);
-  dboolean (*test_activate_line)(line_t *, mobj_t *, int, int);
+  dboolean (*test_activate_line)(line_t *, mobj_t *, int, unsigned int);
   void (*post_process_line_special)(line_t *);
   void (*post_process_sidedef_special)(side_t *, const mapsidedef_t *, sector_t *, int);
   void (*animate_surfaces)(void);
   void (*check_impact)(mobj_t *);
+  void (*translate_line_flags)(unsigned int *);
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;

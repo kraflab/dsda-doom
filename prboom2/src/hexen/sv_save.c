@@ -1342,7 +1342,7 @@ static void ArchiveWorld(void)
     }
     for (i = 0, li = lines; i < numlines; i++, li++)
     {
-        SV_WriteWord(li->flags);
+        SV_WriteLong(li->flags);
         SV_WriteByte(li->special);
         SV_WriteByte(li->arg1);
         SV_WriteByte(li->arg2);
@@ -1390,7 +1390,7 @@ static void UnarchiveWorld(void)
     }
     for (i = 0, li = lines; i < numlines; i++, li++)
     {
-        li->flags = SV_ReadWord();
+        li->flags = SV_ReadLong();
         li->special = SV_ReadByte();
         li->arg1 = SV_ReadByte();
         li->arg2 = SV_ReadByte();

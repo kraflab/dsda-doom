@@ -231,7 +231,7 @@ typedef struct line_s
 #ifdef GL_DOOM
   float texel_length;
 #endif
-  unsigned short flags;           // Animation related.
+  unsigned int flags;           // Animation related.
   short special;
   short tag;
   unsigned short sidenum[2];        // Visual appearance: SideDefs.
