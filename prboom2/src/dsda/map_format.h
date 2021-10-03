@@ -55,6 +55,8 @@ typedef struct {
   void (*apply_sector_movement_special)(mobj_t *, int);
   size_t mapthing_size;
   size_t maplinedef_size;
+  int mt_push;
+  int mt_pull;
 } map_format_t;
 
 extern map_format_t map_format;

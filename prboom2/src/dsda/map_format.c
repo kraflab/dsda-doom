@@ -222,6 +222,8 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
+  .mt_push = MT_PUSH,
+  .mt_pull = MT_PULL,
 };
 
 static const map_format_t hexen_map_format = {
@@ -258,6 +260,8 @@ static const map_format_t hexen_map_format = {
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
+  .mt_push = -1,
+  .mt_pull = -1,
 };
 
 static const map_format_t heretic_map_format = {
@@ -293,6 +297,8 @@ static const map_format_t heretic_map_format = {
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
+  .mt_push = -1,
+  .mt_pull = -1,
 };
 
 static const map_format_t doom_map_format = {
@@ -328,6 +334,8 @@ static const map_format_t doom_map_format = {
   .apply_sector_movement_special = P_ApplyCompatibleSectorMovementSpecial,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
+  .mt_push = MT_PUSH,
+  .mt_pull = MT_PULL,
 };
 
 void dsda_ApplyMapFormat(void) {

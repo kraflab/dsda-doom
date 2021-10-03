@@ -5,7 +5,6 @@
 ### Sectors
 - SCROLLTYPE
 - Scroller copying
-- Push / pull type abstraction
 - Sector damage
 - Sector gravity
 - Friction effect in P_Thrust?
