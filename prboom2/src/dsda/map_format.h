@@ -51,6 +51,7 @@ typedef struct {
   void (*animate_surfaces)(void);
   void (*check_impact)(mobj_t *);
   void (*translate_line_flags)(unsigned int *);
+  void (*apply_sector_movement_special)(mobj_t *, int);
   size_t mapthing_size;
   size_t maplinedef_size;
 } map_format_t;

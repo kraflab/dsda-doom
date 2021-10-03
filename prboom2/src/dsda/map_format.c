@@ -180,6 +180,9 @@ extern void P_CheckZDoomImpact(mobj_t *);
 extern void P_TranslateHexenLineFlags(unsigned int *);
 extern void P_TranslateZDoomLineFlags(unsigned int *);
 
+extern void P_ApplyCompatibleSectorMovementSpecial(mobj_t *, int);
+extern void P_ApplyHereticSectorMovementSpecial(mobj_t *, int);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -210,6 +213,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .animate_surfaces = P_AnimateZDoomSurfaces,
   .check_impact = P_CheckZDoomImpact,
   .translate_line_flags = P_TranslateZDoomLineFlags,
+  .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -244,6 +248,7 @@ static const map_format_t hexen_map_format = {
   .animate_surfaces = P_AnimateHexenSurfaces,
   .check_impact = NULL, // not used
   .translate_line_flags = P_TranslateHexenLineFlags,
+  .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
 };
@@ -277,6 +282,7 @@ static const map_format_t heretic_map_format = {
   .post_process_sidedef_special = P_PostProcessHereticSidedefSpecial,
   .animate_surfaces = P_AnimateHereticSurfaces,
   .check_impact = P_CheckHereticImpact,
+  .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };
@@ -310,6 +316,7 @@ static const map_format_t doom_map_format = {
   .post_process_sidedef_special = P_PostProcessCompatibleSidedefSpecial,
   .animate_surfaces = P_AnimateCompatibleSurfaces,
   .check_impact = P_CheckCompatibleImpact,
+  .apply_sector_movement_special = P_ApplyCompatibleSectorMovementSpecial,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
 };
