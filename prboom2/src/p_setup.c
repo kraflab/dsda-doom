@@ -1610,15 +1610,28 @@ static void P_LoadThings (int lump)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-static void P_TranslateLineFlags(unsigned short *flags)
+void P_TranslateZDoomLineFlags(unsigned int *flags)
 {
-  unsigned short result;
+  unsigned int result;
+  static unsigned int spac_to_flags[8] = {
+    ML_SPAC_CROSS,
+    ML_SPAC_USE,
+    ML_SPAC_MCROSS,
+    ML_SPAC_IMPACT,
+    ML_SPAC_PUSH,
+    ML_SPAC_PCROSS,
+    ML_SPAC_USE | ML_PASSUSE,
+    ML_SPAC_IMPACT | ML_SPAC_PCROSS
+  };
 
-  if (!map_format.zdoom) return;
-
-  result = *flags & 0x1fff;
+  result = *flags & 0x1ff;
 
   // from zdoom-in-hexen to dsda-doom
+
+  result |= spac_to_flags[GET_SPAC(*flags)];
+
+  if (*flags & HML_REPEATSPECIAL)
+    result |= ML_REPEATSPECIAL;
 
   if (*flags & ZML_BLOCKPLAYERS)
     result |= ML_BLOCKPLAYERS;
@@ -1628,6 +1641,32 @@ static void P_TranslateLineFlags(unsigned short *flags)
 
   if (*flags & ZML_BLOCKEVERYTHING)
     result |= ML_BLOCKEVERYTHING;
+
+  *flags = result;
+}
+
+void P_TranslateHexenLineFlags(unsigned int *flags)
+{
+  unsigned int result;
+  static unsigned int spac_to_flags[8] = {
+    ML_SPAC_CROSS,
+    ML_SPAC_USE,
+    ML_SPAC_MCROSS,
+    ML_SPAC_IMPACT,
+    ML_SPAC_PUSH,
+    ML_SPAC_PCROSS,
+    0,
+    0
+  };
+
+  result = *flags & 0x1ff;
+
+  // from hexen to dsda-doom
+
+  result |= spac_to_flags[GET_SPAC(*flags)];
+
+  if (*flags & HML_REPEATSPECIAL)
+    result |= ML_REPEATSPECIAL;
 
   *flags = result;
 }
@@ -1651,7 +1690,7 @@ static void P_LoadLineDefs (int lump)
         const hexen_maplinedef_t *mld = (const hexen_maplinedef_t *) data + i;
 
         ld->flags = (unsigned short)LittleShort(mld->flags);
-        P_TranslateLineFlags(&ld->flags);
+        map_format.translate_line_flags(&ld->flags);
         ld->special = mld->special; // just a byte in hexen
         ld->tag = 0;
         ld->arg1 = mld->arg1;

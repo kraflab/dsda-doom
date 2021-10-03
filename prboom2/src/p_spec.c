@@ -1331,15 +1331,15 @@ void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
 {
   if (thing->player)
   {
-    P_ActivateLine(line, thing, side, SPAC_CROSS);
+    P_ActivateLine(line, thing, side, ML_SPAC_CROSS);
   }
   else if (thing->flags2 & MF2_MCROSS)
   {
-    P_ActivateLine(line, thing, side, SPAC_MCROSS);
+    P_ActivateLine(line, thing, side, ML_SPAC_MCROSS);
   }
   else if (thing->flags2 & MF2_PCROSS)
   {
-    P_ActivateLine(line, thing, side, SPAC_PCROSS);
+    P_ActivateLine(line, thing, side, ML_SPAC_PCROSS);
   }
 }
 
@@ -2276,21 +2276,21 @@ void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
 {
   if (thing->player)
   {
-    P_ActivateLine(line, thing, side, SPAC_CROSS);
+    P_ActivateLine(line, thing, side, ML_SPAC_CROSS);
   }
   else if (thing->flags2 & MF2_MCROSS)
   {
-    P_ActivateLine(line, thing, side, SPAC_MCROSS);
+    P_ActivateLine(line, thing, side, ML_SPAC_MCROSS);
   }
   else if (thing->flags2 & MF2_PCROSS)
   {
-    P_ActivateLine(line, thing, side, SPAC_PCROSS);
+    P_ActivateLine(line, thing, side, ML_SPAC_PCROSS);
   }
   else if (line->special == zl_teleport ||
            line->special == zl_teleport_no_fog ||
            line->special == zl_teleport_line)
   { // [RH] Just a little hack for BOOM compatibility
-    P_ActivateLine(line, thing, side, SPAC_MCROSS);
+    P_ActivateLine(line, thing, side, ML_SPAC_MCROSS);
   }
 }
 
@@ -2479,7 +2479,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
 
 void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line)
 {
-  P_ActivateLine(line, thing, 0, SPAC_IMPACT);
+  P_ActivateLine(line, thing, 0, ML_SPAC_IMPACT);
 }
 
 static void P_ApplySectorDamage(player_t *player, int damage, int leak)
@@ -5191,37 +5191,25 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
     return false;
 }
 
-dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activationType)
+dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned int activationType)
 {
-  int lineActivation;
+  unsigned int lineActivation;
 
-  // convert to flag-based from single-valued
-  lineActivation = 1 << GET_SPAC(line->flags);
-  activationType = 1 << activationType;
+  lineActivation = line->flags & ML_SPAC_MASK;
 
-  // PTOUCH is a composite
-  if (lineActivation & SPACF_PTOUCH)
-  {
-    lineActivation = SPACF_IMPACT | SPACF_PCROSS;
-  }
-
-  if (lineActivation & SPACF_USETHROUGH)
-  {
-    lineActivation |= SPACF_USE;
-  }
-  else if (
+  if (
     line->special == zl_teleport &&
-    lineActivation & SPACF_CROSS &&
-    activationType == SPACF_PCROSS &&
+    lineActivation & ML_SPAC_CROSS &&
+    activationType == ML_SPAC_PCROSS &&
     mo && mo->flags & MF_MISSILE
   )
   { // Let missiles use regular player teleports
-    lineActivation |= SPACF_PCROSS;
+    lineActivation |= ML_SPAC_PCROSS;
   }
 
   if (!(lineActivation & activationType))
   {
-    if (activationType != SPACF_MCROSS || lineActivation != SPACF_CROSS)
+    if (activationType != ML_SPAC_MCROSS || lineActivation != ML_SPAC_CROSS)
     {
       return false;
     }
@@ -5231,7 +5219,7 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activat
     mo && !mo->player &&
     !(mo->flags & MF_MISSILE) &&
     !(line->flags & ML_MONSTERSCANACTIVATE) &&
-    (activationType != SPACF_MCROSS || !(lineActivation & SPACF_MCROSS))
+    (activationType != ML_SPAC_MCROSS || !(lineActivation & ML_SPAC_MCROSS))
   )
   {
     dboolean noway = true;
@@ -5246,13 +5234,13 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activat
       return false;
     }
 
-    if ((activationType == SPACF_USE || activationType == SPACF_PUSH) && line->flags & ML_SECRET)
+    if ((activationType == ML_SPAC_USE || activationType == ML_SPAC_PUSH) && line->flags & ML_SECRET)
       return false;    // never open secret doors
 
     switch (activationType)
     {
-      case SPACF_USE:
-      case SPACF_PUSH:
+      case ML_SPAC_USE:
+      case ML_SPAC_PUSH:
         switch (line->special)
         {
           case zl_door_raise:
@@ -5265,8 +5253,8 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activat
         }
         break;
 
-      case SPACF_MCROSS:
-        if (!(lineActivation & SPACF_MCROSS))
+      case ML_SPAC_MCROSS:
+        if (!(lineActivation & ML_SPAC_MCROSS))
         {
           switch (line->special)
           {
@@ -5292,8 +5280,8 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activat
   }
 
   if (
-    activationType == SPACF_MCROSS &&
-    !(lineActivation & SPACF_MCROSS) &&
+    activationType == ML_SPAC_MCROSS &&
+    !(lineActivation & ML_SPAC_MCROSS) &&
     !(line->flags & ML_MONSTERSCANACTIVATE)
   )
   {
@@ -5303,11 +5291,11 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, int activat
   return true;
 }
 
-dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, int activationType)
+dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned int activationType)
 {
-  int lineActivation;
+  unsigned int lineActivation;
 
-  lineActivation = GET_SPAC(line->flags);
+  lineActivation = line->flags & ML_SPAC_MASK;
 
   if (lineActivation != activationType)
   {
@@ -5316,7 +5304,7 @@ dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, int activat
 
   if (!mo->player && !(mo->flags & MF_MISSILE))
   {
-      if (lineActivation != SPAC_MCROSS)
+      if (lineActivation != ML_SPAC_MCROSS)
       {                       // currently, monsters can only activate the MCROSS activation type
           return false;
       }
@@ -5327,10 +5315,9 @@ dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, int activat
   return true;
 }
 
-dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType)
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activationType)
 {
   byte args[5];
-  int lineActivation;
   dboolean repeat;
   dboolean buttonSuccess;
 
@@ -5339,8 +5326,7 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType
     return false;
   }
 
-  lineActivation = 1 << GET_SPAC(line->flags);
-  repeat = (line->flags & ML_REPEAT_SPECIAL) != 0;
+  repeat = (line->flags & ML_REPEATSPECIAL) != 0;
 
   P_TransferLineArgs(line, args);
 
@@ -5351,7 +5337,7 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, int activationType
     line->special = 0;
   }
 
-  if (buttonSuccess && lineActivation & map_format.switch_activation)
+  if (buttonSuccess && line->flags & map_format.switch_activation)
   {
     P_ChangeSwitchTexture(line, repeat);
   }

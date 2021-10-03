@@ -508,12 +508,11 @@ dboolean PIT_CheckLine (line_t* ld)
     }
 
     // killough 8/9/98: monster-blockers don't affect friends
-    // MAP_FORMAT_TODO: clean up ML_BLOCKLANDMONSTERS check
     if (
       !(tmthing->flags & MF_FRIEND || tmthing->player) &&
       (
         ld->flags & ML_BLOCKMONSTERS ||
-        (mbf21 && !map_format.zdoom && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT))
+        (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT))
       ) &&
       (!heretic || tmthing->type != HERETIC_MT_POD)
     )
@@ -3494,11 +3493,11 @@ static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj)
     {
         if (mobj->flags2 & MF2_PUSHWALL)
         {
-            P_ActivateLine(line, mobj, side, SPAC_PUSH);
+            P_ActivateLine(line, mobj, side, ML_SPAC_PUSH);
         }
         else if (mobj->flags2 & MF2_IMPACT)
         {
-            P_ActivateLine(line, mobj, side, SPAC_IMPACT);
+            P_ActivateLine(line, mobj, side, ML_SPAC_IMPACT);
         }
     }
 }
@@ -3622,15 +3621,15 @@ static dboolean Hexen_P_TryMove(mobj_t* thing, fixed_t x, fixed_t y)
                 {
                     if (thing->player)
                     {
-                        P_ActivateLine(ld, thing, oldside, SPAC_CROSS);
+                        P_ActivateLine(ld, thing, oldside, ML_SPAC_CROSS);
                     }
                     else if (thing->flags2 & MF2_MCROSS)
                     {
-                        P_ActivateLine(ld, thing, oldside, SPAC_MCROSS);
+                        P_ActivateLine(ld, thing, oldside, ML_SPAC_MCROSS);
                     }
                     else if (thing->flags2 & MF2_PCROSS)
                     {
-                        P_ActivateLine(ld, thing, oldside, SPAC_PCROSS);
+                        P_ActivateLine(ld, thing, oldside, ML_SPAC_PCROSS);
                     }
                 }
             }

@@ -118,13 +118,13 @@ typedef struct {
 //
 
 // Solid, is an obstacle.
-#define ML_BLOCKING             1
+#define ML_BLOCKING      0x0001
 
 // Blocks monsters only.
-#define ML_BLOCKMONSTERS        2
+#define ML_BLOCKMONSTERS 0x0002
 
 // Backside will not be drawn if not two sided.
-#define ML_TWOSIDED             4
+#define ML_TWOSIDED      0x0004
 
 // If a texture is pegged, the texture will have
 // the end exposed to air held constant at the
@@ -136,31 +136,30 @@ typedef struct {
 // top and bottom textures (use next to windows).
 
 // upper texture unpegged
-#define ML_DONTPEGTOP           8
+#define ML_DONTPEGTOP    0x0008
 
 // lower texture unpegged
-#define ML_DONTPEGBOTTOM        16
+#define ML_DONTPEGBOTTOM 0x0010
 
 // In AutoMap: don't map as two sided: IT'S A SECRET!
-#define ML_SECRET               32
+#define ML_SECRET        0x0020
 
 // Sound rendering: don't let sound cross two of these.
-#define ML_SOUNDBLOCK           64
+#define ML_SOUNDBLOCK    0x0040
 
 // Don't draw on the automap at all.
-#define ML_DONTDRAW             128
+#define ML_DONTDRAW      0x0080
 
 // Set if already seen, thus drawn in automap.
-#define ML_MAPPED               256
+#define ML_MAPPED        0x0100
 
 //jff 3/21/98 Set if line absorbs use by player
 //allow multiple push/switch triggers to be used on one push
-#define ML_PASSUSE      512
-
+#define ML_PASSUSE 0x0200
 
 // Reserved by EE
 // SoM 9/02/02: 3D Middletexture flag!
-#define ML_3DMIDTEX             1024
+#define ML_3DMIDTEX 0x0400
 
 // haleyjd 05/02/06: Although it was believed until now that a reserved line
 // flag was unnecessary, a problem with Ultimate DOOM E2M7 has disproven this
@@ -168,11 +167,26 @@ typedef struct {
 // making the next line flag reserved and using it to toggle off ALL extended
 // flags will preserve compatibility for such maps. I have been told this map
 // is one of the first ever created, so it may have something to do with that.
-#define ML_RESERVED             2048
+#define ML_RESERVED 0x0800
 
 // mbf21
-#define ML_BLOCKLANDMONSTERS 4096
-#define ML_BLOCKPLAYERS 8192
+#define ML_BLOCKLANDMONSTERS 0x1000
+#define ML_BLOCKPLAYERS      0x2000
+
+// extensions
+#define ML_MONSTERSCANACTIVATE 0x4000 // zdoom
+#define ML_BLOCKEVERYTHING     0x8000 // zdoom
+
+#define ML_REPEATSPECIAL       0x00010000 // hexen
+
+#define ML_SPAC_CROSS          0x00020000 // hexen activation
+#define ML_SPAC_USE            0x00040000 // hexen activation
+#define ML_SPAC_MCROSS         0x00080000 // hexen activation
+#define ML_SPAC_IMPACT         0x00100000 // hexen activation
+#define ML_SPAC_PUSH           0x00200000 // hexen activation
+#define ML_SPAC_PCROSS         0x00400000 // hexen activation
+
+#define ML_SPAC_MASK (ML_SPAC_CROSS|ML_SPAC_USE|ML_SPAC_MCROSS|ML_SPAC_IMPACT|ML_SPAC_PUSH|ML_SPAC_PCROSS)
 
 // Sector definition, from editing.
 typedef struct {
@@ -294,42 +308,15 @@ typedef struct {
 } PACKEDATTR doom_mapthing_t;
 
 // hexen
+#define HML_REPEATSPECIAL 0x0200  // special is repeatable
+#define HML_SPAC_SHIFT 10
+#define HML_SPAC_MASK 0x1c00
+#define GET_SPAC(flags) ((flags&HML_SPAC_MASK)>>HML_SPAC_SHIFT)
 
-#define ML_REPEAT_SPECIAL 0x0200  // special is repeatable
-#define ML_SPAC_SHIFT 10
-#define ML_SPAC_MASK 0x1c00
-#define GET_SPAC(flags) ((flags&ML_SPAC_MASK)>>ML_SPAC_SHIFT)
-
-// Special activation types
-#define SPAC_CROSS  0       // when player crosses line
-#define SPAC_USE    1       // when player uses line
-#define SPAC_MCROSS 2       // when monster crosses line
-#define SPAC_IMPACT 3       // when projectile hits line
-#define SPAC_PUSH   4       // when player/monster pushes line
-#define SPAC_PCROSS 5       // when projectile crosses line
-
-// extensions
-
-// ZML map values are converted to ML internal values
+// zdoom
 #define ZML_MONSTERSCANACTIVATE 0x2000 // Monsters and players can activate
 #define ZML_BLOCKPLAYERS        0x4000 // Blocks players
 #define ZML_BLOCKEVERYTHING     0x8000 // Blocks everything
-
-// ML_BLOCKPLAYERS is above
-#define ML_MONSTERSCANACTIVATE 0x4000
-#define ML_BLOCKEVERYTHING     0x8000
-
-#define SPAC_USETHROUGH 6
-#define SPAC_PTOUCH     7
-
-#define SPACF_CROSS      0x01
-#define SPACF_USE        0x02
-#define SPACF_MCROSS     0x04
-#define SPACF_IMPACT     0x08
-#define SPACF_PUSH       0x10
-#define SPACF_PCROSS     0x20
-#define SPACF_USETHROUGH 0x40
-#define SPACF_PTOUCH     0x80
 
 #ifdef _MSC_VER
 #pragma pack(pop)
