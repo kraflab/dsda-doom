@@ -139,7 +139,8 @@ void P_ArchiveWorld (void)
       sizeof(sec->seqType)
     ) * numsectors +
     (
-      sizeof(short) * 3 +
+      sizeof(short) * 2 +
+      sizeof(li->flags) +
       sizeof(li->arg1) * 5
     ) * numlines +
     sizeof(musinfo.current_item);
@@ -181,7 +182,9 @@ void P_ArchiveWorld (void)
   {
     int j;
 
-    *put++ = li->flags;
+    memcpy(put, &li->flags, sizeof(li->flags));
+    put = (void *)((char *) put + sizeof(li->flags));
+
     *put++ = li->special;
     *put++ = li->tag;
 
@@ -260,7 +263,9 @@ void P_UnArchiveWorld (void)
   {
     int j;
 
-    li->flags = *get++;
+    memcpy(&li->flags, get, sizeof(li->flags));
+    get = (void *)((char *) get + sizeof(li->flags));
+
     li->special = *get++;
     li->tag = *get++;
 
