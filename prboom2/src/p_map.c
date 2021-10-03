@@ -3619,18 +3619,7 @@ static dboolean Hexen_P_TryMove(mobj_t* thing, fixed_t x, fixed_t y)
             {
                 if (ld->special)
                 {
-                    if (thing->player)
-                    {
-                        P_ActivateLine(ld, thing, oldside, ML_SPAC_CROSS);
-                    }
-                    else if (thing->flags2 & MF2_MCROSS)
-                    {
-                        P_ActivateLine(ld, thing, oldside, ML_SPAC_MCROSS);
-                    }
-                    else if (thing->flags2 & MF2_PCROSS)
-                    {
-                        P_ActivateLine(ld, thing, oldside, ML_SPAC_PCROSS);
-                    }
+                    map_format.cross_special_line(ld, oldside, thing, false);
                 }
             }
         }
