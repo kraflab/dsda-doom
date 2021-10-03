@@ -223,6 +223,14 @@ typedef enum
   ST_NEGATIVE
 } slopetype_t;
 
+typedef byte r_flags_t;
+#define RF_TOP_TILE 0x01 // Upper texture needs tiling
+#define RF_MID_TILE 0x02 // Mid texture needs tiling
+#define RF_BOT_TILE 0x04 // Lower texture needs tiling
+#define RF_IGNORE   0x08 // Renderer can skip this line
+#define RF_CLOSED   0x10 // Line blocks view
+#define RF_ISOLATED 0x20 // Isolated line
+
 typedef struct line_s
 {
   int iLineID;           // proff 04/05/2000: needed for OpenGL
@@ -245,14 +253,7 @@ typedef struct line_s
   int tranlump;          // killough 4/11/98: translucency filter, -1 == none
   int firsttag,nexttag;  // killough 4/17/98: improves searches for tags.
   int r_validcount;      // cph: if == gametic, r_flags already done
-  enum {                 // cph:
-    RF_TOP_TILE  = 1,     // Upper texture needs tiling
-    RF_MID_TILE = 2,     // Mid texture needs tiling
-    RF_BOT_TILE = 4,     // Lower texture needs tiling
-    RF_IGNORE   = 8,     // Renderer can skip this line
-    RF_CLOSED   =16,     // Line blocks view
-    RF_ISOLATED =32,     // Isolated line
-  } r_flags;
+  r_flags_t r_flags;     // cph
   degenmobj_t soundorg;  // sound origin for switches/buttons
 
   // hexen
