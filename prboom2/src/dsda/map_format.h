@@ -39,6 +39,7 @@ typedef struct {
   unsigned int switch_activation;
   void (*init_sector_special)(sector_t*, int);
   void (*player_in_special_sector)(player_t*, sector_t*);
+  dboolean (*mobj_in_special_sector)(mobj_t*);
   void (*spawn_scroller)(line_t*, int);
   void (*spawn_friction)(line_t*);
   void (*spawn_pusher)(line_t*);

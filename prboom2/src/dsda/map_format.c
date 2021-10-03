@@ -183,6 +183,11 @@ extern void P_TranslateZDoomLineFlags(unsigned int *);
 extern void P_ApplyCompatibleSectorMovementSpecial(mobj_t *, int);
 extern void P_ApplyHereticSectorMovementSpecial(mobj_t *, int);
 
+extern dboolean P_MobjInCompatibleSector(mobj_t *);
+extern dboolean P_MobjInHereticSector(mobj_t *);
+extern dboolean P_MobjInHexenSector(mobj_t *);
+extern dboolean P_MobjInZDoomSector(mobj_t *);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -201,6 +206,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT | ML_SPAC_PUSH,
   .init_sector_special = P_SpawnZDoomSectorSpecial,
   .player_in_special_sector = P_PlayerInZDoomSector,
+  .mobj_in_special_sector = P_MobjInZDoomSector,
   .spawn_scroller = P_SpawnZDoomScroller,
   .spawn_friction = P_SpawnZDoomFriction,
   .spawn_pusher = P_SpawnZDoomPusher,
@@ -236,6 +242,7 @@ static const map_format_t hexen_map_format = {
   .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT,
   .init_sector_special = NULL, // not used
   .player_in_special_sector = P_PlayerInHexenSector,
+  .mobj_in_special_sector = P_MobjInHexenSector,
   .spawn_scroller = NULL, // not used
   .spawn_friction = NULL, // not used
   .spawn_pusher = NULL, // not used
@@ -271,6 +278,7 @@ static const map_format_t heretic_map_format = {
   .switch_activation = 0, // not used
   .init_sector_special = P_SpawnCompatibleSectorSpecial,
   .player_in_special_sector = P_PlayerInHereticSector,
+  .mobj_in_special_sector = P_MobjInHereticSector,
   .spawn_scroller = P_SpawnCompatibleScroller,
   .spawn_friction = P_SpawnCompatibleFriction,
   .spawn_pusher = P_SpawnCompatiblePusher,
@@ -305,6 +313,7 @@ static const map_format_t doom_map_format = {
   .switch_activation = 0, // not used
   .init_sector_special = P_SpawnCompatibleSectorSpecial,
   .player_in_special_sector = P_PlayerInCompatibleSector,
+  .mobj_in_special_sector = P_MobjInCompatibleSector,
   .spawn_scroller = P_SpawnCompatibleScroller,
   .spawn_friction = P_SpawnCompatibleFriction,
   .spawn_pusher = P_SpawnCompatiblePusher,

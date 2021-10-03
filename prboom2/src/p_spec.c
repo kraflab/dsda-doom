@@ -2685,6 +2685,46 @@ void P_PlayerInSpecialSector (player_t* player)
   map_format.player_in_special_sector(player, sector);
 }
 
+dboolean P_MobjInCompatibleSector(mobj_t *mobj)
+{
+  if (mbf21)
+  {
+    sector_t* sector = mobj->subsector->sector;
+
+    if (
+      sector->special & KILL_MONSTERS_MASK &&
+      mobj->z == mobj->floorz &&
+      mobj->player == NULL &&
+      mobj->flags & MF_SHOOTABLE &&
+      !(mobj->flags & MF_FLOAT)
+    )
+    {
+      P_DamageMobj(mobj, NULL, NULL, 10000);
+
+      // must have been removed
+      if (mobj->thinker.function != P_MobjThinker)
+        return true;
+    }
+  }
+
+  return false;
+}
+
+dboolean P_MobjInHereticSector(mobj_t *mobj)
+{
+  return false;
+}
+
+dboolean P_MobjInHexenSector(mobj_t *mobj)
+{
+  return false;
+}
+
+dboolean P_MobjInZDoomSector(mobj_t *mobj)
+{
+  return false;
+}
+
 //
 // P_UpdateSpecials()
 //
