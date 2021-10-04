@@ -697,6 +697,8 @@ static void P_XYMovement (mobj_t* mo)
 
 static void P_ZMovement (mobj_t* mo)
 {
+  fixed_t gravity = mo->subsector->sector->gravity;
+
   /* killough 7/11/98:
    * BFG fireballs bounced on floors and ceilings in Pre-Beta Doom
    * killough 8/9/98: added support for non-missile objects bouncing
@@ -721,7 +723,7 @@ static void P_ZMovement (mobj_t* mo)
                      FixedMul(mo->momz, (fixed_t)(FRACUNIT*.45)) ;
 
           /* Bring it to rest below a certain speed */
-          if (D_abs(mo->momz) <= mo->info->mass*(GRAVITY*4/256))
+          if (D_abs(mo->momz) <= mo->info->mass * (gravity * 4 / 256))
             mo->momz = 0;
         }
 
@@ -756,7 +758,7 @@ static void P_ZMovement (mobj_t* mo)
     else
     {
       if (!(mo->flags & MF_NOGRAVITY))      /* free-fall under gravity */
-        mo->momz -= mo->info->mass*(GRAVITY/256);
+        mo->momz -= mo->info->mass * (gravity / 256);
 
       if (mo->flags & MF_FLOAT && sentient(mo)) goto floater;
       return;
@@ -916,7 +918,7 @@ floater:
         P_DamageMobj(mo, NULL, NULL, mo->health);
       else
       {
-        if (mo->flags2 & MF2_ICEDAMAGE && mo->momz < -GRAVITY * 8)
+        if (mo->flags2 & MF2_ICEDAMAGE && mo->momz < -gravity * 8)
         {
           mo->tics = 1;
           mo->momx = 0;
@@ -939,7 +941,7 @@ floater:
           // because original sources do not exclude voodoo dolls from condition above,
           // but Boom does it.
           (demo_compatibility || mo->player->mo == mo) &&
-          mo->momz < -GRAVITY * 8 &&
+          mo->momz < -gravity * 8 &&
           !(mo->flags2 & MF2_FLY)
         )
         {
@@ -962,7 +964,7 @@ floater:
               P_FallingDamage(mo->player);
               P_NoiseAlert(mo, mo);
             }
-            else if (mo->momz < -GRAVITY * 12 && !mo->player->morphTics)
+            else if (mo->momz < -gravity * 12 && !mo->player->morphTics)
             {
               S_StartSound(mo, hexen_sfx_player_land);
               switch (mo->player->pclass)
@@ -1024,15 +1026,15 @@ floater:
   else if (mo->flags2 & MF2_LOGRAV || (mo->type == MT_GIBDTH && !demorecording && !demoplayback))
   {
     if (mo->momz == 0)
-      mo->momz = -(GRAVITY >> 3) * 2;
+      mo->momz = -(gravity >> 3) * 2;
     else
-      mo->momz -= GRAVITY >> 3;
+      mo->momz -= gravity >> 3;
   }
   else if (!(mo->flags & MF_NOGRAVITY))
   {
     if (mo->momz == 0)
-      mo->momz = -GRAVITY;
-    mo->momz -= GRAVITY;
+      mo->momz = -gravity;
+    mo->momz -= gravity;
   }
 
   if (mo->z + mo->height > mo->ceilingz)
