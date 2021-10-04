@@ -2917,7 +2917,7 @@ void P_CheckLevelWadStructure(const char *mapname)
   // we may be running a wad that has multiple formats
   // if we are not in "hexen mode" then we need to abort
   // eventually, we can add support for per-map format swapping
-  if (!map_format.acs)
+  if (!map_format.hexen)
   {
     i = lumpnum + ML_BEHAVIOR;
     if (P_CheckLumpsForSameSource(lumpnum, i))
