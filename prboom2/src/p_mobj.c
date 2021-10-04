@@ -1975,8 +1975,14 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // then simply ignore all upper bits.
 
   if (
-    (!map_format.hexen && demo_compatibility) ||
-    (compatibility_level >= lxdoom_1_compatibility && options & MTF_RESERVED)
+    !map_format.hexen &&
+    (
+      demo_compatibility ||
+      (
+        compatibility_level >= lxdoom_1_compatibility &&
+        options & MTF_RESERVED
+      )
+    )
   )
   {
     if (!demo_compatibility) // cph - Add warning about bad thing flags
