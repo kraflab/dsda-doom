@@ -185,6 +185,9 @@ typedef struct
 
   // hexen
   seqtype_t seqType;          // stone, metal, heavy, etc...
+
+  // zdoom
+  fixed_t gravity;
 } sector_t;
 
 //

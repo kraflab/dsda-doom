@@ -3285,11 +3285,10 @@ void P_SpawnZDoomExtra(line_t *l, int i)
       {
         case zi_init_gravity:
         {
-          // MAP_FORMAT_TODO: zi_init_gravity
-          // double grav = lines[i].Delta().Length() / 100.;
-          // FSectorTagIterator itr(lines[i].args[0]);
-          // while ((s = itr.Next()) >= 0)
-          //   sectors[s].gravity = grav;
+          fixed_t grav = FixedDiv(P_AproxDistance(l->dx, l->dy), 100 * FRACUNIT);
+          sec = sides[*l->sidenum].sector->iSectorID;
+          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+            sectors[s].gravity = grav;
         }
         break;
 

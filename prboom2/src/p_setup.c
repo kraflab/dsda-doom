@@ -1028,6 +1028,9 @@ static void P_LoadSectors (int lump)
       // killough 8/28/98: initialize all sectors to normal friction
       ss->friction = ORIG_FRICTION;
       ss->movefactor = ORIG_FRICTION_FACTOR;
+
+      // zdoom
+      ss->gravity = GRAVITY;
     }
 
   W_UnlockLumpNum(lump); // cph - release the data
