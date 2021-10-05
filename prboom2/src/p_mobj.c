@@ -1219,7 +1219,7 @@ fixed_t FloatBobOffsets[64] = {
 // P_MobjThinker
 //
 
-static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj);
+static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj, fixed_t gravity);
 
 void P_MobjThinker (mobj_t* mobj)
 {
@@ -1276,9 +1276,11 @@ void P_MobjThinker (mobj_t* mobj)
         {
           if (hexen)
           {
-            if (mobj->momz < -GRAVITY * 8 && !(mobj->flags2 & MF2_FLY))
+            fixed_t gravity = mobj->subsector->sector->gravity;
+
+            if (mobj->momz < -gravity * 8 && !(mobj->flags2 & MF2_FLY))
             {
-              PlayerLandedOnThing(mobj, onmo);
+              PlayerLandedOnThing(mobj, onmo, gravity);
             }
             if (onmo->z + onmo->height - mobj->z <= 24 * FRACUNIT)
             {
@@ -3288,7 +3290,7 @@ mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
     return (P_CheckMissileSpawn(th) ? th : NULL);
 }
 
-static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj)
+static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj, fixed_t gravity)
 {
     mo->player->deltaviewheight = mo->momz >> 3;
     if (mo->momz < -23 * FRACUNIT)
@@ -3296,7 +3298,7 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj)
         P_FallingDamage(mo->player);
         P_NoiseAlert(mo, mo);
     }
-    else if (mo->momz < -GRAVITY * 12 && !mo->player->morphTics)
+    else if (mo->momz < -gravity * 12 && !mo->player->morphTics)
     {
         S_StartSound(mo, hexen_sfx_player_land);
         switch (mo->player->pclass)

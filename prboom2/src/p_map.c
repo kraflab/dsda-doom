@@ -3303,17 +3303,21 @@ void P_FakeZMovement(mobj_t * mo)
     }
     else if (mo->flags2 & MF2_LOGRAV)
     {
+        fixed_t gravity = mo->subsector->sector->gravity;
+
         if (mo->momz == 0)
-            mo->momz = -(GRAVITY >> 3) * 2;
+            mo->momz = -(gravity >> 3) * 2;
         else
-            mo->momz -= GRAVITY >> 3;
+            mo->momz -= gravity >> 3;
     }
     else if (!(mo->flags & MF_NOGRAVITY))
     {
+        fixed_t gravity = mo->subsector->sector->gravity;
+
         if (mo->momz == 0)
-            mo->momz = -GRAVITY * 2;
+            mo->momz = -gravity * 2;
         else
-            mo->momz -= GRAVITY;
+            mo->momz -= gravity;
     }
 
     if (mo->z + mo->height > mo->ceilingz)

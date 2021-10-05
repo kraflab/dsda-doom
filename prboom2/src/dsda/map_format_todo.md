@@ -6,7 +6,6 @@
 - SCROLLTYPE
 - Scroller copying
 - Sector damage
-- Sector gravity
 - Friction effect in P_Thrust?
 - Floor type / friction?
 - zs_sky2 uses PL_SKYFLAT but the representation is not compatible
