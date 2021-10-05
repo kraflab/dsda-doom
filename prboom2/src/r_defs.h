@@ -105,6 +105,14 @@ typedef struct
 #define SECF_WASSECRET             0x00000080
 #define SECF_HIDDEN                0x00000100
 #define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET)
+#define SECF_UNBLOCKABLEDAMAGE     0x00000200 // not protected by suit
+
+typedef struct
+{
+  unsigned short amount;
+  byte leakrate;
+  byte interval;
+} damage_t;
 
 typedef struct
 {
@@ -188,6 +196,7 @@ typedef struct
 
   // zdoom
   fixed_t gravity;
+  damage_t damage;
 } sector_t;
 
 //

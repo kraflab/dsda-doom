@@ -3294,30 +3294,33 @@ void P_SpawnZDoomExtra(line_t *l, int i)
 
         case zi_init_damage:
         {
-          // MAP_FORMAT_TODO: zi_init_damage
-          // int damage = int(lines[i].Delta().Length());
-          // FSectorTagIterator itr(lines[i].args[0]);
-          // while ((s = itr.Next()) >= 0)
-          // {
-          //   sector_t *sec = &sectors[s];
-          //   sec->damageamount = damage;
-          //   sec->damagetype = NAME_None;
-          //   if (sec->damageamount < 20)
-          //   {
-          //     sec->leakydamage = 0;
-          //     sec->damageinterval = 32;
-          //   }
-          //   else if (sec->damageamount < 50)
-          //   {
-          //     sec->leakydamage = 5;
-          //     sec->damageinterval = 32;
-          //   }
-          //   else
-          //   {
-          //     sec->leakydamage = 256;
-          //     sec->damageinterval = 1;
-          //   }
-          // }
+          damage_t damage;
+          unsigned int flags = 0;
+
+          damage.amount = P_AproxDistance(l->dx, l->dy) >> FRACBITS;
+          if (damage.amount < 20)
+          {
+            damage.leakrate = 0;
+            damage.interval = 32;
+          }
+          else if (damage.amount < 50)
+          {
+            damage.leakrate = 5;
+            damage.interval = 32;
+          }
+          else
+          {
+            flags |= SECF_UNBLOCKABLEDAMAGE;
+            damage.leakrate = 0;
+            damage.interval = 1;
+          }
+
+          sec = sides[*l->sidenum].sector->iSectorID;
+          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+          {
+            sectors[s].damage = damage;
+            sectors[s].flags |= flags;
+          }
         }
         break;
 
