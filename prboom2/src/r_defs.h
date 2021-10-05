@@ -113,7 +113,7 @@ typedef struct
   fixed_t floorheight;
   fixed_t ceilingheight;
   int nexttag,firsttag;  // killough 1/30/98: improves searches for tags.
-  int soundtraversed;    // 0 = untraversed, 1,2 = sndlines-1
+  byte soundtraversed;   // 0 = untraversed, 1,2 = sndlines-1
   mobj_t *soundtarget;   // thing that made a sound (or null)
   int blockbox[4];       // mapblock bounding box for height changes
   int bbox[4];           // bounding box in map units
@@ -132,7 +132,7 @@ typedef struct
   void *ceilingdata;  // floors and ceilings independent
 
   // jff 2/26/98 lockout machinery for stairbuilding
-  int stairlock;   // -2 on first locked -1 after thinker done 0 normally
+  signed char stairlock; // -2 on first locked -1 after thinker done 0 normally
   int prevsec;     // -1 or number of sector for previous step
   int nextsec;     // -1 or number of next step sector
 
