@@ -1469,9 +1469,6 @@ typedef enum {
 } zdoom_sectorspecial_t;
 
 #define ZDOOM_DAMAGE_MASK   0x0300
-#define ZDOOM_DAMAGE_05P    0x0100
-#define ZDOOM_DAMAGE_10P    0x0200
-#define ZDOOM_DAMAGE_20P    0x0300
 #define ZDOOM_SECRET_MASK   0x0400
 #define ZDOOM_FRICTION_MASK 0x0800
 #define ZDOOM_PUSH_MASK     0x1000

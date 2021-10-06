@@ -2940,9 +2940,9 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
   }
 }
 
-void P_SpawnZdoomLights(sector_t *sector)
+void P_SpawnZDoomLights(sector_t *sector)
 {
-  switch (sector->special)
+  switch (sector->special & 0xff)
   {
     case zs_light_phased:
       P_SpawnPhasedLight(sector, 80, -1);
@@ -2961,7 +2961,7 @@ void P_SpawnZdoomLights(sector_t *sector)
       break;
     case zs_d_light_strobe_hurt:
       P_SpawnStrobeFlash(sector, FASTDARK, 0);
-      sector->special |= ZDOOM_DAMAGE_20P;
+      sector->special |= zs_d_light_strobe_hurt;
       break;
     case zs_d_light_glow:
       P_SpawnGlowingLight(sector);
@@ -2981,7 +2981,7 @@ void P_SpawnZdoomLights(sector_t *sector)
       break;
     case zs_s_light_strobe_hurt:
       P_SpawnStrobeFlash(sector, FASTDARK, 0);
-      sector->special |= ZDOOM_DAMAGE_05P;
+      sector->special |= zs_s_light_strobe_hurt;
       break;
     default:
       break;
@@ -3027,10 +3027,9 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
     P_AddSectorSecret(sector);
 
   P_SpawnZDoomGeneralizedDamage(sector);
+  P_SpawnZDoomLights(sector);
 
   sector->special &= 0x1cff;
-
-  P_SpawnZdoomLights(sector);
 
   switch (sector->special & 0xff)
   {
