@@ -285,6 +285,7 @@ typedef struct player_s
 
   // zdoom
   int hazardcount;
+  byte hazardinterval;
 } player_t;
 
 

@@ -104,12 +104,17 @@ typedef struct
 #define SECF_SECRET                0x00000040
 #define SECF_WASSECRET             0x00000080
 #define SECF_HIDDEN                0x00000100
+#define SECF_ENDGODMODE            0x00000200
+#define SECF_ENDLEVEL              0x00000400
+#define SECF_DMGTERRAINFX          0x00000800
+#define SECF_HAZARD                0x00001000
+#define SECF_DMGUNBLOCKABLE        0x00002000
+#define SECF_DAMAGEFLAGS (SECF_ENDGODMODE|SECF_ENDLEVEL|SECF_DMGTERRAINFX|SECF_HAZARD|SECF_DMGUNBLOCKABLE)
 #define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET)
-#define SECF_UNBLOCKABLEDAMAGE     0x00000200 // not protected by suit
 
 typedef struct
 {
-  unsigned short amount;
+  short amount;
   byte leakrate;
   byte interval;
 } damage_t;

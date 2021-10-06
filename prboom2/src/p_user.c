@@ -990,7 +990,7 @@ void P_PlayerThink (player_t* player)
   if (player->hazardcount)
   {
     player->hazardcount--;
-    if (!(leveltime & 0x1f) && player->hazardcount > 16 * TICRATE)
+    if (!(leveltime % player->hazardinterval) && player->hazardcount > 16 * TICRATE)
       P_DamageMobj(player->mo, NULL, NULL, 5);
   }
 

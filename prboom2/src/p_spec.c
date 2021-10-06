@@ -2519,12 +2519,6 @@ static void P_ApplyGeneralizedSectorDamage(player_t *player, int bits)
   }
 }
 
-static void P_ApplySectorHazard(player_t *player, int hazard, int leak)
-{
-  if (!player->powers[pw_ironfeet] || (leak && P_Random(pr_slimehurt) < leak))
-    player->hazardcount += hazard;
-}
-
 void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
 {
   //jff add if to handle old vs generalized types
@@ -2602,58 +2596,49 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
 
 void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
 {
-  P_ApplyGeneralizedSectorDamage(player, (sector->special & ZDOOM_DAMAGE_MASK) >> 8);
-
-  switch (sector->special & 0xff)
+  if (sector->damage.amount > 0)
   {
-    case zs_d_damage_nukage:
-      P_ApplySectorDamage(player, 5, 0);
-      break;
-    case zs_d_damage_hellslime:
-      P_ApplySectorDamage(player, 10, 0);
-      break;
-    case zs_d_damage_super_hellslime:
-      P_ApplySectorDamage(player, 20, 5);
-      break;
-    case zs_d_damage_end:
-      P_ApplySectorDamageEndLevel(player);
-      break;
-    case zs_damage_instant_death:
-      P_DamageMobj(player->mo, NULL, NULL, 10000);
-      break;
-    case zs_h_damage_sludge:
-      P_ApplySectorDamage(player, 4, 0);
-      break;
-    case zs_d_damage_lava_wimpy:
-      if (!(leveltime & 0x1f))
+    if (sector->flags & SECF_ENDGODMODE)
+    {
+      player->cheats &= ~CF_GODMODE;
+    }
+
+    if (
+      sector->flags & SECF_DMGUNBLOCKABLE ||
+      !player->powers[pw_ironfeet] ||
+      (sector->damage.leakrate && P_Random(pr_slimehurt) < sector->damage.leakrate)
+    )
+    {
+      if (sector->flags & SECF_HAZARD)
       {
-        P_DamageMobj(player->mo, NULL, NULL, 5);
-        // P_HitFloor(player->mo);
+        player->hazardcount += sector->damage.amount;
+        player->hazardinterval = sector->damage.interval;
       }
-      break;
-    case zs_d_damage_lava_hefty:
-      if (!(leveltime & 0x1f))
+      else
       {
-        P_DamageMobj(player->mo, NULL, NULL, 8);
-        // P_HitFloor(player->mo);
+        if (leveltime % sector->damage.interval == 0)
+        {
+          P_DamageMobj(player->mo, NULL, NULL, sector->damage.amount);
+
+          if (sector->flags & SECF_ENDLEVEL && player->health <= 10)
+          {
+            G_ExitLevel();
+          }
+
+          if (sector->flags & SECF_DMGTERRAINFX)
+          {
+            // MAP_FORMAT_TODO: damage special effects
+          }
+        }
       }
-      break;
-    case zs_d_scroll_east_lava_damage:
-      if (!(leveltime & 0x1f))
-      {
-        P_DamageMobj(player->mo, NULL, NULL, 5);
-        // P_HitFloor(player->mo);
-      }
-      break;
-    case zs_s_damage_hellslime:
-      P_ApplySectorHazard(player, 2, 0);
-      break;
-    case zs_s_damage_super_hellslime:
-      P_ApplySectorHazard(player, 4, 0);
-    case zs_sector_heal:
-      P_GiveBody(player, 1);
-    default:
-      break;
+    }
+  }
+  else if (sector->damage.amount < 0)
+  {
+    if (leveltime % sector->damage.interval == 0)
+    {
+      P_GiveBody(player, -sector->damage.amount);
+    }
   }
 
   if (sector->special & ZDOOM_SECRET_MASK)
@@ -3003,12 +2988,47 @@ void P_SpawnZdoomLights(sector_t *sector)
   }
 }
 
+void P_SetupSectorDamage(sector_t *sector, short amount,
+                         byte interval, byte leakrate, unsigned int flags)
+{
+  // Only set if damage is not yet initialized.
+  if (sector->damage.amount)
+    return;
+
+  sector->damage.amount = amount;
+  sector->damage.interval = interval;
+  sector->damage.leakrate = leakrate;
+  sector->flags = (sector->flags & ~SECF_DAMAGEFLAGS) | (flags & SECF_DAMAGEFLAGS);
+}
+
+void P_SpawnZDoomGeneralizedDamage(sector_t *sector)
+{
+  int bits = (sector->special & ZDOOM_DAMAGE_MASK) >> 8;
+
+  switch (bits & 3)
+  {
+    case 0:
+      break;
+    case 1:
+      P_SetupSectorDamage(sector, 5, 32, 0, 0);
+      break;
+    case 2:
+      P_SetupSectorDamage(sector, 10, 32, 0, 0);
+      break;
+    case 3:
+      P_SetupSectorDamage(sector, 20, 32, 5, 0);
+      break;
+  }
+}
+
 void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
 {
   if (sector->special & ZDOOM_SECRET_MASK)
     P_AddSectorSecret(sector);
 
-  sector->special &= 0x1fff;
+  P_SpawnZDoomGeneralizedDamage(sector);
+
+  sector->special &= 0x1cff;
 
   P_SpawnZdoomLights(sector);
 
@@ -3016,22 +3036,53 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   {
     case zs_d_scroll_east_lava_damage:
       Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0);
-      // fall through!
+      P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX | SECF_DMGUNBLOCKABLE);
+      break;
     case zs_s_light_strobe_hurt:
     case zs_d_damage_nukage:
+      P_SetupSectorDamage(sector, 5, 32, 0, 0);
+      sector->special &= ~0xff;
+      break;
     case zs_d_damage_hellslime:
+      P_SetupSectorDamage(sector, 10, 32, 0, 0);
+      sector->special &= ~0xff;
+      break;
     case zs_d_light_strobe_hurt:
     case zs_d_damage_super_hellslime:
+      P_SetupSectorDamage(sector, 20, 32, 5, 0);
+      sector->special &= ~0xff;
+      break;
     case zs_d_damage_end:
+      P_SetupSectorDamage(sector, 20, 32, 0, SECF_ENDGODMODE | SECF_ENDLEVEL | SECF_DMGUNBLOCKABLE);
+      sector->special &= ~0xff;
+      break;
     case zs_damage_instant_death:
+      P_SetupSectorDamage(sector, 10000, 1, 0, SECF_DMGUNBLOCKABLE);
+      sector->special &= ~0xff;
+      break;
     case zs_h_damage_sludge:
+      P_SetupSectorDamage(sector, 4, 32, 0, 0);
+      sector->special &= ~0xff;
+      break;
     case zs_d_damage_lava_wimpy:
+      P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX);
+      sector->special &= ~0xff;
+      break;
     case zs_d_damage_lava_hefty:
+      P_SetupSectorDamage(sector, 8, 32, 0, SECF_DMGTERRAINFX);
+      sector->special &= ~0xff;
+      break;
     case zs_s_damage_hellslime:
+      P_SetupSectorDamage(sector, 2, 32, 0, SECF_HAZARD);
+      sector->special &= ~0xff;
+      break;
     case zs_s_damage_super_hellslime:
+      P_SetupSectorDamage(sector, 4, 32, 0, SECF_HAZARD);
+      sector->special &= ~0xff;
+      break;
     case zs_sector_heal:
-      // these specials override generalized damage in zdoom
-      sector->special &= ~ZDOOM_DAMAGE_MASK;
+      P_SetupSectorDamage(sector, -1, 32, 0, 0);
+      sector->special &= ~0xff;
       break;
     case zs_d_sector_door_close_in_30:
       P_SpawnDoorCloseIn30(sector);
@@ -3310,7 +3361,7 @@ void P_SpawnZDoomExtra(line_t *l, int i)
           }
           else
           {
-            flags |= SECF_UNBLOCKABLEDAMAGE;
+            flags |= SECF_DMGUNBLOCKABLE;
             damage.leakrate = 0;
             damage.interval = 1;
           }
