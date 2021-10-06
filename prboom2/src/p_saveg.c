@@ -137,6 +137,7 @@ void P_ArchiveWorld (void)
       sizeof(sec->floorheight) +
       sizeof(sec->ceilingheight) +
       sizeof(sec->seqType) +
+      sizeof(sec->flags) +
       sizeof(sec->damage)
     ) * numsectors +
     (
@@ -176,6 +177,9 @@ void P_ArchiveWorld (void)
 
     memcpy(put, &sec->seqType, sizeof(sec->seqType));
     put = (void *)((char *) put + sizeof(sec->seqType));
+
+    memcpy(put, &sec->flags, sizeof(sec->flags));
+    put = (void *)((char *) put + sizeof(sec->flags));
 
     memcpy(put, &sec->damage, sizeof(sec->damage));
     put = (void *)((char *) put + sizeof(sec->damage));
@@ -256,6 +260,9 @@ void P_UnArchiveWorld (void)
 
     memcpy(&sec->seqType, get, sizeof(sec->seqType));
     get = (void *)((char *) get + sizeof(sec->seqType));
+
+    memcpy(&sec->flags, get, sizeof(sec->flags));
+    get = (void *)((char *) get + sizeof(sec->flags));
 
     memcpy(&sec->damage, get, sizeof(sec->damage));
     get = (void *)((char *) get + sizeof(sec->damage));
