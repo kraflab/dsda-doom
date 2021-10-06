@@ -5,7 +5,7 @@
 ### Sectors
 - SCROLLTYPE
 - Scroller copying
-- east lava flow for player?
+- zs_scroll\* / zs_carry\* player effects
 - Sector damage
   - "Change special" must copy custom damage
 - Flagify friction / push?
