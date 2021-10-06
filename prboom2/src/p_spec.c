@@ -50,6 +50,7 @@
 #include "r_main.h"
 #include "p_maputl.h"
 #include "p_map.h"
+#include "p_user.h"
 #include "g_game.h"
 #include "p_inter.h"
 #include "s_sound.h"
@@ -2641,6 +2642,15 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
     }
   }
 
+  switch (sector->special & 0xff)
+  {
+    case zs_d_scroll_east_lava_damage:
+      P_Thrust(player, 0, 2048 * 28);
+      break;
+    default:
+      break;
+  }
+
   if (sector->special & ZDOOM_SECRET_MASK)
   {
     P_CollectSecretZDoom(sector, player);
@@ -5019,8 +5029,6 @@ void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean
             break;
     }
 }
-
-#include "p_user.h"
 
 void P_PlayerInHereticSector(player_t * player, sector_t * sector)
 {
