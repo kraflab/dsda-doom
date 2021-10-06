@@ -136,7 +136,8 @@ void P_ArchiveWorld (void)
       sizeof(short) * 5 +
       sizeof(sec->floorheight) +
       sizeof(sec->ceilingheight) +
-      sizeof(sec->seqType)
+      sizeof(sec->seqType) +
+      sizeof(sec->damage)
     ) * numsectors +
     (
       sizeof(short) * 2 +
@@ -175,6 +176,9 @@ void P_ArchiveWorld (void)
 
     memcpy(put, &sec->seqType, sizeof(sec->seqType));
     put = (void *)((char *) put + sizeof(sec->seqType));
+
+    memcpy(put, &sec->damage, sizeof(sec->damage));
+    put = (void *)((char *) put + sizeof(sec->damage));
   }
 
   // do lines
@@ -252,6 +256,9 @@ void P_UnArchiveWorld (void)
 
     memcpy(&sec->seqType, get, sizeof(sec->seqType));
     get = (void *)((char *) get + sizeof(sec->seqType));
+
+    memcpy(&sec->damage, get, sizeof(sec->damage));
+    get = (void *)((char *) get + sizeof(sec->damage));
 
     sec->ceilingdata = 0; //jff 2/22/98 now three thinker fields, not two
     sec->floordata = 0;
