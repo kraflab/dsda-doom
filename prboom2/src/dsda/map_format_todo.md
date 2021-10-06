@@ -8,6 +8,7 @@
 - east lava flow for player?
 - Sector damage
   - "Change special" must copy custom damage
+- Flagify friction / push?
 - Friction effect in P_Thrust?
 - Floor type / friction?
 - zs_sky2 uses PL_SKYFLAT but the representation is not compatible
