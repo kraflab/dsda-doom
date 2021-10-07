@@ -6,10 +6,8 @@
 - SCROLLTYPE
 - Scroller copying
 - zs_scroll\* / zs_carry\* player effects
-- Sector damage
 - Flagify friction / push?
 - Friction effect in P_Thrust?
 - Floor type / friction?
 - zs_sky2 uses PL_SKYFLAT but the representation is not compatible
-- zs_d_damage_lava_wimpy, zs_d_damage_lava_hefty, zs_d_scroll_east_lava_damage
-  - floor impact effect + lava inflictor
+- SECF_DMGTERRAINFX
