@@ -633,8 +633,12 @@ static void StreamIn_floormove_t(floormove_t *str)
     // int direction;
     str->direction = SV_ReadLong();
 
-    // int newspecial;
-    str->newspecial = SV_ReadLong();
+    // newspecial_t newspecial;
+    str->newspecial.special = SV_ReadWord();
+    str->newspecial.flags = SV_ReadLong();
+    str->newspecial.damage.amount = SV_ReadWord();
+    str->newspecial.damage.leakrate = SV_ReadByte();
+    str->newspecial.damage.interval = SV_ReadByte();
 
     // short texture;
     str->texture = SV_ReadWord();
@@ -684,8 +688,12 @@ static void StreamOut_floormove_t(floormove_t *str)
     // int direction;
     SV_WriteLong(str->direction);
 
-    // int newspecial;
-    SV_WriteLong(str->newspecial);
+    // newspecial_t newspecial;
+    SV_WriteWord(str->newspecial.special);
+    SV_WriteLong(str->newspecial.flags);
+    SV_WriteWord(str->newspecial.damage.amount);
+    SV_WriteByte(str->newspecial.damage.leakrate);
+    SV_WriteByte(str->newspecial.damage.interval);
 
     // short texture;
     SV_WriteWord(str->texture);

@@ -1240,15 +1240,52 @@ int P_CheckTag(line_t *line)
   return 0;       // zero tag not allowed
 }
 
-void P_TransferSectorFlags(unsigned int *dest, unsigned int source)
+static const damage_t no_damage = { 0 };
+
+static void P_TransferSectorFlags(unsigned int *dest, unsigned int source)
 {
   *dest &= ~SECF_TRANSFERMASK;
   *dest |= source & SECF_TRANSFERMASK;
 }
 
-void P_ResetSectorTransferFlags(unsigned int *flags)
+static void P_ResetSectorTransferFlags(unsigned int *flags)
 {
   *flags &= ~SECF_TRANSFERMASK;
+}
+
+void P_CopySectorSpecial(sector_t *dest, sector_t *source)
+{
+  dest->special = source->special;
+  dest->damage = source->damage;
+  P_TransferSectorFlags(&dest->flags, source->flags);
+}
+
+void P_TransferSpecial(sector_t *sector, newspecial_t *newspecial)
+{
+  sector->special = newspecial->special;
+  sector->damage = newspecial->damage;
+  P_TransferSectorFlags(&sector->flags, newspecial->flags);
+}
+
+void P_CopyTransferSpecial(newspecial_t *newspecial, sector_t *sector)
+{
+  newspecial->special = sector->special;
+  newspecial->damage = sector->damage;
+  P_TransferSectorFlags(&newspecial->flags, sector->flags);
+}
+
+void P_ResetTransferSpecial(newspecial_t *newspecial)
+{
+  newspecial->special = 0;
+  newspecial->damage = no_damage;
+  P_ResetSectorTransferFlags(&newspecial->flags);
+}
+
+void P_ResetSectorSpecial(sector_t *sector)
+{
+  sector->special = 0;
+  sector->damage = no_damage;
+  P_ResetSectorTransferFlags(&sector->flags);
 }
 
 void P_ClearNonGeneralizedSectorSpecial(sector_t *sector)
