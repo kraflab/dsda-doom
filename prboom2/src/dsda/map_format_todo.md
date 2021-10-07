@@ -7,7 +7,6 @@
 - Scroller copying
 - zs_scroll\* / zs_carry\* player effects
 - Sector damage
-  - "Change special" must copy custom damage
 - Flagify friction / push?
 - Friction effect in P_Thrust?
 - Floor type / friction?
