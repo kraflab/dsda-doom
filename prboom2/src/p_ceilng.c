@@ -119,8 +119,7 @@ void T_MoveCeiling (ceiling_t* ceiling)
           // movers with texture change, change the texture then get removed
           case genCeilingChgT:
           case genCeilingChg0:
-            ceiling->sector->special = ceiling->newspecial;
-            P_TransferSectorFlags(&ceiling->sector->flags, ceiling->flags);
+            P_TransferSpecial(ceiling->sector, &ceiling->newspecial);
             // fallthrough
           case genCeilingChg:
             ceiling->sector->ceilingpic = ceiling->texture;
@@ -199,8 +198,7 @@ void T_MoveCeiling (ceiling_t* ceiling)
           // then remove the active ceiling
           case genCeilingChgT:
           case genCeilingChg0:
-            ceiling->sector->special = ceiling->newspecial;
-            P_TransferSectorFlags(&ceiling->sector->flags, ceiling->flags);
+            P_TransferSpecial(ceiling->sector, &ceiling->newspecial);
             // fallthrough
           case genCeilingChg:
             ceiling->sector->ceilingpic = ceiling->texture;

@@ -287,13 +287,12 @@ void T_MoveFloor(floormove_t* floor)
       switch(floor->type) // handle texture/type changes
       {
         case donutRaise:
-          floor->sector->special = floor->newspecial;
+          P_TransferSpecial(floor->sector, &floor->newspecial);
           floor->sector->floorpic = floor->texture;
           break;
         case genFloorChgT:
         case genFloorChg0:
-          floor->sector->special = floor->newspecial;
-          P_TransferSectorFlags(&floor->sector->flags, floor->flags);
+          P_TransferSpecial(floor->sector, &floor->newspecial);
           //fall thru
         case genFloorChg:
           floor->sector->floorpic = floor->texture;
@@ -307,14 +306,12 @@ void T_MoveFloor(floormove_t* floor)
       switch(floor->type) // handle texture/type changes
       {
         case lowerAndChange:
-          floor->sector->special = floor->newspecial;
-          P_TransferSectorFlags(&floor->sector->flags, floor->flags);
+          P_TransferSpecial(floor->sector, &floor->newspecial);
           floor->sector->floorpic = floor->texture;
           break;
         case genFloorChgT:
         case genFloorChg0:
-          floor->sector->special = floor->newspecial;
-          P_TransferSectorFlags(&floor->sector->flags, floor->flags);
+          P_TransferSpecial(floor->sector, &floor->newspecial);
           //fall thru
         case genFloorChg:
           floor->sector->floorpic = floor->texture;
@@ -592,8 +589,7 @@ manual_floor://e6y
         floor->speed = FLOORSPEED;
         floor->floordestheight = floor->sector->floorheight + 24 * FRACUNIT;
         sec->floorpic = line->frontsector->floorpic;
-        sec->special = line->frontsector->special;
-        P_TransferSectorFlags(&sec->flags, line->frontsector->flags);
+        P_CopySectorSpecial(sec, line->frontsector);
         break;
 
       case raiseToTexture:
@@ -647,16 +643,14 @@ manual_floor://e6y
         // jff 1/24/98 make sure floor->newspecial gets initialized
         // in case no surrounding sector is at floordestheight
         // --> should not affect compatibility <--
-        floor->newspecial = sec->special;
-        P_TransferSectorFlags(&floor->flags, sec->flags);
+        P_CopyTransferSpecial(&floor->newspecial, sec);
 
         //jff 5/23/98 use model subroutine to unify fixes and handling
         sec = P_FindModelFloorSector(floor->floordestheight,sec->iSectorID);
         if (sec)
         {
           floor->texture = sec->floorpic;
-          floor->newspecial = sec->special;
-          P_TransferSectorFlags(&floor->flags, sec->flags);
+          P_CopyTransferSpecial(&floor->newspecial, sec);
         }
         break;
       default:
@@ -701,16 +695,14 @@ int EV_DoChange
     {
       case trigChangeOnly:
         sec->floorpic = line->frontsector->floorpic;
-        sec->special = line->frontsector->special;
-        P_TransferSectorFlags(&sec->flags, line->frontsector->flags);
+        P_CopySectorSpecial(sec, line->frontsector);
         break;
       case numChangeOnly:
         secm = P_FindModelFloorSector(sec->floorheight,secnum);
         if (secm) // if no model, no change
         {
           sec->floorpic = secm->floorpic;
-          sec->special = secm->special;
-          P_TransferSectorFlags(&sec->flags, secm->flags);
+          P_CopySectorSpecial(sec, secm);
         }
         break;
       default:
@@ -1068,7 +1060,6 @@ int EV_DoDonut(line_t*  line)
       floor->sector = s2;
       floor->speed = FLOORSPEED / 2;
       floor->texture = s3_floorpic;
-      floor->newspecial = 0;
       floor->floordestheight = s3_floorheight;
 
       //  Spawn lowering donut-hole pillar

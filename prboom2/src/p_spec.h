@@ -717,6 +717,12 @@ typedef struct
   int lighttag;
 } vldoor_t;
 
+typedef struct {
+  short special;
+  unsigned int flags;
+  damage_t damage;
+} newspecial_t;
+
 // p_doors
 
 typedef struct
@@ -731,8 +737,7 @@ typedef struct
   int crush;
 
   //jff 02/04/98 add these to support ceiling changers
-  int newspecial;
-  unsigned int flags;
+  newspecial_t newspecial;
   short texture;
 
   // 1 = up, 0 = waiting, -1 = down
@@ -758,8 +763,7 @@ typedef struct
   int crush;
   sector_t* sector;
   int direction;
-  int newspecial;
-  unsigned int flags;
+  newspecial_t newspecial;
   short texture;
   fixed_t floordestheight;
   fixed_t speed;
@@ -1354,8 +1358,11 @@ line_t *P_FindLine(int lineTag, int *searchPosition);
 int P_FindSectorFromTag(int tag, int start);
 int P_FindLineFromTag(int tag, int start);
 
-void P_TransferSectorFlags(unsigned int *dest, unsigned int source);
-void P_ResetSectorTransferFlags(unsigned int *flags);
+void P_CopySectorSpecial(sector_t *dest, sector_t *source);
+void P_TransferSpecial(sector_t *sector, newspecial_t *newspecial);
+void P_CopyTransferSpecial(newspecial_t *newspecial, sector_t *sector);
+void P_ResetTransferSpecial(newspecial_t *newspecial);
+void P_ResetSectorSpecial(sector_t *sector);
 void P_ClearNonGeneralizedSectorSpecial(sector_t *sector);
 
 typedef enum {

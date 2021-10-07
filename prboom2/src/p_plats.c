@@ -277,8 +277,7 @@ manual_plat://e6y
         plat->high = P_FindNextHighestFloor(sec,sec->floorheight);
         plat->wait = 0;
         plat->status = up;
-        sec->special = 0;
-        P_ResetSectorTransferFlags(&sec->flags);
+        P_ResetSectorSpecial(sec);
 
         S_StartSound((mobj_t *)&sec->soundorg,g_sfx_stnmov_plats);
         break;
