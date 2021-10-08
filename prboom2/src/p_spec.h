@@ -1358,6 +1358,7 @@ line_t *P_FindLine(int lineTag, int *searchPosition);
 int P_FindSectorFromTag(int tag, int start);
 int P_FindLineFromTag(int tag, int start);
 
+dboolean P_IsSpecialSector(sector_t *sector);
 void P_CopySectorSpecial(sector_t *dest, sector_t *source);
 void P_TransferSpecial(sector_t *sector, newspecial_t *newspecial);
 void P_CopyTransferSpecial(newspecial_t *newspecial, sector_t *sector);

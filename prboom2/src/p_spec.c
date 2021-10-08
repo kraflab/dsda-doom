@@ -1294,6 +1294,11 @@ void P_ClearNonGeneralizedSectorSpecial(sector_t *sector)
   sector->special &= map_format.generalized_mask;
 }
 
+dboolean P_IsSpecialSector(sector_t *sector)
+{
+  return sector->special || sector->flags & SECF_SECRET || sector->damage.amount;
+}
+
 static void P_AddSectorSecret(sector_t *sector)
 {
   totalsecret++;
