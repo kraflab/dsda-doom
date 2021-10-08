@@ -3862,6 +3862,50 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
   }
 }
 
+static int copyscroller_count = 0;
+static int copyscroller_max = 0;
+static line_t **copyscrollers;
+
+static void P_AddCopyScroller(line_t *l)
+{
+  while (copyscroller_count >= copyscroller_max)
+  {
+    copyscroller_max = copyscroller_max ? copyscroller_max * 2 : 8;
+    copyscrollers = realloc(copyscrollers, copyscroller_max * sizeof(*copyscrollers));
+  }
+
+  copyscrollers[copyscroller_count++] = l;
+}
+
+static void P_InitCopyScrollers(void)
+{
+  int i;
+  line_t *l;
+
+  if (!map_format.zdoom) return;
+
+  for (i = 0, l = lines; i < numlines; i++, l++)
+    if (l->special == zl_sector_copy_scroller)
+    {
+      // don't allow copying the scroller if the sector has the same tag
+      //   as it would just duplicate it.
+      if (l->frontsector->tag == l->arg1)
+        P_AddCopyScroller(l);
+
+      l->special = 0;
+    }
+}
+
+static void P_FreeCopyScrollers(void)
+{
+  if (copyscrollers)
+  {
+    copyscroller_count = 0;
+    copyscroller_max = 0;
+    free(copyscrollers);
+  }
+}
+
 void P_SpawnZDoomScroller(line_t *l, int i)
 {
   fixed_t dx = 0;               // direction and speed of scrolling
@@ -3905,15 +3949,13 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
         Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
 
-      // for (unsigned j = 0; j < copyscrollers.Size(); j++)
-      // {
-      //   line_t *line = &lines[copyscrollers[j]];
-      //
-      //   if (line->args[0] == l->args[0] && (line->args[1] & 1))
-      //   {
-      //     new DScroller(EScroll::sc_ceiling, -dx, dy, control, int(line->frontsector - sectors), accel);
-      //   }
-      // }
+      for (s = 0; s < copyscroller_count; ++s)
+      {
+        line_t *cs = copyscrollers[s];
+
+        if (cs->arg1 == l->arg1 && cs->arg2 & 1)
+          Add_Scroller(sc_ceiling, -dx, dy, control, cs->frontsector->iSectorID, accel);
+      }
 
       l->special = 0;
       break;
@@ -3923,15 +3965,13 @@ void P_SpawnZDoomScroller(line_t *l, int i)
         for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
           Add_Scroller(sc_floor, -dx, dy, control, s, accel);
 
-        // for(unsigned j = 0;j < copyscrollers.Size(); j++)
-        // {
-        //   line_t *line = &lines[copyscrollers[j]];
-        //
-        //   if (line->args[0] == l->args[0] && (line->args[1] & 2))
-        //   {
-        //     new DScroller (EScroll::sc_floor, -dx, dy, control, int(line->frontsector-sectors), accel);
-        //   }
-        // }
+        for (s = 0; s < copyscroller_count; ++s)
+        {
+          line_t *cs = copyscrollers[s];
+
+          if (cs->arg1 == l->arg1 && cs->arg2 & 2)
+            Add_Scroller(sc_floor, -dx, dy, control, cs->frontsector->iSectorID, accel);
+        }
       }
 
       if (l->arg3 > 0)
@@ -3941,15 +3981,13 @@ void P_SpawnZDoomScroller(line_t *l, int i)
         for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
           Add_Scroller(sc_carry, dx, dy, control, s, accel);
 
-        // for(unsigned j = 0;j < copyscrollers.Size(); j++)
-        // {
-        //   line_t *line = &lines[copyscrollers[j]];
-        //
-        //   if (line->args[0] == l->args[0] && (line->args[1] & 4))
-        //   {
-        //     new DScroller (EScroll::sc_carry, dx, dy, control, int(line->frontsector-sectors), accel);
-        //   }
-        // }
+        for (s = 0; s < copyscroller_count; ++s)
+        {
+          line_t *cs = copyscrollers[s];
+
+          if (cs->arg1 == l->arg1 && cs->arg2 & 4)
+            Add_Scroller(sc_carry, dx, dy, control, cs->frontsector->iSectorID, accel);
+        }
       }
 
       l->special = 0;
@@ -4010,12 +4048,14 @@ void P_SpawnZDoomScroller(line_t *l, int i)
 static void P_SpawnScrollers(void)
 {
   int i;
-  line_t *l = lines;
+  line_t *l;
 
-  // MAP_FORMAT_TODO: zl_sector_copy_scroller handling
+  P_InitCopyScrollers();
 
-  for (i = 0; i < numlines; i++, l++)
+  for (i = 0, l = lines; i < numlines; i++, l++)
     map_format.spawn_scroller(l, i);
+
+  P_FreeCopyScrollers();
 }
 
 // e6y

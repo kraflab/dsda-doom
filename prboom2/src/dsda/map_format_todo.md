@@ -3,7 +3,6 @@
 - P_ExecuteLineSpecial ~170 specials
 
 ### Sectors
-- Scroller copying
 - Flagify friction / push?
 
 ### Later
