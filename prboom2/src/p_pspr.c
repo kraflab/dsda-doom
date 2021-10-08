@@ -68,6 +68,7 @@
   #define CHECK_WEAPON_CODEPOINTER(codepointer, player)
 #endif
 
+extern void P_ForwardThrust(player_t *, angle_t, fixed_t);
 extern void P_Thrust(player_t *, angle_t, fixed_t);
 
 // The following array holds the recoil values         // phares
@@ -761,11 +762,10 @@ static void A_FireSomething(player_t* player,int adder)
 
   // killough 3/27/98: prevent recoil in no-clipping mode
   if (!(player->mo->flags & MF_NOCLIP))
-    if (!compatibility && weapon_recoil)
-      P_Thrust(player,
-               ANG180+player->mo->angle,                          //   ^
-               2048*recoil_values[player->readyweapon]);          //   |
-}                                                                 // phares
+    if (!compatibility && weapon_recoil) // phares
+      P_ForwardThrust(player, ANG180 + player->mo->angle,
+                      2048 * recoil_values[player->readyweapon]);
+}
 
 //
 // A_GunFlash
@@ -929,8 +929,8 @@ void A_FireOldBFG(player_t *player, pspdef_t *psp)
   CHECK_WEAPON_CODEPOINTER("A_FireOldBFG", player);
 
   if (weapon_recoil && !(player->mo->flags & MF_NOCLIP))
-    P_Thrust(player, ANG180 + player->mo->angle,
-    512*recoil_values[wp_plasma]);
+    P_ForwardThrust(player, ANG180 + player->mo->angle,
+                    512 * recoil_values[wp_plasma]);
 
   P_SubtractAmmo(player, 1);
 

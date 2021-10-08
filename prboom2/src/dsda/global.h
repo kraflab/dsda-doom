@@ -38,7 +38,6 @@ extern int g_wp_pistol;
 extern int g_telefog_height;
 extern int g_thrust_factor;
 extern int g_fuzzy_aim_shift;
-extern int g_special_friction_low;
 
 extern int g_s_null;
 

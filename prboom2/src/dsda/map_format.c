@@ -188,6 +188,10 @@ extern dboolean P_MobjInHereticSector(mobj_t *);
 extern dboolean P_MobjInHexenSector(mobj_t *);
 extern dboolean P_MobjInZDoomSector(mobj_t *);
 
+extern void P_CompatiblePlayerThrust(player_t* player, angle_t angle, fixed_t move);
+extern void P_HereticPlayerThrust(player_t* player, angle_t angle, fixed_t move);
+extern void P_HexenPlayerThrust(player_t* player, angle_t angle, fixed_t move);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -220,6 +224,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .check_impact = P_CheckZDoomImpact,
   .translate_line_flags = P_TranslateZDoomLineFlags,
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
+  .player_thrust = P_CompatiblePlayerThrust,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = MT_PUSH,
@@ -258,6 +263,7 @@ static const map_format_t hexen_map_format = {
   .check_impact = NULL, // not used
   .translate_line_flags = P_TranslateHexenLineFlags,
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
+  .player_thrust = P_HexenPlayerThrust,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = -1,
@@ -295,6 +301,7 @@ static const map_format_t heretic_map_format = {
   .animate_surfaces = P_AnimateHereticSurfaces,
   .check_impact = P_CheckHereticImpact,
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
+  .player_thrust = P_HereticPlayerThrust,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = -1,
@@ -332,6 +339,7 @@ static const map_format_t doom_map_format = {
   .animate_surfaces = P_AnimateCompatibleSurfaces,
   .check_impact = P_CheckCompatibleImpact,
   .apply_sector_movement_special = P_ApplyCompatibleSectorMovementSpecial,
+  .player_thrust = P_CompatiblePlayerThrust,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = MT_PUSH,

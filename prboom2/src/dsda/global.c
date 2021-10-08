@@ -65,7 +65,6 @@ int g_wp_pistol;
 int g_telefog_height;
 int g_thrust_factor;
 int g_fuzzy_aim_shift;
-int g_special_friction_low;
 
 int g_s_null;
 
@@ -180,7 +179,6 @@ static void dsda_InitDoom(void) {
   g_telefog_height = 0;
   g_thrust_factor = 100;
   g_fuzzy_aim_shift = 20;
-  g_special_friction_low = IGNORE_VALUE;
 
   g_s_null = S_NULL;
 
@@ -332,7 +330,6 @@ static void dsda_InitHeretic(void) {
   g_telefog_height = TELEFOGHEIGHT;
   g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
-  g_special_friction_low = 15;
 
   g_s_null = HERETIC_S_NULL;
 
@@ -499,7 +496,6 @@ static void dsda_InitHexen(void) {
   g_telefog_height = TELEFOGHEIGHT;
   g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
-  g_special_friction_low = IGNORE_VALUE;
 
   g_s_null = HEXEN_S_NULL;
 

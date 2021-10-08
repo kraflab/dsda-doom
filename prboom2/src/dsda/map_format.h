@@ -53,6 +53,7 @@ typedef struct {
   void (*check_impact)(mobj_t *);
   void (*translate_line_flags)(unsigned int *);
   void (*apply_sector_movement_special)(mobj_t *, int);
+  void (*player_thrust)(player_t* player, angle_t angle, fixed_t move);
   size_t mapthing_size;
   size_t maplinedef_size;
   int mt_push;

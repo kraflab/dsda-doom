@@ -624,7 +624,11 @@ static void P_XYMovement (mobj_t* mo)
         mo->momx = FixedMul(mo->momx, FRICTION_FLY);
         mo->momy = FixedMul(mo->momy, FRICTION_FLY);
       }
-      else if (hexen ? P_GetThingFloorType(mo) == FLOOR_ICE : special == g_special_friction_low)
+      else if (
+        hexen ? P_GetThingFloorType(mo) == FLOOR_ICE :
+        heretic ? special == 15 :
+        false
+      )
       {
         mo->momx = FixedMul(mo->momx, FRICTION_LOW);
         mo->momy = FixedMul(mo->momy, FRICTION_LOW);

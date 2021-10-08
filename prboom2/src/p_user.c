@@ -48,6 +48,7 @@
 #include "p_tick.h"
 #include "e6y.h"//e6y
 
+#include "dsda/map_format.h"
 #include "dsda/settings.h"
 
 // heretic needs
@@ -81,15 +82,54 @@ angle_t P_PlayerPitch(player_t* player)
 // Moves the given origin along a given angle.
 //
 
-void P_SideThrust(player_t *player, angle_t angle, fixed_t move)
+void P_CompatiblePlayerThrust(player_t* player, angle_t angle, fixed_t move)
 {
-  angle >>= ANGLETOFINESHIFT;
-
-  player->mo->momx += FixedMul(move,finecosine[angle]);
-  player->mo->momy += FixedMul(move,finesine[angle]);
+  player->mo->momx += FixedMul(move, finecosine[angle]);
+  player->mo->momy += FixedMul(move, finesine[angle]);
 }
 
-void P_Thrust(player_t* player,angle_t angle,fixed_t move)
+void P_HereticPlayerThrust(player_t* player, angle_t angle, fixed_t move)
+{
+  if (player->powers[pw_flight] && !(player->mo->z <= player->mo->floorz))
+  {
+    player->mo->momx += FixedMul(move, finecosine[angle]);
+    player->mo->momy += FixedMul(move, finesine[angle]);
+  }
+  else if (player->mo->subsector->sector->special == 15)
+  {
+    player->mo->momx += FixedMul(move >> 2, finecosine[angle]);
+    player->mo->momy += FixedMul(move >> 2, finesine[angle]);
+  }
+  else
+  {
+    player->mo->momx += FixedMul(move, finecosine[angle]);
+    player->mo->momy += FixedMul(move, finesine[angle]);
+  }
+}
+
+void P_HexenPlayerThrust(player_t* player, angle_t angle, fixed_t move)
+{
+  if (player->powers[pw_flight] && !(player->mo->z <= player->mo->floorz))
+  {
+    player->mo->momx += FixedMul(move, finecosine[angle]);
+    player->mo->momy += FixedMul(move, finesine[angle]);
+  }
+  else if (P_GetThingFloorType(player->mo) == FLOOR_ICE) // Friction_Low
+  {
+    player->mo->momx += FixedMul(move >> 1, finecosine[angle]);
+    player->mo->momy += FixedMul(move >> 1, finesine[angle]);
+  }
+  else
+  {
+    player->mo->momx += FixedMul(move, finecosine[angle]);
+    player->mo->momy += FixedMul(move, finesine[angle]);
+  }
+}
+
+// In doom, P_Thrust is always player-originated
+// In heretic / hexen P_Thrust can come from effects
+// Need to differentiate the two because of the flight cheat
+void P_ForwardThrust(player_t* player,angle_t angle,fixed_t move)
 {
   angle >>= ANGLETOFINESHIFT;
 
@@ -101,28 +141,15 @@ void P_Thrust(player_t* player,angle_t angle,fixed_t move)
     move = FixedMul(move, finecosine[pitch]);
   }
 
-  if (player->powers[pw_flight] && !(player->mo->z <= player->mo->floorz))
-  {
-      player->mo->momx += FixedMul(move, finecosine[angle]);
-      player->mo->momy += FixedMul(move, finesine[angle]);
-  }
-  else if (player->mo->subsector->sector->special == g_special_friction_low)
-  {
-      player->mo->momx += FixedMul(move >> 2, finecosine[angle]);
-      player->mo->momy += FixedMul(move >> 2, finesine[angle]);
-  }
-  else if (hexen && P_GetThingFloorType(player->mo) == FLOOR_ICE)      // Friction_Low
-  {
-      player->mo->momx += FixedMul(move >> 1, finecosine[angle]);
-      player->mo->momy += FixedMul(move >> 1, finesine[angle]);
-  }
-  else
-  {
-      player->mo->momx += FixedMul(move, finecosine[angle]);
-      player->mo->momy += FixedMul(move, finesine[angle]);
-  }
+  map_format.player_thrust(player, angle, move);
 }
 
+void P_Thrust(player_t* player,angle_t angle,fixed_t move)
+{
+  angle >>= ANGLETOFINESHIFT;
+
+  map_format.player_thrust(player, angle, move);
+}
 
 /*
  * P_Bob
@@ -372,13 +399,13 @@ void P_MovePlayer (player_t* player)
         if (cmd->forwardmove)
         {
           P_Bob(player,mo->angle,cmd->forwardmove*bobfactor);
-          P_Thrust(player,mo->angle,cmd->forwardmove*movefactor);
+          P_ForwardThrust(player,mo->angle,cmd->forwardmove*movefactor);
         }
 
         if (cmd->sidemove)
         {
           P_Bob(player,mo->angle-ANG90,cmd->sidemove*bobfactor);
-          P_SideThrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
+          P_Thrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
         }
       }
       if (mo->state == states+S_PLAY)
@@ -1418,7 +1445,7 @@ void Raven_P_MovePlayer(player_t * player)
     if (player->chickenTics)
     {                           // Chicken speed
         if (cmd->forwardmove && (onground || player->mo->flags2 & MF2_FLY))
-            P_Thrust(player, player->mo->angle, cmd->forwardmove * 2500);
+            P_ForwardThrust(player, player->mo->angle, cmd->forwardmove * 2500);
         if (cmd->sidemove && (onground || player->mo->flags2 & MF2_FLY))
             P_Thrust(player, player->mo->angle - ANG90, cmd->sidemove * 2500);
     }
@@ -1427,9 +1454,9 @@ void Raven_P_MovePlayer(player_t * player)
         if (cmd->forwardmove)
         {
           if (onground || player->mo->flags2 & MF2_FLY)
-              P_Thrust(player, player->mo->angle, cmd->forwardmove * 2048);
+              P_ForwardThrust(player, player->mo->angle, cmd->forwardmove * 2048);
           else if (hexen) // air control?
-              P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
+              P_ForwardThrust(player, player->mo->angle, FRACUNIT >> 8);
         }
 
         if (cmd->sidemove)
