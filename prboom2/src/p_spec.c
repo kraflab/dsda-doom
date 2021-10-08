@@ -1324,8 +1324,10 @@ static void P_CollectSecretVanilla(sector_t *sector, player_t *player)
 static void P_CollectSecretBoom(sector_t *sector, player_t *player)
 {
   sector->special &= ~SECRET_MASK;
-  if (sector->special < 32) // if all extended bits clear,
-    sector->special = 0;    // sector is not special anymore
+
+   // if all extended bits clear, sector is not special anymore
+  if (sector->special < 32 && !(sector->flags & SECF_BOOMGENERAL))
+    sector->special = 0;
 
   P_CollectSecretCommon(sector, player);
 }
