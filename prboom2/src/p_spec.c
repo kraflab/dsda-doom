@@ -3008,6 +3008,9 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
   if (sector->special & FRICTION_MASK)
     sector->flags |= SECF_FRICTION;
 
+  if (sector->special & PUSH_MASK)
+    sector->flags |= SECF_PUSH;
+
   switch ((demo_compatibility && !prboom_comp[PC_TRUNCATED_SECTOR_SPECIALS].state) ?
           sector->special : sector->special & 31)
   {
@@ -3162,6 +3165,9 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
 
   if (sector->special & ZDOOM_FRICTION_MASK)
     sector->flags |= SECF_FRICTION;
+
+  if (sector->special & ZDOOM_PUSH_MASK)
+    sector->flags |= SECF_PUSH;
 
   P_SpawnZDoomLights(sector);
 
@@ -4436,7 +4442,7 @@ void T_Pusher(pusher_t *p)
     // Be sure the special sector type is still turned on. If so, proceed.
     // Else, bail out; the sector type has been changed on us.
 
-    if (!(sec->special & map_format.push_mask))
+    if (!(sec->flags & SECF_PUSH))
         return;
 
     // For constant pushers (wind/current) there are 3 situations:

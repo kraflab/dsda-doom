@@ -33,7 +33,6 @@ typedef struct {
   dboolean doublesky;
   dboolean map99;
   dboolean lax_monster_activation;
-  short push_mask;
   short generalized_mask;
   unsigned int switch_activation;
   void (*init_sector_special)(sector_t*, int);
