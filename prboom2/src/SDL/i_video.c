@@ -892,6 +892,11 @@ void I_CalculateRes(int width, int height)
     // It is extremally important for wiping in software.
     // I have ~20x improvement in speed with using 1056 instead of 1024 on Pentium4
     // and only ~10% for Core2Duo
+    if (nodrawers)
+    {
+      SCREENPITCH = ((width + 15) & ~15) + 32;
+    }
+    else
     {
       unsigned int mintime = 100;
       int w = (width+15) & ~15;
