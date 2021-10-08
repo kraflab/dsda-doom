@@ -1334,7 +1334,6 @@ static void P_CollectSecretBoom(sector_t *sector, player_t *player)
 
 static void P_CollectSecretZDoom(sector_t *sector, player_t *player)
 {
-  sector->special &= ~ZDOOM_SECRET_MASK;
   P_CollectSecretCommon(sector, player);
 }
 
@@ -2695,7 +2694,7 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
     }
   }
 
-  switch (sector->special & 0xff)
+  switch (sector->special)
   {
     case zs_d_scroll_east_lava_damage:
       P_Thrust(player, 0, 2048 * 28);
@@ -2705,74 +2704,74 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
     case zs_carry_east25:
     case zs_carry_east30:
     case zs_carry_east35:
-      P_Thrust(player, 0, heretic_carry[(sector->special & 0xff) - zs_carry_east5]);
+      P_Thrust(player, 0, heretic_carry[sector->special - zs_carry_east5]);
       break;
     case zs_carry_north5:
     case zs_carry_north10:
     case zs_carry_north25:
     case zs_carry_north30:
     case zs_carry_north35:
-      P_Thrust(player, ANG90, heretic_carry[(sector->special & 0xff) - zs_carry_north5]);
+      P_Thrust(player, ANG90, heretic_carry[sector->special - zs_carry_north5]);
       break;
     case zs_carry_south5:
     case zs_carry_south10:
     case zs_carry_south25:
     case zs_carry_south30:
     case zs_carry_south35:
-      P_Thrust(player, ANG270, heretic_carry[(sector->special & 0xff) - zs_carry_south5]);
+      P_Thrust(player, ANG270, heretic_carry[sector->special - zs_carry_south5]);
       break;
     case zs_carry_west5:
     case zs_carry_west10:
     case zs_carry_west25:
     case zs_carry_west30:
     case zs_carry_west35:
-      P_Thrust(player, ANG180, heretic_carry[(sector->special & 0xff) - zs_carry_west5]);
+      P_Thrust(player, ANG180, heretic_carry[sector->special - zs_carry_west5]);
       break;
     case zs_scroll_north_slow:
     case zs_scroll_north_medium:
     case zs_scroll_north_fast:
-      P_Thrust(player, ANG90, hexen_carry[(sector->special & 0xff) - zs_scroll_north_slow]);
+      P_Thrust(player, ANG90, hexen_carry[sector->special - zs_scroll_north_slow]);
       break;
     case zs_scroll_east_slow:
     case zs_scroll_east_medium:
     case zs_scroll_east_fast:
-      P_Thrust(player, 0, hexen_carry[(sector->special & 0xff) - zs_scroll_east_slow]);
+      P_Thrust(player, 0, hexen_carry[sector->special - zs_scroll_east_slow]);
       break;
     case zs_scroll_south_slow:
     case zs_scroll_south_medium:
     case zs_scroll_south_fast:
-      P_Thrust(player, ANG270, hexen_carry[(sector->special & 0xff) - zs_scroll_south_slow]);
+      P_Thrust(player, ANG270, hexen_carry[sector->special - zs_scroll_south_slow]);
       break;
     case zs_scroll_west_slow:
     case zs_scroll_west_medium:
     case zs_scroll_west_fast:
-      P_Thrust(player, ANG180, hexen_carry[(sector->special & 0xff) - zs_scroll_west_slow]);
+      P_Thrust(player, ANG180, hexen_carry[sector->special - zs_scroll_west_slow]);
       break;
     case zs_scroll_northwest_slow:
     case zs_scroll_northwest_medium:
     case zs_scroll_northwest_fast:
-      P_Thrust(player, ANG135, hexen_carry[(sector->special & 0xff) - zs_scroll_northwest_slow]);
+      P_Thrust(player, ANG135, hexen_carry[sector->special - zs_scroll_northwest_slow]);
       break;
     case zs_scroll_northeast_slow:
     case zs_scroll_northeast_medium:
     case zs_scroll_northeast_fast:
-      P_Thrust(player, ANG45, hexen_carry[(sector->special & 0xff) - zs_scroll_northeast_slow]);
+      P_Thrust(player, ANG45, hexen_carry[sector->special - zs_scroll_northeast_slow]);
       break;
     case zs_scroll_southeast_slow:
     case zs_scroll_southeast_medium:
     case zs_scroll_southeast_fast:
-      P_Thrust(player, ANG315, hexen_carry[(sector->special & 0xff) - zs_scroll_southeast_slow]);
+      P_Thrust(player, ANG315, hexen_carry[sector->special - zs_scroll_southeast_slow]);
       break;
     case zs_scroll_southwest_slow:
     case zs_scroll_southwest_medium:
     case zs_scroll_southwest_fast:
-      P_Thrust(player, ANG225, hexen_carry[(sector->special & 0xff) - zs_scroll_southwest_slow]);
+      P_Thrust(player, ANG225, hexen_carry[sector->special - zs_scroll_southwest_slow]);
       break;
     default:
       break;
   }
 
-  if (sector->special & ZDOOM_SECRET_MASK)
+  if (sector->flags & SECF_SECRET)
   {
     P_CollectSecretZDoom(sector, player);
   }
@@ -3079,7 +3078,7 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
 
 void P_SpawnZDoomLights(sector_t *sector)
 {
-  switch (sector->special & 0xff)
+  switch (sector->special)
   {
     case zs_light_phased:
       P_SpawnPhasedLight(sector, 80, -1);
@@ -3138,11 +3137,11 @@ void P_SetupSectorDamage(sector_t *sector, short amount,
   sector->flags = (sector->flags & ~SECF_DAMAGEFLAGS) | (flags & SECF_DAMAGEFLAGS);
 }
 
-void P_SpawnZDoomGeneralizedDamage(sector_t *sector)
+static void P_SpawnZDoomGeneralizedSpecials(sector_t *sector)
 {
-  int bits = (sector->special & ZDOOM_DAMAGE_MASK) >> 8;
+  int damage_bits = (sector->special & ZDOOM_DAMAGE_MASK) >> 8;
 
-  switch (bits & 3)
+  switch (damage_bits & 3)
   {
     case 0:
       break;
@@ -3156,26 +3155,26 @@ void P_SpawnZDoomGeneralizedDamage(sector_t *sector)
       P_SetupSectorDamage(sector, 20, 32, 5, 0);
       break;
   }
-}
 
-void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
-{
   if (sector->special & ZDOOM_SECRET_MASK)
     P_AddSectorSecret(sector);
-
-  P_SpawnZDoomGeneralizedDamage(sector);
 
   if (sector->special & ZDOOM_FRICTION_MASK)
     sector->flags |= SECF_FRICTION;
 
   if (sector->special & ZDOOM_PUSH_MASK)
     sector->flags |= SECF_PUSH;
+}
+
+void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
+{
+  P_SpawnZDoomGeneralizedSpecials(sector);
+
+  sector->special &= 0xff;
 
   P_SpawnZDoomLights(sector);
 
-  sector->special &= 0x1cff;
-
-  switch (sector->special & 0xff)
+  switch (sector->special)
   {
     case zs_d_scroll_east_lava_damage:
       Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0);
@@ -3184,56 +3183,56 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
     case zs_s_light_strobe_hurt:
     case zs_d_damage_nukage:
       P_SetupSectorDamage(sector, 5, 32, 0, 0);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_d_damage_hellslime:
       P_SetupSectorDamage(sector, 10, 32, 0, 0);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_d_light_strobe_hurt:
     case zs_d_damage_super_hellslime:
       P_SetupSectorDamage(sector, 20, 32, 5, 0);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_d_damage_end:
       P_SetupSectorDamage(sector, 20, 32, 0, SECF_ENDGODMODE | SECF_ENDLEVEL | SECF_DMGUNBLOCKABLE);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_damage_instant_death:
       P_SetupSectorDamage(sector, 10000, 1, 0, SECF_DMGUNBLOCKABLE);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_h_damage_sludge:
       P_SetupSectorDamage(sector, 4, 32, 0, 0);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_d_damage_lava_wimpy:
       P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_d_damage_lava_hefty:
       P_SetupSectorDamage(sector, 8, 32, 0, SECF_DMGTERRAINFX);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_s_damage_hellslime:
       P_SetupSectorDamage(sector, 2, 32, 0, SECF_HAZARD);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_s_damage_super_hellslime:
       P_SetupSectorDamage(sector, 4, 32, 0, SECF_HAZARD);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_sector_heal:
       P_SetupSectorDamage(sector, -1, 32, 0, 0);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_d_sector_door_close_in_30:
       P_SpawnDoorCloseIn30(sector);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_d_sector_door_raise_in_5_mins:
       P_SpawnDoorRaiseIn5Mins(sector, i);
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_d_friction_low:
       sector->friction = FRICTION_LOW;
@@ -3242,11 +3241,11 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
       break;
     case zs_sector_hidden:
       sector->flags |= SECF_HIDDEN;
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     case zs_sky2:
       // sector->sky = PL_SKYFLAT;
-      sector->special &= ~0xff;
+      sector->special = 0;
       break;
     default:
       if (sector->special >= zs_scroll_north_slow &&
@@ -3276,7 +3275,7 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
             sector->special <= zs_carry_east35)
       { // Heretic scroll special
         // Only east scrollers also scroll the texture
-        fixed_t dx = FixedDiv((1 << ((sector->special & 0xff) - zs_carry_east5)) << FRACBITS, 2);
+        fixed_t dx = FixedDiv((1 << (sector->special - zs_carry_east5)) << FRACBITS, 2);
         Add_Scroller(sc_floor, dx, 0, -1, sector - sectors, 0);
       }
       break;
