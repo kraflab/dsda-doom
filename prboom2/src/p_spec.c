@@ -1325,9 +1325,8 @@ static void P_CollectSecretBoom(sector_t *sector, player_t *player)
 {
   sector->special &= ~SECRET_MASK;
 
-   // if all extended bits clear, sector is not special anymore
-  if (sector->special < 32 && !(sector->flags & SECF_BOOMGENERAL))
-    sector->special = 0;
+  if (sector->special < 32) // if all extended bits clear,
+    sector->special = 0;    // sector is not special anymore
 
   P_CollectSecretCommon(sector, player);
 }
@@ -2585,7 +2584,7 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
         break;
     }
   }
-  else //jff 3/14/98 handle extended sector types for secrets and damage
+  else //jff 3/14/98 handle extended sector damage
   {
     if (mbf21 && sector->special & DEATH_MASK)
     {
@@ -2618,18 +2617,11 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
     {
       P_ApplyGeneralizedSectorDamage(player, (sector->special & DAMAGE_MASK) >> DAMAGE_SHIFT);
     }
+  }
 
-    if (sector->special&SECRET_MASK)
-    {
-      P_CollectSecretBoom(sector, player);
-    }
-
-    // phares 3/19/98:
-    //
-    // If FRICTION_MASK or PUSH_MASK is set, we don't care at this
-    // point, since the code to deal with those situations is
-    // handled by Thinkers.
-
+  if (sector->flags & SECF_SECRET)
+  {
+    P_CollectSecretBoom(sector, player);
   }
 }
 
