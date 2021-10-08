@@ -19,6 +19,7 @@
 #include "p_spec.h"
 #include "r_state.h"
 #include "w_wad.h"
+#include "m_argv.h"
 
 #include "map_format.h"
 
@@ -339,7 +340,7 @@ static const map_format_t doom_map_format = {
 };
 
 void dsda_ApplyMapFormat(void) {
-  if (false) // in-hexen zdoom format
+  if (M_CheckParm("-zdoom"))
     map_format = zdoom_in_hexen_map_format;
   else if (hexen)
     map_format = hexen_map_format;
