@@ -3005,6 +3005,9 @@ void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i)
   if (sector->special & SECRET_MASK) //jff 3/15/98 count extended
     P_AddSectorSecret(sector);
 
+  if (sector->special & FRICTION_MASK)
+    sector->flags |= SECF_FRICTION;
+
   switch ((demo_compatibility && !prboom_comp[PC_TRUNCATED_SECTOR_SPECIALS].state) ?
           sector->special : sector->special & 31)
   {
@@ -3156,6 +3159,10 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
     P_AddSectorSecret(sector);
 
   P_SpawnZDoomGeneralizedDamage(sector);
+
+  if (sector->special & ZDOOM_FRICTION_MASK)
+    sector->flags |= SECF_FRICTION;
+
   P_SpawnZDoomLights(sector);
 
   sector->special &= 0x1cff;
@@ -3223,7 +3230,7 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
     case zs_d_friction_low:
       sector->friction = FRICTION_LOW;
       sector->movefactor = 0x269;
-      sector->special &= ZDOOM_FRICTION_MASK;
+      sector->flags |= SECF_FRICTION;
       break;
     case zs_sector_hidden:
       sector->flags |= SECF_HIDDEN;
@@ -4100,7 +4107,7 @@ void T_Friction(friction_t *f)
     // Be sure the special sector type is still turned on. If so, proceed.
     // Else, bail out; the sector type has been changed on us.
 
-    if (!(sec->special & map_format.friction_mask))
+    if (!(sec->flags & SECF_FRICTION))
         return;
 
     // Assign the friction value to players on the floor, non-floating,

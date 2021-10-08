@@ -201,7 +201,7 @@ int P_GetFriction(const mobj_t *mo, int *frictionfactor)
     )
       for (m = mo->touching_sectorlist; m; m = m->m_tnext)
         if (
-          (sec = m->m_sector)->special & map_format.friction_mask &&
+          (sec = m->m_sector)->flags & SECF_FRICTION &&
           (sec->friction < friction || friction == ORIG_FRICTION) &&
           (
             mo->z <= sec->floorheight ||

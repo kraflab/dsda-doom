@@ -3,7 +3,7 @@
 - P_ExecuteLineSpecial ~170 specials
 
 ### Sectors
-- Flagify friction / push?
+- Flagify push
 
 ### Later
 - zs_sky2 uses PL_SKYFLAT but the representation is not compatible
