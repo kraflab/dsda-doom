@@ -2634,6 +2634,20 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
 
 void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
 {
+  static const int heretic_carry[5] = {
+    2048 * 5,
+    2048 * 10,
+    2048 * 25,
+    2048 * 30,
+    2048 * 35
+  };
+
+  static const int hexen_carry[3] = {
+    2048 * 5,
+    2048 * 10,
+    2048 * 25
+  };
+
   if (sector->damage.amount > 0)
   {
     if (sector->flags & SECF_ENDGODMODE)
@@ -2683,6 +2697,74 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
   {
     case zs_d_scroll_east_lava_damage:
       P_Thrust(player, 0, 2048 * 28);
+      break;
+    case zs_carry_east5:
+    case zs_carry_east10:
+    case zs_carry_east25:
+    case zs_carry_east30:
+    case zs_carry_east35:
+      P_Thrust(player, 0, heretic_carry[(sector->special & 0xff) - zs_carry_east5]);
+      break;
+    case zs_carry_north5:
+    case zs_carry_north10:
+    case zs_carry_north25:
+    case zs_carry_north30:
+    case zs_carry_north35:
+      P_Thrust(player, ANG90, heretic_carry[(sector->special & 0xff) - zs_carry_north5]);
+      break;
+    case zs_carry_south5:
+    case zs_carry_south10:
+    case zs_carry_south25:
+    case zs_carry_south30:
+    case zs_carry_south35:
+      P_Thrust(player, ANG270, heretic_carry[(sector->special & 0xff) - zs_carry_south5]);
+      break;
+    case zs_carry_west5:
+    case zs_carry_west10:
+    case zs_carry_west25:
+    case zs_carry_west30:
+    case zs_carry_west35:
+      P_Thrust(player, ANG180, heretic_carry[(sector->special & 0xff) - zs_carry_west5]);
+      break;
+    case zs_scroll_north_slow:
+    case zs_scroll_north_medium:
+    case zs_scroll_north_fast:
+      P_Thrust(player, ANG90, hexen_carry[(sector->special & 0xff) - zs_scroll_north_slow]);
+      break;
+    case zs_scroll_east_slow:
+    case zs_scroll_east_medium:
+    case zs_scroll_east_fast:
+      P_Thrust(player, 0, hexen_carry[(sector->special & 0xff) - zs_scroll_east_slow]);
+      break;
+    case zs_scroll_south_slow:
+    case zs_scroll_south_medium:
+    case zs_scroll_south_fast:
+      P_Thrust(player, ANG270, hexen_carry[(sector->special & 0xff) - zs_scroll_south_slow]);
+      break;
+    case zs_scroll_west_slow:
+    case zs_scroll_west_medium:
+    case zs_scroll_west_fast:
+      P_Thrust(player, ANG180, hexen_carry[(sector->special & 0xff) - zs_scroll_west_slow]);
+      break;
+    case zs_scroll_northwest_slow:
+    case zs_scroll_northwest_medium:
+    case zs_scroll_northwest_fast:
+      P_Thrust(player, ANG135, hexen_carry[(sector->special & 0xff) - zs_scroll_northwest_slow]);
+      break;
+    case zs_scroll_northeast_slow:
+    case zs_scroll_northeast_medium:
+    case zs_scroll_northeast_fast:
+      P_Thrust(player, ANG45, hexen_carry[(sector->special & 0xff) - zs_scroll_northeast_slow]);
+      break;
+    case zs_scroll_southeast_slow:
+    case zs_scroll_southeast_medium:
+    case zs_scroll_southeast_fast:
+      P_Thrust(player, ANG315, hexen_carry[(sector->special & 0xff) - zs_scroll_southeast_slow]);
+      break;
+    case zs_scroll_southwest_slow:
+    case zs_scroll_southwest_medium:
+    case zs_scroll_southwest_fast:
+      P_Thrust(player, ANG225, hexen_carry[(sector->special & 0xff) - zs_scroll_southwest_slow]);
       break;
     default:
       break;

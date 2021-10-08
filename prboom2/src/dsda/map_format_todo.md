@@ -5,7 +5,6 @@
 ### Sectors
 - SCROLLTYPE
 - Scroller copying
-- zs_scroll\* / zs_carry\* player effects
 - Flagify friction / push?
 - Friction effect in P_Thrust?
 - Floor type / friction?
