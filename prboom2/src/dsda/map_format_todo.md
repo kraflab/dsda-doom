@@ -6,6 +6,5 @@
 - SCROLLTYPE
 - Scroller copying
 - Flagify friction / push?
-- Floor type / friction?
 - zs_sky2 uses PL_SKYFLAT but the representation is not compatible
 - SECF_DMGTERRAINFX
