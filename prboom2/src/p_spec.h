@@ -1412,20 +1412,20 @@ typedef enum {
 
   zs_sector_outside                = 87,
 
-  zs_s_light_strobe_hurt      = 104,
-  zs_s_damage_hellslime       = 105,
+  zs_s_light_strobe_hurt = 104,
+  zs_s_damage_hellslime  = 105,
+
   zs_damage_instant_death     = 115,
   zs_s_damage_super_hellslime = 116,
-  zs_scroll_strife_current    = 118,
 
-  zs_sector_hidden = 195,
-  zs_sector_heal   = 196,
+  zs_scroll_strife_current = 118,
 
+  zs_sector_hidden           = 195,
+  zs_sector_heal             = 196,
   zs_light_outdoor_lightning = 197,
   zs_light_indoor_lightning1 = 198,
   zs_light_indoor_lightning2 = 199,
-
-  zs_sky2 = 200,
+  zs_sky2                    = 200,
 
   // hexen-type scrollers
   zs_scroll_north_slow       = 201,
