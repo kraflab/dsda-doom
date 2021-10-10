@@ -20,7 +20,110 @@ Current work is isolated to the initial pass over the level format itself - line
 
 ### Things
 
-- To Do
+| Value       | Name                    | Supported |
+| ----------- | ----------------------- | --------- |
+| 118         | ZBridge                 | No        |
+| -           | -                       | -         |
+| 888         | MBFHelperDog            | Yes       |
+| -           | -                       | -         |
+| 1400-1409   | Sound Sequence          | No        |
+| 1411        | Sound Sequence Override | No        |
+| -           | -                       | -         |
+| 1500-1501   | Line Slopes             | No        |
+| -           | -                       | -         |
+| 1504-1505   | Vertex Slopes           | No        |
+| -           | -                       | -         |
+| 4001-4004   | Player 5-8 Start        | No        |
+| 5001        | PointPusher             | Yes       |
+| 5002        | PointPuller             | Yes       |
+| -           | -                       | -         |
+| 5010        | Pistol                  | No        |
+| -           | -                       | -         |
+| 5050        | Stalagmite              | No        |
+| -           | -                       | -         |
+| 5061        | InvisibleBridge32       | No        |
+| -           | -                       | -         |
+| 5064        | InvisibleBridge16       | No        |
+| 5065        | InvisibleBridge8        | No        |
+| -           | -                       | -         |
+| 9001        | MapSpot                 | No        |
+| -           | -                       | -         |
+| 9013        | MapSpotGravity          | No        |
+| -           | -                       | -         |
+| 9024        | PatrolPoint             | No        |
+| 9025        | SecurityCamera          | No        |
+| 9026        | Spark                   | No        |
+| 9027        | RedParticleFountain     | No        |
+| 9028        | GreenParticleFountain   | No        |
+| 9029        | BlueParticleFountain    | No        |
+| 9030        | YellowParticleFountain  | No        |
+| 9031        | PurpleParticleFountain  | No        |
+| 9032        | BlackParticleFountain   | No        |
+| 9033        | WhiteParticleFountain   | No        |
+| -           | -                       | -         |
+| 9037        | BetaSkull               | No        |
+| 9038        | ColorSetter             | No        |
+| 9039        | FadeSetter              | No        |
+| 9040        | MapMarker               | No        |
+| 9041        | SectorFlagSetter        | No        |
+| -           | -                       | -         |
+| 9043-9044   | TeleportDest*           | No        |
+| 9045        | Waterzone               | No        |
+| 9046        | SecretTrigger           | No        |
+| 9047        | PatrolSpecial           | No        |
+| 9048        | SoundEnvironment        | No        |
+| -           | -                       | -         |
+| 9050-9061   | Stealth*                | No        |
+| -           | -                       | -         |
+| 9070        | InterpolationPoint      | No        |
+| 9071        | PathFollower            | No        |
+| 9072        | MovingCamera            | No        |
+| 9073        | AimingCamera            | No        |
+| 9074        | ActorMover              | No        |
+| 9075        | InterpolationSpecial    | No        |
+| 9076        | HateTarget              | No        |
+| 9077        | UpperStackLookOnly      | No        |
+| 9078        | LowerStackLookOnly      | No        |
+| -           | -                       | -         |
+| 9080        | SkyViewpoint            | No        |
+| 9081        | SkyPicker               | No        |
+| 9082        | SectorSilencer          | No        |
+| 9083        | SkyCamCompat            | No        |
+| -           | -                       | -         |
+| 9100        | ScriptedMarine          | No        |
+| 9101-9111   | Marine*                 | No        |
+| -           | -                       | -         |
+| 9200        | Decal                   | No        |
+| -           | -                       | -         |
+| 9300-9303   | PolyObject*             | No        |
+| -           | -                       | -         |
+| 9500-9503   | Slopes                  | No        |
+| -           | -                       | -         |
+| 9510-9511   | Copy Planes             | No        |
+| -           | -                       | -         |
+| 9982        | SecActEyesAboveC        | No        |
+| 9983        | SecActEyesBelowC        | No        |
+| -           | -                       | -         |
+| 9988        | CustomSprite            | No        |
+| 9989        | SecActHitFakeFloor      | No        |
+| 9990        | InvisibleBridge         | No        |
+| 9991        | CustomBridge            | No        |
+| 9992        | SecActEyesSurface       | No        |
+| 9993        | SecActEyesDive          | No        |
+| 9994        | SecActUseWall           | No        |
+| 9995        | SecActUse               | No        |
+| 9996        | SecActHitCeil           | No        |
+| 9997        | SecActExit              | No        |
+| 9998        | SecActEnter             | No        |
+| 9999        | SecActHitFloor          | No        |
+| -           | -                       | -         |
+| 14001-14064 | AmbientSound            | No        |
+| 14065       | Custom AmbientSound     | No        |
+| 14066       | SoundSequence           | No        |
+| 14067       | AmbientSoundNoGravity   | No        |
+| -           | -                       | -         |
+| 14101-14164 | MusicChanger            | Yes       |
+| 14165       | Custom MusicChanger     | No        |
 
 ### Line Specials
 
