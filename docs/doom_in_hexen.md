@@ -390,7 +390,7 @@ Current work is isolated to the initial pass over the level format itself - line
 ### Sector Specials
 
 | Value   | Name                     | Supported |
-|---------|--------------------------|-----------|
+| ------- | ------------------------ | --------- |
 | *       | Generalized Effects      | Yes       |
 | 1       | Light_Phased             | Yes       |
 | 2-4     | LightSequence*           | ?         |
