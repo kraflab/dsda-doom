@@ -3,8 +3,6 @@
 - P_ExecuteLineSpecial ~170 specials
 
 ### Things
-- Stealth things
-- Teleport destinations
 - MF2_DORMANT -> RoughBlockCheck
 
 ### Later
