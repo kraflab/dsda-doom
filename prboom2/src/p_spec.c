@@ -6083,15 +6083,15 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         // 142: LS_NOP
         // 143: LS_NOP
         // 144: LS_NOP
-        // 145: LS_NOP Player_SetTeam
+        // 145: LS_NOP
         // 146: LS_NOP
         // 147: LS_NOP
         // 148: LS_NOP
         // 149: LS_NOP
         // 150: LS_NOP
         // 151: LS_NOP
-        // 152: LS_NOP Team_Score
-        // 153: LS_NOP Team_GivePoints
+        // 152: LS_NOP
+        // 153: LS_NOP
         // 154: LS_Teleport_NoStop
         // 155: LS_NOP
         // 156: LS_NOP
