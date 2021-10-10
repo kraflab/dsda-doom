@@ -162,27 +162,33 @@ typedef enum {
 // These are Thing flags
 
 // Skill flags.
-#define MTF_EASY                1
-#define MTF_NORMAL              2
-#define MTF_HARD                4
+#define MTF_EASY        0x0001
+#define MTF_NORMAL      0x0002
+#define MTF_HARD        0x0004
 // Deaf monsters/do not react to sound.
-#define MTF_AMBUSH              8
+#define MTF_AMBUSH      0x0008
 
 /* killough 11/98 */
-#define MTF_NOTSINGLE          16
-#define MTF_NOTDM              32
-#define MTF_NOTCOOP            64
-#define MTF_FRIEND            128
-#define MTF_RESERVED          256
+#define MTF_NOTSINGLE   0x0010
+#define MTF_NOTDM       0x0020
+#define MTF_NOTCOOP     0x0040
+#define MTF_FRIEND      0x0080
+#define MTF_RESERVED    0x0100
 
 // hexen
-#define MTF_DORMANT       16
-#define MTF_FIGHTER       32
-#define MTF_CLERIC        64
-#define MTF_MAGE         128
-#define MTF_GSINGLE      256
-#define MTF_GCOOP        512
-#define MTF_GDEATHMATCH 1024
+#define MTF_DORMANT     0x0010
+#define MTF_FIGHTER     0x0020
+#define MTF_CLERIC      0x0040
+#define MTF_MAGE        0x0080
+#define MTF_GSINGLE     0x0100
+#define MTF_GCOOP       0x0200
+#define MTF_GDEATHMATCH 0x0400
+
+// zdoom
+#define MTF_TRANSLUCENT 0x0800
+#define MTF_INVISIBLE   0x1000
+#define MTF_FRIENDLY    0x2000
+#define MTF_STANDSTILL  0x4000
 
 typedef enum {
   sk_none=-1, //jff 3/24/98 create unpicked skill setting

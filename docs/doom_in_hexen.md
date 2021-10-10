@@ -125,6 +125,19 @@ Current work is isolated to the initial pass over the level format itself - line
 | 14101-14164 | MusicChanger            | :heavy_check_mark: |
 | 14165       | Custom MusicChanger     | :x:                |
 
+### Spawn Flags
+
+| Name        | Supported          |
+| ----------- | ------------------ |
+| Dormant     | :warning:          |
+| Translucent | :heavy_check_mark: |
+| Invisible   | :heavy_check_mark: |
+| Friendly    | :heavy_check_mark: |
+| Stand Still | :x:                |
+
+#### Notes
+- Some dormant behaviour is still missing.
+
 ### Line Specials
 
 | Value | Name                            | Supported          |

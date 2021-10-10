@@ -2062,7 +2062,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       players[thingtype - 1].secretcount = 1;
 
       // killough 10/98: force it to be a friend
-      options |= MTF_FRIEND;
+      options |= (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND);
       if (HelperThing != -1) // haleyjd 9/22/99: deh substitution
       {
         int type = HelperThing - 1;
@@ -2121,8 +2121,6 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
   if (map_format.hexen)
   {
-    // MAP_FORMAT_TODO: need to check these types
-
     // Check for player starts 5 to 8
     if (mthing->type >= 9100 && mthing->type <= 9103)
     {
@@ -2316,11 +2314,24 @@ spawnit:
     mobj->tics = 1 + (P_Random(pr_spawnthing) % mobj->tics);
 
   if (!(mobj->flags & MF_FRIEND) &&
-      options & MTF_FRIEND &&
+      options & (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND) &&
       mbf_features)
   {
     mobj->flags |= MF_FRIEND;            // killough 10/98:
     P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
+  }
+
+  if (map_format.zdoom)
+  {
+    if (options & MTF_TRANSLUCENT)
+      mobj->flags |= MF_TRANSLUCENT;
+
+    if (options & MTF_INVISIBLE)
+    {
+      P_UnsetThingPosition(mobj);
+      mobj->flags |= MF_NOSECTOR;
+      P_SetThingPosition(mobj);
+    }
   }
 
   /* killough 7/20/98: exclude friends */
@@ -2351,9 +2362,8 @@ spawnit:
 
   if (map_format.hexen && mthing->options & MTF_DORMANT)
   {
-      // MAP_FORMAT_TODO: DORMANT flag
       mobj->flags2 |= MF2_DORMANT;
-      if (mobj->type == HEXEN_MT_ICEGUY)
+      if (hexen && mobj->type == HEXEN_MT_ICEGUY)
       {
         P_SetMobjState(mobj, HEXEN_S_ICEGUY_DORMANT);
       }
