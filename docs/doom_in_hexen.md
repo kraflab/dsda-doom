@@ -18,6 +18,10 @@ Current work is isolated to the initial pass over the level format itself - line
 | SNDSEQ       | No        |
 | ANIMDEFS     | No        |
 
+### Things
+
+- To Do
+
 ### Line Specials
 
 - To Do
