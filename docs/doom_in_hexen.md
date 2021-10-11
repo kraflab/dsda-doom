@@ -136,7 +136,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | Stand Still | :x:                |
 
 #### Notes
-- Some dormant behaviour is still missing.
+- Dormant monsters still bleed.
 
 ### Line Specials
 

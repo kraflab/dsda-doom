@@ -866,6 +866,13 @@ static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
       continue;
     }
 
+    // skip dormant actors
+    if (link->flags2 & MF2_DORMANT)
+    {
+        link = link->bnext;
+        continue;
+    }
+
     // skip the projectile's owner
     if (link == mo->target)
     {
