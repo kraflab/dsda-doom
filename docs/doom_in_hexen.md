@@ -18,7 +18,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | SNDSEQ       | :x:       |
 | ANIMDEFS     | :x:       |
 
-### Things
+### Thing Types
 
 | Value       | Name                    | Supported          |
 | ----------- | ----------------------- | ------------------ |
