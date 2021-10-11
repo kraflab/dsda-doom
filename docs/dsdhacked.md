@@ -1,6 +1,6 @@
 # DSDHacked
 
-DSDA-Doom supports "unlimited" states, sprites, sounds, and things in dehacked (until you run out of memory / reach 2^32). This is an extension of mbf21, which vastly increased the demand for raised limits in dehacked. This document is a specification of the behaviour.
+DSDA-Doom supports "unlimited" states, sprites, sounds, and things in dehacked (until you run out of memory / reach 2^31 - 1). This is an extension of mbf21, which vastly increased the demand for raised limits in dehacked. This document is a specification of the behaviour.
 
 Use `Doom version = 2021` in your dehacked file to signal that you are using dsdhacked indices. This allows ports to adapt your changes to their specific internal tables. Otherwise your file may be interpreted differently in different ports.
 
