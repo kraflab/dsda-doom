@@ -138,6 +138,28 @@ Current work is isolated to the initial pass over the level format itself - line
 #### Notes
 - Dormant monsters still bleed.
 
+### Line Triggers
+
+| Name                       | Supported          |
+| -------------------------- | ------------------ |
+| Player Walkover            | :heavy_check_mark: |
+| Player Use                 | :heavy_check_mark: |
+| Monster Walkover           | :heavy_check_mark: |
+| Projectile Hits            | :heavy_check_mark: |
+| Player Bumps               | :heavy_check_mark: |
+| Projectile Crosses         | :heavy_check_mark: |
+| Player Use (Pass Through)  | :heavy_check_mark: |
+| Projectile Hits or Crosses | :heavy_check_mark: |
+
+### Line Flags
+
+| Name              | Supported          |
+| ----------------- | ------------------ |
+| Repeatable Action | :heavy_check_mark: |
+| Monster Activates | :heavy_check_mark: |
+| Block Everything  | :x:                |
+| Block Players     | :heavy_check_mark: |
+
 ### Line Specials
 
 | Value | Name                            | Supported          |
