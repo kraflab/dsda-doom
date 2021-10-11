@@ -124,7 +124,7 @@ static void dsda_MigrateMobjInfo(void) {
 
   if (!raven) {
     mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
-    mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST;
+    mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL;
   }
 }
 
