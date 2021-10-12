@@ -25,6 +25,7 @@
 #include "lprintf.h"
 
 #include "dsda/key_frame.h"
+#include "dsda/map_format.h"
 
 #include "settings.h"
 
@@ -130,6 +131,8 @@ int dsda_CompatibilityLevel(void) {
   int i, level;
 
   if (raven) return doom_12_compatibility;
+
+  if (map_format.zdoom) return mbf21_compatibility;
 
   i = M_CheckParm("-complevel");
 
