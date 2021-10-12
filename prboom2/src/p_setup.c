@@ -1643,7 +1643,7 @@ void P_TranslateZDoomLineFlags(unsigned int *flags)
     result |= ML_MONSTERSCANACTIVATE;
 
   if (*flags & ZML_BLOCKEVERYTHING)
-    result |= ML_BLOCKEVERYTHING;
+    result |= ML_BLOCKING | ML_BLOCKEVERYTHING;
 
   *flags = result;
 }

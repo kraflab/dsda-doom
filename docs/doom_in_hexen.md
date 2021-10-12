@@ -167,7 +167,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | ----------------- | ------------------ |
 | Repeatable Action | :heavy_check_mark: |
 | Monster Activates | :heavy_check_mark: |
-| Block Everything  | :telescope:        |
+| Block Everything  | :heavy_check_mark: |
 | Block Players     | :heavy_check_mark: |
 
 ### Line Specials

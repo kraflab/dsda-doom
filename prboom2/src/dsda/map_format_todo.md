@@ -1,5 +1,4 @@
 ### Lines
-- ML_BLOCKEVERYTHING
 - P_ExecuteLineSpecial ~170 specials
 
 ### Later
