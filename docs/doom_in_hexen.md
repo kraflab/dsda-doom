@@ -483,3 +483,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 200     | Sky2                     | :telescope:        |
 | 201-224 | Scroll*                  | :heavy_check_mark: |
 | 225-244 | Carry*                   | :heavy_check_mark: |
+
+#### Notes
+
+- Terrain effects (e.g., from lava specials) don't exist.
