@@ -180,6 +180,7 @@ extern void P_CheckZDoomImpact(mobj_t *);
 
 extern void P_TranslateHexenLineFlags(unsigned int *);
 extern void P_TranslateZDoomLineFlags(unsigned int *);
+extern void P_TranslateCompatibleLineFlags(unsigned int *);
 
 extern void P_ApplyCompatibleSectorMovementSpecial(mobj_t *, int);
 extern void P_ApplyHereticSectorMovementSpecial(mobj_t *, int);
@@ -295,6 +296,7 @@ static const map_format_t heretic_map_format = {
   .post_process_sidedef_special = P_PostProcessHereticSidedefSpecial,
   .animate_surfaces = P_AnimateHereticSurfaces,
   .check_impact = P_CheckHereticImpact,
+  .translate_line_flags = P_TranslateCompatibleLineFlags,
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .player_thrust = P_HereticPlayerThrust,
   .mapthing_size = sizeof(doom_mapthing_t),
@@ -331,6 +333,7 @@ static const map_format_t doom_map_format = {
   .post_process_sidedef_special = P_PostProcessCompatibleSidedefSpecial,
   .animate_surfaces = P_AnimateCompatibleSurfaces,
   .check_impact = P_CheckCompatibleImpact,
+  .translate_line_flags = P_TranslateCompatibleLineFlags,
   .apply_sector_movement_special = P_ApplyCompatibleSectorMovementSpecial,
   .player_thrust = P_CompatiblePlayerThrust,
   .mapthing_size = sizeof(doom_mapthing_t),
