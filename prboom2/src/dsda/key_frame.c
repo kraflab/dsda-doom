@@ -47,6 +47,7 @@ extern byte* savebuffer;
 extern size_t savegamesize;
 extern dboolean setsizeneeded;
 extern dboolean BorderNeedRefresh;
+extern int inv_ptr;
 struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
 void RecalculateDrawnSubsectors(void);
 
@@ -238,6 +239,11 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   if (hexen)
   {
     SB_SetClassData();
+  }
+
+  if (raven)
+  {
+    players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
   }
 
   if (setsizeneeded) R_ExecuteSetViewSize();
