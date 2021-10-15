@@ -201,7 +201,7 @@ int P_GetFriction(const mobj_t *mo, int *frictionfactor)
     )
       for (m = mo->touching_sectorlist; m; m = m->m_tnext)
         if (
-          (sec = m->m_sector)->special & map_format.friction_mask &&
+          (sec = m->m_sector)->flags & SECF_FRICTION &&
           (sec->friction < friction || friction == ORIG_FRICTION) &&
           (
             mo->z <= sec->floorheight ||
@@ -490,7 +490,7 @@ dboolean PIT_CheckLine (line_t* ld)
   }
 
   // killough 8/10/98: allow bouncing objects to pass through as missiles
-  if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)))
+  if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)) || ld->flags & ML_BLOCKEVERYTHING)
   {
     // explicitly blocking everything
     // or blocking player
@@ -1988,7 +1988,7 @@ dboolean PTR_AimTraverse (intercept_t* in)
   {
     li = in->d.line;
 
-    if ( !(li->flags & ML_TWOSIDED) )
+    if ( !(li->flags & (ML_TWOSIDED | ML_BLOCKEVERYTHING)) )
       return false;   // stop
 
     // Crosses a two sided line.
@@ -2102,7 +2102,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     if (li->special)
       map_format.shoot_special_line(shootthing, li);
 
-    if (li->flags & ML_TWOSIDED)
+    if (li->flags & ML_TWOSIDED && !(li->flags & ML_BLOCKEVERYTHING))
     {  // crosses a two sided (really 2s) line
       P_LineOpening (li);
       dist = FixedMul(attackrange, in->frac);
@@ -2350,7 +2350,14 @@ dboolean PTR_UseTraverse (intercept_t* in)
   {
     int sound;
 
-    P_LineOpening (in->d.line);
+    if (in->d.line->flags & ML_BLOCKEVERYTHING)
+    {
+      openrange = 0;
+    }
+    else
+    {
+      P_LineOpening (in->d.line);
+    }
 
     if (openrange <= 0)
     {
@@ -3371,6 +3378,10 @@ dboolean PTR_BounceTraverse(intercept_t * in)
         I_Error("PTR_BounceTraverse: not a line?");
 
     li = in->d.line;
+
+    if (li->flags & ML_BLOCKEVERYTHING)
+        goto bounceblocking;
+
     if (!(li->flags & ML_TWOSIDED))
     {
         if (P_PointOnLineSide(slidemo->x, slidemo->y, li))

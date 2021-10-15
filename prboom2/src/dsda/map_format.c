@@ -19,6 +19,7 @@
 #include "p_spec.h"
 #include "r_state.h"
 #include "w_wad.h"
+#include "m_argv.h"
 
 #include "map_format.h"
 
@@ -123,7 +124,7 @@ static void dsda_MigrateMobjInfo(void) {
 
   if (!raven) {
     mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
-    mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST;
+    mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL;
   }
 }
 
@@ -179,6 +180,7 @@ extern void P_CheckZDoomImpact(mobj_t *);
 
 extern void P_TranslateHexenLineFlags(unsigned int *);
 extern void P_TranslateZDoomLineFlags(unsigned int *);
+extern void P_TranslateCompatibleLineFlags(unsigned int *);
 
 extern void P_ApplyCompatibleSectorMovementSpecial(mobj_t *, int);
 extern void P_ApplyHereticSectorMovementSpecial(mobj_t *, int);
@@ -204,8 +206,6 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .doublesky = false,
   .map99 = false,
   .lax_monster_activation = true,
-  .friction_mask = ZDOOM_FRICTION_MASK,
-  .push_mask = ZDOOM_PUSH_MASK,
   .generalized_mask = ~0xff,
   .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT | ML_SPAC_PUSH,
   .init_sector_special = P_SpawnZDoomSectorSpecial,
@@ -243,8 +243,6 @@ static const map_format_t hexen_map_format = {
   .doublesky = true,
   .map99 = true,
   .lax_monster_activation = false,
-  .friction_mask = 0, // not used
-  .push_mask = 0, // not used
   .generalized_mask = 0, // not used
   .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT,
   .init_sector_special = NULL, // not used
@@ -282,8 +280,6 @@ static const map_format_t heretic_map_format = {
   .doublesky = false,
   .map99 = false,
   .lax_monster_activation = true,
-  .friction_mask = FRICTION_MASK,
-  .push_mask = PUSH_MASK,
   .generalized_mask = 0,
   .switch_activation = 0, // not used
   .init_sector_special = P_SpawnCompatibleSectorSpecial,
@@ -300,6 +296,7 @@ static const map_format_t heretic_map_format = {
   .post_process_sidedef_special = P_PostProcessHereticSidedefSpecial,
   .animate_surfaces = P_AnimateHereticSurfaces,
   .check_impact = P_CheckHereticImpact,
+  .translate_line_flags = P_TranslateCompatibleLineFlags,
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .player_thrust = P_HereticPlayerThrust,
   .mapthing_size = sizeof(doom_mapthing_t),
@@ -320,8 +317,6 @@ static const map_format_t doom_map_format = {
   .doublesky = false,
   .map99 = false,
   .lax_monster_activation = true,
-  .friction_mask = FRICTION_MASK,
-  .push_mask = PUSH_MASK,
   .generalized_mask = ~31,
   .switch_activation = 0, // not used
   .init_sector_special = P_SpawnCompatibleSectorSpecial,
@@ -338,6 +333,7 @@ static const map_format_t doom_map_format = {
   .post_process_sidedef_special = P_PostProcessCompatibleSidedefSpecial,
   .animate_surfaces = P_AnimateCompatibleSurfaces,
   .check_impact = P_CheckCompatibleImpact,
+  .translate_line_flags = P_TranslateCompatibleLineFlags,
   .apply_sector_movement_special = P_ApplyCompatibleSectorMovementSpecial,
   .player_thrust = P_CompatiblePlayerThrust,
   .mapthing_size = sizeof(doom_mapthing_t),
@@ -347,7 +343,7 @@ static const map_format_t doom_map_format = {
 };
 
 void dsda_ApplyMapFormat(void) {
-  if (false) // in-hexen zdoom format
+  if (M_CheckParm("-zdoom"))
     map_format = zdoom_in_hexen_map_format;
   else if (hexen)
     map_format = hexen_map_format;

@@ -1643,7 +1643,7 @@ void P_TranslateZDoomLineFlags(unsigned int *flags)
     result |= ML_MONSTERSCANACTIVATE;
 
   if (*flags & ZML_BLOCKEVERYTHING)
-    result |= ML_BLOCKEVERYTHING;
+    result |= ML_BLOCKING | ML_BLOCKEVERYTHING;
 
   *flags = result;
 }
@@ -1674,6 +1674,11 @@ void P_TranslateHexenLineFlags(unsigned int *flags)
   *flags = result;
 }
 
+void P_TranslateCompatibleLineFlags(unsigned int *flags)
+{
+  *flags = *flags & (mbf21 ? 0x3fff : 0x03ff);
+}
+
 static void P_LoadLineDefs (int lump)
 {
   const byte *data; // cph - const*
@@ -1693,7 +1698,6 @@ static void P_LoadLineDefs (int lump)
         const hexen_maplinedef_t *mld = (const hexen_maplinedef_t *) data + i;
 
         ld->flags = (unsigned short)LittleShort(mld->flags);
-        map_format.translate_line_flags(&ld->flags);
         ld->special = mld->special; // just a byte in hexen
         ld->tag = 0;
         ld->arg1 = mld->arg1;
@@ -1723,6 +1727,8 @@ static void P_LoadLineDefs (int lump)
         ld->sidenum[0] = LittleShort(mld->sidenum[0]);
         ld->sidenum[1] = LittleShort(mld->sidenum[1]);
       }
+
+      map_format.translate_line_flags(&ld->flags);
 
       ld->dx = v2->x - v1->x;
       ld->dy = v2->y - v1->y;

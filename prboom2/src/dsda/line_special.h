@@ -177,10 +177,6 @@ typedef enum {
   zl_thing_spawn_facing       = 139,
   zl_sector_change_sound      = 140,
 
-  zl_player_set_team = 145,
-
-  zl_team_score       = 152,
-  zl_team_give_points = 153,
   zl_teleport_no_stop = 154,
 
   zl_line_set_portal             = 156,

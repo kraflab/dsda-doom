@@ -2509,6 +2509,11 @@ void G_DoLoadGame(void)
     SB_SetClassData();
   }
 
+  if (raven)
+  {
+    players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
+  }
+
   if (setsizeneeded)
     R_ExecuteSetViewSize ();
 

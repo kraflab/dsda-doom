@@ -112,15 +112,46 @@ dboolean PTR_SightTraverse(intercept_t *in)
 ===================
 */
 
+static dboolean P_SightCheckLine(line_t *ld)
+{
+  int s1, s2;
+  divline_t dl;
+
+  if (ld->validcount == validcount)
+    return true; // line has already been checked
+
+  ld->validcount = validcount;
+
+  s1 = P_PointOnDivlineSide(ld->v1->x, ld->v1->y, &trace);
+  s2 = P_PointOnDivlineSide(ld->v2->x, ld->v2->y, &trace);
+  if (s1 == s2)
+    return true; // line isn't crossed
+
+  P_MakeDivline(ld, &dl);
+
+  s1 = P_PointOnDivlineSide(trace.x, trace.y, &dl);
+  s2 = P_PointOnDivlineSide(trace.x + trace.dx, trace.y + trace.dy, &dl);
+  if (s1 == s2)
+    return true; // line isn't crossed
+
+  if (!ld->backsector)
+    return false; // stop checking
+
+  check_intercept(); // killough
+
+  // store the line for later intersection testing
+  intercept_p->d.line = ld;
+  intercept_p++;
+
+  return true;
+}
+
 dboolean P_SightBlockLinesIterator(int x, int y)
 {
   int offset;
   int *list;
-  line_t *ld;
-  int s1, s2;
-  divline_t dl;
 
-  offset = y*bmapwidth+x;
+  offset = y * bmapwidth + x;
 
   if (map_format.polyobjs)
   {
@@ -137,33 +168,11 @@ dboolean P_SightBlockLinesIterator(int x, int y)
         if (polyLink->polyobj->validcount != validcount)
         {
           segList = polyLink->polyobj->segs;
+
           for (i = 0; i < polyLink->polyobj->numsegs; i++, segList++)
-          {
-            ld = (*segList)->linedef;
-            if (ld->validcount == validcount)
-            {
-              continue;
-            }
-            ld->validcount = validcount;
-            s1 = P_PointOnDivlineSide(ld->v1->x, ld->v1->y, &trace);
-            s2 = P_PointOnDivlineSide(ld->v2->x, ld->v2->y, &trace);
-            if (s1 == s2)
-              continue;       // line isn't crossed
-            P_MakeDivline(ld, &dl);
-            s1 = P_PointOnDivlineSide(trace.x, trace.y, &dl);
-            s2 = P_PointOnDivlineSide(trace.x + trace.dx,
-                                      trace.y + trace.dy, &dl);
-            if (s1 == s2)
-              continue;       // line isn't crossed
+            if (!P_SightCheckLine((*segList)->linedef))
+              return false;
 
-            // try to early out the check
-            if (!ld->backsector)
-              return false;   // stop checking
-
-            // store the line for later intersection testing
-            intercept_p->d.line = ld;
-            intercept_p++;
-          }
           polyLink->polyobj->validcount = validcount;
         }
       }
@@ -173,34 +182,9 @@ dboolean P_SightBlockLinesIterator(int x, int y)
 
   offset = *(blockmap+offset);
 
-  for (list = blockmaplump+offset; *list != -1; list++)
-  {
-    ld = &lines[*list];
-    if (ld->validcount == validcount)
-      continue;    // line has already been checked
-    ld->validcount = validcount;
-
-    s1 = P_PointOnDivlineSide(ld->v1->x, ld->v1->y, &trace);
-    s2 = P_PointOnDivlineSide(ld->v2->x, ld->v2->y, &trace);
-    if (s1 == s2)
-      continue;    // line isn't crossed
-    P_MakeDivline (ld, &dl);
-    s1 = P_PointOnDivlineSide(trace.x, trace.y, &dl);
-    s2 = P_PointOnDivlineSide(trace.x+trace.dx, trace.y+trace.dy, &dl);
-    if (s1 == s2)
-      continue; // line isn't crossed
-
-    // try to early out the check
-    if (!ld->backsector)
-      return false; // stop checking
-
-    check_intercept();    // killough
-
-    // store the line for later intersection testing
-    intercept_p->d.line = ld;
-    intercept_p++;
-
-  }
+  for (list = blockmaplump + offset; *list != -1; list++)
+    if (!P_SightCheckLine(&lines[*list]))
+      return false;
 
   return true; // everything was checked
 }
@@ -733,7 +717,7 @@ dboolean P_CrossSubsector_Boom(int num)
     ssline->linedef->validcount = validcount;
 
     // stop because it is not two sided anyway
-    if (!(ssline->linedef->flags & ML_TWOSIDED))
+    if (!(ssline->linedef->flags & ML_TWOSIDED) || ssline->linedef->flags & ML_BLOCKEVERYTHING)
       return false;
 
     // crosses a two sided line

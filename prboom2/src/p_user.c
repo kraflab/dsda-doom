@@ -714,7 +714,7 @@ void P_PlayerThink (player_t* player)
   // Determine if there's anything about the sector you're in that's
   // going to affect you, like painful floors.
 
-  if (player->mo->subsector->sector->special)
+  if (P_IsSpecialSector(player->mo->subsector->sector))
     P_PlayerInSpecialSector(player);
 
   if (hexen)
