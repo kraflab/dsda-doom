@@ -1365,14 +1365,18 @@ void I_UpdateVideoMode(void)
   {
     M_ChangeFOV();
     deh_changeCompTranslucency();
+
+    // elim - Needed for scaling viewport in OpenGL when GL Exclusive Mode is off
+    SDL_GetWindowSize(sdl_window, &sdl_window_width, &sdl_window_height);
+
+    // glViewport is called before we acquire window dimensions, so have to re-set
+    // for menu to work correctly
+    glViewport(0.0f, 0.0f, sdl_window_width, sdl_window_height);
   }
 #endif
 
   src_rect.w = SCREENWIDTH;
   src_rect.h = SCREENHEIGHT;
-
-  // Needed for scaling viewport in OpenGL when GL Exclusive Mode is off
-  SDL_GetWindowSize(sdl_window, &sdl_window_width, &sdl_window_height);
 }
 
 static void ActivateMouse(void)

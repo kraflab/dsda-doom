@@ -161,13 +161,11 @@ GLfloat cm2RGB[CR_LIMIT + 1][4] =
 
 void SetFrameTextureMode(void)
 {
-#ifdef USE_FBO_TECHNIQUE
   if (SceneInTexture)
   {
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }
   else
-#endif
   if (invul_method & INVUL_BW)
   {
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
@@ -386,7 +384,8 @@ void gld_Init(int width, int height)
   gld_InitPalettedTextures();
   gld_InitTextureParams();
 
-  glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
+  // glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
+  glViewport(0, 0, sdl_window_width, sdl_window_height);
 
   glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
   glClearDepth(1.0f);
@@ -436,10 +435,8 @@ void gld_Init(int width, int height)
 #endif
 
   // Create FBO object and associated render targets
-#ifdef USE_FBO_TECHNIQUE
   gld_InitFBO();
   I_AtExit(gld_FreeScreenSizeFBO, true);
-#endif
 
   if(!gld_LoadGLDefs("GLBDEFS"))
   {
@@ -1119,6 +1116,23 @@ GLvoid gld_Set2DMode(void)
   glDisable(GL_DEPTH_TEST);
 }
 
+GLvoid gld_Set2DModeRenderTexture(void)
+{
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(
+    (GLdouble) 0,
+    (GLdouble) sdl_window_width,
+    (GLdouble) sdl_window_height,
+    (GLdouble) 0,
+    (GLdouble) -1.0,
+    (GLdouble) 1.0
+  );
+  glDisable(GL_DEPTH_TEST);
+}
+
 void gld_InitDrawScene(void)
 {
   gld_ResetDrawInfo();
@@ -1214,6 +1228,7 @@ void gld_StartDrawScene(void)
 
   glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
   glScissor(viewwindowx, SCREENHEIGHT-(viewheight+viewwindowy), viewwidth, viewheight);
+  // glScissor(0, 0, sdl_window_width, sdl_window_height);
   glEnable(GL_SCISSOR_TEST);
   // Player coordinates
   xCamera=-(float)viewx/MAP_SCALE;
@@ -1279,20 +1294,18 @@ void gld_StartDrawScene(void)
     }
   }
 
-#ifdef USE_FBO_TECHNIQUE
   motion_blur.enabled = gl_use_motionblur &&
     ((motion_blur.curr_speed_pow2 > motion_blur.minspeed_pow2) ||
     (abs(players[displayplayer].cmd.angleturn) > motion_blur.minangle));
 
-  SceneInTexture = (gl_ext_framebuffer_object) &&
-    ((invul_method & INVUL_BW) || (motion_blur.enabled));
+  SceneInTexture = (gl_ext_framebuffer_object); //&&
+    //((invul_method & INVUL_BW) || (motion_blur.enabled));
 
   // Vortex: Set FBO object
   if (SceneInTexture)
   {
     GLEXT_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, glSceneImageFBOTexID);
   }
-#endif
 
   SetFrameTextureMode();
 
@@ -1370,7 +1383,6 @@ void gld_EndDrawScene(void)
   // See nuts.wad
   // http://www.doomworld.com/idgames/index.php?id=11402
 
-#ifdef USE_FBO_TECHNIQUE
   // Vortex: Black and white effect
   if (SceneInTexture)
   {
@@ -1411,14 +1423,25 @@ void gld_EndDrawScene(void)
       GLEXT_glBlendColorEXT(1.0f, 1.0f, 1.0f, motionblur_alpha);
     }
 
+    // Draw render texture
+    gld_Set2DModeRenderTexture();
+    glViewport(0, 0, sdl_window_width, sdl_window_height);
+    //glViewport(0, 0, (float)SCREENWIDTH*2.0f, (float)SCREENHEIGHT);
+    glScissor(0.0f, 0.0f, sdl_window_width, sdl_window_height);
     glBegin(GL_TRIANGLE_STRIP);
     {
+      //glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
+      //glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, (float)SCREENHEIGHT);
+      //glTexCoord2f(1.0f, 1.0f); glVertex2f((float)SCREENWIDTH*2.0f, 0.0f);
+      //glTexCoord2f(1.0f, 0.0f); glVertex2f((float)SCREENWIDTH*2.0f, (float)SCREENHEIGHT);
       glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
-      glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, (float)SCREENHEIGHT);
-      glTexCoord2f(1.0f, 1.0f); glVertex2f((float)SCREENWIDTH, 0.0f);
-      glTexCoord2f(1.0f, 0.0f); glVertex2f((float)SCREENWIDTH, (float)SCREENHEIGHT);
+      glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, sdl_window_height);
+      glTexCoord2f(1.0f, 1.0f); glVertex2f(sdl_window_width, 0.0f);
+      glTexCoord2f(1.0f, 0.0f); glVertex2f(sdl_window_width, sdl_window_height);
     }
     glEnd();
+    glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
+    gld_Set2DMode();
 
 
     if (motion_blur.enabled)
@@ -1429,7 +1452,6 @@ void gld_EndDrawScene(void)
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }
   else
-#endif
   {
     if (invul_method & INVUL_INV)
     {

@@ -261,8 +261,8 @@ void gld_InitOpenGL(dboolean compatibility_mode)
   //
   // EXT_framebuffer_object
   //
-  gl_ext_framebuffer_object = gl_ext_framebuffer_object_default &&
-    isExtensionSupported("GL_EXT_framebuffer_object") != NULL;
+  gl_ext_framebuffer_object = isExtensionSupported("GL_EXT_framebuffer_object") != NULL; // gl_ext_framebuffer_object_default &&
+    //isExtensionSupported("GL_EXT_framebuffer_object") != NULL;
   if (gl_ext_framebuffer_object)
   {
     GLEXT_glGenFramebuffersEXT         = SDL_GL_GetProcAddress("glGenFramebuffersEXT");
@@ -281,7 +281,7 @@ void gld_InitOpenGL(dboolean compatibility_mode)
         !GLEXT_glRenderbufferStorageEXT || !GLEXT_glFramebufferRenderbufferEXT ||
         !GLEXT_glFramebufferTexture2DEXT || !GLEXT_glCheckFramebufferStatusEXT ||
         !GLEXT_glDeleteFramebuffersEXT || !GLEXT_glDeleteRenderbuffersEXT)
-      gl_ext_framebuffer_object = false;
+        gl_ext_framebuffer_object = false;
   }
   if (gl_ext_framebuffer_object)
     lprintf(LO_INFO,"using GL_EXT_framebuffer_object\n");

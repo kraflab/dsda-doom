@@ -46,20 +46,17 @@
 
 dboolean gl_use_FBO = false;
 
-#ifdef USE_FBO_TECHNIQUE
 GLuint glSceneImageFBOTexID = 0;
 GLuint glDepthBufferFBOTexID = 0;
 GLuint glSceneImageTextureFBOTexID = 0;
 int SceneInTexture = false;
 static dboolean gld_CreateScreenSizeFBO(void);
-#endif
 
 //e6y: motion bloor
 int gl_motionblur;
 int gl_use_motionblur = false;
 motion_blur_params_t motion_blur;
 
-#ifdef USE_FBO_TECHNIQUE
 
 void gld_InitMotionBlur(void);
 
@@ -69,8 +66,8 @@ void gld_InitFBO(void)
 
   gl_use_motionblur = gl_ext_framebuffer_object && gl_motionblur && gl_ext_blend_color;
 
-  gl_use_FBO = (gl_ext_framebuffer_object) && (gl_version >= OPENGL_VERSION_1_3) &&
-    (gl_use_motionblur || !gl_boom_colormaps || gl_has_hires);
+  gl_use_FBO = (gl_ext_framebuffer_object) && (gl_version >= OPENGL_VERSION_1_3); //&&
+    //(gl_use_motionblur || !gl_boom_colormaps || gl_has_hires);
 
   if (gl_use_FBO)
   {
@@ -180,4 +177,3 @@ void gld_InitMotionBlur(void)
     sscanf(motion_blur.str_att_c, "%f", &motion_blur.att_c);
   }
 }
-#endif

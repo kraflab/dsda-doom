@@ -53,6 +53,7 @@
 #include "st_stuff.h"
 #include "i_main.h"
 #include "i_system.h"
+#include "i_video.h"
 #include "g_game.h"
 #include "r_demo.h"
 #include "r_fps.h"
@@ -663,6 +664,10 @@ void R_SetupViewport(void)
   viewport[1] = SCREENHEIGHT-(height+viewwindowy-((height-viewheight)/2));
   viewport[2] = viewwidth;
   viewport[3] = height;
+  // viewport[0] = 0;
+  // viewport[1] = 0;
+  // viewport[2] = sdl_window_width;
+  // viewport[3] = sdl_window_height;
 }
 
 void R_SetupPerspective(float fovy, float aspect, float znear)
