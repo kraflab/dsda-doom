@@ -62,6 +62,9 @@ extern const char *screen_resolution;
 
 extern const char *sdl_video_window_pos;
 
+extern int sdl_window_width;
+extern int sdl_window_height;
+
 void I_PreInitGraphics(void); /* CPhipps - do stuff immediately on start */
 void I_InitScreenResolution(void); /* init resolution */
 void I_SetWindowCaption(void); /* Set the window caption */

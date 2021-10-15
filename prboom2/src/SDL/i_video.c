@@ -119,6 +119,8 @@ int gl_exclusive_fullscreen;
 int render_vsync;
 int render_screen_multiply;
 int integer_scaling;
+int sdl_window_width;
+int sdl_window_height;
 SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
@@ -1363,6 +1365,9 @@ void I_UpdateVideoMode(void)
 
   src_rect.w = SCREENWIDTH;
   src_rect.h = SCREENHEIGHT;
+
+  // Needed for scaling viewport in OpenGL when GL Exclusive Mode is off
+  SDL_GetWindowSize(sdl_window, &sdl_window_width, &sdl_window_height);
 }
 
 static void ActivateMouse(void)
