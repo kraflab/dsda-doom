@@ -73,6 +73,7 @@ void D_InitFakeNetGame (void)
 {
   int i;
 
+  consoleplayer = displayplayer = 0;
   localcmds = netcmds[consoleplayer];
   solo_net = (M_CheckParm("-solo-net") != 0);
   coop_spawns = (M_CheckParm("-coop_spawns") != 0);
@@ -81,8 +82,6 @@ void D_InitFakeNetGame (void)
   playeringame[0] = true;
   for (i = 1; i < g_maxplayers; i++)
     playeringame[i] = false;
-
-  consoleplayer = displayplayer = 0;
 }
 
 void FakeNetUpdate(void)
