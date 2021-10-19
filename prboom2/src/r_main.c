@@ -1134,7 +1134,8 @@ void R_RenderPlayerView (player_t* player)
     }
   }
 
-  FakeNetUpdate ();
+  FakeNetUpdate();
+
 #ifdef GL_DOOM
   if (V_IsOpenGLMode()) {
     {
@@ -1159,19 +1160,22 @@ void R_RenderPlayerView (player_t* player)
     R_RenderBSPNode(numnodes - 1);
   }
 
-  FakeNetUpdate ();
+  FakeNetUpdate();
+
   if (V_IsSoftwareMode())
     R_DrawPlanes();
 
   R_ResetColumnBuffer();
 
-  FakeNetUpdate ();
+  FakeNetUpdate();
+
   if (V_IsSoftwareMode()) {
     R_DrawMasked ();
     R_ResetColumnBuffer();
   }
 
-  FakeNetUpdate ();
+  FakeNetUpdate();
+
   if (V_IsOpenGLMode() && !automap) {
 #ifdef GL_DOOM
     // proff 11/99: draw the scene

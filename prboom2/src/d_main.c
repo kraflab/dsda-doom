@@ -455,7 +455,7 @@ void D_Display (fixed_t frac)
   // menus go directly to the screen
   M_Drawer();          // menu is drawn even on top of everything
 
-  FakeNetUpdate();         // send out any new accumulation
+  FakeNetUpdate();     // send out any new accumulation
 
   HU_DrawDemoProgress(true); //e6y
 
