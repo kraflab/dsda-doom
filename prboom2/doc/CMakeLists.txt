@@ -13,7 +13,6 @@ set(MAN5_FILES
 )
 set(MAN6_FILES
     dsda-doom.6
-    dsda-doom-game-server.6
 )
 
 if(${CMAKE_VERSION} VERSION_LESS "3.14.0")

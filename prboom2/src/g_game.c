@@ -1338,9 +1338,6 @@ void G_Ticker (void)
   if (!demoplayback && mapcolor_plyr[consoleplayer] != mapcolor_me) {
     // Changed my multiplayer colour - Inform the whole game
     int net_cl = LittleLong(mapcolor_me);
-#ifdef HAVE_NET
-    D_NetSendMisc(nm_plcolour, sizeof(net_cl), &net_cl);
-#endif
     G_ChangedPlayerColour(consoleplayer, mapcolor_me);
   }
   P_MapStart();
@@ -2544,10 +2541,6 @@ void G_SaveGame(int slot, char *description)
 
   savegameslot = slot;
   G_DoSaveGame(true);
-
-#ifdef HAVE_NET
-  D_NetSendMisc(nm_savegamename, strlen(savedescription)+1, savedescription);
-#endif
 }
 
 // Check for overrun and realloc if necessary -- Lee Killough 1/22/98

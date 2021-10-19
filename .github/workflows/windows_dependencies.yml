@@ -1,7 +1,7 @@
 ###############################################################################
 #
 # HOW TO USE
-#  
+#
 # Push any commit to build_windows_dependencies branch, create it if needed
 # This will trigger execution of the following workflow
 # Generated artifacts can be used to update the dependency package
@@ -44,7 +44,7 @@ jobs:
       id: vars
       shell: cmd
       run: |
-        echo ::set-output name=common_options::sdl2-image sdl2-mixer[dynamic-load,libflac,libmodplug,libvorbis,mpg123,opusfile] sdl2-net libmad fluidsynth dumb portmidi --triplet ${{ matrix.config.triplet }}
+        echo ::set-output name=common_options::sdl2-image sdl2-mixer[dynamic-load,libflac,libmodplug,libvorbis,mpg123,opusfile] libmad fluidsynth dumb portmidi --triplet ${{ matrix.config.triplet }}
 
     - name: Install
       shell: cmd
@@ -65,4 +65,3 @@ jobs:
       with:
         path: artifact
         name: ${{ matrix.config.triplet }}
-

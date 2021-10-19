@@ -1134,10 +1134,7 @@ void R_RenderPlayerView (player_t* player)
     }
   }
 
-  // check for new console commands.
-#ifdef HAVE_NET
-  NetUpdate ();
-#endif
+  FakeNetUpdate();
 
 #ifdef GL_DOOM
   if (V_IsOpenGLMode()) {
@@ -1163,29 +1160,21 @@ void R_RenderPlayerView (player_t* player)
     R_RenderBSPNode(numnodes - 1);
   }
 
-#ifdef HAVE_NET
-  NetUpdate ();
-#endif
+  FakeNetUpdate();
 
   if (V_IsSoftwareMode())
     R_DrawPlanes();
 
   R_ResetColumnBuffer();
 
-  // Check for new console commands.
-#ifdef HAVE_NET
-  NetUpdate ();
-#endif
+  FakeNetUpdate();
 
   if (V_IsSoftwareMode()) {
     R_DrawMasked ();
     R_ResetColumnBuffer();
   }
 
-  // Check for new console commands.
-#ifdef HAVE_NET
-  NetUpdate ();
-#endif
+  FakeNetUpdate();
 
   if (V_IsOpenGLMode() && !automap) {
 #ifdef GL_DOOM

@@ -454,11 +454,8 @@ void D_Display (fixed_t frac)
 
   // menus go directly to the screen
   M_Drawer();          // menu is drawn even on top of everything
-#ifdef HAVE_NET
-  NetUpdate();         // send out any new accumulation
-#else
-  D_BuildNewTiccmds();
-#endif
+
+  FakeNetUpdate();     // send out any new accumulation
 
   HU_DrawDemoProgress(true); //e6y
 
@@ -2015,8 +2012,8 @@ static void D_DoomMainSetup(void)
 
   // CPhipps - move up netgame init
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"D_InitNetGame: Checking for network game.\n");
-  D_InitNetGame();
+  lprintf(LO_INFO,"D_InitFakeNetGame: Checking for network game.\n");
+  D_InitFakeNetGame();
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"W_Init: Init WADfiles.\n");
@@ -2199,11 +2196,6 @@ static void D_DoomMainSetup(void)
   {
     SN_InitSequenceScript();
   }
-
-#ifdef HAVE_NET
-  // CPhipps - now wait for netgame start
-  D_CheckNetGame();
-#endif
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"R_Init: Init DOOM refresh daemon - ");
