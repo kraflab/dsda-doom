@@ -1,11 +1,3 @@
-
-function(ApplySDL2NetOptions TARGET)
-    if(SDL2_NET_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${SDL2_NET_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${SDL2_NET_LIBRARIES})
-    endif()
-endfunction()
-
 # PrBoom main executable
 
 set(COMMON_SRC
@@ -440,7 +432,6 @@ function(AddGameExecutable TARGET SOURCES)
         target_include_directories(${TARGET} PRIVATE ${PCRE_INCLUDE_DIR})
         target_link_libraries(${TARGET} PRIVATE ${PCREPOSIX_LIBRARIES})
     endif()
-    ApplySDL2NetOptions(${TARGET})
     if(ZLIB_FOUND)
         target_include_directories(${TARGET} PRIVATE ${ZLIB_INCLUDE_DIRS})
         target_link_libraries(${TARGET} PRIVATE ${ZLIB_LIBRARIES})

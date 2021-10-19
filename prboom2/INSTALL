@@ -3,7 +3,6 @@ Basic Installation (ZIP, tarball, Git)
 
   1. To compile DSDA-Doom, you need at least SDL2. To enable various
      extensions and optional features, the following are required:
-     - SDL2_net (for network play)
      - SDL2_image (for high-res textures in OpenGL, and PNG screenshots)
      - PCRE (for demo filename pattern matching)
      - for music support, some or all of

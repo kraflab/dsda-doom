@@ -62,7 +62,7 @@ jobs:
           sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev \
             libpcre3-dev libmad0-dev libfluidsynth-dev libdumb1-dev libvorbis-dev libportmidi-dev
         elif [[ "${{ runner.os }}" == 'macOS' ]]; then
-          brew install sdl2 sdl2_image sdl2_mixer sdl2_net pcre mad fluidsynth dumb portmidi
+          brew install sdl2 sdl2_image sdl2_mixer pcre mad fluidsynth dumb portmidi
         fi
 
     - name: Configure
