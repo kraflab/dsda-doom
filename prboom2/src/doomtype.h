@@ -121,7 +121,6 @@ typedef unsigned __int64 uint_64_t;
 /* CPhipps - use limits.h instead of depreciated values.h */
 #include <limits.h>
 
-/* cph - move compatibility levels here so we can use them in d_server.c */
 typedef enum {
   doom_12_compatibility,   /* Doom v1.2 */
   doom_1666_compatibility, /* Doom v1.666 */

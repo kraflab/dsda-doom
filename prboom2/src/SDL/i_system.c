@@ -72,18 +72,14 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#ifndef PRBOOM_SERVER
 #include "m_argv.h"
-#endif
 #include "lprintf.h"
 #include "doomtype.h"
 #include "doomdef.h"
-#ifndef PRBOOM_SERVER
 #include "d_player.h"
 #include "m_fixed.h"
 #include "r_fps.h"
 #include "e6y.h"
-#endif
 #include "i_system.h"
 
 #ifdef __GNUG__
@@ -129,7 +125,6 @@ int I_GetTime_RealTime (void)
   return i;
 }
 
-#ifndef PRBOOM_SERVER
 static unsigned long long displaytime;
 static dboolean InDisplay = false;
 static int saved_gametic = -1;
@@ -199,7 +194,6 @@ void I_GetTime_SaveMS(void)
   prevsubframe = subframe;
   subframe = 0;
 }
-#endif
 
 /*
  * I_GetRandomTimeSeed
@@ -234,7 +228,6 @@ const char* I_SigString(char* buf, size_t sz, int signum)
   return buf;
 }
 
-#ifndef PRBOOM_SERVER
 dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
 {
   FILE *hfile;
@@ -280,7 +273,6 @@ dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
 
   return result;
 }
-#endif // PRBOOM_SERVER
 
 /*
  * I_Read
@@ -314,8 +306,6 @@ int I_Filelength(int handle)
     I_Error("I_Filelength: %s",strerror(errno));
   return fileinfo.st_size;
 }
-
-#ifndef PRBOOM_SERVER
 
 // Return the path where the executable lies -- Lee Killough
 // proff_fs 2002-07-04 - moved to i_system
@@ -588,5 +578,3 @@ const char* I_FindFile2(const char* wfname, const char* ext)
 }
 
 #endif
-
-#endif // PRBOOM_SERVER

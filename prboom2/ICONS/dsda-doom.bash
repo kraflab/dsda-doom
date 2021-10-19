@@ -32,7 +32,7 @@ _dsda_doom()
         -deh -devparm -fast -fastdemo -ffmap -file -fullscreen -geom -height
         -iwad -levelstat -noaccel -noblit -nocheats -nodraw -nodrawers
         -nofullscreen -nojoy -nomonsters -nomouse -nomusic -nosfx -nosound
-        -nowindow -playdemo -port -record -recordfromto -resetgamma -respawn
+        -nowindow -playdemo -record -recordfromto -resetgamma -respawn
         -save -shorttics -shotdir -skill -skipsec -solo-net -spechit -timedemo
         -timer -viddump -videodriver -vidmode -viewangle -warp -width -window' \
         -- "$cur" ) )

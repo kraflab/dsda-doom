@@ -24,8 +24,6 @@
 #cmakedefine HAVE_SDL_JOYSTICKGETAXIS
 #cmakedefine HAVE_LIBSDL2_IMAGE
 #cmakedefine HAVE_LIBSDL2_MIXER
-#cmakedefine HAVE_NET
-#cmakedefine USE_SDL_NET
 
 #cmakedefine HAVE_LIBPCREPOSIX
 #cmakedefine HAVE_LIBZ

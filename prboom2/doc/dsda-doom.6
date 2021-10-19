@@ -7,9 +7,9 @@ dsda-doom \- DSDA-Doom, a version of Doom for Unix, Linux and Windows systems
 .SH DESCRIPTION
 .B PrBoom
 is a version of the first-person shooter game Doom, originally released by iD software in 1993.
-It is based on Boom, a version of Doom adapted by TeamTNT 
+It is based on Boom, a version of Doom adapted by TeamTNT
 (http://www.teamtnt.com/) for Dos. PrBoom uses the SDL library,
-meaning it can run on a variety of different systems, 
+meaning it can run on a variety of different systems,
 including Windows and Unix/X11.
 .PP
 .B PrBoom+
@@ -185,31 +185,6 @@ Forces the Boom DEH parser.
 The desynch in fez1-924.lmp @ fez1.wad is gone, but you still need to add
 "\-setmem dosbox" or "\-setmem dos71" command line parameter, because the
 default "dos622" memory layout causes a desynch.
-.SH MULTIPLAYER OPTIONS
-.TP
-\fB\-net\fP \fIhostname\fR[:\fIport\fR]
-Specifies that a TCP/IP network game is to be started. \fIhostname\fR is
-the name of the machine on which the network game server is running
-(\fBdsda-doom-game-server\fP). For more information about this, see
-.BR dsda-doom-game-server (6)
-and the \fBREADME.md\fP that came with DSDA-Doom. \fIport\fR is the
-port number on the remote machine to which to connect; if not specified,
-the default of \fB5030\fP (which is the default for
-.BR dsda-doom-game-server (6)
-) is assumed. 
-The server will configure your DSDA-Doom settings, so that all the players
-have the same game settings (skill, map etc).
-.PP
-Also, the server may specify additional PWAD files to play with; if you
-do not have the required .WAD file, DSDA-Doom will ask the server for a download
-path, and attempt to use 
-.BR wget(1)
-and if necessary 
-.BR unzip(1)
-to download and extract the required WAD.
-.TP
-.BI \-port\  portnum
-Specifies the local port to use to communicate with the server in a netgame.
 .TP
 .BI \-deathmatch
 No longer used. Tells DSDA-Doom to begin a deathmatch game, but this is
@@ -292,11 +267,11 @@ Advanced syntax, w - windowed, f - fullscreen. Examples: \-geom 320x200f,
 .SH I/O OPTIONS
 .TP
 .BI \-nosound
-Disables all sound effects and in-game music. This prevents the sound server 
-loading, which lets the game run a little faster. 
+Disables all sound effects and in-game music. This prevents the sound server
+loading, which lets the game run a little faster.
 .TP
 .BI \-nosfx
-Disables sound effects during the game. This does not stop the sound server 
+Disables sound effects during the game. This does not stop the sound server
 loading, however, so for best performance use \-nosound.
 .TP
 .BI \-nomusic
@@ -314,7 +289,7 @@ Forces the same mouse behaviour as when recording (i.e. the converse of
 .SH CONFIGURATION
 .TP
 .BI \-config\  myconf
-Loads an alternative configuration file, named \fImyconf\fR. The default is 
+Loads an alternative configuration file, named \fImyconf\fR. The default is
 .BR dsda-doom.cfg (5),
 taken from the same directory as DSDA-Doom was run from.
 .TP
@@ -347,7 +322,7 @@ The only conceivable use of this is (a) a multiplayer server (b) to test
 the speed of the other routines in the program, when combined with \fB\-timedemo\fP.
 .TP
 .BI \-bexout\  bexdbg
-Causes diagnostics related to bex and dehacked file processing to be written 
+Causes diagnostics related to bex and dehacked file processing to be written
 to the names file.
 .TP
 .BI \-blockmap
