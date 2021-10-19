@@ -78,9 +78,7 @@ void D_InitFakeNetGame (void)
   coop_spawns = (M_CheckParm("-coop_spawns") != 0);
   netgame = solo_net;
 
-  for (i = 0; i < 1; i++)
-    playeringame[0] = true;
-
+  playeringame[0] = true;
   for (i = 1; i < g_maxplayers; i++)
     playeringame[i] = false;
 
