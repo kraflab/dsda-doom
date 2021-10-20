@@ -122,6 +122,7 @@ enum {
   comp_ledgeblock,
   comp_friendlyspawn,
   comp_voodooscroller,
+  comp_reservedlineflag,
 
   MBF_COMP_TOTAL = 32  // limit in MBF format
 };

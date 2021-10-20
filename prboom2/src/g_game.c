@@ -2773,8 +2773,8 @@ void G_Compatibility(void)
     { prboom_1_compatibility, mbf21_compatibility },
     // comp_voodooscroller - Voodoo dolls on slow scrollers move too slowly
     { mbf21_compatibility, mbf21_compatibility },
-    // comp_placeholder_32 - Not defined yet
-    { 255, 255 }
+    // comp_reservedlineflag - ML_RESERVED clears extended flags
+    { mbf21_compatibility, mbf21_compatibility }
   };
   unsigned int i;
 
@@ -2916,6 +2916,7 @@ void G_ReloadDefaults(void)
     comp[comp_ledgeblock] = options->comp_ledgeblock;
     comp[comp_friendlyspawn] = options->comp_friendlyspawn;
     comp[comp_voodooscroller] = options->comp_voodooscroller;
+    comp[comp_reservedlineflag] = options->comp_reservedlineflag;
   }
 
   G_Compatibility();

@@ -1676,7 +1676,14 @@ void P_TranslateHexenLineFlags(unsigned int *flags)
 
 void P_TranslateCompatibleLineFlags(unsigned int *flags)
 {
-  *flags = *flags & (mbf21 ? 0x3fff : 0x03ff);
+  int filter;
+
+  if (mbf21)
+    filter = (*flags & ML_RESERVED && comp[comp_reservedlineflag]) ? 0x01ff : 0x3fff;
+  else
+    filter = 0x03ff;
+
+  *flags = *flags & filter;
 }
 
 static void P_LoadLineDefs (int lump)
