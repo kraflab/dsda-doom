@@ -413,7 +413,7 @@ const byte *dsda_ReadOptions21(const byte *demo_p) {
 
   // comp_reservedlineflag
   if (count < 25)
-    comp[mbf21_comp_translation[24]] = 1;
+    comp[mbf21_comp_translation[24]] = 0;
 
   G_Compatibility();
 
