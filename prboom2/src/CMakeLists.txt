@@ -176,8 +176,6 @@ set(COMMON_SRC
     m_random.h
     m_swap.h
     p_ceilng.c
-    p_checksum.c
-    p_checksum.h
     p_doors.c
     p_enemy.c
     p_enemy.h

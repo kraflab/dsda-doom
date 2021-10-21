@@ -52,7 +52,6 @@
 #include "d_main.h"
 #include "g_game.h"
 #include "m_menu.h"
-#include "p_checksum.h"
 
 #include "i_system.h"
 #include "i_main.h"
@@ -148,7 +147,6 @@ void TryRunTics (void)
     M_Ticker ();
     I_GetTime_SaveMS();
     G_Ticker ();
-    P_Checksum(gametic);
     gametic++;
     FakeNetUpdate();
   }
