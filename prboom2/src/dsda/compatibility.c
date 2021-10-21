@@ -149,6 +149,11 @@ static const dsda_compatibility_t sunlust_map30 = {
   { comp_telefrag, -1 }
 };
 
+static const dsda_compatibility_t tnt_map30 = {
+  "42b68b84ff8e55f264c31e6f4cfea82d",
+  { comp_stairs, -1 }
+};
+
 static const dsda_compatibility_t* entry_0[] = {
   &archie_map01,
   &sixpack2_map02,
@@ -177,6 +182,7 @@ static const dsda_compatibility_t* entry_3[] = {
 
 static const dsda_compatibility_t* entry_4[] = {
   &sunlust_map30,
+  &tnt_map30,
   NULL
 };
 
