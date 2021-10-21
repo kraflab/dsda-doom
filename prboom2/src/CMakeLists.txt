@@ -15,6 +15,8 @@ set(COMMON_SRC
     dsda/analysis.h
     dsda/command_display.c
     dsda/command_display.h
+    dsda/compatibility.c
+    dsda/compatibility.h
     dsda/console.c
     dsda/console.h
     dsda/coordinate_display.c

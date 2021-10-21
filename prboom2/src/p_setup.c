@@ -59,6 +59,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/compatibility.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
 
@@ -3101,6 +3102,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // Refuse to load a map with incomplete pwad structure.
   // Avoid segfaults on levels without nodes.
   P_CheckLevelWadStructure(lumpname);
+
+  dsda_ApplyLevelCompatibility(lumpnum);
 
   leveltime = 0; totallive = 0;
 
