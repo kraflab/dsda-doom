@@ -194,6 +194,9 @@ extern void P_CompatiblePlayerThrust(player_t* player, angle_t angle, fixed_t mo
 extern void P_HereticPlayerThrust(player_t* player, angle_t angle, fixed_t move);
 extern void P_HexenPlayerThrust(player_t* player, angle_t angle, fixed_t move);
 
+extern dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
+extern dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -218,6 +221,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .cross_special_line = P_CrossZDoomSpecialLine,
   .shoot_special_line = P_ShootHexenSpecialLine,
   .test_activate_line = P_TestActivateZDoomLine,
+  .execute_line_special = P_ExecuteZDoomLineSpecial,
   .post_process_line_special = P_PostProcessZDoomLineSpecial,
   .post_process_sidedef_special = P_PostProcessZDoomSidedefSpecial,
   .animate_surfaces = P_AnimateZDoomSurfaces,
@@ -255,6 +259,7 @@ static const map_format_t hexen_map_format = {
   .cross_special_line = P_CrossHexenSpecialLine,
   .shoot_special_line = P_ShootHexenSpecialLine,
   .test_activate_line = P_TestActivateHexenLine,
+  .execute_line_special = P_ExecuteHexenLineSpecial,
   .post_process_line_special = P_PostProcessHexenLineSpecial,
   .post_process_sidedef_special = P_PostProcessHexenSidedefSpecial,
   .animate_surfaces = P_AnimateHexenSurfaces,
@@ -292,6 +297,7 @@ static const map_format_t heretic_map_format = {
   .cross_special_line = P_CrossHereticSpecialLine,
   .shoot_special_line = P_ShootCompatibleSpecialLine,
   .test_activate_line = NULL, // not used
+  .execute_line_special = NULL, // not used
   .post_process_line_special = P_PostProcessHereticLineSpecial,
   .post_process_sidedef_special = P_PostProcessHereticSidedefSpecial,
   .animate_surfaces = P_AnimateHereticSurfaces,
@@ -329,6 +335,7 @@ static const map_format_t doom_map_format = {
   .cross_special_line = P_CrossCompatibleSpecialLine,
   .shoot_special_line = P_ShootCompatibleSpecialLine,
   .test_activate_line = NULL, // not used
+  .execute_line_special = NULL, // not used
   .post_process_line_special = P_PostProcessCompatibleLineSpecial,
   .post_process_sidedef_special = P_PostProcessCompatibleSidedefSpecial,
   .animate_surfaces = P_AnimateCompatibleSurfaces,

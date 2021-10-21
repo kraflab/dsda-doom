@@ -54,7 +54,9 @@
 #endif
 #include "p_inter.h"
 #include "e6y.h"//e6y
+
 #include "dsda.h"
+#include "dsda/map_format.h"
 
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
@@ -807,8 +809,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
       }
       else
       {
-          P_ExecuteLineSpecial(target->special, target->args,
-                               NULL, 0, target);
+          map_format.execute_line_special(target->special, target->args, NULL, 0, target);
       }
   }
 
@@ -2831,8 +2832,7 @@ static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
     P_SetMessage(player, message, false);
     if (weapon->special)
     {
-        P_ExecuteLineSpecial(weapon->special, weapon->args,
-                             NULL, 0, player->mo);
+        map_format.execute_line_special(weapon->special, weapon->args, NULL, 0, player->mo);
         weapon->special = 0;
     }
 
@@ -2928,8 +2928,7 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
     // Pick up the weapon piece
     if (pieceMobj->special)
     {
-        P_ExecuteLineSpecial(pieceMobj->special, pieceMobj->args,
-                             NULL, 0, player->mo);
+        map_format.execute_line_special(pieceMobj->special, pieceMobj->args, NULL, 0, player->mo);
         pieceMobj->special = 0;
     }
     if (remove)
@@ -3064,8 +3063,7 @@ static void TryPickupArtifact(player_t * player, artitype_t artifactType, mobj_t
     {
         if (artifact->special)
         {
-            P_ExecuteLineSpecial(artifact->special, artifact->args,
-                                 NULL, 0, NULL);
+            map_format.execute_line_special(artifact->special, artifact->args, NULL, 0, NULL);
             artifact->special = 0;
         }
         player->bonuscount += BONUSADD;
@@ -3169,8 +3167,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             // get removed for coop netplay
             if (special->special)
             {
-                P_ExecuteLineSpecial(special->special, special->args,
-                                     NULL, 0, toucher);
+                map_format.execute_line_special(special->special, special->args, NULL, 0, toucher);
                 special->special = 0;
             }
 
@@ -3380,8 +3377,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     }
     if (special->special)
     {
-        P_ExecuteLineSpecial(special->special, special->args, NULL,
-                             0, toucher);
+        map_format.execute_line_special(special->special, special->args, NULL, 0, toucher);
         special->special = 0;
     }
     if (deathmatch && respawn && !(special->flags & MF_DROPPED))

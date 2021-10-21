@@ -1942,8 +1942,7 @@ void P_TeleportOther(mobj_t * victim)
         if (victim->flags & MF_COUNTKILL && victim->special)
         {
             P_RemoveMobjFromTIDList(victim);
-            P_ExecuteLineSpecial(victim->special, victim->args,
-                                 NULL, 0, victim);
+            map_format.execute_line_special(victim->special, victim->args, NULL, 0, victim);
             victim->special = 0;
         }
 

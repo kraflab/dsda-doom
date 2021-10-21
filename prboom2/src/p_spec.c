@@ -5599,7 +5599,7 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activ
 
   P_TransferLineArgs(line, args);
 
-  buttonSuccess = P_ExecuteLineSpecial(line->special, args, line, side, mo);
+  buttonSuccess = map_format.execute_line_special(line->special, args, line, side, mo);
 
   if (!repeat && buttonSuccess)
   {                           // clear the special on non-retriggerable lines
@@ -5706,8 +5706,20 @@ void P_PlayerInHexenSector(player_t * player, sector_t * sector)
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
 
-dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
-                             int side, mobj_t * mo)
+dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
+{
+  dboolean buttonSuccess = false;
+
+  switch (special)
+  {
+    default:
+      break;
+  }
+
+  return buttonSuccess;
+}
+
+dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
 {
     dboolean buttonSuccess;
 
