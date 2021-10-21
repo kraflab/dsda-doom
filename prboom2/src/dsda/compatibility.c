@@ -144,6 +144,11 @@ static const dsda_compatibility_t conf256b_map12 = {
   { comp_vile, -1 }
 };
 
+static const dsda_compatibility_t sunlust_map30 = {
+  "41efe03223e41935849f64114c5cb471",
+  { comp_telefrag, -1 }
+};
+
 static const dsda_compatibility_t* entry_0[] = {
   &archie_map01,
   &sixpack2_map02,
@@ -171,6 +176,7 @@ static const dsda_compatibility_t* entry_3[] = {
 };
 
 static const dsda_compatibility_t* entry_4[] = {
+  &sunlust_map30,
   NULL
 };
 
