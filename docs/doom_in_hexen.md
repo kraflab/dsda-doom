@@ -183,10 +183,10 @@ Current work is isolated to the initial pass over the level format itself - line
 | 7     | Polyobj_DoorSwing               | :telescope:        |
 | 8     | Polyobj_DoorSlide               | :telescope:        |
 | 9     | Line_Horizon                    | :grey_question:    |
-| 10    | Door_Close                      | :grey_question:    |
-| 11    | Door_Open                       | :grey_question:    |
-| 12    | Door_Raise                      | :grey_question:    |
-| 13    | Door_LockedRaise                | :grey_question:    |
+| 10    | Door_Close                      | :heavy_check_mark: |
+| 11    | Door_Open                       | :heavy_check_mark: |
+| 12    | Door_Raise                      | :heavy_check_mark: |
+| 13    | Door_LockedRaise                | :heavy_check_mark: |
 | 14    | Door_Animated                   | :grey_question:    |
 | 15    | Autosave                        | :x:                |
 | 16    | Transfer_WallLight              | :grey_question:    |

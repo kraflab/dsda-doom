@@ -5844,6 +5844,22 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
 
   switch (special)
   {
+    case zl_door_close:
+      buttonSuccess = EV_DoZDoomDoor(DREV_CLOSE, line, mo, args[0],
+                                     args[1], 0, 0, args[2], false);
+      break;
+    case zl_door_open:
+      buttonSuccess = EV_DoZDoomDoor(DREV_OPEN, line, mo, args[0],
+                                    args[1], 0, 0, args[2], false);
+      break;
+    case zl_door_raise:
+      buttonSuccess = EV_DoZDoomDoor(DREV_NORMAL, line, mo, args[0],
+                                    args[1], args[2], 0, args[3], false);
+      break;
+    case zl_door_locked_raise:
+      buttonSuccess = EV_DoZDoomDoor(args[2] ? DREV_NORMAL : DREV_OPEN, line, mo, args[0],
+                                     args[1], args[2], args[3], args[4], false);
+      break;
     default:
       break;
   }
