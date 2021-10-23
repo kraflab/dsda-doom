@@ -998,6 +998,143 @@ static void Hexen_T_VerticalDoor(vldoor_t * door)
     }
 }
 
+void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t speed,
+                      int delay, byte lightTag, int topwait)
+{
+  vldoor_t *door;
+
+  door = Z_Malloc(sizeof(*door), PU_LEVEL, 0);
+  memset(door, 0, sizeof(*door));
+  P_AddThinker(&door->thinker);
+  sec->ceilingdata = door;
+
+  door->thinker.function = T_VerticalDoor;
+  door->sector = sec;
+  door->type = type;
+  door->topwait = topwait;
+  door->speed = speed;
+  door->line = line;
+  door->lighttag = lightTag;
+
+  switch (type)
+  {
+    case DREV_CLOSE:
+      door->topheight = P_FindLowestCeilingSurrounding(sec);
+      door->topheight -= 4 * FRACUNIT;
+      door->direction = -1;
+      S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_dorcls);
+      break;
+    case DREV_CLOSE30THENOPEN:
+      door->topheight = sec->ceilingheight;
+      door->direction = -1;
+      S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_dorcls);
+      break;
+    case DREV_NORMAL:
+    case DREV_OPEN:
+      door->direction = 1;
+      door->topheight = P_FindLowestCeilingSurrounding(sec);
+      door->topheight -= 4 * FRACUNIT;
+      S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_doropn);
+      break;
+    default:
+      break;
+  }
+}
+
+int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte,
+                   int delay, zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topwait)
+{
+  sector_t *sec;
+  vldoor_t *door;
+  fixed_t speed;
+
+  speed = (fixed_t) speed_byte * FRACUNIT / 8;
+
+  if (lock && !P_CanUnlockZDoomDoor(mo->player, lock))
+    return 0;
+
+  if (!tag)
+  {
+    if (!line)
+      return 0;
+
+    // if the wrong side of door is pushed, give oof sound
+    if (line->sidenum[1] == NO_INDEX)
+    {
+      if (mo->player) // is this check necessary?
+        S_StartSound(mo, sfx_oof);
+      return 0;
+    }
+
+    // get the sector on the second side of activating linedef
+    sec = sides[line->sidenum[1]].sector;
+
+    door = sec->ceilingdata;
+
+    if (door)
+    {
+      // Boom used remote door logic for generalized doors, even if they are manual
+      if (boomgen)
+        return 0;
+
+      if (door->thinker.function == T_VerticalDoor)
+      {
+        // ONLY FOR "RAISE" DOORS, NOT "OPEN"s
+        if (door->type == DREV_NORMAL && type == DREV_NORMAL)
+        {
+          if (door->direction == -1)
+          {
+            door->direction = 1;
+
+            S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_doropn);
+            return 1;
+          }
+          else if (!(line->flags & ML_SPAC_PUSH))
+            // [RH] activate push doors don't go back down when you
+            //    run into them (otherwise opening them would be
+            //    a real pain).
+          {
+            if (!mo->player)
+              return 0;  // JDC: bad guys never close doors
+
+            door->direction = -1; // start going down immediately
+
+            S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_dorcls);
+            return 1;
+          }
+          else
+          {
+            return 0;
+          }
+        }
+      }
+
+      return 0;
+    }
+
+    P_SpawnZDoomDoor(sec, type, line, speed, delay, lightTag, topwait);
+    return 1;
+  }
+  else
+  {
+    int secnum = -1;
+    int retcode = 0;
+
+    while ((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
+    {
+      sec = &sectors[secnum];
+      if (sec->ceilingdata)
+      {
+        continue;
+      }
+      retcode = 1;
+      P_SpawnZDoomDoor(sec, type, line, speed, delay, lightTag, topwait);
+    }
+
+    return retcode;
+  }
+}
+
 int Hexen_EV_DoDoor(line_t * line, byte * args, vldoor_e type)
 {
     int secnum;

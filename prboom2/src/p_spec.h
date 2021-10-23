@@ -1480,4 +1480,27 @@ typedef enum {
 #define ZDOOM_FRICTION_MASK 0x0800
 #define ZDOOM_PUSH_MASK     0x1000
 
+typedef enum {
+  zk_none         =   0,
+  zk_red_card     =   1,
+  zk_blue_card    =   2,
+  zk_yellow_card  =   3,
+  zk_red_skull    =   4,
+  zk_blue_skull   =   5,
+  zk_yellow_skull =   6,
+  zk_any          = 100,
+  zk_all          = 101,
+  zk_red          = 129,
+  zk_blue         = 130,
+  zk_yellow       = 131,
+  zk_redx         = 132, // not sure why these redundant ones exist
+  zk_bluex        = 133,
+  zk_yellowx      = 134,
+  zk_each_color   = 229,
+} zdoom_lock_t;
+
+dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock);
+int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte,
+                   int delay, zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topwait);
+
 #endif

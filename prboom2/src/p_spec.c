@@ -1129,6 +1129,138 @@ dboolean P_CanUnlockGenDoor
   return true;
 }
 
+dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
+{
+  if (!player)
+    return false;
+
+  switch (lock)
+  {
+    case zk_none:
+      break;
+    case zk_red_card:
+      if (!player->cards[it_redcard])
+      {
+        player->message = s_PD_REDC;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_blue_card:
+      if (!player->cards[it_bluecard])
+      {
+        player->message = s_PD_BLUEC;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_yellow_card:
+      if (!player->cards[it_yellowcard])
+      {
+        player->message = s_PD_YELLOWC;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_red_skull:
+      if (!player->cards[it_redskull])
+      {
+        player->message = s_PD_REDS;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_blue_skull:
+      if (!player->cards[it_blueskull])
+      {
+        player->message = s_PD_BLUES;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_yellow_skull:
+      if (!player->cards[it_yellowskull])
+      {
+        player->message = s_PD_YELLOWS;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_any:
+      if (
+        !player->cards[it_redcard] &&
+        !player->cards[it_redskull] &&
+        !player->cards[it_bluecard] &&
+        !player->cards[it_blueskull] &&
+        !player->cards[it_yellowcard] &&
+        !player->cards[it_yellowskull]
+      )
+      {
+        player->message = s_PD_ANY;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_all:
+      if (
+        !player->cards[it_redcard] ||
+        !player->cards[it_redskull] ||
+        !player->cards[it_bluecard] ||
+        !player->cards[it_blueskull] ||
+        !player->cards[it_yellowcard] ||
+        !player->cards[it_yellowskull]
+      )
+      {
+        player->message = s_PD_ALL6;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_red:
+    case zk_redx:
+      if (!player->cards[it_redcard] && !player->cards[it_redskull])
+      {
+        player->message = s_PD_REDK;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_blue:
+    case zk_bluex:
+      if (!player->cards[it_bluecard] && !player->cards[it_blueskull])
+      {
+        player->message = s_PD_BLUEK;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_yellow:
+    case zk_yellowx:
+      if (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
+      {
+        player->message = s_PD_YELLOWK;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_each_color:
+      if (
+        (!player->cards[it_redcard] && !player->cards[it_redskull]) ||
+        (!player->cards[it_bluecard] && !player->cards[it_blueskull]) ||
+        (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
+      )
+      {
+        player->message = s_PD_ALL3;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+    default:
+      break;
+  }
+
+  return true;
+}
+
 
 //
 // P_SectorActive()
