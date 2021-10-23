@@ -1501,6 +1501,6 @@ typedef enum {
 
 dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock);
 int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte,
-                   int delay, zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topwait);
+                   int topwait, zdoom_lock_t lock, byte lightTag, dboolean boomgen);
 
 #endif

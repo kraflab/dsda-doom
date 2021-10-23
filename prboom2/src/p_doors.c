@@ -998,8 +998,8 @@ static void Hexen_T_VerticalDoor(vldoor_t * door)
     }
 }
 
-void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t speed,
-                      int delay, byte lightTag, int topwait)
+static void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t speed,
+                             int topwait, byte lightTag)
 {
   vldoor_t *door;
 
@@ -1042,7 +1042,7 @@ void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t speed,
 }
 
 int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte,
-                   int delay, zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topwait)
+                   int topwait, zdoom_lock_t lock, byte lightTag, dboolean boomgen)
 {
   sector_t *sec;
   vldoor_t *door;
@@ -1112,7 +1112,7 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
       return 0;
     }
 
-    P_SpawnZDoomDoor(sec, type, line, speed, delay, lightTag, topwait);
+    P_SpawnZDoomDoor(sec, type, line, speed, topwait, lightTag);
     return 1;
   }
   else
@@ -1128,7 +1128,7 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
         continue;
       }
       retcode = 1;
-      P_SpawnZDoomDoor(sec, type, line, speed, delay, lightTag, topwait);
+      P_SpawnZDoomDoor(sec, type, line, speed, topwait, lightTag);
     }
 
     return retcode;
