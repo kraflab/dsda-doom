@@ -203,6 +203,8 @@ void F_StartFinale (void)
          break;
   }
 
+	using_FMI = false;
+
 	if (gamemapinfo)
 	{
 		FMI_StartFinale();
