@@ -402,7 +402,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 246   | Elevator_MoveToFloor            | :grey_question:    |
 | 247   | Elevator_LowerToNearest         | :grey_question:    |
 | 248   | HealThing                       | :grey_question:    |
-| 249   | Door_CloseWaitOpen              | :grey_question:    |
+| 249   | Door_CloseWaitOpen              | :heavy_check_mark: |
 | 250   | Floor_Donut                     | :grey_question:    |
 | 251   | FloorAndCeiling_LowerRaise      | :grey_question:    |
 | 252   | Ceiling_RaiseToNearest          | :grey_question:    |

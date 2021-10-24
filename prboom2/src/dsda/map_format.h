@@ -20,6 +20,7 @@
 
 #include "doomtype.h"
 #include "r_defs.h"
+#include "p_spec.h"
 
 typedef struct {
   dboolean zdoom;
@@ -52,6 +53,7 @@ typedef struct {
   void (*check_impact)(mobj_t *);
   void (*translate_line_flags)(unsigned int *);
   void (*apply_sector_movement_special)(mobj_t *, int);
+  void (*t_vertical_door)(vldoor_t *);
   void (*player_thrust)(player_t* player, angle_t angle, fixed_t move);
   size_t mapthing_size;
   size_t maplinedef_size;
