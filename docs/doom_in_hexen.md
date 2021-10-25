@@ -130,7 +130,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 14001-14064 | AmbientSound            | :telescope:        |
 | 14065       | Custom AmbientSound     | :telescope:        |
 | 14066       | SoundSequence           | :telescope:        |
-| 14067       | AmbientSoundNoGravity   | :grey_question:    |
+| 14067       | AmbientSoundNoGravity   | :telescope:        |
 | -           | -                       | -                  |
 | 14101-14164 | MusicChanger            | :heavy_check_mark: |
 | 14165       | Custom MusicChanger     | :telescope:        |
