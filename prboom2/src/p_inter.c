@@ -313,6 +313,28 @@ dboolean P_GiveBody(player_t * player, int num)
     return (true);
 }
 
+void P_HealMobj(mobj_t *mo, int num)
+{
+  player_t *player = mo->player;
+
+  if (mo->health <= 0 || (player && player->playerstate == PST_DEAD))
+    return;
+
+  if (player)
+  {
+    P_GiveBody(player, num);
+    return;
+  }
+  else
+  {
+    int max = mobjinfo[mo->type].spawnhealth;
+
+    mo->health += num;
+    if (mo->health > max)
+      mo->health = max;
+  }
+}
+
 //
 // P_GiveArmor
 // Returns false if the armor is worse

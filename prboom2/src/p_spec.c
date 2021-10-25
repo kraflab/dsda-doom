@@ -5976,6 +5976,34 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
       }
       break;
+    case zl_heal_thing:
+      if (mo)
+      {
+        int max = args[1];
+
+        buttonSuccess = 1;
+
+        if (!max || !mo->player)
+        {
+          P_HealMobj(mo, args[0]);
+          break;
+        }
+        else if (max == 1)
+        {
+          max = max_soul;
+        }
+
+        if (mo->health < max)
+        {
+          mo->health += args[0];
+          if (mo->health > max && max > 0)
+          {
+            mo->health = max;
+          }
+          mo->player->health = mo->health;
+        }
+      }
+      break;
     default:
       break;
   }
