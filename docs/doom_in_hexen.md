@@ -182,7 +182,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 6     | Polyobj_MoveTimes8              | :telescope:        |
 | 7     | Polyobj_DoorSwing               | :telescope:        |
 | 8     | Polyobj_DoorSlide               | :telescope:        |
-| 9     | Line_Horizon                    | :grey_question:    |
+| 9     | Line_Horizon                    | :telescope:        |
 | 10    | Door_Close                      | :heavy_check_mark: |
 | 11    | Door_Open                       | :heavy_check_mark: |
 | 12    | Door_Raise                      | :heavy_check_mark: |
