@@ -369,7 +369,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 213   | Sector_SetFade                  | :x:                |
 | 214   | Sector_SetDamage                | :grey_question:    |
 | 215   | Teleport_Line                   | :grey_question:    |
-| 216   | Sector_SetGravity               | :grey_question:    |
+| 216   | Sector_SetGravity               | :heavy_check_mark: |
 | 217   | Stairs_BuildUpDoom              | :grey_question:    |
 | 218   | Sector_SetWind                  | :heavy_check_mark: |
 | 219   | Sector_SetFriction              | :heavy_check_mark: |

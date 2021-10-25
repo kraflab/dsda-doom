@@ -5923,6 +5923,20 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         buttonSuccess = EV_DoZDoomDoor(type, line, mo, tag, args[1],
                                        (int) args[3] * 35 / 8, args[4], lightTag, boomgen, 0);
       }
+    case zl_sector_set_gravity:
+      {
+        fixed_t gravity;
+        int s = -1;
+
+        if (args[2] > 99)
+          args[2] = 99;
+
+        gravity = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+          sectors[s].gravity = gravity;
+      }
+      break;
     default:
       break;
   }
