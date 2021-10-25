@@ -5875,12 +5875,15 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_door_close_wait_open:
       buttonSuccess = EV_DoZDoomDoor(genCdO, line, mo, args[0],
                                      args[1], (int) args[2] * 35 / 8, 0, args[3], false, 0);
+      break;
     case zl_door_wait_raise:
       buttonSuccess = EV_DoZDoomDoor(waitRaiseDoor, line, mo, args[0],
                                      args[1], args[2], 0, args[4], false, args[3]);
+      break;
     case zl_door_wait_close:
       buttonSuccess = EV_DoZDoomDoor(waitCloseDoor, line, mo, args[0],
                                      args[1], 0, 0, args[3], false, args[2]);
+      break;
     case zl_generic_door:
       {
         byte tag, lightTag;
@@ -5923,6 +5926,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         buttonSuccess = EV_DoZDoomDoor(type, line, mo, tag, args[1],
                                        (int) args[3] * 35 / 8, args[4], lightTag, boomgen, 0);
       }
+      break;
     case zl_sector_set_gravity:
       {
         fixed_t gravity;
