@@ -187,7 +187,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 11    | Door_Open                       | :heavy_check_mark: |
 | 12    | Door_Raise                      | :heavy_check_mark: |
 | 13    | Door_LockedRaise                | :heavy_check_mark: |
-| 14    | Door_Animated                   | :grey_question:    |
+| 14    | Door_Animated                   | :x:                |
 | 15    | Autosave                        | :x:                |
 | 16    | Transfer_WallLight              | :grey_question:    |
 | 17    | Thing_Raise                     | :grey_question:    |
@@ -278,8 +278,8 @@ Current work is isolated to the initial pass over the level format itself - line
 | 102   | Scroll_Texture_Up               | :warning:          |
 | 103   | Scroll_Texture_Down             | :warning:          |
 | 104   | Ceiling_CrushAndRaiseSilentDist | :grey_question:    |
-| 105   | Door_WaitRaise                  | :grey_question:    |
-| 106   | Door_WaitClose                  | :grey_question:    |
+| 105   | Door_WaitRaise                  | :heavy_check_mark: |
+| 106   | Door_WaitClose                  | :heavy_check_mark: |
 | 107   | Line_SetPortalTarget            | :x:                |
 | -     | -                               | -                  |
 | 109   | Light_ForceLightning            | :grey_question:    |
@@ -355,7 +355,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 199   | Ceiling_LowerByValueTimes8      | :grey_question:    |
 | 200   | Generic_Floor                   | :grey_question:    |
 | 201   | Generic_Ceiling                 | :grey_question:    |
-| 202   | Generic_Door                    | :grey_question:    |
+| 202   | Generic_Door                    | :heavy_check_mark: |
 | 203   | Generic_Lift                    | :grey_question:    |
 | 204   | Generic_Stairs                  | :grey_question:    |
 | 205   | Generic_Crusher                 | :grey_question:    |

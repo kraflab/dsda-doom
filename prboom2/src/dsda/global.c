@@ -200,7 +200,7 @@ static void dsda_InitDoom(void) {
   g_sfx_revive = sfx_slop;
 
   g_door_normal = normal;
-  g_door_raise_in_5_mins = raiseIn5Mins;
+  g_door_raise_in_5_mins = waitRaiseDoor;
   g_door_open = openDoor;
 
   g_st_height = 32;

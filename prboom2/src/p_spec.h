@@ -404,7 +404,8 @@ typedef enum
   close30ThenOpen,
   closeDoor,
   openDoor,
-  raiseIn5Mins,
+  waitRaiseDoor,
+  waitCloseDoor,
   blazeRaise,
   blazeOpen,
   blazeClose,
@@ -1500,7 +1501,7 @@ typedef enum {
 } zdoom_lock_t;
 
 dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock);
-int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte,
-                   int topwait, zdoom_lock_t lock, byte lightTag, dboolean boomgen);
+int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte, int topwait,
+                   zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown);
 
 #endif

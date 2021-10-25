@@ -108,17 +108,22 @@ void T_VerticalCompatibleDoor(vldoor_t *door)
       break;
 
     case 2:
-      // Special case for sector type door that opens in 5 mins
-      if (!--door->topcountdown)  // 5 minutes up?
+      // Special case for sector type door that waits before starting
+      if (!--door->topcountdown)
       {
         switch(door->type)
         {
-          case raiseIn5Mins:
+          case waitRaiseDoor:
           case vld_raiseIn5Mins:
             door->direction = 1;  // time to raise then
             door->type = g_door_normal; // door acts just like normal 1 DR door now
             S_StartSound((mobj_t *)&door->sector->soundorg,g_sfx_doropn);
             break;
+
+          case waitCloseDoor:
+            door->direction = -1;
+            door->type = closeDoor;
+            S_StartSound((mobj_t *)&door->sector->soundorg, g_sfx_dorcls);
 
           default:
             break;
@@ -1003,7 +1008,7 @@ void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing)
 // hexen
 
 static void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t speed,
-                             int topwait, byte lightTag)
+                             int topwait, byte lightTag, int topcountdown)
 {
   vldoor_t *door;
 
@@ -1016,6 +1021,7 @@ static void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t
   door->sector = sec;
   door->type = type;
   door->topwait = topwait;
+  door->topcountdown = topcountdown;
   door->speed = speed;
   door->line = line;
   door->lighttag = lightTag;
@@ -1041,13 +1047,23 @@ static void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t
       door->topheight -= 4 * FRACUNIT;
       S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_doropn);
       break;
+    case waitRaiseDoor:
+      door->direction = 2;
+      door->topheight = P_FindLowestCeilingSurrounding(sec);
+      door->topheight -= 4 * FRACUNIT;
+      break;
+    case waitCloseDoor:
+      door->direction = 2;
+      door->topheight = P_FindLowestCeilingSurrounding(sec);
+      door->topheight -= 4 * FRACUNIT;
+      break;
     default:
       break;
   }
 }
 
-int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte,
-                   int topwait, zdoom_lock_t lock, byte lightTag, dboolean boomgen)
+int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte, int topwait,
+                   zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown)
 {
   sector_t *sec;
   vldoor_t *door;
@@ -1117,7 +1133,7 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
       return 0;
     }
 
-    P_SpawnZDoomDoor(sec, type, line, speed, topwait, lightTag);
+    P_SpawnZDoomDoor(sec, type, line, speed, topwait, lightTag, topcountdown);
     return 1;
   }
   else
@@ -1133,7 +1149,7 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
         continue;
       }
       retcode = 1;
-      P_SpawnZDoomDoor(sec, type, line, speed, topwait, lightTag);
+      P_SpawnZDoomDoor(sec, type, line, speed, topwait, lightTag, topcountdown);
     }
 
     return retcode;
