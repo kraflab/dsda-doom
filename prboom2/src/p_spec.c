@@ -5850,6 +5850,11 @@ void P_PlayerInHexenSector(player_t * player, sector_t * sector)
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
 
+static fixed_t P_ArgsToFixed(fixed_t arg_i, fixed_t arg_f)
+{
+  return (arg_i << FRACBITS) + (arg_f << FRACBITS) / 100;
+}
+
 dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
 {
   dboolean buttonSuccess = false;
@@ -5935,7 +5940,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         if (args[2] > 99)
           args[2] = 99;
 
-        gravity = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
+        gravity = P_ArgsToFixed(args[1], args[2]);
 
         while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
           sectors[s].gravity = gravity;
@@ -5946,8 +5951,8 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         int s = -1;
         fixed_t xoffs, yoffs;
 
-        xoffs = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
-        yoffs = (args[3] << FRACBITS) + (args[4] << FRACBITS) / 100;
+        xoffs = P_ArgsToFixed(args[1], args[2]);
+        yoffs = P_ArgsToFixed(args[3], args[4]);
 
         while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
         {
@@ -5961,8 +5966,8 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         int s = -1;
         fixed_t xoffs, yoffs;
 
-        xoffs = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
-        yoffs = (args[3] << FRACBITS) + (args[4] << FRACBITS) / 100;
+        xoffs = P_ArgsToFixed(args[1], args[2]);
+        yoffs = P_ArgsToFixed(args[3], args[4]);
 
         while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
         {
