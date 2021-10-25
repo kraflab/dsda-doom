@@ -440,7 +440,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 1       | Light_Phased             | :heavy_check_mark: |
 | 2-4     | LightSequence*           | :heavy_check_mark: |
 | -       | -                        | -                  |
-| 26-27   | Stairs_Special*          | :grey_question:    |
+| 26-27   | Stairs_Special*          | :heavy_check_mark: |
 | -       | -                        | -                  |
 | 40-51   | Wind*                    | :heavy_check_mark: |
 | -       | -                        | -                  |
