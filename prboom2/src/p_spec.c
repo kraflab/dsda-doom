@@ -5941,6 +5941,36 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           sectors[s].gravity = gravity;
       }
       break;
+    case zl_sector_set_floor_panning:
+      {
+        int s = -1;
+        fixed_t xoffs, yoffs;
+
+        xoffs = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
+        yoffs = (args[3] << FRACBITS) + (args[4] << FRACBITS) / 100;
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        {
+          sectors[s].floor_xoffs = xoffs;
+          sectors[s].floor_yoffs = yoffs;
+        }
+      }
+      break;
+    case zl_sector_set_ceiling_panning:
+      {
+        int s = -1;
+        fixed_t xoffs, yoffs;
+
+        xoffs = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
+        yoffs = (args[3] << FRACBITS) + (args[4] << FRACBITS) / 100;
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        {
+          sectors[s].ceiling_xoffs = xoffs;
+          sectors[s].ceiling_yoffs = yoffs;
+        }
+      }
+      break;
     default:
       break;
   }

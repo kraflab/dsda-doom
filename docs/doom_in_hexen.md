@@ -338,9 +338,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | 182   | Line_Mirror                     | :x:                |
 | 183   | Line_AlignCeiling               | :x:                |
 | 184   | Line_AlignFloor                 | :x:                |
-| 185   | Sector_SetRotation              | :grey_question:    |
-| 186   | Sector_SetCeilingPanning        | :grey_question:    |
-| 187   | Sector_SetFloorPanning          | :grey_question:    |
+| 185   | Sector_SetRotation              | :x:                |
+| 186   | Sector_SetCeilingPanning        | :heavy_check_mark: |
+| 187   | Sector_SetFloorPanning          | :heavy_check_mark: |
 | 188   | Sector_SetCeilingScale          | :x:                |
 | 189   | Sector_SetFloorScale            | :x:                |
 | 190   | Static_Init                     | :warning:          |
