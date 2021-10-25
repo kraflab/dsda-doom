@@ -474,7 +474,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 115     | Damage_InstantDeath      | :heavy_check_mark: |
 | 116     | sDamage_SuperHellslime   | :heavy_check_mark: |
 | -       | -                        | -                  |
-| 118     | Scroll_StrifeCurrent     | :grey_question:    |
+| 118     | Scroll_StrifeCurrent     | :heavy_check_mark: |
 | -       | -                        | -                  |
 | 195     | Sector_Hidden            | :heavy_check_mark: |
 | 196     | Sector_Heal              | :heavy_check_mark: |

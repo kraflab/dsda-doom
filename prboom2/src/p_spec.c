@@ -2828,6 +2828,18 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
     case zs_d_scroll_east_lava_damage:
       P_Thrust(player, 0, 2048 * 28);
       break;
+    case zs_scroll_strife_current:
+      {
+        int anglespeed;
+        fixed_t carryspeed;
+        angle_t angle;
+
+        anglespeed = sector->tag - 100;
+        carryspeed = (anglespeed % 10) * 4096;
+        angle = (anglespeed / 10) * ANG45;
+        P_Thrust(player, angle, carryspeed);
+      }
+      break;
     case zs_carry_east5:
     case zs_carry_east10:
     case zs_carry_east25:
