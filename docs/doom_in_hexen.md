@@ -206,8 +206,8 @@ Current work is isolated to the initial pass over the level format itself - line
 | 30    | Pillar_Open                     | :grey_question:    |
 | 31    | Stairs_BuildDownSync            | :grey_question:    |
 | 32    | Stairs_BuildUpSync              | :grey_question:    |
-| 33    | ForceField                      | :grey_question:    |
-| 34    | ClearForceField                 | :grey_question:    |
+| 33    | ForceField                      | :heavy_check_mark: |
+| 34    | ClearForceField                 | :heavy_check_mark: |
 | 35    | Floor_RaiseByValueTimes8        | :grey_question:    |
 | 36    | Floor_LowerByValueTimes8        | :grey_question:    |
 | 37    | Floor_MoveToValue               | :grey_question:    |

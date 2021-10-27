@@ -6007,6 +6007,40 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
       }
       break;
+    case zl_force_field:
+      if (mo)
+      {
+        P_DamageMobj(mo, NULL, NULL, 16);
+        P_ThrustMobj(mo, ANG180 + mo->angle, 2048 * 250);
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_clear_force_field:
+      {
+        int s = -1;
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        {
+          int i;
+          line_t *line;
+
+          buttonSuccess = 1;
+
+          for (i = 0; i < sectors[s].linecount; i++)
+          {
+            line_t *line = sectors[s].lines[i];
+
+            if (line->backsector && line->special == zl_force_field)
+            {
+              line->flags &= ~(ML_BLOCKING | ML_BLOCKEVERYTHING);
+              line->special = 0;
+              sides[line->sidenum[0]].midtexture = NO_TEXTURE;
+              sides[line->sidenum[1]].midtexture = NO_TEXTURE;
+            }
+          }
+        }
+      }
+      break;
     default:
       break;
   }
