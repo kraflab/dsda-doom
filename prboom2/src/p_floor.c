@@ -1229,6 +1229,30 @@ static void Hexen_T_MoveFloor(floormove_t * floor)
     }
 }
 
+int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
+                    int crush, int change, dboolean hexencrush, dboolean hereticlower)
+{
+  sector_t *sec;
+  int secnum = -1;
+  int retcode = 0;
+
+  speed *= FRACUNIT / 8;
+  height *= FRACUNIT;
+
+  while ((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
+  {
+    sec = &sectors[secnum];
+    if (sec->floordata)
+    {
+      continue;
+    }
+    retcode = 1;
+    // Spawn the floor :^)
+  }
+
+  return retcode;
+}
+
 int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype)
 {
     int secnum;

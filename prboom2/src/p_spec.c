@@ -5850,6 +5850,23 @@ void P_PlayerInHexenSector(player_t * player, sector_t * sector)
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
 
+static dboolean P_ArgToCrushType(byte arg)
+{
+  return arg == 1 ? false : arg == 2 ? true : hexen;
+}
+
+static int P_ArgToCrush(byte arg)
+{
+  return (arg > 0) ? arg : -1;
+}
+
+static byte P_ArgToChange(byte arg)
+{
+  static const byte ChangeMap[8] = { 0, 1, 5, 3, 7, 2, 6, 0 };
+
+  return (arg < 8) ? ChangeMap[arg] : 0;
+}
+
 static fixed_t P_ArgsToFixed(fixed_t arg_i, fixed_t arg_f)
 {
   return (arg_i << FRACBITS) + (arg_f << FRACBITS) / 100;
@@ -5930,6 +5947,143 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
 
         buttonSuccess = EV_DoZDoomDoor(type, line, mo, tag, args[1],
                                        (int) args[3] * 35 / 8, args[4], lightTag, boomgen, 0);
+      }
+      break;
+    case zl_floor_lower_by_value:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], args[2],
+                                      -1, P_ArgToChange(args[3]), false, false);
+      break;
+    case zl_floor_lower_to_lowest:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToLowest, line, args[0], args[1], 0,
+                                      -1, P_ArgToChange(args[2]), false, false);
+      break;
+    case zl_floor_lower_to_highest:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToHighest, line, args[0], args[1],
+                                      (int) args[2] - 128, -1, 0, false, args[3] == 1);
+      break;
+    case zl_floor_lower_to_highest_ee:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToHighest, line, args[0], args[1], 0,
+                                      -1, P_ArgToChange(args[2]), false, false);
+      break;
+    case zl_floor_lower_to_nearest:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToNearest, line, args[0], args[1], 0,
+                                      -1, P_ArgToChange(args[2]), false, false);
+      break;
+    case zl_floor_raise_by_value:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseByValue, line, args[0], args[1], args[2],
+                                      P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
+      break;
+    case zl_floor_raise_to_highest:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToHighest, line, args[0], args[1], 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_to_nearest:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToNearest, line, args[0], args[1], 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_to_lowest:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToLowest, line, args[0], 2, 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_and_crush:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseAndCrush, line, args[0], args[1], 0,
+                                      args[2], 0, P_ArgToCrushType(args[3]), false);
+      break;
+    case zl_floor_raise_and_crushdoom:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseAndCrushDoom, line, args[0], args[1], 0,
+                                      args[2], 0, P_ArgToCrushType(args[3]), false);
+      break;
+    case zl_floor_raise_by_value_times_8:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseByValue, line, args[0], args[1], (int) args[2] * 8,
+                                      P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
+      break;
+    case zl_floor_lower_by_value_times_8:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], (int) args[2] * 8,
+                                      -1, P_ArgToChange(args[3]), false, false);
+      break;
+    case zl_floor_lower_instant:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerInstant, line, args[0], 0, (int) args[2] * 8,
+                                      -1, P_ArgToChange(args[3]), false, false);
+      break;
+    case zl_floor_raise_instant:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseInstant, line, args[0], 0, (int) args[2] * 8,
+                                      P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
+      break;
+    case zl_floor_to_ceiling_instant:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToCeiling, line, args[0], 0, args[3],
+                                      P_ArgToCrush(args[2]), P_ArgToChange(args[1]), true, false);
+      break;
+    case zl_floor_move_to_value:
+      buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
+                                      (int) args[2] * (args[3] ? -1 : 1),
+                                      -1, P_ArgToChange(args[4]), false, false);
+      break;
+    case zl_floor_move_to_value_times_8:
+      buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
+                                      (int) args[2] * 8 * (args[3] ? -1 : 1),
+                                      -1, P_ArgToChange(args[4]), false, false);
+      break;
+    case zl_floor_raise_to_lowest_ceiling:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToLowestCeiling, line, args[0], args[1], 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_lower_to_lowest_ceiling:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToLowestCeiling, line, args[0], args[1], args[4],
+                                      -1, P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_by_texture:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseByTexture, line, args[0], args[1], 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_lower_by_texture:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerByTexture, line, args[0], args[1], 0,
+                                      -1, P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_to_ceiling:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToCeiling, line, args[0], args[1], args[4],
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_by_value_tx_ty:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseAndChange, line, args[0], args[1], args[2],
+                                      -1, 0, false, false);
+      break;
+    case zl_floor_lower_to_lowest_tx_ty:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerAndChange, line, args[0], args[1], args[2],
+                                      -1, 0, false, false);
+      break;
+    case zl_generic_floor:
+      {
+        floor_e type;
+        dboolean raise;
+        byte index;
+
+        static floor_e floor_type[2][7] = {
+          {
+            floorRaiseByValue,
+            floorRaiseToHighest,
+            floorRaiseToLowest,
+            floorRaiseToNearest,
+            floorRaiseToLowestCeiling,
+            floorRaiseToCeiling,
+            floorRaiseByTexture,
+          },
+          {
+            floorLowerByValue,
+            floorLowerToHighest,
+            floorLowerToLowest,
+            floorLowerToNearest,
+            floorLowerToLowestCeiling,
+            floorLowerToCeiling,
+            floorLowerByTexture,
+          }
+        };
+
+        raise = (args[4] & 8) >> 3;
+        index = (args[3] < 7) ? args[3] : 0;
+        type = floor_type[raise][index];
+
+        buttonSuccess = EV_DoZDoomFloor(type, line, args[0], args[1], args[2],
+                                        (args[4] & 16) ? 20 : -1, args[4] & 7, false, false);
       }
       break;
     case zl_sector_set_gravity:

@@ -542,6 +542,29 @@ typedef enum
   FLEV_LOWERTIMES8INSTANT,
   FLEV_RAISETIMES8INSTANT,
   FLEV_MOVETOVALUETIMES8,
+
+  // zdoom - to be merged
+  floorLowerByValue,
+  floorLowerToLowest,
+  floorLowerToHighest,
+  floorLowerToNearest,
+  floorRaiseByValue,
+  floorRaiseToHighest,
+  floorRaiseToNearest,
+  floorRaiseToLowest,
+  floorRaiseAndCrush,
+  floorRaiseAndCrushDoom,
+  floorLowerInstant,
+  floorRaiseInstant,
+  floorLowerToCeiling,
+  floorMoveToValue,
+  floorRaiseToLowestCeiling,
+  floorLowerToLowestCeiling,
+  floorRaiseByTexture,
+  floorLowerByTexture,
+  floorRaiseToCeiling,
+  floorRaiseAndChange,
+  floorLowerAndChange,
 } floor_e;
 
 typedef enum
@@ -1503,5 +1526,7 @@ typedef enum {
 dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock);
 int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte, int topwait,
                    zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown);
+int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
+                   int crush, int change, dboolean hexencrush, dboolean hereticlower);
 
 #endif
