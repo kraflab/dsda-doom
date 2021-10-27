@@ -5945,6 +5945,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
           sectors[s].gravity = gravity;
       }
+      buttonSuccess = 1;
       break;
     case zl_sector_set_floor_panning:
       {
@@ -5960,6 +5961,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           sectors[s].floor_yoffs = yoffs;
         }
       }
+      buttonSuccess = 1;
       break;
     case zl_sector_set_ceiling_panning:
       {
@@ -5975,6 +5977,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           sectors[s].ceiling_yoffs = yoffs;
         }
       }
+      buttonSuccess = 1;
       break;
     case zl_heal_thing:
       if (mo)
