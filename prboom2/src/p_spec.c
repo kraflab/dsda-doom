@@ -6054,19 +6054,10 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_generic_floor:
       {
         floor_e type;
-        dboolean raise;
+        dboolean raise_or_lower;
         byte index;
 
         static floor_e floor_type[2][7] = {
-          {
-            floorRaiseByValue,
-            floorRaiseToHighest,
-            floorRaiseToLowest,
-            floorRaiseToNearest,
-            floorRaiseToLowestCeiling,
-            floorRaiseToCeiling,
-            floorRaiseByTexture,
-          },
           {
             floorLowerByValue,
             floorLowerToHighest,
@@ -6075,12 +6066,21 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
             floorLowerToLowestCeiling,
             floorLowerToCeiling,
             floorLowerByTexture,
+          },
+          {
+            floorRaiseByValue,
+            floorRaiseToHighest,
+            floorRaiseToLowest,
+            floorRaiseToNearest,
+            floorRaiseToLowestCeiling,
+            floorRaiseToCeiling,
+            floorRaiseByTexture,
           }
         };
 
-        raise = (args[4] & 8) >> 3;
+        raise_or_lower = (args[4] & 8) >> 3;
         index = (args[3] < 7) ? args[3] : 0;
-        type = floor_type[raise][index];
+        type = floor_type[raise_or_lower][index];
 
         buttonSuccess = EV_DoZDoomFloor(type, line, args[0], args[1], args[2],
                                         (args[4] & 16) ? 20 : -1, args[4] & 7, false, false);
