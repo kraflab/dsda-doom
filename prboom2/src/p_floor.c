@@ -1229,6 +1229,136 @@ static void Hexen_T_MoveFloor(floormove_t * floor)
     }
 }
 
+static void P_SpawnZDoomFloor(sector_t *sec, floor_e floortype, line_t *line,
+                                  fixed_t speed, fixed_t height, int crush, int change,
+                                  dboolean hexencrush, dboolean hereticlower)
+{
+  floormove_t *floor;
+
+  floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
+  memset(floor, 0, sizeof(*floor));
+  P_AddThinker(&floor->thinker);
+  sec->floordata = floor;
+  floor->thinker.function = T_MoveFloor;
+  floor->type = floortype;
+  floor->crush = crush;
+  floor->speed = speed;
+  floor->sector = sec;
+  // floor->hexencrush = hexencrush;
+  // floor->resetcount = 0;
+  // floor->orgdist = sec->floorheight;
+
+  switch (floortype)
+  {
+    case floorLowerToHighest:
+      floor->direction = -1;
+      floor->floordestheight = P_FindHighestFloorSurrounding(sec);
+      if (hereticlower || floor->floordestheight != sec->floorheight)
+        floor->floordestheight += height;
+      break;
+    case floorLowerToLowest:
+      floor->direction = -1;
+      floor->floordestheight = P_FindLowestFloorSurrounding(sec);
+      break;
+    case floorLowerToNearest:
+      floor->direction = -1;
+      floor->floordestheight = P_FindNextLowestFloor(sec, sec->floorheight);
+      break;
+    case floorLowerInstant:
+      floor->speed = height;
+    case floorLowerByValue:
+      floor->direction = -1;
+      floor->floordestheight = sec->floorheight - height;
+      break;
+    case floorRaiseInstant:
+      floor->speed = height;
+    case floorRaiseByValue:
+      floor->direction = 1;
+      floor->floordestheight = sec->floorheight + height;
+      break;
+    case floorMoveToValue:
+      floor->floordestheight = height;
+      floor->direction = (floor->floordestheight > sec->floorheight) ? 1 : -1;
+      break;
+    case floorRaiseAndCrushDoom:
+      height = 8 * FRACUNIT;
+    case floorRaiseToLowestCeiling:
+      floor->direction = 1;
+      floor->floordestheight = P_FindLowestCeilingSurrounding(sec) - height;
+      if (floor->floordestheight > sec->ceilingheight)
+        floor->floordestheight = sec->ceilingheight - height;
+      break;
+    case floorRaiseToHighest:
+      floor->direction = 1;
+      floor->floordestheight = P_FindHighestFloorSurrounding(sec);
+      break;
+    case floorRaiseToNearest:
+      floor->direction = 1;
+      floor->floordestheight = P_FindNextHighestFloor(sec, sec->floorheight);
+      break;
+    case floorRaiseToLowest:
+      floor->direction = 1;
+      floor->floordestheight = P_FindLowestFloorSurrounding(sec);
+      break;
+    case floorRaiseAndCrush:
+      height = 8 * FRACUNIT;
+    case floorRaiseToCeiling:
+      floor->direction = 1;
+      floor->floordestheight = sec->ceilingheight - height;
+      break;
+    case floorLowerToLowestCeiling:
+      floor->direction = -1;
+      floor->floordestheight = P_FindLowestCeilingSurrounding(sec);
+      break;
+    case floorLowerByTexture:
+      floor->direction = -1;
+      floor->floordestheight = sec->floorheight - P_FindShortestTextureAround(sec->iSectorID);
+      break;
+    case floorRaiseByTexture:
+      floor->direction = 1;
+      floor->floordestheight = sec->floorheight + P_FindShortestTextureAround(sec->iSectorID);
+      break;
+    case floorLowerToCeiling:
+      floor->direction = -1;
+      floor->floordestheight = sec->ceilingheight - height;
+      break;
+    case floorRaiseAndChange:
+      floor->direction = 1;
+      floor->floordestheight = sec->floorheight + height;
+      if (line)
+      {
+        sec->floorpic = line->frontsector->floorpic;
+        P_CopySectorSpecial(sec, line->frontsector);
+      }
+      else
+      {
+        P_ResetSectorSpecial(sec);
+      }
+      break;
+    case floorLowerAndChange:
+      {
+        sector_t *modelsec;
+
+        floor->direction = -1;
+        floor->floordestheight = P_FindLowestFloorSurrounding(sec);
+        floor->texture = sec->floorpic;
+        P_CopyTransferSpecial(&floor->newspecial, sec);
+
+        modelsec = P_FindModelFloorSector(floor->floordestheight, sec->iSectorID);
+        if (modelsec)
+        {
+          floor->texture = modelsec->floorpic;
+          P_CopyTransferSpecial(&floor->newspecial, modelsec);
+        }
+      }
+      break;
+    default:
+      break;
+  }
+
+  // still more to do!
+}
+
 int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
                     int crush, int change, dboolean hexencrush, dboolean hereticlower)
 {
@@ -1247,7 +1377,8 @@ int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fi
       continue;
     }
     retcode = 1;
-    // Spawn the floor :^)
+    P_SpawnZDoomFloor(sec, floortype, line, speed, height,
+                      crush, change, hexencrush, hereticlower);
   }
 
   return retcode;
