@@ -1229,6 +1229,28 @@ static void Hexen_T_MoveFloor(floormove_t * floor)
     }
 }
 
+static void P_SetFloorChangeType(floormove_t *floor, sector_t *sec, int change)
+{
+  floor->texture = sec->floorpic;
+
+  switch (change & 3)
+  {
+    case 0:
+      break;
+    case 1:
+      P_ResetTransferSpecial(&floor->newspecial);
+      floor->type = genFloorChg0;
+      break;
+    case 2:
+      floor->type = genFloorChg;
+      break;
+    case 3:
+      P_TransferSpecial(sec, &floor->newspecial);
+      floor->type = genFloorChgT;
+      break;
+  }
+}
+
 static void P_SpawnZDoomFloor(sector_t *sec, floor_e floortype, line_t *line,
                                   fixed_t speed, fixed_t height, int crush, int change,
                                   dboolean hexencrush, dboolean hereticlower)
@@ -1356,7 +1378,35 @@ static void P_SpawnZDoomFloor(sector_t *sec, floor_e floortype, line_t *line,
       break;
   }
 
-  // still more to do!
+  // hexen and zdoom emit sound at this point, but not doom
+
+  if (change & 3)
+  {
+    // [RH] Need to do some transferring
+    if (change & 4)
+    {
+      // Numeric model change
+      sector_t *modelsec;
+
+      modelsec = (
+        floortype == floorRaiseToLowestCeiling ||
+        floortype == floorLowerToLowestCeiling ||
+        floortype == floorRaiseToCeiling ||
+        floortype == floorLowerToCeiling
+      ) ? P_FindModelCeilingSector(floor->floordestheight, sec->iSectorID)
+        : P_FindModelFloorSector(floor->floordestheight, sec->iSectorID);
+
+      if (modelsec)
+      {
+        P_SetFloorChangeType(floor, modelsec, change);
+      }
+    }
+    else if (line)
+    {
+      // Trigger model change
+      P_SetFloorChangeType(floor, line->frontsector, change);
+    }
+  }
 }
 
 int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
