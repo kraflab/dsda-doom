@@ -45,6 +45,9 @@
 
 #include "dsda/map_format.h"
 
+#include "hexen/p_acs.h"
+#include "hexen/sn_sonix.h"
+
 //e6y
 #define STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE 10
 
@@ -255,13 +258,9 @@ result_e T_MovePlane
 // jff 02/08/98 all cases with labels beginning with gen added to support
 // generalized line type behaviors.
 
-static void Hexen_T_MoveFloor(floormove_t * floor);
-
-void T_MoveFloor(floormove_t* floor)
+void T_MoveCompatibleFloor(floormove_t * floor)
 {
   result_e      res;
-
-  if (map_format.hexen) return Hexen_T_MoveFloor(floor);
 
   res = T_MovePlane       // move the floor
   (
@@ -356,6 +355,73 @@ void T_MoveFloor(floormove_t* floor)
     if (compatibility_level > doom_12_compatibility)
         S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
   }
+}
+
+void T_MoveHexenFloor(floormove_t * floor)
+{
+    result_e res;
+
+    if (floor->resetDelayCount)
+    {
+        floor->resetDelayCount--;
+        if (!floor->resetDelayCount)
+        {
+            floor->floordestheight = floor->resetHeight;
+            floor->direction = -floor->direction;
+            floor->resetDelay = 0;
+            floor->delayCount = 0;
+            floor->delayTotal = 0;
+        }
+    }
+    if (floor->delayCount)
+    {
+        floor->delayCount--;
+        if (!floor->delayCount && floor->textureChange)
+        {
+            floor->sector->floorpic += floor->textureChange;
+        }
+        return;
+    }
+
+    res = T_MovePlane(floor->sector, floor->speed,
+                      floor->floordestheight, floor->crush, 0,
+                      floor->direction);
+
+    if (floor->type == FLEV_RAISEBUILDSTEP)
+    {
+        if ((floor->direction == 1 && floor->sector->floorheight >=
+             floor->stairsDelayHeight) || (floor->direction == -1 &&
+                                           floor->sector->floorheight <=
+                                           floor->stairsDelayHeight))
+        {
+            floor->delayCount = floor->delayTotal;
+            floor->stairsDelayHeight += floor->stairsDelayHeightDelta;
+        }
+    }
+    if (res == pastdest)
+    {
+        SN_StopSequence((mobj_t *) & floor->sector->soundorg);
+        if (floor->delayTotal)
+        {
+            floor->delayTotal = 0;
+        }
+        if (floor->resetDelay)
+        {
+            return;
+        }
+        floor->sector->floordata = NULL;
+        if (floor->textureChange)
+        {
+            floor->sector->floorpic -= floor->textureChange;
+        }
+        P_TagFinished(floor->sector->tag);
+        P_RemoveThinker(&floor->thinker);
+    }
+}
+
+void T_MoveFloor(floormove_t* floor)
+{
+  map_format.t_move_floor(floor);
 }
 
 //
@@ -1163,71 +1229,6 @@ int EV_DoElevator
 }
 
 // hexen
-
-#include "hexen/p_acs.h"
-#include "hexen/sn_sonix.h"
-
-static void Hexen_T_MoveFloor(floormove_t * floor)
-{
-    result_e res;
-
-    if (floor->resetDelayCount)
-    {
-        floor->resetDelayCount--;
-        if (!floor->resetDelayCount)
-        {
-            floor->floordestheight = floor->resetHeight;
-            floor->direction = -floor->direction;
-            floor->resetDelay = 0;
-            floor->delayCount = 0;
-            floor->delayTotal = 0;
-        }
-    }
-    if (floor->delayCount)
-    {
-        floor->delayCount--;
-        if (!floor->delayCount && floor->textureChange)
-        {
-            floor->sector->floorpic += floor->textureChange;
-        }
-        return;
-    }
-
-    res = T_MovePlane(floor->sector, floor->speed,
-                      floor->floordestheight, floor->crush, 0,
-                      floor->direction);
-
-    if (floor->type == FLEV_RAISEBUILDSTEP)
-    {
-        if ((floor->direction == 1 && floor->sector->floorheight >=
-             floor->stairsDelayHeight) || (floor->direction == -1 &&
-                                           floor->sector->floorheight <=
-                                           floor->stairsDelayHeight))
-        {
-            floor->delayCount = floor->delayTotal;
-            floor->stairsDelayHeight += floor->stairsDelayHeightDelta;
-        }
-    }
-    if (res == pastdest)
-    {
-        SN_StopSequence((mobj_t *) & floor->sector->soundorg);
-        if (floor->delayTotal)
-        {
-            floor->delayTotal = 0;
-        }
-        if (floor->resetDelay)
-        {
-            return;
-        }
-        floor->sector->floordata = NULL;
-        if (floor->textureChange)
-        {
-            floor->sector->floorpic -= floor->textureChange;
-        }
-        P_TagFinished(floor->sector->tag);
-        P_RemoveThinker(&floor->thinker);
-    }
-}
 
 static void P_SetFloorChangeType(floormove_t *floor, sector_t *sec, int change)
 {
