@@ -303,6 +303,7 @@ void T_MoveCompatibleFloor(floormove_t * floor)
     {
       switch(floor->type) // handle texture/type changes
       {
+        case floorLowerAndChange:
         case lowerAndChange:
         case genFloorChgT:
         case genFloorChg0:
