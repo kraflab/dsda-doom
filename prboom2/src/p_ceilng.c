@@ -88,7 +88,8 @@ void T_MoveCeiling (ceiling_t* ceiling)
               ceiling->topheight,
               false,
               1,
-              ceiling->direction
+              ceiling->direction,
+              false
             );
 
       // if not a silent crusher, make moving sound
@@ -152,7 +153,8 @@ void T_MoveCeiling (ceiling_t* ceiling)
               ceiling->bottomheight,
               ceiling->crush,
               1,
-              ceiling->direction
+              ceiling->direction,
+              false
             );
 
       // if not silent crusher type make moving sound
@@ -496,7 +498,7 @@ static void Hexen_T_MoveCeiling(ceiling_t * ceiling)
         case 1:                // UP
             res = T_MovePlane(ceiling->sector, ceiling->speed,
                               ceiling->topheight, false, 1,
-                              ceiling->direction);
+                              ceiling->direction, true);
             if (res == pastdest)
             {
                 SN_StopSequence((mobj_t *) & ceiling->sector->soundorg);
@@ -515,7 +517,7 @@ static void Hexen_T_MoveCeiling(ceiling_t * ceiling)
         case -1:               // DOWN
             res = T_MovePlane(ceiling->sector, ceiling->speed,
                               ceiling->bottomheight, ceiling->crush, 1,
-                              ceiling->direction);
+                              ceiling->direction, true);
             if (res == pastdest)
             {
                 SN_StopSequence((mobj_t *) & ceiling->sector->soundorg);

@@ -140,7 +140,8 @@ void T_VerticalCompatibleDoor(vldoor_t *door)
               door->sector->floorheight,
               false,
               1,
-              door->direction
+              door->direction,
+              false
             );
 
       /* killough 10/98: implement gradual lighting effects */
@@ -256,7 +257,8 @@ void T_VerticalCompatibleDoor(vldoor_t *door)
               door->topheight,
               false,
               1,
-              door->direction
+              door->direction,
+              false
             );
 
       /* killough 10/98: implement gradual lighting effects */
@@ -366,7 +368,7 @@ void T_VerticalHexenDoor(vldoor_t *door)
     case -1:               // DOWN
       res = T_MovePlane(door->sector, door->speed,
                         door->sector->floorheight, false, 1,
-                        door->direction);
+                        door->direction, true);
       if (res == pastdest)
       {
         SN_StopSequence((mobj_t *) & door->sector->soundorg);
@@ -400,7 +402,7 @@ void T_VerticalHexenDoor(vldoor_t *door)
       break;
     case 1:                // UP
       res = T_MovePlane(door->sector, door->speed,
-                        door->topheight, false, 1, door->direction);
+                        door->topheight, false, 1, door->direction, true);
       if (res == pastdest)
       {
         SN_StopSequence((mobj_t *) & door->sector->soundorg);

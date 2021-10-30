@@ -77,9 +77,10 @@ result_e T_MovePlane
 ( sector_t*     sector,
   fixed_t       speed,
   fixed_t       dest,
-  dboolean       crush,
+  dboolean      crush,
   int           floorOrCeiling,
-  int           direction )
+  int           direction,
+  dboolean      hexencrush )
 {
   dboolean       flag;
   fixed_t       lastpos;
@@ -156,7 +157,7 @@ result_e T_MovePlane
             if (flag == true)
             {
         /* jff 1/25/98 fix floor crusher */
-              if (!hexen && comp[comp_floors]) {
+              if (!hexencrush && comp[comp_floors]) {
 
                 //e6y: warning about potential desynch
                 if (crush == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
@@ -209,7 +210,7 @@ result_e T_MovePlane
 
             if (flag == true)
             {
-              if (!hexen && crush == true)
+              if (!hexencrush && crush == true)
                 return crushed;
               sector->ceilingheight = lastpos;
               P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
@@ -269,7 +270,8 @@ void T_MoveCompatibleFloor(floormove_t * floor)
     floor->floordestheight,
     floor->crush,
     0,
-    floor->direction
+    floor->direction,
+    floor->hexencrush
   );
 
   if (!(leveltime&7))     // make the floormove sound
@@ -385,7 +387,7 @@ void T_MoveHexenFloor(floormove_t * floor)
 
     res = T_MovePlane(floor->sector, floor->speed,
                       floor->floordestheight, floor->crush, 0,
-                      floor->direction);
+                      floor->direction, true);
 
     if (floor->type == FLEV_RAISEBUILDSTEP)
     {
@@ -449,7 +451,8 @@ void T_MoveElevator(elevator_t* elevator)
       elevator->ceilingdestheight,
       0,
       1,                          // move floor
-      elevator->direction
+      elevator->direction,
+      false
     );
     if (res==ok || res==pastdest) // jff 4/7/98 don't move ceil if blocked
       T_MovePlane
@@ -459,7 +462,8 @@ void T_MoveElevator(elevator_t* elevator)
         elevator->floordestheight,
         0,
         0,                        // move ceiling
-        elevator->direction
+        elevator->direction,
+        false
       );
   }
   else // up
@@ -471,7 +475,8 @@ void T_MoveElevator(elevator_t* elevator)
       elevator->floordestheight,
       0,
       0,                          // move ceiling
-      elevator->direction
+      elevator->direction,
+      false
     );
     if (res==ok || res==pastdest) // jff 4/7/98 don't move floor if blocked
       T_MovePlane
@@ -481,7 +486,8 @@ void T_MoveElevator(elevator_t* elevator)
         elevator->ceilingdestheight,
         0,
         1,                        // move floor
-        elevator->direction
+        elevator->direction,
+        false
       );
   }
 
@@ -1267,7 +1273,7 @@ static void P_SpawnZDoomFloor(sector_t *sec, floor_e floortype, line_t *line,
   floor->crush = crush;
   floor->speed = speed;
   floor->sector = sec;
-  // floor->hexencrush = hexencrush;
+  floor->hexencrush = hexencrush;
   // floor->resetcount = 0;
   // floor->orgdist = sec->floorheight;
 
@@ -1773,11 +1779,12 @@ void T_BuildPillar(pillar_t * pillar)
     result_e res2;
 
     // First, raise the floor
-    res1 = T_MovePlane(pillar->sector, pillar->floorSpeed, pillar->floordest, pillar->crush, 0, pillar->direction);     // floorOrCeiling, direction
+    res1 = T_MovePlane(pillar->sector, pillar->floorSpeed, pillar->floordest,
+                       pillar->crush, 0, pillar->direction, true);     // floorOrCeiling, direction
     // Then, lower the ceiling
     res2 = T_MovePlane(pillar->sector, pillar->ceilingSpeed,
                        pillar->ceilingdest, pillar->crush, 1,
-                       -pillar->direction);
+                       -pillar->direction, true);
     if (res1 == pastdest && res2 == pastdest)
     {
         pillar->sector->floordata = NULL;

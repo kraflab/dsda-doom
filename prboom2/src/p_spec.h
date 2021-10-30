@@ -801,6 +801,9 @@ typedef struct
   short resetDelay;
   short resetDelayCount;
   byte textureChange;
+
+  // zdoom
+  dboolean hexencrush;
 } floormove_t;
 
 typedef struct
@@ -1022,7 +1025,8 @@ result_e T_MovePlane
   fixed_t dest,
   dboolean crush,
   int floorOrCeiling,
-  int direction );
+  int direction,
+  dboolean hexencrush );
 
 void T_MoveFloor
 ( floormove_t* floor );

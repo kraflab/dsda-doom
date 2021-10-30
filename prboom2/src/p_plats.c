@@ -71,7 +71,7 @@ void T_PlatRaise(plat_t* plat)
   switch(plat->status)
   {
     case up: // plat moving up
-      res = T_MovePlane(plat->sector,plat->speed,plat->high,plat->crush,0,1);
+      res = T_MovePlane(plat->sector, plat->speed, plat->high, plat->crush, 0, 1, false);
 
       if (heretic && !(leveltime & 31))
       {
@@ -142,7 +142,7 @@ void T_PlatRaise(plat_t* plat)
       break;
 
     case down: // plat moving down
-      res = T_MovePlane(plat->sector,plat->speed,plat->low,false,0,-1);
+      res = T_MovePlane(plat->sector, plat->speed, plat->low, false, 0, -1, false);
 
       // handle reaching end of down stroke
       if (res == pastdest)
@@ -481,7 +481,7 @@ static void Hexen_T_PlatRaise(plat_t * plat)
     {
         case up:
             res = T_MovePlane(plat->sector, plat->speed,
-                              plat->high, plat->crush, 0, 1);
+                              plat->high, plat->crush, 0, 1, true);
             if (res == crushed && (!plat->crush))
             {
                 plat->count = plat->wait;
@@ -508,7 +508,7 @@ static void Hexen_T_PlatRaise(plat_t * plat)
         case down:
             res =
                 T_MovePlane(plat->sector, plat->speed, plat->low, false, 0,
-                            -1);
+                            -1, true);
             if (res == pastdest)
             {
                 plat->count = plat->wait;
