@@ -288,9 +288,6 @@ void T_MoveCompatibleFloor(floormove_t * floor)
       switch(floor->type) // handle texture/type changes
       {
         case donutRaise:
-          P_TransferSpecial(floor->sector, &floor->newspecial);
-          floor->sector->floorpic = floor->texture;
-          break;
         case genFloorChgT:
         case genFloorChg0:
           P_TransferSpecial(floor->sector, &floor->newspecial);
@@ -307,9 +304,6 @@ void T_MoveCompatibleFloor(floormove_t * floor)
       switch(floor->type) // handle texture/type changes
       {
         case lowerAndChange:
-          P_TransferSpecial(floor->sector, &floor->newspecial);
-          floor->sector->floorpic = floor->texture;
-          break;
         case genFloorChgT:
         case genFloorChg0:
           P_TransferSpecial(floor->sector, &floor->newspecial);
