@@ -1269,8 +1269,6 @@ static void P_SpawnZDoomFloor(sector_t *sec, floor_e floortype, line_t *line,
   floor->speed = speed;
   floor->sector = sec;
   floor->hexencrush = hexencrush;
-  // floor->resetcount = 0;
-  // floor->orgdist = sec->floorheight;
 
   switch (floortype)
   {
