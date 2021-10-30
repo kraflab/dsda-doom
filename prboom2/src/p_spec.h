@@ -528,7 +528,7 @@ typedef enum
   buildStair,
   genBuildStair,
 
-  // hexen - can probably be merged
+  // hexen
   FLEV_LOWERFLOOR,            // lower floor to highest surrounding floor
   FLEV_LOWERFLOORTOLOWEST,    // lower floor to lowest surrounding floor
   FLEV_LOWERFLOORBYVALUE,
@@ -543,7 +543,7 @@ typedef enum
   FLEV_RAISETIMES8INSTANT,
   FLEV_MOVETOVALUETIMES8,
 
-  // zdoom - to be merged
+  // zdoom
   floorLowerByValue,
   floorLowerToLowest,
   floorLowerToHighest,
