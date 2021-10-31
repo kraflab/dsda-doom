@@ -1123,60 +1123,60 @@ static int G_ReadDemoFooter(const char *filename)
     {
       lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file");
     }
-
-    AddDefaultExtension(demoex_filename, ".wad");
-
-    if (!CheckWadBufIntegrity(demoex_p, size))
-    {
-      lprintf(LO_ERROR, "G_ReadDemoFooter: demo footer is corrupted\n");
-    }
-    else
-    //write an additional info from a demo to demoex.wad
-    if (!M_WriteFile(demoex_filename, demoex_p, size))
-    {
-      lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file %s\n", demoex_filename);
-    }
     else
     {
-      //add demoex.wad to the wads list
-      D_AddFile(demoex_filename, source_auto_load);
+      AddDefaultExtension(demoex_filename, ".wad");
 
-      //cache demoex.wad for immediately getting its data with W_CacheLumpName
-      W_Init();
-
-      WadDataInit(&waddata);
-
-      //enumerate and save all auto-loaded files and demo for future use
-      for (i = 0; i < numwadfiles; i++)
+      if (!CheckWadBufIntegrity(demoex_p, size))
       {
-        if (
-          wadfiles[i].src == source_auto_load ||
-          wadfiles[i].src == source_pre ||
-          wadfiles[i].src == source_lmp)
-        {
-          WadDataAddItem(&waddata, wadfiles[i].name, wadfiles[i].src, 0);
-        }
+        lprintf(LO_ERROR, "G_ReadDemoFooter: demo footer is corrupted\n");
+      } // write an additional info from a demo to demoex.wad
+      else if (!M_WriteFile(demoex_filename, demoex_p, size))
+      {
+        lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file %s\n", demoex_filename);
       }
-
-      //get needed wads and dehs from demoex.wad
-      //restore all critical params like -spechit x
-      R_DemoEx_GetParams(buffer, &waddata);
-
-      //replace old wadfiles with the new ones
-      if (waddata.numwadfiles)
+      else
       {
-        for (i = 0; (size_t)i < waddata.numwadfiles; i++)
+        //add demoex.wad to the wads list
+        D_AddFile(demoex_filename, source_auto_load);
+
+        //cache demoex.wad for immediately getting its data with W_CacheLumpName
+        W_Init();
+
+        WadDataInit(&waddata);
+
+        //enumerate and save all auto-loaded files and demo for future use
+        for (i = 0; i < numwadfiles; i++)
         {
-          if (waddata.wadfiles[i].src == source_iwad)
+          if (
+            wadfiles[i].src == source_auto_load ||
+            wadfiles[i].src == source_pre ||
+            wadfiles[i].src == source_lmp)
           {
-            W_ReleaseAllWads();
-            WadDataToWadFiles(&waddata);
-            result = true;
-            break;
+            WadDataAddItem(&waddata, wadfiles[i].name, wadfiles[i].src, 0);
           }
         }
+
+        //get needed wads and dehs from demoex.wad
+        //restore all critical params like -spechit x
+        R_DemoEx_GetParams(buffer, &waddata);
+
+        //replace old wadfiles with the new ones
+        if (waddata.numwadfiles)
+        {
+          for (i = 0; (size_t)i < waddata.numwadfiles; i++)
+          {
+            if (waddata.wadfiles[i].src == source_iwad)
+            {
+              W_ReleaseAllWads();
+              WadDataToWadFiles(&waddata);
+              result = true;
+              break;
+            }
+          }
+        }
+        WadDataFree(&waddata);
       }
-      WadDataFree(&waddata);
     }
     free(buffer);
   }
