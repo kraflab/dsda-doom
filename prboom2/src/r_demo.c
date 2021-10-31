@@ -1084,7 +1084,7 @@ static int G_ReadDemoFooter(const char *filename)
     }
     else
     {
-      int tmp_fd;
+      int tmp_fd = -1;
       const char* tmp_dir;
       char* tmp_path = NULL;
       const char* template_format = "%sdsda-doom-demoex2-XXXXXX";
@@ -1103,14 +1103,14 @@ static int G_ReadDemoFooter(const char *filename)
 #ifdef HAVE_MKSTEMP
         if ((tmp_fd = mkstemp(demoex_filename)) == -1)
 #else
-        if ((tmp_fd = mktemp(demoex_filename)) == 0)
+        if (mktemp(demoex_filename) == NULL)
 #endif
         {
           demoex_filename[0] = 0;
         }
 
         // don't leave file open
-        if (demoex_filename[0])
+        if (tmp_fd >= 0)
         {
           close(tmp_fd);
         }
