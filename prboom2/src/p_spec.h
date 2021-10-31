@@ -468,7 +468,37 @@ typedef enum
   CLEV_RAISEBYVALUE,
   CLEV_CRUSHRAISEANDSTAY,
   CLEV_MOVETOVALUETIMES8,
+
+  // zdoom
+  ceilLowerByValue,
+  ceilRaiseByValue,
+  ceilMoveToValue,
+  ceilLowerToHighestFloor,
+  ceilLowerInstant,
+  ceilRaiseInstant,
+  ceilCrushAndRaise,
+  ceilLowerAndCrush,
+  ceil_placeholder,
+  ceilCrushRaiseAndStay,
+  ceilRaiseToNearest,
+  ceilLowerToLowest,
+  ceilLowerToFloor,
+  ceilRaiseToHighest,
+  ceilLowerToHighest,
+  ceilRaiseToLowest,
+  ceilLowerToNearest,
+  ceilRaiseToHighestFloor,
+  ceilRaiseToFloor,
+  ceilRaiseByTexture,
+  ceilLowerByTexture,
 } ceiling_e;
+
+typedef enum
+{
+  crushDoom = 0,
+  crushHexen = 1,
+  crushSlowdown = 2,
+} crushmode_e;
 
 // p_floor
 
@@ -1532,5 +1562,7 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
                    zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown);
 int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
                    int crush, int change, dboolean hexencrush, dboolean hereticlower);
+int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
+                      fixed_t height, int crush, int silent, int change, crushmode_e crushmode);
 
 #endif

@@ -567,6 +567,29 @@ int Hexen_EV_CeilingCrushStop(line_t * line, byte * args)
     return 0;
 }
 
+int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
+                      fixed_t height, int crush, int silent, int change, crushmode_e crushmode)
+{
+  sector_t *sec;
+  int secnum = -1;
+  int retcode = 0;
+
+  height *= FRACUNIT;
+
+  while ((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
+  {
+    sec = &sectors[secnum];
+    if (sec->ceilingdata)
+    {
+      continue;
+    }
+    retcode = 1;
+    // spawn it
+  }
+
+  return retcode;
+}
+
 int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type)
 {
     int secnum, rtn;

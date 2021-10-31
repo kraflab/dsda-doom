@@ -5855,6 +5855,15 @@ static dboolean P_ArgToCrushType(byte arg)
   return arg == 1 ? false : arg == 2 ? true : hexen;
 }
 
+static crushmode_e P_ArgToCrushMode(byte arg, dboolean slowdown)
+{
+  static const crushmode_e map[] = { crushDoom, crushHexen, crushSlowdown };
+
+  if (arg >= 1 && arg <= 3) return map[arg - 1];
+
+  return hexen ? crushHexen : slowdown ? crushSlowdown : crushDoom;
+}
+
 static int P_ArgToCrush(byte arg)
 {
   return (arg > 0) ? arg : -1;
@@ -5865,6 +5874,11 @@ static byte P_ArgToChange(byte arg)
   static const byte ChangeMap[8] = { 0, 1, 5, 3, 7, 2, 6, 0 };
 
   return (arg < 8) ? ChangeMap[arg] : 0;
+}
+
+static fixed_t P_ArgToSpeed(byte arg)
+{
+  return (fixed_t) arg * FRACUNIT / 8;
 }
 
 static fixed_t P_ArgsToFixed(fixed_t arg_i, fixed_t arg_f)
@@ -6084,6 +6098,223 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
 
         buttonSuccess = EV_DoZDoomFloor(type, line, args[0], args[1], args[2],
                                         (args[4] & 16) ? 20 : -1, args[4] & 7, false, false);
+      }
+      break;
+    case zl_ceiling_lower_by_value:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerByValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[2], P_ArgToCrush(args[4]), 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_raise_by_value:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseByValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[2], P_ArgToCrush(args[4]), 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_lower_by_value_times_8:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerByValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        (int) args[2] * 8, -1, 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_raise_by_value_times_8:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseByValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        (int) args[2] * 8, -1, 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_crush_and_raise:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]) / 2,
+                                        8, args[2], 0,
+                                        0, P_ArgToCrushMode(args[3], false));
+      break;
+    case zl_ceiling_lower_and_crush:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerAndCrush, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]),
+                                        8, args[2], 0,
+                                        0, P_ArgToCrushMode(args[3], args[1] == 8));
+      break;
+    case zl_ceiling_lower_and_crush_dist:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerAndCrush, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]),
+                                        args[3], args[2], 0,
+                                        0, P_ArgToCrushMode(args[4], args[1] == 8));
+      break;
+    case zl_ceiling_crush_raise_and_stay:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushRaiseAndStay, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]) / 2,
+                                        8, args[2], 0,
+                                        0, P_ArgToCrushMode(args[3], false));
+      break;
+    case zl_ceiling_move_to_value_times_8:
+      buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        (int) args[2] * 8 * (args[3] ? -1 : 1), -1, 0,
+                                        P_ArgToChange(args[4]), false);
+      break;
+    case zl_ceiling_move_to_value:
+      buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        (int) args[2] * (args[3] ? -1 : 1), -1, 0,
+                                        P_ArgToChange(args[4]), false);
+      break;
+    case zl_ceiling_lower_to_highest_floor:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToHighestFloor, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[4], P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[2]), false);
+      break;
+    case zl_ceiling_lower_instant:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerInstant, line, args[0],
+                                        0, 0,
+                                        (int) args[2] * 8, P_ArgToCrush(args[4]), 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_raise_instant:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseInstant, line, args[0],
+                                        0, 0,
+                                        (int) args[2] * 8, -1, 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_crush_raise_and_stay_a:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushRaiseAndStay, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[3], 0,
+                                        0, P_ArgToCrushMode(args[4], false));
+      break;
+    case zl_ceiling_crush_raise_and_stay_sil_a:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushRaiseAndStay, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[3], 1,
+                                        0, P_ArgToCrushMode(args[4], false));
+      break;
+    case zl_ceiling_crush_and_raise_a:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[3], 0,
+                                        0, P_ArgToCrushMode(args[4], args[1] == 8 && args[2] == 8));
+      break;
+    case zl_ceiling_crush_and_raise_dist:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[2]), P_ArgToSpeed(args[2]),
+                                        args[1], args[3], 0,
+                                        0, P_ArgToCrushMode(args[4], args[2] == 8));
+      break;
+    case zl_ceiling_crush_and_raise_silent_a:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[3], 1,
+                                        0, P_ArgToCrushMode(args[4], args[1] == 8 && args[2] == 8));
+      break;
+    case zl_ceiling_crush_and_raise_silent_dist:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[2]), P_ArgToSpeed(args[2]),
+                                        args[1], args[3], 1,
+                                        0, P_ArgToCrushMode(args[4], args[2] == 8));
+      break;
+    case zl_ceiling_raise_to_nearest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToNearest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, -1, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_raise_to_highest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToHighest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, -1, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_raise_to_lowest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToLowest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, -1, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_raise_to_highest_floor:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToHighestFloor, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, -1, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_raise_by_texture:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseByTexture, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, -1, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_lower_to_lowest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToLowest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[2]), false);
+      break;
+    case zl_ceiling_lower_to_nearest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToNearest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[2]), false);
+      break;
+    case zl_ceiling_to_highest_instant:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToHighest, line, args[0],
+                                        2 * FRACUNIT, 0,
+                                        0, P_ArgToCrush(args[2]), 0,
+                                        P_ArgToChange(args[1]), false);
+      break;
+    case zl_ceiling_to_floor_instant:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToFloor, line, args[0],
+                                        2 * FRACUNIT, 0,
+                                        args[3], P_ArgToCrush(args[2]), 0,
+                                        P_ArgToChange(args[1]), false);
+      break;
+    case zl_ceiling_lower_to_floor:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToFloor, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[4], P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[4]), false);
+      break;
+    case zl_ceiling_lower_by_texture:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerByTexture, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[4]), false);
+      break;
+    case zl_generic_ceiling:
+      {
+        ceiling_e type;
+        dboolean raise_or_lower;
+        byte index;
+
+        static floor_e ceiling_type[2][7] = {
+          {
+            ceilLowerByValue,
+            ceilLowerToHighest,
+            ceilLowerToLowest,
+            ceilLowerToNearest,
+            ceilLowerToHighestFloor,
+            ceilLowerToFloor,
+            ceilLowerByTexture,
+          },
+          {
+            ceilRaiseByValue,
+            ceilRaiseToHighest,
+            ceilRaiseToLowest,
+            ceilRaiseToNearest,
+            ceilRaiseToHighestFloor,
+            ceilRaiseToFloor,
+            ceilRaiseByTexture,
+          }
+        };
+
+        raise_or_lower = (args[4] & 8) >> 3;
+        index = (args[3] < 7) ? args[3] : 0;
+        type = ceiling_type[raise_or_lower][index];
+
+        buttonSuccess = EV_DoZDoomCeiling(type, line, args[0],
+                                          P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]),
+                                          args[2], (args[4] & 16) ? 20 : -1, 0,
+                                          args[4] & 7, false);
       }
       break;
     case zl_sector_set_gravity:
