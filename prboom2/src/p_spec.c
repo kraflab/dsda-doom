@@ -6195,6 +6195,14 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
       }
       break;
+    case zl_exit_normal:
+      G_ExitLevel(); // args[0] is position
+      buttonSuccess = 1;
+      break;
+    case zl_exit_secret:
+      G_SecretExitLevel(); // args[0] is position
+      buttonSuccess = 1;
+      break;
     default:
       break;
   }

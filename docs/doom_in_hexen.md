@@ -396,8 +396,8 @@ Current work is isolated to the initial pass over the level format itself - line
 | 240   | Floor_RaiseByTexture            | :heavy_check_mark: |
 | 241   | Floor_LowerToLowestTxTy         | :heavy_check_mark: |
 | 242   | Floor_LowerToHighest            | :heavy_check_mark: |
-| 243   | Exit_Normal                     | :grey_question:    |
-| 244   | Exit_Secret                     | :grey_question:    |
+| 243   | Exit_Normal                     | :warning:          |
+| 244   | Exit_Secret                     | :warning:          |
 | 245   | Elevator_RaiseToNearest         | :grey_question:    |
 | 246   | Elevator_MoveToFloor            | :grey_question:    |
 | 247   | Elevator_LowerToNearest         | :grey_question:    |
@@ -431,6 +431,7 @@ Current work is isolated to the initial pass over the level format itself - line
 
 - Wall scrollers cannot distinguish between top, bottom, and mid textures.
 - The static init supports damage, gravity, and skies only.
+- The position argument for map exits is currently ignored.
 
 ### Sector Specials
 
