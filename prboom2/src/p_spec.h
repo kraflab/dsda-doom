@@ -801,6 +801,11 @@ typedef struct
   int tag;
   int olddirection;
   struct ceilinglist *list;   // jff 2/22/98 copied from killough's plats
+
+  // zdoom
+  fixed_t speed2;
+  crushmode_e crushmode;
+  int silent;
 } ceiling_t;
 
 typedef struct ceilinglist {

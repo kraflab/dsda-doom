@@ -571,6 +571,210 @@ static void P_SpawnZDoomCeiling(sector_t *sec, ceiling_e type, line_t *line, int
                                 fixed_t speed, fixed_t speed2, fixed_t height, int crush,
                                 int silent, int change, crushmode_e crushmode)
 {
+  ceiling_t *ceiling;
+  fixed_t targheight = 0;
+
+  ceiling = Z_Malloc(sizeof(*ceiling), PU_LEVEL, 0);
+  memset(ceiling, 0, sizeof(*ceiling));
+  P_AddThinker(&ceiling->thinker);
+  sec->ceilingdata = ceiling;
+  ceiling->thinker.function = T_MoveCeiling;
+  ceiling->sector = sec;
+  ceiling->speed = speed;
+  ceiling->oldspeed = speed;
+  ceiling->speed2 = speed2;
+  ceiling->silent = (silent & ~4);
+  ceiling->texture = NO_TEXTURE;
+
+  switch (type)
+  {
+    case ceilCrushAndRaise:
+    case ceilCrushRaiseAndStay:
+      ceiling->topheight = sec->ceilingheight;
+    case ceilLowerAndCrush:
+      targheight = sec->floorheight + height;
+      ceiling->bottomheight = targheight;
+      ceiling->direction = -1;
+      break;
+    case ceilRaiseToHighest:
+      targheight = P_FindHighestCeilingSurrounding(sec);
+      ceiling->topheight = targheight;
+      ceiling->direction = 1;
+      break;
+    case ceilLowerByValue:
+      targheight = sec->ceilingheight - height;
+      ceiling->bottomheight = targheight;
+      ceiling->direction = -1;
+      break;
+    case ceilRaiseByValue:
+      targheight = sec->ceilingheight + height;
+      ceiling->topheight = targheight;
+      ceiling->direction = 1;
+      break;
+    case ceilMoveToValue:
+      {
+        fixed_t diff = height - sec->ceilingheight;
+
+        targheight = height;
+        if (diff < 0)
+        {
+          ceiling->bottomheight = height;
+          ceiling->direction = -1;
+        }
+        else
+        {
+          ceiling->topheight = height;
+          ceiling->direction = 1;
+        }
+      }
+      break;
+    case ceilLowerToHighestFloor:
+      targheight = P_FindHighestFloorSurrounding(sec) + height;
+      ceiling->bottomheight = targheight;
+      ceiling->direction = -1;
+      break;
+    case ceilRaiseToHighestFloor:
+      targheight = P_FindHighestFloorSurrounding(sec);
+      ceiling->topheight = targheight;
+      ceiling->direction = 1;
+      break;
+    case ceilLowerInstant:
+      targheight = sec->ceilingheight - height;
+      ceiling->bottomheight = targheight;
+      ceiling->direction = -1;
+      ceiling->speed = height;
+      break;
+    case ceilRaiseInstant:
+      targheight = sec->ceilingheight + height;
+      ceiling->topheight = targheight;
+      ceiling->direction = 1;
+      ceiling->speed = height;
+      break;
+    case ceilLowerToNearest:
+      targheight = P_FindNextLowestCeiling(sec, sec->ceilingheight);
+      ceiling->bottomheight = targheight;
+      ceiling->direction = -1;
+      break;
+    case ceilRaiseToNearest:
+      targheight = P_FindNextHighestCeiling(sec, sec->ceilingheight);
+      ceiling->topheight = targheight;
+      ceiling->direction = 1;
+      break;
+    case ceilLowerToLowest:
+      targheight = P_FindLowestCeilingSurrounding(sec);
+      ceiling->bottomheight = targheight;
+      ceiling->direction = -1;
+      break;
+    case ceilRaiseToLowest:
+      targheight = P_FindLowestCeilingSurrounding(sec);
+      ceiling->topheight = targheight;
+      ceiling->direction = 1;
+      break;
+    case ceilLowerToFloor:
+      targheight = sec->floorheight + height;
+      ceiling->bottomheight = targheight;
+      ceiling->direction = -1;
+      break;
+    case ceilRaiseToFloor:
+      targheight = sec->floorheight + height;
+      ceiling->topheight = targheight;
+      ceiling->direction = 1;
+      break;
+    case ceilLowerToHighest:
+      targheight = P_FindHighestCeilingSurrounding(sec);
+      ceiling->bottomheight = targheight;
+      ceiling->direction = -1;
+      break;
+    case ceilLowerByTexture:
+      targheight = sec->ceilingheight - P_FindShortestUpperAround(sec->iSectorID);
+      ceiling->bottomheight = targheight;
+      ceiling->direction = -1;
+      break;
+    case ceilRaiseByTexture:
+      targheight = sec->ceilingheight + P_FindShortestUpperAround(sec->iSectorID);
+      ceiling->topheight = targheight;
+      ceiling->direction = 1;
+      break;
+    default:
+      break;
+  }
+
+  ceiling->tag = tag;
+  ceiling->type = type;
+  ceiling->crush = crush;
+  ceiling->crushmode = crushmode;
+
+  // Don't make noise for instant movement ceilings
+  if (ceiling->direction < 0)
+  {
+    if (ceiling->speed >= sec->ceilingheight - ceiling->bottomheight)
+      if (silent & 4)
+        ceiling->silent = 2;
+  }
+  else
+  {
+    if (ceiling->speed >= ceiling->topheight - sec->ceilingheight)
+      if (silent & 4)
+        ceiling->silent = 2;
+  }
+
+  // set texture/type change properties
+  if (change & 3) // if a texture change is indicated
+  {
+    if (change & 4) // if a numeric model change
+    {
+      sector_t *modelsec;
+
+      // jff 5/23/98 find model with floor at target height if target is a floor type
+      modelsec = (type == ceilRaiseToFloor || type == ceilLowerToFloor) ?
+                 P_FindModelFloorSector(targheight, sec->iSectorID) :
+                 P_FindModelCeilingSector(targheight, sec->iSectorID);
+
+      if (modelsec != NULL)
+      {
+        ceiling->texture = modelsec->ceilingpic;
+        switch (change & 3)
+        {
+          case 0:
+            break;
+          case 1: // type is zeroed
+            P_ResetTransferSpecial(&ceiling->newspecial);
+            ceiling->type = genCeilingChg0;
+            break;
+          case 2: // type is copied
+            P_CopyTransferSpecial(&ceiling->newspecial, sec);
+            ceiling->type = genCeilingChgT;
+            break;
+          case 3: // type is left alone
+            ceiling->type = genCeilingChg;
+            break;
+        }
+      }
+    }
+    else if (line)  // else if a trigger model change
+    {
+      ceiling->texture = line->frontsector->ceilingpic;
+      switch (change & 3)
+      {
+        case 0:
+          break;
+        case 1: // type is zeroed
+          P_ResetTransferSpecial(&ceiling->newspecial);
+          ceiling->type = genCeilingChg0;
+          break;
+        case 2: // type is copied
+          P_CopyTransferSpecial(&ceiling->newspecial, line->frontsector);
+          ceiling->type = genCeilingChgT;
+          break;
+        case 3: // type is left alone
+          ceiling->type = genCeilingChg;
+          break;
+      }
+    }
+  }
+
+  P_AddActiveCeiling(ceiling);
+
   return;
 }
 
