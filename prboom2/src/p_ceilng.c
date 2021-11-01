@@ -124,7 +124,16 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
             ceiling->direction = -1;
             break;
 
+          case ceilCrushAndRaise:
+            ceiling->direction = -1;
+            ceiling->speed = ceiling->oldspeed;
+            if (ceiling->silent == 1)
+              S_StartSound((mobj_t *) &ceiling->sector->soundorg, sfx_pstop);
+            break;
+
           default:
+            if (map_format.zdoom)
+              P_RemoveActiveCeiling(ceiling);
             break;
         }
       }
@@ -140,7 +149,7 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
               ceiling->crush,
               1,
               ceiling->direction,
-              false
+              ceiling->crushmode == crushHexen
             );
 
       // if not silent, make moving sound
@@ -193,7 +202,17 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
             P_RemoveActiveCeiling(ceiling);
             break;
 
+          case ceilCrushAndRaise:
+          case ceilCrushRaiseAndStay:
+            ceiling->speed = ceiling->speed2;
+            ceiling->direction = 1;
+            if (ceiling->silent == 1)
+              S_StartSound((mobj_t *) &ceiling->sector->soundorg, sfx_pstop);
+            break;
+
           default:
+            if (map_format.zdoom)
+              P_RemoveActiveCeiling(ceiling);
             break;
         }
       }
@@ -213,7 +232,13 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
             case silentCrushAndRaise:
             case crushAndRaise:
             case lowerAndCrush:
-                ceiling->speed = CEILSPEED / 8;
+              ceiling->speed = CEILSPEED / 8;
+              break;
+
+            case ceilCrushAndRaise:
+            case ceilLowerAndCrush:
+              if (ceiling->crushmode == crushSlowdown)
+                ceiling->speed = FRACUNIT / 8;
               break;
 
             default:
