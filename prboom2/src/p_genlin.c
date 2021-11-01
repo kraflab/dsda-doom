@@ -820,7 +820,7 @@ int EV_DoGenCrusher
 
   //jff 2/22/98  Reactivate in-stasis ceilings...for certain types.
   //jff 4/5/98 return if activated
-  rtn = P_ActivateInStasisCeiling(line);
+  rtn = P_ActivateInStasisCeiling(line->tag);
 
   if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_crusher;} else {return rtn;}};//e6y
   // check if a manual trigger, if so do just the sector on the backside

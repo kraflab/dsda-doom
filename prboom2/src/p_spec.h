@@ -1278,7 +1278,7 @@ void P_AddActiveCeiling
 ( ceiling_t* c );
 
 int P_ActivateInStasisCeiling
-( line_t* line );
+( int tag );
 
 mobj_t* P_GetPushThing(int);                                // phares 3/23/98
 

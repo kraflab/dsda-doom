@@ -278,7 +278,7 @@ int EV_DoCeiling
     case silentCrushAndRaise:
     case crushAndRaise:
       //jff 4/5/98 return if activated
-      rtn = P_ActivateInStasisCeiling(line); // heretic_note: rtn not set in heretic
+      rtn = P_ActivateInStasisCeiling(line->tag); // heretic_note: rtn not set in heretic
     default:
       break;
   }
@@ -384,7 +384,7 @@ manual_ceiling://e6y
 // Returns true if a ceiling reactivated
 //
 //jff 4/5/98 return if activated
-int P_ActivateInStasisCeiling(line_t *line)
+int P_ActivateInStasisCeiling(int tag)
 {
   ceilinglist_t *cl;
   int rtn=0;
@@ -392,7 +392,7 @@ int P_ActivateInStasisCeiling(line_t *line)
   for (cl=activeceilings; cl; cl=cl->next)
   {
     ceiling_t *ceiling = cl->ceiling;
-    if (ceiling->tag == line->tag && ceiling->direction == 0)
+    if (ceiling->tag == tag && ceiling->direction == 0)
     {
       ceiling->direction = ceiling->olddirection;
       ceiling->thinker.function = T_MoveCeiling;
