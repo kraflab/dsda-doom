@@ -133,13 +133,12 @@ void T_VerticalCompatibleDoor(vldoor_t *door)
 
     case -1:
       // Door is moving down
-      res = T_MovePlane
+      res = T_MoveCeilingPlane
             (
               door->sector,
               door->speed,
               door->sector->floorheight,
               false,
-              1,
               door->direction,
               false
             );
@@ -250,13 +249,12 @@ void T_VerticalCompatibleDoor(vldoor_t *door)
 
     case 1:
       // Door is moving up
-      res = T_MovePlane
+      res = T_MoveCeilingPlane
             (
               door->sector,
               door->speed,
               door->topheight,
               false,
-              1,
               door->direction,
               false
             );
@@ -366,9 +364,9 @@ void T_VerticalHexenDoor(vldoor_t *door)
       }
       break;
     case -1:               // DOWN
-      res = T_MovePlane(door->sector, door->speed,
-                        door->sector->floorheight, false, 1,
-                        door->direction, true);
+      res = T_MoveCeilingPlane(door->sector, door->speed,
+                               door->sector->floorheight, false,
+                               door->direction, true);
       if (res == pastdest)
       {
         SN_StopSequence((mobj_t *) & door->sector->soundorg);
@@ -401,8 +399,8 @@ void T_VerticalHexenDoor(vldoor_t *door)
       }
       break;
     case 1:                // UP
-      res = T_MovePlane(door->sector, door->speed,
-                        door->topheight, false, 1, door->direction, true);
+      res = T_MoveCeilingPlane(door->sector, door->speed,
+                               door->topheight, false, door->direction, true);
       if (res == pastdest)
       {
         SN_StopSequence((mobj_t *) & door->sector->soundorg);

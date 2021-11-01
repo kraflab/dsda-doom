@@ -53,39 +53,36 @@
 
 ///////////////////////////////////////////////////////////////////////
 //
-// Plane (floor or ceiling), Floor motion and Elevator action routines
+// Floor motion and Elevator action routines
 //
 ///////////////////////////////////////////////////////////////////////
 
 //
-// T_MovePlane()
+// T_MoveFloorPlane()
 //
-// Move a plane (floor or ceiling) and check for crushing. Called
-// every tick by all actions that move floors or ceilings.
+// Move a floor plane and check for crushing. Called
+// every tick by all actions that move floors.
 //
 // Passed the sector to move a plane in, the speed to move it at,
 // the dest height it is to achieve, whether it crushes obstacles,
-// whether it moves a floor or ceiling, and the direction up or down
-// to move.
+// and the direction up or down to move.
 //
 // Returns a result_e:
 //  ok - plane moved normally, has not achieved destination yet
 //  pastdest - plane moved normally and is now at destination height
 //  crushed - plane encountered an obstacle, is holding until removed
 //
-result_e T_MovePlane
+result_e T_MoveFloorPlane
 ( sector_t*     sector,
   fixed_t       speed,
   fixed_t       dest,
   dboolean      crush,
-  int           floorOrCeiling,
   int           direction,
   dboolean      hexencrush )
 {
   dboolean       flag;
   fixed_t       lastpos;
-  fixed_t       destheight; //jff 02/04/98 used to keep floors/ceilings
-                            // from moving thru each other
+  fixed_t       destheight; //jff 02/04/98 used to keep floors from moving thru each other
 
 #ifdef GL_DOOM
   if (V_IsOpenGLMode())
@@ -94,155 +91,85 @@ result_e T_MovePlane
   }
 #endif
 
-  switch(floorOrCeiling)
+  switch(direction)
   {
-    case 0:
-      // Moving a floor
-      switch(direction)
+    case -1:
+      // Moving a floor down
+      if (sector->floorheight - speed < dest)
       {
-        case -1:
-          // Moving a floor down
-          if (sector->floorheight - speed < dest)
-          {
-            lastpos = sector->floorheight;
-            sector->floorheight = dest;
-            flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
-            if (flag == true)
-            {
-              sector->floorheight =lastpos;
-              P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
-            }
-            return pastdest;
-          }
-          else
-          {
-            lastpos = sector->floorheight;
-            sector->floorheight -= speed;
-            flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
-            /* cph - make more compatible with original Doom, by
-             *  reintroducing this code. This means floors can't lower
-             *  if objects are stuck in the ceiling */
-            if ((flag == true) && comp[comp_floors]) {
-              sector->floorheight = lastpos;
-              P_ChangeSector(sector,crush);
-              return crushed;
-            }
-          }
-          break;
-
-        case 1:
-          // Moving a floor up
-          // jff 02/04/98 keep floor from moving thru ceilings
-          // jff 2/22/98 weaken check to demo_compatibility
-          destheight = (comp[comp_floors] || dest<sector->ceilingheight)?
-                          dest : sector->ceilingheight;
-          if (sector->floorheight + speed > destheight)
-          {
-            lastpos = sector->floorheight;
-            sector->floorheight = destheight;
-            flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
-            if (flag == true)
-            {
-              sector->floorheight = lastpos;
-              P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
-            }
-            return pastdest;
-          }
-          else
-          {
-            // crushing is possible
-            lastpos = sector->floorheight;
-            sector->floorheight += speed;
-            flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
-            if (flag == true)
-            {
-        /* jff 1/25/98 fix floor crusher */
-              if (!hexencrush && comp[comp_floors]) {
-
-                //e6y: warning about potential desynch
-                if (crush == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
-                {
-                  lprintf(LO_WARN, "T_MovePlane: Stairs which can potentially crush may lead to desynch in compatibility mode.\n");
-                  lprintf(LO_WARN, " gametic: %d, sector: %d, complevel: %d\n", gametic, sector->iSectorID, compatibility_level);
-                }
-
-                if (crush == true)
-                  return crushed;
-              }
-              sector->floorheight = lastpos;
-              P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
-              return crushed;
-            }
-          }
-          break;
+        lastpos = sector->floorheight;
+        sector->floorheight = dest;
+        flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
+        if (flag == true)
+        {
+          sector->floorheight =lastpos;
+          P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
+        }
+        return pastdest;
+      }
+      else
+      {
+        lastpos = sector->floorheight;
+        sector->floorheight -= speed;
+        flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
+        /* cph - make more compatible with original Doom, by
+         *  reintroducing this code. This means floors can't lower
+         *  if objects are stuck in the ceiling */
+        if ((flag == true) && comp[comp_floors]) {
+          sector->floorheight = lastpos;
+          P_ChangeSector(sector,crush);
+          return crushed;
+        }
       }
       break;
 
     case 1:
-      // moving a ceiling
-      switch(direction)
+      // Moving a floor up
+      // jff 02/04/98 keep floor from moving thru ceilings
+      // jff 2/22/98 weaken check to demo_compatibility
+      destheight = (comp[comp_floors] || dest<sector->ceilingheight)?
+                      dest : sector->ceilingheight;
+      if (sector->floorheight + speed > destheight)
       {
-        case -1:
-          // moving a ceiling down
-          // jff 02/04/98 keep ceiling from moving thru floors
-          // jff 2/22/98 weaken check to demo_compatibility
-          destheight = (comp[comp_floors] || dest>sector->floorheight)?
-                          dest : sector->floorheight;
-          if (sector->ceilingheight - speed < destheight)
-          {
-            lastpos = sector->ceilingheight;
-            sector->ceilingheight = destheight;
-            flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
+        lastpos = sector->floorheight;
+        sector->floorheight = destheight;
+        flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
+        if (flag == true)
+        {
+          sector->floorheight = lastpos;
+          P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
+        }
+        return pastdest;
+      }
+      else
+      {
+        // crushing is possible
+        lastpos = sector->floorheight;
+        sector->floorheight += speed;
+        flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
+        if (flag == true)
+        {
+          /* jff 1/25/98 fix floor crusher */
+          if (!hexencrush && comp[comp_floors]) {
 
-            if (flag == true)
+            //e6y: warning about potential desynch
+            if (crush == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
             {
-              sector->ceilingheight = lastpos;
-              P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
+              lprintf(LO_WARN, "T_MoveFloorPlane: Stairs which can potentially crush may lead to desynch in compatibility mode.\n");
+              lprintf(LO_WARN, " gametic: %d, sector: %d, complevel: %d\n", gametic, sector->iSectorID, compatibility_level);
             }
-            return pastdest;
-          }
-          else
-          {
-            // crushing is possible
-            lastpos = sector->ceilingheight;
-            sector->ceilingheight -= speed;
-            flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
 
-            if (flag == true)
-            {
-              if (!hexencrush && crush == true)
-                return crushed;
-              sector->ceilingheight = lastpos;
-              P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
+            if (crush == true)
               return crushed;
-            }
           }
-          break;
-
-        case 1:
-          // moving a ceiling up
-          if (sector->ceilingheight + speed > dest)
-          {
-            lastpos = sector->ceilingheight;
-            sector->ceilingheight = dest;
-            flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
-            if (flag == true)
-            {
-              sector->ceilingheight = lastpos;
-              P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
-            }
-            return pastdest;
-          }
-          else
-          {
-            lastpos = sector->ceilingheight;
-            sector->ceilingheight += speed;
-            flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
-          }
-          break;
+          sector->floorheight = lastpos;
+          P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
+          return crushed;
+        }
       }
       break;
   }
+
   return ok;
 }
 
@@ -263,13 +190,12 @@ void T_MoveCompatibleFloor(floormove_t * floor)
 {
   result_e      res;
 
-  res = T_MovePlane       // move the floor
+  res = T_MoveFloorPlane
   (
     floor->sector,
     floor->speed,
     floor->floordestheight,
     floor->crush,
-    0,
     floor->direction,
     floor->hexencrush
   );
@@ -380,9 +306,9 @@ void T_MoveHexenFloor(floormove_t * floor)
         return;
     }
 
-    res = T_MovePlane(floor->sector, floor->speed,
-                      floor->floordestheight, floor->crush, 0,
-                      floor->direction, true);
+    res = T_MoveFloorPlane(floor->sector, floor->speed,
+                           floor->floordestheight, floor->crush,
+                           floor->direction, true);
 
     if (floor->type == FLEV_RAISEBUILDSTEP)
     {
@@ -439,48 +365,44 @@ void T_MoveElevator(elevator_t* elevator)
 
   if (elevator->direction<0)      // moving down
   {
-    res = T_MovePlane             //jff 4/7/98 reverse order of ceiling/floor
+    res = T_MoveCeilingPlane      //jff 4/7/98 reverse order of ceiling/floor
     (
       elevator->sector,
       elevator->speed,
       elevator->ceilingdestheight,
       0,
-      1,                          // move floor
       elevator->direction,
       false
     );
     if (res==ok || res==pastdest) // jff 4/7/98 don't move ceil if blocked
-      T_MovePlane
+      T_MoveFloorPlane
       (
         elevator->sector,
         elevator->speed,
         elevator->floordestheight,
         0,
-        0,                        // move ceiling
         elevator->direction,
         false
       );
   }
   else // up
   {
-    res = T_MovePlane             //jff 4/7/98 reverse order of ceiling/floor
+    res = T_MoveFloorPlane        //jff 4/7/98 reverse order of ceiling/floor
     (
       elevator->sector,
       elevator->speed,
       elevator->floordestheight,
       0,
-      0,                          // move ceiling
       elevator->direction,
       false
     );
     if (res==ok || res==pastdest) // jff 4/7/98 don't move floor if blocked
-      T_MovePlane
+      T_MoveCeilingPlane
       (
         elevator->sector,
         elevator->speed,
         elevator->ceilingdestheight,
         0,
-        1,                        // move floor
         elevator->direction,
         false
       );
@@ -1772,12 +1694,11 @@ void T_BuildPillar(pillar_t * pillar)
     result_e res2;
 
     // First, raise the floor
-    res1 = T_MovePlane(pillar->sector, pillar->floorSpeed, pillar->floordest,
-                       pillar->crush, 0, pillar->direction, true);     // floorOrCeiling, direction
+    res1 = T_MoveFloorPlane(pillar->sector, pillar->floorSpeed, pillar->floordest,
+                            pillar->crush, pillar->direction, true);
     // Then, lower the ceiling
-    res2 = T_MovePlane(pillar->sector, pillar->ceilingSpeed,
-                       pillar->ceilingdest, pillar->crush, 1,
-                       -pillar->direction, true);
+    res2 = T_MoveCeilingPlane(pillar->sector, pillar->ceilingSpeed, pillar->ceilingdest,
+                              pillar->crush, -pillar->direction, true);
     if (res1 == pastdest && res2 == pastdest)
     {
         pillar->sector->floordata = NULL;

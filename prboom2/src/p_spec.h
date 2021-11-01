@@ -1054,12 +1054,11 @@ void T_MoveCeiling
 
 // p_floor
 
-result_e T_MovePlane
+result_e T_MoveFloorPlane
 ( sector_t* sector,
   fixed_t speed,
   fixed_t dest,
   dboolean crush,
-  int floorOrCeiling,
   int direction,
   dboolean hexencrush );
 
@@ -1122,6 +1121,14 @@ int EV_DoFloor
   floor_e floortype );
 
 // p_ceilng
+
+result_e T_MoveCeilingPlane
+( sector_t* sector,
+  fixed_t speed,
+  fixed_t dest,
+  dboolean crush,
+  int direction,
+  dboolean hexencrush );
 
 int EV_DoCeiling
 ( line_t* line,

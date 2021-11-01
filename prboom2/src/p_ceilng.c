@@ -33,6 +33,7 @@
 
 #include "doomstat.h"
 #include "r_main.h"
+#include "p_map.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "s_sound.h"
@@ -52,6 +53,105 @@ ceilinglist_t *activeceilings;
 // Ceiling action routine and linedef type handler
 //
 /////////////////////////////////////////////////////////////////
+
+//
+// T_MoveCeilingPlane()
+//
+// Move a ceiling plane and check for crushing. Called
+// every tick by all actions that move ceiling.
+//
+// Passed the sector to move a plane in, the speed to move it at,
+// the dest height it is to achieve, whether it crushes obstacles,
+// and the direction up or down to move.
+//
+// Returns a result_e:
+//  ok - plane moved normally, has not achieved destination yet
+//  pastdest - plane moved normally and is now at destination height
+//  crushed - plane encountered an obstacle, is holding until removed
+//
+result_e T_MoveCeilingPlane
+( sector_t*     sector,
+  fixed_t       speed,
+  fixed_t       dest,
+  dboolean      crush,
+  int           direction,
+  dboolean      hexencrush )
+{
+  dboolean       flag;
+  fixed_t       lastpos;
+  fixed_t       destheight; //jff 02/04/98 used to keep ceilings from moving thru each other
+
+#ifdef GL_DOOM
+  if (V_IsOpenGLMode())
+  {
+    gld_UpdateSplitData(sector);
+  }
+#endif
+
+  switch(direction)
+  {
+    case -1:
+      // moving a ceiling down
+      // jff 02/04/98 keep ceiling from moving thru floors
+      // jff 2/22/98 weaken check to demo_compatibility
+      destheight = (comp[comp_floors] || dest>sector->floorheight)?
+                      dest : sector->floorheight;
+      if (sector->ceilingheight - speed < destheight)
+      {
+        lastpos = sector->ceilingheight;
+        sector->ceilingheight = destheight;
+        flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
+
+        if (flag == true)
+        {
+          sector->ceilingheight = lastpos;
+          P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
+        }
+        return pastdest;
+      }
+      else
+      {
+        // crushing is possible
+        lastpos = sector->ceilingheight;
+        sector->ceilingheight -= speed;
+        flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
+
+        if (flag == true)
+        {
+          if (!hexencrush && crush == true)
+            return crushed;
+          sector->ceilingheight = lastpos;
+          P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
+          return crushed;
+        }
+      }
+      break;
+
+    case 1:
+      // moving a ceiling up
+      if (sector->ceilingheight + speed > dest)
+      {
+        lastpos = sector->ceilingheight;
+        sector->ceilingheight = dest;
+        flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
+        if (flag == true)
+        {
+          sector->ceilingheight = lastpos;
+          P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
+        }
+        return pastdest;
+      }
+      else
+      {
+        lastpos = sector->ceilingheight;
+        sector->ceilingheight += speed;
+        flag = P_CheckSector(sector,crush); //jff 3/19/98 use faster chk
+      }
+      break;
+  }
+
+  return ok;
+}
 
 //
 // T_MoveCeiling
@@ -77,13 +177,12 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
 
     case 1:
       // Ceiling is moving up
-      res = T_MovePlane
+      res = T_MoveCeilingPlane
             (
               ceiling->sector,
               ceiling->speed,
               ceiling->topheight,
               false,
-              1,
               ceiling->direction,
               false
             );
@@ -141,13 +240,12 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
 
     case -1:
       // Ceiling moving down
-      res = T_MovePlane
+      res = T_MoveCeilingPlane
             (
               ceiling->sector,
               ceiling->speed,
               ceiling->bottomheight,
               ceiling->crush,
-              1,
               ceiling->direction,
               ceiling->crushmode == crushHexen
             );
@@ -259,9 +357,9 @@ void T_MoveHexenCeiling(ceiling_t * ceiling)
     //              case 0:         // IN STASIS
     //                      break;
         case 1:                // UP
-            res = T_MovePlane(ceiling->sector, ceiling->speed,
-                              ceiling->topheight, false, 1,
-                              ceiling->direction, true);
+            res = T_MoveCeilingPlane(ceiling->sector, ceiling->speed,
+                                     ceiling->topheight, false,
+                                     ceiling->direction, true);
             if (res == pastdest)
             {
                 SN_StopSequence((mobj_t *) & ceiling->sector->soundorg);
@@ -278,9 +376,9 @@ void T_MoveHexenCeiling(ceiling_t * ceiling)
             }
             break;
         case -1:               // DOWN
-            res = T_MovePlane(ceiling->sector, ceiling->speed,
-                              ceiling->bottomheight, ceiling->crush, 1,
-                              ceiling->direction, true);
+            res = T_MoveCeilingPlane(ceiling->sector, ceiling->speed,
+                                     ceiling->bottomheight, ceiling->crush,
+                                     ceiling->direction, true);
             if (res == pastdest)
             {
                 SN_StopSequence((mobj_t *) & ceiling->sector->soundorg);
