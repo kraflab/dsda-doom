@@ -247,11 +247,11 @@ Current work is isolated to the initial pass over the level format itself - line
 | 71    | Teleport_NoFog                  | :grey_question:    |
 | 72    | ThrustThing                     | :telescope:        |
 | 73    | DamageThing                     | :telescope:        |
-| 74    | Teleport_NewMap                 | :grey_question:    |
-| 75    | Teleport_EndGame                | :grey_question:    |
-| 76    | TeleportOther                   | :grey_question:    |
-| 77    | TeleportGroup                   | :grey_question:    |
-| 78    | TeleportInSector                | :grey_question:    |
+| 74    | Teleport_NewMap                 | :telescope:        |
+| 75    | Teleport_EndGame                | :telescope:        |
+| 76    | TeleportOther                   | :telescope:        |
+| 77    | TeleportGroup                   | :telescope:        |
+| 78    | TeleportInSector                | :telescope:        |
 | 79    | Thing_SetConversation           | :x:                |
 | 80    | ACS_Execute                     | :telescope:        |
 | 81    | ACS_Suspend                     | :telescope:        |
@@ -282,7 +282,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 106   | Door_WaitClose                  | :heavy_check_mark: |
 | 107   | Line_SetPortalTarget            | :x:                |
 | -     | -                               | -                  |
-| 109   | Light_ForceLightning            | :grey_question:    |
+| 109   | Light_ForceLightning            | :telescope:        |
 | 110   | Light_RaiseByValue              | :grey_question:    |
 | 111   | Light_LowerByValue              | :grey_question:    |
 | 112   | Light_ChangeToValue             | :grey_question:    |
@@ -293,7 +293,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 117   | Light_Stop                      | :grey_question:    |
 | 118   | Plane_Copy                      | :x:                |
 | 119   | Thing_Damage                    | :telescope:        |
-| 120   | Radius_Quake                    | :grey_question:    |
+| 120   | Radius_Quake                    | :telescope:        |
 | 121   | Line_SetIdentification          | :telescope:        |
 | -     | -                               | -                  |
 | 125   | Thing_Move                      | :telescope:        |
@@ -315,7 +315,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | -     | -                               | -                  |
 | 154   | Teleport_NoStop                 | :grey_question:    |
 | -     | -                               | -                  |
-| 157   | SetGlobalFogParameter           | :grey_question:    |
+| 157   | SetGlobalFogParameter           | :telescope:        |
 | 158   | FS_Execute                      | :x:                |
 | 159   | Sector_SetPlaneReflection       | :x:                |
 | 160   | Sector_Set3DFloor               | :x:                |
