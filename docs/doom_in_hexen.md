@@ -354,7 +354,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 198   | Ceiling_RaiseByValueTimes8      | :heavy_check_mark: |
 | 199   | Ceiling_LowerByValueTimes8      | :heavy_check_mark: |
 | 200   | Generic_Floor                   | :heavy_check_mark: |
-| 201   | Generic_Ceiling                 | :grey_question:    |
+| 201   | Generic_Ceiling                 | :heavy_check_mark: |
 | 202   | Generic_Door                    | :heavy_check_mark: |
 | 203   | Generic_Lift                    | :grey_question:    |
 | 204   | Generic_Stairs                  | :grey_question:    |
