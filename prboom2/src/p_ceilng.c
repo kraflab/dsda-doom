@@ -88,19 +88,9 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
               false
             );
 
-      // if not a silent crusher, make moving sound
-      if (!(leveltime&7))
-      {
-        switch(ceiling->type)
-        {
-          case silentCrushAndRaise:
-          case genSilentCrusher:
-            break;
-          default:
-            S_StartSound((mobj_t *)&ceiling->sector->soundorg, g_sfx_stnmov);
-            break;
-        }
-      }
+      // if not silent, make moving sound
+      if (!(leveltime & 7) && !ceiling->silent)
+        S_StartSound((mobj_t *) &ceiling->sector->soundorg, g_sfx_stnmov);
 
       // handle reaching destination height
       if (res == pastdest)
@@ -153,18 +143,9 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
               false
             );
 
-      // if not silent crusher type make moving sound
-      if (!(leveltime&7))
-      {
-        switch(ceiling->type)
-        {
-          case silentCrushAndRaise:
-          case genSilentCrusher:
-            break;
-          default:
-            S_StartSound((mobj_t *)&ceiling->sector->soundorg, g_sfx_stnmov);
-        }
-      }
+      // if not silent, make moving sound
+      if (!(leveltime & 7) && !ceiling->silent)
+        S_StartSound((mobj_t *) &ceiling->sector->soundorg, g_sfx_stnmov);
 
       // handle reaching destination height
       if (res == pastdest)
@@ -379,6 +360,7 @@ manual_ceiling://e6y
         break;
 
       case silentCrushAndRaise:
+        ceiling->silent = 1;
       case crushAndRaise:
         ceiling->crush = true;
         ceiling->topheight = sec->ceilingheight;

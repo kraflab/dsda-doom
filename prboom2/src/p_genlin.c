@@ -864,6 +864,7 @@ manual_crusher:
     P_CopyTransferSpecial(&ceiling->newspecial, sec);
     ceiling->tag = sec->tag;
     ceiling->type = Slnt? genSilentCrusher : genCrusher;
+    ceiling->silent = (ceiling->type == genSilentCrusher);
     ceiling->topheight = sec->ceilingheight;
     ceiling->bottomheight = sec->floorheight + (8*FRACUNIT);
 
