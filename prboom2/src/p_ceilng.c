@@ -567,6 +567,13 @@ int Hexen_EV_CeilingCrushStop(line_t * line, byte * args)
     return 0;
 }
 
+static void P_SpawnZDoomCeiling(sector_t *sec, ceiling_e type, line_t *line, int tag,
+                                fixed_t speed, fixed_t speed2, fixed_t height, int crush,
+                                int silent, int change, crushmode_e crushmode)
+{
+  return;
+}
+
 int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, int silent, int change, crushmode_e crushmode)
 {
@@ -576,6 +583,32 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
 
   height *= FRACUNIT;
 
+  // check if a manual trigger, if so do just the sector on the backside
+  if (tag == 0)
+  {
+    if (!line || !(sec = line->backsector))
+      return 0;
+
+    secnum = sec - sectors;
+    // [RH] Hack to let manual crushers be retriggerable, too
+    tag ^= secnum | 0x1000000;
+    P_ActivateInStasisCeiling(tag);
+
+    if (sec->ceilingdata)
+      return 0;
+
+    P_SpawnZDoomCeiling(sec, type, line, tag, speed, speed2,
+                        height, crush, silent, change, crushmode);
+    return 1;
+  }
+
+  // Reactivate in-stasis ceilings...for certain types.
+  // This restarts a crusher after it has been stopped
+  if (type == ceilCrushAndRaise)
+  {
+    P_ActivateInStasisCeiling(tag);
+  }
+
   while ((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
   {
     sec = &sectors[secnum];
@@ -584,7 +617,8 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
       continue;
     }
     retcode = 1;
-    // spawn it
+    P_SpawnZDoomCeiling(sec, type, line, tag, speed, speed2,
+                        height, crush, silent, change, crushmode);
   }
 
   return retcode;
