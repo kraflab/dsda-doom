@@ -552,7 +552,7 @@ int Hexen_EV_CeilingCrushStop(line_t * line, byte * args)
 
 static void P_SpawnZDoomCeiling(sector_t *sec, ceiling_e type, line_t *line, int tag,
                                 fixed_t speed, fixed_t speed2, fixed_t height, int crush,
-                                int silent, int change, crushmode_e crushmode)
+                                byte silent, int change, crushmode_e crushmode)
 {
   ceiling_t *ceiling;
   fixed_t targheight = 0;
@@ -762,7 +762,7 @@ static void P_SpawnZDoomCeiling(sector_t *sec, ceiling_e type, line_t *line, int
 }
 
 int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
-                      fixed_t height, int crush, int silent, int change, crushmode_e crushmode)
+                      fixed_t height, int crush, byte silent, int change, crushmode_e crushmode)
 {
   sector_t *sec;
   int secnum = -1;

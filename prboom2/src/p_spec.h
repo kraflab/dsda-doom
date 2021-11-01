@@ -805,7 +805,7 @@ typedef struct
   // zdoom
   fixed_t speed2;
   crushmode_e crushmode;
-  int silent;
+  byte silent;
 } ceiling_t;
 
 typedef struct ceilinglist {
@@ -1568,6 +1568,6 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
 int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
                    int crush, int change, dboolean hexencrush, dboolean hereticlower);
 int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
-                      fixed_t height, int crush, int silent, int change, crushmode_e crushmode);
+                      fixed_t height, int crush, byte silent, int change, crushmode_e crushmode);
 
 #endif
