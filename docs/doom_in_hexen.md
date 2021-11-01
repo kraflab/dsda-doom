@@ -344,7 +344,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 188   | Sector_SetCeilingScale          | :x:                |
 | 189   | Sector_SetFloorScale            | :x:                |
 | 190   | Static_Init                     | :warning:          |
-| 191   | SetPlayerProperty               | :grey_question:    |
+| 191   | SetPlayerProperty               | :x:                |
 | 192   | Ceiling_LowerToHighestFloor     | :heavy_check_mark: |
 | 193   | Ceiling_LowerInstant            | :heavy_check_mark: |
 | 194   | Ceiling_RaiseInstant            | :heavy_check_mark: |
