@@ -203,6 +203,9 @@ extern void T_VerticalHexenDoor(vldoor_t *door);
 extern void T_MoveCompatibleFloor(floormove_t *);
 extern void T_MoveHexenFloor(floormove_t *);
 
+void T_MoveCompatibleCeiling(ceiling_t * ceiling);
+void T_MoveHexenCeiling(ceiling_t * ceiling);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
@@ -236,6 +239,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .t_vertical_door = T_VerticalCompatibleDoor,
   .t_move_floor = T_MoveCompatibleFloor,
+  .t_move_ceiling = T_MoveCompatibleCeiling,
   .player_thrust = P_CompatiblePlayerThrust,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
@@ -276,6 +280,7 @@ static const map_format_t hexen_map_format = {
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .t_vertical_door = T_VerticalHexenDoor,
   .t_move_floor = T_MoveHexenFloor,
+  .t_move_ceiling = T_MoveHexenCeiling,
   .player_thrust = P_HexenPlayerThrust,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
@@ -316,6 +321,7 @@ static const map_format_t heretic_map_format = {
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
   .t_vertical_door = T_VerticalCompatibleDoor,
   .t_move_floor = T_MoveCompatibleFloor,
+  .t_move_ceiling = T_MoveCompatibleCeiling,
   .player_thrust = P_HereticPlayerThrust,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
@@ -356,6 +362,7 @@ static const map_format_t doom_map_format = {
   .apply_sector_movement_special = P_ApplyCompatibleSectorMovementSpecial,
   .t_vertical_door = T_VerticalCompatibleDoor,
   .t_move_floor = T_MoveCompatibleFloor,
+  .t_move_ceiling = T_MoveCompatibleCeiling,
   .player_thrust = P_CompatiblePlayerThrust,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),

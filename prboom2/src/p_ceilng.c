@@ -65,13 +65,9 @@ ceilinglist_t *activeceilings;
 // generalized line type behaviors.
 //
 
-static void Hexen_T_MoveCeiling(ceiling_t* ceiling);
-
-void T_MoveCeiling (ceiling_t* ceiling)
+void T_MoveCompatibleCeiling(ceiling_t * ceiling)
 {
-  result_e  res;
-
-  if (map_format.hexen) return Hexen_T_MoveCeiling(ceiling);
+  result_e res;
 
   switch(ceiling->direction)
   {
@@ -246,6 +242,74 @@ void T_MoveCeiling (ceiling_t* ceiling)
       }
       break;
   }
+}
+
+void T_MoveHexenCeiling(ceiling_t * ceiling)
+{
+    result_e res;
+
+    switch (ceiling->direction)
+    {
+    //              case 0:         // IN STASIS
+    //                      break;
+        case 1:                // UP
+            res = T_MovePlane(ceiling->sector, ceiling->speed,
+                              ceiling->topheight, false, 1,
+                              ceiling->direction, true);
+            if (res == pastdest)
+            {
+                SN_StopSequence((mobj_t *) & ceiling->sector->soundorg);
+                switch (ceiling->type)
+                {
+                    case CLEV_CRUSHANDRAISE:
+                        ceiling->direction = -1;
+                        ceiling->speed = ceiling->speed * 2;
+                        break;
+                    default:
+                        P_RemoveActiveCeiling(ceiling);
+                        break;
+                }
+            }
+            break;
+        case -1:               // DOWN
+            res = T_MovePlane(ceiling->sector, ceiling->speed,
+                              ceiling->bottomheight, ceiling->crush, 1,
+                              ceiling->direction, true);
+            if (res == pastdest)
+            {
+                SN_StopSequence((mobj_t *) & ceiling->sector->soundorg);
+                switch (ceiling->type)
+                {
+                    case CLEV_CRUSHANDRAISE:
+                    case CLEV_CRUSHRAISEANDSTAY:
+                        ceiling->direction = 1;
+                        ceiling->speed = ceiling->speed / 2;
+                        break;
+                    default:
+                        P_RemoveActiveCeiling(ceiling);
+                        break;
+                }
+            }
+            else if (res == crushed)
+            {
+                switch (ceiling->type)
+                {
+                    case CLEV_CRUSHANDRAISE:
+                    case CLEV_LOWERANDCRUSH:
+                    case CLEV_CRUSHRAISEANDSTAY:
+                        //ceiling->speed = ceiling->speed/4;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            break;
+    }
+}
+
+void T_MoveCeiling (ceiling_t * ceiling)
+{
+  map_format.t_move_ceiling(ceiling);
 }
 
 
@@ -486,69 +550,6 @@ void P_RemoveAllActiveCeilings(void)
 }
 
 // hexen
-
-static void Hexen_T_MoveCeiling(ceiling_t * ceiling)
-{
-    result_e res;
-
-    switch (ceiling->direction)
-    {
-//              case 0:         // IN STASIS
-//                      break;
-        case 1:                // UP
-            res = T_MovePlane(ceiling->sector, ceiling->speed,
-                              ceiling->topheight, false, 1,
-                              ceiling->direction, true);
-            if (res == pastdest)
-            {
-                SN_StopSequence((mobj_t *) & ceiling->sector->soundorg);
-                switch (ceiling->type)
-                {
-                    case CLEV_CRUSHANDRAISE:
-                        ceiling->direction = -1;
-                        ceiling->speed = ceiling->speed * 2;
-                        break;
-                    default:
-                        P_RemoveActiveCeiling(ceiling);
-                        break;
-                }
-            }
-            break;
-        case -1:               // DOWN
-            res = T_MovePlane(ceiling->sector, ceiling->speed,
-                              ceiling->bottomheight, ceiling->crush, 1,
-                              ceiling->direction, true);
-            if (res == pastdest)
-            {
-                SN_StopSequence((mobj_t *) & ceiling->sector->soundorg);
-                switch (ceiling->type)
-                {
-                    case CLEV_CRUSHANDRAISE:
-                    case CLEV_CRUSHRAISEANDSTAY:
-                        ceiling->direction = 1;
-                        ceiling->speed = ceiling->speed / 2;
-                        break;
-                    default:
-                        P_RemoveActiveCeiling(ceiling);
-                        break;
-                }
-            }
-            else if (res == crushed)
-            {
-                switch (ceiling->type)
-                {
-                    case CLEV_CRUSHANDRAISE:
-                    case CLEV_LOWERANDCRUSH:
-                    case CLEV_CRUSHRAISEANDSTAY:
-                        //ceiling->speed = ceiling->speed/4;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            break;
-    }
-}
 
 int Hexen_EV_CeilingCrushStop(line_t * line, byte * args)
 {
