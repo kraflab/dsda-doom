@@ -1890,42 +1890,19 @@ void P_PostProcessZDoomLineSpecial(line_t *ld)
   switch (ld->special)
   {                           // killough 4/11/98: handle special types
     case zl_translucent_line: // killough 4/11/98: translucent 2s textures
-      // [RH] Second arg controls how opaque it is.
-      // if (alpha == SHRT_MIN)
-      // {
-      //   alpha = ld->args[1];
-      //   additive = !!ld->args[2];
-      // }
-      // else if (alpha < 0)
-      // {
-      //   alpha = -alpha;
-      //   additive = true;
-      // }
-      //
-      // double dalpha = alpha / 255.;
-      // if (!ld->args[0])
-      // {
-      //   ld->alpha = dalpha;
-      //   if (additive)
-      //   {
-      //     ld->flags |= ML_ADDTRANS;
-      //   }
-      // }
-      // else
-      // {
-      //   for (j = 0; j < numlines; j++)
-      //   {
-      //     if (tagManager.LineHasID(j, ld->args[0]))
-      //     {
-      //       lines[j].alpha = dalpha;
-      //       if (additive)
-      //       {
-      //         lines[j].flags |= ML_ADDTRANS;
-      //       }
-      //     }
-      //   }
-      // }
-      ld->special = 0;
+      {
+        int i, lump;
+
+        lump = sides[*ld->sidenum].special; // translucency from sidedef
+        if (!ld->arg1)
+          ld->tranlump = lump;
+        else
+          // for (i = -1; (i = P_FindLineFromTag(ld->arg1, i)) >= 0;)
+          for (i = 0; i < numlines; i++)
+            if (lines[i].tag == ld->arg1)
+              lines[i].tranlump = lump;
+        ld->special = 0;
+      }
       break;
   }
 }
@@ -2087,32 +2064,15 @@ void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, secto
     //   SetTexture(sd, side_t::bottom, msd->bottomtexture, missingtex);
     //   break;
     //
-    // case zl_translucent_line:  // killough 4/11/98: apply translucency to 2s normal texture
-    //   if (checktranmap)
-    //   {
-    //     int lumpnum;
-    //
-    //     if (strnicmp ("TRANMAP", msd->midtexture, 8) == 0)
-    //     {
-    //       // The translator set the alpha argument already; no reason to do it again.
-    //       sd->SetTexture(side_t::mid, FNullTextureID());
-    //     }
-    //     else if ((lumpnum = Wads.CheckNumForName (msd->midtexture)) > 0 &&
-    //       Wads.LumpLength (lumpnum) == 65536)
-    //     {
-    //       *alpha = (short)P_DetermineTranslucency (lumpnum);
-    //       sd->SetTexture(side_t::mid, FNullTextureID());
-    //     }
-    //     else
-    //     {
-    //       SetTexture(sd, side_t::mid, msd->midtexture, missingtex);
-    //     }
-    //
-    //     SetTexture(sd, side_t::top, msd->toptexture, missingtex);
-    //     SetTexture(sd, side_t::bottom, msd->bottomtexture, missingtex);
-    //     break;
-    //   }
-    //   // Fallthrough for Hexen maps is intentional
+    case zl_translucent_line: // killough 4/11/98: apply translucency to 2s normal texture
+      sd->midtexture = strncasecmp("TRANMAP", msd->midtexture, 8) ?
+        (sd->special = W_CheckNumForName(msd->midtexture)) < 0 ||
+        W_LumpLength(sd->special) != 65536 ?
+        sd->special = 0, R_TextureNumForName(msd->midtexture) :
+          (sd->special++, 0) : (sd->special = 0);
+      sd->toptexture = R_TextureNumForName(msd->toptexture);
+      sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+      break;
 
     default:      // normal cases
       sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);

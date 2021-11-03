@@ -361,7 +361,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 205   | Generic_Crusher                 | :grey_question:    |
 | 206   | Plat_DownWaitUpStayLip          | :grey_question:    |
 | 207   | Plat_PerpetualRaiseLip          | :grey_question:    |
-| 208   | TranslucentLine                 | :grey_question:    |
+| 208   | TranslucentLine                 | :warning:          |
 | 209   | Transfer_Heights                | :heavy_check_mark: |
 | 210   | Transfer_FloorLight             | :heavy_check_mark: |
 | 211   | Transfer_CeilingLight           | :heavy_check_mark: |
@@ -433,6 +433,7 @@ Current work is isolated to the initial pass over the level format itself - line
 - The static init supports damage, gravity, and skies only.
 - The position argument for map exits is currently ignored.
 - Line flags coming from extra arguments are ignored.
+- Line translucency works like boom (fixed alpha).
 
 ### Sector Specials
 
