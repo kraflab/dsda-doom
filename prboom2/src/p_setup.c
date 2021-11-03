@@ -1687,6 +1687,32 @@ void P_TranslateCompatibleLineFlags(unsigned int *flags)
   *flags = *flags & filter;
 }
 
+static void P_SetLineID(line_t *ld)
+{
+  if (!map_format.zdoom) return;
+
+  switch (ld->special)
+  {
+    case zl_line_set_identification:
+      ld->tag = (unsigned short) 256 * ld->arg5 + ld->arg1;
+      ld->special = 0;
+      break;
+    case zl_translucent_line:
+      ld->tag = ld->arg1;
+      break;
+    case zl_teleport_line:
+    case zl_scroll_texture_model:
+      ld->tag = ld->arg1;
+      break;
+    case zl_polyobj_start_line:
+      ld->tag = ld->arg4;
+      break;
+    case zl_polyobj_explicit_line:
+      ld->tag = ld->arg5;
+      break;
+  }
+}
+
 static void P_LoadLineDefs (int lump)
 {
   const byte *data; // cph - const*
@@ -1717,6 +1743,7 @@ static void P_LoadLineDefs (int lump)
         v2 = ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
         ld->sidenum[0] = LittleShort(mld->sidenum[0]);
         ld->sidenum[1] = LittleShort(mld->sidenum[1]);
+        P_SetLineID(ld);
       }
       else
       {

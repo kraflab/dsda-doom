@@ -294,7 +294,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 118   | Plane_Copy                      | :x:                |
 | 119   | Thing_Damage                    | :telescope:        |
 | 120   | Radius_Quake                    | :telescope:        |
-| 121   | Line_SetIdentification          | :telescope:        |
+| 121   | Line_SetIdentification          | :warning:          |
 | -     | -                               | -                  |
 | 125   | Thing_Move                      | :telescope:        |
 | -     | -                               | -                  |
@@ -432,6 +432,7 @@ Current work is isolated to the initial pass over the level format itself - line
 - Wall scrollers cannot distinguish between top, bottom, and mid textures.
 - The static init supports damage, gravity, and skies only.
 - The position argument for map exits is currently ignored.
+- Line flags coming from extra arguments are ignored.
 
 ### Sector Specials
 
