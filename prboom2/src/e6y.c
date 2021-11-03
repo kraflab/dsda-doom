@@ -704,7 +704,6 @@ void MouseAccelChanging(void)
 }
 
 float viewPitch;
-dboolean transparentpresent;
 
 int StepwiseSum(int value, int direction, int step, int minval, int maxval, int defval)
 {

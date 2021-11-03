@@ -1837,7 +1837,6 @@ void P_PostProcessCompatibleLineSpecial(line_t *ld)
     int lump, j;
 
     case 260:               // killough 4/11/98: translucent 2s textures
-      transparentpresent = true; //e6y
       lump = sides[*ld->sidenum].special; // translucency from sidedef
       if (!ld->tag)                       // if tag==0,
         ld->tranlump = lump;              // affect this linedef only
@@ -3058,7 +3057,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   //e6y
   totallive = 0;
-  transparentpresent = false;
 
   dsda_WatchBeforeLevelSetup();
 

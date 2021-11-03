@@ -204,7 +204,6 @@ void I_Init2(void);
 dboolean HaveMouseLook(void);
 
 extern float viewPitch;
-extern dboolean transparentpresent;
 
 void R_ClearClipSegs (void);
 void R_RenderBSPNode(int bspnum);
