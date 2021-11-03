@@ -221,7 +221,7 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
 #define FUDGEFACTOR 10
 
 int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
-                          dboolean reverse)
+                          int tag, dboolean reverse)
 {
   int i;
   line_t *l;
@@ -229,7 +229,7 @@ int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
   if (side || thing->flags & MF_MISSILE)
     return 0;
 
-  for (i = -1; (i = P_FindLineFromLineTag(line, i)) >= 0;)
+  for (i = -1; (i = P_FindLineFromTag(tag, i)) >= 0;)
     if ((l=lines+i) != line && l->backsector)
       {
         // Get the thing's position along the source linedef

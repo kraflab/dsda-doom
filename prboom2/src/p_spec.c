@@ -2254,24 +2254,24 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 243: //jff 3/6/98 make fit within DCK's 256 linedef types
             // killough 2/16/98: W1 silent teleporter (linedef-linedef kind)
-            if (EV_SilentLineTeleport(line, side, thing, false))
+            if (EV_SilentLineTeleport(line, side, thing, line->tag, false))
               line->special = 0;
             break;
 
           case 262: //jff 4/14/98 add silent line-line reversed
-            if (EV_SilentLineTeleport(line, side, thing, true))
+            if (EV_SilentLineTeleport(line, side, thing, line->tag, true))
               line->special = 0;
             break;
 
           case 264: //jff 4/14/98 add monster-only silent line-line reversed
             if (!thing->player &&
-                EV_SilentLineTeleport(line, side, thing, true))
+                EV_SilentLineTeleport(line, side, thing, line->tag, true))
               line->special = 0;
             break;
 
           case 266: //jff 4/14/98 add monster-only silent line-line
             if (!thing->player &&
-                EV_SilentLineTeleport(line, side, thing, false))
+                EV_SilentLineTeleport(line, side, thing, line->tag, false))
               line->special = 0;
             break;
 
@@ -2419,21 +2419,21 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 244: //jff 3/6/98 make fit within DCK's 256 linedef types
             // killough 2/16/98: WR silent teleporter (linedef-linedef kind)
-            EV_SilentLineTeleport(line, side, thing, false);
+            EV_SilentLineTeleport(line, side, thing, line->tag, false);
             break;
 
           case 263: //jff 4/14/98 add silent line-line reversed
-            EV_SilentLineTeleport(line, side, thing, true);
+            EV_SilentLineTeleport(line, side, thing, line->tag, true);
             break;
 
           case 265: //jff 4/14/98 add monster-only silent line-line reversed
             if (!thing->player)
-              EV_SilentLineTeleport(line, side, thing, true);
+              EV_SilentLineTeleport(line, side, thing, line->tag, true);
             break;
 
           case 267: //jff 4/14/98 add monster-only silent line-line
             if (!thing->player)
-              EV_SilentLineTeleport(line, side, thing, false);
+              EV_SilentLineTeleport(line, side, thing, line->tag, false);
             break;
 
           case 269: //jff 4/14/98 add monster-only silent

@@ -1103,6 +1103,7 @@ int EV_SilentLineTeleport
 ( line_t* line,
   int side,
   mobj_t* thing,
+  int tag,
   dboolean reverse);
 
 // p_floor
