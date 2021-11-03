@@ -283,9 +283,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | 107   | Line_SetPortalTarget            | :x:                |
 | -     | -                               | -                  |
 | 109   | Light_ForceLightning            | :telescope:        |
-| 110   | Light_RaiseByValue              | :grey_question:    |
-| 111   | Light_LowerByValue              | :grey_question:    |
-| 112   | Light_ChangeToValue             | :grey_question:    |
+| 110   | Light_RaiseByValue              | :heavy_check_mark: |
+| 111   | Light_LowerByValue              | :heavy_check_mark: |
+| 112   | Light_ChangeToValue             | :heavy_check_mark: |
 | 113   | Light_Fade                      | :grey_question:    |
 | 114   | Light_Glow                      | :grey_question:    |
 | 115   | Light_Flicker                   | :grey_question:    |
@@ -386,8 +386,8 @@ Current work is isolated to the initial pass over the level format itself - line
 | 230   | Plat_UpByValueStayTx            | :grey_question:    |
 | 231   | Plat_ToggleCeiling              | :grey_question:    |
 | 232   | Light_StrobeDoom                | :grey_question:    |
-| 233   | Light_MinNeighbor               | :grey_question:    |
-| 234   | Light_MaxNeighbor               | :grey_question:    |
+| 233   | Light_MinNeighbor               | :heavy_check_mark: |
+| 234   | Light_MaxNeighbor               | :heavy_check_mark: |
 | 235   | Floor_TransferTrigger           | :grey_question:    |
 | 236   | Floor_TransferNumeric           | :grey_question:    |
 | 237   | ChangeCamera                    | :x:                |

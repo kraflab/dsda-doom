@@ -6437,6 +6437,26 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_teleport_line:
       buttonSuccess = EV_SilentLineTeleport(line, side, mo, args[1], args[2]);
       break;
+    case zl_light_raise_by_value:
+      EV_LightChange(args[0], args[1]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_lower_by_value:
+      EV_LightChange(args[0], - (short) args[1]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_change_to_value:
+      EV_LightSet(args[0], args[1]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_min_neighbor:
+      EV_LightSetMinNeighbor(args[0]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_max_neighbor:
+      EV_LightSetMaxNeighbor(args[0]);
+      buttonSuccess = 1;
+      break;
     default:
       break;
   }

@@ -1577,5 +1577,9 @@ int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fi
                    int crush, int change, dboolean hexencrush, dboolean hereticlower);
 int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode);
+void EV_LightChange(int tag, short change);
+void EV_LightSet(int tag, short level);
+void EV_LightSetMinNeighbor(int tag);
+void EV_LightSetMaxNeighbor(int tag);
 
 #endif

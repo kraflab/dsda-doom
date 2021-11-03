@@ -437,6 +437,64 @@ int EV_LightTurnOnPartway(line_t *line, fixed_t level)
   return 1;
 }
 
+void EV_LightChange(int tag, short change)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+    sectors[s].lightlevel += change;
+}
+
+void EV_LightSet(int tag, short level)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+    sectors[s].lightlevel = level;
+}
+
+void EV_LightSetMinNeighbor(int tag)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    int i;
+    short level;
+    sector_t *temp, *sector;
+
+    sector = &sectors[s];
+    level = sector->lightlevel;
+
+    for (i = 0; i < sector->linecount; i++)
+      if ((temp = getNextSector(sector->lines[i], sector)) && temp->lightlevel < level)
+        level = temp->lightlevel;
+
+    sector->lightlevel = level;
+  }
+}
+
+void EV_LightSetMaxNeighbor(int tag)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    int i;
+    short level;
+    sector_t *temp, *sector;
+
+    sector = &sectors[s];
+    level = 0;
+
+    for (i = 0; i < sector->linecount; i++)
+      if ((temp = getNextSector(sector->lines[i], sector)) && temp->lightlevel > level)
+        level = temp->lightlevel;
+
+    sector->lightlevel = level;
+  }
+}
+
 // hexen
 
 void T_Light(light_t * light)
