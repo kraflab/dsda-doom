@@ -6434,6 +6434,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       G_SecretExitLevel(); // args[0] is position
       buttonSuccess = 1;
       break;
+    case zl_teleport_line:
+      buttonSuccess = EV_SilentLineTeleport(line, side, mo, args[1], args[2]);
+      break;
     default:
       break;
   }
