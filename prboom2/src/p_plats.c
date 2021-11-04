@@ -248,7 +248,7 @@ int EV_DoPlat
 
 manual_plat://e6y
     // don't start a second floor function if already moving
-    if (P_SectorActive(floor_special,sec)) {//jff 2/23/98 multiple thinkers
+    if (P_FloorActive(sec)) {//jff 2/23/98 multiple thinkers
       if (!zerotag_manual) continue; else {return rtn;}};//e6y
 
     // Create a thinker

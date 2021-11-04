@@ -1271,31 +1271,29 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
 //
 // P_SectorActive()
 //
-// Passed a linedef special class (floor, ceiling, lighting) and a sector
-// returns whether the sector is already busy with a linedef special of the
-// same class. If old demo compatibility true, all linedef special classes
-// are the same.
+// In old compatibility levels, floor and ceiling data couldn't coexist.
+// Lighting data is only relevant in zdoom levels.
 //
-// jff 2/23/98 added to prevent old demos from
-//  succeeding in starting multiple specials on one sector
-//
-dboolean PUREFUNC P_SectorActive(special_e t, const sector_t *sec)
+
+dboolean PUREFUNC P_PlaneActive(const sector_t *sec)
 {
-  if (demo_compatibility)  // return whether any thinker is active
-    return sec->floordata != NULL || sec->ceilingdata != NULL;
-  else
-    switch (t)             // return whether thinker of same type is active
-    {
-      case floor_special:
-        return sec->floordata != NULL;
-      case ceiling_special:
-        return sec->ceilingdata != NULL;
-      case lighting_special:
-        return false;
-    }
-  return true; // don't know which special, must be active, shouldn't be here
+  return sec->ceilingdata != NULL || sec->floordata != NULL;
 }
 
+dboolean PUREFUNC P_CeilingActive(const sector_t *sec)
+{
+  return sec->ceilingdata != NULL || (demo_compatibility && sec->floordata != NULL);
+}
+
+dboolean PUREFUNC P_FloorActive(const sector_t *sec)
+{
+  return sec->floordata != NULL || (demo_compatibility && sec->ceilingdata != NULL);
+}
+
+dboolean PUREFUNC P_LightingActive(const sector_t *sec)
+{
+  return sec->lightingdata != NULL;
+}
 
 //
 // P_CheckTag()

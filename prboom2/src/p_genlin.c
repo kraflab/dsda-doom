@@ -100,7 +100,7 @@ int EV_DoGenFloor
 
 manual_floor:
     // Do not start another function if floor already moving
-    if (P_SectorActive(floor_special,sec))
+    if (P_FloorActive(sec))
     {
       if (!manual)
         continue;
@@ -295,7 +295,7 @@ int EV_DoGenCeiling
 
 manual_ceiling:
     // Do not start another function if ceiling already moving
-    if (P_SectorActive(ceiling_special,sec)) //jff 2/22/98
+    if (P_CeilingActive(sec)) //jff 2/22/98
     {
       if (!manual)
         continue;
@@ -493,7 +493,7 @@ int EV_DoGenLift
 
 manual_lift:
     // Do not start another function if floor already moving
-    if (P_SectorActive(floor_special,sec))
+    if (P_FloorActive(sec))
     {
       if (!manual)
         continue;
@@ -655,7 +655,7 @@ manual_stair:
     //Do not start another function if floor already moving
     //jff 2/26/98 add special lockout condition to wait for entire
     //staircase to build before retriggering
-    if (P_SectorActive(floor_special,sec) || sec->stairlock)
+    if (P_FloorActive(sec) || sec->stairlock)
     {
       if (!manual)
         continue;
@@ -749,7 +749,7 @@ manual_stair:
           height += floor->direction * stairsize;
 
         //jff 2/26/98 special lockout condition for retriggering
-        if (P_SectorActive(floor_special,tsec) || tsec->stairlock)
+        if (P_FloorActive(tsec) || tsec->stairlock)
           continue;
 
         /* jff 6/19/98 increase height AFTER continue */
@@ -842,7 +842,7 @@ int EV_DoGenCrusher
 
 manual_crusher:
     // Do not start another function if ceiling already moving
-    if (P_SectorActive(ceiling_special,sec)) //jff 2/22/98
+    if (P_CeilingActive(sec)) //jff 2/22/98
     {
       if (!manual)
         continue;
@@ -940,7 +940,7 @@ int EV_DoGenLockedDoor
     sec = &sectors[secnum];
 manual_locked:
     // Do not start another function if ceiling already moving
-    if (P_SectorActive(ceiling_special,sec)) //jff 2/22/98
+    if (P_CeilingActive(sec)) //jff 2/22/98
     {
       if (!manual)
         continue;
@@ -1051,7 +1051,7 @@ int EV_DoGenDoor
     sec = &sectors[secnum];
 manual_door:
     // Do not start another function if ceiling already moving
-    if (P_SectorActive(ceiling_special,sec)) //jff 2/22/98
+    if (P_CeilingActive(sec)) //jff 2/22/98
     {
       if (!manual)
         continue;

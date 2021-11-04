@@ -1013,9 +1013,10 @@ dboolean P_CanUnlockGenDoor
 ( line_t* line,
   player_t* player);
 
-dboolean PUREFUNC P_SectorActive
-( special_e t,
-  const sector_t* s );
+dboolean PUREFUNC P_PlaneActive(const sector_t *sec);
+dboolean PUREFUNC P_CeilingActive(const sector_t *sec);
+dboolean PUREFUNC P_FloorActive(const sector_t *sec);
+dboolean PUREFUNC P_LightingActive(const sector_t *sec);
 
 dboolean PUREFUNC P_IsSecret
 ( const sector_t *sec );

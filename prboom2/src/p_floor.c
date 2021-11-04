@@ -458,7 +458,7 @@ int EV_DoFloor
 
 manual_floor://e6y
     // Don't start a second thinker on the same floor
-    if (P_SectorActive(floor_special,sec)) //jff 2/23/98
+    if (P_FloorActive(sec)) //jff 2/23/98
       { if (!zerotag_manual) continue; else return rtn; }//e6y
 
     // new floor thinker
@@ -761,7 +761,7 @@ int EV_BuildStairs
 
 manual_stair://e6y
    // don't start a stair if the first step's floor is already moving
-   if (!P_SectorActive(floor_special,sec)) { //jff 2/22/98
+   if (!P_FloorActive(sec)) { //jff 2/22/98
     floormove_t*  floor;
     int           texture, height;
     fixed_t       stairsize;
@@ -877,7 +877,7 @@ manual_stair://e6y
           height += stairsize; // jff 6/28/98 change demo compatibility
 
         // if sector's floor already moving, look for another
-        if (P_SectorActive(floor_special,tsec)) //jff 2/22/98
+        if (P_FloorActive(tsec)) //jff 2/22/98
           continue;
 
   /* cph - see comment above - do this iff we didn't do so above */
@@ -959,7 +959,7 @@ int EV_DoDonut(line_t*  line)
     s1 = &sectors[secnum];                // s1 is pillar's sector
 
     // do not start the donut if the pillar is already moving
-    if (P_SectorActive(floor_special,s1)) //jff 2/22/98
+    if (P_FloorActive(s1)) //jff 2/22/98
       continue;
 
     // heretic_note: rtn = 1; // probably doesn't matter?
@@ -987,7 +987,7 @@ int EV_DoDonut(line_t*  line)
 
     /* do not start the donut if the pool is already moving
      * cph - DEMOSYNC - was !compatibility */
-    if (!comp[comp_floors] && P_SectorActive(floor_special,s2))
+    if (!comp[comp_floors] && P_FloorActive(s2))
       continue;                           //jff 5/7/98
 
     // find a two sided line around the pool whose other side isn't the pillar

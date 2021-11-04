@@ -522,7 +522,7 @@ int EV_DoDoor
     sec = &sectors[secnum];
 manual_door://e6y
     // if the ceiling already moving, don't start the door action
-    if (P_SectorActive(ceiling_special,sec)) { //jff 2/22/98
+    if (P_CeilingActive(sec)) { //jff 2/22/98
       if (!zerotag_manual) continue; else {return rtn;}}; //e6y
 
     // new door thinker

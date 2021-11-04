@@ -313,8 +313,11 @@ int EV_StartLightStrobing(line_t* line)
   while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
   {
     sec = &sectors[secnum];
-    // if already doing a lighting function, don't start a second
-    if (P_SectorActive(lighting_special,sec)) //jff 2/22/98
+
+    // Original code never stored lighting data,
+    //   so this only stops a light appearing in old complevels,
+    //   and only when there is a floor or ceiling thinker.
+    if (demo_compatibility && P_PlaneActive(sec))
       continue;
 
     P_SpawnStrobeFlash (sec,SLOWDARK, 0);

@@ -458,7 +458,7 @@ int EV_DoCeiling
 
 manual_ceiling://e6y
     // if ceiling already moving, don't start a second function on it
-    if (P_SectorActive(ceiling_special,sec)) { //jff 2/22/98
+    if (P_CeilingActive(sec)) { //jff 2/22/98
       if (!zerotag_manual) continue; else {return rtn;}};//e6y
 
     // create a new ceiling thinker
