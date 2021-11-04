@@ -269,6 +269,7 @@ void P_UnArchiveWorld (void)
 
     sec->ceilingdata = 0; //jff 2/22/98 now three thinker fields, not two
     sec->floordata = 0;
+    sec->lightingdata = 0;
     sec->soundtarget = 0;
   }
 

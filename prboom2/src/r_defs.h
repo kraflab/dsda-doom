@@ -144,7 +144,8 @@ typedef struct
 
   // thinker_t for reversable actions
   void *floordata;    // jff 2/22/98 make thinkers on
-  void *ceilingdata;  // floors and ceilings independent
+  void *ceilingdata;  // floors, ceilings, and lights independent
+  void *lightingdata;
 
   // jff 2/26/98 lockout machinery for stairbuilding
   signed char stairlock; // -2 on first locked -1 after thinker done 0 normally

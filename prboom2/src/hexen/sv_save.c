@@ -1394,6 +1394,7 @@ static void UnarchiveWorld(void)
         sec->seqType = SV_ReadWord();
         sec->ceilingdata = 0;
         sec->floordata = 0;
+        sec->lightingdata = 0;
         sec->soundtarget = 0;
     }
     for (i = 0, li = lines; i < numlines; i++, li++)
