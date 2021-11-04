@@ -49,7 +49,7 @@
 #include "hexen/sn_sonix.h"
 
 //e6y
-#define STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE 10
+#define STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE -2
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -76,7 +76,7 @@ result_e T_MoveFloorPlane
 ( sector_t*     sector,
   fixed_t       speed,
   fixed_t       dest,
-  dboolean      crush,
+  int           crush,
   int           direction,
   dboolean      hexencrush )
 {
@@ -159,7 +159,7 @@ result_e T_MoveFloorPlane
               lprintf(LO_WARN, " gametic: %d, sector: %d, complevel: %d\n", gametic, sector->iSectorID, compatibility_level);
             }
 
-            if (crush == true)
+            if (crush >= 0)
               return crushed;
           }
           sector->floorheight = lastpos;
@@ -370,7 +370,7 @@ void T_MoveElevator(elevator_t* elevator)
       elevator->sector,
       elevator->speed,
       elevator->ceilingdestheight,
-      0,
+      NO_CRUSH,
       elevator->direction,
       false
     );
@@ -380,7 +380,7 @@ void T_MoveElevator(elevator_t* elevator)
         elevator->sector,
         elevator->speed,
         elevator->floordestheight,
-        0,
+        NO_CRUSH,
         elevator->direction,
         false
       );
@@ -392,7 +392,7 @@ void T_MoveElevator(elevator_t* elevator)
       elevator->sector,
       elevator->speed,
       elevator->floordestheight,
-      0,
+      NO_CRUSH,
       elevator->direction,
       false
     );
@@ -402,7 +402,7 @@ void T_MoveElevator(elevator_t* elevator)
         elevator->sector,
         elevator->speed,
         elevator->ceilingdestheight,
-        0,
+        NO_CRUSH,
         elevator->direction,
         false
       );
@@ -469,7 +469,7 @@ manual_floor://e6y
     sec->floordata = floor; //jff 2/22/98
     floor->thinker.function = T_MoveFloor;
     floor->type = floortype;
-    floor->crush = false;
+    floor->crush = NO_CRUSH;
 
     // setup the thinker according to the linedef type
     switch(floortype)
@@ -524,7 +524,7 @@ manual_floor://e6y
         break;
 
       case raiseFloorCrush:
-        floor->crush = true;
+        floor->crush = DOOM_CRUSH;
         // fallthrough
       case raiseFloor:
         floor->direction = 1;
@@ -766,7 +766,7 @@ manual_stair://e6y
     int           texture, height;
     fixed_t       stairsize;
     fixed_t       speed;
-    dboolean      crush;
+    int           crush;
     int           ok;
 
     // create new floor thinker for first step
@@ -779,6 +779,7 @@ manual_stair://e6y
     floor->direction = 1;
     floor->sector = sec;
     floor->type = buildStair;   //jff 3/31/98 do not leave uninited
+    floor->crush = NO_CRUSH;
     crush = floor->crush;
 
     // set up the speed and stepsize according to the stairs type
@@ -789,7 +790,7 @@ manual_stair://e6y
         speed = FLOORSPEED/4;
         stairsize = 8*FRACUNIT;
         if (!demo_compatibility)
-          crush = false; //jff 2/27/98 fix uninitialized crush field
+          crush = NO_CRUSH; //jff 2/27/98 fix uninitialized crush field
         // e6y
         // Uninitialized crush field will not be equal to 0 or 1 (true)
         // with high probability. So, initialize it with any other value
@@ -807,7 +808,7 @@ manual_stair://e6y
         speed = FLOORSPEED*4;
         stairsize = 16*FRACUNIT;
         if (!demo_compatibility)
-          crush = true;  //jff 2/27/98 fix uninitialized crush field
+          crush = DOOM_CRUSH;  //jff 2/27/98 fix uninitialized crush field
         // e6y
         // Uninitialized crush field will not be equal to 0 or 1 (true)
         // with high probability. So, initialize it with any other value
@@ -1044,7 +1045,7 @@ int EV_DoDonut(line_t*  line)
       s2->floordata = floor; //jff 2/22/98
       floor->thinker.function = T_MoveFloor;
       floor->type = donutRaise;
-      floor->crush = false;
+      floor->crush = NO_CRUSH;
       floor->direction = 1;
       floor->sector = s2;
       floor->speed = FLOORSPEED / 2;
@@ -1058,7 +1059,7 @@ int EV_DoDonut(line_t*  line)
       s1->floordata = floor; //jff 2/22/98
       floor->thinker.function = T_MoveFloor;
       floor->type = lowerFloor;
-      floor->crush = false;
+      floor->crush = NO_CRUSH;
       floor->direction = -1;
       floor->sector = s1;
       floor->speed = FLOORSPEED / 2;
@@ -1383,7 +1384,7 @@ int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype)
         sec->floordata = floor;
         floor->thinker.function = T_MoveFloor;
         floor->type = floortype;
-        floor->crush = 0;
+        floor->crush = NO_CRUSH;
         floor->speed = args[1] * (FRACUNIT / 8);
         if (floortype == FLEV_LOWERTIMES8INSTANT ||
             floortype == FLEV_RAISETIMES8INSTANT)
@@ -1416,7 +1417,7 @@ int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype)
                     args[2] * FRACUNIT * 8;
                 break;
             case FLEV_RAISEFLOORCRUSH:
-                floor->crush = args[2]; // arg[2] = crushing value
+                floor->crush = P_ConvertHexenCrush(args[2]); // arg[2] = crushing value
                 floor->direction = 1;
                 floor->sector = sec;
                 floor->floordestheight = sec->ceilingheight - 8 * FRACUNIT;
@@ -1584,6 +1585,7 @@ static void ProcessStairSector(sector_t * sec, int type, int height,
     floor->direction = Direction;
     floor->sector = sec;
     floor->floordestheight = height;
+    floor->crush = NO_CRUSH;
     switch (stairsType)
     {
         case STAIRS_NORMAL:
@@ -1708,7 +1710,7 @@ void T_BuildPillar(pillar_t * pillar)
     }
 }
 
-int EV_BuildPillar(line_t * line, byte * args, dboolean crush)
+int EV_BuildPillar(line_t * line, byte * args, int crush)
 {
     int secnum;
     sector_t *sec;
@@ -1769,7 +1771,7 @@ int EV_BuildPillar(line_t * line, byte * args, dboolean crush)
         pillar->floordest = newHeight;
         pillar->ceilingdest = newHeight;
         pillar->direction = 1;
-        pillar->crush = crush * args[3];
+        pillar->crush = P_ConvertHexenCrush(crush * args[3]);
         SN_StartSequence((mobj_t *) & pillar->sector->soundorg,
                          SEQ_PLATFORM + pillar->sector->seqType);
     }
@@ -1801,6 +1803,7 @@ int EV_OpenPillar(line_t * line, byte * args)
         P_AddThinker(&pillar->thinker);
         pillar->thinker.function = T_BuildPillar;
         pillar->sector = sec;
+        pillar->crush = NO_CRUSH;
         if (!args[2])
         {
             pillar->floordest = P_FindLowestFloorSurrounding(sec);

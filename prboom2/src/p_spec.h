@@ -1058,7 +1058,7 @@ result_e T_MoveFloorPlane
 ( sector_t* sector,
   fixed_t speed,
   fixed_t dest,
-  dboolean crush,
+  int crush,
   int direction,
   dboolean hexencrush );
 
@@ -1127,7 +1127,7 @@ result_e T_MoveCeilingPlane
 ( sector_t* sector,
   fixed_t speed,
   fixed_t dest,
-  dboolean crush,
+  int crush,
   int direction,
   dboolean hexencrush );
 
@@ -1409,7 +1409,7 @@ int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype);
 int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise);
 int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e stairsType);
 void T_BuildPillar(pillar_t * pillar);
-int EV_BuildPillar(line_t * line, byte * args, dboolean crush);
+int EV_BuildPillar(line_t * line, byte * args, int crush);
 int EV_OpenPillar(line_t * line, byte * args);
 int EV_FloorCrushStop(line_t * line, byte * args);
 void T_FloorWaggle(floorWaggle_t * waggle);
@@ -1581,5 +1581,9 @@ void EV_LightChange(int tag, short change);
 void EV_LightSet(int tag, short level);
 void EV_LightSetMinNeighbor(int tag);
 void EV_LightSetMaxNeighbor(int tag);
+int P_ConvertHexenCrush(int crush);
+
+#define NO_CRUSH -1
+#define DOOM_CRUSH 10
 
 #endif

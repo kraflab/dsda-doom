@@ -73,7 +73,7 @@ result_e T_MoveCeilingPlane
 ( sector_t*     sector,
   fixed_t       speed,
   fixed_t       dest,
-  dboolean      crush,
+  int           crush,
   int           direction,
   dboolean      hexencrush )
 {
@@ -118,7 +118,7 @@ result_e T_MoveCeilingPlane
 
         if (flag == true)
         {
-          if (!hexencrush && crush == true)
+          if (!hexencrush && crush >= 0)
             return crushed;
           sector->ceilingheight = lastpos;
           P_CheckSector(sector,crush);      //jff 3/19/98 use faster chk
@@ -182,7 +182,7 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
               ceiling->sector,
               ceiling->speed,
               ceiling->topheight,
-              false,
+              NO_CRUSH,
               ceiling->direction,
               false
             );
@@ -358,7 +358,7 @@ void T_MoveHexenCeiling(ceiling_t * ceiling)
     //                      break;
         case 1:                // UP
             res = T_MoveCeilingPlane(ceiling->sector, ceiling->speed,
-                                     ceiling->topheight, false,
+                                     ceiling->topheight, NO_CRUSH,
                                      ceiling->direction, true);
             if (res == pastdest)
             {
@@ -469,13 +469,13 @@ manual_ceiling://e6y
     sec->ceilingdata = ceiling;               //jff 2/22/98
     ceiling->thinker.function = T_MoveCeiling;
     ceiling->sector = sec;
-    ceiling->crush = false;
+    ceiling->crush = NO_CRUSH;
 
     // setup ceiling structure according to type of function
     switch(type)
     {
       case fastCrushAndRaise:
-        ceiling->crush = true;
+        ceiling->crush = DOOM_CRUSH;
         ceiling->topheight = sec->ceilingheight;
         ceiling->bottomheight = sec->floorheight + (8*FRACUNIT);
         ceiling->direction = -1;
@@ -485,7 +485,7 @@ manual_ceiling://e6y
       case silentCrushAndRaise:
         ceiling->silent = 1;
       case crushAndRaise:
-        ceiling->crush = true;
+        ceiling->crush = DOOM_CRUSH;
         ceiling->topheight = sec->ceilingheight;
         // fallthrough
       case lowerAndCrush:
@@ -959,12 +959,12 @@ int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type)
         sec->ceilingdata = ceiling;
         ceiling->thinker.function = T_MoveCeiling;
         ceiling->sector = sec;
-        ceiling->crush = 0;
+        ceiling->crush = NO_CRUSH;
         ceiling->speed = arg[1] * (FRACUNIT / 8);
         switch (type)
         {
             case CLEV_CRUSHRAISEANDSTAY:
-                ceiling->crush = arg[2];        // arg[2] = crushing value
+                ceiling->crush = P_ConvertHexenCrush(arg[2]);        // arg[2] = crushing value
                 ceiling->topheight = sec->ceilingheight;
                 ceiling->bottomheight = sec->floorheight + (8 * FRACUNIT);
                 ceiling->direction = -1;
@@ -972,7 +972,7 @@ int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type)
             case CLEV_CRUSHANDRAISE:
                 ceiling->topheight = sec->ceilingheight;
             case CLEV_LOWERANDCRUSH:
-                ceiling->crush = arg[2];        // arg[2] = crushing value
+                ceiling->crush = P_ConvertHexenCrush(arg[2]);        // arg[2] = crushing value
             case CLEV_LOWERTOFLOOR:
                 ceiling->bottomheight = sec->floorheight;
                 if (type != CLEV_LOWERTOFLOOR)
