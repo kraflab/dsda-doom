@@ -718,6 +718,17 @@ typedef struct
 
 } glow_t;
 
+typedef struct
+{
+  thinker_t thinker;
+  sector_t* sector;
+  short startlevel;
+  short endlevel;
+  short tics;
+  short maxtics;
+  dboolean oneshot;
+} zdoom_glow_t;
+
 // p_plats
 
 typedef struct
@@ -1581,6 +1592,9 @@ void EV_LightChange(int tag, short change);
 void EV_LightSet(int tag, short level);
 void EV_LightSetMinNeighbor(int tag);
 void EV_LightSetMaxNeighbor(int tag);
+void EV_StartLightFading(int tag, byte level, byte tics);
+void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics);
+void T_ZDoom_Glow(zdoom_glow_t *g);
 int P_ConvertHexenCrush(int crush);
 
 #define NO_CRUSH -1

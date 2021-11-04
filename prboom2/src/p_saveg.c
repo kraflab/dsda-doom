@@ -653,6 +653,7 @@ typedef enum {
   tc_true_flash,
   tc_true_strobe,
   tc_true_glow,
+  tc_true_zdoom_glow,
   tc_true_elevator,
   tc_true_scroll,
   tc_true_pusher,
@@ -708,6 +709,7 @@ void P_TrueArchiveThinkers(void) {
         th->function==T_LightFlash   ? 4+sizeof(lightflash_t)  :
         th->function==T_StrobeFlash  ? 4+sizeof(strobe_t)      :
         th->function==T_Glow         ? 4+sizeof(glow_t)        :
+        th->function==T_ZDoom_Glow   ? 4+sizeof(zdoom_glow_t)  :
         th->function==T_MoveElevator ? 4+sizeof(elevator_t)    :
         th->function==T_Scroll       ? 4+sizeof(scroll_t)      :
         th->function==T_Pusher       ? 4+sizeof(pusher_t)      :
@@ -824,6 +826,17 @@ void P_TrueArchiveThinkers(void) {
       glow_t *glow;
       *save_p++ = tc_true_glow;
       glow = (glow_t *)save_p;
+      memcpy (glow, th, sizeof(*glow));
+      save_p += sizeof(*glow);
+      glow->sector = (sector_t *)(intptr_t)(glow->sector->iSectorID);
+      continue;
+    }
+
+    if (th->function == T_ZDoom_Glow)
+    {
+      zdoom_glow_t *glow;
+      *save_p++ = tc_true_zdoom_glow;
+      glow = (zdoom_glow_t *)save_p;
       memcpy (glow, th, sizeof(*glow));
       save_p += sizeof(*glow);
       glow->sector = (sector_t *)(intptr_t)(glow->sector->iSectorID);
@@ -1085,6 +1098,7 @@ void P_TrueUnArchiveThinkers(void) {
         tc == tc_true_flash       ? sizeof(lightflash_t)  :
         tc == tc_true_strobe      ? sizeof(strobe_t)      :
         tc == tc_true_glow        ? sizeof(glow_t)        :
+        tc == tc_true_zdoom_glow  ? sizeof(zdoom_glow_t)  :
         tc == tc_true_elevator    ? sizeof(elevator_t)    :
         tc == tc_true_scroll      ? sizeof(scroll_t)      :
         tc == tc_true_pusher      ? sizeof(pusher_t)      :
@@ -1203,6 +1217,17 @@ void P_TrueUnArchiveThinkers(void) {
           save_p += sizeof(*glow);
           glow->sector = &sectors[(size_t)glow->sector];
           glow->thinker.function = T_Glow;
+          P_AddThinker (&glow->thinker);
+          break;
+        }
+
+      case tc_true_zdoom_glow:
+        {
+          zdoom_glow_t *glow = Z_Malloc (sizeof(*glow), PU_LEVEL, NULL);
+          memcpy (glow, save_p, sizeof(*glow));
+          save_p += sizeof(*glow);
+          glow->sector = &sectors[(size_t)glow->sector];
+          glow->thinker.function = T_ZDoom_Glow;
           P_AddThinker (&glow->thinker);
           break;
         }

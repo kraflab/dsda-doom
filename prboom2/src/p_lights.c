@@ -495,6 +495,87 @@ void EV_LightSetMaxNeighbor(int tag)
   }
 }
 
+void T_ZDoom_Glow(zdoom_glow_t *g)
+{
+  if (g->tics++ >= g->maxtics)
+  {
+    if (g->oneshot)
+    {
+      g->sector->lightlevel = g->endlevel;
+      P_RemoveThinker(&g->thinker);
+      return;
+    }
+    else
+    {
+      short temp = g->startlevel;
+      g->startlevel = g->endlevel;
+      g->endlevel = temp;
+      g->tics -= g->maxtics;
+    }
+  }
+
+  g->sector->lightlevel = g->tics * (g->endlevel - g->startlevel) / g->maxtics + g->startlevel;
+}
+
+static void P_SpawnZDoomLightGlow(sector_t *sec, short startlevel, short endlevel,
+                                  short maxtics, dboolean oneshot)
+{
+  zdoom_glow_t *g;
+
+  g = Z_Malloc(sizeof(*g), PU_LEVEL, 0);
+
+  memset(g, 0, sizeof(*g));
+  P_AddThinker(&g->thinker);
+  g->thinker.function = T_ZDoom_Glow;
+
+  g->sector = sec;
+  g->startlevel = startlevel;
+  g->endlevel = endlevel;
+  g->tics = -1;
+  g->maxtics = maxtics;
+  g->oneshot = oneshot;
+}
+
+void EV_StartLightFading(int tag, byte level, byte tics)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightlevel == level)
+      continue;
+
+    if (tics)
+    {
+      P_SpawnZDoomLightGlow(sec, sec->lightlevel, level, tics, true);
+    }
+    else
+    {
+      sec->lightlevel = level;
+    }
+  }
+}
+
+void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics)
+{
+  int s = -1;
+
+  if (tics == 0)
+    return;
+
+  if (upper < lower)
+  {
+    byte temp = upper;
+    upper = lower;
+    lower = temp;
+  }
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+    P_SpawnZDoomLightGlow(&sectors[s], upper, lower, tics, false);
+}
+
 // hexen
 
 void T_Light(light_t * light)

@@ -286,8 +286,8 @@ Current work is isolated to the initial pass over the level format itself - line
 | 110   | Light_RaiseByValue              | :heavy_check_mark: |
 | 111   | Light_LowerByValue              | :heavy_check_mark: |
 | 112   | Light_ChangeToValue             | :heavy_check_mark: |
-| 113   | Light_Fade                      | :grey_question:    |
-| 114   | Light_Glow                      | :grey_question:    |
+| 113   | Light_Fade                      | :heavy_check_mark: |
+| 114   | Light_Glow                      | :heavy_check_mark: |
 | 115   | Light_Flicker                   | :grey_question:    |
 | 116   | Light_Strobe                    | :grey_question:    |
 | 117   | Light_Stop                      | :grey_question:    |
