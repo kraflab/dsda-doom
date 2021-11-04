@@ -553,7 +553,7 @@ void EV_StartLightFading(int tag, byte level, byte tics)
   {
     sector_t *sec = &sectors[s];
 
-    if (sec->lightlevel == level)
+    if (sec->lightingdata || sec->lightlevel == level)
       continue;
 
     if (tics)
@@ -582,7 +582,14 @@ void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics)
   }
 
   while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+      continue;
+
     P_SpawnZDoomLightGlow(&sectors[s], upper, lower, tics, false);
+  }
 }
 
 // hexen
