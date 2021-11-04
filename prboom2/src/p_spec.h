@@ -1595,6 +1595,7 @@ void EV_LightSetMinNeighbor(int tag);
 void EV_LightSetMaxNeighbor(int tag);
 void EV_StartLightFading(int tag, byte level, byte tics);
 void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics);
+void EV_StopLightEffect(int tag);
 void T_ZDoom_Glow(zdoom_glow_t *g);
 int P_ConvertHexenCrush(int crush);
 

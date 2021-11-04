@@ -6469,6 +6469,10 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       EV_StartLightGlowing(args[0], args[1], args[2], args[3]);
       buttonSuccess = 1;
       break;
+    case zl_light_stop:
+      EV_StopLightEffect(args[0]);
+      buttonSuccess = 1;
+      break;
     default:
       break;
   }

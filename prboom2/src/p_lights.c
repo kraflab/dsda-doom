@@ -592,6 +592,22 @@ void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics)
   }
 }
 
+void EV_StopLightEffect(int tag)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+    {
+      P_RemoveThinker((thinker_t *) sec->lightingdata);
+      sec->lightingdata = NULL;
+    }
+  }
+}
+
 // hexen
 
 void T_Light(light_t * light)
