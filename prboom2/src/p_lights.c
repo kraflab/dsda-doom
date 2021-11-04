@@ -642,6 +642,70 @@ void EV_StartLightFlickering(int tag, byte upper, byte lower)
   }
 }
 
+static void P_SpawnZDoomLightStrobe(sector_t *sector, int upper, int lower,
+                             int brighttime, int darktime, int count)
+{
+  strobe_t* g;
+
+  g = Z_Malloc ( sizeof(*g), PU_LEVEL, 0);
+
+  memset(g, 0, sizeof(*g));
+  P_AddThinker (&g->thinker);
+
+  g->sector = sector;
+  sector->lightingdata = g;
+  g->darktime = darktime;
+  g->brighttime = brighttime;
+  g->thinker.function = T_StrobeFlash;
+  g->maxlight = upper;
+  g->minlight = lower;
+
+  if (g->minlight == g->maxlight)
+    g->minlight = 0;
+
+  g->count = count;
+}
+
+static void P_SpawnZDoomLightStrobeDoom(sector_t* sector, int brighttime, int darktime)
+{
+  int count = (P_Random(pr_lights) & 7) + 1;
+
+  P_SpawnZDoomLightStrobe(
+    sector, sector->lightlevel, P_FindMinSurroundingLight(sector, sector->lightlevel),
+    brighttime, darktime, count
+  );
+}
+
+void EV_StartZDoomLightStrobing(int tag, int upper, int lower, int brighttime, int darktime)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+      continue;
+
+    P_SpawnZDoomLightStrobe(sec, upper, lower, brighttime, darktime, 1);
+  }
+}
+
+void EV_StartZDoomLightStrobingDoom(int tag, int brighttime, int darktime)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+      continue;
+
+    P_SpawnZDoomLightStrobeDoom(sec, brighttime, darktime);
+  }
+}
+
 void EV_StopLightEffect(int tag)
 {
   int s = -1;
