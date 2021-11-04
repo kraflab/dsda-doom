@@ -1195,6 +1195,7 @@ void P_TrueUnArchiveThinkers(void) {
           memcpy (flash, save_p, sizeof(*flash));
           save_p += sizeof(*flash);
           flash->sector = &sectors[(size_t)flash->sector];
+          flash->sector->lightingdata = flash;
           flash->thinker.function = T_LightFlash;
           P_AddThinker (&flash->thinker);
           break;
@@ -1206,6 +1207,7 @@ void P_TrueUnArchiveThinkers(void) {
           memcpy (strobe, save_p, sizeof(*strobe));
           save_p += sizeof(*strobe);
           strobe->sector = &sectors[(size_t)strobe->sector];
+          strobe->sector->lightingdata = strobe;
           strobe->thinker.function = T_StrobeFlash;
           P_AddThinker (&strobe->thinker);
           break;
@@ -1217,6 +1219,7 @@ void P_TrueUnArchiveThinkers(void) {
           memcpy (glow, save_p, sizeof(*glow));
           save_p += sizeof(*glow);
           glow->sector = &sectors[(size_t)glow->sector];
+          glow->sector->lightingdata = glow;
           glow->thinker.function = T_Glow;
           P_AddThinker (&glow->thinker);
           break;
@@ -1228,6 +1231,7 @@ void P_TrueUnArchiveThinkers(void) {
           memcpy (glow, save_p, sizeof(*glow));
           save_p += sizeof(*glow);
           glow->sector = &sectors[(size_t)glow->sector];
+          glow->sector->lightingdata = glow;
           glow->thinker.function = T_ZDoom_Glow;
           P_AddThinker (&glow->thinker);
           break;
@@ -1239,6 +1243,7 @@ void P_TrueUnArchiveThinkers(void) {
           memcpy (flicker, save_p, sizeof(*flicker));
           save_p += sizeof(*flicker);
           flicker->sector = &sectors[(size_t)flicker->sector];
+          flicker->sector->lightingdata = flicker;
           flicker->thinker.function = T_FireFlicker;
           P_AddThinker (&flicker->thinker);
           break;
@@ -1306,6 +1311,7 @@ void P_TrueUnArchiveThinkers(void) {
           memcpy(phase, save_p, sizeof(*phase));
           save_p += sizeof(*phase);
           phase->sector = &sectors[(size_t)phase->sector];
+          phase->sector->lightingdata = phase;
           phase->thinker.function = T_Phase;
           P_AddThinker(&phase->thinker);
           break;

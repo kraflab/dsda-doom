@@ -187,6 +187,7 @@ void P_SpawnFireFlicker (sector_t*  sector)
 
   flick->thinker.function = T_FireFlicker;
   flick->sector = sector;
+  sector->lightingdata = flick;
   flick->maxlight = sector->lightlevel;
   flick->minlight = P_FindMinSurroundingLight(sector,sector->lightlevel)+16;
   flick->count = 4;
@@ -213,6 +214,7 @@ void P_SpawnLightFlash (sector_t* sector)
 
   flash->thinker.function = T_LightFlash;
   flash->sector = sector;
+  sector->lightingdata = flash;
   flash->maxlight = sector->lightlevel;
 
   flash->minlight = P_FindMinSurroundingLight(sector,sector->lightlevel);
@@ -244,6 +246,7 @@ void P_SpawnStrobeFlash
   P_AddThinker (&flash->thinker);
 
   flash->sector = sector;
+  sector->lightingdata = flash;
   flash->darktime = fastOrSlow;
   flash->brighttime = STROBEBRIGHT;
   flash->thinker.function = T_StrobeFlash;
@@ -279,6 +282,7 @@ void P_SpawnGlowingLight(sector_t*  sector)
   P_AddThinker(&g->thinker);
 
   g->sector = sector;
+  sector->lightingdata = g;
   g->minlight = P_FindMinSurroundingLight(sector,sector->lightlevel);
   g->maxlight = sector->lightlevel;
   g->thinker.function = T_Glow;
@@ -505,6 +509,7 @@ void T_ZDoom_Glow(zdoom_glow_t *g)
     if (g->oneshot)
     {
       g->sector->lightlevel = g->endlevel;
+      g->sector->lightingdata = NULL;
       P_RemoveThinker(&g->thinker);
       return;
     }
@@ -532,6 +537,7 @@ static void P_SpawnZDoomLightGlow(sector_t *sec, short startlevel, short endleve
   g->thinker.function = T_ZDoom_Glow;
 
   g->sector = sec;
+  sec->lightingdata = g;
   g->startlevel = startlevel;
   g->endlevel = endlevel;
   g->tics = -1;
@@ -794,6 +800,7 @@ void P_SpawnPhasedLight(sector_t * sector, int base, int index)
     phase = Z_Malloc(sizeof(*phase), PU_LEVEL, 0);
     P_AddThinker(&phase->thinker);
     phase->sector = sector;
+    sector->lightingdata = phase;
     if (index == -1)
     {                           // sector->lightlevel as the index
         phase->index = sector->lightlevel & 63;
