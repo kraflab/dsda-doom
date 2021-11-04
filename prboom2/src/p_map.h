@@ -74,8 +74,8 @@ void P_RadiusAttack(mobj_t *spot, mobj_t *source, int damage, int distance, dboo
 dboolean P_CheckPosition(mobj_t *thing, fixed_t x, fixed_t y);
 
 //jff 3/19/98 P_CheckSector(): new routine to replace P_ChangeSector()
-dboolean P_ChangeSector(sector_t* sector,dboolean crunch);
-dboolean P_CheckSector(sector_t *sector, dboolean crunch);
+dboolean P_ChangeSector(sector_t *sector, int crunch);
+dboolean P_CheckSector(sector_t *sector, int crunch);
 void    P_DelSeclist(msecnode_t*);                          // phares 3/16/98
 void    P_FreeSecNodeList(void);                            // sf
 void    P_CreateSecNodeList(mobj_t*,fixed_t,fixed_t);       // phares 3/14/98

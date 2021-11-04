@@ -115,7 +115,7 @@ manual_floor:
     P_AddThinker (&floor->thinker);
     sec->floordata = floor;
     floor->thinker.function = T_MoveFloor;
-    floor->crush = Crsh;
+    floor->crush = (Crsh ? DOOM_CRUSH : NO_CRUSH);
     floor->direction = Dirn? 1 : -1;
     floor->sector = sec;
     floor->texture = sec->floorpic;
@@ -310,7 +310,7 @@ manual_ceiling:
     P_AddThinker (&ceiling->thinker);
     sec->ceilingdata = ceiling; //jff 2/22/98
     ceiling->thinker.function = T_MoveCeiling;
-    ceiling->crush = Crsh;
+    ceiling->crush = (Crsh ? DOOM_CRUSH : NO_CRUSH);
     ceiling->direction = Dirn? 1 : -1;
     ceiling->sector = sec;
     ceiling->texture = sec->ceilingpic;
@@ -510,7 +510,7 @@ manual_lift:
     plat->sector = sec;
     plat->sector->floordata = plat;
     plat->thinker.function = T_PlatRaise;
-    plat->crush = false;
+    plat->crush = NO_CRUSH;
     plat->tag = line->tag;
 
     plat->type = genLift;
@@ -713,7 +713,7 @@ manual_stair:
     height = sec->floorheight + floor->direction * stairsize;
     floor->floordestheight = height;
     texture = sec->floorpic;
-    floor->crush = false;
+    floor->crush = NO_CRUSH;
     floor->type = genBuildStair; // jff 3/31/98 do not leave uninited
 
     sec->stairlock = -2;         // jff 2/26/98 set up lock on current sector
@@ -777,7 +777,7 @@ manual_stair:
         floor->sector = sec;
         floor->speed = speed;
         floor->floordestheight = height;
-        floor->crush = false;
+        floor->crush = NO_CRUSH;
         floor->type = genBuildStair; // jff 3/31/98 do not leave uninited
 
         ok = 1;
@@ -857,7 +857,7 @@ manual_crusher:
     P_AddThinker (&ceiling->thinker);
     sec->ceilingdata = ceiling; //jff 2/22/98
     ceiling->thinker.function = T_MoveCeiling;
-    ceiling->crush = true;
+    ceiling->crush = DOOM_CRUSH;
     ceiling->direction = -1;
     ceiling->sector = sec;
     ceiling->texture = sec->ceilingpic;

@@ -87,7 +87,7 @@ void T_PlatRaise(plat_t* plat)
       }
 
       // if encountered an obstacle, and not a crush type, reverse direction
-      if (res == crushed && (!plat->crush))
+      if (res == crushed && plat->crush == NO_CRUSH)
       {
         plat->count = plat->wait;
         plat->status = down;
@@ -142,7 +142,7 @@ void T_PlatRaise(plat_t* plat)
       break;
 
     case down: // plat moving down
-      res = T_MoveFloorPlane(plat->sector, plat->speed, plat->low, false, -1, false);
+      res = T_MoveFloorPlane(plat->sector, plat->speed, plat->low, NO_CRUSH, -1, false);
 
       // handle reaching end of down stroke
       if (res == pastdest)
@@ -261,7 +261,7 @@ manual_plat://e6y
     plat->sector = sec;
     plat->sector->floordata = plat; //jff 2/23/98 multiple thinkers
     plat->thinker.function = T_PlatRaise;
-    plat->crush = false;
+    plat->crush = NO_CRUSH;
     plat->tag = line->tag;
 
     //jff 1/26/98 Avoid raise plat bouncing a head off a ceiling and then
@@ -339,7 +339,7 @@ manual_plat://e6y
       case toggleUpDn: //jff 3/14/98 add new type to support instant toggle
         plat->speed = PLATSPEED;  //not used
         plat->wait = 35*PLATWAIT; //not used
-        plat->crush = true; //jff 3/14/98 crush anything in the way
+        plat->crush = DOOM_CRUSH; //jff 3/14/98 crush anything in the way
 
         // set up toggling between ceiling, floor inclusive
         plat->low = sec->ceilingheight;
@@ -481,7 +481,7 @@ static void Hexen_T_PlatRaise(plat_t * plat)
     {
         case up:
             res = T_MoveFloorPlane(plat->sector, plat->speed, plat->high, plat->crush, 1, true);
-            if (res == crushed && (!plat->crush))
+            if (res == crushed && plat->crush == NO_CRUSH)
             {
                 plat->count = plat->wait;
                 plat->status = down;
@@ -505,7 +505,7 @@ static void Hexen_T_PlatRaise(plat_t * plat)
             }
             break;
         case down:
-            res = T_MoveFloorPlane(plat->sector, plat->speed, plat->low, false, -1, true);
+            res = T_MoveFloorPlane(plat->sector, plat->speed, plat->low, NO_CRUSH, -1, true);
             if (res == pastdest)
             {
                 plat->count = plat->wait;
@@ -563,7 +563,7 @@ int Hexen_EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount)
         plat->sector = sec;
         plat->sector->floordata = plat;
         plat->thinker.function = T_PlatRaise;
-        plat->crush = false;
+        plat->crush = NO_CRUSH;
         plat->tag = args[0];
         plat->speed = args[1] * (FRACUNIT / 8);
         switch (type)

@@ -80,7 +80,8 @@ static int ls_y; // Lost Soul position for Lost Soul checks      // phares
 //  to undo the changes.
 //
 
-static dboolean crushchange, nofit;
+static int crushchange;
+static dboolean nofit;
 
 // If "floatok" true, move would be ok
 // if within "tmfloorz - tmceilingz".
@@ -2716,12 +2717,11 @@ dboolean PIT_ChangeSector (mobj_t* thing)
 
   nofit = true;
 
-  if (crushchange && !(leveltime & 3)) {
+  if (crushchange > 0 && !(leveltime & 3)) {
     int t;
-    int damage = hexen ? crushchange : 10;
 
-    P_DamageMobj(thing, NULL, NULL, damage);
-    dsda_WatchCrush(thing, damage);
+    P_DamageMobj(thing, NULL, NULL, crushchange);
+    dsda_WatchCrush(thing, crushchange);
 
     if (
       !hexen ||
@@ -2753,7 +2753,7 @@ dboolean PIT_ChangeSector (mobj_t* thing)
 //
 // P_ChangeSector
 //
-dboolean P_ChangeSector(sector_t* sector,dboolean crunch)
+dboolean P_ChangeSector(sector_t* sector, int crunch)
 {
   int   x;
   int   y;
@@ -2781,7 +2781,7 @@ dboolean P_ChangeSector(sector_t* sector,dboolean crunch)
 // sector. Both more accurate and faster.
 //
 
-dboolean P_CheckSector(sector_t* sector,dboolean crunch)
+dboolean P_CheckSector(sector_t* sector, int crunch)
 {
   msecnode_t *n;
 
@@ -3360,7 +3360,7 @@ void P_AppendSpecHit(line_t * ld)
       &tmfloorz,     // fixed_t *tmfloorz;
       &tmceilingz,   // fixed_t *tmceilingz;
 
-      &crushchange,  // dboolean *crushchange;
+      &crushchange,  // int *crushchange;
       &nofit,        // dboolean *nofit;
     };
     spechit_overrun_param.line = ld;

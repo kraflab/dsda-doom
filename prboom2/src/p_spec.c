@@ -940,6 +940,12 @@ static void P_InitTagLists(void)
     }
 }
 
+// Converts Hexen's 0 (meaning no crush) to the internal value
+int P_ConvertHexenCrush(int crush)
+{
+  return (crush ? crush : NO_CRUSH);
+}
+
 //
 // P_FindMinSurroundingLight()
 //
