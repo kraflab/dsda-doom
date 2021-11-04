@@ -592,6 +592,56 @@ void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics)
   }
 }
 
+void T_ZDoom_Flicker(zdoom_flicker_t *g)
+{
+  if (g->count)
+  {
+    g->count--;
+  }
+  else if (g->sector->lightlevel == g->upper)
+  {
+    g->sector->lightlevel = g->lower;
+    g->count = (P_Random(pr_lights) & 7) + 1;
+  }
+  else
+  {
+    g->sector->lightlevel = g->upper;
+    g->count = (P_Random(pr_lights) & 31) + 1;
+  }
+}
+
+static void P_SpawnZDoomLightFlicker(sector_t *sec, short upper, short lower)
+{
+  zdoom_flicker_t *g;
+
+  g = Z_Malloc(sizeof(*g), PU_LEVEL, 0);
+
+  memset(g, 0, sizeof(*g));
+  P_AddThinker(&g->thinker);
+  g->thinker.function = T_ZDoom_Flicker;
+
+  g->sector = sec;
+  sec->lightingdata = g;
+  g->upper = upper;
+  g->lower = lower;
+  g->count = (P_Random(pr_lights) & 64) + 1;
+}
+
+void EV_StartLightFlickering(int tag, byte upper, byte lower)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+      continue;
+
+    P_SpawnZDoomLightFlicker(&sectors[s], upper, lower);
+  }
+}
+
 void EV_StopLightEffect(int tag)
 {
   int s = -1;

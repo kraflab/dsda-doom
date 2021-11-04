@@ -659,6 +659,7 @@ typedef enum {
   tc_true_scroll,
   tc_true_pusher,
   tc_true_flicker,
+  tc_true_zdoom_flicker,
   tc_true_friction,
   tc_true_light,
   tc_true_phase,
@@ -703,28 +704,29 @@ void P_TrueArchiveThinkers(void) {
     }
     else
       size +=
-        th->function==T_MoveCeiling  ? 4+sizeof(ceiling_t)     :
-        th->function==T_VerticalDoor ? 4+sizeof(vldoor_t)      :
-        th->function==T_MoveFloor    ? 4+sizeof(floormove_t)   :
-        th->function==T_PlatRaise    ? 4+sizeof(plat_t)        :
-        th->function==T_LightFlash   ? 4+sizeof(lightflash_t)  :
-        th->function==T_StrobeFlash  ? 4+sizeof(strobe_t)      :
-        th->function==T_Glow         ? 4+sizeof(glow_t)        :
-        th->function==T_ZDoom_Glow   ? 4+sizeof(zdoom_glow_t)  :
-        th->function==T_MoveElevator ? 4+sizeof(elevator_t)    :
-        th->function==T_Scroll       ? 4+sizeof(scroll_t)      :
-        th->function==T_Pusher       ? 4+sizeof(pusher_t)      :
-        th->function==T_FireFlicker  ? 4+sizeof(fireflicker_t) :
-        th->function==T_Friction     ? 4+sizeof(friction_t)    :
-        th->function==T_Light        ? 4+sizeof(light_t)       :
-        th->function==T_Phase        ? 4+sizeof(phase_t)       :
-        th->function==T_InterpretACS ? 4+sizeof(acs_t)         :
-        th->function==T_BuildPillar  ? 4+sizeof(pillar_t)      :
-        th->function==T_FloorWaggle  ? 4+sizeof(floorWaggle_t) :
-        th->function==T_RotatePoly   ? 4+sizeof(polyevent_t)   :
-        th->function==T_MovePoly     ? 4+sizeof(polyevent_t)   :
-        th->function==T_PolyDoor     ? 4+sizeof(polydoor_t)    :
-        P_IsMobjThinker(th)          ? 4+sizeof(mobj_t)        :
+        th->function==T_MoveCeiling   ? 4+sizeof(ceiling_t)       :
+        th->function==T_VerticalDoor  ? 4+sizeof(vldoor_t)        :
+        th->function==T_MoveFloor     ? 4+sizeof(floormove_t)     :
+        th->function==T_PlatRaise     ? 4+sizeof(plat_t)          :
+        th->function==T_LightFlash    ? 4+sizeof(lightflash_t)    :
+        th->function==T_StrobeFlash   ? 4+sizeof(strobe_t)        :
+        th->function==T_Glow          ? 4+sizeof(glow_t)          :
+        th->function==T_ZDoom_Glow    ? 4+sizeof(zdoom_glow_t)    :
+        th->function==T_MoveElevator  ? 4+sizeof(elevator_t)      :
+        th->function==T_Scroll        ? 4+sizeof(scroll_t)        :
+        th->function==T_Pusher        ? 4+sizeof(pusher_t)        :
+        th->function==T_FireFlicker   ? 4+sizeof(fireflicker_t)   :
+        th->function==T_ZDoom_Flicker ? 4+sizeof(zdoom_flicker_t) :
+        th->function==T_Friction      ? 4+sizeof(friction_t)      :
+        th->function==T_Light         ? 4+sizeof(light_t)         :
+        th->function==T_Phase         ? 4+sizeof(phase_t)         :
+        th->function==T_InterpretACS  ? 4+sizeof(acs_t)           :
+        th->function==T_BuildPillar   ? 4+sizeof(pillar_t)        :
+        th->function==T_FloorWaggle   ? 4+sizeof(floorWaggle_t)   :
+        th->function==T_RotatePoly    ? 4+sizeof(polyevent_t)     :
+        th->function==T_MovePoly      ? 4+sizeof(polyevent_t)     :
+        th->function==T_PolyDoor      ? 4+sizeof(polydoor_t)      :
+        P_IsMobjThinker(th)           ? 4+sizeof(mobj_t)          :
       0;
 
   CheckSaveGame(size + 1);    // killough; cph: +1 for the tc_endspecials
@@ -850,6 +852,17 @@ void P_TrueArchiveThinkers(void) {
       fireflicker_t *flicker;
       *save_p++ = tc_true_flicker;
       flicker = (fireflicker_t *)save_p;
+      memcpy (flicker, th, sizeof(*flicker));
+      save_p += sizeof(*flicker);
+      flicker->sector = (sector_t *)(intptr_t)(flicker->sector->iSectorID);
+      continue;
+    }
+
+    if (th->function == T_ZDoom_Flicker)
+    {
+      zdoom_flicker_t *flicker;
+      *save_p++ = tc_true_zdoom_flicker;
+      flicker = (zdoom_flicker_t *)save_p;
       memcpy (flicker, th, sizeof(*flicker));
       save_p += sizeof(*flicker);
       flicker->sector = (sector_t *)(intptr_t)(flicker->sector->iSectorID);
@@ -1092,28 +1105,29 @@ void P_TrueUnArchiveThinkers(void) {
     {
       if (tc == tc_true_mobj) mobj_count++;
       save_p +=
-        tc == tc_true_ceiling     ? sizeof(ceiling_t)     :
-        tc == tc_true_door        ? sizeof(vldoor_t)      :
-        tc == tc_true_floor       ? sizeof(floormove_t)   :
-        tc == tc_true_plat        ? sizeof(plat_t)        :
-        tc == tc_true_flash       ? sizeof(lightflash_t)  :
-        tc == tc_true_strobe      ? sizeof(strobe_t)      :
-        tc == tc_true_glow        ? sizeof(glow_t)        :
-        tc == tc_true_zdoom_glow  ? sizeof(zdoom_glow_t)  :
-        tc == tc_true_elevator    ? sizeof(elevator_t)    :
-        tc == tc_true_scroll      ? sizeof(scroll_t)      :
-        tc == tc_true_pusher      ? sizeof(pusher_t)      :
-        tc == tc_true_flicker     ? sizeof(fireflicker_t) :
-        tc == tc_true_friction    ? sizeof(friction_t)    :
-        tc == tc_true_light       ? sizeof(light_t)       :
-        tc == tc_true_phase       ? sizeof(phase_t)       :
-        tc == tc_true_acs         ? sizeof(acs_t)         :
-        tc == tc_true_pillar      ? sizeof(pillar_t)      :
-        tc == tc_true_waggle      ? sizeof(floorWaggle_t) :
-        tc == tc_true_poly_rotate ? sizeof(polyevent_t)   :
-        tc == tc_true_poly_move   ? sizeof(polyevent_t)   :
-        tc == tc_true_poly_door   ? sizeof(polydoor_t)    :
-        tc == tc_true_mobj        ? sizeof(mobj_t)        :
+        tc == tc_true_ceiling       ? sizeof(ceiling_t)       :
+        tc == tc_true_door          ? sizeof(vldoor_t)        :
+        tc == tc_true_floor         ? sizeof(floormove_t)     :
+        tc == tc_true_plat          ? sizeof(plat_t)          :
+        tc == tc_true_flash         ? sizeof(lightflash_t)    :
+        tc == tc_true_strobe        ? sizeof(strobe_t)        :
+        tc == tc_true_glow          ? sizeof(glow_t)          :
+        tc == tc_true_zdoom_glow    ? sizeof(zdoom_glow_t)    :
+        tc == tc_true_elevator      ? sizeof(elevator_t)      :
+        tc == tc_true_scroll        ? sizeof(scroll_t)        :
+        tc == tc_true_pusher        ? sizeof(pusher_t)        :
+        tc == tc_true_flicker       ? sizeof(fireflicker_t)   :
+        tc == tc_true_zdoom_flicker ? sizeof(zdoom_flicker_t) :
+        tc == tc_true_friction      ? sizeof(friction_t)      :
+        tc == tc_true_light         ? sizeof(light_t)         :
+        tc == tc_true_phase         ? sizeof(phase_t)         :
+        tc == tc_true_acs           ? sizeof(acs_t)           :
+        tc == tc_true_pillar        ? sizeof(pillar_t)        :
+        tc == tc_true_waggle        ? sizeof(floorWaggle_t)   :
+        tc == tc_true_poly_rotate   ? sizeof(polyevent_t)     :
+        tc == tc_true_poly_move     ? sizeof(polyevent_t)     :
+        tc == tc_true_poly_door     ? sizeof(polydoor_t)      :
+        tc == tc_true_mobj          ? sizeof(mobj_t)          :
       0;
     }
 
@@ -1245,6 +1259,18 @@ void P_TrueUnArchiveThinkers(void) {
           flicker->sector = &sectors[(size_t)flicker->sector];
           flicker->sector->lightingdata = flicker;
           flicker->thinker.function = T_FireFlicker;
+          P_AddThinker (&flicker->thinker);
+          break;
+        }
+
+      case tc_true_zdoom_flicker:
+        {
+          zdoom_flicker_t *flicker = Z_Malloc (sizeof(*flicker), PU_LEVEL, NULL);
+          memcpy (flicker, save_p, sizeof(*flicker));
+          save_p += sizeof(*flicker);
+          flicker->sector = &sectors[(size_t)flicker->sector];
+          flicker->sector->lightingdata = flicker;
+          flicker->thinker.function = T_ZDoom_Flicker;
           P_AddThinker (&flicker->thinker);
           break;
         }

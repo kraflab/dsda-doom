@@ -729,6 +729,15 @@ typedef struct
   dboolean oneshot;
 } zdoom_glow_t;
 
+typedef struct
+{
+  thinker_t thinker;
+  sector_t* sector;
+  short upper;
+  short lower;
+  short count;
+} zdoom_flicker_t;
+
 // p_plats
 
 typedef struct
@@ -1595,8 +1604,10 @@ void EV_LightSetMinNeighbor(int tag);
 void EV_LightSetMaxNeighbor(int tag);
 void EV_StartLightFading(int tag, byte level, byte tics);
 void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics);
+void EV_StartLightFlickering(int tag, byte upper, byte lower);
 void EV_StopLightEffect(int tag);
 void T_ZDoom_Glow(zdoom_glow_t *g);
+void T_ZDoom_Flicker(zdoom_flicker_t *g);
 int P_ConvertHexenCrush(int crush);
 
 #define NO_CRUSH -1
