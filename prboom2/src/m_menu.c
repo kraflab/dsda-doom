@@ -785,6 +785,9 @@ static void M_DeleteGame(int slot)
   char *name;
   int len;
 
+  if (dsda_LastSaveSlot() == slot)
+    dsda_ResetLastSaveSlot();
+
   name = dsda_SaveGameName(slot + save_page * g_menu_save_page_size, false);
   remove(name);
   free(name);

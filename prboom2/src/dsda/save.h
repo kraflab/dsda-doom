@@ -24,5 +24,6 @@ void dsda_InitSaveDir(void);
 char* dsda_SaveGameName(int slot, int demo_save);
 void dsda_SetLastSaveSlot(int slot);
 int dsda_LastSaveSlot(void);
+void dsda_ResetLastSaveSlot(void);
 
 #endif

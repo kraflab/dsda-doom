@@ -145,3 +145,7 @@ void dsda_SetLastSaveSlot(int slot) {
 int dsda_LastSaveSlot(void) {
   return last_save_file_slot;
 }
+
+void dsda_ResetLastSaveSlot(void) {
+  last_save_file_slot = -1;
+}
