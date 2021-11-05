@@ -3205,6 +3205,8 @@ static const char *gen_compstrings[] =
   NULL
 };
 
+static const char *death_use_strings[] = { "default", "nothing", "reload", NULL };
+
 static const char *renderfilters[] = { "none", "point", "linear", "rounded" };
 static const char *edgetypes[] = { "jagged", "sloped" };
 
@@ -3284,6 +3286,7 @@ setup_menu_t misc_settings[] = {
   { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "dsda_hide_horns" } },
   { "Organize My Save Files", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_organized_saves" } },
   { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_skip_quit_prompt" } },
+  { "Death Use Action", S_CHOICE, m_null, G_X, G_Y + 16 * 8, { "dsda_death_use_action" }, 0, NULL, death_use_strings },
 
 #ifdef USE_WINDOWS_LAUNCHER
   { "Use Windows Launcher", S_CHOICE, m_null, G_X, G_Y + 17 * 8, { "launcher_enable" }, 0, NULL, launcher_enable_states },

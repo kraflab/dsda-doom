@@ -18,12 +18,6 @@
 #ifndef __DSDA_DEMO__
 #define __DSDA_DEMO__
 
-typedef enum {
-  death_use_default,
-  death_use_nothing,
-  death_use_reload,
-} death_use_action_t;
-
 void dsda_DeathUse(player_t* player);
 
 #endif

@@ -60,6 +60,7 @@ extern int dsda_skip_quit_prompt;
 extern int dsda_show_split_data;
 extern int dsda_subframes;
 extern int dsda_quickstart_cache_tics;
+extern int dsda_death_use_action;
 extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);

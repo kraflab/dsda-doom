@@ -26,20 +26,27 @@ extern int curpos;
 extern int newtorch;
 extern int newtorchdelta;
 
-death_use_action_t death_use_action = death_use_default;
+typedef enum {
+  death_use_default,
+  death_use_nothing,
+  death_use_reload,
+} death_use_action_t;
 
-static death_use_action_t dsda_DeathUseAction(void)
+int dsda_death_use_action;
+
+static int dsda_DeathUseAction(void)
 {
   if (demorecording || demoplayback)
     return death_use_default;
 
-  return death_use_action;
+  return dsda_death_use_action;
 }
 
 void dsda_DeathUse(player_t* player) {
   switch (dsda_DeathUseAction())
   {
     case death_use_default:
+    default:
       if (raven)
       {
         if (player == &players[consoleplayer])
