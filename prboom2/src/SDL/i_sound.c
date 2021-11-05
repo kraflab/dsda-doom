@@ -77,6 +77,8 @@
 #include "i_pcsound.h"
 #include "e6y.h"
 
+#include "dsda/settings.h"
+
 int snd_pcspeaker;
 
 // The number of internal mixing channels,
@@ -1127,8 +1129,16 @@ int I_RegisterSong(const void *data, size_t len)
   return (0);
 }
 
+// Derived value (not saved, accounts for muted music)
+static int music_volume;
+
 void I_SetMusicVolume(int volume)
 {
+  if (dsda_MuteMusic())
+    volume = 0;
+
+  music_volume = volume;
+
   if (use_experimental_music)
   {
     Exp_SetMusicVolume (volume);
@@ -1144,6 +1154,11 @@ void I_SetMusicVolume(int volume)
 #endif
 
 #endif
+}
+
+void I_ResetMusicVolume(void)
+{
+  I_SetMusicVolume(snd_MusicVolume);
 }
 
 
@@ -1269,7 +1284,7 @@ static void Exp_PlaySong(int handle, int looping)
   {
     SDL_LockMutex (musmutex);
     music_players[current_player]->play (music_handle, looping);
-    music_players[current_player]->setvolume (snd_MusicVolume);
+    music_players[current_player]->setvolume (music_volume);
     SDL_UnlockMutex (musmutex);
   }
 

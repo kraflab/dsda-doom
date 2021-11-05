@@ -30,6 +30,7 @@
 #include "settings.h"
 
 extern void S_ResetSfxVolume(void);
+extern void I_ResetMusicVolume(void);
 
 dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode, dsda_ChangeStrictMode },
@@ -41,6 +42,7 @@ dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_coordinate_display] = { 0, 0, "Coordinate Display", NULL, NULL, false, true },
   [dsda_exhud] = { 0, 0, NULL, NULL, NULL, false, true },
   [dsda_mute_sfx] = { 0, 0, "Sfx", NULL, S_ResetSfxVolume, true, true },
+  [dsda_mute_music] = { 0, 0, "Music", NULL, I_ResetMusicVolume, true, true },
 };
 
 int dsda_auto_key_frame_interval;
@@ -195,6 +197,10 @@ dboolean dsda_StrictMode(void) {
 
 dboolean dsda_MuteSfx(void) {
   return dsda_Transient(dsda_mute_sfx);
+}
+
+dboolean dsda_MuteMusic(void) {
+  return dsda_Transient(dsda_mute_music);
 }
 
 dboolean dsda_CycleGhostColors(void) {
