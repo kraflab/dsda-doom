@@ -83,10 +83,6 @@ extern const char *s_QLOADNET; // = QLOADNET;
 extern const char *s_QSAVESPOT; // = QSAVESPOT;
 //#define SAVEDEAD      "you can't save if you aren't playing!\n\n"PRESSKEY
 extern const char *s_SAVEDEAD; // = SAVEDEAD;
-//#define QSPROMPT      "quicksave over your game named\n\n'%s'?\n\n"PRESSYN
-extern const char *s_QSPROMPT; // = QSPROMPT;
-//#define QLPROMPT      "do you want to quickload the game named\n\n'%s'?\n\n"PRESSYN
-extern const char *s_QLPROMPT; // = QLPROMPT;
 
 /*
 #define NEWGAME       \

@@ -268,7 +268,7 @@ static int   joyymove;
 
 // Game events info
 static buttoncode_t special_event; // Event triggered by local player, to send
-static byte  savegameslot;         // Slot to load if gameaction == ga_loadgame
+static int   savegameslot;         // Slot to load if gameaction == ga_loadgame
 char         savedescription[SAVEDESCLEN];  // Description to save in savegame if gameaction == ga_savegame
 
 //jff 3/24/98 define defaultskill here
@@ -2535,7 +2535,7 @@ void G_DoLoadGame(void)
 // Description is a 24 byte text string
 //
 
-void G_SaveGame(int slot, char *description)
+void G_SaveGame(int slot, const char *description)
 {
   strcpy(savedescription, description);
 

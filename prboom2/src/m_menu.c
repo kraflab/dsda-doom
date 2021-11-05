@@ -110,8 +110,7 @@ int screenblocks;    // has default
 
 int screenSize;      // temp for screenblocks (0-9)
 
-int quickSaveSlot;   // -1 = no quicksave slot picked!
-int quickSavePage;
+#define QUICKSAVESLOT 999
 
 int messageToPrint;  // 1 = message to be printed
 
@@ -981,13 +980,6 @@ static void M_DoSave(int slot)
 {
   G_SaveGame(slot + save_page * g_menu_save_page_size, savegamestrings[slot]);
   M_ClearMenus();
-
-  // PICK QUICKSAVE SLOT YET?
-  if (quickSaveSlot == -2)
-  {
-    quickSaveSlot = slot;
-    quickSavePage = save_page;
-  }
 }
 
 //
@@ -1422,16 +1414,6 @@ void M_Mouse(int choice, int *sens)
 //    M_QuickSave
 //
 
-char tempstring[80];
-
-static void M_QuickSaveResponse(int ch)
-{
-  if (ch == 'y')  {
-    M_DoSave(quickSaveSlot);
-    S_StartSound(NULL,g_sfx_swtchx);
-  }
-}
-
 void M_QuickSave(void)
 {
   if (!usergame && (!demoplayback || netgame)) { /* killough 10/98 */
@@ -1442,20 +1424,8 @@ void M_QuickSave(void)
   if (gamestate != GS_LEVEL)
     return;
 
-  if (quickSaveSlot < 0) {
-    M_StartControlPanel();
-    M_ReadSaveStrings();
-    M_SetupNextMenu(&SaveDef);
-    quickSaveSlot = -2; // means to pick a slot now
-    return;
-  }
-  else
-  {
-    save_page = quickSavePage;
-    M_ReadSaveStrings();
-  }
-  sprintf(tempstring,s_QSPROMPT,savegamestrings[quickSaveSlot]); // Ty 03/27/98 - externalized
-  M_StartMessage(tempstring,M_QuickSaveResponse,true);
+  G_SaveGame(QUICKSAVESLOT, "quicksave");
+  doom_printf("quicksave");
 }
 
 /////////////////////////////
@@ -1463,17 +1433,9 @@ void M_QuickSave(void)
 // M_QuickLoad
 //
 
-static void M_QuickLoadResponse(int ch)
-{
-  if (ch == 'y') {
-    M_LoadSelect(quickSaveSlot);
-    S_StartSound(NULL,g_sfx_swtchx);
-  }
-}
-
 void M_QuickLoad(void)
 {
-  // cph - removed restriction against quickload in a netgame
+  char *name;
 
   if (demorecording) {  // killough 5/26/98: exclude during demo recordings
     M_StartMessage("you can't quickload\n"
@@ -1482,17 +1444,19 @@ void M_QuickLoad(void)
     return;
   }
 
-  if (quickSaveSlot < 0) {
-    M_StartMessage(s_QSAVESPOT,NULL,false); // Ty 03/27/98 - externalized
-    return;
+  name = dsda_SaveGameName(QUICKSAVESLOT, false);
+
+  if (!access(name, F_OK))
+  {
+    G_LoadGame(QUICKSAVESLOT, false);
+    doom_printf("quickload");
   }
   else
   {
-    save_page = quickSavePage;
-    M_ReadSaveStrings();
+    doom_printf("no save file");
   }
-  sprintf(tempstring,s_QLPROMPT,savegamestrings[quickSaveSlot]); // Ty 03/27/98 - externalized
-  M_StartMessage(tempstring,M_QuickLoadResponse,true);
+
+  free(name);
 }
 
 /////////////////////////////
@@ -6198,7 +6162,6 @@ void M_Init(void)
   messageToPrint = 0;
   messageString = NULL;
   messageLastMenuActive = menuactive;
-  quickSaveSlot = -1;
 
   // Here we could catch other version dependencies,
   //  like HELP1/2, and four episodes.

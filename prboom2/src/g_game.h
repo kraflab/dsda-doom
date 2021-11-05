@@ -51,7 +51,7 @@ void G_DeferedPlayDemo(const char *demo); // CPhipps - const
 void G_LoadGame(int slot, dboolean is_command); // killough 5/15/98
 void G_ForcedLoadGame(void);           // killough 5/15/98: forced loadgames
 void G_DoLoadGame(void);
-void G_SaveGame(int slot, char *description); // Called by M_Responder.
+void G_SaveGame(int slot, const char *description); // Called by M_Responder.
 void G_BeginRecording(void);
 // CPhipps - const on these string params
 void G_RecordDemo(const char *name);          // Only called by startup code.

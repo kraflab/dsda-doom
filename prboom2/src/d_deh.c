@@ -205,8 +205,6 @@ const char *s_PRESSYN     = PRESSYN;
 const char *s_QUITMSG     = QUITMSG;
 const char *s_QSAVESPOT   = QSAVESPOT; // PRESSKEY;
 const char *s_SAVEDEAD    = SAVEDEAD;  // PRESSKEY; // remove duplicate y/n
-const char *s_QSPROMPT    = QSPROMPT;  // PRESSYN;
-const char *s_QLPROMPT    = QLPROMPT;  // PRESSYN;
 const char *s_NEWGAME     = NEWGAME;   // PRESSKEY;
 const char *s_RESTARTLEVEL= RESTARTLEVEL; // PRESSYN;
 const char *s_NIGHTMARE   = NIGHTMARE; // PRESSYN;
@@ -549,9 +547,6 @@ static deh_strs deh_strlookup[] = {
   {&s_QUITMSG,"QUITMSG"},
   {&s_QSAVESPOT,"QSAVESPOT"},
   {&s_SAVEDEAD,"SAVEDEAD"},
-  /* cph - disabled to prevent format string attacks in WAD files
-  {&s_QSPROMPT,"QSPROMPT"},
-  {&s_QLPROMPT,"QLPROMPT"},*/
   {&s_NEWGAME,"NEWGAME"},
   {&s_RESTARTLEVEL,"RESTARTLEVEL"},
   {&s_NIGHTMARE,"NIGHTMARE"},
