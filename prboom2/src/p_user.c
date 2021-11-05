@@ -48,6 +48,7 @@
 #include "p_tick.h"
 #include "e6y.h"//e6y
 
+#include "dsda/death.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
 
@@ -553,32 +554,7 @@ void P_DeathThink (player_t* player)
 
   if (player->cmd.buttons & BT_USE)
   {
-    if (raven)
-    {
-      if (player == &players[consoleplayer])
-      {
-        V_SetPalette(0);
-        inv_ptr = 0;
-        curpos = 0;
-        newtorch = 0;
-        newtorchdelta = 0;
-      }
-
-      if (hexen)
-      {
-        player->mo->special1.i = player->pclass;
-        if (player->mo->special1.i > 2)
-        {
-          player->mo->special1.i = 0;
-        }
-      }
-
-      // Let the mobj know the player has entered the reborn state.  Some
-      // mobjs need to know when it's ok to remove themselves.
-      player->mo->special2.i = 666;
-    }
-
-    player->playerstate = PST_REBORN;
+    dsda_DeathUse(player);
   }
 
   R_SmoothPlaying_Reset(player); // e6y

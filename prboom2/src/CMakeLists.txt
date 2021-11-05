@@ -23,6 +23,8 @@ set(COMMON_SRC
     dsda/coordinate_display.h
     dsda/data_organizer.c
     dsda/data_organizer.h
+    dsda/death.c
+    dsda/death.h
     dsda/demo.c
     dsda/demo.h
     dsda/exhud.c
