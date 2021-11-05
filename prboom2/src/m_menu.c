@@ -1271,7 +1271,7 @@ void M_Sound(int choice)
 void M_SfxVol(int choice)
 {
   switch(choice)
-    {
+  {
     case 0:
       if (snd_SfxVolume)
         snd_SfxVolume--;
@@ -1280,9 +1280,13 @@ void M_SfxVol(int choice)
       if (snd_SfxVolume < 15)
         snd_SfxVolume++;
       break;
-    }
+  }
 
-  S_SetSfxVolume(snd_SfxVolume /* *8 */);
+  // Unmute the sfx if we are adjusting the volume
+  if (dsda_MuteSfx())
+    dsda_ToggleSetting(dsda_mute_sfx);
+
+  S_SetSfxVolume(snd_SfxVolume);
 }
 
 void M_MusicVol(int choice)
@@ -2670,6 +2674,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Toggle Strict Mode", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_strict_mode },
   { "Toggle Coord. Display", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_coordinate_display },
   { "Toggle Extended HUD", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_exhud },
+  { "Toggle SFX", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, { 0 }, dsda_input_mute_sfx },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
   { 0, S_SKIP | S_END, m_null }
@@ -4358,6 +4363,7 @@ static toggle_input_t toggle_inputs[] = {
   { dsda_input_command_display, dsda_command_display, false },
   { dsda_input_coordinate_display, dsda_coordinate_display, false },
   { dsda_input_exhud, dsda_exhud, true },
+  { dsda_input_mute_sfx, dsda_mute_sfx, true },
   { -1 }
 };
 

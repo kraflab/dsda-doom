@@ -31,6 +31,7 @@ typedef enum {
   dsda_command_display,
   dsda_coordinate_display,
   dsda_exhud,
+  dsda_mute_sfx,
   DSDA_SETTING_IDENTIFIER_COUNT
 } dsda_setting_identifier_t;
 
@@ -75,6 +76,7 @@ dboolean dsda_AutoRun(void);
 dboolean dsda_MouseLook(void);
 dboolean dsda_NoVert(void);
 dboolean dsda_StrictMode(void);
+dboolean dsda_MuteSfx(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_WeaponAttackAlignment(void);
 dboolean dsda_AlwaysSR50(void);
