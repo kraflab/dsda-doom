@@ -39,6 +39,12 @@
 #include "config.h"
 #endif
 
+#ifdef _MSC_VER
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 #include <stdio.h>
 #include <fcntl.h>
 
