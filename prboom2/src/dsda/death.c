@@ -19,6 +19,8 @@
 #include "d_player.h"
 #include "v_video.h"
 
+#include "dsda/save.h"
+
 #include "death.h"
 
 extern int inv_ptr;
@@ -77,7 +79,13 @@ void dsda_DeathUse(player_t* player) {
     case death_use_nothing:
       break;
     case death_use_reload:
-      // need to track latest save file
+      {
+        extern void G_LoadGame(int slot, dboolean command);
+        int slot = dsda_LastSaveSlot();
+
+        if (slot >= 0)
+          G_LoadGame(slot, false);
+      }
       break;
   }
 }

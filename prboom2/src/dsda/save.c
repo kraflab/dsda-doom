@@ -135,3 +135,13 @@ char* dsda_SaveGameName(int slot, int demo_save) {
 
   return name;
 }
+
+static int last_save_file_slot = -1;
+
+void dsda_SetLastSaveSlot(int slot) {
+  last_save_file_slot = slot;
+}
+
+int dsda_LastSaveSlot(void) {
+  return last_save_file_slot;
+}

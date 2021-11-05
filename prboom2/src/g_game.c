@@ -2368,6 +2368,8 @@ void G_DoLoadGame(void)
   const char *maplump;
   int time, ttime;
 
+  dsda_SetLastSaveSlot(savegameslot);
+
   name = dsda_SaveGameName(savegameslot, demoplayback);
 
   // [crispy] loaded game must always be single player.
@@ -2579,6 +2581,8 @@ static void G_DoSaveGame (dboolean menu)
 
   gameaction = ga_nothing; // cph - cancel savegame at top of this function,
     // in case later problems cause a premature exit
+
+  dsda_SetLastSaveSlot(savegameslot);
 
   name = dsda_SaveGameName(savegameslot, demoplayback && !menu);
 

@@ -22,5 +22,7 @@ void dsda_ArchiveAll(void);
 void dsda_UnArchiveAll(void);
 void dsda_InitSaveDir(void);
 char* dsda_SaveGameName(int slot, int demo_save);
+void dsda_SetLastSaveSlot(int slot);
+int dsda_LastSaveSlot(void);
 
 #endif
