@@ -94,7 +94,6 @@ typedef struct
 static channel_t *channels;
 static degenmobj_t *sobjs;
 
-// These are not used, but should be (menu).
 // Maximum volume of a sound effect.
 // Internal default is max out of 0-15.
 int snd_SfxVolume = 15;
@@ -102,7 +101,7 @@ int snd_SfxVolume = 15;
 // Derived value (not saved, accounts for muted sfx)
 static int sfx_volume;
 
-// Maximum volume of music. Useless so far.
+// Maximum volume of music.
 int snd_MusicVolume = 15;
 
 // whether songs are mus_paused
