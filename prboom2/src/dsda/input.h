@@ -173,6 +173,7 @@ typedef enum {
   dsda_input_exhud,
   dsda_input_mute_sfx,
   dsda_input_mute_music,
+  dsda_input_cheat_codes,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

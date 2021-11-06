@@ -33,6 +33,7 @@ typedef enum {
   dsda_exhud,
   dsda_mute_sfx,
   dsda_mute_music,
+  dsda_cheat_codes,
   DSDA_SETTING_IDENTIFIER_COUNT
 } dsda_setting_identifier_t;
 
@@ -79,6 +80,7 @@ dboolean dsda_NoVert(void);
 dboolean dsda_StrictMode(void);
 dboolean dsda_MuteSfx(void);
 dboolean dsda_MuteMusic(void);
+dboolean dsda_ProcessCheatCodes(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_WeaponAttackAlignment(void);
 dboolean dsda_AlwaysSR50(void);

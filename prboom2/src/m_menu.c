@@ -2680,6 +2680,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Toggle Extended HUD", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_exhud },
   { "Toggle SFX", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, { 0 }, dsda_input_mute_sfx },
   { "Toggle Music", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, { 0 }, dsda_input_mute_music },
+  { "Toggle Cheat Code Entry", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_cheat_codes },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
   { 0, S_SKIP | S_END, m_null }
@@ -3277,6 +3278,9 @@ setup_menu_t device_settings[] = {
   { "Max View Pitch", S_NUM, m_null, G_X, G_Y + 11 * 8, { "movement_maxviewpitch" }, 0, M_ChangeMaxViewPitch },
   { "Mouse Strafe Divisor", S_NUM,   m_null, G_X, G_Y + 12 * 8, { "movement_mousestrafedivisor" } },
   { "Fine Sensitivity", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_fine_sensitivity" } },
+
+  { "Keyboard", S_SKIP | S_TITLE, m_null, G_X, G_Y + 15 * 8 },
+  { "Enable Cheat Code Entry", S_YESNO, m_dsda, G_X, G_Y + 16 * 8, { "dsda_cheat_codes" } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { audiovideo_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { misc_settings } },
@@ -4370,6 +4374,7 @@ static toggle_input_t toggle_inputs[] = {
   { dsda_input_exhud, dsda_exhud, true },
   { dsda_input_mute_sfx, dsda_mute_sfx, true },
   { dsda_input_mute_music, dsda_mute_music, true },
+  { dsda_input_cheat_codes, dsda_cheat_codes, false },
   { -1 }
 };
 

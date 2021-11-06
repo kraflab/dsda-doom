@@ -972,7 +972,9 @@ dboolean M_CheatResponder(event_t *ev)
 {
   cheat_input_t* cheat_i;
 
-  if (ev->type == ev_keydown && M_FindCheats(ev->data1))
+  if (dsda_ProcessCheatCodes() &&
+      ev->type == ev_keydown &&
+      M_FindCheats(ev->data1))
     return true;
 
   for (cheat_i = cheat_input; cheat_i->input; cheat_i++)
