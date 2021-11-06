@@ -1052,6 +1052,13 @@ void WI_drawShowNextLoc(void)
   int   i;
   int   last;
 
+  if (gamemapinfo != NULL &&
+      gamemapinfo->endpic[0] &&
+      strcmp(gamemapinfo->endpic, "-") != 0)
+  {
+    return;
+  }
+
   WI_slamBackground();
 
   // draw animated background
@@ -1085,13 +1092,6 @@ void WI_drawShowNextLoc(void)
     // draw flashing ptr
     if (snl_pointeron)
       WI_drawOnLnode(wbs->next, yah);
-  }
-
-  if (gamemapinfo != NULL &&
-      gamemapinfo->endpic[0] &&
-      strcmp(gamemapinfo->endpic, "-") != 0)
-  {
-    return;
   }
 
   if (gamemission == pack_nerve && singleplayer && wbs->last == 7)
