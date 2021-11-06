@@ -1025,7 +1025,7 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
 
   for (i = 0; i < numChannels; i++)
   {
-    if (origin->player)
+    if (gamestate != GS_LEVEL || origin->player)
     {
       i = numChannels;
       break;              // let the player have more than one sound.
