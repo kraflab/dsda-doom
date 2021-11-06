@@ -2335,7 +2335,6 @@ setup_menu_t keys_settings4[];
 setup_menu_t keys_settings5[];
 setup_menu_t keys_settings6[];
 setup_menu_t keys_settings7[];
-setup_menu_t keys_settings8[];
 setup_menu_t raven_keys_settings[];
 setup_menu_t heretic_keys_settings[];
 setup_menu_t hexen_keys_settings[];
@@ -2352,7 +2351,6 @@ setup_menu_t* keys_settings[] =
   keys_settings5,
   keys_settings6,
   keys_settings7,
-  keys_settings8,
   raven_keys_settings,
   heretic_keys_settings,
   hexen_keys_settings,
@@ -2390,13 +2388,13 @@ setup_menu_t keys_settings1[] =  // Key Binding screen strings
   {"STRAFE LEFT" ,S_INPUT     ,m_scrn,KB_X,KB_Y+8*8,{0},dsda_input_strafeleft},
   {"STRAFE RIGHT",S_INPUT     ,m_scrn,KB_X,KB_Y+9*8,{0},dsda_input_straferight},
   {"STRAFE"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+10*8,{0},dsda_input_strafe},
-  {"AUTORUN"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_autorun},
-  {"180 TURN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+12*8,{0},dsda_input_reverse},
-  {"USE"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,{0},dsda_input_use},
-  {"FLY UP"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_flyup},
-  {"FLY DOWN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_flydown},
-  {"MOUSE LOOK"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_mlook},
-  {"NO VERTICAL MOUSE",S_INPUT,m_scrn,KB_X,KB_Y+17*8,{0},dsda_input_novert},
+  {"180 TURN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_reverse},
+  {"USE"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+12*8,{0},dsda_input_use},
+
+  {"TOGGLES"  ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+14*8},
+  {"AUTORUN"  ,S_INPUT,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_autorun},
+  {"MOUSELOOK",S_INPUT,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_mlook},
+  {"VERTMOUSE",S_INPUT,m_scrn,KB_X,KB_Y+17*8,{0},dsda_input_novert},
 
   // Button for resetting to defaults
   {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
@@ -2436,13 +2434,14 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
   {"LARGER VIEW" ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 9*8,{0},dsda_input_zoomin},
   {"SMALLER VIEW",S_INPUT     ,m_scrn,KB_X,KB_Y+10*8,{0},dsda_input_zoomout},
   {"SCREENSHOT"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_screenshot},
-  {"GAME"        ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+12*8},
-  {"SAVE"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,{0},dsda_input_savegame},
-  {"LOAD"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_loadgame},
-  {"QUICKSAVE"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_quicksave},
-  {"QUICKLOAD"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_quickload},
-  {"END GAME"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+17*8,{0},dsda_input_endgame},
-  {"QUIT"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+18*8,{0},dsda_input_quit},
+
+  {"GAME"        ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+13*8},
+  {"SAVE"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_savegame},
+  {"LOAD"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_loadgame},
+  {"QUICKSAVE"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_quicksave},
+  {"QUICKLOAD"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+17*8,{0},dsda_input_quickload},
+  {"END GAME"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+18*8,{0},dsda_input_endgame},
+  {"QUIT"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+19*8,{0},dsda_input_quit},
   {"<-", S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings1}},
   {"->", S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings3}},
 
@@ -2505,52 +2504,36 @@ setup_menu_t keys_settings4[] =  // Key Binding screen strings
   {0,S_SKIP|S_END,m_null}
 };
 
-setup_menu_t keys_settings5[] =  // Key Binding screen strings
-{
-  {"CHATTING"   ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+0*8},
-  {"BEGIN CHAT" ,S_INPUT     ,m_scrn,KB_X,KB_Y+1*8,{0},dsda_input_chat},
-  {"PLAYER 1"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+2*8,{0},dsda_input_chat_dest0},
-  {"PLAYER 2"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+3*8,{0},dsda_input_chat_dest1},
-  {"PLAYER 3"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+4*8,{0},dsda_input_chat_dest2},
-  {"PLAYER 4"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+5*8,{0},dsda_input_chat_dest3},
-  {"BACKSPACE"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+6*8,{0},dsda_input_chat_backspace},
-  {"ENTER"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+7*8,{0},dsda_input_chat_enter},
-
-  {"<-" ,S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings4}},
-  {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings6}},
-
-  // Final entry
-
-  {0,S_SKIP|S_END,m_null}
-};
-
 //e6y
-setup_menu_t keys_settings6[] =  // Key Binding screen strings
+setup_menu_t keys_settings5[] =  // Key Binding screen strings
 {
   {"GAME SPEED"           ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y},
   {"SPEED UP"             ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 1*8,{0},dsda_input_speed_up},
   {"SPEED DOWN"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 2*8,{0},dsda_input_speed_down},
   {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 3*8,{0},dsda_input_speed_default},
   {"STEP OF CHANGE (0-AUTO)" ,S_NUM  ,m_null,KB_X,KB_Y+ 4*8, {"speed_step"}},
-  {"DEMOS"                ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+5*8},
-  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 6*8,{0},dsda_input_demo_skip},
-  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 7*8,{0},dsda_input_demo_endlevel},
-  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 8*8,{0},dsda_input_walkcamera},
-  {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 9*8,{0},dsda_input_join_demo},
-  {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+10*8},
-  {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 11*8,{0},dsda_input_restart},
-  {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 12*8,{0},dsda_input_nextlevel},
+
+  {"DEMOS"                ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+6*8},
+  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 7*8,{0},dsda_input_demo_skip},
+  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 8*8,{0},dsda_input_demo_endlevel},
+  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 9*8,{0},dsda_input_walkcamera},
+  {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,KB_Y+10*8,{0},dsda_input_join_demo},
+  {"RESTART DEMO ATTEMPT" ,S_INPUT   ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_restart},
+
+  {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+13*8},
+  {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_restart},
+  {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_nextlevel},
 #ifdef GL_DOOM
-  {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+13*8,{0},dsda_input_showalive},
+  {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_showalive},
 #endif
 
-  {"<-",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings5}},
-  {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings7}},
+  {"<-",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings4}},
+  {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings6}},
   // Final entry
   {0,S_SKIP|S_END,m_null}
 };
 
-setup_menu_t keys_settings7[] =
+setup_menu_t keys_settings6[] =
 {
   {"MENUS"       ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+0*8},
   {"NEXT ITEM"   ,S_INPUT     ,m_menu,KB_X,KB_Y+1*8,{0},dsda_input_menu_down},
@@ -2562,13 +2545,22 @@ setup_menu_t keys_settings7[] =
   {"EXIT"        ,S_INPUT     ,m_menu,KB_X,KB_Y+7*8,{0},dsda_input_menu_escape},
   {"CLEAR"       ,S_INPUT     ,m_menu,KB_X,KB_Y+8*8,{0},dsda_input_menu_clear},
 
-  {"<-",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings6}},
-  {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings8}},
+  {"CHATTING"   ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+10*8},
+  {"BEGIN CHAT" ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_chat},
+  {"PLAYER 1"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+12*8,{0},dsda_input_chat_dest0},
+  {"PLAYER 2"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,{0},dsda_input_chat_dest1},
+  {"PLAYER 3"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_chat_dest2},
+  {"PLAYER 4"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_chat_dest3},
+  {"BACKSPACE"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_chat_backspace},
+  {"ENTER"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+17*8,{0},dsda_input_chat_enter},
+
+  {"<-",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings5}},
+  {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings7}},
   // Final entry
   {0,S_SKIP|S_END,m_null}
 };
 
-setup_menu_t keys_settings8[] =
+setup_menu_t keys_settings7[] =
 {
   { "CHEATS", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
   { "God Mode", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_iddqd },
@@ -2590,7 +2582,7 @@ setup_menu_t keys_settings8[] =
   { "Tome of Power", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_shazam },
   { "Chicken", S_INPUT, m_scrn, KB_X, KB_Y + 18 * 8, { 0 }, dsda_input_chicken },
 
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings6 } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { raven_keys_settings } },
 
   // Final entry
@@ -2607,7 +2599,7 @@ setup_menu_t raven_keys_settings[] = {
   { "FLY CENTER", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_flycenter },
   { "JUMP", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_jump },
 
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings8 } },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings7 } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { heretic_keys_settings } },
 
   // Final entry
@@ -2674,13 +2666,15 @@ setup_menu_t dsda_keys_settings[] = {
   { "Cycle Palette", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_cycle_palette },
   { "Open Console", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_console },
   { "Fake Archvile Jump", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_avj },
-  { "Toggle Command Display", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_command_display },
-  { "Toggle Strict Mode", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_strict_mode },
-  { "Toggle Coord. Display", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_coordinate_display },
-  { "Toggle Extended HUD", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_exhud },
-  { "Toggle SFX", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, { 0 }, dsda_input_mute_sfx },
-  { "Toggle Music", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, { 0 }, dsda_input_mute_music },
-  { "Toggle Cheat Code Entry", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_cheat_codes },
+
+  { "Toggles", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 9 * 8 },
+  { "Command Display", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_command_display },
+  { "Strict Mode", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_strict_mode },
+  { "Coordinate Display", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, { 0 }, dsda_input_coordinate_display },
+  { "Extended HUD", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, { 0 }, dsda_input_exhud },
+  { "SFX", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_mute_sfx },
+  { "Music", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, { 0 }, dsda_input_mute_music },
+  { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_cheat_codes },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
   { 0, S_SKIP | S_END, m_null }
