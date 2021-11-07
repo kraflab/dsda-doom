@@ -125,7 +125,16 @@ int I_GetTime_RealTime (void)
   return i;
 }
 
-static unsigned long long displaytime;
+static unsigned long long I_TicStartTime(void)
+{
+  return (unsigned long long) I_GetTime_RealTime() * 1000000 / TICRATE;
+}
+
+static unsigned long long I_CurrentTime(void)
+{
+  return dsda_ElapsedTime(dsda_timer_realtime);
+}
+
 static dboolean InDisplay = false;
 static int saved_gametic = -1;
 dboolean realframe = false;
@@ -140,28 +149,19 @@ dboolean I_StartDisplay(void)
   if (realframe)
     saved_gametic = gametic;
 
-  dsda_StartTimer(dsda_timer_displaytime);
   InDisplay = true;
   return true;
 }
 
 void I_EndDisplay(void)
 {
-  displaytime = dsda_ElapsedTime(dsda_timer_displaytime);
   InDisplay = false;
 }
 
-static int subframe = 0;
-static int prevsubframe = 0;
 int interpolation_method;
 fixed_t I_GetTimeFrac (void)
 {
-  unsigned long long tic_time;
   fixed_t frac;
-
-  tic_time = dsda_ElapsedTime(dsda_timer_tic);
-
-  subframe++;
 
   if (!movement_smooth)
   {
@@ -169,30 +169,15 @@ fixed_t I_GetTimeFrac (void)
   }
   else
   {
-    extern int renderer_fps;
-    if ((interpolation_method == 0) || (prevsubframe <= 0) || (renderer_fps <= 0))
-    {
-      frac = (fixed_t)((tic_time + displaytime) * FRACUNIT * tic_vars.tics_per_usec);
-    }
-    else
-    {
-      frac = (fixed_t)(tic_time * FRACUNIT * tic_vars.tics_per_usec);
-      frac = (unsigned int)((float)FRACUNIT * TICRATE * subframe / renderer_fps);
-    }
+    unsigned long long tic_time;
+
+    tic_time = I_CurrentTime() - I_TicStartTime();
+
+    frac = (fixed_t) (tic_time * FRACUNIT * tic_vars.tics_per_usec);
     frac = BETWEEN(0, FRACUNIT, frac);
   }
 
   return frac;
-}
-
-void I_GetTime_SaveMS(void)
-{
-  if (!movement_smooth)
-    return;
-
-  dsda_StartTimer(dsda_timer_tic);
-  prevsubframe = subframe;
-  subframe = 0;
 }
 
 /*

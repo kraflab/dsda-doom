@@ -134,7 +134,7 @@ void TryRunTics (void)
         if (movement_smooth && gamestate==wipegamestate)
         {
           isExtraDDisplay = true;
-          D_Display(I_GetTimeFrac());
+          D_Display(-1);
           isExtraDDisplay = false;
         }
       }
@@ -145,7 +145,6 @@ void TryRunTics (void)
     if (advancedemo)
       D_DoAdvanceDemo ();
     M_Ticker ();
-    I_GetTime_SaveMS();
     G_Ticker ();
     gametic++;
     FakeNetUpdate();
