@@ -604,8 +604,15 @@ typedef enum
 
   // heretic
   heretic_build8,
-  heretic_turbo16
+  heretic_turbo16,
+
+  // zdoom
+  stairBuildDown,
+  stairBuildUp,
 } stair_e;
+
+#define STAIR_USE_SPECIALS 1
+#define STAIR_SYNC         2
 
 typedef enum
 {
@@ -1598,6 +1605,8 @@ int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fi
                    int crush, int change, dboolean hexencrush, dboolean hereticlower);
 int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode);
+int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
+                        fixed_t speed, int delay, int reset, int igntxt, int usespecials);
 void EV_LightChange(int tag, short change);
 void EV_LightSet(int tag, short level);
 void EV_LightSetMinNeighbor(int tag);

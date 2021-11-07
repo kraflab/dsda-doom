@@ -6321,6 +6321,64 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                           args[4] & 7, false);
       }
       break;
+    case zl_stairs_build_down:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildDown, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, STAIR_USE_SPECIALS);
+      break;
+    case zl_stairs_build_up:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, STAIR_USE_SPECIALS);
+      break;
+    case zl_stairs_build_down_sync:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildDown, line,
+                                          args[2], P_ArgToSpeed(args[1]), 0,
+                                          args[3], 0, STAIR_USE_SPECIALS | STAIR_SYNC);
+      break;
+    case zl_stairs_build_up_sync:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), 0,
+                                          args[3], 0, STAIR_USE_SPECIALS | STAIR_SYNC);
+      break;
+    case zl_stairs_build_down_doom:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildDown, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, 0);
+      break;
+    case zl_stairs_build_up_doom:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, 0);
+      break;
+    case zl_stairs_build_down_doom_sync:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildDown, line,
+                                          args[2], P_ArgToSpeed(args[1]), 0,
+                                          args[3], 0, STAIR_SYNC);
+      break;
+    case zl_stairs_build_up_doom_sync:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), 0,
+                                          args[3], 0, STAIR_SYNC);
+      break;
+    case zl_generic_stairs:
+      {
+        stairs_e type;
+
+        type = (args[3] & 1) ? stairBuildUp : stairBuildDown;
+        buttonSuccess = EV_BuildZDoomStairs(args[0], type, line,
+                                            args[2], P_ArgToSpeed(args[1]), 0,
+                                            args[4], args[3] & 2, 0);
+
+        // Toggle direction of next activation of repeatable stairs
+        if (buttonSuccess && line &&
+            line->flags & ML_REPEATSPECIAL &&
+            line->special == zl_generic_stairs)
+        {
+          line->arg4 ^= 1; // args[3]
+        }
+      }
+      break;
     case zl_sector_set_gravity:
       {
         fixed_t gravity;

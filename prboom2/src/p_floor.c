@@ -1640,6 +1640,14 @@ static void ProcessStairSector(sector_t * sec, int type, int height,
     }
 }
 
+int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
+                        fixed_t speed, int delay, int reset, int igntxt, int usespecials)
+{
+  stairsize *= FRACUNIT;
+
+  return 0;
+}
+
 int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e stairsType)
 {
     int secnum;
