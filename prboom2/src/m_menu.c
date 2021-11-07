@@ -3242,7 +3242,7 @@ setup_menu_t audiovideo_settings[] = {
   { "Vertical Sync", S_YESNO, m_null, G_X, G_Y + 9 * 8, { "render_vsync" }, 0, M_ChangeVideoMode },
   { "Translucency filter percentage", S_NUM, m_null, G_X, G_Y + 10 * 8, { "tran_filter_pct" }, 0, M_Trans },
   { "Uncapped Framerate", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "uncapped_framerate" }, 0, M_ChangeUncappedFrameRate },
-  { "Render Limit Per Tic", S_NUM, m_null, G_X, G_Y + 12 * 8, { "dsda_subframes" } },
+  { "FPS Limit", S_NUM, m_null, G_X, G_Y + 12 * 8, { "dsda_fps_limit" } },
 
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 14 * 8 },
   { "Number of Sound Channels", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 15 * 8, { "snd_channels" } },

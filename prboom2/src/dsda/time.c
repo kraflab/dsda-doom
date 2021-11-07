@@ -95,21 +95,22 @@ static void dsda_Throttle(int timer, unsigned long long target_time) {
       return;
     }
 
+    // Sleeping doesn't have high accuracy
     remaining_time = target_time - elapsed_time;
-    if (remaining_time >= 1000)
-      I_uSleep(remaining_time);
+    if (remaining_time > 1000)
+      I_uSleep(remaining_time - 1000);
   }
 }
 
-int dsda_subframes;
+int dsda_fps_limit;
 
 void dsda_LimitFPS(void) {
   extern int movement_smooth;
 
-  if (movement_smooth && dsda_subframes) {
+  if (movement_smooth && dsda_fps_limit) {
     unsigned long long target_time;
 
-    target_time = 1000000 / (dsda_subframes * 35);
+    target_time = 1000000 / dsda_fps_limit;
 
     dsda_Throttle(dsda_timer_fps, target_time);
   }

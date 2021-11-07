@@ -383,6 +383,9 @@ void D_Display (fixed_t frac)
     // Boom colormaps should be applied for everything in R_RenderPlayerView
     use_boom_cm=true;
 
+    if (frac < 0)
+      frac = I_GetTimeFrac();
+
     R_InterpolateView(&players[displayplayer], frac);
 
     R_ClearStats();
@@ -548,7 +551,7 @@ static void D_DoomLoop(void)
       }
       else
       {
-        D_Display(I_GetTimeFrac());
+        D_Display(-1);
       }
     }
 

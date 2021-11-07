@@ -59,7 +59,6 @@ dboolean I_StartDisplay(void);
 void I_EndDisplay(void);
 int I_GetTime_RealTime(void);     /* killough */
 fixed_t I_GetTimeFrac (void);
-void I_GetTime_SaveMS(void);
 
 unsigned long I_GetRandomTimeSeed(void); /* cphipps */
 
