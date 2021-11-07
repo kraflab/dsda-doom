@@ -669,6 +669,43 @@ static const struct {
 };
 static const int num_canonicals = sizeof(canonicals)/sizeof(*canonicals);
 
+static void I_AppendResolution(SDL_DisplayMode *mode, int *current_resolution_index, int *list_size)
+{
+  int i;
+  char mode_name[256];
+
+
+  doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", mode->w, mode->h);
+  fprintf(stdout, "I_AppendResolution: %s\n", mode_name);
+
+  for(i = 0; i < *list_size; i++)
+    if (!strcmp(mode_name, screen_resolutions_list[i]))
+      return;
+
+  fprintf(stdout, "I_AppendResolution: adding %s %d\n", mode_name, *list_size);
+  screen_resolutions_list[*list_size] = strdup(mode_name);
+
+  if (mode->w == desired_screenwidth && mode->h == desired_screenheight)
+    *current_resolution_index = *list_size;
+
+  (*list_size)++;
+}
+
+const char *custom_resolution;
+
+static void I_AppendCustomResolution(int *current_resolution_index, int *list_size)
+{
+  if (strlen(custom_resolution))
+  {
+    SDL_DisplayMode mode;
+
+    if (sscanf(custom_resolution, "%4dx%4d", &mode.w, &mode.h) == 2)
+    {
+      I_AppendResolution(&mode, current_resolution_index, list_size);
+    }
+  }
+}
+
 //
 // I_FillScreenResolutionsList
 // Get all the supported screen resolutions
@@ -725,29 +762,11 @@ static void I_FillScreenResolutionsList(void)
         SDL_GetDisplayMode(display_index, i, &mode);
       }
 
-      doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", mode.w, mode.h);
-
-      for(j = 0; j < list_size; j++)
-      {
-        if (!strcmp(mode_name, screen_resolutions_list[j]))
-        {
-          in_list = true;
-          break;
-        }
-      }
-
-      if (!in_list)
-      {
-        screen_resolutions_list[list_size] = strdup(mode_name);
-
-        if (mode.w == desired_screenwidth && mode.h == desired_screenheight)
-        {
-          current_resolution_index = list_size;
-        }
-
-        list_size++;
-      }
+      I_AppendResolution(&mode, &current_resolution_index, &list_size);
     }
+
+    I_AppendCustomResolution(&current_resolution_index, &list_size);
+
     screen_resolutions_list[list_size] = NULL;
   }
 
