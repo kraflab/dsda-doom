@@ -386,7 +386,7 @@ int G_ReloadLevel(void)
 {
   int result = false;
 
-  if ((gamestate == GS_LEVEL) &&
+  if ((gamestate == GS_LEVEL || gamestate == GS_INTERMISSION) &&
       !deathmatch && !netgame &&
       !demorecording && !demoplayback &&
       !menuactive)
