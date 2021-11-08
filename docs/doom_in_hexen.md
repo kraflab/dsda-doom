@@ -429,6 +429,7 @@ Current work is isolated to the initial pass over the level format itself - line
 
 #### Notes
 
+- Specials above 255 aren't accessible yet (hexen format only supports special < 256).
 - Wall scrollers cannot distinguish between top, bottom, and mid textures.
 - The static init supports damage, gravity, and skies only.
 - The position argument for map exits is currently ignored.
