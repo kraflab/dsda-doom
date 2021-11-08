@@ -894,6 +894,19 @@ int P_FindSectorFromTag(int tag, int start)
   return start;
 }
 
+int P_FindSectorFromTagOrLine(int tag, const line_t *line, int start)
+{
+  if (tag == 0)
+  {
+    if (!line || !line->backsector || line->backsector->iSectorID == start)
+      return -1;
+
+    return line->backsector->iSectorID;
+  }
+  else
+    return P_FindSectorFromTag(tag, start);
+}
+
 // killough 4/16/98: Same thing, only for linedefs
 
 int P_FindLineFromLineTag(const line_t *line, int start)

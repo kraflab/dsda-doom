@@ -1342,7 +1342,7 @@ int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fi
   speed *= FRACUNIT / 8;
   height *= FRACUNIT;
 
-  while ((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
+  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
   {
     sec = &sectors[secnum];
     if (sec->floordata)
