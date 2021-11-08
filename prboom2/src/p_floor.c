@@ -1829,9 +1829,9 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
             sec = tsec;
             continue;
           }
-        }
 
-        newsecnum = tsec - sectors;
+          newsecnum = tsec - sectors;
+        }
       }
       else
       {
@@ -1861,6 +1861,7 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
           if (P_FloorActive(tsec) || tsec->stairlock)
             continue;
 
+          height += stairstep;
           ok = true;
           break;
         }
