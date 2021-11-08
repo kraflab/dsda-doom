@@ -199,13 +199,13 @@ Current work is isolated to the initial pass over the level format itself - line
 | 23    | Floor_RaiseByValue              | :heavy_check_mark: |
 | 24    | Floor_RaiseToHighest            | :heavy_check_mark: |
 | 25    | Floor_RaiseToNearest            | :heavy_check_mark: |
-| 26    | Stairs_BuildDown                | :grey_question:    |
-| 27    | Stairs_BuildUp                  | :grey_question:    |
+| 26    | Stairs_BuildDown                | :heavy_check_mark: |
+| 27    | Stairs_BuildUp                  | :heavy_check_mark: |
 | 28    | Floor_RaiseAndCrush             | :heavy_check_mark: |
 | 29    | Pillar_Build                    | :grey_question:    |
 | 30    | Pillar_Open                     | :grey_question:    |
-| 31    | Stairs_BuildDownSync            | :grey_question:    |
-| 32    | Stairs_BuildUpSync              | :grey_question:    |
+| 31    | Stairs_BuildDownSync            | :heavy_check_mark: |
+| 32    | Stairs_BuildUpSync              | :heavy_check_mark: |
 | 33    | ForceField                      | :heavy_check_mark: |
 | 34    | ClearForceField                 | :heavy_check_mark: |
 | 35    | Floor_RaiseByValueTimes8        | :heavy_check_mark: |
@@ -357,7 +357,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 201   | Generic_Ceiling                 | :heavy_check_mark: |
 | 202   | Generic_Door                    | :heavy_check_mark: |
 | 203   | Generic_Lift                    | :grey_question:    |
-| 204   | Generic_Stairs                  | :grey_question:    |
+| 204   | Generic_Stairs                  | :heavy_check_mark: |
 | 205   | Generic_Crusher                 | :grey_question:    |
 | 206   | Plat_DownWaitUpStayLip          | :grey_question:    |
 | 207   | Plat_PerpetualRaiseLip          | :grey_question:    |
@@ -370,7 +370,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 214   | Sector_SetDamage                | :grey_question:    |
 | 215   | Teleport_Line                   | :grey_question:    |
 | 216   | Sector_SetGravity               | :heavy_check_mark: |
-| 217   | Stairs_BuildUpDoom              | :grey_question:    |
+| 217   | Stairs_BuildUpDoom              | :heavy_check_mark: |
 | 218   | Sector_SetWind                  | :heavy_check_mark: |
 | 219   | Sector_SetFriction              | :heavy_check_mark: |
 | 220   | Sector_SetCurrent               | :heavy_check_mark: |
@@ -423,9 +423,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | 267   | Ceiling_ToFloorInstant          | :heavy_check_mark: |
 | 268   | Ceiling_RaiseByTexture          | :heavy_check_mark: |
 | 269   | Ceiling_LowerByTexture          | :heavy_check_mark: |
-| 270   | Stairs_BuildDownDoom            | :grey_question:    |
-| 271   | Stairs_BuildUpDoomSync          | :grey_question:    |
-| 272   | Stairs_BuildDownDoomSync        | :grey_question:    |
+| 270   | Stairs_BuildDownDoom            | :heavy_check_mark: |
+| 271   | Stairs_BuildUpDoomSync          | :heavy_check_mark: |
+| 272   | Stairs_BuildDownDoomSync        | :heavy_check_mark: |
 
 #### Notes
 
