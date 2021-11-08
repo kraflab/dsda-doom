@@ -595,7 +595,10 @@ typedef enum
   floorRaiseToCeiling,
   floorRaiseAndChange,
   floorLowerAndChange,
+
   floorBuildStair,
+  floorWaitStair,
+  floorResetStair,
 } floor_e;
 
 typedef enum

@@ -190,6 +190,30 @@ void T_MoveCompatibleFloor(floormove_t * floor)
 {
   result_e      res;
 
+  // [RH] Handle resetting stairs
+  if (floor->type == floorBuildStair || floor->type == floorWaitStair)
+  {
+    if (floor->resetDelayCount)
+    {
+      floor->resetDelayCount--;
+      if (!floor->resetDelayCount)
+      {
+        floor->floordestheight = floor->resetHeight;
+        floor->direction = -floor->direction;
+        floor->type = floorResetStair;
+        floor->delayCount = 0;
+      }
+    }
+    if (floor->delayCount)
+    {
+      floor->delayCount--;
+      return;
+    }
+
+    if (floor->type == floorWaitStair)
+      return;
+  }
+
   res = T_MoveFloorPlane
   (
     floor->sector,
@@ -200,6 +224,18 @@ void T_MoveCompatibleFloor(floormove_t * floor)
     floor->hexencrush
   );
 
+  if (floor->delayTotal && floor->type == floorBuildStair)
+  {
+    if (
+      (floor->direction == 1 && floor->sector->floorheight >= floor->stairsDelayHeight) ||
+      (floor->direction == -1 && floor->sector->floorheight <= floor->stairsDelayHeight)
+    )
+    {
+      floor->delayCount = floor->delayTotal;
+      floor->stairsDelayHeight += floor->stairsDelayHeightDelta;
+    }
+  }
+
   if (!(leveltime&7))     // make the floormove sound
     S_StartSound((mobj_t *)&floor->sector->soundorg, g_sfx_stnmov);
 
@@ -209,74 +245,81 @@ void T_MoveCompatibleFloor(floormove_t * floor)
     {
         S_StartSound(&floor->sector->soundorg, heretic_sfx_pstop);
     }
-    if (floor->direction == 1)       // going up
+
+    if (floor->type == floorBuildStair)
+      floor->type = floorWaitStair;
+
+    if (floor->type != floorWaitStair || !floor->resetDelayCount)
     {
-      switch(floor->type) // handle texture/type changes
+      if (floor->direction == 1)       // going up
       {
-        case donutRaise:
-        case genFloorChgT:
-        case genFloorChg0:
-          P_TransferSpecial(floor->sector, &floor->newspecial);
-          //fall thru
-        case genFloorChg:
-          floor->sector->floorpic = floor->texture;
-          break;
-        default:
-          break;
-      }
-    }
-    else if (floor->direction == -1) // going down
-    {
-      switch(floor->type) // handle texture/type changes
-      {
-        case floorLowerAndChange:
-        case lowerAndChange:
-        case genFloorChgT:
-        case genFloorChg0:
-          P_TransferSpecial(floor->sector, &floor->newspecial);
-          //fall thru
-        case genFloorChg:
-          floor->sector->floorpic = floor->texture;
-          break;
-        default:
-          break;
-      }
-    }
-
-    floor->sector->floordata = NULL; //jff 2/22/98
-    P_RemoveThinker(&floor->thinker);//remove this floor from list of movers
-
-    //jff 2/26/98 implement stair retrigger lockout while still building
-    // note this only applies to the retriggerable generalized stairs
-
-    if (floor->sector->stairlock==-2) // if this sector is stairlocked
-    {
-      sector_t *sec = floor->sector;
-      sec->stairlock=-1;              // thinker done, promote lock to -1
-
-      while (sec->prevsec!=-1 && sectors[sec->prevsec].stairlock!=-2)
-        sec = &sectors[sec->prevsec]; // search for a non-done thinker
-      if (sec->prevsec==-1)           // if all thinkers previous are done
-      {
-        sec = floor->sector;          // search forward
-        while (sec->nextsec!=-1 && sectors[sec->nextsec].stairlock!=-2)
-          sec = &sectors[sec->nextsec];
-        if (sec->nextsec==-1)         // if all thinkers ahead are done too
+        switch(floor->type) // handle texture/type changes
         {
-          while (sec->prevsec!=-1)    // clear all locks
-          {
-            sec->stairlock = 0;
-            sec = &sectors[sec->prevsec];
-          }
-          sec->stairlock = 0;
+          case donutRaise:
+          case genFloorChgT:
+          case genFloorChg0:
+            P_TransferSpecial(floor->sector, &floor->newspecial);
+            //fall thru
+          case genFloorChg:
+            floor->sector->floorpic = floor->texture;
+            break;
+          default:
+            break;
         }
       }
-    }
+      else if (floor->direction == -1) // going down
+      {
+        switch(floor->type) // handle texture/type changes
+        {
+          case floorLowerAndChange:
+          case lowerAndChange:
+          case genFloorChgT:
+          case genFloorChg0:
+            P_TransferSpecial(floor->sector, &floor->newspecial);
+            //fall thru
+          case genFloorChg:
+            floor->sector->floorpic = floor->texture;
+            break;
+          default:
+            break;
+        }
+      }
 
-    // Moving floors (but not plats) in versions <= v1.2 did not
-    // make floor stop sound
-    if (compatibility_level > doom_12_compatibility)
-        S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
+      floor->sector->floordata = NULL; //jff 2/22/98
+      P_RemoveThinker(&floor->thinker);//remove this floor from list of movers
+
+      //jff 2/26/98 implement stair retrigger lockout while still building
+      // note this only applies to the retriggerable generalized stairs
+
+      if (floor->sector->stairlock == -2) // if this sector is stairlocked
+      {
+        sector_t *sec = floor->sector;
+        sec->stairlock = -1;              // thinker done, promote lock to -1
+
+        while (sec->prevsec != -1 && sectors[sec->prevsec].stairlock != -2)
+          sec = &sectors[sec->prevsec]; // search for a non-done thinker
+        if (sec->prevsec == -1)         // if all thinkers previous are done
+        {
+          sec = floor->sector;          // search forward
+          while (sec->nextsec != -1 && sectors[sec->nextsec].stairlock != -2)
+            sec = &sectors[sec->nextsec];
+          if (sec->nextsec == -1)       // if all thinkers ahead are done too
+          {
+            while (sec->prevsec != -1)  // clear all locks
+            {
+              sec->stairlock = 0;
+              sec = &sectors[sec->prevsec];
+            }
+            sec->stairlock = 0;
+          }
+        }
+      }
+
+      // Moving floors (but not plats) in versions <= v1.2 did not
+      // make floor stop sound
+      if (compatibility_level > doom_12_compatibility)
+          S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
+    }
   }
 }
 
@@ -1705,7 +1748,6 @@ static void P_SpawnZDoomStair(sector_t *sec, stair_e type, fixed_t stairstep,
   floor->stairsDelayHeight = sec->floorheight + stairstep;
   floor->stairsDelayHeightDelta = stairstep;
 
-  floor->resetDelay = reset;
   floor->resetDelayCount = reset; // [RH] Tics until reset (0 if never)
   floor->resetHeight = sec->floorheight; // [RH] Height to reset to
 }
