@@ -1640,12 +1640,213 @@ static void ProcessStairSector(sector_t * sec, int type, int height,
     }
 }
 
+static sector_t *P_NextSpecialSector(sector_t *sec, int special)
+{
+  int i;
+  sector_t *tsec;
+
+  for (i = 0; i < sec->linecount; i++)
+  {
+    if (!((sec->lines[i])->flags & ML_TWOSIDED))
+    {
+      continue;
+    }
+
+    tsec = sec->lines[i]->frontsector;
+    if (tsec->special == special && tsec->validcount != validcount)
+    {
+      tsec->validcount = validcount;
+      return tsec;
+    }
+
+    tsec = sec->lines[i]->backsector;
+    if (tsec->special == special && tsec->validcount != validcount)
+    {
+      tsec->validcount = validcount;
+      return tsec;
+    }
+  }
+
+  return NULL;
+}
+
+static void P_SpawnZDoomStair(sector_t *sec, stair_e type, fixed_t stairstep,
+                              fixed_t speed, fixed_t height, int delay, int reset, int usespecials)
+{
+  floormove_t *floor;
+
+  floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+  memset(floor, 0, sizeof(*floor));
+  P_AddThinker(&floor->thinker);
+  sec->floordata = floor;
+  floor->thinker.function = T_MoveFloor;
+  floor->direction = (type == stairBuildUp) ? 1 : -1;
+  floor->sector = sec;
+  floor->type = floorBuildStair;
+
+  floor->crush = (
+    !(usespecials & STAIR_USE_SPECIALS) && speed == 4 * FRACUNIT
+  ) ? DOOM_CRUSH : NO_CRUSH;
+  floor->hexencrush = false;
+
+  if (usespecials & STAIR_SYNC)
+  {
+    floor->speed = FixedMul(speed, FixedDiv(height - sec->floorheight, stairstep));
+  }
+  else
+  {
+    floor->speed = speed;
+  }
+
+  floor->floordestheight = height;
+
+  // [RH] Set up delay values
+  floor->delayTotal = delay;
+  floor->stairsDelayHeight = sec->floorheight + stairstep;
+  floor->stairsDelayHeightDelta = stairstep;
+
+  floor->resetDelay = reset;
+  floor->resetDelayCount = reset; // [RH] Tics until reset (0 if never)
+  floor->resetHeight = sec->floorheight; // [RH] Height to reset to
+}
+
 int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
                         fixed_t speed, int delay, int reset, int igntxt, int usespecials)
 {
+  int secnum = -1;
+  int osecnum; //jff 3/4/98 save old loop index
+  int newsecnum;
+  dboolean rtn = 0;
+  fixed_t height;
+  fixed_t stairstep;
+  int texture;
+  floormove_t *floor;
+  int ok;
+  sector_t *sec;
+  sector_t *tsec;
+
+  if (!speed)
+    return 0;
+
   stairsize *= FRACUNIT;
 
-  return 0;
+  validcount++;
+
+  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  {
+    sec = &sectors[secnum];
+
+    // ALREADY MOVING?  IF SO, KEEP GOING...
+    // jff 2/26/98 add special lockout condition to wait for entire
+    // staircase to build before retriggering
+    if (P_FloorActive(sec) || sec->stairlock)
+    {
+      continue;
+    }
+
+    rtn = 1;
+    texture = sec->floorpic;
+    stairstep = (type == stairBuildUp) ? stairsize : -stairsize;
+    height = sec->floorheight + stairstep;
+
+    P_SpawnZDoomStair(sec, type, stairstep, speed, height, delay, reset, usespecials & ~STAIR_SYNC);
+
+    // jff 2/26/98 set up lock on current sector
+    sec->stairlock = -2;
+    sec->nextsec = -1;
+    sec->prevsec = -1;
+    sec->validcount = validcount;
+
+    osecnum = secnum; //jff 3/4/98 preserve loop index
+
+    // Find next sector to raise
+    // 1. Find 2-sided line with same sector side[0] (lowest numbered)
+    // 2. Other side is the next sector to raise
+    // 3. Unless already moving, or different texture, then stop building
+    do
+    {
+      ok = false;
+
+      if (usespecials & STAIR_USE_SPECIALS)
+      {
+        // [RH] Find the next sector by scanning for special
+        tsec = P_NextSpecialSector(sec,
+                                   sec->special == zs_stairs_special1 ?
+                                                   zs_stairs_special2 :
+                                                   zs_stairs_special1);
+
+        ok = (tsec != NULL);
+        if (ok)
+        {
+          height += stairstep;
+
+          // if sector's floor already moving, look for another
+          // jff 2/26/98 special lockout condition for retriggering
+          if (P_FloorActive(tsec) || tsec->stairlock)
+          {
+            sec = tsec;
+            continue;
+          }
+        }
+
+        newsecnum = tsec - sectors;
+      }
+      else
+      {
+        int i;
+
+        for (i = 0; i < sec->linecount; i++)
+        {
+          if (!(sec->lines[i]->flags & ML_TWOSIDED))
+            continue;
+
+          tsec = sec->lines[i]->frontsector;
+          newsecnum = tsec->iSectorID;
+
+          if (secnum != newsecnum)
+            continue;
+
+          tsec = sec->lines[i]->backsector;
+          if (!tsec) continue; //jff 5/7/98 if no backside, continue
+          newsecnum = tsec->iSectorID;
+
+          // if sector's floor is different texture, look for another
+          if (!igntxt && tsec->floorpic != texture)
+            continue;
+
+          // if sector's floor already moving, look for another
+          // jff 2/26/98 special lockout condition for retriggering
+          if (P_FloorActive(tsec) || tsec->stairlock)
+            continue;
+
+          ok = true;
+          break;
+        }
+      }
+
+      if (ok)
+      {
+        // jff 2/26/98
+        // link the stair chain in both directions
+        // lock the stair sector until building complete
+        sec->nextsec = newsecnum; // link step to next
+        tsec->prevsec = secnum;   // link next back
+        tsec->nextsec = -1;       // set next forward link as end
+        tsec->stairlock = -2;     // lock the step
+
+        sec = tsec;
+        secnum = newsecnum;
+
+        P_SpawnZDoomStair(sec, type, stairstep, speed, height, delay, reset, usespecials);
+      }
+    } while (ok);
+
+    // [RH] make sure the first sector doesn't point to a previous one, otherwise
+    // it can infinite loop when the first sector stops moving.
+    sectors[osecnum].prevsec = -1;
+    secnum = osecnum; //jff 3/4/98 restore old loop index
+  }
+  return rtn;
 }
 
 int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e stairsType)
