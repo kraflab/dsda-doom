@@ -1780,6 +1780,8 @@ void P_ArchiveMisc(void)
   CheckSaveGame(sizeof(PlayerClass));
   memcpy(save_p, PlayerClass, sizeof(PlayerClass));
   save_p += sizeof(PlayerClass);
+
+  SV_StoreMapArchive(&save_p);
 }
 
 void P_UnArchiveMisc(void)
@@ -1794,4 +1796,6 @@ void P_UnArchiveMisc(void)
 
   memcpy(PlayerClass, save_p, sizeof(PlayerClass));
   save_p += sizeof(PlayerClass);
+
+  SV_RestoreMapArchive(&save_p);
 }

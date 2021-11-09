@@ -154,6 +154,7 @@ void SV_RestoreMapArchive(byte **buffer)
 
     if (map_archive[i].size)
     {
+      map_archive[i].buffer = malloc(map_archive[i].size);
       memcpy(map_archive[i].buffer, *buffer, map_archive[i].size);
       *buffer += map_archive[i].size;
     }
