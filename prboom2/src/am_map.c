@@ -79,6 +79,7 @@ int mapcolor_bdor;    // blue door color (of enabling one but not other )
 int mapcolor_ydor;    // yellow door color
 int mapcolor_tele;    // teleporter line color
 int mapcolor_secr;    // secret sector boundary color
+int mapcolor_revsecr; // revealed secret sector boundary color
 int mapcolor_exit;    // jff 4/23/98 add exit line color
 int mapcolor_unsn;    // computer map unseen line color
 int mapcolor_flat;    // line with no floor/ceiling changes
@@ -104,6 +105,7 @@ static int heretic_mapcolor_bdor = 197;
 static int heretic_mapcolor_ydor = 144;
 static int heretic_mapcolor_tele = 12 * 8;
 static int heretic_mapcolor_secr = 12 * 8;
+static int heretic_mapcolor_revsecr = 12 * 8;
 static int heretic_mapcolor_exit;
 static int heretic_mapcolor_unsn = 5 * 8 + 3;
 static int heretic_mapcolor_flat;
@@ -129,6 +131,7 @@ static int hexen_mapcolor_bdor = 198;
 static int hexen_mapcolor_ydor = 198;
 static int hexen_mapcolor_tele = 157;
 static int hexen_mapcolor_secr;
+static int hexen_mapcolor_revsecr;
 static int hexen_mapcolor_exit = 177;
 static int hexen_mapcolor_unsn = 5 * 8 + 3;
 static int hexen_mapcolor_flat;
@@ -154,6 +157,7 @@ static int* mapcolor_bdor_p;
 static int* mapcolor_ydor_p;
 static int* mapcolor_tele_p;
 static int* mapcolor_secr_p;
+static int* mapcolor_revsecr_p;
 static int* mapcolor_exit_p;
 static int* mapcolor_unsn_p;
 static int* mapcolor_flat_p;
@@ -183,6 +187,7 @@ static void AM_SetColors(void)
     mapcolor_ydor_p = &heretic_mapcolor_ydor;
     mapcolor_tele_p = &heretic_mapcolor_tele;
     mapcolor_secr_p = &heretic_mapcolor_secr;
+    mapcolor_revsecr_p = &heretic_mapcolor_revsecr;
     mapcolor_exit_p = &heretic_mapcolor_exit;
     mapcolor_unsn_p = &heretic_mapcolor_unsn;
     mapcolor_flat_p = &heretic_mapcolor_flat;
@@ -210,6 +215,7 @@ static void AM_SetColors(void)
     mapcolor_ydor_p = &hexen_mapcolor_ydor;
     mapcolor_tele_p = &hexen_mapcolor_tele;
     mapcolor_secr_p = &hexen_mapcolor_secr;
+    mapcolor_revsecr_p = &hexen_mapcolor_revsecr;
     mapcolor_exit_p = &hexen_mapcolor_exit;
     mapcolor_unsn_p = &hexen_mapcolor_unsn;
     mapcolor_flat_p = &hexen_mapcolor_flat;
@@ -237,6 +243,7 @@ static void AM_SetColors(void)
     mapcolor_ydor_p = &mapcolor_ydor;
     mapcolor_tele_p = &mapcolor_tele;
     mapcolor_secr_p = &mapcolor_secr;
+    mapcolor_revsecr_p = &mapcolor_revsecr;
     mapcolor_exit_p = &mapcolor_exit;
     mapcolor_unsn_p = &mapcolor_unsn;
     mapcolor_flat_p = &mapcolor_flat;
@@ -1626,19 +1633,18 @@ static void AM_drawWalls(void)
         // jff 1/10/98 add new color for 1S secret sector boundary
         if ((*mapcolor_secr_p) && //jff 4/3/98 0 is disable
             (
-             (
-              map_secret_after &&
-              P_WasSecret(lines[i].frontsector) &&
-              !P_IsSecret(lines[i].frontsector)
-             )
-             ||
-             (
-              !map_secret_after &&
-              P_WasSecret(lines[i].frontsector)
-             )
+             !map_secret_after &&
+             P_IsSecret(lines[i].frontsector)
             )
           )
           AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
+        else if ((*mapcolor_revsecr_p) &&
+            (
+             P_WasSecret(lines[i].frontsector) &&
+             !P_IsSecret(lines[i].frontsector)
+            )
+          )
+          AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector
         else                               //jff 2/16/98 fixed bug
           AM_drawMline(&l, (*mapcolor_wall_p)); // special was cleared
       }
@@ -1667,25 +1673,29 @@ static void AM_drawWalls(void)
         (
             (*mapcolor_secr_p) && //jff 2/16/98 fixed bug
             (                    // special was cleared after getting it
-              (map_secret_after &&
+              !map_secret_after &&
                (
-                (P_WasSecret(lines[i].frontsector)
-                 && !P_IsSecret(lines[i].frontsector)) ||
-                (P_WasSecret(lines[i].backsector)
-                 && !P_IsSecret(lines[i].backsector))
+                P_IsSecret(lines[i].frontsector) ||
+                P_IsSecret(lines[i].backsector)
                )
-              )
-              ||  //jff 3/9/98 add logic to not show secret til after entered
-              (   // if map_secret_after is true
-                !map_secret_after &&
-                 (P_WasSecret(lines[i].frontsector) ||
-                  P_WasSecret(lines[i].backsector))
-              )
             )
         )
         {
           AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
         } //jff 1/6/98 end secret sector line change
+        else if
+        (
+            (*mapcolor_revsecr_p) &&
+            (
+              (P_WasSecret(lines[i].frontsector)
+               && !P_IsSecret(lines[i].frontsector)) ||
+              (P_WasSecret(lines[i].backsector)
+               && !P_IsSecret(lines[i].backsector))
+            )
+        )
+        {
+          AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector
+        }
         else if (lines[i].backsector->floorheight !=
                   lines[i].frontsector->floorheight)
         {
