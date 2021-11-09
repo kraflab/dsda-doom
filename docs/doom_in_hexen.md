@@ -228,7 +228,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 52    | Scroll_Wall                     | :grey_question:    |
 | 53    | Line_SetTextureOffset           | :grey_question:    |
 | 54    | Sector_ChangeFlags              | :grey_question:    |
-| 55    | Line_SetBlocking                | :grey_question:    |
+| 55    | Line_SetBlocking                | :warning:          |
 | 56    | Line_SetTextureScale            | :x:                |
 | 57    | Sector_SetPortal                | :x:                |
 | 58    | Sector_CopyScroller             | :heavy_check_mark: |
@@ -435,6 +435,7 @@ Current work is isolated to the initial pass over the level format itself - line
 - The position argument for map exits is currently ignored.
 - Line flags coming from extra arguments are ignored.
 - Line translucency works like boom (fixed alpha).
+- Line_SetBlocking only applies flags for creatures, players, monsters, sound, and everything.
 
 ### Sector Specials
 
