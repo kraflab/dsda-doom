@@ -217,9 +217,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | 41    | Ceiling_RaiseByValue            | :heavy_check_mark: |
 | 42    | Ceiling_CrushAndRaise           | :heavy_check_mark: |
 | 43    | Ceiling_LowerAndCrush           | :heavy_check_mark: |
-| 44    | Ceiling_CrushStop               | :grey_question:    |
+| 44    | Ceiling_CrushStop               | :heavy_check_mark: |
 | 45    | Ceiling_CrushRaiseAndStay       | :heavy_check_mark: |
-| 46    | Floor_CrushStop                 | :grey_question:    |
+| 46    | Floor_CrushStop                 | :heavy_check_mark: |
 | 47    | Ceiling_MoveToValue             | :heavy_check_mark: |
 | 48    | Sector_Attach3dMidtex           | :x:                |
 | 49    | GlassBreak                      | :telescope:        |

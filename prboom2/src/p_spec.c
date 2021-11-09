@@ -6117,6 +6117,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                         (args[4] & 16) ? 20 : NO_CRUSH, args[4] & 7, false, false);
       }
       break;
+    case zl_floor_crush_stop:
+      buttonSuccess = EV_ZDoomFloorCrushStop(args[0]);
+      break;
     case zl_ceiling_lower_by_value:
       buttonSuccess = EV_DoZDoomCeiling(ceilLowerByValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
@@ -6332,6 +6335,26 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                           P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]),
                                           args[2], (args[4] & 16) ? 20 : NO_CRUSH, 0,
                                           args[4] & 7, false);
+      }
+      break;
+    case zl_ceiling_crush_stop:
+      {
+        dboolean remove;
+
+        switch (args[3])
+        {
+          case 1:
+            remove = false;
+            break;
+          case 2:
+            remove = true;
+            break;
+          default:
+            remove = hexen;
+            break;
+        }
+
+        buttonSuccess = EV_ZDoomCeilingCrushStop(args[0], remove);
       }
       break;
     case zl_stairs_build_down:

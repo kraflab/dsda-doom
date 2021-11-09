@@ -1608,8 +1608,10 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
                    zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown);
 int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
                    int crush, int change, dboolean hexencrush, dboolean hereticlower);
+int EV_ZDoomFloorCrushStop(int tag);
 int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode);
+int EV_ZDoomCeilingCrushStop(int tag, dboolean remove);
 int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
                         fixed_t speed, int delay, int reset, int igntxt, int usespecials);
 void EV_LightChange(int tag, short change);

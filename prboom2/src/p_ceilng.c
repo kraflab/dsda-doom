@@ -572,6 +572,32 @@ int P_ActivateInStasisCeiling(int tag)
   return rtn;
 }
 
+int EV_ZDoomCeilingCrushStop(int tag, dboolean remove)
+{
+  dboolean rtn = 0;
+  ceilinglist_t *cl;
+
+  for (cl = activeceilings; cl; cl = cl->next)
+  {
+    ceiling_t *ceiling = cl->ceiling;
+    if (ceiling->direction != 0 && ceiling->tag == tag)
+    {
+      if (!remove)
+      {
+        ceiling->olddirection = ceiling->direction;
+        ceiling->direction = 0;
+      }
+      else
+      {
+        P_RemoveActiveCeiling(ceiling);
+      }
+      rtn = 1;
+    }
+  }
+
+  return rtn;
+}
+
 //
 // EV_CeilingCrushStop()
 //
