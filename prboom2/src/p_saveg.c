@@ -1776,6 +1776,10 @@ void P_ArchiveMisc(void)
   CheckSaveGame(size);
   memcpy(save_p, localQuakeHappening, size);
   save_p += size;
+
+  CheckSaveGame(sizeof(PlayerClass));
+  memcpy(save_p, PlayerClass, sizeof(PlayerClass));
+  save_p += sizeof(PlayerClass);
 }
 
 void P_UnArchiveMisc(void)
@@ -1787,4 +1791,7 @@ void P_UnArchiveMisc(void)
   size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
   memcpy(localQuakeHappening, save_p, size);
   save_p += size;
+
+  memcpy(PlayerClass, save_p, sizeof(PlayerClass));
+  save_p += sizeof(PlayerClass);
 }
