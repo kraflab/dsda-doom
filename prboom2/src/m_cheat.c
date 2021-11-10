@@ -799,6 +799,8 @@ static int M_FindCheats(int key)
 
         if (char_key == cht->cheat[cht->chars_read])
           ++cht->chars_read;
+        else if (char_key == cht->cheat[0])
+          cht->chars_read = 1;
         else
           cht->chars_read = 0;
 
