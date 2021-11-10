@@ -83,6 +83,10 @@ unsigned long long dsda_ElapsedTime(int timer) {
          (now.tv_sec - dsda_time[timer].tv_sec) * 1000000;
 }
 
+unsigned long long dsda_ElapsedTimeMS(int timer) {
+  return dsda_ElapsedTime(timer) / 1000;
+}
+
 static void dsda_Throttle(int timer, unsigned long long target_time) {
   unsigned long long elapsed_time;
   unsigned long long remaining_time;

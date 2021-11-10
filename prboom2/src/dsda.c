@@ -276,6 +276,10 @@ void dsda_WatchAfterLevelSetup(void) {
   dsda_SpawnGhost();
 }
 
+void dsda_WatchNewLevel(void) {
+  dsda_ResetAutoKeyFrameTimeout();
+}
+
 void dsda_WatchLevelCompletion(void) {
   thinker_t *th;
   mobj_t *mobj;

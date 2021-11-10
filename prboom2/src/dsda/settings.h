@@ -51,6 +51,7 @@ extern dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT];
 
 extern int dsda_auto_key_frame_interval;
 extern int dsda_auto_key_frame_depth;
+extern int dsda_auto_key_frame_timeout;
 extern int dsda_cycle_ghost_colors;
 extern int dsda_command_history_size;
 extern int dsda_hide_empty_commands;

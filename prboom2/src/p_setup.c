@@ -3115,6 +3115,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   current_map = map;
   current_nodesVersion = nodesVersion;
 
+  dsda_WatchNewLevel();
+
   if (!samelevel)
   {
 #ifdef GL_DOOM
