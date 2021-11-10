@@ -87,6 +87,7 @@ static void cheat_pushers();
 static void cheat_massacre();
 static void cheat_ddt();
 static void cheat_reveal_secret();
+static void cheat_reveal_kill();
 static void cheat_hom();
 static void cheat_fast();
 static void cheat_tntkey();
@@ -164,6 +165,7 @@ cheatseq_t cheat[] = {
   // killough 2/07/98: moved from am_map.c
   CHEAT("iddt",       "Map cheat",        not_dm, cheat_ddt, 0, true),
   CHEAT("iddst",      NULL,               not_dm, cheat_reveal_secret, 0, true),
+  CHEAT("iddkt",      NULL,               not_dm, cheat_reveal_kill, 0, true),
   // killough 2/07/98: HOM autodetector
   CHEAT("tnthom",     NULL,               always, cheat_hom, 0, false),
   // killough 2/16/98: generalized key cheats
@@ -645,6 +647,50 @@ static void cheat_reveal_secret()
       if (i >= numsectors)
         i = 0;
     } while (i != start_i);
+  }
+}
+
+static void cheat_reveal_kill()
+{
+  if (automapmode & am_active)
+  {
+    extern int init_thinkers_count;
+    static int last_init_thinkers_count;
+    static mobj_t *last_mobj;
+    thinker_t *th, *start_th;
+
+    // If the thinkers have been wiped, addresses are invalid
+    if (last_init_thinkers_count != init_thinkers_count)
+    {
+      last_init_thinkers_count = init_thinkers_count;
+      last_mobj = NULL;
+    }
+
+    if (last_mobj)
+      th = &last_mobj->thinker;
+    else
+      th = &thinkercap;
+
+    start_th = th;
+
+    for (th = th->next; th != start_th; th = th->next)
+    {
+      if (th->function == P_MobjThinker)
+      {
+        mobj_t *mobj;
+
+        automapmode &= ~am_follow;
+
+        mobj = (mobj_t *) th;
+
+        if (mobj->health > 0 && mobj->flags & MF_COUNTKILL)
+        {
+          AM_SetMapCenter(mobj->x, mobj->y);
+          P_SetTarget(&last_mobj, mobj);
+          break;
+        }
+      }
+    }
   }
 }
 
