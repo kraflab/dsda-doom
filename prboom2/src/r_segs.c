@@ -937,32 +937,41 @@ void R_StoreWallRange(const int start, const int stop)
         markceiling = false;
     }
 
-  // calculate incremental stepping values for texture edges
-  worldtop >>= invhgtbits;
-  worldbottom >>= invhgtbits;
+  // The original code compared values after shifting them right.
+  // The code above here makes judgements based on the comparison before shifting.
+  // In some cases (see: hexen floor waggles when the texture visibility is ~0),
+  //   the discrepancy would cause textures to be drawn with the wrong height.
+  {
+    dboolean low_greater_than_bottom = (worldlow > worldbottom);
+    dboolean high_less_than_top = (worldhigh < worldtop);
 
-  topstep = -FixedMul (rw_scalestep, worldtop);
-  topfrac = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldtop*rw_scale)>>FRACBITS); // R_WiggleFix
+    // calculate incremental stepping values for texture edges
+    worldtop >>= invhgtbits;
+    worldbottom >>= invhgtbits;
 
-  bottomstep = -FixedMul (rw_scalestep,worldbottom);
-  bottomfrac = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldbottom*rw_scale)>>FRACBITS); // R_WiggleFix
+    topstep = -FixedMul (rw_scalestep, worldtop);
+    topfrac = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldtop*rw_scale)>>FRACBITS); // R_WiggleFix
 
-  if (backsector)
+    bottomstep = -FixedMul (rw_scalestep,worldbottom);
+    bottomfrac = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldbottom*rw_scale)>>FRACBITS); // R_WiggleFix
+
+    if (backsector)
     {
       worldhigh >>= invhgtbits;
       worldlow >>= invhgtbits;
 
-      if (worldhigh < worldtop)
-        {
-          pixhigh = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldhigh*rw_scale)>>FRACBITS); // R_WiggleFix
-          pixhighstep = -FixedMul (rw_scalestep,worldhigh);
-        }
-      if (worldlow > worldbottom)
-        {
-          pixlow = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldlow*rw_scale)>>FRACBITS); // R_WiggleFix
-          pixlowstep = -FixedMul (rw_scalestep,worldlow);
-        }
+      if (high_less_than_top)
+      {
+        pixhigh = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldhigh*rw_scale)>>FRACBITS); // R_WiggleFix
+        pixhighstep = -FixedMul (rw_scalestep,worldhigh);
+      }
+      if (low_greater_than_bottom)
+      {
+        pixlow = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldlow*rw_scale)>>FRACBITS); // R_WiggleFix
+        pixlowstep = -FixedMul (rw_scalestep,worldlow);
+      }
     }
+  }
 
   // render it
   if (markceiling) {
