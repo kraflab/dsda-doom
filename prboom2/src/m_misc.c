@@ -857,6 +857,8 @@ default_t defaults[] =
    def_colour,ss_auto}, // color used for teleporter lines
   {"mapcolor_secr", {&mapcolor_secr}, {252},0,255,  // purple
    def_colour,ss_auto}, // color used for lines around secret sectors
+  {"mapcolor_revsecr", {&mapcolor_revsecr}, {112},0,255,  // green
+   def_colour,ss_auto}, // color used for lines around revealed secrets
   {"mapcolor_exit", {&mapcolor_exit}, {0},0,255,    // none
    def_colour,ss_auto}, // color used for exit lines
   {"mapcolor_unsn", {&mapcolor_unsn}, {104},0,255,  // dk gray
