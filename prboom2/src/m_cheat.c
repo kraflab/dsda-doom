@@ -752,76 +752,21 @@ static dboolean M_CheatAllowed(int when)
          !(when & not_deh  && M_CheckParm("-deh"));
 }
 
-//-----------------------------------------------------------------------------
-// 2/7/98: Cheat detection rewritten by Lee Killough, to avoid
-// scrambling and to use a more general table-driven approach.
-//-----------------------------------------------------------------------------
-
-static int M_FindCheats_Boom(int key)
+static void cht_InitCheats(void)
 {
-  static uint_64_t sr;
-  static char argbuf[CHEAT_ARGS_MAX+1], *arg;
-  static int init, argsleft, cht;
-  int i, ret, matchedbefore;
+  static int init = false;
 
-  // If we are expecting arguments to a cheat
-  // (e.g. idclev), put them in the arg buffer
+  if (!init)
+  {
+    cheatseq_t* cht;
 
-  if (argsleft)
+    init = true;
+
+    for (cht = cheat; cht->cheat; cht++)
     {
-      *arg++ = tolower(key);             // store key in arg buffer
-      if (!--argsleft)                   // if last key in arg list,
-        cheat[cht].func(argbuf);         // process the arg buffer
-      return 1;                          // affirmative response
+      cht->sequence_len = strlen(cht->cheat);
     }
-
-  key = tolower(key) - 'a';
-  if (key < 0 || key >= 32)              // ignore most non-alpha cheat letters
-    {
-      sr = 0;        // clear shift register
-      return 0;
-    }
-
-  if (!init)                             // initialize aux entries of table
-    {
-      init = 1;
-      for (i=0;cheat[i].cheat;i++)
-        {
-          uint_64_t c=0, m=0;
-          const char *p;
-
-          for (p=cheat[i].cheat; *p; p++)
-            {
-              unsigned key = tolower(*p)-'a';  // convert to 0-31
-              if (key >= 32)            // ignore most non-alpha cheat letters
-                continue;
-              c = (c<<5) + key;         // shift key into code
-              m = (m<<5) + 31;          // shift 1's into mask
-            }
-          cheat[i].code = c;            // code for this cheat key
-          cheat[i].mask = m;            // mask for this cheat key
-        }
-    }
-
-  sr = (sr<<5) + key;                   // shift this key into shift register
-
-  for (matchedbefore = ret = i = 0; cheat[i].cheat; i++)
-    if ((sr & cheat[i].mask) == cheat[i].code && M_CheatAllowed(cheat[i].when)) {
-      if (cheat[i].arg < 0)               // if additional args are required
-        {
-          cht = i;                        // remember this cheat code
-          arg = argbuf;                   // point to start of arg buffer
-          argsleft = -cheat[i].arg;       // number of args expected
-          ret = 1;                        // responder has eaten key
-        }
-      else
-        if (!matchedbefore)               // allow only one cheat at a time
-          {
-            matchedbefore = ret = 1;      // responder has eaten key
-            cheat[i].func(cheat[i].arg);  // call cheat handler
-          }
-    }
-  return ret;
+  }
 }
 
 //
@@ -832,11 +777,13 @@ static int M_FindCheats_Boom(int key)
 // Called in st_stuff module, which handles the input.
 // Returns a 1 if the cheat was successful, 0 if failed.
 //
-static int M_FindCheats_Doom(int key)
+static int M_FindCheats(int key)
 {
   int rc = 0;
   cheatseq_t* cht;
   char char_key;
+
+  cht_InitCheats();
 
   char_key = (char)key;
 
@@ -844,16 +791,7 @@ static int M_FindCheats_Doom(int key)
   {
     if (M_CheatAllowed(cht->when))
     {
-      // if we make a short sequence on a cheat with parameters, this
-      // will not work in vanilla doom.  behave the same.
-
-      if (demo_compatibility || compatibility_level == lxdoom_1_compatibility)
-      {
-        if (cht->arg < 0 && cht->deh_sequence_len < cht->sequence_len)
-          continue;
-      }
-
-      if (cht->chars_read < cht->deh_sequence_len)
+      if (cht->chars_read < cht->sequence_len)
       {
         // still reading characters from the cheat code
         // and verifying.  reset back to the beginning
@@ -879,7 +817,7 @@ static int M_FindCheats_Doom(int key)
         rc = 1;
       }
 
-      if (cht->chars_read >= cht->deh_sequence_len &&
+      if (cht->chars_read >= cht->sequence_len &&
           cht->param_chars_read >= -cht->arg)
       {
         if (cht->param_chars_read)
@@ -904,39 +842,6 @@ static int M_FindCheats_Doom(int key)
   }
 
   return rc;
-}
-
-static void cht_InitCheats(void)
-{
-  static int init = false;
-
-  if (!init)
-  {
-    cheatseq_t* cht;
-
-    init = true;
-
-    memset(boom_cheat_route, 0, sizeof(boom_cheat_route));
-    boom_cheat_route[boom_compatibility_compatibility] = 1;
-    boom_cheat_route[boom_201_compatibility] = 1;
-    boom_cheat_route[boom_202_compatibility] = 1;
-    boom_cheat_route[mbf_compatibility] = 1;
-
-    for (cht = cheat; cht->cheat; cht++)
-    {
-      cht->deh_sequence_len = strlen(cht->cheat);
-    }
-  }
-}
-
-dboolean M_FindCheats(int key)
-{
-  cht_InitCheats();
-
-  if (boom_cheat_route[compatibility_level])
-    return M_FindCheats_Boom(key);
-  else
-    return M_FindCheats_Doom(key);
 }
 
 typedef struct cheat_input_s {

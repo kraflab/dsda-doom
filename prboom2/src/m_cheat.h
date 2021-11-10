@@ -37,8 +37,7 @@
 #include "d_event.h"
 
 #define CHEAT(cheat, deh_cheat, when, func, arg) \
-  { cheat, deh_cheat, when, func, arg, 0, 0, \
-    sizeof(cheat) - 1, 0, 0, 0, "" }
+  { cheat, deh_cheat, when, func, arg, 0, 0, 0, 0, 0, "" }
 
 #define CHEAT_ARGS_MAX 8  /* Maximum number of args at end of cheats */
 
@@ -62,10 +61,7 @@ typedef struct cheatseq_s {
   void (*const func)();
   const int arg;
   uint_64_t code, mask;
-
-  // settings for this cheat
   size_t sequence_len;
-  size_t deh_sequence_len;
 
   // state used during the game
   size_t chars_read;
