@@ -1428,7 +1428,7 @@ typedef struct
   fixed_t scaleDelta;
   int ticker;
   int state;
-} floorWaggle_t;
+} planeWaggle_t;
 
 typedef enum
 {
@@ -1444,7 +1444,7 @@ void T_BuildPillar(pillar_t * pillar);
 int EV_BuildPillar(line_t * line, byte * args, int crush);
 int EV_OpenPillar(line_t * line, byte * args);
 int EV_FloorCrushStop(line_t * line, byte * args);
-void T_FloorWaggle(floorWaggle_t * waggle);
+void T_FloorWaggle(planeWaggle_t * waggle);
 dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset, int timer);
 
 // p_plats

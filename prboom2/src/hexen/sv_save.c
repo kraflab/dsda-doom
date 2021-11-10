@@ -1252,7 +1252,7 @@ static void StreamOut_polydoor_t(polydoor_t *str)
     SV_WriteLong(str->close);
 }
 
-static void StreamIn_floorWaggle_t(floorWaggle_t *str)
+static void StreamIn_planeWaggle_t(planeWaggle_t *str)
 {
     int i;
 
@@ -1285,7 +1285,7 @@ static void StreamIn_floorWaggle_t(floorWaggle_t *str)
     str->state = SV_ReadLong();
 }
 
-static void StreamOut_floorWaggle_t(floorWaggle_t *str)
+static void StreamOut_planeWaggle_t(planeWaggle_t *str)
 {
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
@@ -1517,7 +1517,7 @@ static void UnarchiveMobjs(void)
     P_InitCreatureCorpseQueue(true);    // true = scan for corpses
 }
 
-static void RestoreFloorWaggle(floorWaggle_t *th)
+static void RestoreFloorWaggle(planeWaggle_t *th)
 {
   th->sector->floordata = th->thinker.function;
 }
@@ -1642,10 +1642,10 @@ static thinkInfo_t ThinkerInfo[] = {
     {
       TC_FLOOR_WAGGLE,
       T_FloorWaggle,
-      StreamOut_floorWaggle_t,
-      StreamIn_floorWaggle_t,
+      StreamOut_planeWaggle_t,
+      StreamIn_planeWaggle_t,
       RestoreFloorWaggle,
-      sizeof(floorWaggle_t)
+      sizeof(planeWaggle_t)
     },
     { TC_NULL, NULL, NULL, NULL, NULL, 0 },
 };

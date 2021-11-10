@@ -722,7 +722,7 @@ void P_TrueArchiveThinkers(void) {
         th->function==T_Phase         ? 4+sizeof(phase_t)         :
         th->function==T_InterpretACS  ? 4+sizeof(acs_t)           :
         th->function==T_BuildPillar   ? 4+sizeof(pillar_t)        :
-        th->function==T_FloorWaggle   ? 4+sizeof(floorWaggle_t)   :
+        th->function==T_FloorWaggle   ? 4+sizeof(planeWaggle_t)   :
         th->function==T_RotatePoly    ? 4+sizeof(polyevent_t)     :
         th->function==T_MovePoly      ? 4+sizeof(polyevent_t)     :
         th->function==T_PolyDoor      ? 4+sizeof(polydoor_t)      :
@@ -957,11 +957,11 @@ void P_TrueArchiveThinkers(void) {
 
     if (th->function == T_FloorWaggle)
     {
-      floorWaggle_t *floor_waggle;
+      planeWaggle_t *floor_waggle;
       *save_p++ = tc_true_waggle;
-      floor_waggle = (floorWaggle_t *)save_p;
-      memcpy (save_p, th, sizeof(floorWaggle_t));
-      save_p += sizeof(floorWaggle_t);
+      floor_waggle = (planeWaggle_t *)save_p;
+      memcpy (save_p, th, sizeof(planeWaggle_t));
+      save_p += sizeof(planeWaggle_t);
       floor_waggle->sector = (sector_t *)(intptr_t)(floor_waggle->sector->iSectorID);
       continue;
     }
@@ -1123,7 +1123,7 @@ void P_TrueUnArchiveThinkers(void) {
         tc == tc_true_phase         ? sizeof(phase_t)         :
         tc == tc_true_acs           ? sizeof(acs_t)           :
         tc == tc_true_pillar        ? sizeof(pillar_t)        :
-        tc == tc_true_waggle        ? sizeof(floorWaggle_t)   :
+        tc == tc_true_waggle        ? sizeof(planeWaggle_t)   :
         tc == tc_true_poly_rotate   ? sizeof(polyevent_t)     :
         tc == tc_true_poly_move     ? sizeof(polyevent_t)     :
         tc == tc_true_poly_door     ? sizeof(polydoor_t)      :
@@ -1368,7 +1368,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_waggle:
         {
-          floorWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
+          planeWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
           memcpy(waggle, save_p, sizeof(*waggle));
           save_p += sizeof(*waggle);
           waggle->sector = &sectors[(size_t)waggle->sector];

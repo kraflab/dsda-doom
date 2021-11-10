@@ -2152,7 +2152,7 @@ int EV_FloorCrushStop(line_t * line, byte * args)
 
 extern fixed_t FloatBobOffsets[64];
 
-void T_FloorWaggle(floorWaggle_t * waggle)
+void T_FloorWaggle(planeWaggle_t * waggle)
 {
     switch (waggle->state)
     {
@@ -2202,7 +2202,7 @@ dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
 {
     int sectorIndex;
     sector_t *sector;
-    floorWaggle_t *waggle;
+    planeWaggle_t *waggle;
     dboolean retCode;
 
     retCode = false;
