@@ -214,7 +214,7 @@ cheatseq_t cheat[] = {
   CHEAT("gimme", NULL, cht_never, cheat_artifact, -2, false),
   CHEAT("shazam", NULL, cht_never, cheat_tome, 0, false),
   CHEAT("engage", NULL, cht_never | not_menu, cheat_clev, -2, false),
-  CHEAT("ravmap", NULL, not_dm, cheat_ddt, 0, false),
+  CHEAT("ravmap", NULL, not_dm, cheat_ddt, 0, true),
   CHEAT("cockadoodledoo", NULL, cht_never, cheat_chicken, 0, false),
 
   // hexen
@@ -230,7 +230,7 @@ cheatseq_t cheat[] = {
   CHEAT("visit", NULL, cht_never | not_menu, cheat_clev, -2, false),
   CHEAT("init", NULL, cht_never, cheat_init, 0, false),
   CHEAT("puke", NULL, cht_never, cheat_script, -2, false),
-  CHEAT("mapsco", NULL, not_dm, cheat_ddt, 0, false),
+  CHEAT("mapsco", NULL, not_dm, cheat_ddt, 0, true),
   CHEAT("deliverance", NULL, cht_never, cheat_chicken, 0, false),
 
   // end-of-list marker
