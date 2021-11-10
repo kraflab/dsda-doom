@@ -160,6 +160,7 @@ void M_ChangeMapGridSize(void);
 void M_ChangeMapTextured(void);
 void M_ChangeMapMultisamling(void);
 void AM_ResetIDDTcheat(void);
+void AM_SetMapCenter(fixed_t x, fixed_t y);
 
 typedef struct am_frame_s
 {

@@ -32,6 +32,7 @@
  *-----------------------------------------------------------------------------*/
 
 #include "doomstat.h"
+#include "am_map.h"
 #include "g_game.h"
 #include "r_data.h"
 #include "p_inter.h"
@@ -85,6 +86,7 @@ static void cheat_friction();
 static void cheat_pushers();
 static void cheat_massacre();
 static void cheat_ddt();
+static void cheat_reveal_secret();
 static void cheat_hom();
 static void cheat_fast();
 static void cheat_tntkey();
@@ -161,6 +163,7 @@ cheatseq_t cheat[] = {
   CHEAT("tntem",      NULL,               cht_never, cheat_massacre, 0, false),
   // killough 2/07/98: moved from am_map.c
   CHEAT("iddt",       "Map cheat",        not_dm, cheat_ddt, 0, true),
+  CHEAT("iddst",      NULL,               not_dm, cheat_reveal_secret, 0, true),
   // killough 2/07/98: HOM autodetector
   CHEAT("tnthom",     NULL,               always, cheat_hom, 0, false),
   // killough 2/16/98: generalized key cheats
@@ -606,6 +609,43 @@ static void cheat_ddt()
   extern int dsda_reveal_map;
   if (automapmode & am_active)
     dsda_reveal_map = (dsda_reveal_map+1) % 3;
+}
+
+static void cheat_reveal_secret()
+{
+  static int last_secret = -1;
+
+  if (automapmode & am_active)
+  {
+    int i, start_i;
+
+    i = last_secret + 1;
+    if (i >= numsectors)
+      i = 0;
+    start_i = i;
+
+    do
+    {
+      sector_t *sec = &sectors[i];
+
+      if (P_IsSecret(sec))
+      {
+        automapmode &= ~am_follow;
+
+        // This is probably not necessary
+        if (sec->lines && sec->lines[0] && sec->lines[0]->v1)
+        {
+          AM_SetMapCenter(sec->lines[0]->v1->x, sec->lines[0]->v1->y);
+          last_secret = i;
+          break;
+        }
+      }
+
+      i++;
+      if (i >= numsectors)
+        i = 0;
+    } while (i != start_i);
+  }
 }
 
 // killough 2/7/98: HOM autodetection
