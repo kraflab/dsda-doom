@@ -88,6 +88,7 @@ static void cheat_massacre();
 static void cheat_ddt();
 static void cheat_reveal_secret();
 static void cheat_reveal_kill();
+static void cheat_reveal_item();
 static void cheat_hom();
 static void cheat_fast();
 static void cheat_tntkey();
@@ -166,6 +167,7 @@ cheatseq_t cheat[] = {
   CHEAT("iddt",       "Map cheat",        not_dm, cheat_ddt, 0, true),
   CHEAT("iddst",      NULL,               not_dm, cheat_reveal_secret, 0, true),
   CHEAT("iddkt",      NULL,               not_dm, cheat_reveal_kill, 0, true),
+  CHEAT("iddit",      NULL,               not_dm, cheat_reveal_item, 0, true),
   // killough 2/07/98: HOM autodetector
   CHEAT("tnthom",     NULL,               always, cheat_hom, 0, false),
   // killough 2/16/98: generalized key cheats
@@ -650,47 +652,64 @@ static void cheat_reveal_secret()
   }
 }
 
+static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int alive)
+{
+  extern int init_thinkers_count;
+  thinker_t *th, *start_th;
+
+  // If the thinkers have been wiped, addresses are invalid
+  if (*last_count != init_thinkers_count)
+  {
+    *last_count = init_thinkers_count;
+    *last_mobj = NULL;
+  }
+
+  if (*last_mobj)
+    th = &(*last_mobj)->thinker;
+  else
+    th = &thinkercap;
+
+  start_th = th;
+
+  for (th = th->next; th != start_th; th = th->next)
+  {
+    if (th->function == P_MobjThinker)
+    {
+      mobj_t *mobj;
+
+      automapmode &= ~am_follow;
+
+      mobj = (mobj_t *) th;
+
+      if ((!alive || mobj->health > 0) && mobj->flags & flags)
+      {
+        AM_SetMapCenter(mobj->x, mobj->y);
+        P_SetTarget(last_mobj, mobj);
+        break;
+      }
+    }
+  }
+}
+
 static void cheat_reveal_kill()
 {
   if (automapmode & am_active)
   {
-    extern int init_thinkers_count;
-    static int last_init_thinkers_count;
+    static int last_count;
     static mobj_t *last_mobj;
-    thinker_t *th, *start_th;
 
-    // If the thinkers have been wiped, addresses are invalid
-    if (last_init_thinkers_count != init_thinkers_count)
-    {
-      last_init_thinkers_count = init_thinkers_count;
-      last_mobj = NULL;
-    }
+    cheat_cycle_mobj(&last_mobj, &last_count, MF_COUNTKILL, true);
+  }
+}
 
-    if (last_mobj)
-      th = &last_mobj->thinker;
-    else
-      th = &thinkercap;
+static void cheat_reveal_item()
+{
+  if (automapmode & am_active)
+  {
+    static int last_count;
+    static mobj_t *last_mobj;
 
-    start_th = th;
-
-    for (th = th->next; th != start_th; th = th->next)
-    {
-      if (th->function == P_MobjThinker)
-      {
-        mobj_t *mobj;
-
-        automapmode &= ~am_follow;
-
-        mobj = (mobj_t *) th;
-
-        if (mobj->health > 0 && mobj->flags & MF_COUNTKILL)
-        {
-          AM_SetMapCenter(mobj->x, mobj->y);
-          P_SetTarget(&last_mobj, mobj);
-          break;
-        }
-      }
-    }
+    cheat_cycle_mobj(&last_mobj, &last_count, MF_COUNTITEM, false);
   }
 }
 
