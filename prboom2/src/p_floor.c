@@ -2152,43 +2152,105 @@ int EV_FloorCrushStop(line_t * line, byte * args)
 
 extern fixed_t FloatBobOffsets[64];
 
+static void T_PlaneWaggle(planeWaggle_t * waggle, fixed_t * planeheight, void ** planedata)
+{
+  switch (waggle->state)
+  {
+    case WGLSTATE_EXPAND:
+      if ((waggle->scale += waggle->scaleDelta) >= waggle->targetScale)
+      {
+        waggle->scale = waggle->targetScale;
+        waggle->state = WGLSTATE_STABLE;
+      }
+      break;
+    case WGLSTATE_REDUCE:
+      if ((waggle->scale -= waggle->scaleDelta) <= 0)
+      { // Remove
+        (*planeheight) = waggle->originalHeight;
+        P_ChangeSector(waggle->sector, true);
+        (*planedata) = NULL;
+        P_TagFinished(waggle->sector->tag);
+        P_RemoveThinker(&waggle->thinker);
+        return;
+      }
+      break;
+    case WGLSTATE_STABLE:
+      if (waggle->ticker != -1)
+      {
+        if (!--waggle->ticker)
+        {
+          waggle->state = WGLSTATE_REDUCE;
+        }
+      }
+      break;
+  }
+  waggle->accumulator += waggle->accDelta;
+  (*planeheight) = waggle->originalHeight +
+                   FixedMul(FloatBobOffsets[(waggle->accumulator >> FRACBITS) & 63], waggle->scale);
+  P_ChangeSector(waggle->sector, true);
+}
+
 void T_FloorWaggle(planeWaggle_t * waggle)
 {
-    switch (waggle->state)
-    {
-        case WGLSTATE_EXPAND:
-            if ((waggle->scale += waggle->scaleDelta) >= waggle->targetScale)
-            {
-                waggle->scale = waggle->targetScale;
-                waggle->state = WGLSTATE_STABLE;
-            }
-            break;
-        case WGLSTATE_REDUCE:
-            if ((waggle->scale -= waggle->scaleDelta) <= 0)
-            {                   // Remove
-                waggle->sector->floorheight = waggle->originalHeight;
-                P_ChangeSector(waggle->sector, true);
-                waggle->sector->floordata = NULL;
-                P_TagFinished(waggle->sector->tag);
-                P_RemoveThinker(&waggle->thinker);
-                return;
-            }
-            break;
-        case WGLSTATE_STABLE:
-            if (waggle->ticker != -1)
-            {
-                if (!--waggle->ticker)
-                {
-                    waggle->state = WGLSTATE_REDUCE;
-                }
-            }
-            break;
+  T_PlaneWaggle(waggle, &waggle->sector->floorheight, &waggle->sector->floordata);
+}
+
+void T_CeilingWaggle(planeWaggle_t * waggle)
+{
+  T_PlaneWaggle(waggle, &waggle->sector->ceilingheight, &waggle->sector->ceilingdata);
+}
+
+static void P_SpawnPlaneWaggle(sector_t *sector, int height, int speed,
+                               int offset, int timer, dboolean ceiling)
+{
+  planeWaggle_t *waggle;
+
+  waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, 0);
+  memset(waggle, 0, sizeof(*waggle));
+  if (ceiling)
+  {
+    sector->ceilingdata = waggle;
+    waggle->thinker.function = T_CeilingWaggle;
+    waggle->originalHeight = sector->ceilingheight;
+  }
+  else
+  {
+    sector->floordata = waggle;
+    waggle->thinker.function = T_FloorWaggle;
+    waggle->originalHeight = sector->floorheight;
+  }
+  waggle->sector = sector;
+  waggle->accumulator = offset * FRACUNIT;
+  waggle->accDelta = speed << 10;
+  waggle->scale = 0;
+  waggle->targetScale = height << 10;
+  waggle->scaleDelta = waggle->targetScale / (35 + ((3 * 35) * height) / 255);
+  waggle->ticker = timer ? timer * 35 : -1;
+  waggle->state = WGLSTATE_EXPAND;
+  P_AddThinker(&waggle->thinker);
+}
+
+dboolean EV_StartPlaneWaggle(int tag, line_t *line, int height,
+                             int speed, int offset, int timer, dboolean ceiling)
+{
+  int sectorIndex;
+  sector_t *sector;
+  dboolean retCode;
+
+  retCode = false;
+  sectorIndex = -1;
+  while ((sectorIndex = P_FindSectorFromTagOrLine(tag, line, sectorIndex)) >= 0)
+  {
+    sector = &sectors[sectorIndex];
+    if (ceiling ? P_CeilingActive(sector) : P_FloorActive(sector))
+    { // Already busy with another thinker
+      continue;
     }
-    waggle->accumulator += waggle->accDelta;
-    waggle->sector->floorheight = waggle->originalHeight
-        + FixedMul(FloatBobOffsets[(waggle->accumulator >> FRACBITS) & 63],
-                   waggle->scale);
-    P_ChangeSector(waggle->sector, true);
+    retCode = true;
+    P_SpawnPlaneWaggle(sector, height, speed, offset, timer, ceiling);
+  }
+
+  return retCode;
 }
 
 //==========================================================================
@@ -2215,21 +2277,7 @@ dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
             continue;
         }
         retCode = true;
-        waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, 0);
-        memset(waggle, 0, sizeof(*waggle));
-        sector->floordata = waggle;
-        waggle->thinker.function = T_FloorWaggle;
-        waggle->sector = sector;
-        waggle->originalHeight = sector->floorheight;
-        waggle->accumulator = offset * FRACUNIT;
-        waggle->accDelta = speed << 10;
-        waggle->scale = 0;
-        waggle->targetScale = height << 10;
-        waggle->scaleDelta = waggle->targetScale
-            / (35 + ((3 * 35) * height) / 255);
-        waggle->ticker = timer ? timer * 35 : -1;
-        waggle->state = WGLSTATE_EXPAND;
-        P_AddThinker(&waggle->thinker);
+        P_SpawnPlaneWaggle(sector, height, speed, offset, timer, false);
     }
     return retCode;
 }

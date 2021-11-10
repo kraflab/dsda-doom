@@ -1445,6 +1445,7 @@ int EV_BuildPillar(line_t * line, byte * args, int crush);
 int EV_OpenPillar(line_t * line, byte * args);
 int EV_FloorCrushStop(line_t * line, byte * args);
 void T_FloorWaggle(planeWaggle_t * waggle);
+void T_CeilingWaggle(planeWaggle_t * waggle);
 dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset, int timer);
 
 // p_plats
@@ -1614,6 +1615,8 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
 int EV_ZDoomCeilingCrushStop(int tag, dboolean remove);
 int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
                         fixed_t speed, int delay, int reset, int igntxt, int usespecials);
+dboolean EV_StartPlaneWaggle(int tag, line_t *line, int height,
+                             int speed, int offset, int timer, dboolean ceiling);
 void EV_LightChange(int tag, short change);
 void EV_LightSet(int tag, short level);
 void EV_LightSetMinNeighbor(int tag);

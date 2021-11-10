@@ -211,7 +211,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 35    | Floor_RaiseByValueTimes8        | :heavy_check_mark: |
 | 36    | Floor_LowerByValueTimes8        | :heavy_check_mark: |
 | 37    | Floor_MoveToValue               | :heavy_check_mark: |
-| 38    | Ceiling_Waggle                  | :grey_question:    |
+| 38    | Ceiling_Waggle                  | :heavy_check_mark: |
 | 39    | Teleport_ZombieChanger          | :telescope:        |
 | 40    | Ceiling_LowerByValue            | :heavy_check_mark: |
 | 41    | Ceiling_RaiseByValue            | :heavy_check_mark: |
@@ -309,7 +309,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 135   | Thing_Spawn                     | :telescope:        |
 | 136   | Thing_ProjectileGravity         | :telescope:        |
 | 137   | Thing_SpawnNoFog                | :telescope:        |
-| 138   | Floor_Waggle                    | :grey_question:    |
+| 138   | Floor_Waggle                    | :heavy_check_mark: |
 | 139   | Thing_SpawnFacing               | :telescope:        |
 | 140   | Sector_ChangeSound              | :telescope:        |
 | -     | -                               | -                  |

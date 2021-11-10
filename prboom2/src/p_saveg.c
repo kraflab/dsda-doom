@@ -665,7 +665,8 @@ typedef enum {
   tc_true_phase,
   tc_true_acs,
   tc_true_pillar,
-  tc_true_waggle,
+  tc_true_floor_waggle,
+  tc_true_ceiling_waggle,
   tc_true_poly_rotate,
   tc_true_poly_move,
   tc_true_poly_door,
@@ -723,6 +724,7 @@ void P_TrueArchiveThinkers(void) {
         th->function==T_InterpretACS  ? 4+sizeof(acs_t)           :
         th->function==T_BuildPillar   ? 4+sizeof(pillar_t)        :
         th->function==T_FloorWaggle   ? 4+sizeof(planeWaggle_t)   :
+        th->function==T_CeilingWaggle ? 4+sizeof(planeWaggle_t)   :
         th->function==T_RotatePoly    ? 4+sizeof(polyevent_t)     :
         th->function==T_MovePoly      ? 4+sizeof(polyevent_t)     :
         th->function==T_PolyDoor      ? 4+sizeof(polydoor_t)      :
@@ -958,11 +960,22 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_FloorWaggle)
     {
       planeWaggle_t *floor_waggle;
-      *save_p++ = tc_true_waggle;
+      *save_p++ = tc_true_floor_waggle;
       floor_waggle = (planeWaggle_t *)save_p;
       memcpy (save_p, th, sizeof(planeWaggle_t));
       save_p += sizeof(planeWaggle_t);
       floor_waggle->sector = (sector_t *)(intptr_t)(floor_waggle->sector->iSectorID);
+      continue;
+    }
+
+    if (th->function == T_CeilingWaggle)
+    {
+      planeWaggle_t *ceiling_waggle;
+      *save_p++ = tc_true_ceiling_waggle;
+      ceiling_waggle = (planeWaggle_t *)save_p;
+      memcpy (save_p, th, sizeof(planeWaggle_t));
+      save_p += sizeof(planeWaggle_t);
+      ceiling_waggle->sector = (sector_t *)(intptr_t)(ceiling_waggle->sector->iSectorID);
       continue;
     }
 
@@ -1105,29 +1118,30 @@ void P_TrueUnArchiveThinkers(void) {
     {
       if (tc == tc_true_mobj) mobj_count++;
       save_p +=
-        tc == tc_true_ceiling       ? sizeof(ceiling_t)       :
-        tc == tc_true_door          ? sizeof(vldoor_t)        :
-        tc == tc_true_floor         ? sizeof(floormove_t)     :
-        tc == tc_true_plat          ? sizeof(plat_t)          :
-        tc == tc_true_flash         ? sizeof(lightflash_t)    :
-        tc == tc_true_strobe        ? sizeof(strobe_t)        :
-        tc == tc_true_glow          ? sizeof(glow_t)          :
-        tc == tc_true_zdoom_glow    ? sizeof(zdoom_glow_t)    :
-        tc == tc_true_elevator      ? sizeof(elevator_t)      :
-        tc == tc_true_scroll        ? sizeof(scroll_t)        :
-        tc == tc_true_pusher        ? sizeof(pusher_t)        :
-        tc == tc_true_flicker       ? sizeof(fireflicker_t)   :
-        tc == tc_true_zdoom_flicker ? sizeof(zdoom_flicker_t) :
-        tc == tc_true_friction      ? sizeof(friction_t)      :
-        tc == tc_true_light         ? sizeof(light_t)         :
-        tc == tc_true_phase         ? sizeof(phase_t)         :
-        tc == tc_true_acs           ? sizeof(acs_t)           :
-        tc == tc_true_pillar        ? sizeof(pillar_t)        :
-        tc == tc_true_waggle        ? sizeof(planeWaggle_t)   :
-        tc == tc_true_poly_rotate   ? sizeof(polyevent_t)     :
-        tc == tc_true_poly_move     ? sizeof(polyevent_t)     :
-        tc == tc_true_poly_door     ? sizeof(polydoor_t)      :
-        tc == tc_true_mobj          ? sizeof(mobj_t)          :
+        tc == tc_true_ceiling        ? sizeof(ceiling_t)       :
+        tc == tc_true_door           ? sizeof(vldoor_t)        :
+        tc == tc_true_floor          ? sizeof(floormove_t)     :
+        tc == tc_true_plat           ? sizeof(plat_t)          :
+        tc == tc_true_flash          ? sizeof(lightflash_t)    :
+        tc == tc_true_strobe         ? sizeof(strobe_t)        :
+        tc == tc_true_glow           ? sizeof(glow_t)          :
+        tc == tc_true_zdoom_glow     ? sizeof(zdoom_glow_t)    :
+        tc == tc_true_elevator       ? sizeof(elevator_t)      :
+        tc == tc_true_scroll         ? sizeof(scroll_t)        :
+        tc == tc_true_pusher         ? sizeof(pusher_t)        :
+        tc == tc_true_flicker        ? sizeof(fireflicker_t)   :
+        tc == tc_true_zdoom_flicker  ? sizeof(zdoom_flicker_t) :
+        tc == tc_true_friction       ? sizeof(friction_t)      :
+        tc == tc_true_light          ? sizeof(light_t)         :
+        tc == tc_true_phase          ? sizeof(phase_t)         :
+        tc == tc_true_acs            ? sizeof(acs_t)           :
+        tc == tc_true_pillar         ? sizeof(pillar_t)        :
+        tc == tc_true_floor_waggle   ? sizeof(planeWaggle_t)   :
+        tc == tc_true_ceiling_waggle ? sizeof(planeWaggle_t)   :
+        tc == tc_true_poly_rotate    ? sizeof(polyevent_t)     :
+        tc == tc_true_poly_move      ? sizeof(polyevent_t)     :
+        tc == tc_true_poly_door      ? sizeof(polydoor_t)      :
+        tc == tc_true_mobj           ? sizeof(mobj_t)          :
       0;
     }
 
@@ -1366,7 +1380,7 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
-      case tc_true_waggle:
+      case tc_true_floor_waggle:
         {
           planeWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
           memcpy(waggle, save_p, sizeof(*waggle));
@@ -1374,6 +1388,18 @@ void P_TrueUnArchiveThinkers(void) {
           waggle->sector = &sectors[(size_t)waggle->sector];
           waggle->sector->floordata = waggle;
           waggle->thinker.function = T_FloorWaggle;
+          P_AddThinker(&waggle->thinker);
+          break;
+        }
+
+      case tc_true_ceiling_waggle:
+        {
+          planeWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
+          memcpy(waggle, save_p, sizeof(*waggle));
+          save_p += sizeof(*waggle);
+          waggle->sector = &sectors[(size_t)waggle->sector];
+          waggle->sector->floordata = waggle;
+          waggle->thinker.function = T_CeilingWaggle;
           P_AddThinker(&waggle->thinker);
           break;
         }
