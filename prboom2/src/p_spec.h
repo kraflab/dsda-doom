@@ -1044,6 +1044,9 @@ dboolean PUREFUNC P_IsSecret
 dboolean PUREFUNC P_WasSecret
 ( const sector_t *sec );
 
+dboolean PUREFUNC P_RevealedSecret
+( const sector_t *sec );
+
 void P_ChangeSwitchTexture
 ( line_t* line,
   int useAgain );

@@ -1534,6 +1534,16 @@ static void AM_drawGrid(int color)
   }
 }
 
+static dboolean AM_DrawHiddenSecrets(void)
+{
+  return !!(*mapcolor_secr_p) && !map_secret_after;
+}
+
+static dboolean AM_DrawRevealedSecrets(void)
+{
+  return !!(*mapcolor_revsecr_p);
+}
+
 //
 // Determines visible lines, draws them.
 // This is LineDef based, not LineSeg based.
@@ -1631,19 +1641,9 @@ static void AM_drawWalls(void)
       if (!lines[i].backsector)
       {
         // jff 1/10/98 add new color for 1S secret sector boundary
-        if ((*mapcolor_secr_p) && //jff 4/3/98 0 is disable
-            (
-             !map_secret_after &&
-             P_IsSecret(lines[i].frontsector)
-            )
-          )
+        if (AM_DrawHiddenSecrets() && P_IsSecret(lines[i].frontsector))
           AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
-        else if ((*mapcolor_revsecr_p) &&
-            (
-             P_WasSecret(lines[i].frontsector) &&
-             !P_IsSecret(lines[i].frontsector)
-            )
-          )
+        else if (AM_DrawRevealedSecrets() && P_RevealedSecret(lines[i].frontsector))
           AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector
         else                               //jff 2/16/98 fixed bug
           AM_drawMline(&l, (*mapcolor_wall_p)); // special was cleared
@@ -1669,29 +1669,17 @@ static void AM_drawWalls(void)
         {
           AM_drawMline(&l, (*mapcolor_clsd_p));      // non-secret closed door
         } //jff 1/6/98 show secret sector 2S lines
-        else if
-        (
-            (*mapcolor_secr_p) && //jff 2/16/98 fixed bug
-            (                    // special was cleared after getting it
-              !map_secret_after &&
-               (
-                P_IsSecret(lines[i].frontsector) ||
-                P_IsSecret(lines[i].backsector)
-               )
-            )
+        else if (
+          AM_DrawHiddenSecrets() &&
+          (P_IsSecret(lines[i].frontsector) || P_IsSecret(lines[i].backsector))
         )
         {
           AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
         } //jff 1/6/98 end secret sector line change
         else if
         (
-            (*mapcolor_revsecr_p) &&
-            (
-              (P_WasSecret(lines[i].frontsector)
-               && !P_IsSecret(lines[i].frontsector)) ||
-              (P_WasSecret(lines[i].backsector)
-               && !P_IsSecret(lines[i].backsector))
-            )
+          AM_DrawRevealedSecrets() &&
+          (P_RevealedSecret(lines[i].frontsector) || P_RevealedSecret(lines[i].backsector))
         )
         {
           AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector

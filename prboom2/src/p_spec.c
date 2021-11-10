@@ -1519,6 +1519,11 @@ dboolean PUREFUNC P_WasSecret(const sector_t *sec)
   return (sec->flags & SECF_WASSECRET) != 0;
 }
 
+dboolean PUREFUNC P_RevealedSecret(const sector_t *sec)
+{
+  return P_WasSecret(sec) && !P_IsSecret(sec);
+}
+
 void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
 {
   if (thing->player)
