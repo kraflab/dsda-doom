@@ -174,7 +174,7 @@ void dsda_WriteSplits(void) {
   }
 
   if (!M_WriteFile(path, buffer, p - buffer))
-    I_Error("dsda_WriteSplits: Failed to write splits file.");
+    I_Warn("dsda_WriteSplits: Failed to write splits file.");
 }
 
 static void dsda_TrackSplitTime(dsda_split_time_t* split_time, int current) {
