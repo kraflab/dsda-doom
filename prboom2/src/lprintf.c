@@ -127,6 +127,21 @@ void I_Error(const char *error, ...)
   I_SafeExit(-1);
 }
 
+void I_Warn(const char *error, ...)
+{
+  char errmsg[MAX_MESSAGE_SIZE];
+  va_list argptr;
+  va_start(argptr, error);
+  doom_vsnprintf(errmsg, sizeof(errmsg), error, argptr);
+  va_end(argptr);
+  lprintf(LO_WARN, "%s\n", errmsg);
+#ifdef _WIN32
+  if (!M_CheckParm ("-nodraw") && !capturing_video) {
+    I_MessageBox(errmsg, PRB_MB_OK);
+  }
+#endif
+}
+
 // Attempt to compensate for lack of va_copy
 
 #ifndef va_copy

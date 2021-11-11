@@ -58,6 +58,7 @@ void I_DisableAllLogging(void);
  * killough 4/25/98: add gcc attributes
  * cphipps 01/11- moved from i_system.h */
 void I_Error(const char *error, ...) __attribute__((format(printf,1,2)));
+void I_Warn(const char *error, ...) __attribute__((format(printf,1,2)));
 
 int doom_vsnprintf(char *buf, size_t max, const char *fmt, va_list va);
 int doom_snprintf(char *buf, size_t max, const char *fmt, ...) __attribute__((format(printf,3,4)));
