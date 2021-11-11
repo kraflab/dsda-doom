@@ -2882,6 +2882,7 @@ dboolean P_CheckLumpsForSameSource(int lump1, int lump2)
 void P_CheckLevelWadStructure(const char *mapname)
 {
   int i, lumpnum;
+  dboolean has_behavior = false;
 
   static const char *ml_labels[] = {
     "ML_LABEL",             // A separator, name, ExMx or MAPxx
@@ -2917,20 +2918,25 @@ void P_CheckLevelWadStructure(const char *mapname)
     }
   }
 
-  // we may be running a wad that has multiple formats
-  // if we are not in "hexen mode" then we need to abort
-  // eventually, we can add support for per-map format swapping
-  if (!map_format.hexen)
+  // Find out what format we have
+  i = lumpnum + ML_BEHAVIOR;
+  if (P_CheckLumpsForSameSource(lumpnum, i))
   {
-    i = lumpnum + ML_BEHAVIOR;
-    if (P_CheckLumpsForSameSource(lumpnum, i))
+    if (!strncasecmp(lumpinfo[i].name, "BEHAVIOR", 8))
     {
-      if (!strncasecmp(lumpinfo[i].name, "BEHAVIOR", 8))
-      {
-        I_Error("P_SetupLevel: %s: Hexen format not supported", mapname);
-      }
+      has_behavior = true;
     }
   }
+
+  if (has_behavior && !hexen)
+  {
+    if (heretic)
+      I_Error("Hexen format maps are not supported in Heretic yet");
+
+    dsda_ApplyZDoomMapFormat();
+  }
+  else
+    dsda_ApplyDefaultMapFormat();
 }
 
 void P_InitSubsectorsLines(void)

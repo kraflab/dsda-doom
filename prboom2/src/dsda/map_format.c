@@ -111,20 +111,43 @@ dboolean dsda_IsTeleportLine(int index) {
 // Migrate some non-hexen data to hexen format
 static void dsda_MigrateMobjInfo(void) {
   int i;
+  static dboolean migrated = false;
 
-  if (hexen || !map_format.hexen) return;
+  if (hexen) return;
 
-  for (i = mobj_types_zero; i < num_mobj_types; ++i) {
-    if (mobjinfo[i].flags & MF_COUNTKILL)
-      mobjinfo[i].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
+  if (map_format.zdoom && !migrated)
+  {
+    migrated = true;
 
-    if (mobjinfo[i].flags & MF_MISSILE)
-      mobjinfo[i].flags2 |= MF2_PCROSS | MF2_IMPACT;
+    for (i = mobj_types_zero; i < num_mobj_types; ++i) {
+      if (mobjinfo[i].flags & MF_COUNTKILL)
+        mobjinfo[i].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
+
+      if (mobjinfo[i].flags & MF_MISSILE)
+        mobjinfo[i].flags2 |= MF2_PCROSS | MF2_IMPACT;
+    }
+
+    if (!raven) {
+      mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
+      mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL;
+    }
   }
+  else if (!map_format.zdoom && migrated)
+  {
+    migrated = false;
 
-  if (!raven) {
-    mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
-    mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL;
+    for (i = mobj_types_zero; i < num_mobj_types; ++i) {
+      if (mobjinfo[i].flags & MF_COUNTKILL)
+        mobjinfo[i].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL);
+
+      if (mobjinfo[i].flags & MF_MISSILE)
+        mobjinfo[i].flags2 &= ~(MF2_PCROSS | MF2_IMPACT);
+    }
+
+    if (!raven) {
+      mobjinfo[MT_SKULL].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL);
+      mobjinfo[MT_PLAYER].flags2 &= ~(MF2_WINDTHRUST | MF2_PUSHWALL);
+    }
   }
 }
 
@@ -370,10 +393,14 @@ static const map_format_t doom_map_format = {
   .mt_pull = MT_PULL,
 };
 
-void dsda_ApplyMapFormat(void) {
-  if (M_CheckParm("-zdoom"))
-    map_format = zdoom_in_hexen_map_format;
-  else if (hexen)
+void dsda_ApplyZDoomMapFormat(void) {
+  map_format = zdoom_in_hexen_map_format;
+
+  dsda_MigrateMobjInfo();
+}
+
+void dsda_ApplyDefaultMapFormat(void) {
+  if (hexen)
     map_format = hexen_map_format;
   else if (heretic)
     map_format = heretic_map_format;
