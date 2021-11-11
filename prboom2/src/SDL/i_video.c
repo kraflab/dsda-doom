@@ -682,13 +682,11 @@ static void I_AppendResolution(SDL_DisplayMode *mode, int *current_resolution_in
 
 
   doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", mode->w, mode->h);
-  fprintf(stdout, "I_AppendResolution: %s\n", mode_name);
 
   for(i = 0; i < *list_size; i++)
     if (!strcmp(mode_name, screen_resolutions_list[i]))
       return;
 
-  fprintf(stdout, "I_AppendResolution: adding %s %d\n", mode_name, *list_size);
   screen_resolutions_list[*list_size] = strdup(mode_name);
 
   if (mode->w == desired_screenwidth && mode->h == desired_screenheight)
