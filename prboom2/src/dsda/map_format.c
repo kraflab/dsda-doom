@@ -15,6 +15,7 @@
 //	DSDA Map Format
 //
 
+#include "doomstat.h"
 #include "lprintf.h"
 #include "p_spec.h"
 #include "r_state.h"
@@ -395,6 +396,9 @@ static const map_format_t doom_map_format = {
 
 void dsda_ApplyZDoomMapFormat(void) {
   map_format = zdoom_in_hexen_map_format;
+
+  if (!mbf21)
+    I_Error("You must use complevel 21 when playing doom-in-hexen format maps.");
 
   dsda_MigrateMobjInfo();
 }
