@@ -6463,6 +6463,20 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         buttonSuccess = 1;
       }
       break;
+    case zl_scroll_wall:
+      if (args[0])
+      {
+        int s;
+        int side = !!args[3];
+
+        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        {
+          Add_Scroller(sc_side, args[1], args[2], -1, lines[s].sidenum[side], 0);
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
     case zl_sector_set_gravity:
       {
         fixed_t gravity;

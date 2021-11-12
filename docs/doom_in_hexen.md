@@ -225,7 +225,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 49    | GlassBreak                      | :telescope:        |
 | 50    | ExtraFloor_LightOnly            | :x:                |
 | 51    | Sector_SetLink                  | :x:                |
-| 52    | Scroll_Wall                     | :grey_question:    |
+| 52    | Scroll_Wall                     | :warning:          |
 | 53    | Line_SetTextureOffset           | :grey_question:    |
 | 54    | Sector_ChangeFlags              | :grey_question:    |
 | 55    | Line_SetBlocking                | :warning:          |
