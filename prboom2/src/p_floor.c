@@ -706,7 +706,8 @@ manual_floor://e6y
 //
 int EV_DoChange
 ( line_t*       line,
-  change_e      changetype )
+  change_e      changetype,
+  int tag )
 {
   int                   secnum;
   int                   rtn;
@@ -716,7 +717,7 @@ int EV_DoChange
   secnum = -1;
   rtn = 0;
   // change all sectors with the same tag as the linedef
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  while ((secnum = P_FindSectorFromTag(tag,secnum)) >= 0)
   {
     sec = &sectors[secnum];
 
@@ -726,8 +727,11 @@ int EV_DoChange
     switch(changetype)
     {
       case trigChangeOnly:
-        sec->floorpic = line->frontsector->floorpic;
-        P_CopySectorSpecial(sec, line->frontsector);
+        if (line)
+        {
+          sec->floorpic = line->frontsector->floorpic;
+          P_CopySectorSpecial(sec, line->frontsector);
+        }
         break;
       case numChangeOnly:
         secm = P_FindModelFloorSector(sec->floorheight,secnum);

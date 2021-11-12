@@ -388,8 +388,8 @@ Current work is isolated to the initial pass over the level format itself - line
 | 232   | Light_StrobeDoom                | :heavy_check_mark: |
 | 233   | Light_MinNeighbor               | :heavy_check_mark: |
 | 234   | Light_MaxNeighbor               | :heavy_check_mark: |
-| 235   | Floor_TransferTrigger           | :grey_question:    |
-| 236   | Floor_TransferNumeric           | :grey_question:    |
+| 235   | Floor_TransferTrigger           | :heavy_check_mark: |
+| 236   | Floor_TransferNumeric           | :heavy_check_mark: |
 | 237   | ChangeCamera                    | :x:                |
 | 238   | Floor_RaiseToLowestCeiling      | :heavy_check_mark: |
 | 239   | Floor_RaiseByValueTxTy          | :heavy_check_mark: |

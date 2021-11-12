@@ -833,7 +833,7 @@ P_UseSpecialLine
           case 189: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Trigger)
             // 189 S1 Change Texture/Type Only
-            if (EV_DoChange(line,trigChangeOnly))
+            if (EV_DoChange(line,trigChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,0);
             break;
 
@@ -861,7 +861,7 @@ P_UseSpecialLine
           case 241: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Numeric)
             // 241 S1 Change Texture/Type Only
-            if (EV_DoChange(line,numChangeOnly))
+            if (EV_DoChange(line,numChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,0);
             break;
 
@@ -902,7 +902,7 @@ P_UseSpecialLine
           case 78: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Numeric)
             // 78 SR Change Texture/Type Only
-            if (EV_DoChange(line,numChangeOnly))
+            if (EV_DoChange(line,numChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,1);
             break;
 
@@ -1002,7 +1002,7 @@ P_UseSpecialLine
           case 190: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Trigger)
             // 190 SR Change Texture/Type Only
-            if (EV_DoChange(line,trigChangeOnly))
+            if (EV_DoChange(line,trigChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,1);
             break;
 

@@ -2235,14 +2235,14 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
           case 153: //jff 3/15/98 create texture change no motion type
             // Texture/Type Change Only (Trig)
             // 153 W1 Change Texture/Type Only
-            if (EV_DoChange(line,trigChangeOnly))
+            if (EV_DoChange(line,trigChangeOnly,line->tag))
               line->special = 0;
             break;
 
           case 239: //jff 3/15/98 create texture change no motion type
             // Texture/Type Change Only (Numeric)
             // 239 W1 Change Texture/Type Only
-            if (EV_DoChange(line,numChangeOnly))
+            if (EV_DoChange(line,numChangeOnly,line->tag))
               line->special = 0;
             break;
 
@@ -2406,13 +2406,13 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
           case 154: //jff 3/15/98 create texture change no motion type
             // Texture/Type Change Only (Trigger)
             // 154 WR Change Texture/Type Only
-            EV_DoChange(line,trigChangeOnly);
+            EV_DoChange(line,trigChangeOnly,line->tag);
             break;
 
           case 240: //jff 3/15/98 create texture change no motion type
             // Texture/Type Change Only (Numeric)
             // 240 WR Change Texture/Type Only
-            EV_DoChange(line,numChangeOnly);
+            EV_DoChange(line,numChangeOnly,line->tag);
             break;
 
           case 220:
@@ -6541,6 +6541,12 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           sectors[s].gravity = gravity;
       }
       buttonSuccess = 1;
+      break;
+    case zl_floor_transfer_numeric:
+      buttonSuccess = EV_DoChange(line, numChangeOnly, args[0]);
+      break;
+    case zl_floor_transfer_trigger:
+      buttonSuccess = EV_DoChange(line, trigChangeOnly, args[0]);
       break;
     case zl_sector_set_floor_panning:
       {

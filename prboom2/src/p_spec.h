@@ -1206,7 +1206,8 @@ int EV_LightTurnOnPartway(line_t* line, fixed_t level); // killough 10/10/98
 
 int EV_DoChange
 ( line_t* line,
-  change_e changetype );
+  change_e changetype,
+  int tag );
 
 int EV_DoDonut
 ( line_t* line );
