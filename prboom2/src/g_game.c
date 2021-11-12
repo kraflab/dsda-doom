@@ -3519,6 +3519,9 @@ void G_BeginRecording (void)
 
   if (map_format.zdoom)
   {
+    if (!M_CheckParm("-baddemo"))
+      I_Error("Experimental formats require the -baddemo option to record.");
+
     if (!mbf21)
       I_Error("You must use complevel 21 when recording on doom-in-hexen format.");
 
