@@ -34,6 +34,10 @@ static byte* dsda_demo_write_buffer_p;
 static int dsda_demo_write_buffer_length;
 static char* dsda_demo_name;
 
+#define DSDA_DEMO_VERSION 1
+
+static int dsda_demo_version;
+
 static void dsda_EnsureDemoBufferSpace(size_t length) {
   int offset;
 
@@ -130,47 +134,61 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd) {
     cmd->buttons |= BT_JOIN;
 }
 
+static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* header_p, size_t size) {
+  // 7 = 6 (signature) + 1 (dsda version)
+  if (demo_p - header_p + 7 > size)
+    return NULL;
+
+  if (*demo_p++ != 0x1d)
+    return NULL;
+
+  if (strncmp((const char *) demo_p, "DSDA", 4) != 0)
+    return NULL;
+
+  demo_p += 4;
+
+  if (*demo_p++ != 0xe6)
+    return NULL;
+
+  dsda_demo_version = *demo_p++;
+
+  if (dsda_demo_version > DSDA_DEMO_VERSION)
+    return NULL;
+
+  return demo_p;
+}
+
 // Strip off the defunct extended header (if we understand it) or abort (if we don't)
-const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size) {
+static const byte* dsda_ReadUMAPINFODemoHeader(const byte* demo_p, const byte* header_p, size_t size) {
   // 9 = 6 (signature) + 1 (version) + 2 (extension count)
   if (demo_p - header_p + 9 > size)
     return NULL;
 
   if (strncmp((const char *)demo_p, "PR+UM", 5) != 0)
-  {
     I_Error("G_ReadDemoHeader: Unknown demo format");
-  }
 
   demo_p += 6;
 
   // the defunct format had only version 1
   if (*demo_p++ != 1)
-  {
     I_Error("G_ReadDemoHeader: Unknown demo format");
-  }
 
   // the defunct format had only one extension (in two bytes)
   if (*demo_p++ != 1 || *demo_p++ != 0)
-  {
     I_Error("G_ReadDemoHeader: Unknown demo format");
-  }
 
   if (demo_p - header_p + 1 > size)
     return NULL;
 
   // the defunct extension had length 8
   if (*demo_p++ != 8)
-  {
     I_Error("G_ReadDemoHeader: Unknown demo format");
-  }
 
   if (demo_p - header_p + 8 > size)
     return NULL;
 
   if (strncmp((const char *)demo_p, "UMAPINFO", 8))
-  {
     I_Error("G_ReadDemoHeader: Unknown demo format");
-  }
 
   demo_p += 8;
 
@@ -181,4 +199,36 @@ const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, s
   demo_p += 8;
 
   return demo_p;
+}
+
+const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size) {
+  const byte* dsda_p;
+
+  dsda_p = dsda_ReadDSDADemoHeader(demo_p, header_p, size);
+
+  if (dsda_p) return dsda_p;
+
+  return dsda_ReadUMAPINFODemoHeader(demo_p, header_p, size);
+}
+
+void dsda_WriteDSDADemoHeader(byte** p) {
+  byte* demo_p = *p;
+
+  *demo_p++ = 255;
+
+  // signature
+  *demo_p++ = 0x1d;
+  *demo_p++ = 'D';
+  *demo_p++ = 'S';
+  *demo_p++ = 'D';
+  *demo_p++ = 'A';
+  *demo_p++ = 0xe6;
+
+  *demo_p++ = DSDA_DEMO_VERSION;
+
+  *p = demo_p;
+}
+
+int dsda_DemoVersion(void) {
+  return dsda_demo_version;
 }

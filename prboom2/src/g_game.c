@@ -3517,6 +3517,14 @@ void G_BeginRecording (void)
   demostart = demo_p = malloc(1000);
   longtics = 0;
 
+  if (map_format.zdoom)
+  {
+    if (!mbf21)
+      I_Error("You must use complevel 21 when recording on doom-in-hexen format.");
+
+    dsda_WriteDSDADemoHeader(&demo_p);
+  }
+
   /* cph - 3 demo record formats supported: MBF+, BOOM, and Doom v1.9 */
   if (mbf_features) {
     { /* Write version code into demo */
