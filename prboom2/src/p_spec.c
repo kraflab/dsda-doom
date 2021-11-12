@@ -6477,6 +6477,40 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         buttonSuccess = 1;
       }
       break;
+    case zl_noise_alert:
+      {
+        extern void P_NoiseAlert(mobj_t *target, mobj_t *emitter);
+
+        mobj_t *target, *emitter;
+
+        if (!args[0])
+        {
+          target = mo;
+        }
+        else
+        {
+          // not supported yet
+          target = NULL;
+        }
+
+        if (!args[1])
+        {
+          emitter = mo;
+        }
+        else
+        {
+          // not supported yet
+          emitter = NULL;
+        }
+
+        if (emitter)
+        {
+          P_NoiseAlert(target, emitter);
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
     case zl_sector_set_gravity:
       {
         fixed_t gravity;

@@ -326,7 +326,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 170   | Sector_SetCeilingScale2         | :x:                |
 | 171   | Sector_SetFloorScale2           | :x:                |
 | 172   | Plat_UpNearestWaitDownStay      | :grey_question:    |
-| 173   | NoiseAlert                      | :grey_question:    |
+| 173   | NoiseAlert                      | :warning:          |
 | 174   | SendToCommunicator              | :x:                |
 | 175   | Thing_ProjectileIntercept       | :telescope:        |
 | 176   | Thing_ChangeTID                 | :telescope:        |
@@ -436,6 +436,7 @@ Current work is isolated to the initial pass over the level format itself - line
 - Line flags coming from extra arguments are ignored.
 - Line translucency works like boom (fixed alpha).
 - Line_SetBlocking only applies flags for creatures, players, monsters, sound, and everything.
+- NoiseAlert only works with the default arguments.
 
 ### Sector Specials
 
