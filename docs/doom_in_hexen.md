@@ -227,7 +227,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 51    | Sector_SetLink                  | :x:                |
 | 52    | Scroll_Wall                     | :warning:          |
 | 53    | Line_SetTextureOffset           | :warning:          |
-| 54    | Sector_ChangeFlags              | :grey_question:    |
+| 54    | Sector_ChangeFlags              | :telescope:        |
 | 55    | Line_SetBlocking                | :warning:          |
 | 56    | Line_SetTextureScale            | :x:                |
 | 57    | Sector_SetPortal                | :x:                |
