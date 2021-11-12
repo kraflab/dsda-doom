@@ -6477,6 +6477,22 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         buttonSuccess = 1;
       }
       break;
+    case zl_line_set_texture_offset:
+      if (args[0] && args[3] <= 1)
+      {
+        int s;
+        int sidenum = !!args[3];
+
+        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        {
+          side_t *side = &sides[lines[s].sidenum[sidenum]];
+          side->textureoffset = args[1];
+          side->rowoffset = args[2];
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
     case zl_noise_alert:
       {
         extern void P_NoiseAlert(mobj_t *target, mobj_t *emitter);
