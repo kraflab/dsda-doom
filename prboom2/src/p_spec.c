@@ -1859,7 +1859,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
     case 39:
       // TELEPORT! //jff 02/09/98 fix using up with wrong side crossing
-      if (EV_Teleport(line, side, thing) || demo_compatibility)
+      if (EV_Teleport(line->tag, line, side, thing, TELF_VANILLA) || demo_compatibility)
         line->special = 0;
       break;
 
@@ -1978,7 +1978,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
     case 125:
       // TELEPORT MonsterONLY
       if (!thing->player &&
-          (EV_Teleport(line, side, thing) || demo_compatibility))
+          (EV_Teleport(line->tag, line, side, thing, TELF_VANILLA) || demo_compatibility))
         line->special = 0;
       break;
 
@@ -2115,7 +2115,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
     case 97:
       // TELEPORT!
-      EV_Teleport( line, side, thing );
+      EV_Teleport( line->tag, line, side, thing, TELF_VANILLA );
       break;
 
     case 98:
@@ -2146,7 +2146,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
     case 126:
       // TELEPORT MonsterONLY.
       if (!thing->player)
-        EV_Teleport( line, side, thing );
+        EV_Teleport( line->tag, line, side, thing, TELF_VANILLA );
       break;
 
     case 128:
@@ -5231,7 +5231,7 @@ void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean
             line->special = 0;
             break;
         case 39:               // TELEPORT!
-            EV_Teleport(line, side, thing);
+            EV_Teleport(line->tag, line, side, thing, TELF_VANILLA);
             line->special = 0;
             break;
         case 40:               // RaiseCeilingLowerFloor
@@ -5358,7 +5358,7 @@ void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean
             EV_DoFloor(line, raiseToTexture);
             break;
         case 97:               // TELEPORT!
-            EV_Teleport(line, side, thing);
+            EV_Teleport(line->tag, line, side, thing, TELF_VANILLA);
             break;
         case 98:               // Lower Floor (TURBO)
             EV_DoFloor(line, turboLower);

@@ -43,10 +43,10 @@
 #include "p_user.h"
 #include "r_demo.h"
 
-static mobj_t* P_TeleportDestination(line_t* line)
+static mobj_t* P_TeleportDestination(int tag)
 {
   int i;
-  for (i = -1; (i = P_FindSectorFromLineTag(line, i)) >= 0;) {
+  for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
     register thinker_t* th = NULL;
     while ((th = P_NextThinker(th,th_misc)) != NULL)
       if (th->function == P_MobjThinker) {
@@ -63,7 +63,7 @@ static mobj_t* P_TeleportDestination(line_t* line)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-int EV_Teleport(line_t *line, int side, mobj_t *thing)
+int EV_Teleport(int tag, line_t *line, int side, mobj_t *thing, int flags)
 {
   mobj_t    *m;
 
@@ -78,7 +78,7 @@ int EV_Teleport(line_t *line, int side, mobj_t *thing)
   // killough 1/31/98: improve performance by using
   // P_FindSectorFromLineTag instead of simple linear search.
 
-  if ((m = P_TeleportDestination(line)) != NULL)
+  if ((m = P_TeleportDestination(tag)) != NULL)
   {
     fixed_t oldx = thing->x, oldy = thing->y, oldz = thing->z;
     player_t *player = thing->player;
@@ -97,14 +97,20 @@ int EV_Teleport(line_t *line, int side, mobj_t *thing)
     if (player)
       player->viewz = thing->z + player->viewheight;
 
-    // spawn teleport fog and emit sound at source
-    S_StartSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
+    if (flags & TELF_SOURCEFOG)
+    {
+      // spawn teleport fog and emit sound at source
+      S_StartSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
+    }
 
-    // spawn teleport fog and emit sound at destination
-    S_StartSound(P_SpawnMobj(m->x + 20 * finecosine[m->angle>>ANGLETOFINESHIFT],
-                             m->y + 20 * finesine[m->angle>>ANGLETOFINESHIFT],
-                             thing->z, MT_TFOG),
-                 sfx_telept);
+    if (flags & TELF_DESTFOG)
+    {
+      // spawn teleport fog and emit sound at destination
+      S_StartSound(P_SpawnMobj(m->x + 20 * finecosine[m->angle>>ANGLETOFINESHIFT],
+                               m->y + 20 * finesine[m->angle>>ANGLETOFINESHIFT],
+                               thing->z, MT_TFOG),
+                   sfx_telept);
+    }
 
     /* don't move for a bit
      * cph - DEMOSYNC - BOOM had (player) here? */
@@ -144,7 +150,7 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
   if (side || thing->flags & MF_MISSILE)
     return 0;
 
-  if ((m = P_TeleportDestination(line)) != NULL)
+  if ((m = P_TeleportDestination(line->tag)) != NULL)
   {
     // Height of thing above ground, in case of mid-air teleports:
     fixed_t z = thing->z - thing->floorz;

@@ -819,7 +819,7 @@ P_UseSpecialLine
           case 174:
             // Teleport
             // 174 S1  EV_Teleport(side,thing)
-            if (EV_Teleport(line,side,thing))
+            if (EV_Teleport(line->tag,line,side,thing,TELF_VANILLA))
               P_ChangeSwitchTexture(line,0);
             break;
 
@@ -1037,7 +1037,7 @@ P_UseSpecialLine
           case 195:
             // Teleport
             // 195 SR  EV_Teleport(side,thing)
-            if (EV_Teleport(line,side,thing))
+            if (EV_Teleport(line->tag,line,side,thing,TELF_VANILLA))
               P_ChangeSwitchTexture(line,1);
             break;
 

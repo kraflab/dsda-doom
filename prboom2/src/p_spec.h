@@ -1123,9 +1123,11 @@ void T_Pusher
 // p_telept
 
 int EV_Teleport
-( line_t* line,
+( int tag,
+  line_t* line,
   int side,
-  mobj_t* thing );
+  mobj_t* thing,
+  int flags );
 
 // killough 2/14/98: Add silent teleporter
 int EV_SilentTeleport
@@ -1637,5 +1639,9 @@ int P_ConvertHexenCrush(int crush);
 
 #define NO_CRUSH -1
 #define DOOM_CRUSH 10
+
+#define TELF_SOURCEFOG 0x01
+#define TELF_DESTFOG   0x02
+#define TELF_VANILLA (TELF_SOURCEFOG|TELF_DESTFOG)
 
 #endif
