@@ -243,7 +243,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 67    | Floor_RaiseInstant              | :heavy_check_mark: |
 | 68    | Floor_MoveToValueTimes8         | :heavy_check_mark: |
 | 69    | Ceiling_MoveToValueTimes8       | :heavy_check_mark: |
-| 70    | Teleport                        | :grey_question:    |
+| 70    | Teleport                        | :heavy_check_mark: |
 | 71    | Teleport_NoFog                  | :grey_question:    |
 | 72    | ThrustThing                     | :telescope:        |
 | 73    | DamageThing                     | :telescope:        |
