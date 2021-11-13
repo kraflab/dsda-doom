@@ -6698,6 +6698,36 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         buttonSuccess = EV_Teleport(args[1], line, side, mo, flags);
       }
       break;
+    case zl_teleport_no_fog:
+      {
+        int flags = 0;
+
+        switch (args[1])
+        {
+          case 0:
+            flags |= TELF_KEEPORIENTATION;
+            break;
+
+          case 2:
+            if (line)
+              flags |= TELF_KEEPORIENTATION | TELF_ROTATEBOOM;
+            break;
+
+          case 3:
+            if (line)
+              flags |= TELF_KEEPORIENTATION | TELF_ROTATEBOOMINVERSE;
+            break;
+
+          default:
+            break;
+        }
+
+        if (args[3])
+          flags |= TELF_KEEPHEIGHT;
+
+        buttonSuccess = EV_Teleport(args[2], line, side, mo, flags);
+      }
+      break;
     case zl_teleport_no_stop:
       {
         int flags = TELF_DESTFOG | TELF_KEEPVELOCITY;
