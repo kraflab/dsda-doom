@@ -3370,11 +3370,11 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
       sector->special = 0;
       break;
     case zs_d_damage_lava_wimpy:
-      P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX);
+      P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX | SECF_DMGUNBLOCKABLE);
       sector->special = 0;
       break;
     case zs_d_damage_lava_hefty:
-      P_SetupSectorDamage(sector, 8, 32, 0, SECF_DMGTERRAINFX);
+      P_SetupSectorDamage(sector, 8, 32, 0, SECF_DMGTERRAINFX | SECF_DMGUNBLOCKABLE);
       sector->special = 0;
       break;
     case zs_s_damage_hellslime:
