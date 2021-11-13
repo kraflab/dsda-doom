@@ -79,54 +79,52 @@ int EV_Teleport(line_t *line, int side, mobj_t *thing)
   // P_FindSectorFromLineTag instead of simple linear search.
 
   if ((m = P_TeleportDestination(line)) != NULL)
-        {
-          fixed_t oldx = thing->x, oldy = thing->y, oldz = thing->z;
-          player_t *player = thing->player;
+  {
+    fixed_t oldx = thing->x, oldy = thing->y, oldz = thing->z;
+    player_t *player = thing->player;
 
-          // killough 5/12/98: exclude voodoo dolls:
-          if (player && player->mo != thing)
-            player = NULL;
+    // killough 5/12/98: exclude voodoo dolls:
+    if (player && player->mo != thing)
+      player = NULL;
 
-          if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
-            return 0;
+    if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
+      return 0;
 
-          if (compatibility_level != finaldoom_compatibility)
-            thing->z = thing->floorz;
-          thing->PrevZ = thing->z;
+    if (compatibility_level != finaldoom_compatibility)
+      thing->z = thing->floorz;
+    thing->PrevZ = thing->z;
 
-          if (player)
-            player->viewz = thing->z + player->viewheight;
+    if (player)
+      player->viewz = thing->z + player->viewheight;
 
-          // spawn teleport fog and emit sound at source
-          S_StartSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
+    // spawn teleport fog and emit sound at source
+    S_StartSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
 
-          // spawn teleport fog and emit sound at destination
-          S_StartSound(P_SpawnMobj(m->x +
-                                    20*finecosine[m->angle>>ANGLETOFINESHIFT],
-                                   m->y +
-                                    20*finesine[m->angle>>ANGLETOFINESHIFT],
-                                   thing->z, MT_TFOG),
-                       sfx_telept);
+    // spawn teleport fog and emit sound at destination
+    S_StartSound(P_SpawnMobj(m->x + 20 * finecosine[m->angle>>ANGLETOFINESHIFT],
+                             m->y + 20 * finesine[m->angle>>ANGLETOFINESHIFT],
+                             thing->z, MT_TFOG),
+                 sfx_telept);
 
     /* don't move for a bit
      * cph - DEMOSYNC - BOOM had (player) here? */
-          if (thing->player)
-            thing->reactiontime = 18;
+    if (thing->player)
+      thing->reactiontime = 18;
 
-          thing->angle = m->angle;
+    thing->angle = m->angle;
 
-          thing->momx = thing->momy = thing->momz = 0;
+    thing->momx = thing->momy = thing->momz = 0;
 
     /* killough 10/98: kill all bobbing momentum too */
     if (player)
       player->momx = player->momy = 0;
 
-     // e6y
-     if (player && player->mo == thing)
+    // e6y
+    if (player && player->mo == thing)
       R_ResetAfterTeleport(player);
 
-          return 1;
-        }
+    return 1;
+  }
   return 0;
 }
 
@@ -147,66 +145,65 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
     return 0;
 
   if ((m = P_TeleportDestination(line)) != NULL)
-        {
-          // Height of thing above ground, in case of mid-air teleports:
-          fixed_t z = thing->z - thing->floorz;
+  {
+    // Height of thing above ground, in case of mid-air teleports:
+    fixed_t z = thing->z - thing->floorz;
 
-          // Get the angle between the exit thing and source linedef.
-          // Rotate 90 degrees, so that walking perpendicularly across
-          // teleporter linedef causes thing to exit in the direction
-          // indicated by the exit thing.
-          angle_t angle =
-            R_PointToAngle2(0, 0, line->dx, line->dy) - m->angle + ANG90;
+    // Get the angle between the exit thing and source linedef.
+    // Rotate 90 degrees, so that walking perpendicularly across
+    // teleporter linedef causes thing to exit in the direction
+    // indicated by the exit thing.
+    angle_t angle = R_PointToAngle2(0, 0, line->dx, line->dy) - m->angle + ANG90;
 
-          // Sine, cosine of angle adjustment
-          fixed_t s = finesine[angle>>ANGLETOFINESHIFT];
-          fixed_t c = finecosine[angle>>ANGLETOFINESHIFT];
+    // Sine, cosine of angle adjustment
+    fixed_t s = finesine[angle>>ANGLETOFINESHIFT];
+    fixed_t c = finecosine[angle>>ANGLETOFINESHIFT];
 
-          // Momentum of thing crossing teleporter linedef
-          fixed_t momx = thing->momx;
-          fixed_t momy = thing->momy;
+    // Momentum of thing crossing teleporter linedef
+    fixed_t momx = thing->momx;
+    fixed_t momy = thing->momy;
 
-          // Whether this is a player, and if so, a pointer to its player_t
-          player_t *player = thing->player;
+    // Whether this is a player, and if so, a pointer to its player_t
+    player_t *player = thing->player;
 
-          // Attempt to teleport, aborting if blocked
-          if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
-            return 0;
+    // Attempt to teleport, aborting if blocked
+    if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
+      return 0;
 
-          // Rotate thing according to difference in angles
-          thing->angle += angle;
+    // Rotate thing according to difference in angles
+    thing->angle += angle;
 
-          // Adjust z position to be same height above ground as before
-          thing->z = z + thing->floorz;
-          thing->PrevZ = thing->z;
+    // Adjust z position to be same height above ground as before
+    thing->z = z + thing->floorz;
+    thing->PrevZ = thing->z;
 
-          // Rotate thing's momentum to come out of exit just like it entered
-          thing->momx = FixedMul(momx, c) - FixedMul(momy, s);
-          thing->momy = FixedMul(momy, c) + FixedMul(momx, s);
+    // Rotate thing's momentum to come out of exit just like it entered
+    thing->momx = FixedMul(momx, c) - FixedMul(momy, s);
+    thing->momy = FixedMul(momy, c) + FixedMul(momx, s);
 
-          // Adjust player's view, in case there has been a height change
-          // Voodoo dolls are excluded by making sure player->mo == thing.
-          if (player && player->mo == thing)
-            {
-              // Save the current deltaviewheight, used in stepping
-              fixed_t deltaviewheight = player->deltaviewheight;
+    // Adjust player's view, in case there has been a height change
+    // Voodoo dolls are excluded by making sure player->mo == thing.
+    if (player && player->mo == thing)
+    {
+      // Save the current deltaviewheight, used in stepping
+      fixed_t deltaviewheight = player->deltaviewheight;
 
-              // Clear deltaviewheight, since we don't want any changes
-              player->deltaviewheight = 0;
+      // Clear deltaviewheight, since we don't want any changes
+      player->deltaviewheight = 0;
 
-              // Set player's view according to the newly set parameters
-              P_CalcHeight(player);
+      // Set player's view according to the newly set parameters
+      P_CalcHeight(player);
 
-              // Reset the delta to have the same dynamics as before
-              player->deltaviewheight = deltaviewheight;
-            }
+      // Reset the delta to have the same dynamics as before
+      player->deltaviewheight = deltaviewheight;
+    }
 
-          // e6y
-          if (player && player->mo == thing)
-            R_ResetAfterTeleport(player);
+    // e6y
+    if (player && player->mo == thing)
+      R_ResetAfterTeleport(player);
 
-          return 1;
-        }
+    return 1;
+  }
   return 0;
 }
 
