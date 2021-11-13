@@ -82,6 +82,7 @@ int EV_Teleport(int tag, line_t *line, int side, mobj_t *thing, int flags)
   {
     fixed_t oldx = thing->x, oldy = thing->y, oldz = thing->z;
     player_t *player = thing->player;
+    fixed_t aboveFloor = thing->z - thing->floorz;
 
     // killough 5/12/98: exclude voodoo dolls:
     if (player && player->mo != thing)
@@ -90,7 +91,9 @@ int EV_Teleport(int tag, line_t *line, int side, mobj_t *thing, int flags)
     if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
       return 0;
 
-    if (compatibility_level != finaldoom_compatibility)
+    if (flags & TELF_KEEPHEIGHT)
+      thing->z = thing->floorz + aboveFloor;
+    else if (compatibility_level != finaldoom_compatibility)
       thing->z = thing->floorz;
     thing->PrevZ = thing->z;
 
