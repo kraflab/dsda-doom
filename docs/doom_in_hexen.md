@@ -367,7 +367,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 211   | Transfer_CeilingLight           | :heavy_check_mark: |
 | 212   | Sector_SetColor                 | :x:                |
 | 213   | Sector_SetFade                  | :x:                |
-| 214   | Sector_SetDamage                | :grey_question:    |
+| 214   | Sector_SetDamage                | :heavy_check_mark: |
 | 215   | Teleport_Line                   | :heavy_check_mark: |
 | 216   | Sector_SetGravity               | :heavy_check_mark: |
 | 217   | Stairs_BuildUpDoom              | :heavy_check_mark: |

@@ -6542,6 +6542,44 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       }
       buttonSuccess = 1;
       break;
+    case zl_sector_set_damage:
+      {
+        int s = -1;
+        dboolean unblockable = false;
+
+        if (args[3] == 0)
+        {
+          if (args[1] < 20)
+          {
+            args[4] = 0;
+            args[3] = 32;
+          }
+          else if (args[1] < 50)
+          {
+            args[4] = 5;
+            args[3] = 32;
+          }
+          else
+          {
+            unblockable = true;
+            args[4] = 0;
+            args[3] = 1;
+          }
+        }
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        {
+          sectors[s].damage.amount = args[1];
+          sectors[s].damage.interval = args[3];
+          sectors[s].damage.leakrate = args[4];
+          if (unblockable)
+            sectors[s].flags |= SECF_DMGUNBLOCKABLE;
+          else
+            sectors[s].flags &= ~SECF_DMGUNBLOCKABLE;
+        }
+      }
+      buttonSuccess = 1;
+      break;
     case zl_floor_transfer_numeric:
       buttonSuccess = EV_DoChange(line, numChangeOnly, args[0]);
       break;
