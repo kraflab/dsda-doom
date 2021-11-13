@@ -313,7 +313,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 139   | Thing_SpawnFacing               | :telescope:        |
 | 140   | Sector_ChangeSound              | :telescope:        |
 | -     | -                               | -                  |
-| 154   | Teleport_NoStop                 | :grey_question:    |
+| 154   | Teleport_NoStop                 | :heavy_check_mark: |
 | -     | -                               | -                  |
 | 157   | SetGlobalFogParameter           | :telescope:        |
 | 158   | FS_Execute                      | :x:                |

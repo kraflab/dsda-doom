@@ -6698,6 +6698,16 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         buttonSuccess = EV_Teleport(args[1], line, side, mo, flags);
       }
       break;
+    case zl_teleport_no_stop:
+      {
+        int flags = TELF_DESTFOG | TELF_KEEPVELOCITY;
+
+        if (!args[2])
+          flags |= TELF_SOURCEFOG;
+
+        buttonSuccess = EV_Teleport(args[1], line, side, mo, flags);
+      }
+      break;
     case zl_teleport_line:
       buttonSuccess = EV_SilentLineTeleport(line, side, mo, args[1], args[2]);
       break;

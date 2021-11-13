@@ -1640,8 +1640,9 @@ int P_ConvertHexenCrush(int crush);
 #define NO_CRUSH -1
 #define DOOM_CRUSH 10
 
-#define TELF_SOURCEFOG 0x01
-#define TELF_DESTFOG   0x02
+#define TELF_SOURCEFOG    0x01
+#define TELF_DESTFOG      0x02
+#define TELF_KEEPVELOCITY 0x04
 #define TELF_VANILLA (TELF_SOURCEFOG|TELF_DESTFOG)
 
 #endif

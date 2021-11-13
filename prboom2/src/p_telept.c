@@ -114,12 +114,13 @@ int EV_Teleport(int tag, line_t *line, int side, mobj_t *thing, int flags)
 
     /* don't move for a bit
      * cph - DEMOSYNC - BOOM had (player) here? */
-    if (thing->player)
+    if (thing->player && !(flags & TELF_KEEPVELOCITY))
       thing->reactiontime = 18;
 
     thing->angle = m->angle;
 
-    thing->momx = thing->momy = thing->momz = 0;
+    if (!(flags & TELF_KEEPVELOCITY))
+      thing->momx = thing->momy = thing->momz = 0;
 
     /* killough 10/98: kill all bobbing momentum too */
     if (player)
