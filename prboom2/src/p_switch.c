@@ -854,7 +854,7 @@ P_UseSpecialLine
           case 209:
             // killough 1/31/98: silent teleporter
             //jff 209 S1 SilentTeleport
-            if (EV_SilentTeleport(line, side, thing))
+            if (EV_Teleport(line->tag, line, side, thing, TELF_SILENT))
               P_ChangeSwitchTexture(line,0);
             break;
 
@@ -1065,7 +1065,7 @@ P_UseSpecialLine
           case 210:
             // killough 1/31/98: silent teleporter
             //jff 210 SR SilentTeleport
-            if (EV_SilentTeleport(line, side, thing))
+            if (EV_Teleport(line->tag, line, side, thing, TELF_SILENT))
               P_ChangeSwitchTexture(line,1);
             break;
 

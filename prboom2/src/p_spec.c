@@ -2227,7 +2227,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 207:
             // killough 2/16/98: W1 silent teleporter (normal kind)
-            if (EV_SilentTeleport(line, side, thing))
+            if (EV_Teleport(line->tag, line, side, thing, TELF_SILENT))
               line->special = 0;
             break;
 
@@ -2298,7 +2298,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
             break;
 
           case 268: //jff 4/14/98 add monster-only silent
-            if (!thing->player && EV_SilentTeleport(line, side, thing))
+            if (!thing->player && EV_Teleport(line->tag, line, side, thing, TELF_SILENT))
               line->special = 0;
             break;
 
@@ -2393,7 +2393,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 208:
             // killough 2/16/98: WR silent teleporter (normal kind)
-            EV_SilentTeleport(line, side, thing);
+            EV_Teleport(line->tag, line, side, thing, TELF_SILENT);
             break;
 
           case 212: //jff 3/14/98 create instant toggle floor type
@@ -2460,7 +2460,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 269: //jff 4/14/98 add monster-only silent
             if (!thing->player)
-              EV_SilentTeleport(line, side, thing);
+              EV_Teleport(line->tag, line, side, thing, TELF_SILENT);
             break;
 
             //jff 1/29/98 end of added WR linedef types

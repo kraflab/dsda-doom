@@ -1129,12 +1129,6 @@ int EV_Teleport
   mobj_t* thing,
   int flags );
 
-// killough 2/14/98: Add silent teleporter
-int EV_SilentTeleport
-( line_t* line,
-  int side,
-  mobj_t* thing );
-
 // killough 1/31/98: Add silent line teleporter
 int EV_SilentLineTeleport
 ( line_t* line,
@@ -1648,5 +1642,6 @@ int P_ConvertHexenCrush(int crush);
 #define TELF_ROTATEBOOM        0x20
 #define TELF_ROTATEBOOMINVERSE 0x40
 #define TELF_VANILLA (TELF_SOURCEFOG|TELF_DESTFOG)
+#define TELF_SILENT (TELF_KEEPORIENTATION|TELF_ROTATEBOOM|TELF_KEEPHEIGHT)
 
 #endif
