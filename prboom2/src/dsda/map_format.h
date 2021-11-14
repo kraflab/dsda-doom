@@ -56,6 +56,7 @@ typedef struct {
   void (*t_vertical_door)(vldoor_t *);
   void (*t_move_floor)(floormove_t *);
   void (*t_move_ceiling)(ceiling_t *);
+  int (*ev_teleport)(int, line_t *, int, mobj_t *, int);
   void (*player_thrust)(player_t* player, angle_t angle, fixed_t move);
   size_t mapthing_size;
   size_t maplinedef_size;

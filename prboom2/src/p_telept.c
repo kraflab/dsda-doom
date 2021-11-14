@@ -63,11 +63,9 @@ static mobj_t* P_TeleportDestination(int tag)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-int EV_Teleport(int tag, line_t *line, int side, mobj_t *thing, int flags)
+int EV_CompatibleTeleport(int tag, line_t *line, int side, mobj_t *thing, int flags)
 {
-  mobj_t    *m;
-
-  if (heretic) return Heretic_EV_Teleport(line, side, thing);
+  mobj_t *m;
 
   // don't teleport missiles
   // Don't teleport if hit back of line,
@@ -463,10 +461,9 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolea
     return (true);
 }
 
-dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
+int EV_HereticTeleport(int tag, line_t * line, int side, mobj_t * thing, int flags)
 {
     int i;
-    int tag;
     mobj_t *m;
     thinker_t *thinker;
     sector_t *sector;
@@ -479,7 +476,6 @@ dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
     {                           // Don't teleport when crossing back side
         return (false);
     }
-    tag = line->tag;
     for (i = 0; i < numsectors; i++)
     {
         if (sectors[i].tag == tag)

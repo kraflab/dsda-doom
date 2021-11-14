@@ -1859,7 +1859,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
     case 39:
       // TELEPORT! //jff 02/09/98 fix using up with wrong side crossing
-      if (EV_Teleport(line->tag, line, side, thing, TELF_VANILLA) || demo_compatibility)
+      if (map_format.ev_teleport(line->tag, line, side, thing, TELF_VANILLA) || demo_compatibility)
         line->special = 0;
       break;
 
@@ -1978,7 +1978,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
     case 125:
       // TELEPORT MonsterONLY
       if (!thing->player &&
-          (EV_Teleport(line->tag, line, side, thing, TELF_VANILLA) || demo_compatibility))
+          (map_format.ev_teleport(line->tag, line, side, thing, TELF_VANILLA) || demo_compatibility))
         line->special = 0;
       break;
 
@@ -2115,7 +2115,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
     case 97:
       // TELEPORT!
-      EV_Teleport( line->tag, line, side, thing, TELF_VANILLA );
+      map_format.ev_teleport( line->tag, line, side, thing, TELF_VANILLA );
       break;
 
     case 98:
@@ -2146,7 +2146,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
     case 126:
       // TELEPORT MonsterONLY.
       if (!thing->player)
-        EV_Teleport( line->tag, line, side, thing, TELF_VANILLA );
+        map_format.ev_teleport( line->tag, line, side, thing, TELF_VANILLA );
       break;
 
     case 128:
@@ -2227,7 +2227,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 207:
             // killough 2/16/98: W1 silent teleporter (normal kind)
-            if (EV_Teleport(line->tag, line, side, thing, TELF_SILENT))
+            if (map_format.ev_teleport(line->tag, line, side, thing, TELF_SILENT))
               line->special = 0;
             break;
 
@@ -2298,7 +2298,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
             break;
 
           case 268: //jff 4/14/98 add monster-only silent
-            if (!thing->player && EV_Teleport(line->tag, line, side, thing, TELF_SILENT))
+            if (!thing->player && map_format.ev_teleport(line->tag, line, side, thing, TELF_SILENT))
               line->special = 0;
             break;
 
@@ -2393,7 +2393,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 208:
             // killough 2/16/98: WR silent teleporter (normal kind)
-            EV_Teleport(line->tag, line, side, thing, TELF_SILENT);
+            map_format.ev_teleport(line->tag, line, side, thing, TELF_SILENT);
             break;
 
           case 212: //jff 3/14/98 create instant toggle floor type
@@ -2460,7 +2460,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 269: //jff 4/14/98 add monster-only silent
             if (!thing->player)
-              EV_Teleport(line->tag, line, side, thing, TELF_SILENT);
+              map_format.ev_teleport(line->tag, line, side, thing, TELF_SILENT);
             break;
 
             //jff 1/29/98 end of added WR linedef types
@@ -5231,7 +5231,7 @@ void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean
             line->special = 0;
             break;
         case 39:               // TELEPORT!
-            EV_Teleport(line->tag, line, side, thing, TELF_VANILLA);
+            map_format.ev_teleport(line->tag, line, side, thing, TELF_VANILLA);
             line->special = 0;
             break;
         case 40:               // RaiseCeilingLowerFloor
@@ -5358,7 +5358,7 @@ void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean
             EV_DoFloor(line, raiseToTexture);
             break;
         case 97:               // TELEPORT!
-            EV_Teleport(line->tag, line, side, thing, TELF_VANILLA);
+            map_format.ev_teleport(line->tag, line, side, thing, TELF_VANILLA);
             break;
         case 98:               // Lower Floor (TURBO)
             EV_DoFloor(line, turboLower);
@@ -6695,7 +6695,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         if (!args[2])
           flags |= TELF_SOURCEFOG;
 
-        buttonSuccess = EV_Teleport(args[1], line, side, mo, flags);
+        buttonSuccess = map_format.ev_teleport(args[1], line, side, mo, flags);
       }
       break;
     case zl_teleport_no_fog:
@@ -6725,7 +6725,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         if (args[3])
           flags |= TELF_KEEPHEIGHT;
 
-        buttonSuccess = EV_Teleport(args[2], line, side, mo, flags);
+        buttonSuccess = map_format.ev_teleport(args[2], line, side, mo, flags);
       }
       break;
     case zl_teleport_no_stop:
@@ -6735,7 +6735,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         if (!args[2])
           flags |= TELF_SOURCEFOG;
 
-        buttonSuccess = EV_Teleport(args[1], line, side, mo, flags);
+        buttonSuccess = map_format.ev_teleport(args[1], line, side, mo, flags);
       }
       break;
     case zl_teleport_line:
