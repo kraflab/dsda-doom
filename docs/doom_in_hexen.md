@@ -404,7 +404,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 248   | HealThing                       | :heavy_check_mark: |
 | 249   | Door_CloseWaitOpen              | :heavy_check_mark: |
 | 250   | Floor_Donut                     | :heavy_check_mark: |
-| 251   | FloorAndCeiling_LowerRaise      | :grey_question:    |
+| 251   | FloorAndCeiling_LowerRaise      | :heavy_check_mark: |
 | 252   | Ceiling_RaiseToNearest          | :heavy_check_mark: |
 | 253   | Ceiling_LowerToLowest           | :heavy_check_mark: |
 | 254   | Ceiling_LowerToFloor            | :heavy_check_mark: |

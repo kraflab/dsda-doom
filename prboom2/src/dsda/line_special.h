@@ -269,7 +269,7 @@ typedef enum {
   zl_heal_thing                         = 248,
   zl_door_close_wait_open               = 249,
   zl_floor_donut                        = 250,
-  zl_floorandceiling_lowerraise         = 251,
+  zl_floor_and_ceiling_lower_raise         = 251,
   zl_ceiling_raise_to_nearest           = 252,
   zl_ceiling_lower_to_lowest            = 253,
   zl_ceiling_lower_to_floor             = 254,

@@ -6371,6 +6371,12 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_ceiling_waggle:
       buttonSuccess = EV_StartPlaneWaggle(args[0], line, args[1], args[2], args[3], args[4], true);
       break;
+    case zl_floor_and_ceiling_lower_raise:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToHighest, line, args[0],
+                                        P_ArgToSpeed(args[2]), 0, 0, 0, 0, 0, false);
+      buttonSuccess |= EV_DoZDoomFloor(floorLowerToLowest, line, args[0],
+                                       args[1], 0, NO_CRUSH, 0, false, false);
+      break;
     case zl_stairs_build_down:
       buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildDown, line,
                                           args[2], P_ArgToSpeed(args[1]), args[3],
