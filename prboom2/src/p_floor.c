@@ -984,136 +984,151 @@ manual_stair://e6y
 // Passed the linedef that triggered the donut
 // Returns whether a thinker was created
 //
-int EV_DoDonut(line_t*  line)
+
+int P_SpawnDonut(int secnum, line_t *line, fixed_t pillarspeed, fixed_t slimespeed)
 {
-  sector_t* s1;
-  sector_t* s2;
-  sector_t* s3;
-  int       secnum;
-  int       rtn;
-  int       i;
-  floormove_t* floor;
-
-  //e6y
-  fixed_t s3_floorheight;
+  int i;
+  int rtn = 0;
+  sector_t *s1;
+  sector_t *s2;
+  sector_t *s3;
   short s3_floorpic;
+  fixed_t s3_floorheight;
+  floormove_t *floor;
 
-  secnum = -1;
-  rtn = 0;
-  // do function on all sectors with same tag as linedef
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  s1 = &sectors[secnum]; // s1 is pillar's sector
+
+  // do not start the donut if the pillar is already moving
+  if (P_FloorActive(s1))
+    return 0;
+
+  // heretic_note: rtn = 1; // probably doesn't matter?
+
+  s2 = getNextSector(s1->lines[0], s1);  // s2 is pool's sector
+
+  // note lowest numbered line around
+  // pillar must be two-sided
+  if (!s2)
   {
-    s1 = &sectors[secnum];                // s1 is pillar's sector
-
-    // do not start the donut if the pillar is already moving
-    if (P_FloorActive(s1)) //jff 2/22/98
-      continue;
-
-    // heretic_note: rtn = 1; // probably doesn't matter?
-
-    s2 = getNextSector(s1->lines[0],s1);  // s2 is pool's sector
-
-    // note lowest numbered line around
-    // pillar must be two-sided
-    if (!s2)
+    if (demo_compatibility)
     {
-      if (demo_compatibility)
-      {
-        lprintf(LO_ERROR,
-          "EV_DoDonut: lowest numbered line (linedef: %d) "
-          "around pillar (sector: %d) must be two-sided. "
-          "Unexpected behavior may occur in Vanilla Doom.\n",
-          s1->lines[0]->iLineID, s1->iSectorID);
-        continue;
-      }
-      else
-      {
-        continue;
-      }
+      lprintf(LO_ERROR,
+        "EV_DoDonut: lowest numbered line (linedef: %d) "
+        "around pillar (sector: %d) must be two-sided. "
+        "Unexpected behavior may occur in Vanilla Doom.\n",
+        s1->lines[0]->iLineID, s1->iSectorID);
+      return 0;
     }
-
-    /* do not start the donut if the pool is already moving
-     * cph - DEMOSYNC - was !compatibility */
-    if (!comp[comp_floors] && P_FloorActive(s2))
-      continue;                           //jff 5/7/98
-
-    // find a two sided line around the pool whose other side isn't the pillar
-    for (i = 0;i < s2->linecount;i++)
+    else
     {
-      //jff 3/29/98 use true two-sidedness, not the flag
-      // killough 4/5/98: changed demo_compatibility to compatibility
-      if (comp[comp_model])
-      {
-        // original code:   !s2->lines[i]->flags & ML_TWOSIDED
-        // equivalent to:   (!s2->lines[i]->flags) & ML_TWOSIDED , i.e. 0
-        // should be:       !(s2->lines[i]->flags & ML_TWOSIDED)
-        if (((!s2->lines[i]->flags) & ML_TWOSIDED) ||
-            (s2->lines[i]->backsector == s1))
-          continue;
-      }
-      else if (!s2->lines[i]->backsector || s2->lines[i]->backsector == s1)
-        continue;
-
-      rtn = 1; //jff 1/26/98 no donut action - no switch change on return
-
-      s3 = s2->lines[i]->backsector;      // s3 is model sector for changes
-
-      if (!s3)
-      {
-        // e6y
-        // s3->floorheight is an int at 0000:0000
-        // s3->floorpic is a short at 0000:0008
-        // Trying to emulate
-        lprintf(LO_ERROR,
-          "EV_DoDonut: Access violation at linedef %d, sector %d. "
-          "Unexpected behavior may occur in Vanilla Doom.\n",
-          line->iLineID, s1->iSectorID);
-        if (DonutOverrun(&s3_floorheight, &s3_floorpic))
-        {
-          lprintf(LO_WARN, "EV_DoDonut: Emulated with floorheight %d, floor pic %d.\n",
-            s3_floorheight >> 16, s3_floorpic);
-        }
-        else
-        {
-          lprintf(LO_WARN, "EV_DoDonut: Not emulated.\n");
-          break;
-        }
-      }
-      else
-      {
-        s3_floorheight = s3->floorheight;
-        s3_floorpic = s3->floorpic;
-      }
-
-      //  Spawn rising slime
-      floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
-      memset(floor, 0, sizeof(*floor));
-      P_AddThinker (&floor->thinker);
-      s2->floordata = floor; //jff 2/22/98
-      floor->thinker.function = T_MoveFloor;
-      floor->type = donutRaise;
-      floor->crush = NO_CRUSH;
-      floor->direction = 1;
-      floor->sector = s2;
-      floor->speed = FLOORSPEED / 2;
-      floor->texture = s3_floorpic;
-      floor->floordestheight = s3_floorheight;
-
-      //  Spawn lowering donut-hole pillar
-      floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
-      memset(floor, 0, sizeof(*floor));
-      P_AddThinker (&floor->thinker);
-      s1->floordata = floor; //jff 2/22/98
-      floor->thinker.function = T_MoveFloor;
-      floor->type = lowerFloor;
-      floor->crush = NO_CRUSH;
-      floor->direction = -1;
-      floor->sector = s1;
-      floor->speed = FLOORSPEED / 2;
-      floor->floordestheight = s3_floorheight;
-      break;
+      return 0;
     }
   }
+
+  /* do not start the donut if the pool is already moving
+   * cph - DEMOSYNC - was !compatibility */
+  if (!comp[comp_floors] && P_FloorActive(s2))
+    return 0;
+
+  // find a two sided line around the pool whose other side isn't the pillar
+  for (i = 0; i < s2->linecount; i++)
+  {
+    //jff 3/29/98 use true two-sidedness, not the flag
+    // killough 4/5/98: changed demo_compatibility to compatibility
+    if (comp[comp_model])
+    {
+      // original code:   !s2->lines[i]->flags & ML_TWOSIDED
+      // equivalent to:   (!s2->lines[i]->flags) & ML_TWOSIDED , i.e. 0
+      // should be:       !(s2->lines[i]->flags & ML_TWOSIDED)
+      if (((!s2->lines[i]->flags) & ML_TWOSIDED) || (s2->lines[i]->backsector == s1))
+        continue;
+    }
+    else if (!s2->lines[i]->backsector || s2->lines[i]->backsector == s1)
+      continue;
+
+    rtn = 1; //jff 1/26/98 no donut action - no switch change on return
+
+    s3 = s2->lines[i]->backsector;      // s3 is model sector for changes
+
+    if (!s3)
+    {
+      // e6y
+      // s3->floorheight is an int at 0000:0000
+      // s3->floorpic is a short at 0000:0008
+      // Trying to emulate
+      lprintf(LO_ERROR,
+        "EV_DoDonut: Access violation at linedef %d, sector %d. "
+        "Unexpected behavior may occur in Vanilla Doom.\n",
+        line->iLineID, s1->iSectorID);
+      if (DonutOverrun(&s3_floorheight, &s3_floorpic))
+      {
+        lprintf(LO_WARN, "EV_DoDonut: Emulated with floorheight %d, floor pic %d.\n",
+          s3_floorheight >> 16, s3_floorpic);
+      }
+      else
+      {
+        lprintf(LO_WARN, "EV_DoDonut: Not emulated.\n");
+        break;
+      }
+    }
+    else
+    {
+      s3_floorheight = s3->floorheight;
+      s3_floorpic = s3->floorpic;
+    }
+
+    //  Spawn rising slime
+    floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+    memset(floor, 0, sizeof(*floor));
+    P_AddThinker(&floor->thinker);
+    s2->floordata = floor; //jff 2/22/98
+    floor->thinker.function = T_MoveFloor;
+    floor->type = donutRaise;
+    floor->crush = NO_CRUSH;
+    floor->direction = 1;
+    floor->sector = s2;
+    floor->speed = slimespeed;
+    floor->texture = s3_floorpic;
+    floor->floordestheight = s3_floorheight;
+
+    //  Spawn lowering donut-hole pillar
+    floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+    memset(floor, 0, sizeof(*floor));
+    P_AddThinker(&floor->thinker);
+    s1->floordata = floor; //jff 2/22/98
+    floor->thinker.function = T_MoveFloor;
+    floor->type = lowerFloor;
+    floor->crush = NO_CRUSH;
+    floor->direction = -1;
+    floor->sector = s1;
+    floor->speed = pillarspeed;
+    floor->floordestheight = s3_floorheight;
+    break;
+  }
+
+  return rtn;
+}
+
+int EV_DoDonut(line_t *line)
+{
+  int secnum = -1;
+  int rtn = 0;
+
+  // do function on all sectors with same tag as linedef
+  while ((secnum = P_FindSectorFromLineTag(line, secnum)) >= 0)
+    rtn |= P_SpawnDonut(secnum, line, FLOORSPEED / 2, FLOORSPEED / 2);
+
+  return rtn;
+}
+
+int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespeed)
+{
+  int secnum = -1;
+  int rtn = 0;
+
+  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+    rtn |= P_SpawnDonut(secnum, line, pillarspeed, slimespeed);
+
   return rtn;
 }
 

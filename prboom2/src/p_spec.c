@@ -6125,6 +6125,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_floor_crush_stop:
       buttonSuccess = EV_ZDoomFloorCrushStop(args[0]);
       break;
+    case zl_floor_donut:
+      buttonSuccess = EV_DoZDoomDonut(args[0], line, P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]));
+      break;
     case zl_ceiling_lower_by_value:
       buttonSuccess = EV_DoZDoomCeiling(ceilLowerByValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
