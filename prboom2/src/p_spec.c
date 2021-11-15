@@ -6365,6 +6365,18 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         buttonSuccess = EV_ZDoomCeilingCrushStop(args[0], remove);
       }
       break;
+    case zl_generic_crusher:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[4], args[3] ? 2 : 0,
+                                        0, (args[1] <= 24 && args[2] <= 24) ? crushSlowdown : crushDoom);
+      break;
+    case zl_generic_crusher2:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[4], args[3] ? 2 : 0,
+                                        0, crushHexen);
+      break;
     case zl_floor_waggle:
       buttonSuccess = EV_StartPlaneWaggle(args[0], line, args[1], args[2], args[3], args[4], false);
       break;

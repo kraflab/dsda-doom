@@ -322,7 +322,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 161   | Sector_SetContents              | :x:                |
 | -     | -                               | -                  |
 | 168   | Ceiling_CrushAndRaiseDist       | :heavy_check_mark: |
-| 169   | Generic_Crusher2                | :grey_question:    |
+| 169   | Generic_Crusher2                | :heavy_check_mark: |
 | 170   | Sector_SetCeilingScale2         | :x:                |
 | 171   | Sector_SetFloorScale2           | :x:                |
 | 172   | Plat_UpNearestWaitDownStay      | :grey_question:    |
@@ -358,7 +358,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 202   | Generic_Door                    | :heavy_check_mark: |
 | 203   | Generic_Lift                    | :grey_question:    |
 | 204   | Generic_Stairs                  | :heavy_check_mark: |
-| 205   | Generic_Crusher                 | :grey_question:    |
+| 205   | Generic_Crusher                 | :heavy_check_mark: |
 | 206   | Plat_DownWaitUpStayLip          | :grey_question:    |
 | 207   | Plat_PerpetualRaiseLip          | :grey_question:    |
 | 208   | TranslucentLine                 | :warning:          |
