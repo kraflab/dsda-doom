@@ -104,7 +104,7 @@ void dsda_DisplayNotifications(void) {
 }
 
 void dsda_DisplayNotification(const char* msg) {
-  S_StartSound(0, gamemode == commercial ? sfx_radio : sfx_tink);
+  S_StartSound(0, gamemode == commercial ? sfx_radio : sfx_itmbk);
   doom_printf("%s", msg);
 }
 
