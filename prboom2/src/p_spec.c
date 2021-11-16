@@ -5985,6 +5985,18 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                        (int) args[3] * 35 / 8, args[4], lightTag, boomgen, 0);
       }
       break;
+    case zl_pillar_build:
+      buttonSuccess = EV_DoZDoomPillar(pillarBuild, line, args[0], P_ArgToSpeed(args[1]),
+                                       args[2], 0, NO_CRUSH, false);
+      break;
+    case zl_pillar_build_and_crush:
+      buttonSuccess = EV_DoZDoomPillar(pillarBuild, line, args[0], P_ArgToSpeed(args[1]),
+                                       args[2], 0, args[3], P_ArgToCrushType(args[4]));
+      break;
+    case zl_pillar_open:
+      buttonSuccess = EV_DoZDoomPillar(pillarOpen, line, args[0], P_ArgToSpeed(args[1]),
+                                       args[2], args[3], NO_CRUSH, false);
+      break;
     case zl_floor_lower_by_value:
       buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], args[2],
                                       NO_CRUSH, P_ArgToChange(args[3]), false, false);

@@ -1981,6 +1981,15 @@ void T_BuildPillar(pillar_t * pillar)
     }
 }
 
+int EV_DoZDoomPillar(pillar_e type, line_t *line, int tag, fixed_t speed,
+                     fixed_t height, fixed_t height2, int crush, dboolean hexencrush)
+{
+  height *= FRACUNIT;
+  height2 *= FRACUNIT;
+
+  return 0;
+}
+
 int EV_BuildPillar(line_t * line, byte * args, int crush)
 {
     int secnum;

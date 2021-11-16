@@ -1408,6 +1408,12 @@ typedef struct
   int crush;
 } pillar_t;
 
+typedef enum
+{
+  pillarBuild,
+  pillarOpen,
+} pillar_e;
+
 typedef struct
 {
   thinker_t thinker;
@@ -1610,6 +1616,8 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
                         fixed_t speed, int delay, int reset, int igntxt, int usespecials);
 dboolean EV_StartPlaneWaggle(int tag, line_t *line, int height,
                              int speed, int offset, int timer, dboolean ceiling);
+int EV_DoZDoomPillar(pillar_e type, line_t *line, int tag, fixed_t speed,
+                     fixed_t height, fixed_t height2, int crush, dboolean hexencrush);
 void EV_LightChange(int tag, short change);
 void EV_LightSet(int tag, short level);
 void EV_LightSetMinNeighbor(int tag);
