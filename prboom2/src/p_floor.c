@@ -1981,13 +1981,41 @@ void T_BuildPillar(pillar_t * pillar)
     }
 }
 
+void P_SpawnZDoomPillar(sector_t *sec, pillar_e type, fixed_t speed,
+                        fixed_t height, fixed_t height2, int crush, dboolean hexencrush)
+{
+  return;
+}
+
 int EV_DoZDoomPillar(pillar_e type, line_t *line, int tag, fixed_t speed,
                      fixed_t height, fixed_t height2, int crush, dboolean hexencrush)
 {
+  int secnum = -1;
+  sector_t *sec;
+  dboolean rtn = 0;
+
   height *= FRACUNIT;
   height2 *= FRACUNIT;
 
-  return 0;
+  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  {
+    sec = &sectors[secnum];
+
+    if (P_FloorActive(sec) || P_CeilingActive(sec))
+      continue;
+
+    if (type == pillarBuild && sec->floorheight == sec->ceilingheight)
+      continue;
+
+    if (type == pillarOpen && sec->floorheight != sec->ceilingheight)
+      continue;
+
+    rtn = 1;
+
+    P_SpawnZDoomPillar(sec, type, speed, height, height2, crush, hexencrush);
+  }
+
+  return rtn;
 }
 
 int EV_BuildPillar(line_t * line, byte * args, int crush)
