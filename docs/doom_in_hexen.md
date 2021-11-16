@@ -202,8 +202,8 @@ Current work is isolated to the initial pass over the level format itself - line
 | 26    | Stairs_BuildDown                | :heavy_check_mark: |
 | 27    | Stairs_BuildUp                  | :heavy_check_mark: |
 | 28    | Floor_RaiseAndCrush             | :heavy_check_mark: |
-| 29    | Pillar_Build                    | :grey_question:    |
-| 30    | Pillar_Open                     | :grey_question:    |
+| 29    | Pillar_Build                    | :heavy_check_mark: |
+| 30    | Pillar_Open                     | :heavy_check_mark: |
 | 31    | Stairs_BuildDownSync            | :heavy_check_mark: |
 | 32    | Stairs_BuildUpSync              | :heavy_check_mark: |
 | 33    | ForceField                      | :heavy_check_mark: |
@@ -267,7 +267,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 91    | Polyobj_OR_RotateRight          | :telescope:        |
 | 92    | Polyobj_OR_Move                 | :telescope:        |
 | 93    | Polyobj_OR_MoveTimes8           | :telescope:        |
-| 94    | Pillar_BuildAndCrush            | :grey_question:    |
+| 94    | Pillar_BuildAndCrush            | :heavy_check_mark: |
 | 95    | FloorAndCeiling_LowerByValue    | :grey_question:    |
 | 96    | FloorAndCeiling_RaiseByValue    | :grey_question:    |
 | 97    | Ceiling_LowerAndCrushDist       | :heavy_check_mark: |

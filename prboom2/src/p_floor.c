@@ -1961,7 +1961,7 @@ int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e sta
     return (1);
 }
 
-void T_BuildPillar(pillar_t * pillar)
+void T_BuildHexenPillar(pillar_t * pillar)
 {
     result_e res1;
     result_e res2;
@@ -1981,6 +1981,52 @@ void T_BuildPillar(pillar_t * pillar)
     }
 }
 
+void T_BuildZDoomPillar(pillar_t * pillar)
+{
+  result_e res1, res2;
+  fixed_t oldfloorheight, oldceilingheight;
+
+  oldfloorheight = pillar->sector->floorheight;
+  oldceilingheight = pillar->sector->ceilingheight;
+
+  res1 = !pillar->floorSpeed ? pastdest :
+         T_MoveFloorPlane(pillar->sector, pillar->floorSpeed, pillar->floordest,
+                          pillar->crush, pillar->direction, pillar->hexencrush);
+
+  res2 = !pillar->ceilingSpeed ? pastdest :
+         T_MoveCeilingPlane(pillar->sector, pillar->ceilingSpeed, pillar->ceilingdest,
+                            pillar->crush, -pillar->direction, pillar->hexencrush);
+
+  if (!(leveltime & 7))
+    S_StartSound((mobj_t *) &pillar->sector->soundorg, g_sfx_stnmov);
+
+  if (res1 == pastdest && res2 == pastdest)
+  {
+    pillar->sector->floordata = NULL;
+    pillar->sector->ceilingdata = NULL;
+    P_RemoveThinker(&pillar->thinker);
+  }
+  else
+  {
+    if (res1 == crushed)
+    {
+      T_MoveFloorPlane(pillar->sector, pillar->floorSpeed, oldfloorheight,
+                       NO_CRUSH, -1, pillar->hexencrush);
+    }
+
+    if (res2 == crushed)
+    {
+      T_MoveCeilingPlane(pillar->sector, pillar->ceilingSpeed, oldceilingheight,
+                         NO_CRUSH, 1, pillar->hexencrush);
+    }
+  }
+}
+
+void T_BuildPillar(pillar_t * pillar)
+{
+  map_format.t_build_pillar(pillar);
+}
+
 void P_SpawnZDoomPillar(sector_t *sec, pillar_e type, fixed_t speed,
                         fixed_t floordist, fixed_t ceilingdist, int crush, dboolean hexencrush)
 {
@@ -1992,9 +2038,9 @@ void P_SpawnZDoomPillar(sector_t *sec, pillar_e type, fixed_t speed,
   sec->floordata = pillar;
   sec->ceilingdata = pillar;
   P_AddThinker(&pillar->thinker);
-  // pillar->thinker.function = ?
+  pillar->thinker.function = T_BuildPillar;
   pillar->sector = sec;
-  pillar->direction = type;
+  pillar->direction = (type == pillarBuild ? 1 : -1);
   pillar->crush = crush;
   pillar->hexencrush = hexencrush;
 
