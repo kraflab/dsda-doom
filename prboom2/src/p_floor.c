@@ -1982,20 +1982,75 @@ void T_BuildPillar(pillar_t * pillar)
 }
 
 void P_SpawnZDoomPillar(sector_t *sec, pillar_e type, fixed_t speed,
-                        fixed_t height, fixed_t height2, int crush, dboolean hexencrush)
+                        fixed_t floordist, fixed_t ceilingdist, int crush, dboolean hexencrush)
 {
-  return;
+  pillar_t *pillar;
+  fixed_t newheight;
+
+  pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, 0);
+  memset(pillar, 0, sizeof(*pillar));
+  sec->floordata = pillar;
+  sec->ceilingdata = pillar;
+  P_AddThinker(&pillar->thinker);
+  // pillar->thinker.function = ?
+  pillar->sector = sec;
+  pillar->direction = type;
+  pillar->crush = crush;
+  pillar->hexencrush = hexencrush;
+
+  if (type == pillarBuild)
+  {
+    // If the pillar height is 0, have the floor and ceiling meet halfway
+    if (!floordist)
+    {
+      floordist = (sec->ceilingheight - sec->floorheight) / 2;
+    }
+
+    pillar->floordest = sec->floorheight + floordist;
+    pillar->ceilingdest = pillar->floordest;
+    ceilingdist = sec->ceilingheight - pillar->ceilingdest;
+  }
+  else
+  {
+    // If one of the heights is 0, figure it out based on the
+    // surrounding sectors
+    if (!floordist)
+    {
+      floordist = sec->floorheight - P_FindLowestFloorSurrounding(sec);
+    }
+    pillar->floordest = sec->floorheight - floordist;
+
+    if (!ceilingdist)
+    {
+      ceilingdist = P_FindHighestCeilingSurrounding(sec) - sec->ceilingheight;
+    }
+    pillar->ceilingdest = sec->ceilingheight + ceilingdist;
+  }
+
+  // The speed parameter applies to whichever part of the pillar
+  // travels the farthest. The other part's speed is then set so
+  // that it arrives at its destination at the same time.
+  if (floordist > ceilingdist)
+  {
+    pillar->floorSpeed = speed;
+    pillar->ceilingSpeed = FixedMul(speed, FixedDiv(ceilingdist, floordist));
+  }
+  else
+  {
+    pillar->ceilingSpeed = speed;
+    pillar->floorSpeed = FixedMul(speed, FixedDiv(floordist, ceilingdist));
+  }
 }
 
 int EV_DoZDoomPillar(pillar_e type, line_t *line, int tag, fixed_t speed,
-                     fixed_t height, fixed_t height2, int crush, dboolean hexencrush)
+                     fixed_t floordist, fixed_t ceilingdist, int crush, dboolean hexencrush)
 {
   int secnum = -1;
   sector_t *sec;
   dboolean rtn = 0;
 
-  height *= FRACUNIT;
-  height2 *= FRACUNIT;
+  floordist *= FRACUNIT;
+  ceilingdist *= FRACUNIT;
 
   while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
   {
@@ -2012,7 +2067,7 @@ int EV_DoZDoomPillar(pillar_e type, line_t *line, int tag, fixed_t speed,
 
     rtn = 1;
 
-    P_SpawnZDoomPillar(sec, type, speed, height, height2, crush, hexencrush);
+    P_SpawnZDoomPillar(sec, type, speed, floordist, ceilingdist, crush, hexencrush);
   }
 
   return rtn;

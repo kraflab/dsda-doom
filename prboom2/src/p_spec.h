@@ -1406,6 +1406,9 @@ typedef struct
   int ceilingdest;
   int direction;
   int crush;
+
+  // zdoom
+  dboolean hexencrush;
 } pillar_t;
 
 typedef enum
