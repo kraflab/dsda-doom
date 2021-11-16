@@ -96,7 +96,7 @@ void dsda_UpdateExHud(void) {
     int playerscount;
     int fullkillcount, fullitemcount, fullsecretcount;
     int color, killcolor, itemcolor, secretcolor;
-    int kill_percent_color, kill_percent_count, kill_percent;
+    int kill_percent_count;
     int allkills_len = 0;
     int allsecrets_len = 0;
     int max_kill_requirement;
@@ -128,19 +128,24 @@ void dsda_UpdateExHud(void) {
         kill_percent_count += players[i].killcount;
       }
     }
+
+    if (respawnmonsters)
+    {
+      fullkillcount = kill_percent_count;
+      max_kill_requirement = totalkills;
+    }
+
     killcolor = (fullkillcount >= max_kill_requirement ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
     secretcolor = (fullsecretcount >= totalsecret ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
     itemcolor = (fullitemcount >= totalitems ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
-    kill_percent_color = (kill_percent_count >= totalkills ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
-    kill_percent = (totalkills == 0 ? 100 : kill_percent_count * 100 / totalkills);
+
     if (playerscount < 2) {
       snprintf(
         dsda_exhud_max_totals.msg,
         sizeof(dsda_exhud_max_totals.msg),
-        "\x1b%cK \x1b%c%d/%d \x1b%c%d%% \x1b%cI \x1b%c%d/%d \x1b%cS \x1b%c%d/%d",
+        "\x1b%cK \x1b%c%d/%d \x1b%cI \x1b%c%d/%d \x1b%cS \x1b%c%d/%d",
         0x30 + g_cr_red,
         killcolor, fullkillcount, max_kill_requirement,
-        kill_percent_color, kill_percent,
         0x30 + g_cr_red,
         itemcolor, players[displayplayer].itemcount, totalitems,
         0x30 + g_cr_red,
@@ -151,10 +156,9 @@ void dsda_UpdateExHud(void) {
       snprintf(
         dsda_exhud_max_totals.msg,
         sizeof(dsda_exhud_max_totals.msg),
-        "\x1b%cK %s \x1b%c%d/%d \x1b%c%d%% \x1b%cI \x1b%c%d/%d \x1b%cS %s \x1b%c%d/%d",
+        "\x1b%cK %s \x1b%c%d/%d \x1b%cI \x1b%c%d/%d \x1b%cS %s \x1b%c%d/%d",
         0x30 + g_cr_red,
         allkills, killcolor, fullkillcount, max_kill_requirement,
-        kill_percent_color, kill_percent,
         0x30 + g_cr_red,
         itemcolor, players[displayplayer].itemcount, totalitems,
         0x30 + g_cr_red,
