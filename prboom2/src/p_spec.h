@@ -1406,7 +1406,7 @@ int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type);
 
 // p_telept
 
-dboolean Hexen_EV_Teleport(int tid, mobj_t * thing, dboolean fog);
+dboolean EV_HexenTeleport(int tid, mobj_t * thing, dboolean fog);
 
 // p_doors
 

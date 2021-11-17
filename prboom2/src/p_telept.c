@@ -509,7 +509,7 @@ int EV_HereticTeleport(int tag, line_t * line, int side, mobj_t * thing, int fla
 #include "m_random.h"
 #include "lprintf.h"
 
-dboolean Hexen_EV_Teleport(int tid, mobj_t * thing, dboolean fog)
+dboolean EV_HexenTeleport(int tid, mobj_t * thing, dboolean fog)
 {
     int i;
     int count;
