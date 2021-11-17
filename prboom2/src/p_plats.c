@@ -341,6 +341,8 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
       default:
         break;
     }
+
+    P_AddActivePlat(plat);
   }
 
   return rtn;
