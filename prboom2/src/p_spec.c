@@ -3456,42 +3456,6 @@ static void P_TransferLineArgs(line_t *l, byte *args)
   args[4] = l->arg5;
 }
 
-// Check for undefined parameters that are non-zero and output messages for them.
-// We don't report for specials we don't understand.
-static void P_ValidateLineSpecials(void)
-{
-  int i;
-  line_t *l;
-
-  if (!map_format.zdoom) return;
-
-  for (i = 0, l = lines; i < numlines; i++, l++)
-  {
-    zl_linespecial_t *spec = dsda_GetLineSpecialInfo(l->special);
-
-    if (spec)
-    {
-      int arg;
-      byte args[5];
-
-      P_TransferLineArgs(l, args);
-
-      for (arg = spec->map_args; arg < LINE_ARG_COUNT; ++arg)
-      {
-        if (args[arg])
-        {
-          lprintf(LO_WARN, "Line %d (type %d:%s), arg %u is %d (should be 0)\n",
-                           i, l->special, spec->name, arg + 1, args[arg]);
-        }
-      }
-    }
-    else
-    {
-      lprintf(LO_WARN, "Unknown line special %d\n", l->special);
-    }
-  }
-}
-
 static void P_SpawnVanillaExtras(void)
 {
   int i;
@@ -3785,7 +3749,6 @@ void P_SpawnSpecials (void)
   P_InitButtons();
   P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
-  P_ValidateLineSpecials();
   P_SpawnScrollers(); // killough 3/7/98: Add generalized scrollers
 
   if (demo_compatibility) return P_SpawnVanillaExtras();

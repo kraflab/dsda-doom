@@ -29,14 +29,6 @@ typedef enum {
   zi_init_transfer_sky = 255
 } zi_staticinit_t;
 
-typedef struct {
-  const char *name;
-  int number;
-  signed char min_args;
-  signed char max_args;
-  unsigned char map_args;
-} zl_linespecial_t;
-
 typedef enum {
   zl_polyobj_start_line                  = 1,
   zl_polyobj_rotate_left                 = 2,
@@ -295,7 +287,5 @@ typedef enum {
 
   zl_linespecial_max
 } zl_linespecial_id_t;
-
-zl_linespecial_t* dsda_GetLineSpecialInfo(int special);
 
 #endif
