@@ -623,6 +623,10 @@ typedef enum
   elevateUp,
   elevateDown,
   elevateCurrent,
+
+  // zdoom
+  elevateLower,
+  elevateRaise,
 } elevator_e;
 
 //////////////////////////////////////////////////////////////////
@@ -1621,6 +1625,7 @@ dboolean EV_StartPlaneWaggle(int tag, line_t *line, int height,
                              int speed, int offset, int timer, dboolean ceiling);
 int EV_DoZDoomPillar(pillar_e type, line_t *line, int tag, fixed_t speed,
                      fixed_t height, fixed_t height2, int crush, dboolean hexencrush);
+int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t height, int tag);
 void EV_LightChange(int tag, short change);
 void EV_LightSet(int tag, short level);
 void EV_LightSetMinNeighbor(int tag);

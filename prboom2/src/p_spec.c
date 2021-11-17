@@ -5997,6 +5997,26 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       buttonSuccess = EV_DoZDoomPillar(pillarOpen, line, args[0], P_ArgToSpeed(args[1]),
                                        args[2], args[3], NO_CRUSH, false);
       break;
+    case zl_elevator_move_to_floor:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateCurrent, P_ArgToSpeed(args[1]),
+                                         0, args[0]);
+      break;
+    case zl_elevator_raise_to_nearest:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateUp, P_ArgToSpeed(args[1]),
+                                         0, args[0]);
+      break;
+    case zl_elevator_lower_to_nearest:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateDown, P_ArgToSpeed(args[1]),
+                                         0, args[0]);
+      break;
+    case zl_floor_and_ceiling_lower_by_value:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateLower, P_ArgToSpeed(args[1]),
+                                         args[2], args[0]);
+      break;
+    case zl_floor_and_ceiling_raise_by_value:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateRaise, P_ArgToSpeed(args[1]),
+                                         args[2], args[0]);
+      break;
     case zl_floor_lower_by_value:
       buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], args[2],
                                       NO_CRUSH, P_ArgToChange(args[3]), false, false);

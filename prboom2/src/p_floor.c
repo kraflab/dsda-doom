@@ -1141,6 +1141,14 @@ int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespe
 //
 // jff 2/22/98 new type to move floor and ceiling in parallel
 //
+
+int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t height, int tag)
+{
+  height *= FRACUNIT;
+
+  return 0;
+}
+
 int EV_DoElevator
 ( line_t*       line,
   elevator_e    elevtype )
