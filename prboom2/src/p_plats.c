@@ -211,6 +211,15 @@ void T_PlatRaise(plat_t* plat)
 // and for some plat types, an amount to raise
 // Returns true if a thinker is started, or restarted from stasis
 //
+
+int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
+                   fixed_t speed, int delay, int lip, int change)
+{
+  height *= FRACUNIT;
+
+  return 0;
+}
+
 int EV_DoPlat
 ( line_t*       line,
   plattype_e    type,
@@ -400,6 +409,29 @@ void P_ActivateInStasis(int tag)
 //
 // jff 2/12/98 added int return value, fixed return
 //
+
+void EV_StopZDoomPlat(int tag, dboolean remove)
+{
+  platlist_t *pl;
+
+  for (pl = activeplats; pl; pl = pl->next)
+  {
+    plat_t *plat = pl->plat;
+    if (plat->status != in_stasis && plat->tag == tag)
+    {
+      if (!remove)
+      {
+        plat->oldstatus = plat->status;
+        plat->status = in_stasis;
+      }
+      else
+      {
+        P_RemoveActivePlat(plat);
+      }
+    }
+  }
+}
+
 int EV_StopPlat(line_t* line)
 {
   platlist_t *pl;

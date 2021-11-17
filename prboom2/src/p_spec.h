@@ -394,6 +394,21 @@ typedef enum
   PLAT_DOWNBYVALUEWAITUPSTAY,
   PLAT_UPWAITDOWNSTAY,
   PLAT_UPBYVALUEWAITDOWNSTAY,
+
+  // zdoom
+  platPerpetualRaise,
+  platDownWaitUpStay,
+  platDownWaitUpStayStone,
+  platDownByValue,
+  platUpByValue,
+  platUpWaitDownStay,
+  platUpNearestWaitDownStay,
+  platRaiseAndStay,
+  platRaiseAndStayLockout,
+  platUpByValueStay,
+  platToggle,
+  platDownToNearestFloor,
+  platDownToLowestCeiling,
 } plattype_e;
 
 // p_doors
@@ -1619,6 +1634,9 @@ int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespe
 int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode);
 int EV_ZDoomCeilingCrushStop(int tag, dboolean remove);
+int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
+                   fixed_t speed, int delay, int lip, int change);
+void EV_StopZDoomPlat(int tag, dboolean remove);
 int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
                         fixed_t speed, int delay, int reset, int igntxt, int usespecials);
 dboolean EV_StartPlaneWaggle(int tag, line_t *line, int height,

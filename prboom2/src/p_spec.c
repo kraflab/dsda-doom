@@ -6479,6 +6479,114 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
       }
       break;
+    case zl_plat_stop:
+      {
+        dboolean remove;
+
+        switch (args[3])
+        {
+          case 1:
+            remove = false;
+            break;
+          case 2:
+            remove = true;
+            break;
+          default:
+            remove = hexen;
+            break;
+        }
+
+        EV_StopZDoomPlat(args[0], remove);
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_plat_perpetual_raise:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platPerpetualRaise, 0,
+                                     P_ArgToSpeed(args[1]), args[2], 8, 0);
+      break;
+    case zl_plat_perpetual_raise_lip:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platPerpetualRaise, 0,
+                                     P_ArgToSpeed(args[1]), args[2], args[3], 0);
+      break;
+    case zl_plat_down_wait_up_stay:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platDownWaitUpStay, 0,
+                                     P_ArgToSpeed(args[1]), args[2], 8, 0);
+      break;
+    case zl_plat_down_wait_up_stay_lip:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line,
+                                     args[4] ? platDownWaitUpStayStone : platDownWaitUpStay, 0,
+                                     P_ArgToSpeed(args[1]), args[2], args[3], 0);
+      break;
+    case zl_plat_down_by_value:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platDownByValue, (int) args[3] * 8,
+                                     P_ArgToSpeed(args[1]), args[2], 0, 0);
+      break;
+    case zl_plat_up_by_value:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValue, (int) args[3] * 8,
+                                     P_ArgToSpeed(args[1]), args[2], 0, 0);
+      break;
+    case zl_plat_up_wait_down_stay:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpWaitDownStay, 0,
+                                     P_ArgToSpeed(args[1]), args[2], 0, 0);
+      break;
+    case zl_plat_up_nearest_wait_down_stay:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpNearestWaitDownStay, 0,
+                                     P_ArgToSpeed(args[1]), args[2], 0, 0);
+      break;
+    case zl_plat_raise_and_stay_tx0:
+      {
+        plattype_e type;
+
+        switch (args[3])
+        {
+          case 1:
+            type = platRaiseAndStay;
+            break;
+          case 2:
+            type = platRaiseAndStayLockout;
+            break;
+          default:
+            type = (heretic ? platRaiseAndStayLockout : platRaiseAndStay);
+            break;
+        }
+
+        buttonSuccess = EV_DoZDoomPlat(args[0], line, type, 0, P_ArgToSpeed(args[1]), 0, 0, 1);
+      }
+      break;
+    case zl_plat_up_by_value_stay_tx:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValueStay, (int) args[2] * 8,
+                                     P_ArgToSpeed(args[1]), 0, 0, 2);
+      break;
+    case zl_plat_toggle_ceiling:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platToggle, 0, 0, 0, 0, 0);
+      break;
+    case zl_generic_lift:
+      {
+        plattype_e type;
+
+        switch (args[3])
+        {
+          case 1:
+            type = platDownWaitUpStay;
+            break;
+          case 2:
+            type = platDownToNearestFloor;
+            break;
+          case 3:
+            type = platDownToLowestCeiling;
+            break;
+          case 4:
+            type = platPerpetualRaise;
+            break;
+          default:
+            type = platUpByValue;
+            break;
+        }
+
+        buttonSuccess = EV_DoZDoomPlat(args[0], line, type, (int) args[4] * 8,
+                                       P_ArgToSpeed(args[1]), (int) args[2] * 35 / 8, 0, 0);
+      }
+      break;
     case zl_line_set_blocking:
       if (args[0])
       {
