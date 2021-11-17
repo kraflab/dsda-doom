@@ -59,13 +59,9 @@ platlist_t *activeplats;       // killough 2/14/98: made global again
 // jff 02/08/98 all cases with labels beginning with gen added to support
 // generalized line type behaviors.
 
-static void Hexen_T_PlatRaise(plat_t * plat);
-
-void T_PlatRaise(plat_t* plat)
+void T_CompatiblePlatRaise(plat_t * plat)
 {
   result_e      res;
-
-  if (map_format.hexen) return Hexen_T_PlatRaise(plat);
 
   // handle plat moving, up, down, waiting, or in stasis,
   switch(plat->status)
@@ -199,6 +195,16 @@ void T_PlatRaise(plat_t* plat)
     case in_stasis: // do nothing if in stasis
       break;
   }
+}
+
+void T_ZDoomPlatRaise(plat_t *plat)
+{
+  
+}
+
+void T_PlatRaise(plat_t * plat)
+{
+  map_format.t_plat_raise(plat);
 }
 
 
@@ -633,7 +639,7 @@ void P_RemoveAllActivePlats(void)
 
 // hexen
 
-static void Hexen_T_PlatRaise(plat_t * plat)
+void T_HexenPlatRaise(plat_t * plat)
 {
     result_e res;
 
