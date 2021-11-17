@@ -1142,11 +1142,77 @@ int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespe
 // jff 2/22/98 new type to move floor and ceiling in parallel
 //
 
+void P_SpawnElevator(sector_t *sec, line_t *line, elevator_e type, fixed_t speed, fixed_t height)
+{
+  elevator_t *elevator;
+
+  elevator = Z_Malloc(sizeof(*elevator), PU_LEVEL, 0);
+  memset(elevator, 0, sizeof(*elevator));
+  P_AddThinker(&elevator->thinker);
+  sec->floordata = elevator; //jff 2/22/98
+  sec->ceilingdata = elevator; //jff 2/22/98
+  elevator->thinker.function = T_MoveElevator;
+  elevator->type = type;
+  elevator->speed = speed;
+  elevator->sector = sec;
+
+  switch (type)
+  {
+    case elevateDown:
+      elevator->direction = -1;
+      elevator->floordestheight = P_FindNextLowestFloor(sec, sec->floorheight);
+      elevator->ceilingdestheight = sec->ceilingheight +
+                                    elevator->floordestheight - sec->floorheight;
+      break;
+    case elevateUp:
+      elevator->direction = 1;
+      elevator->floordestheight = P_FindNextHighestFloor(sec, sec->floorheight);
+      elevator->ceilingdestheight = sec->ceilingheight +
+                                    elevator->floordestheight - sec->floorheight;
+      break;
+    case elevateCurrent:
+      elevator->floordestheight = line->frontsector->floorheight;
+      elevator->ceilingdestheight = sec->ceilingheight +
+                                    elevator->floordestheight - sec->floorheight;
+      elevator->direction = elevator->floordestheight > sec->floorheight ? 1 : -1;
+      break;
+    case elevateRaise:
+      elevator->direction = 1;
+      elevator->floordestheight = sec->floorheight + height;
+      elevator->ceilingdestheight = sec->ceilingheight + height;
+      break;
+    case elevateLower:
+      elevator->direction = -1;
+      elevator->floordestheight = sec->floorheight - height;
+      elevator->ceilingdestheight = sec->ceilingheight - height;
+      break;
+  }
+}
+
 int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t height, int tag)
 {
+  int secnum = -1;
+  int rtn = 0;
+  sector_t *sec;
+  elevator_t *elevator;
+
   height *= FRACUNIT;
 
-  return 0;
+  if (!line && type == elevateCurrent)
+    return 0;
+
+  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  {
+    sec = &sectors[secnum];
+
+    if (P_FloorActive(sec) || P_CeilingActive(sec))
+      continue;
+
+    rtn = 1;
+    P_SpawnElevator(sec, line, type, speed, height);
+  }
+
+	return rtn;
 }
 
 int EV_DoElevator
@@ -1169,55 +1235,8 @@ int EV_DoElevator
     if (sec->floordata || sec->ceilingdata) //jff 2/22/98
       continue;
 
-    // create and initialize new elevator thinker
     rtn = 1;
-    elevator = Z_Malloc (sizeof(*elevator), PU_LEVEL, 0);
-    memset(elevator, 0, sizeof(*elevator));
-    P_AddThinker (&elevator->thinker);
-    sec->floordata = elevator; //jff 2/22/98
-    sec->ceilingdata = elevator; //jff 2/22/98
-    elevator->thinker.function = T_MoveElevator;
-    elevator->type = elevtype;
-
-    // set up the fields according to the type of elevator action
-    switch(elevtype)
-    {
-        // elevator down to next floor
-      case elevateDown:
-        elevator->direction = -1;
-        elevator->sector = sec;
-        elevator->speed = ELEVATORSPEED;
-        elevator->floordestheight =
-          P_FindNextLowestFloor(sec,sec->floorheight);
-        elevator->ceilingdestheight =
-          elevator->floordestheight + sec->ceilingheight - sec->floorheight;
-        break;
-
-        // elevator up to next floor
-      case elevateUp:
-        elevator->direction = 1;
-        elevator->sector = sec;
-        elevator->speed = ELEVATORSPEED;
-        elevator->floordestheight =
-          P_FindNextHighestFloor(sec,sec->floorheight);
-        elevator->ceilingdestheight =
-          elevator->floordestheight + sec->ceilingheight - sec->floorheight;
-        break;
-
-        // elevator to floor height of activating switch's front sector
-      case elevateCurrent:
-        elevator->sector = sec;
-        elevator->speed = ELEVATORSPEED;
-        elevator->floordestheight = line->frontsector->floorheight;
-        elevator->ceilingdestheight =
-          elevator->floordestheight + sec->ceilingheight - sec->floorheight;
-        elevator->direction =
-          elevator->floordestheight>sec->floorheight?  1 : -1;
-        break;
-
-      default:
-        break;
-    }
+    P_SpawnElevator(sec, line, elevtype, ELEVATORSPEED, 0);
   }
   return rtn;
 }
