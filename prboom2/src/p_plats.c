@@ -213,11 +213,137 @@ void T_PlatRaise(plat_t* plat)
 //
 
 int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
-                   fixed_t speed, int delay, int lip, int change)
+                   fixed_t speed, int delay, fixed_t lip, int change)
 {
-  height *= FRACUNIT;
+  plat_t *plat;
+  int secnum = -1;
+  int rtn = 0;
+  sector_t *sec;
 
-  return 0;
+  height *= FRACUNIT;
+  lip *= FRACUNIT;
+
+  if (tag)
+  {
+    // Activate all <type> plats that are in_stasis
+    switch (type)
+    {
+      case platToggle:
+        rtn = 1;
+      case platPerpetualRaise:
+        P_ActivateInStasis(tag);
+        break;
+      default:
+        break;
+    }
+  }
+
+  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  {
+    sec = &sectors[secnum];
+
+    if (P_FloorActive(sec))
+      continue;
+
+    rtn = 1;
+
+    plat = Z_Malloc(sizeof(*plat), PU_LEVEL, 0);
+    memset(plat, 0, sizeof(*plat));
+    P_AddThinker(&plat->thinker);
+
+    plat->sector = sec;
+    sec->floordata = plat;
+    plat->thinker.function = T_PlatRaise;
+    plat->type = type;
+    plat->crush = NO_CRUSH;
+    plat->tag = tag;
+    plat->speed = speed;
+    plat->wait = delay;
+    plat->low = sec->floorheight;
+    plat->high = sec->floorheight;
+
+    if (change)
+    {
+      if (line)
+        sec->floorpic = sides[line->sidenum[0]].sector->floorpic;
+      if (change == 1)
+        P_ResetSectorSpecial(sec);
+    }
+
+    switch (type)
+    {
+      case platRaiseAndStay:
+      case platRaiseAndStayLockout:
+        plat->high = P_FindNextHighestFloor(sec, sec->floorheight);
+        plat->status = up;
+        P_ResetSectorSpecial(sec);
+        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_stnmov_plats);
+        break;
+      case platUpByValue:
+      case platUpByValueStay:
+        plat->high = sec->floorheight + height;
+        plat->status = up;
+        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_stnmov_plats);
+        break;
+      case platDownByValue:
+        plat->low = sec->floorheight - height;
+        plat->status = down;
+        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_stnmov_plats);
+        break;
+      case platDownWaitUpStay:
+      case platDownWaitUpStayStone:
+        plat->low = P_FindLowestFloorSurrounding(sec) + lip;
+        if (plat->low > sec->floorheight)
+          plat->low = sec->floorheight;
+        plat->status = down;
+        S_StartSound((mobj_t *) &sec->soundorg,
+                     type == platDownWaitUpStay ? g_sfx_pstart : g_sfx_stnmov_plats);
+        break;
+      case platUpNearestWaitDownStay:
+        plat->high = P_FindNextHighestFloor(sec, sec->floorheight);
+        plat->status = up;
+        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        break;
+      case platUpWaitDownStay:
+        plat->high = P_FindHighestFloorSurrounding(sec);
+        if (plat->high < sec->floorheight)
+          plat->high = sec->floorheight;
+        plat->status = up;
+        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        break;
+      case platPerpetualRaise:
+        plat->low = P_FindLowestFloorSurrounding(sec) + lip;
+        if (plat->low > sec->floorheight)
+          plat->low = sec->floorheight;
+        plat->high = P_FindHighestFloorSurrounding(sec);
+        if (plat->high < sec->floorheight)
+          plat->high = sec->floorheight;
+        plat->status = (P_Random(pr_plats) & 1) ? up : down;
+        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        break;
+      case platToggle:
+        plat->crush = DOOM_CRUSH;
+        plat->low = sec->ceilingheight;
+        plat->status = down;
+        break;
+      case platDownToNearestFloor:
+        plat->low = P_FindNextLowestFloor(sec, sec->floorheight) + lip;
+        plat->status = down;
+        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        break;
+      case platDownToLowestCeiling:
+        plat->low = P_FindLowestCeilingSurrounding(sec);
+        if (plat->low > sec->floorheight)
+          plat->low = sec->floorheight;
+        plat->status = down;
+        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        break;
+      default:
+        break;
+    }
+  }
+
+  return rtn;
 }
 
 int EV_DoPlat
