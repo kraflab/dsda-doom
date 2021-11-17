@@ -817,7 +817,7 @@ void T_HexenPlatRaise(plat_t * plat)
     }
 }
 
-int Hexen_EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount)
+int EV_DoHexenPlat(line_t * line, byte * args, plattype_e type, int amount)
 {
     plat_t *plat;
     int secnum;

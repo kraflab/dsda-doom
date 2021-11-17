@@ -7083,23 +7083,23 @@ dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int 
             buttonSuccess = EV_FloorCrushStop(line, args);
             break;
         case 60:               // Plat Perpetual Raise
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_PERPETUALRAISE, 0);
             break;
         case 61:               // Plat Stop
             Hexen_EV_StopPlat(line, args);
             break;
         case 62:               // Plat Down-Wait-Up-Stay
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
             break;
         case 63:               // Plat Down-by-Value*8-Wait-Up-Stay
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY,
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY,
                                       0);
             break;
         case 64:               // Plat Up-Wait-Down-Stay
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
             break;
         case 65:               // Plat Up-by-Value*8-Wait-Down-Stay
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY,
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY,
                                       0);
             break;
         case 66:               // Floor Lower Instant * 8

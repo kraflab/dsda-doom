@@ -1470,7 +1470,7 @@ dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset, int tim
 
 // p_plats
 
-int Hexen_EV_DoPlat(line_t * line, byte * args, plattype_e type, int amount);
+int EV_DoHexenPlat(line_t * line, byte * args, plattype_e type, int amount);
 void Hexen_EV_StopPlat(line_t * line, byte * args);
 
 //
