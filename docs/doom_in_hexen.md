@@ -268,8 +268,8 @@ Current work is isolated to the initial pass over the level format itself - line
 | 92    | Polyobj_OR_Move                 | :telescope:        |
 | 93    | Polyobj_OR_MoveTimes8           | :telescope:        |
 | 94    | Pillar_BuildAndCrush            | :heavy_check_mark: |
-| 95    | FloorAndCeiling_LowerByValue    | :grey_question:    |
-| 96    | FloorAndCeiling_RaiseByValue    | :grey_question:    |
+| 95    | FloorAndCeiling_LowerByValue    | :heavy_check_mark: |
+| 96    | FloorAndCeiling_RaiseByValue    | :heavy_check_mark: |
 | 97    | Ceiling_LowerAndCrushDist       | :heavy_check_mark: |
 | 98    | Sector_SetTranslucent           | :x:                |
 | 99    | Floor_RaiseAndCrushDoom         | :heavy_check_mark: |
@@ -398,9 +398,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | 242   | Floor_LowerToHighest            | :heavy_check_mark: |
 | 243   | Exit_Normal                     | :warning:          |
 | 244   | Exit_Secret                     | :warning:          |
-| 245   | Elevator_RaiseToNearest         | :grey_question:    |
-| 246   | Elevator_MoveToFloor            | :grey_question:    |
-| 247   | Elevator_LowerToNearest         | :grey_question:    |
+| 245   | Elevator_RaiseToNearest         | :heavy_check_mark: |
+| 246   | Elevator_MoveToFloor            | :heavy_check_mark: |
+| 247   | Elevator_LowerToNearest         | :heavy_check_mark: |
 | 248   | HealThing                       | :heavy_check_mark: |
 | 249   | Door_CloseWaitOpen              | :heavy_check_mark: |
 | 250   | Floor_Donut                     | :heavy_check_mark: |
