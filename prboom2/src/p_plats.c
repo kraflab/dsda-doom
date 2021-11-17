@@ -227,6 +227,7 @@ void T_ZDoomPlatRaise(plat_t * plat)
         {
           plat->count = plat->wait;
           plat->status = waiting;
+          S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstop);
 
           switch (plat->type)
           {
@@ -302,7 +303,7 @@ void T_ZDoomPlatRaise(plat_t * plat)
 
       break;
     case waiting:
-      if (plat->count > 0 && !--plat->count)
+      if (!plat->count || !--plat->count)
       {
         if (plat->sector->floorheight == plat->low)
           plat->status = up;
