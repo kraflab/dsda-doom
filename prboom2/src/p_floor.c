@@ -2032,6 +2032,9 @@ void T_BuildZDoomPillar(pillar_t * pillar)
     pillar->sector->floordata = NULL;
     pillar->sector->ceilingdata = NULL;
     P_RemoveThinker(&pillar->thinker);
+
+    // make floor stop sound
+    S_StartSound((mobj_t *) &pillar->sector->soundorg, sfx_pstop);
   }
   else
   {
