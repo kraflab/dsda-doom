@@ -197,9 +197,125 @@ void T_CompatiblePlatRaise(plat_t * plat)
   }
 }
 
-void T_ZDoomPlatRaise(plat_t *plat)
+void T_ZDoomPlatRaise(plat_t * plat)
 {
-  
+  result_e res;
+
+  switch (plat->status)
+  {
+    case up:
+      res = T_MoveFloorPlane(plat->sector, plat->speed, plat->high, plat->crush, 1, false);
+
+      // if a pure raise type, make the plat moving sound
+      if (plat->type == platUpByValueStay
+          || plat->type == platRaiseAndStay
+          || plat->type == platRaiseAndStayLockout)
+      {
+        if (!(leveltime & 7))
+          S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_stnmov_plats);
+      }
+
+      if (res == crushed && plat->crush == NO_CRUSH)
+      {
+        plat->count = plat->wait;
+        plat->status = down;
+        S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstart);
+      }
+      else if (res == pastdest)
+      {
+        if (plat->type != platToggle)
+        {
+          plat->count = plat->wait;
+          plat->status = waiting;
+
+          switch (plat->type)
+          {
+            case platRaiseAndStayLockout:
+            case platRaiseAndStay:
+            case platDownByValue:
+            case platDownWaitUpStay:
+            case platDownWaitUpStayStone:
+            case platUpByValueStay:
+            case platDownToNearestFloor:
+            case platDownToLowestCeiling:
+              P_RemoveActivePlat(plat);
+              break;
+            default:
+              break;
+          }
+        }
+        else
+        {
+          plat->oldstatus = plat->status;
+          plat->status = in_stasis;
+        }
+      }
+      break;
+    case down:
+      res = T_MoveFloorPlane(plat->sector, plat->speed, plat->low, NO_CRUSH, -1, false);
+
+      if (res == pastdest)
+      {
+        if (plat->type != platToggle)
+        {
+          plat->count = plat->wait;
+          plat->status = waiting;
+          S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstop);
+
+          switch (plat->type)
+          {
+            case platUpWaitDownStay:
+            case platUpNearestWaitDownStay:
+            case platUpByValue:
+              P_RemoveActivePlat(plat);
+              break;
+            default:
+              break;
+          }
+        }
+        else
+        {
+          plat->oldstatus = plat->status;
+          plat->status = in_stasis;
+        }
+      }
+      else if (res == crushed && plat->crush == NO_CRUSH && plat->type != platToggle)
+      {
+        plat->count = plat->wait;
+        plat->status = up;
+        S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstart);
+      }
+
+      // jff 1/26/98 remove the plat if it bounced so it can be tried again
+      // only affects plats that raise and bounce
+      // remove the plat if it's a pure raise type
+      switch (plat->type)
+      {
+        case platUpByValueStay:
+        case platRaiseAndStay:
+        case platRaiseAndStayLockout:
+          P_RemoveActivePlat(plat);
+          break;
+        default:
+          break;
+      }
+
+      break;
+    case waiting:
+      if (plat->count > 0 && !--plat->count)
+      {
+        if (plat->sector->floorheight == plat->low)
+          plat->status = up;
+        else
+          plat->status = down;
+
+        if (plat->type != platToggle)
+          S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstart);
+      }
+      break;
+    case in_stasis:
+      break;
+  }
 }
 
 void T_PlatRaise(plat_t * plat)
