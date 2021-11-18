@@ -31,127 +31,132 @@ typedef struct {
 
 static const dsda_compatibility_t eternal_doom_25 = {
   "6da6fcba8089161bdec6a1d3f6c8d60f",
-  { comp_stairs, comp_vile, -1 }
+  { comp_stairs, comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t doomsday_of_uac_e1m8 = {
   "32fc3115a3162b623f0d0f4e7dee6861",
-  { comp_666, -1 }
+  { comp_666, -1, -1 }
 };
 
 static const dsda_compatibility_t hell_revealed_map19 = {
   "811a0c97777a198bc9b2bb558cb46e6a",
-  { comp_pain, -1 }
+  { comp_pain, -1, -1 }
 };
 
 static const dsda_compatibility_t roger_ritenour_phobos_map03 = {
   "8fa29398776146189396aa1ac6bb9e13",
-  { comp_floors, -1 }
+  { comp_floors, -1, -1 }
 };
 
 static const dsda_compatibility_t hell_revealed_map26 = {
   "145c4dfcf843f2b92c73036ba0e1d98a",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t hell_to_pay_map14 = {
   "5379c080299eb961792b50ad96821543",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t hell_to_pay_map22 = {
   "7837b5334a277f107515d649bcefb682",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t icarus_map24 = {
   "2eeb1e12fa9f9545de9d99990a4a78e5",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t plutonia2_map32 = {
   "65a53a09a09525ae42ea210bf879cd37",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t requiem_map23 = {
   "2499cf9a9351be9bc4e9c66fc9f291a7",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t the_waterfront_map01 = {
   "3ca5493feff2e27bfd4181e6c4a3c2bf",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t gather2_map05_and_darkside_map01 = {
   "cbdfefac579a62de8f1b48ca4a09d381",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t reverie_map18 = {
   "c7a2fafb0afb2632c50ad625cdb50e51",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t project_x_map14 = {
   "9e5724bc6135aa6f86ee54fd4d91f1e2",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t archie_map01 = {
   "01899825ffeae016d39c02a7da4b218f",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t seej_map01 = {
   "1d9f3afdc2517c2e450491ed13896712",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t sixpack2_map02 = {
   "0ae745a3ab86d15fb2fb74489962c421",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t squadron_417_map21 = {
   "2ea635c6b6aec76b6bc77448dab22f9a",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t mayhem_2013_map05 = {
   "1e998262ee319b7d088e01de782e6b41",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t imps_are_ghost_gods_map01 = {
   "a81e2734f735a82720d8e0f1442ba0c9",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t confinement_map31 = {
   "aad7502cb39bc050445e17b15f72356f",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t conf256b_map07 = {
   "5592ea1ca3b8ee0dbb2cb352aaa00911",
-  { comp_pain, -1 }
+  { comp_pain, -1, -1 }
 };
 
 static const dsda_compatibility_t conf256b_map12 = {
   "cecedae33b970f2bf7f8b8631da0c8dd",
-  { comp_vile, -1 }
+  { comp_vile, -1, -1 }
 };
 
 static const dsda_compatibility_t sunlust_map30 = {
   "41efe03223e41935849f64114c5cb471",
-  { comp_telefrag, -1 }
+  { comp_telefrag, -1, -1 }
 };
 
 static const dsda_compatibility_t tnt_map30 = {
   "42b68b84ff8e55f264c31e6f4cfea82d",
-  { comp_stairs, -1 }
+  { comp_stairs, -1, -1 }
+};
+
+static const dsda_compatibility_t intercep2_map03 = {
+  "86587e4f8c8086991c8fc5c1ccfd30b9",
+  { -1, comp_ledgeblock, -1 }
 };
 
 static const dsda_compatibility_t* entry_0[] = {
@@ -206,6 +211,7 @@ static const dsda_compatibility_t* entry_7[] = {
 static const dsda_compatibility_t* entry_8[] = {
   &hell_revealed_map19,
   &roger_ritenour_phobos_map03,
+  &intercep2_map03,
   NULL
 };
 
@@ -319,7 +325,12 @@ void dsda_ApplyLevelCompatibility(int lump) {
 
       for (option = (*level_compatibility)->options; *option != -1; option++) {
         comp[*option] = 1;
-        lprintf(LO_INFO, "Automatically setting comp option %d\n", *option);
+        lprintf(LO_INFO, "Automatically setting comp option %d on\n", *option);
+      }
+
+      for (option++; *option != -1; option++) {
+        comp[*option] = 0;
+        lprintf(LO_INFO, "Automatically setting comp option %d off\n", *option);
       }
 
       return;
