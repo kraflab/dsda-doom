@@ -159,6 +159,11 @@ static const dsda_compatibility_t intercep2_map03 = {
   { -1, comp_ledgeblock, -1 }
 };
 
+static const dsda_compatibility_t skulltiverse_map02 = {
+  "b3fa4a18b31bd96e724f9aab101776a1",
+  { -1, comp_ledgeblock, -1 }
+};
+
 static const dsda_compatibility_t* entry_0[] = {
   &archie_map01,
   &sixpack2_map02,
@@ -227,6 +232,7 @@ static const dsda_compatibility_t* entry_a[] = {
 };
 
 static const dsda_compatibility_t* entry_b[] = {
+  &skulltiverse_map02,
   NULL
 };
 
