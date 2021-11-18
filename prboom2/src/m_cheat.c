@@ -983,6 +983,7 @@ static cheat_input_t cheat_input[] = {
   { dsda_input_ponce, cht_never, cheat_reset_health, 0 },
   { dsda_input_shazam, cht_never, cheat_tome, 0 },
   { dsda_input_chicken, cht_never, cheat_chicken, 0 },
+  { dsda_input_notarget, cht_never, cheat_notarget, 0 },
   { 0 }
 };
 

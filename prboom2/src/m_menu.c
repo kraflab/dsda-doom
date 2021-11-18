@@ -2581,6 +2581,7 @@ setup_menu_t keys_settings7[] =
   { "Reset Health", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_ponce },
   { "Tome of Power", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_shazam },
   { "Chicken", S_INPUT, m_scrn, KB_X, KB_Y + 18 * 8, { 0 }, dsda_input_chicken },
+  { "No Target", S_INPUT, m_scrn, KB_X, KB_Y + 19 * 8, { 0 }, dsda_input_notarget },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { keys_settings6 } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { raven_keys_settings } },
