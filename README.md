@@ -8,7 +8,7 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - [v0.19](./patch_notes/v0.19.md)
 
 ### Doom in Hexen Support (ongoing)
-- [Full details](./docs/doom_in_hexen)
+- [Full details](./docs/doom_in_hexen.md)
 
 ### Hexen Support (beta)
 - DSDA-Doom includes demo-compatible support for hexen.
