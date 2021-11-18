@@ -2789,6 +2789,18 @@ void G_Compatibility(void)
     if (compatibility_level < levels[i].opt)
       comp[i] = (compatibility_level < levels[i].fix);
 
+  // These options were deoptionalized in mbf21
+  if (mbf21)
+  {
+    comp[comp_moveblock] = 0;
+    comp[comp_sound] = 0;
+    comp[comp_666] = 0;
+    comp[comp_maskedanim] = 0;
+    comp[comp_ouchface] = 0;
+    comp[comp_maxhealth] = 0;
+    comp[comp_translucency] = 0;
+  }
+
   e6y_G_Compatibility();//e6y
 
   if (!mbf_features) {
@@ -2802,18 +2814,6 @@ void G_Compatibility(void)
     dog_jumping = 0;
 
     monkeys = 0;
-  }
-
-  // These options were deoptionalized in mbf21
-  if (mbf21)
-  {
-    comp[comp_moveblock] = 0;
-    comp[comp_sound] = 0;
-    comp[comp_666] = 0;
-    comp[comp_maskedanim] = 0;
-    comp[comp_ouchface] = 0;
-    comp[comp_maxhealth] = 0;
-    comp[comp_translucency] = 0;
   }
 }
 
