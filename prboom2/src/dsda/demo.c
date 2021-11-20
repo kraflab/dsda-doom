@@ -25,6 +25,8 @@
 #include "lprintf.h"
 #include "e6y.h"
 
+#include "dsda/excmd.h"
+
 #include "demo.h"
 
 #define INITIAL_DEMO_BUFFER_SIZE 0x20000
@@ -155,6 +157,8 @@ static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* heade
   if (dsda_demo_version > DSDA_DEMO_VERSION)
     return NULL;
 
+  dsda_EnableExCmd();
+
   return demo_p;
 }
 
@@ -227,8 +231,4 @@ void dsda_WriteDSDADemoHeader(byte** p) {
   *demo_p++ = DSDA_DEMO_VERSION;
 
   *p = demo_p;
-}
-
-int dsda_DemoVersion(void) {
-  return dsda_demo_version;
 }

@@ -86,6 +86,7 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 #include "dsda/demo.h"
+#include "dsda/excmd.h"
 #include "dsda/key_frame.h"
 #include "dsda/save.h"
 #include "dsda/settings.h"
@@ -470,8 +471,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   G_SetSpeed(false);
 
-  /* cphipps - remove needless I_BaseTiccmd call, just set the ticcmd to zero */
-  memset(cmd,0,sizeof*cmd);
+  dsda_ResetCmd(cmd);
   cmd->consistancy = consistancy[consoleplayer][maketic%BACKUPTICS];
 
   strafe = dsda_InputActive(dsda_input_strafe);
@@ -3243,6 +3243,8 @@ void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p)
     cmd->angleturn = ((unsigned char)cmd->buttons)<<8;
     cmd->buttons = (byte)tmp;
   }
+
+  dsda_ReadExCmd(cmd, data_p);
 }
 
 void G_ReadDemoTiccmd (ticcmd_t* cmd)
@@ -3269,7 +3271,7 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
  */
 void G_WriteDemoTiccmd (ticcmd_t* cmd)
 {
-  char buf[7];
+  char *buf = dsda_CmdBuffer();
   char *p = buf;
 
   if (compatibility_level == tasdoom_compatibility)
@@ -3298,6 +3300,8 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
       *p++ = cmd->arti;
     }
   }
+
+  dsda_WriteExCmd(&p, cmd);
 
   dsda_WriteToDemo(buf, p - buf);
 
@@ -3517,14 +3521,35 @@ void G_BeginRecording (void)
   demostart = demo_p = malloc(1000);
   longtics = 0;
 
-  if (map_format.zdoom)
   {
-    if (!M_CheckParm("-baddemo"))
-      I_Error("Experimental formats require the -baddemo option to record.");
+    dboolean use_dsda_format = false;
 
-    if (!mbf21)
-      I_Error("You must use complevel 21 when recording on doom-in-hexen format.");
+    if (map_format.zdoom)
+    {
+      if (!M_CheckParm("-baddemo"))
+        I_Error("Experimental formats require the -baddemo option to record.");
 
+      if (!mbf21)
+        I_Error("You must use complevel 21 when recording on doom-in-hexen format.");
+
+      use_dsda_format = true;
+    }
+
+    if (M_CheckParm("-dsdademo"))
+    {
+      use_dsda_format = true;
+      dsda_EnableCasualExCmdFeatures();
+    }
+
+    if (use_dsda_format)
+    {
+      dsda_EnableExCmd();
+      dsda_WriteDSDADemoHeader(&demo_p);
+    }
+  }
+
+  if (M_CheckParm("-dsdademo"))
+  {
     dsda_WriteDSDADemoHeader(&demo_p);
   }
 
@@ -3760,6 +3785,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   //e6y: check for overrun
   if (CheckForOverrun(header_p, demo_p, size, 1, failonerror))
     return NULL;
+
+  dsda_DisableExCmd();
 
   demover = *demo_p++;
   longtics = 0;
