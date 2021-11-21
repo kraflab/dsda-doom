@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 
+#include "doomstat.h"
 #include "lprintf.h"
 #include "z_zone.h"
 #include "p_saveg.h"
@@ -114,7 +115,7 @@ static char* dsda_SaveDir(void) {
 
 extern const char* savegamename;
 
-char* dsda_SaveGameName(int slot, int demo_save) {
+char* dsda_SaveGameName(int slot) {
   int length;
   char* name;
   const char* save_dir;
@@ -125,7 +126,7 @@ char* dsda_SaveGameName(int slot, int demo_save) {
 
   save_dir = dsda_SaveDir();
 
-  save_type = demo_save ? "demosav" : savegamename;
+  save_type = (demorecording || demoplayback) ? "demosav" : savegamename;
 
   length = strlen(save_type) + strlen(save_dir) + 10; // "/" + "9999.dsg\0"
 

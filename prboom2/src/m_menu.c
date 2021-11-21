@@ -657,30 +657,8 @@ void M_DrawNewGame(void)
   V_DrawNamePatch(54, 38, 0, "M_SKILL",CR_DEFAULT, VPT_STRETCH);
 }
 
-/* cph - make `New Game' restart the level in a netgame */
-static void M_RestartLevelResponse(int ch)
-{
-  if (ch != 'y')
-    return;
-
-  if (demorecording)
-    I_SafeExit(0);
-
-  currentMenu->lastOn = itemOn;
-  M_ClearMenus ();
-  G_RestartLevel ();
-}
-
 void M_NewGame(int choice)
 {
-  if (netgame && !demoplayback) {
-    if (compatibility_level < lxdoom_1_compatibility)
-      M_StartMessage(s_NEWGAME,NULL,false); // Ty 03/27/98 - externalized
-    else // CPhipps - query restarting the level
-      M_StartMessage(s_RESTARTLEVEL,M_RestartLevelResponse,true);
-    return;
-  }
-
   if (demorecording) {  /* killough 5/26/98: exclude during demo recordings */
     M_StartMessage("you can't start a new game\n"
        "while recording a demo!\n\n"PRESSKEY,
@@ -788,7 +766,7 @@ static void M_DeleteGame(int slot)
   if (dsda_LastSaveSlot() == slot)
     dsda_ResetLastSaveSlot();
 
-  name = dsda_SaveGameName(slot + save_page * g_menu_save_page_size, false);
+  name = dsda_SaveGameName(slot + save_page * g_menu_save_page_size);
   remove(name);
   free(name);
 
@@ -936,7 +914,7 @@ void M_ReadSaveStrings(void)
 
     /* killough 3/22/98
      * cph - add not-demoplayback parameter */
-    name = dsda_SaveGameName(i + save_page * g_menu_save_page_size, false);
+    name = dsda_SaveGameName(i + save_page * g_menu_save_page_size);
     fp = fopen(name,"rb");
     free(name);
     if (!fp) {   // Ty 03/27/98 - externalized:
@@ -1461,7 +1439,7 @@ void M_QuickLoad(void)
     return;
   }
 
-  name = dsda_SaveGameName(QUICKSAVESLOT, false);
+  name = dsda_SaveGameName(QUICKSAVESLOT);
 
   if (!access(name, F_OK))
   {

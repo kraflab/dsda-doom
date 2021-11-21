@@ -330,7 +330,7 @@ static int G_CarryDouble(double_carry_t c, double value)
   return truncated_result;
 }
 
-static void G_DoSaveGame (dboolean menu);
+static void G_DoSaveGame (void);
 
 //
 // G_BuildTiccmd
@@ -1036,15 +1036,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 }
 
 //
-// G_RestartLevel
-//
-
-void G_RestartLevel(void)
-{
-  special_event = BT_SPECIAL | (BTS_RESTARTLEVEL & BT_SPECIALMASK);
-}
-
-//
 // G_DoLoadLevel
 //
 
@@ -1278,7 +1269,7 @@ dboolean G_Responder (event_t* ev)
 
   if (dsda_InputActivated(dsda_input_pause))
   {
-    special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
+    special_event = BT_SPECIAL | (BT_PAUSE & BT_SPECIALMASK);
     return true;
   }
 
@@ -1365,9 +1356,6 @@ void G_Ticker (void)
       case ga_loadgame:
         G_DoLoadGame();
         break;
-      case ga_savegame:
-        G_DoSaveGame(false);
-        break;
       case ga_playdemo:
         G_DoPlayDemo();
         break;
@@ -1446,27 +1434,12 @@ void G_Ticker (void)
         {
           switch (players[i].cmd.buttons & BT_SPECIALMASK)
           {
-            case BTS_PAUSE:
+            case BT_PAUSE:
               paused ^= 1;
               if (paused)
                 S_PauseSound();
               else
                 S_ResumeSound();
-              break;
-
-            case BTS_SAVEGAME:
-              if (!savedescription[0])
-                strcpy(savedescription, "NET GAME");
-              savegameslot =
-                (players[i].cmd.buttons & BTS_SAVEMASK) >> BTS_SAVESHIFT;
-              gameaction = ga_savegame;
-              break;
-
-            // CPhipps - Restart the level
-            case BTS_RESTARTLEVEL:
-              if (demoplayback || (compatibility_level < lxdoom_1_compatibility))
-                break;     // CPhipps - Ignore in demos or old games
-              gameaction = ga_loadlevel;
               break;
           }
           if (!raven) players[i].cmd.buttons = 0;
@@ -2370,7 +2343,7 @@ void G_DoLoadGame(void)
 
   dsda_SetLastSaveSlot(savegameslot);
 
-  name = dsda_SaveGameName(savegameslot, demoplayback);
+  name = dsda_SaveGameName(savegameslot);
 
   // [crispy] loaded game must always be single player.
   // Needed for ability to use a further game loading, as well as
@@ -2542,7 +2515,7 @@ void G_SaveGame(int slot, const char *description)
   strcpy(savedescription, description);
 
   savegameslot = slot;
-  G_DoSaveGame(true);
+  G_DoSaveGame();
 }
 
 // Check for overrun and realloc if necessary -- Lee Killough 1/22/98
@@ -2569,7 +2542,7 @@ void (CheckSaveGame)(size_t size, const char* file, int line)
            savegamesize += (size+1023) & ~1023)) + pos;
 }
 
-static void G_DoSaveGame (dboolean menu)
+static void G_DoSaveGame (void)
 {
   char *name;
   char *description;
@@ -2584,7 +2557,7 @@ static void G_DoSaveGame (dboolean menu)
 
   dsda_SetLastSaveSlot(savegameslot);
 
-  name = dsda_SaveGameName(savegameslot, demoplayback && !menu);
+  name = dsda_SaveGameName(savegameslot);
 
   description = savedescription;
 
