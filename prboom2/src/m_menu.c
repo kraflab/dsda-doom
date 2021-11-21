@@ -912,8 +912,7 @@ void M_ReadSaveStrings(void)
     char *name;               // killough 3/22/98
     FILE *fp;  // killough 11/98: change to use stdio
 
-    /* killough 3/22/98
-     * cph - add not-demoplayback parameter */
+    // killough 3/22/98
     name = dsda_SaveGameName(i + save_page * g_menu_save_page_size);
     fp = fopen(name,"rb");
     free(name);
