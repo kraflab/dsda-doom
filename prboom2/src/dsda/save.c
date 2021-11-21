@@ -126,7 +126,7 @@ char* dsda_SaveGameName(int slot) {
 
   save_dir = dsda_SaveDir();
 
-  save_type = (demorecording || demoplayback) ? "demosav" : savegamename;
+  save_type = demoplayback ? "demosav" : savegamename;
 
   length = strlen(save_type) + strlen(save_dir) + 10; // "/" + "9999.dsg\0"
 
