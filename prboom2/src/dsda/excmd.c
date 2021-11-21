@@ -37,6 +37,10 @@ void dsda_EnableCasualExCmdFeatures(void) {
   casual_excmd_features = true;
 }
 
+dboolean dsda_AllowCasualExCmdFeatures(void) {
+  return casual_excmd_features;
+}
+
 void dsda_ResetCmd(ticcmd_t* cmd) {
   excmd_t excmd;
 

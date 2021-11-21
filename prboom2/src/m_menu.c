@@ -822,6 +822,15 @@ void M_DrawSaveLoadBorder(int x,int y)
 
 void M_LoadSelect(int choice)
 {
+  if (!dsda_AllowMenuLoad(choice + save_page * g_menu_save_page_size))
+  {
+    M_StartMessage(
+      "you can't load this game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
+    return;
+  }
+
   // CPhipps - Modified so savegame filename is worked out only internal
   //  to g_game.c, this only passes the slot.
 
@@ -858,12 +867,12 @@ void M_LoadGame (int choice)
 {
   delete_verify = false;
 
-  // killough 5/26/98: exclude during demo recordings
-  if (demorecording)
+  if (!dsda_AllowAnyMenuLoad())
   {
-    M_StartMessage("you can't load a game\n"
-       "while recording a demo!\n\n"PRESSKEY,
-       NULL, false); // killough 5/26/98: not externalized
+    M_StartMessage(
+      "you can't load a game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
     return;
   }
 
@@ -1431,10 +1440,21 @@ void M_QuickLoad(void)
 {
   char *name;
 
-  if (demorecording) {  // killough 5/26/98: exclude during demo recordings
-    M_StartMessage("you can't quickload\n"
-       "while recording a demo!\n\n"PRESSKEY,
-       NULL, false); // killough 5/26/98: not externalized
+  if (!dsda_AllowAnyMenuLoad())
+  {
+    M_StartMessage(
+      "you can't load a game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
+    return;
+  }
+
+  if (!dsda_AllowMenuLoad(QUICKSAVESLOT))
+  {
+    M_StartMessage(
+      "you can't load this game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
     return;
   }
 

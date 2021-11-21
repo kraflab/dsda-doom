@@ -2341,7 +2341,7 @@ void G_DoLoadGame(void)
   const char *maplump;
   int time, ttime;
 
-  dsda_SetLastSaveSlot(savegameslot);
+  dsda_SetLastLoadSlot(savegameslot);
 
   name = dsda_SaveGameName(savegameslot);
 
