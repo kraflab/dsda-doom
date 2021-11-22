@@ -2343,7 +2343,7 @@ void G_DoLoadGame(void)
 
   dsda_SetLastLoadSlot(savegameslot);
 
-  name = dsda_SaveGameName(savegameslot);
+  name = dsda_SaveGameName(savegameslot, false);
 
   // [crispy] loaded game must always be single player.
   // Needed for ability to use a further game loading, as well as
@@ -2557,7 +2557,7 @@ static void G_DoSaveGame (void)
 
   dsda_SetLastSaveSlot(savegameslot);
 
-  name = dsda_SaveGameName(savegameslot);
+  name = dsda_SaveGameName(savegameslot, false);
 
   description = savedescription;
 

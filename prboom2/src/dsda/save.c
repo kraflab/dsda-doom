@@ -116,7 +116,7 @@ static char* dsda_SaveDir(void) {
 
 extern const char* savegamename;
 
-char* dsda_SaveGameName(int slot) {
+char* dsda_SaveGameName(int slot, dboolean via_excmd) {
   int length;
   char* name;
   const char* save_dir;
@@ -127,7 +127,7 @@ char* dsda_SaveGameName(int slot) {
 
   save_dir = dsda_SaveDir();
 
-  save_type = demoplayback ? "demosav" : savegamename;
+  save_type = via_excmd ? "demosav" : savegamename;
 
   length = strlen(save_type) + strlen(save_dir) + 10; // "/" + "9999.dsg\0"
 

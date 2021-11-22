@@ -766,7 +766,7 @@ static void M_DeleteGame(int slot)
   if (dsda_LastSaveSlot() == slot)
     dsda_ResetLastSaveSlot();
 
-  name = dsda_SaveGameName(slot + save_page * g_menu_save_page_size);
+  name = dsda_SaveGameName(slot + save_page * g_menu_save_page_size, false);
   remove(name);
   free(name);
 
@@ -922,7 +922,7 @@ void M_ReadSaveStrings(void)
     FILE *fp;  // killough 11/98: change to use stdio
 
     // killough 3/22/98
-    name = dsda_SaveGameName(i + save_page * g_menu_save_page_size);
+    name = dsda_SaveGameName(i + save_page * g_menu_save_page_size, false);
     fp = fopen(name,"rb");
     free(name);
     if (!fp) {   // Ty 03/27/98 - externalized:
@@ -1458,7 +1458,7 @@ void M_QuickLoad(void)
     return;
   }
 
-  name = dsda_SaveGameName(QUICKSAVESLOT);
+  name = dsda_SaveGameName(QUICKSAVESLOT, false);
 
   if (!access(name, F_OK))
   {
