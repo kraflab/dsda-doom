@@ -41,9 +41,9 @@
 #endif
 
 typedef struct {
-  byte *data;
-  byte allocated_size;
-  byte tic_size;
+  byte actions;
+  byte save_slot;
+  byte load_slot;
 } excmd_t;
 
 /* The data sampled per tick (single player)

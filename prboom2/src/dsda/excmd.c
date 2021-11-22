@@ -20,8 +20,6 @@
 
 #include "excmd.h"
 
-static char *tic_buf;
-static byte tic_buf_size;
 static dboolean excmd_enabled;
 static dboolean casual_excmd_features;
 
@@ -41,36 +39,16 @@ dboolean dsda_AllowCasualExCmdFeatures(void) {
   return casual_excmd_features;
 }
 
-void dsda_ResetCmd(ticcmd_t* cmd) {
-  excmd_t excmd;
-
-  excmd = cmd->ex;
-
-  memset(cmd, 0, sizeof(*cmd));
-
-  if (excmd.data) {
-    cmd->ex = excmd;
-    memset(cmd->ex.data, 0, cmd->ex.allocated_size);
-    cmd->ex.tic_size = 0;
-  }
-}
-
-static void dsda_AppendAction(ticcmd_t* cmd, byte value, byte size) {
-  if (cmd->ex.allocated_size < size)
-    cmd->ex.data = realloc(cmd->ex.data, size);
-
-  cmd->ex.data[size - 1] = value;
-}
-
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {
-  byte action = 0;
-  byte action_count = 0;
   const byte* demo_p = *p;
 
   if (!excmd_enabled) return;
 
-  while ((action = *demo_p++) != 0)
-    dsda_AppendAction(cmd, action, ++action_count);
+  cmd->ex.actions = *demo_p++;
+  if (cmd->ex.actions & XC_SAVE)
+    cmd->ex.save_slot = *demo_p++;
+  if (cmd->ex.actions & XC_LOAD)
+    cmd->ex.load_slot = *demo_p++;
 
   *p = demo_p;
 }
@@ -80,30 +58,11 @@ void dsda_WriteExCmd(char** p, ticcmd_t* cmd) {
 
   if (!excmd_enabled) return;
 
-  if (1 + cmd->ex.tic_size + (demo_p - tic_buf) > tic_buf_size) {
-    tic_buf_size = 1 + cmd->ex.tic_size + (demo_p - tic_buf);
-    tic_buf = realloc(tic_buf, tic_buf_size);
-  }
-
-  if (cmd->ex.tic_size) {
-    memcpy(demo_p, cmd->ex.data, cmd->ex.tic_size);
-
-    demo_p += cmd->ex.tic_size;
-  }
-
-  // signifies end of extended command
-  *demo_p++ = 0;
+  *demo_p++ = cmd->ex.actions;
+  if (cmd->ex.actions & XC_SAVE)
+    *demo_p++ = cmd->ex.save_slot;
+  if (cmd->ex.actions & XC_LOAD)
+    *demo_p++ = cmd->ex.load_slot;
 
   *p = demo_p;
-}
-
-char* dsda_CmdBuffer(void) {
-  if (!tic_buf) {
-    tic_buf_size = 7;
-    tic_buf = malloc(tic_buf_size);
-  }
-
-  memset(tic_buf, 0, tic_buf_size);
-
-  return tic_buf;
 }

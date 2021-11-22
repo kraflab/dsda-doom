@@ -20,13 +20,17 @@
 
 #include "d_ticcmd.h"
 
+#define XC_JUMP 0x01
+#define XC_SAVE 0x02
+#define XC_LOAD 0x04
+#define XC_CLIP 0x08
+#define XC_GOD  0x10
+
 void dsda_EnableExCmd(void);
 void dsda_DisableExCmd(void);
 void dsda_EnableCasualExCmdFeatures(void);
 dboolean dsda_AllowCasualExCmdFeatures(void);
-void dsda_ResetCmd(ticcmd_t *cmd);
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p);
 void dsda_WriteExCmd(char** p, ticcmd_t* cmd);
-char* dsda_CmdBuffer(void);
 
 #endif

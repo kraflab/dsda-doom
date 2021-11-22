@@ -471,7 +471,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   G_SetSpeed(false);
 
-  dsda_ResetCmd(cmd);
+  memset(cmd, 0, sizeof(*cmd));
   cmd->consistancy = consistancy[consoleplayer][maketic%BACKUPTICS];
 
   strafe = dsda_InputActive(dsda_input_strafe);
@@ -3244,7 +3244,7 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
  */
 void G_WriteDemoTiccmd (ticcmd_t* cmd)
 {
-  char *buf = dsda_CmdBuffer();
+  char buf[10];
   char *p = buf;
 
   if (compatibility_level == tasdoom_compatibility)
