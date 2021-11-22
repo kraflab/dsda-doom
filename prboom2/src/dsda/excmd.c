@@ -66,3 +66,28 @@ void dsda_WriteExCmd(char** p, ticcmd_t* cmd) {
 
   *p = demo_p;
 }
+
+static excmd_t excmd_queue;
+
+void dsda_ResetExCmdQueue(void) {
+  memset(&excmd_queue, 0, sizeof(excmd_queue));
+}
+
+void dsda_PopExCmdQueue(ticcmd_t* cmd) {
+  cmd->ex = excmd_queue;
+  memset(&excmd_queue, 0, sizeof(excmd_queue));
+}
+
+void dsda_QueueExCmdJump(void) {
+  excmd_queue.actions |= XC_JUMP;
+}
+
+void dsda_QueueExCmdSave(int slot) {
+  excmd_queue.actions |= XC_SAVE;
+  excmd_queue.save_slot = slot;
+}
+
+void dsda_QueueExCmdLoad(int slot) {
+  excmd_queue.actions |= XC_LOAD;
+  excmd_queue.load_slot = XC_LOAD;
+}

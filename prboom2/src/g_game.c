@@ -1018,6 +1018,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     special_event = 0;
   }
 
+  dsda_PopExCmdQueue(cmd);
+
   if (!dsda_StrictMode()) {
     if (leveltime == 0 && totalleveltimes == 0) {
       int p = M_CheckParm("-first_input");
@@ -1168,6 +1170,7 @@ static void G_DoLoadLevel (void)
   mousex = mousey = 0;
   mlooky = 0;//e6y
   special_event = 0; paused = false;
+  dsda_ResetExCmdQueue();
 
   // killough 5/13/98: in case netdemo has consoleplayer other than green
   ST_Start();

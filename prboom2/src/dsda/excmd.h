@@ -32,5 +32,10 @@ void dsda_EnableCasualExCmdFeatures(void);
 dboolean dsda_AllowCasualExCmdFeatures(void);
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p);
 void dsda_WriteExCmd(char** p, ticcmd_t* cmd);
+void dsda_ResetExCmdQueue(void);
+void dsda_PopExCmdQueue(ticcmd_t* cmd);
+void dsda_QueueExCmdJump(void);
+void dsda_QueueExCmdSave(int slot);
+void dsda_QueueExCmdLoad(int slot);
 
 #endif
