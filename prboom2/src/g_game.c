@@ -3524,11 +3524,6 @@ void G_BeginRecording (void)
     }
   }
 
-  if (M_CheckParm("-dsdademo"))
-  {
-    dsda_WriteDSDADemoHeader(&demo_p);
-  }
-
   /* cph - 3 demo record formats supported: MBF+, BOOM, and Doom v1.9 */
   if (mbf_features) {
     { /* Write version code into demo */
