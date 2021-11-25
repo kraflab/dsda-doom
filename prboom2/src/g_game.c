@@ -151,7 +151,8 @@ struct MapEntry    *gamemapinfo;
 dboolean         paused;
 // CPhipps - moved *_loadgame vars here
 static dboolean forced_loadgame = false;
-static dboolean command_loadgame = false;
+static dboolean commandline_loadgame = false;
+static dboolean load_via_cmd = false;
 
 dboolean         usergame;      // ok to save / end game
 dboolean         timingdemo;    // if true, exit with report on completion
@@ -330,7 +331,7 @@ static int G_CarryDouble(double_carry_t c, double value)
   return truncated_result;
 }
 
-static void G_DoSaveGame (void);
+static void G_DoSaveGame(dboolean via_cmd);
 
 //
 // G_BuildTiccmd
@@ -1447,6 +1448,28 @@ void G_Ticker (void)
           }
           if (!raven) players[i].cmd.buttons = 0;
         }
+
+        if (dsda_AllowExCmd())
+        {
+          excmd_t *ex = &players[i].cmd.ex;
+
+          if (ex->actions & XC_SAVE)
+          {
+            strcpy(savedescription, "via_cmd");
+            savegameslot = ex->save_slot;
+            G_DoSaveGame(true);
+          }
+
+          if (ex->actions & XC_LOAD)
+          {
+            savegameslot = ex->load_slot;
+            gameaction = ga_loadgame;
+            forced_loadgame = true;
+            commandline_loadgame = false;
+            load_via_cmd = true;
+            R_SmoothPlaying_Reset(NULL);
+          }
+        }
       }
     }
 
@@ -2237,11 +2260,20 @@ void G_ForcedLoadGame(void)
 
 // killough 3/16/98: add slot info
 // killough 5/15/98: add command-line
-void G_LoadGame(int slot, dboolean command)
+void G_LoadGame(int slot, dboolean via_commandline)
 {
-  if (!demoplayback && !command) {
+  if (demorecording)
+  {
+    dsda_QueueExCmdLoad(slot);
+    return;
+  }
+
+  if (!demoplayback && !via_commandline)
+  {
     forced_loadgame = netgame; // CPhipps - always force load netgames
-  } else {
+  }
+  else
+  {
     forced_loadgame = false;
     demoplayback = false;
     // Don't stay in netgame state if loading single player save
@@ -2251,7 +2283,8 @@ void G_LoadGame(int slot, dboolean command)
 
   gameaction = ga_loadgame;
   savegameslot = slot;
-  command_loadgame = command;
+  commandline_loadgame = via_commandline;
+  load_via_cmd = false;
   R_SmoothPlaying_Reset(NULL); // e6y
 }
 
@@ -2262,7 +2295,7 @@ static void G_LoadGameErr(const char *msg)
 {
   Z_Free(savebuffer);                // Free the savegame buffer
   M_ForcedLoadGame(msg);             // Print message asking for 'Y' to force
-  if (command_loadgame)              // If this was a command-line -loadgame
+  if (commandline_loadgame)              // If this was a command-line -loadgame
     {
       D_StartTitle();                // Start the title screen
       gamestate = GS_DEMOSCREEN;     // And set the game state accordingly
@@ -2346,12 +2379,12 @@ void G_DoLoadGame(void)
 
   dsda_SetLastLoadSlot(savegameslot);
 
-  name = dsda_SaveGameName(savegameslot, false);
+  name = dsda_SaveGameName(savegameslot, load_via_cmd);
 
   // [crispy] loaded game must always be single player.
   // Needed for ability to use a further game loading, as well as
   // cheat codes and other single player only specifics.
-  if (!command_loadgame)
+  if (!commandline_loadgame && !load_via_cmd)
   {
     netdemo = false;
     netgame = false;
@@ -2496,15 +2529,23 @@ void G_DoLoadGame(void)
   R_FillBackScreen ();
 
   /* killough 12/98: support -recordfrom and -loadgame -playdemo */
-  if (!command_loadgame)
+  if (load_via_cmd)
+  {
+    // do nothing
+  }
+  else if (!commandline_loadgame)
+  {
     singledemo = false;  /* Clear singledemo flag if loading from menu */
-  else
-    if (singledemo) {
-      gameaction = ga_loadgame; /* Mark that we're loading a game before demo */
-      G_DoPlayDemo();           /* This will detect it and won't reinit level */
-    } else /* Command line + record means it's a recordfrom */
-      if (demorecording)
-        G_BeginRecording();
+  }
+  else if (singledemo)
+  {
+    gameaction = ga_loadgame; /* Mark that we're loading a game before demo */
+    G_DoPlayDemo();           /* This will detect it and won't reinit level */
+  }
+  else if (demorecording) /* Command line + record means it's a recordfrom */
+  {
+    G_BeginRecording();
+  }
 }
 
 //
@@ -2515,10 +2556,16 @@ void G_DoLoadGame(void)
 
 void G_SaveGame(int slot, const char *description)
 {
-  strcpy(savedescription, description);
-
-  savegameslot = slot;
-  G_DoSaveGame();
+  if (demorecording && dsda_AllowCasualExCmdFeatures())
+  {
+    dsda_QueueExCmdSave(slot);
+  }
+  else
+  {
+    strcpy(savedescription, description);
+    savegameslot = slot;
+    G_DoSaveGame(false);
+  }
 }
 
 // Check for overrun and realloc if necessary -- Lee Killough 1/22/98
@@ -2545,7 +2592,7 @@ void (CheckSaveGame)(size_t size, const char* file, int line)
            savegamesize += (size+1023) & ~1023)) + pos;
 }
 
-static void G_DoSaveGame (void)
+static void G_DoSaveGame(dboolean via_cmd)
 {
   char *name;
   char *description;
@@ -2560,7 +2607,7 @@ static void G_DoSaveGame (void)
 
   dsda_SetLastSaveSlot(savegameslot);
 
-  name = dsda_SaveGameName(savegameslot, false);
+  name = dsda_SaveGameName(savegameslot, via_cmd);
 
   description = savedescription;
 
