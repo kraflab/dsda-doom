@@ -410,6 +410,14 @@ void P_MovePlayer (player_t* player)
           P_Thrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
         }
       }
+      else if (dsda_AllowExCmd())
+      { // slight air control for jumping up ledges
+        if (cmd->forwardmove)
+          P_ForwardThrust(player, player->mo->angle, FRACUNIT >> 8);
+
+        if (cmd->sidemove)
+          P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
+      }
       if (mo->state == states+S_PLAY)
         P_SetMobjState(mo,S_PLAY_RUN1);
     }
