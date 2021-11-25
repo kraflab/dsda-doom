@@ -31,6 +31,10 @@ void dsda_DisableExCmd(void) {
   excmd_enabled = false;
 }
 
+dboolean dsda_AllowExCmd(void) {
+  return excmd_enabled;
+}
+
 void dsda_EnableCasualExCmdFeatures(void) {
   casual_excmd_features = true;
 }

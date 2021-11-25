@@ -28,6 +28,7 @@
 
 void dsda_EnableExCmd(void);
 void dsda_DisableExCmd(void);
+dboolean dsda_AllowExCmd(void);
 void dsda_EnableCasualExCmdFeatures(void);
 dboolean dsda_AllowCasualExCmdFeatures(void);
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p);
