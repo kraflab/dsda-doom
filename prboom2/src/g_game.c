@@ -760,6 +760,14 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     cmd->lookfly |= flyheight << 4;
   }
 
+  if (dsda_AllowCasualExCmdFeatures())
+  {
+    if (dsda_InputActive(dsda_input_jump))
+    {
+      dsda_QueueExCmdJump();
+    }
+  }
+
   // buttons
   cmd->chatchar = HU_dequeueChatChar();
 

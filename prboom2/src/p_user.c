@@ -49,6 +49,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda/death.h"
+#include "dsda/excmd.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
 
@@ -779,6 +780,15 @@ void P_PlayerThink (player_t* player)
       {
         P_PlayerUseArtifact(player, cmd->arti);
       }
+    }
+  }
+
+  if (dsda_AllowExCmd())
+  {
+    if (cmd->ex.actions & XC_JUMP && onground && !player->jumpTics)
+    {
+      player->mo->momz = 9 * FRACUNIT;
+      player->jumpTics = 18;
     }
   }
 
