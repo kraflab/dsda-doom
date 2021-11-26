@@ -212,7 +212,7 @@ cheatseq_t cheat[] = {
   CHEAT("fly",        NULL,               cht_never, cheat_fly, 0, false),
 
   // heretic
-  CHEAT("quicken", NULL, cht_never, cheat_god, 0, false),
+  CHEAT("quicken", NULL, cht_dsda, cheat_god, 0, false),
   CHEAT("ponce", NULL, cht_never, cheat_reset_health, 0, false),
   CHEAT("kitty", NULL, cht_never, cheat_noclip, 0, false),
   CHEAT("massacre", NULL, cht_never, cheat_massacre, 0, false),
@@ -225,7 +225,7 @@ cheatseq_t cheat[] = {
   CHEAT("cockadoodledoo", NULL, cht_never, cheat_chicken, 0, false),
 
   // hexen
-  CHEAT("satan", NULL, cht_never, cheat_god, 0, false),
+  CHEAT("satan", NULL, cht_dsda, cheat_god, 0, false),
   CHEAT("clubmed", NULL, cht_never, cheat_reset_health, 0, false),
   CHEAT("butcher", NULL, cht_never, cheat_massacre, 0, false),
   CHEAT("nra", NULL, cht_never, cheat_fa, 0, false),
