@@ -142,6 +142,10 @@ static int* demo_save_slots;
 static int allocated_save_slot_count;
 static int demo_save_slot_count;
 
+void dsda_ResetDemoSaveSlots(void) {
+  demo_save_slot_count = 0;
+}
+
 static void dsda_MarkSaveSlotUsed(int slot) {
   int i;
 

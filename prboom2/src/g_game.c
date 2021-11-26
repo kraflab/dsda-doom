@@ -3552,6 +3552,8 @@ void G_BeginRecording (void)
   demostart = demo_p = malloc(1000);
   longtics = 0;
 
+  dsda_ResetDemoSaveSlots();
+
   {
     dboolean use_dsda_format = false;
 
