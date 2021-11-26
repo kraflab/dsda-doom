@@ -127,7 +127,7 @@ static void cheat_script();
 // The second argument is its DEH name, or NULL if it's not supported by -deh.
 //
 // The third argument is a combination of the bitmasks:
-// {always, not_dm, not_coop, not_net, not_menu, not_demo, not_deh},
+// {always, not_dm, not_coop, not_net, not_menu, not_demo},
 // which excludes the cheat during certain modes of play.
 //
 // The fourth argument is the handler function.
@@ -853,8 +853,7 @@ static dboolean M_CheatAllowed(int when)
          !(when & not_dm   && deathmatch) &&
          !(when & not_coop && netgame && !deathmatch) &&
          !(when & not_demo && (demorecording || demoplayback)) &&
-         !(when & not_menu && menuactive) &&
-         !(when & not_deh  && M_CheckParm("-deh"));
+         !(when & not_menu && menuactive);
 }
 
 static void cht_InitCheats(void)

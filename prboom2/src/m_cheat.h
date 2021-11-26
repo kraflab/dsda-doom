@@ -49,7 +49,6 @@ typedef enum {
   not_coop = 2,
   not_demo = 4,
   not_menu = 8,
-  not_deh = 16,
   not_net = not_dm | not_coop,
   cht_never = not_net | not_demo
 } cheat_when_t;
