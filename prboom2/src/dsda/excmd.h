@@ -20,11 +20,11 @@
 
 #include "d_ticcmd.h"
 
-#define XC_JUMP 0x01
-#define XC_SAVE 0x02
-#define XC_LOAD 0x04
-#define XC_CLIP 0x08
-#define XC_GOD  0x10
+#define XC_JUMP   0x01
+#define XC_SAVE   0x02
+#define XC_LOAD   0x04
+#define XC_GOD    0x08
+#define XC_NOCLIP 0x10
 
 void dsda_EnableExCmd(void);
 void dsda_DisableExCmd(void);
@@ -39,5 +39,6 @@ void dsda_QueueExCmdJump(void);
 void dsda_QueueExCmdSave(int slot);
 void dsda_QueueExCmdLoad(int slot);
 void dsda_QueueExCmdGod(void);
+void dsda_QueueExCmdNoClip(void);
 
 #endif

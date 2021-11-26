@@ -145,8 +145,8 @@ cheatseq_t cheat[] = {
   CHEAT("iddqd",      "God mode",         cht_dsda,  cheat_god, 0, false),
   CHEAT("idkfa",      "Ammo & Keys",      cht_never, cheat_kfa, 0, false),
   CHEAT("idfa",       "Ammo",             cht_never, cheat_fa, 0, false),
-  CHEAT("idspispopd", "No Clipping 1",    cht_never, cheat_noclip, 0, false),
-  CHEAT("idclip",     "No Clipping 2",    cht_never, cheat_noclip, 0, false),
+  CHEAT("idspispopd", "No Clipping 1",    cht_dsda,  cheat_noclip, 0, false),
+  CHEAT("idclip",     "No Clipping 2",    cht_dsda,  cheat_noclip, 0, false),
   CHEAT("idbeholdh",  "Invincibility",    cht_never, cheat_health, 0, false),
   CHEAT("idbeholdm",  "Invincibility",    cht_never, cheat_megaarmour, 0, false),
   CHEAT("idbeholdv",  "Invincibility",    cht_never, cheat_pw, pw_invulnerability, false),
@@ -214,7 +214,7 @@ cheatseq_t cheat[] = {
   // heretic
   CHEAT("quicken", NULL, cht_dsda, cheat_god, 0, false),
   CHEAT("ponce", NULL, cht_never, cheat_reset_health, 0, false),
-  CHEAT("kitty", NULL, cht_never, cheat_noclip, 0, false),
+  CHEAT("kitty", NULL, cht_dsda, cheat_noclip, 0, false),
   CHEAT("massacre", NULL, cht_never, cheat_massacre, 0, false),
   CHEAT("rambo", NULL, cht_never, cheat_fa, 0, false),
   CHEAT("skel", NULL, cht_never, cheat_k, 0, false),
@@ -232,7 +232,7 @@ cheatseq_t cheat[] = {
   CHEAT("indiana", NULL, cht_never, cheat_inventory, 0, false),
   CHEAT("locksmith", NULL, cht_never, cheat_k, 0, false),
   CHEAT("sherlock", NULL, cht_never, cheat_puzzle, 0, false),
-  CHEAT("casper", NULL, cht_never, cheat_noclip, 0, false),
+  CHEAT("casper", NULL, cht_dsda, cheat_noclip, 0, false),
   CHEAT("shadowcaster", NULL, cht_never, cheat_class, -1, false),
   CHEAT("visit", NULL, cht_never | not_menu, cheat_clev, -2, false),
   CHEAT("init", NULL, cht_never, cheat_init, 0, false),
@@ -431,13 +431,21 @@ static void cheat_kfa()
   plyr->message = s_STSTR_KFAADDED;
 }
 
-static void cheat_noclip()
+void M_CheatNoClip(void)
 {
-  // Simplified, accepting both "noclip" and "idspispopd".
-  // no clipping mode cheat
-
   plyr->message = (plyr->cheats ^= CF_NOCLIP) & CF_NOCLIP ?
     s_STSTR_NCON : s_STSTR_NCOFF; // Ty 03/27/98 - externalized
+}
+
+static void cheat_noclip()
+{
+  if (demorecording)
+  {
+    dsda_QueueExCmdNoClip();
+    return;
+  }
+
+  M_CheatNoClip();
 }
 
 // 'behold?' power-up cheats (modified for infinite duration -- killough)

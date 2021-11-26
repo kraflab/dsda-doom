@@ -99,3 +99,7 @@ void dsda_QueueExCmdLoad(int slot) {
 void dsda_QueueExCmdGod(void) {
   excmd_queue.actions |= XC_GOD;
 }
+
+void dsda_QueueExCmdNoClip(void) {
+  excmd_queue.actions |= XC_NOCLIP;
+}

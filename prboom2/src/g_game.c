@@ -1482,6 +1482,11 @@ void G_Ticker (void)
           {
             M_CheatGod();
           }
+
+          if (ex->actions & XC_NOCLIP)
+          {
+            M_CheatNoClip();
+          }
         }
       }
     }
