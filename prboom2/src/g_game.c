@@ -3553,33 +3553,7 @@ void G_BeginRecording (void)
   longtics = 0;
 
   dsda_ResetDemoSaveSlots();
-
-  {
-    dboolean use_dsda_format = false;
-
-    if (map_format.zdoom)
-    {
-      if (!M_CheckParm("-baddemo"))
-        I_Error("Experimental formats require the -baddemo option to record.");
-
-      if (!mbf21)
-        I_Error("You must use complevel 21 when recording on doom-in-hexen format.");
-
-      use_dsda_format = true;
-    }
-
-    if (M_CheckParm("-dsdademo"))
-    {
-      use_dsda_format = true;
-      dsda_EnableCasualExCmdFeatures();
-    }
-
-    if (use_dsda_format)
-    {
-      dsda_EnableExCmd();
-      dsda_WriteDSDADemoHeader(&demo_p);
-    }
-  }
+  dsda_ApplyDSDADemoFormat(&demo_p);
 
   /* cph - 3 demo record formats supported: MBF+, BOOM, and Doom v1.9 */
   if (mbf_features) {

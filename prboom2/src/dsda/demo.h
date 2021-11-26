@@ -29,5 +29,6 @@ void dsda_SetDemoBufferOffset(int offset);
 void dsda_JoinDemoCmd(ticcmd_t* cmd);
 const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size);
 void dsda_WriteDSDADemoHeader(byte** p);
+void dsda_ApplyDSDADemoFormat(byte** demo_p);
 
 #endif
