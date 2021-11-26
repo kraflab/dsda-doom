@@ -1463,7 +1463,6 @@ void G_Ticker (void)
 
           if (ex->actions & XC_SAVE)
           {
-            strcpy(savedescription, "via_cmd");
             savegameslot = ex->save_slot;
             G_DoSaveGame(true);
           }
@@ -2564,13 +2563,14 @@ void G_DoLoadGame(void)
 
 void G_SaveGame(int slot, const char *description)
 {
+  strcpy(savedescription, description);
+
   if (demorecording && dsda_AllowCasualExCmdFeatures())
   {
     dsda_QueueExCmdSave(slot);
   }
   else
   {
-    strcpy(savedescription, description);
     savegameslot = slot;
     G_DoSaveGame(false);
   }
