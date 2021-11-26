@@ -95,3 +95,7 @@ void dsda_QueueExCmdLoad(int slot) {
   excmd_queue.actions |= XC_LOAD;
   excmd_queue.load_slot = slot;
 }
+
+void dsda_QueueExCmdGod(void) {
+  excmd_queue.actions |= XC_GOD;
+}

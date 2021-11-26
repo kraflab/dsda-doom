@@ -55,6 +55,7 @@
 #include "m_argv.h"
 #include "m_misc.h"
 #include "m_menu.h"
+#include "m_cheat.h"
 #include "m_random.h"
 #include "p_setup.h"
 #include "p_saveg.h"
@@ -1475,6 +1476,11 @@ void G_Ticker (void)
             commandline_loadgame = false;
             load_via_cmd = true;
             R_SmoothPlaying_Reset(NULL);
+          }
+
+          if (ex->actions & XC_GOD)
+          {
+            M_CheatGod();
           }
         }
       }

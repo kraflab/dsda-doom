@@ -38,5 +38,6 @@ void dsda_PopExCmdQueue(ticcmd_t* cmd);
 void dsda_QueueExCmdJump(void);
 void dsda_QueueExCmdSave(int slot);
 void dsda_QueueExCmdLoad(int slot);
+void dsda_QueueExCmdGod(void);
 
 #endif

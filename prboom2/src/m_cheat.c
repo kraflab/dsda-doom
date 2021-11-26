@@ -142,7 +142,7 @@ static void cheat_script();
 cheatseq_t cheat[] = {
   CHEAT("idmus",      "Change music",     always, cheat_mus, -2, false),
   CHEAT("idchoppers", "Chainsaw",         cht_never, cheat_choppers, 0, false),
-  CHEAT("iddqd",      "God mode",         cht_never, cheat_god, 0, false),
+  CHEAT("iddqd",      "God mode",         cht_dsda,  cheat_god, 0, false),
   CHEAT("idkfa",      "Ammo & Keys",      cht_never, cheat_kfa, 0, false),
   CHEAT("idfa",       "Ammo",             cht_never, cheat_fa, 0, false),
   CHEAT("idspispopd", "No Clipping 1",    cht_never, cheat_noclip, 0, false),
@@ -295,44 +295,56 @@ static void cheat_choppers()
   plyr->message = s_STSTR_CHOPPERS; // Ty 03/27/98 - externalized
 }
 
-static void cheat_god()
-{                                    // 'dqd' cheat for toggleable god mode
+void M_CheatGod(void)
+{
   // dead players are first respawned at the current position
   if (plyr->playerstate == PST_DEAD)
-    {
-      signed int an;
-      mapthing_t mt = {0};
+  {
+    signed int an;
+    mapthing_t mt = {0};
 
-      P_MapStart();
-      mt.x = plyr->mo->x >> FRACBITS;
-      mt.y = plyr->mo->y >> FRACBITS;
-      mt.angle = (plyr->mo->angle + ANG45/2)*(uint_64_t)45/ANG45;
-      mt.type = consoleplayer + 1;
-      mt.options = 1; // arbitrary non-zero value
-      P_SpawnPlayer(consoleplayer, &mt);
+    P_MapStart();
+    mt.x = plyr->mo->x >> FRACBITS;
+    mt.y = plyr->mo->y >> FRACBITS;
+    mt.angle = (plyr->mo->angle + ANG45/2)*(uint_64_t)45/ANG45;
+    mt.type = consoleplayer + 1;
+    mt.options = 1; // arbitrary non-zero value
+    P_SpawnPlayer(consoleplayer, &mt);
 
-      // spawn a teleport fog
-      an = plyr->mo->angle >> ANGLETOFINESHIFT;
-      P_SpawnMobj(plyr->mo->x + 20*finecosine[an],
-                  plyr->mo->y + 20*finesine[an],
-                  plyr->mo->z + g_telefog_height,
-                  g_mt_tfog);
-      S_StartSound(plyr, g_sfx_revive);
-      P_MapEnd();
-    }
+    // spawn a teleport fog
+    an = plyr->mo->angle >> ANGLETOFINESHIFT;
+    P_SpawnMobj(plyr->mo->x + 20*finecosine[an],
+                plyr->mo->y + 20*finesine[an],
+                plyr->mo->z + g_telefog_height,
+                g_mt_tfog);
+    S_StartSound(plyr, g_sfx_revive);
+    P_MapEnd();
+  }
+
   plyr->cheats ^= CF_GODMODE;
   if (plyr->cheats & CF_GODMODE)
-    {
-      if (plyr->mo)
-        plyr->mo->health = god_health;  // Ty 03/09/98 - deh
+  {
+    if (plyr->mo)
+      plyr->mo->health = god_health;  // Ty 03/09/98 - deh
 
-      plyr->health = god_health;
-      plyr->message = s_STSTR_DQDON; // Ty 03/27/98 - externalized
-    }
+    plyr->health = god_health;
+    plyr->message = s_STSTR_DQDON; // Ty 03/27/98 - externalized
+  }
   else
     plyr->message = s_STSTR_DQDOFF; // Ty 03/27/98 - externalized
 
   if (raven) SB_Start();
+}
+
+static void cheat_god()
+{                                    // 'dqd' cheat for toggleable god mode
+  if (demorecording)
+  {
+    dsda_QueueExCmdGod();
+    return;
+  }
+
+  M_CheatGod();
 }
 
 // CPhipps - new health and armour cheat codes

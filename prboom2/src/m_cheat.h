@@ -73,6 +73,7 @@ typedef struct cheatseq_s {
 
 extern cheatseq_t cheat[];
 
+void M_CheatGod(void);
 dboolean M_CheatResponder(event_t *ev);
 
 #endif
