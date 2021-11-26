@@ -54,6 +54,7 @@
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
 
+#include "dsda/excmd.h"
 #include "dsda/input.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
@@ -126,8 +127,7 @@ static void cheat_script();
 //
 // The second argument is its DEH name, or NULL if it's not supported by -deh.
 //
-// The third argument is a combination of the bitmasks:
-// {always, not_dm, not_coop, not_net, not_menu, not_demo},
+// The third argument is a combination of the bitmasks,
 // which excludes the cheat during certain modes of play.
 //
 // The fourth argument is the handler function.
@@ -847,13 +847,19 @@ static void cheat_fly()
   }
 }
 
+static dboolean M_ClassicDemo(void)
+{
+  return (demorecording || demoplayback) && !dsda_AllowCasualExCmdFeatures();
+}
+
 static dboolean M_CheatAllowed(int when)
 {
-  return !(when && dsda_StrictMode()) &&
-         !(when & not_dm   && deathmatch) &&
-         !(when & not_coop && netgame && !deathmatch) &&
-         !(when & not_demo && (demorecording || demoplayback)) &&
-         !(when & not_menu && menuactive);
+  return !(when                    && dsda_StrictMode()) &&
+         !(when & not_dm           && deathmatch) &&
+         !(when & not_coop         && netgame && !deathmatch) &&
+         !(when & not_demo         && (demorecording || demoplayback)) &&
+         !(when & not_classic_demo && M_ClassicDemo()) &&
+         !(when & not_menu         && menuactive);
 }
 
 static void cht_InitCheats(void)
