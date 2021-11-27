@@ -763,7 +763,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (dsda_AllowCasualExCmdFeatures())
   {
-    if (dsda_InputActive(dsda_input_jump))
+    if (!hexen && dsda_InputActive(dsda_input_jump))
     {
       dsda_QueueExCmdJump();
     }
