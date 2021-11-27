@@ -410,7 +410,7 @@ void P_MovePlayer (player_t* player)
           P_Thrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
         }
       }
-      else if (dsda_AllowExCmd())
+      else if (dsda_AllowJumping())
       { // slight air control for jumping up ledges
         if (cmd->forwardmove)
           P_ForwardThrust(player, player->mo->angle, FRACUNIT >> 8);
@@ -791,7 +791,7 @@ void P_PlayerThink (player_t* player)
     }
   }
 
-  if (dsda_AllowExCmd())
+  if (dsda_AllowJumping())
   {
     if (cmd->ex.actions & XC_JUMP && onground && !player->jumpTics)
     {

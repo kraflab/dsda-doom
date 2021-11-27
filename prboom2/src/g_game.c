@@ -761,7 +761,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     cmd->lookfly |= flyheight << 4;
   }
 
-  if (dsda_AllowCasualExCmdFeatures())
+  if (dsda_AllowJumping())
   {
     if (!hexen && dsda_InputActive(dsda_input_jump))
     {

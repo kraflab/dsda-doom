@@ -23,6 +23,9 @@
 static dboolean excmd_enabled;
 static dboolean casual_excmd_features;
 
+extern int demorecording;
+extern int demoplayback;
+
 void dsda_EnableExCmd(void) {
   excmd_enabled = true;
 }
@@ -32,7 +35,7 @@ void dsda_DisableExCmd(void) {
 }
 
 dboolean dsda_AllowExCmd(void) {
-  return excmd_enabled;
+  return (!demorecording && !demoplayback) || excmd_enabled;
 }
 
 void dsda_EnableCasualExCmdFeatures(void) {
@@ -43,10 +46,14 @@ dboolean dsda_AllowCasualExCmdFeatures(void) {
   return casual_excmd_features;
 }
 
+dboolean dsda_AllowJumping(void) {
+  return (!demorecording && !demoplayback) || dsda_AllowCasualExCmdFeatures();
+}
+
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {
   const byte* demo_p = *p;
 
-  if (!excmd_enabled) return;
+  if (!dsda_AllowExCmd()) return;
 
   cmd->ex.actions = *demo_p++;
   if (cmd->ex.actions & XC_SAVE)
@@ -60,7 +67,7 @@ void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {
 void dsda_WriteExCmd(char** p, ticcmd_t* cmd) {
   char* demo_p = *p;
 
-  if (!excmd_enabled) return;
+  if (!dsda_AllowExCmd()) return;
 
   *demo_p++ = cmd->ex.actions;
   if (cmd->ex.actions & XC_SAVE)
