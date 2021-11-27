@@ -23,6 +23,8 @@
 static dboolean excmd_enabled;
 static dboolean casual_excmd_features;
 
+int dsda_allow_jumping;
+
 extern int demorecording;
 extern int demoplayback;
 
@@ -47,7 +49,7 @@ dboolean dsda_AllowCasualExCmdFeatures(void) {
 }
 
 dboolean dsda_AllowJumping(void) {
-  return (!demorecording && !demoplayback) || dsda_AllowCasualExCmdFeatures();
+  return (!demorecording && !demoplayback && dsda_allow_jumping) || dsda_AllowCasualExCmdFeatures();
 }
 
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {

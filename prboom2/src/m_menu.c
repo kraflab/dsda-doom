@@ -3416,6 +3416,9 @@ setup_menu_t demo_settings[] = {
   { "Smooth Demo Playback Factor", S_NUM, m_null, G_X, G_Y + 10 * 8, { "demo_smoothturnsfactor" }, 0, M_ChangeDemoSmoothTurns },
   { "Quickstart Window (ms)", S_NUM, m_null, G_X, G_Y + 11 * 8, { "quickstart_window_ms" } },
 
+  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 13 * 8 },
+  { "Allow Jumping", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_allow_jumping" }, 0 },
+
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { mapping_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { tas_settings } },
   { 0, S_SKIP | S_END, m_null }
