@@ -883,16 +883,9 @@ byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size)
 
   if (fread(buffer, file_size, 1, hfile) == 1)
   {
-    //skip demo header
-    p = G_ReadDemoHeaderEx(buffer, file_size, RDH_SKIP_HEADER);
+    p = dsda_DemoMarkerPosition(buffer, file_size);
 
-    //skip demo data
-    while (p < buffer + file_size && *p != DEMOMARKER)
-    {
-      p += bytes_per_tic;
-    }
-
-    if (*p == DEMOMARKER)
+    if (p)
     {
       //skip DEMOMARKER
       p++;

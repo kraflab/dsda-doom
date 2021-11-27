@@ -31,5 +31,7 @@ const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, s
 void dsda_WriteDSDADemoHeader(byte** p);
 void dsda_ApplyDSDADemoFormat(byte** demo_p);
 void dsda_EndDemoRecording(void);
+int dsda_DemoTicsCount(const byte* p, const byte* demobuffer, int demolength);
+const byte* dsda_DemoMarkerPosition(byte* buffer, size_t file_size);
 
 #endif

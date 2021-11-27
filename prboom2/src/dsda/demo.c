@@ -21,6 +21,7 @@
 
 #include "doomtype.h"
 #include "doomstat.h"
+#include "g_game.h"
 #include "m_argv.h"
 #include "m_misc.h"
 #include "lprintf.h"
@@ -103,6 +104,20 @@ static void dsda_WriteIntToHeader(byte** p, int value) {
   *p = header_p;
 }
 
+static int dsda_ReadIntFromHeader(const byte* p) {
+  int result;
+
+  result  = *p++ & 0xff;
+  result <<= 8;
+  result += *p++ & 0xff;
+  result <<= 8;
+  result += *p++ & 0xff;
+  result <<= 8;
+  result += *p++ & 0xff;
+
+  return result;
+}
+
 static void dsda_WriteExtraDemoHeaderData(int end_marker_location, int demo_tic_count) {
   byte* header_p;
 
@@ -182,9 +197,12 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd) {
     cmd->buttons |= BT_JOIN;
 }
 
+#define DSDA_DEMO_HEADER_START_SIZE 8 // version + signature (6) + dsda version
 #define DSDA_DEMO_HEADER_DATA_SIZE (2*sizeof(int))
 
 static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* header_p, size_t size) {
+  dsda_demo_version = 0;
+
   // 7 = 6 (signature) + 1 (dsda version)
   if (demo_p - header_p + 7 > size)
     return NULL;
@@ -316,4 +334,46 @@ void dsda_ApplyDSDADemoFormat(byte** demo_p) {
     dsda_EnableExCmd();
     dsda_WriteDSDADemoHeader(demo_p);
   }
+}
+
+int dsda_DemoTicsCount(const byte* p, const byte* demobuffer, int demolength) {
+  int count = 0;
+  extern int demo_playerscount;
+
+  if (dsda_demo_version)
+    return dsda_ReadIntFromHeader(demobuffer + DSDA_DEMO_HEADER_START_SIZE + 4);
+
+  do {
+    count++;
+    p += bytes_per_tic;
+  } while ((p < demobuffer + demolength) && (*p != DEMOMARKER));
+
+  return count / demo_playerscount;
+}
+
+const byte* dsda_DemoMarkerPosition(byte* buffer, size_t file_size) {
+  const byte* p;
+
+  // read demo header
+  p = G_ReadDemoHeaderEx(buffer, file_size, RDH_SKIP_HEADER);
+
+  if (dsda_demo_version) {
+    int i;
+
+    p = (const byte*) (buffer + dsda_ReadIntFromHeader(buffer + DSDA_DEMO_HEADER_START_SIZE));
+
+    if (*p != DEMOMARKER)
+      return NULL;
+
+    return p;
+  }
+
+  // skip demo data
+  while (p < buffer + file_size && *p != DEMOMARKER)
+    p += bytes_per_tic;
+
+  if (*p != DEMOMARKER)
+    return NULL;
+
+  return p;
 }

@@ -4124,14 +4124,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
     if (demo_playerscount > 0 && demolength > 0)
     {
-      do
-      {
-        demo_tics_count++;
-        p += bytes_per_tic;
-      }
-      while ((p < demobuffer + demolength) && (*p != DEMOMARKER));
-
-      demo_tics_count /= demo_playerscount;
+      demo_tics_count = dsda_DemoTicsCount(p, demobuffer, demolength);
 
       sprintf(demo_len_st, "\x1b\x35/%d:%02d",
         demo_tics_count / TICRATE / 60,
