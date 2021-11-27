@@ -17,12 +17,14 @@
 
 #include <stdlib.h>
 
+#include "doomstat.h"
 #include "lprintf.h"
 #include "z_zone.h"
 #include "p_saveg.h"
 #include "p_map.h"
 
 #include "dsda/data_organizer.h"
+#include "dsda/excmd.h"
 #include "save.h"
 
 int dsda_organized_saves;
@@ -114,7 +116,7 @@ static char* dsda_SaveDir(void) {
 
 extern const char* savegamename;
 
-char* dsda_SaveGameName(int slot, int demo_save) {
+char* dsda_SaveGameName(int slot, dboolean via_cmd) {
   int length;
   char* name;
   const char* save_dir;
@@ -125,7 +127,7 @@ char* dsda_SaveGameName(int slot, int demo_save) {
 
   save_dir = dsda_SaveDir();
 
-  save_type = demo_save ? "demosav" : savegamename;
+  save_type = (via_cmd && demoplayback) ? "demosav" : savegamename;
 
   length = strlen(save_type) + strlen(save_dir) + 10; // "/" + "9999.dsg\0"
 
@@ -136,9 +138,58 @@ char* dsda_SaveGameName(int slot, int demo_save) {
   return name;
 }
 
+static int* demo_save_slots;
+static int allocated_save_slot_count;
+static int demo_save_slot_count;
+
+void dsda_ResetDemoSaveSlots(void) {
+  demo_save_slot_count = 0;
+}
+
+static void dsda_MarkSaveSlotUsed(int slot) {
+  int i;
+
+  if (!demorecording) return;
+
+  for (i = 0; i < demo_save_slot_count; ++i)
+    if (demo_save_slots[i] == slot)
+      return;
+
+  ++demo_save_slot_count;
+  if (demo_save_slot_count > allocated_save_slot_count) {
+    allocated_save_slot_count = allocated_save_slot_count ? allocated_save_slot_count * 2 : 8;
+    demo_save_slots =
+      realloc(demo_save_slots, allocated_save_slot_count * sizeof(*demo_save_slots));
+  }
+
+  demo_save_slots[demo_save_slot_count - 1] = slot;
+}
+
+int dsda_AllowMenuLoad(int slot) {
+  int i;
+
+  if (!demorecording) return true;
+  if (!dsda_AllowCasualExCmdFeatures()) return false;
+
+  for (i = 0; i < demo_save_slot_count; ++i)
+    if (demo_save_slots[i] == slot)
+      return true;
+
+  return false;
+}
+
+int dsda_AllowAnyMenuLoad(void) {
+  return !demorecording || dsda_AllowCasualExCmdFeatures();
+}
+
 static int last_save_file_slot = -1;
 
+void dsda_SetLastLoadSlot(int slot) {
+  last_save_file_slot = slot;
+}
+
 void dsda_SetLastSaveSlot(int slot) {
+  dsda_MarkSaveSlotUsed(slot);
   last_save_file_slot = slot;
 }
 

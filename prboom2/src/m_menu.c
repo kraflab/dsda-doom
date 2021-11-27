@@ -657,30 +657,8 @@ void M_DrawNewGame(void)
   V_DrawNamePatch(54, 38, 0, "M_SKILL",CR_DEFAULT, VPT_STRETCH);
 }
 
-/* cph - make `New Game' restart the level in a netgame */
-static void M_RestartLevelResponse(int ch)
-{
-  if (ch != 'y')
-    return;
-
-  if (demorecording)
-    I_SafeExit(0);
-
-  currentMenu->lastOn = itemOn;
-  M_ClearMenus ();
-  G_RestartLevel ();
-}
-
 void M_NewGame(int choice)
 {
-  if (netgame && !demoplayback) {
-    if (compatibility_level < lxdoom_1_compatibility)
-      M_StartMessage(s_NEWGAME,NULL,false); // Ty 03/27/98 - externalized
-    else // CPhipps - query restarting the level
-      M_StartMessage(s_RESTARTLEVEL,M_RestartLevelResponse,true);
-    return;
-  }
-
   if (demorecording) {  /* killough 5/26/98: exclude during demo recordings */
     M_StartMessage("you can't start a new game\n"
        "while recording a demo!\n\n"PRESSKEY,
@@ -844,6 +822,15 @@ void M_DrawSaveLoadBorder(int x,int y)
 
 void M_LoadSelect(int choice)
 {
+  if (!dsda_AllowMenuLoad(choice + save_page * g_menu_save_page_size))
+  {
+    M_StartMessage(
+      "you can't load this game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
+    return;
+  }
+
   // CPhipps - Modified so savegame filename is worked out only internal
   //  to g_game.c, this only passes the slot.
 
@@ -880,12 +867,12 @@ void M_LoadGame (int choice)
 {
   delete_verify = false;
 
-  // killough 5/26/98: exclude during demo recordings
-  if (demorecording)
+  if (!dsda_AllowAnyMenuLoad())
   {
-    M_StartMessage("you can't load a game\n"
-       "while recording a demo!\n\n"PRESSKEY,
-       NULL, false); // killough 5/26/98: not externalized
+    M_StartMessage(
+      "you can't load a game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
     return;
   }
 
@@ -934,8 +921,7 @@ void M_ReadSaveStrings(void)
     char *name;               // killough 3/22/98
     FILE *fp;  // killough 11/98: change to use stdio
 
-    /* killough 3/22/98
-     * cph - add not-demoplayback parameter */
+    // killough 3/22/98
     name = dsda_SaveGameName(i + save_page * g_menu_save_page_size, false);
     fp = fopen(name,"rb");
     free(name);
@@ -1454,10 +1440,21 @@ void M_QuickLoad(void)
 {
   char *name;
 
-  if (demorecording) {  // killough 5/26/98: exclude during demo recordings
-    M_StartMessage("you can't quickload\n"
-       "while recording a demo!\n\n"PRESSKEY,
-       NULL, false); // killough 5/26/98: not externalized
+  if (!dsda_AllowAnyMenuLoad())
+  {
+    M_StartMessage(
+      "you can't load a game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
+    return;
+  }
+
+  if (!dsda_AllowMenuLoad(QUICKSAVESLOT))
+  {
+    M_StartMessage(
+      "you can't load this game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
     return;
   }
 

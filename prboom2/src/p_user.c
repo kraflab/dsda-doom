@@ -49,6 +49,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda/death.h"
+#include "dsda/excmd.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
 
@@ -408,6 +409,14 @@ void P_MovePlayer (player_t* player)
           P_Bob(player,mo->angle-ANG90,cmd->sidemove*bobfactor);
           P_Thrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
         }
+      }
+      else if (dsda_AllowExCmd())
+      { // slight air control for jumping up ledges
+        if (cmd->forwardmove)
+          P_ForwardThrust(player, player->mo->angle, FRACUNIT >> 8);
+
+        if (cmd->sidemove)
+          P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
       }
       if (mo->state == states+S_PLAY)
         P_SetMobjState(mo,S_PLAY_RUN1);
@@ -779,6 +788,15 @@ void P_PlayerThink (player_t* player)
       {
         P_PlayerUseArtifact(player, cmd->arti);
       }
+    }
+  }
+
+  if (dsda_AllowExCmd())
+  {
+    if (cmd->ex.actions & XC_JUMP && onground && !player->jumpTics)
+    {
+      player->mo->momz = 9 * FRACUNIT;
+      player->jumpTics = 18;
     }
   }
 

@@ -55,6 +55,7 @@
 #include "m_argv.h"
 #include "m_misc.h"
 #include "m_menu.h"
+#include "m_cheat.h"
 #include "m_random.h"
 #include "p_setup.h"
 #include "p_saveg.h"
@@ -86,6 +87,7 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 #include "dsda/demo.h"
+#include "dsda/excmd.h"
 #include "dsda/key_frame.h"
 #include "dsda/save.h"
 #include "dsda/settings.h"
@@ -150,7 +152,8 @@ struct MapEntry    *gamemapinfo;
 dboolean         paused;
 // CPhipps - moved *_loadgame vars here
 static dboolean forced_loadgame = false;
-static dboolean command_loadgame = false;
+static dboolean commandline_loadgame = false;
+static dboolean load_via_cmd = false;
 
 dboolean         usergame;      // ok to save / end game
 dboolean         timingdemo;    // if true, exit with report on completion
@@ -329,7 +332,7 @@ static int G_CarryDouble(double_carry_t c, double value)
   return truncated_result;
 }
 
-static void G_DoSaveGame (dboolean menu);
+static void G_DoSaveGame(dboolean via_cmd);
 
 //
 // G_BuildTiccmd
@@ -470,8 +473,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   G_SetSpeed(false);
 
-  /* cphipps - remove needless I_BaseTiccmd call, just set the ticcmd to zero */
-  memset(cmd,0,sizeof*cmd);
+  memset(cmd, 0, sizeof(*cmd));
   cmd->consistancy = consistancy[consoleplayer][maketic%BACKUPTICS];
 
   strafe = dsda_InputActive(dsda_input_strafe);
@@ -759,6 +761,14 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     cmd->lookfly |= flyheight << 4;
   }
 
+  if (dsda_AllowCasualExCmdFeatures())
+  {
+    if (!hexen && dsda_InputActive(dsda_input_jump))
+    {
+      dsda_QueueExCmdJump();
+    }
+  }
+
   // buttons
   cmd->chatchar = HU_dequeueChatChar();
 
@@ -1018,6 +1028,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     special_event = 0;
   }
 
+  dsda_PopExCmdQueue(cmd);
+
   if (!dsda_StrictMode()) {
     if (leveltime == 0 && totalleveltimes == 0) {
       int p = M_CheckParm("-first_input");
@@ -1033,15 +1045,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     else
       dsda_ApplyTasCommand(cmd);
   }
-}
-
-//
-// G_RestartLevel
-//
-
-void G_RestartLevel(void)
-{
-  special_event = BT_SPECIAL | (BTS_RESTARTLEVEL & BT_SPECIALMASK);
 }
 
 //
@@ -1177,6 +1180,7 @@ static void G_DoLoadLevel (void)
   mousex = mousey = 0;
   mlooky = 0;//e6y
   special_event = 0; paused = false;
+  dsda_ResetExCmdQueue();
 
   // killough 5/13/98: in case netdemo has consoleplayer other than green
   ST_Start();
@@ -1278,7 +1282,7 @@ dboolean G_Responder (event_t* ev)
 
   if (dsda_InputActivated(dsda_input_pause))
   {
-    special_event = BT_SPECIAL | (BTS_PAUSE & BT_SPECIALMASK);
+    special_event = BT_SPECIAL | (BT_PAUSE & BT_SPECIALMASK);
     return true;
   }
 
@@ -1365,9 +1369,6 @@ void G_Ticker (void)
       case ga_loadgame:
         G_DoLoadGame();
         break;
-      case ga_savegame:
-        G_DoSaveGame(false);
-        break;
       case ga_playdemo:
         G_DoPlayDemo();
         break;
@@ -1446,30 +1447,46 @@ void G_Ticker (void)
         {
           switch (players[i].cmd.buttons & BT_SPECIALMASK)
           {
-            case BTS_PAUSE:
+            case BT_PAUSE:
               paused ^= 1;
               if (paused)
                 S_PauseSound();
               else
                 S_ResumeSound();
               break;
-
-            case BTS_SAVEGAME:
-              if (!savedescription[0])
-                strcpy(savedescription, "NET GAME");
-              savegameslot =
-                (players[i].cmd.buttons & BTS_SAVEMASK) >> BTS_SAVESHIFT;
-              gameaction = ga_savegame;
-              break;
-
-            // CPhipps - Restart the level
-            case BTS_RESTARTLEVEL:
-              if (demoplayback || (compatibility_level < lxdoom_1_compatibility))
-                break;     // CPhipps - Ignore in demos or old games
-              gameaction = ga_loadlevel;
-              break;
           }
           if (!raven) players[i].cmd.buttons = 0;
+        }
+
+        if (dsda_AllowExCmd())
+        {
+          excmd_t *ex = &players[i].cmd.ex;
+
+          if (ex->actions & XC_SAVE)
+          {
+            savegameslot = ex->save_slot;
+            G_DoSaveGame(true);
+          }
+
+          if (ex->actions & XC_LOAD)
+          {
+            savegameslot = ex->load_slot;
+            gameaction = ga_loadgame;
+            forced_loadgame = true;
+            commandline_loadgame = false;
+            load_via_cmd = true;
+            R_SmoothPlaying_Reset(NULL);
+          }
+
+          if (ex->actions & XC_GOD)
+          {
+            M_CheatGod();
+          }
+
+          if (ex->actions & XC_NOCLIP)
+          {
+            M_CheatNoClip();
+          }
         }
       }
     }
@@ -2261,11 +2278,20 @@ void G_ForcedLoadGame(void)
 
 // killough 3/16/98: add slot info
 // killough 5/15/98: add command-line
-void G_LoadGame(int slot, dboolean command)
+void G_LoadGame(int slot, dboolean via_commandline)
 {
-  if (!demoplayback && !command) {
+  if (demorecording)
+  {
+    dsda_QueueExCmdLoad(slot);
+    return;
+  }
+
+  if (!demoplayback && !via_commandline)
+  {
     forced_loadgame = netgame; // CPhipps - always force load netgames
-  } else {
+  }
+  else
+  {
     forced_loadgame = false;
     demoplayback = false;
     // Don't stay in netgame state if loading single player save
@@ -2275,7 +2301,8 @@ void G_LoadGame(int slot, dboolean command)
 
   gameaction = ga_loadgame;
   savegameslot = slot;
-  command_loadgame = command;
+  commandline_loadgame = via_commandline;
+  load_via_cmd = false;
   R_SmoothPlaying_Reset(NULL); // e6y
 }
 
@@ -2286,7 +2313,7 @@ static void G_LoadGameErr(const char *msg)
 {
   Z_Free(savebuffer);                // Free the savegame buffer
   M_ForcedLoadGame(msg);             // Print message asking for 'Y' to force
-  if (command_loadgame)              // If this was a command-line -loadgame
+  if (commandline_loadgame)              // If this was a command-line -loadgame
     {
       D_StartTitle();                // Start the title screen
       gamestate = GS_DEMOSCREEN;     // And set the game state accordingly
@@ -2368,14 +2395,14 @@ void G_DoLoadGame(void)
   const char *maplump;
   int time, ttime;
 
-  dsda_SetLastSaveSlot(savegameslot);
+  dsda_SetLastLoadSlot(savegameslot);
 
-  name = dsda_SaveGameName(savegameslot, demoplayback);
+  name = dsda_SaveGameName(savegameslot, load_via_cmd);
 
   // [crispy] loaded game must always be single player.
   // Needed for ability to use a further game loading, as well as
   // cheat codes and other single player only specifics.
-  if (!command_loadgame)
+  if (!commandline_loadgame && !load_via_cmd)
   {
     netdemo = false;
     netgame = false;
@@ -2520,15 +2547,23 @@ void G_DoLoadGame(void)
   R_FillBackScreen ();
 
   /* killough 12/98: support -recordfrom and -loadgame -playdemo */
-  if (!command_loadgame)
+  if (load_via_cmd)
+  {
+    // do nothing
+  }
+  else if (!commandline_loadgame)
+  {
     singledemo = false;  /* Clear singledemo flag if loading from menu */
-  else
-    if (singledemo) {
-      gameaction = ga_loadgame; /* Mark that we're loading a game before demo */
-      G_DoPlayDemo();           /* This will detect it and won't reinit level */
-    } else /* Command line + record means it's a recordfrom */
-      if (demorecording)
-        G_BeginRecording();
+  }
+  else if (singledemo)
+  {
+    gameaction = ga_loadgame; /* Mark that we're loading a game before demo */
+    G_DoPlayDemo();           /* This will detect it and won't reinit level */
+  }
+  else if (demorecording) /* Command line + record means it's a recordfrom */
+  {
+    G_BeginRecording();
+  }
 }
 
 //
@@ -2541,8 +2576,15 @@ void G_SaveGame(int slot, const char *description)
 {
   strcpy(savedescription, description);
 
-  savegameslot = slot;
-  G_DoSaveGame(true);
+  if (demorecording && dsda_AllowCasualExCmdFeatures())
+  {
+    dsda_QueueExCmdSave(slot);
+  }
+  else
+  {
+    savegameslot = slot;
+    G_DoSaveGame(false);
+  }
 }
 
 // Check for overrun and realloc if necessary -- Lee Killough 1/22/98
@@ -2569,7 +2611,7 @@ void (CheckSaveGame)(size_t size, const char* file, int line)
            savegamesize += (size+1023) & ~1023)) + pos;
 }
 
-static void G_DoSaveGame (dboolean menu)
+static void G_DoSaveGame(dboolean via_cmd)
 {
   char *name;
   char *description;
@@ -2584,7 +2626,7 @@ static void G_DoSaveGame (dboolean menu)
 
   dsda_SetLastSaveSlot(savegameslot);
 
-  name = dsda_SaveGameName(savegameslot, demoplayback && !menu);
+  name = dsda_SaveGameName(savegameslot, via_cmd);
 
   description = savedescription;
 
@@ -3243,6 +3285,8 @@ void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p)
     cmd->angleturn = ((unsigned char)cmd->buttons)<<8;
     cmd->buttons = (byte)tmp;
   }
+
+  dsda_ReadExCmd(cmd, data_p);
 }
 
 void G_ReadDemoTiccmd (ticcmd_t* cmd)
@@ -3269,7 +3313,7 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
  */
 void G_WriteDemoTiccmd (ticcmd_t* cmd)
 {
-  char buf[7];
+  char buf[10];
   char *p = buf;
 
   if (compatibility_level == tasdoom_compatibility)
@@ -3298,6 +3342,8 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
       *p++ = cmd->arti;
     }
   }
+
+  dsda_WriteExCmd(&p, cmd);
 
   dsda_WriteToDemo(buf, p - buf);
 
@@ -3517,16 +3563,8 @@ void G_BeginRecording (void)
   demostart = demo_p = malloc(1000);
   longtics = 0;
 
-  if (map_format.zdoom)
-  {
-    if (!M_CheckParm("-baddemo"))
-      I_Error("Experimental formats require the -baddemo option to record.");
-
-    if (!mbf21)
-      I_Error("You must use complevel 21 when recording on doom-in-hexen format.");
-
-    dsda_WriteDSDADemoHeader(&demo_p);
-  }
+  dsda_ResetDemoSaveSlots();
+  dsda_ApplyDSDADemoFormat(&demo_p);
 
   /* cph - 3 demo record formats supported: MBF+, BOOM, and Doom v1.9 */
   if (mbf_features) {
@@ -3760,6 +3798,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   //e6y: check for overrun
   if (CheckForOverrun(header_p, demo_p, size, 1, failonerror))
     return NULL;
+
+  dsda_DisableExCmd();
 
   demover = *demo_p++;
   longtics = 0;
@@ -4069,6 +4109,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
     bytes_per_tic = (longtics ? 5 : 4);
     if (raven) bytes_per_tic += 2;
+    if (dsda_AllowExCmd()) bytes_per_tic++;
     demo_playerscount = 0;
     demo_tics_count = 0;
     demo_curr_tic = 0;
@@ -4084,14 +4125,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
     if (demo_playerscount > 0 && demolength > 0)
     {
-      do
-      {
-        demo_tics_count++;
-        p += bytes_per_tic;
-      }
-      while ((p < demobuffer + demolength) && (*p != DEMOMARKER));
-
-      demo_tics_count /= demo_playerscount;
+      demo_tics_count = dsda_DemoTicsCount(p, demobuffer, demolength);
 
       sprintf(demo_len_st, "\x1b\x35/%d:%02d",
         demo_tics_count / TICRATE / 60,
@@ -4143,17 +4177,7 @@ dboolean G_CheckDemoStatus (void)
 
   if (demorecording)
   {
-    byte end_marker = DEMOMARKER;
-
-    demorecording = false;
-    dsda_WriteToDemo(&end_marker, 1);
-
-    //e6y
-    G_WriteDemoFooter();
-
-    dsda_WriteDemoToFile();
-
-    lprintf(LO_INFO, "G_CheckDemoStatus: Demo recorded\n");
+    dsda_EndDemoRecording();
 
     return false;  // killough
   }

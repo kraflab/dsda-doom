@@ -49,8 +49,9 @@ typedef enum {
   not_coop = 2,
   not_demo = 4,
   not_menu = 8,
-  not_deh = 16,
+  not_classic_demo = 16,
   not_net = not_dm | not_coop,
+  cht_dsda = not_net | not_classic_demo,
   cht_never = not_net | not_demo
 } cheat_when_t;
 
@@ -72,6 +73,8 @@ typedef struct cheatseq_s {
 
 extern cheatseq_t cheat[];
 
+void M_CheatGod(void);
+void M_CheatNoClip(void);
 dboolean M_CheatResponder(event_t *ev);
 
 #endif

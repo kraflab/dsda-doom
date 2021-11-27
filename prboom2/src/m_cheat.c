@@ -54,6 +54,7 @@
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
 
+#include "dsda/excmd.h"
 #include "dsda/input.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
@@ -126,8 +127,7 @@ static void cheat_script();
 //
 // The second argument is its DEH name, or NULL if it's not supported by -deh.
 //
-// The third argument is a combination of the bitmasks:
-// {always, not_dm, not_coop, not_net, not_menu, not_demo, not_deh},
+// The third argument is a combination of the bitmasks,
 // which excludes the cheat during certain modes of play.
 //
 // The fourth argument is the handler function.
@@ -142,11 +142,11 @@ static void cheat_script();
 cheatseq_t cheat[] = {
   CHEAT("idmus",      "Change music",     always, cheat_mus, -2, false),
   CHEAT("idchoppers", "Chainsaw",         cht_never, cheat_choppers, 0, false),
-  CHEAT("iddqd",      "God mode",         cht_never, cheat_god, 0, false),
+  CHEAT("iddqd",      "God mode",         cht_dsda,  cheat_god, 0, false),
   CHEAT("idkfa",      "Ammo & Keys",      cht_never, cheat_kfa, 0, false),
   CHEAT("idfa",       "Ammo",             cht_never, cheat_fa, 0, false),
-  CHEAT("idspispopd", "No Clipping 1",    cht_never, cheat_noclip, 0, false),
-  CHEAT("idclip",     "No Clipping 2",    cht_never, cheat_noclip, 0, false),
+  CHEAT("idspispopd", "No Clipping 1",    cht_dsda,  cheat_noclip, 0, false),
+  CHEAT("idclip",     "No Clipping 2",    cht_dsda,  cheat_noclip, 0, false),
   CHEAT("idbeholdh",  "Invincibility",    cht_never, cheat_health, 0, false),
   CHEAT("idbeholdm",  "Invincibility",    cht_never, cheat_megaarmour, 0, false),
   CHEAT("idbeholdv",  "Invincibility",    cht_never, cheat_pw, pw_invulnerability, false),
@@ -212,9 +212,9 @@ cheatseq_t cheat[] = {
   CHEAT("fly",        NULL,               cht_never, cheat_fly, 0, false),
 
   // heretic
-  CHEAT("quicken", NULL, cht_never, cheat_god, 0, false),
+  CHEAT("quicken", NULL, cht_dsda, cheat_god, 0, false),
   CHEAT("ponce", NULL, cht_never, cheat_reset_health, 0, false),
-  CHEAT("kitty", NULL, cht_never, cheat_noclip, 0, false),
+  CHEAT("kitty", NULL, cht_dsda, cheat_noclip, 0, false),
   CHEAT("massacre", NULL, cht_never, cheat_massacre, 0, false),
   CHEAT("rambo", NULL, cht_never, cheat_fa, 0, false),
   CHEAT("skel", NULL, cht_never, cheat_k, 0, false),
@@ -225,14 +225,14 @@ cheatseq_t cheat[] = {
   CHEAT("cockadoodledoo", NULL, cht_never, cheat_chicken, 0, false),
 
   // hexen
-  CHEAT("satan", NULL, cht_never, cheat_god, 0, false),
+  CHEAT("satan", NULL, cht_dsda, cheat_god, 0, false),
   CHEAT("clubmed", NULL, cht_never, cheat_reset_health, 0, false),
   CHEAT("butcher", NULL, cht_never, cheat_massacre, 0, false),
   CHEAT("nra", NULL, cht_never, cheat_fa, 0, false),
   CHEAT("indiana", NULL, cht_never, cheat_inventory, 0, false),
   CHEAT("locksmith", NULL, cht_never, cheat_k, 0, false),
   CHEAT("sherlock", NULL, cht_never, cheat_puzzle, 0, false),
-  CHEAT("casper", NULL, cht_never, cheat_noclip, 0, false),
+  CHEAT("casper", NULL, cht_dsda, cheat_noclip, 0, false),
   CHEAT("shadowcaster", NULL, cht_never, cheat_class, -1, false),
   CHEAT("visit", NULL, cht_never | not_menu, cheat_clev, -2, false),
   CHEAT("init", NULL, cht_never, cheat_init, 0, false),
@@ -295,44 +295,56 @@ static void cheat_choppers()
   plyr->message = s_STSTR_CHOPPERS; // Ty 03/27/98 - externalized
 }
 
-static void cheat_god()
-{                                    // 'dqd' cheat for toggleable god mode
+void M_CheatGod(void)
+{
   // dead players are first respawned at the current position
   if (plyr->playerstate == PST_DEAD)
-    {
-      signed int an;
-      mapthing_t mt = {0};
+  {
+    signed int an;
+    mapthing_t mt = {0};
 
-      P_MapStart();
-      mt.x = plyr->mo->x >> FRACBITS;
-      mt.y = plyr->mo->y >> FRACBITS;
-      mt.angle = (plyr->mo->angle + ANG45/2)*(uint_64_t)45/ANG45;
-      mt.type = consoleplayer + 1;
-      mt.options = 1; // arbitrary non-zero value
-      P_SpawnPlayer(consoleplayer, &mt);
+    P_MapStart();
+    mt.x = plyr->mo->x >> FRACBITS;
+    mt.y = plyr->mo->y >> FRACBITS;
+    mt.angle = (plyr->mo->angle + ANG45/2)*(uint_64_t)45/ANG45;
+    mt.type = consoleplayer + 1;
+    mt.options = 1; // arbitrary non-zero value
+    P_SpawnPlayer(consoleplayer, &mt);
 
-      // spawn a teleport fog
-      an = plyr->mo->angle >> ANGLETOFINESHIFT;
-      P_SpawnMobj(plyr->mo->x + 20*finecosine[an],
-                  plyr->mo->y + 20*finesine[an],
-                  plyr->mo->z + g_telefog_height,
-                  g_mt_tfog);
-      S_StartSound(plyr, g_sfx_revive);
-      P_MapEnd();
-    }
+    // spawn a teleport fog
+    an = plyr->mo->angle >> ANGLETOFINESHIFT;
+    P_SpawnMobj(plyr->mo->x + 20*finecosine[an],
+                plyr->mo->y + 20*finesine[an],
+                plyr->mo->z + g_telefog_height,
+                g_mt_tfog);
+    S_StartSound(plyr, g_sfx_revive);
+    P_MapEnd();
+  }
+
   plyr->cheats ^= CF_GODMODE;
   if (plyr->cheats & CF_GODMODE)
-    {
-      if (plyr->mo)
-        plyr->mo->health = god_health;  // Ty 03/09/98 - deh
+  {
+    if (plyr->mo)
+      plyr->mo->health = god_health;  // Ty 03/09/98 - deh
 
-      plyr->health = god_health;
-      plyr->message = s_STSTR_DQDON; // Ty 03/27/98 - externalized
-    }
+    plyr->health = god_health;
+    plyr->message = s_STSTR_DQDON; // Ty 03/27/98 - externalized
+  }
   else
     plyr->message = s_STSTR_DQDOFF; // Ty 03/27/98 - externalized
 
   if (raven) SB_Start();
+}
+
+static void cheat_god()
+{                                    // 'dqd' cheat for toggleable god mode
+  if (demorecording)
+  {
+    dsda_QueueExCmdGod();
+    return;
+  }
+
+  M_CheatGod();
 }
 
 // CPhipps - new health and armour cheat codes
@@ -419,13 +431,21 @@ static void cheat_kfa()
   plyr->message = s_STSTR_KFAADDED;
 }
 
-static void cheat_noclip()
+void M_CheatNoClip(void)
 {
-  // Simplified, accepting both "noclip" and "idspispopd".
-  // no clipping mode cheat
-
   plyr->message = (plyr->cheats ^= CF_NOCLIP) & CF_NOCLIP ?
     s_STSTR_NCON : s_STSTR_NCOFF; // Ty 03/27/98 - externalized
+}
+
+static void cheat_noclip()
+{
+  if (demorecording)
+  {
+    dsda_QueueExCmdNoClip();
+    return;
+  }
+
+  M_CheatNoClip();
 }
 
 // 'behold?' power-up cheats (modified for infinite duration -- killough)
@@ -847,14 +867,19 @@ static void cheat_fly()
   }
 }
 
+static dboolean M_ClassicDemo(void)
+{
+  return (demorecording || demoplayback) && !dsda_AllowCasualExCmdFeatures();
+}
+
 static dboolean M_CheatAllowed(int when)
 {
-  return !(when && dsda_StrictMode()) &&
-         !(when & not_dm   && deathmatch) &&
-         !(when & not_coop && netgame && !deathmatch) &&
-         !(when & not_demo && (demorecording || demoplayback)) &&
-         !(when & not_menu && menuactive) &&
-         !(when & not_deh  && M_CheckParm("-deh"));
+  return !(when                    && dsda_StrictMode()) &&
+         !(when & not_dm           && deathmatch) &&
+         !(when & not_coop         && netgame && !deathmatch) &&
+         !(when & not_demo         && (demorecording || demoplayback)) &&
+         !(when & not_classic_demo && M_ClassicDemo()) &&
+         !(when & not_menu         && menuactive);
 }
 
 static void cht_InitCheats(void)
