@@ -37,8 +37,10 @@ static byte* dsda_demo_write_buffer;
 static byte* dsda_demo_write_buffer_p;
 static int dsda_demo_write_buffer_length;
 static char* dsda_demo_name;
+static int dsda_extra_demo_header_data_offset;
 
 #define DSDA_DEMO_VERSION 1
+#define DEMOMARKER 0x80
 
 static int dsda_demo_version;
 
@@ -90,6 +92,48 @@ void dsda_WriteToDemo(void* buffer, size_t length) {
   dsda_demo_write_buffer_p += length;
 }
 
+static void dsda_WriteIntToHeader(byte** p, int value) {
+  byte* header_p = *p;
+
+  *header_p++ = (byte)((value >> 24) & 0xff);
+  *header_p++ = (byte)((value >> 16) & 0xff);
+  *header_p++ = (byte)((value >>  8) & 0xff);
+  *header_p++ = (byte)( value        & 0xff);
+
+  *p = header_p;
+}
+
+static void dsda_WriteExtraDemoHeaderData(int end_marker_location, int demo_tic_count) {
+  byte* header_p;
+
+  if (!dsda_demo_version) return;
+
+  header_p = dsda_demo_write_buffer + dsda_extra_demo_header_data_offset;
+  dsda_WriteIntToHeader(&header_p, end_marker_location);
+  dsda_WriteIntToHeader(&header_p, demo_tic_count);
+}
+
+void dsda_EndDemoRecording(void) {
+  int demo_tic_count;
+  int end_marker_location;
+  byte end_marker = DEMOMARKER;
+
+  demorecording = false;
+
+  end_marker_location = dsda_demo_write_buffer_p - dsda_demo_write_buffer;
+  demo_tic_count = gametic;
+
+  dsda_WriteToDemo(&end_marker, 1);
+
+  dsda_WriteExtraDemoHeaderData(end_marker_location, demo_tic_count);
+
+  G_WriteDemoFooter();
+
+  dsda_WriteDemoToFile();
+
+  lprintf(LO_INFO, "Demo finished recording\n");
+}
+
 void dsda_WriteDemoToFile(void) {
   int length;
 
@@ -138,6 +182,8 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd) {
     cmd->buttons |= BT_JOIN;
 }
 
+#define DSDA_DEMO_HEADER_DATA_SIZE (2*sizeof(int))
+
 static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* header_p, size_t size) {
   // 7 = 6 (signature) + 1 (dsda version)
   if (demo_p - header_p + 7 > size)
@@ -158,6 +204,11 @@ static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* heade
 
   if (dsda_demo_version > DSDA_DEMO_VERSION)
     return NULL;
+
+  if (demo_p - header_p + DSDA_DEMO_HEADER_DATA_SIZE > size)
+    return NULL;
+
+  demo_p += DSDA_DEMO_HEADER_DATA_SIZE;
 
   dsda_EnableExCmd();
 
@@ -231,6 +282,11 @@ void dsda_WriteDSDADemoHeader(byte** p) {
   *demo_p++ = 0xe6;
 
   *demo_p++ = DSDA_DEMO_VERSION;
+
+  dsda_demo_version = DSDA_DEMO_VERSION;
+  dsda_extra_demo_header_data_offset = demo_p - *p;
+  memset(demo_p, 0, DSDA_DEMO_HEADER_DATA_SIZE);
+  demo_p += DSDA_DEMO_HEADER_DATA_SIZE;
 
   *p = demo_p;
 }

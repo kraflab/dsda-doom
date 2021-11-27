@@ -4183,17 +4183,7 @@ dboolean G_CheckDemoStatus (void)
 
   if (demorecording)
   {
-    byte end_marker = DEMOMARKER;
-
-    demorecording = false;
-    dsda_WriteToDemo(&end_marker, 1);
-
-    //e6y
-    G_WriteDemoFooter();
-
-    dsda_WriteDemoToFile();
-
-    lprintf(LO_INFO, "G_CheckDemoStatus: Demo recorded\n");
+    dsda_EndDemoRecording();
 
     return false;  // killough
   }
