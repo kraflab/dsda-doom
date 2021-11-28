@@ -44,7 +44,6 @@ extern dboolean isExtraDDisplay;
 extern int interpolation_maxobjects;
 
 typedef struct {
-  double tics_per_usec;
   fixed_t frac;
 } tic_vars_t;
 
@@ -52,7 +51,6 @@ extern tic_vars_t tic_vars;
 
 void M_ChangeUncappedFrameRate(void);
 
-void R_InitInterpolation(void);
 void R_InterpolateView(player_t *player, fixed_t frac);
 
 extern dboolean WasRenderedInTryRunTics;

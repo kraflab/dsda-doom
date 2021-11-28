@@ -84,11 +84,6 @@ void M_ChangeUncappedFrameRate(void)
     movement_smooth = (singletics ? false : movement_smooth_default);
 }
 
-void R_InitInterpolation(void)
-{
-  tic_vars.tics_per_usec = dsda_RealticClockRate() * TICRATE / 100000000.0f;
-}
-
 typedef fixed_t fixed2_t[2];
 static fixed2_t *oldipos;
 static fixed2_t *bakipos;

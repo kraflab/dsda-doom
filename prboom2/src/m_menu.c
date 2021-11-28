@@ -79,6 +79,7 @@
 #include "dsda/input.h"
 #include "dsda/palette.h"
 #include "dsda/save.h"
+#include "dsda/time.h"
 #include "dsda/console.h"
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
@@ -4408,45 +4409,45 @@ dboolean M_Responder (event_t* ev) {
 
   // Process joystick input
 
-  if (ev->type == ev_joystick && joywait < I_GetTime()) {
+  if (ev->type == ev_joystick && joywait < dsda_GetTick()) {
     if (ev->data3 == -1)
     {
       action = MENU_UP;                                // phares 3/7/98
       ch = 0;
-      joywait = I_GetTime() + 5;
+      joywait = dsda_GetTick() + 5;
     }
     else if (ev->data3 == 1)
     {
       action = MENU_DOWN;                              // phares 3/7/98
       ch = 0;
-      joywait = I_GetTime() + 5;
+      joywait = dsda_GetTick() + 5;
     }
 
     if (ev->data2 == -1)
     {
       action = MENU_LEFT;                              // phares 3/7/98
       ch = 0;
-      joywait = I_GetTime() + 2;
+      joywait = dsda_GetTick() + 2;
     }
     else if (ev->data2 == 1)
     {
       action = MENU_RIGHT;                             // phares 3/7/98
       ch = 0;
-      joywait = I_GetTime() + 2;
+      joywait = dsda_GetTick() + 2;
     }
 
     if (ev->data1&1)
     {
       action = MENU_ENTER;                             // phares 3/7/98
       ch = 0;
-      joywait = I_GetTime() + 5;
+      joywait = dsda_GetTick() + 5;
     }
 
     if (ev->data1&2)
     {
       action = MENU_BACKSPACE;                         // phares 3/7/98
       ch = 0;
-      joywait = I_GetTime() + 5;
+      joywait = dsda_GetTick() + 5;
     }
 
     // phares 4/4/98:
@@ -4457,25 +4458,25 @@ dboolean M_Responder (event_t* ev) {
       if (ev->data1 >> 2)
       {
         ch = 0; // meaningless, just to get you past the check for -1
-        joywait = I_GetTime() + 5;
+        joywait = dsda_GetTick() + 5;
       }
     }
   }
   else {
    // Process mouse input
-    if (ev->type == ev_mouse && mousewait < I_GetTime()) {
+    if (ev->type == ev_mouse && mousewait < dsda_GetTick()) {
       if (ev->data1&1)
       {
         action = MENU_ENTER;                           // phares 3/7/98
         ch = 0;
-        mousewait = I_GetTime() + 15;
+        mousewait = dsda_GetTick() + 15;
       }
 
       if (ev->data1&2)
       {
         action = MENU_BACKSPACE;                       // phares 3/7/98
         ch = 0;
-        mousewait = I_GetTime() + 15;
+        mousewait = dsda_GetTick() + 15;
       }
 
       // phares 4/4/98:
@@ -4483,7 +4484,7 @@ dboolean M_Responder (event_t* ev) {
       if (ev->data1 >> 2)
       {
         ch = 0; // meaningless, just to get you past the check for -1
-        mousewait = I_GetTime() + 15;
+        mousewait = dsda_GetTick() + 15;
       }
     }
     else

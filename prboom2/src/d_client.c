@@ -61,6 +61,7 @@
 #include "lprintf.h"
 #include "e6y.h"
 #include "dsda/settings.h"
+#include "dsda/time.h"
 
 ticcmd_t         netcmds[MAX_MAXPLAYERS][BACKUPTICS];
 static ticcmd_t* localcmds;
@@ -91,7 +92,7 @@ void FakeNetUpdate(void)
     return;
 
   { // Build new ticcmds
-    int newtics = I_GetTime() - lastmadetic;
+    int newtics = dsda_GetTick() - lastmadetic;
     lastmadetic += newtics;
 
     if (ffmap) newtics++;
@@ -111,10 +112,13 @@ void FakeNetUpdate(void)
   }
 }
 
+// Implicitly tracked whenever we check the current tick
+int ms_to_next_tick;
+
 void TryRunTics (void)
 {
   int runtics;
-  int entertime = I_GetTime();
+  int entertime = dsda_GetTick();
 
   // Wait for tics to run
   while (1) {
@@ -124,7 +128,7 @@ void TryRunTics (void)
       if (!movement_smooth || !window_focused) {
           I_uSleep(ms_to_next_tick*1000);
       }
-      if (I_GetTime() - entertime > 10) {
+      if (dsda_GetTick() - entertime > 10) {
         M_Ticker(); return;
       }
 

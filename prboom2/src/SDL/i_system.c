@@ -101,40 +101,6 @@ void I_uSleep(unsigned long usecs)
     SDL_Delay(usecs/1000);
 }
 
-int ms_to_next_tick;
-
-int I_GetTime_RealTime (void)
-{
-  static dboolean started = false;
-  int i;
-  unsigned long long t;
-
-  //e6y: removing startup delay
-  if (!started)
-  {
-    started = true;
-    dsda_StartTimer(dsda_timer_realtime);
-  }
-
-  t = dsda_ElapsedTime(dsda_timer_realtime);
-
-  i = t * TICRATE / 1000000;
-  ms_to_next_tick = (i + 1) * 1000 / TICRATE - t / 1000;
-  if (ms_to_next_tick > 1000 / TICRATE) ms_to_next_tick = 1;
-  if (ms_to_next_tick < 1) ms_to_next_tick = 0;
-  return i;
-}
-
-static unsigned long long I_TicStartTime(void)
-{
-  return (unsigned long long) I_GetTime_RealTime() * 1000000 / TICRATE;
-}
-
-static unsigned long long I_CurrentTime(void)
-{
-  return dsda_ElapsedTime(dsda_timer_realtime);
-}
-
 static dboolean InDisplay = false;
 static int saved_gametic = -1;
 dboolean realframe = false;
@@ -170,10 +136,11 @@ fixed_t I_GetTimeFrac (void)
   else
   {
     unsigned long long tic_time;
+    const double tics_per_usec = TICRATE / 1000000.0f;
 
-    tic_time = I_CurrentTime() - I_TicStartTime();
+    tic_time = dsda_TickElapsedTime();
 
-    frac = (fixed_t) (tic_time * FRACUNIT * tic_vars.tics_per_usec);
+    frac = (fixed_t) (tic_time * FRACUNIT * tics_per_usec);
     frac = BETWEEN(0, FRACUNIT, frac);
   }
 
