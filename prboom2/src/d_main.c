@@ -246,7 +246,7 @@ static void D_Wipe(void)
     I_Init2();
   }
 
-  wipestart = I_GetTime () - 1;
+  wipestart = dsda_GetTick() - 1;
 
   do
   {
@@ -254,7 +254,7 @@ static void D_Wipe(void)
     do
     {
       I_uSleep(5000); // CPhipps - don't thrash cpu in this loop
-      nowtime = I_GetTime();
+      nowtime = dsda_GetTick();
       tics = nowtime - wipestart;
     }
     while (!tics);

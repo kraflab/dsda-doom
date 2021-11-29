@@ -26,9 +26,14 @@ typedef enum {
   DSDA_TIMER_COUNT
 } dsda_timer_t;
 
+extern int (*dsda_GetTick)(void);
+extern unsigned long long (*dsda_TickElapsedTime)(void);
+
 void dsda_StartTimer(int timer);
 unsigned long long dsda_ElapsedTime(int timer);
 unsigned long long dsda_ElapsedTimeMS(int timer);
 void dsda_LimitFPS(void);
+int dsda_GetTickRealTime(void);
+void dsda_ResetTimeFunctions(int fastdemo);
 
 #endif

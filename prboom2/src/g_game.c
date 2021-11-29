@@ -96,6 +96,7 @@
 #include "dsda/mouse.h"
 #include "dsda/options.h"
 #include "dsda/tas.h"
+#include "dsda/time.h"
 #include "dsda/split_tracker.h"
 #include "statdump.h"
 
@@ -1194,7 +1195,7 @@ static void G_DoLoadLevel (void)
     static int first=1;
     if (first)
       {
-        starttime = I_GetTime_RealTime ();
+        starttime = dsda_GetTickRealTime();
         first=0;
       }
   }
@@ -4184,7 +4185,7 @@ dboolean G_CheckDemoStatus (void)
 
   if (timingdemo)
   {
-    int endtime = I_GetTime_RealTime ();
+    int endtime = dsda_GetTickRealTime();
     // killough -- added fps information and made it work for longer demos:
     unsigned realtics = endtime-starttime;
 

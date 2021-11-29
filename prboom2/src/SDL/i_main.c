@@ -81,81 +81,30 @@ typedef BOOL (WINAPI *SetAffinityFunc)(HANDLE hProcess, DWORD mask);
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
 #include "dsda/text_file.h"
+#include "dsda/time.h"
 
 /* Most of the following has been rewritten by Lee Killough
  *
- * I_GetTime
  * killough 4/13/98: Make clock rate adjustable by scale factor
  * cphipps - much made static
  */
 
 int realtic_clock_rate = 100;
-static int_64_t I_GetTime_Scale = 1<<24;
-
-static int I_GetTime_Scaled(void)
-{
-  return (int)( (int_64_t) I_GetTime_RealTime() * I_GetTime_Scale >> 24);
-}
-
-
-
-static int  I_GetTime_FastDemo(void)
-{
-  static int fasttic;
-  return fasttic++;
-}
-
-
-
-static int I_GetTime_Error(void)
-{
-  I_Error("I_GetTime_Error: GetTime() used before initialization");
-  return 0;
-}
-
-
-
-int (*I_GetTime)(void) = I_GetTime_Error;
 
 void I_Init(void)
 {
-  /* killough 4/14/98: Adjustable speedup based on realtic_clock_rate */
-  if (fastdemo)
-    I_GetTime = I_GetTime_FastDemo;
-  else
-    if (dsda_RealticClockRate() != 100)
-      {
-        I_GetTime_Scale = ((int_64_t) dsda_RealticClockRate() << 24) / 100;
-        I_GetTime = I_GetTime_Scaled;
-      }
-    else
-      I_GetTime = I_GetTime_RealTime;
+  dsda_ResetTimeFunctions(fastdemo);
 
-  {
-    /* killough 2/21/98: avoid sound initialization if no sound & no music */
-    if (!(nomusicparm && nosfxparm))
-      I_InitSound();
-  }
-
-  R_InitInterpolation();
+  /* killough 2/21/98: avoid sound initialization if no sound & no music */
+  if (!(nomusicparm && nosfxparm))
+    I_InitSound();
 }
 
 //e6y
 void I_Init2(void)
 {
-  if (fastdemo)
-    I_GetTime = I_GetTime_FastDemo;
-  else
-  {
-    if (dsda_RealticClockRate() != 100)
-      {
-        I_GetTime_Scale = ((int_64_t) dsda_RealticClockRate() << 24) / 100;
-        I_GetTime = I_GetTime_Scaled;
-      }
-    else
-      I_GetTime = I_GetTime_RealTime;
-  }
-  R_InitInterpolation();
+  dsda_ResetTimeFunctions(fastdemo);
+
   force_singletics_to = gametic + BACKUPTICS;
 }
 
