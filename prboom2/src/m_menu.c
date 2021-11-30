@@ -5902,9 +5902,6 @@ void M_ClearMenus (void)
   default_verify = 0;                  // killough 10/98
 
   BorderNeedRefresh = true;
-
-  // if (!netgame && usergame && paused)
-  //     sendpause = true;
 }
 
 //
