@@ -193,7 +193,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     viewy += y_displacement;
   }
 
-  if (!paused && movement_smooth)
+  if (interpolate_view)
   {
     int i;
 

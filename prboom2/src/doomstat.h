@@ -216,6 +216,8 @@ extern  dboolean paused;        // Game Pause?
 extern  dboolean nodrawers;
 extern  dboolean noblit;
 
+#define interpolate_view (!paused && movement_smooth)
+
 // This one is related to the 3-screen display mode.
 // ANG90 = left side, ANG270 = right
 extern  int viewangleoffset;

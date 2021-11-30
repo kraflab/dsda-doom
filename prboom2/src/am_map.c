@@ -1794,7 +1794,7 @@ static void AM_drawLineCharacter
 
 INLINE static void AM_GetMobjPosition(mobj_t *mo, mpoint_t *p, angle_t *angle)
 {
-  if (!paused && movement_smooth)
+  if (interpolate_view)
   {
     p->x = mo->PrevX + FixedMul(tic_vars.frac, mo->x - mo->PrevX);
     p->y = mo->PrevY + FixedMul(tic_vars.frac, mo->y - mo->PrevY);
