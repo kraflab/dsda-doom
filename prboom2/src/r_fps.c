@@ -97,7 +97,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
 {
   static mobj_t *oviewer;
 
-  dboolean NoInterpolate = (paused && !walkcamera.type) || paused_via_menu;
+  dboolean NoInterpolate = paused_camera || paused_via_menu;
 
   viewplayer = player;
 
