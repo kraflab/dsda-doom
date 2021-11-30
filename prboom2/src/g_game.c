@@ -1250,7 +1250,7 @@ dboolean G_Responder (event_t* ev)
     // killough 9/29/98: allow user to pause demos during playback
     if (dsda_InputActivated(dsda_input_pause))
     {
-      if (paused ^= 2)
+      if (paused ^= PAUSE_PLAYBACK)
         S_PauseSound();
       else
         S_ResumeSound();
@@ -1449,7 +1449,7 @@ void G_Ticker (void)
           switch (players[i].cmd.buttons & BT_SPECIALMASK)
           {
             case BT_PAUSE:
-              paused ^= 1;
+              paused ^= PAUSE_COMMAND;
               if (paused)
                 S_PauseSound();
               else

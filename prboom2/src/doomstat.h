@@ -216,6 +216,9 @@ extern  dboolean paused;        // Game Pause?
 extern  dboolean nodrawers;
 extern  dboolean noblit;
 
+#define PAUSE_COMMAND  1
+#define PAUSE_PLAYBACK 2
+
 #define interpolate_view (!paused && movement_smooth)
 #define paused_via_menu (!demoplayback && menuactive && !netgame)
 #define paused_during_playback (paused & 2)
