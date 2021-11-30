@@ -218,6 +218,7 @@ extern  dboolean noblit;
 
 #define interpolate_view (!paused && movement_smooth)
 #define paused_via_menu (!demoplayback && menuactive && !netgame)
+#define paused_during_playback (paused & 2)
 
 // This one is related to the 3-screen display mode.
 // ANG90 = left side, ANG270 = right
