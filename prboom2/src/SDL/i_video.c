@@ -1473,7 +1473,7 @@ static dboolean MouseShouldBeGrabbed()
     return false;
 
   // only grab mouse when playing levels (but not demos)
-  return (gamestate == GS_LEVEL) && !demoplayback;
+  return !demoplayback;
 }
 
 // Update the value of window_focused when we get a focus event
