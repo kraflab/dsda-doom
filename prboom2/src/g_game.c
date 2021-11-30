@@ -1394,7 +1394,7 @@ void G_Ticker (void)
     }
   }
 
-  if (paused & 2 || (!demoplayback && menuactive && !netgame))
+  if (paused & 2 || paused_via_menu)
     basetic++;  // For revenant tracers and RNG -- we must maintain sync
   else {
     // get commands, check consistancy, and build new consistancy check
@@ -1519,7 +1519,7 @@ void G_Ticker (void)
   // e6y
   // do nothing if a pause has been pressed during playback
   // pausing during intermission can cause desynchs without that
-  if ((paused & 2 || (!demoplayback && menuactive && !netgame)) && gamestate != GS_LEVEL)
+  if ((paused & 2 || paused_via_menu) && gamestate != GS_LEVEL)
     return;
 
   // do main actions
