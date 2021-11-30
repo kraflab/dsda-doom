@@ -40,6 +40,11 @@ dboolean dsda_AllowExCmd(void) {
   return (!demorecording && !demoplayback) || excmd_enabled;
 }
 
+// If we are reading a demo header, it might not be in playback mode yet
+dboolean dsda_ExCmdDemo(void) {
+  return excmd_enabled;
+}
+
 void dsda_EnableCasualExCmdFeatures(void) {
   casual_excmd_features = true;
 }

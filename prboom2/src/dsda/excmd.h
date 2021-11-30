@@ -29,6 +29,7 @@
 void dsda_EnableExCmd(void);
 void dsda_DisableExCmd(void);
 dboolean dsda_AllowExCmd(void);
+dboolean dsda_ExCmdDemo(void);
 void dsda_EnableCasualExCmdFeatures(void);
 dboolean dsda_AllowCasualExCmdFeatures(void);
 dboolean dsda_AllowJumping(void);

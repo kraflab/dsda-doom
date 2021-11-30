@@ -4110,7 +4110,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
     bytes_per_tic = (longtics ? 5 : 4);
     if (raven) bytes_per_tic += 2;
-    if (dsda_AllowExCmd()) bytes_per_tic++;
+    if (dsda_ExCmdDemo()) bytes_per_tic++;
     demo_playerscount = 0;
     demo_tics_count = 0;
     demo_curr_tic = 0;
