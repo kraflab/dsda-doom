@@ -13,7 +13,7 @@ Basic Installation (ZIP, tarball, Git)
        * DUMB (various tracker-style formats)
        * vorbisfile (ogg)
      On a typical Debian or Ubuntu system this may be sufficient:
-       apt-get install libsdl2-dev libsdl2-net-dev libsdl2-image-dev \
+       apt-get install libsdl2-dev libsdl2-image-dev \
          libpcre3-dev libsdl2-mixer-dev libfluidsynth-dev \
          libportmidi-dev libmad0-dev libdumb1-dev libvorbis-dev
 
