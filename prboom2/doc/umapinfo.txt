@@ -1,2 +1,0 @@
-Document moved here:
-https://github.com/coelckers/prboom-plus/blob/master/prboom2/doc/umapinfo.md

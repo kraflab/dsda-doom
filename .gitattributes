@@ -337,7 +337,6 @@ prboom2/data/sprites/pls2c0.ppm -text
 prboom2/data/sprites/pls2d0.ppm -text
 prboom2/data/sprites/pls2e0.ppm -text
 prboom2/data/sprites/tnt1a0.ppm -text
-prboom2/doc/Makefile.am eol=lf
 prboom2/make-release.cmd -text
 prboom2/src/MAC/ANSIString.h -text
 prboom2/src/MAC/ANSIString.m -text
