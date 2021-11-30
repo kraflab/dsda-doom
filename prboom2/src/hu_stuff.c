@@ -2307,7 +2307,7 @@ void HU_draw_crosshair(void)
     !crosshair_nam[hudadd_crosshair] ||
     crosshair.lump == -1 ||
     automapmode & am_active ||
-    menuactive != mnact_inactive ||
+    menuactive ||
     paused
   )
   {
