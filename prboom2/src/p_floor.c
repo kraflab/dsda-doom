@@ -48,9 +48,6 @@
 #include "hexen/p_acs.h"
 #include "hexen/sn_sonix.h"
 
-//e6y
-#define STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE -2
-
 ///////////////////////////////////////////////////////////////////////
 //
 // Floor motion and Elevator action routines

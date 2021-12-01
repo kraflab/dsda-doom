@@ -49,6 +49,9 @@
 // is larger, but we do not have any moving sectors nearby
 #define MAXRADIUS       (32*FRACUNIT)
 
+//e6y
+#define STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE -2
+
 // killough 3/15/98: add fourth argument to P_TryMove
 dboolean P_TryMove(mobj_t *thing, fixed_t x, fixed_t y, dboolean dropoff);
 

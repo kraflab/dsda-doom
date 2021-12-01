@@ -2761,6 +2761,9 @@ dboolean P_ChangeSector(sector_t* sector, int crunch)
   nofit = false;
   crushchange = crunch;
 
+  if (crushchange == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
+    crushchange = DOOM_CRUSH;
+
   // ARRGGHHH!!!!
   // This is horrendously slow!!!
   // killough 3/14/98
@@ -2790,6 +2793,9 @@ dboolean P_CheckSector(sector_t* sector, int crunch)
 
   nofit = false;
   crushchange = crunch;
+
+  if (crushchange == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
+    crushchange = DOOM_CRUSH;
 
   // killough 4/4/98: scan list front-to-back until empty or exhausted,
   // restarting from beginning after each thing is processed. Avoids
