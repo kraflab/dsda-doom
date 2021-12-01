@@ -101,6 +101,8 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "weapon_collector %d\n", dsda_weapon_collector);
   fprintf(fstream, "tyson_weapons %d\n", dsda_tyson_weapons);
   fprintf(fstream, "turbo %d\n", dsda_turbo);
+  fprintf(fstream, "solo_net %d\n", solo_net);
+  fprintf(fstream, "coop_spawns %d\n", coop_spawns);
   fprintf(fstream, "category %s\n", category);
 
   fclose(fstream);
