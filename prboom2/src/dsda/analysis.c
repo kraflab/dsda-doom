@@ -142,6 +142,7 @@ const char* dsda_DetectCategory(void) {
 
   if (dsda_turbo) return "Other";
   if (coop_spawns) return "Other";
+  if (solo_net) return "Other";
 
   if (gameskill == sk_hard) {
     if (dsda_nomo && !dsda_respawn && !dsda_fast) {

@@ -171,6 +171,7 @@ extern  dboolean netgame;
 // An enum might handle altdeath/cooperative better.
 extern  dboolean deathmatch;
 
+extern int solo_net;
 extern dboolean coop_spawns;
 
 extern dboolean randomclass;

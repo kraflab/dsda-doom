@@ -2976,7 +2976,6 @@ void G_ReloadDefaults(void)
 
 void G_DoNewGame (void)
 {
-  extern int solo_net;
   int realMap = d_map;
   int realEpisode = d_episode;
 
