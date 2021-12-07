@@ -1,4 +1,4 @@
-Checked up to: d648724ccddc6ec00dec5075cfdb9c5b05f2eeb2 (Nov 19 2021)
+Checked up to: 4fdb9d8c4666a018accfc7fc0d4b3e60689f2548 (Dec 5 2021)
 
 Commits from upstream to go through:
 
@@ -6,3 +6,6 @@ utf8:
 5b5bfa6ffcf656c9fcffc74d2d1c33201d27a74b
 917914fcf0b80803656c973dec2766318d09d0f0
 35659be5098eb813c1b9df72d1eea889ab62a734
+
+iwad without tag:
+62a139ae40258e7e0cb64c998216942ce1e8620c
