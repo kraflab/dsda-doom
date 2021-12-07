@@ -222,7 +222,7 @@ extern  dboolean noblit;
 
 #define interpolate_view (!paused && movement_smooth)
 #define paused_via_menu (!demoplayback && menuactive && !netgame)
-#define paused_during_playback (paused & 2)
+#define paused_during_playback (paused & PAUSE_PLAYBACK)
 #define paused_outside_demo (paused_during_playback || paused_via_menu)
 #define paused_camera (paused && !walkcamera.type)
 
