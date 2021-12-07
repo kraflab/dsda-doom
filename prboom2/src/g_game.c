@@ -2448,16 +2448,6 @@ void G_DoLoadGame(void)
     memcpy(&packageversion, save_p, sizeof packageversion);
     save_p += sizeof packageversion;
   }
-  //e6y: let's show the warning if savegame is from the previous version of prboom
-  if (packageversion != GetPackageVersion())
-  {
-    if (!forced_loadgame)
-    {
-      G_LoadGameErr("Incompatible Savegame version!!!\n\nAre you sure?");
-      return;
-    } else
-      lprintf(LO_WARN, "G_DoLoadGame: Incompatible savegame version\n");
-  }
 
   compatibility_level = *save_p++;
   gameskill = *save_p++;
