@@ -317,7 +317,7 @@ void SB_Ticker(void)
     int delta;
     int curHealth;
 
-    if (heretic && leveltime & 1 && !paused_via_menu)
+    if (heretic && leveltime & 1 && !paused_outside_demo)
     {
         ChainWiggle = P_Random(pr_heretic) & 1;
     }
