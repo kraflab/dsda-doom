@@ -1708,7 +1708,7 @@ const char* doomverstr = NULL;
 
 static void D_DoomMainSetup(void)
 {
-  int p,slot;
+  int p;
   dboolean autoload;
 
   if (M_CheckParm("-verbose"))
@@ -2248,21 +2248,12 @@ static void D_DoomMainSetup(void)
       lprintf(LO_INFO,"External statistics registered.\n");
   }
 
-  // start the apropriate game based on parms
+  // start the appropriate game based on parms
 
-  // killough 12/98:
-  // Support -loadgame with -record and reimplement -recordfrom.
-
-  if ((slot = M_CheckParm("-recordfrom")) && (p = slot+2) < myargc)
-    G_RecordDemo(myargv[p]);
-  else
+  if ((p = M_CheckParm("-record")) && ++p < myargc)
   {
-      slot = M_CheckParm("-loadgame");
-      if ((p = M_CheckParm("-record")) && ++p < myargc)
-      {
-        autostart = true;
-        G_RecordDemo(myargv[p]);
-      }
+    autostart = true;
+    G_RecordDemo(myargv[p]);
   }
 
   if ((p = M_CheckParm ("-fastdemo")) && ++p < myargc)
@@ -2290,12 +2281,7 @@ static void D_DoomMainSetup(void)
     G_CheckDemoContinue();
   }
 
-  if (slot && ++slot < myargc)
-  {
-    slot = atoi(myargv[slot]);        // killough 3/16/98: add slot info
-    G_LoadGame(slot, true);           // killough 5/15/98: add command flag // cph - no filename
-  }
-  else if (!singledemo)               // killough 12/98
+  if (!singledemo)               // killough 12/98
   {
     if (autostart || netgame)
     {

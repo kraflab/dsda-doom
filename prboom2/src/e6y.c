@@ -223,7 +223,6 @@ void ParamsMatchingCheck()
 {
   dboolean recording_attempt =
     M_CheckParm("-record") ||
-    M_CheckParm("-recordfrom") ||
     M_CheckParm("-recordfromto");
 
   dboolean playbacking_attempt =

@@ -153,7 +153,6 @@ struct MapEntry    *gamemapinfo;
 dboolean         paused;
 // CPhipps - moved *_loadgame vars here
 static dboolean forced_loadgame = false;
-static dboolean commandline_loadgame = false;
 static dboolean load_via_cmd = false;
 
 dboolean         usergame;      // ok to save / end game
@@ -1474,7 +1473,6 @@ void G_Ticker (void)
             savegameslot = ex->load_slot;
             gameaction = ga_loadgame;
             forced_loadgame = true;
-            commandline_loadgame = false;
             load_via_cmd = true;
             R_SmoothPlaying_Reset(NULL);
           }
@@ -2278,8 +2276,7 @@ void G_ForcedLoadGame(void)
 }
 
 // killough 3/16/98: add slot info
-// killough 5/15/98: add command-line
-void G_LoadGame(int slot, dboolean via_commandline)
+void G_LoadGame(int slot)
 {
   if (demorecording)
   {
@@ -2287,7 +2284,7 @@ void G_LoadGame(int slot, dboolean via_commandline)
     return;
   }
 
-  if (!demoplayback && !via_commandline)
+  if (!demoplayback)
   {
     forced_loadgame = netgame; // CPhipps - always force load netgames
   }
@@ -2302,7 +2299,6 @@ void G_LoadGame(int slot, dboolean via_commandline)
 
   gameaction = ga_loadgame;
   savegameslot = slot;
-  commandline_loadgame = via_commandline;
   load_via_cmd = false;
   R_SmoothPlaying_Reset(NULL); // e6y
 }
@@ -2314,11 +2310,6 @@ static void G_LoadGameErr(const char *msg)
 {
   Z_Free(savebuffer);                // Free the savegame buffer
   M_ForcedLoadGame(msg);             // Print message asking for 'Y' to force
-  if (commandline_loadgame)              // If this was a command-line -loadgame
-    {
-      D_StartTitle();                // Start the title screen
-      gamestate = GS_DEMOSCREEN;     // And set the game state accordingly
-    }
 }
 
 // CPhipps - size of version header
@@ -2403,7 +2394,7 @@ void G_DoLoadGame(void)
   // [crispy] loaded game must always be single player.
   // Needed for ability to use a further game loading, as well as
   // cheat codes and other single player only specifics.
-  if (!commandline_loadgame && !load_via_cmd)
+  if (!load_via_cmd)
   {
     netdemo = false;
     netgame = false;
@@ -2547,23 +2538,13 @@ void G_DoLoadGame(void)
   // draw the pattern into the back screen
   R_FillBackScreen ();
 
-  /* killough 12/98: support -recordfrom and -loadgame -playdemo */
   if (load_via_cmd)
   {
     // do nothing
   }
-  else if (!commandline_loadgame)
+  else
   {
     singledemo = false;  /* Clear singledemo flag if loading from menu */
-  }
-  else if (singledemo)
-  {
-    gameaction = ga_loadgame; /* Mark that we're loading a game before demo */
-    G_DoPlayDemo();           /* This will detect it and won't reinit level */
-  }
-  else if (demorecording) /* Command line + record means it's a recordfrom */
-  {
-    G_BeginRecording();
   }
 }
 
@@ -4091,12 +4072,10 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
   if (!(params & RDH_SKIP_HEADER))
   {
-    if (gameaction != ga_loadgame) { /* killough 12/98: support -loadgame */
-      if (map_format.mapinfo)
-        G_StartNewInit();
+    if (map_format.mapinfo)
+      G_StartNewInit();
 
-      G_InitNew(skill, episode, map);
-    }
+    G_InitNew(skill, episode, map);
   }
 
   for (i = 0; i < g_maxplayers; i++)         // killough 4/24/98

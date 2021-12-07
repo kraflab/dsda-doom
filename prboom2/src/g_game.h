@@ -48,7 +48,7 @@ void G_DeathMatchSpawnPlayer(int playernum);
 void G_InitNew(skill_t skill, int episode, int map);
 void G_DeferedInitNew(skill_t skill, int episode, int map);
 void G_DeferedPlayDemo(const char *demo); // CPhipps - const
-void G_LoadGame(int slot, dboolean via_commandline); // killough 5/15/98
+void G_LoadGame(int slot); // killough 5/15/98
 void G_ForcedLoadGame(void);           // killough 5/15/98: forced loadgames
 void G_DoLoadGame(void);
 void G_SaveGame(int slot, const char *description); // Called by M_Responder.

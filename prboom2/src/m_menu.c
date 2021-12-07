@@ -836,7 +836,7 @@ void M_LoadSelect(int choice)
   //  to g_game.c, this only passes the slot.
 
   // killough 3/16/98, 5/15/98: add slot, cmd
-  G_LoadGame(choice + save_page * g_menu_save_page_size, false);
+  G_LoadGame(choice + save_page * g_menu_save_page_size);
   M_ClearMenus();
 }
 
@@ -1463,7 +1463,7 @@ void M_QuickLoad(void)
 
   if (!access(name, F_OK))
   {
-    G_LoadGame(QUICKSAVESLOT, false);
+    G_LoadGame(QUICKSAVESLOT);
     doom_printf("quickload");
   }
   else
