@@ -48,9 +48,6 @@ struct sfxinfo_struct {
   // up to 6-character name
   const char *name; // CPhipps - const
 
-  // Sfx singularity (only one at a time)
-  int singularity;
-
   // Sfx priority
   int priority;
 

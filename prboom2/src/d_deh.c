@@ -2394,7 +2394,7 @@ static void deh_procSounds(DEHFILE *fpin, char *line)
     if (!deh_strcasecmp(key, "Offset"))
       ; // ignored
     else if (!deh_strcasecmp(key, "Zero/One"))
-      deh_sfx->singularity = (int)value;
+      ; // ignored
     else if (!deh_strcasecmp(key, "Value"))
       deh_sfx->priority = (int)value;
     else if (!deh_strcasecmp(key, "Zero 1"))
