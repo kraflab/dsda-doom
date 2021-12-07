@@ -1039,6 +1039,8 @@ default_t defaults[] =
   { "dsda_mute_music", { (int *) &dsda_setting[dsda_mute_music] }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_cheat_codes", { (int *) &dsda_setting[dsda_cheat_codes] }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_allow_jumping", { &dsda_allow_jumping }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_parallel_sfx_limit", { &dsda_parallel_sfx_limit }, { 0 }, 0, 32, def_int, ss_stat },
+  { "dsda_parallel_sfx_window", { &dsda_parallel_sfx_window }, { 1 }, 0, 32, def_int, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

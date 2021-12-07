@@ -56,6 +56,7 @@
 #include "dsda/map_format.h"
 #include "dsda/memory.h"
 #include "dsda/settings.h"
+#include "dsda/sfx.h"
 
 // when to clip out sounds
 // Does not fit the large outdoor areas.
@@ -331,6 +332,8 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
     I_Error("S_StartSoundAtVolume: Bad sfx #: %d", sfx_id);
 
   sfx = &S_sfx[sfx_id];
+
+  if (dsda_BlockSFX(sfx)) return;
 
   // Initialize sound parameters
   if (sfx->link)

@@ -3149,13 +3149,14 @@ void M_DrawAutoMap(void)
 extern int usejoystick, usemouse, default_mus_card, default_snd_card;
 extern int detect_voices, realtic_clock_rate, tran_filter_pct;
 
-setup_menu_t audiovideo_settings[], device_settings[], misc_settings[];
+setup_menu_t video_settings[], audio_settings[], device_settings[], misc_settings[];
 setup_menu_t display_settings[], opengl_settings1[], opengl_settings2[];
 setup_menu_t mapping_settings[], demo_settings[], tas_settings[];
 
 setup_menu_t* gen_settings[] =
 {
-  audiovideo_settings,
+  video_settings,
+  audio_settings,
   device_settings,
   misc_settings,
   display_settings,
@@ -3230,7 +3231,7 @@ static const char *gltexfilters[] = {
 
 static const char *gltexfilters_anisotropics[] = { "Off", "2x", "4x", "8x", "16x", NULL };
 
-setup_menu_t audiovideo_settings[] = {
+setup_menu_t video_settings[] = {
   { "Video", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Video mode", S_CHOICE, m_null, G_X, G_Y + 2 * 8, { "videomode" }, 0, M_ChangeVideoMode, videomodes },
   { "Screen Resolution", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "screen_resolution" }, 0, M_ChangeVideoMode, screen_resolutions_list },
@@ -3244,16 +3245,24 @@ setup_menu_t audiovideo_settings[] = {
   { "Uncapped Framerate", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "uncapped_framerate" }, 0, M_ChangeUncappedFrameRate },
   { "FPS Limit", S_NUM, m_null, G_X, G_Y + 12 * 8, { "dsda_fps_limit" } },
 
-  { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 14 * 8 },
-  { "Number of Sound Channels", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 15 * 8, { "snd_channels" } },
-  { "Enable v1.1 Pitch Effects", S_YESNO, m_null, G_X, G_Y + 16 * 8, { "pitched_sounds" } },
-  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_null, G_X, G_Y + 17 * 8, { "snd_pcspeaker" } },
-  { "Preferred MIDI player", S_CHOICE | S_PRGWARN, m_null, G_X, G_Y + 18 * 8, { "snd_midiplayer" }, 0, M_ChangeMIDIPlayer, midiplayers },
-  { "Disable Sound Cutoffs", S_YESNO, m_null, G_X, G_Y + 19 * 8, { "full_sounds" } },
-
   // Button for resetting to defaults
   { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
 
+  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { audio_settings } },
+  { 0, S_SKIP | S_END, m_null }
+};
+
+setup_menu_t audio_settings[] = {
+  { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
+  { "Number of Sound Channels", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 2 * 8, { "snd_channels" } },
+  { "Enable v1.1 Pitch Effects", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "pitched_sounds" } },
+  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_null, G_X, G_Y + 4 * 8, { "snd_pcspeaker" } },
+  { "Preferred MIDI player", S_CHOICE | S_PRGWARN, m_null, G_X, G_Y + 5 * 8, { "snd_midiplayer" }, 0, M_ChangeMIDIPlayer, midiplayers },
+  { "Disable Sound Cutoffs", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "full_sounds" } },
+  { "Parallel Same-Sound Limit", S_NUM, m_null, G_X, G_Y + 7 * 8, { "dsda_parallel_sfx_limit" } },
+  { "Parallel Same-Sound Window", S_NUM, m_null, G_X, G_Y + 8 * 8, { "dsda_parallel_sfx_window" } },
+
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { video_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { device_settings } },
   { 0, S_SKIP | S_END, m_null }
 };
@@ -3276,7 +3285,7 @@ setup_menu_t device_settings[] = {
   { "Keyboard", S_SKIP | S_TITLE, m_null, G_X, G_Y + 15 * 8 },
   { "Enable Cheat Code Entry", S_YESNO, m_dsda, G_X, G_Y + 16 * 8, { "dsda_cheat_codes" } },
 
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { audiovideo_settings } },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { audio_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { misc_settings } },
   { 0, S_SKIP | S_END, m_null }
 };

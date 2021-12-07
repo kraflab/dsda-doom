@@ -66,6 +66,8 @@ extern int dsda_fps_limit;
 extern int dsda_quickstart_cache_tics;
 extern int dsda_death_use_action;
 extern int dsda_allow_jumping;
+extern int dsda_parallel_sfx_limit;
+extern int dsda_parallel_sfx_window;
 extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);

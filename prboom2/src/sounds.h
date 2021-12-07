@@ -71,6 +71,9 @@ struct sfxinfo_struct {
 
   // hexen
   const char *tagname;
+
+  int parallel_tic;
+  int parallel_count;
 };
 
 //
