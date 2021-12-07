@@ -2423,8 +2423,10 @@ void G_DoLoadGame(void)
 
     checksum = G_Signature();
 
-    if (memcmp(&checksum, save_p, sizeof checksum)) {
-      if (!forced_loadgame) {
+    if (memcmp(&checksum, save_p, sizeof checksum))
+    {
+      if (!forced_loadgame)
+      {
         char *msg = malloc(strlen((char*)save_p + sizeof checksum) + 128);
         strcpy(msg,"Incompatible Savegame!!!\n");
         if (save_p[sizeof checksum])
@@ -2433,11 +2435,12 @@ void G_DoLoadGame(void)
         G_LoadGameErr(msg);
         free(msg);
         return;
-      } else
-  lprintf(LO_WARN, "G_DoLoadGame: Incompatible savegame\n");
+      }
+      else
+        lprintf(LO_WARN, "G_DoLoadGame: Incompatible savegame\n");
     }
     save_p += sizeof checksum;
-   }
+  }
 
   save_p += strlen((char*)save_p)+1;
 
