@@ -351,7 +351,6 @@ static void I_EssentialQuit (void)
 {
   if (demorecording)
     G_CheckDemoStatus();
-  M_SaveDefaults ();
   dsda_ExportTextFile();
   dsda_WriteAnalysis();
   dsda_WriteSplits();
@@ -361,6 +360,8 @@ static void I_Quit (void)
 {
   if (!demorecording)
     I_EndDoom();
+
+  M_SaveDefaults ();
 
   // This function frees all WAD data as a side effect (!!!)
   // You MUST NOT call this function before any code that touches lump data (e.g., music shutdown)
