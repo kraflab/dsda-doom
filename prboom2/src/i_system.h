@@ -99,7 +99,16 @@ int I_Filelength(int handle);
 // If run_if_error is true, the function is called if the exit
 // is due to an error (I_Error)
 
+typedef enum
+{
+  exit_priority_first,
+  exit_priority_normal,
+  exit_priority_last,
+  exit_priority_max,
+} exit_priority_t;
+
 typedef void (*atexit_func_t)(void);
-void I_AtExit(atexit_func_t func, dboolean run_if_error, const char* name);
+void I_AtExit(atexit_func_t func, dboolean run_if_error,
+              const char* name, exit_priority_t priority);
 
 #endif

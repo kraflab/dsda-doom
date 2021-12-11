@@ -308,9 +308,11 @@ struct atexit_listentry_s
     const char* name;
 };
 
-static atexit_listentry_t *exit_funcs = NULL;
+static atexit_listentry_t *exit_funcs[exit_priority_max];
+static int exit_priority;
 
-void I_AtExit(atexit_func_t func, dboolean run_on_error, const char* name)
+void I_AtExit(atexit_func_t func, dboolean run_on_error,
+              const char* name, exit_priority_t priority)
 {
     atexit_listentry_t *entry;
 
@@ -318,9 +320,9 @@ void I_AtExit(atexit_func_t func, dboolean run_on_error, const char* name)
 
     entry->func = func;
     entry->run_on_error = run_on_error;
-    entry->next = exit_funcs;
+    entry->next = exit_funcs[priority];
     entry->name = name;
-    exit_funcs = entry;
+    exit_funcs[priority] = entry;
 }
 
 void I_SafeExit(int rc)
@@ -328,33 +330,41 @@ void I_SafeExit(int rc)
   atexit_listentry_t *entry;
 
   // Run through all exit functions
-
-  while ((entry = exit_funcs))
+  for (; exit_priority < exit_priority_max; ++exit_priority)
   {
-    exit_funcs = exit_funcs->next;
-
-    if (rc == 0 || entry->run_on_error)
+    while ((entry = exit_funcs[exit_priority]))
     {
-      lprintf(LO_INFO, "Exit Sequence: %s (%d)\n", entry->name, rc);
-      entry->func();
+      exit_funcs[exit_priority] = exit_funcs[exit_priority]->next;
+
+      if (rc == 0 || entry->run_on_error)
+      {
+        lprintf(LO_INFO, "Exit Sequence[%d]: %s (%d)\n", exit_priority, entry->name, rc);
+        entry->func();
+      }
     }
   }
 
   exit(rc);
 }
 
+static void I_EssentialQuit (void)
+{
+  if (demorecording)
+    G_CheckDemoStatus();
+  M_SaveDefaults ();
+  dsda_ExportTextFile();
+  dsda_WriteAnalysis();
+  dsda_WriteSplits();
+}
+
 static void I_Quit (void)
 {
   if (!demorecording)
     I_EndDoom();
-  if (demorecording)
-    G_CheckDemoStatus();
-  M_SaveDefaults ();
-  I_DemoExShutdown();
 
-  dsda_ExportTextFile();
-  dsda_WriteAnalysis();
-  dsda_WriteSplits();
+  // This function frees all WAD data as a side effect (!!!)
+  // You MUST NOT call this function before any code that touches lump data (e.g., music shutdown)
+  I_DemoExShutdown();
 }
 
 #ifdef SECURE_UID
@@ -528,7 +538,8 @@ int main(int argc, char **argv)
      left in an unstable state.
   */
 
-  I_AtExit(I_Quit, false, "I_Quit");
+  I_AtExit(I_EssentialQuit, true, "I_EssentialQuit", exit_priority_first);
+  I_AtExit(I_Quit, false, "I_Quit", exit_priority_last);
 #ifndef PRBOOM_DEBUG
   if (!M_CheckParm("-devparm"))
   {

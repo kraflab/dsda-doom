@@ -438,7 +438,7 @@ void gld_Init(int width, int height)
   // Create FBO object and associated render targets
 #ifdef USE_FBO_TECHNIQUE
   gld_InitFBO();
-  I_AtExit(gld_FreeScreenSizeFBO, true, "gld_FreeScreenSizeFBO");
+  I_AtExit(gld_FreeScreenSizeFBO, true, "gld_FreeScreenSizeFBO", exit_priority_normal);
 #endif
 
   if(!gld_LoadGLDefs("GLBDEFS"))
@@ -448,7 +448,7 @@ void gld_Init(int width, int height)
 
   gld_ResetLastTexture();
 
-  I_AtExit(gld_CleanMemory, true, "gld_CleanMemory"); //e6y
+  I_AtExit(gld_CleanMemory, true, "gld_CleanMemory", exit_priority_normal); //e6y
 
   glsl_Init(); // elim - Required for fuzz shader, even if lighting mode not set to "shaders"
 }

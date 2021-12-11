@@ -111,7 +111,7 @@ void I_InitMusic(void)
   }
   music_tmp = realloc(music_tmp, strlen(music_tmp) + 4);
   strcat(music_tmp, ".mid");
-  I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic");
+  I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
 }
 
 void I_PlaySong(int handle, int looping)
