@@ -347,10 +347,15 @@ void I_SafeExit(int rc)
   exit(rc);
 }
 
+static dboolean was_demorecording;
+
 static void I_EssentialQuit (void)
 {
   if (demorecording)
+  {
+    was_demorecording = true;
     G_CheckDemoStatus();
+  }
   dsda_ExportTextFile();
   dsda_WriteAnalysis();
   dsda_WriteSplits();
@@ -358,7 +363,7 @@ static void I_EssentialQuit (void)
 
 static void I_Quit (void)
 {
-  if (!demorecording)
+  if (!was_demorecording)
     I_EndDoom();
 
   M_SaveDefaults ();
