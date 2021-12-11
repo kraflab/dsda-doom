@@ -100,6 +100,6 @@ int I_Filelength(int handle);
 // is due to an error (I_Error)
 
 typedef void (*atexit_func_t)(void);
-void I_AtExit(atexit_func_t func, dboolean run_if_error);
+void I_AtExit(atexit_func_t func, dboolean run_if_error, const char* name);
 
 #endif

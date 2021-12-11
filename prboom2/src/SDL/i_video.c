@@ -595,7 +595,7 @@ void I_PreInitGraphics(void)
     I_Error("Could not initialize SDL [%s]", SDL_GetError());
   }
 
-  I_AtExit(I_ShutdownSDL, true);
+  I_AtExit(I_ShutdownSDL, true, "I_ShutdownSDL");
 }
 
 // e6y: resolution limitation is removed
@@ -1073,7 +1073,7 @@ void I_InitGraphics(void)
   {
     firsttime = 0;
 
-    I_AtExit(I_ShutdownGraphics, true);
+    I_AtExit(I_ShutdownGraphics, true, "I_ShutdownGraphics");
     lprintf(LO_INFO, "I_InitGraphics: %dx%d\n", SCREENWIDTH, SCREENHEIGHT);
 
     /* Set the video mode */

@@ -305,11 +305,12 @@ struct atexit_listentry_s
     atexit_func_t func;
     dboolean run_on_error;
     atexit_listentry_t *next;
+    const char* name;
 };
 
 static atexit_listentry_t *exit_funcs = NULL;
 
-void I_AtExit(atexit_func_t func, dboolean run_on_error)
+void I_AtExit(atexit_func_t func, dboolean run_on_error, const char* name)
 {
     atexit_listentry_t *entry;
 
@@ -318,6 +319,7 @@ void I_AtExit(atexit_func_t func, dboolean run_on_error)
     entry->func = func;
     entry->run_on_error = run_on_error;
     entry->next = exit_funcs;
+    entry->name = name;
     exit_funcs = entry;
 }
 
@@ -333,6 +335,7 @@ void I_SafeExit(int rc)
 
     if (rc == 0 || entry->run_on_error)
     {
+      lprintf(LO_INFO, "Exit Sequence: %s (%d)\n", entry->name, rc);
       entry->func();
     }
   }
@@ -525,7 +528,7 @@ int main(int argc, char **argv)
      left in an unstable state.
   */
 
-  I_AtExit(I_Quit, false);
+  I_AtExit(I_Quit, false, "I_Quit");
 #ifndef PRBOOM_DEBUG
   if (!M_CheckParm("-devparm"))
   {
