@@ -229,6 +229,7 @@ static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* heade
   demo_p += DSDA_DEMO_HEADER_DATA_SIZE;
 
   dsda_EnableExCmd();
+  dsda_EnableCasualExCmdFeatures();
 
   return demo_p;
 }
