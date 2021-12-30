@@ -184,9 +184,6 @@ int             totalleveltimes;      // CPhipps - total time for all completed 
 int             longtics;
 int             bytes_per_tic;
 
-dboolean boom_autoswitch;
-dboolean done_autoswitch;
-
 dboolean coop_spawns;
 
 // e6y
@@ -794,11 +791,10 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // Make Boom insert only a single weapon change command on autoswitch.
   if ((!demo_compatibility && players[consoleplayer].attackdown && // killough
-       !P_CheckAmmo(&players[consoleplayer]) && !(done_autoswitch && boom_autoswitch)) ||
+       !P_CheckAmmo(&players[consoleplayer]) && cmd->buttons & BT_ATTACK) ||
        (!hexen && dsda_InputActive(dsda_input_toggleweapon)))
   {
     newweapon = P_SwitchWeapon(&players[consoleplayer]);           // phares
-    done_autoswitch = true;
   }
   else
   {                                 // phares 02/26/98: Added gamemode checks

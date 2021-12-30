@@ -546,9 +546,6 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_WeaponReady", player);
 
-// weapon change sequence considered complete
-  done_autoswitch = false;
-
   if (player->chickenTics)
   {                           // Change to the chicken beak
       P_ActivateBeak(player);
