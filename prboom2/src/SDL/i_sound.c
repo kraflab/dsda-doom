@@ -1230,7 +1230,7 @@ char music_player_order[NUM_MUS_PLAYERS][200] =
 const char *snd_midiplayer;
 
 const char *midiplayers[midi_player_last + 1] = {
-  "sdl", "fluidsynth", "opl2", "portmidi", NULL};
+  "fluidsynth", "opl2", "portmidi", "sdl", NULL};
 
 static int current_player = -1;
 static const void *music_handle = NULL;
