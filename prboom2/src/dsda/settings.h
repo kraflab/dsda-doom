@@ -68,6 +68,7 @@ extern int dsda_death_use_action;
 extern int dsda_allow_jumping;
 extern int dsda_parallel_sfx_limit;
 extern int dsda_parallel_sfx_window;
+extern int dsda_switch_when_ammo_runs_out;
 extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);
@@ -89,6 +90,7 @@ dboolean dsda_CycleGhostColors(void);
 dboolean dsda_WeaponAttackAlignment(void);
 dboolean dsda_AlwaysSR50(void);
 dboolean dsda_HideHorns(void);
+dboolean dsda_SwitchWhenAmmoRunsOut(void);
 dboolean dsda_SkipQuitPrompt(void);
 dboolean dsda_TrackSplits(void);
 dboolean dsda_ShowSplitData(void);

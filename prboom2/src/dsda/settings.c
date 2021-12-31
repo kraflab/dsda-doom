@@ -57,6 +57,7 @@ int dsda_fine_sensitivity;
 int dsda_hide_horns;
 int dsda_skip_quit_prompt;
 int dsda_show_split_data;
+int dsda_switch_when_ammo_runs_out;
 
 void dsda_InitSettings(void) {
   int i;
@@ -222,6 +223,10 @@ dboolean dsda_AlwaysSR50(void) {
 
 dboolean dsda_HideHorns(void) {
   return dsda_hide_horns;
+}
+
+dboolean dsda_SwitchWhenAmmoRunsOut(void) {
+  return dsda_switch_when_ammo_runs_out;
 }
 
 dboolean dsda_SkipQuitPrompt(void) {

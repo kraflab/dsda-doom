@@ -778,94 +778,114 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     dclicks = 0;
   }
 
-  // Toggle between the top 2 favorite weapons.                   // phares
-  // If not currently aiming one of these, switch to              // phares
-  // the favorite. Only switch if you possess the weapon.         // phares
-
-  // killough 3/22/98:
-  //
-  // Perform automatic weapons switch here rather than in p_pspr.c,
-  // except in demo_compatibility mode.
-  //
-  // killough 3/26/98, 4/2/98: fix autoswitch when no weapons are left
-
-  // Make Boom insert only a single weapon change command on autoswitch.
-  if ((!demo_compatibility && players[consoleplayer].attackdown && // killough
-       !P_CheckAmmo(&players[consoleplayer]) && cmd->buttons & BT_ATTACK) ||
-       (!hexen && dsda_InputActive(dsda_input_toggleweapon)))
   {
-    newweapon = P_SwitchWeapon(&players[consoleplayer]);           // phares
-  }
-  else
-  {                                 // phares 02/26/98: Added gamemode checks
-    if (next_weapon && players[consoleplayer].morphTics == 0)
+    static dboolean done_autoswitch = false;
+
+    if (!players[consoleplayer].attackdown)
     {
-      newweapon = G_NextWeapon(next_weapon);
+      done_autoswitch = false;
     }
-    else if (hexen)
+
+    // Toggle between the top 2 favorite weapons.                   // phares
+    // If not currently aiming one of these, switch to              // phares
+    // the favorite. Only switch if you possess the weapon.         // phares
+
+    // killough 3/22/98:
+    //
+    // Perform automatic weapons switch here rather than in p_pspr.c,
+    // except in demo_compatibility mode.
+    //
+    // killough 3/26/98, 4/2/98: fix autoswitch when no weapons are left
+
+    // Make Boom insert only a single weapon change command on autoswitch.
+    if (
+      (
+        !demo_compatibility &&
+        players[consoleplayer].attackdown && // killough
+        !P_CheckAmmo(&players[consoleplayer]) &&
+        (
+          (
+            dsda_SwitchWhenAmmoRunsOut() &&
+            !done_autoswitch
+          ) || cmd->buttons & BT_ATTACK
+        )
+      ) || (!hexen && dsda_InputActive(dsda_input_toggleweapon))
+    )
     {
-      newweapon =
-        dsda_InputActive(dsda_input_weapon1) ? wp_first :    // killough 5/2/98: reformatted
-        dsda_InputActive(dsda_input_weapon2) ? wp_second :
-        dsda_InputActive(dsda_input_weapon3) ? wp_third :
-        dsda_InputActive(dsda_input_weapon4) ? wp_fourth :
-        wp_nochange;
+      done_autoswitch = true;
+      newweapon = P_SwitchWeapon(&players[consoleplayer]);           // phares
     }
     else
-    {
-      // HERETIC_TODO: fix this
-      newweapon =
-        dsda_InputActive(dsda_input_weapon1) ? wp_fist :    // killough 5/2/98: reformatted
-        dsda_InputActive(dsda_input_weapon2) ? wp_pistol :
-        dsda_InputActive(dsda_input_weapon3) ? wp_shotgun :
-        dsda_InputActive(dsda_input_weapon4) ? wp_chaingun :
-        dsda_InputActive(dsda_input_weapon5) ? wp_missile :
-        dsda_InputActive(dsda_input_weapon6) && gamemode != shareware ? wp_plasma :
-        dsda_InputActive(dsda_input_weapon7) && gamemode != shareware ? wp_bfg :
-        dsda_InputActive(dsda_input_weapon8) ? wp_chainsaw :
-        (!demo_compatibility && dsda_InputActive(dsda_input_weapon9) && gamemode == commercial) ? wp_supershotgun :
-        wp_nochange;
-    }
+    {                                 // phares 02/26/98: Added gamemode checks
+      if (next_weapon && players[consoleplayer].morphTics == 0)
+      {
+        newweapon = G_NextWeapon(next_weapon);
+      }
+      else if (hexen)
+      {
+        newweapon =
+          dsda_InputActive(dsda_input_weapon1) ? wp_first :    // killough 5/2/98: reformatted
+          dsda_InputActive(dsda_input_weapon2) ? wp_second :
+          dsda_InputActive(dsda_input_weapon3) ? wp_third :
+          dsda_InputActive(dsda_input_weapon4) ? wp_fourth :
+          wp_nochange;
+      }
+      else
+      {
+        // HERETIC_TODO: fix this
+        newweapon =
+          dsda_InputActive(dsda_input_weapon1) ? wp_fist :    // killough 5/2/98: reformatted
+          dsda_InputActive(dsda_input_weapon2) ? wp_pistol :
+          dsda_InputActive(dsda_input_weapon3) ? wp_shotgun :
+          dsda_InputActive(dsda_input_weapon4) ? wp_chaingun :
+          dsda_InputActive(dsda_input_weapon5) ? wp_missile :
+          dsda_InputActive(dsda_input_weapon6) && gamemode != shareware ? wp_plasma :
+          dsda_InputActive(dsda_input_weapon7) && gamemode != shareware ? wp_bfg :
+          dsda_InputActive(dsda_input_weapon8) ? wp_chainsaw :
+          (!demo_compatibility && dsda_InputActive(dsda_input_weapon9) && gamemode == commercial) ? wp_supershotgun :
+          wp_nochange;
+      }
 
-    // killough 3/22/98: For network and demo consistency with the
-    // new weapons preferences, we must do the weapons switches here
-    // instead of in p_user.c. But for old demos we must do it in
-    // p_user.c according to the old rules. Therefore demo_compatibility
-    // determines where the weapons switch is made.
+      // killough 3/22/98: For network and demo consistency with the
+      // new weapons preferences, we must do the weapons switches here
+      // instead of in p_user.c. But for old demos we must do it in
+      // p_user.c according to the old rules. Therefore demo_compatibility
+      // determines where the weapons switch is made.
 
-    // killough 2/8/98:
-    // Allow user to switch to fist even if they have chainsaw.
-    // Switch to fist or chainsaw based on preferences.
-    // Switch to shotgun or SSG based on preferences.
+      // killough 2/8/98:
+      // Allow user to switch to fist even if they have chainsaw.
+      // Switch to fist or chainsaw based on preferences.
+      // Switch to shotgun or SSG based on preferences.
 
-    if (!demo_compatibility)
-    {
-      const player_t *player = &players[consoleplayer];
+      if (!demo_compatibility)
+      {
+        const player_t *player = &players[consoleplayer];
 
-      // only select chainsaw from '1' if it's owned, it's
-      // not already in use, and the player prefers it or
-      // the fist is already in use, or the player does not
-      // have the berserker strength.
+        // only select chainsaw from '1' if it's owned, it's
+        // not already in use, and the player prefers it or
+        // the fist is already in use, or the player does not
+        // have the berserker strength.
 
-      if (newweapon==wp_fist && player->weaponowned[wp_chainsaw] &&
-          player->readyweapon!=wp_chainsaw &&
-          (player->readyweapon==wp_fist ||
-           !player->powers[pw_strength] ||
-           P_WeaponPreferred(wp_chainsaw, wp_fist)))
-        newweapon = wp_chainsaw;
+        if (newweapon==wp_fist && player->weaponowned[wp_chainsaw] &&
+            player->readyweapon!=wp_chainsaw &&
+            (player->readyweapon==wp_fist ||
+             !player->powers[pw_strength] ||
+             P_WeaponPreferred(wp_chainsaw, wp_fist)))
+          newweapon = wp_chainsaw;
 
-      // Select SSG from '3' only if it's owned and the player
-      // does not have a shotgun, or if the shotgun is already
-      // in use, or if the SSG is not already in use and the
-      // player prefers it.
+        // Select SSG from '3' only if it's owned and the player
+        // does not have a shotgun, or if the shotgun is already
+        // in use, or if the SSG is not already in use and the
+        // player prefers it.
 
-      if (newweapon == wp_shotgun && gamemode == commercial &&
-          player->weaponowned[wp_supershotgun] &&
-          (!player->weaponowned[wp_shotgun] ||
-           player->readyweapon == wp_shotgun ||
-           (player->readyweapon != wp_supershotgun &&
-            P_WeaponPreferred(wp_supershotgun, wp_shotgun))))
-        newweapon = wp_supershotgun;
+        if (newweapon == wp_shotgun && gamemode == commercial &&
+            player->weaponowned[wp_supershotgun] &&
+            (!player->weaponowned[wp_shotgun] ||
+             player->readyweapon == wp_shotgun ||
+             (player->readyweapon != wp_supershotgun &&
+              P_WeaponPreferred(wp_supershotgun, wp_shotgun))))
+          newweapon = wp_supershotgun;
+      }
     }
   }
 
