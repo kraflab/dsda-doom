@@ -401,8 +401,6 @@ function(AddGameExecutable TARGET SOURCES)
         endif()
     endif()
 
-    add_definitions("-DUSE_EXPERIMENTAL_MUSIC")
-
     add_executable(${TARGET} WIN32 ${SOURCES})
     target_include_directories(${TARGET} PRIVATE
         ${SDL2_INCLUDE_DIRS}
