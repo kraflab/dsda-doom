@@ -953,6 +953,9 @@ int I_RegisterMidi(const void *data, size_t len)
   midi_file_t *midifile;
   midimem_t mf;
 
+  if (len < 4 || memcmp(data, "MThd", 4))
+    return 0;
+
   mf.len = len;
   mf.pos = 0;
   mf.data = (const byte *) data;
