@@ -642,7 +642,7 @@ void MIDI_FreeFile(midi_file_t *file)
 
     free(file);
 }
-#include "lprintf.h"
+
 midi_file_t *MIDI_LoadFile (midimem_t *mf)
 {
     midi_file_t *file;
@@ -651,7 +651,6 @@ midi_file_t *MIDI_LoadFile (midimem_t *mf)
 
     if (file == NULL)
     {
-        lprintf(LO_INFO, "allocation failed\n");
         return NULL;
     }
 
@@ -664,7 +663,6 @@ midi_file_t *MIDI_LoadFile (midimem_t *mf)
 
     if (!ReadFileHeader(file, mf))
     {
-        lprintf(LO_INFO, "header failed\n");
         MIDI_FreeFile(file);
         return NULL;
     }
@@ -673,7 +671,6 @@ midi_file_t *MIDI_LoadFile (midimem_t *mf)
 
     if (!ReadAllTracks(file, mf))
     {
-        lprintf(LO_INFO, "tracks failed\n");
         MIDI_FreeFile(file);
         return NULL;
     }
