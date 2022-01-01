@@ -632,30 +632,6 @@ void I_InitSound(void)
     lprintf(LO_INFO," configured audio device with %d samples/slice\n", audio_buffers);
   }
 
-//   if (use_experimental_music)
-//   {
-//     // Open the audio device
-//     audio.freq = snd_samplerate;
-// #if ( SDL_BYTEORDER == SDL_BIG_ENDIAN )
-//     audio.format = AUDIO_S16MSB;
-// #else
-//     audio.format = AUDIO_S16LSB;
-// #endif
-//     audio.channels = 2;
-//     audio.samples = snd_samplecount * snd_samplerate / 11025;
-//     audio.callback = I_UpdateSound;
-//     if ( SDL_OpenAudio(&audio, NULL) < 0 )
-//     {
-//       lprintf(LO_INFO, "couldn't open audio with desired format (%s))\n", SDL_GetError());
-//       nosfxparm = true;
-//       nomusicparm = true;
-//       return;
-//     }
-//     sound_inited_once = true;//e6y
-//     sound_inited = true;
-//     lprintf(LO_INFO, " configured audio device with %d samples/slice\n", audio.samples);
-//   }
-
   if (first_sound_init)
   {
     I_AtExit(I_ShutdownSound, true, "I_ShutdownSound", exit_priority_normal);
