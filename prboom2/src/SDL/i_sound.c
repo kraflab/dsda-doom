@@ -737,7 +737,6 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 
 static void Exp_UpdateMusic (void *buff, unsigned nsamp);
 static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile);
-static int Exp_RegisterSongEx (const void *data, size_t len, midi_file_t *midifile);
 static void Exp_SetMusicVolume (int volume);
 static void Exp_UnRegisterSong(int handle);
 static void Exp_StopSong(int handle);
@@ -1296,7 +1295,7 @@ static void Exp_SetMusicVolume (int volume)
 }
 
 // returns 1 on success, 0 on failure
-static int Exp_RegisterSongEx (const void *data, size_t len, midi_file_t *midifile)
+static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile)
 {
   int i, j;
   dboolean io_errors = false;
@@ -1341,28 +1340,22 @@ static int Exp_RegisterSongEx (const void *data, size_t len, midi_file_t *midifi
               current_player = i;
               music_handle = temp_handle;
               SDL_UnlockMutex (musmutex);
-              lprintf (LO_INFO, "Exp_RegisterSongEx: Using player %s\n", music_players[i]->name ());
+              lprintf (LO_INFO, "Exp_RegisterSong: Using player %s\n", music_players[i]->name ());
               return 1;
             }
           }
           else
-            lprintf (LO_INFO, "Exp_RegisterSongEx: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
+            lprintf (LO_INFO, "Exp_RegisterSong: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
         }
       }
       if (!found)
-        lprintf (LO_INFO, "Exp_RegisterSongEx: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
+        lprintf (LO_INFO, "Exp_RegisterSong: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
     }
     // load failed
   }
 
-  lprintf (LO_ERROR, "Exp_RegisterSongEx: Failed\n");
+  lprintf (LO_ERROR, "Exp_RegisterSong: Failed\n");
   return 0;
-}
-
-
-static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile)
-{
-  return Exp_RegisterSongEx (data, len, midifile);
 }
 
 static void Exp_UpdateMusic (void *buff, unsigned nsamp)
