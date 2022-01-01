@@ -742,6 +742,14 @@ static void Exp_PlaySong(int handle, int looping);
 
 #include "mus2mid.h"
 
+#include "MUSIC/musicplayer.h"
+#include "MUSIC/oplplayer.h"
+#include "MUSIC/madplayer.h"
+#include "MUSIC/dumbplayer.h"
+#include "MUSIC/flplayer.h"
+#include "MUSIC/vorbisplayer.h"
+#include "MUSIC/portmidiplayer.h"
+
 static Mix_Music *music[2] = { NULL, NULL };
 
 // Some tracks are directly streamed from the RWops;
@@ -754,16 +762,6 @@ static SDL_RWops *rwops_stream = NULL;
 const char *snd_soundfont; // soundfont name for synths that use it
 const char *snd_mididev; // midi device to use (portmidiplayer)
 
-#include "MUSIC/musicplayer.h"
-
-#include "MUSIC/oplplayer.h"
-#include "MUSIC/madplayer.h"
-#include "MUSIC/dumbplayer.h"
-#include "MUSIC/flplayer.h"
-#include "MUSIC/vorbisplayer.h"
-#include "MUSIC/portmidiplayer.h"
-
-// list of possible music players
 static const music_player_t *music_players[] =
 { // until some ui work is done, the order these appear is the autodetect order.
   // of particular importance:  things that play mus have to be last, because
@@ -777,7 +775,6 @@ static const music_player_t *music_players[] =
   NULL
 };
 #define NUM_MUS_PLAYERS ((int)(sizeof (music_players) / sizeof (music_player_t *) - 1))
-
 
 static int music_player_was_init[NUM_MUS_PLAYERS];
 
@@ -1111,12 +1108,8 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
   size_t outbuf_len;
   int result;
 
-  //try_mus2mid = 0; // debug: supress mus2mid conversion completely
-
-
   if (music_handle)
     Exp_UnRegisterSong (0);
-
 
   // e6y: new logic by me
   // Now you can hear title music in deca.wad
@@ -1161,9 +1154,6 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
     }
     // load failed
   }
-
-
-
 
   // load failed? try mus2mid
   if (len > 4 && try_mus2mid)
@@ -1238,13 +1228,11 @@ static int Exp_RegisterSong (const void *data, size_t len)
 
 static void Exp_UpdateMusic (void *buff, unsigned nsamp)
 {
-
   if (!music_handle)
   {
     memset (buff, 0, nsamp * 4);
     return;
   }
-
 
   music_players[current_player]->render (buff, nsamp);
 }
