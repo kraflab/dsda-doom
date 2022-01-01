@@ -39,9 +39,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_LIBSDL2_MIXER
-#define HAVE_MIXER
-#endif
 
 #include "SDL.h"
 #include "SDL_audio.h"
@@ -51,10 +48,8 @@
 
 #include "SDL_version.h"
 #include "SDL_thread.h"
-#ifdef HAVE_MIXER
 #define USE_RWOPS
 #include "SDL_mixer.h"
-#endif
 
 #include "z_zone.h"
 
@@ -578,9 +573,7 @@ void I_ShutdownSound(void)
 {
   if (sound_inited)
   {
-#ifdef HAVE_MIXER
     Mix_CloseAudio();
-#endif
     SDL_CloseAudio();
     sound_inited = false;
 
@@ -617,8 +610,6 @@ void I_InitSound(void)
 
   if (!use_experimental_music)
   {
-#ifdef HAVE_MIXER
-
     /* Initialize variables */
     audio_rate = snd_samplerate;
     audio_channels = 2;
@@ -637,9 +628,6 @@ void I_InitSound(void)
     lprintf(LO_INFO," configured audio device with %d samples/slice\n", audio_buffers);
   }
   else
-#else // HAVE_MIXER
-  }
-#endif // HAVE_MIXER
   {
     // Open the audio device
     audio.freq = snd_samplerate;
@@ -779,14 +767,7 @@ static void Exp_PlaySong(int handle, int looping);
 static void Exp_InitMusic(void);
 static void Exp_ShutdownMusic(void);
 
-
-
-
-
-#ifdef HAVE_MIXER
-
 #include "mus2mid.h"
-
 
 static Mix_Music *music[2] = { NULL, NULL };
 
@@ -800,8 +781,6 @@ static char *music_tmp = NULL; /* cph - name of music temporary file */
 static const char *music_tmp_ext[] = { "", ".mp3", ".ogg" };
 #define MUSIC_TMP_EXT (sizeof(music_tmp_ext)/sizeof(*music_tmp_ext))
 
-#endif
-
 void I_ShutdownMusic(void)
 {
   if (use_experimental_music)
@@ -809,7 +788,7 @@ void I_ShutdownMusic(void)
     Exp_ShutdownMusic ();
     return;
   }
-#ifdef HAVE_MIXER
+
   if (music_tmp) {
     int i;
     char *name;
@@ -826,7 +805,6 @@ void I_ShutdownMusic(void)
     free(music_tmp);
     music_tmp = NULL;
   }
-#endif
 }
 
 void I_InitMusic(void)
@@ -836,7 +814,7 @@ void I_InitMusic(void)
     Exp_InitMusic ();
     return;
   }
-#ifdef HAVE_MIXER
+
   if (!music_tmp) {
 #ifndef _WIN32
     music_tmp = strdup("/tmp/"PACKAGE_TARNAME"-music-XXXXXX");
@@ -854,8 +832,6 @@ void I_InitMusic(void)
     I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
   }
   return;
-#endif
-  lprintf (LO_INFO, "I_InitMusic: Was compiled without SDL_Mixer support.  You should enable experimental music.\n");
 }
 
 void I_PlaySong(int handle, int looping)
@@ -865,7 +841,7 @@ void I_PlaySong(int handle, int looping)
     Exp_PlaySong (handle, looping);
     return;
   }
-#ifdef HAVE_MIXER
+
   if ( music[handle] ) {
     //Mix_FadeInMusic(music[handle], looping ? -1 : 0, 500);
     Mix_PlayMusic(music[handle], looping ? -1 : 0);
@@ -873,7 +849,6 @@ void I_PlaySong(int handle, int looping)
     // haleyjd 10/28/05: make sure volume settings remain consistent
     I_SetMusicVolume(snd_MusicVolume);
   }
-#endif
 }
 
 extern int mus_pause_opt; // From m_misc.c
@@ -885,7 +860,7 @@ void I_PauseSong (int handle)
     Exp_PauseSong (handle);
     return;
   }
-#ifdef HAVE_MIXER
+
   switch(mus_pause_opt) {
   case 0:
       I_StopSong(handle);
@@ -906,7 +881,6 @@ void I_PauseSong (int handle)
     }
     break;
   }
-#endif
   // Default - let music continue
 }
 
@@ -917,7 +891,7 @@ void I_ResumeSong (int handle)
     Exp_ResumeSong (handle);
     return;
   }
-#ifdef HAVE_MIXER
+
   switch(mus_pause_opt) {
   case 0:
       I_PlaySong(handle,1);
@@ -936,7 +910,6 @@ void I_ResumeSong (int handle)
     }
     break;
   }
-#endif
   /* Otherwise, music wasn't stopped */
 }
 
@@ -947,10 +920,9 @@ void I_StopSong(int handle)
     Exp_StopSong (handle);
     return;
   }
-#ifdef HAVE_MIXER
+
   // halt music playback
   Mix_HaltMusic();
-#endif
 }
 
 void I_UnRegisterSong(int handle)
@@ -960,7 +932,7 @@ void I_UnRegisterSong(int handle)
     Exp_UnRegisterSong (handle);
     return;
   }
-#ifdef HAVE_MIXER
+
   if ( music[handle] ) {
     Mix_FreeMusic(music[handle]);
     music[handle] = NULL;
@@ -972,7 +944,6 @@ void I_UnRegisterSong(int handle)
       rw_midi = NULL;
     }
   }
-#endif
 }
 
 int I_RegisterSong(const void *data, size_t len)
@@ -986,7 +957,6 @@ int I_RegisterSong(const void *data, size_t len)
   {
     return Exp_RegisterSong (data, len);
   }
-#ifdef HAVE_MIXER
 
   if (music_tmp == NULL)
     return 0;
@@ -1123,7 +1093,6 @@ int I_RegisterSong(const void *data, size_t len)
     }
   }
 
-#endif
   return (0);
 }
 
@@ -1142,15 +1111,13 @@ void I_SetMusicVolume(int volume)
     Exp_SetMusicVolume (volume);
     return;
   }
-#ifdef HAVE_MIXER
+
   Mix_VolumeMusic(volume*8);
 
 #ifdef _WIN32
   // e6y: workaround
   if (mus_extend_volume && Mix_GetMusicType(NULL) == MUS_MID)
     I_midiOutSetVolumes(volume  /* *8  */);
-#endif
-
 #endif
 }
 
