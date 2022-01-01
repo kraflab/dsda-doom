@@ -1005,20 +1005,6 @@ void I_ResetMusicVolume(void)
   I_SetMusicVolume(snd_MusicVolume);
 }
 
-
-
-
-
-
-
-/********************************************************
-
-experimental music API
-
-********************************************************/
-
-
-
 // note that the "handle" passed around by s_sound is ignored
 // however, a handle is maintained for the individual music players
 
