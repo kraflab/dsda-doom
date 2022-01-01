@@ -435,7 +435,7 @@ dboolean I_AnySoundStillPlaying(void)
 // This function currently supports only 16bit.
 //
 
-static void Exp_UpdateMusic (void *buff, unsigned nsamp);
+static void Midi_UpdateMusic (void *buff, unsigned nsamp);
 
 // from pcsound_sdl.c
 void PCSound_Mix_Callback(void *udata, Uint8 *stream, int len);
@@ -470,7 +470,7 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
   if (registered_midi)
   {
     SDL_LockMutex (musmutex);
-    Exp_UpdateMusic (stream, len / 4);
+    Midi_UpdateMusic (stream, len / 4);
     SDL_UnlockMutex (musmutex);
   }
 
@@ -735,16 +735,16 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 // MUSIC API.
 //
 
-static void Exp_UpdateMusic (void *buff, unsigned nsamp);
-static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile);
-static void Exp_SetMusicVolume (int volume);
-static void Exp_UnRegisterSong(int handle);
-static void Exp_StopSong(int handle);
-static void Exp_ResumeSong (int handle);
-static void Exp_PauseSong (int handle);
-static void Exp_PlaySong(int handle, int looping);
-static void Exp_InitMusic(void);
-static void Exp_ShutdownMusic(void);
+static void Midi_UpdateMusic (void *buff, unsigned nsamp);
+static int Midi_RegisterSong (const void *data, size_t len, midi_file_t *midifile);
+static void Midi_SetMusicVolume (int volume);
+static void Midi_UnRegisterSong(int handle);
+static void Midi_StopSong(int handle);
+static void Midi_ResumeSong (int handle);
+static void Midi_PauseSong (int handle);
+static void Midi_PlaySong(int handle, int looping);
+static void Midi_InitMusic(void);
+static void Midi_ShutdownMusic(void);
 
 #include "mus2mid.h"
 
@@ -779,7 +779,7 @@ void I_ShutdownMusic(void)
     music_tmp = NULL;
   }
 
-  Exp_ShutdownMusic ();
+  Midi_ShutdownMusic ();
 }
 
 void I_InitMusic(void)
@@ -801,14 +801,14 @@ void I_InitMusic(void)
     I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
   }
 
-  Exp_InitMusic ();
+  Midi_InitMusic ();
 }
 
 void I_PlaySong(int handle, int looping)
 {
   if (registered_midi)
   {
-    Exp_PlaySong (handle, looping);
+    Midi_PlaySong (handle, looping);
     return;
   }
 
@@ -827,7 +827,7 @@ void I_PauseSong (int handle)
 {
   if (registered_midi)
   {
-    Exp_PauseSong (handle);
+    Midi_PauseSong (handle);
     return;
   }
 
@@ -858,7 +858,7 @@ void I_ResumeSong (int handle)
 {
   if (registered_midi)
   {
-    Exp_ResumeSong (handle);
+    Midi_ResumeSong (handle);
     return;
   }
 
@@ -887,7 +887,7 @@ void I_StopSong(int handle)
 {
   if (registered_midi)
   {
-    Exp_StopSong (handle);
+    Midi_StopSong (handle);
     return;
   }
 
@@ -899,7 +899,7 @@ void I_UnRegisterSong(int handle)
 {
   if (registered_midi)
   {
-    Exp_UnRegisterSong (handle);
+    Midi_UnRegisterSong (handle);
     return;
   }
 
@@ -934,7 +934,7 @@ int I_RegisterMidi(const void *data, size_t len)
   if (!midifile)
     return 0;
 
-  result = Exp_RegisterSong(data, len, midifile);
+  result = Midi_RegisterSong(data, len, midifile);
 
   if (result)
     registered_midi = true;
@@ -1096,27 +1096,13 @@ void I_SetMusicVolume(int volume)
   music_volume = volume;
 
   Mix_VolumeMusic(volume*8);
-  Exp_SetMusicVolume (volume);
+  Midi_SetMusicVolume (volume);
 }
 
 void I_ResetMusicVolume(void)
 {
   I_SetMusicVolume(snd_MusicVolume);
 }
-
-
-
-
-
-
-
-/********************************************************
-
-experimental music API
-
-********************************************************/
-
-
 
 // note that the "handle" passed around by s_sound is ignored
 // however, a handle is maintained for the individual music players
@@ -1172,7 +1158,7 @@ int mus_fluidsynth_gain; // NSM  fine tune fluidsynth output level
 int mus_opl_gain; // NSM  fine tune OPL output level
 
 
-static void Exp_ShutdownMusic(void)
+static void Midi_ShutdownMusic(void)
 {
   int i;
   S_StopMusic ();
@@ -1191,7 +1177,7 @@ static void Exp_ShutdownMusic(void)
 }
 
 
-static void Exp_InitMusic(void)
+static void Midi_InitMusic(void)
 {
   int i;
   musmutex = SDL_CreateMutex ();
@@ -1202,7 +1188,7 @@ static void Exp_InitMusic(void)
     music_player_was_init[i] = music_players[i]->init (snd_samplerate);
 }
 
-static void Exp_PlaySong(int handle, int looping)
+static void Midi_PlaySong(int handle, int looping)
 {
   if (music_handle)
   {
@@ -1216,7 +1202,7 @@ static void Exp_PlaySong(int handle, int looping)
 
 extern int mus_pause_opt; // From m_misc.c
 
-static void Exp_PauseSong (int handle)
+static void Midi_PauseSong (int handle)
 {
   if (!music_handle)
     return;
@@ -1236,7 +1222,7 @@ static void Exp_PauseSong (int handle)
   SDL_UnlockMutex (musmutex);
 }
 
-static void Exp_ResumeSong (int handle)
+static void Midi_ResumeSong (int handle)
 {
   if (!music_handle)
     return;
@@ -1257,7 +1243,7 @@ static void Exp_ResumeSong (int handle)
   SDL_UnlockMutex (musmutex);
 }
 
-static void Exp_StopSong(int handle)
+static void Midi_StopSong(int handle)
 {
   if (music_handle)
   {
@@ -1267,7 +1253,7 @@ static void Exp_StopSong(int handle)
   }
 }
 
-static void Exp_UnRegisterSong(int handle)
+static void Midi_UnRegisterSong(int handle)
 {
   if (music_handle)
   {
@@ -1283,7 +1269,7 @@ static void Exp_UnRegisterSong(int handle)
   }
 }
 
-static void Exp_SetMusicVolume (int volume)
+static void Midi_SetMusicVolume (int volume)
 {
   if (music_handle)
   {
@@ -1294,7 +1280,7 @@ static void Exp_SetMusicVolume (int volume)
 }
 
 // returns 1 on success, 0 on failure
-static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile)
+static int Midi_RegisterSong (const void *data, size_t len, midi_file_t *midifile)
 {
   int i, j;
   dboolean io_errors = false;
@@ -1307,7 +1293,7 @@ static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile
   int found = 0;
 
   if (music_handle)
-    Exp_UnRegisterSong (0);
+    Midi_UnRegisterSong (0);
 
   for (j = 0; j < NUM_MUS_PLAYERS; j++)
   {
@@ -1326,23 +1312,23 @@ static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile
             current_player = i;
             music_handle = temp_handle;
             SDL_UnlockMutex (musmutex);
-            lprintf (LO_INFO, "Exp_RegisterSong: Using player %s\n", music_players[i]->name ());
+            lprintf (LO_INFO, "Midi_RegisterSong: Using player %s\n", music_players[i]->name ());
             return 1;
           }
         }
         else
-          lprintf (LO_INFO, "Exp_RegisterSong: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
+          lprintf (LO_INFO, "Midi_RegisterSong: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
       }
     }
     if (!found)
-      lprintf (LO_INFO, "Exp_RegisterSong: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
+      lprintf (LO_INFO, "Midi_RegisterSong: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
   }
 
-  lprintf (LO_ERROR, "Exp_RegisterSong: Failed\n");
+  lprintf (LO_ERROR, "Midi_RegisterSong: Failed\n");
   return 0;
 }
 
-static void Exp_UpdateMusic (void *buff, unsigned nsamp)
+static void Midi_UpdateMusic (void *buff, unsigned nsamp)
 {
 
   if (!music_handle)
