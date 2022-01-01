@@ -748,7 +748,7 @@ static Mix_Music *music[2] = { NULL, NULL };
 
 // Some tracks are directly streamed from the RWops;
 // we need to free them in the end
-static SDL_RWops *rw_midi = NULL;
+static SDL_RWops *rwops_stream = NULL;
 
 static char *music_tmp = NULL; /* cph - name of music temporary file */
 
@@ -904,10 +904,10 @@ void I_UnRegisterSong(int handle)
     music[handle] = NULL;
 
     // Free RWops
-    if (rw_midi != NULL)
+    if (rwops_stream != NULL)
     {
-      //SDL_FreeRW(rw_midi);
-      rw_midi = NULL;
+      //SDL_FreeRW(rwops_stream);
+      rwops_stream = NULL;
     }
   }
 }
@@ -942,11 +942,10 @@ int I_RegisterSong(const void *data, size_t len)
 
     if (strlen(music_tmp_ext[i]) == 0)
     {
-      //midi
-      rw_midi = SDL_RWFromConstMem(data, len);
-      if (rw_midi)
+      rwops_stream = SDL_RWFromConstMem(data, len);
+      if (rwops_stream)
       {
-        music[0] = Mix_LoadMUS_RW(rw_midi, SDL_FALSE);
+        music[0] = Mix_LoadMUS_RW(rwops_stream, SDL_FALSE);
       }
     }
 
@@ -968,10 +967,10 @@ int I_RegisterSong(const void *data, size_t len)
   if (!music[0])
   {
     // Conversion failed, free everything
-    if (rw_midi != NULL)
+    if (rwops_stream != NULL)
     {
-      //SDL_FreeRW(rw_midi);
-      rw_midi = NULL;
+      //SDL_FreeRW(rwops_stream);
+      rwops_stream = NULL;
     }
 
     if (io_errors)
