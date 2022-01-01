@@ -1304,53 +1304,38 @@ static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile
   void *outbuf;
   size_t outbuf_len;
   int result;
+  int found = 0;
 
   if (music_handle)
     Exp_UnRegisterSong (0);
 
-
-  // e6y: new logic by me
-  // Now you can hear title music in deca.wad
-  // http://www.doomworld.com/idgames/index.php?id=8808
-  // Ability to use mp3 and ogg as inwad lump
-
-  if (len > 4 && memcmp(data, "MUS", 3) != 0)
+  for (j = 0; j < NUM_MUS_PLAYERS; j++)
   {
-    // The header has no MUS signature
-    // Let's try to load this song directly
-
-    // go through music players in order
-    int found = 0;
-
-    for (j = 0; j < NUM_MUS_PLAYERS; j++)
+    found = 0;
+    for (i = 0; music_players[i]; i++)
     {
-      found = 0;
-      for (i = 0; music_players[i]; i++)
+      if (strcmp (music_players[i]->name (), music_player_order[j]) == 0)
       {
-        if (strcmp (music_players[i]->name (), music_player_order[j]) == 0)
+        found = 1;
+        if (music_player_was_init[i])
         {
-          found = 1;
-          if (music_player_was_init[i])
+          const void *temp_handle = music_players[i]->registersong (data, len, midifile);
+          if (temp_handle)
           {
-            const void *temp_handle = music_players[i]->registersong (data, len, midifile);
-            if (temp_handle)
-            {
-              SDL_LockMutex (musmutex);
-              current_player = i;
-              music_handle = temp_handle;
-              SDL_UnlockMutex (musmutex);
-              lprintf (LO_INFO, "Exp_RegisterSong: Using player %s\n", music_players[i]->name ());
-              return 1;
-            }
+            SDL_LockMutex (musmutex);
+            current_player = i;
+            music_handle = temp_handle;
+            SDL_UnlockMutex (musmutex);
+            lprintf (LO_INFO, "Exp_RegisterSong: Using player %s\n", music_players[i]->name ());
+            return 1;
           }
-          else
-            lprintf (LO_INFO, "Exp_RegisterSong: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
         }
+        else
+          lprintf (LO_INFO, "Exp_RegisterSong: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
       }
-      if (!found)
-        lprintf (LO_INFO, "Exp_RegisterSong: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
     }
-    // load failed
+    if (!found)
+      lprintf (LO_INFO, "Exp_RegisterSong: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
   }
 
   lprintf (LO_ERROR, "Exp_RegisterSong: Failed\n");
