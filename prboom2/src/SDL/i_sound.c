@@ -87,7 +87,7 @@ int snd_card = 1;
 int mus_card = 1;
 int detect_voices = 0; // God knows
 
-static dboolean registered_non_sdl = false;
+static dboolean registered_non_rw = false;
 
 static dboolean sound_inited = false;
 static dboolean first_sound_init = true;
@@ -464,7 +464,7 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
     return;
 
   // do music update
-  if (registered_non_sdl)
+  if (registered_non_rw)
   {
     SDL_LockMutex (musmutex);
     UpdateMusic (stream, len / 4);
@@ -844,7 +844,7 @@ void I_InitMusic(void)
 
 void I_PlaySong(int handle, int looping)
 {
-  if (registered_non_sdl)
+  if (registered_non_rw)
   {
     PlaySong (handle, looping);
     return;
@@ -863,7 +863,7 @@ extern int mus_pause_opt; // From m_misc.c
 
 void I_PauseSong (int handle)
 {
-  if (registered_non_sdl)
+  if (registered_non_rw)
   {
     PauseSong (handle);
     return;
@@ -890,7 +890,7 @@ void I_PauseSong (int handle)
 
 void I_ResumeSong (int handle)
 {
-  if (registered_non_sdl)
+  if (registered_non_rw)
   {
     ResumeSong (handle);
     return;
@@ -916,7 +916,7 @@ void I_ResumeSong (int handle)
 
 void I_StopSong(int handle)
 {
-  if (registered_non_sdl)
+  if (registered_non_rw)
   {
     StopSong (handle);
     return;
@@ -928,7 +928,7 @@ void I_StopSong(int handle)
 
 void I_UnRegisterSong(int handle)
 {
-  if (registered_non_sdl)
+  if (registered_non_rw)
   {
     UnRegisterSong (handle);
     return;
@@ -952,7 +952,7 @@ int I_RegisterSong(const void *data, size_t len)
   int i;
   char *name;
 
-  registered_non_sdl = false;
+  registered_non_rw = false;
 
   if (RegisterSong(data, len))
     return 0;
@@ -1219,7 +1219,7 @@ static int RegisterSong (const void *data, size_t len)
   result = RegisterSongEx (data, len, 1);
 
   if (result)
-    registered_non_sdl = true;
+    registered_non_rw = true;
 
   return result;
 }
