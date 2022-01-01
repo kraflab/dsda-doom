@@ -805,9 +805,7 @@ const char *midiplayers[midi_player_last + 1] = {
 static int current_player = -1;
 static const void *music_handle = NULL;
 
-// songs played directly from wad (no mus->mid conversion)
-// won't have this
-static void *song_data = NULL;
+static void *mus2mid_conversion_data = NULL;
 
 int mus_fluidsynth_chorus;
 int mus_fluidsynth_reverb;
@@ -1078,10 +1076,10 @@ static void Exp_UnRegisterSong(int handle)
     SDL_LockMutex (musmutex);
     music_players[current_player]->unregistersong (music_handle);
     music_handle = NULL;
-    if (song_data)
+    if (mus2mid_conversion_data)
     {
-      free (song_data);
-      song_data = NULL;
+      free (mus2mid_conversion_data);
+      mus2mid_conversion_data = NULL;
     }
     SDL_UnlockMutex (musmutex);
   }
@@ -1195,16 +1193,16 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
       mem_get_buf(outstream, &outbuf, &outbuf_len);
 
       // recopy so we can free the MEMFILE
-      song_data = malloc (outbuf_len);
-      if (song_data)
-        memcpy (song_data, outbuf, outbuf_len);
+      mus2mid_conversion_data = malloc (outbuf_len);
+      if (mus2mid_conversion_data)
+        memcpy (mus2mid_conversion_data, outbuf, outbuf_len);
 
       mem_fclose(instream);
       mem_fclose(outstream);
 
-      if (song_data)
+      if (mus2mid_conversion_data)
       {
-        return Exp_RegisterSongEx (song_data, outbuf_len, 0);
+        return Exp_RegisterSongEx (mus2mid_conversion_data, outbuf_len, 0);
       }
     }
   }
