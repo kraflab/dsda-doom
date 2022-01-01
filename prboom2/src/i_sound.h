@@ -131,8 +131,6 @@ extern int mus_card;
 extern int snd_samplerate;
 extern int snd_samplecount;
 
-extern int use_experimental_music;
-
 extern int mus_fluidsynth_chorus;
 extern int mus_fluidsynth_reverb;
 extern int mus_fluidsynth_gain; // NSM  fine tune fluidsynth output level
