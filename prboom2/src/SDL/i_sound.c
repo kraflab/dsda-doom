@@ -750,54 +750,15 @@ static Mix_Music *music[2] = { NULL, NULL };
 // we need to free them in the end
 static SDL_RWops *rwops_stream = NULL;
 
-static char *music_tmp = NULL; /* cph - name of music temporary file */
-
-// List of extensions that can be appended to music_tmp. First must be "".
-static const char *music_tmp_ext[] = { "", ".mp3", ".ogg" };
-#define MUSIC_TMP_EXT (sizeof(music_tmp_ext)/sizeof(*music_tmp_ext))
-
 void I_ShutdownMusic(void)
 {
-  if (music_tmp) {
-    int i;
-    char *name;
-
-    S_StopMusic();
-    for (i = 0; i < MUSIC_TMP_EXT; i++)
-    {
-      name = (char*)malloc(strlen(music_tmp) + strlen(music_tmp_ext[i]) + 1);
-      sprintf(name, "%s%s", music_tmp, music_tmp_ext[i]);
-      if (!unlink(name))
-        lprintf(LO_DEBUG, "I_ShutdownMusic: removed %s\n", name);
-      free(name);
-    }
-    free(music_tmp);
-    music_tmp = NULL;
-  }
-
   Exp_ShutdownMusic ();
 }
 
 void I_InitMusic(void)
 {
-  if (!music_tmp) {
-#ifndef _WIN32
-    music_tmp = strdup("/tmp/"PACKAGE_TARNAME"-music-XXXXXX");
-    {
-      int fd = mkstemp(music_tmp);
-      if (fd<0) {
-        lprintf(LO_ERROR, "I_InitMusic: failed to create music temp file %s", music_tmp);
-        free(music_tmp); music_tmp = NULL; return;
-      } else
-        close(fd);
-    }
-#else /* !_WIN32 */
-    music_tmp = strdup("doom.tmp");
-#endif
-    I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
-  }
-
   Exp_InitMusic ();
+  I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
 }
 
 void I_PlaySong(int handle, int looping)
@@ -909,14 +870,10 @@ int I_RegisterSong(const void *data, size_t len)
 {
   int i;
   char *name;
-  dboolean io_errors = false;
 
   registered_non_sdl = false;
 
   if (Exp_RegisterSong(data, len))
-    return 0;
-
-  if (music_tmp == NULL)
     return 0;
 
   // e6y: new logic by me
@@ -926,34 +883,10 @@ int I_RegisterSong(const void *data, size_t len)
 
   music[0] = NULL;
 
-  for (i = 0; i < MUSIC_TMP_EXT; i++)
+  rwops_stream = SDL_RWFromConstMem(data, len);
+  if (rwops_stream)
   {
-    // Current SDL_mixer (up to 1.2.8) cannot load some MP3 and OGG
-    // without proper extension
-    name = (char*)malloc(strlen(music_tmp) + strlen(music_tmp_ext[i]) + 1);
-    sprintf(name, "%s%s", music_tmp, music_tmp_ext[i]);
-
-    if (strlen(music_tmp_ext[i]) == 0)
-    {
-      rwops_stream = SDL_RWFromConstMem(data, len);
-      if (rwops_stream)
-      {
-        music[0] = Mix_LoadMUS_RW(rwops_stream, SDL_FALSE);
-      }
-    }
-
-    if (!music[0])
-    {
-      io_errors = (M_WriteFile(name, data, len) == 0);
-      if (!io_errors)
-      {
-        music[0] = Mix_LoadMUS(name);
-      }
-    }
-
-    free(name);
-    if (music[0])
-      break; // successfully loaded
+    music[0] = Mix_LoadMUS_RW(rwops_stream, SDL_FALSE);
   }
 
   // Failed to load
@@ -966,14 +899,7 @@ int I_RegisterSong(const void *data, size_t len)
       rwops_stream = NULL;
     }
 
-    if (io_errors)
-    {
-      lprintf(LO_ERROR, "Error writing song\n");
-    }
-    else
-    {
-      lprintf(LO_ERROR, "Error loading song: %s\n", Mix_GetError());
-    }
+    lprintf(LO_ERROR, "Error loading song: %s\n", Mix_GetError());
   }
 
   return (0);
@@ -1194,7 +1120,6 @@ static void Exp_SetMusicVolume (int volume)
 static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
 {
   int i, j;
-  dboolean io_errors = false;
 
   MEMFILE *instream;
   MEMFILE *outstream;
