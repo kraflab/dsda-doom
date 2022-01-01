@@ -973,7 +973,7 @@ int I_RegisterSong(const void *data, size_t len)
 
   if (I_RegisterMidi(data, len))
   {
-    return 1;
+    return 0;
   }
 
   // if (use_experimental_music)
@@ -1467,8 +1467,7 @@ static int Exp_RegisterSongEx (const void *data, size_t len, midi_file_t *midifi
 
 static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile)
 {
-  Exp_RegisterSongEx (data, len, midifile);
-  return 0;
+  return Exp_RegisterSongEx (data, len, midifile);
 }
 
 static void Exp_UpdateMusic (void *buff, unsigned nsamp)
