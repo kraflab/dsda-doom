@@ -432,7 +432,7 @@ dboolean I_AnySoundStillPlaying(void)
 // This function currently supports only 16bit.
 //
 
-static void Exp_UpdateMusic (void *buff, unsigned nsamp);
+static void UpdateMusic (void *buff, unsigned nsamp);
 
 // from pcsound_sdl.c
 void PCSound_Mix_Callback(void *udata, Uint8 *stream, int len);
@@ -467,7 +467,7 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
   if (registered_non_sdl)
   {
     SDL_LockMutex (musmutex);
-    Exp_UpdateMusic (stream, len / 4);
+    UpdateMusic (stream, len / 4);
     SDL_UnlockMutex (musmutex);
   }
 
@@ -730,15 +730,15 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 // MUSIC API.
 //
 
-static void Exp_UpdateMusic (void *buff, unsigned nsamp);
-static int Exp_RegisterSong (const void *data, size_t len);
-static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid);
-static void Exp_SetMusicVolume (int volume);
-static void Exp_UnRegisterSong(int handle);
-static void Exp_StopSong(int handle);
-static void Exp_ResumeSong (int handle);
-static void Exp_PauseSong (int handle);
-static void Exp_PlaySong(int handle, int looping);
+static void UpdateMusic (void *buff, unsigned nsamp);
+static int RegisterSong (const void *data, size_t len);
+static int RegisterSongEx (const void *data, size_t len, int try_mus2mid);
+static void SetMusicVolume (int volume);
+static void UnRegisterSong(int handle);
+static void StopSong(int handle);
+static void ResumeSong (int handle);
+static void PauseSong (int handle);
+static void PlaySong(int handle, int looping);
 
 #include "mus2mid.h"
 
@@ -846,7 +846,7 @@ void I_PlaySong(int handle, int looping)
 {
   if (registered_non_sdl)
   {
-    Exp_PlaySong (handle, looping);
+    PlaySong (handle, looping);
     return;
   }
 
@@ -865,7 +865,7 @@ void I_PauseSong (int handle)
 {
   if (registered_non_sdl)
   {
-    Exp_PauseSong (handle);
+    PauseSong (handle);
     return;
   }
 
@@ -892,7 +892,7 @@ void I_ResumeSong (int handle)
 {
   if (registered_non_sdl)
   {
-    Exp_ResumeSong (handle);
+    ResumeSong (handle);
     return;
   }
 
@@ -918,7 +918,7 @@ void I_StopSong(int handle)
 {
   if (registered_non_sdl)
   {
-    Exp_StopSong (handle);
+    StopSong (handle);
     return;
   }
 
@@ -930,7 +930,7 @@ void I_UnRegisterSong(int handle)
 {
   if (registered_non_sdl)
   {
-    Exp_UnRegisterSong (handle);
+    UnRegisterSong (handle);
     return;
   }
 
@@ -954,7 +954,7 @@ int I_RegisterSong(const void *data, size_t len)
 
   registered_non_sdl = false;
 
-  if (Exp_RegisterSong(data, len))
+  if (RegisterSong(data, len))
     return 0;
 
   // e6y: new logic by me
@@ -997,7 +997,7 @@ void I_SetMusicVolume(int volume)
   music_volume = volume;
 
   Mix_VolumeMusic(volume*8);
-  Exp_SetMusicVolume (volume);
+  SetMusicVolume (volume);
 }
 
 void I_ResetMusicVolume(void)
@@ -1005,7 +1005,7 @@ void I_ResetMusicVolume(void)
   I_SetMusicVolume(snd_MusicVolume);
 }
 
-static void Exp_PlaySong(int handle, int looping)
+static void PlaySong(int handle, int looping)
 {
   if (music_handle)
   {
@@ -1018,7 +1018,7 @@ static void Exp_PlaySong(int handle, int looping)
 
 extern int mus_pause_opt; // From m_misc.c
 
-static void Exp_PauseSong (int handle)
+static void PauseSong (int handle)
 {
   if (!music_handle)
     return;
@@ -1038,7 +1038,7 @@ static void Exp_PauseSong (int handle)
   SDL_UnlockMutex (musmutex);
 }
 
-static void Exp_ResumeSong (int handle)
+static void ResumeSong (int handle)
 {
   if (!music_handle)
     return;
@@ -1059,7 +1059,7 @@ static void Exp_ResumeSong (int handle)
   SDL_UnlockMutex (musmutex);
 }
 
-static void Exp_StopSong(int handle)
+static void StopSong(int handle)
 {
   if (music_handle)
   {
@@ -1069,7 +1069,7 @@ static void Exp_StopSong(int handle)
   }
 }
 
-static void Exp_UnRegisterSong(int handle)
+static void UnRegisterSong(int handle)
 {
   if (music_handle)
   {
@@ -1085,7 +1085,7 @@ static void Exp_UnRegisterSong(int handle)
   }
 }
 
-static void Exp_SetMusicVolume (int volume)
+static void SetMusicVolume (int volume)
 {
   if (music_handle)
   {
@@ -1096,7 +1096,7 @@ static void Exp_SetMusicVolume (int volume)
 }
 
 // returns 1 on success, 0 on failure
-static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
+static int RegisterSongEx (const void *data, size_t len, int try_mus2mid)
 {
   int i, j;
 
@@ -1107,7 +1107,7 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
   int result;
 
   if (music_handle)
-    Exp_UnRegisterSong (0);
+    UnRegisterSong (0);
 
   // e6y: new logic by me
   // Now you can hear title music in deca.wad
@@ -1139,16 +1139,16 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
               current_player = i;
               music_handle = temp_handle;
               SDL_UnlockMutex (musmutex);
-              lprintf (LO_INFO, "Exp_RegisterSongEx: Using player %s\n", music_players[i]->name ());
+              lprintf (LO_INFO, "RegisterSongEx: Using player %s\n", music_players[i]->name ());
               return 1;
             }
           }
           else
-            lprintf (LO_INFO, "Exp_RegisterSongEx: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
+            lprintf (LO_INFO, "RegisterSongEx: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
         }
       }
       if (!found)
-        lprintf (LO_INFO, "Exp_RegisterSongEx: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
+        lprintf (LO_INFO, "RegisterSongEx: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
     }
     // load failed
   }
@@ -1202,21 +1202,21 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
 
       if (mus2mid_conversion_data)
       {
-        return Exp_RegisterSongEx (mus2mid_conversion_data, outbuf_len, 0);
+        return RegisterSongEx (mus2mid_conversion_data, outbuf_len, 0);
       }
     }
   }
 
-  lprintf (LO_ERROR, "Exp_RegisterSongEx: Failed\n");
+  lprintf (LO_ERROR, "RegisterSongEx: Failed\n");
   return 0;
 }
 
 
-static int Exp_RegisterSong (const void *data, size_t len)
+static int RegisterSong (const void *data, size_t len)
 {
   int result;
 
-  result = Exp_RegisterSongEx (data, len, 1);
+  result = RegisterSongEx (data, len, 1);
 
   if (result)
     registered_non_sdl = true;
@@ -1224,7 +1224,7 @@ static int Exp_RegisterSong (const void *data, size_t len)
   return result;
 }
 
-static void Exp_UpdateMusic (void *buff, unsigned nsamp)
+static void UpdateMusic (void *buff, unsigned nsamp)
 {
   if (!music_handle)
   {
