@@ -739,8 +739,6 @@ static void Exp_StopSong(int handle);
 static void Exp_ResumeSong (int handle);
 static void Exp_PauseSong (int handle);
 static void Exp_PlaySong(int handle, int looping);
-static void Exp_InitMusic(void);
-static void Exp_ShutdownMusic(void);
 
 #include "mus2mid.h"
 
@@ -750,14 +748,102 @@ static Mix_Music *music[2] = { NULL, NULL };
 // we need to free them in the end
 static SDL_RWops *rwops_stream = NULL;
 
+// note that the "handle" passed around by s_sound is ignored
+// however, a handle is maintained for the individual music players
+
+const char *snd_soundfont; // soundfont name for synths that use it
+const char *snd_mididev; // midi device to use (portmidiplayer)
+
+#include "MUSIC/musicplayer.h"
+
+#include "MUSIC/oplplayer.h"
+#include "MUSIC/madplayer.h"
+#include "MUSIC/dumbplayer.h"
+#include "MUSIC/flplayer.h"
+#include "MUSIC/vorbisplayer.h"
+#include "MUSIC/portmidiplayer.h"
+
+// list of possible music players
+static const music_player_t *music_players[] =
+{ // until some ui work is done, the order these appear is the autodetect order.
+  // of particular importance:  things that play mus have to be last, because
+  // mus2midi very often succeeds even on garbage input
+  &vorb_player, // vorbisplayer.h
+  &mp_player, // madplayer.h
+  &db_player, // dumbplayer.h
+  &fl_player, // flplayer.h
+  &opl_synth_player, // oplplayer.h
+  &pm_player, // portmidiplayer.h
+  NULL
+};
+#define NUM_MUS_PLAYERS ((int)(sizeof (music_players) / sizeof (music_player_t *) - 1))
+
+
+static int music_player_was_init[NUM_MUS_PLAYERS];
+
+#define PLAYER_VORBIS     "vorbis player"
+#define PLAYER_MAD        "mad mp3 player"
+#define PLAYER_DUMB       "dumb tracker player"
+#define PLAYER_FLUIDSYNTH "fluidsynth midi player"
+#define PLAYER_OPL2       "opl2 synth player"
+#define PLAYER_PORTMIDI   "portmidi midi player"
+
+// order in which players are to be tried
+char music_player_order[NUM_MUS_PLAYERS][200] =
+{
+  PLAYER_VORBIS,
+  PLAYER_MAD,
+  PLAYER_DUMB,
+  PLAYER_FLUIDSYNTH,
+  PLAYER_OPL2,
+  PLAYER_PORTMIDI,
+};
+
+// prefered MIDI device
+const char *snd_midiplayer;
+
+const char *midiplayers[midi_player_last + 1] = {
+  "fluidsynth", "opl2", "portmidi", NULL };
+
+static int current_player = -1;
+static const void *music_handle = NULL;
+
+// songs played directly from wad (no mus->mid conversion)
+// won't have this
+static void *song_data = NULL;
+
+int mus_fluidsynth_chorus;
+int mus_fluidsynth_reverb;
+int mus_fluidsynth_gain; // NSM  fine tune fluidsynth output level
+int mus_opl_gain; // NSM  fine tune OPL output level
+
 void I_ShutdownMusic(void)
 {
-  Exp_ShutdownMusic ();
+  int i;
+  S_StopMusic ();
+
+  for (i = 0; music_players[i]; i++)
+  {
+    if (music_player_was_init[i])
+      music_players[i]->shutdown ();
+  }
+
+  if (musmutex)
+  {
+    SDL_DestroyMutex (musmutex);
+    musmutex = NULL;
+  }
 }
 
 void I_InitMusic(void)
 {
-  Exp_InitMusic ();
+  int i;
+  musmutex = SDL_CreateMutex ();
+
+  // todo not so greedy
+  for (i = 0; music_players[i]; i++)
+    music_player_was_init[i] = music_players[i]->init (snd_samplerate);
+
   I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
 }
 
@@ -922,108 +1008,6 @@ void I_SetMusicVolume(int volume)
 void I_ResetMusicVolume(void)
 {
   I_SetMusicVolume(snd_MusicVolume);
-}
-
-// note that the "handle" passed around by s_sound is ignored
-// however, a handle is maintained for the individual music players
-
-const char *snd_soundfont; // soundfont name for synths that use it
-const char *snd_mididev; // midi device to use (portmidiplayer)
-
-#include "mus2mid.h"
-
-#include "MUSIC/musicplayer.h"
-
-#include "MUSIC/oplplayer.h"
-#include "MUSIC/madplayer.h"
-#include "MUSIC/dumbplayer.h"
-#include "MUSIC/flplayer.h"
-#include "MUSIC/vorbisplayer.h"
-#include "MUSIC/portmidiplayer.h"
-
-// list of possible music players
-static const music_player_t *music_players[] =
-{ // until some ui work is done, the order these appear is the autodetect order.
-  // of particular importance:  things that play mus have to be last, because
-  // mus2midi very often succeeds even on garbage input
-  &vorb_player, // vorbisplayer.h
-  &mp_player, // madplayer.h
-  &db_player, // dumbplayer.h
-  &fl_player, // flplayer.h
-  &opl_synth_player, // oplplayer.h
-  &pm_player, // portmidiplayer.h
-  NULL
-};
-#define NUM_MUS_PLAYERS ((int)(sizeof (music_players) / sizeof (music_player_t *) - 1))
-
-
-static int music_player_was_init[NUM_MUS_PLAYERS];
-
-#define PLAYER_VORBIS     "vorbis player"
-#define PLAYER_MAD        "mad mp3 player"
-#define PLAYER_DUMB       "dumb tracker player"
-#define PLAYER_FLUIDSYNTH "fluidsynth midi player"
-#define PLAYER_OPL2       "opl2 synth player"
-#define PLAYER_PORTMIDI   "portmidi midi player"
-
-// order in which players are to be tried
-char music_player_order[NUM_MUS_PLAYERS][200] =
-{
-  PLAYER_VORBIS,
-  PLAYER_MAD,
-  PLAYER_DUMB,
-  PLAYER_FLUIDSYNTH,
-  PLAYER_OPL2,
-  PLAYER_PORTMIDI,
-};
-
-// prefered MIDI device
-const char *snd_midiplayer;
-
-const char *midiplayers[midi_player_last + 1] = {
-  "fluidsynth", "opl2", "portmidi", NULL };
-
-static int current_player = -1;
-static const void *music_handle = NULL;
-
-// songs played directly from wad (no mus->mid conversion)
-// won't have this
-static void *song_data = NULL;
-
-int mus_fluidsynth_chorus;
-int mus_fluidsynth_reverb;
-int mus_fluidsynth_gain; // NSM  fine tune fluidsynth output level
-int mus_opl_gain; // NSM  fine tune OPL output level
-
-
-static void Exp_ShutdownMusic(void)
-{
-  int i;
-  S_StopMusic ();
-
-  for (i = 0; music_players[i]; i++)
-  {
-    if (music_player_was_init[i])
-      music_players[i]->shutdown ();
-  }
-
-  if (musmutex)
-  {
-    SDL_DestroyMutex (musmutex);
-    musmutex = NULL;
-  }
-}
-
-
-static void Exp_InitMusic(void)
-{
-  int i;
-  musmutex = SDL_CreateMutex ();
-
-
-  // todo not so greedy
-  for (i = 0; music_players[i]; i++)
-    music_player_was_init[i] = music_players[i]->init (snd_samplerate);
 }
 
 static void Exp_PlaySong(int handle, int looping)
