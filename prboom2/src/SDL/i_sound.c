@@ -51,6 +51,8 @@
 #define USE_RWOPS
 #include "SDL_mixer.h"
 
+#include "MUSIC/midifile.h"
+
 #include "z_zone.h"
 
 #include "m_swap.h"
@@ -756,8 +758,8 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 int use_experimental_music = -1;
 
 static void Exp_UpdateMusic (void *buff, unsigned nsamp);
-static int Exp_RegisterSong (const void *data, size_t len);
-static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid);
+static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile);
+static int Exp_RegisterSongEx (const void *data, size_t len, midi_file_t *midifile);
 static void Exp_SetMusicVolume (int volume);
 static void Exp_UnRegisterSong(int handle);
 static void Exp_StopSong(int handle);
@@ -946,17 +948,38 @@ void I_UnRegisterSong(int handle)
   }
 }
 
+int I_RegisterMidi(const void *data, size_t len)
+{
+  midi_file_t *midifile;
+  midimem_t mf;
+
+  mf.len = len;
+  mf.pos = 0;
+  mf.data = (const byte *) data;
+
+  midifile = MIDI_LoadFile(&mf);
+
+  if (!midifile)
+    return 0;
+
+  return Exp_RegisterSong(data, len, midifile);
+}
+
 int I_RegisterSong(const void *data, size_t len)
 {
   int i;
   char *name;
   dboolean io_errors = false;
 
-
-  if (use_experimental_music)
+  if (I_RegisterMidi(data, len))
   {
-    return Exp_RegisterSong (data, len);
+    return 1;
   }
+
+  // if (use_experimental_music)
+  // {
+  //   return Exp_RegisterSong (data, len);
+  // }
 
   if (music_tmp == NULL)
     return 0;
@@ -1321,7 +1344,7 @@ static void Exp_SetMusicVolume (int volume)
 }
 
 // returns 1 on success, 0 on failure
-static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
+static int Exp_RegisterSongEx (const void *data, size_t len, midi_file_t *midifile)
 {
   int i, j;
   dboolean io_errors = false;
@@ -1331,9 +1354,6 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
   void *outbuf;
   size_t outbuf_len;
   int result;
-
-  //try_mus2mid = 0; // debug: supress mus2mid conversion completely
-
 
   if (music_handle)
     Exp_UnRegisterSong (0);
@@ -1362,7 +1382,7 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
           found = 1;
           if (music_player_was_init[i])
           {
-            const void *temp_handle = music_players[i]->registersong (data, len);
+            const void *temp_handle = music_players[i]->registersong (data, len, midifile);
             if (temp_handle)
             {
               SDL_LockMutex (musmutex);
@@ -1387,7 +1407,7 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
 
 
   // load failed? try mus2mid
-  if (len > 4 && try_mus2mid)
+  if (len > 4)
   {
 
     instream = mem_fopen_read (data, len);
@@ -1445,9 +1465,9 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
 }
 
 
-static int Exp_RegisterSong (const void *data, size_t len)
+static int Exp_RegisterSong (const void *data, size_t len, midi_file_t *midifile)
 {
-  Exp_RegisterSongEx (data, len, 1);
+  Exp_RegisterSongEx (data, len, midifile);
   return 0;
 }
 

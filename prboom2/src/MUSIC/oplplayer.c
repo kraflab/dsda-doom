@@ -1343,18 +1343,14 @@ static dboolean IsMid(byte *mem, int len)
 }
 
 // now only takes files in MIDI format
-static const void *I_OPL_RegisterSong(const void *data, unsigned len)
+static const void *I_OPL_RegisterSong(const void *data, unsigned len, midi_file_t *mf)
 {
     midi_file_t *result;
-    midimem_t mf;
 
     if (!music_initialized)
     {
         return NULL;
     }
-    mf.len = len;
-    mf.pos = 0;
-    mf.data = data;
 
     // NSM: if a file has a miniscule timecode we have to not load it.
     // if it's 0, we'll hang in scheduling and never finish.  if it's
@@ -1362,13 +1358,13 @@ static const void *I_OPL_RegisterSong(const void *data, unsigned len)
 
     // this check of course isn't very accurate, but to actually get the
     // time numbers we have to traverse the tracks and everything
-    if (mf.len < 100)
+    if (len < 100)
     {
-        lprintf (LO_WARN, "I_OPL_RegisterSong: Very short MIDI (%I64i bytes)\n", mf.len);
+        lprintf (LO_WARN, "I_OPL_RegisterSong: Very short MIDI (%d bytes)\n", len);
         return NULL;
     }
 
-    result = MIDI_LoadFileSpecial (&mf);
+    result = MIDI_LoadFileSpecial (mf);
 
     if (result == NULL)
     {

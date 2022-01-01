@@ -32,6 +32,8 @@
 #ifndef MUSICPLAYER_H
 #define MUSICPLAYER_H
 
+#include "midifile.h"
+
 /*
 Anything that implements all of these functions can play music in prboomplus.
 
@@ -69,7 +71,7 @@ typedef struct
 
   // return a player-specific handle, or NULL on failure.
   // data does not belong to player, but it will persist as long as unregister is not called
-  const void *(*registersong)(const void *data, unsigned len);
+  const void *(*registersong)(const void *data, unsigned len, midi_file_t *mf);
 
   // deallocate structures, etc.  data is no longer valid
   void (*unregistersong)(const void *handle);

@@ -642,7 +642,7 @@ void MIDI_FreeFile(midi_file_t *file)
 
     free(file);
 }
-
+#include "lprintf.h"
 midi_file_t *MIDI_LoadFile (midimem_t *mf)
 {
     midi_file_t *file;
@@ -651,6 +651,7 @@ midi_file_t *MIDI_LoadFile (midimem_t *mf)
 
     if (file == NULL)
     {
+        lprintf(LO_INFO, "allocation failed\n");
         return NULL;
     }
 
@@ -663,6 +664,7 @@ midi_file_t *MIDI_LoadFile (midimem_t *mf)
 
     if (!ReadFileHeader(file, mf))
     {
+        lprintf(LO_INFO, "header failed\n");
         MIDI_FreeFile(file);
         return NULL;
     }
@@ -671,6 +673,7 @@ midi_file_t *MIDI_LoadFile (midimem_t *mf)
 
     if (!ReadAllTracks(file, mf))
     {
+        lprintf(LO_INFO, "tracks failed\n");
         MIDI_FreeFile(file);
         return NULL;
     }
@@ -1043,10 +1046,10 @@ The alternative is that we recook the file into a single track file with no temp
 load time.
 */
 
-midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf)
+midi_file_t *MIDI_LoadFileSpecial (midi_file_t *mf)
 {
   midi_event_t **flatlist;
-  midi_file_t *base = MIDI_LoadFile (mf);
+  midi_file_t *base = mf;
   midi_file_t *ret;
 
   double opi;

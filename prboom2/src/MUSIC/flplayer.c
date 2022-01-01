@@ -222,15 +222,9 @@ static void fl_shutdown (void)
 
 
 
-static const void *fl_registersong (const void *data, unsigned len)
+static const void *fl_registersong (const void *data, unsigned len, midi_file_t *mf)
 {
-  midimem_t mf;
-
-  mf.len = len;
-  mf.pos = 0;
-  mf.data = (const byte*)data;
-
-  midifile = MIDI_LoadFile (&mf);
+  midifile = mf;
 
   if (!midifile)
   {

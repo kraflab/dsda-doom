@@ -219,17 +219,12 @@ static void pm_shutdown (void)
 
 static PmEvent event_buffer[6 * 16];
 
-static const void *pm_registersong (const void *data, unsigned len)
+static const void *pm_registersong (const void *data, unsigned len, midi_file_t *mf)
 {
   int i;
-  midimem_t mf;
   PmEvent *event = event_buffer;
 
-  mf.len = len;
-  mf.pos = 0;
-  mf.data = data;
-
-  midifile = MIDI_LoadFile (&mf);
+  midifile = mf;
 
   if (!midifile)
   {
