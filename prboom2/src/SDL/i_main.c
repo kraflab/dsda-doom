@@ -383,12 +383,10 @@ uid_t stored_euid = -1;
 
 static void I_SetAffinityMask(void)
 {
-  // Forcing single core only for "SDL MIDI Player"
-  process_affinity_mask = 0;
-  if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_sdl]))
-  {
-    process_affinity_mask = 1;
-  }
+  // This was only set for the sdl music backend,
+  //   but now the backend changes based on the music type.
+  // Not sure what the consequences are for this...
+  process_affinity_mask = 1;
 
   // Set the process affinity mask so that all threads
   // run on the same processor.  This is a workaround for a bug in

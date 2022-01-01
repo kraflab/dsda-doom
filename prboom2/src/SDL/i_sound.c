@@ -730,8 +730,6 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 // MUSIC API.
 //
 
-int use_experimental_music = -1;
-
 static void Exp_UpdateMusic (void *buff, unsigned nsamp);
 static int Exp_RegisterSong (const void *data, size_t len);
 static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid);
@@ -777,10 +775,7 @@ void I_ShutdownMusic(void)
     music_tmp = NULL;
   }
 
-  if (use_experimental_music)
-  {
-    Exp_ShutdownMusic ();
-  }
+  Exp_ShutdownMusic ();
 }
 
 void I_InitMusic(void)
@@ -802,10 +797,7 @@ void I_InitMusic(void)
     I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
   }
 
-  if (use_experimental_music)
-  {
-    Exp_InitMusic ();
-  }
+  Exp_InitMusic ();
 }
 
 void I_PlaySong(int handle, int looping)
@@ -928,7 +920,7 @@ int I_RegisterSong(const void *data, size_t len)
 
   registered_non_sdl = false;
 
-  if (use_experimental_music && Exp_RegisterSong(data, len))
+  if (Exp_RegisterSong(data, len))
     return 0;
 
   if (music_tmp == NULL)
@@ -1006,12 +998,7 @@ void I_SetMusicVolume(int volume)
   music_volume = volume;
 
   Mix_VolumeMusic(volume*8);
-
-  if (use_experimental_music)
-  {
-    Exp_SetMusicVolume (volume);
-    return;
-  }
+  Exp_SetMusicVolume (volume);
 }
 
 void I_ResetMusicVolume(void)
@@ -1090,7 +1077,7 @@ char music_player_order[NUM_MUS_PLAYERS][200] =
 const char *snd_midiplayer;
 
 const char *midiplayers[midi_player_last + 1] = {
-  "fluidsynth", "opl2", "portmidi", "sdl", NULL};
+  "fluidsynth", "opl2", "portmidi", NULL };
 
 static int current_player = -1;
 static const void *music_handle = NULL;
@@ -1377,46 +1364,25 @@ static void Exp_UpdateMusic (void *buff, unsigned nsamp)
 
 void M_ChangeMIDIPlayer(void)
 {
-  int experimental_music;
-
-  if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_sdl]))
+  if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_fluidsynth]))
   {
-    experimental_music = false;
+    strcpy(music_player_order[3], PLAYER_FLUIDSYNTH);
+    strcpy(music_player_order[4], PLAYER_OPL2);
+    strcpy(music_player_order[5], PLAYER_PORTMIDI);
   }
-  else
+  else if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_opl2]))
   {
-    experimental_music = true;
-
-    if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_fluidsynth]))
-    {
-      strcpy(music_player_order[3], PLAYER_FLUIDSYNTH);
-      strcpy(music_player_order[4], PLAYER_OPL2);
-      strcpy(music_player_order[5], PLAYER_PORTMIDI);
-    }
-    else if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_opl2]))
-    {
-      strcpy(music_player_order[3], PLAYER_OPL2);
-      strcpy(music_player_order[4], PLAYER_FLUIDSYNTH);
-      strcpy(music_player_order[5], PLAYER_PORTMIDI);
-    }
-    else if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_portmidi]))
-    {
-      strcpy(music_player_order[3], PLAYER_PORTMIDI);
-      strcpy(music_player_order[4], PLAYER_FLUIDSYNTH);
-      strcpy(music_player_order[5], PLAYER_OPL2);
-    }
+    strcpy(music_player_order[3], PLAYER_OPL2);
+    strcpy(music_player_order[4], PLAYER_FLUIDSYNTH);
+    strcpy(music_player_order[5], PLAYER_PORTMIDI);
+  }
+  else if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_portmidi]))
+  {
+    strcpy(music_player_order[3], PLAYER_PORTMIDI);
+    strcpy(music_player_order[4], PLAYER_FLUIDSYNTH);
+    strcpy(music_player_order[5], PLAYER_OPL2);
   }
 
-  if (use_experimental_music == -1)
-  {
-    use_experimental_music = experimental_music;
-  }
-  else
-  {
-    if (experimental_music && use_experimental_music)
-    {
-      S_StopMusic();
-      S_RestartMusic();
-    }
-  }
+  S_StopMusic();
+  S_RestartMusic();
 }
