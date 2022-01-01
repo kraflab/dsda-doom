@@ -476,7 +476,6 @@ dboolean mus2mid(MEMFILE *musinput, MEMFILE *midioutput)
     return true;
   }
 
-#ifdef CHECK_MUS_HEADER
   // Check MUS header
   if (musfileheader.id[0] != 'M'
     || musfileheader.id[1] != 'U'
@@ -485,7 +484,6 @@ dboolean mus2mid(MEMFILE *musinput, MEMFILE *midioutput)
   {
     return true;
   }
-#endif
 
   // Seek to where the data is held
   if (mem_fseek(musinput, (long)musfileheader.scorestart,

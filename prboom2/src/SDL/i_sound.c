@@ -87,6 +87,8 @@ int snd_card = 1;
 int mus_card = 1;
 int detect_voices = 0; // God knows
 
+static dboolean registered_non_sdl = false;
+
 static dboolean sound_inited = false;
 static dboolean first_sound_init = true;
 
@@ -462,7 +464,7 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
     return;
 
   // do music update
-  if (use_experimental_music)
+  if (registered_non_sdl)
   {
     SDL_LockMutex (musmutex);
     Exp_UpdateMusic (stream, len / 4);
@@ -608,48 +610,23 @@ void I_InitSound(void)
   // Secure and configure sound device first.
   lprintf(LO_INFO, "I_InitSound: ");
 
-  if (!use_experimental_music)
-  {
-    /* Initialize variables */
-    audio_rate = snd_samplerate;
-    audio_channels = 2;
-    audio_buffers = snd_samplecount * snd_samplerate / 11025;
+  /* Initialize variables */
+  audio_rate = snd_samplerate;
+  audio_channels = 2;
+  audio_buffers = snd_samplecount * snd_samplerate / 11025;
 
-    if (Mix_OpenAudio(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers) < 0)
-    {
-      lprintf(LO_INFO,"couldn't open audio with desired format (%s)\n", SDL_GetError());
-      nosfxparm = true;
-      nomusicparm = true;
-      return;
-    }
-    sound_inited_once = true;//e6y
-    sound_inited = true;
-    Mix_SetPostMix(I_UpdateSound, NULL);
-    lprintf(LO_INFO," configured audio device with %d samples/slice\n", audio_buffers);
-  }
-  else
+  if (Mix_OpenAudio(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers) < 0)
   {
-    // Open the audio device
-    audio.freq = snd_samplerate;
-#if ( SDL_BYTEORDER == SDL_BIG_ENDIAN )
-    audio.format = AUDIO_S16MSB;
-#else
-    audio.format = AUDIO_S16LSB;
-#endif
-    audio.channels = 2;
-    audio.samples = snd_samplecount * snd_samplerate / 11025;
-    audio.callback = I_UpdateSound;
-    if ( SDL_OpenAudio(&audio, NULL) < 0 )
-    {
-      lprintf(LO_INFO, "couldn't open audio with desired format (%s))\n", SDL_GetError());
-      nosfxparm = true;
-      nomusicparm = true;
-      return;
-    }
-    sound_inited_once = true;//e6y
-    sound_inited = true;
-    lprintf(LO_INFO, " configured audio device with %d samples/slice\n", audio.samples);
+    lprintf(LO_INFO,"couldn't open audio with desired format (%s)\n", SDL_GetError());
+    nosfxparm = true;
+    nomusicparm = true;
+    return;
   }
+  sound_inited_once = true;//e6y
+  sound_inited = true;
+  Mix_SetPostMix(I_UpdateSound, NULL);
+  lprintf(LO_INFO," configured audio device with %d samples/slice\n", audio_buffers);
+
   if (first_sound_init)
   {
     I_AtExit(I_ShutdownSound, true, "I_ShutdownSound", exit_priority_normal);
@@ -783,12 +760,6 @@ static const char *music_tmp_ext[] = { "", ".mp3", ".ogg" };
 
 void I_ShutdownMusic(void)
 {
-  if (use_experimental_music)
-  {
-    Exp_ShutdownMusic ();
-    return;
-  }
-
   if (music_tmp) {
     int i;
     char *name;
@@ -805,16 +776,15 @@ void I_ShutdownMusic(void)
     free(music_tmp);
     music_tmp = NULL;
   }
+
+  if (use_experimental_music)
+  {
+    Exp_ShutdownMusic ();
+  }
 }
 
 void I_InitMusic(void)
 {
-  if (use_experimental_music)
-  {
-    Exp_InitMusic ();
-    return;
-  }
-
   if (!music_tmp) {
 #ifndef _WIN32
     music_tmp = strdup("/tmp/"PACKAGE_TARNAME"-music-XXXXXX");
@@ -831,12 +801,16 @@ void I_InitMusic(void)
 #endif
     I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
   }
-  return;
+
+  if (use_experimental_music)
+  {
+    Exp_InitMusic ();
+  }
 }
 
 void I_PlaySong(int handle, int looping)
 {
-  if (use_experimental_music)
+  if (registered_non_sdl)
   {
     Exp_PlaySong (handle, looping);
     return;
@@ -855,7 +829,7 @@ extern int mus_pause_opt; // From m_misc.c
 
 void I_PauseSong (int handle)
 {
-  if (use_experimental_music)
+  if (registered_non_sdl)
   {
     Exp_PauseSong (handle);
     return;
@@ -886,7 +860,7 @@ void I_PauseSong (int handle)
 
 void I_ResumeSong (int handle)
 {
-  if (use_experimental_music)
+  if (registered_non_sdl)
   {
     Exp_ResumeSong (handle);
     return;
@@ -915,7 +889,7 @@ void I_ResumeSong (int handle)
 
 void I_StopSong(int handle)
 {
-  if (use_experimental_music)
+  if (registered_non_sdl)
   {
     Exp_StopSong (handle);
     return;
@@ -927,7 +901,7 @@ void I_StopSong(int handle)
 
 void I_UnRegisterSong(int handle)
 {
-  if (use_experimental_music)
+  if (registered_non_sdl)
   {
     Exp_UnRegisterSong (handle);
     return;
@@ -952,11 +926,10 @@ int I_RegisterSong(const void *data, size_t len)
   char *name;
   dboolean io_errors = false;
 
+  registered_non_sdl = false;
 
-  if (use_experimental_music)
-  {
-    return Exp_RegisterSong (data, len);
-  }
+  if (use_experimental_music && Exp_RegisterSong(data, len))
+    return 0;
 
   if (music_tmp == NULL)
     return 0;
@@ -968,109 +941,35 @@ int I_RegisterSong(const void *data, size_t len)
 
   music[0] = NULL;
 
-  if (len > 4 && memcmp(data, "MUS", 3) != 0)
+  for (i = 0; i < MUSIC_TMP_EXT; i++)
   {
-    // The header has no MUS signature
-    // Let's try to load this song with SDL
-    for (i = 0; i < MUSIC_TMP_EXT; i++)
+    // Current SDL_mixer (up to 1.2.8) cannot load some MP3 and OGG
+    // without proper extension
+    name = (char*)malloc(strlen(music_tmp) + strlen(music_tmp_ext[i]) + 1);
+    sprintf(name, "%s%s", music_tmp, music_tmp_ext[i]);
+
+    if (strlen(music_tmp_ext[i]) == 0)
     {
-      // Current SDL_mixer (up to 1.2.8) cannot load some MP3 and OGG
-      // without proper extension
-      name = (char*)malloc(strlen(music_tmp) + strlen(music_tmp_ext[i]) + 1);
-      sprintf(name, "%s%s", music_tmp, music_tmp_ext[i]);
-
-      if (strlen(music_tmp_ext[i]) == 0)
-      {
-        //midi
-        rw_midi = SDL_RWFromConstMem(data, len);
-        if (rw_midi)
-        {
-          music[0] = Mix_LoadMUS_RW(rw_midi, SDL_FALSE);
-        }
-      }
-
-      if (!music[0])
-      {
-        io_errors = (M_WriteFile(name, data, len) == 0);
-        if (!io_errors)
-        {
-          music[0] = Mix_LoadMUS(name);
-        }
-      }
-
-      free(name);
-      if (music[0])
-        break; // successfully loaded
-    }
-  }
-
-  // e6y: from Chocolate-Doom
-  // Assume a MUS file and try to convert
-  if (len > 4 && !music[0])
-  {
-    MEMFILE *instream;
-    MEMFILE *outstream;
-    void *outbuf;
-    size_t outbuf_len;
-    int result;
-
-    instream = mem_fopen_read(data, len);
-    outstream = mem_fopen_write();
-
-    // e6y: from chocolate-doom
-    // New mus -> mid conversion code thanks to Ben Ryves <benryves@benryves.com>
-    // This plays back a lot of music closer to Vanilla Doom - eg. tnt.wad map02
-    result = mus2mid(instream, outstream);
-
-    if (result != 0)
-    {
-      size_t muslen = len;
-      const unsigned char *musptr = (const unsigned char* )data;
-
-      // haleyjd 04/04/10: scan forward for a MUS header. Evidently DMX was
-      // capable of doing this, and would skip over any intervening data. That,
-      // or DMX doesn't use the MUS header at all somehow.
-      while (musptr < (const unsigned char*)data + len - sizeof(musheader))
-      {
-        // if we found a likely header start, reset the mus pointer to that location,
-        // otherwise just leave it alone and pray.
-        if (!strncmp((const char*)musptr, "MUS\x1a", 4))
-        {
-          mem_fclose(instream);
-          instream = mem_fopen_read(musptr, muslen);
-          result = mus2mid(instream, outstream);
-          break;
-        }
-
-        musptr++;
-        muslen--;
-      }
-    }
-
-    if (result == 0)
-    {
-      mem_get_buf(outstream, &outbuf, &outbuf_len);
-
-      rw_midi = SDL_RWFromMem(outbuf, outbuf_len);
+      //midi
+      rw_midi = SDL_RWFromConstMem(data, len);
       if (rw_midi)
       {
         music[0] = Mix_LoadMUS_RW(rw_midi, SDL_FALSE);
       }
+    }
 
-      if (!music[0])
+    if (!music[0])
+    {
+      io_errors = (M_WriteFile(name, data, len) == 0);
+      if (!io_errors)
       {
-        io_errors = M_WriteFile(music_tmp, outbuf, outbuf_len) == 0;
-
-        if (!io_errors)
-        {
-          // Load the MUS
-          music[0] = Mix_LoadMUS(music_tmp);
-        }
+        music[0] = Mix_LoadMUS(name);
       }
     }
 
-    mem_fclose(instream);
-    mem_fclose(outstream);
+    free(name);
+    if (music[0])
+      break; // successfully loaded
   }
 
   // Failed to load
@@ -1106,19 +1005,13 @@ void I_SetMusicVolume(int volume)
 
   music_volume = volume;
 
+  Mix_VolumeMusic(volume*8);
+
   if (use_experimental_music)
   {
     Exp_SetMusicVolume (volume);
     return;
   }
-
-  Mix_VolumeMusic(volume*8);
-
-#ifdef _WIN32
-  // e6y: workaround
-  if (mus_extend_volume && Mix_GetMusicType(NULL) == MUS_MID)
-    I_midiOutSetVolumes(volume  /* *8  */);
-#endif
 }
 
 void I_ResetMusicVolume(void)
@@ -1240,7 +1133,6 @@ static void Exp_InitMusic(void)
   // todo not so greedy
   for (i = 0; music_players[i]; i++)
     music_player_was_init[i] = music_players[i]->init (snd_samplerate);
-  I_AtExit(Exp_ShutdownMusic, true, "Exp_ShutdownMusic", exit_priority_normal);
 }
 
 static void Exp_PlaySong(int handle, int looping)
@@ -1252,7 +1144,6 @@ static void Exp_PlaySong(int handle, int looping)
     music_players[current_player]->setvolume (music_volume);
     SDL_UnlockMutex (musmutex);
   }
-
 }
 
 extern int mus_pause_opt; // From m_misc.c
@@ -1461,8 +1352,14 @@ static int Exp_RegisterSongEx (const void *data, size_t len, int try_mus2mid)
 
 static int Exp_RegisterSong (const void *data, size_t len)
 {
-  Exp_RegisterSongEx (data, len, 1);
-  return 0;
+  int result;
+
+  result = Exp_RegisterSongEx (data, len, 1);
+
+  if (result)
+    registered_non_sdl = true;
+
+  return result;
 }
 
 static void Exp_UpdateMusic (void *buff, unsigned nsamp)
