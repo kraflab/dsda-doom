@@ -314,12 +314,8 @@ set(TEXTSCREEN_SOURCES
 set(DOOMMUSIC_SOURCES
     MUSIC/dbopl.c
     MUSIC/dbopl.h
-    MUSIC/dumbplayer.c
-    MUSIC/dumbplayer.h
     MUSIC/flplayer.c
     MUSIC/flplayer.h
-    MUSIC/madplayer.c
-    MUSIC/madplayer.h
     MUSIC/midifile.c
     MUSIC/midifile.h
     MUSIC/musicplayer.h
@@ -331,8 +327,6 @@ set(DOOMMUSIC_SOURCES
     MUSIC/opl_queue.h
     MUSIC/portmidiplayer.c
     MUSIC/portmidiplayer.h
-    MUSIC/vorbisplayer.c
-    MUSIC/vorbisplayer.h
 )
 
 set(EXTRA_FILES
@@ -435,17 +429,9 @@ function(AddGameExecutable TARGET SOURCES)
         target_include_directories(${TARGET} PRIVATE ${ZLIB_INCLUDE_DIRS})
         target_link_libraries(${TARGET} PRIVATE ${ZLIB_LIBRARIES})
     endif()
-    if(LIBMAD_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${LIBMAD_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${LIBMAD_LIBRARIES})
-    endif()
     if(FLUIDSYNTH_FOUND)
         target_include_directories(${TARGET} PRIVATE ${FLUIDSYNTH_INCLUDE_DIR})
         target_link_libraries(${TARGET} PRIVATE ${FLUIDSYNTH_LIBRARIES})
-    endif()
-    if(DUMB_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${DUMB_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${DUMB_LIBRARY})
     endif()
     if(VORBIS_FOUND)
         target_include_directories(${TARGET} PRIVATE ${VORBIS_INCLUDE_DIR})

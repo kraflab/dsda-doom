@@ -44,12 +44,11 @@ jobs:
       id: vars
       shell: cmd
       run: |
-        echo ::set-output name=common_options::sdl2-image sdl2-mixer[dynamic-load,libflac,libmodplug,libvorbis,mpg123,opusfile] libmad fluidsynth dumb portmidi --triplet ${{ matrix.config.triplet }}
+        echo ::set-output name=common_options::sdl2-image sdl2-mixer[dynamic-load,libflac,libmodplug,libvorbis,mpg123,opusfile] fluidsynth portmidi --triplet ${{ matrix.config.triplet }}
 
     - name: Install
       shell: cmd
       run: |
-        xcopy .github\workflows\dumb %VCPKG_INSTALLATION_ROOT%\ports\dumb\
         xcopy .github\workflows\portmidi %VCPKG_INSTALLATION_ROOT%\ports\portmidi\ /y
         vcpkg update
         vcpkg install ${{ steps.vars.outputs.common_options }}

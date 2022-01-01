@@ -27,9 +27,7 @@
 
 #cmakedefine HAVE_LIBPCREPOSIX
 #cmakedefine HAVE_LIBZ
-#cmakedefine HAVE_LIBMAD
 #cmakedefine HAVE_LIBFLUIDSYNTH
-#cmakedefine HAVE_LIBDUMB
 #cmakedefine HAVE_LIBVORBISFILE
 #cmakedefine HAVE_LIBPORTMIDI
 

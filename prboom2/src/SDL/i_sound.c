@@ -1151,20 +1151,12 @@ const char *snd_mididev; // midi device to use (portmidiplayer)
 #include "MUSIC/musicplayer.h"
 
 #include "MUSIC/oplplayer.h"
-#include "MUSIC/madplayer.h"
-#include "MUSIC/dumbplayer.h"
 #include "MUSIC/flplayer.h"
-#include "MUSIC/vorbisplayer.h"
 #include "MUSIC/portmidiplayer.h"
 
 // list of possible music players
 static const music_player_t *music_players[] =
 { // until some ui work is done, the order these appear is the autodetect order.
-  // of particular importance:  things that play mus have to be last, because
-  // mus2midi very often succeeds even on garbage input
-  &vorb_player, // vorbisplayer.h
-  &mp_player, // madplayer.h
-  &db_player, // dumbplayer.h
   &fl_player, // flplayer.h
   &opl_synth_player, // oplplayer.h
   &pm_player, // portmidiplayer.h
@@ -1175,9 +1167,6 @@ static const music_player_t *music_players[] =
 
 static int music_player_was_init[NUM_MUS_PLAYERS];
 
-#define PLAYER_VORBIS     "vorbis player"
-#define PLAYER_MAD        "mad mp3 player"
-#define PLAYER_DUMB       "dumb tracker player"
 #define PLAYER_FLUIDSYNTH "fluidsynth midi player"
 #define PLAYER_OPL2       "opl2 synth player"
 #define PLAYER_PORTMIDI   "portmidi midi player"
@@ -1185,9 +1174,6 @@ static int music_player_was_init[NUM_MUS_PLAYERS];
 // order in which players are to be tried
 char music_player_order[NUM_MUS_PLAYERS][200] =
 {
-  PLAYER_VORBIS,
-  PLAYER_MAD,
-  PLAYER_DUMB,
   PLAYER_FLUIDSYNTH,
   PLAYER_OPL2,
   PLAYER_PORTMIDI,
@@ -1492,21 +1478,21 @@ void M_ChangeMIDIPlayer(void)
 
     if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_fluidsynth]))
     {
-      strcpy(music_player_order[3], PLAYER_FLUIDSYNTH);
-      strcpy(music_player_order[4], PLAYER_OPL2);
-      strcpy(music_player_order[5], PLAYER_PORTMIDI);
+      strcpy(music_player_order[0], PLAYER_FLUIDSYNTH);
+      strcpy(music_player_order[1], PLAYER_OPL2);
+      strcpy(music_player_order[2], PLAYER_PORTMIDI);
     }
     else if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_opl2]))
     {
-      strcpy(music_player_order[3], PLAYER_OPL2);
-      strcpy(music_player_order[4], PLAYER_FLUIDSYNTH);
-      strcpy(music_player_order[5], PLAYER_PORTMIDI);
+      strcpy(music_player_order[0], PLAYER_OPL2);
+      strcpy(music_player_order[1], PLAYER_FLUIDSYNTH);
+      strcpy(music_player_order[2], PLAYER_PORTMIDI);
     }
     else if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_portmidi]))
     {
-      strcpy(music_player_order[3], PLAYER_PORTMIDI);
-      strcpy(music_player_order[4], PLAYER_FLUIDSYNTH);
-      strcpy(music_player_order[5], PLAYER_OPL2);
+      strcpy(music_player_order[0], PLAYER_PORTMIDI);
+      strcpy(music_player_order[1], PLAYER_FLUIDSYNTH);
+      strcpy(music_player_order[2], PLAYER_OPL2);
     }
   }
 
