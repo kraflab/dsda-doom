@@ -285,6 +285,7 @@ extern int stroller;
 void e6y_G_DoCompleted(void);
 void e6y_WriteStats(void);
 
+void e6y_G_DoTeleportNewMap(void);
 void e6y_G_DoWorldDone(void);
 
 void I_ProcessWin32Mouse(void);

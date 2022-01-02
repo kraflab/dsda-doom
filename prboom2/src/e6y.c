@@ -955,6 +955,26 @@ void e6y_WriteStats(void)
   fclose(f);
 }
 
+void e6y_G_DoTeleportNewMap(void)
+{
+  if (doSkip)
+  {
+    static int firstmap = 1;
+
+    demo_warp_reached = demo_stoponnext ||
+      (
+        gamemode == commercial ?
+          (warpmap == gamemap) :
+          (warpepisode == gameepisode && warpmap == gamemap)
+      );
+
+    if (demo_warp_reached && demo_skiptics == 0 && !firstmap)
+      G_SkipDemoStop();
+
+    firstmap = 0;
+  }
+}
+
 void e6y_G_DoWorldDone(void)
 {
   if (doSkip)
