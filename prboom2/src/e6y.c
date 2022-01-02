@@ -859,6 +859,12 @@ void e6y_WriteStats(void)
 
   f = fopen("levelstat.txt", "wb");
 
+  if (f == NULL)
+  {
+    lprintf(LO_ERROR, "Unable to open levelstat.txt for writing\n");
+    return;
+  }
+
   all = malloc(sizeof(*all) * numlevels);
   memset(&max, 0, sizeof(timetable_t));
 
