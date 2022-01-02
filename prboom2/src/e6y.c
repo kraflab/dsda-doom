@@ -980,7 +980,6 @@ void e6y_G_DoWorldDone(void)
   if (doSkip)
   {
     static int firstmap = 1;
-    int p;
 
     demo_warp_reached = demo_stoponnext ||
       (
