@@ -108,7 +108,10 @@ const char *avi_shot_fname;
 dboolean doSkip;
 dboolean demo_stoponnext;
 dboolean demo_stoponend;
-dboolean demo_warp;
+static dboolean demo_warp_reached;
+
+extern int warpepisode;
+extern int warpmap;
 
 int speed_step;
 
@@ -275,7 +278,7 @@ void e6y_HandleSkip(void)
       demo_skiptics = (int) (sec * TICRATE);
   }
 
-  if ((IsDemoPlayback() || IsDemoContinue()) && (startmap > 1 || demo_skiptics))
+  if ((IsDemoPlayback() || IsDemoContinue()) && (warpmap != -1 || demo_skiptics))
     G_SkipDemoStart();
 }
 
@@ -338,7 +341,7 @@ void G_SkipDemoStop(void)
 
   demo_stoponnext = false;
   demo_stoponend = false;
-  demo_warp = false;
+  demo_warp_reached = false;
   doSkip = false;
   demo_skiptics = 0;
   startmap = 0;
@@ -359,13 +362,19 @@ void G_SkipDemoStop(void)
 #endif
 }
 
+void G_SkipDemoStartCheck(void)
+{
+  if (doSkip && warpmap == gamemap && warpepisode == gameepisode)
+    demo_warp_reached = true;
+}
+
 void G_SkipDemoCheck(void)
 {
   if (doSkip && gametic > 0)
   {
     if (
       (
-        startmap <= 1 &&
+        warpmap == -1 &&
         (
           demo_skiptics > 0 ?
             gametic > demo_skiptics :
@@ -373,7 +382,7 @@ void G_SkipDemoCheck(void)
         )
       ) ||
       (
-        demo_warp && gametic - levelstarttic > demo_skiptics)
+        demo_warp_reached && gametic - levelstarttic > demo_skiptics)
       )
      {
        G_SkipDemoStop();
@@ -792,7 +801,7 @@ void e6y_G_DoCompleted(void)
 {
   int i;
 
-  if (doSkip && (demo_stoponend || demo_warp))
+  if (doSkip && (demo_stoponend || demo_warp_reached))
     G_SkipDemoStop();
 
   if(!stats_level)
@@ -951,31 +960,16 @@ void e6y_G_DoWorldDone(void)
   if (doSkip)
   {
     static int firstmap = 1;
-    int episode = 0;
-    int map = 0;
     int p;
 
-    if ((p = M_CheckParm ("-warp")))
-    {
-      if (gamemode == commercial)
-      {
-        if (p < myargc - 1)
-          map = atoi(myargv[p + 1]);
-      }
-      else
-      {
-        if (p < myargc - 2)
-        {
-          episode = atoi(myargv[++p]);
-          map = atoi(myargv[p + 1]);
-        }
-      }
-    }
+    demo_warp_reached = demo_stoponnext ||
+      (
+        gamemode == commercial ?
+          (warpmap == gamemap) :
+          (warpepisode == gameepisode && warpmap == gamemap)
+      );
 
-    demo_warp = demo_stoponnext ||
-      (gamemode == commercial ? (map == gamemap) : (episode == gameepisode && map == gamemap));
-
-    if (demo_warp && demo_skiptics == 0 && !firstmap)
+    if (demo_warp_reached && demo_skiptics == 0 && !firstmap)
       G_SkipDemoStop();
 
     firstmap = 0;
