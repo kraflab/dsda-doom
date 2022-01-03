@@ -78,6 +78,8 @@ set(COMMON_SRC
     dsda/tas.h
     dsda/text_file.c
     dsda/text_file.h
+    dsda/thing_id.c
+    dsda/thing_id.h
     dsda/time.c
     dsda/time.h
     dstrings.c
