@@ -304,7 +304,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 130   | Thing_Activate                  | :telescope:        |
 | 131   | Thing_Deactivate                | :telescope:        |
 | 132   | Thing_Remove                    | :telescope:        |
-| 133   | Thing_Destroy                   | :telescope:        |
+| 133   | Thing_Destroy                   | :heavy_check_mark: |
 | 134   | Thing_Projectile                | :telescope:        |
 | 135   | Thing_Spawn                     | :telescope:        |
 | 136   | Thing_ProjectileGravity         | :telescope:        |

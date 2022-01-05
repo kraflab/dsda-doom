@@ -53,6 +53,7 @@
 #include "p_user.h"
 #include "g_game.h"
 #include "p_inter.h"
+#include "p_enemy.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "i_sound.h"
@@ -67,6 +68,7 @@
 #include "dsda/global.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
+#include "dsda/thing_id.h"
 
 //
 //      source animation definition
@@ -6907,6 +6909,50 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_light_stop:
       EV_StopLightEffect(args[0]);
+      buttonSuccess = 1;
+      break;
+    case zl_thing_destroy:
+      if (!args[0] && !args[2])
+      {
+        P_Massacre();
+      }
+      else if (!args[0])
+      {
+        int s = -1;
+
+        while ((s = P_FindSectorFromTag(args[2], s)) >= 0)
+        {
+          msecnode_t *n;
+          sector_t *sec;
+
+          sec = &sectors[s];
+          for (n = sec->touching_thinglist; n;)
+          {
+            mobj_t *target = n->m_thing;
+
+            // Not sure if n might be freed when an enemy dies,
+            //   so let's get the next node before applying the damage
+            n = n->m_snext;
+
+            if (target->flags & MF_SHOOTABLE)
+              P_DamageMobj(target, NULL, mo, args[1] ? 10000 : target->health);
+          }
+        }
+      }
+      else
+      {
+        mobj_t *target;
+        thing_id_list_entry_t *entry = NULL;
+
+        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        {
+          if (
+            target->flags & MF_SHOOTABLE &&
+            (!args[2] || target->subsector->sector->tag == args[2])
+          )
+            P_DamageMobj(target, NULL, mo, args[1] ? 10000 : target->health);
+        }
+      }
       buttonSuccess = 1;
       break;
     default:

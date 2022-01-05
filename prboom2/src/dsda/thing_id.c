@@ -16,6 +16,7 @@
 //
 
 #include "p_tick.h"
+#include "z_zone.h"
 
 #include "thing_id.h"
 
@@ -26,7 +27,7 @@ static thing_id_list_t* thing_id_list_hash[THING_ID_HASH_MAX];
 static thing_id_list_t* dsda_NewThingIDList(short thing_id) {
   thing_id_list_t* result;
 
-  result = calloc(1, sizeof(*result));
+  result = Z_Calloc(1, sizeof(*result), PU_LEVEL, NULL);
   result->thing_id = thing_id;
   return result;
 }
@@ -57,8 +58,8 @@ static thing_id_list_t* dsda_ThingIDList(short thing_id) {
 static thing_id_list_entry_t* dsda_NewThingIDListEntry(mobj_t* mo) {
   thing_id_list_entry_t* result;
 
-  result = calloc(1, sizeof(*result));
-  result->mo = mo;
+  result = Z_Calloc(1, sizeof(*result), PU_LEVEL, NULL);
+  P_SetTarget(&result->mo, mo);
   return result;
 }
 
@@ -89,14 +90,16 @@ void dsda_RemoveMobjThingID(mobj_t* mo) {
 
   if (list->first && list->first->mo == mo) {
     next = list->first->next;
-    free(list->first);
+    P_SetTarget(&list->first->mo, NULL);
+    // Z_Free(list->first); // TODO: might be freed during iteration, need solution
     list->first = next;
   }
   else {
     for (entry = list->first; entry; entry = entry->next)
       if (entry->next && entry->next->mo == mo) {
         next = entry->next->next;
-        free(entry->next);
+        P_SetTarget(&entry->next->mo, NULL);
+        // Z_Free(entry->next); // TODO: might be freed during iteration, need solution
         entry->next = next;
       }
   }
@@ -104,9 +107,19 @@ void dsda_RemoveMobjThingID(mobj_t* mo) {
   mo->tid = 0;
 }
 
+// The allocated memory is automatically removed (PU_LEVEL scope)
+void dsda_WipeMobjThingIDList(void) {
+  int i;
+
+  for (i = 0; i < THING_ID_HASH_MAX; ++i)
+    thing_id_list_hash[i] = NULL;
+}
+
 void dsda_BuildMobjThingIDList(void) {
   mobj_t *mo;
   thinker_t *th;
+
+  dsda_WipeMobjThingIDList();
 
   for (th = thinkercap.next; th != &thinkercap; th = th->next) {
     if (th->function != P_MobjThinker)
