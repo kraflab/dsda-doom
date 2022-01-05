@@ -32,6 +32,8 @@
 #include "hu_stuff.h"
 #include "lprintf.h"
 
+#include "dsda/map_format.h"
+
 #include "hexen/a_action.h"
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
@@ -1513,7 +1515,7 @@ static void UnarchiveMobjs(void)
         mobj->thinker.function = P_MobjThinker;
         P_AddThinker(&mobj->thinker);
     }
-    P_CreateTIDList();
+    map_format.build_mobj_thing_id_list();
     P_InitCreatureCorpseQueue(true);    // true = scan for corpses
 }
 

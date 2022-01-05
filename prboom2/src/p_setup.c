@@ -1555,7 +1555,7 @@ static void P_LoadThings (int lump)
 
   if (map_format.acs)
   {
-    P_CreateTIDList();
+    map_format.build_mobj_thing_id_list();
   }
 
   if (hexen)

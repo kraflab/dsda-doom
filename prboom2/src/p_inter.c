@@ -3526,7 +3526,7 @@ static dboolean P_MorphMonster(mobj_t * actor)
     x = oldMonster.x;
     y = oldMonster.y;
     z = oldMonster.z;
-    P_RemoveMobjFromTIDList(actor);
+    map_format.remove_mobj_thing_id(actor);
     P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     S_StartSound(fog, hexen_sfx_teleport);
@@ -3538,7 +3538,7 @@ static dboolean P_MorphMonster(mobj_t * actor)
     monster->angle = oldMonster.angle;
     monster->tid = oldMonster.tid;
     monster->special = oldMonster.special;
-    P_InsertMobjIntoTIDList(monster, oldMonster.tid);
+    map_format.add_mobj_thing_id(monster, oldMonster.tid);
     memcpy(monster->args, oldMonster.args, 5);
     dsda_WatchMorph(monster);
 

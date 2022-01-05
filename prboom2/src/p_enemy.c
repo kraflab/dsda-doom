@@ -5247,7 +5247,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
     z = actor->z;
     oldMonster = *actor;        // Save pig vars
 
-    P_RemoveMobjFromTIDList(actor);
+    map_format.remove_mobj_thing_id(actor);
     P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     mo = P_SpawnMobj(x, y, z, moType);
     dsda_WatchUnMorph(mo);
@@ -5264,7 +5264,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
         mo->special2.i = moType;
         mo->tid = oldMonster.tid;
         memcpy(mo->args, oldMonster.args, 5);
-        P_InsertMobjIntoTIDList(mo, oldMonster.tid);
+        map_format.add_mobj_thing_id(mo, oldMonster.tid);
         dsda_WatchMorph(mo);
         return (false);
     }
@@ -5273,7 +5273,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
     mo->tid = oldMonster.tid;
     mo->special = oldMonster.special;
     memcpy(mo->args, oldMonster.args, 5);
-    P_InsertMobjIntoTIDList(mo, oldMonster.tid);
+    map_format.add_mobj_thing_id(mo, oldMonster.tid);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     S_StartSound(fog, hexen_sfx_teleport);
     return (true);
@@ -6435,7 +6435,7 @@ void A_DragonInitFlight(mobj_t * actor)
         }
     }
     while (actor->special1.m == actor);
-    P_RemoveMobjFromTIDList(actor);
+    map_format.remove_mobj_thing_id(actor);
 }
 
 void A_DragonFlight(mobj_t * actor)
@@ -7228,7 +7228,7 @@ void A_FreezeDeathChunks(mobj_t * actor)
         mo->player->mo = mo;
         mo->player->lookdir = 0;
     }
-    P_RemoveMobjFromTIDList(actor);
+    map_format.remove_mobj_thing_id(actor);
     P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     actor->flags2 |= MF2_DONTDRAW;
 }

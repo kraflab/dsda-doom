@@ -1581,7 +1581,7 @@ void P_RemoveMobj (mobj_t* mobj)
 
     if (map_format.acs && mobj->tid)
     {
-      P_RemoveMobjFromTIDList(mobj);
+      map_format.remove_mobj_thing_id(mobj);
     }
 
     P_UnsetThingPosition(mobj);
@@ -1614,7 +1614,7 @@ void P_RemoveMobj (mobj_t* mobj)
 
   if (map_format.acs && mobj->tid)
   {
-    P_RemoveMobjFromTIDList(mobj);
+    map_format.remove_mobj_thing_id(mobj);
   }
 
   // unlink from sector and block lists
@@ -3366,7 +3366,7 @@ void P_CreateTIDList(void)
     TIDList[i] = 0;
 }
 
-void P_InsertMobjIntoTIDList(mobj_t * mobj, int tid)
+void P_InsertMobjIntoTIDList(mobj_t * mobj, short tid)
 {
     int i;
     int index;
@@ -3412,7 +3412,7 @@ void P_RemoveMobjFromTIDList(mobj_t * mobj)
     mobj->tid = 0;
 }
 
-mobj_t *P_FindMobjFromTID(int tid, int *searchPosition)
+mobj_t *P_FindMobjFromTID(short tid, int *searchPosition)
 {
     int i;
 

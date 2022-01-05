@@ -1542,7 +1542,7 @@ void P_TrueUnArchiveThinkers(void) {
 
   if (map_format.acs)
   {
-    P_CreateTIDList();
+    map_format.build_mobj_thing_id_list();
   }
 
   if (hexen)

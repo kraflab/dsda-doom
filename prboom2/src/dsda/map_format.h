@@ -60,6 +60,9 @@ typedef struct {
   void (*t_plat_raise)(plat_t *);
   int (*ev_teleport)(int, line_t *, int, mobj_t *, int);
   void (*player_thrust)(player_t* player, angle_t angle, fixed_t move);
+  void (*build_mobj_thing_id_list)(void);
+  void (*add_mobj_thing_id)(mobj_t *, short);
+  void (*remove_mobj_thing_id)(mobj_t *);
   size_t mapthing_size;
   size_t maplinedef_size;
   int mt_push;
