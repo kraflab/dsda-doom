@@ -1553,7 +1553,7 @@ static void P_LoadThings (int lump)
       mobjlist[mobjcount++] = mobj;
   }
 
-  if (map_format.acs)
+  if (map_format.thing_id)
   {
     map_format.build_mobj_thing_id_list();
   }

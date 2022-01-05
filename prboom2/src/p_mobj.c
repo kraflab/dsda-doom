@@ -1579,7 +1579,7 @@ void P_RemoveMobj (mobj_t* mobj)
       }
     }
 
-    if (map_format.acs && mobj->tid)
+    if (map_format.thing_id && mobj->tid)
     {
       map_format.remove_mobj_thing_id(mobj);
     }
@@ -1612,7 +1612,7 @@ void P_RemoveMobj (mobj_t* mobj)
       iquetail = (iquetail+1)&(ITEMQUESIZE-1);
     }
 
-  if (map_format.acs && mobj->tid)
+  if (map_format.thing_id && mobj->tid)
   {
     map_format.remove_mobj_thing_id(mobj);
   }
