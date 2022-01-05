@@ -1540,6 +1540,7 @@ void P_TrueUnArchiveThinkers(void) {
 
   free(mobj_p);    // free translation table
 
+  // TODO: not in sync, need to save and load existing order
   if (map_format.thing_id)
   {
     map_format.build_mobj_thing_id_list();
