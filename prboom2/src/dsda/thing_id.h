@@ -34,6 +34,7 @@ typedef struct thing_id_list_s {
 
 void dsda_AddMobjThingID(mobj_t* mo, short thing_id);
 void dsda_RemoveMobjThingID(mobj_t* mo);
+void dsda_BuildMobjThingIDList(void);
 mobj_t* dsda_FindMobjFromThingID(short thing_id, thing_id_list_entry_t** start);
 
 #endif

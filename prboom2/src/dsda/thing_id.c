@@ -15,6 +15,8 @@
 //	DSDA Thing ID
 //
 
+#include "p_tick.h"
+
 #include "thing_id.h"
 
 #define THING_ID_HASH_MAX 128
@@ -100,6 +102,21 @@ void dsda_RemoveMobjThingID(mobj_t* mo) {
   }
 
   mo->tid = 0;
+}
+
+void dsda_BuildMobjThingIDList(void) {
+  mobj_t *mo;
+  thinker_t *th;
+
+  for (th = thinkercap.next; th != &thinkercap; th = th->next) {
+    if (th->function != P_MobjThinker)
+      continue;
+
+    mo = (mobj_t *) th;
+
+    if (mo->tid != 0)
+      dsda_AddMobjThingID(mo, mo->tid);
+  }
 }
 
 mobj_t* dsda_FindMobjFromThingID(short thing_id, thing_id_list_entry_t** start) {
