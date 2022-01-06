@@ -6927,6 +6927,25 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
       }
     	break;
+    case zl_thing_damage:
+      if (!args[0])
+      {
+        if (mo->flags & MF_SHOOTABLE)
+          P_DamageMobj(mo, NULL, mo, args[1]);
+      }
+      else
+      {
+        mobj_t *target;
+        thing_id_list_entry_t *entry = NULL;
+
+        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        {
+          if (target->flags & MF_SHOOTABLE)
+            P_DamageMobj(target, NULL, mo, args[1]);
+        }
+      }
+      buttonSuccess = 1;
+      break;
     case zl_thing_destroy:
       if (!args[0] && !args[2])
       {

@@ -292,7 +292,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 116   | Light_Strobe                    | :heavy_check_mark: |
 | 117   | Light_Stop                      | :heavy_check_mark: |
 | 118   | Plane_Copy                      | :x:                |
-| 119   | Thing_Damage                    | :telescope:        |
+| 119   | Thing_Damage                    | :heavy_check_mark: |
 | 120   | Radius_Quake                    | :telescope:        |
 | 121   | Line_SetIdentification          | :warning:          |
 | -     | -                               | -                  |
