@@ -190,7 +190,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 14    | Door_Animated                   | :x:                |
 | 15    | Autosave                        | :x:                |
 | 16    | Transfer_WallLight              | :telescope:        |
-| 17    | Thing_Raise                     | :telescope:        |
+| 17    | Thing_Raise                     | :heavy_check_mark: |
 | 18    | StartConversation               | :x:                |
 | 19    | Thing_Stop                      | :telescope:        |
 | 20    | Floor_LowerByValue              | :heavy_check_mark: |

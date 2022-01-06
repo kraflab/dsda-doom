@@ -6911,6 +6911,22 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       EV_StopLightEffect(args[0]);
       buttonSuccess = 1;
       break;
+    case zl_thing_raise:
+      if (!args[0])
+      {
+        buttonSuccess = P_RaiseThing(mo, NULL);
+      }
+      else
+      {
+        mobj_t *target;
+        thing_id_list_entry_t *entry = NULL;
+
+        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        {
+          buttonSuccess |= P_RaiseThing(target, NULL);
+        }
+      }
+    	break;
     case zl_thing_destroy:
       if (!args[0] && !args[2])
       {

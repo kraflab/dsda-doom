@@ -1819,6 +1819,66 @@ static dboolean PIT_VileCheck(mobj_t *thing)
     return false;               // got one, so stop checking
 }
 
+dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
+{
+  uint_64_t oldflags;
+  fixed_t oldheight, oldradius;
+  mobjinfo_t *info;
+
+  if (!(corpse->flags & MF_CORPSE))
+    return false;
+
+  info = corpse->info;
+
+  if (info->raisestate == g_s_null)
+    return false;
+
+  corpse->momx = 0;
+  corpse->momy = 0;
+
+  oldheight = corpse->height;
+  oldradius = corpse->radius;
+  oldflags = corpse->flags;
+
+  corpse->height = info->height;
+  corpse->radius = info->radius;
+  corpse->flags |= MF_SOLID;
+
+  if (!P_CheckPosition(corpse, corpse->x, corpse->y))
+  {
+    corpse->height = oldheight;
+    corpse->radius = oldradius;
+    corpse->flags = oldflags;
+    return false;
+  }
+
+  S_StartSound(corpse, sfx_slop);
+
+  P_SetMobjState(corpse, info->raisestate);
+
+  corpse->flags = info->flags;
+  corpse->flags |= MF_RESSURECTED;
+  corpse->flags &= ~MF_JUSTHIT;
+
+  if (raiser)
+  {
+    corpse->flags = (corpse->flags & ~MF_FRIEND) | (raiser->flags & MF_FRIEND);
+  }
+
+  dsda_WatchResurrection(corpse);
+
+  if (!((corpse->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+    totallive++;
+
+  corpse->health = info->spawnhealth;
+  P_SetTarget(&corpse->target, NULL);
+  P_SetTarget(&corpse->lastenemy, NULL);
+
+  P_UpdateThinker(&corpse->thinker);
+
+  return true;
+}
+
 //
 // P_HealCorpse
 // Check for ressurecting a body
