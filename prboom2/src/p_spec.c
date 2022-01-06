@@ -6911,6 +6911,41 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       EV_StopLightEffect(args[0]);
       buttonSuccess = 1;
       break;
+    case zl_thrust_thing_z:
+      {
+        fixed_t thrust;
+
+        thrust = args[1] * FRACUNIT / 4;
+
+        if (args[2])
+          thrust = -thrust;
+
+        if (args[0])
+        {
+          mobj_t *target;
+          thing_id_list_entry_t *entry = NULL;
+
+          while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+          {
+            if (!args[3])
+              target->momz = thrust;
+            else
+              target->momz += thrust;
+          }
+
+          buttonSuccess = 1;
+        }
+        else if (mo)
+        {
+          if (!args[3])
+            mo->momz = thrust;
+          else
+            mo->momz += thrust;
+
+          buttonSuccess = 1;
+        }
+      }
+      break;
     case zl_thing_raise:
       if (!args[0])
       {

@@ -299,7 +299,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 125   | Thing_Move                      | :telescope:        |
 | -     | -                               | -                  |
 | 127   | Thing_SetSpecial                | :telescope:        |
-| 128   | ThrustThingZ                    | :telescope:        |
+| 128   | ThrustThingZ                    | :heavy_check_mark: |
 | 129   | UsePuzzleItem                   | :x:                |
 | 130   | Thing_Activate                  | :telescope:        |
 | 131   | Thing_Deactivate                | :telescope:        |
