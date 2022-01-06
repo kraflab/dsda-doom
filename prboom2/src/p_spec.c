@@ -4078,8 +4078,8 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     else
     {
       // The speed and direction are parameters to the special.
-      dx = (l->arg4 - 128) / 32;
-      dy = (l->arg5 - 128) / 32;
+      dx = (fixed_t) (l->arg4 - 128) * FRACUNIT / 32;
+      dy = (fixed_t) (l->arg5 - 128) * FRACUNIT / 32;
     }
   }
 
