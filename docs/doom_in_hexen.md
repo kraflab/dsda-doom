@@ -301,8 +301,8 @@ Current work is isolated to the initial pass over the level format itself - line
 | 127   | Thing_SetSpecial                | :telescope:        |
 | 128   | ThrustThingZ                    | :heavy_check_mark: |
 | 129   | UsePuzzleItem                   | :x:                |
-| 130   | Thing_Activate                  | :telescope:        |
-| 131   | Thing_Deactivate                | :telescope:        |
+| 130   | Thing_Activate                  | :heavy_check_mark: |
+| 131   | Thing_Deactivate                | :heavy_check_mark: |
 | 132   | Thing_Remove                    | :telescope:        |
 | 133   | Thing_Destroy                   | :heavy_check_mark: |
 | 134   | Thing_Projectile                | :telescope:        |
