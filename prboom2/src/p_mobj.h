@@ -551,4 +551,9 @@ mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
 mobj_t *P_FindMobjFromTID(short tid, int *searchPosition);
 void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
 
+// zdoom
+
+dboolean P_SpawnThing(short thing_id, mobj_t *source, int type,
+                      angle_t angle, dboolean fog, short new_thing_id);
+
 #endif

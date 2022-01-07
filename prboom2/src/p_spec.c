@@ -6911,6 +6911,18 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       EV_StopLightEffect(args[0]);
       buttonSuccess = 1;
       break;
+    case zl_thing_spawn:
+      buttonSuccess =
+        P_SpawnThing(args[0], mo, args[1], (int) args[2] * (ANG180 / 128), true, args[3]);
+      break;
+    case zl_thing_spawn_no_fog:
+      buttonSuccess =
+        P_SpawnThing(args[0], mo, args[1], (int) args[2] * (ANG180 / 128), false, args[3]);
+      break;
+    case zl_thing_spawn_facing:
+      buttonSuccess =
+        P_SpawnThing(args[0], mo, args[1], ANGLE_MAX, args[2] ? false : true, args[3]);
+      break;
     case zl_thing_remove:
       {
         mobj_t *target;

@@ -306,11 +306,11 @@ Current work is isolated to the initial pass over the level format itself - line
 | 132   | Thing_Remove                    | :heavy_check_mark: |
 | 133   | Thing_Destroy                   | :heavy_check_mark: |
 | 134   | Thing_Projectile                | :telescope:        |
-| 135   | Thing_Spawn                     | :telescope:        |
+| 135   | Thing_Spawn                     | :heavy_check_mark: |
 | 136   | Thing_ProjectileGravity         | :telescope:        |
-| 137   | Thing_SpawnNoFog                | :telescope:        |
+| 137   | Thing_SpawnNoFog                | :heavy_check_mark: |
 | 138   | Floor_Waggle                    | :heavy_check_mark: |
-| 139   | Thing_SpawnFacing               | :telescope:        |
+| 139   | Thing_SpawnFacing               | :heavy_check_mark: |
 | 140   | Sector_ChangeSound              | :telescope:        |
 | -     | -                               | -                  |
 | 154   | Teleport_NoStop                 | :heavy_check_mark: |

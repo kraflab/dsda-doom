@@ -57,6 +57,8 @@
 
 #include "dsda.h"
 #include "dsda/map_format.h"
+#include "dsda/spawn_number.h"
+#include "dsda/thing_id.h"
 
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
@@ -1451,6 +1453,51 @@ static PUREFUNC int P_FindDoomedNum(unsigned type)
   while ((i < num_mobj_types) && ((unsigned)mobjinfo[i].doomednum != type))
     i = hash[i].next;
   return i;
+}
+
+dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
+                      angle_t angle, dboolean fog, short new_thing_id)
+{
+  int type;
+  dboolean success = false;
+  thing_id_search_t search;
+  mobj_t *spawn_location;
+  mobj_t *new_mobj;
+
+  type = dsda_ThingTypeFromSpawnNumber(spawn_num);
+
+  if (type == num_mobj_types)
+    return false;
+
+  if (nomonsters && (type == MT_SKULL || (mobjinfo[type].flags & MF_COUNTKILL)))
+    return false;
+
+  dsda_ResetThingIDSearch(&search);
+  while ((spawn_location = dsda_FindMobjFromThingIDOrMobj(thing_id, source, &search)))
+  {
+    new_mobj = P_SpawnMobj(spawn_location->x, spawn_location->y, spawn_location->z, type);
+    if (!P_TestMobjLocation(new_mobj))
+    {
+      dsda_WatchFailedSpawn(new_mobj);
+      P_RemoveMobj(new_mobj);
+    }
+    else
+    {
+      new_mobj->angle = angle == ANGLE_MAX ? spawn_location->angle : angle;
+      if (fog)
+      {
+        mobj_t *fog_mobj;
+        fog_mobj = P_SpawnMobj(spawn_location->x, spawn_location->y,
+                              spawn_location->z + TELEFOGHEIGHT, g_mt_tfog);
+        S_StartSound(fog_mobj, g_sfx_telept);
+      }
+      dsda_AddMobjThingID(new_mobj, new_thing_id);
+      new_mobj->flags |= MF_DROPPED; // Don't respawn
+      success = true;
+    }
+  }
+
+  return success;
 }
 
 //
