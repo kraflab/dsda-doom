@@ -132,10 +132,20 @@ void dsda_BuildMobjThingIDList(void) {
   }
 }
 
-mobj_t* dsda_FindMobjFromThingID(short thing_id, thing_id_list_entry_t** start) {
+void dsda_ResetThingIDSearch(thing_id_search_t* search) {
+  search->done = false;
+  search->start = NULL;
+}
+
+static void dsda_FinishThingIDSearch(thing_id_search_t* search) {
+  search->done = true;
+  search->start = NULL;
+}
+
+mobj_t* dsda_FindMobjFromThingID(short thing_id, thing_id_search_t* search) {
   thing_id_list_entry_t* p;
 
-  p = *start;
+  p = search->start;
 
   if (p)
     p = p->next;
@@ -145,10 +155,24 @@ mobj_t* dsda_FindMobjFromThingID(short thing_id, thing_id_list_entry_t** start) 
   }
 
   if (p) {
-    *start = p;
+    search->start = p;
     return p->mo;
   }
 
-  *start = NULL;
+  dsda_FinishThingIDSearch(search);
   return NULL;
+}
+
+mobj_t* dsda_FindMobjFromThingIDOrMobj(short thing_id, mobj_t* mo, thing_id_search_t* search) {
+  thing_id_list_entry_t* p;
+
+  if (search->done)
+    return NULL;
+
+  if (!thing_id) {
+    dsda_FinishThingIDSearch(search);
+    return mo;
+  }
+
+  return dsda_FindMobjFromThingID(thing_id, search);
 }

@@ -6912,12 +6912,12 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       buttonSuccess = 1;
       break;
     case zl_thing_remove:
-      if (args[0])
       {
         mobj_t *target;
-        thing_id_list_entry_t *entry = NULL;
+        thing_id_search_t search;
 
-        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           if (!target->player)
           {
@@ -6928,25 +6928,15 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           }
         }
       }
-      else if (mo)
-      {
-        if (!mo->player)
-        {
-          if (mo->flags & MF_COUNTKILL)
-            dsda_WatchKill(&players[consoleplayer], mo);
-
-          P_RemoveMobj(mo);
-        }
-      }
       buttonSuccess = 1;
       break;
     case zl_thing_activate:
-      if (args[0])
       {
         mobj_t *target;
-        thing_id_list_entry_t *entry = NULL;
+        thing_id_search_t search;
 
-        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           if (target->flags2 & MF2_DORMANT)
           {
@@ -6957,24 +6947,14 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           buttonSuccess = 1;
         }
       }
-      else if (mo)
-      {
-        if (mo->flags2 & MF2_DORMANT)
-        {
-          mo->flags2 &= ~MF2_DORMANT;
-          mo->tics = 1;
-        }
-
-        buttonSuccess = 1;
-      }
       break;
     case zl_thing_deactivate:
-      if (args[0])
       {
         mobj_t *target;
-        thing_id_list_entry_t *entry = NULL;
+        thing_id_search_t search;
 
-        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           if (!(target->flags2 & MF2_DORMANT))
           {
@@ -6985,80 +6965,49 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           buttonSuccess = 1;
         }
       }
-      else if (mo)
-      {
-        if (!(mo->flags2 & MF2_DORMANT))
-        {
-          mo->flags2 |= MF2_DORMANT;
-          mo->tics = -1;
-        }
-
-        buttonSuccess = 1;
-      }
       break;
     case zl_thrust_thing_z:
       {
         fixed_t thrust;
+        mobj_t *target;
+        thing_id_search_t search;
 
         thrust = args[1] * FRACUNIT / 4;
 
         if (args[2])
           thrust = -thrust;
 
-        if (args[0])
-        {
-          mobj_t *target;
-          thing_id_list_entry_t *entry = NULL;
-
-          while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
-          {
-            if (!args[3])
-              target->momz = thrust;
-            else
-              target->momz += thrust;
-          }
-
-          buttonSuccess = 1;
-        }
-        else if (mo)
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           if (!args[3])
-            mo->momz = thrust;
+            target->momz = thrust;
           else
-            mo->momz += thrust;
+            target->momz += thrust;
 
           buttonSuccess = 1;
         }
       }
       break;
     case zl_thing_raise:
-      if (!args[0])
-      {
-        buttonSuccess = P_RaiseThing(mo, NULL);
-      }
-      else
       {
         mobj_t *target;
-        thing_id_list_entry_t *entry = NULL;
+        thing_id_search_t search;
 
-        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           buttonSuccess |= P_RaiseThing(target, NULL);
         }
       }
     	break;
     case zl_thing_damage:
-      if (!args[0])
-      {
-        if (mo->flags & MF_SHOOTABLE)
-          P_DamageMobj(mo, NULL, mo, args[1]);
-      }
-      else
       {
         mobj_t *target;
-        thing_id_list_entry_t *entry = NULL;
+        thing_id_search_t search;
 
-        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           if (target->flags & MF_SHOOTABLE)
             P_DamageMobj(target, NULL, mo, args[1]);
@@ -7097,9 +7046,10 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       else
       {
         mobj_t *target;
-        thing_id_list_entry_t *entry = NULL;
+        thing_id_search_t search;
 
-        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingID(args[0], &search)))
         {
           if (
             target->flags & MF_SHOOTABLE &&
