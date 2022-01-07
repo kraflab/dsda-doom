@@ -303,7 +303,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 129   | UsePuzzleItem                   | :x:                |
 | 130   | Thing_Activate                  | :heavy_check_mark: |
 | 131   | Thing_Deactivate                | :heavy_check_mark: |
-| 132   | Thing_Remove                    | :telescope:        |
+| 132   | Thing_Remove                    | :heavy_check_mark: |
 | 133   | Thing_Destroy                   | :heavy_check_mark: |
 | 134   | Thing_Projectile                | :telescope:        |
 | 135   | Thing_Spawn                     | :telescope:        |

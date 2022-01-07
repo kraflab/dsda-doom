@@ -6911,6 +6911,35 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       EV_StopLightEffect(args[0]);
       buttonSuccess = 1;
       break;
+    case zl_thing_remove:
+      if (args[0])
+      {
+        mobj_t *target;
+        thing_id_list_entry_t *entry = NULL;
+
+        while ((target = dsda_FindMobjFromThingID(args[0], &entry)))
+        {
+          if (!target->player)
+          {
+            if (target->flags & MF_COUNTKILL)
+              dsda_WatchKill(&players[consoleplayer], target);
+
+            P_RemoveMobj(target);
+          }
+        }
+      }
+      else if (mo)
+      {
+        if (!mo->player)
+        {
+          if (mo->flags & MF_COUNTKILL)
+            dsda_WatchKill(&players[consoleplayer], mo);
+
+          P_RemoveMobj(mo);
+        }
+      }
+      buttonSuccess = 1;
+      break;
     case zl_thing_activate:
       if (args[0])
       {
