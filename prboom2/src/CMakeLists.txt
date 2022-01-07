@@ -68,6 +68,8 @@ set(COMMON_SRC
     dsda/settings.h
     dsda/sfx.c
     dsda/sfx.h
+    dsda/spawn_number.c
+    dsda/spawn_number.h
     dsda/split_tracker.c
     dsda/split_tracker.h
     dsda/sprite.c
