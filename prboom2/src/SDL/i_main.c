@@ -510,6 +510,13 @@ int main(int argc, char **argv)
   myargv = (char**)malloc(sizeof(myargv[0]) * myargc);
   memcpy(myargv, argv, sizeof(myargv[0]) * myargc);
 
+  // Print the version and exit
+  if(M_CheckParm("-v"))
+  {
+    PrintVer();
+    return 0;
+  }
+
   // e6y: Check for conflicts.
   // Conflicting command-line parameters could cause the engine to be confused
   // in some cases. Added checks to prevent this.
