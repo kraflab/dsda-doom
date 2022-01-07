@@ -93,6 +93,8 @@ void dsda_RemoveMobjThingID(mobj_t* mo) {
     P_SetTarget(&list->first->mo, NULL);
     // Z_Free(list->first); // TODO: might be freed during iteration, need solution
     list->first = next;
+    if (!list->first)
+      list->last = NULL;
   }
   else {
     for (entry = list->first; entry; entry = entry->next)
@@ -101,6 +103,8 @@ void dsda_RemoveMobjThingID(mobj_t* mo) {
         P_SetTarget(&entry->next->mo, NULL);
         // Z_Free(entry->next); // TODO: might be freed during iteration, need solution
         entry->next = next;
+        if (!entry->next)
+          list->last = entry;
       }
   }
 
