@@ -1420,6 +1420,39 @@ mobj_t *P_SubstNullMobj(mobj_t *mobj)
     return mobj;
 }
 
+/*
+ * P_FindDoomedNum
+ *
+ * Finds a mobj type with a matching doomednum
+ *
+ * killough 8/24/98: rewrote to use hashing
+ */
+
+static PUREFUNC int P_FindDoomedNum(unsigned type)
+{
+  static struct { int first, next; } *hash;
+  register int i;
+
+  if (!hash)
+    {
+      hash = Z_Malloc(sizeof *hash * num_mobj_types, PU_CACHE, (void **) &hash);
+      for (i=0; i<num_mobj_types; i++)
+  hash[i].first = num_mobj_types;
+      for (i=mobj_types_zero; i<num_mobj_types; i++)
+  if (mobjinfo[i].doomednum != -1)
+    {
+      unsigned h = (unsigned) mobjinfo[i].doomednum % num_mobj_types;
+      hash[i].next = hash[h].first;
+      hash[h].first = i;
+    }
+    }
+
+  i = hash[type % num_mobj_types].first;
+  while ((i < num_mobj_types) && ((unsigned)mobjinfo[i].doomednum != type))
+    i = hash[i].next;
+  return i;
+}
+
 //
 // P_SpawnMobj
 //
@@ -1656,40 +1689,6 @@ void P_RemoveMobj (mobj_t* mobj)
   // free block
 
   P_RemoveThinker (&mobj->thinker);
-}
-
-
-/*
- * P_FindDoomedNum
- *
- * Finds a mobj type with a matching doomednum
- *
- * killough 8/24/98: rewrote to use hashing
- */
-
-static PUREFUNC int P_FindDoomedNum(unsigned type)
-{
-  static struct { int first, next; } *hash;
-  register int i;
-
-  if (!hash)
-    {
-      hash = Z_Malloc(sizeof *hash * num_mobj_types, PU_CACHE, (void **) &hash);
-      for (i=0; i<num_mobj_types; i++)
-  hash[i].first = num_mobj_types;
-      for (i=mobj_types_zero; i<num_mobj_types; i++)
-  if (mobjinfo[i].doomednum != -1)
-    {
-      unsigned h = (unsigned) mobjinfo[i].doomednum % num_mobj_types;
-      hash[i].next = hash[h].first;
-      hash[h].first = i;
-    }
-    }
-
-  i = hash[type % num_mobj_types].first;
-  while ((i < num_mobj_types) && ((unsigned)mobjinfo[i].doomednum != type))
-    i = hash[i].next;
-  return i;
 }
 
 //
