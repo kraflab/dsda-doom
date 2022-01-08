@@ -555,5 +555,8 @@ void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
 
 dboolean P_SpawnThing(short thing_id, mobj_t *source, int type,
                       angle_t angle, dboolean fog, short new_thing_id);
+dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_t angle,
+	                         fixed_t speed, fixed_t vspeed, short dest_id, mobj_t *forcedest,
+                           int gravity, short new_thing_id);
 
 #endif

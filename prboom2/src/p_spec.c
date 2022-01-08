@@ -6928,6 +6928,31 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       buttonSuccess =
         P_SpawnThing(args[0], mo, args[1], ANGLE_MAX, args[2] ? false : true, args[3]);
       break;
+    case zl_thing_projectile:
+      buttonSuccess = P_SpawnProjectile(args[0], mo, args[1], P_ArgToAngle(args[2]),
+                                        P_ArgToSpeed(args[3]), P_ArgToSpeed(args[4]),
+                                        0, NULL, 0, 0);
+      break;
+    case zl_thing_projectile_gravity:
+      buttonSuccess = P_SpawnProjectile(args[0], mo, args[1], P_ArgToAngle(args[2]),
+                                        P_ArgToSpeed(args[3]), P_ArgToSpeed(args[4]),
+                                        0, NULL, 1, 0);
+      break;
+    case zl_thing_projectile_aimed:
+      buttonSuccess = P_SpawnProjectile(args[0], mo, args[1], 0,
+                                        P_ArgToSpeed(args[2]), 0,
+                                        args[3], mo, 0, args[4]);
+      break;
+    case zl_thing_projectile_intercept:
+      // ZDoom's implementation relies on a bunch of trigonometry
+      // I tried converting this to fixed points,
+      //   but the calculations easily go out of bounds (dot products).
+      // Needs a different implementation, or 64 bit fixed point conversions
+      // Falling back on the default aimed behaviour for now
+      buttonSuccess = P_SpawnProjectile(args[0], mo, args[1], 0,
+                                        P_ArgToSpeed(args[2]), 0,
+                                        args[3], mo, 0, args[4]);
+      break;
     case zl_thing_remove:
       {
         mobj_t *target;

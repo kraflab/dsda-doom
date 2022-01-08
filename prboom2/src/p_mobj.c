@@ -1455,6 +1455,113 @@ static PUREFUNC int P_FindDoomedNum(unsigned type)
   return i;
 }
 
+dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_t angle,
+	                         fixed_t speed, fixed_t vspeed, short dest_id, mobj_t *forcedest,
+                           int gravity, short new_thing_id)
+{
+  int type;
+  dboolean is_monster;
+  dboolean success = false;
+  thing_id_search_t search;
+  thing_id_search_t dest_search;
+  mobj_t *spawn_location;
+  mobj_t *destination;
+  mobj_t *new_mobj;
+
+  type = dsda_ThingTypeFromSpawnNumber(spawn_num);
+
+  if (type == num_mobj_types)
+    return false;
+
+  is_monster = (type == MT_SKULL || (mobjinfo[type].flags & MF_COUNTKILL));
+
+  if (nomonsters && is_monster)
+    return false;
+
+  dsda_ResetThingIDSearch(&search);
+  while ((spawn_location = dsda_FindMobjFromThingIDOrMobj(thing_id, source, &search)))
+  {
+    dsda_ResetThingIDSearch(&dest_search);
+    destination = dsda_FindMobjFromThingIDOrMobj(dest_id, forcedest, &dest_search);
+
+    if (!dest_id || destination)
+    {
+      do
+      {
+        new_mobj = P_SpawnMobj(spawn_location->x, spawn_location->y, spawn_location->z, type);
+        if (new_mobj)
+        {
+          if (new_thing_id)
+            dsda_AddMobjThingID(new_mobj, new_thing_id);
+
+          if (new_mobj->info->seesound)
+          {
+            S_StartSound(new_mobj, new_mobj->info->seesound);
+          }
+
+          if (gravity)
+          {
+            new_mobj->flags &= ~MF_NOGRAVITY;
+            if (!is_monster && gravity == 1)
+            {
+              new_mobj->flags2 |= MF2_LOGRAV;
+            }
+          }
+          else
+          {
+            new_mobj->flags |= MF_NOGRAVITY;
+          }
+
+          P_SetTarget(&new_mobj->target, spawn_location);
+
+          if (destination)
+          {
+            fixed_t aimx, aimy, aimz;
+            fixed_t slope;
+
+            aimx = destination->x - new_mobj->x;
+            aimy = destination->y - new_mobj->y;
+            aimz = destination->z + destination->height / 2 - new_mobj->z;
+            slope = FixedDiv(aimz, P_AproxDistance(aimx, aimy));
+            new_mobj->angle = R_PointToAngle2(0, 0, aimx, aimy);
+            new_mobj->momx = FixedMul(speed, finecosine[new_mobj->angle >> ANGLETOFINESHIFT]);
+            new_mobj->momy = FixedMul(speed, finesine[new_mobj->angle >> ANGLETOFINESHIFT]);
+            new_mobj->momz = FixedMul(speed, slope);
+          }
+          else
+          {
+            new_mobj->angle = angle;
+            new_mobj->momx = FixedMul(speed, finecosine[new_mobj->angle >> ANGLETOFINESHIFT]);
+            new_mobj->momy = FixedMul(speed, finesine[new_mobj->angle >> ANGLETOFINESHIFT]);
+            new_mobj->momz = vspeed;
+          }
+
+          new_mobj->flags |= MF_DROPPED; // Don't respawn
+
+          if (new_mobj->flags & MF_MISSILE)
+          {
+            if (P_CheckMissileSpawn(new_mobj))
+            {
+              success = true;
+            }
+          }
+          else if (P_TestMobjLocation(new_mobj))
+          {
+            success = true;
+          }
+          else
+          {
+            dsda_WatchFailedSpawn(new_mobj);
+            P_RemoveMobj(new_mobj);
+          }
+        }
+      } while (dest_id && (destination = dsda_FindMobjFromThingIDOrMobj(dest_id, forcedest, &dest_search)));
+    }
+  }
+
+  return success;
+}
+
 dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
                       angle_t angle, dboolean fog, short new_thing_id)
 {
