@@ -5873,6 +5873,11 @@ static fixed_t P_ArgsToFixed(fixed_t arg_i, fixed_t arg_f)
   return (arg_i << FRACBITS) + (arg_f << FRACBITS) / 100;
 }
 
+static angle_t P_ArgToAngle(angle_t arg)
+{
+  return arg * (ANG180 / 128);
+}
+
 dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
 {
   dboolean buttonSuccess = false;
@@ -6913,11 +6918,11 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_thing_spawn:
       buttonSuccess =
-        P_SpawnThing(args[0], mo, args[1], (int) args[2] * (ANG180 / 128), true, args[3]);
+        P_SpawnThing(args[0], mo, args[1], P_ArgToAngle(args[2]), true, args[3]);
       break;
     case zl_thing_spawn_no_fog:
       buttonSuccess =
-        P_SpawnThing(args[0], mo, args[1], (int) args[2] * (ANG180 / 128), false, args[3]);
+        P_SpawnThing(args[0], mo, args[1], P_ArgToAngle(args[2]), false, args[3]);
       break;
     case zl_thing_spawn_facing:
       buttonSuccess =
