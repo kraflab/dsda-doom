@@ -1491,7 +1491,8 @@ dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
                               spawn_location->z + TELEFOGHEIGHT, g_mt_tfog);
         S_StartSound(fog_mobj, g_sfx_telept);
       }
-      dsda_AddMobjThingID(new_mobj, new_thing_id);
+      if (new_thing_id)
+        dsda_AddMobjThingID(new_mobj, new_thing_id);
       new_mobj->flags |= MF_DROPPED; // Don't respawn
       success = true;
     }
