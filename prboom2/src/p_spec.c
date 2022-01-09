@@ -6953,6 +6953,28 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                         P_ArgToSpeed(args[2]), 0,
                                         args[3], mo, 0, args[4]);
       break;
+    case zl_thing_stop:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          buttonSuccess = 1;
+
+          target->momx = 0;
+          target->momy = 0;
+          target->momz = 0;
+
+          if (target->player)
+          {
+            target->player->momx = 0;
+            target->player->momy = 0;
+          }
+        }
+      }
+      break;
     case zl_thing_change_tid:
       {
         mobj_t *target;
