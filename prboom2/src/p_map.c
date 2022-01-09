@@ -1457,13 +1457,20 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
   // if any special lines were hit, do the effect
 
   if (!(thing->flags & (MF_TELEPORT | MF_NOCLIP)))
-    while (numspechit--)
-      if (spechit[numspechit]->special)  // see if the line was crossed
+  {
+    // In hexen format, crossing a special line can trigger a missile spawn,
+    //   which will trigger a check that resets numspechit.
+    // We must store the index separately in order to check everything
+    int tempnumspechit = numspechit;
+
+    while (tempnumspechit--)
+      if (spechit[tempnumspechit]->special)  // see if the line was crossed
       {
-        int oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit]);
-        if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
-          map_format.cross_special_line(spechit[numspechit], oldside, thing, false);
+        int oldside = P_PointOnLineSide(oldx, oldy, spechit[tempnumspechit]);
+        if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[tempnumspechit]))
+          map_format.cross_special_line(spechit[tempnumspechit], oldside, thing, false);
       }
+  }
 
   return true;
 }
