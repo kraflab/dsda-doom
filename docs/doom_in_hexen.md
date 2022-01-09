@@ -330,7 +330,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 174   | SendToCommunicator              | :x:                |
 | 175   | Thing_ProjectileIntercept       | :x:                |
 | 176   | Thing_ChangeTID                 | :heavy_check_mark: |
-| 177   | Thing_Hate                      | :heavy_check_mark: |
+| 177   | Thing_Hate                      | :warning:          |
 | 178   | Thing_ProjectileAimed           | :heavy_check_mark: |
 | 179   | ChangeSkill                     | :x:                |
 | 180   | Thing_SetTranslation            | :telescope:        |
@@ -438,6 +438,7 @@ Current work is isolated to the initial pass over the level format itself - line
 - Line_SetBlocking only applies flags for creatures, players, monsters, sound, and everything.
 - NoiseAlert only works with the default arguments.
 - Teleport destination thing tags are currently ignored.
+- Thing_Hate only supports 0 for the third argument ("target only").
 
 ### Sector Specials
 
