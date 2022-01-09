@@ -103,6 +103,8 @@ static mobj_t* P_TeleportDestination(short thing_id, int tag)
         }
       }
     }
+
+    return NULL;
   }
 
   for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
