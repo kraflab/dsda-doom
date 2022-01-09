@@ -212,7 +212,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 36    | Floor_LowerByValueTimes8        | :heavy_check_mark: |
 | 37    | Floor_MoveToValue               | :heavy_check_mark: |
 | 38    | Ceiling_Waggle                  | :heavy_check_mark: |
-| 39    | Teleport_ZombieChanger          | :telescope:        |
+| 39    | Teleport_ZombieChanger          | :heavy_check_mark: |
 | 40    | Ceiling_LowerByValue            | :heavy_check_mark: |
 | 41    | Ceiling_RaiseByValue            | :heavy_check_mark: |
 | 42    | Ceiling_CrushAndRaise           | :heavy_check_mark: |

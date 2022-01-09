@@ -6869,6 +6869,17 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         buttonSuccess = map_format.ev_teleport(args[0], args[1], line, side, mo, flags);
       }
       break;
+    case zl_teleport_zombie_changer:
+      if (mo)
+      {
+        map_format.ev_teleport(args[0], args[1], line, side, mo, 0);
+        if (mo->health >= 0 && mo->info->painstate)
+        {
+          P_SetMobjState(mo, mo->info->painstate);
+        }
+        buttonSuccess = 1;
+      }
+      break;
     case zl_teleport_line:
       buttonSuccess = EV_SilentLineTeleport(line, side, mo, args[1], args[2]);
       break;
