@@ -6953,6 +6953,22 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                         P_ArgToSpeed(args[2]), 0,
                                         args[3], mo, 0, args[4]);
       break;
+    case zl_thing_change_tid:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          dsda_RemoveMobjThingID(target);
+          target->tid = args[1];
+          if (target->tid)
+            dsda_AddMobjThingID(target, args[1]);
+        }
+      }
+      buttonSuccess = 1;
+      break;
     case zl_thing_hate:
       {
         mobj_t *hater;

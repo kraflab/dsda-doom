@@ -329,7 +329,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 173   | NoiseAlert                      | :warning:          |
 | 174   | SendToCommunicator              | :x:                |
 | 175   | Thing_ProjectileIntercept       | :x:                |
-| 176   | Thing_ChangeTID                 | :telescope:        |
+| 176   | Thing_ChangeTID                 | :heavy_check_mark: |
 | 177   | Thing_Hate                      | :heavy_check_mark: |
 | 178   | Thing_ProjectileAimed           | :heavy_check_mark: |
 | 179   | ChangeSkill                     | :x:                |
