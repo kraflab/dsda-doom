@@ -305,9 +305,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | 131   | Thing_Deactivate                | :heavy_check_mark: |
 | 132   | Thing_Remove                    | :heavy_check_mark: |
 | 133   | Thing_Destroy                   | :heavy_check_mark: |
-| 134   | Thing_Projectile                | :telescope:        |
+| 134   | Thing_Projectile                | :heavy_check_mark: |
 | 135   | Thing_Spawn                     | :heavy_check_mark: |
-| 136   | Thing_ProjectileGravity         | :telescope:        |
+| 136   | Thing_ProjectileGravity         | :heavy_check_mark: |
 | 137   | Thing_SpawnNoFog                | :heavy_check_mark: |
 | 138   | Floor_Waggle                    | :heavy_check_mark: |
 | 139   | Thing_SpawnFacing               | :heavy_check_mark: |
@@ -328,10 +328,10 @@ Current work is isolated to the initial pass over the level format itself - line
 | 172   | Plat_UpNearestWaitDownStay      | :heavy_check_mark: |
 | 173   | NoiseAlert                      | :warning:          |
 | 174   | SendToCommunicator              | :x:                |
-| 175   | Thing_ProjectileIntercept       | :telescope:        |
+| 175   | Thing_ProjectileIntercept       | :x:                |
 | 176   | Thing_ChangeTID                 | :telescope:        |
 | 177   | Thing_Hate                      | :telescope:        |
-| 178   | Thing_ProjectileAimed           | :telescope:        |
+| 178   | Thing_ProjectileAimed           | :heavy_check_mark: |
 | 179   | ChangeSkill                     | :x:                |
 | 180   | Thing_SetTranslation            | :telescope:        |
 | 181   | Plane_Align                     | :x:                |
