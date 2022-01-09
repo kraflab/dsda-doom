@@ -7188,6 +7188,13 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
       }
     	break;
+    case zl_damage_thing:
+      if (mo)
+      {
+        P_DamageMobj(mo, NULL, NULL, args[0] ? args[0] : 10000);
+        buttonSuccess = 1;
+      }
+      break;
     case zl_thing_damage:
       {
         mobj_t *target;

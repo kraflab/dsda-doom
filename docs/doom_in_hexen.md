@@ -246,7 +246,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 70    | Teleport                        | :heavy_check_mark: |
 | 71    | Teleport_NoFog                  | :heavy_check_mark: |
 | 72    | ThrustThing                     | :telescope:        |
-| 73    | DamageThing                     | :telescope:        |
+| 73    | DamageThing                     | :heavy_check_mark: |
 | 74    | Teleport_NewMap                 | :telescope:        |
 | 75    | Teleport_EndGame                | :telescope:        |
 | 76    | TeleportOther                   | :telescope:        |
