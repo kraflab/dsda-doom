@@ -230,8 +230,8 @@ extern void T_MoveHexenFloor(floormove_t *);
 void T_MoveCompatibleCeiling(ceiling_t * ceiling);
 void T_MoveHexenCeiling(ceiling_t * ceiling);
 
-int EV_CompatibleTeleport(int tag, line_t *line, int side, mobj_t *thing, int flags);
-int EV_HereticTeleport(int tag, line_t * line, int side, mobj_t * thing, int flags);
+int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_t *thing, int flags);
+int EV_HereticTeleport(short thing_id, int tag, line_t * line, int side, mobj_t * thing, int flags);
 
 void T_BuildHexenPillar(pillar_t * pillar);
 void T_BuildZDoomPillar(pillar_t * pillar);

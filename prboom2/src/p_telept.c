@@ -43,9 +43,15 @@
 #include "p_user.h"
 #include "r_demo.h"
 
-static mobj_t* P_TeleportDestination(int tag)
+static mobj_t* P_TeleportDestination(short thing_id, int tag)
 {
   int i;
+
+  if (thing_id)
+  {
+    //
+  }
+
   for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
     register thinker_t* th = NULL;
     while ((th = P_NextThinker(th,th_misc)) != NULL)
@@ -63,7 +69,7 @@ static mobj_t* P_TeleportDestination(int tag)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-int EV_CompatibleTeleport(int tag, line_t *line, int side, mobj_t *thing, int flags)
+int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_t *thing, int flags)
 {
   mobj_t *m;
 
@@ -76,7 +82,7 @@ int EV_CompatibleTeleport(int tag, line_t *line, int side, mobj_t *thing, int fl
   // killough 1/31/98: improve performance by using
   // P_FindSectorFromLineTag instead of simple linear search.
 
-  if ((m = P_TeleportDestination(tag)) != NULL)
+  if ((m = P_TeleportDestination(thing_id, tag)) != NULL)
   {
     fixed_t oldx = thing->x;
     fixed_t oldy = thing->y;
@@ -461,7 +467,7 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolea
     return (true);
 }
 
-int EV_HereticTeleport(int tag, line_t * line, int side, mobj_t * thing, int flags)
+int EV_HereticTeleport(short thing_id, int tag, line_t * line, int side, mobj_t * thing, int flags)
 {
     int i;
     mobj_t *m;

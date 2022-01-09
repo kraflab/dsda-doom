@@ -59,7 +59,7 @@ typedef struct {
   void (*t_move_ceiling)(ceiling_t *);
   void (*t_build_pillar)(pillar_t *);
   void (*t_plat_raise)(plat_t *);
-  int (*ev_teleport)(int, line_t *, int, mobj_t *, int);
+  int (*ev_teleport)(short, int, line_t *, int, mobj_t *, int);
   void (*player_thrust)(player_t* player, angle_t angle, fixed_t move);
   void (*build_mobj_thing_id_list)(void);
   void (*add_mobj_thing_id)(mobj_t *, short);
