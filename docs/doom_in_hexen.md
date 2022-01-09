@@ -245,7 +245,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 69    | Ceiling_MoveToValueTimes8       | :heavy_check_mark: |
 | 70    | Teleport                        | :heavy_check_mark: |
 | 71    | Teleport_NoFog                  | :heavy_check_mark: |
-| 72    | ThrustThing                     | :telescope:        |
+| 72    | ThrustThing                     | :heavy_check_mark: |
 | 73    | DamageThing                     | :heavy_check_mark: |
 | 74    | Teleport_NewMap                 | :telescope:        |
 | 75    | Teleport_EndGame                | :telescope:        |
@@ -438,6 +438,7 @@ Current work is isolated to the initial pass over the level format itself - line
 - Line_SetBlocking only applies flags for creatures, players, monsters, sound, and everything.
 - NoiseAlert only works with the default arguments.
 - Thing_Hate only supports 0 for the third argument ("target only").
+- ThrustThing has an implicit speed limit.
 
 ### Sector Specials
 

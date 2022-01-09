@@ -7153,6 +7153,23 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
       }
       break;
+    case zl_thrust_thing:
+      {
+        fixed_t thrust;
+        mobj_t *target;
+        thing_id_search_t search;
+
+        thrust = args[1] * FRACUNIT;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[3], mo, &search)))
+        {
+          P_ThrustMobj(target, P_ArgToAngle(args[0]), thrust);
+        }
+
+        buttonSuccess = (args[3] != 0 || mo);
+      }
+      break;
     case zl_thrust_thing_z:
       {
         fixed_t thrust;
