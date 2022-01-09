@@ -6953,6 +6953,102 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                         P_ArgToSpeed(args[2]), 0,
                                         args[3], mo, 0, args[4]);
       break;
+    case zl_thing_hate:
+      {
+        mobj_t *hater;
+        mobj_t *target;
+        thing_id_search_t search;
+        thing_id_search_t target_search;
+
+        // Currently no support for this arg
+        if (args[2])
+        {
+          break;
+        }
+
+        if (!args[0] && mo && mo->player)
+        {
+          break;
+        }
+
+        buttonSuccess = 1;
+
+        if (args[1])
+        {
+          dsda_ResetThingIDSearch(&target_search);
+          while ((target = dsda_FindMobjFromThingIDOrMobj(args[1], mo, &target_search)))
+          {
+            if (
+              target->flags & MF_SHOOTABLE &&
+              target->health > 0 &&
+              !(target->flags2 & MF2_DORMANT)
+            )
+            {
+              break;
+            }
+          }
+        }
+
+        if (!target)
+        {
+          break;
+        }
+
+        dsda_ResetThingIDSearch(&search);
+        while ((hater = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          if (
+            hater->health > 0 &&
+            hater->flags & MF_SHOOTABLE &&
+            hater->info->seestate
+          )
+          {
+            while ((target = dsda_FindMobjFromThingIDOrMobj(args[1], mo, &target_search)))
+            {
+              if (
+                target->flags & MF_SHOOTABLE &&
+                target->health > 0 &&
+                !(target->flags2 & MF2_DORMANT) &&
+                target != hater
+              )
+              {
+                break;
+              }
+            }
+
+            // Restart from beginning of list
+            if (!target)
+            {
+              dsda_ResetThingIDSearch(&target_search);
+              while ((target = dsda_FindMobjFromThingIDOrMobj(args[1], mo, &target_search)))
+              {
+                if (
+                  target->flags & MF_SHOOTABLE &&
+                  target->health > 0 &&
+                  !(target->flags2 & MF2_DORMANT) &&
+                  target != hater
+                )
+                {
+                  break;
+                }
+              }
+            }
+
+            // We might have no target if the hater is the only possible target
+            if (target)
+            {
+              P_SetTarget(&hater->lastenemy, hater->target);
+              P_SetTarget(&hater->target, target);
+
+              if (!(hater->flags2 & MF2_DORMANT))
+              {
+                P_SetMobjState(hater, hater->info->seestate);
+              }
+            }
+          }
+        }
+      }
+      break;
     case zl_thing_remove:
       {
         mobj_t *target;
