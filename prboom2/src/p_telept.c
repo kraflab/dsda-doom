@@ -42,6 +42,15 @@
 #include "sounds.h"
 #include "p_user.h"
 #include "r_demo.h"
+#include "m_random.h"
+
+#include "dsda/thing_id.h"
+
+// More will be added
+static dboolean P_IsTeleportDestination(mobj_t *mo)
+{
+  return mo->type == MT_TELEPORTMAN;
+}
 
 static mobj_t* P_TeleportDestination(short thing_id, int tag)
 {
@@ -49,7 +58,51 @@ static mobj_t* P_TeleportDestination(short thing_id, int tag)
 
   if (thing_id)
   {
-    //
+    int count = 0;
+    mobj_t *target;
+    thing_id_search_t search;
+
+    dsda_ResetThingIDSearch(&search);
+    while ((target = dsda_FindMobjFromThingID(thing_id, &search)))
+    {
+      if (P_IsTeleportDestination(target))
+      {
+        if (!tag || target->subsector->sector->tag == tag)
+        {
+          ++count;
+        }
+      }
+    }
+
+    if (!count)
+    {
+      if (!tag)
+      {
+        // TODO: fall back on map spots
+      }
+    }
+    else
+    {
+      if (count > 1)
+      {
+        count = 1 + (P_Random(pr_hexen) % count);
+      }
+
+      dsda_ResetThingIDSearch(&search);
+      while ((target = dsda_FindMobjFromThingID(thing_id, &search)))
+      {
+        if (P_IsTeleportDestination(target))
+        {
+          if (!tag || target->subsector->sector->tag == tag)
+          {
+            if (!--count)
+            {
+              return target;
+            }
+          }
+        }
+      }
+    }
   }
 
   for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
