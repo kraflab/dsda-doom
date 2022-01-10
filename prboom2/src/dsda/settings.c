@@ -59,6 +59,7 @@ int dsda_skip_quit_prompt;
 int dsda_show_split_data;
 int dsda_switch_when_ammo_runs_out;
 int dsda_viewbob;
+int dsda_weaponbob;
 
 void dsda_InitSettings(void) {
   int i;
@@ -182,6 +183,10 @@ dboolean dsda_ViewBob(void) {
   return dsda_viewbob;
 }
 
+dboolean dsda_WeaponBob(void) {
+  return dsda_weaponbob;
+}
+
 dboolean dsda_ShowMessages(void) {
   return dsda_Transient(dsda_show_messages);
 }
@@ -219,7 +224,7 @@ dboolean dsda_CycleGhostColors(void) {
 }
 
 dboolean dsda_WeaponAttackAlignment(void) {
-  return weapon_attack_alignment && !hexen && !dsda_StrictMode();
+  return weapon_attack_alignment && !dsda_StrictMode();
 }
 
 dboolean dsda_AlwaysSR50(void) {

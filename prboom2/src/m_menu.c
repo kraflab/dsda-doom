@@ -2742,7 +2742,6 @@ static const char *weapon_attack_alignment_strings[] = {
 // neighboring screens.
 
 enum {           // killough 10/98: enum for y-offset info
-  weap_bobbing,
   weap_attack_alignment,
   weap_stub1,
   weap_pref1,
@@ -2766,7 +2765,6 @@ setup_menu_t* weap_settings[] =
 
 setup_menu_t weap_settings1[] =  // Weapons Settings screen
 {
-  {"ENABLE BOBBING",S_YESNO,m_null,WP_X, WP_Y+weap_bobbing*8, {"player_bobbing"}},
   {"WEAPON ATTACK ALIGNMENT",S_CHOICE,m_null,WP_X, WP_Y+weap_attack_alignment*8, {"weapon_attack_alignment"}, 0, NULL, weapon_attack_alignment_strings},
 
   {"1ST CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref1*8, {"weapon_choice_1"}},
@@ -3246,6 +3244,7 @@ setup_menu_t video_settings[] = {
   { "Uncapped Framerate", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "uncapped_framerate" }, 0, M_ChangeUncappedFrameRate },
   { "FPS Limit", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_fps_limit" } },
   { "View Bobbing", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_viewbob" } },
+  { "Weapon Bobbing", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_weaponbob" } },
 
   // Button for resetting to defaults
   { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },

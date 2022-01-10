@@ -2865,7 +2865,7 @@ void G_ReloadDefaults(void)
 
   weapon_recoil = options->weapon_recoil;    // weapon recoil
 
-  player_bobbing = default_player_bobbing;  // whether player bobs or not
+  player_bobbing = 1;  // whether player bobs or not
 
   variable_friction = 1;
   allow_pushers     = 1;

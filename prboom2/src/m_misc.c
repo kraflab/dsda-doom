@@ -329,8 +329,6 @@ default_t defaults[] =
   {"Game settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"default_skill",{&defaultskill},{4},1,5, // jff 3/24/98 allow default skill setting
    def_int,ss_none}, // selects default skill 1=TYTD 2=NTR 3=HMP 4=UV 5=NM
-  {"player_bobbing",{&default_player_bobbing},{1},0,1,         // phares 2/25/98
-   def_bool,ss_weap, &player_bobbing},
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
    def_int,ss_weap, &weapon_attack_alignment},
 
@@ -1037,6 +1035,7 @@ default_t defaults[] =
   { "dsda_parallel_sfx_window", { &dsda_parallel_sfx_window }, { 1 }, 1, 32, def_int, ss_stat },
   { "dsda_switch_when_ammo_runs_out", { &dsda_switch_when_ammo_runs_out }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_viewbob", { &dsda_viewbob }, { 1 }, 0, 1, def_bool, ss_stat },
+  { "dsda_weaponbob", { &dsda_weaponbob }, { 1 }, 0, 1, def_bool, ss_stat },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

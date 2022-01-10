@@ -1069,12 +1069,40 @@ static void R_DrawPSprite (pspdef_t *psp)
   lump = sprframe->lump[0];
   flip = (dboolean)(sprframe->flip & 1);
 
-  // [crispy] center the weapon sprite horizontally and vertically
-  if (dsda_WeaponAttackAlignment() && viewplayer->attackdown && !psp->state->misc1)
   {
-      const weaponinfo_t *const winfo = &weaponinfo[viewplayer->readyweapon];
-      const int state = viewplayer->psprites[ps_weapon].state - states;
+    weaponinfo_t *winfo;
+    int state;
 
+    if (hexen)
+    {
+      winfo = &hexen_weaponinfo[viewplayer->readyweapon][viewplayer->pclass];
+    }
+    else
+    {
+      winfo = &weaponinfo[viewplayer->readyweapon];
+    }
+
+    state = viewplayer->psprites[ps_weapon].state - states;
+
+    if (!dsda_WeaponBob())
+    {
+      static fixed_t last_sy = 32 * FRACUNIT;
+
+      psp_sx = FRACUNIT;
+
+      if (state != winfo->downstate && state != winfo->upstate)
+      {
+        last_sy = psp->sy;
+        psp_sy = 32 * FRACUNIT;
+      }
+      else if (state == winfo->downstate)
+      {
+        // We want to move smoothly from where we were
+        psp_sy -= (last_sy - 32 * FRACUNIT);
+      }
+    }
+    else if (dsda_WeaponAttackAlignment() && viewplayer->attackdown && !psp->state->misc1)
+    { // [crispy] center the weapon sprite horizontally and vertically
       R_ApplyWeaponBob(&psp_sx, weapon_attack_alignment == CENTERWEAPON_BOB, NULL, false);
 
       // [crispy] don't center vertically during lowering and raising states
@@ -1083,6 +1111,7 @@ static void R_DrawPSprite (pspdef_t *psp)
       {
           R_ApplyWeaponBob(NULL, false, &psp_sy, weapon_attack_alignment == CENTERWEAPON_BOB);
       }
+    }
   }
 
   {

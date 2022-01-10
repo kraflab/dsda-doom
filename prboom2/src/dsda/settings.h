@@ -70,6 +70,7 @@ extern int dsda_parallel_sfx_limit;
 extern int dsda_parallel_sfx_window;
 extern int dsda_switch_when_ammo_runs_out;
 extern int dsda_viewbob;
+extern int dsda_weaponbob;
 extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);
@@ -80,6 +81,7 @@ void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);
 double dsda_FineSensitivity(int base);
 dboolean dsda_ViewBob(void);
+dboolean dsda_WeaponBob(void);
 dboolean dsda_ShowMessages(void);
 dboolean dsda_AutoRun(void);
 dboolean dsda_MouseLook(void);
