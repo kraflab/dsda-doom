@@ -58,6 +58,7 @@ int dsda_hide_horns;
 int dsda_skip_quit_prompt;
 int dsda_show_split_data;
 int dsda_switch_when_ammo_runs_out;
+int dsda_viewbob;
 
 void dsda_InitSettings(void) {
   int i;
@@ -175,6 +176,10 @@ static int dsda_Transient(dsda_setting_identifier_t id) {
 
 double dsda_FineSensitivity(int base) {
   return (double) base + (double) dsda_fine_sensitivity / 100;
+}
+
+dboolean dsda_ViewBob(void) {
+  return dsda_viewbob;
 }
 
 dboolean dsda_ShowMessages(void) {

@@ -3245,6 +3245,7 @@ setup_menu_t video_settings[] = {
   { "Translucency filter percentage", S_NUM, m_null, G_X, G_Y + 11 * 8, { "tran_filter_pct" }, 0, M_Trans },
   { "Uncapped Framerate", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "uncapped_framerate" }, 0, M_ChangeUncappedFrameRate },
   { "FPS Limit", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_fps_limit" } },
+  { "View Bobbing", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_viewbob" } },
 
   // Button for resetting to defaults
   { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
