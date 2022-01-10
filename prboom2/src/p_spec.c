@@ -6819,6 +6819,21 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       G_SecretExitLevel(); // args[0] is position
       buttonSuccess = 1;
       break;
+    case zl_teleport_other:
+      if (args[0] && args[1])
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingID(args[0], &search)))
+        {
+          buttonSuccess |= map_format.ev_teleport(args[1], 0, NULL, 0, target,
+                                                  args[2] ? (TELF_DESTFOG | TELF_SOURCEFOG) :
+                                                            TELF_KEEPORIENTATION);
+        }
+      }
+      break;
     case zl_teleport:
       {
         int flags = TELF_DESTFOG;

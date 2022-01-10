@@ -249,7 +249,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 73    | DamageThing                     | :heavy_check_mark: |
 | 74    | Teleport_NewMap                 | :telescope:        |
 | 75    | Teleport_EndGame                | :telescope:        |
-| 76    | TeleportOther                   | :telescope:        |
+| 76    | TeleportOther                   | :heavy_check_mark: |
 | 77    | TeleportGroup                   | :telescope:        |
 | 78    | TeleportInSector                | :telescope:        |
 | 79    | Thing_SetConversation           | :x:                |
