@@ -303,6 +303,68 @@ int P_GetMoveFactor(mobj_t *mo, int *frictionp)
   return movefactor;
 }
 
+dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fog)
+{
+  subsector_t *newsubsec;
+  fixed_t oldx, oldy, oldz;
+  fixed_t oldfloorz, oldceilingz, olddropoffz;
+
+  oldx = thing->x;
+  oldy = thing->y;
+  oldz = thing->z;
+  oldfloorz = thing->floorz;
+  oldceilingz = thing->ceilingz;
+  olddropoffz = thing->dropoffz;
+
+  newsubsec = R_PointInSubsector(x, y);
+
+  thing->x = x;
+  thing->y = y;
+  thing->z = z;
+  thing->floorz = newsubsec->sector->floorheight;
+  thing->ceilingz = newsubsec->sector->ceilingheight;
+  thing->dropoffz = thing->floorz;
+
+  if (P_TestMobjLocation(thing))
+  {
+    P_UnsetThingPosition(thing);
+    P_SetThingPosition(thing);
+
+    if (fog)
+    {
+      mobj_t *telefog;
+
+      telefog = P_SpawnMobj(oldx,
+                            oldy,
+                            oldfloorz + g_telefog_height,
+                            g_mt_tfog);
+      S_StartSound(telefog, g_sfx_telept);
+      telefog = P_SpawnMobj(thing->x,
+                            thing->y,
+                            thing->floorz + g_telefog_height,
+                            g_mt_tfog);
+      S_StartSound(telefog, g_sfx_telept);
+    }
+
+    thing->PrevX = x;
+    thing->PrevY = y;
+    thing->PrevZ = z;
+
+    return true;
+  }
+  else
+  {
+    thing->x = oldx;
+    thing->y = oldy;
+    thing->z = oldz;
+    thing->floorz = oldfloorz;
+    thing->ceilingz = oldceilingz;
+    thing->dropoffz = olddropoffz;
+
+    return false;
+  }
+}
+
 //
 // P_TeleportMove
 //

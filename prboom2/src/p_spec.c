@@ -6819,6 +6819,23 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       G_SecretExitLevel(); // args[0] is position
       buttonSuccess = 1;
       break;
+    case zl_thing_move:
+      {
+        mobj_t *target;
+        mobj_t *dest;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search);
+        dsda_ResetThingIDSearch(&search);
+        dest = dsda_FindMobjFromThingID(args[1], &search);
+
+        if (target && dest)
+        {
+          buttonSuccess = P_MoveThing(target, dest->x, dest->y, dest->z, args[2] ? false : true);
+        }
+      }
+      break;
     case zl_teleport_other:
       if (args[0] && args[1])
       {

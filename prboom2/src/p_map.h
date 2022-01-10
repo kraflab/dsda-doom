@@ -122,4 +122,8 @@ void P_BounceWall(mobj_t * mo);
 dboolean P_UsePuzzleItem(player_t * player, int itemType);
 void PIT_ThrustSpike(mobj_t * actor);
 
+// zdoom
+
+dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fog);
+
 #endif // __P_MAP__

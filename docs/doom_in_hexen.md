@@ -296,7 +296,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 120   | Radius_Quake                    | :telescope:        |
 | 121   | Line_SetIdentification          | :warning:          |
 | -     | -                               | -                  |
-| 125   | Thing_Move                      | :telescope:        |
+| 125   | Thing_Move                      | :heavy_check_mark: |
 | -     | -                               | -                  |
 | 127   | Thing_SetSpecial                | :telescope:        |
 | 128   | ThrustThingZ                    | :heavy_check_mark: |
