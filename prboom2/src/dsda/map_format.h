@@ -64,6 +64,7 @@ typedef struct {
   void (*build_mobj_thing_id_list)(void);
   void (*add_mobj_thing_id)(mobj_t *, short);
   void (*remove_mobj_thing_id)(mobj_t *);
+  void (*iterate_spechit)(mobj_t *, fixed_t, fixed_t);
   size_t mapthing_size;
   size_t maplinedef_size;
   int mt_push;

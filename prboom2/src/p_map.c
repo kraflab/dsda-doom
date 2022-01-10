@@ -1339,6 +1339,33 @@ void P_CheckZDoomImpact(mobj_t *thing)
   }
 }
 
+void P_IterateCompatibleSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy)
+{
+  while (numspechit--)
+    if (spechit[numspechit]->special)  // see if the line was crossed
+    {
+      int oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit]);
+      if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
+        map_format.cross_special_line(spechit[numspechit], oldside, thing, false);
+    }
+}
+
+void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy)
+{
+  // In hexen format, crossing a special line can trigger a missile spawn,
+  //   which will trigger a check that resets numspechit.
+  // We must store the index separately in order to check everything
+  int tempnumspechit = numspechit;
+
+  while (tempnumspechit--)
+    if (spechit[tempnumspechit]->special)  // see if the line was crossed
+    {
+      int oldside = P_PointOnLineSide(oldx, oldy, spechit[tempnumspechit]);
+      if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[tempnumspechit]))
+        map_format.cross_special_line(spechit[tempnumspechit], oldside, thing, false);
+    }
+}
+
 dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
                   dboolean dropoff) // killough 3/15/98: allow dropoff as option
 {
@@ -1520,18 +1547,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
 
   if (!(thing->flags & (MF_TELEPORT | MF_NOCLIP)))
   {
-    // In hexen format, crossing a special line can trigger a missile spawn,
-    //   which will trigger a check that resets numspechit.
-    // We must store the index separately in order to check everything
-    int tempnumspechit = numspechit;
-
-    while (tempnumspechit--)
-      if (spechit[tempnumspechit]->special)  // see if the line was crossed
-      {
-        int oldside = P_PointOnLineSide(oldx, oldy, spechit[tempnumspechit]);
-        if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[tempnumspechit]))
-          map_format.cross_special_line(spechit[tempnumspechit], oldside, thing, false);
-      }
+    map_format.iterate_spechit(thing, oldx, oldy);
   }
 
   return true;
