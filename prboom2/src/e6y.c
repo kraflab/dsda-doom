@@ -780,6 +780,7 @@ int I_MessageBox(const char* text, unsigned int type)
   int result = PRB_IDCANCEL;
 
 #ifdef _WIN32
+  if (!M_CheckParm("-no_message_box"))
   {
     HWND current_hwnd = GetForegroundWindow();
     result = MessageBox(GetDesktopWindow(), text, PACKAGE_NAME, type|MB_TASKMODAL|MB_TOPMOST);
