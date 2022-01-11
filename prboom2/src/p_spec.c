@@ -7054,19 +7054,16 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
 
         buttonSuccess = 1;
 
-        if (args[1])
+        dsda_ResetThingIDSearch(&target_search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[1], mo, &target_search)))
         {
-          dsda_ResetThingIDSearch(&target_search);
-          while ((target = dsda_FindMobjFromThingIDOrMobj(args[1], mo, &target_search)))
+          if (
+            target->flags & MF_SHOOTABLE &&
+            target->health > 0 &&
+            !(target->flags2 & MF2_DORMANT)
+          )
           {
-            if (
-              target->flags & MF_SHOOTABLE &&
-              target->health > 0 &&
-              !(target->flags2 & MF2_DORMANT)
-            )
-            {
-              break;
-            }
+            break;
           }
         }
 
