@@ -3106,7 +3106,7 @@ static void deh_procHelperThing(DEHFILE *fpin, char *line)
     // Otherwise it's ok
     deh_log("Processing Helper Thing item '%s'\nvalue is %i", key, (int)value);
     if (!strncasecmp(key, "type", 4))
-      HelperThing = (int)value;
+      HelperThing = dsda_TranslateDehMobjIndex((int)value);
   }
 }
 
