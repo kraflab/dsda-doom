@@ -25,6 +25,7 @@ typedef struct {
   byte* edited_bits;
 } dsda_deh_mobjinfo_t;
 
+int dsda_TranslateDehMobjIndex(int index);
 dsda_deh_mobjinfo_t dsda_GetDehMobjInfo(int index);
 void dsda_InitializeMobjInfo(int zero, int max, int count);
 void dsda_FreeDehMobjInfo(void);

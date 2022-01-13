@@ -5935,21 +5935,6 @@ typedef enum {
   MT_MUSICSOURCE, /* MUSINFO lump */
   MT_GIBDTH,
 
-  /* proff 11/22/98: Andy Baker's stealth monsters (next 12)
-   * cph - moved below the MBF stuff, no need to displace them */
-  MT_STEALTHBABY,
-  MT_STEALTHVILE,
-  MT_STEALTHBRUISER,
-  MT_STEALTHHEAD,
-  MT_STEALTHCHAINGUY,
-  MT_STEALTHSERGEANT,
-  MT_STEALTHKNIGHT,
-  MT_STEALTHIMP,
-  MT_STEALTHFATSO,
-  MT_STEALTHUNDEAD,
-  MT_STEALTHSHOTGUY,
-  MT_STEALTHZOMBIE,
-
   DOOM_NUMMOBJTYPES,
 
   // heretic
