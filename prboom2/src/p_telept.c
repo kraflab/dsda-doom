@@ -49,7 +49,13 @@
 // More will be added
 static dboolean P_IsTeleportDestination(mobj_t *mo)
 {
-  return mo->type == MT_TELEPORTMAN;
+  return mo->type == MT_TELEPORTMAN ||
+         mo->type == ZMT_TELEPORTDEST2 || mo->type == ZMT_TELEPORTDEST3;
+}
+
+static dboolean P_IsMapSpot(mobj_t *mo)
+{
+  return mo->type == ZMT_MAPSPOT || mo->type == ZMT_MAPSPOT_GRAVITY;
 }
 
 static mobj_t* P_TeleportDestination(short thing_id, int tag)
@@ -78,7 +84,30 @@ static mobj_t* P_TeleportDestination(short thing_id, int tag)
     {
       if (!tag)
       {
-        // TODO: fall back on map spots
+        // Fall back on map spots
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingID(thing_id, &search)))
+        {
+          if (P_IsMapSpot(target))
+          {
+            break;
+          }
+        }
+
+        // Fall back on any nonblocking thing
+        if (!target)
+        {
+          dsda_ResetThingIDSearch(&search);
+          while ((target = dsda_FindMobjFromThingID(thing_id, &search)))
+          {
+            if (!(target->flags & MF_SOLID))
+            {
+              break;
+            }
+          }
+        }
+
+        return target;
       }
     }
     else
