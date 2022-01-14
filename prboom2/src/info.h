@@ -6678,4 +6678,13 @@ extern int num_mobj_types;
 extern int mobj_types_zero;
 extern int mobj_types_max;
 
+// zdoom
+
+#define ZMT_UNDEFINED -2
+
+extern int ZMT_MAPSPOT;
+extern int ZMT_MAPSPOT_GRAVITY;
+extern int ZMT_TELEPORTDEST2;
+extern int ZMT_TELEPORTDEST3;
+
 #endif
