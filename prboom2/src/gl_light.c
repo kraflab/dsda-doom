@@ -120,7 +120,7 @@ void M_ChangeLightMode(void)
   gld_Calc2DLightLevel = gld_light[gl_lightmode].Get2DLight;
   gld_CalcFogDensity = gld_light[gl_lightmode].GetFog;
 
-  if (gld_light[gl_lightmode].use_hwgamma)
+  if (gl_hardware_gamma)
   {
     gld_SetGammaRamp(useglgamma);
   }
