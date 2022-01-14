@@ -104,17 +104,6 @@ gld_CalcFogDensity_f gld_CalcFogDensity = gld_CalcFogDensity_glboom;
 
 void M_ChangeLightMode(void)
 {
-  if (gl_compatibility)
-  {
-    if (gl_lightmode_default == gl_lightmode_shaders)
-    {
-      lprintf(LO_INFO,
-        "M_ChangeLightMode: '%s' sector light mode is not allowed in gl_compatibility mode\n",
-        gl_lightmodes[gl_lightmode_default]);
-      gl_lightmode_default = gl_lightmode_glboom;
-    }
-  }
-
   if (gl_lightmode_default == gl_lightmode_shaders)
   {
     if (!glsl_Init())

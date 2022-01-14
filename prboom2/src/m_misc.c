@@ -182,9 +182,6 @@ extern int gl_sky_detail;
 extern int gl_use_paletted_texture;
 extern int gl_use_shared_texture_palette;
 
-//e6y: all OpenGL extentions will be disabled with TRUE
-extern int gl_compatibility;
-
 //cfg values
 extern int gl_ext_texture_filter_anisotropic_default;
 extern int gl_arb_texture_non_power_of_two_default;
@@ -221,7 +218,6 @@ static const char *gl_tex_format_string;
 static int gl_sky_detail;
 static int gl_use_paletted_texture;
 static int gl_use_shared_texture_palette;
-static int gl_compatibility;
 static int gl_ext_texture_filter_anisotropic_default;
 static int gl_arb_texture_non_power_of_two_default;
 static int gl_arb_multitexture_default;
@@ -418,9 +414,6 @@ default_t defaults[] =
    RDRAW_MASKEDCOLUMNEDGE_SQUARE, RDRAW_MASKEDCOLUMNEDGE_SLOPED, def_int,ss_none},
 
   {"OpenGL settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"gl_compatibility", {&gl_compatibility},  {0},0,1,
-   def_bool,ss_stat},
-
   {"gl_arb_multitexture", {&gl_arb_multitexture_default}, {1},0,1,
    def_bool,ss_stat},
   {"gl_arb_texture_compression", {&gl_arb_texture_compression_default}, {1},0,1,
