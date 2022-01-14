@@ -56,9 +56,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | 5064        | InvisibleBridge16       | :x:                |
 | 5065        | InvisibleBridge8        | :x:                |
 | -           | -                       | -                  |
-| 9001        | MapSpot                 | :telescope:        |
+| 9001        | MapSpot                 | :heavy_check_mark: |
 | -           | -                       | -                  |
-| 9013        | MapSpotGravity          | :telescope:        |
+| 9013        | MapSpotGravity          | :heavy_check_mark: |
 | -           | -                       | -                  |
 | 9024        | PatrolPoint             | :x:                |
 | 9025        | SecurityCamera          | :x:                |
@@ -77,7 +77,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 9040        | MapMarker               | :x:                |
 | 9041        | SectorFlagSetter        | :x:                |
 | -           | -                       | -                  |
-| 9043-9044   | TeleportDest*           | :telescope:        |
+| 9043-9044   | TeleportDest*           | :heavy_check_mark: |
 | 9045        | Waterzone               | :x:                |
 | 9046        | SecretTrigger           | :x:                |
 | 9047        | PatrolSpecial           | :x:                |
