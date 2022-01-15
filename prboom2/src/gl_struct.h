@@ -63,8 +63,6 @@ typedef enum {
 typedef enum
 {
   gl_lightmode_glboom,
-  gl_lightmode_gzdoom,
-  gl_lightmode_fogbased,
   gl_lightmode_shaders,
 
   gl_lightmode_last

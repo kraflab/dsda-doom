@@ -75,9 +75,6 @@
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
 
-// All OpenGL extentions will be disabled in gl_compatibility mode
-int gl_compatibility = 0;
-
 int gl_clear;
 
 int gl_preprocessed = false;
@@ -382,7 +379,7 @@ void gld_Init(int width, int height)
     }
   }
 
-  gld_InitOpenGL(gl_compatibility);
+  gld_InitOpenGL();
   gld_InitPalettedTextures();
   gld_InitTextureParams();
 
@@ -1228,9 +1225,7 @@ void gld_StartDrawScene(void)
   gl_spriteindex = 0;
 
   //e6y: fog in frame
-  gl_use_fog = !gl_compatibility &&
-    (gl_fog || gl_lightmode == gl_lightmode_fogbased) &&
-    !frame_fixedcolormap && !boom_cm;
+  gl_use_fog = gl_fog && !frame_fixedcolormap && !boom_cm;
 
 //e6y
   mlook_or_fov = dsda_MouseLook() || (render_fov != FOV90);
@@ -1693,9 +1688,7 @@ void gld_AddWall(seg_t *seg)
     rellight = seg->linedef->dx == 0 ? +gl_rellight : seg->linedef->dy==0 ? -gl_rellight : 0;
   }
   wall.light=gld_CalcLightLevel(frontsector->lightlevel+rellight+(extralight<<5));
-  wall.fogdensity = gld_CalcFogDensity(frontsector,
-    frontsector->lightlevel + (gl_lightmode == gl_lightmode_fogbased ? rellight : 0),
-    GLDIT_WALL);
+  wall.fogdensity = gld_CalcFogDensity(frontsector, frontsector->lightlevel, GLDIT_WALL);
   wall.alpha=1.0f;
   wall.gltexture=NULL;
   wall.seg = seg; //e6y

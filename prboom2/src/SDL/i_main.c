@@ -134,8 +134,7 @@ ExeptionParam_t ExeptionsParams[EXEPTION_MAX + 1] =
 {
   {NULL},
   {"gld_CreateScreenSizeFBO: Access violation in glFramebufferTexture2DEXT.\n\n"
-    "Are you using ATI graphics? Try to update your drivers "
-    "or change gl_compatibility variable in cfg to 1.\n"},
+    "Are you using ATI graphics? Try to update your drivers\n"},
   {NULL}
 };
 
