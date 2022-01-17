@@ -1316,13 +1316,13 @@ void PO_Init(int lump)
         spawnthing.type = LittleShort(mt->type);
 
         // 3001 = no crush, 3002 = crushing
-        if (spawnthing.type == PO_SPAWN_TYPE
-         || spawnthing.type == PO_SPAWNCRUSH_TYPE)
+        if (spawnthing.type >= map_format.dn_polyspawn_start &&
+            spawnthing.type <= map_format.dn_polyspawn_end)
         {                       // Polyobj StartSpot Pt.
             polyobjs[polyIndex].startSpot.x = spawnthing.x << FRACBITS;
             polyobjs[polyIndex].startSpot.y = spawnthing.y << FRACBITS;
             SpawnPolyobj(polyIndex, spawnthing.angle,
-                         (spawnthing.type == PO_SPAWNCRUSH_TYPE));
+                         (spawnthing.type == map_format.dn_polyspawn_crush));
             polyIndex++;
         }
     }
@@ -1333,7 +1333,7 @@ void PO_Init(int lump)
         spawnthing.y = LittleShort(mt->y);
         spawnthing.angle = LittleShort(mt->angle);
         spawnthing.type = LittleShort(mt->type);
-        if (spawnthing.type == PO_ANCHOR_TYPE)
+        if (spawnthing.type == map_format.dn_polyanchor)
         {                       // Polyobj Anchor Pt.
             TranslateToStartSpot(spawnthing.angle,
                                  spawnthing.x << FRACBITS,

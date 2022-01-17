@@ -543,13 +543,6 @@ typedef struct polyblock_s
   struct polyblock_s *next;
 } polyblock_t;
 
-enum
-{
-  PO_ANCHOR_TYPE = 3000,
-  PO_SPAWN_TYPE,
-  PO_SPAWNCRUSH_TYPE
-};
-
 #define PO_LINE_START 1         // polyobj line start special
 #define PO_LINE_EXPLICIT 5
 

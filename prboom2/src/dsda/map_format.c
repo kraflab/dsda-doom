@@ -301,6 +301,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .mt_pull = MT_PULL,
   .dn_polyanchor = 9300,
   .dn_polyspawn_start = 9301,
+  .dn_polyspawn_crush = 9302,
   .dn_polyspawn_end = 9303,
 };
 
@@ -353,6 +354,7 @@ static const map_format_t hexen_map_format = {
   .mt_pull = -1,
   .dn_polyanchor = 3000,
   .dn_polyspawn_start = 3001,
+  .dn_polyspawn_crush = 3002,
   .dn_polyspawn_end = 3002,
 };
 
@@ -405,6 +407,7 @@ static const map_format_t heretic_map_format = {
   .mt_pull = -1,
   .dn_polyanchor = -1,
   .dn_polyspawn_start = -1,
+  .dn_polyspawn_crush = -1,
   .dn_polyspawn_end = -1,
 };
 
@@ -457,6 +460,7 @@ static const map_format_t doom_map_format = {
   .mt_pull = MT_PULL,
   .dn_polyanchor = -1,
   .dn_polyspawn_start = -1,
+  .dn_polyspawn_crush = -1,
   .dn_polyspawn_end = -1,
 };
 
