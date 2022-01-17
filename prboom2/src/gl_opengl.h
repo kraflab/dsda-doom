@@ -166,7 +166,7 @@ extern PFNGLGETACTIVEUNIFORMARBPROC         GLEXT_glGetActiveUniformARB;
 extern PFNGLGETUNIFORMFVARBPROC             GLEXT_glGetUniformfvARB;
 #endif
 
-void gld_InitOpenGL(dboolean compatibility_mode);
+void gld_InitOpenGL(void);
 
 //states
 void gld_EnableTexture2D(GLenum texture, int enable);
