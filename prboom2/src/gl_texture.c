@@ -694,7 +694,7 @@ GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force,
 
     //e6y
     gltexture->flags = 0;
-    if (mipmap && tex_filter[MIP_TEXTURE].mipmap)
+    if (mipmap && tex_filter[MIP_TEXTURE].mipmap && !indexed)
       gltexture->flags |= GLTEXTURE_MIPMAP;
 
     if (indexed)
@@ -846,18 +846,28 @@ void gld_SetTexFilters(GLTexture *gltexture)
   int mip, mag_filter, min_filter;
   float aniso_filter = 0.0f;
 
-  switch (gltexture->textype)
+  if (gltexture->flags & GLTEXTURE_INDEXED)
   {
-  case GLDT_TEXTURE:
-  case GLDT_FLAT:
-    mip = MIP_TEXTURE;
-    break;
-  case GLDT_PATCH:
-    mip = ((gltexture->flags & GLTEXTURE_SPRITE) ? MIP_SPRITE : MIP_PATCH);
-    break;
-  default:
-    mip = MIP_TEXTURE;
-    break;
+    mip = MIP_INDEXED;
+  }
+  else
+  {
+    switch (gltexture->textype)
+    {
+    case GLDT_TEXTURE:
+    case GLDT_FLAT:
+      mip = MIP_TEXTURE;
+      break;
+    case GLDT_PATCH:
+      mip = ((gltexture->flags & GLTEXTURE_SPRITE) ? MIP_SPRITE : MIP_PATCH);
+      break;
+    case GLDT_COLORMAP:
+      mip = MIP_INDEXED;
+      break;
+    default:
+      mip = MIP_TEXTURE;
+      break;
+    }
   }
 
   if (render_usedetail && gltexture->detail)
@@ -1142,12 +1152,12 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean inde
     if (is_sprite)
     {
       gltexture->flags |= GLTEXTURE_SPRITE;
-      if (tex_filter[MIP_SPRITE].mipmap)
+      if (tex_filter[MIP_SPRITE].mipmap && !indexed)
         gltexture->flags |= GLTEXTURE_MIPMAP;
     }
     else
     {
-      if (tex_filter[MIP_PATCH].mipmap)
+      if (tex_filter[MIP_PATCH].mipmap && !indexed)
         gltexture->flags |= GLTEXTURE_MIPMAP;
     }
     //gltexture->wrap_mode = (patch->flags & PATCH_REPEAT ? GL_REPEAT : GLEXT_CLAMP_TO_EDGE);
@@ -1286,7 +1296,7 @@ GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed)
 
     //e6y
     gltexture->flags = 0;
-    if (mipmap && tex_filter[MIP_TEXTURE].mipmap)
+    if (mipmap && tex_filter[MIP_TEXTURE].mipmap && !indexed)
       gltexture->flags |= GLTEXTURE_MIPMAP;
 
     if (indexed)

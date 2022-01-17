@@ -114,6 +114,7 @@ int gl_nearclip=5;
 int gl_texture_filter;
 int gl_sprite_filter;
 int gl_patch_filter;
+int gl_indexed_filter = filter_nearest;
 int gl_texture_filter_anisotropic = 0;
 
 //sprites
@@ -216,7 +217,7 @@ void gld_InitTextureParams(void)
   };
 
   int i;
-  int *var[MIP_COUNT] = {&gl_texture_filter, &gl_sprite_filter, &gl_patch_filter};
+  int *var[MIP_COUNT] = {&gl_texture_filter, &gl_sprite_filter, &gl_patch_filter, &gl_indexed_filter};
 
   for (i = 0; i < MIP_COUNT; i++)
   {

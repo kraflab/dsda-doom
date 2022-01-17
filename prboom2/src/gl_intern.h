@@ -56,6 +56,7 @@ typedef enum
   MIP_TEXTURE,
   MIP_SPRITE,
   MIP_PATCH,
+  MIP_INDEXED,
 
   MIP_COUNT
 } GLMipType;
