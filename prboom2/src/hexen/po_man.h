@@ -61,6 +61,7 @@ dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type);
 
 dboolean PO_MovePolyobj(int num, int x, int y);
 dboolean PO_RotatePolyobj(int num, angle_t angle);
+dboolean PO_Detect(int doomednum);
 void PO_Init(int lump);
 dboolean PO_Busy(int polyobj);
 

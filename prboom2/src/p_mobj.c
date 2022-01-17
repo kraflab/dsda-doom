@@ -2185,18 +2185,9 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   	}
   }
 
-  if (map_format.polyobjs)
+  if (PO_Detect(mthing->type))
   {
-    // MAP_FORMAT_TODO: PO types vary between games
-    if (mthing->type == PO_ANCHOR_TYPE)
-    {                           // Polyobj Anchor Pt.
-      return NULL;
-    }
-    else if (mthing->type == PO_SPAWN_TYPE || mthing->type == PO_SPAWNCRUSH_TYPE)
-    {                           // Polyobj Anchor Pt.
-      po_NumPolyobjs++;
-      return NULL;
-    }
+    return NULL;
   }
 
   // check for players specially

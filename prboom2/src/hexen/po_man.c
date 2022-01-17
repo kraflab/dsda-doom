@@ -30,6 +30,8 @@
 #include "hexen/p_acs.h"
 #include "hexen/sn_sonix.h"
 
+#include "dsda/map_format.h"
+
 #include "po_man.h"
 
 #define PO_MAXPOLYSEGS 64
@@ -1268,6 +1270,25 @@ static void TranslateToStartSpot(int tag, int originX, int originY)
             ("PO_TranslateToStartSpot:  Multiple polyobjs in a single subsector.\n");
     }
     sub->poly = po;
+}
+
+dboolean PO_Detect(int doomednum)
+{
+  if (!map_format.polyobjs) return false;
+
+  if (doomednum == map_format.dn_polyanchor)
+  {
+    return true;
+  }
+
+  if (doomednum >= map_format.dn_polyspawn_start &&
+      doomednum <= map_format.dn_polyspawn_end)
+  {
+    po_NumPolyobjs++;
+    return true;
+  }
+
+  return false;
 }
 
 void PO_Init(int lump)

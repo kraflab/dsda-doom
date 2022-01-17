@@ -69,6 +69,9 @@ typedef struct {
   size_t maplinedef_size;
   int mt_push;
   int mt_pull;
+  int dn_polyanchor;
+  int dn_polyspawn_start;
+  int dn_polyspawn_end;
 } map_format_t;
 
 extern map_format_t map_format;
