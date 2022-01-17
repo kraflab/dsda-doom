@@ -47,7 +47,8 @@ typedef enum
   GLDT_BROKEN,
   GLDT_PATCH,
   GLDT_TEXTURE,
-  GLDT_FLAT
+  GLDT_FLAT,
+  GLDT_COLORMAP
 } GLTexType;
 
 typedef enum
@@ -77,6 +78,7 @@ typedef enum
   GLTEXTURE_CLAMPY    = 0x00000080,
   GLTEXTURE_CLAMPXY   = (GLTEXTURE_CLAMPX | GLTEXTURE_CLAMPY),
   GLTEXTURE_MIPMAP    = 0x00000100,
+  GLTEXTURE_INDEXED   = 0x00000200,
 } GLTexture_flag_t;
 
 typedef struct gl_strip_coords_s
@@ -378,12 +380,15 @@ extern int scene_has_wall_details;
 extern int scene_has_flat_details;
 
 extern GLuint* last_glTexID;
-GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force);
+GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed);
 void gld_BindTexture(GLTexture *gltexture, unsigned int flags);
-GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite);
+GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean indexed);
 void gld_BindPatch(GLTexture *gltexture, int cm);
-GLTexture *gld_RegisterFlat(int lump, dboolean mipmap);
+GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed);
 void gld_BindFlat(GLTexture *gltexture, unsigned int flags);
+GLTexture *gld_RegisterColormapTexture(int palette_index);
+void gld_BindColormapTexture(GLTexture *gltexture);
+void gld_InitColormapTextures(void);
 void gld_InitPalettedTextures(void);
 int gld_GetTexDimension(int value);
 void gld_SetTexturePalette(GLenum target);
@@ -569,10 +574,9 @@ typedef struct GLShader_s
   GLhandleARB hFragProg;
 } GLShader;
 
-extern GLShader *sh_main;
-
 int glsl_Init(void);
 void glsl_SetActiveShader(GLShader *shader);
+void glsl_SetMainShaderActive();
 void glsl_SetFuzzShaderActive();
 void glsl_SetFuzzShaderInactive();
 void glsl_SetLightLevel(float lightlevel);
@@ -585,6 +589,7 @@ int glsl_IsActive(void);
 
 #define glsl_Init() 0
 #define glsl_SetActiveShader(shader)
+#define glsl_SetMainShaderActive()
 #define glsl_SetFuzzShaderActive()
 #define glsl_SetFuzzShaderInactive()
 #define glsl_SetLightLevel(lightlevel)

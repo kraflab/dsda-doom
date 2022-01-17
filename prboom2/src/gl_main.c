@@ -565,7 +565,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
       continue;
     }
 
-    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true);
+    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true, gl_lightmode == gl_lightmode_indexed);
     if (gltexture)
     {
       sector_t tempsec;
@@ -643,7 +643,7 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
   dboolean bFakeColormap;
 
   cmap = ((flags & VPT_TRANS) ? cm : CR_DEFAULT);
-  gltexture=gld_RegisterPatch(lump, cmap, false);
+  gltexture=gld_RegisterPatch(lump, cmap, false, false);
   gld_BindPatch(gltexture, cmap);
 
   if (!gltexture)
@@ -739,7 +739,7 @@ void gld_FillFlat(int lump, int x, int y, int width, int height, enum patch_tran
   int saved_boom_cm = boom_cm;
   boom_cm = 0;
 
-  gltexture = gld_RegisterFlat(lump, false);
+  gltexture = gld_RegisterFlat(lump, false, false);
   gld_BindFlat(gltexture, 0);
 
   //e6y
@@ -778,7 +778,7 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
   int saved_boom_cm = boom_cm;
   boom_cm = 0;
 
-  gltexture = gld_RegisterPatch(lump, CR_DEFAULT, false);
+  gltexture = gld_RegisterPatch(lump, CR_DEFAULT, false, false);
   gld_BindPatch(gltexture, CR_DEFAULT);
 
   if (!gltexture)
@@ -871,7 +871,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   int x1,y1,x2,y2;
   float light;
 
-  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false);
+  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false, gl_lightmode == gl_lightmode_indexed);
   if (!gltexture)
     return;
   gld_BindPatch(gltexture, CR_DEFAULT);
@@ -1306,6 +1306,8 @@ void gld_StartDrawScene(void)
   glMatrixMode(GL_MODELVIEW);
   glLoadMatrixf(modelMatrix);
 
+  gld_InitColormapTextures();
+
   rendermarker++;
   scene_has_overlapped_sprites = false;
   scene_has_wall_details = 0;
@@ -1360,7 +1362,7 @@ void gld_EndDrawScene(void)
 
   if (!viewangleoffset && !viewpitchoffset)
   { // don't draw on side views
-    glsl_SetActiveShader(sh_main);
+    glsl_SetMainShaderActive();
     R_DrawPlayerSprites();
     glsl_SetActiveShader(NULL);
   }
@@ -1456,6 +1458,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
     int currpic, nextpic;
     GLWall *wall = (GLWall*)itemdata;
     float oldalpha = wall->alpha;
+    dboolean indexed = (gl_lightmode == gl_lightmode_indexed);
 
     switch (itemtype)
     {
@@ -1469,7 +1472,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
         currpic = wall->gltexture->index - firstflat - anim->basepic;
         nextpic = anim->basepic + (currpic + 1) % anim->numpics;
         wall->alpha = oldalpha;
-        wall->gltexture = gld_RegisterFlat(nextpic, true);
+        wall->gltexture = gld_RegisterFlat(nextpic, true, indexed);
       }
       break;
     case GLDIT_WALL:
@@ -1485,7 +1488,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
           currpic = wall->gltexture->index - anim->basepic;
           nextpic = anim->basepic + (currpic + 1) % anim->numpics;
           wall->alpha = oldalpha;
-          wall->gltexture = gld_RegisterTexture(nextpic, true, false);
+          wall->gltexture = gld_RegisterTexture(nextpic, true, false, indexed);
         }
       }
       break;
@@ -1653,6 +1656,7 @@ void gld_AddWall(seg_t *seg)
   float lineheight, linelength;
   int rellight = 0;
   int backseg;
+  dboolean indexed;
 
   int side = (seg->sidedef == &sides[seg->linedef->sidenum[0]] ? 0 : 1);
   if (linerendered[side][seg->linedef->iLineID] == rendermarker)
@@ -1661,6 +1665,8 @@ void gld_AddWall(seg_t *seg)
   linelength = lines[seg->linedef->iLineID].texel_length;
   wall.glseg=&gl_lines[seg->linedef->iLineID];
   backseg = seg->sidedef != &sides[seg->linedef->sidenum[0]];
+
+  indexed = (gl_lightmode == gl_lightmode_indexed);
 
   if (poly_add_line)
   {
@@ -1714,7 +1720,7 @@ void gld_AddWall(seg_t *seg)
       wall.ybottom=-MAXCOORD;
       gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_FLOOR);
     }
-    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false);
+    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, indexed);
     if (temptex && frontsector->ceilingheight > frontsector->floorheight)
     {
       wall.gltexture=temptex;
@@ -1826,7 +1832,7 @@ void gld_AddWall(seg_t *seg)
     {
       if (!((frontsector->ceilingpic==skyflatnum) && (backsector->ceilingpic==skyflatnum)))
       {
-        temptex=gld_RegisterTexture(toptexture, true, false);
+        temptex=gld_RegisterTexture(toptexture, true, false, indexed);
         if (!temptex && gl_use_stencil && backsector &&
           !(seg->linedef->r_flags & RF_ISOLATED) &&
           /*frontsector->ceilingpic != skyflatnum && */backsector->ceilingpic != skyflatnum &&
@@ -1837,7 +1843,7 @@ void gld_AddWall(seg_t *seg)
           if (wall.ybottom >= zCamera)
           {
             wall.flag=GLDWF_TOPFLUD;
-            temptex=gld_RegisterFlat(flattranslation[seg->backsector->ceilingpic], true);
+            temptex=gld_RegisterFlat(flattranslation[seg->backsector->ceilingpic], true, indexed);
             if (temptex)
             {
               wall.gltexture=temptex;
@@ -1862,13 +1868,13 @@ void gld_AddWall(seg_t *seg)
     /* midtexture */
     //e6y
     if (comp[comp_maskedanim])
-      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false);
+      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed);
     else
 
     // e6y
     // Animated middle textures with a zero index should be forced
     // See spacelab.wad (http://www.doomworld.com/idgames/index.php?id=6826)
-    temptex=gld_RegisterTexture(midtexture, true, true);
+    temptex=gld_RegisterTexture(midtexture, true, true, indexed);
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
       int top, bottom;
@@ -1993,7 +1999,7 @@ bottomtexture:
     }
     if (floor_height<ceiling_height)
     {
-      temptex=gld_RegisterTexture(bottomtexture, true, false);
+      temptex=gld_RegisterTexture(bottomtexture, true, false, indexed);
       if (!temptex && gl_use_stencil && backsector &&
         !(seg->linedef->r_flags & RF_ISOLATED) &&
         /*frontsector->floorpic != skyflatnum && */backsector->floorpic != skyflatnum &&
@@ -2004,7 +2010,7 @@ bottomtexture:
         if (wall.ytop <= zCamera)
         {
           wall.flag = GLDWF_BOTFLUD;
-          temptex=gld_RegisterFlat(flattranslation[seg->backsector->floorpic], true);
+          temptex=gld_RegisterFlat(flattranslation[seg->backsector->floorpic], true, indexed);
           if (temptex)
           {
             wall.gltexture=temptex;
@@ -2190,6 +2196,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   int floorlightlevel;      // killough 3/16/98: set floor lightlevel
   int ceilinglightlevel;    // killough 4/11/98
   GLFlat flat;
+  dboolean indexed;
 
   if (sectornum<0)
     return;
@@ -2198,13 +2205,15 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   sector=R_FakeFlat(sector, &tempsec, &floorlightlevel, &ceilinglightlevel, false); // for boom effects
   flat.flags = (ceiling ? GLFLAT_CEILING : 0);
 
+  indexed = (gl_lightmode == gl_lightmode_indexed);
+
   if (!ceiling) // if it is a floor ...
   {
     if (sector->floorpic == skyflatnum) // don't draw if sky
       return;
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
-    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true);
+    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);
     if (!flat.gltexture)
       return;
     // get the lightlevel from floorlightlevel
@@ -2310,7 +2319,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
       return;
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
-    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true);
+    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);
     if (!flat.gltexture)
       return;
     // get the lightlevel from ceilinglightlevel
@@ -2345,7 +2354,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
 
       currpic = flat.gltexture->index - firstflat - anim->basepic;
       nextpic = anim->basepic + (currpic + 1) % anim->numpics;
-      flat.gltexture = gld_RegisterFlat(nextpic, true);
+      flat.gltexture = gld_RegisterFlat(nextpic, true, indexed);
     }
   }
 
@@ -2760,7 +2769,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     sprite.cm = thing->color;
   else
     sprite.cm = CR_LIMIT + (int)((thing->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT));
-  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true);
+  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true, gl_lightmode == gl_lightmode_indexed);
   if (!sprite.gltexture)
     goto unlock_patch;
   sprite.flags = thing->flags;
@@ -3154,7 +3163,7 @@ void gld_DrawScene(player_t *player)
   }
 #endif
 
-  glsl_SetActiveShader(sh_main);
+  glsl_SetMainShaderActive();
 
   //
   // opaque stuff
@@ -3285,7 +3294,7 @@ void gld_DrawScene(player_t *player)
     // fake strips of sky
     glsl_SetActiveShader(NULL);
     gld_DrawStripsSky();
-    glsl_SetActiveShader(sh_main);
+    glsl_SetMainShaderActive();
   }
 
   // opaque sprites
@@ -3326,7 +3335,7 @@ void gld_DrawScene(player_t *player)
   {
     glsl_SetActiveShader(NULL);
     gld_DrawHealthBars();
-    glsl_SetActiveShader(sh_main);
+    glsl_SetMainShaderActive();
   }
 
   //
@@ -3376,7 +3385,7 @@ void gld_DrawScene(player_t *player)
 
   glsl_SetActiveShader(NULL);
   gld_RenderShadows();
-  glsl_SetActiveShader(sh_main);
+  glsl_SetMainShaderActive();
 
   /* Transparent sprites and transparent things must be rendered
    * in far-to-near order. The approach used here is to sort in-

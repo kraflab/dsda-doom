@@ -49,7 +49,7 @@
 
 gl_lightmode_t gl_lightmode;
 gl_lightmode_t gl_lightmode_default;
-const char *gl_lightmodes[] = {"glboom", "gzdoom", "fog based", "shaders"};
+const char *gl_lightmodes[] = {"glboom", "gzdoom", "fog based", "shaders", "indexed"};
 int gl_light_ambient;
 int gl_rellight;
 
@@ -115,6 +115,12 @@ static GLLight gld_light[gl_lightmode_last] = {
    gld_InitLightTable_glboom,
    gld_CalcLightLevel_shaders, gld_CalcLightLevel_glboom,
    gld_CalcFogDensity_glboom},
+
+   //gl_lightmode_indexed
+  {true, 32,
+   gld_InitLightTable_glboom,
+   gld_CalcLightLevel_shaders, gld_CalcLightLevel_glboom,
+   gld_CalcFogDensity_glboom},
 };
 
 int gl_hardware_gamma = false;
@@ -127,7 +133,8 @@ void M_ChangeLightMode(void)
   if (gl_compatibility)
   {
     if (gl_lightmode_default == gl_lightmode_fogbased ||
-      gl_lightmode_default == gl_lightmode_shaders)
+      gl_lightmode_default == gl_lightmode_shaders ||
+      gl_lightmode_default == gl_lightmode_indexed)
     {
       lprintf(LO_INFO,
         "M_ChangeLightMode: '%s' sector light mode is not allowed in gl_compatibility mode\n",
@@ -136,7 +143,7 @@ void M_ChangeLightMode(void)
     }
   }
 
-  if (gl_lightmode_default == gl_lightmode_shaders)
+  if (gl_lightmode_default == gl_lightmode_shaders || gl_lightmode_default == gl_lightmode_indexed)
   {
     if (!glsl_Init())
     {
@@ -266,7 +273,7 @@ static float gld_CalcLightLevel_shaders(int lightlevel)
 void gld_StaticLightAlpha(float light, float alpha)
 {
   player_t *player = &players[displayplayer];
-  int shaders = (gl_lightmode == gl_lightmode_shaders);
+  int shaders = (gl_lightmode == gl_lightmode_shaders || gl_lightmode == gl_lightmode_indexed);
 
   if (!player->fixedcolormap)
   {

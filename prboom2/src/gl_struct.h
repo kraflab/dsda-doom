@@ -66,6 +66,7 @@ typedef enum
   gl_lightmode_gzdoom,
   gl_lightmode_fogbased,
   gl_lightmode_shaders,
+  gl_lightmode_indexed,
 
   gl_lightmode_last
 } gl_lightmode_t;

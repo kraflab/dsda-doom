@@ -59,6 +59,7 @@ set(TABLES
     lumps/glshadow.lmp
     lumps/glfp.lmp
     lumps/glfp_fuzz.lmp
+    lumps/glfp_idx.lmp
     lumps/glvp.lmp
     lumps/-prbhud-.lmp
     lumps/m_ammo.lmp
