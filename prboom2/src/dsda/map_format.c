@@ -255,7 +255,7 @@ void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
-  .polyobjs = false,
+  .polyobjs = true,
   .acs = false,
   .thing_id = true,
   .mapinfo = false,
