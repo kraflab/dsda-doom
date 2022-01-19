@@ -21,7 +21,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | Name         | Status      |
 | ------------ | ----------- |
 | Levels       | :warning:   |
-| Poly Objects | :telescope: |
+| Poly Objects | :warning:   |
 | ACS          | :telescope: |
 | MAPINFO      | :telescope: |
 | SNDINFO      | :telescope: |
@@ -105,7 +105,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | -           | -                       | -                  |
 | 9200        | Decal                   | :x:                |
 | -           | -                       | -                  |
-| 9300-9303   | PolyObject*             | :telescope:        |
+| 9300-9303   | PolyObject*             | :heavy_check_mark: |
 | -           | -                       | -                  |
 | 9500-9503   | Slopes                  | :x:                |
 | -           | -                       | -                  |
@@ -174,14 +174,14 @@ Current work is isolated to the initial pass over the level format itself - line
 
 | Value | Name                            | Status             |
 | ----- | ------------------------------- | ------------------ |
-| 1     | Polyobj_StartLine               | :telescope:        |
-| 2     | Polyobj_RotateLeft              | :telescope:        |
-| 3     | Polyobj_RotateRight             | :telescope:        |
-| 4     | Polyobj_Move                    | :telescope:        |
-| 5     | Polyobj_ExplicitLine            | :telescope:        |
-| 6     | Polyobj_MoveTimes8              | :telescope:        |
-| 7     | Polyobj_DoorSwing               | :telescope:        |
-| 8     | Polyobj_DoorSlide               | :telescope:        |
+| 1     | Polyobj_StartLine               | :heavy_check_mark: |
+| 2     | Polyobj_RotateLeft              | :heavy_check_mark: |
+| 3     | Polyobj_RotateRight             | :heavy_check_mark: |
+| 4     | Polyobj_Move                    | :heavy_check_mark: |
+| 5     | Polyobj_ExplicitLine            | :heavy_check_mark: |
+| 6     | Polyobj_MoveTimes8              | :heavy_check_mark: |
+| 7     | Polyobj_DoorSwing               | :heavy_check_mark: |
+| 8     | Polyobj_DoorSlide               | :heavy_check_mark: |
 | 9     | Line_Horizon                    | :telescope:        |
 | 10    | Door_Close                      | :heavy_check_mark: |
 | 11    | Door_Open                       | :heavy_check_mark: |
@@ -439,6 +439,7 @@ Current work is isolated to the initial pass over the level format itself - line
 - NoiseAlert only works with the default arguments.
 - Thing_Hate only supports 0 for the third argument ("target only").
 - ThrustThing has an implicit speed limit.
+- Poly objects have no sound (no SNDSEQ lump support to define it yet).
 
 ### Sector Specials
 
