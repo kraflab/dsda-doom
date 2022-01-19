@@ -46,7 +46,7 @@ static void LinkPolyobj(polyobj_t * po);
 static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po);
 static void InitBlockMap(void);
 static void IterFindPolySegs(int x, int y, seg_t ** segList);
-static void SpawnPolyobj(int index, int tag, dboolean crush);
+static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt);
 static void TranslateToStartSpot(int tag, int originX, int originY);
 
 polyblock_t **PolyBlockMap;
@@ -615,7 +615,7 @@ static void ThrustMobj(mobj_t * mobj, seg_t * seg, polyobj_t * po)
     mobj->momy += thrustY;
     if (po->crush)
     {
-        if (!P_CheckPosition(mobj, mobj->x + thrustX, mobj->y + thrustY))
+        if (po->hurt || !P_CheckPosition(mobj, mobj->x + thrustX, mobj->y + thrustY))
         {
             P_DamageMobj(mobj, NULL, NULL, 3);
         }
@@ -1113,7 +1113,7 @@ static void IterFindPolySegs(int x, int y, seg_t ** segList)
     I_Error("IterFindPolySegs:  Non-closed Polyobj located.\n");
 }
 
-static void SpawnPolyobj(int index, int tag, dboolean crush)
+static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
 {
     int i;
     int j;
@@ -1144,6 +1144,7 @@ static void SpawnPolyobj(int index, int tag, dboolean crush)
             IterFindPolySegs(segs[i].v2->x, segs[i].v2->y,
                              polyobjs[index].segs + 1);
             polyobjs[index].crush = crush;
+            polyobjs[index].hurt = hurt;
             polyobjs[index].tag = tag;
             polyobjs[index].seqType = segs[i].linedef->arg3;
             if (polyobjs[index].seqType < 0
@@ -1218,6 +1219,7 @@ static void SpawnPolyobj(int index, int tag, dboolean crush)
         {
             PolySegCount = polyobjs[index].numsegs;     // PolySegCount used globally
             polyobjs[index].crush = crush;
+            polyobjs[index].hurt = hurt;
             polyobjs[index].tag = tag;
             polyobjs[index].segs = Z_Malloc(polyobjs[index].numsegs
                                             * sizeof(seg_t *), PU_LEVEL, 0);
@@ -1371,7 +1373,8 @@ void PO_Init(int lump)
             polyobjs[polyIndex].startSpot.x = spawnthing.x << FRACBITS;
             polyobjs[polyIndex].startSpot.y = spawnthing.y << FRACBITS;
             SpawnPolyobj(polyIndex, spawnthing.angle,
-                         (spawnthing.type == map_format.dn_polyspawn_crush));
+                         (spawnthing.type != map_format.dn_polyspawn_start),
+                         (spawnthing.type == map_format.dn_polyspawn_hurt));
             polyIndex++;
         }
     }

@@ -71,7 +71,7 @@ typedef struct {
   int mt_pull;
   int dn_polyanchor;
   int dn_polyspawn_start;
-  int dn_polyspawn_crush;
+  int dn_polyspawn_hurt;
   int dn_polyspawn_end;
 } map_format_t;
 

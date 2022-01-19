@@ -531,6 +531,7 @@ typedef struct polyobj_s
   int validcount;
   int validcount2;
   dboolean crush;              // should the polyobj attempt to crush mobjs?
+  dboolean hurt;
   int seqType;
   fixed_t size;               // polyobj size (area of POLY_AREAUNIT == size of FRACUNIT)
   void *specialdata;          // pointer a thinker, if the poly is moving
