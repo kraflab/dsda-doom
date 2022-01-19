@@ -57,6 +57,49 @@ static int PolySegCount;
 static fixed_t PolyStartX;
 static fixed_t PolyStartY;
 
+static void ResetSegDrawingParameters(seg_t *seg)
+{
+  seg->v1->px = seg->v1->x;
+  seg->v1->py = seg->v1->y;
+  seg->v2->px = seg->v2->x;
+  seg->v2->py = seg->v2->y;
+  seg->pangle = seg->angle;
+}
+
+static void ResetPolySubSector(polyobj_t *po)
+{
+  int i;
+  vertex_t avg;
+  seg_t **polySeg;
+  subsector_t *new_sub;
+
+  avg.x = 0;
+  avg.y = 0;
+  polySeg = po->segs;
+
+  for (i = 0; i < po->numsegs; i++, polySeg++)
+  {
+      ResetSegDrawingParameters(*polySeg);
+
+      avg.x += (*polySeg)->v1->x >> FRACBITS;
+      avg.y += (*polySeg)->v1->y >> FRACBITS;
+  }
+
+  avg.x /= po->numsegs;
+  avg.y /= po->numsegs;
+
+  new_sub = R_PointInSubsector(avg.x << FRACBITS, avg.y << FRACBITS);
+
+  if (new_sub->poly)
+  {
+    return; // Colliding poly objects?
+  }
+
+  po->subsector->poly = NULL;
+  po->subsector = new_sub;
+  po->subsector->poly = po;
+}
+
 void T_RotatePoly(polyevent_t * pe)
 {
     int absSpeed;
@@ -724,6 +767,7 @@ dboolean PO_MovePolyobj(int num, int x, int y)
     po->startSpot.x += x;
     po->startSpot.y += y;
     LinkPolyobj(po);
+    ResetPolySubSector(po);
     return true;
 }
 
@@ -818,6 +862,7 @@ dboolean PO_RotatePolyobj(int num, angle_t angle)
     }
     po->angle += angle;
     LinkPolyobj(po);
+    ResetPolySubSector(po);
     return true;
 }
 
@@ -1254,6 +1299,9 @@ static void TranslateToStartSpot(int tag, int originX, int originY)
             (*tempSeg)->v1->x -= deltaX;
             (*tempSeg)->v1->y -= deltaY;
         }
+
+        ResetSegDrawingParameters(*tempSeg);
+
         avg.x += (*tempSeg)->v1->x >> FRACBITS;
         avg.y += (*tempSeg)->v1->y >> FRACBITS;
         // the original Pts are based off the startSpot Pt, and are
@@ -1269,6 +1317,7 @@ static void TranslateToStartSpot(int tag, int originX, int originY)
         I_Error
             ("PO_TranslateToStartSpot:  Multiple polyobjs in a single subsector.\n");
     }
+    po->subsector = sub;
     sub->poly = po;
 }
 

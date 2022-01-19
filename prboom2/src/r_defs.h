@@ -534,6 +534,7 @@ typedef struct polyobj_s
   int seqType;
   fixed_t size;               // polyobj size (area of POLY_AREAUNIT == size of FRACUNIT)
   void *specialdata;          // pointer a thinker, if the poly is moving
+  subsector_t *subsector;
 } polyobj_t;
 
 typedef struct polyblock_s

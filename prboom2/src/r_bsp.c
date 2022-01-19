@@ -794,12 +794,6 @@ static void R_Subsector(int num)
     polySeg = sub->poly->segs;
     while (polyCount--)
     {
-      // hexen_note: find some way to do this only on update?
-      (*polySeg)->v1->px = (*polySeg)->v1->x;
-      (*polySeg)->v1->py = (*polySeg)->v1->y;
-      (*polySeg)->v2->px = (*polySeg)->v2->x;
-      (*polySeg)->v2->py = (*polySeg)->v2->y;
-      (*polySeg)->pangle = (*polySeg)->angle;
       R_AddLine(*polySeg++);
     }
     poly_add_line = false;
