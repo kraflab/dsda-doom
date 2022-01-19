@@ -6819,6 +6819,21 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       G_SecretExitLevel(); // args[0] is position
       buttonSuccess = 1;
       break;
+    case zl_polyobj_rotate_left:
+      buttonSuccess = EV_RotatePoly(line, args, 1, false);
+      break;
+    case zl_polyobj_rotate_right:
+      buttonSuccess = EV_RotatePoly(line, args, -1, false);
+      break;
+    case zl_polyobj_move:
+      buttonSuccess = EV_MovePoly(line, args, false, false);
+      break;
+    case zl_polyobj_move_times_8:
+      buttonSuccess = EV_MovePoly(line, args, true, false);
+      break;
+    case zl_polyobj_door_swing:
+      buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SWING);
+      break;
     case zl_polyobj_door_slide:
       buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SLIDE);
       break;
