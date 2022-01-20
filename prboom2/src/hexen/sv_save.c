@@ -284,7 +284,13 @@ static void SV_OpenWrite(int map)
 
 static int GetMobjNum(mobj_t * mobj)
 {
-    if (mobj == NULL)
+    // The SV_IsMobjThinker check shouldn't be required.
+    // Somehow, *rarely*, something is targeting a mobj
+    //   that has already been cleaned up and forgotten by the thinker loop.
+    // The target has a reference count of zero, meaning nothing points to it.
+    // Or at least...nothing should be.
+    // Need to find where this happens - for now this fixes a crash.
+    if (mobj == NULL || !SV_IsMobjThinker((thinker_t *) mobj))
     {
         return MOBJ_NULL;
     }
