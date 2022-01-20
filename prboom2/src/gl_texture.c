@@ -278,9 +278,9 @@ static GLTexture *gld_AddNewGLPatchTexture(int lump, dboolean indexed)
     return gld_AddNewGLTexItem(lump, numlumps, indexed ? &gld_GLIndexedPatchTextures : &gld_GLPatchTextures);
 }
 
-static GLTexture *gld_AddNewGLColormapTexture(int palette_index)
+static GLTexture *gld_AddNewGLColormapTexture(int palette_index, int gamma_level)
 {
-  return gld_AddNewGLTexItem(palette_index, gld_numGLColormaps, &gld_GLColormapTextures);
+  return gld_AddNewGLTexItem(palette_index + (gamma_level * NUM_GAMMA_LEVELS), gld_numGLColormaps, &gld_GLColormapTextures);
 }
 
 void gld_SetTexturePalette(GLenum target)
@@ -636,11 +636,13 @@ static void gld_AddFlatToTexture(GLTexture *gltexture, unsigned char *buffer, co
   }
 }
 
-static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer, int palette_index)
+static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer, int palette_index, int gamma_level)
 {
   int x,y,pos;
   const unsigned char *playpal;
   const lighttable_t *colormap;
+  const byte * gtable;
+  int gtlump;
 
   if (!gltexture)
     return;
@@ -652,8 +654,13 @@ static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer
   playpal = V_GetPlaypal() + (palette_index*PALETTE_SIZE);
   colormap = fullcolormap;
 
-  // construct a colormap texture using the
-  // selected palette variant, for shader lookup.
+  // also yoink the gamma table and apply
+  // software gamma emulation to the texture.
+  gtlump = (W_CheckNumForName)("GAMMATBL", ns_prboom);
+  gtable = (const byte*)W_CacheLumpNum(gtlump) + 256 * gamma_level;
+
+  // construct a colormap texture using the selected
+  // palette variant & gamma, for shader lookup.
   for (y=0;y<gltexture->realtexheight;y++)
   {
     pos=4*(y*gltexture->buffer_width);
@@ -666,12 +673,14 @@ static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer
         return;
       }
 #endif
-      buffer[pos+0]=playpal[colormap[y*256+x]*3+0];
-      buffer[pos+1]=playpal[colormap[y*256+x]*3+1];
-      buffer[pos+2]=playpal[colormap[y*256+x]*3+2];
+      buffer[pos+0]=gtable[playpal[colormap[y*256+x]*3+0]];
+      buffer[pos+1]=gtable[playpal[colormap[y*256+x]*3+1]];
+      buffer[pos+2]=gtable[playpal[colormap[y*256+x]*3+2]];
       buffer[pos+3]=255;
     }
   }
+
+  W_UnlockLumpNum(gtlump);
 }
 
 //e6y: "force" flag for loading texture with zero index
@@ -1407,11 +1416,11 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
   W_UnlockLumpNum(gltexture->index);
 }
 
-GLTexture *gld_RegisterColormapTexture(int palette_index)
+GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level)
 {
   GLTexture *gltexture;
 
-  gltexture=gld_AddNewGLColormapTexture(palette_index);
+  gltexture=gld_AddNewGLColormapTexture(palette_index, gamma_level);
   if (!gltexture)
     return NULL;
   if (gltexture->textype==GLDT_UNREGISTERED)
@@ -1445,7 +1454,7 @@ GLTexture *gld_RegisterColormapTexture(int palette_index)
   return gltexture;
 }
 
-void gld_BindColormapTexture(GLTexture *gltexture, int palette_index)
+void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level)
 {
   unsigned char *buffer;
 
@@ -1482,7 +1491,7 @@ void gld_BindColormapTexture(GLTexture *gltexture, int palette_index)
   buffer = (unsigned char*)Z_Malloc(gltexture->buffer_size, PU_STATIC, 0);
   memset(buffer, 0, gltexture->buffer_size);
 
-  gld_AddColormapToTexture(gltexture, buffer, palette_index);
+  gld_AddColormapToTexture(gltexture, buffer, palette_index, gamma_level);
 
   // bind it, finally :P
   if (*gltexture->texid_p == 0)
@@ -1504,8 +1513,9 @@ void gld_InitColormapTextures(void)
     return;
 
   // figure out how many palette variants are in the
-  // PLAYPAL lump and create a colormap texture for each.
-  gld_numGLColormaps = V_GetPlaypalCount();
+  // PLAYPAL lump and create a colormap texture for
+  // each palette at each gamma level. word.
+  gld_numGLColormaps = V_GetPlaypalCount() * NUM_GAMMA_LEVELS;
 
   // abort if we're trying to show an out-of-bounds palette.
   if (gld_paletteIndex < 0 || gld_paletteIndex >= gld_numGLColormaps)
@@ -1515,9 +1525,9 @@ void gld_InitColormapTextures(void)
   // the current palette index. since colormaps
   // won't change during the frame, we can go
   // ahead and bind them now and be done with it.
-  gltexture = gld_RegisterColormapTexture(gld_paletteIndex);
+  gltexture = gld_RegisterColormapTexture(gld_paletteIndex, usegamma);
   if (gltexture)
-    gld_BindColormapTexture(gltexture, gld_paletteIndex);
+    gld_BindColormapTexture(gltexture, gld_paletteIndex, usegamma);
 }
 
 // e6y

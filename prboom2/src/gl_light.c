@@ -97,7 +97,7 @@ static GLLight gld_light[gl_lightmode_last] = {
    gld_CalcFogDensity_glboom},
 
    //gl_lightmode_indexed
-  {true, 16,
+  {false, 16,
    gld_InitLightTable_glboom,
    gld_CalcLightLevel_shaders, gld_CalcLightLevel_glboom,
    gld_CalcFogDensity_glboom},

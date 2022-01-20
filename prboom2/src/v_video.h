@@ -162,6 +162,9 @@ extern int          usegamma;
 //      256 colors * 3 bytes per color = 768
 #define PALETTE_SIZE 768
 
+// [XA] wonder why this was never a constant... silly id. :P
+#define NUM_GAMMA_LEVELS 4
+
 // The available bit-depth modes
 typedef enum {
   VID_MODESW,
