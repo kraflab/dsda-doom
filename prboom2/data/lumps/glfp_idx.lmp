@@ -40,6 +40,6 @@ void main()
   float lightIndex = (doomlight * 31.0 / 32.0);
   gl_FragColor = color * texture2D(colormap, vec2(colorIndex, lightIndex));
 
-  // reapply transparency
-  gl_FragColor.a = texel.a;
+  // reapply transparency & translucency
+  gl_FragColor.a = color.a * texel.a;
 }
