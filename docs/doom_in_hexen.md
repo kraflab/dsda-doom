@@ -259,9 +259,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | 83    | ACS_LockedExecute               | :telescope:        |
 | 84    | ACS_ExecuteWithResult           | :telescope:        |
 | 85    | ACS_LockedExecuteDoor           | :telescope:        |
-| 86    | Polyobj_MoveToSpot              | :telescope:        |
+| 86    | Polyobj_MoveToSpot              | :heavy_check_mark: |
 | 87    | Polyobj_Stop                    | :telescope:        |
-| 88    | Polyobj_MoveTo                  | :telescope:        |
+| 88    | Polyobj_MoveTo                  | :heavy_check_mark: |
 | 89    | Polyobj_OR_MoveTo               | :telescope:        |
 | 90    | Polyobj_OR_RotateLeft           | :telescope:        |
 | 91    | Polyobj_OR_RotateRight          | :telescope:        |

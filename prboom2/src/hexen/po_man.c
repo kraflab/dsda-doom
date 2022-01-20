@@ -250,13 +250,82 @@ void T_MovePoly(polyevent_t * pe)
     }
 }
 
-dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean overRide)
+static void EV_SpawnMovePolyEvent(int polyNum, polyobj_t *poly, fixed_t speed,
+                           fixed_t dist, angle_t an, dboolean overRide)
 {
     int mirror;
-    int polyNum;
     polyevent_t *pe;
+
+    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
+    P_AddThinker(&pe->thinker);
+    pe->thinker.function = T_MovePoly;
+    pe->polyobj = polyNum;
+    pe->dist = dist;
+    pe->speed = speed;
+    poly->specialdata = pe;
+    pe->angle = an >> ANGLETOFINESHIFT;
+    pe->xSpeed = FixedMul(pe->speed, finecosine[pe->angle]);
+    pe->ySpeed = FixedMul(pe->speed, finesine[pe->angle]);
+    SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE + poly->seqType);
+
+    while ((mirror = GetPolyobjMirror(polyNum)) != 0)
+    {
+        poly = GetPolyobj(mirror);
+        if (poly && poly->specialdata && !overRide)
+        {                       // mirroring poly is already in motion
+            break;
+        }
+        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
+        P_AddThinker(&pe->thinker);
+        pe->thinker.function = T_MovePoly;
+        pe->polyobj = mirror;
+        poly->specialdata = pe;
+        pe->dist = dist;
+        pe->speed = speed;
+        an = an + ANG180;    // reverse the angle
+        pe->angle = an >> ANGLETOFINESHIFT;
+        pe->xSpeed = FixedMul(pe->speed, finecosine[pe->angle]);
+        pe->ySpeed = FixedMul(pe->speed, finesine[pe->angle]);
+        polyNum = mirror;
+        SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE + poly->seqType);
+    }
+}
+
+dboolean EV_MovePolyTo(line_t * line, int polyNum, fixed_t speed,
+                       fixed_t x, fixed_t y, dboolean overRide)
+{
     polyobj_t *poly;
     angle_t an;
+    fixed_t dist;
+
+    poly = GetPolyobj(polyNum);
+    if (poly != NULL)
+    {
+        if (poly->specialdata && !overRide)
+        {                       // poly is already moving
+            return false;
+        }
+    }
+    else
+    {
+        I_Error("EV_MovePoly:  Invalid polyobj num: %d\n", polyNum);
+    }
+
+    dist = P_AproxDistance(x - poly->startSpot.x, y - poly->startSpot.y);
+    an = R_PointToAngle2(poly->startSpot.x, poly->startSpot.y, x, y);
+
+    EV_SpawnMovePolyEvent(polyNum, poly, speed, dist, an, overRide);
+
+    return true;
+}
+
+dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean overRide)
+{
+    int polyNum;
+    polyobj_t *poly;
+    angle_t an;
+    fixed_t dist;
+    fixed_t speed;
 
     polyNum = args[0];
     poly = GetPolyobj(polyNum);
@@ -271,58 +340,21 @@ dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean o
     {
         I_Error("EV_MovePoly:  Invalid polyobj num: %d\n", polyNum);
     }
-    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
-    P_AddThinker(&pe->thinker);
-    pe->thinker.function = T_MovePoly;
-    pe->polyobj = polyNum;
+
     if (timesEight)
     {
-        pe->dist = args[3] * 8 * FRACUNIT;
+        dist = args[3] * 8 * FRACUNIT;
     }
     else
     {
-        pe->dist = args[3] * FRACUNIT;  // Distance
+        dist = args[3] * FRACUNIT;  // Distance
     }
-    pe->speed = args[1] * (FRACUNIT / 8);
-    poly->specialdata = pe;
 
+    speed = args[1] * (FRACUNIT / 8);
     an = args[2] * (ANG90 / 64);
 
-    pe->angle = an >> ANGLETOFINESHIFT;
-    pe->xSpeed = FixedMul(pe->speed, finecosine[pe->angle]);
-    pe->ySpeed = FixedMul(pe->speed, finesine[pe->angle]);
-    SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE +
-                     poly->seqType);
+    EV_SpawnMovePolyEvent(polyNum, poly, speed, dist, an, overRide);
 
-    while ((mirror = GetPolyobjMirror(polyNum)) != 0)
-    {
-        poly = GetPolyobj(mirror);
-        if (poly && poly->specialdata && !overRide)
-        {                       // mirroring poly is already in motion
-            break;
-        }
-        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
-        P_AddThinker(&pe->thinker);
-        pe->thinker.function = T_MovePoly;
-        pe->polyobj = mirror;
-        poly->specialdata = pe;
-        if (timesEight)
-        {
-            pe->dist = args[3] * 8 * FRACUNIT;
-        }
-        else
-        {
-            pe->dist = args[3] * FRACUNIT;      // Distance
-        }
-        pe->speed = args[1] * (FRACUNIT / 8);
-        an = an + ANG180;    // reverse the angle
-        pe->angle = an >> ANGLETOFINESHIFT;
-        pe->xSpeed = FixedMul(pe->speed, finecosine[pe->angle]);
-        pe->ySpeed = FixedMul(pe->speed, finesine[pe->angle]);
-        polyNum = mirror;
-        SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE +
-                         poly->seqType);
-    }
     return true;
 }
 
