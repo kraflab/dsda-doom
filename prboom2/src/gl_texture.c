@@ -85,6 +85,7 @@ static GLTexture **gld_GLIndexedStaticPatchTextures = NULL;
 /* [XA] Colormap textures, for indexed lightmode */
 static GLTexture **gld_GLColormapTextures = NULL;
 int gld_numGLColormaps = -1;
+int gld_paletteIndex = 0;
 
 tex_filter_t tex_filter[MIP_COUNT];
 
@@ -300,6 +301,11 @@ void gld_SetTexturePalette(GLenum target)
   pal[transparent_pal_index*4+2]=0;
   pal[transparent_pal_index*4+3]=0;
   GLEXT_glColorTableEXT(target, GL_RGBA, 256, GL_RGBA, GL_UNSIGNED_BYTE, pal);
+}
+
+void gld_SetIndexedPalette(int palette_index)
+{
+  gld_paletteIndex = palette_index;
 }
 
 static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned char *buffer, const rpatch_t *patch, int originx, int originy, int paletted)
@@ -630,11 +636,11 @@ static void gld_AddFlatToTexture(GLTexture *gltexture, unsigned char *buffer, co
   }
 }
 
-static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer)
+static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer, int palette_index)
 {
   int x,y,pos;
   const unsigned char *playpal;
-  lighttable_t *colormap;
+  const lighttable_t *colormap;
 
   if (!gltexture)
     return;
@@ -643,8 +649,7 @@ static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer
 
   // figure out which palette variant to use
   // (e.g. normal, pain flash, item flash, etc).
-  // [XA] TODO: this part
-  playpal = V_GetPlaypal();
+  playpal = V_GetPlaypal() + (palette_index*PALETTE_SIZE);
   colormap = fullcolormap;
 
   // construct a colormap texture using the
@@ -1440,7 +1445,7 @@ GLTexture *gld_RegisterColormapTexture(int palette_index)
   return gltexture;
 }
 
-void gld_BindColormapTexture(GLTexture *gltexture)
+void gld_BindColormapTexture(GLTexture *gltexture, int palette_index)
 {
   unsigned char *buffer;
 
@@ -1477,7 +1482,7 @@ void gld_BindColormapTexture(GLTexture *gltexture)
   buffer = (unsigned char*)Z_Malloc(gltexture->buffer_size, PU_STATIC, 0);
   memset(buffer, 0, gltexture->buffer_size);
 
-  gld_AddColormapToTexture(gltexture, buffer);
+  gld_AddColormapToTexture(gltexture, buffer, palette_index);
 
   // bind it, finally :P
   if (*gltexture->texid_p == 0)
@@ -1493,26 +1498,26 @@ void gld_BindColormapTexture(GLTexture *gltexture)
 void gld_InitColormapTextures(void)
 {
   GLTexture *gltexture;
-  int i;
 
+  // ain't in indexed mode? ain't nothin' to do.
   if (gl_lightmode != gl_lightmode_indexed)
     return;
 
   // figure out how many palette variants are in the
   // PLAYPAL lump and create a colormap texture for each.
-  // [XA] TODO: this for real :P
-  gld_numGLColormaps = 1;
+  gld_numGLColormaps = V_GetPlaypalCount();
 
-  for (i = 0; i < gld_numGLColormaps; i++)
-  {
-    gltexture = gld_RegisterColormapTexture(i);
-    if (gltexture)
-    {
-      // since the colormaps won't change during the
-      // frame, we can go ahead and bind them now.
-      gld_BindColormapTexture(gltexture);
-    }
-  }
+  // abort if we're trying to show an out-of-bounds palette.
+  if (gld_paletteIndex < 0 || gld_paletteIndex >= gld_numGLColormaps)
+    return;
+
+  // lazy-init and bind the colormap texture for
+  // the current palette index. since colormaps
+  // won't change during the frame, we can go
+  // ahead and bind them now and be done with it.
+  gltexture = gld_RegisterColormapTexture(gld_paletteIndex);
+  if (gltexture)
+    gld_BindColormapTexture(gltexture, gld_paletteIndex);
 }
 
 // e6y

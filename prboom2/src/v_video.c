@@ -1170,10 +1170,10 @@ const unsigned char* V_GetPlaypal(void)
   if (!playpal_data->lump)
   {
     int lump = W_GetNumForName(playpal_data->lump_name);
-    int len = W_LumpLength(lump);
+    playpal_data->length = W_LumpLength(lump);
     const byte *data = W_CacheLumpNum(lump);
-    playpal_data->lump = malloc(len);
-    memcpy(playpal_data->lump, data, len);
+    playpal_data->lump = malloc(playpal_data->length);
+    memcpy(playpal_data->lump, data, playpal_data->length);
     W_UnlockLumpNum(lump);
   }
 
@@ -1183,6 +1183,12 @@ const unsigned char* V_GetPlaypal(void)
 void V_FreePlaypal(void)
 {
   dsda_FreePlayPal();
+}
+
+int V_GetPlaypalCount(void)
+{
+  V_GetPlaypal(); // ensure playpal data is initialized
+  return (dsda_PlayPalData()->length / PALETTE_SIZE);
 }
 
 void V_FillBorder(int lump, byte color)

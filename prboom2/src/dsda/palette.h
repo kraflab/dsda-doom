@@ -39,6 +39,7 @@ typedef struct playpal_data_s {
   const int index;
   const char* lump_name;
   unsigned char* lump;
+  int length;
   // See r_patch.c
   int transparent;
   int duplicate;

@@ -947,9 +947,19 @@ void gld_SetPalette(int palette)
   extra_green=0.0f;
   extra_blue=0.0f;
   extra_alpha=0.0f;
+
   if (palette < 0)
     palette = last_palette;
   last_palette = palette;
+
+  // [XA] store the current palette so
+  // the indexed lightmode can use it.
+  // if we're actually in indexed mode,
+  // then we're all done here.
+  gld_SetIndexedPalette(palette);
+  if (gl_lightmode == gl_lightmode_indexed)
+    return;
+
   if (gl_shared_texture_palette) {
     const unsigned char *playpal;
     unsigned char pal[1024];

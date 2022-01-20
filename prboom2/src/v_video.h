@@ -158,6 +158,10 @@ extern int          usegamma;
 #define VID_COLORWEIGHTMASK (VID_NUMCOLORWEIGHTS-1)
 #define VID_COLORWEIGHTBITS 6
 
+// [XA] size of a single palette within PLAYPAL:
+//      256 colors * 3 bytes per color = 768
+#define PALETTE_SIZE 768
+
 // The available bit-depth modes
 typedef enum {
   VID_MODESW,
@@ -279,6 +283,9 @@ void V_FreeScreens();
 
 const unsigned char* V_GetPlaypal(void);
 void V_FreePlaypal(void);
+
+// [XA] get number of palettes in the current playpal
+int V_GetPlaypalCount(void);
 
 // e6y: wide-res
 void V_FillBorder(int lump, byte color);

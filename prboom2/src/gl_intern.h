@@ -387,11 +387,12 @@ void gld_BindPatch(GLTexture *gltexture, int cm);
 GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed);
 void gld_BindFlat(GLTexture *gltexture, unsigned int flags);
 GLTexture *gld_RegisterColormapTexture(int palette_index);
-void gld_BindColormapTexture(GLTexture *gltexture);
+void gld_BindColormapTexture(GLTexture *gltexture, int palette_index);
 void gld_InitColormapTextures(void);
 void gld_InitPalettedTextures(void);
 int gld_GetTexDimension(int value);
 void gld_SetTexturePalette(GLenum target);
+void gld_SetIndexedPalette(int palette_index);
 void gld_Precache(void);
 
 void SetFrameTextureMode(void);
