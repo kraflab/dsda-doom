@@ -750,7 +750,8 @@ GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force,
 
     gltexture->textype=GLDT_TEXTURE;
 
-    gld_SetTexDetail(gltexture);
+    if (!indexed)
+      gld_SetTexDetail(gltexture);
   }
   return gltexture;
 }
@@ -1352,7 +1353,8 @@ GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed)
 
     gltexture->textype=GLDT_FLAT;
 
-    gld_SetTexDetail(gltexture);
+    if (!indexed)
+      gld_SetTexDetail(gltexture);
   }
   return gltexture;
 }
