@@ -232,7 +232,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 56    | Line_SetTextureScale            | :x:                |
 | 57    | Sector_SetPortal                | :x:                |
 | 58    | Sector_CopyScroller             | :heavy_check_mark: |
-| 59    | Polyobj_OR_MoveToSpot           | :telescope:        |
+| 59    | Polyobj_OR_MoveToSpot           | :heavy_check_mark: |
 | 60    | Plat_PerpetualRaise             | :heavy_check_mark: |
 | 61    | Plat_Stop                       | :heavy_check_mark: |
 | 62    | Plat_DownWaitUpStay             | :heavy_check_mark: |
@@ -262,11 +262,11 @@ Current work is isolated to the initial pass over the level format itself - line
 | 86    | Polyobj_MoveToSpot              | :heavy_check_mark: |
 | 87    | Polyobj_Stop                    | :heavy_check_mark: |
 | 88    | Polyobj_MoveTo                  | :heavy_check_mark: |
-| 89    | Polyobj_OR_MoveTo               | :telescope:        |
-| 90    | Polyobj_OR_RotateLeft           | :telescope:        |
-| 91    | Polyobj_OR_RotateRight          | :telescope:        |
-| 92    | Polyobj_OR_Move                 | :telescope:        |
-| 93    | Polyobj_OR_MoveTimes8           | :telescope:        |
+| 89    | Polyobj_OR_MoveTo               | :heavy_check_mark: |
+| 90    | Polyobj_OR_RotateLeft           | :heavy_check_mark: |
+| 91    | Polyobj_OR_RotateRight          | :heavy_check_mark: |
+| 92    | Polyobj_OR_Move                 | :heavy_check_mark: |
+| 93    | Polyobj_OR_MoveTimes8           | :heavy_check_mark: |
 | 94    | Pillar_BuildAndCrush            | :heavy_check_mark: |
 | 95    | FloorAndCeiling_LowerByValue    | :heavy_check_mark: |
 | 96    | FloorAndCeiling_RaiseByValue    | :heavy_check_mark: |

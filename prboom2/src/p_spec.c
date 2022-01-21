@@ -6822,14 +6822,26 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_polyobj_rotate_left:
       buttonSuccess = EV_RotatePoly(line, args, 1, false);
       break;
+    case zl_polyobj_or_rotate_left:
+      buttonSuccess = EV_RotatePoly(line, args, 1, true);
+      break;
     case zl_polyobj_rotate_right:
       buttonSuccess = EV_RotatePoly(line, args, -1, false);
+      break;
+    case zl_polyobj_or_rotate_right:
+      buttonSuccess = EV_RotatePoly(line, args, -1, true);
       break;
     case zl_polyobj_move:
       buttonSuccess = EV_MovePoly(line, args, false, false);
       break;
+    case zl_polyobj_or_move:
+      buttonSuccess = EV_MovePoly(line, args, false, true);
+      break;
     case zl_polyobj_move_times_8:
       buttonSuccess = EV_MovePoly(line, args, true, false);
+      break;
+    case zl_polyobj_or_move_times_8:
+      buttonSuccess = EV_MovePoly(line, args, true, true);
       break;
     case zl_polyobj_door_swing:
       buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SWING);
@@ -6840,6 +6852,10 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_polyobj_move_to:
       buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
                                     args[2] << FRACBITS, args[3] << FRACBITS, false);
+      break;
+    case zl_polyobj_or_move_to:
+      buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
+                                    args[2] << FRACBITS, args[3] << FRACBITS, true);
       break;
     case zl_polyobj_move_to_spot:
       {
@@ -6856,6 +6872,23 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
 
         buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
                                       dest->x, dest->y, false);
+      }
+      break;
+    case zl_polyobj_or_move_to_spot:
+      {
+        mobj_t *dest;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        dest = dsda_FindMobjFromThingID(args[2], &search);
+
+        if (!dest)
+        {
+          break;
+        }
+
+        buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
+                                      dest->x, dest->y, true);
       }
       break;
     case zl_polyobj_stop:
