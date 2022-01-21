@@ -4,7 +4,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 
 ### Current Status
 
-Current work is isolated to the initial pass over the level format itself - line and sector specials, necessary changes to internal data structures, etc. Lots of refactoring needs to be done in the engine itself in order to treat different formats correctly without breaking compatibility.
+The initial pass over the format has been completed. Most planned line actions and sector effects are supported. Poly objects are supported (but there are visual artifacts in some cases). New teleport destinations and map spots are implemented. Most line actions targeting thing tags are implemented.
 
 ### Legend
 
