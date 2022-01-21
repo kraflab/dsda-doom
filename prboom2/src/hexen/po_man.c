@@ -100,10 +100,42 @@ static void ResetPolySubSector(polyobj_t *po)
   po->subsector->poly = po;
 }
 
+static void StopPolyEvent(polyevent_t * pe)
+{
+  polyobj_t *poly;
+
+  poly = GetPolyobj(pe->polyobj);
+  if (poly->specialdata == pe)
+  {
+      poly->specialdata = NULL;
+  }
+  SN_StopSequence((mobj_t *) & poly->startSpot);
+  P_PolyobjFinished(poly->tag);
+  P_RemoveThinker(&pe->thinker);
+}
+
+dboolean EV_StopPoly(int polyNum)
+{
+  polyobj_t *poly;
+
+  poly = GetPolyobj(polyNum);
+
+  if (poly)
+  {
+    if (poly->specialdata)
+    {
+      StopPolyEvent(poly->specialdata);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
 void T_RotatePoly(polyevent_t * pe)
 {
     int absSpeed;
-    polyobj_t *poly;
 
     if (PO_RotatePolyobj(pe->polyobj, pe->speed))
     {
@@ -116,14 +148,7 @@ void T_RotatePoly(polyevent_t * pe)
         pe->dist -= absSpeed;
         if (pe->dist <= 0)
         {
-            poly = GetPolyobj(pe->polyobj);
-            if (poly->specialdata == pe)
-            {
-                poly->specialdata = NULL;
-            }
-            SN_StopSequence((mobj_t *) & poly->startSpot);
-            P_PolyobjFinished(poly->tag);
-            P_RemoveThinker(&pe->thinker);
+            StopPolyEvent(pe);
         }
         if (pe->dist < absSpeed)
         {
@@ -224,7 +249,6 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overR
 void T_MovePoly(polyevent_t * pe)
 {
     int absSpeed;
-    polyobj_t *poly;
 
     if (PO_MovePolyobj(pe->polyobj, pe->xSpeed, pe->ySpeed))
     {
@@ -232,14 +256,7 @@ void T_MovePoly(polyevent_t * pe)
         pe->dist -= absSpeed;
         if (pe->dist <= 0)
         {
-            poly = GetPolyobj(pe->polyobj);
-            if (poly->specialdata == pe)
-            {
-                poly->specialdata = NULL;
-            }
-            SN_StopSequence((mobj_t *) & poly->startSpot);
-            P_PolyobjFinished(poly->tag);
-            P_RemoveThinker(&pe->thinker);
+            StopPolyEvent(pe);
         }
         if (pe->dist < absSpeed)
         {

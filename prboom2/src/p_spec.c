@@ -6858,6 +6858,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                       dest->x, dest->y, false);
       }
       break;
+    case zl_polyobj_stop:
+      buttonSuccess = EV_StopPoly(args[0]);
+      break;
     case zl_thing_move:
       {
         mobj_t *target;
