@@ -18,15 +18,15 @@ Current work is isolated to the initial pass over the level format itself - line
 
 ### Major Features
 
-| Name         | Status      |
-| ------------ | ----------- |
-| Levels       | :warning:   |
-| Poly Objects | :warning:   |
-| ACS          | :telescope: |
-| MAPINFO      | :telescope: |
-| SNDINFO      | :telescope: |
-| SNDSEQ       | :telescope: |
-| ANIMDEFS     | :telescope: |
+| Name         | Status             |
+| ------------ | ------------------ |
+| Levels       | :warning:          |
+| Poly Objects | :heavy_check_mark: |
+| ACS          | :telescope:        |
+| MAPINFO      | :telescope:        |
+| SNDINFO      | :telescope:        |
+| SNDSEQ       | :telescope:        |
+| ANIMDEFS     | :telescope:        |
 
 ### Thing Types
 
@@ -440,6 +440,7 @@ Current work is isolated to the initial pass over the level format itself - line
 - Thing_Hate only supports 0 for the third argument ("target only").
 - ThrustThing has an implicit speed limit.
 - Poly objects have no sound (no SNDSEQ lump support to define it yet).
+- Poly objects may have visual errors (especially for large objects).
 
 ### Sector Specials
 
