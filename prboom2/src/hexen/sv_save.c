@@ -284,13 +284,7 @@ static void SV_OpenWrite(int map)
 
 static int GetMobjNum(mobj_t * mobj)
 {
-    // The SV_IsMobjThinker check shouldn't be required.
-    // Somehow, *rarely*, something is targeting a mobj
-    //   that has already been cleaned up and forgotten by the thinker loop.
-    // The target has a reference count of zero, meaning nothing points to it.
-    // Or at least...nothing should be.
-    // Need to find where this happens - for now this fixes a crash.
-    if (mobj == NULL || !SV_IsMobjThinker((thinker_t *) mobj))
+    if (mobj == NULL)
     {
         return MOBJ_NULL;
     }
@@ -1498,6 +1492,8 @@ static void UnarchiveMobjs(void)
     }
     for (i = 0; i < MobjCount; i++)
     {
+        int references;
+
         mobj = MobjList[i];
         StreamIn_mobj_t(mobj);
 
@@ -1509,7 +1505,10 @@ static void UnarchiveMobjs(void)
         {
           mobj->index = -1;
           mobj->thinker.function = P_RemoveThinkerDelayed;
+
+          references = mobj->thinker.references;
           P_AddThinker(&mobj->thinker);
+          mobj->thinker.references = references;
 
           continue;
         }
@@ -1519,7 +1518,10 @@ static void UnarchiveMobjs(void)
         mobj->ceilingz = mobj->subsector->sector->ceilingheight;
 
         mobj->thinker.function = P_MobjThinker;
+
+        references = mobj->thinker.references;
         P_AddThinker(&mobj->thinker);
+        mobj->thinker.references = references;
     }
     map_format.build_mobj_thing_id_list();
     P_InitCreatureCorpseQueue(true);    // true = scan for corpses
