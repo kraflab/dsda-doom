@@ -1704,7 +1704,7 @@ void gld_AddWall(seg_t *seg)
   {
     rellight = seg->linedef->dx == 0 ? +gl_rellight : seg->linedef->dy==0 ? -gl_rellight : 0;
   }
-  wall.light=gld_CalcLightLevel(frontsector->lightlevel+rellight+(extralight<<5));
+  wall.light=gld_CalcLightLevel(frontsector->lightlevel+rellight+gld_GetGunFlashLight());
   wall.fogdensity = gld_CalcFogDensity(frontsector, frontsector->lightlevel, GLDIT_WALL);
   wall.alpha=1.0f;
   wall.gltexture=NULL;
@@ -2221,7 +2221,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
     if (!flat.gltexture)
       return;
     // get the lightlevel from floorlightlevel
-    flat.light=gld_CalcLightLevel(plane->lightlevel+(extralight<<5));
+    flat.light=gld_CalcLightLevel(plane->lightlevel+gld_GetGunFlashLight());
     flat.fogdensity = gld_CalcFogDensity(sector, plane->lightlevel, GLDIT_FLOOR);
     // calculate texture offsets
     if (sector->floor_xoffs | sector->floor_yoffs)
@@ -2327,7 +2327,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
     if (!flat.gltexture)
       return;
     // get the lightlevel from ceilinglightlevel
-    flat.light=gld_CalcLightLevel(plane->lightlevel+(extralight<<5));
+    flat.light=gld_CalcLightLevel(plane->lightlevel+gld_GetGunFlashLight());
     flat.fogdensity = gld_CalcFogDensity(sector, plane->lightlevel, GLDIT_CEILING);
     // calculate texture offsets
     if (sector->ceiling_xoffs | sector->ceiling_yoffs)
@@ -2766,7 +2766,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   }
   else
   {
-    sprite.light = gld_CalcLightLevel(lightlevel+(extralight<<5));
+    sprite.light = gld_CalcLightLevel(lightlevel+gld_GetGunFlashLight());
     sprite.fogdensity = gld_CalcFogDensity(thing->subsector->sector, lightlevel, GLDIT_SPRITE);
   }
   if (thing->color)

@@ -463,6 +463,7 @@ typedef float (*gld_CalcLightLevel_f)(int lightlevel);
 typedef float (*gld_Calc2DLightLevel_f)(int lightlevel);
 extern gld_CalcLightLevel_f gld_CalcLightLevel;
 extern gld_Calc2DLightLevel_f gld_Calc2DLightLevel;
+int gld_GetGunFlashLight(void);
 
 //fog
 extern int gl_fog;
