@@ -12,7 +12,6 @@
 #cmakedefine HAVE_MMAP
 #cmakedefine HAVE_CREATE_FILE_MAPPING
 #cmakedefine HAVE_SCHED_SETAFFINITY
-#cmakedefine HAVE_USLEEP
 #cmakedefine HAVE_STRSIGNAL
 #cmakedefine HAVE_MKSTEMP
 

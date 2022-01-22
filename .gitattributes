@@ -391,7 +391,6 @@ prboom2/src/MUSIC/lib/libvorbisfile.lib -text
 prboom2/src/MUSIC/lib/portmidi.lib -text
 prboom2/src/Makefile.am eol=lf
 prboom2/src/PCSOUND/Makefile.am eol=lf
-prboom2/src/POSIX/Makefile.am eol=lf
 prboom2/src/SDL/Makefile.am eol=lf
 prboom2/src/SDL/SDL_windows.h -text
 prboom2/src/SDL/SDL_windows_main.c -text
