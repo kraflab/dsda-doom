@@ -18,7 +18,12 @@
 #ifndef __DSDA_MAPINFO__
 #define __DSDA_MAPINFO__
 
+#define WI_SHOW_NEXT_LOC      0x01
+#define WI_SHOW_NEXT_DONE     0x02
+#define WI_SHOW_NEXT_EPISODAL 0x04
+
 int dsda_NameToMap(const char* name, int* episode, int* map);
 void dsda_NextMap(int* episode, int* map);
+void dsda_ShowNextLocBehaviour(int* behaviour);
 
 #endif

@@ -19,5 +19,6 @@
 #define __DSDA_MAPINFO_LEGACY__
 
 int dsda_LegacyNextMap(int* episode, int* map);
+int dsda_LegacyShowNextLocBehaviour(int* behaviour);
 
 #endif

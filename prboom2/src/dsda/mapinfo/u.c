@@ -44,3 +44,15 @@ int dsda_UNextMap(int* episode, int* map) {
 
   return false;
 }
+
+int dsda_UShowNextLocBehaviour(int* behaviour) {
+  if (!gamemapinfo)
+    return false;
+
+  if (gamemapinfo->endpic[0])
+    *behaviour = WI_SHOW_NEXT_DONE;
+  else
+    *behaviour = WI_SHOW_NEXT_LOC | WI_SHOW_NEXT_EPISODAL;
+
+  return true;
+}

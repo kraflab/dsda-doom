@@ -45,6 +45,7 @@
 #include "r_draw.h"
 #include "hu_stuff.h"
 #include "dsda/intermission_display.h"
+#include "dsda/mapinfo.h"
 
 #include "heretic/in_lude.h"
 #include "hexen/in_lude.h"
@@ -973,16 +974,24 @@ static dboolean    snl_pointeron = false;
 //
 void WI_initShowNextLoc(void)
 {
-  if (gamemapinfo != NULL)
-  {
-    if (gamemapinfo->endpic[0])
-    {
-      G_WorldDone();
-      return;
-    }
-    state = ShowNextLoc;
+  int behaviour;
 
-    // episode change
+  dsda_ShowNextLocBehaviour(&behaviour);
+
+  if (behaviour & WI_SHOW_NEXT_DONE)
+  {
+    G_WorldDone();
+    return;
+  }
+
+  if (behaviour & WI_SHOW_NEXT_LOC)
+  {
+    state = ShowNextLoc;
+  }
+
+  if (behaviour & WI_SHOW_NEXT_EPISODAL)
+  {
+    // episode change possible
     if (wbs->epsd != wbs->nextep)
     {
       void WI_loadData(void);
@@ -992,18 +1001,6 @@ void WI_initShowNextLoc(void)
       WI_loadData();
     }
   }
-  else if (
-    gamemode != commercial &&
-    (
-      gamemap == 8 ||
-      (gamemission == chex && gamemap == 5)
-    )
-  ) {
-    G_WorldDone();
-    return;
-  }
-  else
-    state = ShowNextLoc;
 
   acceleratestage = 0;
 

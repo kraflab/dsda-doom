@@ -20,6 +20,7 @@
 #include "p_setup.h"
 
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 #include "legacy.h"
 
@@ -100,6 +101,18 @@ int dsda_LegacyNextMap(int* episode, int* map) {
     *episode = next / 10;
     *map = next % 10;
   }
+
+  return true;
+}
+
+int dsda_LegacyShowNextLocBehaviour(int* behaviour) {
+  if (
+    gamemode != commercial &&
+    (gamemap == 8 || (gamemission == chex && gamemap == 5))
+  )
+    *behaviour = WI_SHOW_NEXT_DONE;
+  else
+    *behaviour = WI_SHOW_NEXT_LOC;
 
   return true;
 }

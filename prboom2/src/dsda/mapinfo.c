@@ -61,3 +61,10 @@ void dsda_NextMap(int* episode, int* map) {
 
   dsda_LegacyNextMap(episode, map);
 }
+
+void dsda_ShowNextLocBehaviour(int* behaviour) {
+  if (dsda_UShowNextLocBehaviour(behaviour))
+    return;
+
+  dsda_LegacyShowNextLocBehaviour(behaviour);
+}

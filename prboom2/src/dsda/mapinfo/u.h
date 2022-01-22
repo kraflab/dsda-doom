@@ -19,5 +19,6 @@
 #define __DSDA_MAPINFO_U__
 
 int dsda_UNextMap(int* episode, int* map);
+int dsda_UShowNextLocBehaviour(int* behaviour);
 
 #endif
