@@ -56,3 +56,12 @@ int dsda_UShowNextLocBehaviour(int* behaviour) {
 
   return true;
 }
+
+int dsda_USkipDrawShowNextLoc(int* skip) {
+  if (!gamemapinfo)
+    return false;
+
+  *skip = (gamemapinfo->endpic[0] && strcmp(gamemapinfo->endpic, "-") != 0);
+
+  return true;
+}

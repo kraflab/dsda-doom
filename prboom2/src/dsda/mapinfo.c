@@ -68,3 +68,14 @@ void dsda_ShowNextLocBehaviour(int* behaviour) {
 
   dsda_LegacyShowNextLocBehaviour(behaviour);
 }
+
+int dsda_SkipDrawShowNextLoc(void) {
+  int skip;
+
+  if (dsda_USkipDrawShowNextLoc(&skip))
+    return skip;
+
+  dsda_LegacySkipDrawShowNextLoc(&skip);
+
+  return skip;
+}

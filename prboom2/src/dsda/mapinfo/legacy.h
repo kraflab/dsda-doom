@@ -20,5 +20,6 @@
 
 int dsda_LegacyNextMap(int* episode, int* map);
 int dsda_LegacyShowNextLocBehaviour(int* behaviour);
+int dsda_LegacySkipDrawShowNextLoc(int* skip);
 
 #endif

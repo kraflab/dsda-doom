@@ -116,3 +116,9 @@ int dsda_LegacyShowNextLocBehaviour(int* behaviour) {
 
   return true;
 }
+
+int dsda_LegacySkipDrawShowNextLoc(int* skip) {
+  *skip = false;
+
+  return true;
+}

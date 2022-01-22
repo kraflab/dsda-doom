@@ -1049,9 +1049,7 @@ void WI_drawShowNextLoc(void)
   int   i;
   int   last;
 
-  if (gamemapinfo != NULL &&
-      gamemapinfo->endpic[0] &&
-      strcmp(gamemapinfo->endpic, "-") != 0)
+  if (dsda_SkipDrawShowNextLoc())
   {
     return;
   }
