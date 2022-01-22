@@ -79,3 +79,8 @@ int dsda_SkipDrawShowNextLoc(void) {
 
   return skip;
 }
+
+void dsda_UpdateMapInfo(void) {
+  dsda_UUpdateMapInfo();
+  dsda_LegacyUpdateMapInfo();
+}

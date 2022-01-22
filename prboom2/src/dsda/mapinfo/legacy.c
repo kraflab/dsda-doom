@@ -122,3 +122,7 @@ int dsda_LegacySkipDrawShowNextLoc(int* skip) {
 
   return true;
 }
+
+void dsda_LegacyUpdateMapInfo(void) {
+  // nothing to do right now
+}

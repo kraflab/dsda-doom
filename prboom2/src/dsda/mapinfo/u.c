@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "g_game.h"
 
 #include "dsda/mapinfo.h"
 
@@ -64,4 +65,8 @@ int dsda_USkipDrawShowNextLoc(int* skip) {
   *skip = (gamemapinfo->endpic[0] && strcmp(gamemapinfo->endpic, "-") != 0);
 
   return true;
+}
+
+void dsda_UUpdateMapInfo(void) {
+  gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
 }

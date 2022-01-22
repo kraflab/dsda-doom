@@ -36,6 +36,7 @@
 #include "heretic/sb_bar.h"
 
 #include "dsda/demo.h"
+#include "dsda/mapinfo.h"
 #include "dsda/options.h"
 #include "dsda/save.h"
 #include "dsda/settings.h"
@@ -50,7 +51,6 @@ extern size_t savegamesize;
 extern dboolean setsizeneeded;
 extern dboolean BorderNeedRefresh;
 extern int inv_ptr;
-struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
 void RecalculateDrawnSubsectors(void);
 
 static byte* dsda_quick_key_frame_buffer;
@@ -187,7 +187,7 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   gameskill = *save_p++;
   gameepisode = *save_p++;
   gamemap = *save_p++;
-  gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
+  dsda_UpdateMapInfo();
 
   for (i = 0; i < g_maxplayers; i++)
     playeringame[i] = *save_p++;
