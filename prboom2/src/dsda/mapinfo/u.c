@@ -71,6 +71,15 @@ void dsda_UUpdateMapInfo(void) {
   gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
 }
 
+void dsda_UUpdateLastMapInfo(void) {
+  wminfo.lastmapinfo = gamemapinfo;
+  wminfo.nextmapinfo = NULL;
+}
+
+void dsda_UUpdateNextMapInfo(void) {
+  wminfo.nextmapinfo = G_LookupMapinfo(wminfo.nextep + 1, wminfo.next + 1);
+}
+
 int dsda_UResolveCLEV(int* clev, int* episode, int* map) {
   if (G_LookupMapinfo(*episode, *map)) {
     *clev = true;

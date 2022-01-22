@@ -128,6 +128,14 @@ void dsda_LegacyUpdateMapInfo(void) {
   // nothing to do right now
 }
 
+void dsda_LegacyUpdateLastMapInfo(void) {
+  // nothing to do right now
+}
+
+void dsda_LegacyUpdateNextMapInfo(void) {
+  // nothing to do right now
+}
+
 static int dsda_CannotCLEV(int episode, int map) {
   char* next;
 

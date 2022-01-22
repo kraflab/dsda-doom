@@ -85,6 +85,16 @@ void dsda_UpdateMapInfo(void) {
   dsda_LegacyUpdateMapInfo();
 }
 
+void dsda_UpdateLastMapInfo(void) {
+  dsda_UUpdateLastMapInfo();
+  dsda_LegacyUpdateLastMapInfo();
+}
+
+void dsda_UpdateNextMapInfo(void) {
+  dsda_UUpdateNextMapInfo();
+  dsda_LegacyUpdateNextMapInfo();
+}
+
 int dsda_ResolveCLEV(int* episode, int* map) {
   int clev;
 

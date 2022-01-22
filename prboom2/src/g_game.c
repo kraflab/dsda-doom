@@ -1984,8 +1984,7 @@ void G_DoCompleted (void)
   wminfo.nextep = wminfo.epsd = gameepisode -1;
   wminfo.last = gamemap -1;
 
-  wminfo.lastmapinfo = gamemapinfo;
-  wminfo.nextmapinfo = NULL;
+  dsda_UpdateLastMapInfo();
   if (gamemapinfo)
   {
     const char *next = "";
@@ -2109,7 +2108,7 @@ void G_DoCompleted (void)
 
 frommapinfo:
 
-  wminfo.nextmapinfo = G_LookupMapinfo(wminfo.nextep+1, wminfo.next+1);
+  dsda_UpdateNextMapInfo();
   wminfo.maxkills = totalkills;
   wminfo.maxitems = totalitems;
   wminfo.maxsecret = totalsecret;
