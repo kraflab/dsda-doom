@@ -3051,19 +3051,6 @@ struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap)
   return NULL;
 }
 
-struct MapEntry *G_LookupMapinfoByName(const char *lumpname)
-{
-  unsigned i;
-  for (i = 0; i < Maps.mapcount; i++)
-  {
-    if (!stricmp(lumpname, Maps.maps[i].mapname))
-    {
-      return &Maps.maps[i];
-    }
-  }
-  return NULL;
-}
-
 int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap)
 {
   // Check if the given map name can be expressed as a gameepisode/gamemap pair and be reconstructed from it.
