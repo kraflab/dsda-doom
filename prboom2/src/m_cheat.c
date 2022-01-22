@@ -470,7 +470,6 @@ static void cheat_behold()
 }
 
 extern int EpiCustom;
-struct MapEntry* G_LookupMapinfo(int gameepisode, int gamemap);
 
 // 'clev' change-level cheat
 static void cheat_clev(char buf[3])
