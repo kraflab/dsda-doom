@@ -46,6 +46,12 @@ set(COMMON_SRC
     dsda/line_special.h
     dsda/map_format.c
     dsda/map_format.h
+    dsda/mapinfo.c
+    dsda/mapinfo.h
+    dsda/mapinfo/legacy.c
+    dsda/mapinfo/legacy.h
+    dsda/mapinfo/u.c
+    dsda/mapinfo/u.h
     dsda/memory.c
     dsda/memory.h
     dsda/mobjinfo.c
