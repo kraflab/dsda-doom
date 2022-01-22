@@ -22,6 +22,23 @@
 
 #include "u.h"
 
+static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
+{
+  char lumpname[9];
+  unsigned i;
+
+  if (gamemode == commercial)
+    snprintf(lumpname, 9, "MAP%02d", gamemap);
+  else
+    snprintf(lumpname, 9, "E%dM%d", gameepisode, gamemap);
+
+  for (i = 0; i < Maps.mapcount; i++)
+    if (!stricmp(lumpname, Maps.maps[i].mapname))
+      return &Maps.maps[i];
+
+  return NULL;
+}
+
 int dsda_UNextMap(int* episode, int* map) {
   const char *name = NULL;
 
@@ -68,7 +85,7 @@ int dsda_USkipDrawShowNextLoc(int* skip) {
 }
 
 void dsda_UUpdateMapInfo(void) {
-  gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
+  gamemapinfo = dsda_UMapEntry(gameepisode, gamemap);
 }
 
 void dsda_UUpdateLastMapInfo(void) {
@@ -77,11 +94,11 @@ void dsda_UUpdateLastMapInfo(void) {
 }
 
 void dsda_UUpdateNextMapInfo(void) {
-  wminfo.nextmapinfo = G_LookupMapinfo(wminfo.nextep + 1, wminfo.next + 1);
+  wminfo.nextmapinfo = dsda_UMapEntry(wminfo.nextep + 1, wminfo.next + 1);
 }
 
 int dsda_UResolveCLEV(int* clev, int* episode, int* map) {
-  if (G_LookupMapinfo(*episode, *map)) {
+  if (dsda_UMapEntry(*episode, *map)) {
     *clev = true;
 
     return true;

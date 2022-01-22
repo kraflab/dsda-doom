@@ -137,8 +137,6 @@ extern int bytes_per_tic;
 #define singleplayer (!demorecording && !demoplayback && !democontinue && !netgame)
 #define comperr(i) (default_comperr[i] && !demorecording && !demoplayback && !democontinue && !netgame)
 
-struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
-
 // hexen
 
 void G_TeleportNewMap(int map, int position);

@@ -103,8 +103,6 @@
 #define SAVEGAMESIZE  0x20000
 #define SAVESTRINGSIZE  24
 
-struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap);
-
 struct
 {
     int type;   // mobjtype_t
@@ -3033,22 +3031,6 @@ void G_SetFastParms(int fast_pending)
           states[i].tics <<= 1;
     }
   }
-}
-
-struct MapEntry *G_LookupMapinfo(int gameepisode, int gamemap)
-{
-  char lumpname[9];
-  unsigned i;
-  if (gamemode == commercial) snprintf(lumpname, 9, "MAP%02d", gamemap);
-  else snprintf(lumpname, 9, "E%dM%d", gameepisode, gamemap);
-  for (i = 0; i < Maps.mapcount; i++)
-  {
-    if (!stricmp(lumpname, Maps.maps[i].mapname))
-    {
-      return &Maps.maps[i];
-    }
-  }
-  return NULL;
 }
 
 int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap)
