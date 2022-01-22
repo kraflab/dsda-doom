@@ -6595,6 +6595,7 @@ typedef struct
 
   // misc
   int bloodcolor;
+  int visibility;
 } mobjinfo_t;
 
 #define NO_ALTSPEED -1

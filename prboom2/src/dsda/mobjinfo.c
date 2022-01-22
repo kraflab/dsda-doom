@@ -21,6 +21,8 @@
 #include "sounds.h"
 #include "p_map.h"
 
+#include "dsda/map_format.h"
+
 #include "mobjinfo.h"
 
 mobjinfo_t* mobjinfo;
@@ -38,6 +40,7 @@ static void dsda_ResetMobjInfo(int from, int to) {
     mobjinfo[i].splash_group = SG_DEFAULT;
     mobjinfo[i].altspeed = NO_ALTSPEED;
     mobjinfo[i].meleerange = MELEERANGE;
+    mobjinfo[i].visibility = VF_DOOM;
   }
 }
 
@@ -171,6 +174,7 @@ static mobjinfo_t zmt_mapspot_info = {
   .altspeed = NO_ALTSPEED,
   .meleerange = MELEERANGE,
   .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
 };
 
 static mobjinfo_t zmt_mapspot_gravity_info = {
@@ -207,6 +211,7 @@ static mobjinfo_t zmt_mapspot_gravity_info = {
   .altspeed = NO_ALTSPEED,
   .meleerange = MELEERANGE,
   .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
 };
 
 static mobjinfo_t zmt_teleportdest2_info = {
@@ -243,6 +248,7 @@ static mobjinfo_t zmt_teleportdest2_info = {
   .altspeed = NO_ALTSPEED,
   .meleerange = MELEERANGE,
   .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
 };
 
 static mobjinfo_t zmt_teleportdest3_info = {
@@ -279,6 +285,7 @@ static mobjinfo_t zmt_teleportdest3_info = {
   .altspeed = NO_ALTSPEED,
   .meleerange = MELEERANGE,
   .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
 };
 
 typedef struct {

@@ -22,6 +22,12 @@
 #include "r_defs.h"
 #include "p_spec.h"
 
+// visibility flags - hide things that don't match
+#define VF_DOOM    0x01
+#define VF_HERETIC 0x02
+#define VF_HEXEN   0x04
+#define VF_ZDOOM   0x08
+
 typedef struct {
   dboolean zdoom;
   dboolean hexen;
@@ -73,6 +79,7 @@ typedef struct {
   int dn_polyspawn_start;
   int dn_polyspawn_hurt;
   int dn_polyspawn_end;
+  int visibility;
 } map_format_t;
 
 extern map_format_t map_format;
