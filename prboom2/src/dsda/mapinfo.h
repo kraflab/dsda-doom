@@ -18,6 +18,7 @@
 #ifndef __DSDA_MAPINFO__
 #define __DSDA_MAPINFO__
 
+int dsda_NameToMap(const char* name, int* episode, int* map);
 void dsda_NextMap(int* episode, int* map);
 
 #endif
