@@ -24,13 +24,6 @@ jobs:
             package_name: "vs_x64"
           }
         - {
-            name: "Visual Studio 32-bit",
-            os: windows-2019,
-            build_type: "Release",
-            extra_options: "-A Win32",
-            package_name: "vs_win32"
-          }
-        - {
             name: "Linux GCC",
             os: ubuntu-20.04,
             build_type: "Release",
