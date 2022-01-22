@@ -57,6 +57,7 @@
 #include "dsda/excmd.h"
 #include "dsda/input.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/settings.h"
 
 #define plyr (players+consoleplayer)     /* the console player */
@@ -468,35 +469,6 @@ static void cheat_behold()
   plyr->message = s_STSTR_BEHOLD; // Ty 03/27/98 - externalized
 }
 
-static dboolean cannot_clev(int epsd, int map)
-{
-  char *next;
-
-  if (
-    epsd < 1 ||
-    map < 0 ||
-    ((gamemode == retail || gamemode == registered) && (epsd > 9 || map > 9)) ||
-    (gamemode == shareware && (epsd > 1 || map > 9)) ||
-    (gamemode == commercial && (epsd > 1 || map > 99)) ||
-    (gamemission == pack_nerve && map > 9)
-  ) return true;
-
-  if (map_format.mapinfo)
-  {
-    map = P_TranslateMap(map);
-  }
-
-  // Catch invalid maps.
-  next = MAPNAME(epsd, map);
-  if (W_CheckNumForName(next) == -1)
-  {
-	  doom_printf("IDCLEV target not found: %s", next);
-	  return true;
-  }
-
-  return false;
-}
-
 extern int EpiCustom;
 struct MapEntry* G_LookupMapinfo(int gameepisode, int gamemap);
 
@@ -517,26 +489,12 @@ static void cheat_clev(char buf[3])
     map = buf[1] - '0';
   }
 
-  // First check if we have a mapinfo entry for the requested level. If this is present the remaining checks should be skipped.
-  entry = G_LookupMapinfo(epsd, map);
-  if (!entry)
+  if (dsda_ResolveCLEV(&epsd, &map))
   {
+    plyr->message = s_STSTR_CLEV; // Ty 03/27/98 - externalized
 
-	  // Catch invalid maps.
-	  if (cannot_clev(epsd, map))
-		  return;
-
-	  // Chex.exe always warps to episode 1.
-	  if (gamemission == chex)
-	  {
-		  epsd = 1;
-	  }
+    G_DeferedInitNew(gameskill, epsd, map);
   }
-  // So be it.
-
-  plyr->message = s_STSTR_CLEV; // Ty 03/27/98 - externalized
-
-  G_DeferedInitNew(gameskill, epsd, map);
 }
 
 // 'mypos' for player position

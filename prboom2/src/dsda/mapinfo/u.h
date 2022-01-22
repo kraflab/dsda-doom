@@ -22,5 +22,6 @@ int dsda_UNextMap(int* episode, int* map);
 int dsda_UShowNextLocBehaviour(int* behaviour);
 int dsda_USkipDrawShowNextLoc(int* skip);
 void dsda_UUpdateMapInfo(void);
+int dsda_UResolveCLEV(int* clev, int* episode, int* map);
 
 #endif

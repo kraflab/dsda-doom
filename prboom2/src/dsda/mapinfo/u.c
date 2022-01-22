@@ -70,3 +70,13 @@ int dsda_USkipDrawShowNextLoc(int* skip) {
 void dsda_UUpdateMapInfo(void) {
   gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
 }
+
+int dsda_UResolveCLEV(int* clev, int* episode, int* map) {
+  if (G_LookupMapinfo(*episode, *map)) {
+    *clev = true;
+
+    return true;
+  }
+
+  return false;
+}

@@ -84,3 +84,14 @@ void dsda_UpdateMapInfo(void) {
   dsda_UUpdateMapInfo();
   dsda_LegacyUpdateMapInfo();
 }
+
+int dsda_ResolveCLEV(int* episode, int* map) {
+  int clev;
+
+  if (dsda_UResolveCLEV(&clev, episode, map))
+    return clev;
+
+  dsda_LegacyResolveCLEV(&clev, episode, map);
+
+  return clev;
+}

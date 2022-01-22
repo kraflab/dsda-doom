@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "p_setup.h"
+#include "w_wad.h"
 
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
@@ -125,4 +126,42 @@ int dsda_LegacySkipDrawShowNextLoc(int* skip) {
 
 void dsda_LegacyUpdateMapInfo(void) {
   // nothing to do right now
+}
+
+static int dsda_CannotCLEV(int episode, int map) {
+  char* next;
+
+  if (
+    episode < 1 ||
+    map < 0 ||
+    ((gamemode == retail || gamemode == registered) && (episode > 9 || map > 9)) ||
+    (gamemode == shareware && (episode > 1 || map > 9)) ||
+    (gamemode == commercial && (episode > 1 || map > 99)) ||
+    (gamemission == pack_nerve && map > 9)
+  ) return true;
+
+  if (map_format.mapinfo)
+    map = P_TranslateMap(map);
+
+  // Catch invalid maps
+  next = MAPNAME(episode, map);
+  if (W_CheckNumForName(next) == -1) {
+    doom_printf("IDCLEV target not found: %s", next);
+    return true;
+  }
+
+  return false;
+}
+
+int dsda_LegacyResolveCLEV(int* clev, int* episode, int* map) {
+  if (dsda_CannotCLEV(*episode, *map))
+    *clev = false;
+  else {
+    if (gamemission == chex)
+      *episode = 1;
+
+    *clev = true;
+  }
+
+  return true;
 }
