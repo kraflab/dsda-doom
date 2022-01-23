@@ -332,10 +332,6 @@ const char* I_GetTempDir(void)
   return "PROGDIR:";
 }
 
-#elif defined(MACOSX)
-
-/* Defined elsewhere */
-
 #else
 // cph - V.Aguilar (5/30/99) suggested return ~/.lxdoom/, creating
 //  if non-existant
@@ -395,8 +391,6 @@ dboolean HasTrailingSlash(const char* dn)
  * Searches the standard dirs for a named WAD file
  * The dirs are listed at the start of the function
  */
-
-#ifndef MACOSX /* OSX defines its search paths elsewhere. */
 
 #ifdef _WIN32
 #define PATH_SEPARATOR ';'
@@ -528,5 +522,3 @@ const char* I_FindFile2(const char* wfname, const char* ext)
 {
   return (const char*) I_FindFileInternal(wfname, ext, true);
 }
-
-#endif
