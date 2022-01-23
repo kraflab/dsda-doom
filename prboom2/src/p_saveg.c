@@ -620,6 +620,7 @@ void P_UnArchiveBlockLinks(mobj_t** mobj_p, int mobj_count)
     memcpy(&count, save_p, sizeof(count));
     save_p += sizeof(count);
 
+    blocklinks[i] = NULL;
     bprev = &blocklinks[i];
     for (j = 0; j < count; ++j)
     {
