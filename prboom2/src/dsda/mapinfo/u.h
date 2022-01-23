@@ -33,5 +33,6 @@ int dsda_UStartFinale(void);
 int dsda_UFTicker(void);
 void dsda_UFDrawer(void);
 int dsda_UBossAction(mobj_t* mo);
+int dsda_UHUTitle(const char** title);
 
 #endif

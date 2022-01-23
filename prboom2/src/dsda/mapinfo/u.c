@@ -231,3 +231,29 @@ int dsda_UBossAction(mobj_t* mo) {
 
   return true;
 }
+
+int dsda_UHUTitle(const char** title) {
+  void HU_AddCharToTitle(char s);
+
+  const char* s;
+
+  if (!gamemapinfo || !gamemapinfo->levelname)
+    return false;
+
+  if (gamemapinfo->label)
+    s = gamemapinfo->label;
+  else
+    s = gamemapinfo->mapname;
+
+  if (s == gamemapinfo->mapname || strcmp(s, "-") != 0) {
+    while (*s)
+      HU_AddCharToTitle(*(s++));
+
+    HU_AddCharToTitle(':');
+    HU_AddCharToTitle(' ');
+  }
+
+  *title = gamemapinfo->levelname;
+
+  return true;
+}

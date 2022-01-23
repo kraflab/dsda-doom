@@ -167,3 +167,10 @@ int dsda_BossAction(mobj_t* mo) {
   dsda_LegacyBossAction(mo);
   return false;
 }
+
+void dsda_HUTitle(const char** title) {
+  if (dsda_UHUTitle(title))
+    return;
+
+  dsda_LegacyHUTitle(title);
+}

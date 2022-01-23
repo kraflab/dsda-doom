@@ -38,5 +38,6 @@ void dsda_StartFinale(void);
 int dsda_FTicker(void);
 int dsda_FDrawer(void);
 int dsda_BossAction(mobj_t* mo);
+void dsda_HUTitle(const char** title);
 
 #endif

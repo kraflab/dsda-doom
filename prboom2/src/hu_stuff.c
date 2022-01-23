@@ -56,6 +56,7 @@
 #include "dsda.h"
 #include "dsda/hud.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/settings.h"
 #include "g_overflow.h"
 
@@ -63,8 +64,6 @@
 
 int hud_displayed;    //jff 2/23/98 turns heads-up display on/off
 int hud_num;
-
-extern const char* LevelNames[];
 
 //
 // Locally used constants, shortcuts.
@@ -217,18 +216,6 @@ static char hud_keysstr[80];
 static char hud_gkeysstr[80]; //jff 3/7/98 add support for graphic key display
 static char hud_monsecstr[80];
 
-//
-// Builtin map names.
-// The actual names can be found in DStrings.h.
-//
-// Ty 03/27/98 - externalized map name arrays - now in d_deh.c
-// and converted to arrays of pointers to char *
-// See modified HUTITLEx macros
-extern char **mapnames[];
-extern char **mapnames2[];
-extern char **mapnamesp[];
-extern char **mapnamest[];
-
 extern int map_point_coordinates;
 extern int map_level_stat;
 
@@ -292,60 +279,9 @@ static void HU_SetLumpTrans(const char *name)
   }
 }
 
-static const char* HU_Title(void)
+void HU_AddCharToTitle(char s)
 {
-  if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0)
-  {
-    if (heretic)
-    {
-      if (gameepisode < 6 && gamemap < 10)
-      {
-        return LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
-      }
-    }
-    else if (map_format.mapinfo)
-    {
-      return P_GetMapName(gamemap);
-    }
-    else
-    {
-      switch (gamemode)
-      {
-        case shareware:
-        case registered:
-        case retail:
-          // Chex.exe always uses the episode 1 level title
-          // eg. E2M1 gives the title for E1M1
-          if (gamemission == chex && gamemap < 10)
-          {
-            return *mapnames[gamemap - 1];
-          }
-          else if (gameepisode < 6 && gamemap < 10)
-          {
-            return *mapnames[(gameepisode - 1) * 9 + gamemap - 1];
-          }
-          break;
-
-        case commercial:
-        default:  // Ty 08/27/98 - modified to check mission for TNT/Plutonia
-          if (gamemission == pack_tnt && gamemap < 33)
-          {
-            return *mapnamest[gamemap - 1];
-          }
-          else if (gamemission == pack_plut && gamemap < 33)
-          {
-            return *mapnamesp[gamemap - 1];
-          }
-          else if (gamemap < 34)
-          {
-            return *mapnames2[gamemap - 1];
-          }
-          break;
-      }
-    }
-  }
-
-  return MAPNAME(gameepisode, gamemap);
+  HUlib_addCharToTextLine(&w_title, s);
 }
 
 //
@@ -788,30 +724,10 @@ void HU_Start(void)
     &message_list
   );
 
-  if (gamemapinfo && gamemapinfo->levelname)
-  {
-	  if (gamemapinfo->label)
-		  s = gamemapinfo->label;
-	  else
-		  s = gamemapinfo->mapname;
-	  if (s == gamemapinfo->mapname || strcmp(s, "-") != 0)
-	  {
-		  while (*s)
-			  HUlib_addCharToTextLine(&w_title, *(s++));
-
-		  HUlib_addCharToTextLine(&w_title, ':');
-		  HUlib_addCharToTextLine(&w_title, ' ');
-	  }
-	  s = gamemapinfo->levelname;
-  }
-  else
-  {
-    s = HU_Title();
-  }
+  dsda_HUTitle(&s);
 
   while (*s)
-    HUlib_addCharToTextLine(&w_title, *(s++));
-
+    HU_AddCharToTitle(*(s++));
 
   // create the automaps coordinate widget
   // jff 3/3/98 split coord widget into three lines: x,y,z

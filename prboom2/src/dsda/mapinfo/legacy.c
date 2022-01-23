@@ -259,3 +259,50 @@ void dsda_LegacyFDrawer(void) {
 int dsda_LegacyBossAction(mobj_t* mo) {
   return false;
 }
+
+int dsda_LegacyHUTitle(const char** title) {
+  extern char** mapnames[];
+  extern char** mapnames2[];
+  extern char** mapnamesp[];
+  extern char** mapnamest[];
+  extern const char* LevelNames[];
+
+  *title = NULL;
+
+  if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0) {
+    if (heretic) {
+      if (gameepisode < 6 && gamemap < 10)
+        *title = LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
+    }
+    else if (map_format.mapinfo) // hexen mapinfo
+      *title = P_GetMapName(gamemap);
+    else {
+      switch (gamemode) {
+        case shareware:
+        case registered:
+        case retail:
+          // Chex.exe always uses the episode 1 level title
+          // eg. E2M1 gives the title for E1M1
+          if (gamemission == chex && gamemap < 10)
+            *title = *mapnames[gamemap - 1];
+          else if (gameepisode < 6 && gamemap < 10)
+            *title = *mapnames[(gameepisode - 1) * 9 + gamemap - 1];
+          break;
+
+        default:  // Ty 08/27/98 - modified to check mission for TNT/Plutonia
+          if (gamemission == pack_tnt && gamemap < 33)
+            *title = *mapnamest[gamemap - 1];
+          else if (gamemission == pack_plut && gamemap < 33)
+            *title = *mapnamesp[gamemap - 1];
+          else if (gamemap < 34)
+            *title = *mapnames2[gamemap - 1];
+          break;
+      }
+    }
+  }
+
+  if (*title == NULL)
+    *title = MAPNAME(gameepisode, gamemap);
+
+  return true;
+}
