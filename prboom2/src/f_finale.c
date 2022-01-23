@@ -48,14 +48,6 @@
 
 #include "f_finale.h" // CPhipps - hmm...
 
-
-// The implementation for UMAPINFO is kept separate to avoid demo sync issues
-void FMI_Ticker (void);
-void FMI_Drawer (void);
-void FMI_StartFinale (void);
-extern int using_FMI;
-
-
 // Stage of animation:
 //  0 = text, 1 = art screen, 2 = character cast
 int finalestage; // cph -
@@ -202,12 +194,7 @@ void F_StartFinale (void)
          break;
   }
 
-	using_FMI = false;
-
-	if (gamemapinfo)
-	{
-		FMI_StartFinale();
-	}
+	dsda_StartFinale();
 
   finalestage = 0;
   finalecount = 0;
@@ -256,11 +243,10 @@ void F_Ticker(void)
   if (heretic) return Heretic_F_Ticker();
   if (hexen) return Hexen_F_Ticker();
 
-	if (using_FMI)
-	{
-		FMI_Ticker();
-		return;
-	}
+  if (dsda_FTicker())
+  {
+    return;
+  }
 
   if (!demo_compatibility)
     WI_checkForAccelerate();  // killough 3/28/98: check for acceleration
@@ -724,11 +710,10 @@ void F_Drawer (void)
   if (heretic) return Heretic_F_Drawer();
   if (hexen) return Hexen_F_Drawer();
 
-	if (using_FMI)
-	{
-		FMI_Drawer();
-		return;
-	}
+  if (dsda_FDrawer())
+  {
+    return;
+  }
 
   if (finalestage == 2)
   {

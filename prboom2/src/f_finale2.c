@@ -55,7 +55,6 @@ void WI_checkForAccelerate(void);    // killough 3/28/98: used to
 float Get_TextSpeed(void);
 extern int acceleratestage;          // accelerate intermission screens
 extern int midstage;
-int using_FMI;
 
 //
 // F_StartFinale
@@ -81,8 +80,6 @@ void FMI_StartFinale(void)
 	}
 
 	if (!finaleflat) finaleflat = "FLOOR4_8";	// use a single fallback for all maps.
-
-	using_FMI = true;
 }
 
 
@@ -101,7 +98,7 @@ void FMI_StartFinale(void)
 //
 
 
-void FMI_Ticker(void)
+int FMI_Ticker(void)
 {
 	int i;
 	if (!demo_compatibility) WI_checkForAccelerate();  // killough 3/28/98: check for acceleration
@@ -124,7 +121,7 @@ void FMI_Ticker(void)
 				if (!stricmp(gamemapinfo->endpic, "$CAST"))
 				{
 					F_StartCast();
-					using_FMI = false;
+					return false; // let go of finale ownership
 				}
 				else
 				{
@@ -137,7 +134,7 @@ void FMI_Ticker(void)
 					}
 					else if (!stricmp(gamemapinfo->endpic, "!"))
 					{
-						using_FMI = false;
+						return false; // let go of finale ownership
 					}
 				}
 			}
@@ -147,6 +144,8 @@ void FMI_Ticker(void)
 			}
 		}
 	}
+
+	return true; // keep finale ownership
 }
 
 

@@ -243,3 +243,15 @@ int dsda_LegacyInterMusic(int* music_index, int* music_lump) {
 
   return true;
 }
+
+int dsda_LegacyStartFinale(void) {
+  return true;
+}
+
+int dsda_LegacyFTicker(void) {
+  return true;
+}
+
+void dsda_LegacyFDrawer(void) {
+  return;
+}

@@ -32,5 +32,8 @@ void dsda_UpdateNextMapInfo(void);
 int dsda_ResolveCLEV(int* episode, int* map);
 void dsda_MapMusic(int* music_index, int* music_lump);
 void dsda_InterMusic(int* music_index, int* music_lump);
+void dsda_StartFinale(void);
+int dsda_FTicker(void);
+int dsda_FDrawer(void);
 
 #endif

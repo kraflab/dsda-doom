@@ -149,3 +149,26 @@ int dsda_UInterMusic(int* music_index, int* music_lump) {
 
   return true;
 }
+
+int dsda_UStartFinale(void) {
+  void FMI_StartFinale(void);
+
+  if (!gamemapinfo)
+    return false;
+
+  FMI_StartFinale();
+
+  return true;
+}
+
+int dsda_UFTicker(void) {
+  int FMI_Ticker(void);
+
+  return FMI_Ticker();
+}
+
+void dsda_UFDrawer(void) {
+  void FMI_Drawer(void);
+
+  FMI_Drawer();
+}

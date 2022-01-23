@@ -119,3 +119,43 @@ void dsda_InterMusic(int* music_index, int* music_lump) {
 
   dsda_LegacyInterMusic(music_index, music_lump);
 }
+
+typedef enum {
+  finale_owner_legacy,
+  finale_owner_u,
+} finale_owner_t;
+
+static finale_owner_t finale_owner = finale_owner_legacy;
+
+void dsda_StartFinale(void) {
+  if (dsda_UStartFinale()) {
+    finale_owner = finale_owner_u;
+    return;
+  }
+
+  dsda_LegacyStartFinale();
+  finale_owner = finale_owner_legacy;
+}
+
+int dsda_FTicker(void) {
+  if (finale_owner == finale_owner_u) {
+    if (!dsda_UFTicker())
+      finale_owner = finale_owner_legacy;
+
+    return true;
+  }
+
+  dsda_LegacyFTicker();
+  return false;
+}
+
+int dsda_FDrawer(void) {
+  if (finale_owner == finale_owner_u) {
+    dsda_UFDrawer();
+
+    return true;
+  }
+
+  dsda_LegacyFDrawer();
+  return false;
+}
