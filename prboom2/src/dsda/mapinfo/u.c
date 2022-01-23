@@ -17,6 +17,7 @@
 
 #include "doomstat.h"
 #include "g_game.h"
+#include "w_wad.h"
 
 #include "dsda/mapinfo.h"
 
@@ -107,4 +108,24 @@ int dsda_UResolveCLEV(int* clev, int* episode, int* map) {
   }
 
   return false;
+}
+
+int dsda_UMapMusic(int* music_index, int* music_lump) {
+  int lump;
+
+  if (!gamemapinfo)
+    return false;
+
+  if (!gamemapinfo->music[0])
+    return false;
+
+  lump = W_CheckNumForName(gamemapinfo->music);
+
+  if (lump < 0)
+    return false;
+
+  *music_index = -1;
+  *music_lump = lump;
+
+  return true;
 }

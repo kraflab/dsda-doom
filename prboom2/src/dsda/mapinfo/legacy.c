@@ -18,6 +18,8 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "p_setup.h"
+#include "s_sound.h"
+#include "sounds.h"
 #include "w_wad.h"
 
 #include "dsda/map_format.h"
@@ -169,6 +171,57 @@ int dsda_LegacyResolveCLEV(int* clev, int* episode, int* map) {
       *episode = 1;
 
     *clev = true;
+  }
+
+  return true;
+}
+
+static inline int WRAP(int i, int w)
+{
+  while (i < 0)
+    i += w;
+
+  return i % w;
+}
+
+int dsda_LegacyMapMusic(int* music_index, int* music_lump) {
+  *music_lump = -1;
+
+  // hexen mapinfo
+  if (map_format.mapinfo) {
+    *music_index = gamemap;
+
+    return true;
+  }
+
+  if (idmusnum != -1)
+    *music_index = idmusnum; //jff 3/17/98 reload IDMUS music if not -1
+  else {
+    if (gamemode == commercial)
+      *music_index = mus_runnin + WRAP(gamemap - 1, DOOM_MUSINFO - mus_runnin);
+    else {
+      static const int spmus[] = {
+        mus_e3m4,
+        mus_e3m2,
+        mus_e3m3,
+        mus_e1m5,
+        mus_e2m7,
+        mus_e2m4,
+        mus_e2m6,
+        mus_e2m5,
+        mus_e1m9
+      };
+
+      if (heretic)
+        *music_index = heretic_mus_e1m1 +
+                       WRAP((gameepisode - 1) * 9 + gamemap - 1,
+                            HERETIC_NUMMUSIC - heretic_mus_e1m1);
+      else if (gameepisode < 4)
+        *music_index = mus_e1m1 +
+                       WRAP((gameepisode - 1) * 9 + gamemap - 1, mus_runnin - mus_e1m1);
+      else
+        *music_index = spmus[WRAP(gamemap - 1, 9)];
+    }
   }
 
   return true;

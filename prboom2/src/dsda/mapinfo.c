@@ -105,3 +105,10 @@ int dsda_ResolveCLEV(int* episode, int* map) {
 
   return clev;
 }
+
+void dsda_MapMusic(int* music_index, int* music_lump) {
+  if (dsda_UMapMusic(music_index, music_lump))
+    return;
+
+  dsda_LegacyMapMusic(music_index, music_lump);
+}

@@ -54,6 +54,7 @@
 #include "hexen/sn_sonix.h"
 
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/memory.h"
 #include "dsda/settings.h"
 #include "dsda/sfx.h"
@@ -230,17 +231,10 @@ void S_Stop(void)
 //  determines music if any, changes music.
 //
 
-static inline int WRAP(int i, int w)
-{
-  while (i < 0)
-    i += w;
-
-  return i % w;
-}
-
 void S_Start(void)
 {
   int mnum;
+  int muslump;
 
   // kill all playing sounds at start of level
   //  (trust me - a good idea)
@@ -250,60 +244,20 @@ void S_Start(void)
   // start new music for the level
   mus_paused = 0;
 
-  if (map_format.mapinfo)
+  dsda_MapMusic(&mnum, &muslump);
+
+  if (muslump >= 0)
   {
-    mnum = gamemap;
+    musinfo.items[0] = muslump;
+    S_ChangeMusInfoMusic(muslump, true);
   }
   else
   {
-    if (gamemapinfo && gamemapinfo->music[0])
-    {
-  	  int muslump = W_CheckNumForName(gamemapinfo->music);
-  	  if (muslump >= 0)
-  	  {
-  		  musinfo.items[0] = muslump;
-  		  S_ChangeMusInfoMusic(muslump, true);
-  		  return;
-  	  }
-  	  // If the mapinfo defined music cannot be found, try the default for the given map.
-    }
+    memset(&musinfo, 0, sizeof(musinfo));
+    musinfo.items[0] = -1;
 
-    if (idmusnum!=-1)
-      mnum = idmusnum; //jff 3/17/98 reload IDMUS music if not -1
-    else
-    {
-      if (gamemode == commercial)
-        mnum = mus_runnin + WRAP(gamemap - 1, DOOM_MUSINFO - mus_runnin);
-      else
-      {
-        static const int spmus[] =     // Song - Who? - Where?
-        {
-          mus_e3m4,     // American     e4m1
-          mus_e3m2,     // Romero       e4m2
-          mus_e3m3,     // Shawn        e4m3
-          mus_e1m5,     // American     e4m4
-          mus_e2m7,     // Tim  e4m5
-          mus_e2m4,     // Romero       e4m6
-          mus_e2m6,     // J.Anderson   e4m7 CHIRON.WAD
-          mus_e2m5,     // Shawn        e4m8
-          mus_e1m9      // Tim          e4m9
-        };
-
-        if (heretic)
-          mnum = heretic_mus_e1m1 +
-                 WRAP((gameepisode - 1) * 9 + gamemap - 1, HERETIC_NUMMUSIC - heretic_mus_e1m1);
-        else if (gameepisode < 4)
-          mnum = mus_e1m1 + WRAP((gameepisode - 1) * 9 + gamemap - 1, mus_runnin - mus_e1m1);
-        else
-          mnum = spmus[WRAP(gamemap - 1, 9)];
-      }
-    }
+    S_ChangeMusic(mnum, true);
   }
-
-  memset(&musinfo, 0, sizeof(musinfo));
-  musinfo.items[0] = -1;
-
-  S_ChangeMusic(mnum, true);
 }
 
 void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
