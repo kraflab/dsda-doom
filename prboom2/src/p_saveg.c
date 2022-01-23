@@ -620,6 +620,22 @@ void P_UnArchiveBlockLinks(mobj_t** mobj_p, int mobj_count)
     memcpy(&count, save_p, sizeof(count));
     save_p += sizeof(count);
 
+    // Initialize 'blocklinks[i]' to empty value.
+    //
+    // We are restoring whole blocklist snapshot, so there is no need to keep
+    // any original data.
+    //
+    // There is even problem with original data - 'P_TrueUnArchiveThinkers'
+    // calls 'P_SetThingPosition', which setups some 'blocklinks'.
+    //
+    // When 'mobj' moves after storing in 'blocklist' (e.g. in case of friction
+    // 'P_Move' can update coordinates after calling 'P_TryMove') it leads to
+    // situation when 'mobj' is stored in two 'blocklinks'.
+    //
+    // This can further lead to infinite loops, when 'mobj' moves between this
+    // two 'blocklinks' ('bnext' forms loop).
+    blocklinks[i] = NULL;
+
     bprev = &blocklinks[i];
     for (j = 0; j < count; ++j)
     {
