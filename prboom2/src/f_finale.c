@@ -203,7 +203,7 @@ void F_StartFinale (void)
          break;
   }
 
-	dsda_StartFinale();
+  dsda_StartFinale();
 
   finalestage = 0;
   finalecount = 0;
