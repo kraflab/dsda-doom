@@ -26,5 +26,6 @@ void dsda_UUpdateLastMapInfo(void);
 void dsda_UUpdateNextMapInfo(void);
 int dsda_UResolveCLEV(int* clev, int* episode, int* map);
 int dsda_UMapMusic(int* music_index, int* music_lump);
+int dsda_UInterMusic(int* music_index, int* music_lump);
 
 #endif

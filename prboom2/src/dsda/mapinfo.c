@@ -112,3 +112,10 @@ void dsda_MapMusic(int* music_index, int* music_lump) {
 
   dsda_LegacyMapMusic(music_index, music_lump);
 }
+
+void dsda_InterMusic(int* music_index, int* music_lump) {
+  if (dsda_UInterMusic(music_index, music_lump))
+    return;
+
+  dsda_LegacyInterMusic(music_index, music_lump);
+}

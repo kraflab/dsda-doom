@@ -44,6 +44,8 @@
 #include "heretic/f_finale.h"
 #include "hexen/f_finale.h"
 
+#include "dsda/mapinfo.h"
+
 #include "f_finale.h" // CPhipps - hmm...
 
 
@@ -82,7 +84,8 @@ int midstage;                 // whether we're in "mid-stage"
 //
 void F_StartFinale (void)
 {
-  dboolean mus_changed = false;
+  int mnum;
+  int muslump;
 
   if (heretic) return Heretic_F_StartFinale();
   if (hexen) return Hexen_F_StartFinale();
@@ -97,15 +100,16 @@ void F_StartFinale (void)
   finaletext = NULL;
   finaleflat = NULL;
 
-	if (gamemapinfo && gamemapinfo->intermusic[0])
-	{
-		int l = W_CheckNumForName(gamemapinfo->intermusic);
-		if (l >= 0)
-		{
-			S_ChangeMusInfoMusic(l, true);
-			mus_changed = true;
-		}
-	}
+  dsda_InterMusic(&mnum, &muslump);
+
+  if (muslump >= 0)
+  {
+    S_ChangeMusInfoMusic(muslump, true);
+  }
+  else
+  {
+    S_ChangeMusic(mnum, true);
+  }
 
   // Okay - IWAD dependend stuff.
   // This has been changed severly, and
@@ -117,8 +121,6 @@ void F_StartFinale (void)
     case registered:
     case retail:
     {
-      if (!mus_changed) S_ChangeMusic(mus_victor, true);
-
       switch (gameepisode)
       {
         case 1:
@@ -147,8 +149,6 @@ void F_StartFinale (void)
     // DOOM II and missions packs with E1, M34
     case commercial:
     {
-      if (!mus_changed) S_ChangeMusic(mus_read_m, true);
-
       // Ty 08/27/98 - added the gamemission logic
       switch (gamemap)
       {
@@ -197,7 +197,6 @@ void F_StartFinale (void)
 
     // Indeterminate.
     default:  // Ty 03/30/98 - not externalized
-         if (!mus_changed) S_ChangeMusic(mus_read_m, true);
          finaleflat = "F_SKY1"; // Not used anywhere else.
          finaletext = s_C1TEXT;  // FIXME - other text, music?
          break;

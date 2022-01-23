@@ -226,3 +226,20 @@ int dsda_LegacyMapMusic(int* music_index, int* music_lump) {
 
   return true;
 }
+
+int dsda_LegacyInterMusic(int* music_index, int* music_lump) {
+  *music_lump = -1;
+
+  switch (gamemode) {
+    case shareware:
+    case registered:
+    case retail:
+      *music_index = mus_victor;
+      break;
+    default:
+      *music_index = mus_read_m;
+      break;
+  }
+
+  return true;
+}

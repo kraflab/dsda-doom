@@ -26,5 +26,6 @@ void dsda_LegacyUpdateLastMapInfo(void);
 void dsda_LegacyUpdateNextMapInfo(void);
 int dsda_LegacyResolveCLEV(int* clev, int* episode, int* map);
 int dsda_LegacyMapMusic(int* music_index, int* music_lump);
+int dsda_LegacyInterMusic(int* music_index, int* music_lump);
 
 #endif
