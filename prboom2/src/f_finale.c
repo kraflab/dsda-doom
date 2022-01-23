@@ -48,12 +48,20 @@
 
 #include "f_finale.h" // CPhipps - hmm...
 
+// defines for the end mission display text                     // phares
+
+#define TEXTSPEED    3     // original value                    // phares
+#define TEXTWAIT     250   // original value                    // phares
+#define NEWTEXTSPEED 0.01f // new value                         // phares
+#define NEWTEXTWAIT  1000  // new value                         // phares
+
 // Stage of animation:
 //  0 = text, 1 = art screen, 2 = character cast
-int finalestage; // cph -
-int finalecount; // made static
-const char*   finaletext; // cph -
-const char*   finaleflat; // made static const
+int finalestage;
+int finalecount;
+const char*   finaletext;
+const char*   finaleflat;
+const char*   finalepatch;
 
 // defines for the end mission display text                     // phares
 
@@ -91,6 +99,7 @@ void F_StartFinale (void)
 
   finaletext = NULL;
   finaleflat = NULL;
+  finalepatch = NULL;
 
   dsda_InterMusic(&mnum, &muslump);
 
@@ -308,12 +317,10 @@ extern patchnum_t hu_font[HU_FONTSIZE];
 
 void F_TextWrite (void)
 {
-  // [FG] if interbackdrop does not specify a valid flat, draw it as a patch instead
-  if (gamemapinfo && W_CheckNumForName(finaleflat) != -1 &&
-      (W_CheckNumForName)(finaleflat, ns_flats) == -1)
+  if (finalepatch)
   {
     V_FillBorder(-1, 0);
-    V_DrawNamePatch(0, 0, 0, finaleflat, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(0, 0, 0, finalepatch, CR_DEFAULT, VPT_STRETCH);
   }
   else
     V_DrawBackground(finaleflat, 0);

@@ -44,128 +44,126 @@
 #include "w_wad.h"
 #include "s_sound.h"
 #include "sounds.h"
-#include "d_deh.h"  // Ty 03/22/98 - externalizations
-#include "f_finale.h" // CPhipps - hmm...
+#include "d_deh.h"
 
 void F_StartCast (void);
 void F_TextWrite(void);
 void F_BunnyScroll(void);
-
-void WI_checkForAccelerate(void);    // killough 3/28/98: used to
+void WI_checkForAccelerate(void);
 float Get_TextSpeed(void);
-extern int acceleratestage;          // accelerate intermission screens
-extern int midstage;
 
-//
-// F_StartFinale
-//
+extern int finalestage;
+extern int finalecount;
+extern const char* finaletext;
+extern const char* finaleflat;
+extern const char* finalepatch;
+extern int acceleratestage;
+extern int midstage;
 extern dboolean secretexit;
+
+#define TEXTSPEED    3
+#define TEXTWAIT     250
+#define NEWTEXTWAIT  1000
 
 void FMI_StartFinale(void)
 {
-	if (gamemapinfo->intertextsecret && secretexit && gamemapinfo->intertextsecret[0] != '-') // '-' means that any default intermission was cleared.
-	{
-		finaletext = gamemapinfo->intertextsecret;
-	}
-	else if (gamemapinfo->intertext && !secretexit && gamemapinfo->intertext[0] != '-') // '-' means that any default intermission was cleared.
-	{
-		finaletext = gamemapinfo->intertext;
-	}
+  if (gamemapinfo->intertextsecret && secretexit && gamemapinfo->intertextsecret[0] != '-') // '-' means that any default intermission was cleared.
+  {
+    finaletext = gamemapinfo->intertextsecret;
+  }
+  else if (gamemapinfo->intertext && !secretexit && gamemapinfo->intertext[0] != '-') // '-' means that any default intermission was cleared.
+  {
+    finaletext = gamemapinfo->intertext;
+  }
 
-	if (!finaletext) finaletext = "The End";	// this is to avoid a crash on a missing text in the last map.
+  if (!finaletext) finaletext = "The End"; // this is to avoid a crash on a missing text in the last map.
 
-	if (gamemapinfo->interbackdrop[0])
-	{
-		finaleflat = gamemapinfo->interbackdrop;
-	}
+  if (gamemapinfo->interbackdrop[0])
+  {
+    if (W_CheckNumForName(gamemapinfo->interbackdrop) != -1 &&
+        (W_CheckNumForName)(gamemapinfo->interbackdrop, ns_flats) == -1)
+    {
+      finalepatch = gamemapinfo->interbackdrop;
+    }
+    else
+    {
+      finaleflat = gamemapinfo->interbackdrop;
+    }
+  }
 
-	if (!finaleflat) finaleflat = "FLOOR4_8";	// use a single fallback for all maps.
+  if (!finaleflat) finaleflat = "FLOOR4_8";  // use a single fallback for all maps.
 }
-
-
-
-//
-// F_Ticker
-//
-// killough 3/28/98: almost totally rewritten, to use
-// player-directed acceleration instead of constant delays.
-// Now the player can accelerate the text display by using
-// the fire/use keys while it is being printed. The delay
-// automatically responds to the user, and gives enough
-// time to read.
-//
-// killough 5/10/98: add back v1.9 demo compatibility
-//
-
 
 int FMI_Ticker(void)
 {
-	int i;
-	if (!demo_compatibility) WI_checkForAccelerate();  // killough 3/28/98: check for acceleration
-	else for (i = 0; i < g_maxplayers; i++)	if (players[i].cmd.buttons) goto next_level;      // go on to the next level
+  int i;
+  if (!demo_compatibility)
+    WI_checkForAccelerate(); // killough 3/28/98: check for acceleration
+  else
+    for (i = 0; i < g_maxplayers; i++)
+      if (players[i].cmd.buttons)
+        goto next_level;
 
   // advance animation
-	finalecount++;
+  finalecount++;
 
-	if (!finalestage)
-	{
-		float speed = demo_compatibility ? TEXTSPEED : Get_TextSpeed();
-		/* killough 2/28/98: changed to allow acceleration */
-		if (finalecount > strlen(finaletext)*speed +
-			(midstage ? NEWTEXTWAIT : TEXTWAIT) ||
-			(midstage && acceleratestage)) {
+  if (!finalestage)
+  {
+    float speed = demo_compatibility ? TEXTSPEED : Get_TextSpeed();
+    /* killough 2/28/98: changed to allow acceleration */
+    if (
+      finalecount > strlen(finaletext) * speed + (midstage ? NEWTEXTWAIT : TEXTWAIT) ||
+      (midstage && acceleratestage)
+    )
+    {
 
-		next_level:
-			if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0))
-			{
-				if (!stricmp(gamemapinfo->endpic, "$CAST"))
-				{
-					F_StartCast();
-					return false; // let go of finale ownership
-				}
-				else
-				{
-					finalecount = 0;
-					finalestage = 1;
-					wipegamestate = -1;         // force a wipe
-					if (!stricmp(gamemapinfo->endpic, "$BUNNY"))
-					{
-						S_StartMusic(mus_bunny);
-					}
-					else if (!stricmp(gamemapinfo->endpic, "!"))
-					{
-						return false; // let go of finale ownership
-					}
-				}
-			}
-			else
-			{
-				gameaction = ga_worlddone;  // next level, e.g. MAP07
-			}
-		}
-	}
+    next_level:
+      if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0))
+      {
+        if (!stricmp(gamemapinfo->endpic, "$CAST"))
+        {
+          F_StartCast();
+          return false; // let go of finale ownership
+        }
+        else
+        {
+          finalecount = 0;
+          finalestage = 1;
+          wipegamestate = -1; // force a wipe
+          if (!stricmp(gamemapinfo->endpic, "$BUNNY"))
+          {
+            S_StartMusic(mus_bunny);
+          }
+          else if (!stricmp(gamemapinfo->endpic, "!"))
+          {
+            return false; // let go of finale ownership
+          }
+        }
+      }
+      else
+      {
+        gameaction = ga_worlddone; // next level, e.g. MAP07
+      }
+    }
+  }
 
-	return true; // keep finale ownership
+  return true; // keep finale ownership
 }
 
-
-//
-// F_Drawer
-//
 void FMI_Drawer(void)
 {
-	if (!finalestage || !gamemapinfo->endpic[0] || (strcmp(gamemapinfo->endpic, "-") == 0))
-	{
-		F_TextWrite();
-	}
-	else if (strcmp(gamemapinfo->endpic, "$BUNNY") == 0)
-	{
-		F_BunnyScroll();
-	}
-	else
-	{
-		// e6y: wide-res
-		V_FillBorder(-1, 0);
-		V_DrawNamePatch(0, 0, 0, gamemapinfo->endpic, CR_DEFAULT, VPT_STRETCH);
-	}
+  if (!finalestage || !gamemapinfo->endpic[0] || (strcmp(gamemapinfo->endpic, "-") == 0))
+  {
+    F_TextWrite();
+  }
+  else if (strcmp(gamemapinfo->endpic, "$BUNNY") == 0)
+  {
+    F_BunnyScroll();
+  }
+  else
+  {
+    // e6y: wide-res
+    V_FillBorder(-1, 0);
+    V_DrawNamePatch(0, 0, 0, gamemapinfo->endpic, CR_DEFAULT, VPT_STRETCH);
+  }
 }
