@@ -2601,87 +2601,86 @@ void A_BossDeath(mobj_t *mo)
   }
 
   if (gamemode == commercial)
-    {
-      if (gamemap != 7)
-        return;
+  {
+    if (gamemap != 7)
+      return;
 
-      if (!(mo->flags2 & (MF2_MAP07BOSS1 | MF2_MAP07BOSS2)))
-        return;
-    }
+    if (!(mo->flags2 & (MF2_MAP07BOSS1 | MF2_MAP07BOSS2)))
+      return;
+  }
   else
+  {
+    // e6y
+    // Additional check of gameepisode is necessary, because
+    // there is no right or wrong solution for E4M6 in original EXEs,
+    // there's nothing to emulate.
+    if (comp[comp_666] && gameepisode < 4)
     {
       // e6y
-      // Additional check of gameepisode is necessary, because
-      // there is no right or wrong solution for E4M6 in original EXEs,
-      // there's nothing to emulate.
-      if (comp[comp_666] && gameepisode < 4)
+      // Only following checks are present in doom2.exe ver. 1.666 and 1.9
+      // instead of separate checks for each episode in doomult.exe, plutonia.exe and tnt.exe
+      // There is no more desync on doom.wad\episode3.lmp
+      // http://www.doomworld.com/idgames/index.php?id=6909
+      if (gamemap != 8)
+        return;
+      if (mo->flags2 & MF2_E1M8BOSS && gameepisode != 1)
+        return;
+    }
+    else
+    {
+      switch(gameepisode)
       {
-        // e6y
-        // Only following checks are present in doom2.exe ver. 1.666 and 1.9
-        // instead of separate checks for each episode in doomult.exe, plutonia.exe and tnt.exe
-        // There is no more desync on doom.wad\episode3.lmp
-        // http://www.doomworld.com/idgames/index.php?id=6909
+      case 1:
         if (gamemap != 8)
           return;
-        if (mo->flags2 & MF2_E1M8BOSS && gameepisode != 1)
+
+        if (!(mo->flags2 & MF2_E1M8BOSS))
           return;
-      }
-      else
-      {
-      switch(gameepisode)
+        break;
+
+      case 2:
+        if (gamemap != 8)
+          return;
+
+        if (!(mo->flags2 & MF2_E2M8BOSS))
+          return;
+        break;
+
+      case 3:
+        if (gamemap != 8)
+          return;
+
+        if (!(mo->flags2 & MF2_E3M8BOSS))
+          return;
+
+        break;
+
+      case 4:
+        switch(gamemap)
         {
-        case 1:
-          if (gamemap != 8)
-            return;
-
-          if (!(mo->flags2 & MF2_E1M8BOSS))
-            return;
-          break;
-
-        case 2:
-          if (gamemap != 8)
-            return;
-
-          if (!(mo->flags2 & MF2_E2M8BOSS))
-            return;
-          break;
-
-        case 3:
-          if (gamemap != 8)
-            return;
-
-          if (!(mo->flags2 & MF2_E3M8BOSS))
-            return;
-
-          break;
-
-        case 4:
-          switch(gamemap)
-            {
-            case 6:
-              if (!(mo->flags2 & MF2_E4M6BOSS))
-                return;
-              break;
-
-            case 8:
-              if (!(mo->flags2 & MF2_E4M8BOSS))
-                return;
-              break;
-
-            default:
+          case 6:
+            if (!(mo->flags2 & MF2_E4M6BOSS))
               return;
-              break;
-            }
-          break;
+            break;
 
-        default:
-          if (gamemap != 8)
+          case 8:
+            if (!(mo->flags2 & MF2_E4M8BOSS))
+              return;
+            break;
+
+          default:
             return;
-          break;
+            break;
         }
-      }
+        break;
 
+      default:
+        if (gamemap != 8)
+          return;
+        break;
+      }
     }
+  }
 
   // make sure there is a player alive for victory
   for (i = 0; i < g_maxplayers; i++)
@@ -2691,63 +2690,63 @@ void A_BossDeath(mobj_t *mo)
   if (i == g_maxplayers)
     return;     // no one left alive, so do not end game
 
-    // scan the remaining thinkers to see
-    // if all bosses are dead
+  // scan the remaining thinkers to see
+  // if all bosses are dead
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
     if (th->function == P_MobjThinker)
-      {
-        mobj_t *mo2 = (mobj_t *) th;
-        if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
-          return;         // other boss not dead
-      }
+    {
+      mobj_t *mo2 = (mobj_t *) th;
+      if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
+        return;         // other boss not dead
+    }
 
   // victory!
   if ( gamemode == commercial)
+  {
+    if (gamemap == 7)
     {
-      if (gamemap == 7)
-        {
-          if (mo->flags2 & MF2_MAP07BOSS1)
-            {
-              junk.tag = 666;
-              EV_DoFloor(&junk,lowerFloorToLowest);
-              return;
-            }
+      if (mo->flags2 & MF2_MAP07BOSS1)
+      {
+        junk.tag = 666;
+        EV_DoFloor(&junk,lowerFloorToLowest);
+        return;
+      }
 
-          if (mo->flags2 & MF2_MAP07BOSS2)
-            {
-              junk.tag = 667;
-              EV_DoFloor(&junk,raiseToTexture);
-              return;
-            }
-        }
+      if (mo->flags2 & MF2_MAP07BOSS2)
+      {
+        junk.tag = 667;
+        EV_DoFloor(&junk,raiseToTexture);
+        return;
+      }
     }
+  }
   else
+  {
+    switch(gameepisode)
     {
-      switch(gameepisode)
+      case 1:
+        junk.tag = 666;
+        EV_DoFloor(&junk, lowerFloorToLowest);
+        return;
+        break;
+
+      case 4:
+        switch(gamemap)
         {
-        case 1:
-          junk.tag = 666;
-          EV_DoFloor(&junk, lowerFloorToLowest);
-          return;
-          break;
+          case 6:
+            junk.tag = 666;
+            EV_DoDoor(&junk, blazeOpen);
+            return;
+            break;
 
-        case 4:
-          switch(gamemap)
-            {
-            case 6:
-              junk.tag = 666;
-              EV_DoDoor(&junk, blazeOpen);
-              return;
-              break;
-
-            case 8:
-              junk.tag = 666;
-              EV_DoFloor(&junk, lowerFloorToLowest);
-              return;
-              break;
-            }
+          case 8:
+            junk.tag = 666;
+            EV_DoFloor(&junk, lowerFloorToLowest);
+            return;
+            break;
         }
     }
+  }
   G_ExitLevel();
 }
 
