@@ -247,8 +247,8 @@ while (SDL_PollEvent(Event))
 {
   switch (Event->type) {
   case SDL_KEYDOWN:
-#ifdef MACOSX
-    if (Event->key.keysym.mod & KMOD_META)
+#ifdef __APPLE__
+    if (Event->key.keysym.mod & KMOD_GUI)
     {
       // Switch windowed<->fullscreen if pressed <Command-F>
       if (Event->key.keysym.sym == SDLK_f)
@@ -1167,7 +1167,7 @@ void I_UpdateVideoMode(void)
   // In windowed mode, the window can be resized while the game is
   // running.  This feature is disabled on OS X, as it adds an ugly
   // scroll handle to the corner of the screen.
-#ifndef MACOSX
+#ifndef __APPLE__
   if (!desired_fullscreen && V_IsSoftwareMode())
     init_flags |= SDL_WINDOW_RESIZABLE;
 #endif
