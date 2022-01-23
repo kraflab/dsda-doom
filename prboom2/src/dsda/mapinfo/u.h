@@ -18,6 +18,8 @@
 #ifndef __DSDA_MAPINFO_U__
 #define __DSDA_MAPINFO_U__
 
+#include "p_mobj.h"
+
 int dsda_UNextMap(int* episode, int* map);
 int dsda_UShowNextLocBehaviour(int* behaviour);
 int dsda_USkipDrawShowNextLoc(int* skip);
@@ -30,5 +32,6 @@ int dsda_UInterMusic(int* music_index, int* music_lump);
 int dsda_UStartFinale(void);
 int dsda_UFTicker(void);
 void dsda_UFDrawer(void);
+int dsda_UBossAction(mobj_t* mo);
 
 #endif

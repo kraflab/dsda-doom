@@ -18,6 +18,8 @@
 #ifndef __DSDA_MAPINFO_LEGACY__
 #define __DSDA_MAPINFO_LEGACY__
 
+#include "p_mobj.h"
+
 int dsda_LegacyNextMap(int* episode, int* map);
 int dsda_LegacyShowNextLocBehaviour(int* behaviour);
 int dsda_LegacySkipDrawShowNextLoc(int* skip);
@@ -30,5 +32,6 @@ int dsda_LegacyInterMusic(int* music_index, int* music_lump);
 int dsda_LegacyStartFinale(void);
 int dsda_LegacyFTicker(void);
 void dsda_LegacyFDrawer(void);
+int dsda_LegacyBossAction(mobj_t* mo);
 
 #endif

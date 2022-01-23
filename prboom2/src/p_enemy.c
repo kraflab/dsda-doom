@@ -54,6 +54,7 @@
 
 #include "dsda.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 static mobj_t *current_actor;
 
@@ -2552,52 +2553,9 @@ void A_BossDeath(mobj_t *mo)
   // heretic_note: probably we can adopt the clean heretic style and merge
   if (heretic) return Heretic_A_BossDeath(mo);
 
-  // numbossactions == 0 means to use the defaults.
-  // numbossactions == -1 means to do nothing.
-  // positive values mean to check the list of boss actions and run all that apply.
-  if (gamemapinfo && gamemapinfo->numbossactions != 0)
+  if (dsda_BossAction(mo))
   {
-	  if (gamemapinfo->numbossactions < 0) return;
-
-	  // make sure there is a player alive for victory
-	  for (i = 0; i < g_maxplayers; i++)
-  		if (playeringame[i] && players[i].health > 0)
-  		  break;
-
-	  if (i == g_maxplayers)
-		  return;     // no one left alive, so do not end game
-
-	  for (i = 0; i < gamemapinfo->numbossactions; i++)
-	  {
-		  if (gamemapinfo->bossactions[i].type == mo->type)
-			  break;
-	  }
-	  if (i >= gamemapinfo->numbossactions)
-		  return;	// no matches found
-
-		// scan the remaining thinkers to see
-		// if all bosses are dead
-	  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
-		if (th->function == P_MobjThinker)
-		  {
-			mobj_t *mo2 = (mobj_t *) th;
-			if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
-			  return;         // other boss not dead
-      }
-	  for (i = 0; i < gamemapinfo->numbossactions; i++)
-	  {
-		  if (gamemapinfo->bossactions[i].type == mo->type)
-		  {
-			  junk = *lines;
-			  junk.special = (short)gamemapinfo->bossactions[i].special;
-			  junk.tag = (short)gamemapinfo->bossactions[i].tag;
-			  // use special semantics for line activation to block problem types.
-			  if (!P_UseSpecialLine(mo, &junk, 0, true))
-				  map_format.cross_special_line(&junk, 0, mo, true);
-		  }
-	  }
-
-	  return;
+    return;
   }
 
   if (gamemode == commercial)

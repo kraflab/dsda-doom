@@ -159,3 +159,11 @@ int dsda_FDrawer(void) {
   dsda_LegacyFDrawer();
   return false;
 }
+
+int dsda_BossAction(mobj_t* mo) {
+  if (dsda_UBossAction(mo))
+    return true;
+
+  dsda_LegacyBossAction(mo);
+  return false;
+}

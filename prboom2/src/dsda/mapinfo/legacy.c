@@ -255,3 +255,7 @@ int dsda_LegacyFTicker(void) {
 void dsda_LegacyFDrawer(void) {
   return;
 }
+
+int dsda_LegacyBossAction(mobj_t* mo) {
+  return false;
+}

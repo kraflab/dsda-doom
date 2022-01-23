@@ -18,6 +18,8 @@
 #ifndef __DSDA_MAPINFO__
 #define __DSDA_MAPINFO__
 
+#include "p_mobj.h"
+
 #define WI_SHOW_NEXT_LOC      0x01
 #define WI_SHOW_NEXT_DONE     0x02
 #define WI_SHOW_NEXT_EPISODAL 0x04
@@ -35,5 +37,6 @@ void dsda_InterMusic(int* music_index, int* music_lump);
 void dsda_StartFinale(void);
 int dsda_FTicker(void);
 int dsda_FDrawer(void);
+int dsda_BossAction(mobj_t* mo);
 
 #endif

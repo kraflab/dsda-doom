@@ -12,13 +12,18 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA MapInfo U
+//  DSDA MapInfo U
 //
 
 #include "doomstat.h"
 #include "g_game.h"
+#include "p_spec.h"
+#include "p_tick.h"
+#include "r_state.h"
 #include "w_wad.h"
 
+#include "dsda/global.h"
+#include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 
 #include "u.h"
@@ -171,4 +176,58 @@ void dsda_UFDrawer(void) {
   void FMI_Drawer(void);
 
   FMI_Drawer();
+}
+
+// numbossactions == 0 means to use the defaults.
+// numbossactions == -1 means to do nothing.
+// positive values mean to check the list of boss actions and run all that apply.
+int dsda_UBossAction(mobj_t* mo) {
+  int i;
+  line_t junk;
+  thinker_t* th;
+
+  if (!gamemapinfo || !gamemapinfo->numbossactions)
+    return false;
+
+  if (gamemapinfo->numbossactions < 0)
+    return true;
+
+  // make sure there is a player alive for victory
+  for (i = 0; i < g_maxplayers; i++)
+    if (playeringame[i] && players[i].health > 0)
+      break;
+
+  if (i == g_maxplayers)
+    return true; // no one left alive, so do not end game
+
+  for (i = 0; i < gamemapinfo->numbossactions; i++)
+    if (gamemapinfo->bossactions[i].type == mo->type)
+      break;
+
+  if (i >= gamemapinfo->numbossactions)
+    return true; // no matches found
+
+  // scan the remaining thinkers to see
+  // if all bosses are dead
+  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
+    if (th->function == P_MobjThinker) {
+      mobj_t* mo2 = (mobj_t*) th;
+
+      if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
+        return true; // other boss not dead
+    }
+
+  for (i = 0; i < gamemapinfo->numbossactions; i++) {
+    if (gamemapinfo->bossactions[i].type == mo->type) {
+      junk = *lines;
+      junk.special = (short) gamemapinfo->bossactions[i].special;
+      junk.tag = (short) gamemapinfo->bossactions[i].tag;
+
+      // use special semantics for line activation to block problem types.
+      if (!P_UseSpecialLine(mo, &junk, 0, true))
+        map_format.cross_special_line(&junk, 0, mo, true);
+    }
+  }
+
+  return true;
 }
