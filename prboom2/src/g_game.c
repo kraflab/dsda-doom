@@ -147,7 +147,6 @@ skill_t         gameskill;
 dboolean         respawnmonsters;
 int             gameepisode;
 int             gamemap;
-struct MapEntry    *gamemapinfo;
 dboolean         paused;
 // CPhipps - moved *_loadgame vars here
 static dboolean forced_loadgame = false;

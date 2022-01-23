@@ -22,6 +22,8 @@
 
 #include "u.h"
 
+struct MapEntry* gamemapinfo;
+
 static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
 {
   char lumpname[9];
