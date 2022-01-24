@@ -176,7 +176,11 @@ void dsda_ExportTextFile(void) {
   fprintf(file, "Exe:       %s -complevel %i\n",
           (PACKAGE_NAME" "PACKAGE_VERSION), compatibility_level);
   fprintf(file, "\n");
-  fprintf(file, "Time:      %s\n", dsda_TextFileTime());
+
+  name = dsda_TextFileTime();
+  fprintf(file, "Time:      %s\n", name);
+  free(name);
+
   fprintf(file, "\n");
   fprintf(file, "Author:    %s\n", dsda_player_name);
   fprintf(file, "\n");
