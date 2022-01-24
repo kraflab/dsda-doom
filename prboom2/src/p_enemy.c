@@ -283,7 +283,6 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
 static dboolean P_IsOnLift(const mobj_t *actor)
 {
   const sector_t *sec = actor->subsector->sector;
-  line_t line;
   int l;
 
   // Short-circuit: it's on a lift which is active.
@@ -291,8 +290,8 @@ static dboolean P_IsOnLift(const mobj_t *actor)
     return true;
 
   // Check to see if it's in a sector which can be activated as a lift.
-  if ((line.tag = sec->tag))
-    for (l = -1; (l = P_FindLineFromLineTag(&line, l)) >= 0;)
+  if (sec->tag)
+    for (l = -1; (l = P_FindLineFromTag(sec->tag, l)) >= 0;)
       switch (lines[l].special)
   {
   case  10: case  14: case  15: case  20: case  21: case  22:
