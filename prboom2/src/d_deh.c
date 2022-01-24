@@ -1744,11 +1744,10 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
       continue;
     }
 
-    for (match = 0, i = 0; i < DEH_BLOCKMAX; i++)
+    for (match = 0, i = 0; i < DEH_BLOCKMAX - 1; i++)
       if (!strncasecmp(inbuffer, deh_blocks[i].key, strlen(deh_blocks[i].key)))
       { // matches one
-        if (i < DEH_BLOCKMAX - 1)
-          match = 1;
+        match = 1;
         break;  // we got one, that's enough for this block
       }
 
