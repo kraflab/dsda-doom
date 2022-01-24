@@ -37,7 +37,7 @@ static char* dsda_TextFileName(void) {
   int p;
   int name_length;
   char* name;
-  const char* playdemo;
+  char* playdemo;
 
   p = IsDemoPlayback();
 
@@ -57,6 +57,8 @@ static char* dsda_TextFileName(void) {
   }
 
   strcat(name, ".txt");
+
+  free(playdemo);
 
   return name;
 }
