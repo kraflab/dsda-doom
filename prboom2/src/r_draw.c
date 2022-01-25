@@ -92,8 +92,6 @@ static int    tempyl[4], tempyh[4];
 
 // e6y: resolution limitation is removed
 static byte           *tempbuf;
-static unsigned short *short_tempbuf;
-static unsigned int   *int_tempbuf;
 
 static int    startx = 0;
 static int    temptype = COL_NONE;
@@ -539,13 +537,9 @@ void R_InitBuffersRes(void)
 
   if (solidcol) free(solidcol);
   if (tempbuf) free(tempbuf);
-  if (short_tempbuf) free(short_tempbuf);
-  if (int_tempbuf) free(int_tempbuf);
 
   solidcol = calloc(1, SCREENWIDTH * sizeof(*solidcol));
   tempbuf = calloc(1, (SCREENHEIGHT * 4) * sizeof(*tempbuf));
-  short_tempbuf = calloc(1, (SCREENHEIGHT * 4) * sizeof(*short_tempbuf));
-  int_tempbuf = calloc(1, (SCREENHEIGHT * 4) * sizeof(*int_tempbuf));
 }
 
 //
