@@ -474,3 +474,35 @@ int dsda_LegacyPrepareFinale(int* result) {
 void dsda_LegacyLoadMapInfo(void) {
   return;
 }
+
+int dsda_LegacyExitPic(const char** exit_pic) {
+  *exit_pic = NULL;
+
+  return true;
+}
+
+int dsda_LegacyEnterPic(const char** enter_pic) {
+  *enter_pic = NULL;
+
+  return true;
+}
+
+int dsda_LegacyPrepareEntering(void) {
+  extern const char *el_levelname;
+  extern const char *el_levelpic;
+
+  el_levelname = NULL;
+  el_levelpic = NULL;
+
+  return true;
+}
+
+int dsda_LegacyPrepareFinished(void) {
+  extern const char *lf_levelname;
+  extern const char *lf_levelpic;
+
+  lf_levelname = NULL;
+  lf_levelpic = NULL;
+
+  return true;
+}

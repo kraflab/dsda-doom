@@ -310,7 +310,6 @@ typedef struct
 typedef struct
 {
   int         epsd;   // episode # (0-2)
-  struct MapEntry *lastmapinfo;
 
   // if true, splash the secret level
   dboolean   didsecret;
@@ -319,7 +318,6 @@ typedef struct
   int         last;
   int         next;
   int         nextep;	// for when MAPINFO progression crosses into another episode.
-  struct MapEntry *nextmapinfo;
 
   int         maxkills;
   int         maxitems;

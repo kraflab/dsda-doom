@@ -38,5 +38,9 @@ int dsda_USkyTexture(int* sky);
 int dsda_UPrepareIntermission(int* result);
 int dsda_UPrepareFinale(int* result);
 void dsda_ULoadMapInfo(void);
+int dsda_UExitPic(const char** exit_pic);
+int dsda_UEnterPic(const char** enter_pic);
+int dsda_UPrepareEntering(void);
+int dsda_UPrepareFinished(void);
 
 #endif

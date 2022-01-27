@@ -48,5 +48,9 @@ int dsda_SkyTexture(void);
 void dsda_PrepareIntermission(int* behaviour);
 void dsda_PrepareFinale(int* behaviour);
 void dsda_LoadMapInfo(void);
+const char* dsda_ExitPic(void);
+const char* dsda_EnterPic(void);
+void dsda_PrepareEntering(void);
+void dsda_PrepareFinished(void);
 
 #endif

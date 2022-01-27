@@ -34,6 +34,8 @@
 #include "u.h"
 
 static struct MapEntry* gamemapinfo;
+static struct MapEntry* lastmapinfo;
+static struct MapEntry* nextmapinfo;
 
 static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
 {
@@ -102,12 +104,12 @@ void dsda_UUpdateMapInfo(void) {
 }
 
 void dsda_UUpdateLastMapInfo(void) {
-  wminfo.lastmapinfo = gamemapinfo;
-  wminfo.nextmapinfo = NULL;
+  lastmapinfo = gamemapinfo;
+  nextmapinfo = NULL;
 }
 
 void dsda_UUpdateNextMapInfo(void) {
-  wminfo.nextmapinfo = dsda_UMapEntry(wminfo.nextep + 1, wminfo.next + 1);
+  nextmapinfo = dsda_UMapEntry(wminfo.nextep + 1, wminfo.next + 1);
 }
 
 int dsda_UResolveCLEV(int* clev, int* episode, int* map) {
@@ -442,4 +444,68 @@ void dsda_ULoadMapInfo(void) {
     const unsigned char * lump = (const unsigned char *) W_CacheLumpNum(p);
     ParseUMapInfo(lump, W_LumpLength(p), I_Error);
   }
+}
+
+int dsda_UExitPic(const char** exit_pic) {
+  if (!lastmapinfo || !lastmapinfo->exitpic[0])
+    return false;
+
+  *exit_pic = lastmapinfo->exitpic;
+
+  return true;
+}
+
+int dsda_UEnterPic(const char** enter_pic) {
+  if (!nextmapinfo || !nextmapinfo->enterpic[0])
+    return false;
+
+  *enter_pic = nextmapinfo->enterpic;
+
+  return true;
+}
+
+int dsda_UPrepareEntering(void) {
+  extern const char *el_levelname;
+  extern const char *el_levelpic;
+
+  if (!nextmapinfo)
+    return false;
+
+  if (nextmapinfo->levelname && nextmapinfo->levelpic[0] == 0) {
+    el_levelname = nextmapinfo->levelname;
+    el_levelpic = NULL;
+
+    return true;
+  }
+  else if (nextmapinfo->levelpic[0]) {
+    el_levelname = NULL;
+    el_levelpic = nextmapinfo->levelpic;
+
+    return true;
+  }
+
+  return false;
+}
+
+int dsda_UPrepareFinished(void) {
+  extern const char *lf_levelname;
+  extern const char *lf_levelpic;
+
+  if (!lastmapinfo)
+    return false;
+
+  if (lastmapinfo->levelname && lastmapinfo->levelpic[0] == 0) {
+    lf_levelname = lastmapinfo->levelname;
+    lf_levelpic = NULL;
+
+    return true;
+  }
+  else if (lastmapinfo->levelpic[0]) {
+    lf_levelname = NULL;
+    lf_levelpic = lastmapinfo->levelpic;
+
+    return true;
+  }
+
+  return false;
 }

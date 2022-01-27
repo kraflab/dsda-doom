@@ -497,23 +497,30 @@ static void WI_DrawString(int cx, int cy, const char* ch)
 // Args:    none
 // Returns: void
 //
+const char *lf_levelname;
+const char *lf_levelpic;
+
 void WI_drawLF(void)
 {
   int y = WI_TITLEY;
   char lname[9];
 
-  if (wbs->lastmapinfo != NULL && wbs->lastmapinfo->levelname != NULL && wbs->lastmapinfo->levelpic[0] == 0)
+  dsda_PrepareFinished();
+
+  if (lf_levelname)
   {
     // The level defines a new name but no texture for the name.
-    WI_DrawString(160, y, wbs->lastmapinfo->levelname);
+    WI_DrawString(160, y, lf_levelname);
     y += (5 * hu_font['A' - HU_FONTSTART].height / 4);
   }
   else
   {
     // draw <LevelName>
     /* cph - get the graphic lump name and use it */
-    if (wbs->lastmapinfo != NULL && wbs->lastmapinfo->levelpic[0]) strcpy(lname, wbs->lastmapinfo->levelpic);
-    else WI_levelNameLump(wbs->epsd, wbs->last, lname);
+    if (lf_levelpic)
+      strcpy(lname, lf_levelpic);
+    else
+      WI_levelNameLump(wbs->epsd, wbs->last, lname);
 
     if (W_CheckNumForName(lname) == -1)
       return;
@@ -539,6 +546,9 @@ void WI_drawLF(void)
 // Args:    none
 // Returns: void
 //
+const char *el_levelname;
+const char *el_levelpic;
+
 void WI_drawEL(void)
 {
   int y = WI_TITLEY;
@@ -550,18 +560,22 @@ void WI_drawEL(void)
     y, FB, entering, CR_DEFAULT, VPT_STRETCH);
 
 
-  if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelname != NULL && wbs->nextmapinfo->levelpic[0] == 0)
+  dsda_PrepareEntering();
+
+  if (el_levelname)
   {
     y += (5 * V_NamePatchHeight(entering)) / 4;
 
     // The level defines a new name but no texture for the name.
-    WI_DrawString(160, y, wbs->nextmapinfo->levelname);
+    WI_DrawString(160, y, el_levelname);
   }
   else
   {
     /* cph - get the graphic lump name */
-    if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelpic[0]) strcpy(lname, wbs->nextmapinfo->levelpic);
-    else WI_levelNameLump(wbs->nextep, wbs->next, lname);
+    if (el_levelpic)
+      strcpy(lname, el_levelpic);
+    else
+      WI_levelNameLump(wbs->nextep, wbs->next, lname);
 
     if (W_CheckNumForName(lname) == -1)
       return;
@@ -2146,8 +2160,8 @@ void WI_Start(wbstartstruct_t* wbstartstruct)
   WI_initVariables(wbstartstruct);
   WI_loadData();
 
-  exitpic = (wbs->lastmapinfo && wbs->lastmapinfo->exitpic[0]) ? wbs->lastmapinfo->exitpic : NULL;
-  enterpic = (wbs->nextmapinfo && wbs->nextmapinfo->enterpic[0]) ? wbs->nextmapinfo->enterpic : NULL;
+  exitpic = dsda_ExitPic();
+  enterpic = dsda_EnterPic();
 
   if (deathmatch)
     WI_initDeathmatchStats();

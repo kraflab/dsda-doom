@@ -204,3 +204,37 @@ void dsda_LoadMapInfo(void) {
   dsda_ULoadMapInfo();
   dsda_LegacyLoadMapInfo();
 }
+
+const char* dsda_ExitPic(void) {
+  const char* exit_pic;
+
+  if (dsda_UExitPic(&exit_pic))
+    return exit_pic;
+
+  dsda_LegacyExitPic(&exit_pic);
+  return exit_pic;
+}
+
+const char* dsda_EnterPic(void) {
+  const char* enter_pic;
+
+  if (dsda_UExitPic(&enter_pic))
+    return enter_pic;
+
+  dsda_LegacyExitPic(&enter_pic);
+  return enter_pic;
+}
+
+void dsda_PrepareEntering(void) {
+  if (dsda_UPrepareEntering())
+    return;
+
+  dsda_LegacyPrepareEntering();
+}
+
+void dsda_PrepareFinished(void) {
+  if (dsda_UPrepareFinished())
+    return;
+
+  dsda_LegacyPrepareFinished();
+}
