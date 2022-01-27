@@ -34,5 +34,6 @@ int dsda_LegacyFTicker(void);
 void dsda_LegacyFDrawer(void);
 int dsda_LegacyBossAction(mobj_t* mo);
 int dsda_LegacyHUTitle(const char** title);
+int dsda_LegacySkyTexture(int* sky);
 
 #endif

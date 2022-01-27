@@ -39,5 +39,6 @@ int dsda_FTicker(void);
 int dsda_FDrawer(void);
 int dsda_BossAction(mobj_t* mo);
 void dsda_HUTitle(const char** title);
+int dsda_SkyTexture(void);
 
 #endif

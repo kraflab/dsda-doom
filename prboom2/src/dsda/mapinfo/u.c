@@ -257,3 +257,12 @@ int dsda_UHUTitle(const char** title) {
 
   return true;
 }
+
+int dsda_USkyTexture(int* sky) {
+  if (!gamemapinfo || !gamemapinfo->skytexture[0])
+    return false;
+
+  *sky = R_TextureNumForName(gamemapinfo->skytexture);
+
+  return true;
+}

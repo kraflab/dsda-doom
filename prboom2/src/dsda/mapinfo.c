@@ -174,3 +174,14 @@ void dsda_HUTitle(const char** title) {
 
   dsda_LegacyHUTitle(title);
 }
+
+int dsda_SkyTexture(void) {
+  int sky;
+
+  if (dsda_USkyTexture(&sky))
+    return sky;
+
+  dsda_LegacySkyTexture(&sky);
+
+  return sky;
+}

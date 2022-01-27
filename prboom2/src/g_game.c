@@ -1075,57 +1075,7 @@ static void G_DoLoadLevel (void)
   //  setting one.
 
   skyflatnum = R_FlatNumForName(g_skyflatname);
-
-  if (map_format.doublesky)
-  {
-    skytexture = Sky1Texture;
-  }
-  else if (gamemapinfo && gamemapinfo->skytexture[0])
-  {
-    skytexture = R_TextureNumForName(gamemapinfo->skytexture);
-  }
-  else if (heretic)
-  {
-    static const char *sky_lump_names[5] = {
-        "SKY1", "SKY2", "SKY3", "SKY1", "SKY3"
-    };
-
-    if (gameepisode < 6)
-      skytexture = R_TextureNumForName(sky_lump_names[gameepisode - 1]);
-    else
-      skytexture = R_TextureNumForName("SKY1");
-  }
-  // DOOM determines the sky texture to be used
-  // depending on the current episode, and the game version.
-  else if (gamemode == commercial)
-    // || gamemode == pack_tnt   //jff 3/27/98 sorry guys pack_tnt,pack_plut
-    // || gamemode == pack_plut) //aren't gamemodes, this was matching retail
-  {
-    skytexture = R_TextureNumForName ("SKY3");
-    if (gamemap < 12)
-      skytexture = R_TextureNumForName ("SKY1");
-    else
-      if (gamemap < 21)
-        skytexture = R_TextureNumForName ("SKY2");
-  }
-  else //jff 3/27/98 and lets not forget about DOOM and Ultimate DOOM huh?
-  {
-    switch (gameepisode)
-    {
-      case 1:
-        skytexture = R_TextureNumForName ("SKY1");
-        break;
-      case 2:
-        skytexture = R_TextureNumForName ("SKY2");
-        break;
-      case 3:
-        skytexture = R_TextureNumForName ("SKY3");
-        break;
-      case 4: // Special Edition sky
-        skytexture = R_TextureNumForName ("SKY4");
-        break;
-    }//jff 3/27/98 end sky setting fix
-  }
+  skytexture = dsda_SkyTexture();
 
   // [RH] Set up details about sky rendering
   R_InitSkyMap ();

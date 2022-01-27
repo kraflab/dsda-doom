@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "p_setup.h"
+#include "r_data.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "w_wad.h"
@@ -303,6 +304,47 @@ int dsda_LegacyHUTitle(const char** title) {
 
   if (*title == NULL)
     *title = MAPNAME(gameepisode, gamemap);
+
+  return true;
+}
+
+int dsda_LegacySkyTexture(int* sky) {
+  if (map_format.doublesky)
+    *sky = Sky1Texture;
+  else if (heretic) {
+    static const char *sky_lump_names[5] = {
+        "SKY1", "SKY2", "SKY3", "SKY1", "SKY3"
+    };
+
+    if (gameepisode < 6)
+      *sky = R_TextureNumForName(sky_lump_names[gameepisode - 1]);
+    else
+      *sky = R_TextureNumForName("SKY1");
+  }
+  else if (gamemode == commercial) {
+    *sky = R_TextureNumForName ("SKY3");
+    if (gamemap < 12)
+      *sky = R_TextureNumForName ("SKY1");
+    else
+      if (gamemap < 21)
+        *sky = R_TextureNumForName ("SKY2");
+  }
+  else {
+    switch (gameepisode) {
+      case 1:
+        *sky = R_TextureNumForName ("SKY1");
+        break;
+      case 2:
+        *sky = R_TextureNumForName ("SKY2");
+        break;
+      case 3:
+        *sky = R_TextureNumForName ("SKY3");
+        break;
+      case 4: // Special Edition sky
+        *sky = R_TextureNumForName ("SKY4");
+        break;
+    }
+  }
 
   return true;
 }
