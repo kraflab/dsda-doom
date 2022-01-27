@@ -22,6 +22,7 @@
 #include "r_state.h"
 #include "s_sound.h"
 #include "sounds.h"
+#include "umapinfo.h"
 #include "v_video.h"
 #include "w_wad.h"
 
@@ -31,7 +32,7 @@
 
 #include "u.h"
 
-struct MapEntry* gamemapinfo;
+static struct MapEntry* gamemapinfo;
 
 static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
 {
