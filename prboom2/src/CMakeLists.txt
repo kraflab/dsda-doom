@@ -108,7 +108,6 @@ set(COMMON_SRC
     e6y.h
     f_finale.c
     f_finale.h
-    f_finale2.c
     f_wipe.c
     f_wipe.h
     g_game.c
