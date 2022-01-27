@@ -1992,59 +1992,28 @@ void G_DoCompleted (void)
 
 void G_WorldDone (void)
 {
+  int done_behaviour;
+
   gameaction = ga_worlddone;
 
   if (secretexit)
     players[consoleplayer].didsecret = true;
 
-  if (gamemapinfo)
+  dsda_PrepareFinale(&done_behaviour);
+
+  if (done_behaviour & WD_VICTORY)
   {
-    if (gamemapinfo->intertextsecret && secretexit)
-    {
-      if (gamemapinfo->intertextsecret[0] != '-') // '-' means that any default intermission was cleared.
-      F_StartFinale();
+    gameaction = ga_victory;
 
-      return;
-    }
-    else if (gamemapinfo->intertext && !secretexit)
-    {
-      if (gamemapinfo->intertext[0] != '-') // '-' means that any default intermission was cleared.
-      F_StartFinale();
-
-      return;
-    }
-    else if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0))
-    {
-      // game ends without a status screen.
-      gameaction = ga_victory;
-      return;
-    }
-    // if nothing applied, use the defaults.
+    return;
   }
 
-  if (gamemode == commercial && gamemission != pack_nerve)
-    {
-      switch (gamemap)
-        {
-        case 15:
-        case 31:
-          if (!secretexit)
-            break;
-          // fallthrough
-        case 6:
-        case 11:
-        case 20:
-        case 30:
-          F_StartFinale ();
-          break;
-        }
-    }
-  else if (gamemission == pack_nerve && singleplayer && gamemap == 8)
-         F_StartFinale ();
-  else if (gamemap == 8)
-    gameaction = ga_victory; // cph - after ExM8 summary screen, show victory stuff
-  else if (gamemap == 5 && gamemission == chex)
-    gameaction = ga_victory;
+  if (done_behaviour & WD_START_FINALE)
+  {
+    F_StartFinale();
+
+    return;
+  }
 }
 
 void G_DoWorldDone (void)

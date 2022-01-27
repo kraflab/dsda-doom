@@ -313,3 +313,32 @@ int dsda_UPrepareIntermission(int* result) {
 
   return false;
 }
+
+int dsda_UPrepareFinale(int* result) {
+  if (!gamemapinfo)
+    return false;
+
+  if (gamemapinfo->intertextsecret && secretexit) {
+    if (gamemapinfo->intertextsecret[0] != '-') // '-' means that any default intermission was cleared.
+      *result = WD_START_FINALE;
+    else
+      *result = 0;
+
+    return true;
+  }
+  else if (gamemapinfo->intertext && !secretexit) {
+    if (gamemapinfo->intertext[0] != '-') // '-' means that any default intermission was cleared.
+      *result = WD_START_FINALE;
+    else
+      *result = 0;
+
+    return true;
+  }
+  else if (gamemapinfo->endpic[0] && strcmp(gamemapinfo->endpic, "-") != 0) {
+    *result = WD_VICTORY;
+
+    return true;
+  }
+
+  return false;
+}

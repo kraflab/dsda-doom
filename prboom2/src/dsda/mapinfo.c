@@ -192,3 +192,10 @@ void dsda_PrepareIntermission(int* behaviour) {
 
   dsda_LegacyPrepareIntermission(behaviour);
 }
+
+void dsda_PrepareFinale(int* behaviour) {
+  if (dsda_UPrepareFinale(behaviour))
+    return;
+
+  dsda_LegacyPrepareFinale(behaviour);
+}

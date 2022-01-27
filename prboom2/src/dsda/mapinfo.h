@@ -26,6 +26,9 @@
 
 #define DC_VICTORY 0x01
 
+#define WD_VICTORY      0x01
+#define WD_START_FINALE 0x02
+
 int dsda_NameToMap(const char* name, int* episode, int* map);
 void dsda_NextMap(int* episode, int* map);
 void dsda_ShowNextLocBehaviour(int* behaviour);
@@ -43,5 +46,6 @@ int dsda_BossAction(mobj_t* mo);
 void dsda_HUTitle(const char** title);
 int dsda_SkyTexture(void);
 void dsda_PrepareIntermission(int* behaviour);
+void dsda_PrepareFinale(int* behaviour);
 
 #endif

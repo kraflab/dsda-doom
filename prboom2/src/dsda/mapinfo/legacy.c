@@ -442,3 +442,31 @@ int dsda_LegacyPrepareIntermission(int* result) {
 
   return true;
 }
+
+int dsda_LegacyPrepareFinale(int* result) {
+  *result = 0;
+
+  if (gamemode == commercial && gamemission != pack_nerve) {
+    switch (gamemap) {
+      case 15:
+      case 31:
+        if (!secretexit)
+          break;
+        // fallthrough
+      case 6:
+      case 11:
+      case 20:
+      case 30:
+        *result = WD_START_FINALE;
+        break;
+    }
+  }
+  else if (gamemission == pack_nerve && singleplayer && gamemap == 8)
+    *result = WD_START_FINALE;
+  else if (gamemap == 8)
+    *result = WD_VICTORY;
+  else if (gamemap == 5 && gamemission == chex)
+    *result = WD_VICTORY;
+
+  return true;
+}

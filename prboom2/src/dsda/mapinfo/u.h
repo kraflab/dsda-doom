@@ -36,5 +36,6 @@ int dsda_UBossAction(mobj_t* mo);
 int dsda_UHUTitle(const char** title);
 int dsda_USkyTexture(int* sky);
 int dsda_UPrepareIntermission(int* result);
+int dsda_UPrepareFinale(int* result);
 
 #endif
