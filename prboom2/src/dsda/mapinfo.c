@@ -185,3 +185,10 @@ int dsda_SkyTexture(void) {
 
   return sky;
 }
+
+void dsda_PrepareIntermission(int* behaviour) {
+  if (dsda_UPrepareIntermission(behaviour))
+    return;
+
+  dsda_LegacyPrepareIntermission(behaviour);
+}

@@ -348,3 +348,97 @@ int dsda_LegacySkyTexture(int* sky) {
 
   return true;
 }
+
+int dsda_LegacyPrepareIntermission(int* result) {
+  if (gamemode != commercial)
+    if (gamemap == 9) {
+      int i;
+
+      for (i = 0; i < g_maxplayers; i++)
+        players[i].didsecret = true;
+    }
+
+  wminfo.didsecret = players[consoleplayer].didsecret;
+
+  // wminfo.next is 0 biased, unlike gamemap
+  if (gamemode == commercial) {
+    if (secretexit)
+      switch(gamemap) {
+        case 15:
+          wminfo.next = 30;
+          break;
+        case 31:
+          wminfo.next = 31;
+          break;
+        case 2:
+          if (bfgedition && singleplayer)
+            wminfo.next = 32;
+          break;
+        case 4:
+          if (gamemission == pack_nerve && singleplayer)
+            wminfo.next = 8;
+          break;
+      }
+    else
+      switch(gamemap) {
+        case 31:
+        case 32:
+          wminfo.next = 15;
+          break;
+        case 33:
+          if (bfgedition && singleplayer)
+          {
+            wminfo.next = 2;
+            break;
+          }
+          // fallthrough
+        default:
+          wminfo.next = gamemap;
+      }
+
+    if (gamemission == pack_nerve && singleplayer && gamemap == 9)
+      wminfo.next = 4;
+  }
+  else {
+    if (secretexit)
+      wminfo.next = 8; // go to secret level
+    else if (gamemap == 9) {
+      // returning from secret level
+      if (heretic)
+      {
+        static int after_secret[5] = { 6, 4, 4, 4, 3 };
+        wminfo.next = after_secret[gameepisode - 1];
+      }
+      else
+        switch (gameepisode) {
+          case 1:
+            wminfo.next = 3;
+            break;
+          case 2:
+            wminfo.next = 5;
+            break;
+          case 3:
+            wminfo.next = 6;
+            break;
+          case 4:
+            wminfo.next = 2;
+            break;
+        }
+    }
+    else
+      wminfo.next = gamemap; // go to next level
+  }
+
+  if (gamemode == commercial) {
+    if (gamemap >= 1 && gamemap <= 34)
+      wminfo.partime = TICRATE*cpars[gamemap-1];
+  }
+  else {
+    if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9)
+      wminfo.partime = TICRATE*pars[gameepisode][gamemap];
+  }
+
+  *result = 0;
+
+  return true;
+}

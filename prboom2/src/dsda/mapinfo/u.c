@@ -266,3 +266,50 @@ int dsda_USkyTexture(int* sky) {
 
   return true;
 }
+
+int dsda_UPrepareIntermission(int* result) {
+  const char *next = "";
+
+  if (!gamemapinfo)
+    return false;
+
+  if (
+    gamemapinfo->endpic[0] &&
+    strcmp(gamemapinfo->endpic, "-") != 0 &&
+    gamemapinfo->nointermission
+  ) {
+    *result = DC_VICTORY;
+
+    return true;
+  }
+
+  if (secretexit)
+    next = gamemapinfo->nextsecret;
+
+  if (next[0] == 0)
+    next = gamemapinfo->nextmap;
+
+  if (next[0]) {
+    dsda_NameToMap(next, &wminfo.nextep, &wminfo.next);
+
+    wminfo.nextep--;
+    wminfo.next--;
+
+    if (wminfo.nextep != wminfo.epsd)
+    {
+      int i;
+
+      for (i = 0; i < g_maxplayers; i++)
+        players[i].didsecret = false;
+    }
+
+    wminfo.didsecret = players[consoleplayer].didsecret;
+    wminfo.partime = gamemapinfo->partime;
+
+    *result = 0;
+
+    return true;
+  }
+
+  return false;
+}

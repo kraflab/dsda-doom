@@ -24,6 +24,8 @@
 #define WI_SHOW_NEXT_DONE     0x02
 #define WI_SHOW_NEXT_EPISODAL 0x04
 
+#define DC_VICTORY 0x01
+
 int dsda_NameToMap(const char* name, int* episode, int* map);
 void dsda_NextMap(int* episode, int* map);
 void dsda_ShowNextLocBehaviour(int* behaviour);
@@ -40,5 +42,6 @@ int dsda_FDrawer(void);
 int dsda_BossAction(mobj_t* mo);
 void dsda_HUTitle(const char** title);
 int dsda_SkyTexture(void);
+void dsda_PrepareIntermission(int* behaviour);
 
 #endif

@@ -1915,6 +1915,7 @@ void G_SecretExitLevel (void)
 void G_DoCompleted (void)
 {
   int i;
+  int completed_behaviour;
 
   if (hexen)
     return Hexen_G_DoCompleted();
@@ -1932,128 +1933,14 @@ void G_DoCompleted (void)
   wminfo.last = gamemap -1;
 
   dsda_UpdateLastMapInfo();
-  if (gamemapinfo)
+
+  dsda_PrepareIntermission(&completed_behaviour);
+
+  if (completed_behaviour & DC_VICTORY)
   {
-    const char *next = "";
-    if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0) && gamemapinfo->nointermission)
-    {
-      gameaction = ga_victory;
-      return;
-    }
-    if (secretexit) next = gamemapinfo->nextsecret;
-    if (next[0] == 0) next = gamemapinfo->nextmap;
-    if (next[0])
-    {
-      G_ValidateMapName(next, &wminfo.nextep, &wminfo.next);
-      wminfo.nextep--;
-      wminfo.next--;
-      // episode change
-      if (wminfo.nextep != wminfo.epsd)
-      {
-        for (i = 0; i < g_maxplayers; i++)
-          players[i].didsecret = false;
-      }
-      wminfo.didsecret = players[consoleplayer].didsecret;
-      wminfo.partime = gamemapinfo->partime;
-      goto frommapinfo;  // skip past the default setup.
-    }
+    gameaction = ga_victory;
+    return;
   }
-
-  if (gamemode != commercial) // kilough 2/7/98
-  {
-    if (gamemap == 9)
-    {
-      for (i = 0; i < g_maxplayers; i++)
-        players[i].didsecret = true;
-    }
-  }
-
-  wminfo.didsecret = players[consoleplayer].didsecret;
-
-  // wminfo.next is 0 biased, unlike gamemap
-  if (gamemode == commercial)
-    {
-      if (secretexit)
-        switch(gamemap)
-          {
-          case 15:
-            wminfo.next = 30; break;
-          case 31:
-            wminfo.next = 31; break;
-          case 2:
-            if (bfgedition && singleplayer)
-              wminfo.next = 32;
-            break;
-          case 4:
-            if (gamemission == pack_nerve && singleplayer)
-              wminfo.next = 8;
-            break;
-          }
-      else
-        switch(gamemap)
-          {
-          case 31:
-          case 32:
-            wminfo.next = 15; break;
-          case 33:
-            if (bfgedition && singleplayer)
-            {
-              wminfo.next = 2;
-              break;
-            }
-            // fallthrough
-          default:
-            wminfo.next = gamemap;
-          }
-      if (gamemission == pack_nerve && singleplayer && gamemap == 9)
-        wminfo.next = 4;
-    }
-  else
-    {
-      if (secretexit)
-        wminfo.next = 8;  // go to secret level
-      else
-        if (gamemap == 9)
-          {
-            // returning from secret level
-            if (heretic)
-            {
-              static int after_secret[5] = { 6, 4, 4, 4, 3 };
-              wminfo.next = after_secret[gameepisode - 1];
-            }
-            else
-              switch (gameepisode)
-                {
-                case 1:
-                  wminfo.next = 3;
-                  break;
-                case 2:
-                  wminfo.next = 5;
-                  break;
-                case 3:
-                  wminfo.next = 6;
-                  break;
-                case 4:
-                  wminfo.next = 2;
-                  break;
-                }
-          }
-        else
-          wminfo.next = gamemap;          // go to next level
-    }
-
-  if ( gamemode == commercial )
-  {
-    if (gamemap >= 1 && gamemap <= 34)
-      wminfo.partime = TICRATE*cpars[gamemap-1];
-  }
-  else
-  {
-    if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9)
-      wminfo.partime = TICRATE*pars[gameepisode][gamemap];
-  }
-
-frommapinfo:
 
   dsda_UpdateNextMapInfo();
   wminfo.maxkills = totalkills;
