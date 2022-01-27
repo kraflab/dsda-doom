@@ -47,5 +47,6 @@ void dsda_HUTitle(const char** title);
 int dsda_SkyTexture(void);
 void dsda_PrepareIntermission(int* behaviour);
 void dsda_PrepareFinale(int* behaviour);
+void dsda_LoadMapInfo(void);
 
 #endif

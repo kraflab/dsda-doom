@@ -199,3 +199,8 @@ void dsda_PrepareFinale(int* behaviour) {
 
   dsda_LegacyPrepareFinale(behaviour);
 }
+
+void dsda_LoadMapInfo(void) {
+  dsda_ULoadMapInfo();
+  dsda_LegacyLoadMapInfo();
+}

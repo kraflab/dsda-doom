@@ -470,3 +470,7 @@ int dsda_LegacyPrepareFinale(int* result) {
 
   return true;
 }
+
+void dsda_LegacyLoadMapInfo(void) {
+  return;
+}

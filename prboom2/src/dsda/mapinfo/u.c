@@ -17,6 +17,7 @@
 
 #include "doomstat.h"
 #include "g_game.h"
+#include "lprintf.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_state.h"
@@ -431,4 +432,14 @@ int dsda_UPrepareFinale(int* result) {
   }
 
   return false;
+}
+
+void dsda_ULoadMapInfo(void) {
+  int p;
+
+  p = -1;
+  while ((p = W_ListNumFromName("UMAPINFO", p)) >= 0) {
+    const unsigned char * lump = (const unsigned char *) W_CacheLumpNum(p);
+    ParseUMapInfo(lump, W_LumpLength(p), I_Error);
+  }
 }

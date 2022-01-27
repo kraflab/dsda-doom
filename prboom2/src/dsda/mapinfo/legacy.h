@@ -37,5 +37,6 @@ int dsda_LegacyHUTitle(const char** title);
 int dsda_LegacySkyTexture(int* sky);
 int dsda_LegacyPrepareIntermission(int* result);
 int dsda_LegacyPrepareFinale(int* result);
+void dsda_LegacyLoadMapInfo(void);
 
 #endif
