@@ -185,11 +185,15 @@ static unsigned long long dsda_TickElapsedTimeFastDemo(void) {
 }
 
 static unsigned long long dsda_TickElapsedRealTime(void) {
-  return dsda_RealTime() - (unsigned long long) dsda_GetTick() * 1000000 / TICRATE;
+  int tick = dsda_GetTick();
+
+  return dsda_RealTime() - (unsigned long long) tick * 1000000 / TICRATE;
 }
 
 static unsigned long long dsda_TickElapsedScaledTime(void) {
-  return dsda_ScaledTime() - (unsigned long long) dsda_GetTick() * 1000000 / TICRATE;
+  int tick = dsda_GetTick();
+
+  return dsda_ScaledTime() - (unsigned long long) tick * 1000000 / TICRATE;
 }
 
 int (*dsda_GetTick)(void) = dsda_GetTickRealTime;
