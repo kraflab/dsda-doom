@@ -1394,15 +1394,11 @@ void SetRatio(int width, int height)
   switch (render_stretch_hud)
   {
   case patch_stretch_16x10:
-    ST_SCALED_Y = (200 * patches_scaley - ST_SCALED_HEIGHT);
-
     wide_offset2x = (SCREENWIDTH - patches_scalex * 320);
     wide_offset2y = (SCREENHEIGHT - patches_scaley * 200);
     break;
   case patch_stretch_4x3:
     ST_SCALED_HEIGHT = g_st_height * WIDE_SCREENHEIGHT / 200;
-
-    ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
 
     wide_offset2x = (SCREENWIDTH - WIDE_SCREENWIDTH);
     wide_offset2y = (SCREENHEIGHT - WIDE_SCREENHEIGHT);
@@ -1410,7 +1406,6 @@ void SetRatio(int width, int height)
   case patch_stretch_full:
     ST_SCALED_HEIGHT = g_st_height * SCREENHEIGHT / 200;
 
-    ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
     wide_offset2x = 0;
     wide_offset2y = 0;
     break;

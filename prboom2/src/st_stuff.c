@@ -59,7 +59,6 @@
 
 int ST_SCALED_HEIGHT;
 int ST_SCALED_WIDTH;
-int ST_SCALED_Y;
 int ST_SCALED_OFFSETX;
 
 // Palette indices.
