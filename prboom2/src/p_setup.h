@@ -63,7 +63,6 @@ extern int blockmapyneg;
 // hexen
 
 int P_GetMapCluster(int map);
-int P_GetMapCDTrack(int map);
 int P_GetMapWarpTrans(int map);
 int P_GetMapNextMap(int map);
 int P_TranslateMap(int map);
@@ -77,12 +76,6 @@ dboolean P_GetMapLightning(int map);
 dboolean P_GetMapFadeTable(int map);
 char *P_GetMapSongLump(int map);
 void P_PutMapSongLump(int map, char *lumpName);
-int P_GetCDStartTrack(void);
-int P_GetCDEnd1Track(void);
-int P_GetCDEnd2Track(void);
-int P_GetCDEnd3Track(void);
-int P_GetCDIntermissionTrack(void);
-int P_GetCDTitleTrack(void);
 void InitMapMusicInfo(void);
 
 #endif
