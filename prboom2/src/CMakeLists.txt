@@ -48,6 +48,8 @@ set(COMMON_SRC
     dsda/map_format.h
     dsda/mapinfo.c
     dsda/mapinfo.h
+    dsda/mapinfo/hexen.c
+    dsda/mapinfo/hexen.h
     dsda/mapinfo/legacy.c
     dsda/mapinfo/legacy.h
     dsda/mapinfo/u.c
