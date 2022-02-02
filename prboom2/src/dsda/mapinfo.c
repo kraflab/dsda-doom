@@ -229,10 +229,10 @@ const char* dsda_ExitPic(void) {
 const char* dsda_EnterPic(void) {
   const char* enter_pic;
 
-  if (dsda_UExitPic(&enter_pic))
+  if (dsda_UEnterPic(&enter_pic))
     return enter_pic;
 
-  dsda_LegacyExitPic(&enter_pic);
+  dsda_LegacyEnterPic(&enter_pic);
   return enter_pic;
 }
 
