@@ -70,14 +70,6 @@ int dsda_LegacyNextMap(int* episode, int* map) {
     { 62, 63, 11, 11, 11, 11, 11, 11, 11 }, // E6M4-E6M9 shouldn't be accessible
   };
 
-  // hexen mapinfo
-  if (map_format.mapinfo) {
-    *episode = 1;
-    *map = P_GetMapNextMap(gamemap);
-
-    return true;
-  }
-
   // next arrays are 0-based, unlike gameepisode and gamemap
   *episode = gameepisode - 1;
   *map = gamemap - 1;
@@ -171,9 +163,6 @@ static int dsda_CannotCLEV(int episode, int map) {
     (gamemission == pack_nerve && map > 9)
   ) return true;
 
-  if (map_format.mapinfo)
-    map = P_TranslateMap(map);
-
   // Catch invalid maps
   next = MAPNAME(episode, map);
   if (W_CheckNumForName(next) == -1) {
@@ -207,13 +196,6 @@ static inline int WRAP(int i, int w)
 
 int dsda_LegacyMapMusic(int* music_index, int* music_lump) {
   *music_lump = -1;
-
-  // hexen mapinfo
-  if (map_format.mapinfo) {
-    *music_index = gamemap;
-
-    return true;
-  }
 
   if (idmusnum != -1)
     *music_index = idmusnum; //jff 3/17/98 reload IDMUS music if not -1
@@ -295,8 +277,6 @@ int dsda_LegacyHUTitle(const char** title) {
       if (gameepisode < 6 && gamemap < 10)
         *title = LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
     }
-    else if (map_format.mapinfo) // hexen mapinfo
-      *title = P_GetMapName(gamemap);
     else {
       switch (gamemode) {
         case shareware:

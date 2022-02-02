@@ -67,6 +67,9 @@ void dsda_ResolveWarp(int arg_p, int* episode, int* map) {
 }
 
 void dsda_NextMap(int* episode, int* map) {
+  if (dsda_HexenNextMap(episode, map))
+    return;
+
   if (dsda_UNextMap(episode, map))
     return;
 
@@ -74,6 +77,9 @@ void dsda_NextMap(int* episode, int* map) {
 }
 
 void dsda_ShowNextLocBehaviour(int* behaviour) {
+  if (dsda_HexenShowNextLocBehaviour(behaviour))
+    return;
+
   if (dsda_UShowNextLocBehaviour(behaviour))
     return;
 
@@ -82,6 +88,9 @@ void dsda_ShowNextLocBehaviour(int* behaviour) {
 
 int dsda_SkipDrawShowNextLoc(void) {
   int skip;
+
+  if (dsda_HexenSkipDrawShowNextLoc(&skip))
+    return skip;
 
   if (dsda_USkipDrawShowNextLoc(&skip))
     return skip;
@@ -92,22 +101,28 @@ int dsda_SkipDrawShowNextLoc(void) {
 }
 
 void dsda_UpdateMapInfo(void) {
+  dsda_HexenUpdateMapInfo();
   dsda_UUpdateMapInfo();
   dsda_LegacyUpdateMapInfo();
 }
 
 void dsda_UpdateLastMapInfo(void) {
+  dsda_HexenUpdateLastMapInfo();
   dsda_UUpdateLastMapInfo();
   dsda_LegacyUpdateLastMapInfo();
 }
 
 void dsda_UpdateNextMapInfo(void) {
+  dsda_HexenUpdateNextMapInfo();
   dsda_UUpdateNextMapInfo();
   dsda_LegacyUpdateNextMapInfo();
 }
 
 int dsda_ResolveCLEV(int* episode, int* map) {
   int clev;
+
+  if (dsda_HexenResolveCLEV(&clev, episode, map))
+    return clev;
 
   if (dsda_UResolveCLEV(&clev, episode, map))
     return clev;
@@ -118,6 +133,9 @@ int dsda_ResolveCLEV(int* episode, int* map) {
 }
 
 void dsda_MapMusic(int* music_index, int* music_lump) {
+  if (dsda_HexenMapMusic(music_index, music_lump))
+    return;
+
   if (dsda_UMapMusic(music_index, music_lump))
     return;
 
@@ -125,6 +143,9 @@ void dsda_MapMusic(int* music_index, int* music_lump) {
 }
 
 void dsda_InterMusic(int* music_index, int* music_lump) {
+  if (dsda_HexenInterMusic(music_index, music_lump))
+    return;
+
   if (dsda_UInterMusic(music_index, music_lump))
     return;
 
@@ -134,11 +155,17 @@ void dsda_InterMusic(int* music_index, int* music_lump) {
 typedef enum {
   finale_owner_legacy,
   finale_owner_u,
+  finale_owner_hexen,
 } finale_owner_t;
 
 static finale_owner_t finale_owner = finale_owner_legacy;
 
 void dsda_StartFinale(void) {
+  if (dsda_HexenStartFinale()) {
+    finale_owner = finale_owner_hexen;
+    return;
+  }
+
   if (dsda_UStartFinale()) {
     finale_owner = finale_owner_u;
     return;
@@ -149,6 +176,13 @@ void dsda_StartFinale(void) {
 }
 
 int dsda_FTicker(void) {
+  if (finale_owner == finale_owner_hexen) {
+    if (!dsda_HexenFTicker())
+      finale_owner = finale_owner_legacy;
+
+    return true;
+  }
+
   if (finale_owner == finale_owner_u) {
     if (!dsda_UFTicker())
       finale_owner = finale_owner_legacy;
@@ -161,6 +195,12 @@ int dsda_FTicker(void) {
 }
 
 int dsda_FDrawer(void) {
+  if (finale_owner == finale_owner_hexen) {
+    dsda_HexenFDrawer();
+
+    return true;
+  }
+
   if (finale_owner == finale_owner_u) {
     dsda_UFDrawer();
 
@@ -172,6 +212,9 @@ int dsda_FDrawer(void) {
 }
 
 int dsda_BossAction(mobj_t* mo) {
+  if (dsda_HexenBossAction(mo))
+    return true;
+
   if (dsda_UBossAction(mo))
     return true;
 
@@ -180,6 +223,9 @@ int dsda_BossAction(mobj_t* mo) {
 }
 
 void dsda_HUTitle(const char** title) {
+  if (dsda_HexenHUTitle(title))
+    return;
+
   if (dsda_UHUTitle(title))
     return;
 
@@ -188,6 +234,9 @@ void dsda_HUTitle(const char** title) {
 
 int dsda_SkyTexture(void) {
   int sky;
+
+  if (dsda_HexenSkyTexture(&sky))
+    return sky;
 
   if (dsda_USkyTexture(&sky))
     return sky;
@@ -198,6 +247,9 @@ int dsda_SkyTexture(void) {
 }
 
 void dsda_PrepareIntermission(int* behaviour) {
+  if (dsda_HexenPrepareIntermission(behaviour))
+    return;
+
   if (dsda_UPrepareIntermission(behaviour))
     return;
 
@@ -205,6 +257,9 @@ void dsda_PrepareIntermission(int* behaviour) {
 }
 
 void dsda_PrepareFinale(int* behaviour) {
+  if (dsda_HexenPrepareFinale(behaviour))
+    return;
+
   if (dsda_UPrepareFinale(behaviour))
     return;
 
@@ -212,12 +267,16 @@ void dsda_PrepareFinale(int* behaviour) {
 }
 
 void dsda_LoadMapInfo(void) {
+  dsda_HexenLoadMapInfo();
   dsda_ULoadMapInfo();
   dsda_LegacyLoadMapInfo();
 }
 
 const char* dsda_ExitPic(void) {
   const char* exit_pic;
+
+  if (dsda_HexenExitPic(&exit_pic))
+    return exit_pic;
 
   if (dsda_UExitPic(&exit_pic))
     return exit_pic;
@@ -229,6 +288,9 @@ const char* dsda_ExitPic(void) {
 const char* dsda_EnterPic(void) {
   const char* enter_pic;
 
+  if (dsda_HexenEnterPic(&enter_pic))
+    return enter_pic;
+
   if (dsda_UEnterPic(&enter_pic))
     return enter_pic;
 
@@ -237,6 +299,9 @@ const char* dsda_EnterPic(void) {
 }
 
 void dsda_PrepareEntering(void) {
+  if (dsda_HexenPrepareEntering())
+    return;
+
   if (dsda_UPrepareEntering())
     return;
 
@@ -244,6 +309,9 @@ void dsda_PrepareEntering(void) {
 }
 
 void dsda_PrepareFinished(void) {
+  if (dsda_HexenPrepareFinished())
+    return;
+
   if (dsda_UPrepareFinished())
     return;
 
