@@ -20,6 +20,7 @@
 
 #include "p_mobj.h"
 
+int dsda_LegacyResolveWarp(int arg_p, int* episode, int* map);
 int dsda_LegacyNextMap(int* episode, int* map);
 int dsda_LegacyShowNextLocBehaviour(int* behaviour);
 int dsda_LegacySkipDrawShowNextLoc(int* skip);

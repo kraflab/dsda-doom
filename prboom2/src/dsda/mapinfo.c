@@ -21,6 +21,7 @@
 #include "doomstat.h"
 #include "m_misc.h"
 
+#include "dsda/mapinfo/hexen.h"
 #include "dsda/mapinfo/u.h"
 #include "dsda/mapinfo/legacy.h"
 
@@ -53,6 +54,16 @@ int dsda_NameToMap(const char* name, int* episode, int* map) {
   *map = map_from_name;
 
   return true;
+}
+
+void dsda_ResolveWarp(int arg_p, int* episode, int* map) {
+  if (dsda_HexenResolveWarp(arg_p, episode, map))
+    return;
+
+  if (dsda_UResolveWarp(arg_p, episode, map))
+    return;
+
+  dsda_LegacyResolveWarp(arg_p, episode, map);
 }
 
 void dsda_NextMap(int* episode, int* map) {

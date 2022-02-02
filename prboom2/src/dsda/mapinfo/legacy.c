@@ -17,6 +17,7 @@
 
 #include "doomstat.h"
 #include "g_game.h"
+#include "m_argv.h"
 #include "p_setup.h"
 #include "r_data.h"
 #include "s_sound.h"
@@ -27,6 +28,25 @@
 #include "dsda/mapinfo.h"
 
 #include "legacy.h"
+
+int dsda_LegacyResolveWarp(int arg_p, int* episode, int* map) {
+  *map = 0;
+  *episode = 1;
+
+  if (gamemode == commercial)
+  {
+    if (arg_p < myargc - 1)
+      *map = atoi(myargv[arg_p + 1]);
+  }
+  else if (arg_p < myargc - 1 && sscanf(myargv[arg_p + 1], "%d", episode) == 1) {
+    *map = 1;
+
+    if (arg_p < myargc - 2)
+      sscanf(myargv[arg_p + 2], "%d", map);
+  }
+
+  return true;
+}
 
 int dsda_LegacyNextMap(int* episode, int* map) {
   static byte doom2_next[33] = {

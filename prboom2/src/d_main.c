@@ -1633,54 +1633,15 @@ static void HandleWarp(void)
 {
   int p;
 
-  if ((p = M_CheckParm ("-warp")) ||      // killough 5/2/98
-       (p = M_CheckParm ("-wart")))
-       // Ty 08/29/98 - moved this check later so we can have -warp alone: && p < myargc-1)
+  if ((p = M_CheckParm ("-warp")) || (p = M_CheckParm ("-wart")))
   {
     startmap = 0; // Ty 08/29/98 - allow "-warp x" to go to first map in wad(s)
     autostart = true; // Ty 08/29/98 - move outside the decision tree
 
-    if (map_format.mapinfo)
-    {
-      if (p < myargc - 1)
-        startmap = P_TranslateMap(atoi(myargv[p + 1]));
-      else
-        startmap = P_TranslateMap(1);
-      if (startmap == -1)
-      {                       // Couldn't find real map number
-        I_Error("-warp: Invalid map number.\n");
-      }
+    dsda_ResolveWarp(p, &warpepisode, &warpmap);
 
-      warpepisode = 1;
-      warpmap = startmap;
-    }
-    else if (gamemode == commercial)
-    {
-      if (p < myargc-1)
-        startmap = atoi(myargv[p+1]);   // Ty 08/29/98 - add test if last parm
-
-      warpepisode = 1;
-      warpmap = startmap;
-    }
-    else    // 1/25/98 killough: fix -warp xxx from crashing Doom 1 / UD
-    {
-      if (p < myargc-1)
-      {
-        int episode, map;
-        if (sscanf(myargv[p+1], "%d", &episode) == 1)
-        {
-          startepisode = episode;
-          startmap = 1;
-          if (p < myargc-2 && sscanf(myargv[p+2], "%d", &map) == 1)
-          {
-            startmap = map;
-          }
-
-          warpepisode = startepisode;
-          warpmap = startmap;
-        }
-      }
-    }
+    startmap = warpmap;
+    startepisode = warpepisode;
   }
   // Ty 08/29/98 - later we'll check for startmap=0 and autostart=true
   // as a special case that -warp * was used.  Actually -warp with any

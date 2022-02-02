@@ -17,6 +17,8 @@
 
 #include "doomstat.h"
 #include "g_game.h"
+#include "lprintf.h"
+#include "m_argv.h"
 #include "p_setup.h"
 #include "r_data.h"
 #include "s_sound.h"
@@ -27,6 +29,23 @@
 #include "dsda/mapinfo.h"
 
 #include "hexen.h"
+
+int dsda_HexenResolveWarp(int arg_p, int* episode, int* map) {
+  if (!map_format.mapinfo)
+    return false;
+
+  *episode = 1;
+
+  if (arg_p < myargc - 1)
+    *map = P_TranslateMap(atoi(myargv[arg_p + 1]));
+  else
+    *map = P_TranslateMap(1);
+
+  if (*map == -1)
+    I_Error("-warp: Invalid map number.\n");
+
+  return true;
+}
 
 int dsda_HexenNextMap(int* episode, int* map) {
   if (!map_format.mapinfo)

@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "m_argv.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_state.h"
@@ -52,6 +53,10 @@ static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
       return &Maps.maps[i];
 
   return NULL;
+}
+
+int dsda_UResolveWarp(int arg_p, int* episode, int* map) {
+  return false;
 }
 
 int dsda_UNextMap(int* episode, int* map) {
