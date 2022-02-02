@@ -76,6 +76,5 @@ dboolean P_GetMapLightning(int map);
 dboolean P_GetMapFadeTable(int map);
 char *P_GetMapSongLump(int map);
 void P_PutMapSongLump(int map, char *lumpName);
-void InitMapMusicInfo(void);
 
 #endif

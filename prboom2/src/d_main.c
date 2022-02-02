@@ -2151,11 +2151,6 @@ static void D_DoomMainSetup(void)
   lprintf(LO_INFO,"M_Init: Init miscellaneous info.\n");
   M_Init();
 
-  if (map_format.mapinfo)
-  {
-    InitMapMusicInfo();
-  }
-
   if (map_format.sndinfo)
   {
     S_InitScript();

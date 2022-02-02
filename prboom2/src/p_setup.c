@@ -124,7 +124,6 @@ byte     *map_subsectors;
 
 #define UNKNOWN_MAP_NAME "DEVELOPMENT MAP"
 #define DEFAULT_SKY_NAME "SKY1"
-#define DEFAULT_SONG_LUMP "DEFSONG"
 #define DEFAULT_FADE_TABLE "COLORMAP"
 
 typedef struct mapInfo_s
@@ -143,7 +142,7 @@ typedef struct mapInfo_s
     char songLump[10];
 } mapInfo_t;
 
-int MapCount;
+int MapCount = 98;
 
 static mapInfo_t MapInfo[99];
 
@@ -3570,7 +3569,7 @@ dboolean P_GetMapFadeTable(int map)
 
 char *P_GetMapSongLump(int map)
 {
-    if (!strcasecmp(MapInfo[QualifyMap(map)].songLump, DEFAULT_SONG_LUMP))
+    if (!*MapInfo[QualifyMap(map)].songLump)
     {
         return NULL;
     }
@@ -3593,17 +3592,4 @@ void P_PutMapSongLump(int map, char *lumpName)
 static int QualifyMap(int map)
 {
     return (map < 1 || map > MapCount) ? 0 : map;
-}
-
-// Special early initializer needed to start sound before R_Init()
-void InitMapMusicInfo(void)
-{
-    int i;
-
-    for (i = 0; i < 99; i++)
-    {
-        M_StringCopy(MapInfo[i].songLump, DEFAULT_SONG_LUMP,
-                     sizeof(MapInfo[i].songLump));
-    }
-    MapCount = 98;
 }
