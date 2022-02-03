@@ -2246,11 +2246,7 @@ static void D_DoomMainSetup(void)
       {
         dsda_FirstMap(&startepisode, &startmap);
       }
-      if (map_format.mapinfo)
-      {
-        G_StartNewInit();
-      }
-      G_InitNew(startskill, startepisode, startmap);
+      G_InitNew(startskill, startepisode, startmap, true);
       if (demorecording)
         G_BeginRecording();
     }

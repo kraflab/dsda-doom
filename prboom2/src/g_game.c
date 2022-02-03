@@ -2282,7 +2282,7 @@ void G_DoLoadGame(void)
   save_p += (G_ReadOptions(save_p) - save_p);
 
   // load a base level
-  G_InitNew (gameskill, gameepisode, gamemap);
+  G_InitNew (gameskill, gameepisode, gamemap, false);
 
   /* get the times - killough 11/98: save entire word */
   memcpy(&leveltime, save_p, sizeof leveltime);
@@ -2771,7 +2771,6 @@ void G_DoNewGame (void)
 
   if (map_format.mapinfo)
   {
-    G_StartNewInit();
     realMap = P_TranslateMap(d_map);
     if (realMap == -1)
     {
@@ -2780,7 +2779,7 @@ void G_DoNewGame (void)
     realEpisode = 1;
   }
 
-  G_InitNew (d_skill, realEpisode, realMap);
+  G_InitNew (d_skill, realEpisode, realMap, true);
   gameaction = ga_nothing;
 
   dsda_WatchNewGame();
@@ -2873,7 +2872,7 @@ int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap)
 
 extern int EpiCustom;
 
-void G_InitNew(skill_t skill, int episode, int map)
+void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
 {
   int i;
 
@@ -2885,6 +2884,9 @@ void G_InitNew(skill_t skill, int episode, int map)
   dboolean fake_episode_check =
     compatibility_level == ultdoom_compatibility ||
     compatibility_level == finaldoom_compatibility;
+
+  if (prepare)
+    dsda_PrepareInitNew();
 
   if (paused)
   {
@@ -3847,10 +3849,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
   if (!(params & RDH_SKIP_HEADER))
   {
-    if (map_format.mapinfo)
-      G_StartNewInit();
-
-    G_InitNew(skill, episode, map);
+    G_InitNew(skill, episode, map, true);
   }
 
   for (i = 0; i < g_maxplayers; i++)         // killough 4/24/98
@@ -4257,23 +4256,6 @@ void G_Completed(int map, int position)
     gameaction = ga_completed;
     LeaveMap = map;
     LeavePosition = position;
-}
-
-dboolean partial_reset = false;
-
-void G_StartNewInit(void)
-{
-    SV_Init();
-
-    if (partial_reset)
-    {
-      partial_reset = false;
-      return;
-    }
-
-    P_ACSInitNewGame();
-    // Default the player start spot group to 0
-    RebornPosition = 0;
 }
 
 void G_TeleportNewMap(int map, int position)

@@ -369,6 +369,10 @@ int dsda_USkyTexture(int* sky) {
   return true;
 }
 
+int dsda_UPrepareInitNew(void) {
+  return false;
+}
+
 int dsda_UPrepareIntermission(int* result) {
   const char *next = "";
 

@@ -45,7 +45,7 @@
 dboolean G_Responder(event_t *ev);
 dboolean G_CheckDemoStatus(void);
 void G_DeathMatchSpawnPlayer(int playernum);
-void G_InitNew(skill_t skill, int episode, int map);
+void G_InitNew(skill_t skill, int episode, int map, dboolean prepare);
 void G_DeferedInitNew(skill_t skill, int episode, int map);
 void G_DeferedPlayDemo(const char *demo); // CPhipps - const
 void G_LoadGame(int slot); // killough 5/15/98
@@ -141,6 +141,5 @@ extern int bytes_per_tic;
 
 void G_TeleportNewMap(int map, int position);
 void G_Completed(int map, int position);
-void G_StartNewInit(void);
 
 #endif

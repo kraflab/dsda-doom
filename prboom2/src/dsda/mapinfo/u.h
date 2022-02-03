@@ -37,6 +37,7 @@ void dsda_UFDrawer(void);
 int dsda_UBossAction(mobj_t* mo);
 int dsda_UHUTitle(const char** title);
 int dsda_USkyTexture(int* sky);
+int dsda_UPrepareInitNew(void);
 int dsda_UPrepareIntermission(int* result);
 int dsda_UPrepareFinale(int* result);
 void dsda_ULoadMapInfo(void);

@@ -1947,7 +1947,7 @@ void SV_SaveMap(void)
 void SV_LoadMap(void)
 {
     // Load a base level
-    G_InitNew(gameskill, gameepisode, gamemap);
+    G_InitNew(gameskill, gameepisode, gamemap, false);
 
     // Remove all thinkers
     RemoveAllThinkers();
@@ -2030,7 +2030,7 @@ void SV_MapTeleport(int map, int position)
     }
     else
     {                           // New map
-        G_InitNew(gameskill, gameepisode, gamemap);
+        G_InitNew(gameskill, gameepisode, gamemap, false);
 
         P_MapStart();
 

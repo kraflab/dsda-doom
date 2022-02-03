@@ -25,6 +25,9 @@
 #include "sounds.h"
 #include "w_wad.h"
 
+#include "hexen/p_acs.h"
+#include "hexen/sv_save.h"
+
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 
@@ -155,6 +158,30 @@ int dsda_HexenHUTitle(const char** title) {
 
 int dsda_HexenSkyTexture(int* sky) {
   return false; // TODO
+}
+
+dboolean partial_reset = false;
+
+int dsda_HexenPrepareInitNew(void) {
+  extern int RebornPosition;
+
+  if (!map_format.mapinfo)
+    return false;
+
+  SV_Init();
+
+  if (partial_reset) {
+    partial_reset = false;
+    return true;
+  }
+
+  if (map_format.acs)
+    P_ACSInitNewGame();
+
+  // Default the player start spot group to 0
+  RebornPosition = 0;
+
+  return true;
 }
 
 int dsda_HexenPrepareIntermission(int* result) {

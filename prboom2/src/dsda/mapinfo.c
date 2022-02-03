@@ -256,6 +256,16 @@ int dsda_SkyTexture(void) {
   return sky;
 }
 
+void dsda_PrepareInitNew(void) {
+  if (dsda_HexenPrepareInitNew())
+    return;
+
+  if (dsda_UPrepareInitNew())
+    return;
+
+  dsda_LegacyPrepareInitNew();
+}
+
 void dsda_PrepareIntermission(int* behaviour) {
   if (dsda_HexenPrepareIntermission(behaviour))
     return;

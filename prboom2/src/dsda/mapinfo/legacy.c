@@ -382,6 +382,10 @@ int dsda_LegacySkyTexture(int* sky) {
   return true;
 }
 
+int dsda_LegacyPrepareInitNew(void) {
+  return true;
+}
+
 int dsda_LegacyPrepareIntermission(int* result) {
   if (gamemode != commercial)
     if (gamemap == 9) {

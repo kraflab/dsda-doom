@@ -219,7 +219,7 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
     dsda_SetDemoBufferOffset(demo_write_buffer_offset);
   }
 
-  G_InitNew(gameskill, gameepisode, gamemap);
+  G_InitNew(gameskill, gameepisode, gamemap, false);
 
   memcpy(&leveltime, save_p, sizeof(leveltime));
   save_p += sizeof(leveltime);
