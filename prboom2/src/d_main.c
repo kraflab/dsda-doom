@@ -110,7 +110,6 @@
 
 #include "i_glob.h"
 
-void GetFirstMap(int *ep, int *map); // Ty 08/29/98 - add "-warp x" functionality
 static void D_PageDrawer(void);
 
 // CPhipps - removed wadfiles[] stuff
@@ -2243,9 +2242,9 @@ static void D_DoomMainSetup(void)
     if (autostart || netgame)
     {
       // sets first map and first episode if unknown
-      if (autostart)
+      if (autostart && !startmap)
       {
-        GetFirstMap(&startepisode, &startmap);
+        dsda_FirstMap(&startepisode, &startmap);
       }
       if (map_format.mapinfo)
       {
@@ -2272,89 +2271,4 @@ void D_DoomMain(void)
   D_DoomMainSetup(); // CPhipps - setup out of main execution stack
 
   D_DoomLoop ();  // never returns
-}
-
-//
-// GetFirstMap
-//
-// Ty 08/29/98 - determine first available map from the loaded wads and run it
-//
-
-void GetFirstMap(int *ep, int *map)
-{
-  int i,j; // used to generate map name
-  dboolean done = false;  // Ty 09/13/98 - to exit inner loops
-  char test[6];  // MAPxx or ExMx plus terminator for testing
-  char name[6];  // MAPxx or ExMx plus terminator for display
-  dboolean newlevel = false;  // Ty 10/04/98 - to test for new level
-  int ix;  // index for lookup
-
-  strcpy(name,""); // initialize
-  if (*map == 0) // unknown so go search for first changed one
-  {
-    *ep = 1;
-    *map = 1; // default E1M1 or MAP01
-    if (map_format.mapinfo)
-    {
-      *map = P_TranslateMap(1);
-      if (*map == -1)
-      {                       // Couldn't find real map number
-        I_Error("Unable to autostart.\n");
-      }
-    }
-    else if (gamemode == commercial)
-    {
-      for (i=1;!done && i<33;i++)  // Ty 09/13/98 - add use of !done
-      {
-        snprintf(test,sizeof(test),"MAP%02d",i);
-        ix = W_CheckNumForName(test);
-        if (ix != -1)  // Ty 10/04/98 avoid -1 subscript
-        {
-          if (lumpinfo[ix].source == source_pwad)
-          {
-            *map = i;
-            strcpy(name,test);  // Ty 10/04/98
-            done = true;  // Ty 09/13/98
-            newlevel = true; // Ty 10/04/98
-          }
-          else
-          {
-            if (!*name)  // found one, not pwad.  First default.
-               strcpy(name,test);
-          }
-        }
-      }
-    }
-    else // one of the others
-    {
-      strcpy(name,"E1M1");  // Ty 10/04/98 - default for display
-      for (i=1;!done && i<5;i++)  // Ty 09/13/98 - add use of !done
-      {
-        for (j=1;!done && j<10;j++)  // Ty 09/13/98 - add use of !done
-        {
-          snprintf(test,sizeof(test),"E%dM%d",i,j);
-          ix = W_CheckNumForName(test);
-          if (ix != -1)  // Ty 10/04/98 avoid -1 subscript
-          {
-            if (lumpinfo[ix].source == source_pwad)
-            {
-              *ep = i;
-              *map = j;
-              strcpy(name,test); // Ty 10/04/98
-              done = true;  // Ty 09/13/98
-              newlevel = true; // Ty 10/04/98
-            }
-            else
-            {
-              if (!*name)  // found one, not pwad.  First default.
-                 strcpy(name,test);
-            }
-          }
-        }
-      }
-    }
-    //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"Auto-warping to first %slevel: %s\n",
-      newlevel ? "new " : "", name);  // Ty 10/04/98 - new level test
-  }
 }

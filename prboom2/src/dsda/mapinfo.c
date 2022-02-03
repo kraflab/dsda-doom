@@ -56,6 +56,16 @@ int dsda_NameToMap(const char* name, int* episode, int* map) {
   return true;
 }
 
+void dsda_FirstMap(int* episode, int* map) {
+  if (dsda_HexenFirstMap(episode, map))
+    return;
+
+  if (dsda_UFirstMap(episode, map))
+    return;
+
+  dsda_LegacyFirstMap(episode, map);
+}
+
 void dsda_ResolveWarp(int arg_p, int* episode, int* map) {
   if (dsda_HexenResolveWarp(arg_p, episode, map))
     return;

@@ -20,6 +20,7 @@
 
 #include "p_mobj.h"
 
+int dsda_UFirstMap(int* episode, int* map);
 int dsda_UResolveWarp(int arg_p, int* episode, int* map);
 int dsda_UNextMap(int* episode, int* map);
 int dsda_UShowNextLocBehaviour(int* behaviour);

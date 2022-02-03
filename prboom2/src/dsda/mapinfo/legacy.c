@@ -29,6 +29,39 @@
 
 #include "legacy.h"
 
+int dsda_LegacyFirstMap(int* episode, int* map) {
+  int i, j, lump;
+
+  *episode = 1;
+  *map = 1;
+
+  if (gamemode == commercial) {
+    for (i = 1; i < 33; i++) {
+      lump = W_CheckNumForName(MAPNAME(1, i));
+
+      if (lump != -1 && lumpinfo[lump].source == source_pwad) {
+        *map = i;
+
+        return true;
+      }
+    }
+  }
+  else
+    for (i = 1; i < 5; i++)
+      for (j = 1; j < 10; j++) {
+        lump = W_CheckNumForName(MAPNAME(i, j));
+
+        if (lump != -1 && lumpinfo[lump].source == source_pwad) {
+          *episode = i;
+          *map = j;
+
+          return true;
+        }
+      }
+
+  return true;
+}
+
 int dsda_LegacyResolveWarp(int arg_p, int* episode, int* map) {
   *map = 0;
   *episode = 1;

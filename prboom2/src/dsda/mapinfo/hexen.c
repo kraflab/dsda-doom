@@ -30,6 +30,19 @@
 
 #include "hexen.h"
 
+int dsda_HexenFirstMap(int* episode, int* map) {
+  if (!map_format.mapinfo)
+    return false;
+
+  *episode = 1;
+  *map = P_TranslateMap(1);
+
+  if (*map == -1)
+    I_Error("Unable to detect default first map");
+
+  return true;
+}
+
 int dsda_HexenResolveWarp(int arg_p, int* episode, int* map) {
   if (!map_format.mapinfo)
     return false;
