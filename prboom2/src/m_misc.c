@@ -298,6 +298,8 @@ default_t defaults[] =
   {"default_compatibility_level",{(int*)&default_compatibility_level},
    {-1},-1,MAX_COMPATIBILITY_LEVEL-1,
    def_int,ss_none}, // compatibility level" - CPhipps
+  {"vanilla_keymap",{&vanilla_keymap},{0},0,1,
+   def_bool,ss_none}, // Use vanilla keyboard mapping
   {"realtic_clock_rate",{&realtic_clock_rate},{100},0,UL,
    def_int,ss_none}, // percentage of normal speed (35 fps) realtic clock runs at
   {"menu_background", {(int*)&menu_background}, {1}, 0, 1,

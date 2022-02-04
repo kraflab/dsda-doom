@@ -113,6 +113,8 @@ extern int renderH;		// - DTIED
 extern int process_affinity_mask;
 // Priority class for the prboom-plus process
 extern int process_priority;
+// Use vanilla keybaord mapping
+extern int vanilla_keymap;
 
 extern dboolean window_focused;
 void UpdateGrab(void);

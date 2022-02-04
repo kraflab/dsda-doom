@@ -119,6 +119,7 @@ int gl_exclusive_fullscreen;
 int render_vsync;
 int render_screen_multiply;
 int integer_scaling;
+int vanilla_keymap;
 SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
@@ -146,6 +147,67 @@ static int I_ExclusiveFullscreen(void)
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
 
+// Vanilla keymap taken from chocolate-doom and adjusted for prboom-plus
+#define SCANCODE_TO_KEYS_ARRAY {                                          \
+  0,   0,   0,   0,   'a',                                  /* 0-9 */     \
+  'b', 'c', 'd', 'e', 'f',                                                \
+  'g', 'h', 'i', 'j', 'k',                                  /* 10-19 */   \
+  'l', 'm', 'n', 'o', 'p',                                                \
+  'q', 'r', 's', 't', 'u',                                  /* 20-29 */   \
+  'v', 'w', 'x', 'y', 'z',                                                \
+  '1', '2', '3', '4', '5',                                  /* 30-39 */   \
+  '6', '7', '8', '9', '0',                                                \
+  KEYD_ENTER, KEYD_ESCAPE, KEYD_BACKSPACE, KEYD_TAB, ' ',   /* 40-49 */   \
+  KEYD_MINUS, KEYD_EQUALS, '[', ']', '\\',                                \
+  '\\', ';', '\'', '`', ',',                                /* 50-59 */   \
+  '.', '/', KEYD_CAPSLOCK, KEYD_F1, KEYD_F2,                              \
+  KEYD_F3, KEYD_F4, KEYD_F5, KEYD_F6, KEYD_F7,              /* 60-69 */   \
+  KEYD_F8, KEYD_F9, KEYD_F10, KEYD_F11, KEYD_F12, KEYD_PRINTSC,           \
+  KEYD_SCROLLLOCK, KEYD_PAUSE, KEYD_INSERT, KEYD_HOME,      /* 70-79 */   \
+  KEYD_PAGEUP, KEYD_DEL, KEYD_END, KEYD_PAGEDOWN, KEYD_RIGHTARROW,        \
+  KEYD_LEFTARROW, KEYD_DOWNARROW, KEYD_UPARROW,             /* 80-89 */   \
+  KEYD_NUMLOCK, KEYD_KEYPADDIVIDE,                                        \
+  KEYD_KEYPADMULTIPLY, KEYD_KEYPADMINUS, KEYD_KEYPADPLUS,                 \
+  KEYD_KEYPADENTER, KEYD_KEYPAD1, KEYD_KEYPAD2, KEYD_KEYPAD3,             \
+  KEYD_KEYPAD4, KEYD_KEYPAD5, KEYD_KEYPAD6,                 /* 90-99 */   \
+  KEYD_KEYPAD7, KEYD_KEYPAD8, KEYD_KEYPAD9, KEYD_KEYPAD0,                 \
+  KEYD_KEYPADPERIOD, 0, 0, 0, KEYD_EQUALS                   /* 100-103 */ \
+}
+
+// Map keys like vanilla doom
+static int VanillaTranslateKey(SDL_Keysym* key)
+{
+  static const int scancode_map[] = SCANCODE_TO_KEYS_ARRAY;
+  int rc = 0, sc = key->scancode;
+
+  if (sc > 3 && sc < sizeof(scancode_map) / sizeof(scancode_map[0]))
+    rc = scancode_map[sc];
+
+  // Key is mapped..
+  if (rc)
+    return rc;
+
+  switch (sc) { // Code (Ctrl/Shift/Alt) from scancode.
+    case SDL_SCANCODE_LSHIFT:
+    case SDL_SCANCODE_RSHIFT:
+      return KEYD_RSHIFT;
+
+    case SDL_SCANCODE_LCTRL:
+    case SDL_SCANCODE_RCTRL:
+      return KEYD_RCTRL;
+
+    case SDL_SCANCODE_LALT:
+    case SDL_SCANCODE_RALT:
+    case SDL_SCANCODE_LGUI:
+    case SDL_SCANCODE_RGUI:
+      return KEYD_RALT;
+
+    // Default to the symbolic key (outside of vanilla keys)
+    default:
+      return key->sym;
+  }
+}
+
 //
 //  Translates the key currently in key
 //
@@ -153,6 +215,9 @@ static int I_ExclusiveFullscreen(void)
 static int I_TranslateKey(SDL_Keysym* key)
 {
   int rc = 0;
+
+  if (vanilla_keymap)
+    return VanillaTranslateKey(key);
 
   switch (key->sym) {
   case SDLK_LEFT: rc = KEYD_LEFTARROW;  break;
@@ -210,6 +275,7 @@ static int I_TranslateKey(SDL_Keysym* key)
   case SDLK_RGUI:  rc = KEYD_RALT;   break;
   case SDLK_CAPSLOCK: rc = KEYD_CAPSLOCK; break;
   case SDLK_PRINTSCREEN: rc = KEYD_PRINTSC; break;
+  case SDLK_SCROLLLOCK: rc = KEYD_SCROLLLOCK; break;
   default:    rc = key->sym;    break;
   }
 
