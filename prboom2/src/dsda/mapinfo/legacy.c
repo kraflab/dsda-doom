@@ -62,6 +62,10 @@ int dsda_LegacyFirstMap(int* episode, int* map) {
   return true;
 }
 
+int dsda_LegacyNewGameMap(int* episode, int* map) {
+  return true;
+}
+
 int dsda_LegacyResolveWarp(int arg_p, int* episode, int* map) {
   *map = 0;
   *episode = 1;

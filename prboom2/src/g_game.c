@@ -2769,15 +2769,7 @@ void G_DoNewGame (void)
   netgame = solo_net;
   deathmatch = false;
 
-  if (map_format.mapinfo)
-  {
-    realMap = P_TranslateMap(d_map);
-    if (realMap == -1)
-    {
-        realMap = 1;
-    }
-    realEpisode = 1;
-  }
+  dsda_NewGameMap(&realEpisode, &realMap);
 
   G_InitNew (d_skill, realEpisode, realMap, true);
   gameaction = ga_nothing;

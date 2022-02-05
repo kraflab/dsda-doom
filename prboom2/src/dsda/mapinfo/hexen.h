@@ -21,6 +21,7 @@
 #include "p_mobj.h"
 
 int dsda_HexenFirstMap(int* episode, int* map);
+int dsda_HexenNewGameMap(int* episode, int* map);
 int dsda_HexenResolveWarp(int arg_p, int* episode, int* map);
 int dsda_HexenNextMap(int* episode, int* map);
 int dsda_HexenShowNextLocBehaviour(int* behaviour);

@@ -46,6 +46,19 @@ int dsda_HexenFirstMap(int* episode, int* map) {
   return true;
 }
 
+int dsda_HexenNewGameMap(int* episode, int* map) {
+  if (!map_format.mapinfo)
+    return false;
+
+  *episode = 1;
+  *map = P_TranslateMap(*map);
+
+  if (*map == -1)
+    *map = 1;
+
+  return true;
+}
+
 int dsda_HexenResolveWarp(int arg_p, int* episode, int* map) {
   if (!map_format.mapinfo)
     return false;
