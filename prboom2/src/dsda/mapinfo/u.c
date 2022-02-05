@@ -135,6 +135,10 @@ int dsda_UResolveCLEV(int* clev, int* episode, int* map) {
   return false;
 }
 
+int dsda_UResolveINIT(int* init) {
+  return false;
+}
+
 int dsda_UMapMusic(int* music_index, int* music_lump) {
   int lump;
 

@@ -124,6 +124,21 @@ int dsda_HexenResolveCLEV(int* clev, int* episode, int* map) {
   return true;
 }
 
+dboolean partial_reset = false;
+
+int dsda_HexenResolveINIT(int* init) {
+  if (!map_format.mapinfo)
+    return false;
+
+  partial_reset = true;
+
+  G_DeferedInitNew(gameskill, gameepisode, P_GetMapWarpTrans(gamemap));
+
+  *init = true;
+
+  return true;
+}
+
 int dsda_HexenMapMusic(int* music_index, int* music_lump) {
   if (!map_format.mapinfo)
     return false;
@@ -172,8 +187,6 @@ int dsda_HexenHUTitle(const char** title) {
 int dsda_HexenSkyTexture(int* sky) {
   return false; // TODO
 }
-
-dboolean partial_reset = false;
 
 int dsda_HexenPrepareInitNew(void) {
   extern int RebornPosition;

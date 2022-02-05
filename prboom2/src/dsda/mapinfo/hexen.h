@@ -30,6 +30,7 @@ void dsda_HexenUpdateMapInfo(void);
 void dsda_HexenUpdateLastMapInfo(void);
 void dsda_HexenUpdateNextMapInfo(void);
 int dsda_HexenResolveCLEV(int* clev, int* episode, int* map);
+int dsda_HexenResolveINIT(int* init);
 int dsda_HexenMapMusic(int* music_index, int* music_lump);
 int dsda_HexenInterMusic(int* music_index, int* music_lump);
 int dsda_HexenStartFinale(void);

@@ -1121,15 +1121,10 @@ static void cheat_chicken(void)
 
 static void cheat_init(void)
 {
-  extern dboolean partial_reset;
-
-  if (!map_format.mapinfo) return;
-
-  partial_reset = true;
-
-  G_DeferedInitNew(gameskill, gameepisode, P_GetMapWarpTrans(gamemap));
-
-  P_SetMessage(plyr, "LEVEL WARP", true);
+  if (dsda_ResolveINIT())
+  {
+    P_SetMessage(plyr, "LEVEL WARP", true);
+  }
 }
 
 static void cheat_inventory(void)

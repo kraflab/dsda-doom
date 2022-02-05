@@ -152,6 +152,20 @@ int dsda_ResolveCLEV(int* episode, int* map) {
   return clev;
 }
 
+int dsda_ResolveINIT(void) {
+  int init;
+
+  if (dsda_HexenResolveINIT(&init))
+    return init;
+
+  if (dsda_UResolveINIT(&init))
+    return init;
+
+  dsda_LegacyResolveINIT(&init);
+
+  return init;
+}
+
 void dsda_MapMusic(int* music_index, int* music_lump) {
   if (dsda_HexenMapMusic(music_index, music_lump))
     return;

@@ -223,6 +223,12 @@ int dsda_LegacyResolveCLEV(int* clev, int* episode, int* map) {
   return true;
 }
 
+int dsda_LegacyResolveINIT(int* init) {
+  *init = false;
+
+  return true;
+}
+
 static inline int WRAP(int i, int w)
 {
   while (i < 0)
