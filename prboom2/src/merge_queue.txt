@@ -1,6 +1,12 @@
-Checked up to: 9d1c94b68a38b6d861c8680af71bafe13f6b3c29 (Dec 29 2021)
+Checked up to: 4b832c52366e0a7f2fd4590a1bbd43e96fe165c4 (Feb 4 2022)
 
 Commits from upstream to go through:
+
+umapinfo fix:
+ee33927e3688668b2010cd82ecc1d352cff18391
+
+vanilla_keymap:
+24f387b43b221b63995af0c6147f7e5cf80e95a9
 
 utf8:
 5b5bfa6ffcf656c9fcffc74d2d1c33201d27a74b
