@@ -76,5 +76,6 @@ extern cheatseq_t cheat[];
 void M_CheatGod(void);
 void M_CheatNoClip(void);
 dboolean M_CheatResponder(event_t *ev);
+void M_CheatEntered(char command[]);
 
 #endif

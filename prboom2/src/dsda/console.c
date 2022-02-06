@@ -26,6 +26,8 @@
 
 #include "console.h"
 
+#include "m_cheat.h"
+
 extern patchnum_t hu_font2[HU_FONTSIZE];
 
 #define CONSOLE_ENTRY_SIZE 64
@@ -213,6 +215,10 @@ static dboolean console_Exit(const char* args) {
   return true;
 }
 
+static void console_Cheat(char command[]) {
+  M_CheatEntered(command);
+}
+
 typedef dboolean (*console_command_t)(const char*);
 
 typedef struct {
@@ -253,6 +259,13 @@ static void dsda_ExecuteConsole(void) {
         entry->command(args);
         break;
       }
+    }
+
+    char prefix[2];
+    memcpy(prefix, command, 2);
+    if(!stricmp(prefix, "id"))
+    {
+      console_Cheat(command);
     }
   }
 

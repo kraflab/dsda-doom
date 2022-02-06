@@ -999,6 +999,19 @@ dboolean M_CheatResponder(event_t *ev)
   return false;
 }
 
+void M_CheatEntered(char command[])
+{
+  cheatseq_t* cheat_i;
+
+  for (cheat_i = cheat; cheat_i->cheat; cheat_i++)
+  {
+    if (!strcmp(cheat_i->cheat, command) && M_CheatAllowed(cheat_i->when))
+    {        
+      cheat_i->func(cheat_i->arg);
+    }
+  }
+}
+
 // heretic
 
 #include "p_user.h"
