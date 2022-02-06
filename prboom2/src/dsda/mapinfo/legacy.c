@@ -229,6 +229,19 @@ int dsda_LegacyResolveINIT(int* init) {
   return true;
 }
 
+int dsda_LegacyMusicIndexToLumpNum(int* lump, int music_index) {
+  char name[9];
+  const char* format;
+
+  format = raven ? "%s" : "d_%s";
+
+  sprintf(name, format, S_music[music_index].name);
+
+  *lump = W_GetNumForName(name);
+
+  return true;
+}
+
 static inline int WRAP(int i, int w)
 {
   while (i < 0)

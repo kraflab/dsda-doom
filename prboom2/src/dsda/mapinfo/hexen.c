@@ -139,6 +139,25 @@ int dsda_HexenResolveINIT(int* init) {
   return true;
 }
 
+int dsda_HexenMusicIndexToLumpNum(int* lump, int music_index) {
+  const char* lump_name;
+
+  if (!map_format.mapinfo)
+    return false;
+
+  if (music_index >= hexen_mus_hub)
+    return false;
+
+  lump_name = P_GetMapSongLump(music_index);
+
+  if (!lump_name)
+    *lump = 0;
+  else
+    *lump = W_GetNumForName(lump_name);
+
+  return true;
+}
+
 int dsda_HexenMapMusic(int* music_index, int* music_lump) {
   if (!map_format.mapinfo)
     return false;

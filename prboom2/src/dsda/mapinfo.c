@@ -166,6 +166,20 @@ int dsda_ResolveINIT(void) {
   return init;
 }
 
+int dsda_MusicIndexToLumpNum(int music_index) {
+  int lump;
+
+  if (dsda_HexenMusicIndexToLumpNum(&lump, music_index))
+    return lump;
+
+  if (dsda_UMusicIndexToLumpNum(&lump, music_index))
+    return lump;
+
+  dsda_LegacyMusicIndexToLumpNum(&lump, music_index);
+
+  return lump;
+}
+
 void dsda_MapMusic(int* music_index, int* music_lump) {
   if (dsda_HexenMapMusic(music_index, music_lump))
     return;

@@ -139,6 +139,10 @@ int dsda_UResolveINIT(int* init) {
   return false;
 }
 
+int dsda_UMusicIndexToLumpNum(int* lump, int music_index) {
+  return false;
+}
+
 int dsda_UMapMusic(int* music_index, int* music_lump) {
   int lump;
 

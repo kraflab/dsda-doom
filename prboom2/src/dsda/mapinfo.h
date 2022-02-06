@@ -41,6 +41,7 @@ void dsda_UpdateLastMapInfo(void);
 void dsda_UpdateNextMapInfo(void);
 int dsda_ResolveCLEV(int* episode, int* map);
 int dsda_ResolveINIT(void);
+int dsda_MusicIndexToLumpNum(int music_index);
 void dsda_MapMusic(int* music_index, int* music_lump);
 void dsda_InterMusic(int* music_index, int* music_lump);
 void dsda_StartFinale(void);

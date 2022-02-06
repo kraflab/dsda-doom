@@ -584,32 +584,9 @@ void S_ChangeMusic(int musicnum, int looping)
   // shutdown old music
   S_StopMusic();
 
-  // get lumpnum if neccessary
+  // get lumpnum if necessary
   if (!music->lumpnum)
-  {
-    if (map_format.mapinfo && musicnum < hexen_mus_hub)
-    {
-      const char* songLump;
-
-      songLump = P_GetMapSongLump(musicnum);
-      if (!songLump)
-      {
-        return;
-      }
-
-      music->lumpnum = W_GetNumForName(songLump);
-    }
-    else
-    {
-      char namebuf[9];
-      const char* format;
-
-      format = raven ? "%s" : "d_%s";
-
-      sprintf(namebuf, format, music->name);
-      music->lumpnum = W_GetNumForName(namebuf);
-    }
-  }
+    music->lumpnum = dsda_MusicIndexToLumpNum(musicnum);
 
   // load & register it
   music->data = W_CacheLumpNum(music->lumpnum);
