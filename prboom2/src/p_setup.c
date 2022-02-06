@@ -384,7 +384,6 @@ static int P_CheckForZDoomUncompressedNodes(int lumpnum, int gl_lumpnum)
 
   if (result)
   {
-    lprintf(LO_INFO, "P_CheckForZDoomUncompressedNodes: ZDoom uncompressed normal nodes are detected\n");
     ret = ZDOOM_XNOD_NODES;
   }
 #ifdef HAVE_LIBZ
@@ -394,7 +393,6 @@ static int P_CheckForZDoomUncompressedNodes(int lumpnum, int gl_lumpnum)
 
     if (result)
     {
-      lprintf(LO_INFO, "P_CheckForZDoomUncompressedNodes: compressed ZDoom nodes are detected\n");
       ret = ZDOOM_ZNOD_NODES;
     }
   }
