@@ -49,5 +49,6 @@ int dsda_LegacyEnterPic(const char** enter_pic);
 int dsda_LegacyPrepareEntering(void);
 int dsda_LegacyPrepareFinished(void);
 int dsda_LegacyMapLightning(int* lightning, int map);
+int dsda_LegacyApplyFadeTable(void);
 
 #endif

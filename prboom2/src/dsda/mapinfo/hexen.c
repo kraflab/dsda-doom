@@ -265,3 +265,24 @@ int dsda_HexenMapLightning(int* lightning, int map) {
 
   return true;
 }
+
+int dsda_HexenApplyFadeTable(void) {
+  extern dboolean LevelUseFullBright;
+  extern const lighttable_t** colormaps;
+
+  int fade_lump;
+
+  if (!map_format.mapinfo)
+    return false;
+
+  fade_lump = P_GetMapFadeTable(gamemap);
+
+  colormaps[0] = (const lighttable_t *) W_CacheLumpNum(fade_lump);
+
+  if (fade_lump == W_GetNumForName("COLORMAP"))
+    LevelUseFullBright = true;
+  else
+    LevelUseFullBright = false; // Probably fog ... don't use fullbright sprites
+
+  return true;
+}

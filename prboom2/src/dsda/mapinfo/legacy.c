@@ -572,3 +572,7 @@ int dsda_LegacyMapLightning(int* lightning, int map) {
 
   return true;
 }
+
+int dsda_LegacyApplyFadeTable(void) {
+  return true;
+}

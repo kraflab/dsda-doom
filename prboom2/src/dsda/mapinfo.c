@@ -389,3 +389,13 @@ int dsda_MapLightning(int map) {
 
   return lightning;
 }
+
+void dsda_ApplyFadeTable(void) {
+  if (dsda_HexenApplyFadeTable())
+    return;
+
+  if (dsda_UApplyFadeTable())
+    return;
+
+  dsda_LegacyApplyFadeTable();
+}

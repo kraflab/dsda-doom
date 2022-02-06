@@ -62,6 +62,7 @@
 #include "dsda/compatibility.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 #include "hexen/p_acs.h"
 #include "hexen/p_anim.h"
@@ -3297,22 +3298,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   P_MapEnd();
 
-  if (map_format.mapinfo)
-  {
-    extern dboolean LevelUseFullBright;
-
-    // Load colormap and set the fullbright flag
-    i = P_GetMapFadeTable(gamemap);
-    colormaps[0] = (const lighttable_t *) W_CacheLumpNum(i);
-    if (i == W_GetNumForName("COLORMAP"))
-    {
-      LevelUseFullBright = true;
-    }
-    else
-    {                           // Probably fog ... don't use fullbright sprites
-      LevelUseFullBright = false;
-    }
-  }
+  dsda_ApplyFadeTable();
 
   // preload graphics
   if (precache)

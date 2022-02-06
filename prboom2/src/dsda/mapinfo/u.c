@@ -538,3 +538,7 @@ int dsda_UPrepareFinished(void) {
 int dsda_UMapLightning(int* lightning, int map) {
   return false;
 }
+
+int dsda_UApplyFadeTable(void) {
+  return false;
+}
