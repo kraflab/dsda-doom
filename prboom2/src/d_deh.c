@@ -511,12 +511,6 @@ const char *bgflat15     = "RROCK13";  // DOOM2 going MAP15 to MAP31
 const char *bgflat31     = "RROCK19";  // DOOM2 going MAP31 to MAP32
 const char *bgcastcall   = "BOSSBACK"; // Panel behind cast call
 
-const char *startup1     = "";  // blank lines are default and are not printed
-const char *startup2     = "";
-const char *startup3     = "";
-const char *startup4     = "";
-const char *startup5     = "";
-
 /* Ty 05/03/98 - externalized
  * cph - updated for prboom */
 const char *savegamename = PACKAGE_TARNAME"-savegame";
@@ -845,13 +839,6 @@ static deh_strs deh_strlookup[] = {
   {&bgflat15,"BGFLAT15"},
   {&bgflat31,"BGFLAT31"},
   {&bgcastcall,"BGCASTCALL"},
-  // Ty 04/08/98 - added 5 general purpose startup announcement
-  // strings for hacker use.  See m_menu.c
-  {&startup1,"STARTUP1"},
-  {&startup2,"STARTUP2"},
-  {&startup3,"STARTUP3"},
-  {&startup4,"STARTUP4"},
-  {&startup5,"STARTUP5"},
   {&savegamename,"SAVEGAMENAME"},  // Ty 05/03/98
 };
 
