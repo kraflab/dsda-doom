@@ -3336,10 +3336,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   P_SyncWalkcam(true, true);
   R_SmoothPlaying_Reset(NULL);
 
-  if (map_format.mapinfo)
-  {
-    P_InitLightning();
-  }
+  P_InitLightning();
 
   if (map_format.sndseq)
   {

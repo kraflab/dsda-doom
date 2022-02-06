@@ -58,5 +58,6 @@ const char* dsda_ExitPic(void);
 const char* dsda_EnterPic(void);
 void dsda_PrepareEntering(void);
 void dsda_PrepareFinished(void);
+int dsda_MapLightning(int map);
 
 #endif

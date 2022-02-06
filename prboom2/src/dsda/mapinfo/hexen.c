@@ -256,3 +256,12 @@ int dsda_HexenPrepareEntering(void) {
 int dsda_HexenPrepareFinished(void) {
   return false; // TODO
 }
+
+int dsda_HexenMapLightning(int* lightning, int map) {
+  if (!map_format.mapinfo)
+    return false;
+
+  *lightning = P_GetMapLightning(map);
+
+  return true;
+}

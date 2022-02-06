@@ -534,3 +534,7 @@ int dsda_UPrepareFinished(void) {
 
   return false;
 }
+
+int dsda_UMapLightning(int* lightning, int map) {
+  return false;
+}

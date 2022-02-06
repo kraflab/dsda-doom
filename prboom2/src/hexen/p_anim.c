@@ -27,6 +27,7 @@
 #include "p_setup.h"
 
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 #define ANIM_SCRIPT_NAME "ANIMDEFS"
 #define MAX_ANIM_DEFS 20
@@ -318,7 +319,7 @@ void P_InitLightning(void)
     int i;
     int secCount;
 
-    if (!P_GetMapLightning(gamemap))
+    if (!dsda_MapLightning(gamemap))
     {
         LevelHasLightning = false;
         LightningFlash = 0;

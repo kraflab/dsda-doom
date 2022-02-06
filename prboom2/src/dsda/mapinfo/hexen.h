@@ -48,5 +48,6 @@ int dsda_HexenExitPic(const char** exit_pic);
 int dsda_HexenEnterPic(const char** enter_pic);
 int dsda_HexenPrepareEntering(void);
 int dsda_HexenPrepareFinished(void);
+int dsda_HexenMapLightning(int* lightning, int map);
 
 #endif

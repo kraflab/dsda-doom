@@ -48,5 +48,6 @@ int dsda_UExitPic(const char** exit_pic);
 int dsda_UEnterPic(const char** enter_pic);
 int dsda_UPrepareEntering(void);
 int dsda_UPrepareFinished(void);
+int dsda_UMapLightning(int* lightning, int map);
 
 #endif
