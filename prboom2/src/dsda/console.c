@@ -215,8 +215,16 @@ static dboolean console_Exit(const char* args) {
   return true;
 }
 
-static void console_Cheat(char command[]) {
-  M_CheatEntered(command);
+static dboolean console_CheatEnter(const char* args) {
+  char element[CONSOLE_ENTRY_SIZE];
+  char value[3];
+
+  if (sscanf(args, "%s %s", element, value) > 0)
+  {
+    return M_CheatEntered(element, value);
+  }
+
+  return false;
 }
 
 typedef dboolean (*console_command_t)(const char*);
@@ -237,6 +245,7 @@ static console_command_entry_t console_commands[] = {
   { "player.roundxy", console_PlayerRoundXY },
   { "command.lock", console_CommandLock },
   { "command.unlock", console_CommandUnlock },
+  { "cheat.enter", console_CheatEnter },
   { "exit", console_Exit },
   { "quit", console_Exit },
   { NULL }
@@ -259,13 +268,6 @@ static void dsda_ExecuteConsole(void) {
         entry->command(args);
         break;
       }
-    }
-
-    char prefix[2];
-    memcpy(prefix, command, 2);
-    if(!stricmp(prefix, "id"))
-    {
-      console_Cheat(command);
     }
   }
 
