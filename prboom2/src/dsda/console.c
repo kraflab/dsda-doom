@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
+#include "m_cheat.h"
 #include "m_menu.h"
 #include "v_video.h"
 
@@ -25,8 +26,6 @@
 #include "dsda/tas.h"
 
 #include "console.h"
-
-#include "m_cheat.h"
 
 extern patchnum_t hu_font2[HU_FONTSIZE];
 
