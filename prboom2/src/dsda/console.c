@@ -219,7 +219,7 @@ static dboolean console_CheatEnter(const char* args) {
   char element[CONSOLE_ENTRY_SIZE];
   char value[3];
 
-  if (sscanf(args, "%s %s", element, value) > 0)
+  if (sscanf(args, "%s %2s", element, value) > 0)
   {
     return M_CheatEntered(element, value);
   }
