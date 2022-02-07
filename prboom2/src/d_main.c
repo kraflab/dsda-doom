@@ -2125,11 +2125,6 @@ static void D_DoomMainSetup(void)
     }
   }
 
-  if (!M_CheckParm("-nomapinfo"))
-  {
-    dsda_LoadMapInfo();
-  }
-
   PostProcessDeh();
   dsda_AppendZDoomMobjInfo();
   dsda_ApplyDefaultMapFormat();
@@ -2153,6 +2148,8 @@ static void D_DoomMainSetup(void)
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"R_Init: Init DOOM refresh daemon - ");
   R_Init();
+
+  dsda_LoadMapInfo();
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"\nP_Init: Init Playloop state.\n");

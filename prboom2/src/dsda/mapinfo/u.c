@@ -464,6 +464,9 @@ int dsda_UPrepareFinale(int* result) {
 void dsda_ULoadMapInfo(void) {
   int p;
 
+  if (M_CheckParm("-nomapinfo"))
+    return;
+
   p = -1;
   while ((p = W_ListNumFromName("UMAPINFO", p)) >= 0) {
     const unsigned char * lump = (const unsigned char *) W_CacheLumpNum(p);
