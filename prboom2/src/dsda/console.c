@@ -214,26 +214,8 @@ static dboolean console_Exit(const char* command, const char* args) {
   return true;
 }
 
-static dboolean console_CheatNoArgs(const char* command, const char* args) {
+static dboolean console_BasicCheat(const char* command, const char* args) {
   return M_CheatEntered(command, args);
-}
-
-static dboolean console_CheatOneArg(const char* command, const char* args) {
-  char value[3];
-
-  if (sscanf(args, "%s", value) == 1)
-    return M_CheatEntered(command, value);
-  
-  return false;
-}
-
-static dboolean console_CheatTwoArgs(const char* command, const char* args) {
-  char value[3];
-
-  if (sscanf(args, "%2s", value) == 1)
-    return M_CheatEntered(command, value);
-
-  return false;
 }
 
 typedef dboolean (*console_command_t)(const char*, const char*);
@@ -257,31 +239,21 @@ static console_command_entry_t console_commands[] = {
   { "command.unlock", console_CommandUnlock },
   
   // cheats
-  { "idmus", console_CheatTwoArgs },
-  { "idchoppers", console_CheatNoArgs },
-  { "iddqd", console_CheatNoArgs },
-  { "idkfa", console_CheatNoArgs },
-  { "idfa", console_CheatNoArgs },
-  { "idspispopd", console_CheatNoArgs },
-  { "idclip", console_CheatNoArgs },
-  { "idbeholdh", console_CheatNoArgs },
-  { "idbeholdm", console_CheatNoArgs },
-  { "idbeholdv", console_CheatNoArgs },
-  { "idbeholds", console_CheatNoArgs },
-  { "idbeholdi", console_CheatNoArgs },
-  { "idbeholdr", console_CheatNoArgs },
-  { "idbeholda", console_CheatNoArgs },
-  { "idbeholdl", console_CheatNoArgs },
-  { "idbehold", console_CheatNoArgs },
-  { "idmypos", console_CheatNoArgs },
-  { "idrate", console_CheatNoArgs },
-  { "tntcomp", console_CheatNoArgs },
-  { "tntem", console_CheatNoArgs },
-  { "iddt", console_CheatNoArgs },
-  { "iddst", console_CheatNoArgs },
-  { "iddkt", console_CheatNoArgs },
-  { "iddit", console_CheatNoArgs },
-  { "notarget", console_CheatNoArgs },
+  { "idchoppers", console_BasicCheat },
+  { "iddqd", console_BasicCheat },
+  { "idkfa", console_BasicCheat },
+  { "idfa", console_BasicCheat },
+  { "idspispopd", console_BasicCheat },
+  { "idclip", console_BasicCheat },
+  { "idmypos", console_BasicCheat },
+  { "idrate", console_BasicCheat },
+  { "tntcomp", console_BasicCheat },
+  { "tntem", console_BasicCheat },
+  { "iddt", console_BasicCheat },
+  { "iddst", console_BasicCheat },
+  { "iddkt", console_BasicCheat },
+  { "iddit", console_BasicCheat },
+  { "notarget", console_BasicCheat },
 
   // exit
   { "exit", console_Exit },
