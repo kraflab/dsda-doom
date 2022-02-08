@@ -281,7 +281,6 @@ static console_command_entry_t console_commands[] = {
   { "iddst", console_CheatNoArgs },
   { "iddkt", console_CheatNoArgs },
   { "iddit", console_CheatNoArgs },
-  { "tntweap", console_CheatOneArg },
   { "notarget", console_CheatNoArgs },
 
   // exit
