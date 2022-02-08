@@ -999,7 +999,7 @@ dboolean M_CheatResponder(event_t *ev)
   return false;
 }
 
-dboolean M_CheatEntered(char element[], char value[3])
+dboolean M_CheatEntered(const char* element, const char* value)
 {
   cheatseq_t* cheat_i;
 
@@ -1007,7 +1007,10 @@ dboolean M_CheatEntered(char element[], char value[3])
   {
     if (!strcmp(cheat_i->cheat, element) && M_CheatAllowed(cheat_i->when))
     {    
-      cheat_i->func(value);
+      if (cheat_i->arg > 0)
+        cheat_i->func(cheat_i->arg);
+      else
+        cheat_i->func(value);
       return true;
     }
   }
