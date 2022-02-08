@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
+#include "m_cheat.h"
 #include "m_menu.h"
 #include "v_video.h"
 
@@ -88,7 +89,7 @@ dboolean dsda_OpenConsole(void) {
   return true;
 }
 
-static dboolean console_PlayerSetHealth(const char* args) {
+static dboolean console_PlayerSetHealth(const char* command, const char* args) {
   int health;
 
   if (sscanf(args, "%i", &health)) {
@@ -101,7 +102,7 @@ static dboolean console_PlayerSetHealth(const char* args) {
   return false;
 }
 
-static dboolean console_PlayerSetArmor(const char* args) {
+static dboolean console_PlayerSetArmor(const char* command, const char* args) {
   int arg_count;
   int armorpoints, armortype;
 
@@ -140,15 +141,15 @@ static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
   return false;
 }
 
-static dboolean console_PlayerSetX(const char* args) {
+static dboolean console_PlayerSetX(const char* command, const char* args) {
   return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->x);
 }
 
-static dboolean console_PlayerSetY(const char* args) {
+static dboolean console_PlayerSetY(const char* command, const char* args) {
   return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->y);
 }
 
-static dboolean console_PlayerSetZ(const char* args) {
+static dboolean console_PlayerSetZ(const char* command, const char* args) {
   return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->z);
 }
 
@@ -170,26 +171,26 @@ static void console_PlayerRoundCoordinate(int* x) {
   }
 }
 
-static dboolean console_PlayerRoundX(const char* args) {
+static dboolean console_PlayerRoundX(const char* command, const char* args) {
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
 
   return true;
 }
 
-static dboolean console_PlayerRoundY(const char* args) {
+static dboolean console_PlayerRoundY(const char* command, const char* args) {
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
 
   return true;
 }
 
-static dboolean console_PlayerRoundXY(const char* args) {
+static dboolean console_PlayerRoundXY(const char* command, const char* args) {
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
 
   return true;
 }
 
-static dboolean console_CommandLock(const char* args) {
+static dboolean console_CommandLock(const char* command, const char* args) {
   char element[CONSOLE_ENTRY_SIZE];
   int value;
 
@@ -199,13 +200,13 @@ static dboolean console_CommandLock(const char* args) {
   return false;
 }
 
-static dboolean console_CommandUnlock(const char* args) {
+static dboolean console_CommandUnlock(const char* command, const char* args) {
   dsda_DisablePersistentCommand();
 
   return true;
 }
 
-static dboolean console_Exit(const char* args) {
+static dboolean console_Exit(const char* command, const char* args) {
   extern void M_ClearMenus(void);
 
   M_ClearMenus();
@@ -213,7 +214,11 @@ static dboolean console_Exit(const char* args) {
   return true;
 }
 
-typedef dboolean (*console_command_t)(const char*);
+static dboolean console_BasicCheat(const char* command, const char* args) {
+  return M_CheatEntered(command, args);
+}
+
+typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
   const char* command_name;
@@ -221,6 +226,7 @@ typedef struct {
 } console_command_entry_t;
 
 static console_command_entry_t console_commands[] = {
+  // commands
   { "player.sethealth", console_PlayerSetHealth },
   { "player.setarmor", console_PlayerSetArmor },
   { "player.setx", console_PlayerSetX },
@@ -231,6 +237,25 @@ static console_command_entry_t console_commands[] = {
   { "player.roundxy", console_PlayerRoundXY },
   { "command.lock", console_CommandLock },
   { "command.unlock", console_CommandUnlock },
+  
+  // cheats
+  { "idchoppers", console_BasicCheat },
+  { "iddqd", console_BasicCheat },
+  { "idkfa", console_BasicCheat },
+  { "idfa", console_BasicCheat },
+  { "idspispopd", console_BasicCheat },
+  { "idclip", console_BasicCheat },
+  { "idmypos", console_BasicCheat },
+  { "idrate", console_BasicCheat },
+  { "tntcomp", console_BasicCheat },
+  { "tntem", console_BasicCheat },
+  { "iddt", console_BasicCheat },
+  { "iddst", console_BasicCheat },
+  { "iddkt", console_BasicCheat },
+  { "iddit", console_BasicCheat },
+  { "notarget", console_BasicCheat },
+
+  // exit
   { "exit", console_Exit },
   { "quit", console_Exit },
   { NULL }
@@ -250,7 +275,7 @@ static void dsda_ExecuteConsole(void) {
 
     for (entry = console_commands; entry->command; entry++) {
       if (!stricmp(command, entry->command_name)) {
-        entry->command(args);
+        entry->command(command, args);
         break;
       }
     }
