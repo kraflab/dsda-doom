@@ -75,6 +75,8 @@ static int MapCount = 98;
 
 static mapInfo_t MapInfo[99];
 
+static mapInfo_t *CurrentMap = MapInfo;
+
 static const char *MapCmdNames[] = {
   "SKY1",
   "SKY2",
@@ -182,7 +184,7 @@ int dsda_HexenNextMap(int* episode, int* map) {
     return false;
 
   *episode = 1;
-  *map = MapInfo[QualifyMap(gamemap)].nextMap;
+  *map = CurrentMap->nextMap;
 
   return true;
 }
@@ -196,7 +198,7 @@ int dsda_HexenSkipDrawShowNextLoc(int* skip) {
 }
 
 void dsda_HexenUpdateMapInfo(void) {
-  // TODO
+  CurrentMap = &MapInfo[QualifyMap(gamemap)];
 }
 
 void dsda_HexenUpdateLastMapInfo(void) {
@@ -233,8 +235,7 @@ int dsda_HexenResolveINIT(int* init) {
 
   partial_reset = true;
 
-  G_DeferedInitNew(gameskill, gameepisode,
-                   MapInfo[QualifyMap(gamemap)].warpTrans);
+  G_DeferedInitNew(gameskill, gameepisode, CurrentMap->warpTrans);
 
   *init = true;
 
@@ -300,7 +301,7 @@ int dsda_HexenHUTitle(const char** title) {
   *title = NULL;
 
   if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0)
-    *title = MapInfo[QualifyMap(gamemap)].name;
+    *title = CurrentMap->name;
 
   if (*title == NULL)
     *title = MAPNAME(gameepisode, gamemap);
@@ -487,7 +488,7 @@ int dsda_HexenMapLightning(int* lightning) {
   if (!map_format.mapinfo)
     return false;
 
-  *lightning = MapInfo[QualifyMap(gamemap)].lightning;
+  *lightning = CurrentMap->lightning;
 
   return true;
 }
@@ -501,7 +502,7 @@ int dsda_HexenApplyFadeTable(void) {
   if (!map_format.mapinfo)
     return false;
 
-  fade_lump = MapInfo[QualifyMap(gamemap)].fadetable;
+  fade_lump = CurrentMap->fadetable;
 
   colormaps[0] = (const lighttable_t *) W_CacheLumpNum(fade_lump);
 
@@ -526,7 +527,7 @@ int dsda_HexenSky1Texture(short* texture) {
   if (!map_format.mapinfo)
     return false;
 
-  *texture = MapInfo[QualifyMap(gamemap)].sky1Texture;
+  *texture = CurrentMap->sky1Texture;
 
   return true;
 }
@@ -535,7 +536,7 @@ int dsda_HexenSky2Texture(short* texture) {
   if (!map_format.mapinfo)
     return false;
 
-  *texture = MapInfo[QualifyMap(gamemap)].sky2Texture;
+  *texture = CurrentMap->sky2Texture;
 
   return true;
 }
@@ -547,13 +548,13 @@ int dsda_HexenInitSky(void) {
   if (!map_format.mapinfo)
     return false;
 
-  Sky1Texture = MapInfo[QualifyMap(gamemap)].sky1Texture;
-  Sky2Texture = MapInfo[QualifyMap(gamemap)].sky2Texture;
-  Sky1ScrollDelta = MapInfo[QualifyMap(gamemap)].sky1ScrollDelta;
-  Sky2ScrollDelta = MapInfo[QualifyMap(gamemap)].sky2ScrollDelta;
+  Sky1Texture = CurrentMap->sky1Texture;
+  Sky2Texture = CurrentMap->sky2Texture;
+  Sky1ScrollDelta = CurrentMap->sky1ScrollDelta;
+  Sky2ScrollDelta = CurrentMap->sky2ScrollDelta;
   Sky1ColumnOffset = 0;
   Sky2ColumnOffset = 0;
-  DoubleSky = MapInfo[QualifyMap(gamemap)].doubleSky;
+  DoubleSky = CurrentMap->doubleSky;
 
   return true;
 }
