@@ -413,3 +413,41 @@ int dsda_MapCluster(int map) {
 
   return cluster;
 }
+
+short dsda_Sky1Texture(void) {
+  short texture;
+
+  if (dsda_HexenSky1Texture(&texture))
+    return texture;
+
+  if (dsda_USky1Texture(&texture))
+    return texture;
+
+  dsda_LegacySky1Texture(&texture);
+
+  return texture;
+}
+
+short dsda_Sky2Texture(void) {
+  short texture;
+
+  if (dsda_HexenSky2Texture(&texture))
+    return texture;
+
+  if (dsda_USky2Texture(&texture))
+    return texture;
+
+  dsda_LegacySky2Texture(&texture);
+
+  return texture;
+}
+
+void dsda_InitSky(void) {
+  if (dsda_HexenInitSky())
+    return;
+
+  if (dsda_UInitSky())
+    return;
+
+  dsda_LegacyInitSky();
+}

@@ -62,11 +62,6 @@ extern int blockmapyneg;
 
 // hexen
 
-int P_GetMapSky1Texture(int map);
-int P_GetMapSky2Texture(int map);
-fixed_t P_GetMapSky1ScrollDelta(int map);
-fixed_t P_GetMapSky2ScrollDelta(int map);
-dboolean P_GetMapDoubleSky(int map);
 void P_PutMapSongLump(int map, char *lumpName);
 
 #endif

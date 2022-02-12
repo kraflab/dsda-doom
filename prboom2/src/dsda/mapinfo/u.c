@@ -549,3 +549,15 @@ int dsda_UApplyFadeTable(void) {
 int dsda_UMapCluster(int* cluster, int map) {
   return false;
 }
+
+int dsda_USky1Texture(short* texture) {
+  return false;
+}
+
+int dsda_USky2Texture(short* texture) {
+  return false;
+}
+
+int dsda_UInitSky(void) {
+  return false;
+}

@@ -51,5 +51,8 @@ int dsda_HexenPrepareFinished(void);
 int dsda_HexenMapLightning(int* lightning, int map);
 int dsda_HexenApplyFadeTable(void);
 int dsda_HexenMapCluster(int* cluster, int map);
+int dsda_HexenSky1Texture(short* texture);
+int dsda_HexenSky2Texture(short* texture);
+int dsda_HexenInitSky(void);
 
 #endif

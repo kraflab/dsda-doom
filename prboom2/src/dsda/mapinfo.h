@@ -61,5 +61,8 @@ void dsda_PrepareFinished(void);
 int dsda_MapLightning(int map);
 void dsda_ApplyFadeTable(void);
 int dsda_MapCluster(int map);
+short dsda_Sky1Texture(void);
+short dsda_Sky2Texture(void);
+void dsda_InitSky(void);
 
 #endif

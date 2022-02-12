@@ -239,7 +239,7 @@ static void P_LightningFlash(void)
                     tempLight++;
                 }
             }
-            Sky1Texture = P_GetMapSky1Texture(gamemap);
+            Sky1Texture = dsda_Sky1Texture();
         }
         return;
     }
@@ -285,7 +285,7 @@ static void P_LightningFlash(void)
     }
     if (foundSec)
     {
-        Sky1Texture = P_GetMapSky2Texture(gamemap);     // set alternate sky
+        Sky1Texture = dsda_Sky2Texture();     // set alternate sky
         S_StartSound(NULL, hexen_sfx_thunder_crash);
     }
     // Calculate the next lighting flash

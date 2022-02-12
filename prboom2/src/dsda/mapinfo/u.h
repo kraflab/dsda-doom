@@ -51,5 +51,8 @@ int dsda_UPrepareFinished(void);
 int dsda_UMapLightning(int* lightning, int map);
 int dsda_UApplyFadeTable(void);
 int dsda_UMapCluster(int* cluster, int map);
+int dsda_USky1Texture(short* texture);
+int dsda_USky2Texture(short* texture);
+int dsda_UInitSky(void);
 
 #endif

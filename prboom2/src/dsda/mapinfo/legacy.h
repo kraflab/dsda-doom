@@ -51,5 +51,8 @@ int dsda_LegacyPrepareFinished(void);
 int dsda_LegacyMapLightning(int* lightning, int map);
 int dsda_LegacyApplyFadeTable(void);
 int dsda_LegacyMapCluster(int* cluster, int map);
+int dsda_LegacySky1Texture(short* texture);
+int dsda_LegacySky2Texture(short* texture);
+int dsda_LegacyInitSky(void);
 
 #endif

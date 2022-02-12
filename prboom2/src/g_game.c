@@ -2994,8 +2994,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   //jff 4/16/98 force marks on automap cleared every new level start
   AM_clearMarks();
 
-  if (map_format.doublesky)
-    R_InitSky(map);
+  dsda_InitSky();
 
   G_DoLoadLevel ();
 }

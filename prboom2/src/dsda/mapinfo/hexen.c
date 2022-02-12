@@ -126,26 +126,6 @@ static int P_TranslateMap(int map) {
   return -1;
 }
 
-int P_GetMapSky1Texture(int map) {
-  return MapInfo[QualifyMap(map)].sky1Texture;
-}
-
-int P_GetMapSky2Texture(int map) {
-  return MapInfo[QualifyMap(map)].sky2Texture;
-}
-
-fixed_t P_GetMapSky1ScrollDelta(int map) {
-  return MapInfo[QualifyMap(map)].sky1ScrollDelta;
-}
-
-fixed_t P_GetMapSky2ScrollDelta(int map) {
-  return MapInfo[QualifyMap(map)].sky2ScrollDelta;
-}
-
-dboolean P_GetMapDoubleSky(int map) {
-  return MapInfo[QualifyMap(map)].doubleSky;
-}
-
 void P_PutMapSongLump(int map, char *lumpName) {
   if (map < 1 || map > MapCount)
     return;
@@ -538,6 +518,42 @@ int dsda_HexenMapCluster(int* cluster, int map) {
     return false;
 
   *cluster = MapInfo[QualifyMap(map)].cluster;
+
+  return true;
+}
+
+int dsda_HexenSky1Texture(short* texture) {
+  if (!map_format.mapinfo)
+    return false;
+
+  *texture = MapInfo[QualifyMap(gamemap)].sky1Texture;
+
+  return true;
+}
+
+int dsda_HexenSky2Texture(short* texture) {
+  if (!map_format.mapinfo)
+    return false;
+
+  *texture = MapInfo[QualifyMap(gamemap)].sky2Texture;
+
+  return true;
+}
+
+int dsda_HexenInitSky(void) {
+  extern fixed_t Sky1ScrollDelta;
+  extern fixed_t Sky2ScrollDelta;
+
+  if (!map_format.mapinfo)
+    return false;
+
+  Sky1Texture = MapInfo[QualifyMap(gamemap)].sky1Texture;
+  Sky2Texture = MapInfo[QualifyMap(gamemap)].sky2Texture;
+  Sky1ScrollDelta = MapInfo[QualifyMap(gamemap)].sky1ScrollDelta;
+  Sky2ScrollDelta = MapInfo[QualifyMap(gamemap)].sky2ScrollDelta;
+  Sky1ColumnOffset = 0;
+  Sky2ColumnOffset = 0;
+  DoubleSky = MapInfo[QualifyMap(gamemap)].doubleSky;
 
   return true;
 }

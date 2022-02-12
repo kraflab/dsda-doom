@@ -582,3 +582,19 @@ int dsda_LegacyMapCluster(int* cluster, int map) {
 
   return true;
 }
+
+int dsda_LegacySky1Texture(short* texture) {
+  *texture = -1;
+
+  return true;
+}
+
+int dsda_LegacySky2Texture(short* texture) {
+  *texture = -1;
+
+  return true;
+}
+
+int dsda_LegacyInitSky(void) {
+  return true;
+}
