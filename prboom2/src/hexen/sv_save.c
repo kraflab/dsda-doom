@@ -2024,6 +2024,7 @@ void SV_MapTeleport(int map, int position)
     TargetPlayerAddrs = NULL;
 
     gamemap = map;
+    dsda_UpdateMapInfo();
     if (!deathmatch && MapArchiveExists(gamemap))
     {                           // Unarchive map
         SV_LoadMap();
