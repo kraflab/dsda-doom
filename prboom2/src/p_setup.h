@@ -62,7 +62,6 @@ extern int blockmapyneg;
 
 // hexen
 
-int P_GetMapCluster(int map);
 int P_GetMapWarpTrans(int map);
 int P_GetMapNextMap(int map);
 int P_TranslateMap(int map);

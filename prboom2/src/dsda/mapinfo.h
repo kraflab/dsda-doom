@@ -60,5 +60,6 @@ void dsda_PrepareEntering(void);
 void dsda_PrepareFinished(void);
 int dsda_MapLightning(int map);
 void dsda_ApplyFadeTable(void);
+int dsda_MapCluster(int map);
 
 #endif

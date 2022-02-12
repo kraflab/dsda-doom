@@ -4290,7 +4290,7 @@ void G_PlayerExitMap(int playerNumber)
     }
     else
     {
-        if (P_GetMapCluster(gamemap) != P_GetMapCluster(LeaveMap))
+        if (dsda_MapCluster(gamemap) != dsda_MapCluster(LeaveMap))
         {                       // Entering new cluster
             // Strip all keys
             for (i = 0; i < NUMCARDS; ++i)

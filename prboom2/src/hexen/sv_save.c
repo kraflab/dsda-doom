@@ -33,6 +33,7 @@
 #include "lprintf.h"
 
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 #include "hexen/a_action.h"
 #include "hexen/p_acs.h"
@@ -1996,7 +1997,7 @@ void SV_MapTeleport(int map, int position)
 
     if (!deathmatch)
     {
-        if (P_GetMapCluster(gamemap) == P_GetMapCluster(map))
+        if (dsda_MapCluster(gamemap) == dsda_MapCluster(map))
         {                       // Same cluster - save map without saving player mobjs
             SV_SaveMap();
         }

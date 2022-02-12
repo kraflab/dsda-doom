@@ -114,10 +114,6 @@ static int MapCmdIDs[] = {
 
 static int QualifyMap(int map);
 
-int P_GetMapCluster(int map) {
-  return MapInfo[QualifyMap(map)].cluster;
-}
-
 int P_GetMapWarpTrans(int map) {
   return MapInfo[QualifyMap(map)].warpTrans;
 }
@@ -559,6 +555,15 @@ int dsda_HexenApplyFadeTable(void) {
     LevelUseFullBright = true;
   else
     LevelUseFullBright = false; // Probably fog ... don't use fullbright sprites
+
+  return true;
+}
+
+int dsda_HexenMapCluster(int* cluster, int map) {
+  if (!map_format.mapinfo)
+    return false;
+
+  *cluster = MapInfo[QualifyMap(map)].cluster;
 
   return true;
 }

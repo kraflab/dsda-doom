@@ -399,3 +399,17 @@ void dsda_ApplyFadeTable(void) {
 
   dsda_LegacyApplyFadeTable();
 }
+
+int dsda_MapCluster(int map) {
+  int cluster;
+
+  if (dsda_HexenMapCluster(&cluster, map))
+    return cluster;
+
+  if (dsda_UMapCluster(&cluster, map))
+    return cluster;
+
+  dsda_LegacyMapCluster(&cluster, map);
+
+  return cluster;
+}

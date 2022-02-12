@@ -545,3 +545,7 @@ int dsda_UMapLightning(int* lightning, int map) {
 int dsda_UApplyFadeTable(void) {
   return false;
 }
+
+int dsda_UMapCluster(int* cluster, int map) {
+  return false;
+}
