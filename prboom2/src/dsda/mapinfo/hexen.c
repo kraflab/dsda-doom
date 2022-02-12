@@ -112,17 +112,11 @@ static int MapCmdIDs[] = {
   MCMD_CD_TITLETRACK
 };
 
-static int QualifyMap(int map);
-
-int P_GetMapWarpTrans(int map) {
-  return MapInfo[QualifyMap(map)].warpTrans;
+static int QualifyMap(int map) {
+  return (map < 1 || map > MapCount) ? 0 : map;
 }
 
-int P_GetMapNextMap(int map) {
-  return MapInfo[QualifyMap(map)].nextMap;
-}
-
-int P_TranslateMap(int map) {
+static int P_TranslateMap(int map) {
   int i;
 
   for (i = 1; i < 99; i++)
@@ -140,10 +134,6 @@ int P_GetMapSky2Texture(int map) {
   return MapInfo[QualifyMap(map)].sky2Texture;
 }
 
-char *P_GetMapName(int map) {
-  return MapInfo[QualifyMap(map)].name;
-}
-
 fixed_t P_GetMapSky1ScrollDelta(int map) {
   return MapInfo[QualifyMap(map)].sky1ScrollDelta;
 }
@@ -156,21 +146,6 @@ dboolean P_GetMapDoubleSky(int map) {
   return MapInfo[QualifyMap(map)].doubleSky;
 }
 
-dboolean P_GetMapLightning(int map) {
-  return MapInfo[QualifyMap(map)].lightning;
-}
-
-dboolean P_GetMapFadeTable(int map) {
-  return MapInfo[QualifyMap(map)].fadetable;
-}
-
-char *P_GetMapSongLump(int map) {
-    if (!*MapInfo[QualifyMap(map)].songLump)
-      return NULL;
-    else
-      return MapInfo[QualifyMap(map)].songLump;
-}
-
 void P_PutMapSongLump(int map, char *lumpName) {
   if (map < 1 || map > MapCount)
     return;
@@ -178,11 +153,6 @@ void P_PutMapSongLump(int map, char *lumpName) {
   M_StringCopy(MapInfo[map].songLump, lumpName,
                sizeof(MapInfo[map].songLump));
 }
-
-static int QualifyMap(int map) {
-  return (map < 1 || map > MapCount) ? 0 : map;
-}
-
 
 int dsda_HexenFirstMap(int* episode, int* map) {
   if (!map_format.mapinfo)
@@ -232,7 +202,7 @@ int dsda_HexenNextMap(int* episode, int* map) {
     return false;
 
   *episode = 1;
-  *map = P_GetMapNextMap(gamemap);
+  *map = MapInfo[QualifyMap(gamemap)].nextMap;
 
   return true;
 }
@@ -283,7 +253,8 @@ int dsda_HexenResolveINIT(int* init) {
 
   partial_reset = true;
 
-  G_DeferedInitNew(gameskill, gameepisode, P_GetMapWarpTrans(gamemap));
+  G_DeferedInitNew(gameskill, gameepisode,
+                   MapInfo[QualifyMap(gamemap)].warpTrans);
 
   *init = true;
 
@@ -299,7 +270,10 @@ int dsda_HexenMusicIndexToLumpNum(int* lump, int music_index) {
   if (music_index >= hexen_mus_hub)
     return false;
 
-  lump_name = P_GetMapSongLump(music_index);
+  if (!*MapInfo[QualifyMap(music_index)].songLump)
+    lump_name = NULL;
+  else
+    lump_name = MapInfo[QualifyMap(music_index)].songLump;
 
   if (!lump_name)
     *lump = 0;
@@ -346,7 +320,7 @@ int dsda_HexenHUTitle(const char** title) {
   *title = NULL;
 
   if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0)
-    *title = P_GetMapName(gamemap);
+    *title = MapInfo[QualifyMap(gamemap)].name;
 
   if (*title == NULL)
     *title = MAPNAME(gameepisode, gamemap);
@@ -533,7 +507,7 @@ int dsda_HexenMapLightning(int* lightning, int map) {
   if (!map_format.mapinfo)
     return false;
 
-  *lightning = P_GetMapLightning(map);
+  *lightning = MapInfo[QualifyMap(map)].lightning;
 
   return true;
 }
@@ -547,7 +521,7 @@ int dsda_HexenApplyFadeTable(void) {
   if (!map_format.mapinfo)
     return false;
 
-  fade_lump = P_GetMapFadeTable(gamemap);
+  fade_lump = MapInfo[QualifyMap(gamemap)].fadetable;
 
   colormaps[0] = (const lighttable_t *) W_CacheLumpNum(fade_lump);
 
