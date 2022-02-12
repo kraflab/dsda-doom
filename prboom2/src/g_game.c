@@ -777,6 +777,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   }
 
   {
+    extern dboolean boom_weapon_state_injection;
     static dboolean done_autoswitch = false;
 
     if (!players[consoleplayer].attackdown)
@@ -803,7 +804,10 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         !P_CheckAmmo(&players[consoleplayer]) &&
         (
           (
-            dsda_SwitchWhenAmmoRunsOut() &&
+            (
+              dsda_SwitchWhenAmmoRunsOut() ||
+              boom_weapon_state_injection
+            ) &&
             !done_autoswitch
           ) || cmd->buttons & BT_ATTACK
         )
@@ -811,6 +815,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     )
     {
       done_autoswitch = true;
+      boom_weapon_state_injection = false;
       newweapon = P_SwitchWeapon(&players[consoleplayer]);           // phares
     }
     else
