@@ -237,7 +237,7 @@ static console_command_entry_t console_commands[] = {
   { "player.roundxy", console_PlayerRoundXY },
   { "command.lock", console_CommandLock },
   { "command.unlock", console_CommandUnlock },
-  
+
   // cheats
   { "idchoppers", console_BasicCheat },
   { "iddqd", console_BasicCheat },
@@ -247,13 +247,45 @@ static console_command_entry_t console_commands[] = {
   { "idclip", console_BasicCheat },
   { "idmypos", console_BasicCheat },
   { "idrate", console_BasicCheat },
-  { "tntcomp", console_BasicCheat },
-  { "tntem", console_BasicCheat },
   { "iddt", console_BasicCheat },
   { "iddst", console_BasicCheat },
   { "iddkt", console_BasicCheat },
   { "iddit", console_BasicCheat },
+
+  { "tntcomp", console_BasicCheat },
+  { "tntem", console_BasicCheat },
+  { "tnthom", console_BasicCheat },
+  { "tntka", console_BasicCheat },
+  { "tntsmart", console_BasicCheat },
+  { "tntpitch", console_BasicCheat },
+  { "tntfast", console_BasicCheat },
+  { "tntice", console_BasicCheat },
+  { "tntpush", console_BasicCheat },
+
   { "notarget", console_BasicCheat },
+  { "fly", console_BasicCheat },
+
+  { "quicken", console_BasicCheat },
+  { "ponce", console_BasicCheat },
+  { "kitty", console_BasicCheat },
+  { "massacre", console_BasicCheat },
+  { "rambo", console_BasicCheat },
+  { "skel", console_BasicCheat },
+  { "shazam", console_BasicCheat },
+  { "ravmap", console_BasicCheat },
+  { "cockadoodledoo", console_BasicCheat },
+
+  { "satan", console_BasicCheat },
+  { "clubmed", console_BasicCheat },
+  { "butcher", console_BasicCheat },
+  { "nra", console_BasicCheat },
+  { "indiana", console_BasicCheat },
+  { "locksmith", console_BasicCheat },
+  { "sherlock", console_BasicCheat },
+  { "casper", console_BasicCheat },
+  { "init", console_BasicCheat },
+  { "mapsco", console_BasicCheat },
+  { "deliverance", console_BasicCheat },
 
   // exit
   { "exit", console_Exit },
