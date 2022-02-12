@@ -58,7 +58,7 @@ const char* dsda_ExitPic(void);
 const char* dsda_EnterPic(void);
 void dsda_PrepareEntering(void);
 void dsda_PrepareFinished(void);
-int dsda_MapLightning(int map);
+int dsda_MapLightning(void);
 void dsda_ApplyFadeTable(void);
 int dsda_MapCluster(int map);
 short dsda_Sky1Texture(void);

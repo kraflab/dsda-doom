@@ -483,11 +483,11 @@ int dsda_HexenPrepareFinished(void) {
   return false; // TODO
 }
 
-int dsda_HexenMapLightning(int* lightning, int map) {
+int dsda_HexenMapLightning(int* lightning) {
   if (!map_format.mapinfo)
     return false;
 
-  *lightning = MapInfo[QualifyMap(map)].lightning;
+  *lightning = MapInfo[QualifyMap(gamemap)].lightning;
 
   return true;
 }

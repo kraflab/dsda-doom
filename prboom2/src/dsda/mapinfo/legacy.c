@@ -567,7 +567,7 @@ int dsda_LegacyPrepareFinished(void) {
   return true;
 }
 
-int dsda_LegacyMapLightning(int* lightning, int map) {
+int dsda_LegacyMapLightning(int* lightning) {
   *lightning = false;
 
   return true;

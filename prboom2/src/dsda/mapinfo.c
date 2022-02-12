@@ -376,16 +376,16 @@ void dsda_PrepareFinished(void) {
   dsda_LegacyPrepareFinished();
 }
 
-int dsda_MapLightning(int map) {
+int dsda_MapLightning(void) {
   int lightning;
 
-  if (dsda_HexenMapLightning(&lightning, map))
+  if (dsda_HexenMapLightning(&lightning))
     return lightning;
 
-  if (dsda_UMapLightning(&lightning, map))
+  if (dsda_UMapLightning(&lightning))
     return lightning;
 
-  dsda_LegacyMapLightning(&lightning, map);
+  dsda_LegacyMapLightning(&lightning);
 
   return lightning;
 }

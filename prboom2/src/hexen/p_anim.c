@@ -319,7 +319,7 @@ void P_InitLightning(void)
     int i;
     int secCount;
 
-    if (!dsda_MapLightning(gamemap))
+    if (!dsda_MapLightning())
     {
         LevelHasLightning = false;
         LightningFlash = 0;

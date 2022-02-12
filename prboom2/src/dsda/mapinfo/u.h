@@ -48,7 +48,7 @@ int dsda_UExitPic(const char** exit_pic);
 int dsda_UEnterPic(const char** enter_pic);
 int dsda_UPrepareEntering(void);
 int dsda_UPrepareFinished(void);
-int dsda_UMapLightning(int* lightning, int map);
+int dsda_UMapLightning(int* lightning);
 int dsda_UApplyFadeTable(void);
 int dsda_UMapCluster(int* cluster, int map);
 int dsda_USky1Texture(short* texture);
