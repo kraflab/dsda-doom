@@ -2023,8 +2023,8 @@ void SV_MapTeleport(int map, int position)
     // for the following check (player mobj redirection)
     TargetPlayerAddrs = NULL;
 
-    gamemap = map;
-    dsda_UpdateMapInfo();
+    dsda_UpdateGameMap(1, map);
+
     if (!deathmatch && MapArchiveExists(gamemap))
     {                           // Unarchive map
         SV_LoadMap();

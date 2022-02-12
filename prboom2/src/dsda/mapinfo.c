@@ -120,10 +120,16 @@ int dsda_SkipDrawShowNextLoc(void) {
   return skip;
 }
 
-void dsda_UpdateMapInfo(void) {
+static void dsda_UpdateMapInfo(void) {
   dsda_HexenUpdateMapInfo();
   dsda_UUpdateMapInfo();
   dsda_LegacyUpdateMapInfo();
+}
+
+void dsda_UpdateGameMap(int episode, int map) {
+  gameepisode = episode;
+  gamemap = map;
+  dsda_UpdateMapInfo();
 }
 
 void dsda_UpdateLastMapInfo(void) {

@@ -175,6 +175,7 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
 // save_p is coopted to use the save logic
 void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   int demo_write_buffer_offset, i;
+  int epi, map;
 
   if (buffer == NULL) {
     doom_printf("No key frame found");
@@ -185,9 +186,10 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
 
   compatibility_level = *save_p++;
   gameskill = *save_p++;
-  gameepisode = *save_p++;
-  gamemap = *save_p++;
-  dsda_UpdateMapInfo();
+
+  epi = *save_p++;
+  map = *save_p++;
+  dsda_UpdateGameMap(epi, map);
 
   for (i = 0; i < g_maxplayers; i++)
     playeringame[i] = *save_p++;

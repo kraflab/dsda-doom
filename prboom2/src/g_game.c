@@ -2025,9 +2025,7 @@ void G_DoWorldDone (void)
 {
   idmusnum = -1;             //jff 3/17/98 allow new level's music to be loaded
   gamestate = GS_LEVEL;
-  gameepisode = wminfo.nextep + 1;
-  gamemap = wminfo.next + 1;
-  dsda_UpdateMapInfo();
+  dsda_UpdateGameMap(wminfo.nextep + 1, wminfo.next + 1);
   G_DoLoadLevel();
   gameaction = ga_nothing;
   AM_clearMarks();           //jff 4/12/98 clear any marks on the automap
@@ -2200,6 +2198,7 @@ void G_DoLoadGame(void)
   unsigned int packageversion = 0;
   const char *maplump;
   int time, ttime;
+  int epi, map;
 
   dsda_SetLastLoadSlot(savegameslot);
 
@@ -2268,9 +2267,10 @@ void G_DoLoadGame(void)
 
   compatibility_level = *save_p++;
   gameskill = *save_p++;
-  gameepisode = *save_p++;
-  gamemap = *save_p++;
-  dsda_UpdateMapInfo();
+
+  epi = *save_p++;
+  map = *save_p++;
+  dsda_UpdateGameMap(epi, map);
 
   for (i = 0; i < g_maxplayers; i++)
     playeringame[i] = *save_p++;
@@ -2982,10 +2982,8 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   usergame = true;                // will be set false if a demo
   paused = false;
   automapmode &= ~am_active;
-  gameepisode = episode;
-  gamemap = map;
   gameskill = skill;
-  dsda_UpdateMapInfo();
+  dsda_UpdateGameMap(episode, map);
 
   totalleveltimes = 0; // cph
 
