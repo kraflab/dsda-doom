@@ -60,8 +60,4 @@ extern dboolean skipblstart; // MaxW: Skip initial blocklist short
 extern int blockmapxneg;
 extern int blockmapyneg;
 
-// hexen
-
-void P_PutMapSongLump(int map, char *lumpName);
-
 #endif

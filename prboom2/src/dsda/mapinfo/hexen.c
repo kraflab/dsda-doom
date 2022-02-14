@@ -32,6 +32,7 @@
 
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/sndinfo.h"
 
 #include "hexen.h"
 
@@ -126,14 +127,6 @@ static int P_TranslateMap(int map) {
       return i;
 
   return -1;
-}
-
-void P_PutMapSongLump(int map, char *lumpName) {
-  if (map < 1 || map > MapCount)
-    return;
-
-  M_StringCopy(MapInfo[map].songLump, lumpName,
-               sizeof(MapInfo[map].songLump));
 }
 
 int dsda_HexenFirstMap(int* episode, int* map) {
@@ -251,12 +244,9 @@ int dsda_HexenMusicIndexToLumpNum(int* lump, int music_index) {
   if (music_index >= hexen_mus_hub)
     return false;
 
-  if (!*MapInfo[QualifyMap(music_index)].songLump)
-    lump_name = NULL;
-  else
-    lump_name = MapInfo[QualifyMap(music_index)].songLump;
+  lump_name = dsda_SndInfoMapSongLumpName(music_index);
 
-  if (!lump_name)
+  if (!*lump_name)
     *lump = 0;
   else
     *lump = W_GetNumForName(lump_name);
@@ -386,14 +376,8 @@ void dsda_HexenLoadMapInfo(void) {
 
     info = &MapInfo[map];
 
-    // Save song lump name
-    M_StringCopy(songMulch, info->songLump, sizeof(songMulch));
-
     // Copy defaults to current map definition
     memcpy(info, &MapInfo[0], sizeof(*info));
-
-    // Restore song lump name
-    M_StringCopy(info->songLump, songMulch, sizeof(info->songLump));
 
     // The warp translation defaults to the map number
     info->warpTrans = map;

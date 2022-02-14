@@ -47,7 +47,6 @@
 #include "m_random.h"
 #include "w_wad.h"
 #include "lprintf.h"
-#include "sc_man.h"
 #include "p_setup.h"
 #include "e6y.h"
 
@@ -1274,64 +1273,4 @@ void S_StartSongName(const char *songLump, dboolean loop)
     }
 
     S_ChangeMusic(musicnum, loop);
-}
-
-void S_InitScript(void)
-{
-    int i;
-
-    SC_OpenLump("sndinfo");
-
-    while (SC_GetString())
-    {
-        if (*sc_String == '$')
-        {
-            if (!strcasecmp(sc_String, "$ARCHIVEPATH"))
-            {
-                SC_MustGetString();
-            }
-            else if (!strcasecmp(sc_String, "$MAP"))
-            {
-                SC_MustGetNumber();
-                SC_MustGetString();
-                if (sc_Number)
-                {
-                    P_PutMapSongLump(sc_Number, sc_String);
-                }
-            }
-            continue;
-        }
-        else
-        {
-            for (i = 0; i < HEXEN_NUMSFX; i++)
-            {
-                if (!strcmp(S_sfx[i].tagname, sc_String))
-                {
-                    SC_MustGetString();
-                    if (*sc_String != '?')
-                    {
-                        S_sfx[i].name = strdup(sc_String);
-                    }
-                    else
-                    {
-                        S_sfx[i].name = strdup("default");
-                    }
-                    break;
-                }
-            }
-            if (i == HEXEN_NUMSFX)
-            {
-                SC_MustGetString();
-            }
-        }
-    }
-    SC_Close();
-
-    for (i = 0; i < HEXEN_NUMSFX; i++)
-    {
-        if (!strcmp(S_sfx[i].name, ""))
-        {
-            S_sfx[i].name = strdup("default");
-        }
-    }
 }
