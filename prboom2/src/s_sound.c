@@ -289,23 +289,26 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   if (dsda_BlockSFX(sfx)) return;
 
   // Initialize sound parameters
-  if (sfx->link)
-    {
-      pitch = sfx->pitch;
-      priority = sfx->priority;
-      volume += sfx->volume;
-
-      if (volume < 1)
-        return;
-
-      if (volume > sfx_volume)
-        volume = sfx_volume;
-    }
+  if (sfx->flags & SFXF_PRIORITY)
+    priority = sfx->priority;
   else
-    {
-      pitch = NORM_PITCH;
-      priority = NORM_PRIORITY;
-    }
+    priority = NORM_PRIORITY;
+
+  if (sfx->flags & SFXF_PITCH)
+    pitch = sfx->pitch;
+  else
+    pitch = NORM_PITCH;
+
+  if (sfx->flags & SFXF_VOLUME)
+  {
+    volume += sfx->volume;
+
+    if (volume < 1)
+      return;
+
+    if (volume > sfx_volume)
+      volume = sfx_volume;
+  }
 
   // Check to see if it is audible, modify the params
   // killough 3/7/98, 4/25/98: code rearranged slightly
