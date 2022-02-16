@@ -1238,7 +1238,7 @@ int S_GetSoundID(const char *name)
 {
     int i;
 
-    for (i = 0; i < HEXEN_NUMSFX; i++)
+    for (i = 0; i < num_sfx; i++)
     {
         if (!strcmp(S_sfx[i].tagname, name))
         {

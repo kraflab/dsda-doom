@@ -65,7 +65,7 @@ void dsda_LoadSndInfo(void) {
       continue;
     }
     else {
-      for (i = 0; i < HEXEN_NUMSFX; i++) {
+      for (i = 0; i < num_sfx; i++) {
         if (!strcmp(S_sfx[i].tagname, sc_String)) {
           SC_MustGetString();
 
@@ -77,14 +77,14 @@ void dsda_LoadSndInfo(void) {
           break;
         }
       }
-      if (i == HEXEN_NUMSFX)
+      if (i == num_sfx)
         SC_MustGetString();
     }
   }
 
   SC_Close();
 
-  for (i = 0; i < HEXEN_NUMSFX; i++)
+  for (i = 0; i < num_sfx; i++)
     if (!strcmp(S_sfx[i].name, ""))
       S_sfx[i].name = strdup("default");
 }

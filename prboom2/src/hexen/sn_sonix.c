@@ -126,7 +126,7 @@ static int GetSoundOffset(char *name)
 {
     int i;
 
-    for (i = 0; i < HEXEN_NUMSFX; i++)
+    for (i = 0; i < num_sfx; i++)
     {
         if (!strcasecmp(name, S_sfx[i].tagname))
         {
