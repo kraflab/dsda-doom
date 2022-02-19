@@ -895,7 +895,6 @@ static void I_ClosestResolution (int *width, int *height)
   }
 }
 
-int process_affinity_mask;
 int process_priority;
 
 // e6y
