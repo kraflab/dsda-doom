@@ -454,3 +454,317 @@ sfxinfo_t doom_S_sfx[] = {
   [698] = { "fre198", 127, 0, -1, -1, 0, 0, 0, "" },
   [699] = { "fre199", 127, 0, -1, -1, 0, 0, 0, "" },
 };
+
+#define DISAMBIGUATED_SFX(id, tag) { "", 0, &doom_S_sfx[id], 0, 0, 0, 0, 0, tag }
+
+sfxinfo_t doom_disambiguated_sfx[] = {
+  // alias: intermission/tick
+  DISAMBIGUATED_SFX(sfx_pistol, "weapons/pistol"),
+  DISAMBIGUATED_SFX(sfx_pistol, "grunt/attack"),
+  DISAMBIGUATED_SFX(sfx_pistol, "menu/choose"),
+
+  DISAMBIGUATED_SFX(sfx_shotgn, "weapons/shotgf"),
+  DISAMBIGUATED_SFX(sfx_shotgn, "shotguy/attack"),
+  DISAMBIGUATED_SFX(sfx_shotgn, "chainguy/attack"),
+  DISAMBIGUATED_SFX(sfx_shotgn, "spider/attack"),
+  DISAMBIGUATED_SFX(sfx_shotgn, "wolfss/attack"),
+
+  // alias: intermission/paststats, intermission/pastcoopstats
+  DISAMBIGUATED_SFX(sfx_sgcock, "weapons/shotgr"),
+
+  DISAMBIGUATED_SFX(sfx_dshtgn, "weapons/sshotf"),
+
+  DISAMBIGUATED_SFX(sfx_dbopn, "weapons/sshoto"),
+
+  DISAMBIGUATED_SFX(sfx_dbcls, "weapons/sshotc"),
+
+  DISAMBIGUATED_SFX(sfx_dbload, "weapons/sshotl"),
+
+  DISAMBIGUATED_SFX(sfx_plasma, "weapons/plasmaf"),
+  DISAMBIGUATED_SFX(sfx_plasma, "baby/attack"),
+
+  DISAMBIGUATED_SFX(sfx_bfg, "weapons/bfgf"),
+
+  DISAMBIGUATED_SFX(sfx_sawup, "weapons/sawup"),
+
+  DISAMBIGUATED_SFX(sfx_sawidl, "weapons/sawidle"),
+
+  DISAMBIGUATED_SFX(sfx_sawful, "weapons/sawfull"),
+
+  DISAMBIGUATED_SFX(sfx_sawhit, "weapons/sawhit"),
+
+  DISAMBIGUATED_SFX(sfx_rlaunc, "weapons/rocklf"),
+
+  DISAMBIGUATED_SFX(sfx_rxplod, "weapons/bfgx"),
+
+  DISAMBIGUATED_SFX(sfx_firsht, "baron/attack"),
+  DISAMBIGUATED_SFX(sfx_firsht, "fatso/attack"),
+  DISAMBIGUATED_SFX(sfx_firsht, "imp/attack"),
+  DISAMBIGUATED_SFX(sfx_firsht, "caco/attack"),
+
+  DISAMBIGUATED_SFX(sfx_firxpl, "weapons/plasmax"),
+  DISAMBIGUATED_SFX(sfx_firxpl, "fatso/shotx"),
+  DISAMBIGUATED_SFX(sfx_firxpl, "imp/shotx"),
+  DISAMBIGUATED_SFX(sfx_firxpl, "caco/shotx"),
+  DISAMBIGUATED_SFX(sfx_firxpl, "baron/shotx"),
+  DISAMBIGUATED_SFX(sfx_firxpl, "skull/death"),
+  DISAMBIGUATED_SFX(sfx_firxpl, "baby/shotx"),
+  DISAMBIGUATED_SFX(sfx_firxpl, "brain/cubeboom"),
+
+  DISAMBIGUATED_SFX(sfx_pstart, "plats/pt1_strt"),
+
+  DISAMBIGUATED_SFX(sfx_pstop, "plats/pt1_stop"),
+  DISAMBIGUATED_SFX(sfx_pstop, "menu/cursor"),
+
+  DISAMBIGUATED_SFX(sfx_doropn, "doors/dr1_open"),
+
+  DISAMBIGUATED_SFX(sfx_dorcls, "doors/dr1_clos"),
+
+  DISAMBIGUATED_SFX(sfx_stnmov, "plats/pt1_mid"),
+  DISAMBIGUATED_SFX(sfx_stnmov, "menu/change"),
+
+  DISAMBIGUATED_SFX(sfx_swtchn, "switches/normbutn"),
+  DISAMBIGUATED_SFX(sfx_swtchn, "menu/activate"),
+  DISAMBIGUATED_SFX(sfx_swtchn, "menu/backup"),
+  DISAMBIGUATED_SFX(sfx_swtchn, "menu/prompt"),
+
+  DISAMBIGUATED_SFX(sfx_swtchx, "switches/exitbutn"),
+  DISAMBIGUATED_SFX(sfx_swtchx, "menu/dismiss"),
+  DISAMBIGUATED_SFX(sfx_swtchx, "menu/clear"),
+
+  // alias: *pain75, *pain50, *pain25
+  DISAMBIGUATED_SFX(sfx_plpain, "*pain100"),
+
+  DISAMBIGUATED_SFX(sfx_dmpain, "demon/pain"),
+  DISAMBIGUATED_SFX(sfx_dmpain, "spectre/pain"),
+  DISAMBIGUATED_SFX(sfx_dmpain, "caco/pain"),
+  DISAMBIGUATED_SFX(sfx_dmpain, "baron/pain"),
+  DISAMBIGUATED_SFX(sfx_dmpain, "knight/pain"),
+  DISAMBIGUATED_SFX(sfx_dmpain, "skull/pain"),
+  DISAMBIGUATED_SFX(sfx_dmpain, "spider/pain"),
+  DISAMBIGUATED_SFX(sfx_dmpain, "baby/pain"),
+  DISAMBIGUATED_SFX(sfx_dmpain, "cyber/pain"),
+
+  DISAMBIGUATED_SFX(sfx_popain, "grunt/pain"),
+  DISAMBIGUATED_SFX(sfx_popain, "shotguy/pain"),
+  DISAMBIGUATED_SFX(sfx_popain, "skeleton/pain"),
+  DISAMBIGUATED_SFX(sfx_popain, "chainguy/pain"),
+  DISAMBIGUATED_SFX(sfx_popain, "imp/pain"),
+  DISAMBIGUATED_SFX(sfx_popain, "wolfss/pain"),
+
+  DISAMBIGUATED_SFX(sfx_vipain, "vile/pain"),
+
+  DISAMBIGUATED_SFX(sfx_mnpain, "fatso/pain"),
+
+  DISAMBIGUATED_SFX(sfx_pepain, "pain/pain"),
+
+  // alias: intermission/pastdmstats
+  DISAMBIGUATED_SFX(sfx_slop, "*gibbed"),
+  DISAMBIGUATED_SFX(sfx_slop, "misc/gibbed"),
+  DISAMBIGUATED_SFX(sfx_slop, "vile/raise"),
+
+  // alias: misc/health_pkup, misc/armor_pkup, misc/ammo_pkup
+  DISAMBIGUATED_SFX(sfx_itemup, "misc/i_pkup"),
+  DISAMBIGUATED_SFX(sfx_itemup, "misc/k_pkup"),
+
+  DISAMBIGUATED_SFX(sfx_wpnup, "misc/w_pkup"),
+
+  // alias: *land
+  DISAMBIGUATED_SFX(sfx_oof, "*grunt"),
+  DISAMBIGUATED_SFX(sfx_oof, "menu/invalid"),
+
+  // alias: brain/spawn
+  DISAMBIGUATED_SFX(sfx_telept, "misc/teleport"),
+
+  DISAMBIGUATED_SFX(sfx_posit1, "grunt/sight1"),
+  DISAMBIGUATED_SFX(sfx_posit1, "shotguy/sight1"),
+  DISAMBIGUATED_SFX(sfx_posit1, "chainguy/sight1"),
+
+  DISAMBIGUATED_SFX(sfx_posit2, "grunt/sight2"),
+  DISAMBIGUATED_SFX(sfx_posit2, "shotguy/sight2"),
+  DISAMBIGUATED_SFX(sfx_posit2, "chainguy/sight2"),
+
+  DISAMBIGUATED_SFX(sfx_posit3, "grunt/sight3"),
+  DISAMBIGUATED_SFX(sfx_posit3, "shotguy/sight3"),
+  DISAMBIGUATED_SFX(sfx_posit3, "chainguy/sight3"),
+
+  DISAMBIGUATED_SFX(sfx_bgsit1, "imp/sight1"),
+
+  DISAMBIGUATED_SFX(sfx_bgsit2, "imp/sight2"),
+
+  DISAMBIGUATED_SFX(sfx_sgtsit, "demon/sight"),
+  DISAMBIGUATED_SFX(sfx_sgtsit, "spectre/sight"),
+
+  DISAMBIGUATED_SFX(sfx_cacsit, "caco/sight"),
+
+  DISAMBIGUATED_SFX(sfx_brssit, "baron/sight"),
+
+  DISAMBIGUATED_SFX(sfx_cybsit, "cyber/sight"),
+
+  DISAMBIGUATED_SFX(sfx_spisit, "spider/sight"),
+
+  DISAMBIGUATED_SFX(sfx_bspsit, "baby/sight"),
+
+  DISAMBIGUATED_SFX(sfx_kntsit, "knight/sight"),
+
+  DISAMBIGUATED_SFX(sfx_vilsit, "vile/sight"),
+
+  DISAMBIGUATED_SFX(sfx_mansit, "fatso/sight"),
+
+  DISAMBIGUATED_SFX(sfx_pesit, "pain/sight"),
+
+  DISAMBIGUATED_SFX(sfx_sklatk, "skull/melee"),
+
+  DISAMBIGUATED_SFX(sfx_sgtatk, "demon/melee"),
+  DISAMBIGUATED_SFX(sfx_sgtatk, "spectre/melee"),
+
+  DISAMBIGUATED_SFX(sfx_skepch, "skeleton/melee"),
+
+  DISAMBIGUATED_SFX(sfx_vilatk, "vile/start"),
+
+  DISAMBIGUATED_SFX(sfx_claw, "imp/melee"),
+  DISAMBIGUATED_SFX(sfx_claw, "baron/melee"),
+
+  DISAMBIGUATED_SFX(sfx_skeswg, "skeleton/swing"),
+
+  // alias: intermission/cooptotal
+  DISAMBIGUATED_SFX(sfx_pldeth, "*death"),
+
+  DISAMBIGUATED_SFX(sfx_pdiehi, "*xdeath"),
+
+  DISAMBIGUATED_SFX(sfx_podth1, "grunt/death1"),
+  DISAMBIGUATED_SFX(sfx_podth1, "shotguy/death1"),
+  DISAMBIGUATED_SFX(sfx_podth1, "chainguy/death1"),
+
+  DISAMBIGUATED_SFX(sfx_podth2, "grunt/death2"),
+  DISAMBIGUATED_SFX(sfx_podth2, "shotguy/death2"),
+  DISAMBIGUATED_SFX(sfx_podth2, "chainguy/death2"),
+
+  DISAMBIGUATED_SFX(sfx_podth3, "grunt/death3"),
+  DISAMBIGUATED_SFX(sfx_podth3, "shotguy/death3"),
+  DISAMBIGUATED_SFX(sfx_podth3, "chainguy/death3"),
+
+  DISAMBIGUATED_SFX(sfx_bgdth1, "imp/death1"),
+
+  DISAMBIGUATED_SFX(sfx_bgdth2, "imp/death2"),
+
+  DISAMBIGUATED_SFX(sfx_sgtdth, "demon/death"),
+  DISAMBIGUATED_SFX(sfx_sgtdth, "spectre/death"),
+
+  DISAMBIGUATED_SFX(sfx_cacdth, "caco/death"),
+
+  DISAMBIGUATED_SFX(sfx_skldth, "misc/unused"),
+
+  DISAMBIGUATED_SFX(sfx_brsdth, "baron/death"),
+
+  DISAMBIGUATED_SFX(sfx_cybdth, "cyber/death"),
+
+  DISAMBIGUATED_SFX(sfx_spidth, "spider/death"),
+
+  DISAMBIGUATED_SFX(sfx_bspdth, "baby/death"),
+
+  DISAMBIGUATED_SFX(sfx_vildth, "vile/death"),
+
+  DISAMBIGUATED_SFX(sfx_kntdth, "knight/death"),
+
+  DISAMBIGUATED_SFX(sfx_pedth, "pain/death"),
+
+  DISAMBIGUATED_SFX(sfx_skedth, "skeleton/death"),
+
+  DISAMBIGUATED_SFX(sfx_posact, "grunt/active"),
+  DISAMBIGUATED_SFX(sfx_posact, "shotguy/active"),
+  DISAMBIGUATED_SFX(sfx_posact, "fatso/active"),
+  DISAMBIGUATED_SFX(sfx_posact, "chainguy/active"),
+  DISAMBIGUATED_SFX(sfx_posact, "wolfss/active"),
+
+  DISAMBIGUATED_SFX(sfx_bgact, "imp/active"),
+
+  DISAMBIGUATED_SFX(sfx_dmact, "demon/active"),
+  DISAMBIGUATED_SFX(sfx_dmact, "spectre/active"),
+  DISAMBIGUATED_SFX(sfx_dmact, "caco/active"),
+  DISAMBIGUATED_SFX(sfx_dmact, "baron/active"),
+  DISAMBIGUATED_SFX(sfx_dmact, "knight/active"),
+  DISAMBIGUATED_SFX(sfx_dmact, "skull/active"),
+  DISAMBIGUATED_SFX(sfx_dmact, "spider/active"),
+  DISAMBIGUATED_SFX(sfx_dmact, "cyber/active"),
+  DISAMBIGUATED_SFX(sfx_dmact, "pain/active"),
+
+  DISAMBIGUATED_SFX(sfx_bspact, "baby/active"),
+
+  DISAMBIGUATED_SFX(sfx_bspwlk, "baby/walk"),
+
+  DISAMBIGUATED_SFX(sfx_vilact, "vile/active"),
+
+  // alias: misc/keytry
+  DISAMBIGUATED_SFX(sfx_noway, "*usefail"),
+
+  // alias: misc/brainexplode, intermission/nextstage
+  DISAMBIGUATED_SFX(sfx_barexp, "weapons/rocklx"),
+  DISAMBIGUATED_SFX(sfx_barexp, "vile/stop"),
+  DISAMBIGUATED_SFX(sfx_barexp, "skeleton/tracex"),
+  DISAMBIGUATED_SFX(sfx_barexp, "world/barrelx"),
+
+  DISAMBIGUATED_SFX(sfx_punch, "*fist"),
+
+  DISAMBIGUATED_SFX(sfx_hoof, "cyber/hoof"),
+
+  DISAMBIGUATED_SFX(sfx_metal, "spider/walk"),
+
+  DISAMBIGUATED_SFX(sfx_chgun, "weapons/chngun"), // -> chgun -> pistol
+
+  DISAMBIGUATED_SFX(sfx_tink, "misc/chat2"),
+
+  DISAMBIGUATED_SFX(sfx_bdopn, "doors/dr2_open"),
+
+  DISAMBIGUATED_SFX(sfx_bdcls, "doors/dr2_clos"),
+
+  DISAMBIGUATED_SFX(sfx_itmbk, "misc/spawn"),
+
+  DISAMBIGUATED_SFX(sfx_flame, "vile/firecrkl"),
+
+  DISAMBIGUATED_SFX(sfx_flamst, "vile/firestrt"),
+
+  DISAMBIGUATED_SFX(sfx_getpow, "misc/p_pkup"),
+
+  DISAMBIGUATED_SFX(sfx_bospit, "brain/spit"),
+
+  DISAMBIGUATED_SFX(sfx_boscub, "brain/cube"),
+
+  DISAMBIGUATED_SFX(sfx_bossit, "brain/sight"),
+
+  DISAMBIGUATED_SFX(sfx_bospn, "brain/pain"),
+
+  DISAMBIGUATED_SFX(sfx_bosdth, "brain/death"),
+
+  DISAMBIGUATED_SFX(sfx_manatk, "fatso/raiseguns"),
+
+  DISAMBIGUATED_SFX(sfx_mandth, "fatso/death"),
+
+  DISAMBIGUATED_SFX(sfx_sssit, "wolfss/sight"),
+
+  DISAMBIGUATED_SFX(sfx_ssdth, "wolfss/death"),
+
+  DISAMBIGUATED_SFX(sfx_keenpn, "keen/pain"),
+
+  DISAMBIGUATED_SFX(sfx_keendt, "keen/death"),
+
+  DISAMBIGUATED_SFX(sfx_skeact, "skeleton/active"),
+
+  DISAMBIGUATED_SFX(sfx_skesit, "skeleton/sight"),
+
+  DISAMBIGUATED_SFX(sfx_skeatk, "skeleton/attack"),
+
+  DISAMBIGUATED_SFX(sfx_radio, "misc/chat"),
+
+  DISAMBIGUATED_SFX(sfx_dgsit, "dog/sight"),
+
+  DISAMBIGUATED_SFX(sfx_dgatk, "dog/attack"),
+
+  DISAMBIGUATED_SFX(sfx_dgact, "dog/active"),
+
+  DISAMBIGUATED_SFX(sfx_dgdth, "dog/death"),
+
+  DISAMBIGUATED_SFX(sfx_dgpain, "dog/pain"),
+
+  DISAMBIGUATED_SFX(sfx_secret, "misc/secret"),
+};
