@@ -231,14 +231,14 @@ static int fl_init (int samplerate)
     return 0;
   }
 
-  lumpnum = W_CheckNumForName("SOUNDFNT");
+  lumpnum = W_CheckNumForName("SNDFONT");
   if (lumpnum >= 0)
   {
     fluid_sfloader_t *sfloader = new_fluid_defsfloader(f_set);
     fluid_sfloader_set_callbacks(sfloader, fl_sfopen, fl_sfread, fl_sfseek,
                                  fl_sftell, fl_sfclose);
     fluid_synth_add_sfloader(f_syn, sfloader);
-    f_font = fluid_synth_sfload(f_syn, "SOUNDFNT", 1);
+    f_font = fluid_synth_sfload(f_syn, "SNDFONT", 1);
   }
   else
   {
@@ -249,7 +249,7 @@ static int fl_init (int samplerate)
   if (f_font == FLUID_FAILED)
   {
     lprintf (LO_WARN, "fl_init: error loading soundfont %s\n",
-             lumpnum >= 0 ? "SOUNDFNT" : snd_soundfont);
+             lumpnum >= 0 ? "SNDFONT" : snd_soundfont);
     delete_fluid_synth (f_syn);
     delete_fluid_settings (f_set);
     return 0;
