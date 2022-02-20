@@ -596,3 +596,15 @@ void W_ReadLump(int lump, void *dest)
       }
     }
 }
+
+int W_LumpNumInPortWad(int lump) {
+  const lumpinfo_t *info;
+  size_t name_length, default_name_length;
+
+  info = W_GetLumpInfoByNum(lump);
+  name_length = strlen(info->wadfile->name);
+  default_name_length = strlen(WAD_DATA);
+
+  return name_length >= default_name_length &&
+         !strcmp(info->wadfile->name + name_length - default_name_length, WAD_DATA);
+}

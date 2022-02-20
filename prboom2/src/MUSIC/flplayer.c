@@ -151,7 +151,6 @@ static long long fl_sftell(void *handle)
 static int fl_init (int samplerate)
 {
   const char *filename;
-  int lumpnum;
 
   f_soundrate = samplerate;
   // fluidsynth 1.1.4 supports sample rates as low as 8000hz.  earlier versions only go down to 22050hz
@@ -231,29 +230,42 @@ static int fl_init (int samplerate)
     return 0;
   }
 
-  // TODO: if source is dsda-doom.wad, check snd_soundfont first
-  lumpnum = W_CheckNumForName("SNDFONT");
-  if (lumpnum >= 0)
   {
-    fluid_sfloader_t *sfloader = new_fluid_defsfloader(f_set);
-    fluid_sfloader_set_callbacks(sfloader, fl_sfopen, fl_sfread, fl_sfseek,
-                                 fl_sftell, fl_sfclose);
-    fluid_synth_add_sfloader(f_syn, sfloader);
-    f_font = fluid_synth_sfload(f_syn, "SNDFONT", 1);
-  }
-  else
-  {
-    filename = I_FindFile2(snd_soundfont, ".sf2");
-    f_font = fluid_synth_sfload (f_syn, filename, 1);
-  }
+    int lumpnum;
+    int checked_file = false;
+    dboolean replaced_soundfont = false;
 
-  if (f_font == FLUID_FAILED)
-  {
-    lprintf (LO_WARN, "fl_init: error loading soundfont %s\n",
-             lumpnum >= 0 ? "SNDFONT" : snd_soundfont);
-    delete_fluid_synth (f_syn);
-    delete_fluid_settings (f_set);
-    return 0;
+    lumpnum = W_CheckNumForName("SNDFONT");
+
+    if (lumpnum >= 0)
+    {
+      replaced_soundfont = !W_LumpNumInPortWad(lumpnum);
+    }
+
+    if (!replaced_soundfont && snd_soundfont && snd_soundfont[0])
+    {
+      checked_file = true;
+      filename = I_FindFile2(snd_soundfont, ".sf2");
+      f_font = fluid_synth_sfload (f_syn, filename, 1);
+    }
+
+    if ((!checked_file || f_font == FLUID_FAILED) && lumpnum >= 0)
+    {
+      fluid_sfloader_t *sfloader = new_fluid_defsfloader(f_set);
+      fluid_sfloader_set_callbacks(sfloader, fl_sfopen, fl_sfread, fl_sfseek,
+                                   fl_sftell, fl_sfclose);
+      fluid_synth_add_sfloader(f_syn, sfloader);
+      f_font = fluid_synth_sfload(f_syn, "SNDFONT", 1);
+    }
+
+    if (f_font == FLUID_FAILED)
+    {
+      lprintf (LO_WARN, "fl_init: error loading soundfont %s\n",
+               lumpnum >= 0 ? "SNDFONT" : snd_soundfont);
+      delete_fluid_synth (f_syn);
+      delete_fluid_settings (f_set);
+      return 0;
+    }
   }
 
   return 1;
