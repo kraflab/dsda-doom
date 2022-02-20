@@ -72,7 +72,6 @@ const music_player_t fl_player =
 #include "midifile.h"
 #include "memio.h"
 #include "w_wad.h"
-#include "z_zone.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -113,7 +112,7 @@ static void *fl_sfopen(const char *lumpname)
   MEMFILE *instream;
   int lumpnum = W_GetNumForName(lumpname);
   int len = W_LumpLength(lumpnum);
-  void *data = W_CacheLumpNum(lumpnum, PU_STATIC);
+  const void *data = W_CacheLumpNum(lumpnum);
 
   instream = mem_fopen_read(data, len);
 
