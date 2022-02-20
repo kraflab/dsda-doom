@@ -70,6 +70,8 @@ const music_player_t fl_player =
 #include "i_system.h" // for I_FindFile()
 #include "lprintf.h"
 #include "midifile.h"
+#include "memio.h"
+#include "w_wad.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -105,9 +107,51 @@ static const char *fl_name (void)
 #include <delayimp.h>
 #endif
 
+static void *fl_sfopen(const char *lumpname)
+{
+  MEMFILE *instream;
+  int lumpnum = W_GetNumForName(lumpname);
+  int len = W_LumpLength(lumpnum);
+  const void *data = W_CacheLumpNum(lumpnum);
+
+  instream = mem_fopen_read(data, len);
+
+  return instream;
+}
+
+static int fl_sfread(void *buf, int count, void *handle)
+{
+  if (mem_fread(buf, sizeof(byte), count, (MEMFILE *)handle) == count)
+  {
+    return FLUID_OK;
+  }
+  return FLUID_FAILED;
+}
+
+static int fl_sfseek(void *handle, long offset, int origin)
+{
+  if (mem_fseek((MEMFILE *)handle, offset, origin) < 0)
+  {
+    return FLUID_FAILED;
+  }
+  return FLUID_OK;
+}
+
+static int fl_sfclose(void *handle)
+{
+  mem_fclose((MEMFILE *)handle);
+  return FLUID_OK;
+}
+
+static long fl_sftell(void *handle)
+{
+  return mem_ftell((MEMFILE *)handle);
+}
+
 static int fl_init (int samplerate)
 {
   const char *filename;
+  int lumpnum;
 
   f_soundrate = samplerate;
   // fluidsynth 1.1.4 supports sample rates as low as 8000hz.  earlier versions only go down to 22050hz
@@ -187,12 +231,25 @@ static int fl_init (int samplerate)
     return 0;
   }
 
-  filename = I_FindFile2(snd_soundfont, ".sf2");
-  f_font = fluid_synth_sfload (f_syn, filename, 1);
+  lumpnum = W_CheckNumForName("SNDFONT");
+  if (lumpnum >= 0)
+  {
+    fluid_sfloader_t *sfloader = new_fluid_defsfloader(f_set);
+    fluid_sfloader_set_callbacks(sfloader, fl_sfopen, fl_sfread, fl_sfseek,
+                                 fl_sftell, fl_sfclose);
+    fluid_synth_add_sfloader(f_syn, sfloader);
+    f_font = fluid_synth_sfload(f_syn, "SNDFONT", 1);
+  }
+  else
+  {
+    filename = I_FindFile2(snd_soundfont, ".sf2");
+    f_font = fluid_synth_sfload (f_syn, filename, 1);
+  }
 
   if (f_font == FLUID_FAILED)
   {
-    lprintf (LO_WARN, "fl_init: error loading soundfont %s\n", snd_soundfont);
+    lprintf (LO_WARN, "fl_init: error loading soundfont %s\n",
+             lumpnum >= 0 ? "SNDFONT" : snd_soundfont);
     delete_fluid_synth (f_syn);
     delete_fluid_settings (f_set);
     return 0;
