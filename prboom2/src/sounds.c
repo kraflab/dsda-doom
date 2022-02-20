@@ -458,10 +458,10 @@ sfxinfo_t doom_S_sfx[] = {
 #define DISAMBIGUATED_SFX(id, tag) { "", 0, &doom_S_sfx[id], 0, 0, 0, 0, 0, tag }
 
 sfxinfo_t doom_disambiguated_sfx[] = {
-  // alias: intermission/tick
   DISAMBIGUATED_SFX(sfx_pistol, "weapons/pistol"),
   DISAMBIGUATED_SFX(sfx_pistol, "grunt/attack"),
   DISAMBIGUATED_SFX(sfx_pistol, "menu/choose"),
+  DISAMBIGUATED_SFX(sfx_pistol, "intermission/tick"),
 
   DISAMBIGUATED_SFX(sfx_shotgn, "weapons/shotgf"),
   DISAMBIGUATED_SFX(sfx_shotgn, "shotguy/attack"),
@@ -469,8 +469,9 @@ sfxinfo_t doom_disambiguated_sfx[] = {
   DISAMBIGUATED_SFX(sfx_shotgn, "spider/attack"),
   DISAMBIGUATED_SFX(sfx_shotgn, "wolfss/attack"),
 
-  // alias: intermission/paststats, intermission/pastcoopstats
   DISAMBIGUATED_SFX(sfx_sgcock, "weapons/shotgr"),
+  DISAMBIGUATED_SFX(sfx_sgcock, "intermission/paststats"),
+  DISAMBIGUATED_SFX(sfx_sgcock, "intermission/pastcoopstats"),
 
   DISAMBIGUATED_SFX(sfx_dshtgn, "weapons/sshotf"),
 
@@ -532,8 +533,10 @@ sfxinfo_t doom_disambiguated_sfx[] = {
   DISAMBIGUATED_SFX(sfx_swtchx, "menu/dismiss"),
   DISAMBIGUATED_SFX(sfx_swtchx, "menu/clear"),
 
-  // alias: *pain75, *pain50, *pain25
   DISAMBIGUATED_SFX(sfx_plpain, "*pain100"),
+  DISAMBIGUATED_SFX(sfx_plpain, "*pain75"),
+  DISAMBIGUATED_SFX(sfx_plpain, "*pain50"),
+  DISAMBIGUATED_SFX(sfx_plpain, "*pain25"),
 
   DISAMBIGUATED_SFX(sfx_dmpain, "demon/pain"),
   DISAMBIGUATED_SFX(sfx_dmpain, "spectre/pain"),
@@ -558,23 +561,25 @@ sfxinfo_t doom_disambiguated_sfx[] = {
 
   DISAMBIGUATED_SFX(sfx_pepain, "pain/pain"),
 
-  // alias: intermission/pastdmstats
   DISAMBIGUATED_SFX(sfx_slop, "*gibbed"),
   DISAMBIGUATED_SFX(sfx_slop, "misc/gibbed"),
   DISAMBIGUATED_SFX(sfx_slop, "vile/raise"),
+  DISAMBIGUATED_SFX(sfx_slop, "intermission/pastdmstats"),
 
-  // alias: misc/health_pkup, misc/armor_pkup, misc/ammo_pkup
   DISAMBIGUATED_SFX(sfx_itemup, "misc/i_pkup"),
   DISAMBIGUATED_SFX(sfx_itemup, "misc/k_pkup"),
+  DISAMBIGUATED_SFX(sfx_itemup, "misc/health_pkup"),
+  DISAMBIGUATED_SFX(sfx_itemup, "misc/armor_pkup"),
+  DISAMBIGUATED_SFX(sfx_itemup, "misc/ammo_pkup"),
 
   DISAMBIGUATED_SFX(sfx_wpnup, "misc/w_pkup"),
 
-  // alias: *land
   DISAMBIGUATED_SFX(sfx_oof, "*grunt"),
+  DISAMBIGUATED_SFX(sfx_oof, "*land"),
   DISAMBIGUATED_SFX(sfx_oof, "menu/invalid"),
 
-  // alias: brain/spawn
   DISAMBIGUATED_SFX(sfx_telept, "misc/teleport"),
+  DISAMBIGUATED_SFX(sfx_telept, "brain/spawn"),
 
   DISAMBIGUATED_SFX(sfx_posit1, "grunt/sight1"),
   DISAMBIGUATED_SFX(sfx_posit1, "shotguy/sight1"),
@@ -627,8 +632,8 @@ sfxinfo_t doom_disambiguated_sfx[] = {
 
   DISAMBIGUATED_SFX(sfx_skeswg, "skeleton/swing"),
 
-  // alias: intermission/cooptotal
   DISAMBIGUATED_SFX(sfx_pldeth, "*death"),
+  DISAMBIGUATED_SFX(sfx_pldeth, "intermission/cooptotal"),
 
   DISAMBIGUATED_SFX(sfx_pdiehi, "*xdeath"),
 
@@ -695,14 +700,15 @@ sfxinfo_t doom_disambiguated_sfx[] = {
 
   DISAMBIGUATED_SFX(sfx_vilact, "vile/active"),
 
-  // alias: misc/keytry
   DISAMBIGUATED_SFX(sfx_noway, "*usefail"),
+  DISAMBIGUATED_SFX(sfx_noway, "misc/keytry"),
 
-  // alias: misc/brainexplode, intermission/nextstage
   DISAMBIGUATED_SFX(sfx_barexp, "weapons/rocklx"),
   DISAMBIGUATED_SFX(sfx_barexp, "vile/stop"),
   DISAMBIGUATED_SFX(sfx_barexp, "skeleton/tracex"),
   DISAMBIGUATED_SFX(sfx_barexp, "world/barrelx"),
+  DISAMBIGUATED_SFX(sfx_barexp, "misc/brainexplode"),
+  DISAMBIGUATED_SFX(sfx_barexp, "intermission/nextstage"),
 
   DISAMBIGUATED_SFX(sfx_punch, "*fist"),
 
