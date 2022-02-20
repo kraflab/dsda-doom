@@ -231,6 +231,7 @@ static int fl_init (int samplerate)
     return 0;
   }
 
+  // TODO: if source is dsda-doom.wad, check snd_soundfont first
   lumpnum = W_CheckNumForName("SNDFONT");
   if (lumpnum >= 0)
   {

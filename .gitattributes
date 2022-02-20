@@ -191,6 +191,7 @@ prboom2/data/lumps/m_shadow.lmp -text
 prboom2/data/lumps/m_weap.lmp -text
 prboom2/data/lumps/nervebex.lmp -text
 prboom2/data/lumps/sinetabl.lmp -text
+prboom2/data/lumps/soundfont/sndfont.lmp -text
 prboom2/data/lumps/switches.lmp -text
 prboom2/data/lumps/tangtabl.lmp -text
 prboom2/data/lumps/tantoang.lmp -text

@@ -51,6 +51,9 @@ M_WEAP
 M_MARK
 B_END
 
+# Default soundfont
+SNDFONT
+
 # List of Sounds
 [sounds]
 # MBF dog sounds
