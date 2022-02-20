@@ -119,7 +119,7 @@ static void *fl_sfopen(const char *lumpname)
   return instream;
 }
 
-static int fl_sfread(void *buf, int count, void *handle)
+static int fl_sfread(void *buf, long long count, void *handle)
 {
   if (mem_fread(buf, sizeof(byte), count, (MEMFILE *)handle) == count)
   {
@@ -128,7 +128,7 @@ static int fl_sfread(void *buf, int count, void *handle)
   return FLUID_FAILED;
 }
 
-static int fl_sfseek(void *handle, long offset, int origin)
+static int fl_sfseek(void *handle, long long offset, int origin)
 {
   if (mem_fseek((MEMFILE *)handle, offset, origin) < 0)
   {
@@ -143,7 +143,7 @@ static int fl_sfclose(void *handle)
   return FLUID_OK;
 }
 
-static long fl_sftell(void *handle)
+static long long fl_sftell(void *handle)
 {
   return mem_ftell((MEMFILE *)handle);
 }
