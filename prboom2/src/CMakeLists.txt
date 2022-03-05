@@ -13,6 +13,8 @@ set(COMMON_SRC
     dsda.h
     dsda/analysis.c
     dsda/analysis.h
+    dsda/build.c
+    dsda/build.h
     dsda/command_display.c
     dsda/command_display.h
     dsda/compatibility.c

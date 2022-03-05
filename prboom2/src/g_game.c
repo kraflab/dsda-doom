@@ -86,6 +86,7 @@
 #include "r_fps.h"
 #include "e6y.h"//e6y
 #include "dsda.h"
+#include "dsda/build.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
 #include "dsda/key_frame.h"
@@ -1248,6 +1249,9 @@ dboolean G_Responder (event_t* ev)
     return InventoryMoveRight();
   }
 
+  if (dsda_BuildResponder(ev))
+    return true;
+
   if (dsda_InputActivated(dsda_input_pause))
   {
     special_event = BT_SPECIAL | (BT_PAUSE & BT_SPECIALMASK);
@@ -1304,6 +1308,7 @@ dboolean G_Responder (event_t* ev)
 void G_Ticker (void)
 {
   int i;
+  int old_paused = 0;
   static gamestate_t prevgamestate;
 
   // CPhipps - player colour changing
@@ -1359,6 +1364,12 @@ void G_Ticker (void)
       case ga_nothing:
         break;
     }
+  }
+
+  if (dsda_AdvanceFrame())
+  {
+    old_paused = paused & ~PAUSE_COMMAND;
+    paused &= PAUSE_COMMAND;
   }
 
   if (paused_outside_demo)
@@ -1512,6 +1523,9 @@ void G_Ticker (void)
       D_PageTicker();
       break;
   }
+
+  if (old_paused)
+    paused |= old_paused;
 }
 
 //

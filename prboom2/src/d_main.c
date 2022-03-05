@@ -445,7 +445,7 @@ void D_Display (fixed_t frac)
     }
     else if (heretic)
       MN_DrawPause();
-    else
+    else if (!paused_via_build_mode)
       // Simplified the "logic" here and no need for x-coord caching - POPE
       V_DrawNamePatch(
         (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,

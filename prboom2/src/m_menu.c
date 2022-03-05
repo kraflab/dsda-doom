@@ -2337,6 +2337,7 @@ setup_menu_t raven_keys_settings[];
 setup_menu_t heretic_keys_settings[];
 setup_menu_t hexen_keys_settings[];
 setup_menu_t dsda_keys_settings[];
+setup_menu_t build_keys_settings[];
 
 // The table which gets you from one screen table to the next.
 
@@ -2353,6 +2354,7 @@ setup_menu_t* keys_settings[] =
   heretic_keys_settings,
   hexen_keys_settings,
   dsda_keys_settings,
+  build_keys_settings,
   NULL
 };
 
@@ -2674,8 +2676,18 @@ setup_menu_t dsda_keys_settings[] = {
   { "SFX", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_mute_sfx },
   { "Music", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, { 0 }, dsda_input_mute_music },
   { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_cheat_codes },
+  { "Build Mode", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_build },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
+  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { build_keys_settings } },
+};
+
+setup_menu_t build_keys_settings[] = {
+  { "Build Mode", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
+  { "Toggle Build Mode", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_build },
+  { "Advance Frame", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_build_advance_frame },
+
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { dsda_keys_settings } },
   { 0, S_SKIP | S_END, m_null }
 };
 

@@ -761,6 +761,11 @@ default_t defaults[] =
   { "input_notarget", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_notarget, { 0, -1, -1 } },
 
+  { "input_build", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build, { 0, -1, -1 } },
+  { "input_build_advance_frame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_advance_frame, { 0, -1, -1 } },
+
   { "input_jump", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_jump, { 0, -1, -1 } },
   { "input_hexen_arti_incant", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
