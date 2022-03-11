@@ -184,6 +184,7 @@ typedef enum {
   dsda_input_build_turn_right,
   dsda_input_build_strafe_left,
   dsda_input_build_strafe_right,
+  dsda_input_build_use,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

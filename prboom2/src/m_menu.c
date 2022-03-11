@@ -2695,6 +2695,7 @@ setup_menu_t build_keys_settings[] = {
   { "Turn Right", S_INPUT, m_build, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_build_turn_right },
   { "Strafe Left", S_INPUT, m_build, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_build_strafe_left },
   { "Strafe Right", S_INPUT, m_build, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_build_strafe_right },
+  { "Use", S_INPUT, m_build, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_build_use },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { dsda_keys_settings } },
   { 0, S_SKIP | S_END, m_null }

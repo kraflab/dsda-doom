@@ -89,6 +89,10 @@ static void buildTurnLeft(void) {
     build_cmd.angleturn -= shortTic();
 }
 
+static void buildUse(void) {
+  build_cmd.buttons ^= BT_USE;
+}
+
 static void resetCmd(void) {
   memset(&build_cmd, 0, sizeof(build_cmd));
 }
@@ -174,6 +178,12 @@ dboolean dsda_BuildResponder(event_t* ev) {
 
     return true;
   }
+
+    if (dsda_InputActivated(dsda_input_build_use)) {
+      buildUse();
+
+      return true;
+    }
 
   return false;
 }

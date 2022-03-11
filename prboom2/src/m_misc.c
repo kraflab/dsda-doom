@@ -779,6 +779,8 @@ default_t defaults[] =
     dsda_input_build_strafe_left, { 'a', -1, -1 } },
   { "input_build_strafe_right", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_build_strafe_right, { 'd', -1, -1 } },
+  { "input_build_use", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_use, { KEYD_SPACEBAR, -1, -1 } },
 
   { "input_jump", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_jump, { 0, -1, -1 } },
