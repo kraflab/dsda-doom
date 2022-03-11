@@ -21,6 +21,7 @@
 #include "doomstat.h"
 
 #include "dsda.h"
+#include "dsda/build.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/hud.h"
@@ -53,6 +54,7 @@ int dsda_hide_empty_commands;
 
 static dsda_command_display_t command_history[MAX_HISTORY];
 static dsda_command_display_t* current_command = command_history;
+static dsda_command_display_t next_command_display;
 
 static void dsda_TicCmdToCommand(dsda_command_t* command, ticcmd_t* cmd) {
   command->forwardmove = cmd->forwardmove;
@@ -103,32 +105,89 @@ void dsda_InitCommandHistory(void) {
   command_history[MAX_HISTORY - 1].next = &command_history[0];
 }
 
+void dsda_InitCommandDisplayLine(dsda_command_display_t* command, int offset,
+                                 int color, patchnum_t* font) {
+  HUlib_initTextLine(
+    &command->hu_text,
+    INPUT_TEXT_X,
+    200 - g_st_height - 8 * offset,
+    font,
+    HU_FONTSTART,
+    color,
+    VPT_ALIGN_RIGHT_BOTTOM
+  );
+
+  command->hu_text.space_width = 5;
+}
+
 void dsda_InitCommandDisplay(patchnum_t* font) {
-  int i;
   static int firsttime = 1;
 
   if (firsttime) {
+    int i;
+
     firsttime = 0;
 
-    for (i = 0; i < MAX_HISTORY; ++i) {
-      HUlib_initTextLine(
-        &command_history[i].hu_text,
-        INPUT_TEXT_X,
-        200 - g_st_height - 8 * (i + 1),
-        font,
-        HU_FONTSTART,
-        g_cr_gray,
-        VPT_ALIGN_RIGHT_BOTTOM
-      );
+    for (i = 0; i < MAX_HISTORY; ++i)
+      dsda_InitCommandDisplayLine(&command_history[i], i + 1, g_cr_gray, font);
 
-      command_history[i].hu_text.space_width = 5;
-    }
+    dsda_InitCommandDisplayLine(&next_command_display, 1, g_cr_gold, font);
   }
 }
 
-void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
+void dsda_UpdateCommandText(dsda_command_t* command, dsda_command_display_t* display_command) {
   char* s;
   int length = 0;
+
+  display_command->text[0] = '\0';
+
+  if (display_command->repeat)
+    length += sprintf(display_command->text + length, "x%-3d ", display_command->repeat + 1);
+  else
+    length += sprintf(display_command->text + length, "     ");
+
+  if (command->forwardmove > 0)
+    length += sprintf(display_command->text + length, "MF%2d ", command->forwardmove);
+  else if (command->forwardmove < 0)
+    length += sprintf(display_command->text + length, "MB%2d ", -command->forwardmove);
+  else
+    length += sprintf(display_command->text + length, "     ");
+
+  if (command->sidemove > 0)
+    length += sprintf(display_command->text + length, "SR%2d ", command->sidemove);
+  else if (command->sidemove < 0)
+    length += sprintf(display_command->text + length, "SL%2d ", -command->sidemove);
+  else
+    length += sprintf(display_command->text + length, "     ");
+
+  if (command->angleturn > 0)
+    length += sprintf(display_command->text + length, "TL%2d ", command->angleturn);
+  else if (command->angleturn < 0)
+    length += sprintf(display_command->text + length, "TR%2d ", -command->angleturn);
+  else
+    length += sprintf(display_command->text + length, "     ");
+
+  if (command->attack)
+    length += sprintf(display_command->text + length, "A");
+  else
+    length += sprintf(display_command->text + length, " ");
+
+  if (command->use)
+    length += sprintf(display_command->text + length, "U");
+  else
+    length += sprintf(display_command->text + length, " ");
+
+  if (command->change)
+    length += sprintf(display_command->text + length, "C%d", command->change);
+  else
+    length += sprintf(display_command->text + length, "  ");
+
+  HUlib_clearTextLine(&display_command->hu_text);
+  s = display_command->text;
+  while (*s) HUlib_addCharToTextLine(&display_command->hu_text, *(s++));
+}
+
+void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
   dsda_command_t command;
 
   dsda_TicCmdToCommand(&command, cmd);
@@ -144,61 +203,34 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
     current_command->command = command;
   }
 
-  current_command->text[0] = '\0';
+  dsda_UpdateCommandText(&command, current_command);
+}
 
-  if (current_command->repeat)
-    length += sprintf(current_command->text + length, "x%-3d ", current_command->repeat + 1);
-  else
-    length += sprintf(current_command->text + length, "     ");
-
-  if (command.forwardmove > 0)
-    length += sprintf(current_command->text + length, "MF%2d ", command.forwardmove);
-  else if (command.forwardmove < 0)
-    length += sprintf(current_command->text + length, "MB%2d ", -command.forwardmove);
-  else
-    length += sprintf(current_command->text + length, "     ");
-
-  if (command.sidemove > 0)
-    length += sprintf(current_command->text + length, "SR%2d ", command.sidemove);
-  else if (command.sidemove < 0)
-    length += sprintf(current_command->text + length, "SL%2d ", -command.sidemove);
-  else
-    length += sprintf(current_command->text + length, "     ");
-
-  if (command.angleturn > 0)
-    length += sprintf(current_command->text + length, "TL%2d ", command.angleturn);
-  else if (command.angleturn < 0)
-    length += sprintf(current_command->text + length, "TR%2d ", -command.angleturn);
-  else
-    length += sprintf(current_command->text + length, "     ");
-
-  if (command.attack)
-    length += sprintf(current_command->text + length, "A");
-  else
-    length += sprintf(current_command->text + length, " ");
-
-  if (command.use)
-    length += sprintf(current_command->text + length, "U");
-  else
-    length += sprintf(current_command->text + length, " ");
-
-  if (command.change)
-    length += sprintf(current_command->text + length, "C%d", command.change);
-  else
-    length += sprintf(current_command->text + length, "  ");
-
-  HUlib_clearTextLine(&current_command->hu_text);
-  s = current_command->text;
-  while (*s) HUlib_addCharToTextLine(&current_command->hu_text, *(s++));
+void dsda_DrawCommandDisplayLine(dsda_command_display_t* command, int offset) {
+  command->hu_text.y = 200 - g_st_height - 8 * offset;
+  HUlib_drawTextLine(&command->hu_text, false);
 }
 
 void dsda_DrawCommandDisplay(void) {
   int i;
+  int offset = 1;
   dsda_command_display_t* command = current_command;
 
+  if (dsda_BuildMode()) {
+    ticcmd_t next_cmd;
+    dsda_command_t next_command;
+
+    dsda_CopyBuildCmd(&next_cmd);
+    dsda_TicCmdToCommand(&next_command, &next_cmd);
+    dsda_UpdateCommandText(&next_command, &next_command_display);
+
+    dsda_DrawCommandDisplayLine(&next_command_display, offset);
+
+    ++offset;
+  }
+
   for (i = 0; i < dsda_command_history_size; ++i) {
-    command->hu_text.y = 200 - g_st_height - 8 * (i + 1);
-    HUlib_drawTextLine(&command->hu_text, false);
+    dsda_DrawCommandDisplayLine(command, i + offset);
     command = command->prev;
   }
 }
