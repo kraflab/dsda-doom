@@ -18,5 +18,8 @@
 #include "d_event.h"
 #include "d_ticcmd.h"
 
+dboolean dsda_AllowBuilding(void);
+dboolean dsda_BuildMode(void);
+void dsda_CopyBuildCmd(ticcmd_t* cmd);
 dboolean dsda_BuildResponder(event_t *ev);
 dboolean dsda_AdvanceFrame(void);

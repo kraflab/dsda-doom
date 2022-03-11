@@ -2676,16 +2676,25 @@ setup_menu_t dsda_keys_settings[] = {
   { "SFX", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_mute_sfx },
   { "Music", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, { 0 }, dsda_input_mute_music },
   { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_cheat_codes },
-  { "Build Mode", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_build },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { build_keys_settings } },
+
+  // Final entry
+  { 0, S_SKIP | S_END, m_null }
 };
 
 setup_menu_t build_keys_settings[] = {
   { "Build Mode", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
   { "Toggle Build Mode", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_build },
-  { "Advance Frame", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_build_advance_frame },
+  { "Advance Frame", S_INPUT, m_build, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_build_advance_frame },
+  { "Reset Command", S_INPUT, m_build, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_build_reset_command },
+  { "Forward", S_INPUT, m_build, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_build_forward },
+  { "Backward", S_INPUT, m_build, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_build_backward },
+  { "Turn Left", S_INPUT, m_build, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_build_turn_left },
+  { "Turn Right", S_INPUT, m_build, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_build_turn_right },
+  { "Strafe Left", S_INPUT, m_build, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_build_strafe_left },
+  { "Strafe Right", S_INPUT, m_build, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_build_strafe_right },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { dsda_keys_settings } },
   { 0, S_SKIP | S_END, m_null }
