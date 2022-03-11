@@ -18,6 +18,7 @@
 #include "d_event.h"
 #include "d_ticcmd.h"
 
+angle_t dsda_BuildModeViewAngleOffset(void);
 dboolean dsda_AllowBuilding(void);
 dboolean dsda_BuildMode(void);
 void dsda_CopyBuildCmd(ticcmd_t* cmd);

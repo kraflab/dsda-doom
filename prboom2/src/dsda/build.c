@@ -93,6 +93,13 @@ static void resetCmd(void) {
   memset(&build_cmd, 0, sizeof(build_cmd));
 }
 
+angle_t dsda_BuildModeViewAngleOffset(void) {
+  if (!build_mode)
+    return 0;
+
+  return build_cmd.angleturn << 16;
+}
+
 dboolean dsda_AllowBuilding(void) {
   return !dsda_StrictMode() && !demoplayback;
 }
