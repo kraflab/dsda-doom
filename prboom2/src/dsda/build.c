@@ -93,6 +93,25 @@ static void buildUse(void) {
   build_cmd.buttons ^= BT_USE;
 }
 
+static void buildFire(void) {
+  build_cmd.buttons ^= BT_ATTACK;
+}
+
+static void buildWeapon(int weapon) {
+  int cmdweapon;
+
+  cmdweapon = weapon << BT_WEAPONSHIFT;
+
+  if (build_cmd.buttons & BT_CHANGE && (build_cmd.buttons & BT_WEAPONMASK) == cmdweapon)
+    build_cmd.buttons &= ~BT_CHANGE;
+  else
+    build_cmd.buttons |= BT_CHANGE;
+
+  build_cmd.buttons &= ~BT_WEAPONMASK;
+  if (build_cmd.buttons & BT_CHANGE)
+    build_cmd.buttons |= cmdweapon;
+}
+
 static void resetCmd(void) {
   memset(&build_cmd, 0, sizeof(build_cmd));
 }
@@ -181,6 +200,67 @@ dboolean dsda_BuildResponder(event_t* ev) {
 
   if (dsda_InputActivated(dsda_input_build_use)) {
     buildUse();
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_fire)) {
+    buildFire();
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_weapon1)) {
+    buildWeapon(0);
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_weapon2)) {
+    buildWeapon(1);
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_weapon3)) {
+    buildWeapon(2);
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_weapon4)) {
+    buildWeapon(3);
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_weapon5)) {
+    buildWeapon(4);
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_weapon6)) {
+    buildWeapon(5);
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_weapon7)) {
+    buildWeapon(6);
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_weapon8)) {
+    buildWeapon(7);
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_weapon9)) {
+    if (!demo_compatibility && gamemode == commercial)
+      buildWeapon(8);
 
     return true;
   }

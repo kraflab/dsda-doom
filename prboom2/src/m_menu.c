@@ -2337,7 +2337,8 @@ setup_menu_t raven_keys_settings[];
 setup_menu_t heretic_keys_settings[];
 setup_menu_t hexen_keys_settings[];
 setup_menu_t dsda_keys_settings[];
-setup_menu_t build_keys_settings[];
+setup_menu_t build_keys_settings1[];
+setup_menu_t build_keys_settings2[];
 
 // The table which gets you from one screen table to the next.
 
@@ -2354,7 +2355,8 @@ setup_menu_t* keys_settings[] =
   heretic_keys_settings,
   hexen_keys_settings,
   dsda_keys_settings,
-  build_keys_settings,
+  build_keys_settings1,
+  build_keys_settings2,
   NULL
 };
 
@@ -2678,14 +2680,14 @@ setup_menu_t dsda_keys_settings[] = {
   { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_cheat_codes },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
-  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { build_keys_settings } },
+  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { build_keys_settings1 } },
 
   // Final entry
   { 0, S_SKIP | S_END, m_null }
 };
 
-setup_menu_t build_keys_settings[] = {
-  { "Build Mode", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
+setup_menu_t build_keys_settings1[] = {
+  { "Build Mode (1)", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
   { "Toggle Build Mode", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_build },
   { "Advance Frame", S_INPUT, m_build, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_build_advance_frame },
   { "Reset Command", S_INPUT, m_build, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_build_reset_command },
@@ -2697,7 +2699,29 @@ setup_menu_t build_keys_settings[] = {
   { "Strafe Right", S_INPUT, m_build, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_build_strafe_right },
   { "Use", S_INPUT, m_build, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_build_use },
 
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { dsda_keys_settings } },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
+  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { build_keys_settings2 } },
+
+  // Final entry
+  { 0, S_SKIP | S_END, m_null }
+};
+
+setup_menu_t build_keys_settings2[] = {
+  { "Build Mode (2)", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
+  { "Fire", S_INPUT, m_build, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_build_fire },
+  { "Fist", S_INPUT, m_build, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_build_weapon1 },
+  { "Pistol", S_INPUT, m_build, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_build_weapon2 },
+  { "Shotgun", S_INPUT, m_build, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_build_weapon3 },
+  { "Chaingun", S_INPUT, m_build, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_build_weapon4 },
+  { "Rocket", S_INPUT, m_build, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_build_weapon5 },
+  { "Plasma", S_INPUT, m_build, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_build_weapon6 },
+  { "BFG", S_INPUT, m_build, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_build_weapon7 },
+  { "Chainsaw", S_INPUT, m_build, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_build_weapon8 },
+  { "SSG", S_INPUT, m_build, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_build_weapon9 },
+
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { build_keys_settings1 } },
+
+  // Final entry
   { 0, S_SKIP | S_END, m_null }
 };
 
