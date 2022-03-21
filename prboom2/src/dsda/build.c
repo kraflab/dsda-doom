@@ -179,11 +179,11 @@ dboolean dsda_BuildResponder(event_t* ev) {
     return true;
   }
 
-    if (dsda_InputActivated(dsda_input_build_use)) {
-      buildUse();
+  if (dsda_InputActivated(dsda_input_build_use)) {
+    buildUse();
 
-      return true;
-    }
+    return true;
+  }
 
   return false;
 }
