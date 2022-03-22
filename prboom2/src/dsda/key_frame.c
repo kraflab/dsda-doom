@@ -35,6 +35,7 @@
 
 #include "heretic/sb_bar.h"
 
+#include "dsda/build.h"
 #include "dsda/demo.h"
 #include "dsda/mapinfo.h"
 #include "dsda/options.h"
@@ -264,6 +265,9 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   ST_Start();
 
   dsda_key_frame_restored = 1;
+
+  if (dsda_BuildMode())
+    paused |= PAUSE_BUILDMODE;
 
   doom_printf("Restored key frame");
 }
