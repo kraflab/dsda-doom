@@ -56,6 +56,9 @@ void RecalculateDrawnSubsectors(void);
 static byte* dsda_quick_key_frame_buffer;
 static int dsda_key_frame_restored;
 static dboolean dsda_auto_key_frame_timed_out;
+static int dsda_auto_key_frame_timeout_count;
+
+#define TIMEOUT_LIMIT 1
 
 typedef struct {
   byte* buffer;
@@ -335,6 +338,7 @@ void dsda_RewindAutoKeyFrame(void) {
 
 void dsda_ResetAutoKeyFrameTimeout(void) {
   dsda_auto_key_frame_timed_out = false;
+  dsda_auto_key_frame_timeout_count = 0;
 }
 
 void dsda_UpdateAutoKeyFrames(void) {
@@ -375,10 +379,17 @@ void dsda_UpdateAutoKeyFrames(void) {
       dsda_StoreKeyFrame(&current_key_frame->buffer, false);
       elapsed_time = dsda_ElapsedTimeMS(dsda_timer_key_frame);
 
-      if (dsda_auto_key_frame_timeout && elapsed_time > dsda_auto_key_frame_timeout)
-      {
-        dsda_auto_key_frame_timed_out = true;
-        doom_printf("Slow key framing: rewind disabled");
+      if (dsda_auto_key_frame_timeout) {
+        if (elapsed_time > dsda_auto_key_frame_timeout) {
+          ++dsda_auto_key_frame_timeout_count;
+
+          if (dsda_auto_key_frame_timeout_count > TIMEOUT_LIMIT) {
+            dsda_auto_key_frame_timed_out = true;
+            doom_printf("Slow key framing: rewind disabled");
+          }
+        }
+        else
+          dsda_auto_key_frame_timeout_count = 0;
       }
     }
   }
