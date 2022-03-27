@@ -566,17 +566,15 @@ void P_UnArchiveThinkerSubclasses(mobj_t** mobj_p, int mobj_count)
 }
 
 extern mobj_t** blocklinks;
+extern int      blocklinks_count;
 extern int      bmapwidth;
 extern int      bmapheight;
 
 void P_ArchiveBlockLinks(void)
 {
   int i;
-  int size;
 
-  size = bmapwidth * bmapheight;
-
-  for (i = 0; i < size; ++i)
+  for (i = 0; i < blocklinks_count; ++i)
   {
     int count = 0;
     mobj_t*  mobj;

@@ -160,6 +160,7 @@ int       *blockmaplump;          // was short -- killough
 fixed_t   bmaporgx, bmaporgy;     // origin of block map
 
 mobj_t    **blocklinks;           // for thing chains
+int       blocklinks_count;
 
 // MAES: extensions to support 512x512 blockmaps.
 // They represent the maximum negative number which represents
@@ -2470,7 +2471,8 @@ static void P_LoadBlockMap (int lump)
   }
 
   // clear out mobj chains - CPhipps - use calloc
-  blocklinks = calloc_IfSameLevel(blocklinks, bmapwidth * bmapheight, sizeof(*blocklinks));
+  blocklinks_count = bmapwidth * bmapheight;
+  blocklinks = calloc_IfSameLevel(blocklinks, blocklinks_count, sizeof(*blocklinks));
   blockmap = blockmaplump+4;
 
   // MAES: set blockmapxneg and blockmapyneg
