@@ -89,6 +89,7 @@
 #include "i_main.h"
 
 #include "dsda/palette.h"
+#include "dsda/time.h"
 
 //e6y: new mouse code
 static SDL_Cursor* cursors[2] = {NULL, NULL};
@@ -135,6 +136,7 @@ int             leds_always_off = 0; // Expected by m_misc, not relevant
 
 // Mouse handling
 extern int     usemouse;        // config file var
+extern int mouse_stutter_correction;
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
 
 video_mode_t I_GetModeFromString(const char *modestr);
@@ -1444,6 +1446,34 @@ static void DeactivateMouse(void)
   SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
+// Interpolates mouse input to mitigate stuttering
+static void CorrectMouseStutter(int *x, int *y)
+{
+  static int x_remainder_old, y_remainder_old;
+  int x_remainder, y_remainder;
+  fixed_t fractic, correction_factor;
+
+  if (!mouse_stutter_correction)
+  {
+    return;
+  }
+
+  fractic = dsda_TickElapsedTime();
+
+  *x += x_remainder_old;
+  *y += y_remainder_old;
+
+  correction_factor = FixedDiv(fractic, fractic + FRACUNIT / 2);
+
+  x_remainder = FixedMul(*x, correction_factor);
+  *x -= x_remainder;
+  x_remainder_old = x_remainder;
+
+  y_remainder = FixedMul(*y, correction_factor);
+  *y -= y_remainder;
+  y_remainder_old = y_remainder;
+}
+
 //
 // Read the change in mouse state to generate mouse motion events
 //
@@ -1456,6 +1486,7 @@ static void I_ReadMouse(void)
     int x, y;
 
     SDL_GetRelativeMouseState(&x, &y);
+    CorrectMouseStutter(&x, &y);
 
     if (x != 0 || y != 0)
     {

@@ -156,6 +156,7 @@ int M_ReadFile(char const *name, byte **buffer)
 //
 
 int usemouse;
+int mouse_stutter_correction;
 dboolean    precache = true; /* if true, load all graphics at start */
 
 // The available anisotropic
@@ -782,6 +783,8 @@ default_t defaults[] =
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
    def_bool,ss_none}, // enables use of mouse with DOOM
+  {"mouse_stutter_correction",{&mouse_stutter_correction},{1},0,1,
+   def_bool,ss_none}, // interpolates mouse input to mitigate stuttering
   //jff 4/3/98 allow unlimited sensitivity
   {"mouse_sensitivity_horiz",{&mouseSensitivity_horiz},{10},0,UL,
    def_int,ss_none}, /* adjust horizontal (x) mouse sensitivity killough/mead */
