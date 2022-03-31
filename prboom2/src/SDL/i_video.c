@@ -1463,7 +1463,7 @@ static void CorrectMouseStutter(int *x, int *y)
   *x += x_remainder_old;
   *y += y_remainder_old;
 
-  correction_factor = FixedDiv(fractic, fractic + FRACUNIT / 2);
+  correction_factor = FixedDiv(fractic, fractic + 1000000 / TICRATE);
 
   x_remainder = FixedMul(*x, correction_factor);
   *x -= x_remainder;
