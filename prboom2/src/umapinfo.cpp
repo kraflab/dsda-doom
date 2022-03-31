@@ -559,6 +559,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 				{
 					scanner.MustGetToken(TK_StringConst);
 					key = Z_Strdup(scanner.string);
+					key[0] = tolower(key[0]);
 				}
 			}
 
