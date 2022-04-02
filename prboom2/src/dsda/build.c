@@ -26,6 +26,7 @@
 static dboolean build_mode;
 static dboolean advance_frame;
 static ticcmd_t build_cmd;
+static dboolean replace_source = true;
 
 static signed char forward50(void) {
   return pclass[players[consoleplayer].pclass].forwardmove[1];
@@ -132,7 +133,11 @@ dboolean dsda_BuildMode(void) {
 }
 
 void dsda_CopyBuildCmd(ticcmd_t* cmd) {
-  *cmd = build_cmd;
+  if (replace_source)
+    *cmd = build_cmd;
+  else
+    dsda_CopyPendingCmd(cmd);
+
   dsda_JoinDemoCmd(cmd);
 }
 
@@ -149,6 +154,12 @@ dboolean dsda_BuildResponder(event_t* ev) {
 
   if (!build_mode)
     return false;
+
+  if (dsda_InputActivated(dsda_input_build_source)) {
+    replace_source = !replace_source;
+
+    return true;
+  }
 
   if (dsda_InputActivated(dsda_input_build_advance_frame)) {
     advance_frame = gametic;

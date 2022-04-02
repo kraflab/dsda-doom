@@ -25,6 +25,7 @@ void dsda_WriteToDemo(void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);
 int dsda_DemoBufferOffset(void);
 int dsda_CopyDemoBuffer(void* buffer);
+void dsda_CopyPendingCmd(ticcmd_t* cmd);
 void dsda_SetDemoBufferOffset(int offset);
 void dsda_JoinDemoCmd(ticcmd_t* cmd);
 const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size);

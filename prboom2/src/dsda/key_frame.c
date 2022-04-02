@@ -284,6 +284,9 @@ void dsda_StoreQuickKeyFrame(void) {
 }
 
 void dsda_RestoreQuickKeyFrame(void) {
+  if (dsda_BuildMode())
+    dsda_SkipNextWipe();
+
   dsda_RestoreKeyFrame(dsda_quick_key_frame_buffer, true);
 }
 

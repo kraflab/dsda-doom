@@ -767,6 +767,8 @@ default_t defaults[] =
     dsda_input_build_advance_frame, { KEYD_RIGHTARROW, -1, -1 } },
   { "input_build_reset_command", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_build_reset_command, { KEYD_DEL, -1, -1 } },
+  { "input_build_source", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_source, { KEYD_RSHIFT, -1, -1 } },
   { "input_build_forward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_build_forward, { 'w', -1, -1 } },
   { "input_build_backward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,

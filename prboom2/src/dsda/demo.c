@@ -39,6 +39,7 @@ static byte* dsda_demo_write_buffer_p;
 static int dsda_demo_write_buffer_length;
 static char* dsda_demo_name;
 static int dsda_extra_demo_header_data_offset;
+static int largest_real_offset;
 
 #define DSDA_DEMO_VERSION 1
 #define DEMOMARKER 0x80
@@ -68,6 +69,17 @@ static void dsda_EnsureDemoBufferSpace(size_t length) {
     "dsda_EnsureDemoBufferSpace: expanding demo buffer %d\n",
     dsda_demo_write_buffer_length
   );
+}
+
+void dsda_CopyPendingCmd(ticcmd_t* cmd) {
+  if (largest_real_offset - dsda_DemoBufferOffset() >= bytes_per_tic) {
+    const byte* p = dsda_demo_write_buffer_p;
+
+    G_ReadOneTick(cmd, &p);
+  }
+  else {
+    memset(cmd, 0, sizeof(*cmd));
+  }
 }
 
 void dsda_InitDemo(char* name) {
@@ -179,11 +191,18 @@ int dsda_CopyDemoBuffer(void* buffer) {
 }
 
 void dsda_SetDemoBufferOffset(int offset) {
+  int current_offset;
+
   if (dsda_demo_write_buffer == NULL) return;
 
+  current_offset = dsda_DemoBufferOffset();
+
   // Cannot load forward (demo buffer would desync)
-  if (offset > dsda_DemoBufferOffset())
+  if (offset > current_offset)
     I_Error("dsda_SetDemoBufferOffset: Impossible time traveling detected.");
+
+  if (current_offset > largest_real_offset)
+    largest_real_offset = current_offset;
 
   dsda_demo_write_buffer_p = dsda_demo_write_buffer + offset;
 }
