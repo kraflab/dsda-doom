@@ -350,7 +350,7 @@ void D_Display (fixed_t frac)
       break;
     }
   }
-  else if (gametic != basetic) { // In a level
+  else { // In a level
     dboolean redrawborderstuff;
 
     HU_Erase();
