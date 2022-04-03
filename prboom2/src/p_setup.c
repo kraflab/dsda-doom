@@ -2980,9 +2980,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     players[i].maxkilldiscount = 0;//e6y
   }
 
-  // Initial height of PointOfView will be set by player think.
-  players[consoleplayer].viewz = 1;
-
   // Make sure all sounds are stopped before Z_FreeTag.
   S_Start();
 
@@ -3191,6 +3188,9 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
       if (playeringame[i] && !players[i].mo)
         I_Error("P_SetupLevel: missing player %d start\n", i+1);
   }
+
+  players[consoleplayer].viewz = players[consoleplayer].mo->z +
+                                 players[consoleplayer].viewheight;
 
   if (players[consoleplayer].cheats & CF_FLY)
   {
