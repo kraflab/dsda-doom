@@ -57,6 +57,7 @@
 #include "dsda/hud.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/pause.h"
 #include "dsda/settings.h"
 #include "g_overflow.h"
 
@@ -2224,7 +2225,7 @@ void HU_draw_crosshair(void)
     crosshair.lump == -1 ||
     automapmode & am_active ||
     menuactive ||
-    paused
+    dsda_Paused()
   )
   {
     return;

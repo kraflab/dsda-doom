@@ -44,6 +44,7 @@
 #include "e6y.h"
 
 #include "dsda/build.h"
+#include "dsda/pause.h"
 #include "dsda/settings.h"
 
 #include "hexen/a_action.h"
@@ -95,12 +96,16 @@ static dboolean NoInterpolateView;
 static dboolean didInterp;
 dboolean WasRenderedInTryRunTics;
 
+dboolean R_ViewInterpolation(void) {
+  return !dsda_Paused() && movement_smooth;
+}
+
 void R_InterpolateView(player_t *player, fixed_t frac)
 {
   static mobj_t *oviewer;
   angle_t angleoffset;
 
-  dboolean NoInterpolate = paused_camera || paused_via_menu;
+  dboolean NoInterpolate = dsda_CameraPaused() || dsda_PausedViaMenu();
 
   viewplayer = player;
   angleoffset = viewangleoffset + dsda_BuildModeViewAngleOffset();
@@ -178,7 +183,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     }
   }
 
-  if (localQuakeHappening[displayplayer] && !paused)
+  if (localQuakeHappening[displayplayer] && !dsda_Paused())
   {
     static int x_displacement;
     static int y_displacement;
@@ -197,7 +202,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     viewy += y_displacement;
   }
 
-  if (interpolate_view)
+  if (R_ViewInterpolation())
   {
     int i;
 

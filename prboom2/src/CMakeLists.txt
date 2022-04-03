@@ -70,6 +70,8 @@ set(COMMON_SRC
     dsda/options.h
     dsda/palette.c
     dsda/palette.h
+    dsda/pause.c
+    dsda/pause.h
     dsda/pclass.c
     dsda/pclass.h
     dsda/save.c

@@ -51,6 +51,7 @@ extern tic_vars_t tic_vars;
 
 void M_ChangeUncappedFrameRate(void);
 
+dboolean R_ViewInterpolation(void);
 void R_InterpolateView(player_t *player, fixed_t frac);
 
 extern dboolean WasRenderedInTryRunTics;

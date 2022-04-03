@@ -97,6 +97,7 @@
 #include "dsda/mapinfo.h"
 #include "dsda/mouse.h"
 #include "dsda/options.h"
+#include "dsda/pause.h"
 #include "dsda/tas.h"
 #include "dsda/time.h"
 #include "dsda/split_tracker.h"
@@ -148,7 +149,6 @@ skill_t         gameskill;
 dboolean         respawnmonsters;
 int             gameepisode;
 int             gamemap;
-dboolean         paused;
 // CPhipps - moved *_loadgame vars here
 static dboolean forced_loadgame = false;
 static dboolean load_via_cmd = false;
@@ -1148,7 +1148,8 @@ static void G_DoLoadLevel (void)
   joyxmove = joyymove = 0;
   mousex = mousey = 0;
   mlooky = 0;//e6y
-  special_event = 0; paused = false;
+  special_event = 0;
+  dsda_ResetPauseMode();
   dsda_ResetExCmdQueue();
 
   // killough 5/13/98: in case netdemo has consoleplayer other than green
@@ -1218,7 +1219,8 @@ dboolean G_Responder (event_t* ev)
     // killough 9/29/98: allow user to pause demos during playback
     if (dsda_InputActivated(dsda_input_pause))
     {
-      if (paused ^= PAUSE_PLAYBACK)
+      dsda_TogglePauseMode(PAUSE_PLAYBACK);
+      if (dsda_Paused())
         S_PauseSound();
       else
         S_ResumeSound();
@@ -1308,7 +1310,7 @@ dboolean G_Responder (event_t* ev)
 void G_Ticker (void)
 {
   int i;
-  int old_paused = 0;
+  dboolean advance_frame = false;
   static gamestate_t prevgamestate;
 
   // CPhipps - player colour changing
@@ -1368,11 +1370,11 @@ void G_Ticker (void)
 
   if (dsda_AdvanceFrame())
   {
-    old_paused = paused & ~PAUSE_COMMAND;
-    paused &= PAUSE_COMMAND;
+    advance_frame = true;
+    dsda_MaskPause();
   }
 
-  if (paused_outside_demo)
+  if (dsda_PausedOutsideDemo())
     basetic++;  // For revenant tracers and RNG -- we must maintain sync
   else {
     // get commands, check consistancy, and build new consistancy check
@@ -1430,8 +1432,8 @@ void G_Ticker (void)
           switch (players[i].cmd.buttons & BT_SPECIALMASK)
           {
             case BT_PAUSE:
-              paused ^= PAUSE_COMMAND;
-              if (paused)
+              dsda_TogglePauseMode(PAUSE_COMMAND);
+              if (dsda_Paused())
                 S_PauseSound();
               else
                 S_ResumeSound();
@@ -1499,7 +1501,7 @@ void G_Ticker (void)
   // e6y
   // do nothing if a pause has been pressed during playback
   // pausing during intermission can cause desynchs without that
-  if (paused_outside_demo && gamestate != GS_LEVEL)
+  if (dsda_PausedOutsideDemo() && gamestate != GS_LEVEL)
     return;
 
   // do main actions
@@ -1527,8 +1529,8 @@ void G_Ticker (void)
       break;
   }
 
-  if (old_paused)
-    paused |= old_paused;
+  if (advance_frame)
+    dsda_UnmaskPause();
 }
 
 //
@@ -2902,9 +2904,9 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   if (prepare)
     dsda_PrepareInitNew();
 
-  if (paused)
+  if (dsda_Paused())
   {
-    paused = false;
+    dsda_ResetPauseMode();
     S_ResumeSound();
   }
 
@@ -2997,7 +2999,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   }
 
   usergame = true;                // will be set false if a demo
-  paused = false;
+  dsda_ResetPauseMode();
   automapmode &= ~am_active;
   gameskill = skill;
   dsda_UpdateGameMap(episode, map);

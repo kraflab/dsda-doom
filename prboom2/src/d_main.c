@@ -97,6 +97,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/mobjinfo.h"
+#include "dsda/pause.h"
 #include "dsda/settings.h"
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
@@ -431,7 +432,7 @@ void D_Display (fixed_t frac)
   oldgamestate = wipegamestate = gamestate;
 
   // draw pause pic
-  if (paused && (menuactive != mnact_full)) {
+  if (dsda_Paused() && (menuactive != mnact_full)) {
     if (hexen)
     {
       if (!netgame)
@@ -445,7 +446,7 @@ void D_Display (fixed_t frac)
     }
     else if (heretic)
       MN_DrawPause();
-    else if (!paused_via_build_mode)
+    else if (!dsda_PauseMode(PAUSE_BUILDMODE))
       // Simplified the "logic" here and no need for x-coord caching - POPE
       V_DrawNamePatch(
         (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,
@@ -471,7 +472,7 @@ void D_Display (fixed_t frac)
 
   // e6y
   // Don't thrash cpu during pausing or if the window doesnt have focus
-  if (paused_camera || !window_focused) {
+  if (dsda_CameraPaused() || !window_focused) {
     I_uSleep(5000);
   }
 
@@ -746,7 +747,8 @@ const demostate_t doom_demostates[][4] =
 void D_DoAdvanceDemo(void)
 {
   players[consoleplayer].playerstate = PST_LIVE;  /* not reborn */
-  advancedemo = usergame = paused = false;
+  advancedemo = usergame = false;
+  dsda_ResetPauseMode();
   gameaction = ga_nothing;
 
   pagetic = TICRATE * 11;         /* killough 11/98: default behavior */

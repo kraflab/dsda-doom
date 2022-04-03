@@ -694,7 +694,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
   }
 #endif
 
-  if (interpolate_view)
+  if (R_ViewInterpolation())
   {
     fx = thing->PrevX + FixedMul (tic_vars.frac, thing->x - thing->PrevX);
     fy = thing->PrevY + FixedMul (tic_vars.frac, thing->y - thing->PrevY);

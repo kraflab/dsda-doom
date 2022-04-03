@@ -89,6 +89,7 @@
 #include "i_main.h"
 
 #include "dsda/palette.h"
+#include "dsda/pause.h"
 #include "dsda/time.h"
 
 //e6y: new mouse code
@@ -1541,7 +1542,7 @@ static dboolean MouseShouldBeGrabbed()
     return (demoplayback && gamestate == GS_LEVEL && !menuactive);
 
   // when menu is active or game is paused, release the mouse
-  if (menuactive || paused)
+  if (menuactive || dsda_Paused())
     return false;
 
   // only grab mouse when playing levels (but not demos)

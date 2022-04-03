@@ -2568,7 +2568,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   int frustum_culling = HaveMouseLook() && gl_sprites_frustum_culling;
   int mlook = HaveMouseLook() || (render_fov > FOV90);
 
-  if (interpolate_view)
+  if (R_ViewInterpolation())
   {
     fx = thing->PrevX + FixedMul (tic_vars.frac, thing->x - thing->PrevX);
     fy = thing->PrevY + FixedMul (tic_vars.frac, thing->y - thing->PrevY);

@@ -92,6 +92,7 @@
 
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/pause.h"
 
 dboolean wasWiped = false;
 
@@ -318,7 +319,7 @@ void G_SkipDemoStart(void)
   saved_nosfxparm = nosfxparm;
   saved_nomusicparm = nomusicparm;
 
-  paused = false;
+  dsda_ResetPauseMode();
 
   doSkip = true;
 

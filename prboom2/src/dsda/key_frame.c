@@ -39,6 +39,7 @@
 #include "dsda/demo.h"
 #include "dsda/mapinfo.h"
 #include "dsda/options.h"
+#include "dsda/pause.h"
 #include "dsda/save.h"
 #include "dsda/settings.h"
 #include "dsda/time.h"
@@ -267,7 +268,7 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   dsda_key_frame_restored = 1;
 
   if (dsda_BuildMode())
-    paused |= PAUSE_BUILDMODE;
+    dsda_ApplyPauseMode(PAUSE_BUILDMODE);
 
   doom_printf("Restored key frame");
 }

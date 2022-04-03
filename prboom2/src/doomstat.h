@@ -211,20 +211,8 @@ enum menuactive_e {
 };
 extern enum menuactive_e menuactive; // Type of menu overlaid, if any
 
-extern  dboolean paused;        // Game Pause?
 extern  dboolean nodrawers;
 extern  dboolean noblit;
-
-#define PAUSE_COMMAND   1
-#define PAUSE_PLAYBACK  2
-#define PAUSE_BUILDMODE 4
-
-#define interpolate_view (!paused && movement_smooth)
-#define paused_via_menu (!demoplayback && menuactive && !netgame)
-#define paused_during_playback (paused & PAUSE_PLAYBACK)
-#define paused_via_build_mode (paused & PAUSE_BUILDMODE)
-#define paused_outside_demo (paused_via_build_mode || paused_during_playback || paused_via_menu)
-#define paused_camera (paused && !walkcamera.type)
 
 // This one is related to the 3-screen display mode.
 // ANG90 = left side, ANG270 = right

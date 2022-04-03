@@ -19,6 +19,7 @@
 
 #include "dsda/demo.h"
 #include "dsda/input.h"
+#include "dsda/pause.h"
 #include "dsda/settings.h"
 
 #include "build.h"
@@ -141,13 +142,18 @@ void dsda_CopyBuildCmd(ticcmd_t* cmd) {
   dsda_JoinDemoCmd(cmd);
 }
 
+void dsda_EnterBuildMode(void) {
+  build_mode = true;
+  dsda_ApplyPauseMode(PAUSE_BUILDMODE);
+}
+
 dboolean dsda_BuildResponder(event_t* ev) {
   if (!dsda_AllowBuilding())
     return false;
 
   if (dsda_InputActivated(dsda_input_build)) {
     build_mode = !build_mode;
-    paused ^= PAUSE_BUILDMODE;
+    dsda_TogglePauseMode(PAUSE_BUILDMODE);
 
     return true;
   }
