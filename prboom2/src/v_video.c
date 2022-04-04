@@ -555,42 +555,26 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
       colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, drawvars.filterpatch, RDRAW_FILTER_NONE);
     }
 
-    //e6y: predefined arrays are used
-    if (!(flags & VPT_STRETCH_MASK))
-    {
-      DXI = 1 << 16;
-      DYI = 1 << 16;
+    DXI = params->video->xstep;
+    DYI = params->video->ystep;
 
-      left = x;
-      top = y;
-      right = x + patch->width - 1;
-      bottom = y + patch->height;
-    }
+    left = (x < 0 || x > 320 ? (x * params->video->width) / 320 : params->video->x1lookup[x]);
+    top =  (y < 0 || y > 200 ? (y * params->video->height) / 200 : params->video->y1lookup[y]);
+
+    if (x + patch->width < 0 || x + patch->width > 320)
+      right = ( ((x + patch->width) * params->video->width - 1) / 320 );
     else
-    {
-      DXI = params->video->xstep;
-      DYI = params->video->ystep;
+      right = params->video->x2lookup[x + patch->width - 1];
 
-      //FIXME: Is it needed only for F_BunnyScroll?
+    if (y + patch->height < 0 || y + patch->height > 200)
+      bottom = ( ((y + patch->height - 0) * params->video->height) / 200 );
+    else
+      bottom = params->video->y2lookup[y + patch->height - 1];
 
-      left = (x < 0 || x > 320 ? (x * params->video->width) / 320 : params->video->x1lookup[x]);
-      top =  (y < 0 || y > 200 ? (y * params->video->height) / 200 : params->video->y1lookup[y]);
-
-      if (x + patch->width < 0 || x + patch->width > 320)
-        right = ( ((x + patch->width) * params->video->width - 1) / 320 );
-      else
-        right = params->video->x2lookup[x + patch->width - 1];
-
-      if (y + patch->height < 0 || y + patch->height > 200)
-        bottom = ( ((y + patch->height - 0) * params->video->height) / 200 );
-      else
-        bottom = params->video->y2lookup[y + patch->height - 1];
-
-      left   += params->deltax1;
-      right  += params->deltax2;
-      top    += params->deltay1;
-      bottom += params->deltay1;
-    }
+    left   += params->deltax1;
+    right  += params->deltax2;
+    top    += params->deltay1;
+    bottom += params->deltay1;
 
     dcvars.texheight = patch->height;
     dcvars.iscale = DYI;
