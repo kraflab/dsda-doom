@@ -491,7 +491,7 @@ static void InitStretchParam(stretch_param_t* offsets, int stretch, enum patch_t
 
   switch (stretch)
   {
-  case patch_stretch_16x10:
+  case patch_stretch_not_adjusted:
     if (flags == VPT_ALIGN_WIDE)
     {
       offsets->video = &video_stretch;
@@ -505,12 +505,12 @@ static void InitStretchParam(stretch_param_t* offsets, int stretch, enum patch_t
       offsets->deltax2 = wide_offsetx;
     }
     break;
-  case patch_stretch_4x3:
+  case patch_stretch_doom_format:
     offsets->video = &video_stretch;
     offsets->deltax1 = (SCREENWIDTH - WIDE_SCREENWIDTH) / 2;
     offsets->deltax2 = (SCREENWIDTH - WIDE_SCREENWIDTH) / 2;
     break;
-  case patch_stretch_full:
+  case patch_stretch_fit_to_width:
     offsets->video = &video_full;
     offsets->deltax1 = 0;
     offsets->deltax2 = 0;

@@ -413,13 +413,13 @@ void ST_SetScaledWidth(void)
 
   switch (render_stretch_hud)
   {
-    case patch_stretch_16x10:
+    case patch_stretch_not_adjusted:
       ST_SCALED_WIDTH  = width * patches_scalex;
       break;
-    case patch_stretch_4x3:
+    case patch_stretch_doom_format:
       ST_SCALED_WIDTH  = width * WIDE_SCREENWIDTH / 320;
       break;
-    case patch_stretch_full:
+    case patch_stretch_fit_to_width:
       ST_SCALED_WIDTH  = width * SCREENWIDTH / 320;
       break;
   }

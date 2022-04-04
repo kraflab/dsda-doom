@@ -2350,7 +2350,7 @@ static void AM_drawMarks(void)
             switch (render_stretch_hud)
             {
               default:
-              case patch_stretch_16x10:
+              case patch_stretch_not_adjusted:
                 fx = (float)p.fx / patches_scalex;
                 fy = (float)p.fy * 200.0f / SCREENHEIGHT;
 
@@ -2359,7 +2359,7 @@ static void AM_drawMarks(void)
 
                 flags = VPT_ALIGN_LEFT | VPT_STRETCH;
                 break;
-              case patch_stretch_4x3:
+              case patch_stretch_doom_format:
                 fx = (float)p.fx * 320.0f / WIDE_SCREENWIDTH;
                 fy = (float)p.fy * 200.0f / WIDE_SCREENHEIGHT;
 
@@ -2368,7 +2368,7 @@ static void AM_drawMarks(void)
 
                 flags = VPT_ALIGN_LEFT | VPT_STRETCH;
                 break;
-              case patch_stretch_full:
+              case patch_stretch_fit_to_width:
                 fx = (float)p.fx * 320.0f / SCREENWIDTH;
                 fy = (float)p.fy * 200.0f / SCREENHEIGHT;
 

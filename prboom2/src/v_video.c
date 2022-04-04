@@ -1173,7 +1173,7 @@ void V_FillBorder(int lump, byte color)
 {
   int bordtop, bordbottom, bordleft, bordright;
 
-  if (render_stretch_hud == patch_stretch_full)
+  if (render_stretch_hud == patch_stretch_fit_to_width)
     return;
 
   bordleft = wide_offsetx;
@@ -1367,7 +1367,7 @@ void SetRatio(int width, int height)
   if (SCREENWIDTH < 320 || WIDE_SCREENWIDTH < 320 ||
       SCREENHEIGHT < 200 || WIDE_SCREENHEIGHT < 200)
   {
-    render_stretch_hud = patch_stretch_full;
+    render_stretch_hud = patch_stretch_fit_to_width;
   }
 
   if (raven && render_stretch_hud == 0)
@@ -1377,17 +1377,17 @@ void SetRatio(int width, int height)
 
   switch (render_stretch_hud)
   {
-  case patch_stretch_16x10:
+  case patch_stretch_not_adjusted:
     wide_offset2x = (SCREENWIDTH - patches_scalex * 320);
     wide_offset2y = (SCREENHEIGHT - patches_scaley * 200);
     break;
-  case patch_stretch_4x3:
+  case patch_stretch_doom_format:
     ST_SCALED_HEIGHT = g_st_height * WIDE_SCREENHEIGHT / 200;
 
     wide_offset2x = (SCREENWIDTH - WIDE_SCREENWIDTH);
     wide_offset2y = (SCREENHEIGHT - WIDE_SCREENHEIGHT);
     break;
-  case patch_stretch_full:
+  case patch_stretch_fit_to_width:
     ST_SCALED_HEIGHT = g_st_height * SCREENHEIGHT / 200;
 
     wide_offset2x = 0;
