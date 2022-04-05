@@ -121,7 +121,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     font,
     HU_FONTSTART,
     g_cr_green,
-    VPT_ALIGN_LEFT_TOP
+    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
   HUlib_initTextLine(
@@ -131,7 +131,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     font,
     HU_FONTSTART,
     g_cr_green,
-    VPT_ALIGN_LEFT_TOP
+    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
   HUlib_initTextLine(
@@ -141,7 +141,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     font,
     HU_FONTSTART,
     g_cr_green,
-    VPT_ALIGN_LEFT_TOP
+    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
   HUlib_initTextLine(
@@ -151,7 +151,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     font,
     HU_FONTSTART,
     g_cr_gray,
-    VPT_ALIGN_LEFT_TOP
+    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
   HUlib_initTextLine(
@@ -161,7 +161,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     font,
     HU_FONTSTART,
     g_cr_gray,
-    VPT_ALIGN_LEFT_TOP
+    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
   HUlib_initTextLine(
@@ -171,7 +171,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     font,
     HU_FONTSTART,
     g_cr_gray,
-    VPT_ALIGN_LEFT_TOP
+    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 }
 

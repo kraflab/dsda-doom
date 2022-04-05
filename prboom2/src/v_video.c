@@ -67,14 +67,11 @@ float gl_ratio;
 int psprite_offset; // Needed for "tallscreen" modes
 
 const char *render_aspects_list[5] = {"auto", "16:9", "16:10", "4:3", "5:4"};
-const char *render_stretch_list[patch_stretch_max] = {"not adjusted", "Doom format", "fit to width"};
+const char *render_stretch_list[patch_stretch_max_config] = {"not adjusted", "Doom format", "fit to width"};
 
-stretch_param_t stretch_params_table[3][VPT_ALIGN_MAX];
+stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
 stretch_param_t *stretch_params;
 
-cb_video_t video;
-cb_video_t video_stretch;
-cb_video_t video_full;
 int patches_scalex;
 int patches_scaley;
 
@@ -438,6 +435,9 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 
   // e6y: wide-res
   params = &stretch_params[flags & VPT_ALIGN_MASK];
+
+  if (flags & VPT_EX_TEXT)
+    params = &stretch_params_table[patch_stretch_ex_text][flags & VPT_ALIGN_MASK];
 
   // CPhipps - null translation pointer => no translation
   if (!trans)

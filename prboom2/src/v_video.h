@@ -52,6 +52,10 @@ typedef enum
   patch_stretch_doom_format,
   patch_stretch_fit_to_width,
 
+  patch_stretch_max_config,
+
+  patch_stretch_ex_text = patch_stretch_max_config,
+
   patch_stretch_max
 } patch_stretch_t;
 
@@ -77,12 +81,9 @@ typedef struct stretch_param_s
   int deltay2;
 } stretch_param_t;
 
-extern stretch_param_t stretch_params_table[3][VPT_ALIGN_MAX];
+extern stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
 extern stretch_param_t *stretch_params;
 
-extern cb_video_t video;
-extern cb_video_t video_stretch;
-extern cb_video_t video_full;
 extern int patches_scalex;
 extern int patches_scaley;
 

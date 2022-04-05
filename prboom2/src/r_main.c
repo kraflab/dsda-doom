@@ -485,6 +485,51 @@ static void GenLookup(short *lookup1, short *lookup2, int size, int max, int ste
   }
 }
 
+static cb_video_t video;
+static cb_video_t video_stretch;
+static cb_video_t video_full;
+static cb_video_t video_ex_text;
+
+static int ex_text_scale = 2;
+
+static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e flags)
+{
+  int offsetx, offset2x, offsety, offset2y;
+
+  // crashes on fit to width
+
+  offset2x = SCREENWIDTH - ex_text_scale * 320;
+  offset2y = SCREENHEIGHT - ex_text_scale * 200 - (ST_SCALED_HEIGHT - ex_text_scale * g_st_height);
+  offsetx = offset2x / 2;
+  offsety = offset2y / 2;
+
+  memset(offsets, 0, sizeof(*offsets));
+
+  offsets->video = &video_ex_text;
+
+  if (flags == VPT_ALIGN_LEFT || flags == VPT_ALIGN_LEFT_BOTTOM || flags == VPT_ALIGN_LEFT_TOP)
+  {
+    offsets->deltax1 = 0;
+    offsets->deltax2 = 0;
+  }
+
+  if (flags == VPT_ALIGN_RIGHT || flags == VPT_ALIGN_RIGHT_BOTTOM || flags == VPT_ALIGN_RIGHT_TOP)
+  {
+    offsets->deltax1 = offset2x;
+    offsets->deltax2 = offset2x;
+  }
+
+  if (flags == VPT_ALIGN_BOTTOM || flags == VPT_ALIGN_LEFT_BOTTOM || flags == VPT_ALIGN_RIGHT_BOTTOM)
+  {
+    offsets->deltay1 = offset2y;
+  }
+
+  if (flags == VPT_ALIGN_TOP || flags == VPT_ALIGN_LEFT_TOP || flags == VPT_ALIGN_RIGHT_TOP)
+  {
+    offsets->deltay1 = 0;
+  }
+}
+
 static void InitStretchParam(stretch_param_t* offsets, int stretch, enum patch_translation_e flags)
 {
   memset(offsets, 0, sizeof(*offsets));
@@ -551,12 +596,14 @@ void R_SetupViewScaling(void)
 {
   int i, k;
 
-  for (i = 0; i < 3; i++)
+  for (k = 0; k < VPT_ALIGN_MAX; k++)
   {
-    for (k = 0; k < VPT_ALIGN_MAX; k++)
+    for (i = 0; i < patch_stretch_max_config; i++)
     {
       InitStretchParam(&stretch_params_table[i][k], i, k);
     }
+
+    InitExTextParam(&stretch_params_table[patch_stretch_ex_text][k], k);
   }
   stretch_params = stretch_params_table[render_stretch_hud];
 
@@ -570,6 +617,8 @@ void R_SetupViewScaling(void)
   video_stretch.ystep   = ((200 << FRACBITS) / WIDE_SCREENHEIGHT) + 1;
   video_full.xstep   = ((320 << FRACBITS) / SCREENWIDTH) + 1;
   video_full.ystep   = ((200 << FRACBITS) / SCREENHEIGHT) + 1;
+  video_ex_text.xstep = ((320 << FRACBITS) / 320 / ex_text_scale) + 1;
+  video_ex_text.ystep = ((200 << FRACBITS) / 200 / ex_text_scale) + 1;
 
   // SoM: ok, assemble the realx1/x2 arrays differently. To start, we are using floats
   // to do the scaling which is 100 times more accurate, secondly, I realized that the
@@ -595,6 +644,11 @@ void R_SetupViewScaling(void)
   video_full.height = SCREENHEIGHT;
   GenLookup(video_full.x1lookup, video_full.x2lookup, video_full.width, 320, video_full.xstep);
   GenLookup(video_full.y1lookup, video_full.y2lookup, video_full.height, 200, video_full.ystep);
+
+  video_ex_text.width = 320 * ex_text_scale;
+  video_ex_text.height = 200 * ex_text_scale;
+  GenLookup(video_ex_text.x1lookup, video_ex_text.x2lookup, video_ex_text.width, 320, video_ex_text.xstep);
+  GenLookup(video_ex_text.y1lookup, video_ex_text.y2lookup, video_ex_text.height, 200, video_ex_text.ystep);
 }
 
 void R_MultMatrixVecd(const float matrix[16], const float in[4], float out[4])

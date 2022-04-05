@@ -38,7 +38,7 @@ void dsda_InitExHud(patchnum_t* font) {
     font,
     HU_FONTSTART,
     g_cr_gray,
-    VPT_ALIGN_LEFT_BOTTOM
+    VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT
   );
 
   HUlib_initTextLine(
@@ -48,7 +48,7 @@ void dsda_InitExHud(patchnum_t* font) {
     font,
     HU_FONTSTART,
     g_cr_gray,
-    VPT_ALIGN_LEFT_BOTTOM
+    VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT
   );
 }
 

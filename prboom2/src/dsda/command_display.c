@@ -114,7 +114,7 @@ void dsda_InitCommandDisplayLine(dsda_command_display_t* command, int offset,
     font,
     HU_FONTSTART,
     color,
-    VPT_ALIGN_RIGHT_BOTTOM
+    VPT_ALIGN_RIGHT_BOTTOM | VPT_EX_TEXT
   );
 
   command->hu_text.space_width = 5;

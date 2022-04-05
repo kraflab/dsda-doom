@@ -167,6 +167,7 @@ enum patch_translation_e {
   VPT_ALIGN_RIGHT_BOTTOM = 9,
   VPT_ALIGN_MAX          = 10,
   VPT_STRETCH            = 16, // Stretch to compensate for high-res
+  VPT_EX_TEXT            = 32,
 
   VPT_NONE    = 128, // Normal
   VPT_FLIP    = 256, // Flip image horizontally
