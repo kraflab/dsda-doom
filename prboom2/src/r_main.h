@@ -187,7 +187,10 @@ typedef struct stretch_param_s
   int deltay2;
 } stretch_param_t;
 
+extern int dsda_ex_text_scale;
+
 stretch_param_t* R_StretchParams(int flags);
+void R_SetupViewScaling(void);
 
 void R_ShowStats(void);
 void R_ClearStats(void);

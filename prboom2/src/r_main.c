@@ -493,7 +493,13 @@ static cb_video_t video_ex_text;
 static stretch_param_t *stretch_params;
 static stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
 
-static int ex_text_scale = 2;
+int dsda_ex_text_scale;
+static int actual_ex_text_scale;
+
+void EvaluateExTextScale(void)
+{
+  actual_ex_text_scale = dsda_ex_text_scale ? dsda_ex_text_scale : patches_scalex;
+}
 
 stretch_param_t* R_StretchParams(int flags)
 {
@@ -506,9 +512,10 @@ stretch_param_t* R_StretchParams(int flags)
 static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e flags)
 {
   int offsetx, offset2x, offsety, offset2y;
+  int scale;
 
-  offset2x = SCREENWIDTH - ex_text_scale * 320;
-  offset2y = SCREENHEIGHT - ex_text_scale * 200 - (ST_SCALED_HEIGHT - ex_text_scale * g_st_height);
+  offset2x = SCREENWIDTH - actual_ex_text_scale * 320;
+  offset2y = SCREENHEIGHT - actual_ex_text_scale * 200 - (ST_SCALED_HEIGHT - actual_ex_text_scale * g_st_height);
   offsetx = offset2x / 2;
   offsety = offset2y / 2;
 
@@ -605,6 +612,8 @@ void R_SetupViewScaling(void)
 {
   int i, k;
 
+  EvaluateExTextScale();
+
   for (k = 0; k < VPT_ALIGN_MAX; k++)
   {
     for (i = 0; i < patch_stretch_max_config; i++)
@@ -626,8 +635,8 @@ void R_SetupViewScaling(void)
   video_stretch.ystep   = ((200 << FRACBITS) / WIDE_SCREENHEIGHT) + 1;
   video_full.xstep   = ((320 << FRACBITS) / SCREENWIDTH) + 1;
   video_full.ystep   = ((200 << FRACBITS) / SCREENHEIGHT) + 1;
-  video_ex_text.xstep = ((320 << FRACBITS) / 320 / ex_text_scale) + 1;
-  video_ex_text.ystep = ((200 << FRACBITS) / 200 / ex_text_scale) + 1;
+  video_ex_text.xstep = ((320 << FRACBITS) / 320 / actual_ex_text_scale) + 1;
+  video_ex_text.ystep = ((200 << FRACBITS) / 200 / actual_ex_text_scale) + 1;
 
   // SoM: ok, assemble the realx1/x2 arrays differently. To start, we are using floats
   // to do the scaling which is 100 times more accurate, secondly, I realized that the
@@ -654,8 +663,8 @@ void R_SetupViewScaling(void)
   GenLookup(video_full.x1lookup, video_full.x2lookup, video_full.width, 320, video_full.xstep);
   GenLookup(video_full.y1lookup, video_full.y2lookup, video_full.height, 200, video_full.ystep);
 
-  video_ex_text.width = 320 * ex_text_scale;
-  video_ex_text.height = 200 * ex_text_scale;
+  video_ex_text.width = 320 * actual_ex_text_scale;
+  video_ex_text.height = 200 * actual_ex_text_scale;
   GenLookup(video_ex_text.x1lookup, video_ex_text.x2lookup, video_ex_text.width, 320, video_ex_text.xstep);
   GenLookup(video_ex_text.y1lookup, video_ex_text.y2lookup, video_ex_text.height, 200, video_ex_text.ystep);
 }

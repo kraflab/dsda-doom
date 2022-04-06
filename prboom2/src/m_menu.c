@@ -71,6 +71,7 @@
 #include "i_sound.h"
 #include "r_demo.h"
 #include "r_fps.h"
+#include "r_main.h"
 #include "f_finale.h"
 #include "e6y.h"//e6y
 #include "dsda/global.h"
@@ -3347,13 +3348,14 @@ setup_menu_t misc_settings[] = {
   { "Maximum number of player corpses", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 2 * 8, { "max_player_corpse" } },
   { "Default skill level", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "default_skill" }, 0, NULL, gen_skillstrings },
   { "Default compatibility level", S_CHOICE, m_null, G_X, G_Y + 4 * 8, { "default_compatibility_level" }, 0, NULL, &gen_compstrings[1] },
-  { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 6 * 8, { "render_wipescreen" } },
+  { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 5 * 8, { "render_wipescreen" } },
 
-  { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 8 * 8 },
-  { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 9 * 8, { "dsda_auto_key_frame_interval" } },
-  { "Rewind Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 10 * 8, { "dsda_auto_key_frame_depth" } },
-  { "Rewind Timeout (ms)", S_NUM, m_null, G_X, G_Y + 11 * 8, { "dsda_auto_key_frame_timeout" } },
-  { "Use Extended Hud", S_YESNO, m_dsda, G_X, G_Y + 12 * 8, { "dsda_exhud" } },
+  { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 7 * 8 },
+  { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 8 * 8, { "dsda_auto_key_frame_interval" } },
+  { "Rewind Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 9 * 8, { "dsda_auto_key_frame_depth" } },
+  { "Rewind Timeout (ms)", S_NUM, m_null, G_X, G_Y + 10 * 8, { "dsda_auto_key_frame_timeout" } },
+  { "Use Extended Hud", S_YESNO, m_dsda, G_X, G_Y + 11 * 8, { "dsda_exhud" } },
+  { "Extended Hud Scale", S_NUM, m_null, G_X, G_Y + 12 * 8, { "dsda_ex_text_scale" }, 0, R_SetupViewScaling },
   { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "dsda_hide_horns" } },
   { "Organize My Save Files", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_organized_saves" } },
   { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_skip_quit_prompt" } },
