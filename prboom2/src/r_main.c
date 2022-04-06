@@ -496,8 +496,6 @@ static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e f
 {
   int offsetx, offset2x, offsety, offset2y;
 
-  // crashes on fit to width
-
   offset2x = SCREENWIDTH - ex_text_scale * 320;
   offset2y = SCREENHEIGHT - ex_text_scale * 200 - (ST_SCALED_HEIGHT - ex_text_scale * g_st_height);
   offsetx = offset2x / 2;
