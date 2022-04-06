@@ -69,9 +69,6 @@ int psprite_offset; // Needed for "tallscreen" modes
 const char *render_aspects_list[5] = {"auto", "16:9", "16:10", "4:3", "5:4"};
 const char *render_stretch_list[patch_stretch_max_config] = {"not adjusted", "Doom format", "fit to width"};
 
-stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
-stretch_param_t *stretch_params;
-
 int patches_scalex;
 int patches_scaley;
 
@@ -255,7 +252,7 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
     int sx = x;
     int sy = y;
 
-    params = &stretch_params[flags & VPT_ALIGN_MASK];
+    params = R_StretchParams(flags);
 
     x  = params->video->x1lookup[x];
     y  = params->video->y1lookup[y];
@@ -433,11 +430,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
   if ((flags & VPT_STRETCH_MASK) && SCREEN_320x200)
     flags &= ~VPT_STRETCH_MASK;
 
-  // e6y: wide-res
-  params = &stretch_params[flags & VPT_ALIGN_MASK];
-
-  if (flags & VPT_EX_TEXT)
-    params = &stretch_params_table[patch_stretch_ex_text][flags & VPT_ALIGN_MASK];
+  params = R_StretchParams(flags);
 
   // CPhipps - null translation pointer => no translation
   if (!trans)
@@ -1408,7 +1401,7 @@ void SetRatio(int width, int height)
 
 void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flags)
 {
-  stretch_param_t *params = &stretch_params[flags & VPT_ALIGN_MASK];
+  stretch_param_t *params = R_StretchParams(flags);
   int sx = *x;
   int sy = *y;
 

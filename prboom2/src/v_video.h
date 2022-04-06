@@ -59,31 +59,6 @@ typedef enum
   patch_stretch_max
 } patch_stretch_t;
 
-typedef struct
-{
-   fixed_t     xstep, ystep;
-
-   int width, height;
-
-   // SoM 1-31-04: This will insure that scaled patches and such are put in the right places
-   short x1lookup[321];
-   short y1lookup[201];
-   short x2lookup[321];
-   short y2lookup[201];
-} cb_video_t;
-
-typedef struct stretch_param_s
-{
-  cb_video_t *video;
-  int deltax1;
-  int deltay1;
-  int deltax2;
-  int deltay2;
-} stretch_param_t;
-
-extern stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
-extern stretch_param_t *stretch_params;
-
 extern int patches_scalex;
 extern int patches_scaley;
 

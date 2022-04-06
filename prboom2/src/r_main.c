@@ -490,7 +490,18 @@ static cb_video_t video_stretch;
 static cb_video_t video_full;
 static cb_video_t video_ex_text;
 
+static stretch_param_t *stretch_params;
+static stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
+
 static int ex_text_scale = 2;
+
+stretch_param_t* R_StretchParams(int flags)
+{
+  if (flags & VPT_EX_TEXT)
+    return &stretch_params_table[patch_stretch_ex_text][flags & VPT_ALIGN_MASK];
+
+  return &stretch_params[flags & VPT_ALIGN_MASK];
+}
 
 static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e flags)
 {

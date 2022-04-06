@@ -251,7 +251,7 @@ void HUlib_eraseTextLine(hu_textline_t* l)
 
     if (l->flags & VPT_STRETCH_MASK)
     {
-      stretch_param_t *params = &stretch_params[l->flags & VPT_ALIGN_MASK];
+      stretch_param_t *params = R_StretchParams(l->flags);
       top = params->video->y1lookup[top] + params->deltay1;
       bottom = params->video->y2lookup[bottom] + params->deltay1;
     }

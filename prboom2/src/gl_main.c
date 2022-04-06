@@ -675,7 +675,7 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
 
   if (flags & VPT_STRETCH_MASK)
   {
-    stretch_param_t *params = &stretch_params[flags & VPT_ALIGN_MASK];
+    stretch_param_t *params = R_StretchParams(flags);
 
     xpos   = (float)((x - leftoffset) * params->video->width)  / 320.0f + params->deltax1;
     ypos   = (float)((y - topoffset)  * params->video->height) / 200.0f + params->deltay1;

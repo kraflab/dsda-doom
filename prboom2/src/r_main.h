@@ -164,6 +164,31 @@ void R_Init(void);                           // Called by startup code.
 void R_SetViewSize(int blocks);              // Called by M_Responder.
 void R_ExecuteSetViewSize(void);             // cph - called by D_Display to complete a view resize
 
+typedef struct
+{
+   fixed_t xstep;
+   fixed_t ystep;
+
+   int width, height;
+
+   // SoM 1-31-04: This will insure that scaled patches and such are put in the right places
+   short x1lookup[321];
+   short y1lookup[201];
+   short x2lookup[321];
+   short y2lookup[201];
+} cb_video_t;
+
+typedef struct stretch_param_s
+{
+  cb_video_t *video;
+  int deltax1;
+  int deltay1;
+  int deltax2;
+  int deltay2;
+} stretch_param_t;
+
+stretch_param_t* R_StretchParams(int flags);
+
 void R_ShowStats(void);
 void R_ClearStats(void);
 

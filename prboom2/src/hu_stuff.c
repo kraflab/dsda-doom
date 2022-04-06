@@ -2184,7 +2184,7 @@ void SetCrosshairTarget(void)
     if (R_Project(x, y, z, &winx, &winy, &winz))
     {
       int top, bottom, h;
-      stretch_param_t *params = &stretch_params[crosshair.flags & VPT_ALIGN_MASK];
+      stretch_param_t *params = R_StretchParams(crosshair.flags);
 
       if (V_IsSoftwareMode())
       {
