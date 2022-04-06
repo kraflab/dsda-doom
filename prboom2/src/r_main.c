@@ -495,10 +495,16 @@ static stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
 
 int dsda_ex_text_scale;
 static int actual_ex_text_scale;
+static int ex_text_top_displacement;
 
 void EvaluateExTextScale(void)
 {
   actual_ex_text_scale = dsda_ex_text_scale ? dsda_ex_text_scale : patches_scalex;
+
+  // Difference between expected scale and actual scale of message text at top
+  ex_text_top_displacement = (
+    ((ST_SCALED_HEIGHT << FRACBITS) / g_st_height - (actual_ex_text_scale << FRACBITS)) * 8
+  ) >> FRACBITS;
 }
 
 stretch_param_t* R_StretchParams(int flags)
@@ -542,7 +548,7 @@ static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e f
 
   if (flags == VPT_ALIGN_TOP || flags == VPT_ALIGN_LEFT_TOP || flags == VPT_ALIGN_RIGHT_TOP)
   {
-    offsets->deltay1 = 0;
+    offsets->deltay1 = ex_text_top_displacement;
   }
 }
 
