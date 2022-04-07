@@ -28,7 +28,7 @@
  *
  * DESCRIPTION:
  *  Misc system stuff needed by Doom, implemented for Linux.
- *  Mainly timer handling, and ENDOOM/ENDBOOM.
+ *  Mainly timer handling.
  *
  *-----------------------------------------------------------------------------
  */

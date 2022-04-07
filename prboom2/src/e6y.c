@@ -148,8 +148,6 @@ int mouse_acceleration;
 int demo_overwriteexisting;
 int quickstart_window_ms;
 
-int showendoom;
-
 int palette_ondamage;
 int palette_onbonus;
 int palette_onpowers;

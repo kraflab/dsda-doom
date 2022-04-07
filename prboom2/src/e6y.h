@@ -132,8 +132,6 @@ extern float render_multiplier;
 void M_ChangeAspectRatio(void);
 void M_ChangeStretch(void);
 
-extern int showendoom;
-
 extern int palette_ondamage;
 extern int palette_onbonus;
 extern int palette_onpowers;

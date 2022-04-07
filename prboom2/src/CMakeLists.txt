@@ -320,16 +320,6 @@ set(PCSOUND_SOURCES
     PCSOUND/pcsound_win32.c
 )
 
-set(TEXTSCREEN_SOURCES
-    TEXTSCREEN/doomkeys.h
-    TEXTSCREEN/txt_main.h
-    TEXTSCREEN/txt_font.h
-    TEXTSCREEN/txt_largefont.h
-    TEXTSCREEN/txt_sdl.c
-    TEXTSCREEN/txt_sdl.h
-    TEXTSCREEN/txt_smallfont.h
-)
-
 set(DOOMMUSIC_SOURCES
     MUSIC/dbopl.c
     MUSIC/dbopl.h
@@ -368,7 +358,6 @@ set(PRBOOM_PLUS_SOURCES
     ${MUS2MID_SRC}
     ${SDLDOOM_SOURCES}
     ${PCSOUND_SOURCES}
-    ${TEXTSCREEN_SOURCES}
     ${DOOMMUSIC_SOURCES}
     ${EXTRA_FILES}
 )

@@ -282,8 +282,6 @@ int         mus_pause_opt; // 0 = kill music, 1 = pause, 2 = continue
 
 extern const char* chat_macros[];
 
-extern int endoom_mode;
-
 /* cph - Some MBF stuff parked here for now
  * killough 10/98
  */
@@ -310,8 +308,6 @@ default_t defaults[] =
    def_int,ss_none}, // number of dead bodies in view supported (-1 = no limit)
   {"flashing_hom",{&flashing_hom},{0},0,1,
    def_bool,ss_none}, // killough 10/98 - enable flashing HOM indicator
-  {"endoom_mode", {&endoom_mode},{5},0,7, // CPhipps - endoom flags
-   def_hex, ss_none}, // 0, +1 for colours, +2 for non-ascii chars, +4 for skip-last-line
   {"level_precache",{(int*)&precache},{1},0,1,
    def_bool,ss_none}, // precache level data?
   {"demo_smoothturns", {&demo_smoothturns},  {0},0,1,
@@ -1040,7 +1036,6 @@ default_t defaults[] =
   { "speed_step", { &speed_step }, { 0 }, 0, 1000, def_int, ss_none },
 
   { "Prboom-plus misc settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "showendoom", { &showendoom }, { 0 }, 0, 1, def_bool, ss_stat },
   { "screenshot_dir", { NULL, &screenshot_dir }, { 0, "" }, UL, UL, def_str, ss_none },
   { "health_bar", { &health_bar }, { 0 }, 0, 1, def_bool, ss_stat },
   { "health_bar_full_length", { &health_bar_full_length }, { 1 }, 0, 1, def_bool, ss_stat },
