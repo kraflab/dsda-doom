@@ -138,9 +138,7 @@ size_t          savegamesize = SAVEGAMESIZE; // killough
 static dboolean  netdemo;
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
-//e6y static
 const byte *demo_playback_p;
-const byte *demo_continue_p = NULL;
 
 gameaction_t    gameaction;
 gamestate_t     gamestate;
@@ -1122,7 +1120,7 @@ static void G_DoLoadLevel (void)
       const char message[] = "The -pistolstart option is not supported"
                              " for demos and\n"
                              " network play.";
-      if (!demo_playback_p) demorecording = false;
+      demorecording = false;
       I_Error(message);
     }
   }
@@ -1398,10 +1396,11 @@ void G_Ticker (void)
 
         //e6y
         if (democontinue)
-          G_ReadDemoContinueTiccmd(cmd);
+          G_ReadDemoContinueTiccmd(cmd, &demo_playback_p);
 
         if (demoplayback)
-          G_ReadDemoTiccmd(cmd);
+          G_ReadDemoTiccmd(cmd, &demo_playback_p);
+
         if (demorecording)
           G_WriteDemoTiccmd(cmd);
       }
@@ -3048,22 +3047,22 @@ void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p)
   dsda_ReadExCmd(cmd, data_p);
 }
 
-void G_ReadDemoTiccmd (ticcmd_t* cmd)
+void G_ReadDemoTiccmd (ticcmd_t* cmd, const byte **demo_p)
 {
   demo_curr_tic++;
 
-  if (*demo_playback_p == DEMOMARKER)
+  if (**demo_p == DEMOMARKER)
   {
     G_CheckDemoStatus();      // end of demo data stream
   }
-  else if (demoplayback && demo_playback_p + bytes_per_tic > demobuffer + demolength)
+  else if (demoplayback && *demo_p + bytes_per_tic > demobuffer + demolength)
   {
     lprintf(LO_WARN, "G_ReadDemoTiccmd: missing DEMOMARKER\n");
     G_CheckDemoStatus();
   }
   else
   {
-    G_ReadOneTick(cmd, &demo_playback_p);
+    G_ReadOneTick(cmd, demo_p);
   }
 }
 
@@ -3106,8 +3105,8 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 
   dsda_WriteToDemo(buf, p - buf);
 
-  demo_playback_p = buf;
-  G_ReadDemoTiccmd (cmd);         // make SURE it is exactly the same
+  p = buf; // make SURE it is exactly the same
+  G_ReadDemoTiccmd(cmd, (const byte **) &p);
 }
 
 //
@@ -4146,23 +4145,23 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
   }
 }
 
-void G_ReadDemoContinueTiccmd (ticcmd_t* cmd)
+void G_ReadDemoContinueTiccmd (ticcmd_t* cmd, const byte **demo_p)
 {
-  if (!demo_continue_p)
+  if (!*demo_p)
     return;
 
   if (gametic <= demo_tics_count &&
-    demo_continue_p + bytes_per_tic <= demobuffer + demolength &&
-    *demo_continue_p != DEMOMARKER)
+    *demo_p + bytes_per_tic <= demobuffer + demolength &&
+    **demo_p != DEMOMARKER)
   {
-    G_ReadOneTick(cmd, &demo_continue_p);
+    G_ReadOneTick(cmd, demo_p);
   }
 
   if (gametic >= demo_tics_count ||
-    demo_continue_p > demobuffer + demolength ||
+    *demo_p > demobuffer + demolength ||
     dsda_InputActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use))
   {
-    demo_continue_p = NULL;
+    *demo_p = NULL;
     democontinue = false;
 
     dsda_JoinDemoCmd(cmd);
@@ -4176,7 +4175,7 @@ void G_CheckDemoContinue(void)
   {
     if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
     {
-      demo_continue_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
+      demo_playback_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
 
       singledemo = true;
       autostart = true;
