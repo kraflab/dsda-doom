@@ -143,7 +143,7 @@ int dsda_CompatibilityLevel(void) {
 
   if (map_format.zdoom) return mbf21_compatibility;
 
-  i = M_CheckParm("-complevel");
+  i = M_CheckParm2("-complevel", "-cl");
 
   if (i && (i + 1 < myargc)) {
     level = atoi(myargv[i + 1]);
