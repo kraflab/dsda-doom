@@ -2657,6 +2657,8 @@ void G_Compatibility(void)
 // killough 3/1/98: function to reload all the default parameter
 // settings before a new game begins
 
+static int compatibility_level_unspecified;
+
 void G_ReloadDefaults(void)
 {
   const dsda_options_t* options;
@@ -2667,6 +2669,8 @@ void G_ReloadDefaults(void)
     l = dsda_CompatibilityLevel();
     if (l != UNSPECIFIED_COMPLEVEL)
       compatibility_level = l;
+    else
+      compatibility_level_unspecified = true;
   }
   if (compatibility_level == -1)
     compatibility_level = best_compatibility;
@@ -3116,6 +3120,11 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 void G_RecordDemo (const char* name)
 {
   char *demoname;
+
+  if (compatibility_level_unspecified)
+    I_Error("You must specify a compatibility level when recording a demo!\n"
+            "Example: dsda-doom -iwad DOOM -complevel 3 -record demo");
+
   usergame = false;
   demoname = malloc(strlen(name)+4+1);
   AddDefaultExtension(strcpy(demoname, name), ".lmp");  // 1/18/98 killough
