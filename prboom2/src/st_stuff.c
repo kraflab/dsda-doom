@@ -50,6 +50,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 
 #include "heretic/sb_bar.h"
 

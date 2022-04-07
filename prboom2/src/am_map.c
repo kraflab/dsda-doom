@@ -63,6 +63,7 @@
 #include "dsda/input.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 
 //jff 1/7/98 default automap colors added
 int mapcolor_back;    // map background

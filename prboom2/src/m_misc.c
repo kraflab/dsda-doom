@@ -84,6 +84,7 @@
 #endif
 
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 
 // NSM
 #include "i_capture.h"

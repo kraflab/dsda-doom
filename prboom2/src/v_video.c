@@ -56,6 +56,7 @@
 
 #include "dsda/global.h"
 #include "dsda/palette.h"
+#include "dsda/stretch.h"
 
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
@@ -67,15 +68,6 @@ float gl_ratio;
 int psprite_offset; // Needed for "tallscreen" modes
 
 const char *render_aspects_list[5] = {"auto", "16:9", "16:10", "4:3", "5:4"};
-const char *render_stretch_list[patch_stretch_max_config] = {"not adjusted", "Doom format", "fit to width"};
-
-int patches_scalex;
-int patches_scaley;
-
-int render_stretch_hud;
-int render_stretch_hud_default;
-int render_patches_scalex;
-int render_patches_scaley;
 
 // Each screen is [SCREENWIDTH*SCREENHEIGHT];
 screeninfo_t screens[NUM_SCREENS];
@@ -252,7 +244,7 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
     int sx = x;
     int sy = y;
 
-    params = R_StretchParams(flags);
+    params = dsda_StretchParams(flags);
 
     x  = params->video->x1lookup[x];
     y  = params->video->y1lookup[y];
@@ -430,7 +422,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
   if ((flags & VPT_STRETCH_MASK) && SCREEN_320x200)
     flags &= ~VPT_STRETCH_MASK;
 
-  params = R_StretchParams(flags);
+  params = dsda_StretchParams(flags);
 
   // CPhipps - null translation pointer => no translation
   if (!trans)
@@ -1341,55 +1333,7 @@ void SetRatio(int width, int height)
 
   yaspectmul = Scale((320<<FRACBITS), WIDE_SCREENHEIGHT, 200 * WIDE_SCREENWIDTH);
 
-  patches_scalex = MIN(SCREENWIDTH / 320, SCREENHEIGHT / 200);
-  patches_scalex = MAX(1, patches_scalex);
-  patches_scaley = patches_scalex;
-
-  //custom scaling when "not adjusted" is used
-  if (render_patches_scalex > 0)
-  {
-    patches_scalex = MIN(render_patches_scalex, patches_scalex);
-  }
-  if (render_patches_scaley > 0)
-  {
-    patches_scaley = MIN(render_patches_scaley, patches_scaley);
-  }
-
-  ST_SCALED_HEIGHT = g_st_height * patches_scaley;
-
-  if (SCREENWIDTH < 320 || WIDE_SCREENWIDTH < 320 ||
-      SCREENHEIGHT < 200 || WIDE_SCREENHEIGHT < 200)
-  {
-    render_stretch_hud = patch_stretch_fit_to_width;
-  }
-
-  if (raven && render_stretch_hud == 0)
-  {
-    render_stretch_hud++;
-  }
-
-  switch (render_stretch_hud)
-  {
-  case patch_stretch_not_adjusted:
-    wide_offset2x = (SCREENWIDTH - patches_scalex * 320);
-    wide_offset2y = (SCREENHEIGHT - patches_scaley * 200);
-    break;
-  case patch_stretch_doom_format:
-    ST_SCALED_HEIGHT = g_st_height * WIDE_SCREENHEIGHT / 200;
-
-    wide_offset2x = (SCREENWIDTH - WIDE_SCREENWIDTH);
-    wide_offset2y = (SCREENHEIGHT - WIDE_SCREENHEIGHT);
-    break;
-  case patch_stretch_fit_to_width:
-    ST_SCALED_HEIGHT = g_st_height * SCREENHEIGHT / 200;
-
-    wide_offset2x = 0;
-    wide_offset2y = 0;
-    break;
-  }
-
-  wide_offsetx = wide_offset2x / 2;
-  wide_offsety = wide_offset2y / 2;
+  dsda_EvaluatePatchScale();
 
   SCREEN_320x200 =
     (SCREENWIDTH == 320) && (SCREENHEIGHT == 200) &&
@@ -1401,7 +1345,7 @@ void SetRatio(int width, int height)
 
 void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flags)
 {
-  stretch_param_t *params = R_StretchParams(flags);
+  stretch_param_t *params = dsda_StretchParams(flags);
   int sx = *x;
   int sy = *y;
 

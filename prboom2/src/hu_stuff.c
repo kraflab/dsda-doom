@@ -59,6 +59,7 @@
 #include "dsda/mapinfo.h"
 #include "dsda/pause.h"
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 #include "g_overflow.h"
 
 // global heads up display controls
@@ -2184,7 +2185,7 @@ void SetCrosshairTarget(void)
     if (R_Project(x, y, z, &winx, &winy, &winz))
     {
       int top, bottom, h;
-      stretch_param_t *params = R_StretchParams(crosshair.flags);
+      stretch_param_t *params = dsda_StretchParams(crosshair.flags);
 
       if (V_IsSoftwareMode())
       {

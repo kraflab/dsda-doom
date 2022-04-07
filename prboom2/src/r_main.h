@@ -67,10 +67,6 @@ extern fixed_t  projection;
 extern fixed_t  skyiscale;
 // e6y: wide-res
 extern int wide_centerx;
-extern int wide_offsetx;
-extern int wide_offset2x;
-extern int wide_offsety;
-extern int wide_offset2y;
 #define RMUL (1.6f/1.333333f)
 
 // proff 11/06/98: Added for high-res
@@ -163,34 +159,6 @@ void R_RenderPlayerView(player_t *player);   // Called by G_Drawer.
 void R_Init(void);                           // Called by startup code.
 void R_SetViewSize(int blocks);              // Called by M_Responder.
 void R_ExecuteSetViewSize(void);             // cph - called by D_Display to complete a view resize
-
-typedef struct
-{
-   fixed_t xstep;
-   fixed_t ystep;
-
-   int width, height;
-
-   // SoM 1-31-04: This will insure that scaled patches and such are put in the right places
-   short x1lookup[321];
-   short y1lookup[201];
-   short x2lookup[321];
-   short y2lookup[201];
-} cb_video_t;
-
-typedef struct stretch_param_s
-{
-  cb_video_t *video;
-  int deltax1;
-  int deltay1;
-  int deltax2;
-  int deltay2;
-} stretch_param_t;
-
-extern int dsda_ex_text_scale;
-
-stretch_param_t* R_StretchParams(int flags);
-void R_SetupViewScaling(void);
 
 void R_ShowStats(void);
 void R_ClearStats(void);

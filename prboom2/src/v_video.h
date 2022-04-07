@@ -46,29 +46,7 @@
 // VIDEO
 //
 
-typedef enum
-{
-  patch_stretch_not_adjusted,
-  patch_stretch_doom_format,
-  patch_stretch_fit_to_width,
-
-  patch_stretch_max_config,
-
-  patch_stretch_ex_text = patch_stretch_max_config,
-
-  patch_stretch_max
-} patch_stretch_t;
-
-extern int patches_scalex;
-extern int patches_scaley;
-
 extern const char *render_aspects_list[];
-extern const char *render_stretch_list[];
-
-extern int render_stretch_hud;
-extern int render_stretch_hud_default;
-extern int render_patches_scalex;
-extern int render_patches_scaley;
 
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and

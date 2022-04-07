@@ -46,6 +46,8 @@
 #include "am_map.h"
 #include "lprintf.h"
 
+#include "dsda/stretch.h"
+
 //
 // All drawing to the view buffer is accomplished in this file.
 // The other refresh files only know about ccordinates,

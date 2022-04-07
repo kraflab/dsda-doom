@@ -82,6 +82,7 @@
 #include "dsda/save.h"
 #include "dsda/time.h"
 #include "dsda/console.h"
+#include "dsda/stretch.h"
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
 #ifdef _WIN32
@@ -3355,7 +3356,7 @@ setup_menu_t misc_settings[] = {
   { "Rewind Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 9 * 8, { "dsda_auto_key_frame_depth" } },
   { "Rewind Timeout (ms)", S_NUM, m_null, G_X, G_Y + 10 * 8, { "dsda_auto_key_frame_timeout" } },
   { "Use Extended Hud", S_YESNO, m_dsda, G_X, G_Y + 11 * 8, { "dsda_exhud" } },
-  { "Extended Hud Scale", S_NUM, m_null, G_X, G_Y + 12 * 8, { "dsda_ex_text_scale" }, 0, R_SetupViewScaling },
+  { "Extended Hud Scale", S_NUM, m_null, G_X, G_Y + 12 * 8, { "dsda_ex_text_scale" }, 0, dsda_SetupStretchParams },
   { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "dsda_hide_horns" } },
   { "Organize My Save Files", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_organized_saves" } },
   { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_skip_quit_prompt" } },

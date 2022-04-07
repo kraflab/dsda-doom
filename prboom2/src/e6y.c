@@ -93,6 +93,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/pause.h"
+#include "dsda/stretch.h"
 
 dboolean wasWiped = false;
 

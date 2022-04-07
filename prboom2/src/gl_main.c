@@ -74,6 +74,7 @@
 
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 
 int gl_clear;
 
@@ -675,7 +676,7 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
 
   if (flags & VPT_STRETCH_MASK)
   {
-    stretch_param_t *params = R_StretchParams(flags);
+    stretch_param_t *params = dsda_StretchParams(flags);
 
     xpos   = (float)((x - leftoffset) * params->video->width)  / 320.0f + params->deltax1;
     ypos   = (float)((y - topoffset)  * params->video->height) / 200.0f + params->deltay1;

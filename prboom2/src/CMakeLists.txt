@@ -90,6 +90,8 @@ set(COMMON_SRC
     dsda/sprite.h
     dsda/state.c
     dsda/state.h
+    dsda/stretch.c
+    dsda/stretch.h
     dsda/tas.c
     dsda/tas.h
     dsda/text_file.c
