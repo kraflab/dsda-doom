@@ -2496,7 +2496,7 @@ static void G_DoSaveGame(dboolean via_cmd)
 
   dsda_ArchiveAll();
 
-  *save_p++ = 0xe6;   // consistancy marker
+  *save_p++ = 0xe6;   // consistency marker
 
   doom_printf( "%s", M_WriteFile(name, savebuffer, save_p - savebuffer)
          ? s_GGSAVED /* Ty - externalised */
