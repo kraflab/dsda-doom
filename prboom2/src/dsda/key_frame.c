@@ -47,7 +47,7 @@
 #include "key_frame.h"
 
 // Hook into the save & demo ecosystem
-extern const byte* demo_p;
+extern const byte* demo_playback_p;
 extern byte* savebuffer;
 extern size_t savegamesize;
 extern dboolean setsizeneeded;
@@ -134,9 +134,9 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
   save_p += sizeof(demo_curr_tic);
 
   // Store location in demo playback buffer
-  CheckSaveGame(sizeof(demo_p));
-  memcpy(save_p, &demo_p, sizeof(demo_p));
-  save_p += sizeof(demo_p);
+  CheckSaveGame(sizeof(demo_playback_p));
+  memcpy(save_p, &demo_playback_p, sizeof(demo_playback_p));
+  save_p += sizeof(demo_playback_p);
 
   // Store location in demo recording buffer
   CheckSaveGame(sizeof(demo_write_buffer_offset));
@@ -210,8 +210,8 @@ void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
   save_p += sizeof(demo_curr_tic);
 
   // Restore location in demo playback buffer
-  memcpy(&demo_p, save_p, sizeof(demo_p));
-  save_p += sizeof(demo_p);
+  memcpy(&demo_playback_p, save_p, sizeof(demo_playback_p));
+  save_p += sizeof(demo_playback_p);
 
   // Restore location in demo recording buffer
   memcpy(&demo_write_buffer_offset, save_p, sizeof(demo_write_buffer_offset));

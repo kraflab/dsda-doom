@@ -139,7 +139,7 @@ static dboolean  netdemo;
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
 //e6y static
-const byte *demo_p;
+const byte *demo_playback_p;
 const byte *demo_continue_p = NULL;
 
 gameaction_t    gameaction;
@@ -1122,7 +1122,7 @@ static void G_DoLoadLevel (void)
       const char message[] = "The -pistolstart option is not supported"
                              " for demos and\n"
                              " network play.";
-      if (!demo_p) demorecording = false;
+      if (!demo_playback_p) demorecording = false;
       I_Error(message);
     }
   }
@@ -3052,18 +3052,18 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 {
   demo_curr_tic++;
 
-  if (*demo_p == DEMOMARKER)
+  if (*demo_playback_p == DEMOMARKER)
   {
     G_CheckDemoStatus();      // end of demo data stream
   }
-  else if (demoplayback && demo_p + bytes_per_tic > demobuffer + demolength)
+  else if (demoplayback && demo_playback_p + bytes_per_tic > demobuffer + demolength)
   {
     lprintf(LO_WARN, "G_ReadDemoTiccmd: missing DEMOMARKER\n");
     G_CheckDemoStatus();
   }
   else
   {
-    G_ReadOneTick(cmd, &demo_p);
+    G_ReadOneTick(cmd, &demo_playback_p);
   }
 }
 
@@ -3106,8 +3106,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 
   dsda_WriteToDemo(buf, p - buf);
 
-  /* cph - alias demo_p to it so we can read it back */
-  demo_p = buf;
+  demo_playback_p = buf;
   G_ReadDemoTiccmd (cmd);         // make SURE it is exactly the same
 }
 
@@ -3894,7 +3893,7 @@ void G_DoPlayDemo(void)
 {
   if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
   {
-    demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
+    demo_playback_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
 
     gameaction = ga_nothing;
     usergame = false;
