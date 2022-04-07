@@ -141,7 +141,6 @@ static int demolength; // check for overrun (missing DEMOMARKER)
 //e6y static
 const byte *demo_p;
 const byte *demo_continue_p = NULL;
-static short    consistancy[MAX_MAXPLAYERS][BACKUPTICS];
 
 gameaction_t    gameaction;
 gamestate_t     gamestate;
@@ -469,7 +468,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   G_SetSpeed(false);
 
   memset(cmd, 0, sizeof(*cmd));
-  cmd->consistancy = consistancy[consoleplayer][maketic%BACKUPTICS];
 
   strafe = dsda_InputActive(dsda_input_strafe);
   //e6y: the "RUN" key inverts the autorun state
@@ -1380,7 +1378,6 @@ void G_Ticker (void)
   if (dsda_PausedOutsideDemo())
     basetic++;  // For revenant tracers and RNG -- we must maintain sync
   else {
-    // get commands, check consistancy, and build new consistancy check
     int buf = (gametic / ticdup) % BACKUPTICS;
 
     dsda_UpdateAutoKeyFrames();
@@ -1407,18 +1404,6 @@ void G_Ticker (void)
           G_ReadDemoTiccmd(cmd);
         if (demorecording)
           G_WriteDemoTiccmd(cmd);
-
-        if (netgame && !netdemo && !(gametic % ticdup) )
-        {
-          if (gametic > BACKUPTICS
-              && consistancy[i][buf] != cmd->consistancy)
-            I_Error("G_Ticker: Consistency failure (%i should be %i)",
-                    cmd->consistancy, consistancy[i][buf]);
-          if (players[i].mo)
-            consistancy[i][buf] = players[i].mo->x;
-          else
-            consistancy[i][buf] = 0; // killough 2/14/98
-        }
       }
     }
 
