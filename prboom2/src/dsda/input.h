@@ -196,6 +196,10 @@ typedef enum {
   dsda_input_build_weapon8,
   dsda_input_build_weapon9,
   dsda_input_build_source,
+  dsda_input_build_fine_forward,
+  dsda_input_build_fine_backward,
+  dsda_input_build_fine_strafe_left,
+  dsda_input_build_fine_strafe_right,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 

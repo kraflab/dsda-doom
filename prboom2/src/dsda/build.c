@@ -63,6 +63,16 @@ static void buildBackward(void) {
     build_cmd.forwardmove = -forward50();
 }
 
+static void buildFineForward(void) {
+  if (build_cmd.forwardmove < forward50())
+    ++build_cmd.forwardmove;
+}
+
+static void buildFineBackward(void) {
+  if (build_cmd.forwardmove > -forward50())
+    --build_cmd.forwardmove;
+}
+
 static void buildStrafeRight(void) {
   if (build_cmd.sidemove == strafe50())
     build_cmd.sidemove = 0;
@@ -75,6 +85,16 @@ static void buildStrafeLeft(void) {
     build_cmd.sidemove = 0;
   else
     build_cmd.sidemove = -strafe50();
+}
+
+static void buildFineStrafeRight(void) {
+  if (build_cmd.sidemove < strafe50())
+    ++build_cmd.sidemove;
+}
+
+static void buildFineStrafeLeft(void) {
+  if (build_cmd.sidemove > -strafe50())
+    --build_cmd.sidemove;
 }
 
 static void buildTurnRight(void) {
@@ -197,6 +217,18 @@ dboolean dsda_BuildResponder(event_t* ev) {
     return true;
   }
 
+  if (dsda_InputActivated(dsda_input_build_fine_forward)) {
+    buildFineForward();
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_fine_backward)) {
+    buildFineBackward();
+
+    return true;
+  }
+
   if (dsda_InputActivated(dsda_input_build_strafe_right)) {
     buildStrafeRight();
 
@@ -205,6 +237,18 @@ dboolean dsda_BuildResponder(event_t* ev) {
 
   if (dsda_InputActivated(dsda_input_build_strafe_left)) {
     buildStrafeLeft();
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_fine_strafe_right)) {
+    buildFineStrafeRight();
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_fine_strafe_left)) {
+    buildFineStrafeLeft();
 
     return true;
   }
