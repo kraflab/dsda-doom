@@ -142,6 +142,12 @@ void dsda_CopyBuildCmd(ticcmd_t* cmd) {
   dsda_JoinDemoCmd(cmd);
 }
 
+void dsda_ReadBuildCmd(ticcmd_t* cmd) {
+  dsda_CopyBuildCmd(cmd);
+
+  build_cmd.angleturn = 0;
+}
+
 void dsda_EnterBuildMode(void) {
   build_mode = true;
   dsda_ApplyPauseMode(PAUSE_BUILDMODE);

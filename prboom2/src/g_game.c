@@ -1389,7 +1389,7 @@ void G_Ticker (void)
         memcpy(cmd, &netcmds[i][buf], sizeof *cmd);
 
         if (dsda_BuildMode())
-          dsda_CopyBuildCmd(cmd);
+          dsda_ReadBuildCmd(cmd);
 
         if (dsda_KeyFrameRestored())
           dsda_JoinDemoCmd(cmd);
