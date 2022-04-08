@@ -25,4 +25,11 @@ void dsda_UpdateExHud(void);
 void dsda_DrawExHud(void);
 void dsda_EraseExHud(void);
 
+dboolean dsda_TrackLine(int id);
+dboolean dsda_UntrackLine(int id);
+dboolean dsda_TrackSector(int id);
+dboolean dsda_UntrackSector(int id);
+dboolean dsda_TrackMobj(int id);
+dboolean dsda_UntrackMobj(int id);
+
 #endif
