@@ -31,6 +31,8 @@ dboolean dsda_TrackSector(int id);
 dboolean dsda_UntrackSector(int id);
 dboolean dsda_TrackMobj(int id);
 dboolean dsda_UntrackMobj(int id);
+dboolean dsda_TrackPlayer(int id);
+dboolean dsda_UntrackPlayer(int id);
 void dsda_ResetTrackers(void);
 
 #endif

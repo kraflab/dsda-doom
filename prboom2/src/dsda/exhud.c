@@ -37,6 +37,7 @@ typedef enum {
   dsda_tracker_line,
   dsda_tracker_sector,
   dsda_tracker_mobj,
+  dsda_tracker_player,
 } dsda_tracker_type_t;
 
 typedef struct {
@@ -142,8 +143,21 @@ static void dsda_UpdateTrackers(void) {
             health > 0 ? 0x30 + g_cr_gold : 0x30 + g_cr_blue,
             dsda_tracker[i].id, health
           );
-          break;
         }
+        break;
+      case dsda_tracker_player:
+        {
+          extern int player_damage_last_tic;
+
+          snprintf(
+            dsda_exhud_tracker[i].msg,
+            sizeof(dsda_exhud_tracker[i].msg),
+            "\x1b%cp: %d",
+            player_damage_last_tic > 0 ? 0x30 + g_cr_gold : 0x30 + g_cr_blue,
+            player_damage_last_tic
+          );
+        }
+        break;
     }
 
     dsda_RefreshHudText(&dsda_exhud_tracker[i]);
@@ -187,7 +201,8 @@ static void dsda_WipeTrackers(void) {
   int i;
 
   for (i = 0; i < TRACKER_LIMIT; ++i)
-    dsda_WipeTracker(i);
+    if (dsda_tracker[i].type != dsda_tracker_player)
+      dsda_WipeTracker(i);
 }
 
 static void dsda_RefreshTrackers(void) {
@@ -303,6 +318,19 @@ dboolean dsda_TrackMobj(int id) {
 
 dboolean dsda_UntrackMobj(int id) {
   return dsda_RemoveTracker(dsda_tracker_mobj, id);
+}
+
+dboolean dsda_TrackPlayer(int id) {
+  int i;
+
+  if (dsda_StrictMode())
+    return false;
+
+  return dsda_AddTracker(dsda_tracker_player, id, NULL);
+}
+
+dboolean dsda_UntrackPlayer(int id) {
+  return dsda_RemoveTracker(dsda_tracker_player, id);
 }
 
 void dsda_UpdateExHud(void) {

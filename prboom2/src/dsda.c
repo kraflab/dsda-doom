@@ -129,11 +129,23 @@ void dsda_WatchCard(card_t card) {
     }
 }
 
+static int player_damage_leveltime;
+int player_damage_last_tic;
+
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage) {
   if (
     ((source && source->player) || (inflictor && inflictor->intflags & MIF_PLAYER_DAMAGED_BARREL)) \
     && damage != TELEFRAG_DAMAGE
   ) {
+    if (!target->player) {
+      if (leveltime != player_damage_leveltime) {
+        player_damage_leveltime = leveltime;
+        player_damage_last_tic = 0;
+      }
+
+      player_damage_last_tic += damage;
+    }
+
     if (target->type == MT_BARREL)
       target->intflags |= MIF_PLAYER_DAMAGED_BARREL;
     else if (!target->player)

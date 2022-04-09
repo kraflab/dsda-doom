@@ -261,6 +261,14 @@ static dboolean console_TrackerRemoveMobj(const char* command, const char* args)
   return false;
 }
 
+static dboolean console_TrackerAddPlayer(const char* command, const char* args) {
+  return dsda_TrackPlayer(0);
+}
+
+static dboolean console_TrackerRemovePlayer(const char* command, const char* args) {
+  return dsda_UntrackPlayer(0);
+}
+
 static dboolean console_Exit(const char* command, const char* args) {
   extern void M_ClearMenus(void);
 
@@ -306,6 +314,10 @@ static console_command_entry_t console_commands[] = {
   { "t.am", console_TrackerAddMobj },
   { "tracker.removemobj", console_TrackerRemoveMobj },
   { "t.rm", console_TrackerRemoveMobj },
+  { "tracker.addplayer", console_TrackerAddPlayer },
+  { "t.ap", console_TrackerAddPlayer },
+  { "tracker.removeplayer", console_TrackerRemovePlayer },
+  { "t.rp", console_TrackerRemovePlayer },
 
   // cheats
   { "idchoppers", console_BasicCheat },
