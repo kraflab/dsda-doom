@@ -50,6 +50,9 @@ dsda_text_t dsda_exhud_max_totals;
 dsda_text_t dsda_exhud_tracker[TRACKER_LIMIT];
 dsda_tracker_t dsda_tracker[TRACKER_LIMIT];
 
+static int tracker_map;
+static int tracker_episode;
+
 void dsda_InitExHud(patchnum_t* font) {
   int i;
 
@@ -157,8 +160,63 @@ static int dsda_FindTracker(int type, int id) {
   return -1;
 }
 
+static mobj_t* dsda_FindMobj(int id) {
+  thinker_t* th;
+  mobj_t* mobj;
+
+  for (th = thinkercap.next; th != &thinkercap; th = th->next) {
+    if (th->function != P_MobjThinker)
+      continue;
+
+    mobj = (mobj_t*) th;
+
+    if (mobj->index == id)
+      return mobj;
+  }
+
+  return NULL;
+}
+
+static void dsda_WipeTracker(int i) {
+  dsda_tracker[i].type = dsda_tracker_nothing;
+  dsda_tracker[i].id = 0;
+  dsda_tracker[i].mobj = NULL;
+}
+
+static void dsda_WipeTrackers(void) {
+  int i;
+
+  for (i = 0; i < TRACKER_LIMIT; ++i)
+    dsda_WipeTracker(i);
+}
+
+static void dsda_RefreshTrackers(void) {
+  int i;
+
+  for (i = 0; i < TRACKER_LIMIT; ++i)
+    switch (dsda_tracker[i].type) {
+      default:
+        break;
+      case dsda_tracker_mobj:
+        dsda_tracker[i].mobj = dsda_FindMobj(dsda_tracker[i].id);
+        if (!dsda_tracker[i].mobj)
+          dsda_WipeTracker(i);
+        break;
+    }
+}
+
+void dsda_ResetTrackers(void) {
+  if (gamemap != tracker_map || gameepisode != tracker_episode)
+    dsda_WipeTrackers();
+  else
+    dsda_RefreshTrackers();
+}
+
 static dboolean dsda_AddTracker(int type, int id, mobj_t* mobj) {
   int i;
+
+  tracker_map = gamemap;
+  tracker_episode = gameepisode;
 
   if (dsda_FindTracker(type, id) >= 0)
     return false;
@@ -181,9 +239,7 @@ static dboolean dsda_RemoveTracker(int type, int id) {
     return false;
 
   if ((i = dsda_FindTracker(type, id)) >= 0) {
-    dsda_tracker[i].type = dsda_tracker_nothing;
-    dsda_tracker[i].id = 0;
-    dsda_tracker[i].mobj = NULL;
+    dsda_WipeTracker(i);
 
     return true;
   }
@@ -221,23 +277,6 @@ dboolean dsda_TrackSector(int id) {
 
 dboolean dsda_UntrackSector(int id) {
   return dsda_RemoveTracker(dsda_tracker_sector, id);
-}
-
-static mobj_t* dsda_FindMobj(int id) {
-  thinker_t* th;
-  mobj_t* mobj;
-
-  for (th = thinkercap.next; th != &thinkercap; th = th->next) {
-    if (th->function != P_MobjThinker)
-      continue;
-
-    mobj = (mobj_t*) th;
-
-    if (mobj->index == id)
-      return mobj;
-  }
-
-  return NULL;
 }
 
 dboolean dsda_TrackMobj(int id) {

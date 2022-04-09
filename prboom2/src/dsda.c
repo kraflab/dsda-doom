@@ -28,6 +28,7 @@
 #include "am_map.h"
 
 #include "dsda/analysis.h"
+#include "dsda/exhud.h"
 #include "dsda/ghost.h"
 #include "dsda/hud.h"
 #include "dsda/command_display.h"
@@ -280,6 +281,7 @@ void dsda_WatchBeforeLevelSetup(void) {
 
 void dsda_WatchAfterLevelSetup(void) {
   dsda_SpawnGhost();
+  dsda_ResetTrackers();
 }
 
 void dsda_WatchNewLevel(void) {
