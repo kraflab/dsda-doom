@@ -78,7 +78,6 @@
 #include "r_things.h"
 #include "r_sky.h"
 #include "am_map.h"
-#include "hu_tracers.h"
 #include "dsda.h"
 #include "dsda/settings.h"
 #ifdef GL_DOOM
@@ -299,9 +298,6 @@ void e6y_InitCommandLine(void)
   }
 
   dsda_ReadCommandLine();
-
-  // TAS-tracers
-  InitTracers();
 
   shorttics = movement_shorttics || M_CheckParm("-shorttics");
 }

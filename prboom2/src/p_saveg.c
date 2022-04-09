@@ -44,7 +44,6 @@
 #include "p_enemy.h"
 #include "lprintf.h"
 #include "s_advsound.h"
-#include "hu_tracers.h"
 #include "e6y.h"//e6y
 
 #include "hexen/a_action.h"
@@ -1085,7 +1084,6 @@ void P_TrueUnArchiveThinkers(void) {
   true_thinkerclass_t tc;
 
   totallive = 0;
-  ClearThingsHealthTracers();
 
   // killough 3/26/98: Load boss brain state
   memcpy(&brain, save_p, sizeof brain);
@@ -1460,10 +1458,6 @@ void P_TrueUnArchiveThinkers(void) {
             // The references value must be nonzero to reach the target code
             mobj->thinker.references = 1;
             break;
-          }
-          else
-          {
-            InitThingsHealthTracer(mobj);
           }
 
           P_SetThingPosition (mobj);

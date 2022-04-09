@@ -41,7 +41,6 @@
 #include "sounds.h"
 #include "st_stuff.h"
 #include "hu_stuff.h"
-#include "hu_tracers.h"
 #include "s_sound.h"
 #include "s_advsound.h"
 #include "info.h"
@@ -1794,8 +1793,6 @@ void P_RemoveMobj (mobj_t* mobj)
     return;
   }
 
-  ClearThingsHealthTracer(mobj);
-
   if ((mobj->flags & MF_SPECIAL)
       && !(mobj->flags & MF_DROPPED)
       && (mobj->type != MT_INV)
@@ -1998,12 +1995,6 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   else
     mobj = P_SpawnMobj(x,y,z, g_mt_player);
 
-  if (deathmatch)
-    mobj->index = TracerGetDeathmatchStart(n);
-  else
-    mobj->index = TracerGetPlayerStart(mthing->type - 1);
-
-
   // set color translations for player sprites
   if (hexen)
   {
@@ -2190,8 +2181,6 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       memcpy(deathmatch_p++, mthing, sizeof(*mthing));
       (deathmatch_p - 1)->options = 1;
 
-      TracerAddDeathmatchStart(deathmatch_p - deathmatchstarts - 1, index);
-
       return NULL;
   	}
   }
@@ -2248,8 +2237,6 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
      * in, in effect). Also note that the call below to P_SpawnPlayer must use
      * the playerstarts version with this field set */
     playerstarts[start][thingtype - 1].options = 1;
-
-    TracerAddPlayerStart(thingtype - 1, index);
 
     if (!deathmatch && !mthing->arg1)
       P_SpawnPlayer(thingtype - 1, &playerstarts[start][thingtype - 1]);
@@ -2438,8 +2425,6 @@ spawnit:
   mobj->spawnpoint = *mthing; // heretic_note: this is only done with totalkills++ in heretic
   mobj->index = index;//e6y
   mobj->iden_nums = iden_num;
-
-  InitThingsHealthTracer(mobj);
 
   if (map_format.hexen)
   {

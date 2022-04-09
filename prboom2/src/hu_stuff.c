@@ -36,7 +36,6 @@
 #include "doomstat.h"
 #include "hu_stuff.h"
 #include "hu_lib.h"
-#include "hu_tracers.h"
 #include "st_stuff.h" /* jff 2/16/98 need loc of status bar */
 #include "s_sound.h"
 #include "dstrings.h"
@@ -849,26 +848,6 @@ void HU_Start(void)
   while (*s)
     HUlib_addCharToTextLine(&w_hudadd, *(s++));
 
-  for(i = 0; i < NUMTRACES; i++)
-  {
-    HUlib_initTextLine(
-      &w_traces[i],
-      HU_TRACERX,
-      HU_TRACERY+i*HU_GAPY,
-      hu_font2,
-      HU_FONTSTART,
-      CR_GRAY,
-      VPT_ALIGN_LEFT_BOTTOM
-    );
-
-    strcpy(traces[i].hudstr, "");
-    s = traces[i].hudstr;
-    while (*s)
-      HUlib_addCharToTextLine(&w_traces[i], *(s++));
-    HUlib_drawTextLine(&w_traces[i], false);
-  }
-
-
   //jff 2/16/98 initialize ammo widget
   strcpy(hud_ammostr,"AMM ");
 
@@ -1028,8 +1007,6 @@ static hud_widget_t hud_name_widget[] =
   {&w_hudadd, 0, 0, 0, HU_widget_build_hudadd, HU_widget_draw_hudadd, "hudadd"},
 
   {&w_keys_icon, 0, 0, 0, HU_widget_build_gkeys, HU_widget_draw_gkeys, "gkeys"},
-
-  {&w_traces[0], 0, 0, 0, NULL, NULL, "tracers"},
 
   {&w_health_big, 0, 0, VPT_NOOFFSET, HU_widget_build_health_big, HU_widget_draw_health_big, "health_big"},
   {&w_armor_big,  0, 0, VPT_NOOFFSET, HU_widget_build_armor_big,  HU_widget_draw_armor_big,  "armor_big"},
@@ -2453,42 +2430,6 @@ void HU_Drawer(void)
         }
       }
     }
-
-    //e6y
-    if (traces_present && !dsda_StrictMode())
-    {
-      int k, num = 0;
-
-      if (realframe)
-      {
-        UpdateThingsHealthTracers();
-      }
-
-      for(k = 0; k < NUMTRACES; k++)
-      {
-        if (traces[k].count)
-        {
-          if (realframe)
-          {
-            w_traces[num].y = w_traces[0].y - num * 8;
-
-            if (traces[k].ApplyFunc)
-              traces[k].ApplyFunc(k);
-
-            HUlib_clearTextLine(&w_traces[num]);
-            s = traces[k].hudstr;
-            while (*s)
-              HUlib_addCharToTextLine(&w_traces[num], *(s++));
-
-            if (traces[k].ResetFunc)
-              traces[k].ResetFunc(k);
-          }
-          HUlib_drawTextLine(&w_traces[num], false);
-          num++;
-        }
-      }
-    }
-
   }
 
   //jff 3/4/98 display last to give priority

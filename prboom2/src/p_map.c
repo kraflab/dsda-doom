@@ -49,7 +49,6 @@
 #include "g_game.h"
 #include "p_tick.h"
 #include "g_overflow.h"
-#include "hu_tracers.h"
 #include "e6y.h"//e6y
 
 #include "dsda.h"
@@ -613,8 +612,6 @@ dboolean PIT_CheckLine (line_t* ld)
     tmdropoffz = lowfloor;
 
   // if contacted a special line, add it to the list
-
-  CheckLinesCrossTracer(ld);//e6y
   if (ld->special)
     P_AppendSpecHit(ld);
 
@@ -1284,7 +1281,6 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
       if (!P_BlockLinesIterator (bx,by,PIT_CheckLine))
         return false; // doesn't fit
 
-  ClearLinesCrossTracer();//e6y
   return true;
 }
 

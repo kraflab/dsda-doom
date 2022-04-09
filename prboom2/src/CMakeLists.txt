@@ -164,8 +164,6 @@ set(COMMON_SRC
     hu_lib.h
     hu_stuff.c
     hu_stuff.h
-    hu_tracers.c
-    hu_tracers.h
     info.c
     info.h
     i_capture.c
