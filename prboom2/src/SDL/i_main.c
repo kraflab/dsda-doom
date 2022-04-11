@@ -89,10 +89,7 @@ int realtic_clock_rate = 100;
 void I_Init(void)
 {
   dsda_ResetTimeFunctions(fastdemo);
-
-  /* killough 2/21/98: avoid sound initialization if no sound & no music */
-  if (!(nomusicparm && nosfxparm))
-    I_InitSound();
+  I_InitSound();
 }
 
 //e6y

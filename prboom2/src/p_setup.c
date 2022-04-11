@@ -62,6 +62,7 @@
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/skip.h"
 
 #include "hexen/p_acs.h"
 #include "hexen/p_anim.h"
@@ -3226,7 +3227,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     // Do not preprocess GL data during skipping,
     // because it potentially will not be used.
     // But preprocessing must be called immediately after stop of skipping.
-    if (!doSkip)
+    if (!dsda_SkipMode())
     {
       // proff 11/99: calculate all OpenGL specific tables etc.
       gld_PreprocessLevel();

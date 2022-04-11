@@ -68,6 +68,7 @@ void I_Warning(const char *message, ...);
 #endif
 
 void I_Init(void);
+void I_Init2(void);
 void I_SafeExit(int rc);
 
 #endif

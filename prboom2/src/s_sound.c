@@ -57,6 +57,7 @@
 #include "dsda/memory.h"
 #include "dsda/settings.h"
 #include "dsda/sfx.h"
+#include "dsda/skip.h"
 
 // when to clip out sounds
 // Does not fit the large outdoor areas.

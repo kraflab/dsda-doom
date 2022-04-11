@@ -74,17 +74,21 @@
 #include "r_main.h"
 #include "f_finale.h"
 #include "e6y.h"//e6y
+
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/key_frame.h"
 #include "dsda/input.h"
 #include "dsda/palette.h"
 #include "dsda/save.h"
+#include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/console.h"
 #include "dsda/stretch.h"
+
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
+
 #ifdef _WIN32
 #include "e6y_launcher.h"
 #endif
@@ -4841,10 +4845,9 @@ dboolean M_Responder (event_t* ev) {
     }
     if (dsda_InputActivated(dsda_input_nextlevel))
     {
-      if (demoplayback && !doSkip && singledemo)
+      if (demoplayback && !dsda_SkipMode() && singledemo)
       {
-        demo_stoponnext = true;
-        G_SkipDemoStart();
+        dsda_SkipToNextMap();
         return true;
       }
       else
@@ -4862,10 +4865,9 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_demo_endlevel))
     {
-      if (demoplayback && !doSkip && singledemo)
+      if (demoplayback && !dsda_SkipMode() && singledemo)
       {
-        demo_stoponend = true;
-        G_SkipDemoStart();
+        dsda_SkipToEndOfMap();
         return true;
       }
     }
@@ -4874,14 +4876,7 @@ dboolean M_Responder (event_t* ev) {
     {
       if (demoplayback && singledemo)
       {
-        if (doSkip)
-        {
-          G_SkipDemoStop();
-        }
-        else
-        {
-          G_SkipDemoStart();
-        }
+        dsda_ToggleSkipMode();
         return true;
       }
     }

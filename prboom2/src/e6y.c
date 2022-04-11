@@ -91,13 +91,12 @@
 
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
-#include "dsda/pause.h"
+#include "dsda/skip.h"
 #include "dsda/stretch.h"
 
 dboolean wasWiped = false;
 
 int secretfound;
-int demo_skiptics;
 int demo_playerscount;
 int demo_tics_count;
 int demo_curr_tic;
@@ -106,14 +105,6 @@ char demo_len_st[80];
 int avi_shot_time;
 int avi_shot_num;
 const char *avi_shot_fname;
-
-dboolean doSkip;
-dboolean demo_stoponnext;
-dboolean demo_stoponend;
-static dboolean demo_warp_reached;
-
-extern int warpepisode;
-extern int warpmap;
 
 int speed_step;
 
@@ -264,24 +255,6 @@ prboom_comp_t prboom_comp[PC_MAX] = {
   {0x00000000, 0x02050104, 0, "-reset_monsterspawner_params_after_loading"},
 };
 
-void e6y_HandleSkip(void)
-{
-  int p;
-
-  if ((p = M_CheckParm("-skipsec")) && (p < myargc-1))
-  {
-    float min, sec;
-
-    if (sscanf(myargv[p+1], "%f:%f", &min, &sec) == 2)
-      demo_skiptics = (int) ((60 * min + sec) * TICRATE);
-    else if (sscanf(myargv[p+1], "%f", &sec) == 1)
-      demo_skiptics = (int) (sec * TICRATE);
-  }
-
-  if ((IsDemoPlayback() || IsDemoContinue()) && (warpmap != -1 || demo_skiptics))
-    G_SkipDemoStart();
-}
-
 void e6y_InitCommandLine(void)
 {
   int p;
@@ -300,91 +273,6 @@ void e6y_InitCommandLine(void)
   dsda_ReadCommandLine();
 
   shorttics = movement_shorttics || M_CheckParm("-shorttics");
-}
-
-static dboolean saved_fastdemo;
-static dboolean saved_nodrawers;
-static dboolean saved_nosfxparm;
-static dboolean saved_nomusicparm;
-
-void G_SkipDemoStart(void)
-{
-  saved_fastdemo = fastdemo;
-  saved_nodrawers = nodrawers;
-  saved_nosfxparm = nosfxparm;
-  saved_nomusicparm = nomusicparm;
-
-  dsda_ResetPauseMode();
-
-  doSkip = true;
-
-  S_StopMusic();
-  fastdemo = true;
-  nodrawers = true;
-  nosfxparm = true;
-  nomusicparm = true;
-
-  I_Init2();
-}
-
-dboolean sound_inited_once = false;
-
-void G_SkipDemoStop(void)
-{
-  fastdemo = saved_fastdemo;
-  nodrawers = saved_nodrawers;
-  nosfxparm = saved_nosfxparm;
-  nomusicparm = saved_nomusicparm;
-
-  demo_stoponnext = false;
-  demo_stoponend = false;
-  demo_warp_reached = false;
-  doSkip = false;
-  demo_skiptics = 0;
-  startmap = 0;
-
-  I_Init2();
-  if (!sound_inited_once && !(nomusicparm && nosfxparm))
-  {
-    I_InitSound();
-  }
-  S_Init(snd_SfxVolume, snd_MusicVolume);
-  S_Stop();
-  S_RestartMusic();
-
-#ifdef GL_DOOM
-  if (V_IsOpenGLMode()) {
-    gld_PreprocessLevel();
-  }
-#endif
-}
-
-void G_SkipDemoStartCheck(void)
-{
-  if (doSkip && warpmap == gamemap && warpepisode == gameepisode)
-    demo_warp_reached = true;
-}
-
-void G_SkipDemoCheck(void)
-{
-  if (doSkip && gametic > 0)
-  {
-    if (
-      (
-        warpmap == -1 &&
-        (
-          demo_skiptics > 0 ?
-            gametic > demo_skiptics :
-            demo_curr_tic - demo_skiptics >= demo_tics_count
-        )
-      ) ||
-      (
-        demo_warp_reached && gametic - levelstarttic > demo_skiptics)
-      )
-     {
-       G_SkipDemoStop();
-     }
-  }
 }
 
 int G_ReloadLevel(void)
@@ -710,8 +598,7 @@ void e6y_G_DoCompleted(void)
 {
   int i;
 
-  if (doSkip && (demo_stoponend || demo_warp_reached))
-    G_SkipDemoStop();
+  dsda_EvaluateSkipModeDoCompleted();
 
   if(!stats_level)
     return;
@@ -862,46 +749,6 @@ void e6y_WriteStats(void)
 
   free(all);
   fclose(f);
-}
-
-void e6y_G_DoTeleportNewMap(void)
-{
-  if (doSkip)
-  {
-    static int firstmap = 1;
-
-    demo_warp_reached = demo_stoponnext ||
-      (
-        gamemode == commercial ?
-          (warpmap == gamemap) :
-          (warpepisode == gameepisode && warpmap == gamemap)
-      );
-
-    if (demo_warp_reached && demo_skiptics == 0 && !firstmap)
-      G_SkipDemoStop();
-
-    firstmap = 0;
-  }
-}
-
-void e6y_G_DoWorldDone(void)
-{
-  if (doSkip)
-  {
-    static int firstmap = 1;
-
-    demo_warp_reached = demo_stoponnext ||
-      (
-        gamemode == commercial ?
-          (warpmap == gamemap) :
-          (warpepisode == gameepisode && warpmap == gamemap)
-      );
-
-    if (demo_warp_reached && demo_skiptics == 0 && !firstmap)
-      G_SkipDemoStop();
-
-    firstmap = 0;
-  }
 }
 
 //--------------------------------------------------
@@ -1107,7 +954,8 @@ int HU_DrawDemoProgress(int force)
   if (gamestate == GS_DEMOSCREEN || (!demoplayback && !democontinue) || !hudadd_demoprogressbar)
     return false;
 
-  tics_count = ((doSkip && demo_skiptics > 0) ? MIN(demo_skiptics, demo_tics_count) : demo_tics_count) * demo_playerscount;
+  tics_count = dsda_DemoSkipTics();
+  tics_count = (tics_count ? MIN(tics_count, demo_tics_count) : demo_tics_count) * demo_playerscount;
   len = MIN(SCREENWIDTH, (int)((int_64_t)SCREENWIDTH * demo_curr_tic / tics_count));
 
   if (!force)

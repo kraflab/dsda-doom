@@ -23,6 +23,7 @@
 #include "w_wad.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "i_main.h"
 
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"

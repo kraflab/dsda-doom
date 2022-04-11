@@ -85,6 +85,7 @@
 #include "r_demo.h"
 #include "r_fps.h"
 #include "e6y.h"//e6y
+
 #include "dsda.h"
 #include "dsda/build.h"
 #include "dsda/demo.h"
@@ -98,6 +99,7 @@
 #include "dsda/mouse.h"
 #include "dsda/options.h"
 #include "dsda/pause.h"
+#include "dsda/skip.h"
 #include "dsda/tas.h"
 #include "dsda/time.h"
 #include "dsda/split_tracker.h"
@@ -464,6 +466,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   dsda_pclass_t *player_class = &pclass[players[consoleplayer].pclass];
 
   G_SetSpeed(false);
+  dsda_EvaluateSkipModeBuildTiccmd();
 
   memset(cmd, 0, sizeof(*cmd));
 
@@ -472,8 +475,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   speed = (dsda_InputActive(dsda_input_speed) ? !dsda_AutoRun() : dsda_AutoRun()); // phares
 
   forward = side = 0;
-
-  G_SkipDemoCheck(); //e6y
 
   if (democontinue)
   {
@@ -2035,7 +2036,7 @@ void G_DoWorldDone (void)
   G_DoLoadLevel();
   gameaction = ga_nothing;
   AM_clearMarks();           //jff 4/12/98 clear any marks on the automap
-  e6y_G_DoWorldDone();//e6y
+  dsda_EvaluateSkipModeDoWorldDone();
 }
 
 extern dboolean setsizeneeded;
@@ -2997,7 +2998,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
 
   totalleveltimes = 0; // cph
 
-  G_SkipDemoStartCheck();
+  dsda_EvaluateSkipModeInitNew();
 
   //jff 4/16/98 force marks on automap cleared every new level start
   AM_clearMarks();
@@ -3932,9 +3933,7 @@ void G_DoPlayDemo(void)
  */
 dboolean G_CheckDemoStatus (void)
 {
-  //e6y
-  if (doSkip && (demo_stoponend || demo_stoponnext))
-    G_SkipDemoStop();
+  dsda_EvaluateSkipModeCheckDemoStatus();
 
   if (demorecording)
   {
@@ -4279,7 +4278,7 @@ void G_DoTeleportNewMap(void)
     gamestate = GS_LEVEL;
     gameaction = ga_nothing;
     RebornPosition = LeavePosition;
-    e6y_G_DoTeleportNewMap();
+    dsda_EvaluateSkipModeDoTeleportNewMap();
 }
 
 void G_PlayerExitMap(int playerNumber)
