@@ -89,9 +89,6 @@ int detect_voices = 0; // God knows
 
 static dboolean registered_non_rw = false;
 
-static dboolean sound_inited = false;
-static dboolean first_sound_init = true;
-
 // Needed for calling the actual sound output.
 #define MAX_CHANNELS    32
 
@@ -571,13 +568,16 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
   SDL_UnlockMutex (sfxmutex);
 }
 
+static dboolean sound_was_initialized;
+
 void I_ShutdownSound(void)
 {
-  if (sound_inited)
+  if (sound_was_initialized)
   {
     Mix_CloseAudio();
     SDL_CloseAudio();
-    sound_inited = false;
+
+    sound_was_initialized = false;
 
     if (sfxmutex)
     {
@@ -587,8 +587,6 @@ void I_ShutdownSound(void)
   }
 }
 
-//static SDL_AudioSpec audio;
-
 void I_InitSound(void)
 {
   int audio_rate;
@@ -596,7 +594,9 @@ void I_InitSound(void)
   int audio_buffers;
   SDL_AudioSpec audio;
 
-  // haleyjd: the docs say we should do this
+  if (sound_was_initialized || (nomusicparm && nosfxparm))
+    return;
+
   if (SDL_InitSubSystem(SDL_INIT_AUDIO))
   {
     lprintf(LO_INFO, "Couldn't initialize SDL audio (%s))\n", SDL_GetError());
@@ -604,13 +604,10 @@ void I_InitSound(void)
     nomusicparm = true;
     return;
   }
-  if (sound_inited)
-      I_ShutdownSound();
 
   // Secure and configure sound device first.
   lprintf(LO_INFO, "I_InitSound: ");
 
-  /* Initialize variables */
   audio_rate = snd_samplerate;
   audio_channels = 2;
   audio_buffers = snd_samplecount * snd_samplerate / 11025;
@@ -623,29 +620,26 @@ void I_InitSound(void)
     nomusicparm = true;
     return;
   }
+
   // [FG] feed actual sample frequency back into config variable
   Mix_QuerySpec(&snd_samplerate, NULL, NULL);
-  sound_inited_once = true;//e6y
-  sound_inited = true;
+
+  sound_was_initialized = true;
+
   Mix_SetPostMix(I_UpdateSound, NULL);
+
   lprintf(LO_INFO," configured audio device with %d samples/slice\n", audio_buffers);
 
-  if (first_sound_init)
-  {
-    I_AtExit(I_ShutdownSound, true, "I_ShutdownSound", exit_priority_normal);
-    first_sound_init = false;
-  }
+  I_AtExit(I_ShutdownSound, true, "I_ShutdownSound", exit_priority_normal);
 
   sfxmutex = SDL_CreateMutex ();
 
-  // If we are using the PC speaker, we now need to initialise it.
   if (snd_pcspeaker)
     I_PCS_InitSound();
 
   if (!nomusicparm)
     I_InitMusic();
 
-  // Finished initialization.
   lprintf(LO_INFO, "I_InitSound: sound module ready\n");
   SDL_PauseAudio(0);
 }

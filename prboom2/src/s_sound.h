@@ -43,7 +43,7 @@
 // Sets channels, SFX and music volume,
 //  allocates channel buffer, sets S_sfx lookup.
 //
-void S_Init(int sfxVolume, int musicVolume);
+void S_Init(void);
 
 // Kills all sounds
 void S_Stop(void);

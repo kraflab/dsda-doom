@@ -152,7 +152,7 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
 //  allocates channel buffer, sets S_sfx lookup.
 //
 
-void S_Init(int sfxVolume, int musicVolume)
+void S_Init(void)
 {
   idmusnum = -1; //jff 3/17/98 insure idmus number is blank
 
@@ -162,12 +162,12 @@ void S_Init(int sfxVolume, int musicVolume)
   {
     int i;
 
-    lprintf(LO_INFO, "S_Init: default sfx volume %d\n", sfxVolume);
+    lprintf(LO_INFO, "S_Init: default sfx volume %d\n", snd_SfxVolume);
 
     // Whatever these did with DMX, these are rather dummies now.
     I_SetChannels();
 
-    S_SetSfxVolume(sfxVolume);
+    S_SetSfxVolume(snd_SfxVolume);
 
     // Allocating the internal channels for mixing
     // (the maximum numer of sounds rendered
@@ -187,7 +187,7 @@ void S_Init(int sfxVolume, int musicVolume)
 
   // CPhipps - music init reformatted
   if (mus_card && !nomusicparm) {
-    S_SetMusicVolume(musicVolume);
+    S_SetMusicVolume(snd_MusicVolume);
 
     // no sounds are playing, and they are not mus_paused
     mus_paused = 0;
@@ -628,7 +628,7 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
 {
   musicinfo_t *music;
 
-  if (doSkip)
+  if (dsda_SkipMode())
   {
     musinfo.current_item = lumpnum;
     return;
