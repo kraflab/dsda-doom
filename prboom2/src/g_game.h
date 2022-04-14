@@ -67,8 +67,6 @@ void G_DoNewGame(void);
 void G_DoReborn(int playernum);
 void G_DoPlayDemo(void);
 void G_DoCompleted(void);
-void G_ReadDemoContinueTiccmd (ticcmd_t* cmd, const byte **demo_p);//e6y
-void G_ReadDemoTiccmd(ticcmd_t *cmd, const byte **demo_p);
 void G_WriteDemoTiccmd(ticcmd_t *cmd);
 void G_DoWorldDone(void);
 void G_Compatibility(void);
