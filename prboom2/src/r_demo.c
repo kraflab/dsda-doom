@@ -140,7 +140,7 @@ static angle_t smooth_playing_angle;
 
 void R_SmoothPlaying_Reset(player_t *player)
 {
-  if (demo_smoothturns && demoplayback)
+  if (demo_smoothturns && demoplayback && !demorecording)
   {
     if (!player)
       player = &players[displayplayer];
@@ -160,7 +160,7 @@ void R_SmoothPlaying_Reset(player_t *player)
 
 void R_SmoothPlaying_Add(int delta)
 {
-  if (demo_smoothturns && demoplayback)
+  if (demo_smoothturns && demoplayback && !demorecording)
   {
     smooth_playing_sum -= smooth_playing_turns[smooth_playing_index];
     smooth_playing_turns[smooth_playing_index] = delta;
@@ -172,7 +172,7 @@ void R_SmoothPlaying_Add(int delta)
 
 angle_t R_SmoothPlaying_Get(player_t *player)
 {
-  if (demo_smoothturns && demoplayback && player == &players[displayplayer])
+  if (demo_smoothturns && demoplayback && !demorecording && player == &players[displayplayer])
     return smooth_playing_angle;
   else
     return player->mo->angle;
