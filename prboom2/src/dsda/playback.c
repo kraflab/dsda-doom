@@ -35,10 +35,8 @@ void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour) {
   playback_length = length;
   playback_behaviour = behaviour;
   playback_tics = 0;
-}
 
-dboolean dsda_PlaybackStreamAttached(void) {
-  return demoplayback || democontinue;
+  demoplayback = true;
 }
 
 int dsda_PlaybackTics(void) {
@@ -72,7 +70,6 @@ static void dsda_ClearPlaybackStream(void) {
   playback_behaviour = 0;
   playback_tics = 0;
 
-  democontinue = false;
   demoplayback = false;
 }
 

@@ -20,7 +20,6 @@
 #define PLAYBACK_JOIN_ON_END 1
 
 void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour);
-dboolean dsda_PlaybackStreamAttached(void);
 int dsda_PlaybackTics(void);
 int dsda_PlaybackPositionSize(void);
 void dsda_StorePlaybackPosition(byte** save_p);

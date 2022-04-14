@@ -317,7 +317,7 @@ void P_SetPitch(player_t *player)
 
   if (player == &players[consoleplayer])
   {
-    if (!(demoplayback || democontinue))
+    if (!demoplayback)
     {
       if (dsda_MouseLook())
       {

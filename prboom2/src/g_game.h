@@ -135,7 +135,7 @@ extern int pistolstart;
 extern int longtics;
 extern int bytes_per_tic;
 
-#define singleplayer (!demorecording && !demoplayback && !democontinue && !netgame)
+#define singleplayer (!demorecording && !demoplayback && !netgame)
 #define comperr(i) (default_comperr[i] && singleplayer)
 
 // hexen

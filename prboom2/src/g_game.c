@@ -470,17 +470,17 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   memset(cmd, 0, sizeof(*cmd));
 
+  if (demoplayback && demorecording)
+  {
+    mousex = mousey = 0;
+    return;
+  }
+
   strafe = dsda_InputActive(dsda_input_strafe);
   //e6y: the "RUN" key inverts the autorun state
   speed = (dsda_InputActive(dsda_input_speed) ? !dsda_AutoRun() : dsda_AutoRun()); // phares
 
   forward = side = 0;
-
-  if (democontinue)
-  {
-    mousex = mousey = 0;
-    return;
-  }
 
     // use two stage accelerative turning
     // on the keyboard and joystick
@@ -1395,7 +1395,7 @@ void G_Ticker (void)
         if (dsda_KeyFrameRestored())
           dsda_JoinDemoCmd(cmd);
 
-        if (dsda_PlaybackStreamAttached())
+        if (demoplayback)
           dsda_TryPlaybackOneTick(cmd);
 
         if (demorecording)
@@ -3886,7 +3886,6 @@ void G_DoPlayDemo(void)
     gameaction = ga_nothing;
     usergame = false;
 
-    demoplayback = true;
     R_SmoothPlaying_Reset(NULL); // e6y
   }
   else

@@ -951,7 +951,7 @@ int HU_DrawDemoProgress(int force)
   int len, tics_count, diff;
   unsigned int tick, max_period;
 
-  if (gamestate == GS_DEMOSCREEN || (!demoplayback && !democontinue) || !hudadd_demoprogressbar)
+  if (gamestate == GS_DEMOSCREEN || !demoplayback || !hudadd_demoprogressbar)
     return false;
 
   tics_count = dsda_DemoSkipTics();

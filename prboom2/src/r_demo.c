@@ -397,7 +397,7 @@ angle_t R_DemoEx_ReadMLook(void)
 {
   angle_t pitch;
 
-  if (!(demoplayback || democontinue))
+  if (!demoplayback)
     return 0;
 
   // mlook data must be initialised here
