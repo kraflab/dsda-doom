@@ -34,6 +34,8 @@ static int playback_tics;
 
 static int playdemo_arg, fastdemo_arg, timedemo_arg, recordfromto_arg;
 
+static char recordfromto_dest[PATH_MAX];
+
 int dsda_PlaybackArg(void) {
   if (playdemo_arg)
     return playdemo_arg;
@@ -70,8 +72,7 @@ void dsda_ExecutePlaybackOptions(void) {
     singledemo = true;
   }
   else if (recordfromto_arg) {
-    G_DeferedPlayDemo(myargv[recordfromto_arg + 1]);
-    G_ContinueDemo();
+    G_ContinueDemo(myargv[recordfromto_arg + 1], recordfromto_dest);
   }
 }
 
@@ -100,7 +101,7 @@ int dsda_ParsePlaybackOptions(void) {
   p = M_CheckParm("-recordfromto");
   if (p && p < myargc - 2 && I_FindFile(myargv[p + 1], ".lmp")) {
     recordfromto_arg = p;
-    AddDefaultExtension(strcpy(democontinuename, myargv[p + 2]), ".lmp");
+    AddDefaultExtension(strcpy(recordfromto_dest, myargv[p + 2]), ".lmp");
     return p;
   }
 

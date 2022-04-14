@@ -172,7 +172,6 @@ int             totalkills, totallive, totalitems, totalsecret;    // for interm
 int             show_alive;
 dboolean         demorecording;
 dboolean         demoplayback;
-char             democontinuename[PATH_MAX];
 dboolean         singledemo;           // quit after playing a demo from cmdline
 wbstartstruct_t wminfo;               // parms for world map / intermission
 dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
@@ -4131,18 +4130,18 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
 }
 
 //e6y
-void G_ContinueDemo(void)
+void G_ContinueDemo(const char *playback_name, const char *record_name)
 {
   const byte *demo_p;
 
-  if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
+  if (LoadDemo(playback_name, &demobuffer, &demolength, &demolumpnum))
   {
     demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
     dsda_AttachPlaybackStream(demo_p, demolength, PLAYBACK_JOIN_ON_END);
 
     singledemo = true;
     autostart = true;
-    G_RecordDemo(democontinuename);
+    G_RecordDemo(record_name);
     G_BeginRecording();
     usergame = true;
   }
