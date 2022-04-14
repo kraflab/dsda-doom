@@ -770,7 +770,7 @@ void e6y_G_Compatibility(void)
 {
   deh_applyCompatibility();
 
-  if (IsDemoPlayback())
+  if (dsda_PlaybackArg())
   {
     int i, p;
 

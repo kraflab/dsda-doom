@@ -64,34 +64,9 @@
 #include "hu_stuff.h"
 #include "g_overflow.h"
 #include "e6y.h"
+
 #include "dsda/demo.h"
-
-int IsDemoPlayback(void)
-{
-  int p;
-
-  if ((p = M_CheckParm("-playdemo")) && (p < myargc - 1))
-    return p;
-  if ((p = M_CheckParm("-timedemo")) && (p < myargc - 1))
-    return p;
-  if ((p = M_CheckParm("-fastdemo")) && (p < myargc - 1))
-    return p;
-
-  return 0;
-}
-
-int IsDemoContinue(void)
-{
-  int p;
-
-  if ((p = M_CheckParm("-recordfromto")) && (p < myargc - 2) &&
-    I_FindFile(myargv[p + 1], ".lmp"))
-  {
-    return p;
-  }
-
-  return 0;
-}
+#include "dsda/playback.h"
 
 int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
 {
@@ -1528,11 +1503,7 @@ int CheckDemoExDemo(void)
   int result = false;
   int p;
 
-  p = IsDemoPlayback();
-  if (!p)
-  {
-    p = IsDemoContinue();
-  }
+  p = dsda_PlaybackArg();
 
   if (p)
   {

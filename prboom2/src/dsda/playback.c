@@ -17,6 +17,9 @@
 
 #include "doomstat.h"
 #include "g_game.h"
+#include "i_system.h"
+#include "m_argv.h"
+#include "w_wad.h"
 
 #include "dsda/demo.h"
 #include "dsda/input.h"
@@ -28,6 +31,81 @@ static const byte* playback_p;
 static int playback_length;
 static int playback_behaviour;
 static int playback_tics;
+
+static int playdemo_arg, fastdemo_arg, timedemo_arg, recordfromto_arg;
+
+int dsda_PlaybackArg(void) {
+  if (playdemo_arg)
+    return playdemo_arg;
+
+  if (fastdemo_arg)
+    return fastdemo_arg;
+
+  if (timedemo_arg)
+    return timedemo_arg;
+
+  if (recordfromto_arg)
+    return recordfromto_arg;
+
+  return 0;
+}
+
+void dsda_ExecutePlaybackOptions(void) {
+  if (playdemo_arg)
+  {
+    G_DeferedPlayDemo(myargv[playdemo_arg + 1]);
+    singledemo = true;
+  }
+  else if (fastdemo_arg) {
+    G_DeferedPlayDemo(myargv[fastdemo_arg + 1]);
+    fastdemo = true;
+    timingdemo = true;
+    singledemo = true;
+  }
+  else if (timedemo_arg)
+  {
+    G_DeferedPlayDemo(myargv[timedemo_arg + 1]);
+    singletics = true;
+    timingdemo = true;
+    singledemo = true;
+  }
+  else if (recordfromto_arg) {
+    G_DeferedPlayDemo(myargv[recordfromto_arg + 1]);
+    G_ContinueDemo();
+  }
+}
+
+int dsda_ParsePlaybackOptions(void) {
+  int p;
+
+  p = M_CheckParm("-playdemo");
+  if (p && p < myargc - 1) {
+    playdemo_arg = p;
+    return p;
+  }
+
+  p = M_CheckParm("-fastdemo");
+  if (p && p < myargc - 1) {
+    fastdemo_arg = p;
+    fastdemo = true;
+    return p;
+  }
+
+  p = M_CheckParm("-timedemo");
+  if (p && p < myargc - 1) {
+    timedemo_arg = p;
+    return p;
+  }
+
+  p = M_CheckParm("-recordfromto");
+  if (p && p < myargc - 2 && I_FindFile(myargv[p + 1], ".lmp")) {
+    recordfromto_arg = p;
+    AddDefaultExtension(strcpy(democontinuename, myargv[p + 2]), ".lmp");
+    return p;
+  }
+
+  return 0;
+}
 
 void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour) {
   playback_origin_p = demo_p;

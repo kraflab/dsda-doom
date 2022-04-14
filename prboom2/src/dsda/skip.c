@@ -202,6 +202,6 @@ void dsda_HandleSkip(void) {
       demo_skiptics = (int) (sec * TICRATE);
   }
 
-  if ((IsDemoPlayback() || IsDemoContinue()) && (warpmap != -1 || demo_skiptics))
+  if (dsda_PlaybackArg() && (warpmap != -1 || demo_skiptics))
     dsda_EnterSkipMode();
 }

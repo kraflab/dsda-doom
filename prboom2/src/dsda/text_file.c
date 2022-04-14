@@ -23,6 +23,7 @@
 
 #include "dsda.h"
 #include "dsda/analysis.h"
+#include "dsda/playback.h"
 
 #include "text_file.h"
 
@@ -39,7 +40,7 @@ static char* dsda_TextFileName(void) {
   char* name;
   char* playdemo;
 
-  p = IsDemoPlayback();
+  p = dsda_PlaybackArg();
 
   if (!p)
     return NULL;
