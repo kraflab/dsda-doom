@@ -172,7 +172,6 @@ int             totalkills, totallive, totalitems, totalsecret;    // for interm
 int             show_alive;
 dboolean         demorecording;
 dboolean         demoplayback;
-dboolean         democontinue = false;
 char             democontinuename[PATH_MAX];
 dboolean         singledemo;           // quit after playing a demo from cmdline
 wbstartstruct_t wminfo;               // parms for world map / intermission
@@ -4132,23 +4131,20 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
 }
 
 //e6y
-void G_CheckDemoContinue(void)
+void G_ContinueDemo(void)
 {
   const byte *demo_p;
 
-  if (democontinue)
+  if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
   {
-    if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
-    {
-      demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
-      dsda_AttachPlaybackStream(demo_p, demolength, PLAYBACK_JOIN_ON_END);
+    demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
+    dsda_AttachPlaybackStream(demo_p, demolength, PLAYBACK_JOIN_ON_END);
 
-      singledemo = true;
-      autostart = true;
-      G_RecordDemo(democontinuename);
-      G_BeginRecording();
-      usergame = true;
-    }
+    singledemo = true;
+    autostart = true;
+    G_RecordDemo(democontinuename);
+    G_BeginRecording();
+    usergame = true;
   }
 }
 

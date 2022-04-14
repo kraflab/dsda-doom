@@ -1952,7 +1952,6 @@ static void D_DoomMainSetup(void)
     {
       if ((p = IsDemoContinue()))
       {
-        democontinue = true;
         AddDefaultExtension(strcpy(democontinuename, myargv[p + 2]), ".lmp");
       }
       else
@@ -2222,7 +2221,7 @@ static void D_DoomMainSetup(void)
   else if ((p = IsDemoContinue())) //e6y
   {
     G_DeferedPlayDemo(myargv[p+1]);
-    G_CheckDemoContinue();
+    G_ContinueDemo();
   }
 
   if (!singledemo)               // killough 12/98

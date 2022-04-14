@@ -83,9 +83,8 @@ void G_MakeSpecialEvent(buttoncode_t bc, ...); /* cph - new event stuff */
 int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap);
 
 //e6y
-extern dboolean democontinue;
 extern char democontinuename[];
-void G_CheckDemoContinue(void);
+void G_ContinueDemo(void);
 void G_SetSpeed(dboolean force);
 
 //e6y
