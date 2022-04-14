@@ -99,6 +99,7 @@
 #include "dsda/mouse.h"
 #include "dsda/options.h"
 #include "dsda/pause.h"
+#include "dsda/playback.h"
 #include "dsda/skip.h"
 #include "dsda/tas.h"
 #include "dsda/time.h"
@@ -140,7 +141,6 @@ size_t          savegamesize = SAVEGAMESIZE; // killough
 static dboolean  netdemo;
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
-const byte *demo_playback_p;
 
 gameaction_t    gameaction;
 gamestate_t     gamestate;
@@ -1395,12 +1395,8 @@ void G_Ticker (void)
         if (dsda_KeyFrameRestored())
           dsda_JoinDemoCmd(cmd);
 
-        //e6y
-        if (democontinue)
-          G_ReadDemoContinueTiccmd(cmd, &demo_playback_p);
-
-        if (demoplayback)
-          G_ReadDemoTiccmd(cmd, &demo_playback_p);
+        if (dsda_PlaybackStreamAttached())
+          dsda_TryPlaybackOneTick(cmd);
 
         if (demorecording)
           G_WriteDemoTiccmd(cmd);
@@ -3052,25 +3048,6 @@ void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p)
   dsda_ReadExCmd(cmd, data_p);
 }
 
-void G_ReadDemoTiccmd (ticcmd_t* cmd, const byte **demo_p)
-{
-  demo_curr_tic++;
-
-  if (**demo_p == DEMOMARKER)
-  {
-    G_CheckDemoStatus();      // end of demo data stream
-  }
-  else if (demoplayback && *demo_p + bytes_per_tic > demobuffer + demolength)
-  {
-    lprintf(LO_WARN, "G_ReadDemoTiccmd: missing DEMOMARKER\n");
-    G_CheckDemoStatus();
-  }
-  else
-  {
-    G_ReadOneTick(cmd, demo_p);
-  }
-}
-
 /* Demo limits removed -- killough
  * cph - record straight to file
  */
@@ -3111,7 +3088,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
   dsda_WriteToDemo(buf, p - buf);
 
   p = buf; // make SURE it is exactly the same
-  G_ReadDemoTiccmd(cmd, (const byte **) &p);
+  G_ReadOneTick(cmd, (const byte **) &p);
 }
 
 //
@@ -3874,7 +3851,6 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     if (dsda_ExCmdDemo()) bytes_per_tic++;
     demo_playerscount = 0;
     demo_tics_count = 0;
-    demo_curr_tic = 0;
     strcpy(demo_len_st, "-");
 
     for (i = 0; i < g_maxplayers; i++)
@@ -3900,9 +3876,12 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
 void G_DoPlayDemo(void)
 {
+  const byte *demo_p;
+
   if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
   {
-    demo_playback_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
+    demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
+    dsda_AttachPlaybackStream(demo_p, demolength, 0);
 
     gameaction = ga_nothing;
     usergame = false;
@@ -4153,37 +4132,17 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
   }
 }
 
-void G_ReadDemoContinueTiccmd (ticcmd_t* cmd, const byte **demo_p)
-{
-  if (!*demo_p)
-    return;
-
-  if (gametic <= demo_tics_count &&
-    *demo_p + bytes_per_tic <= demobuffer + demolength &&
-    **demo_p != DEMOMARKER)
-  {
-    G_ReadOneTick(cmd, demo_p);
-  }
-
-  if (gametic >= demo_tics_count ||
-    *demo_p > demobuffer + demolength ||
-    dsda_InputActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use))
-  {
-    *demo_p = NULL;
-    democontinue = false;
-
-    dsda_JoinDemoCmd(cmd);
-  }
-}
-
 //e6y
 void G_CheckDemoContinue(void)
 {
+  const byte *demo_p;
+
   if (democontinue)
   {
     if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
     {
-      demo_playback_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
+      demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
+      dsda_AttachPlaybackStream(demo_p, demolength, PLAYBACK_JOIN_ON_END);
 
       singledemo = true;
       autostart = true;

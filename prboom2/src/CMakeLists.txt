@@ -74,6 +74,8 @@ set(COMMON_SRC
     dsda/pause.h
     dsda/pclass.c
     dsda/pclass.h
+    dsda/playback.c
+    dsda/playback.h
     dsda/save.c
     dsda/save.h
     dsda/settings.c
