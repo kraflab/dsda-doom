@@ -20,8 +20,6 @@
 
 void dsda_InitKeyFrame(void);
 void dsda_ContinueKeyFrame(void);
-void dsda_StoreKeyFrame(unsigned char** buffer, byte complete);
-void dsda_RestoreKeyFrame(unsigned char* buffer, byte complete);
 int dsda_KeyFrameRestored(void);
 void dsda_StoreQuickKeyFrame(void);
 void dsda_RestoreQuickKeyFrame(void);

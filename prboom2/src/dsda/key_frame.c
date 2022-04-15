@@ -55,7 +55,6 @@ extern dboolean BorderNeedRefresh;
 extern int inv_ptr;
 void RecalculateDrawnSubsectors(void);
 
-static byte* dsda_quick_key_frame_buffer;
 static int dsda_key_frame_restored;
 static dboolean dsda_auto_key_frame_timed_out;
 static int dsda_auto_key_frame_timeout_count;
@@ -65,8 +64,10 @@ static int dsda_auto_key_frame_timeout_count;
 typedef struct {
   byte* buffer;
   int index;
+  int game_tic_count;
 } dsda_key_frame_t;
 
+static dsda_key_frame_t dsda_quick_key_frame;
 static dsda_key_frame_t* dsda_auto_key_frames;
 static int dsda_last_auto_key_frame;
 static int dsda_auto_key_frames_size;
@@ -105,7 +106,7 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 }
 
 // Stripped down version of G_DoSaveGame
-void dsda_StoreKeyFrame(byte** buffer, byte complete) {
+void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
   int demo_write_buffer_offset, i, length;
   demo_write_buffer_offset = dsda_DemoBufferOffset();
 
@@ -150,21 +151,23 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
   memcpy(save_p, &totalleveltimes, sizeof(totalleveltimes));
   save_p += sizeof(totalleveltimes);
 
+  key_frame->game_tic_count = gametic - basetic;
+
   CheckSaveGame(1);
   *save_p++ = (gametic - basetic) & 255;
 
   dsda_ArchiveAll();
 
-  if (*buffer != NULL) free(*buffer);
+  if (key_frame->buffer != NULL) free(key_frame->buffer);
 
   length = save_p - savebuffer;
 
-  *buffer = savebuffer;
+  key_frame->buffer = savebuffer;
   savebuffer = save_p = NULL;
 
   if (complete) {
     if (demo_write_buffer_offset)
-      dsda_ExportKeyFrame(*buffer, length);
+      dsda_ExportKeyFrame(key_frame->buffer, length);
 
     doom_printf("Stored key frame");
   }
@@ -172,16 +175,16 @@ void dsda_StoreKeyFrame(byte** buffer, byte complete) {
 
 // Stripped down version of G_DoLoadGame
 // save_p is coopted to use the save logic
-void dsda_RestoreKeyFrame(byte* buffer, byte complete) {
+void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
   int demo_write_buffer_offset, i;
   int epi, map;
 
-  if (buffer == NULL) {
+  if (key_frame->buffer == NULL) {
     doom_printf("No key frame found");
     return;
   }
 
-  save_p = buffer;
+  save_p = key_frame->buffer;
 
   compatibility_level = *save_p++;
   gameskill = *save_p++;
@@ -270,28 +273,28 @@ int dsda_KeyFrameRestored(void) {
 }
 
 void dsda_StoreQuickKeyFrame(void) {
-  dsda_StoreKeyFrame(&dsda_quick_key_frame_buffer, true);
+  dsda_StoreKeyFrame(&dsda_quick_key_frame, true);
 }
 
 void dsda_RestoreQuickKeyFrame(void) {
   if (dsda_BuildMode())
     dsda_SkipNextWipe();
 
-  dsda_RestoreKeyFrame(dsda_quick_key_frame_buffer, true);
+  dsda_RestoreKeyFrame(&dsda_quick_key_frame, true);
 }
 
 void dsda_RestoreKeyFrameFile(const char* name) {
   char *filename;
-  byte* buffer;
+  dsda_key_frame_t key_frame;
 
   filename = I_FindFile(name, ".kf");
   if (filename)
   {
-    M_ReadFile(filename, &buffer);
+    M_ReadFile(filename, &key_frame.buffer);
     free(filename);
 
-    dsda_RestoreKeyFrame(buffer, true);
-    free(buffer);
+    dsda_RestoreKeyFrame(&key_frame, true);
+    free(key_frame.buffer);
   }
   else
     I_Error("dsda_RestoreKeyFrameFile: cannot find %s", name);
@@ -328,7 +331,7 @@ void dsda_RewindAutoKeyFrame(void) {
   if (dsda_auto_key_frames[history_index].index <= key_frame_index) {
     dsda_last_auto_key_frame = history_index;
     dsda_SkipNextWipe();
-    dsda_RestoreKeyFrame(dsda_auto_key_frames[history_index].buffer, false);
+    dsda_RestoreKeyFrame(&dsda_auto_key_frames[history_index], false);
   }
   else doom_printf("No key frame found"); // rewind past the depth limit
 }
@@ -373,7 +376,7 @@ void dsda_UpdateAutoKeyFrames(void) {
       unsigned long long elapsed_time;
 
       dsda_StartTimer(dsda_timer_key_frame);
-      dsda_StoreKeyFrame(&current_key_frame->buffer, false);
+      dsda_StoreKeyFrame(current_key_frame, false);
       elapsed_time = dsda_ElapsedTimeMS(dsda_timer_key_frame);
 
       if (dsda_auto_key_frame_timeout) {
