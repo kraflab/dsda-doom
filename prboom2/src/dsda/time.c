@@ -15,37 +15,39 @@
 //	DSDA Time
 //
 
-#ifdef _WIN32
-#include <windows.h>
-#else
 #include <time.h>
-#endif
 
 #include "i_system.h"
 
 #include "time.h"
 
-// lovey: Win32 interface
-#ifdef _WIN32
+// clock_gettime implementation for msvc
+// NOTE: Only supports CLOCK_MONOTONIC
+#ifdef _MSC_VER
 
-static unsigned long long dsda_time[DSDA_TIMER_COUNT];
+#include <windows.h>
 
-void dsda_StartTimer(int timer) {
-  QueryPerformanceCounter((LARGE_INTEGER*)&dsda_time[timer]);
+#define CLOCK_MONOTONIC -1
+
+static int clock_gettime(int clockid, struct timespec *tp) {
+  static unsigned long long timer_frequency = 0;
+  unsigned long long time;
+
+  // Get number of timer counts per second
+  if (!timer_frequency)
+    QueryPerformanceFrequency((LARGE_INTEGER*) &timer_frequency);
+
+  // Get timer counts
+  QueryPerformanceCounter((LARGE_INTEGER*) &time);
+
+  // Convert timer counts to timespec (that is, nanoseconds and seconds)
+  tp->tv_nsec = time % timer_frequency * 1000000000 / timer_frequency;
+  tp->tv_sec = time / timer_frequency;
+
+  return 0;
 }
 
-unsigned long long dsda_ElapsedTime(int timer) {
-  static unsigned long long freq = 0;
-  unsigned long long now;
-
-  if (!freq) QueryPerformanceFrequency((LARGE_INTEGER*)&freq);
-
-  QueryPerformanceCounter((LARGE_INTEGER*)&now);
-  return (now-dsda_time[timer])*1000000ll/freq;
-}
-
-// lovey: POSIX interface
-#else //_WIN32
+#endif //_MSC_VER
 
 static struct timespec dsda_time[DSDA_TIMER_COUNT];
 
@@ -61,8 +63,6 @@ unsigned long long dsda_ElapsedTime(int timer) {
   return (now.tv_nsec - dsda_time[timer].tv_nsec) / 1000 +
          (now.tv_sec - dsda_time[timer].tv_sec) * 1000000;
 }
-
-#endif //_WIN32
 
 unsigned long long dsda_ElapsedTimeMS(int timer) {
   return dsda_ElapsedTime(timer) / 1000;
