@@ -93,6 +93,17 @@ static int dsda_IsCommandEqual(dsda_command_t* command, dsda_command_t* other) {
          command->change == other->change;
 }
 
+void dsda_ResetCommandHistory(void) {
+  int i;
+
+  for (i = 0; i < MAX_HISTORY; ++i) {
+    memset(&command_history[i].command, 0, sizeof(command_history[i].command));
+    command_history[i].repeat = 0;
+    command_history[i].text[0] = '\0';
+    HUlib_clearTextLine(&command_history[i].hu_text);
+  }
+}
+
 void dsda_InitCommandHistory(void) {
   int i;
 

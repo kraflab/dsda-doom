@@ -36,6 +36,7 @@
 #include "heretic/sb_bar.h"
 
 #include "dsda/build.h"
+#include "dsda/command_display.h"
 #include "dsda/demo.h"
 #include "dsda/mapinfo.h"
 #include "dsda/options.h"
@@ -316,6 +317,7 @@ dboolean dsda_RestoreClosestKeyFrame(int tic) {
   if (!key_frame)
     return false;
 
+  dsda_ResetCommandHistory();
   dsda_SkipNextWipe();
   dsda_RestoreKeyFrame(key_frame);
 
