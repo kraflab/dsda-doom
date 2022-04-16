@@ -23,6 +23,8 @@ void dsda_ExitSkipMode(void);
 void dsda_ToggleSkipMode(void);
 void dsda_SkipToNextMap(void);
 void dsda_SkipToEndOfMap(void);
+void dsda_SkipToLogicTic(int tic);
+void dsda_EvaluateSkipModeGTicker(void);
 void dsda_EvaluateSkipModeInitNew(void);
 void dsda_EvaluateSkipModeBuildTiccmd(void);
 void dsda_EvaluateSkipModeDoCompleted(void);

@@ -24,6 +24,7 @@
 
 #include "dsda/exhud.h"
 #include "dsda/global.h"
+#include "dsda/skip.h"
 #include "dsda/tas.h"
 
 #include "console.h"
@@ -269,6 +270,18 @@ static dboolean console_TrackerRemovePlayer(const char* command, const char* arg
   return dsda_UntrackPlayer(0);
 }
 
+static dboolean console_SkipTic(const char* command, const char* args) {
+  int tic;
+
+  if (sscanf(args, "%i", &tic)) {
+    dsda_SkipToLogicTic(tic);
+
+    return true;
+  }
+
+  return false;
+}
+
 static dboolean console_Exit(const char* command, const char* args) {
   extern void M_ClearMenus(void);
 
@@ -318,6 +331,9 @@ static console_command_entry_t console_commands[] = {
   { "t.ap", console_TrackerAddPlayer },
   { "tracker.removeplayer", console_TrackerRemovePlayer },
   { "t.rp", console_TrackerRemovePlayer },
+
+  // skipping
+  { "skip.tic", console_SkipTic },
 
   // cheats
   { "idchoppers", console_BasicCheat },

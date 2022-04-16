@@ -39,6 +39,7 @@ static dboolean skip_mode;
 static int demo_skiptics;
 static dboolean skip_until_next_map;
 static dboolean skip_until_end_of_map;
+static dboolean skip_until_logictic;
 static dboolean demo_warp_reached;
 
 extern int warpepisode;
@@ -70,8 +71,11 @@ static void dsda_ResetSkipSettings(void) {
 }
 
 void dsda_EnterSkipMode(void) {
+  extern void M_ClearMenus(void);
+
   skip_mode = true;
 
+  M_ClearMenus();
   dsda_ApplySkipSettings();
   dsda_ResetPauseMode();
   S_StopMusic();
@@ -85,6 +89,7 @@ void dsda_ExitSkipMode(void) {
 
   skip_until_next_map = false;
   skip_until_end_of_map = false;
+  skip_until_logictic = 0;
   demo_warp_reached = false;
   demo_skiptics = 0;
   startmap = 0;
@@ -115,6 +120,16 @@ void dsda_SkipToEndOfMap(void) {
   dsda_EnterSkipMode();
 }
 
+void dsda_SkipToLogicTic(int tic) {
+  skip_until_logictic = tic;
+  dsda_EnterSkipMode();
+}
+
+void dsda_EvaluateSkipModeGTicker(void) {
+  if (dsda_SkipMode() && skip_until_logictic && skip_until_logictic <= logictic)
+    dsda_ExitSkipMode();
+}
+
 void dsda_EvaluateSkipModeInitNew(void) {
   if (dsda_SkipMode() && warpmap == gamemap && warpepisode == gameepisode)
     demo_warp_reached = true;
@@ -124,6 +139,7 @@ void dsda_EvaluateSkipModeBuildTiccmd(void) {
   if (dsda_SkipMode() && gametic > 0)
     if (
       (
+        !skip_until_logictic &&
         warpmap == -1 &&
         (
           demo_skiptics > 0 ?

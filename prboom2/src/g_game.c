@@ -1366,6 +1366,8 @@ void G_Ticker (void)
     }
   }
 
+  dsda_EvaluateSkipModeGTicker();
+
   if (dsda_AdvanceFrame())
   {
     advance_frame = true;
