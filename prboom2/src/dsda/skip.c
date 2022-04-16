@@ -29,6 +29,7 @@
 #include "gl_struct.h"
 #endif
 
+#include "dsda/build.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
 
@@ -80,6 +81,9 @@ void dsda_EnterSkipMode(void) {
   dsda_ResetPauseMode();
   S_StopMusic();
   I_Init2();
+
+  if (dsda_BuildMode())
+    dsda_ApplyPauseMode(PAUSE_BUILDMODE);
 }
 
 void dsda_ExitSkipMode(void) {

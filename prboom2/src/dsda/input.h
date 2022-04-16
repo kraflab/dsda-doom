@@ -177,6 +177,7 @@ typedef enum {
   dsda_input_notarget,
   dsda_input_build,
   dsda_input_build_advance_frame,
+  dsda_input_build_reverse_frame,
   dsda_input_build_reset_command,
   dsda_input_build_forward,
   dsda_input_build_backward,

@@ -131,6 +131,9 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
 
   save_p = savebuffer = malloc(savegamesize);
 
+  CheckSaveGame(1);
+  *save_p++ = complete;
+
   CheckSaveGame(5 + FUTURE_MAXPLAYERS);
   *save_p++ = compatibility_level;
   *save_p++ = gameskill;
@@ -194,9 +197,10 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
 
 // Stripped down version of G_DoLoadGame
 // save_p is coopted to use the save logic
-void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
+void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame) {
   int demo_write_buffer_offset, i;
   int epi, map;
+  byte complete;
 
   if (key_frame->buffer == NULL) {
     doom_printf("No key frame found");
@@ -204,6 +208,8 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
   }
 
   save_p = key_frame->buffer;
+
+  complete = *save_p++;
 
   compatibility_level = *save_p++;
   gameskill = *save_p++;
@@ -299,7 +305,21 @@ void dsda_RestoreQuickKeyFrame(void) {
   if (dsda_BuildMode())
     dsda_SkipNextWipe();
 
-  dsda_RestoreKeyFrame(&dsda_quick_key_frame, true);
+  dsda_RestoreKeyFrame(&dsda_quick_key_frame);
+}
+
+dboolean dsda_RestoreClosestKeyFrame(int tic) {
+  dsda_key_frame_t* key_frame;
+
+  key_frame = dsda_ClosestKeyFrame(tic);
+
+  if (!key_frame)
+    return false;
+
+  dsda_SkipNextWipe();
+  dsda_RestoreKeyFrame(key_frame);
+
+  return true;
 }
 
 void dsda_RestoreKeyFrameFile(const char* name) {
@@ -312,7 +332,7 @@ void dsda_RestoreKeyFrameFile(const char* name) {
     M_ReadFile(filename, &key_frame.buffer);
     free(filename);
 
-    dsda_RestoreKeyFrame(&key_frame, true);
+    dsda_RestoreKeyFrame(&key_frame);
     free(key_frame.buffer);
   }
   else
@@ -350,7 +370,7 @@ void dsda_RewindAutoKeyFrame(void) {
   if (dsda_auto_key_frames[history_index].index <= key_frame_index) {
     dsda_last_auto_key_frame = history_index;
     dsda_SkipNextWipe();
-    dsda_RestoreKeyFrame(&dsda_auto_key_frames[history_index], false);
+    dsda_RestoreKeyFrame(&dsda_auto_key_frames[history_index]);
   }
   else doom_printf("No key frame found"); // rewind past the depth limit
 }

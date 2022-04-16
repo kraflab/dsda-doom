@@ -23,6 +23,7 @@ void dsda_ContinueKeyFrame(void);
 int dsda_KeyFrameRestored(void);
 void dsda_StoreQuickKeyFrame(void);
 void dsda_RestoreQuickKeyFrame(void);
+dboolean dsda_RestoreClosestKeyFrame(int tic);
 void dsda_RewindAutoKeyFrame(void);
 void dsda_ResetAutoKeyFrameTimeout(void);
 void dsda_UpdateAutoKeyFrames(void);

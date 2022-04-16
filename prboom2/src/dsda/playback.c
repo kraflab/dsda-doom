@@ -23,6 +23,8 @@
 
 #include "dsda/demo.h"
 #include "dsda/input.h"
+#include "dsda/key_frame.h"
+#include "dsda/skip.h"
 
 #include "playback.h"
 
@@ -35,6 +37,19 @@ static int playback_tics;
 static int playdemo_arg, fastdemo_arg, timedemo_arg, recordfromto_arg;
 
 static char recordfromto_dest[PATH_MAX];
+
+dboolean dsda_JumpToLogicTic(int tic) {
+  if (tic > logictic)
+    dsda_SkipToLogicTic(tic);
+  else if (tic < logictic) {
+    if (!dsda_RestoreClosestKeyFrame(tic))
+      return false;
+
+    dsda_SkipToLogicTic(tic);
+  }
+
+  return true;
+}
 
 int dsda_PlaybackArg(void) {
   if (playdemo_arg)

@@ -19,6 +19,7 @@
 
 #define PLAYBACK_JOIN_ON_END 1
 
+dboolean dsda_JumpToLogicTic(int tic);
 int dsda_PlaybackArg(void);
 void dsda_ExecutePlaybackOptions(void);
 int dsda_ParsePlaybackOptions(void);

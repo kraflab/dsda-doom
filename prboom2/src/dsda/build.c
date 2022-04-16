@@ -20,7 +20,9 @@
 #include "dsda/demo.h"
 #include "dsda/input.h"
 #include "dsda/pause.h"
+#include "dsda/playback.h"
 #include "dsda/settings.h"
+#include "dsda/skip.h"
 
 #include "build.h"
 
@@ -154,7 +156,7 @@ dboolean dsda_BuildMode(void) {
 }
 
 void dsda_CopyBuildCmd(ticcmd_t* cmd) {
-  if (replace_source)
+  if (replace_source && !dsda_SkipMode())
     *cmd = build_cmd;
   else
     dsda_CopyPendingCmd(cmd);
@@ -195,6 +197,12 @@ dboolean dsda_BuildResponder(event_t* ev) {
 
   if (dsda_InputActivated(dsda_input_build_advance_frame)) {
     advance_frame = gametic;
+
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_build_reverse_frame)) {
+    dsda_JumpToLogicTic(logictic - 1);
 
     return true;
   }
@@ -337,6 +345,9 @@ dboolean dsda_BuildResponder(event_t* ev) {
 
 dboolean dsda_AdvanceFrame(void) {
   dboolean result;
+
+  if (dsda_SkipMode())
+    advance_frame = gametic;
 
   result = advance_frame;
   advance_frame = false;
