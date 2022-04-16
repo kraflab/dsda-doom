@@ -2486,7 +2486,7 @@ static void G_DoSaveGame(dboolean via_cmd)
   save_p += sizeof totalleveltimes;
 
   // killough 11/98: save revenant tracer state
-  *save_p++ = (gametic-basetic) & 255;
+  *save_p++ = logictic & 255;
 
   dsda_ArchiveAll();
 

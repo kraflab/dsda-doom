@@ -148,7 +148,7 @@ void dsda_EndDemoRecording(void) {
   demorecording = false;
 
   end_marker_location = dsda_demo_write_buffer_p - dsda_demo_write_buffer;
-  demo_tic_count = gametic - basetic;
+  demo_tic_count = logictic;
 
   dsda_WriteToDemo(&end_marker, 1);
 

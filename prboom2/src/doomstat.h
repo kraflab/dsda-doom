@@ -261,6 +261,8 @@ extern  gamestate_t  gamestate;
 
 extern  int   gametic;
 
+#define logictic (gametic - basetic)
+
 //e6y
 extern  dboolean realframe;
 

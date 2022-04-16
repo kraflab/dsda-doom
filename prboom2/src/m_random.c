@@ -139,7 +139,7 @@ int (P_Random)(pr_class_t pr_class)
    */
 
   if (demo_insurance)
-    boom += (gametic-basetic)*7;
+    boom += logictic * 7;
 
   return boom & 255;
 }

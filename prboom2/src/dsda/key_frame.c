@@ -170,10 +170,10 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
   memcpy(save_p, &totalleveltimes, sizeof(totalleveltimes));
   save_p += sizeof(totalleveltimes);
 
-  key_frame->game_tic_count = gametic - basetic;
+  key_frame->game_tic_count = logictic;
 
   CheckSaveGame(1);
-  *save_p++ = (gametic - basetic) & 255;
+  *save_p++ = logictic & 255;
 
   dsda_ArchiveAll();
 
