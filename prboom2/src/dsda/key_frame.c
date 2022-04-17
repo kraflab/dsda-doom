@@ -176,8 +176,9 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
 
   key_frame->game_tic_count = logictic;
 
-  CheckSaveGame(1);
-  *save_p++ = logictic & 255;
+  CheckSaveGame(sizeof(key_frame->game_tic_count));
+  memcpy(save_p, &key_frame->game_tic_count, sizeof(key_frame->game_tic_count));
+  save_p += sizeof(key_frame->game_tic_count);
 
   dsda_ArchiveAll();
 
@@ -254,7 +255,9 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame) {
 
   restore_key_frame_index = (totalleveltimes + leveltime) / (35 * dsda_AutoKeyFrameInterval());
 
-  basetic = gametic - *save_p++;
+  memcpy(&key_frame->game_tic_count, save_p, sizeof(key_frame->game_tic_count));
+  save_p += sizeof(key_frame->game_tic_count);
+  basetic = gametic - key_frame->game_tic_count;
 
   dsda_UnArchiveAll();
 

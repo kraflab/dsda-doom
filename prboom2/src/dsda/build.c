@@ -148,7 +148,7 @@ angle_t dsda_BuildModeViewAngleOffset(void) {
 }
 
 dboolean dsda_AllowBuilding(void) {
-  return !dsda_StrictMode() && !demoplayback;
+  return !dsda_StrictMode();
 }
 
 dboolean dsda_BuildMode(void) {
