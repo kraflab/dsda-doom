@@ -168,6 +168,7 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
   dsda_CopyBuildCmd(cmd);
 
   build_cmd.angleturn = 0;
+  build_cmd.buttons &= ~BT_USE;
 }
 
 void dsda_EnterBuildMode(void) {
