@@ -15,7 +15,9 @@
 //	DSDA Brute Force
 //
 
-#define MAX_BF_DEPTH 5
+#include "brute_force.h"
+
+#define MAX_BF_CONDITIONS 16
 
 typedef struct {
   int min;
@@ -30,11 +32,17 @@ typedef struct {
   bf_range_t angleturn;
 } bf_t;
 
+typedef struct {
+  dsda_bf_attribute_t attribute;
+  dsda_bf_operator_t operator;
+  fixed_t value;
+} bf_condition_t;
+
 static bf_t brute_force[MAX_BF_DEPTH];
 static int bf_depth;
 static int bf_logictic;
-static int bf_condition;
-static int bf_target;
+static int bf_condition_count;
+static bf_condition_t bf_condition[MAX_BF_CONDITIONS];
 static long long bf_volume;
 static long long bf_volume_max;
 
@@ -103,21 +111,74 @@ static void dsda_EndBF(int result) {
     dsda_RestoreBFKeyFrame(0);
 }
 
-static dboolean dsda_BFConditionReached(void) {
-  return false;
+static dboolean dsda_BFApplyOperator(fixed_t current, int i) {
+  switch (bf_condition[i].operator) {
+    case dsda_bf_less_than:
+      return current < bf_condition[i].value;
+    case dsda_bf_less_than_or_equal_to:
+      return current <= bf_condition[i].value;
+    case dsda_bf_greater_than:
+      return current > bf_condition[i].value;
+    case dsda_bf_greater_than_or_equal_to:
+      return current >= bf_condition[i].value;
+    case dsda_bf_equal_to:
+      return current == bf_condition[i].value;
+    case dsda_bf_not_equal_to:
+      return current != bf_condition[i].value;
+    default:
+      return false;
+  }
+}
+
+static dboolean dsda_BFConditionReached(int i) {
+  switch (bf_condition[i].attribute) {
+    case dsda_bf_x:
+      return dsda_BFApplyOperator(players[displayplayer].x, i);
+    case dsda_bf_y:
+      return dsda_BFApplyOperator(players[displayplayer].y, i);
+    case dsda_bf_z:
+      return dsda_BFApplyOperator(players[displayplayer].z, i);
+    case dsda_bf_momx:
+      return dsda_BFApplyOperator(players[displayplayer].momx, i);
+    case dsda_bf_momy:
+      return dsda_BFApplyOperator(players[displayplayer].momy, i);
+    case dsda_bf_speed:
+      return dsda_BFApplyOperator(dsda_PlayerSpeed(), i);
+    case dsda_bf_damage:
+      {
+        extern int player_damage_last_tic;
+
+        return dsda_BFApplyOperator(player_damage_last_tic, i);
+      }
+    case dsda_bf_rng:
+      {
+        extern rng_t rng;
+
+        return dsda_BFApplyOperator(rng.rndindex, i);
+      }
+    default:
+      return false;
+  }
+}
+
+static dboolean dsda_BFConditionsReached(void) {
+  int i, reached;
+
+  reached = 0;
+  for (i = 0; i < bf_condition_count; ++i)
+    reached += dsda_BFConditionReached(i);
+
+  return reached == bf_condition_count;
 }
 
 void dsda_StartBruteForce(int depth,
                           int forwardmove_min, int forwardmove_max,
                           int sidemove_min, int sidemove_max,
-                          int angleturn_min, int angleturn_max,
-                          int condition, int target) {
+                          int angleturn_min, int angleturn_max) {
   int i;
 
   bf_depth = depth;
   bf_logictic = logictic;
-  bf_condition = condition;
-  bf_target = target;
   bf_volume = 0;
   bf_volume_max = pow((forwardmove_max - forwardmove_min + 1) *
                       (sidemove_max - sidemove_min + 1) *
@@ -133,7 +194,7 @@ void dsda_StartBruteForce(int depth,
 void dsda_UpdateBruteForce(void) {
   int frame;
 
-  if (dsda_BFConditionReached()) {
+  if (dsda_BFConditionsReached()) {
     dsda_EndBF(BF_SUCCESS);
 
     return;
