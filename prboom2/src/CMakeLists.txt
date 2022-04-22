@@ -13,6 +13,8 @@ set(COMMON_SRC
     dsda.h
     dsda/analysis.c
     dsda/analysis.h
+    dsda/brute_force.c
+    dsda/brute_force.h
     dsda/build.c
     dsda/build.h
     dsda/command_display.c
@@ -104,6 +106,8 @@ set(COMMON_SRC
     dsda/thing_id.h
     dsda/time.c
     dsda/time.h
+    dsda/utility.c
+    dsda/utility.h
     dstrings.c
     dstrings.h
     d_deh.c

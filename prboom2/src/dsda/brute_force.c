@@ -15,8 +15,19 @@
 //	DSDA Brute Force
 //
 
+#include <math.h>
+
+#include "d_player.h"
+#include "d_ticcmd.h"
+#include "doomstat.h"
+#include "lprintf.h"
+#include "m_random.h"
+
+#include "dsda/key_frame.h"
+
 #include "brute_force.h"
 
+#define MAX_BF_DEPTH 5
 #define MAX_BF_CONDITIONS 16
 
 typedef struct {
@@ -52,7 +63,7 @@ const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
   [dsda_bf_z] = "z",
   [dsda_bf_momx] = "vx",
   [dsda_bf_momy] = "vy",
-  [dsda_bf_speed] = "spd"
+  [dsda_bf_speed] = "spd",
   [dsda_bf_damage] = "dmg",
   [dsda_bf_rng] = "rng",
 };
@@ -78,9 +89,9 @@ static dboolean dsda_AdvanceBFRange(bf_range_t* range) {
 }
 
 static dboolean dsda_AdvanceBruteForceFrame(int frame) {
-  if (!dsda_AdvanceBFRange(&brute_force[frame]->angleturn))
-    if (!dsda_AdvanceBFRange(&brute_force[frame]->sidemove))
-      if (!dsda_AdvanceBFRange(&brute_force[frame]->forwardmove))
+  if (!dsda_AdvanceBFRange(&brute_force[frame].angleturn))
+    if (!dsda_AdvanceBFRange(&brute_force[frame].sidemove))
+      if (!dsda_AdvanceBFRange(&brute_force[frame].forwardmove))
         return false;
 
   return true;
@@ -99,11 +110,11 @@ static int dsda_AdvanceBruteForce(void) {
 }
 
 static void dsda_RestoreBFKeyFrame(int frame) {
-  dsda_RestoreKeyFrame(&brute_force[frame]);
+  dsda_RestoreKeyFrame(&brute_force[frame].key_frame);
 }
 
 static void dsda_StoreBFKeyFrame(int frame) {
-  dsda_StoreKeyFrame(&brute_force[frame], true);
+  dsda_StoreKeyFrame(&brute_force[frame].key_frame, true);
 }
 
 static void dsda_PrintBFProgress(void) {
@@ -111,13 +122,13 @@ static void dsda_PrintBFProgress(void) {
 
   percent = 100 * bf_volume / bf_volume_max;
 
-  lprintf(LO_INFO, "  %d / %d sequences tested (%d%%)!\n", bf_volume, bf_volume_max, percent);
+  lprintf(LO_INFO, "  %lld / %lld sequences tested (%d%%)!\n", bf_volume, bf_volume_max, percent);
 }
 
 #define BF_FAILURE 0
 #define BF_SUCCESS 1
 
-static const char* bf_result_text[2] = { "FAILURE", "SUCCESS" }
+static const char* bf_result_text[2] = { "FAILURE", "SUCCESS" };
 
 static void dsda_EndBF(int result) {
   int percent;
@@ -151,19 +162,23 @@ static dboolean dsda_BFApplyOperator(fixed_t current, int i) {
 }
 
 static dboolean dsda_BFConditionReached(int i) {
+  player_t* player;
+
+  player = &players[displayplayer];
+
   switch (bf_condition[i].attribute) {
     case dsda_bf_x:
-      return dsda_BFApplyOperator(players[displayplayer].x, i);
+      return dsda_BFApplyOperator(player->mo->x, i);
     case dsda_bf_y:
-      return dsda_BFApplyOperator(players[displayplayer].y, i);
+      return dsda_BFApplyOperator(player->mo->y, i);
     case dsda_bf_z:
-      return dsda_BFApplyOperator(players[displayplayer].z, i);
+      return dsda_BFApplyOperator(player->mo->z, i);
     case dsda_bf_momx:
-      return dsda_BFApplyOperator(players[displayplayer].momx, i);
+      return dsda_BFApplyOperator(player->mo->momx, i);
     case dsda_bf_momy:
-      return dsda_BFApplyOperator(players[displayplayer].momy, i);
+      return dsda_BFApplyOperator(player->mo->momy, i);
     case dsda_bf_speed:
-      return dsda_BFApplyOperator(dsda_PlayerSpeed(), i);
+      return dsda_BFApplyOperator(P_PlayerSpeed(player), i);
     case dsda_bf_damage:
       {
         extern int player_damage_last_tic;
@@ -171,11 +186,7 @@ static dboolean dsda_BFConditionReached(int i) {
         return dsda_BFApplyOperator(player_damage_last_tic, i);
       }
     case dsda_bf_rng:
-      {
-        extern rng_t rng;
-
-        return dsda_BFApplyOperator(rng.rndindex, i);
-      }
+      return dsda_BFApplyOperator(rng.rndindex, i);
     default:
       return false;
   }
@@ -200,9 +211,9 @@ void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
   if (bf_condition_count == MAX_BF_CONDITIONS)
     return;
 
-  conditions[bf_condition_count].attribute = attribute;
-  conditions[bf_condition_count].operator = operator;
-  conditions[bf_condition_count].value = value << FRACBITS;
+  bf_condition[bf_condition_count].attribute = attribute;
+  bf_condition[bf_condition_count].operator = operator;
+  bf_condition[bf_condition_count].value = value << FRACBITS;
   ++bf_condition_count;
 
   lprintf(LO_INFO, "Added brute force condition: %s %s %d\n",
@@ -211,11 +222,14 @@ void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
                    value);
 }
 
-void dsda_StartBruteForce(int depth,
-                          int forwardmove_min, int forwardmove_max,
-                          int sidemove_min, int sidemove_max,
-                          int angleturn_min, int angleturn_max) {
+dboolean dsda_StartBruteForce(int depth,
+                              int forwardmove_min, int forwardmove_max,
+                              int sidemove_min, int sidemove_max,
+                              int angleturn_min, int angleturn_max) {
   int i;
+
+  if (bf_depth > MAX_BF_DEPTH)
+    return false;
 
   bf_depth = depth;
   bf_logictic = logictic;
@@ -227,18 +241,20 @@ void dsda_StartBruteForce(int depth,
   for (i = 0; i < bf_depth; ++i) {
     brute_force[i].forwardmove.min = forwardmove_min;
     brute_force[i].forwardmove.max = forwardmove_max;
-    brute_force[i].i = forwardmove_min;
+    brute_force[i].forwardmove.i = forwardmove_min;
 
     brute_force[i].sidemove.min = sidemove_min;
     brute_force[i].sidemove.max = sidemove_max;
-    brute_force[i].i = sidemove_min;
+    brute_force[i].sidemove.i = sidemove_min;
 
     brute_force[i].angleturn.min = angleturn_min;
     brute_force[i].angleturn.max = angleturn_max;
-    brute_force[i].i = angleturn_min;
+    brute_force[i].angleturn.i = angleturn_min;
   }
 
   lprintf(LO_INFO, "Brute force starting!\n");
+
+  return true;
 }
 
 void dsda_UpdateBruteForce(void) {
@@ -253,13 +269,13 @@ void dsda_UpdateBruteForce(void) {
   frame = logictic - bf_logictic;
 
   if (frame == bf_depth) {
-    frame = dsda_AdvanceBruteForce();
-
     if (bf_volume % 1000 == 0)
       dsda_PrintBFProgress();
 
+    frame = dsda_AdvanceBruteForce();
+
     if (frame >= 0)
-      dsda_RestoreBFKeyFrame(i);
+      dsda_RestoreBFKeyFrame(frame);
     else
       dsda_EndBF(BF_FAILURE);
   }
@@ -275,6 +291,6 @@ void dsda_PopBruteForceCommand(ticcmd_t* cmd) {
   memset(cmd, 0, sizeof(*cmd));
 
   cmd->angleturn = bf->angleturn.i << 8;
-  cmd->forwardmove = bf->forwardmove;
-  cmd->sidemove = bf->sidemove;
+  cmd->forwardmove = bf->forwardmove.i;
+  cmd->sidemove = bf->sidemove.i;
 }

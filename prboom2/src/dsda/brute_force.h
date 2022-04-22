@@ -15,7 +15,7 @@
 //	DSDA Brute Force
 //
 
-#define MAX_BF_DEPTH 5
+#include "doomtype.h"
 
 typedef enum {
   dsda_bf_x,
@@ -41,3 +41,13 @@ typedef enum {
 
 extern const char* dsda_bf_attribute_names[dsda_bf_attribute_max];
 extern const char* dsda_bf_operator_names[dsda_bf_operator_max];
+
+void dsda_ResetBruteForceConditions(void);
+void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
+                                 dsda_bf_operator_t operator, fixed_t value);
+dboolean dsda_StartBruteForce(int depth,
+                              int forwardmove_min, int forwardmove_max,
+                              int sidemove_min, int sidemove_max,
+                              int angleturn_min, int angleturn_max);
+void dsda_UpdateBruteForce(void);
+void dsda_PopBruteForceCommand(ticcmd_t* cmd);
