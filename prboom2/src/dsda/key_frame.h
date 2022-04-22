@@ -18,6 +18,16 @@
 #ifndef __DSDA_KEY_FRAME__
 #define __DSDA_KEY_FRAME__
 
+#include "doomtype.h"
+
+typedef struct {
+  byte* buffer;
+  int index;
+  int game_tic_count;
+} dsda_key_frame_t;
+
+void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete);
+void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame);
 void dsda_InitKeyFrame(void);
 void dsda_ContinueKeyFrame(void);
 int dsda_KeyFrameRestored(void);

@@ -62,12 +62,6 @@ static int dsda_auto_key_frame_timeout_count;
 
 #define TIMEOUT_LIMIT 1
 
-typedef struct {
-  byte* buffer;
-  int index;
-  int game_tic_count;
-} dsda_key_frame_t;
-
 static dsda_key_frame_t dsda_quick_key_frame;
 static dsda_key_frame_t* dsda_auto_key_frames;
 static int dsda_last_auto_key_frame;
