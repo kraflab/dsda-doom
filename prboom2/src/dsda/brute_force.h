@@ -26,6 +26,7 @@ typedef enum {
   dsda_bf_speed,
   dsda_bf_damage,
   dsda_bf_rng,
+  dsda_bf_attribute_max,
 } dsda_bf_attribute_t;
 
 typedef enum {
@@ -35,4 +36,8 @@ typedef enum {
   dsda_bf_greater_than_or_equal_to,
   dsda_bf_equal_to,
   dsda_bf_not_equal_to,
+  dsda_bf_operator_max,
 } dsda_bf_operator_t;
+
+extern const char* dsda_bf_attribute_names[dsda_bf_attribute_max];
+extern const char* dsda_bf_operator_names[dsda_bf_operator_max];

@@ -46,6 +46,26 @@ static bf_condition_t bf_condition[MAX_BF_CONDITIONS];
 static long long bf_volume;
 static long long bf_volume_max;
 
+const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
+  [dsda_bf_x] = "x",
+  [dsda_bf_y] = "y",
+  [dsda_bf_z] = "z",
+  [dsda_bf_momx] = "vx",
+  [dsda_bf_momy] = "vy",
+  [dsda_bf_speed] = "spd"
+  [dsda_bf_damage] = "dmg",
+  [dsda_bf_rng] = "rng",
+};
+
+const char* dsda_bf_operator_names[dsda_bf_operator_max] = {
+  [dsda_bf_less_than] = "<",
+  [dsda_bf_less_than_or_equal_to] = "<=",
+  [dsda_bf_greater_than] = ">",
+  [dsda_bf_greater_than_or_equal_to] = ">=",
+  [dsda_bf_equal_to] = "==",
+  [dsda_bf_not_equal_to] = "!="
+};
+
 static dboolean dsda_AdvanceBFRange(bf_range_t* range) {
   ++range->i;
 
@@ -171,6 +191,26 @@ static dboolean dsda_BFConditionsReached(void) {
   return reached == bf_condition_count;
 }
 
+void dsda_ResetBruteForceConditions(void) {
+  bf_condition_count = 0;
+}
+
+void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
+                                 dsda_bf_operator_t operator, fixed_t value) {
+  if (bf_condition_count == MAX_BF_CONDITIONS)
+    return;
+
+  conditions[bf_condition_count].attribute = attribute;
+  conditions[bf_condition_count].operator = operator;
+  conditions[bf_condition_count].value = value << FRACBITS;
+  ++bf_condition_count;
+
+  lprintf(LO_INFO, "Added brute force condition: %s %s %d\n",
+                   dsda_bf_attribute_names[attribute],
+                   dsda_bf_operator_names[operator],
+                   value);
+}
+
 void dsda_StartBruteForce(int depth,
                           int forwardmove_min, int forwardmove_max,
                           int sidemove_min, int sidemove_max,
@@ -185,7 +225,17 @@ void dsda_StartBruteForce(int depth,
                       (angleturn_max - angleturn_min + 1), depth);
 
   for (i = 0; i < bf_depth; ++i) {
+    brute_force[i].forwardmove.min = forwardmove_min;
+    brute_force[i].forwardmove.max = forwardmove_max;
+    brute_force[i].i = forwardmove_min;
 
+    brute_force[i].sidemove.min = sidemove_min;
+    brute_force[i].sidemove.max = sidemove_max;
+    brute_force[i].i = sidemove_min;
+
+    brute_force[i].angleturn.min = angleturn_min;
+    brute_force[i].angleturn.max = angleturn_max;
+    brute_force[i].i = angleturn_min;
   }
 
   lprintf(LO_INFO, "Brute force starting!\n");
