@@ -316,7 +316,7 @@ void dsda_ApplyLevelCompatibility(int lump) {
     sprintf(&cksum_string[i * 2], "%02x", cksum[i]);
   cksum_string[32] = '\0';
 
-  lprintf(LO_INFO, "Level checksum: %s\n", cksum_string);
+  lprintf(LO_DEBUG, "Level checksum: %s\n", cksum_string);
 
   if (cksum_string[0] >= 'a')
     i = cksum_string[0] - 'a' + 10;
