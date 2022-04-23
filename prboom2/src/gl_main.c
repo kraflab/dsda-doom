@@ -1298,8 +1298,8 @@ void gld_StartDrawScene(void)
     ((motion_blur.curr_speed_pow2 > motion_blur.minspeed_pow2) ||
     (abs(players[displayplayer].cmd.angleturn) > motion_blur.minangle));
 
-  SceneInTexture = (gl_ext_framebuffer_object); //&&
-    //((invul_method & INVUL_BW) || (motion_blur.enabled));
+  // elim - Always enabled (when supported) for upscaling with GL exclusive disabled
+  SceneInTexture = (gl_ext_framebuffer_object); 
 
   // Vortex: Set FBO object
   if (SceneInTexture)
