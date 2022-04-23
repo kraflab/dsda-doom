@@ -43,6 +43,8 @@
 #include "lprintf.h"
 #include "e6y.h"
 
+#include "dsda/gl/render_scale.h"
+
 static GLuint wipe_scr_start_tex = 0;
 static GLuint wipe_scr_end_tex = 0;
 
@@ -61,10 +63,12 @@ GLuint CaptureScreenAsTexID(void)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   glTexImage2D(GL_TEXTURE_2D, 0, 3,
-    gld_GetTexDimension(SCREENWIDTH), gld_GetTexDimension(SCREENHEIGHT),
+    // gld_GetTexDimension(SCREENWIDTH), gld_GetTexDimension(SCREENHEIGHT),
+    gld_GetTexDimension(gl_window_width), gld_GetTexDimension(gl_window_height),
     0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
-  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, SCREENWIDTH, SCREENHEIGHT);
+  // glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, SCREENWIDTH, SCREENHEIGHT);
+  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gl_window_width, gl_window_height);
 
   return id;
 }
@@ -75,12 +79,16 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
   int total_w, total_h;
   float fU1, fU2, fV1, fV2;
 
-  total_w = gld_GetTexDimension(SCREENWIDTH);
-  total_h = gld_GetTexDimension(SCREENHEIGHT);
+  // total_w = gld_GetTexDimension(SCREENWIDTH);
+  // total_h = gld_GetTexDimension(SCREENHEIGHT);
+  total_w = gld_GetTexDimension(gl_window_width);
+  total_h = gld_GetTexDimension(gl_window_height);
 
   fU1 = 0.0f;
-  fV1 = (float)SCREENHEIGHT / (float)total_h;
-  fU2 = (float)SCREENWIDTH / (float)total_w;
+  // fV1 = (float)SCREENHEIGHT / (float)total_h;
+  // fU2 = (float)SCREENWIDTH / (float)total_w;
+  fV1 = (float)gl_window_height / (float)total_h;
+  fU2 = (float)gl_window_width / (float)total_w;
   fV2 = 0.0f;
 
   gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
@@ -91,9 +99,12 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
   glBegin(GL_TRIANGLE_STRIP);
   {
     glTexCoord2f(fU1, fV1); glVertex2f(0.0f, 0.0f);
-    glTexCoord2f(fU1, fV2); glVertex2f(0.0f, (float)SCREENHEIGHT);
-    glTexCoord2f(fU2, fV1); glVertex2f((float)SCREENWIDTH, 0.0f);
-    glTexCoord2f(fU2, fV2); glVertex2f((float)SCREENWIDTH, (float)SCREENHEIGHT);
+    // glTexCoord2f(fU1, fV2); glVertex2f(0.0f, (float)SCREENHEIGHT);
+    // glTexCoord2f(fU2, fV1); glVertex2f((float)SCREENWIDTH, 0.0f);
+    // glTexCoord2f(fU2, fV2); glVertex2f((float)SCREENWIDTH, (float)SCREENHEIGHT);
+    glTexCoord2f(fU1, fV2); glVertex2f(0.0f, (float)gl_window_height);
+    glTexCoord2f(fU2, fV1); glVertex2f((float)gl_window_width, 0.0f);
+    glTexCoord2f(fU2, fV2); glVertex2f((float)gl_window_width, (float)gl_window_height);
   }
   glEnd();
 
@@ -102,7 +113,8 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
 
   glBegin(GL_QUAD_STRIP);
 
-  for (i=0; i <= SCREENWIDTH; i++)
+  //for (i=0; i <= SCREENWIDTH; i++)
+  for (i=0; i <= gl_window_width; i++)
   {
     int yoffs = MAX(0, y_lookup[i]);
 
@@ -111,7 +123,8 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
     float sy = (float) yoffs;
 
     glTexCoord2f(tx, fV1); glVertex2f(sx, sy);
-    glTexCoord2f(tx, fV2); glVertex2f(sx, sy + (float)SCREENHEIGHT);
+    // glTexCoord2f(tx, fV2); glVertex2f(sx, sy + (float)SCREENHEIGHT);
+    glTexCoord2f(tx, fV2); glVertex2f(sx, sy + (float)gl_window_height);
   }
 
   glEnd();

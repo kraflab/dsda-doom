@@ -62,9 +62,6 @@ extern const char *screen_resolution;
 
 extern const char *sdl_video_window_pos;
 
-extern int sdl_window_width;
-extern int sdl_window_height;
-
 void I_PreInitGraphics(void); /* CPhipps - do stuff immediately on start */
 void I_InitScreenResolution(void); /* init resolution */
 void I_SetWindowCaption(void); /* Set the window caption */
@@ -76,7 +73,6 @@ void I_ShutdownGraphics(void);
 /* Takes full 8 bit values. */
 void I_SetPalette(int pal); /* CPhipps - pass down palette number */
 
-void I_UpdateNoBlit (void);
 void I_FinishUpdate (void);
 
 int I_ScreenShot (const char *fname);

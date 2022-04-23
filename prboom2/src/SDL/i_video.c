@@ -91,6 +91,7 @@
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/time.h"
+#include "dsda/gl/render_scale.h"
 
 //e6y: new mouse code
 static SDL_Cursor* cursors[2] = {NULL, NULL};
@@ -122,8 +123,6 @@ int render_vsync;
 int render_screen_multiply;
 int integer_scaling;
 int vanilla_keymap;
-int sdl_window_width;
-int sdl_window_height;
 SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
@@ -541,13 +540,6 @@ void I_ShutdownGraphics(void)
 {
   SDL_FreeCursor(cursors[1]);
   DeactivateMouse();
-}
-
-//
-// I_UpdateNoBlit
-//
-void I_UpdateNoBlit (void)
-{
 }
 
 //
@@ -1433,11 +1425,12 @@ void I_UpdateVideoMode(void)
     deh_changeCompTranslucency();
 
     // elim - Needed for scaling viewport in OpenGL when GL Exclusive Mode is off
-    SDL_GetWindowSize(sdl_window, &sdl_window_width, &sdl_window_height);
+    dsda_GetSDLWindowSize(sdl_window);
 
-    // glViewport is called before we acquire window dimensions, so have to re-set
-    // for menu to work correctly
-    glViewport(0.0f, 0.0f, sdl_window_width, sdl_window_height);
+    // elim - glViewport was called with SCREENWIDTH and SCREENHEIGHT already, so we have to set it again
+    //        in order for the menu to render at the correct size
+    dsda_SetRenderViewportParams();
+    dsda_SetRenderViewport();
   }
 #endif
 

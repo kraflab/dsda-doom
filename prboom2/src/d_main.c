@@ -103,6 +103,7 @@
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
+#include "dsda/gl/render_scale.h"
 
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
@@ -262,7 +263,6 @@ static void D_Wipe(void)
     while (!tics);
     wipestart = nowtime;
     done = wipe_ScreenWipe(tics);
-    I_UpdateNoBlit();
     M_Drawer();                   // menu is drawn even on top of wipes
     I_FinishUpdate();             // page flip or blit buffer
   }
@@ -378,8 +378,19 @@ void D_Display (fixed_t frac)
       borderwillneedredraw = (borderwillneedredraw) ||
         (((automapmode & am_active) && !(automapmode & am_overlay)));
     }
-    if (redrawborderstuff || (V_IsOpenGLMode()))
+
+    if (redrawborderstuff || (V_IsOpenGLMode())) {
+      // elim - Update viewport and scene offsets whenever the view is changed (user hits "-" or "+")
+      if (redrawborderstuff && (V_IsOpenGLMode())) {
+        dsda_SetRenderViewportParams();
+      }
       R_DrawViewBorder();
+    }
+
+    // elim - If we go from visible status bar to invisible status bar, update affected viewport params
+    if (!isborder && isborderstate) {
+      dsda_UpdateStatusBarVisible();
+    }
 
     // e6y
     // Boom colormaps should be applied for everything in R_RenderPlayerView

@@ -75,6 +75,7 @@
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
+#include "dsda/gl/render_scale.h"
 
 int gl_clear;
 
@@ -382,8 +383,7 @@ void gld_Init(int width, int height)
   gld_InitPalettedTextures();
   gld_InitTextureParams();
 
-  // glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
-  glViewport(0, 0, sdl_window_width, sdl_window_height);
+  glViewport(0, 0, gl_window_width, gl_window_height);
 
   glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
   glClearDepth(1.0f);
@@ -1122,8 +1122,8 @@ GLvoid gld_Set2DModeRenderTexture(void)
   glLoadIdentity();
   glOrtho(
     (GLdouble) 0,
-    (GLdouble) sdl_window_width,
-    (GLdouble) sdl_window_height,
+    (GLdouble) gl_window_width,
+    (GLdouble) gl_window_height,
     (GLdouble) 0,
     (GLdouble) -1.0,
     (GLdouble) 1.0
@@ -1226,7 +1226,6 @@ void gld_StartDrawScene(void)
 
   glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
   glScissor(viewwindowx, SCREENHEIGHT-(viewheight+viewwindowy), viewwidth, viewheight);
-  // glScissor(0, 0, sdl_window_width, sdl_window_height);
   glEnable(GL_SCISSOR_TEST);
   // Player coordinates
   xCamera=-(float)viewx/MAP_SCALE;
@@ -1361,10 +1360,6 @@ static void gld_InvertScene(void)
 
 void gld_EndDrawScene(void)
 {
-  float viewport_aspect;
-  int viewport_x;
-  int viewport_width;
-
   glDisable(GL_POLYGON_SMOOTH);
 
   glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
@@ -1426,24 +1421,22 @@ void gld_EndDrawScene(void)
     // Draw render texture
     gld_Set2DModeRenderTexture();
 
-    // elim - Calculate viewport width from render size and center the viewport for non-exclusive fullscreen GL
-    // TODO: Cache this value after graphics settings changes, no need to do this every frame
-    viewport_aspect = (float)SCREENWIDTH / (float)SCREENHEIGHT;
-    viewport_width = (int)((float)sdl_window_height * viewport_aspect);
-    viewport_x = (sdl_window_width - viewport_width) >> 1;
-
-    glViewport(viewport_x, 0, viewport_width, sdl_window_height);
-    glScissor(0, 0, sdl_window_width, sdl_window_height);
+    dsda_SetRenderViewport();
+    // elim - We need the full viewport for correct texture coordinates, but we can prevent garbage
+    //        being drawn when "borders" are enabled by scissoring around the scene
+    glScissor(gl_viewport_x + gl_scene_offset_x, gl_viewport_y + gl_statusbar_height + gl_scene_offset_y, gl_scene_width, gl_scene_height);
     glBegin(GL_TRIANGLE_STRIP);
     {
       glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
-      glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, sdl_window_height);
-      glTexCoord2f(1.0f, 1.0f); glVertex2f((float)sdl_window_width, 0.0f);
-      glTexCoord2f(1.0f, 0.0f); glVertex2f((float)sdl_window_width, (float)sdl_window_height);
+      glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, gl_window_height);
+      glTexCoord2f(1.0f, 1.0f); glVertex2f((float)gl_window_width, 0.0f);
+      glTexCoord2f(1.0f, 0.0f); glVertex2f((float)gl_window_width, (float)gl_window_height);
     }
     glEnd();
-    // glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
-    // glViewport(0, 0, sdl_window_width, sdl_window_height);
+
+    // elim - StatusBar is rendered after this point, so we need to remove the scissor from rendering scene
+    glScissor(gl_viewport_x, gl_viewport_y, gl_viewport_width, gl_viewport_height);
+
     gld_Set2DMode();
 
 
