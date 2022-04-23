@@ -111,7 +111,7 @@ static int dsda_AdvanceBruteForce(void) {
 }
 
 static void dsda_RestoreBFKeyFrame(int frame) {
-  dsda_RestoreKeyFrame(&brute_force[frame].key_frame);
+  dsda_RestoreKeyFrame(&brute_force[frame].key_frame, true);
 }
 
 static void dsda_StoreBFKeyFrame(int frame) {
@@ -295,9 +295,15 @@ void dsda_UpdateBruteForce(void) {
 void dsda_PopBruteForceCommand(ticcmd_t* cmd) {
   bf_t* bf;
 
+  memset(cmd, 0, sizeof(*cmd));
+
+  if (logictic - bf_logictic >= bf_depth)
+    return;
+
   bf = &brute_force[logictic - bf_logictic];
 
-  memset(cmd, 0, sizeof(*cmd));
+  lprintf(LO_INFO, "%d: %d %d %d\n",
+          logictic - bf_logictic, bf->angleturn.i, bf->forwardmove.i, bf->sidemove.i);
 
   cmd->angleturn = bf->angleturn.i << 8;
   cmd->forwardmove = bf->forwardmove.i;

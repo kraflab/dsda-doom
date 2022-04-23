@@ -193,7 +193,7 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
 
 // Stripped down version of G_DoLoadGame
 // save_p is coopted to use the save logic
-void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame) {
+void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   int demo_write_buffer_offset, i;
   int epi, map;
   byte complete;
@@ -202,6 +202,9 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame) {
     doom_printf("No key frame found");
     return;
   }
+
+  if (skip_wipe || dsda_BuildMode())
+    dsda_SkipNextWipe();
 
   save_p = key_frame->buffer;
 
@@ -300,10 +303,7 @@ void dsda_StoreQuickKeyFrame(void) {
 }
 
 void dsda_RestoreQuickKeyFrame(void) {
-  if (dsda_BuildMode())
-    dsda_SkipNextWipe();
-
-  dsda_RestoreKeyFrame(&dsda_quick_key_frame);
+  dsda_RestoreKeyFrame(&dsda_quick_key_frame, false);
 }
 
 dboolean dsda_RestoreClosestKeyFrame(int tic) {
@@ -315,8 +315,7 @@ dboolean dsda_RestoreClosestKeyFrame(int tic) {
     return false;
 
   dsda_ResetCommandHistory();
-  dsda_SkipNextWipe();
-  dsda_RestoreKeyFrame(key_frame);
+  dsda_RestoreKeyFrame(key_frame, true);
 
   return true;
 }
@@ -331,7 +330,7 @@ void dsda_RestoreKeyFrameFile(const char* name) {
     M_ReadFile(filename, &key_frame.buffer);
     free(filename);
 
-    dsda_RestoreKeyFrame(&key_frame);
+    dsda_RestoreKeyFrame(&key_frame, false);
     free(key_frame.buffer);
   }
   else
@@ -368,8 +367,7 @@ void dsda_RewindAutoKeyFrame(void) {
 
   if (dsda_auto_key_frames[history_index].index <= key_frame_index) {
     dsda_last_auto_key_frame = history_index;
-    dsda_SkipNextWipe();
-    dsda_RestoreKeyFrame(&dsda_auto_key_frames[history_index]);
+    dsda_RestoreKeyFrame(&dsda_auto_key_frames[history_index], true);
   }
   else doom_printf("No key frame found"); // rewind past the depth limit
 }

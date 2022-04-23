@@ -17,6 +17,7 @@
 
 #include "doomstat.h"
 
+#include "dsda/brute_force.h"
 #include "dsda/demo.h"
 #include "dsda/input.h"
 #include "dsda/pause.h"
@@ -156,7 +157,9 @@ dboolean dsda_BuildMode(void) {
 }
 
 void dsda_CopyBuildCmd(ticcmd_t* cmd) {
-  if (replace_source && !dsda_SkipMode())
+  if (dsda_BruteForce())
+    dsda_PopBruteForceCommand(cmd);
+  else if (replace_source && !dsda_SkipMode())
     *cmd = build_cmd;
   else
     dsda_CopyPendingCmd(cmd);

@@ -87,6 +87,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/brute_force.h"
 #include "dsda/build.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
@@ -1380,6 +1381,9 @@ void G_Ticker (void)
     int buf = (gametic / ticdup) % BACKUPTICS;
 
     dsda_UpdateAutoKeyFrames();
+
+    if (dsda_BruteForce())
+      dsda_UpdateBruteForce();
 
     for (i = 0; i < g_maxplayers; i++)
     {

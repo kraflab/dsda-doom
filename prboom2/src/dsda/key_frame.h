@@ -27,7 +27,7 @@ typedef struct {
 } dsda_key_frame_t;
 
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete);
-void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame);
+void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe);
 void dsda_InitKeyFrame(void);
 void dsda_ContinueKeyFrame(void);
 int dsda_KeyFrameRestored(void);
