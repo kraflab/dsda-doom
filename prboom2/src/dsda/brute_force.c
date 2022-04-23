@@ -24,6 +24,7 @@
 #include "m_random.h"
 
 #include "dsda/key_frame.h"
+#include "dsda/skip.h"
 
 #include "brute_force.h"
 
@@ -143,6 +144,8 @@ static void dsda_EndBF(int result) {
     dsda_RestoreBFKeyFrame(0);
 
   bf_mode = false;
+
+  dsda_ExitSkipMode();
 }
 
 static dboolean dsda_BFApplyOperator(fixed_t current, int i) {
@@ -263,6 +266,8 @@ dboolean dsda_StartBruteForce(int depth,
 
   bf_mode = true;
 
+  dsda_EnterSkipMode();
+
   return true;
 }
 
@@ -301,9 +306,6 @@ void dsda_PopBruteForceCommand(ticcmd_t* cmd) {
     return;
 
   bf = &brute_force[logictic - bf_logictic];
-
-  lprintf(LO_INFO, "%d: %d %d %d\n",
-          logictic - bf_logictic, bf->angleturn.i, bf->forwardmove.i, bf->sidemove.i);
 
   cmd->angleturn = bf->angleturn.i << 8;
   cmd->forwardmove = bf->forwardmove.i;
