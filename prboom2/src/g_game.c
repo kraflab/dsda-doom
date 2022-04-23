@@ -1309,6 +1309,7 @@ dboolean G_Responder (event_t* ev)
 void G_Ticker (void)
 {
   int i;
+  int pause_mask;
   dboolean advance_frame = false;
   static gamestate_t prevgamestate;
 
@@ -1372,7 +1373,7 @@ void G_Ticker (void)
   if (dsda_AdvanceFrame())
   {
     advance_frame = true;
-    dsda_MaskPause();
+    pause_mask = dsda_MaskPause();
   }
 
   if (dsda_PausedOutsideDemo())
@@ -1383,7 +1384,10 @@ void G_Ticker (void)
     dsda_UpdateAutoKeyFrames();
 
     if (dsda_BruteForce())
+    {
       dsda_UpdateBruteForce();
+      dsda_RemovePauseMode(PAUSE_BUILDMODE);
+    }
 
     for (i = 0; i < g_maxplayers; i++)
     {
@@ -1518,7 +1522,7 @@ void G_Ticker (void)
   }
 
   if (advance_frame)
-    dsda_UnmaskPause();
+    dsda_UnmaskPause(pause_mask);
 }
 
 //

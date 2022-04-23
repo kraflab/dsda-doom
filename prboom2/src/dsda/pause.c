@@ -21,7 +21,6 @@
 #include "pause.h"
 
 static dboolean paused;
-static dboolean old_paused;
 
 dboolean dsda_Paused(void) {
   return paused != 0;
@@ -43,6 +42,10 @@ dboolean dsda_PauseMode(int mode) {
   return (paused & mode) != 0;
 }
 
+void dsda_RemovePauseMode(int mode) {
+  paused &= ~mode;
+}
+
 void dsda_ApplyPauseMode(int mode) {
   paused |= mode;
 }
@@ -53,15 +56,17 @@ void dsda_TogglePauseMode(int mode) {
 
 void dsda_ResetPauseMode(void) {
   paused = 0;
-  old_paused = 0;
 }
 
-void dsda_MaskPause(void) {
-  old_paused = paused & ~PAUSE_COMMAND;
+int dsda_MaskPause(void) {
+  int mask;
+
+  mask = paused & ~PAUSE_COMMAND;
   paused &= PAUSE_COMMAND;
+
+  return mask;
 }
 
-void dsda_UnmaskPause(void) {
-  paused |= old_paused;
-  old_paused = 0;
+void dsda_UnmaskPause(int mask) {
+  paused |= mask;
 }
