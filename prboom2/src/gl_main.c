@@ -1361,6 +1361,10 @@ static void gld_InvertScene(void)
 
 void gld_EndDrawScene(void)
 {
+  float viewport_aspect;
+  int viewport_x;
+  int viewport_width;
+
   glDisable(GL_POLYGON_SMOOTH);
 
   glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
@@ -1421,22 +1425,25 @@ void gld_EndDrawScene(void)
 
     // Draw render texture
     gld_Set2DModeRenderTexture();
-    glViewport(0, 0, sdl_window_width, sdl_window_height);
-    //glViewport(0, 0, (float)SCREENWIDTH*2.0f, (float)SCREENHEIGHT);
-    glScissor(0.0f, 0.0f, sdl_window_width, sdl_window_height);
+
+    // elim - Calculate viewport width from render size and center the viewport for non-exclusive fullscreen GL
+    // TODO: Cache this value after graphics settings changes, no need to do this every frame
+    viewport_aspect = (float)SCREENWIDTH / (float)SCREENHEIGHT;
+    viewport_width = (int)((float)sdl_window_height * viewport_aspect);
+    viewport_x = (sdl_window_width - viewport_width) >> 1;
+
+    glViewport(viewport_x, 0, viewport_width, sdl_window_height);
+    glScissor(0, 0, sdl_window_width, sdl_window_height);
     glBegin(GL_TRIANGLE_STRIP);
     {
-      //glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
-      //glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, (float)SCREENHEIGHT);
-      //glTexCoord2f(1.0f, 1.0f); glVertex2f((float)SCREENWIDTH*2.0f, 0.0f);
-      //glTexCoord2f(1.0f, 0.0f); glVertex2f((float)SCREENWIDTH*2.0f, (float)SCREENHEIGHT);
       glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
       glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, sdl_window_height);
-      glTexCoord2f(1.0f, 1.0f); glVertex2f(sdl_window_width, 0.0f);
-      glTexCoord2f(1.0f, 0.0f); glVertex2f(sdl_window_width, sdl_window_height);
+      glTexCoord2f(1.0f, 1.0f); glVertex2f((float)sdl_window_width, 0.0f);
+      glTexCoord2f(1.0f, 0.0f); glVertex2f((float)sdl_window_width, (float)sdl_window_height);
     }
     glEnd();
-    glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
+    // glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
+    // glViewport(0, 0, sdl_window_width, sdl_window_height);
     gld_Set2DMode();
 
 
