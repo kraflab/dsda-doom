@@ -285,9 +285,6 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
 
   dsda_key_frame_restored = 1;
 
-  if (dsda_BuildMode())
-    dsda_ApplyPauseMode(PAUSE_BUILDMODE);
-
   doom_printf("Restored key frame");
 }
 
