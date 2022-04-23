@@ -29,7 +29,7 @@ char** dsda_SplitString(char* str, const char* delimiter) {
     if (*p++ == *delimiter)
       ++substring_count;
 
-  result = calloc(substring_count, sizeof(*str));
+  result = calloc(substring_count, sizeof(*result));
 
   if (result) {
     char* token;
