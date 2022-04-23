@@ -21,52 +21,33 @@
 
 #include "time.h"
 
-// [XA] MSVC hack: need to implement a handful of functions here.
-// this was yoinked from https://stackoverflow.com/a/31335254 so
-// no guarantees on if this stuff is accurate/kosher/whatever,
-// so maybe don't cut an official release with MSVC just yet.
-// it's enough to hack it into compiling for me, at least. ;)
-
+// clock_gettime implementation for msvc
+// NOTE: Only supports CLOCK_MONOTONIC
 #ifdef _MSC_VER
 
 #include <windows.h>
 
 #define CLOCK_MONOTONIC -1
-#define exp7           10000000i64 //1E+7
-#define exp9         1000000000i64 //1E+9
-#define w2ux 116444736000000000i64 //1.jan1601 to 1.jan1970
 
-void unix_time(struct timespec *spec) {
-  __int64 wintime; GetSystemTimeAsFileTime((FILETIME*)&wintime);
-  wintime -= w2ux;  spec->tv_sec = wintime / exp7;
-  spec->tv_nsec = wintime % exp7 * 100;
-}
+static int clock_gettime(int clockid, struct timespec *tp) {
+  static unsigned long long timer_frequency = 0;
+  unsigned long long time;
 
-int clock_gettime(int _skip, struct timespec *spec)
-{
-  static struct timespec startspec;
-  static double ticks2nano;
-  static __int64 startticks, tps = 0;
-  __int64 tmp, curticks;
+  // Get number of timer counts per second
+  if (!timer_frequency)
+    QueryPerformanceFrequency((LARGE_INTEGER*) &timer_frequency);
 
-  QueryPerformanceFrequency((LARGE_INTEGER*)&tmp);
+  // Get timer counts
+  QueryPerformanceCounter((LARGE_INTEGER*) &time);
 
-  if (tps != tmp) {
-    tps = tmp;
-    QueryPerformanceCounter((LARGE_INTEGER*)&startticks);
-    unix_time(&startspec); ticks2nano = (double)exp9 / tps;
-  }
+  // Convert timer counts to timespec (that is, nanoseconds and seconds)
+  tp->tv_nsec = time % timer_frequency * 1000000000 / timer_frequency;
+  tp->tv_sec = time / timer_frequency;
 
-  QueryPerformanceCounter((LARGE_INTEGER*)&curticks); curticks -= startticks;
-  spec->tv_sec = startspec.tv_sec + (curticks / tps);
-  spec->tv_nsec = startspec.tv_nsec + (double)(curticks % tps) * ticks2nano;
-  if (!(spec->tv_nsec < exp9)) { spec->tv_sec++; spec->tv_nsec -= exp9; }
   return 0;
 }
 
 #endif //_MSC_VER
-
-// [XA] END HACK
 
 static struct timespec dsda_time[DSDA_TIMER_COUNT];
 
@@ -83,6 +64,10 @@ unsigned long long dsda_ElapsedTime(int timer) {
          (now.tv_sec - dsda_time[timer].tv_sec) * 1000000;
 }
 
+unsigned long long dsda_ElapsedTimeMS(int timer) {
+  return dsda_ElapsedTime(timer) / 1000;
+}
+
 static void dsda_Throttle(int timer, unsigned long long target_time) {
   unsigned long long elapsed_time;
   unsigned long long remaining_time;
@@ -95,22 +80,117 @@ static void dsda_Throttle(int timer, unsigned long long target_time) {
       return;
     }
 
+    // Sleeping doesn't have high accuracy
     remaining_time = target_time - elapsed_time;
-    if (remaining_time >= 1000)
-      I_uSleep(remaining_time);
+    if (remaining_time > 1000)
+      I_uSleep(remaining_time - 1000);
   }
 }
 
-int dsda_subframes;
+int dsda_fps_limit;
 
 void dsda_LimitFPS(void) {
   extern int movement_smooth;
 
-  if (movement_smooth && dsda_subframes) {
+  if (movement_smooth && dsda_fps_limit) {
     unsigned long long target_time;
 
-    target_time = 1000000 / (dsda_subframes * 35);
+    target_time = 1000000 / dsda_fps_limit;
 
     dsda_Throttle(dsda_timer_fps, target_time);
+  }
+}
+
+#define TICRATE 35
+
+int dsda_RealticClockRate(void);
+
+static unsigned long long dsda_RealTime(void) {
+  static dboolean started = false;
+
+  if (!started)
+  {
+    started = true;
+    dsda_StartTimer(dsda_timer_realtime);
+  }
+
+  return dsda_ElapsedTime(dsda_timer_realtime);
+}
+
+static unsigned long long dsda_ScaledTime(void) {
+  return dsda_RealTime() * dsda_RealticClockRate() / 100;
+}
+
+extern int ms_to_next_tick;
+
+// During a fast demo, each call yields a new tick
+static int dsda_GetTickFastDemo(void)
+{
+  static int tick;
+  return tick++;
+}
+
+int dsda_GetTickRealTime(void) {
+  int i;
+  unsigned long long t;
+
+  t = dsda_RealTime();
+
+  i = t * TICRATE / 1000000;
+  ms_to_next_tick = (i + 1) * 1000 / TICRATE - t / 1000;
+  if (ms_to_next_tick > 1000 / TICRATE) ms_to_next_tick = 1;
+  if (ms_to_next_tick < 1) ms_to_next_tick = 0;
+  return i;
+}
+
+static int dsda_TickMS(int n) {
+  return n * 1000 * 100 / dsda_RealticClockRate() / TICRATE;
+}
+
+static int dsda_GetTickScaledTime(void) {
+  int i;
+  unsigned long long t;
+
+  t = dsda_RealTime();
+
+  i = t * TICRATE * dsda_RealticClockRate() / 100 / 1000000;
+  ms_to_next_tick = dsda_TickMS(i + 1) - t / 1000;
+  if (ms_to_next_tick > dsda_TickMS(1)) ms_to_next_tick = 1;
+  if (ms_to_next_tick < 1) ms_to_next_tick = 0;
+  return i;
+}
+
+// During a fast demo, no time elapses in between ticks
+static unsigned long long dsda_TickElapsedTimeFastDemo(void) {
+  return 0;
+}
+
+static unsigned long long dsda_TickElapsedRealTime(void) {
+  int tick = dsda_GetTick();
+
+  return dsda_RealTime() - (unsigned long long) tick * 1000000 / TICRATE;
+}
+
+static unsigned long long dsda_TickElapsedScaledTime(void) {
+  int tick = dsda_GetTick();
+
+  return dsda_ScaledTime() - (unsigned long long) tick * 1000000 / TICRATE;
+}
+
+int (*dsda_GetTick)(void) = dsda_GetTickRealTime;
+unsigned long long (*dsda_TickElapsedTime)(void) = dsda_TickElapsedRealTime;
+
+void dsda_ResetTimeFunctions(int fastdemo) {
+  if (fastdemo) {
+    dsda_GetTick = dsda_GetTickFastDemo;
+    dsda_TickElapsedTime = dsda_TickElapsedTimeFastDemo;
+  }
+  else if (dsda_RealticClockRate() != 100) {
+    dsda_GetTick = dsda_GetTickScaledTime;
+    dsda_TickElapsedTime = dsda_TickElapsedScaledTime;
+  }
+  else {
+    dsda_GetTick = dsda_GetTickRealTime;
+    dsda_TickElapsedTime = dsda_TickElapsedRealTime;
   }
 }

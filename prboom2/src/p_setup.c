@@ -53,14 +53,16 @@
 #include "v_video.h"
 #include "r_demo.h"
 #include "r_fps.h"
-#include "hu_tracers.h"
 #include "g_overflow.h"
 #include "am_map.h"
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/compatibility.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
+#include "dsda/skip.h"
 
 #include "hexen/p_acs.h"
 #include "hexen/p_anim.h"
@@ -102,92 +104,6 @@ int      *sslines_indexes;
 ssline_t *sslines;
 
 byte     *map_subsectors;
-
-// hexen
-#define MAPINFO_SCRIPT_NAME "MAPINFO"
-#define MCMD_SKY1 1
-#define MCMD_SKY2 2
-#define MCMD_LIGHTNING 3
-#define MCMD_FADETABLE 4
-#define MCMD_DOUBLESKY 5
-#define MCMD_CLUSTER 6
-#define MCMD_WARPTRANS 7
-#define MCMD_NEXT 8
-#define MCMD_CDTRACK 9
-#define MCMD_CD_STARTTRACK 10
-#define MCMD_CD_END1TRACK 11
-#define MCMD_CD_END2TRACK 12
-#define MCMD_CD_END3TRACK 13
-#define MCMD_CD_INTERTRACK 14
-#define MCMD_CD_TITLETRACK 15
-
-#define UNKNOWN_MAP_NAME "DEVELOPMENT MAP"
-#define DEFAULT_SKY_NAME "SKY1"
-#define DEFAULT_SONG_LUMP "DEFSONG"
-#define DEFAULT_FADE_TABLE "COLORMAP"
-
-typedef struct mapInfo_s
-{
-    short cluster;
-    short warpTrans;
-    short nextMap;
-    short cdTrack;
-    char name[32];
-    short sky1Texture;
-    short sky2Texture;
-    fixed_t sky1ScrollDelta;
-    fixed_t sky2ScrollDelta;
-    dboolean doubleSky;
-    dboolean lightning;
-    int fadetable;
-    char songLump[10];
-} mapInfo_t;
-
-int MapCount;
-
-static mapInfo_t MapInfo[99];
-
-static const char *MapCmdNames[] = {
-    "SKY1",
-    "SKY2",
-    "DOUBLESKY",
-    "LIGHTNING",
-    "FADETABLE",
-    "CLUSTER",
-    "WARPTRANS",
-    "NEXT",
-    "CDTRACK",
-    "CD_START_TRACK",
-    "CD_END1_TRACK",
-    "CD_END2_TRACK",
-    "CD_END3_TRACK",
-    "CD_INTERMISSION_TRACK",
-    "CD_TITLE_TRACK",
-    NULL
-};
-
-static int MapCmdIDs[] = {
-    MCMD_SKY1,
-    MCMD_SKY2,
-    MCMD_DOUBLESKY,
-    MCMD_LIGHTNING,
-    MCMD_FADETABLE,
-    MCMD_CLUSTER,
-    MCMD_WARPTRANS,
-    MCMD_NEXT,
-    MCMD_CDTRACK,
-    MCMD_CD_STARTTRACK,
-    MCMD_CD_END1TRACK,
-    MCMD_CD_END2TRACK,
-    MCMD_CD_END3TRACK,
-    MCMD_CD_INTERTRACK,
-    MCMD_CD_TITLETRACK
-};
-
-static int cd_NonLevelTracks[6];        // Non-level specific song cd track numbers
-
-static int QualifyMap(int map);
-// end hexen
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // figgi 08/21/00 -- constants and globals for glBsp support
@@ -244,6 +160,7 @@ int       *blockmaplump;          // was short -- killough
 fixed_t   bmaporgx, bmaporgy;     // origin of block map
 
 mobj_t    **blocklinks;           // for thing chains
+int       blocklinks_count;
 
 // MAES: extensions to support 512x512 blockmaps.
 // They represent the maximum negative number which represents
@@ -386,7 +303,6 @@ static int P_CheckForZDoomUncompressedNodes(int lumpnum, int gl_lumpnum)
 
   if (result)
   {
-    lprintf(LO_INFO, "P_CheckForZDoomUncompressedNodes: ZDoom uncompressed normal nodes are detected\n");
     ret = ZDOOM_XNOD_NODES;
   }
 #ifdef HAVE_LIBZ
@@ -396,7 +312,6 @@ static int P_CheckForZDoomUncompressedNodes(int lumpnum, int gl_lumpnum)
 
     if (result)
     {
-      lprintf(LO_INFO, "P_CheckForZDoomUncompressedNodes: compressed ZDoom nodes are detected\n");
       ret = ZDOOM_ZNOD_NODES;
     }
   }
@@ -1552,9 +1467,9 @@ static void P_LoadThings (int lump)
       mobjlist[mobjcount++] = mobj;
   }
 
-  if (map_format.acs)
+  if (map_format.thing_id)
   {
-    P_CreateTIDList();
+    map_format.build_mobj_thing_id_list();
   }
 
   if (hexen)
@@ -1676,7 +1591,40 @@ void P_TranslateHexenLineFlags(unsigned int *flags)
 
 void P_TranslateCompatibleLineFlags(unsigned int *flags)
 {
-  *flags = *flags & (mbf21 ? 0x3fff : 0x03ff);
+  int filter;
+
+  if (mbf21)
+    filter = (*flags & ML_RESERVED && comp[comp_reservedlineflag]) ? 0x01ff : 0x3fff;
+  else
+    filter = 0x03ff;
+
+  *flags = *flags & filter;
+}
+
+static void P_SetLineID(line_t *ld)
+{
+  if (!map_format.zdoom) return;
+
+  switch (ld->special)
+  {
+    case zl_line_set_identification:
+      ld->tag = (unsigned short) 256 * ld->arg5 + ld->arg1;
+      ld->special = 0;
+      break;
+    case zl_translucent_line:
+      ld->tag = ld->arg1;
+      break;
+    case zl_teleport_line:
+    case zl_scroll_texture_model:
+      ld->tag = ld->arg1;
+      break;
+    case zl_polyobj_start_line:
+      ld->tag = ld->arg4;
+      break;
+    case zl_polyobj_explicit_line:
+      ld->tag = ld->arg5;
+      break;
+  }
 }
 
 static void P_LoadLineDefs (int lump)
@@ -1709,6 +1657,7 @@ static void P_LoadLineDefs (int lump)
         v2 = ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
         ld->sidenum[0] = LittleShort(mld->sidenum[0]);
         ld->sidenum[1] = LittleShort(mld->sidenum[1]);
+        P_SetLineID(ld);
       }
       else
       {
@@ -1829,7 +1778,6 @@ void P_PostProcessCompatibleLineSpecial(line_t *ld)
     int lump, j;
 
     case 260:               // killough 4/11/98: translucent 2s textures
-      transparentpresent = true; //e6y
       lump = sides[*ld->sidenum].special; // translucency from sidedef
       if (!ld->tag)                       // if tag==0,
         ld->tranlump = lump;              // affect this linedef only
@@ -1856,42 +1804,19 @@ void P_PostProcessZDoomLineSpecial(line_t *ld)
   switch (ld->special)
   {                           // killough 4/11/98: handle special types
     case zl_translucent_line: // killough 4/11/98: translucent 2s textures
-      // [RH] Second arg controls how opaque it is.
-      // if (alpha == SHRT_MIN)
-      // {
-      //   alpha = ld->args[1];
-      //   additive = !!ld->args[2];
-      // }
-      // else if (alpha < 0)
-      // {
-      //   alpha = -alpha;
-      //   additive = true;
-      // }
-      //
-      // double dalpha = alpha / 255.;
-      // if (!ld->args[0])
-      // {
-      //   ld->alpha = dalpha;
-      //   if (additive)
-      //   {
-      //     ld->flags |= ML_ADDTRANS;
-      //   }
-      // }
-      // else
-      // {
-      //   for (j = 0; j < numlines; j++)
-      //   {
-      //     if (tagManager.LineHasID(j, ld->args[0]))
-      //     {
-      //       lines[j].alpha = dalpha;
-      //       if (additive)
-      //       {
-      //         lines[j].flags |= ML_ADDTRANS;
-      //       }
-      //     }
-      //   }
-      // }
-      ld->special = 0;
+      {
+        int i, lump;
+
+        lump = sides[*ld->sidenum].special; // translucency from sidedef
+        if (!ld->arg1)
+          ld->tranlump = lump;
+        else
+          // for (i = -1; (i = P_FindLineFromTag(ld->arg1, i)) >= 0;)
+          for (i = 0; i < numlines; i++)
+            if (lines[i].tag == ld->arg1)
+              lines[i].tranlump = lump;
+        ld->special = 0;
+      }
       break;
   }
 }
@@ -2053,32 +1978,15 @@ void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, secto
     //   SetTexture(sd, side_t::bottom, msd->bottomtexture, missingtex);
     //   break;
     //
-    // case zl_translucent_line:  // killough 4/11/98: apply translucency to 2s normal texture
-    //   if (checktranmap)
-    //   {
-    //     int lumpnum;
-    //
-    //     if (strnicmp ("TRANMAP", msd->midtexture, 8) == 0)
-    //     {
-    //       // The translator set the alpha argument already; no reason to do it again.
-    //       sd->SetTexture(side_t::mid, FNullTextureID());
-    //     }
-    //     else if ((lumpnum = Wads.CheckNumForName (msd->midtexture)) > 0 &&
-    //       Wads.LumpLength (lumpnum) == 65536)
-    //     {
-    //       *alpha = (short)P_DetermineTranslucency (lumpnum);
-    //       sd->SetTexture(side_t::mid, FNullTextureID());
-    //     }
-    //     else
-    //     {
-    //       SetTexture(sd, side_t::mid, msd->midtexture, missingtex);
-    //     }
-    //
-    //     SetTexture(sd, side_t::top, msd->toptexture, missingtex);
-    //     SetTexture(sd, side_t::bottom, msd->bottomtexture, missingtex);
-    //     break;
-    //   }
-    //   // Fallthrough for Hexen maps is intentional
+    case zl_translucent_line: // killough 4/11/98: apply translucency to 2s normal texture
+      sd->midtexture = strncasecmp("TRANMAP", msd->midtexture, 8) ?
+        (sd->special = W_CheckNumForName(msd->midtexture)) < 0 ||
+        W_LumpLength(sd->special) != 65536 ?
+        sd->special = 0, R_TextureNumForName(msd->midtexture) :
+          (sd->special++, 0) : (sd->special = 0);
+      sd->toptexture = R_TextureNumForName(msd->toptexture);
+      sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+      break;
 
     default:      // normal cases
       sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
@@ -2563,7 +2471,8 @@ static void P_LoadBlockMap (int lump)
   }
 
   // clear out mobj chains - CPhipps - use calloc
-  blocklinks = calloc_IfSameLevel(blocklinks, bmapwidth * bmapheight, sizeof(*blocklinks));
+  blocklinks_count = bmapwidth * bmapheight;
+  blocklinks = calloc_IfSameLevel(blocklinks, blocklinks_count, sizeof(*blocklinks));
   blockmap = blockmaplump+4;
 
   // MAES: set blockmapxneg and blockmapyneg
@@ -2888,6 +2797,7 @@ dboolean P_CheckLumpsForSameSource(int lump1, int lump2)
 void P_CheckLevelWadStructure(const char *mapname)
 {
   int i, lumpnum;
+  dboolean has_behavior = false;
 
   static const char *ml_labels[] = {
     "ML_LABEL",             // A separator, name, ExMx or MAPxx
@@ -2923,20 +2833,25 @@ void P_CheckLevelWadStructure(const char *mapname)
     }
   }
 
-  // we may be running a wad that has multiple formats
-  // if we are not in "hexen mode" then we need to abort
-  // eventually, we can add support for per-map format swapping
-  if (!map_format.hexen)
+  // Find out what format we have
+  i = lumpnum + ML_BEHAVIOR;
+  if (P_CheckLumpsForSameSource(lumpnum, i))
   {
-    i = lumpnum + ML_BEHAVIOR;
-    if (P_CheckLumpsForSameSource(lumpnum, i))
+    if (!strncasecmp(lumpinfo[i].name, "BEHAVIOR", 8))
     {
-      if (!strncasecmp(lumpinfo[i].name, "BEHAVIOR", 8))
-      {
-        I_Error("P_SetupLevel: %s: Hexen format not supported", mapname);
-      }
+      has_behavior = true;
     }
   }
+
+  if (has_behavior && !hexen)
+  {
+    if (heretic)
+      I_Error("Hexen format maps are not supported in Heretic yet");
+
+    dsda_ApplyZDoomMapFormat();
+  }
+  else
+    dsda_ApplyDefaultMapFormat();
 }
 
 void P_InitSubsectorsLines(void)
@@ -3050,11 +2965,9 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   //e6y
   totallive = 0;
-  transparentpresent = false;
 
   dsda_WatchBeforeLevelSetup();
 
-  ClearThingsHealthTracers();
   R_StopAllInterpolations();
 
   totallive = totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
@@ -3065,9 +2978,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     players[i].killcount = players[i].secretcount = players[i].itemcount = 0;
     players[i].maxkilldiscount = 0;//e6y
   }
-
-  // Initial height of PointOfView will be set by player think.
-  players[consoleplayer].viewz = 1;
 
   // Make sure all sounds are stopped before Z_FreeTag.
   S_Start();
@@ -3095,6 +3005,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // Avoid segfaults on levels without nodes.
   P_CheckLevelWadStructure(lumpname);
 
+  dsda_ApplyLevelCompatibility(lumpnum);
+
   leveltime = 0; totallive = 0;
 
   // note: most of this ordering is important
@@ -3119,6 +3031,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   current_episode = episode;
   current_map = map;
   current_nodesVersion = nodesVersion;
+
+  dsda_WatchNewLevel();
 
   if (!samelevel)
   {
@@ -3224,7 +3138,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   deathmatch_p = deathmatchstarts;
   for (i = 0; i < g_maxplayers; i++)
     players[i].mo = NULL;
-  TracerClearStarts();
 
   P_MapStart();
 
@@ -3274,6 +3187,9 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
         I_Error("P_SetupLevel: missing player %d start\n", i+1);
   }
 
+  players[consoleplayer].viewz = players[consoleplayer].mo->z +
+                                 players[consoleplayer].viewheight;
+
   if (players[consoleplayer].cheats & CF_FLY)
   {
     players[consoleplayer].mo->flags |= (MF_NOGRAVITY | MF_FLY);
@@ -3298,22 +3214,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   P_MapEnd();
 
-  if (map_format.mapinfo)
-  {
-    extern dboolean LevelUseFullBright;
-
-    // Load colormap and set the fullbright flag
-    i = P_GetMapFadeTable(gamemap);
-    colormaps[0] = (const lighttable_t *) W_CacheLumpNum(i);
-    if (i == W_GetNumForName("COLORMAP"))
-    {
-      LevelUseFullBright = true;
-    }
-    else
-    {                           // Probably fog ... don't use fullbright sprites
-      LevelUseFullBright = false;
-    }
-  }
+  dsda_ApplyFadeTable();
 
   // preload graphics
   if (precache)
@@ -3326,7 +3227,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     // Do not preprocess GL data during skipping,
     // because it potentially will not be used.
     // But preprocessing must be called immediately after stop of skipping.
-    if (!doSkip)
+    if (!dsda_SkipMode())
     {
       // proff 11/99: calculate all OpenGL specific tables etc.
       gld_PreprocessLevel();
@@ -3337,10 +3238,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   P_SyncWalkcam(true, true);
   R_SmoothPlaying_Reset(NULL);
 
-  if (map_format.mapinfo)
-  {
-    P_InitLightning();
-  }
+  P_InitLightning();
 
   if (map_format.sndseq)
   {
@@ -3348,299 +3246,15 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   }
 }
 
-static void InitMapInfo(void);
-
 //
 // P_Init
 //
 void P_Init (void)
 {
-  InitMapInfo();
   P_InitSwitchList();
   P_InitFTAnims();
   P_InitPicAnims();
   P_InitTerrainTypes();
   P_InitLava();
   R_InitSprites(sprnames);
-}
-
-// hexen
-
-#include "sc_man.h"
-
-static void InitMapInfo(void)
-{
-    int map;
-    int mapMax;
-    int mcmdValue;
-    mapInfo_t *info;
-    char songMulch[10];
-    const char *default_sky_name = DEFAULT_SKY_NAME;
-
-    if (!map_format.mapinfo) return;
-
-    mapMax = 1;
-
-    if (gamemode == shareware)
-    {
-        default_sky_name = "SKY2";
-    }
-
-    // Put defaults into MapInfo[0]
-    info = MapInfo;
-    info->cluster = 0;
-    info->warpTrans = 0;
-    info->nextMap = 1;          // Always go to map 1 if not specified
-    info->cdTrack = 1;
-    info->sky1Texture = R_TextureNumForName(default_sky_name);
-    info->sky2Texture = info->sky1Texture;
-    info->sky1ScrollDelta = 0;
-    info->sky2ScrollDelta = 0;
-    info->doubleSky = false;
-    info->lightning = false;
-    info->fadetable = W_GetNumForName(DEFAULT_FADE_TABLE);
-    M_StringCopy(info->name, UNKNOWN_MAP_NAME, sizeof(info->name));
-
-    SC_OpenLump(MAPINFO_SCRIPT_NAME);
-    while (SC_GetString())
-    {
-        if (SC_Compare("MAP") == false)
-        {
-            SC_ScriptError(NULL);
-        }
-        SC_MustGetNumber();
-        if (sc_Number < 1 || sc_Number > 99)
-        {
-            SC_ScriptError(NULL);
-        }
-        map = sc_Number;
-
-        info = &MapInfo[map];
-
-        // Save song lump name
-        M_StringCopy(songMulch, info->songLump, sizeof(songMulch));
-
-        // Copy defaults to current map definition
-        memcpy(info, &MapInfo[0], sizeof(*info));
-
-        // Restore song lump name
-        M_StringCopy(info->songLump, songMulch, sizeof(info->songLump));
-
-        // The warp translation defaults to the map number
-        info->warpTrans = map;
-
-        // Map name must follow the number
-        SC_MustGetString();
-        M_StringCopy(info->name, sc_String, sizeof(info->name));
-
-        // Process optional tokens
-        while (SC_GetString())
-        {
-            if (SC_Compare("MAP"))
-            {                   // Start next map definition
-                SC_UnGet();
-                break;
-            }
-            mcmdValue = MapCmdIDs[SC_MustMatchString(MapCmdNames)];
-            switch (mcmdValue)
-            {
-                case MCMD_CLUSTER:
-                    SC_MustGetNumber();
-                    info->cluster = sc_Number;
-                    break;
-                case MCMD_WARPTRANS:
-                    SC_MustGetNumber();
-                    info->warpTrans = sc_Number;
-                    break;
-                case MCMD_NEXT:
-                    SC_MustGetNumber();
-                    info->nextMap = sc_Number;
-                    break;
-                case MCMD_CDTRACK:
-                    SC_MustGetNumber();
-                    info->cdTrack = sc_Number;
-                    break;
-                case MCMD_SKY1:
-                    SC_MustGetString();
-                    info->sky1Texture = R_TextureNumForName(sc_String);
-                    SC_MustGetNumber();
-                    info->sky1ScrollDelta = sc_Number << 8;
-                    break;
-                case MCMD_SKY2:
-                    SC_MustGetString();
-                    info->sky2Texture = R_TextureNumForName(sc_String);
-                    SC_MustGetNumber();
-                    info->sky2ScrollDelta = sc_Number << 8;
-                    break;
-                case MCMD_DOUBLESKY:
-                    info->doubleSky = true;
-                    break;
-                case MCMD_LIGHTNING:
-                    info->lightning = true;
-                    break;
-                case MCMD_FADETABLE:
-                    SC_MustGetString();
-                    info->fadetable = W_GetNumForName(sc_String);
-                    break;
-                case MCMD_CD_STARTTRACK:
-                case MCMD_CD_END1TRACK:
-                case MCMD_CD_END2TRACK:
-                case MCMD_CD_END3TRACK:
-                case MCMD_CD_INTERTRACK:
-                case MCMD_CD_TITLETRACK:
-                    SC_MustGetNumber();
-                    cd_NonLevelTracks[mcmdValue - MCMD_CD_STARTTRACK] =
-                        sc_Number;
-                    break;
-            }
-        }
-        mapMax = map > mapMax ? map : mapMax;
-    }
-    SC_Close();
-    MapCount = mapMax;
-}
-
-int P_GetMapCluster(int map)
-{
-    return MapInfo[QualifyMap(map)].cluster;
-}
-
-int P_GetMapCDTrack(int map)
-{
-    return MapInfo[QualifyMap(map)].cdTrack;
-}
-
-int P_GetMapWarpTrans(int map)
-{
-    return MapInfo[QualifyMap(map)].warpTrans;
-}
-
-int P_GetMapNextMap(int map)
-{
-    return MapInfo[QualifyMap(map)].nextMap;
-}
-
-int P_TranslateMap(int map)
-{
-    int i;
-
-    for (i = 1; i < 99; i++)    // Make this a macro
-    {
-        if (MapInfo[i].warpTrans == map)
-        {
-            return i;
-        }
-    }
-    // Not found
-    return -1;
-}
-
-int P_GetMapSky1Texture(int map)
-{
-    return MapInfo[QualifyMap(map)].sky1Texture;
-}
-
-int P_GetMapSky2Texture(int map)
-{
-    return MapInfo[QualifyMap(map)].sky2Texture;
-}
-
-char *P_GetMapName(int map)
-{
-    return MapInfo[QualifyMap(map)].name;
-}
-
-fixed_t P_GetMapSky1ScrollDelta(int map)
-{
-    return MapInfo[QualifyMap(map)].sky1ScrollDelta;
-}
-
-fixed_t P_GetMapSky2ScrollDelta(int map)
-{
-    return MapInfo[QualifyMap(map)].sky2ScrollDelta;
-}
-
-dboolean P_GetMapDoubleSky(int map)
-{
-    return MapInfo[QualifyMap(map)].doubleSky;
-}
-
-dboolean P_GetMapLightning(int map)
-{
-    return MapInfo[QualifyMap(map)].lightning;
-}
-
-dboolean P_GetMapFadeTable(int map)
-{
-    return MapInfo[QualifyMap(map)].fadetable;
-}
-
-char *P_GetMapSongLump(int map)
-{
-    if (!strcasecmp(MapInfo[QualifyMap(map)].songLump, DEFAULT_SONG_LUMP))
-    {
-        return NULL;
-    }
-    else
-    {
-        return MapInfo[QualifyMap(map)].songLump;
-    }
-}
-
-void P_PutMapSongLump(int map, char *lumpName)
-{
-    if (map < 1 || map > MapCount)
-    {
-        return;
-    }
-    M_StringCopy(MapInfo[map].songLump, lumpName,
-                 sizeof(MapInfo[map].songLump));
-}
-
-int P_GetCDStartTrack(void)
-{
-    return cd_NonLevelTracks[MCMD_CD_STARTTRACK - MCMD_CD_STARTTRACK];
-}
-
-int P_GetCDEnd1Track(void)
-{
-    return cd_NonLevelTracks[MCMD_CD_END1TRACK - MCMD_CD_STARTTRACK];
-}
-
-int P_GetCDEnd2Track(void)
-{
-    return cd_NonLevelTracks[MCMD_CD_END2TRACK - MCMD_CD_STARTTRACK];
-}
-
-int P_GetCDEnd3Track(void)
-{
-    return cd_NonLevelTracks[MCMD_CD_END3TRACK - MCMD_CD_STARTTRACK];
-}
-
-int P_GetCDIntermissionTrack(void)
-{
-    return cd_NonLevelTracks[MCMD_CD_INTERTRACK - MCMD_CD_STARTTRACK];
-}
-
-int P_GetCDTitleTrack(void)
-{
-    return cd_NonLevelTracks[MCMD_CD_TITLETRACK - MCMD_CD_STARTTRACK];
-}
-
-static int QualifyMap(int map)
-{
-    return (map < 1 || map > MapCount) ? 0 : map;
-}
-
-// Special early initializer needed to start sound before R_Init()
-void InitMapMusicInfo(void)
-{
-    int i;
-
-    for (i = 0; i < 99; i++)
-    {
-        M_StringCopy(MapInfo[i].songLump, DEFAULT_SONG_LUMP,
-                     sizeof(MapInfo[i].songLump));
-    }
-    MapCount = 98;
 }

@@ -61,9 +61,16 @@ dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type);
 
 dboolean PO_MovePolyobj(int num, int x, int y);
 dboolean PO_RotatePolyobj(int num, angle_t angle);
+dboolean PO_Detect(int doomednum);
 void PO_Init(int lump);
 dboolean PO_Busy(int polyobj);
 
 void PO_ResetBlockMap(dboolean allocate);
+
+// zdoom
+
+dboolean EV_StopPoly(int polyNum);
+dboolean EV_MovePolyTo(line_t * line, int polyNum, fixed_t speed,
+                       fixed_t x, fixed_t y, dboolean overRide);
 
 #endif

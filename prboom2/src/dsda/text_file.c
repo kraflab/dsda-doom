@@ -23,6 +23,7 @@
 
 #include "dsda.h"
 #include "dsda/analysis.h"
+#include "dsda/playback.h"
 
 #include "text_file.h"
 
@@ -37,9 +38,9 @@ static char* dsda_TextFileName(void) {
   int p;
   int name_length;
   char* name;
-  const char* playdemo;
+  char* playdemo;
 
-  p = IsDemoPlayback();
+  p = dsda_PlaybackArg();
 
   if (!p)
     return NULL;
@@ -57,6 +58,8 @@ static char* dsda_TextFileName(void) {
   }
 
   strcat(name, ".txt");
+
+  free(playdemo);
 
   return name;
 }
@@ -174,7 +177,11 @@ void dsda_ExportTextFile(void) {
   fprintf(file, "Exe:       %s -complevel %i\n",
           (PACKAGE_NAME" "PACKAGE_VERSION), compatibility_level);
   fprintf(file, "\n");
-  fprintf(file, "Time:      %s\n", dsda_TextFileTime());
+
+  name = dsda_TextFileTime();
+  fprintf(file, "Time:      %s\n", name);
+  free(name);
+
   fprintf(file, "\n");
   fprintf(file, "Author:    %s\n", dsda_player_name);
   fprintf(file, "\n");

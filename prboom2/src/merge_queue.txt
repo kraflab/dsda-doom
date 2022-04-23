@@ -1,8 +1,14 @@
-Checked up to: b3eb71424d2775d16f74190161fa6e05fb7d7973 (Sep 15 2021)
+Checked up to: 4b832c52366e0a7f2fd4590a1bbd43e96fe165c4 (Feb 4 2022)
 
 Commits from upstream to go through:
+
+umapinfo fix:
+ee33927e3688668b2010cd82ecc1d352cff18391
 
 utf8:
 5b5bfa6ffcf656c9fcffc74d2d1c33201d27a74b
 917914fcf0b80803656c973dec2766318d09d0f0
 35659be5098eb813c1b9df72d1eea889ab62a734
+
+iwad without tag:
+62a139ae40258e7e0cb64c998216942ce1e8620c

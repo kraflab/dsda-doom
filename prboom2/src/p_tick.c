@@ -42,6 +42,8 @@
 
 #include "hexen/p_anim.h"
 
+#include "dsda/pause.h"
+
 int leveltime;
 
 static dboolean newthinkerpresent;
@@ -57,6 +59,7 @@ static dboolean newthinkerpresent;
 // killough 8/29/98: we maintain several separate threads, each containing
 // a special class of thinkers, to allow more efficient searches.
 thinker_t thinkerclasscap[th_all+1];
+int init_thinkers_count = 0;
 
 //
 // P_InitThinkers
@@ -70,6 +73,8 @@ void P_InitThinkers(void)
     thinkerclasscap[i].cprev = thinkerclasscap[i].cnext = &thinkerclasscap[i];
 
   thinkercap.prev = thinkercap.next  = &thinkercap;
+
+  init_thinkers_count++;
 }
 
 //
@@ -276,8 +281,7 @@ void P_Ticker (void)
    * All of this complicated mess is used to preserve demo sync.
    */
 
-  if (paused || (menuactive && !demoplayback && !netgame &&
-     players[consoleplayer].viewz != 1))
+  if (dsda_Paused() || (dsda_PausedViaMenu() && players[consoleplayer].viewz != 1))
   {
     P_ResetWalkcam();
     return;

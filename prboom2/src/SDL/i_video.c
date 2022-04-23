@@ -89,6 +89,8 @@
 #include "i_main.h"
 
 #include "dsda/palette.h"
+#include "dsda/pause.h"
+#include "dsda/time.h"
 
 //e6y: new mouse code
 static SDL_Cursor* cursors[2] = {NULL, NULL};
@@ -119,6 +121,7 @@ int gl_exclusive_fullscreen;
 int render_vsync;
 int render_screen_multiply;
 int integer_scaling;
+int vanilla_keymap;
 int sdl_window_width;
 int sdl_window_height;
 SDL_Surface *screen;
@@ -136,6 +139,7 @@ int             leds_always_off = 0; // Expected by m_misc, not relevant
 
 // Mouse handling
 extern int     usemouse;        // config file var
+extern int mouse_stutter_correction;
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
 
 video_mode_t I_GetModeFromString(const char *modestr);
@@ -148,6 +152,67 @@ static int I_ExclusiveFullscreen(void)
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
 
+// Vanilla keymap taken from chocolate-doom and adjusted for prboom-plus
+#define SCANCODE_TO_KEYS_ARRAY {                                          \
+  0,   0,   0,   0,   'a',                                  /* 0-9 */     \
+  'b', 'c', 'd', 'e', 'f',                                                \
+  'g', 'h', 'i', 'j', 'k',                                  /* 10-19 */   \
+  'l', 'm', 'n', 'o', 'p',                                                \
+  'q', 'r', 's', 't', 'u',                                  /* 20-29 */   \
+  'v', 'w', 'x', 'y', 'z',                                                \
+  '1', '2', '3', '4', '5',                                  /* 30-39 */   \
+  '6', '7', '8', '9', '0',                                                \
+  KEYD_ENTER, KEYD_ESCAPE, KEYD_BACKSPACE, KEYD_TAB, ' ',   /* 40-49 */   \
+  KEYD_MINUS, KEYD_EQUALS, '[', ']', '\\',                                \
+  '\\', ';', '\'', '`', ',',                                /* 50-59 */   \
+  '.', '/', KEYD_CAPSLOCK, KEYD_F1, KEYD_F2,                              \
+  KEYD_F3, KEYD_F4, KEYD_F5, KEYD_F6, KEYD_F7,              /* 60-69 */   \
+  KEYD_F8, KEYD_F9, KEYD_F10, KEYD_F11, KEYD_F12, KEYD_PRINTSC,           \
+  KEYD_SCROLLLOCK, KEYD_PAUSE, KEYD_INSERT, KEYD_HOME,      /* 70-79 */   \
+  KEYD_PAGEUP, KEYD_DEL, KEYD_END, KEYD_PAGEDOWN, KEYD_RIGHTARROW,        \
+  KEYD_LEFTARROW, KEYD_DOWNARROW, KEYD_UPARROW,             /* 80-89 */   \
+  KEYD_NUMLOCK, KEYD_KEYPADDIVIDE,                                        \
+  KEYD_KEYPADMULTIPLY, KEYD_KEYPADMINUS, KEYD_KEYPADPLUS,                 \
+  KEYD_KEYPADENTER, KEYD_KEYPAD1, KEYD_KEYPAD2, KEYD_KEYPAD3,             \
+  KEYD_KEYPAD4, KEYD_KEYPAD5, KEYD_KEYPAD6,                 /* 90-99 */   \
+  KEYD_KEYPAD7, KEYD_KEYPAD8, KEYD_KEYPAD9, KEYD_KEYPAD0,                 \
+  KEYD_KEYPADPERIOD, 0, 0, 0, KEYD_EQUALS                   /* 100-103 */ \
+}
+
+// Map keys like vanilla doom
+static int VanillaTranslateKey(SDL_Keysym* key)
+{
+  static const int scancode_map[] = SCANCODE_TO_KEYS_ARRAY;
+  int rc = 0, sc = key->scancode;
+
+  if (sc > 3 && sc < sizeof(scancode_map) / sizeof(scancode_map[0]))
+    rc = scancode_map[sc];
+
+  // Key is mapped..
+  if (rc)
+    return rc;
+
+  switch (sc) { // Code (Ctrl/Shift/Alt) from scancode.
+    case SDL_SCANCODE_LSHIFT:
+    case SDL_SCANCODE_RSHIFT:
+      return KEYD_RSHIFT;
+
+    case SDL_SCANCODE_LCTRL:
+    case SDL_SCANCODE_RCTRL:
+      return KEYD_RCTRL;
+
+    case SDL_SCANCODE_LALT:
+    case SDL_SCANCODE_RALT:
+    case SDL_SCANCODE_LGUI:
+    case SDL_SCANCODE_RGUI:
+      return KEYD_RALT;
+
+    // Default to the symbolic key (outside of vanilla keys)
+    default:
+      return key->sym;
+  }
+}
+
 //
 //  Translates the key currently in key
 //
@@ -155,6 +220,9 @@ static int I_ExclusiveFullscreen(void)
 static int I_TranslateKey(SDL_Keysym* key)
 {
   int rc = 0;
+
+  if (vanilla_keymap)
+    return VanillaTranslateKey(key);
 
   switch (key->sym) {
   case SDLK_LEFT: rc = KEYD_LEFTARROW;  break;
@@ -212,6 +280,7 @@ static int I_TranslateKey(SDL_Keysym* key)
   case SDLK_RGUI:  rc = KEYD_RALT;   break;
   case SDLK_CAPSLOCK: rc = KEYD_CAPSLOCK; break;
   case SDLK_PRINTSCREEN: rc = KEYD_PRINTSC; break;
+  case SDLK_SCROLLLOCK: rc = KEYD_SCROLLLOCK; break;
   default:    rc = key->sym;    break;
   }
 
@@ -249,8 +318,8 @@ while (SDL_PollEvent(Event))
 {
   switch (Event->type) {
   case SDL_KEYDOWN:
-#ifdef MACOSX
-    if (Event->key.keysym.mod & KMOD_META)
+#ifdef __APPLE__
+    if (Event->key.keysym.mod & KMOD_GUI)
     {
       // Switch windowed<->fullscreen if pressed <Command-F>
       if (Event->key.keysym.sym == SDLK_f)
@@ -404,26 +473,6 @@ static void I_InitInputs(void)
 
   I_InitJoystick();
 }
-/////////////////////////////////////////////////////////////////////////////
-
-// I_SkipFrame
-//
-// Returns true if it thinks we can afford to skip this frame
-
-inline static dboolean I_SkipFrame(void)
-{
-  static int frameno;
-
-  frameno++;
-  switch (gamestate) {
-  case GS_LEVEL:
-    if (!paused)
-      return false;
-  default:
-    // Skip odd frames
-    return (frameno & 1) ? true : false;
-  }
-}
 
 ///////////////////////////////////////////////////////////
 // Palette stuff.
@@ -511,10 +560,6 @@ void I_FinishUpdate (void)
 {
   //e6y: new mouse code
   UpdateGrab();
-
-  // The screen wipe following pressing the exit switch on a level
-  // is noticably jerkier with I_SkipFrame
-  // if (I_SkipFrame())return;
 
 #ifdef MONITOR_VISIBILITY
   //!!if (!(SDL_GetAppState()&SDL_APPACTIVE)) {
@@ -621,7 +666,7 @@ void I_PreInitGraphics(void)
     I_Error("Could not initialize SDL [%s]", SDL_GetError());
   }
 
-  I_AtExit(I_ShutdownSDL, true);
+  I_AtExit(I_ShutdownSDL, true, "I_ShutdownSDL", exit_priority_normal);
 }
 
 // e6y: resolution limitation is removed
@@ -664,12 +709,53 @@ void I_GetScreenResolution(void)
 static const struct {
   const int w, h;
 } canonicals[] = {
-  {640, 480}, // Doom 95
-  {640, 400}, // MBF
-  {320, 240}, // Doom 95
-  {320, 200}, // Vanilla Doom
+  { 640, 480}, // Doom 95
+  { 320, 240}, // Doom 95
+  {1120, 400}, // 21:9
+  { 854, 400}, // 16:9
+  { 768, 400}, // 16:10
+  { 640, 400}, // MBF
+  { 560, 200}, // 21:9
+  { 426, 200}, // 16:9
+  { 384, 200}, // 16:10
+  { 320, 200}, // Vanilla Doom
 };
 static const int num_canonicals = sizeof(canonicals)/sizeof(*canonicals);
+
+static void I_AppendResolution(SDL_DisplayMode *mode, int *current_resolution_index, int *list_size)
+{
+  int i;
+  char mode_name[256];
+
+
+  doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", mode->w, mode->h);
+
+  for(i = 0; i < *list_size; i++)
+    if (!strcmp(mode_name, screen_resolutions_list[i]))
+      return;
+
+  screen_resolutions_list[*list_size] = strdup(mode_name);
+
+  if (mode->w == desired_screenwidth && mode->h == desired_screenheight)
+    *current_resolution_index = *list_size;
+
+  (*list_size)++;
+}
+
+const char *custom_resolution;
+
+static void I_AppendCustomResolution(int *current_resolution_index, int *list_size)
+{
+  if (strlen(custom_resolution))
+  {
+    SDL_DisplayMode mode;
+
+    if (sscanf(custom_resolution, "%4dx%4d", &mode.w, &mode.h) == 2)
+    {
+      I_AppendResolution(&mode, current_resolution_index, list_size);
+    }
+  }
+}
 
 //
 // I_FillScreenResolutionsList
@@ -727,29 +813,11 @@ static void I_FillScreenResolutionsList(void)
         SDL_GetDisplayMode(display_index, i, &mode);
       }
 
-      doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", mode.w, mode.h);
-
-      for(j = 0; j < list_size; j++)
-      {
-        if (!strcmp(mode_name, screen_resolutions_list[j]))
-        {
-          in_list = true;
-          break;
-        }
-      }
-
-      if (!in_list)
-      {
-        screen_resolutions_list[list_size] = strdup(mode_name);
-
-        if (mode.w == desired_screenwidth && mode.h == desired_screenheight)
-        {
-          current_resolution_index = list_size;
-        }
-
-        list_size++;
-      }
+      I_AppendResolution(&mode, &current_resolution_index, &list_size);
     }
+
+    I_AppendCustomResolution(&current_resolution_index, &list_size);
+
     screen_resolutions_list[list_size] = NULL;
   }
 
@@ -832,7 +900,6 @@ static void I_ClosestResolution (int *width, int *height)
   }
 }
 
-int process_affinity_mask;
 int process_priority;
 
 // e6y
@@ -1076,7 +1143,7 @@ void I_InitGraphics(void)
   {
     firsttime = 0;
 
-    I_AtExit(I_ShutdownGraphics, true);
+    I_AtExit(I_ShutdownGraphics, true, "I_ShutdownGraphics", exit_priority_normal);
     lprintf(LO_INFO, "I_InitGraphics: %dx%d\n", SCREENWIDTH, SCREENHEIGHT);
 
     /* Set the video mode */
@@ -1170,7 +1237,7 @@ void I_UpdateVideoMode(void)
   // In windowed mode, the window can be resized while the game is
   // running.  This feature is disabled on OS X, as it adds an ugly
   // scroll handle to the corner of the screen.
-#ifndef MACOSX
+#ifndef __APPLE__
   if (!desired_fullscreen && V_IsSoftwareMode())
     init_flags |= SDL_WINDOW_RESIZABLE;
 #endif
@@ -1220,8 +1287,7 @@ void I_UpdateVideoMode(void)
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, flags);
 
     // [FG] aspect ratio correction for the canonical video modes
-    if ((SCREENWIDTH == 320 && SCREENHEIGHT == 200) ||
-        (SCREENWIDTH == 640 && SCREENHEIGHT == 400))
+    if (SCREENHEIGHT == 200 || SCREENHEIGHT == 400)
     {
       actualheight = 6*SCREENHEIGHT/5;
     }
@@ -1277,7 +1343,7 @@ void I_UpdateVideoMode(void)
   {
      SDL_version ver;
      SDL_GetVersion(&ver);
-     if (ver.major == 2 && ver.minor == 0 && ver.patch == 14)
+     if (ver.major == 2 && ver.minor == 0 && (ver.patch == 14 || ver.patch == 16))
      {
         SDL_SetHintWithPriority(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "1", SDL_HINT_OVERRIDE);
      }
@@ -1390,6 +1456,34 @@ static void DeactivateMouse(void)
   SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
+// Interpolates mouse input to mitigate stuttering
+static void CorrectMouseStutter(int *x, int *y)
+{
+  static int x_remainder_old, y_remainder_old;
+  int x_remainder, y_remainder;
+  fixed_t fractic, correction_factor;
+
+  if (!mouse_stutter_correction)
+  {
+    return;
+  }
+
+  fractic = dsda_TickElapsedTime();
+
+  *x += x_remainder_old;
+  *y += y_remainder_old;
+
+  correction_factor = FixedDiv(fractic, fractic + 1000000 / TICRATE);
+
+  x_remainder = FixedMul(*x, correction_factor);
+  *x -= x_remainder;
+  x_remainder_old = x_remainder;
+
+  y_remainder = FixedMul(*y, correction_factor);
+  *y -= y_remainder;
+  y_remainder_old = y_remainder;
+}
+
 //
 // Read the change in mouse state to generate mouse motion events
 //
@@ -1402,6 +1496,7 @@ static void I_ReadMouse(void)
     int x, y;
 
     SDL_GetRelativeMouseState(&x, &y);
+    CorrectMouseStutter(&x, &y);
 
     if (x != 0 || y != 0)
     {
@@ -1456,11 +1551,11 @@ static dboolean MouseShouldBeGrabbed()
     return (demoplayback && gamestate == GS_LEVEL && !menuactive);
 
   // when menu is active or game is paused, release the mouse
-  if (menuactive || paused)
+  if (menuactive || dsda_Paused())
     return false;
 
   // only grab mouse when playing levels (but not demos)
-  return (gamestate == GS_LEVEL) && !demoplayback;
+  return !demoplayback;
 }
 
 // Update the value of window_focused when we get a focus event

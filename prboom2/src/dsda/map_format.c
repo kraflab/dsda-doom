@@ -15,6 +15,7 @@
 //	DSDA Map Format
 //
 
+#include "doomstat.h"
 #include "lprintf.h"
 #include "p_spec.h"
 #include "r_state.h"
@@ -111,20 +112,43 @@ dboolean dsda_IsTeleportLine(int index) {
 // Migrate some non-hexen data to hexen format
 static void dsda_MigrateMobjInfo(void) {
   int i;
+  static dboolean migrated = false;
 
-  if (hexen || !map_format.hexen) return;
+  if (hexen) return;
 
-  for (i = mobj_types_zero; i < num_mobj_types; ++i) {
-    if (mobjinfo[i].flags & MF_COUNTKILL)
-      mobjinfo[i].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
+  if (map_format.zdoom && !migrated)
+  {
+    migrated = true;
 
-    if (mobjinfo[i].flags & MF_MISSILE)
-      mobjinfo[i].flags2 |= MF2_PCROSS | MF2_IMPACT;
+    for (i = mobj_types_zero; i < num_mobj_types; ++i) {
+      if (mobjinfo[i].flags & MF_COUNTKILL)
+        mobjinfo[i].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
+
+      if (mobjinfo[i].flags & MF_MISSILE)
+        mobjinfo[i].flags2 |= MF2_PCROSS | MF2_IMPACT;
+    }
+
+    if (!raven) {
+      mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
+      mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL;
+    }
   }
+  else if (!map_format.zdoom && migrated)
+  {
+    migrated = false;
 
-  if (!raven) {
-    mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
-    mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL;
+    for (i = mobj_types_zero; i < num_mobj_types; ++i) {
+      if (mobjinfo[i].flags & MF_COUNTKILL)
+        mobjinfo[i].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL);
+
+      if (mobjinfo[i].flags & MF_MISSILE)
+        mobjinfo[i].flags2 &= ~(MF2_PCROSS | MF2_IMPACT);
+    }
+
+    if (!raven) {
+      mobjinfo[MT_SKULL].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL);
+      mobjinfo[MT_PLAYER].flags2 &= ~(MF2_WINDTHRUST | MF2_PUSHWALL);
+    }
   }
 }
 
@@ -194,11 +218,46 @@ extern void P_CompatiblePlayerThrust(player_t* player, angle_t angle, fixed_t mo
 extern void P_HereticPlayerThrust(player_t* player, angle_t angle, fixed_t move);
 extern void P_HexenPlayerThrust(player_t* player, angle_t angle, fixed_t move);
 
+extern dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
+extern dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
+
+extern void T_VerticalCompatibleDoor(vldoor_t *door);
+extern void T_VerticalHexenDoor(vldoor_t *door);
+
+extern void T_MoveCompatibleFloor(floormove_t *);
+extern void T_MoveHexenFloor(floormove_t *);
+
+void T_MoveCompatibleCeiling(ceiling_t * ceiling);
+void T_MoveHexenCeiling(ceiling_t * ceiling);
+
+int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_t *thing, int flags);
+int EV_HereticTeleport(short thing_id, int tag, line_t * line, int side, mobj_t * thing, int flags);
+
+void T_BuildHexenPillar(pillar_t * pillar);
+void T_BuildZDoomPillar(pillar_t * pillar);
+
+void T_CompatiblePlatRaise(plat_t * plat);
+void T_HexenPlatRaise(plat_t * plat);
+void T_ZDoomPlatRaise(plat_t * plat);
+
+void P_CreateTIDList(void);
+void dsda_BuildMobjThingIDList(void);
+
+void P_InsertMobjIntoTIDList(mobj_t * mobj, short tid);
+void dsda_AddMobjThingID(mobj_t* mo, short thing_id);
+
+void P_RemoveMobjFromTIDList(mobj_t * mobj);
+void dsda_RemoveMobjThingID(mobj_t* mo);
+
+void P_IterateCompatibleSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
+void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
+
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
-  .polyobjs = false,
+  .polyobjs = true,
   .acs = false,
+  .thing_id = true,
   .mapinfo = false,
   .sndseq = false,
   .sndinfo = false,
@@ -218,17 +277,33 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .cross_special_line = P_CrossZDoomSpecialLine,
   .shoot_special_line = P_ShootHexenSpecialLine,
   .test_activate_line = P_TestActivateZDoomLine,
+  .execute_line_special = P_ExecuteZDoomLineSpecial,
   .post_process_line_special = P_PostProcessZDoomLineSpecial,
   .post_process_sidedef_special = P_PostProcessZDoomSidedefSpecial,
   .animate_surfaces = P_AnimateZDoomSurfaces,
   .check_impact = P_CheckZDoomImpact,
   .translate_line_flags = P_TranslateZDoomLineFlags,
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
+  .t_vertical_door = T_VerticalCompatibleDoor,
+  .t_move_floor = T_MoveCompatibleFloor,
+  .t_move_ceiling = T_MoveCompatibleCeiling,
+  .t_build_pillar = T_BuildZDoomPillar,
+  .t_plat_raise = T_ZDoomPlatRaise,
+  .ev_teleport = EV_CompatibleTeleport,
   .player_thrust = P_CompatiblePlayerThrust,
+  .build_mobj_thing_id_list = dsda_BuildMobjThingIDList,
+  .add_mobj_thing_id = dsda_AddMobjThingID,
+  .remove_mobj_thing_id = dsda_RemoveMobjThingID,
+  .iterate_spechit = P_IterateZDoomSpecHit,
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = MT_PUSH,
   .mt_pull = MT_PULL,
+  .dn_polyanchor = 9300,
+  .dn_polyspawn_start = 9301,
+  .dn_polyspawn_hurt = 9303,
+  .dn_polyspawn_end = 9303,
+  .visibility = VF_ZDOOM | VF_DOOM,
 };
 
 static const map_format_t hexen_map_format = {
@@ -236,6 +311,7 @@ static const map_format_t hexen_map_format = {
   .hexen = true,
   .polyobjs = true,
   .acs = true,
+  .thing_id = true,
   .mapinfo = true,
   .sndseq = true,
   .sndinfo = true,
@@ -255,17 +331,33 @@ static const map_format_t hexen_map_format = {
   .cross_special_line = P_CrossHexenSpecialLine,
   .shoot_special_line = P_ShootHexenSpecialLine,
   .test_activate_line = P_TestActivateHexenLine,
+  .execute_line_special = P_ExecuteHexenLineSpecial,
   .post_process_line_special = P_PostProcessHexenLineSpecial,
   .post_process_sidedef_special = P_PostProcessHexenSidedefSpecial,
   .animate_surfaces = P_AnimateHexenSurfaces,
   .check_impact = NULL, // not used
   .translate_line_flags = P_TranslateHexenLineFlags,
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
+  .t_vertical_door = T_VerticalHexenDoor,
+  .t_move_floor = T_MoveHexenFloor,
+  .t_move_ceiling = T_MoveHexenCeiling,
+  .t_build_pillar = T_BuildHexenPillar,
+  .t_plat_raise = T_HexenPlatRaise,
+  .ev_teleport = NULL, // not used
   .player_thrust = P_HexenPlayerThrust,
+  .build_mobj_thing_id_list = P_CreateTIDList,
+  .add_mobj_thing_id = P_InsertMobjIntoTIDList,
+  .remove_mobj_thing_id = P_RemoveMobjFromTIDList,
+  .iterate_spechit = NULL, // not used
   .mapthing_size = sizeof(mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = -1,
   .mt_pull = -1,
+  .dn_polyanchor = 3000,
+  .dn_polyspawn_start = 3001,
+  .dn_polyspawn_hurt = -1,
+  .dn_polyspawn_end = 3002,
+  .visibility = VF_HEXEN,
 };
 
 static const map_format_t heretic_map_format = {
@@ -273,6 +365,7 @@ static const map_format_t heretic_map_format = {
   .hexen = false,
   .polyobjs = false,
   .acs = false,
+  .thing_id = false,
   .mapinfo = false,
   .sndseq = false,
   .sndinfo = false,
@@ -292,17 +385,33 @@ static const map_format_t heretic_map_format = {
   .cross_special_line = P_CrossHereticSpecialLine,
   .shoot_special_line = P_ShootCompatibleSpecialLine,
   .test_activate_line = NULL, // not used
+  .execute_line_special = NULL, // not used
   .post_process_line_special = P_PostProcessHereticLineSpecial,
   .post_process_sidedef_special = P_PostProcessHereticSidedefSpecial,
   .animate_surfaces = P_AnimateHereticSurfaces,
   .check_impact = P_CheckHereticImpact,
   .translate_line_flags = P_TranslateCompatibleLineFlags,
   .apply_sector_movement_special = P_ApplyHereticSectorMovementSpecial,
+  .t_vertical_door = T_VerticalCompatibleDoor,
+  .t_move_floor = T_MoveCompatibleFloor,
+  .t_move_ceiling = T_MoveCompatibleCeiling,
+  .t_build_pillar = NULL, // not used
+  .t_plat_raise = T_CompatiblePlatRaise,
+  .ev_teleport = EV_HereticTeleport,
   .player_thrust = P_HereticPlayerThrust,
+  .build_mobj_thing_id_list = NULL, // not used
+  .add_mobj_thing_id = NULL, // not used
+  .remove_mobj_thing_id = NULL, // not used
+  .iterate_spechit = P_IterateCompatibleSpecHit,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = -1,
   .mt_pull = -1,
+  .dn_polyanchor = -1,
+  .dn_polyspawn_start = -1,
+  .dn_polyspawn_hurt = -1,
+  .dn_polyspawn_end = -1,
+  .visibility = VF_HERETIC,
 };
 
 static const map_format_t doom_map_format = {
@@ -310,6 +419,7 @@ static const map_format_t doom_map_format = {
   .hexen = false,
   .polyobjs = false,
   .acs = false,
+  .thing_id = false,
   .mapinfo = false,
   .sndseq = false,
   .sndinfo = false,
@@ -329,23 +439,46 @@ static const map_format_t doom_map_format = {
   .cross_special_line = P_CrossCompatibleSpecialLine,
   .shoot_special_line = P_ShootCompatibleSpecialLine,
   .test_activate_line = NULL, // not used
+  .execute_line_special = NULL, // not used
   .post_process_line_special = P_PostProcessCompatibleLineSpecial,
   .post_process_sidedef_special = P_PostProcessCompatibleSidedefSpecial,
   .animate_surfaces = P_AnimateCompatibleSurfaces,
   .check_impact = P_CheckCompatibleImpact,
   .translate_line_flags = P_TranslateCompatibleLineFlags,
   .apply_sector_movement_special = P_ApplyCompatibleSectorMovementSpecial,
+  .t_vertical_door = T_VerticalCompatibleDoor,
+  .t_move_floor = T_MoveCompatibleFloor,
+  .t_move_ceiling = T_MoveCompatibleCeiling,
+  .t_build_pillar = NULL, // not used
+  .t_plat_raise = T_CompatiblePlatRaise,
+  .ev_teleport = EV_CompatibleTeleport,
   .player_thrust = P_CompatiblePlayerThrust,
+  .build_mobj_thing_id_list = NULL, // not used
+  .add_mobj_thing_id = NULL, // not used
+  .remove_mobj_thing_id = NULL, // not used
+  .iterate_spechit = P_IterateCompatibleSpecHit,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = MT_PUSH,
   .mt_pull = MT_PULL,
+  .dn_polyanchor = -1,
+  .dn_polyspawn_start = -1,
+  .dn_polyspawn_hurt = -1,
+  .dn_polyspawn_end = -1,
+  .visibility = VF_DOOM,
 };
 
-void dsda_ApplyMapFormat(void) {
-  if (M_CheckParm("-zdoom"))
-    map_format = zdoom_in_hexen_map_format;
-  else if (hexen)
+void dsda_ApplyZDoomMapFormat(void) {
+  map_format = zdoom_in_hexen_map_format;
+
+  if (!mbf21)
+    I_Error("You must use complevel 21 when playing doom-in-hexen format maps.");
+
+  dsda_MigrateMobjInfo();
+}
+
+void dsda_ApplyDefaultMapFormat(void) {
+  if (hexen)
     map_format = hexen_map_format;
   else if (heretic)
     map_format = heretic_map_format;

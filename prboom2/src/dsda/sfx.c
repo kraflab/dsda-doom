@@ -137,3 +137,21 @@ void dsda_FreeDehSFX(void) {
   free(deh_soundnames);
   free(sfx_state);
 }
+
+int dsda_parallel_sfx_limit = 0;
+int dsda_parallel_sfx_window = 1;
+
+dboolean dsda_BlockSFX(sfxinfo_t *sfx) {
+  extern int gametic;
+
+  if (!dsda_parallel_sfx_limit) return false;
+
+  if (gametic - sfx->parallel_tic >= dsda_parallel_sfx_window) {
+    sfx->parallel_tic = gametic;
+    sfx->parallel_count = 0;
+  }
+
+  ++sfx->parallel_count;
+
+  return sfx->parallel_count > dsda_parallel_sfx_limit;
+}

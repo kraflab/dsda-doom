@@ -153,11 +153,6 @@ static void W_AddFile(wadfile_info_t *wadfile)
 
   wadfile->handle = open(wadfile->name,O_RDONLY | O_BINARY);
 
-#ifdef HAVE_NET
-  if (wadfile->handle == -1 && D_NetGetWad(wadfile->name)) // CPhipps
-    wadfile->handle = open(wadfile->name,O_RDONLY | O_BINARY);
-#endif
-
   if (wadfile->handle == -1 &&
     strlen(wadfile->name) > 4 &&
     wadfile->src == source_pwad &&
@@ -600,4 +595,16 @@ void W_ReadLump(int lump, void *dest)
         I_Read(l->wadfile->handle, dest, l->size);
       }
     }
+}
+
+int W_LumpNumInPortWad(int lump) {
+  const lumpinfo_t *info;
+  size_t name_length, default_name_length;
+
+  info = W_GetLumpInfoByNum(lump);
+  name_length = strlen(info->wadfile->name);
+  default_name_length = strlen(WAD_DATA);
+
+  return name_length >= default_name_length &&
+         !strcmp(info->wadfile->name + name_length - default_name_length, WAD_DATA);
 }

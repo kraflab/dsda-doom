@@ -302,6 +302,14 @@ void SpechitOverrun(spechit_overrun_param_t *params)
           break;
         case 14:
           *(params->crushchange) = addr;
+
+          // In vanilla doom, this field is interpreted as a boolean,
+          //   but it now stores the crushing damage itself.
+          // Since any nonzero value should yield doom's damage,
+          //   we can set this explicitly.
+          if (*params->crushchange)
+            *params->crushchange = 10;
+
           break;
 
         default:

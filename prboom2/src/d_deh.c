@@ -205,8 +205,6 @@ const char *s_PRESSYN     = PRESSYN;
 const char *s_QUITMSG     = QUITMSG;
 const char *s_QSAVESPOT   = QSAVESPOT; // PRESSKEY;
 const char *s_SAVEDEAD    = SAVEDEAD;  // PRESSKEY; // remove duplicate y/n
-const char *s_QSPROMPT    = QSPROMPT;  // PRESSYN;
-const char *s_QLPROMPT    = QLPROMPT;  // PRESSYN;
 const char *s_NEWGAME     = NEWGAME;   // PRESSKEY;
 const char *s_RESTARTLEVEL= RESTARTLEVEL; // PRESSYN;
 const char *s_NIGHTMARE   = NIGHTMARE; // PRESSYN;
@@ -513,12 +511,6 @@ const char *bgflat15     = "RROCK13";  // DOOM2 going MAP15 to MAP31
 const char *bgflat31     = "RROCK19";  // DOOM2 going MAP31 to MAP32
 const char *bgcastcall   = "BOSSBACK"; // Panel behind cast call
 
-const char *startup1     = "";  // blank lines are default and are not printed
-const char *startup2     = "";
-const char *startup3     = "";
-const char *startup4     = "";
-const char *startup5     = "";
-
 /* Ty 05/03/98 - externalized
  * cph - updated for prboom */
 const char *savegamename = PACKAGE_TARNAME"-savegame";
@@ -549,9 +541,6 @@ static deh_strs deh_strlookup[] = {
   {&s_QUITMSG,"QUITMSG"},
   {&s_QSAVESPOT,"QSAVESPOT"},
   {&s_SAVEDEAD,"SAVEDEAD"},
-  /* cph - disabled to prevent format string attacks in WAD files
-  {&s_QSPROMPT,"QSPROMPT"},
-  {&s_QLPROMPT,"QLPROMPT"},*/
   {&s_NEWGAME,"NEWGAME"},
   {&s_RESTARTLEVEL,"RESTARTLEVEL"},
   {&s_NIGHTMARE,"NIGHTMARE"},
@@ -850,13 +839,6 @@ static deh_strs deh_strlookup[] = {
   {&bgflat15,"BGFLAT15"},
   {&bgflat31,"BGFLAT31"},
   {&bgcastcall,"BGCASTCALL"},
-  // Ty 04/08/98 - added 5 general purpose startup announcement
-  // strings for hacker use.  See m_menu.c
-  {&startup1,"STARTUP1"},
-  {&startup2,"STARTUP2"},
-  {&startup3,"STARTUP3"},
-  {&startup4,"STARTUP4"},
-  {&startup5,"STARTUP5"},
   {&savegamename,"SAVEGAMENAME"},  // Ty 05/03/98
 };
 
@@ -1423,9 +1405,22 @@ typedef struct {
   actionf_t cptr;  // actual pointer to the subroutine
   const char *lookup;  // mnemonic lookup string to be specified in BEX
   // CPhipps - const*
-  int argcount;  // [XA] number of mbf21 args this action uses, if any
+  short argcount;  // [XA] number of mbf21 args this action uses, if any
   long default_args[MAXSTATEARGS]; // default values for mbf21 args
+  short ti_flags; // thing index on these args
 } deh_bexptr;
+
+#define TI_MISC1 0x0001
+#define TI_MISC2 0x0002
+#define TI_ARGSSHIFT 2
+#define TI_ARGS1 0x0004
+#define TI_ARGS2 0x0008
+#define TI_ARGS3 0x0010
+#define TI_ARGS4 0x0020
+#define TI_ARGS5 0x0040
+#define TI_ARGS6 0x0080
+#define TI_ARGS7 0x0100
+#define TI_ARGS8 0x0200
 
 static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
 {
@@ -1506,7 +1501,7 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_Detonate,        "A_Detonate"},       // killough 8/9/98
   {A_Mushroom,        "A_Mushroom"},       // killough 10/98
   {A_Die,             "A_Die"},            // killough 11/98
-  {A_Spawn,           "A_Spawn"},          // killough 11/98
+  {A_Spawn,           "A_Spawn", 0, {0}, TI_MISC1},          // killough 11/98
   {A_Turn,            "A_Turn"},           // killough 11/98
   {A_Face,            "A_Face"},           // killough 11/98
   {A_Scratch,         "A_Scratch"},        // killough 11/98
@@ -1519,8 +1514,8 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_Stop,            "A_Stop"},
 
   // [XA] New mbf21 codepointers
-  {A_SpawnObject,         "A_SpawnObject", 8},
-  {A_MonsterProjectile,   "A_MonsterProjectile", 5},
+  {A_SpawnObject,         "A_SpawnObject", 8, {0}, TI_ARGS1},
+  {A_MonsterProjectile,   "A_MonsterProjectile", 5, {0}, TI_ARGS1},
   {A_MonsterBulletAttack, "A_MonsterBulletAttack", 5, {0, 0, 1, 3, 5}},
   {A_MonsterMeleeAttack,  "A_MonsterMeleeAttack", 4, {3, 8, 0, 0}},
   {A_RadiusDamage,        "A_RadiusDamage", 2},
@@ -1537,7 +1532,7 @@ static const deh_bexptr deh_bexptrs[] = // CPhipps - static const
   {A_JumpIfFlagsSet,      "A_JumpIfFlagsSet", 3},
   {A_AddFlags,            "A_AddFlags", 2},
   {A_RemoveFlags,         "A_RemoveFlags", 2},
-  {A_WeaponProjectile,    "A_WeaponProjectile", 5},
+  {A_WeaponProjectile,    "A_WeaponProjectile", 5, {0}, TI_ARGS1},
   {A_WeaponBulletAttack,  "A_WeaponBulletAttack", 5, {0, 0, 1, 5, 3}},
   {A_WeaponMeleeAttack,   "A_WeaponMeleeAttack", 5, {2, 10, 1 * FRACUNIT, 0, 0}},
   {A_WeaponSound,         "A_WeaponSound", 2},
@@ -1736,11 +1731,10 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
       continue;
     }
 
-    for (match = 0, i = 0; i < DEH_BLOCKMAX; i++)
+    for (match = 0, i = 0; i < DEH_BLOCKMAX - 1; i++)
       if (!strncasecmp(inbuffer, deh_blocks[i].key, strlen(deh_blocks[i].key)))
       { // matches one
-        if (i < DEH_BLOCKMAX - 1)
-          match = 1;
+        match = 1;
         break;  // we got one, that's enough for this block
       }
 
@@ -1937,7 +1931,9 @@ static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
         return;
       }
       break;
-    case 24: mi->droppeditem = (int)(value - 1); return; // make it base zero (deh is 1-based)
+    case 24: // make it base zero (deh is 1-based)
+      mi->droppeditem = dsda_TranslateDehMobjIndex((int)value) - 1;
+      return;
 
     // mbf21
     // custom groups count from the end of the vanilla list
@@ -1995,6 +1991,7 @@ static void deh_procThing(DEHFILE *fpin, char *line)
   char inbuffer[DEH_BUFFERMAX];
   uint_64_t value;      // All deh values are ints or longs
   int indexnum;
+  int internal_index;
   int ix;
   char *strval;
   dsda_deh_mobjinfo_t deh_mobjinfo;
@@ -2008,9 +2005,9 @@ static void deh_procThing(DEHFILE *fpin, char *line)
 
   // Note that the mobjinfo[] array is base zero, but object numbers
   // in the dehacked file start with one.  Grumble.
-  --indexnum;
+  internal_index = dsda_TranslateDehMobjIndex(indexnum) - 1;
 
-  deh_mobjinfo = dsda_GetDehMobjInfo(indexnum);
+  deh_mobjinfo = dsda_GetDehMobjInfo(internal_index);
 
   // now process the stuff
   // Note that for Things we can look up the key and use its offset
@@ -2077,7 +2074,7 @@ static void deh_procThing(DEHFILE *fpin, char *line)
         // thus screwing everything up and making most DEH patches result in
         // unshootable enemy types. Moved to a separate function above
         // and stripped of all hairy struct address indexing. - POPE
-        setMobjInfoValue(indexnum, ix, value);
+        setMobjInfoValue(internal_index, ix, value);
       }
       else if (bGetData == 1)
       { // proff
@@ -2399,7 +2396,7 @@ static void deh_procSounds(DEHFILE *fpin, char *line)
     if (!deh_strcasecmp(key, "Offset"))
       ; // ignored
     else if (!deh_strcasecmp(key, "Zero/One"))
-      deh_sfx->singularity = (int)value;
+      ; // ignored
     else if (!deh_strcasecmp(key, "Value"))
       deh_sfx->priority = (int)value;
     else if (!deh_strcasecmp(key, "Zero 1"))
@@ -3095,7 +3092,7 @@ static void deh_procHelperThing(DEHFILE *fpin, char *line)
     // Otherwise it's ok
     deh_log("Processing Helper Thing item '%s'\nvalue is %i", key, (int)value);
     if (!strncasecmp(key, "type", 4))
-      HelperThing = (int)value;
+      HelperThing = dsda_TranslateDehMobjIndex((int)value);
   }
 }
 
@@ -3427,6 +3424,24 @@ void PostProcessDeh(void)
       for (; j >= 0; j--)
         if (!(defined_codeptr_args[i] & (1 << j)))
           states[i].args[j] = bexptr_match->default_args[j];
+
+      // State arguments that refer to thing indices need to be translated
+      if (bexptr_match->ti_flags)
+      {
+        short args_i;
+        short ti_flags = bexptr_match->ti_flags;
+
+        if (ti_flags & TI_MISC1)
+          states[i].misc1 = dsda_TranslateDehMobjIndex(states[i].misc1);
+
+        if (ti_flags & TI_MISC2)
+          states[i].misc2 = dsda_TranslateDehMobjIndex(states[i].misc2);
+
+        ti_flags >>= TI_ARGSSHIFT;
+        for (args_i = 0; args_i < MAXSTATEARGS; ++args_i)
+          if (ti_flags & (1 << args_i))
+            states[i].args[args_i] = dsda_TranslateDehMobjIndex(states[i].args[args_i]);
+      }
 
       // Flags specifications aren't cross-port consistent -> must translate / mask bits
       if (bexptr_match->cptr == A_AddFlags || bexptr_match->cptr == A_RemoveFlags)

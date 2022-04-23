@@ -18,11 +18,16 @@
 #include "doomstat.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
+#include "m_cheat.h"
 #include "m_menu.h"
 #include "v_video.h"
 
+#include "dsda/brute_force.h"
+#include "dsda/exhud.h"
 #include "dsda/global.h"
+#include "dsda/playback.h"
 #include "dsda/tas.h"
+#include "dsda/utility.h"
 
 #include "console.h"
 
@@ -88,7 +93,7 @@ dboolean dsda_OpenConsole(void) {
   return true;
 }
 
-static dboolean console_PlayerSetHealth(const char* args) {
+static dboolean console_PlayerSetHealth(const char* command, const char* args) {
   int health;
 
   if (sscanf(args, "%i", &health)) {
@@ -101,7 +106,7 @@ static dboolean console_PlayerSetHealth(const char* args) {
   return false;
 }
 
-static dboolean console_PlayerSetArmor(const char* args) {
+static dboolean console_PlayerSetArmor(const char* command, const char* args) {
   int arg_count;
   int armorpoints, armortype;
 
@@ -140,15 +145,15 @@ static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
   return false;
 }
 
-static dboolean console_PlayerSetX(const char* args) {
+static dboolean console_PlayerSetX(const char* command, const char* args) {
   return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->x);
 }
 
-static dboolean console_PlayerSetY(const char* args) {
+static dboolean console_PlayerSetY(const char* command, const char* args) {
   return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->y);
 }
 
-static dboolean console_PlayerSetZ(const char* args) {
+static dboolean console_PlayerSetZ(const char* command, const char* args) {
   return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->z);
 }
 
@@ -170,26 +175,26 @@ static void console_PlayerRoundCoordinate(int* x) {
   }
 }
 
-static dboolean console_PlayerRoundX(const char* args) {
+static dboolean console_PlayerRoundX(const char* command, const char* args) {
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
 
   return true;
 }
 
-static dboolean console_PlayerRoundY(const char* args) {
+static dboolean console_PlayerRoundY(const char* command, const char* args) {
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
 
   return true;
 }
 
-static dboolean console_PlayerRoundXY(const char* args) {
+static dboolean console_PlayerRoundXY(const char* command, const char* args) {
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
 
   return true;
 }
 
-static dboolean console_CommandLock(const char* args) {
+static dboolean console_CommandLock(const char* command, const char* args) {
   char element[CONSOLE_ENTRY_SIZE];
   int value;
 
@@ -199,13 +204,158 @@ static dboolean console_CommandLock(const char* args) {
   return false;
 }
 
-static dboolean console_CommandUnlock(const char* args) {
+static dboolean console_CommandUnlock(const char* command, const char* args) {
   dsda_DisablePersistentCommand();
 
   return true;
 }
 
-static dboolean console_Exit(const char* args) {
+static dboolean console_TrackerAddLine(const char* command, const char* args) {
+  int id;
+
+  if (sscanf(args, "%i", &id))
+    return dsda_TrackLine(id);
+
+  return false;
+}
+
+static dboolean console_TrackerRemoveLine(const char* command, const char* args) {
+  int id;
+
+  if (sscanf(args, "%i", &id))
+    return dsda_UntrackLine(id);
+
+  return false;
+}
+
+static dboolean console_TrackerAddSector(const char* command, const char* args) {
+  int id;
+
+  if (sscanf(args, "%i", &id))
+    return dsda_TrackSector(id);
+
+  return false;
+}
+
+static dboolean console_TrackerRemoveSector(const char* command, const char* args) {
+  int id;
+
+  if (sscanf(args, "%i", &id))
+    return dsda_UntrackSector(id);
+
+  return false;
+}
+
+static dboolean console_TrackerAddMobj(const char* command, const char* args) {
+  int id;
+
+  if (sscanf(args, "%i", &id))
+    return dsda_TrackMobj(id);
+
+  return false;
+}
+
+static dboolean console_TrackerRemoveMobj(const char* command, const char* args) {
+  int id;
+
+  if (sscanf(args, "%i", &id))
+    return dsda_UntrackMobj(id);
+
+  return false;
+}
+
+static dboolean console_TrackerAddPlayer(const char* command, const char* args) {
+  return dsda_TrackPlayer(0);
+}
+
+static dboolean console_TrackerRemovePlayer(const char* command, const char* args) {
+  return dsda_UntrackPlayer(0);
+}
+
+static dboolean console_JumpTic(const char* command, const char* args) {
+  int tic;
+
+  if (sscanf(args, "%i", &tic)) {
+    if (tic < 0)
+      tic = logictic + tic;
+
+    dsda_JumpToLogicTic(tic);
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_BruteForceStart(const char* command, const char* args) {
+  int depth;
+  int forwardmove_min, forwardmove_max;
+  int sidemove_min, sidemove_max;
+  int angleturn_min, angleturn_max;
+  char condition_args[CONSOLE_ENTRY_SIZE];
+  int arg_count;
+
+  dsda_ResetBruteForceConditions();
+
+  arg_count = sscanf(
+    args, "%i %i:%i %i:%i %i:%i %[^;]", &depth,
+    &forwardmove_min, &forwardmove_max,
+    &sidemove_min, &sidemove_max,
+    &angleturn_min, &angleturn_max,
+    condition_args
+  );
+
+  if (arg_count == 8) {
+    int i;
+    char** conditions;
+
+    conditions = dsda_SplitString(condition_args, ",");
+
+    if (!conditions)
+      return false;
+
+    for (i = 0; conditions[i]; ++i) {
+      dsda_bf_attribute_t attribute;
+      dsda_bf_operator_t operator;
+      fixed_t value;
+      char attr_s[4] = { 0 };
+      char oper_s[3] = { 0 };
+
+      if (sscanf(conditions[i], "%3s %2s %i", attr_s, oper_s, &value) == 3) {
+        int attr_i, oper_i;
+
+        for (attr_i = 0; attr_i < dsda_bf_attribute_max; ++attr_i)
+          if (!strcmp(attr_s, dsda_bf_attribute_names[attr_i]))
+            break;
+
+        if (attr_i == dsda_bf_attribute_max)
+          return false;
+
+        for (oper_i = 0; oper_i < dsda_bf_operator_max; ++oper_i)
+          if (!strcmp(oper_s, dsda_bf_operator_names[oper_i]))
+            break;
+
+        if (oper_i == dsda_bf_operator_max)
+          return false;
+
+        dsda_AddBruteForceCondition(attr_i, oper_i, value);
+      }
+    }
+
+    free(conditions);
+
+    dsda_StartBruteForce(depth,
+                         forwardmove_min, forwardmove_max,
+                         sidemove_min, sidemove_max,
+                         angleturn_min, angleturn_max);
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_Exit(const char* command, const char* args) {
   extern void M_ClearMenus(void);
 
   M_ClearMenus();
@@ -213,7 +363,11 @@ static dboolean console_Exit(const char* args) {
   return true;
 }
 
-typedef dboolean (*console_command_t)(const char*);
+static dboolean console_BasicCheat(const char* command, const char* args) {
+  return M_CheatEntered(command, args);
+}
+
+typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
   const char* command_name;
@@ -221,6 +375,7 @@ typedef struct {
 } console_command_entry_t;
 
 static console_command_entry_t console_commands[] = {
+  // commands
   { "player.sethealth", console_PlayerSetHealth },
   { "player.setarmor", console_PlayerSetArmor },
   { "player.setx", console_PlayerSetX },
@@ -231,6 +386,78 @@ static console_command_entry_t console_commands[] = {
   { "player.roundxy", console_PlayerRoundXY },
   { "command.lock", console_CommandLock },
   { "command.unlock", console_CommandUnlock },
+
+  // tracking
+  { "tracker.addline", console_TrackerAddLine },
+  { "t.al", console_TrackerAddLine },
+  { "tracker.removeline", console_TrackerRemoveLine },
+  { "t.rl", console_TrackerRemoveLine },
+  { "tracker.addsector", console_TrackerAddSector },
+  { "t.as", console_TrackerAddSector },
+  { "tracker.removesector", console_TrackerRemoveSector },
+  { "t.rs", console_TrackerRemoveSector },
+  { "tracker.addmobj", console_TrackerAddMobj },
+  { "t.am", console_TrackerAddMobj },
+  { "tracker.removemobj", console_TrackerRemoveMobj },
+  { "t.rm", console_TrackerRemoveMobj },
+  { "tracker.addplayer", console_TrackerAddPlayer },
+  { "t.ap", console_TrackerAddPlayer },
+  { "tracker.removeplayer", console_TrackerRemovePlayer },
+  { "t.rp", console_TrackerRemovePlayer },
+
+  // traversing time
+  { "jump.tic", console_JumpTic },
+
+  // cheats
+  { "idchoppers", console_BasicCheat },
+  { "iddqd", console_BasicCheat },
+  { "idkfa", console_BasicCheat },
+  { "idfa", console_BasicCheat },
+  { "idspispopd", console_BasicCheat },
+  { "idclip", console_BasicCheat },
+  { "idmypos", console_BasicCheat },
+  { "idrate", console_BasicCheat },
+  { "iddt", console_BasicCheat },
+  { "iddst", console_BasicCheat },
+  { "iddkt", console_BasicCheat },
+  { "iddit", console_BasicCheat },
+
+  { "tntcomp", console_BasicCheat },
+  { "tntem", console_BasicCheat },
+  { "tnthom", console_BasicCheat },
+  { "tntka", console_BasicCheat },
+  { "tntsmart", console_BasicCheat },
+  { "tntpitch", console_BasicCheat },
+  { "tntfast", console_BasicCheat },
+  { "tntice", console_BasicCheat },
+  { "tntpush", console_BasicCheat },
+
+  { "notarget", console_BasicCheat },
+  { "fly", console_BasicCheat },
+
+  { "quicken", console_BasicCheat },
+  { "ponce", console_BasicCheat },
+  { "kitty", console_BasicCheat },
+  { "massacre", console_BasicCheat },
+  { "rambo", console_BasicCheat },
+  { "skel", console_BasicCheat },
+  { "shazam", console_BasicCheat },
+  { "ravmap", console_BasicCheat },
+  { "cockadoodledoo", console_BasicCheat },
+
+  { "satan", console_BasicCheat },
+  { "clubmed", console_BasicCheat },
+  { "butcher", console_BasicCheat },
+  { "nra", console_BasicCheat },
+  { "indiana", console_BasicCheat },
+  { "locksmith", console_BasicCheat },
+  { "sherlock", console_BasicCheat },
+  { "casper", console_BasicCheat },
+  { "init", console_BasicCheat },
+  { "mapsco", console_BasicCheat },
+  { "deliverance", console_BasicCheat },
+
+  // exit
   { "exit", console_Exit },
   { "quit", console_Exit },
   { NULL }
@@ -250,7 +477,7 @@ static void dsda_ExecuteConsole(void) {
 
     for (entry = console_commands; entry->command; entry++) {
       if (!stricmp(command, entry->command_name)) {
-        entry->command(args);
+        entry->command(command, args);
         break;
       }
     }

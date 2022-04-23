@@ -44,22 +44,24 @@
 #include "heretic/f_finale.h"
 #include "hexen/f_finale.h"
 
+#include "dsda/mapinfo.h"
+
 #include "f_finale.h" // CPhipps - hmm...
 
+// defines for the end mission display text                     // phares
 
-// The implementation for UMAPINFO is kept separate to avoid demo sync issues
-void FMI_Ticker (void);
-void FMI_Drawer (void);
-void FMI_StartFinale (void);
-extern int using_FMI;
-
+#define TEXTSPEED    3     // original value                    // phares
+#define TEXTWAIT     250   // original value                    // phares
+#define NEWTEXTSPEED 0.01f // new value                         // phares
+#define NEWTEXTWAIT  1000  // new value                         // phares
 
 // Stage of animation:
 //  0 = text, 1 = art screen, 2 = character cast
-int finalestage; // cph -
-int finalecount; // made static
-const char*   finaletext; // cph -
-const char*   finaleflat; // made static const
+int finalestage;
+int finalecount;
+const char*   finaletext;
+const char*   finaleflat;
+const char*   finalepatch;
 
 // defines for the end mission display text                     // phares
 
@@ -82,7 +84,8 @@ int midstage;                 // whether we're in "mid-stage"
 //
 void F_StartFinale (void)
 {
-  dboolean mus_changed = false;
+  int mnum;
+  int muslump;
 
   if (heretic) return Heretic_F_StartFinale();
   if (hexen) return Hexen_F_StartFinale();
@@ -96,16 +99,18 @@ void F_StartFinale (void)
 
   finaletext = NULL;
   finaleflat = NULL;
+  finalepatch = NULL;
 
-	if (gamemapinfo && gamemapinfo->intermusic[0])
-	{
-		int l = W_CheckNumForName(gamemapinfo->intermusic);
-		if (l >= 0)
-		{
-			S_ChangeMusInfoMusic(l, true);
-			mus_changed = true;
-		}
-	}
+  dsda_InterMusic(&mnum, &muslump);
+
+  if (muslump >= 0)
+  {
+    S_ChangeMusInfoMusic(muslump, true);
+  }
+  else
+  {
+    S_ChangeMusic(mnum, true);
+  }
 
   // Okay - IWAD dependend stuff.
   // This has been changed severly, and
@@ -117,8 +122,6 @@ void F_StartFinale (void)
     case registered:
     case retail:
     {
-      if (!mus_changed) S_ChangeMusic(mus_victor, true);
-
       switch (gameepisode)
       {
         case 1:
@@ -147,8 +150,6 @@ void F_StartFinale (void)
     // DOOM II and missions packs with E1, M34
     case commercial:
     {
-      if (!mus_changed) S_ChangeMusic(mus_read_m, true);
-
       // Ty 08/27/98 - added the gamemission logic
       switch (gamemap)
       {
@@ -197,16 +198,12 @@ void F_StartFinale (void)
 
     // Indeterminate.
     default:  // Ty 03/30/98 - not externalized
-         if (!mus_changed) S_ChangeMusic(mus_read_m, true);
          finaleflat = "F_SKY1"; // Not used anywhere else.
          finaletext = s_C1TEXT;  // FIXME - other text, music?
          break;
   }
 
-	if (gamemapinfo)
-	{
-		FMI_StartFinale();
-	}
+  dsda_StartFinale();
 
   finalestage = 0;
   finalecount = 0;
@@ -255,11 +252,10 @@ void F_Ticker(void)
   if (heretic) return Heretic_F_Ticker();
   if (hexen) return Hexen_F_Ticker();
 
-	if (using_FMI)
-	{
-		FMI_Ticker();
-		return;
-	}
+  if (dsda_FTicker())
+  {
+    return;
+  }
 
   if (!demo_compatibility)
     WI_checkForAccelerate();  // killough 3/28/98: check for acceleration
@@ -321,12 +317,10 @@ extern patchnum_t hu_font[HU_FONTSIZE];
 
 void F_TextWrite (void)
 {
-  // [FG] if interbackdrop does not specify a valid flat, draw it as a patch instead
-  if (gamemapinfo && W_CheckNumForName(finaleflat) != -1 &&
-      (W_CheckNumForName)(finaleflat, ns_flats) == -1)
+  if (finalepatch)
   {
     V_FillBorder(-1, 0);
-    V_DrawNamePatch(0, 0, 0, finaleflat, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(0, 0, 0, finalepatch, CR_DEFAULT, VPT_STRETCH);
   }
   else
     V_DrawBackground(finaleflat, 0);
@@ -723,11 +717,10 @@ void F_Drawer (void)
   if (heretic) return Heretic_F_Drawer();
   if (hexen) return Hexen_F_Drawer();
 
-	if (using_FMI)
-	{
-		FMI_Drawer();
-		return;
-	}
+  if (dsda_FDrawer())
+  {
+    return;
+  }
 
   if (finalestage == 2)
   {

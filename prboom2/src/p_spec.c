@@ -53,6 +53,7 @@
 #include "p_user.h"
 #include "g_game.h"
 #include "p_inter.h"
+#include "p_enemy.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "i_sound.h"
@@ -67,6 +68,7 @@
 #include "dsda/global.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
+#include "dsda/thing_id.h"
 
 //
 //      source animation definition
@@ -894,6 +896,19 @@ int P_FindSectorFromTag(int tag, int start)
   return start;
 }
 
+int P_FindSectorFromTagOrLine(int tag, const line_t *line, int start)
+{
+  if (tag == 0)
+  {
+    if (!line || !line->backsector || line->backsector->iSectorID == start)
+      return -1;
+
+    return line->backsector->iSectorID;
+  }
+  else
+    return P_FindSectorFromTag(tag, start);
+}
+
 // killough 4/16/98: Same thing, only for linedefs
 
 int P_FindLineFromLineTag(const line_t *line, int start)
@@ -938,6 +953,12 @@ static void P_InitTagLists(void)
       lines[i].nexttag = lines[j].firsttag;   // Prepend linedef to chain
       lines[j].firsttag = i;
     }
+}
+
+// Converts Hexen's 0 (meaning no crush) to the internal value
+int P_ConvertHexenCrush(int crush)
+{
+  return (crush ? crush : NO_CRUSH);
 }
 
 //
@@ -1129,35 +1150,165 @@ dboolean P_CanUnlockGenDoor
   return true;
 }
 
+dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
+{
+  if (!player)
+    return false;
+
+  switch (lock)
+  {
+    case zk_none:
+      break;
+    case zk_red_card:
+      if (!player->cards[it_redcard])
+      {
+        player->message = s_PD_REDC;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_blue_card:
+      if (!player->cards[it_bluecard])
+      {
+        player->message = s_PD_BLUEC;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_yellow_card:
+      if (!player->cards[it_yellowcard])
+      {
+        player->message = s_PD_YELLOWC;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_red_skull:
+      if (!player->cards[it_redskull])
+      {
+        player->message = s_PD_REDS;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_blue_skull:
+      if (!player->cards[it_blueskull])
+      {
+        player->message = s_PD_BLUES;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_yellow_skull:
+      if (!player->cards[it_yellowskull])
+      {
+        player->message = s_PD_YELLOWS;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_any:
+      if (
+        !player->cards[it_redcard] &&
+        !player->cards[it_redskull] &&
+        !player->cards[it_bluecard] &&
+        !player->cards[it_blueskull] &&
+        !player->cards[it_yellowcard] &&
+        !player->cards[it_yellowskull]
+      )
+      {
+        player->message = s_PD_ANY;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_all:
+      if (
+        !player->cards[it_redcard] ||
+        !player->cards[it_redskull] ||
+        !player->cards[it_bluecard] ||
+        !player->cards[it_blueskull] ||
+        !player->cards[it_yellowcard] ||
+        !player->cards[it_yellowskull]
+      )
+      {
+        player->message = s_PD_ALL6;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_red:
+    case zk_redx:
+      if (!player->cards[it_redcard] && !player->cards[it_redskull])
+      {
+        player->message = s_PD_REDK;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_blue:
+    case zk_bluex:
+      if (!player->cards[it_bluecard] && !player->cards[it_blueskull])
+      {
+        player->message = s_PD_BLUEK;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_yellow:
+    case zk_yellowx:
+      if (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
+      {
+        player->message = s_PD_YELLOWK;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+      break;
+    case zk_each_color:
+      if (
+        (!player->cards[it_redcard] && !player->cards[it_redskull]) ||
+        (!player->cards[it_bluecard] && !player->cards[it_blueskull]) ||
+        (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
+      )
+      {
+        player->message = s_PD_ALL3;
+        S_StartSound(player->mo, sfx_oof);
+        return false;
+      }
+    default:
+      break;
+  }
+
+  return true;
+}
+
 
 //
 // P_SectorActive()
 //
-// Passed a linedef special class (floor, ceiling, lighting) and a sector
-// returns whether the sector is already busy with a linedef special of the
-// same class. If old demo compatibility true, all linedef special classes
-// are the same.
+// In old compatibility levels, floor and ceiling data couldn't coexist.
+// Lighting data is only relevant in zdoom levels.
 //
-// jff 2/23/98 added to prevent old demos from
-//  succeeding in starting multiple specials on one sector
-//
-dboolean PUREFUNC P_SectorActive(special_e t, const sector_t *sec)
+
+dboolean PUREFUNC P_PlaneActive(const sector_t *sec)
 {
-  if (demo_compatibility)  // return whether any thinker is active
-    return sec->floordata != NULL || sec->ceilingdata != NULL;
-  else
-    switch (t)             // return whether thinker of same type is active
-    {
-      case floor_special:
-        return sec->floordata != NULL;
-      case ceiling_special:
-        return sec->ceilingdata != NULL;
-      case lighting_special:
-        return false;
-    }
-  return true; // don't know which special, must be active, shouldn't be here
+  return sec->ceilingdata != NULL || sec->floordata != NULL;
 }
 
+dboolean PUREFUNC P_CeilingActive(const sector_t *sec)
+{
+  return sec->ceilingdata != NULL || (demo_compatibility && sec->floordata != NULL);
+}
+
+dboolean PUREFUNC P_FloorActive(const sector_t *sec)
+{
+  return sec->floordata != NULL || (demo_compatibility && sec->ceilingdata != NULL);
+}
+
+dboolean PUREFUNC P_LightingActive(const sector_t *sec)
+{
+  return sec->lightingdata != NULL;
+}
 
 //
 // P_CheckTag()
@@ -1368,6 +1519,11 @@ dboolean PUREFUNC P_IsSecret(const sector_t *sec)
 dboolean PUREFUNC P_WasSecret(const sector_t *sec)
 {
   return (sec->flags & SECF_WASSECRET) != 0;
+}
+
+dboolean PUREFUNC P_RevealedSecret(const sector_t *sec)
+{
+  return P_WasSecret(sec) && !P_IsSecret(sec);
 }
 
 void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
@@ -1705,7 +1861,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
     case 39:
       // TELEPORT! //jff 02/09/98 fix using up with wrong side crossing
-      if (EV_Teleport(line, side, thing) || demo_compatibility)
+      if (map_format.ev_teleport(0, line->tag, line, side, thing, TELF_VANILLA) || demo_compatibility)
         line->special = 0;
       break;
 
@@ -1824,7 +1980,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
     case 125:
       // TELEPORT MonsterONLY
       if (!thing->player &&
-          (EV_Teleport(line, side, thing) || demo_compatibility))
+          (map_format.ev_teleport(0, line->tag, line, side, thing, TELF_VANILLA) || demo_compatibility))
         line->special = 0;
       break;
 
@@ -1961,7 +2117,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
     case 97:
       // TELEPORT!
-      EV_Teleport( line, side, thing );
+      map_format.ev_teleport( 0, line->tag, line, side, thing, TELF_VANILLA );
       break;
 
     case 98:
@@ -1992,7 +2148,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
     case 126:
       // TELEPORT MonsterONLY.
       if (!thing->player)
-        EV_Teleport( line, side, thing );
+        map_format.ev_teleport( 0, line->tag, line, side, thing, TELF_VANILLA );
       break;
 
     case 128:
@@ -2073,7 +2229,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 207:
             // killough 2/16/98: W1 silent teleporter (normal kind)
-            if (EV_SilentTeleport(line, side, thing))
+            if (map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT))
               line->special = 0;
             break;
 
@@ -2081,14 +2237,14 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
           case 153: //jff 3/15/98 create texture change no motion type
             // Texture/Type Change Only (Trig)
             // 153 W1 Change Texture/Type Only
-            if (EV_DoChange(line,trigChangeOnly))
+            if (EV_DoChange(line,trigChangeOnly,line->tag))
               line->special = 0;
             break;
 
           case 239: //jff 3/15/98 create texture change no motion type
             // Texture/Type Change Only (Numeric)
             // 239 W1 Change Texture/Type Only
-            if (EV_DoChange(line,numChangeOnly))
+            if (EV_DoChange(line,numChangeOnly,line->tag))
               line->special = 0;
             break;
 
@@ -2122,29 +2278,29 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 243: //jff 3/6/98 make fit within DCK's 256 linedef types
             // killough 2/16/98: W1 silent teleporter (linedef-linedef kind)
-            if (EV_SilentLineTeleport(line, side, thing, false))
+            if (EV_SilentLineTeleport(line, side, thing, line->tag, false))
               line->special = 0;
             break;
 
           case 262: //jff 4/14/98 add silent line-line reversed
-            if (EV_SilentLineTeleport(line, side, thing, true))
+            if (EV_SilentLineTeleport(line, side, thing, line->tag, true))
               line->special = 0;
             break;
 
           case 264: //jff 4/14/98 add monster-only silent line-line reversed
             if (!thing->player &&
-                EV_SilentLineTeleport(line, side, thing, true))
+                EV_SilentLineTeleport(line, side, thing, line->tag, true))
               line->special = 0;
             break;
 
           case 266: //jff 4/14/98 add monster-only silent line-line
             if (!thing->player &&
-                EV_SilentLineTeleport(line, side, thing, false))
+                EV_SilentLineTeleport(line, side, thing, line->tag, false))
               line->special = 0;
             break;
 
           case 268: //jff 4/14/98 add monster-only silent
-            if (!thing->player && EV_SilentTeleport(line, side, thing))
+            if (!thing->player && map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT))
               line->special = 0;
             break;
 
@@ -2239,7 +2395,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 208:
             // killough 2/16/98: WR silent teleporter (normal kind)
-            EV_SilentTeleport(line, side, thing);
+            map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT);
             break;
 
           case 212: //jff 3/14/98 create instant toggle floor type
@@ -2252,13 +2408,13 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
           case 154: //jff 3/15/98 create texture change no motion type
             // Texture/Type Change Only (Trigger)
             // 154 WR Change Texture/Type Only
-            EV_DoChange(line,trigChangeOnly);
+            EV_DoChange(line,trigChangeOnly,line->tag);
             break;
 
           case 240: //jff 3/15/98 create texture change no motion type
             // Texture/Type Change Only (Numeric)
             // 240 WR Change Texture/Type Only
-            EV_DoChange(line,numChangeOnly);
+            EV_DoChange(line,numChangeOnly,line->tag);
             break;
 
           case 220:
@@ -2287,26 +2443,26 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
           case 244: //jff 3/6/98 make fit within DCK's 256 linedef types
             // killough 2/16/98: WR silent teleporter (linedef-linedef kind)
-            EV_SilentLineTeleport(line, side, thing, false);
+            EV_SilentLineTeleport(line, side, thing, line->tag, false);
             break;
 
           case 263: //jff 4/14/98 add silent line-line reversed
-            EV_SilentLineTeleport(line, side, thing, true);
+            EV_SilentLineTeleport(line, side, thing, line->tag, true);
             break;
 
           case 265: //jff 4/14/98 add monster-only silent line-line reversed
             if (!thing->player)
-              EV_SilentLineTeleport(line, side, thing, true);
+              EV_SilentLineTeleport(line, side, thing, line->tag, true);
             break;
 
           case 267: //jff 4/14/98 add monster-only silent line-line
             if (!thing->player)
-              EV_SilentLineTeleport(line, side, thing, false);
+              EV_SilentLineTeleport(line, side, thing, line->tag, false);
             break;
 
           case 269: //jff 4/14/98 add monster-only silent
             if (!thing->player)
-              EV_SilentTeleport(line, side, thing);
+              map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT);
             break;
 
             //jff 1/29/98 end of added WR linedef types
@@ -2695,6 +2851,18 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
   {
     case zs_d_scroll_east_lava_damage:
       P_Thrust(player, 0, 2048 * 28);
+      break;
+    case zs_scroll_strife_current:
+      {
+        int anglespeed;
+        fixed_t carryspeed;
+        angle_t angle;
+
+        anglespeed = sector->tag - 100;
+        carryspeed = (anglespeed % 10) * 4096;
+        angle = (anglespeed / 10) * ANG45;
+        P_Thrust(player, angle, carryspeed);
+      }
       break;
     case zs_carry_east5:
     case zs_carry_east10:
@@ -3204,11 +3372,11 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
       sector->special = 0;
       break;
     case zs_d_damage_lava_wimpy:
-      P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX);
+      P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX | SECF_DMGUNBLOCKABLE);
       sector->special = 0;
       break;
     case zs_d_damage_lava_hefty:
-      P_SetupSectorDamage(sector, 8, 32, 0, SECF_DMGTERRAINFX);
+      P_SetupSectorDamage(sector, 8, 32, 0, SECF_DMGTERRAINFX | SECF_DMGUNBLOCKABLE);
       sector->special = 0;
       break;
     case zs_s_damage_hellslime:
@@ -3288,42 +3456,6 @@ static void P_TransferLineArgs(line_t *l, byte *args)
   args[2] = l->arg3;
   args[3] = l->arg4;
   args[4] = l->arg5;
-}
-
-// Check for undefined parameters that are non-zero and output messages for them.
-// We don't report for specials we don't understand.
-static void P_ValidateLineSpecials(void)
-{
-  int i;
-  line_t *l;
-
-  if (!map_format.zdoom) return;
-
-  for (i = 0, l = lines; i < numlines; i++, l++)
-  {
-    zl_linespecial_t *spec = dsda_GetLineSpecialInfo(l->special);
-
-    if (spec)
-    {
-      int arg;
-      byte args[5];
-
-      P_TransferLineArgs(l, args);
-
-      for (arg = spec->map_args; arg < LINE_ARG_COUNT; ++arg)
-      {
-        if (args[arg])
-        {
-          lprintf(LO_WARN, "Line %d (type %d:%s), arg %u is %d (should be 0)\n",
-                           i, l->special, spec->name, arg + 1, args[arg]);
-        }
-      }
-    }
-    else
-    {
-      lprintf(LO_WARN, "Unknown line special %d\n", l->special);
-    }
-  }
 }
 
 static void P_SpawnVanillaExtras(void)
@@ -3619,7 +3751,6 @@ void P_SpawnSpecials (void)
   P_InitButtons();
   P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
-  P_ValidateLineSpecials();
   P_SpawnScrollers(); // killough 3/7/98: Add generalized scrollers
 
   if (demo_compatibility) return P_SpawnVanillaExtras();
@@ -3947,8 +4078,8 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     else
     {
       // The speed and direction are parameters to the special.
-      dx = (l->arg4 - 128) / 32;
-      dy = (l->arg5 - 128) / 32;
+      dx = (fixed_t) (l->arg4 - 128) * FRACUNIT / 32;
+      dy = (fixed_t) (l->arg5 - 128) * FRACUNIT / 32;
     }
   }
 
@@ -5065,7 +5196,7 @@ void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean
             line->special = 0;
             break;
         case 39:               // TELEPORT!
-            EV_Teleport(line, side, thing);
+            map_format.ev_teleport(0, line->tag, line, side, thing, TELF_VANILLA);
             line->special = 0;
             break;
         case 40:               // RaiseCeilingLowerFloor
@@ -5192,7 +5323,7 @@ void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean
             EV_DoFloor(line, raiseToTexture);
             break;
         case 97:               // TELEPORT!
-            EV_Teleport(line, side, thing);
+            map_format.ev_teleport(0, line->tag, line, side, thing, TELF_VANILLA);
             break;
         case 98:               // Lower Floor (TURBO)
             EV_DoFloor(line, turboLower);
@@ -5599,7 +5730,7 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activ
 
   P_TransferLineArgs(line, args);
 
-  buttonSuccess = P_ExecuteLineSpecial(line->special, args, line, side, mo);
+  buttonSuccess = map_format.execute_line_special(line->special, args, line, side, mo);
 
   if (!repeat && buttonSuccess)
   {                           // clear the special on non-retriggerable lines
@@ -5706,8 +5837,1552 @@ void P_PlayerInHexenSector(player_t * player, sector_t * sector)
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
 
-dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
-                             int side, mobj_t * mo)
+static dboolean P_ArgToCrushType(byte arg)
+{
+  return arg == 1 ? false : arg == 2 ? true : hexen;
+}
+
+static crushmode_e P_ArgToCrushMode(byte arg, dboolean slowdown)
+{
+  static const crushmode_e map[] = { crushDoom, crushHexen, crushSlowdown };
+
+  if (arg >= 1 && arg <= 3) return map[arg - 1];
+
+  return hexen ? crushHexen : slowdown ? crushSlowdown : crushDoom;
+}
+
+static int P_ArgToCrush(byte arg)
+{
+  return (arg > 0) ? arg : NO_CRUSH;
+}
+
+static byte P_ArgToChange(byte arg)
+{
+  static const byte ChangeMap[8] = { 0, 1, 5, 3, 7, 2, 6, 0 };
+
+  return (arg < 8) ? ChangeMap[arg] : 0;
+}
+
+static fixed_t P_ArgToSpeed(byte arg)
+{
+  return (fixed_t) arg * FRACUNIT / 8;
+}
+
+static fixed_t P_ArgsToFixed(fixed_t arg_i, fixed_t arg_f)
+{
+  return (arg_i << FRACBITS) + (arg_f << FRACBITS) / 100;
+}
+
+static angle_t P_ArgToAngle(angle_t arg)
+{
+  return arg * (ANG180 / 128);
+}
+
+dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
+{
+  dboolean buttonSuccess = false;
+
+  switch (special)
+  {
+    case zl_door_close:
+      buttonSuccess = EV_DoZDoomDoor(closeDoor, line, mo, args[0],
+                                     args[1], 0, 0, args[2], false, 0);
+      break;
+    case zl_door_open:
+      buttonSuccess = EV_DoZDoomDoor(openDoor, line, mo, args[0],
+                                    args[1], 0, 0, args[2], false, 0);
+      break;
+    case zl_door_raise:
+      buttonSuccess = EV_DoZDoomDoor(normal, line, mo, args[0],
+                                    args[1], args[2], 0, args[3], false, 0);
+      break;
+    case zl_door_locked_raise:
+      buttonSuccess = EV_DoZDoomDoor(args[2] ? normal : openDoor, line, mo, args[0],
+                                     args[1], args[2], args[3], args[4], false, 0);
+      break;
+    case zl_door_close_wait_open:
+      buttonSuccess = EV_DoZDoomDoor(genCdO, line, mo, args[0],
+                                     args[1], (int) args[2] * 35 / 8, 0, args[3], false, 0);
+      break;
+    case zl_door_wait_raise:
+      buttonSuccess = EV_DoZDoomDoor(waitRaiseDoor, line, mo, args[0],
+                                     args[1], args[2], 0, args[4], false, args[3]);
+      break;
+    case zl_door_wait_close:
+      buttonSuccess = EV_DoZDoomDoor(waitCloseDoor, line, mo, args[0],
+                                     args[1], 0, 0, args[3], false, args[2]);
+      break;
+    case zl_generic_door:
+      {
+        byte tag, lightTag;
+        vldoor_e type;
+        dboolean boomgen = false;
+
+        switch (args[2] & 63)
+        {
+          case 0:
+            type = normal;
+            break;
+          case 1:
+            type = openDoor;
+            break;
+          case 2:
+            type = genCdO;
+            break;
+          case 3:
+            type = closeDoor;
+            break;
+          default:
+            return 0;
+        }
+
+        // Boom doesn't allow manual generalized doors to be activated while they move
+        if (args[2] & 64)
+          boomgen = true;
+
+        if (args[2] & 128)
+        {
+          tag = 0;
+          lightTag = args[0];
+        }
+        else
+        {
+          tag = args[0];
+          lightTag = 0;
+        }
+
+        buttonSuccess = EV_DoZDoomDoor(type, line, mo, tag, args[1],
+                                       (int) args[3] * 35 / 8, args[4], lightTag, boomgen, 0);
+      }
+      break;
+    case zl_pillar_build:
+      buttonSuccess = EV_DoZDoomPillar(pillarBuild, line, args[0], P_ArgToSpeed(args[1]),
+                                       args[2], 0, NO_CRUSH, false);
+      break;
+    case zl_pillar_build_and_crush:
+      buttonSuccess = EV_DoZDoomPillar(pillarBuild, line, args[0], P_ArgToSpeed(args[1]),
+                                       args[2], 0, args[3], P_ArgToCrushType(args[4]));
+      break;
+    case zl_pillar_open:
+      buttonSuccess = EV_DoZDoomPillar(pillarOpen, line, args[0], P_ArgToSpeed(args[1]),
+                                       args[2], args[3], NO_CRUSH, false);
+      break;
+    case zl_elevator_move_to_floor:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateCurrent, P_ArgToSpeed(args[1]),
+                                         0, args[0]);
+      break;
+    case zl_elevator_raise_to_nearest:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateUp, P_ArgToSpeed(args[1]),
+                                         0, args[0]);
+      break;
+    case zl_elevator_lower_to_nearest:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateDown, P_ArgToSpeed(args[1]),
+                                         0, args[0]);
+      break;
+    case zl_floor_and_ceiling_lower_by_value:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateLower, P_ArgToSpeed(args[1]),
+                                         args[2], args[0]);
+      break;
+    case zl_floor_and_ceiling_raise_by_value:
+      buttonSuccess = EV_DoZDoomElevator(line, elevateRaise, P_ArgToSpeed(args[1]),
+                                         args[2], args[0]);
+      break;
+    case zl_floor_lower_by_value:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], args[2],
+                                      NO_CRUSH, P_ArgToChange(args[3]), false, false);
+      break;
+    case zl_floor_lower_to_lowest:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToLowest, line, args[0], args[1], 0,
+                                      NO_CRUSH, P_ArgToChange(args[2]), false, false);
+      break;
+    case zl_floor_lower_to_highest:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToHighest, line, args[0], args[1],
+                                      (int) args[2] - 128, NO_CRUSH, 0, false, args[3] == 1);
+      break;
+    case zl_floor_lower_to_highest_ee:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToHighest, line, args[0], args[1], 0,
+                                      NO_CRUSH, P_ArgToChange(args[2]), false, false);
+      break;
+    case zl_floor_lower_to_nearest:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToNearest, line, args[0], args[1], 0,
+                                      NO_CRUSH, P_ArgToChange(args[2]), false, false);
+      break;
+    case zl_floor_raise_by_value:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseByValue, line, args[0], args[1], args[2],
+                                      P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
+      break;
+    case zl_floor_raise_to_highest:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToHighest, line, args[0], args[1], 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_to_nearest:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToNearest, line, args[0], args[1], 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_to_lowest:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToLowest, line, args[0], 2, 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_and_crush:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseAndCrush, line, args[0], args[1], 0,
+                                      args[2], 0, P_ArgToCrushType(args[3]), false);
+      break;
+    case zl_floor_raise_and_crushdoom:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseAndCrushDoom, line, args[0], args[1], 0,
+                                      args[2], 0, P_ArgToCrushType(args[3]), false);
+      break;
+    case zl_floor_raise_by_value_times_8:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseByValue, line, args[0], args[1], (int) args[2] * 8,
+                                      P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
+      break;
+    case zl_floor_lower_by_value_times_8:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], (int) args[2] * 8,
+                                      NO_CRUSH, P_ArgToChange(args[3]), false, false);
+      break;
+    case zl_floor_lower_instant:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerInstant, line, args[0], 0, (int) args[2] * 8,
+                                      NO_CRUSH, P_ArgToChange(args[3]), false, false);
+      break;
+    case zl_floor_raise_instant:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseInstant, line, args[0], 0, (int) args[2] * 8,
+                                      P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
+      break;
+    case zl_floor_to_ceiling_instant:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToCeiling, line, args[0], 0, args[3],
+                                      P_ArgToCrush(args[2]), P_ArgToChange(args[1]), true, false);
+      break;
+    case zl_floor_move_to_value:
+      buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
+                                      (int) args[2] * (args[3] ? -1 : 1),
+                                      NO_CRUSH, P_ArgToChange(args[4]), false, false);
+      break;
+    case zl_floor_move_to_value_times_8:
+      buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
+                                      (int) args[2] * 8 * (args[3] ? -1 : 1),
+                                      NO_CRUSH, P_ArgToChange(args[4]), false, false);
+      break;
+    case zl_floor_raise_to_lowest_ceiling:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToLowestCeiling, line, args[0], args[1], 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_lower_to_lowest_ceiling:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerToLowestCeiling, line, args[0], args[1], args[4],
+                                      NO_CRUSH, P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_by_texture:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseByTexture, line, args[0], args[1], 0,
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_lower_by_texture:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerByTexture, line, args[0], args[1], 0,
+                                      NO_CRUSH, P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_to_ceiling:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseToCeiling, line, args[0], args[1], args[4],
+                                      P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
+      break;
+    case zl_floor_raise_by_value_tx_ty:
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseAndChange, line, args[0], args[1], args[2],
+                                      NO_CRUSH, 0, false, false);
+      break;
+    case zl_floor_lower_to_lowest_tx_ty:
+      buttonSuccess = EV_DoZDoomFloor(floorLowerAndChange, line, args[0], args[1], args[2],
+                                      NO_CRUSH, 0, false, false);
+      break;
+    case zl_generic_floor:
+      {
+        floor_e type;
+        dboolean raise_or_lower;
+        byte index;
+
+        static floor_e floor_type[2][7] = {
+          {
+            floorLowerByValue,
+            floorLowerToHighest,
+            floorLowerToLowest,
+            floorLowerToNearest,
+            floorLowerToLowestCeiling,
+            floorLowerToCeiling,
+            floorLowerByTexture,
+          },
+          {
+            floorRaiseByValue,
+            floorRaiseToHighest,
+            floorRaiseToLowest,
+            floorRaiseToNearest,
+            floorRaiseToLowestCeiling,
+            floorRaiseToCeiling,
+            floorRaiseByTexture,
+          }
+        };
+
+        raise_or_lower = (args[4] & 8) >> 3;
+        index = (args[3] < 7) ? args[3] : 0;
+        type = floor_type[raise_or_lower][index];
+
+        buttonSuccess = EV_DoZDoomFloor(type, line, args[0], args[1], args[2],
+                                        (args[4] & 16) ? 20 : NO_CRUSH, args[4] & 7, false, false);
+      }
+      break;
+    case zl_floor_crush_stop:
+      buttonSuccess = EV_ZDoomFloorCrushStop(args[0]);
+      break;
+    case zl_floor_donut:
+      buttonSuccess = EV_DoZDoomDonut(args[0], line, P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]));
+      break;
+    case zl_ceiling_lower_by_value:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerByValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[2], P_ArgToCrush(args[4]), 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_raise_by_value:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseByValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[2], P_ArgToCrush(args[4]), 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_lower_by_value_times_8:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerByValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        (int) args[2] * 8, NO_CRUSH, 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_raise_by_value_times_8:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseByValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        (int) args[2] * 8, NO_CRUSH, 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_crush_and_raise:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]) / 2,
+                                        8, args[2], 0,
+                                        0, P_ArgToCrushMode(args[3], false));
+      break;
+    case zl_ceiling_lower_and_crush:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerAndCrush, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]),
+                                        8, args[2], 0,
+                                        0, P_ArgToCrushMode(args[3], args[1] == 8));
+      break;
+    case zl_ceiling_lower_and_crush_dist:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerAndCrush, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]),
+                                        args[3], args[2], 0,
+                                        0, P_ArgToCrushMode(args[4], args[1] == 8));
+      break;
+    case zl_ceiling_crush_raise_and_stay:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushRaiseAndStay, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]) / 2,
+                                        8, args[2], 0,
+                                        0, P_ArgToCrushMode(args[3], false));
+      break;
+    case zl_ceiling_move_to_value_times_8:
+      buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        (int) args[2] * 8 * (args[3] ? -1 : 1), NO_CRUSH, 0,
+                                        P_ArgToChange(args[4]), false);
+      break;
+    case zl_ceiling_move_to_value:
+      buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        (int) args[2] * (args[3] ? -1 : 1), NO_CRUSH, 0,
+                                        P_ArgToChange(args[4]), false);
+      break;
+    case zl_ceiling_lower_to_highest_floor:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToHighestFloor, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[4], P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[2]), false);
+      break;
+    case zl_ceiling_lower_instant:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerInstant, line, args[0],
+                                        0, 0,
+                                        (int) args[2] * 8, P_ArgToCrush(args[4]), 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_raise_instant:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseInstant, line, args[0],
+                                        0, 0,
+                                        (int) args[2] * 8, NO_CRUSH, 0,
+                                        P_ArgToChange(args[3]), false);
+      break;
+    case zl_ceiling_crush_raise_and_stay_a:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushRaiseAndStay, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[3], 0,
+                                        0, P_ArgToCrushMode(args[4], false));
+      break;
+    case zl_ceiling_crush_raise_and_stay_sil_a:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushRaiseAndStay, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[3], 1,
+                                        0, P_ArgToCrushMode(args[4], false));
+      break;
+    case zl_ceiling_crush_and_raise_a:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[3], 0,
+                                        0, P_ArgToCrushMode(args[4], args[1] == 8 && args[2] == 8));
+      break;
+    case zl_ceiling_crush_and_raise_dist:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[2]), P_ArgToSpeed(args[2]),
+                                        args[1], args[3], 0,
+                                        0, P_ArgToCrushMode(args[4], args[2] == 8));
+      break;
+    case zl_ceiling_crush_and_raise_silent_a:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[3], 1,
+                                        0, P_ArgToCrushMode(args[4], args[1] == 8 && args[2] == 8));
+      break;
+    case zl_ceiling_crush_and_raise_silent_dist:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[2]), P_ArgToSpeed(args[2]),
+                                        args[1], args[3], 1,
+                                        0, P_ArgToCrushMode(args[4], args[2] == 8));
+      break;
+    case zl_ceiling_raise_to_nearest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToNearest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, NO_CRUSH, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_raise_to_highest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToHighest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, NO_CRUSH, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_raise_to_lowest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToLowest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, NO_CRUSH, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_raise_to_highest_floor:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToHighestFloor, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, NO_CRUSH, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_raise_by_texture:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseByTexture, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, NO_CRUSH, P_ArgToChange(args[2]),
+                                        0, false);
+      break;
+    case zl_ceiling_lower_to_lowest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToLowest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[2]), false);
+      break;
+    case zl_ceiling_lower_to_nearest:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToNearest, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[2]), false);
+      break;
+    case zl_ceiling_to_highest_instant:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToHighest, line, args[0],
+                                        2 * FRACUNIT, 0,
+                                        0, P_ArgToCrush(args[2]), 0,
+                                        P_ArgToChange(args[1]), false);
+      break;
+    case zl_ceiling_to_floor_instant:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToFloor, line, args[0],
+                                        2 * FRACUNIT, 0,
+                                        args[3], P_ArgToCrush(args[2]), 0,
+                                        P_ArgToChange(args[1]), false);
+      break;
+    case zl_ceiling_lower_to_floor:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerToFloor, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[4], P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[4]), false);
+      break;
+    case zl_ceiling_lower_by_texture:
+      buttonSuccess = EV_DoZDoomCeiling(ceilLowerByTexture, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        0, P_ArgToCrush(args[3]), 0,
+                                        P_ArgToChange(args[4]), false);
+      break;
+    case zl_generic_ceiling:
+      {
+        ceiling_e type;
+        dboolean raise_or_lower;
+        byte index;
+
+        static floor_e ceiling_type[2][7] = {
+          {
+            ceilLowerByValue,
+            ceilLowerToHighest,
+            ceilLowerToLowest,
+            ceilLowerToNearest,
+            ceilLowerToHighestFloor,
+            ceilLowerToFloor,
+            ceilLowerByTexture,
+          },
+          {
+            ceilRaiseByValue,
+            ceilRaiseToHighest,
+            ceilRaiseToLowest,
+            ceilRaiseToNearest,
+            ceilRaiseToHighestFloor,
+            ceilRaiseToFloor,
+            ceilRaiseByTexture,
+          }
+        };
+
+        raise_or_lower = (args[4] & 8) >> 3;
+        index = (args[3] < 7) ? args[3] : 0;
+        type = ceiling_type[raise_or_lower][index];
+
+        buttonSuccess = EV_DoZDoomCeiling(type, line, args[0],
+                                          P_ArgToSpeed(args[1]), P_ArgToSpeed(args[1]),
+                                          args[2], (args[4] & 16) ? 20 : NO_CRUSH, 0,
+                                          args[4] & 7, false);
+      }
+      break;
+    case zl_ceiling_crush_stop:
+      {
+        dboolean remove;
+
+        switch (args[3])
+        {
+          case 1:
+            remove = false;
+            break;
+          case 2:
+            remove = true;
+            break;
+          default:
+            remove = hexen;
+            break;
+        }
+
+        buttonSuccess = EV_ZDoomCeilingCrushStop(args[0], remove);
+      }
+      break;
+    case zl_generic_crusher:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[4], args[3] ? 2 : 0,
+                                        0, (args[1] <= 24 && args[2] <= 24) ? crushSlowdown : crushDoom);
+      break;
+    case zl_generic_crusher2:
+      buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
+                                        P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),
+                                        0, args[4], args[3] ? 2 : 0,
+                                        0, crushHexen);
+      break;
+    case zl_floor_waggle:
+      buttonSuccess = EV_StartPlaneWaggle(args[0], line, args[1], args[2], args[3], args[4], false);
+      break;
+    case zl_ceiling_waggle:
+      buttonSuccess = EV_StartPlaneWaggle(args[0], line, args[1], args[2], args[3], args[4], true);
+      break;
+    case zl_floor_and_ceiling_lower_raise:
+      buttonSuccess = EV_DoZDoomCeiling(ceilRaiseToHighest, line, args[0],
+                                        P_ArgToSpeed(args[2]), 0, 0, 0, 0, 0, false);
+      buttonSuccess |= EV_DoZDoomFloor(floorLowerToLowest, line, args[0],
+                                       args[1], 0, NO_CRUSH, 0, false, false);
+      break;
+    case zl_stairs_build_down:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildDown, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, STAIR_USE_SPECIALS);
+      break;
+    case zl_stairs_build_up:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, STAIR_USE_SPECIALS);
+      break;
+    case zl_stairs_build_down_sync:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildDown, line,
+                                          args[2], P_ArgToSpeed(args[1]), 0,
+                                          args[3], 0, STAIR_USE_SPECIALS | STAIR_SYNC);
+      break;
+    case zl_stairs_build_up_sync:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), 0,
+                                          args[3], 0, STAIR_USE_SPECIALS | STAIR_SYNC);
+      break;
+    case zl_stairs_build_down_doom:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildDown, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, 0);
+      break;
+    case zl_stairs_build_up_doom:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, 0);
+      break;
+    case zl_stairs_build_down_doom_sync:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildDown, line,
+                                          args[2], P_ArgToSpeed(args[1]), 0,
+                                          args[3], 0, STAIR_SYNC);
+      break;
+    case zl_stairs_build_up_doom_sync:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), 0,
+                                          args[3], 0, STAIR_SYNC);
+      break;
+    case zl_generic_stairs:
+      {
+        stairs_e type;
+
+        type = (args[3] & 1) ? stairBuildUp : stairBuildDown;
+        buttonSuccess = EV_BuildZDoomStairs(args[0], type, line,
+                                            args[2], P_ArgToSpeed(args[1]), 0,
+                                            args[4], args[3] & 2, 0);
+
+        // Toggle direction of next activation of repeatable stairs
+        if (buttonSuccess && line &&
+            line->flags & ML_REPEATSPECIAL &&
+            line->special == zl_generic_stairs)
+        {
+          line->arg4 ^= 1; // args[3]
+        }
+      }
+      break;
+    case zl_plat_stop:
+      {
+        dboolean remove;
+
+        switch (args[3])
+        {
+          case 1:
+            remove = false;
+            break;
+          case 2:
+            remove = true;
+            break;
+          default:
+            remove = hexen;
+            break;
+        }
+
+        EV_StopZDoomPlat(args[0], remove);
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_plat_perpetual_raise:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platPerpetualRaise, 0,
+                                     P_ArgToSpeed(args[1]), args[2], 8, 0);
+      break;
+    case zl_plat_perpetual_raise_lip:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platPerpetualRaise, 0,
+                                     P_ArgToSpeed(args[1]), args[2], args[3], 0);
+      break;
+    case zl_plat_down_wait_up_stay:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platDownWaitUpStay, 0,
+                                     P_ArgToSpeed(args[1]), args[2], 8, 0);
+      break;
+    case zl_plat_down_wait_up_stay_lip:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line,
+                                     args[4] ? platDownWaitUpStayStone : platDownWaitUpStay, 0,
+                                     P_ArgToSpeed(args[1]), args[2], args[3], 0);
+      break;
+    case zl_plat_down_by_value:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platDownByValue, (int) args[3] * 8,
+                                     P_ArgToSpeed(args[1]), args[2], 0, 0);
+      break;
+    case zl_plat_up_by_value:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValue, (int) args[3] * 8,
+                                     P_ArgToSpeed(args[1]), args[2], 0, 0);
+      break;
+    case zl_plat_up_wait_down_stay:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpWaitDownStay, 0,
+                                     P_ArgToSpeed(args[1]), args[2], 0, 0);
+      break;
+    case zl_plat_up_nearest_wait_down_stay:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpNearestWaitDownStay, 0,
+                                     P_ArgToSpeed(args[1]), args[2], 0, 0);
+      break;
+    case zl_plat_raise_and_stay_tx0:
+      {
+        plattype_e type;
+
+        switch (args[3])
+        {
+          case 1:
+            type = platRaiseAndStay;
+            break;
+          case 2:
+            type = platRaiseAndStayLockout;
+            break;
+          default:
+            type = (heretic ? platRaiseAndStayLockout : platRaiseAndStay);
+            break;
+        }
+
+        buttonSuccess = EV_DoZDoomPlat(args[0], line, type, 0, P_ArgToSpeed(args[1]), 0, 0, 1);
+      }
+      break;
+    case zl_plat_up_by_value_stay_tx:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValueStay, (int) args[2] * 8,
+                                     P_ArgToSpeed(args[1]), 0, 0, 2);
+      break;
+    case zl_plat_toggle_ceiling:
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platToggle, 0, 0, 0, 0, 0);
+      break;
+    case zl_generic_lift:
+      {
+        plattype_e type;
+
+        switch (args[3])
+        {
+          case 1:
+            type = platDownWaitUpStay;
+            break;
+          case 2:
+            type = platDownToNearestFloor;
+            break;
+          case 3:
+            type = platDownToLowestCeiling;
+            break;
+          case 4:
+            type = platPerpetualRaise;
+            break;
+          default:
+            type = platUpByValue;
+            break;
+        }
+
+        buttonSuccess = EV_DoZDoomPlat(args[0], line, type, (int) args[4] * 8,
+                                       P_ArgToSpeed(args[1]), (int) args[2] * 35 / 8, 0, 0);
+      }
+      break;
+    case zl_line_set_blocking:
+      if (args[0])
+      {
+        int i, s;
+        static const int flags[] =
+        {
+          ML_BLOCKING,
+          ML_BLOCKMONSTERS,
+          ML_BLOCKPLAYERS,
+          0, // block floaters (not supported)
+          0, // block projectiles (not supported)
+          ML_BLOCKEVERYTHING,
+          0, // railing (not supported)
+          0, // block use (not supported)
+          0, // block sight (not supported)
+          0, // block hitscan (not supported)
+          ML_SOUNDBLOCK,
+          -1
+        };
+
+        int setflags = 0;
+        int clearflags = 0;
+
+        for (i = 0; flags[i] != -1; i++, args[1] >>= 1, args[2] >>= 1)
+        {
+          if (args[1] & 1) setflags |= flags[i];
+          if (args[2] & 1) clearflags |= flags[i];
+        }
+
+        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        {
+          lines[s].flags = (lines[s].flags & ~clearflags) | setflags;
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_scroll_wall:
+      if (args[0])
+      {
+        int s;
+        int side = !!args[3];
+
+        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        {
+          Add_Scroller(sc_side, args[1], args[2], -1, lines[s].sidenum[side], 0);
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_line_set_texture_offset:
+      if (args[0] && args[3] <= 1)
+      {
+        int s;
+        int sidenum = !!args[3];
+
+        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        {
+          side_t *side = &sides[lines[s].sidenum[sidenum]];
+          side->textureoffset = args[1];
+          side->rowoffset = args[2];
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_noise_alert:
+      {
+        extern void P_NoiseAlert(mobj_t *target, mobj_t *emitter);
+
+        mobj_t *target, *emitter;
+
+        if (!args[0])
+        {
+          target = mo;
+        }
+        else
+        {
+          // not supported yet
+          target = NULL;
+        }
+
+        if (!args[1])
+        {
+          emitter = mo;
+        }
+        else
+        {
+          // not supported yet
+          emitter = NULL;
+        }
+
+        if (emitter)
+        {
+          P_NoiseAlert(target, emitter);
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_sector_set_gravity:
+      {
+        fixed_t gravity;
+        int s = -1;
+
+        if (args[2] > 99)
+          args[2] = 99;
+
+        gravity = P_ArgsToFixed(args[1], args[2]);
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+          sectors[s].gravity = gravity;
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_damage:
+      {
+        int s = -1;
+        dboolean unblockable = false;
+
+        if (args[3] == 0)
+        {
+          if (args[1] < 20)
+          {
+            args[4] = 0;
+            args[3] = 32;
+          }
+          else if (args[1] < 50)
+          {
+            args[4] = 5;
+            args[3] = 32;
+          }
+          else
+          {
+            unblockable = true;
+            args[4] = 0;
+            args[3] = 1;
+          }
+        }
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        {
+          sectors[s].damage.amount = args[1];
+          sectors[s].damage.interval = args[3];
+          sectors[s].damage.leakrate = args[4];
+          if (unblockable)
+            sectors[s].flags |= SECF_DMGUNBLOCKABLE;
+          else
+            sectors[s].flags &= ~SECF_DMGUNBLOCKABLE;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_floor_transfer_numeric:
+      buttonSuccess = EV_DoChange(line, numChangeOnly, args[0]);
+      break;
+    case zl_floor_transfer_trigger:
+      buttonSuccess = EV_DoChange(line, trigChangeOnly, args[0]);
+      break;
+    case zl_sector_set_floor_panning:
+      {
+        int s = -1;
+        fixed_t xoffs, yoffs;
+
+        xoffs = P_ArgsToFixed(args[1], args[2]);
+        yoffs = P_ArgsToFixed(args[3], args[4]);
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        {
+          sectors[s].floor_xoffs = xoffs;
+          sectors[s].floor_yoffs = yoffs;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_ceiling_panning:
+      {
+        int s = -1;
+        fixed_t xoffs, yoffs;
+
+        xoffs = P_ArgsToFixed(args[1], args[2]);
+        yoffs = P_ArgsToFixed(args[3], args[4]);
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        {
+          sectors[s].ceiling_xoffs = xoffs;
+          sectors[s].ceiling_yoffs = yoffs;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_heal_thing:
+      if (mo)
+      {
+        int max = args[1];
+
+        buttonSuccess = 1;
+
+        if (!max || !mo->player)
+        {
+          P_HealMobj(mo, args[0]);
+          break;
+        }
+        else if (max == 1)
+        {
+          max = max_soul;
+        }
+
+        if (mo->health < max)
+        {
+          mo->health += args[0];
+          if (mo->health > max && max > 0)
+          {
+            mo->health = max;
+          }
+          mo->player->health = mo->health;
+        }
+      }
+      break;
+    case zl_force_field:
+      if (mo)
+      {
+        P_DamageMobj(mo, NULL, NULL, 16);
+        P_ThrustMobj(mo, ANG180 + mo->angle, 2048 * 250);
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_clear_force_field:
+      {
+        int s = -1;
+
+        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        {
+          int i;
+          line_t *line;
+
+          buttonSuccess = 1;
+
+          for (i = 0; i < sectors[s].linecount; i++)
+          {
+            line_t *line = sectors[s].lines[i];
+
+            if (line->backsector && line->special == zl_force_field)
+            {
+              line->flags &= ~(ML_BLOCKING | ML_BLOCKEVERYTHING);
+              line->special = 0;
+              sides[line->sidenum[0]].midtexture = NO_TEXTURE;
+              sides[line->sidenum[1]].midtexture = NO_TEXTURE;
+            }
+          }
+        }
+      }
+      break;
+    case zl_exit_normal:
+      G_ExitLevel(); // args[0] is position
+      buttonSuccess = 1;
+      break;
+    case zl_exit_secret:
+      G_SecretExitLevel(); // args[0] is position
+      buttonSuccess = 1;
+      break;
+    case zl_polyobj_rotate_left:
+      buttonSuccess = EV_RotatePoly(line, args, 1, false);
+      break;
+    case zl_polyobj_or_rotate_left:
+      buttonSuccess = EV_RotatePoly(line, args, 1, true);
+      break;
+    case zl_polyobj_rotate_right:
+      buttonSuccess = EV_RotatePoly(line, args, -1, false);
+      break;
+    case zl_polyobj_or_rotate_right:
+      buttonSuccess = EV_RotatePoly(line, args, -1, true);
+      break;
+    case zl_polyobj_move:
+      buttonSuccess = EV_MovePoly(line, args, false, false);
+      break;
+    case zl_polyobj_or_move:
+      buttonSuccess = EV_MovePoly(line, args, false, true);
+      break;
+    case zl_polyobj_move_times_8:
+      buttonSuccess = EV_MovePoly(line, args, true, false);
+      break;
+    case zl_polyobj_or_move_times_8:
+      buttonSuccess = EV_MovePoly(line, args, true, true);
+      break;
+    case zl_polyobj_door_swing:
+      buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SWING);
+      break;
+    case zl_polyobj_door_slide:
+      buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SLIDE);
+      break;
+    case zl_polyobj_move_to:
+      buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
+                                    args[2] << FRACBITS, args[3] << FRACBITS, false);
+      break;
+    case zl_polyobj_or_move_to:
+      buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
+                                    args[2] << FRACBITS, args[3] << FRACBITS, true);
+      break;
+    case zl_polyobj_move_to_spot:
+      {
+        mobj_t *dest;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        dest = dsda_FindMobjFromThingID(args[2], &search);
+
+        if (!dest)
+        {
+          break;
+        }
+
+        buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
+                                      dest->x, dest->y, false);
+      }
+      break;
+    case zl_polyobj_or_move_to_spot:
+      {
+        mobj_t *dest;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        dest = dsda_FindMobjFromThingID(args[2], &search);
+
+        if (!dest)
+        {
+          break;
+        }
+
+        buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
+                                      dest->x, dest->y, true);
+      }
+      break;
+    case zl_polyobj_stop:
+      buttonSuccess = EV_StopPoly(args[0]);
+      break;
+    case zl_thing_move:
+      {
+        mobj_t *target;
+        mobj_t *dest;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search);
+        dsda_ResetThingIDSearch(&search);
+        dest = dsda_FindMobjFromThingID(args[1], &search);
+
+        if (target && dest)
+        {
+          buttonSuccess = P_MoveThing(target, dest->x, dest->y, dest->z, args[2] ? false : true);
+        }
+      }
+      break;
+    case zl_teleport_other:
+      if (args[0] && args[1])
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingID(args[0], &search)))
+        {
+          buttonSuccess |= map_format.ev_teleport(args[1], 0, NULL, 0, target,
+                                                  args[2] ? (TELF_DESTFOG | TELF_SOURCEFOG) :
+                                                            TELF_KEEPORIENTATION);
+        }
+      }
+      break;
+    case zl_teleport:
+      {
+        int flags = TELF_DESTFOG;
+
+        if (!args[2])
+          flags |= TELF_SOURCEFOG;
+
+        buttonSuccess = map_format.ev_teleport(args[0], args[1], line, side, mo, flags);
+      }
+      break;
+    case zl_teleport_no_fog:
+      {
+        int flags = 0;
+
+        switch (args[1])
+        {
+          case 0:
+            flags |= TELF_KEEPORIENTATION;
+            break;
+
+          case 2:
+            if (line)
+              flags |= TELF_KEEPORIENTATION | TELF_ROTATEBOOM;
+            break;
+
+          case 3:
+            if (line)
+              flags |= TELF_KEEPORIENTATION | TELF_ROTATEBOOMINVERSE;
+            break;
+
+          default:
+            break;
+        }
+
+        if (args[3])
+          flags |= TELF_KEEPHEIGHT;
+
+        buttonSuccess = map_format.ev_teleport(args[0], args[2], line, side, mo, flags);
+      }
+      break;
+    case zl_teleport_no_stop:
+      {
+        int flags = TELF_DESTFOG | TELF_KEEPVELOCITY;
+
+        if (!args[2])
+          flags |= TELF_SOURCEFOG;
+
+        buttonSuccess = map_format.ev_teleport(args[0], args[1], line, side, mo, flags);
+      }
+      break;
+    case zl_teleport_zombie_changer:
+      if (mo)
+      {
+        map_format.ev_teleport(args[0], args[1], line, side, mo, 0);
+        if (mo->health >= 0 && mo->info->painstate)
+        {
+          P_SetMobjState(mo, mo->info->painstate);
+        }
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_teleport_line:
+      buttonSuccess = EV_SilentLineTeleport(line, side, mo, args[1], args[2]);
+      break;
+    case zl_light_raise_by_value:
+      EV_LightChange(args[0], args[1]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_lower_by_value:
+      EV_LightChange(args[0], - (short) args[1]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_change_to_value:
+      EV_LightSet(args[0], args[1]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_min_neighbor:
+      EV_LightSetMinNeighbor(args[0]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_max_neighbor:
+      EV_LightSetMaxNeighbor(args[0]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_fade:
+      EV_StartLightFading(args[0], args[1], args[2]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_glow:
+      EV_StartLightGlowing(args[0], args[1], args[2], args[3]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_flicker:
+      EV_StartLightFlickering(args[0], args[1], args[2]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_strobe:
+      EV_StartZDoomLightStrobing(args[0], args[1], args[2], args[3], args[4]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_strobe_doom:
+      EV_StartZDoomLightStrobingDoom(args[0], args[1], args[2]);
+      buttonSuccess = 1;
+      break;
+    case zl_light_stop:
+      EV_StopLightEffect(args[0]);
+      buttonSuccess = 1;
+      break;
+    case zl_thing_spawn:
+      buttonSuccess =
+        P_SpawnThing(args[0], mo, args[1], P_ArgToAngle(args[2]), true, args[3]);
+      break;
+    case zl_thing_spawn_no_fog:
+      buttonSuccess =
+        P_SpawnThing(args[0], mo, args[1], P_ArgToAngle(args[2]), false, args[3]);
+      break;
+    case zl_thing_spawn_facing:
+      buttonSuccess =
+        P_SpawnThing(args[0], mo, args[1], ANGLE_MAX, args[2] ? false : true, args[3]);
+      break;
+    case zl_thing_projectile:
+      buttonSuccess = P_SpawnProjectile(args[0], mo, args[1], P_ArgToAngle(args[2]),
+                                        P_ArgToSpeed(args[3]), P_ArgToSpeed(args[4]),
+                                        0, NULL, 0, 0);
+      break;
+    case zl_thing_projectile_gravity:
+      buttonSuccess = P_SpawnProjectile(args[0], mo, args[1], P_ArgToAngle(args[2]),
+                                        P_ArgToSpeed(args[3]), P_ArgToSpeed(args[4]),
+                                        0, NULL, 1, 0);
+      break;
+    case zl_thing_projectile_aimed:
+      buttonSuccess = P_SpawnProjectile(args[0], mo, args[1], 0,
+                                        P_ArgToSpeed(args[2]), 0,
+                                        args[3], mo, 0, args[4]);
+      break;
+    case zl_thing_projectile_intercept:
+      // ZDoom's implementation relies on a bunch of trigonometry
+      // I tried converting this to fixed points,
+      //   but the calculations easily go out of bounds (dot products).
+      // Needs a different implementation, or 64 bit fixed point conversions
+      // Falling back on the default aimed behaviour for now
+      buttonSuccess = P_SpawnProjectile(args[0], mo, args[1], 0,
+                                        P_ArgToSpeed(args[2]), 0,
+                                        args[3], mo, 0, args[4]);
+      break;
+    case zl_thing_stop:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          buttonSuccess = 1;
+
+          target->momx = 0;
+          target->momy = 0;
+          target->momz = 0;
+
+          if (target->player)
+          {
+            target->player->momx = 0;
+            target->player->momy = 0;
+          }
+        }
+      }
+      break;
+    case zl_thing_change_tid:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          dsda_RemoveMobjThingID(target);
+          target->tid = args[1];
+          if (target->tid)
+            dsda_AddMobjThingID(target, args[1]);
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_thing_hate:
+      {
+        mobj_t *hater;
+        mobj_t *target;
+        thing_id_search_t search;
+        thing_id_search_t target_search;
+
+        // Currently no support for this arg
+        if (args[2])
+        {
+          break;
+        }
+
+        if (!args[0] && mo && mo->player)
+        {
+          break;
+        }
+
+        buttonSuccess = 1;
+
+        dsda_ResetThingIDSearch(&target_search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[1], mo, &target_search)))
+        {
+          if (
+            target->flags & MF_SHOOTABLE &&
+            target->health > 0 &&
+            !(target->flags2 & MF2_DORMANT)
+          )
+          {
+            break;
+          }
+        }
+
+        if (!target)
+        {
+          break;
+        }
+
+        dsda_ResetThingIDSearch(&search);
+        while ((hater = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          if (
+            hater->health > 0 &&
+            hater->flags & MF_SHOOTABLE &&
+            hater->info->seestate
+          )
+          {
+            while ((target = dsda_FindMobjFromThingIDOrMobj(args[1], mo, &target_search)))
+            {
+              if (
+                target->flags & MF_SHOOTABLE &&
+                target->health > 0 &&
+                !(target->flags2 & MF2_DORMANT) &&
+                target != hater
+              )
+              {
+                break;
+              }
+            }
+
+            // Restart from beginning of list
+            if (!target)
+            {
+              dsda_ResetThingIDSearch(&target_search);
+              while ((target = dsda_FindMobjFromThingIDOrMobj(args[1], mo, &target_search)))
+              {
+                if (
+                  target->flags & MF_SHOOTABLE &&
+                  target->health > 0 &&
+                  !(target->flags2 & MF2_DORMANT) &&
+                  target != hater
+                )
+                {
+                  break;
+                }
+              }
+            }
+
+            // We might have no target if the hater is the only possible target
+            if (target)
+            {
+              P_SetTarget(&hater->lastenemy, hater->target);
+              P_SetTarget(&hater->target, target);
+
+              if (!(hater->flags2 & MF2_DORMANT))
+              {
+                P_SetMobjState(hater, hater->info->seestate);
+              }
+            }
+          }
+        }
+      }
+      break;
+    case zl_thing_remove:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          if (!target->player)
+          {
+            if (target->flags & MF_COUNTKILL)
+              dsda_WatchKill(&players[consoleplayer], target);
+
+            P_RemoveMobj(target);
+          }
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_thing_activate:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          if (target->flags2 & MF2_DORMANT)
+          {
+            target->flags2 &= ~MF2_DORMANT;
+            target->tics = 1;
+          }
+
+          buttonSuccess = 1;
+        }
+      }
+      break;
+    case zl_thing_deactivate:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          if (!(target->flags2 & MF2_DORMANT))
+          {
+            target->flags2 |= MF2_DORMANT;
+            target->tics = -1;
+          }
+
+          buttonSuccess = 1;
+        }
+      }
+      break;
+    case zl_thrust_thing:
+      {
+        fixed_t thrust;
+        mobj_t *target;
+        thing_id_search_t search;
+
+        thrust = args[1] * FRACUNIT;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[3], mo, &search)))
+        {
+          P_ThrustMobj(target, P_ArgToAngle(args[0]), thrust);
+        }
+
+        buttonSuccess = (args[3] != 0 || mo);
+      }
+      break;
+    case zl_thrust_thing_z:
+      {
+        fixed_t thrust;
+        mobj_t *target;
+        thing_id_search_t search;
+
+        thrust = args[1] * FRACUNIT / 4;
+
+        if (args[2])
+          thrust = -thrust;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          if (!args[3])
+            target->momz = thrust;
+          else
+            target->momz += thrust;
+
+          buttonSuccess = 1;
+        }
+      }
+      break;
+    case zl_thing_raise:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          buttonSuccess |= P_RaiseThing(target, NULL);
+        }
+      }
+    	break;
+    case zl_damage_thing:
+      if (mo)
+      {
+        P_DamageMobj(mo, NULL, NULL, args[0] ? args[0] : 10000);
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_thing_damage:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          if (target->flags & MF_SHOOTABLE)
+            P_DamageMobj(target, NULL, mo, args[1]);
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_thing_destroy:
+      if (!args[0] && !args[2])
+      {
+        P_Massacre();
+      }
+      else if (!args[0])
+      {
+        int s = -1;
+
+        while ((s = P_FindSectorFromTag(args[2], s)) >= 0)
+        {
+          msecnode_t *n;
+          sector_t *sec;
+
+          sec = &sectors[s];
+          for (n = sec->touching_thinglist; n;)
+          {
+            mobj_t *target = n->m_thing;
+
+            // Not sure if n might be freed when an enemy dies,
+            //   so let's get the next node before applying the damage
+            n = n->m_snext;
+
+            if (target->flags & MF_SHOOTABLE)
+              P_DamageMobj(target, NULL, mo, args[1] ? 10000 : target->health);
+          }
+        }
+      }
+      else
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingID(args[0], &search)))
+        {
+          if (
+            target->flags & MF_SHOOTABLE &&
+            (!args[2] || target->subsector->sector->tag == args[2])
+          )
+            P_DamageMobj(target, NULL, mo, args[1] ? 10000 : target->health);
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    default:
+      break;
+  }
+
+  return buttonSuccess;
+}
+
+dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
 {
     dboolean buttonSuccess;
 
@@ -5725,7 +7400,6 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 4:                // Poly Move
             buttonSuccess = EV_MovePoly(line, args, false, false);
             break;
-        // 5: PO_LINE_EXPLICIT
         case 6:                // Poly Move Times 8
             buttonSuccess = EV_MovePoly(line, args, true, false);
             break;
@@ -5735,7 +7409,6 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 8:                // Poly Door Slide
             buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SLIDE);
             break;
-        // 9: LS_NOP Line_Horizon
         case 10:               // Door Close
             buttonSuccess = Hexen_EV_DoDoor(line, args, DREV_CLOSE);
             break;
@@ -5772,12 +7445,6 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
                 }
             }
             break;
-        // 14: LS_Door_Animated
-        // 15: LS_Autosave
-        // 16: LS_NOP Transfer_WallLight
-        // 17: LS_Thing_Raise
-        // 18: LS_StartConversation
-        // 19: LS_Thing_Stop
         case 20:               // Floor Lower by Value
             buttonSuccess = Hexen_EV_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
             break;
@@ -5817,17 +7484,12 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 32:               // Build Stairs Up Sync
             buttonSuccess = Hexen_EV_BuildStairs(line, args, 1, STAIRS_SYNC);
             break;
-        // 33: LS_ForceField
-        // 34: LS_ClearForceField
         case 35:               // Raise Floor by Value Times 8
             buttonSuccess = Hexen_EV_DoFloor(line, args, FLEV_RAISEBYVALUETIMES8);
             break;
         case 36:               // Lower Floor by Value Times 8
             buttonSuccess = Hexen_EV_DoFloor(line, args, FLEV_LOWERBYVALUETIMES8);
             break;
-        // 37: LS_Floor_MoveToValue
-        // 38: LS_Ceiling_Waggle
-        // 39: LS_Teleport_ZombieChanger
         case 40:               // Ceiling Lower by Value
             buttonSuccess = Hexen_EV_DoCeiling(line, args, CLEV_LOWERBYVALUE);
             break;
@@ -5849,37 +7511,24 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 46:               // Floor Crush Stop
             buttonSuccess = EV_FloorCrushStop(line, args);
             break;
-        // 47: LS_Ceiling_MoveToValue
-        // 48: LS_NOP Sector_Attach3dMidtex
-        // 49: LS_GlassBreak
-        // 50: LS_NOP ExtraFloor_LightOnly
-        // 51: LS_Sector_SetLink
-        // 52: LS_Scroll_Wall
-        // 53: LS_Line_SetTextureOffset
-        // 54: LS_Sector_ChangeFlags
-        // 55: LS_Line_SetBlocking
-        // 56: LS_Line_SetTextureScale
-        // 57: LS_NOP Sector_SetPortal
-        // 58: LS_NOP Sector_CopyScroller
-        // 59: LS_Polyobj_OR_MoveToSpot
         case 60:               // Plat Perpetual Raise
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_PERPETUALRAISE, 0);
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_PERPETUALRAISE, 0);
             break;
         case 61:               // Plat Stop
             Hexen_EV_StopPlat(line, args);
             break;
         case 62:               // Plat Down-Wait-Up-Stay
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_DOWNWAITUPSTAY, 0);
             break;
         case 63:               // Plat Down-by-Value*8-Wait-Up-Stay
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY,
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_DOWNBYVALUEWAITUPSTAY,
                                       0);
             break;
         case 64:               // Plat Up-Wait-Down-Stay
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_UPWAITDOWNSTAY, 0);
             break;
         case 65:               // Plat Up-by-Value*8-Wait-Down-Stay
-            buttonSuccess = Hexen_EV_DoPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY,
+            buttonSuccess = EV_DoHexenPlat(line, args, PLAT_UPBYVALUEWAITDOWNSTAY,
                                       0);
             break;
         case 66:               // Floor Lower Instant * 8
@@ -5897,13 +7546,13 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 70:               // Teleport
             if (side == 0)
             {                   // Only teleport when crossing the front side of a line
-                buttonSuccess = Hexen_EV_Teleport(args[0], mo, true);
+                buttonSuccess = EV_HexenTeleport(args[0], mo, true);
             }
             break;
         case 71:               // Teleport, no fog
             if (side == 0)
             {                   // Only teleport when crossing the front side of a line
-                buttonSuccess = Hexen_EV_Teleport(args[0], mo, false);
+                buttonSuccess = EV_HexenTeleport(args[0], mo, false);
             }
             break;
         case 72:               // Thrust Mobj
@@ -5952,10 +7601,6 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
                 }
             }
             break;
-        // 76: LS_TeleportOther
-        // 77: LS_TeleportGroup
-        // 78: LS_TeleportInSector
-        // 79: LS_Thing_SetConversation
         case 80:               // ACS_Execute
             buttonSuccess =
                 P_StartACS(args[0], args[1], &args[2], mo, line, side);
@@ -5969,12 +7614,6 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 83:               // ACS_LockedExecute
             buttonSuccess = P_StartLockedACS(line, args, mo, side);
             break;
-        // 84: LS_ACS_ExecuteWithResult
-        // 85: LS_ACS_LockedExecuteDoor
-        // 86: LS_Polyobj_MoveToSpot
-        // 87: LS_Polyobj_Stop
-        // 88: LS_Polyobj_MoveTo
-        // 89: LS_Polyobj_OR_MoveTo
         case 90:               // Poly Rotate Left Override
             buttonSuccess = EV_RotatePoly(line, args, 1, true);
             break;
@@ -5996,15 +7635,6 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 96:               // Raise Floor and Ceiling
             buttonSuccess = EV_DoFloorAndCeiling(line, args, true);
             break;
-        // 100: Scroll_Texture_Left
-        // 101: Scroll_Texture_Right
-        // 102: Scroll_Texture_Up
-        // 103: Scroll_Texture_Down
-        // 104: LS_Ceiling_CrushAndRaiseSilentDist
-        // 105: LS_Door_WaitRaise
-        // 106: LS_Door_WaitClose
-        // 107: LS_Line_SetPortalTarget
-        // 108: LS_NOP
         case 109:              // Force Lightning
             buttonSuccess = true;
             P_ForceLightning();
@@ -6030,20 +7660,9 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
         case 116:              // Light Strobe
             buttonSuccess = EV_SpawnLight(line, args, LITE_STROBE);
             break;
-        // 117: LS_Light_Stop
-        // 118: LS_NOP Plane_Copy
-        // 119: LS_Thing_Damage
         case 120:              // Quake Tremor
             buttonSuccess = A_LocalQuake(args, mo);
             break;
-        // 121: Line_SetIdentification
-        // 122: LS_NOP
-        // 123: LS_NOP
-        // 124: LS_NOP
-        // 125: LS_Thing_Move
-        // 126: LS_NOP
-        // 127: LS_Thing_SetSpecial
-        // 128: LS_ThrustThingZ
         case 129:              // UsePuzzleItem
             buttonSuccess = EV_LineSearchForPuzzleItem(line, args, mo);
             break;
@@ -6075,125 +7694,9 @@ dboolean P_ExecuteLineSpecial(int special, byte * args, line_t * line,
             buttonSuccess = EV_StartFloorWaggle(args[0], args[1],
                                                 args[2], args[3], args[4]);
             break;
-        // 139: LS_Thing_SpawnFacing
         case 140:              // Sector_SoundChange
             buttonSuccess = EV_SectorSoundChange(args);
             break;
-        // 141: LS_NOP
-        // 142: LS_NOP
-        // 143: LS_NOP
-        // 144: LS_NOP
-        // 145: LS_NOP
-        // 146: LS_NOP
-        // 147: LS_NOP
-        // 148: LS_NOP
-        // 149: LS_NOP
-        // 150: LS_NOP
-        // 151: LS_NOP
-        // 152: LS_NOP
-        // 153: LS_NOP
-        // 154: LS_Teleport_NoStop
-        // 155: LS_NOP
-        // 156: LS_NOP
-        // 157: LS_NOP SetGlobalFogParameter
-        // 158: LS_FS_Execute
-        // 159: LS_NOP Sector_SetPlaneReflection
-        // 160: LS_NOP Sector_Set3DFloor
-        // 161: LS_NOP Sector_SetContents
-        // 162: LS_NOP Reserved Doom64 branch
-        // 163: LS_NOP Reserved Doom64 branch
-        // 164: LS_NOP Reserved Doom64 branch
-        // 165: LS_NOP Reserved Doom64 branch
-        // 166: LS_NOP Reserved Doom64 branch
-        // 167: LS_NOP Reserved Doom64 branch
-        // 168: LS_Ceiling_CrushAndRaiseDist
-        // 169: LS_Generic_Crusher2
-        // 170: LS_Sector_SetCeilingScale2
-        // 171: LS_Sector_SetFloorScale2
-        // 172: LS_Plat_UpNearestWaitDownStay
-        // 173: LS_NoiseAlert
-        // 174: LS_SendToCommunicator
-        // 175: LS_Thing_ProjectileIntercept
-        // 176: LS_Thing_ChangeTID
-        // 177: LS_Thing_Hate
-        // 178: LS_Thing_ProjectileAimed
-        // 179: LS_ChangeSkill
-        // 180: LS_Thing_SetTranslation
-        // 181: LS_NOP Plane_Align
-        // 182: LS_NOP Line_Mirror
-        // 183: LS_Line_AlignCeiling
-        // 184: LS_Line_AlignFloor
-        // 185: LS_Sector_SetRotation
-        // 186: LS_Sector_SetCeilingPanning
-        // 187: LS_Sector_SetFloorPanning
-        // 188: LS_Sector_SetCeilingScale
-        // 189: LS_Sector_SetFloorScale
-        // 190: LS_NOP Static_Init
-        // 191: LS_SetPlayerProperty
-        // 192: LS_Ceiling_LowerToHighestFloor
-        // 193: LS_Ceiling_LowerInstant
-        // 194: LS_Ceiling_RaiseInstant
-        // 195: LS_Ceiling_CrushRaiseAndStayA
-        // 196: LS_Ceiling_CrushAndRaiseA
-        // 197: LS_Ceiling_CrushAndRaiseSilentA
-        // 198: LS_Ceiling_RaiseByValueTimes8
-        // 199: LS_Ceiling_LowerByValueTimes8
-        // 200: LS_Generic_Floor
-        // 201: LS_Generic_Ceiling
-        // 202: LS_Generic_Door
-        // 203: LS_Generic_Lift
-        // 204: LS_Generic_Stairs
-        // 205: LS_Generic_Crusher
-        // 206: LS_Plat_DownWaitUpStayLip
-        // 207: LS_Plat_PerpetualRaiseLip
-        // 208: LS_TranslucentLine
-        // 209: LS_NOP Transfer_Heights
-        // 210: LS_NOP Transfer_FloorLight
-        // 211: LS_NOP Transfer_CeilingLight
-        // 212: LS_Sector_SetColor
-        // 213: LS_Sector_SetFade
-        // 214: LS_Sector_SetDamage
-        // 215: LS_Teleport_Line
-        // 216: LS_Sector_SetGravity
-        // 217: LS_Stairs_BuildUpDoom
-        // 218: LS_Sector_SetWind
-        // 219: LS_Sector_SetFriction
-        // 220: LS_Sector_SetCurrent
-        // 221: LS_Scroll_Texture_Both
-        // 222: LS_NOP Scroll_Texture_Model
-        // 223: LS_Scroll_Floor
-        // 224: LS_Scroll_Ceiling
-        // 225: LS_NOP Scroll_Texture_Offsets
-        // 226: LS_ACS_ExecuteAlways
-        // 227: LS_PointPush_SetForce
-        // 228: LS_Plat_RaiseAndStayTx0
-        // 229: LS_Thing_SetGoal
-        // 230: LS_Plat_UpByValueStayTx
-        // 231: LS_Plat_ToggleCeiling
-        // 232: LS_Light_StrobeDoom
-        // 233: LS_Light_MinNeighbor
-        // 234: LS_Light_MaxNeighbor
-        // 235: LS_Floor_TransferTrigger
-        // 236: LS_Floor_TransferNumeric
-        // 237: LS_ChangeCamera
-        // 238: LS_Floor_RaiseToLowestCeiling
-        // 239: LS_Floor_RaiseByValueTxTy
-        // 240: LS_Floor_RaiseByTexture
-        // 241: LS_Floor_LowerToLowestTxTy
-        // 242: LS_Floor_LowerToHighest
-        // 243: LS_Exit_Normal
-        // 244: LS_Exit_Secret
-        // 245: LS_Elevator_RaiseToNearest
-        // 246: LS_Elevator_MoveToFloor
-        // 247: LS_Elevator_LowerToNearest
-        // 248: LS_HealThing
-        // 249: LS_Door_CloseWaitOpen
-        // 250: LS_Floor_Donut
-        // 251: LS_FloorAndCeiling_LowerRaise
-        // 252: LS_Ceiling_RaiseToNearest
-        // 253: LS_Ceiling_LowerToLowest
-        // 254: LS_Ceiling_LowerToFloor
-        // 255: LS_Ceiling_CrushRaiseAndStaySilA
         default:
             break;
     }

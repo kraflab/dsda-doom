@@ -833,8 +833,8 @@ static int CmdLSpec1(void)
 
     special = ReadCodeInt();
     SpecArgs[0] = Pop();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 
@@ -845,8 +845,8 @@ static int CmdLSpec2(void)
     special = ReadCodeInt();
     SpecArgs[1] = Pop();
     SpecArgs[0] = Pop();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 
@@ -858,8 +858,8 @@ static int CmdLSpec3(void)
     SpecArgs[2] = Pop();
     SpecArgs[1] = Pop();
     SpecArgs[0] = Pop();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 
@@ -872,8 +872,8 @@ static int CmdLSpec4(void)
     SpecArgs[2] = Pop();
     SpecArgs[1] = Pop();
     SpecArgs[0] = Pop();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 
@@ -887,8 +887,8 @@ static int CmdLSpec5(void)
     SpecArgs[2] = Pop();
     SpecArgs[1] = Pop();
     SpecArgs[0] = Pop();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 
@@ -898,8 +898,8 @@ static int CmdLSpec1Direct(void)
 
     special = ReadCodeInt();
     SpecArgs[0] = ReadCodeInt();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 
@@ -910,8 +910,8 @@ static int CmdLSpec2Direct(void)
     special = ReadCodeInt();
     SpecArgs[0] = ReadCodeInt();
     SpecArgs[1] = ReadCodeInt();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 
@@ -923,8 +923,8 @@ static int CmdLSpec3Direct(void)
     SpecArgs[0] = ReadCodeInt();
     SpecArgs[1] = ReadCodeInt();
     SpecArgs[2] = ReadCodeInt();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 
@@ -937,8 +937,8 @@ static int CmdLSpec4Direct(void)
     SpecArgs[1] = ReadCodeInt();
     SpecArgs[2] = ReadCodeInt();
     SpecArgs[3] = ReadCodeInt();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 
@@ -952,8 +952,8 @@ static int CmdLSpec5Direct(void)
     SpecArgs[2] = ReadCodeInt();
     SpecArgs[3] = ReadCodeInt();
     SpecArgs[4] = ReadCodeInt();
-    P_ExecuteLineSpecial(special, SpecArgs, ACScript->line,
-                         ACScript->side, ACScript->activator);
+    map_format.execute_line_special(special, SpecArgs, ACScript->line,
+                                    ACScript->side, ACScript->activator);
     return SCRIPT_CONTINUE;
 }
 

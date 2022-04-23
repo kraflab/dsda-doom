@@ -106,15 +106,16 @@ extern int use_fullscreen;  /* proff 21/05/2000 */
 extern int desired_fullscreen; //e6y
 extern int exclusive_fullscreen;
 extern int gl_exclusive_fullscreen;
+extern const char *custom_resolution;
 
 void I_UpdateRenderSize(void);	// Handle potential
 extern int renderW;		// resolution scaling
 extern int renderH;		// - DTIED
 
-// Set the process affinity mask so that all threads
-extern int process_affinity_mask;
 // Priority class for the prboom-plus process
 extern int process_priority;
+// Use vanilla keybaord mapping
+extern int vanilla_keymap;
 
 extern dboolean window_focused;
 void UpdateGrab(void);

@@ -160,4 +160,8 @@ dboolean A_RaiseMobj(mobj_t * actor);
 dboolean A_SinkMobj(mobj_t * actor);
 void A_NoBlocking(mobj_t * actor);
 
+// zdoom
+
+dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser);
+
 #endif // __P_ENEMY__

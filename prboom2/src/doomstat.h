@@ -41,7 +41,6 @@
 
 // We need the playr data structure as well.
 #include "d_player.h"
-#include "umapinfo.h"
 
 #ifdef __GNUG__
 #pragma interface
@@ -122,6 +121,7 @@ enum {
   comp_ledgeblock,
   comp_friendlyspawn,
   comp_voodooscroller,
+  comp_reservedlineflag,
 
   MBF_COMP_TOTAL = 32  // limit in MBF format
 };
@@ -158,7 +158,6 @@ extern  dboolean   autostart;
 extern  skill_t         gameskill;
 extern  int   gameepisode;
 extern  int   gamemap;
-extern struct MapEntry *gamemapinfo;
 
 // Nightmare mode flag, single player.
 extern  dboolean         respawnmonsters;
@@ -170,6 +169,7 @@ extern  dboolean netgame;
 // An enum might handle altdeath/cooperative better.
 extern  dboolean deathmatch;
 
+extern int solo_net;
 extern dboolean coop_spawns;
 
 extern dboolean randomclass;
@@ -211,7 +211,6 @@ enum menuactive_e {
 };
 extern enum menuactive_e menuactive; // Type of menu overlaid, if any
 
-extern  dboolean paused;        // Game Pause?
 extern  dboolean nodrawers;
 extern  dboolean noblit;
 
@@ -261,6 +260,8 @@ extern  gamestate_t  gamestate;
 //  WAD, partly set at startup time.
 
 extern  int   gametic;
+
+#define logictic (gametic - basetic)
 
 //e6y
 extern  dboolean realframe;
@@ -333,7 +334,6 @@ extern int monsters_remember;                          // killough 3/1/98
 extern int weapon_recoil;          // weapon recoil    // phares
 
 extern int player_bobbing;  // whether player bobs or not   // phares 2/25/98
-extern int default_player_bobbing;  // killough 3/1/98: make local to each game
 
 extern int dogs;     // killough 7/19/98: Marine's best friend :)
 extern int dog_jumping;   // killough 10/98

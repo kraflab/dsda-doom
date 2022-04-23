@@ -34,6 +34,7 @@
 #define __P_TICK__
 
 #include "d_think.h"
+#include "p_mobj.h"
 
 #ifdef __GNUG__
 #pragma interface

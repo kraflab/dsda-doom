@@ -28,7 +28,7 @@
  *
  * DESCRIPTION:
  *  Misc system stuff needed by Doom, implemented for Linux.
- *  Mainly timer handling, and ENDOOM/ENDBOOM.
+ *  Mainly timer handling.
  *
  *-----------------------------------------------------------------------------
  */
@@ -72,18 +72,14 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#ifndef PRBOOM_SERVER
 #include "m_argv.h"
-#endif
 #include "lprintf.h"
 #include "doomtype.h"
 #include "doomdef.h"
-#ifndef PRBOOM_SERVER
 #include "d_player.h"
 #include "m_fixed.h"
 #include "r_fps.h"
 #include "e6y.h"
-#endif
 #include "i_system.h"
 
 #ifdef __GNUG__
@@ -105,32 +101,6 @@ void I_uSleep(unsigned long usecs)
     SDL_Delay(usecs/1000);
 }
 
-int ms_to_next_tick;
-
-int I_GetTime_RealTime (void)
-{
-  static dboolean started = false;
-  int i;
-  unsigned long long t;
-
-  //e6y: removing startup delay
-  if (!started)
-  {
-    started = true;
-    dsda_StartTimer(dsda_timer_realtime);
-  }
-
-  t = dsda_ElapsedTime(dsda_timer_realtime);
-
-  i = t * TICRATE / 1000000;
-  ms_to_next_tick = (i + 1) * 1000 / TICRATE - t / 1000;
-  if (ms_to_next_tick > 1000 / TICRATE) ms_to_next_tick = 1;
-  if (ms_to_next_tick < 1) ms_to_next_tick = 0;
-  return i;
-}
-
-#ifndef PRBOOM_SERVER
-static unsigned long long displaytime;
 static dboolean InDisplay = false;
 static int saved_gametic = -1;
 dboolean realframe = false;
@@ -145,28 +115,19 @@ dboolean I_StartDisplay(void)
   if (realframe)
     saved_gametic = gametic;
 
-  dsda_StartTimer(dsda_timer_displaytime);
   InDisplay = true;
   return true;
 }
 
 void I_EndDisplay(void)
 {
-  displaytime = dsda_ElapsedTime(dsda_timer_displaytime);
   InDisplay = false;
 }
 
-static int subframe = 0;
-static int prevsubframe = 0;
 int interpolation_method;
 fixed_t I_GetTimeFrac (void)
 {
-  unsigned long long tic_time;
   fixed_t frac;
-
-  tic_time = dsda_ElapsedTime(dsda_timer_tic);
-
-  subframe++;
 
   if (!movement_smooth)
   {
@@ -174,32 +135,17 @@ fixed_t I_GetTimeFrac (void)
   }
   else
   {
-    extern int renderer_fps;
-    if ((interpolation_method == 0) || (prevsubframe <= 0) || (renderer_fps <= 0))
-    {
-      frac = (fixed_t)((tic_time + displaytime) * FRACUNIT * tic_vars.tics_per_usec);
-    }
-    else
-    {
-      frac = (fixed_t)(tic_time * FRACUNIT * tic_vars.tics_per_usec);
-      frac = (unsigned int)((float)FRACUNIT * TICRATE * subframe / renderer_fps);
-    }
+    unsigned long long tic_time;
+    const double tics_per_usec = TICRATE / 1000000.0f;
+
+    tic_time = dsda_TickElapsedTime();
+
+    frac = (fixed_t) (tic_time * FRACUNIT * tics_per_usec);
     frac = BETWEEN(0, FRACUNIT, frac);
   }
 
   return frac;
 }
-
-void I_GetTime_SaveMS(void)
-{
-  if (!movement_smooth)
-    return;
-
-  dsda_StartTimer(dsda_timer_tic);
-  prevsubframe = subframe;
-  subframe = 0;
-}
-#endif
 
 /*
  * I_GetRandomTimeSeed
@@ -234,7 +180,6 @@ const char* I_SigString(char* buf, size_t sz, int signum)
   return buf;
 }
 
-#ifndef PRBOOM_SERVER
 dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
 {
   FILE *hfile;
@@ -280,7 +225,6 @@ dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
 
   return result;
 }
-#endif // PRBOOM_SERVER
 
 /*
  * I_Read
@@ -314,8 +258,6 @@ int I_Filelength(int handle)
     I_Error("I_Filelength: %s",strerror(errno));
   return fileinfo.st_size;
 }
-
-#ifndef PRBOOM_SERVER
 
 // Return the path where the executable lies -- Lee Killough
 // proff_fs 2002-07-04 - moved to i_system
@@ -390,10 +332,6 @@ const char* I_GetTempDir(void)
   return "PROGDIR:";
 }
 
-#elif defined(MACOSX)
-
-/* Defined elsewhere */
-
 #else
 // cph - V.Aguilar (5/30/99) suggested return ~/.lxdoom/, creating
 //  if non-existant
@@ -453,8 +391,6 @@ dboolean HasTrailingSlash(const char* dn)
  * Searches the standard dirs for a named WAD file
  * The dirs are listed at the start of the function
  */
-
-#ifndef MACOSX /* OSX defines its search paths elsewhere. */
 
 #ifdef _WIN32
 #define PATH_SEPARATOR ';'
@@ -586,7 +522,3 @@ const char* I_FindFile2(const char* wfname, const char* ext)
 {
   return (const char*) I_FindFileInternal(wfname, ext, true);
 }
-
-#endif
-
-#endif // PRBOOM_SERVER

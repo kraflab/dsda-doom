@@ -23,11 +23,15 @@
 #include "w_wad.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "i_main.h"
 
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 
 #include "settings.h"
+
+extern void S_ResetSfxVolume(void);
+extern void I_ResetMusicVolume(void);
 
 dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode, dsda_ChangeStrictMode },
@@ -38,6 +42,9 @@ dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_command_display] = { 0, 0, "Command Display", NULL, NULL, false, true },
   [dsda_coordinate_display] = { 0, 0, "Coordinate Display", NULL, NULL, false, true },
   [dsda_exhud] = { 0, 0, NULL, NULL, NULL, false, true },
+  [dsda_mute_sfx] = { 0, 0, "Sfx", NULL, S_ResetSfxVolume, true, true },
+  [dsda_mute_music] = { 0, 0, "Music", NULL, I_ResetMusicVolume, true, true },
+  [dsda_cheat_codes] = { 0, 0, "Cheat Codes", NULL, NULL, false, true },
 };
 
 int dsda_auto_key_frame_interval;
@@ -51,6 +58,9 @@ int dsda_fine_sensitivity;
 int dsda_hide_horns;
 int dsda_skip_quit_prompt;
 int dsda_show_split_data;
+int dsda_switch_when_ammo_runs_out;
+int dsda_viewbob;
+int dsda_weaponbob;
 
 void dsda_InitSettings(void) {
   int i;
@@ -134,7 +144,7 @@ int dsda_CompatibilityLevel(void) {
 
   if (map_format.zdoom) return mbf21_compatibility;
 
-  i = M_CheckParm("-complevel");
+  i = M_CheckParm2("-complevel", "-cl");
 
   if (i && (i + 1 < myargc)) {
     level = atoi(myargv[i + 1]);
@@ -170,6 +180,14 @@ double dsda_FineSensitivity(int base) {
   return (double) base + (double) dsda_fine_sensitivity / 100;
 }
 
+dboolean dsda_ViewBob(void) {
+  return dsda_viewbob;
+}
+
+dboolean dsda_WeaponBob(void) {
+  return dsda_weaponbob;
+}
+
 dboolean dsda_ShowMessages(void) {
   return dsda_Transient(dsda_show_messages);
 }
@@ -190,12 +208,24 @@ dboolean dsda_StrictMode(void) {
   return dsda_Transient(dsda_strict_mode) && demorecording && !dsda_tas;
 }
 
+dboolean dsda_MuteSfx(void) {
+  return dsda_Transient(dsda_mute_sfx);
+}
+
+dboolean dsda_MuteMusic(void) {
+  return dsda_Transient(dsda_mute_music);
+}
+
+dboolean dsda_ProcessCheatCodes(void) {
+  return dsda_Transient(dsda_cheat_codes);
+}
+
 dboolean dsda_CycleGhostColors(void) {
   return dsda_cycle_ghost_colors;
 }
 
 dboolean dsda_WeaponAttackAlignment(void) {
-  return weapon_attack_alignment && !hexen && !dsda_StrictMode();
+  return weapon_attack_alignment && !dsda_StrictMode();
 }
 
 dboolean dsda_AlwaysSR50(void) {
@@ -204,6 +234,10 @@ dboolean dsda_AlwaysSR50(void) {
 
 dboolean dsda_HideHorns(void) {
   return dsda_hide_horns;
+}
+
+dboolean dsda_SwitchWhenAmmoRunsOut(void) {
+  return dsda_switch_when_ammo_runs_out;
 }
 
 dboolean dsda_SkipQuitPrompt(void) {

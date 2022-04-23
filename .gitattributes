@@ -8,11 +8,9 @@ prboom2/Makefile.am eol=lf
 prboom2/VisualC6/Doom.dsp eol=crlf
 prboom2/VisualC6/Doom.dsw eol=crlf
 prboom2/VisualC6/Makefile.am eol=lf
-prboom2/VisualC6/prboom_server.dsp eol=crlf
 prboom2/VisualC8/Doom.sln eol=crlf
 prboom2/VisualC8/Doom.vcproj eol=crlf
 prboom2/VisualC8/Makefile.am -text
-prboom2/VisualC8/prboom_server.vcproj eol=crlf
 prboom2/autotools/ac_c_compile_flags.m4 eol=lf
 prboom2/autotools/ac_cpu_optimisations.m4 eol=lf
 prboom2/data/Makefile.am eol=lf
@@ -176,7 +174,6 @@ prboom2/data/lumps/crorange.lmp -text
 prboom2/data/lumps/crred.lmp -text
 prboom2/data/lumps/crtan.lmp -text
 prboom2/data/lumps/cryellow.lmp -text
-prboom2/data/lumps/endboom.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/gammatbl.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/glfp.lmp -text
 prboom2/data/lumps/glshadow.lmp -text
@@ -193,6 +190,7 @@ prboom2/data/lumps/m_shadow.lmp -text
 prboom2/data/lumps/m_weap.lmp -text
 prboom2/data/lumps/nervebex.lmp -text
 prboom2/data/lumps/sinetabl.lmp -text
+prboom2/data/lumps/soundfont/sndfont.lmp -text
 prboom2/data/lumps/switches.lmp -text
 prboom2/data/lumps/tangtabl.lmp -text
 prboom2/data/lumps/tantoang.lmp -text
@@ -339,7 +337,6 @@ prboom2/data/sprites/pls2c0.ppm -text
 prboom2/data/sprites/pls2d0.ppm -text
 prboom2/data/sprites/pls2e0.ppm -text
 prboom2/data/sprites/tnt1a0.ppm -text
-prboom2/doc/Makefile.am eol=lf
 prboom2/make-release.cmd -text
 prboom2/src/MAC/ANSIString.h -text
 prboom2/src/MAC/ANSIString.m -text
@@ -394,15 +391,12 @@ prboom2/src/MUSIC/lib/libvorbisfile.lib -text
 prboom2/src/MUSIC/lib/portmidi.lib -text
 prboom2/src/Makefile.am eol=lf
 prboom2/src/PCSOUND/Makefile.am eol=lf
-prboom2/src/POSIX/Makefile.am eol=lf
 prboom2/src/SDL/Makefile.am eol=lf
 prboom2/src/SDL/SDL_windows.h -text
 prboom2/src/SDL/SDL_windows_main.c -text
 prboom2/src/TEXTSCREEN/Makefile.am -text
 prboom2/src/TEXTSCREEN/txt_largefont.h -text
 prboom2/src/gl_shader.c -text
-prboom2/src/hu_tracers.c -text
-prboom2/src/hu_tracers.h -text
 prboom2/tests/demo-testing.csv -text
 prboom2/tests/donut_av.wad -text
 prboom2/tests/heightlist_overflow.wad -text

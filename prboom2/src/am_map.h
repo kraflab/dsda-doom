@@ -125,6 +125,7 @@ extern int mapcolor_bdor;     // blue door color (of enabling one not other)
 extern int mapcolor_ydor;     // yellow door color
 extern int mapcolor_tele;     // teleporter line color
 extern int mapcolor_secr;     // secret sector boundary color
+extern int mapcolor_revsecr;  // revealed secret sector boundary color
 //jff 4/23/98
 extern int mapcolor_exit;     // exit line
 extern int mapcolor_unsn;     // computer map unseen line color
@@ -159,6 +160,7 @@ void M_ChangeMapGridSize(void);
 void M_ChangeMapTextured(void);
 void M_ChangeMapMultisamling(void);
 void AM_ResetIDDTcheat(void);
+void AM_SetMapCenter(fixed_t x, fixed_t y);
 
 typedef struct am_frame_s
 {

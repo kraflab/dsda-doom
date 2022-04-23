@@ -29,14 +29,6 @@ typedef enum {
   zi_init_transfer_sky = 255
 } zi_staticinit_t;
 
-typedef struct {
-  const char *name;
-  int number;
-  signed char min_args;
-  signed char max_args;
-  unsigned char map_args;
-} zl_linespecial_t;
-
 typedef enum {
   zl_polyobj_start_line                  = 1,
   zl_polyobj_rotate_left                 = 2,
@@ -269,7 +261,7 @@ typedef enum {
   zl_heal_thing                         = 248,
   zl_door_close_wait_open               = 249,
   zl_floor_donut                        = 250,
-  zl_floorandceiling_lowerraise         = 251,
+  zl_floor_and_ceiling_lower_raise         = 251,
   zl_ceiling_raise_to_nearest           = 252,
   zl_ceiling_lower_to_lowest            = 253,
   zl_ceiling_lower_to_floor             = 254,
@@ -295,7 +287,5 @@ typedef enum {
 
   zl_linespecial_max
 } zl_linespecial_id_t;
-
-zl_linespecial_t* dsda_GetLineSpecialInfo(int special);
 
 #endif

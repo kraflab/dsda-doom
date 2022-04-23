@@ -4,7 +4,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 
 ### Current Status
 
-Current work is isolated to the initial pass over the level format itself - line and sector specials, necessary changes to internal data structures, etc. Lots of refactoring needs to be done in the engine itself in order to treat different formats correctly without breaking compatibility.
+The initial pass over the format has been completed. Most planned line actions and sector effects are supported. Poly objects are supported (but there are visual artifacts in some cases). New teleport destinations and map spots are implemented. Most line actions targeting thing tags are implemented.
 
 ### Legend
 
@@ -18,15 +18,15 @@ Current work is isolated to the initial pass over the level format itself - line
 
 ### Major Features
 
-| Name         | Status      |
-| ------------ | ----------- |
-| Levels       | :warning:   |
-| Poly Objects | :telescope: |
-| ACS          | :telescope: |
-| MAPINFO      | :telescope: |
-| SNDINFO      | :telescope: |
-| SNDSEQ       | :telescope: |
-| ANIMDEFS     | :telescope: |
+| Name         | Status             |
+| ------------ | ------------------ |
+| Levels       | :warning:          |
+| Poly Objects | :heavy_check_mark: |
+| ACS          | :telescope:        |
+| MAPINFO      | :telescope:        |
+| SNDINFO      | :telescope:        |
+| SNDSEQ       | :telescope:        |
+| ANIMDEFS     | :telescope:        |
 
 ### Thing Types
 
@@ -56,9 +56,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | 5064        | InvisibleBridge16       | :x:                |
 | 5065        | InvisibleBridge8        | :x:                |
 | -           | -                       | -                  |
-| 9001        | MapSpot                 | :telescope:        |
+| 9001        | MapSpot                 | :heavy_check_mark: |
 | -           | -                       | -                  |
-| 9013        | MapSpotGravity          | :telescope:        |
+| 9013        | MapSpotGravity          | :heavy_check_mark: |
 | -           | -                       | -                  |
 | 9024        | PatrolPoint             | :x:                |
 | 9025        | SecurityCamera          | :x:                |
@@ -77,7 +77,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 9040        | MapMarker               | :x:                |
 | 9041        | SectorFlagSetter        | :x:                |
 | -           | -                       | -                  |
-| 9043-9044   | TeleportDest*           | :telescope:        |
+| 9043-9044   | TeleportDest*           | :heavy_check_mark: |
 | 9045        | Waterzone               | :x:                |
 | 9046        | SecretTrigger           | :x:                |
 | 9047        | PatrolSpecial           | :x:                |
@@ -105,7 +105,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | -           | -                       | -                  |
 | 9200        | Decal                   | :x:                |
 | -           | -                       | -                  |
-| 9300-9303   | PolyObject*             | :telescope:        |
+| 9300-9303   | PolyObject*             | :heavy_check_mark: |
 | -           | -                       | -                  |
 | 9500-9503   | Slopes                  | :x:                |
 | -           | -                       | -                  |
@@ -130,7 +130,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 14001-14064 | AmbientSound            | :telescope:        |
 | 14065       | Custom AmbientSound     | :telescope:        |
 | 14066       | SoundSequence           | :telescope:        |
-| 14067       | AmbientSoundNoGravity   | :grey_question:    |
+| 14067       | AmbientSoundNoGravity   | :telescope:        |
 | -           | -                       | -                  |
 | 14101-14164 | MusicChanger            | :heavy_check_mark: |
 | 14165       | Custom MusicChanger     | :telescope:        |
@@ -174,84 +174,84 @@ Current work is isolated to the initial pass over the level format itself - line
 
 | Value | Name                            | Status             |
 | ----- | ------------------------------- | ------------------ |
-| 1     | Polyobj_StartLine               | :telescope:        |
-| 2     | Polyobj_RotateLeft              | :telescope:        |
-| 3     | Polyobj_RotateRight             | :telescope:        |
-| 4     | Polyobj_Move                    | :telescope:        |
-| 5     | Polyobj_ExplicitLine            | :telescope:        |
-| 6     | Polyobj_MoveTimes8              | :telescope:        |
-| 7     | Polyobj_DoorSwing               | :telescope:        |
-| 8     | Polyobj_DoorSlide               | :telescope:        |
-| 9     | Line_Horizon                    | :grey_question:    |
-| 10    | Door_Close                      | :grey_question:    |
-| 11    | Door_Open                       | :grey_question:    |
-| 12    | Door_Raise                      | :grey_question:    |
-| 13    | Door_LockedRaise                | :grey_question:    |
-| 14    | Door_Animated                   | :grey_question:    |
+| 1     | Polyobj_StartLine               | :heavy_check_mark: |
+| 2     | Polyobj_RotateLeft              | :heavy_check_mark: |
+| 3     | Polyobj_RotateRight             | :heavy_check_mark: |
+| 4     | Polyobj_Move                    | :heavy_check_mark: |
+| 5     | Polyobj_ExplicitLine            | :heavy_check_mark: |
+| 6     | Polyobj_MoveTimes8              | :heavy_check_mark: |
+| 7     | Polyobj_DoorSwing               | :heavy_check_mark: |
+| 8     | Polyobj_DoorSlide               | :heavy_check_mark: |
+| 9     | Line_Horizon                    | :telescope:        |
+| 10    | Door_Close                      | :heavy_check_mark: |
+| 11    | Door_Open                       | :heavy_check_mark: |
+| 12    | Door_Raise                      | :heavy_check_mark: |
+| 13    | Door_LockedRaise                | :heavy_check_mark: |
+| 14    | Door_Animated                   | :x:                |
 | 15    | Autosave                        | :x:                |
-| 16    | Transfer_WallLight              | :grey_question:    |
-| 17    | Thing_Raise                     | :grey_question:    |
+| 16    | Transfer_WallLight              | :telescope:        |
+| 17    | Thing_Raise                     | :heavy_check_mark: |
 | 18    | StartConversation               | :x:                |
-| 19    | Thing_Stop                      | :grey_question:    |
-| 20    | Floor_LowerByValue              | :grey_question:    |
-| 21    | Floor_LowerToLowest             | :grey_question:    |
-| 22    | Floor_LowerToNearest            | :grey_question:    |
-| 23    | Floor_RaiseByValue              | :grey_question:    |
-| 24    | Floor_RaiseToHighest            | :grey_question:    |
-| 25    | Floor_RaiseToNearest            | :grey_question:    |
-| 26    | Stairs_BuildDown                | :grey_question:    |
-| 27    | Stairs_BuildUp                  | :grey_question:    |
-| 28    | Floor_RaiseAndCrush             | :grey_question:    |
-| 29    | Pillar_Build                    | :grey_question:    |
-| 30    | Pillar_Open                     | :grey_question:    |
-| 31    | Stairs_BuildDownSync            | :grey_question:    |
-| 32    | Stairs_BuildUpSync              | :grey_question:    |
-| 33    | ForceField                      | :grey_question:    |
-| 34    | ClearForceField                 | :grey_question:    |
-| 35    | Floor_RaiseByValueTimes8        | :grey_question:    |
-| 36    | Floor_LowerByValueTimes8        | :grey_question:    |
-| 37    | Floor_MoveToValue               | :grey_question:    |
-| 38    | Ceiling_Waggle                  | :grey_question:    |
-| 39    | Teleport_ZombieChanger          | :grey_question:    |
-| 40    | Ceiling_LowerByValue            | :grey_question:    |
-| 41    | Ceiling_RaiseByValue            | :grey_question:    |
-| 42    | Ceiling_CrushAndRaise           | :grey_question:    |
-| 43    | Ceiling_LowerAndCrush           | :grey_question:    |
-| 44    | Ceiling_CrushStop               | :grey_question:    |
-| 45    | Ceiling_CrushRaiseAndStay       | :grey_question:    |
-| 46    | Floor_CrushStop                 | :grey_question:    |
-| 47    | Ceiling_MoveToValue             | :grey_question:    |
+| 19    | Thing_Stop                      | :heavy_check_mark: |
+| 20    | Floor_LowerByValue              | :heavy_check_mark: |
+| 21    | Floor_LowerToLowest             | :heavy_check_mark: |
+| 22    | Floor_LowerToNearest            | :heavy_check_mark: |
+| 23    | Floor_RaiseByValue              | :heavy_check_mark: |
+| 24    | Floor_RaiseToHighest            | :heavy_check_mark: |
+| 25    | Floor_RaiseToNearest            | :heavy_check_mark: |
+| 26    | Stairs_BuildDown                | :heavy_check_mark: |
+| 27    | Stairs_BuildUp                  | :heavy_check_mark: |
+| 28    | Floor_RaiseAndCrush             | :heavy_check_mark: |
+| 29    | Pillar_Build                    | :heavy_check_mark: |
+| 30    | Pillar_Open                     | :heavy_check_mark: |
+| 31    | Stairs_BuildDownSync            | :heavy_check_mark: |
+| 32    | Stairs_BuildUpSync              | :heavy_check_mark: |
+| 33    | ForceField                      | :heavy_check_mark: |
+| 34    | ClearForceField                 | :heavy_check_mark: |
+| 35    | Floor_RaiseByValueTimes8        | :heavy_check_mark: |
+| 36    | Floor_LowerByValueTimes8        | :heavy_check_mark: |
+| 37    | Floor_MoveToValue               | :heavy_check_mark: |
+| 38    | Ceiling_Waggle                  | :heavy_check_mark: |
+| 39    | Teleport_ZombieChanger          | :heavy_check_mark: |
+| 40    | Ceiling_LowerByValue            | :heavy_check_mark: |
+| 41    | Ceiling_RaiseByValue            | :heavy_check_mark: |
+| 42    | Ceiling_CrushAndRaise           | :heavy_check_mark: |
+| 43    | Ceiling_LowerAndCrush           | :heavy_check_mark: |
+| 44    | Ceiling_CrushStop               | :heavy_check_mark: |
+| 45    | Ceiling_CrushRaiseAndStay       | :heavy_check_mark: |
+| 46    | Floor_CrushStop                 | :heavy_check_mark: |
+| 47    | Ceiling_MoveToValue             | :heavy_check_mark: |
 | 48    | Sector_Attach3dMidtex           | :x:                |
-| 49    | GlassBreak                      | :grey_question:    |
-| 50    | ExtraFloor_LightOnly            | :grey_question:    |
-| 51    | Sector_SetLink                  | :grey_question:    |
-| 52    | Scroll_Wall                     | :grey_question:    |
-| 53    | Line_SetTextureOffset           | :grey_question:    |
-| 54    | Sector_ChangeFlags              | :grey_question:    |
-| 55    | Line_SetBlocking                | :grey_question:    |
-| 56    | Line_SetTextureScale            | :grey_question:    |
+| 49    | GlassBreak                      | :telescope:        |
+| 50    | ExtraFloor_LightOnly            | :x:                |
+| 51    | Sector_SetLink                  | :x:                |
+| 52    | Scroll_Wall                     | :warning:          |
+| 53    | Line_SetTextureOffset           | :warning:          |
+| 54    | Sector_ChangeFlags              | :telescope:        |
+| 55    | Line_SetBlocking                | :warning:          |
+| 56    | Line_SetTextureScale            | :x:                |
 | 57    | Sector_SetPortal                | :x:                |
 | 58    | Sector_CopyScroller             | :heavy_check_mark: |
-| 59    | Polyobj_OR_MoveToSpot           | :grey_question:    |
-| 60    | Plat_PerpetualRaise             | :grey_question:    |
-| 61    | Plat_Stop                       | :grey_question:    |
-| 62    | Plat_DownWaitUpStay             | :grey_question:    |
-| 63    | Plat_DownByValue                | :grey_question:    |
-| 64    | Plat_UpWaitDownStay             | :grey_question:    |
-| 65    | Plat_UpByValue                  | :grey_question:    |
-| 66    | Floor_LowerInstant              | :grey_question:    |
-| 67    | Floor_RaiseInstant              | :grey_question:    |
-| 68    | Floor_MoveToValueTimes8         | :grey_question:    |
-| 69    | Ceiling_MoveToValueTimes8       | :grey_question:    |
-| 70    | Teleport                        | :grey_question:    |
-| 71    | Teleport_NoFog                  | :grey_question:    |
-| 72    | ThrustThing                     | :grey_question:    |
-| 73    | DamageThing                     | :grey_question:    |
-| 74    | Teleport_NewMap                 | :grey_question:    |
-| 75    | Teleport_EndGame                | :grey_question:    |
-| 76    | TeleportOther                   | :grey_question:    |
-| 77    | TeleportGroup                   | :grey_question:    |
-| 78    | TeleportInSector                | :grey_question:    |
+| 59    | Polyobj_OR_MoveToSpot           | :heavy_check_mark: |
+| 60    | Plat_PerpetualRaise             | :heavy_check_mark: |
+| 61    | Plat_Stop                       | :heavy_check_mark: |
+| 62    | Plat_DownWaitUpStay             | :heavy_check_mark: |
+| 63    | Plat_DownByValue                | :heavy_check_mark: |
+| 64    | Plat_UpWaitDownStay             | :heavy_check_mark: |
+| 65    | Plat_UpByValue                  | :heavy_check_mark: |
+| 66    | Floor_LowerInstant              | :heavy_check_mark: |
+| 67    | Floor_RaiseInstant              | :heavy_check_mark: |
+| 68    | Floor_MoveToValueTimes8         | :heavy_check_mark: |
+| 69    | Ceiling_MoveToValueTimes8       | :heavy_check_mark: |
+| 70    | Teleport                        | :heavy_check_mark: |
+| 71    | Teleport_NoFog                  | :heavy_check_mark: |
+| 72    | ThrustThing                     | :heavy_check_mark: |
+| 73    | DamageThing                     | :heavy_check_mark: |
+| 74    | Teleport_NewMap                 | :telescope:        |
+| 75    | Teleport_EndGame                | :telescope:        |
+| 76    | TeleportOther                   | :heavy_check_mark: |
+| 77    | TeleportGroup                   | :telescope:        |
+| 78    | TeleportInSector                | :telescope:        |
 | 79    | Thing_SetConversation           | :x:                |
 | 80    | ACS_Execute                     | :telescope:        |
 | 81    | ACS_Suspend                     | :telescope:        |
@@ -259,118 +259,118 @@ Current work is isolated to the initial pass over the level format itself - line
 | 83    | ACS_LockedExecute               | :telescope:        |
 | 84    | ACS_ExecuteWithResult           | :telescope:        |
 | 85    | ACS_LockedExecuteDoor           | :telescope:        |
-| 86    | Polyobj_MoveToSpot              | :telescope:        |
-| 87    | Polyobj_Stop                    | :telescope:        |
-| 88    | Polyobj_MoveTo                  | :telescope:        |
-| 89    | Polyobj_OR_MoveTo               | :telescope:        |
-| 90    | Polyobj_OR_RotateLeft           | :telescope:        |
-| 91    | Polyobj_OR_RotateRight          | :telescope:        |
-| 92    | Polyobj_OR_Move                 | :telescope:        |
-| 93    | Polyobj_OR_MoveTimes8           | :telescope:        |
-| 94    | Pillar_BuildAndCrush            | :grey_question:    |
-| 95    | FloorAndCeiling_LowerByValue    | :grey_question:    |
-| 96    | FloorAndCeiling_RaiseByValue    | :grey_question:    |
-| 97    | Ceiling_LowerAndCrushDist       | :grey_question:    |
-| 98    | Sector_SetTranslucent           | :grey_question:    |
-| 99    | Floor_RaiseAndCrushDoom         | :grey_question:    |
+| 86    | Polyobj_MoveToSpot              | :heavy_check_mark: |
+| 87    | Polyobj_Stop                    | :heavy_check_mark: |
+| 88    | Polyobj_MoveTo                  | :heavy_check_mark: |
+| 89    | Polyobj_OR_MoveTo               | :heavy_check_mark: |
+| 90    | Polyobj_OR_RotateLeft           | :heavy_check_mark: |
+| 91    | Polyobj_OR_RotateRight          | :heavy_check_mark: |
+| 92    | Polyobj_OR_Move                 | :heavy_check_mark: |
+| 93    | Polyobj_OR_MoveTimes8           | :heavy_check_mark: |
+| 94    | Pillar_BuildAndCrush            | :heavy_check_mark: |
+| 95    | FloorAndCeiling_LowerByValue    | :heavy_check_mark: |
+| 96    | FloorAndCeiling_RaiseByValue    | :heavy_check_mark: |
+| 97    | Ceiling_LowerAndCrushDist       | :heavy_check_mark: |
+| 98    | Sector_SetTranslucent           | :x:                |
+| 99    | Floor_RaiseAndCrushDoom         | :heavy_check_mark: |
 | 100   | Scroll_Texture_Left             | :warning:          |
 | 101   | Scroll_Texture_Right            | :warning:          |
 | 102   | Scroll_Texture_Up               | :warning:          |
 | 103   | Scroll_Texture_Down             | :warning:          |
-| 104   | Ceiling_CrushAndRaiseSilentDist | :grey_question:    |
-| 105   | Door_WaitRaise                  | :grey_question:    |
-| 106   | Door_WaitClose                  | :grey_question:    |
+| 104   | Ceiling_CrushAndRaiseSilentDist | :heavy_check_mark: |
+| 105   | Door_WaitRaise                  | :heavy_check_mark: |
+| 106   | Door_WaitClose                  | :heavy_check_mark: |
 | 107   | Line_SetPortalTarget            | :x:                |
 | -     | -                               | -                  |
-| 109   | Light_ForceLightning            | :grey_question:    |
-| 110   | Light_RaiseByValue              | :grey_question:    |
-| 111   | Light_LowerByValue              | :grey_question:    |
-| 112   | Light_ChangeToValue             | :grey_question:    |
-| 113   | Light_Fade                      | :grey_question:    |
-| 114   | Light_Glow                      | :grey_question:    |
-| 115   | Light_Flicker                   | :grey_question:    |
-| 116   | Light_Strobe                    | :grey_question:    |
-| 117   | Light_Stop                      | :grey_question:    |
-| 118   | Plane_Copy                      | :grey_question:    |
-| 119   | Thing_Damage                    | :grey_question:    |
-| 120   | Radius_Quake                    | :grey_question:    |
-| 121   | Line_SetIdentification          | :grey_question:    |
+| 109   | Light_ForceLightning            | :telescope:        |
+| 110   | Light_RaiseByValue              | :heavy_check_mark: |
+| 111   | Light_LowerByValue              | :heavy_check_mark: |
+| 112   | Light_ChangeToValue             | :heavy_check_mark: |
+| 113   | Light_Fade                      | :heavy_check_mark: |
+| 114   | Light_Glow                      | :heavy_check_mark: |
+| 115   | Light_Flicker                   | :heavy_check_mark: |
+| 116   | Light_Strobe                    | :heavy_check_mark: |
+| 117   | Light_Stop                      | :heavy_check_mark: |
+| 118   | Plane_Copy                      | :x:                |
+| 119   | Thing_Damage                    | :heavy_check_mark: |
+| 120   | Radius_Quake                    | :telescope:        |
+| 121   | Line_SetIdentification          | :warning:          |
 | -     | -                               | -                  |
-| 125   | Thing_Move                      | :grey_question:    |
+| 125   | Thing_Move                      | :heavy_check_mark: |
 | -     | -                               | -                  |
-| 127   | Thing_SetSpecial                | :grey_question:    |
-| 128   | ThrustThingZ                    | :grey_question:    |
-| 129   | UsePuzzleItem                   | :grey_question:    |
-| 130   | Thing_Activate                  | :grey_question:    |
-| 131   | Thing_Deactivate                | :grey_question:    |
-| 132   | Thing_Remove                    | :grey_question:    |
-| 133   | Thing_Destroy                   | :grey_question:    |
-| 134   | Thing_Projectile                | :grey_question:    |
-| 135   | Thing_Spawn                     | :grey_question:    |
-| 136   | Thing_ProjectileGravity         | :grey_question:    |
-| 137   | Thing_SpawnNoFog                | :grey_question:    |
-| 138   | Floor_Waggle                    | :grey_question:    |
-| 139   | Thing_SpawnFacing               | :grey_question:    |
-| 140   | Sector_ChangeSound              | :grey_question:    |
+| 127   | Thing_SetSpecial                | :telescope:        |
+| 128   | ThrustThingZ                    | :heavy_check_mark: |
+| 129   | UsePuzzleItem                   | :x:                |
+| 130   | Thing_Activate                  | :heavy_check_mark: |
+| 131   | Thing_Deactivate                | :heavy_check_mark: |
+| 132   | Thing_Remove                    | :heavy_check_mark: |
+| 133   | Thing_Destroy                   | :heavy_check_mark: |
+| 134   | Thing_Projectile                | :heavy_check_mark: |
+| 135   | Thing_Spawn                     | :heavy_check_mark: |
+| 136   | Thing_ProjectileGravity         | :heavy_check_mark: |
+| 137   | Thing_SpawnNoFog                | :heavy_check_mark: |
+| 138   | Floor_Waggle                    | :heavy_check_mark: |
+| 139   | Thing_SpawnFacing               | :heavy_check_mark: |
+| 140   | Sector_ChangeSound              | :telescope:        |
 | -     | -                               | -                  |
-| 154   | Teleport_NoStop                 | :grey_question:    |
+| 154   | Teleport_NoStop                 | :heavy_check_mark: |
 | -     | -                               | -                  |
-| 157   | SetGlobalFogParameter           | :grey_question:    |
+| 157   | SetGlobalFogParameter           | :telescope:        |
 | 158   | FS_Execute                      | :x:                |
-| 159   | Sector_SetPlaneReflection       | :grey_question:    |
+| 159   | Sector_SetPlaneReflection       | :x:                |
 | 160   | Sector_Set3DFloor               | :x:                |
-| 161   | Sector_SetContents              | :grey_question:    |
+| 161   | Sector_SetContents              | :x:                |
 | -     | -                               | -                  |
-| 168   | Ceiling_CrushAndRaiseDist       | :grey_question:    |
-| 169   | Generic_Crusher2                | :grey_question:    |
-| 170   | Sector_SetCeilingScale2         | :grey_question:    |
-| 171   | Sector_SetFloorScale2           | :grey_question:    |
-| 172   | Plat_UpNearestWaitDownStay      | :grey_question:    |
-| 173   | NoiseAlert                      | :grey_question:    |
+| 168   | Ceiling_CrushAndRaiseDist       | :heavy_check_mark: |
+| 169   | Generic_Crusher2                | :heavy_check_mark: |
+| 170   | Sector_SetCeilingScale2         | :x:                |
+| 171   | Sector_SetFloorScale2           | :x:                |
+| 172   | Plat_UpNearestWaitDownStay      | :heavy_check_mark: |
+| 173   | NoiseAlert                      | :warning:          |
 | 174   | SendToCommunicator              | :x:                |
-| 175   | Thing_ProjectileIntercept       | :grey_question:    |
-| 176   | Thing_ChangeTID                 | :grey_question:    |
-| 177   | Thing_Hate                      | :grey_question:    |
-| 178   | Thing_ProjectileAimed           | :grey_question:    |
-| 179   | ChangeSkill                     | :grey_question:    |
-| 180   | Thing_SetTranslation            | :grey_question:    |
-| 181   | Plane_Align                     | :grey_question:    |
+| 175   | Thing_ProjectileIntercept       | :x:                |
+| 176   | Thing_ChangeTID                 | :heavy_check_mark: |
+| 177   | Thing_Hate                      | :warning:          |
+| 178   | Thing_ProjectileAimed           | :heavy_check_mark: |
+| 179   | ChangeSkill                     | :x:                |
+| 180   | Thing_SetTranslation            | :telescope:        |
+| 181   | Plane_Align                     | :x:                |
 | 182   | Line_Mirror                     | :x:                |
-| 183   | Line_AlignCeiling               | :grey_question:    |
-| 184   | Line_AlignFloor                 | :grey_question:    |
-| 185   | Sector_SetRotation              | :grey_question:    |
-| 186   | Sector_SetCeilingPanning        | :grey_question:    |
-| 187   | Sector_SetFloorPanning          | :grey_question:    |
-| 188   | Sector_SetCeilingScale          | :grey_question:    |
-| 189   | Sector_SetFloorScale            | :grey_question:    |
+| 183   | Line_AlignCeiling               | :x:                |
+| 184   | Line_AlignFloor                 | :x:                |
+| 185   | Sector_SetRotation              | :x:                |
+| 186   | Sector_SetCeilingPanning        | :heavy_check_mark: |
+| 187   | Sector_SetFloorPanning          | :heavy_check_mark: |
+| 188   | Sector_SetCeilingScale          | :x:                |
+| 189   | Sector_SetFloorScale            | :x:                |
 | 190   | Static_Init                     | :warning:          |
-| 191   | SetPlayerProperty               | :grey_question:    |
-| 192   | Ceiling_LowerToHighestFloor     | :grey_question:    |
-| 193   | Ceiling_LowerInstant            | :grey_question:    |
-| 194   | Ceiling_RaiseInstant            | :grey_question:    |
-| 195   | Ceiling_CrushRaiseAndStayA      | :grey_question:    |
-| 196   | Ceiling_CrushAndRaiseA          | :grey_question:    |
-| 197   | Ceiling_CrushAndRaiseSilentA    | :grey_question:    |
-| 198   | Ceiling_RaiseByValueTimes8      | :grey_question:    |
-| 199   | Ceiling_LowerByValueTimes8      | :grey_question:    |
-| 200   | Generic_Floor                   | :grey_question:    |
-| 201   | Generic_Ceiling                 | :grey_question:    |
-| 202   | Generic_Door                    | :grey_question:    |
-| 203   | Generic_Lift                    | :grey_question:    |
-| 204   | Generic_Stairs                  | :grey_question:    |
-| 205   | Generic_Crusher                 | :grey_question:    |
-| 206   | Plat_DownWaitUpStayLip          | :grey_question:    |
-| 207   | Plat_PerpetualRaiseLip          | :grey_question:    |
-| 208   | TranslucentLine                 | :grey_question:    |
+| 191   | SetPlayerProperty               | :x:                |
+| 192   | Ceiling_LowerToHighestFloor     | :heavy_check_mark: |
+| 193   | Ceiling_LowerInstant            | :heavy_check_mark: |
+| 194   | Ceiling_RaiseInstant            | :heavy_check_mark: |
+| 195   | Ceiling_CrushRaiseAndStayA      | :heavy_check_mark: |
+| 196   | Ceiling_CrushAndRaiseA          | :heavy_check_mark: |
+| 197   | Ceiling_CrushAndRaiseSilentA    | :heavy_check_mark: |
+| 198   | Ceiling_RaiseByValueTimes8      | :heavy_check_mark: |
+| 199   | Ceiling_LowerByValueTimes8      | :heavy_check_mark: |
+| 200   | Generic_Floor                   | :heavy_check_mark: |
+| 201   | Generic_Ceiling                 | :heavy_check_mark: |
+| 202   | Generic_Door                    | :heavy_check_mark: |
+| 203   | Generic_Lift                    | :heavy_check_mark: |
+| 204   | Generic_Stairs                  | :heavy_check_mark: |
+| 205   | Generic_Crusher                 | :heavy_check_mark: |
+| 206   | Plat_DownWaitUpStayLip          | :heavy_check_mark: |
+| 207   | Plat_PerpetualRaiseLip          | :heavy_check_mark: |
+| 208   | TranslucentLine                 | :warning:          |
 | 209   | Transfer_Heights                | :heavy_check_mark: |
 | 210   | Transfer_FloorLight             | :heavy_check_mark: |
 | 211   | Transfer_CeilingLight           | :heavy_check_mark: |
 | 212   | Sector_SetColor                 | :x:                |
-| 213   | Sector_SetFade                  | :grey_question:    |
-| 214   | Sector_SetDamage                | :grey_question:    |
-| 215   | Teleport_Line                   | :grey_question:    |
-| 216   | Sector_SetGravity               | :grey_question:    |
-| 217   | Stairs_BuildUpDoom              | :grey_question:    |
+| 213   | Sector_SetFade                  | :x:                |
+| 214   | Sector_SetDamage                | :heavy_check_mark: |
+| 215   | Teleport_Line                   | :heavy_check_mark: |
+| 216   | Sector_SetGravity               | :heavy_check_mark: |
+| 217   | Stairs_BuildUpDoom              | :heavy_check_mark: |
 | 218   | Sector_SetWind                  | :heavy_check_mark: |
 | 219   | Sector_SetFriction              | :heavy_check_mark: |
 | 220   | Sector_SetCurrent               | :heavy_check_mark: |
@@ -381,56 +381,66 @@ Current work is isolated to the initial pass over the level format itself - line
 | 225   | Scroll_Texture_Offsets          | :warning:          |
 | 226   | ACS_ExecuteAlways               | :telescope:        |
 | 227   | PointPush_SetForce              | :heavy_check_mark: |
-| 228   | Plat_RaiseAndStayTx0            | :grey_question:    |
+| 228   | Plat_RaiseAndStayTx0            | :heavy_check_mark: |
 | 229   | Thing_SetGoal                   | :x:                |
-| 230   | Plat_UpByValueStayTx            | :grey_question:    |
-| 231   | Plat_ToggleCeiling              | :grey_question:    |
-| 232   | Light_StrobeDoom                | :grey_question:    |
-| 233   | Light_MinNeighbor               | :grey_question:    |
-| 234   | Light_MaxNeighbor               | :grey_question:    |
-| 235   | Floor_TransferTrigger           | :grey_question:    |
-| 236   | Floor_TransferNumeric           | :grey_question:    |
+| 230   | Plat_UpByValueStayTx            | :heavy_check_mark: |
+| 231   | Plat_ToggleCeiling              | :heavy_check_mark: |
+| 232   | Light_StrobeDoom                | :heavy_check_mark: |
+| 233   | Light_MinNeighbor               | :heavy_check_mark: |
+| 234   | Light_MaxNeighbor               | :heavy_check_mark: |
+| 235   | Floor_TransferTrigger           | :heavy_check_mark: |
+| 236   | Floor_TransferNumeric           | :heavy_check_mark: |
 | 237   | ChangeCamera                    | :x:                |
-| 238   | Floor_RaiseToLowestCeiling      | :grey_question:    |
-| 239   | Floor_RaiseByValueTxTy          | :grey_question:    |
-| 240   | Floor_RaiseByTexture            | :grey_question:    |
-| 241   | Floor_LowerToLowestTxTy         | :grey_question:    |
-| 242   | Floor_LowerToHighest            | :grey_question:    |
-| 243   | Exit_Normal                     | :grey_question:    |
-| 244   | Exit_Secret                     | :grey_question:    |
-| 245   | Elevator_RaiseToNearest         | :grey_question:    |
-| 246   | Elevator_MoveToFloor            | :grey_question:    |
-| 247   | Elevator_LowerToNearest         | :grey_question:    |
-| 248   | HealThing                       | :grey_question:    |
-| 249   | Door_CloseWaitOpen              | :grey_question:    |
-| 250   | Floor_Donut                     | :grey_question:    |
-| 251   | FloorAndCeiling_LowerRaise      | :grey_question:    |
-| 252   | Ceiling_RaiseToNearest          | :grey_question:    |
-| 253   | Ceiling_LowerToLowest           | :grey_question:    |
-| 254   | Ceiling_LowerToFloor            | :grey_question:    |
-| 255   | Ceiling_CrushRaiseAndStaySilA   | :grey_question:    |
-| 256   | Floor_LowerToHighestEE          | :grey_question:    |
-| 257   | Floor_RaiseToLowest             | :grey_question:    |
-| 258   | Floor_LowerToLowestCeiling      | :grey_question:    |
-| 259   | Floor_RaiseToCeiling            | :grey_question:    |
-| 260   | Floor_ToCeilingInstant          | :grey_question:    |
-| 261   | Floor_LowerByTexture            | :grey_question:    |
-| 262   | Ceiling_RaiseToHighest          | :grey_question:    |
-| 263   | Ceiling_ToHighestInstant        | :grey_question:    |
-| 264   | Ceiling_LowerToNearest          | :grey_question:    |
-| 265   | Ceiling_RaiseToLowest           | :grey_question:    |
-| 266   | Ceiling_RaiseToHighestFloor     | :grey_question:    |
-| 267   | Ceiling_ToFloorInstant          | :grey_question:    |
-| 268   | Ceiling_RaiseByTexture          | :grey_question:    |
-| 269   | Ceiling_LowerByTexture          | :grey_question:    |
-| 270   | Stairs_BuildDownDoom            | :grey_question:    |
-| 271   | Stairs_BuildUpDoomSync          | :grey_question:    |
-| 272   | Stairs_BuildDownDoomSync        | :grey_question:    |
+| 238   | Floor_RaiseToLowestCeiling      | :heavy_check_mark: |
+| 239   | Floor_RaiseByValueTxTy          | :heavy_check_mark: |
+| 240   | Floor_RaiseByTexture            | :heavy_check_mark: |
+| 241   | Floor_LowerToLowestTxTy         | :heavy_check_mark: |
+| 242   | Floor_LowerToHighest            | :heavy_check_mark: |
+| 243   | Exit_Normal                     | :warning:          |
+| 244   | Exit_Secret                     | :warning:          |
+| 245   | Elevator_RaiseToNearest         | :heavy_check_mark: |
+| 246   | Elevator_MoveToFloor            | :heavy_check_mark: |
+| 247   | Elevator_LowerToNearest         | :heavy_check_mark: |
+| 248   | HealThing                       | :heavy_check_mark: |
+| 249   | Door_CloseWaitOpen              | :heavy_check_mark: |
+| 250   | Floor_Donut                     | :heavy_check_mark: |
+| 251   | FloorAndCeiling_LowerRaise      | :heavy_check_mark: |
+| 252   | Ceiling_RaiseToNearest          | :heavy_check_mark: |
+| 253   | Ceiling_LowerToLowest           | :heavy_check_mark: |
+| 254   | Ceiling_LowerToFloor            | :heavy_check_mark: |
+| 255   | Ceiling_CrushRaiseAndStaySilA   | :heavy_check_mark: |
+| 256   | Floor_LowerToHighestEE          | :heavy_check_mark: |
+| 257   | Floor_RaiseToLowest             | :heavy_check_mark: |
+| 258   | Floor_LowerToLowestCeiling      | :heavy_check_mark: |
+| 259   | Floor_RaiseToCeiling            | :heavy_check_mark: |
+| 260   | Floor_ToCeilingInstant          | :heavy_check_mark: |
+| 261   | Floor_LowerByTexture            | :heavy_check_mark: |
+| 262   | Ceiling_RaiseToHighest          | :heavy_check_mark: |
+| 263   | Ceiling_ToHighestInstant        | :heavy_check_mark: |
+| 264   | Ceiling_LowerToNearest          | :heavy_check_mark: |
+| 265   | Ceiling_RaiseToLowest           | :heavy_check_mark: |
+| 266   | Ceiling_RaiseToHighestFloor     | :heavy_check_mark: |
+| 267   | Ceiling_ToFloorInstant          | :heavy_check_mark: |
+| 268   | Ceiling_RaiseByTexture          | :heavy_check_mark: |
+| 269   | Ceiling_LowerByTexture          | :heavy_check_mark: |
+| 270   | Stairs_BuildDownDoom            | :heavy_check_mark: |
+| 271   | Stairs_BuildUpDoomSync          | :heavy_check_mark: |
+| 272   | Stairs_BuildDownDoomSync        | :heavy_check_mark: |
 
 #### Notes
 
+- Specials above 255 aren't accessible yet (hexen format only supports special < 256).
 - Wall scrollers cannot distinguish between top, bottom, and mid textures.
 - The static init supports damage, gravity, and skies only.
+- The position argument for map exits is currently ignored.
+- Line flags coming from extra arguments are ignored.
+- Line translucency works like boom (fixed alpha).
+- Line_SetBlocking only applies flags for creatures, players, monsters, sound, and everything.
+- NoiseAlert only works with the default arguments.
+- Thing_Hate only supports 0 for the third argument ("target only").
+- ThrustThing has an implicit speed limit.
+- Poly objects have no sound (no SNDSEQ lump support to define it yet).
+- Poly objects may have visual errors (especially for large objects).
 
 ### Sector Specials
 
@@ -438,9 +448,9 @@ Current work is isolated to the initial pass over the level format itself - line
 | ------- | ------------------------ | ------------------ |
 | *       | Generalized Effects      | :heavy_check_mark: |
 | 1       | Light_Phased             | :heavy_check_mark: |
-| 2-4     | LightSequence*           | :grey_question:    |
+| 2-4     | LightSequence*           | :heavy_check_mark: |
 | -       | -                        | -                  |
-| 26-27   | Stairs_Special*          | :grey_question:    |
+| 26-27   | Stairs_Special*          | :heavy_check_mark: |
 | -       | -                        | -                  |
 | 40-51   | Wind*                    | :heavy_check_mark: |
 | -       | -                        | -                  |
@@ -474,7 +484,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 115     | Damage_InstantDeath      | :heavy_check_mark: |
 | 116     | sDamage_SuperHellslime   | :heavy_check_mark: |
 | -       | -                        | -                  |
-| 118     | Scroll_StrifeCurrent     | :grey_question:    |
+| 118     | Scroll_StrifeCurrent     | :heavy_check_mark: |
 | -       | -                        | -                  |
 | 195     | Sector_Hidden            | :heavy_check_mark: |
 | 196     | Sector_Heal              | :heavy_check_mark: |

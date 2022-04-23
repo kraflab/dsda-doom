@@ -42,11 +42,101 @@
 #include "sounds.h"
 #include "p_user.h"
 #include "r_demo.h"
+#include "m_random.h"
 
-static mobj_t* P_TeleportDestination(line_t* line)
+#include "dsda/thing_id.h"
+
+// More will be added
+static dboolean P_IsTeleportDestination(mobj_t *mo)
+{
+  return mo->type == MT_TELEPORTMAN ||
+         mo->type == ZMT_TELEPORTDEST2 || mo->type == ZMT_TELEPORTDEST3;
+}
+
+static dboolean P_IsMapSpot(mobj_t *mo)
+{
+  return mo->type == ZMT_MAPSPOT || mo->type == ZMT_MAPSPOT_GRAVITY;
+}
+
+static mobj_t* P_TeleportDestination(short thing_id, int tag)
 {
   int i;
-  for (i = -1; (i = P_FindSectorFromLineTag(line, i)) >= 0;) {
+
+  if (thing_id)
+  {
+    int count = 0;
+    mobj_t *target;
+    thing_id_search_t search;
+
+    dsda_ResetThingIDSearch(&search);
+    while ((target = dsda_FindMobjFromThingID(thing_id, &search)))
+    {
+      if (P_IsTeleportDestination(target))
+      {
+        if (!tag || target->subsector->sector->tag == tag)
+        {
+          ++count;
+        }
+      }
+    }
+
+    if (!count)
+    {
+      if (!tag)
+      {
+        // Fall back on map spots
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingID(thing_id, &search)))
+        {
+          if (P_IsMapSpot(target))
+          {
+            break;
+          }
+        }
+
+        // Fall back on any nonblocking thing
+        if (!target)
+        {
+          dsda_ResetThingIDSearch(&search);
+          while ((target = dsda_FindMobjFromThingID(thing_id, &search)))
+          {
+            if (!(target->flags & MF_SOLID))
+            {
+              break;
+            }
+          }
+        }
+
+        return target;
+      }
+    }
+    else
+    {
+      if (count > 1)
+      {
+        count = 1 + (P_Random(pr_hexen) % count);
+      }
+
+      dsda_ResetThingIDSearch(&search);
+      while ((target = dsda_FindMobjFromThingID(thing_id, &search)))
+      {
+        if (P_IsTeleportDestination(target))
+        {
+          if (!tag || target->subsector->sector->tag == tag)
+          {
+            if (!--count)
+            {
+              return target;
+            }
+          }
+        }
+      }
+    }
+
+    return NULL;
+  }
+
+  for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
     register thinker_t* th = NULL;
     while ((th = P_NextThinker(th,th_misc)) != NULL)
       if (th->function == P_MobjThinker) {
@@ -63,11 +153,9 @@ static mobj_t* P_TeleportDestination(line_t* line)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-int EV_Teleport(line_t *line, int side, mobj_t *thing)
+int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_t *thing, int flags)
 {
-  mobj_t    *m;
-
-  if (heretic) return Heretic_EV_Teleport(line, side, thing);
+  mobj_t *m;
 
   // don't teleport missiles
   // Don't teleport if hit back of line,
@@ -78,135 +166,128 @@ int EV_Teleport(line_t *line, int side, mobj_t *thing)
   // killough 1/31/98: improve performance by using
   // P_FindSectorFromLineTag instead of simple linear search.
 
-  if ((m = P_TeleportDestination(line)) != NULL)
-        {
-          fixed_t oldx = thing->x, oldy = thing->y, oldz = thing->z;
-          player_t *player = thing->player;
+  if ((m = P_TeleportDestination(thing_id, tag)) != NULL)
+  {
+    fixed_t oldx = thing->x;
+    fixed_t oldy = thing->y;
+    fixed_t oldz = thing->z;
+    fixed_t momx = thing->momx;
+    fixed_t momy = thing->momy;
+    fixed_t z = thing->z - thing->floorz;
+    player_t *player = thing->player;
+    angle_t angle = 0;
+    fixed_t c = 0, s = 0;
 
-          // killough 5/12/98: exclude voodoo dolls:
-          if (player && player->mo != thing)
-            player = NULL;
+    // Get the angle between the exit thing and source linedef.
+    // Rotate 90 degrees, so that walking perpendicularly across
+    // teleporter linedef causes thing to exit in the direction
+    // indicated by the exit thing.
+    if (flags & (TELF_ROTATEBOOM | TELF_ROTATEBOOMINVERSE) && line)
+    {
+      angle = R_PointToAngle2(0, 0, line->dx, line->dy) - m->angle + ANG90;
 
-          if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
-            return 0;
+      if (flags & TELF_ROTATEBOOMINVERSE)
+        angle = angle + ANG180;
 
-          if (compatibility_level != finaldoom_compatibility)
-            thing->z = thing->floorz;
-          thing->PrevZ = thing->z;
+      s = finesine[angle >> ANGLETOFINESHIFT];
+      c = finecosine[angle >> ANGLETOFINESHIFT];
+    }
 
-          if (player)
-            player->viewz = thing->z + player->viewheight;
+    // killough 5/12/98: exclude voodoo dolls:
+    if (player && player->mo != thing)
+      player = NULL;
 
-          // spawn teleport fog and emit sound at source
-          S_StartSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
+    if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
+      return 0;
 
-          // spawn teleport fog and emit sound at destination
-          S_StartSound(P_SpawnMobj(m->x +
-                                    20*finecosine[m->angle>>ANGLETOFINESHIFT],
-                                   m->y +
-                                    20*finesine[m->angle>>ANGLETOFINESHIFT],
-                                   thing->z, MT_TFOG),
-                       sfx_telept);
+    if (flags & (TELF_ROTATEBOOM | TELF_ROTATEBOOMINVERSE))
+    {
+      if (line)
+      {
+        // Rotate thing according to difference in angles
+        thing->angle += angle;
+
+        // Rotate thing's momentum to come out of exit just like it entered
+        thing->momx = FixedMul(momx, c) - FixedMul(momy, s);
+        thing->momy = FixedMul(momy, c) + FixedMul(momx, s);
+      }
+    }
+    else if (!(flags & TELF_KEEPORIENTATION))
+    {
+      thing->angle = m->angle;
+    }
+
+    if (flags & TELF_KEEPHEIGHT)
+      thing->z = thing->floorz + z;
+    else if (compatibility_level != finaldoom_compatibility)
+      thing->z = thing->floorz;
+    thing->PrevZ = thing->z;
+
+    if (flags & TELF_SOURCEFOG)
+    {
+      // spawn teleport fog and emit sound at source
+      S_StartSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
+    }
+
+    if (flags & TELF_DESTFOG)
+    {
+      // spawn teleport fog and emit sound at destination
+      S_StartSound(P_SpawnMobj(m->x + 20 * finecosine[m->angle >> ANGLETOFINESHIFT],
+                               m->y + 20 * finesine[m->angle >> ANGLETOFINESHIFT],
+                               thing->z, MT_TFOG),
+                   sfx_telept);
+    }
 
     /* don't move for a bit
      * cph - DEMOSYNC - BOOM had (player) here? */
-          if (thing->player)
-            thing->reactiontime = 18;
+    if (
+      thing->player &&
+      ((flags & TELF_DESTFOG) || !(flags & TELF_KEEPORIENTATION)) &&
+      !(flags & TELF_KEEPVELOCITY)
+    )
+      thing->reactiontime = 18;
 
-          thing->angle = m->angle;
+    if (!(flags & TELF_KEEPORIENTATION) && !(flags & TELF_KEEPVELOCITY))
+    {
+      thing->momx = thing->momy = thing->momz = 0;
 
-          thing->momx = thing->momy = thing->momz = 0;
+      /* killough 10/98: kill all bobbing momentum too */
+      if (player)
+        player->momx = player->momy = 0;
+    }
 
-    /* killough 10/98: kill all bobbing momentum too */
     if (player)
-      player->momx = player->momy = 0;
-
-     // e6y
-     if (player && player->mo == thing)
-      R_ResetAfterTeleport(player);
-
-          return 1;
-        }
-  return 0;
-}
-
-//
-// Silent TELEPORTATION, by Lee Killough
-// Primarily for rooms-over-rooms etc.
-//
-
-int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
-{
-  mobj_t    *m;
-
-  // don't teleport missiles
-  // Don't teleport if hit back of line,
-  // so you can get out of teleporter.
-
-  if (side || thing->flags & MF_MISSILE)
-    return 0;
-
-  if ((m = P_TeleportDestination(line)) != NULL)
+    {
+      // This code was different between silent and non-silent functions.
+      if (flags & TELF_KEEPORIENTATION)
+      {
+        // Adjust player's view, in case there has been a height change
+        if (player)
         {
-          // Height of thing above ground, in case of mid-air teleports:
-          fixed_t z = thing->z - thing->floorz;
+          // Save the current deltaviewheight, used in stepping
+          fixed_t deltaviewheight = player->deltaviewheight;
 
-          // Get the angle between the exit thing and source linedef.
-          // Rotate 90 degrees, so that walking perpendicularly across
-          // teleporter linedef causes thing to exit in the direction
-          // indicated by the exit thing.
-          angle_t angle =
-            R_PointToAngle2(0, 0, line->dx, line->dy) - m->angle + ANG90;
+          // Clear deltaviewheight, since we don't want any changes
+          player->deltaviewheight = 0;
 
-          // Sine, cosine of angle adjustment
-          fixed_t s = finesine[angle>>ANGLETOFINESHIFT];
-          fixed_t c = finecosine[angle>>ANGLETOFINESHIFT];
+          // Set player's view according to the newly set parameters
+          P_CalcHeight(player);
 
-          // Momentum of thing crossing teleporter linedef
-          fixed_t momx = thing->momx;
-          fixed_t momy = thing->momy;
-
-          // Whether this is a player, and if so, a pointer to its player_t
-          player_t *player = thing->player;
-
-          // Attempt to teleport, aborting if blocked
-          if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
-            return 0;
-
-          // Rotate thing according to difference in angles
-          thing->angle += angle;
-
-          // Adjust z position to be same height above ground as before
-          thing->z = z + thing->floorz;
-          thing->PrevZ = thing->z;
-
-          // Rotate thing's momentum to come out of exit just like it entered
-          thing->momx = FixedMul(momx, c) - FixedMul(momy, s);
-          thing->momy = FixedMul(momy, c) + FixedMul(momx, s);
-
-          // Adjust player's view, in case there has been a height change
-          // Voodoo dolls are excluded by making sure player->mo == thing.
-          if (player && player->mo == thing)
-            {
-              // Save the current deltaviewheight, used in stepping
-              fixed_t deltaviewheight = player->deltaviewheight;
-
-              // Clear deltaviewheight, since we don't want any changes
-              player->deltaviewheight = 0;
-
-              // Set player's view according to the newly set parameters
-              P_CalcHeight(player);
-
-              // Reset the delta to have the same dynamics as before
-              player->deltaviewheight = deltaviewheight;
-            }
-
-          // e6y
-          if (player && player->mo == thing)
-            R_ResetAfterTeleport(player);
-
-          return 1;
+          // Reset the delta to have the same dynamics as before
+          player->deltaviewheight = deltaviewheight;
         }
+      }
+      else
+      {
+        player->viewz = thing->z + player->viewheight;
+      }
+
+      // e6y
+      R_ResetAfterTeleport(player);
+    }
+
+    return 1;
+  }
   return 0;
 }
 
@@ -221,7 +302,7 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
 #define FUDGEFACTOR 10
 
 int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
-                          dboolean reverse)
+                          int tag, dboolean reverse)
 {
   int i;
   line_t *l;
@@ -229,7 +310,7 @@ int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
   if (side || thing->flags & MF_MISSILE)
     return 0;
 
-  for (i = -1; (i = P_FindLineFromLineTag(line, i)) >= 0;)
+  for (i = -1; (i = P_FindLineFromTag(tag, i)) >= 0;)
     if ((l=lines+i) != line && l->backsector)
       {
         // Get the thing's position along the source linedef
@@ -470,10 +551,9 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolea
     return (true);
 }
 
-dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
+int EV_HereticTeleport(short thing_id, int tag, line_t * line, int side, mobj_t * thing, int flags)
 {
     int i;
-    int tag;
     mobj_t *m;
     thinker_t *thinker;
     sector_t *sector;
@@ -486,7 +566,6 @@ dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
     {                           // Don't teleport when crossing back side
         return (false);
     }
-    tag = line->tag;
     for (i = 0; i < numsectors; i++)
     {
         if (sectors[i].tag == tag)
@@ -520,7 +599,7 @@ dboolean Heretic_EV_Teleport(line_t * line, int side, mobj_t * thing)
 #include "m_random.h"
 #include "lprintf.h"
 
-dboolean Hexen_EV_Teleport(int tid, mobj_t * thing, dboolean fog)
+dboolean EV_HexenTeleport(int tid, mobj_t * thing, dboolean fog)
 {
     int i;
     int count;

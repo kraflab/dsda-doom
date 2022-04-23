@@ -30,6 +30,7 @@ void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int dam
 void dsda_WatchDeath(mobj_t* thing);
 void dsda_WatchKill(player_t* player, mobj_t* target);
 void dsda_WatchResurrection(mobj_t* target);
+void dsda_WatchFailedSpawn(mobj_t* spawned);
 void dsda_WatchMorph(mobj_t* morphed);
 void dsda_WatchUnMorph(mobj_t* morphed);
 void dsda_WatchSpawn(mobj_t* spawned);
@@ -37,6 +38,7 @@ void dsda_WatchIconSpawn(mobj_t* spawned);
 void dsda_WatchCommand(void);
 void dsda_WatchBeforeLevelSetup(void);
 void dsda_WatchAfterLevelSetup(void);
+void dsda_WatchNewLevel(void);
 void dsda_WatchLevelCompletion(void);
 void dsda_WatchWeaponFire(weapontype_t weapon);
 void dsda_WatchSecret(void);

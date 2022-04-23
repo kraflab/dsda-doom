@@ -74,9 +74,7 @@
 
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
-
-// All OpenGL extentions will be disabled in gl_compatibility mode
-int gl_compatibility = 0;
+#include "dsda/stretch.h"
 
 int gl_clear;
 
@@ -380,7 +378,7 @@ void gld_Init(int width, int height)
     }
   }
 
-  gld_InitOpenGL(gl_compatibility);
+  gld_InitOpenGL();
   gld_InitPalettedTextures();
   gld_InitTextureParams();
 
@@ -436,7 +434,7 @@ void gld_Init(int width, int height)
 
   // Create FBO object and associated render targets
   gld_InitFBO();
-  I_AtExit(gld_FreeScreenSizeFBO, true);
+  I_AtExit(gld_FreeScreenSizeFBO, true, "gld_FreeScreenSizeFBO", exit_priority_normal);
 
   if(!gld_LoadGLDefs("GLBDEFS"))
   {
@@ -445,7 +443,7 @@ void gld_Init(int width, int height)
 
   gld_ResetLastTexture();
 
-  I_AtExit(gld_CleanMemory, true); //e6y
+  I_AtExit(gld_CleanMemory, true, "gld_CleanMemory", exit_priority_normal); //e6y
 
   glsl_Init(); // elim - Required for fuzz shader, even if lighting mode not set to "shaders"
 }
@@ -675,7 +673,7 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
 
   if (flags & VPT_STRETCH_MASK)
   {
-    stretch_param_t *params = &stretch_params[flags & VPT_ALIGN_MASK];
+    stretch_param_t *params = dsda_StretchParams(flags);
 
     xpos   = (float)((x - leftoffset) * params->video->width)  / 320.0f + params->deltax1;
     ypos   = (float)((y - topoffset)  * params->video->height) / 200.0f + params->deltay1;
@@ -1243,9 +1241,7 @@ void gld_StartDrawScene(void)
   gl_spriteindex = 0;
 
   //e6y: fog in frame
-  gl_use_fog = !gl_compatibility &&
-    (gl_fog || gl_lightmode == gl_lightmode_fogbased) &&
-    !frame_fixedcolormap && !boom_cm;
+  gl_use_fog = gl_fog && !frame_fixedcolormap && !boom_cm;
 
 //e6y
   mlook_or_fov = dsda_MouseLook() || (render_fov != FOV90);
@@ -1715,9 +1711,7 @@ void gld_AddWall(seg_t *seg)
     rellight = seg->linedef->dx == 0 ? +gl_rellight : seg->linedef->dy==0 ? -gl_rellight : 0;
   }
   wall.light=gld_CalcLightLevel(frontsector->lightlevel+rellight+(extralight<<5));
-  wall.fogdensity = gld_CalcFogDensity(frontsector,
-    frontsector->lightlevel + (gl_lightmode == gl_lightmode_fogbased ? rellight : 0),
-    GLDIT_WALL);
+  wall.fogdensity = gld_CalcFogDensity(frontsector, frontsector->lightlevel, GLDIT_WALL);
   wall.alpha=1.0f;
   wall.gltexture=NULL;
   wall.seg = seg; //e6y
@@ -2597,7 +2591,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   int frustum_culling = HaveMouseLook() && gl_sprites_frustum_culling;
   int mlook = HaveMouseLook() || (render_fov > FOV90);
 
-  if (!paused && movement_smooth)
+  if (R_ViewInterpolation())
   {
     fx = thing->PrevX + FixedMul (tic_vars.frac, thing->x - thing->PrevX);
     fy = thing->PrevY + FixedMul (tic_vars.frac, thing->y - thing->PrevY);

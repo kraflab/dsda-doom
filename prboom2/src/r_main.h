@@ -67,10 +67,6 @@ extern fixed_t  projection;
 extern fixed_t  skyiscale;
 // e6y: wide-res
 extern int wide_centerx;
-extern int wide_offsetx;
-extern int wide_offset2x;
-extern int wide_offsety;
-extern int wide_offset2y;
 #define RMUL (1.6f/1.333333f)
 
 // proff 11/06/98: Added for high-res

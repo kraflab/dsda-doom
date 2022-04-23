@@ -47,8 +47,6 @@
 
 int gl_version;
 
-static dboolean gl_compatibility_mode;
-
 int GLEXT_CLAMP_TO_EDGE = GL_CLAMP;
 int gl_max_texture_size = 0;
 
@@ -176,12 +174,10 @@ void gld_InitOpenGLVersion(void)
   }
 }
 
-void gld_InitOpenGL(dboolean compatibility_mode)
+void gld_InitOpenGL(void)
 {
   GLenum texture;
   const char *extensions = (const char*)glGetString(GL_EXTENSIONS);
-
-  gl_compatibility_mode = compatibility_mode;
 
   gld_InitOpenGLVersion();
 
@@ -430,7 +426,7 @@ void gld_InitOpenGL(dboolean compatibility_mode)
     gl_ext_blend_color = false;
   }
 
-  if ((compatibility_mode) || (gl_version <= OPENGL_VERSION_1_1))
+  if (gl_version <= OPENGL_VERSION_1_1)
   {
     lprintf(LO_INFO, "gld_InitOpenGL: Compatibility mode is used.\n");
     gl_arb_texture_non_power_of_two = false;
@@ -592,11 +588,6 @@ void gld_EnableMultisample(int enable)
 
 void SetTextureMode(tex_mode_e type)
 {
-  if (gl_compatibility_mode)
-  {
-    type = TM_MODULATE;
-  }
-
   if (type == TM_MASK)
   {
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);

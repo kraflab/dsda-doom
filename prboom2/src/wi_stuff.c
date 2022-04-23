@@ -45,6 +45,7 @@
 #include "r_draw.h"
 #include "hu_stuff.h"
 #include "dsda/intermission_display.h"
+#include "dsda/mapinfo.h"
 
 #include "heretic/in_lude.h"
 #include "hexen/in_lude.h"
@@ -422,7 +423,7 @@ static void WI_slamBackground(void)
 
   if (state != StatCount && enterpic) strcpy(name, enterpic);
   else if (exitpic) strcpy(name, exitpic);
-  else if (gamemode == commercial || (gamemode == retail && wbs->epsd >= 3))
+  else if (gamemode == commercial || wbs->epsd < 0 || (gamemode == retail && wbs->epsd >= 3))
     strcpy(name, "INTERPIC");
   else
     sprintf(name, "WIMAP%d", wbs->epsd);
@@ -496,23 +497,30 @@ static void WI_DrawString(int cx, int cy, const char* ch)
 // Args:    none
 // Returns: void
 //
+const char *lf_levelname;
+const char *lf_levelpic;
+
 void WI_drawLF(void)
 {
   int y = WI_TITLEY;
   char lname[9];
 
-  if (wbs->lastmapinfo != NULL && wbs->lastmapinfo->levelname != NULL && wbs->lastmapinfo->levelpic[0] == 0)
+  dsda_PrepareFinished();
+
+  if (lf_levelname)
   {
     // The level defines a new name but no texture for the name.
-    WI_DrawString(160, y, wbs->lastmapinfo->levelname);
+    WI_DrawString(160, y, lf_levelname);
     y += (5 * hu_font['A' - HU_FONTSTART].height / 4);
   }
   else
   {
     // draw <LevelName>
     /* cph - get the graphic lump name and use it */
-    if (wbs->lastmapinfo != NULL && wbs->lastmapinfo->levelpic[0]) strcpy(lname, wbs->lastmapinfo->levelpic);
-    else WI_levelNameLump(wbs->epsd, wbs->last, lname);
+    if (lf_levelpic)
+      strcpy(lname, lf_levelpic);
+    else
+      WI_levelNameLump(wbs->epsd, wbs->last, lname);
 
     if (W_CheckNumForName(lname) == -1)
       return;
@@ -538,6 +546,9 @@ void WI_drawLF(void)
 // Args:    none
 // Returns: void
 //
+const char *el_levelname;
+const char *el_levelpic;
+
 void WI_drawEL(void)
 {
   int y = WI_TITLEY;
@@ -549,18 +560,22 @@ void WI_drawEL(void)
     y, FB, entering, CR_DEFAULT, VPT_STRETCH);
 
 
-  if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelname != NULL && wbs->nextmapinfo->levelpic[0] == 0)
+  dsda_PrepareEntering();
+
+  if (el_levelname)
   {
     y += (5 * V_NamePatchHeight(entering)) / 4;
 
     // The level defines a new name but no texture for the name.
-    WI_DrawString(160, y, wbs->nextmapinfo->levelname);
+    WI_DrawString(160, y, el_levelname);
   }
   else
   {
     /* cph - get the graphic lump name */
-    if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelpic[0]) strcpy(lname, wbs->nextmapinfo->levelpic);
-    else WI_levelNameLump(wbs->nextep, wbs->next, lname);
+    if (el_levelpic)
+      strcpy(lname, el_levelpic);
+    else
+      WI_levelNameLump(wbs->nextep, wbs->next, lname);
 
     if (W_CheckNumForName(lname) == -1)
       return;
@@ -649,7 +664,7 @@ void WI_initAnimatedBack(int entering)
   if (gamemode == commercial)  // no animation for DOOM2
     return;
 
-  if (wbs->epsd > 2)
+  if (wbs->epsd < 0 || wbs->epsd > 2)
     return;
 
 
@@ -690,7 +705,7 @@ void WI_updateAnimatedBack(void)
   if (gamemode == commercial)
     return;
 
-  if (wbs->epsd > 2)
+  if (wbs->epsd < 0 || wbs->epsd > 2)
     return;
 
   for (i=0;i<NUMANIMS[wbs->epsd];i++)
@@ -750,7 +765,7 @@ void WI_drawAnimatedBack(void)
   if (gamemode==commercial) //jff 4/25/98 Someone forgot commercial an enum
     return;
 
-  if (wbs->epsd > 2)
+  if (wbs->epsd < 0 || wbs->epsd > 2)
     return;
 
   for (i=0 ; i<NUMANIMS[wbs->epsd] ; i++)
@@ -973,16 +988,24 @@ static dboolean    snl_pointeron = false;
 //
 void WI_initShowNextLoc(void)
 {
-  if (gamemapinfo != NULL)
-  {
-    if (gamemapinfo->endpic[0])
-    {
-      G_WorldDone();
-      return;
-    }
-    state = ShowNextLoc;
+  int behaviour;
 
-    // episode change
+  dsda_ShowNextLocBehaviour(&behaviour);
+
+  if (behaviour & WI_SHOW_NEXT_DONE)
+  {
+    G_WorldDone();
+    return;
+  }
+
+  if (behaviour & WI_SHOW_NEXT_LOC)
+  {
+    state = ShowNextLoc;
+  }
+
+  if (behaviour & WI_SHOW_NEXT_EPISODAL)
+  {
+    // episode change possible
     if (wbs->epsd != wbs->nextep)
     {
       void WI_loadData(void);
@@ -992,18 +1015,6 @@ void WI_initShowNextLoc(void)
       WI_loadData();
     }
   }
-  else if (
-    gamemode != commercial &&
-    (
-      gamemap == 8 ||
-      (gamemission == chex && gamemap == 5)
-    )
-  ) {
-    G_WorldDone();
-    return;
-  }
-  else
-    state = ShowNextLoc;
 
   acceleratestage = 0;
 
@@ -1052,6 +1063,11 @@ void WI_drawShowNextLoc(void)
   int   i;
   int   last;
 
+  if (dsda_SkipDrawShowNextLoc())
+  {
+    return;
+  }
+
   WI_slamBackground();
 
   // draw animated background
@@ -1066,7 +1082,7 @@ void WI_drawShowNextLoc(void)
 
   if ( gamemode != commercial)
   {
-    if (wbs->epsd > 2)
+    if (wbs->epsd < 0 || wbs->epsd > 2)
     {
       WI_drawEL();  // "Entering..." if not E1 or E2
       return;
@@ -1085,13 +1101,6 @@ void WI_drawShowNextLoc(void)
     // draw flashing ptr
     if (snl_pointeron)
       WI_drawOnLnode(wbs->next, yah);
-  }
-
-  if (gamemapinfo != NULL &&
-      gamemapinfo->endpic[0] &&
-      strcmp(gamemapinfo->endpic, "-") != 0)
-  {
-    return;
   }
 
   if (gamemission == pack_nerve && singleplayer && wbs->last == 7)
@@ -2151,8 +2160,8 @@ void WI_Start(wbstartstruct_t* wbstartstruct)
   WI_initVariables(wbstartstruct);
   WI_loadData();
 
-  exitpic = (wbs->lastmapinfo && wbs->lastmapinfo->exitpic[0]) ? wbs->lastmapinfo->exitpic : NULL;
-  enterpic = (wbs->nextmapinfo && wbs->nextmapinfo->enterpic[0]) ? wbs->nextmapinfo->enterpic : NULL;
+  exitpic = dsda_ExitPic();
+  enterpic = dsda_EnterPic();
 
   if (deathmatch)
     WI_initDeathmatchStats();

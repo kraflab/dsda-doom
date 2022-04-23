@@ -546,9 +546,6 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_WeaponReady", player);
 
-// weapon change sequence considered complete
-  done_autoswitch = false;
-
   if (player->chickenTics)
   {                           // Change to the chicken beak
       P_ActivateBeak(player);
@@ -649,6 +646,8 @@ void A_ReFire(player_t *player, pspdef_t *psp)
     }
 }
 
+dboolean boom_weapon_state_injection;
+
 void A_CheckReload(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_CheckReload", player);
@@ -659,6 +658,7 @@ void A_CheckReload(player_t *player, pspdef_t *psp)
      * rewritten. But we must tell Doom that we don't need to complete the
      * reload frames for the weapon here. G_BuildTiccmd will set ->pendingweapon
      * for us later on. */
+    boom_weapon_state_injection = true;
     P_SetPsprite(player,ps_weapon,weaponinfo[player->readyweapon].downstate);
   }
 }

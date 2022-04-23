@@ -83,10 +83,6 @@ extern const char *s_QLOADNET; // = QLOADNET;
 extern const char *s_QSAVESPOT; // = QSAVESPOT;
 //#define SAVEDEAD      "you can't save if you aren't playing!\n\n"PRESSKEY
 extern const char *s_SAVEDEAD; // = SAVEDEAD;
-//#define QSPROMPT      "quicksave over your game named\n\n'%s'?\n\n"PRESSYN
-extern const char *s_QSPROMPT; // = QSPROMPT;
-//#define QLPROMPT      "do you want to quickload the game named\n\n'%s'?\n\n"PRESSYN
-extern const char *s_QLPROMPT; // = QLPROMPT;
 
 /*
 #define NEWGAME       \
@@ -1104,18 +1100,6 @@ extern const char* bgflat31;
 
 // char*        bgcastcall = "BOSSBACK"; // panel behind cast call
 extern const char* bgcastcall;
-
-// ignored if blank, general purpose startup announcements
-// char*        startup1 = "";
-extern const char* startup1;
-// char*        startup2 = "";
-extern const char* startup2;
-// char*        startup3 = "";
-extern const char* startup3;
-// char*        startup4 = "";
-extern const char* startup4;
-// char*        startup5 = "";
-extern const char* startup5;
 
 // from g_game.c, prefix for savegame name like "boomsav"
 extern const char* savegamename;

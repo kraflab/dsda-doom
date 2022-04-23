@@ -57,6 +57,15 @@ int M_CheckParm(const char *check)
   return 0;
 }
 
+int M_CheckParm2(const char *check, const char *alias)
+{
+  int i;
+
+  i = M_CheckParm(check);
+
+  return i ? i : M_CheckParm(alias);
+}
+
 //
 // M_CheckParmEx
 // Checks for the given parameter in the given params list.

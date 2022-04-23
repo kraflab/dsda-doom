@@ -45,14 +45,9 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-typedef BOOL (WINAPI *SetAffinityFunc)(HANDLE hProcess, DWORD mask);
-#else
-#include <sched.h>
 #endif
 
 #include <errno.h>
-
-#include "TEXTSCREEN/txt_main.h"
 
 #include "doomdef.h"
 #include "m_argv.h"
@@ -81,81 +76,27 @@ typedef BOOL (WINAPI *SetAffinityFunc)(HANDLE hProcess, DWORD mask);
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
 #include "dsda/text_file.h"
+#include "dsda/time.h"
 
 /* Most of the following has been rewritten by Lee Killough
  *
- * I_GetTime
  * killough 4/13/98: Make clock rate adjustable by scale factor
  * cphipps - much made static
  */
 
 int realtic_clock_rate = 100;
-static int_64_t I_GetTime_Scale = 1<<24;
-
-static int I_GetTime_Scaled(void)
-{
-  return (int)( (int_64_t) I_GetTime_RealTime() * I_GetTime_Scale >> 24);
-}
-
-
-
-static int  I_GetTime_FastDemo(void)
-{
-  static int fasttic;
-  return fasttic++;
-}
-
-
-
-static int I_GetTime_Error(void)
-{
-  I_Error("I_GetTime_Error: GetTime() used before initialization");
-  return 0;
-}
-
-
-
-int (*I_GetTime)(void) = I_GetTime_Error;
 
 void I_Init(void)
 {
-  /* killough 4/14/98: Adjustable speedup based on realtic_clock_rate */
-  if (fastdemo)
-    I_GetTime = I_GetTime_FastDemo;
-  else
-    if (dsda_RealticClockRate() != 100)
-      {
-        I_GetTime_Scale = ((int_64_t) dsda_RealticClockRate() << 24) / 100;
-        I_GetTime = I_GetTime_Scaled;
-      }
-    else
-      I_GetTime = I_GetTime_RealTime;
-
-  {
-    /* killough 2/21/98: avoid sound initialization if no sound & no music */
-    if (!(nomusicparm && nosfxparm))
-      I_InitSound();
-  }
-
-  R_InitInterpolation();
+  dsda_ResetTimeFunctions(fastdemo);
+  I_InitSound();
 }
 
 //e6y
 void I_Init2(void)
 {
-  if (fastdemo)
-    I_GetTime = I_GetTime_FastDemo;
-  else
-  {
-    if (dsda_RealticClockRate() != 100)
-      {
-        I_GetTime_Scale = ((int_64_t) dsda_RealticClockRate() << 24) / 100;
-        I_GetTime = I_GetTime_Scaled;
-      }
-    else
-      I_GetTime = I_GetTime_RealTime;
-  }
-  R_InitInterpolation();
+  dsda_ResetTimeFunctions(fastdemo);
+
   force_singletics_to = gametic + BACKUPTICS;
 }
 
@@ -185,8 +126,7 @@ ExeptionParam_t ExeptionsParams[EXEPTION_MAX + 1] =
 {
   {NULL},
   {"gld_CreateScreenSizeFBO: Access violation in glFramebufferTexture2DEXT.\n\n"
-    "Are you using ATI graphics? Try to update your drivers "
-    "or change gl_compatibility variable in cfg to 1.\n"},
+    "Are you using ATI graphics? Try to update your drivers\n"},
   {NULL}
 };
 
@@ -215,133 +155,10 @@ void I_ExeptionProcess(void)
   }
 }
 
-
-/* killough 2/22/98: Add support for ENDBOOM, which is PC-specific
- *
- * this converts BIOS color codes to ANSI codes.
- * Its not pretty, but it does the job - rain
- * CPhipps - made static
- */
-
-inline static int convert(int color, int *bold)
-{
-  if (color > 7) {
-    color -= 8;
-    *bold = 1;
-  }
-  switch (color) {
-  case 0:
-    return 0;
-  case 1:
-    return 4;
-  case 2:
-    return 2;
-  case 3:
-    return 6;
-  case 4:
-    return 1;
-  case 5:
-    return 5;
-  case 6:
-    return 3;
-  case 7:
-    return 7;
-  }
-  return 0;
-}
-
-/* CPhipps - flags controlling ENDOOM behaviour */
-enum {
-  endoom_colours = 1,
-  endoom_nonasciichars = 2,
-  endoom_droplastline = 4
-};
-
-int endoom_mode;
-
 static void PrintVer(void)
 {
   char vbuf[200];
   lprintf(LO_INFO,"%s\n",I_GetVersionString(vbuf,200));
-}
-
-//
-// ENDOOM support using text mode emulation
-//
-static void I_EndDoom(void)
-{
-  int lump_eb, lump_ed, lump = -1;
-
-  const unsigned char *endoom_data;
-  unsigned char *screendata;
-
-#ifndef _WIN32
-  PrintVer();
-#endif
-
-  // HERETIC_TODO: ENDTEXT
-  if (!showendoom || demorecording || heretic)
-  {
-    return;
-  }
-
-  /* CPhipps - ENDOOM/ENDBOOM selection */
-  lump_eb = W_CheckNumForName("ENDBOOM");/* jff 4/1/98 sign our work    */
-  lump_ed = W_CheckNumForName("ENDOOM"); /* CPhipps - also maybe ENDOOM */
-
-  if (lump_eb == -1)
-    lump = lump_ed;
-  else if (lump_ed == -1)
-    lump = lump_eb;
-  else
-  { /* Both ENDOOM and ENDBOOM are present */
-#define LUMP_IS_NEW(num) (!((lumpinfo[num].source == source_iwad) || (lumpinfo[num].source == source_auto_load)))
-    switch ((LUMP_IS_NEW(lump_ed) ? 1 : 0 ) |
-      (LUMP_IS_NEW(lump_eb) ? 2 : 0)) {
-    case 1:
-      lump = lump_ed;
-      break;
-    case 2:
-      lump = lump_eb;
-      break;
-    default:
-      /* Both lumps have equal priority, both present */
-      lump = (P_Random(pr_misc) & 1) ? lump_ed : lump_eb;
-      break;
-    }
-  }
-
-  if (lump != -1)
-  {
-    endoom_data = (const unsigned char *)W_CacheLumpNum(lump);
-
-    // Set up text mode screen
-    TXT_Init();
-
-    // Make sure the new window has the right title and icon
-    I_SetWindowCaption();
-    I_SetWindowIcon();
-
-    // Write the data to the screen memory
-    screendata = TXT_GetScreenData();
-    memcpy(screendata, endoom_data, 4000);
-
-    // Wait for a keypress
-    while (true)
-    {
-      TXT_UpdateScreen();
-
-      if (TXT_GetChar() > 0)
-      {
-        break;
-      }
-
-      TXT_Sleep(0);
-    }
-
-    // Shut down text mode screen
-    TXT_Shutdown();
-  }
 }
 
 // Schedule a function to be called when the program exits.
@@ -356,11 +173,14 @@ struct atexit_listentry_s
     atexit_func_t func;
     dboolean run_on_error;
     atexit_listentry_t *next;
+    const char* name;
 };
 
-static atexit_listentry_t *exit_funcs = NULL;
+static atexit_listentry_t *exit_funcs[exit_priority_max];
+static int exit_priority;
 
-void I_AtExit(atexit_func_t func, dboolean run_on_error)
+void I_AtExit(atexit_func_t func, dboolean run_on_error,
+              const char* name, exit_priority_t priority)
 {
     atexit_listentry_t *entry;
 
@@ -368,8 +188,9 @@ void I_AtExit(atexit_func_t func, dboolean run_on_error)
 
     entry->func = func;
     entry->run_on_error = run_on_error;
-    entry->next = exit_funcs;
-    exit_funcs = entry;
+    entry->next = exit_funcs[priority];
+    entry->name = name;
+    exit_funcs[priority] = entry;
 }
 
 void I_SafeExit(int rc)
@@ -377,116 +198,46 @@ void I_SafeExit(int rc)
   atexit_listentry_t *entry;
 
   // Run through all exit functions
-
-  while ((entry = exit_funcs))
+  for (; exit_priority < exit_priority_max; ++exit_priority)
   {
-    exit_funcs = exit_funcs->next;
-
-    if (rc == 0 || entry->run_on_error)
+    while ((entry = exit_funcs[exit_priority]))
     {
-      entry->func();
+      exit_funcs[exit_priority] = exit_funcs[exit_priority]->next;
+
+      if (rc == 0 || entry->run_on_error)
+      {
+        lprintf(LO_INFO, "Exit Sequence[%d]: %s (%d)\n", exit_priority, entry->name, rc);
+        entry->func();
+      }
     }
   }
 
   exit(rc);
 }
 
-static void I_Quit (void)
+static void I_EssentialQuit (void)
 {
-  if (!demorecording)
-    I_EndDoom();
   if (demorecording)
+  {
     G_CheckDemoStatus();
-  M_SaveDefaults ();
-  I_DemoExShutdown();
-
+  }
   dsda_ExportTextFile();
   dsda_WriteAnalysis();
   dsda_WriteSplits();
 }
 
+static void I_Quit (void)
+{
+  M_SaveDefaults ();
+
+  // This function frees all WAD data as a side effect (!!!)
+  // You MUST NOT call this function before any code that touches lump data (e.g., music shutdown)
+  I_DemoExShutdown();
+}
+
 #ifdef SECURE_UID
 uid_t stored_euid = -1;
 #endif
-
-//
-// Ability to use only the allowed CPUs
-//
-
-static void I_SetAffinityMask(void)
-{
-  // Forcing single core only for "SDL MIDI Player"
-  process_affinity_mask = 0;
-  if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_sdl]))
-  {
-    process_affinity_mask = 1;
-  }
-
-  // Set the process affinity mask so that all threads
-  // run on the same processor.  This is a workaround for a bug in
-  // SDL_mixer that causes occasional crashes.
-  if (process_affinity_mask)
-  {
-    const char *errbuf = NULL;
-#ifdef _WIN32
-    HMODULE kernel32_dll;
-    SetAffinityFunc SetAffinity = NULL;
-    int ok = false;
-
-    // Find the kernel interface DLL.
-    kernel32_dll = LoadLibrary("kernel32.dll");
-
-    if (kernel32_dll)
-    {
-      // Find the SetProcessAffinityMask function.
-      SetAffinity = (SetAffinityFunc)GetProcAddress(kernel32_dll, "SetProcessAffinityMask");
-
-      // If the function was not found, we are on an old (Win9x) system
-      // that doesn't have this function.  That's no problem, because
-      // those systems don't support SMP anyway.
-
-      if (SetAffinity)
-      {
-        ok = SetAffinity(GetCurrentProcess(), process_affinity_mask);
-      }
-    }
-
-    if (!ok)
-    {
-      errbuf = WINError();
-    }
-#elif defined(HAVE_SCHED_SETAFFINITY)
-    // POSIX version:
-    int i;
-    {
-      cpu_set_t set;
-
-      CPU_ZERO(&set);
-
-      for(i = 0; i < 16; i++)
-      {
-        CPU_SET((process_affinity_mask>>i)&1, &set);
-      }
-
-      if (sched_setaffinity(getpid(), sizeof(set), &set) == -1)
-      {
-        errbuf = strerror(errno);
-      }
-    }
-#else
-    return;
-#endif
-
-    if (errbuf == NULL)
-    {
-      lprintf(LO_INFO, "I_SetAffinityMask: manual affinity mask is %d\n", process_affinity_mask);
-    }
-    else
-    {
-      lprintf(LO_ERROR, "I_SetAffinityMask: failed to set process affinity mask (%s)\n", errbuf);
-    }
-  }
-}
 
 //
 // Sets the priority class for the prboom-plus process
@@ -544,6 +295,13 @@ int main(int argc, char **argv)
   myargv = (char**)malloc(sizeof(myargv[0]) * myargc);
   memcpy(myargv, argv, sizeof(myargv[0]) * myargc);
 
+  // Print the version and exit
+  if(M_CheckParm("-v"))
+  {
+    PrintVer();
+    return 0;
+  }
+
   // e6y: Check for conflicts.
   // Conflicting command-line parameters could cause the engine to be confused
   // in some cases. Added checks to prevent this.
@@ -576,7 +334,8 @@ int main(int argc, char **argv)
      left in an unstable state.
   */
 
-  I_AtExit(I_Quit, false);
+  I_AtExit(I_EssentialQuit, true, "I_EssentialQuit", exit_priority_first);
+  I_AtExit(I_Quit, false, "I_Quit", exit_priority_last);
 #ifndef PRBOOM_DEBUG
   if (!M_CheckParm("-devparm"))
   {
@@ -588,9 +347,6 @@ int main(int argc, char **argv)
   signal(SIGINT,  I_SignalHandler);  /* killough 3/6/98: allow CTRL-BRK during init */
   signal(SIGABRT, I_SignalHandler);
 #endif
-
-  // Ability to use only the allowed CPUs
-  I_SetAffinityMask();
 
   // Priority class for the prboom-plus process
   I_SetProcessPriority();

@@ -1,12 +1,18 @@
-# dsda-doom v0.21.3
+# dsda-doom v0.24.3
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning. For builds, discussions, and bug reports, check out the release thread on [doomworld](https://www.doomworld.com/forum/topic/118074/).
 
 ### Patch Notes
+- [v0.24](./patch_notes/v0.24.md)
+- [v0.23](./patch_notes/v0.23.md)
+- [v0.22](./patch_notes/v0.22.md)
 - [v0.21](./patch_notes/v0.21.md)
 - [v0.20](./patch_notes/v0.20.md)
 - [v0.19](./patch_notes/v0.19.md)
 
-#### Hexen Support (beta)
+### Doom in Hexen Support (ongoing)
+- [Full details](./docs/doom_in_hexen.md)
+
+### Hexen Support (beta)
 - DSDA-Doom includes demo-compatible support for hexen.
   - Use -iwad HEXEN.WAD (-file HEXDD.WAD for the expansion)
     - Or drag wads onto the exe

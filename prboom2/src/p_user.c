@@ -33,6 +33,8 @@
  *
  *-----------------------------------------------------------------------------*/
 
+#include <math.h>
+
 #include "doomstat.h"
 #include "d_event.h"
 #include "r_main.h"
@@ -48,6 +50,8 @@
 #include "p_tick.h"
 #include "e6y.h"//e6y
 
+#include "dsda/death.h"
+#include "dsda/excmd.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
 
@@ -71,6 +75,16 @@ dboolean onground; // whether player is on ground or in air
 // heretic
 int newtorch;      // used in the torch flicker effect.
 int newtorchdelta;
+
+fixed_t P_PlayerSpeed(player_t* player)
+{
+  double vx, vy;
+
+  vx = (double) player->mo->momx / FRACUNIT;
+  vy = (double) player->mo->momy / FRACUNIT;
+
+  return (fixed_t) (sqrt(vx * vx + vy * vy) * FRACUNIT);
+}
 
 angle_t P_PlayerPitch(player_t* player)
 {
@@ -252,7 +266,7 @@ void P_CalcHeight (player_t* player)
   }
 
   angle = (FINEANGLES / 20 * leveltime) & FINEMASK;
-  bob = FixedMul(player->bob / 2, finesine[angle]);
+  bob = dsda_ViewBob() ? FixedMul(player->bob / 2, finesine[angle]) : 0;
 
   // move viewheight
 
@@ -315,7 +329,7 @@ void P_SetPitch(player_t *player)
 
   if (player == &players[consoleplayer])
   {
-    if (!(demoplayback || democontinue))
+    if (!demoplayback)
     {
       if (dsda_MouseLook())
       {
@@ -407,6 +421,14 @@ void P_MovePlayer (player_t* player)
           P_Bob(player,mo->angle-ANG90,cmd->sidemove*bobfactor);
           P_Thrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
         }
+      }
+      else if (dsda_AllowJumping())
+      { // slight air control for jumping up ledges
+        if (cmd->forwardmove)
+          P_ForwardThrust(player, player->mo->angle, FRACUNIT >> 8);
+
+        if (cmd->sidemove)
+          P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
       }
       if (mo->state == states+S_PLAY)
         P_SetMobjState(mo,S_PLAY_RUN1);
@@ -553,32 +575,7 @@ void P_DeathThink (player_t* player)
 
   if (player->cmd.buttons & BT_USE)
   {
-    if (raven)
-    {
-      if (player == &players[consoleplayer])
-      {
-        V_SetPalette(0);
-        inv_ptr = 0;
-        curpos = 0;
-        newtorch = 0;
-        newtorchdelta = 0;
-      }
-
-      if (hexen)
-      {
-        player->mo->special1.i = player->pclass;
-        if (player->mo->special1.i > 2)
-        {
-          player->mo->special1.i = 0;
-        }
-      }
-
-      // Let the mobj know the player has entered the reborn state.  Some
-      // mobjs need to know when it's ok to remove themselves.
-      player->mo->special2.i = 666;
-    }
-
-    player->playerstate = PST_REBORN;
+    dsda_DeathUse(player);
   }
 
   R_SmoothPlaying_Reset(player); // e6y
@@ -803,6 +800,15 @@ void P_PlayerThink (player_t* player)
       {
         P_PlayerUseArtifact(player, cmd->arti);
       }
+    }
+  }
+
+  if (dsda_AllowJumping())
+  {
+    if (cmd->ex.actions & XC_JUMP && onground && !player->jumpTics)
+    {
+      player->mo->momz = 9 * FRACUNIT;
+      player->jumpTics = 18;
     }
   }
 
@@ -1941,9 +1947,8 @@ void P_TeleportOther(mobj_t * victim)
         // If death action, run it upon teleport
         if (victim->flags & MF_COUNTKILL && victim->special)
         {
-            P_RemoveMobjFromTIDList(victim);
-            P_ExecuteLineSpecial(victim->special, victim->args,
-                                 NULL, 0, victim);
+            map_format.remove_mobj_thing_id(victim);
+            map_format.execute_line_special(victim->special, victim->args, NULL, 0, victim);
             victim->special = 0;
         }
 

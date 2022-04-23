@@ -32,6 +32,7 @@
 
 #include "global.h"
 
+#include "dsda/map_format.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/music.h"
 #include "dsda/sfx.h"
@@ -200,7 +201,7 @@ static void dsda_InitDoom(void) {
   g_sfx_revive = sfx_slop;
 
   g_door_normal = normal;
-  g_door_raise_in_5_mins = raiseIn5Mins;
+  g_door_raise_in_5_mins = waitRaiseDoor;
   g_door_open = openDoor;
 
   g_st_height = 32;
@@ -268,6 +269,7 @@ static void dsda_InitDoom(void) {
 
     // misc
     mobjinfo[i].bloodcolor = 0; // default
+    mobjinfo[i].visibility = VF_DOOM;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
@@ -450,6 +452,7 @@ static void dsda_InitHeretic(void) {
 
     // misc
     mobjinfo[j].bloodcolor = 0; // default
+    mobjinfo[j].visibility = VF_HERETIC;
   }
 
   // heretic doesn't use "clip" concept
@@ -608,6 +611,7 @@ static void dsda_InitHexen(void) {
 
     // misc
     mobjinfo[j].bloodcolor = 0; // default
+    mobjinfo[j].visibility = VF_HEXEN;
   }
 
   {

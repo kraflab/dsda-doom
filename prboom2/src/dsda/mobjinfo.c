@@ -18,7 +18,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "sounds.h"
 #include "p_map.h"
+
+#include "dsda/map_format.h"
 
 #include "mobjinfo.h"
 
@@ -37,6 +40,7 @@ static void dsda_ResetMobjInfo(int from, int to) {
     mobjinfo[i].splash_group = SG_DEFAULT;
     mobjinfo[i].altspeed = NO_ALTSPEED;
     mobjinfo[i].meleerange = MELEERANGE;
+    mobjinfo[i].visibility = VF_DOOM;
   }
 }
 
@@ -57,6 +61,46 @@ static void dsda_EnsureCapacity(int limit) {
 
     dsda_ResetMobjInfo(old_num_mobj_types, num_mobj_types);
   }
+}
+
+typedef struct deh_mobj_index_entry_s {
+  int index_in;
+  int index_out;
+  struct deh_mobj_index_entry_s* next;
+} deh_mobj_index_entry_t;
+
+#define DEH_MOBJ_INDEX_HASH_SIZE 128
+
+static deh_mobj_index_entry_t deh_mobj_index_hash[DEH_MOBJ_INDEX_HASH_SIZE];
+
+static int deh_mobj_index_start;
+static int deh_mobj_index_end;
+
+static int dsda_GetDehMobjIndex(int index) {
+  deh_mobj_index_entry_t* entry;
+
+  if (index < deh_mobj_index_start)
+    return index;
+
+  entry = &deh_mobj_index_hash[index % DEH_MOBJ_INDEX_HASH_SIZE];
+
+  while (entry->next && entry->index_in != index)
+    entry = entry->next;
+
+  if (entry->index_in != index) {
+    entry->next = calloc(1, sizeof(*entry));
+    entry = entry->next;
+    entry->index_in = index;
+    entry->index_out = deh_mobj_index_end;
+    ++deh_mobj_index_end;
+  }
+
+  return entry->index_out;
+}
+
+// Dehacked has the index off by 1
+int dsda_TranslateDehMobjIndex(int index) {
+  return dsda_GetDehMobjIndex(index - 1) + 1;
 }
 
 dsda_deh_mobjinfo_t dsda_GetDehMobjInfo(int index) {
@@ -80,6 +124,8 @@ void dsda_InitializeMobjInfo(int zero, int max, int count) {
 
   if (raven) return;
 
+  deh_mobj_index_start = num_mobj_types;
+  deh_mobj_index_end = num_mobj_types;
   edited_mobjinfo_bits = calloc(num_mobj_types, sizeof(*edited_mobjinfo_bits));
 }
 
@@ -87,4 +133,185 @@ void dsda_InitializeMobjInfo(int zero, int max, int count) {
 //   so we can't free it.
 void dsda_FreeDehMobjInfo(void) {
   // free(edited_mobjinfo_bits);
+}
+
+int ZMT_MAPSPOT = ZMT_UNDEFINED;
+int ZMT_MAPSPOT_GRAVITY = ZMT_UNDEFINED;
+int ZMT_TELEPORTDEST2 = ZMT_UNDEFINED;
+int ZMT_TELEPORTDEST3 = ZMT_UNDEFINED;
+
+static mobjinfo_t zmt_mapspot_info = {
+  .doomednum = 9001,
+  .spawnstate = S_NULL,
+  .spawnhealth = 1000,
+  .seestate = S_NULL,
+  .seesound = sfx_None,
+  .reactiontime = 8,
+  .attacksound = sfx_None,
+  .painstate = S_NULL,
+  .painchance = 0,
+  .painsound = sfx_None,
+  .meleestate = S_NULL,
+  .missilestate = S_NULL,
+  .deathstate = S_NULL,
+  .xdeathstate = S_NULL,
+  .deathsound = sfx_None,
+  .speed = 0,
+  .radius = 20 * FRACUNIT,
+  .height = 16 * FRACUNIT,
+  .mass = 100,
+  .damage = 0,
+  .activesound = sfx_None,
+  .flags = MF_NOBLOCKMAP | MF_NOSECTOR | MF_NOGRAVITY,
+  .raisestate = S_NULL,
+  .droppeditem = MT_NULL,
+  .crashstate = S_NULL,
+  .flags2 = 0,
+  .infighting_group = IG_DEFAULT,
+  .projectile_group = PG_DEFAULT,
+  .splash_group = SG_DEFAULT,
+  .ripsound = sfx_None,
+  .altspeed = NO_ALTSPEED,
+  .meleerange = MELEERANGE,
+  .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
+};
+
+static mobjinfo_t zmt_mapspot_gravity_info = {
+  .doomednum = 9013,
+  .spawnstate = S_NULL,
+  .spawnhealth = 1000,
+  .seestate = S_NULL,
+  .seesound = sfx_None,
+  .reactiontime = 8,
+  .attacksound = sfx_None,
+  .painstate = S_NULL,
+  .painchance = 0,
+  .painsound = sfx_None,
+  .meleestate = S_NULL,
+  .missilestate = S_NULL,
+  .deathstate = S_NULL,
+  .xdeathstate = S_NULL,
+  .deathsound = sfx_None,
+  .speed = 0,
+  .radius = 20 * FRACUNIT,
+  .height = 16 * FRACUNIT,
+  .mass = 100,
+  .damage = 0,
+  .activesound = sfx_None,
+  .flags = 0,
+  .raisestate = S_NULL,
+  .droppeditem = MT_NULL,
+  .crashstate = S_NULL,
+  .flags2 = MF2_DONTDRAW,
+  .infighting_group = IG_DEFAULT,
+  .projectile_group = PG_DEFAULT,
+  .splash_group = SG_DEFAULT,
+  .ripsound = sfx_None,
+  .altspeed = NO_ALTSPEED,
+  .meleerange = MELEERANGE,
+  .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
+};
+
+static mobjinfo_t zmt_teleportdest2_info = {
+  .doomednum = 9044,
+  .spawnstate = S_NULL,
+  .spawnhealth = 1000,
+  .seestate = S_NULL,
+  .seesound = sfx_None,
+  .reactiontime = 8,
+  .attacksound = sfx_None,
+  .painstate = S_NULL,
+  .painchance = 0,
+  .painsound = sfx_None,
+  .meleestate = S_NULL,
+  .missilestate = S_NULL,
+  .deathstate = S_NULL,
+  .xdeathstate = S_NULL,
+  .deathsound = sfx_None,
+  .speed = 0,
+  .radius = 20 * FRACUNIT,
+  .height = 16 * FRACUNIT,
+  .mass = 100,
+  .damage = 0,
+  .activesound = sfx_None,
+  .flags = MF_NOBLOCKMAP | MF_NOSECTOR | MF_NOGRAVITY,
+  .raisestate = S_NULL,
+  .droppeditem = MT_NULL,
+  .crashstate = S_NULL,
+  .flags2 = 0,
+  .infighting_group = IG_DEFAULT,
+  .projectile_group = PG_DEFAULT,
+  .splash_group = SG_DEFAULT,
+  .ripsound = sfx_None,
+  .altspeed = NO_ALTSPEED,
+  .meleerange = MELEERANGE,
+  .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
+};
+
+static mobjinfo_t zmt_teleportdest3_info = {
+  .doomednum = 9043,
+  .spawnstate = S_NULL,
+  .spawnhealth = 1000,
+  .seestate = S_NULL,
+  .seesound = sfx_None,
+  .reactiontime = 8,
+  .attacksound = sfx_None,
+  .painstate = S_NULL,
+  .painchance = 0,
+  .painsound = sfx_None,
+  .meleestate = S_NULL,
+  .missilestate = S_NULL,
+  .deathstate = S_NULL,
+  .xdeathstate = S_NULL,
+  .deathsound = sfx_None,
+  .speed = 0,
+  .radius = 20 * FRACUNIT,
+  .height = 16 * FRACUNIT,
+  .mass = 100,
+  .damage = 0,
+  .activesound = sfx_None,
+  .flags = MF_NOBLOCKMAP | MF_NOSECTOR,
+  .raisestate = S_NULL,
+  .droppeditem = MT_NULL,
+  .crashstate = S_NULL,
+  .flags2 = 0,
+  .infighting_group = IG_DEFAULT,
+  .projectile_group = PG_DEFAULT,
+  .splash_group = SG_DEFAULT,
+  .ripsound = sfx_None,
+  .altspeed = NO_ALTSPEED,
+  .meleerange = MELEERANGE,
+  .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
+};
+
+typedef struct {
+  int* index_p;
+  mobjinfo_t* mobjinfo_p;
+} append_mobjinfo_t;
+
+static append_mobjinfo_t append_mobjinfo[] = {
+  { &ZMT_MAPSPOT, &zmt_mapspot_info },
+  { &ZMT_MAPSPOT_GRAVITY, &zmt_mapspot_gravity_info },
+  { &ZMT_TELEPORTDEST2, &zmt_teleportdest2_info },
+  { &ZMT_TELEPORTDEST3, &zmt_teleportdest3_info },
+};
+
+static int append_mobjinfo_count = sizeof(append_mobjinfo) / sizeof(append_mobjinfo[0]);
+
+void dsda_AppendZDoomMobjInfo(void) {
+  int i;
+  int index;
+  dsda_deh_mobjinfo_t mobjinfo;
+
+  index = deh_mobj_index_end;
+  for (i = 0; i < append_mobjinfo_count; ++i) {
+    mobjinfo = dsda_GetDehMobjInfo(index);
+    *(append_mobjinfo[i].index_p) = index;
+    *(mobjinfo.info) = *(append_mobjinfo[i].mobjinfo_p);
+    ++index;
+  }
 }

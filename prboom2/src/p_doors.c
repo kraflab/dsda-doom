@@ -44,6 +44,9 @@
 
 #include "dsda/map_format.h"
 
+#include "hexen/p_acs.h"
+#include "hexen/sn_sonix.h"
+
 ///////////////////////////////////////////////////////////////
 //
 // Door action routines, called once per tick
@@ -60,13 +63,9 @@
 // jff 02/08/98 all cases with labels beginning with gen added to support
 // generalized line type behaviors.
 
-static void Hexen_T_VerticalDoor(vldoor_t * door);
-
-void T_VerticalDoor (vldoor_t* door)
+void T_VerticalCompatibleDoor(vldoor_t *door)
 {
   result_e  res;
-
-  if (map_format.hexen) return Hexen_T_VerticalDoor(door);
 
   // Is the door waiting, going up, or going down?
   switch(door->direction)
@@ -109,17 +108,22 @@ void T_VerticalDoor (vldoor_t* door)
       break;
 
     case 2:
-      // Special case for sector type door that opens in 5 mins
-      if (!--door->topcountdown)  // 5 minutes up?
+      // Special case for sector type door that waits before starting
+      if (!--door->topcountdown)
       {
         switch(door->type)
         {
-          case raiseIn5Mins:
+          case waitRaiseDoor:
           case vld_raiseIn5Mins:
             door->direction = 1;  // time to raise then
             door->type = g_door_normal; // door acts just like normal 1 DR door now
             S_StartSound((mobj_t *)&door->sector->soundorg,g_sfx_doropn);
             break;
+
+          case waitCloseDoor:
+            door->direction = -1;
+            door->type = closeDoor;
+            S_StartSound((mobj_t *)&door->sector->soundorg, g_sfx_dorcls);
 
           default:
             break;
@@ -129,14 +133,14 @@ void T_VerticalDoor (vldoor_t* door)
 
     case -1:
       // Door is moving down
-      res = T_MovePlane
+      res = T_MoveCeilingPlane
             (
               door->sector,
               door->speed,
               door->sector->floorheight,
-              false,
-              1,
-              door->direction
+              NO_CRUSH,
+              door->direction,
+              false
             );
 
       /* killough 10/98: implement gradual lighting effects */
@@ -229,11 +233,11 @@ void T_VerticalDoor (vldoor_t* door)
           case blazeRaise:
           case genBlazeRaise:
             door->direction = 1;
-      	    if (!comp[comp_blazing]) {
-      	      S_StartSound((mobj_t *)&door->sector->soundorg,sfx_bdopn);
-      	      break;
-      	    }
-	          // fallthrough
+            if (!comp[comp_blazing]) {
+              S_StartSound((mobj_t *)&door->sector->soundorg,sfx_bdopn);
+              break;
+            }
+            // fallthrough
 
           default:             // other types bounce off the obstruction
             door->direction = 1;
@@ -245,14 +249,14 @@ void T_VerticalDoor (vldoor_t* door)
 
     case 1:
       // Door is moving up
-      res = T_MovePlane
+      res = T_MoveCeilingPlane
             (
               door->sector,
               door->speed,
               door->topheight,
-              false,
-              1,
-              door->direction
+              NO_CRUSH,
+              door->direction,
+              false
             );
 
       /* killough 10/98: implement gradual lighting effects */
@@ -320,6 +324,110 @@ void T_VerticalDoor (vldoor_t* door)
       }
       break;
   }
+}
+
+void T_VerticalHexenDoor(vldoor_t *door)
+{
+  result_e res;
+
+  switch (door->direction)
+  {
+    case 0:                // WAITING
+      if (!--door->topcountdown)
+        switch (door->type)
+        {
+          case DREV_NORMAL:
+            door->direction = -1;   // time to go back down
+            SN_StartSequence((mobj_t *) & door->sector->soundorg,
+                             SEQ_DOOR_STONE +
+                             door->sector->seqType);
+            break;
+          case DREV_CLOSE30THENOPEN:
+            door->direction = 1;
+            break;
+          default:
+            break;
+        }
+      break;
+    case 2:                // INITIAL WAIT
+      if (!--door->topcountdown)
+      {
+        switch (door->type)
+        {
+          case DREV_RAISEIN5MINS:
+            door->direction = 1;
+            door->type = DREV_NORMAL;
+            break;
+          default:
+            break;
+        }
+      }
+      break;
+    case -1:               // DOWN
+      res = T_MoveCeilingPlane(door->sector, door->speed,
+                               door->sector->floorheight, NO_CRUSH,
+                               door->direction, true);
+      if (res == pastdest)
+      {
+        SN_StopSequence((mobj_t *) & door->sector->soundorg);
+        switch (door->type)
+        {
+          case DREV_NORMAL:
+          case DREV_CLOSE:
+            door->sector->ceilingdata = NULL;
+            P_TagFinished(door->sector->tag);
+            P_RemoveThinker(&door->thinker);        // unlink and free
+            break;
+          case DREV_CLOSE30THENOPEN:
+            door->direction = 0;
+            door->topcountdown = 35 * 30;
+            break;
+          default:
+            break;
+        }
+      }
+      else if (res == crushed)
+      {
+        switch (door->type)
+        {
+          case DREV_CLOSE:   // DON'T GO BACK UP!
+            break;
+          default:
+            door->direction = 1;
+            break;
+        }
+      }
+      break;
+    case 1:                // UP
+      res = T_MoveCeilingPlane(door->sector, door->speed,
+                               door->topheight, NO_CRUSH, door->direction, true);
+      if (res == pastdest)
+      {
+        SN_StopSequence((mobj_t *) & door->sector->soundorg);
+        switch (door->type)
+        {
+          case DREV_NORMAL:
+            door->direction = 0;    // wait at top
+            door->topcountdown = door->topwait;
+            break;
+          case DREV_CLOSE30THENOPEN:
+          case DREV_OPEN:
+            door->sector->ceilingdata = NULL;
+            P_TagFinished(door->sector->tag);
+            P_RemoveThinker(&door->thinker);        // unlink and free
+            break;
+          default:
+            break;
+        }
+      }
+      break;
+  }
+}
+
+
+void T_VerticalDoor (vldoor_t* door)
+{
+  map_format.t_vertical_door(door);
 }
 
 ///////////////////////////////////////////////////////////////
@@ -414,7 +522,7 @@ int EV_DoDoor
     sec = &sectors[secnum];
 manual_door://e6y
     // if the ceiling already moving, don't start the door action
-    if (P_SectorActive(ceiling_special,sec)) { //jff 2/22/98
+    if (P_CeilingActive(sec)) { //jff 2/22/98
       if (!zerotag_manual) continue; else {return rtn;}}; //e6y
 
     // new door thinker
@@ -582,11 +690,13 @@ int EV_VerticalDoor
     if (!door) door = sec->floordata;
   }
   /* If this is a repeatable line, and the door is already moving, then we can just reverse the current action. Note that in prboom 2.3.0 I erroneously removed the if-this-is-repeatable check, hence the prboom_4_compatibility clause below (foolishly assumed that already moving implies repeatable - but it could be moving due to another switch, e.g. lv19-509) */
-  if (door &&
-	  ((compatibility_level == prboom_4_compatibility) ||
-	   (line->special == 1) || (line->special == 117) || (line->special == 26) || (line->special == 27) || (line->special == 28)
-	  )
-     ) {
+  if (
+    door &&
+    (
+      (compatibility_level == prboom_4_compatibility) ||
+      (line->special == 1) || (line->special == 117) || (line->special == 26) || (line->special == 27) || (line->special == 28)
+    )
+  ) {
     /* For old demos we have to emulate the old buggy behavior and
      * mess up non-T_VerticalDoor actions.
      */
@@ -897,105 +1007,153 @@ void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing)
 
 // hexen
 
-#include "hexen/p_acs.h"
-#include "hexen/sn_sonix.h"
-
-static void Hexen_T_VerticalDoor(vldoor_t * door)
+static void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t speed,
+                             int topwait, byte lightTag, int topcountdown)
 {
-    result_e res;
+  vldoor_t *door;
 
-    switch (door->direction)
+  door = Z_Malloc(sizeof(*door), PU_LEVEL, 0);
+  memset(door, 0, sizeof(*door));
+  P_AddThinker(&door->thinker);
+  sec->ceilingdata = door;
+
+  door->thinker.function = T_VerticalDoor;
+  door->sector = sec;
+  door->type = type;
+  door->topwait = topwait;
+  door->topcountdown = topcountdown;
+  door->speed = speed;
+  door->line = line;
+  door->lighttag = lightTag;
+
+  switch (type)
+  {
+    case closeDoor:
+      door->topheight = P_FindLowestCeilingSurrounding(sec);
+      door->topheight -= 4 * FRACUNIT;
+      door->direction = -1;
+      S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_dorcls);
+      break;
+    case genCdO:
+      door->topheight = sec->ceilingheight;
+      door->direction = -1;
+      door->topwait = topwait;
+      S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_dorcls);
+      break;
+    case normal:
+    case openDoor:
+      door->direction = 1;
+      door->topheight = P_FindLowestCeilingSurrounding(sec);
+      door->topheight -= 4 * FRACUNIT;
+      S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_doropn);
+      break;
+    case waitRaiseDoor:
+      door->direction = 2;
+      door->topheight = P_FindLowestCeilingSurrounding(sec);
+      door->topheight -= 4 * FRACUNIT;
+      break;
+    case waitCloseDoor:
+      door->direction = 2;
+      door->topheight = P_FindLowestCeilingSurrounding(sec);
+      door->topheight -= 4 * FRACUNIT;
+      break;
+    default:
+      break;
+  }
+}
+
+int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte, int topwait,
+                   zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown)
+{
+  sector_t *sec;
+  vldoor_t *door;
+  fixed_t speed;
+
+  speed = (fixed_t) speed_byte * FRACUNIT / 8;
+
+  if (lock && !P_CanUnlockZDoomDoor(mo->player, lock))
+    return 0;
+
+  if (!tag)
+  {
+    if (!line)
+      return 0;
+
+    // if the wrong side of door is pushed, give oof sound
+    if (line->sidenum[1] == NO_INDEX)
     {
-        case 0:                // WAITING
-            if (!--door->topcountdown)
-                switch (door->type)
-                {
-                    case DREV_NORMAL:
-                        door->direction = -1;   // time to go back down
-                        SN_StartSequence((mobj_t *) & door->sector->soundorg,
-                                         SEQ_DOOR_STONE +
-                                         door->sector->seqType);
-                        break;
-                    case DREV_CLOSE30THENOPEN:
-                        door->direction = 1;
-                        break;
-                    default:
-                        break;
-                }
-            break;
-        case 2:                // INITIAL WAIT
-            if (!--door->topcountdown)
-            {
-                switch (door->type)
-                {
-                    case DREV_RAISEIN5MINS:
-                        door->direction = 1;
-                        door->type = DREV_NORMAL;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            break;
-        case -1:               // DOWN
-            res = T_MovePlane(door->sector, door->speed,
-                              door->sector->floorheight, false, 1,
-                              door->direction);
-            if (res == pastdest)
-            {
-                SN_StopSequence((mobj_t *) & door->sector->soundorg);
-                switch (door->type)
-                {
-                    case DREV_NORMAL:
-                    case DREV_CLOSE:
-                        door->sector->ceilingdata = NULL;
-                        P_TagFinished(door->sector->tag);
-                        P_RemoveThinker(&door->thinker);        // unlink and free
-                        break;
-                    case DREV_CLOSE30THENOPEN:
-                        door->direction = 0;
-                        door->topcountdown = 35 * 30;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else if (res == crushed)
-            {
-                switch (door->type)
-                {
-                    case DREV_CLOSE:   // DON'T GO BACK UP!
-                        break;
-                    default:
-                        door->direction = 1;
-                        break;
-                }
-            }
-            break;
-        case 1:                // UP
-            res = T_MovePlane(door->sector, door->speed,
-                              door->topheight, false, 1, door->direction);
-            if (res == pastdest)
-            {
-                SN_StopSequence((mobj_t *) & door->sector->soundorg);
-                switch (door->type)
-                {
-                    case DREV_NORMAL:
-                        door->direction = 0;    // wait at top
-                        door->topcountdown = door->topwait;
-                        break;
-                    case DREV_CLOSE30THENOPEN:
-                    case DREV_OPEN:
-                        door->sector->ceilingdata = NULL;
-                        P_TagFinished(door->sector->tag);
-                        P_RemoveThinker(&door->thinker);        // unlink and free
-                        break;
-                    default:
-                        break;
-                }
-            }
-            break;
+      if (mo->player) // is this check necessary?
+        S_StartSound(mo, sfx_oof);
+      return 0;
     }
+
+    // get the sector on the second side of activating linedef
+    sec = sides[line->sidenum[1]].sector;
+
+    door = sec->ceilingdata;
+
+    if (door)
+    {
+      // Boom used remote door logic for generalized doors, even if they are manual
+      if (boomgen)
+        return 0;
+
+      if (door->thinker.function == T_VerticalDoor)
+      {
+        // ONLY FOR "RAISE" DOORS, NOT "OPEN"s
+        if (door->type == DREV_NORMAL && type == DREV_NORMAL)
+        {
+          if (door->direction == -1)
+          {
+            door->direction = 1;
+
+            S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_doropn);
+            return 1;
+          }
+          else if (!(line->flags & ML_SPAC_PUSH))
+            // [RH] activate push doors don't go back down when you
+            //    run into them (otherwise opening them would be
+            //    a real pain).
+          {
+            if (!mo->player)
+              return 0;  // JDC: bad guys never close doors
+
+            door->direction = -1; // start going down immediately
+
+            S_StartSound((mobj_t *) &door->sector->soundorg, g_sfx_dorcls);
+            return 1;
+          }
+          else
+          {
+            return 0;
+          }
+        }
+      }
+
+      return 0;
+    }
+
+    P_SpawnZDoomDoor(sec, type, line, speed, topwait, lightTag, topcountdown);
+    return 1;
+  }
+  else
+  {
+    int secnum = -1;
+    int retcode = 0;
+
+    while ((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
+    {
+      sec = &sectors[secnum];
+      if (sec->ceilingdata)
+      {
+        continue;
+      }
+      retcode = 1;
+      P_SpawnZDoomDoor(sec, type, line, speed, topwait, lightTag, topcountdown);
+    }
+
+    return retcode;
+  }
 }
 
 int Hexen_EV_DoDoor(line_t * line, byte * args, vldoor_e type)

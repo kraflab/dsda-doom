@@ -49,6 +49,9 @@
 // is larger, but we do not have any moving sectors nearby
 #define MAXRADIUS       (32*FRACUNIT)
 
+//e6y
+#define STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE -2
+
 // killough 3/15/98: add fourth argument to P_TryMove
 dboolean P_TryMove(mobj_t *thing, fixed_t x, fixed_t y, dboolean dropoff);
 
@@ -74,8 +77,8 @@ void P_RadiusAttack(mobj_t *spot, mobj_t *source, int damage, int distance, dboo
 dboolean P_CheckPosition(mobj_t *thing, fixed_t x, fixed_t y);
 
 //jff 3/19/98 P_CheckSector(): new routine to replace P_ChangeSector()
-dboolean P_ChangeSector(sector_t* sector,dboolean crunch);
-dboolean P_CheckSector(sector_t *sector, dboolean crunch);
+dboolean P_ChangeSector(sector_t *sector, int crunch);
+dboolean P_CheckSector(sector_t *sector, int crunch);
 void    P_DelSeclist(msecnode_t*);                          // phares 3/16/98
 void    P_FreeSecNodeList(void);                            // sf
 void    P_CreateSecNodeList(mobj_t*,fixed_t,fixed_t);       // phares 3/14/98
@@ -118,5 +121,9 @@ extern mobj_t *BlockingMobj;
 void P_BounceWall(mobj_t * mo);
 dboolean P_UsePuzzleItem(player_t * player, int itemType);
 void PIT_ThrustSpike(mobj_t * actor);
+
+// zdoom
+
+dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fog);
 
 #endif // __P_MAP__

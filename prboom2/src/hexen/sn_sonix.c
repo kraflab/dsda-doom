@@ -24,6 +24,8 @@
 #include "lprintf.h"
 #include "sc_man.h"
 
+#include "dsda/pause.h"
+
 #include "sn_sonix.h"
 
 #define SS_MAX_SCRIPTS 64
@@ -126,7 +128,7 @@ static int GetSoundOffset(char *name)
 {
     int i;
 
-    for (i = 0; i < HEXEN_NUMSFX; i++)
+    for (i = 0; i < num_sfx; i++)
     {
         if (!strcasecmp(name, S_sfx[i].tagname))
         {
@@ -350,9 +352,8 @@ void SN_UpdateActiveSequences(void)
     seqnode_t *node;
     seqnode_t *next_node;
     dboolean sndPlaying;
-    extern dboolean paused;
 
-    if (!ActiveSequences || paused)
+    if (!ActiveSequences || dsda_Paused())
     {                           // No sequences currently playing/game is paused
         return;
     }

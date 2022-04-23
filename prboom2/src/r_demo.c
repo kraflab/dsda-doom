@@ -64,34 +64,9 @@
 #include "hu_stuff.h"
 #include "g_overflow.h"
 #include "e6y.h"
+
 #include "dsda/demo.h"
-
-int IsDemoPlayback(void)
-{
-  int p;
-
-  if ((p = M_CheckParm("-playdemo")) && (p < myargc - 1))
-    return p;
-  if ((p = M_CheckParm("-timedemo")) && (p < myargc - 1))
-    return p;
-  if ((p = M_CheckParm("-fastdemo")) && (p < myargc - 1))
-    return p;
-
-  return 0;
-}
-
-int IsDemoContinue(void)
-{
-  int p;
-
-  if ((p = M_CheckParm("-recordfromto")) && (p < myargc - 2) &&
-    I_FindFile(myargv[p + 1], ".lmp"))
-  {
-    return p;
-  }
-
-  return 0;
-}
+#include "dsda/playback.h"
 
 int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
 {
@@ -165,7 +140,7 @@ static angle_t smooth_playing_angle;
 
 void R_SmoothPlaying_Reset(player_t *player)
 {
-  if (demo_smoothturns && demoplayback)
+  if (demo_smoothturns && demoplayback && !demorecording)
   {
     if (!player)
       player = &players[displayplayer];
@@ -185,7 +160,7 @@ void R_SmoothPlaying_Reset(player_t *player)
 
 void R_SmoothPlaying_Add(int delta)
 {
-  if (demo_smoothturns && demoplayback)
+  if (demo_smoothturns && demoplayback && !demorecording)
   {
     smooth_playing_sum -= smooth_playing_turns[smooth_playing_index];
     smooth_playing_turns[smooth_playing_index] = delta;
@@ -197,7 +172,7 @@ void R_SmoothPlaying_Add(int delta)
 
 angle_t R_SmoothPlaying_Get(player_t *player)
 {
-  if (demo_smoothturns && demoplayback && player == &players[displayplayer])
+  if (demo_smoothturns && demoplayback && !demorecording && player == &players[displayplayer])
     return smooth_playing_angle;
   else
     return player->mo->angle;
@@ -397,7 +372,7 @@ angle_t R_DemoEx_ReadMLook(void)
 {
   angle_t pitch;
 
-  if (!(demoplayback || democontinue))
+  if (!demoplayback)
     return 0;
 
   // mlook data must be initialised here
@@ -555,7 +530,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
       }
     }
 
-    if (!M_CheckParm("-complevel"))
+    if (!M_CheckParm2("-complevel", "-cl"))
     {
       p = M_CheckParmEx("-complevel", params, paramscount);
       if (p >= 0 && p < (int)paramscount - 1)
@@ -883,16 +858,9 @@ byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size)
 
   if (fread(buffer, file_size, 1, hfile) == 1)
   {
-    //skip demo header
-    p = G_ReadDemoHeaderEx(buffer, file_size, RDH_SKIP_HEADER);
+    p = dsda_DemoMarkerPosition(buffer, file_size);
 
-    //skip demo data
-    while (p < buffer + file_size && *p != DEMOMARKER)
-    {
-      p += bytes_per_tic;
-    }
-
-    if (*p == DEMOMARKER)
+    if (p)
     {
       //skip DEMOMARKER
       p++;
@@ -1084,7 +1052,7 @@ static int G_ReadDemoFooter(const char *filename)
     }
     else
     {
-      int tmp_fd;
+      int tmp_fd = -1;
       const char* tmp_dir;
       char* tmp_path = NULL;
       const char* template_format = "%sdsda-doom-demoex2-XXXXXX";
@@ -1103,14 +1071,14 @@ static int G_ReadDemoFooter(const char *filename)
 #ifdef HAVE_MKSTEMP
         if ((tmp_fd = mkstemp(demoex_filename)) == -1)
 #else
-        if ((tmp_fd = mktemp(demoex_filename)) == 0)
+        if (mktemp(demoex_filename) == NULL)
 #endif
         {
           demoex_filename[0] = 0;
         }
 
         // don't leave file open
-        if (demoex_filename[0])
+        if (tmp_fd >= 0)
         {
           close(tmp_fd);
         }
@@ -1123,60 +1091,60 @@ static int G_ReadDemoFooter(const char *filename)
     {
       lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file");
     }
-
-    AddDefaultExtension(demoex_filename, ".wad");
-
-    if (!CheckWadBufIntegrity(demoex_p, size))
-    {
-      lprintf(LO_ERROR, "G_ReadDemoFooter: demo footer is corrupted\n");
-    }
-    else
-    //write an additional info from a demo to demoex.wad
-    if (!M_WriteFile(demoex_filename, demoex_p, size))
-    {
-      lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file %s\n", demoex_filename);
-    }
     else
     {
-      //add demoex.wad to the wads list
-      D_AddFile(demoex_filename, source_auto_load);
+      AddDefaultExtension(demoex_filename, ".wad");
 
-      //cache demoex.wad for immediately getting its data with W_CacheLumpName
-      W_Init();
-
-      WadDataInit(&waddata);
-
-      //enumerate and save all auto-loaded files and demo for future use
-      for (i = 0; i < numwadfiles; i++)
+      if (!CheckWadBufIntegrity(demoex_p, size))
       {
-        if (
-          wadfiles[i].src == source_auto_load ||
-          wadfiles[i].src == source_pre ||
-          wadfiles[i].src == source_lmp)
-        {
-          WadDataAddItem(&waddata, wadfiles[i].name, wadfiles[i].src, 0);
-        }
+        lprintf(LO_ERROR, "G_ReadDemoFooter: demo footer is corrupted\n");
+      } // write an additional info from a demo to demoex.wad
+      else if (!M_WriteFile(demoex_filename, demoex_p, size))
+      {
+        lprintf(LO_ERROR, "G_ReadDemoFooter: failed to create demoex temp file %s\n", demoex_filename);
       }
-
-      //get needed wads and dehs from demoex.wad
-      //restore all critical params like -spechit x
-      R_DemoEx_GetParams(buffer, &waddata);
-
-      //replace old wadfiles with the new ones
-      if (waddata.numwadfiles)
+      else
       {
-        for (i = 0; (size_t)i < waddata.numwadfiles; i++)
+        //add demoex.wad to the wads list
+        D_AddFile(demoex_filename, source_auto_load);
+
+        //cache demoex.wad for immediately getting its data with W_CacheLumpName
+        W_Init();
+
+        WadDataInit(&waddata);
+
+        //enumerate and save all auto-loaded files and demo for future use
+        for (i = 0; i < numwadfiles; i++)
         {
-          if (waddata.wadfiles[i].src == source_iwad)
+          if (
+            wadfiles[i].src == source_auto_load ||
+            wadfiles[i].src == source_pre ||
+            wadfiles[i].src == source_lmp)
           {
-            W_ReleaseAllWads();
-            WadDataToWadFiles(&waddata);
-            result = true;
-            break;
+            WadDataAddItem(&waddata, wadfiles[i].name, wadfiles[i].src, 0);
           }
         }
+
+        //get needed wads and dehs from demoex.wad
+        //restore all critical params like -spechit x
+        R_DemoEx_GetParams(buffer, &waddata);
+
+        //replace old wadfiles with the new ones
+        if (waddata.numwadfiles)
+        {
+          for (i = 0; (size_t)i < waddata.numwadfiles; i++)
+          {
+            if (waddata.wadfiles[i].src == source_iwad)
+            {
+              W_ReleaseAllWads();
+              WadDataToWadFiles(&waddata);
+              result = true;
+              break;
+            }
+          }
+        }
+        WadDataFree(&waddata);
       }
-      WadDataFree(&waddata);
     }
     free(buffer);
   }
@@ -1535,11 +1503,7 @@ int CheckDemoExDemo(void)
   int result = false;
   int p;
 
-  p = IsDemoPlayback();
-  if (!p)
-  {
-    p = IsDemoContinue();
-  }
+  p = dsda_PlaybackArg();
 
   if (p)
   {

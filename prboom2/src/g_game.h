@@ -45,13 +45,13 @@
 dboolean G_Responder(event_t *ev);
 dboolean G_CheckDemoStatus(void);
 void G_DeathMatchSpawnPlayer(int playernum);
-void G_InitNew(skill_t skill, int episode, int map);
+void G_InitNew(skill_t skill, int episode, int map, dboolean prepare);
 void G_DeferedInitNew(skill_t skill, int episode, int map);
 void G_DeferedPlayDemo(const char *demo); // CPhipps - const
-void G_LoadGame(int slot, dboolean is_command); // killough 5/15/98
+void G_LoadGame(int slot); // killough 5/15/98
 void G_ForcedLoadGame(void);           // killough 5/15/98: forced loadgames
 void G_DoLoadGame(void);
-void G_SaveGame(int slot, char *description); // Called by M_Responder.
+void G_SaveGame(int slot, const char *description); // Called by M_Responder.
 void G_BeginRecording(void);
 // CPhipps - const on these string params
 void G_RecordDemo(const char *name);          // Only called by startup code.
@@ -67,25 +67,21 @@ void G_DoNewGame(void);
 void G_DoReborn(int playernum);
 void G_DoPlayDemo(void);
 void G_DoCompleted(void);
-void G_ReadDemoContinueTiccmd (ticcmd_t* cmd);//e6y
-void G_ReadDemoTiccmd(ticcmd_t *cmd);
 void G_WriteDemoTiccmd(ticcmd_t *cmd);
 void G_DoWorldDone(void);
 void G_Compatibility(void);
 const byte *G_ReadOptions(const byte *demo_p);   /* killough 3/1/98 - cph: const byte* */
 byte *G_WriteOptions(byte *demo_p);        // killough 3/1/98
 void G_PlayerReborn(int player);
-void G_RestartLevel(void); // CPhipps - menu involked level restart
 void G_DoVictory(void);
 void G_BuildTiccmd (ticcmd_t* cmd); // CPhipps - move decl to header
+void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p);
 void G_ChangedPlayerColour(int pn, int cl); // CPhipps - On-the-fly player colour changing
 void G_MakeSpecialEvent(buttoncode_t bc, ...); /* cph - new event stuff */
 int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap);
 
 //e6y
-extern dboolean democontinue;
-extern char democontinuename[];
-void G_CheckDemoContinue(void);
+void G_ContinueDemo(const char *playback_name, const char *record_name);
 void G_SetSpeed(dboolean force);
 
 //e6y
@@ -135,16 +131,12 @@ extern int pistolstart;
 extern int longtics;
 extern int bytes_per_tic;
 
-extern dboolean boom_autoswitch;
-extern dboolean done_autoswitch;
-
-#define singleplayer (!demorecording && !demoplayback && !democontinue && !netgame)
-#define comperr(i) (default_comperr[i] && !demorecording && !demoplayback && !democontinue && !netgame)
+#define singleplayer (!demorecording && !demoplayback && !netgame)
+#define comperr(i) (default_comperr[i] && singleplayer)
 
 // hexen
 
 void G_TeleportNewMap(int map, int position);
 void G_Completed(int map, int position);
-void G_StartNewInit(void);
 
 #endif

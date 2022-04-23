@@ -121,7 +121,6 @@ typedef unsigned __int64 uint_64_t;
 /* CPhipps - use limits.h instead of depreciated values.h */
 #include <limits.h>
 
-/* cph - move compatibility levels here so we can use them in d_server.c */
 typedef enum {
   doom_12_compatibility,   /* Doom v1.2 */
   doom_1666_compatibility, /* Doom v1.666 */
@@ -168,6 +167,7 @@ enum patch_translation_e {
   VPT_ALIGN_RIGHT_BOTTOM = 9,
   VPT_ALIGN_MAX          = 10,
   VPT_STRETCH            = 16, // Stretch to compensate for high-res
+  VPT_EX_TEXT            = 32,
 
   VPT_NONE    = 128, // Normal
   VPT_FLIP    = 256, // Flip image horizontally

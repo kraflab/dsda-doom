@@ -46,53 +46,7 @@
 // VIDEO
 //
 
-typedef enum
-{
-  patch_stretch_16x10,
-  patch_stretch_4x3,
-  patch_stretch_full,
-
-  patch_stretch_max
-} patch_stretch_t;
-
-typedef struct
-{
-   fixed_t     xstep, ystep;
-
-   int width, height;
-
-   // SoM 1-31-04: This will insure that scaled patches and such are put in the right places
-   short x1lookup[321];
-   short y1lookup[201];
-   short x2lookup[321];
-   short y2lookup[201];
-} cb_video_t;
-
-typedef struct stretch_param_s
-{
-  cb_video_t *video;
-  int deltax1;
-  int deltay1;
-  int deltax2;
-  int deltay2;
-} stretch_param_t;
-
-extern stretch_param_t stretch_params_table[3][VPT_ALIGN_MAX];
-extern stretch_param_t *stretch_params;
-
-extern cb_video_t video;
-extern cb_video_t video_stretch;
-extern cb_video_t video_full;
-extern int patches_scalex;
-extern int patches_scaley;
-
 extern const char *render_aspects_list[];
-extern const char *render_stretch_list[];
-
-extern int render_stretch_hud;
-extern int render_stretch_hud_default;
-extern int render_patches_scalex;
-extern int render_patches_scaley;
 
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and

@@ -1,11 +1,3 @@
-
-function(ApplySDL2NetOptions TARGET)
-    if(SDL2_NET_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${SDL2_NET_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${SDL2_NET_LIBRARIES})
-    endif()
-endfunction()
-
 # PrBoom main executable
 
 set(COMMON_SRC
@@ -21,16 +13,26 @@ set(COMMON_SRC
     dsda.h
     dsda/analysis.c
     dsda/analysis.h
+    dsda/brute_force.c
+    dsda/brute_force.h
+    dsda/build.c
+    dsda/build.h
     dsda/command_display.c
     dsda/command_display.h
+    dsda/compatibility.c
+    dsda/compatibility.h
     dsda/console.c
     dsda/console.h
     dsda/coordinate_display.c
     dsda/coordinate_display.h
     dsda/data_organizer.c
     dsda/data_organizer.h
+    dsda/death.c
+    dsda/death.h
     dsda/demo.c
     dsda/demo.h
+    dsda/excmd.c
+    dsda/excmd.h
     dsda/exhud.c
     dsda/exhud.h
     dsda/ghost.c
@@ -45,10 +47,17 @@ set(COMMON_SRC
     dsda/intermission_display.h
     dsda/key_frame.c
     dsda/key_frame.h
-    dsda/line_special.c
     dsda/line_special.h
     dsda/map_format.c
     dsda/map_format.h
+    dsda/mapinfo.c
+    dsda/mapinfo.h
+    dsda/mapinfo/hexen.c
+    dsda/mapinfo/hexen.h
+    dsda/mapinfo/legacy.c
+    dsda/mapinfo/legacy.h
+    dsda/mapinfo/u.c
+    dsda/mapinfo/u.h
     dsda/memory.c
     dsda/memory.h
     dsda/mobjinfo.c
@@ -63,26 +72,42 @@ set(COMMON_SRC
     dsda/options.h
     dsda/palette.c
     dsda/palette.h
+    dsda/pause.c
+    dsda/pause.h
     dsda/pclass.c
     dsda/pclass.h
+    dsda/playback.c
+    dsda/playback.h
     dsda/save.c
     dsda/save.h
     dsda/settings.c
     dsda/settings.h
     dsda/sfx.c
     dsda/sfx.h
+    dsda/skip.c
+    dsda/skip.h
+    dsda/sndinfo.c
+    dsda/sndinfo.h
+    dsda/spawn_number.c
+    dsda/spawn_number.h
     dsda/split_tracker.c
     dsda/split_tracker.h
     dsda/sprite.c
     dsda/sprite.h
     dsda/state.c
     dsda/state.h
+    dsda/stretch.c
+    dsda/stretch.h
     dsda/tas.c
     dsda/tas.h
     dsda/text_file.c
     dsda/text_file.h
+    dsda/thing_id.c
+    dsda/thing_id.h
     dsda/time.c
     dsda/time.h
+    dsda/utility.c
+    dsda/utility.h
     dstrings.c
     dstrings.h
     d_deh.c
@@ -101,7 +126,6 @@ set(COMMON_SRC
     e6y.h
     f_finale.c
     f_finale.h
-    f_finale2.c
     f_wipe.c
     f_wipe.h
     g_game.c
@@ -148,8 +172,6 @@ set(COMMON_SRC
     hu_lib.h
     hu_stuff.c
     hu_stuff.h
-    hu_tracers.c
-    hu_tracers.h
     info.c
     info.h
     i_capture.c
@@ -158,7 +180,6 @@ set(COMMON_SRC
     i_glob.h
     i_joy.h
     i_main.h
-    i_network.h
     i_pcsound.c
     i_pcsound.h
     i_sound.h
@@ -182,10 +203,7 @@ set(COMMON_SRC
     m_random.c
     m_random.h
     m_swap.h
-    protocol.h
     p_ceilng.c
-    p_checksum.c
-    p_checksum.h
     p_doors.c
     p_enemy.c
     p_enemy.h
@@ -248,8 +266,6 @@ set(COMMON_SRC
     sc_man.h
     sounds.c
     sounds.h
-    statdump.c
-    statdump.h
     st_lib.c
     st_lib.h
     st_stuff.c
@@ -296,7 +312,6 @@ set(MUS2MID_SRC
 set(SDLDOOM_SOURCES
     SDL/i_joy.c
     SDL/i_main.c
-    SDL/i_network.c
     SDL/i_sound.c
     SDL/i_sshot.c
     SDL/i_system.c
@@ -309,16 +324,6 @@ set(PCSOUND_SOURCES
     PCSOUND/pcsound_linux.c
     PCSOUND/pcsound_sdl.c
     PCSOUND/pcsound_win32.c
-)
-
-set(TEXTSCREEN_SOURCES
-    TEXTSCREEN/doomkeys.h
-    TEXTSCREEN/txt_main.h
-    TEXTSCREEN/txt_font.h
-    TEXTSCREEN/txt_largefont.h
-    TEXTSCREEN/txt_sdl.c
-    TEXTSCREEN/txt_sdl.h
-    TEXTSCREEN/txt_smallfont.h
 )
 
 set(DOOMMUSIC_SOURCES
@@ -359,7 +364,6 @@ set(PRBOOM_PLUS_SOURCES
     ${MUS2MID_SRC}
     ${SDLDOOM_SOURCES}
     ${PCSOUND_SOURCES}
-    ${TEXTSCREEN_SOURCES}
     ${DOOMMUSIC_SOURCES}
     ${EXTRA_FILES}
 )
@@ -411,8 +415,6 @@ function(AddGameExecutable TARGET SOURCES)
         endif()
     endif()
 
-    add_definitions("-DUSE_EXPERIMENTAL_MUSIC")
-
     add_executable(${TARGET} WIN32 ${SOURCES})
     target_include_directories(${TARGET} PRIVATE
         ${SDL2_INCLUDE_DIRS}
@@ -435,15 +437,14 @@ function(AddGameExecutable TARGET SOURCES)
         target_include_directories(${TARGET} PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
         target_link_libraries(${TARGET} PRIVATE ${SDL2_IMAGE_LIBRARIES})
     endif()
-    if(SDL2_MIXER_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${SDL2_MIXER_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${SDL2_MIXER_LIBRARIES})
-    endif()
+
+    target_include_directories(${TARGET} PRIVATE ${SDL2_MIXER_INCLUDE_DIRS})
+    target_link_libraries(${TARGET} PRIVATE ${SDL2_MIXER_LIBRARIES})
+
     if(PCREPOSIX_FOUND)
         target_include_directories(${TARGET} PRIVATE ${PCRE_INCLUDE_DIR})
         target_link_libraries(${TARGET} PRIVATE ${PCREPOSIX_LIBRARIES})
     endif()
-    ApplySDL2NetOptions(${TARGET})
     if(ZLIB_FOUND)
         target_include_directories(${TARGET} PRIVATE ${ZLIB_INCLUDE_DIRS})
         target_link_libraries(${TARGET} PRIVATE ${ZLIB_LIBRARIES})
@@ -499,123 +500,3 @@ function(AddGameExecutable TARGET SOURCES)
 endfunction()
 
 AddGameExecutable(dsda-doom "${PRBOOM_PLUS_SOURCES}")
-
-
-# DSDA-Doom server executable
-
-option(BUILD_SERVER "Build DSDA-Doom server executable" OFF)
-
-if(BUILD_SERVER AND SDL2_NET_FOUND)
-    set(DSDA_DOOM_GAME_SERVER_SOURCES
-        d_server.c
-        protocol.h
-        SDL/i_network.c
-    )
-
-    if(MSVC)
-        set(DSDA_DOOM_GAME_SERVER_SOURCES
-            ${DSDA_DOOM_GAME_SERVER_SOURCES}
-            SDL/i_system.c
-            dsda/time.c
-            dsda/time.h
-        )
-    else()
-        set(DSDA_DOOM_GAME_SERVER_SOURCES
-            ${DSDA_DOOM_GAME_SERVER_SOURCES}
-            POSIX/i_system.c
-        )
-    endif()
-
-    add_executable(dsda-doom-game-server ${DSDA_DOOM_GAME_SERVER_SOURCES})
-    target_include_directories(dsda-doom-game-server PRIVATE
-        ${SDL2_INCLUDE_DIRS}
-        ${CMAKE_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-    target_link_libraries(dsda-doom-game-server PRIVATE
-        ${SDL2_LIBRARIES}
-    )
-    set_target_properties(dsda-doom-game-server PROPERTIES
-        COMPILE_DEFINITIONS PRBOOM_SERVER
-        RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
-    )
-    ApplySDL2NetOptions(dsda-doom-game-server)
-    install(TARGETS dsda-doom-game-server COMPONENT "Game server executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
-endif()
-
-
-# PrBoom-Plus macOS launcher
-
-if(APPLE)
-    set(LAUNCHER_SOURCES
-        MAC/ANSIString.m
-        MAC/ConsoleController.h
-        MAC/ConsoleController.m
-        MAC/DrawerButton.h
-        MAC/DrawerButton.m
-        MAC/FileButtonController.h
-        MAC/FileButtonController.m
-        MAC/LauncherApp.h
-        MAC/LauncherApp.m
-        MAC/LauncherMain.m
-        MAC/ResolutionDataSource.h
-        MAC/ResolutionDataSource.m
-        MAC/UKFileWatcher.h
-        MAC/UKKQueue.h
-        MAC/UKKQueue.m
-        MAC/UKMainThreadProxy.h
-        MAC/UKMainThreadProxy.m
-        MAC/WadViewController.h
-        MAC/WadViewController.m
-    )
-
-    set(LAUNCHER_RESOURCES
-        MAC/Launcher.icns
-        MAC/PrBoom.icns
-        MAC/PrBoom.sdef
-    )
-    set_source_files_properties(${LAUNCHER_RESOURCES} PROPERTIES
-        MACOSX_PACKAGE_LOCATION Resources
-    )
-
-    set(LAUNCHER_MAINMENU_RESOURCES
-        MAC/English.lproj/MainMenu.nib/classes.nib
-        MAC/English.lproj/MainMenu.nib/info.nib
-        MAC/English.lproj/MainMenu.nib/keyedobjects.nib
-    )
-    set_source_files_properties(${LAUNCHER_MAINMENU_RESOURCES} PROPERTIES
-        MACOSX_PACKAGE_LOCATION Resources/English.lproj/MainMenu.nib
-    )
-
-    add_executable(prboom-plus-launcher MACOSX_BUNDLE
-        ${LAUNCHER_SOURCES}
-        ${LAUNCHER_RESOURCES}
-        ${LAUNCHER_MAINMENU_RESOURCES}
-    )
-    target_include_directories(prboom-plus-launcher PRIVATE
-        ${CMAKE_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-    set_target_properties(prboom-plus-launcher PROPERTIES
-        LINK_FLAGS "-framework Cocoa"
-        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/MAC/Info.plist"
-        OUTPUT_NAME "Launcher"
-        RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
-        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ""
-    )
-    add_dependencies(prboom-plus-launcher dsda-doom)
-
-    set(BUNDLE_GAME_EXECUTABLE dsda-doom)
-
-    add_custom_command(TARGET prboom-plus-launcher POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${BUNDLE_GAME_EXECUTABLE}> $<TARGET_FILE_DIR:prboom-plus-launcher>/PrBoom-Plus
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${WAD_DATA_PATH} $<TARGET_FILE_DIR:prboom-plus-launcher>
-    )
-
-    if(BUILD_SERVER AND SDL2_NET_FOUND)
-        add_dependencies(prboom-plus-launcher dsda-doom-game-server)
-        add_custom_command(TARGET prboom-plus-launcher POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:dsda-doom-game-server> $<TARGET_FILE_DIR:prboom-plus-launcher>
-        )
-    endif()
-endif()

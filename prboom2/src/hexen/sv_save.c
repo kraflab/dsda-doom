@@ -32,6 +32,9 @@
 #include "hu_stuff.h"
 #include "lprintf.h"
 
+#include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
+
 #include "hexen/a_action.h"
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
@@ -154,6 +157,7 @@ void SV_RestoreMapArchive(byte **buffer)
 
     if (map_archive[i].size)
     {
+      map_archive[i].buffer = malloc(map_archive[i].size);
       memcpy(map_archive[i].buffer, *buffer, map_archive[i].size);
       *buffer += map_archive[i].size;
     }
@@ -1251,7 +1255,7 @@ static void StreamOut_polydoor_t(polydoor_t *str)
     SV_WriteLong(str->close);
 }
 
-static void StreamIn_floorWaggle_t(floorWaggle_t *str)
+static void StreamIn_planeWaggle_t(planeWaggle_t *str)
 {
     int i;
 
@@ -1284,7 +1288,7 @@ static void StreamIn_floorWaggle_t(floorWaggle_t *str)
     str->state = SV_ReadLong();
 }
 
-static void StreamOut_floorWaggle_t(floorWaggle_t *str)
+static void StreamOut_planeWaggle_t(planeWaggle_t *str)
 {
     // sector_t *sector;
     SV_WriteLong(str->sector - sectors);
@@ -1394,6 +1398,7 @@ static void UnarchiveWorld(void)
         sec->seqType = SV_ReadWord();
         sec->ceilingdata = 0;
         sec->floordata = 0;
+        sec->lightingdata = 0;
         sec->soundtarget = 0;
     }
     for (i = 0, li = lines; i < numlines; i++, li++)
@@ -1488,6 +1493,8 @@ static void UnarchiveMobjs(void)
     }
     for (i = 0; i < MobjCount; i++)
     {
+        int references;
+
         mobj = MobjList[i];
         StreamIn_mobj_t(mobj);
 
@@ -1499,7 +1506,10 @@ static void UnarchiveMobjs(void)
         {
           mobj->index = -1;
           mobj->thinker.function = P_RemoveThinkerDelayed;
+
+          references = mobj->thinker.references;
           P_AddThinker(&mobj->thinker);
+          mobj->thinker.references = references;
 
           continue;
         }
@@ -1509,13 +1519,16 @@ static void UnarchiveMobjs(void)
         mobj->ceilingz = mobj->subsector->sector->ceilingheight;
 
         mobj->thinker.function = P_MobjThinker;
+
+        references = mobj->thinker.references;
         P_AddThinker(&mobj->thinker);
+        mobj->thinker.references = references;
     }
-    P_CreateTIDList();
+    map_format.build_mobj_thing_id_list();
     P_InitCreatureCorpseQueue(true);    // true = scan for corpses
 }
 
-static void RestoreFloorWaggle(floorWaggle_t *th)
+static void RestoreFloorWaggle(planeWaggle_t *th)
 {
   th->sector->floordata = th->thinker.function;
 }
@@ -1640,10 +1653,10 @@ static thinkInfo_t ThinkerInfo[] = {
     {
       TC_FLOOR_WAGGLE,
       T_FloorWaggle,
-      StreamOut_floorWaggle_t,
-      StreamIn_floorWaggle_t,
+      StreamOut_planeWaggle_t,
+      StreamIn_planeWaggle_t,
       RestoreFloorWaggle,
-      sizeof(floorWaggle_t)
+      sizeof(planeWaggle_t)
     },
     { TC_NULL, NULL, NULL, NULL, NULL, 0 },
 };
@@ -1935,7 +1948,7 @@ void SV_SaveMap(void)
 void SV_LoadMap(void)
 {
     // Load a base level
-    G_InitNew(gameskill, gameepisode, gamemap);
+    G_InitNew(gameskill, gameepisode, gamemap, false);
 
     // Remove all thinkers
     RemoveAllThinkers();
@@ -1984,7 +1997,7 @@ void SV_MapTeleport(int map, int position)
 
     if (!deathmatch)
     {
-        if (P_GetMapCluster(gamemap) == P_GetMapCluster(map))
+        if (dsda_MapCluster(gamemap) == dsda_MapCluster(map))
         {                       // Same cluster - save map without saving player mobjs
             SV_SaveMap();
         }
@@ -2010,7 +2023,8 @@ void SV_MapTeleport(int map, int position)
     // for the following check (player mobj redirection)
     TargetPlayerAddrs = NULL;
 
-    gamemap = map;
+    dsda_UpdateGameMap(1, map);
+
     if (!deathmatch && MapArchiveExists(gamemap))
     {                           // Unarchive map
         SV_LoadMap();
@@ -2018,7 +2032,7 @@ void SV_MapTeleport(int map, int position)
     }
     else
     {                           // New map
-        G_InitNew(gameskill, gameepisode, gamemap);
+        G_InitNew(gameskill, gameepisode, gamemap, false);
 
         P_MapStart();
 

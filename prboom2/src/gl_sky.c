@@ -123,10 +123,7 @@ void gld_DrawFakeSkyStrips(void)
   // I need to render fake strips of sky before dome with using
   // full clearing of color buffer (only in compatibility mode)
 
-  if (!gl_compatibility)
-  {
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no graphics
-  }
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no graphics
   gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
 
   for (i = gld_drawinfo.num_items[GLDIT_SWALL] - 1; i >= 0; i--)
@@ -142,14 +139,7 @@ void gld_DrawFakeSkyStrips(void)
   }
 
   gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
-  if (!gl_compatibility)
-  {
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-  }
-  else
-  {
-    glClear(GL_COLOR_BUFFER_BIT);
-  }
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 }
 
 void gld_GetScreenSkyScale(GLWall *wall, float *scale_x, float *scale_y)
@@ -209,7 +199,7 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
       else
       {
         wall->skyyaw  = -2.0f*(((270.0f-(float)((viewangle+s->textureoffset)>>ANGLETOFINESHIFT)*360.0f/FINEANGLES)+90.0f)/90.0f/skyscale);
-        wall->skyymid = skyYShift+(((float)s->rowoffset/(float)FRACUNIT)/100.0f);
+        wall->skyymid = skyYShift+(((float)s->rowoffset/(float)FRACUNIT + 28.0f)/wall->gltexture->buffer_height)/skyscale;
       }
       wall->flag = (l->special == 272 ? GLDWF_SKY : GLDWF_SKYFLIP);
     }
@@ -460,10 +450,7 @@ void gld_DrawScreenSkybox(void)
     int i, k;
     float w;
 
-    if (!gl_compatibility)
-    {
-      glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no graphics
-    }
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no graphics
     gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
 
     for (i = gld_drawinfo.num_items[GLDIT_SWALL] - 1; i >= 0; i--)
@@ -479,14 +466,7 @@ void gld_DrawScreenSkybox(void)
     }
 
     gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
-    if (!gl_compatibility)
-    {
-      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-    }
-    else
-    {
-      glClear(GL_COLOR_BUFFER_BIT);
-    }
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
     if (!mlook_or_fov)
     {

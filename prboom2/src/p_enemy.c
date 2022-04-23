@@ -54,6 +54,7 @@
 
 #include "dsda.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 static mobj_t *current_actor;
 
@@ -282,7 +283,6 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
 static dboolean P_IsOnLift(const mobj_t *actor)
 {
   const sector_t *sec = actor->subsector->sector;
-  line_t line;
   int l;
 
   // Short-circuit: it's on a lift which is active.
@@ -290,8 +290,8 @@ static dboolean P_IsOnLift(const mobj_t *actor)
     return true;
 
   // Check to see if it's in a sector which can be activated as a lift.
-  if ((line.tag = sec->tag))
-    for (l = -1; (l = P_FindLineFromLineTag(&line, l)) >= 0;)
+  if (sec->tag)
+    for (l = -1; (l = P_FindLineFromTag(sec->tag, l)) >= 0;)
       switch (lines[l].special)
   {
   case  10: case  14: case  15: case  20: case  21: case  22:
@@ -1669,7 +1669,7 @@ void A_Tracer(mobj_t *actor)
    * and improvise around it (using leveltime causes desync across levels).
    */
 
-  if ((gametic-basetic) & 3)
+  if (logictic & 3)
     return;
 
   // spawn a puff of smoke behind the rocket
@@ -1817,6 +1817,66 @@ static dboolean PIT_VileCheck(mobj_t *thing)
     if (!check)
       return true;              // doesn't fit here
     return false;               // got one, so stop checking
+}
+
+dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
+{
+  uint_64_t oldflags;
+  fixed_t oldheight, oldradius;
+  mobjinfo_t *info;
+
+  if (!(corpse->flags & MF_CORPSE))
+    return false;
+
+  info = corpse->info;
+
+  if (info->raisestate == g_s_null)
+    return false;
+
+  corpse->momx = 0;
+  corpse->momy = 0;
+
+  oldheight = corpse->height;
+  oldradius = corpse->radius;
+  oldflags = corpse->flags;
+
+  corpse->height = info->height;
+  corpse->radius = info->radius;
+  corpse->flags |= MF_SOLID;
+
+  if (!P_CheckPosition(corpse, corpse->x, corpse->y))
+  {
+    corpse->height = oldheight;
+    corpse->radius = oldradius;
+    corpse->flags = oldflags;
+    return false;
+  }
+
+  S_StartSound(corpse, sfx_slop);
+
+  P_SetMobjState(corpse, info->raisestate);
+
+  corpse->flags = info->flags;
+  corpse->flags |= MF_RESSURECTED;
+  corpse->flags &= ~MF_JUSTHIT;
+
+  if (raiser)
+  {
+    corpse->flags = (corpse->flags & ~MF_FRIEND) | (raiser->flags & MF_FRIEND);
+  }
+
+  dsda_WatchResurrection(corpse);
+
+  if (!((corpse->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+    totallive++;
+
+  corpse->health = info->spawnhealth;
+  P_SetTarget(&corpse->target, NULL);
+  P_SetTarget(&corpse->lastenemy, NULL);
+
+  P_UpdateThinker(&corpse->thinker);
+
+  return true;
 }
 
 //
@@ -2492,136 +2552,92 @@ void A_BossDeath(mobj_t *mo)
   // heretic_note: probably we can adopt the clean heretic style and merge
   if (heretic) return Heretic_A_BossDeath(mo);
 
-  // numbossactions == 0 means to use the defaults.
-  // numbossactions == -1 means to do nothing.
-  // positive values mean to check the list of boss actions and run all that apply.
-  if (gamemapinfo && gamemapinfo->numbossactions != 0)
+  if (dsda_BossAction(mo))
   {
-	  if (gamemapinfo->numbossactions < 0) return;
-
-	  // make sure there is a player alive for victory
-	  for (i = 0; i < g_maxplayers; i++)
-  		if (playeringame[i] && players[i].health > 0)
-  		  break;
-
-	  if (i == g_maxplayers)
-		  return;     // no one left alive, so do not end game
-
-	  for (i = 0; i < gamemapinfo->numbossactions; i++)
-	  {
-		  if (gamemapinfo->bossactions[i].type == mo->type)
-			  break;
-	  }
-	  if (i >= gamemapinfo->numbossactions)
-		  return;	// no matches found
-
-		// scan the remaining thinkers to see
-		// if all bosses are dead
-	  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
-		if (th->function == P_MobjThinker)
-		  {
-			mobj_t *mo2 = (mobj_t *) th;
-			if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
-			  return;         // other boss not dead
-      }
-	  for (i = 0; i < gamemapinfo->numbossactions; i++)
-	  {
-		  if (gamemapinfo->bossactions[i].type == mo->type)
-		  {
-			  junk = *lines;
-			  junk.special = (short)gamemapinfo->bossactions[i].special;
-			  junk.tag = (short)gamemapinfo->bossactions[i].tag;
-			  // use special semantics for line activation to block problem types.
-			  if (!P_UseSpecialLine(mo, &junk, 0, true))
-				  map_format.cross_special_line(&junk, 0, mo, true);
-		  }
-	  }
-
-	  return;
+    return;
   }
 
   if (gamemode == commercial)
-    {
-      if (gamemap != 7)
-        return;
+  {
+    if (gamemap != 7)
+      return;
 
-      if (!(mo->flags2 & (MF2_MAP07BOSS1 | MF2_MAP07BOSS2)))
-        return;
-    }
+    if (!(mo->flags2 & (MF2_MAP07BOSS1 | MF2_MAP07BOSS2)))
+      return;
+  }
   else
+  {
+    // e6y
+    // Additional check of gameepisode is necessary, because
+    // there is no right or wrong solution for E4M6 in original EXEs,
+    // there's nothing to emulate.
+    if (comp[comp_666] && gameepisode < 4)
     {
       // e6y
-      // Additional check of gameepisode is necessary, because
-      // there is no right or wrong solution for E4M6 in original EXEs,
-      // there's nothing to emulate.
-      if (comp[comp_666] && gameepisode < 4)
+      // Only following checks are present in doom2.exe ver. 1.666 and 1.9
+      // instead of separate checks for each episode in doomult.exe, plutonia.exe and tnt.exe
+      // There is no more desync on doom.wad\episode3.lmp
+      // http://www.doomworld.com/idgames/index.php?id=6909
+      if (gamemap != 8)
+        return;
+      if (mo->flags2 & MF2_E1M8BOSS && gameepisode != 1)
+        return;
+    }
+    else
+    {
+      switch(gameepisode)
       {
-        // e6y
-        // Only following checks are present in doom2.exe ver. 1.666 and 1.9
-        // instead of separate checks for each episode in doomult.exe, plutonia.exe and tnt.exe
-        // There is no more desync on doom.wad\episode3.lmp
-        // http://www.doomworld.com/idgames/index.php?id=6909
+      case 1:
         if (gamemap != 8)
           return;
-        if (mo->flags2 & MF2_E1M8BOSS && gameepisode != 1)
+
+        if (!(mo->flags2 & MF2_E1M8BOSS))
           return;
-      }
-      else
-      {
-      switch(gameepisode)
+        break;
+
+      case 2:
+        if (gamemap != 8)
+          return;
+
+        if (!(mo->flags2 & MF2_E2M8BOSS))
+          return;
+        break;
+
+      case 3:
+        if (gamemap != 8)
+          return;
+
+        if (!(mo->flags2 & MF2_E3M8BOSS))
+          return;
+
+        break;
+
+      case 4:
+        switch(gamemap)
         {
-        case 1:
-          if (gamemap != 8)
-            return;
-
-          if (!(mo->flags2 & MF2_E1M8BOSS))
-            return;
-          break;
-
-        case 2:
-          if (gamemap != 8)
-            return;
-
-          if (!(mo->flags2 & MF2_E2M8BOSS))
-            return;
-          break;
-
-        case 3:
-          if (gamemap != 8)
-            return;
-
-          if (!(mo->flags2 & MF2_E3M8BOSS))
-            return;
-
-          break;
-
-        case 4:
-          switch(gamemap)
-            {
-            case 6:
-              if (!(mo->flags2 & MF2_E4M6BOSS))
-                return;
-              break;
-
-            case 8:
-              if (!(mo->flags2 & MF2_E4M8BOSS))
-                return;
-              break;
-
-            default:
+          case 6:
+            if (!(mo->flags2 & MF2_E4M6BOSS))
               return;
-              break;
-            }
-          break;
+            break;
 
-        default:
-          if (gamemap != 8)
+          case 8:
+            if (!(mo->flags2 & MF2_E4M8BOSS))
+              return;
+            break;
+
+          default:
             return;
-          break;
+            break;
         }
-      }
+        break;
 
+      default:
+        if (gamemap != 8)
+          return;
+        break;
+      }
     }
+  }
 
   // make sure there is a player alive for victory
   for (i = 0; i < g_maxplayers; i++)
@@ -2631,63 +2647,63 @@ void A_BossDeath(mobj_t *mo)
   if (i == g_maxplayers)
     return;     // no one left alive, so do not end game
 
-    // scan the remaining thinkers to see
-    // if all bosses are dead
+  // scan the remaining thinkers to see
+  // if all bosses are dead
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
     if (th->function == P_MobjThinker)
-      {
-        mobj_t *mo2 = (mobj_t *) th;
-        if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
-          return;         // other boss not dead
-      }
+    {
+      mobj_t *mo2 = (mobj_t *) th;
+      if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
+        return;         // other boss not dead
+    }
 
   // victory!
   if ( gamemode == commercial)
+  {
+    if (gamemap == 7)
     {
-      if (gamemap == 7)
-        {
-          if (mo->flags2 & MF2_MAP07BOSS1)
-            {
-              junk.tag = 666;
-              EV_DoFloor(&junk,lowerFloorToLowest);
-              return;
-            }
+      if (mo->flags2 & MF2_MAP07BOSS1)
+      {
+        junk.tag = 666;
+        EV_DoFloor(&junk,lowerFloorToLowest);
+        return;
+      }
 
-          if (mo->flags2 & MF2_MAP07BOSS2)
-            {
-              junk.tag = 667;
-              EV_DoFloor(&junk,raiseToTexture);
-              return;
-            }
-        }
+      if (mo->flags2 & MF2_MAP07BOSS2)
+      {
+        junk.tag = 667;
+        EV_DoFloor(&junk,raiseToTexture);
+        return;
+      }
     }
+  }
   else
+  {
+    switch(gameepisode)
     {
-      switch(gameepisode)
+      case 1:
+        junk.tag = 666;
+        EV_DoFloor(&junk, lowerFloorToLowest);
+        return;
+        break;
+
+      case 4:
+        switch(gamemap)
         {
-        case 1:
-          junk.tag = 666;
-          EV_DoFloor(&junk, lowerFloorToLowest);
-          return;
-          break;
+          case 6:
+            junk.tag = 666;
+            EV_DoDoor(&junk, blazeOpen);
+            return;
+            break;
 
-        case 4:
-          switch(gamemap)
-            {
-            case 6:
-              junk.tag = 666;
-              EV_DoDoor(&junk, blazeOpen);
-              return;
-              break;
-
-            case 8:
-              junk.tag = 666;
-              EV_DoFloor(&junk, lowerFloorToLowest);
-              return;
-              break;
-            }
+          case 8:
+            junk.tag = 666;
+            EV_DoFloor(&junk, lowerFloorToLowest);
+            return;
+            break;
         }
     }
+  }
   G_ExitLevel();
 }
 
@@ -5247,7 +5263,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
     z = actor->z;
     oldMonster = *actor;        // Save pig vars
 
-    P_RemoveMobjFromTIDList(actor);
+    map_format.remove_mobj_thing_id(actor);
     P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     mo = P_SpawnMobj(x, y, z, moType);
     dsda_WatchUnMorph(mo);
@@ -5264,7 +5280,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
         mo->special2.i = moType;
         mo->tid = oldMonster.tid;
         memcpy(mo->args, oldMonster.args, 5);
-        P_InsertMobjIntoTIDList(mo, oldMonster.tid);
+        map_format.add_mobj_thing_id(mo, oldMonster.tid);
         dsda_WatchMorph(mo);
         return (false);
     }
@@ -5273,7 +5289,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
     mo->tid = oldMonster.tid;
     mo->special = oldMonster.special;
     memcpy(mo->args, oldMonster.args, 5);
-    P_InsertMobjIntoTIDList(mo, oldMonster.tid);
+    map_format.add_mobj_thing_id(mo, oldMonster.tid);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     S_StartSound(fog, hexen_sfx_teleport);
     return (true);
@@ -6435,7 +6451,7 @@ void A_DragonInitFlight(mobj_t * actor)
         }
     }
     while (actor->special1.m == actor);
-    P_RemoveMobjFromTIDList(actor);
+    map_format.remove_mobj_thing_id(actor);
 }
 
 void A_DragonFlight(mobj_t * actor)
@@ -7136,7 +7152,7 @@ void A_FreezeDeath(mobj_t * actor)
     else if (actor->flags & MF_COUNTKILL && actor->special)
     {
         // Initiate monster death actions.
-        P_ExecuteLineSpecial(actor->special, actor->args, NULL, 0, actor);
+        map_format.execute_line_special(actor->special, actor->args, NULL, 0, actor);
     }
 }
 
@@ -7228,7 +7244,7 @@ void A_FreezeDeathChunks(mobj_t * actor)
         mo->player->mo = mo;
         mo->player->lookdir = 0;
     }
-    P_RemoveMobjFromTIDList(actor);
+    map_format.remove_mobj_thing_id(actor);
     P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     actor->flags2 |= MF2_DONTDRAW;
 }

@@ -142,6 +142,7 @@ typedef enum {
   m_scrn,       // A key can not be assigned to more than one action
   m_map,        // in the same group. A key can be assigned to one
   m_menu,       // action in one group, and another action in another.
+  m_build,
 
   m_dsda,       // use dsda setting logic
 } setup_group;

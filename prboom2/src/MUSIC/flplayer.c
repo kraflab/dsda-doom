@@ -70,6 +70,8 @@ const music_player_t fl_player =
 #include "i_system.h" // for I_FindFile()
 #include "lprintf.h"
 #include "midifile.h"
+#include "memio.h"
+#include "w_wad.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -104,6 +106,47 @@ static const char *fl_name (void)
 #include <windows.h>
 #include <delayimp.h>
 #endif
+
+static void *fl_sfopen(const char *lumpname)
+{
+  MEMFILE *instream;
+  int lumpnum = W_GetNumForName(lumpname);
+  int len = W_LumpLength(lumpnum);
+  const void *data = W_CacheLumpNum(lumpnum);
+
+  instream = mem_fopen_read(data, len);
+
+  return instream;
+}
+
+static int fl_sfread(void *buf, long long count, void *handle)
+{
+  if (mem_fread(buf, sizeof(byte), count, (MEMFILE *)handle) == count)
+  {
+    return FLUID_OK;
+  }
+  return FLUID_FAILED;
+}
+
+static int fl_sfseek(void *handle, long long offset, int origin)
+{
+  if (mem_fseek((MEMFILE *)handle, offset, origin) < 0)
+  {
+    return FLUID_FAILED;
+  }
+  return FLUID_OK;
+}
+
+static int fl_sfclose(void *handle)
+{
+  mem_fclose((MEMFILE *)handle);
+  return FLUID_OK;
+}
+
+static long long fl_sftell(void *handle)
+{
+  return mem_ftell((MEMFILE *)handle);
+}
 
 static int fl_init (int samplerate)
 {
@@ -187,15 +230,54 @@ static int fl_init (int samplerate)
     return 0;
   }
 
-  filename = I_FindFile2(snd_soundfont, ".sf2");
-  f_font = fluid_synth_sfload (f_syn, filename, 1);
-
-  if (f_font == FLUID_FAILED)
   {
-    lprintf (LO_WARN, "fl_init: error loading soundfont %s\n", snd_soundfont);
-    delete_fluid_synth (f_syn);
-    delete_fluid_settings (f_set);
-    return 0;
+    int lumpnum;
+    int checked_file = false;
+    dboolean replaced_soundfont = false;
+    const char *checked_f_font = NULL;
+
+    lumpnum = W_CheckNumForName("SNDFONT");
+
+    if (lumpnum >= 0)
+    {
+      replaced_soundfont = !W_LumpNumInPortWad(lumpnum);
+    }
+
+    if (!replaced_soundfont && snd_soundfont && snd_soundfont[0])
+    {
+      checked_file = true;
+      checked_f_font = snd_soundfont;
+      filename = I_FindFile2(snd_soundfont, ".sf2");
+      f_font = fluid_synth_sfload (f_syn, filename, 1);
+    }
+
+    if ((!checked_file || f_font == FLUID_FAILED) && lumpnum >= 0)
+    {
+      fluid_sfloader_t *sfloader;
+
+      checked_f_font = "SNDFONT";
+      sfloader = new_fluid_defsfloader(f_set);
+      fluid_sfloader_set_callbacks(sfloader, fl_sfopen, fl_sfread, fl_sfseek,
+                                   fl_sftell, fl_sfclose);
+      fluid_synth_add_sfloader(f_syn, sfloader);
+      f_font = fluid_synth_sfload(f_syn, "SNDFONT", 1);
+    }
+
+    if (!checked_f_font)
+    {
+      lprintf(LO_WARN, "fl_init: no soundfont detected!\n");
+      delete_fluid_synth (f_syn);
+      delete_fluid_settings (f_set);
+      return 0;
+    }
+
+    if (f_font == FLUID_FAILED)
+    {
+      lprintf (LO_WARN, "fl_init: error loading soundfont %s\n", checked_f_font);
+      delete_fluid_synth (f_syn);
+      delete_fluid_settings (f_set);
+      return 0;
+    }
   }
 
   return 1;

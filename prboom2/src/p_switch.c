@@ -818,8 +818,8 @@ P_UseSpecialLine
 
           case 174:
             // Teleport
-            // 174 S1  EV_Teleport(side,thing)
-            if (EV_Teleport(line,side,thing))
+            // 174 S1  Teleport(side,thing)
+            if (map_format.ev_teleport(0, line->tag,line,side,thing,TELF_VANILLA))
               P_ChangeSwitchTexture(line,0);
             break;
 
@@ -833,7 +833,7 @@ P_UseSpecialLine
           case 189: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Trigger)
             // 189 S1 Change Texture/Type Only
-            if (EV_DoChange(line,trigChangeOnly))
+            if (EV_DoChange(line,trigChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,0);
             break;
 
@@ -854,14 +854,14 @@ P_UseSpecialLine
           case 209:
             // killough 1/31/98: silent teleporter
             //jff 209 S1 SilentTeleport
-            if (EV_SilentTeleport(line, side, thing))
+            if (map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT))
               P_ChangeSwitchTexture(line,0);
             break;
 
           case 241: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Numeric)
             // 241 S1 Change Texture/Type Only
-            if (EV_DoChange(line,numChangeOnly))
+            if (EV_DoChange(line,numChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,0);
             break;
 
@@ -902,7 +902,7 @@ P_UseSpecialLine
           case 78: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Numeric)
             // 78 SR Change Texture/Type Only
-            if (EV_DoChange(line,numChangeOnly))
+            if (EV_DoChange(line,numChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,1);
             break;
 
@@ -1002,7 +1002,7 @@ P_UseSpecialLine
           case 190: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Trigger)
             // 190 SR Change Texture/Type Only
-            if (EV_DoChange(line,trigChangeOnly))
+            if (EV_DoChange(line,trigChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,1);
             break;
 
@@ -1036,8 +1036,8 @@ P_UseSpecialLine
 
           case 195:
             // Teleport
-            // 195 SR  EV_Teleport(side,thing)
-            if (EV_Teleport(line,side,thing))
+            // 195 SR  Teleport(side,thing)
+            if (map_format.ev_teleport(0, line->tag,line,side,thing,TELF_VANILLA))
               P_ChangeSwitchTexture(line,1);
             break;
 
@@ -1065,7 +1065,7 @@ P_UseSpecialLine
           case 210:
             // killough 1/31/98: silent teleporter
             //jff 210 SR SilentTeleport
-            if (EV_SilentTeleport(line, side, thing))
+            if (map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT))
               P_ChangeSwitchTexture(line,1);
             break;
 

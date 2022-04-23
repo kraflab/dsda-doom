@@ -36,7 +36,6 @@
 #include "doomstat.h"
 #include "hu_stuff.h"
 #include "hu_lib.h"
-#include "hu_tracers.h"
 #include "st_stuff.h" /* jff 2/16/98 need loc of status bar */
 #include "s_sound.h"
 #include "dstrings.h"
@@ -56,15 +55,16 @@
 #include "dsda.h"
 #include "dsda/hud.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
+#include "dsda/pause.h"
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 #include "g_overflow.h"
 
 // global heads up display controls
 
 int hud_displayed;    //jff 2/23/98 turns heads-up display on/off
 int hud_num;
-
-extern const char* LevelNames[];
 
 //
 // Locally used constants, shortcuts.
@@ -217,18 +217,6 @@ static char hud_keysstr[80];
 static char hud_gkeysstr[80]; //jff 3/7/98 add support for graphic key display
 static char hud_monsecstr[80];
 
-//
-// Builtin map names.
-// The actual names can be found in DStrings.h.
-//
-// Ty 03/27/98 - externalized map name arrays - now in d_deh.c
-// and converted to arrays of pointers to char *
-// See modified HUTITLEx macros
-extern char **mapnames[];
-extern char **mapnames2[];
-extern char **mapnamesp[];
-extern char **mapnamest[];
-
 extern int map_point_coordinates;
 extern int map_level_stat;
 
@@ -292,60 +280,9 @@ static void HU_SetLumpTrans(const char *name)
   }
 }
 
-static const char* HU_Title(void)
+void HU_AddCharToTitle(char s)
 {
-  if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0)
-  {
-    if (heretic)
-    {
-      if (gameepisode < 6 && gamemap < 10)
-      {
-        return LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
-      }
-    }
-    else if (map_format.mapinfo)
-    {
-      return P_GetMapName(gamemap);
-    }
-    else
-    {
-      switch (gamemode)
-      {
-        case shareware:
-        case registered:
-        case retail:
-          // Chex.exe always uses the episode 1 level title
-          // eg. E2M1 gives the title for E1M1
-          if (gamemission == chex && gamemap < 10)
-          {
-            return *mapnames[gamemap - 1];
-          }
-          else if (gameepisode < 6 && gamemap < 10)
-          {
-            return *mapnames[(gameepisode - 1) * 9 + gamemap - 1];
-          }
-          break;
-
-        case commercial:
-        default:  // Ty 08/27/98 - modified to check mission for TNT/Plutonia
-          if (gamemission == pack_tnt && gamemap < 33)
-          {
-            return *mapnamest[gamemap - 1];
-          }
-          else if (gamemission == pack_plut && gamemap < 33)
-          {
-            return *mapnamesp[gamemap - 1];
-          }
-          else if (gamemap < 34)
-          {
-            return *mapnames2[gamemap - 1];
-          }
-          break;
-      }
-    }
-  }
-
-  return MAPNAME(gameepisode, gamemap);
+  HUlib_addCharToTextLine(&w_title, s);
 }
 
 //
@@ -788,30 +725,10 @@ void HU_Start(void)
     &message_list
   );
 
-  if (gamemapinfo && gamemapinfo->levelname)
-  {
-	  if (gamemapinfo->label)
-		  s = gamemapinfo->label;
-	  else
-		  s = gamemapinfo->mapname;
-	  if (s == gamemapinfo->mapname || strcmp(s, "-") != 0)
-	  {
-		  while (*s)
-			  HUlib_addCharToTextLine(&w_title, *(s++));
-
-		  HUlib_addCharToTextLine(&w_title, ':');
-		  HUlib_addCharToTextLine(&w_title, ' ');
-	  }
-	  s = gamemapinfo->levelname;
-  }
-  else
-  {
-    s = HU_Title();
-  }
+  dsda_HUTitle(&s);
 
   while (*s)
-    HUlib_addCharToTextLine(&w_title, *(s++));
-
+    HU_AddCharToTitle(*(s++));
 
   // create the automaps coordinate widget
   // jff 3/3/98 split coord widget into three lines: x,y,z
@@ -930,26 +847,6 @@ void HU_Start(void)
   s = hud_add;
   while (*s)
     HUlib_addCharToTextLine(&w_hudadd, *(s++));
-
-  for(i = 0; i < NUMTRACES; i++)
-  {
-    HUlib_initTextLine(
-      &w_traces[i],
-      HU_TRACERX,
-      HU_TRACERY+i*HU_GAPY,
-      hu_font2,
-      HU_FONTSTART,
-      CR_GRAY,
-      VPT_ALIGN_LEFT_BOTTOM
-    );
-
-    strcpy(traces[i].hudstr, "");
-    s = traces[i].hudstr;
-    while (*s)
-      HUlib_addCharToTextLine(&w_traces[i], *(s++));
-    HUlib_drawTextLine(&w_traces[i], false);
-  }
-
 
   //jff 2/16/98 initialize ammo widget
   strcpy(hud_ammostr,"AMM ");
@@ -1110,8 +1007,6 @@ static hud_widget_t hud_name_widget[] =
   {&w_hudadd, 0, 0, 0, HU_widget_build_hudadd, HU_widget_draw_hudadd, "hudadd"},
 
   {&w_keys_icon, 0, 0, 0, HU_widget_build_gkeys, HU_widget_draw_gkeys, "gkeys"},
-
-  {&w_traces[0], 0, 0, 0, NULL, NULL, "tracers"},
 
   {&w_health_big, 0, 0, VPT_NOOFFSET, HU_widget_build_health_big, HU_widget_draw_health_big, "health_big"},
   {&w_armor_big,  0, 0, VPT_NOOFFSET, HU_widget_build_armor_big,  HU_widget_draw_armor_big,  "armor_big"},
@@ -2267,7 +2162,7 @@ void SetCrosshairTarget(void)
     if (R_Project(x, y, z, &winx, &winy, &winz))
     {
       int top, bottom, h;
-      stretch_param_t *params = &stretch_params[crosshair.flags & VPT_ALIGN_MASK];
+      stretch_param_t *params = dsda_StretchParams(crosshair.flags);
 
       if (V_IsSoftwareMode())
       {
@@ -2307,8 +2202,8 @@ void HU_draw_crosshair(void)
     !crosshair_nam[hudadd_crosshair] ||
     crosshair.lump == -1 ||
     automapmode & am_active ||
-    menuactive != mnact_inactive ||
-    paused
+    menuactive ||
+    dsda_Paused()
   )
   {
     return;
@@ -2535,42 +2430,6 @@ void HU_Drawer(void)
         }
       }
     }
-
-    //e6y
-    if (traces_present && !dsda_StrictMode())
-    {
-      int k, num = 0;
-
-      if (realframe)
-      {
-        UpdateThingsHealthTracers();
-      }
-
-      for(k = 0; k < NUMTRACES; k++)
-      {
-        if (traces[k].count)
-        {
-          if (realframe)
-          {
-            w_traces[num].y = w_traces[0].y - num * 8;
-
-            if (traces[k].ApplyFunc)
-              traces[k].ApplyFunc(k);
-
-            HUlib_clearTextLine(&w_traces[num]);
-            s = traces[k].hudstr;
-            while (*s)
-              HUlib_addCharToTextLine(&w_traces[num], *(s++));
-
-            if (traces[k].ResetFunc)
-              traces[k].ResetFunc(k);
-          }
-          HUlib_drawTextLine(&w_traces[num], false);
-          num++;
-        }
-      }
-    }
-
   }
 
   //jff 3/4/98 display last to give priority

@@ -146,7 +146,7 @@ void gld_InitDetail(void)
 {
   gl_detail_maxdist_sqrt = (float)sqrt((float)gl_detail_maxdist);
 
-  I_AtExit(gld_ShutdownDetail, true);
+  I_AtExit(gld_ShutdownDetail, true, "gld_ShutdownDetail", exit_priority_normal);
   M_ChangeUseDetail();
 }
 

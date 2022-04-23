@@ -187,6 +187,7 @@ void P_SpawnFireFlicker (sector_t*  sector)
 
   flick->thinker.function = T_FireFlicker;
   flick->sector = sector;
+  sector->lightingdata = flick;
   flick->maxlight = sector->lightlevel;
   flick->minlight = P_FindMinSurroundingLight(sector,sector->lightlevel)+16;
   flick->count = 4;
@@ -213,6 +214,7 @@ void P_SpawnLightFlash (sector_t* sector)
 
   flash->thinker.function = T_LightFlash;
   flash->sector = sector;
+  sector->lightingdata = flash;
   flash->maxlight = sector->lightlevel;
 
   flash->minlight = P_FindMinSurroundingLight(sector,sector->lightlevel);
@@ -244,6 +246,7 @@ void P_SpawnStrobeFlash
   P_AddThinker (&flash->thinker);
 
   flash->sector = sector;
+  sector->lightingdata = flash;
   flash->darktime = fastOrSlow;
   flash->brighttime = STROBEBRIGHT;
   flash->thinker.function = T_StrobeFlash;
@@ -279,6 +282,7 @@ void P_SpawnGlowingLight(sector_t*  sector)
   P_AddThinker(&g->thinker);
 
   g->sector = sector;
+  sector->lightingdata = g;
   g->minlight = P_FindMinSurroundingLight(sector,sector->lightlevel);
   g->maxlight = sector->lightlevel;
   g->thinker.function = T_Glow;
@@ -313,8 +317,11 @@ int EV_StartLightStrobing(line_t* line)
   while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
   {
     sec = &sectors[secnum];
-    // if already doing a lighting function, don't start a second
-    if (P_SectorActive(lighting_special,sec)) //jff 2/22/98
+
+    // Original code never stored lighting data,
+    //   so this only stops a light appearing in old complevels,
+    //   and only when there is a floor or ceiling thinker.
+    if (demo_compatibility && P_PlaneActive(sec))
       continue;
 
     P_SpawnStrobeFlash (sec,SLOWDARK, 0);
@@ -435,6 +442,284 @@ int EV_LightTurnOnPartway(line_t *line, fixed_t level)
   (level * bright + (FRACUNIT-level) * min) >> FRACBITS;
     }
   return 1;
+}
+
+void EV_LightChange(int tag, short change)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+    sectors[s].lightlevel += change;
+}
+
+void EV_LightSet(int tag, short level)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+    sectors[s].lightlevel = level;
+}
+
+void EV_LightSetMinNeighbor(int tag)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    int i;
+    short level;
+    sector_t *temp, *sector;
+
+    sector = &sectors[s];
+    level = sector->lightlevel;
+
+    for (i = 0; i < sector->linecount; i++)
+      if ((temp = getNextSector(sector->lines[i], sector)) && temp->lightlevel < level)
+        level = temp->lightlevel;
+
+    sector->lightlevel = level;
+  }
+}
+
+void EV_LightSetMaxNeighbor(int tag)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    int i;
+    short level;
+    sector_t *temp, *sector;
+
+    sector = &sectors[s];
+    level = 0;
+
+    for (i = 0; i < sector->linecount; i++)
+      if ((temp = getNextSector(sector->lines[i], sector)) && temp->lightlevel > level)
+        level = temp->lightlevel;
+
+    sector->lightlevel = level;
+  }
+}
+
+void T_ZDoom_Glow(zdoom_glow_t *g)
+{
+  if (g->tics++ >= g->maxtics)
+  {
+    if (g->oneshot)
+    {
+      g->sector->lightlevel = g->endlevel;
+      g->sector->lightingdata = NULL;
+      P_RemoveThinker(&g->thinker);
+      return;
+    }
+    else
+    {
+      short temp = g->startlevel;
+      g->startlevel = g->endlevel;
+      g->endlevel = temp;
+      g->tics -= g->maxtics;
+    }
+  }
+
+  g->sector->lightlevel = g->tics * (g->endlevel - g->startlevel) / g->maxtics + g->startlevel;
+}
+
+static void P_SpawnZDoomLightGlow(sector_t *sec, short startlevel, short endlevel,
+                                  short maxtics, dboolean oneshot)
+{
+  zdoom_glow_t *g;
+
+  g = Z_Malloc(sizeof(*g), PU_LEVEL, 0);
+
+  memset(g, 0, sizeof(*g));
+  P_AddThinker(&g->thinker);
+  g->thinker.function = T_ZDoom_Glow;
+
+  g->sector = sec;
+  sec->lightingdata = g;
+  g->startlevel = startlevel;
+  g->endlevel = endlevel;
+  g->tics = -1;
+  g->maxtics = maxtics;
+  g->oneshot = oneshot;
+}
+
+void EV_StartLightFading(int tag, byte level, byte tics)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata || sec->lightlevel == level)
+      continue;
+
+    if (tics)
+    {
+      P_SpawnZDoomLightGlow(sec, sec->lightlevel, level, tics, true);
+    }
+    else
+    {
+      sec->lightlevel = level;
+    }
+  }
+}
+
+void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics)
+{
+  int s = -1;
+
+  if (tics == 0)
+    return;
+
+  if (upper < lower)
+  {
+    byte temp = upper;
+    upper = lower;
+    lower = temp;
+  }
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+      continue;
+
+    P_SpawnZDoomLightGlow(&sectors[s], upper, lower, tics, false);
+  }
+}
+
+void T_ZDoom_Flicker(zdoom_flicker_t *g)
+{
+  if (g->count)
+  {
+    g->count--;
+  }
+  else if (g->sector->lightlevel == g->upper)
+  {
+    g->sector->lightlevel = g->lower;
+    g->count = (P_Random(pr_lights) & 7) + 1;
+  }
+  else
+  {
+    g->sector->lightlevel = g->upper;
+    g->count = (P_Random(pr_lights) & 31) + 1;
+  }
+}
+
+static void P_SpawnZDoomLightFlicker(sector_t *sec, short upper, short lower)
+{
+  zdoom_flicker_t *g;
+
+  g = Z_Malloc(sizeof(*g), PU_LEVEL, 0);
+
+  memset(g, 0, sizeof(*g));
+  P_AddThinker(&g->thinker);
+  g->thinker.function = T_ZDoom_Flicker;
+
+  g->sector = sec;
+  sec->lightingdata = g;
+  g->upper = upper;
+  g->lower = lower;
+  g->count = (P_Random(pr_lights) & 64) + 1;
+}
+
+void EV_StartLightFlickering(int tag, byte upper, byte lower)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+      continue;
+
+    P_SpawnZDoomLightFlicker(&sectors[s], upper, lower);
+  }
+}
+
+static void P_SpawnZDoomLightStrobe(sector_t *sector, int upper, int lower,
+                             int brighttime, int darktime, int count)
+{
+  strobe_t* g;
+
+  g = Z_Malloc ( sizeof(*g), PU_LEVEL, 0);
+
+  memset(g, 0, sizeof(*g));
+  P_AddThinker (&g->thinker);
+
+  g->sector = sector;
+  sector->lightingdata = g;
+  g->darktime = darktime;
+  g->brighttime = brighttime;
+  g->thinker.function = T_StrobeFlash;
+  g->maxlight = upper;
+  g->minlight = lower;
+
+  if (g->minlight == g->maxlight)
+    g->minlight = 0;
+
+  g->count = count;
+}
+
+static void P_SpawnZDoomLightStrobeDoom(sector_t* sector, int brighttime, int darktime)
+{
+  int count = (P_Random(pr_lights) & 7) + 1;
+
+  P_SpawnZDoomLightStrobe(
+    sector, sector->lightlevel, P_FindMinSurroundingLight(sector, sector->lightlevel),
+    brighttime, darktime, count
+  );
+}
+
+void EV_StartZDoomLightStrobing(int tag, int upper, int lower, int brighttime, int darktime)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+      continue;
+
+    P_SpawnZDoomLightStrobe(sec, upper, lower, brighttime, darktime, 1);
+  }
+}
+
+void EV_StartZDoomLightStrobingDoom(int tag, int brighttime, int darktime)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+      continue;
+
+    P_SpawnZDoomLightStrobeDoom(sec, brighttime, darktime);
+  }
+}
+
+void EV_StopLightEffect(int tag)
+{
+  int s = -1;
+
+  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  {
+    sector_t *sec = &sectors[s];
+
+    if (sec->lightingdata)
+    {
+      P_RemoveThinker((thinker_t *) sec->lightingdata);
+      sec->lightingdata = NULL;
+    }
+  }
 }
 
 // hexen
@@ -652,6 +937,7 @@ void P_SpawnPhasedLight(sector_t * sector, int base, int index)
     phase = Z_Malloc(sizeof(*phase), PU_LEVEL, 0);
     P_AddThinker(&phase->thinker);
     phase->sector = sector;
+    sector->lightingdata = phase;
     if (index == -1)
     {                           // sector->lightlevel as the index
         phase->index = sector->lightlevel & 63;

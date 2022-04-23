@@ -63,6 +63,7 @@
 #include "dsda/input.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 
 //jff 1/7/98 default automap colors added
 int mapcolor_back;    // map background
@@ -79,6 +80,7 @@ int mapcolor_bdor;    // blue door color (of enabling one but not other )
 int mapcolor_ydor;    // yellow door color
 int mapcolor_tele;    // teleporter line color
 int mapcolor_secr;    // secret sector boundary color
+int mapcolor_revsecr; // revealed secret sector boundary color
 int mapcolor_exit;    // jff 4/23/98 add exit line color
 int mapcolor_unsn;    // computer map unseen line color
 int mapcolor_flat;    // line with no floor/ceiling changes
@@ -104,6 +106,7 @@ static int heretic_mapcolor_bdor = 197;
 static int heretic_mapcolor_ydor = 144;
 static int heretic_mapcolor_tele = 12 * 8;
 static int heretic_mapcolor_secr = 12 * 8;
+static int heretic_mapcolor_revsecr = 12 * 8;
 static int heretic_mapcolor_exit;
 static int heretic_mapcolor_unsn = 5 * 8 + 3;
 static int heretic_mapcolor_flat;
@@ -129,6 +132,7 @@ static int hexen_mapcolor_bdor = 198;
 static int hexen_mapcolor_ydor = 198;
 static int hexen_mapcolor_tele = 157;
 static int hexen_mapcolor_secr;
+static int hexen_mapcolor_revsecr;
 static int hexen_mapcolor_exit = 177;
 static int hexen_mapcolor_unsn = 5 * 8 + 3;
 static int hexen_mapcolor_flat;
@@ -154,6 +158,7 @@ static int* mapcolor_bdor_p;
 static int* mapcolor_ydor_p;
 static int* mapcolor_tele_p;
 static int* mapcolor_secr_p;
+static int* mapcolor_revsecr_p;
 static int* mapcolor_exit_p;
 static int* mapcolor_unsn_p;
 static int* mapcolor_flat_p;
@@ -183,6 +188,7 @@ static void AM_SetColors(void)
     mapcolor_ydor_p = &heretic_mapcolor_ydor;
     mapcolor_tele_p = &heretic_mapcolor_tele;
     mapcolor_secr_p = &heretic_mapcolor_secr;
+    mapcolor_revsecr_p = &heretic_mapcolor_revsecr;
     mapcolor_exit_p = &heretic_mapcolor_exit;
     mapcolor_unsn_p = &heretic_mapcolor_unsn;
     mapcolor_flat_p = &heretic_mapcolor_flat;
@@ -210,6 +216,7 @@ static void AM_SetColors(void)
     mapcolor_ydor_p = &hexen_mapcolor_ydor;
     mapcolor_tele_p = &hexen_mapcolor_tele;
     mapcolor_secr_p = &hexen_mapcolor_secr;
+    mapcolor_revsecr_p = &hexen_mapcolor_revsecr;
     mapcolor_exit_p = &hexen_mapcolor_exit;
     mapcolor_unsn_p = &hexen_mapcolor_unsn;
     mapcolor_flat_p = &hexen_mapcolor_flat;
@@ -237,6 +244,7 @@ static void AM_SetColors(void)
     mapcolor_ydor_p = &mapcolor_ydor;
     mapcolor_tele_p = &mapcolor_tele;
     mapcolor_secr_p = &mapcolor_secr;
+    mapcolor_revsecr_p = &mapcolor_revsecr;
     mapcolor_exit_p = &mapcolor_exit;
     mapcolor_unsn_p = &mapcolor_unsn;
     mapcolor_flat_p = &mapcolor_flat;
@@ -631,6 +639,14 @@ static void AM_findMinMaxBoundaries(void)
 
   min_scale_mtof = a < b ? a : b;
   max_scale_mtof = FixedDiv(f_h<<FRACBITS, 2*PLAYERRADIUS);
+}
+
+void AM_SetMapCenter(fixed_t x, fixed_t y)
+{
+  m_x = (x >> FRACTOMAPBITS) - m_w / 2;
+  m_y = (y >> FRACTOMAPBITS) - m_h / 2;
+  m_x2 = m_x + m_w;
+  m_y2 = m_y + m_h;
 }
 
 //
@@ -1201,10 +1217,7 @@ static void AM_changeWindowScale(void)
 //
 static void AM_doFollowPlayer(void)
 {
-  m_x = (viewx >> FRACTOMAPBITS) - m_w/2;
-  m_y = (viewy >> FRACTOMAPBITS) - m_h/2;
-  m_x2 = m_x + m_w;
-  m_y2 = m_y + m_h;
+  AM_SetMapCenter(viewx, viewy);
 }
 
 //
@@ -1527,6 +1540,16 @@ static void AM_drawGrid(int color)
   }
 }
 
+static dboolean AM_DrawHiddenSecrets(void)
+{
+  return !!(*mapcolor_secr_p) && !map_secret_after;
+}
+
+static dboolean AM_DrawRevealedSecrets(void)
+{
+  return !!(*mapcolor_revsecr_p);
+}
+
 //
 // Determines visible lines, draws them.
 // This is LineDef based, not LineSeg based.
@@ -1624,21 +1647,10 @@ static void AM_drawWalls(void)
       if (!lines[i].backsector)
       {
         // jff 1/10/98 add new color for 1S secret sector boundary
-        if ((*mapcolor_secr_p) && //jff 4/3/98 0 is disable
-            (
-             (
-              map_secret_after &&
-              P_WasSecret(lines[i].frontsector) &&
-              !P_IsSecret(lines[i].frontsector)
-             )
-             ||
-             (
-              !map_secret_after &&
-              P_WasSecret(lines[i].frontsector)
-             )
-            )
-          )
+        if (AM_DrawHiddenSecrets() && P_IsSecret(lines[i].frontsector))
           AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
+        else if (AM_DrawRevealedSecrets() && P_RevealedSecret(lines[i].frontsector))
+          AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector
         else                               //jff 2/16/98 fixed bug
           AM_drawMline(&l, (*mapcolor_wall_p)); // special was cleared
       }
@@ -1663,29 +1675,21 @@ static void AM_drawWalls(void)
         {
           AM_drawMline(&l, (*mapcolor_clsd_p));      // non-secret closed door
         } //jff 1/6/98 show secret sector 2S lines
-        else if
-        (
-            (*mapcolor_secr_p) && //jff 2/16/98 fixed bug
-            (                    // special was cleared after getting it
-              (map_secret_after &&
-               (
-                (P_WasSecret(lines[i].frontsector)
-                 && !P_IsSecret(lines[i].frontsector)) ||
-                (P_WasSecret(lines[i].backsector)
-                 && !P_IsSecret(lines[i].backsector))
-               )
-              )
-              ||  //jff 3/9/98 add logic to not show secret til after entered
-              (   // if map_secret_after is true
-                !map_secret_after &&
-                 (P_WasSecret(lines[i].frontsector) ||
-                  P_WasSecret(lines[i].backsector))
-              )
-            )
+        else if (
+          AM_DrawHiddenSecrets() &&
+          (P_IsSecret(lines[i].frontsector) || P_IsSecret(lines[i].backsector))
         )
         {
           AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
         } //jff 1/6/98 end secret sector line change
+        else if
+        (
+          AM_DrawRevealedSecrets() &&
+          (P_RevealedSecret(lines[i].frontsector) || P_RevealedSecret(lines[i].backsector))
+        )
+        {
+          AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector
+        }
         else if (lines[i].backsector->floorheight !=
                   lines[i].frontsector->floorheight)
         {
@@ -1791,7 +1795,7 @@ static void AM_drawLineCharacter
 
 INLINE static void AM_GetMobjPosition(mobj_t *mo, mpoint_t *p, angle_t *angle)
 {
-  if (!paused && movement_smooth)
+  if (R_ViewInterpolation())
   {
     p->x = mo->PrevX + FixedMul(tic_vars.frac, mo->x - mo->PrevX);
     p->y = mo->PrevY + FixedMul(tic_vars.frac, mo->y - mo->PrevY);
@@ -2347,7 +2351,7 @@ static void AM_drawMarks(void)
             switch (render_stretch_hud)
             {
               default:
-              case patch_stretch_16x10:
+              case patch_stretch_not_adjusted:
                 fx = (float)p.fx / patches_scalex;
                 fy = (float)p.fy * 200.0f / SCREENHEIGHT;
 
@@ -2356,7 +2360,7 @@ static void AM_drawMarks(void)
 
                 flags = VPT_ALIGN_LEFT | VPT_STRETCH;
                 break;
-              case patch_stretch_4x3:
+              case patch_stretch_doom_format:
                 fx = (float)p.fx * 320.0f / WIDE_SCREENWIDTH;
                 fy = (float)p.fy * 200.0f / WIDE_SCREENHEIGHT;
 
@@ -2365,7 +2369,7 @@ static void AM_drawMarks(void)
 
                 flags = VPT_ALIGN_LEFT | VPT_STRETCH;
                 break;
-              case patch_stretch_full:
+              case patch_stretch_fit_to_width:
                 fx = (float)p.fx * 320.0f / SCREENWIDTH;
                 fy = (float)p.fy * 200.0f / SCREENHEIGHT;
 

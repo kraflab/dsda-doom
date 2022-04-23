@@ -174,7 +174,7 @@ void gld_ProcessThingShadow(mobj_t *mo)
     z = sec->floorheight;
 
   // below visible floor
-  if (!paused && movement_smooth)
+  if (R_ViewInterpolation())
   {
     fz = mo->PrevZ + FixedMul (tic_vars.frac, mo->z - mo->PrevZ);
   }

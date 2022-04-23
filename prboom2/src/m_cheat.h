@@ -36,9 +36,8 @@
 
 #include "d_event.h"
 
-#define CHEAT(cheat, deh_cheat, when, func, arg) \
-  { cheat, deh_cheat, when, func, arg, 0, 0, \
-    sizeof(cheat) - 1, 0, 0, 0, "" }
+#define CHEAT(cheat, deh_cheat, when, func, arg, repeatable) \
+  { cheat, deh_cheat, when, func, arg, repeatable, 0, 0, 0, 0, 0, "" }
 
 #define CHEAT_ARGS_MAX 8  /* Maximum number of args at end of cheats */
 
@@ -50,8 +49,9 @@ typedef enum {
   not_coop = 2,
   not_demo = 4,
   not_menu = 8,
-  not_deh = 16,
+  not_classic_demo = 16,
   not_net = not_dm | not_coop,
+  cht_dsda = not_net | not_classic_demo,
   cht_never = not_net | not_demo
 } cheat_when_t;
 
@@ -61,11 +61,9 @@ typedef struct cheatseq_s {
   const cheat_when_t when;
   void (*const func)();
   const int arg;
+  const int repeatable;
   uint_64_t code, mask;
-
-  // settings for this cheat
   size_t sequence_len;
-  size_t deh_sequence_len;
 
   // state used during the game
   size_t chars_read;
@@ -75,6 +73,9 @@ typedef struct cheatseq_s {
 
 extern cheatseq_t cheat[];
 
+void M_CheatGod(void);
+void M_CheatNoClip(void);
 dboolean M_CheatResponder(event_t *ev);
+dboolean M_CheatEntered(const char* element, const char* value);
 
 #endif

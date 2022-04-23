@@ -43,6 +43,7 @@ extern char **myargv;
 
 /* Returns the position of the given parameter in the arg list (0 if not found). */
 int M_CheckParm(const char *check);
+int M_CheckParm2(const char *check, const char *alias);
 
 /* Returns the position of the given parameter in the params list (-1 if not found). */
 int M_CheckParmEx(const char *check, char **params, int paramscount);

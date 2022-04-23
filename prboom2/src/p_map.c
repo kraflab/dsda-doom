@@ -49,7 +49,6 @@
 #include "g_game.h"
 #include "p_tick.h"
 #include "g_overflow.h"
-#include "hu_tracers.h"
 #include "e6y.h"//e6y
 
 #include "dsda.h"
@@ -80,7 +79,8 @@ static int ls_y; // Lost Soul position for Lost Soul checks      // phares
 //  to undo the changes.
 //
 
-static dboolean crushchange, nofit;
+static int crushchange;
+static dboolean nofit;
 
 // If "floatok" true, move would be ok
 // if within "tmfloorz - tmceilingz".
@@ -300,6 +300,68 @@ int P_GetMoveFactor(mobj_t *mo, int *frictionp)
     *frictionp = friction;
 
   return movefactor;
+}
+
+dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fog)
+{
+  subsector_t *newsubsec;
+  fixed_t oldx, oldy, oldz;
+  fixed_t oldfloorz, oldceilingz, olddropoffz;
+
+  oldx = thing->x;
+  oldy = thing->y;
+  oldz = thing->z;
+  oldfloorz = thing->floorz;
+  oldceilingz = thing->ceilingz;
+  olddropoffz = thing->dropoffz;
+
+  newsubsec = R_PointInSubsector(x, y);
+
+  thing->x = x;
+  thing->y = y;
+  thing->z = z;
+  thing->floorz = newsubsec->sector->floorheight;
+  thing->ceilingz = newsubsec->sector->ceilingheight;
+  thing->dropoffz = thing->floorz;
+
+  if (P_TestMobjLocation(thing))
+  {
+    P_UnsetThingPosition(thing);
+    P_SetThingPosition(thing);
+
+    if (fog)
+    {
+      mobj_t *telefog;
+
+      telefog = P_SpawnMobj(oldx,
+                            oldy,
+                            oldfloorz + g_telefog_height,
+                            g_mt_tfog);
+      S_StartSound(telefog, g_sfx_telept);
+      telefog = P_SpawnMobj(thing->x,
+                            thing->y,
+                            thing->floorz + g_telefog_height,
+                            g_mt_tfog);
+      S_StartSound(telefog, g_sfx_telept);
+    }
+
+    thing->PrevX = x;
+    thing->PrevY = y;
+    thing->PrevZ = z;
+
+    return true;
+  }
+  else
+  {
+    thing->x = oldx;
+    thing->y = oldy;
+    thing->z = oldz;
+    thing->floorz = oldfloorz;
+    thing->ceilingz = oldceilingz;
+    thing->dropoffz = olddropoffz;
+
+    return false;
+  }
 }
 
 //
@@ -550,8 +612,6 @@ dboolean PIT_CheckLine (line_t* ld)
     tmdropoffz = lowfloor;
 
   // if contacted a special line, add it to the list
-
-  CheckLinesCrossTracer(ld);//e6y
   if (ld->special)
     P_AppendSpecHit(ld);
 
@@ -1221,7 +1281,6 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
       if (!P_BlockLinesIterator (bx,by,PIT_CheckLine))
         return false; // doesn't fit
 
-  ClearLinesCrossTracer();//e6y
   return true;
 }
 
@@ -1274,6 +1333,33 @@ void P_CheckZDoomImpact(mobj_t *thing)
       CheckForPushSpecial(ld, side, thing);
     }
   }
+}
+
+void P_IterateCompatibleSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy)
+{
+  while (numspechit--)
+    if (spechit[numspechit]->special)  // see if the line was crossed
+    {
+      int oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit]);
+      if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
+        map_format.cross_special_line(spechit[numspechit], oldside, thing, false);
+    }
+}
+
+void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy)
+{
+  // In hexen format, crossing a special line can trigger a missile spawn,
+  //   which will trigger a check that resets numspechit.
+  // We must store the index separately in order to check everything
+  int tempnumspechit = numspechit;
+
+  while (tempnumspechit--)
+    if (spechit[tempnumspechit]->special)  // see if the line was crossed
+    {
+      int oldside = P_PointOnLineSide(oldx, oldy, spechit[tempnumspechit]);
+      if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[tempnumspechit]))
+        map_format.cross_special_line(spechit[tempnumspechit], oldside, thing, false);
+    }
 }
 
 dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
@@ -1456,13 +1542,9 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
   // if any special lines were hit, do the effect
 
   if (!(thing->flags & (MF_TELEPORT | MF_NOCLIP)))
-    while (numspechit--)
-      if (spechit[numspechit]->special)  // see if the line was crossed
-      {
-        int oldside = P_PointOnLineSide(oldx, oldy, spechit[numspechit]);
-        if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
-          map_format.cross_special_line(spechit[numspechit], oldside, thing, false);
-      }
+  {
+    map_format.iterate_spechit(thing, oldx, oldy);
+  }
 
   return true;
 }
@@ -2716,12 +2798,11 @@ dboolean PIT_ChangeSector (mobj_t* thing)
 
   nofit = true;
 
-  if (crushchange && !(leveltime & 3)) {
+  if (crushchange > 0 && !(leveltime & 3)) {
     int t;
-    int damage = hexen ? crushchange : 10;
 
-    P_DamageMobj(thing, NULL, NULL, damage);
-    dsda_WatchCrush(thing, damage);
+    P_DamageMobj(thing, NULL, NULL, crushchange);
+    dsda_WatchCrush(thing, crushchange);
 
     if (
       !hexen ||
@@ -2753,13 +2834,16 @@ dboolean PIT_ChangeSector (mobj_t* thing)
 //
 // P_ChangeSector
 //
-dboolean P_ChangeSector(sector_t* sector,dboolean crunch)
+dboolean P_ChangeSector(sector_t* sector, int crunch)
 {
   int   x;
   int   y;
 
   nofit = false;
   crushchange = crunch;
+
+  if (crushchange == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
+    crushchange = DOOM_CRUSH;
 
   // ARRGGHHH!!!!
   // This is horrendously slow!!!
@@ -2781,7 +2865,7 @@ dboolean P_ChangeSector(sector_t* sector,dboolean crunch)
 // sector. Both more accurate and faster.
 //
 
-dboolean P_CheckSector(sector_t* sector,dboolean crunch)
+dboolean P_CheckSector(sector_t* sector, int crunch)
 {
   msecnode_t *n;
 
@@ -2790,6 +2874,9 @@ dboolean P_CheckSector(sector_t* sector,dboolean crunch)
 
   nofit = false;
   crushchange = crunch;
+
+  if (crushchange == STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE)
+    crushchange = DOOM_CRUSH;
 
   // killough 4/4/98: scan list front-to-back until empty or exhausted,
   // restarting from beginning after each thing is processed. Avoids
@@ -3360,7 +3447,7 @@ void P_AppendSpecHit(line_t * ld)
       &tmfloorz,     // fixed_t *tmfloorz;
       &tmceilingz,   // fixed_t *tmceilingz;
 
-      &crushchange,  // dboolean *crushchange;
+      &crushchange,  // int *crushchange;
       &nofit,        // dboolean *nofit;
     };
     spechit_overrun_param.line = ld;

@@ -548,10 +548,15 @@ mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
                       fixed_t z, mobjtype_t type, angle_t angle);
 mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
                             mobj_t * source, mobj_t * dest, mobjtype_t type);
-void P_CreateTIDList(void);
-void P_RemoveMobjFromTIDList(mobj_t * mobj);
-void P_InsertMobjIntoTIDList(mobj_t * mobj, int tid);
-mobj_t *P_FindMobjFromTID(int tid, int *searchPosition);
+mobj_t *P_FindMobjFromTID(short tid, int *searchPosition);
 void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
+
+// zdoom
+
+dboolean P_SpawnThing(short thing_id, mobj_t *source, int type,
+                      angle_t angle, dboolean fog, short new_thing_id);
+dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_t angle,
+	                         fixed_t speed, fixed_t vspeed, short dest_id, mobj_t *forcedest,
+                           int gravity, short new_thing_id);
 
 #endif

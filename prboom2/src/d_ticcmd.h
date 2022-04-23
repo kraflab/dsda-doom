@@ -40,6 +40,12 @@
 #pragma interface
 #endif
 
+typedef struct {
+  byte actions;
+  byte save_slot;
+  byte load_slot;
+} excmd_t;
+
 /* The data sampled per tick (single player)
  * and transmitted to other peers (multiplayer).
  * Mainly movements/button commands per game tick,
@@ -51,7 +57,7 @@ typedef struct
   signed char forwardmove;  /* *2048 for move       */
   signed char sidemove; /* *2048 for move       */
   signed short  angleturn;  /* <<16 for angle delta */
-  short consistancy;          /* checks for net game  */
+  short obsolete;
   byte  chatchar;
   byte  buttons;
 
@@ -59,6 +65,9 @@ typedef struct
   byte lookfly; // look/fly up/down/centering
   byte arti;    // artitype_t to use
   int lookdir;
+
+  // dsda extension
+  excmd_t ex;
 } ticcmd_t;
 
 #endif

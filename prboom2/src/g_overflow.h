@@ -113,7 +113,7 @@ typedef struct spechit_overrun_param_s
   fixed_t *tmfloorz;
   fixed_t *tmceilingz;
 
-  dboolean *crushchange;
+  int      *crushchange;
   dboolean *nofit;
 } spechit_overrun_param_t;
 

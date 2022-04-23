@@ -5935,21 +5935,6 @@ typedef enum {
   MT_MUSICSOURCE, /* MUSINFO lump */
   MT_GIBDTH,
 
-  /* proff 11/22/98: Andy Baker's stealth monsters (next 12)
-   * cph - moved below the MBF stuff, no need to displace them */
-  MT_STEALTHBABY,
-  MT_STEALTHVILE,
-  MT_STEALTHBRUISER,
-  MT_STEALTHHEAD,
-  MT_STEALTHCHAINGUY,
-  MT_STEALTHSERGEANT,
-  MT_STEALTHKNIGHT,
-  MT_STEALTHIMP,
-  MT_STEALTHFATSO,
-  MT_STEALTHUNDEAD,
-  MT_STEALTHSHOTGUY,
-  MT_STEALTHZOMBIE,
-
   DOOM_NUMMOBJTYPES,
 
   // heretic
@@ -6610,6 +6595,7 @@ typedef struct
 
   // misc
   int bloodcolor;
+  int visibility;
 } mobjinfo_t;
 
 #define NO_ALTSPEED -1
@@ -6692,5 +6678,14 @@ extern mobjinfo_t* mobjinfo;
 extern int num_mobj_types;
 extern int mobj_types_zero;
 extern int mobj_types_max;
+
+// zdoom
+
+#define ZMT_UNDEFINED -2
+
+extern int ZMT_MAPSPOT;
+extern int ZMT_MAPSPOT_GRAVITY;
+extern int ZMT_TELEPORTDEST2;
+extern int ZMT_TELEPORTDEST3;
 
 #endif

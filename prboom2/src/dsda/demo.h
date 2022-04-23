@@ -25,8 +25,14 @@ void dsda_WriteToDemo(void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);
 int dsda_DemoBufferOffset(void);
 int dsda_CopyDemoBuffer(void* buffer);
+void dsda_CopyPendingCmd(ticcmd_t* cmd);
 void dsda_SetDemoBufferOffset(int offset);
 void dsda_JoinDemoCmd(ticcmd_t* cmd);
 const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size);
+void dsda_WriteDSDADemoHeader(byte** p);
+void dsda_ApplyDSDADemoFormat(byte** demo_p);
+void dsda_EndDemoRecording(void);
+int dsda_DemoTicsCount(const byte* p, const byte* demobuffer, int demolength);
+const byte* dsda_DemoMarkerPosition(byte* buffer, size_t file_size);
 
 #endif

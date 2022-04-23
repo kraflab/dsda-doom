@@ -28,6 +28,7 @@
 #include "am_map.h"
 
 #include "dsda/analysis.h"
+#include "dsda/exhud.h"
 #include "dsda/ghost.h"
 #include "dsda/hud.h"
 #include "dsda/command_display.h"
@@ -104,7 +105,7 @@ void dsda_DisplayNotifications(void) {
 }
 
 void dsda_DisplayNotification(const char* msg) {
-  S_StartSound(0, sfx_radio);
+  S_StartSound(0, gamemode == commercial ? sfx_radio : sfx_itmbk);
   doom_printf("%s", msg);
 }
 
@@ -128,11 +129,23 @@ void dsda_WatchCard(card_t card) {
     }
 }
 
+static int player_damage_leveltime;
+int player_damage_last_tic;
+
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage) {
   if (
     ((source && source->player) || (inflictor && inflictor->intflags & MIF_PLAYER_DAMAGED_BARREL)) \
     && damage != TELEFRAG_DAMAGE
   ) {
+    if (!target->player) {
+      if (leveltime != player_damage_leveltime) {
+        player_damage_leveltime = leveltime;
+        player_damage_last_tic = 0;
+      }
+
+      player_damage_last_tic += damage;
+    }
+
     if (target->type == MT_BARREL)
       target->intflags |= MIF_PLAYER_DAMAGED_BARREL;
     else if (!target->player)
@@ -210,6 +223,12 @@ void dsda_WatchSpawn(mobj_t* spawned) {
     ++dsda_max_kill_requirement;
 }
 
+void dsda_WatchFailedSpawn(mobj_t* spawned) {
+  // Fix count from dsda_WatchSpawn
+  if (!((spawned->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+    --dsda_max_kill_requirement;
+}
+
 void dsda_WatchMorph(mobj_t* morphed) {
   // Fix count from dsda_WatchSpawn
   if (!((morphed->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
@@ -274,6 +293,11 @@ void dsda_WatchBeforeLevelSetup(void) {
 
 void dsda_WatchAfterLevelSetup(void) {
   dsda_SpawnGhost();
+  dsda_ResetTrackers();
+}
+
+void dsda_WatchNewLevel(void) {
+  dsda_ResetAutoKeyFrameTimeout();
 }
 
 void dsda_WatchLevelCompletion(void) {

@@ -35,6 +35,11 @@
 #ifndef __SOUNDS__
 #define __SOUNDS__
 
+#define SFXF_PRIORITY 0x01
+#define SFXF_PITCH    0x02
+#define SFXF_VOLUME   0x04
+#define SFXF_OLDLINK (SFXF_PRIORITY|SFXF_PITCH|SFXF_VOLUME)
+
 //
 // SoundFX struct.
 //
@@ -47,9 +52,6 @@ struct sfxinfo_struct {
 
   // up to 6-character name
   const char *name; // CPhipps - const
-
-  // Sfx singularity (only one at a time)
-  int singularity;
 
   // Sfx priority
   int priority;
@@ -66,9 +68,6 @@ struct sfxinfo_struct {
   // sound data
   void *data;
 
-  // this field was related to caching (now meaningless)
-  int usefulness;
-
   // lump number of sfx
   int lumpnum;
 
@@ -77,6 +76,11 @@ struct sfxinfo_struct {
 
   // hexen
   const char *tagname;
+
+  int flags;
+
+  int parallel_tic;
+  int parallel_count;
 };
 
 //

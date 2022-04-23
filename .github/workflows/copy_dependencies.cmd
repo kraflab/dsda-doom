@@ -66,7 +66,6 @@ copy %1\lib\portmidi.lib %2\lib
 copy %1\lib\SDL2.lib %2\lib
 copy %1\lib\SDL2_image.lib %2\lib
 copy %1\lib\SDL2_mixer.lib %2\lib
-copy %1\lib\SDL2_net.lib %2\lib
 copy %1\lib\manual-link\SDL2main.lib %2\lib
 copy %1\lib\vorbis.lib %2\lib
 copy %1\lib\vorbisenc.lib %2\lib
