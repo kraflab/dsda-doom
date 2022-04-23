@@ -18,9 +18,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "z_zone.h"
+
 char** dsda_SplitString(char* str, const char* delimiter) {
   char** result;
-  int substring_count = 1;
+  int substring_count = 2;
   char* p = str;
 
   while (*p)
@@ -35,8 +37,7 @@ char** dsda_SplitString(char* str, const char* delimiter) {
 
     token = strtok(str, delimiter);
     while (token) {
-      ++i;
-      result[i] = token;
+      result[i++] = token;
       token = strtok(NULL, delimiter);
     }
   }
