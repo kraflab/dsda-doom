@@ -56,6 +56,7 @@ static int bf_condition_count;
 static bf_condition_t bf_condition[MAX_BF_CONDITIONS];
 static long long bf_volume;
 static long long bf_volume_max;
+static dboolean bf_mode;
 
 const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
   [dsda_bf_x] = "x",
@@ -140,6 +141,8 @@ static void dsda_EndBF(int result) {
 
   if (result == BF_FAILURE)
     dsda_RestoreBFKeyFrame(0);
+
+  bf_mode = false;
 }
 
 static dboolean dsda_BFApplyOperator(fixed_t current, int i) {
@@ -202,6 +205,10 @@ static dboolean dsda_BFConditionsReached(void) {
   return reached == bf_condition_count;
 }
 
+dboolean dsda_BruteForce(void) {
+  return bf_mode;
+}
+
 void dsda_ResetBruteForceConditions(void) {
   bf_condition_count = 0;
 }
@@ -253,6 +260,8 @@ dboolean dsda_StartBruteForce(int depth,
   }
 
   lprintf(LO_INFO, "Brute force starting!\n");
+
+  bf_mode = true;
 
   return true;
 }
