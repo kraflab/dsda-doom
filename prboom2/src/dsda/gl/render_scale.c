@@ -37,6 +37,10 @@ int gl_scene_offset_x;
 int gl_scene_offset_y;
 float gl_scale_x;
 float gl_scale_y;
+int gl_letterbox_clear_required = 0;
+
+static int gl_clear_box_width;
+static int gl_clear_box_height;
 
 void dsda_GetSDLWindowSize(SDL_Window* sdl_window) {
   SDL_GetWindowSize(sdl_window, &gl_window_width, &gl_window_height);
@@ -73,10 +77,26 @@ void dsda_SetRenderViewportParams() {
 
   gl_scene_width = gl_viewport_width - (gl_scene_offset_x * 2);
   gl_scene_height = gl_viewport_height - gl_statusbar_height - (gl_scene_offset_y * 2);
+
+  // elim - If the viewport's x or y coordinate is indented from the window, we need to call glClear
+  //        each frame to prevent artifacts smearing on undrawn framebuffer area
+  gl_letterbox_clear_required = gl_viewport_x + gl_viewport_y;
+  if (gl_letterbox_clear_required) {
+    gl_clear_box_width = ((gl_viewport_y != 0) * gl_window_width) + gl_viewport_x;
+    gl_clear_box_height = ((gl_viewport_y == 0) * gl_window_height) + gl_viewport_y;
+  }
 }
 
 void dsda_SetRenderViewport() {
   glViewport(gl_viewport_x, gl_viewport_y, gl_viewport_width, gl_viewport_height);
+}
+
+void dsda_SetRenderViewportScissor() {
+  glScissor(gl_viewport_x, gl_viewport_y, gl_viewport_width, gl_viewport_height);
+}
+
+void dsda_SetRenderSceneScissor() {
+  glScissor(gl_viewport_x + gl_scene_offset_x, gl_viewport_y + gl_statusbar_height + gl_scene_offset_y, gl_scene_width, gl_scene_height);
 }
 
 void dsda_UpdateStatusBarVisible() {
@@ -90,4 +110,25 @@ void dsda_UpdateStatusBarVisible() {
     gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT) * (viewheight != SCREENHEIGHT);
     gl_scene_height = gl_viewport_height - gl_statusbar_height - (gl_scene_offset_y * 2);
   }
+}
+
+void dsda_GLLetterboxClear() {
+  if (!gl_letterbox_clear_required)
+    return;
+
+  glViewport(0, 0, gl_window_width, gl_window_height);
+  glEnable(GL_SCISSOR_TEST);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+  // Bottom or left box
+  glScissor(0, 0, gl_clear_box_width, gl_clear_box_height);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  // Top or right box
+  glScissor(gl_window_width - gl_clear_box_width, gl_window_height - gl_clear_box_height, gl_clear_box_width, gl_clear_box_height);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  // Reset to expected state before rendering the actual frame starts
+  dsda_SetRenderViewport();
+  dsda_SetRenderViewportScissor();
 }

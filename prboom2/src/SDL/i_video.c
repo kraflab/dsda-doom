@@ -1424,11 +1424,8 @@ void I_UpdateVideoMode(void)
     M_ChangeFOV();
     deh_changeCompTranslucency();
 
-    // elim - Needed for scaling viewport in OpenGL when GL Exclusive Mode is off
+    // elim - Sets up viewport sizing for render-to-texture scaling
     dsda_GetSDLWindowSize(sdl_window);
-
-    // elim - glViewport was called with SCREENWIDTH and SCREENHEIGHT already, so we have to set it again
-    //        in order for the menu to render at the correct size
     dsda_SetRenderViewportParams();
     dsda_SetRenderViewport();
   }

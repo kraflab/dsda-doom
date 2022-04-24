@@ -322,6 +322,9 @@ void D_Display (fixed_t frac)
     oldgamestate = -1;            // force background redraw
   }
 
+  if (V_IsOpenGLMode() && !exclusive_fullscreen && !dsda_SkipMode())
+    dsda_GLLetterboxClear();
+
   // save the current screen if about to wipe
   if ((wipe = (gamestate != wipegamestate)))
   {
@@ -404,10 +407,9 @@ void D_Display (fixed_t frac)
     R_ClearStats();
 
     // Now do the drawing
-    if (viewactive || map_always_updates)
-    {
+    if (viewactive || map_always_updates) {
       R_RenderPlayerView (&players[displayplayer]);
-    }
+    } 
 
     // IDRATE cheat
     R_ShowStats();

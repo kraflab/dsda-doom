@@ -383,7 +383,8 @@ void gld_Init(int width, int height)
   gld_InitPalettedTextures();
   gld_InitTextureParams();
 
-  glViewport(0, 0, gl_window_width, gl_window_height);
+  dsda_SetRenderViewport();
+  dsda_SetRenderViewportScissor();
 
   glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
   glClearDepth(1.0f);
@@ -1422,9 +1423,8 @@ void gld_EndDrawScene(void)
     gld_Set2DModeRenderTexture();
 
     dsda_SetRenderViewport();
-    // elim - We need the full viewport for correct texture coordinates, but we can prevent garbage
-    //        being drawn when "borders" are enabled by scissoring around the scene
-    glScissor(gl_viewport_x + gl_scene_offset_x, gl_viewport_y + gl_statusbar_height + gl_scene_offset_y, gl_scene_width, gl_scene_height);
+    // elim - Prevent undrawn parts of game scene texture being rendered into the viewport
+    dsda_SetRenderSceneScissor();
     glBegin(GL_TRIANGLE_STRIP);
     {
       glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
@@ -1434,8 +1434,8 @@ void gld_EndDrawScene(void)
     }
     glEnd();
 
-    // elim - StatusBar is rendered after this point, so we need to remove the scissor from rendering scene
-    glScissor(gl_viewport_x, gl_viewport_y, gl_viewport_width, gl_viewport_height);
+    // elim - Set the scissor back to the full viewport so post-scene draws can happen (ie StatusBar)
+    dsda_SetRenderViewportScissor();
 
     gld_Set2DMode();
 
