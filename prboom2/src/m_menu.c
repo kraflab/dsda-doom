@@ -1029,13 +1029,6 @@ void M_SaveGame (int choice)
 {
   delete_verify = false;
 
-  // killough 10/6/98: allow savegames during single-player demo playback
-  if (!usergame && (!demoplayback || netgame))
-    {
-    M_StartMessage(s_SAVEDEAD,NULL,false); // Ty 03/27/98 - externalized
-    return;
-    }
-
   if (gamestate != GS_LEVEL)
     return;
 
@@ -1407,11 +1400,6 @@ void M_Mouse(int choice, int *sens)
 
 void M_QuickSave(void)
 {
-  if (!usergame && (!demoplayback || netgame)) { /* killough 10/98 */
-    S_StartSound(NULL,g_sfx_oof);
-    return;
-  }
-
   if (gamestate != GS_LEVEL)
     return;
 

@@ -298,7 +298,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
   dsda_ResetBruteForceConditions();
 
   arg_count = sscanf(
-    args, "%i %i:%i %i:%i %i:%i %[^;]", &depth,
+    args, "%i %i,%i %i,%i %i,%i %[^;]", &depth,
     &forwardmove_min, &forwardmove_max,
     &sidemove_min, &sidemove_max,
     &angleturn_min, &angleturn_max,
@@ -319,9 +319,9 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       dsda_bf_operator_t operator;
       fixed_t value;
       char attr_s[4] = { 0 };
-      char oper_s[3] = { 0 };
+      char oper_s[5] = { 0 };
 
-      if (sscanf(conditions[i], "%3s %2s %i", attr_s, oper_s, &value) == 3) {
+      if (sscanf(conditions[i], "%3s %4s %i", attr_s, oper_s, &value) == 3) {
         int attr_i, oper_i;
 
         for (attr_i = 0; attr_i < dsda_bf_attribute_max; ++attr_i)
@@ -407,6 +407,10 @@ static console_command_entry_t console_commands[] = {
 
   // traversing time
   { "jump.tic", console_JumpTic },
+
+  // brute force
+  { "bruteforce.start", console_BruteForceStart },
+  { "bf.start", console_BruteForceStart },
 
   // cheats
   { "idchoppers", console_BasicCheat },
@@ -500,7 +504,7 @@ void dsda_UpdateConsole(int ch, int action) {
     if (
       (ch >= 'a' && ch <= 'z') ||
       (ch >= '0' && ch <= '9') ||
-      (ch == ' ' || ch == '.' || ch == '-')
+      (ch == ' ' || ch == '.' || ch == '-' || ch == ';' || ch == ',')
     ) {
       console_entry[console_entry_index] = ch;
       if (console_entry_index < CONSOLE_ENTRY_SIZE)

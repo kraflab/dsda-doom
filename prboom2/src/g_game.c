@@ -87,6 +87,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/brute_force.h"
 #include "dsda/build.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
@@ -152,7 +153,6 @@ int             gamemap;
 static dboolean forced_loadgame = false;
 static dboolean load_via_cmd = false;
 
-dboolean         usergame;      // ok to save / end game
 dboolean         timingdemo;    // if true, exit with report on completion
 dboolean         fastdemo;      // if true, run at full speed -- killough
 dboolean         nodrawers;     // for comparative timing purposes
@@ -178,7 +178,6 @@ dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
 byte            *savebuffer;
 int             totalleveltimes;      // CPhipps - total time for all completed levels
 int             longtics;
-int             bytes_per_tic;
 
 dboolean coop_spawns;
 
@@ -1308,6 +1307,7 @@ dboolean G_Responder (event_t* ev)
 void G_Ticker (void)
 {
   int i;
+  int pause_mask;
   dboolean advance_frame = false;
   static gamestate_t prevgamestate;
 
@@ -1371,7 +1371,7 @@ void G_Ticker (void)
   if (dsda_AdvanceFrame())
   {
     advance_frame = true;
-    dsda_MaskPause();
+    pause_mask = dsda_MaskPause();
   }
 
   if (dsda_PausedOutsideDemo())
@@ -1380,6 +1380,12 @@ void G_Ticker (void)
     int buf = (gametic / ticdup) % BACKUPTICS;
 
     dsda_UpdateAutoKeyFrames();
+
+    if (dsda_BruteForce())
+    {
+      dsda_UpdateBruteForce();
+      dsda_RemovePauseMode(PAUSE_BUILDMODE);
+    }
 
     for (i = 0; i < g_maxplayers; i++)
     {
@@ -1514,7 +1520,7 @@ void G_Ticker (void)
   }
 
   if (advance_frame)
-    dsda_UnmaskPause();
+    dsda_UnmaskPause(pause_mask);
 }
 
 //
@@ -2986,7 +2992,6 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     players[i].worldTimer = 0;
   }
 
-  usergame = true;                // will be set false if a demo
   dsda_ResetPauseMode();
   automapmode &= ~am_active;
   gameskill = skill;
@@ -3103,7 +3108,6 @@ void G_RecordDemo (const char* name)
     I_Error("You must specify a compatibility level when recording a demo!\n"
             "Example: dsda-doom -iwad DOOM -complevel 3 -record demo");
 
-  usergame = false;
   demoname = malloc(strlen(name)+4+1);
   AddDefaultExtension(strcpy(demoname, name), ".lmp");  // 1/18/98 killough
   demorecording = true;
@@ -3469,6 +3473,8 @@ void G_BeginRecording (void)
       }
     }
   }
+
+  dsda_EvaluateBytesPerTic();
 
   dsda_WriteToDemo(demostart, demo_p - demostart);
   dsda_ContinueKeyFrame();
@@ -3846,9 +3852,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   {
     const byte *p = demo_p;
 
-    bytes_per_tic = (longtics ? 5 : 4);
-    if (raven) bytes_per_tic += 2;
-    if (dsda_ExCmdDemo()) bytes_per_tic++;
+    dsda_EvaluateBytesPerTic();
+
     demo_playerscount = 0;
     demo_tics_count = 0;
     strcpy(demo_len_st, "-");
@@ -3884,7 +3889,6 @@ void G_DoPlayDemo(void)
     dsda_AttachPlaybackStream(demo_p, demolength, 0);
 
     gameaction = ga_nothing;
-    usergame = false;
 
     R_SmoothPlaying_Reset(NULL); // e6y
   }
@@ -3898,7 +3902,6 @@ void G_DoPlayDemo(void)
     // Plutonia/Tnt executables exit with "W_GetNumForName: DEMO4 not found"
     // message after playing of DEMO3, because DEMO4 is not present
     // in the corresponding IWADs.
-    usergame = false;
     D_StartTitle();                // Start the title screen
     gamestate = GS_DEMOSCREEN;     // And set the game state accordingly
   }
@@ -4145,7 +4148,6 @@ void G_ContinueDemo(const char *playback_name, const char *record_name)
     autostart = true;
     G_RecordDemo(record_name);
     G_BeginRecording();
-    usergame = true;
   }
 }
 

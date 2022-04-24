@@ -28,3 +28,34 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 - `tracker.addmobj X` / `t.am X`: track the health of mobj X.
 - `tracker.addplayer` / `t.ap`: track the last damage dealt by the player.
 - You can remove trackers with the same commands, substituting `remove` / `r` for `add` / `a`.
+
+### Brute Force
+
+Brute force is a technique in built tases where you automatically apply different sequences of commands until you reach a desired outcome. A common use case is for performing glides. You can activate brute force from the console.
+
+- `bruteforce.start / bf.start depth forward_range strafe_range turn_range conditions`
+  - `depth` is the number of tics you want to brute force (limit 5)
+  - `forward_range` is the range of values for forwardmove. Format: `40,50`, `-50,-40`, etc.
+  - `strafe_range` is the same as `forward_range`, but for strafe values.
+  - `turn_range` is the same as `forward_range`, but for turn values.
+  - `conditions` are comma separated. Format: `attribute operator value`.
+    - `attribute` has the following options:
+      - `x` (player x position)
+      - `y` (player y position)
+      - `z` (player z position)
+      - `vx` (player x velocity)
+      - `vy` (player y velocity)
+      - `spd` (player speed)
+      - `dmg` (single frame player damage dealt)
+      - `rng` (rng index)
+    - `operator` has the following options:
+      - `lt` (less than)
+      - `lteq` (less than or equal to)
+      - `gt` (greater than)
+      - `gteq` (greater than or equal to)
+      - `eq` (equal)
+      - `neq` (not equal)
+    - `value` is the number to compare against (currently limited to integer).
+    - Example: `x gt 4, y lt -34, vx gteq 10` means the player x position must be greater than 4, and the player y position must be less than -34, and the player x velocity must be greater than or equal to 10, all at the same time.
+  - Full example: `bf.start 2 40,50 40,50 -2,2 x lt 1056, vx gt 5` is a depth 2 brute force, with possible forward and strafe values ranging from 40 to 50, possible turn values ranging from -2 to 2, and with the condition that x is less than 1056 and x velocity is greater than 5.
+- Brute force metadata gets printed to the console (conditions, progress, etc).

@@ -239,7 +239,6 @@ extern  int leveltime;  // tics in game play for par
 // --------------------------------------
 // DEMO playback/recording related stuff.
 
-extern  dboolean usergame;
 extern  dboolean demoplayback;
 extern  dboolean demorecording;
 extern  int demover;

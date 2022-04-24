@@ -762,7 +762,7 @@ const demostate_t doom_demostates[][4] =
 void D_DoAdvanceDemo(void)
 {
   players[consoleplayer].playerstate = PST_LIVE;  /* not reborn */
-  advancedemo = usergame = false;
+  advancedemo = false;
   dsda_ResetPauseMode();
   gameaction = ga_nothing;
 

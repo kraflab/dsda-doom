@@ -42,6 +42,7 @@ typedef enum {
 extern const char* dsda_bf_attribute_names[dsda_bf_attribute_max];
 extern const char* dsda_bf_operator_names[dsda_bf_operator_max];
 
+dboolean dsda_BruteForce(void);
 void dsda_ResetBruteForceConditions(void);
 void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
                                  dsda_bf_operator_t operator, fixed_t value);

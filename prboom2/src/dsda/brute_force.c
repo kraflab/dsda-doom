@@ -24,6 +24,7 @@
 #include "m_random.h"
 
 #include "dsda/key_frame.h"
+#include "dsda/skip.h"
 
 #include "brute_force.h"
 
@@ -56,6 +57,7 @@ static int bf_condition_count;
 static bf_condition_t bf_condition[MAX_BF_CONDITIONS];
 static long long bf_volume;
 static long long bf_volume_max;
+static dboolean bf_mode;
 
 const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
   [dsda_bf_x] = "x",
@@ -69,12 +71,12 @@ const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
 };
 
 const char* dsda_bf_operator_names[dsda_bf_operator_max] = {
-  [dsda_bf_less_than] = "<",
-  [dsda_bf_less_than_or_equal_to] = "<=",
-  [dsda_bf_greater_than] = ">",
-  [dsda_bf_greater_than_or_equal_to] = ">=",
-  [dsda_bf_equal_to] = "==",
-  [dsda_bf_not_equal_to] = "!="
+  [dsda_bf_less_than] = "lt",
+  [dsda_bf_less_than_or_equal_to] = "lteq",
+  [dsda_bf_greater_than] = "gt",
+  [dsda_bf_greater_than_or_equal_to] = "gteq",
+  [dsda_bf_equal_to] = "eq",
+  [dsda_bf_not_equal_to] = "neq"
 };
 
 static dboolean dsda_AdvanceBFRange(bf_range_t* range) {
@@ -110,7 +112,7 @@ static int dsda_AdvanceBruteForce(void) {
 }
 
 static void dsda_RestoreBFKeyFrame(int frame) {
-  dsda_RestoreKeyFrame(&brute_force[frame].key_frame);
+  dsda_RestoreKeyFrame(&brute_force[frame].key_frame, true);
 }
 
 static void dsda_StoreBFKeyFrame(int frame) {
@@ -140,6 +142,10 @@ static void dsda_EndBF(int result) {
 
   if (result == BF_FAILURE)
     dsda_RestoreBFKeyFrame(0);
+
+  bf_mode = false;
+
+  dsda_ExitSkipMode();
 }
 
 static dboolean dsda_BFApplyOperator(fixed_t current, int i) {
@@ -202,6 +208,10 @@ static dboolean dsda_BFConditionsReached(void) {
   return reached == bf_condition_count;
 }
 
+dboolean dsda_BruteForce(void) {
+  return bf_mode;
+}
+
 void dsda_ResetBruteForceConditions(void) {
   bf_condition_count = 0;
 }
@@ -254,6 +264,10 @@ dboolean dsda_StartBruteForce(int depth,
 
   lprintf(LO_INFO, "Brute force starting!\n");
 
+  bf_mode = true;
+
+  dsda_EnterSkipMode();
+
   return true;
 }
 
@@ -286,9 +300,12 @@ void dsda_UpdateBruteForce(void) {
 void dsda_PopBruteForceCommand(ticcmd_t* cmd) {
   bf_t* bf;
 
-  bf = &brute_force[logictic - bf_logictic];
-
   memset(cmd, 0, sizeof(*cmd));
+
+  if (logictic - bf_logictic >= bf_depth)
+    return;
+
+  bf = &brute_force[logictic - bf_logictic];
 
   cmd->angleturn = bf->angleturn.i << 8;
   cmd->forwardmove = bf->forwardmove.i;

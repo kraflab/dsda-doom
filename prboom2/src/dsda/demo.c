@@ -27,6 +27,7 @@
 #include "lprintf.h"
 #include "e6y.h"
 
+#include "command_display.h"
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
 
@@ -45,6 +46,17 @@ static int largest_real_offset;
 #define DEMOMARKER 0x80
 
 static int dsda_demo_version;
+static int bytes_per_tic;
+
+int dsda_BytesPerTic(void) {
+  return bytes_per_tic;
+}
+
+void dsda_EvaluateBytesPerTic(void) {
+  bytes_per_tic = (longtics ? 5 : 4);
+  if (raven) bytes_per_tic += 2;
+  if (dsda_ExCmdDemo()) bytes_per_tic++;
+}
 
 static void dsda_EnsureDemoBufferSpace(size_t length) {
   int offset;
@@ -79,6 +91,26 @@ void dsda_CopyPendingCmd(ticcmd_t* cmd) {
   }
   else {
     memset(cmd, 0, sizeof(*cmd));
+  }
+}
+
+void dsda_RestoreCommandHistory(void) {
+  extern int dsda_command_history_size;
+
+  ticcmd_t cmd = { 0 };
+
+  if (demorecording && logictic && dsda_command_history_size) {
+    const byte* p;
+    int count;
+
+    count = MIN(logictic, dsda_command_history_size);
+
+    p = dsda_demo_write_buffer_p - bytes_per_tic * count;
+
+    while (p < dsda_demo_write_buffer_p) {
+      G_ReadOneTick(&cmd, &p);
+      dsda_AddCommandToCommandDisplay(&cmd);
+    }
   }
 }
 

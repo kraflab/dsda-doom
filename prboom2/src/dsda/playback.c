@@ -169,7 +169,7 @@ static void dsda_ClearPlaybackStream(void) {
 
 static dboolean dsda_EndOfPlaybackStream(void) {
   return *playback_p == DEMOMARKER ||
-         playback_p + bytes_per_tic > playback_origin_p + playback_length;
+         playback_p + dsda_BytesPerTic() > playback_origin_p + playback_length;
 }
 
 void dsda_TryPlaybackOneTick(ticcmd_t* cmd) {
