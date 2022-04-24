@@ -96,7 +96,9 @@ void dsda_SetRenderViewportScissor() {
 }
 
 void dsda_SetRenderSceneScissor() {
-  glScissor(gl_viewport_x + gl_scene_offset_x, gl_viewport_y + gl_statusbar_height + gl_scene_offset_y, gl_scene_width, gl_scene_height);
+  glScissor(gl_viewport_x + gl_scene_offset_x,
+            gl_viewport_y + gl_statusbar_height + gl_scene_offset_y,
+            gl_scene_width, gl_scene_height);
 }
 
 void dsda_UpdateStatusBarVisible() {
@@ -125,7 +127,9 @@ void dsda_GLLetterboxClear() {
   glClear(GL_COLOR_BUFFER_BIT);
 
   // Top or right box
-  glScissor(gl_window_width - gl_clear_box_width, gl_window_height - gl_clear_box_height, gl_clear_box_width, gl_clear_box_height);
+  glScissor(gl_window_width - gl_clear_box_width,
+            gl_window_height - gl_clear_box_height,
+            gl_clear_box_width, gl_clear_box_height);
   glClear(GL_COLOR_BUFFER_BIT);
 
   // Reset to expected state before rendering the actual frame starts

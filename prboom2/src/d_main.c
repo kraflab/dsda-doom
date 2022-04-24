@@ -382,11 +382,12 @@ void D_Display (fixed_t frac)
         (((automapmode & am_active) && !(automapmode & am_overlay)));
     }
 
-    if (redrawborderstuff || (V_IsOpenGLMode())) {
+    if (redrawborderstuff || V_IsOpenGLMode()) {
       // elim - Update viewport and scene offsets whenever the view is changed (user hits "-" or "+")
-      if (redrawborderstuff && (V_IsOpenGLMode())) {
+      if (redrawborderstuff && V_IsOpenGLMode()) {
         dsda_SetRenderViewportParams();
       }
+
       R_DrawViewBorder();
     }
 
@@ -409,7 +410,7 @@ void D_Display (fixed_t frac)
     // Now do the drawing
     if (viewactive || map_always_updates) {
       R_RenderPlayerView (&players[displayplayer]);
-    } 
+    }
 
     // IDRATE cheat
     R_ShowStats();

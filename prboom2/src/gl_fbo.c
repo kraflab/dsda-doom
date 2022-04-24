@@ -57,7 +57,6 @@ int gl_motionblur;
 int gl_use_motionblur = false;
 motion_blur_params_t motion_blur;
 
-
 void gld_InitMotionBlur(void);
 
 void gld_InitFBO(void)
@@ -66,8 +65,7 @@ void gld_InitFBO(void)
 
   gl_use_motionblur = gl_ext_framebuffer_object && gl_motionblur && gl_ext_blend_color;
 
-  gl_use_FBO = (gl_ext_framebuffer_object) && (gl_version >= OPENGL_VERSION_1_3); //&&
-    //(gl_use_motionblur || !gl_boom_colormaps || gl_has_hires);
+  gl_use_FBO = (gl_ext_framebuffer_object) && (gl_version >= OPENGL_VERSION_1_3);
 
   if (gl_use_FBO)
   {
