@@ -29,8 +29,8 @@ extern int gl_scene_width;
 extern int gl_scene_height;
 extern int gl_scene_offset_x;
 extern int gl_scene_offset_y;
-extern int gl_scale_x;
-extern int gl_scale_y;
+extern float gl_scale_x;
+extern float gl_scale_y;
 
 void dsda_GetSDLWindowSize(SDL_Window* sdl_window);
 
