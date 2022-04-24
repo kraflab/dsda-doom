@@ -94,6 +94,26 @@ void dsda_CopyPendingCmd(ticcmd_t* cmd) {
   }
 }
 
+void dsda_RestoreCommandHistory(void) {
+  extern int dsda_command_history_size;
+
+  ticcmd_t cmd = { 0 };
+
+  if (demorecording && logictic && dsda_command_history_size) {
+    const byte* p;
+    int count;
+
+    count = MIN(logictic, dsda_command_history_size);
+
+    p = dsda_demo_write_buffer_p - bytes_per_tic * count;
+
+    while (p < dsda_demo_write_buffer_p) {
+      G_ReadOneTick(&cmd, &p);
+      dsda_AddCommandToCommandDisplay(&cmd);
+    }
+  }
+}
+
 void dsda_InitDemo(char* name) {
   size_t name_size;
 

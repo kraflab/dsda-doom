@@ -22,6 +22,7 @@
 
 int dsda_BytesPerTic(void);
 void dsda_EvaluateBytesPerTic(void);
+void dsda_RestoreCommandHistory(void);
 void dsda_InitDemo(char* name);
 void dsda_WriteToDemo(void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);

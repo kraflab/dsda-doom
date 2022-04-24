@@ -258,6 +258,8 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   save_p += sizeof(key_frame->game_tic_count);
   basetic = gametic - key_frame->game_tic_count;
 
+  dsda_RestoreCommandHistory();
+
   dsda_UnArchiveAll();
 
   R_ActivateSectorInterpolations();
