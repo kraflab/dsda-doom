@@ -385,7 +385,7 @@ void D_Display (fixed_t frac)
     if (redrawborderstuff || V_IsOpenGLMode()) {
       // elim - Update viewport and scene offsets whenever the view is changed (user hits "-" or "+")
       if (redrawborderstuff && V_IsOpenGLMode()) {
-        dsda_SetRenderViewportParams();
+        dsda_GLSetRenderViewportParams();
       }
 
       R_DrawViewBorder();
@@ -393,7 +393,7 @@ void D_Display (fixed_t frac)
 
     // elim - If we go from visible status bar to invisible status bar, update affected viewport params
     if (!isborder && isborderstate) {
-      dsda_UpdateStatusBarVisible();
+      dsda_GLUpdateStatusBarVisible();
     }
 
     // e6y

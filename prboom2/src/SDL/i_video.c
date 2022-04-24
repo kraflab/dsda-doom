@@ -1425,9 +1425,9 @@ void I_UpdateVideoMode(void)
     deh_changeCompTranslucency();
 
     // elim - Sets up viewport sizing for render-to-texture scaling
-    dsda_GetSDLWindowSize(sdl_window);
-    dsda_SetRenderViewportParams();
-    dsda_SetRenderViewport();
+    dsda_GLGetSDLWindowSize(sdl_window);
+    dsda_GLSetRenderViewportParams();
+    dsda_GLSetRenderViewport();
   }
 #endif
 

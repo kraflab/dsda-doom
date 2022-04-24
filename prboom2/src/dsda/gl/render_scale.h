@@ -33,10 +33,10 @@ extern float gl_scale_x;
 extern float gl_scale_y;
 extern int gl_letterbox_clear_required;
 
-void dsda_GetSDLWindowSize(SDL_Window* sdl_window);
-void dsda_SetRenderViewportParams();
-void dsda_SetRenderViewport();
-void dsda_SetRenderViewportScissor();
-void dsda_SetRenderSceneScissor();
-void dsda_UpdateStatusBarVisible();
+void dsda_GLGetSDLWindowSize(SDL_Window* sdl_window);
+void dsda_GLSetRenderViewportParams();
+void dsda_GLSetRenderViewport();
+void dsda_GLSetRenderViewportScissor();
+void dsda_GLSetRenderSceneScissor();
+void dsda_GLUpdateStatusBarVisible();
 void dsda_GLLetterboxClear();

@@ -383,8 +383,8 @@ void gld_Init(int width, int height)
   gld_InitPalettedTextures();
   gld_InitTextureParams();
 
-  dsda_SetRenderViewport();
-  dsda_SetRenderViewportScissor();
+  dsda_GLSetRenderViewport();
+  dsda_GLSetRenderViewportScissor();
 
   glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
   glClearDepth(1.0f);
@@ -1422,9 +1422,9 @@ void gld_EndDrawScene(void)
     // Draw render texture
     gld_Set2DModeRenderTexture();
 
-    dsda_SetRenderViewport();
+    dsda_GLSetRenderViewport();
     // elim - Prevent undrawn parts of game scene texture being rendered into the viewport
-    dsda_SetRenderSceneScissor();
+    dsda_GLSetRenderSceneScissor();
     glBegin(GL_TRIANGLE_STRIP);
     {
       glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
@@ -1435,7 +1435,7 @@ void gld_EndDrawScene(void)
     glEnd();
 
     // elim - Set the scissor back to the full viewport so post-scene draws can happen (ie StatusBar)
-    dsda_SetRenderViewportScissor();
+    dsda_GLSetRenderViewportScissor();
 
     gld_Set2DMode();
 
