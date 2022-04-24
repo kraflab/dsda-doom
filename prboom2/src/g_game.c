@@ -179,7 +179,6 @@ dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
 byte            *savebuffer;
 int             totalleveltimes;      // CPhipps - total time for all completed levels
 int             longtics;
-int             bytes_per_tic;
 
 dboolean coop_spawns;
 
@@ -3478,6 +3477,8 @@ void G_BeginRecording (void)
     }
   }
 
+  dsda_EvaluateBytesPerTic();
+
   dsda_WriteToDemo(demostart, demo_p - demostart);
   dsda_ContinueKeyFrame();
   dsda_ResetSplits();
@@ -3854,9 +3855,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   {
     const byte *p = demo_p;
 
-    bytes_per_tic = (longtics ? 5 : 4);
-    if (raven) bytes_per_tic += 2;
-    if (dsda_ExCmdDemo()) bytes_per_tic++;
+    dsda_EvaluateBytesPerTic();
+
     demo_playerscount = 0;
     demo_tics_count = 0;
     strcpy(demo_len_st, "-");

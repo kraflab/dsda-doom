@@ -27,6 +27,7 @@
 #include "lprintf.h"
 #include "e6y.h"
 
+#include "command_display.h"
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
 
@@ -45,6 +46,17 @@ static int largest_real_offset;
 #define DEMOMARKER 0x80
 
 static int dsda_demo_version;
+static int bytes_per_tic;
+
+int dsda_BytesPerTic(void) {
+  return bytes_per_tic;
+}
+
+void dsda_EvaluateBytesPerTic(void) {
+  bytes_per_tic = (longtics ? 5 : 4);
+  if (raven) bytes_per_tic += 2;
+  if (dsda_ExCmdDemo()) bytes_per_tic++;
+}
 
 static void dsda_EnsureDemoBufferSpace(size_t length) {
   int offset;

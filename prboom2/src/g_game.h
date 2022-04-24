@@ -129,7 +129,6 @@ extern int pistolstart;
 
 //e6y: for r_demo.c
 extern int longtics;
-extern int bytes_per_tic;
 
 #define singleplayer (!demorecording && !demoplayback && !netgame)
 #define comperr(i) (default_comperr[i] && singleplayer)
