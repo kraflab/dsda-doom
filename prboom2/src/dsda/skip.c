@@ -42,9 +42,8 @@ static dboolean skip_until_next_map;
 static dboolean skip_until_end_of_map;
 static dboolean skip_until_logictic;
 static dboolean demo_warp_reached;
-
-extern int warpepisode;
-extern int warpmap;
+static int skip_until_map;
+static int skip_until_episode;
 
 dboolean dsda_SkipMode(void) {
   return skip_mode;
@@ -94,6 +93,8 @@ void dsda_ExitSkipMode(void) {
   skip_until_next_map = false;
   skip_until_end_of_map = false;
   skip_until_logictic = 0;
+  skip_until_map = -1;
+  skip_until_episode = -1;
   demo_warp_reached = false;
   demo_skiptics = 0;
   startmap = 0;
@@ -135,7 +136,7 @@ void dsda_EvaluateSkipModeGTicker(void) {
 }
 
 void dsda_EvaluateSkipModeInitNew(void) {
-  if (dsda_SkipMode() && warpmap == gamemap && warpepisode == gameepisode)
+  if (dsda_SkipMode() && skip_until_map == gamemap && skip_until_episode == gameepisode)
     demo_warp_reached = true;
 }
 
@@ -144,7 +145,8 @@ void dsda_EvaluateSkipModeBuildTiccmd(void) {
     if (
       (
         !skip_until_logictic &&
-        warpmap == -1 &&
+        skip_until_map == -1 &&
+        demo_skiptics &&
         (
           demo_skiptics > 0 ?
             gametic > demo_skiptics :
@@ -170,8 +172,8 @@ void dsda_EvaluateSkipModeDoTeleportNewMap(void) {
     demo_warp_reached = skip_until_next_map ||
       (
         gamemode == commercial ?
-          (warpmap == gamemap) :
-          (warpepisode == gameepisode && warpmap == gamemap)
+          (skip_until_map == gamemap) :
+          (skip_until_episode == gameepisode && skip_until_map == gamemap)
       );
 
     if (demo_warp_reached && demo_skiptics == 0 && !firstmap)
@@ -188,8 +190,8 @@ void dsda_EvaluateSkipModeDoWorldDone(void) {
     demo_warp_reached = skip_until_next_map ||
       (
         gamemode == commercial ?
-          (warpmap == gamemap) :
-          (warpepisode == gameepisode && warpmap == gamemap)
+          (skip_until_map == gamemap) :
+          (skip_until_episode == gameepisode && skip_until_map == gamemap)
       );
 
     if (demo_warp_reached && demo_skiptics == 0 && !firstmap)
@@ -209,6 +211,9 @@ int dsda_DemoSkipTics(void) {
 }
 
 void dsda_HandleSkip(void) {
+  extern int warpmap;
+  extern int warpepisode;
+
   int p;
 
   p = M_CheckParm("-skipsec");
@@ -222,6 +227,10 @@ void dsda_HandleSkip(void) {
       demo_skiptics = (int) (sec * TICRATE);
   }
 
-  if (dsda_PlaybackArg() && (warpmap != -1 || demo_skiptics))
+  if (dsda_PlaybackArg() && (warpmap != -1 || demo_skiptics)) {
+    skip_until_map = warpmap;
+    skip_until_episode = warpepisode;
+
     dsda_EnterSkipMode();
+  }
 }
