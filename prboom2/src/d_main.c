@@ -83,7 +83,6 @@
 #include "d_deh.h"  // Ty 04/08/98 - Externalizations
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "am_map.h"
-#include "gl_opengl.h"
 
 //e6y
 #include "r_demo.h"
