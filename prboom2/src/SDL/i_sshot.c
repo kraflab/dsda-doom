@@ -59,15 +59,15 @@ int renderH;
 
 void I_UpdateRenderSize(void)
 {
-	if (V_IsOpenGLMode())
-	{
+  if (V_IsOpenGLMode())
+  {
     renderW = gl_window_width;
     renderH = gl_window_height;
-	}
-	else
-	{
-		SDL_GetRendererOutputSize(sdl_renderer, &renderW, &renderH);
-	}
+  }
+  else
+  {
+    SDL_GetRendererOutputSize(sdl_renderer, &renderW, &renderH);
+  }
 }
 
 //
@@ -82,8 +82,8 @@ int I_ScreenShot(const char *fname)
 
   if (pixels)
   {
-	screenshot = SDL_CreateRGBSurfaceFrom(pixels, renderW, renderH, 24,
-	  renderW * 3, 0x000000ff, 0x0000ff00, 0x00ff0000, 0);
+    screenshot = SDL_CreateRGBSurfaceFrom(pixels, renderW, renderH, 24,
+      renderW * 3, 0x000000ff, 0x0000ff00, 0x00ff0000, 0);
   }
 
   if (screenshot)
