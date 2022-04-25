@@ -52,6 +52,8 @@
 #include "z_zone.h"
 #include "lprintf.h"
 
+#include "dsda/gl/render_scale.h"
+
 int renderW;
 int renderH;
 
@@ -59,8 +61,8 @@ void I_UpdateRenderSize(void)
 {
 	if (V_IsOpenGLMode())
 	{
-		renderW = SCREENWIDTH;
-		renderH = SCREENHEIGHT;
+    renderW = gl_window_width;
+    renderH = gl_window_height;
 	}
 	else
 	{

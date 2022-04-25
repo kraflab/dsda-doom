@@ -1056,21 +1056,16 @@ unsigned char *gld_ReadScreen(void)
   static unsigned char *scr = NULL;
   static unsigned char *buffer = NULL;
   static int scr_size = 0;
-  static int buffer_size = 0;
 
-  int i, size;
+  int src_row, dest_row, size, pixels_per_row;
 
-  size = SCREENWIDTH * 3;
-  if (!buffer || size > buffer_size)
-  {
-    buffer_size = size;
-    buffer = realloc (buffer, size);
-  }
-  size = SCREENWIDTH * SCREENHEIGHT * 3;
+  pixels_per_row = gl_window_width * 3;
+  size = pixels_per_row * gl_window_height;
   if (!scr || size > scr_size)
   {
     scr_size = size;
-    scr = realloc (scr, size);
+    scr = realloc(scr, size);
+    buffer = realloc(buffer, size);
   }
 
   if (buffer && scr)
@@ -1080,22 +1075,22 @@ unsigned char *gld_ReadScreen(void)
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
     glFlush();
-    glReadPixels(0, 0, SCREENWIDTH, SCREENHEIGHT, GL_RGB, GL_UNSIGNED_BYTE, scr);
+    glReadPixels(0, 0, gl_window_width, gl_window_height, GL_RGB, GL_UNSIGNED_BYTE, scr);
 
     glPixelStorei(GL_PACK_ALIGNMENT, pack_aligment);
 
-    gld_ApplyGammaRamp(scr, SCREENWIDTH * 3, SCREENWIDTH, SCREENHEIGHT);
+    gld_ApplyGammaRamp(scr, pixels_per_row, gl_window_width, gl_window_height);
 
-    for (i=0; i<SCREENHEIGHT/2; i++)
+    // GL textures are bottom up, so copy the rows in reverse to flip vertically
+    for (src_row = gl_window_height - 1, dest_row = 0; src_row >= 0; --src_row, ++dest_row) 
     {
-      memcpy(buffer, &scr[i*SCREENWIDTH*3], SCREENWIDTH*3);
-      memcpy(&scr[i*SCREENWIDTH*3],
-        &scr[(SCREENHEIGHT-(i+1))*SCREENWIDTH*3], SCREENWIDTH*3);
-      memcpy(&scr[(SCREENHEIGHT-(i+1))*SCREENWIDTH*3], buffer, SCREENWIDTH*3);
+      memcpy(&buffer[dest_row * pixels_per_row], 
+              &scr[src_row * pixels_per_row], 
+              pixels_per_row);
     }
   }
 
-  return scr;
+  return buffer;
 }
 
 GLvoid gld_Set2DMode(void)
