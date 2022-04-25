@@ -1115,23 +1115,6 @@ GLvoid gld_Set2DMode(void)
   glDisable(GL_DEPTH_TEST);
 }
 
-GLvoid gld_Set2DModeRenderTexture(void)
-{
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(
-    (GLdouble) 0,
-    (GLdouble) gl_window_width,
-    (GLdouble) gl_window_height,
-    (GLdouble) 0,
-    (GLdouble) -1.0,
-    (GLdouble) 1.0
-  );
-  glDisable(GL_DEPTH_TEST);
-}
-
 void gld_InitDrawScene(void)
 {
   gld_ResetDrawInfo();
@@ -1419,9 +1402,8 @@ void gld_EndDrawScene(void)
       GLEXT_glBlendColorEXT(1.0f, 1.0f, 1.0f, motionblur_alpha);
     }
 
-    // Draw render texture
-    gld_Set2DModeRenderTexture();
-
+    // Setup GL camera for drawing the render texture
+    dsda_GLFullscreenOrtho2D();
     dsda_GLSetRenderViewport();
     // elim - Prevent undrawn parts of game scene texture being rendered into the viewport
     dsda_GLSetRenderSceneScissor();

@@ -19,6 +19,7 @@
 #include "render_scale.h"
 
 #include "gl_opengl.h"
+#include "gl_intern.h"
 
 #include "i_video.h"
 #include "r_main.h"
@@ -135,4 +136,55 @@ void dsda_GLLetterboxClear() {
   // Reset to expected state before rendering the actual frame starts
   dsda_GLSetRenderViewport();
   dsda_GLSetRenderViewportScissor();
+}
+
+void dsda_GLStartMeltRenderTexture() {
+  if (!SceneInTexture)
+    return;
+
+  gld_InitDrawScene();
+  gld_StartDrawScene();
+  gld_Set2DMode();
+  glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
+  glScissor(0, 0, SCREENWIDTH, SCREENHEIGHT);
+}
+
+void dsda_GLEndMeltRenderTexture() {
+  if (!SceneInTexture)
+    return;
+
+  GLEXT_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  glBindTexture(GL_TEXTURE_2D, glSceneImageTextureFBOTexID);
+
+  dsda_GLFullscreenOrtho2D();
+  dsda_GLSetRenderViewport();
+  dsda_GLSetRenderViewportScissor();
+
+  glBegin(GL_TRIANGLE_STRIP);
+  {
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, gl_window_height);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f((float)gl_window_width, 0.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f((float)gl_window_width, (float)gl_window_height);
+  }
+  glEnd();
+
+  gld_Set2DMode();
+  glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+}
+
+void dsda_GLFullscreenOrtho2D() {
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(
+    (GLdouble) 0,
+    (GLdouble) gl_window_width,
+    (GLdouble) gl_window_height,
+    (GLdouble) 0,
+    (GLdouble) -1.0,
+    (GLdouble) 1.0
+  );
+  glDisable(GL_DEPTH_TEST);
 }

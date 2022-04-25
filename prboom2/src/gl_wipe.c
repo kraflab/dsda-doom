@@ -87,7 +87,6 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
   fU2 = (float)gl_viewport_width / (float)total_w;
   fV2 = 0.0f;
 
-  gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
 
   glBindTexture(GL_TEXTURE_2D, wipe_scr_end_tex);
   glColor3f(1.0f, 1.0f, 1.0f);
@@ -105,20 +104,24 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
   glColor3f(1.0f, 1.0f, 1.0f);
 
   glBegin(GL_QUAD_STRIP);
-
-  for (i = 0; i <= SCREENWIDTH + 1; i++)
+  for (i = 0; i <= SCREENWIDTH; i++)
   {
-    yoffs = MAX(0, y_lookup[i]);
+    // elim - when (i == SCREENWIDTH), use the previous y_lookup value as gl-quad-strip drawing
+    //        makes the right-most column "lag" behind, causing an annoying artifact
+    yoffs = MAX(0, y_lookup[MIN(SCREENWIDTH-1, i)]);
 
+    // elim - melt texture is the pixel size of the GL viewport, not the game scene texture size
     scaled_i = MIN(gl_viewport_width, (int)((float)i * gl_scale_x));
-    tx = (float) scaled_i / total_w;
+
+    // elim - texel coordinates don't necessarily match texture buffer dimensions, since textures
+    //        have to be stored in dimensions that are power-of-2
+    tx = (float) MIN(fU2, (float)scaled_i / (float)total_w);
     sx = (float) i;
     sy = (float) yoffs;
 
     glTexCoord2f(tx, fV1); glVertex2f(sx, sy);
     glTexCoord2f(tx, fV2); glVertex2f(sx, sy + (float)SCREENHEIGHT);
   }
-
   glEnd();
 
   return 0;

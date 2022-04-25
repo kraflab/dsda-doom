@@ -83,6 +83,7 @@
 #include "d_deh.h"  // Ty 04/08/98 - Externalizations
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "am_map.h"
+#include "gl_opengl.h"
 
 //e6y
 #include "r_demo.h"
@@ -261,8 +262,23 @@ static void D_Wipe(void)
       tics = nowtime - wipestart;
     }
     while (!tics);
+
+    // elim - Enable render-to-texture for GL so "melt" is rendered at same resolution as the game scene
+    if (V_IsOpenGLMode())
+    {
+      dsda_GLLetterboxClear();
+      dsda_GLStartMeltRenderTexture();
+    }
+
     wipestart = nowtime;
     done = wipe_ScreenWipe(tics);
+
+    // elim - Render texture to screen
+    if (V_IsOpenGLMode())
+    {
+      dsda_GLEndMeltRenderTexture();
+    }
+
     M_Drawer();                   // menu is drawn even on top of wipes
     I_FinishUpdate();             // page flip or blit buffer
   }
