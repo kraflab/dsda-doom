@@ -1230,7 +1230,7 @@ void I_UpdateVideoMode(void)
   // running.  This feature is disabled on OS X, as it adds an ugly
   // scroll handle to the corner of the screen.
 #ifndef __APPLE__
-  if (!desired_fullscreen && V_IsSoftwareMode())
+  if (!desired_fullscreen)
     init_flags |= SDL_WINDOW_RESIZABLE;
 #endif
 
@@ -1260,6 +1260,7 @@ void I_UpdateVideoMode(void)
       SCREENWIDTH, SCREENHEIGHT,
       init_flags);
     sdl_glcontext = SDL_GL_CreateContext(sdl_window);
+    SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, SCREENHEIGHT);
 
     gld_CheckHardwareGamma();
 #endif
@@ -1623,4 +1624,9 @@ void UpdateGrab(void)
 
 static void ApplyWindowResize(SDL_Event *resize_event)
 {
+  if (!V_IsOpenGLMode() || !sdl_window)
+    return;
+
+  dsda_GLGetSDLWindowSize(sdl_window);
+  dsda_GLSetRenderViewportParams();
 }
