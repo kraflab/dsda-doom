@@ -91,6 +91,7 @@
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/time.h"
+#include "dsda/gl/render_scale.h"
 
 //e6y: new mouse code
 static SDL_Cursor* cursors[2] = {NULL, NULL};
@@ -539,13 +540,6 @@ void I_ShutdownGraphics(void)
 {
   SDL_FreeCursor(cursors[1]);
   DeactivateMouse();
-}
-
-//
-// I_UpdateNoBlit
-//
-void I_UpdateNoBlit (void)
-{
 }
 
 //
@@ -1236,7 +1230,7 @@ void I_UpdateVideoMode(void)
   // running.  This feature is disabled on OS X, as it adds an ugly
   // scroll handle to the corner of the screen.
 #ifndef __APPLE__
-  if (!desired_fullscreen && V_IsSoftwareMode())
+  if (!desired_fullscreen)
     init_flags |= SDL_WINDOW_RESIZABLE;
 #endif
 
@@ -1266,6 +1260,7 @@ void I_UpdateVideoMode(void)
       SCREENWIDTH, SCREENHEIGHT,
       init_flags);
     sdl_glcontext = SDL_GL_CreateContext(sdl_window);
+    SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, SCREENHEIGHT);
 
     gld_CheckHardwareGamma();
 #endif
@@ -1429,6 +1424,11 @@ void I_UpdateVideoMode(void)
   {
     M_ChangeFOV();
     deh_changeCompTranslucency();
+
+    // elim - Sets up viewport sizing for render-to-texture scaling
+    dsda_GLGetSDLWindowSize(sdl_window);
+    dsda_GLSetRenderViewportParams();
+    dsda_GLSetRenderViewport();
   }
 #endif
 
@@ -1624,4 +1624,9 @@ void UpdateGrab(void)
 
 static void ApplyWindowResize(SDL_Event *resize_event)
 {
+  if (!V_IsOpenGLMode() || !sdl_window)
+    return;
+
+  dsda_GLGetSDLWindowSize(sdl_window);
+  dsda_GLSetRenderViewportParams();
 }

@@ -53,6 +53,7 @@
 #include "st_stuff.h"
 #include "i_main.h"
 #include "i_system.h"
+#include "i_video.h"
 #include "g_game.h"
 #include "r_demo.h"
 #include "r_fps.h"
@@ -62,6 +63,7 @@
 
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
+#include "dsda/gl/render_scale.h"
 
 #include "hexen/a_action.h"
 
@@ -715,6 +717,9 @@ void R_ExecuteSetViewSize (void)
         c_scalelight[t][i][j] = colormaps[t] + level;
     }
   }
+
+  if (V_IsOpenGLMode())
+    dsda_GLSetRenderViewportParams();
 }
 
 //

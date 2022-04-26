@@ -103,6 +103,7 @@
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
+#include "dsda/gl/render_scale.h"
 
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
@@ -260,9 +261,23 @@ static void D_Wipe(void)
       tics = nowtime - wipestart;
     }
     while (!tics);
+
+    // elim - Enable render-to-texture for GL so "melt" is rendered at same resolution as the game scene
+    if (V_IsOpenGLMode())
+    {
+      dsda_GLLetterboxClear();
+      dsda_GLStartMeltRenderTexture();
+    }
+
     wipestart = nowtime;
     done = wipe_ScreenWipe(tics);
-    I_UpdateNoBlit();
+
+    // elim - Render texture to screen
+    if (V_IsOpenGLMode())
+    {
+      dsda_GLEndMeltRenderTexture();
+    }
+
     M_Drawer();                   // menu is drawn even on top of wipes
     I_FinishUpdate();             // page flip or blit buffer
   }
@@ -322,6 +337,9 @@ void D_Display (fixed_t frac)
     oldgamestate = -1;            // force background redraw
   }
 
+  if (V_IsOpenGLMode() && !exclusive_fullscreen && !nodrawers)
+    dsda_GLLetterboxClear();
+
   // save the current screen if about to wipe
   if ((wipe = (gamestate != wipegamestate)))
   {
@@ -378,8 +396,20 @@ void D_Display (fixed_t frac)
       borderwillneedredraw = (borderwillneedredraw) ||
         (((automapmode & am_active) && !(automapmode & am_overlay)));
     }
-    if (redrawborderstuff || (V_IsOpenGLMode()))
+
+    if (redrawborderstuff || V_IsOpenGLMode()) {
+      // elim - Update viewport and scene offsets whenever the view is changed (user hits "-" or "+")
+      if (redrawborderstuff && V_IsOpenGLMode()) {
+        dsda_GLSetRenderViewportParams();
+      }
+
       R_DrawViewBorder();
+    }
+
+    // elim - If we go from visible status bar to invisible status bar, update affected viewport params
+    if (!isborder && isborderstate) {
+      dsda_GLUpdateStatusBarVisible();
+    }
 
     // e6y
     // Boom colormaps should be applied for everything in R_RenderPlayerView
@@ -393,8 +423,7 @@ void D_Display (fixed_t frac)
     R_ClearStats();
 
     // Now do the drawing
-    if (viewactive || map_always_updates)
-    {
+    if (viewactive || map_always_updates) {
       R_RenderPlayerView (&players[displayplayer]);
     }
 
