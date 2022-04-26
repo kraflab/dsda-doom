@@ -337,7 +337,7 @@ void D_Display (fixed_t frac)
     oldgamestate = -1;            // force background redraw
   }
 
-  if (V_IsOpenGLMode() && !exclusive_fullscreen && !dsda_SkipMode())
+  if (V_IsOpenGLMode() && !exclusive_fullscreen && !nodrawers)
     dsda_GLLetterboxClear();
 
   // save the current screen if about to wipe
