@@ -124,7 +124,7 @@ int render_screen_multiply;
 int integer_scaling;
 int vanilla_keymap;
 SDL_Surface *screen;
-static SDL_Surface *buffer;
+SDL_Surface *sdl_buffer;
 SDL_Window *sdl_window;
 SDL_Renderer *sdl_renderer;
 static SDL_Texture *sdl_texture;
@@ -599,10 +599,10 @@ void I_FinishUpdate (void)
 
   // Blit from the paletted 8-bit screen buffer to the intermediate
   // 32-bit RGBA buffer that we can load into the texture.
-  SDL_LowerBlit(screen, &src_rect, buffer, &src_rect);
+  SDL_LowerBlit(screen, &src_rect, sdl_buffer, &src_rect);
 
   // Update the intermediate texture with the contents of the RGBA buffer.
-  SDL_UpdateTexture(sdl_texture, &src_rect, buffer->pixels, buffer->pitch);
+  SDL_UpdateTexture(sdl_texture, &src_rect, sdl_buffer->pixels, sdl_buffer->pitch);
 
   // Make sure the pillarboxes are kept clear each frame.
   SDL_RenderClear(sdl_renderer);
@@ -631,7 +631,7 @@ static void I_ShutdownSDL(void)
 {
   if (sdl_glcontext) SDL_GL_DeleteContext(sdl_glcontext);
   if (screen) SDL_FreeSurface(screen);
-  if (buffer) SDL_FreeSurface(buffer);
+  if (sdl_buffer) SDL_FreeSurface(sdl_buffer);
   if (sdl_texture) SDL_DestroyTexture(sdl_texture);
   if (sdl_renderer) SDL_DestroyRenderer(sdl_renderer);
   if (sdl_window) SDL_DestroyWindow(sdl_window);
@@ -1197,7 +1197,7 @@ void I_UpdateVideoMode(void)
 
     if (sdl_glcontext) SDL_GL_DeleteContext(sdl_glcontext);
     if (screen) SDL_FreeSurface(screen);
-    if (buffer) SDL_FreeSurface(buffer);
+    if (sdl_buffer) SDL_FreeSurface(sdl_buffer);
     if (sdl_texture) SDL_DestroyTexture(sdl_texture);
     if (sdl_renderer) SDL_DestroyRenderer(sdl_renderer);
     SDL_DestroyWindow(sdl_window);
@@ -1206,7 +1206,7 @@ void I_UpdateVideoMode(void)
     sdl_window = NULL;
     sdl_glcontext = NULL;
     screen = NULL;
-    buffer = NULL;
+    sdl_buffer = NULL;
     sdl_texture = NULL;
   }
 
@@ -1308,10 +1308,10 @@ void I_UpdateVideoMode(void)
     SDL_RenderSetIntegerScale(sdl_renderer, integer_scaling);
 
     screen = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 8, 0, 0, 0, 0);
-    buffer = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 32, 0, 0, 0, 0);
-    SDL_FillRect(buffer, NULL, 0);
+    sdl_buffer = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 32, 0, 0, 0, 0);
+    SDL_FillRect(sdl_buffer, NULL, 0);
 
-    sdl_texture = SDL_CreateTextureFromSurface(sdl_renderer, buffer);
+    sdl_texture = SDL_CreateTextureFromSurface(sdl_renderer, sdl_buffer);
 
     if(screen == NULL) {
       I_Error("Couldn't set %dx%d video mode [%s]", SCREENWIDTH, SCREENHEIGHT, SDL_GetError());

@@ -56,6 +56,9 @@
 
 int renderW;
 int renderH;
+int screenshotW;
+int screenshotH;
+enum software_sshot_resolution_type_e software_sshot_type;
 
 void I_UpdateRenderSize(void)
 {
@@ -82,8 +85,8 @@ int I_ScreenShot(const char *fname)
 
   if (pixels)
   {
-    screenshot = SDL_CreateRGBSurfaceFrom(pixels, renderW, renderH, 24,
-      renderW * 3, 0x000000ff, 0x0000ff00, 0x00ff0000, 0);
+    screenshot = SDL_CreateRGBSurfaceFrom(pixels, screenshotW, screenshotH, 24,
+      screenshotW * 3, 0x000000ff, 0x0000ff00, 0x00ff0000, 0);
   }
 
   if (screenshot)
@@ -110,6 +113,7 @@ unsigned char *I_GrabScreen(void)
   static unsigned char *pixels = NULL;
   static int pixels_size = 0;
   int size;
+  SDL_Surface *screenshot_surface;
 
   I_UpdateRenderSize();
 
@@ -120,7 +124,18 @@ unsigned char *I_GrabScreen(void)
   }
   #endif
 
-  size = renderW * renderH * 3;
+  if (software_sshot_type == SSHOT_RES_WINDOW)
+  {
+    screenshotW = renderW;
+    screenshotH = renderH;
+  }
+  else // software_sshot_type == SSHOT_RES_GAME
+  {
+    screenshotW = SCREENWIDTH;
+    screenshotH = SCREENHEIGHT;
+  }
+
+  size = screenshotW * screenshotH * 3;
   if (!pixels || size > pixels_size)
   {
     pixels_size = size;
@@ -129,8 +144,26 @@ unsigned char *I_GrabScreen(void)
 
   if (pixels && size)
   {
-    SDL_Rect screen = { 0, 0, renderW, renderH };
-    SDL_RenderReadPixels(sdl_renderer, &screen, SDL_PIXELFORMAT_RGB24, pixels, renderW * 3);
+    if (software_sshot_type == SSHOT_RES_WINDOW)
+    {
+      SDL_Rect screen = { 0, 0, screenshotW, screenshotH };
+      SDL_RenderReadPixels(sdl_renderer, &screen, SDL_PIXELFORMAT_RGB24, pixels, screenshotW * 3);
+    }
+    else // software_sshot_typee == SSHOT_RES_GAME
+    {
+      SDL_PixelFormat *screenshot_format = SDL_AllocFormat(SDL_PIXELFORMAT_RGB24);
+      SDL_LockSurface(sdl_buffer);
+      screenshot_surface = SDL_ConvertSurface(sdl_buffer, screenshot_format, 0);
+      SDL_UnlockSurface(sdl_buffer);
+
+      SDL_LockSurface(screenshot_surface);
+      memcpy(pixels, screenshot_surface->pixels, pixels_size);
+      SDL_UnlockSurface(screenshot_surface);
+
+      SDL_FreeSurface(screenshot_surface);
+      SDL_FreeFormat(screenshot_format);
+    }
+
   }
 
   return pixels;

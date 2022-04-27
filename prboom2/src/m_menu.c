@@ -3246,6 +3246,7 @@ static const char *death_use_strings[] = { "default", "nothing", "reload", NULL 
 
 static const char *renderfilters[] = { "none", "point", "linear", "rounded" };
 static const char *edgetypes[] = { "jagged", "sloped" };
+static const char *software_sshot_types[] = { "window", "game" };
 
 static const char *gltexfilters[] = {
   "None",
@@ -3368,6 +3369,7 @@ setup_menu_t display_settings[] = {
   { "Software Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 15 * 8 },
   { "Screen Multiple Factor (1-None)", S_NUM, m_null, G_X, G_Y + 16 * 8, { "render_screen_multiply" }, 0, M_ChangeScreenMultipleFactor },
   { "Integer Screen Scaling", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "integer_scaling" }, 0, M_ChangeScreenMultipleFactor },
+  { "Screenshot Resolution", S_CHOICE, m_null, G_X, G_Y + 18 * 8, { "software_sshot_type" }, 0, NULL, software_sshot_types },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { misc_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { opengl_settings1 } },

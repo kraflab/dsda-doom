@@ -50,12 +50,19 @@
 #pragma interface
 #endif
 
+enum software_sshot_resolution_type_e {
+  SSHOT_RES_WINDOW,
+  SSHOT_RES_GAME
+};
+
 extern int render_vsync;
 extern int render_screen_multiply;
 extern int integer_scaling;
+extern enum software_sshot_resolution_type_e software_sshot_type;
 
 extern SDL_Window *sdl_window;
 extern SDL_Renderer *sdl_renderer;
+extern SDL_Surface *sdl_buffer;
 
 extern const char *screen_resolutions_list[];
 extern const char *screen_resolution;
