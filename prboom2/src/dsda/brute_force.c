@@ -369,7 +369,7 @@ void dsda_UpdateBruteForce(void) {
   frame = logictic - bf_logictic;
 
   if (frame == bf_depth) {
-    if (bf_volume % 1000 == 0)
+    if (bf_volume % 10000 == 0)
       dsda_PrintBFProgress();
 
     frame = dsda_AdvanceBruteForce();
