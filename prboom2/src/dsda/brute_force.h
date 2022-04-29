@@ -39,11 +39,27 @@ typedef enum {
   dsda_bf_operator_max,
 } dsda_bf_operator_t;
 
+typedef enum {
+  dsda_bf_limit_trio_zero,
+  dsda_bf_acap = dsda_bf_limit_trio_zero,
+  dsda_bf_limit_trio_max,
+
+  dsda_bf_limit_duo_zero = dsda_bf_limit_trio_max,
+  dsda_bf_max = dsda_bf_limit_duo_zero,
+  dsda_bf_min,
+  dsda_bf_limit_duo_max,
+
+  dsda_bf_limit_max = dsda_bf_limit_duo_max
+} dsda_bf_limit_t;
+
 extern const char* dsda_bf_attribute_names[dsda_bf_attribute_max];
 extern const char* dsda_bf_operator_names[dsda_bf_operator_max];
+extern const char* dsda_bf_limit_names[dsda_bf_limit_max];
 
 dboolean dsda_BruteForce(void);
 void dsda_ResetBruteForceConditions(void);
+void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
+                              dsda_bf_limit_t limit, fixed_t value);
 void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
                                  dsda_bf_operator_t operator, fixed_t value);
 dboolean dsda_StartBruteForce(int depth,

@@ -50,6 +50,17 @@ typedef struct {
   fixed_t value;
 } bf_condition_t;
 
+typedef struct {
+  dsda_bf_attribute_t attribute;
+  dsda_bf_limit_t limit;
+  fixed_t value;
+  dboolean enabled;
+  dboolean evaluated;
+  fixed_t best_value;
+  int best_depth;
+  bf_t best_bf[MAX_BF_DEPTH];
+} bf_target_t;
+
 static bf_t brute_force[MAX_BF_DEPTH];
 static int bf_depth;
 static int bf_logictic;
@@ -58,6 +69,7 @@ static bf_condition_t bf_condition[MAX_BF_CONDITIONS];
 static long long bf_volume;
 static long long bf_volume_max;
 static dboolean bf_mode;
+static bf_target_t bf_target;
 
 const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
   [dsda_bf_x] = "x",
@@ -77,6 +89,12 @@ const char* dsda_bf_operator_names[dsda_bf_operator_max] = {
   [dsda_bf_greater_than_or_equal_to] = "gteq",
   [dsda_bf_equal_to] = "eq",
   [dsda_bf_not_equal_to] = "neq"
+};
+
+const char* dsda_bf_limit_names[dsda_bf_limit_max] = {
+  "acap",
+  "max",
+  "min",
 };
 
 static dboolean dsda_AdvanceBFRange(bf_range_t* range) {
@@ -148,54 +166,91 @@ static void dsda_EndBF(int result) {
   dsda_ExitSkipMode();
 }
 
-static dboolean dsda_BFApplyOperator(fixed_t current, int i) {
+static fixed_t dsda_BFAttribute(int attribute) {
+  player_t* player;
+
+  player = &players[displayplayer];
+
+  switch (attribute) {
+    case dsda_bf_x:
+      return player->mo->x;
+    case dsda_bf_y:
+      return player->mo->y;
+    case dsda_bf_z:
+      return player->mo->z;
+    case dsda_bf_momx:
+      return player->mo->momx;
+    case dsda_bf_momy:
+      return player->mo->momy;
+    case dsda_bf_speed:
+      return P_PlayerSpeed(player);
+    case dsda_bf_damage:
+      {
+        extern int player_damage_last_tic;
+
+        return player_damage_last_tic;
+      }
+    case dsda_bf_rng:
+      return rng.rndindex;
+    default:
+      return 0;
+  }
+}
+
+static dboolean dsda_BFConditionReached(int i) {
+  fixed_t value;
+
+  value = dsda_BFAttribute(bf_condition[i].attribute);
+
   switch (bf_condition[i].operator) {
     case dsda_bf_less_than:
-      return current < bf_condition[i].value;
+      return value < bf_condition[i].value;
     case dsda_bf_less_than_or_equal_to:
-      return current <= bf_condition[i].value;
+      return value <= bf_condition[i].value;
     case dsda_bf_greater_than:
-      return current > bf_condition[i].value;
+      return value > bf_condition[i].value;
     case dsda_bf_greater_than_or_equal_to:
-      return current >= bf_condition[i].value;
+      return value >= bf_condition[i].value;
     case dsda_bf_equal_to:
-      return current == bf_condition[i].value;
+      return value == bf_condition[i].value;
     case dsda_bf_not_equal_to:
-      return current != bf_condition[i].value;
+      return value != bf_condition[i].value;
     default:
       return false;
   }
 }
 
-static dboolean dsda_BFConditionReached(int i) {
-  player_t* player;
+static void dsda_BFUpdateBestResult(fixed_t value) {
+  int i;
 
-  player = &players[displayplayer];
+  bf_target.evaluated = true;
+  bf_target.best_value = value;
+  bf_target.best_depth = logictic - bf_logictic;
 
-  switch (bf_condition[i].attribute) {
-    case dsda_bf_x:
-      return dsda_BFApplyOperator(player->mo->x, i);
-    case dsda_bf_y:
-      return dsda_BFApplyOperator(player->mo->y, i);
-    case dsda_bf_z:
-      return dsda_BFApplyOperator(player->mo->z, i);
-    case dsda_bf_momx:
-      return dsda_BFApplyOperator(player->mo->momx, i);
-    case dsda_bf_momy:
-      return dsda_BFApplyOperator(player->mo->momy, i);
-    case dsda_bf_speed:
-      return dsda_BFApplyOperator(P_PlayerSpeed(player), i);
-    case dsda_bf_damage:
-      {
-        extern int player_damage_last_tic;
+  for (i = 0; i < bf_target.best_depth; ++i)
+    bf_target.best_bf[i] = brute_force[i];
+}
 
-        return dsda_BFApplyOperator(player_damage_last_tic, i);
-      }
-    case dsda_bf_rng:
-      return dsda_BFApplyOperator(rng.rndindex, i);
+static dboolean dsda_BFNewBestResult(fixed_t value) {
+  switch (bf_target.limit) {
+    case dsda_bf_acap:
+      return abs(value - bf_target.value) < abs(bf_target.best_value - bf_target.value);
+    case dsda_bf_max:
+      return value > bf_target.best_value;
+    case dsda_bf_min:
+      return value < bf_target.best_value;
     default:
       return false;
   }
+}
+
+static void dsda_BFEvaluateTarget(void) {
+  fixed_t value;
+
+  value = dsda_BFAttribute(bf_target.attribute);
+
+  if (dsda_BFNewBestResult(value))
+    dsda_BFUpdateBestResult(value);
 }
 
 static dboolean dsda_BFConditionsReached(void) {
@@ -204,6 +259,13 @@ static dboolean dsda_BFConditionsReached(void) {
   reached = 0;
   for (i = 0; i < bf_condition_count; ++i)
     reached += dsda_BFConditionReached(i);
+
+  if (reached == bf_condition_count)
+    if (bf_target.enabled) {
+      dsda_BFEvaluateTarget();
+
+      return false;
+    }
 
   return reached == bf_condition_count;
 }
@@ -214,6 +276,7 @@ dboolean dsda_BruteForce(void) {
 
 void dsda_ResetBruteForceConditions(void) {
   bf_condition_count = 0;
+  memset(&bf_target, 0, sizeof(bf_target));
 }
 
 void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
@@ -230,6 +293,14 @@ void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
                    dsda_bf_attribute_names[attribute],
                    dsda_bf_operator_names[operator],
                    value);
+}
+
+void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
+                              dsda_bf_limit_t limit, fixed_t value) {
+  bf_target.attribute = attribute;
+  bf_target.limit = limit;
+  bf_target.value = value;
+  bf_target.enabled = true;
 }
 
 dboolean dsda_StartBruteForce(int depth,
