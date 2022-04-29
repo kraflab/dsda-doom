@@ -26,6 +26,7 @@
 #include "dsda/key_frame.h"
 #include "dsda/skip.h"
 #include "dsda/time.h"
+#include "dsda/utility.h"
 
 #include "brute_force.h"
 
@@ -237,6 +238,7 @@ static dboolean dsda_BFConditionReached(int i) {
 
 static void dsda_BFUpdateBestResult(fixed_t value) {
   int i;
+  char str[FIXED_STRING_LENGTH];
 
   bf_target.evaluated = true;
   bf_target.best_value = value;
@@ -244,6 +246,13 @@ static void dsda_BFUpdateBestResult(fixed_t value) {
 
   for (i = 0; i < bf_target.best_depth; ++i)
     bf_target.best_bf[i] = brute_force[i];
+
+  if (fixed_point_attribute[bf_target.attribute])
+    dsda_FixedToString(str, value);
+  else
+    snprintf(str, FIXED_STRING_LENGTH, "%i", value);
+
+  lprintf(LO_INFO, "New best: %s = %s\n", dsda_bf_attribute_names[bf_target.attribute], str);
 }
 
 static dboolean dsda_BFNewBestResult(fixed_t value) {
@@ -321,6 +330,11 @@ void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
   bf_target.value = value;
   bf_target.best_value = dsda_BFAttribute(attribute);
   bf_target.enabled = true;
+
+  lprintf(LO_INFO, "Set brute force target: %s %s %d\n",
+                   dsda_bf_attribute_names[attribute],
+                   dsda_bf_limit_names[limit],
+                   value);
 }
 
 dboolean dsda_StartBruteForce(int depth,
