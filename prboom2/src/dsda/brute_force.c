@@ -25,6 +25,7 @@
 
 #include "dsda/key_frame.h"
 #include "dsda/skip.h"
+#include "dsda/time.h"
 
 #include "brute_force.h"
 
@@ -150,10 +151,13 @@ static void dsda_StoreBFKeyFrame(int frame) {
 
 static void dsda_PrintBFProgress(void) {
   int percent;
+  unsigned long long elapsed_time;
 
   percent = 100 * bf_volume / bf_volume_max;
+  elapsed_time = dsda_ElapsedTimeMS(dsda_timer_brute_force);
 
-  lprintf(LO_INFO, "  %lld / %lld sequences tested (%d%%)!\n", bf_volume, bf_volume_max, percent);
+  lprintf(LO_INFO, "  %lld / %lld sequences tested (%d%%) in %.2f seconds!\n",
+          bf_volume, bf_volume_max, percent, (float) elapsed_time / 1000);
 }
 
 #define BF_FAILURE 0
@@ -347,6 +351,8 @@ dboolean dsda_StartBruteForce(int depth,
     brute_force[i].angleturn.max = angleturn_max;
     brute_force[i].angleturn.i = angleturn_min;
   }
+
+  dsda_StartTimer(dsda_timer_brute_force);
 
   lprintf(LO_INFO, "Brute force starting!\n");
 
