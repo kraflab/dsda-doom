@@ -53,19 +53,12 @@ static double dsda_CalculateVelocity(void) {
 }
 
 static void dsda_WriteCoordinate(dsda_text_t* text, fixed_t x, const char* ch) {
-  dsda_fixed_t value;
+  char str[FIXED_STRING_LENGTH];
   const char* format;
 
-  value = dsda_SplitFixed(x);
+  dsda_FixedToString(str, x);
 
-  if (value.frac) {
-    if (value.negative && !value.base)
-      snprintf(text->msg, sizeof(text->msg), "%s: -%i.%05i", ch, value.base, value.frac);
-    else
-      snprintf(text->msg, sizeof(text->msg), "%s: %i.%05i", ch, value.base, value.frac);
-  }
-  else
-    snprintf(text->msg, sizeof(text->msg), "%s: %i", ch, value.base);
+  snprintf(text->msg, sizeof(text->msg), "%s: %s", ch, str);
 
   dsda_RefreshHudText(text);
 }

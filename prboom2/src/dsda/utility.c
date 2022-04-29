@@ -63,6 +63,21 @@ dsda_fixed_t dsda_SplitFixed(fixed_t x) {
   return result;
 }
 
+void dsda_FixedToString(char* str, fixed_t x) {
+  dsda_fixed_t value;
+
+  value = dsda_SplitFixed(x);
+
+  if (value.frac) {
+    if (value.negative && !value.base)
+      snprintf(str, FIXED_STRING_LENGTH, "-%i.%05i", value.base, value.frac);
+    else
+      snprintf(str, FIXED_STRING_LENGTH, "%i.%05i", value.base, value.frac);
+  }
+  else
+    snprintf(str, FIXED_STRING_LENGTH, "%i", value.base);
+}
+
 dsda_angle_t dsda_SplitAngle(angle_t x) {
   dsda_angle_t result;
 
