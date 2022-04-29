@@ -319,6 +319,7 @@ void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
   bf_target.attribute = attribute;
   bf_target.limit = limit;
   bf_target.value = value;
+  bf_target.best_value = dsda_BFAttribute(attribute);
   bf_target.enabled = true;
 }
 
