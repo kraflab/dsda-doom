@@ -20,6 +20,8 @@
 
 #include "z_zone.h"
 
+#include "utility.h"
+
 char** dsda_SplitString(char* str, const char* delimiter) {
   char** result;
   int substring_count = 2;
@@ -41,6 +43,38 @@ char** dsda_SplitString(char* str, const char* delimiter) {
       token = strtok(NULL, delimiter);
     }
   }
+
+  return result;
+}
+
+dsda_fixed_t dsda_SplitFixed(fixed_t x) {
+  dsda_fixed_t result;
+
+  result.negative = x < 0;
+  result.base = x >> FRACBITS;
+  result.frac = x & 0xffff;
+
+  if (result.negative)
+    if (result.frac) {
+      ++result.base;
+      result.frac = 0xffff - result.frac + 1;
+    }
+
+  return result;
+}
+
+dsda_angle_t dsda_SplitAngle(angle_t x) {
+  dsda_angle_t result;
+
+  result.negative = x < 0;
+  result.base = x >> 24;
+  result.frac = (x >> 16) & 0xff;
+
+  if (result.negative)
+    if (result.frac) {
+      ++result.base;
+      result.frac = 0xff - result.frac + 1;
+    }
 
   return result;
 }

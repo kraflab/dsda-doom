@@ -15,4 +15,20 @@
 //	DSDA Utility
 //
 
+#include "tables.h"
+
+typedef struct {
+  dboolean negative;
+  int base;
+  int frac;
+} dsda_fixed_t;
+
+typedef struct {
+  dboolean negative;
+  int base;
+  int frac;
+} dsda_angle_t;
+
 char** dsda_SplitString(char* str, const char* delimiter);
+dsda_fixed_t dsda_SplitFixed(fixed_t x);
+dsda_angle_t dsda_SplitAngle(angle_t x);
