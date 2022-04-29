@@ -97,6 +97,17 @@ const char* dsda_bf_limit_names[dsda_bf_limit_max] = {
   "min",
 };
 
+static dboolean fixed_point_attribute[dsda_bf_attribute_max] = {
+  [dsda_bf_x] = true,
+  [dsda_bf_y] = true,
+  [dsda_bf_z] = true,
+  [dsda_bf_momx] = true,
+  [dsda_bf_momy] = true,
+  [dsda_bf_speed] = true,
+  [dsda_bf_damage] = true,
+  [dsda_bf_rng] = false,
+};
+
 static dboolean dsda_AdvanceBFRange(bf_range_t* range) {
   ++range->i;
 
@@ -286,7 +297,11 @@ void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
 
   bf_condition[bf_condition_count].attribute = attribute;
   bf_condition[bf_condition_count].operator = operator;
-  bf_condition[bf_condition_count].value = value << FRACBITS;
+  bf_condition[bf_condition_count].value = value;
+
+  if (fixed_point_attribute[attribute])
+    bf_condition[bf_condition_count].value <<= FRACBITS;
+
   ++bf_condition_count;
 
   lprintf(LO_INFO, "Added brute force condition: %s %s %d\n",
