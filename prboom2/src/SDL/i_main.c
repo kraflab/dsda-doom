@@ -106,10 +106,14 @@ static void I_SignalHandler(int s)
 {
   char buf[2048];
 
-  signal(s,SIG_IGN);  /* Ignore future instances of this signal.*/
+  signal(s, SIG_IGN);  /* Ignore future instances of this signal.*/
 
-  strcpy(buf,"Exiting on signal: ");
-  I_SigString(buf+strlen(buf),2000-strlen(buf),s);
+  // Terminal Interrupt
+  if (s == 2)
+    I_DisableMessageBoxes();
+
+  strcpy(buf, "Exiting on signal: ");
+  I_SigString(buf + strlen(buf), 2000 - strlen(buf), s);
 
   I_Error("I_SignalHandler: %s", buf);
 }
