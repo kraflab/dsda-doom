@@ -158,7 +158,7 @@ dboolean dsda_BuildMode(void) {
 
 void dsda_CopyBuildCmd(ticcmd_t* cmd) {
   if (dsda_BruteForce())
-    dsda_PopBruteForceCommand(cmd);
+    dsda_CopyBruteForceCommand(cmd);
   else if (replace_source && !dsda_SkipMode())
     *cmd = build_cmd;
   else

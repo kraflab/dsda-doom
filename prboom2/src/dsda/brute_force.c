@@ -72,6 +72,7 @@ static long long bf_volume;
 static long long bf_volume_max;
 static dboolean bf_mode;
 static bf_target_t bf_target;
+static ticcmd_t bf_result[MAX_BF_DEPTH];
 
 const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
   [dsda_bf_x] = "x",
@@ -140,6 +141,25 @@ static int dsda_AdvanceBruteForce(void) {
       break;
 
   return i;
+}
+
+
+static void dsda_CopyBFCommandDepth(ticcmd_t* cmd, bf_t* bf) {
+  memset(cmd, 0, sizeof(*cmd));
+
+  cmd->angleturn = bf->angleturn.i << 8;
+  cmd->forwardmove = bf->forwardmove.i;
+  cmd->sidemove = bf->sidemove.i;
+}
+
+static void dsda_CopyBFResult(bf_t* bf, int depth) {
+  int i;
+
+  for (i = 0; i < depth; ++i)
+    dsda_CopyBFCommandDepth(&bf_result[i], &bf[i]);
+
+  if (i != MAX_BF_DEPTH)
+    memset(&bf_result[i], 0, sizeof(ticcmd_t) * (MAX_BF_DEPTH - i));
 }
 
 static void dsda_RestoreBFKeyFrame(int frame) {
@@ -407,17 +427,16 @@ void dsda_UpdateBruteForce(void) {
     dsda_StoreBFKeyFrame(frame);
 }
 
-void dsda_PopBruteForceCommand(ticcmd_t* cmd) {
-  bf_t* bf;
+void dsda_CopyBruteForceCommand(ticcmd_t* cmd) {
+  int depth;
 
-  memset(cmd, 0, sizeof(*cmd));
+  depth = logictic - bf_logictic;
 
-  if (logictic - bf_logictic >= bf_depth)
+  if (depth >= bf_depth) {
+    memset(cmd, 0, sizeof(*cmd));
+
     return;
+  }
 
-  bf = &brute_force[logictic - bf_logictic];
-
-  cmd->angleturn = bf->angleturn.i << 8;
-  cmd->forwardmove = bf->forwardmove.i;
-  cmd->sidemove = bf->sidemove.i;
+  dsda_CopyBFCommandDepth(cmd, &brute_force[depth]);
 }
