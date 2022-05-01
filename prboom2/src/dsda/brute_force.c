@@ -135,8 +135,6 @@ static dboolean dsda_AdvanceBruteForceFrame(int frame) {
 static int dsda_AdvanceBruteForce(void) {
   int i;
 
-  ++bf_volume;
-
   for (i = bf_depth - 1; i >= 0; --i)
     if (dsda_AdvanceBruteForceFrame(i))
       break;
@@ -200,10 +198,10 @@ static void dsda_EndBF(int result) {
 
   bf_mode = false;
 
-  dsda_ExitSkipMode();
-
   if (bf_target.enabled && result == BF_SUCCESS)
     dsda_QueueBuildCommands(bf_result, bf_target.best_depth);
+  else
+    dsda_ExitSkipMode();
 }
 
 static fixed_t dsda_BFAttribute(int attribute) {
@@ -418,12 +416,6 @@ dboolean dsda_StartBruteForce(int depth,
 void dsda_UpdateBruteForce(void) {
   int frame;
 
-  if (dsda_BFConditionsReached()) {
-    dsda_EndBF(BF_SUCCESS);
-
-    return;
-  }
-
   frame = logictic - bf_logictic;
 
   if (frame == bf_depth) {
@@ -434,13 +426,25 @@ void dsda_UpdateBruteForce(void) {
 
     if (frame >= 0)
       dsda_RestoreBFKeyFrame(frame);
-    else if (bf_target.enabled && bf_target.evaluated)
+  }
+  else
+    dsda_StoreBFKeyFrame(frame);
+}
+
+void dsda_EvaluateBruteForce(void) {
+  if (logictic - bf_logictic != bf_depth)
+    return;
+
+  ++bf_volume;
+
+  if (dsda_BFConditionsReached())
+    dsda_EndBF(BF_SUCCESS);
+  else if (bf_volume >= bf_volume_max) {
+    if (bf_target.enabled && bf_target.evaluated)
       dsda_EndBF(BF_SUCCESS);
     else
       dsda_EndBF(BF_FAILURE);
   }
-  else
-    dsda_StoreBFKeyFrame(frame);
 }
 
 void dsda_CopyBruteForceCommand(ticcmd_t* cmd) {

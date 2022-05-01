@@ -175,6 +175,9 @@ void dsda_QueueBuildCommands(ticcmd_t* cmds, int depth) {
 static void dsda_PopCommandQueue(ticcmd_t* cmd) {
   *cmd = cmd_queue.cmds[cmd_queue.depth - 1];
   --cmd_queue.depth;
+
+  if (!cmd_queue.depth)
+    dsda_ExitSkipMode();
 }
 
 void dsda_CopyBuildCmd(ticcmd_t* cmd) {
@@ -373,7 +376,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
 dboolean dsda_AdvanceFrame(void) {
   dboolean result;
 
-  if (dsda_SkipMode() || cmd_queue.depth)
+  if (dsda_SkipMode())
     advance_frame = gametic;
 
   result = advance_frame;

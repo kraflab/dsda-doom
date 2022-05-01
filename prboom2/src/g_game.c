@@ -1368,6 +1368,9 @@ void G_Ticker (void)
 
   dsda_EvaluateSkipModeGTicker();
 
+  if (dsda_BruteForce())
+    dsda_EvaluateBruteForce();
+
   if (dsda_AdvanceFrame())
   {
     advance_frame = true;
