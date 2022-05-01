@@ -27,10 +27,16 @@
 
 #include "build.h"
 
+typedef struct {
+  ticcmd_t* cmds;
+  int depth;
+} build_cmd_queue_t;
+
 static dboolean build_mode;
 static dboolean advance_frame;
 static ticcmd_t build_cmd;
 static dboolean replace_source = true;
+static build_cmd_queue_t cmd_queue;
 
 static signed char forward50(void) {
   return pclass[players[consoleplayer].pclass].forwardmove[1];
@@ -156,8 +162,25 @@ dboolean dsda_BuildMode(void) {
   return build_mode;
 }
 
+void dsda_QueueBuildCommands(ticcmd_t* cmds, int depth) {
+  cmd_queue.depth = depth;
+
+  if (cmd_queue.cmds)
+    free(cmd_queue.cmds);
+
+  cmd_queue.cmds = malloc(depth * sizeof(*cmds));
+  memcpy(cmd_queue.cmds, cmds, depth * sizeof(*cmds));
+}
+
+static void dsda_PopCommandQueue(ticcmd_t* cmd) {
+  *cmd = cmd_queue.cmds[cmd_queue.depth - 1];
+  --cmd_queue.depth;
+}
+
 void dsda_CopyBuildCmd(ticcmd_t* cmd) {
-  if (dsda_BruteForce())
+  if (cmd_queue.depth)
+    dsda_PopCommandQueue(cmd);
+  else if (dsda_BruteForce())
     dsda_CopyBruteForceCommand(cmd);
   else if (replace_source && !dsda_SkipMode())
     *cmd = build_cmd;
@@ -350,7 +373,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
 dboolean dsda_AdvanceFrame(void) {
   dboolean result;
 
-  if (dsda_SkipMode())
+  if (dsda_SkipMode() || cmd_queue.depth)
     advance_frame = gametic;
 
   result = advance_frame;

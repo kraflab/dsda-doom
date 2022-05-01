@@ -93,3 +93,26 @@ dsda_angle_t dsda_SplitAngle(angle_t x) {
 
   return result;
 }
+
+void dsda_PrintCommandMovement(char* str, ticcmd_t* cmd) {
+  str[0] = '\0';
+
+  if (cmd->forwardmove > 0)
+    str += sprintf(str, "MF%2d ", cmd->forwardmove);
+  else if (cmd->forwardmove < 0)
+    str += sprintf(str, "MB%2d ", -cmd->forwardmove);
+  else
+    str += sprintf(str, "     ");
+
+  if (cmd->sidemove > 0)
+    str += sprintf(str, "SR%2d ", cmd->sidemove);
+  else if (cmd->sidemove < 0)
+    str += sprintf(str, "SL%2d ", -cmd->sidemove);
+  else
+    str += sprintf(str, "     ");
+
+  if (cmd->angleturn > 0)
+    str += sprintf(str, "TL%2d", cmd->angleturn >> 8);
+  else if (cmd->angleturn < 0)
+    str += sprintf(str, "TR%2d", -(cmd->angleturn >> 8));
+}

@@ -21,6 +21,7 @@
 angle_t dsda_BuildModeViewAngleOffset(void);
 dboolean dsda_AllowBuilding(void);
 dboolean dsda_BuildMode(void);
+void dsda_QueueBuildCommands(ticcmd_t* cmds, int depth);
 void dsda_CopyBuildCmd(ticcmd_t* cmd);
 void dsda_ReadBuildCmd(ticcmd_t* cmd);
 void dsda_EnterBuildMode(void);

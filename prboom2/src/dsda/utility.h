@@ -15,9 +15,11 @@
 //	DSDA Utility
 //
 
+#include "d_ticcmd.h"
 #include "tables.h"
 
 #define FIXED_STRING_LENGTH 16
+#define COMMAND_MOVEMENT_STRING_LENGTH 18
 
 typedef struct {
   dboolean negative;
@@ -35,3 +37,4 @@ char** dsda_SplitString(char* str, const char* delimiter);
 void dsda_FixedToString(char* str, fixed_t x);
 dsda_fixed_t dsda_SplitFixed(fixed_t x);
 dsda_angle_t dsda_SplitAngle(angle_t x);
+void dsda_PrintCommandMovement(char* str, ticcmd_t* cmd);

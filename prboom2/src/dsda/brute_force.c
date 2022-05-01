@@ -23,6 +23,7 @@
 #include "lprintf.h"
 #include "m_random.h"
 
+#include "dsda/build.h"
 #include "dsda/key_frame.h"
 #include "dsda/skip.h"
 #include "dsda/time.h"
@@ -194,12 +195,15 @@ static void dsda_EndBF(int result) {
   lprintf(LO_INFO, "Brute force complete (%s)!\n", bf_result_text[result]);
   dsda_PrintBFProgress();
 
-  if (result == BF_FAILURE)
+  if (result == BF_FAILURE || bf_target.enabled)
     dsda_RestoreBFKeyFrame(0);
 
   bf_mode = false;
 
   dsda_ExitSkipMode();
+
+  if (bf_target.enabled && result == BF_SUCCESS)
+    dsda_QueueBuildCommands(bf_result, bf_target.best_depth);
 }
 
 static fixed_t dsda_BFAttribute(int attribute) {
@@ -259,6 +263,7 @@ static dboolean dsda_BFConditionReached(int i) {
 static void dsda_BFUpdateBestResult(fixed_t value) {
   int i;
   char str[FIXED_STRING_LENGTH];
+  char cmd_str[COMMAND_MOVEMENT_STRING_LENGTH];
 
   bf_target.evaluated = true;
   bf_target.best_value = value;
@@ -267,12 +272,21 @@ static void dsda_BFUpdateBestResult(fixed_t value) {
   for (i = 0; i < bf_target.best_depth; ++i)
     bf_target.best_bf[i] = brute_force[i];
 
+  dsda_CopyBFResult(bf_target.best_bf, bf_target.best_depth);
+
   if (fixed_point_attribute[bf_target.attribute])
     dsda_FixedToString(str, value);
   else
     snprintf(str, FIXED_STRING_LENGTH, "%i", value);
 
   lprintf(LO_INFO, "New best: %s = %s\n", dsda_bf_attribute_names[bf_target.attribute], str);
+
+  for (i = 0; i < bf_target.best_depth; ++i) {
+    dsda_PrintCommandMovement(cmd_str, &bf_result[i]);
+    lprintf(LO_INFO, "    %s\n", cmd_str);
+  }
+
+  lprintf(LO_INFO, "\n");
 }
 
 static dboolean dsda_BFNewBestResult(fixed_t value) {
@@ -420,6 +434,8 @@ void dsda_UpdateBruteForce(void) {
 
     if (frame >= 0)
       dsda_RestoreBFKeyFrame(frame);
+    else if (bf_target.enabled && bf_target.evaluated)
+      dsda_EndBF(BF_SUCCESS);
     else
       dsda_EndBF(BF_FAILURE);
   }
