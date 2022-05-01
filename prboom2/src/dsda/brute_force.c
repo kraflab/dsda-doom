@@ -256,6 +256,9 @@ static void dsda_BFUpdateBestResult(fixed_t value) {
 }
 
 static dboolean dsda_BFNewBestResult(fixed_t value) {
+  if (!bf_target.evaluated)
+    return true;
+
   switch (bf_target.limit) {
     case dsda_bf_acap:
       return abs(value - bf_target.value) < abs(bf_target.best_value - bf_target.value);
