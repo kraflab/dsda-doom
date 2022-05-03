@@ -1396,7 +1396,7 @@ void G_Ticker (void)
       {
         ticcmd_t *cmd = &players[i].cmd;
 
-        memcpy(cmd, &netcmds[i][buf], sizeof *cmd);
+        memcpy(cmd, &local_cmds[i][buf], sizeof *cmd);
 
         if (dsda_BuildMode())
           dsda_ReadBuildCmd(cmd);
