@@ -66,7 +66,6 @@
 ticcmd_t         netcmds[MAX_MAXPLAYERS][BACKUPTICS];
 static ticcmd_t* localcmds;
 int maketic;
-int ticdup = 1;
 int solo_net = 0;
 
 void D_InitFakeNetGame (void)

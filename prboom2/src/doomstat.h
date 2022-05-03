@@ -320,7 +320,6 @@ extern  int        maketic;
 #define BACKUPTICS              12
 
 extern  ticcmd_t   netcmds[][BACKUPTICS];
-extern  int        ticdup;
 
 //-----------------------------------------------------------------------------
 

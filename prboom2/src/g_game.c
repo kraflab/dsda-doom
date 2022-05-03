@@ -484,7 +484,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (joyxmove != 0 ||
       dsda_InputActive(dsda_input_turnright) ||
       dsda_InputActive(dsda_input_turnleft))
-    turnheld += ticdup;
+    ++turnheld;
   else
     turnheld = 0;
 
@@ -549,7 +549,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
     if (dsda_InputActive(dsda_input_lookdown) || dsda_InputActive(dsda_input_lookup))
     {
-      lookheld += ticdup;
+      ++lookheld;
     }
     else
     {
@@ -913,7 +913,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicktime = 0;
     }
     else
-      if ((dclicktime += ticdup) > 20)
+      if (++dclicktime > 20)
       {
         dclicks = 0;
         dclickstate = 0;
@@ -935,7 +935,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicktime2 = 0;
     }
     else
-      if ((dclicktime2 += ticdup) > 20)
+      if (++dclicktime2 > 20)
       {
         dclicks2 = 0;
         dclickstate2 = 0;
@@ -1380,7 +1380,7 @@ void G_Ticker (void)
   if (dsda_PausedOutsideDemo())
     basetic++;  // For revenant tracers and RNG -- we must maintain sync
   else {
-    int buf = (gametic / ticdup) % BACKUPTICS;
+    int buf = gametic % BACKUPTICS;
 
     dsda_UpdateAutoKeyFrames();
 
@@ -4006,7 +4006,7 @@ void P_WalkTicker()
   if (joyxmove != 0 ||
       dsda_InputActive(dsda_input_turnright) ||
       dsda_InputActive(dsda_input_turnleft))
-    turnheld += ticdup;
+    ++turnheld;
   else
     turnheld = 0;
 
