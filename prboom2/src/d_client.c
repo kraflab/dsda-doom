@@ -64,7 +64,6 @@
 #include "dsda/time.h"
 
 ticcmd_t         netcmds[MAX_MAXPLAYERS][BACKUPTICS];
-static ticcmd_t* localcmds;
 int maketic;
 int solo_net = 0;
 
@@ -73,7 +72,6 @@ void D_InitFakeNetGame (void)
   int i;
 
   consoleplayer = displayplayer = 0;
-  localcmds = netcmds[consoleplayer];
   solo_net = (M_CheckParm("-solo-net") != 0);
   coop_spawns = (M_CheckParm("-coop_spawns") != 0);
   netgame = solo_net;
@@ -105,7 +103,7 @@ void FakeNetUpdate(void)
       // after change of realtic_clock_rate.
       if (maketic - gametic && gametic <= force_singletics_to && dsda_RealticClockRate() < 200) break;
 
-      G_BuildTiccmd(&localcmds[maketic%BACKUPTICS]);
+      G_BuildTiccmd(&netcmds[0][maketic%BACKUPTICS]);
       maketic++;
     }
   }
