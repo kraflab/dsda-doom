@@ -29,7 +29,7 @@ _dsda_doom()
     if [[ $cur == -* ]]; then
         COMPREPLY=( $( compgen -W '-1 -2 -3 -altdeath -aspect -auto -avg
         -avidemo -bexout -blockmap -complevel -config -deathmatch -debugfile
-        -deh -devparm -fast -fastdemo -ffmap -file -fullscreen -geom -height
+        -deh -devparm -fast -fastdemo -file -fullscreen -geom -height
         -iwad -levelstat -noaccel -noblit -nocheats -nodraw -nodrawers
         -nofullscreen -nojoy -nomonsters -nomouse -nomusic -nosfx -nosound
         -nowindow -playdemo -record -recordfromto -resetgamma -respawn

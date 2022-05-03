@@ -92,8 +92,6 @@ void FakeNetUpdate(void)
     int newtics = dsda_GetTick() - lastmadetic;
     lastmadetic += newtics;
 
-    if (ffmap) newtics++;
-
     while (newtics--) {
       I_StartTic();
       if (maketic - gametic > BACKUPTICS/2) break;
