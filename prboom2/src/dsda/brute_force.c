@@ -193,13 +193,12 @@ static void dsda_EndBF(int result) {
   lprintf(LO_INFO, "Brute force complete (%s)!\n", bf_result_text[result]);
   dsda_PrintBFProgress();
 
-  if (result == BF_FAILURE || bf_target.enabled)
-    dsda_RestoreBFKeyFrame(0);
+  dsda_RestoreBFKeyFrame(0);
 
   bf_mode = false;
 
-  if (bf_target.enabled && result == BF_SUCCESS)
-    dsda_QueueBuildCommands(bf_result, bf_target.best_depth);
+  if (result == BF_SUCCESS)
+    dsda_QueueBuildCommands(bf_result, bf_depth);
   else
     dsda_ExitSkipMode();
 }
@@ -437,8 +436,10 @@ void dsda_EvaluateBruteForce(void) {
 
   ++bf_volume;
 
-  if (dsda_BFConditionsReached())
+  if (dsda_BFConditionsReached()) {
+    dsda_CopyBFResult(brute_force, bf_depth);
     dsda_EndBF(BF_SUCCESS);
+  }
   else if (bf_volume >= bf_volume_max) {
     if (bf_target.enabled && bf_target.evaluated)
       dsda_EndBF(BF_SUCCESS);
