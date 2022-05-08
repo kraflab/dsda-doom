@@ -353,9 +353,6 @@ static st_number_t w_frags;
 // health widget
 static st_percent_t w_health;
 
-// arms background
-static st_binicon_t  w_armsbg;
-
 // weapon ownership widgets
 static st_multicon_t w_arms[6];
 
@@ -905,9 +902,6 @@ static void ST_drawWidgets(dboolean refresh)
     STlib_updatePercent(&w_armor, CR_BLUE2, refresh); //killough 2/28/98
   }
 
-  //e6y: moved to ST_refreshBackground() for correct single-pass stretching
-  //STlib_updateBinIcon(&w_armsbg, refresh);
-
   for (i=0;i<6;i++)
     STlib_updateMultIcon(&w_arms[i], refresh);
 
@@ -1113,14 +1107,6 @@ static void ST_createWidgets(void)
                     &plyr->health,
                     &st_statusbaron,
                     &tallpercent);
-
-  // arms background
-  STlib_initBinIcon(&w_armsbg,
-                    ST_ARMSBGX,
-                    ST_ARMSBGY,
-                    &armsbg,
-                    &st_notdeathmatch,
-                    &st_statusbaron);
 
   // weapons owned
   for(i=0;i<6;i++)
