@@ -203,8 +203,6 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
     return;
   }
 
-  dsda_ResetCommandHistory();
-
   if (skip_wipe || dsda_BuildMode())
     dsda_SkipNextWipe();
 

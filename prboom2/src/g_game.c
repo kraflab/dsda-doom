@@ -89,6 +89,7 @@
 #include "dsda.h"
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
+#include "dsda/command_display.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
 #include "dsda/key_frame.h"
@@ -2996,6 +2997,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   }
 
   dsda_ResetPauseMode();
+  dsda_ResetCommandHistory();
   automapmode &= ~am_active;
   gameskill = skill;
   dsda_UpdateGameMap(episode, map);
