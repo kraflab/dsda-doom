@@ -39,13 +39,17 @@ static int playdemo_arg, fastdemo_arg, timedemo_arg, recordfromto_arg;
 static char recordfromto_dest[PATH_MAX];
 
 dboolean dsda_JumpToLogicTic(int tic) {
+  if (tic < 0)
+    return false;
+
   if (tic > logictic)
     dsda_SkipToLogicTic(tic);
   else if (tic < logictic) {
     if (!dsda_RestoreClosestKeyFrame(tic))
       return false;
 
-    dsda_SkipToLogicTic(tic);
+    if (tic != logictic)
+      dsda_SkipToLogicTic(tic);
   }
 
   return true;
