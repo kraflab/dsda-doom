@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "g_game.h"
 
 #include "dsda/brute_force.h"
 #include "dsda/demo.h"
@@ -232,6 +233,11 @@ dboolean dsda_BuildResponder(event_t* ev) {
   }
 
   if (dsda_InputActivated(dsda_input_build_reverse_frame)) {
+    if (!demorecording) {
+      doom_printf("Cannot reverse outside demo");
+      return true;
+    }
+
     dsda_JumpToLogicTic(logictic - 1);
 
     return true;

@@ -84,7 +84,7 @@ static void dsda_EnsureDemoBufferSpace(size_t length) {
 }
 
 void dsda_CopyPendingCmd(ticcmd_t* cmd) {
-  if (largest_real_offset - dsda_DemoBufferOffset() >= bytes_per_tic) {
+  if (demorecording && largest_real_offset - dsda_DemoBufferOffset() >= bytes_per_tic) {
     const byte* p = dsda_demo_write_buffer_p;
 
     G_ReadOneTick(cmd, &p);
