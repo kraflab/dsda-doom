@@ -105,10 +105,6 @@ void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl);
 void G_WriteDemoFooter(void);
 void I_DemoExShutdown(void);
 
-void W_InitPWADTable(wadtbl_t *wadtbl);
-void W_FreePWADTable(wadtbl_t *wadtbl);
-void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size);
-
 void R_DemoEx_WriteMLook(angle_t pitch);
 angle_t R_DemoEx_ReadMLook(void);
 void R_DemoEx_ResetMLook(void);

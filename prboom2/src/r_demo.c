@@ -1188,6 +1188,8 @@ void G_WriteDemoFooter(void)
   dsda_WriteToDemo(&demoex.header, sizeof(demoex.header));
   dsda_WriteToDemo(demoex.data, demoex.datasize);
   dsda_WriteToDemo(demoex.lumps, demoex.header.numlumps * sizeof(demoex.lumps[0]));
+
+  W_FreePWADTable(&demoex);
 }
 
 int WadDataInit(waddata_t *waddata)
