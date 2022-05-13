@@ -121,8 +121,7 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 
 // Stripped down version of G_DoSaveGame
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
-  int demo_write_buffer_offset, i, length;
-  demo_write_buffer_offset = dsda_DemoBufferOffset();
+  int i, length;
 
   save_p = savebuffer = malloc(savegamesize);
 
@@ -150,15 +149,9 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
   CheckSaveGame(dsda_PlaybackPositionSize());
   dsda_StorePlaybackPosition(&save_p);
 
-  // Store location in demo recording buffer
-  CheckSaveGame(sizeof(demo_write_buffer_offset));
-  memcpy(save_p, &demo_write_buffer_offset, sizeof(demo_write_buffer_offset));
-  save_p += sizeof(demo_write_buffer_offset);
-
-  if (complete && demo_write_buffer_offset) {
-    CheckSaveGame(demo_write_buffer_offset);
-    save_p += dsda_CopyDemoBuffer(save_p);
-  }
+  // Store state of demo recording buffer
+  CheckSaveGame(dsda_DemoDataSize(complete));
+  dsda_StoreDemoData(&save_p, complete);
 
   CheckSaveGame(sizeof(leveltime));
   memcpy(save_p, &leveltime, sizeof(leveltime));
@@ -184,7 +177,7 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
   savebuffer = save_p = NULL;
 
   if (complete) {
-    if (demo_write_buffer_offset)
+    if (demorecording)
       dsda_ExportKeyFrame(key_frame->buffer, length);
 
     doom_printf("Stored key frame");
@@ -229,18 +222,8 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   // Restore state of demo playback buffer
   dsda_RestorePlaybackPosition(&save_p);
 
-  // Restore location in demo recording buffer
-  memcpy(&demo_write_buffer_offset, save_p, sizeof(demo_write_buffer_offset));
-  save_p += sizeof(demo_write_buffer_offset);
-
-  if (complete && demo_write_buffer_offset) {
-    dsda_SetDemoBufferOffset(0);
-    dsda_WriteToDemo(save_p, demo_write_buffer_offset);
-    save_p += demo_write_buffer_offset;
-  }
-  else {
-    dsda_SetDemoBufferOffset(demo_write_buffer_offset);
-  }
+  // Restore state of demo recording buffer
+  dsda_RestoreDemoData(&save_p, complete);
 
   G_InitNew(gameskill, gameepisode, gamemap, false);
 

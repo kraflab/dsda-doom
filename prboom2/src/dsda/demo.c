@@ -41,12 +41,17 @@ static int dsda_demo_write_buffer_length;
 static char* dsda_demo_name;
 static int dsda_extra_demo_header_data_offset;
 static int largest_real_offset;
+static int demo_tics;
 
 #define DSDA_DEMO_VERSION 1
 #define DEMOMARKER 0x80
 
 static int dsda_demo_version;
 static int bytes_per_tic;
+
+static int dsda_DemoBufferOffset(void) {
+  return dsda_demo_write_buffer_p - dsda_demo_write_buffer;
+}
 
 int dsda_BytesPerTic(void) {
   return bytes_per_tic;
@@ -128,6 +133,8 @@ void dsda_InitDemo(char* name) {
   dsda_demo_write_buffer_p = dsda_demo_write_buffer;
 
   dsda_demo_write_buffer_length = INITIAL_DEMO_BUFFER_SIZE;
+
+  demo_tics = 0;
 }
 
 void dsda_WriteToDemo(void* buffer, size_t length) {
@@ -135,6 +142,11 @@ void dsda_WriteToDemo(void* buffer, size_t length) {
 
   memcpy(dsda_demo_write_buffer_p, buffer, length);
   dsda_demo_write_buffer_p += length;
+}
+
+void dsda_WriteTicToDemo(void* buffer, size_t length) {
+  dsda_WriteToDemo(buffer, length);
+  ++demo_tics;
 }
 
 static void dsda_WriteIntToHeader(byte** p, int value) {
@@ -162,29 +174,27 @@ static int dsda_ReadIntFromHeader(const byte* p) {
   return result;
 }
 
-static void dsda_WriteExtraDemoHeaderData(int end_marker_location, int demo_tic_count) {
+static void dsda_WriteExtraDemoHeaderData(int end_marker_location) {
   byte* header_p;
 
   if (!dsda_demo_version) return;
 
   header_p = dsda_demo_write_buffer + dsda_extra_demo_header_data_offset;
   dsda_WriteIntToHeader(&header_p, end_marker_location);
-  dsda_WriteIntToHeader(&header_p, demo_tic_count);
+  dsda_WriteIntToHeader(&header_p, demo_tics);
 }
 
 void dsda_EndDemoRecording(void) {
-  int demo_tic_count;
   int end_marker_location;
   byte end_marker = DEMOMARKER;
 
   demorecording = false;
 
   end_marker_location = dsda_demo_write_buffer_p - dsda_demo_write_buffer;
-  demo_tic_count = logictic;
 
   dsda_WriteToDemo(&end_marker, 1);
 
-  dsda_WriteExtraDemoHeaderData(end_marker_location, demo_tic_count);
+  dsda_WriteExtraDemoHeaderData(end_marker_location);
 
   G_WriteDemoFooter();
 
@@ -209,20 +219,7 @@ void dsda_WriteDemoToFile(void) {
   dsda_demo_name = NULL;
 }
 
-int dsda_DemoBufferOffset(void) {
-  return dsda_demo_write_buffer_p - dsda_demo_write_buffer;
-}
-
-int dsda_CopyDemoBuffer(void* buffer) {
-  int offset;
-
-  offset = dsda_DemoBufferOffset();
-  memcpy(buffer, dsda_demo_write_buffer, offset);
-
-  return offset;
-}
-
-void dsda_SetDemoBufferOffset(int offset) {
+static void dsda_SetDemoBufferOffset(int offset) {
   int current_offset;
 
   if (dsda_demo_write_buffer == NULL) return;
@@ -237,6 +234,49 @@ void dsda_SetDemoBufferOffset(int offset) {
     largest_real_offset = current_offset;
 
   dsda_demo_write_buffer_p = dsda_demo_write_buffer + offset;
+}
+
+int dsda_DemoDataSize(byte complete) {
+  int buffer_size;
+
+  buffer_size = complete ? dsda_DemoBufferOffset() : 0;
+
+  return sizeof(buffer_size) + sizeof(demo_tics) + buffer_size;
+}
+
+void dsda_StoreDemoData(byte** save_p, byte complete) {
+  int demo_write_buffer_offset;
+
+  demo_write_buffer_offset = dsda_DemoBufferOffset();
+
+  memcpy(*save_p, &demo_write_buffer_offset, sizeof(demo_write_buffer_offset));
+  *save_p += sizeof(demo_write_buffer_offset);
+
+  memcpy(*save_p, &demo_tics, sizeof(demo_tics));
+  *save_p += sizeof(demo_tics);
+
+  if (complete && demo_write_buffer_offset) {
+    memcpy(*save_p, dsda_demo_write_buffer, demo_write_buffer_offset);
+    *save_p += demo_write_buffer_offset;
+  }
+}
+
+void dsda_RestoreDemoData(byte** save_p, byte complete) {
+  int demo_write_buffer_offset;
+
+  memcpy(&demo_write_buffer_offset, *save_p, sizeof(demo_write_buffer_offset));
+  *save_p += sizeof(demo_write_buffer_offset);
+
+  memcpy(&demo_tics, *save_p, sizeof(demo_tics));
+  *save_p += sizeof(demo_tics);
+
+  if (complete && demo_write_buffer_offset) {
+    dsda_SetDemoBufferOffset(0);
+    dsda_WriteToDemo(*save_p, demo_write_buffer_offset);
+    *save_p += demo_write_buffer_offset;
+  }
+  else
+    dsda_SetDemoBufferOffset(demo_write_buffer_offset);
 }
 
 void dsda_JoinDemoCmd(ticcmd_t* cmd) {

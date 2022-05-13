@@ -3095,7 +3095,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 
   dsda_WriteExCmd(&p, cmd);
 
-  dsda_WriteToDemo(buf, p - buf);
+  dsda_WriteTicToDemo(buf, p - buf);
 
   p = buf; // make SURE it is exactly the same
   G_ReadOneTick(cmd, (const byte **) &p);
