@@ -32,6 +32,7 @@
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
+#include "dsda/utility.h"
 
 #include "demo.h"
 
@@ -65,34 +66,38 @@ void dsda_SetDemoBaseName(const char* name) {
 
   dsda_demo_name_base = strdup(name);
 
-  p = dsda_demo_name_base + strlen(dsda_demo_name_base);
-  while (--p > dsda_demo_name_base && *p != '/' && *p != '\\')
-    if (*p == '.') {
-      *p = '\0';
-      break;
-    }
+  dsda_CutExtension(dsda_demo_name_base);
 }
 
 // from crispy - incrementing demo file names
-char* dsda_NewDemoName(void) {
+char* dsda_GenerateDemoName(unsigned int* counter, const char* base_name) {
   char* demo_name;
   size_t demo_name_size;
   FILE* fp;
-  static unsigned int j = 2;
+  int j;
+
+  j = *counter;
+  demo_name_size = strlen(base_name) + 11; // 11 = -12345.lmp\0
+  demo_name = malloc(demo_name_size);
+  snprintf(demo_name, demo_name_size, "%s.lmp", base_name);
+
+  for (; j <= 99999 && (fp = fopen(demo_name, "rb")) != NULL; j++) {
+    snprintf(demo_name, demo_name_size, "%s-%05d.lmp", base_name, j);
+    fclose (fp);
+  }
+
+  *counter = j;
+
+  return demo_name;
+}
+
+char* dsda_NewDemoName(void) {
+  static unsigned int counter = 2;
 
   if (!dsda_demo_name_base)
     dsda_SetDemoBaseName("null");
 
-  demo_name_size = strlen(dsda_demo_name_base) + 11; // 11 = -12345.lmp\0
-  demo_name = malloc(demo_name_size);
-  snprintf(demo_name, demo_name_size, "%s.lmp", dsda_demo_name_base);
-
-  for (; j <= 99999 && (fp = fopen(demo_name, "rb")) != NULL; j++) {
-    snprintf(demo_name, demo_name_size, "%s-%05d.lmp", dsda_demo_name_base, j);
-    fclose (fp);
-  }
-
-  return demo_name;
+  return dsda_GenerateDemoName(&counter, dsda_demo_name_base);
 }
 
 static int dsda_DemoBufferOffset(void) {
@@ -198,6 +203,23 @@ void dsda_InitDemoRecording(void) {
   demo_tics = 0;
 }
 
+static void dsda_SetDemoBufferOffset(int offset) {
+  int current_offset;
+
+  if (dsda_demo_write_buffer == NULL) return;
+
+  current_offset = dsda_DemoBufferOffset();
+
+  // Cannot load forward (demo buffer would desync)
+  if (offset > current_offset)
+    I_Error("dsda_SetDemoBufferOffset: Impossible time traveling detected.");
+
+  if (current_offset > largest_real_offset)
+    largest_real_offset = current_offset;
+
+  dsda_demo_write_buffer_p = dsda_demo_write_buffer + offset;
+}
+
 void dsda_WriteToDemo(void* buffer, size_t length) {
   dsda_EnsureDemoBufferSpace(length);
 
@@ -245,11 +267,10 @@ static void dsda_WriteExtraDemoHeaderData(int end_marker_location) {
   dsda_WriteIntToHeader(&header_p, demo_tics);
 }
 
-void dsda_EndDemoRecording(void) {
+static int dsda_ExportDemoToFile(const char* demo_name) {
   int end_marker_location;
   byte end_marker = DEMOMARKER;
-
-  demorecording = false;
+  int length;
 
   end_marker_location = dsda_demo_write_buffer_p - dsda_demo_write_buffer;
 
@@ -259,45 +280,57 @@ void dsda_EndDemoRecording(void) {
 
   G_WriteDemoFooter();
 
-  dsda_WriteDemoToFile();
-
-  lprintf(LO_INFO, "Demo finished recording\n");
-}
-
-void dsda_WriteDemoToFile(void) {
-  int length;
-  char* demo_name;
-
   length = dsda_DemoBufferOffset();
-
-  demo_name = dsda_NewDemoName();
 
   if (!M_WriteFile(demo_name, dsda_demo_write_buffer, length))
     I_Error("dsda_WriteDemoToFile: Failed to write demo file.");
 
+  return end_marker_location;
+}
+
+static void dsda_FreeDemoBuffer(void) {
   free(dsda_demo_write_buffer);
   dsda_demo_write_buffer = NULL;
   dsda_demo_write_buffer_p = NULL;
   dsda_demo_write_buffer_length = 0;
-
-  free(demo_name);
 }
 
-static void dsda_SetDemoBufferOffset(int offset) {
-  int current_offset;
+void dsda_EndDemoRecording(void) {
+  char* demo_name;
 
-  if (dsda_demo_write_buffer == NULL) return;
+  demorecording = false;
 
-  current_offset = dsda_DemoBufferOffset();
+  demo_name = dsda_NewDemoName();
 
-  // Cannot load forward (demo buffer would desync)
-  if (offset > current_offset)
-    I_Error("dsda_SetDemoBufferOffset: Impossible time traveling detected.");
+  dsda_ExportDemoToFile(demo_name);
 
-  if (current_offset > largest_real_offset)
-    largest_real_offset = current_offset;
+  dsda_FreeDemoBuffer();
 
-  dsda_demo_write_buffer_p = dsda_demo_write_buffer + offset;
+  free(demo_name);
+
+  lprintf(LO_INFO, "Demo finished recording\n");
+}
+
+void dsda_ExportDemo(const char* name) {
+  char* demo_name;
+  char* base_name;
+  int counter = 2;
+  int old_offset;
+
+  base_name = strdup(name);
+
+  dsda_CutExtension(base_name);
+
+  demo_name = dsda_GenerateDemoName(&counter, base_name);
+
+  old_offset = dsda_ExportDemoToFile(demo_name);
+
+  dsda_SetDemoBufferOffset(old_offset);
+
+  free(base_name);
+  free(demo_name);
+
+  lprintf(LO_INFO, "Demo recording exported\n");
 }
 
 int dsda_DemoDataSize(byte complete) {

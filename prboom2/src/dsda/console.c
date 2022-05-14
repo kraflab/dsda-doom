@@ -23,6 +23,7 @@
 #include "v_video.h"
 
 #include "dsda/brute_force.h"
+#include "dsda/demo.h"
 #include "dsda/exhud.h"
 #include "dsda/global.h"
 #include "dsda/playback.h"
@@ -192,6 +193,17 @@ static dboolean console_PlayerRoundXY(const char* command, const char* args) {
   console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
 
   return true;
+}
+
+static dboolean console_DemoExport(const char* command, const char* args) {
+  char name[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%s", name) == 1) {
+    dsda_ExportDemo(name);
+    return true;
+  }
+
+  return false;
 }
 
 static dboolean console_CommandLock(const char* command, const char* args) {
@@ -436,6 +448,9 @@ static console_command_entry_t console_commands[] = {
   // brute force
   { "bruteforce.start", console_BruteForceStart },
   { "bf.start", console_BruteForceStart },
+
+  // demos
+  { "demo.export", console_DemoExport },
 
   // cheats
   { "idchoppers", console_BasicCheat },

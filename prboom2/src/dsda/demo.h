@@ -22,6 +22,7 @@
 
 const char* dsda_DemoNameBase(void);
 void dsda_SetDemoBaseName(const char* name);
+void dsda_ExportDemo(const char* name);
 void dsda_MarkCompatibilityLevelUnspecified(void);
 int dsda_BytesPerTic(void);
 void dsda_EvaluateBytesPerTic(void);
