@@ -22,7 +22,7 @@
 #include "lprintf.h"
 #include "e6y.h"
 
-#include "dsda.h"
+#include "dsda/demo.h"
 #include "dsda/settings.h"
 #include "dsda/data_organizer.h"
 

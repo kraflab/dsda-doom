@@ -2664,8 +2664,6 @@ void G_Compatibility(void)
 // killough 3/1/98: function to reload all the default parameter
 // settings before a new game begins
 
-static int compatibility_level_unspecified;
-
 void G_ReloadDefaults(void)
 {
   const dsda_options_t* options;
@@ -2677,7 +2675,7 @@ void G_ReloadDefaults(void)
     if (l != UNSPECIFIED_COMPLEVEL)
       compatibility_level = l;
     else
-      compatibility_level_unspecified = true;
+      dsda_MarkCompatibilityLevelUnspecified();
   }
   if (compatibility_level == -1)
     compatibility_level = best_compatibility;
@@ -3099,36 +3097,6 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 
   p = buf; // make SURE it is exactly the same
   G_ReadOneTick(cmd, (const byte **) &p);
-}
-
-//
-// G_RecordDemo
-//
-
-void G_RecordDemo (const char* name)
-{
-  char *demoname;
-
-  if (compatibility_level_unspecified)
-    I_Error("You must specify a compatibility level when recording a demo!\n"
-            "Example: dsda-doom -iwad DOOM -complevel 3 -record demo");
-
-  demoname = malloc(strlen(name)+4+1);
-  AddDefaultExtension(strcpy(demoname, name), ".lmp");  // 1/18/98 killough
-  demorecording = true;
-
-  dsda_WatchRecordDemo(demoname);
-
-  if (!access(demoname, F_OK) && !demo_overwriteexisting)
-  {
-    free(demoname);
-    demoname = dsda_NewDemoName();
-  }
-
-  // dsda - TODO: abstracting file handling, but should refactor around here
-  dsda_InitDemo(demoname);
-
-  free(demoname);
 }
 
 // These functions are used to read and write game-specific options in demos
@@ -4140,7 +4108,7 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
 }
 
 //e6y
-void G_ContinueDemo(const char *playback_name, const char *record_name)
+void G_ContinueDemo(const char *playback_name)
 {
   const byte *demo_p;
 
@@ -4151,7 +4119,7 @@ void G_ContinueDemo(const char *playback_name, const char *record_name)
 
     singledemo = true;
     autostart = true;
-    G_RecordDemo(record_name);
+    dsda_InitDemoRecording();
     G_BeginRecording();
   }
 }

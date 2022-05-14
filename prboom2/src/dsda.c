@@ -28,6 +28,7 @@
 #include "am_map.h"
 
 #include "dsda/analysis.h"
+#include "dsda/demo.h"
 #include "dsda/exhud.h"
 #include "dsda/ghost.h"
 #include "dsda/hud.h"
@@ -48,7 +49,6 @@ int dsda_last_leveltime;
 int dsda_last_gamemap;
 
 // other
-static char* dsda_demo_name_base;
 int dsda_max_kill_requirement;
 int dsda_session_attempts = 1;
 
@@ -372,29 +372,6 @@ void dsda_WatchSecret(void) {
   if (dsda_time_secrets) dsda_AddSplit(DSDA_SPLIT_SECRET);
 }
 
-char* dsda_DemoNameBase(void) {
-  return dsda_demo_name_base;
-}
-
-// from crispy - incrementing demo file names
-char* dsda_NewDemoName(void) {
-  char* demo_name;
-  size_t demo_name_size;
-  FILE* fp = NULL;
-  static unsigned int j = 2;
-
-  demo_name_size = strlen(dsda_demo_name_base) + 11; // 11 = -12345.lmp\0
-  demo_name = malloc(demo_name_size);
-  snprintf(demo_name, demo_name_size, "%s.lmp", dsda_demo_name_base);
-
-  for (; j <= 99999 && (fp = fopen(demo_name, "rb")) != NULL; j++) {
-    snprintf(demo_name, demo_name_size, "%s-%05d.lmp", dsda_demo_name_base, j);
-    fclose (fp);
-  }
-
-  return demo_name;
-}
-
 static void dsda_ResetTracking(void) {
   dsda_ResetAnalysis();
 
@@ -402,8 +379,6 @@ static void dsda_ResetTracking(void) {
 }
 
 void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
-  char* demo_name;
-
   if (!demorecording) return;
 
   ++dsda_session_attempts;
@@ -414,13 +389,9 @@ void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
   dsda_ResetRevealMap();
   G_CheckDemoStatus();
 
-  demo_name = dsda_NewDemoName();
-
-  G_RecordDemo(demo_name);
+  dsda_InitDemoRecording();
 
   basetic = gametic;
-
-  free(demo_name);
 }
 
 void dsda_WatchNewGame(void) {
@@ -434,23 +405,4 @@ void dsda_WatchLevelReload(int* reloaded) {
 
   G_DeferedInitNew(gameskill, gameepisode, startmap);
   *reloaded = 1;
-}
-
-void dsda_WatchRecordDemo(const char* name) {
-  size_t base_size;
-
-  if (dsda_demo_name_base != NULL) {
-    dsda_InitSettings();
-    return;
-  }
-
-  base_size = strlen(name) - 3;
-  dsda_demo_name_base = malloc(base_size);
-  strncpy(dsda_demo_name_base, name, base_size);
-  dsda_demo_name_base[base_size - 1] = '\0';
-
-  // demorecording is set after prboom+ has already cached its settings
-  // we need to reset things here to satisfy strict mode
-  dsda_InitSettings();
-  dsda_InitKeyFrame();
 }

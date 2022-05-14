@@ -29,25 +29,71 @@
 
 #include "command_display.h"
 #include "dsda/excmd.h"
+#include "dsda/key_frame.h"
 #include "dsda/map_format.h"
+#include "dsda/settings.h"
 
 #include "demo.h"
 
 #define INITIAL_DEMO_BUFFER_SIZE 0x20000
 
+static char* dsda_demo_name_base;
 static byte* dsda_demo_write_buffer;
 static byte* dsda_demo_write_buffer_p;
 static int dsda_demo_write_buffer_length;
-static char* dsda_demo_name;
 static int dsda_extra_demo_header_data_offset;
 static int largest_real_offset;
 static int demo_tics;
+static int compatibility_level_unspecified;
 
 #define DSDA_DEMO_VERSION 1
 #define DEMOMARKER 0x80
 
 static int dsda_demo_version;
 static int bytes_per_tic;
+
+const char* dsda_DemoNameBase(void) {
+  return dsda_demo_name_base;
+}
+
+void dsda_SetDemoBaseName(const char* name) {
+  size_t base_size;
+  char* p;
+
+  if (dsda_demo_name_base)
+    free(dsda_demo_name_base);
+
+  dsda_demo_name_base = strdup(name);
+
+  p = dsda_demo_name_base + strlen(dsda_demo_name_base);
+  while (--p > dsda_demo_name_base && *p != '/' && *p != '\\')
+    if (*p == '.') {
+      *p = '\0';
+      break;
+    }
+}
+
+// from crispy - incrementing demo file names
+char* dsda_NewDemoName(void) {
+  char* demo_name;
+  size_t demo_name_size;
+  FILE* fp;
+  static unsigned int j = 2;
+
+  if (!dsda_demo_name_base)
+    dsda_SetDemoBaseName("null");
+
+  demo_name_size = strlen(dsda_demo_name_base) + 11; // 11 = -12345.lmp\0
+  demo_name = malloc(demo_name_size);
+  snprintf(demo_name, demo_name_size, "%s.lmp", dsda_demo_name_base);
+
+  for (; j <= 99999 && (fp = fopen(demo_name, "rb")) != NULL; j++) {
+    snprintf(demo_name, demo_name_size, "%s-%05d.lmp", dsda_demo_name_base, j);
+    fclose (fp);
+  }
+
+  return demo_name;
+}
 
 static int dsda_DemoBufferOffset(void) {
   return dsda_demo_write_buffer_p - dsda_demo_write_buffer;
@@ -119,12 +165,27 @@ void dsda_RestoreCommandHistory(void) {
   }
 }
 
-void dsda_InitDemo(char* name) {
-  size_t name_size;
+void dsda_MarkCompatibilityLevelUnspecified(void) {
+  compatibility_level_unspecified = true;
+}
 
-  name_size = strlen(name) + 1;
-  dsda_demo_name = malloc(name_size);
-  memcpy(dsda_demo_name, name, name_size);
+void dsda_InitDemoRecording(void) {
+  static dboolean demo_key_frame_initialized;
+
+  if (compatibility_level_unspecified)
+    I_Error("You must specify a compatibility level when recording a demo!\n"
+            "Example: dsda-doom -iwad DOOM -complevel 3 -record demo");
+
+  demorecording = true;
+
+  // prboom+ has already cached its settings (with demorecording == false)
+  // we need to reset things here to satisfy strict mode
+  dsda_InitSettings();
+
+  if (!demo_key_frame_initialized) {
+    dsda_InitKeyFrame();
+    demo_key_frame_initialized = true;
+  }
 
   dsda_demo_write_buffer = malloc(INITIAL_DEMO_BUFFER_SIZE);
   if (dsda_demo_write_buffer == NULL)
@@ -205,18 +266,21 @@ void dsda_EndDemoRecording(void) {
 
 void dsda_WriteDemoToFile(void) {
   int length;
+  char* demo_name;
 
   length = dsda_DemoBufferOffset();
 
-  if (!M_WriteFile(dsda_demo_name, dsda_demo_write_buffer, length))
+  demo_name = dsda_NewDemoName();
+
+  if (!M_WriteFile(demo_name, dsda_demo_write_buffer, length))
     I_Error("dsda_WriteDemoToFile: Failed to write demo file.");
 
   free(dsda_demo_write_buffer);
-  free(dsda_demo_name);
   dsda_demo_write_buffer = NULL;
   dsda_demo_write_buffer_p = NULL;
   dsda_demo_write_buffer_length = 0;
-  dsda_demo_name = NULL;
+
+  free(demo_name);
 }
 
 static void dsda_SetDemoBufferOffset(int offset) {

@@ -45,10 +45,7 @@ void dsda_WatchSecret(void);
 void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map);
 void dsda_WatchNewGame(void);
 void dsda_WatchLevelReload(int* reloaded);
-void dsda_WatchRecordDemo(const char* name);
 
 int dsda_MaxKillRequirement(void);
-char* dsda_DemoNameBase(void);
-char* dsda_NewDemoName(void);
 
 #endif

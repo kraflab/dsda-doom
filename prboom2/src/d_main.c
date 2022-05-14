@@ -91,6 +91,7 @@
 #include "e6y_launcher.h"
 #endif
 
+#include "dsda/demo.h"
 #include "dsda/global.h"
 #include "dsda/save.h"
 #include "dsda/data_organizer.h"
@@ -2206,7 +2207,8 @@ static void D_DoomMainSetup(void)
   if ((p = M_CheckParm("-record")) && ++p < myargc)
   {
     autostart = true;
-    G_RecordDemo(myargv[p]);
+    dsda_SetDemoBaseName(myargv[p]);
+    dsda_InitDemoRecording();
   }
 
   dsda_ExecutePlaybackOptions();

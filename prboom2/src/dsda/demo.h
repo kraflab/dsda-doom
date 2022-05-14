@@ -20,10 +20,13 @@
 
 #include "d_ticcmd.h"
 
+const char* dsda_DemoNameBase(void);
+void dsda_SetDemoBaseName(const char* name);
+void dsda_MarkCompatibilityLevelUnspecified(void);
 int dsda_BytesPerTic(void);
 void dsda_EvaluateBytesPerTic(void);
 void dsda_RestoreCommandHistory(void);
-void dsda_InitDemo(char* name);
+void dsda_InitDemoRecording(void);
 void dsda_WriteToDemo(void* buffer, size_t length);
 void dsda_WriteTicToDemo(void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);
