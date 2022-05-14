@@ -116,3 +116,14 @@ void dsda_PrintCommandMovement(char* str, ticcmd_t* cmd) {
   else if (cmd->angleturn < 0)
     str += sprintf(str, "TR%2d", -(cmd->angleturn >> 8));
 }
+
+void dsda_CutExtension(char* str) {
+  char* p;
+
+  p = str + strlen(str);
+  while (--p > str && *p != '/' && *p != '\\')
+    if (*p == '.') {
+      *p = '\0';
+      break;
+    }
+}
