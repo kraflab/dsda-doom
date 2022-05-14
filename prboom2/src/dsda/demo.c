@@ -27,7 +27,7 @@
 #include "lprintf.h"
 #include "e6y.h"
 
-#include "command_display.h"
+#include "dsda/command_display.h"
 #include "dsda/excmd.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
