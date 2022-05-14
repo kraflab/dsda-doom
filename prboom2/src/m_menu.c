@@ -2682,7 +2682,7 @@ setup_menu_t build_keys_settings1[] = {
   { "Fine Strafe Right", S_INPUT, m_build, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_build_fine_strafe_right },
   { "Use", S_INPUT, m_build, KB_X, KB_Y + 18 * 8, { 0 }, dsda_input_build_use },
 
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { dsda_keys_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { build_keys_settings2 } },
 
   // Final entry
