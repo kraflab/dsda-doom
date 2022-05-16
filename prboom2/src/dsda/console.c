@@ -20,6 +20,7 @@
 #include "hu_stuff.h"
 #include "m_cheat.h"
 #include "m_menu.h"
+#include "s_sound.h"
 #include "v_video.h"
 
 #include "dsda/brute_force.h"
@@ -567,13 +568,25 @@ static void dsda_ExecuteConsole(void) {
     for (entry = console_commands; entry->command; entry++) {
       if (!stricmp(command, entry->command_name)) {
         if (dsda_AuthorizeCommand(entry)) {
-          if (entry->command(command, args))
+          if (entry->command(command, args)) {
             dsda_AddConsoleMessage("command executed");
-          else
+            S_StartSound(NULL, g_sfx_console);
+          }
+          else {
             dsda_AddConsoleMessage("command invalid");
+            S_StartSound(NULL, g_sfx_oof);
+          }
         }
+        else
+          S_StartSound(NULL, g_sfx_oof);
+
         break;
       }
+    }
+
+    if (!entry->command) {
+      dsda_AddConsoleMessage("command unknown");
+      S_StartSound(NULL, g_sfx_oof);
     }
   }
 
