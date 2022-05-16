@@ -27,6 +27,7 @@
 #include "dsda/exhud.h"
 #include "dsda/global.h"
 #include "dsda/playback.h"
+#include "dsda/settings.h"
 #include "dsda/tas.h"
 #include "dsda/utility.h"
 
@@ -36,14 +37,23 @@ extern patchnum_t hu_font2[HU_FONTSIZE];
 
 #define CONSOLE_ENTRY_SIZE 64
 
+#define CF_NEVER  0x00
+#define CF_DEMO   0x01
+#define CF_STRICT 0x02
+#define CF_ALWAYS (CF_DEMO|CF_STRICT)
+
 static char console_prompt[CONSOLE_ENTRY_SIZE + 3] = { '$', ' ' };
+static char console_message[CONSOLE_ENTRY_SIZE + 3] = { ' ', ' ' };
 static char* console_entry = console_prompt + 2;
+static char* console_message_entry = console_message + 2;
 static int console_entry_index;
 static hu_textline_t hu_console_prompt;
+static hu_textline_t hu_console_message;
 
 static void dsda_DrawConsole(void) {
-  V_FillRect(0, 0, 0, SCREENWIDTH, 8 * SCREENHEIGHT / 200, 0);
+  V_FillRect(0, 0, 0, SCREENWIDTH, 16 * SCREENHEIGHT / 200, 0);
   HUlib_drawTextLine(&hu_console_prompt, false);
+  HUlib_drawTextLine(&hu_console_message, false);
 }
 
 menu_t dsda_ConsoleDef = {
@@ -55,10 +65,16 @@ menu_t dsda_ConsoleDef = {
 };
 
 static void dsda_UpdateConsoleDisplay(void) {
-  char* s = console_prompt;
+  const char* s;
+
+  s = console_prompt;
   HUlib_clearTextLine(&hu_console_prompt);
   while (*s) HUlib_addCharToTextLine(&hu_console_prompt, *(s++));
   HUlib_addCharToTextLine(&hu_console_prompt, '_');
+
+  s = console_message;
+  HUlib_clearTextLine(&hu_console_message);
+  while (*s) HUlib_addCharToTextLine(&hu_console_message, *(s++));
 }
 
 static void dsda_ResetConsoleEntry(void) {
@@ -78,6 +94,16 @@ dboolean dsda_OpenConsole(void) {
 
     HUlib_initTextLine(
       &hu_console_prompt,
+      0,
+      8,
+      hu_font2,
+      HU_FONTSTART,
+      g_cr_gray,
+      VPT_ALIGN_LEFT_TOP
+    );
+
+    HUlib_initTextLine(
+      &hu_console_message,
       0,
       0,
       hu_font2,
@@ -409,103 +435,122 @@ typedef dboolean (*console_command_t)(const char*, const char*);
 typedef struct {
   const char* command_name;
   console_command_t command;
+  int flags;
 } console_command_entry_t;
 
 static console_command_entry_t console_commands[] = {
   // commands
-  { "player.sethealth", console_PlayerSetHealth },
-  { "player.setarmor", console_PlayerSetArmor },
-  { "player.setx", console_PlayerSetX },
-  { "player.sety", console_PlayerSetY },
-  { "player.setz", console_PlayerSetZ },
-  { "player.roundx", console_PlayerRoundX },
-  { "player.roundy", console_PlayerRoundY },
-  { "player.roundxy", console_PlayerRoundXY },
-  { "command.lock", console_CommandLock },
-  { "command.unlock", console_CommandUnlock },
+  { "player.sethealth", console_PlayerSetHealth, CF_NEVER },
+  { "player.setarmor", console_PlayerSetArmor, CF_NEVER },
+  { "player.setx", console_PlayerSetX, CF_NEVER },
+  { "player.sety", console_PlayerSetY, CF_NEVER },
+  { "player.setz", console_PlayerSetZ, CF_NEVER },
+  { "player.roundx", console_PlayerRoundX, CF_NEVER },
+  { "player.roundy", console_PlayerRoundY, CF_NEVER },
+  { "player.roundxy", console_PlayerRoundXY, CF_NEVER },
+  { "command.lock", console_CommandLock, CF_DEMO },
+  { "command.unlock", console_CommandUnlock, CF_DEMO },
 
   // tracking
-  { "tracker.addline", console_TrackerAddLine },
-  { "t.al", console_TrackerAddLine },
-  { "tracker.removeline", console_TrackerRemoveLine },
-  { "t.rl", console_TrackerRemoveLine },
-  { "tracker.addsector", console_TrackerAddSector },
-  { "t.as", console_TrackerAddSector },
-  { "tracker.removesector", console_TrackerRemoveSector },
-  { "t.rs", console_TrackerRemoveSector },
-  { "tracker.addmobj", console_TrackerAddMobj },
-  { "t.am", console_TrackerAddMobj },
-  { "tracker.removemobj", console_TrackerRemoveMobj },
-  { "t.rm", console_TrackerRemoveMobj },
-  { "tracker.addplayer", console_TrackerAddPlayer },
-  { "t.ap", console_TrackerAddPlayer },
-  { "tracker.removeplayer", console_TrackerRemovePlayer },
-  { "t.rp", console_TrackerRemovePlayer },
+  { "tracker.addline", console_TrackerAddLine, CF_DEMO },
+  { "t.al", console_TrackerAddLine, CF_DEMO },
+  { "tracker.removeline", console_TrackerRemoveLine, CF_DEMO },
+  { "t.rl", console_TrackerRemoveLine, CF_DEMO },
+  { "tracker.addsector", console_TrackerAddSector, CF_DEMO },
+  { "t.as", console_TrackerAddSector, CF_DEMO },
+  { "tracker.removesector", console_TrackerRemoveSector, CF_DEMO },
+  { "t.rs", console_TrackerRemoveSector, CF_DEMO },
+  { "tracker.addmobj", console_TrackerAddMobj, CF_DEMO },
+  { "t.am", console_TrackerAddMobj, CF_DEMO },
+  { "tracker.removemobj", console_TrackerRemoveMobj, CF_DEMO },
+  { "t.rm", console_TrackerRemoveMobj, CF_DEMO },
+  { "tracker.addplayer", console_TrackerAddPlayer, CF_DEMO },
+  { "t.ap", console_TrackerAddPlayer, CF_DEMO },
+  { "tracker.removeplayer", console_TrackerRemovePlayer, CF_DEMO },
+  { "t.rp", console_TrackerRemovePlayer, CF_DEMO },
 
   // traversing time
-  { "jump.tic", console_JumpTic },
+  { "jump.tic", console_JumpTic, CF_DEMO },
 
   // brute force
-  { "bruteforce.start", console_BruteForceStart },
-  { "bf.start", console_BruteForceStart },
+  { "bruteforce.start", console_BruteForceStart, CF_DEMO },
+  { "bf.start", console_BruteForceStart, CF_DEMO },
 
   // demos
-  { "demo.export", console_DemoExport },
+  { "demo.export", console_DemoExport, CF_DEMO | CF_STRICT },
 
   // cheats
-  { "idchoppers", console_BasicCheat },
-  { "iddqd", console_BasicCheat },
-  { "idkfa", console_BasicCheat },
-  { "idfa", console_BasicCheat },
-  { "idspispopd", console_BasicCheat },
-  { "idclip", console_BasicCheat },
-  { "idmypos", console_BasicCheat },
-  { "idrate", console_BasicCheat },
-  { "iddt", console_BasicCheat },
-  { "iddst", console_BasicCheat },
-  { "iddkt", console_BasicCheat },
-  { "iddit", console_BasicCheat },
+  { "idchoppers", console_BasicCheat, CF_DEMO },
+  { "iddqd", console_BasicCheat, CF_DEMO },
+  { "idkfa", console_BasicCheat, CF_DEMO },
+  { "idfa", console_BasicCheat, CF_DEMO },
+  { "idspispopd", console_BasicCheat, CF_DEMO },
+  { "idclip", console_BasicCheat, CF_DEMO },
+  { "idmypos", console_BasicCheat, CF_DEMO },
+  { "idrate", console_BasicCheat, CF_DEMO },
+  { "iddt", console_BasicCheat, CF_DEMO },
+  { "iddst", console_BasicCheat, CF_DEMO },
+  { "iddkt", console_BasicCheat, CF_DEMO },
+  { "iddit", console_BasicCheat, CF_DEMO },
 
-  { "tntcomp", console_BasicCheat },
-  { "tntem", console_BasicCheat },
-  { "tnthom", console_BasicCheat },
-  { "tntka", console_BasicCheat },
-  { "tntsmart", console_BasicCheat },
-  { "tntpitch", console_BasicCheat },
-  { "tntfast", console_BasicCheat },
-  { "tntice", console_BasicCheat },
-  { "tntpush", console_BasicCheat },
+  { "tntcomp", console_BasicCheat, CF_DEMO },
+  { "tntem", console_BasicCheat, CF_DEMO },
+  { "tnthom", console_BasicCheat, CF_DEMO },
+  { "tntka", console_BasicCheat, CF_DEMO },
+  { "tntsmart", console_BasicCheat, CF_DEMO },
+  { "tntpitch", console_BasicCheat, CF_DEMO },
+  { "tntfast", console_BasicCheat, CF_DEMO },
+  { "tntice", console_BasicCheat, CF_DEMO },
+  { "tntpush", console_BasicCheat, CF_DEMO },
 
-  { "notarget", console_BasicCheat },
-  { "fly", console_BasicCheat },
+  { "notarget", console_BasicCheat, CF_DEMO },
+  { "fly", console_BasicCheat, CF_DEMO },
 
-  { "quicken", console_BasicCheat },
-  { "ponce", console_BasicCheat },
-  { "kitty", console_BasicCheat },
-  { "massacre", console_BasicCheat },
-  { "rambo", console_BasicCheat },
-  { "skel", console_BasicCheat },
-  { "shazam", console_BasicCheat },
-  { "ravmap", console_BasicCheat },
-  { "cockadoodledoo", console_BasicCheat },
+  { "quicken", console_BasicCheat, CF_DEMO },
+  { "ponce", console_BasicCheat, CF_DEMO },
+  { "kitty", console_BasicCheat, CF_DEMO },
+  { "massacre", console_BasicCheat, CF_DEMO },
+  { "rambo", console_BasicCheat, CF_DEMO },
+  { "skel", console_BasicCheat, CF_DEMO },
+  { "shazam", console_BasicCheat, CF_DEMO },
+  { "ravmap", console_BasicCheat, CF_DEMO },
+  { "cockadoodledoo", console_BasicCheat, CF_DEMO },
 
-  { "satan", console_BasicCheat },
-  { "clubmed", console_BasicCheat },
-  { "butcher", console_BasicCheat },
-  { "nra", console_BasicCheat },
-  { "indiana", console_BasicCheat },
-  { "locksmith", console_BasicCheat },
-  { "sherlock", console_BasicCheat },
-  { "casper", console_BasicCheat },
-  { "init", console_BasicCheat },
-  { "mapsco", console_BasicCheat },
-  { "deliverance", console_BasicCheat },
+  { "satan", console_BasicCheat, CF_DEMO },
+  { "clubmed", console_BasicCheat, CF_DEMO },
+  { "butcher", console_BasicCheat, CF_DEMO },
+  { "nra", console_BasicCheat, CF_DEMO },
+  { "indiana", console_BasicCheat, CF_DEMO },
+  { "locksmith", console_BasicCheat, CF_DEMO },
+  { "sherlock", console_BasicCheat, CF_DEMO },
+  { "casper", console_BasicCheat, CF_DEMO },
+  { "init", console_BasicCheat, CF_DEMO },
+  { "mapsco", console_BasicCheat, CF_DEMO },
+  { "deliverance", console_BasicCheat, CF_DEMO },
 
   // exit
-  { "exit", console_Exit },
-  { "quit", console_Exit },
+  { "exit", console_Exit, CF_ALWAYS },
+  { "quit", console_Exit, CF_ALWAYS },
   { NULL }
 };
+
+static void dsda_AddConsoleMessage(const char* message) {
+  strncpy(console_message_entry, message, CONSOLE_ENTRY_SIZE);
+}
+
+static dboolean dsda_AuthorizeCommand(console_command_entry_t* entry) {
+  if (!(entry->flags & CF_DEMO) && (demorecording || demoplayback)) {
+    dsda_AddConsoleMessage("command not allowed in demo mode");
+    return false;
+  }
+
+  if (!(entry->flags & CF_STRICT) && dsda_StrictMode()) {
+    dsda_AddConsoleMessage("command not allowed in strict mode");
+    return false;
+  }
+
+  return true;
+}
 
 static void dsda_ExecuteConsole(void) {
   char command[CONSOLE_ENTRY_SIZE];
@@ -521,7 +566,12 @@ static void dsda_ExecuteConsole(void) {
 
     for (entry = console_commands; entry->command; entry++) {
       if (!stricmp(command, entry->command_name)) {
-        entry->command(command, args);
+        if (dsda_AuthorizeCommand(entry)) {
+          if (entry->command(command, args))
+            dsda_AddConsoleMessage("command executed");
+          else
+            dsda_AddConsoleMessage("command invalid");
+        }
         break;
       }
     }

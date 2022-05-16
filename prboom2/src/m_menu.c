@@ -4749,7 +4749,7 @@ dboolean M_Responder (event_t* ev) {
       return true;
     }
 
-    if (dsda_InputActivated(dsda_input_console) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_console))
     {
       if (dsda_OpenConsole())
         S_StartSound(NULL,g_sfx_swtchn);
