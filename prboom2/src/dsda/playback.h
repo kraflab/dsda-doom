@@ -17,8 +17,10 @@
 
 #include "doomtype.h"
 
+#define PLAYBACK_NORMAL      0
 #define PLAYBACK_JOIN_ON_END 1
 
+void dsda_RestartPlayback(void);
 dboolean dsda_JumpToLogicTic(int tic);
 int dsda_PlaybackArg(void);
 void dsda_ExecutePlaybackOptions(void);

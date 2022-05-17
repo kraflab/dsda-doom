@@ -288,6 +288,12 @@ int G_ReloadLevel(void)
     result = true;
   }
 
+  if (demoplayback)
+  {
+    dsda_RestartPlayback();
+    result = true;
+  }
+
   dsda_WatchLevelReload(&result);
 
   return result;

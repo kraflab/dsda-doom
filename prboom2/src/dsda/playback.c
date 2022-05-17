@@ -36,6 +36,10 @@ static int playback_tics;
 
 static int playdemo_arg, fastdemo_arg, timedemo_arg, recordfromto_arg;
 
+void dsda_RestartPlayback(void) {
+  G_StartDemoPlayback(playback_origin_p, playback_length, playback_behaviour);
+}
+
 dboolean dsda_JumpToLogicTic(int tic) {
   if (tic < 0)
     return false;

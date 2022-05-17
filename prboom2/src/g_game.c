@@ -3852,18 +3852,23 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   return demo_p;
 }
 
-void G_DoPlayDemo(void)
+void G_StartDemoPlayback(const byte *buffer, int length, int behaviour)
 {
   const byte *demo_p;
 
+  demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
+  dsda_AttachPlaybackStream(demo_p, demolength, behaviour);
+
+  R_SmoothPlaying_Reset(NULL); // e6y
+}
+
+void G_DoPlayDemo(void)
+{
   if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
   {
-    demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
-    dsda_AttachPlaybackStream(demo_p, demolength, 0);
+    G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_NORMAL);
 
     gameaction = ga_nothing;
-
-    R_SmoothPlaying_Reset(NULL); // e6y
   }
   else
   {
@@ -4114,8 +4119,7 @@ void G_ContinueDemo(const char *playback_name)
 
   if (LoadDemo(playback_name, &demobuffer, &demolength, &demolumpnum))
   {
-    demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
-    dsda_AttachPlaybackStream(demo_p, demolength, PLAYBACK_JOIN_ON_END);
+    G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_JOIN_ON_END);
 
     singledemo = true;
     autostart = true;
