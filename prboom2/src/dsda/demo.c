@@ -27,6 +27,7 @@
 #include "lprintf.h"
 #include "e6y.h"
 
+#include "dsda.h"
 #include "dsda/command_display.h"
 #include "dsda/excmd.h"
 #include "dsda/key_frame.h"
@@ -295,12 +296,64 @@ static void dsda_FreeDemoBuffer(void) {
   dsda_demo_write_buffer_length = 0;
 }
 
+static dboolean dsda_UseDemoNameWithTime(void) {
+  return dsda_ILComplete() || dsda_MovieComplete();
+}
+
+static char* dsda_DemoNameWithTime(void) {
+  char* demo_name;
+  char* base_name;
+  int counter = 2;
+  size_t length;
+
+  length = strlen(dsda_demo_name_base) + 16 + 1;
+
+  base_name = calloc(length, 1);
+
+  if (dsda_ILComplete()) {
+    dsda_level_time_t level_time;
+
+    dsda_DecomposeILTime(&level_time);
+
+    if (level_time.m == 0 && level_time.s < 10)
+      snprintf(base_name, length - 1, "%s%d%02d",
+               dsda_demo_name_base, level_time.s, level_time.t);
+    else
+      snprintf(base_name, length - 1, "%s%d%02d",
+               dsda_demo_name_base, level_time.m, level_time.s);
+  }
+  else {
+    dsda_movie_time_t movie_time;
+
+    dsda_DecomposeMovieTime(&movie_time);
+
+    if (movie_time.h)
+      snprintf(base_name, length - 1, "%s%d%02d%02d",
+               dsda_demo_name_base, movie_time.h, movie_time.m, movie_time.s);
+    else if (movie_time.m)
+      snprintf(base_name, length - 1, "%s%d%02d",
+               dsda_demo_name_base, movie_time.m, movie_time.s);
+    else
+      snprintf(base_name, length - 1, "%s%03d",
+               dsda_demo_name_base, movie_time.s);
+  }
+
+  demo_name = dsda_GenerateDemoName(&counter, base_name);
+
+  free(base_name);
+
+  return demo_name;
+}
+
 void dsda_EndDemoRecording(void) {
   char* demo_name;
 
   demorecording = false;
 
-  demo_name = dsda_NewDemoName();
+  if (dsda_UseDemoNameWithTime())
+    demo_name = dsda_DemoNameWithTime();
+  else
+    demo_name = dsda_NewDemoName();
 
   dsda_ExportDemoToFile(demo_name);
 

@@ -22,6 +22,14 @@
 #include "p_mobj.h"
 #include "d_player.h"
 
+typedef struct {
+  int m, s, t;
+} dsda_level_time_t;
+
+typedef struct {
+  int h, m, s;
+} dsda_movie_time_t;
+
 void dsda_ReadCommandLine(void);
 void dsda_DisplayNotifications(void);
 void dsda_WatchCard(card_t card);
@@ -46,6 +54,10 @@ void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map);
 void dsda_WatchNewGame(void);
 void dsda_WatchLevelReload(int* reloaded);
 
+dboolean dsda_ILComplete(void);
+dboolean dsda_MovieComplete(void);
+void dsda_DecomposeILTime(dsda_level_time_t* level_time);
+void dsda_DecomposeMovieTime(dsda_movie_time_t* total_time);
 int dsda_MaxKillRequirement(void);
 
 #endif

@@ -30,9 +30,7 @@
 const char* dsda_player_name;
 
 extern int gameepisode, gameskill, totalleveltimes, compatibility_level,
-           dsda_last_leveltime, dsda_last_gamemap;
-
-int dsda_startmap;
+           dsda_last_leveltime, dsda_last_gamemap, dsda_startmap;
 
 static char* dsda_TextFileName(void) {
   int p;
@@ -65,6 +63,8 @@ static char* dsda_TextFileName(void) {
 }
 
 static int dsda_IL(void) {
+  extern int dsda_startmap;
+
   return dsda_startmap == dsda_last_gamemap;
 }
 
