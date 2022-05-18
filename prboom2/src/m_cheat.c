@@ -1006,7 +1006,7 @@ dboolean M_CheatEntered(const char* element, const char* value)
   for (cheat_i = cheat; cheat_i->cheat; cheat_i++)
   {
     if (!strcmp(cheat_i->cheat, element) && M_CheatAllowed(cheat_i->when))
-    {    
+    {
       if (cheat_i->arg >= 0)
         cheat_i->func(cheat_i->arg);
       else
