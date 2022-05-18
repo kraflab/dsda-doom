@@ -482,8 +482,9 @@ void dsda_UpdateExHud(void) {
 void dsda_DrawExHud(void) {
   int i;
 
-  for (i = 0; i < TRACKER_LIMIT; ++i)
-    HUlib_drawTextLine(&dsda_exhud_tracker[i].text, false);
+  if (!dsda_StrictMode())
+    for (i = 0; i < TRACKER_LIMIT; ++i)
+      HUlib_drawTextLine(&dsda_exhud_tracker[i].text, false);
 
   HUlib_drawTextLine(&dsda_exhud_timer.text, false);
   HUlib_drawTextLine(&dsda_exhud_max_totals.text, false);
