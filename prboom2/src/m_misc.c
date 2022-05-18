@@ -1035,7 +1035,6 @@ default_t defaults[] =
   { "Prboom-plus demos settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
   { "demo_demoex_filename", { NULL, &demo_demoex_filename }, { 0, "" }, UL, UL, def_str, ss_none },
   { "getwad_cmdline", { NULL, &getwad_cmdline }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "demo_overwriteexisting", { &demo_overwriteexisting }, { 0 }, 0, 1, def_bool, ss_stat },
   { "quickstart_window_ms", { &quickstart_window_ms }, { 0 }, 0, 1000, def_int, ss_stat },
 
   { "Prboom-plus game settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },

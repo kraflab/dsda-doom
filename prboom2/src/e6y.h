@@ -114,7 +114,6 @@ extern int render_multisampling;
 extern int render_paperitems;
 extern int render_wipescreen;
 extern int mouse_acceleration;
-extern int demo_overwriteexisting;
 extern int quickstart_window_ms;
 
 extern int render_fov;

@@ -3453,13 +3453,12 @@ setup_menu_t demo_settings[] = {
   { "Show Split Data", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "dsda_show_split_data" } },
   { "Text File Author", S_NAME, m_null, G_X, G_Y + 6 * 8, { "dsda_player_name" } },
   { "Quickstart Cache Tics", S_NUM, m_null, G_X, G_Y + 7 * 8, { "dsda_quickstart_cache_tics" } },
-  { "Overwrite Existing", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "demo_overwriteexisting" } },
-  { "Smooth Demo Playback", S_YESNO, m_null, G_X, G_Y + 9 * 8, { "demo_smoothturns" }, 0, M_ChangeDemoSmoothTurns },
-  { "Smooth Demo Playback Factor", S_NUM, m_null, G_X, G_Y + 10 * 8, { "demo_smoothturnsfactor" }, 0, M_ChangeDemoSmoothTurns },
-  { "Quickstart Window (ms)", S_NUM, m_null, G_X, G_Y + 11 * 8, { "quickstart_window_ms" } },
+  { "Smooth Demo Playback", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "demo_smoothturns" }, 0, M_ChangeDemoSmoothTurns },
+  { "Smooth Demo Playback Factor", S_NUM, m_null, G_X, G_Y + 9 * 8, { "demo_smoothturnsfactor" }, 0, M_ChangeDemoSmoothTurns },
+  { "Quickstart Window (ms)", S_NUM, m_null, G_X, G_Y + 10 * 8, { "quickstart_window_ms" } },
 
-  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 13 * 8 },
-  { "Allow Jumping", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_allow_jumping" }, 0 },
+  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 12 * 8 },
+  { "Allow Jumping", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "dsda_allow_jumping" }, 0 },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { mapping_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { tas_settings } },
