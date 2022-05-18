@@ -54,6 +54,8 @@ static int compatibility_level_unspecified;
 static int dsda_demo_version;
 static int bytes_per_tic;
 
+static dboolean use_demo_name_with_time;
+
 const char* dsda_DemoNameBase(void) {
   return dsda_demo_name_base;
 }
@@ -68,6 +70,14 @@ void dsda_SetDemoBaseName(const char* name) {
   dsda_demo_name_base = strdup(name);
 
   dsda_CutExtension(dsda_demo_name_base);
+
+  base_size = strlen(dsda_demo_name_base);
+  if (base_size && dsda_demo_name_base[base_size - 1] == '$') {
+    dsda_demo_name_base[base_size - 1] = '\0';
+    use_demo_name_with_time = true;
+  }
+  else
+    use_demo_name_with_time = false;
 }
 
 // from crispy - incrementing demo file names
@@ -297,7 +307,7 @@ static void dsda_FreeDemoBuffer(void) {
 }
 
 static dboolean dsda_UseDemoNameWithTime(void) {
-  return dsda_ILComplete() || dsda_MovieComplete();
+  return use_demo_name_with_time && (dsda_ILComplete() || dsda_MovieComplete());
 }
 
 static char* dsda_DemoNameWithTime(void) {
