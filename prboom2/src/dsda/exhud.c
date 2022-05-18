@@ -18,6 +18,7 @@
 #include "hu_lib.h"
 #include "hu_stuff.h"
 #include "doomstat.h"
+#include "m_argv.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_state.h"
@@ -220,7 +221,35 @@ static void dsda_RefreshTrackers(void) {
     }
 }
 
+static void dsda_ParseCommandlineTrackers(const char* option, dboolean (*track)(int)) {
+  int p;
+
+  p = M_CheckParm(option);
+  if (p)
+    while (++p < myargc) {
+      if (myargv[p][0] == '-')
+        break;
+      else
+        track(atoi(myargv[p]));
+    }
+}
+
 void dsda_ResetTrackers(void) {
+  static dboolean first_time = true;
+
+  if (first_time) {
+    first_time = false;
+
+    dsda_ParseCommandlineTrackers("-track_line", dsda_TrackLine);
+    dsda_ParseCommandlineTrackers("-track_sector", dsda_TrackSector);
+    dsda_ParseCommandlineTrackers("-track_mobj", dsda_TrackMobj);
+
+    if (M_CheckParm("-track_player"))
+      dsda_TrackPlayer(0);
+
+    return;
+  }
+
   if (gamemap != tracker_map || gameepisode != tracker_episode)
     dsda_WipeTrackers();
   else
