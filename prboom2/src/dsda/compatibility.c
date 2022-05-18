@@ -164,6 +164,11 @@ static const dsda_compatibility_t skulltiverse_map02 = {
   { -1, comp_ledgeblock, -1 }
 };
 
+static const dsda_compatibility_t tntr_map30 = {
+  "1d3c6d456bfcf360ce14aeecc155a96c",
+  { comp_telefrag, -1, -1 }
+};
+
 static const dsda_compatibility_t* entry_0[] = {
   &archie_map01,
   &sixpack2_map02,
@@ -174,6 +179,7 @@ static const dsda_compatibility_t* entry_1[] = {
   &hell_revealed_map26,
   &seej_map01,
   &mayhem_2013_map05,
+  &tntr_map30,
   NULL
 };
 
