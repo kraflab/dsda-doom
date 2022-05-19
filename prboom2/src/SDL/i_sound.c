@@ -109,6 +109,7 @@ typedef struct
   // ... and a 0.16 bit remainder of last step.
   unsigned int stepremainder;
   unsigned int samplerate;
+  unsigned int bits;
   // The channel data pointers, start and end.
   const unsigned char *data;
   const unsigned char *enddata;
@@ -163,21 +164,70 @@ static void stopchan(int i)
 //
 static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
 {
+  channel_info_t *ci = channelinfo + channel;
+
   stopchan(channel);
 
-  channelinfo[channel].data = data;
-  /* Set pointer to end of raw data. */
-  channelinfo[channel].enddata = channelinfo[channel].data + len - 1;
-  channelinfo[channel].samplerate = (channelinfo[channel].data[3] << 8) + channelinfo[channel].data[2];
-  channelinfo[channel].data += 8; /* Skip header */
+  if (len > 44 && memcmp(data, "RIFF", 4) == 0 && memcmp(data + 8, "WAVEfmt ", 8) == 0)
+  {
+    SDL_RWops *RWops;
+    SDL_AudioSpec wav_spec;
+    Uint8 *wav_buffer = NULL;
+    int bits, samplelen;
 
-  channelinfo[channel].stepremainder = 0;
+    RWops = SDL_RWFromMem(data, len);
+
+    Z_ChangeTag(data, PU_CACHE);
+
+    if (SDL_LoadWAV_RW(RWops, 1, &wav_spec, &wav_buffer, &samplelen) == NULL)
+    {
+      lprintf(LO_WARN, "Could not open wav file: %s\n", SDL_GetError());
+      return channel;
+    }
+
+    if (wav_spec.channels != 1)
+    {
+      lprintf(LO_WARN, "Only mono WAV file is supported");
+      SDL_FreeWAV(wav_buffer);
+      return channel;
+    }
+
+    if (!SDL_AUDIO_ISINT(wav_spec.format))
+    {
+      lprintf(LO_WARN, "WAV file in unsupported format");
+      SDL_FreeWAV(wav_buffer);
+      return channel;
+    }
+
+    bits = SDL_AUDIO_BITSIZE(wav_spec.format);
+    if (bits != 8 && bits != 16)
+    {
+      lprintf(LO_WARN, "Only 8 or 16 bit WAV files are supported");
+      SDL_FreeWAV(wav_buffer);
+      return channel;
+    }
+
+    ci->data = wav_buffer;
+    ci->enddata = wav_buffer + len - 1;
+    ci->samplerate = wav_spec.freq;
+    ci->bits = bits;
+  }
+  else
+  {
+    ci->data = data;
+    /* Set pointer to end of raw data. */
+    ci->enddata = ci->data + len - 1;
+    ci->samplerate = (ci->data[3] << 8) + ci->data[2];
+    ci->data += 8; /* Skip header */
+  }
+
+  ci->stepremainder = 0;
   // Should be gametic, I presume.
-  channelinfo[channel].starttime = gametic;
+  ci->starttime = gametic;
 
   // Preserve sound SFX id,
   //  e.g. for avoiding duplicates of chainsaw.
-  channelinfo[channel].id = sfxid;
+  ci->id = sfxid;
 
   return channel;
 }
@@ -502,9 +552,12 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
     //  as well. Thus loop those  channels.
     for ( chan = 0; chan < numChannels; chan++ )
     {
+      channel_info_t *ci = channelinfo + chan;
+
       // Check channel, if active.
-      if (channelinfo[chan].data)
+      if (ci->data)
       {
+        int s;
         // Get the raw data from the channel.
         // no filtering
         //int s = channelinfo[chan].data[0] * 0x10000 - 0x800000;
@@ -512,9 +565,17 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
         // linear filtering
         // the old SRC did linear interpolation back into 8 bit, and then expanded to 16 bit.
         // this does interpolation and 8->16 at same time, allowing slightly higher quality
-        int s = ((unsigned int)channelinfo[chan].data[0] * (0x10000 - channelinfo[chan].stepremainder))
-              + ((unsigned int)channelinfo[chan].data[1] * (channelinfo[chan].stepremainder))
-              - 0x800000; // convert to signed
+        if (ci->bits == 16)
+        {
+          s = (short)(ci->data[0] | (ci->data[1] << 8)) * (255 - (ci->stepremainder >> 8))
+            + (short)(ci->data[2] | (ci->data[3] << 8)) * (ci->stepremainder >> 8);
+        }
+        else
+        {
+          s = (ci->data[0] * (0x10000 - ci->stepremainder))
+            + (ci->data[1] * (ci->stepremainder))
+            - 0x800000; // convert to signed
+        }
 
 
         // Add left and right part
@@ -524,18 +585,23 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
 
         // full loudness (vol=127) is actually 127/191
 
-        dl += channelinfo[chan].leftvol * s / 49152;  // >> 15;
-        dr += channelinfo[chan].rightvol * s / 49152; // >> 15;
+        dl += ci->leftvol * s / 49152;  // >> 15;
+        dr += ci->rightvol * s / 49152; // >> 15;
 
         // Increment index ???
-        channelinfo[chan].stepremainder += channelinfo[chan].step;
+        ci->stepremainder += ci->step;
+
         // MSB is next sample???
-        channelinfo[chan].data += channelinfo[chan].stepremainder >> 16;
+        if (ci->bits == 16)
+          ci->data += (ci->stepremainder >> 16) * 2;
+        else
+          ci->data += ci->stepremainder >> 16;
+
         // Limit to LSB???
-        channelinfo[chan].stepremainder &= 0xffff;
+        ci->stepremainder &= 0xffff;
 
         // Check whether we are done.
-        if (channelinfo[chan].data >= channelinfo[chan].enddata)
+        if (ci->data >= ci->enddata)
           stopchan(chan);
       }
     }
