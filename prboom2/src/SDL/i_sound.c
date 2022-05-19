@@ -177,8 +177,6 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
 
     RWops = SDL_RWFromMem(data, len);
 
-    Z_ChangeTag(data, PU_CACHE);
-
     if (SDL_LoadWAV_RW(RWops, 1, &wav_spec, &wav_buffer, &samplelen) == NULL)
     {
       lprintf(LO_WARN, "Could not open wav file: %s\n", SDL_GetError());
@@ -207,8 +205,13 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
       return channel;
     }
 
-    ci->data = wav_buffer;
-    ci->enddata = wav_buffer + len - 1;
+    Z_Free(data);
+    data = Z_Malloc(samplelen * sizeof(*data), PU_LOCKED, 0);
+    memcpy(data, wav_buffer, samplelen);
+    SDL_FreeWAV(wav_buffer);
+
+    ci->data = data;
+    ci->enddata = data + samplelen - 1;
     ci->samplerate = wav_spec.freq;
     ci->bits = bits;
   }
@@ -219,6 +222,7 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
     ci->enddata = ci->data + len - 1;
     ci->samplerate = (ci->data[3] << 8) + ci->data[2];
     ci->data += 8; /* Skip header */
+    ci->bits = 8;
   }
 
   ci->stepremainder = 0;
