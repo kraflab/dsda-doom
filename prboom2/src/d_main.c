@@ -87,9 +87,6 @@
 //e6y
 #include "r_demo.h"
 #include "e6y.h"
-#ifdef USE_WINDOWS_LAUNCHER
-#include "e6y_launcher.h"
-#endif
 
 #include "dsda/demo.h"
 #include "dsda/global.h"
@@ -1987,14 +1984,7 @@ static void D_DoomMainSetup(void)
   }
 
   //e6y
-  {
-    int demo_footer = CheckDemoExDemo();
-    if (!demo_footer)
-      demo_footer = CheckAutoDemo();
-#ifdef USE_WINDOWS_LAUNCHER
-    LauncherShow(demo_footer);
-#endif
-  }
+  CheckDemoExDemo();
 
   // add wad files from autoload PWAD directories
   if (autoload)
