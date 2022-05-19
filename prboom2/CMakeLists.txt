@@ -80,14 +80,6 @@ endif()
 
 find_package(SDL2_mixer REQUIRED)
 
-option(WITH_PCRE "Use PCRE if available" ON)
-if(WITH_PCRE)
-    find_package(PCREPOSIX)
-    if(PCREPOSIX_FOUND)
-        set(HAVE_LIBPCREPOSIX TRUE)
-    endif()
-endif()
-
 option(WITH_ZLIB "Use ZLIB if available" ON)
 if(WITH_ZLIB)
     find_package(ZLIB)

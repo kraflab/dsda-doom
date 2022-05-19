@@ -351,10 +351,6 @@ prboom2/src/MAC/FileButtonController.h -text
 prboom2/src/MAC/FileButtonController.m -text
 prboom2/src/MAC/Image-DS_Store -text
 prboom2/src/MAC/Info.plist -text
-prboom2/src/MAC/Launcher.icns -text
-prboom2/src/MAC/LauncherApp.h -text
-prboom2/src/MAC/LauncherApp.m -text
-prboom2/src/MAC/LauncherMain.m -text
 prboom2/src/MAC/Makefile.am -text
 prboom2/src/MAC/PrBoom.icns -text
 prboom2/src/MAC/PrBoom.sdef -text

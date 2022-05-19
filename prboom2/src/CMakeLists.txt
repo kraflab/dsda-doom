@@ -400,12 +400,10 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
 
     if(WIN32)
-        add_definitions("-DUSE_WIN32_PCSOUND_DRIVER -DUSE_WINDOWS_LAUNCHER")
+        add_definitions("-DUSE_WIN32_PCSOUND_DRIVER")
         set(SOURCES
             ${SOURCES}
             ../ICONS/icons.rc
-            e6y_launcher.c
-            e6y_launcher.h
             SDL/SDL_windows_main.c
         )
         if(MSVC)
@@ -443,10 +441,6 @@ function(AddGameExecutable TARGET SOURCES)
     target_include_directories(${TARGET} PRIVATE ${SDL2_MIXER_INCLUDE_DIRS})
     target_link_libraries(${TARGET} PRIVATE ${SDL2_MIXER_LIBRARIES})
 
-    if(PCREPOSIX_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${PCRE_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${PCREPOSIX_LIBRARIES})
-    endif()
     if(ZLIB_FOUND)
         target_include_directories(${TARGET} PRIVATE ${ZLIB_INCLUDE_DIRS})
         target_link_libraries(${TARGET} PRIVATE ${ZLIB_LIBRARIES})

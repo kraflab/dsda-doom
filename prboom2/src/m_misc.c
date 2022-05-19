@@ -79,9 +79,6 @@
 #include "gl_struct.h"
 #include "g_overflow.h"
 #include "e6y.h"
-#ifdef USE_WINDOWS_LAUNCHER
-#include "e6y_launcher.h"
-#endif
 
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
@@ -1243,42 +1240,6 @@ default_t defaults[] =
    def_bool,ss_stat},
   {"comperr_freeaim", {&default_comperr[comperr_freeaim]},  {0},0,1,
    def_bool,ss_stat},
-
-#ifdef USE_WINDOWS_LAUNCHER
-  {"Prboom-plus launcher settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"launcher_enable",{(int*)&launcher_enable},{launcher_enable_never},
-   launcher_enable_never, launcher_enable_count - 1, def_int,ss_none},
-  {"launcher_history0", {NULL,&launcher_history[0]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history1", {NULL,&launcher_history[1]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history2", {NULL,&launcher_history[2]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history3", {NULL,&launcher_history[3]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history4", {NULL,&launcher_history[4]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history5", {NULL,&launcher_history[5]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history6", {NULL,&launcher_history[6]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history7", {NULL,&launcher_history[7]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history8", {NULL,&launcher_history[8]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history9", {NULL,&launcher_history[9]}, {0,""},UL,UL,def_str,ss_none},
-#endif
-  {"Prboom-plus demo patterns list. Put your patterns here",{NULL},{0},UL,UL,def_none,ss_none},
-  {"demo_patterns_mask", {NULL, &demo_patterns_mask, &demo_patterns_count, &demo_patterns_list}, {0,"demo_pattern",9, &demo_patterns_list_def[0]},UL,UL,def_arr,ss_none},
-  {"demo_pattern0", {NULL,&demo_patterns_list_def[0]},
-   {0,"DOOM 2: Hell on Earth/((lv)|(nm)|(pa)|(ty))\\d\\d.\\d\\d\\d\\.lmp/doom2.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern1", {NULL,&demo_patterns_list_def[1]},
-   {0,"DOOM 2: Plutonia Experiment/p(c|f|l|n|p|r|s|t)\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|plutonia.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern2", {NULL,&demo_patterns_list_def[2]},
-   {0,"DOOM 2: TNT - Evilution/((e(c|f|v|p|r|s|t))|(tn))\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|tnt.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern3", {NULL,&demo_patterns_list_def[3]},
-   {0,"The Ultimate DOOM/(((e|f|n|p|r|t|u)\\dm\\d)|(n\\ds\\d)).\\d\\d\\d\\.lmp/doom.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern4", {NULL,&demo_patterns_list_def[4]},
-   {0,"Alien Vendetta/a(c|f|n|p|r|s|t|v)\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|av.wad|av.deh"},UL,UL,def_str,ss_none},
-  {"demo_pattern5", {NULL,&demo_patterns_list_def[5]},
-   {0,"Requiem/r(c|f|n|p|q|r|s|t)\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|requiem.wad|req21fix.wad|reqmus.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern6", {NULL,&demo_patterns_list_def[6]},
-   {0,"Hell Revealed/h(c|e|f|n|p|r|s|t)\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|hr.wad|hrmus.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern7", {NULL,&demo_patterns_list_def[7]},
-   {0,"Memento Mori/mm\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|mm.wad|mmmus.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern8", {NULL,&demo_patterns_list_def[8]},
-   {0,"Memento Mori 2/m2\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|mm2.wad|mm2mus.wad"},UL,UL,def_str,ss_none},
 
   {"Weapon preferences",{NULL},{0},UL,UL,def_none,ss_none},
   // killough 2/8/98: weapon preferences set by user:

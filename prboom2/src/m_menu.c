@@ -89,10 +89,6 @@
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
 
-#ifdef _WIN32
-#include "e6y_launcher.h"
-#endif
-
 extern dboolean  message_dontfuckwithme;
 
 extern dboolean chat_on;          // in heads-up code
@@ -3340,10 +3336,6 @@ setup_menu_t misc_settings[] = {
   { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_skip_quit_prompt" } },
   { "Death Use Action", S_CHOICE, m_null, G_X, G_Y + 16 * 8, { "dsda_death_use_action" }, 0, NULL, death_use_strings },
   { "Boom Weapon Auto Switch", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "dsda_switch_when_ammo_runs_out" } },
-
-#ifdef USE_WINDOWS_LAUNCHER
-  { "Use Windows Launcher", S_CHOICE, m_null, G_X, G_Y + 18 * 8, { "launcher_enable" }, 0, NULL, launcher_enable_states },
-#endif
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { device_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { display_settings } },

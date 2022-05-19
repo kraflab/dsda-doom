@@ -17,8 +17,6 @@ copy %1\bin\libpng16.* %2\bin
 copy %1\bin\modplug.* %2\bin
 copy %1\bin\ogg.* %2\bin
 copy %1\bin\opus.* %2\bin
-copy %1\bin\pcre.* %2\bin
-copy %1\bin\pcreposix.* %2\bin
 copy %1\bin\portmidi.* %2\bin
 copy %1\bin\SDL2*.* %2\bin
 copy %1\bin\vorbis*.* %2\bin
@@ -38,8 +36,6 @@ copy %1\include\fluidsynth.h %2\include
 copy %1\include\fmt123.h %2\include
 copy %1\include\mad.h %2\include
 copy %1\include\mpg123.h %2\include
-copy %1\include\pcre.h %2\include
-copy %1\include\pcreposix.h %2\include
 copy %1\include\png.h %2\include
 copy %1\include\pngconf.h %2\include
 copy %1\include\pnglibconf.h %2\include
@@ -60,8 +56,6 @@ copy %1\lib\modplug.lib %2\lib
 copy %1\lib\ogg.lib %2\lib
 copy %1\lib\opus.lib %2\lib
 copy %1\lib\opusfile.lib %2\lib
-copy %1\lib\pcre.lib %2\lib
-copy %1\lib\pcreposix.lib %2\lib
 copy %1\lib\portmidi.lib %2\lib
 copy %1\lib\SDL2.lib %2\lib
 copy %1\lib\SDL2_image.lib %2\lib
