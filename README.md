@@ -9,6 +9,9 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 - [v0.20](./patch_notes/v0.20.md)
 - [v0.19](./patch_notes/v0.19.md)
 
+### Launcher
+There is a dedicated launcher for this port available [here](https://github.com/Pedro-Beirao/dsda-launcher) by PBeGood4.
+
 ### Doom in Hexen Support (ongoing)
 - [Full details](./docs/doom_in_hexen.md)
 
