@@ -199,7 +199,7 @@ static wav_data_t *GetWavData(int sfxid, const unsigned char *data, size_t len)
     Uint8 *wav_buffer = NULL;
     int bits, samplelen;
 
-    RWops = SDL_RWFromMem(data, len);
+    RWops = SDL_RWFromConstMem(data, len);
 
     if (SDL_LoadWAV_RW(RWops, 1, &wav_spec, &wav_buffer, &samplelen) == NULL)
     {
