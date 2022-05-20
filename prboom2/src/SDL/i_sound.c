@@ -155,20 +155,44 @@ static void stopchan(int i)
   }
 }
 
-//
-// This function adds a sound to the
-//  list of currently active sounds,
-//  which is maintained as a given number
-//  (eight, usually) of internal channels.
-// Returns a handle.
-//
-static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
+typedef struct wav_data_s
 {
-  channel_info_t *ci = channelinfo + channel;
+  int sfxid;
+  const unsigned char *data;
+  int samplelen;
+  int samplerate;
+  int bits;
+  struct wav_data_s *next;
+} wav_data_t;
 
-  stopchan(channel);
+#define WAV_DATA_HASH_SIZE 32
+static wav_data_t *wav_data_hash[WAV_DATA_HASH_SIZE];
 
-  if (len > 44 && memcmp(data, "RIFF", 4) == 0 && memcmp(data + 8, "WAVEfmt ", 8) == 0)
+static wav_data_t *GetWavData(int sfxid, const unsigned char *data, size_t len)
+{
+  int key;
+  wav_data_t *target = NULL;
+
+  key = (sfxid % WAV_DATA_HASH_SIZE);
+
+  if (wav_data_hash[key])
+  {
+    wav_data_t *rover = wav_data_hash[key];
+
+    while (rover)
+    {
+      if (rover->sfxid == sfxid)
+      {
+        target = rover;
+        break;
+      }
+
+      rover = rover->next;
+    }
+  }
+
+  if (target == NULL &&
+      len > 44 && !memcmp(data, "RIFF", 4) && !memcmp(data + 8, "WAVEfmt ", 8))
   {
     SDL_RWops *RWops;
     SDL_AudioSpec wav_spec;
@@ -180,21 +204,21 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
     if (SDL_LoadWAV_RW(RWops, 1, &wav_spec, &wav_buffer, &samplelen) == NULL)
     {
       lprintf(LO_WARN, "Could not open wav file: %s\n", SDL_GetError());
-      return channel;
+      return NULL;
     }
 
     if (wav_spec.channels != 1)
     {
       lprintf(LO_WARN, "Only mono WAV file is supported");
       SDL_FreeWAV(wav_buffer);
-      return channel;
+      return NULL;
     }
 
     if (!SDL_AUDIO_ISINT(wav_spec.format))
     {
       lprintf(LO_WARN, "WAV file in unsupported format");
       SDL_FreeWAV(wav_buffer);
-      return channel;
+      return NULL;
     }
 
     bits = SDL_AUDIO_BITSIZE(wav_spec.format);
@@ -202,18 +226,45 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
     {
       lprintf(LO_WARN, "Only 8 or 16 bit WAV files are supported");
       SDL_FreeWAV(wav_buffer);
-      return channel;
+      return NULL;
     }
 
-    Z_Free(data);
-    data = Z_Malloc(samplelen * sizeof(*data), PU_LOCKED, 0);
-    memcpy(data, wav_buffer, samplelen);
-    SDL_FreeWAV(wav_buffer);
+    target = malloc(sizeof(*target));
 
-    ci->data = data;
-    ci->enddata = data + samplelen - 1;
-    ci->samplerate = wav_spec.freq;
-    ci->bits = bits;
+    target->sfxid = sfxid;
+    target->data = wav_buffer;
+    target->samplelen = samplelen;
+    target->samplerate = wav_spec.freq;
+    target->bits = bits;
+
+    // use head insertion
+    target->next = wav_data_hash[key];
+    wav_data_hash[key] = target;
+  }
+
+  return target;
+}
+
+//
+// This function adds a sound to the
+//  list of currently active sounds,
+//  which is maintained as a given number
+//  (eight, usually) of internal channels.
+// Returns a handle.
+//
+static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
+{
+  channel_info_t *ci = channelinfo + channel;
+  wav_data_t *wav_data = GetWavData(sfxid, data, len);
+
+  stopchan(channel);
+
+  if (wav_data)
+  {
+    ci->data = wav_data->data;
+    ci->enddata = ci->data + wav_data->samplelen - 1;
+    ci->samplerate = wav_data->samplerate;
+    ci->bits = wav_data->bits;
   }
   else
   {
