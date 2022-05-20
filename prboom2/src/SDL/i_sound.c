@@ -627,8 +627,8 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
         }
         else
         {
-          s = (ci->data[0] * (0x10000 - ci->stepremainder))
-            + (ci->data[1] * (ci->stepremainder))
+          s = ((unsigned int)ci->data[0] * (0x10000 - ci->stepremainder))
+            + ((unsigned int)ci->data[1] * (ci->stepremainder))
             - 0x800000; // convert to signed
         }
 
