@@ -97,7 +97,6 @@ void dsda_ExitSkipMode(void) {
   skip_until_episode = -1;
   demo_warp_reached = false;
   demo_skiptics = 0;
-  startmap = 0;
 
   I_Init2();
   I_InitSound();

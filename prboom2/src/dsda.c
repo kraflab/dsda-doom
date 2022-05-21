@@ -435,6 +435,8 @@ void dsda_WatchNewGame(void) {
 }
 
 void dsda_WatchLevelReload(int* reloaded) {
+  extern int startmap;
+
   if (!demorecording || *reloaded) return;
 
   G_DeferedInitNew(gameskill, gameepisode, startmap);

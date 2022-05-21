@@ -1665,17 +1665,16 @@ static void HandleWarp(void)
 
   if ((p = M_CheckParm ("-warp")) || (p = M_CheckParm ("-wart")))
   {
-    startmap = 0; // Ty 08/29/98 - allow "-warp x" to go to first map in wad(s)
     autostart = true; // Ty 08/29/98 - move outside the decision tree
 
     dsda_ResolveWarp(p, &warpepisode, &warpmap);
 
+    if (!warpmap)
+      dsda_FirstMap(&warpepisode, &warpmap);
+
     startmap = warpmap;
     startepisode = warpepisode;
   }
-  // Ty 08/29/98 - later we'll check for startmap=0 and autostart=true
-  // as a special case that -warp * was used.  Actually -warp with any
-  // non-numeric will do that but we'll only document "*"
 }
 
 static void HandleClass(void)
@@ -2207,11 +2206,6 @@ static void D_DoomMainSetup(void)
   {
     if (autostart || netgame)
     {
-      // sets first map and first episode if unknown
-      if (autostart && !startmap)
-      {
-        dsda_FirstMap(&startepisode, &startmap);
-      }
       G_InitNew(startskill, startepisode, startmap, true);
       if (demorecording)
         G_BeginRecording();
