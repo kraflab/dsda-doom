@@ -194,6 +194,8 @@ void dsda_TryPlaybackOneTick(ticcmd_t* cmd) {
 
   if (ended) {
     if (playback_behaviour & PLAYBACK_JOIN_ON_END) {
+      if (dsda_SkipMode())
+        dsda_ExitSkipMode();
       dsda_ClearPlaybackStream();
       dsda_JoinDemoCmd(cmd);
     }
