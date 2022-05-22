@@ -163,8 +163,6 @@ void S_Init(void)
   {
     static dboolean first_s_init = true;
 
-    lprintf(LO_INFO, "S_Init: default sfx volume %d\n", snd_SfxVolume);
-
     // Whatever these did with DMX, these are rather dummies now.
     I_SetChannels();
 
