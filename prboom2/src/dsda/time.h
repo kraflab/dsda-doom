@@ -20,7 +20,6 @@
 
 typedef enum {
   dsda_timer_realtime,
-  dsda_timer_memory,
   dsda_timer_fps,
   dsda_timer_key_frame,
   dsda_timer_brute_force,

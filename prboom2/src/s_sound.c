@@ -161,7 +161,7 @@ void S_Init(void)
   numChannels = default_numChannels;
   if (snd_card && !nosfxparm)
   {
-    int i;
+    static dboolean first_s_init = true;
 
     lprintf(LO_INFO, "S_Init: default sfx volume %d\n", snd_SfxVolume);
 
@@ -179,11 +179,17 @@ void S_Init(void)
     sobjs =
       (degenmobj_t *) calloc(numChannels, sizeof(degenmobj_t));
 
-    // Note that sounds have not been cached (yet).
-    for (i=1 ; i<num_sfx ; i++)
-      S_sfx[i].lumpnum = -1;
+    if (first_s_init)
+    {
+      int i;
 
-    dsda_CacheSoundLumps();
+      first_s_init = false;
+
+      for (i = 1; i < num_sfx; i++)
+        S_sfx[i].lumpnum = -1;
+
+      dsda_CacheSoundLumps();
+    }
   }
 
   // CPhipps - music init reformatted
