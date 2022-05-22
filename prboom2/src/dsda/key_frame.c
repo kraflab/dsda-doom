@@ -72,19 +72,25 @@ int dsda_auto_key_frame_timeout;
 
 static dsda_key_frame_t* dsda_ClosestKeyFrame(int target_tic_count) {
   dsda_key_frame_t* closest = NULL;
+  int closest_i = -1;
   int i;
 
   if (dsda_auto_key_frames)
     for (i = 0; i < dsda_auto_key_frames_size; ++i)
       if (dsda_auto_key_frames[i].buffer)
         if (dsda_auto_key_frames[i].game_tic_count <= target_tic_count)
-          if (!closest || dsda_auto_key_frames[i].game_tic_count > closest->game_tic_count)
+          if (!closest || dsda_auto_key_frames[i].game_tic_count > closest->game_tic_count) {
             closest = &dsda_auto_key_frames[i];
+            closest_i = i;
+          }
 
   if (dsda_quick_key_frame.buffer)
     if (dsda_quick_key_frame.game_tic_count <= target_tic_count)
       if (!closest || dsda_quick_key_frame.game_tic_count > closest->game_tic_count)
         closest = &dsda_quick_key_frame;
+
+  if (closest_i != -1 && closest == &dsda_auto_key_frames[closest_i])
+    dsda_last_auto_key_frame = closest_i;
 
   return closest;
 }
