@@ -62,6 +62,7 @@ static int dsda_auto_key_frame_timeout_count;
 
 #define TIMEOUT_LIMIT 1
 
+static dsda_key_frame_t first_key_frame;
 static dsda_key_frame_t dsda_quick_key_frame;
 static dsda_key_frame_t* dsda_auto_key_frames;
 static int dsda_last_auto_key_frame;
@@ -89,10 +90,21 @@ static dsda_key_frame_t* dsda_ClosestKeyFrame(int target_tic_count) {
       if (!closest || dsda_quick_key_frame.game_tic_count > closest->game_tic_count)
         closest = &dsda_quick_key_frame;
 
+  if (first_key_frame.buffer)
+    if (first_key_frame.game_tic_count <= target_tic_count)
+      if (!closest || first_key_frame.game_tic_count > closest->game_tic_count)
+        closest = &first_key_frame;
+
   if (closest_i != -1 && closest == &dsda_auto_key_frames[closest_i])
     dsda_last_auto_key_frame = closest_i;
 
   return closest;
+}
+
+void dsda_CopyKeyFrame(dsda_key_frame_t* dest, dsda_key_frame_t* source) {
+  *dest = *source;
+  dest->buffer = malloc(dest->buffer_length);
+  memcpy(dest->buffer, source->buffer, dest->buffer_length);
 }
 
 void dsda_InitKeyFrame(void) {
@@ -127,7 +139,7 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 
 // Stripped down version of G_DoSaveGame
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
-  int i, length;
+  int i;
 
   save_p = savebuffer = malloc(savegamesize);
 
@@ -177,14 +189,13 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
 
   if (key_frame->buffer != NULL) free(key_frame->buffer);
 
-  length = save_p - savebuffer;
-
   key_frame->buffer = savebuffer;
+  key_frame->buffer_length = save_p - savebuffer;
   savebuffer = save_p = NULL;
 
   if (complete) {
     if (demorecording)
-      dsda_ExportKeyFrame(key_frame->buffer, length);
+      dsda_ExportKeyFrame(key_frame->buffer, key_frame->buffer_length);
 
     doom_printf("Stored key frame");
   }
@@ -415,5 +426,8 @@ void dsda_UpdateAutoKeyFrames(void) {
           dsda_auto_key_frame_timeout_count = 0;
       }
     }
+
+    if (!first_key_frame.buffer)
+      dsda_CopyKeyFrame(&first_key_frame, current_key_frame);
   }
 }

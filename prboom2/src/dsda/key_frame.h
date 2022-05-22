@@ -22,6 +22,7 @@
 
 typedef struct {
   byte* buffer;
+  int buffer_length;
   int index;
   int game_tic_count;
 } dsda_key_frame_t;
