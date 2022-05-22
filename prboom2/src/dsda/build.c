@@ -31,6 +31,7 @@
 typedef struct {
   ticcmd_t* cmds;
   int depth;
+  int original_depth;
 } build_cmd_queue_t;
 
 static dboolean build_mode;
@@ -164,6 +165,7 @@ dboolean dsda_BuildMode(void) {
 }
 
 void dsda_QueueBuildCommands(ticcmd_t* cmds, int depth) {
+  cmd_queue.original_depth = depth;
   cmd_queue.depth = depth;
 
   if (cmd_queue.cmds)
@@ -174,7 +176,7 @@ void dsda_QueueBuildCommands(ticcmd_t* cmds, int depth) {
 }
 
 static void dsda_PopCommandQueue(ticcmd_t* cmd) {
-  *cmd = cmd_queue.cmds[cmd_queue.depth - 1];
+  *cmd = cmd_queue.cmds[cmd_queue.original_depth - cmd_queue.depth];
   --cmd_queue.depth;
 
   if (!cmd_queue.depth)
