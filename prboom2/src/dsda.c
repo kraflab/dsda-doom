@@ -93,7 +93,7 @@ void dsda_ReadCommandLine(void) {
 
   if ((p = M_CheckParm("-import_ghost"))) dsda_InitGhostImport(p);
 
-  if (M_CheckParm("-tas")) dsda_SetTas();
+  if (M_CheckParm2("-tas", "-build")) dsda_SetTas();
 
   dsda_InitKeyFrame();
   dsda_InitCommandHistory();
