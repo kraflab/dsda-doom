@@ -21,6 +21,7 @@
 #include "doomstat.h"
 
 #include "dsda.h"
+#include "dsda/build.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/exhud.h"
@@ -93,7 +94,7 @@ static dboolean dsda_ExHudVisible(void) {
 }
 
 static dboolean dsda_CommandDisplayVisible(void) {
-  return dsda_CommandDisplay() && // command display turned on
+  return (dsda_CommandDisplay() || dsda_BuildMode()) && // command display turned on
          viewheight != SCREENHEIGHT && // not zoomed in
          (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
 }
