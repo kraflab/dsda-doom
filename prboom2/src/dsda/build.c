@@ -201,6 +201,8 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
 
   build_cmd.angleturn = 0;
   build_cmd.buttons &= ~BT_USE;
+  if (build_cmd.buttons & BT_CHANGE)
+    build_cmd.buttons &= ~(BT_CHANGE | BT_WEAPONMASK);
 }
 
 void dsda_EnterBuildMode(void) {
