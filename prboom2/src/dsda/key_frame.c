@@ -151,32 +151,32 @@ void dsda_CopyKeyFrame(dsda_key_frame_t* dest, dsda_key_frame_t* source) {
 }
 
 void dsda_InitKeyFrame(void) {
+  int i;
+
   auto_kf_size = dsda_AutoKeyFrameDepth();
 
-  if (auto_kf_size == 0) return;
+  if (!auto_kf_size) {
+    last_auto_kf = NULL;
+    return;
+  }
 
-  if (auto_key_frames != NULL) free(auto_key_frames);
+  if (auto_key_frames != NULL)
+    free(auto_key_frames);
 
   ++auto_kf_size; // chain includes a terminator
 
-  auto_key_frames =
-    calloc(auto_kf_size, sizeof(auto_kf_t));
-  last_auto_kf = NULL;
+  auto_key_frames = calloc(auto_kf_size, sizeof(auto_kf_t));
 
-  {
-    int i;
+  auto_key_frames[0].prev = &auto_key_frames[auto_kf_size - 1];
+  auto_key_frames[auto_kf_size - 1].next = &auto_key_frames[0];
 
-    auto_key_frames[0].prev = &auto_key_frames[auto_kf_size - 1];
-    auto_key_frames[auto_kf_size - 1].next = &auto_key_frames[0];
+  for (i = 0; i < auto_kf_size - 1; ++i)
+    auto_key_frames[i].next = &auto_key_frames[i + 1];
 
-    for (i = 0; i < auto_kf_size - 1; ++i)
-      auto_key_frames[i].next = &auto_key_frames[i + 1];
+  for (i = 1; i < auto_kf_size; ++i)
+    auto_key_frames[i].prev = &auto_key_frames[i - 1];
 
-    for (i = 1; i < auto_kf_size; ++i)
-      auto_key_frames[i].prev = &auto_key_frames[i - 1];
-
-    last_auto_kf = &auto_key_frames[auto_kf_size - 1];
-  }
+  last_auto_kf = &auto_key_frames[auto_kf_size - 1];
 }
 
 void dsda_ExportKeyFrame(byte* buffer, int length) {
