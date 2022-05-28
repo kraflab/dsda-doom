@@ -20,12 +20,26 @@
 
 #include "doomtype.h"
 
+struct auto_kf_s;
+
+typedef struct {
+  byte* buffer;
+  struct auto_kf_s* auto_kf;
+} parent_kf_t;
+
 typedef struct {
   byte* buffer;
   int buffer_length;
-  int index;
   int game_tic_count;
+  parent_kf_t parent;
 } dsda_key_frame_t;
+
+typedef struct auto_kf_s {
+  int auto_index;
+  dsda_key_frame_t kf;
+  struct auto_kf_s* prev;
+  struct auto_kf_s* next;
+} auto_kf_t;
 
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete);
 void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe);
