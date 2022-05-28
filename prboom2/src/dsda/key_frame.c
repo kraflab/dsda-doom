@@ -446,8 +446,10 @@ void dsda_UpdateAutoKeyFrames(void) {
     key_frame_index = current_time / interval_tics;
 
     // Don't duplicate on rewind
-    if (key_frame_index == restore_key_frame_index)
+    if (key_frame_index == restore_key_frame_index) {
+      restore_key_frame_index = -1;
       return;
+    }
 
     last_auto_kf = last_auto_kf->next;
     last_auto_kf->next->auto_index = 0;
