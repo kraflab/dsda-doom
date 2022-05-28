@@ -75,7 +75,7 @@ static dboolean dsda_AutoKFExists(auto_kf_t* auto_kf) {
   return auto_kf && auto_kf->auto_index && auto_kf->kf.buffer;
 }
 
-static void dsda_DetachAutoKF(void) {
+void dsda_ForgetAutoKeyFrames(void) {
   if (last_auto_kf)
     last_auto_kf->auto_index = 0;
 }
@@ -99,7 +99,7 @@ static void dsda_ResolveParentKF(dsda_key_frame_t* kf) {
     last_auto_kf = kf->parent.auto_kf;
   else {
     dsda_ResetParentKF(kf);
-    dsda_DetachAutoKF();
+    dsda_ForgetAutoKeyFrames();
   }
 }
 

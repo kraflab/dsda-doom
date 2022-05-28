@@ -203,6 +203,8 @@ void dsda_InitDemoRecording(void) {
     demo_key_frame_initialized = true;
   }
 
+  dsda_ForgetAutoKeyFrames();
+
   dsda_demo_write_buffer = malloc(INITIAL_DEMO_BUFFER_SIZE);
   if (dsda_demo_write_buffer == NULL)
     I_Error("dsda_InitDemo: unable to initialize demo buffer!");
