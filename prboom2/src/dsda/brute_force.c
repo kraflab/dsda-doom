@@ -371,6 +371,16 @@ void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
                    value);
 }
 
+static void dsda_SortIntPair(int* a, int* b) {
+  if (*a > *b) {
+    int temp;
+
+    temp = *a;
+    *a = *b;
+    *b = temp;
+  }
+}
+
 dboolean dsda_StartBruteForce(int depth,
                               int forwardmove_min, int forwardmove_max,
                               int sidemove_min, int sidemove_max,
@@ -379,6 +389,10 @@ dboolean dsda_StartBruteForce(int depth,
 
   if (bf_depth > MAX_BF_DEPTH)
     return false;
+
+  dsda_SortIntPair(&forwardmove_min, &forwardmove_max);
+  dsda_SortIntPair(&sidemove_min, &sidemove_max);
+  dsda_SortIntPair(&angleturn_min, &angleturn_max);
 
   bf_depth = depth;
   bf_logictic = logictic;
