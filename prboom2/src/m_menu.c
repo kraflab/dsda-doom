@@ -4421,6 +4421,11 @@ static void M_HandleToggles(void)
   }
 }
 
+dboolean M_ConsoleOpen(void)
+{
+  return menuactive && currentMenu == &dsda_ConsoleDef;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // M_Responder
@@ -4567,8 +4572,7 @@ dboolean M_Responder (event_t* ev) {
   }
 
   if (
-    menuactive &&
-    currentMenu == &dsda_ConsoleDef &&
+    M_ConsoleOpen() &&
     (ch != MENU_NULL || action != MENU_NULL) &&
     action != MENU_ESCAPE
   )
