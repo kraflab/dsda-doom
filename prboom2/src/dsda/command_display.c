@@ -235,6 +235,9 @@ void dsda_DrawCommandDisplay(void) {
     dsda_TicCmdToCommand(&next_command, &next_cmd);
     dsda_UpdateCommandText(&next_command, &next_command_display);
 
+    if (dsda_BuildPlayback())
+      HUlib_cpyStrToTextLine(&next_command_display.hu_text, " PL ");
+
     dsda_DrawCommandDisplayLine(&next_command_display, offset);
 
     ++offset;

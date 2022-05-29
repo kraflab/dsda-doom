@@ -183,6 +183,10 @@ static void dsda_PopCommandQueue(ticcmd_t* cmd) {
     dsda_ExitSkipMode();
 }
 
+dboolean dsda_BuildPlayback(void) {
+  return !replace_source;
+}
+
 void dsda_CopyBuildCmd(ticcmd_t* cmd) {
   if (cmd_queue.depth)
     dsda_PopCommandQueue(cmd);
