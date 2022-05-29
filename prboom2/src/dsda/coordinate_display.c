@@ -21,6 +21,7 @@
 #include "hu_lib.h"
 #include "hu_stuff.h"
 #include "doomstat.h"
+#include "m_menu.h"
 
 #include "dsda/hud.h"
 #include "dsda/utility.h"
@@ -206,13 +207,17 @@ void dsda_UpdateCoordinateDisplay(void) {
 }
 
 void dsda_DrawCoordinateDisplay(void) {
-  HUlib_drawTextLine(&dsda_x_display.text, false);
-  HUlib_drawTextLine(&dsda_y_display.text, false);
-  HUlib_drawTextLine(&dsda_z_display.text, false);
-  HUlib_drawTextLine(&dsda_a_display.text, false);
-  HUlib_drawTextLine(&dsda_v_display.text, false);
-  HUlib_drawTextLine(&dsda_vx_display.text, false);
-  HUlib_drawTextLine(&dsda_vy_display.text, false);
+  int offset;
+
+  offset = M_ConsoleOpen() ? 16 : 0;
+
+  HUlib_drawOffsetTextLine(&dsda_x_display.text, offset);
+  HUlib_drawOffsetTextLine(&dsda_y_display.text, offset);
+  HUlib_drawOffsetTextLine(&dsda_z_display.text, offset);
+  HUlib_drawOffsetTextLine(&dsda_a_display.text, offset);
+  HUlib_drawOffsetTextLine(&dsda_v_display.text, offset);
+  HUlib_drawOffsetTextLine(&dsda_vx_display.text, offset);
+  HUlib_drawOffsetTextLine(&dsda_vy_display.text, offset);
 }
 
 void dsda_EraseCoordinateDisplay(void) {
