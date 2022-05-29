@@ -226,6 +226,16 @@ void HUlib_drawTextLine
   }
 }
 
+void HUlib_drawOffsetTextLine(hu_textline_t* l, int offset)
+{
+  int old_y;
+
+  old_y = l->y;
+  l->y += offset;
+  HUlib_drawTextLine(l, false);
+  l->y = old_y;
+}
+
 //
 // HUlib_eraseTextLine()
 //
