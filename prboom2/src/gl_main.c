@@ -1941,8 +1941,12 @@ void gld_AddWall(seg_t *seg)
       wall.flag = GLDWF_M2S;
       URUL(wall, seg, backseg, linelength);
 
-      wall.vt = (float)((-top + ceiling_height) >> FRACBITS)/(float)wall.gltexture->realtexheight;
-      wall.vb = (float)((-bottom + ceiling_height) >> FRACBITS)/(float)wall.gltexture->realtexheight;
+      wall.vt = (float)((-top + ceiling_height))/(float)wall.gltexture->realtexheight;
+      wall.vb = (float)((-bottom + ceiling_height))/(float)wall.gltexture->realtexheight;
+
+      /* Adjust the final float value accounting for the fixed point conversion */
+      wall.vt /= FRACUNIT;
+      wall.vb /= FRACUNIT;
 
       if (seg->linedef->tranlump >= 0)
         wall.alpha=(float)tran_filter_pct/100.0f;
