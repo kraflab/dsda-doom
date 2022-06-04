@@ -959,8 +959,7 @@ int HU_DrawDemoProgress(int force)
   if (gamestate == GS_DEMOSCREEN || !demoplayback || !hudadd_demoprogressbar)
     return false;
 
-  tics_count = dsda_DemoSkipTics();
-  tics_count = (tics_count ? MIN(tics_count, demo_tics_count) : demo_tics_count) * demo_playerscount;
+  tics_count = demo_tics_count * demo_playerscount;
   len = MIN(SCREENWIDTH, (int)((int_64_t)SCREENWIDTH * dsda_PlaybackTics() / tics_count));
 
   if (!force)

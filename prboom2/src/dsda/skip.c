@@ -205,10 +205,6 @@ void dsda_EvaluateSkipModeCheckDemoStatus(void) {
     dsda_ExitSkipMode();
 }
 
-int dsda_DemoSkipTics(void) {
-  return dsda_SkipMode() ? demo_skiptics : 0;
-}
-
 void dsda_HandleSkip(void) {
   extern int warpmap;
   extern int warpepisode;
