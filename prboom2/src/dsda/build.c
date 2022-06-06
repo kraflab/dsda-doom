@@ -34,6 +34,10 @@ typedef struct {
   int original_depth;
 } build_cmd_queue_t;
 
+#define TURBO_MAX 127
+#define TURBO_MIN -128
+
+static dboolean allow_turbo;
 static dboolean build_mode;
 static dboolean advance_frame;
 static ticcmd_t build_cmd;
@@ -60,7 +64,34 @@ static signed short maxAngle(void) {
   return (128 << 8);
 }
 
+static signed char maxForward(void) {
+  return allow_turbo ? TURBO_MAX : forward50();
+}
+
+static signed char minBackward(void) {
+  return allow_turbo ? TURBO_MIN : -forward50();
+}
+
+static signed char maxStrafeRight(void) {
+  return allow_turbo ? TURBO_MAX : strafe50();
+}
+
+static signed char minStrafeLeft(void) {
+  return allow_turbo ? TURBO_MIN : -strafe50();
+}
+
 static void buildForward(void) {
+  if (allow_turbo) {
+    if (build_cmd.forwardmove == TURBO_MAX)
+      build_cmd.forwardmove = 0;
+    else if (build_cmd.forwardmove == forward50())
+      build_cmd.forwardmove = TURBO_MAX;
+    else
+      build_cmd.forwardmove = forward50();
+
+    return;
+  }
+
   if (build_cmd.forwardmove == forward50())
     build_cmd.forwardmove = 0;
   else
@@ -68,6 +99,17 @@ static void buildForward(void) {
 }
 
 static void buildBackward(void) {
+  if (allow_turbo) {
+    if (build_cmd.forwardmove == TURBO_MIN)
+      build_cmd.forwardmove = 0;
+    else if (build_cmd.forwardmove == -forward50())
+      build_cmd.forwardmove = TURBO_MIN;
+    else
+      build_cmd.forwardmove = -forward50();
+
+    return;
+  }
+
   if (build_cmd.forwardmove == -forward50())
     build_cmd.forwardmove = 0;
   else
@@ -75,16 +117,27 @@ static void buildBackward(void) {
 }
 
 static void buildFineForward(void) {
-  if (build_cmd.forwardmove < forward50())
+  if (build_cmd.forwardmove < maxForward())
     ++build_cmd.forwardmove;
 }
 
 static void buildFineBackward(void) {
-  if (build_cmd.forwardmove > -forward50())
+  if (build_cmd.forwardmove > minBackward())
     --build_cmd.forwardmove;
 }
 
 static void buildStrafeRight(void) {
+  if (allow_turbo) {
+    if (build_cmd.sidemove == TURBO_MAX)
+      build_cmd.sidemove = 0;
+    else if (build_cmd.sidemove == strafe50())
+      build_cmd.sidemove = TURBO_MAX;
+    else
+      build_cmd.sidemove = strafe50();
+
+    return;
+  }
+
   if (build_cmd.sidemove == strafe50())
     build_cmd.sidemove = 0;
   else
@@ -92,6 +145,17 @@ static void buildStrafeRight(void) {
 }
 
 static void buildStrafeLeft(void) {
+  if (allow_turbo) {
+    if (build_cmd.sidemove == TURBO_MIN)
+      build_cmd.sidemove = 0;
+    else if (build_cmd.sidemove == -strafe50())
+      build_cmd.sidemove = TURBO_MIN;
+    else
+      build_cmd.sidemove = -strafe50();
+
+    return;
+  }
+
   if (build_cmd.sidemove == -strafe50())
     build_cmd.sidemove = 0;
   else
@@ -99,12 +163,12 @@ static void buildStrafeLeft(void) {
 }
 
 static void buildFineStrafeRight(void) {
-  if (build_cmd.sidemove < strafe50())
+  if (build_cmd.sidemove < maxStrafeRight())
     ++build_cmd.sidemove;
 }
 
 static void buildFineStrafeLeft(void) {
-  if (build_cmd.sidemove > -strafe50())
+  if (build_cmd.sidemove > minStrafeLeft())
     --build_cmd.sidemove;
 }
 
@@ -392,6 +456,22 @@ dboolean dsda_BuildResponder(event_t* ev) {
   }
 
   return false;
+}
+
+void dsda_ToggleBuildTurbo(void) {
+  allow_turbo = !allow_turbo;
+
+  if (!allow_turbo) {
+    if (build_cmd.forwardmove > maxForward())
+      build_cmd.forwardmove = maxForward();
+    else if (build_cmd.forwardmove < minBackward())
+      build_cmd.forwardmove = minBackward();
+
+    if (build_cmd.sidemove > maxStrafeRight())
+      build_cmd.sidemove = maxStrafeRight();
+    else if (build_cmd.sidemove < minStrafeLeft())
+      build_cmd.sidemove = minStrafeLeft();
+  }
 }
 
 dboolean dsda_AdvanceFrame(void) {

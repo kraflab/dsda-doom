@@ -23,6 +23,7 @@
 #include "s_sound.h"
 #include "v_video.h"
 
+#include "dsda/build.h"
 #include "dsda/brute_force.h"
 #include "dsda/demo.h"
 #include "dsda/exhud.h"
@@ -419,6 +420,12 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
   return false;
 }
 
+static dboolean console_BuildTurbo(const char* command, const char* args) {
+  dsda_ToggleBuildTurbo();
+
+  return true;
+}
+
 static dboolean console_Exit(const char* command, const char* args) {
   extern void M_ClearMenus(void);
 
@@ -476,6 +483,9 @@ static console_command_entry_t console_commands[] = {
   // brute force
   { "bruteforce.start", console_BruteForceStart, CF_DEMO },
   { "bf.start", console_BruteForceStart, CF_DEMO },
+
+  { "build.turbo", console_BuildTurbo, CF_DEMO },
+  { "b.turbo", console_BuildTurbo, CF_DEMO },
 
   // demos
   { "demo.export", console_DemoExport, CF_DEMO | CF_STRICT },
