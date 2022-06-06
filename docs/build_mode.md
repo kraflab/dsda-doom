@@ -13,7 +13,7 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 - Toggle Source: by default, the command you edit in build mode is the one that gets sent to the game when you advance a frame. You can toggle the source to play back commands from the demo buffer instead. If you are past the end of any existing demo buffer, wait tics will be played.
 - Fine Movement: adjusts movement commands by 1 unit.
 - Turn values and the use action are reset every time the frame advances. Other values are kept.
-- Use `build.turbo` / `b.turbo` in the console to toggle turbo on and off.
+- Use `build.turbo` / `b.turbo` in the console to toggle turbo on and off (or launch with `-turbo`).
 
 ### Time
 
