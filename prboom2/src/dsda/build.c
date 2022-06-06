@@ -384,6 +384,13 @@ dboolean dsda_BuildResponder(event_t* ev) {
     return true;
   }
 
+  if (dsda_InputActivated(dsda_input_join_demo)) {
+    if (demoplayback) {
+      dsda_ClearPlaybackStream();
+      dsda_QueueJoin();
+    }
+  }
+
   return false;
 }
 
