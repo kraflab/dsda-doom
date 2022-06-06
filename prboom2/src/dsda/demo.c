@@ -51,6 +51,7 @@ static int compatibility_level_unspecified;
 #define DSDA_DEMO_VERSION 1
 #define DEMOMARKER 0x80
 
+static dboolean join_queued;
 static int dsda_demo_version;
 static int bytes_per_tic;
 
@@ -441,6 +442,17 @@ void dsda_RestoreDemoData(byte** save_p, byte complete) {
     dsda_SetDemoBufferOffset(demo_write_buffer_offset);
 }
 
+void dsda_QueueJoin(void) {
+  join_queued = true;
+}
+
+dboolean dsda_PendingJoin(void) {
+  if (!join_queued) return false;
+
+  join_queued = 0;
+  return true;
+}
+
 void dsda_JoinDemoCmd(ticcmd_t* cmd) {
   // Sometimes this bit is not available
   if (
@@ -448,6 +460,8 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd) {
     (cmd->buttons & BT_CHANGE) == 0
   )
     cmd->buttons |= BT_JOIN;
+  else
+    dsda_QueueJoin();
 }
 
 #define DSDA_DEMO_HEADER_START_SIZE 8 // version + signature (6) + dsda version

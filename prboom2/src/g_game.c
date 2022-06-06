@@ -1402,7 +1402,7 @@ void G_Ticker (void)
         if (dsda_BuildMode())
           dsda_ReadBuildCmd(cmd);
 
-        if (dsda_KeyFrameRestored())
+        if (dsda_PendingJoin())
           dsda_JoinDemoCmd(cmd);
 
         if (demoplayback)

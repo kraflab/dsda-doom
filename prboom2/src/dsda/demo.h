@@ -32,6 +32,8 @@ void dsda_WriteToDemo(void* buffer, size_t length);
 void dsda_WriteTicToDemo(void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);
 void dsda_CopyPendingCmd(ticcmd_t* cmd);
+void dsda_QueueJoin(void);
+dboolean dsda_PendingJoin(void);
 void dsda_JoinDemoCmd(ticcmd_t* cmd);
 const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size);
 void dsda_WriteDSDADemoHeader(byte** p);

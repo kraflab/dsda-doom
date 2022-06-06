@@ -56,7 +56,6 @@ extern dboolean BorderNeedRefresh;
 extern int inv_ptr;
 void RecalculateDrawnSubsectors(void);
 
-static int kf_restored;
 static dboolean auto_kf_timed_out;
 static int auto_kf_timeout_count;
 
@@ -347,18 +346,11 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   BorderNeedRefresh = true;
   ST_Start();
 
-  kf_restored = 1;
+  dsda_QueueJoin();
 
   dsda_ResolveParentKF(key_frame);
 
   doom_printf("Restored key frame");
-}
-
-int dsda_KeyFrameRestored(void) {
-  if (!kf_restored) return 0;
-
-  kf_restored = 0;
-  return 1;
 }
 
 void dsda_StoreQuickKeyFrame(void) {
