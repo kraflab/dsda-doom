@@ -1229,6 +1229,9 @@ dboolean G_Responder (event_t* ev)
   if (gamestate == GS_FINALE && F_Responder(ev))
     return true;  // finale ate the event
 
+  if (dsda_BuildResponder(ev))
+    return true;
+
   // If the next/previous weapon keys are pressed, set the next_weapon
   // variable to change weapons when the next ticcmd is generated.
   if (dsda_InputActivated(dsda_input_prevweapon))
@@ -1248,9 +1251,6 @@ dboolean G_Responder (event_t* ev)
   {
     return InventoryMoveRight();
   }
-
-  if (dsda_BuildResponder(ev))
-    return true;
 
   if (dsda_InputActivated(dsda_input_pause))
   {
