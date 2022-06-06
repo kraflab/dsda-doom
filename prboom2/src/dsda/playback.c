@@ -163,7 +163,7 @@ void dsda_RestorePlaybackPosition(byte** save_p) {
   *save_p += sizeof(playback_p);
 }
 
-static void dsda_ClearPlaybackStream(void) {
+void dsda_ClearPlaybackStream(void) {
   playback_origin_p = NULL;
   playback_p = NULL;
   playback_length = 0;

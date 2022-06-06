@@ -25,6 +25,7 @@ dboolean dsda_JumpToLogicTic(int tic);
 int dsda_PlaybackArg(void);
 void dsda_ExecutePlaybackOptions(void);
 int dsda_ParsePlaybackOptions(void);
+void dsda_ClearPlaybackStream(void);
 void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour);
 int dsda_PlaybackTics(void);
 int dsda_PlaybackPositionSize(void);
