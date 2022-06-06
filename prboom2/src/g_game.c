@@ -369,17 +369,28 @@ void G_SetSpeed(dboolean reset)
     sidemove[1] = player_class->sidemove[1];
   }
 
-  if ((p = M_CheckParm ("-turbo")))
   {
-    int scale = ((p < myargc - 1) ? atoi(myargv[p + 1]) : 200);
-    scale = BETWEEN(10, 400, scale);
+    int turbo_scale = dsda_TurboScale();
 
-    //jff 9/3/98 use logical output routine
-    lprintf (LO_INFO,"turbo scale: %i%%\n",scale);
-    forwardmove[0] = player_class->forwardmove[0]*scale/100;
-    forwardmove[1] = player_class->forwardmove[1]*scale/100;
-    sidemove[0] = sidemove[0]*scale/100;
-    sidemove[1] = sidemove[1]*scale/100;
+    if (turbo_scale)
+    {
+      forwardmove[0] = player_class->forwardmove[0] * turbo_scale / 100;
+      forwardmove[1] = player_class->forwardmove[1] * turbo_scale / 100;
+      sidemove[0] = sidemove[0] * turbo_scale / 100;
+      sidemove[1] = sidemove[1] * turbo_scale / 100;
+
+      if (forwardmove[0] > 127)
+        forwardmove[0] = 127;
+
+      if (forwardmove[1] > 127)
+        forwardmove[1] = 127;
+
+      if (sidemove[0] > 127)
+        sidemove[0] = 127;
+
+      if (sidemove[1] > 127)
+        sidemove[1] = 127;
+    }
   }
 }
 

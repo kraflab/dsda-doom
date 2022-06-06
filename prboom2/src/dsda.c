@@ -29,6 +29,7 @@
 #include "am_map.h"
 
 #include "dsda/analysis.h"
+#include "dsda/build.h"
 #include "dsda/demo.h"
 #include "dsda/exhud.h"
 #include "dsda/ghost.h"
@@ -56,6 +57,8 @@ dboolean dsda_any_map_completed;
 int dsda_max_kill_requirement;
 int dsda_session_attempts = 1;
 
+static int turbo_scale;
+
 dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
 void dsda_ResetMapVariables(void);
@@ -66,6 +69,27 @@ dboolean dsda_ILComplete(void) {
 
 dboolean dsda_MovieComplete(void) {
   return dsda_any_map_completed && dsda_last_gamemap == dsda_movie_target && dsda_movie_target;
+}
+
+static void dsda_HandleTurbo(void) {
+  int p;
+
+  if ((p = M_CheckParm ("-turbo"))) {
+    if (p < myargc - 1)
+      turbo_scale = atoi(myargv[p + 1]);
+
+    if (!turbo_scale)
+      turbo_scale = 255;
+
+    turbo_scale = BETWEEN(10, 255, turbo_scale);
+  }
+
+  if (turbo_scale > 100)
+    dsda_ToggleBuildTurbo();
+}
+
+int dsda_TurboScale(void) {
+  return turbo_scale;
 }
 
 void dsda_ReadCommandLine(void) {
@@ -90,6 +114,8 @@ void dsda_ReadCommandLine(void) {
 
   if ((p = M_CheckParm("-export_ghost")) && ++p < myargc)
     dsda_InitGhostExport(myargv[p]);
+
+  dsda_HandleTurbo();
 
   if ((p = M_CheckParm("-import_ghost"))) dsda_InitGhostImport(p);
 
