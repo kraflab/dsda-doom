@@ -31,9 +31,13 @@
 #define COORDINATE_TEXT_X 2
 #define COORDINATE_TEXT_Y 8
 
-#define THRESHOLD_1 15.11
-#define THRESHOLD_2 19.35
-#define THRESHOLD_3 21.37
+#define THRESHOLD_1V 15.11
+#define THRESHOLD_2V 19.35
+#define THRESHOLD_3V 21.37
+
+#define THRESHOLD_1D 16.67
+#define THRESHOLD_2D 21.35
+#define THRESHOLD_3D 23.58
 
 static dsda_text_t dsda_x_display;
 static dsda_text_t dsda_y_display;
@@ -42,13 +46,29 @@ static dsda_text_t dsda_a_display;
 static dsda_text_t dsda_v_display;
 static dsda_text_t dsda_vx_display;
 static dsda_text_t dsda_vy_display;
+static dsda_text_t dsda_d_display;
+static dsda_text_t dsda_dx_display;
+static dsda_text_t dsda_dy_display;
 static char dsda_velocity_color;
+static char dsda_distance_color;
 
 static double dsda_CalculateVelocity(void) {
   double vx, vy;
 
   vx = (double) players[displayplayer].mo->momx / FRACUNIT;
   vy = (double) players[displayplayer].mo->momy / FRACUNIT;
+
+  return sqrt(vx * vx + vy * vy);
+}
+
+static double dsda_CalculateDistance(void) {
+  double vx, vy;
+  mobj_t* mo;
+
+  mo = players[displayplayer].mo;
+
+  vx = (double) (mo->x - mo->PrevX) / FRACUNIT;
+  vy = (double) (mo->y - mo->PrevY) / FRACUNIT;
 
   return sqrt(vx * vx + vy * vy);
 }
@@ -82,7 +102,7 @@ static void dsda_WriteAngle(dsda_text_t* text, angle_t x, const char* ch) {
   dsda_RefreshHudText(text);
 }
 
-static void dsda_WriteCoordinateSimple(dsda_text_t* text, fixed_t x, const char* ch) {
+static void dsda_WriteCoordinateSimple(dsda_text_t* text, fixed_t x, const char* ch, char color) {
   dsda_fixed_t value;
   const char* format;
 
@@ -91,13 +111,13 @@ static void dsda_WriteCoordinateSimple(dsda_text_t* text, fixed_t x, const char*
   if (value.frac) {
     if (value.negative && !value.base)
       snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: -%i.%03i",
-               dsda_velocity_color, ch, value.base, 1000 * value.frac / 0xffff);
+               color, ch, value.base, 1000 * value.frac / 0xffff);
     else
       snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %i.%03i",
-               dsda_velocity_color, ch, value.base, 1000 * value.frac / 0xffff);
+               color, ch, value.base, 1000 * value.frac / 0xffff);
   }
   else
-    snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %i", dsda_velocity_color, ch, value.base);
+    snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %i", color, ch, value.base);
 
   dsda_RefreshHudText(text);
 }
@@ -108,11 +128,11 @@ static void dsda_WriteVelocity(dsda_text_t* text) {
   v = dsda_CalculateVelocity();
 
   dsda_velocity_color =
-    v >= THRESHOLD_3 ?
+    v >= THRESHOLD_3V ?
       0x30 + g_cr_red   :
-    v >= THRESHOLD_2 ?
+    v >= THRESHOLD_2V ?
       0x30 + g_cr_blue  :
-    v >= THRESHOLD_1 ?
+    v >= THRESHOLD_1V ?
       0x30 + g_cr_green :
     0x30 + g_cr_gray;
 
@@ -120,6 +140,28 @@ static void dsda_WriteVelocity(dsda_text_t* text) {
     snprintf(text->msg, sizeof(text->msg), "\x1b%cV: %.3f", dsda_velocity_color, v);
   else
     snprintf(text->msg, sizeof(text->msg), "\x1b%cV: 0", dsda_velocity_color);
+
+  dsda_RefreshHudText(text);
+}
+
+static void dsda_WriteDistance(dsda_text_t* text) {
+  double v;
+
+  v = dsda_CalculateDistance();
+
+  dsda_distance_color =
+    v >= THRESHOLD_3D ?
+      0x30 + g_cr_red   :
+    v >= THRESHOLD_2D ?
+      0x30 + g_cr_blue  :
+    v >= THRESHOLD_1D ?
+      0x30 + g_cr_green :
+    0x30 + g_cr_gray;
+
+  if (v)
+    snprintf(text->msg, sizeof(text->msg), "\x1b%cD: %.3f", dsda_distance_color, v);
+  else
+    snprintf(text->msg, sizeof(text->msg), "\x1b%cD: 0", dsda_distance_color);
 
   dsda_RefreshHudText(text);
 }
@@ -194,16 +236,53 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     g_cr_gray,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
+
+  HUlib_initTextLine(
+    &dsda_d_display.text,
+    COORDINATE_TEXT_X,
+    COORDINATE_TEXT_Y + 72,
+    font,
+    HU_FONTSTART,
+    g_cr_gray,
+    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
+  );
+
+  HUlib_initTextLine(
+    &dsda_dx_display.text,
+    COORDINATE_TEXT_X,
+    COORDINATE_TEXT_Y + 80,
+    font,
+    HU_FONTSTART,
+    g_cr_gray,
+    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
+  );
+
+  HUlib_initTextLine(
+    &dsda_dy_display.text,
+    COORDINATE_TEXT_X,
+    COORDINATE_TEXT_Y + 88,
+    font,
+    HU_FONTSTART,
+    g_cr_gray,
+    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
+  );
 }
 
 void dsda_UpdateCoordinateDisplay(void) {
-  dsda_WriteCoordinate(&dsda_x_display, players[displayplayer].mo->x, "X");
-  dsda_WriteCoordinate(&dsda_y_display, players[displayplayer].mo->y, "Y");
-  dsda_WriteCoordinate(&dsda_z_display, players[displayplayer].mo->z, "Z");
-  dsda_WriteAngle(&dsda_a_display, players[displayplayer].mo->angle, "A");
+  mobj_t* mo;
+
+  mo = players[displayplayer].mo;
+
+  dsda_WriteCoordinate(&dsda_x_display, mo->x, "X");
+  dsda_WriteCoordinate(&dsda_y_display, mo->y, "Y");
+  dsda_WriteCoordinate(&dsda_z_display, mo->z, "Z");
+  dsda_WriteAngle(&dsda_a_display, mo->angle, "A");
   dsda_WriteVelocity(&dsda_v_display);
-  dsda_WriteCoordinateSimple(&dsda_vx_display, players[displayplayer].mo->momx, "X");
-  dsda_WriteCoordinateSimple(&dsda_vy_display, players[displayplayer].mo->momy, "Y");
+  dsda_WriteCoordinateSimple(&dsda_vx_display, mo->momx, "X", dsda_velocity_color);
+  dsda_WriteCoordinateSimple(&dsda_vy_display, mo->momy, "Y", dsda_velocity_color);
+  dsda_WriteDistance(&dsda_d_display);
+  dsda_WriteCoordinateSimple(&dsda_dx_display, mo->x - mo->PrevX, "X", dsda_distance_color);
+  dsda_WriteCoordinateSimple(&dsda_dy_display, mo->y - mo->PrevY, "Y", dsda_distance_color);
 }
 
 void dsda_DrawCoordinateDisplay(void) {
@@ -218,6 +297,9 @@ void dsda_DrawCoordinateDisplay(void) {
   HUlib_drawOffsetTextLine(&dsda_v_display.text, offset);
   HUlib_drawOffsetTextLine(&dsda_vx_display.text, offset);
   HUlib_drawOffsetTextLine(&dsda_vy_display.text, offset);
+  HUlib_drawOffsetTextLine(&dsda_d_display.text, offset);
+  HUlib_drawOffsetTextLine(&dsda_dx_display.text, offset);
+  HUlib_drawOffsetTextLine(&dsda_dy_display.text, offset);
 }
 
 void dsda_EraseCoordinateDisplay(void) {
@@ -228,4 +310,7 @@ void dsda_EraseCoordinateDisplay(void) {
   HUlib_eraseTextLine(&dsda_v_display.text);
   HUlib_eraseTextLine(&dsda_vx_display.text);
   HUlib_eraseTextLine(&dsda_vy_display.text);
+  HUlib_eraseTextLine(&dsda_d_display.text);
+  HUlib_eraseTextLine(&dsda_dx_display.text);
+  HUlib_eraseTextLine(&dsda_dy_display.text);
 }
