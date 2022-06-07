@@ -60,10 +60,6 @@ static signed short shortTic(void) {
   return (1 << 8);
 }
 
-static signed short maxAngle(void) {
-  return (128 << 8);
-}
-
 static signed char maxForward(void) {
   return allow_turbo ? TURBO_MAX : forward50();
 }
@@ -173,17 +169,11 @@ static void buildFineStrafeLeft(void) {
 }
 
 static void buildTurnRight(void) {
-  if (build_cmd.angleturn == maxAngle())
-    build_cmd.angleturn = 0;
-  else
-    build_cmd.angleturn += shortTic();
+  build_cmd.angleturn += shortTic();
 }
 
 static void buildTurnLeft(void) {
-  if (build_cmd.angleturn == -maxAngle())
-    build_cmd.angleturn = 0;
-  else
-    build_cmd.angleturn -= shortTic();
+  build_cmd.angleturn -= shortTic();
 }
 
 static void buildUse(void) {
