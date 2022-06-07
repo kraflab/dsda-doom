@@ -76,6 +76,60 @@ static signed char minStrafeLeft(void) {
   return allow_turbo ? TURBO_MIN : -strafe50();
 }
 
+dboolean dsda_BuildMF(int x) {
+  if (x < 0 || x > 127)
+    return false;
+
+  build_cmd.forwardmove = x;
+
+  return true;
+}
+
+dboolean dsda_BuildMB(int x) {
+  if (x < 0 || x > 128)
+    return false;
+
+  build_cmd.forwardmove = -x;
+
+  return true;
+}
+
+dboolean dsda_BuildSR(int x) {
+  if (x < 0 || x > 127)
+    return false;
+
+  build_cmd.sidemove = x;
+
+  return true;
+}
+
+dboolean dsda_BuildSL(int x) {
+  if (x < 0 || x > 128)
+    return false;
+
+  build_cmd.sidemove = -x;
+
+  return true;
+}
+
+dboolean dsda_BuildTR(int x) {
+  if (x < 0 || x > 128)
+    return false;
+
+  build_cmd.angleturn = (-x << 8);
+
+  return true;
+}
+
+dboolean dsda_BuildTL(int x) {
+  if (x < 0 || x > 127)
+    return false;
+
+  build_cmd.angleturn = (x << 8);
+
+  return true;
+}
+
 static void buildForward(void) {
   if (allow_turbo) {
     if (build_cmd.forwardmove == TURBO_MAX)

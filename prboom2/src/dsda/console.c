@@ -310,6 +310,42 @@ static dboolean console_JumpTic(const char* command, const char* args) {
   return false;
 }
 
+static dboolean console_BuildMF(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildMF(x);
+}
+
+static dboolean console_BuildMB(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildMB(x);
+}
+
+static dboolean console_BuildSR(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildSR(x);
+}
+
+static dboolean console_BuildSL(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildSL(x);
+}
+
+static dboolean console_BuildTR(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildTR(x);
+}
+
+static dboolean console_BuildTL(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildTL(x);
+}
+
 static dboolean console_BruteForceStart(const char* command, const char* args) {
   int depth;
   int forwardmove_min, forwardmove_max;
@@ -461,12 +497,17 @@ static console_command_entry_t console_commands[] = {
   // traversing time
   { "jump.tic", console_JumpTic, CF_DEMO },
 
-  // brute force
+  // build mode
   { "bruteforce.start", console_BruteForceStart, CF_DEMO },
   { "bf.start", console_BruteForceStart, CF_DEMO },
-
   { "build.turbo", console_BuildTurbo, CF_DEMO },
   { "b.turbo", console_BuildTurbo, CF_DEMO },
+  { "mf", console_BuildMF, CF_DEMO },
+  { "mb", console_BuildMB, CF_DEMO },
+  { "sr", console_BuildSR, CF_DEMO },
+  { "sl", console_BuildSL, CF_DEMO },
+  { "tr", console_BuildTR, CF_DEMO },
+  { "tl", console_BuildTL, CF_DEMO },
 
   // demos
   { "demo.export", console_DemoExport, CF_DEMO | CF_STRICT },
