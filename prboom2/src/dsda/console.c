@@ -30,7 +30,6 @@
 #include "dsda/global.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
-#include "dsda/tas.h"
 #include "dsda/utility.h"
 
 #include "console.h"
@@ -232,22 +231,6 @@ static dboolean console_DemoExport(const char* command, const char* args) {
   }
 
   return false;
-}
-
-static dboolean console_CommandLock(const char* command, const char* args) {
-  char element[CONSOLE_ENTRY_SIZE];
-  int value;
-
-  if (sscanf(args, "%s %i", element, &value) == 2)
-    return dsda_UpdatePersistentCommand(element, value);
-
-  return false;
-}
-
-static dboolean console_CommandUnlock(const char* command, const char* args) {
-  dsda_DisablePersistentCommand();
-
-  return true;
 }
 
 static dboolean console_TrackerAddLine(const char* command, const char* args) {
@@ -456,8 +439,6 @@ static console_command_entry_t console_commands[] = {
   { "player.roundx", console_PlayerRoundX, CF_NEVER },
   { "player.roundy", console_PlayerRoundY, CF_NEVER },
   { "player.roundxy", console_PlayerRoundXY, CF_NEVER },
-  { "command.lock", console_CommandLock, CF_DEMO },
-  { "command.unlock", console_CommandUnlock, CF_DEMO },
 
   // tracking
   { "tracker.addline", console_TrackerAddLine, CF_DEMO },

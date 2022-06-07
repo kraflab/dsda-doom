@@ -103,7 +103,6 @@
 #include "dsda/pause.h"
 #include "dsda/playback.h"
 #include "dsda/skip.h"
-#include "dsda/tas.h"
 #include "dsda/time.h"
 #include "dsda/split_tracker.h"
 
@@ -1067,8 +1066,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dsda_JoinDemoCmd(cmd);
       }
     }
-    else
-      dsda_ApplyTasCommand(cmd);
   }
 }
 
