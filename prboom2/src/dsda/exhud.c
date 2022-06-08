@@ -206,6 +206,25 @@ static void dsda_WipeTrackers(void) {
       dsda_WipeTracker(i);
 }
 
+static void dsda_ConsolidateTrackers(void) {
+  int i;
+
+  for (i = 0; i < TRACKER_LIMIT; ++i)
+    if (dsda_tracker[i].type == dsda_tracker_nothing) {
+      int j;
+
+      for (j = i + 1; j < TRACKER_LIMIT; ++j)
+        if (dsda_tracker[j].type != dsda_tracker_nothing) {
+          dsda_tracker[i] = dsda_tracker[j];
+          dsda_WipeTracker(j);
+          break;
+        }
+
+      if (j == TRACKER_LIMIT)
+        return;
+    }
+}
+
 static void dsda_RefreshTrackers(void) {
   int i;
 
@@ -254,6 +273,8 @@ void dsda_ResetTrackers(void) {
     dsda_WipeTrackers();
   else
     dsda_RefreshTrackers();
+
+  dsda_ConsolidateTrackers();
 }
 
 static dboolean dsda_AddTracker(int type, int id, mobj_t* mobj) {
@@ -284,6 +305,7 @@ static dboolean dsda_RemoveTracker(int type, int id) {
 
   if ((i = dsda_FindTracker(type, id)) >= 0) {
     dsda_WipeTracker(i);
+    dsda_ConsolidateTrackers();
 
     return true;
   }
