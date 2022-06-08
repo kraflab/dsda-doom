@@ -34,9 +34,6 @@ typedef struct {
   int original_depth;
 } build_cmd_queue_t;
 
-#define TURBO_MAX 127
-#define TURBO_MIN -128
-
 static dboolean allow_turbo;
 static dboolean build_mode;
 static dboolean advance_frame;
@@ -61,19 +58,19 @@ static signed short shortTic(void) {
 }
 
 static signed char maxForward(void) {
-  return allow_turbo ? TURBO_MAX : forward50();
+  return allow_turbo ? 127 : forward50();
 }
 
 static signed char minBackward(void) {
-  return allow_turbo ? TURBO_MIN : -forward50();
+  return allow_turbo ? -127 : -forward50();
 }
 
 static signed char maxStrafeRight(void) {
-  return allow_turbo ? TURBO_MAX : strafe50();
+  return allow_turbo ? 127 : strafe50();
 }
 
 static signed char minStrafeLeft(void) {
-  return allow_turbo ? TURBO_MIN : -strafe50();
+  return allow_turbo ? -128 : -strafe50();
 }
 
 dboolean dsda_BuildMF(int x) {
@@ -86,7 +83,7 @@ dboolean dsda_BuildMF(int x) {
 }
 
 dboolean dsda_BuildMB(int x) {
-  if (x < 0 || x > 128)
+  if (x < 0 || x > 127)
     return false;
 
   build_cmd.forwardmove = -x;
@@ -132,10 +129,10 @@ dboolean dsda_BuildTL(int x) {
 
 static void buildForward(void) {
   if (allow_turbo) {
-    if (build_cmd.forwardmove == TURBO_MAX)
+    if (build_cmd.forwardmove == 127)
       build_cmd.forwardmove = 0;
     else if (build_cmd.forwardmove == forward50())
-      build_cmd.forwardmove = TURBO_MAX;
+      build_cmd.forwardmove = 127;
     else
       build_cmd.forwardmove = forward50();
 
@@ -150,10 +147,10 @@ static void buildForward(void) {
 
 static void buildBackward(void) {
   if (allow_turbo) {
-    if (build_cmd.forwardmove == TURBO_MIN)
+    if (build_cmd.forwardmove == -127)
       build_cmd.forwardmove = 0;
     else if (build_cmd.forwardmove == -forward50())
-      build_cmd.forwardmove = TURBO_MIN;
+      build_cmd.forwardmove = -127;
     else
       build_cmd.forwardmove = -forward50();
 
@@ -178,10 +175,10 @@ static void buildFineBackward(void) {
 
 static void buildStrafeRight(void) {
   if (allow_turbo) {
-    if (build_cmd.sidemove == TURBO_MAX)
+    if (build_cmd.sidemove == 127)
       build_cmd.sidemove = 0;
     else if (build_cmd.sidemove == strafe50())
-      build_cmd.sidemove = TURBO_MAX;
+      build_cmd.sidemove = 127;
     else
       build_cmd.sidemove = strafe50();
 
@@ -196,10 +193,10 @@ static void buildStrafeRight(void) {
 
 static void buildStrafeLeft(void) {
   if (allow_turbo) {
-    if (build_cmd.sidemove == TURBO_MIN)
+    if (build_cmd.sidemove == -128)
       build_cmd.sidemove = 0;
     else if (build_cmd.sidemove == -strafe50())
-      build_cmd.sidemove = TURBO_MIN;
+      build_cmd.sidemove = -128;
     else
       build_cmd.sidemove = -strafe50();
 
