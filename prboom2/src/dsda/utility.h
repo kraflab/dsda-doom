@@ -39,3 +39,6 @@ dsda_fixed_t dsda_SplitFixed(fixed_t x);
 dsda_angle_t dsda_SplitAngle(angle_t x);
 void dsda_PrintCommandMovement(char* str, ticcmd_t* cmd);
 void dsda_CutExtension(char* str);
+double dsda_DistancePointToLine(fixed_t line_x1, fixed_t line_y1,
+                                fixed_t line_x2, fixed_t line_y2,
+                                fixed_t point_x, fixed_t point_y);

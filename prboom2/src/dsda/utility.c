@@ -15,6 +15,7 @@
 //	DSDA Utility
 //
 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -126,4 +127,36 @@ void dsda_CutExtension(char* str) {
       *p = '\0';
       break;
     }
+}
+
+static double dsda_DistanceLF(double x1, double y1, double x2, double y2) {
+  return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+}
+
+double dsda_DistancePointToLine(fixed_t line_x1, fixed_t line_y1,
+                                fixed_t line_x2, fixed_t line_y2,
+                                fixed_t point_x, fixed_t point_y) {
+  double dx, dy;
+  double x1, x2, y1, y2, px, py;
+  double intersect, intersect_x, intersect_y;
+
+  x1 = (double) line_x1 / FRACUNIT;
+  x2 = (double) line_x2 / FRACUNIT;
+  y1 = (double) line_y1 / FRACUNIT;
+  y2 = (double) line_y2 / FRACUNIT;
+  px = (double) point_x / FRACUNIT;
+  py = (double) point_y / FRACUNIT;
+
+  if (x1 == x2 && y1 == y2)
+    return dsda_DistanceLF(x1, y1, px, py);
+
+  dx = x2 - x1;
+  dy = y2 - y1;
+
+  intersect = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy);
+  intersect = BETWEEN(0, 1, intersect);
+  intersect_x = x1 + intersect * dx;
+  intersect_y = y1 + intersect * dy;
+
+  return dsda_DistanceLF(intersect_x, intersect_y, px, py);
 }

@@ -27,6 +27,7 @@
 #include "dsda/global.h"
 #include "dsda/hud.h"
 #include "dsda/settings.h"
+#include "dsda/utility.h"
 
 #include "exhud.h"
 
@@ -36,6 +37,7 @@
 typedef enum {
   dsda_tracker_nothing,
   dsda_tracker_line,
+  dsda_tracker_line_distance,
   dsda_tracker_sector,
   dsda_tracker_mobj,
   dsda_tracker_player,
@@ -55,8 +57,16 @@ dsda_tracker_t dsda_tracker[TRACKER_LIMIT];
 static int tracker_map;
 static int tracker_episode;
 
+static int color_default;
+static int color_warning;
+static int color_alert;
+
 void dsda_InitExHud(patchnum_t* font) {
   int i;
+
+  color_default = g_cr_gray;
+  color_warning = g_cr_green;
+  color_alert = g_cr_red;
 
   for (i = 0; i < TRACKER_LIMIT; ++i)
     HUlib_initTextLine(
@@ -105,10 +115,33 @@ static void dsda_UpdateTrackers(void) {
           dsda_exhud_tracker[i].msg,
           sizeof(dsda_exhud_tracker[i].msg),
           "\x1b%cl %d: %d",
-          lines[dsda_tracker[i].id].special ? 0x30 + g_cr_gold : 0x30 + g_cr_blue,
+          lines[dsda_tracker[i].id].special ? 0x30 + color_warning : 0x30 + color_default,
           dsda_tracker[i].id,
           lines[dsda_tracker[i].id].special
         );
+        break;
+      case dsda_tracker_line_distance:
+        {
+          line_t* line;
+          mobj_t* mo;
+          double distance;
+          double radius;
+
+          line = &lines[dsda_tracker[i].id];
+          mo = players[displayplayer].mo;
+          radius = (double) mo->radius / FRACUNIT;
+          distance = dsda_DistancePointToLine(line->v1->x, line->v1->y, line->v2->x, line->v2->y,
+                                              mo->x, mo->y);
+
+          snprintf(
+            dsda_exhud_tracker[i].msg,
+            sizeof(dsda_exhud_tracker[i].msg),
+            "\x1b%cld %d: %.03f",
+            distance < radius ? 0x30 + color_warning : 0x30 + color_default,
+            dsda_tracker[i].id,
+            distance
+          );
+        }
         break;
       case dsda_tracker_sector:
         {
@@ -122,7 +155,7 @@ static void dsda_UpdateTrackers(void) {
             dsda_exhud_tracker[i].msg,
             sizeof(dsda_exhud_tracker[i].msg),
             "\x1b%cs %d: %d %d %d",
-            active ? 0x30 + g_cr_red : special ? 0x30 + g_cr_gold : 0x30 + g_cr_blue,
+            active ? 0x30 + color_alert : special ? 0x30 + color_warning : 0x30 + color_default,
             dsda_tracker[i].id, special, active,
             sectors[dsda_tracker[i].id].floorheight >> FRACBITS
           );
@@ -141,7 +174,7 @@ static void dsda_UpdateTrackers(void) {
             dsda_exhud_tracker[i].msg,
             sizeof(dsda_exhud_tracker[i].msg),
             "\x1b%cm %d: %d",
-            health > 0 ? 0x30 + g_cr_gold : 0x30 + g_cr_blue,
+            health > 0 ? 0x30 + color_warning : 0x30 + color_default,
             dsda_tracker[i].id, health
           );
         }
@@ -154,7 +187,7 @@ static void dsda_UpdateTrackers(void) {
             dsda_exhud_tracker[i].msg,
             sizeof(dsda_exhud_tracker[i].msg),
             "\x1b%cp: %d",
-            player_damage_last_tic > 0 ? 0x30 + g_cr_gold : 0x30 + g_cr_blue,
+            player_damage_last_tic > 0 ? 0x30 + color_warning : 0x30 + color_default,
             player_damage_last_tic
           );
         }
@@ -260,6 +293,7 @@ void dsda_ResetTrackers(void) {
     first_time = false;
 
     dsda_ParseCommandlineTrackers("-track_line", dsda_TrackLine);
+    dsda_ParseCommandlineTrackers("-track_line_distance", dsda_TrackLineDistance);
     dsda_ParseCommandlineTrackers("-track_sector", dsda_TrackSector);
     dsda_ParseCommandlineTrackers("-track_mobj", dsda_TrackMobj);
 
@@ -327,6 +361,22 @@ dboolean dsda_TrackLine(int id) {
 
 dboolean dsda_UntrackLine(int id) {
   return dsda_RemoveTracker(dsda_tracker_line, id);
+}
+
+dboolean dsda_TrackLineDistance(int id) {
+  int i;
+
+  if (dsda_StrictMode())
+    return false;
+
+  if (id >= numlines || id < 0)
+    return false;
+
+  return dsda_AddTracker(dsda_tracker_line_distance, id, NULL);
+}
+
+dboolean dsda_UntrackLineDistance(int id) {
+  return dsda_RemoveTracker(dsda_tracker_line_distance, id);
 }
 
 dboolean dsda_TrackSector(int id) {

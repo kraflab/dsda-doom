@@ -251,6 +251,24 @@ static dboolean console_TrackerRemoveLine(const char* command, const char* args)
   return false;
 }
 
+static dboolean console_TrackerAddLineDistance(const char* command, const char* args) {
+  int id;
+
+  if (sscanf(args, "%i", &id))
+    return dsda_TrackLineDistance(id);
+
+  return false;
+}
+
+static dboolean console_TrackerRemoveLineDistance(const char* command, const char* args) {
+  int id;
+
+  if (sscanf(args, "%i", &id))
+    return dsda_UntrackLineDistance(id);
+
+  return false;
+}
+
 static dboolean console_TrackerAddSector(const char* command, const char* args) {
   int id;
 
@@ -481,6 +499,10 @@ static console_command_entry_t console_commands[] = {
   { "t.al", console_TrackerAddLine, CF_DEMO },
   { "tracker.removeline", console_TrackerRemoveLine, CF_DEMO },
   { "t.rl", console_TrackerRemoveLine, CF_DEMO },
+  { "tracker.addlinedistance", console_TrackerAddLineDistance, CF_DEMO },
+  { "t.ald", console_TrackerAddLineDistance, CF_DEMO },
+  { "tracker.removelinedistance", console_TrackerRemoveLineDistance, CF_DEMO },
+  { "t.rld", console_TrackerRemoveLineDistance, CF_DEMO },
   { "tracker.addsector", console_TrackerAddSector, CF_DEMO },
   { "t.as", console_TrackerAddSector, CF_DEMO },
   { "tracker.removesector", console_TrackerRemoveSector, CF_DEMO },
