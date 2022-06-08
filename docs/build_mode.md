@@ -26,10 +26,17 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 
 - You can display extra data about different aspects of the game state using trackers.
 - `tracker.addline X` / `t.al X`: track the special value of line X.
+- `tracker.addlinedistance X` / `t.ald X`: track the distance from line X.
 - `tracker.addsector X` / `t.as X`: track the special value, active state, and floor height of sector X.
 - `tracker.addmobj X` / `t.am X`: track the health of mobj X.
 - `tracker.addplayer` / `t.ap`: track the last damage dealt by the player.
 - You can remove trackers with the same commands, substituting `remove` / `r` for `add` / `a`.
+- You can also populate these through command line arguments:
+  - `-track_line a [b c ...]`
+  - `-track_line_distance a [b c ...]`
+  - `-track_sector a [b c ...]`
+  - `-track_mobj a [b c ...]`
+  - `-track_player`
 
 ### Brute Force
 
