@@ -1155,7 +1155,7 @@ static void G_DoLoadLevel (void)
   dsda_ResetPauseMode();
   dsda_ResetExCmdQueue();
 
-  if (dsda_BuildMode() || M_CheckParm("-build"))
+  if (dsda_BuildMode() || dsda_StartInBuildMode())
     dsda_EnterBuildMode();
 
   // killough 5/13/98: in case netdemo has consoleplayer other than green

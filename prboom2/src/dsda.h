@@ -61,5 +61,6 @@ void dsda_DecomposeMovieTime(dsda_movie_time_t* total_time);
 int dsda_MaxKillRequirement(void);
 
 int dsda_TurboScale(void);
+int dsda_StartInBuildMode(void);
 
 #endif

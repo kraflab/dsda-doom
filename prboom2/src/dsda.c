@@ -92,6 +92,14 @@ int dsda_TurboScale(void) {
   return turbo_scale;
 }
 
+static void dsda_HandleBuild(void) {
+  start_in_build_mode = M_CheckParm("-build");
+}
+
+int dsda_StartInBuildMode(void) {
+  return start_in_build_mode;
+}
+
 void dsda_ReadCommandLine(void) {
   int p;
 
@@ -116,6 +124,7 @@ void dsda_ReadCommandLine(void) {
     dsda_InitGhostExport(myargv[p]);
 
   dsda_HandleTurbo();
+  dsda_HandleBuild();
 
   if ((p = M_CheckParm("-import_ghost"))) dsda_InitGhostImport(p);
 
