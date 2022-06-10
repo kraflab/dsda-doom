@@ -35,6 +35,7 @@
 
 #include "heretic/sb_bar.h"
 
+#include "dsda.h"
 #include "dsda/build.h"
 #include "dsda/command_display.h"
 #include "dsda/demo.h"
@@ -68,9 +69,26 @@ static auto_kf_t* last_auto_kf;
 static int auto_kf_size;
 static int restore_key_frame_index = -1;
 
+int dsda_auto_key_frame_depth;
+int dsda_auto_key_frame_interval;
 int dsda_auto_key_frame_timeout;
 
-static dboolean dsda_AutoKFExists(auto_kf_t* auto_kf) {
+static int autoKeyFrameTimeout(void) {
+  return dsda_StartInBuildMode() ? 0 : dsda_auto_key_frame_timeout;
+}
+
+static int autoKeyFrameDepth(void) {
+  if (dsda_StrictMode())
+    return 0;
+
+  return dsda_auto_key_frame_depth;
+}
+
+static int autoKeyFrameInterval(void) {
+  return dsda_auto_key_frame_interval;
+}
+
+static dboolean autoKFExists(auto_kf_t* auto_kf) {
   return auto_kf && auto_kf->auto_index && auto_kf->kf.buffer;
 }
 
@@ -85,7 +103,7 @@ static void dsda_ResetParentKF(dsda_key_frame_t* kf) {
 }
 
 static void dsda_AttachAutoKF(dsda_key_frame_t* kf) {
-  if (dsda_AutoKFExists(last_auto_kf)) {
+  if (autoKFExists(last_auto_kf)) {
     kf->parent.auto_kf = last_auto_kf;
     kf->parent.buffer = last_auto_kf->kf.buffer;
   }
@@ -94,7 +112,7 @@ static void dsda_AttachAutoKF(dsda_key_frame_t* kf) {
 }
 
 static void dsda_ResolveParentKF(dsda_key_frame_t* kf) {
-  if (dsda_AutoKFExists(kf->parent.auto_kf) && kf->parent.auto_kf->kf.buffer == kf->parent.buffer)
+  if (autoKFExists(kf->parent.auto_kf) && kf->parent.auto_kf->kf.buffer == kf->parent.buffer)
     last_auto_kf = kf->parent.auto_kf;
   else {
     dsda_ResetParentKF(kf);
@@ -152,7 +170,7 @@ void dsda_CopyKeyFrame(dsda_key_frame_t* dest, dsda_key_frame_t* source) {
 void dsda_InitKeyFrame(void) {
   int i;
 
-  auto_kf_size = dsda_AutoKeyFrameDepth();
+  auto_kf_size = autoKeyFrameDepth();
 
   if (!auto_kf_size) {
     last_auto_kf = NULL;
@@ -311,7 +329,7 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   memcpy(&totalleveltimes, save_p, sizeof(totalleveltimes));
   save_p += sizeof(totalleveltimes);
 
-  restore_key_frame_index = (totalleveltimes + leveltime) / (35 * dsda_AutoKeyFrameInterval());
+  restore_key_frame_index = (totalleveltimes + leveltime) / (35 * autoKeyFrameInterval());
 
   memcpy(&key_frame->game_tic_count, save_p, sizeof(key_frame->game_tic_count));
   save_p += sizeof(key_frame->game_tic_count);
@@ -431,7 +449,7 @@ void dsda_UpdateAutoKeyFrames(void) {
   ) return;
 
   current_time = totalleveltimes + leveltime;
-  interval_tics = 35 * dsda_AutoKeyFrameInterval();
+  interval_tics = 35 * autoKeyFrameInterval();
 
   // Automatically save a key frame each interval
   if (current_time % interval_tics == 0) {
@@ -456,8 +474,8 @@ void dsda_UpdateAutoKeyFrames(void) {
       dsda_StoreKeyFrame(current_key_frame, false);
       elapsed_time = dsda_ElapsedTimeMS(dsda_timer_key_frame);
 
-      if (dsda_auto_key_frame_timeout) {
-        if (elapsed_time > dsda_auto_key_frame_timeout) {
+      if (autoKeyFrameTimeout()) {
+        if (elapsed_time > autoKeyFrameTimeout()) {
           ++auto_kf_timeout_count;
 
           if (auto_kf_timeout_count > TIMEOUT_LIMIT) {

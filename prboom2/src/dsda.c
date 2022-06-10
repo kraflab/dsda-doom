@@ -58,6 +58,7 @@ int dsda_max_kill_requirement;
 int dsda_session_attempts = 1;
 
 static int turbo_scale;
+static int start_in_build_mode;
 
 dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);

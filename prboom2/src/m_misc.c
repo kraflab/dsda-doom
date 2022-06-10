@@ -86,6 +86,10 @@
 // NSM
 #include "i_capture.h"
 
+extern int dsda_auto_key_frame_depth;
+extern int dsda_auto_key_frame_interval;
+extern int dsda_auto_key_frame_timeout;
+
 /* cph - disk icon not implemented */
 static inline void I_BeginRead(void) {}
 static inline void I_EndRead(void) {}
