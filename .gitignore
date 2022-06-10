@@ -1,7 +1,7 @@
 prboom2/ICONS/icons.aps
 prboom2/release
-/build*
-/dependencies*
+build*
+dependencies*
 
 # spec files
 analysis.txt
