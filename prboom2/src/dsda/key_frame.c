@@ -81,10 +81,16 @@ static int autoKeyFrameDepth(void) {
   if (dsda_StrictMode())
     return 0;
 
+  if (dsda_StartInBuildMode() && dsda_auto_key_frame_depth < 60)
+    return 60;
+
   return dsda_auto_key_frame_depth;
 }
 
 static int autoKeyFrameInterval(void) {
+  if (dsda_StartInBuildMode())
+    return 1;
+
   return dsda_auto_key_frame_interval;
 }
 
