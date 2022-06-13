@@ -1,9 +1,18 @@
-Checked up to: 4b832c52366e0a7f2fd4590a1bbd43e96fe165c4 (Feb 4 2022)
+Checked up to: acd8ce1a426e9856026dbb5d4d51da4f0945e3f5 (June 1 2022)
 
 Commits from upstream to go through:
 
-umapinfo fix:
+opengl:
+921adf17e02408e7f0a06b59df4a4c07d716ee35
+
+mixer buffer size:
+5a5233a729fa65aa2d9e03a1cddffc7e4e0eb66c
+
+umapinfo fixes:
 ee33927e3688668b2010cd82ecc1d352cff18391
+d97cb0e78558b83e8c33d9a1d0129570f5b7563e
+d9716acadff8ac16cb5aa39b1a3a432713a6ef6b
+b21bdbc198f382bb5a938b287eab696a5328567a
 
 utf8:
 5b5bfa6ffcf656c9fcffc74d2d1c33201d27a74b
