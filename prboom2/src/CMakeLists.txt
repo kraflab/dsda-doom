@@ -49,6 +49,8 @@ set(COMMON_SRC
     dsda/intermission_display.h
     dsda/key_frame.c
     dsda/key_frame.h
+    dsda/line_display.c
+    dsda/line_display.h
     dsda/line_special.h
     dsda/map_format.c
     dsda/map_format.h

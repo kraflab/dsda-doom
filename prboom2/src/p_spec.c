@@ -63,8 +63,8 @@
 #include "hu_stuff.h"
 #include "lprintf.h"
 #include "e6y.h"//e6y
-#include "dsda.h"
 
+#include "dsda.h"
 #include "dsda/global.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
@@ -1566,6 +1566,8 @@ void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
 void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
 {
   int ok;
+
+  dsda_WatchLineActivation(line, thing);
 
   //  Things that should never trigger lines
   //

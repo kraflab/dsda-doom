@@ -42,6 +42,7 @@
 
 #include "hexen/p_anim.h"
 
+#include "dsda.h"
 #include "dsda/pause.h"
 
 int leveltime;
@@ -302,5 +303,7 @@ void P_Ticker (void)
   P_RespawnSpecials();
   P_AmbientSound();
   P_MapEnd();
+
+  dsda_WatchPTickCompleted();
   leveltime++;                       // for par times
 }

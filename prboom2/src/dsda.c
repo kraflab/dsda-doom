@@ -60,6 +60,10 @@ int dsda_session_attempts = 1;
 static int turbo_scale;
 static int start_in_build_mode;
 
+static int line_activation[2][LINE_ACTIVATION_INDEX_MAX + 1];
+static int line_activation_frame;
+static int line_activation_index;
+
 dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
 void dsda_ResetMapVariables(void);
@@ -70,6 +74,31 @@ dboolean dsda_ILComplete(void) {
 
 dboolean dsda_MovieComplete(void) {
   return dsda_any_map_completed && dsda_last_gamemap == dsda_movie_target && dsda_movie_target;
+}
+
+void dsda_WatchLineActivation(line_t* line, mobj_t* mo) {
+  if (mo && mo->player)
+    if (line_activation_index < LINE_ACTIVATION_INDEX_MAX) {
+      line_activation[line_activation_frame][line_activation_index] = line->iLineID;
+      ++line_activation_index;
+      line_activation[line_activation_frame][line_activation_index] = -1;
+    }
+}
+
+int* dsda_PlayerActivatedLines(void) {
+  return line_activation[!line_activation_frame];
+}
+
+static void dsda_FlipLineActivationTracker(void) {
+  line_activation_frame = !line_activation_frame;
+  line_activation_index = 0;
+
+  line_activation[line_activation_frame][line_activation_index] = -1;
+}
+
+static void dsda_ResetLineActivationTracker(void) {
+  line_activation[0][0] = -1;
+  line_activation[1][0] = -1;
 }
 
 static void dsda_HandleTurbo(void) {
@@ -320,6 +349,10 @@ int dsda_MaxKillRequirement() {
   return dsda_max_kill_requirement;
 }
 
+void dsda_WatchPTickCompleted(void) {
+  dsda_FlipLineActivationTracker();
+}
+
 void dsda_WatchCommand(void) {
   int i;
   ticcmd_t* cmd;
@@ -359,6 +392,7 @@ void dsda_WatchBeforeLevelSetup(void) {
 void dsda_WatchAfterLevelSetup(void) {
   dsda_SpawnGhost();
   dsda_ResetTrackers();
+  dsda_ResetLineActivationTracker();
 }
 
 void dsda_WatchNewLevel(void) {

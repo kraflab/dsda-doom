@@ -41,6 +41,7 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda.h"
 #include "dsda/map_format.h"
 
 //==================================================================
@@ -317,6 +318,8 @@ P_UseSpecialLine
   int           side,
   dboolean		bossaction)
 {
+  dsda_WatchLineActivation(line, thing);
+
   // e6y
   // b.m. side test was broken in boom201
   if ((demoplayback ? (demover != 201) : (compatibility_level != boom_201_compatibility)))
