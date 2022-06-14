@@ -167,100 +167,120 @@ static void dsda_WriteDistance(dsda_text_t* text) {
 }
 
 void dsda_InitCoordinateDisplay(patchnum_t* font) {
+  int offset = 0;
+
   HUlib_initTextLine(
     &dsda_x_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_green,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
+
+  offset += DSDA_CHAR_HEIGHT;
 
   HUlib_initTextLine(
     &dsda_y_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + 8,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_green,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
+
+  offset += DSDA_CHAR_HEIGHT;
 
   HUlib_initTextLine(
     &dsda_z_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + 16,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_green,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
+
+  offset += DSDA_CHAR_HEIGHT;
 
   HUlib_initTextLine(
     &dsda_a_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + 24,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_green,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
+  offset += 2 * DSDA_CHAR_HEIGHT;
+
   HUlib_initTextLine(
     &dsda_v_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + 40,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_gray,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
+
+  offset += DSDA_CHAR_HEIGHT;
 
   HUlib_initTextLine(
     &dsda_vx_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + 48,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_gray,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
+
+  offset += DSDA_CHAR_HEIGHT;
 
   HUlib_initTextLine(
     &dsda_vy_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + 56,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_gray,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
+
+  offset += 2 * DSDA_CHAR_HEIGHT;
 
   HUlib_initTextLine(
     &dsda_d_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + 72,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_gray,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
+
+  offset += DSDA_CHAR_HEIGHT;
 
   HUlib_initTextLine(
     &dsda_dx_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + 80,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_gray,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
+  offset += DSDA_CHAR_HEIGHT;
+
   HUlib_initTextLine(
     &dsda_dy_display.text,
     COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + 88,
+    COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
     g_cr_gray,
@@ -288,7 +308,7 @@ void dsda_UpdateCoordinateDisplay(void) {
 void dsda_DrawCoordinateDisplay(void) {
   int offset;
 
-  offset = M_ConsoleOpen() ? 16 : 0;
+  offset = M_ConsoleOpen() ? 2 * DSDA_CHAR_HEIGHT : 0;
 
   HUlib_drawOffsetTextLine(&dsda_x_display.text, offset);
   HUlib_drawOffsetTextLine(&dsda_y_display.text, offset);
