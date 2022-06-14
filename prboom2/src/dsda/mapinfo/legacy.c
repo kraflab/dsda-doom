@@ -67,13 +67,11 @@ int dsda_LegacyNewGameMap(int* episode, int* map) {
 }
 
 int dsda_LegacyResolveWarp(int arg_p, int* episode, int* map) {
-  *map = 0;
-  *episode = 1;
-
   if (gamemode == commercial)
   {
     if (arg_p < myargc - 1)
-      *map = atoi(myargv[arg_p + 1]);
+      if (sscanf(myargv[arg_p + 1], "%d", map) == 1)
+        *episode = 1;
   }
   else if (arg_p < myargc - 1 && sscanf(myargv[arg_p + 1], "%d", episode) == 1) {
     *map = 1;

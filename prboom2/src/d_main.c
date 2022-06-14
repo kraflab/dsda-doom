@@ -1669,7 +1669,7 @@ static void HandleWarp(void)
 
     dsda_ResolveWarp(p, &warpepisode, &warpmap);
 
-    if (!warpmap)
+    if (warpmap == -1)
       dsda_FirstMap(&warpepisode, &warpmap);
 
     startmap = warpmap;
