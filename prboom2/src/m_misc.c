@@ -1030,6 +1030,7 @@ default_t defaults[] =
   {"cap_tempfile2",{NULL, &cap_tempfile2},{0,"temp_v.nut"},UL,UL,def_str,ss_none},
   {"cap_remove_tempfiles", {&cap_remove_tempfiles},{1},0,1,def_bool,ss_none},
   {"cap_fps", {&cap_fps},{60},16,300,def_int,ss_none},
+  {"cap_wipescreen", {&cap_wipescreen},{0},0,1,def_bool,ss_none},
 
   {"Prboom-plus video settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"sdl_video_window_pos", {NULL,&sdl_video_window_pos}, {0,"center"},UL,UL,

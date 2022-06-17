@@ -70,6 +70,7 @@ const char *cap_tempfile2;
 int cap_remove_tempfiles;
 int cap_fps;
 int cap_frac;
+int cap_wipescreen;
 
 // parses a command with simple printf-style replacements.
 
