@@ -41,7 +41,7 @@ typedef struct auto_kf_s {
   struct auto_kf_s* next;
 } auto_kf_t;
 
-void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete);
+void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export);
 void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe);
 void dsda_InitKeyFrame(void);
 void dsda_ContinueKeyFrame(void);

@@ -173,7 +173,7 @@ static void dsda_RestoreBFKeyFrame(int frame) {
 }
 
 static void dsda_StoreBFKeyFrame(int frame) {
-  dsda_StoreKeyFrame(&brute_force[frame].key_frame, true);
+  dsda_StoreKeyFrame(&brute_force[frame].key_frame, true, false);
 }
 
 static void dsda_PrintBFProgress(void) {

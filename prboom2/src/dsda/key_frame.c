@@ -221,7 +221,7 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 }
 
 // Stripped down version of G_DoSaveGame
-void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
+void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export) {
   int i;
 
   save_p = savebuffer = malloc(savegamesize);
@@ -279,7 +279,7 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete) {
   dsda_AttachAutoKF(key_frame);
 
   if (complete) {
-    if (demorecording)
+    if (demorecording && export)
       dsda_ExportKeyFrame(key_frame->buffer, key_frame->buffer_length);
 
     doom_printf("Stored key frame");
@@ -378,7 +378,7 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
 }
 
 void dsda_StoreQuickKeyFrame(void) {
-  dsda_StoreKeyFrame(&quick_kf, true);
+  dsda_StoreKeyFrame(&quick_kf, true, true);
 }
 
 void dsda_RestoreQuickKeyFrame(void) {
@@ -477,7 +477,7 @@ void dsda_UpdateAutoKeyFrames(void) {
       unsigned long long elapsed_time;
 
       dsda_StartTimer(dsda_timer_key_frame);
-      dsda_StoreKeyFrame(current_key_frame, false);
+      dsda_StoreKeyFrame(current_key_frame, false, false);
       elapsed_time = dsda_ElapsedTimeMS(dsda_timer_key_frame);
 
       if (autoKeyFrameTimeout()) {
