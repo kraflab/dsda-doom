@@ -114,10 +114,11 @@ static void dsda_UpdateTrackers(void) {
         snprintf(
           dsda_exhud_tracker[i].msg,
           sizeof(dsda_exhud_tracker[i].msg),
-          "\x1b%cl %d: %d",
+          "\x1b%cl %d: %d %d",
           lines[dsda_tracker[i].id].special ? 0x30 + color_warning : 0x30 + color_default,
           dsda_tracker[i].id,
-          lines[dsda_tracker[i].id].special
+          lines[dsda_tracker[i].id].special,
+          lines[dsda_tracker[i].id].player_activations
         );
         break;
       case dsda_tracker_line_distance:

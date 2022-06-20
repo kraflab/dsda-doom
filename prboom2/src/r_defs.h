@@ -276,6 +276,9 @@ typedef struct line_s
   r_flags_t r_flags;     // cph
   degenmobj_t soundorg;  // sound origin for switches/buttons
 
+  // dsda
+  byte player_activations;
+
   // hexen
   byte arg1;
   byte arg2;

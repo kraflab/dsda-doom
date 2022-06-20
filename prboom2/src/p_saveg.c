@@ -142,6 +142,7 @@ void P_ArchiveWorld (void)
     (
       sizeof(short) * 2 +
       sizeof(li->flags) +
+      sizeof(li->player_activations) +
       sizeof(li->arg1) * 5
     ) * numlines +
     sizeof(musinfo.current_item);
@@ -196,6 +197,7 @@ void P_ArchiveWorld (void)
     *put++ = li->tag;
 
     save_p = (byte *) put;
+    *save_p++ = li->player_activations;
     *save_p++ = li->arg1;
     *save_p++ = li->arg2;
     *save_p++ = li->arg3;
@@ -284,6 +286,7 @@ void P_UnArchiveWorld (void)
     li->tag = *get++;
 
     save_p = (byte *) get;
+    li->player_activations = *save_p++;
     li->arg1 = *save_p++;
     li->arg2 = *save_p++;
     li->arg3 = *save_p++;

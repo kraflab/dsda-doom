@@ -77,12 +77,15 @@ dboolean dsda_MovieComplete(void) {
 }
 
 void dsda_WatchLineActivation(line_t* line, mobj_t* mo) {
-  if (mo && mo->player)
+  if (mo && mo->player) {
     if (line_activation_index < LINE_ACTIVATION_INDEX_MAX) {
       line_activation[line_activation_frame][line_activation_index] = line->iLineID;
       ++line_activation_index;
       line_activation[line_activation_frame][line_activation_index] = -1;
     }
+
+    ++line->player_activations;
+  }
 }
 
 int* dsda_PlayerActivatedLines(void) {
