@@ -149,7 +149,6 @@ static int dsda_AdvanceBruteForce(void) {
   return i;
 }
 
-
 static void dsda_CopyBFCommandDepth(ticcmd_t* cmd, bf_t* bf) {
   memset(cmd, 0, sizeof(*cmd));
 
