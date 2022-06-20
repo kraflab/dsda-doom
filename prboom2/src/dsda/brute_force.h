@@ -27,6 +27,10 @@ typedef enum {
   dsda_bf_damage,
   dsda_bf_rng,
   dsda_bf_attribute_max,
+
+  dsda_bf_line_skip = 0,
+  dsda_bf_line_activation,
+  dsda_bf_misc_max,
 } dsda_bf_attribute_t;
 
 typedef enum {
@@ -37,6 +41,8 @@ typedef enum {
   dsda_bf_equal_to,
   dsda_bf_not_equal_to,
   dsda_bf_operator_max,
+
+  dsda_bf_operator_misc,
 } dsda_bf_operator_t;
 
 typedef enum {
@@ -60,6 +66,7 @@ dboolean dsda_BruteForce(void);
 void dsda_ResetBruteForceConditions(void);
 void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
                               dsda_bf_limit_t limit, fixed_t value);
+void dsda_AddMiscBruteForceCondition(dsda_bf_attribute_t attribute, fixed_t value);
 void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
                                  dsda_bf_operator_t operator, fixed_t value);
 dboolean dsda_StartBruteForce(int depth,

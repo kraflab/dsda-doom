@@ -22,6 +22,7 @@
 #include "doomstat.h"
 #include "lprintf.h"
 #include "m_random.h"
+#include "r_state.h"
 
 #include "dsda/build.h"
 #include "dsda/key_frame.h"
@@ -51,6 +52,7 @@ typedef struct {
   dsda_bf_attribute_t attribute;
   dsda_bf_operator_t operator;
   fixed_t value;
+  fixed_t secondary_value;
 } bf_condition_t;
 
 typedef struct {
@@ -84,6 +86,11 @@ const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
   [dsda_bf_speed] = "spd",
   [dsda_bf_damage] = "dmg",
   [dsda_bf_rng] = "rng",
+};
+
+const char* dsda_bf_misc_names[dsda_bf_misc_max] = {
+  "line skip",
+  "line activation",
 };
 
 const char* dsda_bf_operator_names[dsda_bf_operator_max] = {
@@ -234,8 +241,22 @@ static fixed_t dsda_BFAttribute(int attribute) {
   }
 }
 
+static dboolean dsda_BFMiscConditionReached(int i) {
+  switch (bf_condition[i].attribute) {
+    case dsda_bf_line_skip:
+      return lines[bf_condition[i].value].player_activations == bf_condition[i].secondary_value;
+    case dsda_bf_line_activation:
+      return lines[bf_condition[i].value].player_activations > bf_condition[i].secondary_value;
+    default:
+      return false;
+  }
+}
+
 static dboolean dsda_BFConditionReached(int i) {
   fixed_t value;
+
+  if (bf_condition[i].operator == dsda_bf_operator_misc)
+    return dsda_BFMiscConditionReached(i);
 
   value = dsda_BFAttribute(bf_condition[i].attribute);
 
@@ -335,6 +356,30 @@ dboolean dsda_BruteForce(void) {
 void dsda_ResetBruteForceConditions(void) {
   bf_condition_count = 0;
   memset(&bf_target, 0, sizeof(bf_target));
+}
+
+void dsda_AddMiscBruteForceCondition(dsda_bf_attribute_t attribute, fixed_t value) {
+  if (bf_condition_count == MAX_BF_CONDITIONS)
+    return;
+
+  bf_condition[bf_condition_count].attribute = attribute;
+  bf_condition[bf_condition_count].operator = dsda_bf_operator_misc;
+  bf_condition[bf_condition_count].value = value;
+
+  switch (attribute) {
+    case dsda_bf_line_skip:
+    case dsda_bf_line_activation:
+      bf_condition[bf_condition_count].secondary_value = lines[value].player_activations;
+      break;
+    default:
+      break;
+  }
+
+  ++bf_condition_count;
+
+  lprintf(LO_INFO, "Added brute force condition: %s %d\n",
+                   dsda_bf_misc_names[attribute],
+                   value);
 }
 
 void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
