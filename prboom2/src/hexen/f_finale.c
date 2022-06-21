@@ -201,8 +201,7 @@ static void InitializeFade(dboolean fadeIn)
     //     for (i = 0; i < 768; i++)
     //     {
     //         Palette[i] = 0;
-    //         PaletteDelta[i] = FixedDiv((*((byte *) W_LumpByName("playpal",
-    //                                                                PU_CACHE) +
+    //         PaletteDelta[i] = FixedDiv((*((byte *) W_LumpByName("playpal") +
     //                                       i)) << FRACBITS, 70 * FRACUNIT);
     //     }
     // }
@@ -211,7 +210,7 @@ static void InitializeFade(dboolean fadeIn)
     //     for (i = 0; i < 768; i++)
     //     {
     //         RealPalette[i] =
-    //             *((byte *) W_LumpByName("playpal", PU_CACHE) + i);
+    //             *((byte *) W_LumpByName("playpal") + i);
     //         Palette[i] = RealPalette[i] << FRACBITS;
     //         PaletteDelta[i] = FixedDiv(Palette[i], -70 * FRACUNIT);
     //     }
