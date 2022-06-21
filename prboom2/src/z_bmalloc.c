@@ -88,7 +88,7 @@ void* Z_BMalloc(struct block_memory_alloc_s *pzone)
     // CPhipps: Allocate new memory, initialised to 0
 
     *pool = newpool = Z_Calloc(sizeof(*newpool) + (sizeof(byte) + pzone->size)*(pzone->perpool),
-             1,  pzone->tag, NULL);
+             1,  pzone->tag);
     newpool->nextpool = NULL; // NULL = (void*)0 so this is redundant
 
     // Return element 0 from this pool to satisfy the request

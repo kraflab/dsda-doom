@@ -1181,7 +1181,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	// first estimate for compression rate:
 	// output buffer size == 2.5 * input size
 	outlen = 2.5 * len;
-	output = Z_Malloc(outlen, PU_STATIC, 0);
+	output = Z_Malloc(outlen, PU_STATIC);
 
 	// initialize stream state for decompression
 	zstream = malloc(sizeof(*zstream));
@@ -2563,7 +2563,7 @@ static int P_GroupLines (void)
   }
 
   {  // allocate line tables for each sector
-    line_t **linebuffer = Z_Malloc(total*sizeof(line_t *), PU_LEVEL, 0);
+    line_t **linebuffer = Z_Malloc(total*sizeof(line_t *), PU_LEVEL);
     // e6y: REJECT overrun emulation code
     // moved to P_LoadReject
 

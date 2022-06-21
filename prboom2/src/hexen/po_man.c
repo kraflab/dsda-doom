@@ -177,7 +177,7 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overR
     {
         I_Error("EV_RotatePoly:  Invalid polyobj num: %d\n", polyNum);
     }
-    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
+    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL);
     P_AddThinker(&pe->thinker);
     pe->thinker.function = T_RotatePoly;
     pe->polyobj = polyNum;
@@ -208,7 +208,7 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overR
         {                       // mirroring poly is already in motion
             break;
         }
-        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
+        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL);
         P_AddThinker(&pe->thinker);
         pe->thinker.function = T_RotatePoly;
         poly->specialdata = pe;
@@ -273,7 +273,7 @@ static void EV_SpawnMovePolyEvent(int polyNum, polyobj_t *poly, fixed_t speed,
     int mirror;
     polyevent_t *pe;
 
-    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
+    pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL);
     P_AddThinker(&pe->thinker);
     pe->thinker.function = T_MovePoly;
     pe->polyobj = polyNum;
@@ -292,7 +292,7 @@ static void EV_SpawnMovePolyEvent(int polyNum, polyobj_t *poly, fixed_t speed,
         {                       // mirroring poly is already in motion
             break;
         }
-        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL, 0);
+        pe = Z_Malloc(sizeof(polyevent_t), PU_LEVEL);
         P_AddThinker(&pe->thinker);
         pe->thinker.function = T_MovePoly;
         pe->polyobj = mirror;
@@ -516,7 +516,7 @@ dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
     {
         I_Error("EV_OpenPolyDoor:  Invalid polyobj num: %d\n", polyNum);
     }
-    pd = Z_Malloc(sizeof(polydoor_t), PU_LEVEL, 0);
+    pd = Z_Malloc(sizeof(polydoor_t), PU_LEVEL);
     memset(pd, 0, sizeof(polydoor_t));
     P_AddThinker(&pd->thinker);
     pd->thinker.function = T_PolyDoor;
@@ -555,7 +555,7 @@ dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
         {                       // mirroring poly is already in motion
             break;
         }
-        pd = Z_Malloc(sizeof(polydoor_t), PU_LEVEL, 0);
+        pd = Z_Malloc(sizeof(polydoor_t), PU_LEVEL);
         memset(pd, 0, sizeof(polydoor_t));
         P_AddThinker(&pd->thinker);
         pd->thinker.function = T_PolyDoor;
@@ -993,7 +993,7 @@ static void LinkPolyobj(polyobj_t * po)
                 link = &PolyBlockMap[j + i];
                 if (!(*link))
                 {               // Create a new link at the current block cell
-                    *link = Z_Malloc(sizeof(polyblock_t), PU_LEVEL, 0);
+                    *link = Z_Malloc(sizeof(polyblock_t), PU_LEVEL);
                     (*link)->next = NULL;
                     (*link)->prev = NULL;
                     (*link)->polyobj = po;
@@ -1015,8 +1015,7 @@ static void LinkPolyobj(polyobj_t * po)
                 }
                 else
                 {
-                    tempLink->next = Z_Malloc(sizeof(polyblock_t),
-                                              PU_LEVEL, 0);
+                    tempLink->next = Z_Malloc(sizeof(polyblock_t), PU_LEVEL);
                     tempLink->next->next = NULL;
                     tempLink->next->prev = tempLink;
                     tempLink->next->polyobj = po;
@@ -1090,7 +1089,7 @@ static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po)
 void PO_ResetBlockMap(dboolean allocate)
 {
   if (allocate)
-    PolyBlockMap = Z_Malloc(bmapwidth * bmapheight * sizeof(polyblock_t *), PU_LEVEL, 0);
+    PolyBlockMap = Z_Malloc(bmapwidth * bmapheight * sizeof(polyblock_t *), PU_LEVEL);
   memset(PolyBlockMap, 0, bmapwidth * bmapheight * sizeof(polyblock_t *));
 }
 
@@ -1187,8 +1186,7 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
             IterFindPolySegs(segs[i].v2->x, segs[i].v2->y, NULL);
 
             polyobjs[index].numsegs = PolySegCount;
-            polyobjs[index].segs = Z_Malloc(PolySegCount * sizeof(seg_t *),
-                                            PU_LEVEL, 0);
+            polyobjs[index].segs = Z_Malloc(PolySegCount * sizeof(seg_t *), PU_LEVEL);
             *(polyobjs[index].segs) = &segs[i]; // insert the first seg
             IterFindPolySegs(segs[i].v2->x, segs[i].v2->y,
                              polyobjs[index].segs + 1);
@@ -1270,8 +1268,7 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
             polyobjs[index].crush = crush;
             polyobjs[index].hurt = hurt;
             polyobjs[index].tag = tag;
-            polyobjs[index].segs = Z_Malloc(polyobjs[index].numsegs
-                                            * sizeof(seg_t *), PU_LEVEL, 0);
+            polyobjs[index].segs = Z_Malloc(polyobjs[index].numsegs * sizeof(seg_t *), PU_LEVEL);
             for (i = 0; i < polyobjs[index].numsegs; i++)
             {
                 polyobjs[index].segs[i] = polySegList[i];
@@ -1317,8 +1314,8 @@ static void TranslateToStartSpot(int tag, int originX, int originY)
             ("TranslateToStartSpot:  Anchor point located without a StartSpot point: %d\n",
              tag);
     }
-    po->originalPts = Z_Malloc(po->numsegs * sizeof(vertex_t), PU_LEVEL, 0);
-    po->prevPts = Z_Malloc(po->numsegs * sizeof(vertex_t), PU_LEVEL, 0);
+    po->originalPts = Z_Malloc(po->numsegs * sizeof(vertex_t), PU_LEVEL);
+    po->prevPts = Z_Malloc(po->numsegs * sizeof(vertex_t), PU_LEVEL);
     deltaX = originX - po->startSpot.x;
     deltaY = originY - po->startSpot.y;
 
@@ -1400,7 +1397,7 @@ void PO_Init(int lump)
     int numthings;
     int polyIndex;
 
-    polyobjs = Z_Malloc(po_NumPolyobjs * sizeof(polyobj_t), PU_LEVEL, 0);
+    polyobjs = Z_Malloc(po_NumPolyobjs * sizeof(polyobj_t), PU_LEVEL);
     memset(polyobjs, 0, po_NumPolyobjs * sizeof(polyobj_t));
 
     data = W_CacheLumpNum(lump);

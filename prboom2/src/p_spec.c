@@ -3148,7 +3148,7 @@ void P_UpdateSpecials (void)
 static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
                          int control, int affectee, int accel)
 {
-  scroll_t *s = Z_Malloc(sizeof *s, PU_LEVEL, 0);
+  scroll_t *s = Z_Malloc(sizeof *s, PU_LEVEL);
   s->thinker.function = T_Scroll;
   s->type = type;
   s->dx = dx;
@@ -4214,7 +4214,7 @@ static void P_SpawnScrollers(void)
 
 static void Add_Friction(int friction, int movefactor, int affectee)
 {
-    friction_t *f = Z_Malloc(sizeof *f, PU_LEVEL, 0);
+    friction_t *f = Z_Malloc(sizeof *f, PU_LEVEL);
 
     f->thinker.function/*.acp1*/ = /*(actionf_p1) */T_Friction;
     f->friction = friction;
@@ -4471,7 +4471,7 @@ static void P_SpawnFriction(void)
 
 static void Add_Pusher(int type, int x_mag, int y_mag, mobj_t* source, int affectee)
 {
-    pusher_t *p = Z_Malloc(sizeof *p, PU_LEVEL, 0);
+    pusher_t *p = Z_Malloc(sizeof *p, PU_LEVEL);
 
     p->thinker.function = T_Pusher;
     p->source = source;
@@ -5082,7 +5082,7 @@ void P_InitTerrainTypes(void)
     if (!raven) return;
 
     size = (numflats + 1) * sizeof(int);
-    TerrainTypes = Z_Malloc(size, PU_STATIC, 0);
+    TerrainTypes = Z_Malloc(size, PU_STATIC);
     memset(TerrainTypes, 0, size);
     for (i = 0; TerrainTypeDefs[hexen][i].type != -1; i++)
     {

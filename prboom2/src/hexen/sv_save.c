@@ -1481,14 +1481,13 @@ static void UnarchiveMobjs(void)
     mobj_t *mobj;
 
     AssertSegment(ASEG_MOBJS);
-    TargetPlayerAddrs = Z_Malloc(MAX_TARGET_PLAYERS * sizeof(mobj_t **),
-                                 PU_STATIC, NULL);
+    TargetPlayerAddrs = Z_Malloc(MAX_TARGET_PLAYERS * sizeof(mobj_t **), PU_STATIC);
     TargetPlayerCount = 0;
     MobjCount = SV_ReadLong();
-    MobjList = Z_Malloc(MobjCount * sizeof(mobj_t *), PU_STATIC, NULL);
+    MobjList = Z_Malloc(MobjCount * sizeof(mobj_t *), PU_STATIC);
     for (i = 0; i < MobjCount; i++)
     {
-        MobjList[i] = Z_Malloc(sizeof(mobj_t), PU_LEVEL, NULL);
+        MobjList[i] = Z_Malloc(sizeof(mobj_t), PU_LEVEL);
         memset(MobjList[i], 0, sizeof(mobj_t));
     }
     for (i = 0; i < MobjCount; i++)
@@ -1697,7 +1696,7 @@ static void UnarchiveThinkers(void)
         {
             if (tClass == info->tClass)
             {
-                thinker = Z_Malloc(info->size, PU_LEVEL, NULL);
+                thinker = Z_Malloc(info->size, PU_LEVEL);
                 memset(thinker, 0, info->size);
                 info->readFunc(thinker);
                 thinker->function = info->thinkerFunc;

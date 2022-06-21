@@ -82,8 +82,11 @@ const void *W_CacheLumpNum(int lump)
     I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
 #endif
 
-  if (!cachelump[lump].cache)      // read the lump in
-    W_ReadLump(lump, Z_Malloc(W_LumpLength(lump), PU_CACHE, &cachelump[lump].cache));
+  // read the lump in
+  if (!cachelump[lump].cache) {
+    cachelump[lump].cache = Z_Malloc(W_LumpLength(lump), PU_STATIC);
+    W_ReadLump(lump, cachelump[lump].cache);
+  }
 
   /* cph - if wasn't locked but now is, tell z_zone to hold it */
   if (!cachelump[lump].locks && locks) {

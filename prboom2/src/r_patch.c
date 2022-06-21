@@ -453,7 +453,7 @@ static void createPatch(int id) {
 
   // allocate our data chunk
   dataSize = pixelDataSize + columnsDataSize + postsDataSize;
-  patch->data = (unsigned char*)Z_Malloc(dataSize, PU_CACHE, (void **)&patch->data);
+  patch->data = (unsigned char*) Z_Malloc(dataSize, PU_STATIC);
   memset(patch->data, 0, dataSize);
 
   // set out pixel, column, and post pointers into our data array
@@ -658,7 +658,7 @@ static void createTextureCompositePatch(int id) {
 
   // allocate our data chunk
   dataSize = pixelDataSize + columnsDataSize + postsDataSize;
-  composite_patch->data = (unsigned char*)Z_Malloc(dataSize, PU_LOCKED, (void **)&composite_patch->data);
+  composite_patch->data = (unsigned char*) Z_Malloc(dataSize, PU_LOCKED);
   memset(composite_patch->data, 0, dataSize);
 
   // set out pixel, column, and post pointers into our data array

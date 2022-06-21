@@ -1159,7 +1159,7 @@ void P_TrueUnArchiveThinkers(void) {
     switch (tc) {
       case tc_true_ceiling:
         {
-          ceiling_t *ceiling = Z_Malloc (sizeof(*ceiling), PU_LEVEL, NULL);
+          ceiling_t *ceiling = Z_Malloc (sizeof(*ceiling), PU_LEVEL);
           memcpy (ceiling, save_p, sizeof(*ceiling));
           save_p += sizeof(*ceiling);
           ceiling->sector = &sectors[(size_t)ceiling->sector];
@@ -1175,7 +1175,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_door:
         {
-          vldoor_t *door = Z_Malloc (sizeof(*door), PU_LEVEL, NULL);
+          vldoor_t *door = Z_Malloc (sizeof(*door), PU_LEVEL);
           memcpy (door, save_p, sizeof(*door));
           save_p += sizeof(*door);
           door->sector = &sectors[(size_t)door->sector];
@@ -1191,7 +1191,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_floor:
         {
-          floormove_t *floor = Z_Malloc (sizeof(*floor), PU_LEVEL, NULL);
+          floormove_t *floor = Z_Malloc (sizeof(*floor), PU_LEVEL);
           memcpy (floor, save_p, sizeof(*floor));
           save_p += sizeof(*floor);
           floor->sector = &sectors[(size_t)floor->sector];
@@ -1203,7 +1203,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_plat:
         {
-          plat_t *plat = Z_Malloc (sizeof(*plat), PU_LEVEL, NULL);
+          plat_t *plat = Z_Malloc (sizeof(*plat), PU_LEVEL);
           memcpy (plat, save_p, sizeof(*plat));
           save_p += sizeof(*plat);
           plat->sector = &sectors[(size_t)plat->sector];
@@ -1219,7 +1219,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_flash:
         {
-          lightflash_t *flash = Z_Malloc (sizeof(*flash), PU_LEVEL, NULL);
+          lightflash_t *flash = Z_Malloc (sizeof(*flash), PU_LEVEL);
           memcpy (flash, save_p, sizeof(*flash));
           save_p += sizeof(*flash);
           flash->sector = &sectors[(size_t)flash->sector];
@@ -1231,7 +1231,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_strobe:
         {
-          strobe_t *strobe = Z_Malloc (sizeof(*strobe), PU_LEVEL, NULL);
+          strobe_t *strobe = Z_Malloc (sizeof(*strobe), PU_LEVEL);
           memcpy (strobe, save_p, sizeof(*strobe));
           save_p += sizeof(*strobe);
           strobe->sector = &sectors[(size_t)strobe->sector];
@@ -1243,7 +1243,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_glow:
         {
-          glow_t *glow = Z_Malloc (sizeof(*glow), PU_LEVEL, NULL);
+          glow_t *glow = Z_Malloc (sizeof(*glow), PU_LEVEL);
           memcpy (glow, save_p, sizeof(*glow));
           save_p += sizeof(*glow);
           glow->sector = &sectors[(size_t)glow->sector];
@@ -1255,7 +1255,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_zdoom_glow:
         {
-          zdoom_glow_t *glow = Z_Malloc (sizeof(*glow), PU_LEVEL, NULL);
+          zdoom_glow_t *glow = Z_Malloc (sizeof(*glow), PU_LEVEL);
           memcpy (glow, save_p, sizeof(*glow));
           save_p += sizeof(*glow);
           glow->sector = &sectors[(size_t)glow->sector];
@@ -1267,7 +1267,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_flicker:           // killough 10/4/98
         {
-          fireflicker_t *flicker = Z_Malloc (sizeof(*flicker), PU_LEVEL, NULL);
+          fireflicker_t *flicker = Z_Malloc (sizeof(*flicker), PU_LEVEL);
           memcpy (flicker, save_p, sizeof(*flicker));
           save_p += sizeof(*flicker);
           flicker->sector = &sectors[(size_t)flicker->sector];
@@ -1279,7 +1279,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_zdoom_flicker:
         {
-          zdoom_flicker_t *flicker = Z_Malloc (sizeof(*flicker), PU_LEVEL, NULL);
+          zdoom_flicker_t *flicker = Z_Malloc (sizeof(*flicker), PU_LEVEL);
           memcpy (flicker, save_p, sizeof(*flicker));
           save_p += sizeof(*flicker);
           flicker->sector = &sectors[(size_t)flicker->sector];
@@ -1292,7 +1292,7 @@ void P_TrueUnArchiveThinkers(void) {
         //jff 2/22/98 new case for elevators
       case tc_true_elevator:
         {
-          elevator_t *elevator = Z_Malloc (sizeof(*elevator), PU_LEVEL, NULL);
+          elevator_t *elevator = Z_Malloc (sizeof(*elevator), PU_LEVEL);
           memcpy (elevator, save_p, sizeof(*elevator));
           save_p += sizeof(*elevator);
           elevator->sector = &sectors[(size_t)elevator->sector];
@@ -1305,7 +1305,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_scroll:       // killough 3/7/98: scroll effect thinkers
         {
-          scroll_t *scroll = Z_Malloc (sizeof(scroll_t), PU_LEVEL, NULL);
+          scroll_t *scroll = Z_Malloc (sizeof(scroll_t), PU_LEVEL);
           memcpy (scroll, save_p, sizeof(scroll_t));
           save_p += sizeof(scroll_t);
           scroll->thinker.function = T_Scroll;
@@ -1315,7 +1315,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_pusher:   // phares 3/22/98: new Push/Pull effect thinkers
         {
-          pusher_t *pusher = Z_Malloc (sizeof(pusher_t), PU_LEVEL, NULL);
+          pusher_t *pusher = Z_Malloc (sizeof(pusher_t), PU_LEVEL);
           memcpy (pusher, save_p, sizeof(pusher_t));
           save_p += sizeof(pusher_t);
           pusher->thinker.function = T_Pusher;
@@ -1326,7 +1326,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_friction:
         {
-          friction_t *friction = Z_Malloc (sizeof(friction_t), PU_LEVEL, NULL);
+          friction_t *friction = Z_Malloc (sizeof(friction_t), PU_LEVEL);
           memcpy (friction, save_p, sizeof(friction_t));
           save_p += sizeof(friction_t);
           friction->thinker.function = T_Friction;
@@ -1336,7 +1336,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_light:
         {
-          light_t *light = Z_Malloc(sizeof(*light), PU_LEVEL, NULL);
+          light_t *light = Z_Malloc(sizeof(*light), PU_LEVEL);
           memcpy(light, save_p, sizeof(*light));
           save_p += sizeof(*light);
           light->sector = &sectors[(size_t)light->sector];
@@ -1347,7 +1347,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_phase:
         {
-          phase_t *phase = Z_Malloc(sizeof(*phase), PU_LEVEL, NULL);
+          phase_t *phase = Z_Malloc(sizeof(*phase), PU_LEVEL);
           memcpy(phase, save_p, sizeof(*phase));
           save_p += sizeof(*phase);
           phase->sector = &sectors[(size_t)phase->sector];
@@ -1359,7 +1359,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_acs:
         {
-          acs_t *acs = Z_Malloc(sizeof(*acs), PU_LEVEL, NULL);
+          acs_t *acs = Z_Malloc(sizeof(*acs), PU_LEVEL);
           memcpy(acs, save_p, sizeof(*acs));
           save_p += sizeof(*acs);
           acs->line = (intptr_t) acs->line != -1 ? &lines[(size_t) acs->line] : NULL;
@@ -1370,7 +1370,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_pillar:
         {
-          pillar_t *pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, NULL);
+          pillar_t *pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL);
           memcpy(pillar, save_p, sizeof(*pillar));
           save_p += sizeof(*pillar);
           pillar->sector = &sectors[(size_t)pillar->sector];
@@ -1382,7 +1382,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_floor_waggle:
         {
-          planeWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
+          planeWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL);
           memcpy(waggle, save_p, sizeof(*waggle));
           save_p += sizeof(*waggle);
           waggle->sector = &sectors[(size_t)waggle->sector];
@@ -1394,7 +1394,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_ceiling_waggle:
         {
-          planeWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
+          planeWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL);
           memcpy(waggle, save_p, sizeof(*waggle));
           save_p += sizeof(*waggle);
           waggle->sector = &sectors[(size_t)waggle->sector];
@@ -1406,7 +1406,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_poly_rotate:
         {
-          polyevent_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
+          polyevent_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL);
           memcpy(poly, save_p, sizeof(*poly));
           save_p += sizeof(*poly);
           poly->thinker.function = T_RotatePoly;
@@ -1416,7 +1416,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_poly_move:
         {
-          polyevent_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
+          polyevent_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL);
           memcpy(poly, save_p, sizeof(*poly));
           save_p += sizeof(*poly);
           poly->thinker.function = T_MovePoly;
@@ -1426,7 +1426,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_poly_door:
         {
-          polydoor_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
+          polydoor_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL);
           memcpy(poly, save_p, sizeof(*poly));
           save_p += sizeof(*poly);
           poly->thinker.function = T_PolyDoor;
@@ -1436,7 +1436,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_mobj:
         {
-          mobj_t *mobj = Z_Malloc(sizeof(mobj_t), PU_LEVEL, NULL);
+          mobj_t *mobj = Z_Malloc(sizeof(mobj_t), PU_LEVEL);
 
           // killough 2/14/98 -- insert pointers to thinkers into table, in order:
           mobj_count++;

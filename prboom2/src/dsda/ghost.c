@@ -220,7 +220,7 @@ void dsda_SpawnGhost(void) {
       continue;
     }
 
-    mobj = Z_Malloc(sizeof(*mobj), PU_LEVEL, NULL);
+    mobj = Z_Malloc(sizeof(*mobj), PU_LEVEL);
     memset(mobj, 0, sizeof(*mobj));
     mobj->type = MT_NULL;
     mobj->info = &dsda_ghost_info;
@@ -272,7 +272,7 @@ void dsda_SpawnGhost(void) {
   }
 
   if (dsda_ghost_import.count > 0) {
-    dsda_ghost_import.thinker = Z_Malloc(sizeof(thinker_t), PU_LEVEL, NULL);
+    dsda_ghost_import.thinker = Z_Malloc(sizeof(thinker_t), PU_LEVEL);
     memset(dsda_ghost_import.thinker, 0, sizeof(thinker_t));
     dsda_ghost_import.thinker->function = dsda_UpdateGhosts;
     P_AddThinker(dsda_ghost_import.thinker);

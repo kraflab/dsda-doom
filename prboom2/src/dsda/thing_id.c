@@ -27,7 +27,7 @@ static thing_id_list_t* thing_id_list_hash[THING_ID_HASH_MAX];
 static thing_id_list_t* dsda_NewThingIDList(short thing_id) {
   thing_id_list_t* result;
 
-  result = Z_Calloc(1, sizeof(*result), PU_LEVEL, NULL);
+  result = Z_Calloc(1, sizeof(*result), PU_LEVEL);
   result->thing_id = thing_id;
   return result;
 }
@@ -58,7 +58,7 @@ static thing_id_list_t* dsda_ThingIDList(short thing_id) {
 static thing_id_list_entry_t* dsda_NewThingIDListEntry(mobj_t* mo) {
   thing_id_list_entry_t* result;
 
-  result = Z_Calloc(1, sizeof(*result), PU_LEVEL, NULL);
+  result = Z_Calloc(1, sizeof(*result), PU_LEVEL);
   P_SetTarget(&result->mo, mo);
   return result;
 }

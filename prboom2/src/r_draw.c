@@ -410,7 +410,7 @@ void R_InitTranslationTables (void)
   if (hexen)
   {
     int lumpnum = W_GetNumForName("trantbl0");
-    translationtables = Z_Malloc(256 * 3 * (g_maxplayers - 1), PU_STATIC, 0);
+    translationtables = Z_Malloc(256 * 3 * (g_maxplayers - 1), PU_STATIC);
 
     for (i = 0; i < g_maxplayers; i++)
       playernumtotrans[i] = i;
@@ -429,7 +429,7 @@ void R_InitTranslationTables (void)
   // Remove dependency of colormaps aligned on 256-byte boundary
 
   if (translationtables == NULL) // CPhipps - allow multiple calls
-    translationtables = Z_Malloc(256*MAXTRANS, PU_STATIC, 0);
+    translationtables = Z_Malloc(256*MAXTRANS, PU_STATIC);
 
   for (i=0; i<MAXTRANS; i++) transtocolour[i] = 255;
 

@@ -66,7 +66,6 @@ typedef struct memblock {
   unsigned signature;
   struct memblock *next,*prev;
   size_t size;
-  void **user;
   unsigned char tag;
 } memblock_t;
 
@@ -75,8 +74,6 @@ static const size_t HEADER_SIZE = sizeof(memblock_t);
 static memblock_t *blockbytag[PU_MAX];
 
 /* Z_Malloc
- * You can pass a NULL user if the tag is not PU_CACHE.
- *
  * cph - the algorithm here was a very simple first-fit round-robin
  *  one - just keep looping around, freeing everything we can until
  *  we get a large enough space
@@ -86,20 +83,16 @@ static memblock_t *blockbytag[PU_MAX];
  * free all the stuff we just pass on the way.
  */
 
-void *Z_Malloc(size_t size, int tag, void **user)
+void *Z_Malloc(size_t size, int tag)
 {
   memblock_t *block = NULL;
 
-  if (tag == PU_CACHE && !user)
-    I_Error ("Z_Malloc: An owner is required for purgable blocks");
-
   if (!size)
-    return user ? *user = NULL : NULL;           // malloc(0) returns NULL
+    return NULL; // malloc(0) returns NULL
 
-  while (!(block = (malloc)(size + HEADER_SIZE))) {
-    if (!blockbytag[PU_CACHE])
-      I_Error ("Z_Malloc: Failure trying to allocate %lu bytes", (unsigned long) size);
-    Z_FreeTag(PU_CACHE);
+  if (!(block = (malloc)(size + HEADER_SIZE)))
+  {
+    I_Error ("Z_Malloc: Failure trying to allocate %lu bytes", (unsigned long) size);
   }
 
   if (!blockbytag[tag])
@@ -118,10 +111,7 @@ void *Z_Malloc(size_t size, int tag, void **user)
   block->size = size;
   block->signature = ZONE_SIGNATURE;
   block->tag = tag;           // tag
-  block->user = user;         // user
   block = (memblock_t *)((char *) block + HEADER_SIZE);
-  if (user)                   // if there is a user
-    *user = block;            // set user to point to new block
 
   return block;
 }
@@ -136,9 +126,6 @@ void Z_Free(void *p)
   if (block->signature != ZONE_SIGNATURE)
     I_Error("Z_Free: freed a non-zone pointer");
   block->signature = 0;       // Nullify signature so another free fails
-
-  if (block->user)            // Nullify user if one exists
-    *block->user = NULL;
 
   if (block == block->next)
     blockbytag[block->tag] = NULL;
@@ -187,9 +174,6 @@ void Z_ChangeTag(void *ptr, int tag)
   if (block->signature != ZONE_SIGNATURE)
     I_Error ("Z_ChangeTag: freed a non-zone pointer");
 
-  if (tag == PU_CACHE && !block->user)
-    I_Error ("Z_ChangeTag: an owner is required for purgable blocks\n");
-
   if (block == block->next)
     blockbytag[block->tag] = NULL;
   else
@@ -214,27 +198,25 @@ void Z_ChangeTag(void *ptr, int tag)
   block->tag = tag;
 }
 
-void *Z_Realloc(void *ptr, size_t n, int tag, void **user)
+void *Z_Realloc(void *ptr, size_t n, int tag)
 {
-  void *p = Z_Malloc(n, tag, user);
+  void *p = Z_Malloc(n, tag);
   if (ptr)
     {
       memblock_t *block = (memblock_t *)((char *) ptr - HEADER_SIZE);
       memcpy(p, ptr, n <= block->size ? n : block->size);
       Z_Free(ptr);
-      if (user) // in case Z_Free nullified same user
-        *user=p;
     }
   return p;
 }
 
-void *Z_Calloc(size_t n1, size_t n2, int tag, void **user)
+void *Z_Calloc(size_t n1, size_t n2, int tag)
 {
   return
-    (n1*=n2) ? memset(Z_Malloc(n1, tag, user), 0, n1) : NULL;
+    (n1*=n2) ? memset(Z_Malloc(n1, tag), 0, n1) : NULL;
 }
 
-char *Z_Strdup(const char *s, int tag, void **user)
+char *Z_Strdup(const char *s, int tag)
 {
-  return strcpy(Z_Malloc(strlen(s)+1, tag, user), s);
+  return strcpy(Z_Malloc(strlen(s)+1, tag), s);
 }

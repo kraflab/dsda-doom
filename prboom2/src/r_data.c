@@ -194,8 +194,8 @@ static void R_InitTextures (void)
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  textures = Z_Malloc(numtextures*sizeof*textures, PU_STATIC, 0);
-  textureheight = Z_Malloc(numtextures*sizeof*textureheight, PU_STATIC, 0);
+  textures = Z_Malloc(numtextures*sizeof*textures, PU_STATIC);
+  textureheight = Z_Malloc(numtextures*sizeof*textureheight, PU_STATIC);
 
   for (i=0 ; i<numtextures ; i++, directory++)
     {
@@ -217,7 +217,7 @@ static void R_InitTextures (void)
       texture = textures[i] =
         Z_Malloc(sizeof(texture_t) +
                  sizeof(texpatch_t)*(LittleShort(mtexture->patchcount)-1),
-                 PU_STATIC, 0);
+                 PU_STATIC);
 
       texture->width = LittleShort(mtexture->width);
       texture->height = LittleShort(mtexture->height);
@@ -317,8 +317,7 @@ static void R_InitTextures (void)
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  texturetranslation =
-    Z_Malloc((numtextures+1)*sizeof*texturetranslation, PU_STATIC, 0);
+  texturetranslation = Z_Malloc((numtextures+1)*sizeof*texturetranslation, PU_STATIC);
 
   for (i=0 ; i<numtextures ; i++)
     texturetranslation[i] = i;
@@ -349,8 +348,7 @@ static void R_InitFlats(void)
   // killough 4/9/98: make column offsets 32-bit;
   // clean up malloc-ing to use sizeof
 
-  flattranslation =
-    Z_Malloc((numflats+1)*sizeof(*flattranslation), PU_STATIC, 0);
+  flattranslation = Z_Malloc((numflats+1)*sizeof(*flattranslation), PU_STATIC);
 
   for (i=0 ; i<numflats ; i++)
     flattranslation[i] = i;
@@ -394,7 +392,7 @@ static void R_InitColormaps(void)
     lastcolormaplump  = W_GetNumForName("C_END");
     numcolormaps = lastcolormaplump - firstcolormaplump;
   }
-  colormaps = Z_Malloc(sizeof(*colormaps) * numcolormaps, PU_STATIC, 0);
+  colormaps = Z_Malloc(sizeof(*colormaps) * numcolormaps, PU_STATIC);
   colormaps[0] = (const lighttable_t *)W_CacheLumpName("COLORMAP");
   for (i=1; i<numcolormaps; i++)
     colormaps[i] = (const lighttable_t *)W_CacheLumpNum(i+firstcolormaplump);
@@ -452,7 +450,7 @@ void R_InitTranMap(int progress)
       doom_snprintf(fname, fnlen+1, "%s/tranmap.dat", I_DoomExeDir());
       cachefp = fopen(fname, "rb");
 
-      main_tranmap = my_tranmap = Z_Malloc(256*256, PU_STATIC, 0);  // killough 4/11/98
+      main_tranmap = my_tranmap = Z_Malloc(256*256, PU_STATIC);  // killough 4/11/98
 
       // Use cached translucency filter if it's available
 

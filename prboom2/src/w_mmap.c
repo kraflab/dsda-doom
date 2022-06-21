@@ -258,9 +258,9 @@ const void* W_LockLumpNum(int lump)
   size_t len = W_LumpLength(lump);
   const void *data = W_CacheLumpNum(lump);
 
+  // read the lump in
   if (!cachelump[lump].cache) {
-    // read the lump in
-    Z_Malloc(len, PU_CACHE, &cachelump[lump].cache);
+    cachelump[lump].cache = Z_Malloc(len, PU_STATIC);
     memcpy(cachelump[lump].cache, data, len);
   }
 
