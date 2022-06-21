@@ -52,19 +52,6 @@ static struct {
   unsigned int locks;
 } *cachelump;
 
-#ifdef HEAPDUMP
-void W_PrintLump(FILE* fp, void* p) {
-  int i;
-  for (i=0; i<numlumps; i++)
-    if (cachelump[i].cache == p) {
-      fprintf(fp, " %8.8s %6u %2d %6d", lumpinfo[i].name,
-	      W_LumpLength(i), cachelump[i].locks, gametic - cachelump[i].locktic);
-      return;
-    }
-  fprintf(fp, " not found");
-}
-#endif
-
 /* W_InitCache
  *
  * cph 2001/07/07 - split from W_Init

@@ -142,8 +142,6 @@ option(SIMPLECHECKS "Enable checks which only impose significant overhead if a p
 
 # Debug options, disabled by default
 option(RANGECHECK "Enable internal range checking" OFF)
-option(HEAPCHECK "Turn on continuous heap checking (very slow)" OFF)
-option(HEAPDUMP "Turn on dumping the heap state for debugging" OFF)
 
 configure_file(cmake/config.h.cin config.h)
 

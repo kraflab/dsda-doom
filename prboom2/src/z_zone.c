@@ -60,15 +60,8 @@
 #include <dpmi.h>
 #endif
 
-// Tunables
-
 // signature for block header
 #define ZONEID  0x931d4a11
-
-// Number of mallocs & frees kept in history buffer (must be a power of 2)
-#define ZONE_HISTORY 4
-
-// End Tunables
 
 typedef struct memblock {
   unsigned id;
@@ -162,10 +155,6 @@ void Z_Free(void *p)
 void Z_FreeTag(int tag)
 {
   memblock_t *block, *end_block;
-
-#ifdef HEAPDUMP
-  Z_DumpMemory();
-#endif
 
   if (tag < 0 || tag >= PU_MAX)
     I_Error("Z_FreeTag: Tag %i does not exist", tag);

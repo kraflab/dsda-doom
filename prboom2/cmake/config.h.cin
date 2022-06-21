@@ -33,5 +33,3 @@
 #cmakedefine SIMPLECHECKS
 
 #cmakedefine RANGECHECK
-#cmakedefine HEAPCHECK
-#cmakedefine HEAPDUMP
