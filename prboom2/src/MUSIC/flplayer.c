@@ -112,7 +112,7 @@ static void *fl_sfopen(const char *lumpname)
   MEMFILE *instream;
   int lumpnum = W_GetNumForName(lumpname);
   int len = W_LumpLength(lumpnum);
-  const void *data = W_CacheLumpNum(lumpnum);
+  const void *data = W_LumpByNum(lumpnum);
 
   instream = mem_fopen_read(data, len);
 

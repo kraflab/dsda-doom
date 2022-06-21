@@ -174,7 +174,7 @@ static int ReadLump(const char *filename, const char *lumpname, unsigned char **
     if (lump != -1)
     {
       size = W_LumpLength(lump);
-      data = W_CacheLumpNum(lump);
+      data = W_LumpByNum(lump);
       *buffer = calloc(1, size + 1);
       memcpy (*buffer, data, size);
       (*buffer)[size] = 0;

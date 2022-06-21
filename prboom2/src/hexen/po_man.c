@@ -1400,7 +1400,7 @@ void PO_Init(int lump)
     polyobjs = Z_Malloc(po_NumPolyobjs * sizeof(polyobj_t), PU_LEVEL);
     memset(polyobjs, 0, po_NumPolyobjs * sizeof(polyobj_t));
 
-    data = W_CacheLumpNum(lump);
+    data = W_LumpByNum(lump);
     numthings = W_LumpLength(lump) / sizeof(mapthing_t);
     mt = (const mapthing_t *) data;
     polyIndex = 0;              // index polyobj number

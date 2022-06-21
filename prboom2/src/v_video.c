@@ -203,7 +203,7 @@ void V_InitColorTranslation(void)
   register const crdef_t *p;
   for (p=crdefs; p->name; p++)
   {
-    *p->map = W_CacheLumpName(p->name);
+    *p->map = W_LumpByName(p->name);
     if (p - crdefs == CR_DEFAULT)
       continue;
     if (gamemission == chex || gamemission == hacx)
@@ -309,7 +309,7 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
   lump += firstflat;
 
   // killough 4/17/98:
-  data = W_CacheLumpNum(lump);
+  data = W_LumpByNum(lump);
 
   {
     const byte *src, *src_p;
@@ -1136,7 +1136,7 @@ const unsigned char* V_GetPlaypal(void)
   {
     int lump = W_GetNumForName(playpal_data->lump_name);
     int len = W_LumpLength(lump);
-    const byte *data = W_CacheLumpNum(lump);
+    const byte *data = W_LumpByNum(lump);
     playpal_data->lump = malloc(len);
     memcpy(playpal_data->lump, data, len);
   }
@@ -1467,7 +1467,7 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
     }
   }
 
-  raw = (const byte *) W_CacheLumpName(lump_name) + source_offset;
+  raw = (const byte *) W_LumpByName(lump_name) + source_offset;
 
   x_factor = (float)SCREENWIDTH / 320;
   y_factor = (float)SCREENHEIGHT / 200;

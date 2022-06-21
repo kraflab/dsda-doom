@@ -140,7 +140,7 @@ static void R_InitTextures (void)
 
   // Load the patch names from pnames.lmp.
   name[8] = 0;
-  names = W_CacheLumpNum(names_lump = W_GetNumForName("PNAMES"));
+  names = W_LumpByNum(names_lump = W_GetNumForName("PNAMES"));
   nummappatches = LittleLong(*((const int *)names));
   name_p = names+4;
   patchlookup = malloc(nummappatches*sizeof(*patchlookup));  // killough
@@ -171,14 +171,14 @@ static void R_InitTextures (void)
   // The data is contained in one or two lumps,
   //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
 
-  maptex = maptex1 = W_CacheLumpNum(maptex_lump[0] = W_GetNumForName("TEXTURE1"));
+  maptex = maptex1 = W_LumpByNum(maptex_lump[0] = W_GetNumForName("TEXTURE1"));
   numtextures1 = LittleLong(*maptex);
   maxoff = W_LumpLength(maptex_lump[0]);
   directory = maptex+1;
 
   if (W_CheckNumForName("TEXTURE2") != -1)
     {
-      maptex2 = W_CacheLumpNum(maptex_lump[1] = W_GetNumForName("TEXTURE2"));
+      maptex2 = W_LumpByNum(maptex_lump[1] = W_GetNumForName("TEXTURE2"));
       numtextures2 = LittleLong(*maptex2);
       maxoff2 = W_LumpLength(maptex_lump[1]);
     }
@@ -387,9 +387,9 @@ static void R_InitColormaps(void)
     numcolormaps = lastcolormaplump - firstcolormaplump;
   }
   colormaps = Z_Malloc(sizeof(*colormaps) * numcolormaps, PU_STATIC);
-  colormaps[0] = (const lighttable_t *)W_CacheLumpName("COLORMAP");
+  colormaps[0] = (const lighttable_t *)W_LumpByName("COLORMAP");
   for (i=1; i<numcolormaps; i++)
-    colormaps[i] = (const lighttable_t *)W_CacheLumpNum(i+firstcolormaplump);
+    colormaps[i] = (const lighttable_t *)W_LumpByNum(i+firstcolormaplump);
   // cph - always lock
 }
 
@@ -425,10 +425,10 @@ void R_InitTranMap(int progress)
   // If a tranlucency filter map lump is present, use it
 
   if (lump != -1)  // Set a pointer to the translucency filter maps.
-    main_tranmap = W_CacheLumpNum(lump);   // killough 4/11/98
+    main_tranmap = W_LumpByNum(lump);   // killough 4/11/98
   else if (W_CheckNumForName("PLAYPAL")!=-1) // can be called before WAD loaded
     {   // Compose a default transparent filter map based on PLAYPAL.
-      const byte *playpal = W_CacheLumpName("PLAYPAL");
+      const byte *playpal = W_LumpByName("PLAYPAL");
       byte       *my_tranmap;
 
       char *fname;
@@ -641,7 +641,7 @@ int PUREFUNC R_SafeTextureNumForName(const char *name, int snum)
 
 static inline void precache_lump(int l)
 {
-  W_CacheLumpNum(l);
+  W_LumpByNum(l);
 }
 
 void R_PrecacheLevel(void)

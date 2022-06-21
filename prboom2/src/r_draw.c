@@ -417,7 +417,7 @@ void R_InitTranslationTables (void)
 
     for (i = 0; i < 3 * (g_maxplayers - 1); i++)
     {
-        const byte* transLump = W_CacheLumpNum(lumpnum + i);
+        const byte* transLump = W_LumpByNum(lumpnum + i);
         memcpy(translationtables + i * 256, transLump, 256);
     }
 

@@ -67,17 +67,17 @@ void W_DoneCache(void)
 {
 }
 
-/* W_CacheLumpNum
+/* W_LumpByNum
  * killough 4/25/98: simplified
  * CPhipps - modified for new lump locking scheme
  *           returns a const*
  */
 
-const void *W_CacheLumpNum(int lump)
+const void *W_LumpByNum(int lump)
 {
 #ifdef RANGECHECK
   if ((unsigned)lump >= (unsigned)numlumps)
-    I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
+    I_Error ("W_LumpByNum: %i >= numlumps",lump);
 #endif
 
   // read the lump in
@@ -91,5 +91,5 @@ const void *W_CacheLumpNum(int lump)
 
 const void *W_LockLumpNum(int lump)
 {
-  return W_CacheLumpNum(lump);
+  return W_LumpByNum(lump);
 }

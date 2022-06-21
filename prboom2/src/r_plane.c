@@ -598,7 +598,7 @@ static void R_DoDrawPlane(visplane_t *pl)
       int stop, light;
       draw_span_vars_t dsvars;
 
-      dsvars.source = W_CacheLumpNum(firstflat + flattranslation[pl->picnum]);
+      dsvars.source = W_LumpByNum(firstflat + flattranslation[pl->picnum]);
 
       if (map_format.hexen)
       {

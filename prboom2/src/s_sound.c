@@ -210,7 +210,7 @@ void S_Init(void)
     dist_adjust = max_snd_dist / 10;
 
     soundCurve = Z_Malloc(max_snd_dist, PU_STATIC);
-    memcpy(soundCurve, (const byte *) W_CacheLumpNum(lump), max_snd_dist);
+    memcpy(soundCurve, (const byte *) W_LumpByNum(lump), max_snd_dist);
   }
 }
 
@@ -595,7 +595,7 @@ void S_ChangeMusic(int musicnum, int looping)
     music->lumpnum = dsda_MusicIndexToLumpNum(musicnum);
 
   // load & register it
-  music->data = W_CacheLumpNum(music->lumpnum);
+  music->data = W_LumpByNum(music->lumpnum);
   music->handle = I_RegisterSong(music->data, W_LumpLength(music->lumpnum));
 
   // play it
@@ -657,7 +657,7 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
   music->lumpnum = lumpnum;
 
   // load & register it
-  music->data = W_CacheLumpNum(music->lumpnum);
+  music->data = W_LumpByNum(music->lumpnum);
   music->handle = I_RegisterSong(music->data, W_LumpLength(music->lumpnum));
 
   // play it

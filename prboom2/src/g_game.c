@@ -2070,7 +2070,7 @@ static uint_64_t G_UpdateSignature(uint_64_t s, const char *name)
     do
       {
   int size = W_LumpLength(i);
-  const byte *p = W_CacheLumpNum(i);
+  const byte *p = W_LumpByNum(i);
   while (size--)
     s <<= 1, s += *p++;
       }

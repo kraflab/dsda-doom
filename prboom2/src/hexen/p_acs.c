@@ -383,7 +383,7 @@ void P_LoadACScripts(int lump)
     const acsHeader_t *header;
     acsInfo_t *info;
 
-    ActionCodeBase = W_CacheLumpNum(lump);
+    ActionCodeBase = W_LumpByNum(lump);
     ActionCodeSize = W_LumpLength(lump);
 
     doom_snprintf(EvalContext, sizeof(EvalContext),

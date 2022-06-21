@@ -1246,7 +1246,7 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
     return;
   }
 
-  flat=W_CacheLumpNum(gltexture->index);
+  flat=W_LumpByNum(gltexture->index);
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size,PU_STATIC);
   if (!(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture)
     memset(buffer,transparent_pal_index,gltexture->buffer_size);

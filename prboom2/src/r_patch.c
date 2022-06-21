@@ -331,7 +331,7 @@ static dboolean CheckIfPatch(int lump)
   if (size < 13)
     return false;
 
-  patch = (const patch_t *)W_CacheLumpNum(lump);
+  patch = (const patch_t *)W_LumpByNum(lump);
 
   width = LittleShort(patch->width);
   height = LittleShort(patch->height);
@@ -399,7 +399,7 @@ static void createPatch(int id) {
       (patchNum < numlumps ? lumpinfo[patchNum].name : NULL));
   }
 
-  oldPatch = (const patch_t*)W_CacheLumpNum(patchNum);
+  oldPatch = (const patch_t*)W_LumpByNum(patchNum);
 
   patch = &patches[id];
   // proff - 2003-02-16 What about endianess?
@@ -624,7 +624,7 @@ static void createTextureCompositePatch(int id) {
   for (i=0; i<texture->patchcount; i++) {
     texpatch = &texture->patches[i];
     patchNum = texpatch->patch;
-    oldPatch = (const patch_t*)W_CacheLumpNum(patchNum);
+    oldPatch = (const patch_t*)W_LumpByNum(patchNum);
 
     for (x=0; x<LittleShort(oldPatch->width); x++) {
       int tx = texpatch->originx + x;
@@ -678,7 +678,7 @@ static void createTextureCompositePatch(int id) {
   for (i=0; i<texture->patchcount; i++) {
     texpatch = &texture->patches[i];
     patchNum = texpatch->patch;
-    oldPatch = (const patch_t*)W_CacheLumpNum(patchNum);
+    oldPatch = (const patch_t*)W_LumpByNum(patchNum);
 
     for (x=0; x<LittleShort(oldPatch->width); x++) {
       int top = -1;

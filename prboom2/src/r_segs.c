@@ -273,7 +273,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
       colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, drawvars.filterwall, drawvars.filterz);
       tranmap = main_tranmap;
       if (curline->linedef->tranlump > 0)
-        tranmap = W_CacheLumpNum(curline->linedef->tranlump-1);
+        tranmap = W_LumpByNum(curline->linedef->tranlump-1);
     }
   // killough 4/11/98: end translucent 2s normal code
 

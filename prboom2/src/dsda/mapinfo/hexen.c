@@ -488,7 +488,7 @@ int dsda_HexenApplyFadeTable(void) {
 
   fade_lump = CurrentMap->fadetable;
 
-  colormaps[0] = (const lighttable_t *) W_CacheLumpNum(fade_lump);
+  colormaps[0] = (const lighttable_t *) W_LumpByNum(fade_lump);
 
   if (fade_lump == W_GetNumForName("COLORMAP"))
     LevelUseFullBright = true;

@@ -242,7 +242,7 @@ static dboolean CheckForIdentifier(int lumpnum, const byte *id, size_t length)
 
   if (W_LumpLength(lumpnum) >= length)
   {
-    const char *data = W_CacheLumpNum(lumpnum);
+    const char *data = W_LumpByNum(lumpnum);
 
     if (!memcmp(data, id, length))
       result = true;
@@ -378,7 +378,7 @@ static void P_LoadVertexes (int lump)
 
   // Load data into cache.
   // cph 2006/07/29 - cast to mapvertex_t here, making the loop below much neater
-  data = (const mapvertex_t *)W_CacheLumpNum(lump);
+  data = (const mapvertex_t *)W_LumpByNum(lump);
 
   // Copy and convert vertex coordinates,
   // internal representation as fixed.
@@ -410,7 +410,7 @@ static void P_LoadVertexes2(int lump, int gllump)
 
   if (gllump >= 0)  // check for glVertices
   {
-    gldata = W_CacheLumpNum(gllump);
+    gldata = W_LumpByNum(gllump);
 
     if (nodesVersion == 2) // 32 bit GL_VERT format (16.16 fixed)
     {
@@ -442,7 +442,7 @@ static void P_LoadVertexes2(int lump, int gllump)
     }
   }
 
-  ml = (const mapvertex_t*) W_CacheLumpNum(lump);
+  ml = (const mapvertex_t*) W_LumpByNum(lump);
 
   for (i=0; i < firstglvertex; i++)
   {
@@ -506,7 +506,7 @@ static void P_LoadSegs (int lump)
 
   numsegs = W_LumpLength(lump) / sizeof(mapseg_t);
   segs = calloc_IfSameLevel(segs, numsegs, sizeof(seg_t));
-  data = (const mapseg_t *)W_CacheLumpNum(lump); // cph - wad lump handling updated
+  data = (const mapseg_t *)W_LumpByNum(lump); // cph - wad lump handling updated
 
   if ((!data) || (!numsegs))
     I_Error("P_LoadSegs: no segs in level");
@@ -646,7 +646,7 @@ static void P_LoadSegs_V4(int lump)
 
   numsegs = W_LumpLength(lump) / sizeof(mapseg_v4_t);
   segs = calloc_IfSameLevel(segs, numsegs, sizeof(seg_t));
-  data = (const mapseg_v4_t *)W_CacheLumpNum(lump);
+  data = (const mapseg_v4_t *)W_LumpByNum(lump);
 
   if ((!data) || (!numsegs))
     I_Error("P_LoadSegs_V4: no segs in level");
@@ -776,7 +776,7 @@ static void P_LoadGLSegs(int lump)
   numsegs = W_LumpLength(lump) / sizeof(glseg_t);
   segs = malloc_IfSameLevel(segs, numsegs * sizeof(seg_t));
   memset(segs, 0, numsegs * sizeof(seg_t));
-  ml = (const glseg_t*)W_CacheLumpNum(lump);
+  ml = (const glseg_t*)W_LumpByNum(lump);
 
   if ((!ml) || (!numsegs))
     I_Error("P_LoadGLSegs: no glsegs in level");
@@ -832,7 +832,7 @@ static void P_LoadSubsectors (int lump)
 
   numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_t);
   subsectors = calloc_IfSameLevel(subsectors, numsubsectors, sizeof(subsector_t));
-  data = (const mapsubsector_t *)W_CacheLumpNum(lump);
+  data = (const mapsubsector_t *)W_LumpByNum(lump);
 
   if ((!data) || (!numsubsectors))
     I_Error("P_LoadSubsectors: no subsectors in level");
@@ -853,7 +853,7 @@ static void P_LoadSubsectors_V4(int lump)
 
   numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_v4_t);
   subsectors = calloc_IfSameLevel(subsectors, numsubsectors, sizeof(subsector_t));
-  data = (const mapsubsector_v4_t *)W_CacheLumpNum(lump);
+  data = (const mapsubsector_v4_t *)W_LumpByNum(lump);
 
   if ((!data) || (!numsubsectors))
     I_Error("P_LoadSubsectors_V4: no subsectors in level");
@@ -878,7 +878,7 @@ static void P_LoadSectors (int lump)
 
   numsectors = W_LumpLength (lump) / sizeof(mapsector_t);
   sectors = calloc_IfSameLevel(sectors, numsectors, sizeof(sector_t));
-  data = W_CacheLumpNum (lump); // cph - wad lump handling updated
+  data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   for (i=0; i<numsectors; i++)
     {
@@ -946,7 +946,7 @@ static void P_LoadNodes (int lump)
 
   numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
   nodes = malloc_IfSameLevel(nodes, numnodes * sizeof(node_t));
-  data = W_CacheLumpNum (lump); // cph - wad lump handling updated
+  data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   if ((!data) || (!numnodes))
   {
@@ -1008,7 +1008,7 @@ static void P_LoadNodes_V4(int lump)
 
   numnodes = (W_LumpLength (lump) - 8) / sizeof(mapnode_v4_t);
   nodes = malloc_IfSameLevel(nodes, numnodes * sizeof(node_t));
-  data = W_CacheLumpNum (lump); // cph - wad lump handling updated
+  data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   // skip header
   data = data + 8;
@@ -1147,7 +1147,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
   byte *output;
 #endif
 
-  data = W_CacheLumpNum(lump);
+  data = W_LumpByNum(lump);
   len =  W_LumpLength(lump);
 
   if (compressed == ZDOOM_ZNOD_NODES)
@@ -1383,7 +1383,7 @@ static void P_LoadThings (int lump)
   mobj_t **mobjlist;
 
   numthings = W_LumpLength (lump) / map_format.mapthing_size;
-  data = W_CacheLumpNum(lump);
+  data = W_LumpByNum(lump);
   doom_data = (const doom_mapthing_t*) data;
   mobjlist = malloc(numthings * sizeof(mobjlist[0]));
 
@@ -1606,7 +1606,7 @@ static void P_LoadLineDefs (int lump)
 
   numlines = W_LumpLength (lump) / map_format.maplinedef_size;
   lines = calloc_IfSameLevel(lines, numlines, sizeof(line_t));
-  data = W_CacheLumpNum (lump); // cph - wad lump handling updated
+  data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   for (i=0; i<numlines; i++)
     {
@@ -1972,7 +1972,7 @@ void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, secto
 
 static void P_LoadSideDefs2(int lump)
 {
-  const byte *data = W_CacheLumpNum(lump); // cph - const*, wad lump handling updated
+  const byte *data = W_LumpByNum(lump); // cph - const*, wad lump handling updated
   int  i;
 
   for (i=0; i<numsides; i++)
@@ -2403,7 +2403,7 @@ static void P_LoadBlockMap (int lump)
   {
     long i;
     // cph - const*, wad lump handling updated
-    const short *wadblockmaplump = W_CacheLumpNum(lump);
+    const short *wadblockmaplump = W_LumpByNum(lump);
     blockmaplump = malloc_IfSameLevel(blockmaplump, sizeof(*blockmaplump) * count);
 
     // killough 3/1/98: Expand wad blockmap into larger internal one,
@@ -2463,7 +2463,7 @@ static void P_LoadBlockMap (int lump)
 static void P_LoadReject(int lumpnum, int totallines)
 {
   rejectlump = lumpnum + ML_REJECT;
-  rejectmatrix = W_CacheLumpNum(rejectlump);
+  rejectmatrix = W_LumpByNum(rejectlump);
 
   //e6y: check for overflow
   RejectOverrun(rejectlump, &rejectmatrix, totallines);

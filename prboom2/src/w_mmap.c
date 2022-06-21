@@ -161,14 +161,14 @@ void W_InitCache(void)
   }
 }
 
-const void* W_CacheLumpNum(int lump)
+const void* W_LumpByNum(int lump)
 {
   int wad_index = (int)(lumpinfo[lump].wadfile-wadfiles);
 #ifdef RANGECHECK
   if ((wad_index<0)||((size_t)wad_index>=numwadfiles))
-    I_Error("W_CacheLumpNum: wad_index out of range");
+    I_Error("W_LumpByNum: wad_index out of range");
   if ((unsigned)lump >= (unsigned)numlumps)
-    I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
+    I_Error ("W_LumpByNum: %i >= numlumps",lump);
 #endif
   if (!lumpinfo[lump].wadfile)
     return NULL;
@@ -225,11 +225,11 @@ void W_DoneCache(void)
   mapped_wad = NULL;
 }
 
-const void* W_CacheLumpNum(int lump)
+const void* W_LumpByNum(int lump)
 {
 #ifdef RANGECHECK
   if ((unsigned)lump >= (unsigned)numlumps)
-    I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
+    I_Error ("W_LumpByNum: %i >= numlumps",lump);
 #endif
   if (!lumpinfo[lump].wadfile)
     return NULL;
@@ -252,7 +252,7 @@ const void* W_CacheLumpNum(int lump)
 const void* W_LockLumpNum(int lump)
 {
   size_t len = W_LumpLength(lump);
-  const void *data = W_CacheLumpNum(lump);
+  const void *data = W_LumpByNum(lump);
 
   // read the lump in
   if (!cachelump[lump].cache) {

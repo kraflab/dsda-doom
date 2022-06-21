@@ -202,7 +202,7 @@ void P_InitPicAnims (void)
   {
     lump = W_GetNumForName("ANIMATED"); // cph - new wad lump handling
     //jff 3/23/98 read from predefined or wad lump instead of table
-    animdefs = (const animdef_t *)W_CacheLumpNum(lump);
+    animdefs = (const animdef_t *)W_LumpByNum(lump);
   }
 
   lastanim = anims;

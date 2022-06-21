@@ -283,7 +283,7 @@ static const dsda_compatibility_t** level_compatibilities[16] = {
 
 static void dsda_MD5UpdateLump(int lump, struct MD5Context *md5)
 {
-  MD5Update(md5, W_CacheLumpNum(lump), W_LumpLength(lump));
+  MD5Update(md5, W_LumpByNum(lump), W_LumpLength(lump));
 }
 
 static void dsda_GetLevelCheckSum(int lump, byte cksum[16])

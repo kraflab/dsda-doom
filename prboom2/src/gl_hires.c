@@ -853,7 +853,7 @@ int gld_HiRes_BuildTables(void)
       {
         const byte* RGB2PAL_lump;
 
-        RGB2PAL_lump = W_CacheLumpNum(lump);
+        RGB2PAL_lump = W_LumpByNum(lump);
         RGB2PAL = malloc(RGB2PAL_size);
         memcpy(RGB2PAL, RGB2PAL_lump, RGB2PAL_size);
         return true;
@@ -1202,7 +1202,7 @@ int gld_LoadHiresTex(GLTexture *gltexture, int cm)
           int lump = (W_CheckNumForName)(lumpname, ns_hires);
           if (lump != -1)
           {
-            SDL_RWops *rw_data = SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump));
+            SDL_RWops *rw_data = SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump));
             SDL_Surface *surf_tmp = IMG_Load_RW(rw_data, false);
 
             // SDL can't load some TGA with common method

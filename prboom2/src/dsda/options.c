@@ -230,7 +230,7 @@ static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
   dsda_option_t* option;
 
   lump.length = W_LumpLength(lumpnum);
-  lump.data = W_CacheLumpNum(lumpnum);
+  lump.data = W_LumpByNum(lumpnum);
 
   while (dsda_ReadOption(buf, OPTIONS_LINE_LENGTH, &lump)) {
     if (buf[0] == '#')

@@ -93,7 +93,7 @@ void dsda_InitPlayPal(void) {
       if (lump < 0)
         continue;
 
-      playpal = W_CacheLumpNum(lump);
+      playpal = W_LumpByNum(lump);
 
       // find two duplicate palette entries. use one for transparency.
       // rewrite source pixels in patches to the other on composition.
