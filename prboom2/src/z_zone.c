@@ -60,11 +60,10 @@
 #include <dpmi.h>
 #endif
 
-// signature for block header
-#define ZONEID  0x931d4a11
+#define ZONE_SIGNATURE 0x931d4a11
 
 typedef struct memblock {
-  unsigned id;
+  unsigned signature;
   struct memblock *next,*prev;
   size_t size;
   void **user;
@@ -117,7 +116,7 @@ void *Z_Malloc(size_t size, int tag, void **user)
   }
 
   block->size = size;
-  block->id = ZONEID;         // signature required in block header
+  block->signature = ZONE_SIGNATURE;
   block->tag = tag;           // tag
   block->user = user;         // user
   block = (memblock_t *)((char *) block + HEADER_SIZE);
@@ -134,9 +133,9 @@ void Z_Free(void *p)
   if (!p)
     return;
 
-  if (block->id != ZONEID)
-    I_Error("Z_Free: freed a pointer without ZONEID");
-  block->id = 0;              // Nullify id so another free fails
+  if (block->signature != ZONE_SIGNATURE)
+    I_Error("Z_Free: freed a non-zone pointer");
+  block->signature = 0;       // Nullify signature so another free fails
 
   if (block->user)            // Nullify user if one exists
     *block->user = NULL;
@@ -185,8 +184,8 @@ void Z_ChangeTag(void *ptr, int tag)
   if (tag == block->tag)
     return;
 
-  if (block->id != ZONEID)
-    I_Error ("Z_ChangeTag: freed a pointer without ZONEID");
+  if (block->signature != ZONE_SIGNATURE)
+    I_Error ("Z_ChangeTag: freed a non-zone pointer");
 
   if (tag == PU_CACHE && !block->user)
     I_Error ("Z_ChangeTag: an owner is required for purgable blocks\n");
