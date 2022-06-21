@@ -1082,10 +1082,10 @@ unsigned char *gld_ReadScreen(void)
     gld_ApplyGammaRamp(scr, pixels_per_row, gl_window_width, gl_window_height);
 
     // GL textures are bottom up, so copy the rows in reverse to flip vertically
-    for (src_row = gl_window_height - 1, dest_row = 0; src_row >= 0; --src_row, ++dest_row) 
+    for (src_row = gl_window_height - 1, dest_row = 0; src_row >= 0; --src_row, ++dest_row)
     {
-      memcpy(&buffer[dest_row * pixels_per_row], 
-              &scr[src_row * pixels_per_row], 
+      memcpy(&buffer[dest_row * pixels_per_row],
+              &scr[src_row * pixels_per_row],
               pixels_per_row);
     }
   }
@@ -2678,7 +2678,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
 
     // off the side?
     if (x1 > viewwidth || x2 < 0)
-      goto unlock_patch;
+      return;
   }
 
   // killough 3/27/98: exclude things totally separated
@@ -2693,16 +2693,16 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     if (phs != -1 && viewz < sectors[phs].floorheight ?
         fz >= sectors[heightsec].floorheight :
         gzt < sectors[heightsec].floorheight)
-      goto unlock_patch;
+      return;
     if (phs != -1 && viewz > sectors[phs].ceilingheight ?
         gzt < sectors[heightsec].ceilingheight && viewz >= sectors[heightsec].ceilingheight :
         fz >= sectors[heightsec].ceilingheight)
-      goto unlock_patch;
+      return;
   }
 
   //e6y FIXME!!!
   if (thing == players[displayplayer].mo && walkcamera.type != 2)
-    goto unlock_patch;
+    return;
 
   sprite.x =-(float)fx / MAP_SCALE;
   sprite.y = (float)fz / MAP_SCALE;
@@ -2737,7 +2737,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
       //1.5 == sqrt(2) + small delta for MF_FOREGROUND
       (float)(MAX(patch->width, patch->height)) / MAP_COEFF / 2.0f * 1.5f))
     {
-      goto unlock_patch;
+      return;
     }
   }
 
@@ -2758,7 +2758,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     sprite.cm = CR_LIMIT + (int)((thing->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT));
   sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true);
   if (!sprite.gltexture)
-    goto unlock_patch;
+    return;
   sprite.flags = thing->flags;
 
   if (thing->flags & MF_FOREGROUND)
@@ -2797,9 +2797,6 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   {
     gld_AddHealthBar(thing, &sprite);
   }
-
-unlock_patch:
-  R_UnlockPatchNum(lump);
 }
 
 /*****************

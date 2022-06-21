@@ -301,7 +301,6 @@ static void R_InitTextures (void)
     {
       // proff - This is for the new renderer now
       R_CacheTextureCompositePatchNum(i);
-      R_UnlockTextureCompositePatchNum(i);
     }
   }
 
@@ -739,7 +738,6 @@ void R_SetPatchNum(patchnum_t *patchnum, const char *name)
   patchnum->leftoffset = patch->leftoffset;
   patchnum->topoffset = patch->topoffset;
   patchnum->lumpnum = W_GetNumForName(name);
-  R_UnlockPatchName(name);
 }
 
 void R_SetSpriteByNum(patchnum_t *patchnum, int lump)
@@ -750,7 +748,6 @@ void R_SetSpriteByNum(patchnum_t *patchnum, int lump)
   patchnum->leftoffset = patch->leftoffset;
   patchnum->topoffset = patch->topoffset;
   patchnum->lumpnum = lump;
-  R_UnlockPatchNum(lump);
 }
 
 int R_SetSpriteByIndex(patchnum_t *patchnum, spritenum_t item)

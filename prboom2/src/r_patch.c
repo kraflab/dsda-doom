@@ -162,7 +162,6 @@ int R_NumPatchWidth(int lump)
 {
   const rpatch_t *patch = R_CachePatchNum(lump);
   int width = patch->width;
-  R_UnlockPatchNum(lump);
   return width;
 }
 
@@ -171,7 +170,6 @@ int R_NumPatchHeight(int lump)
 {
   const rpatch_t *patch = R_CachePatchNum(lump);
   int height = patch->height;
-  R_UnlockPatchNum(lump);
   return height;
 }
 
@@ -840,11 +838,6 @@ const rpatch_t *R_CachePatchNum(int id) {
   return &patches[id];
 }
 
-void R_UnlockPatchNum(int id)
-{
-  // No op
-}
-
 //---------------------------------------------------------------------------
 const rpatch_t *R_CacheTextureCompositePatchNum(int id) {
   if (!texture_composites)
@@ -860,11 +853,6 @@ const rpatch_t *R_CacheTextureCompositePatchNum(int id) {
 
   return &texture_composites[id];
 
-}
-
-void R_UnlockTextureCompositePatchNum(int id)
-{
-  // No op
 }
 
 //---------------------------------------------------------------------------

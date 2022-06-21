@@ -988,7 +988,6 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
   patch=R_CacheTextureCompositePatchNum(gltexture->index);
   gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0,
                         CR_DEFAULT, !(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture);
-  R_UnlockTextureCompositePatchNum(gltexture->index);
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
@@ -1065,7 +1064,6 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite)
     gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
 
     gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*4;
-    R_UnlockPatchNum(lump);
     if (gltexture->realtexwidth>gltexture->buffer_width)
       return gltexture;
     if (gltexture->realtexheight>gltexture->buffer_height)
@@ -1149,8 +1147,6 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   gld_BuildTexture(gltexture, buffer, false, w, h);
 
   gld_SetTexClamp(gltexture, GLTEXTURE_CLAMPXY);
-
-  R_UnlockPatchNum(gltexture->index);
 }
 
 GLTexture *gld_RegisterFlat(int lump, dboolean mipmap)

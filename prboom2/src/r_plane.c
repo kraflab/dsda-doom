@@ -593,8 +593,6 @@ static void R_DoDrawPlane(visplane_t *pl)
               colfunc(&dcvars);
             }
 
-      R_UnlockTextureCompositePatchNum(texture);
-
     } else {     // regular flat
 
       int stop, light;

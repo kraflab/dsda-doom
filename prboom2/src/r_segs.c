@@ -390,8 +390,6 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
         maskedtexturecol[dcvars.x] = INT_MAX; // dropoff overflow
       }
 
-  R_UnlockTextureCompositePatchNum(texnum);
-
   curline = NULL; /* cph 2001/11/18 - must clear curline now we're done with it, so R_ColourMap doesn't try using it for other things */
 }
 
@@ -510,7 +508,6 @@ static void R_RenderSegLoop (void)
           dcvars.nextsource = R_GetTextureColumn(tex_patch, texturecolumn+1);
           dcvars.texheight = midtexheight;
           colfunc(&dcvars);
-          R_UnlockTextureCompositePatchNum(midtexture);
           tex_patch = NULL;
           ceilingclip[rw_x] = viewheight;
           floorclip[rw_x] = -1;
@@ -539,7 +536,6 @@ static void R_RenderSegLoop (void)
                   dcvars.nextsource = R_GetTextureColumn(tex_patch,texturecolumn+1);
                   dcvars.texheight = toptexheight;
                   colfunc(&dcvars);
-                  R_UnlockTextureCompositePatchNum(toptexture);
                   tex_patch = NULL;
                   ceilingclip[rw_x] = mid;
                 }
@@ -573,7 +569,6 @@ static void R_RenderSegLoop (void)
                   dcvars.nextsource = R_GetTextureColumn(tex_patch, texturecolumn+1);
                   dcvars.texheight = bottomtexheight;
                   colfunc(&dcvars);
-                  R_UnlockTextureCompositePatchNum(bottomtexture);
                   tex_patch = NULL;
                   floorclip[rw_x] = mid;
                 }

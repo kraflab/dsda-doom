@@ -629,7 +629,6 @@ static void R_DrawVisSprite(vissprite_t *vis)
         R_GetPatchColumnClamped(patch, texturecolumn+1)
       );
     }
-  R_UnlockPatchNum(vis->patch+firstspritelump); // cph - release lump
 }
 
 int r_near_clip_plane = MINZ;
@@ -793,7 +792,6 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     gzt = fz + (patch->topoffset << FRACBITS);
     gzb = gzt - (patch->height << FRACBITS);
     width = patch->width;
-    R_UnlockPatchNum(lump+firstspritelump);
   }
 
   // off the side?
@@ -1128,7 +1126,6 @@ static void R_DrawPSprite (pspdef_t *psp)
 
     width = patch->width;
     topoffset = patch->topoffset<<FRACBITS;
-    R_UnlockPatchNum(lump+firstspritelump);
   }
 
   // off the side
