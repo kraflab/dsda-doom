@@ -519,8 +519,6 @@ static void I_UploadNewPalette(int pal, int force)
       palette += 3;
     }
 
-    W_UnlockLumpNum(pplump);
-    W_UnlockLumpNum(gtlump);
     num_pals /= 256;
   }
 

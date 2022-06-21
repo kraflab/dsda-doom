@@ -361,7 +361,6 @@ static dboolean CheckIfPatch(int lump)
     }
   }
 
-  W_UnlockLumpNum(lump);
   return result;
 }
 
@@ -540,7 +539,6 @@ static void createPatch(int id) {
 
   FillEmptySpace(patch);
 
-  W_UnlockLumpNum(patchNum);
   free(numPostsInColumn);
 }
 
@@ -647,8 +645,6 @@ static void createTextureCompositePatch(int id) {
         oldColumn = (const column_t *)((const byte *)oldColumn + oldColumn->length + 4);
       }
     }
-
-    W_UnlockLumpNum(patchNum);
   }
 
   postsDataSize = numPostsTotal * sizeof(rpost_t);
@@ -789,8 +785,6 @@ static void createTextureCompositePatch(int id) {
         assert(countsInColumn[tx].posts_used <= countsInColumn[tx].posts);
       }
     }
-
-    W_UnlockLumpNum(patchNum);
   }
 
   for (x=0; x<texture->width; x++) {

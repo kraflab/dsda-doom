@@ -95,8 +95,6 @@ void gld_InitMapPics(void)
       SDL_FreeSurface(surf_raw);
 #endif
 
-      W_UnlockLumpNum(lump);
-
       if (surf)
       {
         glGenTextures(1, &am_icons[i].tex_id);

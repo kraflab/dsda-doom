@@ -1438,7 +1438,6 @@ void PO_Init(int lump)
                                  spawnthing.y << FRACBITS);
         }
     }
-    W_UnlockLumpNum(lump);
     // check for a startspot without an anchor point
     for (i = 0; i < po_NumPolyobjs; i++)
     {

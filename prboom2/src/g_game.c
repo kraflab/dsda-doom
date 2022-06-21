@@ -2073,7 +2073,6 @@ static uint_64_t G_UpdateSignature(uint_64_t s, const char *name)
   const byte *p = W_CacheLumpNum(i);
   while (size--)
     s <<= 1, s += *p++;
-  W_UnlockLumpNum(i);
       }
     while (--i > lump);
   return s;
@@ -3929,8 +3928,6 @@ dboolean G_CheckDemoStatus (void)
       I_SafeExit(0);  // killough
 
     if (demolumpnum != -1) {
-      // cph - unlock the demo lump
-      W_UnlockLumpNum(demolumpnum);
       demolumpnum = -1;
     }
     G_ReloadDefaults();    // killough 3/1/98

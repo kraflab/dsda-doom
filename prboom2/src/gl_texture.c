@@ -1266,8 +1266,6 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
   gld_BuildTexture(gltexture, buffer, false, w, h);
 
   gld_SetTexClamp(gltexture, flags);
-
-  W_UnlockLumpNum(gltexture->index);
 }
 
 // e6y

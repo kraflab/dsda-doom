@@ -166,7 +166,6 @@ static void R_InitTextures (void)
             lprintf(LO_WARN,"\nWarning: patch %.8s, index %d does not exist",name,i);
         }
     }
-  W_UnlockLumpNum(names_lump); // cph - release the lump
 
   // Load the map texture definitions from textures.lmp.
   // The data is contained in one or two lumps,
@@ -284,10 +283,6 @@ static void R_InitTextures (void)
     }
 
   free(patchlookup);         // killough
-
-  for (i=0; i<2; i++) // cph - release the TEXTUREx lumps
-    if (maptex_lump[i] != -1)
-      W_UnlockLumpNum(maptex_lump[i]);
 
   if (errors)
   {
@@ -532,8 +527,6 @@ void R_InitTranMap(int progress)
         fclose(cachefp);
 
       free(fname);
-
-      W_UnlockLumpName("PLAYPAL");
     }
 }
 
@@ -649,7 +642,7 @@ int PUREFUNC R_SafeTextureNumForName(const char *name, int snum)
 
 static inline void precache_lump(int l)
 {
-  W_CacheLumpNum(l); W_UnlockLumpNum(l);
+  W_CacheLumpNum(l);
 }
 
 void R_PrecacheLevel(void)

@@ -93,14 +93,3 @@ const void *W_LockLumpNum(int lump)
 {
   return W_CacheLumpNum(lump);
 }
-
-/*
- * W_UnlockLumpNum
- *
- * CPhipps - this changes (should reduce) the number of locks on a lump
- */
-
-void W_UnlockLumpNum(int lump)
-{
-  // No op
-}

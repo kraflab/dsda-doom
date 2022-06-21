@@ -663,9 +663,6 @@ void F_BunnyScroll (void)
       // Widescreen mod PFUBs.
       p1offset = 0;
     }
-
-    W_UnlockLumpName(pfub2);
-    W_UnlockLumpName(pfub1);
   }
 
   {

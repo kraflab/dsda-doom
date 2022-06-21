@@ -390,10 +390,6 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
         maskedtexturecol[dcvars.x] = INT_MAX; // dropoff overflow
       }
 
-  // Except for main_tranmap, mark others purgable at this point
-  if (curline->linedef->tranlump > 0)
-    W_UnlockLumpNum(curline->linedef->tranlump-1); // cph - unlock it
-
   R_UnlockTextureCompositePatchNum(texnum);
 
   curline = NULL; /* cph 2001/11/18 - must clear curline now we're done with it, so R_ColourMap doesn't try using it for other things */

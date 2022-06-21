@@ -346,8 +346,6 @@ static dboolean LoadInstrumentTable(void)
 
     if (strncmp((const char *) lump, GENMIDI_HEADER, strlen(GENMIDI_HEADER)) != 0)
     {
-        W_UnlockLumpName("GENMIDI");
-
         return false;
     }
 
@@ -1389,10 +1387,6 @@ static void I_OPL_ShutdownMusic(void)
         I_OPL_StopSong();
 
         OPL_Shutdown();
-
-        // Release GENMIDI lump
-
-        W_UnlockLumpName("GENMIDI");
 
         music_initialized = false;
     }

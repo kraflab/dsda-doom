@@ -419,7 +419,6 @@ void R_InitTranslationTables (void)
     {
         const byte* transLump = W_CacheLumpNum(lumpnum + i);
         memcpy(translationtables + i * 256, transLump, 256);
-        W_UnlockLumpNum(lumpnum + i);
     }
 
     return;

@@ -211,7 +211,6 @@ void S_Init(void)
 
     soundCurve = Z_Malloc(max_snd_dist, PU_STATIC);
     memcpy(soundCurve, (const byte *) W_CacheLumpNum(lump), max_snd_dist);
-    W_UnlockLumpNum(lump);
   }
 }
 
@@ -682,8 +681,6 @@ void S_StopMusic(void)
 
       I_StopSong(mus_playing->handle);
       I_UnRegisterSong(mus_playing->handle);
-      if (mus_playing->lumpnum >= 0)
-  W_UnlockLumpNum(mus_playing->lumpnum); // cph - release the music data
 
       mus_playing->data = 0;
       mus_playing = 0;

@@ -336,8 +336,6 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
       }
     }
   }
-
-  W_UnlockLumpNum(lump);
 }
 
 static void FUNC_V_FillPatch(int lump, int scrn, int x, int y, int width, int height, enum patch_translation_e flags)
@@ -1143,7 +1141,6 @@ const unsigned char* V_GetPlaypal(void)
     const byte *data = W_CacheLumpNum(lump);
     playpal_data->lump = malloc(len);
     memcpy(playpal_data->lump, data, len);
-    W_UnlockLumpNum(lump);
   }
 
   return playpal_data->lump;
@@ -1494,8 +1491,6 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
 
       V_FillRect(0, x_offset + x, y, width, height, *raw);
     }
-
-  W_UnlockLumpName(lump_name);
 }
 
 void V_DrawShadowedNumPatch(int x, int y, int lump)

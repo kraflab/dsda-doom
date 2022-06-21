@@ -706,8 +706,6 @@ static void R_DoDrawPlane(visplane_t *pl)
       for (x = pl->minx ; x <= stop ; x++)
          R_MakeSpans(x,pl->top[x-1],pl->bottom[x-1],
                      pl->top[x],pl->bottom[x], &dsvars);
-
-      W_UnlockLumpNum(firstflat + flattranslation[pl->picnum]);
     }
   }
 }

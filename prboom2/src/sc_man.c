@@ -133,7 +133,6 @@ void SC_Close(void)
 {
   if (ScriptOpen)
   {
-    W_UnlockLumpNum(ScriptLump);
     ScriptOpen = false;
   }
 }

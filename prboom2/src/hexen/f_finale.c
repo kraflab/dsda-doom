@@ -301,7 +301,6 @@ static char *GetFinaleText(int sequence)
     }
 
     memcpy(ClusterMessage, W_CacheLumpNum(msgLump), msgSize);
-    W_UnlockLumpNum(msgLump);
     ClusterMessage[msgSize] = '\0';        // Append terminator
     return ClusterMessage;
 }

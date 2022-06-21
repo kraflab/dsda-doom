@@ -122,8 +122,6 @@ void dsda_InitPlayPal(void) {
         playpal_data[playpal_i].transparent = 255;
         playpal_data[playpal_i].duplicate   = -1;
       }
-
-      W_UnlockLumpNum(lump);
     }
   }
 }

@@ -354,8 +354,6 @@ void R_DemoEx_ShowComment(void)
     V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_DEFAULT, VPT_STRETCH);
     cx += w;
   }
-
-  W_UnlockLumpNum(lump);
 }
 
 angle_t R_DemoEx_ReadMLook(void)
@@ -448,7 +446,6 @@ static int R_DemoEx_GetVersion(void)
         result = ver;
       }
     }
-    W_UnlockLumpNum(lump);
   }
 
   return result;
@@ -627,7 +624,6 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
     free(params);
   }
 
-  W_UnlockLumpNum(lump);
   free(str);
 }
 

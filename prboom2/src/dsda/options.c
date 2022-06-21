@@ -253,8 +253,6 @@ static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
     }
   }
 
-  W_UnlockLumpNum(lumpnum);
-
   return &mbf_options;
 }
 

@@ -155,14 +155,10 @@ void    W_ReadLump (int lump, void *dest);
 // CPhipps - modified for 'new' lump locking
 const void* W_CacheLumpNum (int lump);
 const void* W_LockLumpNum(int lump);
-void    W_UnlockLumpNum(int lump);
 
 // CPhipps - convenience macros
 //#define W_CacheLumpNum(num) (W_CacheLumpNum)((num),1)
 #define W_CacheLumpName(name) W_CacheLumpNum (W_GetNumForName(name))
-
-//#define W_UnlockLumpNum(num) (W_UnlockLumpNum)((num),1)
-#define W_UnlockLumpName(name) W_UnlockLumpNum (W_GetNumForName(name))
 
 char *AddDefaultExtension(char *, const char *);  // killough 1/18/98
 void ExtractFileBase(const char *, char *);       // killough

@@ -262,7 +262,3 @@ const void* W_LockLumpNum(int lump)
 
   return cachelump[lump].cache;
 }
-
-void W_UnlockLumpNum(int lump) {
-  // No op
-}

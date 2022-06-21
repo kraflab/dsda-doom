@@ -361,8 +361,6 @@ void RejectOverrun(int rejectlump, const byte **rejectmatrix, int totallines)
     pad = prboom_comp[PC_REJECT_PAD_WITH_FF].state ? 0xff : 0;
 
     memset(newreject + length, pad, required - length);
-    // unlock the original lump, it is no longer needed
-    W_UnlockLumpNum(rejectlump);
     rejectlump = -1;
 
     if (!hexen && demo_compatibility && PROCESS(OVERFLOW_REJECT))

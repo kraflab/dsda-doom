@@ -856,7 +856,6 @@ int gld_HiRes_BuildTables(void)
         RGB2PAL_lump = W_CacheLumpNum(lump);
         RGB2PAL = malloc(RGB2PAL_size);
         memcpy(RGB2PAL, RGB2PAL_lump, RGB2PAL_size);
-        W_UnlockLumpName(RGB2PAL_NAME);
         return true;
       }
     }

@@ -707,8 +707,6 @@ GLuint gld_LoadDetailName(const char *name)
     surf_raw = SDL_LoadBMP_RW(SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump)), 1);
 #endif
 
-    W_UnlockLumpNum(lump);
-
     if (surf_raw)
     {
       fmt = *surf_raw->format;
