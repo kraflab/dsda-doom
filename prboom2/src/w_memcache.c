@@ -47,9 +47,7 @@
 #include "z_zone.h"
 #include "lprintf.h"
 
-static struct {
-  void *cache;
-} *cachelump;
+static void **lump_data;
 
 /* W_InitCache
  *
@@ -58,9 +56,9 @@ static struct {
 void W_InitCache(void)
 {
   // set up caching
-  cachelump = calloc(sizeof *cachelump, numlumps);
-  if (!cachelump)
-    I_Error ("W_Init: Couldn't allocate lumpcache");
+  lump_data = calloc(sizeof *lump_data, numlumps);
+  if (!lump_data)
+    I_Error ("W_Init: Couldn't allocate lump data");
 }
 
 void W_DoneCache(void)
@@ -81,12 +79,12 @@ const void *W_LumpByNum(int lump)
 #endif
 
   // read the lump in
-  if (!cachelump[lump].cache) {
-    cachelump[lump].cache = Z_Malloc(W_LumpLength(lump), PU_STATIC);
-    W_ReadLump(lump, cachelump[lump].cache);
+  if (!lump_data[lump]) {
+    lump_data[lump] = Z_Malloc(W_LumpLength(lump), PU_STATIC);
+    W_ReadLump(lump, lump_data[lump]);
   }
 
-  return cachelump[lump].cache;
+  return lump_data[lump];
 }
 
 const void *W_LockLumpNum(int lump)

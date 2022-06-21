@@ -57,9 +57,7 @@
 
 #include "e6y.h"//e6y
 
-static struct {
-  void *cache;
-} *cachelump;
+static void **lump_data;
 
 #ifdef _WIN32
 typedef struct {
@@ -75,9 +73,9 @@ void W_DoneCache(void)
 {
   size_t i;
 
-  if (cachelump) {
-    free(cachelump);
-    cachelump = NULL;
+  if (lump_data) {
+    free(lump_data);
+    lump_data = NULL;
   }
 
   if (!mapped_wad)
@@ -110,9 +108,9 @@ void W_InitCache(void)
   W_DoneCache();
 
   // set up caching
-  cachelump = calloc(numlumps, sizeof *cachelump);
-  if (!cachelump)
-    I_Error ("W_Init: Couldn't allocate lumpcache");
+  lump_data = calloc(numlumps, sizeof *lump_data);
+  if (!lump_data)
+    I_Error ("W_Init: Couldn't allocate lump data");
 
   mapped_wad = calloc(numwadfiles,sizeof(mmap_info_t));
   memset(mapped_wad,0,sizeof(mmap_info_t)*numwadfiles);
@@ -183,9 +181,9 @@ void W_InitCache(void)
 {
   int maxfd = 0;
   // set up caching
-  cachelump = calloc(numlumps, sizeof *cachelump);
-  if (!cachelump)
-    I_Error ("W_Init: Couldn't allocate lumpcache");
+  lump_data = calloc(numlumps, sizeof *lump_data);
+  if (!lump_data)
+    I_Error ("W_Init: Couldn't allocate lump data");
 
   {
     int i;
@@ -255,10 +253,10 @@ const void* W_LockLumpNum(int lump)
   const void *data = W_LumpByNum(lump);
 
   // read the lump in
-  if (!cachelump[lump].cache) {
-    cachelump[lump].cache = Z_Malloc(len, PU_STATIC);
-    memcpy(cachelump[lump].cache, data, len);
+  if (!lump_data[lump]) {
+    lump_data[lump] = Z_Malloc(len, PU_STATIC);
+    memcpy(lump_data[lump], data, len);
   }
 
-  return cachelump[lump].cache;
+  return lump_data[lump];
 }
