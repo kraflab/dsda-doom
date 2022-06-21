@@ -80,7 +80,7 @@ const void *W_LumpByNum(int lump)
 
   // read the lump in
   if (!lump_data[lump]) {
-    lump_data[lump] = Z_Malloc(W_LumpLength(lump), PU_STATIC);
+    lump_data[lump] = Z_Malloc(W_LumpLength(lump));
     W_ReadLump(lump, lump_data[lump]);
   }
 

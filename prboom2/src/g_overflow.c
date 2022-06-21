@@ -350,7 +350,7 @@ void RejectOverrun(int rejectlump, const byte **rejectmatrix, int totallines)
   {
     // allocate a new block and copy the reject table into it; zero the rest
     // PU_LEVEL => will be freed on level exit
-    newreject = Z_Malloc(required, PU_LEVEL);
+    newreject = Z_MallocTag(required, PU_LEVEL);
     *rejectmatrix = memmove(newreject, *rejectmatrix, length);
 
     // e6y

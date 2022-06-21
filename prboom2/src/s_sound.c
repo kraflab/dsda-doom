@@ -209,7 +209,7 @@ void S_Init(void)
     max_snd_dist = length;
     dist_adjust = max_snd_dist / 10;
 
-    soundCurve = Z_Malloc(max_snd_dist, PU_STATIC);
+    soundCurve = Z_Malloc(max_snd_dist);
     memcpy(soundCurve, (const byte *) W_LumpByNum(lump), max_snd_dist);
   }
 }

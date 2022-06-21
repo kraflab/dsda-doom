@@ -240,11 +240,11 @@ static GLTexture *gld_AddNewGLTexItem(int num, int count, GLTexture ***items)
     return NULL;
   if (!(*items))
   {
-    (*items)=Z_Calloc(count, sizeof(GLTexture *),PU_STATIC);
+    (*items)=Z_Calloc(count, sizeof(GLTexture *));
   }
   if (!(*items)[num])
   {
-    (*items)[num]=Z_Calloc(1, sizeof(GLTexture),PU_STATIC);
+    (*items)[num]=Z_Calloc(1, sizeof(GLTexture));
     (*items)[num]->textype=GLDT_UNREGISTERED;
 
     //if (gl_boom_colormaps)
@@ -980,7 +980,7 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
     return;
   }
 
-  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size,PU_STATIC);
+  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   if (!(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture)
     memset(buffer,transparent_pal_index,gltexture->buffer_size);
   else
@@ -1113,7 +1113,7 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   }
 
   patch=R_PatchByNum(gltexture->index);
-  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size,PU_STATIC);
+  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   if (gl_paletted_texture)
     memset(buffer,transparent_pal_index,gltexture->buffer_size);
   else
@@ -1247,7 +1247,7 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
   }
 
   flat=W_LumpByNum(gltexture->index);
-  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size,PU_STATIC);
+  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   if (!(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture)
     memset(buffer,transparent_pal_index,gltexture->buffer_size);
   else
@@ -1366,7 +1366,7 @@ void gld_Precache(void)
 
   {
     size_t size = numflats > num_sprites  ? numflats : num_sprites;
-    hitlist = Z_Malloc((size_t)numtextures > size ? (size_t)numtextures : size,PU_LEVEL);
+    hitlist = Z_MallocTag((size_t)numtextures > size ? (size_t)numtextures : size,PU_LEVEL);
   }
 
   // Precache flats.

@@ -83,7 +83,7 @@ static memblock_t *blockbytag[PU_MAX];
  * free all the stuff we just pass on the way.
  */
 
-void *Z_Malloc(size_t size, int tag)
+void *Z_MallocTag(size_t size, int tag)
 {
   memblock_t *block = NULL;
 
@@ -159,9 +159,9 @@ void Z_FreeTag(int tag)
   }
 }
 
-void *Z_Realloc(void *ptr, size_t n, int tag)
+void *Z_ReallocTag(void *ptr, size_t n, int tag)
 {
-  void *p = Z_Malloc(n, tag);
+  void *p = Z_MallocTag(n, tag);
   if (ptr)
     {
       memblock_t *block = (memblock_t *)((char *) ptr - HEADER_SIZE);
@@ -171,13 +171,29 @@ void *Z_Realloc(void *ptr, size_t n, int tag)
   return p;
 }
 
-void *Z_Calloc(size_t n1, size_t n2, int tag)
+void *Z_CallocTag(size_t n1, size_t n2, int tag)
 {
   return
-    (n1*=n2) ? memset(Z_Malloc(n1, tag), 0, n1) : NULL;
+    (n1*=n2) ? memset(Z_MallocTag(n1, tag), 0, n1) : NULL;
 }
 
-char *Z_Strdup(const char *s, int tag)
+char *Z_StrdupTag(const char *s, int tag)
 {
-  return strcpy(Z_Malloc(strlen(s)+1, tag), s);
+  return strcpy(Z_MallocTag(strlen(s)+1, tag), s);
+}
+
+void *Z_Malloc(size_t size) {
+  return Z_MallocTag(size, PU_STATIC);
+}
+
+void *Z_Calloc(size_t n, size_t n2) {
+  return Z_CallocTag(n, n2, PU_STATIC);
+}
+
+void *Z_Realloc(void *p, size_t n) {
+  return Z_ReallocTag(p, n, PU_STATIC);
+}
+
+char *Z_Strdup(const char *s) {
+  return Z_StrdupTag(s, PU_STATIC);
 }

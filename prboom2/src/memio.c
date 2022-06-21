@@ -54,7 +54,7 @@ MEMFILE *mem_fopen_read(const void *buf, size_t buflen)
 {
   MEMFILE *file;
 
-  file = Z_Malloc(sizeof(MEMFILE), PU_STATIC);
+  file = Z_Malloc(sizeof(MEMFILE));
 
   // The MEMFILE struct is overloaded for both read-only and write use cases
   // This is required to interface with 3rd party libraries (I think)
@@ -107,10 +107,10 @@ MEMFILE *mem_fopen_write(void)
 {
   MEMFILE *file;
 
-  file = Z_Malloc(sizeof(MEMFILE), PU_STATIC);
+  file = Z_Malloc(sizeof(MEMFILE));
 
   file->alloced = 1024;
-  file->buf = Z_Malloc(file->alloced, PU_STATIC);
+  file->buf = Z_Malloc(file->alloced);
   file->buflen = 0;
   file->position = 0;
   file->mode = MODE_WRITE;
@@ -138,7 +138,7 @@ size_t mem_fwrite(const void *ptr, size_t size, size_t nmemb, MEMFILE *stream)
   {
     unsigned char *newbuf;
 
-    newbuf = Z_Malloc(stream->alloced * 2, PU_STATIC);
+    newbuf = Z_Malloc(stream->alloced * 2);
     memcpy(newbuf, stream->buf, stream->alloced);
     Z_Free(stream->buf);
     stream->buf = newbuf;

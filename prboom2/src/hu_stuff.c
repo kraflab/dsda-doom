@@ -2860,7 +2860,7 @@ int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int
   }
   else
   {
-    message_thinker_t *message = Z_Calloc(1, sizeof(*message), PU_LEVEL);
+    message_thinker_t *message = Z_CallocTag(1, sizeof(*message), PU_LEVEL);
     message->thinker.function = T_ShowMessage;
     message->delay = delay;
     message->plr = plr;

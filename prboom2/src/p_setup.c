@@ -1159,7 +1159,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	// first estimate for compression rate:
 	// output buffer size == 2.5 * input size
 	outlen = 2.5 * len;
-	output = Z_Malloc(outlen, PU_STATIC);
+	output = Z_Malloc(outlen);
 
 	// initialize stream state for decompression
 	zstream = malloc(sizeof(*zstream));
@@ -2526,7 +2526,7 @@ static int P_GroupLines (void)
   }
 
   {  // allocate line tables for each sector
-    line_t **linebuffer = Z_Malloc(total*sizeof(line_t *), PU_LEVEL);
+    line_t **linebuffer = Z_MallocTag(total*sizeof(line_t *), PU_LEVEL);
     // e6y: REJECT overrun emulation code
     // moved to P_LoadReject
 
@@ -2977,11 +2977,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   // figgi 10/19/00 -- check for gl lumps and load them
   P_GetNodesVersion(lumpnum,gl_lumpnum);
-
-  // e6y: speedup of level reloading
-  // Most of level's structures now are allocated with PU_STATIC instead of PU_LEVEL
-  // It is important for OpenGL, because in case of the same data in memory
-  // we can skip recalculation of much stuff
 
   samelevel =
     (map == current_map) &&

@@ -236,7 +236,7 @@ static void R_InitSpriteDefs(const char * const * namelist)
   if (!numentries || !*namelist)
     return;
 
-  sprites = Z_Calloc(num_sprites, sizeof(*sprites), PU_STATIC);
+  sprites = Z_Calloc(num_sprites, sizeof(*sprites));
 
   // Create hash table based on just the first four letters of each sprite
   // killough 1/31/98
@@ -374,7 +374,7 @@ static void R_InitSpriteDefs(const char * const * namelist)
 
               // allocate space for the frames present and copy sprtemp to it
               sprites[i].spriteframes =
-                Z_Malloc (maxframe * sizeof(spriteframe_t), PU_STATIC);
+                Z_Malloc (maxframe * sizeof(spriteframe_t));
               memcpy (sprites[i].spriteframes, sprtemp,
                       maxframe*sizeof(spriteframe_t));
             }

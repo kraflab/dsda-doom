@@ -254,7 +254,7 @@ const void* W_LockLumpNum(int lump)
 
   // read the lump in
   if (!lump_data[lump]) {
-    lump_data[lump] = Z_Malloc(len, PU_STATIC);
+    lump_data[lump] = Z_Malloc(len);
     memcpy(lump_data[lump], data, len);
   }
 

@@ -64,12 +64,17 @@ enum {
   PU_MAX
 };
 
-void *Z_Malloc(size_t size, int tag);
 void Z_Free(void *ptr);
+void *Z_Malloc(size_t size);
+void *Z_Calloc(size_t n, size_t n2);
+void *Z_Realloc(void *p, size_t n);
+char *Z_Strdup(const char *s);
+
 void Z_FreeTag(int tag);
-void *Z_Calloc(size_t n, size_t n2, int tag);
-void *Z_Realloc(void *p, size_t n, int tag);
-char *Z_Strdup(const char *s, int tag);
+void *Z_MallocTag(size_t size, int tag);
+void *Z_CallocTag(size_t n, size_t n2, int tag);
+void *Z_ReallocTag(void *p, size_t n, int tag);
+char *Z_StrdupTag(const char *s, int tag);
 
 /* cphipps 2001/11/18 -
  * If we're using memory mapped file access to WADs, we won't need to maintain
@@ -80,18 +85,16 @@ char *Z_Strdup(const char *s, int tag);
 
 // Remove all definitions before including system definitions
 
-#undef malloc
 #undef free
+#undef malloc
 #undef realloc
 #undef calloc
 #undef strdup
 
-#define malloc(n)          Z_Malloc(n,PU_STATIC)
 #define free(p)            Z_Free(p)
-#define realloc(p,n)       Z_Realloc(p,n,PU_STATIC)
-#define calloc(n1,n2)      Z_Calloc(n1,n2,PU_STATIC)
-#define strdup(s)          Z_Strdup(s,PU_STATIC)
-
-void Z_ZoneHistory(char *);
+#define malloc(n)          Z_Malloc(n)
+#define realloc(p,n)       Z_Realloc(p,n)
+#define calloc(n1,n2)      Z_Calloc(n1,n2)
+#define strdup(s)          Z_Strdup(s)
 
 #endif
