@@ -49,7 +49,6 @@
 
 static struct {
   void *cache;
-  unsigned int locks;
 } *cachelump;
 
 /* W_InitCache
@@ -76,7 +75,6 @@ void W_DoneCache(void)
 
 const void *W_CacheLumpNum(int lump)
 {
-  const int locks = 1;
 #ifdef RANGECHECK
   if ((unsigned)lump >= (unsigned)numlumps)
     I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
@@ -87,12 +85,6 @@ const void *W_CacheLumpNum(int lump)
     cachelump[lump].cache = Z_Malloc(W_LumpLength(lump), PU_STATIC);
     W_ReadLump(lump, cachelump[lump].cache);
   }
-
-  /* cph - if wasn't locked but now is, tell z_zone to hold it */
-  if (!cachelump[lump].locks && locks) {
-    Z_ChangeTag(cachelump[lump].cache, PU_LOCKED);
-  }
-  cachelump[lump].locks += locks;
 
   return cachelump[lump].cache;
 }
@@ -110,11 +102,5 @@ const void *W_LockLumpNum(int lump)
 
 void W_UnlockLumpNum(int lump)
 {
-  const int unlocks = 1;
-  cachelump[lump].locks -= unlocks;
-  /* cph - Note: must only tell z_zone to make purgeable if currently locked,
-   * else it might already have been purged
-   */
-  if (unlocks && !cachelump[lump].locks)
-    Z_ChangeTag(cachelump[lump].cache, PU_CACHE);
+  // No op
 }

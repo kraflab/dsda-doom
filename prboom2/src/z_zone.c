@@ -159,45 +159,6 @@ void Z_FreeTag(int tag)
   }
 }
 
-void Z_ChangeTag(void *ptr, int tag)
-{
-  memblock_t *block = (memblock_t *)((char *) ptr - HEADER_SIZE);
-
-  // proff - added sanity check, this can happen when an empty lump is locked
-  if (!ptr)
-    return;
-
-  // proff - do nothing if tag doesn't differ
-  if (tag == block->tag)
-    return;
-
-  if (block->signature != ZONE_SIGNATURE)
-    I_Error ("Z_ChangeTag: freed a non-zone pointer");
-
-  if (block == block->next)
-    blockbytag[block->tag] = NULL;
-  else
-    if (blockbytag[block->tag] == block)
-      blockbytag[block->tag] = block->next;
-  block->prev->next = block->next;
-  block->next->prev = block->prev;
-
-  if (!blockbytag[tag])
-  {
-    blockbytag[tag] = block;
-    block->next = block->prev = block;
-  }
-  else
-  {
-    blockbytag[tag]->prev->next = block;
-    block->prev = blockbytag[tag]->prev;
-    block->next = blockbytag[tag];
-    blockbytag[tag]->prev = block;
-  }
-
-  block->tag = tag;
-}
-
 void *Z_Realloc(void *ptr, size_t n, int tag)
 {
   void *p = Z_Malloc(n, tag);

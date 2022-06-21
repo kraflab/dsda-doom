@@ -59,7 +59,6 @@
 
 static struct {
   void *cache;
-  int locks;
 } *cachelump;
 
 #ifdef _WIN32
@@ -122,8 +121,6 @@ void W_InitCache(void)
     for (i=0; i<numlumps; i++)
     {
       int wad_index = (int)(lumpinfo[i].wadfile-wadfiles);
-
-      cachelump[i].locks = -1;
 
       if (!lumpinfo[i].wadfile)
         continue;
@@ -200,7 +197,6 @@ void W_InitCache(void)
   {
     int i;
     for (i=0; i<numlumps; i++) {
-      cachelump[i].locks = -1;
       if (lumpinfo[i].wadfile) {
         int fd = lumpinfo[i].wadfile->handle;
         if (!mapped_wad[fd])
@@ -264,27 +260,9 @@ const void* W_LockLumpNum(int lump)
     memcpy(cachelump[lump].cache, data, len);
   }
 
-  /* cph - if wasn't locked but now is, tell z_zone to hold it */
-  if (cachelump[lump].locks <= 0) {
-    Z_ChangeTag(cachelump[lump].cache, PU_LOCKED);
-    // reset lock counter
-    cachelump[lump].locks = 1;
-  } else {
-    // increment lock counter
-    cachelump[lump].locks += 1;
-  }
-
   return cachelump[lump].cache;
 }
 
 void W_UnlockLumpNum(int lump) {
-  if (cachelump[lump].locks == -1)
-    return; // this lump is memory mapped
-
-  cachelump[lump].locks -= 1;
-  /* cph - Note: must only tell z_zone to make purgeable if currently locked,
-   * else it might already have been purged
-   */
-  if (cachelump[lump].locks == 0)
-    Z_ChangeTag(cachelump[lump].cache, PU_CACHE);
+  // No op
 }

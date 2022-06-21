@@ -78,7 +78,6 @@ typedef struct {
   rcolumn_t *columns;
   rpost_t *posts;
 
-  unsigned int locks;
   unsigned int flags;//e6y
 } rpatch_t;
 
