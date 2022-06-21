@@ -318,7 +318,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
     dcvars.nextcolormap = dcvars.colormap; // for filtering -- POPE
   }
 
-  patch = R_CacheTextureCompositePatchNum(texnum);
+  patch = R_TextureCompositePatchByNum(texnum);
 
   // draw the columns
   for (dcvars.x = x1 ; dcvars.x <= x2 ; dcvars.x++, spryscale += rw_scalestep)
@@ -502,7 +502,7 @@ static void R_RenderSegLoop (void)
           dcvars.yl = yl;     // single sided line
           dcvars.yh = yh;
           dcvars.texturemid = rw_midtexturemid;
-          tex_patch = R_CacheTextureCompositePatchNum(midtexture);
+          tex_patch = R_TextureCompositePatchByNum(midtexture);
           dcvars.source = R_GetTextureColumn(tex_patch, texturecolumn);
           dcvars.prevsource = R_GetTextureColumn(tex_patch, texturecolumn-1);
           dcvars.nextsource = R_GetTextureColumn(tex_patch, texturecolumn+1);
@@ -530,7 +530,7 @@ static void R_RenderSegLoop (void)
                   dcvars.yl = yl;
                   dcvars.yh = mid;
                   dcvars.texturemid = rw_toptexturemid;
-                  tex_patch = R_CacheTextureCompositePatchNum(toptexture);
+                  tex_patch = R_TextureCompositePatchByNum(toptexture);
                   dcvars.source = R_GetTextureColumn(tex_patch,texturecolumn);
                   dcvars.prevsource = R_GetTextureColumn(tex_patch,texturecolumn-1);
                   dcvars.nextsource = R_GetTextureColumn(tex_patch,texturecolumn+1);
@@ -563,7 +563,7 @@ static void R_RenderSegLoop (void)
                   dcvars.yl = mid;
                   dcvars.yh = yh;
                   dcvars.texturemid = rw_bottomtexturemid;
-                  tex_patch = R_CacheTextureCompositePatchNum(bottomtexture);
+                  tex_patch = R_TextureCompositePatchByNum(bottomtexture);
                   dcvars.source = R_GetTextureColumn(tex_patch, texturecolumn);
                   dcvars.prevsource = R_GetTextureColumn(tex_patch, texturecolumn-1);
                   dcvars.nextsource = R_GetTextureColumn(tex_patch, texturecolumn+1);

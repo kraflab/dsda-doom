@@ -581,7 +581,7 @@ static void R_DoDrawPlane(visplane_t *pl)
       // old code: dcvars.iscale = FRACUNIT*200/viewheight;
       dcvars.iscale = skyiscale;
 
-      tex_patch = R_CacheTextureCompositePatchNum(texture);
+      tex_patch = R_TextureCompositePatchByNum(texture);
 
   // killough 10/98: Use sky scrolling offset, and possibly flip picture
         for (x = pl->minx; (dcvars.x = x) <= pl->maxx; x++)

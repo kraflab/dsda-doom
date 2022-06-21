@@ -160,7 +160,7 @@ void R_FlushAllPatches(void) {
 //---------------------------------------------------------------------------
 int R_NumPatchWidth(int lump)
 {
-  const rpatch_t *patch = R_CachePatchNum(lump);
+  const rpatch_t *patch = R_PatchByNum(lump);
   int width = patch->width;
   return width;
 }
@@ -168,7 +168,7 @@ int R_NumPatchWidth(int lump)
 //---------------------------------------------------------------------------
 int R_NumPatchHeight(int lump)
 {
-  const rpatch_t *patch = R_CachePatchNum(lump);
+  const rpatch_t *patch = R_PatchByNum(lump);
   int height = patch->height;
   return height;
 }
@@ -823,9 +823,9 @@ static void createTextureCompositePatch(int id) {
 }
 
 //---------------------------------------------------------------------------
-const rpatch_t *R_CachePatchNum(int id) {
+const rpatch_t *R_PatchByNum(int id) {
   if (!patches)
-    I_Error("R_CachePatchNum: Patches not initialized");
+    I_Error("R_PatchByNum: Patches not initialized");
 
 #ifdef RANGECHECK
   if (id >= numlumps)
@@ -839,9 +839,9 @@ const rpatch_t *R_CachePatchNum(int id) {
 }
 
 //---------------------------------------------------------------------------
-const rpatch_t *R_CacheTextureCompositePatchNum(int id) {
+const rpatch_t *R_TextureCompositePatchByNum(int id) {
   if (!texture_composites)
-    I_Error("R_CacheTextureCompositePatchNum: Composite patches not initialized");
+    I_Error("R_TextureCompositePatchByNum: Composite patches not initialized");
 
 #ifdef RANGECHECK
   if (id >= numtextures)

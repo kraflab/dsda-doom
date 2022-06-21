@@ -300,7 +300,7 @@ static void R_InitTextures (void)
     for (i=0 ; i<numtextures ; i++)
     {
       // proff - This is for the new renderer now
-      R_CacheTextureCompositePatchNum(i);
+      R_TextureCompositePatchByNum(i);
     }
   }
 
@@ -732,7 +732,7 @@ void R_PrecacheLevel(void)
 // Proff - Added for OpenGL
 void R_SetPatchNum(patchnum_t *patchnum, const char *name)
 {
-  const rpatch_t *patch = R_CachePatchName(name);
+  const rpatch_t *patch = R_PatchByName(name);
   patchnum->width = patch->width;
   patchnum->height = patch->height;
   patchnum->leftoffset = patch->leftoffset;
@@ -742,7 +742,7 @@ void R_SetPatchNum(patchnum_t *patchnum, const char *name)
 
 void R_SetSpriteByNum(patchnum_t *patchnum, int lump)
 {
-  const rpatch_t *patch = R_CachePatchNum(lump);
+  const rpatch_t *patch = R_PatchByNum(lump);
   patchnum->width = patch->width;
   patchnum->height = patch->height;
   patchnum->leftoffset = patch->leftoffset;

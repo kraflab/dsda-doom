@@ -649,8 +649,8 @@ void F_BunnyScroll (void)
   if (finalecount == 0)
   {
     const rpatch_t *p1, *p2;
-    p1 = R_CachePatchName(pfub1);
-    p2 = R_CachePatchName(pfub2);
+    p1 = R_PatchByName(pfub1);
+    p2 = R_PatchByName(pfub2);
 
     p2width = p2->width;
     if (p1->width == 320)

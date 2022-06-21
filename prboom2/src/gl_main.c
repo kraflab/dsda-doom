@@ -2656,7 +2656,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   }
   lump += firstspritelump;
 
-  patch = R_CachePatchNum(lump);
+  patch = R_PatchByNum(lump);
   thing->patch_width = patch->width;
 
   // killough 4/9/98: clip things which are out of view due to height

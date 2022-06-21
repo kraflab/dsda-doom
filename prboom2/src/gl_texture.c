@@ -985,7 +985,7 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
     memset(buffer,transparent_pal_index,gltexture->buffer_size);
   else
     memset(buffer,0,gltexture->buffer_size);
-  patch=R_CacheTextureCompositePatchNum(gltexture->index);
+  patch=R_TextureCompositePatchByNum(gltexture->index);
   gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0,
                         CR_DEFAULT, !(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture);
   if (*gltexture->texid_p == 0)
@@ -1014,7 +1014,7 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite)
     return NULL;
   if (gltexture->textype==GLDT_UNREGISTERED)
   {
-    patch=R_CachePatchNum(lump);
+    patch=R_PatchByNum(lump);
     if (!patch)
       return NULL;
     gltexture->textype=GLDT_BROKEN;
@@ -1112,7 +1112,7 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
     return;
   }
 
-  patch=R_CachePatchNum(gltexture->index);
+  patch=R_PatchByNum(gltexture->index);
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size,PU_STATIC);
   if (gl_paletted_texture)
     memset(buffer,transparent_pal_index,gltexture->buffer_size);

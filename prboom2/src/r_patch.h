@@ -82,10 +82,10 @@ typedef struct {
 } rpatch_t;
 
 
-const rpatch_t *R_CachePatchNum(int id);
-#define R_CachePatchName(name) R_CachePatchNum(W_GetNumForName(name))
+const rpatch_t *R_PatchByNum(int id);
+#define R_PatchByName(name) R_PatchByNum(W_GetNumForName(name))
 
-const rpatch_t *R_CacheTextureCompositePatchNum(int id);
+const rpatch_t *R_TextureCompositePatchByNum(int id);
 
 // Size query funcs
 int R_NumPatchWidth(int lump) ;
