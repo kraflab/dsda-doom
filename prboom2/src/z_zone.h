@@ -54,34 +54,18 @@
 #include <string.h>
 #include <assert.h>
 
-// ZONE MEMORY
-// PU - purge tags.
-
-enum {
-  PU_STATIC,
-  PU_LEVEL,
-  /* Must always be last -- killough */
-  PU_MAX
-};
-
 void Z_Free(void *ptr);
+void Z_FreeLevel(void);
+
 void *Z_Malloc(size_t size);
 void *Z_Calloc(size_t n, size_t n2);
 void *Z_Realloc(void *p, size_t n);
 char *Z_Strdup(const char *s);
 
-void Z_FreeTag(int tag);
-void *Z_MallocTag(size_t size, int tag);
-void *Z_CallocTag(size_t n, size_t n2, int tag);
-void *Z_ReallocTag(void *p, size_t n, int tag);
-char *Z_StrdupTag(const char *s, int tag);
-
-/* cphipps 2001/11/18 -
- * If we're using memory mapped file access to WADs, we won't need to maintain
- * our own heap. So we *could* let "normal" malloc users use the libc malloc
- * directly, for efficiency. Except we do need a wrapper to handle out of memory
- * errors... damn, ok, we'll leave it for now.
- */
+void *Z_MallocLevel(size_t size);
+void *Z_CallocLevel(size_t n, size_t n2);
+void *Z_ReallocLevel(void *p, size_t n);
+char *Z_StrdupLevel(const char *s);
 
 // Remove all definitions before including system definitions
 

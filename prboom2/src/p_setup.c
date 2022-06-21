@@ -2526,7 +2526,7 @@ static int P_GroupLines (void)
   }
 
   {  // allocate line tables for each sector
-    line_t **linebuffer = Z_MallocTag(total*sizeof(line_t *), PU_LEVEL);
+    line_t **linebuffer = Z_MallocLevel(total*sizeof(line_t *));
     // e6y: REJECT overrun emulation code
     // moved to P_LoadReject
 
@@ -2945,7 +2945,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // Make sure all sounds are stopped before Z_FreeTag.
   S_Start();
 
-  Z_FreeTag(PU_LEVEL);
+  Z_FreeLevel();
   rejectlump = -1;
 
   P_InitThinkers();

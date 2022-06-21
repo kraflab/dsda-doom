@@ -27,7 +27,7 @@ static thing_id_list_t* thing_id_list_hash[THING_ID_HASH_MAX];
 static thing_id_list_t* dsda_NewThingIDList(short thing_id) {
   thing_id_list_t* result;
 
-  result = Z_CallocTag(1, sizeof(*result), PU_LEVEL);
+  result = Z_CallocLevel(1, sizeof(*result));
   result->thing_id = thing_id;
   return result;
 }
@@ -58,7 +58,7 @@ static thing_id_list_t* dsda_ThingIDList(short thing_id) {
 static thing_id_list_entry_t* dsda_NewThingIDListEntry(mobj_t* mo) {
   thing_id_list_entry_t* result;
 
-  result = Z_CallocTag(1, sizeof(*result), PU_LEVEL);
+  result = Z_CallocLevel(1, sizeof(*result));
   P_SetTarget(&result->mo, mo);
   return result;
 }
@@ -111,7 +111,7 @@ void dsda_RemoveMobjThingID(mobj_t* mo) {
   mo->tid = 0;
 }
 
-// The allocated memory is automatically removed (PU_LEVEL scope)
+// The allocated memory is automatically removed (zone memory)
 void dsda_WipeMobjThingIDList(void) {
   int i;
 

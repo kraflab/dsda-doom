@@ -1627,7 +1627,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   state_t*    st;
   mobjinfo_t* info;
 
-  mobj = Z_MallocTag (sizeof(*mobj), PU_LEVEL);
+  mobj = Z_MallocLevel (sizeof(*mobj));
   memset (mobj, 0, sizeof (*mobj));
   info = &mobjinfo[type];
   mobj->type = type;

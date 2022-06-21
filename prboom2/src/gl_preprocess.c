@@ -140,7 +140,7 @@ static vertex_t *gld_FlatEdgeClipper(int *numpoints, vertex_t *points, int numcl
         gld_CalcIntersectionVertex(&points[startIdx], &points[endIdx], curclip, &newvert);
 
         // Add the new vertex. Also modify the sidelist.
-        points = (vertex_t*)Z_ReallocTag(points,(++num)*sizeof(vertex_t),PU_LEVEL);
+        points = (vertex_t*)Z_ReallocLevel(points,(++num)*sizeof(vertex_t));
         if(num >= MAX_CC_SIDES)
           I_Error("gld_FlatEdgeClipper: Too many points in carver");
 
@@ -193,7 +193,7 @@ static void gld_FlatConvexCarver(int ssidx, int num, divline_t *list)
   int i, numedgepoints;
   vertex_t *edgepoints;
 
-  clippers=(divline_t*)Z_MallocTag(numclippers*sizeof(divline_t),PU_LEVEL);
+  clippers=(divline_t*)Z_MallocLevel(numclippers*sizeof(divline_t));
   if (!clippers)
     return;
   for(i=0; i<num; i++)
@@ -214,7 +214,7 @@ static void gld_FlatConvexCarver(int ssidx, int num, divline_t *list)
 
   // Setup the 'worldwide' polygon.
   numedgepoints = 4;
-  edgepoints = (vertex_t*)Z_MallocTag(numedgepoints*sizeof(vertex_t),PU_LEVEL);
+  edgepoints = (vertex_t*)Z_MallocLevel(numedgepoints*sizeof(vertex_t));
 
   edgepoints[0].x = INT_MIN;
   edgepoints[0].y = INT_MAX;
@@ -305,7 +305,7 @@ static void gld_CarveFlats(int bspnode, int numdivlines, divline_t *divlines)
   nod = nodes + bspnode;
 
   // Allocate a new list for each child.
-  childlist = (divline_t*)Z_MallocTag(childlistsize*sizeof(divline_t),PU_LEVEL);
+  childlist = (divline_t*)Z_MallocLevel(childlistsize*sizeof(divline_t));
 
   // Copy the previous lines.
   if(divlines) memcpy(childlist,divlines,numdivlines*sizeof(divline_t));
@@ -476,7 +476,7 @@ static void gld_PrecalculateSector(int num)
   int vertexnum;
 
   currentsector=num;
-  lineadded=Z_MallocTag(sectors[num].linecount*sizeof(dboolean),PU_LEVEL);
+  lineadded=Z_MallocLevel(sectors[num].linecount*sizeof(dboolean));
   if (!lineadded)
   {
     if (levelinfo) fclose(levelinfo);
@@ -607,7 +607,7 @@ static void gld_PrecalculateSector(int num)
     if (vertexnum>=maxvertexnum)
     {
       maxvertexnum+=512;
-      v=Z_ReallocTag(v,maxvertexnum*3*sizeof(double),PU_LEVEL);
+      v=Z_ReallocLevel(v,maxvertexnum*3*sizeof(double));
     }
     // calculate coordinates for the glu tesselation functions
     v[vertexnum*3+0]=-(double)currentvertex->x/(double)MAP_SCALE;

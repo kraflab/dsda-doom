@@ -1487,7 +1487,7 @@ static void UnarchiveMobjs(void)
     MobjList = Z_Malloc(MobjCount * sizeof(mobj_t *));
     for (i = 0; i < MobjCount; i++)
     {
-        MobjList[i] = Z_MallocTag(sizeof(mobj_t), PU_LEVEL);
+        MobjList[i] = Z_MallocLevel(sizeof(mobj_t));
         memset(MobjList[i], 0, sizeof(mobj_t));
     }
     for (i = 0; i < MobjCount; i++)
@@ -1696,7 +1696,7 @@ static void UnarchiveThinkers(void)
         {
             if (tClass == info->tClass)
             {
-                thinker = Z_MallocTag(info->size, PU_LEVEL);
+                thinker = Z_MallocLevel(info->size);
                 memset(thinker, 0, info->size);
                 info->readFunc(thinker);
                 thinker->function = info->thinkerFunc;

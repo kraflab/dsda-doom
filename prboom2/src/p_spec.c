@@ -3147,7 +3147,7 @@ void P_UpdateSpecials (void)
 static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
                          int control, int affectee, int accel)
 {
-  scroll_t *s = Z_MallocTag(sizeof *s, PU_LEVEL);
+  scroll_t *s = Z_MallocLevel(sizeof *s);
   s->thinker.function = T_Scroll;
   s->type = type;
   s->dx = dx;
@@ -4213,7 +4213,7 @@ static void P_SpawnScrollers(void)
 
 static void Add_Friction(int friction, int movefactor, int affectee)
 {
-    friction_t *f = Z_MallocTag(sizeof *f, PU_LEVEL);
+    friction_t *f = Z_MallocLevel(sizeof *f);
 
     f->thinker.function/*.acp1*/ = /*(actionf_p1) */T_Friction;
     f->friction = friction;
@@ -4470,7 +4470,7 @@ static void P_SpawnFriction(void)
 
 static void Add_Pusher(int type, int x_mag, int y_mag, mobj_t* source, int affectee)
 {
-    pusher_t *p = Z_MallocTag(sizeof *p, PU_LEVEL);
+    pusher_t *p = Z_MallocLevel(sizeof *p);
 
     p->thinker.function = T_Pusher;
     p->source = source;

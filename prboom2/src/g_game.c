@@ -1578,7 +1578,7 @@ static void G_PlayerFinishLevel(int player)
 
   memset(p->powers, 0, sizeof p->powers);
   memset(p->cards, 0, sizeof p->cards);
-  p->mo = NULL;           // cph - this is allocated PU_LEVEL so it's gone
+  p->mo = NULL;           // cph - this is zone-allocated so it's gone
   p->extralight = 0;      // cancel gun flashes
   p->fixedcolormap = 0;   // cancel ir gogles
   p->damagecount = 0;     // no palette changes
