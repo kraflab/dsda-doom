@@ -203,7 +203,7 @@ void V_InitColorTranslation(void)
   register const crdef_t *p;
   for (p=crdefs; p->name; p++)
   {
-    *p->map = W_CacheLumpName(p->name);
+    *p->map = W_LumpByName(p->name);
     if (p - crdefs == CR_DEFAULT)
       continue;
     if (gamemission == chex || gamemission == hacx)
@@ -309,7 +309,7 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
   lump += firstflat;
 
   // killough 4/17/98:
-  data = W_CacheLumpNum(lump);
+  data = W_LumpByNum(lump);
 
   {
     const byte *src, *src_p;
@@ -336,8 +336,6 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
       }
     }
   }
-
-  W_UnlockLumpNum(lump);
 }
 
 static void FUNC_V_FillPatch(int lump, int scrn, int x, int y, int width, int height, enum patch_translation_e flags)
@@ -679,15 +677,13 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 static void FUNC_V_DrawNumPatch(int x, int y, int scrn, int lump,
          int cm, enum patch_translation_e flags)
 {
-  V_DrawMemPatch(x, y, scrn, R_CachePatchNum(lump), cm, flags);
-  R_UnlockPatchNum(lump);
+  V_DrawMemPatch(x, y, scrn, R_PatchByNum(lump), cm, flags);
 }
 
 static void FUNC_V_DrawNumPatchPrecise(float x, float y, int scrn, int lump,
          int cm, enum patch_translation_e flags)
 {
-  V_DrawMemPatch((int)x, (int)y, scrn, R_CachePatchNum(lump), cm, flags);
-  R_UnlockPatchNum(lump);
+  V_DrawMemPatch((int)x, (int)y, scrn, R_PatchByNum(lump), cm, flags);
 }
 
 static int currentPaletteIndex = 0;
@@ -1140,10 +1136,9 @@ const unsigned char* V_GetPlaypal(void)
   {
     int lump = W_GetNumForName(playpal_data->lump_name);
     int len = W_LumpLength(lump);
-    const byte *data = W_CacheLumpNum(lump);
+    const byte *data = W_LumpByNum(lump);
     playpal_data->lump = malloc(len);
     memcpy(playpal_data->lump, data, len);
-    W_UnlockLumpNum(lump);
   }
 
   return playpal_data->lump;
@@ -1472,7 +1467,7 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
     }
   }
 
-  raw = (const byte *) W_CacheLumpName(lump_name) + source_offset;
+  raw = (const byte *) W_LumpByName(lump_name) + source_offset;
 
   x_factor = (float)SCREENWIDTH / 320;
   y_factor = (float)SCREENHEIGHT / 200;
@@ -1494,8 +1489,6 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
 
       V_FillRect(0, x_offset + x, y, width, height, *raw);
     }
-
-  W_UnlockLumpName(lump_name);
 }
 
 void V_DrawShadowedNumPatch(int x, int y, int lump)

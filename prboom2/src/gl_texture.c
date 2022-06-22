@@ -240,11 +240,11 @@ static GLTexture *gld_AddNewGLTexItem(int num, int count, GLTexture ***items)
     return NULL;
   if (!(*items))
   {
-    (*items)=Z_Calloc(count, sizeof(GLTexture *),PU_STATIC,0);
+    (*items)=Z_Calloc(count, sizeof(GLTexture *));
   }
   if (!(*items)[num])
   {
-    (*items)[num]=Z_Calloc(1, sizeof(GLTexture),PU_STATIC,0);
+    (*items)[num]=Z_Calloc(1, sizeof(GLTexture));
     (*items)[num]->textype=GLDT_UNREGISTERED;
 
     //if (gl_boom_colormaps)
@@ -980,15 +980,14 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
     return;
   }
 
-  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size,PU_STATIC,0);
+  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   if (!(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture)
     memset(buffer,transparent_pal_index,gltexture->buffer_size);
   else
     memset(buffer,0,gltexture->buffer_size);
-  patch=R_CacheTextureCompositePatchNum(gltexture->index);
+  patch=R_TextureCompositePatchByNum(gltexture->index);
   gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0,
                         CR_DEFAULT, !(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture);
-  R_UnlockTextureCompositePatchNum(gltexture->index);
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
@@ -1015,7 +1014,7 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite)
     return NULL;
   if (gltexture->textype==GLDT_UNREGISTERED)
   {
-    patch=R_CachePatchNum(lump);
+    patch=R_PatchByNum(lump);
     if (!patch)
       return NULL;
     gltexture->textype=GLDT_BROKEN;
@@ -1065,7 +1064,6 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite)
     gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
 
     gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*4;
-    R_UnlockPatchNum(lump);
     if (gltexture->realtexwidth>gltexture->buffer_width)
       return gltexture;
     if (gltexture->realtexheight>gltexture->buffer_height)
@@ -1114,8 +1112,8 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
     return;
   }
 
-  patch=R_CachePatchNum(gltexture->index);
-  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size,PU_STATIC,0);
+  patch=R_PatchByNum(gltexture->index);
+  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   if (gl_paletted_texture)
     memset(buffer,transparent_pal_index,gltexture->buffer_size);
   else
@@ -1149,8 +1147,6 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   gld_BuildTexture(gltexture, buffer, false, w, h);
 
   gld_SetTexClamp(gltexture, GLTEXTURE_CLAMPXY);
-
-  R_UnlockPatchNum(gltexture->index);
 }
 
 GLTexture *gld_RegisterFlat(int lump, dboolean mipmap)
@@ -1250,8 +1246,8 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
     return;
   }
 
-  flat=W_CacheLumpNum(gltexture->index);
-  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size,PU_STATIC,0);
+  flat=W_LumpByNum(gltexture->index);
+  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   if (!(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture)
     memset(buffer,transparent_pal_index,gltexture->buffer_size);
   else
@@ -1266,8 +1262,6 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
   gld_BuildTexture(gltexture, buffer, false, w, h);
 
   gld_SetTexClamp(gltexture, flags);
-
-  W_UnlockLumpNum(gltexture->index);
 }
 
 // e6y
@@ -1372,7 +1366,7 @@ void gld_Precache(void)
 
   {
     size_t size = numflats > num_sprites  ? numflats : num_sprites;
-    hitlist = Z_Malloc((size_t)numtextures > size ? (size_t)numtextures : size,PU_LEVEL,0);
+    hitlist = Z_MallocLevel((size_t)numtextures > size ? (size_t)numtextures : size);
   }
 
   // Precache flats.

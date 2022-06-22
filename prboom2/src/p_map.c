@@ -2913,7 +2913,7 @@ dboolean P_CheckSector(sector_t* sector, int crunch)
 
 #include "z_bmalloc.h"
 
-IMPLEMENT_BLOCK_MEMORY_ALLOC_ZONE(secnodezone, sizeof(msecnode_t), PU_LEVEL, 256, "SecNodes");
+IMPLEMENT_BLOCK_MEMORY_ALLOC_ZONE(secnodezone, sizeof(msecnode_t), 256, "SecNodes");
 
 //
 // P_FreeSecNodeList
@@ -2964,7 +2964,7 @@ msecnode_t *P_GetSecnode(void)
 
   return headsecnode ?
     node = headsecnode, headsecnode = node->m_snext, node :
-  (msecnode_t *)(Z_Malloc(sizeof *node, PU_LEVEL, NULL));
+  (msecnode_t *)(Z_MallocLevel(sizeof *node));
 }
 
 //

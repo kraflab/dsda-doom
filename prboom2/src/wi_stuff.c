@@ -611,13 +611,12 @@ WI_drawOnLnode  // draw stuff at a location by episode/map#
     int            top;
     int            right;
     int            bottom;
-    const rpatch_t* patch = R_CachePatchName(c[i]);
+    const rpatch_t* patch = R_PatchByName(c[i]);
 
     left = lnodes[wbs->epsd][n].x - patch->leftoffset;
     top = lnodes[wbs->epsd][n].y - patch->topoffset;
     right = left + patch->width;
     bottom = top + patch->height;
-    R_UnlockPatchName(c[i]);
 
     if (left >= 0
        && right < 320

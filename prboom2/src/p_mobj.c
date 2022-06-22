@@ -1444,7 +1444,7 @@ static PUREFUNC int P_FindDoomedNum(unsigned type)
 
   if (!hash)
   {
-    hash = Z_Malloc(sizeof *hash * num_mobj_types, PU_CACHE, (void **) &hash);
+    hash = Z_Malloc(sizeof(*hash) * num_mobj_types);
 
     for (i = 0; i < num_mobj_types; i++)
       hash[i].first = num_mobj_types;
@@ -1627,7 +1627,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   state_t*    st;
   mobjinfo_t* info;
 
-  mobj = Z_Malloc (sizeof(*mobj), PU_LEVEL, NULL);
+  mobj = Z_MallocLevel (sizeof(*mobj));
   memset (mobj, 0, sizeof (*mobj));
   info = &mobjinfo[type];
   mobj->type = type;

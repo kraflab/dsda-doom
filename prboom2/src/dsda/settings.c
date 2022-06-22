@@ -109,7 +109,7 @@ static int dsda_WadCompatibilityLevel(void) {
       const char* data;
 
       length = W_LumpLength(num);
-      data = W_CacheLumpNum(num);
+      data = W_LumpByNum(num);
 
       if (length == 7 && !strncasecmp("vanilla", data, 7)) {
         if (gamemode == commercial) {

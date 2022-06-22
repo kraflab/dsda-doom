@@ -340,14 +340,12 @@ static dboolean LoadInstrumentTable(void)
 {
     const byte *lump;
 
-    lump = (const byte*)W_CacheLumpName("GENMIDI");
+    lump = (const byte*)W_LumpByName("GENMIDI");
 
     // Check header
 
     if (strncmp((const char *) lump, GENMIDI_HEADER, strlen(GENMIDI_HEADER)) != 0)
     {
-        W_UnlockLumpName("GENMIDI");
-
         return false;
     }
 
@@ -1389,10 +1387,6 @@ static void I_OPL_ShutdownMusic(void)
         I_OPL_StopSong();
 
         OPL_Shutdown();
-
-        // Release GENMIDI lump
-
-        W_UnlockLumpName("GENMIDI");
 
         music_initialized = false;
     }

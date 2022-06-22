@@ -702,12 +702,10 @@ GLuint gld_LoadDetailName(const char *name)
     SDL_Surface *surf_raw;
 
 #ifdef HAVE_LIBSDL2_IMAGE
-    surf_raw = IMG_Load_RW(SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump)), 1);
+    surf_raw = IMG_Load_RW(SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump)), 1);
 #else
-    surf_raw = SDL_LoadBMP_RW(SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump)), 1);
+    surf_raw = SDL_LoadBMP_RW(SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump)), 1);
 #endif
-
-    W_UnlockLumpNum(lump);
 
     if (surf_raw)
     {

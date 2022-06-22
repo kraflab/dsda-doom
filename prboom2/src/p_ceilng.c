@@ -463,7 +463,7 @@ manual_ceiling://e6y
 
     // create a new ceiling thinker
     rtn = 1;
-    ceiling = Z_Malloc (sizeof(*ceiling), PU_LEVEL, 0);
+    ceiling = Z_MallocLevel (sizeof(*ceiling));
     memset(ceiling, 0, sizeof(*ceiling));
     P_AddThinker (&ceiling->thinker);
     sec->ceilingdata = ceiling;               //jff 2/22/98
@@ -706,7 +706,7 @@ static void P_SpawnZDoomCeiling(sector_t *sec, ceiling_e type, line_t *line, int
   ceiling_t *ceiling;
   fixed_t targheight = 0;
 
-  ceiling = Z_Malloc(sizeof(*ceiling), PU_LEVEL, 0);
+  ceiling = Z_MallocLevel(sizeof(*ceiling));
   memset(ceiling, 0, sizeof(*ceiling));
   P_AddThinker(&ceiling->thinker);
   sec->ceilingdata = ceiling;
@@ -979,7 +979,7 @@ int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type)
         // new door thinker
         //
         rtn = 1;
-        ceiling = Z_Malloc(sizeof(*ceiling), PU_LEVEL, 0);
+        ceiling = Z_MallocLevel(sizeof(*ceiling));
         memset(ceiling, 0, sizeof(*ceiling));
         P_AddThinker(&ceiling->thinker);
         sec->ceilingdata = ceiling;

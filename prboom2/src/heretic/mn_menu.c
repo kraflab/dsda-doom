@@ -325,7 +325,7 @@ void MN_Drawer(void)
   //   y = CurrentMenu->y + (CurrentItPos * ITEM_HEIGHT) + SELECTOR_YOFFSET;
   //   selName = (MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
   //   V_DrawPatch(x + SELECTOR_XOFFSET, y,
-  //               W_CacheLumpName(selName, PU_CACHE));
+  //               W_LumpByName(selName));
   // }
 }
 

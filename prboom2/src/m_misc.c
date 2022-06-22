@@ -138,7 +138,7 @@ int M_ReadFile(char const *name, byte **buffer)
       fseek(fp, 0, SEEK_END);
       length = ftell(fp);
       fseek(fp, 0, SEEK_SET);
-      *buffer = Z_Malloc(length, PU_STATIC, 0);
+      *buffer = Z_Malloc(length);
       if (fread(*buffer, 1, length, fp) == length)
         {
           fclose(fp);

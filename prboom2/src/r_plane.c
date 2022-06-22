@@ -581,7 +581,7 @@ static void R_DoDrawPlane(visplane_t *pl)
       // old code: dcvars.iscale = FRACUNIT*200/viewheight;
       dcvars.iscale = skyiscale;
 
-      tex_patch = R_CacheTextureCompositePatchNum(texture);
+      tex_patch = R_TextureCompositePatchByNum(texture);
 
   // killough 10/98: Use sky scrolling offset, and possibly flip picture
         for (x = pl->minx; (dcvars.x = x) <= pl->maxx; x++)
@@ -593,14 +593,12 @@ static void R_DoDrawPlane(visplane_t *pl)
               colfunc(&dcvars);
             }
 
-      R_UnlockTextureCompositePatchNum(texture);
-
     } else {     // regular flat
 
       int stop, light;
       draw_span_vars_t dsvars;
 
-      dsvars.source = W_CacheLumpNum(firstflat + flattranslation[pl->picnum]);
+      dsvars.source = W_LumpByNum(firstflat + flattranslation[pl->picnum]);
 
       if (map_format.hexen)
       {
@@ -706,8 +704,6 @@ static void R_DoDrawPlane(visplane_t *pl)
       for (x = pl->minx ; x <= stop ; x++)
          R_MakeSpans(x,pl->top[x-1],pl->bottom[x-1],
                      pl->top[x],pl->bottom[x], &dsvars);
-
-      W_UnlockLumpNum(firstflat + flattranslation[pl->picnum]);
     }
   }
 }

@@ -47,10 +47,7 @@
 #include "z_zone.h"
 #include "lprintf.h"
 
-static struct {
-  void *cache;
-  unsigned int locks;
-} *cachelump;
+static void **lump_data;
 
 /* W_InitCache
  *
@@ -59,59 +56,38 @@ static struct {
 void W_InitCache(void)
 {
   // set up caching
-  cachelump = calloc(sizeof *cachelump, numlumps);
-  if (!cachelump)
-    I_Error ("W_Init: Couldn't allocate lumpcache");
+  lump_data = calloc(sizeof *lump_data, numlumps);
+  if (!lump_data)
+    I_Error ("W_Init: Couldn't allocate lump data");
 }
 
 void W_DoneCache(void)
 {
 }
 
-/* W_CacheLumpNum
+/* W_LumpByNum
  * killough 4/25/98: simplified
  * CPhipps - modified for new lump locking scheme
  *           returns a const*
  */
 
-const void *W_CacheLumpNum(int lump)
+const void *W_LumpByNum(int lump)
 {
-  const int locks = 1;
 #ifdef RANGECHECK
   if ((unsigned)lump >= (unsigned)numlumps)
-    I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
+    I_Error ("W_LumpByNum: %i >= numlumps",lump);
 #endif
 
-  if (!cachelump[lump].cache)      // read the lump in
-    W_ReadLump(lump, Z_Malloc(W_LumpLength(lump), PU_CACHE, &cachelump[lump].cache));
-
-  /* cph - if wasn't locked but now is, tell z_zone to hold it */
-  if (!cachelump[lump].locks && locks) {
-    Z_ChangeTag(cachelump[lump].cache, PU_LOCKED);
+  // read the lump in
+  if (!lump_data[lump]) {
+    lump_data[lump] = Z_Malloc(W_LumpLength(lump));
+    W_ReadLump(lump, lump_data[lump]);
   }
-  cachelump[lump].locks += locks;
 
-  return cachelump[lump].cache;
+  return lump_data[lump];
 }
 
 const void *W_LockLumpNum(int lump)
 {
-  return W_CacheLumpNum(lump);
-}
-
-/*
- * W_UnlockLumpNum
- *
- * CPhipps - this changes (should reduce) the number of locks on a lump
- */
-
-void W_UnlockLumpNum(int lump)
-{
-  const int unlocks = 1;
-  cachelump[lump].locks -= unlocks;
-  /* cph - Note: must only tell z_zone to make purgeable if currently locked,
-   * else it might already have been purged
-   */
-  if (unlocks && !cachelump[lump].locks)
-    Z_ChangeTag(cachelump[lump].cache, PU_CACHE);
+  return W_LumpByNum(lump);
 }

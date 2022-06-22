@@ -349,8 +349,7 @@ void RejectOverrun(int rejectlump, const byte **rejectmatrix, int totallines)
   if (length < required)
   {
     // allocate a new block and copy the reject table into it; zero the rest
-    // PU_LEVEL => will be freed on level exit
-    newreject = Z_Malloc(required, PU_LEVEL, NULL);
+    newreject = Z_MallocLevel(required);
     *rejectmatrix = memmove(newreject, *rejectmatrix, length);
 
     // e6y
@@ -361,8 +360,6 @@ void RejectOverrun(int rejectlump, const byte **rejectmatrix, int totallines)
     pad = prboom_comp[PC_REJECT_PAD_WITH_FF].state ? 0xff : 0;
 
     memset(newreject + length, pad, required - length);
-    // unlock the original lump, it is no longer needed
-    W_UnlockLumpNum(rejectlump);
     rejectlump = -1;
 
     if (!hexen && demo_compatibility && PROCESS(OVERFLOW_REJECT))

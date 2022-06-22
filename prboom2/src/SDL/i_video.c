@@ -499,8 +499,8 @@ static void I_UploadNewPalette(int pal, int force)
 
     pplump = W_GetNumForName(playpal_data->lump_name);
     gtlump = (W_CheckNumForName)("GAMMATBL", ns_prboom);
-    palette = (const byte*) W_CacheLumpNum(pplump);
-    gtable = (const byte*) W_CacheLumpNum(gtlump) + 256 * (cachedgamma = usegamma);
+    palette = (const byte*) W_LumpByNum(pplump);
+    gtable = (const byte*) W_LumpByNum(gtlump) + 256 * (cachedgamma = usegamma);
 
     num_pals = W_LumpLength(pplump) / (3 * 256);
     num_pals *= 256;
@@ -519,8 +519,6 @@ static void I_UploadNewPalette(int pal, int force)
       palette += 3;
     }
 
-    W_UnlockLumpNum(pplump);
-    W_UnlockLumpNum(gtlump);
     num_pals /= 256;
   }
 

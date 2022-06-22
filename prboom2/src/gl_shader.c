@@ -83,12 +83,12 @@ void get_light_shader_bindings()
     int idx;
 
     light_unifs.lightlevel_index = GLEXT_glGetUniformLocationARB(sh_main->hShader, "lightlevel");
-  
+
     GLEXT_glUseProgramObjectARB(sh_main->hShader);
-  
+
     idx = GLEXT_glGetUniformLocationARB(sh_main->hShader, "tex");
     GLEXT_glUniform1iARB(idx, 0);
-  
+
     GLEXT_glUseProgramObjectARB(0);
   }
 }
@@ -174,11 +174,10 @@ static int ReadLump(const char *filename, const char *lumpname, unsigned char **
     if (lump != -1)
     {
       size = W_LumpLength(lump);
-      data = W_CacheLumpNum(lump);
+      data = W_LumpByNum(lump);
       *buffer = calloc(1, size + 1);
       memcpy (*buffer, data, size);
       (*buffer)[size] = 0;
-      W_UnlockLumpNum(lump);
     }
   }
 
@@ -273,7 +272,7 @@ void glsl_SetFuzzShaderActive()
   if (active_shader != sh_fuzz)
   {
     GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
-    active_shader = sh_fuzz;  
+    active_shader = sh_fuzz;
   }
 }
 
@@ -302,7 +301,7 @@ void glsl_SetFuzzTime(int time)
   if (sh_fuzz)
   {
     if (active_shader != sh_fuzz)
-    {        
+    {
       prev_active_shader = active_shader;
       glsl_SetFuzzShaderActive();
     }
@@ -330,7 +329,7 @@ void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight)
   if (sh_fuzz)
   {
     if (active_shader != sh_fuzz)
-    {        
+    {
       prev_active_shader = active_shader;
       glsl_SetFuzzShaderActive();
     }
@@ -357,7 +356,7 @@ void glsl_SetFuzzTextureDimensions(float texwidth, float texheight)
   if (sh_fuzz)
   {
     if (active_shader != sh_fuzz)
-    {        
+    {
       prev_active_shader = active_shader;
       glsl_SetFuzzShaderActive();
     }

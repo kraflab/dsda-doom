@@ -242,12 +242,10 @@ static dboolean CheckForIdentifier(int lumpnum, const byte *id, size_t length)
 
   if (W_LumpLength(lumpnum) >= length)
   {
-    const char *data = W_CacheLumpNum(lumpnum);
+    const char *data = W_LumpByNum(lumpnum);
 
     if (!memcmp(data, id, length))
       result = true;
-
-    W_UnlockLumpNum(lumpnum);
   }
 
   return result;
@@ -380,7 +378,7 @@ static void P_LoadVertexes (int lump)
 
   // Load data into cache.
   // cph 2006/07/29 - cast to mapvertex_t here, making the loop below much neater
-  data = (const mapvertex_t *)W_CacheLumpNum(lump);
+  data = (const mapvertex_t *)W_LumpByNum(lump);
 
   // Copy and convert vertex coordinates,
   // internal representation as fixed.
@@ -389,9 +387,6 @@ static void P_LoadVertexes (int lump)
       vertexes[i].x = LittleShort(data[i].x)<<FRACBITS;
       vertexes[i].y = LittleShort(data[i].y)<<FRACBITS;
     }
-
-  // Free buffer memory.
-  W_UnlockLumpNum(lump);
 }
 
 /*******************************************
@@ -415,7 +410,7 @@ static void P_LoadVertexes2(int lump, int gllump)
 
   if (gllump >= 0)  // check for glVertices
   {
-    gldata = W_CacheLumpNum(gllump);
+    gldata = W_LumpByNum(gllump);
 
     if (nodesVersion == 2) // 32 bit GL_VERT format (16.16 fixed)
     {
@@ -445,10 +440,9 @@ static void P_LoadVertexes2(int lump, int gllump)
         ml++;
       }
     }
-    W_UnlockLumpNum(gllump);
   }
 
-  ml = (const mapvertex_t*) W_CacheLumpNum(lump);
+  ml = (const mapvertex_t*) W_LumpByNum(lump);
 
   for (i=0; i < firstglvertex; i++)
   {
@@ -456,7 +450,6 @@ static void P_LoadVertexes2(int lump, int gllump)
     vertexes[i].y = LittleShort(ml->y)<<FRACBITS;
     ml++;
   }
-  W_UnlockLumpNum(lump);
 }
 
 
@@ -513,7 +506,7 @@ static void P_LoadSegs (int lump)
 
   numsegs = W_LumpLength(lump) / sizeof(mapseg_t);
   segs = calloc_IfSameLevel(segs, numsegs, sizeof(seg_t));
-  data = (const mapseg_t *)W_CacheLumpNum(lump); // cph - wad lump handling updated
+  data = (const mapseg_t *)W_LumpByNum(lump); // cph - wad lump handling updated
 
   if ((!data) || (!numsegs))
     I_Error("P_LoadSegs: no segs in level");
@@ -644,8 +637,6 @@ static void P_LoadSegs (int lump)
       // of DV.wad, map 5
       li->offset = GetOffset(li->v1, (ml->side ? ldef->v2 : ldef->v1));
     }
-
-  W_UnlockLumpNum(lump); // cph - release the data
 }
 
 static void P_LoadSegs_V4(int lump)
@@ -655,7 +646,7 @@ static void P_LoadSegs_V4(int lump)
 
   numsegs = W_LumpLength(lump) / sizeof(mapseg_v4_t);
   segs = calloc_IfSameLevel(segs, numsegs, sizeof(seg_t));
-  data = (const mapseg_v4_t *)W_CacheLumpNum(lump);
+  data = (const mapseg_v4_t *)W_LumpByNum(lump);
 
   if ((!data) || (!numsegs))
     I_Error("P_LoadSegs_V4: no segs in level");
@@ -766,8 +757,6 @@ static void P_LoadSegs_V4(int lump)
     // of DV.wad, map 5
     li->offset = GetOffset(li->v1, (ml->side ? ldef->v2 : ldef->v1));
   }
-
-  W_UnlockLumpNum(lump); // cph - release the data
 }
 
 
@@ -787,7 +776,7 @@ static void P_LoadGLSegs(int lump)
   numsegs = W_LumpLength(lump) / sizeof(glseg_t);
   segs = malloc_IfSameLevel(segs, numsegs * sizeof(seg_t));
   memset(segs, 0, numsegs * sizeof(seg_t));
-  ml = (const glseg_t*)W_CacheLumpNum(lump);
+  ml = (const glseg_t*)W_LumpByNum(lump);
 
   if ((!ml) || (!numsegs))
     I_Error("P_LoadGLSegs: no glsegs in level");
@@ -828,7 +817,6 @@ static void P_LoadGLSegs(int lump)
     }
     ml++;
   }
-  W_UnlockLumpNum(lump);
 }
 
 //
@@ -844,7 +832,7 @@ static void P_LoadSubsectors (int lump)
 
   numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_t);
   subsectors = calloc_IfSameLevel(subsectors, numsubsectors, sizeof(subsector_t));
-  data = (const mapsubsector_t *)W_CacheLumpNum(lump);
+  data = (const mapsubsector_t *)W_LumpByNum(lump);
 
   if ((!data) || (!numsubsectors))
     I_Error("P_LoadSubsectors: no subsectors in level");
@@ -855,8 +843,6 @@ static void P_LoadSubsectors (int lump)
     subsectors[i].numlines  = (unsigned short)LittleShort(data[i].numsegs );
     subsectors[i].firstline = (unsigned short)LittleShort(data[i].firstseg);
   }
-
-  W_UnlockLumpNum(lump); // cph - release the data
 }
 
 static void P_LoadSubsectors_V4(int lump)
@@ -867,7 +853,7 @@ static void P_LoadSubsectors_V4(int lump)
 
   numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_v4_t);
   subsectors = calloc_IfSameLevel(subsectors, numsubsectors, sizeof(subsector_t));
-  data = (const mapsubsector_v4_t *)W_CacheLumpNum(lump);
+  data = (const mapsubsector_v4_t *)W_LumpByNum(lump);
 
   if ((!data) || (!numsubsectors))
     I_Error("P_LoadSubsectors_V4: no subsectors in level");
@@ -878,8 +864,6 @@ static void P_LoadSubsectors_V4(int lump)
     subsectors[i].numlines = (unsigned short)LittleShort(data[i].numsegs);
     subsectors[i].firstline = LittleLong(data[i].firstseg);
   }
-
-  W_UnlockLumpNum(lump); // cph - release the data
 }
 
 //
@@ -894,7 +878,7 @@ static void P_LoadSectors (int lump)
 
   numsectors = W_LumpLength (lump) / sizeof(mapsector_t);
   sectors = calloc_IfSameLevel(sectors, numsectors, sizeof(sector_t));
-  data = W_CacheLumpNum (lump); // cph - wad lump handling updated
+  data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   for (i=0; i<numsectors; i++)
     {
@@ -947,8 +931,6 @@ static void P_LoadSectors (int lump)
       // zdoom
       ss->gravity = GRAVITY;
     }
-
-  W_UnlockLumpNum(lump); // cph - release the data
 }
 
 
@@ -964,7 +946,7 @@ static void P_LoadNodes (int lump)
 
   numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
   nodes = malloc_IfSameLevel(nodes, numnodes * sizeof(node_t));
-  data = W_CacheLumpNum (lump); // cph - wad lump handling updated
+  data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   if ((!data) || (!numnodes))
   {
@@ -1017,8 +999,6 @@ static void P_LoadNodes (int lump)
             no->bbox[j][k] = LittleShort(mn->bbox[j][k])<<FRACBITS;
         }
     }
-
-  W_UnlockLumpNum(lump); // cph - release the data
 }
 
 static void P_LoadNodes_V4(int lump)
@@ -1028,7 +1008,7 @@ static void P_LoadNodes_V4(int lump)
 
   numnodes = (W_LumpLength (lump) - 8) / sizeof(mapnode_v4_t);
   nodes = malloc_IfSameLevel(nodes, numnodes * sizeof(node_t));
-  data = W_CacheLumpNum (lump); // cph - wad lump handling updated
+  data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   // skip header
   data = data + 8;
@@ -1063,8 +1043,6 @@ static void P_LoadNodes_V4(int lump)
             no->bbox[j][k] = LittleShort(mn->bbox[j][k])<<FRACBITS;
         }
     }
-
-  W_UnlockLumpNum(lump); // cph - release the data
 }
 
 static void CheckZNodesOverflow(int *size, int count)
@@ -1169,7 +1147,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
   byte *output;
 #endif
 
-  data = W_CacheLumpNum(lump);
+  data = W_LumpByNum(lump);
   len =  W_LumpLength(lump);
 
   if (compressed == ZDOOM_ZNOD_NODES)
@@ -1181,7 +1159,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	// first estimate for compression rate:
 	// output buffer size == 2.5 * input size
 	outlen = 2.5 * len;
-	output = Z_Malloc(outlen, PU_STATIC, 0);
+	output = Z_Malloc(outlen);
 
 	// initialize stream state for decompression
 	zstream = malloc(sizeof(*zstream));
@@ -1221,8 +1199,6 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	if (inflateEnd(zstream) != Z_OK)
 	    I_Error("P_LoadZNodes: Error during ZDoom nodes decompression shut-down!");
 
-	// release the original data lump
-	W_UnlockLumpNum(lump);
 	free(zstream);
 #else
 	I_Error("P_LoadZNodes: Compressed ZDoom nodes are not supported!");
@@ -1372,9 +1348,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 #ifdef HAVE_LIBZ
   if (compressed == ZDOOM_ZNOD_NODES)
     Z_Free(output);
-  else
 #endif
-  W_UnlockLumpNum(lump); // cph - release the data
 }
 
 #ifdef GL_DOOM
@@ -1409,7 +1383,7 @@ static void P_LoadThings (int lump)
   mobj_t **mobjlist;
 
   numthings = W_LumpLength (lump) / map_format.mapthing_size;
-  data = W_CacheLumpNum(lump);
+  data = W_LumpByNum(lump);
   doom_data = (const doom_mapthing_t*) data;
   mobjlist = malloc(numthings * sizeof(mobjlist[0]));
 
@@ -1476,8 +1450,6 @@ static void P_LoadThings (int lump)
   {
     P_InitCreatureCorpseQueue(false);   // false = do NOT scan for corpses
   }
-
-  W_UnlockLumpNum(lump); // cph - release the data
 
 #ifdef GL_DOOM
   if (V_IsOpenGLMode())
@@ -1634,7 +1606,7 @@ static void P_LoadLineDefs (int lump)
 
   numlines = W_LumpLength (lump) / map_format.maplinedef_size;
   lines = calloc_IfSameLevel(lines, numlines, sizeof(line_t));
-  data = W_CacheLumpNum (lump); // cph - wad lump handling updated
+  data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   for (i=0; i<numlines; i++)
     {
@@ -1767,8 +1739,6 @@ static void P_LoadLineDefs (int lump)
       if (ld->sidenum[0] != NO_INDEX && ld->special)
         sides[*ld->sidenum].special = ld->special;
     }
-
-  W_UnlockLumpNum(lump); // cph - release the lump
 }
 
 void P_PostProcessCompatibleLineSpecial(line_t *ld)
@@ -2002,7 +1972,7 @@ void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, secto
 
 static void P_LoadSideDefs2(int lump)
 {
-  const byte *data = W_CacheLumpNum(lump); // cph - const*, wad lump handling updated
+  const byte *data = W_LumpByNum(lump); // cph - const*, wad lump handling updated
   int  i;
 
   for (i=0; i<numsides; i++)
@@ -2025,8 +1995,6 @@ static void P_LoadSideDefs2(int lump)
 
     map_format.post_process_sidedef_special(sd, msd, sec, i);
   }
-
-  W_UnlockLumpNum(lump); // cph - release the lump
 }
 
 //
@@ -2435,7 +2403,7 @@ static void P_LoadBlockMap (int lump)
   {
     long i;
     // cph - const*, wad lump handling updated
-    const short *wadblockmaplump = W_CacheLumpNum(lump);
+    const short *wadblockmaplump = W_LumpByNum(lump);
     blockmaplump = malloc_IfSameLevel(blockmaplump, sizeof(*blockmaplump) * count);
 
     // killough 3/1/98: Expand wad blockmap into larger internal one,
@@ -2453,8 +2421,6 @@ static void P_LoadBlockMap (int lump)
       short t = LittleShort(wadblockmaplump[i]);          // killough 3/1/98
       blockmaplump[i] = t == -1 ? -1l : (long) t & 0xffff;
     }
-
-    W_UnlockLumpNum(lump); // cph - unlock the lump
 
     bmaporgx = blockmaplump[0]<<FRACBITS;
     bmaporgy = blockmaplump[1]<<FRACBITS;
@@ -2496,11 +2462,8 @@ static void P_LoadBlockMap (int lump)
 
 static void P_LoadReject(int lumpnum, int totallines)
 {
-  // dump any old cached reject lump, then cache the new one
-  if (rejectlump != -1)
-    W_UnlockLumpNum(rejectlump);
   rejectlump = lumpnum + ML_REJECT;
-  rejectmatrix = W_CacheLumpNum(rejectlump);
+  rejectmatrix = W_LumpByNum(rejectlump);
 
   //e6y: check for overflow
   RejectOverrun(rejectlump, &rejectmatrix, totallines);
@@ -2563,7 +2526,7 @@ static int P_GroupLines (void)
   }
 
   {  // allocate line tables for each sector
-    line_t **linebuffer = Z_Malloc(total*sizeof(line_t *), PU_LEVEL, 0);
+    line_t **linebuffer = Z_MallocLevel(total*sizeof(line_t *));
     // e6y: REJECT overrun emulation code
     // moved to P_LoadReject
 
@@ -2982,11 +2945,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // Make sure all sounds are stopped before Z_FreeTag.
   S_Start();
 
-  Z_FreeTag(PU_LEVEL);
-  if (rejectlump != -1) { // cph - unlock the reject table
-    W_UnlockLumpNum(rejectlump);
-    rejectlump = -1;
-  }
+  Z_FreeLevel();
+  rejectlump = -1;
 
   P_InitThinkers();
 
@@ -3017,11 +2977,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   // figgi 10/19/00 -- check for gl lumps and load them
   P_GetNodesVersion(lumpnum,gl_lumpnum);
-
-  // e6y: speedup of level reloading
-  // Most of level's structures now are allocated with PU_STATIC instead of PU_LEVEL
-  // It is important for OpenGL, because in case of the same data in memory
-  // we can skip recalculation of much stuff
 
   samelevel =
     (map == current_map) &&

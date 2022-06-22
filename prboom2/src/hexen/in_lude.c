@@ -145,7 +145,7 @@ static void InitStats(void)
                 {
                     I_Error("Cluster message too long (%s)", msgLumpName);
                 }
-                memcpy(ClusterMessage, W_CacheLumpNum(msgLump), msgSize);
+                memcpy(ClusterMessage, W_LumpByNum(msgLump), msgSize);
                 ClusterMessage[msgSize] = '\0';    // Append terminator
                 HubText = ClusterMessage;
                 HubCount = strlen(HubText) * TEXTSPEED + TEXTWAIT;

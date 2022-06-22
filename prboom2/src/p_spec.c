@@ -202,7 +202,7 @@ void P_InitPicAnims (void)
   {
     lump = W_GetNumForName("ANIMATED"); // cph - new wad lump handling
     //jff 3/23/98 read from predefined or wad lump instead of table
-    animdefs = (const animdef_t *)W_CacheLumpNum(lump);
+    animdefs = (const animdef_t *)W_LumpByNum(lump);
   }
 
   lastanim = anims;
@@ -247,7 +247,6 @@ void P_InitPicAnims (void)
     lastanim++;
   }
 
-  if (lump != -1) W_UnlockLumpNum(lump);
   MarkAnimatedTextures();//e6y
 }
 
@@ -3148,7 +3147,7 @@ void P_UpdateSpecials (void)
 static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
                          int control, int affectee, int accel)
 {
-  scroll_t *s = Z_Malloc(sizeof *s, PU_LEVEL, 0);
+  scroll_t *s = Z_MallocLevel(sizeof *s);
   s->thinker.function = T_Scroll;
   s->type = type;
   s->dx = dx;
@@ -4214,7 +4213,7 @@ static void P_SpawnScrollers(void)
 
 static void Add_Friction(int friction, int movefactor, int affectee)
 {
-    friction_t *f = Z_Malloc(sizeof *f, PU_LEVEL, 0);
+    friction_t *f = Z_MallocLevel(sizeof *f);
 
     f->thinker.function/*.acp1*/ = /*(actionf_p1) */T_Friction;
     f->friction = friction;
@@ -4471,7 +4470,7 @@ static void P_SpawnFriction(void)
 
 static void Add_Pusher(int type, int x_mag, int y_mag, mobj_t* source, int affectee)
 {
-    pusher_t *p = Z_Malloc(sizeof *p, PU_LEVEL, 0);
+    pusher_t *p = Z_MallocLevel(sizeof *p);
 
     p->thinker.function = T_Pusher;
     p->source = source;
@@ -5082,7 +5081,7 @@ void P_InitTerrainTypes(void)
     if (!raven) return;
 
     size = (numflats + 1) * sizeof(int);
-    TerrainTypes = Z_Malloc(size, PU_STATIC, 0);
+    TerrainTypes = Z_Malloc(size);
     memset(TerrainTypes, 0, size);
     for (i = 0; TerrainTypeDefs[hexen][i].type != -1; i++)
     {

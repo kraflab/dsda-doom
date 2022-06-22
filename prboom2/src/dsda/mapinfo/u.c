@@ -469,7 +469,7 @@ void dsda_ULoadMapInfo(void) {
 
   p = -1;
   while ((p = W_ListNumFromName("UMAPINFO", p)) >= 0) {
-    const unsigned char * lump = (const unsigned char *) W_CacheLumpNum(p);
+    const unsigned char * lump = (const unsigned char *) W_LumpByNum(p);
     ParseUMapInfo(lump, W_LumpLength(p), I_Error);
   }
 }

@@ -1578,7 +1578,7 @@ static void G_PlayerFinishLevel(int player)
 
   memset(p->powers, 0, sizeof p->powers);
   memset(p->cards, 0, sizeof p->cards);
-  p->mo = NULL;           // cph - this is allocated PU_LEVEL so it's gone
+  p->mo = NULL;           // cph - this is zone-allocated so it's gone
   p->extralight = 0;      // cancel gun flashes
   p->fixedcolormap = 0;   // cancel ir gogles
   p->damagecount = 0;     // no palette changes
@@ -2070,10 +2070,9 @@ static uint_64_t G_UpdateSignature(uint_64_t s, const char *name)
     do
       {
   int size = W_LumpLength(i);
-  const byte *p = W_CacheLumpNum(i);
+  const byte *p = W_LumpByNum(i);
   while (size--)
     s <<= 1, s += *p++;
-  W_UnlockLumpNum(i);
       }
     while (--i > lump);
   return s;
@@ -3929,8 +3928,6 @@ dboolean G_CheckDemoStatus (void)
       I_SafeExit(0);  // killough
 
     if (demolumpnum != -1) {
-      // cph - unlock the demo lump
-      W_UnlockLumpNum(demolumpnum);
       demolumpnum = -1;
     }
     G_ReloadDefaults();    // killough 3/1/98

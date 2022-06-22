@@ -503,7 +503,7 @@ manual_floor://e6y
 
     // new floor thinker
     rtn = 1;
-    floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
+    floor = Z_MallocLevel (sizeof(*floor));
     memset(floor, 0, sizeof(*floor));
     P_AddThinker (&floor->thinker);
     sec->floordata = floor; //jff 2/22/98
@@ -815,7 +815,7 @@ manual_stair://e6y
 
     // create new floor thinker for first step
     rtn = 1;
-    floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
+    floor = Z_MallocLevel (sizeof(*floor));
     memset(floor, 0, sizeof(*floor));
     P_AddThinker (&floor->thinker);
     sec->floordata = floor;
@@ -932,7 +932,7 @@ manual_stair://e6y
         secnum = newsecnum;
 
         // create and initialize a thinker for the next step
-        floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
+        floor = Z_MallocLevel (sizeof(*floor));
         memset(floor, 0, sizeof(*floor));
         P_AddThinker (&floor->thinker);
 
@@ -1075,7 +1075,7 @@ int P_SpawnDonut(int secnum, line_t *line, fixed_t pillarspeed, fixed_t slimespe
     }
 
     //  Spawn rising slime
-    floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+    floor = Z_MallocLevel(sizeof(*floor));
     memset(floor, 0, sizeof(*floor));
     P_AddThinker(&floor->thinker);
     s2->floordata = floor; //jff 2/22/98
@@ -1089,7 +1089,7 @@ int P_SpawnDonut(int secnum, line_t *line, fixed_t pillarspeed, fixed_t slimespe
     floor->floordestheight = s3_floorheight;
 
     //  Spawn lowering donut-hole pillar
-    floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+    floor = Z_MallocLevel(sizeof(*floor));
     memset(floor, 0, sizeof(*floor));
     P_AddThinker(&floor->thinker);
     s1->floordata = floor; //jff 2/22/98
@@ -1143,7 +1143,7 @@ void P_SpawnElevator(sector_t *sec, line_t *line, elevator_e type, fixed_t speed
 {
   elevator_t *elevator;
 
-  elevator = Z_Malloc(sizeof(*elevator), PU_LEVEL, 0);
+  elevator = Z_MallocLevel(sizeof(*elevator));
   memset(elevator, 0, sizeof(*elevator));
   P_AddThinker(&elevator->thinker);
   sec->floordata = elevator; //jff 2/22/98
@@ -1268,7 +1268,7 @@ static void P_SpawnZDoomFloor(sector_t *sec, floor_e floortype, line_t *line,
 {
   floormove_t *floor;
 
-  floor = Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
+  floor = Z_MallocLevel (sizeof(*floor));
   memset(floor, 0, sizeof(*floor));
   P_AddThinker(&floor->thinker);
   sec->floordata = floor;
@@ -1464,7 +1464,7 @@ int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype)
         //      new floor thinker
         //
         rtn = 1;
-        floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+        floor = Z_MallocLevel(sizeof(*floor));
         memset(floor, 0, sizeof(*floor));
         P_AddThinker(&floor->thinker);
         sec->floordata = floor;
@@ -1662,7 +1662,7 @@ static void ProcessStairSector(sector_t * sec, int type, int height,
     // new floor thinker
     //
     height += StepDelta;
-    floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+    floor = Z_MallocLevel(sizeof(*floor));
     memset(floor, 0, sizeof(*floor));
     P_AddThinker(&floor->thinker);
     sec->floordata = floor;
@@ -1761,7 +1761,7 @@ static void P_SpawnZDoomStair(sector_t *sec, stair_e type, fixed_t stairstep,
 {
   floormove_t *floor;
 
-  floor = Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+  floor = Z_MallocLevel(sizeof(*floor));
   memset(floor, 0, sizeof(*floor));
   P_AddThinker(&floor->thinker);
   sec->floordata = floor;
@@ -2060,7 +2060,7 @@ void P_SpawnZDoomPillar(sector_t *sec, pillar_e type, fixed_t speed,
   pillar_t *pillar;
   fixed_t newheight;
 
-  pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, 0);
+  pillar = Z_MallocLevel(sizeof(*pillar));
   memset(pillar, 0, sizeof(*pillar));
   sec->floordata = pillar;
   sec->ceilingdata = pillar;
@@ -2176,7 +2176,7 @@ int EV_BuildPillar(line_t * line, byte * args, int crush)
             newHeight = sec->floorheight + (args[2] << FRACBITS);
         }
 
-        pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, 0);
+        pillar = Z_MallocLevel(sizeof(*pillar));
         memset(pillar, 0, sizeof(*pillar));
         sec->floordata = pillar;
         P_AddThinker(&pillar->thinker);
@@ -2233,7 +2233,7 @@ int EV_OpenPillar(line_t * line, byte * args)
             continue;
         }
         rtn = 1;
-        pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, 0);
+        pillar = Z_MallocLevel(sizeof(*pillar));
         memset(pillar, 0, sizeof(*pillar));
         sec->floordata = pillar;
         P_AddThinker(&pillar->thinker);
@@ -2389,7 +2389,7 @@ static void P_SpawnPlaneWaggle(sector_t *sector, int height, int speed,
 {
   planeWaggle_t *waggle;
 
-  waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, 0);
+  waggle = Z_MallocLevel(sizeof(*waggle));
   memset(waggle, 0, sizeof(*waggle));
   if (ceiling)
   {

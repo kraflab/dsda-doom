@@ -106,7 +106,7 @@ int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
   }
   else
   {
-    buf = W_CacheLumpNum(num);
+    buf = W_LumpByNum(num);
     len = W_LumpLength(num);
   }
 
@@ -325,7 +325,7 @@ void R_DemoEx_ShowComment(void)
   if (count <= 0)
     return;
 
-  ch = W_CacheLumpNum(lump);
+  ch = W_LumpByNum(lump);
 
   for ( ; count ; count-- )
   {
@@ -354,8 +354,6 @@ void R_DemoEx_ShowComment(void)
     V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_DEFAULT, VPT_STRETCH);
     cx += w;
   }
-
-  W_UnlockLumpNum(lump);
 }
 
 angle_t R_DemoEx_ReadMLook(void)
@@ -378,7 +376,7 @@ angle_t R_DemoEx_ReadMLook(void)
       mlook_lump.lump = W_CheckNumForName(mlook_lump.name);
       if (mlook_lump.lump != -1)
       {
-        const unsigned char *data = W_CacheLumpName(mlook_lump.name);
+        const unsigned char *data = W_LumpByName(mlook_lump.name);
         int size = W_LumpLength(mlook_lump.lump);
 
         mlook_lump.maxtick = size / sizeof(mlook_lump.data[0]);
@@ -439,7 +437,7 @@ static int R_DemoEx_GetVersion(void)
     if (size > 0)
     {
       size_t len = MIN(size, sizeof(str_ver) - 1);
-      data = W_CacheLumpNum(lump);
+      data = W_LumpByNum(lump);
       strncpy(str_ver, data, len);
       str_ver[len] = 0;
 
@@ -448,7 +446,6 @@ static int R_DemoEx_GetVersion(void)
         result = ver;
       }
     }
-    W_UnlockLumpNum(lump);
   }
 
   return result;
@@ -475,7 +472,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
   if (!str)
     return;
 
-  data = W_CacheLumpNum(lump);
+  data = W_LumpByNum(lump);
   strncpy(str, data, size);
 
   M_ParseCmdLine(str, NULL, NULL, &paramscount, &i);
@@ -627,7 +624,6 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
     free(params);
   }
 
-  W_UnlockLumpNum(lump);
   free(str);
 }
 
@@ -1098,7 +1094,7 @@ static int G_ReadDemoFooter(const char *filename)
         //add demoex.wad to the wads list
         D_AddFile(demoex_filename, source_auto_load);
 
-        //cache demoex.wad for immediately getting its data with W_CacheLumpName
+        //cache demoex.wad for immediately getting its data with W_LumpByName
         W_Init();
 
         WadDataInit(&waddata);

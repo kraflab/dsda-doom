@@ -1662,7 +1662,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
   else  // DEH file comes from lump indicated by third argument
   {
     infile.size = W_LumpLength(lumpnum);
-    infile.inp = infile.lump = W_CacheLumpNum(lumpnum);
+    infile.inp = infile.lump = W_LumpByNum(lumpnum);
     // [FG] skip empty DEHACKED lumps
     if (!infile.inp)
     {
@@ -1752,9 +1752,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
     filepos = dehftell(filein);
   }
 
-  if (infile.lump)
-    W_UnlockLumpNum(lumpnum);                 // Mark purgable
-  else
+  if (!infile.lump)
     fclose(infile.f);                         // Close real file
 
   if (outfilename)   // killough 10/98: only at top recursion level
