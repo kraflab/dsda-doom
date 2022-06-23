@@ -2260,7 +2260,7 @@ void G_DoLoadGame(void)
     {
       if (!forced_loadgame)
       {
-        char *msg = malloc(strlen((char*)save_p + sizeof checksum) + 128);
+        char *msg = Z_Malloc(strlen((char*)save_p + sizeof checksum) + 128);
         strcpy(msg,"Incompatible Savegame!!!\n");
         if (save_p[sizeof checksum])
           strcat(strcat(msg,"Wads expected:\n\n"), (char*)save_p + sizeof checksum);
@@ -2439,7 +2439,7 @@ static void G_DoSaveGame(dboolean via_cmd)
 
   description = savedescription;
 
-  save_p = savebuffer = malloc(savegamesize);
+  save_p = savebuffer = Z_Malloc(savegamesize);
 
   CheckSaveGame(SAVESTRINGSIZE+VERSIONSIZE+sizeof(uint_64_t));
   memcpy (save_p, description, SAVESTRINGSIZE);
@@ -3288,7 +3288,7 @@ void G_BeginRecording (void)
 {
   int i;
   byte *demostart, *demo_p;
-  demostart = demo_p = malloc(1000);
+  demostart = demo_p = Z_Malloc(1000);
   longtics = 0;
 
   dsda_ResetDemoSaveSlots();

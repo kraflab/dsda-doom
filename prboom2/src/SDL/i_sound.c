@@ -229,7 +229,7 @@ static wav_data_t *GetWavData(int sfxid, const unsigned char *data, size_t len)
       return NULL;
     }
 
-    target = malloc(sizeof(*target));
+    target = Z_Malloc(sizeof(*target));
 
     target->sfxid = sfxid;
     target->data = wav_buffer;
@@ -1311,7 +1311,7 @@ static int RegisterSongEx (const void *data, size_t len, int try_mus2mid)
       mem_get_buf(outstream, &outbuf, &outbuf_len);
 
       // recopy so we can free the MEMFILE
-      mus2mid_conversion_data = malloc (outbuf_len);
+      mus2mid_conversion_data = Z_Malloc (outbuf_len);
       if (mus2mid_conversion_data)
         memcpy (mus2mid_conversion_data, outbuf, outbuf_len);
 

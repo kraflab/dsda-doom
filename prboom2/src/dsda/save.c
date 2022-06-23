@@ -131,7 +131,7 @@ char* dsda_SaveGameName(int slot, dboolean via_cmd) {
 
   length = strlen(save_type) + strlen(save_dir) + 10; // "/" + "9999.dsg\0"
 
-  name = malloc(length);
+  name = Z_Malloc(length);
 
   snprintf(name, length, "%s/%s%d.dsg", save_dir, save_type, slot);
 

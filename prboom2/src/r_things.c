@@ -241,7 +241,7 @@ static void R_InitSpriteDefs(const char * const * namelist)
   // Create hash table based on just the first four letters of each sprite
   // killough 1/31/98
 
-  hash = malloc(sizeof(*hash)*numentries); // allocate hash table
+  hash = Z_Malloc(sizeof(*hash)*numentries); // allocate hash table
 
   for (i=0; (size_t)i<numentries; i++)             // initialize hash table as empty
     hash[i].index = -1;
@@ -1377,7 +1377,7 @@ void R_SortVisSprites (void)
       if (num_vissprite_ptrs < num_vissprite*2)
         {
           Z_Free(vissprite_ptrs);  // better than realloc -- no preserving needed
-          vissprite_ptrs = malloc((num_vissprite_ptrs = num_vissprite_alloc*2)
+          vissprite_ptrs = Z_Malloc((num_vissprite_ptrs = num_vissprite_alloc*2)
                                   * sizeof *vissprite_ptrs);
         }
 

@@ -558,7 +558,7 @@ void gld_GetSkyCapColors(void)
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
 
-  buffer = malloc(width * height * 4);
+  buffer = Z_Malloc(width * height * 4);
   glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
   averageColor(ceiling_rgb, (unsigned int*)buffer, width * MIN(30, height), 0);
@@ -670,9 +670,9 @@ static void gld_BuildSky(int row_count, int col_count, SkyBoxParams_t *sky, int 
   if (!vbo->data)
   {
     memset(vbo, 0, sizeof(vbo[0]));
-    vbo->loops = malloc((row_count * 2 + 2) * sizeof(vbo->loops[0]));
+    vbo->loops = Z_Malloc((row_count * 2 + 2) * sizeof(vbo->loops[0]));
     // create vertex array
-    vbo->data = malloc(vertex_count * sizeof(vbo->data[0]));
+    vbo->data = Z_Malloc(vertex_count * sizeof(vbo->data[0]));
   }
 
   vbo->columns = col_count;

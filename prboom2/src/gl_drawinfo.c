@@ -101,7 +101,7 @@ static void gld_AddDrawRange(int size)
     gld_drawinfo.maxsize * sizeof(gld_drawinfo.data[0]));
 
   gld_drawinfo.data[gld_drawinfo.size].maxsize = size;
-  gld_drawinfo.data[gld_drawinfo.size].data = malloc(size);
+  gld_drawinfo.data[gld_drawinfo.size].data = Z_Malloc(size);
   gld_drawinfo.data[gld_drawinfo.size].size = 0;
 }
 

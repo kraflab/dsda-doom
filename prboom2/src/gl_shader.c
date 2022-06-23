@@ -151,7 +151,7 @@ static int ReadLump(const char *filename, const char *lumpname, unsigned char **
     fseek(file, 0, SEEK_END);
     size = ftell(file);
     fseek(file, 0, SEEK_SET);
-    *buffer = malloc(size + 1);
+    *buffer = Z_Malloc(size + 1);
     size = fread(*buffer, 1, size, file);
     if (size > 0)
     {
@@ -199,7 +199,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
   vp_fnlen = doom_snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
   fp_fnlen = doom_snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), fpname);
-  filename = malloc(MAX(vp_fnlen, fp_fnlen) + 1);
+  filename = Z_Malloc(MAX(vp_fnlen, fp_fnlen) + 1);
 
   sprintf(filename, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
   vp_size = ReadLump(filename, vpname, (unsigned char**) &vp_data);

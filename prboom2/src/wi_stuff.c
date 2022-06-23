@@ -1731,9 +1731,9 @@ void WI_initStats(void)
   sp_state = 1;
 
   // CPhipps - allocate (awful code, I know, but saves changing it all) and initialise
-  *(cnt_kills = malloc(sizeof(*cnt_kills))) =
-  *(cnt_items = malloc(sizeof(*cnt_items))) =
-  *(cnt_secret= malloc(sizeof(*cnt_secret))) = -1;
+  *(cnt_kills = Z_Malloc(sizeof(*cnt_kills))) =
+  *(cnt_items = Z_Malloc(sizeof(*cnt_items))) =
+  *(cnt_secret= Z_Malloc(sizeof(*cnt_secret))) = -1;
   cnt_time = cnt_par = cnt_total_time = -1;
   cnt_pause = TICRATE;
 

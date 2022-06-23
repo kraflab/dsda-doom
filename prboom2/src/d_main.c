@@ -594,7 +594,7 @@ static void D_DoomLoop(void)
       char *avi_shot_curr_fname;
       avi_shot_num++;
       len = snprintf(NULL, 0, "%s%06d.tga", avi_shot_fname, avi_shot_num);
-      avi_shot_curr_fname = malloc(len+1);
+      avi_shot_curr_fname = Z_Malloc(len+1);
       sprintf(avi_shot_curr_fname, "%s%06d.tga", avi_shot_fname, avi_shot_num);
       M_DoScreenShot(avi_shot_curr_fname);
       Z_Free(avi_shot_curr_fname);
@@ -818,7 +818,7 @@ void D_AddFile (const char *file, wad_source_t source)
 
   wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
   wadfiles[numwadfiles].name =
-    AddDefaultExtension(strcpy(malloc(strlen(file)+5), file), ".wad");
+    AddDefaultExtension(strcpy(Z_Malloc(strlen(file)+5), file), ".wad");
   wadfiles[numwadfiles].src = source; // Ty 08/29/98
   wadfiles[numwadfiles].handle = 0;
 
@@ -830,7 +830,7 @@ void D_AddFile (const char *file, wad_source_t source)
   numwadfiles++;
   // proff: automatically try to add the gwa files
   // proff - moved from w_wad.c
-  gwa_filename=AddDefaultExtension(strcpy(malloc(strlen(file)+5), file), ".wad");
+  gwa_filename=AddDefaultExtension(strcpy(Z_Malloc(strlen(file)+5), file), ".wad");
   if (strlen(gwa_filename)>4)
     if (!strcasecmp(gwa_filename+(strlen(gwa_filename)-4),".wad"))
     {
@@ -897,7 +897,7 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
         header.numlumps = LittleLong(header.numlumps);
         header.infotableofs = LittleLong(header.infotableofs);
         length = header.numlumps;
-        fileinfo = malloc(length*sizeof(filelump_t));
+        fileinfo = Z_Malloc(length*sizeof(filelump_t));
         if (fseek (fp, header.infotableofs, SEEK_SET) ||
             fread (fileinfo, sizeof(filelump_t), length, fp) != length)
         {
@@ -1168,12 +1168,12 @@ static void FindResponseFile (void)
         int  index;
         int indexinfile;
         byte *file = NULL;
-        const char **moreargs = malloc(myargc * sizeof(const char*));
+        const char **moreargs = Z_Malloc(myargc * sizeof(const char*));
         char **newargv;
         // proff 04/05/2000: Added for searching responsefile
         char *fname;
 
-        fname = malloc(strlen(&myargv[i][i])+4+1);
+        fname = Z_Malloc(strlen(&myargv[i][i])+4+1);
         strcpy(fname,&myargv[i][1]);
         AddDefaultExtension(fname,".rsp");
 
@@ -1237,7 +1237,7 @@ static void FindResponseFile (void)
           do {
             while (size > 0 && isspace(*infile)) { infile++; size--; }
             if (size > 0) {
-              char *s = malloc(size+1);
+              char *s = Z_Malloc(size+1);
               char *p = s;
               int quoted = 0;
 
@@ -1347,10 +1347,10 @@ static void DoLooseFiles(void)
     {0}
   };
 
-  wads = malloc(myargc * sizeof(*wads));
-  lmps = malloc(myargc * sizeof(*lmps));
-  dehs = malloc(myargc * sizeof(*dehs));
-  skip = malloc(myargc * sizeof(dboolean));
+  wads = Z_Malloc(myargc * sizeof(*wads));
+  lmps = Z_Malloc(myargc * sizeof(*lmps));
+  dehs = Z_Malloc(myargc * sizeof(*dehs));
+  skip = Z_Malloc(myargc * sizeof(dboolean));
 
   for (i = 0; i < myargc; i++)
     skip[i] = false;
@@ -1477,7 +1477,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
     {
         const char* exedir = I_DoomExeDir();
         len = doom_snprintf(NULL, 0, "%s/autoload", exedir);
-        autoload_path = malloc(len+1);
+        autoload_path = Z_Malloc(len+1);
         doom_snprintf(autoload_path, len+1, "%s/autoload", exedir);
     }
 
@@ -1488,7 +1488,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
 #endif
 
     len = doom_snprintf(NULL, 0, "%s/%s", autoload_path, iwadname);
-    result = malloc(len+1);
+    result = Z_Malloc(len+1);
     doom_snprintf(result, len+1, "%s/%s", autoload_path, iwadname);
 
     if (createdir)
@@ -1810,7 +1810,7 @@ static void D_DoomMainSetup(void)
     {
       char *tempverstr;
       const char bfgverstr[]=" (BFG Edition)";
-      tempverstr = malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
+      tempverstr = Z_Malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
       strcpy (tempverstr, doomverstr);
       strcat (tempverstr, bfgverstr);
       doomverstr = Z_Strdup (tempverstr);
@@ -1973,7 +1973,7 @@ static void D_DoomMainSetup(void)
 
   if (p)
   {
-    char *file = malloc(strlen(myargv[p+1])+4+1); // cph - localised
+    char *file = Z_Malloc(strlen(myargv[p+1])+4+1); // cph - localised
     strcpy(file,myargv[p+1]);
     AddDefaultExtension(file,".lmp");     // killough
     D_AddFile (file,source_lmp);

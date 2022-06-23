@@ -5520,7 +5520,7 @@ dboolean M_Responder (event_t* ev) {
         //
         // killough 10/98: fix bugs, simplify
 
-        chat_string_buffer = malloc(CHAT_STRING_BFR_SIZE);
+        chat_string_buffer = Z_Malloc(CHAT_STRING_BFR_SIZE);
         strncpy(chat_string_buffer,
                 *ptr1->var.def->location.ppsz, CHAT_STRING_BFR_SIZE);
 

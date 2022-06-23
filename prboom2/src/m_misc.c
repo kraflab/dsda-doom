@@ -1407,8 +1407,8 @@ void M_LoadDefaults (void)
   int   len;
   FILE* f;
   char  def[80];
-  char* strparm = malloc(CFG_BUFFERMAX);
-  char* cfgline = malloc(CFG_BUFFERMAX);
+  char* strparm = Z_Malloc(CFG_BUFFERMAX);
+  char* cfgline = Z_Malloc(CFG_BUFFERMAX);
   char* newstring = NULL;   // killough
   int   parm;
   dboolean isstring;
@@ -1493,7 +1493,7 @@ void M_LoadDefaults (void)
     const char* exedir = I_DoomExeDir();
     /* get config file from same directory as executable */
     int len = doom_snprintf(NULL, 0, "%s/" BOOM_CFG, exedir);
-    defaultfile = malloc(len+1);
+    defaultfile = Z_Malloc(len+1);
     doom_snprintf(defaultfile, len+1, "%s/" BOOM_CFG, exedir);
   }
 
@@ -1522,7 +1522,7 @@ void M_LoadDefaults (void)
 
           isstring = true;
           len = strlen(strparm);
-          newstring = malloc(len);
+          newstring = Z_Malloc(len);
           strparm[len-1] = 0; // clears trailing double-quote mark
           strcpy(newstring, strparm+1); // clears leading double-quote mark
   } else if ((strparm[0] == '0') && (strparm[1] == 'x')) {
@@ -1719,7 +1719,7 @@ const char* M_CheckWritableDir(const char *dir)
   if (len + 1 > base_len)
   {
     base_len = len + 1;
-    base = malloc(len + 1);
+    base = Z_Malloc(len + 1);
   }
 
   if (base)

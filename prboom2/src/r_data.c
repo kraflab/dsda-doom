@@ -143,7 +143,7 @@ static void R_InitTextures (void)
   names = W_LumpByNum(names_lump = W_GetNumForName("PNAMES"));
   nummappatches = LittleLong(*((const int *)names));
   name_p = names+4;
-  patchlookup = malloc(nummappatches*sizeof(*patchlookup));  // killough
+  patchlookup = Z_Malloc(nummappatches*sizeof(*patchlookup));  // killough
 
   for (i=0 ; i<nummappatches ; i++)
     {
@@ -438,7 +438,7 @@ void R_InitTranMap(int progress)
       FILE *cachefp;
 
       fnlen = doom_snprintf(NULL, 0, "%s/tranmap.dat", I_DoomExeDir());
-      fname = malloc(fnlen+1);
+      fname = Z_Malloc(fnlen+1);
       doom_snprintf(fname, fnlen+1, "%s/tranmap.dat", I_DoomExeDir());
       cachefp = fopen(fname, "rb");
 
@@ -652,7 +652,7 @@ void R_PrecacheLevel(void)
 
   {
     int size = numflats > num_sprites  ? numflats : num_sprites;
-    hitlist = malloc(numtextures > size ? numtextures : size);
+    hitlist = Z_Malloc(numtextures > size ? numtextures : size);
   }
 
   // Precache flats.

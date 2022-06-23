@@ -147,7 +147,7 @@ void I_AtExit(atexit_func_t func, dboolean run_on_error,
 {
     atexit_listentry_t *entry;
 
-    entry = malloc(sizeof(*entry));
+    entry = Z_Malloc(sizeof(*entry));
 
     entry->func = func;
     entry->run_on_error = run_on_error;
@@ -255,7 +255,7 @@ int main(int argc, char **argv)
 #endif
 
   myargc = argc;
-  myargv = (char**)malloc(sizeof(myargv[0]) * myargc);
+  myargv = (char**)Z_Malloc(sizeof(myargv[0]) * myargc);
   memcpy(myargv, argv, sizeof(myargv[0]) * myargc);
 
   // Print the version and exit

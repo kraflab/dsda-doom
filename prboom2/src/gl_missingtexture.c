@@ -298,7 +298,7 @@ void gld_PreprocessFakeSectors(void)
   {
     Z_Free(sectors2);
   }
-  sectors2 = malloc(numsectors * sizeof(sector_t*));
+  sectors2 = Z_Malloc(numsectors * sizeof(sector_t*));
 
   // reset all groups with fake floors and ceils
   // 0 - floor; 1 - ceil;
@@ -326,7 +326,7 @@ void gld_PreprocessFakeSectors(void)
         {
           gld_PreprocessFakeSector(ceiling, &sectors[i], groupid);
           fakeplanes[groupid].ceiling = ceiling;
-          fakeplanes[groupid].list = malloc(fakeplanes[groupid].count * sizeof(sector_t*));
+          fakeplanes[groupid].list = Z_Malloc(fakeplanes[groupid].count * sizeof(sector_t*));
           for (j = 0, k = 0; k < fakeplanes[groupid].count; k++)
           {
             if (!(sectors2[k]->flags & no_texture_flag))

@@ -136,7 +136,7 @@ static void dsda_InitWadDataDir(void) {
         dir_index = -1;
 
       if (dir_index >= 0 && dir_index < DATA_DIR_LIMIT) {
-        dsda_data_dir_strings[dir_index] = malloc(length + 1);
+        dsda_data_dir_strings[dir_index] = Z_Malloc(length + 1);
         strncpy(dsda_data_dir_strings[dir_index], start, length);
         dsda_data_dir_strings[dir_index][length] = '\0';
 

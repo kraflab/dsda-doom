@@ -908,8 +908,8 @@ static void gld_PreprocessSectors(void)
 #ifdef USE_GLU_TESS
   if (numvertexes)
   {
-    vertexcheck=malloc(numvertexes*sizeof(vertexcheck[0]));
-    vertexcheck2=malloc(numvertexes*sizeof(vertexcheck2[0]));
+    vertexcheck=Z_Malloc(numvertexes*sizeof(vertexcheck[0]));
+    vertexcheck2=Z_Malloc(numvertexes*sizeof(vertexcheck2[0]));
     if (!vertexcheck || !vertexcheck2)
     {
       if (levelinfo) fclose(levelinfo);

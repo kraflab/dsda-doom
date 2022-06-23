@@ -208,7 +208,7 @@ void V_InitColorTranslation(void)
       continue;
     if (gamemission == chex || gamemission == hacx)
     {
-      byte *temp = malloc(256);
+      byte *temp = Z_Malloc(256);
       memcpy (temp, *p->map, 256);
       if (gamemission == chex)
         memcpy (temp+112, *p->map+176, 16); // green range
@@ -1137,7 +1137,7 @@ const unsigned char* V_GetPlaypal(void)
     int lump = W_GetNumForName(playpal_data->lump_name);
     int len = W_LumpLength(lump);
     const byte *data = W_LumpByNum(lump);
-    playpal_data->lump = malloc(len);
+    playpal_data->lump = Z_Malloc(len);
     memcpy(playpal_data->lump, data, len);
   }
 

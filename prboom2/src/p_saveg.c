@@ -1149,7 +1149,7 @@ void P_TrueUnArchiveThinkers(void) {
       I_Error ("P_TrueUnArchiveThinkers: Unknown tc %i in size calculation", *save_p);
 
     // first table entry special: 0 maps to NULL
-    *(mobj_p = malloc((mobj_count + 1) * sizeof *mobj_p)) = 0;   // table of pointers
+    *(mobj_p = Z_Malloc((mobj_count + 1) * sizeof *mobj_p)) = 0;   // table of pointers
     save_p = sp;           // restore save pointer
   }
 

@@ -2942,7 +2942,7 @@ static void deh_procStrings(DEHFILE *fpin, char *line)
 
   deh_log("Processing extended string substitution\n");
 
-  if (!holdstring) holdstring = malloc(maxstrlen * sizeof(*holdstring));
+  if (!holdstring) holdstring = Z_Malloc(maxstrlen * sizeof(*holdstring));
 
   *holdstring = '\0';  // empty string to start with
   strncpy(inbuffer, line, DEH_BUFFERMAX - 1);

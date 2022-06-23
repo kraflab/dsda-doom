@@ -169,7 +169,7 @@ static dsda_key_frame_t* dsda_ClosestKeyFrame(int target_tic_count) {
 
 void dsda_CopyKeyFrame(dsda_key_frame_t* dest, dsda_key_frame_t* source) {
   *dest = *source;
-  dest->buffer = malloc(dest->buffer_length);
+  dest->buffer = Z_Malloc(dest->buffer_length);
   memcpy(dest->buffer, source->buffer, dest->buffer_length);
 }
 
@@ -224,7 +224,7 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export) {
   int i;
 
-  save_p = savebuffer = malloc(savegamesize);
+  save_p = savebuffer = Z_Malloc(savegamesize);
 
   CheckSaveGame(1);
   *save_p++ = complete;

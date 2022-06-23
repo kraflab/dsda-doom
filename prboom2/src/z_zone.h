@@ -67,10 +67,4 @@ void *Z_CallocLevel(size_t n, size_t n2);
 void *Z_ReallocLevel(void *p, size_t n);
 char *Z_StrdupLevel(const char *s);
 
-// Remove all definitions before including system definitions
-
-#undef malloc
-
-#define malloc(n)          Z_Malloc(n)
-
 #endif

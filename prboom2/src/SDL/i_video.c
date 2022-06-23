@@ -508,7 +508,7 @@ static void I_UploadNewPalette(int pal, int force)
     if (!playpal_data->colours) {
       // First call - allocate and prepare colour array
       playpal_data->colours =
-        (SDL_Color*) malloc(sizeof(*playpal_data->colours) * num_pals);
+        (SDL_Color*) Z_Malloc(sizeof(*playpal_data->colours) * num_pals);
     }
 
     // set the colormap entries
@@ -900,8 +900,8 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
   char *s, *d, *ps, *pd;
   unsigned int tickStart;
 
-  s = (char*)malloc(width * height);
-  d = (char*)malloc(width * height);
+  s = (char*)Z_Malloc(width * height);
+  d = (char*)Z_Malloc(width * height);
 
   tickStart = SDL_GetTicks();
   k = 0;

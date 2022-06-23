@@ -240,7 +240,7 @@ int AddString(char **str, const char *val)
   else
   {
     size = strlen(val) + 1;
-    *str = malloc(size);
+    *str = Z_Malloc(size);
     strcpy(*str, val);
   }
 
@@ -380,7 +380,7 @@ angle_t R_DemoEx_ReadMLook(void)
         int size = W_LumpLength(mlook_lump.lump);
 
         mlook_lump.maxtick = size / sizeof(mlook_lump.data[0]);
-        mlook_lump.data = malloc(size);
+        mlook_lump.data = Z_Malloc(size);
         memcpy(mlook_lump.data, data, size);
       }
     }
@@ -477,7 +477,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
 
   M_ParseCmdLine(str, NULL, NULL, &paramscount, &i);
 
-  params = malloc(paramscount * sizeof(char*) + i * sizeof(char) + 1);
+  params = Z_Malloc(paramscount * sizeof(char*) + i * sizeof(char) + 1);
   if (params)
   {
     struct {
@@ -601,7 +601,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
         int value;
         char *pstr, *mask;
 
-        mask = malloc(strlen(overflow_cfgname[overflow]) + 16);
+        mask = Z_Malloc(strlen(overflow_cfgname[overflow]) + 16);
         if (mask)
         {
           sprintf(mask, "-set %s", overflow_cfgname[overflow]);
@@ -840,7 +840,7 @@ byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size)
   file_size = ftell(hfile);
   fseek(hfile, 0, SEEK_SET);
 
-  buffer = malloc(file_size);
+  buffer = Z_Malloc(file_size);
 
   if (fread(buffer, file_size, 1, hfile) == 1)
   {
@@ -988,7 +988,7 @@ int CheckWadFileIntegrity(const char *filename)
       header.infotableofs = LittleLong(header.infotableofs);
       length = header.numlumps * sizeof(filelump_t);
 
-      fileinfo2free = fileinfo = malloc(length);
+      fileinfo2free = fileinfo = Z_Malloc(length);
       if (fileinfo)
       {
         if (fseek(hfile, header.infotableofs, SEEK_SET) == 0 &&
@@ -1046,7 +1046,7 @@ static int G_ReadDemoFooter(const char *filename)
       tmp_dir = I_GetTempDir();
       if (tmp_dir && *tmp_dir != '\0')
       {
-        tmp_path = malloc(strlen(tmp_dir) + 2);
+        tmp_path = Z_Malloc(strlen(tmp_dir) + 2);
         strcpy(tmp_path, tmp_dir);
         if (!HasTrailingSlash(tmp_dir))
         {
@@ -1234,7 +1234,7 @@ void WadDataToWadFiles(waddata_t *waddata)
   size_t old_numwadfiles = numwadfiles;
 
   old_numwadfiles = numwadfiles;
-  old_wadfiles = malloc(sizeof(*(wadfiles)) * numwadfiles);
+  old_wadfiles = Z_Malloc(sizeof(*(wadfiles)) * numwadfiles);
   memcpy(old_wadfiles, wadfiles, sizeof(*(wadfiles)) * numwadfiles);
 
   Z_Free(wadfiles);
@@ -1331,7 +1331,7 @@ int CheckDemoExDemo(void)
   {
     char *demoname, *filename;
 
-    filename = malloc(strlen(myargv[p + 1]) + 16);
+    filename = Z_Malloc(strlen(myargv[p + 1]) + 16);
     strcpy(filename, myargv[p + 1]);
     AddDefaultExtension(filename, ".lmp");
 
@@ -1370,7 +1370,7 @@ dboolean D_TryGetWad(const char* name)
   strncpy(wadname, PathFindFileName(name), sizeof(wadname) - 4);
   AddDefaultExtension(wadname, ".wad");
 
-  cmdline = malloc(strlen(getwad_cmdline) + strlen(wadname) + 2);
+  cmdline = Z_Malloc(strlen(getwad_cmdline) + strlen(wadname) + 2);
   wadname_p = strstr(getwad_cmdline, "%wadname%");
   if (wadname_p)
   {
@@ -1383,7 +1383,7 @@ dboolean D_TryGetWad(const char* name)
     sprintf(cmdline, "%s %s", getwad_cmdline, wadname);
   }
 
-  msg = malloc(strlen(format) + strlen(wadname) + strlen(cmdline));
+  msg = Z_Malloc(strlen(format) + strlen(wadname) + strlen(cmdline));
   sprintf(msg, format, wadname, cmdline);
 
   if (PRB_IDYES == I_MessageBox(msg, PRB_MB_DEFBUTTON2 | PRB_MB_YESNO))

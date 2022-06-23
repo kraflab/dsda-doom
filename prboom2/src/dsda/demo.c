@@ -90,7 +90,7 @@ char* dsda_GenerateDemoName(unsigned int* counter, const char* base_name) {
 
   j = *counter;
   demo_name_size = strlen(base_name) + 11; // 11 = -12345.lmp\0
-  demo_name = malloc(demo_name_size);
+  demo_name = Z_Malloc(demo_name_size);
   snprintf(demo_name, demo_name_size, "%s.lmp", base_name);
 
   for (; j <= 99999 && (fp = fopen(demo_name, "rb")) != NULL; j++) {
@@ -206,7 +206,7 @@ void dsda_InitDemoRecording(void) {
 
   dsda_ForgetAutoKeyFrames();
 
-  dsda_demo_write_buffer = malloc(INITIAL_DEMO_BUFFER_SIZE);
+  dsda_demo_write_buffer = Z_Malloc(INITIAL_DEMO_BUFFER_SIZE);
   if (dsda_demo_write_buffer == NULL)
     I_Error("dsda_InitDemo: unable to initialize demo buffer!");
 

@@ -633,7 +633,7 @@ unsigned char* gld_GetTextureBuffer(GLuint texid, int miplevel, int *width, int 
 
   if (!buf)
   {
-    buf = malloc(buf_size);
+    buf = Z_Malloc(buf_size);
   }
 
   if (texid)
@@ -647,7 +647,7 @@ unsigned char* gld_GetTextureBuffer(GLuint texid, int miplevel, int *width, int 
   {
     Z_Free(buf);
     buf_size = w * h * 4;
-    buf = malloc(buf_size);
+    buf = Z_Malloc(buf_size);
   }
   glGetTexImage(GL_TEXTURE_2D, miplevel, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 
@@ -861,7 +861,7 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
 #ifdef USE_GLU_IMAGESCALE
     if ((width != tex_width) || (height != tex_height))
     {
-      tex_buffer = malloc(tex_buffer_size);
+      tex_buffer = Z_Malloc(tex_buffer_size);
       if (!tex_buffer)
       {
         goto l_exit;
@@ -883,7 +883,7 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
       {
         if (width == tex_width)
         {
-          tex_buffer = malloc(tex_buffer_size);
+          tex_buffer = Z_Malloc(tex_buffer_size);
           memcpy(tex_buffer, data, width * height * 4);
         }
         else

@@ -210,7 +210,7 @@ static void *malloc_IfSameLevel(void* p, size_t size)
 {
   if (!samelevel || !p)
   {
-    return malloc(size);
+    return Z_Malloc(size);
   }
   return p;
 }
@@ -1162,7 +1162,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	output = Z_Malloc(outlen);
 
 	// initialize stream state for decompression
-	zstream = malloc(sizeof(*zstream));
+	zstream = Z_Malloc(sizeof(*zstream));
 	memset(zstream, 0, sizeof(*zstream));
 
   // Evidently next_in is the wrong type for legacy reasons
@@ -1385,7 +1385,7 @@ static void P_LoadThings (int lump)
   numthings = W_LumpLength (lump) / map_format.mapthing_size;
   data = W_LumpByNum(lump);
   doom_data = (const doom_mapthing_t*) data;
-  mobjlist = malloc(numthings * sizeof(mobjlist[0]));
+  mobjlist = Z_Malloc(numthings * sizeof(mobjlist[0]));
 
   if ((!data) || (!numthings))
     I_Error("P_LoadThings: no things in level");
@@ -2034,7 +2034,7 @@ static void AddBlockLine
   if (done[blockno])
     return;
 
-  l = malloc(sizeof(linelist_t));
+  l = Z_Malloc(sizeof(linelist_t));
   l->num = lineno;
   l->next = lists[blockno];
   lists[blockno] = l;
@@ -2100,14 +2100,14 @@ static void P_CreateBlockMap(void)
   // CPhipps - calloc's
   blocklists = Z_Calloc(NBlocks,sizeof(linelist_t *));
   blockcount = Z_Calloc(NBlocks,sizeof(int));
-  blockdone = malloc(NBlocks*sizeof(int));
+  blockdone = Z_Malloc(NBlocks*sizeof(int));
 
   // initialize each blocklist, and enter the trailing -1 in all blocklists
   // note the linked list of lines grows backwards
 
   for (i=0;i<NBlocks;i++)
   {
-    blocklists[i] = malloc(sizeof(linelist_t));
+    blocklists[i] = Z_Malloc(sizeof(linelist_t));
     blocklists[i]->num = -1;
     blocklists[i]->next = NULL;
     blockcount[i]++;
@@ -2834,7 +2834,7 @@ void P_InitSubsectorsLines(void)
   }
 
   count = 0;
-  sslines_indexes = malloc((numsubsectors + 1) * sizeof(sslines_indexes[0]));
+  sslines_indexes = Z_Malloc((numsubsectors + 1) * sizeof(sslines_indexes[0]));
 
   for (num = 0; num < numsubsectors; num++)
   {
@@ -2864,7 +2864,7 @@ void P_InitSubsectorsLines(void)
 
   sslines_indexes[numsubsectors] = count;
 
-  sslines = malloc(count * sizeof(sslines[0]));
+  sslines = Z_Malloc(count * sizeof(sslines[0]));
   count = 0;
 
   for (num = 0; num < numsubsectors; num++)

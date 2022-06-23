@@ -157,7 +157,7 @@ void SV_RestoreMapArchive(byte **buffer)
 
     if (map_archive[i].size)
     {
-      map_archive[i].buffer = malloc(map_archive[i].size);
+      map_archive[i].buffer = Z_Malloc(map_archive[i].size);
       memcpy(map_archive[i].buffer, *buffer, map_archive[i].size);
       *buffer += map_archive[i].size;
     }
@@ -279,7 +279,7 @@ static void SV_OpenWrite(int map)
     Z_Free(ma_p->buffer);
   }
   ma_p->size = 1024;
-  ma_p->buffer = malloc(ma_p->size);
+  ma_p->buffer = Z_Malloc(ma_p->size);
   buffer_p = ma_p->buffer;
 }
 

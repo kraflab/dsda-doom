@@ -179,7 +179,7 @@ static int my_popen3 (pipeinfo_t *p)
   STARTUPINFO siStartInfo;
   SECURITY_ATTRIBUTES sa;
 
-  puser = malloc (sizeof (puser_t));
+  puser = Z_Malloc (sizeof (puser_t));
   if (!puser)
     return 0;
 
@@ -344,7 +344,7 @@ static int my_popen3 (pipeinfo_t *p)
 
   puser_t *puser = NULL;
 
-  puser = malloc (sizeof (puser_t));
+  puser = Z_Malloc (sizeof (puser_t));
   if (!puser)
     return 0;
 

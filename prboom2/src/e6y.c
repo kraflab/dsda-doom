@@ -675,7 +675,7 @@ void e6y_WriteStats(void)
     return;
   }
 
-  all = malloc(sizeof(*all) * numlevels);
+  all = Z_Malloc(sizeof(*all) * numlevels);
   memset(&max, 0, sizeof(timetable_t));
 
   playerscount = 0;

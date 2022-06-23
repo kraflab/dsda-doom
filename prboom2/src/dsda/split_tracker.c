@@ -69,7 +69,7 @@ static char* dsda_SplitTrackerPath(void) {
     dir = dsda_SplitTrackerDir();
 
     length = strlen(dir) + strlen(name_base) + 28;
-    dsda_split_tracker_path = malloc(length);
+    dsda_split_tracker_path = Z_Malloc(length);
 
     snprintf(
       dsda_split_tracker_path, length - 1, "%s/%s_%i_%i_%i_%s_splits.txt",

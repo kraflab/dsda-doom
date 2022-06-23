@@ -98,7 +98,7 @@ static const char* dsda_Movie(void) {
 static char* dsda_TextFileTime(void) {
   char* text_file_time;
 
-  text_file_time = malloc(16);
+  text_file_time = Z_Malloc(16);
 
   if (dsda_IL())
     snprintf(
