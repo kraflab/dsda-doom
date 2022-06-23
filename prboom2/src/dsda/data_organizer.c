@@ -72,14 +72,14 @@ char* dsda_DetectDirectory(const char* env_key, const char* param) {
   if ((i = M_CheckParm(param)) && i < myargc - 1) {
     if (!stat(myargv[i + 1], &sbuf) && S_ISDIR(sbuf.st_mode)) {
       if (result) Z_Free(result);
-      result = strdup(myargv[i + 1]);
+      result = Z_Strdup(myargv[i + 1]);
     }
     else
       lprintf(LO_ERROR, "Error: %s path does not exist; using %s\n", param, default_directory);
   }
 
   if (!result)
-    result = strdup(default_directory);
+    result = Z_Strdup(default_directory);
 
   dsda_NormalizeSlashes(result);
 
@@ -115,7 +115,7 @@ static void dsda_InitWadDataDir(void) {
   int pwad_index = 2;
   struct stat sbuf;
 
-  dsda_data_dir_strings[0] = strdup(dsda_data_root);
+  dsda_data_dir_strings[0] = Z_Strdup(dsda_data_root);
 
   for (i = 0; i < numwadfiles; ++i) {
     const char* start;

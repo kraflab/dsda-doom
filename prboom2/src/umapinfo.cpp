@@ -340,7 +340,7 @@ void FreeMapList()
 void ReplaceString(char **pptr, const char *newstring)
 {
 	if (*pptr != NULL) Z_Free(*pptr);
-	*pptr = strdup(newstring);
+	*pptr = Z_Strdup(newstring);
 }
 
 // -----------------------------------------------
@@ -357,7 +357,7 @@ static char *ParseMultiString(Scanner &scanner, int error)
 	{
 		if (!stricmp(scanner.string, "clear"))
 		{
-			return strdup("-");	// this was explicitly deleted to override the default.
+			return Z_Strdup("-");	// this was explicitly deleted to override the default.
 		}
 		else
 		{
@@ -368,7 +368,7 @@ static char *ParseMultiString(Scanner &scanner, int error)
 	do
 	{
 		scanner.MustGetToken(TK_StringConst);
-		if (build == NULL) build = strdup(scanner.string);
+		if (build == NULL) build = Z_Strdup(scanner.string);
 		else
 		{
 			size_t newlen = strlen(build) + strlen(scanner.string) + 2; // strlen for both the existing text and the new line, plus room for one \n and one \0
@@ -414,7 +414,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	// this line is no property.
 
 	scanner.MustGetToken(TK_Identifier);
-	char *pname = strdup(scanner.string);
+	char *pname = Z_Strdup(scanner.string);
 	scanner.MustGetToken('=');
 
 	if (!stricmp(pname, "levelname"))
@@ -552,11 +552,11 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			if (scanner.CheckToken(','))
 			{
 				scanner.MustGetToken(TK_StringConst);
-				alttext = strdup(scanner.string);
+				alttext = Z_Strdup(scanner.string);
 				if (scanner.CheckToken(','))
 				{
 					scanner.MustGetToken(TK_StringConst);
-					key = strdup(scanner.string);
+					key = Z_Strdup(scanner.string);
 				}
 			}
 

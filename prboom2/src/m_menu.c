@@ -563,7 +563,7 @@ void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char 
     EpiMenuMap[EpiDef.numitems] = mapnum;
     strncpy(EpisodeMenu[EpiDef.numitems].name, gfx, 8);
     EpisodeMenu[EpiDef.numitems].name[8] = 0;
-    EpisodeMenu[EpiDef.numitems].alttext = txt ? strdup(txt) : NULL;
+    EpisodeMenu[EpiDef.numitems].alttext = txt ? Z_Strdup(txt) : NULL;
     EpisodeMenu[EpiDef.numitems].alphaKey = alpha ? *alpha : 0;
     EpiDef.numitems++;
   }
@@ -852,13 +852,13 @@ static void M_VerifyForcedLoadGame(int ch)
 {
   if (ch=='y')
     G_ForcedLoadGame();
-  Z_Free(forced_loadgame_message);    // free the message strdup()'ed below
+  Z_Free(forced_loadgame_message);    // free the message Z_Strdup()'ed below
   M_ClearMenus();
 }
 
 void M_ForcedLoadGame(const char *msg)
 {
-  forced_loadgame_message = strdup(msg); // Z_Free()'d above
+  forced_loadgame_message = Z_Strdup(msg); // Z_Free()'d above
   M_StartMessage(forced_loadgame_message, M_VerifyForcedLoadGame, true);
 }
 
@@ -1872,7 +1872,7 @@ static void M_DrawItem(const setup_menu_t* s)
      * This supports multiline items on horizontally-crowded menus.
      */
 
-    for (p = t = strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
+    for (p = t = Z_Strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
     {      /* killough 10/98: support left-justification: */
       strcpy(menu_buffer,p);
       if (!(flags & S_LEFTJUST))
@@ -3847,7 +3847,7 @@ static void M_ResetDefaults(void)
 
               u.c = dp->location.ppsz;
               Z_Free(*(u.s));
-              *(u.c) = strdup(dp->defaultvalue.psz);
+              *(u.c) = Z_Strdup(dp->defaultvalue.psz);
             }
             else
               *dp->location.pi = dp->defaultvalue.i;
@@ -5848,8 +5848,8 @@ void M_Drawer (void)
 
     if (raven) return MN_DrawMessage(messageString);
 
-    /* cph - strdup string to writable memory */
-    ms = strdup(messageString);
+    /* cph - Z_Strdup string to writable memory */
+    ms = Z_Strdup(messageString);
     p = ms;
 
     y = 100 - M_StringHeight(messageString)/2;

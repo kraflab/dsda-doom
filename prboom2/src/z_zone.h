@@ -72,11 +72,9 @@ char *Z_StrdupLevel(const char *s);
 #undef malloc
 #undef realloc
 #undef calloc
-#undef strdup
 
 #define malloc(n)          Z_Malloc(n)
 #define realloc(p,n)       Z_Realloc(p,n)
 #define calloc(n1,n2)      Z_Calloc(n1,n2)
-#define strdup(s)          Z_Strdup(s)
 
 #endif

@@ -2707,7 +2707,7 @@ static void deh_procCheat(DEHFILE *fpin, char *line) // done
           //e6y: ability to ignore cheats in dehacked files.
           if (deh_apply_cheats && !M_CheckParm("-nocheats"))
           {
-            cheat[iy].cheat = strdup(p);
+            cheat[iy].cheat = Z_Strdup(p);
             deh_log("Assigned new cheat '%s' to cheat '%s'at index %d\n",
                     p, cheat[ix].deh_cheat, iy); // killough 4/18/98
           }
@@ -2860,7 +2860,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
               i, sprnames[i], tolen, &inbuffer[fromlen]);
 
       // CPhipps - fix constness problem
-      sprnames[i] = s = strdup(sprnames[i]);
+      sprnames[i] = s = Z_Strdup(sprnames[i]);
       strncpy(s, &inbuffer[fromlen], tolen);
 
       found = TRUE;
@@ -2879,7 +2879,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
       deh_log("Changing name of sfx from %s to %*s\n",
               S_sfx[i].name, usedlen, &inbuffer[fromlen]);
 
-      S_sfx[i].name = strdup(&inbuffer[fromlen]);
+      S_sfx[i].name = Z_Strdup(&inbuffer[fromlen]);
 
       found = TRUE;
     }
@@ -2891,7 +2891,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
         deh_log("Changing name of music from %s to %*s\n",
                 S_music[i].name, usedlen, &inbuffer[fromlen]);
 
-        S_music[i].name = strdup(&inbuffer[fromlen]);
+        S_music[i].name = Z_Strdup(&inbuffer[fromlen]);
 
         found = TRUE;
       }
@@ -2904,7 +2904,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
             inbuffer, (strlen(inbuffer) > 12) ? "..." : "", fromlen, tolen);
     if ((size_t)fromlen <= strlen(inbuffer))
     {
-      line2 = strdup(&inbuffer[fromlen]);
+      line2 = Z_Strdup(&inbuffer[fromlen]);
       inbuffer[fromlen] = '\0';
     }
 
@@ -3023,7 +3023,7 @@ dboolean deh_procStringSub(char *key, char *lookfor, char *newstring)
     if (found)
     {
       char *t;
-      *deh_strlookup[i].ppstr = t = strdup(newstring); // orphan originalstring
+      *deh_strlookup[i].ppstr = t = Z_Strdup(newstring); // orphan originalstring
       found = true;
       // Handle embedded \n's in the incoming string, convert to 0x0a's
       {
@@ -3140,7 +3140,7 @@ static void deh_procBexSprites(DEHFILE *fpin, char *line)
     if (match >= 0)
     {
       deh_log("Substituting '%s' for sprite '%s'\n", candidate, key);
-      sprnames[match] = strdup(candidate);
+      sprnames[match] = Z_Strdup(candidate);
     }
   }
 }
@@ -3188,7 +3188,7 @@ static void deh_procBexSounds(DEHFILE *fpin, char *line)
     if (match >= 0)
     {
       deh_log("Substituting '%s' for sound '%s'\n", candidate, key);
-      S_sfx[match].name = strdup(candidate);
+      S_sfx[match].name = Z_Strdup(candidate);
     }
   }
 }
@@ -3236,7 +3236,7 @@ static void deh_procBexMusic(DEHFILE *fpin, char *line)
     if (match >= 0)
     {
       deh_log("Substituting '%s' for music '%s'\n", candidate, key);
-      S_music[match].name = strdup(candidate);
+      S_music[match].name = Z_Strdup(candidate);
     }
   }
 }

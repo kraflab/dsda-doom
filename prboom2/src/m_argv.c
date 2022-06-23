@@ -95,7 +95,7 @@ int M_CheckParmEx(const char *check, char **params, int paramscount)
 void M_AddParam(const char *param)
 {
   myargv = realloc(myargv, sizeof(myargv[0]) * (myargc + 1));
-  myargv[myargc] = strdup(param);
+  myargv[myargc] = Z_Strdup(param);
   myargc++;
 }
 

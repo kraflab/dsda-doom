@@ -68,7 +68,7 @@ void dsda_SetDemoBaseName(const char* name) {
   if (dsda_demo_name_base)
     Z_Free(dsda_demo_name_base);
 
-  dsda_demo_name_base = strdup(name);
+  dsda_demo_name_base = Z_Strdup(name);
 
   dsda_CutExtension(dsda_demo_name_base);
 
@@ -383,7 +383,7 @@ void dsda_ExportDemo(const char* name) {
   int counter = 2;
   int old_offset;
 
-  base_name = strdup(name);
+  base_name = Z_Strdup(name);
 
   dsda_CutExtension(base_name);
 

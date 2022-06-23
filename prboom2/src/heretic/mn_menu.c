@@ -219,7 +219,7 @@ void MN_DrawMessage(const char* messageString)
   char *p;
   int y;
 
-  msg = strdup(messageString);
+  msg = Z_Strdup(messageString);
   p = msg;
   y = 100 - MN_TextAHeight(msg) / 2;
 

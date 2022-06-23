@@ -507,7 +507,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
             filename = I_FindFile(params[p], ".wad");
             if (!filename)
             {
-              filename = strdup(params[p]);
+              filename = Z_Strdup(params[p]);
             }
             WadDataAddItem(waddata, filename, files[i].source, 0);
             Z_Free(filename);
@@ -1214,7 +1214,7 @@ int WadDataAddItem(waddata_t *waddata, const char *filename, wad_source_t source
     return false;
 
   waddata->wadfiles = realloc(waddata->wadfiles, sizeof(*wadfiles) * (waddata->numwadfiles + 1));
-  waddata->wadfiles[waddata->numwadfiles].name = strdup(filename);
+  waddata->wadfiles[waddata->numwadfiles].name = Z_Strdup(filename);
   waddata->wadfiles[waddata->numwadfiles].src = source;
   waddata->wadfiles[waddata->numwadfiles].handle = handle;
 
@@ -1261,7 +1261,7 @@ void WadDataToWadFiles(waddata_t *waddata)
     if (old_wadfiles[i].src == source_auto_load || old_wadfiles[i].src == source_pre)
     {
       wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
-      wadfiles[numwadfiles].name = strdup(old_wadfiles[i].name);
+      wadfiles[numwadfiles].name = Z_Strdup(old_wadfiles[i].name);
       wadfiles[numwadfiles].src = old_wadfiles[i].src;
       wadfiles[numwadfiles].handle = old_wadfiles[i].handle;
       numwadfiles++;
@@ -1273,7 +1273,7 @@ void WadDataToWadFiles(waddata_t *waddata)
     if (waddata->wadfiles[i].src == source_auto_load)
     {
       wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
-      wadfiles[numwadfiles].name = strdup(waddata->wadfiles[i].name);
+      wadfiles[numwadfiles].name = Z_Strdup(waddata->wadfiles[i].name);
       wadfiles[numwadfiles].src = waddata->wadfiles[i].src;
       wadfiles[numwadfiles].handle = waddata->wadfiles[i].handle;
       numwadfiles++;
@@ -1296,7 +1296,7 @@ void WadDataToWadFiles(waddata_t *waddata)
         if (file)
         {
           Z_Free(waddata->wadfiles[i].name);
-          waddata->wadfiles[i].name = strdup(file);
+          waddata->wadfiles[i].name = Z_Strdup(file);
         }
       }
       if (file)

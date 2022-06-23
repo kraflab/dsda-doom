@@ -1428,7 +1428,7 @@ void M_LoadDefaults (void)
     else
     {
       if (defaults[i].location.ppsz)
-        *defaults[i].location.ppsz = strdup(defaults[i].defaultvalue.psz);
+        *defaults[i].location.ppsz = Z_Strdup(defaults[i].defaultvalue.psz);
       if (defaults[i].location.pi)
         *defaults[i].location.pi = defaults[i].defaultvalue.i;
     }
@@ -1472,9 +1472,9 @@ void M_LoadDefaults (void)
       for (k = 0; k < item->defaultvalue.array_size; k++)
       {
         if (item->defaultvalue.array_data[k])
-          (*arr)[k] = strdup(item->defaultvalue.array_data[k]);
+          (*arr)[k] = Z_Strdup(item->defaultvalue.array_data[k]);
         else
-          (*arr)[k] = strdup("");
+          (*arr)[k] = Z_Strdup("");
       }
     }
   }
@@ -1486,7 +1486,7 @@ void M_LoadDefaults (void)
   i = M_CheckParm ("-config");
   if (i && i < myargc-1)
   {
-    defaultfile = strdup(myargv[i+1]);
+    defaultfile = Z_Strdup(myargv[i+1]);
   }
   else
   {

@@ -444,7 +444,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {
       char *left, *ptr, *dup_dwp;
 
-      dup_dwp = strdup(dwp);
+      dup_dwp = Z_Strdup(dwp);
       left = dup_dwp;
 
       for (;;)
@@ -457,7 +457,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
               num_search++;
               search = realloc(search, num_search * sizeof(*search));
               memset(&search[num_search-1], 0, sizeof(*search));
-              search[num_search-1].dir = strdup(left);
+              search[num_search-1].dir = Z_Strdup(left);
 
               left = ptr + 1;
           }
@@ -470,7 +470,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       num_search++;
       search = realloc(search, num_search * sizeof(*search));
       memset(&search[num_search-1], 0, sizeof(*search));
-      search[num_search-1].dir = strdup(left);
+      search[num_search-1].dir = Z_Strdup(left);
 
       Z_Free(dup_dwp);
     }

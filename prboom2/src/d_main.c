@@ -1375,17 +1375,17 @@ static void DoLooseFiles(void)
         {
           // We can only have one iwad
           if (iwad) Z_Free(iwad);
-          iwad = strdup(myargv[i]);
+          iwad = Z_Strdup(myargv[i]);
           break;
         }
 
-        (*(looses[k].list))[(*looses[k].count)++] = strdup(myargv[i]);
+        (*(looses[k].list))[(*looses[k].count)++] = Z_Strdup(myargv[i]);
         break;
       }
       k++;
     }
     /*if (myargv[i][j-4] != '.')  // assume wad if no extension
-      wads[wadcount++] = strdup(myargv[i]);*/
+      wads[wadcount++] = Z_Strdup(myargv[i]);*/
     skip[i] = true; // nuke that entry so it won't repeat later
   }
 
@@ -1406,7 +1406,7 @@ static void DoLooseFiles(void)
         skip[p] = true;    // nuke the entry
         while (++p != myargc && *myargv[p] != '-')
         {
-          (*(params[k].list))[(*params[k].count)++] = strdup(myargv[p]);
+          (*(params[k].list))[(*params[k].count)++] = Z_Strdup(myargv[p]);
           skip[p] = true;  // null any we find and save
         }
       }
@@ -1432,9 +1432,9 @@ static void DoLooseFiles(void)
       // put our stuff into it
       if (*(params[k].count) > 0)
       {
-        tmyargv[tmyargc++] = strdup(params[k].cmdparam); // put the switch in
+        tmyargv[tmyargc++] = Z_Strdup(params[k].cmdparam); // put the switch in
         for (i=0;i<*(params[k].count);)
-          tmyargv[tmyargc++] = (*(params[k].list))[i++]; // allocated by strdup above
+          tmyargv[tmyargc++] = (*(params[k].list))[i++]; // allocated by Z_Strdup above
       }
       k++;
     }
@@ -1813,7 +1813,7 @@ static void D_DoomMainSetup(void)
       tempverstr = malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
       strcpy (tempverstr, doomverstr);
       strcat (tempverstr, bfgverstr);
-      doomverstr = strdup (tempverstr);
+      doomverstr = Z_Strdup (tempverstr);
       Z_Free (tempverstr);
     }
 

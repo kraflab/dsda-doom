@@ -43,11 +43,11 @@ static char* dsda_TextFileName(void) {
   if (!p)
     return NULL;
 
-  playdemo = strdup(myargv[p + 1]);
+  playdemo = Z_Strdup(myargv[p + 1]);
   name_length = strlen(playdemo);
 
   if (name_length > 4 && !stricmp(playdemo + name_length - 4, ".lmp")) {
-    name = strdup(playdemo);
+    name = Z_Strdup(playdemo);
     name[name_length - 4] = '\0';
   }
   else {
