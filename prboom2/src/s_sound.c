@@ -173,9 +173,9 @@ void S_Init(void)
     // simultaneously) within zone memory.
     // CPhipps - calloc
     channels =
-      (channel_t *) calloc(numChannels,sizeof(channel_t));
+      (channel_t *) Z_Calloc(numChannels,sizeof(channel_t));
     sobjs =
-      (degenmobj_t *) calloc(numChannels, sizeof(degenmobj_t));
+      (degenmobj_t *) Z_Calloc(numChannels, sizeof(degenmobj_t));
 
     if (first_s_init)
     {

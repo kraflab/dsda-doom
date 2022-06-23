@@ -120,17 +120,17 @@ static int maxframe;
 
 void R_InitSpritesRes(void)
 {
-  if (xtoviewangle) free(xtoviewangle);
-  if (negonearray) free(negonearray);
-  if (screenheightarray) free(screenheightarray);
+  if (xtoviewangle) Z_Free(xtoviewangle);
+  if (negonearray) Z_Free(negonearray);
+  if (screenheightarray) Z_Free(screenheightarray);
 
-  xtoviewangle = calloc(1, (SCREENWIDTH + 1) * sizeof(*xtoviewangle));
-  negonearray = calloc(1, SCREENWIDTH * sizeof(*negonearray));
-  screenheightarray = calloc(1, SCREENWIDTH * sizeof(*screenheightarray));
+  xtoviewangle = Z_Calloc(1, (SCREENWIDTH + 1) * sizeof(*xtoviewangle));
+  negonearray = Z_Calloc(1, SCREENWIDTH * sizeof(*negonearray));
+  screenheightarray = Z_Calloc(1, SCREENWIDTH * sizeof(*screenheightarray));
 
-  if (clipbot) free(clipbot);
+  if (clipbot) Z_Free(clipbot);
 
-  clipbot = calloc(1, 2 * SCREENWIDTH * sizeof(*clipbot));
+  clipbot = Z_Calloc(1, 2 * SCREENWIDTH * sizeof(*clipbot));
   cliptop = clipbot + SCREENWIDTH;
 }
 
@@ -241,7 +241,7 @@ static void R_InitSpriteDefs(const char * const * namelist)
   // Create hash table based on just the first four letters of each sprite
   // killough 1/31/98
 
-  hash = malloc(sizeof(*hash)*numentries); // allocate hash table
+  hash = Z_Malloc(sizeof(*hash)*numentries); // allocate hash table
 
   for (i=0; (size_t)i<numentries; i++)             // initialize hash table as empty
     hash[i].index = -1;
@@ -380,7 +380,7 @@ static void R_InitSpriteDefs(const char * const * namelist)
             }
         }
     }
-  free(hash);             // free hash table
+  Z_Free(hash);             // free hash table
 }
 
 //
@@ -424,7 +424,7 @@ static vissprite_t *R_NewVisSprite(void)
       size_t num_vissprite_alloc_prev = num_vissprite_alloc;
 
       num_vissprite_alloc = num_vissprite_alloc ? num_vissprite_alloc*2 : 128;
-      vissprites = realloc(vissprites,num_vissprite_alloc*sizeof(*vissprites));
+      vissprites = Z_Realloc(vissprites,num_vissprite_alloc*sizeof(*vissprites));
 
       //e6y: set all fields to zero
       memset(vissprites + num_vissprite_alloc_prev, 0,
@@ -1376,8 +1376,8 @@ void R_SortVisSprites (void)
 
       if (num_vissprite_ptrs < num_vissprite*2)
         {
-          free(vissprite_ptrs);  // better than realloc -- no preserving needed
-          vissprite_ptrs = malloc((num_vissprite_ptrs = num_vissprite_alloc*2)
+          Z_Free(vissprite_ptrs);  // better than realloc -- no preserving needed
+          vissprite_ptrs = Z_Malloc((num_vissprite_ptrs = num_vissprite_alloc*2)
                                   * sizeof *vissprite_ptrs);
         }
 
@@ -1563,7 +1563,7 @@ void R_DrawMasked(void)
       drawsegs_xrange_size = 2 * maxdrawsegs;
       for(i = 0; i < DS_RANGES_COUNT; i++)
       {
-        drawsegs_xranges[i].items = realloc(
+        drawsegs_xranges[i].items = Z_Realloc(
           drawsegs_xranges[i].items,
           drawsegs_xrange_size * sizeof(drawsegs_xranges[i].items[0]));
       }

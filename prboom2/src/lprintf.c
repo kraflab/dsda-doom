@@ -183,7 +183,7 @@ int doom_vsnprintf(char *buf, size_t max, const char *fmt, va_list va)
     {
       if (backsize <= max) continue;
 
-      backbuffer = (realloc)(backbuffer, backsize);
+      backbuffer = realloc(backbuffer, backsize);
       assert(backbuffer != NULL);
 
       va_copy(vc, va);

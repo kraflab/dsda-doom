@@ -151,7 +151,7 @@ static int ReadLump(const char *filename, const char *lumpname, unsigned char **
     fseek(file, 0, SEEK_END);
     size = ftell(file);
     fseek(file, 0, SEEK_SET);
-    *buffer = malloc(size + 1);
+    *buffer = Z_Malloc(size + 1);
     size = fread(*buffer, 1, size, file);
     if (size > 0)
     {
@@ -175,7 +175,7 @@ static int ReadLump(const char *filename, const char *lumpname, unsigned char **
     {
       size = W_LumpLength(lump);
       data = W_LumpByNum(lump);
-      *buffer = calloc(1, size + 1);
+      *buffer = Z_Calloc(1, size + 1);
       memcpy (*buffer, data, size);
       (*buffer)[size] = 0;
     }
@@ -199,7 +199,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
   vp_fnlen = doom_snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
   fp_fnlen = doom_snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), fpname);
-  filename = malloc(MAX(vp_fnlen, fp_fnlen) + 1);
+  filename = Z_Malloc(MAX(vp_fnlen, fp_fnlen) + 1);
 
   sprintf(filename, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
   vp_size = ReadLump(filename, vpname, (unsigned char**) &vp_data);
@@ -209,7 +209,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
   if (vp_data && fp_data)
   {
-    shader = calloc(1, sizeof(GLShader));
+    shader = Z_Calloc(1, sizeof(GLShader));
 
     shader->hVertProg = GLEXT_glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
     shader->hFragProg = GLEXT_glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
@@ -243,14 +243,14 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
     else
     {
       lprintf(LO_ERROR, "gld_LoadShader: Error compiling shader \"%s+%s\": %s\n", vpname, fpname, buffer);
-      free(shader);
+      Z_Free(shader);
       shader = NULL;
     }
   }
 
-  free(filename);
-  free(vp_data);
-  free(fp_data);
+  Z_Free(filename);
+  Z_Free(vp_data);
+  Z_Free(fp_data);
 
   return shader;
 }

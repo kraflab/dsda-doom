@@ -487,7 +487,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   if (numsubsectors > visible_subsectors_size)
   {
     visible_subsectors_size = numsubsectors;
-    visible_subsectors = realloc(visible_subsectors, visible_subsectors_size * sizeof(visible_subsectors[0]));
+    visible_subsectors = Z_Realloc(visible_subsectors, visible_subsectors_size * sizeof(visible_subsectors[0]));
   }
 
   visible_subsectors_count = 0;
@@ -1064,8 +1064,8 @@ unsigned char *gld_ReadScreen(void)
   if (!scr || size > scr_size)
   {
     scr_size = size;
-    scr = realloc(scr, size);
-    buffer = realloc(buffer, size);
+    scr = Z_Realloc(scr, size);
+    buffer = Z_Realloc(buffer, size);
   }
 
   if (buffer && scr)

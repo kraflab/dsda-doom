@@ -43,21 +43,21 @@ static char* dsda_TextFileName(void) {
   if (!p)
     return NULL;
 
-  playdemo = strdup(myargv[p + 1]);
+  playdemo = Z_Strdup(myargv[p + 1]);
   name_length = strlen(playdemo);
 
   if (name_length > 4 && !stricmp(playdemo + name_length - 4, ".lmp")) {
-    name = strdup(playdemo);
+    name = Z_Strdup(playdemo);
     name[name_length - 4] = '\0';
   }
   else {
-    name = calloc(name_length + 4, 1);
+    name = Z_Calloc(name_length + 4, 1);
     strcat(name, playdemo);
   }
 
   strcat(name, ".txt");
 
-  free(playdemo);
+  Z_Free(playdemo);
 
   return name;
 }
@@ -98,7 +98,7 @@ static const char* dsda_Movie(void) {
 static char* dsda_TextFileTime(void) {
   char* text_file_time;
 
-  text_file_time = malloc(16);
+  text_file_time = Z_Malloc(16);
 
   if (dsda_IL())
     snprintf(
@@ -136,7 +136,7 @@ void dsda_ExportTextFile(void) {
     return;
 
   file = fopen(name, "wb");
-  free(name);
+  Z_Free(name);
 
   if (!file)
     I_Error("Unable to export text file!");
@@ -180,7 +180,7 @@ void dsda_ExportTextFile(void) {
 
   name = dsda_TextFileTime();
   fprintf(file, "Time:      %s\n", name);
-  free(name);
+  Z_Free(name);
 
   fprintf(file, "\n");
   fprintf(file, "Author:    %s\n", dsda_player_name);

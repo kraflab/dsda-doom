@@ -195,7 +195,7 @@ dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
     filesize = ftell(hfile);
     fseek(hfile, 0, SEEK_SET);
 
-    buffer = (byte*)malloc(filesize);
+    buffer = (byte*)Z_Malloc(filesize);
     if (buffer)
     {
       if (fread(buffer, filesize, 1, hfile) == 1)
@@ -219,7 +219,7 @@ dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
 
   if (!result)
   {
-    free(buffer);
+    Z_Free(buffer);
     buffer = NULL;
   }
 
@@ -291,7 +291,7 @@ const char *I_DoomExeDir(void)
   if (!base)        // cache multiple requests
     {
       size_t len = strlen(*myargv);
-      char *p = (base = (char*)malloc(len+1)) + len - 1;
+      char *p = (base = (char*)Z_Malloc(len+1)) + len - 1;
       strcpy(base,*myargv);
       while (p > base && *p!='/' && *p!='\\')
         *p--=0;
@@ -299,8 +299,8 @@ const char *I_DoomExeDir(void)
         *p--=0;
       if (strlen(base)<2 || access(base, W_OK) != 0)
       {
-        free(base);
-        base = (char*)malloc(1024);
+        Z_Free(base);
+        base = (char*)Z_Malloc(1024);
         if (!getcwd(base,1024) || access(base, W_OK) != 0)
           strcpy(base, current_dir_dummy);
       }
@@ -346,7 +346,7 @@ const char *I_DoomExeDir(void)
       char *home = getenv("HOME");
       size_t len = strlen(home);
 
-      base = malloc(len + strlen(prboom_dir) + 1);
+      base = Z_Malloc(len + strlen(prboom_dir) + 1);
       strcpy(base, home);
       // I've had trouble with trailing slashes before...
       if (base[len-1] == '/') base[len-1] = 0;
@@ -436,7 +436,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
 
     // initialize with the static lookup table
     num_search = sizeof(search0)/sizeof(*search0);
-    search = malloc(num_search * sizeof(*search));
+    search = Z_Malloc(num_search * sizeof(*search));
     memcpy(search, search0, num_search * sizeof(*search));
 
     // add each directory from the $DOOMWADPATH environment variable
@@ -444,7 +444,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {
       char *left, *ptr, *dup_dwp;
 
-      dup_dwp = strdup(dwp);
+      dup_dwp = Z_Strdup(dwp);
       left = dup_dwp;
 
       for (;;)
@@ -455,9 +455,9 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
               *ptr = '\0';
 
               num_search++;
-              search = realloc(search, num_search * sizeof(*search));
+              search = Z_Realloc(search, num_search * sizeof(*search));
               memset(&search[num_search-1], 0, sizeof(*search));
-              search[num_search-1].dir = strdup(left);
+              search[num_search-1].dir = Z_Strdup(left);
 
               left = ptr + 1;
           }
@@ -468,11 +468,11 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       }
 
       num_search++;
-      search = realloc(search, num_search * sizeof(*search));
+      search = Z_Realloc(search, num_search * sizeof(*search));
       memset(&search[num_search-1], 0, sizeof(*search));
-      search[num_search-1].dir = strdup(left);
+      search[num_search-1].dir = Z_Strdup(left);
 
-      free(dup_dwp);
+      Z_Free(dup_dwp);
     }
   }
 
@@ -495,7 +495,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     s = search[i].sub;
 
     if (!isStatic)
-      p = (char*)malloc((d ? strlen(d) : 0) + (s ? strlen(s) : 0) + pl);
+      p = (char*)Z_Malloc((d ? strlen(d) : 0) + (s ? strlen(s) : 0) + pl);
     sprintf(p, "%s%s%s%s%s", d ? d : "", (d && !HasTrailingSlash(d)) ? "/" : "",
                              s ? s : "", (s && !HasTrailingSlash(s)) ? "/" : "",
                              wfname);
@@ -508,7 +508,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       return p;
     }
     if (!isStatic)
-      free(p);
+      Z_Free(p);
   }
   return NULL;
 }

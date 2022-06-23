@@ -115,13 +115,13 @@ static int playpal_transparent, playpal_duplicate;
 void R_InitPatches(void) {
   if (!patches)
   {
-    patches = malloc(numlumps * sizeof(rpatch_t));
+    patches = Z_Malloc(numlumps * sizeof(rpatch_t));
     // clear out new patches to signal they're uninitialized
     memset(patches, 0, sizeof(rpatch_t)*numlumps);
   }
   if (!texture_composites)
   {
-    texture_composites = malloc(numtextures * sizeof(rpatch_t));
+    texture_composites = Z_Malloc(numtextures * sizeof(rpatch_t));
     // clear out new patches to signal they're uninitialized
     memset(texture_composites, 0, sizeof(rpatch_t)*numtextures);
   }
@@ -144,15 +144,15 @@ void R_FlushAllPatches(void) {
 
   if (patches)
   {
-    free(patches);
+    Z_Free(patches);
     patches = NULL;
   }
   if (texture_composites)
   {
     for (i=0; i<numtextures; i++)
       if (texture_composites[i].data)
-        free(texture_composites[i].data);
-    free(texture_composites);
+        Z_Free(texture_composites[i].data);
+    Z_Free(texture_composites);
     texture_composites = NULL;
   }
 }
@@ -243,7 +243,7 @@ static void FillEmptySpace(rpatch_t *patch)
 
   // alternate between two buffers to avoid "overlapping memcpy"-like symptoms
   orig = patch->pixels;
-  copy = malloc(numpix);
+  copy = Z_Malloc(numpix);
 
   for (pass = 0; pass < 8; pass++) // arbitrarily chosen limit (must be even)
   {
@@ -295,7 +295,7 @@ static void FillEmptySpace(rpatch_t *patch)
       break; // avoid infinite loop on entirely transparent patches (STBR127)
   }
 
-  free(copy);
+  Z_Free(copy);
 
   // copy top row of patch into any space at bottom, and vice versa
   // a hack to fix erroneous row of pixels at top of firing chaingun
@@ -430,7 +430,7 @@ static void createPatch(int id) {
   columnsDataSize = sizeof(rcolumn_t) * patch->width;
 
   // count the number of posts in each column
-  numPostsInColumn = malloc(sizeof(int) * patch->width);
+  numPostsInColumn = Z_Malloc(sizeof(int) * patch->width);
   numPostsTotal = 0;
 
   for (x=0; x<patch->width; x++) {
@@ -537,7 +537,7 @@ static void createPatch(int id) {
 
   FillEmptySpace(patch);
 
-  free(numPostsInColumn);
+  Z_Free(numPostsInColumn);
 }
 
 typedef struct {
@@ -618,7 +618,7 @@ static void createTextureCompositePatch(int id) {
   columnsDataSize = sizeof(rcolumn_t) * composite_patch->width;
 
   // count the number of posts in each column
-  countsInColumn = (count_t *)calloc(sizeof(count_t), composite_patch->width);
+  countsInColumn = (count_t *)Z_Calloc(sizeof(count_t), composite_patch->width);
   numPostsTotal = 0;
 
   for (i=0; i<texture->patchcount; i++) {
@@ -819,7 +819,7 @@ static void createTextureCompositePatch(int id) {
 
   FillEmptySpace(composite_patch);
 
-  free(countsInColumn);
+  Z_Free(countsInColumn);
 }
 
 //---------------------------------------------------------------------------

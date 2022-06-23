@@ -1760,7 +1760,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
       static int queuesize;
       if (queuesize < bodyquesize)
   {
-    bodyque = realloc(bodyque, bodyquesize*sizeof*bodyque);
+    bodyque = Z_Realloc(bodyque, bodyquesize*sizeof*bodyque);
     memset(bodyque+queuesize, 0,
      (bodyquesize-queuesize)*sizeof*bodyque);
     queuesize = bodyquesize;
@@ -2239,7 +2239,7 @@ void G_DoLoadGame(void)
   length = M_ReadFile(name, &savebuffer);
   if (length<=0)
     I_Error("Couldn't read file %s: %s", name, "(Unknown Error)");
-  free(name);
+  Z_Free(name);
   save_p = savebuffer + SAVESTRINGSIZE;
 
   if (strncmp((char*)save_p, SAVEVERSION, VERSIONSIZE) && !forced_loadgame) {
@@ -2260,13 +2260,13 @@ void G_DoLoadGame(void)
     {
       if (!forced_loadgame)
       {
-        char *msg = malloc(strlen((char*)save_p + sizeof checksum) + 128);
+        char *msg = Z_Malloc(strlen((char*)save_p + sizeof checksum) + 128);
         strcpy(msg,"Incompatible Savegame!!!\n");
         if (save_p[sizeof checksum])
           strcat(strcat(msg,"Wads expected:\n\n"), (char*)save_p + sizeof checksum);
         strcat(msg, "\nAre you sure?");
         G_LoadGameErr(msg);
-        free(msg);
+        Z_Free(msg);
         return;
       }
       else
@@ -2416,7 +2416,7 @@ void (CheckSaveGame)(size_t size, const char* file, int line)
 
   size += 1024;  // breathing room
   if (pos+size > savegamesize)
-    save_p = (savebuffer = realloc(savebuffer,
+    save_p = (savebuffer = Z_Realloc(savebuffer,
            savegamesize += (size+1023) & ~1023)) + pos;
 }
 
@@ -2439,7 +2439,7 @@ static void G_DoSaveGame(dboolean via_cmd)
 
   description = savedescription;
 
-  save_p = savebuffer = malloc(savegamesize);
+  save_p = savebuffer = Z_Malloc(savegamesize);
 
   CheckSaveGame(SAVESTRINGSIZE+VERSIONSIZE+sizeof(uint_64_t));
   memcpy (save_p, description, SAVESTRINGSIZE);
@@ -2524,11 +2524,11 @@ static void G_DoSaveGame(dboolean via_cmd)
     savegameslot + 1, maplump, W_GetLumpInfoByNum(W_GetNumForName(maplump))->wadfile->name, gameskill + 1,
     time/3600, (time%3600)/60, time%60, ttime/3600, (ttime%3600)/60, ttime%60);
 
-  free(savebuffer);  // killough
+  Z_Free(savebuffer);  // killough
   savebuffer = save_p = NULL;
 
   savedescription[0] = 0;
-  free(name);
+  Z_Free(name);
 }
 
 static skill_t d_skill;
@@ -3288,7 +3288,7 @@ void G_BeginRecording (void)
 {
   int i;
   byte *demostart, *demo_p;
-  demostart = demo_p = malloc(1000);
+  demostart = demo_p = Z_Malloc(1000);
   longtics = 0;
 
   dsda_ResetDemoSaveSlots();
@@ -3462,7 +3462,7 @@ void G_BeginRecording (void)
 
   R_DemoEx_ResetMLook();
 
-  free(demostart);
+  Z_Free(demostart);
 }
 
 //

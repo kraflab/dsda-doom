@@ -470,7 +470,7 @@ void P_UnArchiveMap(void)
     {
       int i;
       while (markpointnum >= markpointnum_max)
-        markpoints = realloc(markpoints, sizeof *markpoints *
+        markpoints = Z_Realloc(markpoints, sizeof *markpoints *
          (markpointnum_max = markpointnum_max ? markpointnum_max*2 : 16));
 
       for (i = 0; i < markpointnum; i++)
@@ -1149,7 +1149,7 @@ void P_TrueUnArchiveThinkers(void) {
       I_Error ("P_TrueUnArchiveThinkers: Unknown tc %i in size calculation", *save_p);
 
     // first table entry special: 0 maps to NULL
-    *(mobj_p = malloc((mobj_count + 1) * sizeof *mobj_p)) = 0;   // table of pointers
+    *(mobj_p = Z_Malloc((mobj_count + 1) * sizeof *mobj_p)) = 0;   // table of pointers
     save_p = sp;           // restore save pointer
   }
 
@@ -1534,7 +1534,7 @@ void P_TrueUnArchiveThinkers(void) {
 
   dsda_UnArchiveMSecNodes(mobj_p, mobj_count);
 
-  free(mobj_p);    // free translation table
+  Z_Free(mobj_p);    // free translation table
 
   // TODO: not in sync, need to save and load existing order
   if (map_format.thing_id)

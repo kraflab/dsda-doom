@@ -594,10 +594,10 @@ static void D_DoomLoop(void)
       char *avi_shot_curr_fname;
       avi_shot_num++;
       len = snprintf(NULL, 0, "%s%06d.tga", avi_shot_fname, avi_shot_num);
-      avi_shot_curr_fname = malloc(len+1);
+      avi_shot_curr_fname = Z_Malloc(len+1);
       sprintf(avi_shot_curr_fname, "%s%06d.tga", avi_shot_fname, avi_shot_num);
       M_DoScreenShot(avi_shot_curr_fname);
-      free(avi_shot_curr_fname);
+      Z_Free(avi_shot_curr_fname);
     }
   }
 }
@@ -816,9 +816,9 @@ void D_AddFile (const char *file, wad_source_t source)
   char *gwa_filename=NULL;
   int len;
 
-  wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+  wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
   wadfiles[numwadfiles].name =
-    AddDefaultExtension(strcpy(malloc(strlen(file)+5), file), ".wad");
+    AddDefaultExtension(strcpy(Z_Malloc(strlen(file)+5), file), ".wad");
   wadfiles[numwadfiles].src = source; // Ty 08/29/98
   wadfiles[numwadfiles].handle = 0;
 
@@ -830,14 +830,14 @@ void D_AddFile (const char *file, wad_source_t source)
   numwadfiles++;
   // proff: automatically try to add the gwa files
   // proff - moved from w_wad.c
-  gwa_filename=AddDefaultExtension(strcpy(malloc(strlen(file)+5), file), ".wad");
+  gwa_filename=AddDefaultExtension(strcpy(Z_Malloc(strlen(file)+5), file), ".wad");
   if (strlen(gwa_filename)>4)
     if (!strcasecmp(gwa_filename+(strlen(gwa_filename)-4),".wad"))
     {
       char *ext;
       ext = &gwa_filename[strlen(gwa_filename)-4];
       ext[1] = 'g'; ext[2] = 'w'; ext[3] = 'a';
-      wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+      wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
       wadfiles[numwadfiles].name = gwa_filename;
       wadfiles[numwadfiles].src = source; // Ty 08/29/98
       wadfiles[numwadfiles].handle = 0;
@@ -897,7 +897,7 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
         header.numlumps = LittleLong(header.numlumps);
         header.infotableofs = LittleLong(header.infotableofs);
         length = header.numlumps;
-        fileinfo = malloc(length*sizeof(filelump_t));
+        fileinfo = Z_Malloc(length*sizeof(filelump_t));
         if (fseek (fp, header.infotableofs, SEEK_SET) ||
             fread (fileinfo, sizeof(filelump_t), length, fp) != length)
         {
@@ -938,7 +938,7 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
           if (!strncmp(fileinfo[length].name,"HACX",4))
             hx++;
         }
-        free(fileinfo);
+        Z_Free(fileinfo);
 
       }
 
@@ -1144,7 +1144,7 @@ static void IdentifyVersion (void)
   if (iwad && *iwad)
   {
     AddIWAD(iwad);
-    free(iwad);
+    Z_Free(iwad);
   }
   else
     I_Error("IdentifyVersion: IWAD not found\n");
@@ -1168,12 +1168,12 @@ static void FindResponseFile (void)
         int  index;
         int indexinfile;
         byte *file = NULL;
-        const char **moreargs = malloc(myargc * sizeof(const char*));
+        const char **moreargs = Z_Malloc(myargc * sizeof(const char*));
         char **newargv;
         // proff 04/05/2000: Added for searching responsefile
         char *fname;
 
-        fname = malloc(strlen(&myargv[i][i])+4+1);
+        fname = Z_Malloc(strlen(&myargv[i][i])+4+1);
         strcpy(fname,&myargv[i][1]);
         AddDefaultExtension(fname,".rsp");
 
@@ -1186,7 +1186,7 @@ static void FindResponseFile (void)
         {
           size_t fnlen = doom_snprintf(NULL, 0, "%s/%s",
                                        I_DoomExeDir(), &myargv[i][1]);
-          fname = realloc(fname, fnlen+4+1);
+          fname = Z_Realloc(fname, fnlen+4+1);
           doom_snprintf(fname, fnlen+1, "%s/%s",
                         I_DoomExeDir(), &myargv[i][1]);
           AddDefaultExtension(fname,".rsp");
@@ -1202,14 +1202,14 @@ static void FindResponseFile (void)
         }
         //jff 9/3/98 use logical output routine
         lprintf(LO_INFO,"Found response file %s\n",fname);
-        free(fname);
+        Z_Free(fname);
         // proff 04/05/2000: Added check for empty rsp file
         if (size<=0)
         {
           int k;
           lprintf(LO_ERROR,"\nResponse file empty!\n");
 
-          newargv = calloc(sizeof(newargv[0]),myargc);
+          newargv = Z_Calloc(sizeof(newargv[0]),myargc);
           newargv[0] = myargv[0];
           for (k = 1,index = 1;k < myargc;k++)
           {
@@ -1226,7 +1226,7 @@ static void FindResponseFile (void)
 
         {
           char *firstargv = myargv[0];
-          newargv = calloc(sizeof(newargv[0]), 1);
+          newargv = Z_Calloc(sizeof(newargv[0]), 1);
           newargv[0] = firstargv;
         }
 
@@ -1237,7 +1237,7 @@ static void FindResponseFile (void)
           do {
             while (size > 0 && isspace(*infile)) { infile++; size--; }
             if (size > 0) {
-              char *s = malloc(size+1);
+              char *s = Z_Malloc(size+1);
               char *p = s;
               int quoted = 0;
 
@@ -1255,16 +1255,16 @@ static void FindResponseFile (void)
 
               // Terminate string, realloc and add to argv
               *p = 0;
-              newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + 1));
-              newargv[indexinfile++] = realloc(s,strlen(s)+1);
+              newargv = Z_Realloc(newargv, sizeof(newargv[0]) * (indexinfile + 1));
+              newargv[indexinfile++] = Z_Realloc(s,strlen(s)+1);
             }
           } while(size > 0);
         }
-        free(file);
+        Z_Free(file);
 
-        newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
+        newargv = Z_Realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
         memcpy((void *)&newargv[indexinfile],moreargs,index*sizeof(moreargs[0]));
-        free((void *)moreargs);
+        Z_Free((void *)moreargs);
 
         myargc = indexinfile+index;
         myargv = newargv;
@@ -1347,10 +1347,10 @@ static void DoLooseFiles(void)
     {0}
   };
 
-  wads = malloc(myargc * sizeof(*wads));
-  lmps = malloc(myargc * sizeof(*lmps));
-  dehs = malloc(myargc * sizeof(*dehs));
-  skip = malloc(myargc * sizeof(dboolean));
+  wads = Z_Malloc(myargc * sizeof(*wads));
+  lmps = Z_Malloc(myargc * sizeof(*lmps));
+  dehs = Z_Malloc(myargc * sizeof(*dehs));
+  skip = Z_Malloc(myargc * sizeof(dboolean));
 
   for (i = 0; i < myargc; i++)
     skip[i] = false;
@@ -1374,18 +1374,18 @@ static void DoLooseFiles(void)
         if (k == loose_wad_index && FileMatchesIWAD(myargv[i]))
         {
           // We can only have one iwad
-          if (iwad) free(iwad);
-          iwad = strdup(myargv[i]);
+          if (iwad) Z_Free(iwad);
+          iwad = Z_Strdup(myargv[i]);
           break;
         }
 
-        (*(looses[k].list))[(*looses[k].count)++] = strdup(myargv[i]);
+        (*(looses[k].list))[(*looses[k].count)++] = Z_Strdup(myargv[i]);
         break;
       }
       k++;
     }
     /*if (myargv[i][j-4] != '.')  // assume wad if no extension
-      wads[wadcount++] = strdup(myargv[i]);*/
+      wads[wadcount++] = Z_Strdup(myargv[i]);*/
     skip[i] = true; // nuke that entry so it won't repeat later
   }
 
@@ -1406,7 +1406,7 @@ static void DoLooseFiles(void)
         skip[p] = true;    // nuke the entry
         while (++p != myargc && *myargv[p] != '-')
         {
-          (*(params[k].list))[(*params[k].count)++] = strdup(myargv[p]);
+          (*(params[k].list))[(*params[k].count)++] = Z_Strdup(myargv[p]);
           skip[p] = true;  // null any we find and save
         }
       }
@@ -1422,7 +1422,7 @@ static void DoLooseFiles(void)
 
     // Now go back and redo the whole myargv array with our stuff in it.
     // First, create a new myargv array to copy into
-    tmyargv = calloc(sizeof(tmyargv[0]), myargc + n);
+    tmyargv = Z_Calloc(sizeof(tmyargv[0]), myargc + n);
     tmyargv[0] = myargv[0]; // invocation
     tmyargc = 1;
 
@@ -1432,9 +1432,9 @@ static void DoLooseFiles(void)
       // put our stuff into it
       if (*(params[k].count) > 0)
       {
-        tmyargv[tmyargc++] = strdup(params[k].cmdparam); // put the switch in
+        tmyargv[tmyargc++] = Z_Strdup(params[k].cmdparam); // put the switch in
         for (i=0;i<*(params[k].count);)
-          tmyargv[tmyargc++] = (*(params[k].list))[i++]; // allocated by strdup above
+          tmyargv[tmyargc++] = (*(params[k].list))[i++]; // allocated by Z_Strdup above
       }
       k++;
     }
@@ -1450,11 +1450,11 @@ static void DoLooseFiles(void)
     myargc = tmyargc;
   }
 
-  free(wads);
-  free(lmps);
-  free(dehs);
-  free(skip);
-  if (iwad) free(iwad);
+  Z_Free(wads);
+  Z_Free(lmps);
+  Z_Free(dehs);
+  Z_Free(skip);
+  if (iwad) Z_Free(iwad);
 }
 
 /* cph - MBF-like wad/deh/bex autoload code */
@@ -1477,7 +1477,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
     {
         const char* exedir = I_DoomExeDir();
         len = doom_snprintf(NULL, 0, "%s/autoload", exedir);
-        autoload_path = malloc(len+1);
+        autoload_path = Z_Malloc(len+1);
         doom_snprintf(autoload_path, len+1, "%s/autoload", exedir);
     }
 
@@ -1488,7 +1488,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
 #endif
 
     len = doom_snprintf(NULL, 0, "%s/%s", autoload_path, iwadname);
-    result = malloc(len+1);
+    result = Z_Malloc(len+1);
     doom_snprintf(result, len+1, "%s/%s", autoload_path, iwadname);
 
     if (createdir)
@@ -1573,17 +1573,17 @@ void D_AutoloadIWadDir()
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
   AutoLoadWADs(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
   AutoLoadWADs(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
   AutoLoadWADs(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 }
 
 static void D_AutoloadPWadDir()
@@ -1595,7 +1595,7 @@ static void D_AutoloadPWadDir()
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
       AutoLoadWADs(autoload_dir);
-      free(autoload_dir);
+      Z_Free(autoload_dir);
     }
 }
 
@@ -1630,17 +1630,17 @@ static void D_AutoloadDehIWadDir()
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
   AutoLoadPatches(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
   AutoLoadPatches(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
   AutoLoadPatches(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 }
 
 static void D_AutoloadDehPWadDir()
@@ -1652,7 +1652,7 @@ static void D_AutoloadDehPWadDir()
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
       AutoLoadPatches(autoload_dir);
-      free(autoload_dir);
+      Z_Free(autoload_dir);
     }
 }
 
@@ -1810,11 +1810,11 @@ static void D_DoomMainSetup(void)
     {
       char *tempverstr;
       const char bfgverstr[]=" (BFG Edition)";
-      tempverstr = malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
+      tempverstr = Z_Malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
       strcpy (tempverstr, doomverstr);
       strcat (tempverstr, bfgverstr);
-      doomverstr = strdup (tempverstr);
-      free (tempverstr);
+      doomverstr = Z_Strdup (tempverstr);
+      Z_Free (tempverstr);
     }
 
     /* cphipps - the main display. This shows the build date, copyright, and game type */
@@ -1932,7 +1932,7 @@ static void D_DoomMainSetup(void)
         lprintf(LO_WARN, "Failed to autoload %s\n", fname);
       else {
         D_AddFile(fpath,source_auto_load);
-        free(fpath);
+        Z_Free(fpath);
       }
     }
   }
@@ -1964,7 +1964,7 @@ static void D_DoomMainSetup(void)
       if (file)
       {
         D_AddFile(file,source_pwad);
-        free(file);
+        Z_Free(file);
       }
     }
   }
@@ -1973,13 +1973,13 @@ static void D_DoomMainSetup(void)
 
   if (p)
   {
-    char *file = malloc(strlen(myargv[p+1])+4+1); // cph - localised
+    char *file = Z_Malloc(strlen(myargv[p+1])+4+1); // cph - localised
     strcpy(file,myargv[p+1]);
     AddDefaultExtension(file,".lmp");     // killough
     D_AddFile (file,source_lmp);
     //jff 9/3/98 use logical output routine
     lprintf(LO_INFO,"Playing demo %s\n",file);
-    free(file);
+    Z_Free(file);
   }
 
   //e6y
@@ -2072,7 +2072,7 @@ static void D_DoomMainSetup(void)
       else {
         ProcessDehFile(fpath, D_dehout(), 0);
         // this used to set modifiedgame here, but patches shouldn't
-        free(fpath);
+        Z_Free(fpath);
       }
     }
   }
@@ -2119,7 +2119,7 @@ static void D_DoomMainSetup(void)
       {
         // during the beta we have debug output to dehout.txt
         ProcessDehFile(file,D_dehout(),0);
-        free(file);
+        Z_Free(file);
       }
       else
       {

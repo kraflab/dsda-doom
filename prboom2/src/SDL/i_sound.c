@@ -229,7 +229,7 @@ static wav_data_t *GetWavData(int sfxid, const unsigned char *data, size_t len)
       return NULL;
     }
 
-    target = malloc(sizeof(*target));
+    target = Z_Malloc(sizeof(*target));
 
     target->sfxid = sfxid;
     target->data = wav_buffer;
@@ -789,7 +789,7 @@ unsigned char *I_GrabSound (int len)
   if (!buffer || size > buffer_size)
   {
     buffer_size = size * 4;
-    buffer = (unsigned char *)realloc (buffer, buffer_size);
+    buffer = (unsigned char *)Z_Realloc (buffer, buffer_size);
   }
 
   if (buffer)
@@ -822,7 +822,7 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 
   if (nreq > sinsamp)
   {
-    sin = (short*)realloc (sin, (nreq + 1) * 4);
+    sin = (short*)Z_Realloc (sin, (nreq + 1) * 4);
     if (!sinsamp) // avoid pop when first starting stream
       sin[0] = sin[1] = 0;
     sinsamp = nreq;
@@ -1196,7 +1196,7 @@ static void UnRegisterSong(int handle)
     music_handle = NULL;
     if (mus2mid_conversion_data)
     {
-      free (mus2mid_conversion_data);
+      Z_Free (mus2mid_conversion_data);
       mus2mid_conversion_data = NULL;
     }
     SDL_UnlockMutex (musmutex);
@@ -1311,7 +1311,7 @@ static int RegisterSongEx (const void *data, size_t len, int try_mus2mid)
       mem_get_buf(outstream, &outbuf, &outbuf_len);
 
       // recopy so we can free the MEMFILE
-      mus2mid_conversion_data = malloc (outbuf_len);
+      mus2mid_conversion_data = Z_Malloc (outbuf_len);
       if (mus2mid_conversion_data)
         memcpy (mus2mid_conversion_data, outbuf, outbuf_len);
 

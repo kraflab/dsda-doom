@@ -69,7 +69,7 @@ static char* dsda_SplitTrackerPath(void) {
     dir = dsda_SplitTrackerDir();
 
     length = strlen(dir) + strlen(name_base) + 28;
-    dsda_split_tracker_path = malloc(length);
+    dsda_split_tracker_path = Z_Malloc(length);
 
     snprintf(
       dsda_split_tracker_path, length - 1, "%s/%s_%i_%i_%i_%s_splits.txt",
@@ -126,7 +126,7 @@ static void dsda_LoadSplits(void) {
         break;
 
       i = dsda_splits_count;
-      dsda_splits = realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
+      dsda_splits = Z_Realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
       dsda_InitSplitTime(&dsda_splits[i].leveltime);
       dsda_InitSplitTime(&dsda_splits[i].totalleveltimes);
       dsda_splits[i].first_time = 0;
@@ -144,7 +144,7 @@ static void dsda_LoadSplits(void) {
 
     lprintf(LO_INFO, "dsda_LoadSplits: %I64i splits loaded!\n", dsda_splits_count);
 
-    free(buffer);
+    Z_Free(buffer);
   }
 }
 
@@ -205,7 +205,7 @@ void dsda_RecordSplit(void) {
     }
 
   if (i == dsda_splits_count) {
-    dsda_splits = realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
+    dsda_splits = Z_Realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
     dsda_splits[i].first_time = 1;
     dsda_InitSplitTime(&dsda_splits[i].leveltime);
     dsda_InitSplitTime(&dsda_splits[i].totalleveltimes);

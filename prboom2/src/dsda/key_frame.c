@@ -169,7 +169,7 @@ static dsda_key_frame_t* dsda_ClosestKeyFrame(int target_tic_count) {
 
 void dsda_CopyKeyFrame(dsda_key_frame_t* dest, dsda_key_frame_t* source) {
   *dest = *source;
-  dest->buffer = malloc(dest->buffer_length);
+  dest->buffer = Z_Malloc(dest->buffer_length);
   memcpy(dest->buffer, source->buffer, dest->buffer_length);
 }
 
@@ -184,11 +184,11 @@ void dsda_InitKeyFrame(void) {
   }
 
   if (auto_key_frames != NULL)
-    free(auto_key_frames);
+    Z_Free(auto_key_frames);
 
   ++auto_kf_size; // chain includes a terminator
 
-  auto_key_frames = calloc(auto_kf_size, sizeof(auto_kf_t));
+  auto_key_frames = Z_Calloc(auto_kf_size, sizeof(auto_kf_t));
 
   auto_key_frames[0].prev = &auto_key_frames[auto_kf_size - 1];
   auto_key_frames[auto_kf_size - 1].next = &auto_key_frames[0];
@@ -224,7 +224,7 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export) {
   int i;
 
-  save_p = savebuffer = malloc(savegamesize);
+  save_p = savebuffer = Z_Malloc(savegamesize);
 
   CheckSaveGame(1);
   *save_p++ = complete;
@@ -270,7 +270,7 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export)
 
   dsda_ArchiveAll();
 
-  if (key_frame->buffer != NULL) free(key_frame->buffer);
+  if (key_frame->buffer != NULL) Z_Free(key_frame->buffer);
 
   key_frame->buffer = savebuffer;
   key_frame->buffer_length = save_p - savebuffer;
@@ -406,10 +406,10 @@ void dsda_RestoreKeyFrameFile(const char* name) {
   if (filename)
   {
     M_ReadFile(filename, &key_frame.buffer);
-    free(filename);
+    Z_Free(filename);
 
     dsda_RestoreKeyFrame(&key_frame, false);
-    free(key_frame.buffer);
+    Z_Free(key_frame.buffer);
   }
   else
     I_Error("dsda_RestoreKeyFrameFile: cannot find %s", name);

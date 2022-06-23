@@ -591,7 +591,7 @@ static void AM_addMark(void)
   // remove limit on automap marks
 
   if (markpointnum >= markpointnum_max)
-    markpoints = realloc(markpoints,
+    markpoints = Z_Realloc(markpoints,
                         (markpointnum_max = markpointnum_max ?
                          markpointnum_max*2 : 16) * sizeof(*markpoints));
 

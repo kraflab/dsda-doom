@@ -208,7 +208,7 @@ void V_InitColorTranslation(void)
       continue;
     if (gamemission == chex || gamemission == hacx)
     {
-      byte *temp = malloc(256);
+      byte *temp = Z_Malloc(256);
       memcpy (temp, *p->map, 256);
       if (gamemission == chex)
         memcpy (temp+112, *p->map+176, 16); // green range
@@ -868,7 +868,7 @@ void V_AllocScreen(screeninfo_t *scrn) {
   if (!scrn->not_on_heap)
     if ((scrn->pitch * scrn->height) > 0)
       //e6y: Clear the screen to black.
-      scrn->data = calloc(scrn->pitch*scrn->height, 1);
+      scrn->data = Z_Calloc(scrn->pitch*scrn->height, 1);
 }
 
 //
@@ -886,7 +886,7 @@ void V_AllocScreens(void) {
 //
 void V_FreeScreen(screeninfo_t *scrn) {
   if (!scrn->not_on_heap) {
-    free(scrn->data);
+    Z_Free(scrn->data);
     scrn->data = NULL;
   }
 }
@@ -1137,7 +1137,7 @@ const unsigned char* V_GetPlaypal(void)
     int lump = W_GetNumForName(playpal_data->lump_name);
     int len = W_LumpLength(lump);
     const byte *data = W_LumpByNum(lump);
-    playpal_data->lump = malloc(len);
+    playpal_data->lump = Z_Malloc(len);
     memcpy(playpal_data->lump, data, len);
   }
 

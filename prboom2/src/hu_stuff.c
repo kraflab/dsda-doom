@@ -1065,7 +1065,7 @@ void HU_LoadHUDDefs(void)
 
         // setup new hud
         huds_count++;
-        huds = realloc(huds, huds_count * sizeof(huds[0]));
+        huds = Z_Realloc(huds, huds_count * sizeof(huds[0]));
         list = &huds[huds_count - 1];
         list->items = NULL;
         list->count = 0;
@@ -1098,7 +1098,7 @@ void HU_LoadHUDDefs(void)
             hud_widget_t *item;
 
             list->count++;
-            list->items = realloc(list->items, list->count * sizeof(list->items[0]));
+            list->items = Z_Realloc(list->items, list->count * sizeof(list->items[0]));
 
             item = &list->items[list->count - 1];
 

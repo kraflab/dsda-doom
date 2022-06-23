@@ -66,9 +66,9 @@ void dsda_SetDemoBaseName(const char* name) {
   char* p;
 
   if (dsda_demo_name_base)
-    free(dsda_demo_name_base);
+    Z_Free(dsda_demo_name_base);
 
-  dsda_demo_name_base = strdup(name);
+  dsda_demo_name_base = Z_Strdup(name);
 
   dsda_CutExtension(dsda_demo_name_base);
 
@@ -90,7 +90,7 @@ char* dsda_GenerateDemoName(unsigned int* counter, const char* base_name) {
 
   j = *counter;
   demo_name_size = strlen(base_name) + 11; // 11 = -12345.lmp\0
-  demo_name = malloc(demo_name_size);
+  demo_name = Z_Malloc(demo_name_size);
   snprintf(demo_name, demo_name_size, "%s.lmp", base_name);
 
   for (; j <= 99999 && (fp = fopen(demo_name, "rb")) != NULL; j++) {
@@ -137,7 +137,7 @@ static void dsda_EnsureDemoBufferSpace(size_t length) {
     dsda_demo_write_buffer_length *= 2;
 
   dsda_demo_write_buffer =
-    (byte *)realloc(dsda_demo_write_buffer, dsda_demo_write_buffer_length);
+    (byte *)Z_Realloc(dsda_demo_write_buffer, dsda_demo_write_buffer_length);
 
   if (dsda_demo_write_buffer == NULL)
     I_Error("dsda_EnsureDemoBufferSpace: out of memory!");
@@ -206,7 +206,7 @@ void dsda_InitDemoRecording(void) {
 
   dsda_ForgetAutoKeyFrames();
 
-  dsda_demo_write_buffer = malloc(INITIAL_DEMO_BUFFER_SIZE);
+  dsda_demo_write_buffer = Z_Malloc(INITIAL_DEMO_BUFFER_SIZE);
   if (dsda_demo_write_buffer == NULL)
     I_Error("dsda_InitDemo: unable to initialize demo buffer!");
 
@@ -303,7 +303,7 @@ static int dsda_ExportDemoToFile(const char* demo_name) {
 }
 
 static void dsda_FreeDemoBuffer(void) {
-  free(dsda_demo_write_buffer);
+  Z_Free(dsda_demo_write_buffer);
   dsda_demo_write_buffer = NULL;
   dsda_demo_write_buffer_p = NULL;
   dsda_demo_write_buffer_length = 0;
@@ -321,7 +321,7 @@ static char* dsda_DemoNameWithTime(void) {
 
   length = strlen(dsda_demo_name_base) + 16 + 1;
 
-  base_name = calloc(length, 1);
+  base_name = Z_Calloc(length, 1);
 
   if (dsda_ILComplete()) {
     dsda_level_time_t level_time;
@@ -353,7 +353,7 @@ static char* dsda_DemoNameWithTime(void) {
 
   demo_name = dsda_GenerateDemoName(&counter, base_name);
 
-  free(base_name);
+  Z_Free(base_name);
 
   return demo_name;
 }
@@ -372,7 +372,7 @@ void dsda_EndDemoRecording(void) {
 
   dsda_FreeDemoBuffer();
 
-  free(demo_name);
+  Z_Free(demo_name);
 
   lprintf(LO_INFO, "Demo finished recording\n");
 }
@@ -383,7 +383,7 @@ void dsda_ExportDemo(const char* name) {
   int counter = 2;
   int old_offset;
 
-  base_name = strdup(name);
+  base_name = Z_Strdup(name);
 
   dsda_CutExtension(base_name);
 
@@ -393,8 +393,8 @@ void dsda_ExportDemo(const char* name) {
 
   dsda_SetDemoBufferOffset(old_offset);
 
-  free(base_name);
-  free(demo_name);
+  Z_Free(base_name);
+  Z_Free(demo_name);
 
   lprintf(LO_INFO, "Demo recording exported\n");
 }

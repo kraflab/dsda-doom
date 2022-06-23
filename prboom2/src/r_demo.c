@@ -95,13 +95,13 @@ int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
     {
       if (sbuf)
       {
-        free(sbuf);
+        Z_Free(sbuf);
         sbuf = NULL;
       }
 
       len = M_ReadFile(filename, &sbuf);
       buf = (const byte *)sbuf;
-      free(filename);
+      Z_Free(filename);
     }
   }
   else
@@ -234,13 +234,13 @@ int AddString(char **str, const char *val)
   if (*str)
   {
     size = strlen(*str) + strlen(val) + 1;
-    *str = realloc(*str, size);
+    *str = Z_Realloc(*str, size);
     strcat(*str, val);
   }
   else
   {
     size = strlen(val) + 1;
-    *str = malloc(size);
+    *str = Z_Malloc(size);
     strcpy(*str, val);
   }
 
@@ -265,10 +265,10 @@ void W_InitPWADTable(wadtbl_t *wadtbl)
 void W_FreePWADTable(wadtbl_t *wadtbl)
 {
   //clear PWAD lookup table
-  free(wadtbl->lumps);
+  Z_Free(wadtbl->lumps);
 
   //clear PWAD data
-  free(wadtbl->data);
+  Z_Free(wadtbl->data);
 }
 
 void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size)
@@ -285,7 +285,7 @@ void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size
 
   if (name)
   {
-    wadtbl->lumps = realloc(wadtbl->lumps, (lumpnum + 1) * sizeof(wadtbl->lumps[0]));
+    wadtbl->lumps = Z_Realloc(wadtbl->lumps, (lumpnum + 1) * sizeof(wadtbl->lumps[0]));
 
     memcpy(wadtbl->lumps[lumpnum].name, name, 8);
     wadtbl->lumps[lumpnum].size = size;
@@ -296,7 +296,7 @@ void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size
 
   if (data && size > 0)
   {
-    wadtbl->data = realloc(wadtbl->data, wadtbl->datasize + size);
+    wadtbl->data = Z_Realloc(wadtbl->data, wadtbl->datasize + size);
 
     memcpy(wadtbl->data + wadtbl->datasize, data, size);
     wadtbl->datasize += size;
@@ -380,7 +380,7 @@ angle_t R_DemoEx_ReadMLook(void)
         int size = W_LumpLength(mlook_lump.lump);
 
         mlook_lump.maxtick = size / sizeof(mlook_lump.data[0]);
-        mlook_lump.data = malloc(size);
+        mlook_lump.data = Z_Malloc(size);
         memcpy(mlook_lump.data, data, size);
       }
     }
@@ -413,7 +413,7 @@ void R_DemoEx_WriteMLook(angle_t pitch)
     mlook_lump.maxtick = (mlook_lump.maxtick ? mlook_lump.maxtick * 2 : 8192);
     if (mlook_lump.tick >= mlook_lump.maxtick)
       mlook_lump.maxtick = mlook_lump.tick * 2;
-    mlook_lump.data = realloc(mlook_lump.data, mlook_lump.maxtick * sizeof(mlook_lump.data[0]));
+    mlook_lump.data = Z_Realloc(mlook_lump.data, mlook_lump.maxtick * sizeof(mlook_lump.data[0]));
     memset(mlook_lump.data + ticks, 0, (mlook_lump.maxtick - ticks) * sizeof(mlook_lump.data[0]));
   }
 
@@ -468,7 +468,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
   if (size <= 0)
     return;
 
-  str = calloc(size + 1, 1);
+  str = Z_Calloc(size + 1, 1);
   if (!str)
     return;
 
@@ -477,7 +477,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
 
   M_ParseCmdLine(str, NULL, NULL, &paramscount, &i);
 
-  params = malloc(paramscount * sizeof(char*) + i * sizeof(char) + 1);
+  params = Z_Malloc(paramscount * sizeof(char*) + i * sizeof(char) + 1);
   if (params)
   {
     struct {
@@ -507,10 +507,10 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
             filename = I_FindFile(params[p], ".wad");
             if (!filename)
             {
-              filename = strdup(params[p]);
+              filename = Z_Strdup(params[p]);
             }
             WadDataAddItem(waddata, filename, files[i].source, 0);
-            free(filename);
+            Z_Free(filename);
           }
         }
         i++;
@@ -601,7 +601,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
         int value;
         char *pstr, *mask;
 
-        mask = malloc(strlen(overflow_cfgname[overflow]) + 16);
+        mask = Z_Malloc(strlen(overflow_cfgname[overflow]) + 16);
         if (mask)
         {
           sprintf(mask, "-set %s", overflow_cfgname[overflow]);
@@ -616,15 +616,15 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
               overflows[overflow].footer_emulate = value;
             }
           }
-          free(mask);
+          Z_Free(mask);
         }
       }
     }
 
-    free(params);
+    Z_Free(params);
   }
 
-  free(str);
+  Z_Free(str);
 }
 
 static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
@@ -682,7 +682,7 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
         AddString(&dehs, "\"");
         AddString(&dehs, filename_p);
         AddString(&dehs, "\" ");
-        free(file);
+        Z_Free(file);
       }
     }
   }
@@ -840,7 +840,7 @@ byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size)
   file_size = ftell(hfile);
   fseek(hfile, 0, SEEK_SET);
 
-  buffer = malloc(file_size);
+  buffer = Z_Malloc(file_size);
 
   if (fread(buffer, file_size, 1, hfile) == 1)
   {
@@ -921,7 +921,7 @@ void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl)
 
       fclose(hfile);
     }
-    free(buffer);
+    Z_Free(buffer);
   }
 }
 
@@ -988,7 +988,7 @@ int CheckWadFileIntegrity(const char *filename)
       header.infotableofs = LittleLong(header.infotableofs);
       length = header.numlumps * sizeof(filelump_t);
 
-      fileinfo2free = fileinfo = malloc(length);
+      fileinfo2free = fileinfo = Z_Malloc(length);
       if (fileinfo)
       {
         if (fseek(hfile, header.infotableofs, SEEK_SET) == 0 &&
@@ -1005,7 +1005,7 @@ int CheckWadFileIntegrity(const char *filename)
           }
           result = (i == header.numlumps);
         }
-        free(fileinfo2free);
+        Z_Free(fileinfo2free);
       }
     }
     fclose(hfile);
@@ -1046,7 +1046,7 @@ static int G_ReadDemoFooter(const char *filename)
       tmp_dir = I_GetTempDir();
       if (tmp_dir && *tmp_dir != '\0')
       {
-        tmp_path = malloc(strlen(tmp_dir) + 2);
+        tmp_path = Z_Malloc(strlen(tmp_dir) + 2);
         strcpy(tmp_path, tmp_dir);
         if (!HasTrailingSlash(tmp_dir))
         {
@@ -1069,7 +1069,7 @@ static int G_ReadDemoFooter(const char *filename)
           close(tmp_fd);
         }
 
-        free(tmp_path);
+        Z_Free(tmp_path);
       }
     }
 
@@ -1132,7 +1132,7 @@ static int G_ReadDemoFooter(const char *filename)
         WadDataFree(&waddata);
       }
     }
-    free(buffer);
+    Z_Free(buffer);
   }
 
   return result;
@@ -1198,11 +1198,11 @@ void WadDataFree(waddata_t *waddata)
       {
         if (waddata->wadfiles[i].name)
         {
-          free(waddata->wadfiles[i].name);
+          Z_Free(waddata->wadfiles[i].name);
           waddata->wadfiles[i].name = NULL;
         }
       }
-      free(waddata->wadfiles);
+      Z_Free(waddata->wadfiles);
       waddata->wadfiles = NULL;
     }
   }
@@ -1213,8 +1213,8 @@ int WadDataAddItem(waddata_t *waddata, const char *filename, wad_source_t source
   if (!waddata || !filename)
     return false;
 
-  waddata->wadfiles = realloc(waddata->wadfiles, sizeof(*wadfiles) * (waddata->numwadfiles + 1));
-  waddata->wadfiles[waddata->numwadfiles].name = strdup(filename);
+  waddata->wadfiles = Z_Realloc(waddata->wadfiles, sizeof(*wadfiles) * (waddata->numwadfiles + 1));
+  waddata->wadfiles[waddata->numwadfiles].name = Z_Strdup(filename);
   waddata->wadfiles[waddata->numwadfiles].src = source;
   waddata->wadfiles[waddata->numwadfiles].handle = handle;
 
@@ -1234,10 +1234,10 @@ void WadDataToWadFiles(waddata_t *waddata)
   size_t old_numwadfiles = numwadfiles;
 
   old_numwadfiles = numwadfiles;
-  old_wadfiles = malloc(sizeof(*(wadfiles)) * numwadfiles);
+  old_wadfiles = Z_Malloc(sizeof(*(wadfiles)) * numwadfiles);
   memcpy(old_wadfiles, wadfiles, sizeof(*(wadfiles)) * numwadfiles);
 
-  free(wadfiles);
+  Z_Free(wadfiles);
   wadfiles = NULL;
   numwadfiles = 0;
 
@@ -1260,8 +1260,8 @@ void WadDataToWadFiles(waddata_t *waddata)
   {
     if (old_wadfiles[i].src == source_auto_load || old_wadfiles[i].src == source_pre)
     {
-      wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
-      wadfiles[numwadfiles].name = strdup(old_wadfiles[i].name);
+      wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+      wadfiles[numwadfiles].name = Z_Strdup(old_wadfiles[i].name);
       wadfiles[numwadfiles].src = old_wadfiles[i].src;
       wadfiles[numwadfiles].handle = old_wadfiles[i].handle;
       numwadfiles++;
@@ -1272,8 +1272,8 @@ void WadDataToWadFiles(waddata_t *waddata)
   {
     if (waddata->wadfiles[i].src == source_auto_load)
     {
-      wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
-      wadfiles[numwadfiles].name = strdup(waddata->wadfiles[i].name);
+      wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+      wadfiles[numwadfiles].name = Z_Strdup(waddata->wadfiles[i].name);
       wadfiles[numwadfiles].src = waddata->wadfiles[i].src;
       wadfiles[numwadfiles].handle = waddata->wadfiles[i].handle;
       numwadfiles++;
@@ -1295,8 +1295,8 @@ void WadDataToWadFiles(waddata_t *waddata)
         file = I_FindFile2(waddata->wadfiles[i].name, ".wad");
         if (file)
         {
-          free(waddata->wadfiles[i].name);
-          waddata->wadfiles[i].name = strdup(file);
+          Z_Free(waddata->wadfiles[i].name);
+          waddata->wadfiles[i].name = Z_Strdup(file);
         }
       }
       if (file)
@@ -1317,7 +1317,7 @@ void WadDataToWadFiles(waddata_t *waddata)
       D_AddFile(waddata->wadfiles[i].name, waddata->wadfiles[i].src);
   }
 
-  free(old_wadfiles);
+  Z_Free(old_wadfiles);
 }
 
 int CheckDemoExDemo(void)
@@ -1331,7 +1331,7 @@ int CheckDemoExDemo(void)
   {
     char *demoname, *filename;
 
-    filename = malloc(strlen(myargv[p + 1]) + 16);
+    filename = Z_Malloc(strlen(myargv[p + 1]) + 16);
     strcpy(filename, myargv[p + 1]);
     AddDefaultExtension(filename, ".lmp");
 
@@ -1339,10 +1339,10 @@ int CheckDemoExDemo(void)
     if (demoname)
     {
       result = G_ReadDemoFooter(demoname);
-      free(demoname);
+      Z_Free(demoname);
     }
 
-    free(filename);
+    Z_Free(filename);
   }
 
   return result;
@@ -1370,7 +1370,7 @@ dboolean D_TryGetWad(const char* name)
   strncpy(wadname, PathFindFileName(name), sizeof(wadname) - 4);
   AddDefaultExtension(wadname, ".wad");
 
-  cmdline = malloc(strlen(getwad_cmdline) + strlen(wadname) + 2);
+  cmdline = Z_Malloc(strlen(getwad_cmdline) + strlen(wadname) + 2);
   wadname_p = strstr(getwad_cmdline, "%wadname%");
   if (wadname_p)
   {
@@ -1383,7 +1383,7 @@ dboolean D_TryGetWad(const char* name)
     sprintf(cmdline, "%s %s", getwad_cmdline, wadname);
   }
 
-  msg = malloc(strlen(format) + strlen(wadname) + strlen(cmdline));
+  msg = Z_Malloc(strlen(format) + strlen(wadname) + strlen(cmdline));
   sprintf(msg, format, wadname, cmdline);
 
   if (PRB_IDYES == I_MessageBox(msg, PRB_MB_DEFBUTTON2 | PRB_MB_YESNO))
@@ -1404,14 +1404,14 @@ dboolean D_TryGetWad(const char* name)
       if (str)
       {
         lprintf(LO_INFO, "D_TryGetWad: Successfully received\n");
-        free(str);
+        Z_Free(str);
         result = true;
       }
     }
   }
 
-  free(msg);
-  free(cmdline);
+  Z_Free(msg);
+  Z_Free(cmdline);
 
   return result;
 }

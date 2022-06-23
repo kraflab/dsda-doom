@@ -92,7 +92,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
   ret = true;
 
   if (recursion++)                            // if recursion detected,
-    seenstate = tempstate = calloc(num_states, sizeof(statenum_t)); // allocate state table
+    seenstate = tempstate = Z_Calloc(num_states, sizeof(statenum_t)); // allocate state table
 
   do
     {
@@ -129,7 +129,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
       seenstate[i] = 0;  // killough 4/9/98: erase memory of states
 
   if (tempstate)
-    free(tempstate);
+    Z_Free(tempstate);
 
   return ret;
 }
@@ -2173,7 +2173,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       {
         num_deathmatchstarts = num_deathmatchstarts ?
                                num_deathmatchstarts * 2 : 16;
-        deathmatchstarts = realloc(deathmatchstarts,
+        deathmatchstarts = Z_Realloc(deathmatchstarts,
                                    num_deathmatchstarts *
                                    sizeof(*deathmatchstarts));
         deathmatch_p = deathmatchstarts + offset;

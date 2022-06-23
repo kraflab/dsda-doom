@@ -70,9 +70,9 @@ void dsda_LoadSndInfo(void) {
           SC_MustGetString();
 
           if (*sc_String != '?')
-            S_sfx[i].name = strdup(sc_String);
+            S_sfx[i].name = Z_Strdup(sc_String);
           else
-            S_sfx[i].name = strdup("default");
+            S_sfx[i].name = Z_Strdup("default");
 
           break;
         }
@@ -86,5 +86,5 @@ void dsda_LoadSndInfo(void) {
 
   for (i = 0; i < num_sfx; i++)
     if (!strcmp(S_sfx[i].name, ""))
-      S_sfx[i].name = strdup("default");
+      S_sfx[i].name = Z_Strdup("default");
 }

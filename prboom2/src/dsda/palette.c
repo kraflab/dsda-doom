@@ -74,7 +74,7 @@ void dsda_FreePlayPal(void) {
 
   for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i)
     if (playpal_data[playpal_i].lump) {
-      free(playpal_data[playpal_i].lump);
+      Z_Free(playpal_data[playpal_i].lump);
       playpal_data[playpal_i].lump = NULL;
     }
 }

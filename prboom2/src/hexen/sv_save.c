@@ -119,7 +119,7 @@ static void FreeMapArchive(void)
   for (map = 0; map < MAX_MAPS; ++map)
     if (map_archive[map].buffer)
     {
-      free(map_archive[map].buffer);
+      Z_Free(map_archive[map].buffer);
       map_archive[map].buffer = NULL;
       map_archive[map].size = 0;
     }
@@ -157,7 +157,7 @@ void SV_RestoreMapArchive(byte **buffer)
 
     if (map_archive[i].size)
     {
-      map_archive[i].buffer = malloc(map_archive[i].size);
+      map_archive[i].buffer = Z_Malloc(map_archive[i].size);
       memcpy(map_archive[i].buffer, *buffer, map_archive[i].size);
       *buffer += map_archive[i].size;
     }
@@ -177,7 +177,7 @@ static void CheckBuffer(size_t size)
   while (delta + size > ma_p->size)
   {
     ma_p->size += 1024;
-    ma_p->buffer = realloc(ma_p->buffer, ma_p->size);
+    ma_p->buffer = Z_Realloc(ma_p->buffer, ma_p->size);
     buffer_p = ma_p->buffer + delta;
   }
 }
@@ -276,10 +276,10 @@ static void SV_OpenWrite(int map)
   ma_p = &map_archive[map];
   if (ma_p->buffer)
   {
-    free(ma_p->buffer);
+    Z_Free(ma_p->buffer);
   }
   ma_p->size = 1024;
-  ma_p->buffer = malloc(ma_p->size);
+  ma_p->buffer = Z_Malloc(ma_p->size);
   buffer_p = ma_p->buffer;
 }
 

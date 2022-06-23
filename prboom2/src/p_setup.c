@@ -210,7 +210,7 @@ static void *malloc_IfSameLevel(void* p, size_t size)
 {
   if (!samelevel || !p)
   {
-    return malloc(size);
+    return Z_Malloc(size);
   }
   return p;
 }
@@ -222,7 +222,7 @@ static void *calloc_IfSameLevel(void* p, size_t n1, size_t n2)
 {
   if (!samelevel)
   {
-    return calloc(n1, n2);
+    return Z_Calloc(n1, n2);
   }
   else
   {
@@ -1162,7 +1162,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	output = Z_Malloc(outlen);
 
 	// initialize stream state for decompression
-	zstream = malloc(sizeof(*zstream));
+	zstream = Z_Malloc(sizeof(*zstream));
 	memset(zstream, 0, sizeof(*zstream));
 
   // Evidently next_in is the wrong type for legacy reasons
@@ -1182,7 +1182,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	{
 	    int outlen_old = outlen;
 	    outlen = 2 * outlen_old;
-	    output = realloc(output, outlen);
+	    output = Z_Realloc(output, outlen);
 	    zstream->next_out = output + outlen_old;
 	    zstream->avail_out = outlen - outlen_old;
 	}
@@ -1199,7 +1199,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	if (inflateEnd(zstream) != Z_OK)
 	    I_Error("P_LoadZNodes: Error during ZDoom nodes decompression shut-down!");
 
-	free(zstream);
+	Z_Free(zstream);
 #else
 	I_Error("P_LoadZNodes: Compressed ZDoom nodes are not supported!");
 #endif
@@ -1228,7 +1228,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
     }
     else
     {
-      newvertarray = calloc(orgVerts + newVerts, sizeof(vertex_t));
+      newvertarray = Z_Calloc(orgVerts + newVerts, sizeof(vertex_t));
       memcpy (newvertarray, vertexes, orgVerts * sizeof(vertex_t));
     }
 
@@ -1249,7 +1249,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
         lines[i].v1 = lines[i].v1 - vertexes + newvertarray;
         lines[i].v2 = lines[i].v2 - vertexes + newvertarray;
       }
-      free(vertexes);
+      Z_Free(vertexes);
       vertexes = newvertarray;
       numvertexes = orgVerts + newVerts;
     }
@@ -1385,7 +1385,7 @@ static void P_LoadThings (int lump)
   numthings = W_LumpLength (lump) / map_format.mapthing_size;
   data = W_LumpByNum(lump);
   doom_data = (const doom_mapthing_t*) data;
-  mobjlist = malloc(numthings * sizeof(mobjlist[0]));
+  mobjlist = Z_Malloc(numthings * sizeof(mobjlist[0]));
 
   if ((!data) || (!numthings))
     I_Error("P_LoadThings: no things in level");
@@ -1486,7 +1486,7 @@ static void P_LoadThings (int lump)
   }
 #endif
 
-  free(mobjlist);
+  Z_Free(mobjlist);
 }
 
 //
@@ -2034,7 +2034,7 @@ static void AddBlockLine
   if (done[blockno])
     return;
 
-  l = malloc(sizeof(linelist_t));
+  l = Z_Malloc(sizeof(linelist_t));
   l->num = lineno;
   l->next = lists[blockno];
   lists[blockno] = l;
@@ -2098,16 +2098,16 @@ static void P_CreateBlockMap(void)
   // finally make an array in which we can mark blocks done per line
 
   // CPhipps - calloc's
-  blocklists = calloc(NBlocks,sizeof(linelist_t *));
-  blockcount = calloc(NBlocks,sizeof(int));
-  blockdone = malloc(NBlocks*sizeof(int));
+  blocklists = Z_Calloc(NBlocks,sizeof(linelist_t *));
+  blockcount = Z_Calloc(NBlocks,sizeof(int));
+  blockdone = Z_Malloc(NBlocks*sizeof(int));
 
   // initialize each blocklist, and enter the trailing -1 in all blocklists
   // note the linked list of lines grows backwards
 
   for (i=0;i<NBlocks;i++)
   {
-    blocklists[i] = malloc(sizeof(linelist_t));
+    blocklists[i] = Z_Malloc(sizeof(linelist_t));
     blocklists[i]->num = -1;
     blocklists[i]->next = NULL;
     blockcount[i]++;
@@ -2296,16 +2296,16 @@ static void P_CreateBlockMap(void)
     {
       linelist_t *tmp = bl->next;
       blockmaplump[offs++] = bl->num;
-      free(bl);
+      Z_Free(bl);
       bl = tmp;
     }
   }
 
   // free all temporary storage
 
-  free (blocklists);
-  free (blockcount);
-  free (blockdone);
+  Z_Free (blocklists);
+  Z_Free (blockcount);
+  Z_Free (blockdone);
 }
 
 // jff 10/6/98
@@ -2640,7 +2640,7 @@ static int P_GroupLines (void)
 
 static void P_RemoveSlimeTrails(void)         // killough 10/98
 {
-  byte *hit = calloc(1, numvertexes);         // Hitlist for vertices
+  byte *hit = Z_Calloc(1, numvertexes);         // Hitlist for vertices
   int i;
   // Correction of desync on dv04-423.lmp/dv.wad
   // http://www.doomworld.com/vb/showthread.php?s=&postid=627257#post627257
@@ -2697,7 +2697,7 @@ static void P_RemoveSlimeTrails(void)         // killough 10/98
     while ((v != segs[i].v2) && (v = segs[i].v2));
   }
     }
-  free(hit);
+  Z_Free(hit);
 }
 
 static void R_CalcSegsLength(void)
@@ -2823,18 +2823,18 @@ void P_InitSubsectorsLines(void)
 
   if (sslines_indexes)
   {
-    free(sslines_indexes);
+    Z_Free(sslines_indexes);
     sslines_indexes = NULL;
   }
 
   if (sslines)
   {
-    free(sslines);
+    Z_Free(sslines);
     sslines = NULL;
   }
 
   count = 0;
-  sslines_indexes = malloc((numsubsectors + 1) * sizeof(sslines_indexes[0]));
+  sslines_indexes = Z_Malloc((numsubsectors + 1) * sizeof(sslines_indexes[0]));
 
   for (num = 0; num < numsubsectors; num++)
   {
@@ -2864,7 +2864,7 @@ void P_InitSubsectorsLines(void)
 
   sslines_indexes[numsubsectors] = count;
 
-  sslines = malloc(count * sizeof(sslines[0]));
+  sslines = Z_Malloc(count * sizeof(sslines[0]));
   count = 0;
 
   for (num = 0; num < numsubsectors; num++)
@@ -2996,20 +2996,20 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     gld_CleanMemory();
 #endif
 
-    free(segs);
-    free(nodes);
-    free(subsectors);
+    Z_Free(segs);
+    Z_Free(nodes);
+    Z_Free(subsectors);
 #ifdef GL_DOOM
-    free(map_subsectors);
+    Z_Free(map_subsectors);
 #endif
 
-    free(blocklinks);
-    free(blockmaplump);
+    Z_Free(blocklinks);
+    Z_Free(blockmaplump);
 
-    free(lines);
-    free(sides);
-    free(sectors);
-    free(vertexes);
+    Z_Free(lines);
+    Z_Free(sides);
+    Z_Free(sectors);
+    Z_Free(vertexes);
   }
 
   if (nodesVersion > 0)

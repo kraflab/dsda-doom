@@ -508,7 +508,7 @@ static void I_UploadNewPalette(int pal, int force)
     if (!playpal_data->colours) {
       // First call - allocate and prepare colour array
       playpal_data->colours =
-        (SDL_Color*) malloc(sizeof(*playpal_data->colours) * num_pals);
+        (SDL_Color*) Z_Malloc(sizeof(*playpal_data->colours) * num_pals);
     }
 
     // set the colormap entries
@@ -724,7 +724,7 @@ static void I_AppendResolution(SDL_DisplayMode *mode, int *current_resolution_in
     if (!strcmp(mode_name, screen_resolutions_list[i]))
       return;
 
-  screen_resolutions_list[*list_size] = strdup(mode_name);
+  screen_resolutions_list[*list_size] = Z_Strdup(mode_name);
 
   if (mode->w == desired_screenwidth && mode->h == desired_screenheight)
     *current_resolution_index = *list_size;
@@ -814,7 +814,7 @@ static void I_FillScreenResolutionsList(void)
   if (list_size == 0)
   {
     doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", desired_screenwidth, desired_screenheight);
-    screen_resolutions_list[0] = strdup(mode_name);
+    screen_resolutions_list[0] = Z_Strdup(mode_name);
     current_resolution_index = 0;
     list_size = 1;
   }
@@ -829,7 +829,7 @@ static void I_FillScreenResolutionsList(void)
     {
       screen_resolutions_list[i] = screen_resolutions_list[i - 1];
     }
-    screen_resolutions_list[0] = strdup(mode_name);
+    screen_resolutions_list[0] = Z_Strdup(mode_name);
     current_resolution_index = 0;
   }
 
@@ -900,8 +900,8 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
   char *s, *d, *ps, *pd;
   unsigned int tickStart;
 
-  s = (char*)malloc(width * height);
-  d = (char*)malloc(width * height);
+  s = (char*)Z_Malloc(width * height);
+  d = (char*)Z_Malloc(width * height);
 
   tickStart = SDL_GetTicks();
   k = 0;
@@ -919,8 +919,8 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
   }
   while (SDL_GetTicks() - tickStart < mintime);
 
-  free(d);
-  free(s);
+  Z_Free(d);
+  Z_Free(s);
 
   return k;
 }

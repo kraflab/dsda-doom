@@ -536,11 +536,11 @@ void R_InitBuffersRes(void)
 {
   extern byte *solidcol;
 
-  if (solidcol) free(solidcol);
-  if (tempbuf) free(tempbuf);
+  if (solidcol) Z_Free(solidcol);
+  if (tempbuf) Z_Free(tempbuf);
 
-  solidcol = calloc(1, SCREENWIDTH * sizeof(*solidcol));
-  tempbuf = calloc(1, (SCREENHEIGHT * 4) * sizeof(*tempbuf));
+  solidcol = Z_Calloc(1, SCREENWIDTH * sizeof(*solidcol));
+  tempbuf = Z_Calloc(1, (SCREENHEIGHT * 4) * sizeof(*tempbuf));
 }
 
 //

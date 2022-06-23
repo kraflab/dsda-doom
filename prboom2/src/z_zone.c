@@ -96,7 +96,7 @@ static void *Z_MallocTag(size_t size, int tag)
   if (!size)
     return NULL; // malloc(0) returns NULL
 
-  if (!(block = (malloc)(size + HEADER_SIZE)))
+  if (!(block = malloc(size + HEADER_SIZE)))
   {
     I_Error ("Z_Malloc: Failure trying to allocate %lu bytes", (unsigned long) size);
   }
@@ -141,7 +141,7 @@ void Z_Free(void *p)
   block->prev->next = block->next;
   block->next->prev = block->prev;
 
-  (free)(block);
+  free(block);
 }
 
 static void Z_FreeTag(int tag)

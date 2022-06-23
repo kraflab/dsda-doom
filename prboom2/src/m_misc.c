@@ -1407,8 +1407,8 @@ void M_LoadDefaults (void)
   int   len;
   FILE* f;
   char  def[80];
-  char* strparm = malloc(CFG_BUFFERMAX);
-  char* cfgline = malloc(CFG_BUFFERMAX);
+  char* strparm = Z_Malloc(CFG_BUFFERMAX);
+  char* cfgline = Z_Malloc(CFG_BUFFERMAX);
   char* newstring = NULL;   // killough
   int   parm;
   dboolean isstring;
@@ -1428,7 +1428,7 @@ void M_LoadDefaults (void)
     else
     {
       if (defaults[i].location.ppsz)
-        *defaults[i].location.ppsz = strdup(defaults[i].defaultvalue.psz);
+        *defaults[i].location.ppsz = Z_Strdup(defaults[i].defaultvalue.psz);
       if (defaults[i].location.pi)
         *defaults[i].location.pi = defaults[i].defaultvalue.i;
     }
@@ -1458,23 +1458,23 @@ void M_LoadDefaults (void)
       {
         if ((*arr)[k])
         {
-          free((*arr)[k]);
+          Z_Free((*arr)[k]);
           (*arr)[k] = NULL;
         }
       }
-      free(*arr);
+      Z_Free(*arr);
       *arr = NULL;
       *(item->location.array_size) = 0;
       // load predefined data
-      *arr = realloc(*arr, sizeof(char*) * item->defaultvalue.array_size);
+      *arr = Z_Realloc(*arr, sizeof(char*) * item->defaultvalue.array_size);
       *(item->location.array_size) = item->defaultvalue.array_size;
       item->location.array_index = 0;
       for (k = 0; k < item->defaultvalue.array_size; k++)
       {
         if (item->defaultvalue.array_data[k])
-          (*arr)[k] = strdup(item->defaultvalue.array_data[k]);
+          (*arr)[k] = Z_Strdup(item->defaultvalue.array_data[k]);
         else
-          (*arr)[k] = strdup("");
+          (*arr)[k] = Z_Strdup("");
       }
     }
   }
@@ -1486,14 +1486,14 @@ void M_LoadDefaults (void)
   i = M_CheckParm ("-config");
   if (i && i < myargc-1)
   {
-    defaultfile = strdup(myargv[i+1]);
+    defaultfile = Z_Strdup(myargv[i+1]);
   }
   else
   {
     const char* exedir = I_DoomExeDir();
     /* get config file from same directory as executable */
     int len = doom_snprintf(NULL, 0, "%s/" BOOM_CFG, exedir);
-    defaultfile = malloc(len+1);
+    defaultfile = Z_Malloc(len+1);
     doom_snprintf(defaultfile, len+1, "%s/" BOOM_CFG, exedir);
   }
 
@@ -1522,7 +1522,7 @@ void M_LoadDefaults (void)
 
           isstring = true;
           len = strlen(strparm);
-          newstring = malloc(len);
+          newstring = Z_Malloc(len);
           strparm[len-1] = 0; // clears trailing double-quote mark
           strcpy(newstring, strparm+1); // clears leading double-quote mark
   } else if ((strparm[0] == '0') && (strparm[1] == 'x')) {
@@ -1544,14 +1544,14 @@ void M_LoadDefaults (void)
           {
             if ((*index) + 1 > *pcount)
             {
-              *arr = realloc(*arr, sizeof(char*) * ((*index) + 1));
+              *arr = Z_Realloc(*arr, sizeof(char*) * ((*index) + 1));
               (*pcount)++;
             }
             else
             {
               if ((*arr)[(*index)])
               {
-                free((*arr)[(*index)]);
+                Z_Free((*arr)[(*index)]);
                 (*arr)[(*index)] = NULL;
               }
             }
@@ -1574,7 +1574,7 @@ void M_LoadDefaults (void)
                 union { const char **c; char **s; } u; // type punning via unions
 
                 u.c = defaults[i].location.ppsz;
-                free(*(u.s));
+                Z_Free(*(u.s));
                 *(u.s) = newstring;
 
                 item = &defaults[i];
@@ -1641,7 +1641,7 @@ void M_LoadDefaults (void)
                 union { const char **c; char **s; } u; // type punning via unions
 
                 u.c = defaults[i].location.ppsz;
-                free(*(u.s));
+                Z_Free(*(u.s));
                 *(u.s) = newstring;
               }
             break;
@@ -1652,8 +1652,8 @@ void M_LoadDefaults (void)
     fclose (f);
     }
 
-  free(strparm);
-  free(cfgline);
+  Z_Free(strparm);
+  Z_Free(cfgline);
 
   dsda_InitSettings();
 
@@ -1719,7 +1719,7 @@ const char* M_CheckWritableDir(const char *dir)
   if (len + 1 > base_len)
   {
     base_len = len + 1;
-    base = malloc(len + 1);
+    base = Z_Malloc(len + 1);
   }
 
   if (base)
@@ -1764,7 +1764,7 @@ void M_ScreenShot(void)
 
     do {
       int size = doom_snprintf(NULL, 0, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
-      lbmname = realloc(lbmname, size+1);
+      lbmname = Z_Realloc(lbmname, size+1);
       doom_snprintf(lbmname, size+1, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
       shot++;
     } while (!access(lbmname,0) && (shot != startshot) && (shot < 10000));
@@ -1775,7 +1775,7 @@ void M_ScreenShot(void)
       M_DoScreenShot(lbmname); // cph
       success = 1;
     }
-    free(lbmname);
+    Z_Free(lbmname);
     if (success) return;
   }
 
@@ -1892,7 +1892,7 @@ void M_ArrayFree(array_t *data)
 {
   if (data->data)
   {
-    free(data->data);
+    Z_Free(data->data);
     data->data = NULL;
   }
 
@@ -1905,7 +1905,7 @@ void M_ArrayAddItem(array_t *data, void *item, int itemsize)
   if (data->count + 1 >= data->capacity)
   {
     data->capacity = (data->capacity ? data->capacity * 2 : 128);
-    data->data = realloc(data->data, data->capacity * itemsize);
+    data->data = Z_Realloc(data->data, data->capacity * itemsize);
   }
 
   memcpy((unsigned char*)data->data + data->count * itemsize, item, itemsize);
@@ -1917,7 +1917,7 @@ void* M_ArrayGetNewItem(array_t *data, int itemsize)
   if (data->count + 1 >= data->capacity)
   {
     data->capacity = (data->capacity ? data->capacity * 2 : 128);
-    data->data = realloc(data->data, data->capacity * itemsize);
+    data->data = Z_Realloc(data->data, data->capacity * itemsize);
   }
 
   data->count++;
