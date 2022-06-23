@@ -127,14 +127,14 @@ void R_InitPlanesRes(void)
   if (yslope) Z_Free(yslope);
   if (distscale) Z_Free(distscale);
 
-  floorclip = calloc(1, SCREENWIDTH * sizeof(*floorclip));
-  ceilingclip = calloc(1, SCREENWIDTH * sizeof(*ceilingclip));
-  spanstart = calloc(1, SCREENHEIGHT * sizeof(*spanstart));
+  floorclip = Z_Calloc(1, SCREENWIDTH * sizeof(*floorclip));
+  ceilingclip = Z_Calloc(1, SCREENWIDTH * sizeof(*ceilingclip));
+  spanstart = Z_Calloc(1, SCREENHEIGHT * sizeof(*spanstart));
 
-  cachedheight = calloc(1, SCREENHEIGHT * sizeof(*cachedheight));
+  cachedheight = Z_Calloc(1, SCREENHEIGHT * sizeof(*cachedheight));
 
-  yslope = calloc(1, SCREENHEIGHT * sizeof(*yslope));
-  distscale = calloc(1, SCREENWIDTH * sizeof(*distscale));
+  yslope = Z_Calloc(1, SCREENHEIGHT * sizeof(*yslope));
+  distscale = Z_Calloc(1, SCREENWIDTH * sizeof(*distscale));
 }
 
 void R_InitVisplanesRes(void)
@@ -268,7 +268,7 @@ static visplane_t *new_visplane(unsigned hash)
   if (!check)
   {
     // e6y: resolution limitation is removed
-    check = calloc(1, sizeof(*check) + sizeof(*check->top) * (SCREENWIDTH * 2));
+    check = Z_Calloc(1, sizeof(*check) + sizeof(*check->top) * (SCREENWIDTH * 2));
     check->bottom = &check->top[SCREENWIDTH + 2];
   }
   else

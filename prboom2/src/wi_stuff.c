@@ -1168,8 +1168,8 @@ void WI_initDeathmatchStats(void)
   int   i; // looping variables
 
   // CPhipps - allocate data structures needed
-  dm_frags  = calloc(g_maxplayers, sizeof(*dm_frags));
-  dm_totals = calloc(g_maxplayers, sizeof(*dm_totals));
+  dm_frags  = Z_Calloc(g_maxplayers, sizeof(*dm_frags));
+  dm_totals = Z_Calloc(g_maxplayers, sizeof(*dm_totals));
 
   state = StatCount;  // We're doing stats
   acceleratestage = 0;
@@ -1182,7 +1182,7 @@ void WI_initDeathmatchStats(void)
     if (playeringame[i])
     {
       // CPhipps - allocate frags line
-      dm_frags[i] = calloc(g_maxplayers, sizeof(**dm_frags)); // set all counts to zero
+      dm_frags[i] = Z_Calloc(g_maxplayers, sizeof(**dm_frags)); // set all counts to zero
 
       dm_totals[i] = 0;
     }
@@ -1458,10 +1458,10 @@ void WI_initNetgameStats(void)
   cnt_pause = TICRATE;
 
   // CPhipps - allocate these dynamically, blank with calloc
-  cnt_kills = calloc(g_maxplayers, sizeof(*cnt_kills));
-  cnt_items = calloc(g_maxplayers, sizeof(*cnt_items));
-  cnt_secret= calloc(g_maxplayers, sizeof(*cnt_secret));
-  cnt_frags = calloc(g_maxplayers, sizeof(*cnt_frags));
+  cnt_kills = Z_Calloc(g_maxplayers, sizeof(*cnt_kills));
+  cnt_items = Z_Calloc(g_maxplayers, sizeof(*cnt_items));
+  cnt_secret= Z_Calloc(g_maxplayers, sizeof(*cnt_secret));
+  cnt_frags = Z_Calloc(g_maxplayers, sizeof(*cnt_frags));
 
   for (i = 0; i < g_maxplayers; i++)
     if (playeringame[i])

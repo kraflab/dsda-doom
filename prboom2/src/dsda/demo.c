@@ -321,7 +321,7 @@ static char* dsda_DemoNameWithTime(void) {
 
   length = strlen(dsda_demo_name_base) + 16 + 1;
 
-  base_name = calloc(length, 1);
+  base_name = Z_Calloc(length, 1);
 
   if (dsda_ILComplete()) {
     dsda_level_time_t level_time;

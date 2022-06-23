@@ -336,8 +336,8 @@ void gld_InitVertexData()
   if (gl_vertexsplit)
     return;
 
-  vt_sectorlists = calloc(sizeof(vt_sectorlists[0]), numvertexes);
-  vt_sectorlists_size = calloc(sizeof(vt_sectorlists_size[0]), numvertexes);
+  vt_sectorlists = Z_Calloc(sizeof(vt_sectorlists[0]), numvertexes);
+  vt_sectorlists_size = Z_Calloc(sizeof(vt_sectorlists_size[0]), numvertexes);
 
   for(i = 0; i < numlines; i++)
   {

@@ -73,7 +73,7 @@ void R_InitMeltRes(void)
 {
   if (y_lookup) Z_Free(y_lookup);
 
-  y_lookup = calloc(1, SCREENWIDTH * sizeof(*y_lookup));
+  y_lookup = Z_Calloc(1, SCREENWIDTH * sizeof(*y_lookup));
 }
 
 static int wipe_initMelt(int ticks)

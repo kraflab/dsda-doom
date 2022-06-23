@@ -618,7 +618,7 @@ static void createTextureCompositePatch(int id) {
   columnsDataSize = sizeof(rcolumn_t) * composite_patch->width;
 
   // count the number of posts in each column
-  countsInColumn = (count_t *)calloc(sizeof(count_t), composite_patch->width);
+  countsInColumn = (count_t *)Z_Calloc(sizeof(count_t), composite_patch->width);
   numPostsTotal = 0;
 
   for (i=0; i<texture->patchcount; i++) {

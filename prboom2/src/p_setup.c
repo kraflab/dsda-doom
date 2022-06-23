@@ -222,7 +222,7 @@ static void *calloc_IfSameLevel(void* p, size_t n1, size_t n2)
 {
   if (!samelevel)
   {
-    return calloc(n1, n2);
+    return Z_Calloc(n1, n2);
   }
   else
   {
@@ -1228,7 +1228,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
     }
     else
     {
-      newvertarray = calloc(orgVerts + newVerts, sizeof(vertex_t));
+      newvertarray = Z_Calloc(orgVerts + newVerts, sizeof(vertex_t));
       memcpy (newvertarray, vertexes, orgVerts * sizeof(vertex_t));
     }
 
@@ -2098,8 +2098,8 @@ static void P_CreateBlockMap(void)
   // finally make an array in which we can mark blocks done per line
 
   // CPhipps - calloc's
-  blocklists = calloc(NBlocks,sizeof(linelist_t *));
-  blockcount = calloc(NBlocks,sizeof(int));
+  blocklists = Z_Calloc(NBlocks,sizeof(linelist_t *));
+  blockcount = Z_Calloc(NBlocks,sizeof(int));
   blockdone = malloc(NBlocks*sizeof(int));
 
   // initialize each blocklist, and enter the trailing -1 in all blocklists
@@ -2640,7 +2640,7 @@ static int P_GroupLines (void)
 
 static void P_RemoveSlimeTrails(void)         // killough 10/98
 {
-  byte *hit = calloc(1, numvertexes);         // Hitlist for vertices
+  byte *hit = Z_Calloc(1, numvertexes);         // Hitlist for vertices
   int i;
   // Correction of desync on dv04-423.lmp/dv.wad
   // http://www.doomworld.com/vb/showthread.php?s=&postid=627257#post627257

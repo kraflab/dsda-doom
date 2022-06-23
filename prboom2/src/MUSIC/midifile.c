@@ -838,8 +838,8 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
 
   int totaldelta = 0;
 
-  int *trackpos = (int*)calloc (file->num_tracks, sizeof (int));
-  int *tracktime = (int*)calloc (file->num_tracks, sizeof (int));
+  int *trackpos = (int*)Z_Calloc (file->num_tracks, sizeof (int));
+  int *tracktime = (int*)Z_Calloc (file->num_tracks, sizeof (int));
   int trackactive = file->num_tracks;
 
   midi_event_t **ret;

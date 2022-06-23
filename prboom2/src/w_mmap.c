@@ -108,11 +108,11 @@ void W_InitCache(void)
   W_DoneCache();
 
   // set up caching
-  lump_data = calloc(numlumps, sizeof *lump_data);
+  lump_data = Z_Calloc(numlumps, sizeof *lump_data);
   if (!lump_data)
     I_Error ("W_Init: Couldn't allocate lump data");
 
-  mapped_wad = calloc(numwadfiles,sizeof(mmap_info_t));
+  mapped_wad = Z_Calloc(numwadfiles,sizeof(mmap_info_t));
   memset(mapped_wad,0,sizeof(mmap_info_t)*numwadfiles);
   {
     int i;
@@ -181,7 +181,7 @@ void W_InitCache(void)
 {
   int maxfd = 0;
   // set up caching
-  lump_data = calloc(numlumps, sizeof *lump_data);
+  lump_data = Z_Calloc(numlumps, sizeof *lump_data);
   if (!lump_data)
     I_Error ("W_Init: Couldn't allocate lump data");
 
@@ -191,7 +191,7 @@ void W_InitCache(void)
       if (lumpinfo[i].wadfile)
         if (lumpinfo[i].wadfile->handle > maxfd) maxfd = lumpinfo[i].wadfile->handle;
   }
-  mapped_wad = calloc(maxfd+1,sizeof *mapped_wad);
+  mapped_wad = Z_Calloc(maxfd+1,sizeof *mapped_wad);
   {
     int i;
     for (i=0; i<numlumps; i++) {

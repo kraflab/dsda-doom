@@ -175,7 +175,7 @@ static int ReadLump(const char *filename, const char *lumpname, unsigned char **
     {
       size = W_LumpLength(lump);
       data = W_LumpByNum(lump);
-      *buffer = calloc(1, size + 1);
+      *buffer = Z_Calloc(1, size + 1);
       memcpy (*buffer, data, size);
       (*buffer)[size] = 0;
     }
@@ -209,7 +209,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
   if (vp_data && fp_data)
   {
-    shader = calloc(1, sizeof(GLShader));
+    shader = Z_Calloc(1, sizeof(GLShader));
 
     shader->hVertProg = GLEXT_glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
     shader->hFragProg = GLEXT_glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);

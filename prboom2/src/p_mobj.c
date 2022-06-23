@@ -92,7 +92,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
   ret = true;
 
   if (recursion++)                            // if recursion detected,
-    seenstate = tempstate = calloc(num_states, sizeof(statenum_t)); // allocate state table
+    seenstate = tempstate = Z_Calloc(num_states, sizeof(statenum_t)); // allocate state table
 
   do
     {

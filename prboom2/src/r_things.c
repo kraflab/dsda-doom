@@ -124,13 +124,13 @@ void R_InitSpritesRes(void)
   if (negonearray) Z_Free(negonearray);
   if (screenheightarray) Z_Free(screenheightarray);
 
-  xtoviewangle = calloc(1, (SCREENWIDTH + 1) * sizeof(*xtoviewangle));
-  negonearray = calloc(1, SCREENWIDTH * sizeof(*negonearray));
-  screenheightarray = calloc(1, SCREENWIDTH * sizeof(*screenheightarray));
+  xtoviewangle = Z_Calloc(1, (SCREENWIDTH + 1) * sizeof(*xtoviewangle));
+  negonearray = Z_Calloc(1, SCREENWIDTH * sizeof(*negonearray));
+  screenheightarray = Z_Calloc(1, SCREENWIDTH * sizeof(*screenheightarray));
 
   if (clipbot) Z_Free(clipbot);
 
-  clipbot = calloc(1, 2 * SCREENWIDTH * sizeof(*clipbot));
+  clipbot = Z_Calloc(1, 2 * SCREENWIDTH * sizeof(*clipbot));
   cliptop = clipbot + SCREENWIDTH;
 }
 

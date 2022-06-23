@@ -468,7 +468,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
   if (size <= 0)
     return;
 
-  str = calloc(size + 1, 1);
+  str = Z_Calloc(size + 1, 1);
   if (!str)
     return;
 

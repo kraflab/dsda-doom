@@ -539,8 +539,8 @@ void R_InitBuffersRes(void)
   if (solidcol) Z_Free(solidcol);
   if (tempbuf) Z_Free(tempbuf);
 
-  solidcol = calloc(1, SCREENWIDTH * sizeof(*solidcol));
-  tempbuf = calloc(1, (SCREENHEIGHT * 4) * sizeof(*tempbuf));
+  solidcol = Z_Calloc(1, SCREENWIDTH * sizeof(*solidcol));
+  tempbuf = Z_Calloc(1, (SCREENHEIGHT * 4) * sizeof(*tempbuf));
 }
 
 //

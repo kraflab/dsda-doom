@@ -884,15 +884,15 @@ static void gld_PreprocessSectors(void)
 
   if (numsegs)
   {
-    segrendered=calloc(numsegs, sizeof(byte));
+    segrendered=Z_Calloc(numsegs, sizeof(byte));
     if (!segrendered)
       I_Error("gld_PreprocessSectors: Not enough memory for array segrendered");
   }
 
   if (numlines)
   {
-    linerendered[0]=calloc(numlines, sizeof(byte));
-    linerendered[1]=calloc(numlines, sizeof(byte));
+    linerendered[0]=Z_Calloc(numlines, sizeof(byte));
+    linerendered[1]=Z_Calloc(numlines, sizeof(byte));
     if (!linerendered[0] || !linerendered[1])
       I_Error("gld_PreprocessSectors: Not enough memory for array linerendered");
   }

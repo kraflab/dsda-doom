@@ -51,7 +51,7 @@ static char* dsda_TextFileName(void) {
     name[name_length - 4] = '\0';
   }
   else {
-    name = calloc(name_length + 4, 1);
+    name = Z_Calloc(name_length + 4, 1);
     strcat(name, playdemo);
   }
 

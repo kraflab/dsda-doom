@@ -868,7 +868,7 @@ void V_AllocScreen(screeninfo_t *scrn) {
   if (!scrn->not_on_heap)
     if ((scrn->pitch * scrn->height) > 0)
       //e6y: Clear the screen to black.
-      scrn->data = calloc(scrn->pitch*scrn->height, 1);
+      scrn->data = Z_Calloc(scrn->pitch*scrn->height, 1);
 }
 
 //

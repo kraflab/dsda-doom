@@ -163,7 +163,7 @@ void* NewIntDynArray(int dimCount, int *dims)
 
   bufferSize += sizeof(int) * tableSize * dims[dimCount - 1];
 
-  buffer = calloc(1, bufferSize);
+  buffer = Z_Calloc(1, bufferSize);
   if(!buffer)
   {
     return 0;
@@ -889,7 +889,7 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
         else
         {
           int y;
-          tex_buffer = calloc(1, tex_buffer_size);
+          tex_buffer = Z_Calloc(1, tex_buffer_size);
           for (y = 0; y < height; y++)
           {
             memcpy(tex_buffer + y * tex_width * 4,

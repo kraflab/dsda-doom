@@ -188,7 +188,7 @@ void dsda_InitKeyFrame(void) {
 
   ++auto_kf_size; // chain includes a terminator
 
-  auto_key_frames = calloc(auto_kf_size, sizeof(auto_kf_t));
+  auto_key_frames = Z_Calloc(auto_kf_size, sizeof(auto_kf_t));
 
   auto_key_frames[0].prev = &auto_key_frames[auto_kf_size - 1];
   auto_key_frames[auto_kf_size - 1].next = &auto_key_frames[0];

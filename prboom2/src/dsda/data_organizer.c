@@ -155,7 +155,7 @@ static void dsda_InitWadDataDir(void) {
       length += strlen(dsda_data_dir_strings[i]) + 1; // "/"
   }
 
-  dsda_wad_data_dir = calloc(length + 1, 1); // "\0"
+  dsda_wad_data_dir = Z_Calloc(length + 1, 1); // "\0"
 
   strcat(dsda_wad_data_dir, dsda_base_data_dir);
 

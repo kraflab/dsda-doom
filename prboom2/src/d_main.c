@@ -1209,7 +1209,7 @@ static void FindResponseFile (void)
           int k;
           lprintf(LO_ERROR,"\nResponse file empty!\n");
 
-          newargv = calloc(sizeof(newargv[0]),myargc);
+          newargv = Z_Calloc(sizeof(newargv[0]),myargc);
           newargv[0] = myargv[0];
           for (k = 1,index = 1;k < myargc;k++)
           {
@@ -1226,7 +1226,7 @@ static void FindResponseFile (void)
 
         {
           char *firstargv = myargv[0];
-          newargv = calloc(sizeof(newargv[0]), 1);
+          newargv = Z_Calloc(sizeof(newargv[0]), 1);
           newargv[0] = firstargv;
         }
 
@@ -1422,7 +1422,7 @@ static void DoLooseFiles(void)
 
     // Now go back and redo the whole myargv array with our stuff in it.
     // First, create a new myargv array to copy into
-    tmyargv = calloc(sizeof(tmyargv[0]), myargc + n);
+    tmyargv = Z_Calloc(sizeof(tmyargv[0]), myargc + n);
     tmyargv[0] = myargv[0]; // invocation
     tmyargc = 1;
 
