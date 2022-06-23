@@ -120,15 +120,15 @@ static int maxframe;
 
 void R_InitSpritesRes(void)
 {
-  if (xtoviewangle) free(xtoviewangle);
-  if (negonearray) free(negonearray);
-  if (screenheightarray) free(screenheightarray);
+  if (xtoviewangle) Z_Free(xtoviewangle);
+  if (negonearray) Z_Free(negonearray);
+  if (screenheightarray) Z_Free(screenheightarray);
 
   xtoviewangle = calloc(1, (SCREENWIDTH + 1) * sizeof(*xtoviewangle));
   negonearray = calloc(1, SCREENWIDTH * sizeof(*negonearray));
   screenheightarray = calloc(1, SCREENWIDTH * sizeof(*screenheightarray));
 
-  if (clipbot) free(clipbot);
+  if (clipbot) Z_Free(clipbot);
 
   clipbot = calloc(1, 2 * SCREENWIDTH * sizeof(*clipbot));
   cliptop = clipbot + SCREENWIDTH;
@@ -380,7 +380,7 @@ static void R_InitSpriteDefs(const char * const * namelist)
             }
         }
     }
-  free(hash);             // free hash table
+  Z_Free(hash);             // free hash table
 }
 
 //
@@ -1376,7 +1376,7 @@ void R_SortVisSprites (void)
 
       if (num_vissprite_ptrs < num_vissprite*2)
         {
-          free(vissprite_ptrs);  // better than realloc -- no preserving needed
+          Z_Free(vissprite_ptrs);  // better than realloc -- no preserving needed
           vissprite_ptrs = malloc((num_vissprite_ptrs = num_vissprite_alloc*2)
                                   * sizeof *vissprite_ptrs);
         }

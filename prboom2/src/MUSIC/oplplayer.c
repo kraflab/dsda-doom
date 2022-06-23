@@ -1309,7 +1309,7 @@ static void I_OPL_StopSong(void)
         MIDI_FreeIterator(tracks[i].iter);
     }
 
-    free(tracks);
+    Z_Free(tracks);
 
     tracks = NULL;
     num_tracks = 0;

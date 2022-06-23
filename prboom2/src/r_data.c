@@ -280,7 +280,7 @@ static void R_InitTextures (void)
       textureheight[i] = texture->height<<FRACBITS;
     }
 
-  free(patchlookup);         // killough
+  Z_Free(patchlookup);         // killough
 
   if (errors)
   {
@@ -523,7 +523,7 @@ void R_InitTranMap(int progress)
       if (cachefp)              // killough 11/98: fix filehandle leak
         fclose(cachefp);
 
-      free(fname);
+      Z_Free(fname);
     }
 }
 
@@ -724,7 +724,7 @@ void R_PrecacheLevel(void)
             while (--k >= 0);
           }
       }
-  free(hitlist);
+  Z_Free(hitlist);
 }
 
 // Proff - Added for OpenGL

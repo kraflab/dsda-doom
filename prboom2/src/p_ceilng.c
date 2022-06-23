@@ -660,7 +660,7 @@ void P_RemoveActiveCeiling(ceiling_t* ceiling)
   P_TagFinished(ceiling->sector->tag);
   if ((*list->prev = list->next))
     list->next->prev = list->prev;
-  free(list);
+  Z_Free(list);
 }
 
 //
@@ -675,7 +675,7 @@ void P_RemoveAllActiveCeilings(void)
   while (activeceilings)
   {
     ceilinglist_t *next = activeceilings->next;
-    free(activeceilings);
+    Z_Free(activeceilings);
     activeceilings = next;
   }
 }

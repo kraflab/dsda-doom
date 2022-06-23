@@ -240,7 +240,7 @@ static void *ReadByteSequence(unsigned int num_bytes, midimem_t *mf)
         if (!ReadByte(&result[i], mf))
         {
             lprintf (LO_WARN, "ReadByteSequence: Error while reading byte %u\n", i);
-            free(result);
+            Z_Free(result);
             return NULL;
         }
     }
@@ -443,11 +443,11 @@ static void FreeEvent(midi_event_t *event)
     {
         case MIDI_EVENT_SYSEX:
         case MIDI_EVENT_SYSEX_SPLIT:
-            free(event->data.sysex.data);
+            Z_Free(event->data.sysex.data);
             break;
 
         case MIDI_EVENT_META:
-            free(event->data.meta.data);
+            Z_Free(event->data.meta.data);
             break;
 
         default:
@@ -555,7 +555,7 @@ static void FreeTrack(midi_track_t *track)
         FreeEvent(&track->events[i]);
     }
 
-    free(track->events);
+    Z_Free(track->events);
 }
 
 static dboolean ReadAllTracks(midi_file_t *file, midimem_t *mf)
@@ -637,10 +637,10 @@ void MIDI_FreeFile(midi_file_t *file)
             FreeTrack(&file->tracks[i]);
         }
 
-        free(file->tracks);
+        Z_Free(file->tracks);
     }
 
-    free(file);
+    Z_Free(file);
 }
 
 midi_file_t *MIDI_LoadFile (midimem_t *mf)
@@ -702,7 +702,7 @@ midi_track_iter_t *MIDI_IterateTrack(const midi_file_t *file, unsigned int track
 
 void MIDI_FreeIterator(midi_track_iter_t *iter)
 {
-    free(iter);
+    Z_Free(iter);
 }
 
 // Get the time until the next MIDI event in a track.
@@ -893,9 +893,9 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
     else if ((unsigned) trackpos[nextrk] == file->tracks[nextrk].num_events)
     {
       lprintf (LO_WARN, "MIDI_GenerateFlatList: Unexpected end of track\n");
-      free (trackpos);
-      free (tracktime);
-      free (ret);
+      Z_Free (trackpos);
+      Z_Free (tracktime);
+      Z_Free (ret);
       return NULL;
     }
     epos++;
@@ -904,22 +904,22 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
   if (trackactive)
   { // unexpected EOF
     lprintf (LO_WARN, "MIDI_GenerateFlatList: Unexpected end of midi file\n");
-    free (trackpos);
-    free (tracktime);
-    free (ret);
+    Z_Free (trackpos);
+    Z_Free (tracktime);
+    Z_Free (ret);
     return NULL;
   }
 
   // last end of track event is preserved though
   epos[-1]->data.meta.type = MIDI_META_END_OF_TRACK;
 
-  free (trackpos);
-  free (tracktime);
+  Z_Free (trackpos);
+  Z_Free (tracktime);
 
   if (totaldelta < 100)
   {
     lprintf (LO_WARN, "MIDI_GeneratFlatList: very short file %i\n", totaldelta);
-    free (ret);
+    Z_Free (ret);
     return NULL;
   }
 
@@ -933,7 +933,7 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
 
 void MIDI_DestroyFlatList (midi_event_t **evs)
 {
-  free (evs);
+  Z_Free (evs);
 }
 
 

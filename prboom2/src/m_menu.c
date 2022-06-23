@@ -771,7 +771,7 @@ static void M_DeleteGame(int slot)
 
   name = dsda_SaveGameName(slot + save_page * g_menu_save_page_size, false);
   remove(name);
-  free(name);
+  Z_Free(name);
 
   M_ReadSaveStrings();
 }
@@ -852,13 +852,13 @@ static void M_VerifyForcedLoadGame(int ch)
 {
   if (ch=='y')
     G_ForcedLoadGame();
-  free(forced_loadgame_message);    // free the message strdup()'ed below
+  Z_Free(forced_loadgame_message);    // free the message strdup()'ed below
   M_ClearMenus();
 }
 
 void M_ForcedLoadGame(const char *msg)
 {
-  forced_loadgame_message = strdup(msg); // free()'d above
+  forced_loadgame_message = strdup(msg); // Z_Free()'d above
   M_StartMessage(forced_loadgame_message, M_VerifyForcedLoadGame, true);
 }
 
@@ -927,7 +927,7 @@ void M_ReadSaveStrings(void)
     // killough 3/22/98
     name = dsda_SaveGameName(i + save_page * g_menu_save_page_size, false);
     fp = fopen(name,"rb");
-    free(name);
+    Z_Free(name);
     if (!fp) {   // Ty 03/27/98 - externalized:
       strcpy(&savegamestrings[i][0],s_EMPTYSTRING);
       LoadMenue[i].status = 0;
@@ -1442,7 +1442,7 @@ void M_QuickLoad(void)
     doom_printf("no save file");
   }
 
-  free(name);
+  Z_Free(name);
 }
 
 /////////////////////////////
@@ -1882,7 +1882,7 @@ static void M_DrawItem(const setup_menu_t* s)
       if (s == current_setup_menu + set_menu_itemon && whichSkull)
         M_DrawString(x - w - 8, y, color, ">");
     }
-    free(t);
+    Z_Free(t);
   }
 }
 
@@ -3846,7 +3846,7 @@ static void M_ResetDefaults(void)
               union { const char **c; char **s; } u; // type punning via unions
 
               u.c = dp->location.ppsz;
-              free(*(u.s));
+              Z_Free(*(u.s));
               *(u.c) = strdup(dp->defaultvalue.psz);
             }
             else
@@ -5533,7 +5533,7 @@ dboolean M_Responder (event_t* ev) {
           union { const char **c; char **s; } u; // type punning via unions
 
           u.c = ptr1->var.def->location.ppsz;
-          free(*(u.s));
+          Z_Free(*(u.s));
           *(u.c) = chat_string_buffer;
         }
         chat_index = 0; // current cursor position in chat_string_buffer
@@ -5864,7 +5864,7 @@ void M_Drawer (void)
       if ((*p = c))
         p++;
     }
-    free(ms);
+    Z_Free(ms);
   }
   else if (menuactive)
   {

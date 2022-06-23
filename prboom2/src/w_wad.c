@@ -246,7 +246,7 @@ static void W_AddFile(wadfile_info_t *wadfile)
 	lump_p->source = wadfile->src;                    // Ty 08/29/98
       }
 
-    free(fileinfo2free);      // killough
+    Z_Free(fileinfo2free);      // killough
 }
 
 // jff 1/23/98 Create routines to reorder the master directory
@@ -318,7 +318,7 @@ static int W_CoalesceMarkedResource(const char *start_marker,
   // Append marked list to end of unmarked list
   memcpy(lumpinfo + num_unmarked, marked, num_marked * sizeof(*marked));
 
-  free(marked);                                   // free marked list
+  Z_Free(marked);                                   // free marked list
 
   numlumps = num_unmarked + num_marked;           // new total number of lumps
 
@@ -553,10 +553,10 @@ void W_ReleaseAllWads(void)
   }
 
   numwadfiles = 0;
-  free(wadfiles);
+  Z_Free(wadfiles);
   wadfiles = NULL;
   numlumps = 0;
-  free(lumpinfo);
+  Z_Free(lumpinfo);
   lumpinfo = NULL;
 
   V_FreePlaypal();

@@ -95,13 +95,13 @@ int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
     {
       if (sbuf)
       {
-        free(sbuf);
+        Z_Free(sbuf);
         sbuf = NULL;
       }
 
       len = M_ReadFile(filename, &sbuf);
       buf = (const byte *)sbuf;
-      free(filename);
+      Z_Free(filename);
     }
   }
   else
@@ -265,10 +265,10 @@ void W_InitPWADTable(wadtbl_t *wadtbl)
 void W_FreePWADTable(wadtbl_t *wadtbl)
 {
   //clear PWAD lookup table
-  free(wadtbl->lumps);
+  Z_Free(wadtbl->lumps);
 
   //clear PWAD data
-  free(wadtbl->data);
+  Z_Free(wadtbl->data);
 }
 
 void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size)
@@ -510,7 +510,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
               filename = strdup(params[p]);
             }
             WadDataAddItem(waddata, filename, files[i].source, 0);
-            free(filename);
+            Z_Free(filename);
           }
         }
         i++;
@@ -616,15 +616,15 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
               overflows[overflow].footer_emulate = value;
             }
           }
-          free(mask);
+          Z_Free(mask);
         }
       }
     }
 
-    free(params);
+    Z_Free(params);
   }
 
-  free(str);
+  Z_Free(str);
 }
 
 static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
@@ -682,7 +682,7 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
         AddString(&dehs, "\"");
         AddString(&dehs, filename_p);
         AddString(&dehs, "\" ");
-        free(file);
+        Z_Free(file);
       }
     }
   }
@@ -921,7 +921,7 @@ void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl)
 
       fclose(hfile);
     }
-    free(buffer);
+    Z_Free(buffer);
   }
 }
 
@@ -1005,7 +1005,7 @@ int CheckWadFileIntegrity(const char *filename)
           }
           result = (i == header.numlumps);
         }
-        free(fileinfo2free);
+        Z_Free(fileinfo2free);
       }
     }
     fclose(hfile);
@@ -1069,7 +1069,7 @@ static int G_ReadDemoFooter(const char *filename)
           close(tmp_fd);
         }
 
-        free(tmp_path);
+        Z_Free(tmp_path);
       }
     }
 
@@ -1132,7 +1132,7 @@ static int G_ReadDemoFooter(const char *filename)
         WadDataFree(&waddata);
       }
     }
-    free(buffer);
+    Z_Free(buffer);
   }
 
   return result;
@@ -1198,11 +1198,11 @@ void WadDataFree(waddata_t *waddata)
       {
         if (waddata->wadfiles[i].name)
         {
-          free(waddata->wadfiles[i].name);
+          Z_Free(waddata->wadfiles[i].name);
           waddata->wadfiles[i].name = NULL;
         }
       }
-      free(waddata->wadfiles);
+      Z_Free(waddata->wadfiles);
       waddata->wadfiles = NULL;
     }
   }
@@ -1237,7 +1237,7 @@ void WadDataToWadFiles(waddata_t *waddata)
   old_wadfiles = malloc(sizeof(*(wadfiles)) * numwadfiles);
   memcpy(old_wadfiles, wadfiles, sizeof(*(wadfiles)) * numwadfiles);
 
-  free(wadfiles);
+  Z_Free(wadfiles);
   wadfiles = NULL;
   numwadfiles = 0;
 
@@ -1295,7 +1295,7 @@ void WadDataToWadFiles(waddata_t *waddata)
         file = I_FindFile2(waddata->wadfiles[i].name, ".wad");
         if (file)
         {
-          free(waddata->wadfiles[i].name);
+          Z_Free(waddata->wadfiles[i].name);
           waddata->wadfiles[i].name = strdup(file);
         }
       }
@@ -1317,7 +1317,7 @@ void WadDataToWadFiles(waddata_t *waddata)
       D_AddFile(waddata->wadfiles[i].name, waddata->wadfiles[i].src);
   }
 
-  free(old_wadfiles);
+  Z_Free(old_wadfiles);
 }
 
 int CheckDemoExDemo(void)
@@ -1339,10 +1339,10 @@ int CheckDemoExDemo(void)
     if (demoname)
     {
       result = G_ReadDemoFooter(demoname);
-      free(demoname);
+      Z_Free(demoname);
     }
 
-    free(filename);
+    Z_Free(filename);
   }
 
   return result;
@@ -1404,14 +1404,14 @@ dboolean D_TryGetWad(const char* name)
       if (str)
       {
         lprintf(LO_INFO, "D_TryGetWad: Successfully received\n");
-        free(str);
+        Z_Free(str);
         result = true;
       }
     }
   }
 
-  free(msg);
-  free(cmdline);
+  Z_Free(msg);
+  Z_Free(cmdline);
 
   return result;
 }

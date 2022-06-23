@@ -144,7 +144,7 @@ static void dsda_LoadSplits(void) {
 
     lprintf(LO_INFO, "dsda_LoadSplits: %I64i splits loaded!\n", dsda_splits_count);
 
-    free(buffer);
+    Z_Free(buffer);
   }
 }
 

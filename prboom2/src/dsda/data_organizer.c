@@ -71,7 +71,7 @@ char* dsda_DetectDirectory(const char* env_key, const char* param) {
 
   if ((i = M_CheckParm(param)) && i < myargc - 1) {
     if (!stat(myargv[i + 1], &sbuf) && S_ISDIR(sbuf.st_mode)) {
-      if (result) free(result);
+      if (result) Z_Free(result);
       result = strdup(myargv[i + 1]);
     }
     else

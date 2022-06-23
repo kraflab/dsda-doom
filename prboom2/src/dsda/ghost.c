@@ -107,7 +107,7 @@ void dsda_InitGhostExport(const char* name) {
   version = DSDA_GHOST_VERSION;
   fwrite(&version, sizeof(int), 1, dsda_ghost_export);
 
-  free(filename);
+  Z_Free(filename);
 }
 
 void dsda_OpenGhostFile(int arg_i, dsda_ghost_file_t* ghost_file) {
@@ -130,7 +130,7 @@ void dsda_OpenGhostFile(int arg_i, dsda_ghost_file_t* ghost_file) {
   if (ghost_file->version == 1) ghost_file->count = 1;
   else fread(&ghost_file->count, sizeof(int), 1, ghost_file->fstream);
 
-  free(filename);
+  Z_Free(filename);
 }
 
 int dsda_GhostCount(int arg_i) {

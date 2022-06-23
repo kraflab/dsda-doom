@@ -752,7 +752,7 @@ void e6y_WriteStats(void)
 
   }
 
-  free(all);
+  Z_Free(all);
   fclose(f);
 }
 

@@ -85,7 +85,7 @@ static void gld_PrepareSectorSpecialEffects(void)
   /* free memory if allocated by previous maps */
   if (bleedsectors)
   {
-    free(bleedsectors);
+    Z_Free(bleedsectors);
     numbleedsectors = 0;
     bleedsectors = NULL;
   }
@@ -287,16 +287,16 @@ void gld_PreprocessFakeSectors(void)
     for (i = 0; i < numfakeplanes; i++)
     {
       fakeplanes[i].count = 0;
-      free(fakeplanes[i].list);
+      Z_Free(fakeplanes[i].list);
       fakeplanes[i].list = NULL;
     }
     numfakeplanes = 0;
-    free(fakeplanes);
+    Z_Free(fakeplanes);
     fakeplanes = NULL;
   }
   if (sectors2)
   {
-    free(sectors2);
+    Z_Free(sectors2);
   }
   sectors2 = malloc(numsectors * sizeof(sector_t*));
 

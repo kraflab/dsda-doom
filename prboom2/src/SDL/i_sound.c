@@ -1196,7 +1196,7 @@ static void UnRegisterSong(int handle)
     music_handle = NULL;
     if (mus2mid_conversion_data)
     {
-      free (mus2mid_conversion_data);
+      Z_Free (mus2mid_conversion_data);
       mus2mid_conversion_data = NULL;
     }
     SDL_UnlockMutex (musmutex);

@@ -183,7 +183,7 @@ static void scale4x ( unsigned int* inputBuffer, unsigned int* outputBuffer, int
   unsigned int * buffer2x = malloc((2 * inWidth) * (2 * inHeight) * sizeof(unsigned int));
   scale2x (inputBuffer, buffer2x, inWidth, inHeight, seamlessWidth, seamlessHeight);
   scale2x (buffer2x, outputBuffer, 2 * inWidth, 2 * inHeight, seamlessWidth, seamlessHeight);
-  free(buffer2x);
+  Z_Free(buffer2x);
 }
 
 
@@ -204,7 +204,7 @@ static unsigned char *HQScaleHelper( void (*scaleNxFunction) ( unsigned int* , u
   newBuffer = malloc((*outWidth) * (*outHeight) * 4 * sizeof(unsigned char));
 
   scaleNxFunction ( (unsigned int*)inputBuffer, (unsigned int*)newBuffer, inWidth, inHeight, seamlessWidth, seamlessHeight );
-  free(inputBuffer);
+  Z_Free(inputBuffer);
   inputBuffer = NULL;
   return newBuffer;
 }

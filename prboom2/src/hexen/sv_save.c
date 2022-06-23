@@ -119,7 +119,7 @@ static void FreeMapArchive(void)
   for (map = 0; map < MAX_MAPS; ++map)
     if (map_archive[map].buffer)
     {
-      free(map_archive[map].buffer);
+      Z_Free(map_archive[map].buffer);
       map_archive[map].buffer = NULL;
       map_archive[map].size = 0;
     }
@@ -276,7 +276,7 @@ static void SV_OpenWrite(int map)
   ma_p = &map_archive[map];
   if (ma_p->buffer)
   {
-    free(ma_p->buffer);
+    Z_Free(ma_p->buffer);
   }
   ma_p->size = 1024;
   ma_p->buffer = malloc(ma_p->size);

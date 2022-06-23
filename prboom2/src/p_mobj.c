@@ -129,7 +129,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
       seenstate[i] = 0;  // killough 4/9/98: erase memory of states
 
   if (tempstate)
-    free(tempstate);
+    Z_Free(tempstate);
 
   return ret;
 }

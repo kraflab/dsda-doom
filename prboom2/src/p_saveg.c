@@ -1534,7 +1534,7 @@ void P_TrueUnArchiveThinkers(void) {
 
   dsda_UnArchiveMSecNodes(mobj_p, mobj_count);
 
-  free(mobj_p);    // free translation table
+  Z_Free(mobj_p);    // free translation table
 
   // TODO: not in sync, need to save and load existing order
   if (map_format.thing_id)

@@ -161,7 +161,7 @@ void gld_ShutdownDetail(void)
       glDeleteTextures(1, &details[i].texid);
     }
 
-    free(details);
+    Z_Free(details);
     details = NULL;
     details_count = 0;
     details_size = 0;

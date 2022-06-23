@@ -919,8 +919,8 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
   }
   while (SDL_GetTicks() - tickStart < mintime);
 
-  free(d);
-  free(s);
+  Z_Free(d);
+  Z_Free(s);
 
   return k;
 }

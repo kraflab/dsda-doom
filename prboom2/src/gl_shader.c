@@ -243,14 +243,14 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
     else
     {
       lprintf(LO_ERROR, "gld_LoadShader: Error compiling shader \"%s+%s\": %s\n", vpname, fpname, buffer);
-      free(shader);
+      Z_Free(shader);
       shader = NULL;
     }
   }
 
-  free(filename);
-  free(vp_data);
-  free(fp_data);
+  Z_Free(filename);
+  Z_Free(vp_data);
+  Z_Free(fp_data);
 
   return shader;
 }

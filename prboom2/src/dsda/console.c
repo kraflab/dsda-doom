@@ -456,7 +456,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       }
     }
 
-    free(conditions);
+    Z_Free(conditions);
 
     dsda_StartBruteForce(depth,
                          forwardmove_min, forwardmove_max,

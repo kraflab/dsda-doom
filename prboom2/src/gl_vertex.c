@@ -429,8 +429,8 @@ void gld_InitVertexData()
   for(i = 0; i < numvertexes; i++)
     gld_RecalcVertexHeights(&vertexes[i]);
 
-  free(vt_sectorlists);
-  free(vt_sectorlists_size);
+  Z_Free(vt_sectorlists);
+  Z_Free(vt_sectorlists_size);
 }
 
 //==========================================================================
@@ -461,7 +461,7 @@ void gld_CleanVertexData()
 {
   if (gl_vertexsplit)
   {
-    free(gl_vertexsplit);
+    Z_Free(gl_vertexsplit);
     gl_vertexsplit = NULL;
   }
 
@@ -472,10 +472,10 @@ void gld_CleanVertexData()
     {
       if (gl_splitsbysector[i].numsplits > 0)
       {
-        free(gl_splitsbysector[i].splits);
+        Z_Free(gl_splitsbysector[i].splits);
       }
     }
-    free(gl_splitsbysector);
+    Z_Free(gl_splitsbysector);
     gl_splitsbysector = NULL;
   }
 }

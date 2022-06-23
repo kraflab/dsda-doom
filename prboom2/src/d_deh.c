@@ -2910,7 +2910,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
 
     deh_procStringSub(NULL, inbuffer, line2);
   }
-  free(line2); // may be NULL, ignored by free()
+  Z_Free(line2); // may be NULL, ignored by free()
 }
 
 static void deh_procError(DEHFILE *fpin, char *line)

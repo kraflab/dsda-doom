@@ -141,7 +141,7 @@ void Z_Free(void *p)
   block->prev->next = block->next;
   block->next->prev = block->prev;
 
-  (free)(block);
+  free(block);
 }
 
 static void Z_FreeTag(int tag)

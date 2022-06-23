@@ -986,8 +986,8 @@ static void gld_PreprocessSectors(void)
     if (sectors[i].flags & SECTOR_IS_CLOSED)
       gld_PrecalculateSector(i);
   }
-  free(vertexcheck);
-  free(vertexcheck2);
+  Z_Free(vertexcheck);
+  Z_Free(vertexcheck2);
 #endif /* USE_GLU_TESS */
 
   // figgi -- adapted for glnodes
@@ -1040,26 +1040,26 @@ void gld_PreprocessLevel(void)
     static int numsectors_prev = 0;
     static int numsubsectors_prev = 0;
 
-    free(gl_segs);
-    free(gl_lines);
+    Z_Free(gl_segs);
+    Z_Free(gl_lines);
 
-    free(flats_vbo);
+    Z_Free(flats_vbo);
     flats_vbo = NULL;
 
-    free(segrendered);
-    free(linerendered[0]);
-    free(linerendered[1]);
+    Z_Free(segrendered);
+    Z_Free(linerendered[0]);
+    Z_Free(linerendered[1]);
 
     for (i = 0; i < numsectors_prev; i++)
     {
-      free(sectorloops[i].loops);
+      Z_Free(sectorloops[i].loops);
     }
-    free(sectorloops);
+    Z_Free(sectorloops);
     for (i = 0; i < numsubsectors_prev; i++)
     {
-      free(subsectorloops[i].loops);
+      Z_Free(subsectorloops[i].loops);
     }
-    free(subsectorloops);
+    Z_Free(subsectorloops);
 
     gld_Precache();
     gld_PreprocessSectors();
@@ -1101,7 +1101,7 @@ void gld_PreprocessLevel(void)
         gld_num_vertexes * sizeof(flats_vbo[0]),
         flats_vbo, GL_STATIC_DRAW_ARB);
 
-      free(flats_vbo);
+      Z_Free(flats_vbo);
       flats_vbo = NULL;
 
       // bind VBO in order to use

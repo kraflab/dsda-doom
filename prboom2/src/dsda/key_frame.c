@@ -184,7 +184,7 @@ void dsda_InitKeyFrame(void) {
   }
 
   if (auto_key_frames != NULL)
-    free(auto_key_frames);
+    Z_Free(auto_key_frames);
 
   ++auto_kf_size; // chain includes a terminator
 
@@ -270,7 +270,7 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export)
 
   dsda_ArchiveAll();
 
-  if (key_frame->buffer != NULL) free(key_frame->buffer);
+  if (key_frame->buffer != NULL) Z_Free(key_frame->buffer);
 
   key_frame->buffer = savebuffer;
   key_frame->buffer_length = save_p - savebuffer;
@@ -406,10 +406,10 @@ void dsda_RestoreKeyFrameFile(const char* name) {
   if (filename)
   {
     M_ReadFile(filename, &key_frame.buffer);
-    free(filename);
+    Z_Free(filename);
 
     dsda_RestoreKeyFrame(&key_frame, false);
-    free(key_frame.buffer);
+    Z_Free(key_frame.buffer);
   }
   else
     I_Error("dsda_RestoreKeyFrameFile: cannot find %s", name);

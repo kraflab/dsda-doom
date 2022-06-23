@@ -239,7 +239,7 @@ void MN_DrawMessage(const char* messageString)
     if ((*p = c))
       p++;
   }
-  free(msg);
+  Z_Free(msg);
 }
 
 void MN_Drawer(void)

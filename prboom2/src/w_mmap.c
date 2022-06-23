@@ -74,7 +74,7 @@ void W_DoneCache(void)
   size_t i;
 
   if (lump_data) {
-    free(lump_data);
+    Z_Free(lump_data);
     lump_data = NULL;
   }
 
@@ -98,7 +98,7 @@ void W_DoneCache(void)
       mapped_wad[i].hnd=NULL;
     }
   }
-  free(mapped_wad);
+  Z_Free(mapped_wad);
   mapped_wad = NULL;
 }
 
@@ -219,7 +219,7 @@ void W_DoneCache(void)
         }
       }
   }
-  free(mapped_wad);
+  Z_Free(mapped_wad);
   mapped_wad = NULL;
 }
 

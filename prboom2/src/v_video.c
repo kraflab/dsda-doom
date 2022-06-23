@@ -886,7 +886,7 @@ void V_AllocScreens(void) {
 //
 void V_FreeScreen(screeninfo_t *scrn) {
   if (!scrn->not_on_heap) {
-    free(scrn->data);
+    Z_Free(scrn->data);
     scrn->data = NULL;
   }
 }

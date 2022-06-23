@@ -597,7 +597,7 @@ static void D_DoomLoop(void)
       avi_shot_curr_fname = malloc(len+1);
       sprintf(avi_shot_curr_fname, "%s%06d.tga", avi_shot_fname, avi_shot_num);
       M_DoScreenShot(avi_shot_curr_fname);
-      free(avi_shot_curr_fname);
+      Z_Free(avi_shot_curr_fname);
     }
   }
 }
@@ -938,7 +938,7 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
           if (!strncmp(fileinfo[length].name,"HACX",4))
             hx++;
         }
-        free(fileinfo);
+        Z_Free(fileinfo);
 
       }
 
@@ -1144,7 +1144,7 @@ static void IdentifyVersion (void)
   if (iwad && *iwad)
   {
     AddIWAD(iwad);
-    free(iwad);
+    Z_Free(iwad);
   }
   else
     I_Error("IdentifyVersion: IWAD not found\n");
@@ -1202,7 +1202,7 @@ static void FindResponseFile (void)
         }
         //jff 9/3/98 use logical output routine
         lprintf(LO_INFO,"Found response file %s\n",fname);
-        free(fname);
+        Z_Free(fname);
         // proff 04/05/2000: Added check for empty rsp file
         if (size<=0)
         {
@@ -1260,11 +1260,11 @@ static void FindResponseFile (void)
             }
           } while(size > 0);
         }
-        free(file);
+        Z_Free(file);
 
         newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
         memcpy((void *)&newargv[indexinfile],moreargs,index*sizeof(moreargs[0]));
-        free((void *)moreargs);
+        Z_Free((void *)moreargs);
 
         myargc = indexinfile+index;
         myargv = newargv;
@@ -1374,7 +1374,7 @@ static void DoLooseFiles(void)
         if (k == loose_wad_index && FileMatchesIWAD(myargv[i]))
         {
           // We can only have one iwad
-          if (iwad) free(iwad);
+          if (iwad) Z_Free(iwad);
           iwad = strdup(myargv[i]);
           break;
         }
@@ -1450,11 +1450,11 @@ static void DoLooseFiles(void)
     myargc = tmyargc;
   }
 
-  free(wads);
-  free(lmps);
-  free(dehs);
-  free(skip);
-  if (iwad) free(iwad);
+  Z_Free(wads);
+  Z_Free(lmps);
+  Z_Free(dehs);
+  Z_Free(skip);
+  if (iwad) Z_Free(iwad);
 }
 
 /* cph - MBF-like wad/deh/bex autoload code */
@@ -1573,17 +1573,17 @@ void D_AutoloadIWadDir()
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
   AutoLoadWADs(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
   AutoLoadWADs(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
   AutoLoadWADs(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 }
 
 static void D_AutoloadPWadDir()
@@ -1595,7 +1595,7 @@ static void D_AutoloadPWadDir()
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
       AutoLoadWADs(autoload_dir);
-      free(autoload_dir);
+      Z_Free(autoload_dir);
     }
 }
 
@@ -1630,17 +1630,17 @@ static void D_AutoloadDehIWadDir()
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
   AutoLoadPatches(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
   AutoLoadPatches(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
   AutoLoadPatches(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 }
 
 static void D_AutoloadDehPWadDir()
@@ -1652,7 +1652,7 @@ static void D_AutoloadDehPWadDir()
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
       AutoLoadPatches(autoload_dir);
-      free(autoload_dir);
+      Z_Free(autoload_dir);
     }
 }
 
@@ -1814,7 +1814,7 @@ static void D_DoomMainSetup(void)
       strcpy (tempverstr, doomverstr);
       strcat (tempverstr, bfgverstr);
       doomverstr = strdup (tempverstr);
-      free (tempverstr);
+      Z_Free (tempverstr);
     }
 
     /* cphipps - the main display. This shows the build date, copyright, and game type */
@@ -1932,7 +1932,7 @@ static void D_DoomMainSetup(void)
         lprintf(LO_WARN, "Failed to autoload %s\n", fname);
       else {
         D_AddFile(fpath,source_auto_load);
-        free(fpath);
+        Z_Free(fpath);
       }
     }
   }
@@ -1964,7 +1964,7 @@ static void D_DoomMainSetup(void)
       if (file)
       {
         D_AddFile(file,source_pwad);
-        free(file);
+        Z_Free(file);
       }
     }
   }
@@ -1979,7 +1979,7 @@ static void D_DoomMainSetup(void)
     D_AddFile (file,source_lmp);
     //jff 9/3/98 use logical output routine
     lprintf(LO_INFO,"Playing demo %s\n",file);
-    free(file);
+    Z_Free(file);
   }
 
   //e6y
@@ -2072,7 +2072,7 @@ static void D_DoomMainSetup(void)
       else {
         ProcessDehFile(fpath, D_dehout(), 0);
         // this used to set modifiedgame here, but patches shouldn't
-        free(fpath);
+        Z_Free(fpath);
       }
     }
   }
@@ -2119,7 +2119,7 @@ static void D_DoomMainSetup(void)
       {
         // during the beta we have debug output to dehout.txt
         ProcessDehFile(file,D_dehout(),0);
-        free(file);
+        Z_Free(file);
       }
       else
       {

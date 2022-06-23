@@ -144,15 +144,15 @@ void R_FlushAllPatches(void) {
 
   if (patches)
   {
-    free(patches);
+    Z_Free(patches);
     patches = NULL;
   }
   if (texture_composites)
   {
     for (i=0; i<numtextures; i++)
       if (texture_composites[i].data)
-        free(texture_composites[i].data);
-    free(texture_composites);
+        Z_Free(texture_composites[i].data);
+    Z_Free(texture_composites);
     texture_composites = NULL;
   }
 }
@@ -295,7 +295,7 @@ static void FillEmptySpace(rpatch_t *patch)
       break; // avoid infinite loop on entirely transparent patches (STBR127)
   }
 
-  free(copy);
+  Z_Free(copy);
 
   // copy top row of patch into any space at bottom, and vice versa
   // a hack to fix erroneous row of pixels at top of firing chaingun
@@ -537,7 +537,7 @@ static void createPatch(int id) {
 
   FillEmptySpace(patch);
 
-  free(numPostsInColumn);
+  Z_Free(numPostsInColumn);
 }
 
 typedef struct {
@@ -819,7 +819,7 @@ static void createTextureCompositePatch(int id) {
 
   FillEmptySpace(composite_patch);
 
-  free(countsInColumn);
+  Z_Free(countsInColumn);
 }
 
 //---------------------------------------------------------------------------

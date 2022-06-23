@@ -219,7 +219,7 @@ dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
 
   if (!result)
   {
-    free(buffer);
+    Z_Free(buffer);
     buffer = NULL;
   }
 
@@ -299,7 +299,7 @@ const char *I_DoomExeDir(void)
         *p--=0;
       if (strlen(base)<2 || access(base, W_OK) != 0)
       {
-        free(base);
+        Z_Free(base);
         base = (char*)malloc(1024);
         if (!getcwd(base,1024) || access(base, W_OK) != 0)
           strcpy(base, current_dir_dummy);
@@ -472,7 +472,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       memset(&search[num_search-1], 0, sizeof(*search));
       search[num_search-1].dir = strdup(left);
 
-      free(dup_dwp);
+      Z_Free(dup_dwp);
     }
   }
 
@@ -508,7 +508,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       return p;
     }
     if (!isStatic)
-      free(p);
+      Z_Free(p);
   }
   return NULL;
 }

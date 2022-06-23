@@ -2239,7 +2239,7 @@ void G_DoLoadGame(void)
   length = M_ReadFile(name, &savebuffer);
   if (length<=0)
     I_Error("Couldn't read file %s: %s", name, "(Unknown Error)");
-  free(name);
+  Z_Free(name);
   save_p = savebuffer + SAVESTRINGSIZE;
 
   if (strncmp((char*)save_p, SAVEVERSION, VERSIONSIZE) && !forced_loadgame) {
@@ -2266,7 +2266,7 @@ void G_DoLoadGame(void)
           strcat(strcat(msg,"Wads expected:\n\n"), (char*)save_p + sizeof checksum);
         strcat(msg, "\nAre you sure?");
         G_LoadGameErr(msg);
-        free(msg);
+        Z_Free(msg);
         return;
       }
       else
@@ -2524,11 +2524,11 @@ static void G_DoSaveGame(dboolean via_cmd)
     savegameslot + 1, maplump, W_GetLumpInfoByNum(W_GetNumForName(maplump))->wadfile->name, gameskill + 1,
     time/3600, (time%3600)/60, time%60, ttime/3600, (ttime%3600)/60, ttime%60);
 
-  free(savebuffer);  // killough
+  Z_Free(savebuffer);  // killough
   savebuffer = save_p = NULL;
 
   savedescription[0] = 0;
-  free(name);
+  Z_Free(name);
 }
 
 static skill_t d_skill;
@@ -3462,7 +3462,7 @@ void G_BeginRecording (void)
 
   R_DemoEx_ResetMLook();
 
-  free(demostart);
+  Z_Free(demostart);
 }
 
 //

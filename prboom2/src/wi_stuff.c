@@ -1201,9 +1201,9 @@ void WI_endDeathmatchStats(void)
 {
   int i;
   for (i = 0; i < g_maxplayers; i++)
-    free(dm_frags[i]);
+    Z_Free(dm_frags[i]);
 
-  free(dm_frags); free(dm_totals);
+  Z_Free(dm_frags); Z_Free(dm_totals);
 }
 
 // ====================================================================
@@ -1435,10 +1435,10 @@ static int    ng_state;
 //
 static void WI_endNetgameStats(void)
 {
-  free(cnt_frags); cnt_frags = NULL;
-  free(cnt_secret); cnt_secret = NULL;
-  free(cnt_items); cnt_items = NULL;
-  free(cnt_kills); cnt_kills = NULL;
+  Z_Free(cnt_frags); cnt_frags = NULL;
+  Z_Free(cnt_secret); cnt_secret = NULL;
+  Z_Free(cnt_items); cnt_items = NULL;
+  Z_Free(cnt_kills); cnt_kills = NULL;
 }
 
 // ====================================================================

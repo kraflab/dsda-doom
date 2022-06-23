@@ -274,7 +274,7 @@ void dsda_QueueBuildCommands(ticcmd_t* cmds, int depth) {
   cmd_queue.depth = depth;
 
   if (cmd_queue.cmds)
-    free(cmd_queue.cmds);
+    Z_Free(cmd_queue.cmds);
 
   cmd_queue.cmds = malloc(depth * sizeof(*cmds));
   memcpy(cmd_queue.cmds, cmds, depth * sizeof(*cmds));

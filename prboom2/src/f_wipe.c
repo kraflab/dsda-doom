@@ -71,7 +71,7 @@ static int *y_lookup = NULL;
 // e6y: resolution limitation is removed
 void R_InitMeltRes(void)
 {
-  if (y_lookup) free(y_lookup);
+  if (y_lookup) Z_Free(y_lookup);
 
   y_lookup = calloc(1, SCREENWIDTH * sizeof(*y_lookup));
 }

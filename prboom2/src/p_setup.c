@@ -1199,7 +1199,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	if (inflateEnd(zstream) != Z_OK)
 	    I_Error("P_LoadZNodes: Error during ZDoom nodes decompression shut-down!");
 
-	free(zstream);
+	Z_Free(zstream);
 #else
 	I_Error("P_LoadZNodes: Compressed ZDoom nodes are not supported!");
 #endif
@@ -1249,7 +1249,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
         lines[i].v1 = lines[i].v1 - vertexes + newvertarray;
         lines[i].v2 = lines[i].v2 - vertexes + newvertarray;
       }
-      free(vertexes);
+      Z_Free(vertexes);
       vertexes = newvertarray;
       numvertexes = orgVerts + newVerts;
     }
@@ -1486,7 +1486,7 @@ static void P_LoadThings (int lump)
   }
 #endif
 
-  free(mobjlist);
+  Z_Free(mobjlist);
 }
 
 //
@@ -2296,16 +2296,16 @@ static void P_CreateBlockMap(void)
     {
       linelist_t *tmp = bl->next;
       blockmaplump[offs++] = bl->num;
-      free(bl);
+      Z_Free(bl);
       bl = tmp;
     }
   }
 
   // free all temporary storage
 
-  free (blocklists);
-  free (blockcount);
-  free (blockdone);
+  Z_Free (blocklists);
+  Z_Free (blockcount);
+  Z_Free (blockdone);
 }
 
 // jff 10/6/98
@@ -2697,7 +2697,7 @@ static void P_RemoveSlimeTrails(void)         // killough 10/98
     while ((v != segs[i].v2) && (v = segs[i].v2));
   }
     }
-  free(hit);
+  Z_Free(hit);
 }
 
 static void R_CalcSegsLength(void)
@@ -2823,13 +2823,13 @@ void P_InitSubsectorsLines(void)
 
   if (sslines_indexes)
   {
-    free(sslines_indexes);
+    Z_Free(sslines_indexes);
     sslines_indexes = NULL;
   }
 
   if (sslines)
   {
-    free(sslines);
+    Z_Free(sslines);
     sslines = NULL;
   }
 
@@ -2996,20 +2996,20 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     gld_CleanMemory();
 #endif
 
-    free(segs);
-    free(nodes);
-    free(subsectors);
+    Z_Free(segs);
+    Z_Free(nodes);
+    Z_Free(subsectors);
 #ifdef GL_DOOM
-    free(map_subsectors);
+    Z_Free(map_subsectors);
 #endif
 
-    free(blocklinks);
-    free(blockmaplump);
+    Z_Free(blocklinks);
+    Z_Free(blockmaplump);
 
-    free(lines);
-    free(sides);
-    free(sectors);
-    free(vertexes);
+    Z_Free(lines);
+    Z_Free(sides);
+    Z_Free(sectors);
+    Z_Free(vertexes);
   }
 
   if (nodesVersion > 0)

@@ -589,7 +589,7 @@ void gld_GetSkyCapColors(void)
   fixedcolormap = fixedcolormap_saved;
   frame_fixedcolormap = frame_fixedcolormap_saved;
 
-  free(buffer);
+  Z_Free(buffer);
 }
 
 //-----------------------------------------------------------------------------
@@ -662,8 +662,8 @@ static void gld_BuildSky(int row_count, int col_count, SkyBoxParams_t *sky, int 
 
   if ((vbo->columns != col_count) || (vbo->rows != row_count))
   {
-    free(vbo->loops);
-    free(vbo->data);
+    Z_Free(vbo->loops);
+    Z_Free(vbo->data);
     memset(vbo, 0, sizeof(vbo[0]));
   }
 

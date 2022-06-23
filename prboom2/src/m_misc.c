@@ -1458,11 +1458,11 @@ void M_LoadDefaults (void)
       {
         if ((*arr)[k])
         {
-          free((*arr)[k]);
+          Z_Free((*arr)[k]);
           (*arr)[k] = NULL;
         }
       }
-      free(*arr);
+      Z_Free(*arr);
       *arr = NULL;
       *(item->location.array_size) = 0;
       // load predefined data
@@ -1551,7 +1551,7 @@ void M_LoadDefaults (void)
             {
               if ((*arr)[(*index)])
               {
-                free((*arr)[(*index)]);
+                Z_Free((*arr)[(*index)]);
                 (*arr)[(*index)] = NULL;
               }
             }
@@ -1574,7 +1574,7 @@ void M_LoadDefaults (void)
                 union { const char **c; char **s; } u; // type punning via unions
 
                 u.c = defaults[i].location.ppsz;
-                free(*(u.s));
+                Z_Free(*(u.s));
                 *(u.s) = newstring;
 
                 item = &defaults[i];
@@ -1641,7 +1641,7 @@ void M_LoadDefaults (void)
                 union { const char **c; char **s; } u; // type punning via unions
 
                 u.c = defaults[i].location.ppsz;
-                free(*(u.s));
+                Z_Free(*(u.s));
                 *(u.s) = newstring;
               }
             break;
@@ -1652,8 +1652,8 @@ void M_LoadDefaults (void)
     fclose (f);
     }
 
-  free(strparm);
-  free(cfgline);
+  Z_Free(strparm);
+  Z_Free(cfgline);
 
   dsda_InitSettings();
 
@@ -1775,7 +1775,7 @@ void M_ScreenShot(void)
       M_DoScreenShot(lbmname); // cph
       success = 1;
     }
-    free(lbmname);
+    Z_Free(lbmname);
     if (success) return;
   }
 
@@ -1892,7 +1892,7 @@ void M_ArrayFree(array_t *data)
 {
   if (data->data)
   {
-    free(data->data);
+    Z_Free(data->data);
     data->data = NULL;
   }
 

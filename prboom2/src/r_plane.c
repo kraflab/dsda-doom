@@ -118,14 +118,14 @@ fixed_t *distscale = NULL;
 
 void R_InitPlanesRes(void)
 {
-  if (floorclip) free(floorclip);
-  if (ceilingclip) free(ceilingclip);
-  if (spanstart) free(spanstart);
+  if (floorclip) Z_Free(floorclip);
+  if (ceilingclip) Z_Free(ceilingclip);
+  if (spanstart) Z_Free(spanstart);
 
-  if (cachedheight) free(cachedheight);
+  if (cachedheight) Z_Free(cachedheight);
 
-  if (yslope) free(yslope);
-  if (distscale) free(distscale);
+  if (yslope) Z_Free(yslope);
+  if (distscale) Z_Free(distscale);
 
   floorclip = calloc(1, SCREENWIDTH * sizeof(*floorclip));
   ceilingclip = calloc(1, SCREENWIDTH * sizeof(*ceilingclip));

@@ -645,7 +645,7 @@ unsigned char* gld_GetTextureBuffer(GLuint texid, int miplevel, int *width, int 
   glGetTexLevelParameteriv(GL_TEXTURE_2D, miplevel, GL_TEXTURE_HEIGHT, &h);
   if (w * h * 4 > buf_size)
   {
-    free(buf);
+    Z_Free(buf);
     buf_size = w * h * 4;
     buf = malloc(buf_size);
   }
@@ -928,7 +928,7 @@ l_exit:
 
   if (tex_buffer && tex_buffer != data)
   {
-    free(tex_buffer);
+    Z_Free(tex_buffer);
     tex_buffer = NULL;
   }
 
@@ -1293,7 +1293,7 @@ static void gld_CleanTexItems(int count, GLTexture ***items)
         }
       }
 
-      free((*items)[i]->glTexExID);
+      Z_Free((*items)[i]->glTexExID);
       (*items)[i]->glTexExID = NULL;
 
       Z_Free((*items)[i]);

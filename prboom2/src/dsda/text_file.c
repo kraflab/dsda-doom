@@ -57,7 +57,7 @@ static char* dsda_TextFileName(void) {
 
   strcat(name, ".txt");
 
-  free(playdemo);
+  Z_Free(playdemo);
 
   return name;
 }
@@ -136,7 +136,7 @@ void dsda_ExportTextFile(void) {
     return;
 
   file = fopen(name, "wb");
-  free(name);
+  Z_Free(name);
 
   if (!file)
     I_Error("Unable to export text file!");
@@ -180,7 +180,7 @@ void dsda_ExportTextFile(void) {
 
   name = dsda_TextFileTime();
   fprintf(file, "Time:      %s\n", name);
-  free(name);
+  Z_Free(name);
 
   fprintf(file, "\n");
   fprintf(file, "Author:    %s\n", dsda_player_name);

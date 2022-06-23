@@ -69,13 +69,11 @@ char *Z_StrdupLevel(const char *s);
 
 // Remove all definitions before including system definitions
 
-#undef free
 #undef malloc
 #undef realloc
 #undef calloc
 #undef strdup
 
-#define free(p)            Z_Free(p)
 #define malloc(n)          Z_Malloc(n)
 #define realloc(p,n)       Z_Realloc(p,n)
 #define calloc(n1,n2)      Z_Calloc(n1,n2)

@@ -4045,7 +4045,7 @@ static void P_FreeCopyScrollers(void)
   {
     copyscroller_count = 0;
     copyscroller_max = 0;
-    free(copyscrollers);
+    Z_Free(copyscrollers);
   }
 }
 
