@@ -789,7 +789,7 @@ unsigned char *I_GrabSound (int len)
   if (!buffer || size > buffer_size)
   {
     buffer_size = size * 4;
-    buffer = (unsigned char *)realloc (buffer, buffer_size);
+    buffer = (unsigned char *)Z_Realloc (buffer, buffer_size);
   }
 
   if (buffer)
@@ -822,7 +822,7 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 
   if (nreq > sinsamp)
   {
-    sin = (short*)realloc (sin, (nreq + 1) * 4);
+    sin = (short*)Z_Realloc (sin, (nreq + 1) * 4);
     if (!sinsamp) // avoid pop when first starting stream
       sin[0] = sin[1] = 0;
     sinsamp = nreq;

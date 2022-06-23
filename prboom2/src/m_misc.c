@@ -1466,7 +1466,7 @@ void M_LoadDefaults (void)
       *arr = NULL;
       *(item->location.array_size) = 0;
       // load predefined data
-      *arr = realloc(*arr, sizeof(char*) * item->defaultvalue.array_size);
+      *arr = Z_Realloc(*arr, sizeof(char*) * item->defaultvalue.array_size);
       *(item->location.array_size) = item->defaultvalue.array_size;
       item->location.array_index = 0;
       for (k = 0; k < item->defaultvalue.array_size; k++)
@@ -1544,7 +1544,7 @@ void M_LoadDefaults (void)
           {
             if ((*index) + 1 > *pcount)
             {
-              *arr = realloc(*arr, sizeof(char*) * ((*index) + 1));
+              *arr = Z_Realloc(*arr, sizeof(char*) * ((*index) + 1));
               (*pcount)++;
             }
             else
@@ -1764,7 +1764,7 @@ void M_ScreenShot(void)
 
     do {
       int size = doom_snprintf(NULL, 0, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
-      lbmname = realloc(lbmname, size+1);
+      lbmname = Z_Realloc(lbmname, size+1);
       doom_snprintf(lbmname, size+1, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
       shot++;
     } while (!access(lbmname,0) && (shot != startshot) && (shot < 10000));
@@ -1905,7 +1905,7 @@ void M_ArrayAddItem(array_t *data, void *item, int itemsize)
   if (data->count + 1 >= data->capacity)
   {
     data->capacity = (data->capacity ? data->capacity * 2 : 128);
-    data->data = realloc(data->data, data->capacity * itemsize);
+    data->data = Z_Realloc(data->data, data->capacity * itemsize);
   }
 
   memcpy((unsigned char*)data->data + data->count * itemsize, item, itemsize);
@@ -1917,7 +1917,7 @@ void* M_ArrayGetNewItem(array_t *data, int itemsize)
   if (data->count + 1 >= data->capacity)
   {
     data->capacity = (data->capacity ? data->capacity * 2 : 128);
-    data->data = realloc(data->data, data->capacity * itemsize);
+    data->data = Z_Realloc(data->data, data->capacity * itemsize);
   }
 
   data->count++;

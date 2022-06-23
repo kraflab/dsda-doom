@@ -370,9 +370,9 @@ static void R_SetInterpolation(interpolation_type_e type, void *posptr)
       return;
     }
 
-    oldipos = (fixed2_t*)realloc(oldipos, sizeof(*oldipos) * interpolations_max);
-    bakipos = (fixed2_t*)realloc(bakipos, sizeof(*bakipos) * interpolations_max);
-    curipos = (interpolation_t*)realloc(curipos, sizeof(*curipos) * interpolations_max);
+    oldipos = (fixed2_t*)Z_Realloc(oldipos, sizeof(*oldipos) * interpolations_max);
+    bakipos = (fixed2_t*)Z_Realloc(bakipos, sizeof(*bakipos) * interpolations_max);
+    curipos = (interpolation_t*)Z_Realloc(curipos, sizeof(*curipos) * interpolations_max);
   }
 
   i = NULL;

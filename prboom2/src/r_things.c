@@ -424,7 +424,7 @@ static vissprite_t *R_NewVisSprite(void)
       size_t num_vissprite_alloc_prev = num_vissprite_alloc;
 
       num_vissprite_alloc = num_vissprite_alloc ? num_vissprite_alloc*2 : 128;
-      vissprites = realloc(vissprites,num_vissprite_alloc*sizeof(*vissprites));
+      vissprites = Z_Realloc(vissprites,num_vissprite_alloc*sizeof(*vissprites));
 
       //e6y: set all fields to zero
       memset(vissprites + num_vissprite_alloc_prev, 0,
@@ -1563,7 +1563,7 @@ void R_DrawMasked(void)
       drawsegs_xrange_size = 2 * maxdrawsegs;
       for(i = 0; i < DS_RANGES_COUNT; i++)
       {
-        drawsegs_xranges[i].items = realloc(
+        drawsegs_xranges[i].items = Z_Realloc(
           drawsegs_xranges[i].items,
           drawsegs_xrange_size * sizeof(drawsegs_xranges[i].items[0]));
       }

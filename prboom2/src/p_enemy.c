@@ -2771,7 +2771,7 @@ void P_SpawnBrainTargets(void)  // killough 3/26/98: renamed old function
         if (m->type == MT_BOSSTARGET )
           {   // killough 2/7/98: remove limit on icon landings:
             if (numbraintargets >= numbraintargets_alloc)
-              braintargets = realloc(braintargets,
+              braintargets = Z_Realloc(braintargets,
                       (numbraintargets_alloc = numbraintargets_alloc ?
                        numbraintargets_alloc*2 : 32) *sizeof *braintargets);
             braintargets[numbraintargets++] = m;
@@ -4838,7 +4838,7 @@ void A_AddPlayerCorpse(mobj_t * actor)
       static int queuesize;
       if (queuesize < bodyquesize)
     	{
-    	  bodyque = realloc(bodyque, bodyquesize * sizeof(*bodyque));
+    	  bodyque = Z_Realloc(bodyque, bodyquesize * sizeof(*bodyque));
     	  memset(bodyque+queuesize, 0, (bodyquesize - queuesize) * sizeof(*bodyque));
     	  queuesize = bodyquesize;
     	}

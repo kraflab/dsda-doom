@@ -1182,7 +1182,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
 	{
 	    int outlen_old = outlen;
 	    outlen = 2 * outlen_old;
-	    output = realloc(output, outlen);
+	    output = Z_Realloc(output, outlen);
 	    zstream->next_out = output + outlen_old;
 	    zstream->avail_out = outlen - outlen_old;
 	}

@@ -126,7 +126,7 @@ static void dsda_LoadSplits(void) {
         break;
 
       i = dsda_splits_count;
-      dsda_splits = realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
+      dsda_splits = Z_Realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
       dsda_InitSplitTime(&dsda_splits[i].leveltime);
       dsda_InitSplitTime(&dsda_splits[i].totalleveltimes);
       dsda_splits[i].first_time = 0;
@@ -205,7 +205,7 @@ void dsda_RecordSplit(void) {
     }
 
   if (i == dsda_splits_count) {
-    dsda_splits = realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
+    dsda_splits = Z_Realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
     dsda_splits[i].first_time = 1;
     dsda_InitSplitTime(&dsda_splits[i].leveltime);
     dsda_InitSplitTime(&dsda_splits[i].totalleveltimes);

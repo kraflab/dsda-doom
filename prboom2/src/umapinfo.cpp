@@ -372,7 +372,7 @@ static char *ParseMultiString(Scanner &scanner, int error)
 		else
 		{
 			size_t newlen = strlen(build) + strlen(scanner.string) + 2; // strlen for both the existing text and the new line, plus room for one \n and one \0
-			build = (char*)realloc(build, newlen); // Prepare the destination memory for the below strcats
+			build = (char*)Z_Realloc(build, newlen); // Prepare the destination memory for the below strcats
 			strcat(build, "\n"); // Replace the existing text's \0 terminator with a \n
 			strcat(build, scanner.string); // Concatenate the new line onto the existing text
 		}
@@ -602,7 +602,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			{
 				if (mape->numbossactions == -1) mape->numbossactions = 1;
 				else mape->numbossactions++;
-				mape->bossactions = (struct BossAction *)realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
+				mape->bossactions = (struct BossAction *)Z_Realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
 				mape->bossactions[mape->numbossactions - 1].type = i;
 				mape->bossactions[mape->numbossactions - 1].special = special;
 				mape->bossactions[mape->numbossactions - 1].tag = tag;
@@ -713,7 +713,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 		if (i == Maps.mapcount)
 		{
 			Maps.mapcount++;
-			Maps.maps = (MapEntry*)realloc(Maps.maps, sizeof(MapEntry)*Maps.mapcount);
+			Maps.maps = (MapEntry*)Z_Realloc(Maps.maps, sizeof(MapEntry)*Maps.mapcount);
 			Maps.maps[Maps.mapcount-1] = parsed;
 		}
 

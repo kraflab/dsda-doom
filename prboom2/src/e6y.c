@@ -611,7 +611,7 @@ void e6y_G_DoCompleted(void)
   if (numlevels >= levels_max)
   {
     levels_max = levels_max ? levels_max*2 : 32;
-    stats = realloc(stats,sizeof(*stats)*levels_max);
+    stats = Z_Realloc(stats,sizeof(*stats)*levels_max);
   }
 
   memset(&stats[numlevels], 0, sizeof(timetable_t));

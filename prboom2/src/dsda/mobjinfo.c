@@ -50,12 +50,12 @@ static void dsda_EnsureCapacity(int limit) {
 
     num_mobj_types *= 2;
 
-    mobjinfo = realloc(mobjinfo, num_mobj_types * sizeof(*mobjinfo));
+    mobjinfo = Z_Realloc(mobjinfo, num_mobj_types * sizeof(*mobjinfo));
     memset(mobjinfo + old_num_mobj_types, 0,
       (num_mobj_types - old_num_mobj_types) * sizeof(*mobjinfo));
 
     edited_mobjinfo_bits =
-      realloc(edited_mobjinfo_bits, num_mobj_types * sizeof(*edited_mobjinfo_bits));
+      Z_Realloc(edited_mobjinfo_bits, num_mobj_types * sizeof(*edited_mobjinfo_bits));
     memset(edited_mobjinfo_bits + old_num_mobj_types, 0,
       (num_mobj_types - old_num_mobj_types) * sizeof(*edited_mobjinfo_bits));
 

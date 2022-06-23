@@ -816,7 +816,7 @@ void D_AddFile (const char *file, wad_source_t source)
   char *gwa_filename=NULL;
   int len;
 
-  wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+  wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
   wadfiles[numwadfiles].name =
     AddDefaultExtension(strcpy(malloc(strlen(file)+5), file), ".wad");
   wadfiles[numwadfiles].src = source; // Ty 08/29/98
@@ -837,7 +837,7 @@ void D_AddFile (const char *file, wad_source_t source)
       char *ext;
       ext = &gwa_filename[strlen(gwa_filename)-4];
       ext[1] = 'g'; ext[2] = 'w'; ext[3] = 'a';
-      wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+      wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
       wadfiles[numwadfiles].name = gwa_filename;
       wadfiles[numwadfiles].src = source; // Ty 08/29/98
       wadfiles[numwadfiles].handle = 0;
@@ -1186,7 +1186,7 @@ static void FindResponseFile (void)
         {
           size_t fnlen = doom_snprintf(NULL, 0, "%s/%s",
                                        I_DoomExeDir(), &myargv[i][1]);
-          fname = realloc(fname, fnlen+4+1);
+          fname = Z_Realloc(fname, fnlen+4+1);
           doom_snprintf(fname, fnlen+1, "%s/%s",
                         I_DoomExeDir(), &myargv[i][1]);
           AddDefaultExtension(fname,".rsp");
@@ -1255,14 +1255,14 @@ static void FindResponseFile (void)
 
               // Terminate string, realloc and add to argv
               *p = 0;
-              newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + 1));
-              newargv[indexinfile++] = realloc(s,strlen(s)+1);
+              newargv = Z_Realloc(newargv, sizeof(newargv[0]) * (indexinfile + 1));
+              newargv[indexinfile++] = Z_Realloc(s,strlen(s)+1);
             }
           } while(size > 0);
         }
         Z_Free(file);
 
-        newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
+        newargv = Z_Realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
         memcpy((void *)&newargv[indexinfile],moreargs,index*sizeof(moreargs[0]));
         Z_Free((void *)moreargs);
 

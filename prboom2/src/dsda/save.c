@@ -159,7 +159,7 @@ static void dsda_MarkSaveSlotUsed(int slot) {
   if (demo_save_slot_count > allocated_save_slot_count) {
     allocated_save_slot_count = allocated_save_slot_count ? allocated_save_slot_count * 2 : 8;
     demo_save_slots =
-      realloc(demo_save_slots, allocated_save_slot_count * sizeof(*demo_save_slots));
+      Z_Realloc(demo_save_slots, allocated_save_slot_count * sizeof(*demo_save_slots));
   }
 
   demo_save_slots[demo_save_slot_count - 1] = slot;

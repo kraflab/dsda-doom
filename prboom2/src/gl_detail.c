@@ -827,7 +827,7 @@ void gld_ParseDetailItem(tag_detail_e item)
           if (details_count + 1 > details_size)
           {
             details_size = (details_size == 0 ? 128 : details_size * 2);
-            details = realloc(details, details_size * sizeof(details[0]));
+            details = Z_Realloc(details, details_size * sizeof(details[0]));
           }
           details[details_count] = detail;
           details_count++;

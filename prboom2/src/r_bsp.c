@@ -411,7 +411,7 @@ static void R_AddLine (seg_t *line)
     {
       unsigned pos = ds_p - drawsegs; // jff 8/9/98 fix from ZDOOM1.14a
       unsigned newmax = maxdrawsegs ? maxdrawsegs*2 : 128; // killough
-      drawsegs = realloc(drawsegs,newmax*sizeof(*drawsegs));
+      drawsegs = Z_Realloc(drawsegs,newmax*sizeof(*drawsegs));
       ds_p = drawsegs + pos;          // jff 8/9/98 fix from ZDOOM1.14a
       maxdrawsegs = newmax;
     }

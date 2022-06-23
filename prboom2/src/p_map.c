@@ -3431,7 +3431,7 @@ void P_AppendSpecHit(line_t * ld)
   // 1/11/98 killough: remove limit on lines hit, by array doubling
   if (numspechit >= spechit_max) {
     spechit_max = spechit_max ? spechit_max*2 : 8;
-    spechit = realloc(spechit,sizeof *spechit*spechit_max); // killough
+    spechit = Z_Realloc(spechit,sizeof *spechit*spechit_max); // killough
   }
   spechit[numspechit++] = ld;
   // e6y: Spechits overrun emulation code

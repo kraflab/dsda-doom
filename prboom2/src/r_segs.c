@@ -631,7 +631,7 @@ void R_StoreWallRange(const int start, const int stop)
     {
       unsigned pos = ds_p - drawsegs; // jff 8/9/98 fix from ZDOOM1.14a
       unsigned newmax = maxdrawsegs ? maxdrawsegs*2 : 128; // killough
-      drawsegs = realloc(drawsegs,newmax*sizeof(*drawsegs));
+      drawsegs = Z_Realloc(drawsegs,newmax*sizeof(*drawsegs));
       ds_p = drawsegs + pos;          // jff 8/9/98 fix from ZDOOM1.14a
       maxdrawsegs = newmax;
     }
@@ -695,7 +695,7 @@ void R_StoreWallRange(const int start, const int stop)
         do
           maxopenings = maxopenings ? maxopenings*2 : 16384;
         while (need > maxopenings);
-        openings = realloc(openings, maxopenings * sizeof(*openings));
+        openings = Z_Realloc(openings, maxopenings * sizeof(*openings));
         lastopening = openings + pos;
 
       // jff 8/9/98 borrowed fix for openings from ZDOOM1.14

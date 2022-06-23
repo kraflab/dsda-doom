@@ -177,7 +177,7 @@ static void CheckBuffer(size_t size)
   while (delta + size > ma_p->size)
   {
     ma_p->size += 1024;
-    ma_p->buffer = realloc(ma_p->buffer, ma_p->size);
+    ma_p->buffer = Z_Realloc(ma_p->buffer, ma_p->size);
     buffer_p = ma_p->buffer + delta;
   }
 }

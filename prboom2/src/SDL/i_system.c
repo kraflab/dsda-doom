@@ -455,7 +455,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
               *ptr = '\0';
 
               num_search++;
-              search = realloc(search, num_search * sizeof(*search));
+              search = Z_Realloc(search, num_search * sizeof(*search));
               memset(&search[num_search-1], 0, sizeof(*search));
               search[num_search-1].dir = Z_Strdup(left);
 
@@ -468,7 +468,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       }
 
       num_search++;
-      search = realloc(search, num_search * sizeof(*search));
+      search = Z_Realloc(search, num_search * sizeof(*search));
       memset(&search[num_search-1], 0, sizeof(*search));
       search[num_search-1].dir = Z_Strdup(left);
 

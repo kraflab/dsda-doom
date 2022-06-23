@@ -124,7 +124,7 @@ unsigned char *I_GrabScreen(void)
   if (!pixels || size > pixels_size)
   {
     pixels_size = size;
-    pixels = (unsigned char*)realloc(pixels, size);
+    pixels = (unsigned char*)Z_Realloc(pixels, size);
   }
 
   if (pixels && size)

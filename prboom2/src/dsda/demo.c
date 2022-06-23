@@ -137,7 +137,7 @@ static void dsda_EnsureDemoBufferSpace(size_t length) {
     dsda_demo_write_buffer_length *= 2;
 
   dsda_demo_write_buffer =
-    (byte *)realloc(dsda_demo_write_buffer, dsda_demo_write_buffer_length);
+    (byte *)Z_Realloc(dsda_demo_write_buffer, dsda_demo_write_buffer_length);
 
   if (dsda_demo_write_buffer == NULL)
     I_Error("dsda_EnsureDemoBufferSpace: out of memory!");

@@ -212,7 +212,7 @@ void P_InitPicAnims (void)
     if (lastanim >= anims + maxanims)
     {
       size_t newmax = maxanims ? maxanims*2 : MAXANIMS;
-      anims = realloc(anims, newmax*sizeof(*anims));   // killough
+      anims = Z_Realloc(anims, newmax*sizeof(*anims));   // killough
       lastanim = anims + maxanims;
       maxanims = newmax;
     }
@@ -449,7 +449,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
       {
         heightlist_size = heightlist_size ? heightlist_size * 2 : 128;
       } while (sec->linecount > heightlist_size);
-      heightlist = realloc(heightlist, heightlist_size * sizeof(heightlist[0]));
+      heightlist = Z_Realloc(heightlist, heightlist_size * sizeof(heightlist[0]));
     }
 
     for (i=0, h=0 ;i < sec->linecount ; i++)
@@ -4014,7 +4014,7 @@ static void P_AddCopyScroller(line_t *l)
   while (copyscroller_count >= copyscroller_max)
   {
     copyscroller_max = copyscroller_max ? copyscroller_max * 2 : 8;
-    copyscrollers = realloc(copyscrollers, copyscroller_max * sizeof(*copyscrollers));
+    copyscrollers = Z_Realloc(copyscrollers, copyscroller_max * sizeof(*copyscrollers));
   }
 
   copyscrollers[copyscroller_count++] = l;

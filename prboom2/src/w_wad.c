@@ -221,7 +221,7 @@ static void W_AddFile(wadfile_info_t *wadfile)
     }
 
     // Fill in lumpinfo
-    lumpinfo = realloc(lumpinfo, numlumps*sizeof(lumpinfo_t));
+    lumpinfo = Z_Realloc(lumpinfo, numlumps*sizeof(lumpinfo_t));
 
     lump_p = &lumpinfo[startlump];
 

@@ -2173,7 +2173,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       {
         num_deathmatchstarts = num_deathmatchstarts ?
                                num_deathmatchstarts * 2 : 16;
-        deathmatchstarts = realloc(deathmatchstarts,
+        deathmatchstarts = Z_Realloc(deathmatchstarts,
                                    num_deathmatchstarts *
                                    sizeof(*deathmatchstarts));
         deathmatch_p = deathmatchstarts + offset;

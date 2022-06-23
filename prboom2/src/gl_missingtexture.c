@@ -181,7 +181,7 @@ static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, i
   if (source_idx == -1)
   {
     /* allocate memory for new sector */
-    bleedsectors = (bleedthrough_t*) realloc(bleedsectors, (numbleedsectors + 1) * sizeof(bleedthrough_t));
+    bleedsectors = (bleedthrough_t*) Z_Realloc(bleedsectors, (numbleedsectors + 1) * sizeof(bleedthrough_t));
     if(!bleedsectors) I_Error("gld_RegisterBleedthroughSector: Out of memory");
     memset(&bleedsectors[numbleedsectors], 0, sizeof(bleedthrough_t));
     numbleedsectors++;
@@ -232,7 +232,7 @@ static void gld_PreprocessFakeSector(int ceiling, sector_t *sector, int groupid)
     sector->fakegroup[ceiling] = groupid;
     if (groupid >= numfakeplanes)
     {
-      fakeplanes = realloc(fakeplanes, (numfakeplanes + 1) * sizeof(fakegroup_t));
+      fakeplanes = Z_Realloc(fakeplanes, (numfakeplanes + 1) * sizeof(fakegroup_t));
       memset(&fakeplanes[numfakeplanes], 0, sizeof(fakegroup_t));
       numfakeplanes++;
     }

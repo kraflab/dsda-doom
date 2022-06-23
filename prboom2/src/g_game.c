@@ -1760,7 +1760,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
       static int queuesize;
       if (queuesize < bodyquesize)
   {
-    bodyque = realloc(bodyque, bodyquesize*sizeof*bodyque);
+    bodyque = Z_Realloc(bodyque, bodyquesize*sizeof*bodyque);
     memset(bodyque+queuesize, 0,
      (bodyquesize-queuesize)*sizeof*bodyque);
     queuesize = bodyquesize;
@@ -2416,7 +2416,7 @@ void (CheckSaveGame)(size_t size, const char* file, int line)
 
   size += 1024;  // breathing room
   if (pos+size > savegamesize)
-    save_p = (savebuffer = realloc(savebuffer,
+    save_p = (savebuffer = Z_Realloc(savebuffer,
            savegamesize += (size+1023) & ~1023)) + pos;
 }
 

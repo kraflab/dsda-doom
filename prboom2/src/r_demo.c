@@ -234,7 +234,7 @@ int AddString(char **str, const char *val)
   if (*str)
   {
     size = strlen(*str) + strlen(val) + 1;
-    *str = realloc(*str, size);
+    *str = Z_Realloc(*str, size);
     strcat(*str, val);
   }
   else
@@ -285,7 +285,7 @@ void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size
 
   if (name)
   {
-    wadtbl->lumps = realloc(wadtbl->lumps, (lumpnum + 1) * sizeof(wadtbl->lumps[0]));
+    wadtbl->lumps = Z_Realloc(wadtbl->lumps, (lumpnum + 1) * sizeof(wadtbl->lumps[0]));
 
     memcpy(wadtbl->lumps[lumpnum].name, name, 8);
     wadtbl->lumps[lumpnum].size = size;
@@ -296,7 +296,7 @@ void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size
 
   if (data && size > 0)
   {
-    wadtbl->data = realloc(wadtbl->data, wadtbl->datasize + size);
+    wadtbl->data = Z_Realloc(wadtbl->data, wadtbl->datasize + size);
 
     memcpy(wadtbl->data + wadtbl->datasize, data, size);
     wadtbl->datasize += size;
@@ -413,7 +413,7 @@ void R_DemoEx_WriteMLook(angle_t pitch)
     mlook_lump.maxtick = (mlook_lump.maxtick ? mlook_lump.maxtick * 2 : 8192);
     if (mlook_lump.tick >= mlook_lump.maxtick)
       mlook_lump.maxtick = mlook_lump.tick * 2;
-    mlook_lump.data = realloc(mlook_lump.data, mlook_lump.maxtick * sizeof(mlook_lump.data[0]));
+    mlook_lump.data = Z_Realloc(mlook_lump.data, mlook_lump.maxtick * sizeof(mlook_lump.data[0]));
     memset(mlook_lump.data + ticks, 0, (mlook_lump.maxtick - ticks) * sizeof(mlook_lump.data[0]));
   }
 
@@ -1213,7 +1213,7 @@ int WadDataAddItem(waddata_t *waddata, const char *filename, wad_source_t source
   if (!waddata || !filename)
     return false;
 
-  waddata->wadfiles = realloc(waddata->wadfiles, sizeof(*wadfiles) * (waddata->numwadfiles + 1));
+  waddata->wadfiles = Z_Realloc(waddata->wadfiles, sizeof(*wadfiles) * (waddata->numwadfiles + 1));
   waddata->wadfiles[waddata->numwadfiles].name = Z_Strdup(filename);
   waddata->wadfiles[waddata->numwadfiles].src = source;
   waddata->wadfiles[waddata->numwadfiles].handle = handle;
@@ -1260,7 +1260,7 @@ void WadDataToWadFiles(waddata_t *waddata)
   {
     if (old_wadfiles[i].src == source_auto_load || old_wadfiles[i].src == source_pre)
     {
-      wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+      wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
       wadfiles[numwadfiles].name = Z_Strdup(old_wadfiles[i].name);
       wadfiles[numwadfiles].src = old_wadfiles[i].src;
       wadfiles[numwadfiles].handle = old_wadfiles[i].handle;
@@ -1272,7 +1272,7 @@ void WadDataToWadFiles(waddata_t *waddata)
   {
     if (waddata->wadfiles[i].src == source_auto_load)
     {
-      wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+      wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
       wadfiles[numwadfiles].name = Z_Strdup(waddata->wadfiles[i].name);
       wadfiles[numwadfiles].src = waddata->wadfiles[i].src;
       wadfiles[numwadfiles].handle = waddata->wadfiles[i].handle;

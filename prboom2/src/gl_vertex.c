@@ -296,7 +296,7 @@ static void AddToVertex(const sector_t *sec, int **list, unsigned int *size)
     if ((*list)[i] == secno)
       return;
   }
-  (*list) = realloc((*list), sizeof(*list) * ((*size) + 1));
+  (*list) = Z_Realloc((*list), sizeof(*list) * ((*size) + 1));
   (*list)[(*size)] = secno;
   (*size)++;
 }
@@ -314,7 +314,7 @@ static void AddToSplitBySector(vertexsplit_info_t *vi, splitsbysector_t *splitsb
     if (splitsbysector->splits[i] == vi)
       return;
   }
-  splitsbysector->splits = realloc(
+  splitsbysector->splits = Z_Realloc(
     splitsbysector->splits,
     sizeof(splitsbysector->splits) * (splitsbysector->numsplits + 1));
   splitsbysector->splits[splitsbysector->numsplits] = vi;

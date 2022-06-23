@@ -97,7 +97,7 @@ void gld_ResetDrawInfo(void)
 static void gld_AddDrawRange(int size)
 {
   gld_drawinfo.maxsize++;
-  gld_drawinfo.data = realloc(gld_drawinfo.data,
+  gld_drawinfo.data = Z_Realloc(gld_drawinfo.data,
     gld_drawinfo.maxsize * sizeof(gld_drawinfo.data[0]));
 
   gld_drawinfo.data[gld_drawinfo.size].maxsize = size;
@@ -157,7 +157,7 @@ void gld_AddDrawItem(GLDrawItemType itemtype, void *itemdata)
   if (gld_drawinfo.num_items[itemtype] >= gld_drawinfo.max_items[itemtype])
   {
     gld_drawinfo.max_items[itemtype] += 64;
-    gld_drawinfo.items[itemtype] = realloc(
+    gld_drawinfo.items[itemtype] = Z_Realloc(
       gld_drawinfo.items[itemtype],
       gld_drawinfo.max_items[itemtype] * sizeof(gld_drawinfo.items[0][0]));
   }

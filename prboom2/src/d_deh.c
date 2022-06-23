@@ -2968,7 +2968,7 @@ static void deh_procStrings(DEHFILE *fpin, char *line)
       maxstrlen = strlen(holdstring) + strlen(inbuffer);
       deh_log("* increased buffer from to %ld for buffer size %d\n",
               (long)maxstrlen, (int)strlen(inbuffer));
-      holdstring = realloc(holdstring, maxstrlen * sizeof(*holdstring));
+      holdstring = Z_Realloc(holdstring, maxstrlen * sizeof(*holdstring));
     }
     // concatenate the whole buffer if continuation or the value iffirst
     strcat(holdstring, ptr_lstrip(((*holdstring) ? inbuffer : strval)));

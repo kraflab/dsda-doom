@@ -1020,7 +1020,7 @@ void gld_ParseSkybox(void)
         if (ok)
         {
           BoxSkyboxCount++;
-          BoxSkybox = realloc(BoxSkybox, BoxSkyboxCount * sizeof(BoxSkybox[0]));
+          BoxSkybox = Z_Realloc(BoxSkybox, BoxSkyboxCount * sizeof(BoxSkybox[0]));
           memcpy(&BoxSkybox[BoxSkyboxCount - 1], &sb, sizeof(sb));
         }
       }
