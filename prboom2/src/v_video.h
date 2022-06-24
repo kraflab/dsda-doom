@@ -244,9 +244,7 @@ int V_BestColor(const unsigned char *palette, int r, int g, int b);
 // [FG] colored blood and gibs
 int V_BloodColor(int blood);
 
-#ifdef GL_DOOM
 #include "gl_struct.h"
-#endif
 
 void V_FillRectStretch(int scrn, int x, int y, int width, int height, byte color);
 

@@ -369,7 +369,6 @@ static void R_AddLine (seg_t *line)
 
   curline = line;
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     angle1 = R_PointToPseudoAngle(line->v1->x, line->v1->y);
@@ -425,7 +424,6 @@ static void R_AddLine (seg_t *line)
 
     return;
   }
-#endif
 
   angle1 = R_PointToAngleEx(line->v1->px, line->v1->py);
   angle2 = R_PointToAngleEx(line->v2->px, line->v2->py);
@@ -537,14 +535,12 @@ static dboolean R_CheckBBox(const fixed_t *bspcoord)
 
   check = checkcoord[boxpos];
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     angle1 = R_PointToPseudoAngle(bspcoord[check[0]], bspcoord[check[1]]);
     angle2 = R_PointToPseudoAngle(bspcoord[check[2]], bspcoord[check[3]]);
     return gld_clipper_SafeCheckRange(angle2, angle1);
   }
-#endif
 
   angle1 = R_PointToAngleEx (bspcoord[check[0]], bspcoord[check[1]]) - viewangle;
   angle2 = R_PointToAngleEx (bspcoord[check[2]], bspcoord[check[3]]) - viewangle;
@@ -603,14 +599,13 @@ static void R_Subsector(int num)
   sector_t    tempsec;              // killough 3/7/98: deep water hack
   int         floorlightlevel;      // killough 3/16/98: set floor lightlevel
   int         ceilinglightlevel;    // killough 4/11/98
-  #ifdef GL_DOOM
+
   // dmooter 1/16/2017 Move from being declared next to its use several lines lower.
   // Needs to remain in scope to the end of the function so its stack memory is recycled,
   // compiler optimizations will make the floorplane pointer a dangling pointer
   // when passed into gld_AddPlane().
   visplane_t dummyfloorplane;
   visplane_t dummyceilingplane;
-  #endif
 
 #ifdef RANGECHECK
   if (num>=numsubsectors)
@@ -620,9 +615,7 @@ static void R_Subsector(int num)
   sub = &subsectors[num];
   currentsubsectornum = num;
 
-#ifdef GL_DOOM
   if (V_IsSoftwareMode() || !gl_use_stencil || sub->sector->validcount != validcount)
-#endif
   {
     frontsector = sub->sector;
 
@@ -664,7 +657,6 @@ static void R_Subsector(int num)
   // e6y
   // New algo can handle fake flats and ceilings
   // much more correctly and fastly the the original
-#ifdef GL_DOOM
     if (V_IsOpenGLMode())
     {
       // check if the sector is faked
@@ -755,7 +747,6 @@ static void R_Subsector(int num)
         }
       }
     }
-#endif
 
   // killough 9/18/98: Fix underwater slowdown, by passing real sector
   // instead of fake one. Improve sprite lighting by basing sprite
@@ -776,10 +767,8 @@ static void R_Subsector(int num)
 
     R_AddSprites(sub, (floorlightlevel+ceilinglightlevel)/2);
 
-#ifdef GL_DOOM
     if (V_IsOpenGLMode())
       gld_AddPlane(num, floorplane, ceilingplane);
-#endif
   }
 
   // hexen

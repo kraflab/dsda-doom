@@ -38,10 +38,7 @@
 
 #include <math.h>
 
-#ifdef GL_DOOM
 #include "gl_opengl.h"
-#endif
-
 #include "doomstat.h"
 #include "st_stuff.h"
 #include "r_main.h"
@@ -280,7 +277,7 @@ const char *map_things_appearance_list[map_things_appearance_max] =
 {
   "classic",
   "scaled",
-#if defined(HAVE_LIBSDL2_IMAGE) && defined(GL_DOOM)
+#if defined(HAVE_LIBSDL2_IMAGE)
   "icons"
 #endif
 };
@@ -478,10 +475,8 @@ static void AM_SetMPointFloatValue(mpoint_t *p)
 
 static void AM_SetFPointFloatValue(fpoint_t *p)
 {
-#ifdef GL_DOOM
   p->fx = (float)p->x;
   p->fy = (float)p->y;
-#endif
 }
 
 static dboolean stop_zooming;
@@ -1094,13 +1089,11 @@ dboolean AM_Responder
   }
   else if (dsda_InputActivated(dsda_input_map_textured))
   {
-#ifdef GL_DOOM
     map_textured = !map_textured;
     M_ChangeMapTextured();
     plr->message = (map_textured ? s_AMSTR_TEXTUREDON : s_AMSTR_TEXTUREDOFF);
 
     return true;
-#endif
   }
   else if (
     dsda_InputDeactivated(dsda_input_map_zoomout) ||
@@ -1830,7 +1823,7 @@ static void AM_drawPlayers(void)
   mpoint_t pt;
   fixed_t scale;
 
-#if defined(HAVE_LIBSDL2_IMAGE) && defined(GL_DOOM)
+#if defined(HAVE_LIBSDL2_IMAGE)
   if (V_IsOpenGLMode())
   {
     if (map_things_appearance == map_things_appearance_icon)
@@ -1884,7 +1877,6 @@ static void AM_drawPlayers(void)
 
 static void AM_ProcessNiceThing(mobj_t* mobj, angle_t angle, fixed_t x, fixed_t y)
 {
-#ifdef GL_DOOM
   const float shadow_scale_factor = 1.3f;
   angle_t ang;
   int i, type, radius, rotate, need_shadow;
@@ -2050,12 +2042,10 @@ static void AM_ProcessNiceThing(mobj_t* mobj, angle_t angle, fixed_t x, fixed_t 
   {
     gld_AddNiceThing(am_icon_shadow, fx, fy, shadow_radius, rot, 0, 0, 0, 128);
   }
-#endif
 }
 
 static void AM_DrawNiceThings(void)
 {
-#ifdef GL_DOOM
   int i;
   mobj_t* t;
   mpoint_t p;
@@ -2149,8 +2139,6 @@ static void AM_DrawNiceThings(void)
       }
     }
   }
-
-#endif
 }
 
 //
@@ -2166,7 +2154,7 @@ static void AM_drawThings(void)
   int   i;
   mobj_t* t;
 
-#if defined(HAVE_LIBSDL2_IMAGE) && defined(GL_DOOM)
+#if defined(HAVE_LIBSDL2_IMAGE)
   if (V_IsOpenGLMode())
   {
     if (map_things_appearance == map_things_appearance_icon)
@@ -2302,7 +2290,7 @@ static void AM_drawMarks(void)
   int i;
   char namebuf[16] = "AMMNUM0";
 
-#if defined(HAVE_LIBSDL2_IMAGE) && defined(GL_DOOM)
+#if defined(HAVE_LIBSDL2_IMAGE)
   if (V_IsOpenGLMode())
   {
     if (map_things_appearance == map_things_appearance_icon)
@@ -2443,12 +2431,10 @@ void M_ChangeMapGridSize(void)
 
 void M_ChangeMapTextured(void)
 {
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_ProcessTexturedMap();
   }
-#endif
 }
 
 void M_ChangeMapMultisamling(void)
@@ -2467,12 +2453,10 @@ void M_ChangeMapMultisamling(void)
 
 void AM_drawSubsectors(void)
 {
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_MapDrawSubsectors(plr, f_x, f_y, m_x, m_y, f_w, f_h, scale_mtof);
   }
-#endif
 }
 
 static void AM_setFrameVariables(void)
@@ -2539,13 +2523,11 @@ void AM_Drawer (void)
 
   AM_setFrameVariables();
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     // do not use multisampling in automap mode if map_use_multisamling 0
     gld_MultisamplingSet();
   }
-#endif
 
   if (!(automapmode & am_overlay)) // cph - If not overlay mode, clear background for the automap
     V_FillRect(FB, f_x, f_y, f_w, f_h, (byte)(*mapcolor_back_p)); //jff 1/5/98 background default color
@@ -2562,7 +2544,6 @@ void AM_Drawer (void)
   AM_drawThings(); //jff 1/5/98 default double IDDT sprite
   AM_drawCrosshair((*mapcolor_hair_p));   //jff 1/7/98 default crosshair color
 
-#if defined(GL_DOOM)
   if (V_IsOpenGLMode())
   {
     gld_DrawMapLines();
@@ -2575,7 +2556,6 @@ void AM_Drawer (void)
     }
 #endif
   }
-#endif
 
   AM_drawMarks();
 }

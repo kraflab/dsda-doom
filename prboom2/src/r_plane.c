@@ -341,9 +341,8 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
   check->special = special;
   check->xoffs = xoffs;               // killough 2/28/98: Save offsets
   check->yoffs = yoffs;
-#ifdef GL_DOOM
+
   if (V_IsSoftwareMode())
-#endif
   {
     int i;
     check->minx = viewwidth; // Was SCREENWIDTH -- killough 11/98

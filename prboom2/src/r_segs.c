@@ -639,7 +639,6 @@ void R_StoreWallRange(const int start, const int stop)
   if(curline->miniseg == false) // figgi -- skip minisegs
     curline->linedef->flags |= ML_MAPPED;
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     // proff 11/99: the rest of the calculations is not needed for OpenGL
@@ -648,8 +647,6 @@ void R_StoreWallRange(const int start, const int stop)
 
     return;
   }
-#endif
-
 
 #ifdef RANGECHECK
   if (start >=viewwidth || start > stop)

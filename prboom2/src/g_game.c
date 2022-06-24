@@ -979,9 +979,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (!walkcamera.type || menuactive) //e6y
     mousex = mousey = 0;
-#ifdef GL_DOOM
+
   motion_blur.curr_speed_pow2 = 0;
-#endif
 
   if (forward > MAXPLMOVE)
     forward = MAXPLMOVE;
@@ -1089,9 +1088,7 @@ static void G_DoLoadLevel (void)
   // [RH] Set up details about sky rendering
   R_InitSkyMap ();
 
-#ifdef GL_DOOM
   R_SetBoxSkybox(skytexture);
-#endif
 
   levelstarttic = gametic;        // for time calculation
 
@@ -2188,7 +2185,6 @@ unsigned int GetPackageVersion(void)
 
 void RecalculateDrawnSubsectors(void)
 {
-#ifdef GL_DOOM
   int i, j;
 
   for (i = 0; i < numsubsectors; i++)
@@ -2205,7 +2201,6 @@ void RecalculateDrawnSubsectors(void)
   }
 
   gld_ResetTexturedAutomap();
-#endif
 }
 
 void G_DoLoadGame(void)

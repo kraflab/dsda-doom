@@ -594,12 +594,11 @@ GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force)
     gltexture->height=MIN(gltexture->realtexheight, gltexture->tex_height);
     gltexture->buffer_width=gltexture->tex_width;
     gltexture->buffer_height=gltexture->tex_height;
-#ifdef USE_GLU_IMAGESCALE
     gltexture->width=gltexture->tex_width;
     gltexture->height=gltexture->tex_height;
     gltexture->buffer_width=gltexture->realtexwidth;
     gltexture->buffer_height=gltexture->realtexheight;
-#endif
+
     if (gltexture->flags & GLTEXTURE_MIPMAP)
     {
       gltexture->width=gltexture->tex_width;
@@ -842,7 +841,6 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
     goto l_exit;
   }
 
-#ifdef USE_GLU_MIPMAP
   if (gltexture->flags & GLTEXTURE_MIPMAP)
   {
     gluBuild2DMipmaps(GL_TEXTURE_2D, gl_tex_format,
@@ -856,9 +854,7 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
     goto l_exit;
   }
   else
-#endif // USE_GLU_MIPMAP
   {
-#ifdef USE_GLU_IMAGESCALE
     if ((width != tex_width) || (height != tex_height))
     {
       tex_buffer = Z_Malloc(tex_buffer_size);
@@ -877,7 +873,6 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
         0, GL_RGBA, GL_UNSIGNED_BYTE, tex_buffer);
     }
     else
-#endif // USE_GLU_IMAGESCALE
     {
       if ((width != tex_width) || (height != tex_height))
       {
@@ -1045,12 +1040,11 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite)
     gltexture->height=MIN(gltexture->realtexheight, gltexture->tex_height);
     gltexture->buffer_width=gltexture->tex_width;
     gltexture->buffer_height=gltexture->tex_height;
-#ifdef USE_GLU_IMAGESCALE
     gltexture->width=MIN(gltexture->realtexwidth, gltexture->tex_width);
     gltexture->height=MIN(gltexture->realtexheight, gltexture->tex_height);
     gltexture->buffer_width=MAX(gltexture->realtexwidth, gltexture->tex_width);
     gltexture->buffer_height=MAX(gltexture->realtexheight, gltexture->tex_height);
-#endif
+
     if (gltexture->flags & GLTEXTURE_MIPMAP)
     {
       gltexture->width=gltexture->tex_width;
@@ -1176,12 +1170,11 @@ GLTexture *gld_RegisterFlat(int lump, dboolean mipmap)
     gltexture->height=MIN(gltexture->realtexheight, gltexture->tex_height);
     gltexture->buffer_width=gltexture->tex_width;
     gltexture->buffer_height=gltexture->tex_height;
-#ifdef USE_GLU_IMAGESCALE
     gltexture->width=gltexture->tex_width;
     gltexture->height=gltexture->tex_height;
     gltexture->buffer_width=gltexture->realtexwidth;
     gltexture->buffer_height=gltexture->realtexheight;
-#endif
+
     if (gltexture->flags & GLTEXTURE_MIPMAP)
     {
       gltexture->width=gltexture->tex_width;

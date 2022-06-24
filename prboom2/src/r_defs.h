@@ -195,9 +195,7 @@ typedef struct
   int INTERP_SectorCeiling;
   int INTERP_FloorPanning;
   int INTERP_CeilingPanning;
-#ifdef GL_DOOM
   int fakegroup[2];
-#endif
 
   // hexen
   seqtype_t seqType;          // stone, metal, heavy, etc...
@@ -227,9 +225,7 @@ typedef struct
   int special;
 
   int INTERP_WallPanning;
-#ifdef GL_DOOM
   int skybox_index;
-#endif
 } side_t;
 
 //
@@ -256,9 +252,7 @@ typedef struct line_s
   int iLineID;           // proff 04/05/2000: needed for OpenGL
   vertex_t *v1, *v2;     // Vertices, from v1 to v2.
   fixed_t dx, dy;        // Precalculated v2 - v1 for side checking.
-#ifdef GL_DOOM
   float texel_length;
-#endif
   unsigned int flags;           // Animation related.
   short special;
   short tag;

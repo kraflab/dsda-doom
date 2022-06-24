@@ -636,7 +636,6 @@ int r_near_clip_plane = MINZ;
 void R_SetClipPlanes(void)
 {
   // thing is behind view plane?
-#ifdef GL_DOOM
   if ((V_IsOpenGLMode()) &&
       (HaveMouseLook() || (render_fov > FOV90)) &&
       (!render_paperitems || simple_shadows.loaded))
@@ -644,7 +643,6 @@ void R_SetClipPlanes(void)
     r_near_clip_plane = -(FRACUNIT * MAX(64, simple_shadows.max_radius));
   }
   else
-#endif
   {
     r_near_clip_plane = MINZ;
   }
@@ -685,13 +683,11 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     return;
   }
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_ProjectSprite(thing, lightlevel);
     return;
   }
-#endif
 
   if (R_ViewInterpolation())
   {
@@ -937,7 +933,6 @@ void R_AddSprites(subsector_t* subsec, int lightlevel)
 
   // Handle all things in sector.
 
-#ifdef GL_DOOM
   if (show_alive)
   {
     if (show_alive == 1)
@@ -950,7 +945,6 @@ void R_AddSprites(subsector_t* subsec, int lightlevel)
     }
   }
   else
-#endif
   {
     for (thing = sec->thinglist; thing; thing = thing->snext)
     {
@@ -1254,7 +1248,6 @@ static void R_DrawPSprite (pspdef_t *psp)
   {
     R_DrawVisSprite(vis);
   }
-#ifdef GL_DOOM
   else
   {
     int lightlevel;
@@ -1279,7 +1272,6 @@ static void R_DrawPSprite (pspdef_t *psp)
     }
     gld_DrawWeapon(lump,vis,lightlevel);
   }
-#endif
 }
 
 //

@@ -701,9 +701,7 @@ void V_SetPalette(int pal)
   currentPaletteIndex = pal;
 
   if (V_IsOpenGLMode()) {
-#ifdef GL_DOOM
     gld_SetPalette(pal);
-#endif
   } else {
     I_SetPalette(pal);
   }
@@ -717,9 +715,7 @@ void V_SetPlayPal(int playpal_index)
 
   if (V_IsOpenGLMode())
   {
-#ifdef GL_DOOM
     gld_FlushTextures();
-#endif
   }
 }
 
@@ -742,7 +738,6 @@ static void V_PlotPixel8(int scrn, int x, int y, byte color);
 static void WRAP_V_DrawLineWu(fline_t* fl, int color);
 static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight);
 
-#ifdef GL_DOOM
 static void WRAP_gld_FillRect(int scrn, int x, int y, int width, int height, byte colour)
 {
   gld_FillBlock(x,y,width,height,colour);
@@ -784,7 +779,6 @@ static void WRAP_gld_DrawLine(fline_t* fl, int color)
 {
   gld_DrawLine_f(fl->a.fx, fl->a.fy, fl->b.fx, fl->b.fy, color);
 }
-#endif
 
 static void NULL_FillRect(int scrn, int x, int y, int width, int height, byte colour) {}
 static void NULL_CopyRect(int srcscrn, int destscrn, int x, int y, int width, int height, enum patch_translation_e flags) {}
@@ -834,7 +828,6 @@ void V_InitMode(video_mode_t mode) {
       V_DrawLineWu = WRAP_V_DrawLineWu;
       current_videomode = VID_MODESW;
       break;
-#ifdef GL_DOOM
     case VID_MODEGL:
       lprintf(LO_INFO, "V_InitMode: using OpenGL video mode\n");
       V_CopyRect = WRAP_gld_CopyRect;
@@ -850,7 +843,6 @@ void V_InitMode(video_mode_t mode) {
       V_DrawLineWu = WRAP_gld_DrawLine;
       current_videomode = VID_MODEGL;
       break;
-#endif
   }
   R_FilterInit();
 }
@@ -1411,24 +1403,20 @@ void V_ToggleFullscreen(void)
 
   I_UpdateVideoMode();
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_PreprocessLevel();
   }
-#endif
 }
 
 void V_ChangeScreenResolution(void)
 {
   I_UpdateVideoMode();
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_PreprocessLevel();
   }
-#endif
 }
 
 void V_FillRectStretch(int scrn, int x, int y, int width, int height, byte color)

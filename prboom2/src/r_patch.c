@@ -412,7 +412,6 @@ static void createPatch(int id) {
   if (getPatchIsNotTileable(oldPatch))
     patch->flags |= PATCH_ISNOTTILEABLE;
 
-#ifdef GL_DOOM
   // Width of M_THERMM patch is 9, but Doom interprets it as 8-columns lump
   // during drawing. It is not a problem for software mode and GL_NEAREST,
   // but looks wrong with filtering. So I need to patch it during loading.
@@ -423,7 +422,6 @@ static void createPatch(int id) {
       patch->width--;
     }
   }
-#endif
 
   // work out how much memory we need to allocate for this patch's data
   pixelDataSize = (patch->width * patch->height + 4) & ~3;

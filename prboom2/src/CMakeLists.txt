@@ -371,33 +371,31 @@ set(PRBOOM_PLUS_SOURCES
 )
 
 function(AddGameExecutable TARGET SOURCES)
-    if(OPENGL_FOUND AND OPENGL_GLU_FOUND)
-        set(SOURCES
-            ${SOURCES}
-            gl_clipper.c
-            gl_detail.c
-            gl_drawinfo.c
-            gl_fbo.c
-            gl_gamma.c
-            gl_hires.c
-            gl_hqresize.c
-            gl_intern.h
-            gl_light.c
-            gl_main.c
-            gl_map.c
-            gl_missingtexture.c
-            gl_opengl.c
-            gl_opengl.h
-            gl_preprocess.c
-            gl_shader.c
-            gl_shadow.c
-            gl_sky.c
-            gl_struct.h
-            gl_texture.c
-            gl_vertex.c
-            gl_wipe.c
-        )
-    endif()
+    set(SOURCES
+        ${SOURCES}
+        gl_clipper.c
+        gl_detail.c
+        gl_drawinfo.c
+        gl_fbo.c
+        gl_gamma.c
+        gl_hires.c
+        gl_hqresize.c
+        gl_intern.h
+        gl_light.c
+        gl_main.c
+        gl_map.c
+        gl_missingtexture.c
+        gl_opengl.c
+        gl_opengl.h
+        gl_preprocess.c
+        gl_shader.c
+        gl_shadow.c
+        gl_sky.c
+        gl_struct.h
+        gl_texture.c
+        gl_vertex.c
+        gl_wipe.c
+    )
 
     if(WIN32)
         add_definitions("-DUSE_WIN32_PCSOUND_DRIVER")
@@ -479,20 +477,10 @@ function(AddGameExecutable TARGET SOURCES)
 
     install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
-    if(OPENGL_FOUND AND OPENGL_GLU_FOUND)
-        target_compile_definitions(${TARGET} PRIVATE
-            GL_DOOM
-            USE_SHADERS
-            USE_FBO_TECHNIQUE
-            USE_GLU_IMAGESCALE
-            USE_GLU_MIPMAP
-            USE_GLU_TESS
-        )
-        target_link_libraries(${TARGET} PRIVATE
-            ${OPENGL_gl_LIBRARY}
-            ${OPENGL_glu_LIBRARY}
-        )
-    endif()
+    target_link_libraries(${TARGET} PRIVATE
+        ${OPENGL_gl_LIBRARY}
+        ${OPENGL_glu_LIBRARY}
+    )
 endfunction()
 
 AddGameExecutable(dsda-doom "${PRBOOM_PLUS_SOURCES}")

@@ -314,12 +314,10 @@ void D_Display (fixed_t frac)
     if (!dsda_InputActive(dsda_input_use))
       return;
 
-#ifdef GL_DOOM
     if (V_IsOpenGLMode())
     {
       gld_PreprocessLevel();
     }
-#endif
   }
 
   if (!dsda_SkipMode() || !dsda_InputActive(dsda_input_use))
@@ -450,10 +448,8 @@ void D_Display (fixed_t frac)
       R_DrawViewBorder();
     HU_Drawer();
 
-#ifdef GL_DOOM
     if (V_IsOpenGLMode())
       gld_ProcessExtraAlpha();
-#endif
   }
 
   isborderstate      = isborder;
@@ -1128,7 +1124,7 @@ static void IdentifyVersion (void)
 
   iwad = FindIWADFile();
 
-#if (defined(GL_DOOM) && defined(PRBOOM_DEBUG))
+#if defined(PRBOOM_DEBUG)
   // proff 11/99: used for debugging
   {
     FILE *f;
@@ -1890,10 +1886,8 @@ static void D_DoomMainSetup(void)
   G_ReloadDefaults();    // killough 3/4/98: set defaults just loaded.
   // jff 3/24/98 this sets startskill if it was -1
 
-#ifdef GL_DOOM
   // proff 04/05/2000: for GL-specific switches
   gld_InitCommandLine();
-#endif
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"V_Init: allocate screens.\n");

@@ -40,9 +40,7 @@
 #include <direct.h>
 #include <winreg.h>
 #endif
-#ifdef GL_DOOM
 #include <SDL_opengl.h>
-#endif
 #include <string.h>
 #include <math.h>
 
@@ -80,10 +78,8 @@
 #include "am_map.h"
 #include "dsda.h"
 #include "dsda/settings.h"
-#ifdef GL_DOOM
 #include "gl_struct.h"
 #include "gl_intern.h"
-#endif
 #include "g_game.h"
 #include "r_demo.h"
 #include "d_deh.h"
@@ -328,12 +324,10 @@ void M_ChangeMouseLook(void)
 
   R_InitSkyMap();
 
-#ifdef GL_DOOM
   if (gl_skymode == skytype_auto)
     gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);
   else
     gl_drawskys = gl_skymode;
-#endif // GL_DOOM
 }
 
 void M_ChangeMouseInvert(void)
@@ -454,7 +448,6 @@ void M_ChangeFOV(void)
   skyscale = 1.0f / (float)tan(DEG2RAD(render_fov / 2));
 }
 
-#ifdef GL_DOOM
 void M_ChangeMultiSample(void)
 {
 }
@@ -498,7 +491,6 @@ void M_ChangeTextureHQResize(void)
 {
   gld_FlushTextures();
 }
-#endif //GL_DOOM
 
 void M_Mouse(int choice, int *sens);
 void M_MouseMLook(int choice)

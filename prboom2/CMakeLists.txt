@@ -63,10 +63,7 @@ check_include_file("unistd.h" HAVE_UNISTD_H)
 check_include_file("asm/byteorder.h" HAVE_ASM_BYTEORDER_H)
 check_include_file("dirent.h" HAVE_DIRENT_H)
 
-option(BUILD_GL "Enable OpenGL rendering code" ON)
-if(BUILD_GL)
-    find_package(OpenGL)
-endif()
+find_package(OpenGL REQUIRED)
 
 find_package(SDL2 2.0.7 REQUIRED)
 

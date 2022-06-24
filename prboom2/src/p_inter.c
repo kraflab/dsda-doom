@@ -1139,12 +1139,10 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   mo = P_SpawnMobj (target->x,target->y,ONFLOORZ, item);
   mo->flags |= MF_DROPPED;    // special versions of items
 
-#ifdef GL_DOOM
   if (target->momx == 0 && target->momy == 0)
   {
     target->flags |= MF_FOREGROUND;
   }
-#endif
 }
 
 //

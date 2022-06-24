@@ -24,10 +24,7 @@
 #include "r_demo.h"
 #include "s_sound.h"
 #include "v_video.h"
-
-#ifdef GL_DOOM
 #include "gl_struct.h"
-#endif
 
 #include "dsda/build.h"
 #include "dsda/pause.h"
@@ -104,10 +101,8 @@ void dsda_ExitSkipMode(void) {
   S_Stop();
   S_RestartMusic();
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
     gld_PreprocessLevel();
-#endif
 }
 
 void dsda_ToggleSkipMode(void) {

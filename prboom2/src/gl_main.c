@@ -220,11 +220,7 @@ void gld_InitTextureParams(void)
 
   for (i = 0; i < MIP_COUNT; i++)
   {
-#ifdef USE_GLU_MIPMAP
     tex_filter[i].mipmap     = params[*var[i]].mipmap;
-#else
-    tex_filter[i].mipmap     = false;
-#endif
     tex_filter[i].mag_filter = params[*var[i]].tex_filter;
     tex_filter[i].min_filter = params[*var[i]].mipmap_filter;
   }

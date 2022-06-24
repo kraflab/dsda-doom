@@ -328,8 +328,6 @@ static void gld_CarveFlats(int bspnode, int numdivlines, divline_t *divlines)
   Z_Free(childlist);
 }
 
-#ifdef USE_GLU_TESS
-
 static int currentsector; // the sector which is currently tesselated
 
 // ntessBegin
@@ -697,8 +695,6 @@ static void gld_PrecalculateSector(int num)
   Z_Free(lineadded);
 }
 
-#endif /* USE_GLU_TESS */
-
 /********************************************
  * Name     : gld_GetSubSectorVertices      *
  * created  : 08/13/00                      *
@@ -849,14 +845,12 @@ static void gld_MarkSectorsForClamp(void)
 
 static void gld_PreprocessSectors(void)
 {
-#ifdef USE_GLU_TESS // figgi
   char *vertexcheck = NULL;
   char *vertexcheck2 = NULL;
   int v1num;
   int v2num;
   int i;
   int j;
-#endif
 
 #ifdef PRBOOM_DEBUG
   levelinfo=fopen("levelinfo.txt","a");
@@ -905,7 +899,6 @@ static void gld_PreprocessSectors(void)
     gld_AddGlobalVertexes(numvertexes*2);
   }
 
-#ifdef USE_GLU_TESS
   if (numvertexes)
   {
     vertexcheck=Z_Malloc(numvertexes*sizeof(vertexcheck[0]));
@@ -988,7 +981,6 @@ static void gld_PreprocessSectors(void)
   }
   Z_Free(vertexcheck);
   Z_Free(vertexcheck2);
-#endif /* USE_GLU_TESS */
 
   // figgi -- adapted for glnodes
   if (numnodes)

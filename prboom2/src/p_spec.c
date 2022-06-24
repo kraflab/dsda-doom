@@ -133,7 +133,6 @@ line_t *linespeciallist[MAXLINEANIMS];
 //e6y
 void MarkAnimatedTextures(void)
 {
-#ifdef GL_DOOM
   anim_t* anim;
 
   anim_textures = Z_Calloc(numtextures, sizeof(TAnimItemParam));
@@ -156,7 +155,6 @@ void MarkAnimatedTextures(void)
       }
     }
   }
-#endif // GL_DOOM
 }
 
 //

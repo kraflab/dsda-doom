@@ -811,13 +811,11 @@ void R_SetupMatrix(void)
 
   R_SetupViewport();
 
-  #ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     extern int gl_nearclip;
     r_nearclip = gl_nearclip;
   }
-  #endif
 
   fovy = render_fovy;
   aspect = render_ratio;
@@ -958,7 +956,6 @@ void R_RenderPlayerView (player_t* player)
 
   if (V_IsOpenGLMode())
   {
-#ifdef GL_DOOM
     // proff 11/99: clear buffers
     gld_InitDrawScene();
 
@@ -967,7 +964,6 @@ void R_RenderPlayerView (player_t* player)
       // proff 11/99: switch to perspective mode
       gld_StartDrawScene();
     }
-#endif
   } else {
     if (flashing_hom)
     { // killough 2/10/98: add flashing red HOM indicators
@@ -990,7 +986,6 @@ void R_RenderPlayerView (player_t* player)
 
   FakeNetUpdate();
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode()) {
     {
       angle_t a1 = gld_FrustumAngle();
@@ -999,7 +994,6 @@ void R_RenderPlayerView (player_t* player)
       gld_FrustrumSetup();
     }
   }
-#endif
 
   // Make displayed player invisible locally
   if (localQuakeHappening[displayplayer] && gamestate == GS_LEVEL)
@@ -1031,11 +1025,9 @@ void R_RenderPlayerView (player_t* player)
   FakeNetUpdate();
 
   if (V_IsOpenGLMode() && !automap) {
-#ifdef GL_DOOM
     // proff 11/99: draw the scene
     gld_DrawScene(player);
     // proff 11/99: finishing off
     gld_EndDrawScene();
-#endif
   }
 }

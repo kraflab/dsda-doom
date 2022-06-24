@@ -2465,9 +2465,7 @@ setup_menu_t keys_settings4[] =  // Key Binding screen strings
   {"GRID"       ,S_INPUT     ,m_map ,KB_X,KB_Y+11*8,{0},dsda_input_map_grid},
   {"ROTATE"     ,S_INPUT     ,m_map ,KB_X,KB_Y+12*8,{0},dsda_input_map_rotate},
   {"OVERLAY"    ,S_INPUT     ,m_map ,KB_X,KB_Y+13*8,{0},dsda_input_map_overlay},
-#ifdef GL_DOOM
   {"TEXTURED"   ,S_INPUT     ,m_map ,KB_X,KB_Y+14*8,{0},dsda_input_map_textured},
-#endif
 
   {"<-" ,S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings3}},
   {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings5}},
@@ -2496,9 +2494,7 @@ setup_menu_t keys_settings5[] =  // Key Binding screen strings
   {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+13*8},
   {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_restart},
   {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_nextlevel},
-#ifdef GL_DOOM
   {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_showalive},
-#endif
 
   {"<-",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings4}},
   {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings6}},
@@ -3006,14 +3002,12 @@ setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
   {"Scroll / Zoom speed  (1..32)",            S_NUM,  m_null,AU_X,AU_Y+5*8, {"map_scroll_speed"}},
   {"Use mouse wheel for zooming",             S_YESNO,m_null,AU_X,AU_Y+6*8, {"map_wheel_zoom"}},
   {"Apply multisampling",                     S_YESNO,m_null,AU_X,AU_Y+7*8, {"map_use_multisamling"}, 0, M_ChangeMapMultisamling},
-#ifdef GL_DOOM
   {"Enable textured display",                 S_YESNO,m_null,AU_X,AU_Y+8*8, {"map_textured"}, 0, M_ChangeMapTextured},
   {"Things appearance",                       S_CHOICE,m_null,AU_X,AU_Y+9*8, {"map_things_appearance"}, 0, NULL, map_things_appearance_list},
   {"Translucency percentage",                 S_SKIP|S_TITLE,m_null,AU_X,AU_Y+10*8},
   {"Textured automap",                        S_NUM,  m_null,AU_X,AU_Y+11*8, {"map_textured_trans"}},
   {"Textured automap in overlay mode",        S_NUM,  m_null,AU_X,AU_Y+12*8, {"map_textured_overlay_trans"}},
   {"Lines in overlay mode",                   S_NUM,  m_null,AU_X,AU_Y+13*8, {"map_lines_overlay_trans"}},
-#endif
 
   // Button for resetting to defaults
   {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
@@ -3197,9 +3191,7 @@ setup_menu_t* gen_settings[] =
 
 static const char *videomodes[] = {
   "Software",
-#ifdef GL_DOOM
   "OpenGL",
-#endif
   NULL};
 
 static const char *gltexformats[] = {
@@ -3500,13 +3492,11 @@ void M_ChangeDemoSmoothTurns(void)
 
 void M_ChangeTextureParams(void)
 {
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_InitTextureParams();
     gld_FlushTextures();
   }
-#endif
 }
 
 // Setting up for the General screen. Turn on flags, set pointers,
@@ -4755,7 +4745,6 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_gamma))
     {
 //e6y
-#ifdef GL_DOOM
       if (V_IsOpenGLMode() && gl_hardware_gamma)
       {
         static char str[200];
@@ -4768,7 +4757,6 @@ dboolean M_Responder (event_t* ev) {
         gld_SetGammaRamp(useglgamma);
       }
       else
-#endif
       {
         usegamma++;
         if (usegamma > 4)
@@ -4917,7 +4905,6 @@ dboolean M_Responder (event_t* ev) {
       }
     }
 
-#ifdef GL_DOOM
     if (V_IsOpenGLMode())
     {
       if (dsda_InputActivated(dsda_input_showalive) && !dsda_StrictMode())
@@ -4927,7 +4914,6 @@ dboolean M_Responder (event_t* ev) {
           (show_alive ? (show_alive == 1 ? "(mode 1) on" : "(mode 2) on" ) : "off"));
       }
     }
-#endif
 
     M_HandleToggles();
 
@@ -5035,13 +5021,11 @@ dboolean M_Responder (event_t* ev) {
           M_SettingUpdated(ptr1, true);
 
           //e6y
-          #ifdef GL_DOOM
           {
             extern dboolean gl_arb_multitexture;
             if ((ptr1->m_flags&S_CANT_GL_ARB_MULTITEXTURE) && !gl_arb_multitexture)
               warn_about_changes(ptr1->m_flags & S_CANT_GL_ARB_MULTITEXTURE);
           }
-          #endif
         }
         M_SelectDone(ptr1);                           // phares 4/17/98
         return true;
@@ -6247,10 +6231,8 @@ void M_Init(void)
   M_ChangeMouseLook();
   M_ChangeMouseInvert();
   M_ChangeFOV();
-#ifdef GL_DOOM
   M_ChangeSpriteClip();
   M_ChangeAllowBoomColormaps();
-#endif
 
   M_ChangeDemoSmoothTurns();
 

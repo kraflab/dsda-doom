@@ -558,8 +558,6 @@ extern byte *segrendered; // true if sector rendered (only here for malloc)
 extern byte *linerendered[2]; // true if linedef rendered (only here for malloc)
 extern GLuint flats_vbo_id;
 
-#ifdef USE_SHADERS
-
 typedef struct GLShader_s
 {
   char name[256];
@@ -579,18 +577,5 @@ void glsl_SetFuzzTime(int time);
 void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight);
 void glsl_SetFuzzTextureDimensions(float texwidth, float texheight);
 int glsl_IsActive(void);
-
-#else
-
-#define glsl_Init() 0
-#define glsl_SetActiveShader(shader)
-#define glsl_SetFuzzShaderActive()
-#define glsl_SetFuzzShaderInactive()
-#define glsl_SetLightLevel(lightlevel)
-#define glsl_SetFuzzTime(time);
-#define glsl_SetFuzzScreenResolution(screenwidth, screenheight);
-#define glsl_SetFuzzTextureDimensions(texwidth, texheight);
-
-#endif // USE_SHADERS
 
 #endif // _GL_INTERN_H

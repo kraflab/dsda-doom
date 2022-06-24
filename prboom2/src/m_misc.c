@@ -172,7 +172,6 @@ typedef enum {
 
 extern int viewwidth;
 extern int viewheight;
-#ifdef GL_DOOM
 extern int gl_nearclip;
 extern int gl_colorbuffer_bits;
 extern int gl_depthbuffer_bits;
@@ -208,69 +207,6 @@ extern int gl_fog_color;
 extern int gl_finish;
 extern int gl_clear;
 extern int gl_ztrick;
-#else
-// dummy variables for !GL_DOOM
-static int gl_nearclip;
-extern int gl_colorbuffer_bits;
-extern int gl_depthbuffer_bits;
-static int gl_texture_filter;
-static int gl_sprite_filter;
-static int gl_patch_filter;
-static int gl_texture_filter_anisotropic;
-static const char *gl_tex_format_string;
-static int gl_sky_detail;
-static int gl_use_paletted_texture;
-static int gl_use_shared_texture_palette;
-static int gl_ext_texture_filter_anisotropic_default;
-static int gl_arb_texture_non_power_of_two_default;
-static int gl_arb_multitexture_default;
-static int gl_arb_texture_compression_default;
-static int gl_ext_framebuffer_object_default;
-static int gl_ext_packed_depth_stencil_default;
-static int gl_ext_blend_color_default;
-static int gl_use_stencil_default;
-static int gl_ext_arb_vertex_buffer_object_default;
-static int gl_arb_pixel_buffer_object_default;
-static int gl_arb_shader_objects_default;
-static int gl_motionblur;
-static int gl_fog;
-static int gl_fog_color;
-static int gl_finish;
-static int gl_clear;
-static int gl_ztrick;
-
-// dummy variables for !GL_DOOM declared in gl_struct.h
-int gl_use_display_lists;
-int gl_sprite_offset_default;
-int gl_sprite_blend;
-int gl_mask_sprite_threshold;
-int gl_skymode;
-int gl_allow_detail_textures;
-int gl_detail_maxdist;
-spriteclipmode_t gl_spriteclip;
-int gl_spriteclip_threshold;
-int gl_sprites_frustum_culling;
-int gl_boom_colormaps_default;
-int gl_hires_24bit_colormap;
-int gl_texture_internal_hires;
-int gl_texture_external_hires;
-int gl_hires_override_pwads;
-const char *gl_texture_hires_dir;
-int gl_texture_hqresize;
-int gl_texture_hqresize_textures;
-int gl_texture_hqresize_sprites;
-int gl_texture_hqresize_patches;
-motion_blur_params_t motion_blur;
-gl_lightmode_t gl_lightmode_default;
-int gl_light_ambient;
-int useglgamma;
-int gl_color_mip_levels;
-simple_shadow_params_t simple_shadows;
-int gl_shadows_maxdist;
-int gl_shadows_factor;
-int gl_blend_animations;
-
-#endif
 
 extern int realtic_clock_rate;         // killough 4/13/98: adjustable timer
 extern int tran_filter_pct;            // killough 2/21/98

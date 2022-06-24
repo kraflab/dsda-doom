@@ -38,9 +38,7 @@
 #include "config.h"
 #endif
 
-#ifdef GL_DOOM
 #include <SDL_opengl.h>
-#endif
 
 #include "doomtype.h"
 #include "v_video.h"

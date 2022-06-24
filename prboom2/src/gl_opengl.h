@@ -140,7 +140,6 @@ extern PFNGLMAPBUFFERARBPROC               GLEXT_glMapBufferARB;
 extern PFNGLUNMAPBUFFERARBPROC             GLEXT_glUnmapBufferARB;
 
 /* GL_ARB_shader_objects */
-#ifdef USE_SHADERS
 extern PFNGLDELETEOBJECTARBPROC            GLEXT_glDeleteObjectARB;
 extern PFNGLGETHANDLEARBPROC               GLEXT_glGetHandleARB;
 extern PFNGLDETACHOBJECTARBPROC            GLEXT_glDetachObjectARB;
@@ -164,7 +163,6 @@ extern PFNGLGETATTACHEDOBJECTSARBPROC       GLEXT_glGetAttachedObjectsARB;
 extern PFNGLGETUNIFORMLOCATIONARBPROC       GLEXT_glGetUniformLocationARB;
 extern PFNGLGETACTIVEUNIFORMARBPROC         GLEXT_glGetActiveUniformARB;
 extern PFNGLGETUNIFORMFVARBPROC             GLEXT_glGetUniformfvARB;
-#endif
 
 void gld_InitOpenGL(void);
 

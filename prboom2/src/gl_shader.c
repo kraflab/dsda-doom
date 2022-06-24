@@ -36,8 +36,6 @@
 #include "config.h"
 #endif
 
-#ifdef USE_SHADERS
-
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <math.h>
@@ -379,5 +377,3 @@ int glsl_IsActive(void)
 {
   return (gl_lightmode == gl_lightmode_shaders && sh_main);
 }
-
-#endif // USE_SHADERS

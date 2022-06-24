@@ -80,10 +80,7 @@
 #include "g_game.h"
 #include "lprintf.h"
 #include "i_system.h"
-
-#ifdef GL_DOOM
 #include "gl_struct.h"
-#endif
 
 #include "e6y.h"//e6y
 #include "i_main.h"
@@ -557,13 +554,11 @@ void I_FinishUpdate (void)
   //!!}
 #endif
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode()) {
     // proff 04/05/2000: swap OpenGL buffers
     gld_Finish();
     return;
   }
-#endif
 
   if (SDL_MUSTLOCK(screen)) {
       int h;
@@ -1063,12 +1058,6 @@ void I_InitScreenResolution(void)
   {
     mode = (video_mode_t)I_GetModeFromString(myargv[i+1]);
   }
-#ifndef GL_DOOM
-  if (mode == VID_MODEGL)
-  {
-    mode = (video_mode_t)I_GetModeFromString(default_videomode = "Software");
-  }
-#endif
 
   V_InitMode(mode);
 
@@ -1182,14 +1171,12 @@ void I_UpdateVideoMode(void)
     // video capturing cannot be continued with new screen settings
     I_CaptureFinish();
 
-#ifdef GL_DOOM
     if (V_IsOpenGLMode())
     {
       gld_CleanMemory();
       // hires patches
       gld_CleanStaticMemory();
     }
-#endif
 
     I_InitScreenResolution();
 
@@ -1234,7 +1221,6 @@ void I_UpdateVideoMode(void)
 
   if (V_IsOpenGLMode())
   {
-#ifdef GL_DOOM
     SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 0 );
     SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 0 );
     SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 0 );
@@ -1261,7 +1247,6 @@ void I_UpdateVideoMode(void)
     SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, SCREENHEIGHT);
 
     gld_CheckHardwareGamma();
-#endif
   }
   else
   {
@@ -1343,12 +1328,10 @@ void I_UpdateVideoMode(void)
 
   windowid = SDL_GetWindowID(sdl_window);
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     SDL_GL_SetSwapInterval(((render_vsync && !novsync) ? 1 : 0));
   }
-#endif
 
   if (V_IsSoftwareMode())
   {
@@ -1381,7 +1364,6 @@ void I_UpdateVideoMode(void)
   ST_SetResolution();
   AM_SetResolution();
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     int temp;
@@ -1428,7 +1410,6 @@ void I_UpdateVideoMode(void)
     dsda_GLSetRenderViewportParams();
     dsda_GLSetRenderViewport();
   }
-#endif
 
   src_rect.w = SCREENWIDTH;
   src_rect.h = SCREENHEIGHT;
@@ -1578,7 +1559,6 @@ static void UpdateFocus(void)
     V_SetPalette(st_palette);
   }
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     if (gl_hardware_gamma)
@@ -1594,7 +1574,6 @@ static void UpdateFocus(void)
       }
     }
   }
-#endif
 
   // Should the screen be grabbed?
   //    screenvisible = (state & SDL_APPACTIVE) != 0;

@@ -113,12 +113,10 @@ unsigned char *I_GrabScreen(void)
 
   I_UpdateRenderSize();
 
-  #ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     return gld_ReadScreen();
   }
-  #endif
 
   size = renderW * renderH * 3;
   if (!pixels || size > pixels_size)
