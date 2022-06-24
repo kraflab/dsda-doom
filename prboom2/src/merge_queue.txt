@@ -1,9 +1,6 @@
-Checked up to: acd8ce1a426e9856026dbb5d4d51da4f0945e3f5 (June 1 2022)
+Checked up to: 3e957d68a853375a0cf8c3908a0c745206031949 (June 22 2022)
 
 Commits from upstream to go through:
-
-opengl:
-921adf17e02408e7f0a06b59df4a4c07d716ee35
 
 mixer buffer size:
 5a5233a729fa65aa2d9e03a1cddffc7e4e0eb66c
