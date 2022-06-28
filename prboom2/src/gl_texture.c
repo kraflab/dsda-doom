@@ -657,7 +657,7 @@ static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer
   // also yoink the gamma table and apply
   // software gamma emulation to the texture.
   gtlump = (W_CheckNumForName)("GAMMATBL", ns_prboom);
-  gtable = (const byte*)W_CacheLumpNum(gtlump) + 256 * gamma_level;
+  gtable = (const byte*) W_LumpByNum(gtlump) + 256 * gamma_level;
 
   // construct a colormap texture using the selected
   // palette variant & gamma, for shader lookup.
@@ -679,8 +679,6 @@ static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer
       buffer[pos+3]=255;
     }
   }
-
-  W_UnlockLumpNum(gtlump);
 }
 
 //e6y: "force" flag for loading texture with zero index
@@ -1477,7 +1475,7 @@ void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_
   }
 
   // collect the actual texture data
-  buffer = (unsigned char*)Z_Malloc(gltexture->buffer_size, PU_STATIC, 0);
+  buffer = (unsigned char*) Z_Malloc(gltexture->buffer_size);
   memset(buffer, 0, gltexture->buffer_size);
 
   gld_AddColormapToTexture(gltexture, buffer, palette_index, gamma_level);
