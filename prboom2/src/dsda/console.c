@@ -318,6 +318,12 @@ static dboolean console_TrackerRemovePlayer(const char* command, const char* arg
   return dsda_UntrackPlayer(0);
 }
 
+static dboolean console_TrackerReset(const char* command, const char* args) {
+  dsda_WipeTrackers();
+
+  return true;
+}
+
 static dboolean console_JumpTic(const char* command, const char* args) {
   int tic;
 
@@ -586,6 +592,8 @@ static console_command_entry_t console_commands[] = {
   { "t.ap", console_TrackerAddPlayer, CF_DEMO },
   { "tracker.removeplayer", console_TrackerRemovePlayer, CF_DEMO },
   { "t.rp", console_TrackerRemovePlayer, CF_DEMO },
+  { "tracker.reset", console_TrackerReset, CF_DEMO },
+  { "t.r", console_TrackerReset, CF_DEMO },
 
   // traversing time
   { "jump.tic", console_JumpTic, CF_DEMO },
