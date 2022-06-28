@@ -40,9 +40,7 @@
 #include <direct.h>
 #include <winreg.h>
 #endif
-#ifdef GL_DOOM
 #include <SDL_opengl.h>
-#endif
 #include <string.h>
 #include <math.h>
 
@@ -78,40 +76,31 @@
 #include "r_things.h"
 #include "r_sky.h"
 #include "am_map.h"
-#include "hu_tracers.h"
 #include "dsda.h"
 #include "dsda/settings.h"
-#ifdef GL_DOOM
 #include "gl_struct.h"
 #include "gl_intern.h"
-#endif
 #include "g_game.h"
 #include "r_demo.h"
 #include "d_deh.h"
 #include "e6y.h"
 
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
+#include "dsda/playback.h"
+#include "dsda/skip.h"
+#include "dsda/stretch.h"
 
 dboolean wasWiped = false;
 
 int secretfound;
-int demo_skiptics;
 int demo_playerscount;
 int demo_tics_count;
-int demo_curr_tic;
 char demo_len_st[80];
 
 int avi_shot_time;
 int avi_shot_num;
 const char *avi_shot_fname;
-
-dboolean doSkip;
-dboolean demo_stoponnext;
-dboolean demo_stoponend;
-static dboolean demo_warp_reached;
-
-extern int warpepisode;
-extern int warpmap;
 
 int speed_step;
 
@@ -142,10 +131,7 @@ int render_multisampling;
 int render_paperitems;
 int render_wipescreen;
 int mouse_acceleration;
-int demo_overwriteexisting;
 int quickstart_window_ms;
-
-int showendoom;
 
 int palette_ondamage;
 int palette_onbonus;
@@ -264,24 +250,6 @@ prboom_comp_t prboom_comp[PC_MAX] = {
   {0x00000000, 0x02050104, 0, "-reset_monsterspawner_params_after_loading"},
 };
 
-void e6y_HandleSkip(void)
-{
-  int p;
-
-  if ((p = M_CheckParm("-skipsec")) && (p < myargc-1))
-  {
-    float min, sec;
-
-    if (sscanf(myargv[p+1], "%f:%f", &min, &sec) == 2)
-      demo_skiptics = (int) ((60 * min + sec) * TICRATE);
-    else if (sscanf(myargv[p+1], "%f", &sec) == 1)
-      demo_skiptics = (int) (sec * TICRATE);
-  }
-
-  if ((IsDemoPlayback() || IsDemoContinue()) && (warpmap != -1 || demo_skiptics))
-    G_SkipDemoStart();
-}
-
 void e6y_InitCommandLine(void)
 {
   int p;
@@ -299,95 +267,7 @@ void e6y_InitCommandLine(void)
 
   dsda_ReadCommandLine();
 
-  // TAS-tracers
-  InitTracers();
-
   shorttics = movement_shorttics || M_CheckParm("-shorttics");
-}
-
-static dboolean saved_fastdemo;
-static dboolean saved_nodrawers;
-static dboolean saved_nosfxparm;
-static dboolean saved_nomusicparm;
-
-void G_SkipDemoStart(void)
-{
-  saved_fastdemo = fastdemo;
-  saved_nodrawers = nodrawers;
-  saved_nosfxparm = nosfxparm;
-  saved_nomusicparm = nomusicparm;
-
-  paused = false;
-
-  doSkip = true;
-
-  S_StopMusic();
-  fastdemo = true;
-  nodrawers = true;
-  nosfxparm = true;
-  nomusicparm = true;
-
-  I_Init2();
-}
-
-dboolean sound_inited_once = false;
-
-void G_SkipDemoStop(void)
-{
-  fastdemo = saved_fastdemo;
-  nodrawers = saved_nodrawers;
-  nosfxparm = saved_nosfxparm;
-  nomusicparm = saved_nomusicparm;
-
-  demo_stoponnext = false;
-  demo_stoponend = false;
-  demo_warp_reached = false;
-  doSkip = false;
-  demo_skiptics = 0;
-  startmap = 0;
-
-  I_Init2();
-  if (!sound_inited_once && !(nomusicparm && nosfxparm))
-  {
-    I_InitSound();
-  }
-  S_Init(snd_SfxVolume, snd_MusicVolume);
-  S_Stop();
-  S_RestartMusic();
-
-#ifdef GL_DOOM
-  if (V_IsOpenGLMode()) {
-    gld_PreprocessLevel();
-  }
-#endif
-}
-
-void G_SkipDemoStartCheck(void)
-{
-  if (doSkip && warpmap == gamemap && warpepisode == gameepisode)
-    demo_warp_reached = true;
-}
-
-void G_SkipDemoCheck(void)
-{
-  if (doSkip && gametic > 0)
-  {
-    if (
-      (
-        warpmap == -1 &&
-        (
-          demo_skiptics > 0 ?
-            gametic > demo_skiptics :
-            demo_curr_tic - demo_skiptics >= demo_tics_count
-        )
-      ) ||
-      (
-        demo_warp_reached && gametic - levelstarttic > demo_skiptics)
-      )
-     {
-       G_SkipDemoStop();
-     }
-  }
 }
 
 int G_ReloadLevel(void)
@@ -403,6 +283,12 @@ int G_ReloadLevel(void)
     result = true;
   }
 
+  if (demoplayback)
+  {
+    dsda_RestartPlayback();
+    result = true;
+  }
+
   dsda_WatchLevelReload(&result);
 
   return result;
@@ -410,99 +296,10 @@ int G_ReloadLevel(void)
 
 int G_GotoNextLevel(void)
 {
-  static byte doom2_next[33] = {
-    2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-    12, 13, 14, 15, 31, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30, 1,
-    32, 16, 3
-  };
-  static byte doom_next[4][9] = {
-    {12, 13, 19, 15, 16, 17, 18, 21, 14},
-    {22, 23, 24, 25, 29, 27, 28, 31, 26},
-    {32, 33, 34, 35, 36, 39, 38, 41, 37},
-    {42, 49, 44, 45, 46, 47, 48, 11, 43}
-  };
-  static byte heretic_next[6][9] = {
-    {12, 13, 14, 15, 16, 19, 18, 21, 17},
-    {22, 23, 24, 29, 26, 27, 28, 31, 25},
-    {32, 33, 34, 39, 36, 37, 38, 41, 35},
-    {42, 43, 44, 49, 46, 47, 48, 51, 45},
-    {52, 53, 59, 55, 56, 57, 58, 61, 54},
-    {62, 63, 11, 11, 11, 11, 11, 11, 11}, // E6M4-E6M9 shouldn't be accessible
-  };
-  int epsd;
-  int map = -1;
+  int epsd, map;
   int changed = false;
 
-  if (map_format.mapinfo)
-    map = P_GetMapNextMap(gamemap);
-
-  if (gamemapinfo != NULL)
-  {
-    const char *n = NULL;
-    if (gamemapinfo->nextsecret[0]) n = gamemapinfo->nextsecret;
-    else if (gamemapinfo->nextmap[0]) n = gamemapinfo->nextmap;
-    else if (gamemapinfo->endpic[0] && gamemapinfo->endpic[0] != '-')
-    {
-      epsd = 1;
-      map = 1;
-    }
-    if (n) G_ValidateMapName(n, &epsd, &map);
-  }
-
-  if (map == -1)
-  {
-    // secret level
-    doom2_next[14] = (haswolflevels ? 31 : 16);
-
-    if (bfgedition && singleplayer)
-    {
-      if (gamemission == pack_nerve)
-      {
-        doom2_next[3] = 9;
-        doom2_next[7] = 1;
-        doom2_next[8] = 5;
-      }
-      else
-        doom2_next[1] = 33;
-    }
-
-    if (gamemode == shareware)
-      heretic_next[0][7] = 11;
-
-    if (gamemode == registered)
-      heretic_next[2][7] = 11;
-
-    // shareware doom has only episode 1
-    doom_next[0][7] = (gamemode == shareware ? 11 : 21);
-
-    doom_next[2][7] = ((gamemode == registered) ||
-      // the fourth episode for pre-ultimate complevels is not allowed.
-      (compatibility_level < ultdoom_compatibility) ?
-      11 : 41);
-
-    //doom2_next and doom_next are 0 based, unlike gameepisode and gamemap
-    epsd = gameepisode - 1;
-    map = gamemap - 1;
-
-    if (heretic)
-    {
-      int next = heretic_next[BETWEEN(0, 5, epsd)][BETWEEN(0, 8, map)];
-      epsd = next / 10;
-      map = next % 10;
-    }
-    else if (gamemode == commercial)
-    {
-      epsd = 1;
-      map = doom2_next[BETWEEN(0, 32, map)];
-    }
-    else
-    {
-      int next = doom_next[BETWEEN(0, 3, epsd)][BETWEEN(0, 9, map)];
-      epsd = next / 10;
-      map = next % 10;
-    }
-  }
+  dsda_NextMap(&epsd, &map);
 
   if ((gamestate == GS_LEVEL) &&
     !deathmatch && !netgame &&
@@ -527,12 +324,10 @@ void M_ChangeMouseLook(void)
 
   R_InitSkyMap();
 
-#ifdef GL_DOOM
   if (gl_skymode == skytype_auto)
     gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);
   else
     gl_drawskys = gl_skymode;
-#endif // GL_DOOM
 }
 
 void M_ChangeMouseInvert(void)
@@ -653,7 +448,6 @@ void M_ChangeFOV(void)
   skyscale = 1.0f / (float)tan(DEG2RAD(render_fov / 2));
 }
 
-#ifdef GL_DOOM
 void M_ChangeMultiSample(void)
 {
 }
@@ -697,7 +491,6 @@ void M_ChangeTextureHQResize(void)
 {
   gld_FlushTextures();
 }
-#endif //GL_DOOM
 
 void M_Mouse(int choice, int *sens);
 void M_MouseMLook(int choice)
@@ -802,8 +595,7 @@ void e6y_G_DoCompleted(void)
 {
   int i;
 
-  if (doSkip && (demo_stoponend || demo_warp_reached))
-    G_SkipDemoStop();
+  dsda_EvaluateSkipModeDoCompleted();
 
   if(!stats_level)
     return;
@@ -811,7 +603,7 @@ void e6y_G_DoCompleted(void)
   if (numlevels >= levels_max)
   {
     levels_max = levels_max ? levels_max*2 : 32;
-    stats = realloc(stats,sizeof(*stats)*levels_max);
+    stats = Z_Realloc(stats,sizeof(*stats)*levels_max);
   }
 
   memset(&stats[numlevels], 0, sizeof(timetable_t));
@@ -875,7 +667,7 @@ void e6y_WriteStats(void)
     return;
   }
 
-  all = malloc(sizeof(*all) * numlevels);
+  all = Z_Malloc(sizeof(*all) * numlevels);
   memset(&max, 0, sizeof(timetable_t));
 
   playerscount = 0;
@@ -952,48 +744,8 @@ void e6y_WriteStats(void)
 
   }
 
-  free(all);
+  Z_Free(all);
   fclose(f);
-}
-
-void e6y_G_DoTeleportNewMap(void)
-{
-  if (doSkip)
-  {
-    static int firstmap = 1;
-
-    demo_warp_reached = demo_stoponnext ||
-      (
-        gamemode == commercial ?
-          (warpmap == gamemap) :
-          (warpepisode == gameepisode && warpmap == gamemap)
-      );
-
-    if (demo_warp_reached && demo_skiptics == 0 && !firstmap)
-      G_SkipDemoStop();
-
-    firstmap = 0;
-  }
-}
-
-void e6y_G_DoWorldDone(void)
-{
-  if (doSkip)
-  {
-    static int firstmap = 1;
-
-    demo_warp_reached = demo_stoponnext ||
-      (
-        gamemode == commercial ?
-          (warpmap == gamemap) :
-          (warpepisode == gameepisode && warpmap == gamemap)
-      );
-
-    if (demo_warp_reached && demo_skiptics == 0 && !firstmap)
-      G_SkipDemoStop();
-
-    firstmap = 0;
-  }
 }
 
 //--------------------------------------------------
@@ -1015,7 +767,7 @@ void e6y_G_Compatibility(void)
 {
   deh_applyCompatibility();
 
-  if (IsDemoPlayback())
+  if (dsda_PlaybackArg())
   {
     int i, p;
 
@@ -1196,15 +948,15 @@ int HU_DrawDemoProgress(int force)
   int len, tics_count, diff;
   unsigned int tick, max_period;
 
-  if (gamestate == GS_DEMOSCREEN || (!demoplayback && !democontinue) || !hudadd_demoprogressbar)
+  if (gamestate == GS_DEMOSCREEN || !demoplayback || !hudadd_demoprogressbar)
     return false;
 
-  tics_count = ((doSkip && demo_skiptics > 0) ? MIN(demo_skiptics, demo_tics_count) : demo_tics_count) * demo_playerscount;
-  len = MIN(SCREENWIDTH, (int)((int_64_t)SCREENWIDTH * demo_curr_tic / tics_count));
+  tics_count = demo_tics_count * demo_playerscount;
+  len = MIN(SCREENWIDTH, (int)((int_64_t)SCREENWIDTH * dsda_PlaybackTics() / tics_count));
 
   if (!force)
   {
-    max_period = ((tics_count - demo_curr_tic > 35 * demo_playerscount) ? 500 : 15);
+    max_period = ((tics_count - dsda_PlaybackTics() > 35 * demo_playerscount) ? 500 : 15);
 
     // Unnecessary updates of progress bar
     // can slow down demo skipping and playback

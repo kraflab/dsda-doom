@@ -1,6 +1,15 @@
-Checked up to: 9d1c94b68a38b6d861c8680af71bafe13f6b3c29 (Dec 29 2021)
+Checked up to: 3e957d68a853375a0cf8c3908a0c745206031949 (June 22 2022)
 
 Commits from upstream to go through:
+
+mixer buffer size:
+5a5233a729fa65aa2d9e03a1cddffc7e4e0eb66c
+
+umapinfo fixes:
+ee33927e3688668b2010cd82ecc1d352cff18391
+d97cb0e78558b83e8c33d9a1d0129570f5b7563e
+d9716acadff8ac16cb5aa39b1a3a432713a6ef6b
+b21bdbc198f382bb5a938b287eab696a5328567a
 
 utf8:
 5b5bfa6ffcf656c9fcffc74d2d1c33201d27a74b

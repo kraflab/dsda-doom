@@ -49,7 +49,6 @@
 #include "g_game.h"
 #include "p_tick.h"
 #include "g_overflow.h"
-#include "hu_tracers.h"
 #include "e6y.h"//e6y
 
 #include "dsda.h"
@@ -613,8 +612,6 @@ dboolean PIT_CheckLine (line_t* ld)
     tmdropoffz = lowfloor;
 
   // if contacted a special line, add it to the list
-
-  CheckLinesCrossTracer(ld);//e6y
   if (ld->special)
     P_AppendSpecHit(ld);
 
@@ -1284,7 +1281,6 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
       if (!P_BlockLinesIterator (bx,by,PIT_CheckLine))
         return false; // doesn't fit
 
-  ClearLinesCrossTracer();//e6y
   return true;
 }
 
@@ -2917,7 +2913,7 @@ dboolean P_CheckSector(sector_t* sector, int crunch)
 
 #include "z_bmalloc.h"
 
-IMPLEMENT_BLOCK_MEMORY_ALLOC_ZONE(secnodezone, sizeof(msecnode_t), PU_LEVEL, 256, "SecNodes");
+IMPLEMENT_BLOCK_MEMORY_ALLOC_ZONE(secnodezone, sizeof(msecnode_t), 256, "SecNodes");
 
 //
 // P_FreeSecNodeList
@@ -2968,7 +2964,7 @@ msecnode_t *P_GetSecnode(void)
 
   return headsecnode ?
     node = headsecnode, headsecnode = node->m_snext, node :
-  (msecnode_t *)(Z_Malloc(sizeof *node, PU_LEVEL, NULL));
+  (msecnode_t *)(Z_MallocLevel(sizeof *node));
 }
 
 //
@@ -3435,7 +3431,7 @@ void P_AppendSpecHit(line_t * ld)
   // 1/11/98 killough: remove limit on lines hit, by array doubling
   if (numspechit >= spechit_max) {
     spechit_max = spechit_max ? spechit_max*2 : 8;
-    spechit = realloc(spechit,sizeof *spechit*spechit_max); // killough
+    spechit = Z_Realloc(spechit,sizeof *spechit*spechit_max); // killough
   }
   spechit[numspechit++] = ld;
   // e6y: Spechits overrun emulation code

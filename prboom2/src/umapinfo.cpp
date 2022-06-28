@@ -310,13 +310,13 @@ static const char * const ActorNames[] =
 
 static void FreeMap(MapEntry *mape)
 {
-	if (mape->mapname) free(mape->mapname);
-	if (mape->levelname) free(mape->levelname);
-	if (mape->label) free(mape->label);
-	if (mape->intertext) free(mape->intertext);
-	if (mape->intertextsecret) free(mape->intertextsecret);
-	if (mape->properties) free(mape->properties);
-	if (mape->bossactions) free(mape->bossactions);
+	if (mape->mapname) Z_Free(mape->mapname);
+	if (mape->levelname) Z_Free(mape->levelname);
+	if (mape->label) Z_Free(mape->label);
+	if (mape->intertext) Z_Free(mape->intertext);
+	if (mape->intertextsecret) Z_Free(mape->intertextsecret);
+	if (mape->properties) Z_Free(mape->properties);
+	if (mape->bossactions) Z_Free(mape->bossactions);
 	mape->propertycount = 0;
 	mape->mapname = NULL;
 	mape->properties = NULL;
@@ -331,7 +331,7 @@ void FreeMapList()
 	{
 		FreeMap(&Maps.maps[i]);
 	}
-	free(Maps.maps);
+	Z_Free(Maps.maps);
 	Maps.maps = NULL;
 	Maps.mapcount = 0;
 }
@@ -339,8 +339,8 @@ void FreeMapList()
 
 void ReplaceString(char **pptr, const char *newstring)
 {
-	if (*pptr != NULL) free(*pptr);
-	*pptr = strdup(newstring);
+	if (*pptr != NULL) Z_Free(*pptr);
+	*pptr = Z_Strdup(newstring);
 }
 
 // -----------------------------------------------
@@ -357,7 +357,7 @@ static char *ParseMultiString(Scanner &scanner, int error)
 	{
 		if (!stricmp(scanner.string, "clear"))
 		{
-			return strdup("-");	// this was explicitly deleted to override the default.
+			return Z_Strdup("-");	// this was explicitly deleted to override the default.
 		}
 		else
 		{
@@ -368,11 +368,11 @@ static char *ParseMultiString(Scanner &scanner, int error)
 	do
 	{
 		scanner.MustGetToken(TK_StringConst);
-		if (build == NULL) build = strdup(scanner.string);
+		if (build == NULL) build = Z_Strdup(scanner.string);
 		else
 		{
 			size_t newlen = strlen(build) + strlen(scanner.string) + 2; // strlen for both the existing text and the new line, plus room for one \n and one \0
-			build = (char*)realloc(build, newlen); // Prepare the destination memory for the below strcats
+			build = (char*)Z_Realloc(build, newlen); // Prepare the destination memory for the below strcats
 			strcat(build, "\n"); // Replace the existing text's \0 terminator with a \n
 			strcat(build, scanner.string); // Concatenate the new line onto the existing text
 		}
@@ -414,7 +414,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	// this line is no property.
 
 	scanner.MustGetToken(TK_Identifier);
-	char *pname = strdup(scanner.string);
+	char *pname = Z_Strdup(scanner.string);
 	scanner.MustGetToken('=');
 
 	if (!stricmp(pname, "levelname"))
@@ -513,14 +513,14 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	{
 		char *lname = ParseMultiString(scanner, 1);
 		if (!lname) return 0;
-		if (mape->intertext != NULL) free(mape->intertext);
+		if (mape->intertext != NULL) Z_Free(mape->intertext);
 		mape->intertext = lname;
 	}
 	else if (!stricmp(pname, "intertextsecret"))
 	{
 		char *lname = ParseMultiString(scanner, 1);
 		if (!lname) return 0;
-		if (mape->intertextsecret != NULL) free(mape->intertextsecret);
+		if (mape->intertextsecret != NULL) Z_Free(mape->intertextsecret);
 		mape->intertextsecret = lname;
 	}
 	else if (!stricmp(pname, "interbackdrop"))
@@ -552,18 +552,18 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			if (scanner.CheckToken(','))
 			{
 				scanner.MustGetToken(TK_StringConst);
-				alttext = strdup(scanner.string);
+				alttext = Z_Strdup(scanner.string);
 				if (scanner.CheckToken(','))
 				{
 					scanner.MustGetToken(TK_StringConst);
-					key = strdup(scanner.string);
+					key = Z_Strdup(scanner.string);
 				}
 			}
 
 			M_AddEpisode(mape->mapname, lumpname, alttext, key);
 
-			if (alttext) free(alttext);
-			if (key) free(key);
+			if (alttext) Z_Free(alttext);
+			if (key) Z_Free(key);
 		}
 	}
 	else if (!stricmp(pname, "bossaction"))
@@ -574,7 +574,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		{
 			// mark level free of boss actions
 			classnum = special = tag = -1;
-			if (mape->bossactions) free(mape->bossactions);
+			if (mape->bossactions) Z_Free(mape->bossactions);
 			mape->bossactions = NULL;
 			mape->numbossactions = -1;
 		}
@@ -602,7 +602,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			{
 				if (mape->numbossactions == -1) mape->numbossactions = 1;
 				else mape->numbossactions++;
-				mape->bossactions = (struct BossAction *)realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
+				mape->bossactions = (struct BossAction *)Z_Realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
 				mape->bossactions[mape->numbossactions - 1].type = i;
 				mape->bossactions[mape->numbossactions - 1].special = special;
 				mape->bossactions[mape->numbossactions - 1].tag = tag;
@@ -622,7 +622,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 
 		} while (scanner.CheckToken(','));
 	}
-	free(pname);
+	Z_Free(pname);
 	return 1;
 }
 
@@ -713,7 +713,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 		if (i == Maps.mapcount)
 		{
 			Maps.mapcount++;
-			Maps.maps = (MapEntry*)realloc(Maps.maps, sizeof(MapEntry)*Maps.mapcount);
+			Maps.maps = (MapEntry*)Z_Realloc(Maps.maps, sizeof(MapEntry)*Maps.mapcount);
 			Maps.maps[Maps.mapcount-1] = parsed;
 		}
 

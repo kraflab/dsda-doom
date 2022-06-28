@@ -23,45 +23,48 @@
 
 #include "dsda.h"
 #include "dsda/analysis.h"
+#include "dsda/playback.h"
 
 #include "text_file.h"
 
 const char* dsda_player_name;
 
 extern int gameepisode, gameskill, totalleveltimes, compatibility_level,
-           dsda_last_leveltime, dsda_last_gamemap;
-
-int dsda_startmap;
+           dsda_last_leveltime, dsda_last_gamemap, dsda_startmap;
 
 static char* dsda_TextFileName(void) {
   int p;
   int name_length;
   char* name;
-  const char* playdemo;
+  char* playdemo;
 
-  p = IsDemoPlayback();
+  p = dsda_PlaybackArg();
 
   if (!p)
     return NULL;
 
-  playdemo = strdup(myargv[p + 1]);
+  playdemo = Z_Strdup(myargv[p + 1]);
   name_length = strlen(playdemo);
 
   if (name_length > 4 && !stricmp(playdemo + name_length - 4, ".lmp")) {
-    name = strdup(playdemo);
+    name = Z_Strdup(playdemo);
     name[name_length - 4] = '\0';
   }
   else {
-    name = calloc(name_length + 4, 1);
+    name = Z_Calloc(name_length + 4, 1);
     strcat(name, playdemo);
   }
 
   strcat(name, ".txt");
 
+  Z_Free(playdemo);
+
   return name;
 }
 
 static int dsda_IL(void) {
+  extern int dsda_startmap;
+
   return dsda_startmap == dsda_last_gamemap;
 }
 
@@ -95,7 +98,7 @@ static const char* dsda_Movie(void) {
 static char* dsda_TextFileTime(void) {
   char* text_file_time;
 
-  text_file_time = malloc(16);
+  text_file_time = Z_Malloc(16);
 
   if (dsda_IL())
     snprintf(
@@ -133,7 +136,7 @@ void dsda_ExportTextFile(void) {
     return;
 
   file = fopen(name, "wb");
-  free(name);
+  Z_Free(name);
 
   if (!file)
     I_Error("Unable to export text file!");
@@ -174,7 +177,11 @@ void dsda_ExportTextFile(void) {
   fprintf(file, "Exe:       %s -complevel %i\n",
           (PACKAGE_NAME" "PACKAGE_VERSION), compatibility_level);
   fprintf(file, "\n");
-  fprintf(file, "Time:      %s\n", dsda_TextFileTime());
+
+  name = dsda_TextFileTime();
+  fprintf(file, "Time:      %s\n", name);
+  Z_Free(name);
+
   fprintf(file, "\n");
   fprintf(file, "Author:    %s\n", dsda_player_name);
   fprintf(file, "\n");

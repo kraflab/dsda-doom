@@ -12,6 +12,8 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include <stdlib.h>
+#include <string.h>
+
 #include "doomtype.h"
 #include "w_wad.h"
 #include "m_misc.h"
@@ -89,7 +91,7 @@ void SC_OpenLumpByNum(int lump)
 
 static void OpenScript(void)
 {
-  ScriptBuffer = W_CacheLumpNum(ScriptLump);
+  ScriptBuffer = W_LumpByNum(ScriptLump);
   ScriptSize = W_LumpLength(ScriptLump);
 
   ScriptPtr = ScriptBuffer;
@@ -133,7 +135,6 @@ void SC_Close(void)
 {
   if (ScriptOpen)
   {
-    W_UnlockLumpNum(ScriptLump);
     ScriptOpen = false;
   }
 }

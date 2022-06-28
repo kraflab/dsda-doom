@@ -54,6 +54,7 @@
 
 #include "dsda.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 static mobj_t *current_actor;
 
@@ -282,7 +283,6 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
 static dboolean P_IsOnLift(const mobj_t *actor)
 {
   const sector_t *sec = actor->subsector->sector;
-  line_t line;
   int l;
 
   // Short-circuit: it's on a lift which is active.
@@ -290,8 +290,8 @@ static dboolean P_IsOnLift(const mobj_t *actor)
     return true;
 
   // Check to see if it's in a sector which can be activated as a lift.
-  if ((line.tag = sec->tag))
-    for (l = -1; (l = P_FindLineFromLineTag(&line, l)) >= 0;)
+  if (sec->tag)
+    for (l = -1; (l = P_FindLineFromTag(sec->tag, l)) >= 0;)
       switch (lines[l].special)
   {
   case  10: case  14: case  15: case  20: case  21: case  22:
@@ -1669,7 +1669,7 @@ void A_Tracer(mobj_t *actor)
    * and improvise around it (using leveltime causes desync across levels).
    */
 
-  if ((gametic-basetic) & 3)
+  if (logictic & 3)
     return;
 
   // spawn a puff of smoke behind the rocket
@@ -2552,136 +2552,92 @@ void A_BossDeath(mobj_t *mo)
   // heretic_note: probably we can adopt the clean heretic style and merge
   if (heretic) return Heretic_A_BossDeath(mo);
 
-  // numbossactions == 0 means to use the defaults.
-  // numbossactions == -1 means to do nothing.
-  // positive values mean to check the list of boss actions and run all that apply.
-  if (gamemapinfo && gamemapinfo->numbossactions != 0)
+  if (dsda_BossAction(mo))
   {
-	  if (gamemapinfo->numbossactions < 0) return;
-
-	  // make sure there is a player alive for victory
-	  for (i = 0; i < g_maxplayers; i++)
-  		if (playeringame[i] && players[i].health > 0)
-  		  break;
-
-	  if (i == g_maxplayers)
-		  return;     // no one left alive, so do not end game
-
-	  for (i = 0; i < gamemapinfo->numbossactions; i++)
-	  {
-		  if (gamemapinfo->bossactions[i].type == mo->type)
-			  break;
-	  }
-	  if (i >= gamemapinfo->numbossactions)
-		  return;	// no matches found
-
-		// scan the remaining thinkers to see
-		// if all bosses are dead
-	  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
-		if (th->function == P_MobjThinker)
-		  {
-			mobj_t *mo2 = (mobj_t *) th;
-			if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
-			  return;         // other boss not dead
-      }
-	  for (i = 0; i < gamemapinfo->numbossactions; i++)
-	  {
-		  if (gamemapinfo->bossactions[i].type == mo->type)
-		  {
-			  junk = *lines;
-			  junk.special = (short)gamemapinfo->bossactions[i].special;
-			  junk.tag = (short)gamemapinfo->bossactions[i].tag;
-			  // use special semantics for line activation to block problem types.
-			  if (!P_UseSpecialLine(mo, &junk, 0, true))
-				  map_format.cross_special_line(&junk, 0, mo, true);
-		  }
-	  }
-
-	  return;
+    return;
   }
 
   if (gamemode == commercial)
-    {
-      if (gamemap != 7)
-        return;
+  {
+    if (gamemap != 7)
+      return;
 
-      if (!(mo->flags2 & (MF2_MAP07BOSS1 | MF2_MAP07BOSS2)))
-        return;
-    }
+    if (!(mo->flags2 & (MF2_MAP07BOSS1 | MF2_MAP07BOSS2)))
+      return;
+  }
   else
+  {
+    // e6y
+    // Additional check of gameepisode is necessary, because
+    // there is no right or wrong solution for E4M6 in original EXEs,
+    // there's nothing to emulate.
+    if (comp[comp_666] && gameepisode < 4)
     {
       // e6y
-      // Additional check of gameepisode is necessary, because
-      // there is no right or wrong solution for E4M6 in original EXEs,
-      // there's nothing to emulate.
-      if (comp[comp_666] && gameepisode < 4)
+      // Only following checks are present in doom2.exe ver. 1.666 and 1.9
+      // instead of separate checks for each episode in doomult.exe, plutonia.exe and tnt.exe
+      // There is no more desync on doom.wad\episode3.lmp
+      // http://www.doomworld.com/idgames/index.php?id=6909
+      if (gamemap != 8)
+        return;
+      if (mo->flags2 & MF2_E1M8BOSS && gameepisode != 1)
+        return;
+    }
+    else
+    {
+      switch(gameepisode)
       {
-        // e6y
-        // Only following checks are present in doom2.exe ver. 1.666 and 1.9
-        // instead of separate checks for each episode in doomult.exe, plutonia.exe and tnt.exe
-        // There is no more desync on doom.wad\episode3.lmp
-        // http://www.doomworld.com/idgames/index.php?id=6909
+      case 1:
         if (gamemap != 8)
           return;
-        if (mo->flags2 & MF2_E1M8BOSS && gameepisode != 1)
+
+        if (!(mo->flags2 & MF2_E1M8BOSS))
           return;
-      }
-      else
-      {
-      switch(gameepisode)
+        break;
+
+      case 2:
+        if (gamemap != 8)
+          return;
+
+        if (!(mo->flags2 & MF2_E2M8BOSS))
+          return;
+        break;
+
+      case 3:
+        if (gamemap != 8)
+          return;
+
+        if (!(mo->flags2 & MF2_E3M8BOSS))
+          return;
+
+        break;
+
+      case 4:
+        switch(gamemap)
         {
-        case 1:
-          if (gamemap != 8)
-            return;
-
-          if (!(mo->flags2 & MF2_E1M8BOSS))
-            return;
-          break;
-
-        case 2:
-          if (gamemap != 8)
-            return;
-
-          if (!(mo->flags2 & MF2_E2M8BOSS))
-            return;
-          break;
-
-        case 3:
-          if (gamemap != 8)
-            return;
-
-          if (!(mo->flags2 & MF2_E3M8BOSS))
-            return;
-
-          break;
-
-        case 4:
-          switch(gamemap)
-            {
-            case 6:
-              if (!(mo->flags2 & MF2_E4M6BOSS))
-                return;
-              break;
-
-            case 8:
-              if (!(mo->flags2 & MF2_E4M8BOSS))
-                return;
-              break;
-
-            default:
+          case 6:
+            if (!(mo->flags2 & MF2_E4M6BOSS))
               return;
-              break;
-            }
-          break;
+            break;
 
-        default:
-          if (gamemap != 8)
+          case 8:
+            if (!(mo->flags2 & MF2_E4M8BOSS))
+              return;
+            break;
+
+          default:
             return;
-          break;
+            break;
         }
-      }
+        break;
 
+      default:
+        if (gamemap != 8)
+          return;
+        break;
+      }
     }
+  }
 
   // make sure there is a player alive for victory
   for (i = 0; i < g_maxplayers; i++)
@@ -2691,63 +2647,63 @@ void A_BossDeath(mobj_t *mo)
   if (i == g_maxplayers)
     return;     // no one left alive, so do not end game
 
-    // scan the remaining thinkers to see
-    // if all bosses are dead
+  // scan the remaining thinkers to see
+  // if all bosses are dead
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
     if (th->function == P_MobjThinker)
-      {
-        mobj_t *mo2 = (mobj_t *) th;
-        if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
-          return;         // other boss not dead
-      }
+    {
+      mobj_t *mo2 = (mobj_t *) th;
+      if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
+        return;         // other boss not dead
+    }
 
   // victory!
   if ( gamemode == commercial)
+  {
+    if (gamemap == 7)
     {
-      if (gamemap == 7)
-        {
-          if (mo->flags2 & MF2_MAP07BOSS1)
-            {
-              junk.tag = 666;
-              EV_DoFloor(&junk,lowerFloorToLowest);
-              return;
-            }
+      if (mo->flags2 & MF2_MAP07BOSS1)
+      {
+        junk.tag = 666;
+        EV_DoFloor(&junk,lowerFloorToLowest);
+        return;
+      }
 
-          if (mo->flags2 & MF2_MAP07BOSS2)
-            {
-              junk.tag = 667;
-              EV_DoFloor(&junk,raiseToTexture);
-              return;
-            }
-        }
+      if (mo->flags2 & MF2_MAP07BOSS2)
+      {
+        junk.tag = 667;
+        EV_DoFloor(&junk,raiseToTexture);
+        return;
+      }
     }
+  }
   else
+  {
+    switch(gameepisode)
     {
-      switch(gameepisode)
+      case 1:
+        junk.tag = 666;
+        EV_DoFloor(&junk, lowerFloorToLowest);
+        return;
+        break;
+
+      case 4:
+        switch(gamemap)
         {
-        case 1:
-          junk.tag = 666;
-          EV_DoFloor(&junk, lowerFloorToLowest);
-          return;
-          break;
+          case 6:
+            junk.tag = 666;
+            EV_DoDoor(&junk, blazeOpen);
+            return;
+            break;
 
-        case 4:
-          switch(gamemap)
-            {
-            case 6:
-              junk.tag = 666;
-              EV_DoDoor(&junk, blazeOpen);
-              return;
-              break;
-
-            case 8:
-              junk.tag = 666;
-              EV_DoFloor(&junk, lowerFloorToLowest);
-              return;
-              break;
-            }
+          case 8:
+            junk.tag = 666;
+            EV_DoFloor(&junk, lowerFloorToLowest);
+            return;
+            break;
         }
     }
+  }
   G_ExitLevel();
 }
 
@@ -2815,7 +2771,7 @@ void P_SpawnBrainTargets(void)  // killough 3/26/98: renamed old function
         if (m->type == MT_BOSSTARGET )
           {   // killough 2/7/98: remove limit on icon landings:
             if (numbraintargets >= numbraintargets_alloc)
-              braintargets = realloc(braintargets,
+              braintargets = Z_Realloc(braintargets,
                       (numbraintargets_alloc = numbraintargets_alloc ?
                        numbraintargets_alloc*2 : 32) *sizeof *braintargets);
             braintargets[numbraintargets++] = m;
@@ -4882,7 +4838,7 @@ void A_AddPlayerCorpse(mobj_t * actor)
       static int queuesize;
       if (queuesize < bodyquesize)
     	{
-    	  bodyque = realloc(bodyque, bodyquesize * sizeof(*bodyque));
+    	  bodyque = Z_Realloc(bodyque, bodyquesize * sizeof(*bodyque));
     	  memset(bodyque+queuesize, 0, (bodyquesize - queuesize) * sizeof(*bodyque));
     	  queuesize = bodyquesize;
     	}

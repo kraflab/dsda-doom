@@ -70,6 +70,7 @@ const char *cap_tempfile2;
 int cap_remove_tempfiles;
 int cap_fps;
 int cap_frac;
+int cap_wipescreen;
 
 // parses a command with simple printf-style replacements.
 
@@ -179,7 +180,7 @@ static int my_popen3 (pipeinfo_t *p)
   STARTUPINFO siStartInfo;
   SECURITY_ATTRIBUTES sa;
 
-  puser = malloc (sizeof (puser_t));
+  puser = Z_Malloc (sizeof (puser_t));
   if (!puser)
     return 0;
 
@@ -287,7 +288,7 @@ static int my_popen3 (pipeinfo_t *p)
   if (parent_herr != INVALID_HANDLE_VALUE)
     CloseHandle (parent_herr);
 
-  free (puser);
+  Z_Free (puser);
 
   return 0;
 
@@ -309,7 +310,7 @@ static void my_pclose3 (pipeinfo_t *p)
 
   CloseHandle (puser->proc);
   CloseHandle (puser->thread);
-  free (puser);
+  Z_Free (puser);
 }
 
 #else // _WIN32
@@ -344,7 +345,7 @@ static int my_popen3 (pipeinfo_t *p)
 
   puser_t *puser = NULL;
 
-  puser = malloc (sizeof (puser_t));
+  puser = Z_Malloc (sizeof (puser_t));
   if (!puser)
     return 0;
 
@@ -418,7 +419,7 @@ static int my_popen3 (pipeinfo_t *p)
   close (child_hout);
   close (child_herr);
 
-  free (puser);
+  Z_Free (puser);
   return 0;
 
 }
@@ -439,7 +440,7 @@ static void my_pclose3 (pipeinfo_t *p)
 
   waitpid (puser->pid, &s, 0);
 
-  free (puser);
+  Z_Free (puser);
 }
 
 
@@ -578,14 +579,14 @@ void I_CaptureFrame (void)
   {
     if (fwrite (snd, nsampreq * 4, 1, soundpipe.f_stdin) != 1)
       lprintf(LO_WARN, "I_CaptureFrame: error writing soundpipe.\n");
-    //free (snd); // static buffer
+    //Z_Free (snd); // static buffer
   }
   vid = I_GrabScreen ();
   if (vid)
   {
     if (fwrite (vid, renderW * renderH * 3, 1, videopipe.f_stdin) != 1)
       lprintf(LO_WARN, "I_CaptureFrame: error writing videopipe.\n");
-    //free (vid); // static buffer
+    //Z_Free (vid); // static buffer
   }
 
 }

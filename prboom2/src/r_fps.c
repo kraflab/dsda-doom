@@ -42,6 +42,9 @@
 #include "i_system.h"
 #include "i_capture.h"
 #include "e6y.h"
+
+#include "dsda/build.h"
+#include "dsda/pause.h"
 #include "dsda/settings.h"
 
 #include "hexen/a_action.h"
@@ -93,13 +96,19 @@ static dboolean NoInterpolateView;
 static dboolean didInterp;
 dboolean WasRenderedInTryRunTics;
 
+dboolean R_ViewInterpolation(void) {
+  return !dsda_Paused() && movement_smooth;
+}
+
 void R_InterpolateView(player_t *player, fixed_t frac)
 {
   static mobj_t *oviewer;
+  angle_t angleoffset;
 
-  dboolean NoInterpolate = paused_camera || paused_via_menu;
+  dboolean NoInterpolate = dsda_CameraPaused() || dsda_PausedViaMenu();
 
   viewplayer = player;
+  angleoffset = viewangleoffset + dsda_BuildModeViewAngleOffset();
 
   if (player->mo != oviewer || NoInterpolate)
   {
@@ -118,7 +127,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
       NoInterpolateView = false;
 
       player->prev_viewz = player->viewz;
-      player->prev_viewangle = player->mo->angle + viewangleoffset;
+      player->prev_viewangle = player->mo->angle + angleoffset;
       player->prev_viewpitch = P_PlayerPitch(player) + viewpitchoffset;
 
       P_ResetWalkcam();
@@ -144,7 +153,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     }
     else
     {
-      viewangle = player->prev_viewangle + FixedMul (frac, R_SmoothPlaying_Get(player) - player->prev_viewangle) + viewangleoffset;
+      viewangle = player->prev_viewangle + FixedMul (frac, R_SmoothPlaying_Get(player) - player->prev_viewangle) + angleoffset;
       viewpitch = player->prev_viewpitch + FixedMul (frac, P_PlayerPitch(player) - player->prev_viewpitch) + viewpitchoffset;
     }
   }
@@ -169,12 +178,12 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     }
     else
     {
-      viewangle = R_SmoothPlaying_Get(player) + viewangleoffset;
+      viewangle = R_SmoothPlaying_Get(player) + angleoffset;
       viewpitch = P_PlayerPitch(player) + viewpitchoffset;
     }
   }
 
-  if (localQuakeHappening[displayplayer] && !paused)
+  if (localQuakeHappening[displayplayer] && !dsda_Paused())
   {
     static int x_displacement;
     static int y_displacement;
@@ -193,7 +202,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     viewy += y_displacement;
   }
 
-  if (interpolate_view)
+  if (R_ViewInterpolation())
   {
     int i;
 
@@ -318,7 +327,6 @@ static void R_DoAnInterpolation (int i, fixed_t smoothratio)
     *adr2 = oldipos[i][1] + FixedMul (pos - oldipos[i][1], smoothratio);
   }
 
-#ifdef GL_DOOM
   switch (curipos[i].type)
   {
   case INTERP_SectorFloor:
@@ -326,7 +334,6 @@ static void R_DoAnInterpolation (int i, fixed_t smoothratio)
     gld_UpdateSplitData(((sector_t*)curipos[i].address));
     break;
   }
-#endif
 }
 
 void R_UpdateInterpolations()
@@ -361,9 +368,9 @@ static void R_SetInterpolation(interpolation_type_e type, void *posptr)
       return;
     }
 
-    oldipos = (fixed2_t*)realloc(oldipos, sizeof(*oldipos) * interpolations_max);
-    bakipos = (fixed2_t*)realloc(bakipos, sizeof(*bakipos) * interpolations_max);
-    curipos = (interpolation_t*)realloc(curipos, sizeof(*curipos) * interpolations_max);
+    oldipos = (fixed2_t*)Z_Realloc(oldipos, sizeof(*oldipos) * interpolations_max);
+    bakipos = (fixed2_t*)Z_Realloc(bakipos, sizeof(*bakipos) * interpolations_max);
+    curipos = (interpolation_t*)Z_Realloc(curipos, sizeof(*curipos) * interpolations_max);
   }
 
   i = NULL;

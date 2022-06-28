@@ -57,23 +57,7 @@
 
 #include "e6y.h"//e6y
 
-static struct {
-  void *cache;
-  int locks;
-} *cachelump;
-
-#ifdef HEAPDUMP
-void W_PrintLump(FILE* fp, void* p) {
-  int i;
-  for (i=0; i<numlumps; i++)
-    if (cachelump[i].cache == p) {
-      fprintf(fp, " %8.8s %6u %2d %6d", lumpinfo[i].name,
-        W_LumpLength(i), cachelump[i].locks, gametic - cachelump[i].locktic);
-      return;
-    }
-  fprintf(fp, " not found");
-}
-#endif
+static void **lump_data;
 
 #ifdef _WIN32
 typedef struct {
@@ -89,9 +73,9 @@ void W_DoneCache(void)
 {
   size_t i;
 
-  if (cachelump) {
-    free(cachelump);
-    cachelump = NULL;
+  if (lump_data) {
+    Z_Free(lump_data);
+    lump_data = NULL;
   }
 
   if (!mapped_wad)
@@ -114,7 +98,7 @@ void W_DoneCache(void)
       mapped_wad[i].hnd=NULL;
     }
   }
-  free(mapped_wad);
+  Z_Free(mapped_wad);
   mapped_wad = NULL;
 }
 
@@ -124,19 +108,17 @@ void W_InitCache(void)
   W_DoneCache();
 
   // set up caching
-  cachelump = calloc(numlumps, sizeof *cachelump);
-  if (!cachelump)
-    I_Error ("W_Init: Couldn't allocate lumpcache");
+  lump_data = Z_Calloc(numlumps, sizeof *lump_data);
+  if (!lump_data)
+    I_Error ("W_Init: Couldn't allocate lump data");
 
-  mapped_wad = calloc(numwadfiles,sizeof(mmap_info_t));
+  mapped_wad = Z_Calloc(numwadfiles,sizeof(mmap_info_t));
   memset(mapped_wad,0,sizeof(mmap_info_t)*numwadfiles);
   {
     int i;
     for (i=0; i<numlumps; i++)
     {
       int wad_index = (int)(lumpinfo[i].wadfile-wadfiles);
-
-      cachelump[i].locks = -1;
 
       if (!lumpinfo[i].wadfile)
         continue;
@@ -177,14 +159,14 @@ void W_InitCache(void)
   }
 }
 
-const void* W_CacheLumpNum(int lump)
+const void* W_LumpByNum(int lump)
 {
   int wad_index = (int)(lumpinfo[lump].wadfile-wadfiles);
 #ifdef RANGECHECK
   if ((wad_index<0)||((size_t)wad_index>=numwadfiles))
-    I_Error("W_CacheLumpNum: wad_index out of range");
+    I_Error("W_LumpByNum: wad_index out of range");
   if ((unsigned)lump >= (unsigned)numlumps)
-    I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
+    I_Error ("W_LumpByNum: %i >= numlumps",lump);
 #endif
   if (!lumpinfo[lump].wadfile)
     return NULL;
@@ -199,9 +181,9 @@ void W_InitCache(void)
 {
   int maxfd = 0;
   // set up caching
-  cachelump = calloc(numlumps, sizeof *cachelump);
-  if (!cachelump)
-    I_Error ("W_Init: Couldn't allocate lumpcache");
+  lump_data = Z_Calloc(numlumps, sizeof *lump_data);
+  if (!lump_data)
+    I_Error ("W_Init: Couldn't allocate lump data");
 
   {
     int i;
@@ -209,11 +191,10 @@ void W_InitCache(void)
       if (lumpinfo[i].wadfile)
         if (lumpinfo[i].wadfile->handle > maxfd) maxfd = lumpinfo[i].wadfile->handle;
   }
-  mapped_wad = calloc(maxfd+1,sizeof *mapped_wad);
+  mapped_wad = Z_Calloc(maxfd+1,sizeof *mapped_wad);
   {
     int i;
     for (i=0; i<numlumps; i++) {
-      cachelump[i].locks = -1;
       if (lumpinfo[i].wadfile) {
         int fd = lumpinfo[i].wadfile->handle;
         if (!mapped_wad[fd])
@@ -238,15 +219,15 @@ void W_DoneCache(void)
         }
       }
   }
-  free(mapped_wad);
+  Z_Free(mapped_wad);
   mapped_wad = NULL;
 }
 
-const void* W_CacheLumpNum(int lump)
+const void* W_LumpByNum(int lump)
 {
 #ifdef RANGECHECK
   if ((unsigned)lump >= (unsigned)numlumps)
-    I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
+    I_Error ("W_LumpByNum: %i >= numlumps",lump);
 #endif
   if (!lumpinfo[lump].wadfile)
     return NULL;
@@ -269,35 +250,13 @@ const void* W_CacheLumpNum(int lump)
 const void* W_LockLumpNum(int lump)
 {
   size_t len = W_LumpLength(lump);
-  const void *data = W_CacheLumpNum(lump);
+  const void *data = W_LumpByNum(lump);
 
-  if (!cachelump[lump].cache) {
-    // read the lump in
-    Z_Malloc(len, PU_CACHE, &cachelump[lump].cache);
-    memcpy(cachelump[lump].cache, data, len);
+  // read the lump in
+  if (!lump_data[lump]) {
+    lump_data[lump] = Z_Malloc(len);
+    memcpy(lump_data[lump], data, len);
   }
 
-  /* cph - if wasn't locked but now is, tell z_zone to hold it */
-  if (cachelump[lump].locks <= 0) {
-    Z_ChangeTag(cachelump[lump].cache, PU_LOCKED);
-    // reset lock counter
-    cachelump[lump].locks = 1;
-  } else {
-    // increment lock counter
-    cachelump[lump].locks += 1;
-  }
-
-  return cachelump[lump].cache;
-}
-
-void W_UnlockLumpNum(int lump) {
-  if (cachelump[lump].locks == -1)
-    return; // this lump is memory mapped
-
-  cachelump[lump].locks -= 1;
-  /* cph - Note: must only tell z_zone to make purgeable if currently locked,
-   * else it might already have been purged
-   */
-  if (cachelump[lump].locks == 0)
-    Z_ChangeTag(cachelump[lump].cache, PU_CACHE);
+  return lump_data[lump];
 }

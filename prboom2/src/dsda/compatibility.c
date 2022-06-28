@@ -164,6 +164,11 @@ static const dsda_compatibility_t skulltiverse_map02 = {
   { -1, comp_ledgeblock, -1 }
 };
 
+static const dsda_compatibility_t tntr_map30 = {
+  "1d3c6d456bfcf360ce14aeecc155a96c",
+  { comp_telefrag, -1, -1 }
+};
+
 static const dsda_compatibility_t* entry_0[] = {
   &archie_map01,
   &sixpack2_map02,
@@ -174,6 +179,7 @@ static const dsda_compatibility_t* entry_1[] = {
   &hell_revealed_map26,
   &seej_map01,
   &mayhem_2013_map05,
+  &tntr_map30,
   NULL
 };
 
@@ -277,8 +283,7 @@ static const dsda_compatibility_t** level_compatibilities[16] = {
 
 static void dsda_MD5UpdateLump(int lump, struct MD5Context *md5)
 {
-  MD5Update(md5, W_CacheLumpNum(lump), W_LumpLength(lump));
-  W_UnlockLumpNum(lump);
+  MD5Update(md5, W_LumpByNum(lump), W_LumpLength(lump));
 }
 
 static void dsda_GetLevelCheckSum(int lump, byte cksum[16])
@@ -316,7 +321,7 @@ void dsda_ApplyLevelCompatibility(int lump) {
     sprintf(&cksum_string[i * 2], "%02x", cksum[i]);
   cksum_string[32] = '\0';
 
-  lprintf(LO_INFO, "Level checksum: %s\n", cksum_string);
+  lprintf(LO_DEBUG, "Level checksum: %s\n", cksum_string);
 
   if (cksum_string[0] >= 'a')
     i = cksum_string[0] - 'a' + 10;

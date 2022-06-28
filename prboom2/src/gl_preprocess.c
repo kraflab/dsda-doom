@@ -73,7 +73,7 @@ static void gld_AddGlobalVertexes(int count)
   if ((gld_num_vertexes+count)>=gld_max_vertexes)
   {
     gld_max_vertexes+=count+1024;
-    flats_vbo = Z_Realloc(flats_vbo, gld_max_vertexes * sizeof(flats_vbo[0]), PU_STATIC, 0);
+    flats_vbo = Z_Realloc(flats_vbo, gld_max_vertexes * sizeof(flats_vbo[0]));
   }
 }
 
@@ -140,7 +140,7 @@ static vertex_t *gld_FlatEdgeClipper(int *numpoints, vertex_t *points, int numcl
         gld_CalcIntersectionVertex(&points[startIdx], &points[endIdx], curclip, &newvert);
 
         // Add the new vertex. Also modify the sidelist.
-        points = (vertex_t*)Z_Realloc(points,(++num)*sizeof(vertex_t),PU_LEVEL,0);
+        points = (vertex_t*)Z_Realloc(points,(++num)*sizeof(vertex_t));
         if(num >= MAX_CC_SIDES)
           I_Error("gld_FlatEdgeClipper: Too many points in carver");
 
@@ -193,7 +193,7 @@ static void gld_FlatConvexCarver(int ssidx, int num, divline_t *list)
   int i, numedgepoints;
   vertex_t *edgepoints;
 
-  clippers=(divline_t*)Z_Malloc(numclippers*sizeof(divline_t),PU_LEVEL,0);
+  clippers=(divline_t*)Z_Malloc(numclippers*sizeof(divline_t));
   if (!clippers)
     return;
   for(i=0; i<num; i++)
@@ -214,7 +214,7 @@ static void gld_FlatConvexCarver(int ssidx, int num, divline_t *list)
 
   // Setup the 'worldwide' polygon.
   numedgepoints = 4;
-  edgepoints = (vertex_t*)Z_Malloc(numedgepoints*sizeof(vertex_t),PU_LEVEL,0);
+  edgepoints = (vertex_t*)Z_Malloc(numedgepoints*sizeof(vertex_t));
 
   edgepoints[0].x = INT_MIN;
   edgepoints[0].y = INT_MAX;
@@ -258,7 +258,7 @@ static void gld_FlatConvexCarver(int ssidx, int num, divline_t *list)
         }
 
         (*loopcount)++;
-        (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount), PU_STATIC, 0);
+        (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount));
         ((*loop)[(*loopcount) - 1]).index = ssidx;
         ((*loop)[(*loopcount) - 1]).mode = GL_TRIANGLE_FAN;
         ((*loop)[(*loopcount) - 1]).vertexcount = numedgepoints;
@@ -305,7 +305,7 @@ static void gld_CarveFlats(int bspnode, int numdivlines, divline_t *divlines)
   nod = nodes + bspnode;
 
   // Allocate a new list for each child.
-  childlist = (divline_t*)Z_Malloc(childlistsize*sizeof(divline_t),PU_LEVEL,0);
+  childlist = (divline_t*)Z_Malloc(childlistsize*sizeof(divline_t));
 
   // Copy the previous lines.
   if(divlines) memcpy(childlist,divlines,numdivlines*sizeof(divline_t));
@@ -327,8 +327,6 @@ static void gld_CarveFlats(int bspnode, int numdivlines, divline_t *divlines)
   // We are finishing with this node, free the allocated list.
   Z_Free(childlist);
 }
-
-#ifdef USE_GLU_TESS
 
 static int currentsector; // the sector which is currently tesselated
 
@@ -356,8 +354,7 @@ static void CALLBACK ntessBegin( GLenum type )
   // increase loopcount for currentsector
   sectorloops[ currentsector ].loopcount++;
   // reallocate to get space for another loop
-  // PU_LEVEL is used, so this gets freed before a new level is loaded
-  sectorloops[ currentsector ].loops=Z_Realloc(sectorloops[currentsector].loops,sizeof(GLLoopDef)*sectorloops[currentsector].loopcount, PU_STATIC, 0);
+  sectorloops[ currentsector ].loops=Z_Realloc(sectorloops[currentsector].loops,sizeof(GLLoopDef)*sectorloops[currentsector].loopcount);
   // set initial values for current loop
   // currentloop is -> sectorloops[currentsector].loopcount-1
   sectorloops[ currentsector ].loops[ sectorloops[currentsector].loopcount-1 ].index=-1;
@@ -477,7 +474,7 @@ static void gld_PrecalculateSector(int num)
   int vertexnum;
 
   currentsector=num;
-  lineadded=Z_Malloc(sectors[num].linecount*sizeof(dboolean),PU_LEVEL,0);
+  lineadded=Z_Malloc(sectors[num].linecount*sizeof(dboolean));
   if (!lineadded)
   {
     if (levelinfo) fclose(levelinfo);
@@ -608,7 +605,7 @@ static void gld_PrecalculateSector(int num)
     if (vertexnum>=maxvertexnum)
     {
       maxvertexnum+=512;
-      v=Z_Realloc(v,maxvertexnum*3*sizeof(double),PU_LEVEL,0);
+      v=Z_Realloc(v,maxvertexnum*3*sizeof(double));
     }
     // calculate coordinates for the glu tesselation functions
     v[vertexnum*3+0]=-(double)currentvertex->x/(double)MAP_SCALE;
@@ -698,8 +695,6 @@ static void gld_PrecalculateSector(int num)
   Z_Free(lineadded);
 }
 
-#endif /* USE_GLU_TESS */
-
 /********************************************
  * Name     : gld_GetSubSectorVertices      *
  * created  : 08/13/00                      *
@@ -744,7 +739,7 @@ static void gld_GetSubSectorVertices(void)
       }
 
       (*loopcount)++;
-      (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount), PU_STATIC, 0);
+      (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount));
       ((*loop)[(*loopcount) - 1]).index = i;
       ((*loop)[(*loopcount) - 1]).mode = GL_TRIANGLE_FAN;
       ((*loop)[(*loopcount) - 1]).vertexcount = numedgepoints;
@@ -850,14 +845,12 @@ static void gld_MarkSectorsForClamp(void)
 
 static void gld_PreprocessSectors(void)
 {
-#ifdef USE_GLU_TESS // figgi
   char *vertexcheck = NULL;
   char *vertexcheck2 = NULL;
   int v1num;
   int v2num;
   int i;
   int j;
-#endif
 
 #ifdef PRBOOM_DEBUG
   levelinfo=fopen("levelinfo.txt","a");
@@ -869,7 +862,7 @@ static void gld_PreprocessSectors(void)
 
   if (numsectors)
   {
-    sectorloops=Z_Malloc(sizeof(GLSector)*numsectors,PU_STATIC,0);
+    sectorloops=Z_Malloc(sizeof(GLSector)*numsectors);
     if (!sectorloops)
       I_Error("gld_PreprocessSectors: Not enough memory for array sectorloops");
     memset(sectorloops, 0, sizeof(GLSector)*numsectors);
@@ -877,7 +870,7 @@ static void gld_PreprocessSectors(void)
 
   if (numsubsectors)
   {
-    subsectorloops=Z_Malloc(sizeof(GLMapSubsector)*numsubsectors,PU_STATIC,0);
+    subsectorloops=Z_Malloc(sizeof(GLMapSubsector)*numsubsectors);
     if (!subsectorloops)
       I_Error("gld_PreprocessSectors: Not enough memory for array subsectorloops");
     memset(subsectorloops, 0, sizeof(GLMapSubsector)*numsubsectors);
@@ -885,15 +878,15 @@ static void gld_PreprocessSectors(void)
 
   if (numsegs)
   {
-    segrendered=calloc(numsegs, sizeof(byte));
+    segrendered=Z_Calloc(numsegs, sizeof(byte));
     if (!segrendered)
       I_Error("gld_PreprocessSectors: Not enough memory for array segrendered");
   }
 
   if (numlines)
   {
-    linerendered[0]=calloc(numlines, sizeof(byte));
-    linerendered[1]=calloc(numlines, sizeof(byte));
+    linerendered[0]=Z_Calloc(numlines, sizeof(byte));
+    linerendered[1]=Z_Calloc(numlines, sizeof(byte));
     if (!linerendered[0] || !linerendered[1])
       I_Error("gld_PreprocessSectors: Not enough memory for array linerendered");
   }
@@ -906,11 +899,10 @@ static void gld_PreprocessSectors(void)
     gld_AddGlobalVertexes(numvertexes*2);
   }
 
-#ifdef USE_GLU_TESS
   if (numvertexes)
   {
-    vertexcheck=malloc(numvertexes*sizeof(vertexcheck[0]));
-    vertexcheck2=malloc(numvertexes*sizeof(vertexcheck2[0]));
+    vertexcheck=Z_Malloc(numvertexes*sizeof(vertexcheck[0]));
+    vertexcheck2=Z_Malloc(numvertexes*sizeof(vertexcheck2[0]));
     if (!vertexcheck || !vertexcheck2)
     {
       if (levelinfo) fclose(levelinfo);
@@ -987,9 +979,8 @@ static void gld_PreprocessSectors(void)
     if (sectors[i].flags & SECTOR_IS_CLOSED)
       gld_PrecalculateSector(i);
   }
-  free(vertexcheck);
-  free(vertexcheck2);
-#endif /* USE_GLU_TESS */
+  Z_Free(vertexcheck);
+  Z_Free(vertexcheck2);
 
   // figgi -- adapted for glnodes
   if (numnodes)
@@ -1012,7 +1003,7 @@ static void gld_PreprocessSegs(void)
 {
   int i;
 
-  gl_segs=Z_Malloc(numsegs*sizeof(GLSeg),PU_STATIC,0);
+  gl_segs=Z_Malloc(numsegs*sizeof(GLSeg));
   for (i=0; i<numsegs; i++)
   {
     gl_segs[i].x1=-(float)segs[i].v1->x/(float)MAP_SCALE;
@@ -1021,7 +1012,7 @@ static void gld_PreprocessSegs(void)
     gl_segs[i].z2= (float)segs[i].v2->y/(float)MAP_SCALE;
   }
 
-  gl_lines=Z_Malloc(numlines*sizeof(GLSeg),PU_STATIC,0);
+  gl_lines=Z_Malloc(numlines*sizeof(GLSeg));
   for (i=0; i<numlines; i++)
   {
     gl_lines[i].x1=-(float)lines[i].v1->x/(float)MAP_SCALE;
@@ -1041,26 +1032,26 @@ void gld_PreprocessLevel(void)
     static int numsectors_prev = 0;
     static int numsubsectors_prev = 0;
 
-    free(gl_segs);
-    free(gl_lines);
+    Z_Free(gl_segs);
+    Z_Free(gl_lines);
 
-    free(flats_vbo);
+    Z_Free(flats_vbo);
     flats_vbo = NULL;
 
-    free(segrendered);
-    free(linerendered[0]);
-    free(linerendered[1]);
+    Z_Free(segrendered);
+    Z_Free(linerendered[0]);
+    Z_Free(linerendered[1]);
 
     for (i = 0; i < numsectors_prev; i++)
     {
-      free(sectorloops[i].loops);
+      Z_Free(sectorloops[i].loops);
     }
-    free(sectorloops);
+    Z_Free(sectorloops);
     for (i = 0; i < numsubsectors_prev; i++)
     {
-      free(subsectorloops[i].loops);
+      Z_Free(subsectorloops[i].loops);
     }
-    free(subsectorloops);
+    Z_Free(subsectorloops);
 
     gld_Precache();
     gld_PreprocessSectors();
@@ -1102,7 +1093,7 @@ void gld_PreprocessLevel(void)
         gld_num_vertexes * sizeof(flats_vbo[0]),
         flats_vbo, GL_STATIC_DRAW_ARB);
 
-      free(flats_vbo);
+      Z_Free(flats_vbo);
       flats_vbo = NULL;
 
       // bind VBO in order to use

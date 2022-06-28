@@ -32,6 +32,8 @@ typedef enum
 } dsda_split_class_t;
 
 #define DSDA_TEXT_SIZE 200
+#define DSDA_CHAR_HEIGHT 8
+#define DSDA_CHAR_WIDTH 6
 
 typedef struct {
   hu_textline_t text;

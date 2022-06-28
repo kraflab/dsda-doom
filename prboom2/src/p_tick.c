@@ -42,6 +42,9 @@
 
 #include "hexen/p_anim.h"
 
+#include "dsda.h"
+#include "dsda/pause.h"
+
 int leveltime;
 
 static dboolean newthinkerpresent;
@@ -279,7 +282,7 @@ void P_Ticker (void)
    * All of this complicated mess is used to preserve demo sync.
    */
 
-  if (paused || (paused_via_menu && players[consoleplayer].viewz != 1))
+  if (dsda_Paused() || (dsda_PausedViaMenu() && players[consoleplayer].viewz != 1))
   {
     P_ResetWalkcam();
     return;
@@ -300,5 +303,7 @@ void P_Ticker (void)
   P_RespawnSpecials();
   P_AmbientSound();
   P_MapEnd();
+
+  dsda_WatchPTickCompleted();
   leveltime++;                       // for par times
 }

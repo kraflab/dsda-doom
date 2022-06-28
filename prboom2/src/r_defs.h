@@ -195,9 +195,7 @@ typedef struct
   int INTERP_SectorCeiling;
   int INTERP_FloorPanning;
   int INTERP_CeilingPanning;
-#ifdef GL_DOOM
   int fakegroup[2];
-#endif
 
   // hexen
   seqtype_t seqType;          // stone, metal, heavy, etc...
@@ -227,9 +225,7 @@ typedef struct
   int special;
 
   int INTERP_WallPanning;
-#ifdef GL_DOOM
   int skybox_index;
-#endif
 } side_t;
 
 //
@@ -256,9 +252,7 @@ typedef struct line_s
   int iLineID;           // proff 04/05/2000: needed for OpenGL
   vertex_t *v1, *v2;     // Vertices, from v1 to v2.
   fixed_t dx, dy;        // Precalculated v2 - v1 for side checking.
-#ifdef GL_DOOM
   float texel_length;
-#endif
   unsigned int flags;           // Animation related.
   short special;
   short tag;
@@ -275,6 +269,9 @@ typedef struct line_s
   int r_validcount;      // cph: if == gametic, r_flags already done
   r_flags_t r_flags;     // cph
   degenmobj_t soundorg;  // sound origin for switches/buttons
+
+  // dsda
+  byte player_activations;
 
   // hexen
   byte arg1;
@@ -531,9 +528,11 @@ typedef struct polyobj_s
   int validcount;
   int validcount2;
   dboolean crush;              // should the polyobj attempt to crush mobjs?
+  dboolean hurt;
   int seqType;
   fixed_t size;               // polyobj size (area of POLY_AREAUNIT == size of FRACUNIT)
   void *specialdata;          // pointer a thinker, if the poly is moving
+  subsector_t *subsector;
 } polyobj_t;
 
 typedef struct polyblock_s
@@ -542,13 +541,6 @@ typedef struct polyblock_s
   struct polyblock_s *prev;
   struct polyblock_s *next;
 } polyblock_t;
-
-enum
-{
-  PO_ANCHOR_TYPE = 3000,
-  PO_SPAWN_TYPE,
-  PO_SPAWNCRUSH_TYPE
-};
 
 #define PO_LINE_START 1         // polyobj line start special
 #define PO_LINE_EXPLICIT 5

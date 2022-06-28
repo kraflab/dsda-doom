@@ -340,14 +340,12 @@ static dboolean LoadInstrumentTable(void)
 {
     const byte *lump;
 
-    lump = (const byte*)W_CacheLumpName("GENMIDI");
+    lump = (const byte*)W_LumpByName("GENMIDI");
 
     // Check header
 
     if (strncmp((const char *) lump, GENMIDI_HEADER, strlen(GENMIDI_HEADER)) != 0)
     {
-        W_UnlockLumpName("GENMIDI");
-
         return false;
     }
 
@@ -1231,7 +1229,7 @@ static void I_OPL_PlaySong(const void *handle, int looping)
 
     // Allocate track data.
 
-    tracks = (opl_track_data_t*)malloc(MIDI_NumTracks(file) * sizeof(opl_track_data_t));
+    tracks = (opl_track_data_t*)Z_Malloc(MIDI_NumTracks(file) * sizeof(opl_track_data_t));
 
     num_tracks = MIDI_NumTracks(file);
     running_tracks = num_tracks;
@@ -1311,7 +1309,7 @@ static void I_OPL_StopSong(void)
         MIDI_FreeIterator(tracks[i].iter);
     }
 
-    free(tracks);
+    Z_Free(tracks);
 
     tracks = NULL;
     num_tracks = 0;
@@ -1389,10 +1387,6 @@ static void I_OPL_ShutdownMusic(void)
         I_OPL_StopSong();
 
         OPL_Shutdown();
-
-        // Release GENMIDI lump
-
-        W_UnlockLumpName("GENMIDI");
 
         music_initialized = false;
     }

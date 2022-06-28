@@ -74,6 +74,8 @@
 
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
+#include "dsda/gl/render_scale.h"
 
 int gl_clear;
 
@@ -159,13 +161,11 @@ GLfloat cm2RGB[CR_LIMIT + 1][4] =
 
 void SetFrameTextureMode(void)
 {
-#ifdef USE_FBO_TECHNIQUE
   if (SceneInTexture)
   {
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }
   else
-#endif
   if (invul_method & INVUL_BW)
   {
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
@@ -221,11 +221,7 @@ void gld_InitTextureParams(void)
 
   for (i = 0; i < MIP_COUNT; i++)
   {
-#ifdef USE_GLU_MIPMAP
     tex_filter[i].mipmap     = params[*var[i]].mipmap;
-#else
-    tex_filter[i].mipmap     = false;
-#endif
     tex_filter[i].mag_filter = params[*var[i]].tex_filter;
     tex_filter[i].min_filter = params[*var[i]].mipmap_filter;
   }
@@ -384,7 +380,8 @@ void gld_Init(int width, int height)
   gld_InitPalettedTextures();
   gld_InitTextureParams();
 
-  glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
+  dsda_GLSetRenderViewport();
+  dsda_GLSetRenderViewportScissor();
 
   glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
   glClearDepth(1.0f);
@@ -434,10 +431,8 @@ void gld_Init(int width, int height)
 #endif
 
   // Create FBO object and associated render targets
-#ifdef USE_FBO_TECHNIQUE
   gld_InitFBO();
   I_AtExit(gld_FreeScreenSizeFBO, true, "gld_FreeScreenSizeFBO", exit_priority_normal);
-#endif
 
   if(!gld_LoadGLDefs("GLBDEFS"))
   {
@@ -489,7 +484,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   if (numsubsectors > visible_subsectors_size)
   {
     visible_subsectors_size = numsubsectors;
-    visible_subsectors = realloc(visible_subsectors, visible_subsectors_size * sizeof(visible_subsectors[0]));
+    visible_subsectors = Z_Realloc(visible_subsectors, visible_subsectors_size * sizeof(visible_subsectors[0]));
   }
 
   visible_subsectors_count = 0;
@@ -676,7 +671,7 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
 
   if (flags & VPT_STRETCH_MASK)
   {
-    stretch_param_t *params = &stretch_params[flags & VPT_ALIGN_MASK];
+    stretch_param_t *params = dsda_StretchParams(flags);
 
     xpos   = (float)((x - leftoffset) * params->video->width)  / 320.0f + params->deltax1;
     ypos   = (float)((y - topoffset)  * params->video->height) / 200.0f + params->deltay1;
@@ -1068,21 +1063,16 @@ unsigned char *gld_ReadScreen(void)
   static unsigned char *scr = NULL;
   static unsigned char *buffer = NULL;
   static int scr_size = 0;
-  static int buffer_size = 0;
 
-  int i, size;
+  int src_row, dest_row, size, pixels_per_row;
 
-  size = SCREENWIDTH * 3;
-  if (!buffer || size > buffer_size)
-  {
-    buffer_size = size;
-    buffer = realloc (buffer, size);
-  }
-  size = SCREENWIDTH * SCREENHEIGHT * 3;
+  pixels_per_row = gl_window_width * 3;
+  size = pixels_per_row * gl_window_height;
   if (!scr || size > scr_size)
   {
     scr_size = size;
-    scr = realloc (scr, size);
+    scr = Z_Realloc(scr, size);
+    buffer = Z_Realloc(buffer, size);
   }
 
   if (buffer && scr)
@@ -1092,22 +1082,22 @@ unsigned char *gld_ReadScreen(void)
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
     glFlush();
-    glReadPixels(0, 0, SCREENWIDTH, SCREENHEIGHT, GL_RGB, GL_UNSIGNED_BYTE, scr);
+    glReadPixels(0, 0, gl_window_width, gl_window_height, GL_RGB, GL_UNSIGNED_BYTE, scr);
 
     glPixelStorei(GL_PACK_ALIGNMENT, pack_aligment);
 
-    gld_ApplyGammaRamp(scr, SCREENWIDTH * 3, SCREENWIDTH, SCREENHEIGHT);
+    gld_ApplyGammaRamp(scr, pixels_per_row, gl_window_width, gl_window_height);
 
-    for (i=0; i<SCREENHEIGHT/2; i++)
+    // GL textures are bottom up, so copy the rows in reverse to flip vertically
+    for (src_row = gl_window_height - 1, dest_row = 0; src_row >= 0; --src_row, ++dest_row)
     {
-      memcpy(buffer, &scr[i*SCREENWIDTH*3], SCREENWIDTH*3);
-      memcpy(&scr[i*SCREENWIDTH*3],
-        &scr[(SCREENHEIGHT-(i+1))*SCREENWIDTH*3], SCREENWIDTH*3);
-      memcpy(&scr[(SCREENHEIGHT-(i+1))*SCREENWIDTH*3], buffer, SCREENWIDTH*3);
+      memcpy(&buffer[dest_row * pixels_per_row],
+              &scr[src_row * pixels_per_row],
+              pixels_per_row);
     }
   }
 
-  return scr;
+  return buffer;
 }
 
 GLvoid gld_Set2DMode(void)
@@ -1285,20 +1275,18 @@ void gld_StartDrawScene(void)
     }
   }
 
-#ifdef USE_FBO_TECHNIQUE
   motion_blur.enabled = gl_use_motionblur &&
     ((motion_blur.curr_speed_pow2 > motion_blur.minspeed_pow2) ||
     (abs(players[displayplayer].cmd.angleturn) > motion_blur.minangle));
 
-  SceneInTexture = (gl_ext_framebuffer_object) &&
-    ((invul_method & INVUL_BW) || (motion_blur.enabled));
+  // elim - Always enabled (when supported) for upscaling with GL exclusive disabled
+  SceneInTexture = gl_ext_framebuffer_object;
 
   // Vortex: Set FBO object
   if (SceneInTexture)
   {
     GLEXT_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, glSceneImageFBOTexID);
   }
-#endif
 
   SetFrameTextureMode();
 
@@ -1378,7 +1366,6 @@ void gld_EndDrawScene(void)
   // See nuts.wad
   // http://www.doomworld.com/idgames/index.php?id=11402
 
-#ifdef USE_FBO_TECHNIQUE
   // Vortex: Black and white effect
   if (SceneInTexture)
   {
@@ -1419,15 +1406,24 @@ void gld_EndDrawScene(void)
       GLEXT_glBlendColorEXT(1.0f, 1.0f, 1.0f, motionblur_alpha);
     }
 
+    // Setup GL camera for drawing the render texture
+    dsda_GLFullscreenOrtho2D();
+    dsda_GLSetRenderViewport();
+    // elim - Prevent undrawn parts of game scene texture being rendered into the viewport
+    dsda_GLSetRenderSceneScissor();
     glBegin(GL_TRIANGLE_STRIP);
     {
       glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
-      glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, (float)SCREENHEIGHT);
-      glTexCoord2f(1.0f, 1.0f); glVertex2f((float)SCREENWIDTH, 0.0f);
-      glTexCoord2f(1.0f, 0.0f); glVertex2f((float)SCREENWIDTH, (float)SCREENHEIGHT);
+      glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, gl_window_height);
+      glTexCoord2f(1.0f, 1.0f); glVertex2f((float)gl_window_width, 0.0f);
+      glTexCoord2f(1.0f, 0.0f); glVertex2f((float)gl_window_width, (float)gl_window_height);
     }
     glEnd();
 
+    // elim - Set the scissor back to the full viewport so post-scene draws can happen (ie StatusBar)
+    dsda_GLSetRenderViewportScissor();
+
+    gld_Set2DMode();
 
     if (motion_blur.enabled)
     {
@@ -1437,7 +1433,6 @@ void gld_EndDrawScene(void)
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }
   else
-#endif
   {
     if (invul_method & INVUL_INV)
     {
@@ -1959,8 +1954,12 @@ void gld_AddWall(seg_t *seg)
       wall.flag = GLDWF_M2S;
       URUL(wall, seg, backseg, linelength);
 
-      wall.vt = (float)((-top + ceiling_height) >> FRACBITS)/(float)wall.gltexture->realtexheight;
-      wall.vb = (float)((-bottom + ceiling_height) >> FRACBITS)/(float)wall.gltexture->realtexheight;
+      wall.vt = (float)((-top + ceiling_height))/(float)wall.gltexture->realtexheight;
+      wall.vb = (float)((-bottom + ceiling_height))/(float)wall.gltexture->realtexheight;
+
+      /* Adjust the final float value accounting for the fixed point conversion */
+      wall.vt /= FRACUNIT;
+      wall.vb /= FRACUNIT;
 
       if (seg->linedef->tranlump >= 0)
         wall.alpha=(float)tran_filter_pct/100.0f;
@@ -2588,7 +2587,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   int frustum_culling = HaveMouseLook() && gl_sprites_frustum_culling;
   int mlook = HaveMouseLook() || (render_fov > FOV90);
 
-  if (interpolate_view)
+  if (R_ViewInterpolation())
   {
     fx = thing->PrevX + FixedMul (tic_vars.frac, thing->x - thing->PrevX);
     fy = thing->PrevY + FixedMul (tic_vars.frac, thing->y - thing->PrevY);
@@ -2673,7 +2672,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   }
   lump += firstspritelump;
 
-  patch = R_CachePatchNum(lump);
+  patch = R_PatchByNum(lump);
   thing->patch_width = patch->width;
 
   // killough 4/9/98: clip things which are out of view due to height
@@ -2695,7 +2694,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
 
     // off the side?
     if (x1 > viewwidth || x2 < 0)
-      goto unlock_patch;
+      return;
   }
 
   // killough 3/27/98: exclude things totally separated
@@ -2710,16 +2709,16 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     if (phs != -1 && viewz < sectors[phs].floorheight ?
         fz >= sectors[heightsec].floorheight :
         gzt < sectors[heightsec].floorheight)
-      goto unlock_patch;
+      return;
     if (phs != -1 && viewz > sectors[phs].ceilingheight ?
         gzt < sectors[heightsec].ceilingheight && viewz >= sectors[heightsec].ceilingheight :
         fz >= sectors[heightsec].ceilingheight)
-      goto unlock_patch;
+      return;
   }
 
   //e6y FIXME!!!
   if (thing == players[displayplayer].mo && walkcamera.type != 2)
-    goto unlock_patch;
+    return;
 
   sprite.x =-(float)fx / MAP_SCALE;
   sprite.y = (float)fz / MAP_SCALE;
@@ -2754,7 +2753,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
       //1.5 == sqrt(2) + small delta for MF_FOREGROUND
       (float)(MAX(patch->width, patch->height)) / MAP_COEFF / 2.0f * 1.5f))
     {
-      goto unlock_patch;
+      return;
     }
   }
 
@@ -2775,7 +2774,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     sprite.cm = CR_LIMIT + (int)((thing->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT));
   sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true, gl_lightmode == gl_lightmode_indexed);
   if (!sprite.gltexture)
-    goto unlock_patch;
+    return;
   sprite.flags = thing->flags;
 
   if (thing->flags & MF_FOREGROUND)
@@ -2814,9 +2813,6 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   {
     gld_AddHealthBar(thing, &sprite);
   }
-
-unlock_patch:
-  R_UnlockPatchNum(lump);
 }
 
 /*****************

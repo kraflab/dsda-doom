@@ -24,6 +24,8 @@
 #include "lprintf.h"
 #include "sc_man.h"
 
+#include "dsda/pause.h"
+
 #include "sn_sonix.h"
 
 #define SS_MAX_SCRIPTS 64
@@ -126,7 +128,7 @@ static int GetSoundOffset(char *name)
 {
     int i;
 
-    for (i = 0; i < HEXEN_NUMSFX; i++)
+    for (i = 0; i < num_sfx; i++)
     {
         if (!strcasecmp(name, S_sfx[i].tagname))
         {
@@ -159,8 +161,7 @@ void SN_InitSequenceScript(void)
             {
                 SC_ScriptError("SN_InitSequenceScript:  Nested Script Error");
             }
-            tempDataStart = (int *) Z_Malloc(SS_TEMPBUFFER_SIZE,
-                                             PU_STATIC, NULL);
+            tempDataStart = (int *) Z_Malloc(SS_TEMPBUFFER_SIZE);
             memset(tempDataStart, 0, SS_TEMPBUFFER_SIZE);
             tempDataPtr = tempDataStart;
             for (i = 0; i < SS_MAX_SCRIPTS; i++)
@@ -250,7 +251,7 @@ void SN_InitSequenceScript(void)
 
             *tempDataPtr++ = SS_CMD_END;
             dataSize = (tempDataPtr - tempDataStart) * sizeof(int);
-            SequenceData[i] = (int *) Z_Malloc(dataSize, PU_STATIC, NULL);
+            SequenceData[i] = (int *) Z_Malloc(dataSize);
             memcpy(SequenceData[i], tempDataStart, dataSize);
             Z_Free(tempDataStart);
             inSequence = -1;
@@ -274,7 +275,7 @@ void SN_StartSequence(mobj_t * mobj, int sequence)
     seqnode_t *node;
 
     SN_StopSequence(mobj);      // Stop any previous sequence
-    node = (seqnode_t *) Z_Malloc(sizeof(seqnode_t), PU_STATIC, NULL);
+    node = (seqnode_t *) Z_Malloc(sizeof(seqnode_t));
     node->sequencePtr = SequenceData[SequenceTranslate[sequence].scriptNum];
     node->sequence = sequence;
     node->mobj = mobj;
@@ -350,9 +351,8 @@ void SN_UpdateActiveSequences(void)
     seqnode_t *node;
     seqnode_t *next_node;
     dboolean sndPlaying;
-    extern dboolean paused;
 
-    if (!ActiveSequences || paused)
+    if (!ActiveSequences || dsda_Paused())
     {                           // No sequences currently playing/game is paused
         return;
     }

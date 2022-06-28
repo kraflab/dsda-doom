@@ -32,6 +32,7 @@
 
 #include "global.h"
 
+#include "dsda/map_format.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/music.h"
 #include "dsda/sfx.h"
@@ -114,6 +115,7 @@ int g_sfx_menu;
 int g_sfx_respawn;
 int g_sfx_secret;
 int g_sfx_revive;
+int g_sfx_console;
 
 int g_door_normal;
 int g_door_raise_in_5_mins;
@@ -198,6 +200,7 @@ static void dsda_InitDoom(void) {
   g_sfx_menu = sfx_pstop;
   g_sfx_secret = sfx_secret;
   g_sfx_revive = sfx_slop;
+  g_sfx_console = sfx_radio;
 
   g_door_normal = normal;
   g_door_raise_in_5_mins = waitRaiseDoor;
@@ -268,6 +271,7 @@ static void dsda_InitDoom(void) {
 
     // misc
     mobjinfo[i].bloodcolor = 0; // default
+    mobjinfo[i].visibility = VF_DOOM;
   }
 
   // don't want to reorganize info.c structure for a few tweaks...
@@ -379,6 +383,7 @@ static void dsda_InitHeretic(void) {
   g_sfx_respawn = heretic_sfx_respawn;
   g_sfx_secret = heretic_sfx_chat;
   g_sfx_revive = heretic_sfx_telept;
+  g_sfx_console = heretic_sfx_chat;
 
   g_door_normal = vld_normal;
   g_door_raise_in_5_mins = vld_raiseIn5Mins;
@@ -450,6 +455,7 @@ static void dsda_InitHeretic(void) {
 
     // misc
     mobjinfo[j].bloodcolor = 0; // default
+    mobjinfo[j].visibility = VF_HERETIC;
   }
 
   // heretic doesn't use "clip" concept
@@ -541,6 +547,7 @@ static void dsda_InitHexen(void) {
   g_sfx_respawn = hexen_sfx_respawn;
   g_sfx_secret = hexen_sfx_chat;
   g_sfx_revive = hexen_sfx_teleport;
+  g_sfx_console = hexen_sfx_chat;
 
   g_st_height = 39;
   g_border_offset = 4;
@@ -608,6 +615,7 @@ static void dsda_InitHexen(void) {
 
     // misc
     mobjinfo[j].bloodcolor = 0; // default
+    mobjinfo[j].visibility = VF_HEXEN;
   }
 
   {

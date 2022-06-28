@@ -23,6 +23,7 @@
 #include "w_wad.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "i_main.h"
 
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
@@ -46,8 +47,6 @@ dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_cheat_codes] = { 0, 0, "Cheat Codes", NULL, NULL, false, true },
 };
 
-int dsda_auto_key_frame_interval;
-int dsda_auto_key_frame_depth;
 int dsda_cycle_ghost_colors;
 int dsda_tas;
 int dsda_skip_next_wipe;
@@ -110,7 +109,7 @@ static int dsda_WadCompatibilityLevel(void) {
       const char* data;
 
       length = W_LumpLength(num);
-      data = W_CacheLumpNum(num);
+      data = W_LumpByNum(num);
 
       if (length == 7 && !strncasecmp("vanilla", data, 7)) {
         if (gamemode == commercial) {
@@ -143,7 +142,7 @@ int dsda_CompatibilityLevel(void) {
 
   if (map_format.zdoom) return mbf21_compatibility;
 
-  i = M_CheckParm("-complevel");
+  i = M_CheckParm2("-complevel", "-cl");
 
   if (i && (i + 1 < myargc)) {
     level = atoi(myargv[i + 1]);
@@ -317,18 +316,6 @@ int dsda_RealticClockRate(void) {
   if (dsda_StrictMode()) return 100;
 
   return realtic_clock_rate;
-}
-
-int dsda_AutoKeyFrameInterval(void) {
-  if (dsda_StrictMode()) return 0;
-
-  return dsda_auto_key_frame_interval;
-}
-
-int dsda_AutoKeyFrameDepth(void) {
-  if (dsda_StrictMode()) return 0;
-
-  return dsda_auto_key_frame_depth;
 }
 
 void dsda_SkipNextWipe(void) {

@@ -43,58 +43,22 @@
 #define __attribute__(x)
 #endif
 
-// Include system definitions so that prototypes become
-// active before macro replacements below are in effect.
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
 
-// ZONE MEMORY
-// PU - purge tags.
+#include <stddef.h>
 
-enum {
-  PU_STATIC,
-  PU_LOCKED,
-  PU_LEVEL,
-  PU_CACHE,
-  /* Must always be last -- killough */
-  PU_MAX
-};
-
-void *Z_Malloc(size_t size, int tag, void **ptr);
 void Z_Free(void *ptr);
-void Z_FreeTag(int tag);
-void Z_ChangeTag(void *ptr, int tag);
-void *Z_Calloc(size_t n, size_t n2, int tag, void **user);
-void *Z_Realloc(void *p, size_t n, int tag, void **user);
-char *Z_Strdup(const char *s, int tag, void **user);
+void Z_FreeLevel(void);
 
-/* cphipps 2001/11/18 -
- * If we're using memory mapped file access to WADs, we won't need to maintain
- * our own heap. So we *could* let "normal" malloc users use the libc malloc
- * directly, for efficiency. Except we do need a wrapper to handle out of memory
- * errors... damn, ok, we'll leave it for now.
- */
+void *Z_Malloc(size_t size);
+void *Z_Calloc(size_t n, size_t n2);
+void *Z_Realloc(void *p, size_t n);
+char *Z_Strdup(const char *s);
 
-// Remove all definitions before including system definitions
-
-#undef malloc
-#undef free
-#undef realloc
-#undef calloc
-#undef strdup
-
-#define malloc(n)          Z_Malloc(n,PU_STATIC,0)
-#define free(p)            Z_Free(p)
-#define realloc(p,n)       Z_Realloc(p,n,PU_STATIC,0)
-#define calloc(n1,n2)      Z_Calloc(n1,n2,PU_STATIC,0)
-#define strdup(s)          Z_Strdup(s,PU_STATIC,0)
-
-void Z_ZoneHistory(char *);
+void *Z_MallocLevel(size_t size);
+void *Z_CallocLevel(size_t n, size_t n2);
+void *Z_ReallocLevel(void *p, size_t n);
 
 #endif

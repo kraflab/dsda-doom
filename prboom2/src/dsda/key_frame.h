@@ -18,15 +18,40 @@
 #ifndef __DSDA_KEY_FRAME__
 #define __DSDA_KEY_FRAME__
 
+#include "doomtype.h"
+
+struct auto_kf_s;
+
+typedef struct {
+  byte* buffer;
+  struct auto_kf_s* auto_kf;
+} parent_kf_t;
+
+typedef struct {
+  byte* buffer;
+  int buffer_length;
+  int game_tic_count;
+  parent_kf_t parent;
+} dsda_key_frame_t;
+
+typedef struct auto_kf_s {
+  int auto_index;
+  dsda_key_frame_t kf;
+  struct auto_kf_s* prev;
+  struct auto_kf_s* next;
+} auto_kf_t;
+
+void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export);
+void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe);
 void dsda_InitKeyFrame(void);
 void dsda_ContinueKeyFrame(void);
-void dsda_StoreKeyFrame(unsigned char** buffer, byte complete);
-void dsda_RestoreKeyFrame(unsigned char* buffer, byte complete);
 int dsda_KeyFrameRestored(void);
 void dsda_StoreQuickKeyFrame(void);
 void dsda_RestoreQuickKeyFrame(void);
+dboolean dsda_RestoreClosestKeyFrame(int tic);
 void dsda_RewindAutoKeyFrame(void);
 void dsda_ResetAutoKeyFrameTimeout(void);
 void dsda_UpdateAutoKeyFrames(void);
+void dsda_ForgetAutoKeyFrames(void);
 
 #endif

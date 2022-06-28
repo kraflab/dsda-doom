@@ -21,6 +21,8 @@
 #include "sounds.h"
 #include "p_map.h"
 
+#include "dsda/map_format.h"
+
 #include "mobjinfo.h"
 
 mobjinfo_t* mobjinfo;
@@ -38,6 +40,7 @@ static void dsda_ResetMobjInfo(int from, int to) {
     mobjinfo[i].splash_group = SG_DEFAULT;
     mobjinfo[i].altspeed = NO_ALTSPEED;
     mobjinfo[i].meleerange = MELEERANGE;
+    mobjinfo[i].visibility = VF_DOOM;
   }
 }
 
@@ -47,12 +50,12 @@ static void dsda_EnsureCapacity(int limit) {
 
     num_mobj_types *= 2;
 
-    mobjinfo = realloc(mobjinfo, num_mobj_types * sizeof(*mobjinfo));
+    mobjinfo = Z_Realloc(mobjinfo, num_mobj_types * sizeof(*mobjinfo));
     memset(mobjinfo + old_num_mobj_types, 0,
       (num_mobj_types - old_num_mobj_types) * sizeof(*mobjinfo));
 
     edited_mobjinfo_bits =
-      realloc(edited_mobjinfo_bits, num_mobj_types * sizeof(*edited_mobjinfo_bits));
+      Z_Realloc(edited_mobjinfo_bits, num_mobj_types * sizeof(*edited_mobjinfo_bits));
     memset(edited_mobjinfo_bits + old_num_mobj_types, 0,
       (num_mobj_types - old_num_mobj_types) * sizeof(*edited_mobjinfo_bits));
 
@@ -85,7 +88,7 @@ static int dsda_GetDehMobjIndex(int index) {
     entry = entry->next;
 
   if (entry->index_in != index) {
-    entry->next = calloc(1, sizeof(*entry));
+    entry->next = Z_Calloc(1, sizeof(*entry));
     entry = entry->next;
     entry->index_in = index;
     entry->index_out = deh_mobj_index_end;
@@ -117,13 +120,13 @@ void dsda_InitializeMobjInfo(int zero, int max, int count) {
   num_mobj_types = count;
   mobj_types_zero = zero;
 
-  mobjinfo = calloc(num_mobj_types, sizeof(*mobjinfo));
+  mobjinfo = Z_Calloc(num_mobj_types, sizeof(*mobjinfo));
 
   if (raven) return;
 
   deh_mobj_index_start = num_mobj_types;
   deh_mobj_index_end = num_mobj_types;
-  edited_mobjinfo_bits = calloc(num_mobj_types, sizeof(*edited_mobjinfo_bits));
+  edited_mobjinfo_bits = Z_Calloc(num_mobj_types, sizeof(*edited_mobjinfo_bits));
 }
 
 // Changing the renderer causes a reset that accesses this list,
@@ -171,6 +174,7 @@ static mobjinfo_t zmt_mapspot_info = {
   .altspeed = NO_ALTSPEED,
   .meleerange = MELEERANGE,
   .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
 };
 
 static mobjinfo_t zmt_mapspot_gravity_info = {
@@ -207,6 +211,7 @@ static mobjinfo_t zmt_mapspot_gravity_info = {
   .altspeed = NO_ALTSPEED,
   .meleerange = MELEERANGE,
   .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
 };
 
 static mobjinfo_t zmt_teleportdest2_info = {
@@ -243,6 +248,7 @@ static mobjinfo_t zmt_teleportdest2_info = {
   .altspeed = NO_ALTSPEED,
   .meleerange = MELEERANGE,
   .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
 };
 
 static mobjinfo_t zmt_teleportdest3_info = {
@@ -279,6 +285,7 @@ static mobjinfo_t zmt_teleportdest3_info = {
   .altspeed = NO_ALTSPEED,
   .meleerange = MELEERANGE,
   .bloodcolor = 0,
+  .visibility = VF_ZDOOM,
 };
 
 typedef struct {

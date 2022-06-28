@@ -42,6 +42,7 @@ set(LUMPS
     lumps/crblack.lmp
     lumps/crpurple.lmp
     lumps/crwhite.lmp
+    lumps/soundfont/sndfont.lmp
 )
 
 set(COLORMAPS

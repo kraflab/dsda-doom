@@ -1,12 +1,16 @@
-# dsda-doom v0.23.0
+# dsda-doom v0.24.3
 This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning. For builds, discussions, and bug reports, check out the release thread on [doomworld](https://www.doomworld.com/forum/topic/118074/).
 
 ### Patch Notes
+- [v0.24](./patch_notes/v0.24.md)
 - [v0.23](./patch_notes/v0.23.md)
 - [v0.22](./patch_notes/v0.22.md)
 - [v0.21](./patch_notes/v0.21.md)
 - [v0.20](./patch_notes/v0.20.md)
 - [v0.19](./patch_notes/v0.19.md)
+
+### Launcher
+There is a dedicated launcher for this port available [here](https://github.com/Pedro-Beirao/dsda-launcher) by PBeGood4.
 
 ### Doom in Hexen Support (ongoing)
 - [Full details](./docs/doom_in_hexen.md)
@@ -16,7 +20,6 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
   - Use -iwad HEXEN.WAD (-file HEXDD.WAD for the expansion)
     - Or drag wads onto the exe
   - You can force hexen engine behaviour with `-hexen` (shouldn't be necessary)
-  - Probably doesn't work with the windows launcher (same as heretic)
 - Don't need to supply complevel (hexen is complevel 0 by necessity)
 - There are a variety of sound and graphical oddities - the ones I've looked into are consistent with chocolate hexen (hexen itself is a bit more hacky - that's just how it is).
 - Cheat codes are implemented
@@ -42,7 +45,6 @@ This is a fork of prboom+ with extra tooling for demo recording and playback, wi
 ### Heretic Support (beta)
 - DSDA-Doom includes demo-compatible support for heretic (all the demos stored on dsda are in sync).
 - Heretic game logic should be set automatically if you use `HERETIC.WAD` as the iwad. If it doesn't work, please use the `-heretic` commandline option. This flips a switch in the engine that determines all the core game data.
-- The prboom+ launcher doesn't work properly with heretic.
 - You do not need to (and can't) set the complevel when playing heretic. It is implicitly set to `0`, since heretic is based on doom v1.2.
 - Setting the "Status Bar and Menu Appearance" option to "not adjusted" will have no effect for heretic (it will default instead to "Doom format").
 - The "Apply multisampling" automap option is disabled for heretic.

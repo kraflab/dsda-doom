@@ -38,9 +38,7 @@
 #include "config.h"
 #endif
 
-#ifdef GL_DOOM
 #include <SDL_opengl.h>
-#endif
 
 #include "doomtype.h"
 #include "v_video.h"
@@ -73,7 +71,6 @@ void I_ShutdownGraphics(void);
 /* Takes full 8 bit values. */
 void I_SetPalette(int pal); /* CPhipps - pass down palette number */
 
-void I_UpdateNoBlit (void);
 void I_FinishUpdate (void);
 
 int I_ScreenShot (const char *fname);
@@ -109,10 +106,10 @@ void I_UpdateRenderSize(void);	// Handle potential
 extern int renderW;		// resolution scaling
 extern int renderH;		// - DTIED
 
-// Set the process affinity mask so that all threads
-extern int process_affinity_mask;
 // Priority class for the prboom-plus process
 extern int process_priority;
+// Use vanilla keybaord mapping
+extern int vanilla_keymap;
 
 extern dboolean window_focused;
 void UpdateGrab(void);

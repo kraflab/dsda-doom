@@ -511,12 +511,6 @@ const char *bgflat15     = "RROCK13";  // DOOM2 going MAP15 to MAP31
 const char *bgflat31     = "RROCK19";  // DOOM2 going MAP31 to MAP32
 const char *bgcastcall   = "BOSSBACK"; // Panel behind cast call
 
-const char *startup1     = "";  // blank lines are default and are not printed
-const char *startup2     = "";
-const char *startup3     = "";
-const char *startup4     = "";
-const char *startup5     = "";
-
 /* Ty 05/03/98 - externalized
  * cph - updated for prboom */
 const char *savegamename = PACKAGE_TARNAME"-savegame";
@@ -845,13 +839,6 @@ static deh_strs deh_strlookup[] = {
   {&bgflat15,"BGFLAT15"},
   {&bgflat31,"BGFLAT31"},
   {&bgcastcall,"BGCASTCALL"},
-  // Ty 04/08/98 - added 5 general purpose startup announcement
-  // strings for hacker use.  See m_menu.c
-  {&startup1,"STARTUP1"},
-  {&startup2,"STARTUP2"},
-  {&startup3,"STARTUP3"},
-  {&startup4,"STARTUP4"},
-  {&startup5,"STARTUP5"},
   {&savegamename,"SAVEGAMENAME"},  // Ty 05/03/98
 };
 
@@ -1675,7 +1662,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
   else  // DEH file comes from lump indicated by third argument
   {
     infile.size = W_LumpLength(lumpnum);
-    infile.inp = infile.lump = W_CacheLumpNum(lumpnum);
+    infile.inp = infile.lump = W_LumpByNum(lumpnum);
     // [FG] skip empty DEHACKED lumps
     if (!infile.inp)
     {
@@ -1744,11 +1731,10 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
       continue;
     }
 
-    for (match = 0, i = 0; i < DEH_BLOCKMAX; i++)
+    for (match = 0, i = 0; i < DEH_BLOCKMAX - 1; i++)
       if (!strncasecmp(inbuffer, deh_blocks[i].key, strlen(deh_blocks[i].key)))
       { // matches one
-        if (i < DEH_BLOCKMAX - 1)
-          match = 1;
+        match = 1;
         break;  // we got one, that's enough for this block
       }
 
@@ -1766,9 +1752,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
     filepos = dehftell(filein);
   }
 
-  if (infile.lump)
-    W_UnlockLumpNum(lumpnum);                 // Mark purgable
-  else
+  if (!infile.lump)
     fclose(infile.f);                         // Close real file
 
   if (outfilename)   // killough 10/98: only at top recursion level
@@ -2723,7 +2707,7 @@ static void deh_procCheat(DEHFILE *fpin, char *line) // done
           //e6y: ability to ignore cheats in dehacked files.
           if (deh_apply_cheats && !M_CheckParm("-nocheats"))
           {
-            cheat[iy].cheat = strdup(p);
+            cheat[iy].cheat = Z_Strdup(p);
             deh_log("Assigned new cheat '%s' to cheat '%s'at index %d\n",
                     p, cheat[ix].deh_cheat, iy); // killough 4/18/98
           }
@@ -2876,7 +2860,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
               i, sprnames[i], tolen, &inbuffer[fromlen]);
 
       // CPhipps - fix constness problem
-      sprnames[i] = s = strdup(sprnames[i]);
+      sprnames[i] = s = Z_Strdup(sprnames[i]);
       strncpy(s, &inbuffer[fromlen], tolen);
 
       found = TRUE;
@@ -2895,7 +2879,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
       deh_log("Changing name of sfx from %s to %*s\n",
               S_sfx[i].name, usedlen, &inbuffer[fromlen]);
 
-      S_sfx[i].name = strdup(&inbuffer[fromlen]);
+      S_sfx[i].name = Z_Strdup(&inbuffer[fromlen]);
 
       found = TRUE;
     }
@@ -2907,7 +2891,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
         deh_log("Changing name of music from %s to %*s\n",
                 S_music[i].name, usedlen, &inbuffer[fromlen]);
 
-        S_music[i].name = strdup(&inbuffer[fromlen]);
+        S_music[i].name = Z_Strdup(&inbuffer[fromlen]);
 
         found = TRUE;
       }
@@ -2920,13 +2904,13 @@ static void deh_procText(DEHFILE *fpin, char *line)
             inbuffer, (strlen(inbuffer) > 12) ? "..." : "", fromlen, tolen);
     if ((size_t)fromlen <= strlen(inbuffer))
     {
-      line2 = strdup(&inbuffer[fromlen]);
+      line2 = Z_Strdup(&inbuffer[fromlen]);
       inbuffer[fromlen] = '\0';
     }
 
     deh_procStringSub(NULL, inbuffer, line2);
   }
-  free(line2); // may be NULL, ignored by free()
+  Z_Free(line2); // may be NULL, ignored by free()
 }
 
 static void deh_procError(DEHFILE *fpin, char *line)
@@ -2958,7 +2942,7 @@ static void deh_procStrings(DEHFILE *fpin, char *line)
 
   deh_log("Processing extended string substitution\n");
 
-  if (!holdstring) holdstring = malloc(maxstrlen * sizeof(*holdstring));
+  if (!holdstring) holdstring = Z_Malloc(maxstrlen * sizeof(*holdstring));
 
   *holdstring = '\0';  // empty string to start with
   strncpy(inbuffer, line, DEH_BUFFERMAX - 1);
@@ -2984,7 +2968,7 @@ static void deh_procStrings(DEHFILE *fpin, char *line)
       maxstrlen = strlen(holdstring) + strlen(inbuffer);
       deh_log("* increased buffer from to %ld for buffer size %d\n",
               (long)maxstrlen, (int)strlen(inbuffer));
-      holdstring = realloc(holdstring, maxstrlen * sizeof(*holdstring));
+      holdstring = Z_Realloc(holdstring, maxstrlen * sizeof(*holdstring));
     }
     // concatenate the whole buffer if continuation or the value iffirst
     strcat(holdstring, ptr_lstrip(((*holdstring) ? inbuffer : strval)));
@@ -3039,7 +3023,7 @@ dboolean deh_procStringSub(char *key, char *lookfor, char *newstring)
     if (found)
     {
       char *t;
-      *deh_strlookup[i].ppstr = t = strdup(newstring); // orphan originalstring
+      *deh_strlookup[i].ppstr = t = Z_Strdup(newstring); // orphan originalstring
       found = true;
       // Handle embedded \n's in the incoming string, convert to 0x0a's
       {
@@ -3156,7 +3140,7 @@ static void deh_procBexSprites(DEHFILE *fpin, char *line)
     if (match >= 0)
     {
       deh_log("Substituting '%s' for sprite '%s'\n", candidate, key);
-      sprnames[match] = strdup(candidate);
+      sprnames[match] = Z_Strdup(candidate);
     }
   }
 }
@@ -3204,7 +3188,7 @@ static void deh_procBexSounds(DEHFILE *fpin, char *line)
     if (match >= 0)
     {
       deh_log("Substituting '%s' for sound '%s'\n", candidate, key);
-      S_sfx[match].name = strdup(candidate);
+      S_sfx[match].name = Z_Strdup(candidate);
     }
   }
 }
@@ -3252,7 +3236,7 @@ static void deh_procBexMusic(DEHFILE *fpin, char *line)
     if (match >= 0)
     {
       deh_log("Substituting '%s' for music '%s'\n", candidate, key);
-      S_music[match].name = strdup(candidate);
+      S_music[match].name = Z_Strdup(candidate);
     }
   }
 }

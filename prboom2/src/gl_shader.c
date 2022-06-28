@@ -36,8 +36,6 @@
 #include "config.h"
 #endif
 
-#ifdef USE_SHADERS
-
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <math.h>
@@ -91,12 +89,12 @@ void get_light_shader_bindings()
     int idx;
 
     light_unifs.lightlevel_index = GLEXT_glGetUniformLocationARB(sh_main->hShader, "lightlevel");
-  
+
     GLEXT_glUseProgramObjectARB(sh_main->hShader);
-  
+
     idx = GLEXT_glGetUniformLocationARB(sh_main->hShader, "tex");
     GLEXT_glUniform1iARB(idx, 0);
-  
+
     GLEXT_glUseProgramObjectARB(0);
   }
 }
@@ -182,7 +180,7 @@ static int ReadLump(const char *filename, const char *lumpname, unsigned char **
     fseek(file, 0, SEEK_END);
     size = ftell(file);
     fseek(file, 0, SEEK_SET);
-    *buffer = malloc(size + 1);
+    *buffer = Z_Malloc(size + 1);
     size = fread(*buffer, 1, size, file);
     if (size > 0)
     {
@@ -205,11 +203,10 @@ static int ReadLump(const char *filename, const char *lumpname, unsigned char **
     if (lump != -1)
     {
       size = W_LumpLength(lump);
-      data = W_CacheLumpNum(lump);
-      *buffer = calloc(1, size + 1);
+      data = W_LumpByNum(lump);
+      *buffer = Z_Calloc(1, size + 1);
       memcpy (*buffer, data, size);
       (*buffer)[size] = 0;
-      W_UnlockLumpNum(lump);
     }
   }
 
@@ -231,7 +228,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
   vp_fnlen = doom_snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
   fp_fnlen = doom_snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), fpname);
-  filename = malloc(MAX(vp_fnlen, fp_fnlen) + 1);
+  filename = Z_Malloc(MAX(vp_fnlen, fp_fnlen) + 1);
 
   sprintf(filename, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
   vp_size = ReadLump(filename, vpname, (unsigned char**) &vp_data);
@@ -241,7 +238,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
   if (vp_data && fp_data)
   {
-    shader = calloc(1, sizeof(GLShader));
+    shader = Z_Calloc(1, sizeof(GLShader));
 
     shader->hVertProg = GLEXT_glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
     shader->hFragProg = GLEXT_glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
@@ -275,14 +272,14 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
     else
     {
       lprintf(LO_ERROR, "gld_LoadShader: Error compiling shader \"%s+%s\": %s\n", vpname, fpname, buffer);
-      free(shader);
+      Z_Free(shader);
       shader = NULL;
     }
   }
 
-  free(filename);
-  free(vp_data);
-  free(fp_data);
+  Z_Free(filename);
+  Z_Free(vp_data);
+  Z_Free(fp_data);
 
   return shader;
 }
@@ -316,7 +313,7 @@ void glsl_SetFuzzShaderActive()
   if (active_shader != sh_fuzz)
   {
     GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
-    active_shader = sh_fuzz;  
+    active_shader = sh_fuzz;
   }
 }
 
@@ -349,7 +346,7 @@ void glsl_SetFuzzTime(int time)
   if (sh_fuzz)
   {
     if (active_shader != sh_fuzz)
-    {        
+    {
       prev_active_shader = active_shader;
       glsl_SetFuzzShaderActive();
     }
@@ -377,7 +374,7 @@ void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight)
   if (sh_fuzz)
   {
     if (active_shader != sh_fuzz)
-    {        
+    {
       prev_active_shader = active_shader;
       glsl_SetFuzzShaderActive();
     }
@@ -404,7 +401,7 @@ void glsl_SetFuzzTextureDimensions(float texwidth, float texheight)
   if (sh_fuzz)
   {
     if (active_shader != sh_fuzz)
-    {        
+    {
       prev_active_shader = active_shader;
       glsl_SetFuzzShaderActive();
     }
@@ -427,5 +424,3 @@ int glsl_IsActive(void)
 {
   return ((gl_lightmode == gl_lightmode_shaders && sh_main) || (gl_lightmode == gl_lightmode_indexed && sh_indexed));
 }
-
-#endif // USE_SHADERS

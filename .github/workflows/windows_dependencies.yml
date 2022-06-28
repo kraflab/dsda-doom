@@ -31,11 +31,6 @@ jobs:
             os: windows-latest,
             triplet: x64-windows
           }
-        - {
-            name: "Visual Studio 32-bit",
-            os: windows-latest,
-            triplet: x86-windows
-          }
 
     steps:
     - uses: actions/checkout@v1

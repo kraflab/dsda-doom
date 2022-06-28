@@ -20,17 +20,28 @@
 
 #include "d_ticcmd.h"
 
-void dsda_InitDemo(char* name);
+const char* dsda_DemoNameBase(void);
+void dsda_SetDemoBaseName(const char* name);
+void dsda_ExportDemo(const char* name);
+void dsda_MarkCompatibilityLevelUnspecified(void);
+int dsda_BytesPerTic(void);
+void dsda_EvaluateBytesPerTic(void);
+void dsda_RestoreCommandHistory(void);
+void dsda_InitDemoRecording(void);
 void dsda_WriteToDemo(void* buffer, size_t length);
+void dsda_WriteTicToDemo(void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);
-int dsda_DemoBufferOffset(void);
-int dsda_CopyDemoBuffer(void* buffer);
-void dsda_SetDemoBufferOffset(int offset);
+void dsda_CopyPendingCmd(ticcmd_t* cmd);
+void dsda_QueueJoin(void);
+dboolean dsda_PendingJoin(void);
 void dsda_JoinDemoCmd(ticcmd_t* cmd);
 const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size);
 void dsda_WriteDSDADemoHeader(byte** p);
 void dsda_ApplyDSDADemoFormat(byte** demo_p);
 void dsda_EndDemoRecording(void);
+int dsda_DemoDataSize(byte complete);
+void dsda_StoreDemoData(byte** save_p, byte complete);
+void dsda_RestoreDemoData(byte** save_p, byte complete);
 int dsda_DemoTicsCount(const byte* p, const byte* demobuffer, int demolength);
 const byte* dsda_DemoMarkerPosition(byte* buffer, size_t file_size);
 

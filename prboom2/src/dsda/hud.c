@@ -21,12 +21,15 @@
 #include "doomstat.h"
 
 #include "dsda.h"
+#include "dsda/build.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/exhud.h"
 #include "dsda/command_display.h"
 #include "dsda/coordinate_display.h"
 #include "dsda/intermission_display.h"
+#include "dsda/line_display.h"
+
 #include "hud.h"
 
 #define DSDA_TEXT_X 2
@@ -84,6 +87,7 @@ void dsda_InitHud(patchnum_t* font) {
   dsda_InitExHud(font);
   dsda_InitCommandDisplay(font);
   dsda_InitCoordinateDisplay(font);
+  dsda_InitLineDisplay(font);
 }
 
 static dboolean dsda_ExHudVisible(void) {
@@ -93,7 +97,7 @@ static dboolean dsda_ExHudVisible(void) {
 }
 
 static dboolean dsda_CommandDisplayVisible(void) {
-  return dsda_CommandDisplay() && // command display turned on
+  return (dsda_CommandDisplay() || dsda_BuildMode()) && // command display turned on
          viewheight != SCREENHEIGHT && // not zoomed in
          (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
 }
@@ -115,6 +119,7 @@ void dsda_UpdateHud(void) {
 
   if (dsda_ExHudVisible()) dsda_UpdateExHud();
   if (dsda_CoordinateDisplayVisible()) dsda_UpdateCoordinateDisplay();
+  if (dsda_CoordinateDisplayVisible()) dsda_UpdateLineDisplay();
 }
 
 void dsda_DrawHud(void) {
@@ -123,6 +128,7 @@ void dsda_DrawHud(void) {
   if (dsda_ExHudVisible()) dsda_DrawExHud();
   if (dsda_CommandDisplayVisible()) dsda_DrawCommandDisplay();
   if (dsda_CoordinateDisplayVisible()) dsda_DrawCoordinateDisplay();
+  if (dsda_CoordinateDisplayVisible()) dsda_DrawLineDisplay();
 }
 
 void dsda_EraseHud(void) {
@@ -131,6 +137,7 @@ void dsda_EraseHud(void) {
   dsda_EraseExHud();
   dsda_EraseCommandDisplay();
   dsda_EraseCoordinateDisplay();
+  dsda_EraseLineDisplay();
 }
 
 void dsda_AddSplit(dsda_split_class_t split_class) {

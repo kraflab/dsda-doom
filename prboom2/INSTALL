@@ -4,7 +4,6 @@ Basic Installation (ZIP, tarball, Git)
   1. To compile DSDA-Doom, you need at least SDL2. To enable various
      extensions and optional features, the following are required:
      - SDL2_image (for high-res textures in OpenGL, and PNG screenshots)
-     - PCRE (for demo filename pattern matching)
      - for music support, some or all of
        * SDL2_mixer (midi, timidity)
        * Fluidsynth (midi)
@@ -14,7 +13,7 @@ Basic Installation (ZIP, tarball, Git)
        * vorbisfile (ogg)
      On a typical Debian or Ubuntu system this may be sufficient:
        apt-get install libsdl2-dev libsdl2-image-dev \
-         libpcre3-dev libsdl2-mixer-dev libfluidsynth-dev \
+         libsdl2-mixer-dev libfluidsynth-dev \
          libportmidi-dev libmad0-dev libdumb1-dev libvorbis-dev
 
     You will also need `cmake` and `make` if you haven't already got them.

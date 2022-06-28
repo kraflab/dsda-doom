@@ -77,8 +77,7 @@ void gld_InitShadows(void)
     SDL_PixelFormat fmt;
     SDL_Surface *surf = NULL;
     SDL_Surface *surf_raw;
-    surf_raw = SDL_LoadBMP_RW(SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump)), 1);
-    W_UnlockLumpNum(lump);
+    surf_raw = SDL_LoadBMP_RW(SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump)), 1);
 
     fmt = *surf_raw->format;
     fmt.BitsPerPixel = 24;
@@ -174,7 +173,7 @@ void gld_ProcessThingShadow(mobj_t *mo)
     z = sec->floorheight;
 
   // below visible floor
-  if (interpolate_view)
+  if (R_ViewInterpolation())
   {
     fz = mo->PrevZ + FixedMul (tic_vars.frac, mo->z - mo->PrevZ);
   }

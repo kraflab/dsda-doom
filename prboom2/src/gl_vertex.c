@@ -296,7 +296,7 @@ static void AddToVertex(const sector_t *sec, int **list, unsigned int *size)
     if ((*list)[i] == secno)
       return;
   }
-  (*list) = realloc((*list), sizeof(*list) * ((*size) + 1));
+  (*list) = Z_Realloc((*list), sizeof(*list) * ((*size) + 1));
   (*list)[(*size)] = secno;
   (*size)++;
 }
@@ -314,7 +314,7 @@ static void AddToSplitBySector(vertexsplit_info_t *vi, splitsbysector_t *splitsb
     if (splitsbysector->splits[i] == vi)
       return;
   }
-  splitsbysector->splits = realloc(
+  splitsbysector->splits = Z_Realloc(
     splitsbysector->splits,
     sizeof(splitsbysector->splits) * (splitsbysector->numsplits + 1));
   splitsbysector->splits[splitsbysector->numsplits] = vi;
@@ -336,8 +336,8 @@ void gld_InitVertexData()
   if (gl_vertexsplit)
     return;
 
-  vt_sectorlists = calloc(sizeof(vt_sectorlists[0]), numvertexes);
-  vt_sectorlists_size = calloc(sizeof(vt_sectorlists_size[0]), numvertexes);
+  vt_sectorlists = Z_Calloc(sizeof(vt_sectorlists[0]), numvertexes);
+  vt_sectorlists_size = Z_Calloc(sizeof(vt_sectorlists_size[0]), numvertexes);
 
   for(i = 0; i < numlines; i++)
   {
@@ -377,7 +377,7 @@ void gld_InitVertexData()
     vertexes_count * sizeof(gl_vertexsplit->sectors[0]) +
     2 * vertexes_count * sizeof(gl_vertexsplit->heightlist[0]);
 
-  gl_vertexsplit = malloc(gl_vertexsplit_size);
+  gl_vertexsplit = Z_Malloc(gl_vertexsplit_size);
   memset(gl_vertexsplit, 0, gl_vertexsplit_size);
 
   pos = numvertexes * sizeof(vertexsplit_info_t);
@@ -409,7 +409,7 @@ void gld_InitVertexData()
     }
   }
 
-  gl_splitsbysector = malloc(sizeof(gl_splitsbysector[0]) * numsectors);
+  gl_splitsbysector = Z_Malloc(sizeof(gl_splitsbysector[0]) * numsectors);
   memset(gl_splitsbysector, 0, sizeof(gl_splitsbysector[0]) * numsectors);
 
   for(i = 0; i < numsectors; i++)
@@ -429,8 +429,8 @@ void gld_InitVertexData()
   for(i = 0; i < numvertexes; i++)
     gld_RecalcVertexHeights(&vertexes[i]);
 
-  free(vt_sectorlists);
-  free(vt_sectorlists_size);
+  Z_Free(vt_sectorlists);
+  Z_Free(vt_sectorlists_size);
 }
 
 //==========================================================================
@@ -461,7 +461,7 @@ void gld_CleanVertexData()
 {
   if (gl_vertexsplit)
   {
-    free(gl_vertexsplit);
+    Z_Free(gl_vertexsplit);
     gl_vertexsplit = NULL;
   }
 
@@ -472,10 +472,10 @@ void gld_CleanVertexData()
     {
       if (gl_splitsbysector[i].numsplits > 0)
       {
-        free(gl_splitsbysector[i].splits);
+        Z_Free(gl_splitsbysector[i].splits);
       }
     }
-    free(gl_splitsbysector);
+    Z_Free(gl_splitsbysector);
     gl_splitsbysector = NULL;
   }
 }

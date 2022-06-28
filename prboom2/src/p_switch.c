@@ -41,6 +41,7 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda.h"
 #include "dsda/map_format.h"
 
 //==================================================================
@@ -118,13 +119,13 @@ void P_InitSwitchList(void)
     lump = W_GetNumForName("SWITCHES"); // cph - new wad lump handling
 
     //jff 3/23/98 read the switch table from a predefined lump
-    alphSwitchList = (const switchlist_t *)W_CacheLumpNum(lump);
+    alphSwitchList = (const switchlist_t *)W_LumpByNum(lump);
   }
 
   for (i=0;;i++)
   {
     if (index+1 >= max_numswitches)
-      switchlist = realloc(switchlist, sizeof *switchlist *
+      switchlist = Z_Realloc(switchlist, sizeof *switchlist *
           (max_numswitches = max_numswitches ? max_numswitches*2 : 8));
 
     // hexen overrides the episode field with a sound index
@@ -156,7 +157,6 @@ void P_InitSwitchList(void)
 
   numswitches = index / 2;
   switchlist[index] = -1;
-  if (lump != -1) W_UnlockLumpNum(lump);
 }
 
 //
@@ -317,6 +317,8 @@ P_UseSpecialLine
   int           side,
   dboolean		bossaction)
 {
+  dsda_WatchLineActivation(line, thing);
+
   // e6y
   // b.m. side test was broken in boom201
   if ((demoplayback ? (demover != 201) : (compatibility_level != boom_201_compatibility)))

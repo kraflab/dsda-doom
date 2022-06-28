@@ -1,10 +1,10 @@
-prboom2/ICONS/icons.aps
-prboom2/release
+/prboom2/ICONS/icons.aps
+/prboom2/release
 /build*
 /dependencies*
 
 # spec files
 analysis.txt
 levelstat.txt
-spec/support/wads/*
-!spec/support/wads/analysis_test.wad
+/spec/support/wads/*
+!/spec/support/wads/analysis_test.wad

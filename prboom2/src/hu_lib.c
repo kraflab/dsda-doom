@@ -39,6 +39,8 @@
 #include "r_main.h"
 #include "r_draw.h"
 
+#include "dsda/stretch.h"
+
 //
 // not used currently
 // code to initialize HUlib would go here if needed
@@ -120,6 +122,28 @@ dboolean HUlib_addCharToTextLine
     return true;
   }
 
+}
+
+dboolean HUlib_cpyStrToTextLine
+( hu_textline_t*  t,
+  const char* str )
+{
+  int diff;
+
+  diff = strlen(str) - t->len;
+
+  if (diff > 0)
+  {
+    if (t->linelen + diff >= HU_MAXLINELENGTH)
+      return false;
+
+    t->linelen += diff;
+    t->len += diff;
+    t->l[t->len] = 0;
+  }
+
+  strcpy(t->l, str);
+  return true;
 }
 
 //
@@ -224,6 +248,16 @@ void HUlib_drawTextLine
   }
 }
 
+void HUlib_drawOffsetTextLine(hu_textline_t* l, int offset)
+{
+  int old_y;
+
+  old_y = l->y;
+  l->y += offset;
+  HUlib_drawTextLine(l, false);
+  l->y = old_y;
+}
+
 //
 // HUlib_eraseTextLine()
 //
@@ -251,7 +285,7 @@ void HUlib_eraseTextLine(hu_textline_t* l)
 
     if (l->flags & VPT_STRETCH_MASK)
     {
-      stretch_param_t *params = &stretch_params[l->flags & VPT_ALIGN_MASK];
+      stretch_param_t *params = dsda_StretchParams(l->flags);
       top = params->video->y1lookup[top] + params->deltay1;
       bottom = params->video->y2lookup[bottom] + params->deltay1;
     }

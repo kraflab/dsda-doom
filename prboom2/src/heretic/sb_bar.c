@@ -25,6 +25,7 @@
 #include "st_stuff.h"
 #include "r_draw.h"
 
+#include "dsda/pause.h"
 #include "dsda/settings.h"
 
 #include "heretic/def.h"
@@ -317,7 +318,7 @@ void SB_Ticker(void)
     int delta;
     int curHealth;
 
-    if (heretic && leveltime & 1 && !paused_outside_demo)
+    if (heretic && leveltime & 1 && !dsda_PausedOutsideDemo())
     {
         ChainWiggle = P_Random(pr_heretic) & 1;
     }

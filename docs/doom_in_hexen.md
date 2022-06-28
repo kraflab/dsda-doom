@@ -4,7 +4,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 
 ### Current Status
 
-Current work is isolated to the initial pass over the level format itself - line and sector specials, necessary changes to internal data structures, etc. Lots of refactoring needs to be done in the engine itself in order to treat different formats correctly without breaking compatibility.
+The initial pass over the format has been completed. Most planned line actions and sector effects are supported. Poly objects are supported (but there are visual artifacts in some cases). New teleport destinations and map spots are implemented. Most line actions targeting thing tags are implemented.
 
 ### Legend
 
@@ -18,15 +18,15 @@ Current work is isolated to the initial pass over the level format itself - line
 
 ### Major Features
 
-| Name         | Status      |
-| ------------ | ----------- |
-| Levels       | :warning:   |
-| Poly Objects | :telescope: |
-| ACS          | :telescope: |
-| MAPINFO      | :telescope: |
-| SNDINFO      | :telescope: |
-| SNDSEQ       | :telescope: |
-| ANIMDEFS     | :telescope: |
+| Name         | Status             |
+| ------------ | ------------------ |
+| Levels       | :warning:          |
+| Poly Objects | :heavy_check_mark: |
+| ACS          | :telescope:        |
+| MAPINFO      | :telescope:        |
+| SNDINFO      | :telescope:        |
+| SNDSEQ       | :telescope:        |
+| ANIMDEFS     | :telescope:        |
 
 ### Thing Types
 
@@ -105,7 +105,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | -           | -                       | -                  |
 | 9200        | Decal                   | :x:                |
 | -           | -                       | -                  |
-| 9300-9303   | PolyObject*             | :telescope:        |
+| 9300-9303   | PolyObject*             | :heavy_check_mark: |
 | -           | -                       | -                  |
 | 9500-9503   | Slopes                  | :x:                |
 | -           | -                       | -                  |
@@ -174,14 +174,14 @@ Current work is isolated to the initial pass over the level format itself - line
 
 | Value | Name                            | Status             |
 | ----- | ------------------------------- | ------------------ |
-| 1     | Polyobj_StartLine               | :telescope:        |
-| 2     | Polyobj_RotateLeft              | :telescope:        |
-| 3     | Polyobj_RotateRight             | :telescope:        |
-| 4     | Polyobj_Move                    | :telescope:        |
-| 5     | Polyobj_ExplicitLine            | :telescope:        |
-| 6     | Polyobj_MoveTimes8              | :telescope:        |
-| 7     | Polyobj_DoorSwing               | :telescope:        |
-| 8     | Polyobj_DoorSlide               | :telescope:        |
+| 1     | Polyobj_StartLine               | :heavy_check_mark: |
+| 2     | Polyobj_RotateLeft              | :heavy_check_mark: |
+| 3     | Polyobj_RotateRight             | :heavy_check_mark: |
+| 4     | Polyobj_Move                    | :heavy_check_mark: |
+| 5     | Polyobj_ExplicitLine            | :heavy_check_mark: |
+| 6     | Polyobj_MoveTimes8              | :heavy_check_mark: |
+| 7     | Polyobj_DoorSwing               | :heavy_check_mark: |
+| 8     | Polyobj_DoorSlide               | :heavy_check_mark: |
 | 9     | Line_Horizon                    | :telescope:        |
 | 10    | Door_Close                      | :heavy_check_mark: |
 | 11    | Door_Open                       | :heavy_check_mark: |
@@ -232,7 +232,7 @@ Current work is isolated to the initial pass over the level format itself - line
 | 56    | Line_SetTextureScale            | :x:                |
 | 57    | Sector_SetPortal                | :x:                |
 | 58    | Sector_CopyScroller             | :heavy_check_mark: |
-| 59    | Polyobj_OR_MoveToSpot           | :telescope:        |
+| 59    | Polyobj_OR_MoveToSpot           | :heavy_check_mark: |
 | 60    | Plat_PerpetualRaise             | :heavy_check_mark: |
 | 61    | Plat_Stop                       | :heavy_check_mark: |
 | 62    | Plat_DownWaitUpStay             | :heavy_check_mark: |
@@ -259,14 +259,14 @@ Current work is isolated to the initial pass over the level format itself - line
 | 83    | ACS_LockedExecute               | :telescope:        |
 | 84    | ACS_ExecuteWithResult           | :telescope:        |
 | 85    | ACS_LockedExecuteDoor           | :telescope:        |
-| 86    | Polyobj_MoveToSpot              | :telescope:        |
-| 87    | Polyobj_Stop                    | :telescope:        |
-| 88    | Polyobj_MoveTo                  | :telescope:        |
-| 89    | Polyobj_OR_MoveTo               | :telescope:        |
-| 90    | Polyobj_OR_RotateLeft           | :telescope:        |
-| 91    | Polyobj_OR_RotateRight          | :telescope:        |
-| 92    | Polyobj_OR_Move                 | :telescope:        |
-| 93    | Polyobj_OR_MoveTimes8           | :telescope:        |
+| 86    | Polyobj_MoveToSpot              | :heavy_check_mark: |
+| 87    | Polyobj_Stop                    | :heavy_check_mark: |
+| 88    | Polyobj_MoveTo                  | :heavy_check_mark: |
+| 89    | Polyobj_OR_MoveTo               | :heavy_check_mark: |
+| 90    | Polyobj_OR_RotateLeft           | :heavy_check_mark: |
+| 91    | Polyobj_OR_RotateRight          | :heavy_check_mark: |
+| 92    | Polyobj_OR_Move                 | :heavy_check_mark: |
+| 93    | Polyobj_OR_MoveTimes8           | :heavy_check_mark: |
 | 94    | Pillar_BuildAndCrush            | :heavy_check_mark: |
 | 95    | FloorAndCeiling_LowerByValue    | :heavy_check_mark: |
 | 96    | FloorAndCeiling_RaiseByValue    | :heavy_check_mark: |
@@ -439,6 +439,8 @@ Current work is isolated to the initial pass over the level format itself - line
 - NoiseAlert only works with the default arguments.
 - Thing_Hate only supports 0 for the third argument ("target only").
 - ThrustThing has an implicit speed limit.
+- Poly objects have no sound (no SNDSEQ lump support to define it yet).
+- Poly objects may have visual errors (especially for large objects).
 
 ### Sector Specials
 

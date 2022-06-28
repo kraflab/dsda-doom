@@ -46,20 +46,16 @@
 
 dboolean gl_use_FBO = false;
 
-#ifdef USE_FBO_TECHNIQUE
 GLuint glSceneImageFBOTexID = 0;
 GLuint glDepthBufferFBOTexID = 0;
 GLuint glSceneImageTextureFBOTexID = 0;
 int SceneInTexture = false;
 static dboolean gld_CreateScreenSizeFBO(void);
-#endif
 
 //e6y: motion bloor
 int gl_motionblur;
 int gl_use_motionblur = false;
 motion_blur_params_t motion_blur;
-
-#ifdef USE_FBO_TECHNIQUE
 
 void gld_InitMotionBlur(void);
 
@@ -69,8 +65,7 @@ void gld_InitFBO(void)
 
   gl_use_motionblur = gl_ext_framebuffer_object && gl_motionblur && gl_ext_blend_color;
 
-  gl_use_FBO = (gl_ext_framebuffer_object) && (gl_version >= OPENGL_VERSION_1_3) &&
-    (gl_use_motionblur || !gl_boom_colormaps || gl_has_hires);
+  gl_use_FBO = (gl_ext_framebuffer_object) && (gl_version >= OPENGL_VERSION_1_3);
 
   if (gl_use_FBO)
   {
@@ -123,18 +118,8 @@ static dboolean gld_CreateScreenSizeFBO(void)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-  // e6y
-  // Some ATI�s drivers have a bug whereby adding the depth renderbuffer
-  // and then a texture causes the application to crash.
-  // This should be kept in mind when doing any FBO related work and
-  // tested for as it is possible it could be fixed in a future driver revision
-  // thus rendering the problem non-existent.
-  PRBOOM_TRY(EXEPTION_glFramebufferTexture2DEXT)
-  {
-    GLEXT_glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, glSceneImageTextureFBOTexID, 0);
-    status = GLEXT_glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-  }
-  PRBOOM_EXCEPT(EXEPTION_glFramebufferTexture2DEXT)
+  GLEXT_glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, glSceneImageTextureFBOTexID, 0);
+  status = GLEXT_glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
   if (status == GL_FRAMEBUFFER_COMPLETE_EXT)
   {
@@ -180,4 +165,3 @@ void gld_InitMotionBlur(void)
     sscanf(motion_blur.str_att_c, "%f", &motion_blur.att_c);
   }
 }
-#endif

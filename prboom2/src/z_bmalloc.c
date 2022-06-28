@@ -35,6 +35,8 @@
 #include "config.h"
 #endif
 
+#include <string.h>
+
 #include "doomtype.h"
 #include "z_zone.h"
 #include "z_bmalloc.h"
@@ -87,8 +89,8 @@ void* Z_BMalloc(struct block_memory_alloc_s *pzone)
 
     // CPhipps: Allocate new memory, initialised to 0
 
-    *pool = newpool = Z_Calloc(sizeof(*newpool) + (sizeof(byte) + pzone->size)*(pzone->perpool),
-             1,  pzone->tag, NULL);
+    *pool = newpool =
+      Z_CallocLevel(sizeof(*newpool) + (sizeof(byte) + pzone->size)*(pzone->perpool), 1);
     newpool->nextpool = NULL; // NULL = (void*)0 so this is redundant
 
     // Return element 0 from this pool to satisfy the request

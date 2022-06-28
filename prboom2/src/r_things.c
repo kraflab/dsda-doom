@@ -120,17 +120,17 @@ static int maxframe;
 
 void R_InitSpritesRes(void)
 {
-  if (xtoviewangle) free(xtoviewangle);
-  if (negonearray) free(negonearray);
-  if (screenheightarray) free(screenheightarray);
+  if (xtoviewangle) Z_Free(xtoviewangle);
+  if (negonearray) Z_Free(negonearray);
+  if (screenheightarray) Z_Free(screenheightarray);
 
-  xtoviewangle = calloc(1, (SCREENWIDTH + 1) * sizeof(*xtoviewangle));
-  negonearray = calloc(1, SCREENWIDTH * sizeof(*negonearray));
-  screenheightarray = calloc(1, SCREENWIDTH * sizeof(*screenheightarray));
+  xtoviewangle = Z_Calloc(1, (SCREENWIDTH + 1) * sizeof(*xtoviewangle));
+  negonearray = Z_Calloc(1, SCREENWIDTH * sizeof(*negonearray));
+  screenheightarray = Z_Calloc(1, SCREENWIDTH * sizeof(*screenheightarray));
 
-  if (clipbot) free(clipbot);
+  if (clipbot) Z_Free(clipbot);
 
-  clipbot = calloc(1, 2 * SCREENWIDTH * sizeof(*clipbot));
+  clipbot = Z_Calloc(1, 2 * SCREENWIDTH * sizeof(*clipbot));
   cliptop = clipbot + SCREENWIDTH;
 }
 
@@ -236,12 +236,12 @@ static void R_InitSpriteDefs(const char * const * namelist)
   if (!numentries || !*namelist)
     return;
 
-  sprites = Z_Calloc(num_sprites, sizeof(*sprites), PU_STATIC, NULL);
+  sprites = Z_Calloc(num_sprites, sizeof(*sprites));
 
   // Create hash table based on just the first four letters of each sprite
   // killough 1/31/98
 
-  hash = malloc(sizeof(*hash)*numentries); // allocate hash table
+  hash = Z_Malloc(sizeof(*hash)*numentries); // allocate hash table
 
   for (i=0; (size_t)i<numentries; i++)             // initialize hash table as empty
     hash[i].index = -1;
@@ -374,13 +374,13 @@ static void R_InitSpriteDefs(const char * const * namelist)
 
               // allocate space for the frames present and copy sprtemp to it
               sprites[i].spriteframes =
-                Z_Malloc (maxframe * sizeof(spriteframe_t), PU_STATIC, NULL);
+                Z_Malloc (maxframe * sizeof(spriteframe_t));
               memcpy (sprites[i].spriteframes, sprtemp,
                       maxframe*sizeof(spriteframe_t));
             }
         }
     }
-  free(hash);             // free hash table
+  Z_Free(hash);             // free hash table
 }
 
 //
@@ -424,7 +424,7 @@ static vissprite_t *R_NewVisSprite(void)
       size_t num_vissprite_alloc_prev = num_vissprite_alloc;
 
       num_vissprite_alloc = num_vissprite_alloc ? num_vissprite_alloc*2 : 128;
-      vissprites = realloc(vissprites,num_vissprite_alloc*sizeof(*vissprites));
+      vissprites = Z_Realloc(vissprites,num_vissprite_alloc*sizeof(*vissprites));
 
       //e6y: set all fields to zero
       memset(vissprites + num_vissprite_alloc_prev, 0,
@@ -480,7 +480,7 @@ void R_DrawMaskedColumn(
         dcvars->yh = dcvars->baseclip;
 
       // killough 3/2/98, 3/27/98: Failsafe against overflow/crash:
-      if (dcvars->yl <= dcvars->yh && dcvars->yh < viewheight)
+      if (dcvars->yl >= 0 && dcvars->yl <= dcvars->yh && dcvars->yh < viewheight)
         {
           dcvars->source = column->pixels + post->topdelta;
           dcvars->prevsource = prevcolumn->pixels + post->topdelta;
@@ -515,7 +515,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
 {
   int      texturecolumn;
   fixed_t  frac;
-  const rpatch_t *patch = R_CachePatchNum(vis->patch+firstspritelump);
+  const rpatch_t *patch = R_PatchByNum(vis->patch+firstspritelump);
   R_DrawColumn_f colfunc;
   draw_column_vars_t dcvars;
   enum draw_filter_type_e filter;
@@ -629,7 +629,6 @@ static void R_DrawVisSprite(vissprite_t *vis)
         R_GetPatchColumnClamped(patch, texturecolumn+1)
       );
     }
-  R_UnlockPatchNum(vis->patch+firstspritelump); // cph - release lump
 }
 
 int r_near_clip_plane = MINZ;
@@ -637,7 +636,6 @@ int r_near_clip_plane = MINZ;
 void R_SetClipPlanes(void)
 {
   // thing is behind view plane?
-#ifdef GL_DOOM
   if ((V_IsOpenGLMode()) &&
       (HaveMouseLook() || (render_fov > FOV90)) &&
       (!render_paperitems || simple_shadows.loaded))
@@ -645,7 +643,6 @@ void R_SetClipPlanes(void)
     r_near_clip_plane = -(FRACUNIT * MAX(64, simple_shadows.max_radius));
   }
   else
-#endif
   {
     r_near_clip_plane = MINZ;
   }
@@ -686,15 +683,13 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     return;
   }
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_ProjectSprite(thing, lightlevel);
     return;
   }
-#endif
 
-  if (interpolate_view)
+  if (R_ViewInterpolation())
   {
     fx = thing->PrevX + FixedMul (tic_vars.frac, thing->x - thing->PrevX);
     fy = thing->PrevY + FixedMul (tic_vars.frac, thing->y - thing->PrevY);
@@ -774,7 +769,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     }
 
   {
-    const rpatch_t* patch = R_CachePatchNum(lump+firstspritelump);
+    const rpatch_t* patch = R_PatchByNum(lump+firstspritelump);
     thing->patch_width = patch->width;
 
     /* calculate edges of the shape
@@ -793,7 +788,6 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     gzt = fz + (patch->topoffset << FRACBITS);
     gzb = gzt - (patch->height << FRACBITS);
     width = patch->width;
-    R_UnlockPatchNum(lump+firstspritelump);
   }
 
   // off the side?
@@ -939,7 +933,6 @@ void R_AddSprites(subsector_t* subsec, int lightlevel)
 
   // Handle all things in sector.
 
-#ifdef GL_DOOM
   if (show_alive)
   {
     if (show_alive == 1)
@@ -952,7 +945,6 @@ void R_AddSprites(subsector_t* subsec, int lightlevel)
     }
   }
   else
-#endif
   {
     for (thing = sec->thinglist; thing; thing = thing->snext)
     {
@@ -1115,7 +1107,7 @@ static void R_DrawPSprite (pspdef_t *psp)
   }
 
   {
-    const rpatch_t* patch = R_CachePatchNum(lump+firstspritelump);
+    const rpatch_t* patch = R_PatchByNum(lump+firstspritelump);
     // calculate edges of the shape
     fixed_t       tx;
     tx = psp_sx-160*FRACUNIT;
@@ -1128,7 +1120,6 @@ static void R_DrawPSprite (pspdef_t *psp)
 
     width = patch->width;
     topoffset = patch->topoffset<<FRACBITS;
-    R_UnlockPatchNum(lump+firstspritelump);
   }
 
   // off the side
@@ -1257,7 +1248,6 @@ static void R_DrawPSprite (pspdef_t *psp)
   {
     R_DrawVisSprite(vis);
   }
-#ifdef GL_DOOM
   else
   {
     int lightlevel;
@@ -1282,7 +1272,6 @@ static void R_DrawPSprite (pspdef_t *psp)
     }
     gld_DrawWeapon(lump,vis,lightlevel);
   }
-#endif
 }
 
 //
@@ -1379,8 +1368,8 @@ void R_SortVisSprites (void)
 
       if (num_vissprite_ptrs < num_vissprite*2)
         {
-          free(vissprite_ptrs);  // better than realloc -- no preserving needed
-          vissprite_ptrs = malloc((num_vissprite_ptrs = num_vissprite_alloc*2)
+          Z_Free(vissprite_ptrs);  // better than realloc -- no preserving needed
+          vissprite_ptrs = Z_Malloc((num_vissprite_ptrs = num_vissprite_alloc*2)
                                   * sizeof *vissprite_ptrs);
         }
 
@@ -1566,7 +1555,7 @@ void R_DrawMasked(void)
       drawsegs_xrange_size = 2 * maxdrawsegs;
       for(i = 0; i < DS_RANGES_COUNT; i++)
       {
-        drawsegs_xranges[i].items = realloc(
+        drawsegs_xranges[i].items = Z_Realloc(
           drawsegs_xranges[i].items,
           drawsegs_xrange_size * sizeof(drawsegs_xranges[i].items[0]));
       }

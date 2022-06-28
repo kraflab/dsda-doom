@@ -221,11 +221,11 @@ static void *ReadByteSequence(unsigned int num_bytes, midimem_t *mf)
 
     // events can be length 0.  malloc(0) is not portable (can return NULL)
     if (!num_bytes)
-      return malloc (4);
+      return Z_Malloc (4);
 
     // Allocate a buffer:
 
-    result = (byte*)malloc(num_bytes);
+    result = (byte*)Z_Malloc(num_bytes);
 
     if (result == NULL)
     {
@@ -240,7 +240,7 @@ static void *ReadByteSequence(unsigned int num_bytes, midimem_t *mf)
         if (!ReadByte(&result[i], mf))
         {
             lprintf (LO_WARN, "ReadByteSequence: Error while reading byte %u\n", i);
-            free(result);
+            Z_Free(result);
             return NULL;
         }
     }
@@ -443,11 +443,11 @@ static void FreeEvent(midi_event_t *event)
     {
         case MIDI_EVENT_SYSEX:
         case MIDI_EVENT_SYSEX_SPLIT:
-            free(event->data.sysex.data);
+            Z_Free(event->data.sysex.data);
             break;
 
         case MIDI_EVENT_META:
-            free(event->data.meta.data);
+            Z_Free(event->data.meta.data);
             break;
 
         default:
@@ -505,14 +505,14 @@ static dboolean ReadTrack(midi_track_t *track, midimem_t *mf)
     {
         // Resize the track slightly larger to hold another event:
         /*
-        new_events = realloc(track->events,
+        new_events = Z_Realloc(track->events,
                              sizeof(midi_event_t) * (track->num_events + 1));
         */
         if (track->num_events == track->num_event_mem)
         { // depending on the state of the heap and the malloc implementation, realloc()
           // one more event at a time can be VERY slow.  10sec+ in MSVC
           track->num_event_mem += 100;
-          new_events = (midi_event_t*)realloc (track->events, sizeof (midi_event_t) * track->num_event_mem);
+          new_events = (midi_event_t*)Z_Realloc (track->events, sizeof (midi_event_t) * track->num_event_mem);
         }
 
         if (new_events == NULL)
@@ -555,7 +555,7 @@ static void FreeTrack(midi_track_t *track)
         FreeEvent(&track->events[i]);
     }
 
-    free(track->events);
+    Z_Free(track->events);
 }
 
 static dboolean ReadAllTracks(midi_file_t *file, midimem_t *mf)
@@ -564,7 +564,7 @@ static dboolean ReadAllTracks(midi_file_t *file, midimem_t *mf)
 
     // Allocate list of tracks and read each track:
 
-    file->tracks = (midi_track_t*)malloc(sizeof(midi_track_t) * file->num_tracks);
+    file->tracks = (midi_track_t*)Z_Malloc(sizeof(midi_track_t) * file->num_tracks);
 
     if (file->tracks == NULL)
     {
@@ -637,17 +637,17 @@ void MIDI_FreeFile(midi_file_t *file)
             FreeTrack(&file->tracks[i]);
         }
 
-        free(file->tracks);
+        Z_Free(file->tracks);
     }
 
-    free(file);
+    Z_Free(file);
 }
 
 midi_file_t *MIDI_LoadFile (midimem_t *mf)
 {
     midi_file_t *file;
 
-    file = (midi_file_t*)malloc(sizeof(midi_file_t));
+    file = (midi_file_t*)Z_Malloc(sizeof(midi_file_t));
 
     if (file == NULL)
     {
@@ -693,7 +693,7 @@ midi_track_iter_t *MIDI_IterateTrack(const midi_file_t *file, unsigned int track
 
     assert(track < file->num_tracks);
 
-    iter = (midi_track_iter_t*)malloc(sizeof(*iter));
+    iter = (midi_track_iter_t*)Z_Malloc(sizeof(*iter));
     iter->track = &file->tracks[track];
     iter->position = 0;
 
@@ -702,7 +702,7 @@ midi_track_iter_t *MIDI_IterateTrack(const midi_file_t *file, unsigned int track
 
 void MIDI_FreeIterator(midi_track_iter_t *iter)
 {
-    free(iter);
+    Z_Free(iter);
 }
 
 // Get the time until the next MIDI event in a track.
@@ -838,8 +838,8 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
 
   int totaldelta = 0;
 
-  int *trackpos = (int*)calloc (file->num_tracks, sizeof (int));
-  int *tracktime = (int*)calloc (file->num_tracks, sizeof (int));
+  int *trackpos = (int*)Z_Calloc (file->num_tracks, sizeof (int));
+  int *tracktime = (int*)Z_Calloc (file->num_tracks, sizeof (int));
   int trackactive = file->num_tracks;
 
   midi_event_t **ret;
@@ -848,7 +848,7 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
   for (i = 0; i < file->num_tracks; i++)
     totalevents += file->tracks[i].num_events;
 
-  ret = (midi_event_t**)malloc (totalevents * sizeof (midi_event_t **));
+  ret = (midi_event_t**)Z_Malloc (totalevents * sizeof (midi_event_t **));
 
   epos = ret;
 
@@ -893,9 +893,9 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
     else if ((unsigned) trackpos[nextrk] == file->tracks[nextrk].num_events)
     {
       lprintf (LO_WARN, "MIDI_GenerateFlatList: Unexpected end of track\n");
-      free (trackpos);
-      free (tracktime);
-      free (ret);
+      Z_Free (trackpos);
+      Z_Free (tracktime);
+      Z_Free (ret);
       return NULL;
     }
     epos++;
@@ -904,22 +904,22 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
   if (trackactive)
   { // unexpected EOF
     lprintf (LO_WARN, "MIDI_GenerateFlatList: Unexpected end of midi file\n");
-    free (trackpos);
-    free (tracktime);
-    free (ret);
+    Z_Free (trackpos);
+    Z_Free (tracktime);
+    Z_Free (ret);
     return NULL;
   }
 
   // last end of track event is preserved though
   epos[-1]->data.meta.type = MIDI_META_END_OF_TRACK;
 
-  free (trackpos);
-  free (tracktime);
+  Z_Free (trackpos);
+  Z_Free (tracktime);
 
   if (totaldelta < 100)
   {
     lprintf (LO_WARN, "MIDI_GeneratFlatList: very short file %i\n", totaldelta);
-    free (ret);
+    Z_Free (ret);
     return NULL;
   }
 
@@ -933,7 +933,7 @@ midi_event_t **MIDI_GenerateFlatList (midi_file_t *file)
 
 void MIDI_DestroyFlatList (midi_event_t **evs)
 {
-  free (evs);
+  Z_Free (evs);
 }
 
 
@@ -1063,7 +1063,7 @@ midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf)
     return NULL;
   }
 
-  ret = (midi_file_t*)malloc (sizeof (midi_file_t));
+  ret = (midi_file_t*)Z_Malloc (sizeof (midi_file_t));
 
   ret->header.format_type = 0;
   ret->header.num_tracks = 1;
@@ -1071,7 +1071,7 @@ midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf)
   ret->num_tracks = 1;
   ret->buffer_size = 0;
   ret->buffer = NULL;
-  ret->tracks = (midi_track_t*)malloc (sizeof (midi_track_t));
+  ret->tracks = (midi_track_t*)Z_Malloc (sizeof (midi_track_t));
 
   ret->tracks->num_events = 0;
   ret->tracks->num_event_mem = 0;
@@ -1088,7 +1088,7 @@ midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf)
     if (ret->tracks->num_events == ret->tracks->num_event_mem)
     {
       ret->tracks->num_event_mem += 100;
-      ret->tracks->events = (midi_event_t*)realloc (ret->tracks->events, sizeof (midi_event_t) * ret->tracks->num_event_mem);
+      ret->tracks->events = (midi_event_t*)Z_Realloc (ret->tracks->events, sizeof (midi_event_t) * ret->tracks->num_event_mem);
     }
 
     oldev = flatlist[epos];
@@ -1115,7 +1115,7 @@ midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf)
         nextev->event_type = MIDI_EVENT_META;
         nextev->data.meta.type = MIDI_META_TEXT;
         nextev->data.meta.length = 0;
-        nextev->data.meta.data = (byte*)malloc (4);
+        nextev->data.meta.data = (byte*)Z_Malloc (4);
         epos++;
         ret->tracks->num_events++;
         continue;
@@ -1125,7 +1125,7 @@ midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf)
         nextev->event_type = MIDI_EVENT_META;
         nextev->data.meta.type = MIDI_META_END_OF_TRACK;
         nextev->data.meta.length = 0;
-        nextev->data.meta.data = (byte*)malloc (4);
+        nextev->data.meta.data = (byte*)Z_Malloc (4);
         epos++;
         ret->tracks->num_events++;
         break;
@@ -1246,7 +1246,7 @@ int main(int argc, char *argv[])
     mf.len = ftell (f);
     mf.pos = 0;
     rewind (f);
-    mf.data = malloc (mf.len);
+    mf.data = Z_Malloc (mf.len);
     fread (mf.data, 1, mf.len, f);
     fclose (f);
 

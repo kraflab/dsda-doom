@@ -43,7 +43,7 @@
 // Sets channels, SFX and music volume,
 //  allocates channel buffer, sets S_sfx lookup.
 //
-void S_Init(int sfxVolume, int musicVolume);
+void S_Init(void);
 
 // Kills all sounds
 void S_Stop(void);
@@ -113,6 +113,5 @@ void S_SetSoundCurve(dboolean fullprocess);
 void S_StartSongName(const char *songLump, dboolean loop);
 dboolean S_GetSoundPlayingInfo(void * mobj, int sound_id);
 int S_GetSoundID(const char *name);
-void S_InitScript(void);
 
 #endif

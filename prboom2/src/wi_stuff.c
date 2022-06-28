@@ -45,6 +45,7 @@
 #include "r_draw.h"
 #include "hu_stuff.h"
 #include "dsda/intermission_display.h"
+#include "dsda/mapinfo.h"
 
 #include "heretic/in_lude.h"
 #include "hexen/in_lude.h"
@@ -496,23 +497,30 @@ static void WI_DrawString(int cx, int cy, const char* ch)
 // Args:    none
 // Returns: void
 //
+const char *lf_levelname;
+const char *lf_levelpic;
+
 void WI_drawLF(void)
 {
   int y = WI_TITLEY;
   char lname[9];
 
-  if (wbs->lastmapinfo != NULL && wbs->lastmapinfo->levelname != NULL && wbs->lastmapinfo->levelpic[0] == 0)
+  dsda_PrepareFinished();
+
+  if (lf_levelname)
   {
     // The level defines a new name but no texture for the name.
-    WI_DrawString(160, y, wbs->lastmapinfo->levelname);
+    WI_DrawString(160, y, lf_levelname);
     y += (5 * hu_font['A' - HU_FONTSTART].height / 4);
   }
   else
   {
     // draw <LevelName>
     /* cph - get the graphic lump name and use it */
-    if (wbs->lastmapinfo != NULL && wbs->lastmapinfo->levelpic[0]) strcpy(lname, wbs->lastmapinfo->levelpic);
-    else WI_levelNameLump(wbs->epsd, wbs->last, lname);
+    if (lf_levelpic)
+      strcpy(lname, lf_levelpic);
+    else
+      WI_levelNameLump(wbs->epsd, wbs->last, lname);
 
     if (W_CheckNumForName(lname) == -1)
       return;
@@ -538,6 +546,9 @@ void WI_drawLF(void)
 // Args:    none
 // Returns: void
 //
+const char *el_levelname;
+const char *el_levelpic;
+
 void WI_drawEL(void)
 {
   int y = WI_TITLEY;
@@ -549,18 +560,22 @@ void WI_drawEL(void)
     y, FB, entering, CR_DEFAULT, VPT_STRETCH);
 
 
-  if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelname != NULL && wbs->nextmapinfo->levelpic[0] == 0)
+  dsda_PrepareEntering();
+
+  if (el_levelname)
   {
     y += (5 * V_NamePatchHeight(entering)) / 4;
 
     // The level defines a new name but no texture for the name.
-    WI_DrawString(160, y, wbs->nextmapinfo->levelname);
+    WI_DrawString(160, y, el_levelname);
   }
   else
   {
     /* cph - get the graphic lump name */
-    if (wbs->nextmapinfo != NULL && wbs->nextmapinfo->levelpic[0]) strcpy(lname, wbs->nextmapinfo->levelpic);
-    else WI_levelNameLump(wbs->nextep, wbs->next, lname);
+    if (el_levelpic)
+      strcpy(lname, el_levelpic);
+    else
+      WI_levelNameLump(wbs->nextep, wbs->next, lname);
 
     if (W_CheckNumForName(lname) == -1)
       return;
@@ -596,13 +611,12 @@ WI_drawOnLnode  // draw stuff at a location by episode/map#
     int            top;
     int            right;
     int            bottom;
-    const rpatch_t* patch = R_CachePatchName(c[i]);
+    const rpatch_t* patch = R_PatchByName(c[i]);
 
     left = lnodes[wbs->epsd][n].x - patch->leftoffset;
     top = lnodes[wbs->epsd][n].y - patch->topoffset;
     right = left + patch->width;
     bottom = top + patch->height;
-    R_UnlockPatchName(c[i]);
 
     if (left >= 0
        && right < 320
@@ -973,16 +987,24 @@ static dboolean    snl_pointeron = false;
 //
 void WI_initShowNextLoc(void)
 {
-  if (gamemapinfo != NULL)
-  {
-    if (gamemapinfo->endpic[0])
-    {
-      G_WorldDone();
-      return;
-    }
-    state = ShowNextLoc;
+  int behaviour;
 
-    // episode change
+  dsda_ShowNextLocBehaviour(&behaviour);
+
+  if (behaviour & WI_SHOW_NEXT_DONE)
+  {
+    G_WorldDone();
+    return;
+  }
+
+  if (behaviour & WI_SHOW_NEXT_LOC)
+  {
+    state = ShowNextLoc;
+  }
+
+  if (behaviour & WI_SHOW_NEXT_EPISODAL)
+  {
+    // episode change possible
     if (wbs->epsd != wbs->nextep)
     {
       void WI_loadData(void);
@@ -992,18 +1014,6 @@ void WI_initShowNextLoc(void)
       WI_loadData();
     }
   }
-  else if (
-    gamemode != commercial &&
-    (
-      gamemap == 8 ||
-      (gamemission == chex && gamemap == 5)
-    )
-  ) {
-    G_WorldDone();
-    return;
-  }
-  else
-    state = ShowNextLoc;
 
   acceleratestage = 0;
 
@@ -1052,9 +1062,7 @@ void WI_drawShowNextLoc(void)
   int   i;
   int   last;
 
-  if (gamemapinfo != NULL &&
-      gamemapinfo->endpic[0] &&
-      strcmp(gamemapinfo->endpic, "-") != 0)
+  if (dsda_SkipDrawShowNextLoc())
   {
     return;
   }
@@ -1160,8 +1168,8 @@ void WI_initDeathmatchStats(void)
   int   i; // looping variables
 
   // CPhipps - allocate data structures needed
-  dm_frags  = calloc(g_maxplayers, sizeof(*dm_frags));
-  dm_totals = calloc(g_maxplayers, sizeof(*dm_totals));
+  dm_frags  = Z_Calloc(g_maxplayers, sizeof(*dm_frags));
+  dm_totals = Z_Calloc(g_maxplayers, sizeof(*dm_totals));
 
   state = StatCount;  // We're doing stats
   acceleratestage = 0;
@@ -1174,7 +1182,7 @@ void WI_initDeathmatchStats(void)
     if (playeringame[i])
     {
       // CPhipps - allocate frags line
-      dm_frags[i] = calloc(g_maxplayers, sizeof(**dm_frags)); // set all counts to zero
+      dm_frags[i] = Z_Calloc(g_maxplayers, sizeof(**dm_frags)); // set all counts to zero
 
       dm_totals[i] = 0;
     }
@@ -1193,9 +1201,9 @@ void WI_endDeathmatchStats(void)
 {
   int i;
   for (i = 0; i < g_maxplayers; i++)
-    free(dm_frags[i]);
+    Z_Free(dm_frags[i]);
 
-  free(dm_frags); free(dm_totals);
+  Z_Free(dm_frags); Z_Free(dm_totals);
 }
 
 // ====================================================================
@@ -1427,10 +1435,10 @@ static int    ng_state;
 //
 static void WI_endNetgameStats(void)
 {
-  free(cnt_frags); cnt_frags = NULL;
-  free(cnt_secret); cnt_secret = NULL;
-  free(cnt_items); cnt_items = NULL;
-  free(cnt_kills); cnt_kills = NULL;
+  Z_Free(cnt_frags); cnt_frags = NULL;
+  Z_Free(cnt_secret); cnt_secret = NULL;
+  Z_Free(cnt_items); cnt_items = NULL;
+  Z_Free(cnt_kills); cnt_kills = NULL;
 }
 
 // ====================================================================
@@ -1450,10 +1458,10 @@ void WI_initNetgameStats(void)
   cnt_pause = TICRATE;
 
   // CPhipps - allocate these dynamically, blank with calloc
-  cnt_kills = calloc(g_maxplayers, sizeof(*cnt_kills));
-  cnt_items = calloc(g_maxplayers, sizeof(*cnt_items));
-  cnt_secret= calloc(g_maxplayers, sizeof(*cnt_secret));
-  cnt_frags = calloc(g_maxplayers, sizeof(*cnt_frags));
+  cnt_kills = Z_Calloc(g_maxplayers, sizeof(*cnt_kills));
+  cnt_items = Z_Calloc(g_maxplayers, sizeof(*cnt_items));
+  cnt_secret= Z_Calloc(g_maxplayers, sizeof(*cnt_secret));
+  cnt_frags = Z_Calloc(g_maxplayers, sizeof(*cnt_frags));
 
   for (i = 0; i < g_maxplayers; i++)
     if (playeringame[i])
@@ -1723,9 +1731,9 @@ void WI_initStats(void)
   sp_state = 1;
 
   // CPhipps - allocate (awful code, I know, but saves changing it all) and initialise
-  *(cnt_kills = malloc(sizeof(*cnt_kills))) =
-  *(cnt_items = malloc(sizeof(*cnt_items))) =
-  *(cnt_secret= malloc(sizeof(*cnt_secret))) = -1;
+  *(cnt_kills = Z_Malloc(sizeof(*cnt_kills))) =
+  *(cnt_items = Z_Malloc(sizeof(*cnt_items))) =
+  *(cnt_secret= Z_Malloc(sizeof(*cnt_secret))) = -1;
   cnt_time = cnt_par = cnt_total_time = -1;
   cnt_pause = TICRATE;
 
@@ -2151,8 +2159,8 @@ void WI_Start(wbstartstruct_t* wbstartstruct)
   WI_initVariables(wbstartstruct);
   WI_loadData();
 
-  exitpic = (wbs->lastmapinfo && wbs->lastmapinfo->exitpic[0]) ? wbs->lastmapinfo->exitpic : NULL;
-  enterpic = (wbs->nextmapinfo && wbs->nextmapinfo->enterpic[0]) ? wbs->nextmapinfo->enterpic : NULL;
+  exitpic = dsda_ExitPic();
+  enterpic = dsda_EnterPic();
 
   if (deathmatch)
     WI_initDeathmatchStats();

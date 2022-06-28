@@ -41,7 +41,6 @@
 
 // We need the playr data structure as well.
 #include "d_player.h"
-#include "umapinfo.h"
 
 #ifdef __GNUG__
 #pragma interface
@@ -151,7 +150,6 @@ extern  Language_t   language;
 // Defaults for menu, methinks.
 extern  skill_t   startskill;
 extern  int             startepisode;
-extern  int   startmap;
 
 extern  dboolean   autostart;
 
@@ -159,7 +157,6 @@ extern  dboolean   autostart;
 extern  skill_t         gameskill;
 extern  int   gameepisode;
 extern  int   gamemap;
-extern struct MapEntry *gamemapinfo;
 
 // Nightmare mode flag, single player.
 extern  dboolean         respawnmonsters;
@@ -213,18 +210,8 @@ enum menuactive_e {
 };
 extern enum menuactive_e menuactive; // Type of menu overlaid, if any
 
-extern  dboolean paused;        // Game Pause?
 extern  dboolean nodrawers;
 extern  dboolean noblit;
-
-#define PAUSE_COMMAND  1
-#define PAUSE_PLAYBACK 2
-
-#define interpolate_view (!paused && movement_smooth)
-#define paused_via_menu (!demoplayback && menuactive && !netgame)
-#define paused_during_playback (paused & PAUSE_PLAYBACK)
-#define paused_outside_demo (paused_during_playback || paused_via_menu)
-#define paused_camera (paused && !walkcamera.type)
 
 // This one is related to the 3-screen display mode.
 // ANG90 = left side, ANG270 = right
@@ -251,7 +238,6 @@ extern  int leveltime;  // tics in game play for par
 // --------------------------------------
 // DEMO playback/recording related stuff.
 
-extern  dboolean usergame;
 extern  dboolean demoplayback;
 extern  dboolean demorecording;
 extern  int demover;
@@ -272,6 +258,8 @@ extern  gamestate_t  gamestate;
 //  WAD, partly set at startup time.
 
 extern  int   gametic;
+
+#define logictic (gametic - basetic)
 
 //e6y
 extern  dboolean realframe;
@@ -330,8 +318,7 @@ extern  int        maketic;
 // Networking and tick handling related.
 #define BACKUPTICS              12
 
-extern  ticcmd_t   netcmds[][BACKUPTICS];
-extern  int        ticdup;
+extern  ticcmd_t   local_cmds[][BACKUPTICS];
 
 //-----------------------------------------------------------------------------
 

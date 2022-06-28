@@ -27,6 +27,7 @@
 #include "p_setup.h"
 
 #include "dsda/intermission_display.h"
+#include "dsda/mapinfo.h"
 
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
@@ -132,8 +133,8 @@ static void InitStats(void)
     {
         gametype = SINGLE;
         HubCount = 0;
-        oldCluster = P_GetMapCluster(gamemap);
-        if (oldCluster != P_GetMapCluster(LeaveMap))
+        oldCluster = dsda_MapCluster(gamemap);
+        if (oldCluster != dsda_MapCluster(LeaveMap))
         {
             if (oldCluster >= 1 && oldCluster <= 5)
             {
@@ -144,7 +145,7 @@ static void InitStats(void)
                 {
                     I_Error("Cluster message too long (%s)", msgLumpName);
                 }
-                memcpy(ClusterMessage, W_CacheLumpNum(msgLump), msgSize);
+                memcpy(ClusterMessage, W_LumpByNum(msgLump), msgSize);
                 ClusterMessage[msgSize] = '\0';    // Append terminator
                 HubText = ClusterMessage;
                 HubCount = strlen(HubText) * TEXTSPEED + TEXTWAIT;
