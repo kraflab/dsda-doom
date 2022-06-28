@@ -603,7 +603,7 @@ static console_command_entry_t console_commands[] = {
   { "tl", console_BuildTL, CF_DEMO },
 
   // demos
-  { "demo.export", console_DemoExport, CF_DEMO | CF_STRICT },
+  { "demo.export", console_DemoExport, CF_ALWAYS },
 
   // cheats
   { "idchoppers", console_BasicCheat, CF_DEMO },
