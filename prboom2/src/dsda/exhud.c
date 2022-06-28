@@ -232,7 +232,7 @@ static void dsda_WipeTracker(int i) {
   dsda_tracker[i].mobj = NULL;
 }
 
-static void dsda_WipeTrackers(void) {
+void dsda_WipeTrackers(void) {
   int i;
 
   for (i = 0; i < TRACKER_LIMIT; ++i)
