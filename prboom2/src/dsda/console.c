@@ -18,8 +18,11 @@
 #include "doomstat.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
+#include "i_system.h"
+#include "lprintf.h"
 #include "m_cheat.h"
 #include "m_menu.h"
+#include "m_misc.h"
 #include "s_sound.h"
 #include "v_video.h"
 
@@ -64,6 +67,8 @@ menu_t dsda_ConsoleDef = {
   dsda_DrawConsole,
   0, 0
 };
+
+static dboolean dsda_ExecuteConsole(const char* command_line);
 
 static void dsda_UpdateConsoleDisplay(void) {
   const char* s;
@@ -487,6 +492,58 @@ static dboolean console_BasicCheat(const char* command, const char* args) {
   return M_CheatEntered(command, args);
 }
 
+
+static dboolean console_ScriptRun(const char* command, const char* args) {
+  char name[CONSOLE_ENTRY_SIZE];
+  dboolean ret = true;
+
+  if (sscanf(args, "%s", name)) {
+    char* filename;
+    byte* buffer;
+
+    filename = I_FindFile(name, "");
+
+    if (filename) {
+      if (M_ReadFileToString(filename, &buffer) != -1) {
+        char* line;
+
+        for (line = strtok(buffer, "\n"); line; line = strtok(NULL, "\n")) {
+          if (strlen(line) && line[0] != '#' && line[0] != '!' && line[0] != '/') {
+            if (strlen(line) >= CONSOLE_ENTRY_SIZE) {
+              lprintf(LO_ERROR, "Script line too long: \"%s\" (limit %d)\n", line, CONSOLE_ENTRY_SIZE);
+              ret = false;
+              break;
+            }
+
+            if (!dsda_ExecuteConsole(line)) {
+              lprintf(LO_ERROR, "Script line failed: \"%s\"\n", line);
+              ret = false;
+              break;
+            }
+          }
+        }
+
+        Z_Free(buffer);
+      }
+      else {
+        lprintf(LO_ERROR, "Unable to read script file (%s)\n", filename);
+        ret = false;
+      }
+
+      Z_Free(filename);
+    }
+    else {
+      lprintf(LO_ERROR, "Cannot find script file (%s)\n", name);
+      ret = false;
+    }
+
+    return ret;
+  }
+
+  return false;
+}
+
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -505,6 +562,8 @@ static console_command_entry_t console_commands[] = {
   { "player.roundx", console_PlayerRoundX, CF_NEVER },
   { "player.roundy", console_PlayerRoundY, CF_NEVER },
   { "player.roundxy", console_PlayerRoundXY, CF_NEVER },
+
+  { "script.run", console_ScriptRun, CF_ALWAYS },
 
   // tracking
   { "tracker.addline", console_TrackerAddLine, CF_DEMO },
@@ -619,12 +678,13 @@ static dboolean dsda_AuthorizeCommand(console_command_entry_t* entry) {
   return true;
 }
 
-static void dsda_ExecuteConsole(void) {
+static dboolean dsda_ExecuteConsole(const char* command_line) {
   char command[CONSOLE_ENTRY_SIZE];
   char args[CONSOLE_ENTRY_SIZE];
   int scan_count;
+  dboolean ret = true;
 
-  scan_count = sscanf(console_entry, "%s %[^;]", command, args);
+  scan_count = sscanf(command_line, "%s %[^;]", command, args);
 
   if (scan_count) {
     console_command_entry_t* entry;
@@ -640,11 +700,14 @@ static void dsda_ExecuteConsole(void) {
           }
           else {
             dsda_AddConsoleMessage("command invalid");
+            ret = false;
             S_StartSound(NULL, g_sfx_oof);
           }
         }
-        else
+        else {
           S_StartSound(NULL, g_sfx_oof);
+          ret = false;
+        }
 
         break;
       }
@@ -653,10 +716,13 @@ static void dsda_ExecuteConsole(void) {
     if (!entry->command) {
       dsda_AddConsoleMessage("command unknown");
       S_StartSound(NULL, g_sfx_oof);
+      ret = false;
     }
   }
 
   dsda_ResetConsoleEntry();
+
+  return ret;
 }
 
 void dsda_UpdateConsole(int ch, int action) {
@@ -666,7 +732,7 @@ void dsda_UpdateConsole(int ch, int action) {
     dsda_UpdateConsoleDisplay();
   }
   else if (action == MENU_ENTER) {
-    dsda_ExecuteConsole();
+    dsda_ExecuteConsole(console_entry);
   }
   else if (ch > 0) {
     ch = tolower(ch);
