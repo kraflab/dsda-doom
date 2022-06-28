@@ -101,7 +101,7 @@ static void dsda_CreateDirectory(const char* path) {
 #endif
 
   if (error)
-    I_Error("dsda_CreateDirectory: unable to create directory %s (%d)", path, error);
+    I_Error("dsda_CreateDirectory: unable to create directory %s (%d)", path, errno);
 }
 
 void dsda_InitDataDir(void) {
