@@ -104,7 +104,7 @@ static void dsda_LoadSplits(void) {
   if (!path)
     return;
 
-  if (M_ReadFile(path, &buffer) != -1) {
+  if (M_ReadFileToString(path, &buffer) != -1) {
     int episode, map, tics, total_tics, exits, count, i, ref_tics, ref_total_tics;
     char* line;
 
