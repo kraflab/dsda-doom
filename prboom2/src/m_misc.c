@@ -153,6 +153,34 @@ int M_ReadFile(char const *name, byte **buffer)
   return -1;
 }
 
+// Same as above, but add null terminator
+int M_ReadFileToString(char const *name, byte **buffer) {
+  FILE *fp;
+
+  if ((fp = fopen(name, "rb")))
+  {
+    size_t length;
+
+    I_BeginRead();
+    fseek(fp, 0, SEEK_END);
+    length = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    *buffer = Z_Malloc(length + 1);
+    if (fread(*buffer, 1, length, fp) == length)
+    {
+      fclose(fp);
+      I_EndRead();
+      (*buffer)[length] = '\0';
+      return length;
+    }
+    fclose(fp);
+  }
+
+  /* cph 2002/08/10 - this used to return 0 on error, but that's ambiguous,
+   * because we could have a legit 0-length file. So make it -1. */
+  return -1;
+}
+
 //
 // DEFAULTS
 //
