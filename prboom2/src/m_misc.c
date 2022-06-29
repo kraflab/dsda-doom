@@ -1468,35 +1468,36 @@ void M_LoadDefaults (void)
 
   f = fopen (defaultfile, "r");
   if (f)
-    {
+  {
     while (!feof(f))
-      {
+    {
       isstring = false;
       parm = 0;
       fgets(cfgline, CFG_BUFFERMAX, f);
       if (sscanf (cfgline, "%79s %[^\n]\n", def, strparm) == 2)
-        {
-
+      {
         //jff 3/3/98 skip lines not starting with an alphanum
-
         if (!isalnum(def[0]))
           continue;
 
-        if (strparm[0] == '"') {
+        if (strparm[0] == '"')
+        {
           // get a string default
-
           isstring = true;
           len = strlen(strparm);
           newstring = Z_Malloc(len);
           strparm[len-1] = 0; // clears trailing double-quote mark
           strcpy(newstring, strparm+1); // clears leading double-quote mark
-  } else if ((strparm[0] == '0') && (strparm[1] == 'x')) {
-    // CPhipps - allow ints to be specified in hex
-    sscanf(strparm+2, "%x", &parm);
-  } else {
+        }
+        else if ((strparm[0] == '0') && (strparm[1] == 'x'))
+        {
+          // CPhipps - allow ints to be specified in hex
+          sscanf(strparm+2, "%x", &parm);
+        }
+        else
+        {
           sscanf(strparm, "%i", &parm);
-    // Keycode hack removed
-  }
+        }
 
         // e6y: arrays
         if (item)
@@ -1532,90 +1533,91 @@ void M_LoadDefaults (void)
 
         for (i = 0 ; i < numdefaults ; i++)
           if ((defaults[i].type != def_none) && !strcmp(def, defaults[i].name))
+          {
+            // e6y: arrays
+            if (defaults[i].type == def_arr)
             {
-              // e6y: arrays
-              if (defaults[i].type == def_arr)
-              {
-                union { const char **c; char **s; } u; // type punning via unions
+              union { const char **c; char **s; } u; // type punning via unions
 
-                u.c = defaults[i].location.ppsz;
-                Z_Free(*(u.s));
-                *(u.s) = newstring;
+              u.c = defaults[i].location.ppsz;
+              Z_Free(*(u.s));
+              *(u.s) = newstring;
 
-                item = &defaults[i];
-                continue;
-              }
+              item = &defaults[i];
+              continue;
+            }
 
-      // CPhipps - safety check
+            // CPhipps - safety check
             if (isstring != IS_STRING(defaults[i])) {
-        lprintf(LO_WARN, "M_LoadDefaults: Type mismatch reading %s\n", defaults[i].name);
-        continue;
-      }
-            if (!isstring)
-              {
-                if (defaults[i].type == def_input)
-                {
-                  int count;
-                  char keys[80];
-                  int key, mouseb, joyb;
-                  int index = 0;
-                  char* key_scan_p;
-                  char* config_scan_p;
+              lprintf(LO_WARN, "M_LoadDefaults: Type mismatch reading %s\n", defaults[i].name);
+              continue;
+            }
 
-                  config_scan_p = strparm;
+            if (!isstring)
+            {
+              if (defaults[i].type == def_input)
+              {
+                int count;
+                char keys[80];
+                int key, mouseb, joyb;
+                int index = 0;
+                char* key_scan_p;
+                char* config_scan_p;
+
+                config_scan_p = strparm;
+                do
+                {
+                  count = sscanf(config_scan_p, "%79s %d %d", keys, &mouseb, &joyb);
+
+                  if (count != 3)
+                    break;
+
+                  dsda_InputResetSpecific(index, defaults[i].identifier);
+
+                  dsda_InputAddSpecificMouseB(index, defaults[i].identifier, mouseb);
+                  dsda_InputAddSpecificJoyB(index, defaults[i].identifier, joyb);
+
+                  key_scan_p = strtok(keys, ",");
                   do
                   {
-                    count = sscanf(config_scan_p, "%79s %d %d", keys, &mouseb, &joyb);
+                    count = sscanf(key_scan_p, "%d,", &key);
 
-                    if (count != 3)
+                    if (count != 1)
                       break;
 
-                    dsda_InputResetSpecific(index, defaults[i].identifier);
+                    dsda_InputAddSpecificKey(index, defaults[i].identifier, key);
 
-                    dsda_InputAddSpecificMouseB(index, defaults[i].identifier, mouseb);
-                    dsda_InputAddSpecificJoyB(index, defaults[i].identifier, joyb);
+                    key_scan_p = strtok(NULL, ",");
+                  } while (key_scan_p);
 
-                    key_scan_p = strtok(keys, ",");
-                    do
-                    {
-                      count = sscanf(key_scan_p, "%d,", &key);
-
-                      if (count != 1)
-                        break;
-
-                      dsda_InputAddSpecificKey(index, defaults[i].identifier, key);
-
-                      key_scan_p = strtok(NULL, ",");
-                    } while (key_scan_p);
-
-                    index++;
-                    config_scan_p = strchr(config_scan_p, '|');
-                    if (config_scan_p)
-                      config_scan_p++;
-                  } while (config_scan_p && index < DSDA_INPUT_PROFILE_COUNT);
-                }
-
-                //jff 3/4/98 range check numeric parameters
-
-                else if ((defaults[i].minvalue==UL || defaults[i].minvalue<=parm) &&
-                         (defaults[i].maxvalue==UL || defaults[i].maxvalue>=parm))
-                  *(defaults[i].location.pi) = parm;
+                  index++;
+                  config_scan_p = strchr(config_scan_p, '|');
+                  if (config_scan_p)
+                    config_scan_p++;
+                } while (config_scan_p && index < DSDA_INPUT_PROFILE_COUNT);
               }
-            else
-              {
-                union { const char **c; char **s; } u; // type punning via unions
 
-                u.c = defaults[i].location.ppsz;
-                Z_Free(*(u.s));
-                *(u.s) = newstring;
-              }
-            break;
+              //jff 3/4/98 range check numeric parameters
+
+              else if ((defaults[i].minvalue==UL || defaults[i].minvalue<=parm) &&
+                       (defaults[i].maxvalue==UL || defaults[i].maxvalue>=parm))
+                *(defaults[i].location.pi) = parm;
             }
+            else
+            {
+              union { const char **c; char **s; } u; // type punning via unions
+
+              u.c = defaults[i].location.ppsz;
+              Z_Free(*(u.s));
+              *(u.s) = newstring;
+            }
+          break;
         }
       }
+    }
 
     fclose (f);
-    }
+  }
 
   Z_Free(strparm);
   Z_Free(cfgline);
