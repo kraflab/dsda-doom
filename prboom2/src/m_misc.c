@@ -344,7 +344,7 @@ default_t defaults[] =
   {"videomode",{NULL, &default_videomode},{0,"Software"},UL,UL,def_str,ss_none},
   /* 640x480 default resolution */
   {"screen_resolution",{NULL, &screen_resolution},{0,"640x480"},UL,UL,def_str,ss_none},
-  {"custom_resolution",{0,&custom_resolution},{0,""},UL,UL,def_str,ss_chat},
+  {"custom_resolution",{0,&custom_resolution},{0,""},UL,UL,def_str,ss_none},
   {"use_fullscreen",{&use_fullscreen},{0},0,1, /* proff 21/05/2000 */
    def_bool,ss_none},
   {"exclusive_fullscreen",{&exclusive_fullscreen},{0},0,1, // [FG] mode-changing fullscreen
@@ -1036,7 +1036,7 @@ default_t defaults[] =
   { "dsda_coordinate_display", { (int *) &dsda_setting[dsda_coordinate_display] }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_skip_quit_prompt", { &dsda_skip_quit_prompt }, { 0 }, 0, 1, def_bool, ss_stat },
   { "dsda_show_split_data", { &dsda_show_split_data }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_player_name", { 0, &dsda_player_name }, { 0, "Anonymous" }, UL, UL, def_str, ss_chat },
+  { "dsda_player_name", { 0, &dsda_player_name }, { 0, "Anonymous" }, UL, UL, def_str, ss_none },
   { "dsda_quickstart_cache_tics", { &dsda_quickstart_cache_tics }, { 0 }, 0, 35, def_int, ss_stat },
   { "dsda_death_use_action", { &dsda_death_use_action }, { 0 }, 0, 2, def_int, ss_none },
   { "dsda_mute_sfx", { (int *) &dsda_setting[dsda_mute_sfx] }, { 0 }, 0, 1, def_bool, ss_stat },
