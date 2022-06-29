@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "g_game.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
 #include "i_system.h"
@@ -53,6 +54,9 @@ static char* console_message_entry = console_message + 2;
 static int console_entry_index;
 static hu_textline_t hu_console_prompt;
 static hu_textline_t hu_console_message;
+
+const char* dsda_console_script[CONSOLE_SCRIPT_COUNT];
+static char** dsda_console_script_lines[CONSOLE_SCRIPT_COUNT];
 
 static void dsda_DrawConsole(void) {
   V_FillRect(0, 0, 0, SCREENWIDTH, 16 * SCREENHEIGHT / 200, 0);
@@ -498,6 +502,21 @@ static dboolean console_BasicCheat(const char* command, const char* args) {
   return M_CheatEntered(command, args);
 }
 
+static dboolean console_ScriptRunLine(const char* line) {
+  if (strlen(line) && line[0] != '#' && line[0] != '!' && line[0] != '/') {
+    if (strlen(line) >= CONSOLE_ENTRY_SIZE) {
+      lprintf(LO_ERROR, "Script line too long: \"%s\" (limit %d)\n", line, CONSOLE_ENTRY_SIZE);
+      return false;
+    }
+
+    if (!dsda_ExecuteConsole(line)) {
+      lprintf(LO_ERROR, "Script line failed: \"%s\"\n", line);
+      return false;
+    }
+  }
+
+  return true;
+}
 
 static dboolean console_ScriptRun(const char* command, const char* args) {
   char name[CONSOLE_ENTRY_SIZE];
@@ -513,21 +532,11 @@ static dboolean console_ScriptRun(const char* command, const char* args) {
       if (M_ReadFileToString(filename, &buffer) != -1) {
         char* line;
 
-        for (line = strtok(buffer, "\n"); line; line = strtok(NULL, "\n")) {
-          if (strlen(line) && line[0] != '#' && line[0] != '!' && line[0] != '/') {
-            if (strlen(line) >= CONSOLE_ENTRY_SIZE) {
-              lprintf(LO_ERROR, "Script line too long: \"%s\" (limit %d)\n", line, CONSOLE_ENTRY_SIZE);
-              ret = false;
-              break;
-            }
-
-            if (!dsda_ExecuteConsole(line)) {
-              lprintf(LO_ERROR, "Script line failed: \"%s\"\n", line);
-              ret = false;
-              break;
-            }
+        for (line = strtok(buffer, "\n"); line; line = strtok(NULL, "\n"))
+          if (!console_ScriptRunLine(line)) {
+            ret = false;
+            break;
           }
-        }
 
         Z_Free(buffer);
       }
@@ -756,4 +765,27 @@ void dsda_UpdateConsole(int ch, int action) {
       dsda_UpdateConsoleDisplay();
     }
   }
+}
+
+void dsda_ExecuteConsoleScript(int i) {
+  int line;
+
+  if (gamestate != GS_LEVEL || i < 0 || i >= CONSOLE_SCRIPT_COUNT)
+    return;
+
+  if (!dsda_console_script_lines[i]) {
+    char* dup;
+
+    dup = Z_Strdup(dsda_console_script[i]);
+    dsda_console_script_lines[i] = dsda_SplitString(dup, ";");
+  }
+
+  for (line = 0; dsda_console_script_lines[i][line]; ++line)
+    if (!console_ScriptRunLine(dsda_console_script_lines[i][line])) {
+      doom_printf("Script %d failed", i);
+
+      return;
+    }
+
+  doom_printf("Script %d executed", i);
 }

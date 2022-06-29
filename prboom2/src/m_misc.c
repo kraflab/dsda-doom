@@ -80,6 +80,7 @@
 #include "g_overflow.h"
 #include "e6y.h"
 
+#include "dsda/console.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 
@@ -795,6 +796,27 @@ default_t defaults[] =
   { "input_hexen_arti_bracers", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_hexen_arti_bracers, { 0, -1, -1 } },
 
+  { "input_script_0", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_0, { 0, -1, -1 } },
+  { "input_script_1", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_1, { 0, -1, -1 } },
+  { "input_script_2", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_2, { 0, -1, -1 } },
+  { "input_script_3", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_3, { 0, -1, -1 } },
+  { "input_script_4", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_4, { 0, -1, -1 } },
+  { "input_script_5", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_5, { 0, -1, -1 } },
+  { "input_script_6", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_6, { 0, -1, -1 } },
+  { "input_script_7", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_7, { 0, -1, -1 } },
+  { "input_script_8", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_8, { 0, -1, -1 } },
+  { "input_script_9", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_script_9, { 0, -1, -1 } },
+
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
    def_bool,ss_none}, // enables use of mouse with DOOM
@@ -1048,6 +1070,18 @@ default_t defaults[] =
   { "dsda_switch_when_ammo_runs_out", { &dsda_switch_when_ammo_runs_out }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_viewbob", { &dsda_viewbob }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_weaponbob", { &dsda_weaponbob }, { 1 }, 0, 1, def_bool, ss_stat },
+
+  { "Scripts", { NULL }, { 0 }, UL, UL, def_none, ss_none },
+  { "dsda_script_0", { 0, &dsda_console_script[0] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "dsda_script_1", { 0, &dsda_console_script[1] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "dsda_script_2", { 0, &dsda_console_script[2] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "dsda_script_3", { 0, &dsda_console_script[3] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "dsda_script_4", { 0, &dsda_console_script[4] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "dsda_script_5", { 0, &dsda_console_script[5] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "dsda_script_6", { 0, &dsda_console_script[6] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "dsda_script_7", { 0, &dsda_console_script[7] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "dsda_script_8", { 0, &dsda_console_script[8] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "dsda_script_9", { 0, &dsda_console_script[9] }, { 0, "" }, UL, UL, def_str, ss_none },
 
   // NSM
   {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},

@@ -2308,6 +2308,7 @@ setup_menu_t raven_keys_settings[];
 setup_menu_t heretic_keys_settings[];
 setup_menu_t hexen_keys_settings[];
 setup_menu_t dsda_keys_settings[];
+setup_menu_t script_keys_settings[];
 setup_menu_t build_keys_settings1[];
 setup_menu_t build_keys_settings2[];
 
@@ -2326,6 +2327,7 @@ setup_menu_t* keys_settings[] =
   heretic_keys_settings,
   hexen_keys_settings,
   dsda_keys_settings,
+  script_keys_settings,
   build_keys_settings1,
   build_keys_settings2,
   NULL
@@ -2647,6 +2649,26 @@ setup_menu_t dsda_keys_settings[] = {
   { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_cheat_codes },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
+  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { script_keys_settings } },
+
+  // Final entry
+  { 0, S_SKIP | S_END, m_null }
+};
+
+setup_menu_t script_keys_settings[] = {
+  { "Script Keys", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
+  { "Script 0", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, { 0 }, dsda_input_script_0 },
+  { "Script 1", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, { 0 }, dsda_input_script_1 },
+  { "Script 2", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, { 0 }, dsda_input_script_2 },
+  { "Script 3", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, { 0 }, dsda_input_script_3 },
+  { "Script 4", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, { 0 }, dsda_input_script_4 },
+  { "Script 5", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, { 0 }, dsda_input_script_5 },
+  { "Script 6", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, { 0 }, dsda_input_script_6 },
+  { "Script 7", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, { 0 }, dsda_input_script_7 },
+  { "Script 8", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, { 0 }, dsda_input_script_8 },
+  { "Script 9", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, { 0 }, dsda_input_script_9 },
+
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { dsda_keys_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { build_keys_settings1 } },
 
   // Final entry
@@ -2674,7 +2696,7 @@ setup_menu_t build_keys_settings1[] = {
   { "Fine Strafe Right", S_INPUT, m_build, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_build_fine_strafe_right },
   { "Use", S_INPUT, m_build, KB_X, KB_Y + 18 * 8, { 0 }, dsda_input_build_use },
 
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { dsda_keys_settings } },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { script_keys_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { build_keys_settings2 } },
 
   // Final entry
@@ -4739,6 +4761,17 @@ dboolean M_Responder (event_t* ev) {
       if (dsda_OpenConsole())
         S_StartSound(NULL,g_sfx_swtchn);
       return true;
+    }
+
+    {
+      int i;
+
+      for (i = 0; i < CONSOLE_SCRIPT_COUNT; ++i)
+        if (dsda_InputActivated(dsda_input_script_0 + i)) {
+          dsda_ExecuteConsoleScript(i);
+
+          return true;
+        }
     }
 
     // Toggle gamma
