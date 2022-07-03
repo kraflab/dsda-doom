@@ -569,8 +569,8 @@ default_t defaults[] =
   { "input_map_textured", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_map_textured, { 0, -1, -1 } },
 
-  { "input_chat_enter", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_chat_enter, { KEYD_ENTER, -1, -1 } },
+  { "input_repeat_message", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_repeat_message, { 0, -1, -1 } },
 
   { "input_speed_up", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_speed_up, { 0, -1, -1 } },

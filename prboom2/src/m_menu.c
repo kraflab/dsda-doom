@@ -1787,16 +1787,16 @@ void M_Setup(int choice)
 #define PAL_BLACK   0
 #define PAL_WHITE   4
 
-// Data used by the Chat String editing code
+// Data used by the string editing code
 
-#define CHAT_STRING_BFR_SIZE 128
+#define ENTRY_STRING_BFR_SIZE 128
 
-// chat strings must fit in this screen space
+// strings must fit in this screen space
 // killough 10/98: reduced, for more general uses
-#define MAXCHATWIDTH         272
+#define MAXENTRYWIDTH         272
 
-int   chat_index;
-char* chat_string_buffer; // points to new chat strings while editing
+int   entry_index;
+char* entry_string_index; // points to new strings while editing
 
 /////////////////////////////
 //
@@ -2026,9 +2026,7 @@ static void M_DrawSetting(const setup_menu_t* s)
       return;
     }
 
-  // Is the item a chat string?
-  // killough 10/98: or a filename?
-
+  // Is the item a string?
   if (flags & S_STRING) {
     /* cph - cast to char* as it's really a Z_Strdup'd string (see m_misc.h) */
     union { const char **c; char **s; } u; // type punning via unions
@@ -2048,25 +2046,25 @@ static void M_DrawSetting(const setup_menu_t* s)
       // one char at a time until it fits. This should only occur
       // while you're editing the string.
 
-      while (M_GetPixelWidth(text) >= MAXCHATWIDTH) {
-  int len = strlen(text);
-  text[--len] = 0;
-  if (chat_index > len)
-    chat_index--;
+      while (M_GetPixelWidth(text) >= MAXENTRYWIDTH) {
+        int len = strlen(text);
+        text[--len] = 0;
+        if (entry_index > len)
+          entry_index--;
       }
 
       // Find the distance from the beginning of the string to
       // where the cursor should be drawn, plus the width of
       // the char the cursor is under..
 
-      *c = text[chat_index]; // hold temporarily
+      *c = text[entry_index]; // hold temporarily
       c[1] = 0;
       char_width = M_GetPixelWidth(c);
       if (char_width == 1)
-  char_width = 7; // default for end of line
-      text[chat_index] = 0; // NULL to get cursor position
+        char_width = 7; // default for end of line
+      text[entry_index] = 0; // NULL to get cursor position
       cursor_start = M_GetPixelWidth(text);
-      text[chat_index] = *c; // replace stored char
+      text[entry_index] = *c; // replace stored char
 
       // Now draw the cursor
       // proff 12/6/98: Drawing of cursor changed for hi-res
@@ -2495,7 +2493,7 @@ setup_menu_t keys_settings6[] =
   {"CLEAR"       ,S_INPUT     ,m_menu,KB_X,KB_Y+8*8,{0},dsda_input_menu_clear},
 
   {"MESSAGES"       ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+10*8},
-  {"REPEAT MESSAGE" ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_chat_enter},
+  {"REPEAT MESSAGE" ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_repeat_message},
 
   {"<-",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings5}},
   {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings7}},
@@ -4428,7 +4426,7 @@ dboolean M_Responder (event_t* ev) {
       {
         ch = ev->data1;
                                       // phares 4/11/98:
-        if (ch == KEYD_RSHIFT)        // For chat string processing, need
+        if (ch == KEYD_RSHIFT)        // For string processing, need
           shiftdown = true;           // to know when shift key is up or
       }                               // down so you can get at the !,#,
       else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
@@ -5289,49 +5287,49 @@ dboolean M_Responder (event_t* ev) {
       {
         if (action == MENU_BACKSPACE) // backspace and DEL
         {
-          if (chat_string_buffer[chat_index] == 0)
+          if (entry_string_index[entry_index] == 0)
           {
-            if (chat_index > 0)
-              chat_string_buffer[--chat_index] = 0;
+            if (entry_index > 0)
+              entry_string_index[--entry_index] = 0;
           }
           // shift the remainder of the text one char left
           else
-            strcpy(&chat_string_buffer[chat_index],
-                   &chat_string_buffer[chat_index + 1]);
+            strcpy(&entry_string_index[entry_index],
+                   &entry_string_index[entry_index + 1]);
         }
         else if (action == MENU_LEFT) // move cursor left
         {
-          if (chat_index > 0)
-            chat_index--;
+          if (entry_index > 0)
+            entry_index--;
         }
         else if (action == MENU_RIGHT) // move cursor right
         {
-          if (chat_string_buffer[chat_index] != 0)
-            chat_index++;
+          if (entry_string_index[entry_index] != 0)
+            entry_index++;
         }
         else if ((action == MENU_ENTER) || (action == MENU_ESCAPE))
         {
-          *ptr1->var.def->location.ppsz = chat_string_buffer;
+          *ptr1->var.def->location.ppsz = entry_string_index;
           M_SelectDone(ptr1);   // phares 4/17/98
         }
 
         // Adding a char to the text. Has to be a printable
         // char, and you can't overrun the buffer. If the
-        // chat string gets larger than what the screen can hold,
+        // string gets larger than what the screen can hold,
         // it is dealt with when the string is drawn (above).
 
         else if ((ch >= 32) && (ch <= 126))
-          if ((chat_index + 1) < CHAT_STRING_BFR_SIZE)
+          if ((entry_index + 1) < ENTRY_STRING_BFR_SIZE)
           {
             if (shiftdown)
               ch = shiftxform[ch];
-            if (chat_string_buffer[chat_index] == 0)
+            if (entry_string_index[entry_index] == 0)
             {
-              chat_string_buffer[chat_index++] = ch;
-              chat_string_buffer[chat_index] = 0;
+              entry_string_index[entry_index++] = ch;
+              entry_string_index[entry_index] = 0;
             }
             else
-              chat_string_buffer[chat_index++] = ch;
+              entry_string_index[entry_index++] = ch;
           }
         return true;
       }
@@ -5417,29 +5415,29 @@ dboolean M_Responder (event_t* ev) {
       }
       else if (flags & S_STRING)
       {
-        // copy chat string into working buffer; trim if needed.
-        // free the old chat string memory and replace it with
+        // copy string into working buffer; trim if needed.
+        // free the old string memory and replace it with
         // the (possibly larger) new memory for editing purposes
         //
         // killough 10/98: fix bugs, simplify
 
-        chat_string_buffer = Z_Malloc(CHAT_STRING_BFR_SIZE);
-        strncpy(chat_string_buffer,
-                *ptr1->var.def->location.ppsz, CHAT_STRING_BFR_SIZE);
+        entry_string_index = Z_Malloc(ENTRY_STRING_BFR_SIZE);
+        strncpy(entry_string_index,
+                *ptr1->var.def->location.ppsz, ENTRY_STRING_BFR_SIZE);
 
         // guarantee null delimiter
-        chat_string_buffer[CHAT_STRING_BFR_SIZE-1] = 0;
+        entry_string_index[ENTRY_STRING_BFR_SIZE-1] = 0;
 
-        // set chat table pointer to working buffer
+        // set string table pointer to working buffer
         // and free old string's memory.
         {
           union { const char **c; char **s; } u; // type punning via unions
 
           u.c = ptr1->var.def->location.ppsz;
           Z_Free(*(u.s));
-          *(u.c) = chat_string_buffer;
+          *(u.c) = entry_string_index;
         }
-        chat_index = 0; // current cursor position in chat_string_buffer
+        entry_index = 0; // current cursor position in entry_string_index
       }
       else if (flags & S_RESET)
         default_verify = true;

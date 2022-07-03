@@ -2518,7 +2518,7 @@ void HU_Ticker(void)
 //
 dboolean HU_Responder(event_t *ev)
 {
-  if (dsda_InputActivated(dsda_input_chat_enter)) // phares
+  if (dsda_InputActivated(dsda_input_repeat_message)) // phares
   {
     if (hud_msg_lines>1)  // it posts multi-line messages that will trash
     {
