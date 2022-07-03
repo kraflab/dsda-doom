@@ -296,27 +296,6 @@
 #define THUSTR_31   "level 31: pharaoh"
 #define THUSTR_32   "level 32: caribbean"
 
-#define HUSTR_TALKTOSELF1 "You mumble to yourself"
-#define HUSTR_TALKTOSELF2 "Who's there?"
-#define HUSTR_TALKTOSELF3 "You scare yourself"
-#define HUSTR_TALKTOSELF4 "You start to rave"
-#define HUSTR_TALKTOSELF5 "You've lost it..."
-
-#define HUSTR_MESSAGESENT "[Message Sent]"
-
-/* The following should NOT be changed unless it seems
- * just AWFULLY necessary */
-
-#define HUSTR_PLRGREEN    "Player 1: "
-#define HUSTR_PLRINDIGO   "Player 2: "
-#define HUSTR_PLRBROWN    "Player 3: "
-#define HUSTR_PLRRED      "Player 4: "
-
-#define HUSTR_KEYGREEN    'g'
-#define HUSTR_KEYINDIGO   'i'
-#define HUSTR_KEYBROWN    'b'
-#define HUSTR_KEYRED      'r'
-
 /* am_map.c */
 
 #define AMSTR_FOLLOWON    "Follow Mode ON"

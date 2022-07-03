@@ -104,16 +104,6 @@ int hud_num;
 #define key_alt KEYD_RALT
 #define key_shift KEYD_RSHIFT
 
-const char* player_names[] =
-// Ty 03/27/98 - *not* externalized
-// CPhipps - const char*
-{
-  HUSTR_PLRGREEN,
-  HUSTR_PLRINDIGO,
-  HUSTR_PLRBROWN,
-  HUSTR_PLRRED
-};
-
 //jff 3/17/98 translate player colmap to text color ranges
 int plyrcoltran[MAX_MAXPLAYERS]={CR_GREEN,CR_GRAY,CR_BROWN,CR_RED,CR_GREEN,CR_GRAY,CR_BROWN,CR_RED};
 

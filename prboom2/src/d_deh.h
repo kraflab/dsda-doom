@@ -547,32 +547,6 @@ extern const char *s_THUSTR_31; // = THUSTR_31;
 //#define THUSTR_32     "level 32: caribbean"
 extern const char *s_THUSTR_32; // = THUSTR_32;
 
-//#define HUSTR_TALKTOSELF1     "You mumble to yourself"
-extern const char *s_HUSTR_TALKTOSELF1; // = HUSTR_TALKTOSELF1;
-//#define HUSTR_TALKTOSELF2     "Who's there?"
-extern const char *s_HUSTR_TALKTOSELF2; // = HUSTR_TALKTOSELF2;
-//#define HUSTR_TALKTOSELF3     "You scare yourself"
-extern const char *s_HUSTR_TALKTOSELF3; // = HUSTR_TALKTOSELF3;
-//#define HUSTR_TALKTOSELF4     "You start to rave"
-extern const char *s_HUSTR_TALKTOSELF4; // = HUSTR_TALKTOSELF4;
-//#define HUSTR_TALKTOSELF5     "You've lost it..."
-extern const char *s_HUSTR_TALKTOSELF5; // = HUSTR_TALKTOSELF5;
-
-//#define HUSTR_MESSAGESENT     "[Message Sent]"
-extern const char *s_HUSTR_MESSAGESENT; // = HUSTR_MESSAGESENT;
-
-// The following should NOT be changed unless it seems
-// just AWFULLY necessary
-
-//#define HUSTR_PLRGREEN        "Green: "
-extern const char *s_HUSTR_PLRGREEN; // = HUSTR_PLRGREEN;
-//#define HUSTR_PLRINDIGO       "Indigo: "
-extern const char *s_HUSTR_PLRINDIGO; // = HUSTR_PLRINDIGO;
-//#define HUSTR_PLRBROWN        "Brown: "
-extern const char *s_HUSTR_PLRBROWN; // = HUSTR_PLRBROWN;
-//#define HUSTR_PLRRED          "Red: "
-extern const char *s_HUSTR_PLRRED; // = HUSTR_PLRRED;
-
 //
 //      AM_map.C
 //
