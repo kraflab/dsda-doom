@@ -164,6 +164,41 @@ static dboolean console_PlayerSetArmor(const char* command, const char* args) {
   return false;
 }
 
+static dboolean console_PlayerGiveWeapon(const char* command, const char* args) {
+  dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped);
+  void TryPickupWeapon(player_t * player, pclass_t weaponClass,
+                       weapontype_t weaponType, mobj_t * weapon,
+                       const char *message);
+
+  int weapon;
+
+  if (sscanf(args, "%i", &weapon)) {
+    if (hexen) {
+      mobj_t mo;
+
+      if (weapon < 0 || weapon >= HEXEN_NUMWEAPONS)
+        return false;
+
+      memset(&mo, 0, sizeof(mo));
+
+      mo.intflags |= MIF_FAKE;
+
+      TryPickupWeapon(&players[consoleplayer], players[consoleplayer].pclass,
+                      weapon, &mo, "WEAPON");
+    }
+    else {
+      if (weapon < 0 || weapon >= NUMWEAPONS)
+        return false;
+
+      P_GiveWeapon(&players[consoleplayer], weapon, false);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
 static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
   int x, x_frac = 0;
   double x_double;
@@ -571,6 +606,7 @@ static console_command_entry_t console_commands[] = {
   // commands
   { "player.sethealth", console_PlayerSetHealth, CF_NEVER },
   { "player.setarmor", console_PlayerSetArmor, CF_NEVER },
+  { "player.giveweapon", console_PlayerGiveWeapon, CF_NEVER },
   { "player.setx", console_PlayerSetX, CF_NEVER },
   { "player.sety", console_PlayerSetY, CF_NEVER },
   { "player.setz", console_PlayerSetZ, CF_NEVER },

@@ -234,7 +234,7 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
 // The weapon name may have a MF_DROPPED flag ored in.
 //
 
-static dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
+dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
 {
   dboolean gaveammo;
   dboolean gaveweapon;
@@ -2764,9 +2764,9 @@ void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg)
     player->yellowMessage = true;
 }
 
-static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
-                            weapontype_t weaponType, mobj_t * weapon,
-                            const char *message)
+void TryPickupWeapon(player_t * player, pclass_t weaponClass,
+                     weapontype_t weaponType, mobj_t * weapon,
+                     const char *message)
 {
     dboolean remove;
     dboolean gaveMana;
@@ -2848,7 +2848,7 @@ static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
         weapon->special = 0;
     }
 
-    if (remove)
+    if (remove && !(weapon->intflags & MIF_FAKE))
     {
         if (deathmatch && !(weapon->flags & MF_DROPPED))
         {

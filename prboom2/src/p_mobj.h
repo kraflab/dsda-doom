@@ -245,6 +245,7 @@ enum {
   MIF_SCROLLING = 4,    // Object is affected by scroller / pusher / puller
   MIF_PLAYER_DAMAGED_BARREL = 8,
   MIF_SPAWNED_BY_ICON = 16,
+  MIF_FAKE = 32, // Not a real thing, transient (e.g., for cheats)
 };
 
 // heretic
