@@ -273,6 +273,7 @@ typedef enum {
   am_shell,   // Shotgun / double barreled shotgun.
   am_cell,    // Plasma rifle, BFG.
   am_misl,    // Missile launcher.
+  DOOM_NUMAMMO,
 
   // heretic
   am_goldwand = 0,
@@ -281,8 +282,9 @@ typedef enum {
   am_skullrod,
   am_phoenixrod,
   am_mace,
+  HERETIC_NUMAMMO,
 
-  NUMAMMO,
+  NUMAMMO = HERETIC_NUMAMMO,
   am_noammo,   // fist, chainsaw, staff, gauntlets
 
   // hexen
