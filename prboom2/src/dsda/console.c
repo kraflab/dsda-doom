@@ -40,6 +40,8 @@
 
 extern patchnum_t hu_font2[HU_FONTSIZE];
 
+#define target_player players[consoleplayer]
+
 #define CONSOLE_ENTRY_SIZE 64
 
 #define CF_NEVER  0x00
@@ -134,8 +136,8 @@ static dboolean console_PlayerSetHealth(const char* command, const char* args) {
   int health;
 
   if (sscanf(args, "%i", &health)) {
-    players[consoleplayer].mo->health = health;
-    players[consoleplayer].health = health;
+    target_player.mo->health = health;
+    target_player.health = health;
 
     return true;
   }
@@ -150,13 +152,13 @@ static dboolean console_PlayerSetArmor(const char* command, const char* args) {
   arg_count = sscanf(args, "%i %i", &armorpoints, &armortype);
 
   if (arg_count != 2 || (armortype != 1 && armortype != 2))
-    armortype = players[consoleplayer].armortype;
+    armortype = target_player.armortype;
 
   if (arg_count) {
-    players[consoleplayer].armorpoints[ARMOR_ARMOR] = armorpoints;
+    target_player.armorpoints[ARMOR_ARMOR] = armorpoints;
 
     if (armortype == 0) armortype = 1;
-    players[consoleplayer].armortype = armortype;
+    target_player.armortype = armortype;
 
     return true;
   }
@@ -183,14 +185,13 @@ static dboolean console_PlayerGiveWeapon(const char* command, const char* args) 
 
       mo.intflags |= MIF_FAKE;
 
-      TryPickupWeapon(&players[consoleplayer], players[consoleplayer].pclass,
-                      weapon, &mo, "WEAPON");
+      TryPickupWeapon(&target_player, target_player.pclass, weapon, &mo, "WEAPON");
     }
     else {
       if (weapon < 0 || weapon >= NUMWEAPONS)
         return false;
 
-      P_GiveWeapon(&players[consoleplayer], weapon, false);
+      P_GiveWeapon(&target_player, weapon, false);
     }
 
     return true;
@@ -218,15 +219,15 @@ static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
 }
 
 static dboolean console_PlayerSetX(const char* command, const char* args) {
-  return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->x);
+  return console_PlayerSetCoordinate(args, &target_player.mo->x);
 }
 
 static dboolean console_PlayerSetY(const char* command, const char* args) {
-  return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->y);
+  return console_PlayerSetCoordinate(args, &target_player.mo->y);
 }
 
 static dboolean console_PlayerSetZ(const char* command, const char* args) {
-  return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->z);
+  return console_PlayerSetCoordinate(args, &target_player.mo->z);
 }
 
 static void console_PlayerRoundCoordinate(int* x) {
@@ -248,20 +249,20 @@ static void console_PlayerRoundCoordinate(int* x) {
 }
 
 static dboolean console_PlayerRoundX(const char* command, const char* args) {
-  console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
+  console_PlayerRoundCoordinate(&target_player.mo->x);
 
   return true;
 }
 
 static dboolean console_PlayerRoundY(const char* command, const char* args) {
-  console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
+  console_PlayerRoundCoordinate(&target_player.mo->y);
 
   return true;
 }
 
 static dboolean console_PlayerRoundXY(const char* command, const char* args) {
-  console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
-  console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
+  console_PlayerRoundCoordinate(&target_player.mo->x);
+  console_PlayerRoundCoordinate(&target_player.mo->y);
 
   return true;
 }
