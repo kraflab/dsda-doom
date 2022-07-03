@@ -769,9 +769,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
   }
 
-  // buttons
-  cmd->chatchar = HU_dequeueChatChar();
-
   if (dsda_InputActive(dsda_input_fire))
     cmd->buttons |= BT_ATTACK;
 

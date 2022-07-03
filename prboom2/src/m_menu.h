@@ -95,7 +95,6 @@ extern dboolean menu_background;
 #define S_YESNO      0x8 // Yes or No item
 #define S_CRITEM    0x10 // Message color
 #define S_COLOR     0x20 // Automap color
-#define S_CHAT      0x40 // Chat String
 #define S_RESET     0x80 // Reset to Defaults Button
 #define S_PREV     0x100 // Previous menu exists
 #define S_NEXT     0x200 // Next menu exists
@@ -122,11 +121,11 @@ extern dboolean menu_background;
  * S_HASDEFPTR = the set of items whose var field points to default array
  */
 
-#define S_SHOWDESC (S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_CHAT|S_RESET|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
+#define S_SHOWDESC (S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_RESET|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
 
-#define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_CHAT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_NAME)
+#define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_NAME)
 
-#define S_STRING (S_CHAT|S_FILE|S_NAME)
+#define S_STRING (S_FILE|S_NAME)
 
 #define S_HASDEFPTR (S_STRING|S_YESNO|S_NUM|S_WEAP|S_COLOR|S_CRITEM|S_CHOICE)
 

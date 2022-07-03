@@ -547,27 +547,6 @@ extern const char *s_THUSTR_31; // = THUSTR_31;
 //#define THUSTR_32     "level 32: caribbean"
 extern const char *s_THUSTR_32; // = THUSTR_32;
 
-//#define HUSTR_CHATMACRO1      "I'm ready to kick butt!"
-extern const char *s_HUSTR_CHATMACRO1; // = HUSTR_CHATMACRO1;
-//#define HUSTR_CHATMACRO2      "I'm OK."
-extern const char *s_HUSTR_CHATMACRO2; // = HUSTR_CHATMACRO2;
-//#define HUSTR_CHATMACRO3      "I'm not looking too good!"
-extern const char *s_HUSTR_CHATMACRO3; // = HUSTR_CHATMACRO3;
-//#define HUSTR_CHATMACRO4      "Help!"
-extern const char *s_HUSTR_CHATMACRO4; // = HUSTR_CHATMACRO4;
-//#define HUSTR_CHATMACRO5      "You suck!"
-extern const char *s_HUSTR_CHATMACRO5; // = HUSTR_CHATMACRO5;
-//#define HUSTR_CHATMACRO6      "Next time, scumbag..."
-extern const char *s_HUSTR_CHATMACRO6; // = HUSTR_CHATMACRO6;
-//#define HUSTR_CHATMACRO7      "Come here!"
-extern const char *s_HUSTR_CHATMACRO7; // = HUSTR_CHATMACRO7;
-//#define HUSTR_CHATMACRO8      "I'll take care of it."
-extern const char *s_HUSTR_CHATMACRO8; // = HUSTR_CHATMACRO8;
-//#define HUSTR_CHATMACRO9      "Yes"
-extern const char *s_HUSTR_CHATMACRO9; // = HUSTR_CHATMACRO9;
-//#define HUSTR_CHATMACRO0      "No"
-extern const char *s_HUSTR_CHATMACRO0; // = HUSTR_CHATMACRO0;
-
 //#define HUSTR_TALKTOSELF1     "You mumble to yourself"
 extern const char *s_HUSTR_TALKTOSELF1; // = HUSTR_TALKTOSELF1;
 //#define HUSTR_TALKTOSELF2     "Who's there?"

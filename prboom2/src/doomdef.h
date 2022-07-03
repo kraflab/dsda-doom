@@ -417,7 +417,6 @@ typedef enum {
   ss_stat,
   ss_auto,
   ss_mess,
-  ss_chat,
   ss_gen,       /* killough 10/98 */
   ss_max
 } ss_types;

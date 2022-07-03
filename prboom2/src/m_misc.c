@@ -246,8 +246,6 @@ extern int screenblocks;
 int         mus_pause_opt; // 0 = kill music, 1 = pause, 2 = continue
 #endif
 
-extern const char* chat_macros[];
-
 /* cph - Some MBF stuff parked here for now
  * killough 10/98
  */
@@ -571,18 +569,6 @@ default_t defaults[] =
   { "input_map_textured", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_map_textured, { 0, -1, -1 } },
 
-  { "input_chat", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_chat, { 't', -1, -1 } },
-  { "input_chat_dest0", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_chat_dest0, { 'g', -1, -1 } },
-  { "input_chat_dest1", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_chat_dest1, { 'i', -1, -1 } },
-  { "input_chat_dest2", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_chat_dest2, { 'b', -1, -1 } },
-  { "input_chat_dest3", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_chat_dest3, { 'r', -1, -1 } },
-  { "input_chat_backspace", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
-    dsda_input_chat_backspace, { KEYD_BACKSPACE, -1, -1 } },
   { "input_chat_enter", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_chat_enter, { KEYD_ENTER, -1, -1 } },
 
@@ -833,28 +819,6 @@ default_t defaults[] =
   {"use_joystick",{&usejoystick},{0},0,2,
    def_int,ss_none}, // number of joystick to use (0 for none)
 
-  {"Chat macros",{NULL},{0},UL,UL,def_none,ss_none},
-  {"chatmacro0", {0,&chat_macros[0]}, {0,HUSTR_CHATMACRO0},UL,UL,
-   def_str,ss_chat}, // chat string associated with 0 key
-  {"chatmacro1", {0,&chat_macros[1]}, {0,HUSTR_CHATMACRO1},UL,UL,
-   def_str,ss_chat}, // chat string associated with 1 key
-  {"chatmacro2", {0,&chat_macros[2]}, {0,HUSTR_CHATMACRO2},UL,UL,
-   def_str,ss_chat}, // chat string associated with 2 key
-  {"chatmacro3", {0,&chat_macros[3]}, {0,HUSTR_CHATMACRO3},UL,UL,
-   def_str,ss_chat}, // chat string associated with 3 key
-  {"chatmacro4", {0,&chat_macros[4]}, {0,HUSTR_CHATMACRO4},UL,UL,
-   def_str,ss_chat}, // chat string associated with 4 key
-  {"chatmacro5", {0,&chat_macros[5]}, {0,HUSTR_CHATMACRO5},UL,UL,
-   def_str,ss_chat}, // chat string associated with 5 key
-  {"chatmacro6", {0,&chat_macros[6]}, {0,HUSTR_CHATMACRO6},UL,UL,
-   def_str,ss_chat}, // chat string associated with 6 key
-  {"chatmacro7", {0,&chat_macros[7]}, {0,HUSTR_CHATMACRO7},UL,UL,
-   def_str,ss_chat}, // chat string associated with 7 key
-  {"chatmacro8", {0,&chat_macros[8]}, {0,HUSTR_CHATMACRO8},UL,UL,
-   def_str,ss_chat}, // chat string associated with 8 key
-  {"chatmacro9", {0,&chat_macros[9]}, {0,HUSTR_CHATMACRO9},UL,UL,
-   def_str,ss_chat}, // chat string associated with 9 key
-
   {"Automap settings",{NULL},{0},UL,UL,def_none,ss_none},
   //jff 1/7/98 defaults for automap colors
   //jff 4/3/98 remove -1 in lower range, 0 now disables new map features
@@ -961,8 +925,6 @@ default_t defaults[] =
    def_int,ss_auto}, // color range used for automap statistics for level time and total time
   {"hudcolor_mesg", {&hudcolor_mesg}, {6},0,9,  // red range
    def_int,ss_mess}, // color range used for messages during play
-  {"hudcolor_chat", {&hudcolor_chat}, {5},0,9,  // gold range
-   def_int,ss_mess}, // color range used for chat messages and entry
   {"hudcolor_list", {&hudcolor_list}, {5},0,9,  // gold range  //jff 2/26/98
    def_int,ss_mess}, // color range used for message review
   {"hud_msg_lines", {&hud_msg_lines}, {1},1,16,  // 1 line scrolling window
@@ -1395,8 +1357,6 @@ struct default_s *M_LookupDefault(const char *name)
 //
 // M_LoadDefaults
 //
-
-#define NUMCHATSTRINGS 10 // phares 4/13/98
 
 #define CFG_BUFFERMAX 32000
 

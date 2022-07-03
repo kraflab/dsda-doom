@@ -91,8 +91,6 @@
 
 extern dboolean  message_dontfuckwithme;
 
-extern dboolean chat_on;          // in heads-up code
-
 extern const char* g_menu_flat;
 extern patchnum_t* g_menu_font;
 extern int g_menu_save_page_size;
@@ -184,7 +182,6 @@ int mapcolor_me;    // cph
 extern int map_point_coordinates; // killough 10/98
 extern int map_level_stat;
 
-extern char* chat_macros[];  // chat macros
 extern const char* shiftxform;
 extern default_t defaults[];
 extern int numdefaults;
@@ -262,7 +259,6 @@ void M_Weapons(int);
 void M_StatusBar(int);
 void M_Automap(int);
 void M_Messages(int);
-void M_ChatStrings(int);
 void M_InitExtendedHelp(void);
 void M_ExtHelpNextScreen(int);
 void M_ExtHelp(int);
@@ -276,7 +272,6 @@ void M_DrawStatusHUD(void);
 void M_DrawExtHelp(void);
 void M_DrawAutoMap(void);
 void M_DrawMessages(void);
-void M_DrawChatStrings(void);
 void M_ChangeDemoSmoothTurns(void);
 void M_ChangeTextureParams(void);
 void M_General(int);      // killough 10/98
@@ -1544,7 +1539,6 @@ void M_SizeDisplay(int choice)
 //    Status Bar / HUD
 //    Automap
 //    Messages
-//    Chat Strings
 //
 // killough 10/98: added Compatibility and General menus
 //
@@ -1562,7 +1556,6 @@ dboolean set_weapon_active = false; // in weapons setup screen
 dboolean set_status_active = false; // in status bar/hud setup screen
 dboolean set_auto_active   = false; // in automap setup screen
 dboolean set_mess_active   = false; // in messages setup screen
-dboolean set_chat_active   = false; // in chat string setup screen
 dboolean setup_select      = false; // changing an item
 dboolean setup_gather      = false; // gathering keys for value
 dboolean colorbox_active   = false; // color palette being shown
@@ -1627,7 +1620,6 @@ enum
   set_statbar,
   set_automap,
   set_messages,
-  set_chatstrings,
   set_setup_end
 } setup_e;
 
@@ -1648,7 +1640,6 @@ menuitem_t SetupMenu[]=
   {1,"M_STAT"  ,M_StatusBar,  's', "STATUS BAR / HUD"},
   {1,"M_AUTO"  ,M_Automap,    'a', "AUTOMAP"},
   {1,"M_MESS"  ,M_Messages,   'm', "MESSAGES"},
-  {1,"M_CHAT"  ,M_ChatStrings,'c', "CHAT STRINGS"},
 };
 
 /////////////////////////////
@@ -1750,16 +1741,6 @@ menu_t MessageDef =                                         // phares 4/08/98
   &SetupDef,
   Generic_Setup,
   M_DrawMessages,
-  34,5,      // skull drawn here
-  0
-};
-
-menu_t ChatStrDef =                                         // phares 4/10/98
-{
-  generic_setup_end,
-  &SetupDef,
-  Generic_Setup,
-  M_DrawChatStrings,
   34,5,      // skull drawn here
   0
 };
@@ -2229,7 +2210,7 @@ static void M_DrawInstructions(void)
   // are changing an item or just sitting on it.
 
   if (setup_select) {
-    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_CHAT | S_RESET | S_FILE | S_CHOICE | S_NAME)) {
+    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_RESET | S_FILE | S_CHOICE | S_NAME)) {
       case S_INPUT:
         M_DrawStringCentered(160, 20, g_menu_cr_select, "Press key or button for this action");
         break;
@@ -2248,9 +2229,6 @@ static void M_DrawInstructions(void)
       break;
     case S_CRITEM:
       M_DrawStringCentered(160, 20, g_menu_cr_select, "Enter value");
-      break;
-    case S_CHAT:
-      M_DrawStringCentered(160, 20, g_menu_cr_select, "Type/edit chat string and Press ENTER");
       break;
     case S_FILE:
       M_DrawStringCentered(160, 20, g_menu_cr_select, "Type/edit filename and Press ENTER");
@@ -2516,14 +2494,8 @@ setup_menu_t keys_settings6[] =
   {"EXIT"        ,S_INPUT     ,m_menu,KB_X,KB_Y+7*8,{0},dsda_input_menu_escape},
   {"CLEAR"       ,S_INPUT     ,m_menu,KB_X,KB_Y+8*8,{0},dsda_input_menu_clear},
 
-  {"CHATTING"   ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+10*8},
-  {"BEGIN CHAT" ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_chat},
-  {"PLAYER 1"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+12*8,{0},dsda_input_chat_dest0},
-  {"PLAYER 2"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,{0},dsda_input_chat_dest1},
-  {"PLAYER 3"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_chat_dest2},
-  {"PLAYER 4"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_chat_dest3},
-  {"BACKSPACE"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_chat_backspace},
-  {"ENTER"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+17*8,{0},dsda_input_chat_enter},
+  {"MESSAGES"       ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+10*8},
+  {"REPEAT MESSAGE" ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_chat_enter},
 
   {"<-",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings5}},
   {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings7}},
@@ -3575,11 +3547,7 @@ void M_DrawGeneral(void)
 enum {
   mess_color_play,
   mess_timer,
-  mess_color_chat,
-  mess_chat_timer,
   mess_color_review,
-  mess_timed,
-  mess_hud_timer,
   mess_lines,
   mess_scrollup,
   mess_background,
@@ -3597,9 +3565,6 @@ setup_menu_t mess_settings1[] =  // Messages screen
 {
   {"Message Color During Play", S_CRITEM, m_null, M_X,
    M_Y + mess_color_play*8, {"hudcolor_mesg"}},
-
-  {"Chat Message Color", S_CRITEM, m_null, M_X,
-   M_Y + mess_color_chat*8, {"hudcolor_chat"}},
 
   {"Message Review Color", S_CRITEM, m_null, M_X,
    M_Y + mess_color_review*8, {"hudcolor_list"}},
@@ -3658,84 +3623,6 @@ void M_DrawMessages(void)
     M_DrawDefVerify();
 }
 
-
-/////////////////////////////
-//
-// The Chat Strings table.
-
-#define CS_X 20
-#define CS_Y (31+8)
-
-setup_menu_t chat_settings1[];
-
-setup_menu_t* chat_settings[] =
-{
-  chat_settings1,
-  NULL
-};
-
-setup_menu_t chat_settings1[] =  // Chat Strings screen
-{
-  {"1",S_CHAT,m_null,CS_X,CS_Y+ 1*8, {"chatmacro1"}},
-  {"2",S_CHAT,m_null,CS_X,CS_Y+ 2*8, {"chatmacro2"}},
-  {"3",S_CHAT,m_null,CS_X,CS_Y+ 3*8, {"chatmacro3"}},
-  {"4",S_CHAT,m_null,CS_X,CS_Y+ 4*8, {"chatmacro4"}},
-  {"5",S_CHAT,m_null,CS_X,CS_Y+ 5*8, {"chatmacro5"}},
-  {"6",S_CHAT,m_null,CS_X,CS_Y+ 6*8, {"chatmacro6"}},
-  {"7",S_CHAT,m_null,CS_X,CS_Y+ 7*8, {"chatmacro7"}},
-  {"8",S_CHAT,m_null,CS_X,CS_Y+ 8*8, {"chatmacro8"}},
-  {"9",S_CHAT,m_null,CS_X,CS_Y+ 9*8, {"chatmacro9"}},
-  {"0",S_CHAT,m_null,CS_X,CS_Y+10*8, {"chatmacro0"}},
-
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-
-  // Final entry
-  {0,S_SKIP|S_END,m_null}
-
-};
-
-// Setting up for the Chat Strings screen. Turn on flags, set pointers,
-// locate the first item on the screen where the cursor is allowed to
-// land.
-
-void M_ChatStrings(int choice)
-{
-  M_SetupNextMenu(&ChatStrDef);
-  setup_active = true;
-  setup_screen = ss_chat;
-  set_chat_active = true;
-  setup_select = false;
-  default_verify = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  current_setup_menu = chat_settings[0];
-  set_menu_itemon = M_GetSetupMenuItemOn();
-  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
-}
-
-// The drawing part of the Chat Strings Setup initialization. Draw the
-// background, title, instruction line, and items.
-
-void M_DrawChatStrings(void)
-{
-  menuactive = mnact_full;
-
-  M_DrawBackground(g_menu_flat, 0); // Draw background
-
-  // CPhipps - patch drawing updated
-  M_DrawTitle(83, 2, "M_CHAT", CR_DEFAULT, "CHAT STRINGS", g_cr_gold);
-  M_DrawInstructions();
-  M_DrawScreenItems(current_setup_menu);
-
-  // If the Reset Button has been selected, an "Are you sure?" message
-  // is overlayed across everything else.
-
-  if (default_verify)
-    M_DrawDefVerify();
-}
-
 /////////////////////////////
 //
 // General routines used by the Setup screens.
@@ -3768,7 +3655,6 @@ static setup_menu_t **setup_screens[] =
   stat_settings,
   auto_settings,
   mess_settings,
-  chat_settings,
   gen_settings,      // killough 10/98
 };
 
@@ -4807,7 +4693,7 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_zoomout))
     {
-      if ((automapmode & am_active) || chat_on)
+      if (automapmode & am_active)
         return false;
       M_SizeDisplay(0);
       S_StartSound(NULL,g_sfx_stnmov);
@@ -4816,7 +4702,7 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_zoomin))
     {                                   // jff 2/23/98
-      if ((automapmode & am_active) || chat_on)     // allow
+      if (automapmode & am_active)     // allow
         return false;                   // key_hud==key_zoomin
       M_SizeDisplay(1);                                             //  ^
       S_StartSound(NULL,g_sfx_stnmov);                              //  |
@@ -4952,7 +4838,7 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_hud))   // heads-up mode
     {
-      if ((automapmode & am_active) || chat_on)    // jff 2/22/98
+      if (automapmode & am_active)    // jff 2/22/98
         return false;                  // HUD mode control
       if (screenSize<8)                // function on default F5
         while (screenSize<8 || !hud_displayed) // make hud visible
@@ -5397,7 +5283,7 @@ dboolean M_Responder (event_t* ev) {
 
     // killough 10/98: consolidate handling into one place:
     if (setup_select &&
-        set_general_active | set_chat_active | set_mess_active | set_status_active)
+        set_general_active | set_mess_active | set_status_active)
     {
       if (ptr1->m_flags & S_STRING) // creating/editing a string?
       {
@@ -5583,7 +5469,6 @@ dboolean M_Responder (event_t* ev) {
       set_status_active = false;
       set_auto_active = false;
       set_mess_active = false;
-      set_chat_active = false;
       colorbox_active = false;
       default_verify = false;       // phares 4/19/98
       set_general_active = false;    // killough 10/98

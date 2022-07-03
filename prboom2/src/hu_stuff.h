@@ -70,7 +70,6 @@ dboolean HU_Responder(event_t* ev);
 
 void HU_Ticker(void);
 void HU_Drawer(void);
-char HU_dequeueChatChar(void);
 void HU_Erase(void);
 void HU_MoveHud(int force); // jff 3/9/98 avoid glitch in HUD display
 void HU_NextHud(void);
@@ -85,7 +84,6 @@ extern int hudcolor_mapstat_value;
 extern int hudcolor_mapstat_time;
 /* jff 2/16/98 hud text colors, controls added */
 extern int hudcolor_mesg;   /* color range of scrolling messages    */
-extern int hudcolor_chat;   /* color range of chat lines            */
 /* jff 2/26/98 hud message list color and background enable */
 extern int hudcolor_list;   /* color of list of past messages                  */
 extern int hud_list_bgon;   /* solid window background for list of messages    */
