@@ -239,6 +239,31 @@ static dboolean console_PlayerGiveAmmo(const char* command, const char* args) {
   return false;
 }
 
+static dboolean console_PlayerSetAmmo(const char* command, const char* args) {
+  int ammo;
+  int amount;
+
+  if (sscanf(args, "%i %i", &ammo, &amount) == 2) {
+    if (ammo < 0 || ammo >= g_numammo || amount <= 0)
+      return false;
+
+    if (hexen) {
+      target_player.ammo[ammo] = amount;
+      if (target_player.ammo[ammo] > MAX_MANA)
+        target_player.ammo[ammo] = MAX_MANA;
+    }
+    else {
+      target_player.ammo[ammo] = amount;
+      if (target_player.ammo[ammo] > target_player.maxammo[ammo])
+        target_player.ammo[ammo] = target_player.maxammo[ammo];
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
 static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
   int x, x_frac = 0;
   double x_double;
@@ -648,6 +673,7 @@ static console_command_entry_t console_commands[] = {
   { "player.setarmor", console_PlayerSetArmor, CF_NEVER },
   { "player.giveweapon", console_PlayerGiveWeapon, CF_NEVER },
   { "player.giveammo", console_PlayerGiveAmmo, CF_NEVER },
+  { "player.setammo", console_PlayerSetAmmo, CF_NEVER },
   { "player.setx", console_PlayerSetX, CF_NEVER },
   { "player.sety", console_PlayerSetY, CF_NEVER },
   { "player.setz", console_PlayerSetZ, CF_NEVER },
