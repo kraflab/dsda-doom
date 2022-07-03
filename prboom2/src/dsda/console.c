@@ -203,8 +203,11 @@ static dboolean console_PlayerGiveWeapon(const char* command, const char* args) 
 static dboolean console_PlayerGiveAmmo(const char* command, const char* args) {
   int ammo;
   int amount;
+  int arg_count;
 
-  if (sscanf(args, "%i %i", &ammo, &amount) == 2) {
+  arg_count = sscanf(args, "%i %i", &ammo, &amount);
+
+  if (arg_count == 2) {
     if (ammo < 0 || ammo >= g_numammo || amount <= 0)
       return false;
 
@@ -218,6 +221,17 @@ static dboolean console_PlayerGiveAmmo(const char* command, const char* args) {
       if (target_player.ammo[ammo] > target_player.maxammo[ammo])
         target_player.ammo[ammo] = target_player.maxammo[ammo];
     }
+
+    return true;
+  }
+  else if (arg_count == 1) {
+    if (ammo < 0 || ammo >= g_numammo)
+      return false;
+
+    if (hexen)
+      target_player.ammo[ammo] = MAX_MANA;
+    else
+      target_player.ammo[ammo] = target_player.maxammo[ammo];
 
     return true;
   }
