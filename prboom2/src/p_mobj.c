@@ -41,7 +41,6 @@
 #include "sounds.h"
 #include "st_stuff.h"
 #include "hu_stuff.h"
-#include "hu_tracers.h"
 #include "s_sound.h"
 #include "s_advsound.h"
 #include "info.h"
@@ -62,6 +61,8 @@
 
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
+
+#include "hexen/po_man.h"
 
 // heretic_note: static NUMSTATES arrays here - probably fine?
 // NUMSTATES > HERETIC_NUMSTATES
@@ -91,7 +92,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
   ret = true;
 
   if (recursion++)                            // if recursion detected,
-    seenstate = tempstate = calloc(num_states, sizeof(statenum_t)); // allocate state table
+    seenstate = tempstate = Z_Calloc(num_states, sizeof(statenum_t)); // allocate state table
 
   do
     {
@@ -128,7 +129,7 @@ dboolean P_SetMobjState(mobj_t* mobj,statenum_t state)
       seenstate[i] = 0;  // killough 4/9/98: erase memory of states
 
   if (tempstate)
-    free(tempstate);
+    Z_Free(tempstate);
 
   return ret;
 }
@@ -685,14 +686,12 @@ static void P_XYMovement (mobj_t* mo)
     }
   }
 
-#ifdef GL_DOOM
   if (gl_use_motionblur && player == &players[displayplayer])
   {
     float dx = (float)(oldx - player->mo->x) / 65536.0f;
     float dy = (float)(oldy - player->mo->y) / 65536.0f;
     motion_blur.curr_speed_pow2 = dx * dx + dy * dy;
   }
-#endif
 }
 
 
@@ -1430,28 +1429,37 @@ mobj_t *P_SubstNullMobj(mobj_t *mobj)
  * killough 8/24/98: rewrote to use hashing
  */
 
+static dboolean P_IsTypeMatch(unsigned doomednum, int type)
+{
+  return (unsigned) mobjinfo[type].doomednum == doomednum &&
+         mobjinfo[type].visibility & map_format.visibility;
+}
+
 static PUREFUNC int P_FindDoomedNum(unsigned type)
 {
   static struct { int first, next; } *hash;
   register int i;
 
   if (!hash)
-    {
-      hash = Z_Malloc(sizeof *hash * num_mobj_types, PU_CACHE, (void **) &hash);
-      for (i=0; i<num_mobj_types; i++)
-  hash[i].first = num_mobj_types;
-      for (i=mobj_types_zero; i<num_mobj_types; i++)
-  if (mobjinfo[i].doomednum != -1)
-    {
-      unsigned h = (unsigned) mobjinfo[i].doomednum % num_mobj_types;
-      hash[i].next = hash[h].first;
-      hash[h].first = i;
-    }
-    }
+  {
+    hash = Z_Malloc(sizeof(*hash) * num_mobj_types);
+
+    for (i = 0; i < num_mobj_types; i++)
+      hash[i].first = num_mobj_types;
+
+    for (i = mobj_types_zero; i < num_mobj_types; i++)
+      if (mobjinfo[i].doomednum != -1)
+      {
+        unsigned h = (unsigned) mobjinfo[i].doomednum % num_mobj_types;
+        hash[i].next = hash[h].first;
+        hash[h].first = i;
+      }
+  }
 
   i = hash[type % num_mobj_types].first;
-  while ((i < num_mobj_types) && ((unsigned)mobjinfo[i].doomednum != type))
+  while (i < num_mobj_types && !P_IsTypeMatch(type, i))
     i = hash[i].next;
+
   return i;
 }
 
@@ -1617,7 +1625,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   state_t*    st;
   mobjinfo_t* info;
 
-  mobj = Z_Malloc (sizeof(*mobj), PU_LEVEL, NULL);
+  mobj = Z_MallocLevel (sizeof(*mobj));
   memset (mobj, 0, sizeof (*mobj));
   info = &mobjinfo[type];
   mobj->type = type;
@@ -1782,8 +1790,6 @@ void P_RemoveMobj (mobj_t* mobj)
     P_RemoveThinker((thinker_t *) mobj);
     return;
   }
-
-  ClearThingsHealthTracer(mobj);
 
   if ((mobj->flags & MF_SPECIAL)
       && !(mobj->flags & MF_DROPPED)
@@ -1987,12 +1993,6 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   else
     mobj = P_SpawnMobj(x,y,z, g_mt_player);
 
-  if (deathmatch)
-    mobj->index = TracerGetDeathmatchStart(n);
-  else
-    mobj->index = TracerGetPlayerStart(mthing->type - 1);
-
-
   // set color translations for player sprites
   if (hexen)
   {
@@ -2171,15 +2171,13 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       {
         num_deathmatchstarts = num_deathmatchstarts ?
                                num_deathmatchstarts * 2 : 16;
-        deathmatchstarts = realloc(deathmatchstarts,
+        deathmatchstarts = Z_Realloc(deathmatchstarts,
                                    num_deathmatchstarts *
                                    sizeof(*deathmatchstarts));
         deathmatch_p = deathmatchstarts + offset;
       }
       memcpy(deathmatch_p++, mthing, sizeof(*mthing));
       (deathmatch_p - 1)->options = 1;
-
-      TracerAddDeathmatchStart(deathmatch_p - deathmatchstarts - 1, index);
 
       return NULL;
   	}
@@ -2237,8 +2235,6 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
      * in, in effect). Also note that the call below to P_SpawnPlayer must use
      * the playerstarts version with this field set */
     playerstarts[start][thingtype - 1].options = 1;
-
-    TracerAddPlayerStart(thingtype - 1, index);
 
     if (!deathmatch && !mthing->arg1)
       P_SpawnPlayer(thingtype - 1, &playerstarts[start][thingtype - 1]);
@@ -2427,8 +2423,6 @@ spawnit:
   mobj->spawnpoint = *mthing; // heretic_note: this is only done with totalkills++ in heretic
   mobj->index = index;//e6y
   mobj->iden_nums = iden_num;
-
-  InitThingsHealthTracer(mobj);
 
   if (map_format.hexen)
   {

@@ -55,6 +55,4 @@ extern fixed_t freelookviewheight;
 /* Called whenever the view size changes. */
 void R_InitSkyMap(void);
 
-void R_InitSky(int map);
-
 #endif

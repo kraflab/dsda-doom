@@ -125,7 +125,6 @@ PFNGLMAPBUFFERARBPROC               GLEXT_glMapBufferARB               = NULL;
 PFNGLUNMAPBUFFERARBPROC             GLEXT_glUnmapBufferARB             = NULL;
 
 /* GL_ARB_shader_objects */
-#ifdef USE_SHADERS
 PFNGLDELETEOBJECTARBPROC        GLEXT_glDeleteObjectARB = NULL;
 PFNGLGETHANDLEARBPROC           GLEXT_glGetHandleARB = NULL;
 PFNGLDETACHOBJECTARBPROC        GLEXT_glDetachObjectARB = NULL;
@@ -149,7 +148,6 @@ PFNGLGETATTACHEDOBJECTSARBPROC   GLEXT_glGetAttachedObjectsARB = NULL;
 PFNGLGETUNIFORMLOCATIONARBPROC   GLEXT_glGetUniformLocationARB = NULL;
 PFNGLGETACTIVEUNIFORMARBPROC     GLEXT_glGetActiveUniformARB = NULL;
 PFNGLGETUNIFORMFVARBPROC         GLEXT_glGetUniformfvARB = NULL;
-#endif
 
 void gld_InitOpenGLVersion(void)
 {
@@ -257,8 +255,8 @@ void gld_InitOpenGL(void)
   //
   // EXT_framebuffer_object
   //
-  gl_ext_framebuffer_object = gl_ext_framebuffer_object_default &&
-    isExtensionSupported("GL_EXT_framebuffer_object") != NULL;
+  gl_ext_framebuffer_object = isExtensionSupported("GL_EXT_framebuffer_object") != NULL;
+
   if (gl_ext_framebuffer_object)
   {
     GLEXT_glGenFramebuffersEXT         = SDL_GL_GetProcAddress("glGenFramebuffersEXT");
@@ -355,7 +353,6 @@ void gld_InitOpenGL(void)
   //
   // GL_ARB_shader_objects
   //
-#ifdef USE_SHADERS
   gl_arb_shader_objects = gl_arb_shader_objects_default &&
     (gl_version >= OPENGL_VERSION_2_0) &&
     isExtensionSupported ("GL_ARB_shader_objects") &&
@@ -409,9 +406,6 @@ void gld_InitOpenGL(void)
     lprintf(LO_INFO,"using GL_ARB_fragment_shader\n");
     lprintf(LO_INFO,"using GL_ARB_shading_language_100\n");
   }
-#else
-  gl_arb_shader_objects = false;
-#endif
 
   // GL_CLAMP_TO_EDGE
   GLEXT_CLAMP_TO_EDGE = (gl_version >= OPENGL_VERSION_1_2 ? GL_CLAMP_TO_EDGE : GL_CLAMP);

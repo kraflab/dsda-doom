@@ -357,7 +357,7 @@ GLGenericImage * ReadDDSFile(const char *filename, int * bufsize, int * numMipma
       (strncmp(filecode, "DDS ", 4) == 0) &&    // verify the type of file
       (fread(&ddsd, sizeof(ddsd), 1, fp) == 1)) // get the surface desc
     {
-      genericImage = malloc(sizeof(GLGenericImage));
+      genericImage = Z_Malloc(sizeof(GLGenericImage));
       if (genericImage)
       {
         memset(genericImage, 0, sizeof(GLGenericImage));
@@ -385,7 +385,7 @@ GLGenericImage * ReadDDSFile(const char *filename, int * bufsize, int * numMipma
         {
           /* how big is it going to be including all mipmaps? */
           *bufsize = ddsd.u2.dwMipMapCount > 1 ? ddsd.u1.dwLinearSize * factor : ddsd.u1.dwLinearSize;
-          genericImage->pixels = malloc(*bufsize * sizeof(unsigned char));
+          genericImage->pixels = Z_Malloc(*bufsize * sizeof(unsigned char));
 
           if (fread(genericImage->pixels, 1, *bufsize, fp) > 0)
           {
@@ -412,7 +412,7 @@ GLGenericImage * ReadDDSFile(const char *filename, int * bufsize, int * numMipma
   else
   {
     if (genericImage)
-      free(genericImage);
+      Z_Free(genericImage);
 
     return NULL;
   }
@@ -700,7 +700,7 @@ static int gld_HiRes_GetExternalName(GLTexture *gltexture, char *img_path, char 
 
   if (!hiresdir)
   {
-    hiresdir = malloc(PATH_MAX);
+    hiresdir = Z_Malloc(PATH_MAX);
     if (strlen(gl_texture_hires_dir) > 0)
     {
       strncpy(hiresdir, gl_texture_hires_dir, PATH_MAX - 1);
@@ -853,10 +853,9 @@ int gld_HiRes_BuildTables(void)
       {
         const byte* RGB2PAL_lump;
 
-        RGB2PAL_lump = W_CacheLumpNum(lump);
-        RGB2PAL = malloc(RGB2PAL_size);
+        RGB2PAL_lump = W_LumpByNum(lump);
+        RGB2PAL = Z_Malloc(RGB2PAL_size);
         memcpy(RGB2PAL, RGB2PAL_lump, RGB2PAL_size);
-        W_UnlockLumpName(RGB2PAL_NAME);
         return true;
       }
     }
@@ -872,7 +871,7 @@ int gld_HiRes_BuildTables(void)
       {
         I_FileToBuffer(RGB2PAL_fname, &RGB2PAL, &size);
       }
-      free(RGB2PAL_fname);
+      Z_Free(RGB2PAL_fname);
 
       if (size == RGB2PAL_size)
         return true;
@@ -904,7 +903,7 @@ int gld_HiRes_BuildTables(void)
       y = NewIntDynArray(2, dims);
       z = NewIntDynArray(2, dims);
 
-      RGB2PAL = malloc(RGB2PAL_size);
+      RGB2PAL = Z_Malloc(RGB2PAL_size);
       palette = V_GetPlaypal();
 
       // create the RGB24to8 lookup table
@@ -960,9 +959,9 @@ int gld_HiRes_BuildTables(void)
       }
       gld_ProgressEnd();
 
-      free(z);
-      free(y);
-      free(x);
+      Z_Free(z);
+      Z_Free(y);
+      Z_Free(x);
 
       if (gl_hires_24bit_colormap)
       {
@@ -1041,8 +1040,8 @@ static int gld_HiRes_LoadDDSTexture(GLTexture* gltexture, GLuint* texid, const c
 
         gld_SetTexFilters(gltexture);
 
-        free(ddsimage->pixels);
-        free(ddsimage);
+        Z_Free(ddsimage->pixels);
+        Z_Free(ddsimage);
 
         result = true;
       }
@@ -1067,7 +1066,7 @@ static int gld_HiRes_LoadFromCache(GLTexture* gltexture, GLuint* texid, const ch
   memset(&tex_stat, 0, sizeof(tex_stat));
   stat(img_path, &tex_stat);
 
-  cache_filename = malloc(strlen(img_path) + 16);
+  cache_filename = Z_Malloc(strlen(img_path) + 16);
   sprintf(cache_filename, "%s.cache", img_path);
 
   cachefp = fopen(cache_filename, "rb");
@@ -1081,7 +1080,7 @@ static int gld_HiRes_LoadFromCache(GLTexture* gltexture, GLuint* texid, const ch
       {
         tex_buffer_size = tex_width * tex_height * 4;
 
-        tex_buffer = malloc(tex_buffer_size);
+        tex_buffer = Z_Malloc(tex_buffer_size);
         if (tex_buffer)
         {
           if (fread(tex_buffer, tex_buffer_size, 1, cachefp) == 1)
@@ -1097,7 +1096,7 @@ static int gld_HiRes_LoadFromCache(GLTexture* gltexture, GLuint* texid, const ch
     fclose(cachefp);
   }
 
-  free(cache_filename);
+  Z_Free(cache_filename);
 
   return result;
 }
@@ -1203,7 +1202,7 @@ int gld_LoadHiresTex(GLTexture *gltexture, int cm)
           int lump = (W_CheckNumForName)(lumpname, ns_hires);
           if (lump != -1)
           {
-            SDL_RWops *rw_data = SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump));
+            SDL_RWops *rw_data = SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump));
             SDL_Surface *surf_tmp = IMG_Load_RW(rw_data, false);
 
             // SDL can't load some TGA with common method

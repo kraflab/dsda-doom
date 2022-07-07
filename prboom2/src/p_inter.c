@@ -47,7 +47,6 @@
 #include "p_spec.h"
 #include "p_pspr.h"
 #include "p_user.h"
-#include "hu_tracers.h"
 
 #ifdef __GNUG__
 #pragma implementation "p_inter.h"
@@ -771,8 +770,6 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
   P_RemoveMobj (special);
   player->bonuscount += BONUSADD;
 
-  CheckThingsPickupTracer(special);//e6y
-
   /* cph 20028/10 - for old-school DM addicts, allow old behavior
    * where only consoleplayer's pickup sounds are heard */
   // displayplayer, not consoleplayer, for viewing multiplayer demos
@@ -1142,12 +1139,10 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   mo = P_SpawnMobj (target->x,target->y,ONFLOORZ, item);
   mo->flags |= MF_DROPPED;    // special versions of items
 
-#ifdef GL_DOOM
   if (target->momx == 0 && target->momy == 0)
   {
     target->flags |= MF_FOREGROUND;
   }
-#endif
 }
 
 //
@@ -1574,11 +1569,6 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     {
       SB_PaletteFlash(false);
     }
-  }
-
-  if (source && target)
-  {
-    CheckGivenDamageTracer(source, damage);
   }
 
   dsda_WatchDamage(target, inflictor, source, damage);

@@ -161,7 +161,7 @@ void gld_ShutdownDetail(void)
       glDeleteTextures(1, &details[i].texid);
     }
 
-    free(details);
+    Z_Free(details);
     details = NULL;
     details_count = 0;
     details_size = 0;
@@ -702,12 +702,10 @@ GLuint gld_LoadDetailName(const char *name)
     SDL_Surface *surf_raw;
 
 #ifdef HAVE_LIBSDL2_IMAGE
-    surf_raw = IMG_Load_RW(SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump)), 1);
+    surf_raw = IMG_Load_RW(SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump)), 1);
 #else
-    surf_raw = SDL_LoadBMP_RW(SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump)), 1);
+    surf_raw = SDL_LoadBMP_RW(SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump)), 1);
 #endif
-
-    W_UnlockLumpNum(lump);
 
     if (surf_raw)
     {
@@ -829,7 +827,7 @@ void gld_ParseDetailItem(tag_detail_e item)
           if (details_count + 1 > details_size)
           {
             details_size = (details_size == 0 ? 128 : details_size * 2);
-            details = realloc(details, details_size * sizeof(details[0]));
+            details = Z_Realloc(details, details_size * sizeof(details[0]));
           }
           details[details_count] = detail;
           details_count++;
@@ -845,7 +843,7 @@ void gld_ParseDetail(void)
 
   details_count = 2; // reserved for default wall and flat
   details_size = 128;
-  details = calloc(details_size, sizeof(details[0]));
+  details = Z_Calloc(details_size, sizeof(details[0]));
 
   // skip "Detail" params
   while (SC_Check() && !SC_Compare("{"))

@@ -46,6 +46,8 @@
 #include "am_map.h"
 #include "lprintf.h"
 
+#include "dsda/stretch.h"
+
 //
 // All drawing to the view buffer is accomplished in this file.
 // The other refresh files only know about ccordinates,
@@ -92,8 +94,6 @@ static int    tempyl[4], tempyh[4];
 
 // e6y: resolution limitation is removed
 static byte           *tempbuf;
-static unsigned short *short_tempbuf;
-static unsigned int   *int_tempbuf;
 
 static int    startx = 0;
 static int    temptype = COL_NONE;
@@ -410,16 +410,15 @@ void R_InitTranslationTables (void)
   if (hexen)
   {
     int lumpnum = W_GetNumForName("trantbl0");
-    translationtables = Z_Malloc(256 * 3 * (g_maxplayers - 1), PU_STATIC, 0);
+    translationtables = Z_Malloc(256 * 3 * (g_maxplayers - 1));
 
     for (i = 0; i < g_maxplayers; i++)
       playernumtotrans[i] = i;
 
     for (i = 0; i < 3 * (g_maxplayers - 1); i++)
     {
-        const byte* transLump = W_CacheLumpNum(lumpnum + i);
+        const byte* transLump = W_LumpByNum(lumpnum + i);
         memcpy(translationtables + i * 256, transLump, 256);
-        W_UnlockLumpNum(lumpnum + i);
     }
 
     return;
@@ -429,7 +428,7 @@ void R_InitTranslationTables (void)
   // Remove dependency of colormaps aligned on 256-byte boundary
 
   if (translationtables == NULL) // CPhipps - allow multiple calls
-    translationtables = Z_Malloc(256*MAXTRANS, PU_STATIC, 0);
+    translationtables = Z_Malloc(256*MAXTRANS);
 
   for (i=0; i<MAXTRANS; i++) transtocolour[i] = 255;
 
@@ -537,15 +536,11 @@ void R_InitBuffersRes(void)
 {
   extern byte *solidcol;
 
-  if (solidcol) free(solidcol);
-  if (tempbuf) free(tempbuf);
-  if (short_tempbuf) free(short_tempbuf);
-  if (int_tempbuf) free(int_tempbuf);
+  if (solidcol) Z_Free(solidcol);
+  if (tempbuf) Z_Free(tempbuf);
 
-  solidcol = calloc(1, SCREENWIDTH * sizeof(*solidcol));
-  tempbuf = calloc(1, (SCREENHEIGHT * 4) * sizeof(*tempbuf));
-  short_tempbuf = calloc(1, (SCREENHEIGHT * 4) * sizeof(*short_tempbuf));
-  int_tempbuf = calloc(1, (SCREENHEIGHT * 4) * sizeof(*int_tempbuf));
+  solidcol = Z_Calloc(1, SCREENWIDTH * sizeof(*solidcol));
+  tempbuf = Z_Calloc(1, (SCREENHEIGHT * 4) * sizeof(*tempbuf));
 }
 
 //
@@ -597,13 +592,11 @@ void R_FillBackScreen (void)
     extern int screenblocks;
     int only_stbar;
 
-#ifdef GL_DOOM
     if (V_IsOpenGLMode())
     {
       only_stbar = (automap ? screenblocks >= 10 : screenblocks == 10);
     }
     else
-#endif
     {
       only_stbar = screenblocks >= 10;
     }

@@ -688,6 +688,8 @@ void IN_DrawSingleStats(void)
     x = 160 - MN_TextAWidth("FINISHED") / 2;
     MN_DrTextA("FINISHED", x, 25);
 
+    dsda_DrawIntermissionDisplay();
+
     if (intertime < 30)
     {
         sounds = 0;
@@ -761,8 +763,6 @@ void IN_DrawSingleStats(void)
         IN_DrTextB(next_level_name, x, 170);
         skipintermission = false;
     }
-
-    dsda_DrawIntermissionDisplay();
 }
 
 //========================================================================

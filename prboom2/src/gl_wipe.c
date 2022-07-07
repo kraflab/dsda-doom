@@ -43,6 +43,8 @@
 #include "lprintf.h"
 #include "e6y.h"
 
+#include "dsda/gl/render_scale.h"
+
 static GLuint wipe_scr_start_tex = 0;
 static GLuint wipe_scr_end_tex = 0;
 
@@ -61,29 +63,30 @@ GLuint CaptureScreenAsTexID(void)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   glTexImage2D(GL_TEXTURE_2D, 0, 3,
-    gld_GetTexDimension(SCREENWIDTH), gld_GetTexDimension(SCREENHEIGHT),
+    gld_GetTexDimension(gl_viewport_width), gld_GetTexDimension(gl_viewport_height),
     0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
-  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, SCREENWIDTH, SCREENHEIGHT);
+  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, gl_viewport_x, gl_viewport_y, gl_viewport_width, gl_viewport_height);
 
   return id;
 }
 
 int gld_wipe_doMelt(int ticks, int *y_lookup)
 {
-  int i;
+  int i, scaled_i;
   int total_w, total_h;
   float fU1, fU2, fV1, fV2;
+  int yoffs;
+  float tx, sx, sy;
 
-  total_w = gld_GetTexDimension(SCREENWIDTH);
-  total_h = gld_GetTexDimension(SCREENHEIGHT);
+  total_w = gld_GetTexDimension(gl_viewport_width);
+  total_h = gld_GetTexDimension(gl_viewport_height);
 
   fU1 = 0.0f;
-  fV1 = (float)SCREENHEIGHT / (float)total_h;
-  fU2 = (float)SCREENWIDTH / (float)total_w;
+  fV1 = (float)gl_viewport_height / (float)total_h;
+  fU2 = (float)gl_viewport_width / (float)total_w;
   fV2 = 0.0f;
 
-  gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
 
   glBindTexture(GL_TEXTURE_2D, wipe_scr_end_tex);
   glColor3f(1.0f, 1.0f, 1.0f);
@@ -101,19 +104,24 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
   glColor3f(1.0f, 1.0f, 1.0f);
 
   glBegin(GL_QUAD_STRIP);
-
-  for (i=0; i <= SCREENWIDTH; i++)
+  for (i = 0; i <= SCREENWIDTH; i++)
   {
-    int yoffs = MAX(0, y_lookup[i]);
+    // elim - when (i == SCREENWIDTH), use the previous y_lookup value as gl-quad-strip drawing
+    //        makes the right-most column "lag" behind, causing an annoying artifact
+    yoffs = MAX(0, y_lookup[MIN(SCREENWIDTH-1, i)]);
 
-    float tx = (float) i / total_w;
-    float sx = (float) i;
-    float sy = (float) yoffs;
+    // elim - melt texture is the pixel size of the GL viewport, not the game scene texture size
+    scaled_i = MIN(gl_viewport_width, (int)((float)i * gl_scale_x));
+
+    // elim - texel coordinates don't necessarily match texture buffer dimensions, since textures
+    //        have to be stored in dimensions that are power-of-2
+    tx = (float) MIN(fU2, (float)scaled_i / (float)total_w);
+    sx = (float) i;
+    sy = (float) yoffs;
 
     glTexCoord2f(tx, fV1); glVertex2f(sx, sy);
     glTexCoord2f(tx, fV2); glVertex2f(sx, sy + (float)SCREENHEIGHT);
   }
-
   glEnd();
 
   return 0;

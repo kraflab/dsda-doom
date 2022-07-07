@@ -180,7 +180,7 @@ void P_SpawnFireFlicker (sector_t*  sector)
 
   P_ClearNonGeneralizedSectorSpecial(sector);
 
-  flick = Z_Malloc ( sizeof(*flick), PU_LEVEL, 0);
+  flick = Z_MallocLevel ( sizeof(*flick));
 
   memset(flick, 0, sizeof(*flick));
   P_AddThinker (&flick->thinker);
@@ -207,7 +207,7 @@ void P_SpawnLightFlash (sector_t* sector)
 
   P_ClearNonGeneralizedSectorSpecial(sector);
 
-  flash = Z_Malloc ( sizeof(*flash), PU_LEVEL, 0);
+  flash = Z_MallocLevel ( sizeof(*flash));
 
   memset(flash, 0, sizeof(*flash));
   P_AddThinker (&flash->thinker);
@@ -240,7 +240,7 @@ void P_SpawnStrobeFlash
 {
   strobe_t* flash;
 
-  flash = Z_Malloc ( sizeof(*flash), PU_LEVEL, 0);
+  flash = Z_MallocLevel ( sizeof(*flash));
 
   memset(flash, 0, sizeof(*flash));
   P_AddThinker (&flash->thinker);
@@ -276,7 +276,7 @@ void P_SpawnGlowingLight(sector_t*  sector)
 {
   glow_t* g;
 
-  g = Z_Malloc( sizeof(*g), PU_LEVEL, 0);
+  g = Z_MallocLevel( sizeof(*g));
 
   memset(g, 0, sizeof(*g));
   P_AddThinker(&g->thinker);
@@ -530,7 +530,7 @@ static void P_SpawnZDoomLightGlow(sector_t *sec, short startlevel, short endleve
 {
   zdoom_glow_t *g;
 
-  g = Z_Malloc(sizeof(*g), PU_LEVEL, 0);
+  g = Z_MallocLevel(sizeof(*g));
 
   memset(g, 0, sizeof(*g));
   P_AddThinker(&g->thinker);
@@ -614,7 +614,7 @@ static void P_SpawnZDoomLightFlicker(sector_t *sec, short upper, short lower)
 {
   zdoom_flicker_t *g;
 
-  g = Z_Malloc(sizeof(*g), PU_LEVEL, 0);
+  g = Z_MallocLevel(sizeof(*g));
 
   memset(g, 0, sizeof(*g));
   P_AddThinker(&g->thinker);
@@ -647,7 +647,7 @@ static void P_SpawnZDoomLightStrobe(sector_t *sector, int upper, int lower,
 {
   strobe_t* g;
 
-  g = Z_Malloc ( sizeof(*g), PU_LEVEL, 0);
+  g = Z_MallocLevel ( sizeof(*g));
 
   memset(g, 0, sizeof(*g));
   P_AddThinker (&g->thinker);
@@ -821,7 +821,7 @@ dboolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
         think = false;
         sec = &sectors[secNum];
 
-        light = (light_t *) Z_Malloc(sizeof(light_t), PU_LEVEL, 0);
+        light = (light_t *) Z_MallocLevel(sizeof(light_t));
         light->type = type;
         light->sector = sec;
         light->count = 0;
@@ -934,7 +934,7 @@ void P_SpawnPhasedLight(sector_t * sector, int base, int index)
 {
     phase_t *phase;
 
-    phase = Z_Malloc(sizeof(*phase), PU_LEVEL, 0);
+    phase = Z_MallocLevel(sizeof(*phase));
     P_AddThinker(&phase->thinker);
     phase->sector = sector;
     sector->lightingdata = phase;

@@ -33,6 +33,8 @@
  *
  *-----------------------------------------------------------------------------*/
 
+#include <math.h>
+
 #include "doomstat.h"
 #include "d_event.h"
 #include "r_main.h"
@@ -73,6 +75,16 @@ dboolean onground; // whether player is on ground or in air
 // heretic
 int newtorch;      // used in the torch flicker effect.
 int newtorchdelta;
+
+fixed_t P_PlayerSpeed(player_t* player)
+{
+  double vx, vy;
+
+  vx = (double) player->mo->momx / FRACUNIT;
+  vy = (double) player->mo->momy / FRACUNIT;
+
+  return (fixed_t) (sqrt(vx * vx + vy * vy) * FRACUNIT);
+}
 
 angle_t P_PlayerPitch(player_t* player)
 {
@@ -317,7 +329,7 @@ void P_SetPitch(player_t *player)
 
   if (player == &players[consoleplayer])
   {
-    if (!(demoplayback || democontinue))
+    if (!demoplayback)
     {
       if (dsda_MouseLook())
       {

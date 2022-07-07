@@ -89,13 +89,11 @@ void gld_InitMapPics(void)
 #ifdef HAVE_LIBSDL2_IMAGE
       SDL_Surface *surf_raw;
 
-      surf_raw = IMG_Load_RW(SDL_RWFromConstMem(W_CacheLumpNum(lump), W_LumpLength(lump)), true);
+      surf_raw = IMG_Load_RW(SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump)), true);
 
       surf = SDL_ConvertSurface(surf_raw, &RGBAFormat, 0);
       SDL_FreeSurface(surf_raw);
 #endif
-
-      W_UnlockLumpNum(lump);
 
       if (surf)
       {

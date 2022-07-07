@@ -15,6 +15,7 @@
 //	DSDA Split Tracker
 //
 
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -22,7 +23,7 @@
 #include "lprintf.h"
 #include "e6y.h"
 
-#include "dsda.h"
+#include "dsda/demo.h"
 #include "dsda/settings.h"
 #include "dsda/data_organizer.h"
 
@@ -68,7 +69,7 @@ static char* dsda_SplitTrackerPath(void) {
     dir = dsda_SplitTrackerDir();
 
     length = strlen(dir) + strlen(name_base) + 28;
-    dsda_split_tracker_path = malloc(length);
+    dsda_split_tracker_path = Z_Malloc(length);
 
     snprintf(
       dsda_split_tracker_path, length - 1, "%s/%s_%i_%i_%i_%s_splits.txt",
@@ -125,7 +126,7 @@ static void dsda_LoadSplits(void) {
         break;
 
       i = dsda_splits_count;
-      dsda_splits = realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
+      dsda_splits = Z_Realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
       dsda_InitSplitTime(&dsda_splits[i].leveltime);
       dsda_InitSplitTime(&dsda_splits[i].totalleveltimes);
       dsda_splits[i].first_time = 0;
@@ -143,7 +144,7 @@ static void dsda_LoadSplits(void) {
 
     lprintf(LO_INFO, "dsda_LoadSplits: %I64i splits loaded!\n", dsda_splits_count);
 
-    free(buffer);
+    Z_Free(buffer);
   }
 }
 
@@ -174,7 +175,7 @@ void dsda_WriteSplits(void) {
   }
 
   if (!M_WriteFile(path, buffer, p - buffer))
-    I_Warn("dsda_WriteSplits: Failed to write splits file.");
+    I_Warn("dsda_WriteSplits: Failed to write splits file \"%s\". (%d)", path, errno);
 }
 
 static void dsda_TrackSplitTime(dsda_split_time_t* split_time, int current) {
@@ -204,7 +205,7 @@ void dsda_RecordSplit(void) {
     }
 
   if (i == dsda_splits_count) {
-    dsda_splits = realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
+    dsda_splits = Z_Realloc(dsda_splits, (++dsda_splits_count) * sizeof(dsda_split_t));
     dsda_splits[i].first_time = 1;
     dsda_InitSplitTime(&dsda_splits[i].leveltime);
     dsda_InitSplitTime(&dsda_splits[i].totalleveltimes);

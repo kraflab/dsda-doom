@@ -73,19 +73,7 @@ typedef struct
   size_t numwadfiles;
 } waddata_t;
 
-typedef struct
-{
-  int pattern_num;
-  char pattern_name[80];
-  char *missed;
-} patterndata_t;
-
 extern const char *demo_demoex_filename;
-
-extern int demo_patterns_count;
-extern const char *demo_patterns_mask;
-extern char **demo_patterns_list;
-extern const char *demo_patterns_list_def[];
 
 extern const char *getwad_cmdline;
 
@@ -94,29 +82,18 @@ int WadDataAddItem(waddata_t *waddata, const char *filename, wad_source_t source
 void WadDataFree(waddata_t *wadfiles);
 
 int CheckDemoExDemo(void);
-int CheckAutoDemo(void);
-int ParseDemoPattern(const char *str, waddata_t* waddata, char **missed, dboolean trytodownload);
-int DemoNameToWadData(const char * demoname, waddata_t *waddata, patterndata_t *patterndata);
 void WadDataToWadFiles(waddata_t *waddata);
-void WadFilesToWadData(waddata_t *waddata);
 
 byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size);
 void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl);
 void G_WriteDemoFooter(void);
 void I_DemoExShutdown(void);
 
-void W_InitPWADTable(wadtbl_t *wadtbl);
-void W_FreePWADTable(wadtbl_t *wadtbl);
-void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size);
-
 void R_DemoEx_WriteMLook(angle_t pitch);
 angle_t R_DemoEx_ReadMLook(void);
 void R_DemoEx_ResetMLook(void);
 
 dboolean D_TryGetWad(const char* name);
-
-int IsDemoPlayback(void);
-int IsDemoContinue(void);
 
 int LoadDemo(const char *name, const byte **buffer, int *length, int *lump);
 

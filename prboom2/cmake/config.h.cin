@@ -11,8 +11,6 @@
 #cmakedefine HAVE_GETOPT
 #cmakedefine HAVE_MMAP
 #cmakedefine HAVE_CREATE_FILE_MAPPING
-#cmakedefine HAVE_SCHED_SETAFFINITY
-#cmakedefine HAVE_USLEEP
 #cmakedefine HAVE_STRSIGNAL
 #cmakedefine HAVE_MKSTEMP
 
@@ -25,7 +23,6 @@
 #cmakedefine HAVE_LIBSDL2_IMAGE
 #cmakedefine HAVE_LIBSDL2_MIXER
 
-#cmakedefine HAVE_LIBPCREPOSIX
 #cmakedefine HAVE_LIBZ
 #cmakedefine HAVE_LIBMAD
 #cmakedefine HAVE_LIBFLUIDSYNTH
@@ -36,5 +33,3 @@
 #cmakedefine SIMPLECHECKS
 
 #cmakedefine RANGECHECK
-#cmakedefine HEAPCHECK
-#cmakedefine HEAPDUMP

@@ -174,7 +174,6 @@ prboom2/data/lumps/crorange.lmp -text
 prboom2/data/lumps/crred.lmp -text
 prboom2/data/lumps/crtan.lmp -text
 prboom2/data/lumps/cryellow.lmp -text
-prboom2/data/lumps/endboom.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/gammatbl.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/glfp.lmp -text
 prboom2/data/lumps/glshadow.lmp -text
@@ -191,6 +190,7 @@ prboom2/data/lumps/m_shadow.lmp -text
 prboom2/data/lumps/m_weap.lmp -text
 prboom2/data/lumps/nervebex.lmp -text
 prboom2/data/lumps/sinetabl.lmp -text
+prboom2/data/lumps/soundfont/sndfont.lmp -text
 prboom2/data/lumps/switches.lmp -text
 prboom2/data/lumps/tangtabl.lmp -text
 prboom2/data/lumps/tantoang.lmp -text
@@ -351,10 +351,6 @@ prboom2/src/MAC/FileButtonController.h -text
 prboom2/src/MAC/FileButtonController.m -text
 prboom2/src/MAC/Image-DS_Store -text
 prboom2/src/MAC/Info.plist -text
-prboom2/src/MAC/Launcher.icns -text
-prboom2/src/MAC/LauncherApp.h -text
-prboom2/src/MAC/LauncherApp.m -text
-prboom2/src/MAC/LauncherMain.m -text
 prboom2/src/MAC/Makefile.am -text
 prboom2/src/MAC/PrBoom.icns -text
 prboom2/src/MAC/PrBoom.sdef -text
@@ -391,15 +387,12 @@ prboom2/src/MUSIC/lib/libvorbisfile.lib -text
 prboom2/src/MUSIC/lib/portmidi.lib -text
 prboom2/src/Makefile.am eol=lf
 prboom2/src/PCSOUND/Makefile.am eol=lf
-prboom2/src/POSIX/Makefile.am eol=lf
 prboom2/src/SDL/Makefile.am eol=lf
 prboom2/src/SDL/SDL_windows.h -text
 prboom2/src/SDL/SDL_windows_main.c -text
 prboom2/src/TEXTSCREEN/Makefile.am -text
 prboom2/src/TEXTSCREEN/txt_largefont.h -text
 prboom2/src/gl_shader.c -text
-prboom2/src/hu_tracers.c -text
-prboom2/src/hu_tracers.h -text
 prboom2/tests/demo-testing.csv -text
 prboom2/tests/donut_av.wad -text
 prboom2/tests/heightlist_overflow.wad -text

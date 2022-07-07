@@ -44,7 +44,6 @@
 #include "p_enemy.h"
 #include "lprintf.h"
 #include "s_advsound.h"
-#include "hu_tracers.h"
 #include "e6y.h"//e6y
 
 #include "hexen/a_action.h"
@@ -143,6 +142,7 @@ void P_ArchiveWorld (void)
     (
       sizeof(short) * 2 +
       sizeof(li->flags) +
+      sizeof(li->player_activations) +
       sizeof(li->arg1) * 5
     ) * numlines +
     sizeof(musinfo.current_item);
@@ -197,6 +197,7 @@ void P_ArchiveWorld (void)
     *put++ = li->tag;
 
     save_p = (byte *) put;
+    *save_p++ = li->player_activations;
     *save_p++ = li->arg1;
     *save_p++ = li->arg2;
     *save_p++ = li->arg3;
@@ -285,6 +286,7 @@ void P_UnArchiveWorld (void)
     li->tag = *get++;
 
     save_p = (byte *) get;
+    li->player_activations = *save_p++;
     li->arg1 = *save_p++;
     li->arg2 = *save_p++;
     li->arg3 = *save_p++;
@@ -468,7 +470,7 @@ void P_UnArchiveMap(void)
     {
       int i;
       while (markpointnum >= markpointnum_max)
-        markpoints = realloc(markpoints, sizeof *markpoints *
+        markpoints = Z_Realloc(markpoints, sizeof *markpoints *
          (markpointnum_max = markpointnum_max ? markpointnum_max*2 : 16));
 
       for (i = 0; i < markpointnum; i++)
@@ -566,17 +568,15 @@ void P_UnArchiveThinkerSubclasses(mobj_t** mobj_p, int mobj_count)
 }
 
 extern mobj_t** blocklinks;
+extern int      blocklinks_count;
 extern int      bmapwidth;
 extern int      bmapheight;
 
 void P_ArchiveBlockLinks(void)
 {
   int i;
-  int size;
 
-  size = bmapwidth * bmapheight;
-
-  for (i = 0; i < size; ++i)
+  for (i = 0; i < blocklinks_count; ++i)
   {
     int count = 0;
     mobj_t*  mobj;
@@ -620,6 +620,7 @@ void P_UnArchiveBlockLinks(mobj_t** mobj_p, int mobj_count)
     memcpy(&count, save_p, sizeof(count));
     save_p += sizeof(count);
 
+    blocklinks[i] = NULL;
     bprev = &blocklinks[i];
     for (j = 0; j < count; ++j)
     {
@@ -1086,7 +1087,6 @@ void P_TrueUnArchiveThinkers(void) {
   true_thinkerclass_t tc;
 
   totallive = 0;
-  ClearThingsHealthTracers();
 
   // killough 3/26/98: Load boss brain state
   memcpy(&brain, save_p, sizeof brain);
@@ -1149,7 +1149,7 @@ void P_TrueUnArchiveThinkers(void) {
       I_Error ("P_TrueUnArchiveThinkers: Unknown tc %i in size calculation", *save_p);
 
     // first table entry special: 0 maps to NULL
-    *(mobj_p = malloc((mobj_count + 1) * sizeof *mobj_p)) = 0;   // table of pointers
+    *(mobj_p = Z_Malloc((mobj_count + 1) * sizeof *mobj_p)) = 0;   // table of pointers
     save_p = sp;           // restore save pointer
   }
 
@@ -1159,7 +1159,7 @@ void P_TrueUnArchiveThinkers(void) {
     switch (tc) {
       case tc_true_ceiling:
         {
-          ceiling_t *ceiling = Z_Malloc (sizeof(*ceiling), PU_LEVEL, NULL);
+          ceiling_t *ceiling = Z_MallocLevel (sizeof(*ceiling));
           memcpy (ceiling, save_p, sizeof(*ceiling));
           save_p += sizeof(*ceiling);
           ceiling->sector = &sectors[(size_t)ceiling->sector];
@@ -1175,7 +1175,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_door:
         {
-          vldoor_t *door = Z_Malloc (sizeof(*door), PU_LEVEL, NULL);
+          vldoor_t *door = Z_MallocLevel (sizeof(*door));
           memcpy (door, save_p, sizeof(*door));
           save_p += sizeof(*door);
           door->sector = &sectors[(size_t)door->sector];
@@ -1191,7 +1191,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_floor:
         {
-          floormove_t *floor = Z_Malloc (sizeof(*floor), PU_LEVEL, NULL);
+          floormove_t *floor = Z_MallocLevel (sizeof(*floor));
           memcpy (floor, save_p, sizeof(*floor));
           save_p += sizeof(*floor);
           floor->sector = &sectors[(size_t)floor->sector];
@@ -1203,7 +1203,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_plat:
         {
-          plat_t *plat = Z_Malloc (sizeof(*plat), PU_LEVEL, NULL);
+          plat_t *plat = Z_MallocLevel (sizeof(*plat));
           memcpy (plat, save_p, sizeof(*plat));
           save_p += sizeof(*plat);
           plat->sector = &sectors[(size_t)plat->sector];
@@ -1219,7 +1219,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_flash:
         {
-          lightflash_t *flash = Z_Malloc (sizeof(*flash), PU_LEVEL, NULL);
+          lightflash_t *flash = Z_MallocLevel (sizeof(*flash));
           memcpy (flash, save_p, sizeof(*flash));
           save_p += sizeof(*flash);
           flash->sector = &sectors[(size_t)flash->sector];
@@ -1231,7 +1231,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_strobe:
         {
-          strobe_t *strobe = Z_Malloc (sizeof(*strobe), PU_LEVEL, NULL);
+          strobe_t *strobe = Z_MallocLevel (sizeof(*strobe));
           memcpy (strobe, save_p, sizeof(*strobe));
           save_p += sizeof(*strobe);
           strobe->sector = &sectors[(size_t)strobe->sector];
@@ -1243,7 +1243,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_glow:
         {
-          glow_t *glow = Z_Malloc (sizeof(*glow), PU_LEVEL, NULL);
+          glow_t *glow = Z_MallocLevel (sizeof(*glow));
           memcpy (glow, save_p, sizeof(*glow));
           save_p += sizeof(*glow);
           glow->sector = &sectors[(size_t)glow->sector];
@@ -1255,7 +1255,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_zdoom_glow:
         {
-          zdoom_glow_t *glow = Z_Malloc (sizeof(*glow), PU_LEVEL, NULL);
+          zdoom_glow_t *glow = Z_MallocLevel (sizeof(*glow));
           memcpy (glow, save_p, sizeof(*glow));
           save_p += sizeof(*glow);
           glow->sector = &sectors[(size_t)glow->sector];
@@ -1267,7 +1267,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_flicker:           // killough 10/4/98
         {
-          fireflicker_t *flicker = Z_Malloc (sizeof(*flicker), PU_LEVEL, NULL);
+          fireflicker_t *flicker = Z_MallocLevel (sizeof(*flicker));
           memcpy (flicker, save_p, sizeof(*flicker));
           save_p += sizeof(*flicker);
           flicker->sector = &sectors[(size_t)flicker->sector];
@@ -1279,7 +1279,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_zdoom_flicker:
         {
-          zdoom_flicker_t *flicker = Z_Malloc (sizeof(*flicker), PU_LEVEL, NULL);
+          zdoom_flicker_t *flicker = Z_MallocLevel (sizeof(*flicker));
           memcpy (flicker, save_p, sizeof(*flicker));
           save_p += sizeof(*flicker);
           flicker->sector = &sectors[(size_t)flicker->sector];
@@ -1292,7 +1292,7 @@ void P_TrueUnArchiveThinkers(void) {
         //jff 2/22/98 new case for elevators
       case tc_true_elevator:
         {
-          elevator_t *elevator = Z_Malloc (sizeof(*elevator), PU_LEVEL, NULL);
+          elevator_t *elevator = Z_MallocLevel (sizeof(*elevator));
           memcpy (elevator, save_p, sizeof(*elevator));
           save_p += sizeof(*elevator);
           elevator->sector = &sectors[(size_t)elevator->sector];
@@ -1305,7 +1305,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_scroll:       // killough 3/7/98: scroll effect thinkers
         {
-          scroll_t *scroll = Z_Malloc (sizeof(scroll_t), PU_LEVEL, NULL);
+          scroll_t *scroll = Z_MallocLevel (sizeof(scroll_t));
           memcpy (scroll, save_p, sizeof(scroll_t));
           save_p += sizeof(scroll_t);
           scroll->thinker.function = T_Scroll;
@@ -1315,7 +1315,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_pusher:   // phares 3/22/98: new Push/Pull effect thinkers
         {
-          pusher_t *pusher = Z_Malloc (sizeof(pusher_t), PU_LEVEL, NULL);
+          pusher_t *pusher = Z_MallocLevel (sizeof(pusher_t));
           memcpy (pusher, save_p, sizeof(pusher_t));
           save_p += sizeof(pusher_t);
           pusher->thinker.function = T_Pusher;
@@ -1326,7 +1326,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_friction:
         {
-          friction_t *friction = Z_Malloc (sizeof(friction_t), PU_LEVEL, NULL);
+          friction_t *friction = Z_MallocLevel (sizeof(friction_t));
           memcpy (friction, save_p, sizeof(friction_t));
           save_p += sizeof(friction_t);
           friction->thinker.function = T_Friction;
@@ -1336,7 +1336,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_light:
         {
-          light_t *light = Z_Malloc(sizeof(*light), PU_LEVEL, NULL);
+          light_t *light = Z_MallocLevel(sizeof(*light));
           memcpy(light, save_p, sizeof(*light));
           save_p += sizeof(*light);
           light->sector = &sectors[(size_t)light->sector];
@@ -1347,7 +1347,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_phase:
         {
-          phase_t *phase = Z_Malloc(sizeof(*phase), PU_LEVEL, NULL);
+          phase_t *phase = Z_MallocLevel(sizeof(*phase));
           memcpy(phase, save_p, sizeof(*phase));
           save_p += sizeof(*phase);
           phase->sector = &sectors[(size_t)phase->sector];
@@ -1359,7 +1359,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_acs:
         {
-          acs_t *acs = Z_Malloc(sizeof(*acs), PU_LEVEL, NULL);
+          acs_t *acs = Z_MallocLevel(sizeof(*acs));
           memcpy(acs, save_p, sizeof(*acs));
           save_p += sizeof(*acs);
           acs->line = (intptr_t) acs->line != -1 ? &lines[(size_t) acs->line] : NULL;
@@ -1370,7 +1370,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_pillar:
         {
-          pillar_t *pillar = Z_Malloc(sizeof(*pillar), PU_LEVEL, NULL);
+          pillar_t *pillar = Z_MallocLevel(sizeof(*pillar));
           memcpy(pillar, save_p, sizeof(*pillar));
           save_p += sizeof(*pillar);
           pillar->sector = &sectors[(size_t)pillar->sector];
@@ -1382,7 +1382,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_floor_waggle:
         {
-          planeWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
+          planeWaggle_t *waggle = Z_MallocLevel(sizeof(*waggle));
           memcpy(waggle, save_p, sizeof(*waggle));
           save_p += sizeof(*waggle);
           waggle->sector = &sectors[(size_t)waggle->sector];
@@ -1394,7 +1394,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_ceiling_waggle:
         {
-          planeWaggle_t *waggle = Z_Malloc(sizeof(*waggle), PU_LEVEL, NULL);
+          planeWaggle_t *waggle = Z_MallocLevel(sizeof(*waggle));
           memcpy(waggle, save_p, sizeof(*waggle));
           save_p += sizeof(*waggle);
           waggle->sector = &sectors[(size_t)waggle->sector];
@@ -1406,7 +1406,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_poly_rotate:
         {
-          polyevent_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
+          polyevent_t *poly = Z_MallocLevel(sizeof(*poly));
           memcpy(poly, save_p, sizeof(*poly));
           save_p += sizeof(*poly);
           poly->thinker.function = T_RotatePoly;
@@ -1416,7 +1416,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_poly_move:
         {
-          polyevent_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
+          polyevent_t *poly = Z_MallocLevel(sizeof(*poly));
           memcpy(poly, save_p, sizeof(*poly));
           save_p += sizeof(*poly);
           poly->thinker.function = T_MovePoly;
@@ -1426,7 +1426,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_poly_door:
         {
-          polydoor_t *poly = Z_Malloc(sizeof(*poly), PU_LEVEL, NULL);
+          polydoor_t *poly = Z_MallocLevel(sizeof(*poly));
           memcpy(poly, save_p, sizeof(*poly));
           save_p += sizeof(*poly);
           poly->thinker.function = T_PolyDoor;
@@ -1436,7 +1436,7 @@ void P_TrueUnArchiveThinkers(void) {
 
       case tc_true_mobj:
         {
-          mobj_t *mobj = Z_Malloc(sizeof(mobj_t), PU_LEVEL, NULL);
+          mobj_t *mobj = Z_MallocLevel(sizeof(mobj_t));
 
           // killough 2/14/98 -- insert pointers to thinkers into table, in order:
           mobj_count++;
@@ -1461,10 +1461,6 @@ void P_TrueUnArchiveThinkers(void) {
             // The references value must be nonzero to reach the target code
             mobj->thinker.references = 1;
             break;
-          }
-          else
-          {
-            InitThingsHealthTracer(mobj);
           }
 
           P_SetThingPosition (mobj);
@@ -1538,7 +1534,7 @@ void P_TrueUnArchiveThinkers(void) {
 
   dsda_UnArchiveMSecNodes(mobj_p, mobj_count);
 
-  free(mobj_p);    // free translation table
+  Z_Free(mobj_p);    // free translation table
 
   // TODO: not in sync, need to save and load existing order
   if (map_format.thing_id)

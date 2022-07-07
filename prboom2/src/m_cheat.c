@@ -57,6 +57,7 @@
 #include "dsda/excmd.h"
 #include "dsda/input.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/settings.h"
 
 #define plyr (players+consoleplayer)     /* the console player */
@@ -468,37 +469,7 @@ static void cheat_behold()
   plyr->message = s_STSTR_BEHOLD; // Ty 03/27/98 - externalized
 }
 
-static dboolean cannot_clev(int epsd, int map)
-{
-  char *next;
-
-  if (
-    epsd < 1 ||
-    map < 0 ||
-    ((gamemode == retail || gamemode == registered) && (epsd > 9 || map > 9)) ||
-    (gamemode == shareware && (epsd > 1 || map > 9)) ||
-    (gamemode == commercial && (epsd > 1 || map > 99)) ||
-    (gamemission == pack_nerve && map > 9)
-  ) return true;
-
-  if (map_format.mapinfo)
-  {
-    map = P_TranslateMap(map);
-  }
-
-  // Catch invalid maps.
-  next = MAPNAME(epsd, map);
-  if (W_CheckNumForName(next) == -1)
-  {
-	  doom_printf("IDCLEV target not found: %s", next);
-	  return true;
-  }
-
-  return false;
-}
-
 extern int EpiCustom;
-struct MapEntry* G_LookupMapinfo(int gameepisode, int gamemap);
 
 // 'clev' change-level cheat
 static void cheat_clev(char buf[3])
@@ -517,26 +488,12 @@ static void cheat_clev(char buf[3])
     map = buf[1] - '0';
   }
 
-  // First check if we have a mapinfo entry for the requested level. If this is present the remaining checks should be skipped.
-  entry = G_LookupMapinfo(epsd, map);
-  if (!entry)
+  if (dsda_ResolveCLEV(&epsd, &map))
   {
+    plyr->message = s_STSTR_CLEV; // Ty 03/27/98 - externalized
 
-	  // Catch invalid maps.
-	  if (cannot_clev(epsd, map))
-		  return;
-
-	  // Chex.exe always warps to episode 1.
-	  if (gamemission == chex)
-	  {
-		  epsd = 1;
-	  }
+    G_DeferedInitNew(gameskill, epsd, map);
   }
-  // So be it.
-
-  plyr->message = s_STSTR_CLEV; // Ty 03/27/98 - externalized
-
-  G_DeferedInitNew(gameskill, epsd, map);
 }
 
 // 'mypos' for player position
@@ -990,10 +947,10 @@ typedef struct cheat_input_s {
 } cheat_input_t;
 
 static cheat_input_t cheat_input[] = {
-  { dsda_input_iddqd, cht_never, cheat_god, 0 },
+  { dsda_input_iddqd, cht_dsda, cheat_god, 0 },
   { dsda_input_idkfa, cht_never, cheat_kfa, 0 },
   { dsda_input_idfa, cht_never, cheat_fa, 0 },
-  { dsda_input_idclip, cht_never, cheat_noclip, 0 },
+  { dsda_input_idclip, cht_dsda, cheat_noclip, 0 },
   { dsda_input_idbeholdh, cht_never, cheat_health, 0 },
   { dsda_input_idbeholdm, cht_never, cheat_megaarmour, 0 },
   { dsda_input_idbeholdv, cht_never, cheat_pw, pw_invulnerability },
@@ -1039,6 +996,24 @@ dboolean M_CheatResponder(event_t *ev)
     return true;
   }
 
+  return false;
+}
+
+dboolean M_CheatEntered(const char* element, const char* value)
+{
+  cheatseq_t* cheat_i;
+
+  for (cheat_i = cheat; cheat_i->cheat; cheat_i++)
+  {
+    if (!strcmp(cheat_i->cheat, element) && M_CheatAllowed(cheat_i->when))
+    {
+      if (cheat_i->arg >= 0)
+        cheat_i->func(cheat_i->arg);
+      else
+        cheat_i->func(value);
+      return true;
+    }
+  }
   return false;
 }
 
@@ -1164,15 +1139,10 @@ static void cheat_chicken(void)
 
 static void cheat_init(void)
 {
-  extern dboolean partial_reset;
-
-  if (!map_format.mapinfo) return;
-
-  partial_reset = true;
-
-  G_DeferedInitNew(gameskill, gameepisode, P_GetMapWarpTrans(gamemap));
-
-  P_SetMessage(plyr, "LEVEL WARP", true);
+  if (dsda_ResolveINIT())
+  {
+    P_SetMessage(plyr, "LEVEL WARP", true);
+  }
 }
 
 static void cheat_inventory(void)

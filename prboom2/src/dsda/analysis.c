@@ -17,6 +17,7 @@
 
 #include "doomstat.h"
 
+#include "dsda/excmd.h"
 #include "dsda/settings.h"
 
 #include "analysis.h"
@@ -142,6 +143,7 @@ const char* dsda_DetectCategory(void) {
   );
   satisfies_100s = dsda_any_secrets && dsda_100s;
 
+  if (dsda_ExCmdDemo()) return "Other";
   if (dsda_turbo) return "Other";
   if (coop_spawns) return "Other";
   if (solo_net) return "Other";

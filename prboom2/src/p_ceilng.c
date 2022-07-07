@@ -81,12 +81,10 @@ result_e T_MoveCeilingPlane
   fixed_t       lastpos;
   fixed_t       destheight; //jff 02/04/98 used to keep ceilings from moving thru each other
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_UpdateSplitData(sector);
   }
-#endif
 
   switch(direction)
   {
@@ -463,7 +461,7 @@ manual_ceiling://e6y
 
     // create a new ceiling thinker
     rtn = 1;
-    ceiling = Z_Malloc (sizeof(*ceiling), PU_LEVEL, 0);
+    ceiling = Z_MallocLevel (sizeof(*ceiling));
     memset(ceiling, 0, sizeof(*ceiling));
     P_AddThinker (&ceiling->thinker);
     sec->ceilingdata = ceiling;               //jff 2/22/98
@@ -635,7 +633,7 @@ int EV_CeilingCrushStop(line_t* line)
 //
 void P_AddActiveCeiling(ceiling_t* ceiling)
 {
-  ceilinglist_t *list = malloc(sizeof *list);
+  ceilinglist_t *list = Z_Malloc(sizeof *list);
   list->ceiling = ceiling;
   ceiling->list = list;
   if ((list->next = activeceilings))
@@ -660,7 +658,7 @@ void P_RemoveActiveCeiling(ceiling_t* ceiling)
   P_TagFinished(ceiling->sector->tag);
   if ((*list->prev = list->next))
     list->next->prev = list->prev;
-  free(list);
+  Z_Free(list);
 }
 
 //
@@ -675,7 +673,7 @@ void P_RemoveAllActiveCeilings(void)
   while (activeceilings)
   {
     ceilinglist_t *next = activeceilings->next;
-    free(activeceilings);
+    Z_Free(activeceilings);
     activeceilings = next;
   }
 }
@@ -706,7 +704,7 @@ static void P_SpawnZDoomCeiling(sector_t *sec, ceiling_e type, line_t *line, int
   ceiling_t *ceiling;
   fixed_t targheight = 0;
 
-  ceiling = Z_Malloc(sizeof(*ceiling), PU_LEVEL, 0);
+  ceiling = Z_MallocLevel(sizeof(*ceiling));
   memset(ceiling, 0, sizeof(*ceiling));
   P_AddThinker(&ceiling->thinker);
   sec->ceilingdata = ceiling;
@@ -979,7 +977,7 @@ int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type)
         // new door thinker
         //
         rtn = 1;
-        ceiling = Z_Malloc(sizeof(*ceiling), PU_LEVEL, 0);
+        ceiling = Z_MallocLevel(sizeof(*ceiling));
         memset(ceiling, 0, sizeof(*ceiling));
         P_AddThinker(&ceiling->thinker);
         sec->ceilingdata = ceiling;

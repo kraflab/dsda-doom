@@ -35,6 +35,8 @@
 #include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "gl_opengl.h"
 
 #include <SDL.h>
@@ -85,7 +87,7 @@ static void gld_PrepareSectorSpecialEffects(void)
   /* free memory if allocated by previous maps */
   if (bleedsectors)
   {
-    free(bleedsectors);
+    Z_Free(bleedsectors);
     numbleedsectors = 0;
     bleedsectors = NULL;
   }
@@ -181,7 +183,7 @@ static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, i
   if (source_idx == -1)
   {
     /* allocate memory for new sector */
-    bleedsectors = (bleedthrough_t*) realloc(bleedsectors, (numbleedsectors + 1) * sizeof(bleedthrough_t));
+    bleedsectors = (bleedthrough_t*) Z_Realloc(bleedsectors, (numbleedsectors + 1) * sizeof(bleedthrough_t));
     if(!bleedsectors) I_Error("gld_RegisterBleedthroughSector: Out of memory");
     memset(&bleedsectors[numbleedsectors], 0, sizeof(bleedthrough_t));
     numbleedsectors++;
@@ -232,7 +234,7 @@ static void gld_PreprocessFakeSector(int ceiling, sector_t *sector, int groupid)
     sector->fakegroup[ceiling] = groupid;
     if (groupid >= numfakeplanes)
     {
-      fakeplanes = realloc(fakeplanes, (numfakeplanes + 1) * sizeof(fakegroup_t));
+      fakeplanes = Z_Realloc(fakeplanes, (numfakeplanes + 1) * sizeof(fakegroup_t));
       memset(&fakeplanes[numfakeplanes], 0, sizeof(fakegroup_t));
       numfakeplanes++;
     }
@@ -287,18 +289,18 @@ void gld_PreprocessFakeSectors(void)
     for (i = 0; i < numfakeplanes; i++)
     {
       fakeplanes[i].count = 0;
-      free(fakeplanes[i].list);
+      Z_Free(fakeplanes[i].list);
       fakeplanes[i].list = NULL;
     }
     numfakeplanes = 0;
-    free(fakeplanes);
+    Z_Free(fakeplanes);
     fakeplanes = NULL;
   }
   if (sectors2)
   {
-    free(sectors2);
+    Z_Free(sectors2);
   }
-  sectors2 = malloc(numsectors * sizeof(sector_t*));
+  sectors2 = Z_Malloc(numsectors * sizeof(sector_t*));
 
   // reset all groups with fake floors and ceils
   // 0 - floor; 1 - ceil;
@@ -326,7 +328,7 @@ void gld_PreprocessFakeSectors(void)
         {
           gld_PreprocessFakeSector(ceiling, &sectors[i], groupid);
           fakeplanes[groupid].ceiling = ceiling;
-          fakeplanes[groupid].list = malloc(fakeplanes[groupid].count * sizeof(sector_t*));
+          fakeplanes[groupid].list = Z_Malloc(fakeplanes[groupid].count * sizeof(sector_t*));
           for (j = 0, k = 0; k < fakeplanes[groupid].count; k++)
           {
             if (!(sectors2[k]->flags & no_texture_flag))

@@ -33,6 +33,7 @@
 #include "lprintf.h"
 
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 #include "hexen/a_action.h"
 #include "hexen/p_acs.h"
@@ -118,7 +119,7 @@ static void FreeMapArchive(void)
   for (map = 0; map < MAX_MAPS; ++map)
     if (map_archive[map].buffer)
     {
-      free(map_archive[map].buffer);
+      Z_Free(map_archive[map].buffer);
       map_archive[map].buffer = NULL;
       map_archive[map].size = 0;
     }
@@ -156,7 +157,7 @@ void SV_RestoreMapArchive(byte **buffer)
 
     if (map_archive[i].size)
     {
-      map_archive[i].buffer = malloc(map_archive[i].size);
+      map_archive[i].buffer = Z_Malloc(map_archive[i].size);
       memcpy(map_archive[i].buffer, *buffer, map_archive[i].size);
       *buffer += map_archive[i].size;
     }
@@ -176,7 +177,7 @@ static void CheckBuffer(size_t size)
   while (delta + size > ma_p->size)
   {
     ma_p->size += 1024;
-    ma_p->buffer = realloc(ma_p->buffer, ma_p->size);
+    ma_p->buffer = Z_Realloc(ma_p->buffer, ma_p->size);
     buffer_p = ma_p->buffer + delta;
   }
 }
@@ -275,10 +276,10 @@ static void SV_OpenWrite(int map)
   ma_p = &map_archive[map];
   if (ma_p->buffer)
   {
-    free(ma_p->buffer);
+    Z_Free(ma_p->buffer);
   }
   ma_p->size = 1024;
-  ma_p->buffer = malloc(ma_p->size);
+  ma_p->buffer = Z_Malloc(ma_p->size);
   buffer_p = ma_p->buffer;
 }
 
@@ -1480,18 +1481,19 @@ static void UnarchiveMobjs(void)
     mobj_t *mobj;
 
     AssertSegment(ASEG_MOBJS);
-    TargetPlayerAddrs = Z_Malloc(MAX_TARGET_PLAYERS * sizeof(mobj_t **),
-                                 PU_STATIC, NULL);
+    TargetPlayerAddrs = Z_Malloc(MAX_TARGET_PLAYERS * sizeof(mobj_t **));
     TargetPlayerCount = 0;
     MobjCount = SV_ReadLong();
-    MobjList = Z_Malloc(MobjCount * sizeof(mobj_t *), PU_STATIC, NULL);
+    MobjList = Z_Malloc(MobjCount * sizeof(mobj_t *));
     for (i = 0; i < MobjCount; i++)
     {
-        MobjList[i] = Z_Malloc(sizeof(mobj_t), PU_LEVEL, NULL);
+        MobjList[i] = Z_MallocLevel(sizeof(mobj_t));
         memset(MobjList[i], 0, sizeof(mobj_t));
     }
     for (i = 0; i < MobjCount; i++)
     {
+        int references;
+
         mobj = MobjList[i];
         StreamIn_mobj_t(mobj);
 
@@ -1503,7 +1505,10 @@ static void UnarchiveMobjs(void)
         {
           mobj->index = -1;
           mobj->thinker.function = P_RemoveThinkerDelayed;
+
+          references = mobj->thinker.references;
           P_AddThinker(&mobj->thinker);
+          mobj->thinker.references = references;
 
           continue;
         }
@@ -1513,7 +1518,10 @@ static void UnarchiveMobjs(void)
         mobj->ceilingz = mobj->subsector->sector->ceilingheight;
 
         mobj->thinker.function = P_MobjThinker;
+
+        references = mobj->thinker.references;
         P_AddThinker(&mobj->thinker);
+        mobj->thinker.references = references;
     }
     map_format.build_mobj_thing_id_list();
     P_InitCreatureCorpseQueue(true);    // true = scan for corpses
@@ -1688,7 +1696,7 @@ static void UnarchiveThinkers(void)
         {
             if (tClass == info->tClass)
             {
-                thinker = Z_Malloc(info->size, PU_LEVEL, NULL);
+                thinker = Z_MallocLevel(info->size);
                 memset(thinker, 0, info->size);
                 info->readFunc(thinker);
                 thinker->function = info->thinkerFunc;
@@ -1939,7 +1947,7 @@ void SV_SaveMap(void)
 void SV_LoadMap(void)
 {
     // Load a base level
-    G_InitNew(gameskill, gameepisode, gamemap);
+    G_InitNew(gameskill, gameepisode, gamemap, false);
 
     // Remove all thinkers
     RemoveAllThinkers();
@@ -1988,7 +1996,7 @@ void SV_MapTeleport(int map, int position)
 
     if (!deathmatch)
     {
-        if (P_GetMapCluster(gamemap) == P_GetMapCluster(map))
+        if (dsda_MapCluster(gamemap) == dsda_MapCluster(map))
         {                       // Same cluster - save map without saving player mobjs
             SV_SaveMap();
         }
@@ -2014,7 +2022,8 @@ void SV_MapTeleport(int map, int position)
     // for the following check (player mobj redirection)
     TargetPlayerAddrs = NULL;
 
-    gamemap = map;
+    dsda_UpdateGameMap(1, map);
+
     if (!deathmatch && MapArchiveExists(gamemap))
     {                           // Unarchive map
         SV_LoadMap();
@@ -2022,7 +2031,7 @@ void SV_MapTeleport(int map, int position)
     }
     else
     {                           // New map
-        G_InitNew(gameskill, gameepisode, gamemap);
+        G_InitNew(gameskill, gameepisode, gamemap, false);
 
         P_MapStart();
 

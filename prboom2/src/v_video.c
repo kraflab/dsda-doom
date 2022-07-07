@@ -38,6 +38,8 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#include <assert.h>
 #include "SDL.h"
 
 #include "doomdef.h"
@@ -56,6 +58,7 @@
 
 #include "dsda/global.h"
 #include "dsda/palette.h"
+#include "dsda/stretch.h"
 
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
@@ -67,21 +70,6 @@ float gl_ratio;
 int psprite_offset; // Needed for "tallscreen" modes
 
 const char *render_aspects_list[5] = {"auto", "16:9", "16:10", "4:3", "5:4"};
-const char *render_stretch_list[patch_stretch_max] = {"not adjusted", "Doom format", "fit to width"};
-
-stretch_param_t stretch_params_table[3][VPT_ALIGN_MAX];
-stretch_param_t *stretch_params;
-
-cb_video_t video;
-cb_video_t video_stretch;
-cb_video_t video_full;
-int patches_scalex;
-int patches_scaley;
-
-int render_stretch_hud;
-int render_stretch_hud_default;
-int render_patches_scalex;
-int render_patches_scaley;
 
 // Each screen is [SCREENWIDTH*SCREENHEIGHT];
 screeninfo_t screens[NUM_SCREENS];
@@ -217,12 +205,12 @@ void V_InitColorTranslation(void)
   register const crdef_t *p;
   for (p=crdefs; p->name; p++)
   {
-    *p->map = W_CacheLumpName(p->name);
+    *p->map = W_LumpByName(p->name);
     if (p - crdefs == CR_DEFAULT)
       continue;
     if (gamemission == chex || gamemission == hacx)
     {
-      byte *temp = malloc(256);
+      byte *temp = Z_Malloc(256);
       memcpy (temp, *p->map, 256);
       if (gamemission == chex)
         memcpy (temp+112, *p->map+176, 16); // green range
@@ -258,7 +246,7 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
     int sx = x;
     int sy = y;
 
-    params = &stretch_params[flags & VPT_ALIGN_MASK];
+    params = dsda_StretchParams(flags);
 
     x  = params->video->x1lookup[x];
     y  = params->video->y1lookup[y];
@@ -323,7 +311,7 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
   lump += firstflat;
 
   // killough 4/17/98:
-  data = W_CacheLumpNum(lump);
+  data = W_LumpByNum(lump);
 
   {
     const byte *src, *src_p;
@@ -350,8 +338,6 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
       }
     }
   }
-
-  W_UnlockLumpNum(lump);
 }
 
 static void FUNC_V_FillPatch(int lump, int scrn, int x, int y, int width, int height, enum patch_translation_e flags)
@@ -436,8 +422,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
   if ((flags & VPT_STRETCH_MASK) && SCREEN_320x200)
     flags &= ~VPT_STRETCH_MASK;
 
-  // e6y: wide-res
-  params = &stretch_params[flags & VPT_ALIGN_MASK];
+  params = dsda_StretchParams(flags);
 
   // CPhipps - null translation pointer => no translation
   if (!trans)
@@ -555,42 +540,26 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
       colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, drawvars.filterpatch, RDRAW_FILTER_NONE);
     }
 
-    //e6y: predefined arrays are used
-    if (!(flags & VPT_STRETCH_MASK))
-    {
-      DXI = 1 << 16;
-      DYI = 1 << 16;
+    DXI = params->video->xstep;
+    DYI = params->video->ystep;
 
-      left = x;
-      top = y;
-      right = x + patch->width - 1;
-      bottom = y + patch->height;
-    }
+    left = (x < 0 || x > 320 ? (x * params->video->width) / 320 : params->video->x1lookup[x]);
+    top =  (y < 0 || y > 200 ? (y * params->video->height) / 200 : params->video->y1lookup[y]);
+
+    if (x + patch->width < 0 || x + patch->width > 320)
+      right = ( ((x + patch->width) * params->video->width - 1) / 320 );
     else
-    {
-      DXI = params->video->xstep;
-      DYI = params->video->ystep;
+      right = params->video->x2lookup[x + patch->width - 1];
 
-      //FIXME: Is it needed only for F_BunnyScroll?
+    if (y + patch->height < 0 || y + patch->height > 200)
+      bottom = ( ((y + patch->height - 0) * params->video->height) / 200 );
+    else
+      bottom = params->video->y2lookup[y + patch->height - 1];
 
-      left = (x < 0 || x > 320 ? (x * params->video->width) / 320 : params->video->x1lookup[x]);
-      top =  (y < 0 || y > 200 ? (y * params->video->height) / 200 : params->video->y1lookup[y]);
-
-      if (x + patch->width < 0 || x + patch->width > 320)
-        right = ( ((x + patch->width) * params->video->width - 1) / 320 );
-      else
-        right = params->video->x2lookup[x + patch->width - 1];
-
-      if (y + patch->height < 0 || y + patch->height > 200)
-        bottom = ( ((y + patch->height - 0) * params->video->height) / 200 );
-      else
-        bottom = params->video->y2lookup[y + patch->height - 1];
-
-      left   += params->deltax1;
-      right  += params->deltax2;
-      top    += params->deltay1;
-      bottom += params->deltay1;
-    }
+    left   += params->deltax1;
+    right  += params->deltax2;
+    top    += params->deltay1;
+    bottom += params->deltay1;
 
     dcvars.texheight = patch->height;
     dcvars.iscale = DYI;
@@ -710,15 +679,13 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 static void FUNC_V_DrawNumPatch(int x, int y, int scrn, int lump,
          int cm, enum patch_translation_e flags)
 {
-  V_DrawMemPatch(x, y, scrn, R_CachePatchNum(lump), cm, flags);
-  R_UnlockPatchNum(lump);
+  V_DrawMemPatch(x, y, scrn, R_PatchByNum(lump), cm, flags);
 }
 
 static void FUNC_V_DrawNumPatchPrecise(float x, float y, int scrn, int lump,
          int cm, enum patch_translation_e flags)
 {
-  V_DrawMemPatch((int)x, (int)y, scrn, R_CachePatchNum(lump), cm, flags);
-  R_UnlockPatchNum(lump);
+  V_DrawMemPatch((int)x, (int)y, scrn, R_PatchByNum(lump), cm, flags);
 }
 
 static int currentPaletteIndex = 0;
@@ -734,9 +701,7 @@ void V_SetPalette(int pal)
   currentPaletteIndex = pal;
 
   if (V_IsOpenGLMode()) {
-#ifdef GL_DOOM
     gld_SetPalette(pal);
-#endif
   } else {
     I_SetPalette(pal);
   }
@@ -750,9 +715,7 @@ void V_SetPlayPal(int playpal_index)
 
   if (V_IsOpenGLMode())
   {
-#ifdef GL_DOOM
     gld_FlushTextures();
-#endif
   }
 }
 
@@ -775,7 +738,6 @@ static void V_PlotPixel8(int scrn, int x, int y, byte color);
 static void WRAP_V_DrawLineWu(fline_t* fl, int color);
 static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight);
 
-#ifdef GL_DOOM
 static void WRAP_gld_FillRect(int scrn, int x, int y, int width, int height, byte colour)
 {
   gld_FillBlock(x,y,width,height,colour);
@@ -817,7 +779,6 @@ static void WRAP_gld_DrawLine(fline_t* fl, int color)
 {
   gld_DrawLine_f(fl->a.fx, fl->a.fy, fl->b.fx, fl->b.fy, color);
 }
-#endif
 
 static void NULL_FillRect(int scrn, int x, int y, int width, int height, byte colour) {}
 static void NULL_CopyRect(int srcscrn, int destscrn, int x, int y, int width, int height, enum patch_translation_e flags) {}
@@ -867,7 +828,6 @@ void V_InitMode(video_mode_t mode) {
       V_DrawLineWu = WRAP_V_DrawLineWu;
       current_videomode = VID_MODESW;
       break;
-#ifdef GL_DOOM
     case VID_MODEGL:
       lprintf(LO_INFO, "V_InitMode: using OpenGL video mode\n");
       V_CopyRect = WRAP_gld_CopyRect;
@@ -883,7 +843,6 @@ void V_InitMode(video_mode_t mode) {
       V_DrawLineWu = WRAP_gld_DrawLine;
       current_videomode = VID_MODEGL;
       break;
-#endif
   }
   R_FilterInit();
 }
@@ -903,7 +862,7 @@ void V_AllocScreen(screeninfo_t *scrn) {
   if (!scrn->not_on_heap)
     if ((scrn->pitch * scrn->height) > 0)
       //e6y: Clear the screen to black.
-      scrn->data = calloc(scrn->pitch*scrn->height, 1);
+      scrn->data = Z_Calloc(scrn->pitch*scrn->height, 1);
 }
 
 //
@@ -921,7 +880,7 @@ void V_AllocScreens(void) {
 //
 void V_FreeScreen(screeninfo_t *scrn) {
   if (!scrn->not_on_heap) {
-    free(scrn->data);
+    Z_Free(scrn->data);
     scrn->data = NULL;
   }
 }
@@ -1170,11 +1129,10 @@ const unsigned char* V_GetPlaypal(void)
   if (!playpal_data->lump)
   {
     int lump = W_GetNumForName(playpal_data->lump_name);
+    const byte *data = W_LumpByNum(lump);
     playpal_data->length = W_LumpLength(lump);
-    const byte *data = W_CacheLumpNum(lump);
-    playpal_data->lump = malloc(playpal_data->length);
+    playpal_data->lump = Z_Malloc(playpal_data->length);
     memcpy(playpal_data->lump, data, playpal_data->length);
-    W_UnlockLumpNum(lump);
   }
 
   return playpal_data->lump;
@@ -1195,7 +1153,7 @@ void V_FillBorder(int lump, byte color)
 {
   int bordtop, bordbottom, bordleft, bordright;
 
-  if (render_stretch_hud == patch_stretch_full)
+  if (render_stretch_hud == patch_stretch_fit_to_width)
     return;
 
   bordleft = wide_offsetx;
@@ -1370,60 +1328,7 @@ void SetRatio(int width, int height)
 
   yaspectmul = Scale((320<<FRACBITS), WIDE_SCREENHEIGHT, 200 * WIDE_SCREENWIDTH);
 
-  patches_scalex = MIN(SCREENWIDTH / 320, SCREENHEIGHT / 200);
-  patches_scalex = MAX(1, patches_scalex);
-  patches_scaley = patches_scalex;
-
-  //custom scaling when "not adjusted" is used
-  if (render_patches_scalex > 0)
-  {
-    patches_scalex = MIN(render_patches_scalex, patches_scalex);
-  }
-  if (render_patches_scaley > 0)
-  {
-    patches_scaley = MIN(render_patches_scaley, patches_scaley);
-  }
-
-  ST_SCALED_HEIGHT = g_st_height * patches_scaley;
-
-  if (SCREENWIDTH < 320 || WIDE_SCREENWIDTH < 320 ||
-      SCREENHEIGHT < 200 || WIDE_SCREENHEIGHT < 200)
-  {
-    render_stretch_hud = patch_stretch_full;
-  }
-
-  if (raven && render_stretch_hud == 0)
-  {
-    render_stretch_hud++;
-  }
-
-  switch (render_stretch_hud)
-  {
-  case patch_stretch_16x10:
-    ST_SCALED_Y = (200 * patches_scaley - ST_SCALED_HEIGHT);
-
-    wide_offset2x = (SCREENWIDTH - patches_scalex * 320);
-    wide_offset2y = (SCREENHEIGHT - patches_scaley * 200);
-    break;
-  case patch_stretch_4x3:
-    ST_SCALED_HEIGHT = g_st_height * WIDE_SCREENHEIGHT / 200;
-
-    ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
-
-    wide_offset2x = (SCREENWIDTH - WIDE_SCREENWIDTH);
-    wide_offset2y = (SCREENHEIGHT - WIDE_SCREENHEIGHT);
-    break;
-  case patch_stretch_full:
-    ST_SCALED_HEIGHT = g_st_height * SCREENHEIGHT / 200;
-
-    ST_SCALED_Y = SCREENHEIGHT - ST_SCALED_HEIGHT;
-    wide_offset2x = 0;
-    wide_offset2y = 0;
-    break;
-  }
-
-  wide_offsetx = wide_offset2x / 2;
-  wide_offsety = wide_offset2y / 2;
+  dsda_EvaluatePatchScale();
 
   SCREEN_320x200 =
     (SCREENWIDTH == 320) && (SCREENHEIGHT == 200) &&
@@ -1435,7 +1340,7 @@ void SetRatio(int width, int height)
 
 void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flags)
 {
-  stretch_param_t *params = &stretch_params[flags & VPT_ALIGN_MASK];
+  stretch_param_t *params = dsda_StretchParams(flags);
   int sx = *x;
   int sy = *y;
 
@@ -1504,24 +1409,20 @@ void V_ToggleFullscreen(void)
 
   I_UpdateVideoMode();
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_PreprocessLevel();
   }
-#endif
 }
 
 void V_ChangeScreenResolution(void)
 {
   I_UpdateVideoMode();
 
-#ifdef GL_DOOM
   if (V_IsOpenGLMode())
   {
     gld_PreprocessLevel();
   }
-#endif
 }
 
 void V_FillRectStretch(int scrn, int x, int y, int width, int height, byte color)
@@ -1562,7 +1463,7 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
     }
   }
 
-  raw = (const byte *) W_CacheLumpName(lump_name) + source_offset;
+  raw = (const byte *) W_LumpByName(lump_name) + source_offset;
 
   x_factor = (float)SCREENWIDTH / 320;
   y_factor = (float)SCREENHEIGHT / 200;
@@ -1584,8 +1485,6 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
 
       V_FillRect(0, x_offset + x, y, width, height, *raw);
     }
-
-  W_UnlockLumpName(lump_name);
 }
 
 void V_DrawShadowedNumPatch(int x, int y, int lump)

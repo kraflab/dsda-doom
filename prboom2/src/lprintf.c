@@ -55,6 +55,8 @@
 #include "e6y.h"//e6y
 #include "i_capture.h"
 
+static dboolean disable_message_box;
+
 int cons_stdout_mask = LO_INFO;
 int cons_stderr_mask = LO_WARN | LO_ERROR;
 
@@ -102,6 +104,11 @@ void I_DisableAllLogging(void)
   cons_stderr_mask = 0;
 }
 
+void I_DisableMessageBoxes(void)
+{
+  disable_message_box = true;
+}
+
 /*
  * I_Error
  *
@@ -120,7 +127,7 @@ void I_Error(const char *error, ...)
   va_end(argptr);
   lprintf(LO_ERROR, "%s\n", errmsg);
 #ifdef _WIN32
-  if (!M_CheckParm ("-nodraw") && !capturing_video) {
+  if (!disable_message_box && !M_CheckParm ("-nodraw") && !capturing_video) {
     I_MessageBox(errmsg, PRB_MB_OK);
   }
 #endif
@@ -176,7 +183,7 @@ int doom_vsnprintf(char *buf, size_t max, const char *fmt, va_list va)
     {
       if (backsize <= max) continue;
 
-      backbuffer = (realloc)(backbuffer, backsize);
+      backbuffer = realloc(backbuffer, backsize);
       assert(backbuffer != NULL);
 
       va_copy(vc, va);

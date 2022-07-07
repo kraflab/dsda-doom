@@ -255,7 +255,7 @@ void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,
   .hexen = true,
-  .polyobjs = false,
+  .polyobjs = true,
   .acs = false,
   .thing_id = true,
   .mapinfo = false,
@@ -301,7 +301,9 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .mt_pull = MT_PULL,
   .dn_polyanchor = 9300,
   .dn_polyspawn_start = 9301,
+  .dn_polyspawn_hurt = 9303,
   .dn_polyspawn_end = 9303,
+  .visibility = VF_ZDOOM | VF_DOOM,
 };
 
 static const map_format_t hexen_map_format = {
@@ -353,7 +355,9 @@ static const map_format_t hexen_map_format = {
   .mt_pull = -1,
   .dn_polyanchor = 3000,
   .dn_polyspawn_start = 3001,
+  .dn_polyspawn_hurt = -1,
   .dn_polyspawn_end = 3002,
+  .visibility = VF_HEXEN,
 };
 
 static const map_format_t heretic_map_format = {
@@ -405,7 +409,9 @@ static const map_format_t heretic_map_format = {
   .mt_pull = -1,
   .dn_polyanchor = -1,
   .dn_polyspawn_start = -1,
+  .dn_polyspawn_hurt = -1,
   .dn_polyspawn_end = -1,
+  .visibility = VF_HERETIC,
 };
 
 static const map_format_t doom_map_format = {
@@ -457,7 +463,9 @@ static const map_format_t doom_map_format = {
   .mt_pull = MT_PULL,
   .dn_polyanchor = -1,
   .dn_polyspawn_start = -1,
+  .dn_polyspawn_hurt = -1,
   .dn_polyspawn_end = -1,
+  .visibility = VF_DOOM,
 };
 
 void dsda_ApplyZDoomMapFormat(void) {

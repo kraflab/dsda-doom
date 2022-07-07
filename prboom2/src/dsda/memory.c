@@ -29,8 +29,6 @@ void dsda_CacheSoundLumps(void) {
   unsigned int count = 0;
   unsigned long long cache_time;
 
-  dsda_StartTimer(dsda_timer_memory);
-
   for (i = 0; i < num_sfx; ++i) {
     sfxinfo_t *sfx = &S_sfx[i];
     sfx->lumpnum = I_GetSfxLumpNum(sfx);
@@ -40,8 +38,4 @@ void dsda_CacheSoundLumps(void) {
       W_LockLumpNum(sfx->lumpnum);
     }
   }
-
-  cache_time = dsda_ElapsedTime(dsda_timer_memory);
-
-  lprintf(LO_INFO, "dsda_CacheSoundLumps: %d sounds in %0.2f ms!\n", count, (float) cache_time / 1000);
 }

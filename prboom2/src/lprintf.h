@@ -53,6 +53,7 @@ extern int lprintf(OutputLevels pri, const char *fmt, ...) __attribute__((format
 
 void I_EnableVerboseLogging(void);
 void I_DisableAllLogging(void);
+void I_DisableMessageBoxes(void);
 
 /* killough 3/20/98: add const
  * killough 4/25/98: add gcc attributes

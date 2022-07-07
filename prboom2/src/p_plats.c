@@ -370,7 +370,7 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
 
     rtn = 1;
 
-    plat = Z_Malloc(sizeof(*plat), PU_LEVEL, 0);
+    plat = Z_MallocLevel(sizeof(*plat));
     memset(plat, 0, sizeof(*plat));
     P_AddThinker(&plat->thinker);
 
@@ -513,7 +513,7 @@ manual_plat://e6y
 
     // Create a thinker
     rtn = 1;
-    plat = Z_Malloc( sizeof(*plat), PU_LEVEL, 0);
+    plat = Z_MallocLevel( sizeof(*plat));
     memset(plat, 0, sizeof(*plat));
     P_AddThinker(&plat->thinker);
 
@@ -709,7 +709,7 @@ int EV_StopPlat(line_t* line)
 //
 void P_AddActivePlat(plat_t* plat)
 {
-  platlist_t *list = malloc(sizeof *list);
+  platlist_t *list = Z_Malloc(sizeof *list);
   list->plat = plat;
   plat->list = list;
   if ((list->next = activeplats))
@@ -734,7 +734,7 @@ void P_RemoveActivePlat(plat_t* plat)
   P_RemoveThinker(&plat->thinker);
   if ((*list->prev = list->next))
     list->next->prev = list->prev;
-  free(list);
+  Z_Free(list);
 }
 
 //
@@ -749,7 +749,7 @@ void P_RemoveAllActivePlats(void)
   while (activeplats)
   {
     platlist_t *next = activeplats->next;
-    free(activeplats);
+    Z_Free(activeplats);
     activeplats = next;
   }
 }
@@ -838,7 +838,7 @@ int EV_DoHexenPlat(line_t * line, byte * args, plattype_e type, int amount)
         // Find lowest & highest floors around sector
         //
         rtn = 1;
-        plat = Z_Malloc(sizeof(*plat), PU_LEVEL, 0);
+        plat = Z_MallocLevel(sizeof(*plat));
         memset(plat, 0, sizeof(*plat));
         P_AddThinker(&plat->thinker);
 

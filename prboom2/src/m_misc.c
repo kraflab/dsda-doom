@@ -79,14 +79,16 @@
 #include "gl_struct.h"
 #include "g_overflow.h"
 #include "e6y.h"
-#ifdef USE_WINDOWS_LAUNCHER
-#include "e6y_launcher.h"
-#endif
 
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 
 // NSM
 #include "i_capture.h"
+
+extern int dsda_auto_key_frame_depth;
+extern int dsda_auto_key_frame_interval;
+extern int dsda_auto_key_frame_timeout;
 
 /* cph - disk icon not implemented */
 static inline void I_BeginRead(void) {}
@@ -136,7 +138,7 @@ int M_ReadFile(char const *name, byte **buffer)
       fseek(fp, 0, SEEK_END);
       length = ftell(fp);
       fseek(fp, 0, SEEK_SET);
-      *buffer = Z_Malloc(length, PU_STATIC, 0);
+      *buffer = Z_Malloc(length);
       if (fread(*buffer, 1, length, fp) == length)
         {
           fclose(fp);
@@ -156,6 +158,7 @@ int M_ReadFile(char const *name, byte **buffer)
 //
 
 int usemouse;
+int mouse_stutter_correction;
 dboolean    precache = true; /* if true, load all graphics at start */
 
 // The available anisotropic
@@ -169,7 +172,6 @@ typedef enum {
 
 extern int viewwidth;
 extern int viewheight;
-#ifdef GL_DOOM
 extern int gl_nearclip;
 extern int gl_colorbuffer_bits;
 extern int gl_depthbuffer_bits;
@@ -205,69 +207,6 @@ extern int gl_fog_color;
 extern int gl_finish;
 extern int gl_clear;
 extern int gl_ztrick;
-#else
-// dummy variables for !GL_DOOM
-static int gl_nearclip;
-extern int gl_colorbuffer_bits;
-extern int gl_depthbuffer_bits;
-static int gl_texture_filter;
-static int gl_sprite_filter;
-static int gl_patch_filter;
-static int gl_texture_filter_anisotropic;
-static const char *gl_tex_format_string;
-static int gl_sky_detail;
-static int gl_use_paletted_texture;
-static int gl_use_shared_texture_palette;
-static int gl_ext_texture_filter_anisotropic_default;
-static int gl_arb_texture_non_power_of_two_default;
-static int gl_arb_multitexture_default;
-static int gl_arb_texture_compression_default;
-static int gl_ext_framebuffer_object_default;
-static int gl_ext_packed_depth_stencil_default;
-static int gl_ext_blend_color_default;
-static int gl_use_stencil_default;
-static int gl_ext_arb_vertex_buffer_object_default;
-static int gl_arb_pixel_buffer_object_default;
-static int gl_arb_shader_objects_default;
-static int gl_motionblur;
-static int gl_fog;
-static int gl_fog_color;
-static int gl_finish;
-static int gl_clear;
-static int gl_ztrick;
-
-// dummy variables for !GL_DOOM declared in gl_struct.h
-int gl_use_display_lists;
-int gl_sprite_offset_default;
-int gl_sprite_blend;
-int gl_mask_sprite_threshold;
-int gl_skymode;
-int gl_allow_detail_textures;
-int gl_detail_maxdist;
-spriteclipmode_t gl_spriteclip;
-int gl_spriteclip_threshold;
-int gl_sprites_frustum_culling;
-int gl_boom_colormaps_default;
-int gl_hires_24bit_colormap;
-int gl_texture_internal_hires;
-int gl_texture_external_hires;
-int gl_hires_override_pwads;
-const char *gl_texture_hires_dir;
-int gl_texture_hqresize;
-int gl_texture_hqresize_textures;
-int gl_texture_hqresize_sprites;
-int gl_texture_hqresize_patches;
-motion_blur_params_t motion_blur;
-gl_lightmode_t gl_lightmode_default;
-int gl_light_ambient;
-int useglgamma;
-int gl_color_mip_levels;
-simple_shadow_params_t simple_shadows;
-int gl_shadows_maxdist;
-int gl_shadows_factor;
-int gl_blend_animations;
-
-#endif
 
 extern int realtic_clock_rate;         // killough 4/13/98: adjustable timer
 extern int tran_filter_pct;            // killough 2/21/98
@@ -279,8 +218,6 @@ int         mus_pause_opt; // 0 = kill music, 1 = pause, 2 = continue
 #endif
 
 extern const char* chat_macros[];
-
-extern int endoom_mode;
 
 /* cph - Some MBF stuff parked here for now
  * killough 10/98
@@ -298,6 +235,8 @@ default_t defaults[] =
   {"default_compatibility_level",{(int*)&default_compatibility_level},
    {-1},-1,MAX_COMPATIBILITY_LEVEL-1,
    def_int,ss_none}, // compatibility level" - CPhipps
+  {"vanilla_keymap",{&vanilla_keymap},{0},0,1,
+   def_bool,ss_none}, // Use vanilla keyboard mapping
   {"realtic_clock_rate",{&realtic_clock_rate},{100},0,UL,
    def_int,ss_none}, // percentage of normal speed (35 fps) realtic clock runs at
   {"menu_background", {(int*)&menu_background}, {1}, 0, 1,
@@ -306,8 +245,6 @@ default_t defaults[] =
    def_int,ss_none}, // number of dead bodies in view supported (-1 = no limit)
   {"flashing_hom",{&flashing_hom},{0},0,1,
    def_bool,ss_none}, // killough 10/98 - enable flashing HOM indicator
-  {"endoom_mode", {&endoom_mode},{5},0,7, // CPhipps - endoom flags
-   def_hex, ss_none}, // 0, +1 for colours, +2 for non-ascii chars, +4 for skip-last-line
   {"level_precache",{(int*)&precache},{1},0,1,
    def_bool,ss_none}, // precache level data?
   {"demo_smoothturns", {&demo_smoothturns},  {0},0,1,
@@ -362,7 +299,7 @@ default_t defaults[] =
   {"snd_channels",{&default_numChannels},{32},1,32,
    def_int,ss_none}, // number of audio events simultaneously // killough
   {"snd_midiplayer",{NULL, &snd_midiplayer},{0,"fluidsynth"},UL,UL,def_str,ss_none},
-  {"snd_soundfont",{NULL, &snd_soundfont},{0,"soundfonts/dsda-doom.sf2"},UL,UL,def_str,ss_none},
+  {"snd_soundfont",{NULL, &snd_soundfont},{0,""},UL,UL,def_str,ss_none},
   {"snd_mididev",{NULL, &snd_mididev},{0,""},UL,UL,def_str,ss_none}, // midi device to use for portmidiplayer
   {"full_sounds",{&full_sounds},{0},0,1,def_bool,ss_none}, // disable sound cutoffs
 
@@ -758,6 +695,59 @@ default_t defaults[] =
   { "input_notarget", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_notarget, { 0, -1, -1 } },
 
+  { "input_build", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build, { 0, -1, -1 } },
+  { "input_build_advance_frame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_advance_frame, { KEYD_RIGHTARROW, -1, -1 } },
+  { "input_build_reverse_frame", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_reverse_frame, { KEYD_LEFTARROW, -1, -1 } },
+  { "input_build_reset_command", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_reset_command, { KEYD_DEL, -1, -1 } },
+  { "input_build_source", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_source, { KEYD_RSHIFT, -1, -1 } },
+  { "input_build_forward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_forward, { 'w', -1, -1 } },
+  { "input_build_backward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_backward, { 's', -1, -1 } },
+  { "input_build_fine_forward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_fine_forward, { 't', -1, -1 } },
+  { "input_build_fine_backward", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_fine_backward, { 'g', -1, -1 } },
+  { "input_build_turn_left", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_turn_left, { 'e', -1, -1 } },
+  { "input_build_turn_right", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_turn_right, { 'q', -1, -1 } },
+  { "input_build_strafe_left", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_strafe_left, { 'a', -1, -1 } },
+  { "input_build_strafe_right", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_strafe_right, { 'd', -1, -1 } },
+  { "input_build_fine_strafe_left", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_fine_strafe_left, { 'f', -1, -1 } },
+  { "input_build_fine_strafe_right", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_fine_strafe_right, { 'h', -1, -1 } },
+  { "input_build_use", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_use, { KEYD_SPACEBAR, -1, -1 } },
+  { "input_build_fire", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_fire, { KEYD_RCTRL, -1, -1 } },
+  { "input_build_weapon1", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_weapon1, { '1', -1, -1 } },
+  { "input_build_weapon2", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_weapon2, { '2', -1, -1 } },
+  { "input_build_weapon3", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_weapon3, { '3', -1, -1 } },
+  { "input_build_weapon4", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_weapon4, { '4', -1, -1 } },
+  { "input_build_weapon5", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_weapon5, { '5', -1, -1 } },
+  { "input_build_weapon6", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_weapon6, { '6', -1, -1 } },
+  { "input_build_weapon7", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_weapon7, { '7', -1, -1 } },
+  { "input_build_weapon8", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_weapon8, { '8', -1, -1 } },
+  { "input_build_weapon9", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
+    dsda_input_build_weapon9, { '9', -1, -1 } },
+
   { "input_jump", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
     dsda_input_jump, { 0, -1, -1 } },
   { "input_hexen_arti_incant", { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL,
@@ -780,6 +770,8 @@ default_t defaults[] =
   {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"use_mouse",{&usemouse},{1},0,1,
    def_bool,ss_none}, // enables use of mouse with DOOM
+  {"mouse_stutter_correction",{&mouse_stutter_correction},{1},0,1,
+   def_bool,ss_none}, // interpolates mouse input to mitigate stuttering
   //jff 4/3/98 allow unlimited sensitivity
   {"mouse_sensitivity_horiz",{&mouseSensitivity_horiz},{10},0,UL,
    def_int,ss_none}, /* adjust horizontal (x) mouse sensitivity killough/mead */
@@ -980,7 +972,6 @@ default_t defaults[] =
   { "Prboom-plus demos settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
   { "demo_demoex_filename", { NULL, &demo_demoex_filename }, { 0, "" }, UL, UL, def_str, ss_none },
   { "getwad_cmdline", { NULL, &getwad_cmdline }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "demo_overwriteexisting", { &demo_overwriteexisting }, { 0 }, 0, 1, def_bool, ss_stat },
   { "quickstart_window_ms", { &quickstart_window_ms }, { 0 }, 0, 1000, def_int, ss_stat },
 
   { "Prboom-plus game settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
@@ -991,7 +982,6 @@ default_t defaults[] =
   { "speed_step", { &speed_step }, { 0 }, 0, 1000, def_int, ss_none },
 
   { "Prboom-plus misc settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "showendoom", { &showendoom }, { 0 }, 0, 1, def_bool, ss_stat },
   { "screenshot_dir", { NULL, &screenshot_dir }, { 0, "" }, UL, UL, def_str, ss_none },
   { "health_bar", { &health_bar }, { 0 }, 0, 1, def_bool, ss_stat },
   { "health_bar_full_length", { &health_bar_full_length }, { 1 }, 0, 1, def_bool, ss_stat },
@@ -1006,6 +996,7 @@ default_t defaults[] =
   { "dsda_auto_key_frame_depth", { &dsda_auto_key_frame_depth }, { 60 }, 0, 600, def_int, ss_stat },
   { "dsda_auto_key_frame_timeout", { &dsda_auto_key_frame_timeout }, { 10 }, 0, 25, def_int, ss_stat },
   { "dsda_exhud", { (int *) &dsda_setting[dsda_exhud] }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "dsda_ex_text_scale", { &dsda_ex_text_scale }, { 0 }, 0, 16, def_int, ss_stat },
   { "dsda_wipe_at_full_speed", { &dsda_wipe_at_full_speed }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_show_demo_attempts", { &dsda_show_demo_attempts }, { 1 }, 0, 1, def_bool, ss_stat },
   { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int, ss_stat },
@@ -1039,6 +1030,7 @@ default_t defaults[] =
   {"cap_tempfile2",{NULL, &cap_tempfile2},{0,"temp_v.nut"},UL,UL,def_str,ss_none},
   {"cap_remove_tempfiles", {&cap_remove_tempfiles},{1},0,1,def_bool,ss_none},
   {"cap_fps", {&cap_fps},{60},16,300,def_int,ss_none},
+  {"cap_wipescreen", {&cap_wipescreen},{0},0,1,def_bool,ss_none},
 
   {"Prboom-plus video settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"sdl_video_window_pos", {NULL,&sdl_video_window_pos}, {0,"center"},UL,UL,
@@ -1061,7 +1053,7 @@ default_t defaults[] =
    def_bool,ss_stat},
   {"fake_contrast", {&fake_contrast},  {1},0,1,
    def_bool,ss_stat}, /* cph - allow crappy fake contrast to be disabled */
-  {"render_stretch_hud", {&render_stretch_hud_default},{patch_stretch_16x10},0,patch_stretch_max - 1,
+  {"render_stretch_hud", {&render_stretch_hud_default},{patch_stretch_not_adjusted},0,patch_stretch_max_config - 1,
   def_int,ss_stat},
   {"render_patches_scalex", {&render_patches_scalex},{0},0,16,
   def_int,ss_stat},
@@ -1189,42 +1181,6 @@ default_t defaults[] =
    def_bool,ss_stat},
   {"comperr_freeaim", {&default_comperr[comperr_freeaim]},  {0},0,1,
    def_bool,ss_stat},
-
-#ifdef USE_WINDOWS_LAUNCHER
-  {"Prboom-plus launcher settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"launcher_enable",{(int*)&launcher_enable},{launcher_enable_never},
-   launcher_enable_never, launcher_enable_count - 1, def_int,ss_none},
-  {"launcher_history0", {NULL,&launcher_history[0]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history1", {NULL,&launcher_history[1]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history2", {NULL,&launcher_history[2]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history3", {NULL,&launcher_history[3]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history4", {NULL,&launcher_history[4]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history5", {NULL,&launcher_history[5]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history6", {NULL,&launcher_history[6]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history7", {NULL,&launcher_history[7]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history8", {NULL,&launcher_history[8]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history9", {NULL,&launcher_history[9]}, {0,""},UL,UL,def_str,ss_none},
-#endif
-  {"Prboom-plus demo patterns list. Put your patterns here",{NULL},{0},UL,UL,def_none,ss_none},
-  {"demo_patterns_mask", {NULL, &demo_patterns_mask, &demo_patterns_count, &demo_patterns_list}, {0,"demo_pattern",9, &demo_patterns_list_def[0]},UL,UL,def_arr,ss_none},
-  {"demo_pattern0", {NULL,&demo_patterns_list_def[0]},
-   {0,"DOOM 2: Hell on Earth/((lv)|(nm)|(pa)|(ty))\\d\\d.\\d\\d\\d\\.lmp/doom2.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern1", {NULL,&demo_patterns_list_def[1]},
-   {0,"DOOM 2: Plutonia Experiment/p(c|f|l|n|p|r|s|t)\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|plutonia.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern2", {NULL,&demo_patterns_list_def[2]},
-   {0,"DOOM 2: TNT - Evilution/((e(c|f|v|p|r|s|t))|(tn))\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|tnt.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern3", {NULL,&demo_patterns_list_def[3]},
-   {0,"The Ultimate DOOM/(((e|f|n|p|r|t|u)\\dm\\d)|(n\\ds\\d)).\\d\\d\\d\\.lmp/doom.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern4", {NULL,&demo_patterns_list_def[4]},
-   {0,"Alien Vendetta/a(c|f|n|p|r|s|t|v)\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|av.wad|av.deh"},UL,UL,def_str,ss_none},
-  {"demo_pattern5", {NULL,&demo_patterns_list_def[5]},
-   {0,"Requiem/r(c|f|n|p|q|r|s|t)\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|requiem.wad|req21fix.wad|reqmus.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern6", {NULL,&demo_patterns_list_def[6]},
-   {0,"Hell Revealed/h(c|e|f|n|p|r|s|t)\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|hr.wad|hrmus.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern7", {NULL,&demo_patterns_list_def[7]},
-   {0,"Memento Mori/mm\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|mm.wad|mmmus.wad"},UL,UL,def_str,ss_none},
-  {"demo_pattern8", {NULL,&demo_patterns_list_def[8]},
-   {0,"Memento Mori 2/m2\\d\\d.\\d\\d\\d\\.lmp/doom2.wad|mm2.wad|mm2mus.wad"},UL,UL,def_str,ss_none},
 
   {"Weapon preferences",{NULL},{0},UL,UL,def_none,ss_none},
   // killough 2/8/98: weapon preferences set by user:
@@ -1388,8 +1344,8 @@ void M_LoadDefaults (void)
   int   len;
   FILE* f;
   char  def[80];
-  char* strparm = malloc(CFG_BUFFERMAX);
-  char* cfgline = malloc(CFG_BUFFERMAX);
+  char* strparm = Z_Malloc(CFG_BUFFERMAX);
+  char* cfgline = Z_Malloc(CFG_BUFFERMAX);
   char* newstring = NULL;   // killough
   int   parm;
   dboolean isstring;
@@ -1409,7 +1365,7 @@ void M_LoadDefaults (void)
     else
     {
       if (defaults[i].location.ppsz)
-        *defaults[i].location.ppsz = strdup(defaults[i].defaultvalue.psz);
+        *defaults[i].location.ppsz = Z_Strdup(defaults[i].defaultvalue.psz);
       if (defaults[i].location.pi)
         *defaults[i].location.pi = defaults[i].defaultvalue.i;
     }
@@ -1439,23 +1395,23 @@ void M_LoadDefaults (void)
       {
         if ((*arr)[k])
         {
-          free((*arr)[k]);
+          Z_Free((*arr)[k]);
           (*arr)[k] = NULL;
         }
       }
-      free(*arr);
+      Z_Free(*arr);
       *arr = NULL;
       *(item->location.array_size) = 0;
       // load predefined data
-      *arr = realloc(*arr, sizeof(char*) * item->defaultvalue.array_size);
+      *arr = Z_Realloc(*arr, sizeof(char*) * item->defaultvalue.array_size);
       *(item->location.array_size) = item->defaultvalue.array_size;
       item->location.array_index = 0;
       for (k = 0; k < item->defaultvalue.array_size; k++)
       {
         if (item->defaultvalue.array_data[k])
-          (*arr)[k] = strdup(item->defaultvalue.array_data[k]);
+          (*arr)[k] = Z_Strdup(item->defaultvalue.array_data[k]);
         else
-          (*arr)[k] = strdup("");
+          (*arr)[k] = Z_Strdup("");
       }
     }
   }
@@ -1467,14 +1423,14 @@ void M_LoadDefaults (void)
   i = M_CheckParm ("-config");
   if (i && i < myargc-1)
   {
-    defaultfile = strdup(myargv[i+1]);
+    defaultfile = Z_Strdup(myargv[i+1]);
   }
   else
   {
     const char* exedir = I_DoomExeDir();
     /* get config file from same directory as executable */
     int len = doom_snprintf(NULL, 0, "%s/" BOOM_CFG, exedir);
-    defaultfile = malloc(len+1);
+    defaultfile = Z_Malloc(len+1);
     doom_snprintf(defaultfile, len+1, "%s/" BOOM_CFG, exedir);
   }
 
@@ -1503,7 +1459,7 @@ void M_LoadDefaults (void)
 
           isstring = true;
           len = strlen(strparm);
-          newstring = malloc(len);
+          newstring = Z_Malloc(len);
           strparm[len-1] = 0; // clears trailing double-quote mark
           strcpy(newstring, strparm+1); // clears leading double-quote mark
   } else if ((strparm[0] == '0') && (strparm[1] == 'x')) {
@@ -1525,14 +1481,14 @@ void M_LoadDefaults (void)
           {
             if ((*index) + 1 > *pcount)
             {
-              *arr = realloc(*arr, sizeof(char*) * ((*index) + 1));
+              *arr = Z_Realloc(*arr, sizeof(char*) * ((*index) + 1));
               (*pcount)++;
             }
             else
             {
               if ((*arr)[(*index)])
               {
-                free((*arr)[(*index)]);
+                Z_Free((*arr)[(*index)]);
                 (*arr)[(*index)] = NULL;
               }
             }
@@ -1555,7 +1511,7 @@ void M_LoadDefaults (void)
                 union { const char **c; char **s; } u; // type punning via unions
 
                 u.c = defaults[i].location.ppsz;
-                free(*(u.s));
+                Z_Free(*(u.s));
                 *(u.s) = newstring;
 
                 item = &defaults[i];
@@ -1622,7 +1578,7 @@ void M_LoadDefaults (void)
                 union { const char **c; char **s; } u; // type punning via unions
 
                 u.c = defaults[i].location.ppsz;
-                free(*(u.s));
+                Z_Free(*(u.s));
                 *(u.s) = newstring;
               }
             break;
@@ -1633,8 +1589,8 @@ void M_LoadDefaults (void)
     fclose (f);
     }
 
-  free(strparm);
-  free(cfgline);
+  Z_Free(strparm);
+  Z_Free(cfgline);
 
   dsda_InitSettings();
 
@@ -1700,7 +1656,7 @@ const char* M_CheckWritableDir(const char *dir)
   if (len + 1 > base_len)
   {
     base_len = len + 1;
-    base = malloc(len + 1);
+    base = Z_Malloc(len + 1);
   }
 
   if (base)
@@ -1745,7 +1701,7 @@ void M_ScreenShot(void)
 
     do {
       int size = doom_snprintf(NULL, 0, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
-      lbmname = realloc(lbmname, size+1);
+      lbmname = Z_Realloc(lbmname, size+1);
       doom_snprintf(lbmname, size+1, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
       shot++;
     } while (!access(lbmname,0) && (shot != startshot) && (shot < 10000));
@@ -1756,7 +1712,7 @@ void M_ScreenShot(void)
       M_DoScreenShot(lbmname); // cph
       success = 1;
     }
-    free(lbmname);
+    Z_Free(lbmname);
     if (success) return;
   }
 
@@ -1873,7 +1829,7 @@ void M_ArrayFree(array_t *data)
 {
   if (data->data)
   {
-    free(data->data);
+    Z_Free(data->data);
     data->data = NULL;
   }
 
@@ -1886,7 +1842,7 @@ void M_ArrayAddItem(array_t *data, void *item, int itemsize)
   if (data->count + 1 >= data->capacity)
   {
     data->capacity = (data->capacity ? data->capacity * 2 : 128);
-    data->data = realloc(data->data, data->capacity * itemsize);
+    data->data = Z_Realloc(data->data, data->capacity * itemsize);
   }
 
   memcpy((unsigned char*)data->data + data->count * itemsize, item, itemsize);
@@ -1898,7 +1854,7 @@ void* M_ArrayGetNewItem(array_t *data, int itemsize)
   if (data->count + 1 >= data->capacity)
   {
     data->capacity = (data->capacity ? data->capacity * 2 : 128);
-    data->data = realloc(data->data, data->capacity * itemsize);
+    data->data = Z_Realloc(data->data, data->capacity * itemsize);
   }
 
   data->count++;

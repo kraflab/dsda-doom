@@ -646,6 +646,8 @@ void A_ReFire(player_t *player, pspdef_t *psp)
     }
 }
 
+dboolean boom_weapon_state_injection;
+
 void A_CheckReload(player_t *player, pspdef_t *psp)
 {
   CHECK_WEAPON_CODEPOINTER("A_CheckReload", player);
@@ -656,6 +658,7 @@ void A_CheckReload(player_t *player, pspdef_t *psp)
      * rewritten. But we must tell Doom that we don't need to complete the
      * reload frames for the weapon here. G_BuildTiccmd will set ->pendingweapon
      * for us later on. */
+    boom_weapon_state_injection = true;
     P_SetPsprite(player,ps_weapon,weaponinfo[player->readyweapon].downstate);
   }
 }

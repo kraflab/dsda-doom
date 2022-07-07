@@ -57,6 +57,15 @@ int M_CheckParm(const char *check)
   return 0;
 }
 
+int M_CheckParm2(const char *check, const char *alias)
+{
+  int i;
+
+  i = M_CheckParm(check);
+
+  return i ? i : M_CheckParm(alias);
+}
+
 //
 // M_CheckParmEx
 // Checks for the given parameter in the given params list.
@@ -85,8 +94,8 @@ int M_CheckParmEx(const char *check, char **params, int paramscount)
 
 void M_AddParam(const char *param)
 {
-  myargv = realloc(myargv, sizeof(myargv[0]) * (myargc + 1));
-  myargv[myargc] = strdup(param);
+  myargv = Z_Realloc(myargv, sizeof(myargv[0]) * (myargc + 1));
+  myargv[myargc] = Z_Strdup(param);
   myargc++;
 }
 

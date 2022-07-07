@@ -44,6 +44,7 @@ extern const char *cap_tempfile2;
 extern int cap_remove_tempfiles;
 extern int cap_fps;
 extern int cap_frac;
+extern int cap_wipescreen;
 
 // true if we're capturing video
 extern int capturing_video;

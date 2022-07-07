@@ -21,52 +21,33 @@
 
 #include "time.h"
 
-// [XA] MSVC hack: need to implement a handful of functions here.
-// this was yoinked from https://stackoverflow.com/a/31335254 so
-// no guarantees on if this stuff is accurate/kosher/whatever,
-// so maybe don't cut an official release with MSVC just yet.
-// it's enough to hack it into compiling for me, at least. ;)
-
+// clock_gettime implementation for msvc
+// NOTE: Only supports CLOCK_MONOTONIC
 #ifdef _MSC_VER
 
 #include <windows.h>
 
 #define CLOCK_MONOTONIC -1
-#define exp7           10000000i64 //1E+7
-#define exp9         1000000000i64 //1E+9
-#define w2ux 116444736000000000i64 //1.jan1601 to 1.jan1970
 
-void unix_time(struct timespec *spec) {
-  __int64 wintime; GetSystemTimeAsFileTime((FILETIME*)&wintime);
-  wintime -= w2ux;  spec->tv_sec = wintime / exp7;
-  spec->tv_nsec = wintime % exp7 * 100;
-}
+static int clock_gettime(int clockid, struct timespec *tp) {
+  static unsigned long long timer_frequency = 0;
+  unsigned long long time;
 
-int clock_gettime(int _skip, struct timespec *spec)
-{
-  static struct timespec startspec;
-  static double ticks2nano;
-  static __int64 startticks, tps = 0;
-  __int64 tmp, curticks;
+  // Get number of timer counts per second
+  if (!timer_frequency)
+    QueryPerformanceFrequency((LARGE_INTEGER*) &timer_frequency);
 
-  QueryPerformanceFrequency((LARGE_INTEGER*)&tmp);
+  // Get timer counts
+  QueryPerformanceCounter((LARGE_INTEGER*) &time);
 
-  if (tps != tmp) {
-    tps = tmp;
-    QueryPerformanceCounter((LARGE_INTEGER*)&startticks);
-    unix_time(&startspec); ticks2nano = (double)exp9 / tps;
-  }
+  // Convert timer counts to timespec (that is, nanoseconds and seconds)
+  tp->tv_nsec = time % timer_frequency * 1000000000 / timer_frequency;
+  tp->tv_sec = time / timer_frequency;
 
-  QueryPerformanceCounter((LARGE_INTEGER*)&curticks); curticks -= startticks;
-  spec->tv_sec = startspec.tv_sec + (curticks / tps);
-  spec->tv_nsec = startspec.tv_nsec + (double)(curticks % tps) * ticks2nano;
-  if (!(spec->tv_nsec < exp9)) { spec->tv_sec++; spec->tv_nsec -= exp9; }
   return 0;
 }
 
 #endif //_MSC_VER
-
-// [XA] END HACK
 
 static struct timespec dsda_time[DSDA_TIMER_COUNT];
 
@@ -185,11 +166,15 @@ static unsigned long long dsda_TickElapsedTimeFastDemo(void) {
 }
 
 static unsigned long long dsda_TickElapsedRealTime(void) {
-  return dsda_RealTime() - (unsigned long long) dsda_GetTick() * 1000000 / TICRATE;
+  int tick = dsda_GetTick();
+
+  return dsda_RealTime() - (unsigned long long) tick * 1000000 / TICRATE;
 }
 
 static unsigned long long dsda_TickElapsedScaledTime(void) {
-  return dsda_ScaledTime() - (unsigned long long) dsda_GetTick() * 1000000 / TICRATE;
+  int tick = dsda_GetTick();
+
+  return dsda_ScaledTime() - (unsigned long long) tick * 1000000 / TICRATE;
 }
 
 int (*dsda_GetTick)(void) = dsda_GetTickRealTime;

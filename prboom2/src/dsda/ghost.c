@@ -96,7 +96,7 @@ dsda_ghost_import_t dsda_ghost_import;
 void dsda_InitGhostExport(const char* name) {
   int version;
   char* filename;
-  filename = malloc(strlen(name) + 4 + 1);
+  filename = Z_Malloc(strlen(name) + 4 + 1);
   AddDefaultExtension(strcpy(filename, name), ".gst");
 
   dsda_ghost_export = fopen(filename, "wb");
@@ -107,7 +107,7 @@ void dsda_InitGhostExport(const char* name) {
   version = DSDA_GHOST_VERSION;
   fwrite(&version, sizeof(int), 1, dsda_ghost_export);
 
-  free(filename);
+  Z_Free(filename);
 }
 
 void dsda_OpenGhostFile(int arg_i, dsda_ghost_file_t* ghost_file) {
@@ -115,7 +115,7 @@ void dsda_OpenGhostFile(int arg_i, dsda_ghost_file_t* ghost_file) {
 
   memset(ghost_file, 0, sizeof(dsda_ghost_file_t));
 
-  filename = malloc(strlen(myargv[arg_i]) + 4 + 1);
+  filename = Z_Malloc(strlen(myargv[arg_i]) + 4 + 1);
   AddDefaultExtension(strcpy(filename, myargv[arg_i]), ".gst");
 
   ghost_file->fstream = fopen(filename, "rb");
@@ -130,7 +130,7 @@ void dsda_OpenGhostFile(int arg_i, dsda_ghost_file_t* ghost_file) {
   if (ghost_file->version == 1) ghost_file->count = 1;
   else fread(&ghost_file->count, sizeof(int), 1, ghost_file->fstream);
 
-  free(filename);
+  Z_Free(filename);
 }
 
 int dsda_GhostCount(int arg_i) {
@@ -155,7 +155,7 @@ void dsda_InitGhostImport(int option_i) {
   while (++arg_i != myargc && *myargv[arg_i] != '-')
     dsda_ghost_import.count += dsda_GhostCount(arg_i);
 
-  dsda_ghost_import.ghosts = calloc(dsda_ghost_import.count, sizeof(dsda_ghost_t));
+  dsda_ghost_import.ghosts = Z_Calloc(dsda_ghost_import.count, sizeof(dsda_ghost_t));
 
   arg_i = option_i;
   while (++arg_i != myargc && *myargv[arg_i] != '-') {
@@ -220,7 +220,7 @@ void dsda_SpawnGhost(void) {
       continue;
     }
 
-    mobj = Z_Malloc(sizeof(*mobj), PU_LEVEL, NULL);
+    mobj = Z_MallocLevel(sizeof(*mobj));
     memset(mobj, 0, sizeof(*mobj));
     mobj->type = MT_NULL;
     mobj->info = &dsda_ghost_info;
@@ -272,7 +272,7 @@ void dsda_SpawnGhost(void) {
   }
 
   if (dsda_ghost_import.count > 0) {
-    dsda_ghost_import.thinker = Z_Malloc(sizeof(thinker_t), PU_LEVEL, NULL);
+    dsda_ghost_import.thinker = Z_MallocLevel(sizeof(*mobj));
     memset(dsda_ghost_import.thinker, 0, sizeof(thinker_t));
     dsda_ghost_import.thinker->function = dsda_UpdateGhosts;
     P_AddThinker(dsda_ghost_import.thinker);

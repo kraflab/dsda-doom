@@ -83,22 +83,25 @@
 #include "d_deh.h"  // Ty 04/08/98 - Externalizations
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "am_map.h"
-#include "umapinfo.h"
 
 //e6y
 #include "r_demo.h"
 #include "e6y.h"
-#ifdef USE_WINDOWS_LAUNCHER
-#include "e6y_launcher.h"
-#endif
 
+#include "dsda/demo.h"
 #include "dsda/global.h"
 #include "dsda/save.h"
 #include "dsda/data_organizer.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/mobjinfo.h"
+#include "dsda/pause.h"
+#include "dsda/playback.h"
 #include "dsda/settings.h"
+#include "dsda/skip.h"
+#include "dsda/sndinfo.h"
 #include "dsda/time.h"
+#include "dsda/gl/render_scale.h"
 
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
@@ -110,7 +113,6 @@
 
 #include "i_glob.h"
 
-void GetFirstMap(int *ep, int *map); // Ty 08/29/98 - add "-warp x" functionality
 static void D_PageDrawer(void);
 
 // CPhipps - removed wadfiles[] stuff
@@ -134,7 +136,6 @@ dboolean singletics = false; // debug flag to cancel adaptiveness
 //jff 1/22/98 parms for disabling music and sound
 dboolean nosfxparm;
 dboolean nomusicparm;
-dboolean umapinfo_loaded;
 
 //jff 4/18/98
 extern dboolean inhelpscreens;
@@ -145,7 +146,6 @@ int     startepisode;
 int     startmap;
 dboolean autostart;
 FILE    *debugfile;
-int ffmap;
 
 dboolean advancedemo;
 
@@ -192,7 +192,7 @@ void D_PostEvent(event_t *ev)
   dsda_InputTrackEvent(ev);
 
   // Allow only sensible keys during skipping
-  if (doSkip)
+  if (dsda_SkipMode())
   {
     if (dsda_InputActivated(dsda_input_quit))
     {
@@ -258,11 +258,30 @@ static void D_Wipe(void)
       tics = nowtime - wipestart;
     }
     while (!tics);
+
+    // elim - Enable render-to-texture for GL so "melt" is rendered at same resolution as the game scene
+    if (V_IsOpenGLMode())
+    {
+      dsda_GLLetterboxClear();
+      dsda_GLStartMeltRenderTexture();
+    }
+
     wipestart = nowtime;
     done = wipe_ScreenWipe(tics);
-    I_UpdateNoBlit();
+
+    // elim - Render texture to screen
+    if (V_IsOpenGLMode())
+    {
+      dsda_GLEndMeltRenderTexture();
+    }
+
     M_Drawer();                   // menu is drawn even on top of wipes
     I_FinishUpdate();             // page flip or blit buffer
+
+    if (capturing_video && !dsda_SkipMode() && cap_wipescreen)
+    {
+      I_CaptureFrame();
+    }
   }
   while (!done);
 
@@ -293,22 +312,20 @@ void D_Display (fixed_t frac)
   dboolean viewactive = false, isborder = false;
 
   // e6y
-  if (doSkip)
+  if (dsda_SkipMode())
   {
     if (HU_DrawDemoProgress(false))
       I_FinishUpdate();
     if (!dsda_InputActive(dsda_input_use))
       return;
 
-#ifdef GL_DOOM
     if (V_IsOpenGLMode())
     {
       gld_PreprocessLevel();
     }
-#endif
   }
 
-  if (!doSkip || !dsda_InputActive(dsda_input_use))
+  if (!dsda_SkipMode() || !dsda_InputActive(dsda_input_use))
     if (nodrawers)                    // for comparative timing / profiling
       return;
 
@@ -319,6 +336,9 @@ void D_Display (fixed_t frac)
     R_ExecuteSetViewSize();
     oldgamestate = -1;            // force background redraw
   }
+
+  if (V_IsOpenGLMode() && !exclusive_fullscreen && !nodrawers)
+    dsda_GLLetterboxClear();
 
   // save the current screen if about to wipe
   if ((wipe = (gamestate != wipegamestate)))
@@ -350,7 +370,7 @@ void D_Display (fixed_t frac)
       break;
     }
   }
-  else if (gametic != basetic) { // In a level
+  else { // In a level
     dboolean redrawborderstuff;
 
     HU_Erase();
@@ -376,8 +396,20 @@ void D_Display (fixed_t frac)
       borderwillneedredraw = (borderwillneedredraw) ||
         (((automapmode & am_active) && !(automapmode & am_overlay)));
     }
-    if (redrawborderstuff || (V_IsOpenGLMode()))
+
+    if (redrawborderstuff || V_IsOpenGLMode()) {
+      // elim - Update viewport and scene offsets whenever the view is changed (user hits "-" or "+")
+      if (redrawborderstuff && V_IsOpenGLMode()) {
+        dsda_GLSetRenderViewportParams();
+      }
+
       R_DrawViewBorder();
+    }
+
+    // elim - If we go from visible status bar to invisible status bar, update affected viewport params
+    if (!isborder && isborderstate) {
+      dsda_GLUpdateStatusBarVisible();
+    }
 
     // e6y
     // Boom colormaps should be applied for everything in R_RenderPlayerView
@@ -391,8 +423,7 @@ void D_Display (fixed_t frac)
     R_ClearStats();
 
     // Now do the drawing
-    if (viewactive || map_always_updates)
-    {
+    if (viewactive || map_always_updates) {
       R_RenderPlayerView (&players[displayplayer]);
     }
 
@@ -422,17 +453,15 @@ void D_Display (fixed_t frac)
       R_DrawViewBorder();
     HU_Drawer();
 
-#ifdef GL_DOOM
     if (V_IsOpenGLMode())
       gld_ProcessExtraAlpha();
-#endif
   }
 
   isborderstate      = isborder;
   oldgamestate = wipegamestate = gamestate;
 
   // draw pause pic
-  if (paused && (menuactive != mnact_full)) {
+  if (dsda_Paused() && (menuactive != mnact_full)) {
     if (hexen)
     {
       if (!netgame)
@@ -446,7 +475,7 @@ void D_Display (fixed_t frac)
     }
     else if (heretic)
       MN_DrawPause();
-    else
+    else if (!dsda_PauseMode(PAUSE_BUILDMODE))
       // Simplified the "logic" here and no need for x-coord caching - POPE
       V_DrawNamePatch(
         (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,
@@ -472,7 +501,7 @@ void D_Display (fixed_t frac)
 
   // e6y
   // Don't thrash cpu during pausing or if the window doesnt have focus
-  if (paused_camera || !window_focused) {
+  if (dsda_CameraPaused() || !window_focused) {
     I_uSleep(5000);
   }
 
@@ -508,13 +537,11 @@ static void D_DoomLoop(void)
     // frame syncronous IO operations
     I_StartFrame ();
 
-    if (ffmap == gamemap) ffmap = 0;
-
     // process one or more tics
     if (singletics)
     {
       I_StartTic ();
-      G_BuildTiccmd (&netcmds[consoleplayer][maketic%BACKUPTICS]);
+      G_BuildTiccmd (&local_cmds[consoleplayer][maketic%BACKUPTICS]);
       if (advancedemo)
         D_DoAdvanceDemo ();
       M_Ticker ();
@@ -533,7 +560,7 @@ static void D_DoomLoop(void)
     if (!movement_smooth || !WasRenderedInTryRunTics || gamestate != wipegamestate)
     {
       // NSM
-      if (capturing_video && !doSkip)
+      if (capturing_video && !dsda_SkipMode())
       {
         dboolean first = true;
         int cap_step = TICRATE * FRACUNIT / cap_fps;
@@ -562,16 +589,16 @@ static void D_DoomLoop(void)
     }
 
     //e6y
-    if (avi_shot_fname && !doSkip)
+    if (avi_shot_fname && !dsda_SkipMode())
     {
       int len;
       char *avi_shot_curr_fname;
       avi_shot_num++;
       len = snprintf(NULL, 0, "%s%06d.tga", avi_shot_fname, avi_shot_num);
-      avi_shot_curr_fname = malloc(len+1);
+      avi_shot_curr_fname = Z_Malloc(len+1);
       sprintf(avi_shot_curr_fname, "%s%06d.tga", avi_shot_fname, avi_shot_num);
       M_DoScreenShot(avi_shot_curr_fname);
-      free(avi_shot_curr_fname);
+      Z_Free(avi_shot_curr_fname);
     }
   }
 }
@@ -747,7 +774,8 @@ const demostate_t doom_demostates[][4] =
 void D_DoAdvanceDemo(void)
 {
   players[consoleplayer].playerstate = PST_LIVE;  /* not reborn */
-  advancedemo = usergame = paused = false;
+  advancedemo = false;
+  dsda_ResetPauseMode();
   gameaction = ga_nothing;
 
   pagetic = TICRATE * 11;         /* killough 11/98: default behavior */
@@ -789,9 +817,9 @@ void D_AddFile (const char *file, wad_source_t source)
   char *gwa_filename=NULL;
   int len;
 
-  wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+  wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
   wadfiles[numwadfiles].name =
-    AddDefaultExtension(strcpy(malloc(strlen(file)+5), file), ".wad");
+    AddDefaultExtension(strcpy(Z_Malloc(strlen(file)+5), file), ".wad");
   wadfiles[numwadfiles].src = source; // Ty 08/29/98
   wadfiles[numwadfiles].handle = 0;
 
@@ -803,14 +831,14 @@ void D_AddFile (const char *file, wad_source_t source)
   numwadfiles++;
   // proff: automatically try to add the gwa files
   // proff - moved from w_wad.c
-  gwa_filename=AddDefaultExtension(strcpy(malloc(strlen(file)+5), file), ".wad");
+  gwa_filename=AddDefaultExtension(strcpy(Z_Malloc(strlen(file)+5), file), ".wad");
   if (strlen(gwa_filename)>4)
     if (!strcasecmp(gwa_filename+(strlen(gwa_filename)-4),".wad"))
     {
       char *ext;
       ext = &gwa_filename[strlen(gwa_filename)-4];
       ext[1] = 'g'; ext[2] = 'w'; ext[3] = 'a';
-      wadfiles = realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
+      wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
       wadfiles[numwadfiles].name = gwa_filename;
       wadfiles[numwadfiles].src = source; // Ty 08/29/98
       wadfiles[numwadfiles].handle = 0;
@@ -870,11 +898,13 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
         header.numlumps = LittleLong(header.numlumps);
         header.infotableofs = LittleLong(header.infotableofs);
         length = header.numlumps;
-        fileinfo = malloc(length*sizeof(filelump_t));
+        fileinfo = Z_Malloc(length*sizeof(filelump_t));
         if (fseek (fp, header.infotableofs, SEEK_SET) ||
-            fread (fileinfo, sizeof(filelump_t), length, fp) != length ||
-            fclose(fp))
+            fread (fileinfo, sizeof(filelump_t), length, fp) != length)
+        {
+          fclose(fp);
           I_Error("CheckIWAD: failed to read directory %s",iwadname);
+        }
 
         // scan directory for levelname lumps
         while (length--)
@@ -909,9 +939,11 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
           if (!strncmp(fileinfo[length].name,"HACX",4))
             hx++;
         }
-        free(fileinfo);
+        Z_Free(fileinfo);
 
       }
+
+      fclose(fp);
     }
     else // error from open call
       I_Error("CheckIWAD: Can't open IWAD %s", iwadname);
@@ -1097,7 +1129,7 @@ static void IdentifyVersion (void)
 
   iwad = FindIWADFile();
 
-#if (defined(GL_DOOM) && defined(PRBOOM_DEBUG))
+#if defined(PRBOOM_DEBUG)
   // proff 11/99: used for debugging
   {
     FILE *f;
@@ -1113,7 +1145,7 @@ static void IdentifyVersion (void)
   if (iwad && *iwad)
   {
     AddIWAD(iwad);
-    free(iwad);
+    Z_Free(iwad);
   }
   else
     I_Error("IdentifyVersion: IWAD not found\n");
@@ -1137,12 +1169,12 @@ static void FindResponseFile (void)
         int  index;
         int indexinfile;
         byte *file = NULL;
-        const char **moreargs = malloc(myargc * sizeof(const char*));
+        const char **moreargs = Z_Malloc(myargc * sizeof(const char*));
         char **newargv;
         // proff 04/05/2000: Added for searching responsefile
         char *fname;
 
-        fname = malloc(strlen(&myargv[i][i])+4+1);
+        fname = Z_Malloc(strlen(&myargv[i][i])+4+1);
         strcpy(fname,&myargv[i][1]);
         AddDefaultExtension(fname,".rsp");
 
@@ -1155,7 +1187,7 @@ static void FindResponseFile (void)
         {
           size_t fnlen = doom_snprintf(NULL, 0, "%s/%s",
                                        I_DoomExeDir(), &myargv[i][1]);
-          fname = realloc(fname, fnlen+4+1);
+          fname = Z_Realloc(fname, fnlen+4+1);
           doom_snprintf(fname, fnlen+1, "%s/%s",
                         I_DoomExeDir(), &myargv[i][1]);
           AddDefaultExtension(fname,".rsp");
@@ -1171,14 +1203,14 @@ static void FindResponseFile (void)
         }
         //jff 9/3/98 use logical output routine
         lprintf(LO_INFO,"Found response file %s\n",fname);
-        free(fname);
+        Z_Free(fname);
         // proff 04/05/2000: Added check for empty rsp file
         if (size<=0)
         {
           int k;
           lprintf(LO_ERROR,"\nResponse file empty!\n");
 
-          newargv = calloc(sizeof(newargv[0]),myargc);
+          newargv = Z_Calloc(sizeof(newargv[0]),myargc);
           newargv[0] = myargv[0];
           for (k = 1,index = 1;k < myargc;k++)
           {
@@ -1195,7 +1227,7 @@ static void FindResponseFile (void)
 
         {
           char *firstargv = myargv[0];
-          newargv = calloc(sizeof(newargv[0]), 1);
+          newargv = Z_Calloc(sizeof(newargv[0]), 1);
           newargv[0] = firstargv;
         }
 
@@ -1206,7 +1238,7 @@ static void FindResponseFile (void)
           do {
             while (size > 0 && isspace(*infile)) { infile++; size--; }
             if (size > 0) {
-              char *s = malloc(size+1);
+              char *s = Z_Malloc(size+1);
               char *p = s;
               int quoted = 0;
 
@@ -1224,16 +1256,16 @@ static void FindResponseFile (void)
 
               // Terminate string, realloc and add to argv
               *p = 0;
-              newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + 1));
-              newargv[indexinfile++] = realloc(s,strlen(s)+1);
+              newargv = Z_Realloc(newargv, sizeof(newargv[0]) * (indexinfile + 1));
+              newargv[indexinfile++] = Z_Realloc(s,strlen(s)+1);
             }
           } while(size > 0);
         }
-        free(file);
+        Z_Free(file);
 
-        newargv = realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
+        newargv = Z_Realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
         memcpy((void *)&newargv[indexinfile],moreargs,index*sizeof(moreargs[0]));
-        free((void *)moreargs);
+        Z_Free((void *)moreargs);
 
         myargc = indexinfile+index;
         myargv = newargv;
@@ -1316,10 +1348,10 @@ static void DoLooseFiles(void)
     {0}
   };
 
-  wads = malloc(myargc * sizeof(*wads));
-  lmps = malloc(myargc * sizeof(*lmps));
-  dehs = malloc(myargc * sizeof(*dehs));
-  skip = malloc(myargc * sizeof(dboolean));
+  wads = Z_Malloc(myargc * sizeof(*wads));
+  lmps = Z_Malloc(myargc * sizeof(*lmps));
+  dehs = Z_Malloc(myargc * sizeof(*dehs));
+  skip = Z_Malloc(myargc * sizeof(dboolean));
 
   for (i = 0; i < myargc; i++)
     skip[i] = false;
@@ -1343,18 +1375,18 @@ static void DoLooseFiles(void)
         if (k == loose_wad_index && FileMatchesIWAD(myargv[i]))
         {
           // We can only have one iwad
-          if (iwad) free(iwad);
-          iwad = strdup(myargv[i]);
+          if (iwad) Z_Free(iwad);
+          iwad = Z_Strdup(myargv[i]);
           break;
         }
 
-        (*(looses[k].list))[(*looses[k].count)++] = strdup(myargv[i]);
+        (*(looses[k].list))[(*looses[k].count)++] = Z_Strdup(myargv[i]);
         break;
       }
       k++;
     }
     /*if (myargv[i][j-4] != '.')  // assume wad if no extension
-      wads[wadcount++] = strdup(myargv[i]);*/
+      wads[wadcount++] = Z_Strdup(myargv[i]);*/
     skip[i] = true; // nuke that entry so it won't repeat later
   }
 
@@ -1375,7 +1407,7 @@ static void DoLooseFiles(void)
         skip[p] = true;    // nuke the entry
         while (++p != myargc && *myargv[p] != '-')
         {
-          (*(params[k].list))[(*params[k].count)++] = strdup(myargv[p]);
+          (*(params[k].list))[(*params[k].count)++] = Z_Strdup(myargv[p]);
           skip[p] = true;  // null any we find and save
         }
       }
@@ -1391,7 +1423,7 @@ static void DoLooseFiles(void)
 
     // Now go back and redo the whole myargv array with our stuff in it.
     // First, create a new myargv array to copy into
-    tmyargv = calloc(sizeof(tmyargv[0]), myargc + n);
+    tmyargv = Z_Calloc(sizeof(tmyargv[0]), myargc + n);
     tmyargv[0] = myargv[0]; // invocation
     tmyargc = 1;
 
@@ -1401,9 +1433,9 @@ static void DoLooseFiles(void)
       // put our stuff into it
       if (*(params[k].count) > 0)
       {
-        tmyargv[tmyargc++] = strdup(params[k].cmdparam); // put the switch in
+        tmyargv[tmyargc++] = Z_Strdup(params[k].cmdparam); // put the switch in
         for (i=0;i<*(params[k].count);)
-          tmyargv[tmyargc++] = (*(params[k].list))[i++]; // allocated by strdup above
+          tmyargv[tmyargc++] = (*(params[k].list))[i++]; // allocated by Z_Strdup above
       }
       k++;
     }
@@ -1419,11 +1451,11 @@ static void DoLooseFiles(void)
     myargc = tmyargc;
   }
 
-  free(wads);
-  free(lmps);
-  free(dehs);
-  free(skip);
-  if (iwad) free(iwad);
+  Z_Free(wads);
+  Z_Free(lmps);
+  Z_Free(dehs);
+  Z_Free(skip);
+  if (iwad) Z_Free(iwad);
 }
 
 /* cph - MBF-like wad/deh/bex autoload code */
@@ -1446,7 +1478,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
     {
         const char* exedir = I_DoomExeDir();
         len = doom_snprintf(NULL, 0, "%s/autoload", exedir);
-        autoload_path = malloc(len+1);
+        autoload_path = Z_Malloc(len+1);
         doom_snprintf(autoload_path, len+1, "%s/autoload", exedir);
     }
 
@@ -1457,7 +1489,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
 #endif
 
     len = doom_snprintf(NULL, 0, "%s/%s", autoload_path, iwadname);
-    result = malloc(len+1);
+    result = Z_Malloc(len+1);
     doom_snprintf(result, len+1, "%s/%s", autoload_path, iwadname);
 
     if (createdir)
@@ -1542,17 +1574,17 @@ void D_AutoloadIWadDir()
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
   AutoLoadWADs(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
   AutoLoadWADs(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
   AutoLoadWADs(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 }
 
 static void D_AutoloadPWadDir()
@@ -1564,7 +1596,7 @@ static void D_AutoloadPWadDir()
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
       AutoLoadWADs(autoload_dir);
-      free(autoload_dir);
+      Z_Free(autoload_dir);
     }
 }
 
@@ -1599,17 +1631,17 @@ static void D_AutoloadDehIWadDir()
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
   AutoLoadPatches(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
   AutoLoadPatches(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
   AutoLoadPatches(autoload_dir);
-  free(autoload_dir);
+  Z_Free(autoload_dir);
 }
 
 static void D_AutoloadDehPWadDir()
@@ -1621,7 +1653,7 @@ static void D_AutoloadDehPWadDir()
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
       AutoLoadPatches(autoload_dir);
-      free(autoload_dir);
+      Z_Free(autoload_dir);
     }
 }
 
@@ -1632,58 +1664,18 @@ static void HandleWarp(void)
 {
   int p;
 
-  if ((p = M_CheckParm ("-warp")) ||      // killough 5/2/98
-       (p = M_CheckParm ("-wart")))
-       // Ty 08/29/98 - moved this check later so we can have -warp alone: && p < myargc-1)
+  if ((p = M_CheckParm ("-warp")) || (p = M_CheckParm ("-wart")))
   {
-    startmap = 0; // Ty 08/29/98 - allow "-warp x" to go to first map in wad(s)
     autostart = true; // Ty 08/29/98 - move outside the decision tree
 
-    if (map_format.mapinfo)
-    {
-      if (p < myargc - 1)
-        startmap = P_TranslateMap(atoi(myargv[p + 1]));
-      else
-        startmap = P_TranslateMap(1);
-      if (startmap == -1)
-      {                       // Couldn't find real map number
-        I_Error("-warp: Invalid map number.\n");
-      }
+    dsda_ResolveWarp(p, &warpepisode, &warpmap);
 
-      warpepisode = 1;
-      warpmap = startmap;
-    }
-    else if (gamemode == commercial)
-    {
-      if (p < myargc-1)
-        startmap = atoi(myargv[p+1]);   // Ty 08/29/98 - add test if last parm
+    if (warpmap == -1)
+      dsda_FirstMap(&warpepisode, &warpmap);
 
-      warpepisode = 1;
-      warpmap = startmap;
-    }
-    else    // 1/25/98 killough: fix -warp xxx from crashing Doom 1 / UD
-    {
-      if (p < myargc-1)
-      {
-        int episode, map;
-        if (sscanf(myargv[p+1], "%d", &episode) == 1)
-        {
-          startepisode = episode;
-          startmap = 1;
-          if (p < myargc-2 && sscanf(myargv[p+2], "%d", &map) == 1)
-          {
-            startmap = map;
-          }
-
-          warpepisode = startepisode;
-          warpmap = startmap;
-        }
-      }
-    }
+    startmap = warpmap;
+    startepisode = warpepisode;
   }
-  // Ty 08/29/98 - later we'll check for startmap=0 and autostart=true
-  // as a special case that -warp * was used.  Actually -warp with any
-  // non-numeric will do that but we'll only document "*"
 }
 
 static void HandleClass(void)
@@ -1819,11 +1811,11 @@ static void D_DoomMainSetup(void)
     {
       char *tempverstr;
       const char bfgverstr[]=" (BFG Edition)";
-      tempverstr = malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
+      tempverstr = Z_Malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
       strcpy (tempverstr, doomverstr);
       strcat (tempverstr, bfgverstr);
-      doomverstr = strdup (tempverstr);
-      free (tempverstr);
+      doomverstr = Z_Strdup (tempverstr);
+      Z_Free (tempverstr);
     }
 
     /* cphipps - the main display. This shows the build date, copyright, and game type */
@@ -1899,10 +1891,8 @@ static void D_DoomMainSetup(void)
   G_ReloadDefaults();    // killough 3/4/98: set defaults just loaded.
   // jff 3/24/98 this sets startskill if it was -1
 
-#ifdef GL_DOOM
   // proff 04/05/2000: for GL-specific switches
   gld_InitCommandLine();
-#endif
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"V_Init: allocate screens.\n");
@@ -1941,7 +1931,7 @@ static void D_DoomMainSetup(void)
         lprintf(LO_WARN, "Failed to autoload %s\n", fname);
       else {
         D_AddFile(fpath,source_auto_load);
-        free(fpath);
+        Z_Free(fpath);
       }
     }
   }
@@ -1973,51 +1963,26 @@ static void D_DoomMainSetup(void)
       if (file)
       {
         D_AddFile(file,source_pwad);
-        free(file);
+        Z_Free(file);
       }
     }
   }
 
-  if (!(p = M_CheckParm("-playdemo")) || p >= myargc-1) {   /* killough */
-    if ((p = M_CheckParm ("-fastdemo")) && p < myargc-1)    /* killough */
-      fastdemo = true;             // run at fastest speed possible
-    else
-    {
-      if ((p = IsDemoContinue()))
-      {
-        democontinue = true;
-        AddDefaultExtension(strcpy(democontinuename, myargv[p + 2]), ".lmp");
-      }
-      else
-      {
-        p = M_CheckParm ("-timedemo");
-      }
-    }
-  }
+  p = dsda_ParsePlaybackOptions();
 
-  if (p && p < myargc-1)
+  if (p)
   {
-    char *file = malloc(strlen(myargv[p+1])+4+1); // cph - localised
+    char *file = Z_Malloc(strlen(myargv[p+1])+4+1); // cph - localised
     strcpy(file,myargv[p+1]);
     AddDefaultExtension(file,".lmp");     // killough
     D_AddFile (file,source_lmp);
     //jff 9/3/98 use logical output routine
     lprintf(LO_INFO,"Playing demo %s\n",file);
-    if ((p = M_CheckParm ("-ffmap")) && p < myargc-1) {
-      ffmap = atoi(myargv[p+1]);
-    }
-    free(file);
+    Z_Free(file);
   }
 
   //e6y
-  {
-    int demo_footer = CheckDemoExDemo();
-    if (!demo_footer)
-      demo_footer = CheckAutoDemo();
-#ifdef USE_WINDOWS_LAUNCHER
-    LauncherShow(demo_footer);
-#endif
-  }
+  CheckDemoExDemo();
 
   // add wad files from autoload PWAD directories
   if (autoload)
@@ -2106,7 +2071,7 @@ static void D_DoomMainSetup(void)
       else {
         ProcessDehFile(fpath, D_dehout(), 0);
         // this used to set modifiedgame here, but patches shouldn't
-        free(fpath);
+        Z_Free(fpath);
       }
     }
   }
@@ -2153,23 +2118,12 @@ static void D_DoomMainSetup(void)
       {
         // during the beta we have debug output to dehout.txt
         ProcessDehFile(file,D_dehout(),0);
-        free(file);
+        Z_Free(file);
       }
       else
       {
         I_Error("D_DoomMainSetup: Cannot find .deh or .bex file named %s",myargv[p]);
       }
-    }
-  }
-
-  if (!M_CheckParm("-nomapinfo"))
-  {
-    int p;
-    for (p = -1; (p = W_ListNumFromName("UMAPINFO", p)) >= 0; )
-    {
-      const unsigned char * lump = (const unsigned char *)W_CacheLumpNum(p);
-      ParseUMapInfo(lump, W_LumpLength(p), I_Error);
-      umapinfo_loaded = true;
     }
   }
 
@@ -2179,31 +2133,11 @@ static void D_DoomMainSetup(void)
 
   V_InitColorTranslation(); //jff 4/24/98 load color translation lumps
 
-  // killough 2/22/98: copyright / "modified game" / SPA banners removed
-
-  // Ty 04/08/98 - Add 5 lines of misc. data, only if nonblank
-  // The expectation is that these will be set in a .bex file
-  //jff 9/3/98 use logical output routine
-  if (*startup1) lprintf(LO_INFO,"%s",startup1);
-  if (*startup2) lprintf(LO_INFO,"%s",startup2);
-  if (*startup3) lprintf(LO_INFO,"%s",startup3);
-  if (*startup4) lprintf(LO_INFO,"%s",startup4);
-  if (*startup5) lprintf(LO_INFO,"%s",startup5);
-  // End new startup strings
-
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"M_Init: Init miscellaneous info.\n");
   M_Init();
 
-  if (map_format.mapinfo)
-  {
-    InitMapMusicInfo();
-  }
-
-  if (map_format.sndinfo)
-  {
-    S_InitScript();
-  }
+  dsda_LoadSndInfo();
 
   if (map_format.sndseq)
   {
@@ -2214,6 +2148,8 @@ static void D_DoomMainSetup(void)
   lprintf(LO_INFO,"R_Init: Init DOOM refresh daemon - ");
   R_Init();
 
+  dsda_LoadMapInfo();
+
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"\nP_Init: Init Playloop state.\n");
   P_Init();
@@ -2222,7 +2158,7 @@ static void D_DoomMainSetup(void)
   HandleWarp();
 
   // Must be after HandleWarp
-  e6y_HandleSkip();
+  dsda_HandleSkip();
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"I_Init: Setting up machine state.\n");
@@ -2230,7 +2166,7 @@ static void D_DoomMainSetup(void)
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"S_Init: Setting up sound.\n");
-  S_Init(snd_SfxVolume /* *8 */, snd_MusicVolume /* *8*/ );
+  S_Init();
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"HU_Init: Setting up heads up display.\n");
@@ -2259,48 +2195,17 @@ static void D_DoomMainSetup(void)
   if ((p = M_CheckParm("-record")) && ++p < myargc)
   {
     autostart = true;
-    G_RecordDemo(myargv[p]);
+    dsda_SetDemoBaseName(myargv[p]);
+    dsda_InitDemoRecording();
   }
 
-  if ((p = M_CheckParm ("-fastdemo")) && ++p < myargc)
-  {                                 // killough
-    fastdemo = true;                // run at fastest speed possible
-    timingdemo = true;              // show stats after quit
-    G_DeferedPlayDemo(myargv[p]);
-    singledemo = true;              // quit after one demo
-  }
-  else if ((p = M_CheckParm("-timedemo")) && ++p < myargc)
-  {
-    singletics = true;
-    timingdemo = true;            // show stats after quit
-    G_DeferedPlayDemo(myargv[p]);
-    singledemo = true;            // quit after one demo
-  }
-  else if ((p = M_CheckParm("-playdemo")) && ++p < myargc)
-  {
-    G_DeferedPlayDemo(myargv[p]);
-    singledemo = true;          // quit after one demo
-  }
-  else if ((p = IsDemoContinue())) //e6y
-  {
-    G_DeferedPlayDemo(myargv[p+1]);
-    G_CheckDemoContinue();
-  }
+  dsda_ExecutePlaybackOptions();
 
   if (!singledemo)               // killough 12/98
   {
     if (autostart || netgame)
     {
-      // sets first map and first episode if unknown
-      if (autostart)
-      {
-        GetFirstMap(&startepisode, &startmap);
-      }
-      if (map_format.mapinfo)
-      {
-        G_StartNewInit();
-      }
-      G_InitNew(startskill, startepisode, startmap);
+      G_InitNew(startskill, startepisode, startmap, true);
       if (demorecording)
         G_BeginRecording();
     }
@@ -2321,89 +2226,4 @@ void D_DoomMain(void)
   D_DoomMainSetup(); // CPhipps - setup out of main execution stack
 
   D_DoomLoop ();  // never returns
-}
-
-//
-// GetFirstMap
-//
-// Ty 08/29/98 - determine first available map from the loaded wads and run it
-//
-
-void GetFirstMap(int *ep, int *map)
-{
-  int i,j; // used to generate map name
-  dboolean done = false;  // Ty 09/13/98 - to exit inner loops
-  char test[6];  // MAPxx or ExMx plus terminator for testing
-  char name[6];  // MAPxx or ExMx plus terminator for display
-  dboolean newlevel = false;  // Ty 10/04/98 - to test for new level
-  int ix;  // index for lookup
-
-  strcpy(name,""); // initialize
-  if (*map == 0) // unknown so go search for first changed one
-  {
-    *ep = 1;
-    *map = 1; // default E1M1 or MAP01
-    if (map_format.mapinfo)
-    {
-      *map = P_TranslateMap(1);
-      if (*map == -1)
-      {                       // Couldn't find real map number
-        I_Error("Unable to autostart.\n");
-      }
-    }
-    else if (gamemode == commercial)
-    {
-      for (i=1;!done && i<33;i++)  // Ty 09/13/98 - add use of !done
-      {
-        snprintf(test,sizeof(test),"MAP%02d",i);
-        ix = W_CheckNumForName(test);
-        if (ix != -1)  // Ty 10/04/98 avoid -1 subscript
-        {
-          if (lumpinfo[ix].source == source_pwad)
-          {
-            *map = i;
-            strcpy(name,test);  // Ty 10/04/98
-            done = true;  // Ty 09/13/98
-            newlevel = true; // Ty 10/04/98
-          }
-          else
-          {
-            if (!*name)  // found one, not pwad.  First default.
-               strcpy(name,test);
-          }
-        }
-      }
-    }
-    else // one of the others
-    {
-      strcpy(name,"E1M1");  // Ty 10/04/98 - default for display
-      for (i=1;!done && i<5;i++)  // Ty 09/13/98 - add use of !done
-      {
-        for (j=1;!done && j<10;j++)  // Ty 09/13/98 - add use of !done
-        {
-          snprintf(test,sizeof(test),"E%dM%d",i,j);
-          ix = W_CheckNumForName(test);
-          if (ix != -1)  // Ty 10/04/98 avoid -1 subscript
-          {
-            if (lumpinfo[ix].source == source_pwad)
-            {
-              *ep = i;
-              *map = j;
-              strcpy(name,test); // Ty 10/04/98
-              done = true;  // Ty 09/13/98
-              newlevel = true; // Ty 10/04/98
-            }
-            else
-            {
-              if (!*name)  // found one, not pwad.  First default.
-                 strcpy(name,test);
-            }
-          }
-        }
-      }
-    }
-    //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"Auto-warping to first %slevel: %s\n",
-      newlevel ? "new " : "", name);  // Ty 10/04/98 - new level test
-  }
 }

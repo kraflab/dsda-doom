@@ -191,9 +191,9 @@ static void InitializeFade(dboolean fadeIn)
 {
     // unsigned i;
     //
-    // Palette = Z_Malloc(768 * sizeof(fixed_t), PU_STATIC, 0);
-    // PaletteDelta = Z_Malloc(768 * sizeof(fixed_t), PU_STATIC, 0);
-    // RealPalette = Z_Malloc(768 * sizeof(byte), PU_STATIC, 0);
+    // Palette = Z_Malloc(768 * sizeof(fixed_t));
+    // PaletteDelta = Z_Malloc(768 * sizeof(fixed_t),);
+    // RealPalette = Z_Malloc(768 * sizeof(byte));
     //
     // if (fadeIn)
     // {
@@ -201,8 +201,7 @@ static void InitializeFade(dboolean fadeIn)
     //     for (i = 0; i < 768; i++)
     //     {
     //         Palette[i] = 0;
-    //         PaletteDelta[i] = FixedDiv((*((byte *) W_CacheLumpName("playpal",
-    //                                                                PU_CACHE) +
+    //         PaletteDelta[i] = FixedDiv((*((byte *) W_LumpByName("playpal") +
     //                                       i)) << FRACBITS, 70 * FRACUNIT);
     //     }
     // }
@@ -211,7 +210,7 @@ static void InitializeFade(dboolean fadeIn)
     //     for (i = 0; i < 768; i++)
     //     {
     //         RealPalette[i] =
-    //             *((byte *) W_CacheLumpName("playpal", PU_CACHE) + i);
+    //             *((byte *) W_LumpByName("playpal") + i);
     //         Palette[i] = RealPalette[i] << FRACBITS;
     //         PaletteDelta[i] = FixedDiv(Palette[i], -70 * FRACUNIT);
     //     }
@@ -300,8 +299,7 @@ static char *GetFinaleText(int sequence)
         I_Error("Finale message too long (%s)", msgLumpName);
     }
 
-    memcpy(ClusterMessage, W_CacheLumpNum(msgLump), msgSize);
-    W_UnlockLumpNum(msgLump);
+    memcpy(ClusterMessage, W_LumpByNum(msgLump), msgSize);
     ClusterMessage[msgSize] = '\0';        // Append terminator
     return ClusterMessage;
 }

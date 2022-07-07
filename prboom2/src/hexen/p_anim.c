@@ -27,6 +27,7 @@
 #include "p_setup.h"
 
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 #define ANIM_SCRIPT_NAME "ANIMDEFS"
 #define MAX_ANIM_DEFS 20
@@ -238,7 +239,7 @@ static void P_LightningFlash(void)
                     tempLight++;
                 }
             }
-            Sky1Texture = P_GetMapSky1Texture(gamemap);
+            Sky1Texture = dsda_Sky1Texture();
         }
         return;
     }
@@ -284,7 +285,7 @@ static void P_LightningFlash(void)
     }
     if (foundSec)
     {
-        Sky1Texture = P_GetMapSky2Texture(gamemap);     // set alternate sky
+        Sky1Texture = dsda_Sky2Texture();     // set alternate sky
         S_StartSound(NULL, hexen_sfx_thunder_crash);
     }
     // Calculate the next lighting flash
@@ -318,7 +319,7 @@ void P_InitLightning(void)
     int i;
     int secCount;
 
-    if (!P_GetMapLightning(gamemap))
+    if (!dsda_MapLightning())
     {
         LevelHasLightning = false;
         LightningFlash = 0;
@@ -344,8 +345,7 @@ void P_InitLightning(void)
         LevelHasLightning = false;
         return;
     }
-    LightningLightLevels = (int *) Z_Malloc(secCount * sizeof(int), PU_LEVEL,
-                                            NULL);
+    LightningLightLevels = (int *) Z_MallocLevel(secCount * sizeof(int));
     NextLightningFlash = ((P_Random(pr_hexen) & 15) + 5) * 35;  // don't flash at level start
 }
 

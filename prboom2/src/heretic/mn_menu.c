@@ -219,7 +219,7 @@ void MN_DrawMessage(const char* messageString)
   char *p;
   int y;
 
-  msg = strdup(messageString);
+  msg = Z_Strdup(messageString);
   p = msg;
   y = 100 - MN_TextAHeight(msg) / 2;
 
@@ -239,7 +239,7 @@ void MN_DrawMessage(const char* messageString)
     if ((*p = c))
       p++;
   }
-  free(msg);
+  Z_Free(msg);
 }
 
 void MN_Drawer(void)
@@ -325,7 +325,7 @@ void MN_Drawer(void)
   //   y = CurrentMenu->y + (CurrentItPos * ITEM_HEIGHT) + SELECTOR_YOFFSET;
   //   selName = (MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
   //   V_DrawPatch(x + SELECTOR_XOFFSET, y,
-  //               W_CacheLumpName(selName, PU_CACHE));
+  //               W_LumpByName(selName));
   // }
 }
 

@@ -78,19 +78,13 @@ extern dboolean wasWiped;
 extern int totalleveltimes;
 
 extern int secretfound;
-extern int demo_skiptics;
 extern int demo_tics_count;
-extern int demo_curr_tic;
 extern int demo_playerscount;
 extern char demo_len_st[80];
 
 extern int avi_shot_time;
 extern int avi_shot_num;
 extern const char *avi_shot_fname;
-
-extern dboolean doSkip;
-extern dboolean demo_stoponnext;
-extern dboolean demo_stoponend;
 
 extern int speed_step;
 
@@ -120,7 +114,6 @@ extern int render_multisampling;
 extern int render_paperitems;
 extern int render_wipescreen;
 extern int mouse_acceleration;
-extern int demo_overwriteexisting;
 extern int quickstart_window_ms;
 
 extern int render_fov;
@@ -131,8 +124,6 @@ extern float render_fovy;
 extern float render_multiplier;
 void M_ChangeAspectRatio(void);
 void M_ChangeStretch(void);
-
-extern int showendoom;
 
 extern int palette_ondamage;
 extern int palette_onbonus;
@@ -171,7 +162,6 @@ void P_ResetWalkcam(void);
 
 extern dboolean sound_inited_once;
 void e6y_I_uSleep(unsigned long usecs);
-void G_SkipDemoStart(void);
 void G_SkipDemoStop(void);
 void G_SkipDemoStartCheck(void);
 void G_SkipDemoCheck(void);
@@ -184,7 +174,6 @@ void M_ChangeMouseInvert(void);
 
 void M_ChangeFOV(void);
 
-#ifdef GL_DOOM
 void M_ChangeUseDetail(void);
 void M_ChangeMultiSample(void);
 void M_ChangeSpriteClip(void);
@@ -192,14 +181,12 @@ void M_ChangeAllowBoomColormaps(void);
 void M_ChangeTextureUseHires(void);
 void M_ChangeAllowFog(void);
 void M_ChangeTextureHQResize(void);
-#endif
 void M_ChangeSpeed(void);
 void M_ChangeScreenMultipleFactor(void);
 void M_ChangeInterlacedScanning(void);
 void M_MouseMLook(int choice);
 void M_MouseAccel(int choice);
 void CheckPitch(signed int *pitch);
-void I_Init2(void);
 
 dboolean HaveMouseLook(void);
 
