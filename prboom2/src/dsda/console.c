@@ -764,7 +764,7 @@ static dboolean console_ScriptRun(const char* command, const char* args) {
       if (M_ReadFileToString(filename, &buffer) != -1) {
         char* line;
 
-        for (line = strtok(buffer, "\n"); line; line = strtok(NULL, "\n"))
+        for (line = strtok(buffer, "\n;"); line; line = strtok(NULL, "\n;"))
           if (!console_ScriptRunLine(line)) {
             ret = false;
             break;
