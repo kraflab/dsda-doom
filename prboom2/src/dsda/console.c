@@ -308,7 +308,8 @@ static dboolean console_PlayerGivePower(const char* command, const char* args) {
   int duration = -1;
 
   if (sscanf(args, "%i %i", &power, &duration)) {
-    if (power < 0 || power >= NUMPOWERS)
+    if (power < 0 || power >= NUMPOWERS ||
+        power == pw_shield || power == pw_health2 || power == pw_minotaur)
       return false;
 
     target_player.powers[power] = 0;
@@ -330,7 +331,8 @@ static dboolean console_PlayerRemovePower(const char* command, const char* args)
   int power;
 
   if (sscanf(args, "%i", &power)) {
-    if (power < 0 || power >= NUMPOWERS)
+    if (power < 0 || power >= NUMPOWERS ||
+        power == pw_shield || power == pw_health2 || power == pw_minotaur)
       return false;
 
     target_player.powers[power] = 0;
