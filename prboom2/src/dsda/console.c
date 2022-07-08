@@ -264,6 +264,121 @@ static dboolean console_PlayerSetAmmo(const char* command, const char* args) {
   return false;
 }
 
+static dboolean console_PlayerGiveKey(const char* command, const char* args) {
+  extern int playerkeys;
+
+  int key;
+
+  if (sscanf(args, "%i", &key)) {
+    if (key < 0 || key >= NUMCARDS)
+      return false;
+
+    target_player.cards[key] = true;
+    playerkeys |= 1 << key;
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerRemoveKey(const char* command, const char* args) {
+  extern int playerkeys;
+
+  int key;
+
+  if (sscanf(args, "%i", &key)) {
+    if (key < 0 || key >= NUMCARDS)
+      return false;
+
+    target_player.cards[key] = false;
+    playerkeys &= ~(1 << key);
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerGivePower(const char* command, const char* args) {
+  dboolean P_GivePower(player_t *player, int power);
+  void SB_Start(void);
+
+  int power;
+  int duration = -1;
+
+  if (sscanf(args, "%i %i", &power, &duration)) {
+    if (power < 0 || power >= NUMPOWERS)
+      return false;
+
+    target_player.powers[power] = 0;
+    P_GivePower(&target_player, power);
+    if (power != pw_strength)
+      target_player.powers[power] = duration;
+
+    if (raven) SB_Start();
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerRemovePower(const char* command, const char* args) {
+  void SB_Start(void);
+
+  int power;
+
+  if (sscanf(args, "%i", &power)) {
+    if (power < 0 || power >= NUMPOWERS)
+      return false;
+
+    target_player.powers[power] = 0;
+
+    if (power == pw_invulnerability) {
+      target_player.mo->flags2 &= ~(MF2_INVULNERABLE | MF2_REFLECTIVE);
+      if (target_player.pclass == PCLASS_CLERIC)
+      {
+        target_player.mo->flags2 &= ~(MF2_DONTDRAW | MF2_NONSHOOTABLE);
+        target_player.mo->flags &= ~(MF_SHADOW | MF_ALTSHADOW);
+      }
+    }
+    else if (power == pw_invisibility)
+      target_player.mo->flags &= ~MF_SHADOW;
+    else if (power == pw_flight) {
+      if (target_player.mo->z != target_player.mo->floorz)
+      {
+        target_player.centering = true;
+      }
+      target_player.mo->flags2 &= ~MF2_FLY;
+      target_player.mo->flags &= ~MF_NOGRAVITY;
+    }
+    else if (power == pw_weaponlevel2 && heretic) {
+      if ((target_player.readyweapon == wp_phoenixrod)
+          && (target_player.psprites[ps_weapon].state
+              != &states[HERETIC_S_PHOENIXREADY])
+          && (target_player.psprites[ps_weapon].state
+              != &states[HERETIC_S_PHOENIXUP]))
+      {
+        P_SetPsprite(&target_player, ps_weapon, HERETIC_S_PHOENIXREADY);
+        target_player.ammo[am_phoenixrod] -= USE_PHRD_AMMO_2;
+        target_player.refire = 0;
+      }
+      else if ((target_player.readyweapon == wp_gauntlets)
+               || (target_player.readyweapon == wp_staff))
+      {
+        target_player.pendingweapon = target_player.readyweapon;
+      }
+    }
+
+    if (raven) SB_Start();
+
+    return true;
+  }
+
+  return false;
+}
+
 static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
   int x, x_frac = 0;
   double x_double;
@@ -688,6 +803,10 @@ static console_command_entry_t console_commands[] = {
   { "player.giveweapon", console_PlayerGiveWeapon, CF_NEVER },
   { "player.giveammo", console_PlayerGiveAmmo, CF_NEVER },
   { "player.setammo", console_PlayerSetAmmo, CF_NEVER },
+  { "player.givekey", console_PlayerGiveKey, CF_NEVER },
+  { "player.removekey", console_PlayerRemoveKey, CF_NEVER },
+  { "player.givepower", console_PlayerGivePower, CF_NEVER },
+  { "player.removepower", console_PlayerRemovePower, CF_NEVER },
   { "player.setx", console_PlayerSetX, CF_NEVER },
   { "player.sety", console_PlayerSetY, CF_NEVER },
   { "player.setz", console_PlayerSetZ, CF_NEVER },

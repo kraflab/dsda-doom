@@ -354,7 +354,7 @@ static dboolean P_GiveArmor(player_t *player, int armortype)
 // P_GiveCard
 //
 
-static void P_GiveCard(player_t *player, card_t card)
+void P_GiveCard(player_t *player, card_t card)
 {
   if (player->cards[card])
     return;
