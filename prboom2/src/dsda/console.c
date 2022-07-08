@@ -753,6 +753,8 @@ static console_command_entry_t console_commands[] = {
   { "iddst", console_BasicCheat, CF_DEMO },
   { "iddkt", console_BasicCheat, CF_DEMO },
   { "iddit", console_BasicCheat, CF_DEMO },
+  { "idclev", console_BasicCheat, CF_DEMO },
+  { "idmus", console_BasicCheat, CF_DEMO },
 
   { "tntcomp", console_BasicCheat, CF_DEMO },
   { "tntem", console_BasicCheat, CF_DEMO },
@@ -776,6 +778,8 @@ static console_command_entry_t console_commands[] = {
   { "shazam", console_BasicCheat, CF_DEMO },
   { "ravmap", console_BasicCheat, CF_DEMO },
   { "cockadoodledoo", console_BasicCheat, CF_DEMO },
+  { "gimme", console_BasicCheat, CF_DEMO },
+  { "engage", console_BasicCheat, CF_DEMO },
 
   { "satan", console_BasicCheat, CF_DEMO },
   { "clubmed", console_BasicCheat, CF_DEMO },
@@ -788,6 +792,9 @@ static console_command_entry_t console_commands[] = {
   { "init", console_BasicCheat, CF_DEMO },
   { "mapsco", console_BasicCheat, CF_DEMO },
   { "deliverance", console_BasicCheat, CF_DEMO },
+  { "shadowcaster", console_BasicCheat, CF_DEMO },
+  { "visit", console_BasicCheat, CF_DEMO },
+  { "puke", console_BasicCheat, CF_DEMO },
 
   // exit
   { "exit", console_Exit, CF_ALWAYS },
