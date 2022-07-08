@@ -996,8 +996,19 @@ void dsda_UpdateConsole(int ch, int action) {
     dsda_UpdateConsoleDisplay();
   }
   else if (action == MENU_ENTER) {
+    int line;
+    char* entry;
+    char** lines;
+
     strcpy(last_console_entry, console_entry);
-    dsda_ExecuteConsole(console_entry);
+
+    entry = Z_Strdup(console_entry);
+    lines = dsda_SplitString(entry, ";");
+    for (line = 0; lines[line]; ++line)
+      dsda_ExecuteConsole(lines[line]);
+
+    Z_Free(entry);
+    Z_Free(lines);
   }
   else if (action == MENU_UP) {
     strcpy(console_entry, last_console_entry);
