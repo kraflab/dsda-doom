@@ -428,12 +428,26 @@ static dboolean console_TrackerReset(const char* command, const char* args) {
   return true;
 }
 
-static dboolean console_JumpTic(const char* command, const char* args) {
+static dboolean console_JumpToTic(const char* command, const char* args) {
   int tic;
 
   if (sscanf(args, "%i", &tic)) {
     if (tic < 0)
-      tic = logictic + tic;
+      return false;
+
+    dsda_JumpToLogicTic(tic);
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_JumpByTic(const char* command, const char* args) {
+  int tic;
+
+  if (sscanf(args, "%i", &tic)) {
+    tic = logictic + tic;
 
     dsda_JumpToLogicTic(tic);
 
@@ -708,7 +722,8 @@ static console_command_entry_t console_commands[] = {
   { "t.r", console_TrackerReset, CF_DEMO },
 
   // traversing time
-  { "jump.tic", console_JumpTic, CF_DEMO },
+  { "jump.totic", console_JumpToTic, CF_DEMO },
+  { "jump.bytic", console_JumpByTic, CF_DEMO },
 
   // build mode
   { "bruteforce.start", console_BruteForceStart, CF_DEMO },
