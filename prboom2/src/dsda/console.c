@@ -53,6 +53,7 @@ static char console_prompt[CONSOLE_ENTRY_SIZE + 3] = { '$', ' ' };
 static char console_message[CONSOLE_ENTRY_SIZE + 3] = { ' ', ' ' };
 static char* console_entry = console_prompt + 2;
 static char* console_message_entry = console_message + 2;
+static char last_console_entry[CONSOLE_ENTRY_SIZE + 1];
 static int console_entry_index;
 static hu_textline_t hu_console_prompt;
 static hu_textline_t hu_console_message;
@@ -995,7 +996,13 @@ void dsda_UpdateConsole(int ch, int action) {
     dsda_UpdateConsoleDisplay();
   }
   else if (action == MENU_ENTER) {
+    strcpy(last_console_entry, console_entry);
     dsda_ExecuteConsole(console_entry);
+  }
+  else if (action == MENU_UP) {
+    strcpy(console_entry, last_console_entry);
+    console_entry_index = strlen(console_entry);
+    dsda_UpdateConsoleDisplay();
   }
   else if (ch > 0) {
     ch = tolower(ch);
