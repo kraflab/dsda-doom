@@ -194,6 +194,17 @@ static void dsda_ParseIntArg(arg_config_t* config, int* value, const char* param
     I_Error("%s argument too high (max is %i)", config->name, config->upper_limit);
 }
 
+static void dsda_ValidateArrayArg(arg_config_t* config, dsda_arg_t* arg) {
+  if (config->min_count == config->max_count) {
+    if (arg->count != config->min_count)
+      I_Error("%s requires exactly %i arguments", config->name, config->min_count);
+  }
+  else {
+    if (arg->count < config->min_count || arg->count > config->max_count)
+      I_Error("%s requires %i to %i arguments", config->name, config->min_count, config->max_count);
+  }
+}
+
 static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
   for (arg->count = 0; myarg_i + arg->count < myargc - 1; ++arg->count) {
     if (config->type == arg_int || config->type == arg_int_array) {
@@ -251,10 +262,7 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
 
       break;
     case arg_int_array:
-      if (arg->count < config->min_count)
-        I_Error("too few argument for %s (min %i)", config->name, config->min_count);
-      else if (arg->count > config->max_count)
-        I_Error("too many arguments for %s (max %i)", config->name, config->max_count);
+      dsda_ValidateArrayArg(config, arg);
 
       {
         int i;
@@ -268,10 +276,7 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
       break;
 
     case arg_string_array:
-      if (arg->count < config->min_count)
-        I_Error("too few argument for %s (min %i)", config->name, config->min_count);
-      else if (arg->count > config->max_count)
-        I_Error("too many arguments for %s (max %i)", config->name, config->max_count);
+      dsda_ValidateArrayArg(config, arg);
 
       {
         int i;
@@ -326,6 +331,8 @@ void dsda_AppendStringArg(dsda_arg_identifier_t id, const char* param) {
   arg_value[id].value.v_string_array =
     Z_Realloc(arg_value[id].value.v_string_array, arg_value[id].count * sizeof(char *));
   arg_value[id].value.v_string_array[arg_value[id].count - 1] = param;
+
+  dsda_ValidateArrayArg(&arg_config[id], &arg_value[id]);
 }
 
 dsda_arg_t* dsda_Arg(dsda_arg_identifier_t id) {
