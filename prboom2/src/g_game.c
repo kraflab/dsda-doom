@@ -87,6 +87,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
 #include "dsda/command_display.h"
@@ -3630,9 +3631,9 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       // There is no more desynch on mesh.lmp @ mesh.wad
       // prboom -iwad doom.wad -file mesh.wad -playdemo mesh.lmp -nomonsters
       // http://www.doomworld.com/idgames/index.php?id=13976
-      respawnparm = M_CheckParm("-respawn");
-      fastparm = M_CheckParm("-fast");
-      nomonsters = M_CheckParm("-nomonsters");
+      respawnparm = dsda_Flag(dsda_arg_respawn);
+      fastparm = dsda_Flag(dsda_arg_fast);
+      nomonsters = dsda_Flag(dsda_arg_nomonsters);
 
       // Read special parameter bits from player one byte.
       // This aligns with vvHeretic demo usage:

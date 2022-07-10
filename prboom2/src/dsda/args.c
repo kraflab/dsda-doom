@@ -53,6 +53,21 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets the compatibility level",
     arg_int, -1, mbf21_compatibility,
   },
+  [dsda_arg_fast] = {
+    "-fast", NULL,
+    "turns on fast monsters",
+    arg_null,
+  },
+  [dsda_arg_respawn] = {
+    "-respawn", NULL,
+    "turns on monster respawning",
+    arg_null,
+  },
+  [dsda_arg_nomonsters] = {
+    "-nomonsters", "-nomo",
+    "turns off monster spawning",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];
@@ -173,6 +188,10 @@ void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param) {
 
 dsda_arg_t* dsda_Arg(dsda_arg_identifier_t id) {
   return &arg_value[id];
+}
+
+void dsda_UpdateFlag(dsda_arg_identifier_t id, int on) {
+  arg_value[id].count = on;
 }
 
 dboolean dsda_Flag(dsda_arg_identifier_t id) {

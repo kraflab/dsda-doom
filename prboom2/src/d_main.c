@@ -1756,9 +1756,9 @@ static void D_DoomMainSetup(void)
   // The dachaked stuff has been moved below an autoload
 
   // jff 1/24/98 set both working and command line value of play parms
-  nomonsters = clnomonsters = M_CheckParm ("-nomonsters");
-  respawnparm = clrespawnparm = M_CheckParm ("-respawn");
-  fastparm = clfastparm = M_CheckParm ("-fast");
+  nomonsters = clnomonsters = dsda_Flag(dsda_arg_nomonsters);
+  respawnparm = clrespawnparm = dsda_Flag(dsda_arg_respawn);
+  fastparm = clfastparm = dsda_Flag(dsda_arg_fast);
   // jff 1/24/98 end of set to both working and command line value
 
   devparm = M_CheckParm ("-devparm");
