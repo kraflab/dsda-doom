@@ -528,22 +528,22 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
     }
 
     //for recording or playback using "single-player coop" mode
-    if (!M_CheckParm("-solo-net"))
+    if (!dsda_Flag(dsda_arg_solo_net))
     {
       p = M_CheckParmEx("-solo-net", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-solo-net");
+        dsda_UpdateFlag(dsda_arg_solo_net, true);
       }
     }
 
     //for recording or playback using "coop in single-player" mode
-    if (!M_CheckParm("-coop_spawns"))
+    if (!dsda_Flag(dsda_arg_coop_spawns))
     {
       p = M_CheckParmEx("-coop_spawns", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-coop_spawns");
+        dsda_UpdateFlag(dsda_arg_coop_spawns, true);
       }
     }
 
@@ -714,14 +714,14 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   }
 
   //for recording or playback using "single-player coop" mode
-  if (M_CheckParm("-solo-net"))
+  if (dsda_Flag(dsda_arg_solo_net))
   {
     sprintf(buf, "-solo-net ");
     AddString(&files, buf);
   }
 
   //for recording or playback using "coop in single-player" mode
-  if (M_CheckParm("-coop_spawns"))
+  if (dsda_Flag(dsda_arg_coop_spawns))
   {
     sprintf(buf, "-coop_spawns ");
     AddString(&files, buf);

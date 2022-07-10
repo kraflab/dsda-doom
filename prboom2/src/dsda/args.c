@@ -122,6 +122,26 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "turns off monster spawning",
     arg_null,
   },
+  [dsda_arg_heretic] = {
+    "-heretic", NULL, NULL,
+    "sets the game to heretic",
+    arg_null,
+  },
+  [dsda_arg_hexen] = {
+    "-hexen", NULL, NULL,
+    "sets the game to hexen",
+    arg_null,
+  },
+  [dsda_arg_solo_net] = {
+    "-solo-net", NULL, NULL,
+    "play a net game with one player",
+    arg_null,
+  },
+  [dsda_arg_coop_spawns] = {
+    "-coop_spawns", NULL, NULL,
+    "play single player with coop thing spawns",
+    arg_null,
+  },
   [dsda_arg_stroller] = {
     "-stroller", NULL, NULL,
     "applies stroller category limitations",

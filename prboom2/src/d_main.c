@@ -992,14 +992,14 @@ void AddIWAD(const char *iwad)
 
   if (i >= 11 && !strnicmp(iwad + i - 11, "heretic.wad", 11))
   {
-    if (!M_CheckParm("-heretic"))
-      M_AddParam("-heretic");
+    if (!dsda_Flag(dsda_arg_heretic))
+      dsda_UpdateFlag(dsda_arg_heretic, true);
   }
 
   if (i >= 9 && !strnicmp(iwad + i - 9, "hexen.wad", 9))
   {
-    if (!M_CheckParm("-hexen"))
-      M_AddParam("-hexen");
+    if (!dsda_Flag(dsda_arg_hexen))
+      dsda_UpdateFlag(dsda_arg_hexen, true);
 
     gamemode = commercial;
     haswolflevels = false;
@@ -1066,9 +1066,9 @@ static char *FindIWADFile(void)
   }
   else
   {
-    if (M_CheckParm("-heretic") || CheckExeSuffix("-heretic"))
+    if (dsda_Flag(dsda_arg_heretic) || CheckExeSuffix("-heretic"))
       return I_FindFile("heretic.wad", ".wad");
-    else if (M_CheckParm("-hexen") || CheckExeSuffix("-hexen"))
+    else if (dsda_Flag(dsda_arg_hexen) || CheckExeSuffix("-hexen"))
       return I_FindFile("hexen.wad", ".wad");
 
     for (i=0; !iwad && i<nstandard_iwads; i++)

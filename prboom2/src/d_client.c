@@ -60,6 +60,8 @@
 #include "r_fps.h"
 #include "lprintf.h"
 #include "e6y.h"
+
+#include "dsda/args.h"
 #include "dsda/settings.h"
 #include "dsda/time.h"
 
@@ -72,8 +74,8 @@ void D_InitFakeNetGame (void)
   int i;
 
   consoleplayer = displayplayer = 0;
-  solo_net = (M_CheckParm("-solo-net") != 0);
-  coop_spawns = (M_CheckParm("-coop_spawns") != 0);
+  solo_net = dsda_Flag(dsda_arg_solo_net);
+  coop_spawns = dsda_Flag(dsda_arg_coop_spawns);
   netgame = solo_net;
 
   playeringame[0] = true;

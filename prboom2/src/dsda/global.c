@@ -661,8 +661,8 @@ static dboolean dsda_AutoDetectHexen(void)
 extern void dsda_ResetNullPClass(void);
 
 void dsda_InitGlobal(void) {
-  heretic = M_CheckParm("-heretic") || dsda_AutoDetectHeretic();
-  hexen = M_CheckParm("-hexen") || dsda_AutoDetectHexen();
+  heretic = dsda_Flag(dsda_arg_heretic) || dsda_AutoDetectHeretic();
+  hexen = dsda_Flag(dsda_arg_hexen) || dsda_AutoDetectHexen();
   raven = heretic || hexen;
 
   if (hexen)
