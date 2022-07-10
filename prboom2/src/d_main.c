@@ -1879,17 +1879,21 @@ static void D_DoomMainSetup(void)
     }
   }
 
-  p = dsda_ParsePlaybackOptions();
-
-  if (p)
   {
-    char *file = Z_Malloc(strlen(myargv[p+1])+4+1); // cph - localised
-    strcpy(file,myargv[p+1]);
-    AddDefaultExtension(file,".lmp");     // killough
-    D_AddFile (file,source_lmp);
-    //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"Playing demo %s\n",file);
-    Z_Free(file);
+    const char* name;
+
+    name = dsda_ParsePlaybackOptions();
+
+    if (name)
+    {
+      char *file = Z_Malloc(strlen(name) + 4 + 1); // cph - localised
+      strcpy(file, name);
+      AddDefaultExtension(file, ".lmp");     // killough
+      D_AddFile (file, source_lmp);
+      //jff 9/3/98 use logical output routine
+      lprintf(LO_INFO, "Playing demo %s\n", file);
+      Z_Free(file);
+    }
   }
 
   //e6y

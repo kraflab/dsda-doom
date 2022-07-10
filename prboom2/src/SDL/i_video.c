@@ -85,6 +85,7 @@
 #include "e6y.h"//e6y
 #include "i_main.h"
 
+#include "dsda/args.h"
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/time.h"
@@ -1163,8 +1164,8 @@ void I_UpdateVideoMode(void)
   int init_flags = 0;
   int screen_multiply;
   int actualheight;
-  const dboolean novsync = M_CheckParm("-timedemo") || \
-                           M_CheckParm("-fastdemo");
+  const dboolean novsync = dsda_Flag(dsda_arg_timedemo) ||
+                           dsda_Flag(dsda_arg_fastdemo);
 
   if(sdl_window)
   {

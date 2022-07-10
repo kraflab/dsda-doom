@@ -49,6 +49,7 @@ typedef struct {
 } arg_config_t;
 
 #define AT_LEAST_ONE_STRING 0, 0, 1, INT_MAX
+#define EXACT_ARRAY_LENGTH(x) 0, 0, x, x
 
 static arg_config_t arg_config[dsda_arg_count] = {
   [dsda_arg_help] = {
@@ -75,6 +76,21 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "-playdemo", NULL, NULL,
     "plays the given demo file",
     arg_string,
+  },
+  [dsda_arg_timedemo] = {
+    "-timedemo", NULL, NULL,
+    "plays the given demo file as fast as possible, timing the process",
+    arg_string,
+  },
+  [dsda_arg_fastdemo] = {
+    "-fastdemo", NULL, NULL,
+    "plays the given demo file as fast as possible, skipping some frames",
+    arg_string,
+  },
+  [dsda_arg_recordfromto] = {
+    "-recordfromto", NULL, NULL,
+    "plays back the first file while writing to the second",
+    arg_string_array, EXACT_ARRAY_LENGTH(2),
   },
   [dsda_arg_complevel] = {
     "-complevel", "-cl", NULL,

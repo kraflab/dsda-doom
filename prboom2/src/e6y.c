@@ -213,12 +213,12 @@ void ParamsMatchingCheck()
 {
   dboolean recording_attempt =
     M_CheckParm("-record") ||
-    M_CheckParm("-recordfromto");
+    dsda_Flag(dsda_arg_recordfromto);
 
   dboolean playbacking_attempt =
-    M_CheckParm("-playdemo") ||
-    M_CheckParm("-timedemo") ||
-    M_CheckParm("-fastdemo");
+    dsda_Flag(dsda_arg_playdemo) ||
+    dsda_Flag(dsda_arg_timedemo) ||
+    dsda_Flag(dsda_arg_fastdemo);
 
   if (recording_attempt && playbacking_attempt)
     I_Error("Params are not matching: Can not being played back and recorded at the same time.");
@@ -765,7 +765,7 @@ void e6y_G_Compatibility(void)
 {
   deh_applyCompatibility();
 
-  if (dsda_PlaybackArg())
+  if (dsda_PlaybackName())
   {
     int i, p;
 

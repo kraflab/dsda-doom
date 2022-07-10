@@ -222,7 +222,7 @@ void dsda_HandleSkip(void) {
   if (p && p < myargc - 1)
     sscanf(myargv[p + 1], "%d", &demo_skiptics);
 
-  if (dsda_PlaybackArg() && (warpmap != -1 || demo_skiptics)) {
+  if (dsda_PlaybackName() && (warpmap != -1 || demo_skiptics)) {
     skip_until_map = warpmap;
     skip_until_episode = warpepisode;
 

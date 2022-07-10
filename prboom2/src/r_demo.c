@@ -1324,16 +1324,16 @@ void WadDataToWadFiles(waddata_t *waddata)
 int CheckDemoExDemo(void)
 {
   int result = false;
-  int p;
+  const char* playback_name;
 
-  p = dsda_PlaybackArg();
+  playback_name = dsda_PlaybackName();
 
-  if (p)
+  if (playback_name)
   {
     char *demoname, *filename;
 
-    filename = Z_Malloc(strlen(myargv[p + 1]) + 16);
-    strcpy(filename, myargv[p + 1]);
+    filename = Z_Malloc(strlen(playback_name) + 16);
+    strcpy(filename, playback_name);
     AddDefaultExtension(filename, ".lmp");
 
     demoname = I_FindFile(filename, NULL);

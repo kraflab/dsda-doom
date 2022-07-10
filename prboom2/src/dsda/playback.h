@@ -22,9 +22,9 @@
 
 void dsda_RestartPlayback(void);
 dboolean dsda_JumpToLogicTic(int tic);
-int dsda_PlaybackArg(void);
 void dsda_ExecutePlaybackOptions(void);
-int dsda_ParsePlaybackOptions(void);
+const char* dsda_ParsePlaybackOptions(void);
+const char* dsda_PlaybackName(void);
 void dsda_ClearPlaybackStream(void);
 void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour);
 int dsda_PlaybackTics(void);

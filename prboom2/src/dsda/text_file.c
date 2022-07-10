@@ -34,17 +34,17 @@ extern int gameepisode, gameskill, totalleveltimes, compatibility_level,
            dsda_last_leveltime, dsda_last_gamemap, dsda_startmap;
 
 static char* dsda_TextFileName(void) {
-  int p;
   int name_length;
   char* name;
   char* playdemo;
+  const char* playback_name;
 
-  p = dsda_PlaybackArg();
+  playback_name = dsda_PlaybackName();
 
-  if (!p)
+  if (!playback_name)
     return NULL;
 
-  playdemo = Z_Strdup(myargv[p + 1]);
+  playdemo = Z_Strdup(playback_name);
   name_length = strlen(playdemo);
 
   if (name_length > 4 && !stricmp(playdemo + name_length - 4, ".lmp")) {
