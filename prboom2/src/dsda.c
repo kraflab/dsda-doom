@@ -29,6 +29,7 @@
 #include "am_map.h"
 
 #include "dsda/analysis.h"
+#include "dsda/args.h"
 #include "dsda/build.h"
 #include "dsda/demo.h"
 #include "dsda/exhud.h"
@@ -105,17 +106,12 @@ static void dsda_ResetLineActivationTracker(void) {
 }
 
 static void dsda_HandleTurbo(void) {
-  int p;
+  dsda_arg_t* arg;
 
-  if ((p = M_CheckParm ("-turbo"))) {
-    if (p < myargc - 1)
-      turbo_scale = atoi(myargv[p + 1]);
+  arg = dsda_Arg(dsda_arg_turbo);
 
-    if (!turbo_scale)
-      turbo_scale = 255;
-
-    turbo_scale = BETWEEN(10, 255, turbo_scale);
-  }
+  if (arg->count)
+    turbo_scale = arg->value.v_int;
 
   if (turbo_scale > 100)
     dsda_ToggleBuildTurbo();

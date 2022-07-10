@@ -85,6 +85,7 @@
 #include "d_deh.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/playback.h"
@@ -259,11 +260,8 @@ void e6y_InitCommandLine(void)
 
   stats_level = M_CheckParm("-levelstat");
 
-  if ((stroller = M_CheckParm("-stroller")))
-  {
-    M_AddParam("-turbo");
-    M_AddParam("50");
-  }
+  if ((stroller = dsda_Flag(dsda_arg_stroller)))
+    dsda_UpdateIntArg(dsda_arg_turbo, "50");
 
   dsda_ReadCommandLine();
 

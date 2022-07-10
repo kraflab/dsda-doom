@@ -68,6 +68,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "turns off monster spawning",
     arg_null,
   },
+  [dsda_arg_stroller] = {
+    "-stroller", NULL,
+    "applies stroller category limitations",
+    arg_null,
+  },
+  [dsda_arg_turbo] = {
+    "-turbo", NULL,
+    "turns off monster spawning",
+    arg_int, 10, 255,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];
@@ -183,6 +193,7 @@ void dsda_ParseCommandLineArgs(void) {
 }
 
 void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param) {
+  arg_value[id].count = 1;
   dsda_ParseIntArg(&arg_config[id], &arg_value[id].value.v_int, param);
 }
 

@@ -22,6 +22,8 @@ typedef enum {
   dsda_arg_fast,
   dsda_arg_respawn,
   dsda_arg_nomonsters,
+  dsda_arg_stroller,
+  dsda_arg_turbo,
   dsda_arg_count,
 } dsda_arg_identifier_t;
 
