@@ -187,6 +187,51 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "disable all logging",
     arg_null,
   },
+  [dsda_arg_forceoldbsp] = {
+    "-forceoldbsp", NULL, NULL,
+    "force classic bsp nodes",
+    arg_null,
+  },
+  [dsda_arg_devparm] = {
+    "-devparm", NULL, NULL,
+    "turn on old development mode",
+    arg_null,
+  },
+  [dsda_arg_deathmatch] = {
+    "-deathmatch", NULL, NULL,
+    "turn on deathmatch mode",
+    arg_null,
+  },
+  [dsda_arg_altdeath] = {
+    "-altdeath", NULL, NULL,
+    "turn on altdeath mode",
+    arg_null,
+  },
+  [dsda_arg_nosound] = {
+    "-nosound", NULL, NULL,
+    "turn off sound",
+    arg_null,
+  },
+  [dsda_arg_nomusic] = {
+    "-nomusic", NULL, NULL,
+    "turn off music",
+    arg_null,
+  },
+  [dsda_arg_nosfx] = {
+    "-nosfx", NULL, NULL,
+    "turn off sfx",
+    arg_null,
+  },
+  [dsda_arg_nodraw] = {
+    "-nodraw", NULL, NULL,
+    "turn off drawing",
+    arg_null,
+  },
+  [dsda_arg_nodeh] = {
+    "-nodeh", NULL, NULL,
+    "skip dehacked lumps inside wads",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];

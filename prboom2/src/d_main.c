@@ -1646,7 +1646,7 @@ static void D_DoomMainSetup(void)
   }
 
   // figgi 09/18/00-- added switch to force classic bsp nodes
-  if (M_CheckParm ("-forceoldbsp"))
+  if (dsda_Flag(dsda_arg_forceoldbsp))
     forceOldBsp = true;
 
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
@@ -1665,13 +1665,12 @@ static void D_DoomMainSetup(void)
   fastparm = clfastparm = dsda_Flag(dsda_arg_fast);
   // jff 1/24/98 end of set to both working and command line value
 
-  devparm = M_CheckParm ("-devparm");
+  devparm = dsda_Flag(dsda_arg_devparm);
 
-  if (M_CheckParm ("-altdeath"))
+  if (dsda_Flag(dsda_arg_altdeath))
     deathmatch = 2;
-  else
-    if (M_CheckParm ("-deathmatch"))
-      deathmatch = 1;
+  else if (dsda_Flag(dsda_arg_deathmatch))
+    deathmatch = 1;
 
   {
     switch ( gamemode )
@@ -1775,14 +1774,14 @@ static void D_DoomMainSetup(void)
 
   //jff 1/22/98 add command line parms to disable sound and music
   {
-    int nosound = M_CheckParm("-nosound");
-    nomusicparm = nosound || M_CheckParm("-nomusic");
-    nosfxparm   = nosound || M_CheckParm("-nosfx");
+    int nosound = dsda_Flag(dsda_arg_nosound);
+    nomusicparm = nosound || dsda_Flag(dsda_arg_nomusic);
+    nosfxparm   = nosound || dsda_Flag(dsda_arg_nosfx);
   }
   //jff end of sound/music command line parms
 
-  nodrawers = M_CheckParm ("-nodraw");
   // killough 3/2/98: allow -nodraw generally
+  nodrawers = dsda_Flag(dsda_arg_nodraw);
 
   //proff 11/22/98: Added setting of viewangleoffset
   p = M_CheckParm("-viewangle");
@@ -1933,7 +1932,7 @@ static void D_DoomMainSetup(void)
 
   // e6y
   // option to disable automatic loading of dehacked-in-wad lump
-  if (!M_CheckParm ("-nodeh"))
+  if (!dsda_Flag(dsda_arg_nodeh))
   {
     // MBF-style DeHackEd in wad support: load all lumps, not just the last one
     for (p = -1; (p = W_ListNumFromName("DEHACKED", p)) >= 0; )
@@ -1994,7 +1993,7 @@ static void D_DoomMainSetup(void)
   if (autoload)
     D_AutoloadDehIWadDir();
 
-  if (!M_CheckParm ("-nodeh"))
+  if (!dsda_Flag(dsda_arg_nodeh))
     for (p = -1; (p = W_ListNumFromName("DEHACKED", p)) >= 0; )
       if (!(lumpinfo[p].source == source_iwad
             || lumpinfo[p].source == source_pre
@@ -2085,7 +2084,7 @@ static void D_DoomMainSetup(void)
   lprintf(LO_INFO,"HU_Init: Setting up heads up display.\n");
   HU_Init();
 
-  if (!(M_CheckParm("-nodraw") && M_CheckParm("-nosound")))
+  if (!(dsda_Flag(dsda_arg_nodraw) && dsda_Flag(dsda_arg_nosound)))
     I_InitGraphics();
 
   // NSM

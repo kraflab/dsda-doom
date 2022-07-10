@@ -55,6 +55,8 @@
 #include "e6y.h"//e6y
 #include "i_capture.h"
 
+#include "dsda/args.h"
+
 static dboolean disable_message_box;
 
 int cons_stdout_mask = LO_INFO;
@@ -127,7 +129,7 @@ void I_Error(const char *error, ...)
   va_end(argptr);
   lprintf(LO_ERROR, "%s\n", errmsg);
 #ifdef _WIN32
-  if (!disable_message_box && !M_CheckParm ("-nodraw") && !capturing_video) {
+  if (!disable_message_box && !dsda_Flag(dsda_arg_nodraw) && !capturing_video) {
     I_MessageBox(errmsg, PRB_MB_OK);
   }
 #endif
@@ -143,7 +145,7 @@ void I_Warn(const char *error, ...)
   va_end(argptr);
   lprintf(LO_WARN, "%s\n", errmsg);
 #ifdef _WIN32
-  if (!M_CheckParm ("-nodraw") && !capturing_video) {
+  if (!dsda_Flag(dsda_arg_nodraw) && !capturing_video) {
     I_MessageBox(errmsg, PRB_MB_OK);
   }
 #endif

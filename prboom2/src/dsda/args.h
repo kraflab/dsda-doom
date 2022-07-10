@@ -45,6 +45,15 @@ typedef enum {
   dsda_arg_movie,
   dsda_arg_verbose,
   dsda_arg_quiet,
+  dsda_arg_forceoldbsp,
+  dsda_arg_devparm,
+  dsda_arg_deathmatch,
+  dsda_arg_altdeath,
+  dsda_arg_nosound,
+  dsda_arg_nomusic,
+  dsda_arg_nosfx,
+  dsda_arg_nodraw,
+  dsda_arg_nodeh,
   dsda_arg_count,
 } dsda_arg_identifier_t;
 
