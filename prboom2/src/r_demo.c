@@ -493,7 +493,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
 
     M_ParseCmdLine(str, params, ((char*)params) + sizeof(char*) * paramscount, &paramscount, &i);
 
-    if (!M_CheckParm("-iwad") && !M_CheckParm("-file"))
+    if (!dsda_Flag(dsda_arg_iwad) && !dsda_Flag(dsda_arg_file))
     {
       i = 0;
       while (files[i].param)
@@ -629,6 +629,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
 
 static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
 {
+  dsda_arg_t* arg;
   size_t i;
   int p;
   char buf[200];
@@ -669,14 +670,14 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   }
 
   //dehs
-  p = M_CheckParm ("-deh");
-  if (p)
+  arg = dsda_Arg(dsda_arg_deh);
+  if (arg->found)
   {
-    while (++p != myargc && *myargv[p] != '-')
+    for (i = 0; i < arg->count; ++i)
     {
       char *file = NULL;
-      if ((file = I_FindFile(myargv[p], ".bex")) ||
-          (file = I_FindFile(myargv[p], ".deh")))
+      if ((file = I_FindFile(arg->value.v_string_array[i], ".bex")) ||
+          (file = I_FindFile(arg->value.v_string_array[i], ".deh")))
       {
         filename_p = PathFindFileName(file);
         AddString(&dehs, "\"");

@@ -48,11 +48,33 @@ typedef struct {
   int max_count;
 } arg_config_t;
 
+#define AT_LEAST_ONE_STRING 0, 0, 1, INT_MAX
+
 static arg_config_t arg_config[dsda_arg_count] = {
   [dsda_arg_help] = {
     "-help", "--help", NULL,
     "prints out command line argument information",
     arg_null,
+  },
+  [dsda_arg_iwad] = {
+    "-iwad", NULL, NULL,
+    "loads the given iwad file",
+    arg_string,
+  },
+  [dsda_arg_file] = {
+    "-file", NULL, NULL,
+    "loads additional wad files",
+    arg_string_array, AT_LEAST_ONE_STRING,
+  },
+  [dsda_arg_deh] = {
+    "-deh", NULL, NULL,
+    "loads additional deh files",
+    arg_string_array, AT_LEAST_ONE_STRING,
+  },
+  [dsda_arg_playdemo] = {
+    "-playdemo", NULL, NULL,
+    "plays the given demo file",
+    arg_string,
   },
   [dsda_arg_complevel] = {
     "-complevel", "-cl", NULL,
@@ -271,6 +293,23 @@ void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param) {
   arg_value[id].count = 1;
   arg_value[id].found = true;
   dsda_ParseIntArg(&arg_config[id], &arg_value[id].value.v_int, param);
+}
+
+void dsda_UpdateStringArg(dsda_arg_identifier_t id, const char* param) {
+  arg_value[id].count = 1;
+  arg_value[id].found = true;
+  arg_value[id].value.v_string = param;
+}
+
+void dsda_AppendStringArg(dsda_arg_identifier_t id, const char* param) {
+  if (arg_config[id].type == arg_string)
+    return dsda_UpdateStringArg(id, param);
+
+  ++arg_value[id].count;
+  arg_value[id].found = true;
+  arg_value[id].value.v_string_array =
+    Z_Realloc(arg_value[id].value.v_string_array, arg_value[id].count * sizeof(char *));
+  arg_value[id].value.v_string_array[arg_value[id].count - 1] = param;
 }
 
 dsda_arg_t* dsda_Arg(dsda_arg_identifier_t id) {

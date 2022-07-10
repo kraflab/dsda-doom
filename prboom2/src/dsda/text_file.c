@@ -23,6 +23,7 @@
 
 #include "dsda.h"
 #include "dsda/analysis.h"
+#include "dsda/args.h"
 #include "dsda/playback.h"
 
 #include "text_file.h"
@@ -122,6 +123,7 @@ static char* dsda_TextFileTime(void) {
 
 void dsda_ExportTextFile(void) {
   int p;
+  dsda_arg_t* arg;
   char* name;
   const char* iwad = NULL;
   const char* pwad = NULL;
@@ -141,13 +143,13 @@ void dsda_ExportTextFile(void) {
   if (!file)
     I_Error("Unable to export text file!");
 
-  p = M_CheckParm("-iwad");
-  if (p && (++p < myargc))
-    iwad = PathFindFileName(myargv[p]);
+  arg = dsda_Arg(dsda_arg_iwad);
+  if (arg->found)
+    iwad = PathFindFileName(arg->value.v_string);
 
-  p = M_CheckParm("-file");
-  if (p && (++p < myargc))
-    pwad = PathFindFileName(myargv[p]);
+  arg = dsda_Arg(dsda_arg_file);
+  if (arg->found)
+    pwad = PathFindFileName(arg->value.v_string_array[0]);
 
   fprintf(file, "Doom Speed Demo Archive\n");
   fprintf(file, "https://dsdarchive.com/\n");

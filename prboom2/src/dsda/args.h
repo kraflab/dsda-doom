@@ -19,6 +19,10 @@
 
 typedef enum {
   dsda_arg_help,
+  dsda_arg_iwad,
+  dsda_arg_file,
+  dsda_arg_deh,
+  dsda_arg_playdemo,
   dsda_arg_complevel,
   dsda_arg_fast,
   dsda_arg_respawn,
@@ -55,5 +59,7 @@ void dsda_ParseCommandLineArgs(void);
 dsda_arg_t* dsda_Arg(dsda_arg_identifier_t id);
 dboolean dsda_Flag(dsda_arg_identifier_t id);
 void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param);
+void dsda_UpdateStringArg(dsda_arg_identifier_t id, const char* param);
+void dsda_AppendStringArg(dsda_arg_identifier_t id, const char* param);
 void dsda_UpdateFlag(dsda_arg_identifier_t id, dboolean found);
 void dsda_PrintArgHelp(void);

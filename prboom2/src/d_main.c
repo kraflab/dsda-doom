@@ -1056,12 +1056,13 @@ static inline dboolean CheckExeSuffix(const char *suffix)
 static char *FindIWADFile(void)
 {
   int   i;
+  dsda_arg_t* arg;
   char  * iwad  = NULL;
 
-  i = M_CheckParm("-iwad");
-  if (i && (++i < myargc))
+  arg = dsda_Arg(dsda_arg_iwad);
+  if (arg->found)
   {
-    iwad = I_FindFile(myargv[i], ".wad");
+    iwad = I_FindFile(arg->value.v_string, ".wad");
   }
   else
   {
@@ -1310,52 +1311,22 @@ static void FindResponseFile (void)
 
 static void DoLooseFiles(void)
 {
-  char **wads;  // store the respective loose filenames
-  char **lmps;
-  char **dehs;
-  char  *iwad = NULL;
-  int wadcount = 0;      // count the loose filenames
-  int lmpcount = 0;
-  int dehcount = 0;
-  int i,k,n,p;
-  char **tmyargv;  // use these to recreate the argv array
-  int tmyargc;
-  dboolean *skip; // CPhipps - should these be skipped at the end
+  int i, k;
   const int loose_wad_index = 0;
 
   struct {
     const char *ext;
-    char ***list;
-    int *count;
+    dsda_arg_identifier_t arg_id;
   } looses[] = {
-    {".wad", &wads, &wadcount},
-    {".lmp", &lmps, &lmpcount},
-    {".deh", &dehs, &dehcount},
-    {".bex", &dehs, &dehcount},
+    { ".wad", dsda_arg_file },
+    { ".lmp", dsda_arg_playdemo },
+    { ".deh", dsda_arg_deh },
+    { ".bex", dsda_arg_deh },
     // assume wad if no extension or length of the extention is not equal to 3
-    // must be last entrie
-    {"",     &wads, &wadcount},
-    {0}
+    // must be last entry
+    { "", dsda_arg_file },
+    { 0 }
   };
-
-  struct {
-    const char *cmdparam;
-    char ***list;
-    int *count;
-  } params[] = {
-    {"-file"    , &wads, &wadcount},
-    {"-deh"     , &dehs, &dehcount},
-    {"-playdemo", &lmps, &lmpcount},
-    {0}
-  };
-
-  wads = Z_Malloc(myargc * sizeof(*wads));
-  lmps = Z_Malloc(myargc * sizeof(*lmps));
-  dehs = Z_Malloc(myargc * sizeof(*dehs));
-  skip = Z_Malloc(myargc * sizeof(dboolean));
-
-  for (i = 0; i < myargc; i++)
-    skip[i] = false;
 
   for (i = 1; i < myargc; i++)
   {
@@ -1366,8 +1337,7 @@ static void DoLooseFiles(void)
     // so now we must have a loose file.  Find out what kind and store it.
     arglen = strlen(myargv[i]);
 
-    k = 0;
-    while (looses[k].ext)
+    for (k = 0; looses[k].ext; ++k)
     {
       extlen = strlen(looses[k].ext);
       if (arglen >= extlen && !stricmp(&myargv[i][arglen - extlen], looses[k].ext))
@@ -1375,88 +1345,15 @@ static void DoLooseFiles(void)
         // If a wad is an iwad, we don't want to send it to -file
         if (k == loose_wad_index && FileMatchesIWAD(myargv[i]))
         {
-          // We can only have one iwad
-          if (iwad) Z_Free(iwad);
-          iwad = Z_Strdup(myargv[i]);
+          dsda_UpdateStringArg(dsda_arg_iwad, myargv[i]);
           break;
         }
 
-        (*(looses[k].list))[(*looses[k].count)++] = Z_Strdup(myargv[i]);
+        dsda_AppendStringArg(looses[k].arg_id, myargv[i]);
         break;
       }
-      k++;
     }
-    /*if (myargv[i][j-4] != '.')  // assume wad if no extension
-      wads[wadcount++] = Z_Strdup(myargv[i]);*/
-    skip[i] = true; // nuke that entry so it won't repeat later
   }
-
-  if (iwad) {
-    M_AddParam("-iwad");
-    M_AddParam(iwad);
-  }
-
-  // Now, if we didn't find any loose files, we can just leave.
-  if (wadcount+lmpcount+dehcount != 0)
-  {
-    n = 0;
-    k = 0;
-    while (params[k].cmdparam)
-    {
-      if ((p = M_CheckParm (params[k].cmdparam)))
-      {
-        skip[p] = true;    // nuke the entry
-        while (++p != myargc && *myargv[p] != '-')
-        {
-          (*(params[k].list))[(*params[k].count)++] = Z_Strdup(myargv[p]);
-          skip[p] = true;  // null any we find and save
-        }
-      }
-      else
-      {
-        if (*(params[k].count) > 0)
-        {
-          n++;
-        }
-      }
-      k++;
-    }
-
-    // Now go back and redo the whole myargv array with our stuff in it.
-    // First, create a new myargv array to copy into
-    tmyargv = Z_Calloc(sizeof(tmyargv[0]), myargc + n);
-    tmyargv[0] = myargv[0]; // invocation
-    tmyargc = 1;
-
-    k = 0;
-    while (params[k].cmdparam)
-    {
-      // put our stuff into it
-      if (*(params[k].count) > 0)
-      {
-        tmyargv[tmyargc++] = Z_Strdup(params[k].cmdparam); // put the switch in
-        for (i=0;i<*(params[k].count);)
-          tmyargv[tmyargc++] = (*(params[k].list))[i++]; // allocated by Z_Strdup above
-      }
-      k++;
-    }
-
-    // then copy everything that's there now
-    for (i = 1; i < myargc; i++)
-    {
-      if (!skip[i])  // skip any zapped entries
-        tmyargv[tmyargc++] = myargv[i];  // pointers are still valid
-    }
-    // now make the global variables point to our array
-    myargv = tmyargv;
-    myargc = tmyargc;
-  }
-
-  Z_Free(wads);
-  Z_Free(lmps);
-  Z_Free(dehs);
-  Z_Free(skip);
-  if (iwad) Z_Free(iwad);
 }
 
 /* cph - MBF-like wad/deh/bex autoload code */
@@ -1714,7 +1611,10 @@ const char* doomverstr = NULL;
 static void D_DoomMainSetup(void)
 {
   int p;
+  dsda_arg_t *arg;
   dboolean autoload;
+
+  dsda_ParseCommandLineArgs();
 
   if (M_CheckParm("-verbose"))
     I_EnableVerboseLogging();
@@ -1723,6 +1623,12 @@ static void D_DoomMainSetup(void)
     I_DisableAllLogging();
 
   setbuf(stdout,NULL);
+
+  if (dsda_Flag(dsda_arg_help))
+  {
+    dsda_PrintArgHelp();
+    I_SafeExit(0);
+  }
 
   // proff 04/05/2000: Added support for include response files
   /* proff 2001/7/1 - Moved up, so -config can be in response files */
@@ -1744,14 +1650,6 @@ static void D_DoomMainSetup(void)
     forceOldBsp = true;
 
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
-
-  dsda_ParseCommandLineArgs(); // must be AFTER DoLooseFiles (edits myargv)
-
-  if (dsda_Flag(dsda_arg_help))
-  {
-    dsda_PrintArgHelp();
-    I_SafeExit(0);
-  }
 
   IdentifyVersion();
 
@@ -1955,20 +1853,23 @@ static void D_DoomMainSetup(void)
 
   // killough 1/31/98, 5/2/98: reload hack removed, -wart same as -warp now.
 
-  if ((p = M_CheckParm ("-file")))
+  if ((arg = dsda_Arg(dsda_arg_file))->found)
   {
+    int file_i;
     // the parms after p are wadfile/lump names,
     // until end of parms or another - preceded parm
     modifiedgame = true;            // homebrew levels
-    while (++p != myargc && *myargv[p] != '-')
+
+    for (file_i = 0; file_i < arg->count; ++file_i)
     {
+      const char* file_name = arg->value.v_string_array[file_i];
       // e6y
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)
-      char *file = I_FindFile(myargv[p], ".wad");
-      if (!file && D_TryGetWad(myargv[p]))
+      char *file = I_FindFile(file_name, ".wad");
+      if (!file && D_TryGetWad(file_name))
       {
-        file = I_FindFile(myargv[p], ".wad");
+        file = I_FindFile(file_name, ".wad");
       }
       if (file)
       {
@@ -2110,21 +2011,19 @@ static void D_DoomMainSetup(void)
   // Using -deh in BOOM, others use -dehacked.
   // Ty 03/18/98 also allow .bex extension.  .bex overrides if both exist.
 
-  p = M_CheckParm ("-deh");
-  if (p)
+  arg = dsda_Arg(dsda_arg_deh);
+  if (arg->found)
   {
-    // the parms after p are deh/bex file names,
-    // until end of parms or another - preceded parm
-    // Ty 04/11/98 - Allow multiple -deh files in a row
-    //
+    int i;
+
     // e6y
     // reorganization of the code for looking for bex/deh patches
     // in all standard dirs (%DOOMWADDIR%, etc)
-    while (++p != myargc && *myargv[p] != '-')
+    for (i = 0; i < arg->count; ++i)
     {
       char *file = NULL;
-      if ((file = I_FindFile(myargv[p], ".bex")) ||
-          (file = I_FindFile(myargv[p], ".deh")))
+      if ((file = I_FindFile(arg->value.v_string_array[i], ".bex")) ||
+          (file = I_FindFile(arg->value.v_string_array[i], ".deh")))
       {
         // during the beta we have debug output to dehout.txt
         ProcessDehFile(file,D_dehout(),0);
@@ -2132,7 +2031,8 @@ static void D_DoomMainSetup(void)
       }
       else
       {
-        I_Error("D_DoomMainSetup: Cannot find .deh or .bex file named %s",myargv[p]);
+        I_Error("D_DoomMainSetup: Cannot find .deh or .bex file named %s",
+                arg->value.v_string_array[i]);
       }
     }
   }

@@ -32,6 +32,7 @@
 
 #include "global.h"
 
+#include "dsda/args.h"
 #include "dsda/map_format.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/music.h"
@@ -631,11 +632,12 @@ static void dsda_InitHexen(void) {
 
 static dboolean dsda_AutoDetectHeretic(void)
 {
+  dsda_arg_t* arg;
   int i, length;
-  i = M_CheckParm("-iwad");
-  if (i && (++i < myargc)) {
-    length = strlen(myargv[i]);
-    if (length >= 11 && !strnicmp(myargv[i] + length - 11, "heretic.wad", 11))
+  arg = dsda_Arg(dsda_arg_iwad);
+  if (arg->found) {
+    length = strlen(arg->value.v_string);
+    if (length >= 11 && !strnicmp(arg->value.v_string + length - 11, "heretic.wad", 11))
       return true;
   }
 
@@ -644,11 +646,12 @@ static dboolean dsda_AutoDetectHeretic(void)
 
 static dboolean dsda_AutoDetectHexen(void)
 {
+  dsda_arg_t* arg;
   int i, length;
-  i = M_CheckParm("-iwad");
-  if (i && (++i < myargc)) {
-    length = strlen(myargv[i]);
-    if (length >= 9 && !strnicmp(myargv[i] + length - 9, "hexen.wad", 9))
+  arg = dsda_Arg(dsda_arg_iwad);
+  if (arg->found) {
+    length = strlen(arg->value.v_string);
+    if (length >= 9 && !strnicmp(arg->value.v_string + length - 9, "hexen.wad", 9))
       return true;
   }
 
