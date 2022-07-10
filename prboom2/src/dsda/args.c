@@ -177,6 +177,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets the target final level for movie demos (for automatic exit detection)",
     arg_int, 0, 99,
   },
+  [dsda_arg_verbose] = {
+    "-verbose", NULL, NULL,
+    "enable all logging",
+    arg_null,
+  },
+  [dsda_arg_quiet] = {
+    "-quiet", NULL, NULL,
+    "disable all logging",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];

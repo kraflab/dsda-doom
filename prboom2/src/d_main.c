@@ -1616,10 +1616,10 @@ static void D_DoomMainSetup(void)
 
   dsda_ParseCommandLineArgs();
 
-  if (M_CheckParm("-verbose"))
+  if (dsda_Flag(dsda_arg_verbose))
     I_EnableVerboseLogging();
 
-  if (M_CheckParm("-quiet"))
+  if (dsda_Flag(dsda_arg_quiet))
     I_DisableAllLogging();
 
   setbuf(stdout,NULL);

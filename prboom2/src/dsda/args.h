@@ -43,6 +43,8 @@ typedef enum {
   dsda_arg_analysis,
   dsda_arg_levelstat,
   dsda_arg_movie,
+  dsda_arg_verbose,
+  dsda_arg_quiet,
   dsda_arg_count,
 } dsda_arg_identifier_t;
 
