@@ -49,6 +49,11 @@ typedef struct {
 } arg_config_t;
 
 static arg_config_t arg_config[dsda_arg_count] = {
+  [dsda_arg_help] = {
+    "-help", "--help", NULL,
+    "prints out command line argument information",
+    arg_null,
+  },
   [dsda_arg_complevel] = {
     "-complevel", "-cl", NULL,
     "sets the compatibility level",
@@ -273,4 +278,25 @@ void dsda_UpdateFlag(dsda_arg_identifier_t id, dboolean found) {
 
 dboolean dsda_Flag(dsda_arg_identifier_t id) {
   return arg_value[id].found;
+}
+
+void dsda_PrintArgHelp(void) {
+  int i;
+
+  lprintf(LO_INFO, "\nCommand Line Arguments:\n\n");
+
+  for (i = 0; i < dsda_arg_count; ++i) {
+    arg_config_t* config;
+
+    config = &arg_config[i];
+
+    lprintf(LO_INFO, "  %s", config->name);
+    if (config->alias)
+      lprintf(LO_INFO, " / %s", config->alias);
+    lprintf(LO_INFO, ":\n");
+    lprintf(LO_INFO, "    %s\n", config->description);
+    if (config->default_value)
+      lprintf(LO_INFO, "    Default: %s\n", config->default_value);
+    lprintf(LO_INFO, "\n");
+  }
 }

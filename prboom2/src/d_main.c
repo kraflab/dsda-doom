@@ -1747,6 +1747,12 @@ static void D_DoomMainSetup(void)
 
   dsda_ParseCommandLineArgs(); // must be AFTER DoLooseFiles (edits myargv)
 
+  if (dsda_Flag(dsda_arg_help))
+  {
+    dsda_PrintArgHelp();
+    I_SafeExit(0);
+  }
+
   IdentifyVersion();
 
   dsda_InitGlobal();

@@ -18,6 +18,7 @@
 #include "doomtype.h"
 
 typedef enum {
+  dsda_arg_help,
   dsda_arg_complevel,
   dsda_arg_fast,
   dsda_arg_respawn,
@@ -54,3 +55,4 @@ dsda_arg_t* dsda_Arg(dsda_arg_identifier_t id);
 dboolean dsda_Flag(dsda_arg_identifier_t id);
 void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param);
 void dsda_UpdateFlag(dsda_arg_identifier_t id, dboolean found);
+void dsda_PrintArgHelp(void);
