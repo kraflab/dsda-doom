@@ -211,7 +211,6 @@ enum menuactive_e {
 extern enum menuactive_e menuactive; // Type of menu overlaid, if any
 
 extern  dboolean nodrawers;
-extern  dboolean noblit;
 
 // This one is related to the 3-screen display mode.
 // ANG90 = left side, ANG270 = right

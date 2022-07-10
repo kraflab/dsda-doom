@@ -1781,9 +1781,8 @@ static void D_DoomMainSetup(void)
   }
   //jff end of sound/music command line parms
 
-  // killough 3/2/98: allow -nodraw -noblit generally
   nodrawers = M_CheckParm ("-nodraw");
-  noblit = M_CheckParm ("-noblit");
+  // killough 3/2/98: allow -nodraw generally
 
   //proff 11/22/98: Added setting of viewangleoffset
   p = M_CheckParm("-viewangle");
