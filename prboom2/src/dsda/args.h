@@ -26,6 +26,12 @@ typedef enum {
   dsda_arg_turbo,
   dsda_arg_tas,
   dsda_arg_build,
+  dsda_arg_track_pacifist,
+  dsda_arg_track_100k,
+  dsda_arg_time_keys,
+  dsda_arg_time_use,
+  dsda_arg_time_secrets,
+  dsda_arg_time_all,
   dsda_arg_count,
 } dsda_arg_identifier_t;
 

@@ -89,6 +89,36 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "starts in build mode",
     arg_null,
   },
+  [dsda_arg_track_pacifist] = {
+    "-track_pacifist", NULL, NULL,
+    "tracks pacifist category restrictions",
+    arg_null,
+  },
+  [dsda_arg_track_100k] = {
+    "-track_100k", NULL, NULL,
+    "tracks when 100% kills is reached",
+    arg_null,
+  },
+  [dsda_arg_time_keys] = {
+    "-time_keys", NULL, NULL,
+    "announces the time when keys are picked up",
+    arg_null,
+  },
+  [dsda_arg_time_use] = {
+    "-time_use", NULL, NULL,
+    "announces the time when the use command is activated",
+    arg_null,
+  },
+  [dsda_arg_time_secrets] = {
+    "-time_secrets", NULL, NULL,
+    "announces the time when a secret is collected",
+    arg_null,
+  },
+  [dsda_arg_time_all] = {
+    "-time_all", NULL, NULL,
+    "announces the time when any -time_* event happens",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];
