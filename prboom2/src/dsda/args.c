@@ -37,6 +37,7 @@ typedef enum {
 typedef struct {
   const char* name;
   const char* alias;
+  const char* default_value;
   const char* description;
 
   arg_type_t type;
@@ -49,32 +50,32 @@ typedef struct {
 
 static arg_config_t arg_config[dsda_arg_count] = {
   [dsda_arg_complevel] = {
-    "-complevel", "-cl",
+    "-complevel", "-cl", NULL,
     "sets the compatibility level",
     arg_int, -1, mbf21_compatibility,
   },
   [dsda_arg_fast] = {
-    "-fast", NULL,
+    "-fast", NULL, NULL,
     "turns on fast monsters",
     arg_null,
   },
   [dsda_arg_respawn] = {
-    "-respawn", NULL,
+    "-respawn", NULL, NULL,
     "turns on monster respawning",
     arg_null,
   },
   [dsda_arg_nomonsters] = {
-    "-nomonsters", "-nomo",
+    "-nomonsters", "-nomo", NULL,
     "turns off monster spawning",
     arg_null,
   },
   [dsda_arg_stroller] = {
-    "-stroller", NULL,
+    "-stroller", NULL, NULL,
     "applies stroller category limitations",
     arg_null,
   },
   [dsda_arg_turbo] = {
-    "-turbo", NULL,
+    "-turbo", NULL, "255",
     "turns off monster spawning",
     arg_int, 10, 255,
   },
@@ -120,8 +121,15 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
 
       break;
     case arg_int:
-      if (arg->count == 0)
+      if (arg->count == 0) {
+        if (config->default_value) {
+          dsda_ParseIntArg(config, &arg->value.v_int, config->default_value);
+
+          break;
+        }
+
         I_Error("%s requires an integer argument", config->name);
+      }
       if (arg->count > 1)
         I_Error("%s takes only one argument", config->name);
 
@@ -129,8 +137,15 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
 
       break;
     case arg_string:
-      if (arg->count == 0)
+      if (arg->count == 0) {
+        if (config->default_value) {
+          arg->value.v_string = config->default_value;
+
+          break;
+        }
+
         I_Error("%s requires a string argument", config->name);
+      }
       if (arg->count > 1)
         I_Error("%s takes only one argument", config->name);
 
