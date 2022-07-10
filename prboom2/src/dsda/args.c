@@ -92,6 +92,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "plays back the first file while writing to the second",
     arg_string_array, EXACT_ARRAY_LENGTH(2),
   },
+  [dsda_arg_skill] = {
+    "-skill", NULL, NULL,
+    "sets the skill level",
+    arg_int, 1, 5,
+  },
   [dsda_arg_complevel] = {
     "-complevel", "-cl", NULL,
     "sets the compatibility level",

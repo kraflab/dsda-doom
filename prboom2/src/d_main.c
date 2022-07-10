@@ -1746,9 +1746,10 @@ static void D_DoomMainSetup(void)
   startmap = 1;
   autostart = false;
 
-  if ((p = M_CheckParm ("-skill")) && p < myargc-1)
+  arg = dsda_Arg(dsda_arg_skill);
+  if (arg->found)
   {
-    startskill = myargv[p+1][0]-'1';
+    startskill = arg->value.v_int - 1;
     autostart = true;
   }
 
