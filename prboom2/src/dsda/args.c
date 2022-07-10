@@ -76,7 +76,7 @@ static arg_config_t arg_config[dsda_arg_count] = {
   },
   [dsda_arg_turbo] = {
     "-turbo", NULL, "255",
-    "set player speed percent",
+    "sets player speed percent",
     arg_int, 10, 255,
   },
 };
