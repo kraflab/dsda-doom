@@ -51,6 +51,8 @@ typedef enum {
   dsda_arg_devparm,
   dsda_arg_deathmatch,
   dsda_arg_altdeath,
+  dsda_arg_timer,
+  dsda_arg_frags,
   dsda_arg_nosound,
   dsda_arg_nomusic,
   dsda_arg_nosfx,

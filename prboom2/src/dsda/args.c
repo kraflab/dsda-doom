@@ -217,6 +217,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "turn on altdeath mode",
     arg_null,
   },
+  [dsda_arg_timer] = {
+    "-timer", NULL, NULL,
+    "sets the level time limit (in minutes) for deathmatch",
+    arg_int, 1, INT_MAX,
+  },
+  [dsda_arg_frags] = {
+    "-frags", NULL, "10",
+    "sets the level frag limit for deathmatch",
+    arg_int, 1, INT_MAX,
+  },
   [dsda_arg_nosound] = {
     "-nosound", NULL, NULL,
     "turn off sound",

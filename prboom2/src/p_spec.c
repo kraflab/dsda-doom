@@ -65,6 +65,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/global.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
@@ -3678,30 +3679,24 @@ static void P_SpawnExtras(void)
 
 static void P_EvaluateDeathmatchParams(void)
 {
-  int i;
+  dsda_arg_t *arg;
 
-  // See if -timer needs to be used.
   levelTimer = false;
 
-  i = M_CheckParm("-timer"); // user defined timer on game play
-  if (i && deathmatch)
+  arg = dsda_Arg(dsda_arg_timer);
+  if (arg->found && deathmatch)
   {
-    int time;
-    time = atoi(myargv[i+1]) * 60 * TICRATE;
     levelTimer = true;
-    levelTimeCount = time;
+    levelTimeCount = arg->value.v_int * 60 * TICRATE;
   }
 
-  // See if -frags has been used
   levelFragLimit = false;
-  i = M_CheckParm("-frags");  // Ty 03/18/98 Added -frags support
-  if (i && deathmatch)
+
+  arg = dsda_Arg(dsda_arg_frags);
+  if (arg->found && deathmatch)
   {
-    int frags;
-    frags = atoi(myargv[i+1]);
-    if (frags <= 0) frags = 10;  // default 10 if no count provided
     levelFragLimit = true;
-    levelFragLimitCount = frags;
+    levelFragLimitCount = arg->value.v_int;
   }
 }
 

@@ -1763,9 +1763,10 @@ static void D_DoomMainSetup(void)
 
   HandleClass();
 
-  if ((p = M_CheckParm ("-timer")) && p < myargc-1 && deathmatch)
+  arg = dsda_Arg(dsda_arg_timer);
+  if (arg->found && deathmatch)
   {
-    int time = atoi(myargv[p+1]);
+    int time = arg->value.v_int;
     //jff 9/3/98 use logical output routine
     lprintf(LO_INFO,"Levels will end after %d minute%s.\n", time, time>1 ? "s" : "");
   }
