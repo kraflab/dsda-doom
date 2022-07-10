@@ -111,12 +111,12 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
       break;
   }
 
+  arg->found = true;
+
   switch (config->type) {
     case arg_null:
       if (arg->count)
         I_Error("%s does not take an argument", config->name);
-
-      arg->count = 1; // track that it was found
 
       break;
     case arg_int:
@@ -194,6 +194,7 @@ void dsda_ParseCommandLineArgs(void) {
 
 void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param) {
   arg_value[id].count = 1;
+  arg_value[id].found = true;
   dsda_ParseIntArg(&arg_config[id], &arg_value[id].value.v_int, param);
 }
 
@@ -201,10 +202,10 @@ dsda_arg_t* dsda_Arg(dsda_arg_identifier_t id) {
   return &arg_value[id];
 }
 
-void dsda_UpdateFlag(dsda_arg_identifier_t id, int on) {
-  arg_value[id].count = on;
+void dsda_UpdateFlag(dsda_arg_identifier_t id, dboolean found) {
+  arg_value[id].found = found;
 }
 
 dboolean dsda_Flag(dsda_arg_identifier_t id) {
-  return arg_value[id].count > 0;
+  return arg_value[id].found;
 }

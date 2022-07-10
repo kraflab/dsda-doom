@@ -518,7 +518,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
       }
     }
 
-    if (!dsda_Arg(dsda_arg_complevel)->count)
+    if (!dsda_Arg(dsda_arg_complevel)->found)
     {
       p = M_CheckParmEx("-complevel", params, paramscount);
       if (p >= 0 && p < (int)paramscount - 1)

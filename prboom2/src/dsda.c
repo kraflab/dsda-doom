@@ -110,7 +110,7 @@ static void dsda_HandleTurbo(void) {
 
   arg = dsda_Arg(dsda_arg_turbo);
 
-  if (arg->count)
+  if (arg->found)
     turbo_scale = arg->value.v_int;
 
   if (turbo_scale > 100)
