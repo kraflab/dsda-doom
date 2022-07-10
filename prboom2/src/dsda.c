@@ -134,7 +134,7 @@ void dsda_ReadCommandLine(void) {
 
   dsda_track_pacifist = dsda_Flag(dsda_arg_track_pacifist);
   dsda_track_100k = dsda_Flag(dsda_arg_track_100k);
-  dsda_analysis = M_CheckParm("-analysis");
+  dsda_analysis = dsda_Flag(dsda_arg_analysis);
   dsda_time_keys = dsda_Flag(dsda_arg_time_keys);
   dsda_time_use = dsda_Flag(dsda_arg_time_use);
   dsda_time_secrets = dsda_Flag(dsda_arg_time_secrets);

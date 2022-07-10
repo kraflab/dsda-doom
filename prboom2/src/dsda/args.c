@@ -119,6 +119,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "announces the time when any -time_* event happens",
     arg_null,
   },
+  [dsda_arg_analysis] = {
+    "-analysis", NULL, NULL,
+    "writes various data to analysis.txt",
+    arg_null,
+  },
+  [dsda_arg_levelstat] = {
+    "-levelstat", NULL, NULL,
+    "writes level stats to levelstat.txt",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];

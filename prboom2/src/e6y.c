@@ -258,7 +258,7 @@ void e6y_InitCommandLine(void)
   if ((p = M_CheckParm("-avidemo")) && (p < myargc-1))
     avi_shot_fname = myargv[p + 1];
 
-  stats_level = M_CheckParm("-levelstat");
+  stats_level = dsda_Flag(dsda_arg_levelstat);
 
   if ((stroller = dsda_Flag(dsda_arg_stroller)))
     dsda_UpdateIntArg(dsda_arg_turbo, "50");

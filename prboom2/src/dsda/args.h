@@ -32,6 +32,8 @@ typedef enum {
   dsda_arg_time_use,
   dsda_arg_time_secrets,
   dsda_arg_time_all,
+  dsda_arg_analysis,
+  dsda_arg_levelstat,
   dsda_arg_count,
 } dsda_arg_identifier_t;
 
