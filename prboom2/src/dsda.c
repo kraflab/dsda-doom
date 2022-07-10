@@ -122,7 +122,7 @@ int dsda_TurboScale(void) {
 }
 
 static void dsda_HandleBuild(void) {
-  start_in_build_mode = M_CheckParm("-build");
+  start_in_build_mode = dsda_Flag(dsda_arg_build);
 }
 
 int dsda_StartInBuildMode(void) {
@@ -157,7 +157,7 @@ void dsda_ReadCommandLine(void) {
 
   if ((p = M_CheckParm("-import_ghost"))) dsda_InitGhostImport(p);
 
-  if (M_CheckParm2("-tas", "-build")) dsda_SetTas();
+  if (dsda_Flag(dsda_arg_tas) || dsda_Flag(dsda_arg_build)) dsda_SetTas();
 
   dsda_InitKeyFrame();
   dsda_InitCommandHistory();

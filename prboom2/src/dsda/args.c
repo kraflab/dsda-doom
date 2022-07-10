@@ -79,6 +79,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets player speed percent",
     arg_int, 10, 255,
   },
+  [dsda_arg_tas] = {
+    "-tas", NULL, NULL,
+    "lifts strict mode restrictions",
+    arg_null,
+  },
+  [dsda_arg_build] = {
+    "-build", NULL, NULL,
+    "starts in build mode",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];
