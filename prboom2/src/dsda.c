@@ -131,6 +131,7 @@ int dsda_StartInBuildMode(void) {
 
 void dsda_ReadCommandLine(void) {
   int p;
+  dsda_arg_t* arg;
 
   dsda_track_pacifist = dsda_Flag(dsda_arg_track_pacifist);
   dsda_track_100k = dsda_Flag(dsda_arg_track_100k);
@@ -140,8 +141,8 @@ void dsda_ReadCommandLine(void) {
   dsda_time_secrets = dsda_Flag(dsda_arg_time_secrets);
   dsda_time_all = dsda_Flag(dsda_arg_time_all);
 
-  if ((p = M_CheckParm("-movie")) && ++p < myargc)
-    dsda_movie_target = atoi(myargv[p]);
+  if ((arg = dsda_Arg(dsda_arg_movie)))
+    dsda_movie_target = arg->value.v_int;
 
   if (dsda_time_all) {
     dsda_time_keys = true;

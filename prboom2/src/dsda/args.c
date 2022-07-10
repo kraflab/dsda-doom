@@ -134,6 +134,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "writes level stats to levelstat.txt",
     arg_null,
   },
+  [dsda_arg_movie] = {
+    "-movie", NULL, NULL,
+    "sets the target final level for movie demos (for automatic exit detection)",
+    arg_int, 0, 99,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];
