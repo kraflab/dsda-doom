@@ -97,6 +97,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets the skill level",
     arg_int, 1, 5,
   },
+  [dsda_arg_episode] = {
+    "-episode", NULL, NULL,
+    "warp to the first map in the given episode",
+    arg_int, 0, 9,
+  },
   [dsda_arg_complevel] = {
     "-complevel", "-cl", NULL,
     "sets the compatibility level",

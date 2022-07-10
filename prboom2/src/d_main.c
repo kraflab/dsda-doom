@@ -1753,9 +1753,10 @@ static void D_DoomMainSetup(void)
     autostart = true;
   }
 
-  if ((p = M_CheckParm ("-episode")) && p < myargc-1)
+  arg = dsda_Arg(dsda_arg_episode);
+  if (arg->found)
   {
-    startepisode = myargv[p+1][0]-'0';
+    startepisode = arg->value.v_int;
     startmap = 1;
     autostart = true;
   }
