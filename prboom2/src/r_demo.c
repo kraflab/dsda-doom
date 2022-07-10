@@ -65,6 +65,7 @@
 #include "g_overflow.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/demo.h"
 #include "dsda/playback.h"
 
@@ -517,13 +518,12 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
       }
     }
 
-    if (!M_CheckParm2("-complevel", "-cl"))
+    if (!dsda_Arg(dsda_arg_complevel)->count)
     {
       p = M_CheckParmEx("-complevel", params, paramscount);
       if (p >= 0 && p < (int)paramscount - 1)
       {
-        M_AddParam("-complevel");
-        M_AddParam(params[p + 1]);
+        dsda_UpdateIntArg(dsda_arg_complevel, params[p + 1]);
       }
     }
 

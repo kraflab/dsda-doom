@@ -88,6 +88,7 @@
 #include "r_demo.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/demo.h"
 #include "dsda/global.h"
 #include "dsda/save.h"
@@ -1743,6 +1744,9 @@ static void D_DoomMainSetup(void)
     forceOldBsp = true;
 
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
+
+  dsda_ParseCommandLineArgs(); // must be AFTER DoLooseFiles (edits myargv)
+
   IdentifyVersion();
 
   dsda_InitGlobal();
