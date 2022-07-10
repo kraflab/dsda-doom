@@ -27,7 +27,7 @@ _dsda_doom()
     esac
 
     if [[ $cur == -* ]]; then
-        COMPREPLY=( $( compgen -W '-1 -2 -3 -altdeath -aspect -auto -avg
+        COMPREPLY=( $( compgen -W '-1 -2 -3 -altdeath -aspect -auto
         -avidemo -bexout -blockmap -complevel -config -deathmatch -debugfile
         -deh -devparm -fast -fastdemo -file -fullscreen -geom -height
         -iwad -levelstat -noaccel -nocheats -nodraw -nodrawers

@@ -1770,10 +1770,6 @@ static void D_DoomMainSetup(void)
     lprintf(LO_INFO,"Levels will end after %d minute%s.\n", time, time>1 ? "s" : "");
   }
 
-  if ((p = M_CheckParm ("-avg")) && p < myargc-1 && deathmatch)
-    //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"Austin Virtual Gaming: Levels will end after 20 minutes\n");
-
   //jff 1/22/98 add command line parms to disable sound and music
   {
     int nosound = dsda_Flag(dsda_arg_nosound);
