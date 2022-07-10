@@ -34,8 +34,8 @@ typedef struct {
   union {
     int v_int;
     int* v_int_array;
-    char* v_string;
-    char** v_string_array;
+    const char* v_string;
+    const char** v_string_array;
   } value;
 } dsda_arg_t;
 
