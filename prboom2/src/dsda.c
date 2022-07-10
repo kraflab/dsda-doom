@@ -141,7 +141,7 @@ void dsda_ReadCommandLine(void) {
   dsda_time_secrets = dsda_Flag(dsda_arg_time_secrets);
   dsda_time_all = dsda_Flag(dsda_arg_time_all);
 
-  if ((arg = dsda_Arg(dsda_arg_movie)))
+  if ((arg = dsda_Arg(dsda_arg_movie))->found)
     dsda_movie_target = arg->value.v_int;
 
   if (dsda_time_all) {
