@@ -227,6 +227,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets the target final level for movie demos (for automatic exit detection)",
     arg_int, 0, 99,
   },
+  [dsda_arg_viddump] = {
+    "-viddump", NULL, NULL,
+    "dumps a video to the chosen file name",
+    arg_string,
+  },
   [dsda_arg_verbose] = {
     "-verbose", NULL, NULL,
     "enable all logging",

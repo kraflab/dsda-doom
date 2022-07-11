@@ -2076,9 +2076,10 @@ static void D_DoomMainSetup(void)
     I_InitGraphics();
 
   // NSM
-  if ((p = M_CheckParm("-viddump")) && (p < myargc-1))
+  arg = dsda_Arg(dsda_arg_viddump);
+  if (arg->found)
   {
-    I_CapturePrep(myargv[p + 1]);
+    I_CapturePrep(arg->value.v_string);
   }
 
   //jff 9/3/98 use logical output routine
