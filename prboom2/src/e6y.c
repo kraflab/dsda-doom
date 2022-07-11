@@ -99,10 +99,6 @@ int demo_playerscount;
 int demo_tics_count;
 char demo_len_st[80];
 
-int avi_shot_time;
-int avi_shot_num;
-const char *avi_shot_fname;
-
 int speed_step;
 
 int hudadd_gamespeed;
@@ -253,11 +249,6 @@ prboom_comp_t prboom_comp[PC_MAX] = {
 
 void e6y_InitCommandLine(void)
 {
-  int p;
-
-  if ((p = M_CheckParm("-avidemo")) && (p < myargc-1))
-    avi_shot_fname = myargv[p + 1];
-
   stats_level = dsda_Flag(dsda_arg_levelstat);
 
   if ((stroller = dsda_Flag(dsda_arg_stroller)))

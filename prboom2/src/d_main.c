@@ -577,19 +577,6 @@ static void D_DoomLoop(void)
         D_Display(-1);
       }
     }
-
-    //e6y
-    if (avi_shot_fname && !dsda_SkipMode())
-    {
-      int len;
-      char *avi_shot_curr_fname;
-      avi_shot_num++;
-      len = snprintf(NULL, 0, "%s%06d.tga", avi_shot_fname, avi_shot_num);
-      avi_shot_curr_fname = Z_Malloc(len+1);
-      sprintf(avi_shot_curr_fname, "%s%06d.tga", avi_shot_fname, avi_shot_num);
-      M_DoScreenShot(avi_shot_curr_fname);
-      Z_Free(avi_shot_curr_fname);
-    }
   }
 }
 
