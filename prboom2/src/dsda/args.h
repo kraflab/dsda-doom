@@ -67,6 +67,7 @@ typedef enum {
   dsda_arg_nodraw,
   dsda_arg_nodeh,
   dsda_arg_noautoload,
+  dsda_arg_nocheats,
   dsda_arg_count,
 } dsda_arg_identifier_t;
 

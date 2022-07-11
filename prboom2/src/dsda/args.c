@@ -297,6 +297,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "ignore autoload files",
     arg_null,
   },
+  [dsda_arg_nocheats] = {
+    "-nocheats", NULL, NULL,
+    "ignore dehacked cheats",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];
