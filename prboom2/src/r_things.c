@@ -1626,7 +1626,5 @@ void R_DrawMasked(void)
       R_RenderMaskedSegRange(ds, ds->x1, ds->x2);
 
   // draw the psprites on top of everything
-  //  but does not draw on side views
-  if (!viewangleoffset && !viewpitchoffset)
-    R_DrawPlayerSprites ();
+  R_DrawPlayerSprites ();
 }

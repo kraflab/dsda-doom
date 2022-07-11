@@ -1341,12 +1341,9 @@ void gld_EndDrawScene(void)
   gl_EnableFog(false);
   gld_Set2DMode();
 
-  if (!viewangleoffset && !viewpitchoffset)
-  { // don't draw on side views
-    glsl_SetActiveShader(sh_main);
-    R_DrawPlayerSprites();
-    glsl_SetActiveShader(NULL);
-  }
+  glsl_SetActiveShader(sh_main);
+  R_DrawPlayerSprites();
+  glsl_SetActiveShader(NULL);
 
   // e6y
   // Effect of invulnerability uses a colormap instead of hard-coding now

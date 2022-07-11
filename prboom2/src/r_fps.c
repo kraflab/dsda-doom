@@ -108,7 +108,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
   dboolean NoInterpolate = dsda_CameraPaused() || dsda_PausedViaMenu();
 
   viewplayer = player;
-  angleoffset = viewangleoffset + dsda_BuildModeViewAngleOffset();
+  angleoffset = dsda_BuildModeViewAngleOffset();
 
   if (player->mo != oviewer || NoInterpolate)
   {
@@ -128,7 +128,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
 
       player->prev_viewz = player->viewz;
       player->prev_viewangle = player->mo->angle + angleoffset;
-      player->prev_viewpitch = P_PlayerPitch(player) + viewpitchoffset;
+      player->prev_viewpitch = P_PlayerPitch(player);
 
       P_ResetWalkcam();
     }
@@ -154,7 +154,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     else
     {
       viewangle = player->prev_viewangle + FixedMul (frac, R_SmoothPlaying_Get(player) - player->prev_viewangle) + angleoffset;
-      viewpitch = player->prev_viewpitch + FixedMul (frac, P_PlayerPitch(player) - player->prev_viewpitch) + viewpitchoffset;
+      viewpitch = player->prev_viewpitch + FixedMul (frac, P_PlayerPitch(player) - player->prev_viewpitch);
     }
   }
   else
@@ -179,7 +179,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     else
     {
       viewangle = R_SmoothPlaying_Get(player) + angleoffset;
-      viewpitch = P_PlayerPitch(player) + viewpitchoffset;
+      viewpitch = P_PlayerPitch(player);
     }
   }
 

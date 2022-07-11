@@ -212,11 +212,6 @@ extern enum menuactive_e menuactive; // Type of menu overlaid, if any
 
 extern  dboolean nodrawers;
 
-// This one is related to the 3-screen display mode.
-// ANG90 = left side, ANG270 = right
-extern  int viewangleoffset;
-extern  int viewpitchoffset;
-
 // Player taking events, and displaying.
 extern  int consoleplayer;
 extern  int displayplayer;

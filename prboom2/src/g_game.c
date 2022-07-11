@@ -1673,7 +1673,6 @@ void G_PlayerReborn (int player)
     SB_Start();             // refresh the status bar
     inv_ptr = 0;            // reset the inventory pointer
     curpos = 0;
-    viewangleoffset = 0;
   }
 
   for (i=0 ; i<NUMAMMO ; i++)
@@ -4262,7 +4261,6 @@ void G_PlayerExitMap(int playerNumber)
     if (player == &players[consoleplayer])
     {
         SB_Start();          // refresh the status bar
-        viewangleoffset = 0;
     }
 }
 

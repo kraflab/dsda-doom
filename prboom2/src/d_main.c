@@ -1785,15 +1785,6 @@ static void D_DoomMainSetup(void)
   // killough 3/2/98: allow -nodraw generally
   nodrawers = dsda_Flag(dsda_arg_nodraw);
 
-  //proff 11/22/98: Added setting of viewangleoffset
-  p = M_CheckParm("-viewangle");
-  if (p && p < myargc-1)
-  {
-    viewangleoffset = atoi(myargv[p+1]);
-    viewangleoffset = viewangleoffset<0 ? 0 : (viewangleoffset>7 ? 7 : viewangleoffset);
-    viewangleoffset = (8-viewangleoffset) * ANG45;
-  }
-
   // init subsystems
 
   G_ReloadDefaults();    // killough 3/4/98: set defaults just loaded.
