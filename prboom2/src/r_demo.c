@@ -547,13 +547,12 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
       }
     }
 
-    if (!M_CheckParm("-emulate"))
+    if (!dsda_Flag(dsda_arg_emulate))
     {
       p = M_CheckParmEx("-emulate", params, paramscount);
       if (p >= 0 && p < (int)paramscount - 1)
       {
-        M_AddParam("-emulate");
-        M_AddParam(params[p + 1]);
+        dsda_UpdateStringArg(dsda_arg_emulate, params[p + 1]);
       }
     }
 
@@ -727,9 +726,10 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
     AddString(&files, buf);
   }
 
-  if ((p = M_CheckParm("-emulate")) && (p < myargc - 1))
+  arg = dsda_Arg(dsda_arg_emulate);
+  if (arg->found)
   {
-    sprintf(buf, "-emulate %s", myargv[p + 1]);
+    sprintf(buf, "-emulate %s", arg->value.v_string);
     AddString(&files, buf);
   }
 
