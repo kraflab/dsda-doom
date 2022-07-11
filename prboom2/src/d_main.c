@@ -1804,7 +1804,7 @@ static void D_DoomMainSetup(void)
   e6y_InitCommandLine();
 
   // Automatic pistol start when advancing from one level to the next.
-  pistolstart = M_CheckParm("-pistolstart") || M_CheckParm("-wandstart");
+  pistolstart = dsda_Flag(dsda_arg_pistolstart);
 
   // CPhipps - autoloading of wads
   // Designed to be general, instead of specific to boomlump.wad
