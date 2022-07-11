@@ -511,11 +511,6 @@ void D_Display (fixed_t frac)
   I_EndDisplay();
 }
 
-// CPhipps - Auto screenshot Variables
-
-static int auto_shot_count, auto_shot_time;
-static const char *auto_shot_fname;
-
 //
 //  D_DoomLoop()
 //
@@ -581,12 +576,6 @@ static void D_DoomLoop(void)
       {
         D_Display(-1);
       }
-    }
-
-    // CPhipps - auto screenshot
-    if (auto_shot_fname && !--auto_shot_count) {
-      auto_shot_count = auto_shot_time;
-      M_DoScreenShot(auto_shot_fname);
     }
 
     //e6y
@@ -2085,11 +2074,6 @@ static void D_DoomMainSetup(void)
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"ST_Init: Init status bar.\n");
   ST_Init();
-
-  // CPhipps - auto screenshots
-  if ((p = M_CheckParm("-autoshot")) && (p < myargc-2))
-    if ((auto_shot_count = auto_shot_time = atoi(myargv[p+1])))
-      auto_shot_fname = myargv[p+2];
 
   // start the appropriate game based on parms
 
