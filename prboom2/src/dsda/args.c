@@ -359,6 +359,13 @@ static void dsda_ParseIntArg(arg_config_t* config, int* value, const char* param
     I_Error("%s argument too high (max is %i)", config->name, config->upper_limit);
 }
 
+static void dsda_ParseStringArg(arg_config_t* config, const char** value, const char* param) {
+  if (config->upper_limit && strlen(param) > config->upper_limit)
+    I_Error("%s argument too long (max is %i)", config->name, config->upper_limit);
+
+  *value = param;
+}
+
 static void dsda_ValidateArrayArg(arg_config_t* config, dsda_arg_t* arg) {
   if (config->min_count == config->max_count) {
     if (arg->count != config->min_count)
@@ -423,7 +430,7 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
       if (arg->count > 1)
         I_Error("%s takes only one argument", config->name);
 
-      arg->value.v_string = myargv[myarg_i + 1];
+      dsda_ParseStringArg(config, &arg->value.v_string, myargv[myarg_i + 1]);
 
       break;
     case arg_int_array:
@@ -449,7 +456,7 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
         arg->value.v_string_array = Z_Malloc(arg->count * sizeof(char *));
 
         for (i = myarg_i; i < myarg_i + arg->count; ++i)
-          arg->value.v_string_array[i - myarg_i] = myargv[i + 1];
+          dsda_ParseStringArg(config, &arg->value.v_string_array[i - myarg_i], myargv[i + 1]);
       }
 
       break;
@@ -484,7 +491,7 @@ void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param) {
 void dsda_UpdateStringArg(dsda_arg_identifier_t id, const char* param) {
   arg_value[id].count = 1;
   arg_value[id].found = true;
-  arg_value[id].value.v_string = param;
+  dsda_ParseStringArg(&arg_config[id], &arg_value[id].value.v_string, param);
 }
 
 void dsda_AppendStringArg(dsda_arg_identifier_t id, const char* param) {
@@ -495,7 +502,12 @@ void dsda_AppendStringArg(dsda_arg_identifier_t id, const char* param) {
   arg_value[id].found = true;
   arg_value[id].value.v_string_array =
     Z_Realloc(arg_value[id].value.v_string_array, arg_value[id].count * sizeof(char *));
-  arg_value[id].value.v_string_array[arg_value[id].count - 1] = param;
+
+  dsda_ParseStringArg(
+    &arg_config[id],
+    &arg_value[id].value.v_string_array[arg_value[id].count - 1],
+    param
+  );
 
   dsda_ValidateArrayArg(&arg_config[id], &arg_value[id]);
 }
