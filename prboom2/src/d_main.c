@@ -1581,13 +1581,14 @@ static void HandleWarp(void)
 static void HandleClass(void)
 {
   int p;
+  dsda_arg_t* arg;
   int player_class = PCLASS_FIGHTER;
 
   if (!hexen) return;
 
-  p = M_CheckParm("-class");
-  if (p && p < myargc - 1)
-    player_class = atoi(myargv[p + 1]) + PCLASS_FIGHTER;
+  arg = dsda_Arg(dsda_arg_class);
+  if (arg->found)
+    player_class = arg->value.v_int + PCLASS_FIGHTER;
 
   if (
     player_class != PCLASS_FIGHTER &&
@@ -1600,7 +1601,7 @@ static void HandleClass(void)
   for (p = 1; p < MAX_MAXPLAYERS; p++)
     PlayerClass[p] = PCLASS_FIGHTER;
 
-  randomclass = (M_CheckParm("-randclass") != 0);
+  randomclass = dsda_Flag(dsda_arg_randclass);
 }
 
 //

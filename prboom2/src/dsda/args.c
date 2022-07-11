@@ -137,6 +137,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets the game to hexen",
     arg_null,
   },
+  [dsda_arg_class] = {
+    "-class", NULL, NULL,
+    "sets the player class in hexen",
+    arg_int, 0, 2,
+  },
+  [dsda_arg_randclass] = {
+    "-randclass", NULL, NULL,
+    "sets a random player class in hexen deathmatch",
+    arg_null,
+  },
   [dsda_arg_solo_net] = {
     "-solo-net", NULL, NULL,
     "play a net game with one player",
