@@ -841,10 +841,11 @@ void D_AddFile (const char *file, wad_source_t source)
 //e6y static
 const char *D_dehout(void)
 {
-  int p = M_CheckParm("-dehout");
-  if (!p)
-    p = M_CheckParm("-bexout");
-  return (p && ++p < myargc ? myargv[p] : NULL);
+  dsda_arg_t* arg;
+
+  arg = dsda_Arg(dsda_arg_dehout);
+
+  return arg->found ? arg->value.v_string : NULL;
 }
 
 //

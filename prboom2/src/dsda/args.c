@@ -232,6 +232,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "dumps a video to the chosen file name",
     arg_string,
   },
+  [dsda_arg_dehout] = {
+    "-dehout", "-bexout", NULL,
+    "sets dehacked log file",
+    arg_string,
+  },
   [dsda_arg_verbose] = {
     "-verbose", NULL, NULL,
     "enable all logging",
