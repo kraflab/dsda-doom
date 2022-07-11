@@ -337,6 +337,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "ignore dehacked cheats",
     arg_null,
   },
+  [dsda_arg_no_message_box] = {
+    "-no_message_box", NULL, NULL,
+    "disable message boxes",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];
