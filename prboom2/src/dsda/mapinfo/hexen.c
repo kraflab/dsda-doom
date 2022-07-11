@@ -155,14 +155,14 @@ int dsda_HexenNewGameMap(int* episode, int* map) {
   return true;
 }
 
-int dsda_HexenResolveWarp(int arg_p, int* episode, int* map) {
+int dsda_HexenResolveWarp(int* args, int arg_count, int* episode, int* map) {
   if (!map_format.mapinfo)
     return false;
 
   *episode = 1;
 
-  if (arg_p < myargc - 1)
-    *map = P_TranslateMap(atoi(myargv[arg_p + 1]));
+  if (arg_count)
+    *map = P_TranslateMap(args[0]);
   else
     *map = P_TranslateMap(1);
 

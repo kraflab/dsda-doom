@@ -76,14 +76,14 @@ void dsda_NewGameMap(int* episode, int* map) {
   dsda_LegacyNewGameMap(episode, map);
 }
 
-void dsda_ResolveWarp(int arg_p, int* episode, int* map) {
-  if (dsda_HexenResolveWarp(arg_p, episode, map))
+void dsda_ResolveWarp(int* args, int arg_count, int* episode, int* map) {
+  if (dsda_HexenResolveWarp(args, arg_count, episode, map))
     return;
 
-  if (dsda_UResolveWarp(arg_p, episode, map))
+  if (dsda_UResolveWarp(args, arg_count, episode, map))
     return;
 
-  dsda_LegacyResolveWarp(arg_p, episode, map);
+  dsda_LegacyResolveWarp(args, arg_count, episode, map);
 }
 
 void dsda_NextMap(int* episode, int* map) {

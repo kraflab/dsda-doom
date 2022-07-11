@@ -1560,13 +1560,15 @@ int warpmap = -1;
 
 static void HandleWarp(void)
 {
-  int p;
+  dsda_arg_t* arg;
 
-  if ((p = M_CheckParm ("-warp")) || (p = M_CheckParm ("-wart")))
+  arg = dsda_Arg(dsda_arg_warp);
+
+  if (arg->found)
   {
     autostart = true; // Ty 08/29/98 - move outside the decision tree
 
-    dsda_ResolveWarp(p, &warpepisode, &warpmap);
+    dsda_ResolveWarp(arg->value.v_int_array, arg->count, &warpepisode, &warpmap);
 
     if (warpmap == -1)
       dsda_FirstMap(&warpepisode, &warpmap);
@@ -1847,8 +1849,6 @@ static void D_DoomMainSetup(void)
 
   // add any files specified on the command line with -file wadfile
   // to the wad list
-
-  // killough 1/31/98, 5/2/98: reload hack removed, -wart same as -warp now.
 
   if ((arg = dsda_Arg(dsda_arg_file))->found)
   {
