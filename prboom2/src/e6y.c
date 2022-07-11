@@ -265,7 +265,7 @@ void e6y_InitCommandLine(void)
 
   dsda_ReadCommandLine();
 
-  shorttics = movement_shorttics || M_CheckParm("-shorttics");
+  shorttics = movement_shorttics || dsda_Flag(dsda_arg_shorttics);
 }
 
 int G_ReloadLevel(void)

@@ -33,6 +33,8 @@ typedef enum {
   dsda_arg_fast,
   dsda_arg_respawn,
   dsda_arg_nomonsters,
+  dsda_arg_longtics,
+  dsda_arg_shorttics,
   dsda_arg_heretic,
   dsda_arg_hexen,
   dsda_arg_class,

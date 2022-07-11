@@ -127,6 +127,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "turns off monster spawning",
     arg_null,
   },
+  [dsda_arg_longtics] = {
+    "-longtics", NULL, NULL,
+    "enables high precision turn angles (in supported formats)",
+    arg_null,
+  },
+  [dsda_arg_shorttics] = {
+    "-shorttics", NULL, NULL,
+    "restricts turn angles to lower precision",
+    arg_null,
+  },
   [dsda_arg_heretic] = {
     "-heretic", NULL, NULL,
     "sets the game to heretic",

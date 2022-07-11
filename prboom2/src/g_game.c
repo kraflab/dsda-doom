@@ -3302,7 +3302,7 @@ void G_BeginRecording (void)
         case mbf21_compatibility:
              v = 221;
              longtics = 1;
-             shorttics = !M_CheckParm("-longtics");
+             shorttics = !dsda_Flag(dsda_arg_longtics);
              break;
         default: I_Error("G_BeginRecording: PrBoom compatibility level unrecognised?");
       }
@@ -3382,7 +3382,7 @@ void G_BeginRecording (void)
       *demo_p++ = 0;
   } else if (!raven) { // cph - write old v1.9 demos (might even sync)
     unsigned char v = 109;
-    longtics = M_CheckParm("-longtics");
+    longtics = dsda_Flag(dsda_arg_longtics);
     if (longtics)
     {
       v = 111;
@@ -3642,7 +3642,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       {
         if (*demo_p & DEMOHEADER_RESPAWN)
           respawnparm = true;
-        if (*demo_p & DEMOHEADER_LONGTICS || M_CheckParm("-longtics"))
+        if (*demo_p & DEMOHEADER_LONGTICS || dsda_Flag(dsda_arg_longtics))
           longtics = true;
         if (*demo_p & DEMOHEADER_NOMONSTERS)
           nomonsters = true;
