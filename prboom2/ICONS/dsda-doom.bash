@@ -27,14 +27,14 @@ _dsda_doom()
     esac
 
     if [[ $cur == -* ]]; then
-        COMPREPLY=( $( compgen -W '-1 -2 -3 -altdeath -aspect -auto
-        -avidemo -bexout -blockmap -complevel -config -deathmatch -debugfile
+        COMPREPLY=( $( compgen -W '-altdeath -aspect -auto
+        -bexout -blockmap -complevel -config -deathmatch
         -deh -devparm -fast -fastdemo -file -fullscreen -geom -height
         -iwad -levelstat -noaccel -nocheats -nodraw -nodrawers
         -nofullscreen -nojoy -nomonsters -nomouse -nomusic -nosfx -nosound
         -nowindow -playdemo -record -recordfromto -resetgamma -respawn
         -save -shorttics -shotdir -skill -skipsec -solo-net -spechit -timedemo
-        -timer -viddump -videodriver -vidmode -viewangle -warp -width -window' \
+        -timer -viddump -vidmode -warp -width -window' \
         -- "$cur" ) )
     else
         # DoLooseFiles() takes any file names on the command line before the
