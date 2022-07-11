@@ -37,6 +37,8 @@ typedef enum {
   dsda_arg_hexen,
   dsda_arg_class,
   dsda_arg_randclass,
+  dsda_arg_baddemo,
+  dsda_arg_dsdademo,
   dsda_arg_solo_net,
   dsda_arg_coop_spawns,
   dsda_arg_pistolstart,
