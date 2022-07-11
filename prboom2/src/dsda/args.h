@@ -25,6 +25,7 @@ typedef enum {
   dsda_arg_playdemo,
   dsda_arg_timedemo,
   dsda_arg_fastdemo,
+  dsda_arg_record,
   dsda_arg_recordfromto,
   dsda_arg_warp,
   dsda_arg_skill,

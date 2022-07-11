@@ -208,7 +208,7 @@ void e6y_assert(const char *format, ...)
 void ParamsMatchingCheck()
 {
   dboolean recording_attempt =
-    M_CheckParm("-record") ||
+    dsda_Flag(dsda_arg_record) ||
     dsda_Flag(dsda_arg_recordfromto);
 
   dboolean playbacking_attempt =

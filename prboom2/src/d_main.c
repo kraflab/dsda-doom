@@ -2065,10 +2065,11 @@ static void D_DoomMainSetup(void)
 
   // start the appropriate game based on parms
 
-  if ((p = M_CheckParm("-record")) && ++p < myargc)
+  arg = dsda_Arg(dsda_arg_record);
+  if (arg->found)
   {
     autostart = true;
-    dsda_SetDemoBaseName(myargv[p]);
+    dsda_SetDemoBaseName(arg->value.v_string);
     dsda_InitDemoRecording();
   }
 

@@ -87,6 +87,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "plays the given demo file as fast as possible, skipping some frames",
     arg_string,
   },
+  [dsda_arg_record] = {
+    "-record", NULL, NULL,
+    "records a demo to the give file",
+    arg_string,
+  },
   [dsda_arg_recordfromto] = {
     "-recordfromto", NULL, NULL,
     "plays back the first file while writing to the second",
