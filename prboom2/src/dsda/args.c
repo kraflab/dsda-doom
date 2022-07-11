@@ -342,6 +342,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "disable message boxes",
     arg_null,
   },
+  [dsda_arg_aspect] = {
+    "-aspect", NULL, NULL,
+    "sets the fov aspect ratio WxH",
+    arg_string, 0, 21,
+  },
+  [dsda_arg_emulate] = {
+    "-emulate", NULL, NULL,
+    "emulates errors from a version of prboom+ (a.b.c.d)",
+    arg_string,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];

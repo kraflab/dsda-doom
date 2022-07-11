@@ -395,11 +395,14 @@ void M_ChangeStretch(void)
 void M_ChangeFOV(void)
 {
   float f1, f2;
-  int p;
+  dsda_arg_t* arg;
   int render_aspect_width, render_aspect_height;
 
-  if ((p = M_CheckParm("-aspect")) && (p+1 < myargc) && (strlen(myargv[p+1]) <= 21) &&
-     (2 == sscanf(myargv[p+1], "%dx%d", &render_aspect_width, &render_aspect_height)))
+  arg = dsda_Arg(dsda_arg_aspect);
+  if (
+    arg->found &&
+    sscanf(arg->value.v_string, "%dx%d", &render_aspect_width, &render_aspect_height) == 2
+  )
   {
     SetRatio(SCREENWIDTH, SCREENHEIGHT);
     render_fovratio = (float)render_aspect_width / (float)render_aspect_height;
@@ -758,15 +761,17 @@ void e6y_G_Compatibility(void)
 
   if (dsda_PlaybackName())
   {
-    int i, p;
+    int i;
+    dsda_arg_t* arg;
 
     //"2.4.8.2" -> 0x02040802
-    if ((p = M_CheckParm("-emulate")) && (p < myargc - 1))
+    arg = dsda_Arg(dsda_arg_emulate);
+    if (arg->found)
     {
       unsigned int emulated_version = 0;
       int b[4], k = 1;
       memset(b, 0, sizeof(b));
-      sscanf(myargv[p + 1], "%d.%d.%d.%d", &b[0], &b[1], &b[2], &b[3]);
+      sscanf(arg->value.v_string, "%d.%d.%d.%d", &b[0], &b[1], &b[2], &b[3]);
       for (i = 3; i >= 0; i--, k *= 256)
       {
 #ifdef RANGECHECK
