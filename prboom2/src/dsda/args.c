@@ -207,6 +207,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "starts in build mode",
     arg_null,
   },
+  [dsda_arg_first_input] = {
+    "-first_input", NULL, NULL,
+    "builds the first frame F S T",
+    arg_int_array, -128, 127, 3, 3
+  },
   [dsda_arg_track_pacifist] = {
     "-track_pacifist", NULL, NULL,
     "tracks pacifist category restrictions",
