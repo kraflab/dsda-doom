@@ -292,6 +292,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "skip dehacked lumps inside wads",
     arg_null,
   },
+  [dsda_arg_noautoload] = {
+    "-noautoload", "-noload", NULL,
+    "ignore autoload files",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];

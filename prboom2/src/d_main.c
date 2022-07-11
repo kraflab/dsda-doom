@@ -1807,15 +1807,12 @@ static void D_DoomMainSetup(void)
   pistolstart = dsda_Flag(dsda_arg_pistolstart);
 
   // CPhipps - autoloading of wads
-  // Designed to be general, instead of specific to boomlump.wad
-  // Some people might find this useful
-  // cph - support MBF -noload parameter
-  autoload = !M_CheckParm("-noload") && !M_CheckParm("-noautoload");
+  autoload = !dsda_Flag(dsda_arg_noautoload);
   {
     // only autoloaded wads here - autoloaded patches moved down below W_Init
     int i, imax = MAXLOADFILES;
 
-    // make sure to always autoload prboom-plus.wad
+    // make sure to always autoload dsda-doom.wad
     if (!autoload)
       imax = 1;
 
