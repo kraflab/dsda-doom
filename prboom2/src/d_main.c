@@ -1020,11 +1020,11 @@ void AddIWAD(const char *iwad)
  */
 static inline dboolean CheckExeSuffix(const char *suffix)
 {
-  extern char **myargv;
+  extern char **dsda_argv;
 
   char *dash;
 
-  if ((dash = strrchr(myargv[0], '-')))
+  if ((dash = strrchr(dsda_argv[0], '-')))
     if (!stricmp(dash, suffix))
       return true;
 
@@ -1147,8 +1147,8 @@ static void IdentifyVersion (void)
 
 static void DoLooseFiles(void)
 {
-  extern int myargc;
-  extern char **myargv;
+  extern int dsda_argc;
+  extern char **dsda_argv;
 
   int i, k;
   const int loose_wad_index = 0;
@@ -1167,28 +1167,28 @@ static void DoLooseFiles(void)
     { 0 }
   };
 
-  for (i = 1; i < myargc; i++)
+  for (i = 1; i < dsda_argc; i++)
   {
     size_t arglen, extlen;
 
-    if (*myargv[i] == '-') break;  // quit at first switch
+    if (*dsda_argv[i] == '-') break;  // quit at first switch
 
     // so now we must have a loose file.  Find out what kind and store it.
-    arglen = strlen(myargv[i]);
+    arglen = strlen(dsda_argv[i]);
 
     for (k = 0; looses[k].ext; ++k)
     {
       extlen = strlen(looses[k].ext);
-      if (arglen >= extlen && !stricmp(&myargv[i][arglen - extlen], looses[k].ext))
+      if (arglen >= extlen && !stricmp(&dsda_argv[i][arglen - extlen], looses[k].ext))
       {
         // If a wad is an iwad, we don't want to send it to -file
-        if (k == loose_wad_index && FileMatchesIWAD(myargv[i]))
+        if (k == loose_wad_index && FileMatchesIWAD(dsda_argv[i]))
         {
-          dsda_UpdateStringArg(dsda_arg_iwad, myargv[i]);
+          dsda_UpdateStringArg(dsda_arg_iwad, dsda_argv[i]);
           break;
         }
 
-        dsda_AppendStringArg(looses[k].arg_id, myargv[i]);
+        dsda_AppendStringArg(looses[k].arg_id, dsda_argv[i]);
         break;
       }
     }

@@ -23,8 +23,8 @@
 
 #include "dsda/args.h"
 
-int myargc;
-char** myargv;
+int dsda_argc;
+char** dsda_argv;
 
 typedef enum {
   arg_null,
@@ -682,12 +682,12 @@ static void dsda_ValidateArrayArg(arg_config_t* config, dsda_arg_t* arg) {
   }
 }
 
-static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
-  for (arg->count = 0; myarg_i + arg->count < myargc - 1; ++arg->count) {
+static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int argv_i) {
+  for (arg->count = 0; argv_i + arg->count < dsda_argc - 1; ++arg->count) {
     int x;
     dboolean is_integer;
 
-    is_integer = sscanf(myargv[myarg_i + arg->count + 1], "%i", &x);
+    is_integer = sscanf(dsda_argv[argv_i + arg->count + 1], "%i", &x);
 
     if (config->type == arg_int || config->type == arg_int_array) {
       // only valid integers should be interpreted as arguments
@@ -698,7 +698,7 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
     }
 
     // negative numbers are valid string arguments (e.g., -skipsec -1:20)
-    if (myargv[myarg_i + arg->count + 1][0] == '-' && !is_integer)
+    if (dsda_argv[argv_i + arg->count + 1][0] == '-' && !is_integer)
       break;
   }
 
@@ -723,7 +723,7 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
       if (arg->count > 1)
         I_Error("%s takes only one argument", config->name);
 
-      dsda_ParseIntArg(config, &arg->value.v_int, myargv[myarg_i + 1]);
+      dsda_ParseIntArg(config, &arg->value.v_int, dsda_argv[argv_i + 1]);
 
       break;
     case arg_string:
@@ -739,7 +739,7 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
       if (arg->count > 1)
         I_Error("%s takes only one argument", config->name);
 
-      dsda_ParseStringArg(config, &arg->value.v_string, myargv[myarg_i + 1]);
+      dsda_ParseStringArg(config, &arg->value.v_string, dsda_argv[argv_i + 1]);
 
       break;
     case arg_int_array:
@@ -750,8 +750,8 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
 
         arg->value.v_int_array = Z_Malloc(arg->count * sizeof(int));
 
-        for (i = myarg_i; i < myarg_i + arg->count; ++i)
-          dsda_ParseIntArg(config, &arg->value.v_int_array[i - myarg_i], myargv[i + 1]);
+        for (i = argv_i; i < argv_i + arg->count; ++i)
+          dsda_ParseIntArg(config, &arg->value.v_int_array[i - argv_i], dsda_argv[i + 1]);
       }
 
       break;
@@ -764,8 +764,8 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
 
         arg->value.v_string_array = Z_Malloc(arg->count * sizeof(char *));
 
-        for (i = myarg_i; i < myarg_i + arg->count; ++i)
-          dsda_ParseStringArg(config, &arg->value.v_string_array[i - myarg_i], myargv[i + 1]);
+        for (i = argv_i; i < argv_i + arg->count; ++i)
+          dsda_ParseStringArg(config, &arg->value.v_string_array[i - argv_i], dsda_argv[i + 1]);
       }
 
       break;
@@ -774,21 +774,21 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
 
 void dsda_ParseCommandLineArgs(int argc, char** argv) {
   int i;
-  int myarg_i;
+  int argv_i;
   arg_config_t* config;
 
-  myargc = argc;
-  myargv = argv;
+  dsda_argc = argc;
+  dsda_argv = argv;
 
   for (i = 0; i < dsda_arg_count; ++i) {
     config = &arg_config[i];
 
-    for (myarg_i = myargc - 1; myarg_i > 0; --myarg_i)
+    for (argv_i = dsda_argc - 1; argv_i > 0; --argv_i)
       if (
-        !strcasecmp(config->name, myargv[myarg_i]) ||
-        (config->alias && !strcasecmp(config->alias, myargv[myarg_i]))
+        !strcasecmp(config->name, dsda_argv[argv_i]) ||
+        (config->alias && !strcasecmp(config->alias, dsda_argv[argv_i]))
       ) {
-        dsda_ParseArg(config, &arg_value[i], myarg_i);
+        dsda_ParseArg(config, &arg_value[i], argv_i);
         break;
       }
   }
