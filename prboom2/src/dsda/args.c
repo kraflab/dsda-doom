@@ -392,6 +392,46 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "disable message boxes",
     arg_null,
   },
+  [dsda_arg_fullscreen] = {
+    "-fullscreen", NULL, NULL,
+    "turns on fullscreen mode (changes config)",
+    arg_null,
+  },
+  [dsda_arg_nofullscreen] = {
+    "-nofullscreen", NULL, NULL,
+    "turns on windowed mode (changes config)",
+    arg_null,
+  },
+  [dsda_arg_window] = {
+    "-window", NULL, NULL,
+    "temporarily turns on windowed mode",
+    arg_null,
+  },
+  [dsda_arg_nowindow] = {
+    "-nowindow", NULL, NULL,
+    "temporarily turns on fullscreen mode",
+    arg_null,
+  },
+  [dsda_arg_width] = {
+    "-width", NULL, NULL,
+    "temporarily sets the resolution width",
+    arg_int, 320, INT_MAX,
+  },
+  [dsda_arg_height] = {
+    "-height", NULL, NULL,
+    "temporarily sets the resolution height",
+    arg_int, 200, INT_MAX,
+  },
+  [dsda_arg_geometry] = {
+    "-geometry", "-geom", NULL,
+    "temporarily sets the resolution and, optionally, the window mode WxH[w|f]",
+    arg_string,
+  },
+  [dsda_arg_vidmode] = {
+    "-vidmode", NULL, NULL,
+    "temporarily sets the graphics renderer (sw or gl)",
+    arg_string,
+  },
   [dsda_arg_aspect] = {
     "-aspect", NULL, NULL,
     "sets the fov aspect ratio WxH",
