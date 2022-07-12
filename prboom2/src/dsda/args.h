@@ -86,6 +86,8 @@ typedef enum {
   dsda_arg_nomapinfo,
   dsda_arg_noautoload,
   dsda_arg_nocheats,
+  dsda_arg_nojoy,
+  dsda_arg_nomouse,
   dsda_arg_no_message_box,
   dsda_arg_aspect,
   dsda_arg_emulate,

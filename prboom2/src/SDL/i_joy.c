@@ -47,6 +47,8 @@
 #include "lprintf.h"
 #include "i_system.h"
 
+#include "dsda/args.h"
+
 int usejoystick;
 
 #ifdef HAVE_SDL_JOYSTICKGETAXIS
@@ -95,7 +97,7 @@ void I_InitJoystick(void)
   if (!usejoystick) return;
   SDL_InitSubSystem(SDL_INIT_JOYSTICK);
   num_joysticks=SDL_NumJoysticks();
-  if (M_CheckParm("-nojoy") || (usejoystick>num_joysticks) || (usejoystick<0)) {
+  if (dsda_Flag(dsda_arg_nojoy) || (usejoystick>num_joysticks) || (usejoystick<0)) {
     if ((usejoystick > num_joysticks) || (usejoystick < 0))
       lprintf(LO_WARN, "%sinvalid joystick %d\n", fname, usejoystick);
     else
