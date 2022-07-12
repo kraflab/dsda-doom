@@ -477,8 +477,12 @@ static void dsda_ValidateArrayArg(arg_config_t* config, dsda_arg_t* arg) {
       I_Error("%s requires exactly %i arguments", config->name, config->min_count);
   }
   else {
-    if (arg->count < config->min_count || arg->count > config->max_count)
-      I_Error("%s requires %i to %i arguments", config->name, config->min_count, config->max_count);
+    if (arg->count < config->min_count || arg->count > config->max_count) {
+      if (config->max_count == INT_MAX)
+        I_Error("%s requires at least %i argument(s)", config->name, config->min_count);
+      else
+        I_Error("%s requires %i to %i argument(s)", config->name, config->min_count, config->max_count);
+    }
   }
 }
 
