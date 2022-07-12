@@ -130,7 +130,6 @@ int dsda_StartInBuildMode(void) {
 }
 
 void dsda_ReadCommandLine(void) {
-  int p;
   dsda_arg_t* arg;
 
   dsda_track_pacifist = dsda_Flag(dsda_arg_track_pacifist);
@@ -150,13 +149,16 @@ void dsda_ReadCommandLine(void) {
     dsda_time_secrets = true;
   }
 
-  if ((p = M_CheckParm("-export_ghost")) && ++p < myargc)
-    dsda_InitGhostExport(myargv[p]);
+  arg = dsda_Arg(dsda_arg_export_ghost);
+  if (arg->found)
+    dsda_InitGhostExport(arg->value.v_string);
 
   dsda_HandleTurbo();
   dsda_HandleBuild();
 
-  if ((p = M_CheckParm("-import_ghost"))) dsda_InitGhostImport(p);
+  arg = dsda_Arg(dsda_arg_import_ghost);
+  if (arg->found)
+    dsda_InitGhostImport(arg->value.v_string_array, arg->count);
 
   if (dsda_Flag(dsda_arg_tas) || dsda_Flag(dsda_arg_build)) dsda_SetTas();
 

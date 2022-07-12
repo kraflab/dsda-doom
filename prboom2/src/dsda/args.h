@@ -70,6 +70,8 @@ typedef enum {
   dsda_arg_analysis,
   dsda_arg_levelstat,
   dsda_arg_export_text_file,
+  dsda_arg_export_ghost,
+  dsda_arg_import_ghost,
   dsda_arg_consoleplayer,
   dsda_arg_spechit,
   dsda_arg_setmem,

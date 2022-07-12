@@ -298,6 +298,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "export a dsda-format text file template",
     arg_null,
   },
+  [dsda_arg_export_ghost] = {
+    "-export_ghost", NULL, NULL,
+    "exports a ghost file",
+    arg_string,
+  },
+  [dsda_arg_import_ghost] = {
+    "-import_ghost", NULL, NULL,
+    "imports at least one ghost file",
+    arg_string_array, AT_LEAST_ONE_STRING,
+  },
   [dsda_arg_consoleplayer] = {
     "-consoleplayer", NULL, NULL,
     "sets the console player (for coop playback)",
