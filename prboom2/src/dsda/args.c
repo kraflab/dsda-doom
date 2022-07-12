@@ -98,6 +98,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "plays back the first file while writing to the second",
     arg_string_array, EXACT_ARRAY_LENGTH(2),
   },
+  [dsda_arg_from_key_frame] = {
+    "-from_key_frame", NULL, NULL,
+    "restores state and demo buffer from a key frame file",
+    arg_string,
+  },
   [dsda_arg_warp] = {
     "-warp", NULL, NULL,
     "warp to the given episode and / or map",

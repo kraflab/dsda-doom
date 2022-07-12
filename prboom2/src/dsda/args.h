@@ -30,6 +30,7 @@ typedef enum {
   dsda_arg_fastdemo,
   dsda_arg_record,
   dsda_arg_recordfromto,
+  dsda_arg_from_key_frame,
   dsda_arg_warp,
   dsda_arg_skill,
   dsda_arg_episode,
