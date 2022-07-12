@@ -3795,12 +3795,13 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   }
 
   {
-    int p = M_CheckParm("-consoleplayer");
+    dsda_arg_t* arg;
 
-    if (p && (p + 1 < myargc)) {
-      consoleplayer = atoi(myargv[p + 1]);
+    arg = dsda_Arg(dsda_arg_consoleplayer);
+    if (arg->found) {
+      consoleplayer = arg->value.v_int;
 
-      if (consoleplayer < 0 || consoleplayer >= g_maxplayers || !playeringame[consoleplayer])
+      if (consoleplayer >= g_maxplayers || !playeringame[consoleplayer])
         consoleplayer = 0;
     }
   }
