@@ -440,7 +440,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
 
     // 20 adjoining sectors max!
     if (!MAX_ADJOINING_SECTORS)
-      MAX_ADJOINING_SECTORS = M_CheckParm("-doom95") ? 500 : 20;
+      MAX_ADJOINING_SECTORS = dsda_Flag(dsda_arg_doom95) ? 500 : 20;
 
     if (sec->linecount > heightlist_size)
     {

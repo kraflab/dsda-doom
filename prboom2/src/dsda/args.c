@@ -362,6 +362,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "emulates errors from a version of prboom+ (a.b.c.d)",
     arg_string,
   },
+  [dsda_arg_doom95] = {
+    "-doom95", NULL, NULL,
+    "use doom95's adjacent sector limit",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];

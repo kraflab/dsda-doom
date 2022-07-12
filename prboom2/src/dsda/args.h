@@ -80,6 +80,7 @@ typedef enum {
   dsda_arg_no_message_box,
   dsda_arg_aspect,
   dsda_arg_emulate,
+  dsda_arg_doom95,
   dsda_arg_count,
 } dsda_arg_identifier_t;
 
