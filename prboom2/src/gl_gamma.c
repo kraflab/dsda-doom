@@ -49,6 +49,8 @@
 #include "m_argv.h"
 #include "lprintf.h"
 
+#include "dsda/args.h"
+
 #ifndef HIBYTE
 #define HIBYTE(W) (((W) >> 8) & 0xFF)
 #endif
@@ -167,7 +169,7 @@ int gld_SetGammaRamp(int gamma)
 // Restoring the gamma values to a linear value and exit
 void gld_ResetGammaRamp(void)
 {
-  if (M_CheckParm("-resetgamma"))
+  if (dsda_Flag(dsda_arg_resetgamma))
   {
     if (gld_SetGammaRamp(1))
     {

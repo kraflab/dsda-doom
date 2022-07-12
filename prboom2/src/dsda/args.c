@@ -287,6 +287,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "disable all logging",
     arg_null,
   },
+  [dsda_arg_resetgamma] = {
+    "-resetgamma", NULL, NULL,
+    "reset gamma and exit",
+    arg_null,
+  },
   [dsda_arg_forceoldbsp] = {
     "-forceoldbsp", NULL, NULL,
     "force classic bsp nodes",
