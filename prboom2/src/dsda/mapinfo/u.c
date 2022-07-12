@@ -28,6 +28,7 @@
 #include "v_video.h"
 #include "w_wad.h"
 
+#include "dsda/args.h"
 #include "dsda/global.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
@@ -464,7 +465,7 @@ int dsda_UPrepareFinale(int* result) {
 void dsda_ULoadMapInfo(void) {
   int p;
 
-  if (M_CheckParm("-nomapinfo"))
+  if (dsda_Flag(dsda_arg_nomapinfo))
     return;
 
   p = -1;

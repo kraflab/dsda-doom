@@ -332,6 +332,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "skip dehacked lumps inside wads",
     arg_null,
   },
+  [dsda_arg_nomapinfo] = {
+    "-nomapinfo", NULL, NULL,
+    "skip UMAPINFO lumps",
+    arg_null,
+  },
   [dsda_arg_noautoload] = {
     "-noautoload", "-noload", NULL,
     "ignore autoload files",
