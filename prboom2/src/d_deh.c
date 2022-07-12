@@ -48,7 +48,6 @@
 #include "g_game.h"
 #include "d_think.h"
 #include "w_wad.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "v_video.h"
 #include "e6y.h"//e6y
@@ -56,6 +55,7 @@
 // CPhipps - modify to use logical output routine
 #include "lprintf.h"
 
+#include "dsda/args.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/music.h"
 #include "dsda/sfx.h"
@@ -2661,7 +2661,7 @@ static void deh_procCheat(DEHFILE *fpin, char *line) // done
           while (*p == ' ') ++p;
 
           //e6y: ability to ignore cheats in dehacked files.
-          if (deh_apply_cheats && !M_CheckParm("-nocheats"))
+          if (deh_apply_cheats && !dsda_Flag(dsda_arg_nocheats))
           {
             cheat[iy].cheat = Z_Strdup(p);
             deh_log("Assigned new cheat '%s' to cheat '%s'at index %d\n",

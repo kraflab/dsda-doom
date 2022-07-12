@@ -50,7 +50,6 @@
 #include <errno.h>
 
 #include "doomdef.h"
-#include "m_argv.h"
 #include "d_main.h"
 #include "m_fixed.h"
 #include "i_system.h"
@@ -71,8 +70,11 @@
 #include <stdlib.h>
 
 #include "e6y.h"
+
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/analysis.h"
+#include "dsda/args.h"
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
 #include "dsda/text_file.h"
@@ -254,12 +256,10 @@ int main(int argc, char **argv)
       fprintf(stderr, "Revoked uid %d\n",stored_euid);
 #endif
 
-  myargc = argc;
-  myargv = (char**)Z_Malloc(sizeof(myargv[0]) * myargc);
-  memcpy(myargv, argv, sizeof(myargv[0]) * myargc);
+  dsda_ParseCommandLineArgs(argc, argv);
 
   // Print the version and exit
-  if(M_CheckParm("-v"))
+  if (dsda_Flag(dsda_arg_v))
   {
     PrintVer();
     return 0;
@@ -300,7 +300,7 @@ int main(int argc, char **argv)
   I_AtExit(I_EssentialQuit, true, "I_EssentialQuit", exit_priority_first);
   I_AtExit(I_Quit, false, "I_Quit", exit_priority_last);
 #ifndef PRBOOM_DEBUG
-  if (!M_CheckParm("-devparm"))
+  if (!dsda_Flag(dsda_arg_devparm))
   {
     signal(SIGSEGV, I_SignalHandler);
   }

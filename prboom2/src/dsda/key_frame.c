@@ -27,7 +27,6 @@
 #include "r_fps.h"
 #include "r_main.h"
 #include "g_game.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "i_system.h"
 #include "lprintf.h"
@@ -36,6 +35,7 @@
 #include "heretic/sb_bar.h"
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/build.h"
 #include "dsda/command_display.h"
 #include "dsda/demo.h"
@@ -416,11 +416,11 @@ void dsda_RestoreKeyFrameFile(const char* name) {
 }
 
 void dsda_ContinueKeyFrame(void) {
-  int p;
+  dsda_arg_t* arg;
 
-  p = M_CheckParm("-from_key_frame");
-  if (p && (p + 1 < myargc)) {
-    dsda_RestoreKeyFrameFile(myargv[p + 1]);
+  arg = dsda_Arg(dsda_arg_from_key_frame);
+  if (arg->found) {
+    dsda_RestoreKeyFrameFile(arg->value.v_string);
   }
 }
 

@@ -45,7 +45,6 @@
 #include "p_setup.h"
 #include "m_random.h"
 #include "d_englsh.h"
-#include "m_argv.h"
 #include "w_wad.h"
 #include "r_main.h"
 #include "p_maputl.h"
@@ -65,6 +64,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/global.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
@@ -439,7 +439,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
 
     // 20 adjoining sectors max!
     if (!MAX_ADJOINING_SECTORS)
-      MAX_ADJOINING_SECTORS = M_CheckParm("-doom95") ? 500 : 20;
+      MAX_ADJOINING_SECTORS = dsda_Flag(dsda_arg_doom95) ? 500 : 20;
 
     if (sec->linecount > heightlist_size)
     {
@@ -3678,37 +3678,24 @@ static void P_SpawnExtras(void)
 
 static void P_EvaluateDeathmatchParams(void)
 {
-  int i;
+  dsda_arg_t *arg;
 
-  // See if -timer needs to be used.
   levelTimer = false;
 
-  i = M_CheckParm("-avg");   // Austin Virtual Gaming 20 min timer on DM play
-  if (i && deathmatch)
+  arg = dsda_Arg(dsda_arg_timer);
+  if (arg->found && deathmatch)
   {
     levelTimer = true;
-    levelTimeCount = 20 * 60 * TICRATE;
+    levelTimeCount = arg->value.v_int * 60 * TICRATE;
   }
 
-  i = M_CheckParm("-timer"); // user defined timer on game play
-  if (i && deathmatch)
-  {
-    int time;
-    time = atoi(myargv[i+1]) * 60 * TICRATE;
-    levelTimer = true;
-    levelTimeCount = time;
-  }
-
-  // See if -frags has been used
   levelFragLimit = false;
-  i = M_CheckParm("-frags");  // Ty 03/18/98 Added -frags support
-  if (i && deathmatch)
+
+  arg = dsda_Arg(dsda_arg_frags);
+  if (arg->found && deathmatch)
   {
-    int frags;
-    frags = atoi(myargv[i+1]);
-    if (frags <= 0) frags = 10;  // default 10 if no count provided
     levelFragLimit = true;
-    levelFragLimitCount = frags;
+    levelFragLimitCount = arg->value.v_int;
   }
 }
 

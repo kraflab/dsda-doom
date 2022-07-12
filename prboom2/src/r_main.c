@@ -84,12 +84,6 @@ int r_have_internal_hires = false;
 
 #define HEXEN_PI 3.141592657
 
-// killough: viewangleoffset is a legacy from the pre-v1.2 days, when Doom
-// had Left/Mid/Right viewing. +/-ANG90 offsets were placed here on each
-// node, by d_net.c, to set up a L/M/R session.
-
-int viewangleoffset;
-int viewpitchoffset;
 int validcount = 1;         // increment every time a check is made
 int validcount2 = 1;
 const lighttable_t *fixedcolormap;

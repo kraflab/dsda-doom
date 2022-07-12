@@ -59,7 +59,6 @@
 #include "hu_stuff.h"
 #include "r_main.h"
 #include "r_sky.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "e6y.h"
 
@@ -830,7 +829,6 @@ void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
 
 int gld_HiRes_BuildTables(void)
 {
-#define RGB2PAL_NAME "RGB2PAL"
   const int chanel_bits = (gl_hires_24bit_colormap ? 8 : 5);
   const int numcolors_per_chanel = (1 << chanel_bits);
   const int RGB2PAL_size = numcolors_per_chanel * numcolors_per_chanel * numcolors_per_chanel;
@@ -845,7 +843,7 @@ int gld_HiRes_BuildTables(void)
 
   if (gl_hires_24bit_colormap)
   {
-    lump = W_CheckNumForName(RGB2PAL_NAME);
+    lump = W_CheckNumForName("RGB2PAL");
     if (lump != -1)
     {
       size = W_LumpLength(lump);
@@ -860,7 +858,7 @@ int gld_HiRes_BuildTables(void)
       }
     }
 
-    RGB2PAL_fname = I_FindFile(RGB2PAL_NAME".dat", ".dat");
+    RGB2PAL_fname = I_FindFile("RGB2PAL.dat", ".dat");
     if (RGB2PAL_fname)
     {
       struct stat RGB24to8_stat;
@@ -878,7 +876,6 @@ int gld_HiRes_BuildTables(void)
     }
   }
 
-  if (1 || M_CheckParm("-"RGB2PAL_NAME))
   {
     int ok = true;
     FILE *RGB2PAL_fp = NULL;
@@ -886,7 +883,7 @@ int gld_HiRes_BuildTables(void)
 
     if (gl_hires_24bit_colormap)
     {
-      doom_snprintf(fname, sizeof(fname), "%s/"RGB2PAL_NAME".dat", I_DoomExeDir());
+      doom_snprintf(fname, sizeof(fname), "%s/RGB2PAL.dat", I_DoomExeDir());
       RGB2PAL_fp = fopen(fname, "wb");
       ok = RGB2PAL_fp != NULL;
     }

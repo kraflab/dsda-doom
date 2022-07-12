@@ -63,7 +63,6 @@
 #include "v_video.h"
 #include "f_finale.h"
 #include "f_wipe.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "i_main.h"
@@ -88,6 +87,7 @@
 #include "r_demo.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/demo.h"
 #include "dsda/global.h"
 #include "dsda/save.h"
@@ -510,11 +510,6 @@ void D_Display (fixed_t frac)
   I_EndDisplay();
 }
 
-// CPhipps - Auto screenshot Variables
-
-static int auto_shot_count, auto_shot_time;
-static const char *auto_shot_fname;
-
 //
 //  D_DoomLoop()
 //
@@ -580,25 +575,6 @@ static void D_DoomLoop(void)
       {
         D_Display(-1);
       }
-    }
-
-    // CPhipps - auto screenshot
-    if (auto_shot_fname && !--auto_shot_count) {
-      auto_shot_count = auto_shot_time;
-      M_DoScreenShot(auto_shot_fname);
-    }
-
-    //e6y
-    if (avi_shot_fname && !dsda_SkipMode())
-    {
-      int len;
-      char *avi_shot_curr_fname;
-      avi_shot_num++;
-      len = snprintf(NULL, 0, "%s%06d.tga", avi_shot_fname, avi_shot_num);
-      avi_shot_curr_fname = Z_Malloc(len+1);
-      sprintf(avi_shot_curr_fname, "%s%06d.tga", avi_shot_fname, avi_shot_num);
-      M_DoScreenShot(avi_shot_curr_fname);
-      Z_Free(avi_shot_curr_fname);
     }
   }
 }
@@ -851,10 +827,11 @@ void D_AddFile (const char *file, wad_source_t source)
 //e6y static
 const char *D_dehout(void)
 {
-  int p = M_CheckParm("-dehout");
-  if (!p)
-    p = M_CheckParm("-bexout");
-  return (p && ++p < myargc ? myargv[p] : NULL);
+  dsda_arg_t* arg;
+
+  arg = dsda_Arg(dsda_arg_dehout);
+
+  return arg->found ? arg->value.v_string : NULL;
 }
 
 //
@@ -991,14 +968,14 @@ void AddIWAD(const char *iwad)
 
   if (i >= 11 && !strnicmp(iwad + i - 11, "heretic.wad", 11))
   {
-    if (!M_CheckParm("-heretic"))
-      M_AddParam("-heretic");
+    if (!dsda_Flag(dsda_arg_heretic))
+      dsda_UpdateFlag(dsda_arg_heretic, true);
   }
 
   if (i >= 9 && !strnicmp(iwad + i - 9, "hexen.wad", 9))
   {
-    if (!M_CheckParm("-hexen"))
-      M_AddParam("-hexen");
+    if (!dsda_Flag(dsda_arg_hexen))
+      dsda_UpdateFlag(dsda_arg_hexen, true);
 
     gamemode = commercial;
     haswolflevels = false;
@@ -1043,9 +1020,11 @@ void AddIWAD(const char *iwad)
  */
 static inline dboolean CheckExeSuffix(const char *suffix)
 {
+  extern char **dsda_argv;
+
   char *dash;
 
-  if ((dash = strrchr(myargv[0], '-')))
+  if ((dash = strrchr(dsda_argv[0], '-')))
     if (!stricmp(dash, suffix))
       return true;
 
@@ -1055,18 +1034,19 @@ static inline dboolean CheckExeSuffix(const char *suffix)
 static char *FindIWADFile(void)
 {
   int   i;
+  dsda_arg_t* arg;
   char  * iwad  = NULL;
 
-  i = M_CheckParm("-iwad");
-  if (i && (++i < myargc))
+  arg = dsda_Arg(dsda_arg_iwad);
+  if (arg->found)
   {
-    iwad = I_FindFile(myargv[i], ".wad");
+    iwad = I_FindFile(arg->value.v_string, ".wad");
   }
   else
   {
-    if (M_CheckParm("-heretic") || CheckExeSuffix("-heretic"))
+    if (dsda_Flag(dsda_arg_heretic) || CheckExeSuffix("-heretic"))
       return I_FindFile("heretic.wad", ".wad");
-    else if (M_CheckParm("-hexen") || CheckExeSuffix("-hexen"))
+    else if (dsda_Flag(dsda_arg_hexen) || CheckExeSuffix("-hexen"))
       return I_FindFile("hexen.wad", ".wad");
 
     for (i=0; !iwad && i<nstandard_iwads; i++)
@@ -1151,154 +1131,12 @@ static void IdentifyVersion (void)
     I_Error("IdentifyVersion: IWAD not found\n");
 }
 
-
-
-// killough 5/3/98: old code removed
-//
-// Find a Response File
-//
-
-static void FindResponseFile (void)
-{
-  int i;
-
-  for (i = 1;i < myargc;i++)
-    if (myargv[i][0] == '@')
-      {
-        int  size;
-        int  index;
-        int indexinfile;
-        byte *file = NULL;
-        const char **moreargs = Z_Malloc(myargc * sizeof(const char*));
-        char **newargv;
-        // proff 04/05/2000: Added for searching responsefile
-        char *fname;
-
-        fname = Z_Malloc(strlen(&myargv[i][i])+4+1);
-        strcpy(fname,&myargv[i][1]);
-        AddDefaultExtension(fname,".rsp");
-
-        // READ THE RESPONSE FILE INTO MEMORY
-        // proff 04/05/2000: changed for searching responsefile
-        // cph 2002/08/09 - use M_ReadFile for simplicity
-        size = M_ReadFile(fname, &file);
-        // proff 04/05/2000: Added for searching responsefile
-        if (size < 0)
-        {
-          size_t fnlen = doom_snprintf(NULL, 0, "%s/%s",
-                                       I_DoomExeDir(), &myargv[i][1]);
-          fname = Z_Realloc(fname, fnlen+4+1);
-          doom_snprintf(fname, fnlen+1, "%s/%s",
-                        I_DoomExeDir(), &myargv[i][1]);
-          AddDefaultExtension(fname,".rsp");
-          size = M_ReadFile(fname, &file);
-        }
-        if (size < 0)
-        {
-            /* proff 04/05/2000: Changed from LO_FATAL
-             * proff 04/05/2000: Simply removed the exit(1);
-       * cph - made fatal, don't drop through and SEGV
-       */
-            I_Error("No such response file: %s",fname);
-        }
-        //jff 9/3/98 use logical output routine
-        lprintf(LO_INFO,"Found response file %s\n",fname);
-        Z_Free(fname);
-        // proff 04/05/2000: Added check for empty rsp file
-        if (size<=0)
-        {
-          int k;
-          lprintf(LO_ERROR,"\nResponse file empty!\n");
-
-          newargv = Z_Calloc(sizeof(newargv[0]),myargc);
-          newargv[0] = myargv[0];
-          for (k = 1,index = 1;k < myargc;k++)
-          {
-            if (i!=k)
-              newargv[index++] = myargv[k];
-          }
-          myargc = index;
-          myargv = newargv;
-          return;
-        }
-
-        // KEEP ALL CMDLINE ARGS FOLLOWING @RESPONSEFILE ARG
-        memcpy((void *)moreargs,&myargv[i+1],(index = myargc - i - 1) * sizeof(myargv[0]));
-
-        {
-          char *firstargv = myargv[0];
-          newargv = Z_Calloc(sizeof(newargv[0]), 1);
-          newargv[0] = firstargv;
-        }
-
-        {
-          byte *infile = file;
-          indexinfile = 0;
-          indexinfile++;  // SKIP PAST ARGV[0] (KEEP IT)
-          do {
-            while (size > 0 && isspace(*infile)) { infile++; size--; }
-            if (size > 0) {
-              char *s = Z_Malloc(size+1);
-              char *p = s;
-              int quoted = 0;
-
-              while (size > 0) {
-                // Whitespace terminates the token unless quoted
-                if (!quoted && isspace(*infile)) break;
-                if (*infile == '\"') {
-                  // Quotes are removed but remembered
-                  infile++; size--; quoted ^= 1;
-                } else {
-                  *p++ = *infile++; size--;
-                }
-              }
-              if (quoted) I_Error("Runaway quoted string in response file");
-
-              // Terminate string, realloc and add to argv
-              *p = 0;
-              newargv = Z_Realloc(newargv, sizeof(newargv[0]) * (indexinfile + 1));
-              newargv[indexinfile++] = Z_Realloc(s,strlen(s)+1);
-            }
-          } while(size > 0);
-        }
-        Z_Free(file);
-
-        newargv = Z_Realloc(newargv, sizeof(newargv[0]) * (indexinfile + index));
-        memcpy((void *)&newargv[indexinfile],moreargs,index*sizeof(moreargs[0]));
-        Z_Free((void *)moreargs);
-
-        myargc = indexinfile+index;
-        myargv = newargv;
-
-        // DISPLAY ARGS
-        //jff 9/3/98 use logical output routine
-        lprintf(LO_INFO,"%d command-line args:\n",myargc);
-        for (index=1;index<myargc;index++)
-          //jff 9/3/98 use logical output routine
-          lprintf(LO_INFO,"%s\n",myargv[index]);
-        break;
-      }
-}
-
 //
 // DoLooseFiles
 //
 // Take any file names on the command line before the first switch parm
 // and insert the appropriate -file, -deh or -playdemo switch in front
 // of them.
-//
-// Note that more than one -file, etc. entry on the command line won't
-// work, so we have to go get all the valid ones if any that show up
-// after the loose ones.  This means that boom fred.wad -file wilma
-// will still load fred.wad and wilma.wad, in that order.
-// The response file code kludges up its own version of myargv[] and
-// unfortunately we have to do the same here because that kludge only
-// happens if there _is_ a response file.  Truth is, it's more likely
-// that there will be a need to do one or the other so it probably
-// isn't important.  We'll point off to the original argv[], or the
-// area allocated in FindResponseFile, or our own areas from strdups.
-//
-// CPhipps - OUCH! Writing into *myargv is too dodgy, damn
 //
 // e6y
 // Fixed crash if numbers of wads/lmps/dehs is greater than 100
@@ -1309,153 +1147,52 @@ static void FindResponseFile (void)
 
 static void DoLooseFiles(void)
 {
-  char **wads;  // store the respective loose filenames
-  char **lmps;
-  char **dehs;
-  char  *iwad = NULL;
-  int wadcount = 0;      // count the loose filenames
-  int lmpcount = 0;
-  int dehcount = 0;
-  int i,k,n,p;
-  char **tmyargv;  // use these to recreate the argv array
-  int tmyargc;
-  dboolean *skip; // CPhipps - should these be skipped at the end
+  extern int dsda_argc;
+  extern char **dsda_argv;
+
+  int i, k;
   const int loose_wad_index = 0;
 
   struct {
     const char *ext;
-    char ***list;
-    int *count;
+    dsda_arg_identifier_t arg_id;
   } looses[] = {
-    {".wad", &wads, &wadcount},
-    {".lmp", &lmps, &lmpcount},
-    {".deh", &dehs, &dehcount},
-    {".bex", &dehs, &dehcount},
+    { ".wad", dsda_arg_file },
+    { ".lmp", dsda_arg_playdemo },
+    { ".deh", dsda_arg_deh },
+    { ".bex", dsda_arg_deh },
     // assume wad if no extension or length of the extention is not equal to 3
-    // must be last entrie
-    {"",     &wads, &wadcount},
-    {0}
+    // must be last entry
+    { "", dsda_arg_file },
+    { 0 }
   };
 
-  struct {
-    const char *cmdparam;
-    char ***list;
-    int *count;
-  } params[] = {
-    {"-file"    , &wads, &wadcount},
-    {"-deh"     , &dehs, &dehcount},
-    {"-playdemo", &lmps, &lmpcount},
-    {0}
-  };
-
-  wads = Z_Malloc(myargc * sizeof(*wads));
-  lmps = Z_Malloc(myargc * sizeof(*lmps));
-  dehs = Z_Malloc(myargc * sizeof(*dehs));
-  skip = Z_Malloc(myargc * sizeof(dboolean));
-
-  for (i = 0; i < myargc; i++)
-    skip[i] = false;
-
-  for (i = 1; i < myargc; i++)
+  for (i = 1; i < dsda_argc; i++)
   {
     size_t arglen, extlen;
 
-    if (*myargv[i] == '-') break;  // quit at first switch
+    if (*dsda_argv[i] == '-') break;  // quit at first switch
 
     // so now we must have a loose file.  Find out what kind and store it.
-    arglen = strlen(myargv[i]);
+    arglen = strlen(dsda_argv[i]);
 
-    k = 0;
-    while (looses[k].ext)
+    for (k = 0; looses[k].ext; ++k)
     {
       extlen = strlen(looses[k].ext);
-      if (arglen >= extlen && !stricmp(&myargv[i][arglen - extlen], looses[k].ext))
+      if (arglen >= extlen && !stricmp(&dsda_argv[i][arglen - extlen], looses[k].ext))
       {
         // If a wad is an iwad, we don't want to send it to -file
-        if (k == loose_wad_index && FileMatchesIWAD(myargv[i]))
+        if (k == loose_wad_index && FileMatchesIWAD(dsda_argv[i]))
         {
-          // We can only have one iwad
-          if (iwad) Z_Free(iwad);
-          iwad = Z_Strdup(myargv[i]);
+          dsda_UpdateStringArg(dsda_arg_iwad, dsda_argv[i]);
           break;
         }
 
-        (*(looses[k].list))[(*looses[k].count)++] = Z_Strdup(myargv[i]);
+        dsda_AppendStringArg(looses[k].arg_id, dsda_argv[i]);
         break;
       }
-      k++;
     }
-    /*if (myargv[i][j-4] != '.')  // assume wad if no extension
-      wads[wadcount++] = Z_Strdup(myargv[i]);*/
-    skip[i] = true; // nuke that entry so it won't repeat later
   }
-
-  if (iwad) {
-    M_AddParam("-iwad");
-    M_AddParam(iwad);
-  }
-
-  // Now, if we didn't find any loose files, we can just leave.
-  if (wadcount+lmpcount+dehcount != 0)
-  {
-    n = 0;
-    k = 0;
-    while (params[k].cmdparam)
-    {
-      if ((p = M_CheckParm (params[k].cmdparam)))
-      {
-        skip[p] = true;    // nuke the entry
-        while (++p != myargc && *myargv[p] != '-')
-        {
-          (*(params[k].list))[(*params[k].count)++] = Z_Strdup(myargv[p]);
-          skip[p] = true;  // null any we find and save
-        }
-      }
-      else
-      {
-        if (*(params[k].count) > 0)
-        {
-          n++;
-        }
-      }
-      k++;
-    }
-
-    // Now go back and redo the whole myargv array with our stuff in it.
-    // First, create a new myargv array to copy into
-    tmyargv = Z_Calloc(sizeof(tmyargv[0]), myargc + n);
-    tmyargv[0] = myargv[0]; // invocation
-    tmyargc = 1;
-
-    k = 0;
-    while (params[k].cmdparam)
-    {
-      // put our stuff into it
-      if (*(params[k].count) > 0)
-      {
-        tmyargv[tmyargc++] = Z_Strdup(params[k].cmdparam); // put the switch in
-        for (i=0;i<*(params[k].count);)
-          tmyargv[tmyargc++] = (*(params[k].list))[i++]; // allocated by Z_Strdup above
-      }
-      k++;
-    }
-
-    // then copy everything that's there now
-    for (i = 1; i < myargc; i++)
-    {
-      if (!skip[i])  // skip any zapped entries
-        tmyargv[tmyargc++] = myargv[i];  // pointers are still valid
-    }
-    // now make the global variables point to our array
-    myargv = tmyargv;
-    myargc = tmyargc;
-  }
-
-  Z_Free(wads);
-  Z_Free(lmps);
-  Z_Free(dehs);
-  Z_Free(skip);
-  if (iwad) Z_Free(iwad);
 }
 
 /* cph - MBF-like wad/deh/bex autoload code */
@@ -1662,13 +1399,15 @@ int warpmap = -1;
 
 static void HandleWarp(void)
 {
-  int p;
+  dsda_arg_t* arg;
 
-  if ((p = M_CheckParm ("-warp")) || (p = M_CheckParm ("-wart")))
+  arg = dsda_Arg(dsda_arg_warp);
+
+  if (arg->found)
   {
     autostart = true; // Ty 08/29/98 - move outside the decision tree
 
-    dsda_ResolveWarp(p, &warpepisode, &warpmap);
+    dsda_ResolveWarp(arg->value.v_int_array, arg->count, &warpepisode, &warpmap);
 
     if (warpmap == -1)
       dsda_FirstMap(&warpepisode, &warpmap);
@@ -1681,13 +1420,14 @@ static void HandleWarp(void)
 static void HandleClass(void)
 {
   int p;
+  dsda_arg_t* arg;
   int player_class = PCLASS_FIGHTER;
 
   if (!hexen) return;
 
-  p = M_CheckParm("-class");
-  if (p && p < myargc - 1)
-    player_class = atoi(myargv[p + 1]) + PCLASS_FIGHTER;
+  arg = dsda_Arg(dsda_arg_class);
+  if (arg->found)
+    player_class = arg->value.v_int + PCLASS_FIGHTER;
 
   if (
     player_class != PCLASS_FIGHTER &&
@@ -1700,7 +1440,7 @@ static void HandleClass(void)
   for (p = 1; p < MAX_MAXPLAYERS; p++)
     PlayerClass[p] = PCLASS_FIGHTER;
 
-  randomclass = (M_CheckParm("-randclass") != 0);
+  randomclass = dsda_Flag(dsda_arg_randclass);
 }
 
 //
@@ -1713,36 +1453,29 @@ const char* doomverstr = NULL;
 static void D_DoomMainSetup(void)
 {
   int p;
+  dsda_arg_t *arg;
   dboolean autoload;
 
-  if (M_CheckParm("-verbose"))
+  if (dsda_Flag(dsda_arg_verbose))
     I_EnableVerboseLogging();
 
-  if (M_CheckParm("-quiet"))
+  if (dsda_Flag(dsda_arg_quiet))
     I_DisableAllLogging();
 
   setbuf(stdout,NULL);
 
-  // proff 04/05/2000: Added support for include response files
-  /* proff 2001/7/1 - Moved up, so -config can be in response files */
+  if (dsda_Flag(dsda_arg_help))
   {
-    dboolean rsp_found;
-    int i;
-
-    do {
-      rsp_found=false;
-      for (i=0; i<myargc; i++)
-        if (myargv[i][0]=='@')
-          rsp_found=true;
-      FindResponseFile();
-    } while (rsp_found==true);
+    dsda_PrintArgHelp();
+    I_SafeExit(0);
   }
 
   // figgi 09/18/00-- added switch to force classic bsp nodes
-  if (M_CheckParm ("-forceoldbsp"))
+  if (dsda_Flag(dsda_arg_forceoldbsp))
     forceOldBsp = true;
 
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
+
   IdentifyVersion();
 
   dsda_InitGlobal();
@@ -1752,18 +1485,17 @@ static void D_DoomMainSetup(void)
   // The dachaked stuff has been moved below an autoload
 
   // jff 1/24/98 set both working and command line value of play parms
-  nomonsters = clnomonsters = M_CheckParm ("-nomonsters");
-  respawnparm = clrespawnparm = M_CheckParm ("-respawn");
-  fastparm = clfastparm = M_CheckParm ("-fast");
+  nomonsters = clnomonsters = dsda_Flag(dsda_arg_nomonsters);
+  respawnparm = clrespawnparm = dsda_Flag(dsda_arg_respawn);
+  fastparm = clfastparm = dsda_Flag(dsda_arg_fast);
   // jff 1/24/98 end of set to both working and command line value
 
-  devparm = M_CheckParm ("-devparm");
+  devparm = dsda_Flag(dsda_arg_devparm);
 
-  if (M_CheckParm ("-altdeath"))
+  if (dsda_Flag(dsda_arg_altdeath))
     deathmatch = 2;
-  else
-    if (M_CheckParm ("-deathmatch"))
-      deathmatch = 1;
+  else if (dsda_Flag(dsda_arg_deathmatch))
+    deathmatch = 1;
 
   {
     switch ( gamemode )
@@ -1839,52 +1571,41 @@ static void D_DoomMainSetup(void)
   startmap = 1;
   autostart = false;
 
-  if ((p = M_CheckParm ("-skill")) && p < myargc-1)
+  arg = dsda_Arg(dsda_arg_skill);
+  if (arg->found)
   {
-    startskill = myargv[p+1][0]-'1';
+    startskill = arg->value.v_int - 1;
     autostart = true;
   }
 
-  if ((p = M_CheckParm ("-episode")) && p < myargc-1)
+  arg = dsda_Arg(dsda_arg_episode);
+  if (arg->found)
   {
-    startepisode = myargv[p+1][0]-'0';
+    startepisode = arg->value.v_int;
     startmap = 1;
     autostart = true;
   }
 
   HandleClass();
 
-  if ((p = M_CheckParm ("-timer")) && p < myargc-1 && deathmatch)
+  arg = dsda_Arg(dsda_arg_timer);
+  if (arg->found && deathmatch)
   {
-    int time = atoi(myargv[p+1]);
+    int time = arg->value.v_int;
     //jff 9/3/98 use logical output routine
     lprintf(LO_INFO,"Levels will end after %d minute%s.\n", time, time>1 ? "s" : "");
   }
 
-  if ((p = M_CheckParm ("-avg")) && p < myargc-1 && deathmatch)
-    //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"Austin Virtual Gaming: Levels will end after 20 minutes\n");
-
   //jff 1/22/98 add command line parms to disable sound and music
   {
-    int nosound = M_CheckParm("-nosound");
-    nomusicparm = nosound || M_CheckParm("-nomusic");
-    nosfxparm   = nosound || M_CheckParm("-nosfx");
+    int nosound = dsda_Flag(dsda_arg_nosound);
+    nomusicparm = nosound || dsda_Flag(dsda_arg_nomusic);
+    nosfxparm   = nosound || dsda_Flag(dsda_arg_nosfx);
   }
   //jff end of sound/music command line parms
 
-  // killough 3/2/98: allow -nodraw -noblit generally
-  nodrawers = M_CheckParm ("-nodraw");
-  noblit = M_CheckParm ("-noblit");
-
-  //proff 11/22/98: Added setting of viewangleoffset
-  p = M_CheckParm("-viewangle");
-  if (p && p < myargc-1)
-  {
-    viewangleoffset = atoi(myargv[p+1]);
-    viewangleoffset = viewangleoffset<0 ? 0 : (viewangleoffset>7 ? 7 : viewangleoffset);
-    viewangleoffset = (8-viewangleoffset) * ANG45;
-  }
+  // killough 3/2/98: allow -nodraw generally
+  nodrawers = dsda_Flag(dsda_arg_nodraw);
 
   // init subsystems
 
@@ -1905,18 +1626,15 @@ static void D_DoomMainSetup(void)
   e6y_InitCommandLine();
 
   // Automatic pistol start when advancing from one level to the next.
-  pistolstart = M_CheckParm("-pistolstart") || M_CheckParm("-wandstart");
+  pistolstart = dsda_Flag(dsda_arg_pistolstart);
 
   // CPhipps - autoloading of wads
-  // Designed to be general, instead of specific to boomlump.wad
-  // Some people might find this useful
-  // cph - support MBF -noload parameter
-  autoload = !M_CheckParm("-noload") && !M_CheckParm("-noautoload");
+  autoload = !dsda_Flag(dsda_arg_noautoload);
   {
     // only autoloaded wads here - autoloaded patches moved down below W_Init
     int i, imax = MAXLOADFILES;
 
-    // make sure to always autoload prboom-plus.wad
+    // make sure to always autoload dsda-doom.wad
     if (!autoload)
       imax = 1;
 
@@ -1943,22 +1661,23 @@ static void D_DoomMainSetup(void)
   // add any files specified on the command line with -file wadfile
   // to the wad list
 
-  // killough 1/31/98, 5/2/98: reload hack removed, -wart same as -warp now.
-
-  if ((p = M_CheckParm ("-file")))
+  if ((arg = dsda_Arg(dsda_arg_file))->found)
   {
+    int file_i;
     // the parms after p are wadfile/lump names,
     // until end of parms or another - preceded parm
     modifiedgame = true;            // homebrew levels
-    while (++p != myargc && *myargv[p] != '-')
+
+    for (file_i = 0; file_i < arg->count; ++file_i)
     {
+      const char* file_name = arg->value.v_string_array[file_i];
       // e6y
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)
-      char *file = I_FindFile(myargv[p], ".wad");
-      if (!file && D_TryGetWad(myargv[p]))
+      char *file = I_FindFile(file_name, ".wad");
+      if (!file && D_TryGetWad(file_name))
       {
-        file = I_FindFile(myargv[p], ".wad");
+        file = I_FindFile(file_name, ".wad");
       }
       if (file)
       {
@@ -1968,17 +1687,21 @@ static void D_DoomMainSetup(void)
     }
   }
 
-  p = dsda_ParsePlaybackOptions();
-
-  if (p)
   {
-    char *file = Z_Malloc(strlen(myargv[p+1])+4+1); // cph - localised
-    strcpy(file,myargv[p+1]);
-    AddDefaultExtension(file,".lmp");     // killough
-    D_AddFile (file,source_lmp);
-    //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"Playing demo %s\n",file);
-    Z_Free(file);
+    const char* name;
+
+    name = dsda_ParsePlaybackOptions();
+
+    if (name)
+    {
+      char *file = Z_Malloc(strlen(name) + 4 + 1); // cph - localised
+      strcpy(file, name);
+      AddDefaultExtension(file, ".lmp");     // killough
+      D_AddFile (file, source_lmp);
+      //jff 9/3/98 use logical output routine
+      lprintf(LO_INFO, "Playing demo %s\n", file);
+      Z_Free(file);
+    }
   }
 
   //e6y
@@ -2019,7 +1742,7 @@ static void D_DoomMainSetup(void)
 
   // e6y
   // option to disable automatic loading of dehacked-in-wad lump
-  if (!M_CheckParm ("-nodeh"))
+  if (!dsda_Flag(dsda_arg_nodeh))
   {
     // MBF-style DeHackEd in wad support: load all lumps, not just the last one
     for (p = -1; (p = W_ListNumFromName("DEHACKED", p)) >= 0; )
@@ -2080,7 +1803,7 @@ static void D_DoomMainSetup(void)
   if (autoload)
     D_AutoloadDehIWadDir();
 
-  if (!M_CheckParm ("-nodeh"))
+  if (!dsda_Flag(dsda_arg_nodeh))
     for (p = -1; (p = W_ListNumFromName("DEHACKED", p)) >= 0; )
       if (!(lumpinfo[p].source == source_iwad
             || lumpinfo[p].source == source_pre
@@ -2100,21 +1823,19 @@ static void D_DoomMainSetup(void)
   // Using -deh in BOOM, others use -dehacked.
   // Ty 03/18/98 also allow .bex extension.  .bex overrides if both exist.
 
-  p = M_CheckParm ("-deh");
-  if (p)
+  arg = dsda_Arg(dsda_arg_deh);
+  if (arg->found)
   {
-    // the parms after p are deh/bex file names,
-    // until end of parms or another - preceded parm
-    // Ty 04/11/98 - Allow multiple -deh files in a row
-    //
+    int i;
+
     // e6y
     // reorganization of the code for looking for bex/deh patches
     // in all standard dirs (%DOOMWADDIR%, etc)
-    while (++p != myargc && *myargv[p] != '-')
+    for (i = 0; i < arg->count; ++i)
     {
       char *file = NULL;
-      if ((file = I_FindFile(myargv[p], ".bex")) ||
-          (file = I_FindFile(myargv[p], ".deh")))
+      if ((file = I_FindFile(arg->value.v_string_array[i], ".bex")) ||
+          (file = I_FindFile(arg->value.v_string_array[i], ".deh")))
       {
         // during the beta we have debug output to dehout.txt
         ProcessDehFile(file,D_dehout(),0);
@@ -2122,7 +1843,8 @@ static void D_DoomMainSetup(void)
       }
       else
       {
-        I_Error("D_DoomMainSetup: Cannot find .deh or .bex file named %s",myargv[p]);
+        I_Error("D_DoomMainSetup: Cannot find .deh or .bex file named %s",
+                arg->value.v_string_array[i]);
       }
     }
   }
@@ -2172,30 +1894,27 @@ static void D_DoomMainSetup(void)
   lprintf(LO_INFO,"HU_Init: Setting up heads up display.\n");
   HU_Init();
 
-  if (!(M_CheckParm("-nodraw") && M_CheckParm("-nosound")))
+  if (!(dsda_Flag(dsda_arg_nodraw) && dsda_Flag(dsda_arg_nosound)))
     I_InitGraphics();
 
   // NSM
-  if ((p = M_CheckParm("-viddump")) && (p < myargc-1))
+  arg = dsda_Arg(dsda_arg_viddump);
+  if (arg->found)
   {
-    I_CapturePrep(myargv[p + 1]);
+    I_CapturePrep(arg->value.v_string);
   }
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"ST_Init: Init status bar.\n");
   ST_Init();
 
-  // CPhipps - auto screenshots
-  if ((p = M_CheckParm("-autoshot")) && (p < myargc-2))
-    if ((auto_shot_count = auto_shot_time = atoi(myargv[p+1])))
-      auto_shot_fname = myargv[p+2];
-
   // start the appropriate game based on parms
 
-  if ((p = M_CheckParm("-record")) && ++p < myargc)
+  arg = dsda_Arg(dsda_arg_record);
+  if (arg->found)
   {
     autostart = true;
-    dsda_SetDemoBaseName(myargv[p]);
+    dsda_SetDemoBaseName(arg->value.v_string);
     dsda_InitDemoRecording();
   }
 

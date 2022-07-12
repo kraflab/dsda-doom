@@ -36,7 +36,6 @@
 
 #include "doomstat.h"
 #include "m_bbox.h"
-#include "m_argv.h"
 #include "g_game.h"
 #include "w_wad.h"
 #include "r_main.h"
@@ -58,6 +57,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/compatibility.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
@@ -2390,7 +2390,7 @@ static void P_LoadBlockMap (int lump)
 {
   long count;
 
-  if (M_CheckParm("-blockmap") || W_LumpLength(lump)<8 || (count = W_LumpLength(lump)/2) >= 0x10000) //e6y
+  if (dsda_Flag(dsda_arg_blockmap) || W_LumpLength(lump)<8 || (count = W_LumpLength(lump)/2) >= 0x10000) //e6y
     P_CreateBlockMap();
   else
   {

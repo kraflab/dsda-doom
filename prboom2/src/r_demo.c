@@ -65,6 +65,7 @@
 #include "g_overflow.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/demo.h"
 #include "dsda/playback.h"
 
@@ -492,7 +493,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
 
     M_ParseCmdLine(str, params, ((char*)params) + sizeof(char*) * paramscount, &paramscount, &i);
 
-    if (!M_CheckParm("-iwad") && !M_CheckParm("-file"))
+    if (!dsda_Flag(dsda_arg_iwad) && !dsda_Flag(dsda_arg_file))
     {
       i = 0;
       while (files[i].param)
@@ -517,73 +518,71 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
       }
     }
 
-    if (!M_CheckParm2("-complevel", "-cl"))
+    if (!dsda_Arg(dsda_arg_complevel)->found)
     {
       p = M_CheckParmEx("-complevel", params, paramscount);
       if (p >= 0 && p < (int)paramscount - 1)
       {
-        M_AddParam("-complevel");
-        M_AddParam(params[p + 1]);
+        dsda_UpdateIntArg(dsda_arg_complevel, params[p + 1]);
       }
     }
 
     //for recording or playback using "single-player coop" mode
-    if (!M_CheckParm("-solo-net"))
+    if (!dsda_Flag(dsda_arg_solo_net))
     {
       p = M_CheckParmEx("-solo-net", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-solo-net");
+        dsda_UpdateFlag(dsda_arg_solo_net, true);
       }
     }
 
     //for recording or playback using "coop in single-player" mode
-    if (!M_CheckParm("-coop_spawns"))
+    if (!dsda_Flag(dsda_arg_coop_spawns))
     {
       p = M_CheckParmEx("-coop_spawns", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-coop_spawns");
+        dsda_UpdateFlag(dsda_arg_coop_spawns, true);
       }
     }
 
-    if (!M_CheckParm("-emulate"))
+    if (!dsda_Flag(dsda_arg_emulate))
     {
       p = M_CheckParmEx("-emulate", params, paramscount);
       if (p >= 0 && p < (int)paramscount - 1)
       {
-        M_AddParam("-emulate");
-        M_AddParam(params[p + 1]);
+        dsda_UpdateStringArg(dsda_arg_emulate, params[p + 1]);
       }
     }
 
     // for doom 1.2
-    if (!M_CheckParm("-respawn"))
+    if (!dsda_Flag(dsda_arg_respawn))
     {
       p = M_CheckParmEx("-respawn", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-respawn");
+        dsda_UpdateFlag(dsda_arg_respawn, true);
       }
     }
 
     // for doom 1.2
-    if (!M_CheckParm("-fast"))
+    if (!dsda_Flag(dsda_arg_fast))
     {
       p = M_CheckParmEx("-fast", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-fast");
+        dsda_UpdateFlag(dsda_arg_fast, true);
       }
     }
 
     // for doom 1.2
-    if (!M_CheckParm("-nomonsters"))
+    if (!dsda_Flag(dsda_arg_nomonsters))
     {
       p = M_CheckParmEx("-nomonsters", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-nomonsters");
+        dsda_UpdateFlag(dsda_arg_nomonsters, true);
       }
     }
 
@@ -629,6 +628,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
 
 static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
 {
+  dsda_arg_t* arg;
   size_t i;
   int p;
   char buf[200];
@@ -669,14 +669,14 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   }
 
   //dehs
-  p = M_CheckParm ("-deh");
-  if (p)
+  arg = dsda_Arg(dsda_arg_deh);
+  if (arg->found)
   {
-    while (++p != myargc && *myargv[p] != '-')
+    for (i = 0; i < arg->count; ++i)
     {
       char *file = NULL;
-      if ((file = I_FindFile(myargv[p], ".bex")) ||
-          (file = I_FindFile(myargv[p], ".deh")))
+      if ((file = I_FindFile(arg->value.v_string_array[i], ".bex")) ||
+          (file = I_FindFile(arg->value.v_string_array[i], ".deh")))
       {
         filename_p = PathFindFileName(file);
         AddString(&dehs, "\"");
@@ -713,39 +713,40 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   }
 
   //for recording or playback using "single-player coop" mode
-  if (M_CheckParm("-solo-net"))
+  if (dsda_Flag(dsda_arg_solo_net))
   {
     sprintf(buf, "-solo-net ");
     AddString(&files, buf);
   }
 
   //for recording or playback using "coop in single-player" mode
-  if (M_CheckParm("-coop_spawns"))
+  if (dsda_Flag(dsda_arg_coop_spawns))
   {
     sprintf(buf, "-coop_spawns ");
     AddString(&files, buf);
   }
 
-  if ((p = M_CheckParm("-emulate")) && (p < myargc - 1))
+  arg = dsda_Arg(dsda_arg_emulate);
+  if (arg->found)
   {
-    sprintf(buf, "-emulate %s", myargv[p + 1]);
+    sprintf(buf, "-emulate %s", arg->value.v_string);
     AddString(&files, buf);
   }
 
   // doom 1.2 does not store these params in header
   if (compatibility_level == doom_12_compatibility)
   {
-    if (M_CheckParm("-respawn"))
+    if (dsda_Flag(dsda_arg_respawn))
     {
       sprintf(buf, "-respawn ");
       AddString(&files, buf);
     }
-    if (M_CheckParm("-fast"))
+    if (dsda_Flag(dsda_arg_fast))
     {
       sprintf(buf, "-fast ");
       AddString(&files, buf);
     }
-    if (M_CheckParm("-nomonsters"))
+    if (dsda_Flag(dsda_arg_nomonsters))
     {
       sprintf(buf, "-nomonsters ");
       AddString(&files, buf);
@@ -1323,16 +1324,16 @@ void WadDataToWadFiles(waddata_t *waddata)
 int CheckDemoExDemo(void)
 {
   int result = false;
-  int p;
+  const char* playback_name;
 
-  p = dsda_PlaybackArg();
+  playback_name = dsda_PlaybackName();
 
-  if (p)
+  if (playback_name)
   {
     char *demoname, *filename;
 
-    filename = Z_Malloc(strlen(myargv[p + 1]) + 16);
-    strcpy(filename, myargv[p + 1]);
+    filename = Z_Malloc(strlen(playback_name) + 16);
+    strcpy(filename, playback_name);
     AddDefaultExtension(filename, ".lmp");
 
     demoname = I_FindFile(filename, NULL);

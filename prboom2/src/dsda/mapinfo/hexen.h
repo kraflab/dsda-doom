@@ -22,7 +22,7 @@
 
 int dsda_HexenFirstMap(int* episode, int* map);
 int dsda_HexenNewGameMap(int* episode, int* map);
-int dsda_HexenResolveWarp(int arg_p, int* episode, int* map);
+int dsda_HexenResolveWarp(int* args, int arg_count, int* episode, int* map);
 int dsda_HexenNextMap(int* episode, int* map);
 int dsda_HexenShowNextLocBehaviour(int* behaviour);
 int dsda_HexenSkipDrawShowNextLoc(int* skip);

@@ -64,7 +64,6 @@
 #include "i_sound.h"
 #include "m_menu.h"
 #include "lprintf.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "i_system.h"
 #include "p_maputl.h"
@@ -85,6 +84,7 @@
 #include "d_deh.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/playback.h"
@@ -97,10 +97,6 @@ int secretfound;
 int demo_playerscount;
 int demo_tics_count;
 char demo_len_st[80];
-
-int avi_shot_time;
-int avi_shot_num;
-const char *avi_shot_fname;
 
 int speed_step;
 
@@ -211,63 +207,55 @@ void e6y_assert(const char *format, ...)
 void ParamsMatchingCheck()
 {
   dboolean recording_attempt =
-    M_CheckParm("-record") ||
-    M_CheckParm("-recordfromto");
+    dsda_Flag(dsda_arg_record) ||
+    dsda_Flag(dsda_arg_recordfromto);
 
   dboolean playbacking_attempt =
-    M_CheckParm("-playdemo") ||
-    M_CheckParm("-timedemo") ||
-    M_CheckParm("-fastdemo");
+    dsda_Flag(dsda_arg_playdemo) ||
+    dsda_Flag(dsda_arg_timedemo) ||
+    dsda_Flag(dsda_arg_fastdemo);
 
   if (recording_attempt && playbacking_attempt)
     I_Error("Params are not matching: Can not being played back and recorded at the same time.");
 }
 
 prboom_comp_t prboom_comp[PC_MAX] = {
-  {0xffffffff, 0x02020615, 0, "-force_monster_avoid_hazards"},
-  {0x00000000, 0x02040601, 0, "-force_remove_slime_trails"},
-  {0x02020200, 0x02040801, 0, "-force_no_dropoff"},
-  {0x00000000, 0x02040801, 0, "-force_truncated_sector_specials"},
-  {0x00000000, 0x02040802, 0, "-force_boom_brainawake"},
-  {0x00000000, 0x02040802, 0, "-force_prboom_friction"},
-  {0x02020500, 0x02040000, 0, "-reject_pad_with_ff"},
-  {0xffffffff, 0x02040802, 0, "-force_lxdoom_demo_compatibility"},
-  {0x00000000, 0x0202061b, 0, "-allow_ssg_direct"},
-  {0x00000000, 0x02040601, 0, "-treat_no_clipping_things_as_not_blocking"},
-  {0x00000000, 0x02040803, 0, "-force_incorrect_processing_of_respawn_frame_entry"},
-  {0x00000000, 0x02040601, 0, "-force_correct_code_for_3_keys_doors_in_mbf"},
-  {0x00000000, 0x02040601, 0, "-uninitialize_crush_field_for_stairs"},
-  {0x00000000, 0x02040802, 0, "-force_boom_findnexthighestfloor"},
-  {0x00000000, 0x02040802, 0, "-allow_sky_transfer_in_boom"},
-  {0x00000000, 0x02040803, 0, "-apply_green_armor_class_to_armor_bonuses"},
-  {0x00000000, 0x02040803, 0, "-apply_blue_armor_class_to_megasphere"},
-  {0x02020200, 0x02050003, 0, "-force_incorrect_bobbing_in_boom"},
-  {0xffffffff, 0x00000000, 0, "-boom_deh_parser"},
-  {0x00000000, 0x02050007, 0, "-mbf_remove_thinker_in_killmobj"},
-  {0x00000000, 0x02050007, 0, "-do_not_inherit_friendlyness_flag_on_spawn"},
-  {0x00000000, 0x02050007, 0, "-do_not_use_misc12_frame_parameters_in_a_mushroom"},
-  {0x00000000, 0x02050102, 0, "-apply_mbf_codepointers_to_any_complevel"},
-  {0x00000000, 0x02050104, 0, "-reset_monsterspawner_params_after_loading"},
+  {0xffffffff, 0x02020615, 0, dsda_arg_force_monster_avoid_hazards},
+  {0x00000000, 0x02040601, 0, dsda_arg_force_remove_slime_trails},
+  {0x02020200, 0x02040801, 0, dsda_arg_force_no_dropoff},
+  {0x00000000, 0x02040801, 0, dsda_arg_force_truncated_sector_specials},
+  {0x00000000, 0x02040802, 0, dsda_arg_force_boom_brainawake},
+  {0x00000000, 0x02040802, 0, dsda_arg_force_prboom_friction},
+  {0x02020500, 0x02040000, 0, dsda_arg_reject_pad_with_ff},
+  {0xffffffff, 0x02040802, 0, dsda_arg_force_lxdoom_demo_compatibility},
+  {0x00000000, 0x0202061b, 0, dsda_arg_allow_ssg_direct},
+  {0x00000000, 0x02040601, 0, dsda_arg_treat_no_clipping_things_as_not_blocking},
+  {0x00000000, 0x02040803, 0, dsda_arg_force_incorrect_processing_of_respawn_frame_entry},
+  {0x00000000, 0x02040601, 0, dsda_arg_force_correct_code_for_3_keys_doors_in_mbf},
+  {0x00000000, 0x02040601, 0, dsda_arg_uninitialize_crush_field_for_stairs},
+  {0x00000000, 0x02040802, 0, dsda_arg_force_boom_findnexthighestfloor},
+  {0x00000000, 0x02040802, 0, dsda_arg_allow_sky_transfer_in_boom},
+  {0x00000000, 0x02040803, 0, dsda_arg_apply_green_armor_class_to_armor_bonuses},
+  {0x00000000, 0x02040803, 0, dsda_arg_apply_blue_armor_class_to_megasphere},
+  {0x02020200, 0x02050003, 0, dsda_arg_force_incorrect_bobbing_in_boom},
+  {0xffffffff, 0x00000000, 0, dsda_arg_boom_deh_parser},
+  {0x00000000, 0x02050007, 0, dsda_arg_mbf_remove_thinker_in_killmobj},
+  {0x00000000, 0x02050007, 0, dsda_arg_do_not_inherit_friendlyness_flag_on_spawn},
+  {0x00000000, 0x02050007, 0, dsda_arg_do_not_use_misc12_frame_parameters_in_a_mushroom},
+  {0x00000000, 0x02050102, 0, dsda_arg_apply_mbf_codepointers_to_any_complevel},
+  {0x00000000, 0x02050104, 0, dsda_arg_reset_monsterspawner_params_after_loading},
 };
 
 void e6y_InitCommandLine(void)
 {
-  int p;
+  stats_level = dsda_Flag(dsda_arg_levelstat);
 
-  if ((p = M_CheckParm("-avidemo")) && (p < myargc-1))
-    avi_shot_fname = myargv[p + 1];
-
-  stats_level = M_CheckParm("-levelstat");
-
-  if ((stroller = M_CheckParm("-stroller")))
-  {
-    M_AddParam("-turbo");
-    M_AddParam("50");
-  }
+  if ((stroller = dsda_Flag(dsda_arg_stroller)))
+    dsda_UpdateIntArg(dsda_arg_turbo, "50");
 
   dsda_ReadCommandLine();
 
-  shorttics = movement_shorttics || M_CheckParm("-shorttics");
+  shorttics = movement_shorttics || dsda_Flag(dsda_arg_shorttics);
 }
 
 int G_ReloadLevel(void)
@@ -406,11 +394,14 @@ void M_ChangeStretch(void)
 void M_ChangeFOV(void)
 {
   float f1, f2;
-  int p;
+  dsda_arg_t* arg;
   int render_aspect_width, render_aspect_height;
 
-  if ((p = M_CheckParm("-aspect")) && (p+1 < myargc) && (strlen(myargv[p+1]) <= 21) &&
-     (2 == sscanf(myargv[p+1], "%dx%d", &render_aspect_width, &render_aspect_height)))
+  arg = dsda_Arg(dsda_arg_aspect);
+  if (
+    arg->found &&
+    sscanf(arg->value.v_string, "%dx%d", &render_aspect_width, &render_aspect_height) == 2
+  )
   {
     SetRatio(SCREENWIDTH, SCREENHEIGHT);
     render_fovratio = (float)render_aspect_width / (float)render_aspect_height;
@@ -573,7 +564,7 @@ int I_MessageBox(const char* text, unsigned int type)
   int result = PRB_IDCANCEL;
 
 #ifdef _WIN32
-  if (!M_CheckParm("-no_message_box"))
+  if (!dsda_Flag(dsda_arg_no_message_box))
   {
     HWND current_hwnd = GetForegroundWindow();
     result = MessageBox(GetDesktopWindow(), text, PACKAGE_NAME, type|MB_TASKMODAL|MB_TOPMOST);
@@ -767,17 +758,19 @@ void e6y_G_Compatibility(void)
 {
   deh_applyCompatibility();
 
-  if (dsda_PlaybackArg())
+  if (dsda_PlaybackName())
   {
-    int i, p;
+    int i;
+    dsda_arg_t* arg;
 
     //"2.4.8.2" -> 0x02040802
-    if ((p = M_CheckParm("-emulate")) && (p < myargc - 1))
+    arg = dsda_Arg(dsda_arg_emulate);
+    if (arg->found)
     {
       unsigned int emulated_version = 0;
       int b[4], k = 1;
       memset(b, 0, sizeof(b));
-      sscanf(myargv[p + 1], "%d.%d.%d.%d", &b[0], &b[1], &b[2], &b[3]);
+      sscanf(arg->value.v_string, "%d.%d.%d.%d", &b[0], &b[1], &b[2], &b[3]);
       for (i = 3; i >= 0; i--, k *= 256)
       {
 #ifdef RANGECHECK
@@ -797,7 +790,7 @@ void e6y_G_Compatibility(void)
 
     for (i = 0; i < PC_MAX; i++)
     {
-      if (M_CheckParm(prboom_comp[i].cmd))
+      if (dsda_Flag(prboom_comp[i].arg_id))
         prboom_comp[i].state = true;
     }
   }

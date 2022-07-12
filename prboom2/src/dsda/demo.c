@@ -22,12 +22,12 @@
 #include "doomtype.h"
 #include "doomstat.h"
 #include "g_game.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "lprintf.h"
 #include "e6y.h"
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/command_display.h"
 #include "dsda/excmd.h"
 #include "dsda/key_frame.h"
@@ -582,7 +582,7 @@ void dsda_ApplyDSDADemoFormat(byte** demo_p) {
 
   if (map_format.zdoom)
   {
-    if (!M_CheckParm("-baddemo"))
+    if (!dsda_Flag(dsda_arg_baddemo))
       I_Error("Experimental formats require the -baddemo option to record.");
 
     if (!mbf21)
@@ -591,7 +591,7 @@ void dsda_ApplyDSDADemoFormat(byte** demo_p) {
     use_dsda_format = true;
   }
 
-  if (M_CheckParm("-dsdademo"))
+  if (dsda_Flag(dsda_arg_dsdademo))
   {
     use_dsda_format = true;
     dsda_EnableCasualExCmdFeatures();

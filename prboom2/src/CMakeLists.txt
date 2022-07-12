@@ -13,6 +13,8 @@ set(COMMON_SRC
     dsda.h
     dsda/analysis.c
     dsda/analysis.h
+    dsda/args.c
+    dsda/args.h
     dsda/brute_force.c
     dsda/brute_force.h
     dsda/build.c

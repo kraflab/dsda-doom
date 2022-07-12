@@ -52,7 +52,6 @@
 #include "doomstat.h"
 #include "d_net.h"
 #include "f_finale.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "m_cheat.h"
@@ -87,6 +86,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
 #include "dsda/command_display.h"
@@ -156,7 +156,6 @@ static dboolean load_via_cmd = false;
 dboolean         timingdemo;    // if true, exit with report on completion
 dboolean         fastdemo;      // if true, run at full speed -- killough
 dboolean         nodrawers;     // for comparative timing purposes
-dboolean         noblit;        // for comparative timing purposes
 int             starttime;     // for comparative timing purposes
 dboolean         deathmatch;    // only if started as net death
 dboolean         netgame;       // only true if packets are broadcast
@@ -1052,12 +1051,13 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (!dsda_StrictMode()) {
     if (leveltime == 0 && totalleveltimes == 0) {
-      int p = M_CheckParm("-first_input");
+      dsda_arg_t* arg;
 
-      if (p && (p + 3 < myargc)) {
-        cmd->forwardmove = (signed char) atoi(myargv[p + 1]);
-        cmd->sidemove = (signed char) atoi(myargv[p + 2]);
-        cmd->angleturn = (signed short) (atoi(myargv[p + 3]) << 8);
+      arg = dsda_Arg(dsda_arg_first_input);
+      if (arg->found) {
+        cmd->forwardmove = (signed char) arg->value.v_int_array[0];
+        cmd->sidemove = (signed char) arg->value.v_int_array[1];
+        cmd->angleturn = (signed short) (arg->value.v_int_array[2] << 8);
 
         dsda_JoinDemoCmd(cmd);
       }
@@ -1673,7 +1673,6 @@ void G_PlayerReborn (int player)
     SB_Start();             // refresh the status bar
     inv_ptr = 0;            // reset the inventory pointer
     curpos = 0;
-    viewangleoffset = 0;
   }
 
   for (i=0 ; i<NUMAMMO ; i++)
@@ -3303,7 +3302,7 @@ void G_BeginRecording (void)
         case mbf21_compatibility:
              v = 221;
              longtics = 1;
-             shorttics = !M_CheckParm("-longtics");
+             shorttics = !dsda_Flag(dsda_arg_longtics);
              break;
         default: I_Error("G_BeginRecording: PrBoom compatibility level unrecognised?");
       }
@@ -3383,7 +3382,7 @@ void G_BeginRecording (void)
       *demo_p++ = 0;
   } else if (!raven) { // cph - write old v1.9 demos (might even sync)
     unsigned char v = 109;
-    longtics = M_CheckParm("-longtics");
+    longtics = dsda_Flag(dsda_arg_longtics);
     if (longtics)
     {
       v = 111;
@@ -3630,9 +3629,9 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       // There is no more desynch on mesh.lmp @ mesh.wad
       // prboom -iwad doom.wad -file mesh.wad -playdemo mesh.lmp -nomonsters
       // http://www.doomworld.com/idgames/index.php?id=13976
-      respawnparm = M_CheckParm("-respawn");
-      fastparm = M_CheckParm("-fast");
-      nomonsters = M_CheckParm("-nomonsters");
+      respawnparm = dsda_Flag(dsda_arg_respawn);
+      fastparm = dsda_Flag(dsda_arg_fast);
+      nomonsters = dsda_Flag(dsda_arg_nomonsters);
 
       // Read special parameter bits from player one byte.
       // This aligns with vvHeretic demo usage:
@@ -3643,7 +3642,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       {
         if (*demo_p & DEMOHEADER_RESPAWN)
           respawnparm = true;
-        if (*demo_p & DEMOHEADER_LONGTICS || M_CheckParm("-longtics"))
+        if (*demo_p & DEMOHEADER_LONGTICS || dsda_Flag(dsda_arg_longtics))
           longtics = true;
         if (*demo_p & DEMOHEADER_NOMONSTERS)
           nomonsters = true;
@@ -3795,12 +3794,13 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   }
 
   {
-    int p = M_CheckParm("-consoleplayer");
+    dsda_arg_t* arg;
 
-    if (p && (p + 1 < myargc)) {
-      consoleplayer = atoi(myargv[p + 1]);
+    arg = dsda_Arg(dsda_arg_consoleplayer);
+    if (arg->found) {
+      consoleplayer = arg->value.v_int;
 
-      if (consoleplayer < 0 || consoleplayer >= g_maxplayers || !playeringame[consoleplayer])
+      if (consoleplayer >= g_maxplayers || !playeringame[consoleplayer])
         consoleplayer = 0;
     }
   }
@@ -4262,7 +4262,6 @@ void G_PlayerExitMap(int playerNumber)
     if (player == &players[consoleplayer])
     {
         SB_Start();          // refresh the status bar
-        viewangleoffset = 0;
     }
 }
 

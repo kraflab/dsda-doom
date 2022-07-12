@@ -55,7 +55,6 @@
 #include <SDL_syswm.h>
 #endif
 
-#include "m_argv.h"
 #include "doomstat.h"
 #include "doomdef.h"
 #include "doomtype.h"
@@ -85,6 +84,7 @@
 #include "e6y.h"//e6y
 #include "i_main.h"
 
+#include "dsda/args.h"
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/time.h"
@@ -450,10 +450,8 @@ static void I_InitInputs(void)
 {
   static Uint8 empty_cursor_data = 0;
 
-  int nomouse_parm = M_CheckParm("-nomouse");
-
   // check if the user wants to use the mouse
-  mouse_enabled = usemouse && !nomouse_parm;
+  mouse_enabled = usemouse && !dsda_Flag(dsda_arg_nomouse);
 
   SDL_PumpEvents();
 
@@ -639,7 +637,7 @@ void I_PreInitGraphics(void)
 
   // Initialize SDL
   unsigned int flags = 0;
-  if (!(M_CheckParm("-nodraw") && M_CheckParm("-nosound")))
+  if (!(dsda_Flag(dsda_arg_nodraw) && dsda_Flag(dsda_arg_nosound)))
     flags = SDL_INIT_VIDEO;
 #ifdef PRBOOM_DEBUG
   flags |= SDL_INIT_NOPARACHUTE;
@@ -976,8 +974,9 @@ void I_CalculateRes(int width, int height)
 // Sets the screen resolution
 void I_InitScreenResolution(void)
 {
-  int i, p, w, h;
+  int i, w, h;
   char c, x;
+  dsda_arg_t *arg;
   video_mode_t mode;
   int init = (sdl_window == NULL);
 
@@ -989,18 +988,18 @@ void I_InitScreenResolution(void)
     I_FillScreenResolutionsList();
 
     // Video stuff
-    if ((p = M_CheckParm("-width")))
-      if (myargv[p+1])
-        desired_screenwidth = atoi(myargv[p+1]);
+    arg = dsda_Arg(dsda_arg_width);
+    if (arg->found)
+      desired_screenwidth = arg->value.v_int;
 
-    if ((p = M_CheckParm("-height")))
-      if (myargv[p+1])
-        desired_screenheight = atoi(myargv[p+1]);
+    arg = dsda_Arg(dsda_arg_height);
+    if (arg->found)
+      desired_screenheight = arg->value.v_int;
 
-    if ((p = M_CheckParm("-fullscreen")))
+    if (dsda_Flag(dsda_arg_fullscreen))
       use_fullscreen = 1;
 
-    if ((p = M_CheckParm("-nofullscreen")))
+    if (dsda_Flag(dsda_arg_nofullscreen))
       use_fullscreen = 0;
 
     // e6y
@@ -1008,10 +1007,10 @@ void I_InitScreenResolution(void)
     // or fullscreen (-nowindow) mode temporarily which is not saved in cfg.
     // It works like "-geom" switch
     desired_fullscreen = use_fullscreen;
-    if ((p = M_CheckParm("-window")))
+    if (dsda_Flag(dsda_arg_window))
       desired_fullscreen = 0;
 
-    if ((p = M_CheckParm("-nowindow")))
+    if (dsda_Flag(dsda_arg_nowindow))
       desired_fullscreen = 1;
 
     // e6y
@@ -1021,12 +1020,10 @@ void I_InitScreenResolution(void)
     w = desired_screenwidth;
     h = desired_screenheight;
 
-    if (!(p = M_CheckParm("-geom")))
-      p = M_CheckParm("-geometry");
-
-    if (p && p + 1 < myargc)
+    arg = dsda_Arg(dsda_arg_geometry);
+    if (arg->found)
     {
-      int count = sscanf(myargv[p+1], "%d%c%d%c", &w, &x, &h, &c);
+      int count = sscanf(arg->value.v_string, "%d%c%d%c", &w, &x, &h, &c);
 
       // at least width and height must be specified
       // restoring original values if not
@@ -1054,9 +1051,10 @@ void I_InitScreenResolution(void)
   }
 
   mode = (video_mode_t)I_GetModeFromString(default_videomode);
-  if ((i=M_CheckParm("-vidmode")) && i<myargc-1)
+  arg = dsda_Arg(dsda_arg_vidmode);
+  if (arg->found)
   {
-    mode = (video_mode_t)I_GetModeFromString(myargv[i+1]);
+    mode = (video_mode_t)I_GetModeFromString(arg->value.v_string);
   }
 
   V_InitMode(mode);
@@ -1163,8 +1161,8 @@ void I_UpdateVideoMode(void)
   int init_flags = 0;
   int screen_multiply;
   int actualheight;
-  const dboolean novsync = M_CheckParm("-timedemo") || \
-                           M_CheckParm("-fastdemo");
+  const dboolean novsync = dsda_Flag(dsda_arg_timedemo) ||
+                           dsda_Flag(dsda_arg_fastdemo);
 
   if(sdl_window)
   {

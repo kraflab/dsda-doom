@@ -40,12 +40,13 @@
 #include "SDL.h"
 #include "doomdef.h"
 #include "doomtype.h"
-#include "m_argv.h"
 #include "d_event.h"
 #include "d_main.h"
 #include "i_joy.h"
 #include "lprintf.h"
 #include "i_system.h"
+
+#include "dsda/args.h"
 
 int usejoystick;
 
@@ -95,7 +96,7 @@ void I_InitJoystick(void)
   if (!usejoystick) return;
   SDL_InitSubSystem(SDL_INIT_JOYSTICK);
   num_joysticks=SDL_NumJoysticks();
-  if (M_CheckParm("-nojoy") || (usejoystick>num_joysticks) || (usejoystick<0)) {
+  if (dsda_Flag(dsda_arg_nojoy) || (usejoystick>num_joysticks) || (usejoystick<0)) {
     if ((usejoystick > num_joysticks) || (usejoystick < 0))
       lprintf(LO_WARN, "%sinvalid joystick %d\n", fname, usejoystick);
     else

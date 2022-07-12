@@ -82,10 +82,6 @@ extern int demo_tics_count;
 extern int demo_playerscount;
 extern char demo_len_st[80];
 
-extern int avi_shot_time;
-extern int avi_shot_num;
-extern const char *avi_shot_fname;
-
 extern int speed_step;
 
 extern int hudadd_gamespeed;
@@ -200,7 +196,7 @@ typedef struct prboom_comp_s
   unsigned int minver;
   unsigned int maxver;
   dboolean state;
-  const char *cmd;
+  int arg_id;
 } prboom_comp_t;
 
 enum

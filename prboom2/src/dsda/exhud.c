@@ -18,12 +18,12 @@
 #include "hu_lib.h"
 #include "hu_stuff.h"
 #include "doomstat.h"
-#include "m_argv.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_state.h"
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/global.h"
 #include "dsda/hud.h"
 #include "dsda/settings.h"
@@ -274,17 +274,16 @@ static void dsda_RefreshTrackers(void) {
     }
 }
 
-static void dsda_ParseCommandlineTrackers(const char* option, dboolean (*track)(int)) {
-  int p;
+static void dsda_ParseCommandlineTrackers(int arg_id, dboolean (*track)(int)) {
+  dsda_arg_t* arg;
 
-  p = M_CheckParm(option);
-  if (p)
-    while (++p < myargc) {
-      if (myargv[p][0] == '-')
-        break;
-      else
-        track(atoi(myargv[p]));
-    }
+  arg = dsda_Arg(arg_id);
+  if (arg->found) {
+    int i;
+
+    for (i = 0; i < arg->count; ++i)
+      track(arg->value.v_int_array[i]);
+  }
 }
 
 void dsda_ResetTrackers(void) {
@@ -293,12 +292,12 @@ void dsda_ResetTrackers(void) {
   if (first_time) {
     first_time = false;
 
-    dsda_ParseCommandlineTrackers("-track_line", dsda_TrackLine);
-    dsda_ParseCommandlineTrackers("-track_line_distance", dsda_TrackLineDistance);
-    dsda_ParseCommandlineTrackers("-track_sector", dsda_TrackSector);
-    dsda_ParseCommandlineTrackers("-track_mobj", dsda_TrackMobj);
+    dsda_ParseCommandlineTrackers(dsda_arg_track_line, dsda_TrackLine);
+    dsda_ParseCommandlineTrackers(dsda_arg_track_line_distance, dsda_TrackLineDistance);
+    dsda_ParseCommandlineTrackers(dsda_arg_track_sector, dsda_TrackSector);
+    dsda_ParseCommandlineTrackers(dsda_arg_track_mobj, dsda_TrackMobj);
 
-    if (M_CheckParm("-track_player"))
+    if (dsda_Flag(dsda_arg_track_player))
       dsda_TrackPlayer(0);
 
     return;

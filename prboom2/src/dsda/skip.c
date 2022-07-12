@@ -20,12 +20,12 @@
 #include "e6y.h"
 #include "i_main.h"
 #include "i_sound.h"
-#include "m_argv.h"
 #include "r_demo.h"
 #include "s_sound.h"
 #include "v_video.h"
 #include "gl_struct.h"
 
+#include "dsda/args.h"
 #include "dsda/build.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
@@ -204,25 +204,23 @@ void dsda_HandleSkip(void) {
   extern int warpmap;
   extern int warpepisode;
 
-  int p;
+  dsda_arg_t* arg;
 
-  p = M_CheckParm("-skipsec");
-
-  if (p && p < myargc - 1) {
+  arg = dsda_Arg(dsda_arg_skipsec);
+  if (arg->found) {
     float min, sec;
 
-    if (sscanf(myargv[p + 1], "%f:%f", &min, &sec) == 2)
+    if (sscanf(arg->value.v_string, "%f:%f", &min, &sec) == 2)
       demo_skiptics = (int) ((60 * min + sec) * TICRATE);
-    else if (sscanf(myargv[p + 1], "%f", &sec) == 1)
+    else if (sscanf(arg->value.v_string, "%f", &sec) == 1)
       demo_skiptics = (int) (sec * TICRATE);
   }
 
-  p = M_CheckParm("-skiptic");
+  arg = dsda_Arg(dsda_arg_skiptic);
+  if (arg->found)
+    demo_skiptics = arg->value.v_int;
 
-  if (p && p < myargc - 1)
-    sscanf(myargv[p + 1], "%d", &demo_skiptics);
-
-  if (dsda_PlaybackArg() && (warpmap != -1 || demo_skiptics)) {
+  if (dsda_PlaybackName() && (warpmap != -1 || demo_skiptics)) {
     skip_until_map = warpmap;
     skip_until_episode = warpepisode;
 

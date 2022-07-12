@@ -72,7 +72,6 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#include "m_argv.h"
 #include "lprintf.h"
 #include "doomtype.h"
 #include "doomdef.h"
@@ -286,13 +285,15 @@ void I_SwitchToWindow(HWND hwnd)
 
 const char *I_DoomExeDir(void)
 {
+  extern char **dsda_argv;
+
   static const char current_dir_dummy[] = {"."}; // proff - rem extra slash 8/21/03
   static char *base;
   if (!base)        // cache multiple requests
     {
-      size_t len = strlen(*myargv);
+      size_t len = strlen(*dsda_argv);
       char *p = (base = (char*)Z_Malloc(len+1)) + len - 1;
-      strcpy(base,*myargv);
+      strcpy(base,*dsda_argv);
       while (p > base && *p!='/' && *p!='\\')
         *p--=0;
       if (*p=='/' || *p=='\\')

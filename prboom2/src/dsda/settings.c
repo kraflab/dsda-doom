@@ -16,7 +16,6 @@
 //
 
 #include "doomstat.h"
-#include "m_argv.h"
 #include "m_menu.h"
 #include "e6y.h"
 #include "r_things.h"
@@ -25,6 +24,7 @@
 #include "lprintf.h"
 #include "i_main.h"
 
+#include "dsda/args.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 
@@ -137,18 +137,16 @@ static int dsda_WadCompatibilityLevel(void) {
 
 int dsda_CompatibilityLevel(void) {
   int i, level;
+  dsda_arg_t* complevel_arg;
 
   if (raven) return doom_12_compatibility;
 
   if (map_format.zdoom) return mbf21_compatibility;
 
-  i = M_CheckParm2("-complevel", "-cl");
+  complevel_arg = dsda_Arg(dsda_arg_complevel);
 
-  if (i && (i + 1 < myargc)) {
-    level = atoi(myargv[i + 1]);
-
-    if (level >= -1) return level;
-  }
+  if (complevel_arg->count)
+    return complevel_arg->value.v_int;
 
   if (!demoplayback) {
     level = dsda_WadCompatibilityLevel();
