@@ -534,17 +534,21 @@ static void dsda_ValidateArrayArg(arg_config_t* config, dsda_arg_t* arg) {
 
 static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
   for (arg->count = 0; myarg_i + arg->count < myargc - 1; ++arg->count) {
-    if (config->type == arg_int || config->type == arg_int_array) {
-      int x;
+    int x;
+    dboolean is_integer;
 
+    is_integer = sscanf(myargv[myarg_i + arg->count + 1], "%i", &x);
+
+    if (config->type == arg_int || config->type == arg_int_array) {
       // only valid integers should be interpreted as arguments
-      if (!sscanf(myargv[myarg_i + arg->count + 1], "%i", &x))
+      if (!is_integer)
         break;
 
       continue;
     }
 
-    if (myargv[myarg_i + arg->count + 1][0] == '-')
+    // negative numbers are valid string arguments (e.g., -skipsec -1:20)
+    if (myargv[myarg_i + arg->count + 1][0] == '-' && !is_integer)
       break;
   }
 
