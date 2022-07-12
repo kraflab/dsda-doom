@@ -473,6 +473,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "use doom95's adjacent sector limit",
     arg_null,
   },
+  [dsda_arg_blockmap] = {
+    "-blockmap", NULL, NULL,
+    "rebuild the blockmap (ignore BLOCKMAP lump)",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];
