@@ -129,7 +129,7 @@ void dsda_ExportTextFile(void) {
   const char* pwad = NULL;
   FILE* file;
 
-  if (!M_CheckParm("-export_text_file"))
+  if (!dsda_Flag(dsda_arg_export_text_file))
     return;
 
   name = dsda_TextFileName();

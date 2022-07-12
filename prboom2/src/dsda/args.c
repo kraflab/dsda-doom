@@ -288,6 +288,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "writes level stats to levelstat.txt",
     arg_null,
   },
+  [dsda_arg_export_text_file] = {
+    "-export_text_file", NULL, NULL,
+    "export a dsda-format text file template",
+    arg_null,
+  },
   [dsda_arg_consoleplayer] = {
     "-consoleplayer", NULL, NULL,
     "sets the console player (for coop playback)",
