@@ -49,6 +49,7 @@ typedef struct {
 } arg_config_t;
 
 #define AT_LEAST_ONE_STRING 0, 0, 1, INT_MAX
+#define AT_LEAST_ONE_NONNEGATIVE_INT 0, INT_MAX, 1, INT_MAX
 #define EXACT_ARRAY_LENGTH(x) 0, 0, x, x
 
 static arg_config_t arg_config[dsda_arg_count] = {
@@ -241,6 +242,31 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "-time_all", NULL, NULL,
     "announces the time when any -time_* event happens",
     arg_null,
+  },
+  [dsda_arg_track_player] = {
+    "-track_player", NULL, NULL,
+    "adds player info to the tracker",
+    arg_null,
+  },
+  [dsda_arg_track_line] = {
+    "-track_line", NULL, NULL,
+    "adds at least one line to the tracker",
+    arg_int_array, AT_LEAST_ONE_NONNEGATIVE_INT,
+  },
+  [dsda_arg_track_line_distance] = {
+    "-track_line_distance", NULL, NULL,
+    "adds at least one line distance to the tracker",
+    arg_int_array, AT_LEAST_ONE_NONNEGATIVE_INT,
+  },
+  [dsda_arg_track_sector] = {
+    "-track_sector", NULL, NULL,
+    "adds at least one sector to the tracker",
+    arg_int_array, AT_LEAST_ONE_NONNEGATIVE_INT,
+  },
+  [dsda_arg_track_mobj] = {
+    "-track_mobj", NULL, NULL,
+    "adds at least one mobj to the tracker",
+    arg_int_array, AT_LEAST_ONE_NONNEGATIVE_INT,
   },
   [dsda_arg_analysis] = {
     "-analysis", NULL, NULL,
