@@ -1138,19 +1138,6 @@ static void IdentifyVersion (void)
 // and insert the appropriate -file, -deh or -playdemo switch in front
 // of them.
 //
-// Note that more than one -file, etc. entry on the command line won't
-// work, so we have to go get all the valid ones if any that show up
-// after the loose ones.  This means that boom fred.wad -file wilma
-// will still load fred.wad and wilma.wad, in that order.
-// The response file code kludges up its own version of myargv[] and
-// unfortunately we have to do the same here because that kludge only
-// happens if there _is_ a response file.  Truth is, it's more likely
-// that there will be a need to do one or the other so it probably
-// isn't important.  We'll point off to the original argv[], or the
-// area allocated in FindResponseFile, or our own areas from strdups.
-//
-// CPhipps - OUCH! Writing into *myargv is too dodgy, damn
-//
 // e6y
 // Fixed crash if numbers of wads/lmps/dehs is greater than 100
 // Fixed bug when length of argname is smaller than 3
