@@ -213,6 +213,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "builds the first frame F S T",
     arg_int_array, -128, 127, 3, 3
   },
+  [dsda_arg_skipsec] = {
+    "-skipsec", NULL, NULL,
+    "skip to the given time (mm:ss or ss) - negative times seek from the end",
+    arg_string,
+  },
+  [dsda_arg_skiptic] = {
+    "-skiptic", NULL, NULL,
+    "skip to the given tic - negative tics seek from the end",
+    arg_int, INT_MIN, INT_MAX,
+  },
   [dsda_arg_track_pacifist] = {
     "-track_pacifist", NULL, NULL,
     "tracks pacifist category restrictions",
