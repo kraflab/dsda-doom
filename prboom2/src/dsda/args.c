@@ -283,6 +283,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets the console player (for coop playback)",
     arg_int, 0, 7,
   },
+  [dsda_arg_spechit] = {
+    "-spechit", NULL, NULL,
+    "sets a magic spechit base address for certain overrun demos",
+    arg_int, 0, INT_MAX,
+  },
+  [dsda_arg_setmem] = {
+    "-setmem", NULL, NULL,
+    "sets a magic block of memory for certain overrun demos",
+    arg_string_array, 0, 0, 1, 10,
+  },
   [dsda_arg_data] = {
     "-data", NULL, NULL,
     "sets the data directory",
