@@ -196,7 +196,7 @@ typedef struct prboom_comp_s
   unsigned int minver;
   unsigned int maxver;
   dboolean state;
-  const char *cmd;
+  int arg_id;
 } prboom_comp_t;
 
 enum

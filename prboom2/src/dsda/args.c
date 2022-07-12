@@ -523,6 +523,126 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "rebuild the blockmap (ignore BLOCKMAP lump)",
     arg_null,
   },
+  [dsda_arg_force_monster_avoid_hazards] = {
+    "-force_monster_avoid_hazards", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_remove_slime_trails] = {
+    "-force_remove_slime_trails", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_no_dropoff] = {
+    "-force_no_dropoff", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_truncated_sector_specials] = {
+    "-force_truncated_sector_specials", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_boom_brainawake] = {
+    "-force_boom_brainawake", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_prboom_friction] = {
+    "-force_prboom_friction", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_reject_pad_with_ff] = {
+    "-reject_pad_with_ff", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_lxdoom_demo_compatibility] = {
+    "-force_lxdoom_demo_compatibility", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_allow_ssg_direct] = {
+    "-allow_ssg_direct", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_treat_no_clipping_things_as_not_blocking] = {
+    "-treat_no_clipping_things_as_not_blocking", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_incorrect_processing_of_respawn_frame_entry] = {
+    "-force_incorrect_processing_of_respawn_frame_entry", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_correct_code_for_3_keys_doors_in_mbf] = {
+    "-force_correct_code_for_3_keys_doors_in_mbf", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_uninitialize_crush_field_for_stairs] = {
+    "-uninitialize_crush_field_for_stairs", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_boom_findnexthighestfloor] = {
+    "-force_boom_findnexthighestfloor", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_allow_sky_transfer_in_boom] = {
+    "-allow_sky_transfer_in_boom", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_apply_green_armor_class_to_armor_bonuses] = {
+    "-apply_green_armor_class_to_armor_bonuses", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_apply_blue_armor_class_to_megasphere] = {
+    "-apply_blue_armor_class_to_megasphere", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_force_incorrect_bobbing_in_boom] = {
+    "-force_incorrect_bobbing_in_boom", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_boom_deh_parser] = {
+    "-boom_deh_parser", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_mbf_remove_thinker_in_killmobj] = {
+    "-mbf_remove_thinker_in_killmobj", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_do_not_inherit_friendlyness_flag_on_spawn] = {
+    "-do_not_inherit_friendlyness_flag_on_spawn", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_do_not_use_misc12_frame_parameters_in_a_mushroom] = {
+    "-do_not_use_misc12_frame_parameters_in_a_mushroom", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_apply_mbf_codepointers_to_any_complevel] = {
+    "-apply_mbf_codepointers_to_any_complevel", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
+  [dsda_arg_reset_monsterspawner_params_after_loading] = {
+    "-reset_monsterspawner_params_after_loading", NULL, NULL,
+    "sets a special flag to compensate for sync errors in certain demos",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];

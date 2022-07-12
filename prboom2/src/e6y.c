@@ -221,30 +221,30 @@ void ParamsMatchingCheck()
 }
 
 prboom_comp_t prboom_comp[PC_MAX] = {
-  {0xffffffff, 0x02020615, 0, "-force_monster_avoid_hazards"},
-  {0x00000000, 0x02040601, 0, "-force_remove_slime_trails"},
-  {0x02020200, 0x02040801, 0, "-force_no_dropoff"},
-  {0x00000000, 0x02040801, 0, "-force_truncated_sector_specials"},
-  {0x00000000, 0x02040802, 0, "-force_boom_brainawake"},
-  {0x00000000, 0x02040802, 0, "-force_prboom_friction"},
-  {0x02020500, 0x02040000, 0, "-reject_pad_with_ff"},
-  {0xffffffff, 0x02040802, 0, "-force_lxdoom_demo_compatibility"},
-  {0x00000000, 0x0202061b, 0, "-allow_ssg_direct"},
-  {0x00000000, 0x02040601, 0, "-treat_no_clipping_things_as_not_blocking"},
-  {0x00000000, 0x02040803, 0, "-force_incorrect_processing_of_respawn_frame_entry"},
-  {0x00000000, 0x02040601, 0, "-force_correct_code_for_3_keys_doors_in_mbf"},
-  {0x00000000, 0x02040601, 0, "-uninitialize_crush_field_for_stairs"},
-  {0x00000000, 0x02040802, 0, "-force_boom_findnexthighestfloor"},
-  {0x00000000, 0x02040802, 0, "-allow_sky_transfer_in_boom"},
-  {0x00000000, 0x02040803, 0, "-apply_green_armor_class_to_armor_bonuses"},
-  {0x00000000, 0x02040803, 0, "-apply_blue_armor_class_to_megasphere"},
-  {0x02020200, 0x02050003, 0, "-force_incorrect_bobbing_in_boom"},
-  {0xffffffff, 0x00000000, 0, "-boom_deh_parser"},
-  {0x00000000, 0x02050007, 0, "-mbf_remove_thinker_in_killmobj"},
-  {0x00000000, 0x02050007, 0, "-do_not_inherit_friendlyness_flag_on_spawn"},
-  {0x00000000, 0x02050007, 0, "-do_not_use_misc12_frame_parameters_in_a_mushroom"},
-  {0x00000000, 0x02050102, 0, "-apply_mbf_codepointers_to_any_complevel"},
-  {0x00000000, 0x02050104, 0, "-reset_monsterspawner_params_after_loading"},
+  {0xffffffff, 0x02020615, 0, dsda_arg_force_monster_avoid_hazards},
+  {0x00000000, 0x02040601, 0, dsda_arg_force_remove_slime_trails},
+  {0x02020200, 0x02040801, 0, dsda_arg_force_no_dropoff},
+  {0x00000000, 0x02040801, 0, dsda_arg_force_truncated_sector_specials},
+  {0x00000000, 0x02040802, 0, dsda_arg_force_boom_brainawake},
+  {0x00000000, 0x02040802, 0, dsda_arg_force_prboom_friction},
+  {0x02020500, 0x02040000, 0, dsda_arg_reject_pad_with_ff},
+  {0xffffffff, 0x02040802, 0, dsda_arg_force_lxdoom_demo_compatibility},
+  {0x00000000, 0x0202061b, 0, dsda_arg_allow_ssg_direct},
+  {0x00000000, 0x02040601, 0, dsda_arg_treat_no_clipping_things_as_not_blocking},
+  {0x00000000, 0x02040803, 0, dsda_arg_force_incorrect_processing_of_respawn_frame_entry},
+  {0x00000000, 0x02040601, 0, dsda_arg_force_correct_code_for_3_keys_doors_in_mbf},
+  {0x00000000, 0x02040601, 0, dsda_arg_uninitialize_crush_field_for_stairs},
+  {0x00000000, 0x02040802, 0, dsda_arg_force_boom_findnexthighestfloor},
+  {0x00000000, 0x02040802, 0, dsda_arg_allow_sky_transfer_in_boom},
+  {0x00000000, 0x02040803, 0, dsda_arg_apply_green_armor_class_to_armor_bonuses},
+  {0x00000000, 0x02040803, 0, dsda_arg_apply_blue_armor_class_to_megasphere},
+  {0x02020200, 0x02050003, 0, dsda_arg_force_incorrect_bobbing_in_boom},
+  {0xffffffff, 0x00000000, 0, dsda_arg_boom_deh_parser},
+  {0x00000000, 0x02050007, 0, dsda_arg_mbf_remove_thinker_in_killmobj},
+  {0x00000000, 0x02050007, 0, dsda_arg_do_not_inherit_friendlyness_flag_on_spawn},
+  {0x00000000, 0x02050007, 0, dsda_arg_do_not_use_misc12_frame_parameters_in_a_mushroom},
+  {0x00000000, 0x02050102, 0, dsda_arg_apply_mbf_codepointers_to_any_complevel},
+  {0x00000000, 0x02050104, 0, dsda_arg_reset_monsterspawner_params_after_loading},
 };
 
 void e6y_InitCommandLine(void)
@@ -791,7 +791,7 @@ void e6y_G_Compatibility(void)
 
     for (i = 0; i < PC_MAX; i++)
     {
-      if (M_CheckParm(prboom_comp[i].cmd))
+      if (dsda_Flag(prboom_comp[i].arg_id))
         prboom_comp[i].state = true;
     }
   }
