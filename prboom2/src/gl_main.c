@@ -44,7 +44,6 @@
 #include <SDL.h>
 #include "doomtype.h"
 #include "w_wad.h"
-#include "m_argv.h"
 #include "d_event.h"
 #include "v_video.h"
 #include "doomstat.h"
@@ -63,7 +62,6 @@
 #include "gl_struct.h"
 #include "p_spec.h"
 #include "i_system.h"
-#include "m_argv.h"
 #include "i_video.h"
 #include "i_main.h"
 #include "am_map.h"

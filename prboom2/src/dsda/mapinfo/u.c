@@ -18,7 +18,6 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "lprintf.h"
-#include "m_argv.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_state.h"

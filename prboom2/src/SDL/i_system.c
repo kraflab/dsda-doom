@@ -72,7 +72,6 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#include "m_argv.h"
 #include "lprintf.h"
 #include "doomtype.h"
 #include "doomdef.h"
@@ -286,6 +285,8 @@ void I_SwitchToWindow(HWND hwnd)
 
 const char *I_DoomExeDir(void)
 {
+  extern char **myargv;
+
   static const char current_dir_dummy[] = {"."}; // proff - rem extra slash 8/21/03
   static char *base;
   if (!base)        // cache multiple requests

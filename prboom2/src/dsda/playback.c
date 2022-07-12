@@ -18,7 +18,6 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "i_system.h"
-#include "m_argv.h"
 #include "w_wad.h"
 
 #include "dsda/args.h"

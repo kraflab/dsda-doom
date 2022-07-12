@@ -36,7 +36,6 @@
 
 #include "doomstat.h"
 #include "m_bbox.h"
-#include "m_argv.h"
 #include "g_game.h"
 #include "w_wad.h"
 #include "r_main.h"

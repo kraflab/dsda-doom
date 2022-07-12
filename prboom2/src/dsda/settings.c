@@ -16,7 +16,6 @@
 //
 
 #include "doomstat.h"
-#include "m_argv.h"
 #include "m_menu.h"
 #include "e6y.h"
 #include "r_things.h"

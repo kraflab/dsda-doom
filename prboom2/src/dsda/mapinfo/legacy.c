@@ -17,7 +17,6 @@
 
 #include "doomstat.h"
 #include "g_game.h"
-#include "m_argv.h"
 #include "p_setup.h"
 #include "r_data.h"
 #include "s_sound.h"

@@ -18,7 +18,6 @@
 #include "hu_lib.h"
 #include "hu_stuff.h"
 #include "doomstat.h"
-#include "m_argv.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_state.h"

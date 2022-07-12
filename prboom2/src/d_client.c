@@ -56,7 +56,6 @@
 #include "i_system.h"
 #include "i_main.h"
 #include "i_video.h"
-#include "m_argv.h"
 #include "r_fps.h"
 #include "lprintf.h"
 #include "e6y.h"

@@ -40,7 +40,6 @@
 #include "SDL.h"
 #include "doomdef.h"
 #include "doomtype.h"
-#include "m_argv.h"
 #include "d_event.h"
 #include "d_main.h"
 #include "i_joy.h"

@@ -18,7 +18,6 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "lprintf.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "p_setup.h"
 #include "r_data.h"

@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "m_argv.h"
 #include "info.h"
 #include "d_items.h"
 #include "p_inter.h"

@@ -23,7 +23,6 @@
 #include <errno.h>
 
 #include "doomtype.h"
-#include "m_argv.h"
 #include "lprintf.h"
 #include "w_wad.h"
 #include "i_system.h"

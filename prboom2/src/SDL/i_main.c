@@ -50,7 +50,6 @@
 #include <errno.h>
 
 #include "doomdef.h"
-#include "m_argv.h"
 #include "d_main.h"
 #include "m_fixed.h"
 #include "i_system.h"
@@ -257,11 +256,7 @@ int main(int argc, char **argv)
       fprintf(stderr, "Revoked uid %d\n",stored_euid);
 #endif
 
-  myargc = argc;
-  myargv = (char**)Z_Malloc(sizeof(myargv[0]) * myargc);
-  memcpy(myargv, argv, sizeof(myargv[0]) * myargc);
-
-  dsda_ParseCommandLineArgs();
+  dsda_ParseCommandLineArgs(argc, argv);
 
   // Print the version and exit
   if (dsda_Flag(dsda_arg_v))

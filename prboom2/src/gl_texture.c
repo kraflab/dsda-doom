@@ -52,7 +52,6 @@
 #include <SDL.h>
 #include "doomtype.h"
 #include "w_wad.h"
-#include "m_argv.h"
 #include "d_event.h"
 #include "v_video.h"
 #include "doomstat.h"

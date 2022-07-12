@@ -22,7 +22,6 @@
 #include "doomtype.h"
 #include "doomstat.h"
 #include "g_game.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "lprintf.h"
 #include "e6y.h"

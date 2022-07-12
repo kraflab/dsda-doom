@@ -63,7 +63,6 @@
 #include "v_video.h"
 #include "f_finale.h"
 #include "f_wipe.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "i_main.h"
@@ -1021,6 +1020,8 @@ void AddIWAD(const char *iwad)
  */
 static inline dboolean CheckExeSuffix(const char *suffix)
 {
+  extern char **myargv;
+
   char *dash;
 
   if ((dash = strrchr(myargv[0], '-')))
@@ -1159,6 +1160,9 @@ static void IdentifyVersion (void)
 
 static void DoLooseFiles(void)
 {
+  extern int myargc;
+  extern char **myargv;
+
   int i, k;
   const int loose_wad_index = 0;
 

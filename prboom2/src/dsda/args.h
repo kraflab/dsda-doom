@@ -154,7 +154,7 @@ typedef struct {
   } value;
 } dsda_arg_t;
 
-void dsda_ParseCommandLineArgs(void);
+void dsda_ParseCommandLineArgs(int argc, char** argv);
 dsda_arg_t* dsda_Arg(dsda_arg_identifier_t id);
 dboolean dsda_Flag(dsda_arg_identifier_t id);
 void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param);

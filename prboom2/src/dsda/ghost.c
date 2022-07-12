@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 
-#include "m_argv.h"
 #include "lprintf.h"
 #include "doomtype.h"
 #include "doomstat.h"

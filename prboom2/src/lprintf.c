@@ -51,7 +51,6 @@
 #include "lprintf.h"
 #include "i_main.h"
 #include "i_system.h"
-#include "m_argv.h"
 #include "e6y.h"//e6y
 #include "i_capture.h"
 

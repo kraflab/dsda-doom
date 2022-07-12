@@ -43,7 +43,6 @@
 
 #include "doomstat.h"
 #include "lprintf.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "e6y.h"
 

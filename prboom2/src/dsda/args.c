@@ -23,8 +23,8 @@
 
 #include "dsda/args.h"
 
-extern int myargc;
-extern char** myargv;
+int myargc;
+char** myargv;
 
 typedef enum {
   arg_null,
@@ -772,10 +772,13 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int myarg_i) {
   }
 }
 
-void dsda_ParseCommandLineArgs(void) {
+void dsda_ParseCommandLineArgs(int argc, char** argv) {
   int i;
   int myarg_i;
   arg_config_t* config;
+
+  myargc = argc;
+  myargv = argv;
 
   for (i = 0; i < dsda_arg_count; ++i) {
     config = &arg_config[i];

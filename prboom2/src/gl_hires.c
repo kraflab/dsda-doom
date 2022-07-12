@@ -59,7 +59,6 @@
 #include "hu_stuff.h"
 #include "r_main.h"
 #include "r_sky.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "e6y.h"
 

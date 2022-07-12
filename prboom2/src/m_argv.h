@@ -35,20 +35,8 @@
 #ifndef __M_ARGV__
 #define __M_ARGV__
 
-/*
- * MISC
- */
-extern int  myargc;
-extern char **myargv;
-
-/* Returns the position of the given parameter in the arg list (0 if not found). */
-int M_CheckParm(const char *check);
-
 /* Returns the position of the given parameter in the params list (-1 if not found). */
 int M_CheckParmEx(const char *check, char **params, int paramscount);
-
-/* Add one parameter to myargv list */
-void M_AddParam(const char *param);
 
 /* Parses the command line and sets up the argv[] array */
 void M_ParseCmdLine(char *cmdstart, char **argv, char *args, int *numargs, int *numchars);
