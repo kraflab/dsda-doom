@@ -58,6 +58,8 @@ typedef enum {
   dsda_arg_time_all,
   dsda_arg_analysis,
   dsda_arg_levelstat,
+  dsda_arg_data,
+  dsda_arg_save,
   dsda_arg_movie,
   dsda_arg_viddump,
   dsda_arg_dehout,

@@ -23,8 +23,10 @@
 #include "p_saveg.h"
 #include "p_map.h"
 
+#include "dsda/args.h"
 #include "dsda/data_organizer.h"
 #include "dsda/excmd.h"
+
 #include "save.h"
 
 int dsda_organized_saves;
@@ -100,7 +102,7 @@ void dsda_UnArchiveAll(void) {
 }
 
 void dsda_InitSaveDir(void) {
-  dsda_base_save_dir = dsda_DetectDirectory("DOOMSAVEDIR", "-save");
+  dsda_base_save_dir = dsda_DetectDirectory("DOOMSAVEDIR", dsda_arg_save);
 }
 
 static char* dsda_SaveDir(void) {
