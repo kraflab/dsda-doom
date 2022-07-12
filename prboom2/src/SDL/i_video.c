@@ -451,10 +451,8 @@ static void I_InitInputs(void)
 {
   static Uint8 empty_cursor_data = 0;
 
-  int nomouse_parm = dsda_Flag(dsda_arg_nomouse);
-
   // check if the user wants to use the mouse
-  mouse_enabled = usemouse && !nomouse_parm;
+  mouse_enabled = usemouse && !dsda_Flag(dsda_arg_nomouse);
 
   SDL_PumpEvents();
 
