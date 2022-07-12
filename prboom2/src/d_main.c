@@ -1594,8 +1594,6 @@ static void D_DoomMainSetup(void)
   dsda_arg_t *arg;
   dboolean autoload;
 
-  dsda_ParseCommandLineArgs();
-
   if (dsda_Flag(dsda_arg_verbose))
     I_EnableVerboseLogging();
 

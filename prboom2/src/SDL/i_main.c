@@ -73,6 +73,7 @@
 #include "e6y.h"
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/analysis.h"
 #include "dsda/args.h"
 #include "dsda/settings.h"
@@ -259,6 +260,8 @@ int main(int argc, char **argv)
   myargc = argc;
   myargv = (char**)Z_Malloc(sizeof(myargv[0]) * myargc);
   memcpy(myargv, argv, sizeof(myargv[0]) * myargc);
+
+  dsda_ParseCommandLineArgs();
 
   // Print the version and exit
   if(M_CheckParm("-v"))
