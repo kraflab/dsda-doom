@@ -264,7 +264,7 @@ int main(int argc, char **argv)
   dsda_ParseCommandLineArgs();
 
   // Print the version and exit
-  if(M_CheckParm("-v"))
+  if (dsda_Flag(dsda_arg_v))
   {
     PrintVer();
     return 0;
