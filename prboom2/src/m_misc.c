@@ -80,6 +80,7 @@
 #include "g_overflow.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/console.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
@@ -1370,6 +1371,7 @@ void M_LoadDefaults (void)
   char* cfgline = Z_Malloc(CFG_BUFFERMAX);
   char* newstring = NULL;   // killough
   int   parm;
+  dsda_arg_t *arg;
   dboolean isstring;
   // e6y: arrays
   default_t *item = NULL;
@@ -1442,10 +1444,10 @@ void M_LoadDefaults (void)
 
 #define BOOM_CFG "dsda-doom.cfg"
 
-  i = M_CheckParm ("-config");
-  if (i && i < myargc-1)
+  arg = dsda_Arg(dsda_arg_config);
+  if (arg->found)
   {
-    defaultfile = Z_Strdup(myargv[i+1]);
+    defaultfile = Z_Strdup(arg->value.v_string);
   }
   else
   {
@@ -1705,11 +1707,12 @@ void M_ScreenShot(void)
   char       *lbmname = NULL;
   int        startshot;
   const char *shot_dir = NULL;
-  int p;
+  dsda_arg_t *arg;
   int        success = 0;
 
-  if ((p = M_CheckParm("-shotdir")) && (p < myargc - 1))
-    shot_dir = M_CheckWritableDir(myargv[p + 1]);
+  arg = dsda_Arg(dsda_arg_shotdir);
+  if (arg->found)
+    shot_dir = M_CheckWritableDir(arg->value.v_string);
   if (!shot_dir)
     shot_dir = M_CheckWritableDir(screenshot_dir);
   if (!shot_dir)

@@ -262,6 +262,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets the save directory",
     arg_string,
   },
+  [dsda_arg_config] = {
+    "-config", NULL, NULL,
+    "sets the config file",
+    arg_string,
+  },
+  [dsda_arg_shotdir] = {
+    "-shotdir", NULL, NULL,
+    "sets the screenshot directory",
+    arg_string,
+  },
   [dsda_arg_movie] = {
     "-movie", NULL, NULL,
     "sets the target final level for movie demos (for automatic exit detection)",
