@@ -24,6 +24,11 @@
 
 #include "utility.h"
 
+dboolean dsda_HasFileExt(const char* file, const char* ext) {
+  return strlen(file) > strlen(ext) &&
+         !strcasecmp(file + strlen(file) - strlen(ext), ext);
+}
+
 char** dsda_SplitString(char* str, const char* delimiter) {
   char** result;
   int substring_count = 2;

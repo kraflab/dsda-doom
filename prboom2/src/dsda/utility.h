@@ -33,6 +33,7 @@ typedef struct {
   int frac;
 } dsda_angle_t;
 
+dboolean dsda_HasFileExt(const char* file, const char* ext);
 char** dsda_SplitString(char* str, const char* delimiter);
 void dsda_FixedToString(char* str, fixed_t x);
 dsda_fixed_t dsda_SplitFixed(fixed_t x);
