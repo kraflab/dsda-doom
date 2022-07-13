@@ -693,13 +693,12 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int argv_i) {
       // only valid integers should be interpreted as arguments
       if (!is_integer)
         break;
-
-      continue;
     }
-
-    // negative numbers are valid string arguments (e.g., -skipsec -1:20)
-    if (dsda_argv[argv_i + arg->count + 1][0] == '-' && !is_integer)
-      break;
+    else {
+      // negative numbers are valid string arguments (e.g., -skipsec -1:20)
+      if (dsda_argv[argv_i + arg->count + 1][0] == '-' && !is_integer)
+        break;
+    }
   }
 
   arg->found = true;
