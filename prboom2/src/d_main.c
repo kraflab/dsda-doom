@@ -1711,9 +1711,6 @@ static void D_DoomMainSetup(void)
   if (autoload)
     D_AutoloadPWadDir();
 
-  // CPhipps - move up netgame init
-  //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"D_InitFakeNetGame: Checking for network game.\n");
   D_InitFakeNetGame();
 
   //jff 9/3/98 use logical output routine

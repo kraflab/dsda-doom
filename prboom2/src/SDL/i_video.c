@@ -958,13 +958,13 @@ void I_CalculateRes(int width, int height)
       count1 = I_TestCPUCacheMisses(pitch1, SCREENHEIGHT, mintime);
       count2 = I_TestCPUCacheMisses(pitch2, SCREENHEIGHT, mintime);
 
-      lprintf(LO_INFO, "I_CalculateRes: trying to optimize screen pitch\n");
-      lprintf(LO_INFO, " test case for pitch=%d is processed %d times for %d msec\n", pitch1, count1, mintime);
-      lprintf(LO_INFO, " test case for pitch=%d is processed %d times for %d msec\n", pitch2, count2, mintime);
+      lprintf(LO_DEBUG, "I_CalculateRes: trying to optimize screen pitch\n");
+      lprintf(LO_DEBUG, " test case for pitch=%d is processed %d times for %d msec\n", pitch1, count1, mintime);
+      lprintf(LO_DEBUG, " test case for pitch=%d is processed %d times for %d msec\n", pitch2, count2, mintime);
 
       SCREENPITCH = (count2 > count1 ? pitch2 : pitch1);
 
-      lprintf(LO_INFO, " optimized screen pitch is %d\n", SCREENPITCH);
+      lprintf(LO_DEBUG, " optimized screen pitch is %d\n", SCREENPITCH);
     }
   }
 }
