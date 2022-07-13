@@ -1695,7 +1695,7 @@ static void D_DoomMainSetup(void)
       }
       else
       {
-        lprintf(LO_WARN, "Warning: missing file %s\n", file_name);
+        I_Error("D_DoomMainSetup: Cannot find .wad file named %s", file_name);
       }
     }
   }
