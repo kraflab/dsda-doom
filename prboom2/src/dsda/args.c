@@ -779,17 +779,31 @@ void dsda_ParseCommandLineArgs(int argc, char** argv) {
   dsda_argc = argc;
   dsda_argv = argv;
 
-  for (i = 0; i < dsda_arg_count; ++i) {
-    config = &arg_config[i];
+  for (argv_i = dsda_argc - 1; argv_i > 0; --argv_i) {
+    int x;
+    dboolean is_integer;
 
-    for (argv_i = dsda_argc - 1; argv_i > 0; --argv_i)
-      if (
-        !strcasecmp(config->name, dsda_argv[argv_i]) ||
-        (config->alias && !strcasecmp(config->alias, dsda_argv[argv_i]))
-      ) {
-        dsda_ParseArg(config, &arg_value[i], argv_i);
-        break;
+    is_integer = sscanf(dsda_argv[argv_i], "%i", &x);
+
+    if (dsda_argv[argv_i][0] == '-' && !is_integer) {
+      for (i = 0; i < dsda_arg_count; ++i) {
+        config = &arg_config[i];
+
+        if (
+          !strcasecmp(config->name, dsda_argv[argv_i]) ||
+          (config->alias && !strcasecmp(config->alias, dsda_argv[argv_i]))
+        ) {
+          if (arg_value[i].found)
+            lprintf(LO_WARN, "Warning: ignoring duplicate argument %s\n", config->name);
+          else
+            dsda_ParseArg(config, &arg_value[i], argv_i);
+          break;
+        }
       }
+
+      if (i == dsda_arg_count)
+        I_Error("Unknown command line option %s\n", dsda_argv[argv_i]);
+    }
   }
 }
 
