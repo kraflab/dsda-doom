@@ -1693,6 +1693,10 @@ static void D_DoomMainSetup(void)
         D_AddFile(file,source_pwad);
         Z_Free(file);
       }
+      else
+      {
+        lprintf(LO_WARN, "Warning: missing file %s\n", file_name);
+      }
     }
   }
 
