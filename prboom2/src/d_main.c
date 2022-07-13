@@ -101,6 +101,7 @@
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
+#include "dsda/utility.h"
 #include "dsda/gl/render_scale.h"
 
 #include "heretic/mn_menu.h"
@@ -1670,11 +1671,20 @@ static void D_DoomMainSetup(void)
 
     for (file_i = 0; file_i < arg->count; ++file_i)
     {
-      const char* file_name = arg->value.v_string_array[file_i];
+      const char* file_name;
+      char *file;
+
+      file_name = arg->value.v_string_array[file_i];
+      if (dsda_HasFileExt(file_name, ".deh") || dsda_HasFileExt(file_name, ".bex"))
+      {
+        dsda_AppendStringArg(dsda_arg_deh, file_name);
+        continue;
+      }
+
       // e6y
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)
-      char *file = I_FindFile(file_name, ".wad");
+      file = I_FindFile(file_name, ".wad");
       if (!file && D_TryGetWad(file_name))
       {
         file = I_FindFile(file_name, ".wad");
