@@ -76,6 +76,7 @@ void dsda_ArchiveAll(void) {
   P_TrueArchiveThinkers();
   P_ArchiveScripts();
   P_ArchiveSounds();
+  P_ArchiveAmbientSound();
   P_ArchiveMisc();
   P_IndexToThinker();
   P_ArchiveRNG();
@@ -93,6 +94,7 @@ void dsda_UnArchiveAll(void) {
   P_TrueUnArchiveThinkers();
   P_UnArchiveScripts();
   P_UnArchiveSounds();
+  P_UnArchiveAmbientSound();
   P_UnArchiveMisc();
   P_UnArchiveRNG();
   P_UnArchiveMap();

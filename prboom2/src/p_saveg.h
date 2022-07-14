@@ -65,6 +65,11 @@ extern byte *save_p;
 void CheckSaveGame(size_t,const char*, int);              /* killough */
 #define CheckSaveGame(a) (CheckSaveGame)(a, __FILE__, __LINE__)
 
+// heretic
+
+void P_ArchiveAmbientSound(void);
+void P_UnArchiveAmbientSound(void);
+
 // hexen
 
 void P_ArchiveACS(void);

@@ -1789,6 +1789,76 @@ void P_UnArchiveSounds(void)
   }
 }
 
+void P_ArchiveAmbientSound(void)
+{
+  size_t size;
+
+  if (!heretic) return;
+
+  size = sizeof(AmbSfxTics);
+  CheckSaveGame(size);
+  memcpy(save_p, &AmbSfxTics, size);
+  save_p += size;
+
+  size = sizeof(AmbSfxVolume);
+  CheckSaveGame(size);
+  memcpy(save_p, &AmbSfxVolume, size);
+  save_p += size;
+
+  size = sizeof(AmbSfxPtrIndex);
+  CheckSaveGame(size);
+  memcpy(save_p, &AmbSfxPtrIndex, size);
+  save_p += size;
+
+  if (AmbSfxPtrIndex != -1)
+  {
+    size_t offset;
+
+    offset = AmbSfxPtr - LevelAmbientSfx[AmbSfxPtrIndex];
+
+    size = sizeof(offset);
+    CheckSaveGame(size);
+    memcpy(save_p, &offset, size);
+    save_p += size;
+  }
+}
+
+void P_UnArchiveAmbientSound(void)
+{
+  size_t size;
+
+  if (!heretic) return;
+
+  size = sizeof(AmbSfxTics);
+  memcpy(&AmbSfxTics, save_p, size);
+  save_p += size;
+
+  size = sizeof(AmbSfxVolume);
+  memcpy(&AmbSfxVolume, save_p, size);
+  save_p += size;
+
+  size = sizeof(AmbSfxPtrIndex);
+  memcpy(&AmbSfxPtrIndex, save_p, size);
+  save_p += size;
+
+  if (AmbSfxPtrIndex == -1)
+  {
+    extern int AmbSndSeqInit[];
+
+    AmbSfxPtr = AmbSndSeqInit;
+  }
+  else
+  {
+    size_t offset;
+
+    size = sizeof(offset);
+    memcpy(&offset, save_p, size);
+    save_p += size;
+
+    AmbSfxPtr = LevelAmbientSfx[AmbSfxPtrIndex] + offset;
+  }
+}
+
 void P_ArchiveMisc(void)
 {
   size_t size;

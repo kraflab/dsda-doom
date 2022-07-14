@@ -4800,8 +4800,6 @@ static void P_SpawnPushers(void)
 
 #include "heretic/def.h"
 
-#define MAX_AMBIENT_SFX 8
-
 typedef enum
 {
     afxcmd_play,                // (sound)
@@ -4814,6 +4812,7 @@ typedef enum
 
 int *LevelAmbientSfx[MAX_AMBIENT_SFX];
 int *AmbSfxPtr;
+int AmbSfxPtrIndex;
 int AmbSfxCount;
 int AmbSfxTics;
 int AmbSfxVolume;
@@ -4982,6 +4981,7 @@ void P_InitAmbientSound(void)
     AmbSfxCount = 0;
     AmbSfxVolume = 0;
     AmbSfxTics = 10 * TICRATE;
+    AmbSfxPtrIndex = -1;
     AmbSfxPtr = AmbSndSeqInit;
 }
 
@@ -5037,7 +5037,8 @@ void P_AmbientSound(void)
                 break;
             case afxcmd_end:
                 AmbSfxTics = 6 * TICRATE + P_Random(pr_heretic);
-                AmbSfxPtr = LevelAmbientSfx[P_Random(pr_heretic) % AmbSfxCount];
+                AmbSfxPtrIndex = P_Random(pr_heretic) % AmbSfxCount;
+                AmbSfxPtr = LevelAmbientSfx[AmbSfxPtrIndex];
                 done = true;
                 break;
             default:
