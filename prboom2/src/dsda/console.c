@@ -734,6 +734,11 @@ static dboolean console_BasicCheat(const char* command, const char* args) {
   return M_CheatEntered(command, args);
 }
 
+static dboolean console_CheatFullClip(const char* command, const char* args) {
+  target_player.cheats ^= CF_INFINITE_AMMO;
+  return true;
+}
+
 static dboolean console_ScriptRunLine(const char* line) {
   if (strlen(line) && line[0] != '#' && line[0] != '!' && line[0] != '/') {
     if (strlen(line) >= CONSOLE_ENTRY_SIZE) {
@@ -890,6 +895,7 @@ static console_command_entry_t console_commands[] = {
 
   { "notarget", console_BasicCheat, CF_DEMO },
   { "fly", console_BasicCheat, CF_DEMO },
+  { "fullclip", console_CheatFullClip, CF_NEVER },
 
   { "quicken", console_BasicCheat, CF_DEMO },
   { "ponce", console_BasicCheat, CF_DEMO },

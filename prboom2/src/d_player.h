@@ -74,6 +74,7 @@ typedef enum
 
 #define CF_NOCLIP        0x01 // no clipping
 #define CF_GODMODE       0x02 // immune to damage
+#define CF_INFINITE_AMMO 0x04 // infinite ammo
 #define CF_NOTARGET      0x08 // monsters don't target
 #define CF_FLY           0x10 // flying player
 

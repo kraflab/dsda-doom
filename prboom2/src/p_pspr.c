@@ -402,7 +402,7 @@ dboolean P_CheckAmmo(player_t *player)
   // Some do not need ammunition anyway.
   // Return if current ammunition sufficient.
 
-  if (ammo == am_noammo || player->ammo[ammo] >= count)
+  if (player->cheats & CF_INFINITE_AMMO || ammo == am_noammo || player->ammo[ammo] >= count)
     return true;
 
   // Out of ammo, pick a weapon to change to.
@@ -440,7 +440,7 @@ void P_SubtractAmmo(struct player_s *player, int vanilla_amount)
   int amount;
   ammotype_t ammotype = weaponinfo[player->readyweapon].ammo;
 
-  if (mbf21 && ammotype == am_noammo)
+  if (player->cheats & CF_INFINITE_AMMO || (mbf21 && ammotype == am_noammo))
     return; // [XA] hmm... I guess vanilla/boom will go out of bounds then?
 
   if (mbf21 && (weaponinfo[player->readyweapon].intflags & WIF_ENABLEAPS))
