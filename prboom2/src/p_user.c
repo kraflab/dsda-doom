@@ -255,7 +255,7 @@ void P_CalcHeight (player_t* player)
     player->bob = FRACUNIT / 2;
   }
 
-  if ((!onground && !raven) || player->cheats & CF_NOMOMENTUM)
+  if (!onground && !raven)
   {
     player->viewz = player->mo->z + g_viewheight;
 
