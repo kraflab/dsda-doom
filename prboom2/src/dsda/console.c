@@ -245,7 +245,7 @@ static dboolean console_PlayerSetAmmo(const char* command, const char* args) {
   int amount;
 
   if (sscanf(args, "%i %i", &ammo, &amount) == 2) {
-    if (ammo < 0 || ammo >= g_numammo || amount <= 0)
+    if (ammo < 0 || ammo >= g_numammo || amount < 0)
       return false;
 
     if (hexen) {
