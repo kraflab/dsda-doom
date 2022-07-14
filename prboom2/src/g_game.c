@@ -811,7 +811,10 @@ void G_BuildTiccmd(ticcmd_t* cmd)
               boom_weapon_state_injection
             ) &&
             !done_autoswitch
-          ) || cmd->buttons & BT_ATTACK
+          ) || (
+            cmd->buttons & BT_ATTACK &&
+            players[consoleplayer].pendingweapon == wp_nochange
+          )
         )
       ) || (!hexen && dsda_InputActive(dsda_input_toggleweapon))
     )
