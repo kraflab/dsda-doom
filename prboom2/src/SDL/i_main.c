@@ -200,10 +200,6 @@ static void I_Quit (void)
   I_DemoExShutdown();
 }
 
-#ifdef SECURE_UID
-uid_t stored_euid = -1;
-#endif
-
 //
 // Sets the priority class for the prboom-plus process
 //
@@ -246,16 +242,6 @@ void I_SetProcessPriority(void)
 //int main(int argc, const char * const * argv)
 int main(int argc, char **argv)
 {
-#ifdef SECURE_UID
-  /* First thing, revoke setuid status (if any) */
-  stored_euid = geteuid();
-  if (getuid() != stored_euid)
-    if (seteuid(getuid()) < 0)
-      fprintf(stderr, "Failed to revoke setuid\n");
-    else
-      fprintf(stderr, "Revoked uid %d\n",stored_euid);
-#endif
-
   dsda_ParseCommandLineArgs(argc, argv);
 
   if (dsda_Flag(dsda_arg_verbose))
