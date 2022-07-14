@@ -1456,12 +1456,6 @@ static void D_DoomMainSetup(void)
   dsda_arg_t *arg;
   dboolean autoload;
 
-  if (dsda_Flag(dsda_arg_verbose))
-    I_EnableVerboseLogging();
-
-  if (dsda_Flag(dsda_arg_quiet))
-    I_DisableAllLogging();
-
   setbuf(stdout,NULL);
 
   if (dsda_Flag(dsda_arg_help))

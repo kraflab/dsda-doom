@@ -258,6 +258,12 @@ int main(int argc, char **argv)
 
   dsda_ParseCommandLineArgs(argc, argv);
 
+  if (dsda_Flag(dsda_arg_verbose))
+    I_EnableVerboseLogging();
+
+  if (dsda_Flag(dsda_arg_quiet))
+    I_DisableAllLogging();
+
   // Print the version and exit
   if (dsda_Flag(dsda_arg_v))
   {
