@@ -96,7 +96,8 @@ void dsda_ArchiveMSecNodes(void) {
     count = 0;
     msecnode = sectors[sector_i].touching_thinglist;
     while (msecnode) {
-      count++;
+      if (dsda_IsMSecNodeMobj(&msecnode->m_thing->thinker))
+        count++;
       msecnode = msecnode->m_snext;
     }
 
@@ -107,6 +108,12 @@ void dsda_ArchiveMSecNodes(void) {
     msecnode = sectors[sector_i].touching_thinglist;
     while (msecnode) {
       th = &msecnode->m_thing->thinker;
+
+      if (!dsda_IsMSecNodeMobj(th)) {
+        lprintf(LO_WARN, "Orphan mobj in msecnode list - undefined behaviour may occur!\n");
+        msecnode = msecnode->m_snext;
+        continue;
+      }
 
       CheckSaveGame(sizeof(th->prev));
       memcpy(save_p, &th->prev, sizeof(th->prev));
