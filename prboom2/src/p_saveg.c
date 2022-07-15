@@ -645,6 +645,72 @@ void P_UnArchiveBlockLinks(mobj_t** mobj_p, int mobj_count)
   }
 }
 
+static dboolean P_IsPolyObjThinker(thinker_t *th)
+{
+  return th->function == T_RotatePoly || th->function == T_MovePoly || th->function == T_PolyDoor;
+}
+
+void P_ArchivePolyObjSpecialData(void)
+{
+  thinker_t *th;
+
+  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
+  {
+    if (P_IsPolyObjThinker(th))
+    {
+      int i;
+      int count = 0;
+
+      for (i = 0; i < po_NumPolyobjs; ++i)
+      {
+        if (polyobjs[i].specialdata == th)
+          ++count;
+      }
+
+      CheckSaveGame(sizeof(count) + count * sizeof(i));
+
+      memcpy(save_p, &count, sizeof(count));
+      save_p += sizeof(count);
+
+      for (i = 0; i < po_NumPolyobjs; ++i)
+      {
+        if (polyobjs[i].specialdata == th)
+        {
+          memcpy(save_p, &i, sizeof(i));
+          save_p += sizeof(i);
+        }
+      }
+    }
+  }
+}
+
+void P_UnArchivePolyObjSpecialData(void)
+{
+  thinker_t *th;
+
+  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
+  {
+    if (P_IsPolyObjThinker(th))
+    {
+      int i;
+      int count;
+
+      memcpy(&count, save_p, sizeof(count));
+      save_p += sizeof(count);
+
+      for (i = 0; i < count; ++i)
+      {
+        int j;
+
+        memcpy(&j, save_p, sizeof(j));
+        save_p += sizeof(j);
+
+        polyobjs[j].specialdata = th;
+      }
+    }
+  }
+}
+
 // dsda - fix save / load synchronization
 // merges thinkerclass_t and specials_e
 typedef enum {
@@ -1057,6 +1123,8 @@ void P_TrueArchiveThinkers(void) {
 
   // add a terminating marker
   *save_p++ = tc_true_end;
+
+  P_ArchivePolyObjSpecialData();
 
   // killough 9/14/98: save soundtargets
   {
@@ -1518,6 +1586,8 @@ void P_TrueUnArchiveThinkers(void) {
       }
     }
   }
+
+  P_UnArchivePolyObjSpecialData();
 
   {  // killough 9/14/98: restore soundtargets
     int i;
