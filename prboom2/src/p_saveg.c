@@ -654,6 +654,8 @@ void P_ArchivePolyObjSpecialData(void)
 {
   thinker_t *th;
 
+  if (!map_format.polyobjs) return;
+
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
   {
     if (P_IsPolyObjThinker(th))
@@ -687,6 +689,8 @@ void P_ArchivePolyObjSpecialData(void)
 void P_UnArchivePolyObjSpecialData(void)
 {
   thinker_t *th;
+
+  if (!map_format.polyobjs) return;
 
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
   {
@@ -1934,6 +1938,13 @@ void P_ArchiveMisc(void)
 {
   size_t size;
 
+  if (map_format.animdefs)
+  {
+    CheckSaveGame(sizeof(AnimDefs));
+    memcpy(save_p, AnimDefs, sizeof(AnimDefs));
+    save_p += sizeof(AnimDefs);
+  }
+
   if (!hexen) return;
 
   size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
@@ -1944,10 +1955,6 @@ void P_ArchiveMisc(void)
   CheckSaveGame(sizeof(PlayerClass));
   memcpy(save_p, PlayerClass, sizeof(PlayerClass));
   save_p += sizeof(PlayerClass);
-
-  CheckSaveGame(sizeof(AnimDefs));
-  memcpy(save_p, AnimDefs, sizeof(AnimDefs));
-  save_p += sizeof(AnimDefs);
 
   CheckSaveGame(sizeof(NextLightningFlash));
   memcpy(save_p, &NextLightningFlash, sizeof(NextLightningFlash));
@@ -1964,6 +1971,12 @@ void P_UnArchiveMisc(void)
 {
   size_t size;
 
+  if (map_format.animdefs)
+  {
+    memcpy(AnimDefs, save_p, sizeof(AnimDefs));
+    save_p += sizeof(AnimDefs);
+  }
+
   if (!hexen) return;
 
   size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
@@ -1972,9 +1985,6 @@ void P_UnArchiveMisc(void)
 
   memcpy(PlayerClass, save_p, sizeof(PlayerClass));
   save_p += sizeof(PlayerClass);
-
-  memcpy(AnimDefs, save_p, sizeof(AnimDefs));
-  save_p += sizeof(AnimDefs);
 
   memcpy(&NextLightningFlash, save_p, sizeof(NextLightningFlash));
   save_p += sizeof(NextLightningFlash);
