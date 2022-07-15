@@ -17,6 +17,23 @@
 #ifndef __HEXEN_P_ANIM__
 #define __HEXEN_P_ANIM__
 
+#define MAX_ANIM_DEFS 20
+
+typedef struct
+{
+    int type;
+    int index;
+    int tics;
+    int currentFrameDef;
+    int startFrameDef;
+    int endFrameDef;
+} animDef_t;
+
+extern animDef_t AnimDefs[MAX_ANIM_DEFS];
+
+extern int NextLightningFlash;
+extern int LightningFlash;
+
 void P_AnimateSurfaces(void);
 void P_ForceLightning(void);
 void P_InitLightning(void);

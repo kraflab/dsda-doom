@@ -48,6 +48,7 @@
 
 #include "hexen/a_action.h"
 #include "hexen/p_acs.h"
+#include "hexen/p_anim.h"
 #include "hexen/po_man.h"
 #include "hexen/sn_sonix.h"
 #include "hexen/sv_save.h"
@@ -1874,6 +1875,18 @@ void P_ArchiveMisc(void)
   memcpy(save_p, PlayerClass, sizeof(PlayerClass));
   save_p += sizeof(PlayerClass);
 
+  CheckSaveGame(sizeof(AnimDefs));
+  memcpy(save_p, AnimDefs, sizeof(AnimDefs));
+  save_p += sizeof(AnimDefs);
+
+  CheckSaveGame(sizeof(NextLightningFlash));
+  memcpy(save_p, &NextLightningFlash, sizeof(NextLightningFlash));
+  save_p += sizeof(NextLightningFlash);
+
+  CheckSaveGame(sizeof(LightningFlash));
+  memcpy(save_p, &LightningFlash, sizeof(LightningFlash));
+  save_p += sizeof(LightningFlash);
+
   SV_StoreMapArchive(&save_p);
 }
 
@@ -1889,6 +1902,15 @@ void P_UnArchiveMisc(void)
 
   memcpy(PlayerClass, save_p, sizeof(PlayerClass));
   save_p += sizeof(PlayerClass);
+
+  memcpy(AnimDefs, save_p, sizeof(AnimDefs));
+  save_p += sizeof(AnimDefs);
+
+  memcpy(&NextLightningFlash, save_p, sizeof(NextLightningFlash));
+  save_p += sizeof(NextLightningFlash);
+
+  memcpy(&LightningFlash, save_p, sizeof(LightningFlash));
+  save_p += sizeof(LightningFlash);
 
   SV_RestoreMapArchive(&save_p);
 }
