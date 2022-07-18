@@ -447,9 +447,9 @@ void R_InitTranslationTables (void)
     if (i >= 0x70 && i<= 0x7f)
     {
       // CPhipps - configurable player colours
-      translationtables[i] = colormaps[0][((i&0xf)<<9) + transtocolour[0]];
-      translationtables[i+256] = colormaps[0][((i&0xf)<<9) + transtocolour[1]];
-      translationtables[i+512] = colormaps[0][((i&0xf)<<9) + transtocolour[2]];
+      translationtables[i] = colormaps[0][(i&0xf) + transtocolour[0]];
+      translationtables[i+256] = colormaps[0][(i&0xf) + transtocolour[1]];
+      translationtables[i+512] = colormaps[0][(i&0xf) + transtocolour[2]];
     }
     else  // Keep all other colors as is.
       translationtables[i]=translationtables[i+256]=translationtables[i+512]=i;
