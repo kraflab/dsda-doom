@@ -1,5 +1,5 @@
 # dsda-doom v0.24.3
-This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning. For builds, discussions, and bug reports, check out the release thread on [doomworld](https://www.doomworld.com/forum/topic/118074/).
+This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning. Latest windows release [here](https://drive.google.com/file/d/1pL-59hKPGvgUkL-AQCPuEsR25_fveEhe/view?usp=sharing).
 
 ### Patch Notes
 - [v0.24](./patch_notes/v0.24.md)
