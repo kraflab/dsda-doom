@@ -68,10 +68,9 @@ const music_player_t db_player =
 #if !defined(_FILE_OFFSET_BITS) || (_FILE_OFFSET_BITS < 64)
 #ifdef _MSC_VER
 #define DUMB_OFF_T_CUSTOM __int64
-#elif defined(__APPLE__)
-#define DUMB_OFF_T_CUSTOM off_t
 #else
-#define DUMB_OFF_T_CUSTOM off64_t
+#include <stdint.h>
+#define DUMB_OFF_T_CUSTOM int64_t
 #endif
 #endif
 
