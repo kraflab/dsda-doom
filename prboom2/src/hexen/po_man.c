@@ -41,8 +41,8 @@ static int GetPolyobjMirror(int poly);
 static void ThrustMobj(mobj_t * mobj, seg_t * seg, polyobj_t * po);
 static void UpdateSegBBox(seg_t * seg);
 static void RotatePt(int an, fixed_t * x, fixed_t * y, fixed_t startSpotX, fixed_t startSpotY);
-static void UnLinkPolyobj(polyobj_t * po);
-static void LinkPolyobj(polyobj_t * po);
+void UnLinkPolyobj(polyobj_t * po);
+void LinkPolyobj(polyobj_t * po);
 static dboolean CheckMobjBlocking(seg_t * seg, polyobj_t * po);
 static void InitBlockMap(void);
 static void IterFindPolySegs(int x, int y, seg_t ** segList);
@@ -66,7 +66,7 @@ static void ResetSegDrawingParameters(seg_t *seg)
   seg->pangle = seg->angle;
 }
 
-static void ResetPolySubSector(polyobj_t *po)
+void ResetPolySubSector(polyobj_t *po)
 {
   int i;
   vertex_t avg;
@@ -915,7 +915,7 @@ dboolean PO_RotatePolyobj(int num, angle_t angle)
     return true;
 }
 
-static void UnLinkPolyobj(polyobj_t * po)
+void UnLinkPolyobj(polyobj_t * po)
 {
     polyblock_t *link;
     int i, j;
@@ -944,7 +944,7 @@ static void UnLinkPolyobj(polyobj_t * po)
     }
 }
 
-static void LinkPolyobj(polyobj_t * po)
+void LinkPolyobj(polyobj_t * po)
 {
     int leftX, rightX;
     int topY, bottomY;

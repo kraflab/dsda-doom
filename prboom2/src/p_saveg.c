@@ -1672,51 +1672,146 @@ void P_UnArchiveACS(void)
   save_p += size;
 }
 
+static void P_ArchiveVertex(vertex_t *v)
+{
+  memcpy(save_p, &v->x, sizeof(v->x));
+  save_p += sizeof(v->x);
+
+  memcpy(save_p, &v->y, sizeof(v->y));
+  save_p += sizeof(v->y);
+}
+
+static void P_UnArchiveVertex(vertex_t *v)
+{
+  memcpy(&v->x, save_p, sizeof(v->x));
+  save_p += sizeof(v->x);
+
+  memcpy(&v->y, save_p, sizeof(v->y));
+  save_p += sizeof(v->y);
+}
+
 void P_ArchivePolyobjs(void)
 {
   int i;
 
   if (!map_format.polyobjs) return;
 
-  CheckSaveGame(po_NumPolyobjs * (sizeof(angle_t) + 2 * sizeof(fixed_t)));
-
   for (i = 0; i < po_NumPolyobjs; i++)
   {
-    memcpy(save_p, &polyobjs[i].angle, sizeof(polyobjs[i].angle));
-    save_p += sizeof(polyobjs[i].angle);
+    int seg_i;
+    polyobj_t *po;
 
-    memcpy(save_p, &polyobjs[i].startSpot.x, sizeof(polyobjs[i].startSpot.x));
-    save_p += sizeof(polyobjs[i].startSpot.x);
+    po = &polyobjs[i];
 
-    memcpy(save_p, &polyobjs[i].startSpot.y, sizeof(polyobjs[i].startSpot.y));
-    save_p += sizeof(polyobjs[i].startSpot.y);
+    CheckSaveGame(
+      po->numsegs * (
+        sizeof(fixed_t) * 14 +
+        sizeof(angle_t) +
+        sizeof(slopetype_t)
+      ) +
+      sizeof(fixed_t) * 2 +
+      sizeof(angle_t)
+    );
+
+    for (seg_i = 0; seg_i < po->numsegs; ++seg_i) {
+      seg_t *seg;
+      line_t *line;
+
+      seg = po->segs[seg_i];
+      line = seg->linedef;
+
+      P_ArchiveVertex(seg->v1);
+      P_ArchiveVertex(seg->v2);
+
+      memcpy(save_p, &seg->angle, sizeof(seg->angle));
+      save_p += sizeof(seg->angle);
+
+      memcpy(save_p, &line->slopetype, sizeof(line->slopetype));
+      save_p += sizeof(line->slopetype);
+
+      memcpy(save_p, line->bbox, sizeof(line->bbox));
+      save_p += sizeof(line->bbox);
+
+      memcpy(save_p, &line->dx, sizeof(line->dx));
+      save_p += sizeof(line->dx);
+
+      memcpy(save_p, &line->dy, sizeof(line->dy));
+      save_p += sizeof(line->dy);
+
+      P_ArchiveVertex(&po->originalPts[seg_i]);
+      P_ArchiveVertex(&po->prevPts[seg_i]);
+    }
+
+    memcpy(save_p, &po->angle, sizeof(po->angle));
+    save_p += sizeof(po->angle);
+
+    memcpy(save_p, &po->startSpot.x, sizeof(po->startSpot.x));
+    save_p += sizeof(po->startSpot.x);
+
+    memcpy(save_p, &po->startSpot.y, sizeof(po->startSpot.y));
+    save_p += sizeof(po->startSpot.y);
   }
 }
 
 void P_UnArchivePolyobjs(void)
 {
+  void UnLinkPolyobj(polyobj_t * po);
+  void LinkPolyobj(polyobj_t * po);
+  void ResetPolySubSector(polyobj_t *po);
+
   int i;
-  angle_t angle;
-  fixed_t deltaX;
-  fixed_t deltaY;
 
   if (!map_format.polyobjs) return;
 
   for (i = 0; i < po_NumPolyobjs; i++)
   {
-    memcpy(&angle, save_p, sizeof(angle));
-    save_p += sizeof(angle);
+    int seg_i;
+    polyobj_t *po;
 
-    memcpy(&deltaX, save_p, sizeof(deltaX));
-    save_p += sizeof(deltaX);
+    po = &polyobjs[i];
 
-    memcpy(&deltaY, save_p, sizeof(deltaY));
-    save_p += sizeof(deltaY);
+    UnLinkPolyobj(po);
 
-    PO_RotatePolyobj(polyobjs[i].tag, angle);
-    deltaX -= polyobjs[i].startSpot.x;
-    deltaY -= polyobjs[i].startSpot.y;
-    PO_MovePolyobj(polyobjs[i].tag, deltaX, deltaY);
+    for (seg_i = 0; seg_i < po->numsegs; ++seg_i) {
+      seg_t *seg;
+      line_t *line;
+
+      seg = po->segs[seg_i];
+      line = seg->linedef;
+
+      P_UnArchiveVertex(seg->v1);
+      P_UnArchiveVertex(seg->v2);
+
+      memcpy(&seg->angle, save_p, sizeof(seg->angle));
+      save_p += sizeof(seg->angle);
+
+      memcpy(&line->slopetype, save_p, sizeof(line->slopetype));
+      save_p += sizeof(line->slopetype);
+
+      memcpy(line->bbox, save_p, sizeof(line->bbox));
+      save_p += sizeof(line->bbox);
+
+      memcpy(&line->dx, save_p, sizeof(line->dx));
+      save_p += sizeof(line->dx);
+
+      memcpy(&line->dy, save_p, sizeof(line->dy));
+      save_p += sizeof(line->dy);
+
+      P_UnArchiveVertex(&po->originalPts[seg_i]);
+      P_UnArchiveVertex(&po->prevPts[seg_i]);
+    }
+
+    memcpy(&po->angle, save_p, sizeof(po->angle));
+    save_p += sizeof(po->angle);
+
+    memcpy(&po->startSpot.x, save_p, sizeof(po->startSpot.x));
+    save_p += sizeof(po->startSpot.x);
+
+    memcpy(&po->startSpot.y, save_p, sizeof(po->startSpot.y));
+    save_p += sizeof(po->startSpot.y);
+
+    LinkPolyobj(po);
+    ResetPolySubSector(po);
   }
 }
 
