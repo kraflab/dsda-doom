@@ -39,27 +39,18 @@ static void dsda_ArchiveInternal(void) {
   extern int dsda_max_kill_requirement;
   int internal_size = sizeof(dsda_max_kill_requirement);
 
-  CheckSaveGame(sizeof(internal_size));
-  memcpy(save_p, &internal_size, sizeof(internal_size));
-  save_p += sizeof(internal_size);
-
-  CheckSaveGame(sizeof(dsda_max_kill_requirement));
-  memcpy(save_p, &dsda_max_kill_requirement, sizeof(dsda_max_kill_requirement));
-  save_p += sizeof(dsda_max_kill_requirement);
+  P_SAVE_X(internal_size);
+  P_SAVE_X(dsda_max_kill_requirement);
 }
 
 static void dsda_UnArchiveInternal(void) {
   extern int dsda_max_kill_requirement;
   int internal_size;
 
-  memcpy(&internal_size, save_p, sizeof(internal_size));
-  save_p += sizeof(internal_size);
+  P_LOAD_X(internal_size);
 
   if (internal_size > 0)
-  {
-    memcpy(&dsda_max_kill_requirement, save_p, sizeof(dsda_max_kill_requirement));
-    save_p += sizeof(dsda_max_kill_requirement);
-  }
+    P_LOAD_X(dsda_max_kill_requirement);
 
   if (internal_size > TRACKING_SIZE)
   {

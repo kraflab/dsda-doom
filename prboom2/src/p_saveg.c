@@ -58,45 +58,47 @@
 
 #define MARKED_FOR_DELETION -2
 
+#define SAVEGAMESIZE 0x20000
+
 byte *save_p;
+byte *savebuffer;
+static int savegamesize;
 
-#define P_SAVE_X(x) CheckSaveGame(sizeof(x)); \
-                    memcpy(save_p, &x, sizeof(x)); \
-                    save_p += sizeof(x)
+// Check for overrun and realloc if necessary -- Lee Killough 1/22/98
+void CheckSaveGame(size_t size)
+{
+  size_t offset = save_p - savebuffer;
 
-#define P_LOAD_X(x) memcpy(&x, save_p, sizeof(x)); \
-                    save_p += sizeof(x)
+  if (offset + size <= savegamesize)
+  {
+    return;
+  }
 
-#define P_SAVE_SIZE(x, size) CheckSaveGame(size); \
-                             memcpy(save_p, x, size); \
-                             save_p += size
+  while (offset + size > savegamesize)
+  {
+    savegamesize *= 2;
+  }
 
-#define P_LOAD_SIZE(x, size) memcpy(x, save_p, size); \
-                             save_p += size
+  savebuffer = Z_Realloc(savebuffer, savegamesize);
+  save_p = savebuffer + offset;
+}
 
-#define P_SAVE_TYPE(x, type) CheckSaveGame(sizeof(type)); \
-                             memcpy(save_p, x, sizeof(type)); \
-                             save_p += sizeof(type)
+void P_InitSaveBuffer(void)
+{
+  savegamesize = SAVEGAMESIZE;
+  save_p = savebuffer = Z_Malloc(savegamesize);
+}
 
-#define P_SAVE_TYPE_REF(x, ref, type) CheckSaveGame(sizeof(type)); \
-                                      ref = (type *) save_p; \
-                                      memcpy(save_p, x, sizeof(type)); \
-                                      save_p += sizeof(type)
+void P_ForgetSaveBuffer(void)
+{
+  save_p = savebuffer = NULL;
+}
 
-#define P_LOAD_P(p) memcpy(p, save_p, sizeof(*p)); \
-                    save_p += sizeof(*p)
-
-#define P_SAVE_BYTE(x) CheckSaveGame(1); \
-                       *save_p++ = x
-
-#define P_LOAD_BYTE(x) x = *save_p++
-
-#define P_SAVE_ARRAY(x) CheckSaveGame(sizeof(x)); \
-                        memcpy(save_p, x, sizeof(x)); \
-                        save_p += sizeof(x)
-
-#define P_LOAD_ARRAY(x) memcpy(x, save_p, sizeof(x)); \
-                        save_p += sizeof(x)
+void P_FreeSaveBuffer(void)
+{
+  Z_Free(savebuffer);
+  P_ForgetSaveBuffer();
+}
 
 //
 // P_ArchivePlayers
@@ -1719,7 +1721,7 @@ void P_ArchiveMisc(void)
   P_SAVE_X(NextLightningFlash);
   P_SAVE_X(LightningFlash);
 
-  SV_StoreMapArchive(&save_p);
+  SV_StoreMapArchive();
 }
 
 void P_UnArchiveMisc(void)
@@ -1739,5 +1741,5 @@ void P_UnArchiveMisc(void)
   P_LOAD_X(NextLightningFlash);
   P_LOAD_X(LightningFlash);
 
-  SV_RestoreMapArchive(&save_p);
+  SV_RestoreMapArchive();
 }

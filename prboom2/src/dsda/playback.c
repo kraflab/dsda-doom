@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "i_system.h"
+#include "p_saveg.h"
 #include "w_wad.h"
 
 #include "dsda/args.h"
@@ -139,24 +140,14 @@ int dsda_PlaybackTics(void) {
   return playback_tics;
 }
 
-int dsda_PlaybackPositionSize(void) {
-  return sizeof(playback_tics) + sizeof(playback_p);
+void dsda_StorePlaybackPosition(void) {
+  P_SAVE_X(playback_tics);
+  P_SAVE_X(playback_p);
 }
 
-void dsda_StorePlaybackPosition(byte** save_p) {
-  memcpy(*save_p, &playback_tics, sizeof(playback_tics));
-  *save_p += sizeof(playback_tics);
-
-  memcpy(*save_p, &playback_p, sizeof(playback_p));
-  *save_p += sizeof(playback_p);
-}
-
-void dsda_RestorePlaybackPosition(byte** save_p) {
-  memcpy(&playback_tics, *save_p, sizeof(playback_tics));
-  *save_p += sizeof(playback_tics);
-
-  memcpy(&playback_p, *save_p, sizeof(playback_p));
-  *save_p += sizeof(playback_p);
+void dsda_RestorePlaybackPosition(void) {
+  P_LOAD_X(playback_tics);
+  P_LOAD_X(playback_p);
 }
 
 void dsda_ClearPlaybackStream(void) {

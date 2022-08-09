@@ -50,8 +50,6 @@
 #include "key_frame.h"
 
 // Hook into the save & demo ecosystem
-extern byte* savebuffer;
-extern size_t savegamesize;
 extern dboolean setsizeneeded;
 extern dboolean BorderNeedRefresh;
 extern int inv_ptr;
@@ -224,49 +222,38 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export) {
   int i;
 
-  save_p = savebuffer = Z_Malloc(savegamesize);
+  P_InitSaveBuffer();
 
-  CheckSaveGame(1);
-  *save_p++ = complete;
+  P_SAVE_BYTE(complete);
 
-  CheckSaveGame(5 + FUTURE_MAXPLAYERS);
-  *save_p++ = compatibility_level;
-  *save_p++ = gameskill;
-  *save_p++ = gameepisode;
-  *save_p++ = gamemap;
+  P_SAVE_BYTE(compatibility_level);
+  P_SAVE_BYTE(gameskill);
+  P_SAVE_BYTE(gameepisode);
+  P_SAVE_BYTE(gamemap);
 
   for (i = 0; i < g_maxplayers; i++)
-    *save_p++ = playeringame[i];
+    P_SAVE_BYTE(playeringame[i]);
 
   for (; i < FUTURE_MAXPLAYERS; i++)
-    *save_p++ = 0;
+    P_SAVE_BYTE(0);
 
-  *save_p++ = idmusnum;
+  P_SAVE_BYTE(idmusnum);
 
   CheckSaveGame(dsda_GameOptionSize());
   save_p = G_WriteOptions(save_p);
 
   // Store state of demo playback buffer
-  CheckSaveGame(dsda_PlaybackPositionSize());
-  dsda_StorePlaybackPosition(&save_p);
+  dsda_StorePlaybackPosition();
 
   // Store state of demo recording buffer
-  CheckSaveGame(dsda_DemoDataSize(complete));
-  dsda_StoreDemoData(&save_p, complete);
+  dsda_StoreDemoData(complete);
 
-  CheckSaveGame(sizeof(leveltime));
-  memcpy(save_p, &leveltime, sizeof(leveltime));
-  save_p += sizeof(leveltime);
-
-  CheckSaveGame(sizeof(totalleveltimes));
-  memcpy(save_p, &totalleveltimes, sizeof(totalleveltimes));
-  save_p += sizeof(totalleveltimes);
+  P_SAVE_X(leveltime);
+  P_SAVE_X(totalleveltimes);
 
   key_frame->game_tic_count = logictic;
 
-  CheckSaveGame(sizeof(key_frame->game_tic_count));
-  memcpy(save_p, &key_frame->game_tic_count, sizeof(key_frame->game_tic_count));
-  save_p += sizeof(key_frame->game_tic_count);
+  P_SAVE_X(key_frame->game_tic_count);
 
   dsda_ArchiveAll();
 
@@ -274,7 +261,8 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export)
 
   key_frame->buffer = savebuffer;
   key_frame->buffer_length = save_p - savebuffer;
-  savebuffer = save_p = NULL;
+
+  P_ForgetSaveBuffer();
 
   dsda_AttachAutoKF(key_frame);
 
@@ -287,7 +275,6 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export)
 }
 
 // Stripped down version of G_DoLoadGame
-// save_p is coopted to use the save logic
 void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   int demo_write_buffer_offset, i;
   int epi, map;
@@ -303,42 +290,39 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
 
   save_p = key_frame->buffer;
 
-  complete = *save_p++;
+  P_LOAD_BYTE(complete);
 
-  compatibility_level = *save_p++;
-  gameskill = *save_p++;
+  P_LOAD_BYTE(compatibility_level);
+  P_LOAD_BYTE(gameskill);
 
-  epi = *save_p++;
-  map = *save_p++;
+  P_LOAD_BYTE(epi);
+  P_LOAD_BYTE(map);
   dsda_UpdateGameMap(epi, map);
 
   for (i = 0; i < g_maxplayers; i++)
-    playeringame[i] = *save_p++;
+    P_LOAD_BYTE(playeringame[i]);
   save_p += FUTURE_MAXPLAYERS - g_maxplayers;
 
-  idmusnum = *save_p++;
+  P_LOAD_BYTE(idmusnum);
   if (idmusnum == 255) idmusnum = -1;
 
   save_p += (G_ReadOptions(save_p) - save_p);
 
   // Restore state of demo playback buffer
-  dsda_RestorePlaybackPosition(&save_p);
+  dsda_RestorePlaybackPosition();
 
   // Restore state of demo recording buffer
-  dsda_RestoreDemoData(&save_p, complete);
+  dsda_RestoreDemoData(complete);
 
   G_InitNew(gameskill, gameepisode, gamemap, false);
 
-  memcpy(&leveltime, save_p, sizeof(leveltime));
-  save_p += sizeof(leveltime);
-
-  memcpy(&totalleveltimes, save_p, sizeof(totalleveltimes));
-  save_p += sizeof(totalleveltimes);
+  P_LOAD_X(leveltime);
+  P_LOAD_X(totalleveltimes);
 
   restore_key_frame_index = (totalleveltimes + leveltime) / (35 * autoKeyFrameInterval());
 
-  memcpy(&key_frame->game_tic_count, save_p, sizeof(key_frame->game_tic_count));
-  save_p += sizeof(key_frame->game_tic_count);
+  P_LOAD_X(key_frame->game_tic_count);
+
   basetic = gametic - key_frame->game_tic_count;
 
   dsda_RestoreCommandHistory();
