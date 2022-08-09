@@ -75,8 +75,6 @@ typedef struct camera_s
 
 extern dboolean wasWiped;
 
-extern int totalleveltimes;
-
 extern int secretfound;
 extern int demo_tics_count;
 extern int demo_playerscount;

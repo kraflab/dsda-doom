@@ -225,9 +225,9 @@ extern  int totalitems;
 extern  int totalsecret;
 extern  int show_alive;
 
-// Timer, for scores.
-extern  int basetic;    /* killough 9/29/98: levelstarttic, adjusted */
-extern  int leveltime;  // tics in game play for par
+extern  int basetic;
+extern  int leveltime;       // level time in tics
+extern  int totalleveltimes; // sum of intermission times in tics at second resolution
 
 // --------------------------------------
 // DEMO playback/recording related stuff.
