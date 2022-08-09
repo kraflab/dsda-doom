@@ -2252,21 +2252,20 @@ void G_DoLoadGame(void)
 
     P_LOAD_X(checksum);
 
-    if (checksum != G_Signature())
+    if (checksum != G_Signature() && !forced_loadgame)
     {
-      if (!forced_loadgame)
-      {
-        char *msg = Z_Malloc(strlen((char *) save_p) + 128);
-        strcpy(msg,"Incompatible Savegame!!!\n");
-        if (*save_p)
-          strcat(strcat(msg, "Wads expected:\n\n"), (char *) save_p);
-        strcat(msg, "\nAre you sure?");
-        G_LoadGameErr(msg);
-        Z_Free(msg);
-        return;
-      }
-      else
-        lprintf(LO_WARN, "G_DoLoadGame: Incompatible savegame\n");
+      char *msg = Z_Malloc(strlen((char *) save_p) + 128);
+
+      strcpy(msg, "Incompatible Savegame!!!\n");
+      if (*save_p)
+        strcat(strcat(msg, "Wads expected:\n\n"), (char *) save_p);
+      strcat(msg, "\nAre you sure?");
+
+      G_LoadGameErr(msg);
+
+      Z_Free(msg);
+
+      return;
     }
   }
 
