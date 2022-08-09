@@ -2174,6 +2174,39 @@ void RecalculateDrawnSubsectors(void)
   gld_ResetTexturedAutomap();
 }
 
+void G_AfterLoad(void)
+{
+  extern int BorderNeedRefresh;
+
+  R_ActivateSectorInterpolations(); //e6y
+  R_SmoothPlaying_Reset(NULL); // e6y
+
+  if (musinfo.current_item != -1)
+  {
+    S_ChangeMusInfoMusic(musinfo.current_item, true);
+  }
+
+  RecalculateDrawnSubsectors();
+
+  if (hexen)
+  {
+    SB_SetClassData();
+  }
+
+  if (raven)
+  {
+    players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
+  }
+
+  if (setsizeneeded)
+    R_ExecuteSetViewSize ();
+
+  R_FillBackScreen ();
+
+  BorderNeedRefresh = true;
+  ST_Start();
+}
+
 void G_DoLoadGame(void)
 {
   int  length, i;
@@ -2242,45 +2275,12 @@ void G_DoLoadGame(void)
   // dearchive all the modifications
   dsda_UnArchiveAll();
 
-  R_ActivateSectorInterpolations();//e6y
-  R_SmoothPlaying_Reset(NULL); // e6y
-
-  if (musinfo.current_item != -1)
-  {
-    S_ChangeMusInfoMusic(musinfo.current_item, true);
-  }
-
-  RecalculateDrawnSubsectors();
-
   if (*save_p != 0xe6)
     I_Error ("G_DoLoadGame: Bad savegame");
 
-  /* Print some information about the save game */
-  maplump = MAPNAME(gameepisode, gamemap);
-  time = leveltime / TICRATE;
-  ttime = (totalleveltimes + leveltime) / TICRATE;
-
-  lprintf(LO_INFO, "G_DoLoadGame: [%d] %s (%s), Skill %d, Level Time %02d:%02d:%02d, Total Time %02d:%02d:%02d\n",
-    savegameslot + 1, maplump, W_GetLumpInfoByNum(W_GetNumForName(maplump))->wadfile->name, gameskill + 1,
-    time/3600, (time%3600)/60, time%60, ttime/3600, (ttime%3600)/60, ttime%60);
+  G_AfterLoad();
 
   P_FreeSaveBuffer();
-
-  if (hexen)
-  {
-    SB_SetClassData();
-  }
-
-  if (raven)
-  {
-    players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
-  }
-
-  if (setsizeneeded)
-    R_ExecuteSetViewSize ();
-
-  // draw the pattern into the back screen
-  R_FillBackScreen ();
 
   if (load_via_cmd)
   {

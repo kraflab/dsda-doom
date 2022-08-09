@@ -49,12 +49,6 @@
 
 #include "key_frame.h"
 
-// Hook into the save & demo ecosystem
-extern dboolean setsizeneeded;
-extern dboolean BorderNeedRefresh;
-extern int inv_ptr;
-void RecalculateDrawnSubsectors(void);
-
 static dboolean auto_kf_timed_out;
 static int auto_kf_timeout_count;
 
@@ -256,6 +250,8 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export)
 
 // Stripped down version of G_DoLoadGame
 void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
+  void G_AfterLoad(void);
+
   int demo_write_buffer_offset, i;
   int epi, map;
   byte complete;
@@ -285,30 +281,7 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
 
   restore_key_frame_index = (totalleveltimes + leveltime) / (35 * autoKeyFrameInterval());
 
-  R_ActivateSectorInterpolations();
-  R_SmoothPlaying_Reset(NULL);
-
-  if (musinfo.current_item != -1)
-    S_ChangeMusInfoMusic(musinfo.current_item, true);
-
-  RecalculateDrawnSubsectors();
-
-  if (hexen)
-  {
-    SB_SetClassData();
-  }
-
-  if (raven)
-  {
-    players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
-  }
-
-  if (setsizeneeded) R_ExecuteSetViewSize();
-
-  R_FillBackScreen();
-
-  BorderNeedRefresh = true;
-  ST_Start();
+  G_AfterLoad();
 
   dsda_QueueJoin();
 
