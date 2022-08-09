@@ -18,14 +18,18 @@
 #include <stdlib.h>
 
 #include "doomstat.h"
+#include "g_game.h"
 #include "lprintf.h"
 #include "z_zone.h"
 #include "p_saveg.h"
 #include "p_map.h"
+#include "s_sound.h"
 
 #include "dsda/args.h"
 #include "dsda/data_organizer.h"
 #include "dsda/excmd.h"
+#include "dsda/mapinfo.h"
+#include "dsda/options.h"
 
 #include "save.h"
 
@@ -58,7 +62,67 @@ static void dsda_UnArchiveInternal(void) {
   }
 }
 
+static void dsda_ArchiveContext(void) {
+  int i;
+  int logictic_value;
+
+  P_SAVE_BYTE(compatibility_level);
+  P_SAVE_BYTE(gameskill);
+  P_SAVE_BYTE(gameepisode);
+  P_SAVE_BYTE(gamemap);
+
+  for (i = 0; i < g_maxplayers; ++i)
+    P_SAVE_BYTE(playeringame[i]);
+
+  for (; i < FUTURE_MAXPLAYERS; ++i)
+    P_SAVE_BYTE(0);
+
+  P_SAVE_BYTE(idmusnum);
+
+  CheckSaveGame(dsda_GameOptionSize());
+  save_p = G_WriteOptions(save_p);
+
+  P_SAVE_X(leveltime);
+  P_SAVE_X(totalleveltimes);
+
+  logictic_value = logictic;
+  P_SAVE_X(logictic_value);
+}
+
+static void dsda_UnArchiveContext(void) {
+  int i;
+  int epi, map;
+  int logictic_value;
+
+  P_LOAD_BYTE(compatibility_level);
+  P_LOAD_BYTE(gameskill);
+
+  P_LOAD_BYTE(epi);
+  P_LOAD_BYTE(map);
+  dsda_UpdateGameMap(epi, map);
+
+  for (i = 0; i < g_maxplayers; ++i)
+    P_LOAD_BYTE(playeringame[i]);
+  save_p += FUTURE_MAXPLAYERS - g_maxplayers;
+
+  P_LOAD_BYTE(idmusnum);
+  if (idmusnum == 255)
+    idmusnum = -1;
+
+  save_p += (G_ReadOptions(save_p) - save_p);
+
+  G_InitNew(gameskill, gameepisode, gamemap, false);
+
+  P_LOAD_X(leveltime);
+  P_LOAD_X(totalleveltimes);
+
+  P_LOAD_X(logictic_value);
+  basetic = gametic - logictic_value;
+}
+
 void dsda_ArchiveAll(void) {
+  dsda_ArchiveContext();
+
   P_ArchiveACS();
   P_ArchivePlayers();
   P_ThinkerToIndex();
@@ -77,6 +141,8 @@ void dsda_ArchiveAll(void) {
 }
 
 void dsda_UnArchiveAll(void) {
+  dsda_UnArchiveContext();
+
   P_MapStart();
   P_UnArchiveACS();
   P_UnArchivePlayers();

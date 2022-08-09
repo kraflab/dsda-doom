@@ -2183,8 +2183,6 @@ void G_DoLoadGame(void)
   int savegame_compatibility = -1;
   const char *maplump;
   int time, ttime;
-  int epi, map;
-  byte basetic_offset;
 
   dsda_SetLastLoadSlot(savegameslot);
 
@@ -2240,37 +2238,6 @@ void G_DoLoadGame(void)
   }
 
   save_p += strlen((char*) save_p) + 1;
-
-  P_LOAD_BYTE(compatibility_level);
-  P_LOAD_BYTE(gameskill);
-
-  P_LOAD_BYTE(epi);
-  P_LOAD_BYTE(map);
-  dsda_UpdateGameMap(epi, map);
-
-  for (i = 0; i < g_maxplayers; i++)
-    P_LOAD_BYTE(playeringame[i]);
-  save_p += FUTURE_MAXPLAYERS - g_maxplayers;         // killough 2/28/98
-
-  P_LOAD_BYTE(idmusnum);           // jff 3/17/98 restore idmus music
-  if (idmusnum==255) idmusnum=-1; // jff 3/18/98 account for unsigned byte
-
-  /* killough 3/1/98: Read game options
-   * killough 11/98: move down to here
-   */
-  // Avoid assignment of const to non-const: add the difference
-  // between the updated and original pointer onto the original
-  save_p += (G_ReadOptions(save_p) - save_p);
-
-  // load a base level
-  G_InitNew (gameskill, gameepisode, gamemap, false);
-
-  P_LOAD_X(leveltime);
-  P_LOAD_X(totalleveltimes);
-
-  // killough 11/98: load revenant tracer state
-  P_LOAD_BYTE(basetic_offset);
-  basetic = gametic - basetic_offset;
 
   // dearchive all the modifications
   dsda_UnArchiveAll();
@@ -2389,29 +2356,6 @@ static void G_DoSaveGame(dboolean via_cmd)
     }
     P_SAVE_BYTE(0);
   }
-
-  P_SAVE_BYTE(compatibility_level);
-
-  P_SAVE_BYTE(gameskill);
-  P_SAVE_BYTE(gameepisode);
-  P_SAVE_BYTE(gamemap);
-
-  for (i = 0; i < g_maxplayers; i++)
-    P_SAVE_BYTE(playeringame[i]);
-
-  for (;i<FUTURE_MAXPLAYERS;i++)         // killough 2/28/98
-    P_SAVE_BYTE(0);
-
-  P_SAVE_BYTE(idmusnum);               // jff 3/17/98 save idmus state
-
-  CheckSaveGame(dsda_GameOptionSize());
-  save_p = G_WriteOptions(save_p);    // killough 3/1/98: save game options
-
-  P_SAVE_X(leveltime);
-  P_SAVE_X(totalleveltimes);
-
-  // killough 11/98: save revenant tracer state
-  P_SAVE_BYTE(logictic & 255);
 
   dsda_ArchiveAll();
 
