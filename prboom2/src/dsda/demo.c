@@ -25,6 +25,7 @@
 #include "m_misc.h"
 #include "lprintf.h"
 #include "e6y.h"
+#include "p_saveg.h"
 
 #include "dsda.h"
 #include "dsda/args.h"
@@ -407,36 +408,28 @@ int dsda_DemoDataSize(byte complete) {
   return sizeof(buffer_size) + sizeof(demo_tics) + buffer_size;
 }
 
-void dsda_StoreDemoData(byte** save_p, byte complete) {
+void dsda_StoreDemoData(byte complete) {
   int demo_write_buffer_offset;
 
   demo_write_buffer_offset = dsda_DemoBufferOffset();
 
-  memcpy(*save_p, &demo_write_buffer_offset, sizeof(demo_write_buffer_offset));
-  *save_p += sizeof(demo_write_buffer_offset);
+  P_SAVE_X(demo_write_buffer_offset);
+  P_SAVE_X(demo_tics);
 
-  memcpy(*save_p, &demo_tics, sizeof(demo_tics));
-  *save_p += sizeof(demo_tics);
-
-  if (complete && demo_write_buffer_offset) {
-    memcpy(*save_p, dsda_demo_write_buffer, demo_write_buffer_offset);
-    *save_p += demo_write_buffer_offset;
-  }
+  if (complete && demo_write_buffer_offset)
+    P_SAVE_SIZE(dsda_demo_write_buffer, demo_write_buffer_offset);
 }
 
-void dsda_RestoreDemoData(byte** save_p, byte complete) {
+void dsda_RestoreDemoData(byte complete) {
   int demo_write_buffer_offset;
 
-  memcpy(&demo_write_buffer_offset, *save_p, sizeof(demo_write_buffer_offset));
-  *save_p += sizeof(demo_write_buffer_offset);
-
-  memcpy(&demo_tics, *save_p, sizeof(demo_tics));
-  *save_p += sizeof(demo_tics);
+  P_LOAD_X(demo_write_buffer_offset);
+  P_LOAD_X(demo_tics);
 
   if (complete && demo_write_buffer_offset) {
     dsda_SetDemoBufferOffset(0);
-    dsda_WriteToDemo(*save_p, demo_write_buffer_offset);
-    *save_p += demo_write_buffer_offset;
+    dsda_WriteToDemo(save_p, demo_write_buffer_offset);
+    save_p += demo_write_buffer_offset;
   }
   else
     dsda_SetDemoBufferOffset(demo_write_buffer_offset);

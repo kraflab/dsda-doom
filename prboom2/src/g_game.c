@@ -106,9 +106,6 @@
 #include "dsda/time.h"
 #include "dsda/split_tracker.h"
 
-#define SAVEGAMESIZE  0x20000
-#define SAVESTRINGSIZE  24
-
 struct
 {
     int type;   // mobjtype_t
@@ -138,7 +135,6 @@ struct
 // The old format is still supported.
 #define NEWFORMATSIG "\xff\xff\xff\xff"
 
-size_t          savegamesize = SAVEGAMESIZE; // killough
 static dboolean  netdemo;
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
@@ -174,7 +170,6 @@ dboolean         demoplayback;
 dboolean         singledemo;           // quit after playing a demo from cmdline
 wbstartstruct_t wminfo;               // parms for world map / intermission
 dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
-byte            *savebuffer;
 int             totalleveltimes;      // CPhipps - total time for all completed levels
 int             longtics;
 
@@ -2140,38 +2135,15 @@ void G_LoadGame(int slot)
 
 static void G_LoadGameErr(const char *msg)
 {
-  Z_Free(savebuffer);                // Free the savegame buffer
+  P_FreeSaveBuffer();
   M_ForcedLoadGame(msg);             // Print message asking for 'Y' to force
 }
-
-// CPhipps - size of version header
-#define VERSIONSIZE   16
-#define SAVEVERSION "DSDA-DOOM 2"
 
 const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
 { "Doom v1.2", "Doom v1.666", "Doom/Doom2 v1.9", "Ultimate Doom/Doom95", "Final Doom",
   "early DosDoom", "TASDoom", "\"boom compatibility\"", "boom v2.01", "boom v2.02", "lxdoom v1.3.2+",
   "MBF", "PrBoom 2.03beta", "PrBoom v2.1.0-2.1.1", "PrBoom v2.1.2-v2.2.6",
   "PrBoom v2.3.x", "PrBoom 2.4.0", "Current PrBoom", "", "", "", "MBF21" };
-
-//e6y
-unsigned int GetPackageVersion(void)
-{
-  static unsigned int PACKAGEVERSION = 0;
-
-  //e6y: "2.4.8.2" -> 0x02040802
-  if (PACKAGEVERSION == 0)
-  {
-    int b[4], i, k = 1;
-    memset(b, 0, sizeof(b));
-    sscanf(PACKAGE_VERSION, "%d.%d.%d.%d", &b[0], &b[1], &b[2], &b[3]);
-    for (i = 3; i >= 0; i--, k *= 256)
-    {
-      PACKAGEVERSION += b[i] * k;
-    }
-  }
-  return PACKAGEVERSION;
-}
 
 //==========================================================================
 //
@@ -2207,12 +2179,12 @@ void G_DoLoadGame(void)
   int  length, i;
   // CPhipps - do savegame filename stuff here
   char *name;                // killough 3/22/98
+  int saveversion;
   int savegame_compatibility = -1;
-  //e6y: numeric version number of package should be zero before initializing from savegame
-  unsigned int packageversion = 0;
   const char *maplump;
   int time, ttime;
   int epi, map;
+  byte basetic_offset;
 
   dsda_SetLastLoadSlot(savegameslot);
 
@@ -2236,28 +2208,27 @@ void G_DoLoadGame(void)
   Z_Free(name);
   save_p = savebuffer + SAVESTRINGSIZE;
 
-  if (strncmp((char*)save_p, SAVEVERSION, VERSIONSIZE) && !forced_loadgame) {
+  P_LOAD_X(saveversion);
+  if (saveversion != SAVEVERSION && !forced_loadgame) {
     G_LoadGameErr("Unrecognised savegame version!\nAre you sure? (y/n) ");
     return;
   }
 
-  save_p += VERSIONSIZE;
-
   // CPhipps - always check savegames even when forced,
   //  only print a warning if forced
   {  // killough 3/16/98: check lump name checksum (independent of order)
-    uint_64_t checksum = 0;
+    uint_64_t checksum;
 
-    checksum = G_Signature();
+    P_LOAD_X(checksum);
 
-    if (memcmp(&checksum, save_p, sizeof checksum))
+    if (checksum != G_Signature())
     {
       if (!forced_loadgame)
       {
-        char *msg = Z_Malloc(strlen((char*)save_p + sizeof checksum) + 128);
+        char *msg = Z_Malloc(strlen((char *) save_p) + 128);
         strcpy(msg,"Incompatible Savegame!!!\n");
-        if (save_p[sizeof checksum])
-          strcat(strcat(msg,"Wads expected:\n\n"), (char*)save_p + sizeof checksum);
+        if (*save_p)
+          strcat(strcat(msg, "Wads expected:\n\n"), (char *) save_p);
         strcat(msg, "\nAre you sure?");
         G_LoadGameErr(msg);
         Z_Free(msg);
@@ -2266,31 +2237,22 @@ void G_DoLoadGame(void)
       else
         lprintf(LO_WARN, "G_DoLoadGame: Incompatible savegame\n");
     }
-    save_p += sizeof checksum;
   }
 
-  save_p += strlen((char*)save_p)+1;
+  save_p += strlen((char*) save_p) + 1;
 
-  //e6y: check on new savegame format
-  if (!memcmp(NEWFORMATSIG, save_p, strlen(NEWFORMATSIG)))
-  {
-    save_p += strlen(NEWFORMATSIG);
-    memcpy(&packageversion, save_p, sizeof packageversion);
-    save_p += sizeof packageversion;
-  }
+  P_LOAD_BYTE(compatibility_level);
+  P_LOAD_BYTE(gameskill);
 
-  compatibility_level = *save_p++;
-  gameskill = *save_p++;
-
-  epi = *save_p++;
-  map = *save_p++;
+  P_LOAD_BYTE(epi);
+  P_LOAD_BYTE(map);
   dsda_UpdateGameMap(epi, map);
 
   for (i = 0; i < g_maxplayers; i++)
-    playeringame[i] = *save_p++;
+    P_LOAD_BYTE(playeringame[i]);
   save_p += FUTURE_MAXPLAYERS - g_maxplayers;         // killough 2/28/98
 
-  idmusnum = *save_p++;           // jff 3/17/98 restore idmus music
+  P_LOAD_BYTE(idmusnum);           // jff 3/17/98 restore idmus music
   if (idmusnum==255) idmusnum=-1; // jff 3/18/98 account for unsigned byte
 
   /* killough 3/1/98: Read game options
@@ -2303,17 +2265,12 @@ void G_DoLoadGame(void)
   // load a base level
   G_InitNew (gameskill, gameepisode, gamemap, false);
 
-  /* get the times - killough 11/98: save entire word */
-  memcpy(&leveltime, save_p, sizeof leveltime);
-  save_p += sizeof leveltime;
-
-  /* cph - total episode time */
-  //e6y: total level times are always saved since 2.4.8.1
-  memcpy(&totalleveltimes, save_p, sizeof totalleveltimes);
-  save_p += sizeof totalleveltimes;
+  P_LOAD_X(leveltime);
+  P_LOAD_X(totalleveltimes);
 
   // killough 11/98: load revenant tracer state
-  basetic = gametic - *save_p++;
+  P_LOAD_BYTE(basetic_offset);
+  basetic = gametic - basetic_offset;
 
   // dearchive all the modifications
   dsda_UnArchiveAll();
@@ -2340,8 +2297,7 @@ void G_DoLoadGame(void)
     savegameslot + 1, maplump, W_GetLumpInfoByNum(W_GetNumForName(maplump))->wadfile->name, gameskill + 1,
     time/3600, (time%3600)/60, time%60, ttime/3600, (ttime%3600)/60, ttime%60);
 
-  // done
-  Z_Free (savebuffer);
+  P_FreeSaveBuffer();
 
   if (hexen)
   {
@@ -2390,37 +2346,13 @@ void G_SaveGame(int slot, const char *description)
   }
 }
 
-// Check for overrun and realloc if necessary -- Lee Killough 1/22/98
-void (CheckSaveGame)(size_t size, const char* file, int line)
-{
-  size_t pos = save_p - savebuffer;
-
-#ifdef RANGECHECK
-  /* cph 2006/08/07 - after-the-fact sanity checking of CheckSaveGame calls */
-  static size_t prev_check;
-  static const char* prevf;
-  static int prevl;
-
-  if (pos > prev_check)
-    I_Error("CheckSaveGame at %s:%d called for insufficient buffer (%u < %u)", prevf, prevl, prev_check, pos);
-  prev_check = size + pos;
-  prevf = file;
-  prevl = line;
-#endif
-
-  size += 1024;  // breathing room
-  if (pos+size > savegamesize)
-    save_p = (savebuffer = Z_Realloc(savebuffer,
-           savegamesize += (size+1023) & ~1023)) + pos;
-}
-
 static void G_DoSaveGame(dboolean via_cmd)
 {
   char *name;
   char *description;
+  int saveversion;
+  uint_64_t checksum;
   int  i;
-  //e6y: numeric version number of package
-  unsigned int packageversion = GetPackageVersion();
   const char *maplump;
   int time, ttime;
 
@@ -2432,78 +2364,58 @@ static void G_DoSaveGame(dboolean via_cmd)
   name = dsda_SaveGameName(savegameslot, via_cmd);
 
   description = savedescription;
+  saveversion = SAVEVERSION;
 
-  save_p = savebuffer = Z_Malloc(savegamesize);
+  P_InitSaveBuffer();
 
-  CheckSaveGame(SAVESTRINGSIZE+VERSIONSIZE+sizeof(uint_64_t));
-  memcpy (save_p, description, SAVESTRINGSIZE);
-  save_p += SAVESTRINGSIZE;
+  P_SAVE_SIZE(description, SAVESTRINGSIZE);
+  P_SAVE_X(saveversion);
 
-  memset(save_p, 0, VERSIONSIZE);
-  strncpy(save_p, SAVEVERSION, VERSIONSIZE);
-  save_p += VERSIONSIZE;
-
-  { /* killough 3/16/98, 12/98: store lump name checksum */
-    uint_64_t checksum = G_Signature();
-    memcpy(save_p, &checksum, sizeof checksum);
-    save_p += sizeof checksum;
-  }
+  /* killough 3/16/98, 12/98: store lump name checksum */
+  checksum = G_Signature();
+  P_SAVE_X(checksum);
 
   // killough 3/16/98: store pwad filenames in savegame
   {
     // CPhipps - changed for new wadfiles handling
     size_t i;
     for (i = 0; i<numwadfiles; i++)
-      {
-        const char *const w = wadfiles[i].name;
-        CheckSaveGame(strlen(w)+2);
-        strcpy((char*)save_p, w);
-        save_p += strlen((char*)save_p);
-        *save_p++ = '\n';
-      }
-    *save_p++ = 0;
+    {
+      const char *const w = wadfiles[i].name;
+      size_t size = strlen(w);
+
+      P_SAVE_SIZE(w, size);
+      P_SAVE_BYTE('\n');
+    }
+    P_SAVE_BYTE(0);
   }
 
-  CheckSaveGame(dsda_GameOptionSize()+FUTURE_MAXPLAYERS+14+strlen(NEWFORMATSIG)+sizeof packageversion);
+  P_SAVE_BYTE(compatibility_level);
 
-  //e6y: saving of the version number of package
-  strcpy((char*)save_p, NEWFORMATSIG);
-  save_p += strlen(NEWFORMATSIG);
-  memcpy(save_p, &packageversion, sizeof packageversion);
-  save_p += sizeof packageversion;
-
-  *save_p++ = compatibility_level;
-
-  *save_p++ = gameskill;
-  *save_p++ = gameepisode;
-  *save_p++ = gamemap;
+  P_SAVE_BYTE(gameskill);
+  P_SAVE_BYTE(gameepisode);
+  P_SAVE_BYTE(gamemap);
 
   for (i = 0; i < g_maxplayers; i++)
-    *save_p++ = playeringame[i];
+    P_SAVE_BYTE(playeringame[i]);
 
   for (;i<FUTURE_MAXPLAYERS;i++)         // killough 2/28/98
-    *save_p++ = 0;
+    P_SAVE_BYTE(0);
 
-  *save_p++ = idmusnum;               // jff 3/17/98 save idmus state
+  P_SAVE_BYTE(idmusnum);               // jff 3/17/98 save idmus state
 
+  CheckSaveGame(dsda_GameOptionSize());
   save_p = G_WriteOptions(save_p);    // killough 3/1/98: save game options
 
-  /* cph - FIXME - endianness? */
-  /* killough 11/98: save entire word */
-  memcpy(save_p, &leveltime, sizeof leveltime);
-  save_p += sizeof leveltime;
-
-  /* cph - total episode time */
-  //e6y: always saved since 2.4.8
-  memcpy(save_p, &totalleveltimes, sizeof totalleveltimes);
-  save_p += sizeof totalleveltimes;
+  P_SAVE_X(leveltime);
+  P_SAVE_X(totalleveltimes);
 
   // killough 11/98: save revenant tracer state
-  *save_p++ = logictic & 255;
+  P_SAVE_BYTE(logictic & 255);
 
   dsda_ArchiveAll();
 
-  *save_p++ = 0xe6;   // consistency marker
+  P_SAVE_BYTE(0xe6);   // consistency marker
 
   doom_printf( "%s", M_WriteFile(name, savebuffer, save_p - savebuffer)
          ? s_GGSAVED /* Ty - externalised */
@@ -2518,8 +2430,7 @@ static void G_DoSaveGame(dboolean via_cmd)
     savegameslot + 1, maplump, W_GetLumpInfoByNum(W_GetNumForName(maplump))->wadfile->name, gameskill + 1,
     time/3600, (time%3600)/60, time%60, ttime/3600, (ttime%3600)/60, ttime%60);
 
-  Z_Free(savebuffer);  // killough
-  savebuffer = save_p = NULL;
+  P_FreeSaveBuffer();
 
   savedescription[0] = 0;
   Z_Free(name);
