@@ -993,8 +993,12 @@ void P_TrueUnArchiveThinkers(void) {
     sp = save_p;
     mobj_count = 0;
 
-    while ((P_LOAD_BYTE(tc)) != tc_true_end)
+    while (true)
     {
+      P_LOAD_BYTE(tc);
+      if (tc == tc_true_end)
+        break;
+
       if (tc == tc_true_mobj) mobj_count++;
       save_p +=
         tc == tc_true_ceiling        ? sizeof(ceiling_t)       :
@@ -1034,7 +1038,12 @@ void P_TrueUnArchiveThinkers(void) {
 
   // read in saved thinkers
   mobj_count = 0;
-  while ((P_LOAD_BYTE(tc)) != tc_true_end)
+  while (true)
+  {
+    P_LOAD_BYTE(tc);
+    if (tc == tc_true_end)
+      break;
+
     switch (tc) {
       case tc_true_ceiling:
         {
@@ -1339,6 +1348,7 @@ void P_TrueUnArchiveThinkers(void) {
       default:
         I_Error("P_TrueUnarchiveSpecials: Unknown tc %i in extraction", tc);
     }
+  }
 
   // killough 2/14/98: adjust target and tracer fields, plus
   // lastenemy field, to correctly point to mobj thinkers.
