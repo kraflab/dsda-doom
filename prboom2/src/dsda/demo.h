@@ -22,6 +22,8 @@
 
 const char* dsda_DemoNameBase(void);
 void dsda_SetDemoBaseName(const char* name);
+dboolean dsda_StartDemoSegment(const char* demo_name);
+const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p);
 void dsda_ExportDemo(const char* name);
 void dsda_MarkCompatibilityLevelUnspecified(void);
 int dsda_BytesPerTic(void);

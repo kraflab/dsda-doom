@@ -49,8 +49,22 @@ static int largest_real_offset;
 static int demo_tics;
 static int compatibility_level_unspecified;
 
-#define DSDA_DEMO_VERSION 1
+#define DSDA_DEMO_VERSION 2
+#define DSDA_DEMO_HEADER_START_SIZE 8 // version + signature (6) + dsda version
+
+const int dsda_demo_header_data_size[DSDA_DEMO_VERSION + 1] = { 0, 8, 9 };
+
+typedef struct {
+  int end_marker_location;
+  int demo_tics;
+  byte flags;
+} dsda_demo_header_data_t;
+
+static dsda_demo_header_data_t dsda_demo_header_data;
+
 #define DEMOMARKER 0x80
+
+#define DF_FROM_KEYFRAME 0x01
 
 static dboolean join_queued;
 static int dsda_demo_version;
@@ -168,7 +182,8 @@ void dsda_RestoreCommandHistory(void) {
 
   ticcmd_t cmd = { 0 };
 
-  if (demorecording && logictic && dsda_command_history_size) {
+  // the dsda format has variable bytes_per_tic - ignoring these for now
+  if (demorecording && logictic && dsda_command_history_size && !dsda_demo_version) {
     const byte* p;
     int count;
 
@@ -280,6 +295,59 @@ static void dsda_WriteExtraDemoHeaderData(int end_marker_location) {
   header_p = dsda_demo_write_buffer + dsda_extra_demo_header_data_offset;
   dsda_WriteIntToHeader(&header_p, end_marker_location);
   dsda_WriteIntToHeader(&header_p, demo_tics);
+}
+
+static void dsda_SetExtraDemoHeaderFlag(byte flag) {
+  byte* header_p;
+
+  header_p = dsda_demo_write_buffer + dsda_extra_demo_header_data_offset;
+  header_p += 8; // skip other fields
+  *header_p |= flag;
+}
+
+dboolean dsda_StartDemoSegment(const char* demo_name) {
+  if (demorecording)
+    return false;
+
+  dsda_UpdateFlag(dsda_arg_dsdademo, true);
+  dsda_SetDemoBaseName(demo_name);
+  dsda_InitDemoRecording();
+  G_BeginRecording();
+  dsda_SetExtraDemoHeaderFlag(DF_FROM_KEYFRAME);
+
+  {
+    dsda_key_frame_t key_frame;
+
+    memset(&key_frame, 0, sizeof(key_frame));
+    dsda_StoreKeyFrame(&key_frame, false, false);
+    dsda_WriteToDemo(&key_frame.buffer_length, sizeof(key_frame.buffer_length));
+    dsda_WriteToDemo(key_frame.buffer, key_frame.buffer_length);
+    Z_Free(key_frame.buffer);
+  }
+
+  return true;
+}
+
+const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p) {
+  if (dsda_demo_version && dsda_demo_header_data.flags & DF_FROM_KEYFRAME) {
+    dsda_key_frame_t key_frame;
+
+    memset(&key_frame, 0, sizeof(key_frame));
+
+    memcpy(&key_frame.buffer_length, demo_p, sizeof(key_frame.buffer_length));
+    demo_p += sizeof(key_frame.buffer_length);
+
+    // Is it worth creating a redundant read-only version?
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
+    key_frame.buffer = demo_p;
+    #pragma GCC diagnostic pop
+
+    dsda_RestoreKeyFrame(&key_frame, false);
+    demo_p += key_frame.buffer_length;
+  }
+
+  return demo_p;
 }
 
 static int dsda_ExportDemoToFile(const char* demo_name) {
@@ -457,9 +525,6 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd) {
     dsda_QueueJoin();
 }
 
-#define DSDA_DEMO_HEADER_START_SIZE 8 // version + signature (6) + dsda version
-#define DSDA_DEMO_HEADER_DATA_SIZE (2*sizeof(int))
-
 static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* header_p, size_t size) {
   dsda_demo_version = 0;
 
@@ -483,10 +548,19 @@ static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* heade
   if (dsda_demo_version > DSDA_DEMO_VERSION)
     return NULL;
 
-  if (demo_p - header_p + DSDA_DEMO_HEADER_DATA_SIZE > size)
+  if (demo_p - header_p + dsda_demo_header_data_size[dsda_demo_version] > size)
     return NULL;
 
-  demo_p += DSDA_DEMO_HEADER_DATA_SIZE;
+  dsda_demo_header_data.end_marker_location = dsda_ReadIntFromHeader(demo_p);
+  demo_p += 4;
+
+  dsda_demo_header_data.demo_tics = dsda_ReadIntFromHeader(demo_p);
+  demo_p += 4;
+
+  if (dsda_demo_version >= 2)
+    dsda_demo_header_data.flags = *demo_p++;
+  else
+    dsda_demo_header_data.flags = 0;
 
   dsda_EnableExCmd();
   dsda_EnableCasualExCmdFeatures();
@@ -564,8 +638,8 @@ void dsda_WriteDSDADemoHeader(byte** p) {
 
   dsda_demo_version = DSDA_DEMO_VERSION;
   dsda_extra_demo_header_data_offset = demo_p - *p;
-  memset(demo_p, 0, DSDA_DEMO_HEADER_DATA_SIZE);
-  demo_p += DSDA_DEMO_HEADER_DATA_SIZE;
+  memset(demo_p, 0, dsda_demo_header_data_size[dsda_demo_version]);
+  demo_p += dsda_demo_header_data_size[dsda_demo_version];
 
   *p = demo_p;
 }
@@ -602,7 +676,7 @@ int dsda_DemoTicsCount(const byte* p, const byte* demobuffer, int demolength) {
   extern int demo_playerscount;
 
   if (dsda_demo_version)
-    return dsda_ReadIntFromHeader(demobuffer + DSDA_DEMO_HEADER_START_SIZE + 4);
+    return dsda_demo_header_data.demo_tics;
 
   do {
     count++;
@@ -621,7 +695,7 @@ const byte* dsda_DemoMarkerPosition(byte* buffer, size_t file_size) {
   if (dsda_demo_version) {
     int i;
 
-    p = (const byte*) (buffer + dsda_ReadIntFromHeader(buffer + DSDA_DEMO_HEADER_START_SIZE));
+    p = (const byte*) (buffer + dsda_demo_header_data.end_marker_location);
 
     if (*p != DEMOMARKER)
       return NULL;

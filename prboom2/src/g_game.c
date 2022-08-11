@@ -3671,6 +3671,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   if (!(params & RDH_SKIP_HEADER))
   {
     G_InitNew(skill, episode, map, true);
+    demo_p = dsda_EvaluateDemoStartPoint(demo_p);
   }
 
   for (i = 0; i < g_maxplayers; i++)         // killough 4/24/98

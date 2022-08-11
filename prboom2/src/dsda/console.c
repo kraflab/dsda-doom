@@ -460,6 +460,15 @@ static dboolean console_DemoExport(const char* command, const char* args) {
   return false;
 }
 
+static dboolean console_DemoStart(const char* command, const char* args) {
+  char name[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%s", name) == 1)
+    return dsda_StartDemoSegment(name);
+
+  return false;
+}
+
 static dboolean console_TrackerAddLine(const char* command, const char* args) {
   int id;
 
@@ -866,6 +875,7 @@ static console_command_entry_t console_commands[] = {
 
   // demos
   { "demo.export", console_DemoExport, CF_ALWAYS },
+  { "demo.start", console_DemoStart, CF_NEVER },
 
   // cheats
   { "idchoppers", console_BasicCheat, CF_DEMO },
