@@ -28,7 +28,6 @@ typedef struct {
 } dsda_fixed_t;
 
 typedef struct {
-  dboolean negative;
   int base;
   int frac;
 } dsda_angle_t;

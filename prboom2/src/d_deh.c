@@ -2282,12 +2282,6 @@ static void deh_procPointer(DEHFILE *fpin, char *line) // done
       continue;
     }
 
-    if (value < 0)
-    {
-      deh_log("Pointer number must be positive (%d)\n", value);
-      return;
-    }
-
     ptr_state = dsda_GetDehState(value);
 
     if (!deh_strcasecmp(key, deh_state_fields[4]))  // Codep frame (not set in Frame deh block)

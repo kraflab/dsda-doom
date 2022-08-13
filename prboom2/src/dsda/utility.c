@@ -88,15 +88,8 @@ void dsda_FixedToString(char* str, fixed_t x) {
 dsda_angle_t dsda_SplitAngle(angle_t x) {
   dsda_angle_t result;
 
-  result.negative = x < 0;
   result.base = x >> 24;
   result.frac = (x >> 16) & 0xff;
-
-  if (result.negative)
-    if (result.frac) {
-      ++result.base;
-      result.frac = 0xff - result.frac + 1;
-    }
 
   return result;
 }

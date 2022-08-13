@@ -90,12 +90,8 @@ static void dsda_WriteAngle(dsda_text_t* text, angle_t x, const char* ch) {
 
   value = dsda_SplitAngle(x);
 
-  if (value.frac) {
-    if (value.negative && !value.base)
-      snprintf(text->msg, sizeof(text->msg), "%s: -%i.%03i", ch, value.base, value.frac);
-    else
-      snprintf(text->msg, sizeof(text->msg), "%s: %i.%03i", ch, value.base, value.frac);
-  }
+  if (value.frac)
+    snprintf(text->msg, sizeof(text->msg), "%s: %i.%03i", ch, value.base, value.frac);
   else
     snprintf(text->msg, sizeof(text->msg), "%s: %i", ch, value.base);
 
