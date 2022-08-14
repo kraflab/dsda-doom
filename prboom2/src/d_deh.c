@@ -1124,7 +1124,7 @@ struct deh_flag_s {
   uint_64_t value;
 };
 
-static uint_64_t deh_translate_bits(uint64_t value, const struct deh_flag_s *flags)
+static uint_64_t deh_translate_bits(uint_64_t value, const struct deh_flag_s *flags)
 {
   int i;
   uint_64_t result = 0;
