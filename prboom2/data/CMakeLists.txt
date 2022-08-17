@@ -425,4 +425,4 @@ add_custom_command(
     DEPENDS rdatawad ${WAD_SRC}
 )
 add_custom_target(dsda-doom-wad DEPENDS ${WAD_DATA_PATH})
-install(FILES ${WAD_DATA_PATH} DESTINATION ${DOOMWADDIR} COMPONENT "PrBoom-Plus internal WAD")
+install(FILES ${WAD_DATA_PATH} DESTINATION ${DSDAPWADDIR} COMPONENT "DSDA-Doom internal WAD")
