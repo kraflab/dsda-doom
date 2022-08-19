@@ -16,6 +16,7 @@
 //
 
 #include <time.h>
+#include <string.h>
 
 #include "i_system.h"
 
