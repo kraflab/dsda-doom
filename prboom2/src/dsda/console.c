@@ -72,7 +72,8 @@ menu_t dsda_ConsoleDef = {
   NULL,
   NULL,
   dsda_DrawConsole,
-  0, 0
+  0, 0,
+  0, MENUF_TEXTINPUT
 };
 
 static dboolean dsda_ExecuteConsole(const char* command_line);

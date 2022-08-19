@@ -202,6 +202,8 @@ typedef struct
   const char *alttext;
 } menuitem_t;
 
+#define MENUF_TEXTINPUT 0x01
+
 typedef struct menu_s
 {
   short           numitems;     // # of menu items
@@ -211,6 +213,7 @@ typedef struct menu_s
   short           x;
   short           y;            // x,y of menu
   short           lastOn;       // last item user was on in menu
+  byte            flags;
 } menu_t;
 
 #define SAVESTRINGSIZE 24
