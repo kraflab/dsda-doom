@@ -48,6 +48,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 
+#include "SDL.h"
+
 #include "doomdef.h"
 #include "doomstat.h"
 #include "dstrings.h"
@@ -157,7 +159,7 @@ dboolean inhelpscreens; // indicates we are in or just left a help screen
 
 dboolean BorderNeedRefresh;
 
-enum menuactive_e menuactive;    // The menus are up
+menuactive_t menuactive;    // The menus are up
 
 #define SKULLXOFF  -32
 #define LINEHEIGHT  16
@@ -247,6 +249,7 @@ void M_DrawTitle(int x, int y, const char *patch, int cm,
                  const char *alttext, int altcm);
 void M_StartMessage(const char *string,void *routine,dboolean input);
 void M_StopMessage(void);
+void M_ChangeMenu(menu_t *menu, menuactive_t mnact);
 void M_ClearMenus (void);
 
 // phares 3/30/98
@@ -2718,7 +2721,7 @@ void M_KeyBindings(int choice)
 
 void M_DrawKeybnd(void)
 {
-  menuactive = mnact_full;
+  M_ChangeMenu(NULL, mnact_full);
 
   // Set up the Key Binding screen
 
@@ -2825,7 +2828,7 @@ void M_Weapons(int choice)
 
 void M_DrawWeapons(void)
 {
-  menuactive = mnact_full;
+  M_ChangeMenu(NULL, mnact_full);
 
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
@@ -2946,7 +2949,7 @@ void M_StatusBar(int choice)
 
 void M_DrawStatusHUD(void)
 {
-  menuactive = mnact_full;
+  M_ChangeMenu(NULL, mnact_full);
 
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
@@ -3129,7 +3132,7 @@ static void M_DrawColPal(void)
 
 void M_DrawAutoMap(void)
 {
-  menuactive = mnact_full;
+  M_ChangeMenu(NULL, mnact_full);
 
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
@@ -3517,7 +3520,7 @@ void M_General(int choice)
 
 void M_DrawGeneral(void)
 {
-  menuactive = mnact_full;
+  M_ChangeMenu(NULL, mnact_full);
 
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
@@ -3609,7 +3612,7 @@ void M_Messages(int choice)
 
 void M_DrawMessages(void)
 {
-  menuactive = mnact_full;
+  M_ChangeMenu(NULL, mnact_full);
 
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
@@ -4170,7 +4173,7 @@ void M_DrawHelp (void)
 {
   const int helplump = W_CheckNumForName("HELP");
 
-  menuactive = mnact_full;
+  M_ChangeMenu(NULL, mnact_full);
 
   if (helplump >= 0 && lumpinfo[helplump].source != source_iwad)
   {
@@ -4467,14 +4470,19 @@ dboolean M_Responder (event_t* ev) {
     action = MENU_CLEAR;
   }
 
-  if (
-    M_ConsoleOpen() &&
-    (ch != MENU_NULL || action != MENU_NULL) &&
-    action != MENU_ESCAPE
-  )
+  if (M_ConsoleOpen() && action != MENU_ESCAPE)
   {
-    dsda_UpdateConsole(ch, action);
-    return true;
+    if (ev->type == ev_text) {
+      dsda_UpdateConsoleText(ev->text);
+      return true;
+    }
+    else if (action != MENU_NULL)
+    {
+      dsda_UpdateConsole(action);
+      return true;
+    }
+    else if (ch != MENU_NULL)
+      return true;
   }
 
   // Save Game string input
@@ -4552,12 +4560,12 @@ dboolean M_Responder (event_t* ev) {
         !(ch == ' ' || ch == 'n' || ch == 'y' || ch == KEYD_ESCAPE)) // phares
       return false;
 
-    menuactive = messageLastMenuActive;
+    M_ChangeMenu(NULL, messageLastMenuActive);
     messageToPrint = 0;
     if (messageRoutine)
       messageRoutine(ch);
 
-    menuactive = mnact_inactive;
+    M_ChangeMenu(NULL, mnact_inactive);
     S_StartSound(NULL,g_sfx_swtchx);
     return true;
   }
@@ -4578,8 +4586,7 @@ dboolean M_Responder (event_t* ev) {
     if (ch == KEYD_F1)                                         //  V
     {
       M_StartControlPanel ();
-
-      currentMenu = &HelpDef;         // killough 10/98: new help screen
+      M_ChangeMenu(&HelpDef, mnact_nochange);
 
       itemOn = 0;
       S_StartSound(NULL,g_sfx_swtchn);
@@ -4605,7 +4612,7 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_soundvolume))
     {
       M_StartControlPanel ();
-      currentMenu = &SoundDef;
+      M_ChangeMenu(&SoundDef, mnact_nochange);
       itemOn = sfx_vol;
       S_StartSound(NULL,g_sfx_swtchn);
       return true;
@@ -5456,7 +5463,7 @@ dboolean M_Responder (event_t* ev) {
       else // MENU_BACKSPACE = return to Setup Menu
         if (currentMenu->prevMenu)
         {
-          currentMenu = currentMenu->prevMenu;
+          M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
           itemOn = currentMenu->lastOn;
           S_StartSound(NULL, g_sfx_swtchn);
         }
@@ -5628,12 +5635,12 @@ dboolean M_Responder (event_t* ev) {
       {
         if (--extended_help_index == 0)
         {
-          currentMenu = currentMenu->prevMenu;
+          M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
           extended_help_index = 1; // reset
         }
       }
       else
-        currentMenu = currentMenu->prevMenu;
+        M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
       itemOn = currentMenu->lastOn;
       S_StartSound(NULL, g_sfx_swtchn);
     }
@@ -5720,8 +5727,7 @@ void M_StartControlPanel (void)
   }
 
   default_verify = 0;                  // killough 10/98
-  menuactive = mnact_float;
-  currentMenu = &MainDef;         // JDC
+  M_ChangeMenu(&MainDef, mnact_float);
   itemOn = currentMenu->lastOn;   // JDC
   print_warning_about_changes = false;   // killough 11/98
 }
@@ -5771,7 +5777,7 @@ void M_Drawer (void)
     int x,y,max,i;
     int lumps_missing = 0;
 
-    menuactive = mnact_float; // Boom-style menu drawers will set mnact_full
+    M_ChangeMenu(NULL, mnact_float);
 
     if (currentMenu->routine)
       currentMenu->routine();     // call Draw routine
@@ -5814,6 +5820,22 @@ void M_Drawer (void)
   }
 }
 
+void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
+{
+  if (menudef)
+    currentMenu = menudef;
+
+  if (mnact != mnact_nochange)
+    menuactive = mnact;
+
+  if (SDL_IsTextInputActive()) {
+    if (!(currentMenu && currentMenu->flags & MENUF_TEXTINPUT))
+      SDL_StopTextInput();
+  }
+  else if (currentMenu && currentMenu->flags & MENUF_TEXTINPUT)
+    SDL_StartTextInput();
+}
+
 //
 // M_ClearMenus
 //
@@ -5821,8 +5843,7 @@ void M_Drawer (void)
 
 void M_ClearMenus (void)
 {
-  currentMenu = &MainDef;
-  menuactive = mnact_inactive;
+  M_ChangeMenu(&MainDef, mnact_inactive);
   print_warning_about_changes = 0;     // killough 8/15/98
   default_verify = 0;                  // killough 10/98
 
@@ -5834,7 +5855,7 @@ void M_ClearMenus (void)
 //
 void M_SetupNextMenu(menu_t *menudef)
 {
-  currentMenu = menudef;
+  M_ChangeMenu(menudef, mnact_nochange);
   itemOn = currentMenu->lastOn;
 
   BorderNeedRefresh = true;
@@ -5868,13 +5889,13 @@ void M_StartMessage (const char* string,void* routine,dboolean input)
   messageString = string;
   messageRoutine = routine;
   messageNeedsInput = input;
-  menuactive = mnact_float;
+  M_ChangeMenu(NULL, mnact_float);
   return;
 }
 
 void M_StopMessage(void)
 {
-  menuactive = messageLastMenuActive;
+  M_ChangeMenu(NULL, messageLastMenuActive);
   messageToPrint = 0;
 }
 
@@ -6090,8 +6111,7 @@ void M_Init(void)
   if (raven) MN_Init();
 
   M_InitDefaults();                // killough 11/98
-  currentMenu = &MainDef;
-  menuactive = mnact_inactive;
+  M_ChangeMenu(&MainDef, mnact_inactive);
   itemOn = currentMenu->lastOn;
   whichSkull = 0;
   skullAnimCounter = 10;
