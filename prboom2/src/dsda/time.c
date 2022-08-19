@@ -194,3 +194,13 @@ void dsda_ResetTimeFunctions(int fastdemo) {
     dsda_TickElapsedTime = dsda_TickElapsedRealTime;
   }
 }
+
+void dsda_StrCatLocalTime(char* str) {
+  time_t now;
+  struct tm* local;
+
+  now = time(NULL);
+  local = localtime(&now);
+
+  strftime(str + strlen(str), 9, "%H:%M:%S", local);
+}

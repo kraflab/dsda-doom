@@ -35,5 +35,6 @@ unsigned long long dsda_ElapsedTimeMS(int timer);
 void dsda_LimitFPS(void);
 int dsda_GetTickRealTime(void);
 void dsda_ResetTimeFunctions(int fastdemo);
+void dsda_StrCatLocalTime(char* str);
 
 #endif
