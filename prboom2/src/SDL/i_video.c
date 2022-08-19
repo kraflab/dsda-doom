@@ -396,6 +396,12 @@ while (SDL_PollEvent(Event))
   }
   break;
 
+  case SDL_TEXTINPUT:
+    event.type = ev_text;
+    event.text = Event->text.text;
+    D_PostEvent(&event);
+    break;
+
   case SDL_WINDOWEVENT:
     if (Event->window.windowID == windowid)
     {

@@ -1006,7 +1006,22 @@ static dboolean dsda_ExecuteConsole(const char* command_line) {
   return ret;
 }
 
-void dsda_UpdateConsole(int ch, int action) {
+void dsda_UpdateConsoleText(char* text) {
+  int i;
+  int length;
+
+  length = strlen(text);
+
+  for (i = 0; i < length; ++i) {
+    console_entry[console_entry_index] = tolower(text[i]);
+    if (console_entry_index < CONSOLE_ENTRY_SIZE)
+      ++console_entry_index;
+  }
+
+  dsda_UpdateConsoleDisplay();
+}
+
+void dsda_UpdateConsole(int action) {
   if (action == MENU_BACKSPACE && console_entry_index > 0) {
     --console_entry_index;
     console_entry[console_entry_index] = '\0';
@@ -1031,20 +1046,6 @@ void dsda_UpdateConsole(int ch, int action) {
     strcpy(console_entry, last_console_entry);
     console_entry_index = strlen(console_entry);
     dsda_UpdateConsoleDisplay();
-  }
-  else if (ch > 0) {
-    ch = tolower(ch);
-    if (
-      (ch >= 'a' && ch <= 'z') ||
-      (ch >= '0' && ch <= '9') ||
-      (ch == ' ' || ch == '.' || ch == '-' || ch == ';' || ch == ',')
-    ) {
-      console_entry[console_entry_index] = ch;
-      if (console_entry_index < CONSOLE_ENTRY_SIZE)
-        ++console_entry_index;
-
-      dsda_UpdateConsoleDisplay();
-    }
   }
 }
 

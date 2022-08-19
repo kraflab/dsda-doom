@@ -48,6 +48,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 
+#include "SDL.h"
+
 #include "doomdef.h"
 #include "doomstat.h"
 #include "dstrings.h"
@@ -4468,14 +4470,19 @@ dboolean M_Responder (event_t* ev) {
     action = MENU_CLEAR;
   }
 
-  if (
-    M_ConsoleOpen() &&
-    (ch != MENU_NULL || action != MENU_NULL) &&
-    action != MENU_ESCAPE
-  )
+  if (M_ConsoleOpen() && action != MENU_ESCAPE)
   {
-    dsda_UpdateConsole(ch, action);
-    return true;
+    if (ev->type == ev_text) {
+      dsda_UpdateConsoleText(ev->text);
+      return true;
+    }
+    else if (action != MENU_NULL)
+    {
+      dsda_UpdateConsole(action);
+      return true;
+    }
+    else if (ch != MENU_NULL)
+      return true;
   }
 
   // Save Game string input
@@ -5820,6 +5827,13 @@ void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
 
   if (mnact != mnact_nochange)
     menuactive = mnact;
+
+  if (SDL_IsTextInputActive()) {
+    if (!(currentMenu && currentMenu->flags & MENUF_TEXTINPUT))
+      SDL_StopTextInput();
+  }
+  else if (currentMenu && currentMenu->flags & MENUF_TEXTINPUT)
+    SDL_StartTextInput();
 }
 
 //
