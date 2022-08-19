@@ -204,6 +204,7 @@ enum automapmode_e {
 extern enum automapmode_e automapmode; // Mode that the automap is in
 
 enum menuactive_e {
+  mnact_nochange = -1,
   mnact_inactive, // no menu
   mnact_float, // doom-style large font menu, doesn't overlap anything
   mnact_full, // boom-style small font menu, may overlap status bar
