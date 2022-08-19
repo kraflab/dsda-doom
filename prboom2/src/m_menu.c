@@ -157,7 +157,7 @@ dboolean inhelpscreens; // indicates we are in or just left a help screen
 
 dboolean BorderNeedRefresh;
 
-enum menuactive_e menuactive;    // The menus are up
+menuactive_t menuactive;    // The menus are up
 
 #define SKULLXOFF  -32
 #define LINEHEIGHT  16
@@ -247,7 +247,7 @@ void M_DrawTitle(int x, int y, const char *patch, int cm,
                  const char *alttext, int altcm);
 void M_StartMessage(const char *string,void *routine,dboolean input);
 void M_StopMessage(void);
-void M_ChangeMenu(menu_t *menu, enum menuactive_e mnact);
+void M_ChangeMenu(menu_t *menu, menuactive_t mnact);
 void M_ClearMenus (void);
 
 // phares 3/30/98
@@ -5813,7 +5813,7 @@ void M_Drawer (void)
   }
 }
 
-void M_ChangeMenu(menu_t *menudef, enum menuactive_e mnact)
+void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
 {
   if (menudef)
     currentMenu = menudef;
