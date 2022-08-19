@@ -632,7 +632,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
   dsda_ResetBruteForceConditions();
 
   arg_count = sscanf(
-    args, "%i %i,%i %i,%i %i,%i %[^;]", &depth,
+    args, "%i %i:%i %i:%i %i:%i %[^;]", &depth,
     &forwardmove_min, &forwardmove_max,
     &sidemove_min, &sidemove_max,
     &angleturn_min, &angleturn_max,
@@ -653,7 +653,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       dsda_bf_operator_t operator;
       fixed_t value;
       char attr_s[4] = { 0 };
-      char oper_s[5] = { 0 };
+      char oper_s[3] = { 0 };
 
       if (sscanf(conditions[i], "skip %i", &value) == 1) {
         if (value >= numlines || value < 0)
@@ -667,7 +667,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
         dsda_AddMiscBruteForceCondition(dsda_bf_line_activation, value);
       }
-      else if (sscanf(conditions[i], "%3s %4s %i", attr_s, oper_s, &value) == 3) {
+      else if (sscanf(conditions[i], "%3s %2s %i", attr_s, oper_s, &value) == 3) {
         int attr_i, oper_i;
 
         for (attr_i = 0; attr_i < dsda_bf_attribute_max; ++attr_i)
@@ -816,54 +816,54 @@ typedef struct {
 
 static console_command_entry_t console_commands[] = {
   // commands
-  { "player.sethealth", console_PlayerSetHealth, CF_NEVER },
-  { "player.setarmor", console_PlayerSetArmor, CF_NEVER },
-  { "player.giveweapon", console_PlayerGiveWeapon, CF_NEVER },
-  { "player.giveammo", console_PlayerGiveAmmo, CF_NEVER },
-  { "player.setammo", console_PlayerSetAmmo, CF_NEVER },
-  { "player.givekey", console_PlayerGiveKey, CF_NEVER },
-  { "player.removekey", console_PlayerRemoveKey, CF_NEVER },
-  { "player.givepower", console_PlayerGivePower, CF_NEVER },
-  { "player.removepower", console_PlayerRemovePower, CF_NEVER },
-  { "player.setx", console_PlayerSetX, CF_NEVER },
-  { "player.sety", console_PlayerSetY, CF_NEVER },
-  { "player.setz", console_PlayerSetZ, CF_NEVER },
-  { "player.roundx", console_PlayerRoundX, CF_NEVER },
-  { "player.roundy", console_PlayerRoundY, CF_NEVER },
-  { "player.roundxy", console_PlayerRoundXY, CF_NEVER },
+  { "player.set_health", console_PlayerSetHealth, CF_NEVER },
+  { "player.set_armor", console_PlayerSetArmor, CF_NEVER },
+  { "player.give_weapon", console_PlayerGiveWeapon, CF_NEVER },
+  { "player.give_ammo", console_PlayerGiveAmmo, CF_NEVER },
+  { "player.set_ammo", console_PlayerSetAmmo, CF_NEVER },
+  { "player.give_key", console_PlayerGiveKey, CF_NEVER },
+  { "player.remove_key", console_PlayerRemoveKey, CF_NEVER },
+  { "player.give_power", console_PlayerGivePower, CF_NEVER },
+  { "player.remove_power", console_PlayerRemovePower, CF_NEVER },
+  { "player.set_x", console_PlayerSetX, CF_NEVER },
+  { "player.set_y", console_PlayerSetY, CF_NEVER },
+  { "player.set_z", console_PlayerSetZ, CF_NEVER },
+  { "player.round_x", console_PlayerRoundX, CF_NEVER },
+  { "player.round_y", console_PlayerRoundY, CF_NEVER },
+  { "player.round_xy", console_PlayerRoundXY, CF_NEVER },
 
   { "script.run", console_ScriptRun, CF_ALWAYS },
 
   // tracking
-  { "tracker.addline", console_TrackerAddLine, CF_DEMO },
+  { "tracker.add_line", console_TrackerAddLine, CF_DEMO },
   { "t.al", console_TrackerAddLine, CF_DEMO },
-  { "tracker.removeline", console_TrackerRemoveLine, CF_DEMO },
+  { "tracker.remove_line", console_TrackerRemoveLine, CF_DEMO },
   { "t.rl", console_TrackerRemoveLine, CF_DEMO },
-  { "tracker.addlinedistance", console_TrackerAddLineDistance, CF_DEMO },
+  { "tracker.add_line_distance", console_TrackerAddLineDistance, CF_DEMO },
   { "t.ald", console_TrackerAddLineDistance, CF_DEMO },
-  { "tracker.removelinedistance", console_TrackerRemoveLineDistance, CF_DEMO },
+  { "tracker.remove_line_distance", console_TrackerRemoveLineDistance, CF_DEMO },
   { "t.rld", console_TrackerRemoveLineDistance, CF_DEMO },
-  { "tracker.addsector", console_TrackerAddSector, CF_DEMO },
+  { "tracker.add_sector", console_TrackerAddSector, CF_DEMO },
   { "t.as", console_TrackerAddSector, CF_DEMO },
-  { "tracker.removesector", console_TrackerRemoveSector, CF_DEMO },
+  { "tracker.remove_sector", console_TrackerRemoveSector, CF_DEMO },
   { "t.rs", console_TrackerRemoveSector, CF_DEMO },
-  { "tracker.addmobj", console_TrackerAddMobj, CF_DEMO },
+  { "tracker.add_mobj", console_TrackerAddMobj, CF_DEMO },
   { "t.am", console_TrackerAddMobj, CF_DEMO },
-  { "tracker.removemobj", console_TrackerRemoveMobj, CF_DEMO },
+  { "tracker.remove_mobj", console_TrackerRemoveMobj, CF_DEMO },
   { "t.rm", console_TrackerRemoveMobj, CF_DEMO },
-  { "tracker.addplayer", console_TrackerAddPlayer, CF_DEMO },
+  { "tracker.add_player", console_TrackerAddPlayer, CF_DEMO },
   { "t.ap", console_TrackerAddPlayer, CF_DEMO },
-  { "tracker.removeplayer", console_TrackerRemovePlayer, CF_DEMO },
+  { "tracker.remove_player", console_TrackerRemovePlayer, CF_DEMO },
   { "t.rp", console_TrackerRemovePlayer, CF_DEMO },
   { "tracker.reset", console_TrackerReset, CF_DEMO },
   { "t.r", console_TrackerReset, CF_DEMO },
 
   // traversing time
-  { "jump.totic", console_JumpToTic, CF_DEMO },
-  { "jump.bytic", console_JumpByTic, CF_DEMO },
+  { "jump.to_tic", console_JumpToTic, CF_DEMO },
+  { "jump.by_tic", console_JumpByTic, CF_DEMO },
 
   // build mode
-  { "bruteforce.start", console_BruteForceStart, CF_DEMO },
+  { "brute_force.start", console_BruteForceStart, CF_DEMO },
   { "bf.start", console_BruteForceStart, CF_DEMO },
   { "build.turbo", console_BuildTurbo, CF_DEMO },
   { "b.turbo", console_BuildTurbo, CF_DEMO },

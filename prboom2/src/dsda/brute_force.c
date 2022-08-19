@@ -94,12 +94,12 @@ const char* dsda_bf_misc_names[dsda_bf_misc_max] = {
 };
 
 const char* dsda_bf_operator_names[dsda_bf_operator_max] = {
-  [dsda_bf_less_than] = "lt",
-  [dsda_bf_less_than_or_equal_to] = "lteq",
-  [dsda_bf_greater_than] = "gt",
-  [dsda_bf_greater_than_or_equal_to] = "gteq",
-  [dsda_bf_equal_to] = "eq",
-  [dsda_bf_not_equal_to] = "neq"
+  [dsda_bf_less_than] = "<",
+  [dsda_bf_less_than_or_equal_to] = "<=",
+  [dsda_bf_greater_than] = ">",
+  [dsda_bf_greater_than_or_equal_to] = ">=",
+  [dsda_bf_equal_to] = "==",
+  [dsda_bf_not_equal_to] = "!="
 };
 
 const char* dsda_bf_limit_names[dsda_bf_limit_max] = {
