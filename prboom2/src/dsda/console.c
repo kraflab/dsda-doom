@@ -1013,6 +1013,9 @@ void dsda_UpdateConsoleText(char* text) {
   length = strlen(text);
 
   for (i = 0; i < length; ++i) {
+    if (text[i] < 32 || text[i] > 126)
+      continue;
+
     console_entry[console_entry_index] = tolower(text[i]);
     if (console_entry_index < CONSOLE_ENTRY_SIZE)
       ++console_entry_index;
