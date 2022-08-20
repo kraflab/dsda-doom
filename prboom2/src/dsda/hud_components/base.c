@@ -32,7 +32,7 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
     y = 200;
     y_offset = -y_offset;
 
-    if (viewheight != SCREENHEIGHT)
+    // if (viewheight != SCREENHEIGHT)
       y -= g_st_height;
   }
 
