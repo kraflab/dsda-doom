@@ -64,6 +64,8 @@ set(COMMON_SRC
     dsda/hud_components/sector_tracker.h
     dsda/hud_components/stat_totals.c
     dsda/hud_components/stat_totals.h
+    dsda/hud_components/tracker.c
+    dsda/hud_components/tracker.h
     dsda/input.c
     dsda/input.h
     dsda/intermission_display.c

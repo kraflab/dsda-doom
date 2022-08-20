@@ -12,9 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA HUD Components
+//	DSDA Tracker HUD Component
 //
 
-#include "hud_components/composite_time.h"
-#include "hud_components/stat_totals.h"
-#include "hud_components/tracker.h"
+#ifndef __DSDA_HUD_COMPONENT_TRACKER__
+#define __DSDA_HUD_COMPONENT_TRACKER__
+
+void dsda_InitTrackerHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateTrackerHC(void);
+void dsda_DrawTrackerHC(void);
+void dsda_EraseTrackerHC(void);
+
+#endif

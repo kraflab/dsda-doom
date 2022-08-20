@@ -33,24 +33,7 @@
 #include "exhud.h"
 
 #define DSDA_EXHUD_X 2
-#define TRACKER_LIMIT 16
 
-typedef enum {
-  dsda_tracker_nothing,
-  dsda_tracker_line,
-  dsda_tracker_line_distance,
-  dsda_tracker_sector,
-  dsda_tracker_mobj,
-  dsda_tracker_player,
-} dsda_tracker_type_t;
-
-typedef struct {
-  dsda_tracker_type_t type;
-  int id;
-  mobj_t* mobj;
-} dsda_tracker_t;
-
-dsda_text_t dsda_exhud_tracker[TRACKER_LIMIT];
 dsda_tracker_t dsda_tracker[TRACKER_LIMIT];
 
 static int tracker_map;
@@ -67,54 +50,9 @@ void dsda_InitExHud(patchnum_t* font) {
   exhud_color_warning = g_cr_green;
   exhud_color_alert = g_cr_red;
 
-  for (i = 0; i < TRACKER_LIMIT; ++i)
-    HUlib_initTextLine(
-      &dsda_exhud_tracker[i].text,
-      DSDA_EXHUD_X,
-      200 - g_st_height - 32 - i * 8,
-      font,
-      HU_FONTSTART,
-      g_cr_gray,
-      VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT
-    );
-
+  dsda_InitTrackerHC(DSDA_EXHUD_X, 32, VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT);
   dsda_InitCompositeTimeHC(DSDA_EXHUD_X, 16, VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT);
   dsda_InitStatTotalsHC(DSDA_EXHUD_X, 8, VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT);
-}
-
-extern int totalleveltimes;
-
-static void dsda_UpdateTrackers(void) {
-  int i;
-
-  for (i = 0; i < TRACKER_LIMIT; ++i) {
-    switch (dsda_tracker[i].type) {
-      case dsda_tracker_nothing:
-        dsda_NullHC(dsda_exhud_tracker[i].msg, sizeof(dsda_exhud_tracker[i].msg));
-        break;
-      case dsda_tracker_line:
-        dsda_LineTrackerHC(dsda_exhud_tracker[i].msg,
-                           sizeof(dsda_exhud_tracker[i].msg), dsda_tracker[i].id);
-        break;
-      case dsda_tracker_line_distance:
-        dsda_LineDistanceTrackerHC(dsda_exhud_tracker[i].msg,
-                                   sizeof(dsda_exhud_tracker[i].msg), dsda_tracker[i].id);
-        break;
-      case dsda_tracker_sector:
-        dsda_SectorTrackerHC(dsda_exhud_tracker[i].msg,
-                             sizeof(dsda_exhud_tracker[i].msg), dsda_tracker[i].id);
-        break;
-      case dsda_tracker_mobj:
-        dsda_MobjTrackerHC(dsda_exhud_tracker[i].msg, sizeof(dsda_exhud_tracker[i].msg),
-                           dsda_tracker[i].id, dsda_tracker[i].mobj);
-        break;
-      case dsda_tracker_player:
-        dsda_PlayerTrackerHC(dsda_exhud_tracker[i].msg, sizeof(dsda_exhud_tracker[i].msg));
-        break;
-    }
-
-    dsda_RefreshHudText(&dsda_exhud_tracker[i]);
-  }
 }
 
 static int dsda_FindTracker(int type, int id) {
@@ -353,8 +291,7 @@ dboolean dsda_UntrackPlayer(int id) {
 }
 
 void dsda_UpdateExHud(void) {
-  dsda_UpdateTrackers();
-
+  dsda_UpdateTrackerHC();
   dsda_UpdateCompositeTimeHC();
   dsda_UpdateStatTotalsHC();
 }
@@ -363,8 +300,7 @@ void dsda_DrawExHud(void) {
   int i;
 
   if (!dsda_StrictMode())
-    for (i = 0; i < TRACKER_LIMIT; ++i)
-      HUlib_drawTextLine(&dsda_exhud_tracker[i].text, false);
+    dsda_DrawTrackerHC();
 
   dsda_DrawCompositeTimeHC();
   dsda_DrawStatTotalsHC();
@@ -373,9 +309,7 @@ void dsda_DrawExHud(void) {
 void dsda_EraseExHud(void) {
   int i;
 
-  for (i = 0; i < TRACKER_LIMIT; ++i)
-    HUlib_eraseTextLine(&dsda_exhud_tracker[i].text);
-
+  dsda_EraseTrackerHC();
   dsda_EraseCompositeTimeHC();
   dsda_EraseStatTotalsHC();
 }
