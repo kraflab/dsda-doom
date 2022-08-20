@@ -17,7 +17,7 @@
 
 #include "base.h"
 
-#include "health_text.h"
+#include "armor_text.h"
 
 static dsda_text_t component;
 
