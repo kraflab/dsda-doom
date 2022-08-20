@@ -48,3 +48,30 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
     vpt
   );
 }
+
+void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt) {
+  int x, y, vpt_align;
+
+  x = 0;
+  y = 0;
+
+  vpt_align = vpt & VPT_ALIGN_MASK;
+  if (
+    vpt_align == VPT_ALIGN_BOTTOM ||
+    vpt_align == VPT_ALIGN_LEFT_BOTTOM ||
+    vpt_align == VPT_ALIGN_RIGHT_BOTTOM
+  ) {
+    y = 200;
+    y_offset = -y_offset;
+
+    // if (viewheight != SCREENHEIGHT)
+      y -= g_st_height;
+  }
+
+  x += x_offset;
+  y += y_offset;
+
+  component->x = x;
+  component->y = y;
+  component->vpt = vpt;
+}

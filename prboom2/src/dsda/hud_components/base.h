@@ -27,6 +27,8 @@
 #include "p_tick.h"
 #include "r_main.h"
 #include "r_state.h"
+#include "v_video.h"
+#include "w_wad.h"
 
 #include "dsda.h"
 #include "dsda/exhud.h"
@@ -41,6 +43,13 @@ extern int exhud_color_alert;
 
 extern patchnum_t hu_font2[HU_FONTSIZE];
 
+typedef struct {
+  int x;
+  int y;
+  int vpt;
+} dsda_patch_component_t;
+
 void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt);
+void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt);
 
 #endif
