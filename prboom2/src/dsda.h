@@ -21,6 +21,7 @@
 #include "doomdef.h"
 #include "p_mobj.h"
 #include "d_player.h"
+#include "r_defs.h"
 
 typedef struct {
   int m, s, t;
