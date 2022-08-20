@@ -66,6 +66,8 @@ set(COMMON_SRC
     dsda/hud_components/player_tracker.h
     dsda/hud_components/sector_tracker.c
     dsda/hud_components/sector_tracker.h
+    dsda/hud_components/speed_text.c
+    dsda/hud_components/speed_text.h
     dsda/hud_components/stat_totals.c
     dsda/hud_components/stat_totals.h
     dsda/hud_components/tracker.c

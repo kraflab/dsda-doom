@@ -32,6 +32,7 @@
 #include "dsda/exhud.h"
 #include "dsda/global.h"
 #include "dsda/hud.h"
+#include "dsda/settings.h"
 #include "dsda/utility.h"
 
 extern int exhud_color_default;

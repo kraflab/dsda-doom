@@ -12,12 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA HUD Components
+//	DSDA Speed Text HUD Component
 //
 
-#include "hud_components/armor_text.h"
-#include "hud_components/composite_time.h"
-#include "hud_components/health_text.h"
-#include "hud_components/speed_text.h"
-#include "hud_components/stat_totals.h"
-#include "hud_components/tracker.h"
+#ifndef __DSDA_HUD_COMPONENT_SPEED_TEXT__
+#define __DSDA_HUD_COMPONENT_SPEED_TEXT__
+
+void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateSpeedTextHC(void);
+void dsda_DrawSpeedTextHC(void);
+void dsda_EraseSpeedTextHC(void);
+
+#endif
