@@ -18,9 +18,7 @@
 #ifndef __DSDA_EXHUD__
 #define __DSDA_EXHUD__
 
-#include "r_defs.h"
-
-void dsda_InitExHud(patchnum_t* font);
+void dsda_InitExHud(void);
 void dsda_UpdateExHud(void);
 void dsda_DrawExHud(void);
 void dsda_EraseExHud(void);

@@ -84,7 +84,7 @@ void dsda_InitHud(patchnum_t* font) {
   );
 
   dsda_InitIntermissionDisplay(font);
-  dsda_InitExHud(font);
+  dsda_InitExHud();
   dsda_InitCommandDisplay(font);
   dsda_InitCoordinateDisplay(font);
   dsda_InitLineDisplay(font);

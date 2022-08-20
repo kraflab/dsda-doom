@@ -15,20 +15,9 @@
 //	DSDA Intermission Display
 //
 
-#include "hu_lib.h"
-#include "hu_stuff.h"
-#include "doomstat.h"
-#include "p_spec.h"
-#include "p_tick.h"
-#include "r_state.h"
-
-#include "dsda.h"
-#include "dsda/args.h"
 #include "dsda/global.h"
-#include "dsda/hud.h"
 #include "dsda/hud_components.h"
 #include "dsda/settings.h"
-#include "dsda/utility.h"
 
 #include "exhud.h"
 
@@ -38,7 +27,7 @@ int exhud_color_default;
 int exhud_color_warning;
 int exhud_color_alert;
 
-void dsda_InitExHud(patchnum_t* font) {
+void dsda_InitExHud(void) {
   int i;
 
   exhud_color_default = g_cr_gray;
