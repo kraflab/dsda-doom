@@ -28,8 +28,6 @@ int exhud_color_warning;
 int exhud_color_alert;
 
 void dsda_InitExHud(void) {
-  int i;
-
   exhud_color_default = g_cr_gray;
   exhud_color_warning = g_cr_green;
   exhud_color_alert = g_cr_red;
