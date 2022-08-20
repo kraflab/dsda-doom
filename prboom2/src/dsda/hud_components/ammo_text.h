@@ -12,15 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA HUD Components
+//	DSDA Ammo Text HUD Component
 //
 
-#include "hud_components/ammo_text.h"
-#include "hud_components/armor_text.h"
-#include "hud_components/composite_time.h"
-#include "hud_components/health_text.h"
-#include "hud_components/keys.h"
-#include "hud_components/speed_text.h"
-#include "hud_components/stat_totals.h"
-#include "hud_components/tracker.h"
-#include "hud_components/weapon_text.h"
+#ifndef __DSDA_HUD_COMPONENT_AMMO_TEXT__
+#define __DSDA_HUD_COMPONENT_AMMO_TEXT__
+
+void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateAmmoTextHC(void);
+void dsda_DrawAmmoTextHC(void);
+void dsda_EraseAmmoTextHC(void);
+
+#endif
