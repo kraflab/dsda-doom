@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Composite Time HUD Component
+//	DSDA HUD Components
 //
 
 #include "hud_components/composite_time.h"
