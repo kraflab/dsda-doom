@@ -45,6 +45,11 @@ set(COMMON_SRC
     dsda/global.h
     dsda/hud.c
     dsda/hud.h
+    dsda/hud_components.h
+    dsda/hud_components/composite_time.c
+    dsda/hud_components/composite_time.h
+    dsda/hud_components/stat_totals.c
+    dsda/hud_components/stat_totals.h
     dsda/input.c
     dsda/input.h
     dsda/intermission_display.c

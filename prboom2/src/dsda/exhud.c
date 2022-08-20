@@ -26,6 +26,7 @@
 #include "dsda/args.h"
 #include "dsda/global.h"
 #include "dsda/hud.h"
+#include "dsda/hud_components.h"
 #include "dsda/settings.h"
 #include "dsda/utility.h"
 
@@ -435,119 +436,12 @@ dboolean dsda_UntrackPlayer(int id) {
 }
 
 void dsda_UpdateExHud(void) {
-  int total_time;
-
   dsda_UpdateTrackers();
 
-  total_time = hexen ?
-               players[consoleplayer].worldTimer :
-               totalleveltimes + leveltime;
-
-  // Timer - from hu_stuff.c
-  if (total_time != leveltime)
-    snprintf(
-      dsda_exhud_timer.msg,
-      sizeof(dsda_exhud_timer.msg),
-      "\x1b%ctime \x1b%c%d:%02d \x1b%c%d:%05.2f ",
-      g_cr_gray + 0x30,
-      g_cr_gold + 0x30,
-      total_time / 35 / 60,
-      (total_time % (60 * 35)) / 35,
-      g_cr_green + 0x30,
-      leveltime / 35 / 60,
-      (float)(leveltime % (60 * 35)) / 35
-    );
-  else
-    snprintf(
-      dsda_exhud_timer.msg,
-      sizeof(dsda_exhud_timer.msg),
-      "\x1b%ctime \x1b%c%d:%05.2f ",
-      g_cr_gray + 0x30,
-      g_cr_green + 0x30,
-      leveltime / 35 / 60,
-      (float)(leveltime % (60 * 35)) / 35
-    );
-
+  dsda_CompositeTimeHC(dsda_exhud_timer.msg, sizeof(dsda_exhud_timer.msg));
   dsda_RefreshHudText(&dsda_exhud_timer);
 
-  // Max totals - from hu_stuff.c
-  {
-    int i;
-    char allkills[200], allsecrets[200];
-    int playerscount;
-    int fullkillcount, fullitemcount, fullsecretcount;
-    int color, killcolor, itemcolor, secretcolor;
-    int kill_percent_count;
-    int allkills_len = 0;
-    int allsecrets_len = 0;
-    int max_kill_requirement;
-
-    playerscount = 0;
-    fullkillcount = 0;
-    fullitemcount = 0;
-    fullsecretcount = 0;
-    kill_percent_count = 0;
-    max_kill_requirement = dsda_MaxKillRequirement();
-
-    for (i = 0; i < g_maxplayers; i++) {
-      if (playeringame[i]) {
-        color = i == displayplayer ? 0x30 + g_cr_green : 0x30 + g_cr_gray;
-        if (playerscount==0) {
-          allkills_len = sprintf(allkills, "\x1b%c%d", color, players[i].killcount - players[i].maxkilldiscount);
-          allsecrets_len = sprintf(allsecrets, "\x1b%c%d", color, players[i].secretcount);
-        }
-        else {
-          if (allkills_len >= 0 && allsecrets_len >=0) {
-            allkills_len += sprintf(&allkills[allkills_len], "\x1b%c+%d", color, players[i].killcount - players[i].maxkilldiscount);
-            allsecrets_len += sprintf(&allsecrets[allsecrets_len], "\x1b%c+%d", color, players[i].secretcount);
-          }
-        }
-        playerscount++;
-        fullkillcount += players[i].killcount - players[i].maxkilldiscount;
-        fullitemcount += players[i].itemcount;
-        fullsecretcount += players[i].secretcount;
-        kill_percent_count += players[i].killcount;
-      }
-    }
-
-    if (respawnmonsters)
-    {
-      fullkillcount = kill_percent_count;
-      max_kill_requirement = totalkills;
-    }
-
-    killcolor = (fullkillcount >= max_kill_requirement ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
-    secretcolor = (fullsecretcount >= totalsecret ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
-    itemcolor = (fullitemcount >= totalitems ? 0x30 + g_cr_blue : 0x30 + g_cr_gold);
-
-    if (playerscount < 2) {
-      snprintf(
-        dsda_exhud_max_totals.msg,
-        sizeof(dsda_exhud_max_totals.msg),
-        "\x1b%cK \x1b%c%d/%d \x1b%cI \x1b%c%d/%d \x1b%cS \x1b%c%d/%d",
-        0x30 + g_cr_red,
-        killcolor, fullkillcount, max_kill_requirement,
-        0x30 + g_cr_red,
-        itemcolor, players[displayplayer].itemcount, totalitems,
-        0x30 + g_cr_red,
-        secretcolor, fullsecretcount, totalsecret
-      );
-    }
-    else {
-      snprintf(
-        dsda_exhud_max_totals.msg,
-        sizeof(dsda_exhud_max_totals.msg),
-        "\x1b%cK %s \x1b%c%d/%d \x1b%cI \x1b%c%d/%d \x1b%cS %s \x1b%c%d/%d",
-        0x30 + g_cr_red,
-        allkills, killcolor, fullkillcount, max_kill_requirement,
-        0x30 + g_cr_red,
-        itemcolor, players[displayplayer].itemcount, totalitems,
-        0x30 + g_cr_red,
-        allsecrets, secretcolor, fullsecretcount, totalsecret
-      );
-    }
-  }
-
+  dsda_StatTotalsHC(dsda_exhud_max_totals.msg, sizeof(dsda_exhud_max_totals.msg));
   dsda_RefreshHudText(&dsda_exhud_max_totals);
 }
 
