@@ -12,11 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA HUD Components
+//	DSDA Armor Text HUD Component
 //
 
-#include "hud_components/armor_text.h"
-#include "hud_components/composite_time.h"
-#include "hud_components/health_text.h"
-#include "hud_components/stat_totals.h"
-#include "hud_components/tracker.h"
+#ifndef __DSDA_HUD_COMPONENT_ARMOR_TEXT__
+#define __DSDA_HUD_COMPONENT_ARMOR_TEXT__
+
+void dsda_InitArmorTextHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateArmorTextHC(void);
+void dsda_DrawArmorTextHC(void);
+void dsda_EraseArmorTextHC(void);
+
+#endif

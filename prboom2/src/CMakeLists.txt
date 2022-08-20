@@ -46,6 +46,8 @@ set(COMMON_SRC
     dsda/hud.c
     dsda/hud.h
     dsda/hud_components.h
+    dsda/hud_components/armor_text.c
+    dsda/hud_components/armor_text.h
     dsda/hud_components/base.c
     dsda/hud_components/base.h
     dsda/hud_components/composite_time.c
