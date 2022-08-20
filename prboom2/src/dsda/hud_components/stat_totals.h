@@ -15,4 +15,9 @@
 //	DSDA Stat Totals HUD Component
 //
 
+#ifndef __DSDA_HUD_COMPONENT_STAT_TOTALS__
+#define __DSDA_HUD_COMPONENT_STAT_TOTALS__
+
 void dsda_StatTotalsHC(char* str, size_t max_size);
+
+#endif

@@ -15,12 +15,7 @@
 //	DSDA Stat Totals HUD Component
 //
 
-#include "stdio.h"
-
-#include "doomstat.h"
-
-#include "dsda.h"
-#include "dsda/global.h"
+#include "base.h"
 
 #include "stat_totals.h"
 

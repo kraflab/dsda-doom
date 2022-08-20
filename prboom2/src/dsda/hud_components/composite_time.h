@@ -15,4 +15,9 @@
 //	DSDA Composite Time HUD Component
 //
 
+#ifndef __DSDA_HUD_COMPONENT_COMPOSITE_TIME__
+#define __DSDA_HUD_COMPONENT_COMPOSITE_TIME__
+
 void dsda_CompositeTimeHC(char* str, size_t max_size);
+
+#endif

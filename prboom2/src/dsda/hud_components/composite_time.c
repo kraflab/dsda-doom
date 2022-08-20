@@ -15,11 +15,7 @@
 //	DSDA Composite Time HUD Component
 //
 
-#include "stdio.h"
-
-#include "doomstat.h"
-
-#include "dsda/global.h"
+#include "base.h"
 
 #include "composite_time.h"
 
