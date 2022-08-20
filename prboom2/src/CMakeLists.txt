@@ -131,6 +131,8 @@ set(COMMON_SRC
     dsda/thing_id.h
     dsda/time.c
     dsda/time.h
+    dsda/tracker.c
+    dsda/tracker.h
     dsda/utility.c
     dsda/utility.h
     dstrings.c

@@ -39,6 +39,7 @@
 #include "dsda/mouse.h"
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
+#include "dsda/tracker.h"
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000

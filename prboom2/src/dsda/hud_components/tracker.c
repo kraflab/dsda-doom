@@ -15,6 +15,8 @@
 //	DSDA Tracker HUD Component
 //
 
+#include "dsda/tracker.h"
+
 #include "base.h"
 
 #include "line_distance_tracker.h"

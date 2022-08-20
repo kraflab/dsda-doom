@@ -34,6 +34,7 @@
 #include "dsda/global.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
+#include "dsda/tracker.h"
 #include "dsda/utility.h"
 
 #include "console.h"
