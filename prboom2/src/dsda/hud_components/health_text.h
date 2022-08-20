@@ -12,10 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA HUD Components
+//	DSDA Health Text HUD Component
 //
 
-#include "hud_components/composite_time.h"
-#include "hud_components/health_text.h"
-#include "hud_components/stat_totals.h"
-#include "hud_components/tracker.h"
+#ifndef __DSDA_HUD_COMPONENT_HEALTH_TEXT__
+#define __DSDA_HUD_COMPONENT_HEALTH_TEXT__
+
+void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateHealthTextHC(void);
+void dsda_DrawHealthTextHC(void);
+void dsda_EraseHealthTextHC(void);
+
+#endif
