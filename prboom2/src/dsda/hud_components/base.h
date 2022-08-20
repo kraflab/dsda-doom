@@ -20,6 +20,7 @@
 
 #include "stdio.h"
 
+#include "doomdef.h"
 #include "doomstat.h"
 #include "hu_stuff.h"
 #include "p_mobj.h"
