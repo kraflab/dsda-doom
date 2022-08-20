@@ -12,14 +12,27 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Composite Time HUD Component
+//	DSDA HUD Component Base Header
 //
 
-#include "hud_components/composite_time.h"
-#include "hud_components/line_distance_tracker.h"
-#include "hud_components/line_tracker.h"
-#include "hud_components/mobj_tracker.h"
-#include "hud_components/null.h"
-#include "hud_components/player_tracker.h"
-#include "hud_components/sector_tracker.h"
-#include "hud_components/stat_totals.h"
+#ifndef __DSDA_HUD_COMPONENT_BASE__
+#define __DSDA_HUD_COMPONENT_BASE__
+
+#include "stdio.h"
+
+#include "doomstat.h"
+#include "p_mobj.h"
+#include "p_spec.h"
+#include "p_tick.h"
+#include "r_state.h"
+
+#include "dsda.h"
+#include "dsda/exhud.h"
+#include "dsda/global.h"
+#include "dsda/utility.h"
+
+extern int exhud_color_default;
+extern int exhud_color_warning;
+extern int exhud_color_alert;
+
+#endif

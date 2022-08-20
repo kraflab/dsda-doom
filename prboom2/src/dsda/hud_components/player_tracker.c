@@ -12,14 +12,21 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Composite Time HUD Component
+//	DSDA Player Tracker HUD Component
 //
 
-#include "hud_components/composite_time.h"
-#include "hud_components/line_distance_tracker.h"
-#include "hud_components/line_tracker.h"
-#include "hud_components/mobj_tracker.h"
-#include "hud_components/null.h"
-#include "hud_components/player_tracker.h"
-#include "hud_components/sector_tracker.h"
-#include "hud_components/stat_totals.h"
+#include "base.h"
+
+#include "player_tracker.h"
+
+void dsda_PlayerTrackerHC(char* str, size_t max_size) {
+  extern int player_damage_last_tic;
+
+  snprintf(
+    str,
+    max_size,
+    "\x1b%cp: %d",
+    player_damage_last_tic > 0 ? 0x30 + exhud_color_warning : 0x30 + exhud_color_default,
+    player_damage_last_tic
+  );
+}

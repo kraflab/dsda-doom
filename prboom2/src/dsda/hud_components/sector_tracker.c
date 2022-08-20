@@ -12,14 +12,26 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Composite Time HUD Component
+//	DSDA Sector Tracker HUD Component
 //
 
-#include "hud_components/composite_time.h"
-#include "hud_components/line_distance_tracker.h"
-#include "hud_components/line_tracker.h"
-#include "hud_components/mobj_tracker.h"
-#include "hud_components/null.h"
-#include "hud_components/player_tracker.h"
-#include "hud_components/sector_tracker.h"
-#include "hud_components/stat_totals.h"
+#include "base.h"
+
+#include "sector_tracker.h"
+
+void dsda_SectorTrackerHC(char* str, size_t max_size, int id) {
+  dboolean active;
+  int special;
+
+  active = P_PlaneActive(&sectors[id]);
+  special = sectors[id].special;
+
+  snprintf(
+    str,
+    max_size,
+    "\x1b%cs %d: %d %d %d",
+    active ? 0x30 + exhud_color_alert : special ? 0x30 + exhud_color_warning : 0x30 + exhud_color_default,
+    id, special, active,
+    sectors[id].floorheight >> FRACBITS
+  );
+}

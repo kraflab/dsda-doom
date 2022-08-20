@@ -12,14 +12,12 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Composite Time HUD Component
+//	DSDA Null HUD Component
 //
 
-#include "hud_components/composite_time.h"
-#include "hud_components/line_distance_tracker.h"
-#include "hud_components/line_tracker.h"
-#include "hud_components/mobj_tracker.h"
-#include "hud_components/null.h"
-#include "hud_components/player_tracker.h"
-#include "hud_components/sector_tracker.h"
-#include "hud_components/stat_totals.h"
+#ifndef __DSDA_HUD_COMPONENT_NULL__
+#define __DSDA_HUD_COMPONENT_NULL__
+
+void dsda_NullHC(char* str, size_t max_size);
+
+#endif

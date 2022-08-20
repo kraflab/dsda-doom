@@ -12,14 +12,14 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Composite Time HUD Component
+//	DSDA Mobj Tracker HUD Component
 //
 
-#include "hud_components/composite_time.h"
-#include "hud_components/line_distance_tracker.h"
-#include "hud_components/line_tracker.h"
-#include "hud_components/mobj_tracker.h"
-#include "hud_components/null.h"
-#include "hud_components/player_tracker.h"
-#include "hud_components/sector_tracker.h"
-#include "hud_components/stat_totals.h"
+#ifndef __DSDA_HUD_COMPONENT_MOBJ_TRACKER__
+#define __DSDA_HUD_COMPONENT_MOBJ_TRACKER__
+
+#include "p_mobj.h"
+
+void dsda_MobjTrackerHC(char* str, size_t max_size, int id, mobj_t* mobj);
+
+#endif

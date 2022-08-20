@@ -12,14 +12,12 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Composite Time HUD Component
+//	DSDA Line Distance Tracker HUD Component
 //
 
-#include "hud_components/composite_time.h"
-#include "hud_components/line_distance_tracker.h"
-#include "hud_components/line_tracker.h"
-#include "hud_components/mobj_tracker.h"
-#include "hud_components/null.h"
-#include "hud_components/player_tracker.h"
-#include "hud_components/sector_tracker.h"
-#include "hud_components/stat_totals.h"
+#ifndef __DSDA_HUD_COMPONENT_LINE_DISTANCE_TRACKER__
+#define __DSDA_HUD_COMPONENT_LINE_DISTANCE_TRACKER__
+
+void dsda_LineDistanceTrackerHC(char* str, size_t max_size, int id);
+
+#endif

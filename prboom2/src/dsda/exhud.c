@@ -58,16 +58,16 @@ dsda_tracker_t dsda_tracker[TRACKER_LIMIT];
 static int tracker_map;
 static int tracker_episode;
 
-static int color_default;
-static int color_warning;
-static int color_alert;
+int exhud_color_default;
+int exhud_color_warning;
+int exhud_color_alert;
 
 void dsda_InitExHud(patchnum_t* font) {
   int i;
 
-  color_default = g_cr_gray;
-  color_warning = g_cr_green;
-  color_alert = g_cr_red;
+  exhud_color_default = g_cr_gray;
+  exhud_color_warning = g_cr_green;
+  exhud_color_alert = g_cr_red;
 
   for (i = 0; i < TRACKER_LIMIT; ++i)
     HUlib_initTextLine(
@@ -109,90 +109,26 @@ static void dsda_UpdateTrackers(void) {
   for (i = 0; i < TRACKER_LIMIT; ++i) {
     switch (dsda_tracker[i].type) {
       case dsda_tracker_nothing:
-        dsda_exhud_tracker[i].msg[0] = '\0';
+        dsda_NullHC(dsda_exhud_tracker[i].msg, sizeof(dsda_exhud_tracker[i].msg));
         break;
       case dsda_tracker_line:
-        snprintf(
-          dsda_exhud_tracker[i].msg,
-          sizeof(dsda_exhud_tracker[i].msg),
-          "\x1b%cl %d: %d %d",
-          lines[dsda_tracker[i].id].special ? 0x30 + color_warning : 0x30 + color_default,
-          dsda_tracker[i].id,
-          lines[dsda_tracker[i].id].special,
-          lines[dsda_tracker[i].id].player_activations
-        );
+        dsda_LineTrackerHC(dsda_exhud_tracker[i].msg,
+                           sizeof(dsda_exhud_tracker[i].msg), dsda_tracker[i].id);
         break;
       case dsda_tracker_line_distance:
-        {
-          line_t* line;
-          mobj_t* mo;
-          double distance;
-          double radius;
-
-          line = &lines[dsda_tracker[i].id];
-          mo = players[displayplayer].mo;
-          radius = (double) mo->radius / FRACUNIT;
-          distance = dsda_DistancePointToLine(line->v1->x, line->v1->y, line->v2->x, line->v2->y,
-                                              mo->x, mo->y);
-
-          snprintf(
-            dsda_exhud_tracker[i].msg,
-            sizeof(dsda_exhud_tracker[i].msg),
-            "\x1b%cld %d: %.03f",
-            distance < radius ? 0x30 + color_warning : 0x30 + color_default,
-            dsda_tracker[i].id,
-            distance
-          );
-        }
+        dsda_LineDistanceTrackerHC(dsda_exhud_tracker[i].msg,
+                                   sizeof(dsda_exhud_tracker[i].msg), dsda_tracker[i].id);
         break;
       case dsda_tracker_sector:
-        {
-          dboolean active;
-          int special;
-
-          active = P_PlaneActive(&sectors[dsda_tracker[i].id]);
-          special = sectors[dsda_tracker[i].id].special;
-
-          snprintf(
-            dsda_exhud_tracker[i].msg,
-            sizeof(dsda_exhud_tracker[i].msg),
-            "\x1b%cs %d: %d %d %d",
-            active ? 0x30 + color_alert : special ? 0x30 + color_warning : 0x30 + color_default,
-            dsda_tracker[i].id, special, active,
-            sectors[dsda_tracker[i].id].floorheight >> FRACBITS
-          );
-        }
+        dsda_SectorTrackerHC(dsda_exhud_tracker[i].msg,
+                             sizeof(dsda_exhud_tracker[i].msg), dsda_tracker[i].id);
         break;
       case dsda_tracker_mobj:
-        {
-          int health;
-
-          health = dsda_tracker[i].mobj->health;
-
-          if (dsda_tracker[i].mobj->thinker.function == P_RemoveThinkerDelayed)
-            health = 0;
-
-          snprintf(
-            dsda_exhud_tracker[i].msg,
-            sizeof(dsda_exhud_tracker[i].msg),
-            "\x1b%cm %d: %d",
-            health > 0 ? 0x30 + color_warning : 0x30 + color_default,
-            dsda_tracker[i].id, health
-          );
-        }
+        dsda_MobjTrackerHC(dsda_exhud_tracker[i].msg, sizeof(dsda_exhud_tracker[i].msg),
+                           dsda_tracker[i].id, dsda_tracker[i].mobj);
         break;
       case dsda_tracker_player:
-        {
-          extern int player_damage_last_tic;
-
-          snprintf(
-            dsda_exhud_tracker[i].msg,
-            sizeof(dsda_exhud_tracker[i].msg),
-            "\x1b%cp: %d",
-            player_damage_last_tic > 0 ? 0x30 + color_warning : 0x30 + color_default,
-            player_damage_last_tic
-          );
-        }
+        dsda_PlayerTrackerHC(dsda_exhud_tracker[i].msg, sizeof(dsda_exhud_tracker[i].msg));
         break;
     }
 

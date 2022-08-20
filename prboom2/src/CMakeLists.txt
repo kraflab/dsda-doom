@@ -48,6 +48,18 @@ set(COMMON_SRC
     dsda/hud_components.h
     dsda/hud_components/composite_time.c
     dsda/hud_components/composite_time.h
+    dsda/hud_components/line_distance_tracker.c
+    dsda/hud_components/line_distance_tracker.h
+    dsda/hud_components/line_tracker.c
+    dsda/hud_components/line_tracker.h
+    dsda/hud_components/mobj_tracker.c
+    dsda/hud_components/mobj_tracker.h
+    dsda/hud_components/null.c
+    dsda/hud_components/null.h
+    dsda/hud_components/player_tracker.c
+    dsda/hud_components/player_tracker.h
+    dsda/hud_components/sector_tracker.c
+    dsda/hud_components/sector_tracker.h
     dsda/hud_components/stat_totals.c
     dsda/hud_components/stat_totals.h
     dsda/input.c
