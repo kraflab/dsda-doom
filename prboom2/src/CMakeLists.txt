@@ -72,6 +72,8 @@ set(COMMON_SRC
     dsda/hud_components/stat_totals.h
     dsda/hud_components/tracker.c
     dsda/hud_components/tracker.h
+    dsda/hud_components/weapon_text.c
+    dsda/hud_components/weapon_text.h
     dsda/input.c
     dsda/input.h
     dsda/intermission_display.c
