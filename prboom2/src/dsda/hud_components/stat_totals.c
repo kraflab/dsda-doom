@@ -21,7 +21,9 @@
 
 #define STAT_STRING_SIZE 200
 
-void dsda_StatTotalsHC(char* str, size_t max_size) {
+static dsda_text_t component;
+
+static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int i;
   char allkills[STAT_STRING_SIZE], allsecrets[STAT_STRING_SIZE];
   int playerscount;
@@ -122,4 +124,21 @@ void dsda_StatTotalsHC(char* str, size_t max_size) {
       allsecrets, secretcolor, fullsecretcount, totalsecret
     );
   }
+}
+
+void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt) {
+  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+}
+
+void dsda_UpdateStatTotalsHC(void) {
+  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
+  dsda_RefreshHudText(&component);
+}
+
+void dsda_DrawStatTotalsHC(void) {
+  HUlib_drawTextLine(&component.text, false);
+}
+
+void dsda_EraseStatTotalsHC(void) {
+  HUlib_eraseTextLine(&component.text);
 }

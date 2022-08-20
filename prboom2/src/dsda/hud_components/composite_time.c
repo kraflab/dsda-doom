@@ -19,7 +19,9 @@
 
 #include "composite_time.h"
 
-void dsda_CompositeTimeHC(char* str, size_t max_size) {
+static dsda_text_t component;
+
+static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int total_time;
 
   total_time = hexen ?
@@ -49,4 +51,21 @@ void dsda_CompositeTimeHC(char* str, size_t max_size) {
       leveltime / 35 / 60,
       (float) (leveltime % (60 * 35)) / 35
     );
+}
+
+void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt) {
+  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+}
+
+void dsda_UpdateCompositeTimeHC(void) {
+  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
+  dsda_RefreshHudText(&component);
+}
+
+void dsda_DrawCompositeTimeHC(void) {
+  HUlib_drawTextLine(&component.text, false);
+}
+
+void dsda_EraseCompositeTimeHC(void) {
+  HUlib_eraseTextLine(&component.text);
 }

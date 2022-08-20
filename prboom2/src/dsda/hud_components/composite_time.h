@@ -18,6 +18,9 @@
 #ifndef __DSDA_HUD_COMPONENT_COMPOSITE_TIME__
 #define __DSDA_HUD_COMPONENT_COMPOSITE_TIME__
 
-void dsda_CompositeTimeHC(char* str, size_t max_size);
+void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateCompositeTimeHC(void);
+void dsda_DrawCompositeTimeHC(void);
+void dsda_EraseCompositeTimeHC(void);
 
 #endif

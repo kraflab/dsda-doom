@@ -15,31 +15,36 @@
 //	DSDA HUD Component Base
 //
 
-#ifndef __DSDA_HUD_COMPONENT_BASE__
-#define __DSDA_HUD_COMPONENT_BASE__
+#include "base.h"
 
-#include "stdio.h"
+void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
+  int x, y, vpt_align;
 
-#include "doomstat.h"
-#include "hu_stuff.h"
-#include "p_mobj.h"
-#include "p_spec.h"
-#include "p_tick.h"
-#include "r_main.h"
-#include "r_state.h"
+  x = 0;
+  y = 0;
 
-#include "dsda.h"
-#include "dsda/exhud.h"
-#include "dsda/global.h"
-#include "dsda/hud.h"
-#include "dsda/utility.h"
+  vpt_align = vpt & VPT_ALIGN_MASK;
+  if (
+    vpt_align == VPT_ALIGN_BOTTOM ||
+    vpt_align == VPT_ALIGN_LEFT_BOTTOM ||
+    vpt_align == VPT_ALIGN_RIGHT_BOTTOM
+  ) {
+    y = 200;
+    y_offset = -y_offset;
 
-extern int exhud_color_default;
-extern int exhud_color_warning;
-extern int exhud_color_alert;
+    if (viewheight != SCREENHEIGHT)
+      y -= g_st_height;
+  }
 
-extern patchnum_t hu_font2[HU_FONTSIZE];
+  x += x_offset;
+  y += y_offset;
 
-void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt);
-
-#endif
+  HUlib_initTextLine(
+    &component->text,
+    x, y,
+    hu_font2,
+    HU_FONTSTART,
+    g_cr_gray,
+    vpt
+  );
+}

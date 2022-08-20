@@ -50,8 +50,6 @@ typedef struct {
   mobj_t* mobj;
 } dsda_tracker_t;
 
-dsda_text_t dsda_exhud_timer;
-dsda_text_t dsda_exhud_max_totals;
 dsda_text_t dsda_exhud_tracker[TRACKER_LIMIT];
 dsda_tracker_t dsda_tracker[TRACKER_LIMIT];
 
@@ -80,25 +78,8 @@ void dsda_InitExHud(patchnum_t* font) {
       VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT
     );
 
-  HUlib_initTextLine(
-    &dsda_exhud_timer.text,
-    DSDA_EXHUD_X,
-    200 - g_st_height - 16,
-    font,
-    HU_FONTSTART,
-    g_cr_gray,
-    VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT
-  );
-
-  HUlib_initTextLine(
-    &dsda_exhud_max_totals.text,
-    DSDA_EXHUD_X,
-    200 - g_st_height - 8,
-    font,
-    HU_FONTSTART,
-    g_cr_gray,
-    VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT
-  );
+  dsda_InitCompositeTimeHC(DSDA_EXHUD_X, 16, VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT);
+  dsda_InitStatTotalsHC(DSDA_EXHUD_X, 8, VPT_ALIGN_LEFT_BOTTOM | VPT_EX_TEXT);
 }
 
 extern int totalleveltimes;
@@ -374,11 +355,8 @@ dboolean dsda_UntrackPlayer(int id) {
 void dsda_UpdateExHud(void) {
   dsda_UpdateTrackers();
 
-  dsda_CompositeTimeHC(dsda_exhud_timer.msg, sizeof(dsda_exhud_timer.msg));
-  dsda_RefreshHudText(&dsda_exhud_timer);
-
-  dsda_StatTotalsHC(dsda_exhud_max_totals.msg, sizeof(dsda_exhud_max_totals.msg));
-  dsda_RefreshHudText(&dsda_exhud_max_totals);
+  dsda_UpdateCompositeTimeHC();
+  dsda_UpdateStatTotalsHC();
 }
 
 void dsda_DrawExHud(void) {
@@ -388,8 +366,8 @@ void dsda_DrawExHud(void) {
     for (i = 0; i < TRACKER_LIMIT; ++i)
       HUlib_drawTextLine(&dsda_exhud_tracker[i].text, false);
 
-  HUlib_drawTextLine(&dsda_exhud_timer.text, false);
-  HUlib_drawTextLine(&dsda_exhud_max_totals.text, false);
+  dsda_DrawCompositeTimeHC();
+  dsda_DrawStatTotalsHC();
 }
 
 void dsda_EraseExHud(void) {
@@ -398,6 +376,6 @@ void dsda_EraseExHud(void) {
   for (i = 0; i < TRACKER_LIMIT; ++i)
     HUlib_eraseTextLine(&dsda_exhud_tracker[i].text);
 
-  HUlib_eraseTextLine(&dsda_exhud_timer.text);
-  HUlib_eraseTextLine(&dsda_exhud_max_totals.text);
+  dsda_EraseCompositeTimeHC();
+  dsda_EraseStatTotalsHC();
 }
