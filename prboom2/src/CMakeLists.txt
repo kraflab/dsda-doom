@@ -54,6 +54,8 @@ set(COMMON_SRC
     dsda/hud_components/composite_time.h
     dsda/hud_components/health_text.c
     dsda/hud_components/health_text.h
+    dsda/hud_components/keys.c
+    dsda/hud_components/keys.h
     dsda/hud_components/line_distance_tracker.c
     dsda/hud_components/line_distance_tracker.h
     dsda/hud_components/line_tracker.c
