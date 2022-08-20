@@ -22,7 +22,7 @@
 #include "dsda.h"
 #include "dsda/global.h"
 
-#include "composite_time.h"
+#include "stat_totals.h"
 
 #define STAT_STRING_SIZE 200
 
