@@ -31,19 +31,26 @@ static void dsda_DrawComponent(void) {
   player_t* player;
   int x, y;
   int cm;
+  int lump;
 
   player = &players[displayplayer];
   x = component.x;
   y = component.y;
 
-  if (!player->armorpoints[ARMOR_ARMOR] || player->armortype < 2) {
+  if (!player->armorpoints[ARMOR_ARMOR]) {
+    cm = g_cr_red;
+    lump = armor_lump_green;
+  }
+  else if (player->armortype < 2) {
     cm = g_cr_green;
-    V_DrawNumPatch(x, y, FG, armor_lump_green, CR_DEFAULT, component.vpt);
+    lump = armor_lump_green;
   }
   else {
     cm = CR_BLUE2;
-    V_DrawNumPatch(x, y, FG, armor_lump_blue, CR_DEFAULT, component.vpt);
+    lump = armor_lump_blue;
   }
+
+  V_DrawNumPatch(x, y, FG, lump, CR_DEFAULT, component.vpt);
 
   x += R_NumPatchWidth(armor_lump_green) + PATCH_SPACING;
   y += PATCH_VERTICAL_SPACING;

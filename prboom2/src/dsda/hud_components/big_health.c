@@ -36,9 +36,9 @@ static void dsda_DrawComponent(void) {
   x = component.x;
   y = component.y;
 
-  cm = player->health < 25 ? g_cr_red :
-       player->health < 50 ? g_cr_gold :
-       player->health <= 100 ? g_cr_green :
+  cm = player->health <= health_red ? g_cr_red :
+       player->health <= health_yellow ? g_cr_gold :
+       player->health <= health_green ? g_cr_green :
        CR_BLUE2;
 
   V_DrawNumPatch(x, y, FG, health_lump, CR_DEFAULT, component.vpt);
