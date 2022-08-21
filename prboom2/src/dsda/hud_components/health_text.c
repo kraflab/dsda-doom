@@ -32,7 +32,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     "\x1b%cHEL %3d%%",
     player->health < 25 ? 0x30 + g_cr_red :
       player->health < 50 ? 0x30 + g_cr_gold :
-      player->health < 100 ? 0x30 + g_cr_green :
+      player->health <= 100 ? 0x30 + g_cr_green :
       0x30 + g_cr_blue,
     player->health
   );
