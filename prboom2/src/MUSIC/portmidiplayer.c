@@ -217,7 +217,7 @@ static void pm_shutdown (void)
 
 
 
-static PmEvent event_buffer[6 * 16];
+static PmEvent event_buffer[14 * 16];
 
 static const void *pm_registersong (const void *data, unsigned len)
 {
@@ -259,10 +259,22 @@ static const void *pm_registersong (const void *data, unsigned len)
     // end of RPN sequence
     event[4].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x64, 0x7f);
     event[5].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x65, 0x7f);
-    event += 6;
+    // all notes off
+    event[6].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x7b, 0x00);
+    // reset all controllers
+    event[7].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x79, 0x00);
+    // reset pan to 64 (center)
+    event[8].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x0a, 0x40);
+    // reset reverb to 40 and other effect controllers to 0
+    event[9].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5b, 0x28); // reverb
+    event[10].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5c, 0x00); // tremolo
+    event[11].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5d, 0x00); // chorus
+    event[12].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5e, 0x00); // detune
+    event[13].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5f, 0x00); // phaser
+    event += 14;
   }
 
-  Pm_Write(pm_stream, event_buffer, 6 * 16);
+  Pm_Write(pm_stream, event_buffer, 14 * 16);
 
   // handle not used
   return data;
