@@ -15,6 +15,8 @@
 //	DSDA HUD Component Base
 //
 
+#include <math.h>
+
 #include "base.h"
 
 void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
@@ -74,4 +76,37 @@ void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_off
   component->x = x;
   component->y = y;
   component->vpt = vpt;
+}
+
+static char digit_lump[9];
+
+static void dsda_DrawBigDigit(int x, int y, int cm, int vpt, int digit) {
+  if (digit > 9 || digit < 0)
+    return;
+
+  snprintf(digit_lump, sizeof(digit_lump), "STTNUM%.1d", digit);
+  V_DrawNamePatch(x, y, FG, digit_lump, cm, vpt | VPT_TRANS);
+}
+
+static int digit_mod[6] = { 1, 10, 100, 1000, 10000, 100000 };
+static int digit_div[6] = { 1,  1,  10,  100,  1000,  10000 };
+
+void dsda_DrawBigNumber(int x, int y, int delta_x, int delta_y, int cm, int vpt, int count, int n) {
+  int i;
+  int digit, any_digit;
+
+  if (count > 5)
+    return;
+
+  any_digit = 0;
+
+  for (i = count; i > 0; --i) {
+    digit = (n % digit_mod[i]) / digit_div[i];
+    any_digit |= digit;
+
+    if (any_digit || i == 1)
+      dsda_DrawBigDigit(x, y, cm, vpt, digit);
+
+    x += delta_x;
+  }
 }

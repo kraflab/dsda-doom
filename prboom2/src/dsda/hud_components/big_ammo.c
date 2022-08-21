@@ -22,15 +22,11 @@
 #define PATCH_DELTA_X 14
 
 static dsda_patch_component_t component;
-static char digit_lump[9];
 
 static void dsda_DrawComponent(void) {
   player_t* player;
   ammotype_t ammo_type;
   int ammo;
-  int digit;
-  int any_digit;
-  int x, y;
 
   player = &players[displayplayer];
   ammo_type = weaponinfo[player->readyweapon].ammo;
@@ -38,37 +34,10 @@ static void dsda_DrawComponent(void) {
   if (ammo_type == am_noammo || !player->maxammo[ammo_type])
     return;
 
-  x = component.x;
-  y = component.y;
-
   ammo = player->ammo[ammo_type];
-  digit = (ammo % 1000) / 100;
-  any_digit = digit;
 
-  if (any_digit) {
-    snprintf(digit_lump, sizeof(digit_lump), "STTNUM%.1d", digit);
-    V_DrawNamePatch(x, y, FG, digit_lump, CR_DEFAULT, component.vpt);
-  }
-
-  x += PATCH_DELTA_X;
-
-  digit = (ammo % 100) / 10;
-  any_digit |= digit;
-
-  if (any_digit) {
-    snprintf(digit_lump, sizeof(digit_lump), "STTNUM%.1d", digit);
-    V_DrawNamePatch(x, y, FG, digit_lump, CR_DEFAULT, component.vpt);
-  }
-
-  x += PATCH_DELTA_X;
-
-  digit = (ammo % 10);
-  any_digit |= digit;
-
-  if (any_digit) {
-    snprintf(digit_lump, sizeof(digit_lump), "STTNUM%.1d", digit);
-    V_DrawNamePatch(x, y, FG, digit_lump, CR_DEFAULT, component.vpt);
-  }
+  dsda_DrawBigNumber(component.x, component.y, PATCH_DELTA_X, 0,
+                     CR_DEFAULT, component.vpt, 3, ammo);
 }
 
 void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt) {
