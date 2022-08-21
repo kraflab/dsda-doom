@@ -29,9 +29,9 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   ammo_type = weaponinfo[player->readyweapon].ammo;
 
   if (ammo_type == am_noammo || !player->maxammo[ammo_type])
-    snprintf(str, max_size, "AMMO: N/A");
+    snprintf(str, max_size, "AMM N/A");
   else
-    snprintf(str, max_size, "AMMO: %3d", player->ammo[ammo_type]);
+    snprintf(str, max_size, "AMM %3d", player->ammo[ammo_type]);
 }
 
 void dsda_InitReadyAmmoTextHC(int x_offset, int y_offset, int vpt) {
