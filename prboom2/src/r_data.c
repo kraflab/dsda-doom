@@ -760,6 +760,16 @@ int R_SetSpriteByIndex(patchnum_t *patchnum, spritenum_t item)
   return result;
 }
 
+int R_NumPatchForSpriteIndex(spritenum_t item)
+{
+  if (item < 0 || item >= num_sprites)
+  {
+    return -1;
+  }
+
+  return firstspritelump + sprites[item].spriteframes->lump[0];
+}
+
 int R_SetSpriteByName(patchnum_t *patchnum, const char *name)
 {
   int result = false;
