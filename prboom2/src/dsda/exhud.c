@@ -178,9 +178,19 @@ void dsda_InitExHud(void) {
     dsda_TurnComponentOn(exhud_stat_totals, DSDA_EXHUD_X, 8, VPT_ALIGN_LEFT_BOTTOM);
   }
   else if (hud_displayed) {
-    dsda_TurnComponentOn(exhud_tracker, DSDA_EXHUD_X, 32, VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_composite_time, DSDA_EXHUD_X, 16, VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_stat_totals, DSDA_EXHUD_X, 8, VPT_ALIGN_LEFT_BOTTOM);
+    int y = 0;
+
+    dsda_TurnComponentOn(exhud_ready_ammo_text, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
+    dsda_TurnComponentOn(exhud_health_text, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
+    dsda_TurnComponentOn(exhud_armor_text, DSDA_EXHUD_X + (10 * 5), y, VPT_ALIGN_LEFT_BOTTOM);
+    dsda_TurnComponentOn(exhud_weapon_text, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
+    dsda_TurnComponentOn(exhud_stat_totals, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
+    dsda_TurnComponentOn(exhud_composite_time, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
+    dsda_TurnComponentOn(exhud_tracker, DSDA_EXHUD_X, (y += 16), VPT_ALIGN_LEFT_BOTTOM);
+
+    dsda_TurnComponentOn(exhud_keys, 320 - DSDA_EXHUD_X - (16 * 5), 30, VPT_ALIGN_RIGHT_BOTTOM);
+
+    dsda_TurnComponentOn(exhud_ammo_text, 320 - DSDA_EXHUD_X - (14 * 5), 32, VPT_ALIGN_RIGHT_BOTTOM);
   }
 }
 
