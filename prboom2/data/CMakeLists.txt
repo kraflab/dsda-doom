@@ -177,11 +177,6 @@ set(GRAPHICS
     graphics/dig124.ppm
     graphics/dig125.ppm
     graphics/dig126.ppm
-    graphics/stbr123.ppm
-    graphics/stbr124.ppm
-    graphics/stbr125.ppm
-    graphics/stbr126.ppm
-    graphics/stbr127.ppm
     graphics/boxul.ppm
     graphics/boxuc.ppm
     graphics/boxur.ppm
