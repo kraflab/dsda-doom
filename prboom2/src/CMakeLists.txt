@@ -70,6 +70,8 @@ set(COMMON_SRC
     dsda/hud_components/null.h
     dsda/hud_components/player_tracker.c
     dsda/hud_components/player_tracker.h
+    dsda/hud_components/ready_ammo_text.c
+    dsda/hud_components/ready_ammo_text.h
     dsda/hud_components/sector_tracker.c
     dsda/hud_components/sector_tracker.h
     dsda/hud_components/speed_text.c
