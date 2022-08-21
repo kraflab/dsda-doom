@@ -90,26 +90,13 @@ typedef enum
 extern int health_red;    // health amount less than which status is red
 extern int health_yellow; // health amount less than which status is yellow
 extern int health_green;  // health amount above is blue, below is green
-extern int armor_red;     // armor amount less than which status is red
-extern int armor_yellow;  // armor amount less than which status is yellow
-extern int armor_green;   // armor amount above is blue, below is green
 extern int ammo_red;      // ammo percent less than which status is red
 extern int ammo_yellow;   // ammo percent less is yellow more green
 extern int sts_always_red;// status numbers do not change colors
 extern int sts_pct_always_gray;// status percents do not change colors
 extern int sts_traditional_keys;  // display keys the traditional way
-extern int sts_armorcolor_type;  // armor color depends on type
 
 extern int st_palette;    // cph 2006/04/06 - make palette visible
-
-typedef enum {
-  ammo_colour_behaviour_no,
-  ammo_colour_behaviour_full_only,
-  ammo_colour_behaviour_yes,
-  ammo_colour_behaviour_max
-} ammo_colour_behaviour_t;
-extern ammo_colour_behaviour_t ammo_colour_behaviour;
-extern const char *ammo_colour_behaviour_list[];
 
 // e6y: makes sense for wide resolutions
 extern patchnum_t grnrock;

@@ -2907,33 +2907,23 @@ setup_menu_t* stat_settings[] =
 
 setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 {
-  {"STATUS BAR"        ,S_SKIP|S_TITLE,m_null,SB_X,SB_Y+ 1*8 },
+  { "STATUS BAR", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 1 * 8 },
 
-  {"USE RED NUMBERS"   ,S_YESNO, m_null,SB_X,SB_Y+ 2*8, {"sts_always_red"}},
-  {"GRAY %"            ,S_YESNO, m_null,SB_X,SB_Y+ 3*8, {"sts_pct_always_gray"}},
-  {"SINGLE KEY DISPLAY",S_YESNO, m_null,SB_X,SB_Y+ 4*8, {"sts_traditional_keys"}},
+  { "USE RED NUMBERS", S_YESNO, m_null, SB_X, SB_Y + 2 * 8, { "sts_always_red" } },
+  { "GRAY %",S_YESNO, m_null, SB_X, SB_Y + 3 * 8, {"sts_pct_always_gray" } },
+  { "SINGLE KEY DISPLAY", S_YESNO, m_null, SB_X, SB_Y + 4 * 8, {"sts_traditional_keys" } },
 
-  {"HEADS-UP DISPLAY"  ,S_SKIP|S_TITLE,m_null,SB_X,SB_Y+ 6*8},
+  { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 6 * 8 },
 
-  {"HEALTH LOW/OK"     ,S_NUM       ,m_null,SB_X,SB_Y+ 7*8, {"health_red"}},
-  {"HEALTH OK/GOOD"    ,S_NUM       ,m_null,SB_X,SB_Y+ 8*8, {"health_yellow"}},
-  {"HEALTH GOOD/EXTRA" ,S_NUM       ,m_null,SB_X,SB_Y+ 9*8, {"health_green"}},
-  {"ARMOR COLOR DEPENDS ON TYPE",S_YESNO, m_null,SB_X,SB_Y+ 10*8, {"sts_armorcolor_type"}},
-  {"ARMOR LOW/OK"      ,S_NUM       ,m_null,SB_X,SB_Y+11*8, {"armor_red"}},
-  {"ARMOR OK/GOOD"     ,S_NUM       ,m_null,SB_X,SB_Y+12*8, {"armor_yellow"}},
-  {"ARMOR GOOD/EXTRA"  ,S_NUM       ,m_null,SB_X,SB_Y+13*8, {"armor_green"}},
-  {"AMMO LOW/OK"       ,S_NUM       ,m_null,SB_X,SB_Y+14*8, {"ammo_red"}},
-  {"AMMO OK/GOOD"      ,S_NUM       ,m_null,SB_X,SB_Y+15*8, {"ammo_yellow"}},
-  {"BACKPACK CHANGES THRESHOLDS",S_CHOICE,m_null,SB_X,SB_Y+16*8,
-   {"ammo_colour_behaviour"},0,NULL,ammo_colour_behaviour_list},
+  { "HEALTH LOW/OK", S_NUM, m_null, SB_X, SB_Y + 7 * 8, {"health_red" } },
+  { "HEALTH OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 8 * 8, {"health_yellow" } },
+  { "HEALTH GOOD/EXTRA", S_NUM, m_null, SB_X, SB_Y + 9 * 8, {"health_green" } },
+  { "AMMO LOW/OK", S_NUM, m_null, SB_X, SB_Y + 10 * 8, {"ammo_red" } },
+  { "AMMO OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 11 * 8, {"ammo_yellow" } },
 
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-
-  //e6y
-  {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,SB_Y+20*8, {stat_settings2}},
-  // Final entry
-  {0,S_SKIP|S_END,m_null}
+  { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
+  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, SB_Y + 20 * 8, { stat_settings2 } },
+  { 0, S_SKIP | S_END, m_null }
 };
 
 //e6y
@@ -2941,10 +2931,12 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 setup_menu_t stat_settings2[] =
 {
   { "HUD SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 1 * 8 },
+
   { "REPORT REVEALED SECRETS", S_YESNO, m_null, HUD_X, SB_Y + 2 * 8, {"hudadd_secretarea" } },
   { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_null, HUD_X, SB_Y + 3 * 8, {"hudadd_demoprogressbar" } },
 
   { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 5 * 8 },
+
   { "ENABLE CROSSHAIR", S_CHOICE, m_null, HUD_X, SB_Y + 6 * 8, { "hudadd_crosshair" }, 0, 0, crosshair_str },
   { "SCALE CROSSHAIR", S_YESNO, m_null, HUD_X, SB_Y + 7 * 8, { "hudadd_crosshair_scale" } },
   { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_null, HUD_X, SB_Y + 8 * 8, {"hudadd_crosshair_health" } },
