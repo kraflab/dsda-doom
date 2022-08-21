@@ -952,19 +952,11 @@ default_t defaults[] =
    {ammo_colour_behaviour_max-1}, // whether backpack changes thresholds above
    0,ammo_colour_behaviour_max-1,def_int,ss_stat},
 
-  //jff 2/16/98 HUD and status feature controls
-  {"hud_num",    {&hud_num}, {6},0,100,
-   def_int,ss_none},
   //jff 2/23/98
-  {"hud_displayed", {&hud_displayed},  {0},0,1, // whether hud is displayed
-   def_bool,ss_none}, // enables display of HUD
+  { "hud_displayed", { &hud_displayed },  { 0 }, 0, 1, def_bool, ss_none },
 
   { "Prboom-plus heads-up display settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-    { "hudadd_gamespeed", { &hudadd_gamespeed }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_leveltime", { &hudadd_leveltime }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_demotime", { &hudadd_demotime }, { 0 }, 0, 1, def_bool, ss_stat },
   { "hudadd_secretarea", { &hudadd_secretarea }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_maxtotals", { &hudadd_maxtotals }, { 0 }, 0, 1, def_bool, ss_stat },
   { "hudadd_demoprogressbar", { &hudadd_demoprogressbar }, { 1 }, 0, 1, def_bool, ss_stat },
   { "hudadd_crosshair", { &hudadd_crosshair }, { 0 }, 0, HU_CROSSHAIRS - 1, def_bool, ss_stat },
   { "hudadd_crosshair_scale", { &hudadd_crosshair_scale }, { 0 }, 0, 1, def_bool, ss_stat },

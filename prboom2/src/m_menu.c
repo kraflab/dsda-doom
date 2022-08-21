@@ -2937,29 +2937,25 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 };
 
 //e6y
-#define ADVHUD_X 284
+#define HUD_X 284
 setup_menu_t stat_settings2[] =
 {
-  {"ADVANCED HUD SETTINGS"       ,S_SKIP|S_TITLE,m_null,ADVHUD_X,SB_Y+1*8},
-  {"REPORT REVEALED SECRETS"     ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 2*8, {"hudadd_secretarea"}},
-  {"MAX TOTALS"                  ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 3*8, {"hudadd_maxtotals"}},
-  {"SHOW GAMESPEED"              ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 4*8, {"hudadd_gamespeed"}},
-  {"SHOW LEVELTIME"              ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 5*8, {"hudadd_leveltime"}},
-  {"SHOW DEMOTIME"               ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 6*8, {"hudadd_demotime"}},
-  {"SHOW PROGRESS BAR DURING DEMO PLAYBACK" ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 7*8, {"hudadd_demoprogressbar"}},
+  { "HUD SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 1 * 8 },
+  { "REPORT REVEALED SECRETS", S_YESNO, m_null, HUD_X, SB_Y + 2 * 8, {"hudadd_secretarea" } },
+  { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_null, HUD_X, SB_Y + 3 * 8, {"hudadd_demoprogressbar" } },
 
-  {"CROSSHAIR SETTINGS"            ,S_SKIP|S_TITLE,m_null,ADVHUD_X,SB_Y+9*8},
-  {"ENABLE CROSSHAIR"              ,S_CHOICE   ,m_null,ADVHUD_X,SB_Y+10*8, {"hudadd_crosshair"}, 0, 0, crosshair_str},
-  {"SCALE CROSSHAIR"               ,S_YESNO    ,m_null,ADVHUD_X,SB_Y+11*8, {"hudadd_crosshair_scale"}},
-  {"CHANGE CROSSHAIR COLOR BY PLAYER HEALTH" ,S_YESNO    ,m_null,ADVHUD_X,SB_Y+12*8, {"hudadd_crosshair_health"}},
-  {"CHANGE CROSSHAIR COLOR ON TARGET"        ,S_YESNO    ,m_null,ADVHUD_X,SB_Y+13*8, {"hudadd_crosshair_target"}},
-  {"LOCK CROSSHAIR ON TARGET"                ,S_YESNO    ,m_null,ADVHUD_X,SB_Y+14*8, {"hudadd_crosshair_lock_target"}},
-  {"DEFAULT CROSSHAIR COLOR"                 ,S_CRITEM   ,m_null,ADVHUD_X,SB_Y+15*8, {"hudadd_crosshair_color"}},
-  {"TARGET CROSSHAIR COLOR"                  ,S_CRITEM   ,m_null,ADVHUD_X,SB_Y+16*8, {"hudadd_crosshair_target_color"}},
+  { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 5 * 8 },
+  { "ENABLE CROSSHAIR", S_CHOICE, m_null, HUD_X, SB_Y + 6 * 8, { "hudadd_crosshair" }, 0, 0, crosshair_str },
+  { "SCALE CROSSHAIR", S_YESNO, m_null, HUD_X, SB_Y + 7 * 8, { "hudadd_crosshair_scale" } },
+  { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_null, HUD_X, SB_Y + 8 * 8, {"hudadd_crosshair_health" } },
+  { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 9 * 8, {"hudadd_crosshair_target" } },
+  { "LOCK CROSSHAIR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 10 * 8, {"hudadd_crosshair_lock_target" } },
+  { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 11 * 8, {"hudadd_crosshair_color" } },
+  { "TARGET CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 12 * 8, {"hudadd_crosshair_target_color" } },
 
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-  {"<-",S_SKIP|S_PREV,m_null,KB_PREV,SB_Y+20*8, {stat_settings1}},
-  {0,S_SKIP|S_END,m_null}
+  { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, SB_Y + 20 * 8, { stat_settings1 } },
+  { 0, S_SKIP | S_END, m_null }
 };
 
 // Setting up for the Status Bar / HUD screen. Turn on flags, set pointers,
@@ -4885,15 +4881,14 @@ dboolean M_Responder (event_t* ev) {
     {
       if (automapmode & am_active)    // jff 2/22/98
         return false;                  // HUD mode control
-      if (screenSize<8)                // function on default F5
-        while (screenSize<8 || !hud_displayed) // make hud visible
+      if (screenSize < 8)                // function on default F5
+        while (screenSize < 8 || !hud_displayed) // make hud visible
           M_SizeDisplay(1);            // when configuring it
       else
-        {
+      {
         hud_displayed = 1;               //jff 3/3/98 turn hud on
-        HU_NextHud();
-        HU_MoveHud(true);                //jff 3/9/98 move it now to avoid glitch
-        }
+        // HU_NextHud();
+      }
       return true;
     }
 
