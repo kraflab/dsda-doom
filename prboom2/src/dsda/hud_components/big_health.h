@@ -12,19 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA HUD Components
+//	DSDA Big Health HUD Component
 //
 
-#include "hud_components/ammo_text.h"
-#include "hud_components/armor_text.h"
-#include "hud_components/big_ammo.h"
-#include "hud_components/big_armor.h"
-#include "hud_components/big_health.h"
-#include "hud_components/composite_time.h"
-#include "hud_components/health_text.h"
-#include "hud_components/keys.h"
-#include "hud_components/ready_ammo_text.h"
-#include "hud_components/speed_text.h"
-#include "hud_components/stat_totals.h"
-#include "hud_components/tracker.h"
-#include "hud_components/weapon_text.h"
+#ifndef __DSDA_HUD_COMPONENT_BIG_HEALTH__
+#define __DSDA_HUD_COMPONENT_BIG_HEALTH__
+
+void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateBigHealthHC(void);
+void dsda_DrawBigHealthHC(void);
+void dsda_EraseBigHealthHC(void);
+
+#endif
