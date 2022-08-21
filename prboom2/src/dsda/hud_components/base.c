@@ -49,6 +49,8 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
     g_cr_gray,
     vpt
   );
+
+  component->text.space_width = 5;
 }
 
 void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt) {

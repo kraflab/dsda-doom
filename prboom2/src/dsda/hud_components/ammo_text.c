@@ -56,10 +56,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
 void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt) {
   int i;
 
-  for (i = 0; i < AMMO_COMPONENT_COUNT; ++i) {
+  for (i = 0; i < AMMO_COMPONENT_COUNT; ++i)
     dsda_InitTextHC(&component[i], x_offset, y_offset - i * 8, vpt);
-    component[i].text.space_width = 5;
-  }
 }
 
 void dsda_UpdateAmmoTextHC(void) {
