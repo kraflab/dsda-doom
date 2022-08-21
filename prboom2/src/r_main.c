@@ -61,6 +61,7 @@
 #include "e6y.h"//e6y
 #include "xs_Float.h"
 
+#include "dsda/exhud.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 #include "dsda/gl/render_scale.h"
@@ -720,6 +721,8 @@ void R_ExecuteSetViewSize (void)
 
   if (V_IsOpenGLMode())
     dsda_GLSetRenderViewportParams();
+
+  dsda_InitExHud();
 }
 
 //
