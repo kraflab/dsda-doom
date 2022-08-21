@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Intermission Display
+//	DSDA Extended HUD
 //
 
 #ifndef __DSDA_EXHUD__
