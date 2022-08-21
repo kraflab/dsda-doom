@@ -1016,7 +1016,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   cmd->forwardmove += fudgef((signed char)forward);
   cmd->sidemove += side;
 
-  dsda_ApplyQuickstartMouseCache(cmd);
+  dsda_ApplyQuickstartMouseCache(cmd, strafe);
 
   if ((demorecording && !longtics) || shorttics)
   {

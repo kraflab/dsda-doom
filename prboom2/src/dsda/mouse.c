@@ -20,7 +20,7 @@
 int dsda_quickstart_cache_tics;
 static int quickstart_queued;
 
-void dsda_ApplyQuickstartMouseCache(ticcmd_t* cmd) {
+void dsda_ApplyQuickstartMouseCache(ticcmd_t* cmd, int strafe) {
   static signed short angleturn_cache[35];
   static unsigned int angleturn_cache_index;
   int i;
@@ -31,6 +31,9 @@ void dsda_ApplyQuickstartMouseCache(ticcmd_t* cmd) {
     signed short result = 0;
 
     quickstart_queued = false;
+
+    if (strafe)
+      return;
 
     for (i = 0; i < dsda_quickstart_cache_tics; ++i)
       result += angleturn_cache[i];
