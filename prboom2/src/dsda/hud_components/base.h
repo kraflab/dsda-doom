@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_BASE__
 #define __DSDA_HUD_COMPONENT_BASE__
 
-#include "stdio.h"
+#include <stdio.h>
 
 #include "doomdef.h"
 #include "doomstat.h"
