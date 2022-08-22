@@ -42,6 +42,8 @@ set(LUMPS
     lumps/crblack.lmp
     lumps/crpurple.lmp
     lumps/crwhite.lmp
+    lumps/crheresy.lmp
+    lumps/crhexen.lmp
     lumps/soundfont/sndfont.lmp
 )
 

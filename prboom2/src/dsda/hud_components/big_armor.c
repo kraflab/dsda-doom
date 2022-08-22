@@ -38,11 +38,11 @@ static void dsda_DrawComponent(void) {
   y = component.y;
 
   if (!player->armorpoints[ARMOR_ARMOR]) {
-    cm = g_cr_red;
+    cm = CR_RED;
     lump = armor_lump_green;
   }
   else if (player->armortype < 2) {
-    cm = g_cr_green;
+    cm = CR_GREEN;
     lump = armor_lump_green;
   }
   else {

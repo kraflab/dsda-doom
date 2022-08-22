@@ -1807,7 +1807,7 @@ void M_DrawSetup(void)
   if (raven) return MN_DrawSetup();
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(124, 15, "M_SETUP", CR_DEFAULT, "SETUP", g_cr_gold);
+  M_DrawTitle(124, 15, "M_SETUP", CR_DEFAULT, "SETUP", CR_GOLD);
 }
 
 /////////////////////////////
@@ -2163,25 +2163,25 @@ static void M_DrawScreenItems(const setup_menu_t* src)
   //e6y
     if (warning_about_changes & S_CANT_GL_ARB_MULTITEXTURE) {
   strcpy(menu_buffer, "Extension GL_ARB_multitexture not found");
-  M_DrawMenuString(30,176,g_cr_red);
+  M_DrawMenuString(30,176,CR_RED);
   } else
     if (warning_about_changes & S_CANT_GL_ARB_MULTISAMPLEFACTOR) {
   strcpy(menu_buffer, "Mast be even number like 0-none, 2, 4, 6");
-  M_DrawMenuString(30,176,g_cr_red);
+  M_DrawMenuString(30,176,CR_RED);
   } else
 
     if (warning_about_changes & S_BADVAL) {
   strcpy(menu_buffer, "Value out of Range");
-  M_DrawMenuString(100,176,g_cr_red);
+  M_DrawMenuString(100,176,CR_RED);
     } else if (warning_about_changes & S_PRGWARN) {
         strcpy(menu_buffer, "Warning: Program must be restarted to see changes");
-  M_DrawMenuString(3, 176, g_cr_red);
+  M_DrawMenuString(3, 176, CR_RED);
     } else if (warning_about_changes & S_BADVID) {
         strcpy(menu_buffer, "Video mode not supported");
-  M_DrawMenuString(80,176,g_cr_red);
+  M_DrawMenuString(80,176,CR_RED);
     } else {
   strcpy(menu_buffer, "Warning: Changes are pending until next game");
-        M_DrawMenuString(18,184,g_cr_red);
+        M_DrawMenuString(18,184,CR_RED);
     }
   }
 
@@ -2219,7 +2219,7 @@ static void M_DrawDefVerify(void)
 
   if (whichSkull) { // blink the text
     strcpy(menu_buffer,"Reset to defaults? (Y or N)");
-    M_DrawMenuString(VERIFYBOXXORG+8,VERIFYBOXYORG+8,g_cr_red);
+    M_DrawMenuString(VERIFYBOXXORG+8,VERIFYBOXYORG+8,CR_RED);
   }
 }
 
@@ -2768,7 +2768,7 @@ void M_DrawKeybnd(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", g_cr_gold);
+  M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -2873,7 +2873,7 @@ void M_DrawWeapons(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", g_cr_gold);
+  M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -2982,7 +2982,7 @@ void M_DrawStatusHUD(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", g_cr_gold);
+  M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3165,7 +3165,7 @@ void M_DrawAutoMap(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", g_cr_gold);
+  M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3553,7 +3553,7 @@ void M_DrawGeneral(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", g_cr_gold);
+  M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3645,7 +3645,7 @@ void M_DrawMessages(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(103, 2, "M_MESS", CR_DEFAULT, "MESSAGES", g_cr_gold);
+  M_DrawTitle(103, 2, "M_MESS", CR_DEFAULT, "MESSAGES", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
   if (default_verify)
@@ -4280,7 +4280,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   {
     // Use V_DrawBackground here deliberately to force drawing a background
     V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
-    M_DrawTitle(81, 9, "PRBOOM", g_cr_gold, PACKAGE_NAME " v" PACKAGE_VERSION, g_cr_gold);
+    M_DrawTitle(81, 9, "PRBOOM", CR_GOLD, PACKAGE_NAME " v" PACKAGE_VERSION, CR_GOLD);
     M_DrawScreenItems(cred_settings);
   }
 }

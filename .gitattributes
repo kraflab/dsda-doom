@@ -164,6 +164,8 @@ prboom2/data/lumps/crbrown.lmp -text
 prboom2/data/lumps/crgold.lmp -text
 prboom2/data/lumps/crgray.lmp -text
 prboom2/data/lumps/crgreen.lmp -text
+prboom2/data/lumps/crheresy.lmp -text
+prboom2/data/lumps/crhexen.lmp -text
 prboom2/data/lumps/crorange.lmp -text
 prboom2/data/lumps/crred.lmp -text
 prboom2/data/lumps/crtan.lmp -text

@@ -79,7 +79,7 @@ void dsda_InitHud(patchnum_t* font) {
     DSDA_SPLIT_Y,
     font,
     HU_FONTSTART,
-    g_cr_gray,
+    CR_GRAY,
     VPT_ALIGN_LEFT
   );
 

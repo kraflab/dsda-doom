@@ -140,9 +140,9 @@ void dsda_InitCommandDisplay(patchnum_t* font) {
     firsttime = 0;
 
     for (i = 0; i < MAX_HISTORY; ++i)
-      dsda_InitCommandDisplayLine(&command_history[i], i + 1, g_cr_gray, font);
+      dsda_InitCommandDisplayLine(&command_history[i], i + 1, CR_GRAY, font);
 
-    dsda_InitCommandDisplayLine(&next_command_display, 1, g_cr_gold, font);
+    dsda_InitCommandDisplayLine(&next_command_display, 1, CR_GOLD, font);
   }
 }
 

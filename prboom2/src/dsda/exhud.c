@@ -17,6 +17,7 @@
 
 #include "hu_stuff.h"
 #include "r_main.h"
+#include "v_video.h"
 
 #include "dsda/global.h"
 #include "dsda/hud_components.h"
@@ -165,9 +166,9 @@ static void dsda_TurnComponentOn(int id, int x, int y, int vpt) {
 void dsda_InitExHud(void) {
   int i;
 
-  exhud_color_default = g_cr_gray;
-  exhud_color_warning = g_cr_green;
-  exhud_color_alert = g_cr_red;
+  exhud_color_default = CR_GRAY;
+  exhud_color_warning = CR_GREEN;
+  exhud_color_alert = CR_RED;
 
   for (i = 0; i < exhud_component_count; ++i)
     components[i].on = false;

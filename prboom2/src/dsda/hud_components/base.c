@@ -46,7 +46,7 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
     x, y,
     hu_font2,
     HU_FONTSTART,
-    g_cr_gray,
+    CR_GRAY,
     vpt
   );
 

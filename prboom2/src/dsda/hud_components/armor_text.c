@@ -31,8 +31,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     max_size,
     "\x1b%cARM %3d%%",
     player->armorpoints[ARMOR_ARMOR] <= 0 ? 1 :
-      player->armortype == 1 ? 0x30 + g_cr_green :
-      0x30 + g_cr_blue,
+      player->armortype == 1 ? 0x30 + CR_GREEN :
+      0x30 + CR_BLUE,
     player->armorpoints[ARMOR_ARMOR]
   );
 }

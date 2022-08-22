@@ -30,10 +30,10 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     str,
     max_size,
     "\x1b%cSPEED \x1b%c%d%%",
-    0x30 + g_cr_gray,
-    speed < 100 ? 0x30 + g_cr_gold :
-      speed == 100 ? 0x30 + g_cr_green :
-      0x30 + g_cr_blue,
+    0x30 + CR_GRAY,
+    speed < 100 ? 0x30 + CR_GOLD :
+      speed == 100 ? 0x30 + CR_GREEN :
+      0x30 + CR_BLUE,
     speed
   );
 }

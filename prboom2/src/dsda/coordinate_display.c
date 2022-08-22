@@ -125,12 +125,12 @@ static void dsda_WriteVelocity(dsda_text_t* text) {
 
   dsda_velocity_color =
     v >= THRESHOLD_3V ?
-      0x30 + g_cr_red   :
+      0x30 + CR_RED   :
     v >= THRESHOLD_2V ?
-      0x30 + g_cr_blue  :
+      0x30 + CR_BLUE  :
     v >= THRESHOLD_1V ?
-      0x30 + g_cr_green :
-    0x30 + g_cr_gray;
+      0x30 + CR_GREEN :
+    0x30 + CR_GRAY;
 
   if (v)
     snprintf(text->msg, sizeof(text->msg), "\x1b%cV: %.3f", dsda_velocity_color, v);
@@ -147,12 +147,12 @@ static void dsda_WriteDistance(dsda_text_t* text) {
 
   dsda_distance_color =
     v >= THRESHOLD_3D ?
-      0x30 + g_cr_red   :
+      0x30 + CR_RED   :
     v >= THRESHOLD_2D ?
-      0x30 + g_cr_blue  :
+      0x30 + CR_BLUE  :
     v >= THRESHOLD_1D ?
-      0x30 + g_cr_green :
-    0x30 + g_cr_gray;
+      0x30 + CR_GREEN :
+    0x30 + CR_GRAY;
 
   if (v)
     snprintf(text->msg, sizeof(text->msg), "\x1b%cD: %.3f", dsda_distance_color, v);
@@ -171,7 +171,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_green,
+    CR_GREEN,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
@@ -183,7 +183,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_green,
+    CR_GREEN,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
@@ -195,7 +195,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_green,
+    CR_GREEN,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
@@ -207,7 +207,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_green,
+    CR_GREEN,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
@@ -219,7 +219,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_gray,
+    CR_GRAY,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
@@ -231,7 +231,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_gray,
+    CR_GRAY,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
@@ -243,7 +243,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_gray,
+    CR_GRAY,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
@@ -255,7 +255,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_gray,
+    CR_GRAY,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
@@ -267,7 +267,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_gray,
+    CR_GRAY,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 
@@ -279,7 +279,7 @@ void dsda_InitCoordinateDisplay(patchnum_t* font) {
     COORDINATE_TEXT_Y + offset,
     font,
     HU_FONTSTART,
-    g_cr_gray,
+    CR_GRAY,
     VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
   );
 }

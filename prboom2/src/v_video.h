@@ -75,7 +75,7 @@ typedef enum
   CR_GREEN,   //3
   CR_BROWN,   //4
   CR_GOLD,    //5
-  CR_RED,     //6
+  CR_DEFAULT, //6
   CR_BLUE,    //7
   CR_ORANGE,  //8
   CR_YELLOW,  //9
@@ -83,11 +83,10 @@ typedef enum
   CR_BLACK,   //11
   CR_PURPLE,  //12
   CR_WHITE,   //13
-  CR_LIMIT    //14 //jff 2/27/98 added for range check
+  CR_RED,     //14
+  CR_LIMIT    //15 //jff 2/27/98 added for range check
 } crange_idx_e;
 //jff 1/16/98 end palette color range additions
-
-#define CR_DEFAULT CR_RED   /* default value for out of range colors */
 
 typedef struct {
   byte *data;          // pointer to the screen content
