@@ -194,7 +194,11 @@ void HUlib_drawTextLine
       if (c == '\n')
         continue;
       else if (c == '\x1b')
+      {
         i++;
+        if (i < l->len && l->l[i] < 0x30)
+          l->w += l->l[i];
+      }
       else if (c != ' ' && c >= l->sc && c <= 127)
         l->w += l->f[c - l->sc].width;
       else
@@ -216,9 +220,13 @@ void HUlib_drawTextLine
       x=x-x%80+80;
     else if (c=='\x1b')  //jff 2/17/98 escape code for color change
     {                    //jff 3/26/98 changed to actual escape char
-      if (++i<l->len)
+      if (++i < l->len)
+      {
         if (l->l[i] >= '0' && l->l[i] < '0' + CR_LIMIT)
           l->cm = l->l[i]-'0';
+        else if (l->l[i] < 0x30)
+          x += l->l[i];
+      }
     }
     else  if (c != ' ' && c >= l->sc && c <= 127)
     {
