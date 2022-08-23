@@ -46,7 +46,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
   snprintf(
     str,
     max_size,
-    "%s %3d / %3d",
+    "%s %3d\x1b\x01/\x1b\x01%3d",
     name,
     current_ammo,
     max_ammo
