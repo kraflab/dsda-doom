@@ -24,7 +24,7 @@ void dsda_LineTrackerHC(char* str, size_t max_size, int id) {
     str,
     max_size,
     "\x1b%cl %d: %d %d",
-    lines[id].special ? 0x30 + exhud_color_warning : 0x30 + exhud_color_default,
+    lines[id].special ? HUlib_Color(exhud_color_warning) : HUlib_Color(exhud_color_default),
     id,
     lines[id].special,
     lines[id].player_activations

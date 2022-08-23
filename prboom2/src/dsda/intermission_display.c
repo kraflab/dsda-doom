@@ -66,7 +66,7 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
   char color;
 
   delta[0] = '\0';
-  color = 0x30 + CR_GRAY;
+  color = HUlib_Color(CR_GRAY);
 
   if (split && !split->first_time) {
     const char* sign;
@@ -74,7 +74,7 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
 
     diff = dsda_SplitComparisonDelta(&split->leveltime);
     sign = diff >= 0 ? "+" : "-";
-    color = diff >= 0 ? 0x30 + CR_GRAY : 0x30 + CR_GREEN;
+    color = diff >= 0 ? HUlib_Color(CR_GRAY) : HUlib_Color(CR_GREEN);
     diff = abs(diff);
 
     if (diff >= 2100) {
@@ -112,7 +112,7 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
   char color;
 
   delta[0] = '\0';
-  color = 0x30 + CR_GRAY;
+  color = HUlib_Color(CR_GRAY);
 
   if (split && !split->first_time) {
     const char* sign;
@@ -120,7 +120,7 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
 
     diff = dsda_SplitComparisonDelta(&split->totalleveltimes) / 35;
     sign = diff >= 0 ? "+" : "-";
-    color = diff >= 0 ? 0x30 + CR_GRAY : 0x30 + CR_GREEN;
+    color = diff >= 0 ? HUlib_Color(CR_GRAY) : HUlib_Color(CR_GREEN);
     diff = abs(diff);
 
     if (diff >= 60) {

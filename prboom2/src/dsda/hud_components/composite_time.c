@@ -33,11 +33,11 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       str,
       max_size,
       "\x1b%ctime \x1b%c%d:%02d \x1b%c%d:%05.2f ",
-      CR_GRAY + 0x30,
-      CR_GOLD + 0x30,
+      HUlib_Color(CR_GRAY),
+      HUlib_Color(CR_GOLD),
       total_time / 35 / 60,
       (total_time % (60 * 35)) / 35,
-      CR_GREEN + 0x30,
+      HUlib_Color(CR_GREEN),
       leveltime / 35 / 60,
       (float) (leveltime % (60 * 35)) / 35
     );
@@ -46,8 +46,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       str,
       max_size,
       "\x1b%ctime \x1b%c%d:%05.2f ",
-      CR_GRAY + 0x30,
-      CR_GREEN + 0x30,
+      HUlib_Color(CR_GRAY),
+      HUlib_Color(CR_GREEN),
       leveltime / 35 / 60,
       (float) (leveltime % (60 * 35)) / 35
     );

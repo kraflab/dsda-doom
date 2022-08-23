@@ -700,7 +700,7 @@ void HU_Drawer(void)
       if (hexen)
         ttime = players[consoleplayer].worldTimer / TICRATE;
 
-      sprintf(str, "Monsters: \x1b%c%d/%d", '0' + hudcolor_mapstat_value,
+      sprintf(str, "Monsters: \x1b%c%d/%d", HUlib_Color(hudcolor_mapstat_value),
         players[consoleplayer].killcount - players[consoleplayer].maxkilldiscount,
         totalkills);
       HUlib_clearTextLine(&w_map_monsters);
@@ -709,7 +709,7 @@ void HU_Drawer(void)
         HUlib_addCharToTextLine(&w_map_monsters, *(s++));
       HUlib_drawTextLine(&w_map_monsters, false);
 
-      sprintf(str, "Secrets: \x1b%c%d/%d", '0' + hudcolor_mapstat_value,
+      sprintf(str, "Secrets: \x1b%c%d/%d", HUlib_Color(hudcolor_mapstat_value),
         players[consoleplayer].secretcount, totalsecret);
       HUlib_clearTextLine(&w_map_secrets);
       s = str;
@@ -717,7 +717,7 @@ void HU_Drawer(void)
         HUlib_addCharToTextLine(&w_map_secrets, *(s++));
       HUlib_drawTextLine(&w_map_secrets, false);
 
-      sprintf(str, "Items: \x1b%c%d/%d", '0' + hudcolor_mapstat_value,
+      sprintf(str, "Items: \x1b%c%d/%d", HUlib_Color(hudcolor_mapstat_value),
         players[consoleplayer].itemcount, totalitems);
       HUlib_clearTextLine(&w_map_items);
       s = str;

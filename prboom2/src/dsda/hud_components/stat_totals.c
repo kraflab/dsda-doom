@@ -44,7 +44,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 
   for (i = 0; i < g_maxplayers; ++i) {
     if (playeringame[i]) {
-      color = (i == displayplayer ? 0x30 + CR_GREEN : 0x30 + CR_GRAY);
+      color = (i == displayplayer ? HUlib_Color(CR_GREEN) : HUlib_Color(CR_GRAY));
 
       if (playerscount == 0) {
         allkills_len = snprintf(
@@ -94,20 +94,20 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     max_kill_requirement = totalkills;
   }
 
-  killcolor = (fullkillcount >= max_kill_requirement ? 0x30 + CR_BLUE : 0x30 + CR_GOLD);
-  secretcolor = (fullsecretcount >= totalsecret ? 0x30 + CR_BLUE : 0x30 + CR_GOLD);
-  itemcolor = (fullitemcount >= totalitems ? 0x30 + CR_BLUE : 0x30 + CR_GOLD);
+  killcolor = (fullkillcount >= max_kill_requirement ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GOLD));
+  secretcolor = (fullsecretcount >= totalsecret ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GOLD));
+  itemcolor = (fullitemcount >= totalitems ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GOLD));
 
   if (playerscount < 2) {
     snprintf(
       str,
       max_size,
       "\x1b%cK \x1b%c%d/%d \x1b%cI \x1b%c%d/%d \x1b%cS \x1b%c%d/%d",
-      0x30 + CR_RED,
+      HUlib_Color(CR_RED),
       killcolor, fullkillcount, max_kill_requirement,
-      0x30 + CR_RED,
+      HUlib_Color(CR_RED),
       itemcolor, players[displayplayer].itemcount, totalitems,
-      0x30 + CR_RED,
+      HUlib_Color(CR_RED),
       secretcolor, fullsecretcount, totalsecret
     );
   }
@@ -116,11 +116,11 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       str,
       max_size,
       "\x1b%cK %s \x1b%c%d/%d \x1b%cI \x1b%c%d/%d \x1b%cS %s \x1b%c%d/%d",
-      0x30 + CR_RED,
+      HUlib_Color(CR_RED),
       allkills, killcolor, fullkillcount, max_kill_requirement,
-      0x30 + CR_RED,
+      HUlib_Color(CR_RED),
       itemcolor, players[displayplayer].itemcount, totalitems,
-      0x30 + CR_RED,
+      HUlib_Color(CR_RED),
       allsecrets, secretcolor, fullsecretcount, totalsecret
     );
   }

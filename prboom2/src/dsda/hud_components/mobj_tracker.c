@@ -31,7 +31,7 @@ void dsda_MobjTrackerHC(char* str, size_t max_size, int id, mobj_t* mobj) {
     str,
     max_size,
     "\x1b%cm %d: %d",
-    health > 0 ? 0x30 + exhud_color_warning : 0x30 + exhud_color_default,
+    health > 0 ? HUlib_Color(exhud_color_warning) : HUlib_Color(exhud_color_default),
     id, health
   );
 }

@@ -30,9 +30,9 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     str,
     max_size,
     "\x1b%cARM %3d%%",
-    player->armorpoints[ARMOR_ARMOR] <= 0 ? 1 :
-      player->armortype == 1 ? 0x30 + CR_GREEN :
-      0x30 + CR_BLUE,
+    player->armorpoints[ARMOR_ARMOR] <= 0 ? HUlib_Color(CR_GRAY) :
+      player->armortype == 1 ? HUlib_Color(CR_GREEN) :
+      HUlib_Color(CR_BLUE),
     player->armorpoints[ARMOR_ARMOR]
   );
 }

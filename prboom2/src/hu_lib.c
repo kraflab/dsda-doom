@@ -49,6 +49,13 @@ static void HUlib_init(void)
 {
 }
 
+#define HU_COLOR 0x30
+
+char HUlib_Color(int cm)
+{
+  return HU_COLOR + cm;
+}
+
 ////////////////////////////////////////////////////////
 //
 // Basic text line widget
@@ -196,7 +203,7 @@ void HUlib_drawTextLine
       else if (c == '\x1b')
       {
         i++;
-        if (i < l->len && l->l[i] < 0x30)
+        if (i < l->len && l->l[i] < HU_COLOR)
           l->w += l->l[i];
       }
       else if (c != ' ' && c >= l->sc && c <= 127)
@@ -222,9 +229,9 @@ void HUlib_drawTextLine
     {                    //jff 3/26/98 changed to actual escape char
       if (++i < l->len)
       {
-        if (l->l[i] >= '0' && l->l[i] < '0' + CR_LIMIT)
-          l->cm = l->l[i]-'0';
-        else if (l->l[i] < 0x30)
+        if (l->l[i] >= HU_COLOR && l->l[i] < HU_COLOR + CR_LIMIT)
+          l->cm = l->l[i] - HU_COLOR;
+        else if (l->l[i] < HU_COLOR)
           x += l->l[i];
       }
     }

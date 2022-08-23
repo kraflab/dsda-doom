@@ -125,12 +125,12 @@ static void dsda_WriteVelocity(dsda_text_t* text) {
 
   dsda_velocity_color =
     v >= THRESHOLD_3V ?
-      0x30 + CR_RED   :
+      HUlib_Color(CR_RED)   :
     v >= THRESHOLD_2V ?
-      0x30 + CR_BLUE  :
+      HUlib_Color(CR_BLUE)  :
     v >= THRESHOLD_1V ?
-      0x30 + CR_GREEN :
-    0x30 + CR_GRAY;
+      HUlib_Color(CR_GREEN) :
+    HUlib_Color(CR_GRAY);
 
   if (v)
     snprintf(text->msg, sizeof(text->msg), "\x1b%cV: %.3f", dsda_velocity_color, v);
@@ -147,12 +147,12 @@ static void dsda_WriteDistance(dsda_text_t* text) {
 
   dsda_distance_color =
     v >= THRESHOLD_3D ?
-      0x30 + CR_RED   :
+      HUlib_Color(CR_RED)   :
     v >= THRESHOLD_2D ?
-      0x30 + CR_BLUE  :
+      HUlib_Color(CR_BLUE)  :
     v >= THRESHOLD_1D ?
-      0x30 + CR_GREEN :
-    0x30 + CR_GRAY;
+      HUlib_Color(CR_GREEN) :
+    HUlib_Color(CR_GRAY);
 
   if (v)
     snprintf(text->msg, sizeof(text->msg), "\x1b%cD: %.3f", dsda_distance_color, v);

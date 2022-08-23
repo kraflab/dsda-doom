@@ -3892,8 +3892,8 @@ void M_InitExtendedHelp(void)
 
   extended_help_count = 0;
   for (index = 1 ; index < 100 ; index++) {
-    namebfr[4] = index/10 + 0x30;
-    namebfr[5] = index%10 + 0x30;
+    namebfr[4] = index/10 + '0';
+    namebfr[5] = index%10 + '0';
     i = W_CheckNumForName(namebfr);
     if (i == -1) {
       if (extended_help_count) {
@@ -3938,8 +3938,8 @@ void M_DrawExtHelp(void)
   char namebfr[10] = { "HELPnn" }; // CPhipps - make it local & writable
 
   inhelpscreens = true;              // killough 5/1/98
-  namebfr[4] = extended_help_index/10 + 0x30;
-  namebfr[5] = extended_help_index%10 + 0x30;
+  namebfr[4] = extended_help_index/10 + '0';
+  namebfr[5] = extended_help_index%10 + '0';
   // CPhipps - patch drawing updated
   V_DrawNamePatch(0, 0, 0, namebfr, CR_DEFAULT, VPT_STRETCH);
 }
@@ -4986,7 +4986,7 @@ dboolean M_Responder (event_t* ev) {
       {
         if (action != MENU_ENTER)
         {
-          ch -= 0x30; // out of ascii
+          ch -= '0'; // out of ascii
           if (ch < 0 || ch > 9)
             return true; // ignore
           *ptr1->var.def->location.pi = ch;
