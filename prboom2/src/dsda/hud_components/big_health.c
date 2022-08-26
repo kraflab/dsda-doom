@@ -25,6 +25,9 @@
 
 static dsda_patch_component_t component;
 static int health_lump;
+static int patch_delta_x;
+static int patch_vertical_spacing;
+static int patch_spacing;
 
 static void dsda_DrawComponent(void) {
   player_t* player;
@@ -43,17 +46,35 @@ static void dsda_DrawComponent(void) {
 
   V_DrawNumPatch(x, y, FG, health_lump, CR_DEFAULT, component.vpt);
 
-  x += R_NumPatchWidth(health_lump) + PATCH_SPACING;
-  y += PATCH_VERTICAL_SPACING;
+  x += patch_spacing;
+  y += patch_vertical_spacing;
 
   health = player->health < 0 ? 0 : player->health;
 
-  dsda_DrawBigNumber(x, y, PATCH_DELTA_X, 0,
+  dsda_DrawBigNumber(x, y, patch_delta_x, 0,
                      cm, component.vpt, 3, player->health);
 }
 
 void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt) {
-  health_lump = R_NumPatchForSpriteIndex(SPR_MEDI);
+  if (heretic) {
+    health_lump = R_NumPatchForSpriteIndex(HERETIC_SPR_PTN2);
+    patch_delta_x = 10;
+    patch_vertical_spacing = 6;
+    patch_spacing = 4;
+  }
+  else if (hexen) {
+    health_lump = R_NumPatchForSpriteIndex(HEXEN_SPR_PTN2);
+    patch_delta_x = 10;
+    patch_vertical_spacing = 6;
+    patch_spacing = 4;
+  }
+  else {
+    health_lump = R_NumPatchForSpriteIndex(SPR_MEDI);
+    patch_delta_x = 14;
+    patch_vertical_spacing = 2;
+    patch_spacing = 2;
+  }
+  patch_spacing += R_NumPatchWidth(health_lump);
   dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
 }
 
