@@ -47,8 +47,16 @@ static const char* heretic_ammo_name[6] = {
 
 static const int heretic_ammo_type[6] = { 0, 1, 2, 3, 4, 5 };
 
+static const char* hexen_ammo_name[2] = {
+  "BLUE",
+  "GREN",
+};
+
+static const int hexen_ammo_type[2] = { 0, 1 };
+
 static const ammo_component_config_t doom_ammo = { doom_ammo_name, doom_ammo_type, 4 };
 static const ammo_component_config_t heretic_ammo = { heretic_ammo_name, heretic_ammo_type, 6 };
+static const ammo_component_config_t hexen_ammo = { hexen_ammo_name, hexen_ammo_type, 2 };
 
 static const ammo_component_config_t* component_config;
 
@@ -61,7 +69,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
   name = component_config->ammo_name[i];
   i = component_config->ammo_type[i];
   current_ammo = player->ammo[i];
-  max_ammo = player->maxammo[i];
+  max_ammo = hexen ? MAX_MANA : player->maxammo[i];
 
   snprintf(
     str,
@@ -78,6 +86,8 @@ void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt) {
 
   if (heretic)
     component_config = &heretic_ammo;
+  else if (hexen)
+    component_config = &hexen_ammo;
   else
     component_config = &doom_ammo;
 
