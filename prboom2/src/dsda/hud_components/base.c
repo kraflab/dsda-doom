@@ -82,12 +82,10 @@ void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_off
   component->y = y;
   component->vpt = vpt;
 
-  if (heretic) {
+  if (raven)
     digit_lump_format = "IN%.1d";
-  }
-  else {
+  else
     digit_lump_format = "STTNUM%.1d";
-  }
 }
 
 static void dsda_DrawBigDigit(int x, int y, int cm, int vpt, int digit) {
