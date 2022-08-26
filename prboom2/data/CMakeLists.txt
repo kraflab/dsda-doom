@@ -45,6 +45,7 @@ set(LUMPS
     lumps/crheresy.lmp
     lumps/crhexen.lmp
     lumps/soundfont/sndfont.lmp
+    lumps/dsdahud.lmp
 )
 
 set(COLORMAPS
