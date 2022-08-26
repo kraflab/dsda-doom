@@ -189,7 +189,7 @@ void dsda_InitExHud(void) {
     dsda_TurnComponentOn(exhud_composite_time, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
     dsda_TurnComponentOn(exhud_tracker, DSDA_EXHUD_X, (y += 16), VPT_ALIGN_LEFT_BOTTOM);
 
-    dsda_TurnComponentOn(exhud_keys, 320 - DSDA_EXHUD_X - (16 * 5), 30, VPT_ALIGN_RIGHT_BOTTOM);
+    dsda_TurnComponentOn(exhud_keys, 320 - DSDA_EXHUD_X - (17 * 5), 30, VPT_ALIGN_RIGHT_BOTTOM);
 
     dsda_TurnComponentOn(exhud_ammo_text, 320 - DSDA_EXHUD_X - (14 * 5), 32, VPT_ALIGN_RIGHT_BOTTOM);
   }

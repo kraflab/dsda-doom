@@ -23,55 +23,80 @@
 
 static dsda_patch_component_t component;
 
+static const char* dsda_Key1Name(player_t* player) {
+  if (heretic) {
+    if (player->cards[key_yellow])
+      return "ykeyicon";
+  }
+  else {
+    if (player->cards[0] && player->cards[3])
+      return "STKEYS6";
+    else if (player->cards[0])
+      return "STKEYS0";
+    else if (player->cards[3])
+      return "STKEYS3";
+  }
+
+  return NULL;
+}
+
+static const char* dsda_Key2Name(player_t* player) {
+  if (heretic) {
+    if (player->cards[key_green])
+      return "gkeyicon";
+  }
+  else {
+    if (player->cards[1] && player->cards[4])
+      return "STKEYS7";
+    else if (player->cards[1])
+      return "STKEYS1";
+    else if (player->cards[4])
+      return "STKEYS4";
+  }
+
+  return NULL;
+}
+
+static const char* dsda_Key3Name(player_t* player) {
+  if (heretic) {
+    if (player->cards[key_blue])
+      return "bkeyicon";
+  }
+  else {
+    if (player->cards[2] && player->cards[5])
+      return "STKEYS8";
+    else if (player->cards[2])
+      return "STKEYS2";
+    else if (player->cards[5])
+      return "STKEYS5";
+  }
+
+  return NULL;
+}
+
+void drawKey(player_t* player, int* x, int* y, const char* (*key)(player_t*)) {
+  const char* name;
+
+  name = key(player);
+
+  if (name)
+    V_DrawNamePatch(*x, *y, FG, name, CR_DEFAULT, component.vpt);
+
+  *y += PATCH_DELTA_Y;
+}
+
 static void dsda_DrawComponent(void) {
   player_t* player;
   int x, y;
-  const char* name;
 
   player = &players[displayplayer];
 
   x = component.x;
   y = component.y;
 
-  if (player->cards[0] && player->cards[3])
-    name = "STKEYS6";
-  else if (player->cards[0])
-    name = "STKEYS0";
-  else if (player->cards[3])
-    name = "STKEYS3";
-  else
-    name = NULL;
-
-  if (name)
-    V_DrawNamePatch(x, y, FG, name, CR_DEFAULT, component.vpt);
-
-  y += PATCH_DELTA_Y;
-
-  if (player->cards[1] && player->cards[4])
-    name = "STKEYS7";
-  else if (player->cards[1])
-    name = "STKEYS1";
-  else if (player->cards[4])
-    name = "STKEYS4";
-  else
-    name = NULL;
-
-  if (name)
-    V_DrawNamePatch(x, y, FG, name, CR_DEFAULT, component.vpt);
-
-  y += PATCH_DELTA_Y;
-
-  if (player->cards[2] && player->cards[5])
-    name = "STKEYS8";
-  else if (player->cards[2])
-    name = "STKEYS2";
-  else if (player->cards[5])
-    name = "STKEYS5";
-  else
-    name = NULL;
-
-  if (name)
-    V_DrawNamePatch(x, y, FG, name, CR_DEFAULT, component.vpt);
+  drawKey(player, &x, &y, dsda_Key1Name);
+  drawKey(player, &x, &y, dsda_Key2Name);
+  drawKey(player, &x, &y, dsda_Key3Name);
 }
 
 void dsda_InitKeysHC(int x_offset, int y_offset, int vpt) {
