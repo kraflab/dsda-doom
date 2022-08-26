@@ -26,15 +26,36 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 
   player = &players[displayplayer];
 
-  snprintf(
-    str,
-    max_size,
-    "\x1b%cARM %3d%%",
-    player->armorpoints[ARMOR_ARMOR] <= 0 ? HUlib_Color(CR_GRAY) :
-      player->armortype == 1 ? HUlib_Color(CR_GREEN) :
-      HUlib_Color(CR_BLUE),
-    player->armorpoints[ARMOR_ARMOR]
-  );
+  if (hexen) {
+    fixed_t armor_percent;
+
+    armor_percent = pclass[player->pclass].auto_armor_save
+                    + player->armorpoints[ARMOR_ARMOR]
+                    + player->armorpoints[ARMOR_SHIELD]
+                    + player->armorpoints[ARMOR_HELMET]
+                    + player->armorpoints[ARMOR_AMULET];
+
+    snprintf(
+      str,
+      max_size,
+      "\x1b%cARM %3d%%",
+      armor_percent == pclass[player->pclass].auto_armor_save ? HUlib_Color(CR_GRAY) :
+        armor_percent <= (50 << FRACBITS) ? HUlib_Color(CR_GREEN) :
+        HUlib_Color(CR_BLUE),
+      armor_percent >> FRACBITS
+    );
+  }
+  else {
+    snprintf(
+      str,
+      max_size,
+      "\x1b%cARM %3d%%",
+      player->armorpoints[ARMOR_ARMOR] <= 0 ? HUlib_Color(CR_GRAY) :
+        player->armortype == 1 ? HUlib_Color(CR_GREEN) :
+        HUlib_Color(CR_BLUE),
+      player->armorpoints[ARMOR_ARMOR]
+    );
+  }
 }
 
 void dsda_InitArmorTextHC(int x_offset, int y_offset, int vpt) {
