@@ -19,6 +19,9 @@
 
 #include "base.h"
 
+static char digit_lump[9];
+static const char* digit_lump_format;
+
 void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
   int x, y, vpt_align;
 
@@ -78,15 +81,20 @@ void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_off
   component->x = x;
   component->y = y;
   component->vpt = vpt;
-}
 
-static char digit_lump[9];
+  if (heretic) {
+    digit_lump_format = "IN%.1d";
+  }
+  else {
+    digit_lump_format = "STTNUM%.1d";
+  }
+}
 
 static void dsda_DrawBigDigit(int x, int y, int cm, int vpt, int digit) {
   if (digit > 9 || digit < 0)
     return;
 
-  snprintf(digit_lump, sizeof(digit_lump), "STTNUM%.1d", digit);
+  snprintf(digit_lump, sizeof(digit_lump), digit_lump_format, digit);
   V_DrawNamePatch(x, y, FG, digit_lump, cm, vpt | VPT_TRANS);
 }
 
