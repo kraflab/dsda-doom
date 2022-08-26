@@ -29,20 +29,16 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   if (hexen) {
     fixed_t armor_percent;
 
-    armor_percent = pclass[player->pclass].auto_armor_save
-                    + player->armorpoints[ARMOR_ARMOR]
-                    + player->armorpoints[ARMOR_SHIELD]
-                    + player->armorpoints[ARMOR_HELMET]
-                    + player->armorpoints[ARMOR_AMULET];
+    armor_percent = dsda_HexenArmor(player);
 
     snprintf(
       str,
       max_size,
       "\x1b%cARM %3d%%",
-      armor_percent == pclass[player->pclass].auto_armor_save ? HUlib_Color(CR_GRAY) :
-        armor_percent <= (50 << FRACBITS) ? HUlib_Color(CR_GREEN) :
+      armor_percent == 0 ? HUlib_Color(CR_GRAY) :
+        armor_percent <= 50 ? HUlib_Color(CR_GREEN) :
         HUlib_Color(CR_BLUE),
-      armor_percent >> FRACBITS
+      armor_percent
     );
   }
   else {
