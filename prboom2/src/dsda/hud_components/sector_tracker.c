@@ -30,7 +30,9 @@ void dsda_SectorTrackerHC(char* str, size_t max_size, int id) {
     str,
     max_size,
     "\x1b%cs %d: %d %d %d",
-    active ? 0x30 + exhud_color_alert : special ? 0x30 + exhud_color_warning : 0x30 + exhud_color_default,
+    active ? HUlib_Color(exhud_color_alert)
+           : special ? HUlib_Color(exhud_color_warning)
+                     : HUlib_Color(exhud_color_default),
     id, special, active,
     sectors[id].floorheight >> FRACBITS
   );

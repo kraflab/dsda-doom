@@ -19,18 +19,46 @@
 
 #include "ammo_text.h"
 
-#define AMMO_COMPONENT_COUNT 4
+static dsda_text_t component[6];
 
-static dsda_text_t component[AMMO_COMPONENT_COUNT];
+typedef struct {
+  const char** ammo_name;
+  const int* ammo_type;
+  const int count;
+} ammo_component_config_t;
 
-static const char* ammo_name[AMMO_COMPONENT_COUNT] = {
+static const char* doom_ammo_name[4] = {
   "BULL",
   "SHEL",
   "RCKT",
   "CELL",
 };
 
-static const int ammo_type[AMMO_COMPONENT_COUNT] = { 0, 1, 3, 2 };
+static const int doom_ammo_type[4] = { 0, 1, 3, 2 };
+
+static const char* heretic_ammo_name[6] = {
+  "CRYS",
+  "BOLT",
+  "CLAW",
+  "RUNE",
+  "FLAM",
+  "MACE",
+};
+
+static const int heretic_ammo_type[6] = { 0, 1, 2, 3, 4, 5 };
+
+static const char* hexen_ammo_name[2] = {
+  "BLUE",
+  "GREN",
+};
+
+static const int hexen_ammo_type[2] = { 0, 1 };
+
+static const ammo_component_config_t doom_ammo = { doom_ammo_name, doom_ammo_type, 4 };
+static const ammo_component_config_t heretic_ammo = { heretic_ammo_name, heretic_ammo_type, 6 };
+static const ammo_component_config_t hexen_ammo = { hexen_ammo_name, hexen_ammo_type, 2 };
+
+static const ammo_component_config_t* component_config;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
   player_t* player;
@@ -38,15 +66,15 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
   const char* name;
 
   player = &players[displayplayer];
-  name = ammo_name[i];
-  i = ammo_type[i];
+  name = component_config->ammo_name[i];
+  i = component_config->ammo_type[i];
   current_ammo = player->ammo[i];
-  max_ammo = player->maxammo[i];
+  max_ammo = hexen ? MAX_MANA : player->maxammo[i];
 
   snprintf(
     str,
     max_size,
-    "%s %3d / %3d",
+    "%s %3d\x1b\x01/\x1b\x01%3d",
     name,
     current_ammo,
     max_ammo
@@ -56,16 +84,21 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
 void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt) {
   int i;
 
-  for (i = 0; i < AMMO_COMPONENT_COUNT; ++i) {
+  if (heretic)
+    component_config = &heretic_ammo;
+  else if (hexen)
+    component_config = &hexen_ammo;
+  else
+    component_config = &doom_ammo;
+
+  for (i = 0; i < component_config->count; ++i)
     dsda_InitTextHC(&component[i], x_offset, y_offset - i * 8, vpt);
-    component[i].text.space_width = 5;
-  }
 }
 
 void dsda_UpdateAmmoTextHC(void) {
   int i;
 
-  for (i = 0; i < AMMO_COMPONENT_COUNT; ++i) {
+  for (i = 0; i < component_config->count; ++i) {
     dsda_UpdateComponentText(component[i].msg, sizeof(component[i].msg), i);
     dsda_RefreshHudText(&component[i]);
   }
@@ -74,13 +107,13 @@ void dsda_UpdateAmmoTextHC(void) {
 void dsda_DrawAmmoTextHC(void) {
   int i;
 
-  for (i = 0; i < AMMO_COMPONENT_COUNT; ++i)
+  for (i = 0; i < component_config->count; ++i)
     HUlib_drawTextLine(&component[i].text, false);
 }
 
 void dsda_EraseAmmoTextHC(void) {
   int i;
 
-  for (i = 0; i < AMMO_COMPONENT_COUNT; ++i)
+  for (i = 0; i < component_config->count; ++i)
     HUlib_eraseTextLine(&component[i].text);
 }

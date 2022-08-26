@@ -100,11 +100,7 @@ char demo_len_st[80];
 
 int speed_step;
 
-int hudadd_gamespeed;
-int hudadd_leveltime;
-int hudadd_demotime;
 int hudadd_secretarea;
-int hudadd_maxtotals;
 int hudadd_demoprogressbar;
 int hudadd_crosshair;
 int hudadd_crosshair_scale;

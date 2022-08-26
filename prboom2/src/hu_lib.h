@@ -258,4 +258,6 @@ void HUlib_eraseIText(hu_itext_t* it);
 //e6y
 void HUlib_setTextXCenter(hu_textline_t* t);
 
+char HUlib_Color(int cm);
+
 #endif

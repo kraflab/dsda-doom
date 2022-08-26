@@ -298,8 +298,6 @@ default_t defaults[] =
    def_bool,ss_stat}, // makes percent signs on status bar always gray
   {"sts_traditional_keys",{&sts_traditional_keys},{0},0,1,  // killough 2/28/98
    def_bool,ss_stat}, // disables doubled card and skull key display on status bar
-  {"sts_armorcolor_type",{&sts_armorcolor_type},{1},0,1, //  armor color depends on type
-   def_bool,ss_stat},
   {"show_messages",{(int *)&dsda_setting[dsda_show_messages]},{1},0,1,
    def_bool,ss_none}, // enables message display
   {"autorun",{(int *)&dsda_setting[dsda_autorun]},{1},0,1,  // killough 3/6/98: preserve autorun across games
@@ -932,39 +930,17 @@ default_t defaults[] =
   {"hud_list_bgon", {&hud_list_bgon}, {0},0,1,  // solid window bg ena //jff 2/26/98
    def_bool,ss_mess}, // enables background window behind message review
 
-  {"health_red",    {&health_red}   , {25},0,200, // below is red
-   def_int,ss_stat}, // amount of health for red to yellow transition
-  {"health_yellow", {&health_yellow}, {50},0,200, // below is yellow
-   def_int,ss_stat}, // amount of health for yellow to green transition
-  {"health_green",  {&health_green} , {100},0,200,// below is green, above blue
-   def_int,ss_stat}, // amount of health for green to blue transition
-  {"armor_red",     {&armor_red}    , {25},0,200, // below is red
-   def_int,ss_stat}, // amount of armor for red to yellow transition
-  {"armor_yellow",  {&armor_yellow} , {50},0,200, // below is yellow
-   def_int,ss_stat}, // amount of armor for yellow to green transition
-  {"armor_green",   {&armor_green}  , {100},0,200,// below is green, above blue
-   def_int,ss_stat}, // amount of armor for green to blue transition
-  {"ammo_red",      {&ammo_red}     , {25},0,100, // below 25% is red
-   def_int,ss_stat}, // percent of ammo for red to yellow transition
-  {"ammo_yellow",   {&ammo_yellow}  , {50},0,100, // below 50% is yellow, above green
-   def_int,ss_stat}, // percent of ammo for yellow to green transition
-  {"ammo_colour_behaviour",{(int*)&ammo_colour_behaviour},
-   {ammo_colour_behaviour_max-1}, // whether backpack changes thresholds above
-   0,ammo_colour_behaviour_max-1,def_int,ss_stat},
+  { "health_red", { &health_red }, { 25 }, 0, 200, def_int, ss_stat }, // amount of health for red to yellow transition
+  { "health_yellow", { &health_yellow }, { 50 }, 0, 200, def_int, ss_stat }, // amount of health for yellow to green transition
+  { "health_green", { &health_green}, { 100 }, 0, 200, def_int, ss_stat }, // amount of health for green to blue transition
+  { "ammo_red", { &ammo_red }, { 25 }, 0, 100, def_int, ss_stat }, // percent of ammo for red to yellow transition
+  { "ammo_yellow", { &ammo_yellow }, { 50 }, 0, 100, def_int, ss_stat }, // percent of ammo for yellow to green transition
 
-  //jff 2/16/98 HUD and status feature controls
-  {"hud_num",    {&hud_num}, {6},0,100,
-   def_int,ss_none},
   //jff 2/23/98
-  {"hud_displayed", {&hud_displayed},  {0},0,1, // whether hud is displayed
-   def_bool,ss_none}, // enables display of HUD
+  { "hud_displayed", { &hud_displayed },  { 0 }, 0, 1, def_bool, ss_none },
 
   { "Prboom-plus heads-up display settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-    { "hudadd_gamespeed", { &hudadd_gamespeed }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_leveltime", { &hudadd_leveltime }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_demotime", { &hudadd_demotime }, { 0 }, 0, 1, def_bool, ss_stat },
   { "hudadd_secretarea", { &hudadd_secretarea }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_maxtotals", { &hudadd_maxtotals }, { 0 }, 0, 1, def_bool, ss_stat },
   { "hudadd_demoprogressbar", { &hudadd_demoprogressbar }, { 1 }, 0, 1, def_bool, ss_stat },
   { "hudadd_crosshair", { &hudadd_crosshair }, { 0 }, 0, HU_CROSSHAIRS - 1, def_bool, ss_stat },
   { "hudadd_crosshair_scale", { &hudadd_crosshair_scale }, { 0 }, 0, 1, def_bool, ss_stat },

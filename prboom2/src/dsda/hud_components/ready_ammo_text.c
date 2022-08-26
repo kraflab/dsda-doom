@@ -23,15 +23,24 @@ static dsda_text_t component;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   player_t* player;
-  ammotype_t ammo_type;
 
   player = &players[displayplayer];
-  ammo_type = weaponinfo[player->readyweapon].ammo;
 
-  if (ammo_type == am_noammo || !player->maxammo[ammo_type])
-    snprintf(str, max_size, "AMMO: N/A");
-  else
-    snprintf(str, max_size, "AMMO: %3d", player->ammo[ammo_type]);
+  if (hexen) {
+    snprintf(str, max_size, "AMM \x1b%c%3d \x1b%c%3d",
+            HUlib_Color(CR_BLUE), player->ammo[0],
+            HUlib_Color(CR_GREEN), player->ammo[1]);
+  }
+  else {
+    ammotype_t ammo_type;
+
+    ammo_type = weaponinfo[player->readyweapon].ammo;
+
+    if (ammo_type == am_noammo || !player->maxammo[ammo_type])
+      snprintf(str, max_size, "AMM N/A");
+    else
+      snprintf(str, max_size, "AMM %3d", player->ammo[ammo_type]);
+  }
 }
 
 void dsda_InitReadyAmmoTextHC(int x_offset, int y_offset, int vpt) {

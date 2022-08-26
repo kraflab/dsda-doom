@@ -145,16 +145,10 @@ prboom2/data/graphics/m_vbox.ppm -text
 prboom2/data/graphics/m_versen.ppm -text
 prboom2/data/graphics/m_weap.ppm -text
 prboom2/data/graphics/prboom.ppm -text
-prboom2/data/graphics/stbr123.ppm -text
-prboom2/data/graphics/stbr124.ppm -text
-prboom2/data/graphics/stbr125.ppm -text
-prboom2/data/graphics/stbr126.ppm -text
-prboom2/data/graphics/stbr127.ppm -text
 prboom2/data/graphics/stcfn096.ppm -text
 prboom2/data/graphics/stkeys6.ppm -text
 prboom2/data/graphics/stkeys7.ppm -text
 prboom2/data/graphics/stkeys8.ppm -text
-prboom2/data/lumps/-prbhud-.lmp -text
 prboom2/data/lumps/animated.lmp -text
 prboom2/data/lumps/b_end.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/b_start.lmp -text svneol=unset#application/octet-stream
@@ -169,10 +163,13 @@ prboom2/data/lumps/crbrown.lmp -text
 prboom2/data/lumps/crgold.lmp -text
 prboom2/data/lumps/crgray.lmp -text
 prboom2/data/lumps/crgreen.lmp -text
+prboom2/data/lumps/crheresy.lmp -text
+prboom2/data/lumps/crhexen.lmp -text
 prboom2/data/lumps/crorange.lmp -text
 prboom2/data/lumps/crred.lmp -text
 prboom2/data/lumps/crtan.lmp -text
 prboom2/data/lumps/cryellow.lmp -text
+prboom2/data/lumps/dsdahud.lmp -text
 prboom2/data/lumps/gammatbl.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/glfp.lmp -text
 prboom2/data/lumps/glshadow.lmp -text

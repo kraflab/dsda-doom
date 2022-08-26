@@ -35,7 +35,7 @@ void dsda_LineDistanceTrackerHC(char* str, size_t max_size, int id) {
     str,
     max_size,
     "\x1b%cld %d: %.03f",
-    distance < radius ? 0x30 + exhud_color_warning : 0x30 + exhud_color_default,
+    distance < radius ? HUlib_Color(exhud_color_warning) : HUlib_Color(exhud_color_default),
     id,
     distance
   );

@@ -113,7 +113,7 @@ dboolean dsda_OpenConsole(void) {
       8,
       hu_font2,
       HU_FONTSTART,
-      g_cr_gray,
+      CR_GRAY,
       VPT_ALIGN_LEFT_TOP
     );
 
@@ -123,7 +123,7 @@ dboolean dsda_OpenConsole(void) {
       0,
       hu_font2,
       HU_FONTSTART,
-      g_cr_gray,
+      CR_GRAY,
       VPT_ALIGN_LEFT_TOP
     );
   }

@@ -42,7 +42,10 @@ set(LUMPS
     lumps/crblack.lmp
     lumps/crpurple.lmp
     lumps/crwhite.lmp
+    lumps/crheresy.lmp
+    lumps/crhexen.lmp
     lumps/soundfont/sndfont.lmp
+    lumps/dsdahud.lmp
 )
 
 set(COLORMAPS
@@ -61,7 +64,6 @@ set(TABLES
     lumps/glfp.lmp
     lumps/glfp_fuzz.lmp
     lumps/glvp.lmp
-    lumps/-prbhud-.lmp
     lumps/m_ammo.lmp
     lumps/m_armour.lmp
     lumps/m_arrow.lmp
@@ -177,11 +179,6 @@ set(GRAPHICS
     graphics/dig124.ppm
     graphics/dig125.ppm
     graphics/dig126.ppm
-    graphics/stbr123.ppm
-    graphics/stbr124.ppm
-    graphics/stbr125.ppm
-    graphics/stbr126.ppm
-    graphics/stbr127.ppm
     graphics/boxul.ppm
     graphics/boxuc.ppm
     graphics/boxur.ppm

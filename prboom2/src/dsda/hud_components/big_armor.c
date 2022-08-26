@@ -19,42 +19,77 @@
 
 #include "big_armor.h"
 
-#define PATCH_DELTA_X 14
-#define PATCH_SPACING 2
-#define PATCH_VERTICAL_SPACING 1
-
 static dsda_patch_component_t component;
 static int armor_lump_green;
 static int armor_lump_blue;
+static int patch_delta_x;
+static int patch_vertical_spacing;
+static int patch_spacing;
 
 static void dsda_DrawComponent(void) {
   player_t* player;
   int x, y;
   int cm;
+  int lump;
+  int armor;
 
   player = &players[displayplayer];
   x = component.x;
   y = component.y;
 
-  if (!player->armorpoints[ARMOR_ARMOR] || player->armortype < 2) {
-    cm = g_cr_green;
-    V_DrawNumPatch(x, y, FG, armor_lump_green, CR_DEFAULT, component.vpt);
+  if (hexen) {
+    armor = dsda_HexenArmor(player);
+    cm = CR_GRAY;
+    lump = armor_lump_green;
   }
   else {
-    cm = CR_BLUE2;
-    V_DrawNumPatch(x, y, FG, armor_lump_blue, CR_DEFAULT, component.vpt);
+    armor = player->armorpoints[ARMOR_ARMOR];
+    if (!player->armorpoints[ARMOR_ARMOR]) {
+      cm = CR_RED;
+      lump = armor_lump_green;
+    }
+    else if (player->armortype < 2) {
+      cm = CR_GREEN;
+      lump = armor_lump_green;
+    }
+    else {
+      cm = CR_BLUE2;
+      lump = armor_lump_blue;
+    }
   }
 
-  x += R_NumPatchWidth(armor_lump_green) + PATCH_SPACING;
-  y += PATCH_VERTICAL_SPACING;
+  V_DrawNumPatch(x, y, FG, lump, CR_DEFAULT, component.vpt);
 
-  dsda_DrawBigNumber(x, y, PATCH_DELTA_X, 0,
-                     cm, component.vpt, 3, player->armorpoints[ARMOR_ARMOR]);
+  x += patch_spacing;
+  y += patch_vertical_spacing;
+
+  dsda_DrawBigNumber(x, y, patch_delta_x, 0,
+                     cm, component.vpt, 3, armor);
 }
 
 void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt) {
-  armor_lump_green = R_NumPatchForSpriteIndex(SPR_ARM1);
-  armor_lump_blue = R_NumPatchForSpriteIndex(SPR_ARM2);
+  if (heretic) {
+    armor_lump_green = R_NumPatchForSpriteIndex(HERETIC_SPR_SHLD);
+    armor_lump_blue = R_NumPatchForSpriteIndex(HERETIC_SPR_SHD2);
+    patch_delta_x = 10;
+    patch_vertical_spacing = 6;
+    patch_spacing = 2;
+  }
+  else if (hexen) {
+    armor_lump_green = R_NumPatchForSpriteIndex(HEXEN_SPR_ARM3);
+    armor_lump_blue = R_NumPatchForSpriteIndex(HEXEN_SPR_ARM3);
+    patch_delta_x = 10;
+    patch_vertical_spacing = 4;
+    patch_spacing = 2;
+  }
+  else {
+    armor_lump_green = R_NumPatchForSpriteIndex(SPR_ARM1);
+    armor_lump_blue = R_NumPatchForSpriteIndex(SPR_ARM2);
+    patch_delta_x = 14;
+    patch_vertical_spacing = 1;
+    patch_spacing = 2;
+  }
+  patch_spacing += MAX(R_NumPatchWidth(armor_lump_green), R_NumPatchWidth(armor_lump_blue));
   dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
 }
 

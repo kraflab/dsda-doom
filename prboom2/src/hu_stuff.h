@@ -63,7 +63,6 @@ extern const char *crosshair_str[HU_CROSSHAIRS];
  * Heads up text
  */
 void HU_Init(void);
-void HU_LoadHUDDefs(void);
 void HU_Start(void);
 
 dboolean HU_Responder(event_t* ev);
@@ -71,8 +70,6 @@ dboolean HU_Responder(event_t* ev);
 void HU_Ticker(void);
 void HU_Drawer(void);
 void HU_Erase(void);
-void HU_MoveHud(int force); // jff 3/9/98 avoid glitch in HUD display
-void HU_NextHud(void);
 
 /* killough 5/2/98: moved from m_misc.c: */
 
@@ -90,9 +87,6 @@ extern int hud_list_bgon;   /* solid window background for list of messages    *
 extern int hud_msg_lines;   /* number of message lines in window up to 16      */
 /* jff 2/23/98 hud is currently displayed */
 extern int hud_displayed;   /* hud is displayed */
-/* jff 2/18/98 hud/status control */
-extern int hud_num;
-extern int huds_count;
 
 typedef struct custom_message_s
 {

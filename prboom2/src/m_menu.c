@@ -1550,13 +1550,21 @@ void M_SizeDisplay(int choice)
     if (screenSize > 0) {
       screenblocks--;
       screenSize--;
-      hud_displayed = 0;
     }
     break;
   case 1:
     if (screenSize < 8) {
       screenblocks++;
       screenSize++;
+    }
+    else
+      hud_displayed = !hud_displayed;
+    break;
+  case 2:
+    if (screenSize < 8) {
+      screenblocks += (8 - screenSize);
+      screenSize = 8;
+      hud_displayed = true;
     }
     else
       hud_displayed = !hud_displayed;
@@ -1807,7 +1815,7 @@ void M_DrawSetup(void)
   if (raven) return MN_DrawSetup();
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(124, 15, "M_SETUP", CR_DEFAULT, "SETUP", g_cr_gold);
+  M_DrawTitle(124, 15, "M_SETUP", CR_DEFAULT, "SETUP", CR_GOLD);
 }
 
 /////////////////////////////
@@ -2163,25 +2171,25 @@ static void M_DrawScreenItems(const setup_menu_t* src)
   //e6y
     if (warning_about_changes & S_CANT_GL_ARB_MULTITEXTURE) {
   strcpy(menu_buffer, "Extension GL_ARB_multitexture not found");
-  M_DrawMenuString(30,176,g_cr_red);
+  M_DrawMenuString(30,176,CR_RED);
   } else
     if (warning_about_changes & S_CANT_GL_ARB_MULTISAMPLEFACTOR) {
   strcpy(menu_buffer, "Mast be even number like 0-none, 2, 4, 6");
-  M_DrawMenuString(30,176,g_cr_red);
+  M_DrawMenuString(30,176,CR_RED);
   } else
 
     if (warning_about_changes & S_BADVAL) {
   strcpy(menu_buffer, "Value out of Range");
-  M_DrawMenuString(100,176,g_cr_red);
+  M_DrawMenuString(100,176,CR_RED);
     } else if (warning_about_changes & S_PRGWARN) {
         strcpy(menu_buffer, "Warning: Program must be restarted to see changes");
-  M_DrawMenuString(3, 176, g_cr_red);
+  M_DrawMenuString(3, 176, CR_RED);
     } else if (warning_about_changes & S_BADVID) {
         strcpy(menu_buffer, "Video mode not supported");
-  M_DrawMenuString(80,176,g_cr_red);
+  M_DrawMenuString(80,176,CR_RED);
     } else {
   strcpy(menu_buffer, "Warning: Changes are pending until next game");
-        M_DrawMenuString(18,184,g_cr_red);
+        M_DrawMenuString(18,184,CR_RED);
     }
   }
 
@@ -2219,7 +2227,7 @@ static void M_DrawDefVerify(void)
 
   if (whichSkull) { // blink the text
     strcpy(menu_buffer,"Reset to defaults? (Y or N)");
-    M_DrawMenuString(VERIFYBOXXORG+8,VERIFYBOXYORG+8,g_cr_red);
+    M_DrawMenuString(VERIFYBOXXORG+8,VERIFYBOXYORG+8,CR_RED);
   }
 }
 
@@ -2768,7 +2776,7 @@ void M_DrawKeybnd(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", g_cr_gold);
+  M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -2873,7 +2881,7 @@ void M_DrawWeapons(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", g_cr_gold);
+  M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -2907,59 +2915,47 @@ setup_menu_t* stat_settings[] =
 
 setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 {
-  {"STATUS BAR"        ,S_SKIP|S_TITLE,m_null,SB_X,SB_Y+ 1*8 },
+  { "STATUS BAR", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 1 * 8 },
 
-  {"USE RED NUMBERS"   ,S_YESNO, m_null,SB_X,SB_Y+ 2*8, {"sts_always_red"}},
-  {"GRAY %"            ,S_YESNO, m_null,SB_X,SB_Y+ 3*8, {"sts_pct_always_gray"}},
-  {"SINGLE KEY DISPLAY",S_YESNO, m_null,SB_X,SB_Y+ 4*8, {"sts_traditional_keys"}},
+  { "USE RED NUMBERS", S_YESNO, m_null, SB_X, SB_Y + 2 * 8, { "sts_always_red" } },
+  { "GRAY %",S_YESNO, m_null, SB_X, SB_Y + 3 * 8, {"sts_pct_always_gray" } },
+  { "SINGLE KEY DISPLAY", S_YESNO, m_null, SB_X, SB_Y + 4 * 8, {"sts_traditional_keys" } },
 
-  {"HEADS-UP DISPLAY"  ,S_SKIP|S_TITLE,m_null,SB_X,SB_Y+ 6*8},
+  { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 6 * 8 },
 
-  {"HEALTH LOW/OK"     ,S_NUM       ,m_null,SB_X,SB_Y+ 7*8, {"health_red"}},
-  {"HEALTH OK/GOOD"    ,S_NUM       ,m_null,SB_X,SB_Y+ 8*8, {"health_yellow"}},
-  {"HEALTH GOOD/EXTRA" ,S_NUM       ,m_null,SB_X,SB_Y+ 9*8, {"health_green"}},
-  {"ARMOR COLOR DEPENDS ON TYPE",S_YESNO, m_null,SB_X,SB_Y+ 10*8, {"sts_armorcolor_type"}},
-  {"ARMOR LOW/OK"      ,S_NUM       ,m_null,SB_X,SB_Y+11*8, {"armor_red"}},
-  {"ARMOR OK/GOOD"     ,S_NUM       ,m_null,SB_X,SB_Y+12*8, {"armor_yellow"}},
-  {"ARMOR GOOD/EXTRA"  ,S_NUM       ,m_null,SB_X,SB_Y+13*8, {"armor_green"}},
-  {"AMMO LOW/OK"       ,S_NUM       ,m_null,SB_X,SB_Y+14*8, {"ammo_red"}},
-  {"AMMO OK/GOOD"      ,S_NUM       ,m_null,SB_X,SB_Y+15*8, {"ammo_yellow"}},
-  {"BACKPACK CHANGES THRESHOLDS",S_CHOICE,m_null,SB_X,SB_Y+16*8,
-   {"ammo_colour_behaviour"},0,NULL,ammo_colour_behaviour_list},
+  { "HEALTH LOW/OK", S_NUM, m_null, SB_X, SB_Y + 7 * 8, {"health_red" } },
+  { "HEALTH OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 8 * 8, {"health_yellow" } },
+  { "HEALTH GOOD/EXTRA", S_NUM, m_null, SB_X, SB_Y + 9 * 8, {"health_green" } },
+  { "AMMO LOW/OK", S_NUM, m_null, SB_X, SB_Y + 10 * 8, {"ammo_red" } },
+  { "AMMO OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 11 * 8, {"ammo_yellow" } },
 
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-
-  //e6y
-  {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,SB_Y+20*8, {stat_settings2}},
-  // Final entry
-  {0,S_SKIP|S_END,m_null}
+  { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
+  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, SB_Y + 20 * 8, { stat_settings2 } },
+  { 0, S_SKIP | S_END, m_null }
 };
 
 //e6y
-#define ADVHUD_X 284
+#define HUD_X 284
 setup_menu_t stat_settings2[] =
 {
-  {"ADVANCED HUD SETTINGS"       ,S_SKIP|S_TITLE,m_null,ADVHUD_X,SB_Y+1*8},
-  {"REPORT REVEALED SECRETS"     ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 2*8, {"hudadd_secretarea"}},
-  {"MAX TOTALS"                  ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 3*8, {"hudadd_maxtotals"}},
-  {"SHOW GAMESPEED"              ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 4*8, {"hudadd_gamespeed"}},
-  {"SHOW LEVELTIME"              ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 5*8, {"hudadd_leveltime"}},
-  {"SHOW DEMOTIME"               ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 6*8, {"hudadd_demotime"}},
-  {"SHOW PROGRESS BAR DURING DEMO PLAYBACK" ,S_YESNO     ,m_null,ADVHUD_X,SB_Y+ 7*8, {"hudadd_demoprogressbar"}},
+  { "HUD SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 1 * 8 },
 
-  {"CROSSHAIR SETTINGS"            ,S_SKIP|S_TITLE,m_null,ADVHUD_X,SB_Y+9*8},
-  {"ENABLE CROSSHAIR"              ,S_CHOICE   ,m_null,ADVHUD_X,SB_Y+10*8, {"hudadd_crosshair"}, 0, 0, crosshair_str},
-  {"SCALE CROSSHAIR"               ,S_YESNO    ,m_null,ADVHUD_X,SB_Y+11*8, {"hudadd_crosshair_scale"}},
-  {"CHANGE CROSSHAIR COLOR BY PLAYER HEALTH" ,S_YESNO    ,m_null,ADVHUD_X,SB_Y+12*8, {"hudadd_crosshair_health"}},
-  {"CHANGE CROSSHAIR COLOR ON TARGET"        ,S_YESNO    ,m_null,ADVHUD_X,SB_Y+13*8, {"hudadd_crosshair_target"}},
-  {"LOCK CROSSHAIR ON TARGET"                ,S_YESNO    ,m_null,ADVHUD_X,SB_Y+14*8, {"hudadd_crosshair_lock_target"}},
-  {"DEFAULT CROSSHAIR COLOR"                 ,S_CRITEM   ,m_null,ADVHUD_X,SB_Y+15*8, {"hudadd_crosshair_color"}},
-  {"TARGET CROSSHAIR COLOR"                  ,S_CRITEM   ,m_null,ADVHUD_X,SB_Y+16*8, {"hudadd_crosshair_target_color"}},
+  { "REPORT REVEALED SECRETS", S_YESNO, m_null, HUD_X, SB_Y + 2 * 8, {"hudadd_secretarea" } },
+  { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_null, HUD_X, SB_Y + 3 * 8, {"hudadd_demoprogressbar" } },
 
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-  {"<-",S_SKIP|S_PREV,m_null,KB_PREV,SB_Y+20*8, {stat_settings1}},
-  {0,S_SKIP|S_END,m_null}
+  { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 5 * 8 },
+
+  { "ENABLE CROSSHAIR", S_CHOICE, m_null, HUD_X, SB_Y + 6 * 8, { "hudadd_crosshair" }, 0, 0, crosshair_str },
+  { "SCALE CROSSHAIR", S_YESNO, m_null, HUD_X, SB_Y + 7 * 8, { "hudadd_crosshair_scale" } },
+  { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_null, HUD_X, SB_Y + 8 * 8, {"hudadd_crosshair_health" } },
+  { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 9 * 8, {"hudadd_crosshair_target" } },
+  { "LOCK CROSSHAIR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 10 * 8, {"hudadd_crosshair_lock_target" } },
+  { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 11 * 8, {"hudadd_crosshair_color" } },
+  { "TARGET CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 12 * 8, {"hudadd_crosshair_target_color" } },
+
+  { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, SB_Y + 20 * 8, { stat_settings1 } },
+  { 0, S_SKIP | S_END, m_null }
 };
 
 // Setting up for the Status Bar / HUD screen. Turn on flags, set pointers,
@@ -2994,7 +2990,7 @@ void M_DrawStatusHUD(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", g_cr_gold);
+  M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3177,7 +3173,7 @@ void M_DrawAutoMap(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", g_cr_gold);
+  M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3565,7 +3561,7 @@ void M_DrawGeneral(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", g_cr_gold);
+  M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3657,7 +3653,7 @@ void M_DrawMessages(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(103, 2, "M_MESS", CR_DEFAULT, "MESSAGES", g_cr_gold);
+  M_DrawTitle(103, 2, "M_MESS", CR_DEFAULT, "MESSAGES", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
   if (default_verify)
@@ -3904,8 +3900,8 @@ void M_InitExtendedHelp(void)
 
   extended_help_count = 0;
   for (index = 1 ; index < 100 ; index++) {
-    namebfr[4] = index/10 + 0x30;
-    namebfr[5] = index%10 + 0x30;
+    namebfr[4] = index/10 + '0';
+    namebfr[5] = index%10 + '0';
     i = W_CheckNumForName(namebfr);
     if (i == -1) {
       if (extended_help_count) {
@@ -3950,8 +3946,8 @@ void M_DrawExtHelp(void)
   char namebfr[10] = { "HELPnn" }; // CPhipps - make it local & writable
 
   inhelpscreens = true;              // killough 5/1/98
-  namebfr[4] = extended_help_index/10 + 0x30;
-  namebfr[5] = extended_help_index%10 + 0x30;
+  namebfr[4] = extended_help_index/10 + '0';
+  namebfr[5] = extended_help_index%10 + '0';
   // CPhipps - patch drawing updated
   V_DrawNamePatch(0, 0, 0, namebfr, CR_DEFAULT, VPT_STRETCH);
 }
@@ -4292,7 +4288,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   {
     // Use V_DrawBackground here deliberately to force drawing a background
     V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
-    M_DrawTitle(81, 9, "PRBOOM", g_cr_gold, PACKAGE_NAME " v" PACKAGE_VERSION, g_cr_gold);
+    M_DrawTitle(81, 9, "PRBOOM", CR_GOLD, PACKAGE_NAME " v" PACKAGE_VERSION, CR_GOLD);
     M_DrawScreenItems(cred_settings);
   }
 }
@@ -4885,15 +4881,7 @@ dboolean M_Responder (event_t* ev) {
     {
       if (automapmode & am_active)    // jff 2/22/98
         return false;                  // HUD mode control
-      if (screenSize<8)                // function on default F5
-        while (screenSize<8 || !hud_displayed) // make hud visible
-          M_SizeDisplay(1);            // when configuring it
-      else
-        {
-        hud_displayed = 1;               //jff 3/3/98 turn hud on
-        HU_NextHud();
-        HU_MoveHud(true);                //jff 3/9/98 move it now to avoid glitch
-        }
+      M_SizeDisplay(2);
       return true;
     }
 
@@ -4999,7 +4987,7 @@ dboolean M_Responder (event_t* ev) {
       {
         if (action != MENU_ENTER)
         {
-          ch -= 0x30; // out of ascii
+          ch -= '0'; // out of ascii
           if (ch < 0 || ch > 9)
             return true; // ignore
           *ptr1->var.def->location.pi = ch;

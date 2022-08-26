@@ -324,16 +324,6 @@ int ammo_yellow;   // ammo percent less is yellow more green
 int health_red;    // health amount less than which status is red
 int health_yellow; // health amount less than which status is yellow
 int health_green;  // health amount above is blue, below is green
-int armor_red;     // armor amount less than which status is red
-int armor_yellow;  // armor amount less than which status is yellow
-int armor_green;   // armor amount above is blue, below is green
-
-ammo_colour_behaviour_t ammo_colour_behaviour;
-const char *ammo_colour_behaviour_list[ammo_colour_behaviour_max] = {
-  "no",
-  "full ammo only",
-  "yes"
-};
 
  // in deathmatch only, summary of frags stats
 static st_number_t w_frags;
@@ -829,15 +819,11 @@ static void ST_drawWidgets(dboolean refresh)
   st_fragson = deathmatch && st_statusbaron;
 
   //jff 2/16/98 make color of ammo depend on amount
-  if ((*w_ready.num == plyr->maxammo[weaponinfo[w_ready.data].ammo]) ||
-    (ammo_colour_behaviour == ammo_colour_behaviour_no && plyr->backpack &&
-    *w_ready.num*2 >= plyr->maxammo[weaponinfo[w_ready.data].ammo]))
+  if (*w_ready.num == plyr->maxammo[weaponinfo[w_ready.data].ammo])
     STlib_updateNum(&w_ready, CR_BLUE2, refresh);
   else {
     if (plyr->maxammo[weaponinfo[w_ready.data].ammo])
       ammopct = (*w_ready.num*100)/plyr->maxammo[weaponinfo[w_ready.data].ammo];
-    if (plyr->backpack && ammo_colour_behaviour != ammo_colour_behaviour_yes)
-      ammopct *= 2;
     if (ammopct < ammo_red)
       STlib_updateNum(&w_ready, CR_RED, refresh);
     else
@@ -862,8 +848,6 @@ static void ST_drawWidgets(dboolean refresh)
   else
     STlib_updatePercent(&w_health, CR_BLUE2, refresh); //killough 2/28/98
 
-  if (sts_armorcolor_type)
-  {
   // armor color dictated by type (Status Bar)
   if (plyr->armortype >= 2)
     STlib_updatePercent(&w_armor, CR_BLUE2, refresh);
@@ -871,19 +855,6 @@ static void ST_drawWidgets(dboolean refresh)
     STlib_updatePercent(&w_armor, CR_GREEN, refresh);
   else if (plyr->armortype == 0)
     STlib_updatePercent(&w_armor, CR_RED, refresh);
-  }
-  else
-  {
-  //jff 2/16/98 make color of armor depend on amount
-  if (*w_armor.n.num<armor_red)
-    STlib_updatePercent(&w_armor, CR_RED, refresh);
-  else if (*w_armor.n.num<armor_yellow)
-    STlib_updatePercent(&w_armor, CR_GOLD, refresh);
-  else if (*w_armor.n.num<=armor_green)
-    STlib_updatePercent(&w_armor, CR_GREEN, refresh);
-  else
-    STlib_updatePercent(&w_armor, CR_BLUE2, refresh); //killough 2/28/98
-  }
 
   for (i=0;i<6;i++)
     STlib_updateMultIcon(&w_arms[i], refresh);

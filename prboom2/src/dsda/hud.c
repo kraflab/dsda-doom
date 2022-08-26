@@ -79,7 +79,7 @@ void dsda_InitHud(patchnum_t* font) {
     DSDA_SPLIT_Y,
     font,
     HU_FONTSTART,
-    g_cr_gray,
+    CR_GRAY,
     VPT_ALIGN_LEFT
   );
 
@@ -92,7 +92,6 @@ void dsda_InitHud(patchnum_t* font) {
 
 static dboolean dsda_ExHudVisible(void) {
   return dsda_ExHud() && // extended hud turned on
-         viewheight != SCREENHEIGHT && // not zoomed in
          (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
 }
 
