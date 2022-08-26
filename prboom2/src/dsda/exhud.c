@@ -15,13 +15,18 @@
 //	DSDA Extended HUD
 //
 
+#include <stdio.h>
+
 #include "hu_stuff.h"
+#include "lprintf.h"
 #include "r_main.h"
 #include "v_video.h"
+#include "w_wad.h"
 
 #include "dsda/global.h"
 #include "dsda/hud_components.h"
 #include "dsda/settings.h"
+#include "dsda/utility.h"
 
 #include "exhud.h"
 
@@ -165,6 +170,15 @@ static void dsda_TurnComponentOn(int id, int x, int y, int vpt) {
 
 void dsda_InitExHud(void) {
   int i;
+  static char* lump;
+  static char** lines;
+  const char* line;
+  int line_i;
+  char target[16];
+  dboolean reading = false;
+  char command[64];
+  char args[64];
+  int count;
 
   exhud_color_default = CR_GRAY;
   exhud_color_warning = CR_GREEN;
@@ -173,25 +187,73 @@ void dsda_InitExHud(void) {
   for (i = 0; i < exhud_component_count; ++i)
     components[i].on = false;
 
-  if (viewheight != SCREENHEIGHT) {
-    dsda_TurnComponentOn(exhud_tracker, DSDA_EXHUD_X, 32, VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_composite_time, DSDA_EXHUD_X, 16, VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_stat_totals, DSDA_EXHUD_X, 8, VPT_ALIGN_LEFT_BOTTOM);
-  }
-  else if (hud_displayed) {
-    int y = 0;
+  if (viewheight == SCREENHEIGHT && !hud_displayed)
+    return;
 
-    dsda_TurnComponentOn(exhud_ready_ammo_text, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_health_text, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_armor_text, DSDA_EXHUD_X + (10 * 5), y, VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_weapon_text, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_stat_totals, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_composite_time, DSDA_EXHUD_X, (y += 8), VPT_ALIGN_LEFT_BOTTOM);
-    dsda_TurnComponentOn(exhud_tracker, DSDA_EXHUD_X, (y += 16), VPT_ALIGN_LEFT_BOTTOM);
+  if (!lump)
+    lump = W_ReadLumpToString(W_GetNumForName("DSDAHUD"));
 
-    dsda_TurnComponentOn(exhud_keys, 320 - DSDA_EXHUD_X - (17 * 5), 30, VPT_ALIGN_RIGHT_BOTTOM);
+  if (!lump)
+    return;
 
-    dsda_TurnComponentOn(exhud_ammo_text, 320 - DSDA_EXHUD_X - (14 * 5), 32, VPT_ALIGN_RIGHT_BOTTOM);
+  snprintf(target, sizeof(target), "%s %s",
+           hexen ? "hexen" : heretic ? "heretic" : "doom",
+           viewheight == SCREENHEIGHT ? "full" : "ex");
+
+  if (!lines)
+    lines = dsda_SplitString(lump, "\n\r");
+
+  if (!lines)
+    return;
+
+  for (line_i = 0; lines[line_i]; ++line_i) {
+    line = lines[line_i];
+
+    if (!strncmp(target, line, sizeof(target)))
+      reading = true;
+    else if (reading) {
+      int count;
+      dboolean found = false;
+
+      if (line[0] == '#' || line[0] == '/' || line[0] == '!' || !line[0])
+        continue;
+
+      count = sscanf(line, "%63s %63[^\n\r]", command, args);
+      if (count != 2)
+        I_Error("Invalid hud definition \"%s\"", line);
+
+      // The start of another definition
+      if (!strncmp(command, "doom", sizeof(command)) ||
+          !strncmp(command, "heretic", sizeof(command)) ||
+          !strncmp(command, "hexen", sizeof(command)))
+        break;
+
+      for (i = 0; i < exhud_component_count; ++i)
+        if (!strncmp(command, components[i].name, sizeof(command))) {
+          int x, y, vpt;
+          char alignment[16];
+
+          found = true;
+
+          count = sscanf(args, "%d %d %15s", &x, &y, alignment);
+          if (count != 3)
+            I_Error("Invalid hud component args \"%s\"", line);
+
+          if (!strncmp(alignment, "bottom_left", sizeof(alignment)))
+            vpt = VPT_ALIGN_LEFT_BOTTOM;
+          else if (!strncmp(alignment, "bottom_right", sizeof(alignment)))
+            vpt = VPT_ALIGN_RIGHT_BOTTOM;
+          else if (!strncmp(alignment, "top_right", sizeof(alignment)))
+            vpt = VPT_ALIGN_RIGHT_TOP;
+          else
+            I_Error("Invalid hud component alignment \"%s\"", line);
+
+          dsda_TurnComponentOn(i, x, y, vpt);
+        }
+
+      if (!found)
+        I_Error("Invalid hud component \"%s\"", line);
+    }
   }
 }
 
