@@ -152,6 +152,7 @@ int     W_GetNumForName (const char* name);
 const lumpinfo_t* W_GetLumpInfoByNum(int lump);
 int     W_LumpLength (int lump);
 void    W_ReadLump (int lump, void *dest);
+char*   W_ReadLumpToString (int lump);
 // CPhipps - modified for 'new' lump locking
 const void* W_LumpByNum (int lump);
 const void* W_LockLumpNum(int lump);

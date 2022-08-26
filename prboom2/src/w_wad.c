@@ -597,6 +597,22 @@ void W_ReadLump(int lump, void *dest)
     }
 }
 
+char* W_ReadLumpToString(int lump)
+{
+  char* buffer = NULL;
+  lumpinfo_t *l = lumpinfo + lump;
+
+  if (lump >= 0 && lump < numlumps && l->wadfile)
+  {
+    buffer = Z_Malloc(l->size + 1);
+    lseek(l->wadfile->handle, l->position, SEEK_SET);
+    I_Read(l->wadfile->handle, buffer, l->size);
+    buffer[l->size] = '\0';
+  }
+
+  return buffer;
+}
+
 int W_LumpNumInPortWad(int lump) {
   const lumpinfo_t *info;
   size_t name_length, default_name_length;
