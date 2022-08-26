@@ -28,6 +28,9 @@ static void dsda_DrawComponent(void) {
   ammotype_t ammo_type;
   int ammo;
 
+  if (hexen)
+    return;
+
   player = &players[displayplayer];
   ammo_type = weaponinfo[player->readyweapon].ammo;
 
