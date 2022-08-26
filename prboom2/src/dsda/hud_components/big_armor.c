@@ -31,22 +31,31 @@ static void dsda_DrawComponent(void) {
   int x, y;
   int cm;
   int lump;
+  int armor;
 
   player = &players[displayplayer];
   x = component.x;
   y = component.y;
 
-  if (!player->armorpoints[ARMOR_ARMOR]) {
-    cm = CR_RED;
-    lump = armor_lump_green;
-  }
-  else if (player->armortype < 2) {
-    cm = CR_GREEN;
+  if (hexen) {
+    armor = dsda_HexenArmor(player);
+    cm = CR_GRAY;
     lump = armor_lump_green;
   }
   else {
-    cm = CR_BLUE2;
-    lump = armor_lump_blue;
+    armor = player->armorpoints[ARMOR_ARMOR];
+    if (!player->armorpoints[ARMOR_ARMOR]) {
+      cm = CR_RED;
+      lump = armor_lump_green;
+    }
+    else if (player->armortype < 2) {
+      cm = CR_GREEN;
+      lump = armor_lump_green;
+    }
+    else {
+      cm = CR_BLUE2;
+      lump = armor_lump_blue;
+    }
   }
 
   V_DrawNumPatch(x, y, FG, lump, CR_DEFAULT, component.vpt);
@@ -55,7 +64,7 @@ static void dsda_DrawComponent(void) {
   y += patch_vertical_spacing;
 
   dsda_DrawBigNumber(x, y, patch_delta_x, 0,
-                     cm, component.vpt, 3, player->armorpoints[ARMOR_ARMOR]);
+                     cm, component.vpt, 3, armor);
 }
 
 void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt) {
@@ -64,6 +73,13 @@ void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt) {
     armor_lump_blue = R_NumPatchForSpriteIndex(HERETIC_SPR_SHD2);
     patch_delta_x = 10;
     patch_vertical_spacing = 6;
+    patch_spacing = 2;
+  }
+  else if (hexen) {
+    armor_lump_green = R_NumPatchForSpriteIndex(HEXEN_SPR_ARM3);
+    armor_lump_blue = R_NumPatchForSpriteIndex(HEXEN_SPR_ARM3);
+    patch_delta_x = 10;
+    patch_vertical_spacing = 4;
     patch_spacing = 2;
   }
   else {
