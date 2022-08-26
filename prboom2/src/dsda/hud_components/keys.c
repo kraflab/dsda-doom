@@ -23,6 +23,8 @@
 
 static dsda_patch_component_t component;
 
+static int key_patch_num[NUMCARDS];
+
 static const char* dsda_Key1Name(player_t* player) {
   if (heretic) {
     if (player->cards[key_yellow])
@@ -94,12 +96,31 @@ static void dsda_DrawComponent(void) {
   x = component.x;
   y = component.y;
 
+  if (hexen) {
+    int i;
+
+    for (i = 0; i < NUMCARDS; ++i)
+      if (player->cards[i]) {
+        V_DrawNumPatch(x, y, 0, key_patch_num[i], CR_DEFAULT, component.vpt);
+        x += R_NumPatchWidth(key_patch_num[i]) + 4;
+      }
+
+    return;
+  }
+
   drawKey(player, &x, &y, dsda_Key1Name);
   drawKey(player, &x, &y, dsda_Key2Name);
   drawKey(player, &x, &y, dsda_Key3Name);
 }
 
 void dsda_InitKeysHC(int x_offset, int y_offset, int vpt) {
+  if (hexen) {
+    int i;
+
+    for (i = 0; i < NUMCARDS; ++i)
+      key_patch_num[i] = R_NumPatchForSpriteIndex(HEXEN_SPR_KEY1 + i);
+  }
+
   dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
 }
 
