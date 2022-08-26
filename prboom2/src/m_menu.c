@@ -1550,13 +1550,21 @@ void M_SizeDisplay(int choice)
     if (screenSize > 0) {
       screenblocks--;
       screenSize--;
-      hud_displayed = 0;
     }
     break;
   case 1:
     if (screenSize < 8) {
       screenblocks++;
       screenSize++;
+    }
+    else
+      hud_displayed = !hud_displayed;
+    break;
+  case 2:
+    if (screenSize < 8) {
+      screenblocks += (8 - screenSize);
+      screenSize = 8;
+      hud_displayed = true;
     }
     else
       hud_displayed = !hud_displayed;
@@ -4873,14 +4881,7 @@ dboolean M_Responder (event_t* ev) {
     {
       if (automapmode & am_active)    // jff 2/22/98
         return false;                  // HUD mode control
-      if (screenSize < 8)                // function on default F5
-        while (screenSize < 8 || !hud_displayed) // make hud visible
-          M_SizeDisplay(1);            // when configuring it
-      else
-      {
-        hud_displayed = 1;               //jff 3/3/98 turn hud on
-        // HU_NextHud();
-      }
+      M_SizeDisplay(2);
       return true;
     }
 
