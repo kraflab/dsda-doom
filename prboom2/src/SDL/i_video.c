@@ -44,7 +44,6 @@
 #endif // _WIN32
 
 #include <stdlib.h>
-#include <assert.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -846,9 +845,6 @@ static void I_FillScreenResolutionsList(void)
       break;
     }
   }
-
-  assert(list_size > 0);
-  assert(current_resolution_index > -1);
 
   screen_resolutions_list[list_size] = NULL;
   screen_resolution = screen_resolutions_list[current_resolution_index];
