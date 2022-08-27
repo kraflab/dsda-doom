@@ -141,6 +141,8 @@ typedef void (*V_CopyRect_f)(int srcscrn, int destscrn,
                              enum patch_translation_e flags);
 extern V_CopyRect_f V_CopyRect;
 
+void V_CopyScreen(int srcscrn, int destscrn);
+
 // V_FillRect
 typedef void (*V_FillRect_f)(int scrn, int x, int y,
                              int width, int height, byte colour);

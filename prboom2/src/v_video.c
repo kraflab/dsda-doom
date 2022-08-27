@@ -940,6 +940,11 @@ dboolean V_IsOpenGLMode(void) {
   return current_videomode == VID_MODEGL;
 }
 
+void V_CopyScreen(int srcscrn, int destscrn)
+{
+  V_CopyRect(srcscrn, destscrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_NONE);
+}
+
 //
 // V_AllocScreen
 //
