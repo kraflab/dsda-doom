@@ -771,7 +771,7 @@ static void I_FillScreenResolutionsList(void)
   int display_index = 0;
   SDL_DisplayMode mode;
   int i, j, list_size, current_resolution_index, count;
-  char mode_name[256];
+  char desired_resolution[256];
 
   // do it only once
   if (screen_resolutions_list[0])
@@ -825,12 +825,12 @@ static void I_FillScreenResolutionsList(void)
     screen_resolutions_list[list_size] = NULL;
   }
 
-  doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", desired_screenwidth, desired_screenheight);
+  doom_snprintf(desired_resolution, sizeof(desired_resolution), "%dx%d", desired_screenwidth, desired_screenheight);
 
   // [FG] if the desired resolution not in the list, append it
   if (current_resolution_index == -1)
   {
-    screen_resolutions_list[list_size] = Z_Strdup(mode_name);
+    screen_resolutions_list[list_size] = Z_Strdup(desired_resolution);
     list_size++;
   }
 
@@ -840,7 +840,7 @@ static void I_FillScreenResolutionsList(void)
   // [FG] find the desired resolution again
   for (i = 0; i < list_size; i++)
   {
-    if (!strcmp(mode_name, screen_resolutions_list[i]))
+    if (!strcmp(desired_resolution, screen_resolutions_list[i]))
     {
       current_resolution_index = i;
       break;
