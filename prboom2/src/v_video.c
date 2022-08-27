@@ -341,11 +341,32 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
     y += params->deltay1;
   }
 
-#ifdef RANGECHECK
-  if (x < 0 || x + width > SCREENWIDTH ||
-      y < 0 || y + height > SCREENHEIGHT)
-    I_Error ("V_CopyRect: Bad arguments");
-#endif
+  if (x < 0)
+  {
+    width += x;
+    x = 0;
+  }
+
+  if (x + width > SCREENWIDTH)
+  {
+    width = SCREENWIDTH - x;
+  }
+
+  if (y < 0)
+  {
+    height += y;
+    y = 0;
+  }
+
+  if (y + height > SCREENHEIGHT)
+  {
+    height = SCREENHEIGHT - y;
+  }
+
+  if (width <= 0 || height <= 0)
+  {
+    return;
+  }
 
   src = screens[srcscrn].data + screens[srcscrn].pitch * y + x;
   dest = screens[destscrn].data + screens[destscrn].pitch * y + x;
