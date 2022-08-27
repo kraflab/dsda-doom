@@ -347,8 +347,7 @@ default_t defaults[] =
   {"exclusive_fullscreen",{&exclusive_fullscreen},{0},0,1, // [FG] mode-changing fullscreen
   def_bool,ss_none},
   {"gl_exclusive_fullscreen",{&gl_exclusive_fullscreen},{1},0,1,def_bool,ss_none},
-  {"render_vsync",{&render_vsync},{1},0,1,
-   def_bool,ss_none},
+  {"render_vsync",{&render_vsync},{0},0,1,def_bool,ss_none},
   {"tran_filter_pct",{&tran_filter_pct},{66},0,100,         // killough 2/21/98
    def_int,ss_none}, // set percentage of foreground/background translucency mix
   {"screenblocks",{&screenblocks},{10},3,11,  // killough 2/21/98: default to 10
