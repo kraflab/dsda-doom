@@ -44,6 +44,7 @@
 #endif // _WIN32
 
 #include <stdlib.h>
+#include <assert.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -711,6 +712,20 @@ static const struct {
 };
 static const int num_canonicals = sizeof(canonicals)/sizeof(*canonicals);
 
+// [FG] sort resolutions by width first and height second
+static int cmp_resolutions (const void *a, const void *b)
+{
+    const char *const *sa = (const char *const *) a;
+    const char *const *sb = (const char *const *) b;
+
+    int wa, wb, ha, hb;
+
+    if (sscanf(*sa, "%dx%d", &wa, &ha) != 2) wa = ha = 0;
+    if (sscanf(*sb, "%dx%d", &wb, &hb) != 2) wb = hb = 0;
+
+    return (wa == wb) ? ha - hb : wa - wb;
+}
+
 static void I_AppendResolution(SDL_DisplayMode *mode, int *current_resolution_index, int *list_size)
 {
   int i;
@@ -810,27 +825,30 @@ static void I_FillScreenResolutionsList(void)
     screen_resolutions_list[list_size] = NULL;
   }
 
-  if (list_size == 0)
-  {
-    doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", desired_screenwidth, desired_screenheight);
-    screen_resolutions_list[0] = Z_Strdup(mode_name);
-    current_resolution_index = 0;
-    list_size = 1;
-  }
+  // [FG] if the desired resolution not in the list, append it
+  doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", desired_screenwidth, desired_screenheight);
 
   if (current_resolution_index == -1)
   {
-    doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", desired_screenwidth, desired_screenheight);
-
-    // make it first
+    screen_resolutions_list[list_size] = Z_Strdup(mode_name);
     list_size++;
-    for(i = list_size - 1; i > 0; i--)
-    {
-      screen_resolutions_list[i] = screen_resolutions_list[i - 1];
-    }
-    screen_resolutions_list[0] = Z_Strdup(mode_name);
-    current_resolution_index = 0;
   }
+
+  // [FG] sort the list
+  SDL_qsort(screen_resolutions_list, list_size, sizeof(*screen_resolutions_list), cmp_resolutions);
+
+  // [FG] find the desired resolution again
+  for (i = 0; i < list_size; i++)
+  {
+    if (!strcmp(mode_name, screen_resolutions_list[i]))
+    {
+      current_resolution_index = i;
+      break;
+    }
+  }
+
+  assert(list_size > 0);
+  assert(current_resolution_index > -1);
 
   screen_resolutions_list[list_size] = NULL;
   screen_resolution = screen_resolutions_list[current_resolution_index];
