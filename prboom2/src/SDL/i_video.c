@@ -825,9 +825,9 @@ static void I_FillScreenResolutionsList(void)
     screen_resolutions_list[list_size] = NULL;
   }
 
-  // [FG] if the desired resolution not in the list, append it
   doom_snprintf(mode_name, sizeof(mode_name), "%dx%d", desired_screenwidth, desired_screenheight);
 
+  // [FG] if the desired resolution not in the list, append it
   if (current_resolution_index == -1)
   {
     screen_resolutions_list[list_size] = Z_Strdup(mode_name);
