@@ -205,15 +205,3 @@ int doom_vsnprintf(char *buf, size_t max, const char *fmt, va_list va)
 
   return rv;
 }
-
-int doom_snprintf(char *buf, size_t max, const char *fmt, ...)
-{
-  int rv;
-  va_list va;
-
-  va_start(va, fmt);
-  rv = doom_vsnprintf(buf, max, fmt, va);
-  va_end(va);
-
-  return rv;
-}

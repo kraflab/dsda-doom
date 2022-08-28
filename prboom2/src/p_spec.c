@@ -5523,8 +5523,8 @@ static dboolean CheckedLockedDoor(mobj_t * mo, byte lock)
     }
     if (!mo->player->cards[lock - 1])
     {
-        doom_snprintf(LockedBuffer, sizeof(LockedBuffer),
-                   "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
+        snprintf(LockedBuffer, sizeof(LockedBuffer),
+                 "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
         P_SetMessage(mo->player, LockedBuffer, true);
         S_StartSound(mo, hexen_sfx_door_locked);
         return false;

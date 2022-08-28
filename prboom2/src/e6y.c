@@ -672,13 +672,13 @@ void e6y_WriteStats(void)
         char strtmp[200];
         strcpy(str, tmp.kill[0] == '\0' ? "%s%d" : "%s+%d");
 
-        doom_snprintf(strtmp, sizeof(strtmp), str, tmp.kill, stats[level].kill[i]);
+        snprintf(strtmp, sizeof(strtmp), str, tmp.kill, stats[level].kill[i]);
         strcpy(tmp.kill, strtmp);
 
-        doom_snprintf(strtmp, sizeof(strtmp), str, tmp.item, stats[level].item[i]);
+        snprintf(strtmp, sizeof(strtmp), str, tmp.item, stats[level].item[i]);
         strcpy(tmp.item, strtmp);
 
-        doom_snprintf(strtmp, sizeof(strtmp), str, tmp.secret, stats[level].secret[i]);
+        snprintf(strtmp, sizeof(strtmp), str, tmp.secret, stats[level].secret[i]);
         strcpy(tmp.secret, strtmp);
       }
     }
@@ -706,7 +706,7 @@ void e6y_WriteStats(void)
   max.stat[TT_TOTALTIME] = max.stat[TT_TOTALTIME]/TICRATE/60;
 
   for(i=0; i<TT_MAX; i++) {
-    doom_snprintf(str, 200, "%d", max.stat[i]);
+    snprintf(str, sizeof(str), "%d", max.stat[i]);
     max.stat[i] = strlen(str);
   }
 

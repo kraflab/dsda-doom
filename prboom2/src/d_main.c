@@ -1214,9 +1214,9 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
     if (autoload_path == NULL)
     {
         const char* exedir = I_DoomExeDir();
-        len = doom_snprintf(NULL, 0, "%s/autoload", exedir);
+        len = snprintf(NULL, 0, "%s/autoload", exedir);
         autoload_path = Z_Malloc(len+1);
-        doom_snprintf(autoload_path, len+1, "%s/autoload", exedir);
+        snprintf(autoload_path, len+1, "%s/autoload", exedir);
     }
 
 #ifdef _WIN32
@@ -1225,9 +1225,9 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
     mkdir(autoload_path, 0755);
 #endif
 
-    len = doom_snprintf(NULL, 0, "%s/%s", autoload_path, iwadname);
+    len = snprintf(NULL, 0, "%s/%s", autoload_path, iwadname);
     result = Z_Malloc(len+1);
-    doom_snprintf(result, len+1, "%s/%s", autoload_path, iwadname);
+    snprintf(result, len+1, "%s/%s", autoload_path, iwadname);
 
     if (createdir)
     {

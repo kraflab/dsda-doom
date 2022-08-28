@@ -94,22 +94,22 @@ static int parsecommand (char *out, const char *in, int len)
       switch (in[1])
       {
         case 'w':
-          i = doom_snprintf (out, len, "%u", renderW);
+          i = snprintf (out, len, "%u", renderW);
           break;
         case 'h':
-          i = doom_snprintf (out, len, "%u", renderH);
+          i = snprintf (out, len, "%u", renderH);
           break;
         case 's':
-          i = doom_snprintf (out, len, "%u", snd_samplerate);
+          i = snprintf (out, len, "%u", snd_samplerate);
           break;
         case 'f':
-          i = doom_snprintf (out, len, "%s", vid_fname);
+          i = snprintf (out, len, "%s", vid_fname);
           break;
         case 'r':
-          i = doom_snprintf (out, len, "%u", cap_fps);
+          i = snprintf (out, len, "%u", cap_fps);
           break;
         case '%':
-          i = doom_snprintf (out, len, "%%");
+          i = snprintf (out, len, "%%");
           break;
         default:
           return 0;

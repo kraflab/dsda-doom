@@ -149,7 +149,7 @@ static int pm_init (int samplerate)
     oinfo = Pm_GetDeviceInfo (i);
     if (!oinfo || !oinfo->output)
       continue;
-    doom_snprintf (devname, 64, "%s:%s", oinfo->interf, oinfo->name);
+    snprintf (devname, sizeof(devname), "%s:%s", oinfo->interf, oinfo->name);
     if (strlen (snd_mididev) && strstr (devname, snd_mididev))
     {
       outputdevice = i;

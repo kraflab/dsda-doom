@@ -1235,8 +1235,7 @@ static void cheat_script(char buf[3])
 
   if (P_StartACS(script, 0, script_args, plyr->mo, NULL, 0))
   {
-    doom_snprintf(textBuffer, sizeof(textBuffer),
-                  "RUNNING SCRIPT %.2d", script);
+    snprintf(textBuffer, sizeof(textBuffer), "RUNNING SCRIPT %.2d", script);
     P_SetMessage(plyr, textBuffer, true);
   }
 }

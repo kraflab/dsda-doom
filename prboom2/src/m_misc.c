@@ -1427,9 +1427,9 @@ void M_LoadDefaults (void)
   {
     const char* exedir = I_DoomExeDir();
     /* get config file from same directory as executable */
-    int len = doom_snprintf(NULL, 0, "%s/" BOOM_CFG, exedir);
+    int len = snprintf(NULL, 0, "%s/" BOOM_CFG, exedir);
     defaultfile = Z_Malloc(len+1);
-    doom_snprintf(defaultfile, len+1, "%s/" BOOM_CFG, exedir);
+    snprintf(defaultfile, len+1, "%s/" BOOM_CFG, exedir);
   }
 
   lprintf (LO_INFO, " default file: %s\n",defaultfile);
@@ -1701,9 +1701,9 @@ void M_ScreenShot(void)
     startshot = shot; // CPhipps - prevent infinite loop
 
     do {
-      int size = doom_snprintf(NULL, 0, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
+      int size = snprintf(NULL, 0, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
       lbmname = Z_Realloc(lbmname, size+1);
-      doom_snprintf(lbmname, size+1, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
+      snprintf(lbmname, size+1, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
       shot++;
     } while (!access(lbmname,0) && (shot != startshot) && (shot < 10000));
 
