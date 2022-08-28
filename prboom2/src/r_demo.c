@@ -205,23 +205,11 @@ char demoex_filename[PATH_MAX];
 const char *demo_demoex_filename;
 //wadtbl_t demoex;
 
-typedef struct
-{
-  const char name[9];
-  short *data;
-  int lump;
-  size_t maxtick;
-  size_t tick;
-} mlooklump_t;
-
-mlooklump_t mlook_lump = {DEMOEX_MLOOK_LUMPNAME, NULL, -2, 0, 0};
-
 int AddString(char **str, const char *val);
 
 static void R_DemoEx_AddParams(wadtbl_t *wadtbl);
 static int R_DemoEx_GetVersion(void);
 static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata);
-static void R_DemoEx_AddMouseLookData(wadtbl_t *wadtbl);
 
 static int G_ReadDemoFooter(const char *filename);
 
@@ -355,71 +343,6 @@ void R_DemoEx_ShowComment(void)
     V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_DEFAULT, VPT_STRETCH);
     cx += w;
   }
-}
-
-angle_t R_DemoEx_ReadMLook(void)
-{
-  angle_t pitch;
-
-  if (!demoplayback)
-    return 0;
-
-  // mlook data must be initialised here
-  if ((mlook_lump.lump == -2))
-  {
-    if (R_DemoEx_GetVersion() < 2)
-    {
-      // unsupported format
-      mlook_lump.lump = -1;
-    }
-    else
-    {
-      mlook_lump.lump = W_CheckNumForName(mlook_lump.name);
-      if (mlook_lump.lump != -1)
-      {
-        const unsigned char *data = W_LumpByName(mlook_lump.name);
-        int size = W_LumpLength(mlook_lump.lump);
-
-        mlook_lump.maxtick = size / sizeof(mlook_lump.data[0]);
-        mlook_lump.data = Z_Malloc(size);
-        memcpy(mlook_lump.data, data, size);
-      }
-    }
-  }
-
-  pitch = 0;
-  if (mlook_lump.data && mlook_lump.tick < mlook_lump.maxtick &&
-    consoleplayer == displayplayer && !walkcamera.type)
-  {
-    pitch = mlook_lump.data[mlook_lump.tick];
-  }
-  mlook_lump.tick++;
-
-  return (pitch << 16);
-}
-
-void R_DemoEx_ResetMLook(void)
-{
-  mlook_lump.tick = 0;
-}
-
-void R_DemoEx_WriteMLook(angle_t pitch)
-{
-  if (!demorecording)
-    return;
-
-  if (mlook_lump.tick >= mlook_lump.maxtick)
-  {
-    int ticks = mlook_lump.maxtick;
-    mlook_lump.maxtick = (mlook_lump.maxtick ? mlook_lump.maxtick * 2 : 8192);
-    if (mlook_lump.tick >= mlook_lump.maxtick)
-      mlook_lump.maxtick = mlook_lump.tick * 2;
-    mlook_lump.data = Z_Realloc(mlook_lump.data, mlook_lump.maxtick * sizeof(mlook_lump.data[0]));
-    memset(mlook_lump.data + ticks, 0, (mlook_lump.maxtick - ticks) * sizeof(mlook_lump.data[0]));
-  }
-
-  mlook_lump.data[mlook_lump.tick] = (short)(pitch >> 16);
-  mlook_lump.tick++;
 }
 
 static int R_DemoEx_GetVersion(void)
@@ -775,26 +698,6 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   if (files)
   {
     W_AddLump(wadtbl, DEMOEX_PARAMS_LUMPNAME, (const byte*)files, strlen(files));
-  }
-}
-
-static void R_DemoEx_AddMouseLookData(wadtbl_t *wadtbl)
-{
-  int i = 0;
-
-  if (!mlook_lump.data)
-    return;
-
-  // search for at least one tic with a nonzero pitch
-  while (i < (int)mlook_lump.tick)
-  {
-    if (mlook_lump.data[i] != 0)
-    {
-      W_AddLump(wadtbl, mlook_lump.name,
-        (const byte*)mlook_lump.data, mlook_lump.tick * sizeof(mlook_lump.data[0]));
-      break;
-    }
-    i++;
   }
 }
 
@@ -1156,10 +1059,6 @@ void G_WriteDemoFooter(void)
 
   //process format version
   W_AddLump(&demoex, DEMOEX_VERSION_LUMPNAME, (const byte*)DEMOEX_VERSION, strlen(DEMOEX_VERSION));
-  W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
-
-  //process mlook
-  R_DemoEx_AddMouseLookData(&demoex);
   W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
 
   //process port name

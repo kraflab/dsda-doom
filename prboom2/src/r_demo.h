@@ -89,10 +89,6 @@ void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl);
 void G_WriteDemoFooter(void);
 void I_DemoExShutdown(void);
 
-void R_DemoEx_WriteMLook(angle_t pitch);
-angle_t R_DemoEx_ReadMLook(void);
-void R_DemoEx_ResetMLook(void);
-
 dboolean D_TryGetWad(const char* name);
 
 int LoadDemo(const char *name, const byte **buffer, int *length, int *lump);

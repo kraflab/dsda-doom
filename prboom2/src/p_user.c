@@ -343,13 +343,10 @@ void P_SetPitch(player_t *player)
       {
         mo->pitch = 0;
       }
-
-      R_DemoEx_WriteMLook(mo->pitch);
     }
     else
     {
-      mo->pitch = R_DemoEx_ReadMLook();
-      CheckPitch((signed int *)&mo->pitch);
+      mo->pitch = 0;
     }
   }
   else

@@ -3308,8 +3308,6 @@ void G_BeginRecording (void)
   dsda_ContinueKeyFrame();
   dsda_ResetSplits();
 
-  R_DemoEx_ResetMLook();
-
   Z_Free(demostart);
 }
 
