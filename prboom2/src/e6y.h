@@ -300,7 +300,6 @@ int GetFullPath(const char* FileName, const char* ext, char *Buffer, size_t Buff
 #endif
 
 void I_vWarning(const char *message, va_list argList);
-void I_Warning(const char *message, ...);
 
 #define PRB_MB_OK                       0x00000000
 #define PRB_MB_OKCANCEL                 0x00000001

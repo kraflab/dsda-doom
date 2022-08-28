@@ -547,14 +547,6 @@ void I_vWarning(const char *message, va_list argList)
 #endif
 }
 
-void I_Warning(const char *message, ...)
-{
-  va_list argptr;
-  va_start(argptr,message);
-  I_vWarning(message, argptr);
-  va_end(argptr);
-}
-
 int I_MessageBox(const char* text, unsigned int type)
 {
   int result = PRB_IDCANCEL;
