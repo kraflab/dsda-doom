@@ -540,7 +540,7 @@ int StepwiseSum(int value, int direction, int step, int minval, int maxval, int 
 void I_vWarning(const char *message, va_list argList)
 {
   char msg[1024];
-  doom_vsnprintf(msg,sizeof(msg),message,argList);
+  vsnprintf(msg,sizeof(msg),message,argList);
   lprintf(LO_ERROR, "%s\n", msg);
 #ifdef _WIN32
   I_MessageBox(msg, PRB_MB_OK);

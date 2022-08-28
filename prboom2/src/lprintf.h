@@ -61,5 +61,4 @@ void I_DisableMessageBoxes(void);
 void I_Error(const char *error, ...) __attribute__((format(printf,1,2)));
 void I_Warn(const char *error, ...) __attribute__((format(printf,1,2)));
 
-int doom_vsnprintf(char *buf, size_t max, const char *fmt, va_list va);
 #endif

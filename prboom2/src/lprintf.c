@@ -74,7 +74,7 @@ int lprintf(OutputLevels pri, const char *s, ...)
 
   va_list v;
   va_start(v,s);
-  doom_vsnprintf(msg,sizeof(msg),s,v);    /* print message in buffer  */
+  vsnprintf(msg,sizeof(msg),s,v);    /* print message in buffer  */
   va_end(v);
 
 #ifdef _WIN32
@@ -124,7 +124,7 @@ void I_Error(const char *error, ...)
   char errmsg[MAX_MESSAGE_SIZE];
   va_list argptr;
   va_start(argptr,error);
-  doom_vsnprintf(errmsg,sizeof(errmsg),error,argptr);
+  vsnprintf(errmsg,sizeof(errmsg),error,argptr);
   va_end(argptr);
   lprintf(LO_ERROR, "%s\n", errmsg);
 #ifdef _WIN32
@@ -140,7 +140,7 @@ void I_Warn(const char *error, ...)
   char errmsg[MAX_MESSAGE_SIZE];
   va_list argptr;
   va_start(argptr, error);
-  doom_vsnprintf(errmsg, sizeof(errmsg), error, argptr);
+  vsnprintf(errmsg, sizeof(errmsg), error, argptr);
   va_end(argptr);
   lprintf(LO_WARN, "%s\n", errmsg);
 #ifdef _WIN32
@@ -148,60 +148,4 @@ void I_Warn(const char *error, ...)
     I_MessageBox(errmsg, PRB_MB_OK);
   }
 #endif
-}
-
-// Attempt to compensate for lack of va_copy
-
-#ifndef va_copy
-# ifdef __va_copy
-#  define va_copy(a,b) __va_copy(a,b)
-# else
-#  define va_copy(a,b) ((a)=(b))
-# endif
-#endif
-
-// Wrapper to handle non-standard stdio implementations
-
-int doom_vsnprintf(char *buf, size_t max, const char *fmt, va_list va)
-{
-  int rv;
-  va_list vc;
-
-  assert((max == 0 && buf == NULL) || (max != 0 && buf != NULL));
-  assert(fmt != NULL);
-
-  va_copy(vc, va);
-  rv = vsnprintf(buf, max, fmt, vc);
-  va_end(vc);
-
-  if (rv < 0) // Handle an unhelpful return value.
-  {
-    // write into a scratch buffer that keeps growing until the output fits
-    static char *backbuffer;
-    static size_t backsize = 1024;
-
-    for (; rv < 0; backsize *= 2)
-    {
-      if (backsize <= max) continue;
-
-      backbuffer = realloc(backbuffer, backsize);
-      assert(backbuffer != NULL);
-
-      va_copy(vc, va);
-      rv = vsnprintf(backbuffer, backsize, fmt, vc);
-      va_end(vc);
-    }
-
-    if (buf)
-    {
-      size_t end = (size_t) rv >= max ? max-1 : rv;
-      memmove(buf, backbuffer, end);
-      buf[end] = '\0';
-    }
-  }
-
-  if (buf && (size_t) rv >= max && buf[max-1]) // ensure null-termination
-    buf[max-1] = '\0';
-
-  return rv;
 }

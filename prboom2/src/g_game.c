@@ -3803,7 +3803,7 @@ void doom_printf(const char *s, ...)
   static char msg[MAX_MESSAGE_SIZE];
   va_list v;
   va_start(v,s);
-  doom_vsnprintf(msg,sizeof(msg),s,v);   /* print message in buffer */
+  vsnprintf(msg,sizeof(msg),s,v);   /* print message in buffer */
   va_end(v);
   players[consoleplayer].message = msg;  // set new message
 }
