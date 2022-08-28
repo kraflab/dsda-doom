@@ -72,7 +72,7 @@ static char* dsda_SplitTrackerPath(void) {
     dsda_split_tracker_path = Z_Malloc(length);
 
     snprintf(
-      dsda_split_tracker_path, length - 1, "%s/%s_%i_%i_%i_%s_splits.txt",
+      dsda_split_tracker_path, length, "%s/%s_%i_%i_%i_%s_splits.txt",
       dir, name_base, gameskill + 1, gameepisode, gamemap, params
     );
   }

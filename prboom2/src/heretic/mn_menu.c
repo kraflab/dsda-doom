@@ -620,7 +620,7 @@ void MN_DrawSlider(int x, int y, int width, int slot)
   V_DrawNamePatch(x2, y, 0, "M_SLDRT", CR_DEFAULT, VPT_STRETCH);
 
   // [crispy] print the value
-  snprintf(num, 4, "%3d", slot);
+  snprintf(num, sizeof(num), "%3d", slot);
   MN_DrTextA(num, x2 + 32, y + 3);
 
   // [crispy] do not crash anymore if the value is out of bounds

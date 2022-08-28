@@ -2718,12 +2718,12 @@ int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap)
   if (gamemode != commercial)
   {
     if (sscanf(mapuname, "E%dM%d", &epi, &map) != 2) return 0;
-    snprintf(lumpname, 9, "E%dM%d", epi, map);
+    snprintf(lumpname, sizeof(lumpname), "E%dM%d", epi, map);
   }
   else
   {
     if (sscanf(mapuname, "MAP%d", &map) != 1) return 0;
-    snprintf(lumpname, 9, "MAP%02d", map);
+    snprintf(lumpname, sizeof(lumpname), "MAP%02d", map);
     epi = 1;
   }
   if (pEpi) *pEpi = epi;

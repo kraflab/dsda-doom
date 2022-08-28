@@ -44,9 +44,9 @@ static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
   unsigned i;
 
   if (gamemode == commercial)
-    snprintf(lumpname, 9, "MAP%02d", gamemap);
+    snprintf(lumpname, sizeof(lumpname), "MAP%02d", gamemap);
   else
-    snprintf(lumpname, 9, "E%dM%d", gameepisode, gamemap);
+    snprintf(lumpname, sizeof(lumpname), "E%dM%d", gameepisode, gamemap);
 
   for (i = 0; i < Maps.mapcount; i++)
     if (!stricmp(lumpname, Maps.maps[i].mapname))

@@ -5972,7 +5972,7 @@ void M_DrawThermo(int x,int y,int thermWidth,int thermDot )
   V_DrawNamePatch(xx, y, 0, "M_THERMR", CR_DEFAULT, VPT_STRETCH);
 
   // [crispy] print the value
-  snprintf(num, 4, "%3d", thermDot);
+  snprintf(num, sizeof(num), "%3d", thermDot);
   strcpy(menu_buffer, num);
   M_DrawMenuString(xx + 12, y + 3, g_menu_cr_select);
 

@@ -390,7 +390,7 @@ static char* dsda_DemoNameWithTime(void) {
 
   length = strlen(dsda_demo_name_base) + 16 + 1;
 
-  base_name = Z_Calloc(length, 1);
+  base_name = Z_Malloc(length);
 
   if (dsda_ILComplete()) {
     dsda_level_time_t level_time;
@@ -398,10 +398,10 @@ static char* dsda_DemoNameWithTime(void) {
     dsda_DecomposeILTime(&level_time);
 
     if (level_time.m == 0 && level_time.s < 10)
-      snprintf(base_name, length - 1, "%s%d%02d",
+      snprintf(base_name, length, "%s%d%02d",
                dsda_demo_name_base, level_time.s, level_time.t);
     else
-      snprintf(base_name, length - 1, "%s%d%02d",
+      snprintf(base_name, length, "%s%d%02d",
                dsda_demo_name_base, level_time.m, level_time.s);
   }
   else {
@@ -410,13 +410,13 @@ static char* dsda_DemoNameWithTime(void) {
     dsda_DecomposeMovieTime(&movie_time);
 
     if (movie_time.h)
-      snprintf(base_name, length - 1, "%s%d%02d%02d",
+      snprintf(base_name, length, "%s%d%02d%02d",
                dsda_demo_name_base, movie_time.h, movie_time.m, movie_time.s);
     else if (movie_time.m)
-      snprintf(base_name, length - 1, "%s%d%02d",
+      snprintf(base_name, length, "%s%d%02d",
                dsda_demo_name_base, movie_time.m, movie_time.s);
     else
-      snprintf(base_name, length - 1, "%s%03d",
+      snprintf(base_name, length, "%s%03d",
                dsda_demo_name_base, movie_time.s);
   }
 

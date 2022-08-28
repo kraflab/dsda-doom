@@ -201,11 +201,11 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 
   timestamp = totalleveltimes + leveltime;
 
-  snprintf(name, 40, "backup-%010d.kf", timestamp);
+  snprintf(name, sizeof(name), "backup-%010d.kf", timestamp);
 
   if ((fp = fopen(name, "rb")) != NULL) {
     fclose(fp);
-    snprintf(name, 40, "backup-%010d-%lld.kf", timestamp, time(NULL));
+    snprintf(name, sizeof(name), "backup-%010d-%lld.kf", timestamp, time(NULL));
   }
 
   if (!M_WriteFile(name, buffer, length))
