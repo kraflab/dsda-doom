@@ -193,7 +193,7 @@ dboolean dsda_AutoRun(void) {
 }
 
 dboolean dsda_MouseLook(void) {
-  return dsda_Transient(dsda_mouselook);
+  return dsda_Transient(dsda_mouselook) && !dsda_StrictMode();
 }
 
 dboolean dsda_NoVert(void) {
