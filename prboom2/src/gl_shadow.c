@@ -42,6 +42,8 @@
 #include "r_main.h"
 #include "lprintf.h"
 
+#include "dsda/settings.h"
+
 int gl_shadows_maxdist;
 int gl_shadows_factor;
 
@@ -107,7 +109,7 @@ void gld_InitShadows(void)
     }
   }
 
-  if (simple_shadows.enable && !simple_shadows.loaded)
+  if (dsda_SimpleShadows() && !simple_shadows.loaded)
   {
     lprintf(LO_INFO, "gld_InitShadows: failed to initialise shadow texture");
   }
@@ -144,7 +146,7 @@ void gld_ProcessThingShadow(mobj_t *mo)
   fixed_t fz;
   GLShadow shadow;
 
-  if (!simple_shadows.enable || !simple_shadows.loaded)
+  if (!dsda_SimpleShadows() || !simple_shadows.loaded)
     return;
 
   // Should this mobj have a shadow?
@@ -232,7 +234,7 @@ void gld_RenderShadows(void)
 {
   int i;
 
-  if (!simple_shadows.enable || !simple_shadows.loaded || players[displayplayer].fixedcolormap)
+  if (!dsda_SimpleShadows() || !simple_shadows.loaded || players[displayplayer].fixedcolormap)
     return;
 
   if (gld_drawinfo.num_items[GLDIT_SHADOW] <= 0)

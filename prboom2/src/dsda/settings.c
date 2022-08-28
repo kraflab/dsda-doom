@@ -21,6 +21,7 @@
 #include "r_things.h"
 #include "w_wad.h"
 #include "g_game.h"
+#include "gl_struct.h"
 #include "lprintf.h"
 #include "i_main.h"
 
@@ -276,6 +277,10 @@ dboolean dsda_CrosshairTarget(void) {
 
 dboolean dsda_CrosshairLockTarget(void) {
   return hudadd_crosshair_lock_target && !dsda_StrictMode();
+}
+
+dboolean dsda_SimpleShadows(void) {
+  return simple_shadows.enable && !dsda_StrictMode();
 }
 
 dboolean dsda_PainPalette(void) {
