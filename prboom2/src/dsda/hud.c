@@ -19,6 +19,7 @@
 #include "hu_lib.h"
 #include "hu_stuff.h"
 #include "doomstat.h"
+#include "r_main.h"
 
 #include "dsda.h"
 #include "dsda/build.h"
@@ -36,10 +37,6 @@
 #define DSDA_SPLIT_Y 12
 #define DSDA_SPLIT_LIFETIME 105
 #define DSDA_SPLIT_SIZE 80
-
-// hook into screen settings
-extern int SCREENHEIGHT;
-extern int viewheight;
 
 typedef struct {
   hu_textline_t text;
@@ -97,13 +94,13 @@ static dboolean dsda_ExHudVisible(void) {
 
 static dboolean dsda_CommandDisplayVisible(void) {
   return (dsda_CommandDisplay() || dsda_BuildMode()) && // command display turned on
-         viewheight != SCREENHEIGHT && // not zoomed in
+         R_PartialView() && // not zoomed in
          (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
 }
 
 static dboolean dsda_CoordinateDisplayVisible(void) {
   return dsda_CoordinateDisplay() && // command display turned on
-         viewheight != SCREENHEIGHT && // not zoomed in
+         R_PartialView() && // not zoomed in
          (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
 }
 

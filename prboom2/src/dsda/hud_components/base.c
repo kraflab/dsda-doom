@@ -37,7 +37,7 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
     y = 200;
     y_offset = -y_offset;
 
-    if (viewheight != SCREENHEIGHT)
+    if (R_PartialView())
       y -= g_st_height;
   }
 
@@ -71,7 +71,7 @@ void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_off
     y = 200;
     y_offset = -y_offset;
 
-    if (viewheight != SCREENHEIGHT)
+    if (R_PartialView())
       y -= g_st_height;
   }
 

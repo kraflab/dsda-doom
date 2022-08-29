@@ -154,6 +154,16 @@ draw_vars_t drawvars = {
   49152 // mag_threshold
 };
 
+dboolean R_FullView(void)
+{
+  return viewheight == SCREENHEIGHT;
+}
+
+dboolean R_PartialView(void)
+{
+  return viewheight != SCREENHEIGHT;
+}
+
 //
 // Error functions that will abort if R_FlushColumns tries to flush
 // columns without a column type.
@@ -690,8 +700,7 @@ void R_DrawViewBorder(void)
 
   // e6y: wide-res
   if ((ratio_multiplier != ratio_scale || wide_offsety) &&
-     ((SCREENHEIGHT != viewheight) ||
-     ((automapmode & am_active) && ! (automapmode & am_overlay))))
+     (R_PartialView() || ((automapmode & am_active) && ! (automapmode & am_overlay))))
   {
     for (i = (SCREENHEIGHT - ST_SCALED_HEIGHT); i < SCREENHEIGHT; i++)
     {

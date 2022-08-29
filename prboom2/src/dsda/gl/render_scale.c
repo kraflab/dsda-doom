@@ -71,7 +71,7 @@ void dsda_GLSetRenderViewportParams() {
   gl_scale_y = (float)gl_viewport_height / (float)SCREENHEIGHT;
 
   // elim - This will be zero if no statusbar is being drawn
-  gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT) * (viewheight != SCREENHEIGHT);
+  gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT) * R_PartialView();
 
   gl_scene_offset_x = (int)(viewwindowx * gl_scale_x);
   gl_scene_offset_y = (int)(viewwindowy * gl_scale_y);
@@ -107,10 +107,10 @@ void dsda_GLUpdateStatusBarVisible() {
   int current_visible;
 
   saved_visible = (gl_statusbar_height > 0);
-  current_visible = (viewheight != SCREENHEIGHT);
+  current_visible = R_PartialView();
 
   if (saved_visible != current_visible) {
-    gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT) * (viewheight != SCREENHEIGHT);
+    gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT) * R_PartialView();
     gl_scene_height = gl_viewport_height - gl_statusbar_height - (gl_scene_offset_y * 2);
   }
 }

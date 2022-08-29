@@ -159,6 +159,8 @@ void R_RenderPlayerView(player_t *player);   // Called by G_Drawer.
 void R_Init(void);                           // Called by startup code.
 void R_SetViewSize(int blocks);              // Called by M_Responder.
 void R_ExecuteSetViewSize(void);             // cph - called by D_Display to complete a view resize
+dboolean R_FullView(void);
+dboolean R_PartialView(void);
 
 void R_ShowStats(void);
 void R_ClearStats(void);

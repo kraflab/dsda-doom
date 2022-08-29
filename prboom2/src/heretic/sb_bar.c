@@ -551,7 +551,7 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
     }
 
     CPlayer = &players[consoleplayer];
-    if (viewheight == SCREENHEIGHT && !(automapmode & am_active))
+    if (R_FullView() && !(automapmode & am_active))
     {
         DrawFullScreenStuff();
         SB_state = -1;

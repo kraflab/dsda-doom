@@ -603,13 +603,13 @@ void HU_draw_crosshair(void)
 
     if (!hudadd_crosshair_scale)
     {
-      st_height = (viewheight != SCREENHEIGHT ? ST_SCALED_HEIGHT : 0);
+      st_height = (R_PartialView() ? ST_SCALED_HEIGHT : 0);
       x = (SCREENWIDTH - crosshair.w) / 2;
       y = (SCREENHEIGHT - st_height - crosshair.h) / 2;
     }
     else
     {
-      st_height = (viewheight != SCREENHEIGHT ? ST_HEIGHT : 0);
+      st_height = (R_PartialView() ? ST_HEIGHT : 0);
       x = (320 - crosshair.w) / 2;
       y = (200 - st_height - crosshair.h) / 2;
     }
@@ -643,7 +643,7 @@ void HU_Drawer(void)
   if (automapmode & am_active)
   {
     // Hide title if automap in overlay mode and adv / ex hud is active
-    if (!(automapmode & am_overlay) || ((viewheight != SCREENHEIGHT) && !dsda_ExHud()))
+    if (!(automapmode & am_overlay) || (R_PartialView() && !dsda_ExHud()))
     {
       // map title
       HUlib_drawTextLine(&w_title, false);

@@ -187,7 +187,7 @@ void dsda_InitExHud(void) {
   for (i = 0; i < exhud_component_count; ++i)
     components[i].on = false;
 
-  if (viewheight == SCREENHEIGHT && !hud_displayed)
+  if (R_FullView() && !hud_displayed)
     return;
 
   if (!lump)
@@ -198,7 +198,7 @@ void dsda_InitExHud(void) {
 
   snprintf(target, sizeof(target), "%s %s",
            hexen ? "hexen" : heretic ? "heretic" : "doom",
-           viewheight == SCREENHEIGHT ? "full" : "ex");
+           R_FullView() ? "full" : "ex");
 
   if (!lines)
     lines = dsda_SplitString(lump, "\n\r");

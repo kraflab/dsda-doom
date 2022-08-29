@@ -378,7 +378,7 @@ void D_Display (fixed_t frac)
 
     // Work out if the player view is visible, and if there is a border
     viewactive = (!(automapmode & am_active) || (automapmode & am_overlay)) && !inhelpscreens;
-    isborder = viewactive ? (viewheight != SCREENHEIGHT) : (!inhelpscreens && (automapmode & am_active));
+    isborder = viewactive ? R_PartialView() : (!inhelpscreens && (automapmode & am_active));
 
     if (oldgamestate != GS_LEVEL) {
       R_FillBackScreen ();    // draw the pattern into the back screen
@@ -444,8 +444,7 @@ void D_Display (fixed_t frac)
     R_RestoreInterpolations();
 
     ST_Drawer(
-        ((viewheight != SCREENHEIGHT)
-         || ((automapmode & am_active) && !(automapmode & am_overlay))),
+        (R_PartialView() || ((automapmode & am_active) && !(automapmode & am_overlay))),
         redrawborderstuff || BorderNeedRefresh,
         (menuactive == mnact_full));
 
