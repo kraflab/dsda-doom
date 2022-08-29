@@ -37,6 +37,8 @@ set(COMMON_SRC
     dsda/excmd.h
     dsda/exhud.c
     dsda/exhud.h
+    dsda/features.c
+    dsda/features.h
     dsda/ghost.c
     dsda/ghost.h
     dsda/gl/render_scale.c

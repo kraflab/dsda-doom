@@ -27,6 +27,7 @@
 
 #include "dsda/args.h"
 #include "dsda/build.h"
+#include "dsda/features.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
 
@@ -69,6 +70,8 @@ static void dsda_ResetSkipSettings(void) {
 
 void dsda_EnterSkipMode(void) {
   extern void M_ClearMenus(void);
+
+  dsda_TrackFeature(UF_SKIP);
 
   skip_mode = true;
 

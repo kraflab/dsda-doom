@@ -20,6 +20,7 @@
 #include "r_state.h"
 
 #include "dsda/args.h"
+#include "dsda/features.h"
 #include "dsda/settings.h"
 #include "dsda/tracker.h"
 
@@ -93,7 +94,7 @@ static void dsda_ConsolidateTrackers(void) {
 static void dsda_RefreshTrackers(void) {
   int i;
 
-  for (i = 0; i < TRACKER_LIMIT; ++i)
+  for (i = 0; i < TRACKER_LIMIT; ++i) {
     switch (dsda_tracker[i].type) {
       default:
         break;
@@ -103,6 +104,10 @@ static void dsda_RefreshTrackers(void) {
           dsda_WipeTracker(i);
         break;
     }
+
+    if (dsda_tracker[i].type != dsda_tracker_nothing)
+      dsda_TrackFeature(UF_TRACKER);
+  }
 }
 
 static void dsda_ParseCommandlineTrackers(int arg_id, dboolean (*track)(int)) {
@@ -152,6 +157,8 @@ static dboolean dsda_AddTracker(int type, int id, mobj_t* mobj) {
     return false;
 
   if ((i = dsda_FindTracker(dsda_tracker_nothing, 0)) >= 0) {
+    dsda_TrackFeature(UF_TRACKER);
+
     dsda_tracker[i].type = type;
     dsda_tracker[i].id = id;
     dsda_tracker[i].mobj = mobj;

@@ -77,6 +77,7 @@
 #include "f_finale.h"
 #include "e6y.h"//e6y
 
+#include "dsda/features.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/key_frame.h"
@@ -5855,6 +5856,9 @@ void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
 
   if (mnact != mnact_nochange)
     menuactive = mnact;
+
+  if (mnact > mnact_inactive)
+    dsda_TrackFeature(UF_MENU);
 
   if (SDL_IsTextInputActive()) {
     if (!(currentMenu && currentMenu->flags & MENUF_TEXTINPUT))

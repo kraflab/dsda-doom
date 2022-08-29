@@ -92,6 +92,7 @@
 #include "dsda/command_display.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
+#include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/save.h"
 #include "dsda/settings.h"
@@ -1053,6 +1054,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
       arg = dsda_Arg(dsda_arg_first_input);
       if (arg->found) {
+        dsda_TrackFeature(UF_BUILDZERO);
+
         cmd->forwardmove = (signed char) arg->value.v_int_array[0];
         cmd->sidemove = (signed char) arg->value.v_int_array[1];
         cmd->angleturn = (signed short) (arg->value.v_int_array[2] << 8);

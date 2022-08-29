@@ -54,6 +54,7 @@
 #include "heretic/sb_bar.h"
 
 #include "dsda/excmd.h"
+#include "dsda/features.h"
 #include "dsda/input.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
@@ -451,6 +452,12 @@ static void cheat_noclip()
 // 'behold?' power-up cheats (modified for infinite duration -- killough)
 static void cheat_pw(int pw)
 {
+  if (pw == pw_allmap)
+    dsda_TrackFeature(UF_AUTOMAP);
+
+  if (pw == pw_infrared)
+    dsda_TrackFeature(UF_LITEAMP);
+
   if (plyr->powers[pw])
     plyr->powers[pw] = pw!=pw_strength && pw!=pw_allmap;  // killough
   else
@@ -587,8 +594,13 @@ static void cheat_massacre()    // jff 2/01/98 kill all monsters
 static void cheat_ddt()
 {
   extern int dsda_reveal_map;
+
   if (automapmode & am_active)
+  {
+    dsda_TrackFeature(UF_IDDT);
+
     dsda_reveal_map = (dsda_reveal_map+1) % 3;
+  }
 }
 
 static void cheat_reveal_secret()
@@ -598,6 +610,8 @@ static void cheat_reveal_secret()
   if (automapmode & am_active)
   {
     int i, start_i;
+
+    dsda_TrackFeature(UF_IDDT);
 
     i = last_secret + 1;
     if (i >= numsectors)
@@ -674,6 +688,8 @@ static void cheat_reveal_kill()
     static int last_count;
     static mobj_t *last_mobj;
 
+    dsda_TrackFeature(UF_IDDT);
+
     cheat_cycle_mobj(&last_mobj, &last_count, MF_COUNTKILL, true);
   }
 }
@@ -684,6 +700,8 @@ static void cheat_reveal_item()
   {
     static int last_count;
     static mobj_t *last_mobj;
+
+    dsda_TrackFeature(UF_IDDT);
 
     cheat_cycle_mobj(&last_mobj, &last_count, MF_COUNTITEM, false);
   }

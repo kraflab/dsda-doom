@@ -20,6 +20,7 @@
 
 #include "dsda/brute_force.h"
 #include "dsda/demo.h"
+#include "dsda/features.h"
 #include "dsda/input.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
@@ -315,6 +316,8 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
 }
 
 void dsda_EnterBuildMode(void) {
+  dsda_TrackFeature(UF_BUILD);
+
   build_mode = true;
   dsda_ApplyPauseMode(PAUSE_BUILDMODE);
 }

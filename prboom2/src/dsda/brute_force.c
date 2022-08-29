@@ -25,6 +25,7 @@
 #include "r_state.h"
 
 #include "dsda/build.h"
+#include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/skip.h"
 #include "dsda/time.h"
@@ -433,6 +434,8 @@ dboolean dsda_StartBruteForce(int depth,
 
   if (bf_depth > MAX_BF_DEPTH)
     return false;
+
+  dsda_TrackFeature(UF_BRUTEFORCE);
 
   dsda_SortIntPair(&forwardmove_min, &forwardmove_max);
   dsda_SortIntPair(&sidemove_min, &sidemove_max);

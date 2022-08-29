@@ -39,6 +39,7 @@
 #include "dsda/build.h"
 #include "dsda/command_display.h"
 #include "dsda/demo.h"
+#include "dsda/features.h"
 #include "dsda/mapinfo.h"
 #include "dsda/options.h"
 #include "dsda/pause.h"
@@ -260,6 +261,8 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
     doom_printf("No key frame found");
     return;
   }
+
+  dsda_TrackFeature(UF_KEYFRAME);
 
   if (skip_wipe || dsda_BuildMode())
     dsda_SkipNextWipe();
