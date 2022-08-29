@@ -319,13 +319,20 @@ void dsda_EnterBuildMode(void) {
   dsda_ApplyPauseMode(PAUSE_BUILDMODE);
 }
 
+void dsda_ExitBuildMode(void) {
+  build_mode = false;
+  dsda_RemovePauseMode(PAUSE_BUILDMODE);
+}
+
 dboolean dsda_BuildResponder(event_t* ev) {
   if (!dsda_AllowBuilding())
     return false;
 
   if (dsda_InputActivated(dsda_input_build)) {
-    build_mode = !build_mode;
-    dsda_TogglePauseMode(PAUSE_BUILDMODE);
+    if (dsda_BuildMode())
+      dsda_ExitBuildMode();
+    else
+      dsda_EnterBuildMode();
 
     return true;
   }
