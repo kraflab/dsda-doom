@@ -15,11 +15,15 @@
 //	DSDA Utility
 //
 
+#include <string.h>
+
 #include "d_ticcmd.h"
 #include "tables.h"
 
 #define FIXED_STRING_LENGTH 16
 #define COMMAND_MOVEMENT_STRING_LENGTH 18
+
+#define ZERO_DATA(item) memset(&item, 0, sizeof(item))
 
 typedef struct {
   dboolean negative;
