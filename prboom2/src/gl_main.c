@@ -1262,10 +1262,6 @@ void gld_StartDrawScene(void)
     }
   }
 
-  motion_blur.enabled = gl_use_motionblur &&
-    ((motion_blur.curr_speed_pow2 > motion_blur.minspeed_pow2) ||
-    (abs(players[displayplayer].cmd.angleturn) > motion_blur.minangle));
-
   // elim - Always enabled (when supported) for upscaling with GL exclusive disabled
   SceneInTexture = gl_ext_framebuffer_object;
 
@@ -1373,21 +1369,6 @@ void gld_EndDrawScene(void)
       glColor3f(1.0f, 1.0f, 1.0f);
     }
 
-    //e6y: motion bloor effect for strafe50
-    if (motion_blur.enabled)
-    {
-      extern int renderer_fps;
-      static float motionblur_alpha = 1.0f;
-
-      if (realframe)
-      {
-        motionblur_alpha = (float)((atan(-renderer_fps / motion_blur.att_a)) / motion_blur.att_b) + motion_blur.att_c;
-      }
-
-      glBlendFunc(GL_CONSTANT_ALPHA_EXT, GL_ONE_MINUS_CONSTANT_ALPHA_EXT);
-      GLEXT_glBlendColorEXT(1.0f, 1.0f, 1.0f, motionblur_alpha);
-    }
-
     // Setup GL camera for drawing the render texture
     dsda_GLFullscreenOrtho2D();
     dsda_GLSetRenderViewport();
@@ -1406,11 +1387,6 @@ void gld_EndDrawScene(void)
     dsda_GLSetRenderViewportScissor();
 
     gld_Set2DMode();
-
-    if (motion_blur.enabled)
-    {
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
 
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }

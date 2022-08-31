@@ -52,29 +52,15 @@ GLuint glSceneImageTextureFBOTexID = 0;
 int SceneInTexture = false;
 static dboolean gld_CreateScreenSizeFBO(void);
 
-//e6y: motion bloor
-int gl_motionblur;
-int gl_use_motionblur = false;
-motion_blur_params_t motion_blur;
-
-void gld_InitMotionBlur(void);
-
 void gld_InitFBO(void)
 {
   gld_FreeScreenSizeFBO();
-
-  gl_use_motionblur = gl_ext_framebuffer_object && gl_motionblur && gl_ext_blend_color;
 
   gl_use_FBO = (gl_ext_framebuffer_object) && (gl_version >= OPENGL_VERSION_1_3);
 
   if (gl_use_FBO)
   {
-    if (gld_CreateScreenSizeFBO())
-    {
-      // motion blur setup
-      gld_InitMotionBlur();
-    }
-    else
+    if (!gld_CreateScreenSizeFBO())
     {
       gld_FreeScreenSizeFBO();
       gl_use_FBO = false;
@@ -87,7 +73,7 @@ static dboolean gld_CreateScreenSizeFBO(void)
 {
   int status = 0;
   GLenum internalFormat;
-  dboolean attach_stencil = gl_ext_packed_depth_stencil;// && (gl_has_hires || gl_use_motionblur);
+  dboolean attach_stencil = gl_ext_packed_depth_stencil;// && gl_has_hires;
 
   if (!gl_ext_framebuffer_object)
     return false;
@@ -146,22 +132,4 @@ void gld_FreeScreenSizeFBO(void)
 
   glDeleteTextures(1, &glSceneImageTextureFBOTexID);
   glSceneImageTextureFBOTexID = 0;
-}
-
-void gld_InitMotionBlur(void)
-{
-  if (gl_use_motionblur)
-  {
-    float f;
-
-    sscanf(motion_blur.str_min_speed, "%f", &f);
-    motion_blur.minspeed_pow2 = f * f;
-
-    sscanf(motion_blur.str_min_angle, "%f", &f);
-    motion_blur.minangle = (int)(f * 65536.0f / 360.0f);
-
-    sscanf(motion_blur.str_att_a, "%f", &motion_blur.att_a);
-    sscanf(motion_blur.str_att_b, "%f", &motion_blur.att_b);
-    sscanf(motion_blur.str_att_c, "%f", &motion_blur.att_c);
-  }
 }
