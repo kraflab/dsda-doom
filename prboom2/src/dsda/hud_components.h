@@ -24,6 +24,7 @@
 #include "hud_components/health_text.h"
 #include "hud_components/keys.h"
 #include "hud_components/ready_ammo_text.h"
+#include "hud_components/render_stats.h"
 #include "hud_components/speed_text.h"
 #include "hud_components/stat_totals.h"
 #include "hud_components/tracker.h"

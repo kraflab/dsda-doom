@@ -55,6 +55,7 @@ typedef enum {
   exhud_stat_totals,
   exhud_tracker,
   exhud_weapon_text,
+  exhud_render_stats,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -155,6 +156,13 @@ exhud_component_t components[exhud_component_count] = {
     dsda_EraseWeaponTextHC,
     "weapon_text"
   },
+  [exhud_render_stats] = {
+    dsda_InitRenderStatsHC,
+    dsda_UpdateRenderStatsHC,
+    dsda_DrawRenderStatsHC,
+    dsda_EraseRenderStatsHC,
+    "render_stats"
+  },
 };
 
 #define DSDA_EXHUD_X 2
@@ -162,6 +170,8 @@ exhud_component_t components[exhud_component_count] = {
 int exhud_color_default;
 int exhud_color_warning;
 int exhud_color_alert;
+
+int dsda_show_render_stats;
 
 static void dsda_TurnComponentOn(int id, int x, int y, int vpt) {
   components[id].on = true;
@@ -255,6 +265,9 @@ void dsda_InitExHud(void) {
         I_Error("Invalid hud component \"%s\"", line);
     }
   }
+
+  if (dsda_show_render_stats)
+    dsda_TurnComponentOn(exhud_render_stats, 2, 8, VPT_ALIGN_LEFT_TOP);
 }
 
 void dsda_UpdateExHud(void) {
@@ -279,4 +292,13 @@ void dsda_EraseExHud(void) {
   for (i = 0; i < exhud_component_count; ++i)
     if (components[i].on && (!components[i].strict || !dsda_StrictMode()))
       components[i].erase();
+}
+
+void dsda_ToggleRenderStats(void) {
+  dsda_show_render_stats = !dsda_show_render_stats;
+
+  if (components[exhud_render_stats].on && !dsda_show_render_stats)
+    components[exhud_render_stats].on = false;
+  else if (!components[exhud_render_stats].on && dsda_show_render_stats)
+    dsda_TurnComponentOn(exhud_render_stats, 2, 8, VPT_ALIGN_LEFT_TOP);
 }

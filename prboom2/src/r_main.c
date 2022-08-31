@@ -62,6 +62,7 @@
 #include "xs_Float.h"
 
 #include "dsda/exhud.h"
+#include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 #include "dsda/gl/render_scale.h"
@@ -723,6 +724,7 @@ void R_ExecuteSetViewSize (void)
     dsda_GLSetRenderViewportParams();
 
   dsda_InitExHud();
+  dsda_BeginRenderStats();
 }
 
 //
@@ -900,40 +902,6 @@ static void R_SetupFrame (player_t *player)
     R_SetupMatrix();
 
   validcount++;
-}
-
-//
-// R_ShowStats
-//
-int rendered_visplanes, rendered_segs, rendered_vissprites;
-dboolean rendering_stats;
-int renderer_fps = 0;
-
-void R_ShowStats(void)
-{
-  static unsigned int FPS_SavedTick = 0, FPS_FrameCount = 0;
-  unsigned int tick = SDL_GetTicks();
-  FPS_FrameCount++;
-  if(tick >= FPS_SavedTick + 1000)
-  {
-    renderer_fps = 1000 * FPS_FrameCount / (tick - FPS_SavedTick);
-    if (rendering_stats)
-    {
-      doom_printf((V_IsOpenGLMode())
-                  ?"Frame rate %d fps\nWalls %d, Flats %d, Sprites %d"
-                  :"Frame rate %d fps\nSegs %d, Visplanes %d, Sprites %d",
-      renderer_fps, rendered_segs, rendered_visplanes, rendered_vissprites);
-    }
-    FPS_SavedTick = tick;
-    FPS_FrameCount = 0;
-  }
-}
-
-void R_ClearStats(void)
-{
-  rendered_visplanes = 0;
-  rendered_segs = 0;
-  rendered_vissprites = 0;
 }
 
 //

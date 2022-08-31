@@ -54,6 +54,7 @@
 #include "heretic/sb_bar.h"
 
 #include "dsda/excmd.h"
+#include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/input.h"
 #include "dsda/map_format.h"
@@ -516,7 +517,7 @@ static void cheat_mypos()
 // cph - cheat to toggle frame rate/rendering stats display
 static void cheat_rate()
 {
-  rendering_stats ^= 1;
+  dsda_ToggleRenderStats();
 }
 
 // compatibility cheat

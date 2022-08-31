@@ -49,6 +49,8 @@
 #include "v_video.h"
 #include "lprintf.h"
 
+#include "dsda/render_stats.h"
+
 // OPTIMIZE: closed two sided lines as single sided
 
 // killough 1/6/98: replaced globals with statics where appropriate
@@ -411,7 +413,8 @@ static void R_RenderSegLoop (void)
 
   R_SetDefaultDrawColumnVars(&dcvars);
 
-  rendered_segs++;
+  dsda_RecordDrawSeg();
+
   for ( ; rw_x < rw_stopx ; rw_x++)
     {
 

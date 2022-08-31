@@ -97,6 +97,7 @@
 #include "dsda/mobjinfo.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
+#include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
@@ -421,15 +422,12 @@ void D_Display (fixed_t frac)
 
     R_InterpolateView(&players[displayplayer], frac);
 
-    R_ClearStats();
-
     // Now do the drawing
     if (viewactive || map_always_updates) {
       R_RenderPlayerView (&players[displayplayer]);
     }
 
-    // IDRATE cheat
-    R_ShowStats();
+    dsda_UpdateRenderStats();
 
     // e6y
     // but should NOT be applied for automap, statusbar and HUD

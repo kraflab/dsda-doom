@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2021 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,16 +12,25 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Extended HUD
+//	DSDA Render Stats
 //
 
-#ifndef __DSDA_EXHUD__
-#define __DSDA_EXHUD__
+#ifndef __RENDER_STATS__
+#define __RENDER_STATS__
 
-void dsda_InitExHud(void);
-void dsda_UpdateExHud(void);
-void dsda_DrawExHud(void);
-void dsda_EraseExHud(void);
-void dsda_ToggleRenderStats(void);
+typedef struct {
+  int visplanes;
+  int drawsegs;
+  int vissprites;
+} dsda_render_stats_t;
+
+void dsda_BeginRenderStats(void);
+void dsda_RecordVisSprite(void);
+void dsda_RecordVisSprites(int n);
+void dsda_RecordVisPlane(void);
+void dsda_RecordVisPlanes(int n);
+void dsda_RecordDrawSeg(void);
+void dsda_RecordDrawSegs(int n);
+void dsda_UpdateRenderStats(void);
 
 #endif

@@ -71,6 +71,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda/map_format.h"
+#include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 #include "dsda/gl/render_scale.h"
@@ -1470,7 +1471,7 @@ static void gld_DrawWall(GLWall *wall)
   int has_detail;
   unsigned int flags;
 
-  rendered_segs++;
+  dsda_RecordDrawSeg();
 
   has_detail =
     scene_has_details &&
@@ -2015,7 +2016,7 @@ static void gld_DrawFlat(GLFlat *flat)
   int has_offset;
   unsigned int flags;
 
-  rendered_visplanes++;
+  dsda_RecordVisPlane();
 
   has_detail =
     scene_has_details &&
@@ -2347,7 +2348,7 @@ static void gld_DrawSprite(GLSprite *sprite)
   GLint blend_src, blend_dst;
   int restore = 0;
 
-  rendered_vissprites++;
+  dsda_RecordVisSprite();
 
   gld_BindPatch(sprite->gltexture,sprite->cm);
 
@@ -3241,7 +3242,7 @@ void gld_DrawScene(player_t *player)
   // normal sky (not a skybox)
   if (!skybox && (gl_drawskys == skytype_none || gl_drawskys == skytype_standard))
   {
-    rendered_segs += gld_drawinfo.num_items[GLDIT_SWALL];
+    dsda_RecordDrawSegs(gld_drawinfo.num_items[GLDIT_SWALL]);
     // fake strips of sky
     glsl_SetActiveShader(NULL);
     gld_DrawStripsSky();

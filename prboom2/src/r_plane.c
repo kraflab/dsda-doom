@@ -62,6 +62,7 @@
 #include "lprintf.h"
 
 #include "dsda/map_format.h"
+#include "dsda/render_stats.h"
 
 int Sky1Texture;
 int Sky2Texture;
@@ -717,6 +718,10 @@ void R_DrawPlanes (void)
   visplane_t *pl;
   int i;
   for (i=0;i<MAXVISPLANES;i++)
-    for (pl=visplanes[i]; pl; pl=pl->next, rendered_visplanes++)
+    for (pl=visplanes[i]; pl; pl=pl->next)
+    {
+      dsda_RecordVisPlane();
+
       R_DoDrawPlane(pl);
+    }
 }
