@@ -162,7 +162,9 @@ exhud_component_t components[exhud_component_count] = {
     dsda_UpdateRenderStatsHC,
     dsda_DrawRenderStatsHC,
     dsda_EraseRenderStatsHC,
-    "render_stats"
+    "render_stats",
+    VPT_NONE,
+    true
   },
 };
 
