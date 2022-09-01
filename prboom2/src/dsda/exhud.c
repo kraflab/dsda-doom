@@ -25,6 +25,7 @@
 
 #include "dsda/global.h"
 #include "dsda/hud_components.h"
+#include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/utility.h"
 
@@ -323,6 +324,7 @@ void dsda_ToggleRenderStats(void) {
   if (components[exhud_render_stats].on && !dsda_show_render_stats)
     dsda_TurnComponentOff(exhud_render_stats);
   else if (!components[exhud_render_stats].on && dsda_show_render_stats) {
+    dsda_BeginRenderStats();
     dsda_TurnComponentOn(exhud_render_stats);
   }
 }
