@@ -77,6 +77,7 @@
 #include "f_finale.h"
 #include "e6y.h"//e6y
 
+#include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
@@ -2669,6 +2670,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Music", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, { 0 }, dsda_input_mute_music },
   { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_cheat_codes },
   { "Render Stats", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_idrate },
+  { "FPS", S_INPUT, m_scrn, KB_X, KB_Y + 18 * 8, { 0 }, dsda_input_fps },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { hexen_keys_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { script_keys_settings } },
@@ -3347,6 +3349,7 @@ setup_menu_t misc_settings[] = {
   { "Default skill level", S_CHOICE, m_null, G_X, G_Y + 2 * 8, { "default_skill" }, 0, NULL, gen_skillstrings },
   { "Default compatibility level", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "default_compatibility_level" }, 0, NULL, &gen_compstrings[1] },
   { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 4 * 8, { "render_wipescreen" } },
+  { "Show FPS", S_YESNO,  m_dsda, G_X, G_Y + 5 * 8, { "dsda_show_fps" }, 0, dsda_RefreshExHudFPS },
 
   { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 7 * 8 },
   { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 8 * 8, { "dsda_auto_key_frame_interval" } },
@@ -4336,6 +4339,7 @@ static toggle_input_t toggle_inputs[] = {
   { dsda_input_messages, dsda_show_messages, true },
   { dsda_input_command_display, dsda_command_display, false },
   { dsda_input_coordinate_display, dsda_coordinate_display, false },
+  { dsda_input_fps, dsda_show_fps, true },
   { dsda_input_exhud, dsda_exhud, true },
   { dsda_input_mute_sfx, dsda_mute_sfx, true },
   { dsda_input_mute_music, dsda_mute_music, true },

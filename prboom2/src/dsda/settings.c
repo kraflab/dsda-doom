@@ -26,6 +26,7 @@
 #include "i_main.h"
 
 #include "dsda/args.h"
+#include "dsda/exhud.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 
@@ -46,6 +47,7 @@ dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
   [dsda_mute_sfx] = { 0, 0, "Sfx", NULL, S_ResetSfxVolume, true, true },
   [dsda_mute_music] = { 0, 0, "Music", NULL, I_ResetMusicVolume, true, true },
   [dsda_cheat_codes] = { 0, 0, "Cheat Codes", NULL, NULL, false, true },
+  [dsda_show_fps] = { 0, 0, "FPS", NULL, dsda_RefreshExHudFPS, false, true  },
 };
 
 int dsda_cycle_ghost_colors;
@@ -259,6 +261,10 @@ dboolean dsda_CommandDisplay(void) {
 
 dboolean dsda_CoordinateDisplay(void) {
   return dsda_Transient(dsda_coordinate_display) && !dsda_StrictMode();
+}
+
+dboolean dsda_ShowFPS(void) {
+  return dsda_Transient(dsda_show_fps);
 }
 
 dboolean dsda_ShowDemoAttempts(void) {

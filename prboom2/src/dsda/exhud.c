@@ -300,6 +300,8 @@ void dsda_InitExHud(void) {
 
   if (dsda_show_render_stats)
     dsda_TurnComponentOn(exhud_render_stats);
+
+  dsda_RefreshExHudFPS();
 }
 
 void dsda_UpdateExHud(void) {
@@ -335,4 +337,11 @@ void dsda_ToggleRenderStats(void) {
     dsda_BeginRenderStats();
     dsda_TurnComponentOn(exhud_render_stats);
   }
+}
+
+void dsda_RefreshExHudFPS(void) {
+  if (dsda_ShowFPS())
+    dsda_TurnComponentOn(exhud_fps);
+  else
+    dsda_TurnComponentOff(exhud_fps);
 }
