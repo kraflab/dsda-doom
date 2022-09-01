@@ -3344,10 +3344,9 @@ setup_menu_t device_settings[] = {
 
 setup_menu_t misc_settings[] = {
   { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Maximum number of player corpses", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 2 * 8, { "max_player_corpse" } },
-  { "Default skill level", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "default_skill" }, 0, NULL, gen_skillstrings },
-  { "Default compatibility level", S_CHOICE, m_null, G_X, G_Y + 4 * 8, { "default_compatibility_level" }, 0, NULL, &gen_compstrings[1] },
-  { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 5 * 8, { "render_wipescreen" } },
+  { "Default skill level", S_CHOICE, m_null, G_X, G_Y + 2 * 8, { "default_skill" }, 0, NULL, gen_skillstrings },
+  { "Default compatibility level", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "default_compatibility_level" }, 0, NULL, &gen_compstrings[1] },
+  { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 4 * 8, { "render_wipescreen" } },
 
   { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 7 * 8 },
   { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 8 * 8, { "dsda_auto_key_frame_interval" } },
