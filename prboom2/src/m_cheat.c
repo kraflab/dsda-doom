@@ -160,7 +160,7 @@ cheatseq_t cheat[] = {
   CHEAT("idbehold",   "BEHOLD menu",      not_dm, cheat_behold, 0, false),
   CHEAT("idclev",     "Level Warp",       cht_never | not_menu, cheat_clev, -2, false),
   CHEAT("idmypos",    "Player Position",  not_dm, cheat_mypos, 0, false),
-  CHEAT("idrate",     "Frame rate",       always, cheat_rate, 0, false),
+  CHEAT("idrate",     "Frame rate",       not_dm, cheat_rate, 0, false),
   // phares
   CHEAT("tntcomp",    NULL,               cht_never, cheat_comp, 0, false),
   // jff 2/01/98 kill all monsters
@@ -978,7 +978,7 @@ static cheat_input_t cheat_input[] = {
   { dsda_input_idbeholda, not_dm, cheat_pw, pw_allmap },
   { dsda_input_idbeholdl, not_dm, cheat_pw, pw_infrared },
   { dsda_input_idmypos, not_dm, cheat_mypos, 0 },
-  { dsda_input_idrate, always, cheat_rate, 0 },
+  { dsda_input_idrate, not_dm, cheat_rate, 0 },
   { dsda_input_iddt, not_dm, cheat_ddt, 0 },
   { dsda_input_ponce, cht_never, cheat_reset_health, 0 },
   { dsda_input_shazam, cht_never, cheat_tome, 0 },
