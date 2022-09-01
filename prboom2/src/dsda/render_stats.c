@@ -75,7 +75,6 @@ void dsda_RecordDrawSegs(int n) {
 
 void dsda_UpdateRenderStats(void) {
   dsda_UpdateMaxValues(&interval_stats, &frame_stats);
-  dsda_UpdateMaxValues(&dsda_render_stats_max, &interval_stats);
 
   ++frame_count;
   ZERO_DATA(frame_stats);
@@ -83,6 +82,7 @@ void dsda_UpdateRenderStats(void) {
   if (dsda_ElapsedTimeMS(dsda_timer_render_stats) >= 1000) {
     dsda_render_stats = interval_stats;
     ZERO_DATA(interval_stats);
+    dsda_UpdateMaxValues(&dsda_render_stats_max, &dsda_render_stats);
     dsda_render_stats_fps = frame_count * 1000 / dsda_ElapsedTimeMS(dsda_timer_render_stats);
     frame_count = 0;
     dsda_StartTimer(dsda_timer_render_stats);
