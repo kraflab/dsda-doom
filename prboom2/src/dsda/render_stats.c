@@ -44,6 +44,7 @@ void dsda_BeginRenderStats(void) {
   ZERO_DATA(interval_stats);
   ZERO_DATA(dsda_render_stats);
   ZERO_DATA(dsda_render_stats_max);
+  dsda_render_stats_fps = 35;
 
   dsda_StartTimer(dsda_timer_render_stats);
 }
