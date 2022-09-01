@@ -26,7 +26,7 @@ static int frame_count;
 
 dsda_render_stats_t dsda_render_stats;
 dsda_render_stats_t dsda_render_stats_max;
-int dsda_render_stats_fps;
+int dsda_render_stats_fps = 35;
 
 static void dsda_UpdateMaxValues(dsda_render_stats_t* x, dsda_render_stats_t* y) {
   if (x->visplanes < y->visplanes)
@@ -44,7 +44,6 @@ void dsda_BeginRenderStats(void) {
   ZERO_DATA(interval_stats);
   ZERO_DATA(dsda_render_stats);
   ZERO_DATA(dsda_render_stats_max);
-  dsda_render_stats_fps = 35;
 
   dsda_StartTimer(dsda_timer_render_stats);
 }
