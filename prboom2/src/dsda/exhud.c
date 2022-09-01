@@ -39,6 +39,7 @@ typedef struct {
   int default_vpt;
   dboolean strict;
   dboolean on;
+  dboolean initialized;
 } exhud_component_t;
 
 typedef enum {
@@ -173,8 +174,19 @@ int exhud_color_alert;
 
 int dsda_show_render_stats;
 
-static void dsda_TurnComponentOn(int id, int x, int y, int vpt) {
+static void dsda_TurnComponentOn(int id) {
+  if (!components[id].initialized)
+    return;
+
   components[id].on = true;
+}
+
+static void dsda_TurnComponentOff(int id) {
+  components[id].on = false;
+}
+
+static void dsda_InitializeComponent(int id, int x, int y, int vpt) {
+  components[id].initialized = true;
   components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT);
 }
 
@@ -194,8 +206,10 @@ void dsda_InitExHud(void) {
   exhud_color_warning = CR_GREEN;
   exhud_color_alert = CR_RED;
 
-  for (i = 0; i < exhud_component_count; ++i)
+  for (i = 0; i < exhud_component_count; ++i) {
     components[i].on = false;
+    components[i].initialized = false;
+  }
 
   if (R_FullView() && !hud_displayed)
     return;
@@ -240,25 +254,32 @@ void dsda_InitExHud(void) {
 
       for (i = 0; i < exhud_component_count; ++i)
         if (!strncmp(command, components[i].name, sizeof(command))) {
-          int x, y, vpt;
+          int x, y, vpt, always_on;
           char alignment[16];
 
           found = true;
 
-          count = sscanf(args, "%d %d %15s", &x, &y, alignment);
-          if (count != 3)
+          count = sscanf(args, "%d %d %15s %d", &x, &y, alignment, &always_on);
+          if (count != 4)
             I_Error("Invalid hud component args \"%s\"", line);
 
           if (!strncmp(alignment, "bottom_left", sizeof(alignment)))
             vpt = VPT_ALIGN_LEFT_BOTTOM;
           else if (!strncmp(alignment, "bottom_right", sizeof(alignment)))
             vpt = VPT_ALIGN_RIGHT_BOTTOM;
+          else if (!strncmp(alignment, "top_left", sizeof(alignment)))
+            vpt = VPT_ALIGN_LEFT_TOP;
           else if (!strncmp(alignment, "top_right", sizeof(alignment)))
             vpt = VPT_ALIGN_RIGHT_TOP;
           else
             I_Error("Invalid hud component alignment \"%s\"", line);
 
-          dsda_TurnComponentOn(i, x, y, vpt);
+          dsda_InitializeComponent(i, x, y, vpt);
+
+          if (always_on)
+            dsda_TurnComponentOn(i);
+          else
+            dsda_TurnComponentOff(i);
         }
 
       if (!found)
@@ -267,7 +288,7 @@ void dsda_InitExHud(void) {
   }
 
   if (dsda_show_render_stats)
-    dsda_TurnComponentOn(exhud_render_stats, 2, 8, VPT_ALIGN_LEFT_TOP);
+    dsda_TurnComponentOn(exhud_render_stats);
 }
 
 void dsda_UpdateExHud(void) {
@@ -298,7 +319,8 @@ void dsda_ToggleRenderStats(void) {
   dsda_show_render_stats = !dsda_show_render_stats;
 
   if (components[exhud_render_stats].on && !dsda_show_render_stats)
-    components[exhud_render_stats].on = false;
-  else if (!components[exhud_render_stats].on && dsda_show_render_stats)
-    dsda_TurnComponentOn(exhud_render_stats, 2, 8, VPT_ALIGN_LEFT_TOP);
+    dsda_TurnComponentOff(exhud_render_stats);
+  else if (!components[exhud_render_stats].on && dsda_show_render_stats) {
+    dsda_TurnComponentOn(exhud_render_stats);
+  }
 }

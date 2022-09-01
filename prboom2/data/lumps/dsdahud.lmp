@@ -1,47 +1,53 @@
 doom ex
-stat_totals 2 8 bottom_left
-composite_time 2 16 bottom_left
-tracker 2 32 bottom_left
+stat_totals 2 8 bottom_left 1
+composite_time 2 16 bottom_left 1
+tracker 2 32 bottom_left 1
+render_stats 2 8 top_left 0
 
 heretic ex
-stat_totals 2 8 bottom_left
-composite_time 2 16 bottom_left
-tracker 2 32 bottom_left
+stat_totals 2 8 bottom_left 1
+composite_time 2 16 bottom_left 1
+tracker 2 32 bottom_left 1
+render_stats 2 8 top_left 0
 
 hexen ex
-stat_totals 2 8 bottom_left
-composite_time 2 16 bottom_left
-tracker 2 32 bottom_left
+stat_totals 2 8 bottom_left 1
+composite_time 2 16 bottom_left 1
+tracker 2 32 bottom_left 1
+render_stats 2 8 top_left 0
 
 doom full
-ready_ammo_text 2 8 bottom_left
-health_text 2 16 bottom_left
-armor_text 52 16 bottom_left
-weapon_text 2 24 bottom_left
-stat_totals 2 32 bottom_left
-composite_time 2 40 bottom_left
-tracker 2 56 bottom_left
-ammo_text 248 32 bottom_right
-keys 233 30 bottom_right
+ready_ammo_text 2 8 bottom_left 1
+health_text 2 16 bottom_left 1
+armor_text 52 16 bottom_left 1
+weapon_text 2 24 bottom_left 1
+stat_totals 2 32 bottom_left 1
+composite_time 2 40 bottom_left 1
+tracker 2 56 bottom_left 1
+ammo_text 248 32 bottom_right 1
+keys 233 30 bottom_right 1
+render_stats 2 8 top_left 0
 
 heretic full
-ready_ammo_text 2 8 bottom_left
-health_text 2 16 bottom_left
-armor_text 52 16 bottom_left
-weapon_text 2 24 bottom_left
-stat_totals 2 32 bottom_left
-composite_time 2 40 bottom_left
-tracker 2 56 bottom_left
-ammo_text 248 48 bottom_right
-keys 233 30 bottom_right
+ready_ammo_text 2 8 bottom_left 1
+health_text 2 16 bottom_left 1
+armor_text 52 16 bottom_left 1
+weapon_text 2 24 bottom_left 1
+stat_totals 2 32 bottom_left 1
+composite_time 2 40 bottom_left 1
+tracker 2 56 bottom_left 1
+ammo_text 248 48 bottom_right 1
+keys 233 30 bottom_right 1
+render_stats 2 8 top_left 0
 
 hexen full
-ready_ammo_text 2 8 bottom_left
-health_text 2 16 bottom_left
-armor_text 52 16 bottom_left
-weapon_text 2 24 bottom_left
-stat_totals 2 32 bottom_left
-composite_time 2 40 bottom_left
-tracker 2 56 bottom_left
-ammo_text 248 24 bottom_right
-keys 102 30 bottom_left
+ready_ammo_text 2 8 bottom_left 1
+health_text 2 16 bottom_left 1
+armor_text 52 16 bottom_left 1
+weapon_text 2 24 bottom_left 1
+stat_totals 2 32 bottom_left 1
+composite_time 2 40 bottom_left 1
+tracker 2 56 bottom_left 1
+ammo_text 248 24 bottom_right 1
+keys 102 30 bottom_left 1
+render_stats 2 8 top_left 0
