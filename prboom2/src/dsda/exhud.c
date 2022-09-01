@@ -58,6 +58,7 @@ typedef enum {
   exhud_tracker,
   exhud_weapon_text,
   exhud_render_stats,
+  exhud_fps,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -166,6 +167,13 @@ exhud_component_t components[exhud_component_count] = {
     "render_stats",
     VPT_NONE,
     true
+  },
+  [exhud_fps] = {
+    dsda_InitFPSHC,
+    dsda_UpdateFPSHC,
+    dsda_DrawFPSHC,
+    dsda_EraseFPSHC,
+    "fps"
   },
 };
 

@@ -21,6 +21,7 @@
 #include "hud_components/big_armor.h"
 #include "hud_components/big_health.h"
 #include "hud_components/composite_time.h"
+#include "hud_components/fps.h"
 #include "hud_components/health_text.h"
 #include "hud_components/keys.h"
 #include "hud_components/ready_ammo_text.h"

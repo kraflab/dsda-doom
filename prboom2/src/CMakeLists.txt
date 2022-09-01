@@ -62,6 +62,8 @@ set(COMMON_SRC
     dsda/hud_components/big_health.h
     dsda/hud_components/composite_time.c
     dsda/hud_components/composite_time.h
+    dsda/hud_components/fps.c
+    dsda/hud_components/fps.h
     dsda/hud_components/health_text.c
     dsda/hud_components/health_text.h
     dsda/hud_components/keys.c
