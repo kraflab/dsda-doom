@@ -3201,19 +3201,17 @@ extern int usejoystick, usemouse, default_mus_card, default_snd_card;
 extern int detect_voices, realtic_clock_rate, tran_filter_pct;
 extern int mouse_stutter_correction;
 
-setup_menu_t video_settings[], audio_settings[], device_settings[], misc_settings[];
-setup_menu_t display_settings[], opengl_settings1[], opengl_settings2[];
+setup_menu_t audiovideo_settings[], device_settings[], misc_settings[];
+setup_menu_t display_settings[], opengl_settings[];
 setup_menu_t mapping_settings[], demo_settings[], tas_settings[];
 
 setup_menu_t* gen_settings[] =
 {
-  video_settings,
-  audio_settings,
+  audiovideo_settings,
   device_settings,
   misc_settings,
   display_settings,
-  opengl_settings1,
-  opengl_settings2,
+  opengl_settings,
   mapping_settings,
   demo_settings,
   tas_settings,
@@ -3281,7 +3279,7 @@ static const char *gltexfilters[] = {
 
 static const char *gltexfilters_anisotropics[] = { "Off", "2x", "4x", "8x", "16x", NULL };
 
-setup_menu_t video_settings[] = {
+setup_menu_t audiovideo_settings[] = {
   { "Video", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Video mode", S_CHOICE, m_null, G_X, G_Y + 2 * 8, { "videomode" }, 0, M_ChangeVideoMode, videomodes },
   { "Screen Resolution", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "screen_resolution" }, 0, M_ChangeVideoMode, screen_resolutions_list },
@@ -3289,33 +3287,20 @@ setup_menu_t video_settings[] = {
   { "Fullscreen Video mode", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "use_fullscreen" }, 0, M_ChangeFullScreen },
   { "Software Exclusive Fullscreen", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "exclusive_fullscreen" }, 0, M_ChangeVideoMode },
   { "OpenGL Exclusive Fullscreen", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "gl_exclusive_fullscreen" }, 0, M_ChangeVideoMode },
-  { "Status Bar and Menu Appearance", S_CHOICE, m_null, G_X, G_Y + 8 * 8, { "render_stretch_hud" }, 0, M_ChangeStretch, render_stretch_list },
-  { "Fullscreen Menu Background", S_YESNO, m_null, G_X, G_Y + 9 * 8, { "menu_background" } },
-  { "Vertical Sync", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "render_vsync" }, 0, M_ChangeVideoMode },
-  { "Translucency filter percentage", S_NUM, m_null, G_X, G_Y + 11 * 8, { "tran_filter_pct" }, 0, M_Trans },
-  { "Uncapped Framerate", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "uncapped_framerate" }, 0, M_ChangeUncappedFrameRate },
-  { "FPS Limit", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_fps_limit" } },
-  { "View Bobbing", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_viewbob" } },
-  { "Weapon Bobbing", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_weaponbob" } },
+  { "Vertical Sync", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "render_vsync" }, 0, M_ChangeVideoMode },
+  { "Uncapped Framerate", S_YESNO, m_null, G_X, G_Y + 9 * 8, { "uncapped_framerate" }, 0, M_ChangeUncappedFrameRate },
+  { "FPS Limit", S_NUM, m_null, G_X, G_Y + 10 * 8, { "dsda_fps_limit" } },
+
+  { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 12 * 8 },
+  { "Number of Sound Channels", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 13 * 8, { "snd_channels" } },
+  { "Enable v1.1 Pitch Effects", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "pitched_sounds" } },
+  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_null, G_X, G_Y + 15 * 8, { "snd_pcspeaker" } },
+  { "Preferred MIDI player", S_CHOICE | S_PRGWARN, m_null, G_X, G_Y + 16 * 8, { "snd_midiplayer" }, 0, M_ChangeMIDIPlayer, midiplayers },
+  { "Disable Sound Cutoffs", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "full_sounds" } },
 
   // Button for resetting to defaults
   { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
 
-  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { audio_settings } },
-  { 0, S_SKIP | S_END, m_null }
-};
-
-setup_menu_t audio_settings[] = {
-  { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Number of Sound Channels", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 2 * 8, { "snd_channels" } },
-  { "Enable v1.1 Pitch Effects", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "pitched_sounds" } },
-  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_null, G_X, G_Y + 4 * 8, { "snd_pcspeaker" } },
-  { "Preferred MIDI player", S_CHOICE | S_PRGWARN, m_null, G_X, G_Y + 5 * 8, { "snd_midiplayer" }, 0, M_ChangeMIDIPlayer, midiplayers },
-  { "Disable Sound Cutoffs", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "full_sounds" } },
-  { "Parallel Same-Sound Limit", S_NUM, m_null, G_X, G_Y + 7 * 8, { "dsda_parallel_sfx_limit" } },
-  { "Parallel Same-Sound Window", S_NUM, m_null, G_X, G_Y + 8 * 8, { "dsda_parallel_sfx_window" } },
-
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { video_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { device_settings } },
   { 0, S_SKIP | S_END, m_null }
 };
@@ -3339,7 +3324,7 @@ setup_menu_t device_settings[] = {
   { "Keyboard", S_SKIP | S_TITLE, m_null, G_X, G_Y + 16 * 8 },
   { "Enable Cheat Code Entry", S_YESNO, m_dsda, G_X, G_Y + 17 * 8, { "dsda_cheat_codes" } },
 
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { audio_settings } },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { audiovideo_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { misc_settings } },
   { 0, S_SKIP | S_END, m_null }
 };
@@ -3348,20 +3333,17 @@ setup_menu_t misc_settings[] = {
   { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Default skill level", S_CHOICE, m_null, G_X, G_Y + 2 * 8, { "default_skill" }, 0, NULL, gen_skillstrings },
   { "Default compatibility level", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "default_compatibility_level" }, 0, NULL, &gen_compstrings[1] },
-  { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 4 * 8, { "render_wipescreen" } },
-  { "Show FPS", S_YESNO,  m_dsda, G_X, G_Y + 5 * 8, { "dsda_show_fps" }, 0, dsda_RefreshExHudFPS },
 
-  { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 7 * 8 },
-  { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 8 * 8, { "dsda_auto_key_frame_interval" } },
-  { "Rewind Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 9 * 8, { "dsda_auto_key_frame_depth" } },
-  { "Rewind Timeout (ms)", S_NUM, m_null, G_X, G_Y + 10 * 8, { "dsda_auto_key_frame_timeout" } },
-  { "Use Extended Hud", S_YESNO, m_dsda, G_X, G_Y + 11 * 8, { "dsda_exhud" } },
-  { "Extended Hud Scale", S_NUM, m_null, G_X, G_Y + 12 * 8, { "dsda_ex_text_scale" }, 0, dsda_SetupStretchParams },
-  { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "dsda_hide_horns" } },
-  { "Organize My Save Files", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "dsda_organized_saves" } },
-  { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "dsda_skip_quit_prompt" } },
-  { "Death Use Action", S_CHOICE, m_null, G_X, G_Y + 16 * 8, { "dsda_death_use_action" }, 0, NULL, death_use_strings },
-  { "Boom Weapon Auto Switch", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "dsda_switch_when_ammo_runs_out" } },
+  { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
+  { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 6 * 8, { "dsda_auto_key_frame_interval" } },
+  { "Rewind Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 7 * 8, { "dsda_auto_key_frame_depth" } },
+  { "Rewind Timeout (ms)", S_NUM, m_null, G_X, G_Y + 8 * 8, { "dsda_auto_key_frame_timeout" } },
+  { "Organize My Save Files", S_YESNO, m_null, G_X, G_Y + 9 * 8, { "dsda_organized_saves" } },
+  { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "dsda_skip_quit_prompt" } },
+  { "Death Use Action", S_CHOICE, m_null, G_X, G_Y + 11 * 8, { "dsda_death_use_action" }, 0, NULL, death_use_strings },
+  { "Boom Weapon Auto Switch", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "dsda_switch_when_ammo_runs_out" } },
+  { "Parallel Same-Sound Limit", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_parallel_sfx_limit" } },
+  { "Parallel Same-Sound Window", S_NUM, m_null, G_X, G_Y + 14 * 8, { "dsda_parallel_sfx_window" } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { device_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { display_settings } },
@@ -3370,30 +3352,28 @@ setup_menu_t misc_settings[] = {
 
 setup_menu_t display_settings[] = {
   { "Display Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Filter for walls", S_CHOICE, m_null, G_X, G_Y + 2 * 8, { "filter_wall" }, 0, NULL, renderfilters },
-  { "Filter for floors/ceilings", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "filter_floor" }, 0, NULL, renderfilters },
-  { "Filter for sprites", S_CHOICE, m_null, G_X, G_Y + 4 * 8, { "filter_sprite" }, 0, NULL, renderfilters },
-  { "Filter for patches", S_CHOICE, m_null, G_X, G_Y + 5 * 8, { "filter_patch" }, 0, NULL, renderfilters },
-  { "Filter for lighting", S_CHOICE, m_null, G_X, G_Y + 6 * 8, { "filter_z" }, 0, NULL, renderfilters },
-  { "Drawing of sprite edges", S_CHOICE, m_null, G_X, G_Y + 7 * 8, { "sprite_edges" }, 0, NULL, edgetypes },
-  { "Drawing of patch edges", S_CHOICE, m_null, G_X, G_Y + 8 * 8, { "patch_edges" }, 0, NULL, edgetypes },
-  { "Flashing HOM indicator", S_YESNO, m_null, G_X, G_Y + 9 * 8, { "flashing_hom" } },
+  { "Use Extended Hud", S_YESNO, m_dsda, G_X, G_Y + 2 * 8, { "dsda_exhud" } },
+  { "Extended Hud Scale", S_NUM, m_null, G_X, G_Y + 3 * 8, { "dsda_ex_text_scale" }, 0, dsda_SetupStretchParams },
+  { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 4 * 8, { "dsda_hide_horns" } },
+  { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 5 * 8, { "render_wipescreen" } },
+  { "Show FPS", S_YESNO,  m_dsda, G_X, G_Y + 6 * 8, { "dsda_show_fps" }, 0, dsda_RefreshExHudFPS },
+  { "View Bobbing", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "dsda_viewbob" } },
+  { "Weapon Bobbing", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "dsda_weaponbob" } },
 
-  { "Change Palette On Pain", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "palette_ondamage" }, 0, M_ChangeApplyPalette },
-  { "Change Palette On Bonus", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "palette_onbonus" }, 0, M_ChangeApplyPalette },
-  { "Change Palette On Powers", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "palette_onpowers" }, 0, M_ChangeApplyPalette },
+  { "Change Palette On Pain", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "palette_ondamage" }, 0, M_ChangeApplyPalette },
+  { "Change Palette On Bonus", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "palette_onbonus" }, 0, M_ChangeApplyPalette },
+  { "Change Palette On Powers", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "palette_onpowers" }, 0, M_ChangeApplyPalette },
 
-  { "Software Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 15 * 8 },
-  { "Screen Multiple Factor (1-None)", S_NUM, m_null, G_X, G_Y + 16 * 8, { "render_screen_multiply" }, 0, M_ChangeScreenMultipleFactor },
-  { "Integer Screen Scaling", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "integer_scaling" }, 0, M_ChangeScreenMultipleFactor },
+  { "Status Bar and Menu Appearance", S_CHOICE, m_null, G_X, G_Y + 14 * 8, { "render_stretch_hud" }, 0, M_ChangeStretch, render_stretch_list },
+  { "Fullscreen Menu Background", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "menu_background" } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { misc_settings } },
-  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { opengl_settings1 } },
+  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { opengl_settings } },
   { 0, S_SKIP | S_END, m_null }
 };
 
-setup_menu_t opengl_settings1[] = {
-  { "OpenGL Options 1", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8},
+setup_menu_t opengl_settings[] = {
+  { "OpenGL Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8},
   { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_CANT_GL_ARB_MULTISAMPLEFACTOR, m_null, G_X, G_Y + 2 * 8, { "render_multisampling" }, 0, M_ChangeMultiSample },
   { "Field Of View", S_NUM, m_null, G_X, G_Y + 3 * 8, { "render_fov" }, 0, M_ChangeFOV },
   { "Sector Light Mode", S_CHOICE, m_null, G_X, G_Y + 4 * 8, { "gl_lightmode" }, 0, M_ChangeLightMode, gl_lightmodes },
@@ -3412,26 +3392,6 @@ setup_menu_t opengl_settings1[] = {
   { "Texture format", S_CHOICE, m_null, G_X, G_Y + 17 * 8, { "gl_tex_format_string" }, 0, M_ChangeTextureParams, gltexformats },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { display_settings } },
-  { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { opengl_settings2 } },
-  { 0, S_SKIP | S_END, m_null }
-};
-
-setup_menu_t opengl_settings2[] = {
-  { "OpenGL Options 2", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Enable Colormaps", S_YESNO, m_null, G_X, G_Y + 2 * 8, { "gl_boom_colormaps" }, 0, M_ChangeAllowBoomColormaps },
-  { "Enable Internal Hi-Res", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "gl_texture_internal_hires" }, 0, M_ChangeTextureUseHires },
-  { "Enable External Hi-Res", S_YESNO, m_null, G_X, G_Y + 4 * 8, { "gl_texture_external_hires" }, 0, M_ChangeTextureUseHires },
-  { "Override PWAD's graphics with Hi-Res", S_YESNO | S_PRGWARN, m_null, G_X, G_Y + 5 * 8, { "gl_hires_override_pwads" }, 0, M_ChangeTextureUseHires },
-
-  { "Enable High Quality Resize", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "gl_texture_hqresize" }, 0, M_ChangeTextureHQResize },
-  { "Resize textures", S_CHOICE, m_null, G_X, G_Y + 8 * 8, { "gl_texture_hqresize_textures" }, 0, M_ChangeTextureHQResize, gl_hqresizemodes },
-  { "Resize sprites", S_CHOICE, m_null, G_X, G_Y + 9 * 8, { "gl_texture_hqresize_sprites" }, 0, M_ChangeTextureHQResize, gl_hqresizemodes },
-  { "Resize patches", S_CHOICE, m_null, G_X, G_Y + 10 * 8, { "gl_texture_hqresize_patches" }, 0, M_ChangeTextureHQResize, gl_hqresizemodes },
-
-  { "Allow Detail Textures", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "gl_allow_detail_textures" }, 0, M_ChangeUseDetail },
-  { "Blend Animations", S_YESNO, m_null, G_X, G_Y + 13 * 8, {"gl_blend_animations" } },
-
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { opengl_settings1 } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { mapping_settings } },
   { 0, S_SKIP | S_END, m_null }
 };
@@ -3446,19 +3406,15 @@ setup_menu_t mapping_settings[] = {
   { "TRY TO EMULATE IT", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "overrun_intercept_emulate" } },
   { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "overrun_playeringame_warn" } },
   { "TRY TO EMULATE IT", S_YESNO, m_null, G_X, G_Y + 9 * 8, { "overrun_playeringame_emulate" } },
-  { "WARN ON DONUT OVERFLOW", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "overrun_donut_warn" } },
-  { "TRY TO EMULATE IT", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "overrun_donut_emulate" } },
-  { "WARN ON MISSEDBACKSIDE OVERFLOW", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "overrun_missedbackside_warn" } },
-  { "TRY TO EMULATE IT", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "overrun_missedbackside_emulate" } },
 
-  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_null, G_X, G_Y + 15 * 8 },
-  { "LINEDEFS W/O TAGS APPLY LOCALLY", S_YESNO, m_null, G_X, G_Y + 16 * 8, { "comperr_zerotag" } },
-  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "comperr_passuse" } },
-  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_null, G_X, G_Y + 18 * 8, { "comperr_hangsolid" } },
-  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_null, G_X, G_Y + 19 * 8, { "comperr_blockmap" } },
-  { "ALLOW VERTICAL AIMING", S_YESNO, m_null, G_X, G_Y + 20 * 8, { "comperr_freeaim" } },
+  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
+  { "LINEDEFS W/O TAGS APPLY LOCALLY", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "comperr_zerotag" } },
+  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "comperr_passuse" } },
+  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "comperr_hangsolid" } },
+  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "comperr_blockmap" } },
+  { "ALLOW VERTICAL AIMING", S_YESNO, m_null, G_X, G_Y + 16 * 8, { "comperr_freeaim" } },
 
-  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { opengl_settings2 } },
+  { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { opengl_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { demo_settings } },
   { 0, S_SKIP | S_END, m_null }
 };
