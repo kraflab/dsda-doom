@@ -2569,7 +2569,7 @@ setup_menu_t keys_settings7[] =
   { "Computer Area Map", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, { 0 }, dsda_input_idbeholda },
   { "Light Amplification", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, { 0 }, dsda_input_idbeholdl },
   { "Show Position", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, { 0 }, dsda_input_idmypos },
-  { "Show FPS", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_idrate },
+  { "Show Render Stats", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, { 0 }, dsda_input_idrate },
   { "Reveal Map", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, { 0 }, dsda_input_iddt },
   { "Reset Health", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, { 0 }, dsda_input_ponce },
   { "Tome of Power", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, { 0 }, dsda_input_shazam },
