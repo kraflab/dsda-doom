@@ -165,7 +165,6 @@ int             displayplayer; // view being displayed
 int             gametic;
 int             basetic;       /* killough 9/29/98: for demo sync */
 int             totalkills, totallive, totalitems, totalsecret;    // for intermission
-int             show_alive;
 dboolean         demorecording;
 dboolean         demoplayback;
 dboolean         singledemo;           // quit after playing a demo from cmdline

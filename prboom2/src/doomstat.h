@@ -224,7 +224,6 @@ extern  int displayplayer;
 extern  int totalkills, totallive;
 extern  int totalitems;
 extern  int totalsecret;
-extern  int show_alive;
 
 extern  int basetic;
 extern  int leveltime;       // level time in tics

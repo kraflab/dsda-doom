@@ -69,6 +69,7 @@ extern int dsda_parallel_sfx_window;
 extern int dsda_switch_when_ammo_runs_out;
 extern int dsda_viewbob;
 extern int dsda_weaponbob;
+extern int dsda_show_alive_monsters;
 extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);
@@ -110,6 +111,7 @@ dboolean dsda_PainPalette(void);
 dboolean dsda_BonusPalette(void);
 dboolean dsda_PowerPalette(void);
 dboolean dsda_WipeAtFullSpeed(void);
+int dsda_ShowAliveMonsters(void);
 int dsda_RevealAutomap(void);
 void dsda_ResetRevealMap(void);
 int dsda_RealticClockRate(void);

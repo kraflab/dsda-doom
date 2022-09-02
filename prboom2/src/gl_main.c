@@ -2710,7 +2710,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   }
 
   sprite.scale = FixedDiv(projectiony, tz);;
-  if ((thing->frame & FF_FULLBRIGHT) || show_alive)
+  if ((thing->frame & FF_FULLBRIGHT) || dsda_ShowAliveMonsters())
   {
     sprite.fogdensity = 0.0f;
     sprite.light = 1.0f;
@@ -3260,7 +3260,7 @@ void gld_DrawScene(player_t *player)
   glAlphaFunc(GL_GEQUAL, 0.5f);
 
   // mode for viewing all the alive monsters
-  if (show_alive)
+  if (dsda_ShowAliveMonsters())
   {
     const int period = 250;
     float color;

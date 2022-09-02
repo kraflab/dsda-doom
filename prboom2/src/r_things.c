@@ -934,9 +934,9 @@ void R_AddSprites(subsector_t* subsec, int lightlevel)
 
   // Handle all things in sector.
 
-  if (show_alive)
+  if (dsda_ShowAliveMonsters())
   {
-    if (show_alive == 1)
+    if (dsda_ShowAliveMonsters() == 1)
     {
       for (thing = sec->thinglist; thing; thing = thing->snext)
       {

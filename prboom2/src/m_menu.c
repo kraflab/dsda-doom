@@ -4829,9 +4829,11 @@ dboolean M_Responder (event_t* ev) {
     {
       if (dsda_InputActivated(dsda_input_showalive) && !dsda_StrictMode())
       {
-        show_alive = (show_alive + 1) % 3;
-        doom_printf("Show Alive Monsters %s",
-          (show_alive ? (show_alive == 1 ? "(mode 1) on" : "(mode 2) on" ) : "off"));
+        const char* const show_alive_message[3] = { "off", "(mode 1) on", "(mode 2) on" };
+        int show_alive = dsda_CycleShowAliveMonsters();
+
+        if (show_alive >= 0 && show_alive < 3)
+          doom_printf("Show Alive Monsters %s", show_alive_message[show_alive]);
       }
     }
 
