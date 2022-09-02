@@ -338,6 +338,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets the config file",
     arg_string,
   },
+  [dsda_arg_hud] = {
+    "-hud", NULL, NULL,
+    "sets the hud config file",
+    arg_string,
+  },
   [dsda_arg_shotdir] = {
     "-shotdir", NULL, NULL,
     "sets the screenshot directory",

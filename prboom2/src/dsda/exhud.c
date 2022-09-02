@@ -19,10 +19,12 @@
 
 #include "hu_stuff.h"
 #include "lprintf.h"
+#include "m_misc.h"
 #include "r_main.h"
 #include "v_video.h"
 #include "w_wad.h"
 
+#include "dsda/args.h"
 #include "dsda/global.h"
 #include "dsda/hud_components.h"
 #include "dsda/render_stats.h"
@@ -201,10 +203,45 @@ static void dsda_InitializeComponent(int id, int x, int y, int vpt) {
   components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT);
 }
 
+static char** dsda_HUDConfig(void) {
+  static dboolean loaded;
+  static char* hud_config;
+  static char** lines;
+
+  if (!loaded) {
+    dsda_arg_t* arg;
+    int lump;
+    int length = 0;
+
+    arg = dsda_Arg(dsda_arg_hud);
+    if (arg->found)
+      length = M_ReadFileToString(arg->value.v_string, &hud_config);
+
+    lump = W_GetNumForName("DSDAHUD");
+
+    if (lump != -1) {
+      if (!hud_config)
+        hud_config = W_ReadLumpToString(lump);
+      else {
+        hud_config = Z_Realloc(hud_config, length + W_LumpLength(lump) + 2);
+        hud_config[length++] = '\n'; // in case the file didn't end in a new line
+        W_ReadLump(lump, hud_config + length);
+        hud_config[length + W_LumpLength(lump)] = '\0';
+      }
+    }
+
+    if (hud_config)
+      lines = dsda_SplitString(hud_config, "\n\r");
+
+    loaded = true;
+  }
+
+  return lines;
+}
+
 void dsda_InitExHud(void) {
   int i;
-  static char* lump;
-  static char** lines;
+  char** hud_config;
   const char* line;
   int line_i;
   char target[16];
@@ -225,24 +262,17 @@ void dsda_InitExHud(void) {
   if (R_FullView() && !hud_displayed)
     return;
 
-  if (!lump)
-    lump = W_ReadLumpToString(W_GetNumForName("DSDAHUD"));
+  hud_config = dsda_HUDConfig();
 
-  if (!lump)
+  if (!hud_config)
     return;
 
   snprintf(target, sizeof(target), "%s %s",
            hexen ? "hexen" : heretic ? "heretic" : "doom",
            R_FullView() ? "full" : "ex");
 
-  if (!lines)
-    lines = dsda_SplitString(lump, "\n\r");
-
-  if (!lines)
-    return;
-
-  for (line_i = 0; lines[line_i]; ++line_i) {
-    line = lines[line_i];
+  for (line_i = 0; hud_config[line_i]; ++line_i) {
+    line = hud_config[line_i];
 
     if (!strncmp(target, line, sizeof(target)))
       reading = true;

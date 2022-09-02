@@ -78,6 +78,7 @@ typedef enum {
   dsda_arg_data,
   dsda_arg_save,
   dsda_arg_config,
+  dsda_arg_hud,
   dsda_arg_shotdir,
   dsda_arg_movie,
   dsda_arg_viddump,
