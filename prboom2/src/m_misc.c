@@ -575,6 +575,7 @@ default_t defaults[] =
   INPUT_SETTING("input_mute_music", dsda_input_mute_music, 0, -1, -1),
   INPUT_SETTING("input_cheat_codes", dsda_input_cheat_codes, 0, -1, -1),
   INPUT_SETTING("input_notarget", dsda_input_notarget, 0, -1, -1),
+  INPUT_SETTING("input_freeze", dsda_input_freeze, 0, -1, -1),
 
   INPUT_SETTING("input_build", dsda_input_build, 0, -1, -1),
   INPUT_SETTING("input_build_advance_frame", dsda_input_build_advance_frame, KEYD_RIGHTARROW, -1, -1),

@@ -121,6 +121,19 @@ int dsda_TurboScale(void) {
   return turbo_scale;
 }
 
+static dboolean frozen_mode;
+
+dboolean dsda_FrozenMode(void) {
+  return frozen_mode;
+}
+
+void dsda_ToggleFrozenMode(void) {
+  if (demorecording || demoplayback)
+    return;
+
+  frozen_mode = !frozen_mode;
+}
+
 static void dsda_HandleBuild(void) {
   start_in_build_mode = dsda_Flag(dsda_arg_build);
 }

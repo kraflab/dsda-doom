@@ -53,6 +53,7 @@
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
 
+#include "dsda.h"
 #include "dsda/excmd.h"
 #include "dsda/exhud.h"
 #include "dsda/features.h"
@@ -106,6 +107,7 @@ static void cheat_pitch();
 static void cheat_megaarmour();
 static void cheat_health();
 static void cheat_notarget();
+static void cheat_freeze();
 static void cheat_fly();
 
 // heretic
@@ -822,6 +824,12 @@ static void cheat_notarget()
     plyr->message = "Notarget Mode OFF";
 }
 
+static void cheat_freeze()
+{
+  dsda_ToggleFrozenMode();
+  plyr->message = dsda_FrozenMode() ? "FREEZE ON" : "FREEZE OFF";
+}
+
 static void cheat_fly()
 {
   if (plyr->mo != NULL)
@@ -984,6 +992,7 @@ static cheat_input_t cheat_input[] = {
   { dsda_input_shazam, cht_never, cheat_tome, 0 },
   { dsda_input_chicken, cht_never, cheat_chicken, 0 },
   { dsda_input_notarget, cht_never, cheat_notarget, 0 },
+  { dsda_input_freeze, cht_never, cheat_freeze, 0 },
   { 0 }
 };
 

@@ -27,6 +27,7 @@
 #include "s_sound.h"
 #include "v_video.h"
 
+#include "dsda.h"
 #include "dsda/build.h"
 #include "dsda/brute_force.h"
 #include "dsda/demo.h"
@@ -750,6 +751,11 @@ static dboolean console_CheatFullClip(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_Freeze(const char* command, const char* args) {
+  dsda_ToggleFrozenMode();
+  return true;
+}
+
 static dboolean console_ScriptRunLine(const char* line) {
   if (strlen(line) && line[0] != '#' && line[0] != '!' && line[0] != '/') {
     if (strlen(line) >= CONSOLE_ENTRY_SIZE) {
@@ -908,6 +914,7 @@ static console_command_entry_t console_commands[] = {
   { "notarget", console_BasicCheat, CF_DEMO },
   { "fly", console_BasicCheat, CF_DEMO },
   { "fullclip", console_CheatFullClip, CF_NEVER },
+  { "freeze", console_Freeze, CF_NEVER },
 
   { "quicken", console_BasicCheat, CF_DEMO },
   { "ponce", console_BasicCheat, CF_DEMO },
