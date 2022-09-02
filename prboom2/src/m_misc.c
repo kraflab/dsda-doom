@@ -176,6 +176,8 @@ int M_ReadFileToString(char const *name, char **buffer) {
       (*buffer)[length] = '\0';
       return length;
     }
+    Z_Free(*buffer);
+    *buffer = NULL;
     fclose(fp);
   }
 
