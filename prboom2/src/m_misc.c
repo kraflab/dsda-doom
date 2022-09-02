@@ -157,7 +157,7 @@ int M_ReadFile(char const *name, byte **buffer)
 }
 
 // Same as above, but add null terminator
-int M_ReadFileToString(char const *name, byte **buffer) {
+int M_ReadFileToString(char const *name, char **buffer) {
   FILE *fp;
 
   if ((fp = fopen(name, "rb")))

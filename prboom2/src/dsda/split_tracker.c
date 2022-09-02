@@ -92,7 +92,7 @@ static void dsda_InitSplitTime(dsda_split_time_t* split_time) {
 
 static void dsda_LoadSplits(void) {
   char* path;
-  byte* buffer;
+  char* buffer;
   static int loaded = false;
 
   if (loaded)

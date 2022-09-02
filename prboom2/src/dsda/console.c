@@ -772,7 +772,7 @@ static dboolean console_ScriptRun(const char* command, const char* args) {
 
   if (sscanf(args, "%s", name)) {
     char* filename;
-    byte* buffer;
+    char* buffer;
 
     filename = I_FindFile(name, "");
 
