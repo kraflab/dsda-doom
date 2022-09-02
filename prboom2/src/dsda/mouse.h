@@ -20,7 +20,7 @@
 
 #include "d_ticcmd.h"
 
-void dsda_ApplyQuickstartMouseCache(ticcmd_t* cmd, int strafe);
+void dsda_ApplyQuickstartMouseCache(int* mousex);
 void dsda_QueueQuickstart(void);
 
 #endif

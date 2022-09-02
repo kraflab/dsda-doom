@@ -952,6 +952,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     forward += mousey;
   }
 
+  dsda_ApplyQuickstartMouseCache(&mousex);
+
   if (strafe)
   {
     static double mousestrafe_carry = 0;
@@ -1013,8 +1015,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   cmd->forwardmove += fudgef((signed char)forward);
   cmd->sidemove += side;
-
-  dsda_ApplyQuickstartMouseCache(cmd, strafe);
 
   if ((demorecording && !longtics) || shorttics)
   {
