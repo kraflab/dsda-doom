@@ -1192,8 +1192,7 @@ static void DoLooseFiles(void)
   }
 }
 
-/* cph - MBF-like wad/deh/bex autoload code */
-const char *wad_files[MAXLOADFILES], *deh_files[MAXLOADFILES];
+const char *port_wad_file;
 
 // CPhipps - misc screen stuff
 int desired_screenwidth, desired_screenheight;
@@ -1621,29 +1620,8 @@ static void D_DoomMainSetup(void)
 
   // CPhipps - autoloading of wads
   autoload = !dsda_Flag(dsda_arg_noautoload);
-  {
-    // only autoloaded wads here - autoloaded patches moved down below W_Init
-    int i, imax = MAXLOADFILES;
 
-    // make sure to always autoload dsda-doom.wad
-    if (!autoload)
-      imax = 1;
-
-    for (i=0; i<imax; i++) {
-      const char *fname = wad_files[i];
-      char *fpath;
-
-      if (!(fname && *fname)) continue;
-      // Filename is now stored as a zero terminated string
-      fpath = I_FindFile(fname, ".wad");
-      if (!fpath)
-        lprintf(LO_WARN, "Failed to autoload %s\n", fname);
-      else {
-        D_AddFile(fpath,source_auto_load);
-        Z_Free(fpath);
-      }
-    }
-  }
+  D_AddFile(port_wad_file, source_auto_load);
 
   // add wad files from autoload directory before wads from -file parameter
   if (autoload)
@@ -1775,27 +1753,6 @@ static void D_DoomMainSetup(void)
       if (lump != -1)
       {
         ProcessDehFile(NULL, D_dehout(), lump);
-      }
-    }
-  }
-
-  if (autoload) {
-    // now do autoloaded dehacked patches, after IWAD patches but before PWAD
-    int i;
-
-    for (i=0; i<MAXLOADFILES; i++) {
-      const char *fname = deh_files[i];
-      char *fpath;
-
-      if (!(fname && *fname)) continue;
-      // Filename is now stored as a zero terminated string
-      fpath = I_FindFile(fname, ".bex");
-      if (!fpath)
-        lprintf(LO_WARN, "Failed to autoload %s\n", fname);
-      else {
-        ProcessDehFile(fpath, D_dehout(), 0);
-        // this used to set modifiedgame here, but patches shouldn't
-        Z_Free(fpath);
       }
     }
   }

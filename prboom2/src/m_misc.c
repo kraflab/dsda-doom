@@ -280,13 +280,6 @@ default_t defaults[] =
   {"demo_smoothturnsfactor", {&demo_smoothturnsfactor},  {6},1,SMOOTH_PLAYING_MAXFACTOR,
    def_int,ss_stat},
 
-  {"Files",{NULL},{0},UL,UL,def_none,ss_none},
-  /* cph - MBF-like wad/deh/bex autoload code */
-  {"wadfile_1",{NULL,&wad_files[1]},{0,""},UL,UL,def_str,ss_none},
-  {"wadfile_2",{NULL,&wad_files[2]},{0,""},UL,UL,def_str,ss_none},
-  {"dehfile_1",{NULL,&deh_files[0]},{0,""},UL,UL,def_str,ss_none},
-  {"dehfile_2",{NULL,&deh_files[1]},{0,""},UL,UL,def_str,ss_none},
-
   {"Game settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"default_skill",{&defaultskill},{4},1,5, // jff 3/24/98 allow default skill setting
    def_int,ss_none}, // selects default skill 1=TYTD 2=NTR 3=HMP 4=UV 5=NM
@@ -1414,11 +1407,8 @@ void M_LoadDefaults (void)
 
   dsda_InitSettings();
 
-  //jff 3/4/98 redundant range checks for hud deleted here
-  /* proff 2001/7/1 - added prboom.wad as last entry so it's always loaded and
-     doesn't overlap with the cfg settings */
-  //e6y: Check on existence of prboom.wad
-  if (!(wad_files[0] = I_FindFile(WAD_DATA, "")))
+  //e6y: Check on existence of dsda-doom.wad
+  if (!(port_wad_file = I_FindFile(WAD_DATA, "")))
     I_Error("dsda-doom.wad not found. Can't continue.");
 }
 
