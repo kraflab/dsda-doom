@@ -100,7 +100,6 @@ typedef struct default_s
     def_str,  // A string
     def_int,  // Integer
     def_hex,  // Integer (write in hex)
-    def_arr,  // e6y: arrays
     def_input, // Composite input
     def_bool = def_int,  // Boolean
     def_colour = def_hex // Colour (256 colour palette entry)

@@ -1056,28 +1056,9 @@ void M_SaveDefaults (void)
     if (defaults[i].type == def_none) {
       // CPhipps - pure headers
       fprintf(f, "\n# %s\n", defaults[i].name);
-    } else
-      // e6y: arrays
-      if (defaults[i].type == def_arr)
-      {
-        int k;
-        fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
-        for (k = 0; k < *(defaults[i].location.array_size); k++)
-        {
-          char ***arr = defaults[i].location.array_data;
-          if ((*arr)[k])
-          {
-            char def[80];
-            sprintf(def, "%s%d", *(defaults[i].location.ppsz), k);
-            fprintf (f,"%-*s \"%s\"\n",maxlen,def, (*arr)[k]);
-          }
-        }
-        i += defaults[i].defaultvalue.array_size;
-      }
-      else
-
+    }
     // CPhipps - modified for new default_t form
-    if (!IS_STRING(defaults[i])) //jff 4/10/98 kill super-hack on pointer value
+    else if (!IS_STRING(defaults[i])) //jff 4/10/98 kill super-hack on pointer value
     {
       // CPhipps - remove keycode hack
       // killough 3/6/98: use spaces instead of tabs for uniform justification
@@ -1195,39 +1176,6 @@ void M_LoadDefaults (void)
     }
   }
 
-  //e6y: arrays
-  for (i = 0 ; i < numdefaults ; i++) {
-    if (defaults[i].type == def_arr)
-    {
-      int k;
-      default_t *item = &defaults[i];
-      char ***arr = (char***)(item->location.array_data);
-      // free memory
-      for (k = 0; k < *(item->location.array_size); k++)
-      {
-        if ((*arr)[k])
-        {
-          Z_Free((*arr)[k]);
-          (*arr)[k] = NULL;
-        }
-      }
-      Z_Free(*arr);
-      *arr = NULL;
-      *(item->location.array_size) = 0;
-      // load predefined data
-      *arr = Z_Realloc(*arr, sizeof(char*) * item->defaultvalue.array_size);
-      *(item->location.array_size) = item->defaultvalue.array_size;
-      item->location.array_index = 0;
-      for (k = 0; k < item->defaultvalue.array_size; k++)
-      {
-        if (item->defaultvalue.array_data[k])
-          (*arr)[k] = Z_Strdup(item->defaultvalue.array_data[k]);
-        else
-          (*arr)[k] = Z_Strdup("");
-      }
-    }
-  }
-
   // check for a custom default file
 
 #define BOOM_CFG "dsda-doom.cfg"
@@ -1318,19 +1266,6 @@ void M_LoadDefaults (void)
         for (i = 0 ; i < numdefaults ; i++)
           if ((defaults[i].type != def_none) && !strcmp(def, defaults[i].name))
           {
-            // e6y: arrays
-            if (defaults[i].type == def_arr)
-            {
-              union { const char **c; char **s; } u; // type punning via unions
-
-              u.c = defaults[i].location.ppsz;
-              Z_Free(*(u.s));
-              *(u.s) = newstring;
-
-              item = &defaults[i];
-              continue;
-            }
-
             // CPhipps - safety check
             if (isstring != IS_STRING(defaults[i])) {
               lprintf(LO_WARN, "M_LoadDefaults: Type mismatch reading %s\n", defaults[i].name);
