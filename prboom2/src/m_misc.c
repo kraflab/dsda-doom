@@ -1142,8 +1142,6 @@ void M_LoadDefaults (void)
   int   parm;
   dsda_arg_t *arg;
   dboolean isstring;
-  // e6y: arrays
-  default_t *item = NULL;
 
   // set everything to base values
 
@@ -1229,38 +1227,6 @@ void M_LoadDefaults (void)
         else
         {
           sscanf(strparm, "%i", &parm);
-        }
-
-        // e6y: arrays
-        if (item)
-        {
-          int *pcount = item->location.array_size;
-          int *index = &item->location.array_index;
-          char ***arr = (char***)(item->location.array_data);
-          if (!strncmp(def, *(item->location.ppsz), strlen(*(item->location.ppsz)))
-              && ((item->maxvalue == UL) || *(item->location.array_size) < item->maxvalue) )
-          {
-            if ((*index) + 1 > *pcount)
-            {
-              *arr = Z_Realloc(*arr, sizeof(char*) * ((*index) + 1));
-              (*pcount)++;
-            }
-            else
-            {
-              if ((*arr)[(*index)])
-              {
-                Z_Free((*arr)[(*index)]);
-                (*arr)[(*index)] = NULL;
-              }
-            }
-            (*arr)[(*index)] = newstring;
-            (*index)++;
-            continue;
-          }
-          else
-          {
-            item = NULL;
-          }
         }
 
         for (i = 0 ; i < numdefaults ; i++)
@@ -1570,30 +1536,6 @@ char *M_StrRTrim(char *str)
 void M_ArrayClear(array_t *data)
 {
   data->count = 0;
-}
-
-void M_ArrayFree(array_t *data)
-{
-  if (data->data)
-  {
-    Z_Free(data->data);
-    data->data = NULL;
-  }
-
-  data->capacity = 0;
-  data->count = 0;
-}
-
-void M_ArrayAddItem(array_t *data, void *item, int itemsize)
-{
-  if (data->count + 1 >= data->capacity)
-  {
-    data->capacity = (data->capacity ? data->capacity * 2 : 128);
-    data->data = Z_Realloc(data->data, data->capacity * itemsize);
-  }
-
-  memcpy((unsigned char*)data->data + data->count * itemsize, item, itemsize);
-  data->count++;
 }
 
 void* M_ArrayGetNewItem(array_t *data, int itemsize)
