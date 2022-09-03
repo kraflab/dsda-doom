@@ -39,7 +39,7 @@
 
 #include "doomtype.h"
 
-#include "dsda/config.h"
+#include "dsda/configuration.h"
 #include "dsda/input.h"
 
 //

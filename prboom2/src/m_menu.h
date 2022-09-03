@@ -36,7 +36,7 @@
 
 #include "d_event.h"
 
-#include "dsda/config.h"
+#include "dsda/configuration.h"
 
 //
 // MENUS
