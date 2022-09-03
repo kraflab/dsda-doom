@@ -39,6 +39,7 @@
 
 #include "doomtype.h"
 
+#include "dsda/config.h"
 #include "dsda/input.h"
 
 //
@@ -100,7 +101,7 @@ typedef struct default_s
   int   setupscreen;      // phares 4/19/98: setup screen where this appears
 
   // migrate to new config process
-  int config_id;
+  dsda_config_identifier_t config_id;
 
   // composite input
   int identifier;
