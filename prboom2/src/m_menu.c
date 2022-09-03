@@ -1612,7 +1612,6 @@ dboolean set_mess_active   = false; // in messages setup screen
 dboolean setup_select      = false; // changing an item
 dboolean setup_gather      = false; // gathering keys for value
 dboolean colorbox_active   = false; // color palette being shown
-dboolean default_verify    = false; // verify reset defaults decision
 dboolean set_general_active = false;
 
 /////////////////////////////
@@ -1675,8 +1674,6 @@ enum
   set_messages,
   set_setup_end
 } setup_e;
-
-int setup_screen; // the current setup screen. takes values from setup_e
 
 /////////////////////////////
 //
@@ -1876,48 +1873,30 @@ static void M_DrawItem(const setup_menu_t* s)
   int x = s->m_x;
   int y = s->m_y;
   int flags = s->m_flags;
-  if (flags & S_RESET)
-  {
-    // This item is the reset button
-    // Draw the 'off' version if this isn't the current menu item
-    // Draw the blinking version in tune with the blinking skull otherwise
+  char *p, *t;
+  int w = 0;
+  int color =
+    flags & S_DISABLE ? g_menu_cr_disable : //e6y
+    flags & S_SELECT ? g_menu_cr_select :
+    flags & S_HILITE ? g_menu_cr_hilite :
+    flags & (S_TITLE|S_NEXT|S_PREV) ? g_menu_cr_title : g_menu_cr_item; // killough 10/98
 
-    // proff/nicolas 09/20/98 -- changed for hi-res
-    // CPhipps - Patch drawing updated, reformatted
-    if (!raven)
-      V_DrawNamePatch(
-        x, y, 0,
-        ResetButtonName[(flags & (S_HILITE|S_SELECT)) ? whichSkull : 0],
-        CR_DEFAULT, VPT_STRETCH
-      );
+  /* killough 10/98:
+   * Enhance to support multiline text separated by newlines.
+   * This supports multiline items on horizontally-crowded menus.
+   */
+
+  for (p = t = Z_Strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
+  {      /* killough 10/98: support left-justification: */
+    strcpy(menu_buffer,p);
+    if (!(flags & S_LEFTJUST))
+      w = M_GetPixelWidth(menu_buffer) + 4;
+    M_DrawMenuString(x - w, y ,color);
+    // print a blinking "arrow" next to the currently highlighted menu item
+    if (s == current_setup_menu + set_menu_itemon && whichSkull)
+      M_DrawString(x - w - 8, y, color, ">");
   }
-  else // Draw the item string
-  {
-    char *p, *t;
-    int w = 0;
-    int color =
-      flags & S_DISABLE ? g_menu_cr_disable : //e6y
-      flags & S_SELECT ? g_menu_cr_select :
-      flags & S_HILITE ? g_menu_cr_hilite :
-      flags & (S_TITLE|S_NEXT|S_PREV) ? g_menu_cr_title : g_menu_cr_item; // killough 10/98
-
-    /* killough 10/98:
-     * Enhance to support multiline text separated by newlines.
-     * This supports multiline items on horizontally-crowded menus.
-     */
-
-    for (p = t = Z_Strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
-    {      /* killough 10/98: support left-justification: */
-      strcpy(menu_buffer,p);
-      if (!(flags & S_LEFTJUST))
-        w = M_GetPixelWidth(menu_buffer) + 4;
-      M_DrawMenuString(x - w, y ,color);
-      // print a blinking "arrow" next to the currently highlighted menu item
-      if (s == current_setup_menu + set_menu_itemon && whichSkull)
-        M_DrawString(x - w - 8, y, color, ">");
-    }
-    Z_Free(t);
-  }
+  Z_Free(t);
 }
 
 // If a number item is being changed, allow up to N keystrokes to 'gather'
@@ -2265,7 +2244,7 @@ static void M_DrawInstructions(void)
   // are changing an item or just sitting on it.
 
   if (setup_select) {
-    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_RESET | S_FILE | S_CHOICE | S_NAME)) {
+    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_FILE | S_CHOICE | S_NAME)) {
       case S_INPUT:
         M_DrawStringCentered(160, 20, g_menu_cr_select, "Press key or button for this action");
         break;
@@ -2294,17 +2273,13 @@ static void M_DrawInstructions(void)
     case S_NAME:
       M_DrawStringCentered(160, 20, g_menu_cr_select, "Type / edit author and Press ENTER");
       break;
-    case S_RESET:
-      break;
 #ifdef SIMPLECHECKS
     default:
       lprintf(LO_WARN,"Unrecognised menu item type %d", flags);
 #endif
     }
   } else {
-    if (flags & S_RESET)
-      M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press ENTER key to reset to defaults");
-    else if (flags & S_INPUT)
+    if (flags & S_INPUT)
       M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press Enter to Change, Del to Clear");
     else
       M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press Enter to Change");
@@ -2403,9 +2378,6 @@ setup_menu_t keys_settings1[] =  // Key Binding screen strings
   {"AUTORUN"  ,S_INPUT,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_autorun},
   {"MOUSELOOK",S_INPUT,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_mlook},
   {"VERTMOUSE",S_INPUT,m_scrn,KB_X,KB_Y+17*8,{0},dsda_input_novert},
-
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
 
   {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings2}},
 
@@ -2760,10 +2732,8 @@ void M_KeyBindings(int choice)
   M_SetupNextMenu(&KeybndDef);
 
   setup_active = true;
-  setup_screen = ss_keys;
   set_keybnd_active = true;
   setup_select = false;
-  default_verify = false;
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = keys_settings[0];
@@ -2787,12 +2757,6 @@ void M_DrawKeybnd(void)
   M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
-
-  // If the Reset Button has been selected, an "Are you sure?" message
-  // is overlayed across everything else.
-
-  if (default_verify)
-    M_DrawDefVerify();
 }
 
 /////////////////////////////
@@ -2849,9 +2813,6 @@ setup_menu_t weap_settings1[] =  // Weapons Settings screen
   {"8th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref8*8, {"weapon_choice_8"}},
   {"9th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref9*8, {"weapon_choice_9"}},
 
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-
   // Final entry
   {0,S_SKIP|S_END,m_null}
 
@@ -2866,10 +2827,8 @@ void M_Weapons(int choice)
   M_SetupNextMenu(&WeaponDef);
 
   setup_active = true;
-  setup_screen = ss_weap;
   set_weapon_active = true;
   setup_select = false;
-  default_verify = false;
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = weap_settings[0];
@@ -2892,12 +2851,6 @@ void M_DrawWeapons(void)
   M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
-
-  // If the Reset Button has been selected, an "Are you sure?" message
-  // is overlayed across everything else.
-
-  if (default_verify)
-    M_DrawDefVerify();
 }
 
 /////////////////////////////
@@ -2937,7 +2890,6 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
   { "AMMO LOW/OK", S_NUM, m_null, SB_X, SB_Y + 10 * 8, {"ammo_red" } },
   { "AMMO OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 11 * 8, {"ammo_yellow" } },
 
-  { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, SB_Y + 20 * 8, { stat_settings2 } },
   { 0, S_SKIP | S_END, m_null }
 };
@@ -2961,7 +2913,6 @@ setup_menu_t stat_settings2[] =
   { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 11 * 8, {"hudadd_crosshair_color" } },
   { "TARGET CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 12 * 8, {"hudadd_crosshair_target_color" } },
 
-  { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, SB_Y + 20 * 8, { stat_settings1 } },
   { 0, S_SKIP | S_END, m_null }
 };
@@ -2975,10 +2926,8 @@ void M_StatusBar(int choice)
   M_SetupNextMenu(&StatusHUDDef);
 
   setup_active = true;
-  setup_screen = ss_stat;
   set_status_active = true;
   setup_select = false;
-  default_verify = false;
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = stat_settings[0];
@@ -3001,12 +2950,6 @@ void M_DrawStatusHUD(void)
   M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
-
-  // If the Reset Button has been selected, an "Are you sure?" message
-  // is overlayed across everything else.
-
-  if (default_verify)
-    M_DrawDefVerify();
 }
 
 
@@ -3048,9 +2991,6 @@ setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
   {"Textured automap in overlay mode",        S_NUM,  m_null,AU_X,AU_Y+12*8, {"map_textured_overlay_trans"}},
   {"Lines in overlay mode",                   S_NUM,  m_null,AU_X,AU_Y+13*8, {"map_lines_overlay_trans"}},
 
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-
   {"->",S_SKIP|S_NEXT,m_null,AU_NEXT,AU_Y+20*8, {auto_settings2}},
 
   // Final entry
@@ -3078,9 +3018,6 @@ setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
   {"Automap Statistics Titles Color",S_CRITEM,m_null,AU_X,AU_Y+14*8, {"hudcolor_mapstat_title"}},
   {"Automap Statistics Values Color",S_CRITEM,m_null,AU_X,AU_Y+15*8, {"hudcolor_mapstat_value"}},
   {"Automap Statistics Time Color"  ,S_CRITEM,m_null,AU_X,AU_Y+16*8, {"hudcolor_mapstat_time"}},
-
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
 
   {"<-",S_SKIP|S_PREV,m_null,AU_PREV,AU_Y+20*8, {auto_settings1}},
   {"->",S_SKIP|S_NEXT,m_null,AU_NEXT,AU_Y+20*8, {auto_settings3}},
@@ -3126,11 +3063,9 @@ void M_Automap(int choice)
   M_SetupNextMenu(&AutoMapDef);
 
   setup_active = true;
-  setup_screen = ss_auto;
   set_auto_active = true;
   setup_select = false;
   colorbox_active = false;
-  default_verify = false;
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = auto_settings[0];
@@ -3189,12 +3124,6 @@ void M_DrawAutoMap(void)
 
   if (colorbox_active)
     M_DrawColPal();
-
-  // If the Reset Button has been selected, an "Are you sure?" message
-  // is overlayed across everything else.
-
-  else if (default_verify)
-    M_DrawDefVerify();
 }
 
 /////////////////////////////
@@ -3302,9 +3231,6 @@ setup_menu_t audiovideo_settings[] = {
   { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_null, G_X, G_Y + 15 * 8, { "snd_pcspeaker" } },
   { "Preferred MIDI player", S_CHOICE | S_PRGWARN, m_null, G_X, G_Y + 16 * 8, { "snd_midiplayer" }, 0, M_ChangeMIDIPlayer, midiplayers },
   { "Disable Sound Cutoffs", S_YESNO, m_null, G_X, G_Y + 17 * 8, { "full_sounds" } },
-
-  // Button for resetting to defaults
-  { 0, S_RESET, m_null, X_BUTTON, Y_BUTTON },
 
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { device_settings } },
   { 0, S_SKIP | S_END, m_null }
@@ -3503,10 +3429,8 @@ void M_General(int choice)
   M_SetupNextMenu(&GeneralDef);
 
   setup_active = true;
-  setup_screen = ss_gen;
   set_general_active = true;
   setup_select = false;
-  default_verify = false;
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = gen_settings[0];
@@ -3528,12 +3452,6 @@ void M_DrawGeneral(void)
   M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
-
-  // If the Reset Button has been selected, an "Are you sure?" message
-  // is overlayed across everything else.
-
-  if (default_verify)
-    M_DrawDefVerify();
 }
 
 /////////////////////////////
@@ -3576,9 +3494,6 @@ setup_menu_t mess_settings1[] =  // Messages screen
   {"Message Background",  S_YESNO,  m_null,  M_X,
    M_Y + mess_background*8, {"hud_list_bgon"}},
 
-  // Button for resetting to defaults
-  {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
-
   // Final entry
 
   {0,S_SKIP|S_END,m_null}
@@ -3594,10 +3509,8 @@ void M_Messages(int choice)
   M_SetupNextMenu(&MessageDef);
 
   setup_active = true;
-  setup_screen = ss_mess;
   set_mess_active = true;
   setup_select = false;
-  default_verify = false;
   setup_gather = false;
   mult_screens_index = 0;
   current_setup_menu = mess_settings[0];
@@ -3620,8 +3533,6 @@ void M_DrawMessages(void)
   M_DrawTitle(103, 2, "M_MESS", CR_DEFAULT, "MESSAGES", CR_GOLD);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
-  if (default_verify)
-    M_DrawDefVerify();
 }
 
 /////////////////////////////
@@ -3647,7 +3558,7 @@ static void M_SelectDone(setup_menu_t* ptr)
 }
 
 // phares 4/21/98:
-// Array of setup screens used by M_ResetDefaults()
+// Array of setup screens used by M_InitDefaults()
 
 static setup_menu_t **setup_screens[] =
 {
@@ -3657,6 +3568,7 @@ static setup_menu_t **setup_screens[] =
   auto_settings,
   mess_settings,
   gen_settings,      // killough 10/98
+  NULL,
 };
 
 /* killough 8/15/98: when changes are allowed to sync-critical variables */
@@ -3676,77 +3588,6 @@ static void M_SettingUpdated(setup_menu_t *setting, int update_current)
     setting->action();
 }
 
-// phares 4/19/98:
-// M_ResetDefaults() resets all values for a setup screen to default values
-//
-// killough 10/98: rewritten to fix bugs and warn about pending changes
-
-static void M_ResetDefaults(void)
-{
-  int i; //e6y
-
-  default_t *dp;
-  int warn = 0;
-
-  // Look through the defaults table and reset every variable that
-  // belongs to the group we're interested in.
-  //
-  // killough: However, only reset variables whose field in the
-  // current setup screen is the same as in the defaults table.
-  // i.e. only reset variables really in the current setup screen.
-
-  // e6y
-  // Fixed crash while trying to read data past array end
-  // All previous versions of prboom worked only by a lucky accident
-  // old code: for (dp = defaults; dp->name; dp++)
-  for (i = 0; i < numdefaults ; i++)
-  {
-    dp = &defaults[i];
-
-    if (dp->setupscreen == setup_screen)
-    {
-      setup_menu_t **l, *p;
-      for (l = setup_screens[setup_screen-1]; *l; l++)
-        for (p = *l; !(p->m_flags & S_END); p++)
-          if (p->m_group == m_conf)
-          {
-            continue; // TODO m_conf reset to default
-          }
-          else if (p->m_flags & (S_INPUT | S_KEEP))
-          {
-            if (dp->identifier == p->input)
-            {
-              dsda_InputSet(dp->identifier, dp->input);
-
-              goto end;
-            }
-          }
-          else if ((p->m_flags & S_HASDEFPTR) && p->var.def == dp)
-          {
-            lprintf(LO_INFO, "Reset: %d %d\n", p->m_flags, i);
-            if (IS_STRING(*dp))
-            {
-              union { const char **c; char **s; } u; // type punning via unions
-
-              u.c = dp->location.ppsz;
-              Z_Free(*(u.s));
-              *(u.c) = Z_Strdup(dp->defaultvalue.psz);
-            }
-            else
-              *dp->location.pi = dp->defaultvalue.i;
-
-            M_SettingUpdated(p, false);
-
-            goto end;
-          }
-      end:;
-    }
-  }
-
-  if (warn)
-    warn_about_changes(warn);
-}
-
 //
 // M_InitDefaults()
 //
@@ -3762,7 +3603,7 @@ static void M_InitDefaults(void)
   setup_menu_t *const *p, *t;
   default_t *dp;
   int i;
-  for (i = 0; i < ss_max-1; i++)
+  for (i = 0; setup_screens[i]; i++)
   {
     for (p = setup_screens[i]; *p; p++)
     {
@@ -4892,24 +4733,6 @@ dboolean M_Responder (event_t* ev) {
     setup_menu_t* ptr1= current_setup_menu + set_menu_itemon;
     setup_menu_t* ptr2 = NULL;
 
-    // phares 4/19/98:
-    // Catch the response to the 'reset to default?' verification
-    // screen
-
-    if (default_verify)
-    {
-      if (toupper(ch) == 'Y') {
-        M_ResetDefaults();
-        default_verify = false;
-        M_SelectDone(ptr1);
-      }
-      else if (toupper(ch) == 'N') {
-        default_verify = false;
-        M_SelectDone(ptr1);
-      }
-      return true;
-    }
-
     // Common processing for some items
 
     if (setup_select) { // changing an entry
@@ -5429,8 +5252,6 @@ dboolean M_Responder (event_t* ev) {
         }
         entry_index = 0; // current cursor position in entry_string_index
       }
-      else if (flags & S_RESET)
-        default_verify = true;
 
       ptr1->m_flags |= S_SELECT;
       setup_select = true;
@@ -5458,7 +5279,6 @@ dboolean M_Responder (event_t* ev) {
       set_auto_active = false;
       set_mess_active = false;
       colorbox_active = false;
-      default_verify = false;       // phares 4/19/98
       set_general_active = false;    // killough 10/98
       HU_Start();    // catch any message changes // phares 4/19/98
       S_StartSound(NULL, g_sfx_swtchx);
@@ -5709,7 +5529,6 @@ void M_StartControlPanel (void)
     }
   }
 
-  default_verify = 0;                  // killough 10/98
   M_ChangeMenu(&MainDef, mnact_float);
   itemOn = currentMenu->lastOn;   // JDC
   print_warning_about_changes = false;   // killough 11/98
@@ -5831,7 +5650,6 @@ void M_ClearMenus (void)
 {
   M_ChangeMenu(&MainDef, mnact_inactive);
   print_warning_about_changes = 0;     // killough 8/15/98
-  default_verify = 0;                  // killough 10/98
 
   BorderNeedRefresh = true;
 }

@@ -98,7 +98,6 @@ typedef struct default_s
     def_bool = def_int,  // Boolean
     def_colour = def_hex // Colour (256 colour palette entry)
   } type; // CPhipps - type of entry
-  int   setupscreen;      // phares 4/19/98: setup screen where this appears
 
   // migrate to new config process
   dsda_config_identifier_t config_id;

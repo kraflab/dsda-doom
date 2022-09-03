@@ -87,7 +87,7 @@
 // NSM
 #include "i_capture.h"
 
-#define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, ss_keys, 0, id, { k, m, j } }
+#define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, 0, id, { k, m, j } }
 
 extern int dsda_auto_key_frame_depth;
 extern int dsda_auto_key_frame_interval;
@@ -256,187 +256,187 @@ int map_level_stat;
 default_t defaults[] =
 {
   //e6y
-  {"System settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"process_priority", {&process_priority},{0},0,2,def_int,ss_none},
+  {"System settings",{NULL},{0},UL,UL,def_none},
+  {"process_priority", {&process_priority},{0},0,2,def_int},
 
-  {"Misc settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Misc settings",{NULL},{0},UL,UL,def_none},
   {"default_compatibility_level",{(int*)&default_compatibility_level},
    {-1},-1,MAX_COMPATIBILITY_LEVEL-1,
-   def_int,ss_none}, // compatibility level" - CPhipps
+   def_int}, // compatibility level" - CPhipps
   {"vanilla_keymap",{&vanilla_keymap},{0},0,1,
-   def_bool,ss_none}, // Use vanilla keyboard mapping
+   def_bool}, // Use vanilla keyboard mapping
   {"realtic_clock_rate",{&realtic_clock_rate},{100},0,UL,
-   def_int,ss_none}, // percentage of normal speed (35 fps) realtic clock runs at
+   def_int}, // percentage of normal speed (35 fps) realtic clock runs at
   {"menu_background", {(int*)&menu_background}, {1}, 0, 1,
-   def_bool,ss_none}, // do Boom fullscreen menus have backgrounds?
+   def_bool}, // do Boom fullscreen menus have backgrounds?
   {"max_player_corpse", {&bodyquesize}, {32},-1,UL,   // killough 2/8/98
-   def_int,ss_none}, // number of dead bodies in view supported (-1 = no limit)
+   def_int}, // number of dead bodies in view supported (-1 = no limit)
   {"flashing_hom",{&flashing_hom},{0},0,1,
-   def_bool,ss_none}, // killough 10/98 - enable flashing HOM indicator
+   def_bool}, // killough 10/98 - enable flashing HOM indicator
   {"level_precache",{(int*)&precache},{1},0,1,
-   def_bool,ss_none}, // precache level data?
+   def_bool}, // precache level data?
   {"demo_smoothturns", {&demo_smoothturns},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"demo_smoothturnsfactor", {&demo_smoothturnsfactor},  {6},1,SMOOTH_PLAYING_MAXFACTOR,
-   def_int,ss_stat},
+   def_int},
 
-  {"Game settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Game settings",{NULL},{0},UL,UL,def_none},
   {"default_skill",{&defaultskill},{4},1,5, // jff 3/24/98 allow default skill setting
-   def_int,ss_none}, // selects default skill 1=TYTD 2=NTR 3=HMP 4=UV 5=NM
+   def_int}, // selects default skill 1=TYTD 2=NTR 3=HMP 4=UV 5=NM
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
-   def_int,ss_weap},
+   def_int},
 
   {"sts_always_red",{&sts_always_red},{1},0,1, // no color changes on status bar
-   def_bool,ss_stat},
+   def_bool},
   {"sts_pct_always_gray",{&sts_pct_always_gray},{0},0,1, // 2/23/98 chg default
-   def_bool,ss_stat}, // makes percent signs on status bar always gray
+   def_bool}, // makes percent signs on status bar always gray
   {"sts_traditional_keys",{&sts_traditional_keys},{0},0,1,  // killough 2/28/98
-   def_bool,ss_stat}, // disables doubled card and skull key display on status bar
+   def_bool}, // disables doubled card and skull key display on status bar
   {"show_messages",{(int *)&dsda_setting[dsda_show_messages]},{1},0,1,
-   def_bool,ss_none}, // enables message display
+   def_bool}, // enables message display
   {"autorun",{(int *)&dsda_setting[dsda_autorun]},{1},0,1,  // killough 3/6/98: preserve autorun across games
-   def_bool,ss_none},
+   def_bool},
 
-  {"Dehacked settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Dehacked settings",{NULL},{0},UL,UL,def_none},
   {"deh_apply_cheats",{&deh_apply_cheats},{1},0,1,
-   def_bool,ss_stat}, // if 0, dehacked cheat replacements are ignored.
+   def_bool}, // if 0, dehacked cheat replacements are ignored.
 
-  {"Sound settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"snd_pcspeaker",{&snd_pcspeaker},{0}, 0, 1, def_bool,ss_none},
+  {"Sound settings",{NULL},{0},UL,UL,def_none},
+  {"snd_pcspeaker",{&snd_pcspeaker},{0}, 0, 1, def_bool},
   {"sound_card",{&snd_card},{-1},-1,7,       // jff 1/18/98 allow Allegro drivers
-   def_int,ss_none}, // select sounds driver (DOS), -1 is autodetect, 0 is none; in Linux, non-zero enables sound
+   def_int}, // select sounds driver (DOS), -1 is autodetect, 0 is none; in Linux, non-zero enables sound
   {"music_card",{&mus_card},{-1},-1,9,       //  to be set,  -1 = autodetect
-   def_int,ss_none}, // select music driver (DOS), -1 is autodetect, 0 is none"; in Linux, non-zero enables music
+   def_int}, // select music driver (DOS), -1 is autodetect, 0 is none"; in Linux, non-zero enables music
   {"pitched_sounds",{&pitched_sounds},{0},0,1, // killough 2/21/98
-   def_bool,ss_none}, // enables variable pitch in sound effects (from id's original code)
-  {"samplerate",{&snd_samplerate},{44100},11025,48000, def_int,ss_none},
-  {"slice_samplecount",{&snd_samplecount},{512},32,8192, def_int,ss_none},
-  {"sfx_volume",{&snd_SfxVolume},{8},0,15, def_int,ss_none},
-  {"music_volume",{&snd_MusicVolume},{8},0,15, def_int,ss_none},
+   def_bool}, // enables variable pitch in sound effects (from id's original code)
+  {"samplerate",{&snd_samplerate},{44100},11025,48000, def_int},
+  {"slice_samplecount",{&snd_samplecount},{512},32,8192, def_int},
+  {"sfx_volume",{&snd_SfxVolume},{8},0,15, def_int},
+  {"music_volume",{&snd_MusicVolume},{8},0,15, def_int},
   {"mus_pause_opt",{&mus_pause_opt},{1},0,2, // CPhipps - music pausing
-   def_int, ss_none}, // 0 = kill music when paused, 1 = pause music, 2 = let music continue
+   def_int}, // 0 = kill music when paused, 1 = pause music, 2 = let music continue
   {"snd_channels",{&default_numChannels},{32},1,32,
-   def_int,ss_none}, // number of audio events simultaneously // killough
-  {"snd_midiplayer",{NULL, &snd_midiplayer},{0,"fluidsynth"},UL,UL,def_str,ss_none},
-  {"snd_soundfont",{NULL, &snd_soundfont},{0,""},UL,UL,def_str,ss_none},
-  {"snd_mididev",{NULL, &snd_mididev},{0,""},UL,UL,def_str,ss_none}, // midi device to use for portmidiplayer
-  {"full_sounds",{&full_sounds},{0},0,1,def_bool,ss_none}, // disable sound cutoffs
+   def_int}, // number of audio events simultaneously // killough
+  {"snd_midiplayer",{NULL, &snd_midiplayer},{0,"fluidsynth"},UL,UL,def_str},
+  {"snd_soundfont",{NULL, &snd_soundfont},{0,""},UL,UL,def_str},
+  {"snd_mididev",{NULL, &snd_mididev},{0,""},UL,UL,def_str}, // midi device to use for portmidiplayer
+  {"full_sounds",{&full_sounds},{0},0,1,def_bool}, // disable sound cutoffs
 
 #ifdef _WIN32
   {"mus_extend_volume",{&mus_extend_volume},{0},0,1,
-   def_bool,ss_none}, // e6y: apply midi volume to all midi devices
+   def_bool}, // e6y: apply midi volume to all midi devices
 #endif
-  {"mus_fluidsynth_chorus",{&mus_fluidsynth_chorus},{0},0,1,def_bool,ss_none},
-  {"mus_fluidsynth_reverb",{&mus_fluidsynth_reverb},{0},0,1,def_bool,ss_none},
-  {"mus_fluidsynth_gain",{&mus_fluidsynth_gain},{50},0,1000,def_int,ss_none}, // NSM  fine tune fluidsynth output level
-  {"mus_opl_gain",{&mus_opl_gain},{50},0,1000,def_int,ss_none}, // NSM  fine tune opl output level
+  {"mus_fluidsynth_chorus",{&mus_fluidsynth_chorus},{0},0,1,def_bool},
+  {"mus_fluidsynth_reverb",{&mus_fluidsynth_reverb},{0},0,1,def_bool},
+  {"mus_fluidsynth_gain",{&mus_fluidsynth_gain},{50},0,1000,def_int}, // NSM  fine tune fluidsynth output level
+  {"mus_opl_gain",{&mus_opl_gain},{50},0,1000,def_int}, // NSM  fine tune opl output level
 
-  {"Video settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"videomode",{NULL, &default_videomode},{0,"Software"},UL,UL,def_str,ss_none},
+  {"Video settings",{NULL},{0},UL,UL,def_none},
+  {"videomode",{NULL, &default_videomode},{0,"Software"},UL,UL,def_str},
   /* 640x480 default resolution */
-  {"screen_resolution",{NULL, &screen_resolution},{0,"640x480"},UL,UL,def_str,ss_none},
-  {"custom_resolution",{0,&custom_resolution},{0,""},UL,UL,def_str,ss_none},
+  {"screen_resolution",{NULL, &screen_resolution},{0,"640x480"},UL,UL,def_str},
+  {"custom_resolution",{0,&custom_resolution},{0,""},UL,UL,def_str},
   {"use_fullscreen",{&use_fullscreen},{0},0,1, /* proff 21/05/2000 */
-   def_bool,ss_none},
+   def_bool},
   {"exclusive_fullscreen",{&exclusive_fullscreen},{0},0,1, // [FG] mode-changing fullscreen
-  def_bool,ss_none},
-  {"gl_exclusive_fullscreen",{&gl_exclusive_fullscreen},{1},0,1,def_bool,ss_none},
-  {"render_vsync",{&render_vsync},{0},0,1,def_bool,ss_none},
+  def_bool},
+  {"gl_exclusive_fullscreen",{&gl_exclusive_fullscreen},{1},0,1,def_bool},
+  {"render_vsync",{&render_vsync},{0},0,1,def_bool},
   {"tran_filter_pct",{&tran_filter_pct},{66},0,100,         // killough 2/21/98
-   def_int,ss_none}, // set percentage of foreground/background translucency mix
+   def_int}, // set percentage of foreground/background translucency mix
   {"screenblocks",{&screenblocks},{10},3,11,  // killough 2/21/98: default to 10
-   def_int,ss_none},
+   def_int},
   {"usegamma",{&usegamma},{0},0,4, //jff 3/6/98 fix erroneous upper limit in range
-   def_int,ss_none}, // gamma correction level // killough 1/18/98
+   def_int}, // gamma correction level // killough 1/18/98
   {"uncapped_framerate", {&movement_smooth_default},  {1},0,1,
-   def_bool,ss_stat},
-  {"dsda_fps_limit", {&dsda_fps_limit}, {0}, 0, 1000, def_int, ss_stat},
+   def_bool},
+  {"dsda_fps_limit", {&dsda_fps_limit}, {0}, 0, 1000, def_int},
 
   // TODO: are these settings important?
   { "filter_wall", { (int*) &drawvars.filterwall }, { RDRAW_FILTER_POINT },
-    RDRAW_FILTER_POINT, RDRAW_FILTER_ROUNDED, def_int, ss_none },
+    RDRAW_FILTER_POINT, RDRAW_FILTER_ROUNDED, def_int },
   { "filter_floor", { (int*) &drawvars.filterfloor }, { RDRAW_FILTER_POINT },
-    RDRAW_FILTER_POINT, RDRAW_FILTER_ROUNDED, def_int, ss_none },
+    RDRAW_FILTER_POINT, RDRAW_FILTER_ROUNDED, def_int },
   { "filter_sprite", { (int*) &drawvars.filtersprite }, { RDRAW_FILTER_POINT },
-    RDRAW_FILTER_POINT, RDRAW_FILTER_ROUNDED, def_int, ss_none },
+    RDRAW_FILTER_POINT, RDRAW_FILTER_ROUNDED, def_int },
   { "filter_z", { (int*) &drawvars.filterz }, { RDRAW_FILTER_POINT },
-    RDRAW_FILTER_POINT, RDRAW_FILTER_LINEAR, def_int, ss_none },
+    RDRAW_FILTER_POINT, RDRAW_FILTER_LINEAR, def_int },
   { "filter_patch", { (int*) &drawvars.filterpatch }, { RDRAW_FILTER_POINT },
-    RDRAW_FILTER_POINT, RDRAW_FILTER_ROUNDED, def_int, ss_none },
+    RDRAW_FILTER_POINT, RDRAW_FILTER_ROUNDED, def_int },
   { "filter_threshold", { (int*) &drawvars.mag_threshold }, { 49152 },
-    0, UL, def_int, ss_none },
+    0, UL, def_int },
   { "sprite_edges", { (int*) &drawvars.sprite_edges }, { RDRAW_MASKEDCOLUMNEDGE_SQUARE },
-    RDRAW_MASKEDCOLUMNEDGE_SQUARE, RDRAW_MASKEDCOLUMNEDGE_SLOPED, def_int, ss_none },
+    RDRAW_MASKEDCOLUMNEDGE_SQUARE, RDRAW_MASKEDCOLUMNEDGE_SLOPED, def_int },
   { "patch_edges", { (int*) &drawvars.patch_edges }, { RDRAW_MASKEDCOLUMNEDGE_SQUARE },
-    RDRAW_MASKEDCOLUMNEDGE_SQUARE, RDRAW_MASKEDCOLUMNEDGE_SLOPED, def_int, ss_none },
+    RDRAW_MASKEDCOLUMNEDGE_SQUARE, RDRAW_MASKEDCOLUMNEDGE_SLOPED, def_int },
 
-  {"OpenGL settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"OpenGL settings",{NULL},{0},UL,UL,def_none},
   {"gl_arb_multitexture", {&gl_arb_multitexture_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_arb_texture_compression", {&gl_arb_texture_compression_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_arb_texture_non_power_of_two", {&gl_arb_texture_non_power_of_two_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_ext_arb_vertex_buffer_object", {&gl_ext_arb_vertex_buffer_object_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_arb_pixel_buffer_object", {&gl_arb_pixel_buffer_object_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_arb_shader_objects", {&gl_arb_shader_objects_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_ext_blend_color", {&gl_ext_blend_color_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_ext_framebuffer_object", {&gl_ext_framebuffer_object_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_ext_packed_depth_stencil", {&gl_ext_packed_depth_stencil_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_ext_texture_filter_anisotropic", {&gl_ext_texture_filter_anisotropic_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_use_stencil", {&gl_use_stencil_default}, {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_use_display_lists",{&gl_use_display_lists},{0},0,1,
-   def_bool,ss_none},
+   def_bool},
 
   {"gl_finish",{&gl_finish},{1},0,1,
-   def_bool,ss_none},
+   def_bool},
   {"gl_clear",{&gl_clear},{0},0,1,
-   def_bool,ss_none},
+   def_bool},
   {"gl_ztrick",{&gl_ztrick},{0},0,1,
-   def_bool,ss_none},
+   def_bool},
   {"gl_nearclip",{&gl_nearclip},{5},0,UL,
-   def_int,ss_none}, /* near clipping plane pos */
+   def_int}, /* near clipping plane pos */
   {"gl_colorbuffer_bits",{&gl_colorbuffer_bits},{32},16,32,
-   def_int,ss_none},
+   def_int},
   {"gl_depthbuffer_bits",{&gl_depthbuffer_bits},{24},16,32,
-   def_int,ss_none},
+   def_int},
   {"gl_texture_filter",{(int*)&gl_texture_filter},
-   {filter_nearest_mipmap_linear}, filter_nearest, filter_count - 1, def_int,ss_none},
+   {filter_nearest_mipmap_linear}, filter_nearest, filter_count - 1, def_int},
   {"gl_sprite_filter",{(int*)&gl_sprite_filter},
-   {filter_nearest}, filter_nearest, filter_linear_mipmap_nearest, def_int,ss_none},
+   {filter_nearest}, filter_nearest, filter_linear_mipmap_nearest, def_int},
   {"gl_patch_filter",{(int*)&gl_patch_filter},
-   {filter_nearest}, filter_nearest, filter_linear, def_int,ss_none},
+   {filter_nearest}, filter_nearest, filter_linear, def_int},
   {"gl_texture_filter_anisotropic",{(int*)&gl_texture_filter_anisotropic},
-   {gl_anisotropic_8x}, gl_anisotropic_off, gl_anisotropic_16x, def_int,ss_none},
+   {gl_anisotropic_8x}, gl_anisotropic_off, gl_anisotropic_16x, def_int},
   {"gl_tex_format_string", {NULL,&gl_tex_format_string}, {0,"GL_RGBA"},UL,UL,
-   def_str,ss_none},
+   def_str},
   {"gl_sprite_offset",{&gl_sprite_offset_default},{0}, 0, 5,
-   def_int,ss_none}, // amount to bring items out of floor (GL) Mead 8/13/03
+   def_int}, // amount to bring items out of floor (GL) Mead 8/13/03
   {"gl_sprite_blend",{&gl_sprite_blend},{0},0,1,
-   def_bool,ss_none},
+   def_bool},
   {"gl_mask_sprite_threshold",{&gl_mask_sprite_threshold},{50},0,100,
-   def_int,ss_none},
+   def_int},
   {"gl_skymode",{(int*)&gl_skymode},
-  {skytype_auto}, skytype_auto, skytype_count - 1, def_int,ss_none},
+  {skytype_auto}, skytype_auto, skytype_count - 1, def_int},
   {"gl_sky_detail",{&gl_sky_detail},{16},1,32,
-   def_int,ss_none},
+   def_int},
   {"gl_use_paletted_texture",{&gl_use_paletted_texture},{0},0,1,
-   def_bool,ss_none},
+   def_bool},
   {"gl_use_shared_texture_palette",{&gl_use_shared_texture_palette},{0},0,1,
-   def_bool,ss_none},
+   def_bool},
 
   // defaults { key, mouseb, joyb }
-  { "Input settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
+  { "Input settings", { NULL }, { 0 }, UL, UL, def_none },
 
-  { "input_profile", { &dsda_input_profile }, { 0 }, 0, DSDA_INPUT_PROFILE_COUNT - 1, def_int, ss_none },
+  { "input_profile", { &dsda_input_profile }, { 0 }, 0, DSDA_INPUT_PROFILE_COUNT - 1, def_int },
 
   INPUT_SETTING("input_forward", dsda_input_forward, 'w', 2, -1),
   INPUT_SETTING("input_backward", dsda_input_backward, 's', -1, -1),
@@ -625,396 +625,396 @@ default_t defaults[] =
   INPUT_SETTING("input_script_8", dsda_input_script_8, 0, -1, -1),
   INPUT_SETTING("input_script_9", dsda_input_script_9, 0, -1, -1),
 
-  {"Mouse settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Mouse settings",{NULL},{0},UL,UL,def_none},
   {"use_mouse",{&usemouse},{1},0,1,
-   def_bool,ss_none}, // enables use of mouse with DOOM
+   def_bool}, // enables use of mouse with DOOM
   {"mouse_stutter_correction",{&mouse_stutter_correction},{1},0,1,
-   def_bool,ss_none}, // interpolates mouse input to mitigate stuttering
+   def_bool}, // interpolates mouse input to mitigate stuttering
   //jff 4/3/98 allow unlimited sensitivity
   {"mouse_sensitivity_horiz",{&mouseSensitivity_horiz},{10},0,UL,
-   def_int,ss_none}, /* adjust horizontal (x) mouse sensitivity killough/mead */
+   def_int}, /* adjust horizontal (x) mouse sensitivity killough/mead */
   //jff 4/3/98 allow unlimited sensitivity
   {"mouse_sensitivity_vert",{&mouseSensitivity_vert},{1},0,UL,
-   def_int,ss_none}, /* adjust vertical (y) mouse sensitivity killough/mead */
+   def_int}, /* adjust vertical (y) mouse sensitivity killough/mead */
 
-  {"Joystick settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Joystick settings",{NULL},{0},UL,UL,def_none},
   {"use_joystick",{&usejoystick},{0},0,2,
-   def_int,ss_none}, // number of joystick to use (0 for none)
+   def_int}, // number of joystick to use (0 for none)
 
-  {"Automap settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Automap settings",{NULL},{0},UL,UL,def_none},
   //jff 1/7/98 defaults for automap colors
   //jff 4/3/98 remove -1 in lower range, 0 now disables new map features
   {"mapcolor_back", {&mapcolor_back}, {247},0,255,  // black //jff 4/6/98 new black
-   def_colour,ss_auto}, // color used as background for automap
+   def_colour}, // color used as background for automap
   {"mapcolor_grid", {&mapcolor_grid}, {104},0,255,  // dk gray
-   def_colour,ss_auto}, // color used for automap grid lines
+   def_colour}, // color used for automap grid lines
   {"mapcolor_wall", {&mapcolor_wall}, {23},0,255,   // red-brown
-   def_colour,ss_auto}, // color used for one side walls on automap
+   def_colour}, // color used for one side walls on automap
   {"mapcolor_fchg", {&mapcolor_fchg}, {55},0,255,   // lt brown
-   def_colour,ss_auto}, // color used for lines floor height changes across
+   def_colour}, // color used for lines floor height changes across
   {"mapcolor_cchg", {&mapcolor_cchg}, {215},0,255,  // orange
-   def_colour,ss_auto}, // color used for lines ceiling height changes across
+   def_colour}, // color used for lines ceiling height changes across
   {"mapcolor_clsd", {&mapcolor_clsd}, {208},0,255,  // white
-   def_colour,ss_auto}, // color used for lines denoting closed doors, objects
+   def_colour}, // color used for lines denoting closed doors, objects
   {"mapcolor_rkey", {&mapcolor_rkey}, {175},0,255,  // red
-   def_colour,ss_auto}, // color used for red key sprites
+   def_colour}, // color used for red key sprites
   {"mapcolor_bkey", {&mapcolor_bkey}, {204},0,255,  // blue
-   def_colour,ss_auto}, // color used for blue key sprites
+   def_colour}, // color used for blue key sprites
   {"mapcolor_ykey", {&mapcolor_ykey}, {231},0,255,  // yellow
-   def_colour,ss_auto}, // color used for yellow key sprites
+   def_colour}, // color used for yellow key sprites
   {"mapcolor_rdor", {&mapcolor_rdor}, {175},0,255,  // red
-   def_colour,ss_auto}, // color used for closed red doors
+   def_colour}, // color used for closed red doors
   {"mapcolor_bdor", {&mapcolor_bdor}, {204},0,255,  // blue
-   def_colour,ss_auto}, // color used for closed blue doors
+   def_colour}, // color used for closed blue doors
   {"mapcolor_ydor", {&mapcolor_ydor}, {231},0,255,  // yellow
-   def_colour,ss_auto}, // color used for closed yellow doors
+   def_colour}, // color used for closed yellow doors
   {"mapcolor_tele", {&mapcolor_tele}, {119},0,255,  // dk green
-   def_colour,ss_auto}, // color used for teleporter lines
+   def_colour}, // color used for teleporter lines
   {"mapcolor_secr", {&mapcolor_secr}, {252},0,255,  // purple
-   def_colour,ss_auto}, // color used for lines around secret sectors
+   def_colour}, // color used for lines around secret sectors
   {"mapcolor_revsecr", {&mapcolor_revsecr}, {112},0,255,  // green
-   def_colour,ss_auto}, // color used for lines around revealed secrets
+   def_colour}, // color used for lines around revealed secrets
   {"mapcolor_exit", {&mapcolor_exit}, {0},0,255,    // none
-   def_colour,ss_auto}, // color used for exit lines
+   def_colour}, // color used for exit lines
   {"mapcolor_unsn", {&mapcolor_unsn}, {104},0,255,  // dk gray
-   def_colour,ss_auto}, // color used for lines not seen without computer map
+   def_colour}, // color used for lines not seen without computer map
   {"mapcolor_flat", {&mapcolor_flat}, {88},0,255,   // lt gray
-   def_colour,ss_auto}, // color used for lines with no height changes
+   def_colour}, // color used for lines with no height changes
   {"mapcolor_sprt", {&mapcolor_sprt}, {112},0,255,  // green
-   def_colour,ss_auto}, // color used as things
+   def_colour}, // color used as things
   {"mapcolor_item", {&mapcolor_item}, {231},0,255,  // yellow
-   def_colour,ss_auto}, // color used for counted items
+   def_colour}, // color used for counted items
   {"mapcolor_hair", {&mapcolor_hair}, {208},0,255,  // white
-   def_colour,ss_auto}, // color used for dot crosshair denoting center of map
+   def_colour}, // color used for dot crosshair denoting center of map
   {"mapcolor_sngl", {&mapcolor_sngl}, {208},0,255,  // white
-   def_colour,ss_auto}, // color used for the single player arrow
+   def_colour}, // color used for the single player arrow
   {"mapcolor_me",   {&mapcolor_me}, {112},0,255, // green
-   def_colour,ss_auto}, // your (player) colour
+   def_colour}, // your (player) colour
   {"mapcolor_enemy",   {&mapcolor_enemy}, {177},0,255,
-   def_colour,ss_auto},
+   def_colour},
   {"mapcolor_frnd",   {&mapcolor_frnd}, {112},0,255,
-   def_colour,ss_auto},
+   def_colour},
   //jff 3/9/98 add option to not show secrets til after found
   {"map_secret_after", {&map_secret_after}, {0},0,1, // show secret after gotten
-   def_bool,ss_auto}, // prevents showing secret sectors till after entered
+   def_bool}, // prevents showing secret sectors till after entered
   {"map_point_coord", {&map_point_coordinates}, {0},0,1,
-   def_bool,ss_auto},
+   def_bool},
   {"map_level_stat", {&map_level_stat}, {1},0,1,
-   def_bool,ss_auto},
+   def_bool},
   //jff 1/7/98 end additions for automap
   {"automapmode", {(int*)&automapmode}, {am_follow}, 0, 31, // CPhipps - remember automap mode
-   def_hex,ss_none}, // automap mode
+   def_hex}, // automap mode
   {"map_always_updates", {&map_always_updates}, {1},0,1,
-   def_bool,ss_auto},
+   def_bool},
   {"map_grid_size", {&map_grid_size}, {128},8,256,
-   def_int,ss_auto},
+   def_int},
   {"map_scroll_speed", {&map_scroll_speed}, {8},1,32,
-   def_int,ss_auto},
+   def_int},
   {"map_wheel_zoom", {&map_wheel_zoom}, {1},0,1,
-   def_bool,ss_auto},
+   def_bool},
   {"map_use_multisamling", {&map_use_multisamling}, {0},0,1,
-   def_bool,ss_auto},
+   def_bool},
   {"map_textured", {&map_textured}, {1},0,1,
-   def_bool,ss_auto},
+   def_bool},
   {"map_textured_trans", {&map_textured_trans}, {100},0,100,
-   def_int,ss_auto},
+   def_int},
   {"map_textured_overlay_trans", {&map_textured_overlay_trans}, {66},0,100,
-   def_int,ss_auto},
+   def_int},
   {"map_lines_overlay_trans", {&map_lines_overlay_trans}, {100},0,100,
-   def_int,ss_auto},
+   def_int},
   {"map_overlay_pos_x", {&map_overlay_pos_x}, {0},0,319,
-   def_int,ss_auto},
+   def_int},
   {"map_overlay_pos_y", {&map_overlay_pos_y}, {0},0,199,
-   def_int,ss_auto},
+   def_int},
   {"map_overlay_pos_width", {&map_overlay_pos_width}, {320},0,320,
-   def_int,ss_auto},
+   def_int},
   {"map_overlay_pos_height", {&map_overlay_pos_height}, {200},0,200,
-   def_int,ss_auto},
+   def_int},
   {"map_things_appearance", {(int*)&map_things_appearance}, {map_things_appearance_max-1},0,map_things_appearance_max-1,
-   def_int,ss_auto},
+   def_int},
 
-  {"Heads-up display settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Heads-up display settings",{NULL},{0},UL,UL,def_none},
   //jff 2/16/98 defaults for color ranges in hud and status
   {"hudcolor_titl", {&hudcolor_titl}, {5},0,9,  // gold range
-   def_int,ss_auto}, // color range used for automap level title
+   def_int}, // color range used for automap level title
   {"hudcolor_xyco", {&hudcolor_xyco}, {3},0,9,  // green range
-   def_int,ss_auto}, // color range used for automap coordinates
+   def_int}, // color range used for automap coordinates
    {"hudcolor_mapstat_title", {&hudcolor_mapstat_title}, {6},0,9, // red range
-   def_int,ss_auto}, // color range used for automap statistics for titles
+   def_int}, // color range used for automap statistics for titles
   {"hudcolor_mapstat_value", {&hudcolor_mapstat_value}, {2},0,9,    // gray range
-   def_int,ss_auto}, // color range used for automap statistics for data
+   def_int}, // color range used for automap statistics for data
   {"hudcolor_mapstat_time", {&hudcolor_mapstat_time}, {2},0,9,    // gray range
-   def_int,ss_auto}, // color range used for automap statistics for level time and total time
+   def_int}, // color range used for automap statistics for level time and total time
   {"hudcolor_mesg", {&hudcolor_mesg}, {6},0,9,  // red range
-   def_int,ss_mess}, // color range used for messages during play
+   def_int}, // color range used for messages during play
   {"hudcolor_list", {&hudcolor_list}, {5},0,9,  // gold range  //jff 2/26/98
-   def_int,ss_mess}, // color range used for message review
+   def_int}, // color range used for message review
   {"hud_msg_lines", {&hud_msg_lines}, {1},1,16,  // 1 line scrolling window
-   def_int,ss_mess}, // number of messages in review display (1=disable)
+   def_int}, // number of messages in review display (1=disable)
   {"hud_list_bgon", {&hud_list_bgon}, {0},0,1,  // solid window bg ena //jff 2/26/98
-   def_bool,ss_mess}, // enables background window behind message review
+   def_bool}, // enables background window behind message review
 
-  { "health_red", { &health_red }, { 25 }, 0, 200, def_int, ss_stat }, // amount of health for red to yellow transition
-  { "health_yellow", { &health_yellow }, { 50 }, 0, 200, def_int, ss_stat }, // amount of health for yellow to green transition
-  { "health_green", { &health_green}, { 100 }, 0, 200, def_int, ss_stat }, // amount of health for green to blue transition
-  { "ammo_red", { &ammo_red }, { 25 }, 0, 100, def_int, ss_stat }, // percent of ammo for red to yellow transition
-  { "ammo_yellow", { &ammo_yellow }, { 50 }, 0, 100, def_int, ss_stat }, // percent of ammo for yellow to green transition
+  { "health_red", { &health_red }, { 25 }, 0, 200, def_int }, // amount of health for red to yellow transition
+  { "health_yellow", { &health_yellow }, { 50 }, 0, 200, def_int }, // amount of health for yellow to green transition
+  { "health_green", { &health_green}, { 100 }, 0, 200, def_int }, // amount of health for green to blue transition
+  { "ammo_red", { &ammo_red }, { 25 }, 0, 100, def_int }, // percent of ammo for red to yellow transition
+  { "ammo_yellow", { &ammo_yellow }, { 50 }, 0, 100, def_int }, // percent of ammo for yellow to green transition
 
   //jff 2/23/98
-  { "hud_displayed", { &hud_displayed },  { 0 }, 0, 1, def_bool, ss_none },
+  { "hud_displayed", { &hud_displayed },  { 0 }, 0, 1, def_bool },
 
-  { "Prboom-plus heads-up display settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "hudadd_secretarea", { &hudadd_secretarea }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_demoprogressbar", { &hudadd_demoprogressbar }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_crosshair", { &hudadd_crosshair }, { 0 }, 0, HU_CROSSHAIRS - 1, def_bool, ss_stat },
-  { "hudadd_crosshair_scale", { &hudadd_crosshair_scale }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_crosshair_color", { &hudadd_crosshair_color }, { 3 }, 0, 9, def_int, ss_stat },
-  { "hudadd_crosshair_health", { &hudadd_crosshair_health }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_crosshair_target", { &hudadd_crosshair_target }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "hudadd_crosshair_target_color", { &hudadd_crosshair_target_color }, { 9 }, 0, 9, def_int, ss_stat },
-  { "hudadd_crosshair_lock_target", { &hudadd_crosshair_lock_target }, { 0 }, 0, 1, def_bool, ss_stat },
+  { "Prboom-plus heads-up display settings", { NULL }, { 0 }, UL, UL, def_none },
+  { "hudadd_secretarea", { &hudadd_secretarea }, { 0 }, 0, 1, def_bool },
+  { "hudadd_demoprogressbar", { &hudadd_demoprogressbar }, { 1 }, 0, 1, def_bool },
+  { "hudadd_crosshair", { &hudadd_crosshair }, { 0 }, 0, HU_CROSSHAIRS - 1, def_bool },
+  { "hudadd_crosshair_scale", { &hudadd_crosshair_scale }, { 0 }, 0, 1, def_bool },
+  { "hudadd_crosshair_color", { &hudadd_crosshair_color }, { 3 }, 0, 9, def_int },
+  { "hudadd_crosshair_health", { &hudadd_crosshair_health }, { 0 }, 0, 1, def_bool },
+  { "hudadd_crosshair_target", { &hudadd_crosshair_target }, { 0 }, 0, 1, def_bool },
+  { "hudadd_crosshair_target_color", { &hudadd_crosshair_target_color }, { 9 }, 0, 9, def_int },
+  { "hudadd_crosshair_lock_target", { &hudadd_crosshair_lock_target }, { 0 }, 0, 1, def_bool },
 
   //e6y
-  { "Prboom-plus mouse settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "mouse_acceleration", { &mouse_acceleration }, { 0 }, 0, UL, def_int, ss_none },
-  { "mouse_sensitivity_mlook", { &mouseSensitivity_mlook }, { 10 }, 0, UL, def_int, ss_none },
-  { "mouse_doubleclick_as_use", { &mouse_doubleclick_as_use }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "mouse_carrytics", { &mouse_carrytics }, { 1 }, 0, 1, def_bool, ss_stat },
+  { "Prboom-plus mouse settings", { NULL }, { 0 }, UL, UL, def_none },
+  { "mouse_acceleration", { &mouse_acceleration }, { 0 }, 0, UL, def_int },
+  { "mouse_sensitivity_mlook", { &mouseSensitivity_mlook }, { 10 }, 0, UL, def_int },
+  { "mouse_doubleclick_as_use", { &mouse_doubleclick_as_use }, { 1 }, 0, 1, def_bool },
+  { "mouse_carrytics", { &mouse_carrytics }, { 1 }, 0, 1, def_bool },
 
-  { "Prboom-plus demos settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "demo_demoex_filename", { NULL, &demo_demoex_filename }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "getwad_cmdline", { NULL, &getwad_cmdline }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "quickstart_window_ms", { &quickstart_window_ms }, { 0 }, 0, 1000, def_int, ss_stat },
+  { "Prboom-plus demos settings", { NULL }, { 0 }, UL, UL, def_none },
+  { "demo_demoex_filename", { NULL, &demo_demoex_filename }, { 0, "" }, UL, UL, def_str },
+  { "getwad_cmdline", { NULL, &getwad_cmdline }, { 0, "" }, UL, UL, def_str },
+  { "quickstart_window_ms", { &quickstart_window_ms }, { 0 }, 0, 1000, def_int },
 
-  { "Prboom-plus game settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "movement_strafe50", { &movement_strafe50 }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "movement_strafe50onturns", { &movement_strafe50onturns }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "movement_shorttics", { &movement_shorttics }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "interpolation_maxobjects", { &interpolation_maxobjects }, { 0 }, 0, UL, def_int, ss_stat },
-  { "speed_step", { &speed_step }, { 0 }, 0, 1000, def_int, ss_none },
+  { "Prboom-plus game settings", { NULL }, { 0 }, UL, UL, def_none },
+  { "movement_strafe50", { &movement_strafe50 }, { 0 }, 0, 1, def_bool },
+  { "movement_strafe50onturns", { &movement_strafe50onturns }, { 0 }, 0, 1, def_bool },
+  { "movement_shorttics", { &movement_shorttics }, { 0 }, 0, 1, def_bool },
+  { "interpolation_maxobjects", { &interpolation_maxobjects }, { 0 }, 0, UL, def_int },
+  { "speed_step", { &speed_step }, { 0 }, 0, 1000, def_int },
 
-  { "Prboom-plus misc settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "screenshot_dir", { NULL, &screenshot_dir }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "health_bar", { &health_bar }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "health_bar_full_length", { &health_bar_full_length }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "health_bar_red", { &health_bar_red }, { 50 }, 0, 100, def_int, ss_stat },
-  { "health_bar_yellow", { &health_bar_yellow }, { 99 }, 0, 100, def_int, ss_stat },
-  { "health_bar_green", { &health_bar_green }, { 0 }, 0, 100, def_int, ss_stat },
+  { "Prboom-plus misc settings", { NULL }, { 0 }, UL, UL, def_none },
+  { "screenshot_dir", { NULL, &screenshot_dir }, { 0, "" }, UL, UL, def_str },
+  { "health_bar", { &health_bar }, { 0 }, 0, 1, def_bool },
+  { "health_bar_full_length", { &health_bar_full_length }, { 1 }, 0, 1, def_bool },
+  { "health_bar_red", { &health_bar_red }, { 50 }, 0, 100, def_int },
+  { "health_bar_yellow", { &health_bar_yellow }, { 99 }, 0, 100, def_int },
+  { "health_bar_green", { &health_bar_green }, { 0 }, 0, 100, def_int },
 
-  { "DSDA-Doom settings", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "dsda_strict_mode", { (int *) &dsda_setting[dsda_strict_mode] }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_cycle_ghost_colors", { &dsda_cycle_ghost_colors }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_auto_key_frame_interval", { &dsda_auto_key_frame_interval }, { 1 }, 1, 600, def_int, ss_stat },
-  { "dsda_auto_key_frame_depth", { &dsda_auto_key_frame_depth }, { 60 }, 0, 600, def_int, ss_stat },
-  { "dsda_auto_key_frame_timeout", { &dsda_auto_key_frame_timeout }, { 10 }, 0, 25, def_int, ss_stat },
-  { "dsda_exhud", { (int *) &dsda_setting[dsda_exhud] }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_ex_text_scale", { &dsda_ex_text_scale }, { 0 }, 0, 16, def_int, ss_stat },
-  { "dsda_wipe_at_full_speed", { &dsda_wipe_at_full_speed }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_show_demo_attempts", { &dsda_show_demo_attempts }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int, ss_stat },
-  { "dsda_hide_horns", { &dsda_hide_horns }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_organized_saves", { &dsda_organized_saves }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_command_display", { (int *) &dsda_setting[dsda_command_display] }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_command_history_size", { &dsda_command_history_size }, { 10 }, 1, 20, def_int, ss_stat },
-  { "dsda_hide_empty_commands", { &dsda_hide_empty_commands }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_coordinate_display", { (int *) &dsda_setting[dsda_coordinate_display] }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_show_fps", { (int *) &dsda_setting[dsda_show_fps] }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_skip_quit_prompt", { &dsda_skip_quit_prompt }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_show_split_data", { &dsda_show_split_data }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_player_name", { 0, &dsda_player_name }, { 0, "Anonymous" }, UL, UL, def_str, ss_none },
-  { "dsda_quickstart_cache_tics", { &dsda_quickstart_cache_tics }, { 0 }, 0, 35, def_int, ss_stat },
-  { "dsda_death_use_action", { &dsda_death_use_action }, { 0 }, 0, 2, def_int, ss_none },
-  { "dsda_mute_sfx", { (int *) &dsda_setting[dsda_mute_sfx] }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_mute_music", { (int *) &dsda_setting[dsda_mute_music] }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_cheat_codes", { (int *) &dsda_setting[dsda_cheat_codes] }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_allow_jumping", { &dsda_allow_jumping }, { 0 }, 0, 1, def_bool, ss_stat },
-  { "dsda_parallel_sfx_limit", { &dsda_parallel_sfx_limit }, { 0 }, 0, 32, def_int, ss_stat },
-  { "dsda_parallel_sfx_window", { &dsda_parallel_sfx_window }, { 1 }, 1, 32, def_int, ss_stat },
-  { "dsda_switch_when_ammo_runs_out", { &dsda_switch_when_ammo_runs_out }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_viewbob", { &dsda_viewbob }, { 1 }, 0, 1, def_bool, ss_stat },
-  { "dsda_weaponbob", { &dsda_weaponbob }, { 1 }, 0, 1, def_bool, ss_stat },
+  { "DSDA-Doom settings", { NULL }, { 0 }, UL, UL, def_none },
+  { "dsda_strict_mode", { (int *) &dsda_setting[dsda_strict_mode] }, { 1 }, 0, 1, def_bool },
+  { "dsda_cycle_ghost_colors", { &dsda_cycle_ghost_colors }, { 0 }, 0, 1, def_bool },
+  { "dsda_auto_key_frame_interval", { &dsda_auto_key_frame_interval }, { 1 }, 1, 600, def_int },
+  { "dsda_auto_key_frame_depth", { &dsda_auto_key_frame_depth }, { 60 }, 0, 600, def_int },
+  { "dsda_auto_key_frame_timeout", { &dsda_auto_key_frame_timeout }, { 10 }, 0, 25, def_int },
+  { "dsda_exhud", { (int *) &dsda_setting[dsda_exhud] }, { 0 }, 0, 1, def_bool },
+  { "dsda_ex_text_scale", { &dsda_ex_text_scale }, { 0 }, 0, 16, def_int },
+  { "dsda_wipe_at_full_speed", { &dsda_wipe_at_full_speed }, { 1 }, 0, 1, def_bool },
+  { "dsda_show_demo_attempts", { &dsda_show_demo_attempts }, { 1 }, 0, 1, def_bool },
+  { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int },
+  { "dsda_hide_horns", { &dsda_hide_horns }, { 0 }, 0, 1, def_bool },
+  { "dsda_organized_saves", { &dsda_organized_saves }, { 1 }, 0, 1, def_bool },
+  { "dsda_command_display", { (int *) &dsda_setting[dsda_command_display] }, { 0 }, 0, 1, def_bool },
+  { "dsda_command_history_size", { &dsda_command_history_size }, { 10 }, 1, 20, def_int },
+  { "dsda_hide_empty_commands", { &dsda_hide_empty_commands }, { 1 }, 0, 1, def_bool },
+  { "dsda_coordinate_display", { (int *) &dsda_setting[dsda_coordinate_display] }, { 0 }, 0, 1, def_bool },
+  { "dsda_show_fps", { (int *) &dsda_setting[dsda_show_fps] }, { 0 }, 0, 1, def_bool },
+  { "dsda_skip_quit_prompt", { &dsda_skip_quit_prompt }, { 0 }, 0, 1, def_bool },
+  { "dsda_show_split_data", { &dsda_show_split_data }, { 1 }, 0, 1, def_bool },
+  { "dsda_player_name", { 0, &dsda_player_name }, { 0, "Anonymous" }, UL, UL, def_str },
+  { "dsda_quickstart_cache_tics", { &dsda_quickstart_cache_tics }, { 0 }, 0, 35, def_int },
+  { "dsda_death_use_action", { &dsda_death_use_action }, { 0 }, 0, 2, def_int },
+  { "dsda_mute_sfx", { (int *) &dsda_setting[dsda_mute_sfx] }, { 0 }, 0, 1, def_bool },
+  { "dsda_mute_music", { (int *) &dsda_setting[dsda_mute_music] }, { 0 }, 0, 1, def_bool },
+  { "dsda_cheat_codes", { (int *) &dsda_setting[dsda_cheat_codes] }, { 1 }, 0, 1, def_bool },
+  { "dsda_allow_jumping", { &dsda_allow_jumping }, { 0 }, 0, 1, def_bool },
+  { "dsda_parallel_sfx_limit", { &dsda_parallel_sfx_limit }, { 0 }, 0, 32, def_int },
+  { "dsda_parallel_sfx_window", { &dsda_parallel_sfx_window }, { 1 }, 1, 32, def_int },
+  { "dsda_switch_when_ammo_runs_out", { &dsda_switch_when_ammo_runs_out }, { 1 }, 0, 1, def_bool },
+  { "dsda_viewbob", { &dsda_viewbob }, { 1 }, 0, 1, def_bool },
+  { "dsda_weaponbob", { &dsda_weaponbob }, { 1 }, 0, 1, def_bool },
 
-  { "Scripts", { NULL }, { 0 }, UL, UL, def_none, ss_none },
-  { "dsda_script_0", { 0, &dsda_console_script[0] }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "dsda_script_1", { 0, &dsda_console_script[1] }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "dsda_script_2", { 0, &dsda_console_script[2] }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "dsda_script_3", { 0, &dsda_console_script[3] }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "dsda_script_4", { 0, &dsda_console_script[4] }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "dsda_script_5", { 0, &dsda_console_script[5] }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "dsda_script_6", { 0, &dsda_console_script[6] }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "dsda_script_7", { 0, &dsda_console_script[7] }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "dsda_script_8", { 0, &dsda_console_script[8] }, { 0, "" }, UL, UL, def_str, ss_none },
-  { "dsda_script_9", { 0, &dsda_console_script[9] }, { 0, "" }, UL, UL, def_str, ss_none },
+  { "Scripts", { NULL }, { 0 }, UL, UL, def_none },
+  { "dsda_script_0", { 0, &dsda_console_script[0] }, { 0, "" }, UL, UL, def_str },
+  { "dsda_script_1", { 0, &dsda_console_script[1] }, { 0, "" }, UL, UL, def_str },
+  { "dsda_script_2", { 0, &dsda_console_script[2] }, { 0, "" }, UL, UL, def_str },
+  { "dsda_script_3", { 0, &dsda_console_script[3] }, { 0, "" }, UL, UL, def_str },
+  { "dsda_script_4", { 0, &dsda_console_script[4] }, { 0, "" }, UL, UL, def_str },
+  { "dsda_script_5", { 0, &dsda_console_script[5] }, { 0, "" }, UL, UL, def_str },
+  { "dsda_script_6", { 0, &dsda_console_script[6] }, { 0, "" }, UL, UL, def_str },
+  { "dsda_script_7", { 0, &dsda_console_script[7] }, { 0, "" }, UL, UL, def_str },
+  { "dsda_script_8", { 0, &dsda_console_script[8] }, { 0, "" }, UL, UL, def_str },
+  { "dsda_script_9", { 0, &dsda_console_script[9] }, { 0, "" }, UL, UL, def_str },
 
   // NSM
-  {"Video capture encoding settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"cap_soundcommand",{NULL, &cap_soundcommand},{0,"ffmpeg -f s16le -ar %s -ac 2 -i - -c:a libopus -y temp_a.nut"},UL,UL,def_str,ss_none},
-  {"cap_videocommand",{NULL, &cap_videocommand},{0,"ffmpeg -f rawvideo -pix_fmt rgb24 -r %r -s %wx%h -i - -c:v libx264 -y temp_v.nut"},UL,UL,def_str,ss_none},
-  {"cap_muxcommand",{NULL, &cap_muxcommand},{0,"ffmpeg -i temp_v.nut -i temp_a.nut -c copy -y %f"},UL,UL,def_str,ss_none},
-  {"cap_tempfile1",{NULL, &cap_tempfile1},{0,"temp_a.nut"},UL,UL,def_str,ss_none},
-  {"cap_tempfile2",{NULL, &cap_tempfile2},{0,"temp_v.nut"},UL,UL,def_str,ss_none},
-  {"cap_remove_tempfiles", {&cap_remove_tempfiles},{1},0,1,def_bool,ss_none},
-  {"cap_fps", {&cap_fps},{60},16,300,def_int,ss_none},
-  {"cap_wipescreen", {&cap_wipescreen},{0},0,1,def_bool,ss_none},
+  {"Video capture encoding settings",{NULL},{0},UL,UL,def_none},
+  {"cap_soundcommand",{NULL, &cap_soundcommand},{0,"ffmpeg -f s16le -ar %s -ac 2 -i - -c:a libopus -y temp_a.nut"},UL,UL,def_str},
+  {"cap_videocommand",{NULL, &cap_videocommand},{0,"ffmpeg -f rawvideo -pix_fmt rgb24 -r %r -s %wx%h -i - -c:v libx264 -y temp_v.nut"},UL,UL,def_str},
+  {"cap_muxcommand",{NULL, &cap_muxcommand},{0,"ffmpeg -i temp_v.nut -i temp_a.nut -c copy -y %f"},UL,UL,def_str},
+  {"cap_tempfile1",{NULL, &cap_tempfile1},{0,"temp_a.nut"},UL,UL,def_str},
+  {"cap_tempfile2",{NULL, &cap_tempfile2},{0,"temp_v.nut"},UL,UL,def_str},
+  {"cap_remove_tempfiles", {&cap_remove_tempfiles},{1},0,1,def_bool},
+  {"cap_fps", {&cap_fps},{60},16,300,def_int},
+  {"cap_wipescreen", {&cap_wipescreen},{0},0,1,def_bool},
 
-  {"Prboom-plus video settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Prboom-plus video settings",{NULL},{0},UL,UL,def_none},
   {"sdl_video_window_pos", {NULL,&sdl_video_window_pos}, {0,"center"},UL,UL,
-   def_str,ss_none},
+   def_str},
   {"palette_ondamage", {&palette_ondamage},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"palette_onbonus", {&palette_onbonus},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"palette_onpowers", {&palette_onpowers},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"render_wipescreen", {&render_wipescreen},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"render_screen_multiply", {&render_screen_multiply},  {1},1,5,
-   def_int,ss_stat},
+   def_int},
   {"integer_scaling", {&integer_scaling},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"render_aspect", {&render_aspect},  {0},0,4,
-   def_int,ss_stat},
+   def_int},
   {"render_doom_lightmaps", {&render_doom_lightmaps},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"fake_contrast", {&fake_contrast},  {1},0,1,
-   def_bool,ss_stat}, /* cph - allow crappy fake contrast to be disabled */
+   def_bool}, /* cph - allow crappy fake contrast to be disabled */
   {"render_stretch_hud", {&render_stretch_hud_default},{patch_stretch_not_adjusted},0,patch_stretch_max_config - 1,
-  def_int,ss_stat},
+  def_int},
   {"render_patches_scalex", {&render_patches_scalex},{0},0,16,
-  def_int,ss_stat},
+  def_int},
   {"render_patches_scaley", {&render_patches_scaley},{0},0,16,
-  def_int,ss_stat},
+  def_int},
   {"render_stretchsky",{&r_stretchsky},{1},0,1,
-   def_bool,ss_none},
+   def_bool},
   {"sprites_doom_order", {&sprites_doom_order}, {DOOM_ORDER_STATIC},0,DOOM_ORDER_LAST - 1,
-   def_int,ss_stat},
+   def_int},
 
   {"movement_mouselook", {(int *)&dsda_setting[dsda_mouselook]},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"movement_mousenovert", {(int *)&dsda_setting[dsda_novert]},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"movement_maxviewpitch", {&movement_maxviewpitch},  {90},0,90,
-   def_int,ss_stat},
+   def_int},
    {"movement_mousestrafedivisor", {&movement_mousestrafedivisor},  {4},1,512,
-    def_int,ss_stat},
+    def_int},
   {"movement_mouseinvert", {&movement_mouseinvert},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
 
-  {"Prboom-plus OpenGL settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Prboom-plus OpenGL settings",{NULL},{0},UL,UL,def_none},
   {"gl_allow_detail_textures", {&gl_allow_detail_textures},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_detail_maxdist", {&gl_detail_maxdist},  {0},0,65535,
-   def_int,ss_stat},
+   def_int},
   {"render_multisampling", {&render_multisampling},  {0},0,8,
-   def_int,ss_stat},
+   def_int},
   {"render_fov", {&render_fov},  {90},20,160,
-   def_int,ss_stat},
-  {"gl_spriteclip",{(int*)&gl_spriteclip},{spriteclip_smart}, spriteclip_const, spriteclip_smart, def_int,ss_none},
+   def_int},
+  {"gl_spriteclip",{(int*)&gl_spriteclip},{spriteclip_smart}, spriteclip_const, spriteclip_smart, def_int},
    {"gl_spriteclip_threshold", {&gl_spriteclip_threshold},  {10},0,100,
-   def_int,ss_stat},
+   def_int},
    {"gl_sprites_frustum_culling", {&gl_sprites_frustum_culling},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"render_paperitems", {&render_paperitems},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_boom_colormaps", {&gl_boom_colormaps_default},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_hires_24bit_colormap", {&gl_hires_24bit_colormap},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_texture_internal_hires", {&gl_texture_internal_hires},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_texture_external_hires", {&gl_texture_external_hires},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_hires_override_pwads", {&gl_hires_override_pwads},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_texture_hires_dir", {NULL,&gl_texture_hires_dir}, {0,""},UL,UL,
-   def_str,ss_none},
+   def_str},
   {"gl_texture_hqresize", {&gl_texture_hqresize},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_texture_hqresize_textures", {&gl_texture_hqresize_textures},
-   {hq_scale_2x},hq_scale_none,hq_scale_max-1, def_int,ss_stat},
+   {hq_scale_2x},hq_scale_none,hq_scale_max-1, def_int},
   {"gl_texture_hqresize_sprites", {&gl_texture_hqresize_sprites},
-   {hq_scale_none},hq_scale_none,hq_scale_max-1, def_int,ss_stat},
+   {hq_scale_none},hq_scale_none,hq_scale_max-1, def_int},
   {"gl_texture_hqresize_patches", {&gl_texture_hqresize_patches},
-   {hq_scale_2x},hq_scale_none,hq_scale_max-1,def_int,ss_stat},
+   {hq_scale_2x},hq_scale_none,hq_scale_max-1,def_int},
   {"gl_lightmode",{(int*)&gl_lightmode_default},{gl_lightmode_shaders},
-   gl_lightmode_glboom, gl_lightmode_last-1, def_int,ss_none},
+   gl_lightmode_glboom, gl_lightmode_last-1, def_int},
   {"gl_light_ambient", {&gl_light_ambient},  {20},1,255,
-   def_int,ss_stat},
+   def_int},
   {"gl_fog", {&gl_fog},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_fog_color", {&gl_fog_color},  {0},0,0xffffff,
-   def_hex,ss_stat},
+   def_hex},
   {"useglgamma",{&useglgamma},{0},0,MAX_GLGAMMA,
-   def_int,ss_none},
+   def_int},
   {"gl_color_mip_levels", {&gl_color_mip_levels},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_shadows", {&simple_shadows.enable},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"gl_shadows_maxdist",{&gl_shadows_maxdist},{1000},0,32767,
-   def_int,ss_none},
+   def_int},
   {"gl_shadows_factor",{&gl_shadows_factor},{128},0,255,
-   def_int,ss_none},
+   def_int},
   {"gl_blend_animations",{&gl_blend_animations},{0},0,1,
-   def_bool,ss_none},
+   def_bool},
 
-  {"Prboom-plus emulation settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Prboom-plus emulation settings",{NULL},{0},UL,UL,def_none},
   {"overrun_spechit_warn", {&overflows[OVERFLOW_SPECHIT].warn},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_spechit_emulate", {&overflows[OVERFLOW_SPECHIT].emulate},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_reject_warn", {&overflows[OVERFLOW_REJECT].warn},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_reject_emulate", {&overflows[OVERFLOW_REJECT].emulate},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_intercept_warn", {&overflows[OVERFLOW_INTERCEPT].warn},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_intercept_emulate", {&overflows[OVERFLOW_INTERCEPT].emulate},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_playeringame_warn", {&overflows[OVERFLOW_PLYERINGAME].warn},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_playeringame_emulate", {&overflows[OVERFLOW_PLYERINGAME].emulate},  {1},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_donut_warn", {&overflows[OVERFLOW_DONUT].warn},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_donut_emulate", {&overflows[OVERFLOW_DONUT].emulate},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_missedbackside_warn", {&overflows[OVERFLOW_MISSEDBACKSIDE].warn},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"overrun_missedbackside_emulate", {&overflows[OVERFLOW_MISSEDBACKSIDE].emulate},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
 
-  {"Prboom-plus 'bad' compatibility settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Prboom-plus 'bad' compatibility settings",{NULL},{0},UL,UL,def_none},
   {"comperr_zerotag", {&default_comperr[comperr_zerotag]},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"comperr_passuse", {&default_comperr[comperr_passuse]},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"comperr_hangsolid", {&default_comperr[comperr_hangsolid]},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"comperr_blockmap", {&default_comperr[comperr_blockmap]},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
   {"comperr_freeaim", {&default_comperr[comperr_freeaim]},  {0},0,1,
-   def_bool,ss_stat},
+   def_bool},
 
-  {"Weapon preferences",{NULL},{0},UL,UL,def_none,ss_none},
+  {"Weapon preferences",{NULL},{0},UL,UL,def_none},
   // killough 2/8/98: weapon preferences set by user:
   {"weapon_choice_1", {&weapon_preferences[0][0]}, {6}, 0,9,
-   def_int,ss_weap}, // first choice for weapon (best)
+   def_int}, // first choice for weapon (best)
   {"weapon_choice_2", {&weapon_preferences[0][1]}, {9}, 0,9,
-   def_int,ss_weap}, // second choice for weapon
+   def_int}, // second choice for weapon
   {"weapon_choice_3", {&weapon_preferences[0][2]}, {4}, 0,9,
-   def_int,ss_weap}, // third choice for weapon
+   def_int}, // third choice for weapon
   {"weapon_choice_4", {&weapon_preferences[0][3]}, {3}, 0,9,
-   def_int,ss_weap}, // fourth choice for weapon
+   def_int}, // fourth choice for weapon
   {"weapon_choice_5", {&weapon_preferences[0][4]}, {2}, 0,9,
-   def_int,ss_weap}, // fifth choice for weapon
+   def_int}, // fifth choice for weapon
   {"weapon_choice_6", {&weapon_preferences[0][5]}, {8}, 0,9,
-   def_int,ss_weap}, // sixth choice for weapon
+   def_int}, // sixth choice for weapon
   {"weapon_choice_7", {&weapon_preferences[0][6]}, {5}, 0,9,
-   def_int,ss_weap}, // seventh choice for weapon
+   def_int}, // seventh choice for weapon
   {"weapon_choice_8", {&weapon_preferences[0][7]}, {7}, 0,9,
-   def_int,ss_weap}, // eighth choice for weapon
+   def_int}, // eighth choice for weapon
   {"weapon_choice_9", {&weapon_preferences[0][8]}, {1}, 0,9,
-   def_int,ss_weap}, // ninth choice for weapon (worst)
+   def_int}, // ninth choice for weapon (worst)
 };
 
 int numdefaults;
