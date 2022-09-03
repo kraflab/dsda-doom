@@ -53,6 +53,8 @@ int dsda_InitIntConfig(dsda_config_identifier_t id, int value);
 const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* value, dboolean persist);
 const char* dsda_InitStringConfig(dsda_config_identifier_t id, const char* value);
 int dsda_IntConfig(dsda_config_identifier_t id);
+int dsda_PersistentIntConfig(dsda_config_identifier_t id);
 const char* dsda_StringConfig(dsda_config_identifier_t id);
+const char* dsda_PersistentStringConfig(dsda_config_identifier_t id);
 
 #endif

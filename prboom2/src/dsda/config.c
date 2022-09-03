@@ -113,6 +113,14 @@ int dsda_IntConfig(dsda_config_identifier_t id) {
   return dsda_config[id].transient_value.v_int;
 }
 
+int dsda_PersistentIntConfig(dsda_config_identifier_t id) {
+  return dsda_config[id].persistent_value.v_int;
+}
+
 const char* dsda_StringConfig(dsda_config_identifier_t id) {
   return dsda_config[id].transient_value.v_string;
+}
+
+const char* dsda_PersistentStringConfig(dsda_config_identifier_t id) {
+  return dsda_config[id].persistent_value.v_string;
 }
