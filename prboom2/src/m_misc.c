@@ -87,7 +87,7 @@
 // NSM
 #include "i_capture.h"
 
-#define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, NULL, id, { k, m, j } }
+#define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, id, { k, m, j } }
 
 extern int dsda_auto_key_frame_depth;
 extern int dsda_auto_key_frame_interval;

@@ -99,10 +99,6 @@ typedef struct default_s
   } type; // CPhipps - type of entry
   int   setupscreen;      // phares 4/19/98: setup screen where this appears
   int  *current;          /* cph - MBF-like pointer to current value */
-  // cph - removed the help strings from the config file
-  // const char* help;       // jff 3/3/98 description of parameter
-  // CPhipps - remove unused "lousy hack" code
-  struct setup_menu_s *setup_menu;   /* Xref to setup menu item, if any */
 
   // composite input
   int identifier;
