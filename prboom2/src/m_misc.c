@@ -88,6 +88,7 @@
 #include "i_capture.h"
 
 #define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, 0, id, { k, m, j } }
+#define MIGRATED_SETTING(id) { NULL, { NULL }, { 0 }, 0, 0, 0, id }
 
 extern int dsda_auto_key_frame_depth;
 extern int dsda_auto_key_frame_interval;
@@ -1055,11 +1056,7 @@ void M_SaveDefaults (void)
   for (i = 0 ; i < numdefaults ; i++) {
     if (defaults[i].config_id)
     {
-      if (defaults[i].type == def_int)
-      {
-        fprintf(f, "%-*s %i\n", maxlen, defaults[i].name,
-                dsda_PersistentIntConfig(defaults[i].config_id));
-      }
+      dsda_WriteConfig(defaults[i].config_id, maxlen, f);
     }
     else
     {
@@ -1156,16 +1153,11 @@ void M_LoadDefaults (void)
 
   // set everything to base values
 
+  dsda_InitConfig();
+
   numdefaults = sizeof(defaults)/sizeof(defaults[0]);
   for (i = 0 ; i < numdefaults ; i++) {
-    if (defaults[i].config_id)
-    {
-      if (defaults[i].type == def_int)
-      {
-        dsda_InitIntConfig(defaults[i].config_id, defaults[i].defaultvalue.i);
-      }
-    }
-    else
+    if (!defaults[i].config_id) // not handled in dsda_InitConfig (yet)
     {
       if (defaults[i].type == def_input)
       {
@@ -1224,6 +1216,8 @@ void M_LoadDefaults (void)
       fgets(cfgline, CFG_BUFFERMAX, f);
       if (sscanf (cfgline, "%79s %[^\n]\n", def, strparm) == 2)
       {
+        newstring = NULL;
+
         //jff 3/3/98 skip lines not starting with an alphanum
         if (!isalnum(def[0]))
           continue;
@@ -1247,22 +1241,21 @@ void M_LoadDefaults (void)
           sscanf(strparm, "%i", &parm);
         }
 
-        for (i = 0 ; i < numdefaults ; i++)
-          if ((defaults[i].type != def_none) && !strcmp(def, defaults[i].name))
-          {
-            // CPhipps - safety check
-            if (isstring != IS_STRING(defaults[i])) {
-              lprintf(LO_WARN, "M_LoadDefaults: Type mismatch reading %s\n", defaults[i].name);
-              continue;
-            }
+        if (dsda_ReadConfig(def, newstring, parm))
+        {
+          Z_Free(newstring);
+        }
+        else
+        {
+          for (i = 0 ; i < numdefaults ; i++)
+            if ((defaults[i].type != def_none) && !strcmp(def, defaults[i].name))
+            {
+              // CPhipps - safety check
+              if (isstring != IS_STRING(defaults[i])) {
+                lprintf(LO_WARN, "M_LoadDefaults: Type mismatch reading %s\n", defaults[i].name);
+                continue;
+              }
 
-            if (defaults[i].config_id)
-            {
-              if (defaults[i].type == def_int)
-                dsda_InitIntConfig(defaults[i].config_id, parm);
-            }
-            else
-            {
               if (!isstring)
               {
                 if (defaults[i].type == def_input)
@@ -1321,9 +1314,10 @@ void M_LoadDefaults (void)
                 Z_Free(*(u.s));
                 *(u.s) = newstring;
               }
+
+              break;
             }
-            break;
-          }
+        }
       }
     }
 
