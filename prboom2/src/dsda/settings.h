@@ -116,6 +116,7 @@ int dsda_CycleShowAliveMonsters(void);
 int dsda_RevealAutomap(void);
 void dsda_ResetRevealMap(void);
 int dsda_RealticClockRate(void);
+void dsda_UpdateRealticClockRate(int value);
 int dsda_AutoKeyFrameInterval(void);
 int dsda_AutoKeyFrameDepth(void);
 void dsda_SkipNextWipe(void);

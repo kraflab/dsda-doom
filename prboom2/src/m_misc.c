@@ -239,7 +239,6 @@ extern int gl_finish;
 extern int gl_clear;
 extern int gl_ztrick;
 
-extern int realtic_clock_rate;         // killough 4/13/98: adjustable timer
 extern int tran_filter_pct;            // killough 2/21/98
 
 extern int screenblocks;
@@ -266,8 +265,7 @@ default_t defaults[] =
    def_int}, // compatibility level" - CPhipps
   {"vanilla_keymap",{&vanilla_keymap},{0},0,1,
    def_bool}, // Use vanilla keyboard mapping
-  {"realtic_clock_rate",{&realtic_clock_rate},{100},0,UL,
-   def_int}, // percentage of normal speed (35 fps) realtic clock runs at
+  MIGRATED_SETTING(dsda_config_realtic_clock_rate),
   {"menu_background", {(int*)&menu_background}, {1}, 0, 1,
    def_bool}, // do Boom fullscreen menus have backgrounds?
   {"max_player_corpse", {&bodyquesize}, {32},-1,UL,   // killough 2/8/98

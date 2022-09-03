@@ -21,7 +21,17 @@
 
 #include "config.h"
 
-dsda_config_t dsda_config[dsda_config_count];
+static void UpdateRealticClockRate(void) {
+  void I_Init2(void);
+
+  I_Init2();
+}
+
+dsda_config_t dsda_config[dsda_config_count] = {
+  [dsda_config_realtic_clock_rate] = {
+    "realtic_clock_rate", dsda_config_int, 3, 10000, { 100 }, 100, UpdateRealticClockRate
+  },
+};
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
   conf->persistent_value.v_int = conf->transient_value.v_int;

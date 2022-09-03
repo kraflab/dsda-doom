@@ -3132,7 +3132,7 @@ void M_DrawAutoMap(void)
 // killough 10/10/98
 
 extern int usejoystick, usemouse, default_mus_card, default_snd_card;
-extern int detect_voices, realtic_clock_rate, tran_filter_pct;
+extern int detect_voices, tran_filter_pct;
 extern int mouse_stutter_correction;
 
 setup_menu_t audiovideo_settings[], device_settings[], misc_settings[];
@@ -3379,7 +3379,7 @@ setup_menu_t tas_settings[] = {
   { "Show Coordinate Display", S_YESNO, m_dsda, G_X, G_Y + 6 * 8, { "dsda_coordinate_display" } },
   { "Permanent Strafe50", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "movement_strafe50" }, 0, M_ChangeSpeed },
   { "Strafe50 On Turns", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "movement_strafe50onturns" }, 0, M_ChangeSpeed },
-  { "Game speed (%)", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 9 * 8, { "realtic_clock_rate" } },
+  { "Game speed (%)", S_NUM | S_PRGWARN, m_conf, G_X, G_Y + 9 * 8, { dsda_config_realtic_clock_rate } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { demo_settings } },
   { 0, S_SKIP | S_END, m_null }
@@ -4547,25 +4547,25 @@ dboolean M_Responder (event_t* ev) {
     //e6y
     if (dsda_InputActivated(dsda_input_speed_default) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
-      realtic_clock_rate = StepwiseSum(realtic_clock_rate, 0, speed_step, 3, 10000, 100);
-      doom_printf("Game Speed %d", realtic_clock_rate);
-      I_Init2();
+      int value = StepwiseSum(dsda_RealticClockRate(), 0, speed_step, 3, 10000, 100);
+      dsda_UpdateRealticClockRate(value);
+      doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.
       // return true;
     }
     if (dsda_InputActivated(dsda_input_speed_up) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
-      realtic_clock_rate = StepwiseSum(realtic_clock_rate, 1, speed_step, 3, 10000, 100);
-      doom_printf("Game Speed %d", realtic_clock_rate);
-      I_Init2();
+      int value = StepwiseSum(dsda_RealticClockRate(), 1, speed_step, 3, 10000, 100);
+      dsda_UpdateRealticClockRate(value);
+      doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.
       // return true;
     }
     if (dsda_InputActivated(dsda_input_speed_down) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
-      realtic_clock_rate = StepwiseSum(realtic_clock_rate, -1, speed_step, 3, 10000, 100);
-      doom_printf("Game Speed %d", realtic_clock_rate);
-      I_Init2();
+      int value = StepwiseSum(dsda_RealticClockRate(), -1, speed_step, 3, 10000, 100);
+      dsda_UpdateRealticClockRate(value);
+      doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.
       // return true;
     }

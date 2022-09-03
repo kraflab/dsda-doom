@@ -272,7 +272,6 @@ int AccelerateMouse(int val);
 void MouseAccelChanging(void);
 
 extern int mlooky;
-extern int realtic_clock_rate;
 
 void e6y_G_Compatibility(void);
 

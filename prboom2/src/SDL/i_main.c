@@ -86,8 +86,6 @@
  * cphipps - much made static
  */
 
-int realtic_clock_rate = 100;
-
 void I_Init(void)
 {
   dsda_ResetTimeFunctions(fastdemo);

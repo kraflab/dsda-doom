@@ -241,11 +241,10 @@ static void D_Wipe(void)
     return;
   }
 
-  if (realtic_clock_rate != 100 && dsda_WipeAtFullSpeed())
+  if (dsda_RealticClockRate() != 100 && dsda_WipeAtFullSpeed())
   {
-    old_realtic_clock_rate = realtic_clock_rate;
-    realtic_clock_rate = 100;
-    I_Init2();
+    old_realtic_clock_rate = dsda_RealticClockRate();
+    dsda_UpdateRealticClockRate(100);
   }
 
   wipestart = dsda_GetTick() - 1;
@@ -289,8 +288,7 @@ static void D_Wipe(void)
 
   if (old_realtic_clock_rate)
   {
-    realtic_clock_rate = old_realtic_clock_rate;
-    I_Init2();
+    dsda_UpdateRealticClockRate(old_realtic_clock_rate);
   }
 
   force_singletics_to = gametic + BACKUPTICS;

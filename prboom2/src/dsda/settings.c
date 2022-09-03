@@ -336,9 +336,11 @@ void dsda_ResetRevealMap(void) {
 }
 
 int dsda_RealticClockRate(void) {
-  if (dsda_StrictMode()) return 100;
+  return dsda_IntConfig(dsda_config_realtic_clock_rate);
+}
 
-  return realtic_clock_rate;
+void dsda_UpdateRealticClockRate(int value) {
+  dsda_UpdateIntConfig(dsda_config_realtic_clock_rate, value, true);
 }
 
 void dsda_SkipNextWipe(void) {
