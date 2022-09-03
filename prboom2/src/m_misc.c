@@ -87,7 +87,7 @@
 // NSM
 #include "i_capture.h"
 
-#define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, ss_keys, NULL, id, { k, m, j } }
+#define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, ss_keys, -1, id, { k, m, j } }
 
 extern int dsda_auto_key_frame_depth;
 extern int dsda_auto_key_frame_interval;
@@ -284,7 +284,7 @@ default_t defaults[] =
   {"default_skill",{&defaultskill},{4},1,5, // jff 3/24/98 allow default skill setting
    def_int,ss_none}, // selects default skill 1=TYTD 2=NTR 3=HMP 4=UV 5=NM
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
-   def_int,ss_weap, &weapon_attack_alignment},
+   def_int,ss_weap},
 
   {"sts_always_red",{&sts_always_red},{1},0,1, // no color changes on status bar
    def_bool,ss_stat},

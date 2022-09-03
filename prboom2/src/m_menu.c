@@ -3661,28 +3661,8 @@ static int allow_changes(void)
  return !(demoplayback || demorecording || netgame);
 }
 
-static void M_UpdateCurrent(default_t* def)
-{
-  /* cph - requires rewrite of m_misc.c */
-  if (def->current)
-  {
-    if (allow_changes())  /* killough 8/15/98 */
-      *def->current = *def->location.pi;
-    else if (*def->current != *def->location.pi)
-      warn_about_changes(S_LEVWARN); /* killough 8/15/98 */
-  }
-}
-
 static void M_SettingUpdated(setup_menu_t *setting, int update_current)
 {
-  if (update_current)
-  {
-    if (setting->m_flags & (S_LEVWARN | S_PRGWARN))
-      warn_about_changes(setting->m_flags & (S_LEVWARN | S_PRGWARN));
-    else
-      M_UpdateCurrent(setting->var.def);
-  }
-
   if (setting->m_group == m_dsda)
   {
     dsda_ResetTransient((dsda_setting_t *) setting->var.def->location.pi);

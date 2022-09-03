@@ -98,7 +98,9 @@ typedef struct default_s
     def_colour = def_hex // Colour (256 colour palette entry)
   } type; // CPhipps - type of entry
   int   setupscreen;      // phares 4/19/98: setup screen where this appears
-  int  *current;          /* cph - MBF-like pointer to current value */
+
+  // migrate to new config process
+  int config_id;
 
   // composite input
   int identifier;
