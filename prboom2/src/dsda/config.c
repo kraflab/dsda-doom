@@ -104,24 +104,18 @@ void dsda_WriteConfig(dsda_config_identifier_t id, int key_length, FILE* file) {
 }
 
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist) {
-  dsda_config[id].transient_value.v_int = !dsda_config[id].transient_value.v_int;
-
-  if (persist)
-    dsda_PersistIntConfig(&dsda_config[id]);
-
-  return dsda_IntConfig(id);
+  return dsda_UpdateIntConfig(id, !dsda_config[id].transient_value.v_int, persist);
 }
 
 int dsda_CycleConfig(dsda_config_identifier_t id, dboolean persist) {
-  ++dsda_config[id].transient_value.v_int;
+  int value;
 
-  if (dsda_config[id].transient_value.v_int > dsda_config[id].upper_limit)
-    dsda_config[id].transient_value.v_int = dsda_config[id].lower_limit;
+  value = dsda_config[id].transient_value.v_int + 1;
 
-  if (persist)
-    dsda_PersistIntConfig(&dsda_config[id]);
+  if (value > dsda_config[id].upper_limit)
+    value = dsda_config[id].lower_limit;
 
-  return dsda_IntConfig(id);
+  return dsda_UpdateIntConfig(id, value, persist);
 }
 
 int dsda_UpdateIntConfig(dsda_config_identifier_t id, int value, dboolean persist) {
