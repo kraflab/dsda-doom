@@ -36,6 +36,8 @@
 
 #include "d_event.h"
 
+#include "dsda/config.h"
+
 //
 // MENUS
 //
@@ -144,6 +146,7 @@ typedef enum {
   m_build,
 
   m_dsda,       // use dsda setting logic
+  m_conf,       // migrate to new config process
 } setup_group;
 
 /****************************
@@ -178,6 +181,7 @@ typedef struct setup_menu_s
     const char          *name;  /* name */
     struct default_s    *def;   /* default[] table entry */
     struct setup_menu_s *menu;  /* next or prev menu */
+    dsda_config_identifier_t config_id; // migrate to new config process
   } var;
 
   int input; // composite input identifier

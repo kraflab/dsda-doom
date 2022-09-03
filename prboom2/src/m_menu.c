@@ -1968,6 +1968,10 @@ static void M_DrawSetting(const setup_menu_t* s)
       gather_buffer[gather_count] = 0;
       strcpy(menu_buffer, gather_buffer);
     }
+    else if (s->m_group == m_conf)
+    {
+      sprintf(menu_buffer, "%d", dsda_IntConfig(s->var.config_id));
+    }
     else
       sprintf(menu_buffer,"%d",*s->var.def->location.pi);
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
@@ -3704,7 +3708,11 @@ static void M_ResetDefaults(void)
       setup_menu_t **l, *p;
       for (l = setup_screens[setup_screen-1]; *l; l++)
         for (p = *l; !(p->m_flags & S_END); p++)
-          if (p->m_flags & (S_INPUT | S_KEEP))
+          if (p->m_group == m_conf)
+          {
+            continue; // TODO m_conf reset to default
+          }
+          else if (p->m_flags & (S_INPUT | S_KEEP))
           {
             if (dp->identifier == p->input)
             {
@@ -3760,7 +3768,11 @@ static void M_InitDefaults(void)
     {
       for (t = *p; !(t->m_flags & S_END); t++)
       {
-        if (t->m_flags & S_HASDEFPTR)
+        if (t->m_group == m_conf)
+        {
+          continue;
+        }
+        else if (t->m_flags & S_HASDEFPTR)
         {
           if (!(dp = M_LookupDefault(t->var.name)))
             I_Error("M_InitDefaults: Couldn't find config variable %s", t->var.name);
@@ -4958,9 +4970,9 @@ dboolean M_Responder (event_t* ev) {
               //e6y
               if ((ptr1->m_flags&S_CANT_GL_ARB_MULTISAMPLEFACTOR) && value%2!=0)
                 warn_about_changes(ptr1->m_flags & S_CANT_GL_ARB_MULTISAMPLEFACTOR);
-              else
-
-              if ((ptr1->var.def->minvalue != UL &&
+              else if (ptr1->m_group == m_conf)
+                dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
+              else if ((ptr1->var.def->minvalue != UL &&
                    value < ptr1->var.def->minvalue) ||
                   (ptr1->var.def->maxvalue != UL &&
                    value > ptr1->var.def->maxvalue))

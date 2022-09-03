@@ -87,7 +87,7 @@
 // NSM
 #include "i_capture.h"
 
-#define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, ss_keys, -1, id, { k, m, j } }
+#define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, ss_keys, 0, id, { k, m, j } }
 
 extern int dsda_auto_key_frame_depth;
 extern int dsda_auto_key_frame_interval;
@@ -1053,52 +1053,63 @@ void M_SaveDefaults (void)
   fprintf(f,"# variable   value\n");
 
   for (i = 0 ; i < numdefaults ; i++) {
-    if (defaults[i].type == def_none) {
-      // CPhipps - pure headers
-      fprintf(f, "\n# %s\n", defaults[i].name);
-    }
-    // CPhipps - modified for new default_t form
-    else if (!IS_STRING(defaults[i])) //jff 4/10/98 kill super-hack on pointer value
+    if (defaults[i].config_id)
     {
-      // CPhipps - remove keycode hack
-      // killough 3/6/98: use spaces instead of tabs for uniform justification
-      if (defaults[i].type == def_hex)
-        fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
-      else if (defaults[i].type == def_input)
+      if (defaults[i].type == def_int)
       {
-        int a, j;
-        dsda_input_t* input[DSDA_INPUT_PROFILE_COUNT];
-        dsda_InputCopy(defaults[i].identifier, input);
-
-        fprintf(f, "%-*s", maxlen, defaults[i].name);
-
-        for (a = 0; a < DSDA_INPUT_PROFILE_COUNT; ++a)
-        {
-          if (input[a]->num_keys)
-          {
-            fprintf(f, " %i", input[a]->key[0]);
-            for (j = 1; j < input[a]->num_keys; ++j)
-            {
-              fprintf(f, ",%i", input[a]->key[j]);
-            }
-          }
-          else
-            fprintf(f, " 0");
-
-          fprintf(f, " %i %i", input[a]->mouseb, input[a]->joyb);
-
-          if (a != DSDA_INPUT_PROFILE_COUNT - 1)
-            fprintf(f, " |");
-        }
-
-        fprintf(f, "\n");
+        fprintf(f, "%-*s %i\n", maxlen, defaults[i].name,
+                dsda_PersistentIntConfig(defaults[i].config_id));
       }
-      else
-        fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
     }
     else
     {
-      fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
+      if (defaults[i].type == def_none) {
+        // CPhipps - pure headers
+        fprintf(f, "\n# %s\n", defaults[i].name);
+      }
+      // CPhipps - modified for new default_t form
+      else if (!IS_STRING(defaults[i])) //jff 4/10/98 kill super-hack on pointer value
+      {
+        // CPhipps - remove keycode hack
+        // killough 3/6/98: use spaces instead of tabs for uniform justification
+        if (defaults[i].type == def_hex)
+          fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
+        else if (defaults[i].type == def_input)
+        {
+          int a, j;
+          dsda_input_t* input[DSDA_INPUT_PROFILE_COUNT];
+          dsda_InputCopy(defaults[i].identifier, input);
+
+          fprintf(f, "%-*s", maxlen, defaults[i].name);
+
+          for (a = 0; a < DSDA_INPUT_PROFILE_COUNT; ++a)
+          {
+            if (input[a]->num_keys)
+            {
+              fprintf(f, " %i", input[a]->key[0]);
+              for (j = 1; j < input[a]->num_keys; ++j)
+              {
+                fprintf(f, ",%i", input[a]->key[j]);
+              }
+            }
+            else
+              fprintf(f, " 0");
+
+            fprintf(f, " %i %i", input[a]->mouseb, input[a]->joyb);
+
+            if (a != DSDA_INPUT_PROFILE_COUNT - 1)
+              fprintf(f, " |");
+          }
+
+          fprintf(f, "\n");
+        }
+        else
+          fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
+      }
+      else
+      {
+        fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
+      }
     }
   }
 
@@ -1147,18 +1158,28 @@ void M_LoadDefaults (void)
 
   numdefaults = sizeof(defaults)/sizeof(defaults[0]);
   for (i = 0 ; i < numdefaults ; i++) {
-    if (defaults[i].type == def_input)
+    if (defaults[i].config_id)
     {
-      int c;
-      for (c = 0; c < DSDA_INPUT_PROFILE_COUNT; ++c)
-        dsda_InputSetSpecific(c, defaults[i].identifier, defaults[i].input);
+      if (defaults[i].type == def_int)
+      {
+        dsda_InitIntConfig(defaults[i].config_id, defaults[i].defaultvalue.i);
+      }
     }
     else
     {
-      if (defaults[i].location.ppsz)
-        *defaults[i].location.ppsz = Z_Strdup(defaults[i].defaultvalue.psz);
-      if (defaults[i].location.pi)
-        *defaults[i].location.pi = defaults[i].defaultvalue.i;
+      if (defaults[i].type == def_input)
+      {
+        int c;
+        for (c = 0; c < DSDA_INPUT_PROFILE_COUNT; ++c)
+          dsda_InputSetSpecific(c, defaults[i].identifier, defaults[i].input);
+      }
+      else
+      {
+        if (defaults[i].location.ppsz)
+          *defaults[i].location.ppsz = Z_Strdup(defaults[i].defaultvalue.psz);
+        if (defaults[i].location.pi)
+          *defaults[i].location.pi = defaults[i].defaultvalue.i;
+      }
     }
   }
 
@@ -1235,66 +1256,74 @@ void M_LoadDefaults (void)
               continue;
             }
 
-            if (!isstring)
+            if (defaults[i].config_id)
             {
-              if (defaults[i].type == def_input)
-              {
-                int count;
-                char keys[80];
-                int key, mouseb, joyb;
-                int index = 0;
-                char* key_scan_p;
-                char* config_scan_p;
-
-                config_scan_p = strparm;
-                do
-                {
-                  count = sscanf(config_scan_p, "%79s %d %d", keys, &mouseb, &joyb);
-
-                  if (count != 3)
-                    break;
-
-                  dsda_InputResetSpecific(index, defaults[i].identifier);
-
-                  dsda_InputAddSpecificMouseB(index, defaults[i].identifier, mouseb);
-                  dsda_InputAddSpecificJoyB(index, defaults[i].identifier, joyb);
-
-                  key_scan_p = strtok(keys, ",");
-                  do
-                  {
-                    count = sscanf(key_scan_p, "%d,", &key);
-
-                    if (count != 1)
-                      break;
-
-                    dsda_InputAddSpecificKey(index, defaults[i].identifier, key);
-
-                    key_scan_p = strtok(NULL, ",");
-                  } while (key_scan_p);
-
-                  index++;
-                  config_scan_p = strchr(config_scan_p, '|');
-                  if (config_scan_p)
-                    config_scan_p++;
-                } while (config_scan_p && index < DSDA_INPUT_PROFILE_COUNT);
-              }
-
-              //jff 3/4/98 range check numeric parameters
-
-              else if ((defaults[i].minvalue==UL || defaults[i].minvalue<=parm) &&
-                       (defaults[i].maxvalue==UL || defaults[i].maxvalue>=parm))
-                *(defaults[i].location.pi) = parm;
+              if (defaults[i].type == def_int)
+                dsda_InitIntConfig(defaults[i].config_id, parm);
             }
             else
             {
-              union { const char **c; char **s; } u; // type punning via unions
+              if (!isstring)
+              {
+                if (defaults[i].type == def_input)
+                {
+                  int count;
+                  char keys[80];
+                  int key, mouseb, joyb;
+                  int index = 0;
+                  char* key_scan_p;
+                  char* config_scan_p;
 
-              u.c = defaults[i].location.ppsz;
-              Z_Free(*(u.s));
-              *(u.s) = newstring;
+                  config_scan_p = strparm;
+                  do
+                  {
+                    count = sscanf(config_scan_p, "%79s %d %d", keys, &mouseb, &joyb);
+
+                    if (count != 3)
+                      break;
+
+                    dsda_InputResetSpecific(index, defaults[i].identifier);
+
+                    dsda_InputAddSpecificMouseB(index, defaults[i].identifier, mouseb);
+                    dsda_InputAddSpecificJoyB(index, defaults[i].identifier, joyb);
+
+                    key_scan_p = strtok(keys, ",");
+                    do
+                    {
+                      count = sscanf(key_scan_p, "%d,", &key);
+
+                      if (count != 1)
+                        break;
+
+                      dsda_InputAddSpecificKey(index, defaults[i].identifier, key);
+
+                      key_scan_p = strtok(NULL, ",");
+                    } while (key_scan_p);
+
+                    index++;
+                    config_scan_p = strchr(config_scan_p, '|');
+                    if (config_scan_p)
+                      config_scan_p++;
+                  } while (config_scan_p && index < DSDA_INPUT_PROFILE_COUNT);
+                }
+
+                //jff 3/4/98 range check numeric parameters
+
+                else if ((defaults[i].minvalue==UL || defaults[i].minvalue<=parm) &&
+                         (defaults[i].maxvalue==UL || defaults[i].maxvalue>=parm))
+                  *(defaults[i].location.pi) = parm;
+              }
+              else
+              {
+                union { const char **c; char **s; } u; // type punning via unions
+
+                u.c = defaults[i].location.ppsz;
+                Z_Free(*(u.s));
+                *(u.s) = newstring;
+              }
             }
-          break;
-        }
+            break;
+          }
       }
     }
 
