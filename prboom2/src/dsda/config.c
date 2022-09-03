@@ -71,6 +71,16 @@ int dsda_UpdateIntConfig(dsda_config_identifier_t id, int value, dboolean persis
   return dsda_IntConfig(id);
 }
 
+// No side effects
+int dsda_InitIntConfig(dsda_config_identifier_t id, int value) {
+  dsda_config[id].transient_value.v_int = value;
+
+  dsda_ConstrainIntConfig(id);
+  dsda_PersistIntConfig(id);
+
+  return dsda_IntConfig(id);
+}
+
 const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* value, dboolean persist) {
   if (dsda_config[id].transient_value.v_string)
     Z_Free(dsda_config[id].transient_value.v_string);
@@ -79,6 +89,17 @@ const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* val
 
   if (persist)
     dsda_PersistStringConfig(id);
+
+  return dsda_StringConfig(id);
+}
+
+// No side effects
+const char* dsda_InitStringConfig(dsda_config_identifier_t id, const char* value) {
+  if (dsda_config[id].transient_value.v_string)
+    Z_Free(dsda_config[id].transient_value.v_string);
+
+  dsda_config[id].transient_value.v_string = Z_Strdup(value);
+  dsda_PersistStringConfig(id);
 
   return dsda_StringConfig(id);
 }

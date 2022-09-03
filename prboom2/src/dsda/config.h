@@ -21,6 +21,7 @@
 #include "doomtype.h"
 
 typedef enum {
+  dsda_config_none,
   dsda_config_realtic_clock_rate,
   dsda_config_count,
 } dsda_config_identifier_t;
@@ -48,7 +49,9 @@ typedef struct {
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist);
 int dsda_CycleConfig(dsda_config_identifier_t id, dboolean persist);
 int dsda_UpdateIntConfig(dsda_config_identifier_t id, int value, dboolean persist);
+int dsda_InitIntConfig(dsda_config_identifier_t id, int value);
 const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* value, dboolean persist);
+const char* dsda_InitStringConfig(dsda_config_identifier_t id, const char* value);
 int dsda_IntConfig(dsda_config_identifier_t id);
 const char* dsda_StringConfig(dsda_config_identifier_t id);
 
