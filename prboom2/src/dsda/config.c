@@ -126,6 +126,9 @@ int dsda_UpdateIntConfig(dsda_config_identifier_t id, int value, dboolean persis
   if (persist)
     dsda_PersistIntConfig(&dsda_config[id]);
 
+  if (dsda_config[id].onUpdate)
+    dsda_config[id].onUpdate();
+
   return dsda_IntConfig(id);
 }
 
