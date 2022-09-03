@@ -1176,8 +1176,6 @@ void M_LoadDefaults (void)
 
   // check for a custom default file
 
-#define BOOM_CFG "dsda-doom.cfg"
-
   arg = dsda_Arg(dsda_arg_config);
   if (arg->found)
   {
@@ -1186,10 +1184,9 @@ void M_LoadDefaults (void)
   else
   {
     const char* exedir = I_DoomExeDir();
-    /* get config file from same directory as executable */
-    int len = snprintf(NULL, 0, "%s/" BOOM_CFG, exedir);
-    defaultfile = Z_Malloc(len+1);
-    snprintf(defaultfile, len+1, "%s/" BOOM_CFG, exedir);
+    int len = snprintf(NULL, 0, "%s/dsda-doom.cfg", exedir);
+    defaultfile = Z_Malloc(len + 1);
+    snprintf(defaultfile, len + 1, "%s/dsda-doom.cfg", exedir);
   }
 
   lprintf (LO_INFO, " default file: %s\n",defaultfile);
