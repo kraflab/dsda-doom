@@ -23,6 +23,8 @@ set(COMMON_SRC
     dsda/command_display.h
     dsda/compatibility.c
     dsda/compatibility.h
+    dsda/config.c
+    dsda/config.h
     dsda/console.c
     dsda/console.h
     dsda/coordinate_display.c
