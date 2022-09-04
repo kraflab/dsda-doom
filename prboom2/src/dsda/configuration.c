@@ -107,7 +107,7 @@ static void dsda_ConstrainIntConfig(dsda_config_t* conf) {
 
 static void dsda_PropagateIntConfig(dsda_config_t* conf) {
   if (conf->int_binding)
-    *conf->int_binding = conf->transient_value.v_int;
+    *conf->int_binding = dsda_IntConfig(conf->id);
 }
 
 // No side effects
