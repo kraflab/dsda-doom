@@ -35,6 +35,7 @@ typedef union {
 
 typedef struct {
   const char* name;
+  dsda_config_identifier_t id;
   dsda_config_type_t type;
   int lower_limit;
   int upper_limit;
@@ -57,25 +58,32 @@ static void UpdateRealticClockRate(void) {
 
 dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_realtic_clock_rate] = {
-    "realtic_clock_rate", dsda_config_int, 3, 10000, { 100 }, true, 100, UpdateRealticClockRate
+    "realtic_clock_rate", dsda_config_realtic_clock_rate,
+    dsda_config_int, 3, 10000, { 100 }, true, 100, UpdateRealticClockRate
   },
   [dsda_config_default_complevel] = {
-    "default_compatibility_level", dsda_config_int, 0, mbf21_compatibility, { mbf21_compatibility }
+    "default_compatibility_level", dsda_config_default_complevel,
+    dsda_config_int, 0, mbf21_compatibility, { mbf21_compatibility }
   },
   [dsda_config_vanilla_keymap] = {
-    "vanilla_keymap", dsda_config_int, 0, 1, { 0 }
+    "vanilla_keymap", dsda_config_vanilla_keymap,
+    dsda_config_int, 0, 1, { 0 }
   },
   [dsda_config_menu_background] = {
-    "menu_background", dsda_config_int, 0, 1, { 1 }
+    "menu_background", dsda_config_menu_background,
+    dsda_config_int, 0, 1, { 1 }
   },
   [dsda_config_process_priority] = {
-    "process_priority", dsda_config_int, 0, 2, { 0 }
+    "process_priority", dsda_config_process_priority,
+    dsda_config_int, 0, 2, { 0 }
   },
   [dsda_config_max_player_corpse] = {
-    "max_player_corpse", dsda_config_int, -1, INT_MAX, { 32 }, true, 32
+    "max_player_corpse", dsda_config_max_player_corpse,
+    dsda_config_int, -1, INT_MAX, { 32 }, true, 32
   },
   [dsda_config_input_profile] = {
-    "input_profile", dsda_config_int, 0, DSDA_INPUT_PROFILE_COUNT - 1, { 0 },
+    "input_profile", dsda_config_input_profile,
+    dsda_config_int, 0, DSDA_INPUT_PROFILE_COUNT - 1, { 0 },
   },
 };
 
