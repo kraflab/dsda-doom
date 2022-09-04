@@ -29,7 +29,7 @@ static void UpdateRealticClockRate(void) {
 
 dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_realtic_clock_rate] = {
-    "realtic_clock_rate", dsda_config_int, 3, 10000, { 100 }, 100, UpdateRealticClockRate
+    "realtic_clock_rate", dsda_config_int, 3, 10000, { 100 }, true, 100, UpdateRealticClockRate
   },
   [dsda_config_default_complevel] = {
     "default_compatibility_level", dsda_config_int, 0, mbf21_compatibility, { mbf21_compatibility }
@@ -169,7 +169,7 @@ const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* val
 int dsda_IntConfig(dsda_config_identifier_t id) {
   dboolean dsda_StrictMode(void);
 
-  if (dsda_config[id].strict_value >= 0 && dsda_StrictMode())
+  if (dsda_config[id].strict && dsda_StrictMode())
     return dsda_config[id].strict_value;
 
   return dsda_config[id].transient_value.v_int;

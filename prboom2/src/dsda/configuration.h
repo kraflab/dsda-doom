@@ -48,6 +48,7 @@ typedef struct {
   int lower_limit;
   int upper_limit;
   dsda_config_value_t default_value;
+  dboolean strict;
   int strict_value;
   void (*onUpdate)(void);
   dsda_config_value_t transient_value;
