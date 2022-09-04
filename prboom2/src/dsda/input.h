@@ -26,8 +26,6 @@
 #define MAX_MOUSE_BUTTONS 8
 #define MAX_JOY_BUTTONS 8
 
-extern int dsda_input_profile;
-
 typedef enum {
   dsda_input_null,
   dsda_input_forward,
@@ -254,6 +252,5 @@ dboolean dsda_InputActive(int identifer);
 dboolean dsda_InputKeyActive(int identifier);
 dboolean dsda_InputMouseBActive(int identifier);
 dboolean dsda_InputJoyBActive(int identifier);
-void dsda_InputCycleProfile(void);
 
 #endif

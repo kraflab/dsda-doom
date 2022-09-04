@@ -19,7 +19,11 @@
 
 #include "z_zone.h"
 
+#include "dsda/input.h"
+
 #include "configuration.h"
+
+extern int dsda_input_profile;
 
 static void UpdateRealticClockRate(void) {
   void I_Init2(void);
@@ -45,6 +49,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_max_player_corpse] = {
     "max_player_corpse", dsda_config_int, -1, INT_MAX, { 32 }, true, 32
+  },
+  [dsda_config_input_profile] = {
+    "input_profile", dsda_config_int, 0, DSDA_INPUT_PROFILE_COUNT - 1, { 0 },
   },
 };
 
@@ -95,6 +102,8 @@ static void dsda_BindInt(dsda_config_identifier_t id, int* p) {
 
 void dsda_InitConfig(void) {
   int i;
+
+  dsda_BindInt(dsda_config_input_profile, &dsda_input_profile);
 
   for (i = 1; i < dsda_config_count; ++i) {
     dsda_config_t* conf;

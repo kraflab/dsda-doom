@@ -819,10 +819,8 @@ default_t defaults[] =
   {"weapon_choice_9", {&weapon_preferences[0][8]}, {1}, 0,9,
    def_int}, // ninth choice for weapon (worst)
 
-  // defaults { key, mouseb, joyb }
   SETTING_HEADING("Input settings"),
-
-  { "input_profile", { &dsda_input_profile }, { 0 }, 0, DSDA_INPUT_PROFILE_COUNT - 1, def_int },
+  MIGRATED_SETTING(dsda_config_input_profile),
 
   INPUT_SETTING("input_forward", dsda_input_forward, 'w', 2, -1),
   INPUT_SETTING("input_backward", dsda_input_backward, 's', -1, -1),

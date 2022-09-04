@@ -30,6 +30,7 @@ typedef enum {
   dsda_config_menu_background,
   dsda_config_process_priority,
   dsda_config_max_player_corpse,
+  dsda_config_input_profile,
   dsda_config_count,
 } dsda_config_identifier_t;
 
