@@ -40,10 +40,10 @@ typedef struct {
   int lower_limit;
   int upper_limit;
   dsda_config_value_t default_value;
+  int* int_binding;
   dboolean strict;
   int strict_value;
   void (*onUpdate)(void);
-  int* int_binding;
   dsda_config_value_t transient_value;
   dsda_config_value_t persistent_value;
 } dsda_config_t;
@@ -59,7 +59,7 @@ static void UpdateRealticClockRate(void) {
 dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_realtic_clock_rate] = {
     "realtic_clock_rate", dsda_config_realtic_clock_rate,
-    dsda_config_int, 3, 10000, { 100 }, true, 100, UpdateRealticClockRate
+    dsda_config_int, 3, 10000, { 100 }, NULL, true, 100, UpdateRealticClockRate
   },
   [dsda_config_default_complevel] = {
     "default_compatibility_level", dsda_config_default_complevel,
@@ -79,11 +79,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_max_player_corpse] = {
     "max_player_corpse", dsda_config_max_player_corpse,
-    dsda_config_int, -1, INT_MAX, { 32 }, true, 32
+    dsda_config_int, -1, INT_MAX, { 32 }, NULL, true, 32
   },
   [dsda_config_input_profile] = {
     "input_profile", dsda_config_input_profile,
-    dsda_config_int, 0, DSDA_INPUT_PROFILE_COUNT - 1, { 0 },
+    dsda_config_int, 0, DSDA_INPUT_PROFILE_COUNT - 1, { 0 }, &dsda_input_profile
   },
 };
 
@@ -128,14 +128,8 @@ static void dsda_InitStringConfig(dsda_config_t* conf, const char* value) {
   dsda_PersistStringConfig(conf);
 }
 
-static void dsda_BindInt(dsda_config_identifier_t id, int* p) {
-  dsda_config[id].int_binding = p;
-}
-
 void dsda_InitConfig(void) {
   int i;
-
-  dsda_BindInt(dsda_config_input_profile, &dsda_input_profile);
 
   for (i = 1; i < dsda_config_count; ++i) {
     dsda_config_t* conf;
