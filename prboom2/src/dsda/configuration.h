@@ -27,6 +27,7 @@ typedef enum {
   dsda_config_realtic_clock_rate,
   dsda_config_default_complevel,
   dsda_config_vanilla_keymap,
+  dsda_config_menu_background,
   dsda_config_count,
 } dsda_config_identifier_t;
 

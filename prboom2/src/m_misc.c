@@ -264,8 +264,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_default_complevel),
   MIGRATED_SETTING(dsda_config_vanilla_keymap),
   MIGRATED_SETTING(dsda_config_realtic_clock_rate),
-  {"menu_background", {(int*)&menu_background}, {1}, 0, 1,
-   def_bool}, // do Boom fullscreen menus have backgrounds?
+  MIGRATED_SETTING(dsda_config_menu_background),
   {"max_player_corpse", {&bodyquesize}, {32},-1,UL,   // killough 2/8/98
    def_int}, // number of dead bodies in view supported (-1 = no limit)
   {"flashing_hom",{&flashing_hom},{0},0,1,

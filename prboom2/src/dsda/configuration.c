@@ -37,6 +37,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_vanilla_keymap] = {
     "vanilla_keymap", dsda_config_int, 0, 1, { 0 }
   },
+  [dsda_config_menu_background] = {
+    "menu_background", dsda_config_int, 0, 1, { 1 }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

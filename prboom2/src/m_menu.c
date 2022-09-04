@@ -139,13 +139,9 @@ void (*messageRoutine)(int response);
 
 int warning_about_changes, print_warning_about_changes;
 
-/* cphipps - M_DrawBackground renamed and moved to v_video.c */
-
-dboolean menu_background = 1; // do Boom fullscreen menus have backgrounds?
-
 static void M_DrawBackground(const char *flat, int scrn)
 {
-  if (menu_background)
+  if (dsda_IntConfig(dsda_config_menu_background))
     V_DrawBackground(flat, scrn);
 }
 
@@ -3310,7 +3306,7 @@ setup_menu_t display_settings[] = {
   { "Change Palette On Powers", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "palette_onpowers" }, 0, M_ChangeApplyPalette },
 
   { "Status Bar and Menu Appearance", S_CHOICE, m_null, G_X, G_Y + 14 * 8, { "render_stretch_hud" }, 0, M_ChangeStretch, render_stretch_list },
-  { "Fullscreen Menu Background", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "menu_background" } },
+  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 15 * 8, { dsda_config_menu_background } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { misc_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { opengl_settings } },
