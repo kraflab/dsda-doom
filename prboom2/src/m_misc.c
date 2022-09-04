@@ -799,25 +799,15 @@ default_t defaults[] =
    def_bool},
 
   SETTING_HEADING("Weapon preferences"),
-  // killough 2/8/98: weapon preferences set by user:
-  {"weapon_choice_1", {&weapon_preferences[0][0]}, {6}, 0,9,
-   def_int}, // first choice for weapon (best)
-  {"weapon_choice_2", {&weapon_preferences[0][1]}, {9}, 0,9,
-   def_int}, // second choice for weapon
-  {"weapon_choice_3", {&weapon_preferences[0][2]}, {4}, 0,9,
-   def_int}, // third choice for weapon
-  {"weapon_choice_4", {&weapon_preferences[0][3]}, {3}, 0,9,
-   def_int}, // fourth choice for weapon
-  {"weapon_choice_5", {&weapon_preferences[0][4]}, {2}, 0,9,
-   def_int}, // fifth choice for weapon
-  {"weapon_choice_6", {&weapon_preferences[0][5]}, {8}, 0,9,
-   def_int}, // sixth choice for weapon
-  {"weapon_choice_7", {&weapon_preferences[0][6]}, {5}, 0,9,
-   def_int}, // seventh choice for weapon
-  {"weapon_choice_8", {&weapon_preferences[0][7]}, {7}, 0,9,
-   def_int}, // eighth choice for weapon
-  {"weapon_choice_9", {&weapon_preferences[0][8]}, {1}, 0,9,
-   def_int}, // ninth choice for weapon (worst)
+  MIGRATED_SETTING(dsda_config_weapon_choice_1),
+  MIGRATED_SETTING(dsda_config_weapon_choice_2),
+  MIGRATED_SETTING(dsda_config_weapon_choice_3),
+  MIGRATED_SETTING(dsda_config_weapon_choice_4),
+  MIGRATED_SETTING(dsda_config_weapon_choice_5),
+  MIGRATED_SETTING(dsda_config_weapon_choice_6),
+  MIGRATED_SETTING(dsda_config_weapon_choice_7),
+  MIGRATED_SETTING(dsda_config_weapon_choice_8),
+  MIGRATED_SETTING(dsda_config_weapon_choice_9),
 
   SETTING_HEADING("Input settings"),
   MIGRATED_SETTING(dsda_config_input_profile),

@@ -2031,13 +2031,20 @@ static void M_DrawSetting(const setup_menu_t* s)
   // killough 11/98: consolidated weapons code with color range code
 
   if (flags & (S_WEAP|S_CRITEM)) // weapon number or color range
+  {
+    if (s->m_group == m_conf)
+    {
+      sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->var.config_id));
+    }
+    else
     {
       sprintf(menu_buffer,"%d", *s->var.def->location.pi);
-      if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-        M_DrawString(x + 8, y, color, " <");
-      M_DrawMenuString(x,y, flags & S_CRITEM ? *s->var.def->location.pi : color);
-      return;
     }
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
+      M_DrawString(x + 8, y, color, " <");
+    M_DrawMenuString(x,y, flags & S_CRITEM ? *s->var.def->location.pi : color);
+    return;
+  }
 
   // Is the item a paint chip?
 
@@ -5065,25 +5072,34 @@ dboolean M_Responder (event_t* ev) {
           if (ch < 1 || ch > 9)
             return true; // ignore
 
-          // Plasma and BFG don't exist in shareware
-          // killough 10/98: allow it anyway, since this
-          // isn't the game itself, just setting preferences
-
           // see if 'ch' is already assigned elsewhere. if so,
           // you have to swap assignments.
-
-          // killough 11/98: simplified
-
-          for (i = 0; (ptr2 = weap_settings[i]); i++)
+          if (ptr1->m_group == m_conf)
+          {
+            int old_value;
+            ptr2 = weap_settings1;
+            old_value = dsda_PersistentIntConfig(ptr1->var.config_id);
+            for (; !(ptr2->m_flags & S_END); ptr2++)
+              if (ptr2->m_flags & S_WEAP && ptr1 != ptr2 &&
+                  dsda_PersistentIntConfig(ptr2->var.config_id) == ch)
+              {
+                dsda_UpdateIntConfig(ptr2->var.config_id, old_value, true);
+                break;
+              }
+            dsda_UpdateIntConfig(ptr1->var.config_id, ch, true);
+          }
+          else
+          {
+            ptr2 = weap_settings1;
             for (; !(ptr2->m_flags & S_END); ptr2++)
               if (ptr2->m_flags & S_WEAP &&
                   *ptr2->var.def->location.pi == ch && ptr1 != ptr2)
               {
                 *ptr2->var.def->location.pi = *ptr1->var.def->location.pi;
-                goto end;
+                break;
               }
-        end:
-          *ptr1->var.def->location.pi = ch;
+            *ptr1->var.def->location.pi = ch;
+          }
         }
 
         M_SelectDone(ptr1);       // phares 4/17/98
