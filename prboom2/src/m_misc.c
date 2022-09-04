@@ -261,8 +261,7 @@ default_t defaults[] =
 
   {"Misc settings",{NULL},{0},UL,UL,def_none},
   MIGRATED_SETTING(dsda_config_default_complevel),
-  {"vanilla_keymap",{&vanilla_keymap},{0},0,1,
-   def_bool}, // Use vanilla keyboard mapping
+  MIGRATED_SETTING(dsda_config_vanilla_keymap),
   MIGRATED_SETTING(dsda_config_realtic_clock_rate),
   {"menu_background", {(int*)&menu_background}, {1}, 0, 1,
    def_bool}, // do Boom fullscreen menus have backgrounds?

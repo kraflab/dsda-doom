@@ -34,6 +34,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_default_complevel] = {
     "default_compatibility_level", dsda_config_int, 0, mbf21_compatibility, { mbf21_compatibility }
   },
+  [dsda_config_vanilla_keymap] = {
+    "vanilla_keymap", dsda_config_int, 0, 1, { 0 }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

@@ -85,6 +85,7 @@
 #include "i_main.h"
 
 #include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/time.h"
@@ -119,7 +120,6 @@ int gl_exclusive_fullscreen;
 int render_vsync;
 int render_screen_multiply;
 int integer_scaling;
-int vanilla_keymap;
 SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
@@ -217,7 +217,7 @@ static int I_TranslateKey(SDL_Keysym* key)
 {
   int rc = 0;
 
-  if (vanilla_keymap)
+  if (dsda_IntConfig(dsda_config_vanilla_keymap))
     return VanillaTranslateKey(key);
 
   switch (key->sym) {
