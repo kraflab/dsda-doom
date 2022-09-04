@@ -1932,7 +1932,14 @@ static void M_DrawSetting(const setup_menu_t* s)
   // Is the item a YES/NO item?
 
   if (flags & S_YESNO) {
-    strcpy(menu_buffer,*s->var.def->location.pi ? "YES" : "NO");
+    if (s->m_group == m_conf)
+    {
+      strcpy(menu_buffer, dsda_PersistentIntConfig(s->var.config_id) ? "YES" : "NO");
+    }
+    else
+    {
+      strcpy(menu_buffer,*s->var.def->location.pi ? "YES" : "NO");
+    }
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");
     M_DrawMenuString(x,y,color);
@@ -4753,9 +4760,16 @@ dboolean M_Responder (event_t* ev) {
       if (ptr1->m_flags & S_YESNO) // yes or no setting?
       {
         if (action == MENU_ENTER) {
-          *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
+          if (ptr1->m_group == m_conf)
+          {
+            dsda_ToggleConfig(ptr1->var.config_id, true);
+          }
+          else
+          {
+            *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
 
-          M_SettingUpdated(ptr1, true);
+            M_SettingUpdated(ptr1, true);
+          }
 
           //e6y
           {
