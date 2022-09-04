@@ -1949,7 +1949,7 @@ static void M_DrawSetting(const setup_menu_t* s)
     }
     else if (s->m_group == m_conf)
     {
-      sprintf(menu_buffer, "%d", dsda_IntConfig(s->var.config_id));
+      sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->var.config_id));
     }
     else
       sprintf(menu_buffer,"%d",*s->var.def->location.pi);
