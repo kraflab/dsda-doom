@@ -90,6 +90,7 @@
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
 #include "dsda/command_display.h"
+#include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
 #include "dsda/features.h"
@@ -2523,7 +2524,7 @@ void G_ReloadDefaults(void)
 {
   const dsda_options_t* options;
 
-  compatibility_level = default_compatibility_level;
+  compatibility_level = dsda_IntConfig(dsda_config_default_complevel);
   {
     int l;
     l = dsda_CompatibilityLevel();

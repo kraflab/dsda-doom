@@ -3270,7 +3270,7 @@ setup_menu_t device_settings[] = {
 setup_menu_t misc_settings[] = {
   { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Default skill level", S_CHOICE, m_null, G_X, G_Y + 2 * 8, { "default_skill" }, 0, NULL, gen_skillstrings },
-  { "Default compatibility level", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "default_compatibility_level" }, 0, NULL, &gen_compstrings[1] },
+  { "Default compatibility level", S_CHOICE, m_conf, G_X, G_Y + 3 * 8, { dsda_config_default_complevel }, 0, NULL, &gen_compstrings[1] },
 
   { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
   { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 6 * 8, { "dsda_auto_key_frame_interval" } },

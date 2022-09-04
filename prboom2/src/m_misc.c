@@ -260,9 +260,7 @@ default_t defaults[] =
   {"process_priority", {&process_priority},{0},0,2,def_int},
 
   {"Misc settings",{NULL},{0},UL,UL,def_none},
-  {"default_compatibility_level",{(int*)&default_compatibility_level},
-   {-1},-1,MAX_COMPATIBILITY_LEVEL-1,
-   def_int}, // compatibility level" - CPhipps
+  MIGRATED_SETTING(dsda_config_default_complevel),
   {"vanilla_keymap",{&vanilla_keymap},{0},0,1,
    def_bool}, // Use vanilla keyboard mapping
   MIGRATED_SETTING(dsda_config_realtic_clock_rate),

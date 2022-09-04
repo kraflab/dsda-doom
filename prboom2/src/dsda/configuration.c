@@ -31,6 +31,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_realtic_clock_rate] = {
     "realtic_clock_rate", dsda_config_int, 3, 10000, { 100 }, 100, UpdateRealticClockRate
   },
+  [dsda_config_default_complevel] = {
+    "default_compatibility_level", dsda_config_int, 0, mbf21_compatibility, { mbf21_compatibility }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

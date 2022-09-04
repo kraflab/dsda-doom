@@ -52,7 +52,7 @@ dboolean modifiedgame;
 //-----------------------------------------------------------------------------
 
 // CPhipps - compatibility vars
-complevel_t compatibility_level, default_compatibility_level;
+complevel_t compatibility_level;
 
 // e6y
 // it's required for demos recorded in "demo compatibility" mode by boom201 for example

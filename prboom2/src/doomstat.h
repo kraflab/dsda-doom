@@ -69,7 +69,7 @@ extern char *MAPNAME(int e, int m);
 extern  dboolean modifiedgame;
 
 // CPhipps - new compatibility handling
-extern complevel_t compatibility_level, default_compatibility_level;
+extern complevel_t compatibility_level;
 
 // CPhipps - old compatibility testing flags aliased to new handling
 #define compatibility (compatibility_level<=boom_compatibility_compatibility)
