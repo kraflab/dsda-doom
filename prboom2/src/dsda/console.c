@@ -830,6 +830,41 @@ static dboolean console_Check(const char* command, const char* args) {
   return false;
 }
 
+static dboolean console_ChangeConfig(const char* command, const char* args, dboolean persist) {
+  char name[CONSOLE_ENTRY_SIZE];
+  char value_string[CONSOLE_ENTRY_SIZE];
+  int value_int;
+
+  if (sscanf(args, "%s %d", name, &value_int)) {
+    int id;
+
+    id = dsda_ConfigIDByName(name);
+    if (id) {
+      dsda_UpdateIntConfig(id, value_int, persist);
+      return true;
+    }
+  }
+  else if (sscanf(args, "%s %s", name, value_string)) {
+    int id;
+
+    id = dsda_ConfigIDByName(name);
+    if (id) {
+      dsda_UpdateStringConfig(id, value_string, persist);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static dboolean console_Assign(const char* command, const char* args) {
+  return console_ChangeConfig(command, args, false);
+}
+
+static dboolean console_Update(const char* command, const char* args) {
+  return console_ChangeConfig(command, args, true);
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -858,6 +893,8 @@ static console_command_entry_t console_commands[] = {
 
   { "script.run", console_ScriptRun, CF_ALWAYS },
   { "check", console_Check, CF_ALWAYS },
+  { "assign", console_Assign, CF_ALWAYS },
+  { "update", console_Update, CF_ALWAYS },
 
   // tracking
   { "tracker.add_line", console_TrackerAddLine, CF_DEMO },
