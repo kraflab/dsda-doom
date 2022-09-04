@@ -87,21 +87,21 @@ void dsda_InitConfig(void) {
 }
 
 dboolean dsda_ReadConfig(const char* name, const char* string_param, int int_param) {
-  int i;
+  int id;
 
-  for (i = 1; i < dsda_config_count; ++i) {
+  id = dsda_ConfigIDByName(name);
+
+  if (id) {
     dsda_config_t* conf;
 
-    conf = &dsda_config[i];
+    conf = &dsda_config[id];
 
-    if (!strcmp(name, conf->name)) {
-      if (conf->type == dsda_config_int && !string_param)
-        dsda_InitIntConfig(conf, int_param);
-      else if (conf->type == dsda_config_string && string_param)
-        dsda_InitStringConfig(conf, string_param);
+    if (conf->type == dsda_config_int && !string_param)
+      dsda_InitIntConfig(conf, int_param);
+    else if (conf->type == dsda_config_string && string_param)
+      dsda_InitStringConfig(conf, string_param);
 
-      return true;
-    }
+    return true;
   }
 
   return false;
@@ -179,39 +179,48 @@ const char* dsda_PersistentStringConfig(dsda_config_identifier_t id) {
 }
 
 char* dsda_ConfigSummary(const char* name) {
-  int i;
+  int id;
+  char* summary = NULL;
+  size_t length;
 
-  for (i = 1; i < dsda_config_count; ++i) {
+  id = dsda_ConfigIDByName(name);
+
+  if (id) {
     dsda_config_t* conf;
 
-    conf = &dsda_config[i];
+    conf = &dsda_config[id];
 
-    if (!strcmp(name, dsda_config[i].name)) {
-      char* summary = NULL;
-      size_t length;
-
-      if (conf->type == dsda_config_int) {
-        length = snprintf(NULL, 0,
-                          "%s: %d (transient), %d (persistent)", conf->name,
-                          conf->transient_value.v_int, conf->persistent_value.v_int);
-        summary = Z_Malloc(length + 1);
-        snprintf(summary, length + 1,
-                          "%s: %d (transient), %d (persistent)", conf->name,
-                          conf->transient_value.v_int, conf->persistent_value.v_int);
-      }
-      else if (conf->type == dsda_config_string) {
-        length = snprintf(NULL, 0,
-                          "%s: %s (transient), %s (persistent)", conf->name,
-                          conf->transient_value.v_string, conf->persistent_value.v_string);
-        summary = Z_Malloc(length + 1);
-        snprintf(summary, length + 1,
-                          "%s: %s (transient), %s (persistent)", conf->name,
-                          conf->transient_value.v_string, conf->persistent_value.v_string);
-      }
-
-      return summary;
+    if (conf->type == dsda_config_int) {
+      length = snprintf(NULL, 0,
+                        "%s: %d (transient), %d (persistent)", conf->name,
+                        conf->transient_value.v_int, conf->persistent_value.v_int);
+      summary = Z_Malloc(length + 1);
+      snprintf(summary, length + 1,
+                        "%s: %d (transient), %d (persistent)", conf->name,
+                        conf->transient_value.v_int, conf->persistent_value.v_int);
     }
+    else if (conf->type == dsda_config_string) {
+      length = snprintf(NULL, 0,
+                        "%s: %s (transient), %s (persistent)", conf->name,
+                        conf->transient_value.v_string, conf->persistent_value.v_string);
+      summary = Z_Malloc(length + 1);
+      snprintf(summary, length + 1,
+                        "%s: %s (transient), %s (persistent)", conf->name,
+                        conf->transient_value.v_string, conf->persistent_value.v_string);
+    }
+
+    return summary;
   }
 
   return NULL;
+}
+
+int dsda_ConfigIDByName(const char* name) {
+  int i;
+
+  for (i = 1; i < dsda_config_count; ++i)
+    if (!strcmp(name, dsda_config[i].name))
+      return i;
+
+  return 0;
 }

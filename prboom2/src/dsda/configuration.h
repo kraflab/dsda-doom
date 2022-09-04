@@ -63,5 +63,6 @@ int dsda_PersistentIntConfig(dsda_config_identifier_t id);
 const char* dsda_StringConfig(dsda_config_identifier_t id);
 const char* dsda_PersistentStringConfig(dsda_config_identifier_t id);
 char* dsda_ConfigSummary(const char* name);
+int dsda_ConfigIDByName(const char* name);
 
 #endif
