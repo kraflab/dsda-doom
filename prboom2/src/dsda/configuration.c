@@ -66,12 +66,18 @@ static void dsda_ConstrainIntConfig(dsda_config_t* conf) {
     conf->transient_value.v_int = conf->lower_limit;
 }
 
+static void dsda_PropagateIntConfig(dsda_config_t* conf) {
+  if (conf->int_binding)
+    *conf->int_binding = conf->transient_value.v_int;
+}
+
 // No side effects
 static void dsda_InitIntConfig(dsda_config_t* conf, int value) {
   conf->transient_value.v_int = value;
 
   dsda_ConstrainIntConfig(conf);
   dsda_PersistIntConfig(conf);
+  dsda_PropagateIntConfig(conf);
 }
 
 // No side effects
@@ -81,6 +87,10 @@ static void dsda_InitStringConfig(dsda_config_t* conf, const char* value) {
 
   conf->transient_value.v_string = Z_Strdup(value);
   dsda_PersistStringConfig(conf);
+}
+
+static void dsda_BindInt(dsda_config_identifier_t id, int* p) {
+  dsda_config[id].int_binding = p;
 }
 
 void dsda_InitConfig(void) {
@@ -150,6 +160,8 @@ int dsda_UpdateIntConfig(dsda_config_identifier_t id, int value, dboolean persis
 
   if (persist)
     dsda_PersistIntConfig(&dsda_config[id]);
+
+  dsda_PropagateIntConfig(&dsda_config[id]);
 
   if (dsda_config[id].onUpdate)
     dsda_config[id].onUpdate();

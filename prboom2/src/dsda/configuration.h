@@ -52,6 +52,7 @@ typedef struct {
   dboolean strict;
   int strict_value;
   void (*onUpdate)(void);
+  int* int_binding;
   dsda_config_value_t transient_value;
   dsda_config_value_t persistent_value;
 } dsda_config_t;
