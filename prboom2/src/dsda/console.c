@@ -812,6 +812,23 @@ static dboolean console_ScriptRun(const char* command, const char* args) {
   return false;
 }
 
+static dboolean console_Check(const char* command, const char* args) {
+  char name[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%s", name)) {
+    char* summary;
+
+    summary = dsda_ConfigSummary(name);
+
+    if (summary) {
+      lprintf(LO_INFO, "%s\n", summary);
+      Z_Free(summary);
+      return true;
+    }
+  }
+
+  return false;
+}
 
 typedef dboolean (*console_command_t)(const char*, const char*);
 
@@ -840,6 +857,7 @@ static console_command_entry_t console_commands[] = {
   { "player.round_xy", console_PlayerRoundXY, CF_NEVER },
 
   { "script.run", console_ScriptRun, CF_ALWAYS },
+  { "check", console_Check, CF_ALWAYS },
 
   // tracking
   { "tracker.add_line", console_TrackerAddLine, CF_DEMO },
