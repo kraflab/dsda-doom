@@ -31,6 +31,15 @@ typedef enum {
   dsda_config_process_priority,
   dsda_config_max_player_corpse,
   dsda_config_input_profile,
+  dsda_config_weapon_choice_1,
+  dsda_config_weapon_choice_2,
+  dsda_config_weapon_choice_3,
+  dsda_config_weapon_choice_4,
+  dsda_config_weapon_choice_5,
+  dsda_config_weapon_choice_6,
+  dsda_config_weapon_choice_7,
+  dsda_config_weapon_choice_8,
+  dsda_config_weapon_choice_9,
   dsda_config_count,
 } dsda_config_identifier_t;
 

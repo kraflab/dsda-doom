@@ -2794,20 +2794,6 @@ static const char *weapon_attack_alignment_strings[] = {
 // Note that this screen has no PREV or NEXT items, since there are no
 // neighboring screens.
 
-enum {           // killough 10/98: enum for y-offset info
-  weap_attack_alignment,
-  weap_stub1,
-  weap_pref1,
-  weap_pref2,
-  weap_pref3,
-  weap_pref4,
-  weap_pref5,
-  weap_pref6,
-  weap_pref7,
-  weap_pref8,
-  weap_pref9,
-};
-
 setup_menu_t weap_settings1[];
 
 setup_menu_t* weap_settings[] =
@@ -2818,21 +2804,19 @@ setup_menu_t* weap_settings[] =
 
 setup_menu_t weap_settings1[] =  // Weapons Settings screen
 {
-  {"WEAPON ATTACK ALIGNMENT",S_CHOICE,m_null,WP_X, WP_Y+weap_attack_alignment*8, {"weapon_attack_alignment"}, 0, NULL, weapon_attack_alignment_strings},
+  { "WEAPON ATTACK ALIGNMENT", S_CHOICE, m_null, WP_X, WP_Y, { "weapon_attack_alignment" }, 0, NULL, weapon_attack_alignment_strings },
 
-  {"1ST CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref1*8, {"weapon_choice_1"}},
-  {"2nd CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref2*8, {"weapon_choice_2"}},
-  {"3rd CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref3*8, {"weapon_choice_3"}},
-  {"4th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref4*8, {"weapon_choice_4"}},
-  {"5th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref5*8, {"weapon_choice_5"}},
-  {"6th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref6*8, {"weapon_choice_6"}},
-  {"7th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref7*8, {"weapon_choice_7"}},
-  {"8th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref8*8, {"weapon_choice_8"}},
-  {"9th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref9*8, {"weapon_choice_9"}},
+  { "1ST CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 2 * 8, { dsda_config_weapon_choice_1 } },
+  { "2nd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 3 * 8, { dsda_config_weapon_choice_2 } },
+  { "3rd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 4 * 8, { dsda_config_weapon_choice_3 } },
+  { "4th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 5 * 8, { dsda_config_weapon_choice_4 } },
+  { "5th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 6 * 8, { dsda_config_weapon_choice_5 } },
+  { "6th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 7 * 8, { dsda_config_weapon_choice_6 } },
+  { "7th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 8 * 8, { dsda_config_weapon_choice_7 } },
+  { "8th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 9 * 8, { dsda_config_weapon_choice_8 } },
+  { "9th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 10 * 8, { dsda_config_weapon_choice_9 } },
 
-  // Final entry
-  {0,S_SKIP|S_END,m_null}
-
+  { 0, S_SKIP | S_END, m_null }
 };
 
 // Setting up for the Weapons screen. Turn on flags, set pointers,

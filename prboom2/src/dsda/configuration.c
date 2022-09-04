@@ -17,6 +17,7 @@
 
 #include <string.h>
 
+#include "doomdef.h"
 #include "z_zone.h"
 
 #include "dsda/input.h"
@@ -49,6 +50,7 @@ typedef struct {
 } dsda_config_t;
 
 extern int dsda_input_profile;
+extern int weapon_preferences[2][NUMWEAPONS + 1];
 
 static void UpdateRealticClockRate(void) {
   void I_Init2(void);
@@ -84,6 +86,42 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_input_profile] = {
     "input_profile", dsda_config_input_profile,
     dsda_config_int, 0, DSDA_INPUT_PROFILE_COUNT - 1, { 0 }, &dsda_input_profile
+  },
+  [dsda_config_weapon_choice_1] = {
+    "weapon_choice_1", dsda_config_weapon_choice_1,
+    dsda_config_int, 0, 9, { 6 }, &weapon_preferences[0][0]
+  },
+  [dsda_config_weapon_choice_2] = {
+    "weapon_choice_2", dsda_config_weapon_choice_2,
+    dsda_config_int, 0, 9, { 9 }, &weapon_preferences[0][1]
+  },
+  [dsda_config_weapon_choice_3] = {
+    "weapon_choice_3", dsda_config_weapon_choice_3,
+    dsda_config_int, 0, 9, { 4 }, &weapon_preferences[0][2]
+  },
+  [dsda_config_weapon_choice_4] = {
+    "weapon_choice_4", dsda_config_weapon_choice_4,
+    dsda_config_int, 0, 9, { 3 }, &weapon_preferences[0][3]
+  },
+  [dsda_config_weapon_choice_5] = {
+    "weapon_choice_5", dsda_config_weapon_choice_5,
+    dsda_config_int, 0, 9, { 2 }, &weapon_preferences[0][4]
+  },
+  [dsda_config_weapon_choice_6] = {
+    "weapon_choice_6", dsda_config_weapon_choice_6,
+    dsda_config_int, 0, 9, { 8 }, &weapon_preferences[0][5]
+  },
+  [dsda_config_weapon_choice_7] = {
+    "weapon_choice_7", dsda_config_weapon_choice_7,
+    dsda_config_int, 0, 9, { 5 }, &weapon_preferences[0][6]
+  },
+  [dsda_config_weapon_choice_8] = {
+    "weapon_choice_8", dsda_config_weapon_choice_8,
+    dsda_config_int, 0, 9, { 7 }, &weapon_preferences[0][7]
+  },
+  [dsda_config_weapon_choice_9] = {
+    "weapon_choice_9", dsda_config_weapon_choice_9,
+    dsda_config_int, 0, 9, { 1 }, &weapon_preferences[0][8]
   },
 };
 
