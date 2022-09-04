@@ -106,9 +106,6 @@ void I_UpdateRenderSize(void);	// Handle potential
 extern int renderW;		// resolution scaling
 extern int renderH;		// - DTIED
 
-// Priority class for the prboom-plus process
-extern int process_priority;
-
 extern dboolean window_focused;
 void UpdateGrab(void);
 

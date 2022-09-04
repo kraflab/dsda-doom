@@ -204,6 +204,8 @@ static void I_Quit (void)
 
 void I_SetProcessPriority(void)
 {
+  int process_priority = dsda_IntConfig(dsda_config_process_priority);
+
   if (process_priority)
   {
     const char *errbuf = NULL;

@@ -258,7 +258,7 @@ default_t defaults[] =
 {
   //e6y
   SETTING_HEADING("System settings"),
-  {"process_priority", {&process_priority},{0},0,2,def_int},
+  MIGRATED_SETTING(dsda_config_process_priority),
 
   SETTING_HEADING("Misc settings"),
   MIGRATED_SETTING(dsda_config_default_complevel),

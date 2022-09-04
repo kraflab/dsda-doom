@@ -903,8 +903,6 @@ static void I_ClosestResolution (int *width, int *height)
   }
 }
 
-int process_priority;
-
 // e6y
 // It is a simple test of CPU cache misses.
 unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)

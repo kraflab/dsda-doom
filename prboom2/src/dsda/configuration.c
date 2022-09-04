@@ -40,6 +40,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_menu_background] = {
     "menu_background", dsda_config_int, 0, 1, { 1 }
   },
+  [dsda_config_process_priority] = {
+    "process_priority", dsda_config_int, 0, 2, { 0 }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

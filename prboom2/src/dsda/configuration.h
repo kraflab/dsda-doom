@@ -28,6 +28,7 @@ typedef enum {
   dsda_config_default_complevel,
   dsda_config_vanilla_keymap,
   dsda_config_menu_background,
+  dsda_config_process_priority,
   dsda_config_count,
 } dsda_config_identifier_t;
 
