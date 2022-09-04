@@ -23,6 +23,30 @@
 
 #include "configuration.h"
 
+typedef enum {
+  dsda_config_int,
+  dsda_config_string,
+} dsda_config_type_t;
+
+typedef union {
+  int v_int;
+  char* v_string;
+} dsda_config_value_t;
+
+typedef struct {
+  const char* name;
+  dsda_config_type_t type;
+  int lower_limit;
+  int upper_limit;
+  dsda_config_value_t default_value;
+  dboolean strict;
+  int strict_value;
+  void (*onUpdate)(void);
+  int* int_binding;
+  dsda_config_value_t transient_value;
+  dsda_config_value_t persistent_value;
+} dsda_config_t;
+
 extern int dsda_input_profile;
 
 static void UpdateRealticClockRate(void) {

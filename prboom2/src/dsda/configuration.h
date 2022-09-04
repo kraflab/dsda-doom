@@ -34,30 +34,6 @@ typedef enum {
   dsda_config_count,
 } dsda_config_identifier_t;
 
-typedef enum {
-  dsda_config_int,
-  dsda_config_string,
-} dsda_config_type_t;
-
-typedef union {
-  int v_int;
-  char* v_string;
-} dsda_config_value_t;
-
-typedef struct {
-  const char* name;
-  dsda_config_type_t type;
-  int lower_limit;
-  int upper_limit;
-  dsda_config_value_t default_value;
-  dboolean strict;
-  int strict_value;
-  void (*onUpdate)(void);
-  int* int_binding;
-  dsda_config_value_t transient_value;
-  dsda_config_value_t persistent_value;
-} dsda_config_t;
-
 void dsda_InitConfig(void);
 dboolean dsda_ReadConfig(const char* name, const char* string_param, int int_param);
 void dsda_WriteConfig(dsda_config_identifier_t id, int key_length, FILE* file);
