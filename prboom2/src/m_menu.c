@@ -2125,15 +2125,22 @@ static void M_DrawSetting(const setup_menu_t* s)
   // Is the item a selection of choices?
 
   if (flags & S_CHOICE) {
-    if (s->var.def->type == def_int) {
+    if (s->m_group == m_conf)
+    {
+      if (s->selectstrings == NULL) {
+        sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->var.config_id));
+      } else {
+        strcpy(menu_buffer, s->selectstrings[dsda_PersistentIntConfig(s->var.config_id)]);
+      }
+    }
+    else if (s->var.def->type == def_int) {
       if (s->selectstrings == NULL) {
         sprintf(menu_buffer,"%d",*s->var.def->location.pi);
       } else {
         strcpy(menu_buffer,s->selectstrings[*s->var.def->location.pi]);
       }
     }
-
-    if (s->var.def->type == def_str) {
+    else if (s->var.def->type == def_str) {
       sprintf(menu_buffer,"%s", *s->var.def->location.ppsz);
     }
 
@@ -4831,7 +4838,19 @@ dboolean M_Responder (event_t* ev) {
       if (ptr1->m_flags & S_CHOICE) // selection of choices?
       {
         if (action == MENU_LEFT) {
-          if (ptr1->var.def->type == def_int) {
+          if (ptr1->m_group == m_conf) {
+            int value = dsda_PersistentIntConfig(ptr1->var.config_id);
+
+            do {
+              --value;
+            } while (value && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
+
+            if (dsda_PersistentIntConfig(ptr1->var.config_id) != value) {
+              S_StartSound(NULL, g_sfx_menu);
+              dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
+            }
+          }
+          else if (ptr1->var.def->type == def_int) {
             int value = *ptr1->var.def->location.pi;
 
             value = value - 1;
@@ -4847,7 +4866,7 @@ dboolean M_Responder (event_t* ev) {
               S_StartSound(NULL,g_sfx_menu);
             *ptr1->var.def->location.pi = value;
           }
-          if (ptr1->var.def->type == def_str) {
+          else if (ptr1->var.def->type == def_str) {
             int old_value, value;
 
             old_value = M_IndexInChoices(*ptr1->var.def->location.ppsz,
@@ -4860,8 +4879,20 @@ dboolean M_Responder (event_t* ev) {
             *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
           }
         }
-        if (action == MENU_RIGHT) {
-          if (ptr1->var.def->type == def_int) {
+        else if (action == MENU_RIGHT) {
+          if (ptr1->m_group == m_conf) {
+            int value = dsda_PersistentIntConfig(ptr1->var.config_id);
+
+            do {
+              ++value;
+            } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
+
+            if (dsda_PersistentIntConfig(ptr1->var.config_id) != value) {
+              S_StartSound(NULL, g_sfx_menu);
+              dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
+            }
+          }
+          else if (ptr1->var.def->type == def_int) {
             int value = *ptr1->var.def->location.pi;
 
             value = value + 1;
@@ -4877,7 +4908,7 @@ dboolean M_Responder (event_t* ev) {
               S_StartSound(NULL,g_sfx_menu);
             *ptr1->var.def->location.pi = value;
           }
-          if (ptr1->var.def->type == def_str) {
+          else if (ptr1->var.def->type == def_str) {
             int old_value, value;
 
             old_value = M_IndexInChoices(*ptr1->var.def->location.ppsz,
@@ -4890,8 +4921,11 @@ dboolean M_Responder (event_t* ev) {
             *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
           }
         }
-        if (action == MENU_ENTER) {
-          M_SettingUpdated(ptr1, true);
+        else if (action == MENU_ENTER) {
+          if (ptr1->m_group != m_conf)
+          {
+            M_SettingUpdated(ptr1, true);
+          }
           M_SelectDone(ptr1);                           // phares 4/17/98
         }
         return true;
