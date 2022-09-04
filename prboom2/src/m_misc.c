@@ -87,6 +87,7 @@
 // NSM
 #include "i_capture.h"
 
+#define SETTING_HEADING(str) { str, { NULL }, { 0 }, UL, UL, def_none }
 #define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, 0, id, { k, m, j } }
 #define MIGRATED_SETTING(id) { NULL, { NULL }, { 0 }, 0, 0, 0, id }
 
@@ -256,10 +257,10 @@ int map_level_stat;
 default_t defaults[] =
 {
   //e6y
-  {"System settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("System settings"),
   {"process_priority", {&process_priority},{0},0,2,def_int},
 
-  {"Misc settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Misc settings"),
   MIGRATED_SETTING(dsda_config_default_complevel),
   MIGRATED_SETTING(dsda_config_vanilla_keymap),
   MIGRATED_SETTING(dsda_config_realtic_clock_rate),
@@ -276,7 +277,7 @@ default_t defaults[] =
   {"demo_smoothturnsfactor", {&demo_smoothturnsfactor},  {6},1,SMOOTH_PLAYING_MAXFACTOR,
    def_int},
 
-  {"Game settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Game settings"),
   {"default_skill",{&defaultskill},{4},1,5, // jff 3/24/98 allow default skill setting
    def_int}, // selects default skill 1=TYTD 2=NTR 3=HMP 4=UV 5=NM
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
@@ -293,11 +294,11 @@ default_t defaults[] =
   {"autorun",{(int *)&dsda_setting[dsda_autorun]},{1},0,1,  // killough 3/6/98: preserve autorun across games
    def_bool},
 
-  {"Dehacked settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Dehacked settings"),
   {"deh_apply_cheats",{&deh_apply_cheats},{1},0,1,
    def_bool}, // if 0, dehacked cheat replacements are ignored.
 
-  {"Sound settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Sound settings"),
   {"snd_pcspeaker",{&snd_pcspeaker},{0}, 0, 1, def_bool},
   {"sound_card",{&snd_card},{-1},-1,7,       // jff 1/18/98 allow Allegro drivers
    def_int}, // select sounds driver (DOS), -1 is autodetect, 0 is none; in Linux, non-zero enables sound
@@ -327,7 +328,7 @@ default_t defaults[] =
   {"mus_fluidsynth_gain",{&mus_fluidsynth_gain},{50},0,1000,def_int}, // NSM  fine tune fluidsynth output level
   {"mus_opl_gain",{&mus_opl_gain},{50},0,1000,def_int}, // NSM  fine tune opl output level
 
-  {"Video settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Video settings"),
   {"videomode",{NULL, &default_videomode},{0,"Software"},UL,UL,def_str},
   /* 640x480 default resolution */
   {"screen_resolution",{NULL, &screen_resolution},{0,"640x480"},UL,UL,def_str},
@@ -366,7 +367,7 @@ default_t defaults[] =
   { "patch_edges", { (int*) &drawvars.patch_edges }, { RDRAW_MASKEDCOLUMNEDGE_SQUARE },
     RDRAW_MASKEDCOLUMNEDGE_SQUARE, RDRAW_MASKEDCOLUMNEDGE_SLOPED, def_int },
 
-  {"OpenGL settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("OpenGL settings"),
   {"gl_arb_multitexture", {&gl_arb_multitexture_default}, {1},0,1,
    def_bool},
   {"gl_arb_texture_compression", {&gl_arb_texture_compression_default}, {1},0,1,
@@ -430,7 +431,7 @@ default_t defaults[] =
    def_bool},
 
   // defaults { key, mouseb, joyb }
-  { "Input settings", { NULL }, { 0 }, UL, UL, def_none },
+  SETTING_HEADING("Input settings"),
 
   { "input_profile", { &dsda_input_profile }, { 0 }, 0, DSDA_INPUT_PROFILE_COUNT - 1, def_int },
 
@@ -621,7 +622,7 @@ default_t defaults[] =
   INPUT_SETTING("input_script_8", dsda_input_script_8, 0, -1, -1),
   INPUT_SETTING("input_script_9", dsda_input_script_9, 0, -1, -1),
 
-  {"Mouse settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Mouse settings"),
   {"use_mouse",{&usemouse},{1},0,1,
    def_bool}, // enables use of mouse with DOOM
   {"mouse_stutter_correction",{&mouse_stutter_correction},{1},0,1,
@@ -633,11 +634,11 @@ default_t defaults[] =
   {"mouse_sensitivity_vert",{&mouseSensitivity_vert},{1},0,UL,
    def_int}, /* adjust vertical (y) mouse sensitivity killough/mead */
 
-  {"Joystick settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Joystick settings"),
   {"use_joystick",{&usejoystick},{0},0,2,
    def_int}, // number of joystick to use (0 for none)
 
-  {"Automap settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Automap settings"),
   //jff 1/7/98 defaults for automap colors
   //jff 4/3/98 remove -1 in lower range, 0 now disables new map features
   {"mapcolor_back", {&mapcolor_back}, {247},0,255,  // black //jff 4/6/98 new black
@@ -729,7 +730,7 @@ default_t defaults[] =
   {"map_things_appearance", {(int*)&map_things_appearance}, {map_things_appearance_max-1},0,map_things_appearance_max-1,
    def_int},
 
-  {"Heads-up display settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Heads-up display settings"),
   //jff 2/16/98 defaults for color ranges in hud and status
   {"hudcolor_titl", {&hudcolor_titl}, {5},0,9,  // gold range
    def_int}, // color range used for automap level title
@@ -759,7 +760,7 @@ default_t defaults[] =
   //jff 2/23/98
   { "hud_displayed", { &hud_displayed },  { 0 }, 0, 1, def_bool },
 
-  { "Prboom-plus heads-up display settings", { NULL }, { 0 }, UL, UL, def_none },
+  SETTING_HEADING("Prboom-plus heads-up display settings"),
   { "hudadd_secretarea", { &hudadd_secretarea }, { 0 }, 0, 1, def_bool },
   { "hudadd_demoprogressbar", { &hudadd_demoprogressbar }, { 1 }, 0, 1, def_bool },
   { "hudadd_crosshair", { &hudadd_crosshair }, { 0 }, 0, HU_CROSSHAIRS - 1, def_bool },
@@ -771,25 +772,25 @@ default_t defaults[] =
   { "hudadd_crosshair_lock_target", { &hudadd_crosshair_lock_target }, { 0 }, 0, 1, def_bool },
 
   //e6y
-  { "Prboom-plus mouse settings", { NULL }, { 0 }, UL, UL, def_none },
+  SETTING_HEADING("Prboom-plus mouse settings"),
   { "mouse_acceleration", { &mouse_acceleration }, { 0 }, 0, UL, def_int },
   { "mouse_sensitivity_mlook", { &mouseSensitivity_mlook }, { 10 }, 0, UL, def_int },
   { "mouse_doubleclick_as_use", { &mouse_doubleclick_as_use }, { 1 }, 0, 1, def_bool },
   { "mouse_carrytics", { &mouse_carrytics }, { 1 }, 0, 1, def_bool },
 
-  { "Prboom-plus demos settings", { NULL }, { 0 }, UL, UL, def_none },
+  SETTING_HEADING("Prboom-plus demos settings"),
   { "demo_demoex_filename", { NULL, &demo_demoex_filename }, { 0, "" }, UL, UL, def_str },
   { "getwad_cmdline", { NULL, &getwad_cmdline }, { 0, "" }, UL, UL, def_str },
   { "quickstart_window_ms", { &quickstart_window_ms }, { 0 }, 0, 1000, def_int },
 
-  { "Prboom-plus game settings", { NULL }, { 0 }, UL, UL, def_none },
+  SETTING_HEADING("Prboom-plus game settings"),
   { "movement_strafe50", { &movement_strafe50 }, { 0 }, 0, 1, def_bool },
   { "movement_strafe50onturns", { &movement_strafe50onturns }, { 0 }, 0, 1, def_bool },
   { "movement_shorttics", { &movement_shorttics }, { 0 }, 0, 1, def_bool },
   { "interpolation_maxobjects", { &interpolation_maxobjects }, { 0 }, 0, UL, def_int },
   { "speed_step", { &speed_step }, { 0 }, 0, 1000, def_int },
 
-  { "Prboom-plus misc settings", { NULL }, { 0 }, UL, UL, def_none },
+  SETTING_HEADING("Prboom-plus misc settings"),
   { "screenshot_dir", { NULL, &screenshot_dir }, { 0, "" }, UL, UL, def_str },
   { "health_bar", { &health_bar }, { 0 }, 0, 1, def_bool },
   { "health_bar_full_length", { &health_bar_full_length }, { 1 }, 0, 1, def_bool },
@@ -797,7 +798,7 @@ default_t defaults[] =
   { "health_bar_yellow", { &health_bar_yellow }, { 99 }, 0, 100, def_int },
   { "health_bar_green", { &health_bar_green }, { 0 }, 0, 100, def_int },
 
-  { "DSDA-Doom settings", { NULL }, { 0 }, UL, UL, def_none },
+  SETTING_HEADING("DSDA-Doom settings"),
   { "dsda_strict_mode", { (int *) &dsda_setting[dsda_strict_mode] }, { 1 }, 0, 1, def_bool },
   { "dsda_cycle_ghost_colors", { &dsda_cycle_ghost_colors }, { 0 }, 0, 1, def_bool },
   { "dsda_auto_key_frame_interval", { &dsda_auto_key_frame_interval }, { 1 }, 1, 600, def_int },
@@ -830,7 +831,7 @@ default_t defaults[] =
   { "dsda_viewbob", { &dsda_viewbob }, { 1 }, 0, 1, def_bool },
   { "dsda_weaponbob", { &dsda_weaponbob }, { 1 }, 0, 1, def_bool },
 
-  { "Scripts", { NULL }, { 0 }, UL, UL, def_none },
+  SETTING_HEADING("Scripts"),
   { "dsda_script_0", { 0, &dsda_console_script[0] }, { 0, "" }, UL, UL, def_str },
   { "dsda_script_1", { 0, &dsda_console_script[1] }, { 0, "" }, UL, UL, def_str },
   { "dsda_script_2", { 0, &dsda_console_script[2] }, { 0, "" }, UL, UL, def_str },
@@ -843,7 +844,7 @@ default_t defaults[] =
   { "dsda_script_9", { 0, &dsda_console_script[9] }, { 0, "" }, UL, UL, def_str },
 
   // NSM
-  {"Video capture encoding settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Video capture encoding settings"),
   {"cap_soundcommand",{NULL, &cap_soundcommand},{0,"ffmpeg -f s16le -ar %s -ac 2 -i - -c:a libopus -y temp_a.nut"},UL,UL,def_str},
   {"cap_videocommand",{NULL, &cap_videocommand},{0,"ffmpeg -f rawvideo -pix_fmt rgb24 -r %r -s %wx%h -i - -c:v libx264 -y temp_v.nut"},UL,UL,def_str},
   {"cap_muxcommand",{NULL, &cap_muxcommand},{0,"ffmpeg -i temp_v.nut -i temp_a.nut -c copy -y %f"},UL,UL,def_str},
@@ -853,7 +854,7 @@ default_t defaults[] =
   {"cap_fps", {&cap_fps},{60},16,300,def_int},
   {"cap_wipescreen", {&cap_wipescreen},{0},0,1,def_bool},
 
-  {"Prboom-plus video settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Prboom-plus video settings"),
   {"sdl_video_window_pos", {NULL,&sdl_video_window_pos}, {0,"center"},UL,UL,
    def_str},
   {"palette_ondamage", {&palette_ondamage},  {1},0,1,
@@ -896,7 +897,7 @@ default_t defaults[] =
   {"movement_mouseinvert", {&movement_mouseinvert},  {0},0,1,
    def_bool},
 
-  {"Prboom-plus OpenGL settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Prboom-plus OpenGL settings"),
   {"gl_allow_detail_textures", {&gl_allow_detail_textures},  {1},0,1,
    def_bool},
   {"gl_detail_maxdist", {&gl_detail_maxdist},  {0},0,65535,
@@ -953,7 +954,7 @@ default_t defaults[] =
   {"gl_blend_animations",{&gl_blend_animations},{0},0,1,
    def_bool},
 
-  {"Prboom-plus emulation settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Prboom-plus emulation settings"),
   {"overrun_spechit_warn", {&overflows[OVERFLOW_SPECHIT].warn},  {0},0,1,
    def_bool},
   {"overrun_spechit_emulate", {&overflows[OVERFLOW_SPECHIT].emulate},  {1},0,1,
@@ -979,7 +980,7 @@ default_t defaults[] =
   {"overrun_missedbackside_emulate", {&overflows[OVERFLOW_MISSEDBACKSIDE].emulate},  {0},0,1,
    def_bool},
 
-  {"Prboom-plus 'bad' compatibility settings",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Prboom-plus 'bad' compatibility settings"),
   {"comperr_zerotag", {&default_comperr[comperr_zerotag]},  {0},0,1,
    def_bool},
   {"comperr_passuse", {&default_comperr[comperr_passuse]},  {0},0,1,
@@ -991,7 +992,7 @@ default_t defaults[] =
   {"comperr_freeaim", {&default_comperr[comperr_freeaim]},  {0},0,1,
    def_bool},
 
-  {"Weapon preferences",{NULL},{0},UL,UL,def_none},
+  SETTING_HEADING("Weapon preferences"),
   // killough 2/8/98: weapon preferences set by user:
   {"weapon_choice_1", {&weapon_preferences[0][0]}, {6}, 0,9,
    def_int}, // first choice for weapon (best)
