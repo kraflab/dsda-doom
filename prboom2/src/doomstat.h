@@ -300,8 +300,6 @@ extern  int             mouseSensitivity_vert;
 // debug flag to cancel adaptiveness
 extern  dboolean         singletics;
 
-extern  int             bodyqueslot;
-
 // Needed to store the number of the dummy sky flat.
 // Used for rendering, as well as tracking projectiles etc.
 

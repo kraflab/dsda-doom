@@ -53,6 +53,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/configuration.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 
@@ -4828,24 +4829,35 @@ void A_FreeTargMobj(mobj_t * mo)
     }
 }
 
-extern int bodyqueslot, bodyquesize;
-extern mobj_t** bodyque;
+static int bodyqueslot, bodyquesize;
+static mobj_t** bodyque;
+
+void A_ResetPlayerCorpseQueue(void)
+{
+  bodyqueslot = 0;
+  bodyquesize = dsda_IntConfig(dsda_config_max_player_corpse);
+}
 
 void A_AddPlayerCorpse(mobj_t * actor)
 {
-    if (bodyquesize > 0)
-    {
-      static int queuesize;
-      if (queuesize < bodyquesize)
-    	{
-    	  bodyque = Z_Realloc(bodyque, bodyquesize * sizeof(*bodyque));
-    	  memset(bodyque+queuesize, 0, (bodyquesize - queuesize) * sizeof(*bodyque));
-    	  queuesize = bodyquesize;
-    	}
-      if (bodyqueslot >= bodyquesize)
-    	  P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
-      bodyque[bodyqueslot++ % bodyquesize] = actor;
-    }
+  if (bodyquesize > 0)
+  {
+    static int queuesize;
+
+    if (queuesize < bodyquesize)
+  	{
+  	  bodyque = Z_Realloc(bodyque, bodyquesize * sizeof(*bodyque));
+  	  memset(bodyque + queuesize, 0, (bodyquesize - queuesize) * sizeof(*bodyque));
+  	  queuesize = bodyquesize;
+  	}
+
+    if (bodyqueslot >= bodyquesize)
+  	  P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
+
+    bodyque[bodyqueslot++ % bodyquesize] = actor;
+  }
+  else if (!bodyquesize)
+    P_RemoveMobj(actor);
 }
 
 void A_FlameSnd(mobj_t * actor)

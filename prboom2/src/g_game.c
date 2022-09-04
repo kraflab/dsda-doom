@@ -263,10 +263,6 @@ char         savedescription[SAVEDESCLEN];  // Description to save in savegame i
 //jff 3/24/98 define defaultskill here
 int defaultskill;               //note 1-based
 
-// killough 2/8/98: make corpse queue variable in size
-int    bodyqueslot, bodyquesize;        // killough 2/8/98
-mobj_t **bodyque = 0;                   // phares 8/10/98
-
 // heretic
 #include "p_user.h"
 #include "heretic/def.h"
@@ -1743,27 +1739,11 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
   if (!i)
     return false;
 
-  // flush an old corpse if needed
-  // killough 2/8/98: make corpse queue have an adjustable limit
-  // killough 8/1/98: Fix bugs causing strange crashes
-
-  if (bodyquesize > 0)
-    {
-      static int queuesize;
-      if (queuesize < bodyquesize)
   {
-    bodyque = Z_Realloc(bodyque, bodyquesize*sizeof*bodyque);
-    memset(bodyque+queuesize, 0,
-     (bodyquesize-queuesize)*sizeof*bodyque);
-    queuesize = bodyquesize;
+    void A_AddPlayerCorpse(mobj_t * actor);
+
+    A_AddPlayerCorpse(players[playernum].mo);
   }
-      if (bodyqueslot >= bodyquesize)
-  P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
-      bodyque[bodyqueslot++ % bodyquesize] = players[playernum].mo;
-    }
-  else
-    if (!bodyquesize)
-      P_RemoveMobj(players[playernum].mo);
 
   // spawn a teleport fog
   ss = R_PointInSubsector (x,y);

@@ -265,8 +265,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_vanilla_keymap),
   MIGRATED_SETTING(dsda_config_realtic_clock_rate),
   MIGRATED_SETTING(dsda_config_menu_background),
-  {"max_player_corpse", {&bodyquesize}, {32},-1,UL,   // killough 2/8/98
-   def_int}, // number of dead bodies in view supported (-1 = no limit)
+  MIGRATED_SETTING(dsda_config_max_player_corpse),
   {"flashing_hom",{&flashing_hom},{0},0,1,
    def_bool}, // killough 10/98 - enable flashing HOM indicator
   {"level_precache",{(int*)&precache},{1},0,1,
