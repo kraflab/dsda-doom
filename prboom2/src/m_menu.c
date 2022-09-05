@@ -2030,28 +2030,28 @@ static void M_DrawSetting(const setup_menu_t* s)
   // Is the item a paint chip?
 
   if (flags & S_COLOR) // Automap paint chip
+  {
+    int ch;
+
+    ch = *s->var.def->location.pi;
+    // proff 12/6/98: Drawing of colorchips completly changed for hi-res, it now uses a patch
+    // draw the paint chip
+    // e6y: wide-res
     {
-      int ch;
-
-      ch = *s->var.def->location.pi;
-      // proff 12/6/98: Drawing of colorchips completly changed for hi-res, it now uses a patch
-      // draw the paint chip
-      // e6y: wide-res
-      {
-        int xx = x, yy = y - 1, ww = 8, hh = 8;
-        V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-        V_FillRect(0, xx, yy, ww, hh, PAL_BLACK);
-        xx = x + 1, yy = y, ww = 6, hh = 6;
-        V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-        V_FillRect(0, xx, yy, ww, hh, (byte)ch);
-      }
-
-      if (!ch) // don't show this item in automap mode
-  V_DrawNamePatch(x+1,y,0,"M_PALNO", CR_DEFAULT, VPT_STRETCH);
-  if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-    M_DrawString(x + 8, y, color, " <");
-      return;
+      int xx = x, yy = y - 1, ww = 8, hh = 8;
+      V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+      V_FillRect(0, xx, yy, ww, hh, PAL_BLACK);
+      xx = x + 1, yy = y, ww = 6, hh = 6;
+      V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+      V_FillRect(0, xx, yy, ww, hh, (byte)ch);
     }
+
+    if (!ch) // don't show this item in automap mode
+      V_DrawNamePatch(x+1,y,0,"M_PALNO", CR_DEFAULT, VPT_STRETCH);
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
+      M_DrawString(x + 8, y, color, " <");
+    return;
+  }
 
   // Is the item a string?
   if (flags & S_STRING) {
