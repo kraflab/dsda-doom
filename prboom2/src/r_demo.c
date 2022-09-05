@@ -159,6 +159,11 @@ void R_SmoothPlaying_Reset(player_t *player)
   }
 }
 
+void R_SmoothPlaying_ResetDisplayPlayer(void)
+{
+  R_SmoothPlaying_Reset(NULL);
+}
+
 void R_SmoothPlaying_Add(int delta)
 {
   if (demo_smoothturns && demoplayback && !demorecording)

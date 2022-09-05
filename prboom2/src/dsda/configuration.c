@@ -68,9 +68,9 @@ static void UpdateRealticClockRate(void) {
 }
 
 static void UpdateDemoSmoothTurns(void) {
-  void R_SmoothPlaying_Reset(player_t* player);
+  void R_SmoothPlaying_ResetDisplayPlayer(void);
 
-  R_SmoothPlaying_Reset(NULL);
+  R_SmoothPlaying_ResetDisplayPlayer();
 }
 
 static void UpdateMouseLook(void) {
