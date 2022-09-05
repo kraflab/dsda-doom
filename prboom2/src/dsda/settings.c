@@ -146,8 +146,8 @@ dboolean dsda_MouseLook(void) {
   return dsda_IntConfig(dsda_config_mouselook);
 }
 
-dboolean dsda_NoVert(void) {
-  return dsda_IntConfig(dsda_config_novert);
+dboolean dsda_VertMouse(void) {
+  return dsda_IntConfig(dsda_config_vertmouse);
 }
 
 dboolean dsda_StrictMode(void) {

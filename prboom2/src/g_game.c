@@ -941,7 +941,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       }
   }
 
-  if (!dsda_NoVert())
+  if (dsda_VertMouse())
   {
     forward += mousey;
   }

@@ -182,8 +182,8 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_strict_mode", dsda_config_strict_mode,
     BOOL_DEFAULT_ON, NULL, false, 0, UpdateStrictMode
   },
-  [dsda_config_novert] = {
-    "movement_mousenovert", dsda_config_novert,
+  [dsda_config_vertmouse] = {
+    "movement_vertmouse", dsda_config_vertmouse,
     BOOL_DEFAULT_ON
   },
   [dsda_config_mouselook] = {

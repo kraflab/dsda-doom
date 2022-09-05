@@ -53,7 +53,7 @@ dboolean dsda_WeaponBob(void);
 dboolean dsda_ShowMessages(void);
 dboolean dsda_AutoRun(void);
 dboolean dsda_MouseLook(void);
-dboolean dsda_NoVert(void);
+dboolean dsda_VertMouse(void);
 dboolean dsda_StrictMode(void);
 dboolean dsda_MuteSfx(void);
 dboolean dsda_MuteMusic(void);

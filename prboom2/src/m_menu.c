@@ -3224,7 +3224,7 @@ setup_menu_t device_settings[] = {
   { "Dbl-Click As Use", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "mouse_doubleclick_as_use" } },
   { "Carry Fractional Tics", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "mouse_carrytics" } },
   { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { dsda_config_mouselook } },
-  { "No Vertical Mouse", S_YESNO, m_conf, G_X, G_Y + 9 * 8, { dsda_config_novert } },
+  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 9 * 8, { dsda_config_vertmouse } },
   { "Invert Mouse", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "movement_mouseinvert" }, 0, M_ChangeMouseInvert },
   { "Max View Pitch", S_NUM, m_null, G_X, G_Y + 11 * 8, { "movement_maxviewpitch" }, 0, M_ChangeMaxViewPitch },
   { "Mouse Strafe Divisor", S_NUM,   m_null, G_X, G_Y + 12 * 8, { "movement_mousestrafedivisor" } },
@@ -4101,7 +4101,7 @@ typedef struct {
 
 static toggle_input_t toggle_inputs[] = {
   { dsda_input_strict_mode, dsda_config_strict_mode, true, false, "Strict Mode" },
-  { dsda_input_novert, dsda_config_novert, true, false, "Vertical Mouse Movement", true },
+  { dsda_input_novert, dsda_config_vertmouse, true, false, "Vertical Mouse Movement" },
   { dsda_input_mlook, dsda_config_mouselook, true, true, "Mouselook" },
   { dsda_input_autorun, dsda_config_autorun, true, true, "Auto Run" },
   { dsda_input_messages, dsda_config_show_messages, true, true, "Messages" },

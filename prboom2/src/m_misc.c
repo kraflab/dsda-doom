@@ -661,7 +661,7 @@ default_t defaults[] =
    def_int},
 
   MIGRATED_SETTING(dsda_config_mouselook),
-  MIGRATED_SETTING(dsda_config_novert),
+  MIGRATED_SETTING(dsda_config_vertmouse),
   {"movement_maxviewpitch", {&movement_maxviewpitch},  {90},0,90,
    def_int},
    {"movement_mousestrafedivisor", {&movement_mousestrafedivisor},  {4},1,512,
