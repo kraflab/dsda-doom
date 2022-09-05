@@ -5212,7 +5212,7 @@ dboolean M_Responder (event_t* ev) {
       //
       // killough 10/98: use friendlier char-based input buffer
 
-      if (flags & S_NUM)
+      if (flags & (S_NUM | S_CRITEM))
       {
         setup_gather = true;
         print_warning_about_changes = false;
