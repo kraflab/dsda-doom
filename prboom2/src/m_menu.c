@@ -5046,38 +5046,24 @@ dboolean M_Responder (event_t* ev) {
       {
         if (action != MENU_ENTER)
         {
+          int old_value;
+
           ch -= '0'; // out of ascii
           if (ch < 1 || ch > 9)
             return true; // ignore
 
           // see if 'ch' is already assigned elsewhere. if so,
           // you have to swap assignments.
-          if (ptr1->m_group == m_conf)
-          {
-            int old_value;
-            ptr2 = weap_settings1;
-            old_value = dsda_PersistentIntConfig(ptr1->var.config_id);
-            for (; !(ptr2->m_flags & S_END); ptr2++)
-              if (ptr2->m_flags & S_WEAP && ptr1 != ptr2 &&
-                  dsda_PersistentIntConfig(ptr2->var.config_id) == ch)
-              {
-                dsda_UpdateIntConfig(ptr2->var.config_id, old_value, true);
-                break;
-              }
-            dsda_UpdateIntConfig(ptr1->var.config_id, ch, true);
-          }
-          else
-          {
-            ptr2 = weap_settings1;
-            for (; !(ptr2->m_flags & S_END); ptr2++)
-              if (ptr2->m_flags & S_WEAP &&
-                  *ptr2->var.def->location.pi == ch && ptr1 != ptr2)
-              {
-                *ptr2->var.def->location.pi = *ptr1->var.def->location.pi;
-                break;
-              }
-            *ptr1->var.def->location.pi = ch;
-          }
+          ptr2 = weap_settings1;
+          old_value = dsda_PersistentIntConfig(ptr1->var.config_id);
+          for (; !(ptr2->m_flags & S_END); ptr2++)
+            if (ptr2->m_flags & S_WEAP && ptr1 != ptr2 &&
+                dsda_PersistentIntConfig(ptr2->var.config_id) == ch)
+            {
+              dsda_UpdateIntConfig(ptr2->var.config_id, old_value, true);
+              break;
+            }
+          dsda_UpdateIntConfig(ptr1->var.config_id, ch, true);
         }
 
         M_SelectDone(ptr1);       // phares 4/17/98
