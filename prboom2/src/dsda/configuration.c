@@ -35,13 +35,18 @@ typedef union {
   char* v_string;
 } dsda_config_value_t;
 
+typedef union {
+  int v_int;
+  const char* v_string;
+} dsda_config_default_t;
+
 typedef struct {
   const char* name;
   dsda_config_identifier_t id;
   dsda_config_type_t type;
   int lower_limit;
   int upper_limit;
-  dsda_config_value_t default_value;
+  dsda_config_default_t default_value;
   int* int_binding;
   dboolean strict;
   int strict_value;
