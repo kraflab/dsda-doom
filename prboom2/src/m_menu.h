@@ -142,7 +142,6 @@ typedef enum {
   m_menu,       // action in one group, and another action in another.
   m_build,
 
-  m_dsda,       // use dsda setting logic
   m_conf,       // migrate to new config process
 } setup_group;
 

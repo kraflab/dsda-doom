@@ -48,6 +48,18 @@ typedef enum {
   dsda_config_sts_always_red,
   dsda_config_sts_pct_always_gray,
   dsda_config_sts_traditional_keys,
+  dsda_config_strict_mode,
+  dsda_config_novert,
+  dsda_config_mouselook,
+  dsda_config_autorun,
+  dsda_config_show_messages,
+  dsda_config_command_display,
+  dsda_config_coordinate_display,
+  dsda_config_show_fps,
+  dsda_config_exhud,
+  dsda_config_mute_sfx,
+  dsda_config_mute_music,
+  dsda_config_cheat_codes,
   dsda_config_count,
 } dsda_config_identifier_t;
 

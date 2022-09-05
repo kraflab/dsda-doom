@@ -33,24 +33,6 @@
 
 #include "settings.h"
 
-extern void S_ResetSfxVolume(void);
-extern void I_ResetMusicVolume(void);
-
-dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
-  [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode, dsda_ChangeStrictMode },
-  [dsda_novert] = { 0, 0, "Vertical Mouse Movement", NULL, NULL, true },
-  [dsda_mouselook] = { 0, 0, "Mouselook", M_ChangeMouseLook, M_ChangeMouseLook, false, true },
-  [dsda_autorun] = { 0, 0, "Auto Run", NULL, NULL, false, true },
-  [dsda_show_messages] = { 0, 0, NULL, NULL, M_ChangeMessages, false, true },
-  [dsda_command_display] = { 0, 0, "Command Display", NULL, NULL, false, true },
-  [dsda_coordinate_display] = { 0, 0, "Coordinate Display", NULL, NULL, false, true },
-  [dsda_exhud] = { 0, 0, NULL, NULL, NULL, false, true },
-  [dsda_mute_sfx] = { 0, 0, "Sfx", NULL, S_ResetSfxVolume, true, true },
-  [dsda_mute_music] = { 0, 0, "Music", NULL, I_ResetMusicVolume, true, true },
-  [dsda_cheat_codes] = { 0, 0, "Cheat Codes", NULL, NULL, false, true },
-  [dsda_show_fps] = { 0, 0, "FPS", NULL, dsda_RefreshExHudFPS, false, true  },
-};
-
 int dsda_cycle_ghost_colors;
 int dsda_tas;
 int dsda_skip_next_wipe;
@@ -65,36 +47,10 @@ int dsda_viewbob;
 int dsda_weaponbob;
 
 void dsda_InitSettings(void) {
-  int i;
-
-  for (i = 0; i < DSDA_SETTING_IDENTIFIER_COUNT; i++) {
-    dsda_ResetTransient(&dsda_setting[i]);
-  }
-}
-
-void dsda_ResetTransient(dsda_setting_t* setting) {
-  setting->transient_value = setting->persistent_value;
-  if (setting->initializer)
-    setting->initializer();
-}
-
-void dsda_ToggleSetting(dsda_setting_identifier_t id) {
-  dsda_setting[id].transient_value = !dsda_setting[id].transient_value;
-
-  if (dsda_setting[id].persist_changes)
-    dsda_setting[id].persistent_value = dsda_setting[id].transient_value;
-
-  if (dsda_setting[id].updater)
-    dsda_setting[id].updater();
-
-  if (dsda_setting[id].name)
-    doom_printf(
-      "%s %s",
-      dsda_setting[id].name,
-      dsda_setting[id].transient_value ?
-        dsda_setting[id].invert_text ? "off" : "on" :
-        dsda_setting[id].invert_text ? "on"  : "off"
-    );
+  I_Init2();
+  M_ChangeSpeed();
+  dsda_InitKeyFrame();
+  M_ChangeMouseLook();
 }
 
 static int dsda_WadCompatibilityLevel(void) {
@@ -162,18 +118,8 @@ int dsda_CompatibilityLevel(void) {
   return UNSPECIFIED_COMPLEVEL;
 }
 
-void dsda_ChangeStrictMode(void) {
-  I_Init2(); // side effect of realtic clock rate
-  M_ChangeSpeed(); // side effect of always sr50
-  dsda_InitKeyFrame();
-}
-
 void dsda_SetTas(void) {
   dsda_tas = true;
-}
-
-static int dsda_Transient(dsda_setting_identifier_t id) {
-  return dsda_setting[id].transient_value;
 }
 
 double dsda_FineSensitivity(int base) {
@@ -189,35 +135,35 @@ dboolean dsda_WeaponBob(void) {
 }
 
 dboolean dsda_ShowMessages(void) {
-  return dsda_Transient(dsda_show_messages);
+  return dsda_IntConfig(dsda_config_show_messages);
 }
 
 dboolean dsda_AutoRun(void) {
-  return dsda_Transient(dsda_autorun);
+  return dsda_IntConfig(dsda_config_autorun);
 }
 
 dboolean dsda_MouseLook(void) {
-  return dsda_Transient(dsda_mouselook) && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_mouselook);
 }
 
 dboolean dsda_NoVert(void) {
-  return dsda_Transient(dsda_novert);
+  return dsda_IntConfig(dsda_config_novert);
 }
 
 dboolean dsda_StrictMode(void) {
-  return dsda_Transient(dsda_strict_mode) && demorecording && !dsda_tas;
+  return dsda_IntConfig(dsda_config_strict_mode) && demorecording && !dsda_tas;
 }
 
 dboolean dsda_MuteSfx(void) {
-  return dsda_Transient(dsda_mute_sfx);
+  return dsda_IntConfig(dsda_config_mute_sfx);
 }
 
 dboolean dsda_MuteMusic(void) {
-  return dsda_Transient(dsda_mute_music);
+  return dsda_IntConfig(dsda_config_mute_music);
 }
 
 dboolean dsda_ProcessCheatCodes(void) {
-  return dsda_Transient(dsda_cheat_codes);
+  return dsda_IntConfig(dsda_config_cheat_codes);
 }
 
 dboolean dsda_CycleGhostColors(void) {
@@ -249,19 +195,19 @@ dboolean dsda_ShowSplitData(void) {
 }
 
 dboolean dsda_ExHud(void) {
-  return dsda_Transient(dsda_exhud);
+  return dsda_IntConfig(dsda_config_exhud);
 }
 
 dboolean dsda_CommandDisplay(void) {
-  return dsda_Transient(dsda_command_display) && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_command_display);
 }
 
 dboolean dsda_CoordinateDisplay(void) {
-  return dsda_Transient(dsda_coordinate_display) && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_coordinate_display);
 }
 
 dboolean dsda_ShowFPS(void) {
-  return dsda_Transient(dsda_show_fps);
+  return dsda_IntConfig(dsda_config_show_fps);
 }
 
 dboolean dsda_ShowDemoAttempts(void) {

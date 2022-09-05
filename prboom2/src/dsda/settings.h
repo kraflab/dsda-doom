@@ -22,34 +22,6 @@
 
 #define UNSPECIFIED_COMPLEVEL -2
 
-typedef enum {
-  dsda_strict_mode,
-  dsda_novert,
-  dsda_mouselook,
-  dsda_autorun,
-  dsda_show_messages,
-  dsda_command_display,
-  dsda_coordinate_display,
-  dsda_exhud,
-  dsda_mute_sfx,
-  dsda_mute_music,
-  dsda_cheat_codes,
-  dsda_show_fps,
-  DSDA_SETTING_IDENTIFIER_COUNT
-} dsda_setting_identifier_t;
-
-typedef struct {
-  int persistent_value;
-  int transient_value;
-  const char* name;
-  void (*initializer)(void);
-  void (*updater)(void);
-  int invert_text;
-  int persist_changes;
-} dsda_setting_t;
-
-extern dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT];
-
 extern int dsda_cycle_ghost_colors;
 extern int dsda_command_history_size;
 extern int dsda_hide_empty_commands;
@@ -73,10 +45,7 @@ extern int dsda_show_alive_monsters;
 extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);
-void dsda_ResetTransient(dsda_setting_t* setting);
-void dsda_ToggleSetting(dsda_setting_identifier_t id);
 int dsda_CompatibilityLevel(void);
-void dsda_ChangeStrictMode(void);
 void dsda_SetTas(void);
 double dsda_FineSensitivity(int base);
 dboolean dsda_ViewBob(void);

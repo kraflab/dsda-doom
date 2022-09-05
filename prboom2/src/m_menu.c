@@ -1282,7 +1282,7 @@ void M_SfxVol(int choice)
 
   // Unmute the sfx if we are adjusting the volume
   if (dsda_MuteSfx())
-    dsda_ToggleSetting(dsda_mute_sfx);
+    dsda_ToggleConfig(dsda_config_mute_sfx, true);
 
   S_SetSfxVolume(snd_SfxVolume);
 }
@@ -1303,7 +1303,7 @@ void M_MusicVol(int choice)
 
   // Unmute the music if we are adjusting the volume
   if (dsda_MuteMusic())
-    dsda_ToggleSetting(dsda_mute_music);
+    dsda_ToggleConfig(dsda_config_mute_music, true);
 
   S_SetMusicVolume(snd_MusicVolume);
 }
@@ -1518,7 +1518,7 @@ void M_ToggleMessages(int choice)
 {
   // warning: unused parameter `int choice'
   choice = 0;
-  dsda_ToggleSetting(dsda_show_messages);
+  dsda_ToggleConfig(dsda_config_show_messages, true);
 }
 
 void M_ChangeMessages(void)
@@ -3222,8 +3222,8 @@ setup_menu_t device_settings[] = {
   { "Mouse", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
   { "Dbl-Click As Use", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "mouse_doubleclick_as_use" } },
   { "Carry Fractional Tics", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "mouse_carrytics" } },
-  { "Enable Mouselook", S_YESNO, m_dsda, G_X, G_Y + 8 * 8, { "movement_mouselook" }, 0 },
-  { "No Vertical Mouse", S_YESNO, m_dsda, G_X, G_Y + 9 * 8, { "movement_mousenovert" } },
+  { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { dsda_config_mouselook } },
+  { "No Vertical Mouse", S_YESNO, m_conf, G_X, G_Y + 9 * 8, { dsda_config_novert } },
   { "Invert Mouse", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "movement_mouseinvert" }, 0, M_ChangeMouseInvert },
   { "Max View Pitch", S_NUM, m_null, G_X, G_Y + 11 * 8, { "movement_maxviewpitch" }, 0, M_ChangeMaxViewPitch },
   { "Mouse Strafe Divisor", S_NUM,   m_null, G_X, G_Y + 12 * 8, { "movement_mousestrafedivisor" } },
@@ -3231,7 +3231,7 @@ setup_menu_t device_settings[] = {
   { "Mouse Stutter Correction", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "mouse_stutter_correction" } },
 
   { "Keyboard", S_SKIP | S_TITLE, m_null, G_X, G_Y + 16 * 8 },
-  { "Enable Cheat Code Entry", S_YESNO, m_dsda, G_X, G_Y + 17 * 8, { "dsda_cheat_codes" } },
+  { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, G_Y + 17 * 8, { dsda_config_cheat_codes } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { audiovideo_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { misc_settings } },
@@ -3261,11 +3261,11 @@ setup_menu_t misc_settings[] = {
 
 setup_menu_t display_settings[] = {
   { "Display Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Use Extended Hud", S_YESNO, m_dsda, G_X, G_Y + 2 * 8, { "dsda_exhud" } },
+  { "Use Extended Hud", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { dsda_config_exhud } },
   { "Extended Hud Scale", S_NUM, m_null, G_X, G_Y + 3 * 8, { "dsda_ex_text_scale" }, 0, dsda_SetupStretchParams },
   { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 4 * 8, { "dsda_hide_horns" } },
   { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 5 * 8, { "render_wipescreen" } },
-  { "Show FPS", S_YESNO,  m_dsda, G_X, G_Y + 6 * 8, { "dsda_show_fps" }, 0, dsda_RefreshExHudFPS },
+  { "Show FPS", S_YESNO,  m_conf, G_X, G_Y + 6 * 8, { dsda_config_show_fps } },
   { "View Bobbing", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "dsda_viewbob" } },
   { "Weapon Bobbing", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "dsda_weaponbob" } },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, { dsda_config_weapon_attack_alignment }, 0, NULL, weapon_attack_alignment_strings },
@@ -3331,7 +3331,7 @@ setup_menu_t mapping_settings[] = {
 
 setup_menu_t demo_settings[] = {
   { "Demo Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Strict Mode", S_YESNO, m_dsda, G_X, G_Y + 2 * 8, { "dsda_strict_mode" }, 0 },
+  { "Strict Mode", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { dsda_config_strict_mode } },
   { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "dsda_cycle_ghost_colors" } },
   { "Show Demo Attempts", S_YESNO, m_null, G_X, G_Y + 4 * 8, { "dsda_show_demo_attempts" } },
   { "Show Split Data", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "dsda_show_split_data" } },
@@ -3352,10 +3352,10 @@ setup_menu_t demo_settings[] = {
 setup_menu_t tas_settings[] = {
   { "TAS Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Wipe At Full Speed", S_YESNO, m_null, G_X, G_Y + 2 * 8, { "dsda_wipe_at_full_speed" } },
-  { "Show Command Display", S_YESNO, m_dsda, G_X, G_Y + 3 * 8, { "dsda_command_display" } },
+  { "Show Command Display", S_YESNO, m_conf, G_X, G_Y + 3 * 8, { dsda_config_command_display } },
   { "Command History", S_NUM, m_null, G_X, G_Y + 4 * 8, { "dsda_command_history_size" } },
   { "Hide Empty Commands", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "dsda_hide_empty_commands" } },
-  { "Show Coordinate Display", S_YESNO, m_dsda, G_X, G_Y + 6 * 8, { "dsda_coordinate_display" } },
+  { "Show Coordinate Display", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { dsda_config_coordinate_display } },
   { "Permanent Strafe50", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "movement_strafe50" }, 0, M_ChangeSpeed },
   { "Strafe50 On Turns", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "movement_strafe50onturns" }, 0, M_ChangeSpeed },
   { "Game speed (%)", S_NUM | S_PRGWARN, m_conf, G_X, G_Y + 9 * 8, { dsda_config_realtic_clock_rate } },
@@ -3553,11 +3553,6 @@ static int allow_changes(void)
 
 static void M_SettingUpdated(setup_menu_t *setting, int update_current)
 {
-  if (setting->m_group == m_dsda)
-  {
-    dsda_ResetTransient((dsda_setting_t *) setting->var.def->location.pi);
-  }
-
   if (setting->action)
     setting->action();
 }
@@ -4091,23 +4086,26 @@ static inline int GetButtons(const unsigned int max, int data)
 
 typedef struct {
   int input;
-  int setting;
+  dsda_config_identifier_t config_id;
   int allowed_in_strict_mode;
+  dboolean persist;
+  const char* message;
+  dboolean invert_message;
 } toggle_input_t;
 
 static toggle_input_t toggle_inputs[] = {
-  { dsda_input_strict_mode, dsda_strict_mode, true },
-  { dsda_input_novert, dsda_novert, true },
-  { dsda_input_mlook, dsda_mouselook, true },
-  { dsda_input_autorun, dsda_autorun, true },
-  { dsda_input_messages, dsda_show_messages, true },
-  { dsda_input_command_display, dsda_command_display, false },
-  { dsda_input_coordinate_display, dsda_coordinate_display, false },
-  { dsda_input_fps, dsda_show_fps, true },
-  { dsda_input_exhud, dsda_exhud, true },
-  { dsda_input_mute_sfx, dsda_mute_sfx, true },
-  { dsda_input_mute_music, dsda_mute_music, true },
-  { dsda_input_cheat_codes, dsda_cheat_codes, false },
+  { dsda_input_strict_mode, dsda_config_strict_mode, true, false, "Strict Mode" },
+  { dsda_input_novert, dsda_config_novert, true, false, "Vertical Mouse Movement", true },
+  { dsda_input_mlook, dsda_config_mouselook, true, true, "Mouselook" },
+  { dsda_input_autorun, dsda_config_autorun, true, true, "Auto Run" },
+  { dsda_input_messages, dsda_config_show_messages, true, true, "Messages" },
+  { dsda_input_command_display, dsda_config_command_display, false, true, "Command Display" },
+  { dsda_input_coordinate_display, dsda_config_coordinate_display, false, true, "Coordinate Display" },
+  { dsda_input_fps, dsda_config_show_fps, true, true, "FPS" },
+  { dsda_input_exhud, dsda_config_exhud, true, true, "Extended HUD" },
+  { dsda_input_mute_sfx, dsda_config_mute_sfx, true, true, "SFX", true },
+  { dsda_input_mute_music, dsda_config_mute_music, true, true, "Music", true },
+  { dsda_input_cheat_codes, dsda_config_cheat_codes, false, true, "Cheat Codes" },
   { -1 }
 };
 
@@ -4120,7 +4118,13 @@ static void M_HandleToggles(void)
       dsda_InputActivated(toggle->input) &&
       (toggle->allowed_in_strict_mode || !dsda_StrictMode())
     )
-      dsda_ToggleSetting(toggle->setting);
+    {
+      int value;
+
+      value = dsda_ToggleConfig(toggle->config_id, toggle->persist);
+      doom_printf("%s %s", toggle->message, value ? toggle->invert_message ? "off" : "on"
+                                                  : toggle->invert_message ? "on"  : "off");
+    }
   }
 }
 

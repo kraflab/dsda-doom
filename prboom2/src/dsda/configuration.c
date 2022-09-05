@@ -73,6 +73,47 @@ static void UpdateDemoSmoothTurns(void) {
   R_SmoothPlaying_Reset(NULL);
 }
 
+static void UpdateMouseLook(void) {
+  void M_ChangeMouseLook(void);
+
+  M_ChangeMouseLook();
+}
+
+static void UpdateShowMessages(void) {
+  void M_ChangeMessages(void);
+
+  M_ChangeMessages();
+}
+
+static void UpdateMuteSFX(void) {
+  void S_ResetSfxVolume(void);
+
+  S_ResetSfxVolume();
+}
+
+static void UpdateMuteMusic(void) {
+  void I_ResetMusicVolume(void);
+
+  I_ResetMusicVolume();
+}
+
+static void UpdateShowFPS(void) {
+  void dsda_RefreshExHudFPS(void);
+
+  dsda_RefreshExHudFPS();
+}
+
+// TODO: automatically go through strict list
+static void UpdateStrictMode(void) {
+  void I_Init2(void);
+  void M_ChangeSpeed(void);
+  void dsda_InitKeyFrame(void);
+
+  I_Init2(); // side effect of realtic clock rate
+  M_ChangeSpeed(); // side effect of always sr50
+  dsda_InitKeyFrame();
+}
+
 dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_realtic_clock_rate] = {
     "realtic_clock_rate", dsda_config_realtic_clock_rate,
@@ -171,6 +212,54 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_sts_traditional_keys] = {
     "sts_traditional_keys", dsda_config_sts_traditional_keys,
     BOOL_DEFAULT_OFF, &sts_traditional_keys
+  },
+  [dsda_config_strict_mode] = {
+    "dsda_strict_mode", dsda_config_strict_mode,
+    BOOL_DEFAULT_ON, NULL, false, 0, UpdateStrictMode
+  },
+  [dsda_config_novert] = {
+    "movement_mousenovert", dsda_config_novert,
+    BOOL_DEFAULT_ON
+  },
+  [dsda_config_mouselook] = {
+    "movement_mouselook", dsda_config_mouselook,
+    BOOL_DEFAULT_OFF, NULL, true, 0, UpdateMouseLook
+  },
+  [dsda_config_autorun] = {
+    "autorun", dsda_config_autorun,
+    BOOL_DEFAULT_ON
+  },
+  [dsda_config_show_messages] = {
+    "show_messages", dsda_config_show_messages,
+    BOOL_DEFAULT_ON, NULL, false, 0, UpdateShowMessages
+  },
+  [dsda_config_command_display] = {
+    "dsda_command_display", dsda_config_command_display,
+    BOOL_DEFAULT_OFF, NULL, true, 0
+  },
+  [dsda_config_coordinate_display] = {
+    "dsda_coordinate_display", dsda_config_coordinate_display,
+    BOOL_DEFAULT_OFF, NULL, true, 0
+  },
+  [dsda_config_show_fps] = {
+    "dsda_show_fps", dsda_config_show_fps,
+    BOOL_DEFAULT_OFF, NULL, false, 0, UpdateShowFPS
+  },
+  [dsda_config_exhud] = {
+    "dsda_exhud", dsda_config_exhud,
+    BOOL_DEFAULT_OFF
+  },
+  [dsda_config_mute_sfx] = {
+    "dsda_mute_sfx", dsda_config_mute_sfx,
+    BOOL_DEFAULT_OFF, NULL, false, 0, UpdateMuteSFX
+  },
+  [dsda_config_mute_music] = {
+    "dsda_mute_music", dsda_config_mute_music,
+    BOOL_DEFAULT_OFF, NULL, false, 0, UpdateMuteMusic
+  },
+  [dsda_config_cheat_codes] = {
+    "dsda_cheat_codes", dsda_config_cheat_codes,
+    BOOL_DEFAULT_ON
   },
 };
 
