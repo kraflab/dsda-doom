@@ -49,6 +49,9 @@ typedef struct {
   dsda_config_value_t persistent_value;
 } dsda_config_t;
 
+#define BOOL_DEFAULT_ON dsda_config_int, 0, 1, { 1 }
+#define BOOL_DEFAULT_OFF dsda_config_int, 0, 1, { 0 }
+
 extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
 
@@ -69,11 +72,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_vanilla_keymap] = {
     "vanilla_keymap", dsda_config_vanilla_keymap,
-    dsda_config_int, 0, 1, { 0 }
+    BOOL_DEFAULT_OFF
   },
   [dsda_config_menu_background] = {
     "menu_background", dsda_config_menu_background,
-    dsda_config_int, 0, 1, { 1 }
+    BOOL_DEFAULT_ON
   },
   [dsda_config_process_priority] = {
     "process_priority", dsda_config_process_priority,
