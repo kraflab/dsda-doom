@@ -2360,7 +2360,7 @@ int mult_screens_index; // the index of the current screen in a set
 
 setup_menu_t keys_settings1[] =  // Key Binding screen strings
 {
-  { "INPUT PROFILE", S_NUM, m_conf, KB_X, KB_Y, { dsda_config_input_profile } },
+  { "INPUT PROFILE", S_NUM, m_conf, KB_X, KB_Y, { .config_id = dsda_config_input_profile } },
   {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+2*8},
   {"FORWARD"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+3*8,{0},dsda_input_forward},
   {"BACKWARD"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+4*8,{0},dsda_input_backward},
@@ -2787,15 +2787,15 @@ setup_menu_t* weap_settings[] =
 setup_menu_t weap_settings1[] =  // Weapons Settings screen
 {
   { "Weapon Preferences", S_SKIP | S_TITLE, m_null, WP_X, WP_Y + 1 * 8 },
-  { "1ST CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 2 * 8, { dsda_config_weapon_choice_1 } },
-  { "2nd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 3 * 8, { dsda_config_weapon_choice_2 } },
-  { "3rd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 4 * 8, { dsda_config_weapon_choice_3 } },
-  { "4th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 5 * 8, { dsda_config_weapon_choice_4 } },
-  { "5th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 6 * 8, { dsda_config_weapon_choice_5 } },
-  { "6th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 7 * 8, { dsda_config_weapon_choice_6 } },
-  { "7th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 8 * 8, { dsda_config_weapon_choice_7 } },
-  { "8th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 9 * 8, { dsda_config_weapon_choice_8 } },
-  { "9th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 10 * 8, { dsda_config_weapon_choice_9 } },
+  { "1ST CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 2 * 8, { .config_id = dsda_config_weapon_choice_1 } },
+  { "2nd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 3 * 8, { .config_id = dsda_config_weapon_choice_2 } },
+  { "3rd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 4 * 8, { .config_id = dsda_config_weapon_choice_3 } },
+  { "4th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 5 * 8, { .config_id = dsda_config_weapon_choice_4 } },
+  { "5th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 6 * 8, { .config_id = dsda_config_weapon_choice_5 } },
+  { "6th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 7 * 8, { .config_id = dsda_config_weapon_choice_6 } },
+  { "7th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 8 * 8, { .config_id = dsda_config_weapon_choice_7 } },
+  { "8th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 9 * 8, { .config_id = dsda_config_weapon_choice_8 } },
+  { "9th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 10 * 8, { .config_id = dsda_config_weapon_choice_9 } },
 
   { 0, S_SKIP | S_END, m_null }
 };
@@ -2860,9 +2860,9 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 {
   { "STATUS BAR", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 1 * 8 },
 
-  { "USE RED NUMBERS", S_YESNO, m_conf, SB_X, SB_Y + 2 * 8, { dsda_config_sts_always_red } },
-  { "GRAY %",S_YESNO, m_conf, SB_X, SB_Y + 3 * 8, { dsda_config_sts_pct_always_gray } },
-  { "SINGLE KEY DISPLAY", S_YESNO, m_conf, SB_X, SB_Y + 4 * 8, { dsda_config_sts_traditional_keys } },
+  { "USE RED NUMBERS", S_YESNO, m_conf, SB_X, SB_Y + 2 * 8, { .config_id = dsda_config_sts_always_red } },
+  { "GRAY %",S_YESNO, m_conf, SB_X, SB_Y + 3 * 8, { .config_id = dsda_config_sts_pct_always_gray } },
+  { "SINGLE KEY DISPLAY", S_YESNO, m_conf, SB_X, SB_Y + 4 * 8, { .config_id = dsda_config_sts_traditional_keys } },
 
   { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 6 * 8 },
 
@@ -3223,8 +3223,8 @@ setup_menu_t device_settings[] = {
   { "Mouse", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
   { "Dbl-Click As Use", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "mouse_doubleclick_as_use" } },
   { "Carry Fractional Tics", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "mouse_carrytics" } },
-  { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { dsda_config_mouselook } },
-  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 9 * 8, { dsda_config_vertmouse } },
+  { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_mouselook } },
+  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_vertmouse } },
   { "Invert Mouse", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "movement_mouseinvert" }, 0, M_ChangeMouseInvert },
   { "Max View Pitch", S_NUM, m_null, G_X, G_Y + 11 * 8, { "movement_maxviewpitch" }, 0, M_ChangeMaxViewPitch },
   { "Mouse Strafe Divisor", S_NUM,   m_null, G_X, G_Y + 12 * 8, { "movement_mousestrafedivisor" } },
@@ -3232,7 +3232,7 @@ setup_menu_t device_settings[] = {
   { "Mouse Stutter Correction", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "mouse_stutter_correction" } },
 
   { "Keyboard", S_SKIP | S_TITLE, m_null, G_X, G_Y + 16 * 8 },
-  { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, G_Y + 17 * 8, { dsda_config_cheat_codes } },
+  { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, G_Y + 17 * 8, { .config_id = dsda_config_cheat_codes } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { audiovideo_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { misc_settings } },
@@ -3241,8 +3241,8 @@ setup_menu_t device_settings[] = {
 
 setup_menu_t misc_settings[] = {
   { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Default skill level", S_CHOICE, m_conf, G_X, G_Y + 2 * 8, { dsda_config_default_skill }, 0, NULL, gen_skillstrings },
-  { "Default compatibility level", S_CHOICE, m_conf, G_X, G_Y + 3 * 8, { dsda_config_default_complevel }, 0, NULL, &gen_compstrings[1] },
+  { "Default skill level", S_CHOICE, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_default_skill }, 0, NULL, gen_skillstrings },
+  { "Default compatibility level", S_CHOICE, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_default_complevel }, 0, NULL, &gen_compstrings[1] },
 
   { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
   { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 6 * 8, { "dsda_auto_key_frame_interval" } },
@@ -3262,21 +3262,21 @@ setup_menu_t misc_settings[] = {
 
 setup_menu_t display_settings[] = {
   { "Display Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Use Extended Hud", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { dsda_config_exhud } },
+  { "Use Extended Hud", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_exhud } },
   { "Extended Hud Scale", S_NUM, m_null, G_X, G_Y + 3 * 8, { "dsda_ex_text_scale" }, 0, dsda_SetupStretchParams },
   { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 4 * 8, { "dsda_hide_horns" } },
   { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 5 * 8, { "render_wipescreen" } },
-  { "Show FPS", S_YESNO,  m_conf, G_X, G_Y + 6 * 8, { dsda_config_show_fps } },
+  { "Show FPS", S_YESNO,  m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_show_fps } },
   { "View Bobbing", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "dsda_viewbob" } },
   { "Weapon Bobbing", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "dsda_weaponbob" } },
-  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, { dsda_config_weapon_attack_alignment }, 0, NULL, weapon_attack_alignment_strings },
+  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_weapon_attack_alignment }, 0, NULL, weapon_attack_alignment_strings },
 
   { "Change Palette On Pain", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "palette_ondamage" }, 0, M_ChangeApplyPalette },
   { "Change Palette On Bonus", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "palette_onbonus" }, 0, M_ChangeApplyPalette },
   { "Change Palette On Powers", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "palette_onpowers" }, 0, M_ChangeApplyPalette },
 
   { "Status Bar and Menu Appearance", S_CHOICE, m_null, G_X, G_Y + 15 * 8, { "render_stretch_hud" }, 0, M_ChangeStretch, render_stretch_list },
-  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 16 * 8, { dsda_config_menu_background } },
+  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 16 * 8, { .config_id = dsda_config_menu_background } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { misc_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { opengl_settings } },
@@ -3332,14 +3332,14 @@ setup_menu_t mapping_settings[] = {
 
 setup_menu_t demo_settings[] = {
   { "Demo Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Strict Mode", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { dsda_config_strict_mode } },
+  { "Strict Mode", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_strict_mode } },
   { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "dsda_cycle_ghost_colors" } },
   { "Show Demo Attempts", S_YESNO, m_null, G_X, G_Y + 4 * 8, { "dsda_show_demo_attempts" } },
   { "Show Split Data", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "dsda_show_split_data" } },
   { "Text File Author", S_NAME, m_null, G_X, G_Y + 6 * 8, { "dsda_player_name" } },
   { "Quickstart Cache Tics", S_NUM, m_null, G_X, G_Y + 7 * 8, { "dsda_quickstart_cache_tics" } },
-  { "Smooth Demo Playback", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { dsda_config_demo_smoothturns } },
-  { "Smooth Demo Playback Factor", S_NUM, m_conf, G_X, G_Y + 9 * 8, { dsda_config_demo_smoothturnsfactor } },
+  { "Smooth Demo Playback", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_demo_smoothturns } },
+  { "Smooth Demo Playback Factor", S_NUM, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_demo_smoothturnsfactor } },
   { "Quickstart Window (ms)", S_NUM, m_null, G_X, G_Y + 10 * 8, { "quickstart_window_ms" } },
 
   { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 12 * 8 },
@@ -3353,13 +3353,13 @@ setup_menu_t demo_settings[] = {
 setup_menu_t tas_settings[] = {
   { "TAS Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Wipe At Full Speed", S_YESNO, m_null, G_X, G_Y + 2 * 8, { "dsda_wipe_at_full_speed" } },
-  { "Show Command Display", S_YESNO, m_conf, G_X, G_Y + 3 * 8, { dsda_config_command_display } },
+  { "Show Command Display", S_YESNO, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_command_display } },
   { "Command History", S_NUM, m_null, G_X, G_Y + 4 * 8, { "dsda_command_history_size" } },
   { "Hide Empty Commands", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "dsda_hide_empty_commands" } },
-  { "Show Coordinate Display", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { dsda_config_coordinate_display } },
+  { "Show Coordinate Display", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_coordinate_display } },
   { "Permanent Strafe50", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "movement_strafe50" }, 0, M_ChangeSpeed },
   { "Strafe50 On Turns", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "movement_strafe50onturns" }, 0, M_ChangeSpeed },
-  { "Game speed (%)", S_NUM | S_PRGWARN, m_conf, G_X, G_Y + 9 * 8, { dsda_config_realtic_clock_rate } },
+  { "Game speed (%)", S_NUM | S_PRGWARN, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_realtic_clock_rate } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { demo_settings } },
   { 0, S_SKIP | S_END, m_null }
