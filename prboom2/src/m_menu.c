@@ -5960,6 +5960,8 @@ void M_Init(void)
   M_ChangeSpriteClip();
   M_ChangeAllowBoomColormaps();
 
+  R_SmoothPlaying_Reset(NULL);
+
   M_ChangeMapMultisamling();
 
   render_stretch_hud = render_stretch_hud_default;
