@@ -69,6 +69,8 @@ void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
 void dsda_RefreshExHudFPS(void);
 
+// TODO: migrate all kinds of stuff from M_Init
+
 // TODO: automatically go through strict list
 static void UpdateStrictMode(void) {
   void M_ChangeSpeed(void);
