@@ -62,7 +62,7 @@ extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 
 void I_Init2(void);
-void R_SmoothPlaying_ResetDisplayPlayer(void);
+void M_ChangeDemoSmoothTurns(void);
 void M_ChangeMouseLook(void);
 void M_ChangeMessages(void);
 void S_ResetSfxVolume(void);
@@ -155,12 +155,12 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_demo_smoothturns] = {
     "demo_smoothturns", dsda_config_demo_smoothturns,
     BOOL_DEFAULT_OFF, &demo_smoothturns,
-    false, 0, R_SmoothPlaying_ResetDisplayPlayer
+    false, 0, M_ChangeDemoSmoothTurns
   },
   [dsda_config_demo_smoothturnsfactor] = {
     "demo_smoothturnsfactor", dsda_config_demo_smoothturnsfactor,
     dsda_config_int, 1, SMOOTH_PLAYING_MAXFACTOR, { 6 }, &demo_smoothturnsfactor,
-    false, 0, R_SmoothPlaying_ResetDisplayPlayer
+    false, 0, M_ChangeDemoSmoothTurns
   },
   [dsda_config_weapon_attack_alignment] = {
     "weapon_attack_alignment", dsda_config_weapon_attack_alignment,

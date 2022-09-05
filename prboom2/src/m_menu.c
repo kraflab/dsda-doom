@@ -272,6 +272,7 @@ void M_DrawStatusHUD(void);
 void M_DrawExtHelp(void);
 void M_DrawAutoMap(void);
 void M_DrawMessages(void);
+void M_ChangeDemoSmoothTurns(void);
 void M_ChangeTextureParams(void);
 void M_General(int);      // killough 10/98
 void M_DrawGeneral(void); // killough 10/98
@@ -3385,6 +3386,11 @@ void M_ChangeUseGLSurface(void)
   V_ChangeScreenResolution();
 }
 
+void M_ChangeDemoSmoothTurns(void)
+{
+  R_SmoothPlaying_Reset(NULL);
+}
+
 void M_ChangeTextureParams(void)
 {
   if (V_IsOpenGLMode())
@@ -5960,7 +5966,7 @@ void M_Init(void)
   M_ChangeSpriteClip();
   M_ChangeAllowBoomColormaps();
 
-  R_SmoothPlaying_Reset(NULL);
+  M_ChangeDemoSmoothTurns();
 
   M_ChangeMapMultisamling();
 
