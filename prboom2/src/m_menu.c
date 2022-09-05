@@ -4763,21 +4763,7 @@ dboolean M_Responder (event_t* ev) {
         return true;
       }
 
-      if (ptr1->m_flags & S_CRITEM)
-      {
-        if (action != MENU_ENTER)
-        {
-          ch -= '0'; // out of ascii
-          if (ch < 0 || ch > 9)
-            return true; // ignore
-          *ptr1->var.def->location.pi = ch;
-        }
-        M_SettingUpdated(ptr1, false);
-        M_SelectDone(ptr1);                      // phares 4/17/98
-        return true;
-      }
-
-      if (ptr1->m_flags & S_NUM) // number?
+      if (ptr1->m_flags & (S_NUM | S_CRITEM)) // number?
       {
         if (setup_gather) { // gathering keys for a value?
           /* killough 10/98: Allow negatives, and use a more
