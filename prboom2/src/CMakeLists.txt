@@ -411,7 +411,6 @@ set(EXTRA_FILES
     r_drawcolpipeline.inl
     r_drawcolumn.inl
     r_drawflush.inl
-    r_drawspan.inl
 )
 
 set(PRBOOM_PLUS_SOURCES

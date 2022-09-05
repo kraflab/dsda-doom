@@ -269,10 +269,10 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
 
   // killough 4/11/98: draw translucent 2s normal textures
 
-  colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, drawvars.filterwall, drawvars.filterz);
+  colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, RDRAW_FILTER_POINT);
   if (curline->linedef->tranlump >= 0)
     {
-      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, drawvars.filterwall, drawvars.filterz);
+      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, RDRAW_FILTER_POINT);
       tranmap = main_tranmap;
       if (curline->linedef->tranlump > 0)
         tranmap = W_LumpByNum(curline->linedef->tranlump-1);
@@ -329,8 +329,6 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
         // calculate texture offset - POPE
         angle = (ds->rw_centerangle + xtoviewangle[dcvars.x]) >> ANGLETOFINESHIFT;
         dcvars.texu = ds->rw_offset - FixedMul(finetangent[angle], ds->rw_distance);
-        if (drawvars.filterwall == RDRAW_FILTER_LINEAR)
-          dcvars.texu -= (FRACUNIT>>1);
 
         if (!fixedcolormap)
           dcvars.z = spryscale; // for filtering -- POPE
@@ -407,7 +405,7 @@ static int didsolidcol; /* True if at least one column was marked solid */
 static void R_RenderSegLoop (void)
 {
   const rpatch_t *tex_patch;
-  R_DrawColumn_f colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, drawvars.filterwall, drawvars.filterz);
+  R_DrawColumn_f colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, RDRAW_FILTER_POINT);
   draw_column_vars_t dcvars;
   fixed_t  texturecolumn = 0;   // shut up compiler warning
 
@@ -472,8 +470,6 @@ static void R_RenderSegLoop (void)
           angle_t angle =(rw_centerangle+xtoviewangle[rw_x])>>ANGLETOFINESHIFT;
 
           texturecolumn = rw_offset-FixedMul(finetangent[angle],rw_distance);
-          if (drawvars.filterwall == RDRAW_FILTER_LINEAR)
-            texturecolumn -= (FRACUNIT>>1);
           dcvars.texu = texturecolumn; // for filtering -- POPE
           texturecolumn >>= FRACBITS;
 

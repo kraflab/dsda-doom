@@ -207,11 +207,6 @@ static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
   dsvars->xfrac =  viewx + xoffs + FixedMul(viewcos, distance) + (x1 - centerx) * dsvars->xstep;
   dsvars->yfrac = -viewy + yoffs - FixedMul(viewsin, distance) + (x1 - centerx) * dsvars->ystep;
 
-  if (drawvars.filterfloor == RDRAW_FILTER_LINEAR) {
-    dsvars->xfrac -= (FRACUNIT>>1);
-    dsvars->yfrac -= (FRACUNIT>>1);
-  }
-
   if (!(dsvars->colormap = fixedcolormap))
     {
       dsvars->z = distance;
@@ -407,7 +402,7 @@ static void R_DoDrawPlane(visplane_t *pl)
 {
   register int x;
   draw_column_vars_t dcvars;
-  R_DrawColumn_f colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, drawvars.filterwall, drawvars.filterz);
+  R_DrawColumn_f colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, RDRAW_FILTER_POINT);
 
   R_SetDefaultDrawColumnVars(&dcvars);
 

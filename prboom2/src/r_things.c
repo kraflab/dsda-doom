@@ -519,19 +519,8 @@ static void R_DrawVisSprite(vissprite_t *vis)
   const rpatch_t *patch = R_PatchByNum(vis->patch+firstspritelump);
   R_DrawColumn_f colfunc;
   draw_column_vars_t dcvars;
-  enum draw_filter_type_e filter;
-  enum draw_filter_type_e filterz;
 
   R_SetDefaultDrawColumnVars(&dcvars);
-  if (vis->mobjflags & MF_PLAYERSPRITE) {
-    dcvars.edgetype = drawvars.patch_edges;
-    filter = drawvars.filterpatch;
-    filterz = RDRAW_FILTER_POINT;
-  } else {
-    dcvars.edgetype = drawvars.sprite_edges;
-    filter = drawvars.filtersprite;
-    filterz = drawvars.filterz;
-  }
 
   dcvars.colormap = vis->colormap;
   dcvars.nextcolormap = dcvars.colormap; // for filtering -- POPE
@@ -569,35 +558,33 @@ static void R_DrawVisSprite(vissprite_t *vis)
 
   if (!dcvars.colormap)   // NULL colormap = shadow draw
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_FUZZ, filter, filterz);    // killough 3/14/98
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_FUZZ, RDRAW_FILTER_POINT);    // killough 3/14/98
   }
   else if (vis->color)
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, filter, filterz);
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, RDRAW_FILTER_POINT);
     dcvars.translation = colrngs[vis->color];
   }
   else if (vis->mobjflags & MF_TRANSLATION)
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, filter, filterz);
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, RDRAW_FILTER_POINT);
     dcvars.translation = translationtables - 256 +
       ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
   }
   else if (vis->mobjflags & g_mf_translucent) // phares
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, filter, filterz);
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, RDRAW_FILTER_POINT);
     tranmap = main_tranmap;       // killough 4/11/98
   }
   else
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, filter, filterz); // killough 3/14/98, 4/11/98
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, RDRAW_FILTER_POINT); // killough 3/14/98, 4/11/98
   }
 
 // proff 11/06/98: Changed for high-res
   dcvars.iscale = FixedDiv (FRACUNIT, vis->scale);
   dcvars.texturemid = vis->texturemid;
   frac = vis->startfrac;
-  if (filter == RDRAW_FILTER_LINEAR)
-    frac -= (FRACUNIT>>1);
   spryscale = vis->scale;
   sprtopscreen = centeryfrac - FixedMul(dcvars.texturemid,spryscale);
 

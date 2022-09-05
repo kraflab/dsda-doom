@@ -3179,9 +3179,6 @@ static const char *gen_compstrings[] =
 
 static const char *death_use_strings[] = { "default", "nothing", "reload", NULL };
 
-static const char *renderfilters[] = { "none", "point", "linear", "rounded" };
-static const char *edgetypes[] = { "jagged", "sloped" };
-
 static const char *gltexfilters[] = {
   "None",
   "Linear",
