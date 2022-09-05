@@ -54,6 +54,7 @@
 #include "heretic/sb_bar.h"
 
 #include "dsda.h"
+#include "dsda/configuration.h"
 #include "dsda/excmd.h"
 #include "dsda/exhud.h"
 #include "dsda/features.h"
@@ -713,8 +714,8 @@ static void cheat_reveal_item()
 // killough 2/7/98: HOM autodetection
 static void cheat_hom()
 {
-  plyr->message = (flashing_hom = !flashing_hom) ? "HOM Detection On" :
-    "HOM Detection Off";
+  plyr->message = dsda_ToggleConfig(dsda_config_flashing_hom, true) ? "HOM Detection On"
+                                                                    : "HOM Detection Off";
 }
 
 // killough 3/6/98: -fast parameter toggle

@@ -61,6 +61,7 @@
 #include "e6y.h"//e6y
 #include "xs_Float.h"
 
+#include "dsda/configuration.h"
 #include "dsda/exhud.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
@@ -936,7 +937,7 @@ void R_RenderPlayerView (player_t* player)
       gld_StartDrawScene();
     }
   } else {
-    if (flashing_hom)
+    if (dsda_IntConfig(dsda_config_flashing_hom))
     { // killough 2/10/98: add flashing red HOM indicators
       unsigned char color=(gametic % 20) < 9 ? 0xb0 : 0;
       V_FillRect(0, viewwindowx, viewwindowy, viewwidth, viewheight, color);

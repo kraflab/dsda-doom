@@ -266,8 +266,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_realtic_clock_rate),
   MIGRATED_SETTING(dsda_config_menu_background),
   MIGRATED_SETTING(dsda_config_max_player_corpse),
-  {"flashing_hom",{&flashing_hom},{0},0,1,
-   def_bool}, // killough 10/98 - enable flashing HOM indicator
+  MIGRATED_SETTING(dsda_config_flashing_hom),
   {"level_precache",{(int*)&precache},{1},0,1,
    def_bool}, // precache level data?
   {"demo_smoothturns", {&demo_smoothturns},  {0},0,1,

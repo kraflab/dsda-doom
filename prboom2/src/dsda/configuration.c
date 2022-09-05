@@ -126,6 +126,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "weapon_choice_9", dsda_config_weapon_choice_9,
     dsda_config_int, 0, 9, { 1 }, &weapon_preferences[0][8]
   },
+  [dsda_config_flashing_hom] = {
+    "flashing_hom", dsda_config_flashing_hom,
+    BOOL_DEFAULT_OFF
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

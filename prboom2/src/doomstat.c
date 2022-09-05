@@ -95,8 +95,6 @@ int monster_avoid_hazards;
 // killough 9/9/98: whether monsters help friends
 int help_friends;
 
-int flashing_hom;     // killough 10/98
-
 int monkeys;
 
 char *MAPNAME(int e, int m)

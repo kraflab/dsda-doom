@@ -342,8 +342,6 @@ extern int monster_friction;
 /* killough 9/9/98: whether monsters help friends */
 extern int help_friends;
 
-extern int flashing_hom; // killough 10/98
-
 /* killough 7/19/98: whether monsters should fight against each other */
 extern int monster_infighting;
 

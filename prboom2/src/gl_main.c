@@ -70,6 +70,7 @@
 #include "hu_stuff.h"
 #include "e6y.h"//e6y
 
+#include "dsda/configuration.h"
 #include "dsda/map_format.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
@@ -1151,7 +1152,7 @@ void gld_Clear(void)
     clearbits |= GL_COLOR_BUFFER_BIT;
 
   // flashing red HOM indicators
-  if (flashing_hom)
+  if (dsda_IntConfig(dsda_config_flashing_hom))
   {
     clearbits |= GL_COLOR_BUFFER_BIT;
     glClearColor (gametic % 20 < 9 ? 1.0f : 0.0f, 0.0f, 0.0f, 1.0f);
