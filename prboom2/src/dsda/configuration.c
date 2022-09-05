@@ -319,6 +319,8 @@ void dsda_WriteConfig(dsda_config_identifier_t id, int key_length, FILE* file) {
 
   if (conf->type == dsda_config_int)
     fprintf(file, "%-*s %i\n", key_length, conf->name, conf->persistent_value.v_int);
+  else if (conf->type == dsda_config_string)
+    fprintf(file, "%-*s \"%s\"\n", key_length, conf->name, conf->persistent_value.v_string);
 }
 
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist) {
