@@ -260,8 +260,6 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_process_priority),
 
   SETTING_HEADING("Misc settings"),
-  MIGRATED_SETTING(dsda_config_default_complevel),
-  MIGRATED_SETTING(dsda_config_default_skill),
   MIGRATED_SETTING(dsda_config_vanilla_keymap),
   MIGRATED_SETTING(dsda_config_realtic_clock_rate),
   MIGRATED_SETTING(dsda_config_menu_background),
@@ -271,6 +269,8 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_demo_smoothturnsfactor),
 
   SETTING_HEADING("Game settings"),
+  MIGRATED_SETTING(dsda_config_default_complevel),
+  MIGRATED_SETTING(dsda_config_default_skill),
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
    def_int},
 
