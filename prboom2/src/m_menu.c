@@ -1943,7 +1943,7 @@ static void M_DrawSetting(const setup_menu_t* s)
 
   // Is the item a simple number?
 
-  if (flags & S_NUM) {
+  if (flags & (S_NUM | S_WEAP)) {
     // killough 10/98: We must draw differently for items being gathered.
     if (flags & (S_HILITE|S_SELECT) && setup_gather) {
       gather_buffer[gather_count] = 0;
@@ -2020,28 +2020,21 @@ static void M_DrawSetting(const setup_menu_t* s)
     return;
   }
 
-  // Is the item a weapon number?
-  // OR, Is the item a colored text string from the Automap?
-  //
-  // killough 10/98: removed special code, since the rest of the engine
-  // already takes care of it, and this code prevented the user from setting
-  // their overall weapons preferences while playing Doom 1.
-  //
-  // killough 11/98: consolidated weapons code with color range code
-
-  if (flags & (S_WEAP|S_CRITEM)) // weapon number or color range
+  if (flags & S_CRITEM) // color range
   {
+    int value;
     if (s->m_group == m_conf)
     {
-      sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->var.config_id));
+      value = dsda_PersistentIntConfig(s->var.config_id);
     }
     else
     {
-      sprintf(menu_buffer,"%d", *s->var.def->location.pi);
+      value = *s->var.def->location.pi;
     }
+    sprintf(menu_buffer, "%d", value);
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       M_DrawString(x + 8, y, color, " <");
-    M_DrawMenuString(x,y, flags & S_CRITEM ? *s->var.def->location.pi : color);
+    M_DrawMenuString(x, y, value);
     return;
   }
 
