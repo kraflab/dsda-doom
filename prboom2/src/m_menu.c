@@ -2803,8 +2803,7 @@ setup_menu_t* weap_settings[] =
 
 setup_menu_t weap_settings1[] =  // Weapons Settings screen
 {
-  { "WEAPON ATTACK ALIGNMENT", S_CHOICE, m_null, WP_X, WP_Y, { "weapon_attack_alignment" }, 0, NULL, weapon_attack_alignment_strings },
-
+  { "Weapon Preferences", S_SKIP | S_TITLE, m_null, WP_X, WP_Y + 1 * 8 },
   { "1ST CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 2 * 8, { dsda_config_weapon_choice_1 } },
   { "2nd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 3 * 8, { dsda_config_weapon_choice_2 } },
   { "3rd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 4 * 8, { dsda_config_weapon_choice_3 } },
@@ -3290,13 +3289,14 @@ setup_menu_t display_settings[] = {
   { "Show FPS", S_YESNO,  m_dsda, G_X, G_Y + 6 * 8, { "dsda_show_fps" }, 0, dsda_RefreshExHudFPS },
   { "View Bobbing", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "dsda_viewbob" } },
   { "Weapon Bobbing", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "dsda_weaponbob" } },
+  { "Weapon Attack Alignment", S_CHOICE, m_null, G_X, G_Y + 9 * 8, { "weapon_attack_alignment" }, 0, NULL, weapon_attack_alignment_strings },
 
-  { "Change Palette On Pain", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "palette_ondamage" }, 0, M_ChangeApplyPalette },
-  { "Change Palette On Bonus", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "palette_onbonus" }, 0, M_ChangeApplyPalette },
-  { "Change Palette On Powers", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "palette_onpowers" }, 0, M_ChangeApplyPalette },
+  { "Change Palette On Pain", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "palette_ondamage" }, 0, M_ChangeApplyPalette },
+  { "Change Palette On Bonus", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "palette_onbonus" }, 0, M_ChangeApplyPalette },
+  { "Change Palette On Powers", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "palette_onpowers" }, 0, M_ChangeApplyPalette },
 
-  { "Status Bar and Menu Appearance", S_CHOICE, m_null, G_X, G_Y + 14 * 8, { "render_stretch_hud" }, 0, M_ChangeStretch, render_stretch_list },
-  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 15 * 8, { dsda_config_menu_background } },
+  { "Status Bar and Menu Appearance", S_CHOICE, m_null, G_X, G_Y + 15 * 8, { "render_stretch_hud" }, 0, M_ChangeStretch, render_stretch_list },
+  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 16 * 8, { dsda_config_menu_background } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { misc_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { opengl_settings } },
