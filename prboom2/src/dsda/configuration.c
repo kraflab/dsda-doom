@@ -61,51 +61,16 @@ extern int sts_always_red;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 
-static void UpdateRealticClockRate(void) {
-  void I_Init2(void);
-
-  I_Init2();
-}
-
-static void UpdateDemoSmoothTurns(void) {
-  void R_SmoothPlaying_ResetDisplayPlayer(void);
-
-  R_SmoothPlaying_ResetDisplayPlayer();
-}
-
-static void UpdateMouseLook(void) {
-  void M_ChangeMouseLook(void);
-
-  M_ChangeMouseLook();
-}
-
-static void UpdateShowMessages(void) {
-  void M_ChangeMessages(void);
-
-  M_ChangeMessages();
-}
-
-static void UpdateMuteSFX(void) {
-  void S_ResetSfxVolume(void);
-
-  S_ResetSfxVolume();
-}
-
-static void UpdateMuteMusic(void) {
-  void I_ResetMusicVolume(void);
-
-  I_ResetMusicVolume();
-}
-
-static void UpdateShowFPS(void) {
-  void dsda_RefreshExHudFPS(void);
-
-  dsda_RefreshExHudFPS();
-}
+void I_Init2(void);
+void R_SmoothPlaying_ResetDisplayPlayer(void);
+void M_ChangeMouseLook(void);
+void M_ChangeMessages(void);
+void S_ResetSfxVolume(void);
+void I_ResetMusicVolume(void);
+void dsda_RefreshExHudFPS(void);
 
 // TODO: automatically go through strict list
 static void UpdateStrictMode(void) {
-  void I_Init2(void);
   void M_ChangeSpeed(void);
   void dsda_InitKeyFrame(void);
 
@@ -117,7 +82,7 @@ static void UpdateStrictMode(void) {
 dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_realtic_clock_rate] = {
     "realtic_clock_rate", dsda_config_realtic_clock_rate,
-    dsda_config_int, 3, 10000, { 100 }, NULL, true, 100, UpdateRealticClockRate
+    dsda_config_int, 3, 10000, { 100 }, NULL, true, 100, I_Init2
   },
   [dsda_config_default_complevel] = {
     "default_compatibility_level", dsda_config_default_complevel,
@@ -190,12 +155,12 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_demo_smoothturns] = {
     "demo_smoothturns", dsda_config_demo_smoothturns,
     BOOL_DEFAULT_OFF, &demo_smoothturns,
-    false, 0, UpdateDemoSmoothTurns
+    false, 0, R_SmoothPlaying_ResetDisplayPlayer
   },
   [dsda_config_demo_smoothturnsfactor] = {
     "demo_smoothturnsfactor", dsda_config_demo_smoothturnsfactor,
     dsda_config_int, 1, SMOOTH_PLAYING_MAXFACTOR, { 6 }, &demo_smoothturnsfactor,
-    false, 0, UpdateDemoSmoothTurns
+    false, 0, R_SmoothPlaying_ResetDisplayPlayer
   },
   [dsda_config_weapon_attack_alignment] = {
     "weapon_attack_alignment", dsda_config_weapon_attack_alignment,
@@ -223,7 +188,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mouselook] = {
     "movement_mouselook", dsda_config_mouselook,
-    BOOL_DEFAULT_OFF, NULL, true, 0, UpdateMouseLook
+    BOOL_DEFAULT_OFF, NULL, true, 0, M_ChangeMouseLook
   },
   [dsda_config_autorun] = {
     "autorun", dsda_config_autorun,
@@ -231,7 +196,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_show_messages] = {
     "show_messages", dsda_config_show_messages,
-    BOOL_DEFAULT_ON, NULL, false, 0, UpdateShowMessages
+    BOOL_DEFAULT_ON, NULL, false, 0, M_ChangeMessages
   },
   [dsda_config_command_display] = {
     "dsda_command_display", dsda_config_command_display,
@@ -243,7 +208,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_show_fps] = {
     "dsda_show_fps", dsda_config_show_fps,
-    BOOL_DEFAULT_OFF, NULL, false, 0, UpdateShowFPS
+    BOOL_DEFAULT_OFF, NULL, false, 0, dsda_RefreshExHudFPS
   },
   [dsda_config_exhud] = {
     "dsda_exhud", dsda_config_exhud,
@@ -251,11 +216,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mute_sfx] = {
     "dsda_mute_sfx", dsda_config_mute_sfx,
-    BOOL_DEFAULT_OFF, NULL, false, 0, UpdateMuteSFX
+    BOOL_DEFAULT_OFF, NULL, false, 0, S_ResetSfxVolume
   },
   [dsda_config_mute_music] = {
     "dsda_mute_music", dsda_config_mute_music,
-    BOOL_DEFAULT_OFF, NULL, false, 0, UpdateMuteMusic
+    BOOL_DEFAULT_OFF, NULL, false, 0, I_ResetMusicVolume
   },
   [dsda_config_cheat_codes] = {
     "dsda_cheat_codes", dsda_config_cheat_codes,
