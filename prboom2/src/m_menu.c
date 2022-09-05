@@ -1943,21 +1943,28 @@ static void M_DrawSetting(const setup_menu_t* s)
 
   // Is the item a simple number?
 
-  if (flags & (S_NUM | S_WEAP)) {
+  if (flags & (S_NUM | S_WEAP | S_CRITEM)) {
     // killough 10/98: We must draw differently for items being gathered.
-    if (flags & (S_HILITE|S_SELECT) && setup_gather) {
+    if (flags & (S_HILITE | S_SELECT) && setup_gather) {
       gather_buffer[gather_count] = 0;
       strcpy(menu_buffer, gather_buffer);
     }
-    else if (s->m_group == m_conf)
-    {
-      sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->var.config_id));
+    else {
+      int value;
+
+      if (s->m_group == m_conf)
+        value = dsda_PersistentIntConfig(s->var.config_id);
+      else
+        value = *s->var.def->location.pi;
+
+      sprintf(menu_buffer, "%d", value);
+
+      if (flags & S_CRITEM)
+        color = value;
     }
-    else
-      sprintf(menu_buffer,"%d",*s->var.def->location.pi);
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");
-    M_DrawMenuString(x,y,color);
+    M_DrawMenuString(x, y, color);
     return;
   }
 
@@ -2017,24 +2024,6 @@ static void M_DrawSetting(const setup_menu_t* s)
 
     M_DrawMenuString(x, y, color);
 
-    return;
-  }
-
-  if (flags & S_CRITEM) // color range
-  {
-    int value;
-    if (s->m_group == m_conf)
-    {
-      value = dsda_PersistentIntConfig(s->var.config_id);
-    }
-    else
-    {
-      value = *s->var.def->location.pi;
-    }
-    sprintf(menu_buffer, "%d", value);
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      M_DrawString(x + 8, y, color, " <");
-    M_DrawMenuString(x, y, value);
     return;
   }
 
