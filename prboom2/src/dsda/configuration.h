@@ -60,6 +60,16 @@ typedef enum {
   dsda_config_mute_sfx,
   dsda_config_mute_music,
   dsda_config_cheat_codes,
+  dsda_config_script_0,
+  dsda_config_script_1,
+  dsda_config_script_2,
+  dsda_config_script_3,
+  dsda_config_script_4,
+  dsda_config_script_5,
+  dsda_config_script_6,
+  dsda_config_script_7,
+  dsda_config_script_8,
+  dsda_config_script_9,
   dsda_config_count,
 } dsda_config_identifier_t;
 

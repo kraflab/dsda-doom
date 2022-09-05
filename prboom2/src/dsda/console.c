@@ -60,7 +60,6 @@ static int console_entry_index;
 static hu_textline_t hu_console_prompt;
 static hu_textline_t hu_console_message;
 
-const char* dsda_console_script[CONSOLE_SCRIPT_COUNT];
 static char** dsda_console_script_lines[CONSOLE_SCRIPT_COUNT];
 
 static void dsda_DrawConsole(void) {
@@ -1124,7 +1123,7 @@ void dsda_ExecuteConsoleScript(int i) {
   if (!dsda_console_script_lines[i]) {
     char* dup;
 
-    dup = Z_Strdup(dsda_console_script[i]);
+    dup = Z_Strdup(dsda_StringConfig(dsda_config_script_0 + i));
     dsda_console_script_lines[i] = dsda_SplitString(dup, ";");
   }
 
