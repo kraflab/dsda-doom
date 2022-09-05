@@ -3240,7 +3240,7 @@ setup_menu_t device_settings[] = {
 
 setup_menu_t misc_settings[] = {
   { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Default skill level", S_CHOICE, m_null, G_X, G_Y + 2 * 8, { "default_skill" }, 0, NULL, gen_skillstrings },
+  { "Default skill level", S_CHOICE, m_conf, G_X, G_Y + 2 * 8, { dsda_config_default_skill }, 0, NULL, gen_skillstrings },
   { "Default compatibility level", S_CHOICE, m_conf, G_X, G_Y + 3 * 8, { dsda_config_default_complevel }, 0, NULL, &gen_compstrings[1] },
 
   { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
@@ -5495,14 +5495,7 @@ void M_StartControlPanel (void)
   if (menuactive)
     return;
 
-  //jff 3/24/98 make default skill menu choice follow -skill or defaultskill
-  //from command line or config file
-  //
-  // killough 10/98:
-  // Fix to make "always floating" with menu selections, and to always follow
-  // defaultskill, instead of -skill.
-
-  NewDef.lastOn = defaultskill - 1;
+  NewDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
 
   // e6y
   // We need to remove the fourth episode for pre-ultimate complevels.

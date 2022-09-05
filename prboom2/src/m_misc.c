@@ -261,6 +261,7 @@ default_t defaults[] =
 
   SETTING_HEADING("Misc settings"),
   MIGRATED_SETTING(dsda_config_default_complevel),
+  MIGRATED_SETTING(dsda_config_default_skill),
   MIGRATED_SETTING(dsda_config_vanilla_keymap),
   MIGRATED_SETTING(dsda_config_realtic_clock_rate),
   MIGRATED_SETTING(dsda_config_menu_background),
@@ -270,8 +271,6 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_demo_smoothturnsfactor),
 
   SETTING_HEADING("Game settings"),
-  {"default_skill",{&defaultskill},{4},1,5, // jff 3/24/98 allow default skill setting
-   def_int}, // selects default skill 1=TYTD 2=NTR 3=HMP 4=UV 5=NM
   {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
    def_int},
 

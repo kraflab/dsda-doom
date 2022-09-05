@@ -260,9 +260,6 @@ static buttoncode_t special_event; // Event triggered by local player, to send
 static int   savegameslot;         // Slot to load if gameaction == ga_loadgame
 char         savedescription[SAVEDESCLEN];  // Description to save in savegame if gameaction == ga_savegame
 
-//jff 3/24/98 define defaultskill here
-int defaultskill;               //note 1-based
-
 // heretic
 #include "p_user.h"
 #include "heretic/def.h"
@@ -2555,8 +2552,8 @@ void G_ReloadDefaults(void)
 
   //jff 3/24/98 set startskill from defaultskill in config file, unless
   // it has already been set by a -skill parameter
-  if (startskill==sk_none)
-    startskill = (skill_t)(defaultskill-1);
+  if (startskill == sk_none)
+    startskill = (skill_t)(dsda_IntConfig(dsda_config_default_skill) - 1);
 
   demoplayback = false;
   singledemo = false;            // killough 9/29/98: don't stop after 1 demo
