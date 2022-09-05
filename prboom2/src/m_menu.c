@@ -272,7 +272,6 @@ void M_DrawStatusHUD(void);
 void M_DrawExtHelp(void);
 void M_DrawAutoMap(void);
 void M_DrawMessages(void);
-void M_ChangeDemoSmoothTurns(void);
 void M_ChangeTextureParams(void);
 void M_General(int);      // killough 10/98
 void M_DrawGeneral(void); // killough 10/98
@@ -3359,8 +3358,8 @@ setup_menu_t demo_settings[] = {
   { "Show Split Data", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "dsda_show_split_data" } },
   { "Text File Author", S_NAME, m_null, G_X, G_Y + 6 * 8, { "dsda_player_name" } },
   { "Quickstart Cache Tics", S_NUM, m_null, G_X, G_Y + 7 * 8, { "dsda_quickstart_cache_tics" } },
-  { "Smooth Demo Playback", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "demo_smoothturns" }, 0, M_ChangeDemoSmoothTurns },
-  { "Smooth Demo Playback Factor", S_NUM, m_null, G_X, G_Y + 9 * 8, { "demo_smoothturnsfactor" }, 0, M_ChangeDemoSmoothTurns },
+  { "Smooth Demo Playback", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { dsda_config_demo_smoothturns } },
+  { "Smooth Demo Playback Factor", S_NUM, m_conf, G_X, G_Y + 9 * 8, { dsda_config_demo_smoothturnsfactor } },
   { "Quickstart Window (ms)", S_NUM, m_null, G_X, G_Y + 10 * 8, { "quickstart_window_ms" } },
 
   { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 12 * 8 },
@@ -3405,11 +3404,6 @@ void M_ChangeVideoMode(void)
 void M_ChangeUseGLSurface(void)
 {
   V_ChangeScreenResolution();
-}
-
-void M_ChangeDemoSmoothTurns(void)
-{
-  R_SmoothPlaying_Reset(NULL);
 }
 
 void M_ChangeTextureParams(void)
@@ -6017,8 +6011,6 @@ void M_Init(void)
   M_ChangeFOV();
   M_ChangeSpriteClip();
   M_ChangeAllowBoomColormaps();
-
-  M_ChangeDemoSmoothTurns();
 
   M_ChangeMapMultisamling();
 

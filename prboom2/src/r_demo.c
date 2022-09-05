@@ -131,7 +131,7 @@ int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
 // Smooth playing stuff
 //
 
-int demo_smoothturns = false;
+int demo_smoothturns;
 int demo_smoothturnsfactor = 6;
 
 static int smooth_playing_turns[SMOOTH_PLAYING_MAXFACTOR];

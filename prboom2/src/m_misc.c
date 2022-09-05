@@ -266,10 +266,8 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_menu_background),
   MIGRATED_SETTING(dsda_config_max_player_corpse),
   MIGRATED_SETTING(dsda_config_flashing_hom),
-  {"demo_smoothturns", {&demo_smoothturns},  {0},0,1,
-   def_bool},
-  {"demo_smoothturnsfactor", {&demo_smoothturnsfactor},  {6},1,SMOOTH_PLAYING_MAXFACTOR,
-   def_int},
+  MIGRATED_SETTING(dsda_config_demo_smoothturns),
+  MIGRATED_SETTING(dsda_config_demo_smoothturnsfactor),
 
   SETTING_HEADING("Game settings"),
   {"default_skill",{&defaultskill},{4},1,5, // jff 3/24/98 allow default skill setting

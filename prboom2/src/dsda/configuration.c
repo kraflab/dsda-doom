@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "doomdef.h"
+#include "r_demo.h"
 #include "z_zone.h"
 
 #include "dsda/input.h"
@@ -54,11 +55,19 @@ typedef struct {
 
 extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
+extern int demo_smoothturns;
+extern int demo_smoothturnsfactor;
 
 static void UpdateRealticClockRate(void) {
   void I_Init2(void);
 
   I_Init2();
+}
+
+static void UpdateDemoSmoothTurns(void) {
+  void R_SmoothPlaying_Reset(player_t* player);
+
+  R_SmoothPlaying_Reset(NULL);
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
@@ -129,6 +138,16 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_flashing_hom] = {
     "flashing_hom", dsda_config_flashing_hom,
     BOOL_DEFAULT_OFF
+  },
+  [dsda_config_demo_smoothturns] = {
+    "demo_smoothturns", dsda_config_demo_smoothturns,
+    BOOL_DEFAULT_OFF, &demo_smoothturns,
+    false, 0, UpdateDemoSmoothTurns
+  },
+  [dsda_config_demo_smoothturnsfactor] = {
+    "demo_smoothturnsfactor", dsda_config_demo_smoothturnsfactor,
+    dsda_config_int, 1, SMOOTH_PLAYING_MAXFACTOR, { 6 }, &demo_smoothturnsfactor,
+    false, 0, UpdateDemoSmoothTurns
   },
 };
 
