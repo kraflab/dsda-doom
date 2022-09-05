@@ -3160,8 +3160,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   dsda_ApplyFadeTable();
 
   // preload graphics
-  if (precache)
-    R_PrecacheLevel();
+  R_PrecacheLevel();
 
   if (V_IsOpenGLMode())
   {

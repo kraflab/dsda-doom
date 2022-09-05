@@ -287,9 +287,6 @@ extern wbstartstruct_t wminfo;
 // File handling stuff.
 extern  FILE   *debugfile;
 
-// if true, load all graphics at level load
-extern  dboolean precache;
-
 // wipegamestate can be set to -1
 //  to force a wipe on the next draw
 extern  gamestate_t     wipegamestate;

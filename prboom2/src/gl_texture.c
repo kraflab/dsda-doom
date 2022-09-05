@@ -1347,9 +1347,6 @@ void gld_Precache(void)
 
   if (!usehires)
   {
-    if (!precache)
-      return;
-
     if (timingdemo)
       return;
   }

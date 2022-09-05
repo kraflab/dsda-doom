@@ -194,7 +194,6 @@ int M_ReadFileToString(char const *name, char **buffer) {
 
 int usemouse;
 int mouse_stutter_correction;
-dboolean    precache = true; /* if true, load all graphics at start */
 
 // The available anisotropic
 typedef enum {
@@ -267,8 +266,6 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_menu_background),
   MIGRATED_SETTING(dsda_config_max_player_corpse),
   MIGRATED_SETTING(dsda_config_flashing_hom),
-  {"level_precache",{(int*)&precache},{1},0,1,
-   def_bool}, // precache level data?
   {"demo_smoothturns", {&demo_smoothturns},  {0},0,1,
    def_bool},
   {"demo_smoothturnsfactor", {&demo_smoothturnsfactor},  {6},1,SMOOTH_PLAYING_MAXFACTOR,
