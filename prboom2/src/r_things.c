@@ -44,6 +44,7 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda/configuration.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
 
@@ -1052,6 +1053,7 @@ static void R_DrawPSprite (pspdef_t *psp)
   {
     weaponinfo_t *winfo;
     int state;
+    int weapon_attack_alignment;
 
     if (hexen)
     {
@@ -1063,6 +1065,7 @@ static void R_DrawPSprite (pspdef_t *psp)
     }
 
     state = viewplayer->psprites[ps_weapon].state - states;
+    weapon_attack_alignment = dsda_IntConfig(dsda_config_weapon_attack_alignment);
 
     if (!dsda_WeaponBob())
     {
@@ -1081,7 +1084,7 @@ static void R_DrawPSprite (pspdef_t *psp)
         psp_sy -= (last_sy - 32 * FRACUNIT);
       }
     }
-    else if (dsda_WeaponAttackAlignment() && viewplayer->attackdown && !psp->state->misc1)
+    else if (weapon_attack_alignment && viewplayer->attackdown && !psp->state->misc1)
     { // [crispy] center the weapon sprite horizontally and vertically
       R_ApplyWeaponBob(&psp_sx, weapon_attack_alignment == CENTERWEAPON_BOB, NULL, false);
 

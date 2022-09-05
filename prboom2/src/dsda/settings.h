@@ -90,7 +90,6 @@ dboolean dsda_MuteSfx(void);
 dboolean dsda_MuteMusic(void);
 dboolean dsda_ProcessCheatCodes(void);
 dboolean dsda_CycleGhostColors(void);
-dboolean dsda_WeaponAttackAlignment(void);
 dboolean dsda_AlwaysSR50(void);
 dboolean dsda_HideHorns(void);
 dboolean dsda_SwitchWhenAmmoRunsOut(void);

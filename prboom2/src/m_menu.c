@@ -3268,7 +3268,7 @@ setup_menu_t display_settings[] = {
   { "Show FPS", S_YESNO,  m_dsda, G_X, G_Y + 6 * 8, { "dsda_show_fps" }, 0, dsda_RefreshExHudFPS },
   { "View Bobbing", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "dsda_viewbob" } },
   { "Weapon Bobbing", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "dsda_weaponbob" } },
-  { "Weapon Attack Alignment", S_CHOICE, m_null, G_X, G_Y + 9 * 8, { "weapon_attack_alignment" }, 0, NULL, weapon_attack_alignment_strings },
+  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, { dsda_config_weapon_attack_alignment }, 0, NULL, weapon_attack_alignment_strings },
 
   { "Change Palette On Pain", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "palette_ondamage" }, 0, M_ChangeApplyPalette },
   { "Change Palette On Bonus", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "palette_onbonus" }, 0, M_ChangeApplyPalette },

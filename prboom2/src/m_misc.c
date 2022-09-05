@@ -271,8 +271,7 @@ default_t defaults[] =
   SETTING_HEADING("Game settings"),
   MIGRATED_SETTING(dsda_config_default_complevel),
   MIGRATED_SETTING(dsda_config_default_skill),
-  {"weapon_attack_alignment",{&weapon_attack_alignment},{0},0,3,         // phares 2/25/98
-   def_int},
+  MIGRATED_SETTING(dsda_config_weapon_attack_alignment),
 
   {"sts_always_red",{&sts_always_red},{1},0,1, // no color changes on status bar
    def_bool},

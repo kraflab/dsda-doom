@@ -44,6 +44,7 @@ typedef enum {
   dsda_config_flashing_hom,
   dsda_config_demo_smoothturns,
   dsda_config_demo_smoothturnsfactor,
+  dsda_config_weapon_attack_alignment,
   dsda_config_count,
 } dsda_config_identifier_t;
 

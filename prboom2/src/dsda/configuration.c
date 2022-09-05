@@ -153,6 +153,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     dsda_config_int, 1, SMOOTH_PLAYING_MAXFACTOR, { 6 }, &demo_smoothturnsfactor,
     false, 0, UpdateDemoSmoothTurns
   },
+  [dsda_config_weapon_attack_alignment] = {
+    "weapon_attack_alignment", dsda_config_weapon_attack_alignment,
+    dsda_config_int, 0, 3, { 0 }, NULL, true, 0
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

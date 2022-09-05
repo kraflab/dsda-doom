@@ -91,7 +91,6 @@ enum
     NUM_CENTERWEAPON,
 };
 
-extern int weapon_attack_alignment;
 int P_WeaponPreferred(int w1, int w2);
 
 struct player_s;
