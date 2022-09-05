@@ -272,13 +272,10 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_default_complevel),
   MIGRATED_SETTING(dsda_config_default_skill),
   MIGRATED_SETTING(dsda_config_weapon_attack_alignment),
+  MIGRATED_SETTING(dsda_config_sts_always_red),
+  MIGRATED_SETTING(dsda_config_sts_pct_always_gray),
+  MIGRATED_SETTING(dsda_config_sts_traditional_keys),
 
-  {"sts_always_red",{&sts_always_red},{1},0,1, // no color changes on status bar
-   def_bool},
-  {"sts_pct_always_gray",{&sts_pct_always_gray},{0},0,1, // 2/23/98 chg default
-   def_bool}, // makes percent signs on status bar always gray
-  {"sts_traditional_keys",{&sts_traditional_keys},{0},0,1,  // killough 2/28/98
-   def_bool}, // disables doubled card and skull key display on status bar
   {"show_messages",{(int *)&dsda_setting[dsda_show_messages]},{1},0,1,
    def_bool}, // enables message display
   {"autorun",{(int *)&dsda_setting[dsda_autorun]},{1},0,1,  // killough 3/6/98: preserve autorun across games

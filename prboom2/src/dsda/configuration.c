@@ -57,6 +57,9 @@ extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
 extern int demo_smoothturns;
 extern int demo_smoothturnsfactor;
+extern int sts_always_red;
+extern int sts_pct_always_gray;
+extern int sts_traditional_keys;
 
 static void UpdateRealticClockRate(void) {
   void I_Init2(void);
@@ -156,6 +159,18 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_weapon_attack_alignment] = {
     "weapon_attack_alignment", dsda_config_weapon_attack_alignment,
     dsda_config_int, 0, 3, { 0 }, NULL, true, 0
+  },
+  [dsda_config_sts_always_red] = {
+    "sts_always_red", dsda_config_sts_always_red,
+    BOOL_DEFAULT_ON, &sts_always_red
+  },
+  [dsda_config_sts_pct_always_gray] = {
+    "sts_pct_always_gray", dsda_config_sts_pct_always_gray,
+    BOOL_DEFAULT_OFF, &sts_pct_always_gray
+  },
+  [dsda_config_sts_traditional_keys] = {
+    "sts_traditional_keys", dsda_config_sts_traditional_keys,
+    BOOL_DEFAULT_OFF, &sts_traditional_keys
   },
 };
 

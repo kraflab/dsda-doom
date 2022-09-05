@@ -2859,9 +2859,9 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 {
   { "STATUS BAR", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 1 * 8 },
 
-  { "USE RED NUMBERS", S_YESNO, m_null, SB_X, SB_Y + 2 * 8, { "sts_always_red" } },
-  { "GRAY %",S_YESNO, m_null, SB_X, SB_Y + 3 * 8, {"sts_pct_always_gray" } },
-  { "SINGLE KEY DISPLAY", S_YESNO, m_null, SB_X, SB_Y + 4 * 8, {"sts_traditional_keys" } },
+  { "USE RED NUMBERS", S_YESNO, m_conf, SB_X, SB_Y + 2 * 8, { dsda_config_sts_always_red } },
+  { "GRAY %",S_YESNO, m_conf, SB_X, SB_Y + 3 * 8, { dsda_config_sts_pct_always_gray } },
+  { "SINGLE KEY DISPLAY", S_YESNO, m_conf, SB_X, SB_Y + 4 * 8, { dsda_config_sts_traditional_keys } },
 
   { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 6 * 8 },
 

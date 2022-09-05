@@ -45,6 +45,9 @@ typedef enum {
   dsda_config_demo_smoothturns,
   dsda_config_demo_smoothturnsfactor,
   dsda_config_weapon_attack_alignment,
+  dsda_config_sts_always_red,
+  dsda_config_sts_pct_always_gray,
+  dsda_config_sts_traditional_keys,
   dsda_config_count,
 } dsda_config_identifier_t;
 
