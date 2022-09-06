@@ -159,7 +159,7 @@ void S_Init(void)
 
   //jff 1/22/98 skip sound init if sound not enabled
   numChannels = default_numChannels;
-  if (snd_card && !nosfxparm)
+  if (!nosfxparm)
   {
     static dboolean first_s_init = true;
 
@@ -191,7 +191,7 @@ void S_Init(void)
   }
 
   // CPhipps - music init reformatted
-  if (mus_card && !nomusicparm) {
+  if (!nomusicparm) {
     S_SetMusicVolume(snd_MusicVolume);
 
     // no sounds are playing, and they are not mus_paused
@@ -222,7 +222,7 @@ void S_Stop(void)
   AmbChan = -1;
 
   //jff 1/22/98 skip sound init if sound not enabled
-  if (snd_card && !nosfxparm)
+  if (!nosfxparm)
     for (cnum=0 ; cnum<numChannels ; cnum++)
       if (channels[cnum].sfxinfo)
         S_StopChannel(cnum);
@@ -275,7 +275,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   origin = (mobj_t *) origin_p;
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
   is_pickup = sfx_id & PICKUP_SOUND || sfx_id == sfx_oof || (compatibility_level >= prboom_2_compatibility && sfx_id == sfx_noway); // killough 4/25/98
@@ -387,7 +387,7 @@ void S_StopSound(void *origin)
   if (raven) return Heretic_S_StopSound(origin);
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
   for (cnum=0 ; cnum<numChannels ; cnum++)
@@ -406,7 +406,7 @@ void S_UnlinkSound(void *origin)
   int cnum;
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
   if (origin)
@@ -433,7 +433,7 @@ void S_UnlinkSound(void *origin)
 void S_PauseSound(void)
 {
   //jff 1/22/98 return if music is not enabled
-  if (!mus_card || nomusicparm)
+  if (nomusicparm)
     return;
 
   if (mus_playing && !mus_paused)
@@ -446,7 +446,7 @@ void S_PauseSound(void)
 void S_ResumeSound(void)
 {
   //jff 1/22/98 return if music is not enabled
-  if (!mus_card || nomusicparm)
+  if (nomusicparm)
     return;
 
   if (mus_playing && mus_paused)
@@ -470,7 +470,7 @@ void S_UpdateSounds(void* listener_p)
   listener = (mobj_t*) listener_p;
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
 #ifdef UPDATE_MUSIC
@@ -525,7 +525,7 @@ void S_UpdateSounds(void* listener_p)
 void S_SetMusicVolume(int volume)
 {
   //jff 1/22/98 return if music is not enabled
-  if (!mus_card || nomusicparm)
+  if (nomusicparm)
     return;
   if (volume < 0 || volume > 15)
     I_Error("S_SetMusicVolume: Attempt to set music volume at %d", volume);
@@ -538,7 +538,7 @@ void S_SetMusicVolume(int volume)
 void S_SetSfxVolume(int volume)
 {
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
   if (volume < 0 || volume > 127)
@@ -576,7 +576,7 @@ void S_ChangeMusic(int musicnum, int looping)
   S_music[mus_musinfo].lumpnum = -1;
 
   //jff 1/22/98 return if music is not enabled
-  if (!mus_card || nomusicparm)
+  if (nomusicparm)
     return;
 
   if (musicnum <= mus_None || musicnum >= num_music)
@@ -639,7 +639,7 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
   }
 
   //jff 1/22/98 return if music is not enabled
-  if (!mus_card || nomusicparm)
+  if (nomusicparm)
     return;
 
   if (mus_playing && mus_playing->lumpnum == lumpnum)
@@ -671,7 +671,7 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
 void S_StopMusic(void)
 {
   //jff 1/22/98 return if music is not enabled
-  if (!mus_card || nomusicparm)
+  if (nomusicparm)
     return;
 
   if (mus_playing)
@@ -695,7 +695,7 @@ void S_StopChannel(int cnum)
   channel_t *c = &channels[cnum];
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
   if (c->sfxinfo)
@@ -731,7 +731,7 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
   angle_t angle;
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return 0;
 
   // e6y
@@ -811,7 +811,7 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup)
   channel_t *c;
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return -1;
 
   // Find an open channel
@@ -932,7 +932,7 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   listener = GetSoundListener();
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
   if (sound_id == heretic_sfx_None)
@@ -1066,7 +1066,7 @@ static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume
   origin = (mobj_t *)_origin;
   listener = GetSoundListener();
 
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
   if (sound_id == heretic_sfx_None || volume == 0)
@@ -1103,7 +1103,7 @@ static void Heretic_S_StopSound(void *_origin)
   int i;
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
   for (i = 0; i < numChannels; i++)
@@ -1131,7 +1131,7 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
   fixed_t absy;
 
   //jff 1/22/98 return if sound is not enabled
-  if (!snd_card || nosfxparm)
+  if (nosfxparm)
     return;
 
 #ifdef UPDATE_MUSIC
@@ -1218,7 +1218,7 @@ dboolean S_GetSoundPlayingInfo(void * origin, int sound_id)
     sfxinfo_t *sfx;
 
     //jff 1/22/98 return if sound is not enabled
-    if (!snd_card || nosfxparm)
+    if (nosfxparm)
         return false;
 
     sfx = &S_sfx[sound_id];

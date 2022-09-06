@@ -124,9 +124,6 @@ void I_StopSong(int handle);
 // See above (register), then think backwards
 void I_UnRegisterSong(int handle);
 
-// Allegro card support jff 1/18/98
-extern int snd_card;
-extern int mus_card;
 // CPhipps - put these in config file
 extern int snd_samplerate;
 extern int snd_samplecount;

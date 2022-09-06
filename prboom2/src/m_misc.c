@@ -284,10 +284,6 @@ default_t defaults[] =
 
   SETTING_HEADING("Sound settings"),
   {"snd_pcspeaker",{&snd_pcspeaker},{0}, 0, 1, def_bool},
-  {"sound_card",{&snd_card},{-1},-1,7,       // jff 1/18/98 allow Allegro drivers
-   def_int}, // select sounds driver (DOS), -1 is autodetect, 0 is none; in Linux, non-zero enables sound
-  {"music_card",{&mus_card},{-1},-1,9,       //  to be set,  -1 = autodetect
-   def_int}, // select music driver (DOS), -1 is autodetect, 0 is none"; in Linux, non-zero enables music
   {"pitched_sounds",{&pitched_sounds},{0},0,1, // killough 2/21/98
    def_bool}, // enables variable pitch in sound effects (from id's original code)
   {"samplerate",{&snd_samplerate},{44100},11025,48000, def_int},

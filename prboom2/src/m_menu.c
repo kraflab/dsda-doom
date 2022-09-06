@@ -3114,7 +3114,7 @@ void M_DrawAutoMap(void)
 // killough 10/10/98
 
 extern int usejoystick, usemouse, default_mus_card, default_snd_card;
-extern int detect_voices, tran_filter_pct;
+extern int tran_filter_pct;
 extern int mouse_stutter_correction;
 
 setup_menu_t audiovideo_settings[], device_settings[], misc_settings[];

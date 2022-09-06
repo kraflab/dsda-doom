@@ -75,18 +75,12 @@
 
 int snd_pcspeaker;
 
+static dboolean registered_non_rw = false;
+
 // The number of internal mixing channels,
 //  the samples calculated for each mixing step,
 //  the size of the 16bit, 2 hardware channel (stereo)
 //  mixing buffer, and the samplerate of the raw data.
-
-// Variables used by Boom from Allegro
-// created here to avoid changes to core Boom files
-int snd_card = 1;
-int mus_card = 1;
-int detect_voices = 0; // God knows
-
-static dboolean registered_non_rw = false;
 
 // Needed for calling the actual sound output.
 #define MAX_CHANNELS    32
