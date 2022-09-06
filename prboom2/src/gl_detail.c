@@ -208,14 +208,10 @@ void gld_PreprocessDetail(void)
   if (gl_arb_multitexture)
   {
     GLEXT_glClientActiveTextureARB(GL_TEXTURE0_ARB);
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
     glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
-#endif
 
     GLEXT_glClientActiveTextureARB(GL_TEXTURE1_ARB);
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
     glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
-#endif
     GLEXT_glClientActiveTextureARB(GL_TEXTURE0_ARB);
 
     GLEXT_glActiveTextureARB(GL_TEXTURE1_ARB);
@@ -425,7 +421,6 @@ void gld_DrawFlatDetail_NoARB(GLFlat *flat)
   if (flat->sectornum>=0)
   {
     // go through all loops of this sector
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
     if (gl_use_display_lists)
     {
       glCallList(flats_display_list + flat->sectornum);
@@ -438,30 +433,6 @@ void gld_DrawFlatDetail_NoARB(GLFlat *flat)
         glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
       }
     }
-#else
-    for (loopnum=0; loopnum<sectorloops[flat->sectornum].loopcount; loopnum++)
-    {
-      int vertexnum;
-      // set the current loop
-      currentloop=&sectorloops[flat->sectornum].loops[loopnum];
-      if (!currentloop)
-        continue;
-      // set the mode (GL_TRIANGLES, GL_TRIANGLE_STRIP or GL_TRIANGLE_FAN)
-      glBegin(currentloop->mode);
-      // go through all vertexes of this loop
-      for (vertexnum=currentloop->vertexindex; vertexnum<(currentloop->vertexindex+currentloop->vertexcount); vertexnum++)
-      {
-        // set texture coordinate of this vertex
-        GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE0_ARB, (GLfloat*)&flats_vbo[vertexnum].u);
-        GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE1_ARB, (GLfloat*)&flats_vbo[vertexnum].u);
-
-        // set vertex coordinate
-        glVertex3fv((GLfloat*)&flats_vbo[vertexnum].x);
-      }
-      // end of loop
-      glEnd();
-    }
-#endif
   }
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);

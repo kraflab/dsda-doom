@@ -1074,7 +1074,6 @@ void gld_PreprocessLevel(void)
 
   gld_FreeDrawInfo();
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   if (!gl_preprocessed)
   {
     if (gl_ext_arb_vertex_buffer_object)
@@ -1103,13 +1102,11 @@ void gld_PreprocessLevel(void)
     glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
     glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
   }
-#endif
 
   //e6y
   gld_PreprocessDetail();
   gld_InitVertexData();
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   if (!gl_preprocessed)
   {
     if (gl_use_display_lists)
@@ -1117,7 +1114,6 @@ void gld_PreprocessLevel(void)
       gld_InitDisplayLists();
     }
   }
-#endif
 
   gl_preprocessed = true;
 }

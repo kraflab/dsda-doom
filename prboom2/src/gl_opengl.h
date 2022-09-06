@@ -38,9 +38,6 @@
 #include "config.h"
 #endif
 
-#define USE_VERTEX_ARRAYS
-//#define USE_VBO
-
 #include <SDL.h>
 #include <SDL_opengl.h>
 

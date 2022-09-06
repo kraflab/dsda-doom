@@ -805,7 +805,6 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
 
 void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
 {
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   const unsigned char *playpal = V_GetPlaypal();
   unsigned char r, g, b, a;
   map_line_t *line;
@@ -833,22 +832,6 @@ void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
   line->point[1].g = g;
   line->point[1].b = b;
   line->point[1].a = a;
-#else
-  const unsigned char *playpal = V_GetPlaypal();
-
-  float alpha = ((automapmode & am_overlay) ? map_lines_overlay_trans / 100.0f : 1.0f);
-  if (alpha == 0)
-    return;
-
-  glColor4f((float)playpal[3*BaseColor]/255.0f,
-            (float)playpal[3*BaseColor+1]/255.0f,
-            (float)playpal[3*BaseColor+2]/255.0f,
-            alpha);
-  glBegin(GL_LINES);
-    glVertex2f( x0, y0 );
-    glVertex2f( x1, y1 );
-  glEnd();
-#endif
 }
 
 void gld_DrawLine(int x0, int y0, int x1, int y1, int BaseColor)
@@ -2037,11 +2020,9 @@ static void gld_DrawFlat(GLFlat *flat)
   gld_BindFlat(flat->gltexture, flags);
   gld_StaticLightAlpha(flat->light, flat->alpha);
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glTranslatef(0.0f,flat->z,0.0f);
-#endif
 
   if (has_offset)
   {
@@ -2077,7 +2058,6 @@ static void gld_DrawFlat(GLFlat *flat)
   if (flat->sectornum>=0)
   {
     // go through all loops of this sector
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
     if (gl_use_display_lists)
     {
       int display_list = (has_detail ? flats_detail_display_list : flats_display_list);
@@ -2092,37 +2072,6 @@ static void gld_DrawFlat(GLFlat *flat)
         glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
       }
     }
-#else
-    for (loopnum=0; loopnum<sectorloops[flat->sectornum].loopcount; loopnum++)
-    {
-      int vertexnum;
-      // set the current loop
-      currentloop=&sectorloops[flat->sectornum].loops[loopnum];
-      if (!currentloop)
-        continue;
-      // set the mode (GL_TRIANGLES, GL_TRIANGLE_STRIP or GL_TRIANGLE_FAN)
-      glBegin(currentloop->mode);
-      // go through all vertexes of this loop
-      for (vertexnum=currentloop->vertexindex; vertexnum<(currentloop->vertexindex+currentloop->vertexcount); vertexnum++)
-      {
-        // set texture coordinate of this vertex
-        if (has_detail)
-        {
-          GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE0_ARB, (GLfloat*)&flats_vbo[vertexnum].u);
-          GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE1_ARB, (GLfloat*)&flats_vbo[vertexnum].u);
-        }
-        else
-        {
-          glTexCoord2fv((GLfloat*)&flats_vbo[vertexnum].u);
-        }
-        // set vertex coordinate
-        //glVertex3fv((GLfloat*)&flats_vbo[vertexnum].x);
-        glVertex3f(flats_vbo[vertexnum].x, flat->z, flats_vbo[vertexnum].z);
-      }
-      // end of loop
-      glEnd();
-    }
-#endif
   }
 
   //e6y
@@ -2137,10 +2086,8 @@ static void gld_DrawFlat(GLFlat *flat)
     glPopMatrix();
   }
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
-#endif
 }
 
 // gld_AddFlat
@@ -3036,14 +2983,12 @@ void gld_DrawScene(player_t *player)
   gld_EnableDetail(false);
   gld_InitFrameDetails();
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   if (!gl_use_display_lists)
   {
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
   }
-#endif
 
   //e6y: skybox
   skybox = 0;
@@ -3065,7 +3010,6 @@ void gld_DrawScene(player_t *player)
     }
   }
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   if (!gl_use_display_lists)
   {
     if (gl_ext_arb_vertex_buffer_object)
@@ -3075,7 +3019,6 @@ void gld_DrawScene(player_t *player)
     glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
     glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
   }
-#endif
 
   glsl_SetActiveShader(sh_main);
 
@@ -3378,7 +3321,6 @@ void gld_DrawScene(player_t *player)
 
   gld_EnableDetail(false);
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   if (!gl_use_display_lists)
   {
     if (gl_ext_arb_vertex_buffer_object)
@@ -3390,7 +3332,6 @@ void gld_DrawScene(player_t *player)
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
   }
-#endif
 
   glsl_SetActiveShader(NULL);
 }

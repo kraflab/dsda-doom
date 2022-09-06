@@ -497,7 +497,6 @@ void gld_EnableTexture2D(GLenum texture, int enable)
 
 void gld_EnableClientCoordArray(GLenum texture, int enable)
 {
-#ifdef USE_VERTEX_ARRAYS
   int arb;
 
   if (!gl_arb_multitexture)
@@ -532,7 +531,6 @@ void gld_EnableClientCoordArray(GLenum texture, int enable)
       clieant_active_texture_enabled[arb] = enable;
     }
   }
-#endif
 }
 
 void gld_EnableMultisample(int enable)
