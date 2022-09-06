@@ -82,6 +82,11 @@ typedef enum {
   dsda_config_overrun_donut_emulate,
   dsda_config_overrun_missedbackside_warn,
   dsda_config_overrun_missedbackside_emulate,
+  dsda_config_comperr_zerotag,
+  dsda_config_comperr_passuse,
+  dsda_config_comperr_hangsolid,
+  dsda_config_comperr_blockmap,
+  dsda_config_comperr_freeaim,
   dsda_config_count,
 } dsda_config_identifier_t;
 

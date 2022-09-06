@@ -137,7 +137,7 @@ enum {
 };
 
 extern int comp[MBF_COMP_TOTAL];
-extern int /*comperr[COMPERR_NUM], */default_comperr[COMPERR_NUM];
+extern int default_comperr[COMPERR_NUM];
 
 // -------------------------------------------
 // Language.

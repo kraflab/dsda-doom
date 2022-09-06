@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "doomdef.h"
+#include "doomstat.h"
 #include "g_overflow.h"
 #include "r_demo.h"
 #include "z_zone.h"
@@ -321,6 +322,26 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_overrun_missedbackside_emulate] = {
     "overrun_missedbackside_emulate", dsda_config_overrun_missedbackside_emulate,
     BOOL_DEFAULT_OFF, &overflows[OVERFLOW_MISSEDBACKSIDE].emulate
+  },
+  [dsda_config_comperr_zerotag] = {
+    "comperr_zerotag", dsda_config_comperr_zerotag,
+    BOOL_DEFAULT_OFF, &default_comperr[comperr_zerotag]
+  },
+  [dsda_config_comperr_passuse] = {
+    "comperr_passuse", dsda_config_comperr_passuse,
+    BOOL_DEFAULT_OFF, &default_comperr[comperr_passuse]
+  },
+  [dsda_config_comperr_hangsolid] = {
+    "comperr_hangsolid", dsda_config_comperr_hangsolid,
+    BOOL_DEFAULT_OFF, &default_comperr[comperr_hangsolid]
+  },
+  [dsda_config_comperr_blockmap] = {
+    "comperr_blockmap", dsda_config_comperr_blockmap,
+    BOOL_DEFAULT_OFF, &default_comperr[comperr_blockmap]
+  },
+  [dsda_config_comperr_freeaim] = {
+    "comperr_freeaim", dsda_config_comperr_freeaim,
+    BOOL_DEFAULT_OFF, &default_comperr[comperr_freeaim]
   },
 };
 

@@ -59,7 +59,7 @@ complevel_t compatibility_level;
 int demover;
 
 int comp[MBF_COMP_TOTAL];    // killough 10/98
-int /*comperr[COMPERR_NUM], */default_comperr[COMPERR_NUM];
+int default_comperr[COMPERR_NUM];
 
 // v1.1-like pitched sounds
 int pitched_sounds;        // killough

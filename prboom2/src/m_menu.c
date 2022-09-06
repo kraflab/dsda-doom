@@ -3318,12 +3318,12 @@ setup_menu_t mapping_settings[] = {
   { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_overrun_playeringame_warn } },
   { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_overrun_playeringame_emulate } },
 
-  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
-  { "LINEDEFS W/O TAGS APPLY LOCALLY", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "comperr_zerotag" } },
-  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "comperr_passuse" } },
-  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "comperr_hangsolid" } },
-  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "comperr_blockmap" } },
-  { "ALLOW VERTICAL AIMING", S_YESNO, m_null, G_X, G_Y + 16 * 8, { "comperr_freeaim" } },
+  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, G_X, G_Y + 11 * 8 },
+  { "LINEDEFS W/O TAGS APPLY LOCALLY", S_YESNO, m_conf, G_X, G_Y + 12 * 8, { .config_id = dsda_config_comperr_zerotag } },
+  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G_X, G_Y + 13 * 8, { .config_id = dsda_config_comperr_passuse } },
+  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, G_Y + 14 * 8, { .config_id = dsda_config_comperr_hangsolid } },
+  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, G_Y + 15 * 8, { .config_id = dsda_config_comperr_blockmap } },
+  { "ALLOW VERTICAL AIMING", S_YESNO, m_conf, G_X, G_Y + 16 * 8, { .config_id = dsda_config_comperr_freeaim } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { opengl_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { demo_settings } },
