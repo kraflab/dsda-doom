@@ -2034,7 +2034,7 @@ static void M_DrawSetting(const setup_menu_t* s)
   {
     int ch;
 
-    ch = *s->var.def->location.pi;
+    ch = dsda_PersistentIntConfig(s->var.config_id);
     // proff 12/6/98: Drawing of colorchips completly changed for hi-res, it now uses a patch
     // draw the paint chip
     // e6y: wide-res
@@ -2980,18 +2980,18 @@ setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
 
 setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
 {
-  {"background", S_COLOR, m_null, AU_X, AU_Y, {"mapcolor_back"}},
-  {"grid lines", S_COLOR, m_null, AU_X, AU_Y + 1*8, {"mapcolor_grid"}},
-  {"normal 1s wall", S_COLOR, m_null,AU_X,AU_Y+ 2*8, {"mapcolor_wall"}},
-  {"line at floor height change", S_COLOR, m_null, AU_X, AU_Y+ 3*8, {"mapcolor_fchg"}},
-  {"line at ceiling height change"      ,S_COLOR,m_null,AU_X,AU_Y+ 4*8, {"mapcolor_cchg"}},
-  {"line at sector with floor = ceiling",S_COLOR,m_null,AU_X,AU_Y+ 5*8, {"mapcolor_clsd"}},
-  {"red key"                            ,S_COLOR,m_null,AU_X,AU_Y+ 6*8, {"mapcolor_rkey"}},
-  {"blue key"                           ,S_COLOR,m_null,AU_X,AU_Y+ 7*8, {"mapcolor_bkey"}},
-  {"yellow key"                         ,S_COLOR,m_null,AU_X,AU_Y+ 8*8, {"mapcolor_ykey"}},
-  {"red door"                           ,S_COLOR,m_null,AU_X,AU_Y+ 9*8, {"mapcolor_rdor"}},
-  {"blue door"                          ,S_COLOR,m_null,AU_X,AU_Y+10*8, {"mapcolor_bdor"}},
-  {"yellow door"                        ,S_COLOR,m_null,AU_X,AU_Y+11*8, {"mapcolor_ydor"}},
+  {"background", S_COLOR, m_conf, AU_X, AU_Y, { .config_id = dsda_config_mapcolor_back }},
+  {"grid lines", S_COLOR, m_conf, AU_X, AU_Y + 1*8, { .config_id = dsda_config_mapcolor_grid }},
+  {"normal 1s wall", S_COLOR, m_conf,AU_X,AU_Y+ 2*8, { .config_id = dsda_config_mapcolor_wall }},
+  {"line at floor height change", S_COLOR, m_conf, AU_X, AU_Y+ 3*8, { .config_id = dsda_config_mapcolor_fchg }},
+  {"line at ceiling height change"      ,S_COLOR,m_conf,AU_X,AU_Y+ 4*8, { .config_id = dsda_config_mapcolor_cchg }},
+  {"line at sector with floor = ceiling",S_COLOR,m_conf,AU_X,AU_Y+ 5*8, { .config_id = dsda_config_mapcolor_clsd }},
+  {"red key"                            ,S_COLOR,m_conf,AU_X,AU_Y+ 6*8, { .config_id = dsda_config_mapcolor_rkey }},
+  {"blue key"                           ,S_COLOR,m_conf,AU_X,AU_Y+ 7*8, { .config_id = dsda_config_mapcolor_bkey }},
+  {"yellow key"                         ,S_COLOR,m_conf,AU_X,AU_Y+ 8*8, { .config_id = dsda_config_mapcolor_ykey }},
+  {"red door"                           ,S_COLOR,m_conf,AU_X,AU_Y+ 9*8, { .config_id = dsda_config_mapcolor_rdor }},
+  {"blue door"                          ,S_COLOR,m_conf,AU_X,AU_Y+10*8, { .config_id = dsda_config_mapcolor_bdor }},
+  {"yellow door"                        ,S_COLOR,m_conf,AU_X,AU_Y+11*8, { .config_id = dsda_config_mapcolor_ydor }},
 
   {"AUTOMAP LEVEL TITLE COLOR"      ,S_CRITEM,m_null,AU_X,AU_Y+12*8, {"hudcolor_titl"}},
   {"AUTOMAP COORDINATES COLOR"      ,S_CRITEM,m_null,AU_X,AU_Y+13*8, {"hudcolor_xyco"}},
@@ -3010,21 +3010,21 @@ setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
 
 setup_menu_t auto_settings3[] =  // 3nd AutoMap Settings screen
 {
-  {"teleporter line"                ,S_COLOR ,m_null,AU_X,AU_Y, {"mapcolor_tele"}},
-  {"secret sector boundary"         ,S_COLOR ,m_null,AU_X,AU_Y+ 1*8, {"mapcolor_secr"}},
-  {"revealed secret sector boundary",S_COLOR ,m_null,AU_X,AU_Y+ 2*8, {"mapcolor_revsecr"}},
+  {"teleporter line"                ,S_COLOR ,m_conf,AU_X,AU_Y, { .config_id = dsda_config_mapcolor_tele }},
+  {"secret sector boundary"         ,S_COLOR ,m_conf,AU_X,AU_Y+ 1*8, { .config_id = dsda_config_mapcolor_secr }},
+  {"revealed secret sector boundary",S_COLOR ,m_conf,AU_X,AU_Y+ 2*8, { .config_id = dsda_config_mapcolor_revsecr }},
   //jff 4/23/98 add exit line to automap
-  {"exit line"                      ,S_COLOR ,m_null,AU_X,AU_Y+ 3*8, {"mapcolor_exit"}},
-  {"computer map unseen line"       ,S_COLOR ,m_null,AU_X,AU_Y+ 4*8, {"mapcolor_unsn"}},
-  {"line w/no floor/ceiling changes",S_COLOR ,m_null,AU_X,AU_Y+ 5*8, {"mapcolor_flat"}},
-  {"general sprite"                 ,S_COLOR ,m_null,AU_X,AU_Y+ 6*8, {"mapcolor_sprt"}},
-  {"countable enemy sprite"         ,S_COLOR ,m_null,AU_X,AU_Y+ 7*8, {"mapcolor_enemy"}},      // cph 2006/06/30
-  {"countable item sprite"          ,S_COLOR ,m_null,AU_X,AU_Y+ 8*8, {"mapcolor_item"}},       // mead 3/4/2003
-  {"crosshair"                      ,S_COLOR ,m_null,AU_X,AU_Y+ 9*8, {"mapcolor_hair"}},
-  {"single player arrow"            ,S_COLOR ,m_null,AU_X,AU_Y+10*8, {"mapcolor_sngl"}},
-  {"your colour in multiplayer"     ,S_COLOR ,m_null,AU_X,AU_Y+11*8, {"mapcolor_me"}},
+  {"exit line"                      ,S_COLOR ,m_conf,AU_X,AU_Y+ 3*8, { .config_id = dsda_config_mapcolor_exit }},
+  {"computer map unseen line"       ,S_COLOR ,m_conf,AU_X,AU_Y+ 4*8, { .config_id = dsda_config_mapcolor_unsn }},
+  {"line w/no floor/ceiling changes",S_COLOR ,m_conf,AU_X,AU_Y+ 5*8, { .config_id = dsda_config_mapcolor_flat }},
+  {"general sprite"                 ,S_COLOR ,m_conf,AU_X,AU_Y+ 6*8, { .config_id = dsda_config_mapcolor_sprt }},
+  {"countable enemy sprite"         ,S_COLOR ,m_conf,AU_X,AU_Y+ 7*8, { .config_id = dsda_config_mapcolor_enemy }},      // cph 2006/06/30
+  {"countable item sprite"          ,S_COLOR ,m_conf,AU_X,AU_Y+ 8*8, { .config_id = dsda_config_mapcolor_item }},       // mead 3/4/2003
+  {"crosshair"                      ,S_COLOR ,m_conf,AU_X,AU_Y+ 9*8, { .config_id = dsda_config_mapcolor_hair }},
+  {"single player arrow"            ,S_COLOR ,m_conf,AU_X,AU_Y+10*8, { .config_id = dsda_config_mapcolor_sngl }},
+  {"your colour in multiplayer"     ,S_COLOR ,m_conf,AU_X,AU_Y+11*8, { .config_id = dsda_config_mapcolor_me }},
 
-  {"friends"                        ,S_COLOR ,m_null,AU_X,AU_Y+13*8, {"mapcolor_frnd"}},        // killough 8/8/98
+  {"friends"                        ,S_COLOR ,m_conf,AU_X,AU_Y+13*8, { .config_id = dsda_config_mapcolor_frnd }},        // killough 8/8/98
 
   {"<-",S_SKIP|S_PREV,m_null,AU_PREV,AU_Y+20*8, {auto_settings2}},
 
@@ -5083,7 +5083,7 @@ dboolean M_Responder (event_t* ev) {
 
         if (action == MENU_ENTER)
         {
-          *ptr1->var.def->location.pi = color_palette_x + 16 * color_palette_y;
+          dsda_UpdateIntConfig(ptr1->var.config_id, color_palette_x + 16 * color_palette_y, true);
           M_SelectDone(ptr1);                         // phares 4/17/98
           colorbox_active = false;
           return true;
@@ -5215,13 +5215,13 @@ dboolean M_Responder (event_t* ev) {
       }
       else if (flags & S_COLOR)
       {
-        int color = *ptr1->var.def->location.pi;
+        int color = dsda_PersistentIntConfig(ptr1->var.config_id);
 
         if (color < 0 || color > 255) // range check the value
           color = 0;        // 'no show' if invalid
 
-        color_palette_x = *ptr1->var.def->location.pi & 15;
-        color_palette_y = *ptr1->var.def->location.pi >> 4;
+        color_palette_x = color & 15;
+        color_palette_y = color >> 4;
         colorbox_active = true;
       }
       else if (flags & S_STRING)

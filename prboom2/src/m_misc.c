@@ -418,31 +418,31 @@ default_t defaults[] =
   { "use_joystick",{&usejoystick},{0},0,2, def_int}, // number of joystick to use (0 for none)
 
   SETTING_HEADING("Automap settings"),
-  { "mapcolor_back", {&mapcolor_back}, {247},0,255, def_colour}, // color used as background for automap
-  { "mapcolor_grid", {&mapcolor_grid}, {104},0,255, def_colour}, // color used for automap grid lines
-  { "mapcolor_wall", {&mapcolor_wall}, {23},0,255, def_colour}, // color used for one side walls on automap
-  { "mapcolor_fchg", {&mapcolor_fchg}, {55},0,255, def_colour}, // color used for lines floor height changes across
-  { "mapcolor_cchg", {&mapcolor_cchg}, {215},0,255, def_colour}, // color used for lines ceiling height changes across
-  { "mapcolor_clsd", {&mapcolor_clsd}, {208},0,255, def_colour}, // color used for lines denoting closed doors, objects
-  { "mapcolor_rkey", {&mapcolor_rkey}, {175},0,255, def_colour}, // color used for red key sprites
-  { "mapcolor_bkey", {&mapcolor_bkey}, {204},0,255, def_colour}, // color used for blue key sprites
-  { "mapcolor_ykey", {&mapcolor_ykey}, {231},0,255, def_colour}, // color used for yellow key sprites
-  { "mapcolor_rdor", {&mapcolor_rdor}, {175},0,255, def_colour}, // color used for closed red doors
-  { "mapcolor_bdor", {&mapcolor_bdor}, {204},0,255, def_colour}, // color used for closed blue doors
-  { "mapcolor_ydor", {&mapcolor_ydor}, {231},0,255, def_colour}, // color used for closed yellow doors
-  { "mapcolor_tele", {&mapcolor_tele}, {119},0,255, def_colour}, // color used for teleporter lines
-  { "mapcolor_secr", {&mapcolor_secr}, {252},0,255, def_colour}, // color used for lines around secret sectors
-  { "mapcolor_revsecr", {&mapcolor_revsecr}, {112},0,255, def_colour}, // color used for lines around revealed secrets
-  { "mapcolor_exit", {&mapcolor_exit}, {0},0,255, def_colour}, // color used for exit lines
-  { "mapcolor_unsn", {&mapcolor_unsn}, {104},0,255, def_colour}, // color used for lines not seen without computer map
-  { "mapcolor_flat", {&mapcolor_flat}, {88},0,255, def_colour}, // color used for lines with no height changes
-  { "mapcolor_sprt", {&mapcolor_sprt}, {112},0,255, def_colour}, // color used as things
-  { "mapcolor_item", {&mapcolor_item}, {231},0,255, def_colour}, // color used for counted items
-  { "mapcolor_hair", {&mapcolor_hair}, {208},0,255, def_colour}, // color used for dot crosshair denoting center of map
-  { "mapcolor_sngl", {&mapcolor_sngl}, {208},0,255, def_colour}, // color used for the single player arrow
-  { "mapcolor_me",   {&mapcolor_me}, {112},0,255, def_colour}, // your (player) colour
-  { "mapcolor_enemy",   {&mapcolor_enemy}, {177},0,255, def_colour},
-  { "mapcolor_frnd",   {&mapcolor_frnd}, {112},0,255, def_colour},
+  MIGRATED_SETTING(dsda_config_mapcolor_back),
+  MIGRATED_SETTING(dsda_config_mapcolor_grid),
+  MIGRATED_SETTING(dsda_config_mapcolor_wall),
+  MIGRATED_SETTING(dsda_config_mapcolor_fchg),
+  MIGRATED_SETTING(dsda_config_mapcolor_cchg),
+  MIGRATED_SETTING(dsda_config_mapcolor_clsd),
+  MIGRATED_SETTING(dsda_config_mapcolor_rkey),
+  MIGRATED_SETTING(dsda_config_mapcolor_bkey),
+  MIGRATED_SETTING(dsda_config_mapcolor_ykey),
+  MIGRATED_SETTING(dsda_config_mapcolor_rdor),
+  MIGRATED_SETTING(dsda_config_mapcolor_bdor),
+  MIGRATED_SETTING(dsda_config_mapcolor_ydor),
+  MIGRATED_SETTING(dsda_config_mapcolor_tele),
+  MIGRATED_SETTING(dsda_config_mapcolor_secr),
+  MIGRATED_SETTING(dsda_config_mapcolor_revsecr),
+  MIGRATED_SETTING(dsda_config_mapcolor_exit),
+  MIGRATED_SETTING(dsda_config_mapcolor_unsn),
+  MIGRATED_SETTING(dsda_config_mapcolor_flat),
+  MIGRATED_SETTING(dsda_config_mapcolor_sprt),
+  MIGRATED_SETTING(dsda_config_mapcolor_item),
+  MIGRATED_SETTING(dsda_config_mapcolor_hair),
+  MIGRATED_SETTING(dsda_config_mapcolor_sngl),
+  MIGRATED_SETTING(dsda_config_mapcolor_me),
+  MIGRATED_SETTING(dsda_config_mapcolor_enemy),
+  MIGRATED_SETTING(dsda_config_mapcolor_frnd),
   { "map_secret_after", {&map_secret_after}, {0},0,1, def_bool}, // prevents showing secret sectors till after entered
   { "map_point_coord", {&map_point_coordinates}, {0},0,1, def_bool},
   { "map_level_stat", {&map_level_stat}, {1},0,1, def_bool},
