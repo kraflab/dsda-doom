@@ -73,8 +73,6 @@ static const lighttable_t **spritelights;        // killough 1/25/98 made static
 float pspriteyscale_f;
 float pspritexscale_f;
 
-int sprites_doom_order;
-
 int health_bar;
 int health_bar_full_length;
 int health_bar_red;
@@ -1364,16 +1362,8 @@ void R_SortVisSprites (void)
                                   * sizeof *vissprite_ptrs);
         }
 
-      if (sprites_doom_order)
-      {
-        while (--i>=0)
-          vissprite_ptrs[num_vissprite-i-1] = vissprites+i;
-      }
-      else
-      {
-        while (--i>=0)
-          vissprite_ptrs[i] = vissprites+i;
-      }
+      while (--i>=0)
+        vissprite_ptrs[num_vissprite-i-1] = vissprites+i;
 
       // killough 9/22/98: replace qsort with merge sort, since the keys
       // are roughly in order to begin with, due to BSP rendering.

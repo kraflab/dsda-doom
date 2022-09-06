@@ -2871,7 +2871,7 @@ static void gld_DrawItemsSortSprites(GLDrawItemType itemtype)
   static const float delta = 0.2f / MAP_COEFF;
   int i;
 
-  if (scene_has_overlapped_sprites && sprites_doom_order == DOOM_ORDER_STATIC)
+  if (scene_has_overlapped_sprites)
   {
     for (i = 0; i < gld_drawinfo.num_items[itemtype]; i++)
     {
@@ -2881,45 +2881,6 @@ static void gld_DrawItemsSortSprites(GLDrawItemType itemtype)
         sprite->index = gl_spriteindex;
         sprite->x -= delta * sin_inv_yaw;
         sprite->z -= delta * cos_inv_yaw;
-      }
-    }
-  }
-
-  if (sprites_doom_order == DOOM_ORDER_DYNAMIC)
-  {
-    no_overlapped_sprites = true;
-    gld_DrawItemsSort(itemtype, dicmp_sprite_by_pos); // back to front
-
-    if (!no_overlapped_sprites)
-    {
-      // there are overlapped sprites
-      int count = gld_drawinfo.num_items[itemtype];
-
-      i = 1;
-      while (i < count)
-      {
-        GLSprite *sprite1 = gld_drawinfo.items[itemtype][i - 1].item.sprite;
-        GLSprite *sprite2 = gld_drawinfo.items[itemtype][i - 0].item.sprite;
-
-        if (sprite1->xy == sprite2->xy)
-        {
-          GLSprite *sprite = (sprite1->index > sprite2->index ? sprite1 : sprite2);
-          i++;
-          while (i < count && gld_drawinfo.items[itemtype][i].item.sprite->xy == sprite1->xy)
-          {
-            if (gld_drawinfo.items[itemtype][i].item.sprite->index > sprite->index)
-            {
-              sprite = gld_drawinfo.items[itemtype][i].item.sprite;
-            }
-            i++;
-          }
-
-          // 'nearest'
-          sprite->index = gl_spriteindex;
-          sprite->x -= delta * sin_inv_yaw;
-          sprite->z -= delta * cos_inv_yaw;
-        }
-        i++;
       }
     }
   }

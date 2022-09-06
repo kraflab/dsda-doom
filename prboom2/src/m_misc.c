@@ -363,8 +363,6 @@ default_t defaults[] =
   def_int},
   {"render_stretchsky",{&r_stretchsky},{1},0,1,
    def_bool},
-  {"sprites_doom_order", {&sprites_doom_order}, {DOOM_ORDER_STATIC},0,DOOM_ORDER_LAST - 1,
-   def_int},
 
   SETTING_HEADING("OpenGL settings"),
   {"gl_arb_multitexture", {&gl_arb_multitexture_default}, {1},0,1,
