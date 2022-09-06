@@ -71,8 +71,6 @@ extern int sts_always_red;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 
-extern int gl_clear;
-extern int gl_ztrick;
 extern int gl_sprite_blend;
 extern int gl_use_paletted_texture;
 extern int gl_use_shared_texture_palette;
@@ -464,14 +462,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_mapcolor_frnd] = {
     "mapcolor_frnd", dsda_config_mapcolor_frnd,
     CONF_COLOR, { 112 }, &mapcolor_frnd
-  },
-  [dsda_config_gl_clear] = {
-    "gl_clear", dsda_config_gl_clear,
-    BOOL_DEFAULT_OFF, &gl_clear
-  },
-  [dsda_config_gl_ztrick] = {
-    "gl_ztrick", dsda_config_gl_ztrick,
-    BOOL_DEFAULT_OFF, &gl_ztrick
   },
   [dsda_config_gl_sprite_blend] = {
     "gl_sprite_blend", dsda_config_gl_sprite_blend,

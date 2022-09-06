@@ -240,10 +240,7 @@ void gld_RenderShadows(void)
   if (gld_drawinfo.num_items[GLDIT_SHADOW] <= 0)
     return;
 
-  if (!gl_ztrick)
-  {
-    glDepthRange(simple_shadows.bias, 1);
-  }
+  glDepthRange(simple_shadows.bias, 1);
 
   gl_EnableFog(false);
 
@@ -268,10 +265,7 @@ void gld_RenderShadows(void)
     gld_DrawShadow(gld_drawinfo.items[GLDIT_SHADOW][i].item.shadow);
   }
 
-  if (!gl_ztrick)
-  {
-    glDepthRange(0, 1);
-  }
+  glDepthRange(0, 1);
 
   glPopMatrix();
   glDepthMask(GL_TRUE);

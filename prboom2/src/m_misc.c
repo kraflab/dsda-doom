@@ -222,9 +222,6 @@ extern int gl_use_shared_texture_palette;
 extern int gl_fog;
 extern int gl_fog_color;
 
-extern int gl_clear;
-extern int gl_ztrick;
-
 extern int tran_filter_pct;            // killough 2/21/98
 
 extern int screenblocks;
@@ -326,8 +323,6 @@ default_t defaults[] =
   { "render_stretchsky",{&r_stretchsky},{1},0,1, def_bool},
 
   SETTING_HEADING("OpenGL settings"),
-  MIGRATED_SETTING(dsda_config_gl_clear),
-  MIGRATED_SETTING(dsda_config_gl_ztrick),
   MIGRATED_SETTING(dsda_config_gl_sprite_blend),
   MIGRATED_SETTING(dsda_config_gl_use_paletted_texture),
   MIGRATED_SETTING(dsda_config_gl_use_shared_texture_palette),

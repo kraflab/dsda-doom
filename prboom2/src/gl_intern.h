@@ -327,8 +327,6 @@ extern float yaw;
 extern float inv_yaw;
 extern float pitch;
 
-extern int gl_ztrick;
-
 extern int gl_preprocessed; //e6y
 
 extern GLDrawInfo gld_drawinfo;

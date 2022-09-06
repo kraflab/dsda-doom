@@ -77,8 +77,6 @@
 #include "dsda/stretch.h"
 #include "dsda/gl/render_scale.h"
 
-int gl_clear;
-
 int gl_preprocessed = false;
 
 int gl_spriteindex;
@@ -86,13 +84,6 @@ int scene_has_overlapped_sprites;
 
 int gl_blend_animations;
 
-// e6y
-// This variables toggles the use of a trick to prevent the clearning of the
-// z-buffer between frames. When this variable is set to "1", the game will not
-// clear the z-buffer between frames. This will result in increased performance
-// only on very old hardware and might cause problems for some display hardware.
-int gl_ztrick;
-int gl_ztrickframe = 0;
 float gldepthmin, gldepthmax;
 
 unsigned int invul_method;
@@ -1116,11 +1107,6 @@ void gld_Clear(void)
 {
   int clearbits = 0;
 
-#ifndef PRBOOM_DEBUG
-  if (gl_clear)
-#endif
-    clearbits |= GL_COLOR_BUFFER_BIT;
-
   // flashing red HOM indicators
   if (dsda_IntConfig(dsda_config_flashing_hom))
   {
@@ -1131,29 +1117,10 @@ void gld_Clear(void)
   if (gl_use_stencil)
     clearbits |= GL_STENCIL_BUFFER_BIT;
 
-  if (!gl_ztrick)
-    clearbits |= GL_DEPTH_BUFFER_BIT;
+  clearbits |= GL_DEPTH_BUFFER_BIT;
 
   if (clearbits)
     glClear(clearbits);
-
-  if (gl_ztrick)
-  {
-    gl_ztrickframe = !gl_ztrickframe;
-    if (gl_ztrickframe)
-    {
-      gldepthmin = 0.0f;
-      gldepthmax = 0.49999f;
-      glDepthFunc(GL_LEQUAL);
-    }
-    else
-    {
-      gldepthmin = 1.0f;
-      gldepthmax = 0.5f;
-      glDepthFunc(GL_GEQUAL);
-    }
-    glDepthRange(gldepthmin, gldepthmax);
-  }
 }
 
 void gld_StartDrawScene(void)
