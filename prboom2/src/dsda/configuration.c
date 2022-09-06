@@ -300,11 +300,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_overrun_playeringame_warn] = {
     "overrun_playeringame_warn", dsda_config_overrun_playeringame_warn,
-    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_PLYERINGAME].warn
+    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_PLAYERINGAME].warn
   },
   [dsda_config_overrun_playeringame_emulate] = {
     "overrun_playeringame_emulate", dsda_config_overrun_playeringame_emulate,
-    BOOL_DEFAULT_ON, &overflows[OVERFLOW_PLYERINGAME].emulate
+    BOOL_DEFAULT_ON, &overflows[OVERFLOW_PLAYERINGAME].emulate
   },
   [dsda_config_overrun_donut_warn] = {
     "overrun_donut_warn", dsda_config_overrun_donut_warn,

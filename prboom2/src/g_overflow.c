@@ -188,12 +188,12 @@ void InterceptsOverrun(int num_intercepts, intercept_t *intercept)
 
 int PlayeringameOverrun(const mapthing_t* mthing)
 {
-  if (mthing->type == 0 && PROCESS(OVERFLOW_PLYERINGAME))
+  if (mthing->type == 0 && PROCESS(OVERFLOW_PLAYERINGAME))
   {
     // playeringame[-1] == players[3].didsecret
-    ShowOverflowWarning(OVERFLOW_PLYERINGAME, (players + 3)->didsecret, "");
+    ShowOverflowWarning(OVERFLOW_PLAYERINGAME, (players + 3)->didsecret, "");
 
-    if (EMULATE(OVERFLOW_PLYERINGAME))
+    if (EMULATE(OVERFLOW_PLAYERINGAME))
     {
       return true;
     }
