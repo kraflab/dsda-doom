@@ -86,8 +86,6 @@ int scene_has_overlapped_sprites;
 
 int gl_blend_animations;
 
-int gl_finish = 1;
-
 // e6y
 // This variables toggles the use of a trick to prevent the clearning of the
 // z-buffer between frames. When this variable is set to "1", the game will not
@@ -1090,10 +1088,6 @@ void gld_InitDrawScene(void)
 void gld_Finish(void)
 {
   gld_Set2DMode();
-  if (gl_finish && !render_vsync && 0)
-  {
-    glFinish();
-  }
   SDL_GL_SwapWindow(sdl_window);
 }
 
