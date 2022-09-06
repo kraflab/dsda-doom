@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "doomdef.h"
+#include "g_overflow.h"
 #include "r_demo.h"
 #include "z_zone.h"
 
@@ -272,6 +273,54 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_script_9] = {
     "dsda_script_9", dsda_config_script_9,
     dsda_config_string, 0, 0, { .v_string = "" }
+  },
+  [dsda_config_overrun_spechit_warn] = {
+    "overrun_spechit_warn", dsda_config_overrun_spechit_warn,
+    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_SPECHIT].warn
+  },
+  [dsda_config_overrun_spechit_emulate] = {
+    "overrun_spechit_emulate", dsda_config_overrun_spechit_emulate,
+    BOOL_DEFAULT_ON, &overflows[OVERFLOW_SPECHIT].emulate
+  },
+  [dsda_config_overrun_reject_warn] = {
+    "overrun_reject_warn", dsda_config_overrun_reject_warn,
+    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_REJECT].warn
+  },
+  [dsda_config_overrun_reject_emulate] = {
+    "overrun_reject_emulate", dsda_config_overrun_reject_emulate,
+    BOOL_DEFAULT_ON, &overflows[OVERFLOW_REJECT].emulate
+  },
+  [dsda_config_overrun_intercept_warn] = {
+    "overrun_intercept_warn", dsda_config_overrun_intercept_warn,
+    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_INTERCEPT].warn
+  },
+  [dsda_config_overrun_intercept_emulate] = {
+    "overrun_intercept_emulate", dsda_config_overrun_intercept_emulate,
+    BOOL_DEFAULT_ON, &overflows[OVERFLOW_INTERCEPT].emulate
+  },
+  [dsda_config_overrun_playeringame_warn] = {
+    "overrun_playeringame_warn", dsda_config_overrun_playeringame_warn,
+    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_PLYERINGAME].warn
+  },
+  [dsda_config_overrun_playeringame_emulate] = {
+    "overrun_playeringame_emulate", dsda_config_overrun_playeringame_emulate,
+    BOOL_DEFAULT_ON, &overflows[OVERFLOW_PLYERINGAME].emulate
+  },
+  [dsda_config_overrun_donut_warn] = {
+    "overrun_donut_warn", dsda_config_overrun_donut_warn,
+    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_DONUT].warn
+  },
+  [dsda_config_overrun_donut_emulate] = {
+    "overrun_donut_emulate", dsda_config_overrun_donut_emulate,
+    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_DONUT].emulate
+  },
+  [dsda_config_overrun_missedbackside_warn] = {
+    "overrun_missedbackside_warn", dsda_config_overrun_missedbackside_warn,
+    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_MISSEDBACKSIDE].warn
+  },
+  [dsda_config_overrun_missedbackside_emulate] = {
+    "overrun_missedbackside_emulate", dsda_config_overrun_missedbackside_emulate,
+    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_MISSEDBACKSIDE].emulate
   },
 };
 

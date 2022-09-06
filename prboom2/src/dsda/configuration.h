@@ -70,6 +70,18 @@ typedef enum {
   dsda_config_script_7,
   dsda_config_script_8,
   dsda_config_script_9,
+  dsda_config_overrun_spechit_warn,
+  dsda_config_overrun_spechit_emulate,
+  dsda_config_overrun_reject_warn,
+  dsda_config_overrun_reject_emulate,
+  dsda_config_overrun_intercept_warn,
+  dsda_config_overrun_intercept_emulate,
+  dsda_config_overrun_playeringame_warn,
+  dsda_config_overrun_playeringame_emulate,
+  dsda_config_overrun_donut_warn,
+  dsda_config_overrun_donut_emulate,
+  dsda_config_overrun_missedbackside_warn,
+  dsda_config_overrun_missedbackside_emulate,
   dsda_config_count,
 } dsda_config_identifier_t;
 

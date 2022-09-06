@@ -3309,14 +3309,14 @@ setup_menu_t opengl_settings[] = {
 
 setup_menu_t mapping_settings[] = {
   { "EMULATION", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8},
-  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_null, G_X, G_Y + 2 * 8, { "overrun_spechit_warn" } },
-  { "TRY TO EMULATE IT", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "overrun_spechit_emulate" } },
-  { "WARN ON REJECT OVERFLOW", S_YESNO, m_null, G_X, G_Y + 4 * 8, { "overrun_reject_warn" } },
-  { "TRY TO EMULATE IT", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "overrun_reject_emulate" } },
-  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "overrun_intercept_warn" } },
-  { "TRY TO EMULATE IT", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "overrun_intercept_emulate" } },
-  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "overrun_playeringame_warn" } },
-  { "TRY TO EMULATE IT", S_YESNO, m_null, G_X, G_Y + 9 * 8, { "overrun_playeringame_emulate" } },
+  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_overrun_spechit_warn } },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_overrun_spechit_emulate } },
+  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, G_X, G_Y + 4 * 8, { .config_id = dsda_config_overrun_reject_warn } },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 5 * 8, { .config_id = dsda_config_overrun_reject_emulate } },
+  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_overrun_intercept_warn } },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { .config_id = dsda_config_overrun_intercept_emulate } },
+  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_overrun_playeringame_warn } },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_overrun_playeringame_emulate } },
 
   { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
   { "LINEDEFS W/O TAGS APPLY LOCALLY", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "comperr_zerotag" } },
