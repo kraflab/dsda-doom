@@ -1651,10 +1651,6 @@ static void D_DoomMainSetup(void)
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)
       file = I_FindFile(file_name, ".wad");
-      if (!file && D_TryGetWad(file_name))
-      {
-        file = I_FindFile(file_name, ".wad");
-      }
       if (file)
       {
         D_AddFile(file,source_pwad);

@@ -273,7 +273,6 @@ default_t defaults[] =
   { "health_bar_red", { &health_bar_red }, { 50 }, 0, 100, def_int },
   { "health_bar_yellow", { &health_bar_yellow }, { 99 }, 0, 100, def_int },
   { "health_bar_green", { &health_bar_green }, { 0 }, 0, 100, def_int },
-  { "getwad_cmdline", { NULL, &getwad_cmdline }, { 0, "" }, UL, UL, def_str },
   { "quickstart_window_ms", { &quickstart_window_ms }, { 0 }, 0, 1000, def_int },
 
   SETTING_HEADING("Game settings"),

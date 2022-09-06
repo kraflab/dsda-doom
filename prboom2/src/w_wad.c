@@ -152,16 +152,6 @@ static void W_AddFile(wadfile_info_t *wadfile)
   // open the file and add to directory
 
   wadfile->handle = open(wadfile->name,O_RDONLY | O_BINARY);
-
-  if (wadfile->handle == -1 &&
-    strlen(wadfile->name) > 4 &&
-    wadfile->src == source_pwad &&
-    !strcasecmp(wadfile->name + strlen(wadfile->name) - 4 , ".wad") &&
-    D_TryGetWad(wadfile->name))
-  {
-    wadfile->handle = open(wadfile->name, O_RDONLY | O_BINARY);
-  }
-
   if (wadfile->handle == -1)
     {
       if (  strlen(wadfile->name)<=4 ||      // add error check -- killough

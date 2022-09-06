@@ -1180,15 +1180,6 @@ void WadDataToWadFiles(waddata_t *waddata)
     if (waddata->wadfiles[i].src == source_pwad)
     {
       const char *file = I_FindFile2(waddata->wadfiles[i].name, ".wad");
-      if (!file && D_TryGetWad(waddata->wadfiles[i].name))
-      {
-        file = I_FindFile2(waddata->wadfiles[i].name, ".wad");
-        if (file)
-        {
-          Z_Free(waddata->wadfiles[i].name);
-          waddata->wadfiles[i].name = Z_Strdup(file);
-        }
-      }
       if (file)
       {
         D_AddFile(waddata->wadfiles[i].name, source_pwad);
@@ -1234,74 +1225,6 @@ int CheckDemoExDemo(void)
 
     Z_Free(filename);
   }
-
-  return result;
-}
-
-const char *getwad_cmdline;
-
-dboolean D_TryGetWad(const char* name)
-{
-  dboolean result = false;
-
-  char wadname[PATH_MAX];
-  char* cmdline = NULL;
-  char* wadname_p = NULL;
-  char* msg = NULL;
-  const char* format =
-    "The necessary wad has not been found\n"
-    "Do you want to search for \'%s\'?\n\n"
-    "Command line:\n%s\n\n"
-    "Be careful! Execution of an unknown program is unsafe.";
-
-  if (!getwad_cmdline || !name || !(*getwad_cmdline) || !(*name))
-    return false;
-
-  strncpy(wadname, PathFindFileName(name), sizeof(wadname) - 4);
-  AddDefaultExtension(wadname, ".wad");
-
-  cmdline = Z_Malloc(strlen(getwad_cmdline) + strlen(wadname) + 2);
-  wadname_p = strstr(getwad_cmdline, "%wadname%");
-  if (wadname_p)
-  {
-    strncpy(cmdline, getwad_cmdline, wadname_p - getwad_cmdline);
-    strcat(cmdline, wadname);
-    strcat(cmdline, wadname_p + strlen("%wadname%"));
-  }
-  else
-  {
-    sprintf(cmdline, "%s %s", getwad_cmdline, wadname);
-  }
-
-  msg = Z_Malloc(strlen(format) + strlen(wadname) + strlen(cmdline));
-  sprintf(msg, format, wadname, cmdline);
-
-  if (PRB_IDYES == I_MessageBox(msg, PRB_MB_DEFBUTTON2 | PRB_MB_YESNO))
-  {
-    int ret;
-
-    lprintf(LO_INFO, "D_TryGetWad: Trying to get %s from somewhere\n", name);
-
-    ret = system(cmdline);
-
-    if (ret != 0)
-    {
-      lprintf(LO_ERROR, "D_TryGetWad: Execution failed - %s\n", strerror(errno));
-    }
-    else
-    {
-      char *str = I_FindFile(name, ".wad");
-      if (str)
-      {
-        lprintf(LO_INFO, "D_TryGetWad: Successfully received\n");
-        Z_Free(str);
-        result = true;
-      }
-    }
-  }
-
-  Z_Free(msg);
-  Z_Free(cmdline);
 
   return result;
 }
