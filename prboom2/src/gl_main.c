@@ -86,12 +86,6 @@ int scene_has_overlapped_sprites;
 
 int gl_blend_animations;
 
-int gl_use_display_lists = false;
-int flats_display_list;
-int flats_display_list_size = 0;
-int flats_detail_display_list;
-int flats_detail_display_list_size = 0;
-
 int gl_finish = 1;
 
 // e6y
@@ -130,7 +124,6 @@ int gl_sprite_blend;  // e6y: smooth sprite edges
 int gl_mask_sprite_threshold;
 float gl_mask_sprite_threshold_f;
 
-GLuint gld_DisplayList=0;
 int fog_density=200;
 static float extra_red=0.0f;
 static float extra_green=0.0f;
@@ -2058,19 +2051,11 @@ static void gld_DrawFlat(GLFlat *flat)
   if (flat->sectornum>=0)
   {
     // go through all loops of this sector
-    if (gl_use_display_lists)
+    for (loopnum=0; loopnum<sectorloops[flat->sectornum].loopcount; loopnum++)
     {
-      int display_list = (has_detail ? flats_detail_display_list : flats_display_list);
-      glCallList(display_list + flat->sectornum);
-    }
-    else
-    {
-      for (loopnum=0; loopnum<sectorloops[flat->sectornum].loopcount; loopnum++)
-      {
-        // set the current loop
-        currentloop=&sectorloops[flat->sectornum].loops[loopnum];
-        glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
-      }
+      // set the current loop
+      currentloop=&sectorloops[flat->sectornum].loops[loopnum];
+      glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
     }
   }
 
@@ -2876,98 +2861,6 @@ void gld_DrawProjectedWalls(GLDrawItemType itemtype)
   }
 }
 
-void gld_InitDisplayLists(void)
-{
-  int i;
-  int loopnum; // current loop number
-  GLLoopDef *currentloop;
-
-  if (gl_use_display_lists)
-  {
-    flats_display_list_size = numsectors;
-    flats_display_list = glGenLists(flats_display_list_size);
-
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-
-    if (gl_ext_arb_vertex_buffer_object)
-    {
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, flats_vbo_id);
-    }
-    glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
-
-    for (i = 0; i < flats_display_list_size; i++)
-    {
-      glNewList(flats_display_list + i, GL_COMPILE);
-
-      for (loopnum = 0; loopnum < sectorloops[i].loopcount; loopnum++)
-      {
-        // set the current loop
-        currentloop = &sectorloops[i].loops[loopnum];
-        glDrawArrays(currentloop->mode, currentloop->vertexindex, currentloop->vertexcount);
-      }
-
-      glEndList();
-    }
-
-    // duplicated display list for flats with enabled detail ARB
-    if (details_count && gl_arb_multitexture)
-    {
-      flats_detail_display_list_size = numsectors;
-      flats_detail_display_list = glGenLists(flats_detail_display_list_size);
-
-      gld_EnableClientCoordArray(GL_TEXTURE1_ARB, true);
-
-      for (i = 0; i < flats_display_list_size; i++)
-      {
-        glNewList(flats_detail_display_list + i, GL_COMPILE);
-
-        for (loopnum = 0; loopnum < sectorloops[i].loopcount; loopnum++)
-        {
-          // set the current loop
-          currentloop = &sectorloops[i].loops[loopnum];
-          glDrawArrays(currentloop->mode, currentloop->vertexindex, currentloop->vertexcount);
-        }
-
-        glEndList();
-      }
-
-      gld_EnableClientCoordArray(GL_TEXTURE1_ARB, false);
-    }
-
-    if (gl_ext_arb_vertex_buffer_object)
-    {
-      // bind with 0, so, switch back to normal pointer operation
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, 0);
-    }
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-  }
-}
-
-void gld_CleanDisplayLists(void)
-{
-  if (gl_use_display_lists)
-  {
-    if (flats_display_list_size > 0)
-    {
-      glDeleteLists(flats_display_list, flats_display_list_size);
-      flats_display_list = 0;
-      flats_display_list_size = 0;
-    }
-
-    if (flats_detail_display_list_size > 0)
-    {
-      glDeleteLists(flats_detail_display_list, flats_detail_display_list_size);
-      flats_detail_display_list = 0;
-      flats_detail_display_list_size = 0;
-    }
-  }
-}
-
 void gld_DrawScene(player_t *player)
 {
   int i;
@@ -2983,12 +2876,9 @@ void gld_DrawScene(player_t *player)
   gld_EnableDetail(false);
   gld_InitFrameDetails();
 
-  if (!gl_use_display_lists)
-  {
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-  }
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_COLOR_ARRAY);
 
   //e6y: skybox
   skybox = 0;
@@ -3010,15 +2900,12 @@ void gld_DrawScene(player_t *player)
     }
   }
 
-  if (!gl_use_display_lists)
+  if (gl_ext_arb_vertex_buffer_object)
   {
-    if (gl_ext_arb_vertex_buffer_object)
-    {
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, flats_vbo_id);
-    }
-    glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
+    GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, flats_vbo_id);
   }
+  glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
+  glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
 
   glsl_SetActiveShader(sh_main);
 
@@ -3321,17 +3208,14 @@ void gld_DrawScene(player_t *player)
 
   gld_EnableDetail(false);
 
-  if (!gl_use_display_lists)
+  if (gl_ext_arb_vertex_buffer_object)
   {
-    if (gl_ext_arb_vertex_buffer_object)
-    {
-      // bind with 0, so, switch back to normal pointer operation
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, 0);
-    }
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+    // bind with 0, so, switch back to normal pointer operation
+    GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, 0);
   }
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_COLOR_ARRAY);
 
   glsl_SetActiveShader(NULL);
 }

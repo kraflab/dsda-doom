@@ -421,17 +421,10 @@ void gld_DrawFlatDetail_NoARB(GLFlat *flat)
   if (flat->sectornum>=0)
   {
     // go through all loops of this sector
-    if (gl_use_display_lists)
+    for (loopnum=0; loopnum<sectorloops[flat->sectornum].loopcount; loopnum++)
     {
-      glCallList(flats_display_list + flat->sectornum);
-    }
-    else
-    {
-      for (loopnum=0; loopnum<sectorloops[flat->sectornum].loopcount; loopnum++)
-      {
-        currentloop=&sectorloops[flat->sectornum].loops[loopnum];
-        glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
-      }
+      currentloop=&sectorloops[flat->sectornum].loops[loopnum];
+      glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
     }
   }
   glPopMatrix();

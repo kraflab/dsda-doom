@@ -545,11 +545,6 @@ box_skybox_t* R_GetBoxSkybox(int index);
 void gld_ParseSkybox(void);
 extern box_skybox_t *BoxSkybox_default;
 
-// display lists
-void gld_InitDisplayLists(void);
-void gld_CleanDisplayLists(void);
-extern int flats_display_list;
-
 // preprocessing
 extern byte *segrendered; // true if sector rendered (only here for malloc)
 extern byte *linerendered[2]; // true if linedef rendered (only here for malloc)

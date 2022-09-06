@@ -1107,14 +1107,6 @@ void gld_PreprocessLevel(void)
   gld_PreprocessDetail();
   gld_InitVertexData();
 
-  if (!gl_preprocessed)
-  {
-    if (gl_use_display_lists)
-    {
-      gld_InitDisplayLists();
-    }
-  }
-
   gl_preprocessed = true;
 }
 
