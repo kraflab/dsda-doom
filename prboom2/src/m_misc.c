@@ -494,7 +494,7 @@ default_t defaults[] =
    def_int}, /* adjust vertical (y) mouse sensitivity killough/mead */
   { "mouse_acceleration", { &mouse_acceleration }, { 0 }, 0, UL, def_int },
   { "mouse_sensitivity_mlook", { &mouseSensitivity_mlook }, { 10 }, 0, UL, def_int },
-  { "mouse_doubleclick_as_use", { &mouse_doubleclick_as_use }, { 1 }, 0, 1, def_bool },
+  { "mouse_doubleclick_as_use", { &mouse_doubleclick_as_use }, { 0 }, 0, 1, def_bool },
   { "mouse_carrytics", { &mouse_carrytics }, { 1 }, 0, 1, def_bool },
   MIGRATED_SETTING(dsda_config_mouselook),
   MIGRATED_SETTING(dsda_config_vertmouse),
