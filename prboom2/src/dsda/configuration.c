@@ -21,6 +21,7 @@
 #include "doomdef.h"
 #include "doomstat.h"
 #include "g_overflow.h"
+#include "gl_struct.h"
 #include "r_demo.h"
 #include "z_zone.h"
 
@@ -70,6 +71,37 @@ extern int sts_always_red;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 
+extern int gl_arb_multitexture_default;
+extern int gl_arb_texture_compression_default;
+extern int gl_arb_texture_non_power_of_two_default;
+extern int gl_ext_arb_vertex_buffer_object_default;
+extern int gl_arb_pixel_buffer_object_default;
+extern int gl_arb_shader_objects_default;
+extern int gl_ext_blend_color_default;
+extern int gl_ext_framebuffer_object_default;
+extern int gl_ext_packed_depth_stencil_default;
+extern int gl_ext_texture_filter_anisotropic_default;
+extern int gl_use_stencil_default;
+extern int gl_use_display_lists;
+extern int gl_finish;
+extern int gl_clear;
+extern int gl_ztrick;
+extern int gl_sprite_blend;
+extern int gl_use_paletted_texture;
+extern int gl_use_shared_texture_palette;
+extern int gl_allow_detail_textures;
+extern int gl_sprites_frustum_culling;
+extern int render_paperitems;
+extern int gl_boom_colormaps_default;
+extern int gl_hires_24bit_colormap;
+extern int gl_texture_internal_hires;
+extern int gl_texture_external_hires;
+extern int gl_hires_override_pwads;
+extern int gl_texture_hqresize;
+extern int gl_fog;
+extern int gl_color_mip_levels;
+extern int gl_blend_animations;
+
 void I_Init2(void);
 void M_ChangeDemoSmoothTurns(void);
 void M_ChangeMouseLook(void);
@@ -77,6 +109,7 @@ void M_ChangeMessages(void);
 void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
 void dsda_RefreshExHudFPS(void);
+void M_ChangeAllowFog(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -444,6 +477,130 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_mapcolor_frnd] = {
     "mapcolor_frnd", dsda_config_mapcolor_frnd,
     CONF_COLOR, { 112 }, &mapcolor_frnd
+  },
+  [dsda_config_gl_arb_multitexture] = {
+    "gl_arb_multitexture", dsda_config_gl_arb_multitexture,
+    BOOL_DEFAULT_ON, &gl_arb_multitexture_default
+  },
+  [dsda_config_gl_arb_texture_compression] = {
+    "gl_arb_texture_compression", dsda_config_gl_arb_texture_compression,
+    BOOL_DEFAULT_ON, &gl_arb_texture_compression_default
+  },
+  [dsda_config_gl_arb_texture_non_power_of_two] = {
+    "gl_arb_texture_non_power_of_two", dsda_config_gl_arb_texture_non_power_of_two,
+    BOOL_DEFAULT_ON, &gl_arb_texture_non_power_of_two_default
+  },
+  [dsda_config_gl_ext_arb_vertex_buffer_object] = {
+    "gl_ext_arb_vertex_buffer_object", dsda_config_gl_ext_arb_vertex_buffer_object,
+    BOOL_DEFAULT_ON, &gl_ext_arb_vertex_buffer_object_default
+  },
+  [dsda_config_gl_arb_pixel_buffer_object] = {
+    "gl_arb_pixel_buffer_object", dsda_config_gl_arb_pixel_buffer_object,
+    BOOL_DEFAULT_ON, &gl_arb_pixel_buffer_object_default
+  },
+  [dsda_config_gl_arb_shader_objects] = {
+    "gl_arb_shader_objects", dsda_config_gl_arb_shader_objects,
+    BOOL_DEFAULT_ON, &gl_arb_shader_objects_default
+  },
+  [dsda_config_gl_ext_blend_color] = {
+    "gl_ext_blend_color", dsda_config_gl_ext_blend_color,
+    BOOL_DEFAULT_ON, &gl_ext_blend_color_default
+  },
+  [dsda_config_gl_ext_framebuffer_object] = {
+    "gl_ext_framebuffer_object", dsda_config_gl_ext_framebuffer_object,
+    BOOL_DEFAULT_ON, &gl_ext_framebuffer_object_default
+  },
+  [dsda_config_gl_ext_packed_depth_stencil] = {
+    "gl_ext_packed_depth_stencil", dsda_config_gl_ext_packed_depth_stencil,
+    BOOL_DEFAULT_ON, &gl_ext_packed_depth_stencil_default
+  },
+  [dsda_config_gl_ext_texture_filter_anisotropic] = {
+    "gl_ext_texture_filter_anisotropic", dsda_config_gl_ext_texture_filter_anisotropic,
+    BOOL_DEFAULT_ON, &gl_ext_texture_filter_anisotropic_default
+  },
+  [dsda_config_gl_use_stencil] = {
+    "gl_use_stencil", dsda_config_gl_use_stencil,
+    BOOL_DEFAULT_ON, &gl_use_stencil_default
+  },
+  [dsda_config_gl_use_display_lists] = {
+    "gl_use_display_lists", dsda_config_gl_use_display_lists,
+    BOOL_DEFAULT_OFF, &gl_use_display_lists
+  },
+  [dsda_config_gl_finish] = {
+    "gl_finish", dsda_config_gl_finish,
+    BOOL_DEFAULT_ON, &gl_finish
+  },
+  [dsda_config_gl_clear] = {
+    "gl_clear", dsda_config_gl_clear,
+    BOOL_DEFAULT_OFF, &gl_clear
+  },
+  [dsda_config_gl_ztrick] = {
+    "gl_ztrick", dsda_config_gl_ztrick,
+    BOOL_DEFAULT_OFF, &gl_ztrick
+  },
+  [dsda_config_gl_sprite_blend] = {
+    "gl_sprite_blend", dsda_config_gl_sprite_blend,
+    BOOL_DEFAULT_OFF, &gl_sprite_blend
+  },
+  [dsda_config_gl_use_paletted_texture] = {
+    "gl_use_paletted_texture", dsda_config_gl_use_paletted_texture,
+    BOOL_DEFAULT_OFF, &gl_use_paletted_texture
+  },
+  [dsda_config_gl_use_shared_texture_palette] = {
+    "gl_use_shared_texture_palette", dsda_config_gl_use_shared_texture_palette,
+    BOOL_DEFAULT_OFF, &gl_use_shared_texture_palette
+  },
+  [dsda_config_gl_allow_detail_textures] = {
+    "gl_allow_detail_textures", dsda_config_gl_allow_detail_textures,
+    BOOL_DEFAULT_ON, &gl_allow_detail_textures
+  },
+  [dsda_config_gl_sprites_frustum_culling] = {
+    "gl_sprites_frustum_culling", dsda_config_gl_sprites_frustum_culling,
+    BOOL_DEFAULT_ON, &gl_sprites_frustum_culling
+  },
+  [dsda_config_render_paperitems] = {
+    "render_paperitems", dsda_config_render_paperitems,
+    BOOL_DEFAULT_OFF, &render_paperitems
+  },
+  [dsda_config_gl_boom_colormaps] = {
+    "gl_boom_colormaps", dsda_config_gl_boom_colormaps,
+    BOOL_DEFAULT_ON, &gl_boom_colormaps_default
+  },
+  [dsda_config_gl_hires_24bit_colormap] = {
+    "gl_hires_24bit_colormap", dsda_config_gl_hires_24bit_colormap,
+    BOOL_DEFAULT_OFF, &gl_hires_24bit_colormap
+  },
+  [dsda_config_gl_texture_internal_hires] = {
+    "gl_texture_internal_hires", dsda_config_gl_texture_internal_hires,
+    BOOL_DEFAULT_ON, &gl_texture_internal_hires
+  },
+  [dsda_config_gl_texture_external_hires] = {
+    "gl_texture_external_hires", dsda_config_gl_texture_external_hires,
+    BOOL_DEFAULT_OFF, &gl_texture_external_hires
+  },
+  [dsda_config_gl_hires_override_pwads] = {
+    "gl_hires_override_pwads", dsda_config_gl_hires_override_pwads,
+    BOOL_DEFAULT_OFF, &gl_hires_override_pwads
+  },
+  [dsda_config_gl_texture_hqresize] = {
+    "gl_texture_hqresize", dsda_config_gl_texture_hqresize,
+    BOOL_DEFAULT_OFF, &gl_texture_hqresize
+  },
+  [dsda_config_gl_fog] = {
+    "gl_fog", dsda_config_gl_fog,
+    BOOL_DEFAULT_ON, &gl_fog, false, 0, M_ChangeAllowFog
+  },
+  [dsda_config_gl_color_mip_levels] = {
+    "gl_color_mip_levels", dsda_config_gl_color_mip_levels,
+    BOOL_DEFAULT_OFF, &gl_color_mip_levels
+  },
+  [dsda_config_gl_shadows] = {
+    "gl_shadows", dsda_config_gl_shadows,
+    BOOL_DEFAULT_OFF, &simple_shadows.enable
+  },
+  [dsda_config_gl_blend_animations] = {
+    "gl_blend_animations", dsda_config_gl_blend_animations,
+    BOOL_DEFAULT_OFF, &gl_blend_animations
   },
 };
 
