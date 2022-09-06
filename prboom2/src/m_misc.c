@@ -218,19 +218,6 @@ extern int gl_sky_detail;
 extern int gl_use_paletted_texture;
 extern int gl_use_shared_texture_palette;
 
-//cfg values
-extern int gl_ext_texture_filter_anisotropic_default;
-extern int gl_arb_texture_non_power_of_two_default;
-extern int gl_arb_multitexture_default;
-extern int gl_arb_texture_compression_default;
-extern int gl_ext_framebuffer_object_default;
-extern int gl_ext_packed_depth_stencil_default;
-extern int gl_ext_blend_color_default;
-extern int gl_use_stencil_default;
-extern int gl_ext_arb_vertex_buffer_object_default;
-extern int gl_arb_pixel_buffer_object_default;
-extern int gl_arb_shader_objects_default;
-
 //e6y: fog
 extern int gl_fog;
 extern int gl_fog_color;
@@ -340,17 +327,6 @@ default_t defaults[] =
   { "render_stretchsky",{&r_stretchsky},{1},0,1, def_bool},
 
   SETTING_HEADING("OpenGL settings"),
-  MIGRATED_SETTING(dsda_config_gl_arb_multitexture),
-  MIGRATED_SETTING(dsda_config_gl_arb_texture_compression),
-  MIGRATED_SETTING(dsda_config_gl_arb_texture_non_power_of_two),
-  MIGRATED_SETTING(dsda_config_gl_ext_arb_vertex_buffer_object),
-  MIGRATED_SETTING(dsda_config_gl_arb_pixel_buffer_object),
-  MIGRATED_SETTING(dsda_config_gl_arb_shader_objects),
-  MIGRATED_SETTING(dsda_config_gl_ext_blend_color),
-  MIGRATED_SETTING(dsda_config_gl_ext_framebuffer_object),
-  MIGRATED_SETTING(dsda_config_gl_ext_packed_depth_stencil),
-  MIGRATED_SETTING(dsda_config_gl_ext_texture_filter_anisotropic),
-  MIGRATED_SETTING(dsda_config_gl_use_stencil),
   MIGRATED_SETTING(dsda_config_gl_use_display_lists),
   MIGRATED_SETTING(dsda_config_gl_finish),
   MIGRATED_SETTING(dsda_config_gl_clear),

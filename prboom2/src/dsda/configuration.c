@@ -71,17 +71,6 @@ extern int sts_always_red;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 
-extern int gl_arb_multitexture_default;
-extern int gl_arb_texture_compression_default;
-extern int gl_arb_texture_non_power_of_two_default;
-extern int gl_ext_arb_vertex_buffer_object_default;
-extern int gl_arb_pixel_buffer_object_default;
-extern int gl_arb_shader_objects_default;
-extern int gl_ext_blend_color_default;
-extern int gl_ext_framebuffer_object_default;
-extern int gl_ext_packed_depth_stencil_default;
-extern int gl_ext_texture_filter_anisotropic_default;
-extern int gl_use_stencil_default;
 extern int gl_use_display_lists;
 extern int gl_finish;
 extern int gl_clear;
@@ -477,50 +466,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_mapcolor_frnd] = {
     "mapcolor_frnd", dsda_config_mapcolor_frnd,
     CONF_COLOR, { 112 }, &mapcolor_frnd
-  },
-  [dsda_config_gl_arb_multitexture] = {
-    "gl_arb_multitexture", dsda_config_gl_arb_multitexture,
-    BOOL_DEFAULT_ON, &gl_arb_multitexture_default
-  },
-  [dsda_config_gl_arb_texture_compression] = {
-    "gl_arb_texture_compression", dsda_config_gl_arb_texture_compression,
-    BOOL_DEFAULT_ON, &gl_arb_texture_compression_default
-  },
-  [dsda_config_gl_arb_texture_non_power_of_two] = {
-    "gl_arb_texture_non_power_of_two", dsda_config_gl_arb_texture_non_power_of_two,
-    BOOL_DEFAULT_ON, &gl_arb_texture_non_power_of_two_default
-  },
-  [dsda_config_gl_ext_arb_vertex_buffer_object] = {
-    "gl_ext_arb_vertex_buffer_object", dsda_config_gl_ext_arb_vertex_buffer_object,
-    BOOL_DEFAULT_ON, &gl_ext_arb_vertex_buffer_object_default
-  },
-  [dsda_config_gl_arb_pixel_buffer_object] = {
-    "gl_arb_pixel_buffer_object", dsda_config_gl_arb_pixel_buffer_object,
-    BOOL_DEFAULT_ON, &gl_arb_pixel_buffer_object_default
-  },
-  [dsda_config_gl_arb_shader_objects] = {
-    "gl_arb_shader_objects", dsda_config_gl_arb_shader_objects,
-    BOOL_DEFAULT_ON, &gl_arb_shader_objects_default
-  },
-  [dsda_config_gl_ext_blend_color] = {
-    "gl_ext_blend_color", dsda_config_gl_ext_blend_color,
-    BOOL_DEFAULT_ON, &gl_ext_blend_color_default
-  },
-  [dsda_config_gl_ext_framebuffer_object] = {
-    "gl_ext_framebuffer_object", dsda_config_gl_ext_framebuffer_object,
-    BOOL_DEFAULT_ON, &gl_ext_framebuffer_object_default
-  },
-  [dsda_config_gl_ext_packed_depth_stencil] = {
-    "gl_ext_packed_depth_stencil", dsda_config_gl_ext_packed_depth_stencil,
-    BOOL_DEFAULT_ON, &gl_ext_packed_depth_stencil_default
-  },
-  [dsda_config_gl_ext_texture_filter_anisotropic] = {
-    "gl_ext_texture_filter_anisotropic", dsda_config_gl_ext_texture_filter_anisotropic,
-    BOOL_DEFAULT_ON, &gl_ext_texture_filter_anisotropic_default
-  },
-  [dsda_config_gl_use_stencil] = {
-    "gl_use_stencil", dsda_config_gl_use_stencil,
-    BOOL_DEFAULT_ON, &gl_use_stencil_default
   },
   [dsda_config_gl_use_display_lists] = {
     "gl_use_display_lists", dsda_config_gl_use_display_lists,
