@@ -39,6 +39,7 @@
 #endif
 
 #include "d_event.h"
+#include "m_fixed.h"
 #include "m_misc.h"
 
 typedef struct map_point_s
