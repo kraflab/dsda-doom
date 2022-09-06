@@ -2152,28 +2152,24 @@ static void M_DrawSetting(const setup_menu_t* s)
 static void M_DrawScreenItems(const setup_menu_t* src)
 {
   if (print_warning_about_changes > 0) { /* killough 8/15/98: print warning */
-  //e6y
-    if (warning_about_changes & S_CANT_GL_ARB_MULTITEXTURE) {
-  strcpy(menu_buffer, "Extension GL_ARB_multitexture not found");
-  M_DrawMenuString(30,176,CR_RED);
-  } else
     if (warning_about_changes & S_CANT_GL_ARB_MULTISAMPLEFACTOR) {
-  strcpy(menu_buffer, "Mast be even number like 0-none, 2, 4, 6");
-  M_DrawMenuString(30,176,CR_RED);
-  } else
-
-    if (warning_about_changes & S_BADVAL) {
-  strcpy(menu_buffer, "Value out of Range");
-  M_DrawMenuString(100,176,CR_RED);
-    } else if (warning_about_changes & S_PRGWARN) {
-        strcpy(menu_buffer, "Warning: Program must be restarted to see changes");
-  M_DrawMenuString(3, 176, CR_RED);
-    } else if (warning_about_changes & S_BADVID) {
-        strcpy(menu_buffer, "Video mode not supported");
-  M_DrawMenuString(80,176,CR_RED);
+      strcpy(menu_buffer, "Mast be even number like 0-none, 2, 4, 6");
+      M_DrawMenuString(30,176,CR_RED);
+    }
+    else if (warning_about_changes & S_BADVAL) {
+      strcpy(menu_buffer, "Value out of Range");
+      M_DrawMenuString(100,176,CR_RED);
+    }
+    else if (warning_about_changes & S_PRGWARN) {
+      strcpy(menu_buffer, "Warning: Program must be restarted to see changes");
+      M_DrawMenuString(3, 176, CR_RED);
+    }
+    else if (warning_about_changes & S_BADVID) {
+      strcpy(menu_buffer, "Video mode not supported");
+      M_DrawMenuString(80,176,CR_RED);
     } else {
-  strcpy(menu_buffer, "Warning: Changes are pending until next game");
-        M_DrawMenuString(18,184,CR_RED);
+      strcpy(menu_buffer, "Warning: Changes are pending until next game");
+      M_DrawMenuString(18,184,CR_RED);
     }
   }
 
@@ -4738,13 +4734,6 @@ dboolean M_Responder (event_t* ev) {
             *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
 
             M_SettingUpdated(ptr1, true);
-          }
-
-          //e6y
-          {
-            extern dboolean gl_arb_multitexture;
-            if ((ptr1->m_flags&S_CANT_GL_ARB_MULTITEXTURE) && !gl_arb_multitexture)
-              warn_about_changes(ptr1->m_flags & S_CANT_GL_ARB_MULTITEXTURE);
           }
         }
         M_SelectDone(ptr1);                           // phares 4/17/98
