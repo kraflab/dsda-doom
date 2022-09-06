@@ -69,8 +69,6 @@ typedef struct
   void *address;
 } interpolation_t;
 
-int interpolation_maxobjects;
-
 static int numinterpolations = 0;
 
 tic_vars_t tic_vars;
@@ -357,11 +355,6 @@ static void R_SetInterpolation(interpolation_type_e type, void *posptr)
     int prevmax = interpolations_max;
 
     interpolations_max = interpolations_max ? interpolations_max * 2 : 256;
-
-    if (interpolation_maxobjects > 0 && interpolations_max > interpolation_maxobjects)
-    {
-      interpolations_max = interpolation_maxobjects;
-    }
 
     if (interpolations_max == prevmax)
     {
