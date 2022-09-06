@@ -86,7 +86,7 @@ int scene_has_overlapped_sprites;
 
 int gl_blend_animations;
 
-int gl_use_display_lists;
+int gl_use_display_lists = false;
 int flats_display_list;
 int flats_display_list_size = 0;
 int flats_detail_display_list;

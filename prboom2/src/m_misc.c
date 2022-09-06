@@ -327,7 +327,6 @@ default_t defaults[] =
   { "render_stretchsky",{&r_stretchsky},{1},0,1, def_bool},
 
   SETTING_HEADING("OpenGL settings"),
-  MIGRATED_SETTING(dsda_config_gl_use_display_lists),
   MIGRATED_SETTING(dsda_config_gl_finish),
   MIGRATED_SETTING(dsda_config_gl_clear),
   MIGRATED_SETTING(dsda_config_gl_ztrick),

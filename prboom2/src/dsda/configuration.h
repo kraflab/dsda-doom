@@ -112,7 +112,6 @@ typedef enum {
   dsda_config_mapcolor_me,
   dsda_config_mapcolor_enemy,
   dsda_config_mapcolor_frnd,
-   dsda_config_gl_use_display_lists,
    dsda_config_gl_finish,
    dsda_config_gl_clear,
    dsda_config_gl_ztrick,
