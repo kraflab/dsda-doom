@@ -289,7 +289,6 @@ default_t defaults[] =
   { "movement_strafe50", { &movement_strafe50 }, { 0 }, 0, 1, def_bool },
   { "movement_strafe50onturns", { &movement_strafe50onturns }, { 0 }, 0, 1, def_bool },
   { "movement_shorttics", { &movement_shorttics }, { 0 }, 0, 1, def_bool },
-  { "speed_step", { &speed_step }, { 0 }, 0, 1000, def_int },
 
   SETTING_HEADING("Sound settings"),
   {"snd_pcspeaker",{&snd_pcspeaker},{0}, 0, 1, def_bool},

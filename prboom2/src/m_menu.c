@@ -2488,19 +2488,18 @@ setup_menu_t keys_settings5[] =  // Key Binding screen strings
   {"SPEED UP"             ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 1*8,{0},dsda_input_speed_up},
   {"SPEED DOWN"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 2*8,{0},dsda_input_speed_down},
   {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 3*8,{0},dsda_input_speed_default},
-  {"STEP OF CHANGE (0-AUTO)" ,S_NUM  ,m_null,KB_X,KB_Y+ 4*8, {"speed_step"}},
 
-  {"DEMOS"                ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+6*8},
-  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 7*8,{0},dsda_input_demo_skip},
-  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 8*8,{0},dsda_input_demo_endlevel},
-  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 9*8,{0},dsda_input_walkcamera},
-  {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,KB_Y+10*8,{0},dsda_input_join_demo},
-  {"RESTART DEMO ATTEMPT" ,S_INPUT   ,m_scrn,KB_X,KB_Y+11*8,{0},dsda_input_restart},
+  {"DEMOS"                ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+5*8},
+  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 6*8,{0},dsda_input_demo_skip},
+  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 7*8,{0},dsda_input_demo_endlevel},
+  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 8*8,{0},dsda_input_walkcamera},
+  {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 9*8,{0},dsda_input_join_demo},
+  {"RESTART DEMO ATTEMPT" ,S_INPUT   ,m_scrn,KB_X,KB_Y+10*8,{0},dsda_input_restart},
 
-  {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+13*8},
-  {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_restart},
-  {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_nextlevel},
-  {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+16*8,{0},dsda_input_showalive},
+  {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+12*8},
+  {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+13*8,{0},dsda_input_restart},
+  {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+14*8,{0},dsda_input_nextlevel},
+  {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+15*8,{0},dsda_input_showalive},
 
   {"<-",S_SKIP|S_PREV,m_null,KB_PREV,KB_Y+20*8, {keys_settings4}},
   {"->",S_SKIP|S_NEXT,m_null,KB_NEXT,KB_Y+20*8, {keys_settings6}},
@@ -4531,7 +4530,7 @@ dboolean M_Responder (event_t* ev) {
     //e6y
     if (dsda_InputActivated(dsda_input_speed_default) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
-      int value = StepwiseSum(dsda_RealticClockRate(), 0, speed_step, 3, 10000, 100);
+      int value = StepwiseSum(dsda_RealticClockRate(), 0, 3, 10000, 100);
       dsda_UpdateRealticClockRate(value);
       doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.
@@ -4539,7 +4538,7 @@ dboolean M_Responder (event_t* ev) {
     }
     if (dsda_InputActivated(dsda_input_speed_up) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
-      int value = StepwiseSum(dsda_RealticClockRate(), 1, speed_step, 3, 10000, 100);
+      int value = StepwiseSum(dsda_RealticClockRate(), 1, 3, 10000, 100);
       dsda_UpdateRealticClockRate(value);
       doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.
@@ -4547,7 +4546,7 @@ dboolean M_Responder (event_t* ev) {
     }
     if (dsda_InputActivated(dsda_input_speed_down) && (!netgame||demoplayback) && !dsda_StrictMode())
     {
-      int value = StepwiseSum(dsda_RealticClockRate(), -1, speed_step, 3, 10000, 100);
+      int value = StepwiseSum(dsda_RealticClockRate(), -1, 3, 10000, 100);
       dsda_UpdateRealticClockRate(value);
       doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.

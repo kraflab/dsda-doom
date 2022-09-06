@@ -98,8 +98,6 @@ int demo_playerscount;
 int demo_tics_count;
 char demo_len_st[80];
 
-int speed_step;
-
 int hudadd_secretarea;
 int hudadd_demoprogressbar;
 int hudadd_crosshair;
@@ -498,7 +496,7 @@ void MouseAccelChanging(void)
 
 float viewPitch;
 
-int StepwiseSum(int value, int direction, int step, int minval, int maxval, int defval)
+int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
 {
   static int prev_value = 0;
   static int prev_direction = 0;
@@ -511,9 +509,6 @@ int StepwiseSum(int value, int direction, int step, int minval, int maxval, int 
 
   direction = (direction > 0 ? 1 : -1);
 
-  if (step != 0)
-    newvalue = (prev_direction * direction < 0 ? prev_value : value + direction * step);
-  else
   {
     int exp = 1;
     while (exp * 10 <= val)

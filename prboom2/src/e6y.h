@@ -80,8 +80,6 @@ extern int demo_tics_count;
 extern int demo_playerscount;
 extern char demo_len_st[80];
 
-extern int speed_step;
-
 extern int hudadd_secretarea;
 extern int hudadd_demoprogressbar;
 extern int hudadd_crosshair;
@@ -224,7 +222,7 @@ enum
 
 extern prboom_comp_t prboom_comp[];
 
-int StepwiseSum(int value, int direction, int step, int minval, int maxval, int defval);
+int StepwiseSum(int value, int direction, int minval, int maxval, int defval);
 
 enum
 {
