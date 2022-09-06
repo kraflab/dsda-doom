@@ -202,8 +202,6 @@ void R_ResetAfterTeleport(player_t *player)
 
 // demo ex
 char demoex_filename[PATH_MAX];
-const char *demo_demoex_filename;
-//wadtbl_t demoex;
 
 int AddString(char **str, const char *val);
 
@@ -705,7 +703,7 @@ void I_DemoExShutdown(void)
 {
   W_ReleaseAllWads();
 
-  if (demoex_filename[0] && !(demo_demoex_filename && *demo_demoex_filename))
+  if (demoex_filename[0])
   {
     lprintf(LO_DEBUG, "I_DemoExShutdown: removing %s\n", demoex_filename);
     if (unlink(demoex_filename) != 0)
@@ -935,46 +933,38 @@ static int G_ReadDemoFooter(const char *filename)
     //the demo has an additional information itself
     size_t i;
     waddata_t waddata;
+    int tmp_fd = -1;
+    const char* tmp_dir;
+    char* tmp_path = NULL;
+    const char* template_format = "%sdsda-doom-demoex2-XXXXXX";
 
-    if (demo_demoex_filename && *demo_demoex_filename)
+    tmp_dir = I_GetTempDir();
+    if (tmp_dir && *tmp_dir != '\0')
     {
-      strncpy(demoex_filename, demo_demoex_filename, PATH_MAX-1);
-    }
-    else
-    {
-      int tmp_fd = -1;
-      const char* tmp_dir;
-      char* tmp_path = NULL;
-      const char* template_format = "%sdsda-doom-demoex2-XXXXXX";
-
-      tmp_dir = I_GetTempDir();
-      if (tmp_dir && *tmp_dir != '\0')
+      tmp_path = Z_Malloc(strlen(tmp_dir) + 2);
+      strcpy(tmp_path, tmp_dir);
+      if (!HasTrailingSlash(tmp_dir))
       {
-        tmp_path = Z_Malloc(strlen(tmp_dir) + 2);
-        strcpy(tmp_path, tmp_dir);
-        if (!HasTrailingSlash(tmp_dir))
-        {
-          strcat(tmp_path, "/");
-        }
-
-        snprintf(demoex_filename, sizeof(demoex_filename), template_format, tmp_path);
-#ifdef HAVE_MKSTEMP
-        if ((tmp_fd = mkstemp(demoex_filename)) == -1)
-#else
-        if (mktemp(demoex_filename) == NULL)
-#endif
-        {
-          demoex_filename[0] = 0;
-        }
-
-        // don't leave file open
-        if (tmp_fd >= 0)
-        {
-          close(tmp_fd);
-        }
-
-        Z_Free(tmp_path);
+        strcat(tmp_path, "/");
       }
+
+      snprintf(demoex_filename, sizeof(demoex_filename), template_format, tmp_path);
+#ifdef HAVE_MKSTEMP
+      if ((tmp_fd = mkstemp(demoex_filename)) == -1)
+#else
+      if (mktemp(demoex_filename) == NULL)
+#endif
+      {
+        demoex_filename[0] = 0;
+      }
+
+      // don't leave file open
+      if (tmp_fd >= 0)
+      {
+        close(tmp_fd);
+      }
+
+      Z_Free(tmp_path);
     }
 
     if (!demoex_filename[0])

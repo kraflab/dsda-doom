@@ -553,7 +553,6 @@ default_t defaults[] =
   { "mouse_carrytics", { &mouse_carrytics }, { 1 }, 0, 1, def_bool },
 
   SETTING_HEADING("Prboom-plus demos settings"),
-  { "demo_demoex_filename", { NULL, &demo_demoex_filename }, { 0, "" }, UL, UL, def_str },
   { "getwad_cmdline", { NULL, &getwad_cmdline }, { 0, "" }, UL, UL, def_str },
   { "quickstart_window_ms", { &quickstart_window_ms }, { 0 }, 0, 1000, def_int },
 

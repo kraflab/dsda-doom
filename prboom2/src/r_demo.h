@@ -73,8 +73,6 @@ typedef struct
   size_t numwadfiles;
 } waddata_t;
 
-extern const char *demo_demoex_filename;
-
 extern const char *getwad_cmdline;
 
 int WadDataInit(waddata_t *waddata);
