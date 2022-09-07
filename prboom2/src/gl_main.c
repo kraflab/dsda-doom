@@ -108,8 +108,7 @@ float gl_spriteclip_threshold_f;
 int gl_sprite_offset_default;	// item out of floor offset Mead 8/13/03
 float gl_sprite_offset;       // precalcilated float value for gl_sprite_offset_default
 int gl_sprite_blend;  // e6y: smooth sprite edges
-int gl_mask_sprite_threshold;
-float gl_mask_sprite_threshold_f;
+const float gl_mask_sprite_threshold_f = 0.5f;
 
 int fog_density=200;
 static float extra_red=0.0f;
@@ -1135,7 +1134,6 @@ void gld_StartDrawScene(void)
   }
   cos_paperitems_pitch = (float)cos(paperitems_pitch * M_PI / 180.f);
   sin_paperitems_pitch = (float)sin(paperitems_pitch * M_PI / 180.f);
-  gl_mask_sprite_threshold_f = (gl_sprite_blend ? (float)gl_mask_sprite_threshold / 100.0f : 0.5f);
 
   gld_InitFrameSky();
 

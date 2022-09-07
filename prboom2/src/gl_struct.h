@@ -182,7 +182,6 @@ extern float gl_spriteclip_threshold_f;
 extern int gl_sprite_offset_default;
 extern float gl_sprite_offset;
 extern int gl_sprite_blend;
-extern int gl_mask_sprite_threshold;
 
 //skybox
 int R_BoxSkyboxNumForName(const char *name);

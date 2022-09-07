@@ -328,7 +328,6 @@ default_t defaults[] =
    { "gl_patch_filter",{(int*)&gl_patch_filter}, {filter_nearest}, filter_nearest, filter_linear, def_int},
    { "gl_texture_filter_anisotropic",{(int*)&gl_texture_filter_anisotropic}, {gl_anisotropic_8x}, gl_anisotropic_off, gl_anisotropic_16x, def_int},
   // end TODO
-  { "gl_mask_sprite_threshold",{&gl_mask_sprite_threshold},{50},0,100, def_int},
    { "gl_tex_format_string", {NULL,&gl_tex_format_string}, {0,"GL_RGBA"},UL,UL, def_str},
    { "gl_sprite_offset",{&gl_sprite_offset_default},{0}, 0, 5, def_int}, // amount to bring items out of floor (GL) Mead 8/13/03
   { "gl_skymode",{(int*)&gl_skymode}, {skytype_auto}, skytype_auto, skytype_count - 1, def_int},
