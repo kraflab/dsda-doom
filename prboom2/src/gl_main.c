@@ -106,7 +106,6 @@ spriteclipmode_t gl_spriteclip;
 const char *gl_spriteclipmodes[] = {"constant", "full", "smart"};
 int gl_spriteclip_threshold;
 float gl_spriteclip_threshold_f;
-int gl_sprites_frustum_culling;
 int gl_sprite_offset_default;	// item out of floor offset Mead 8/13/03
 float gl_sprite_offset;       // precalcilated float value for gl_sprite_offset_default
 int gl_sprite_blend;  // e6y: smooth sprite edges
@@ -2393,7 +2392,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   GLSprite sprite;
   const rpatch_t* patch;
 
-  int frustum_culling = HaveMouseLook() && gl_sprites_frustum_culling;
+  int frustum_culling = HaveMouseLook();
   int mlook = HaveMouseLook() || (render_fov > FOV90);
 
   if (R_ViewInterpolation())

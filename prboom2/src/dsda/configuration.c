@@ -72,7 +72,6 @@ extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 
 extern int gl_sprite_blend;
-extern int gl_sprites_frustum_culling;
 extern int render_paperitems;
 extern int gl_boom_colormaps_default;
 extern int gl_hires_24bit_colormap;
@@ -463,10 +462,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_sprite_blend] = {
     "gl_sprite_blend", dsda_config_gl_sprite_blend,
     BOOL_DEFAULT_OFF, &gl_sprite_blend
-  },
-  [dsda_config_gl_sprites_frustum_culling] = {
-    "gl_sprites_frustum_culling", dsda_config_gl_sprites_frustum_culling,
-    BOOL_DEFAULT_ON, &gl_sprites_frustum_culling
   },
   [dsda_config_render_paperitems] = {
     "render_paperitems", dsda_config_render_paperitems,

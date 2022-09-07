@@ -207,7 +207,6 @@ extern spriteclipmode_t gl_spriteclip;
 extern const char *gl_spriteclipmodes[];
 extern int gl_spriteclip_threshold;
 extern float gl_spriteclip_threshold_f;
-extern int gl_sprites_frustum_culling;
 extern int gl_sprite_offset_default;
 extern float gl_sprite_offset;
 extern int gl_sprite_blend;

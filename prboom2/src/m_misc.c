@@ -322,7 +322,6 @@ default_t defaults[] =
 
   SETTING_HEADING("OpenGL settings"),
   MIGRATED_SETTING(dsda_config_gl_sprite_blend),
-  MIGRATED_SETTING(dsda_config_gl_sprites_frustum_culling),
   MIGRATED_SETTING(dsda_config_render_paperitems),
   MIGRATED_SETTING(dsda_config_gl_boom_colormaps),
   MIGRATED_SETTING(dsda_config_gl_hires_24bit_colormap),
