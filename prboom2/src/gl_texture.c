@@ -896,16 +896,9 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
         tex_buffer = data;
       }
 
-      if (gl_paletted_texture) {
-        gld_SetTexturePalette(GL_TEXTURE_2D);
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_COLOR_INDEX8_EXT,
-          tex_width, tex_height,
-          0, GL_COLOR_INDEX, GL_UNSIGNED_BYTE, tex_buffer);
-      } else {
-        glTexImage2D( GL_TEXTURE_2D, 0, gl_tex_format,
-          tex_width, tex_height,
-          0, GL_RGBA, GL_UNSIGNED_BYTE, tex_buffer);
-      }
+      glTexImage2D( GL_TEXTURE_2D, 0, gl_tex_format,
+        tex_width, tex_height,
+        0, GL_RGBA, GL_UNSIGNED_BYTE, tex_buffer);
     }
 
     gltexture->flags &= ~GLTEXTURE_MIPMAP;
@@ -975,13 +968,9 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
   }
 
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
-  if (!(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture)
-    memset(buffer,transparent_pal_index,gltexture->buffer_size);
-  else
-    memset(buffer,0,gltexture->buffer_size);
+  memset(buffer,0,gltexture->buffer_size);
   patch=R_TextureCompositePatchByNum(gltexture->index);
-  gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0,
-                        CR_DEFAULT, !(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture);
+  gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, CR_DEFAULT, 0);
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
@@ -1107,11 +1096,8 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
 
   patch=R_PatchByNum(gltexture->index);
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
-  if (gl_paletted_texture)
-    memset(buffer,transparent_pal_index,gltexture->buffer_size);
-  else
-    memset(buffer,0,gltexture->buffer_size);
-  gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, cm, gl_paletted_texture);
+  memset(buffer,0,gltexture->buffer_size);
+  gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, cm, 0);
 
   // e6y
   // Post-process the texture data after the buffer has been created.
@@ -1240,11 +1226,8 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
 
   flat=W_LumpByNum(gltexture->index);
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
-  if (!(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture)
-    memset(buffer,transparent_pal_index,gltexture->buffer_size);
-  else
-    memset(buffer,0,gltexture->buffer_size);
-  gld_AddFlatToTexture(gltexture, buffer, flat, !(gltexture->flags & GLTEXTURE_MIPMAP) && gl_paletted_texture);
+  memset(buffer,0,gltexture->buffer_size);
+  gld_AddFlatToTexture(gltexture, buffer, flat, 0);
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);

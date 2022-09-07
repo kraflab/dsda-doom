@@ -215,8 +215,6 @@ extern int gl_patch_filter;
 extern int gl_texture_filter_anisotropic;
 extern const char *gl_tex_format_string;
 extern int gl_sky_detail;
-extern int gl_use_paletted_texture;
-extern int gl_use_shared_texture_palette;
 
 //e6y: fog
 extern int gl_fog;
@@ -324,8 +322,6 @@ default_t defaults[] =
 
   SETTING_HEADING("OpenGL settings"),
   MIGRATED_SETTING(dsda_config_gl_sprite_blend),
-  MIGRATED_SETTING(dsda_config_gl_use_paletted_texture),
-  MIGRATED_SETTING(dsda_config_gl_use_shared_texture_palette),
   MIGRATED_SETTING(dsda_config_gl_allow_detail_textures),
   MIGRATED_SETTING(dsda_config_gl_sprites_frustum_culling),
   MIGRATED_SETTING(dsda_config_render_paperitems),

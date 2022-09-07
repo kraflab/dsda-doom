@@ -72,8 +72,6 @@ extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 
 extern int gl_sprite_blend;
-extern int gl_use_paletted_texture;
-extern int gl_use_shared_texture_palette;
 extern int gl_allow_detail_textures;
 extern int gl_sprites_frustum_culling;
 extern int render_paperitems;
@@ -466,14 +464,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_sprite_blend] = {
     "gl_sprite_blend", dsda_config_gl_sprite_blend,
     BOOL_DEFAULT_OFF, &gl_sprite_blend
-  },
-  [dsda_config_gl_use_paletted_texture] = {
-    "gl_use_paletted_texture", dsda_config_gl_use_paletted_texture,
-    BOOL_DEFAULT_OFF, &gl_use_paletted_texture
-  },
-  [dsda_config_gl_use_shared_texture_palette] = {
-    "gl_use_shared_texture_palette", dsda_config_gl_use_shared_texture_palette,
-    BOOL_DEFAULT_OFF, &gl_use_shared_texture_palette
   },
   [dsda_config_gl_allow_detail_textures] = {
     "gl_allow_detail_textures", dsda_config_gl_allow_detail_textures,

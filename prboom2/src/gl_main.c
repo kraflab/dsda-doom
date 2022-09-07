@@ -207,11 +207,6 @@ void gld_InitTextureParams(void)
     tex_filter[i].min_filter = params[*var[i]].mipmap_filter;
   }
 
-  if (tex_filter[MIP_TEXTURE].mipmap)
-  {
-    gl_shared_texture_palette = false;
-  }
-
   i = 0;
   while (tex_formats[i].tex_format_name)
   {
@@ -909,107 +904,79 @@ void gld_SetPalette(int palette)
   if (palette < 0)
     palette = last_palette;
   last_palette = palette;
-  if (gl_shared_texture_palette) {
-    const unsigned char *playpal;
-    unsigned char pal[1024];
-    int i;
-
-    playpal = V_GetPlaypal();
-    playpal += (768*palette);
-    for (i=0; i<256; i++) {
-      int col;
-
-      if (fixedcolormap)
-        col = fixedcolormap[i];
-      else if (fullcolormap)
-        col = fullcolormap[i];
-      else
-        col = i;
-      pal[i*4+0] = playpal[col*3+0];
-      pal[i*4+1] = playpal[col*3+1];
-      pal[i*4+2] = playpal[col*3+2];
-      pal[i*4+3] = 255;
-    }
-    pal[transparent_pal_index*4+0]=0;
-    pal[transparent_pal_index*4+1]=0;
-    pal[transparent_pal_index*4+2]=0;
-    pal[transparent_pal_index*4+3]=0;
-    GLEXT_glColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGBA, 256, GL_RGBA, GL_UNSIGNED_BYTE, pal);
-  } else {
-    if (palette > 0)
+  if (palette > 0)
+  {
+    if (palette <= 8)
     {
-      if (palette <= 8)
+      // doom [0] 226 1 1
+      extra_red = 1.0f;
+      extra_green = 0.0f;
+      extra_blue = 0.0f;
+      extra_alpha = (float) palette / 9.0f;
+    }
+    else if (palette <= 12)
+    {
+      // doom [0] 108 94 35
+      palette = palette - 8;
+      extra_red = 1.0f;
+      extra_green = 0.9f;
+      extra_blue = 0.3f;
+      extra_alpha = (float) palette / 10.0f;
+    }
+    else if (!hexen && palette == 13)
+    {
+      extra_red = 0.4f;
+      extra_green = 1.0f;
+      extra_blue = 0.0f;
+      extra_alpha = 0.2f;
+    }
+    else if (hexen)
+    {
+      if (palette <= 20)
       {
-        // doom [0] 226 1 1
-        extra_red = 1.0f;
-        extra_green = 0.0f;
-        extra_blue = 0.0f;
-        extra_alpha = (float) palette / 9.0f;
-      }
-      else if (palette <= 12)
-      {
-        // doom [0] 108 94 35
-        palette = palette - 8;
-        extra_red = 1.0f;
-        extra_green = 0.9f;
-        extra_blue = 0.3f;
-        extra_alpha = (float) palette / 10.0f;
-      }
-      else if (!hexen && palette == 13)
-      {
-        extra_red = 0.4f;
+        // hexen [0] = 35 74 29
+        palette = palette - 12;
+        extra_red = 0.5f;
         extra_green = 1.0f;
-        extra_blue = 0.0f;
-        extra_alpha = 0.2f;
+        extra_blue = 0.4f;
+        extra_alpha = (float) palette / 27.f;
       }
-      else if (hexen)
+      else if (palette == 21)
       {
-        if (palette <= 20)
-        {
-          // hexen [0] = 35 74 29
-          palette = palette - 12;
-          extra_red = 0.5f;
-          extra_green = 1.0f;
-          extra_blue = 0.4f;
-          extra_alpha = (float) palette / 27.f;
-        }
-        else if (palette == 21)
-        {
-          // hexen [0] = 1 1 113
-          extra_red = 0.0f;
-          extra_green = 0.0f;
-          extra_blue = 1.0f;
-          extra_alpha = 0.4f;
-        }
-        else if (palette <= 24)
-        {
-          // hexen [...] = 66, 51, 36
-          palette = 24 - palette;
-          extra_red = 1.0f;
-          extra_green = 1.0f;
-          extra_blue = 1.0f;
-          extra_alpha = 0.14f + 0.06f * palette;
-        }
-        else if (palette <= 27)
-        {
-          // hexen [0] = 76 56 1
-          palette = 27 - palette;
-          extra_red = 1.0f;
-          extra_green = 0.7f;
-          extra_blue = 0.0f;
-          extra_alpha = 0.14f + 0.06f * palette;
-        }
+        // hexen [0] = 1 1 113
+        extra_red = 0.0f;
+        extra_green = 0.0f;
+        extra_blue = 1.0f;
+        extra_alpha = 0.4f;
+      }
+      else if (palette <= 24)
+      {
+        // hexen [...] = 66, 51, 36
+        palette = 24 - palette;
+        extra_red = 1.0f;
+        extra_green = 1.0f;
+        extra_blue = 1.0f;
+        extra_alpha = 0.14f + 0.06f * palette;
+      }
+      else if (palette <= 27)
+      {
+        // hexen [0] = 76 56 1
+        palette = 27 - palette;
+        extra_red = 1.0f;
+        extra_green = 0.7f;
+        extra_blue = 0.0f;
+        extra_alpha = 0.14f + 0.06f * palette;
       }
     }
-    if (extra_red > 1.0f)
-      extra_red = 1.0f;
-    if (extra_green > 1.0f)
-      extra_green = 1.0f;
-    if (extra_blue > 1.0f)
-      extra_blue = 1.0f;
-    if (extra_alpha > 1.0f)
-      extra_alpha = 1.0f;
   }
+  if (extra_red > 1.0f)
+    extra_red = 1.0f;
+  if (extra_green > 1.0f)
+    extra_green = 1.0f;
+  if (extra_blue > 1.0f)
+    extra_blue = 1.0f;
+  if (extra_alpha > 1.0f)
+    extra_alpha = 1.0f;
 }
 
 unsigned char *gld_ReadScreen(void)
@@ -1132,8 +1099,6 @@ void gld_StartDrawScene(void)
 
   gld_MultisamplingSet();
 
-  if (gl_shared_texture_palette)
-    glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
   gld_SetPalette(-1);
 
   glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
@@ -1344,8 +1309,6 @@ void gld_EndDrawScene(void)
   glColor3f(1.0f,1.0f,1.0f);
   glDisable(GL_SCISSOR_TEST);
   glDisable(GL_ALPHA_TEST);
-  if (gl_shared_texture_palette)
-    glDisable(GL_SHARED_TEXTURE_PALETTE_EXT);
 }
 
 static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)

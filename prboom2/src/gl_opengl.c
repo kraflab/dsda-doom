@@ -52,12 +52,6 @@ int gl_max_texture_size = 0;
 
 SDL_PixelFormat RGBAFormat;
 
-// obsolete?
-int gl_use_paletted_texture = 0;
-int gl_use_shared_texture_palette = 0;
-int gl_paletted_texture = 0;
-int gl_shared_texture_palette = 0;
-
 dboolean gl_ext_texture_filter_anisotropic = false;
 dboolean gl_arb_texture_non_power_of_two = false;
 dboolean gl_arb_multitexture = false;
@@ -174,32 +168,6 @@ void gld_InitOpenGL(void)
   gl_arb_texture_non_power_of_two = isExtensionSupported("GL_ARB_texture_non_power_of_two") != NULL;
   if (gl_arb_texture_non_power_of_two)
     lprintf(LO_INFO, "using GL_ARB_texture_non_power_of_two\n");
-
-  // Paletted textures
-  if (isExtensionSupported("GL_EXT_paletted_texture") != NULL)
-  {
-    if (gl_use_paletted_texture)
-    {
-      gl_paletted_texture = true;
-      GLEXT_glColorTableEXT = SDL_GL_GetProcAddress("glColorTableEXT");
-      if (GLEXT_glColorTableEXT == NULL)
-        gl_paletted_texture = false;
-      else
-        lprintf(LO_INFO,"using GL_EXT_paletted_texture\n");
-    }
-  }
-  else if (isExtensionSupported("GL_EXT_shared_texture_palette") != NULL)
-  {
-    if (gl_use_shared_texture_palette)
-    {
-      gl_shared_texture_palette = true;
-      GLEXT_glColorTableEXT = SDL_GL_GetProcAddress("glColorTableEXT");
-      if (GLEXT_glColorTableEXT == NULL)
-        gl_shared_texture_palette = false;
-      else
-        lprintf(LO_INFO,"using GL_EXT_shared_texture_palette\n");
-    }
-  }
 
   //
   // ARB_multitexture command function pointers

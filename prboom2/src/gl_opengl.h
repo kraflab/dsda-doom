@@ -81,12 +81,6 @@ extern int gl_max_texture_size;
 
 extern SDL_PixelFormat RGBAFormat;
 
-// obsolete?
-extern int gl_use_paletted_texture;
-extern int gl_use_shared_texture_palette;
-extern int gl_paletted_texture;
-extern int gl_shared_texture_palette;
-
 extern dboolean gl_ext_texture_filter_anisotropic;
 extern dboolean gl_arb_texture_non_power_of_two;
 extern dboolean gl_arb_multitexture;
