@@ -61,7 +61,7 @@ typedef struct {
 
 #define CONF_BOOL(x) dsda_config_int, 0, 1, { x }
 #define CONF_COLOR(x) dsda_config_int, 0, 255, { x }
-#define CONF_BYTE dsda_config_int, 0, 255
+#define CONF_BYTE(x) dsda_config_int, 0, 255, { x }
 
 extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
@@ -479,7 +479,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_shadows_factor] = {
     "gl_shadows_factor", dsda_config_gl_shadows_factor,
-    CONF_BYTE, { 128 }, NULL, false, 0, gld_ResetShadowParameters
+    CONF_BYTE(128), NULL, false, 0, gld_ResetShadowParameters
   },
 };
 
