@@ -206,8 +206,6 @@ typedef enum {
 
 extern int viewwidth;
 extern int viewheight;
-extern int gl_colorbuffer_bits;
-extern int gl_depthbuffer_bits;
 extern int gl_texture_filter;
 extern int gl_sprite_filter;
 extern int gl_patch_filter;
@@ -324,8 +322,6 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_fog),
   MIGRATED_SETTING(dsda_config_gl_blend_animations),
 
-  { "gl_colorbuffer_bits",{&gl_colorbuffer_bits},{32},16,32, def_int},
-  { "gl_depthbuffer_bits",{&gl_depthbuffer_bits},{24},16,32, def_int},
   // TODO: add these back to menu
    { "gl_texture_filter",{(int*)&gl_texture_filter}, {filter_nearest_mipmap_linear}, filter_nearest, filter_count - 1, def_int},
    { "gl_sprite_filter",{(int*)&gl_sprite_filter}, {filter_nearest}, filter_nearest, filter_linear_mipmap_nearest, def_int},

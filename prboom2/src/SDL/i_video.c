@@ -109,8 +109,8 @@ static void I_ReadMouse(void);
 static dboolean MouseShouldBeGrabbed();
 static void UpdateFocus(void);
 
-int gl_colorbuffer_bits=16;
-int gl_depthbuffer_bits=16;
+extern const int gl_colorbuffer_bits;
+extern const int gl_depthbuffer_bits;
 
 extern void M_QuitDOOM(int choice);
 int use_fullscreen;

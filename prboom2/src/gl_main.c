@@ -218,20 +218,15 @@ void gld_InitTextureParams(void)
   }
 }
 
+const int gl_colorbuffer_bits = 32;
+const int gl_depthbuffer_bits = 24;
+
 void gld_MultisamplingInit(void)
 {
   if (render_multisampling)
   {
-    extern int gl_colorbuffer_bits;
-    extern int gl_depthbuffer_bits;
-
-    gl_colorbuffer_bits = 32;
     SDL_GL_SetAttribute( SDL_GL_BUFFER_SIZE, gl_colorbuffer_bits );
-
-    if (gl_depthbuffer_bits!=8 && gl_depthbuffer_bits!=16 && gl_depthbuffer_bits!=24)
-      gl_depthbuffer_bits = 16;
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, gl_depthbuffer_bits );
-
     SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, render_multisampling );
     SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 1 );
   }
