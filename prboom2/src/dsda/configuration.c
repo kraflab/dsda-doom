@@ -60,7 +60,7 @@ typedef struct {
 } dsda_config_t;
 
 #define CONF_BOOL(x) dsda_config_int, 0, 1, { x }
-#define CONF_COLOR dsda_config_int, 0, 255
+#define CONF_COLOR(x) dsda_config_int, 0, 255, { x }
 #define CONF_BYTE dsda_config_int, 0, 255
 
 extern int dsda_input_profile;
@@ -355,103 +355,103 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mapcolor_back] = {
     "mapcolor_back", dsda_config_mapcolor_back,
-    CONF_COLOR, { 247 }, &mapcolor_back
+    CONF_COLOR(247), &mapcolor_back
   },
   [dsda_config_mapcolor_grid] = {
     "mapcolor_grid", dsda_config_mapcolor_grid,
-    CONF_COLOR, { 104 }, &mapcolor_grid
+    CONF_COLOR(104), &mapcolor_grid
   },
   [dsda_config_mapcolor_wall] = {
     "mapcolor_wall", dsda_config_mapcolor_wall,
-    CONF_COLOR, { 23 }, &mapcolor_wall
+    CONF_COLOR(23), &mapcolor_wall
   },
   [dsda_config_mapcolor_fchg] = {
     "mapcolor_fchg", dsda_config_mapcolor_fchg,
-    CONF_COLOR, { 55 }, &mapcolor_fchg
+    CONF_COLOR(55), &mapcolor_fchg
   },
   [dsda_config_mapcolor_cchg] = {
     "mapcolor_cchg", dsda_config_mapcolor_cchg,
-    CONF_COLOR, { 215 }, &mapcolor_cchg
+    CONF_COLOR(215), &mapcolor_cchg
   },
   [dsda_config_mapcolor_clsd] = {
     "mapcolor_clsd", dsda_config_mapcolor_clsd,
-    CONF_COLOR, { 208 }, &mapcolor_clsd
+    CONF_COLOR(208), &mapcolor_clsd
   },
   [dsda_config_mapcolor_rkey] = {
     "mapcolor_rkey", dsda_config_mapcolor_rkey,
-    CONF_COLOR, { 175 }, &mapcolor_rkey
+    CONF_COLOR(175), &mapcolor_rkey
   },
   [dsda_config_mapcolor_bkey] = {
     "mapcolor_bkey", dsda_config_mapcolor_bkey,
-    CONF_COLOR, { 204 }, &mapcolor_bkey
+    CONF_COLOR(204), &mapcolor_bkey
   },
   [dsda_config_mapcolor_ykey] = {
     "mapcolor_ykey", dsda_config_mapcolor_ykey,
-    CONF_COLOR, { 231 }, &mapcolor_ykey
+    CONF_COLOR(231), &mapcolor_ykey
   },
   [dsda_config_mapcolor_rdor] = {
     "mapcolor_rdor", dsda_config_mapcolor_rdor,
-    CONF_COLOR, { 175 }, &mapcolor_rdor
+    CONF_COLOR(175), &mapcolor_rdor
   },
   [dsda_config_mapcolor_bdor] = {
     "mapcolor_bdor", dsda_config_mapcolor_bdor,
-    CONF_COLOR, { 204 }, &mapcolor_bdor
+    CONF_COLOR(204), &mapcolor_bdor
   },
   [dsda_config_mapcolor_ydor] = {
     "mapcolor_ydor", dsda_config_mapcolor_ydor,
-    CONF_COLOR, { 231 }, &mapcolor_ydor
+    CONF_COLOR(231), &mapcolor_ydor
   },
   [dsda_config_mapcolor_tele] = {
     "mapcolor_tele", dsda_config_mapcolor_tele,
-    CONF_COLOR, { 119 }, &mapcolor_tele
+    CONF_COLOR(119), &mapcolor_tele
   },
   [dsda_config_mapcolor_secr] = {
     "mapcolor_secr", dsda_config_mapcolor_secr,
-    CONF_COLOR, { 252 }, &mapcolor_secr
+    CONF_COLOR(252), &mapcolor_secr
   },
   [dsda_config_mapcolor_revsecr] = {
     "mapcolor_revsecr", dsda_config_mapcolor_revsecr,
-    CONF_COLOR, { 112 }, &mapcolor_revsecr
+    CONF_COLOR(112), &mapcolor_revsecr
   },
   [dsda_config_mapcolor_exit] = {
     "mapcolor_exit", dsda_config_mapcolor_exit,
-    CONF_COLOR, { 0 }, &mapcolor_exit
+    CONF_COLOR(0), &mapcolor_exit
   },
   [dsda_config_mapcolor_unsn] = {
     "mapcolor_unsn", dsda_config_mapcolor_unsn,
-    CONF_COLOR, { 104 }, &mapcolor_unsn
+    CONF_COLOR(104), &mapcolor_unsn
   },
   [dsda_config_mapcolor_flat] = {
     "mapcolor_flat", dsda_config_mapcolor_flat,
-    CONF_COLOR, { 88 }, &mapcolor_flat
+    CONF_COLOR(88), &mapcolor_flat
   },
   [dsda_config_mapcolor_sprt] = {
     "mapcolor_sprt", dsda_config_mapcolor_sprt,
-    CONF_COLOR, { 112 }, &mapcolor_sprt
+    CONF_COLOR(112), &mapcolor_sprt
   },
   [dsda_config_mapcolor_item] = {
     "mapcolor_item", dsda_config_mapcolor_item,
-    CONF_COLOR, { 231 }, &mapcolor_item
+    CONF_COLOR(231), &mapcolor_item
   },
   [dsda_config_mapcolor_hair] = {
     "mapcolor_hair", dsda_config_mapcolor_hair,
-    CONF_COLOR, { 208 }, &mapcolor_hair
+    CONF_COLOR(208), &mapcolor_hair
   },
   [dsda_config_mapcolor_sngl] = {
     "mapcolor_sngl", dsda_config_mapcolor_sngl,
-    CONF_COLOR, { 208 }, &mapcolor_sngl
+    CONF_COLOR(208), &mapcolor_sngl
   },
   [dsda_config_mapcolor_me] = {
     "mapcolor_me", dsda_config_mapcolor_me,
-    CONF_COLOR, { 112 }, &mapcolor_me
+    CONF_COLOR(112), &mapcolor_me
   },
   [dsda_config_mapcolor_enemy] = {
     "mapcolor_enemy", dsda_config_mapcolor_enemy,
-    CONF_COLOR, { 177 }, &mapcolor_enemy
+    CONF_COLOR(177), &mapcolor_enemy
   },
   [dsda_config_mapcolor_frnd] = {
     "mapcolor_frnd", dsda_config_mapcolor_frnd,
-    CONF_COLOR, { 112 }, &mapcolor_frnd
+    CONF_COLOR(112), &mapcolor_frnd
   },
   [dsda_config_gl_sprite_blend] = {
     "gl_sprite_blend", dsda_config_gl_sprite_blend,
