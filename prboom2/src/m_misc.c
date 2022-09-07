@@ -206,7 +206,6 @@ typedef enum {
 
 extern int viewwidth;
 extern int viewheight;
-extern int gl_nearclip;
 extern int gl_colorbuffer_bits;
 extern int gl_depthbuffer_bits;
 extern int gl_texture_filter;
@@ -326,7 +325,6 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_shadows),
   MIGRATED_SETTING(dsda_config_gl_blend_animations),
 
-  { "gl_nearclip",{&gl_nearclip},{5},0,UL, def_int}, /* near clipping plane pos */
   { "gl_colorbuffer_bits",{&gl_colorbuffer_bits},{32},16,32, def_int},
   { "gl_depthbuffer_bits",{&gl_depthbuffer_bits},{24},16,32, def_int},
   // TODO: add these back to menu

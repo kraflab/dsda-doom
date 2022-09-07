@@ -95,7 +95,6 @@ extern int tran_filter_pct;
 
 dboolean use_fog=false;
 
-int gl_nearclip=5;
 int gl_texture_filter;
 int gl_sprite_filter;
 int gl_patch_filter;

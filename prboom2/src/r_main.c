@@ -817,12 +817,6 @@ void R_SetupMatrix(void)
 
   R_SetupViewport();
 
-  if (V_IsOpenGLMode())
-  {
-    extern int gl_nearclip;
-    r_nearclip = gl_nearclip;
-  }
-
   fovy = render_fovy;
   aspect = render_ratio;
   znear = (float)r_nearclip / 100.0f;
