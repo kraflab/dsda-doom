@@ -116,7 +116,7 @@ typedef enum {
   dsda_config_render_paperitems,
   dsda_config_gl_fog,
   dsda_config_gl_shadows,
-   dsda_config_gl_blend_animations,
+  dsda_config_gl_blend_animations,
   dsda_config_count,
 } dsda_config_identifier_t;
 
