@@ -90,7 +90,7 @@ int gl_tex_format=GL_RGB5_A1;
 int gl_color_mip_levels;
 
 int gl_boom_colormaps = -1;
-int gl_boom_colormaps_default;
+int gl_boom_colormaps_default = true;
 
 GLuint* last_glTexID = NULL;
 
@@ -246,7 +246,6 @@ static GLTexture *gld_AddNewGLTexItem(int num, int count, GLTexture ***items)
     (*items)[num]=Z_Calloc(1, sizeof(GLTexture));
     (*items)[num]->textype=GLDT_UNREGISTERED;
 
-    //if (gl_boom_colormaps)
     {
       GLTexture *texture = (*items)[num];
       int dims[3] = {(CR_LIMIT+MAX_MAXPLAYERS), (PLAYERCOLORMAP_COUNT), numcolormaps};
@@ -1322,8 +1321,7 @@ void gld_Precache(void)
 
   unsigned int tics = SDL_GetTicks();
 
-  int usehires = (gl_texture_external_hires) ||
-    (gl_texture_internal_hires && r_have_internal_hires);
+  int usehires = r_have_internal_hires;
 
   if (nodrawers)
     return;
@@ -1524,13 +1522,6 @@ void gld_Precache(void)
           }
       }
   Z_Free(hitlist);
-
-  if (gl_texture_external_hires)
-  {
-#ifdef HAVE_LIBSDL2_IMAGE
-    gld_PrecacheGUIPatches();
-#endif
-  }
 
   gld_ProgressEnd();
 

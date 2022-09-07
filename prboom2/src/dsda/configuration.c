@@ -73,11 +73,6 @@ extern int sts_traditional_keys;
 
 extern int gl_sprite_blend;
 extern int render_paperitems;
-extern int gl_boom_colormaps_default;
-extern int gl_hires_24bit_colormap;
-extern int gl_texture_internal_hires;
-extern int gl_texture_external_hires;
-extern int gl_hires_override_pwads;
 extern int gl_texture_hqresize;
 extern int gl_fog;
 extern int gl_color_mip_levels;
@@ -466,26 +461,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_render_paperitems] = {
     "render_paperitems", dsda_config_render_paperitems,
     BOOL_DEFAULT_OFF, &render_paperitems
-  },
-  [dsda_config_gl_boom_colormaps] = {
-    "gl_boom_colormaps", dsda_config_gl_boom_colormaps,
-    BOOL_DEFAULT_ON, &gl_boom_colormaps_default
-  },
-  [dsda_config_gl_hires_24bit_colormap] = {
-    "gl_hires_24bit_colormap", dsda_config_gl_hires_24bit_colormap,
-    BOOL_DEFAULT_OFF, &gl_hires_24bit_colormap
-  },
-  [dsda_config_gl_texture_internal_hires] = {
-    "gl_texture_internal_hires", dsda_config_gl_texture_internal_hires,
-    BOOL_DEFAULT_ON, &gl_texture_internal_hires
-  },
-  [dsda_config_gl_texture_external_hires] = {
-    "gl_texture_external_hires", dsda_config_gl_texture_external_hires,
-    BOOL_DEFAULT_OFF, &gl_texture_external_hires
-  },
-  [dsda_config_gl_hires_override_pwads] = {
-    "gl_hires_override_pwads", dsda_config_gl_hires_override_pwads,
-    BOOL_DEFAULT_OFF, &gl_hires_override_pwads
   },
   [dsda_config_gl_texture_hqresize] = {
     "gl_texture_hqresize", dsda_config_gl_texture_hqresize,

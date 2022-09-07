@@ -141,14 +141,6 @@ int gld_wipe_exitMelt(int ticks);
 int gld_wipe_StartScreen(void);
 int gld_wipe_EndScreen(void);
 
-// hires
-extern int gl_hires_24bit_colormap;
-extern int gl_texture_external_hires;
-extern int gl_texture_internal_hires;
-extern int gl_hires_override_pwads;
-extern const char *gl_texture_hires_dir;
-int gld_PrecacheGUIPatches(void);
-
 //HQ resize
 typedef enum
 {
