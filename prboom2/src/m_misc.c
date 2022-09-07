@@ -332,7 +332,6 @@ default_t defaults[] =
    { "gl_sprite_offset",{&gl_sprite_offset_default},{0}, 0, 5, def_int}, // amount to bring items out of floor (GL) Mead 8/13/03
   { "gl_skymode",{(int*)&gl_skymode}, {skytype_auto}, skytype_auto, skytype_count - 1, def_int},
   { "gl_sky_detail",{&gl_sky_detail},{16},1,32, def_int},
-  { "gl_detail_maxdist", {&gl_detail_maxdist},  {0},0,65535, def_int},
    { "render_multisampling", {&render_multisampling},  {0},0,8, def_int},
    { "render_fov", {&render_fov},  {90},20,160, def_int},
    { "gl_spriteclip",{(int*)&gl_spriteclip},{spriteclip_smart}, spriteclip_const, spriteclip_smart, def_int},

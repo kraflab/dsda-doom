@@ -350,7 +350,6 @@ extern float xCamera,yCamera,zCamera;
 //detail
 //
 
-int gld_IsDetailVisible(float x0, float y0, float x1, float y1, float x2, float y2);
 void gld_InitDetail(void);
 void gld_InitFrameDetails(void);
 void gld_ParseDetail(void);

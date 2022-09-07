@@ -81,9 +81,6 @@ void gld_FlushTextures(void);
 void gld_ApplyGammaRamp(byte *buf, int pitch, int width, int height);
 void M_ChangeLightMode(void);
 
-//detail
-extern int gl_detail_maxdist;
-
 void gld_InitVertexData();
 void gld_CleanVertexData();
 void gld_UpdateSplitData(sector_t *sector);

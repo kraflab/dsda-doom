@@ -1369,10 +1369,7 @@ static void gld_DrawWall(GLWall *wall)
     scene_has_details &&
     gl_arb_multitexture &&
     (wall->flag < GLDWF_SKY) &&
-    (wall->gltexture->detail) &&
-    gld_IsDetailVisible(xCamera, yCamera,
-      wall->glseg->x1, wall->glseg->z1,
-      wall->glseg->x2, wall->glseg->z2);
+    (wall->gltexture->detail);
 
   // Do not repeat middle texture vertically
   // to avoid visual glitches for textures with holes

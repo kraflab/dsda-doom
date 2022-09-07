@@ -161,7 +161,6 @@ void M_ChangeMouseInvert(void);
 
 void M_ChangeFOV(void);
 
-void M_ChangeUseDetail(void);
 void M_ChangeMultiSample(void);
 void M_ChangeSpriteClip(void);
 void M_ChangeAllowBoomColormaps(void);

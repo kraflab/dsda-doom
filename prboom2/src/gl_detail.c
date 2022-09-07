@@ -58,8 +58,6 @@
 #include "i_system.h"
 
 int render_usedetail;
-int gl_detail_maxdist;
-float gl_detail_maxdist_sqrt;
 
 detail_t *details;
 int details_count;
@@ -90,63 +88,14 @@ TAnimItemParam *anim_textures = NULL;
 
 void gld_ShutdownDetail(void);
 
-void M_ChangeUseDetail(void)
-{
-  render_usedetail = false;
-
-  if (V_IsOpenGLMode())
-  {
-    render_usedetail = true;
-    gld_EnableDetail(true);
-    gld_EnableDetail(false);
-    gld_FlushTextures();
-  }
-}
-
-float distance2piece(float x0, float y0, float x1, float y1, float x2, float y2)
-{
-  float t, w;
-  float x01 = x0 - x1;
-  float x02 = x0 - x2;
-  float x21 = x2 - x1;
-  float y01 = y0 - y1;
-  float y02 = y0 - y2;
-  float y21 = y2 - y1;
-
-  if((x01 * x21 + y01 * y21) * (x02 * x21 + y02 * y21) > 0.0001f)
-  {
-    t = x01 * x01 + y01 * y01;
-    w = x02 * x02 + y02 * y02;
-    if (w < t) t = w;
-  }
-  else
-  {
-    float i1 = x01 * y21 - y01 * x21;
-    float i2 = x21 * x21 + y21 * y21;
-    t = (i1 * i1) / i2;
-  }
-
-  return t;
-}
-
-int gld_IsDetailVisible(float x0, float y0, float x1, float y1, float x2, float y2)
-{
-  if (gl_detail_maxdist_sqrt == 0)
-  {
-    return true;
-  }
-  else
-  {
-    return (distance2piece(x0, y0, x1, y1, x2, y2) < gl_detail_maxdist_sqrt);
-  }
-}
-
 void gld_InitDetail(void)
 {
-  gl_detail_maxdist_sqrt = (float)sqrt((float)gl_detail_maxdist);
-
   I_AtExit(gld_ShutdownDetail, true, "gld_ShutdownDetail", exit_priority_normal);
-  M_ChangeUseDetail();
+
+  render_usedetail = true;
+  gld_EnableDetail(true);
+  gld_EnableDetail(false);
+  gld_FlushTextures();
 }
 
 void gld_ShutdownDetail(void)
@@ -309,9 +258,6 @@ void gld_DrawWallDetail_NoARB(GLWall *wall)
   if (wall->flag >= GLDWF_SKY)
     return;
 
-  if (gld_IsDetailVisible(xCamera, yCamera,
-      wall->glseg->x1, wall->glseg->z1,
-      wall->glseg->x2, wall->glseg->z2))
   {
     float w, h, dx, dy;
     dboolean fake = (wall->flag == GLDWF_TOPFLUD) || (wall->flag == GLDWF_BOTFLUD);
