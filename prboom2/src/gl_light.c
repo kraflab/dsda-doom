@@ -55,7 +55,6 @@ int gl_rellight;
 
 int gl_fog;
 int gl_use_fog;
-int gl_fog_color;
 
 int gl_fogenabled;
 int gl_distfog = 70;
@@ -215,11 +214,6 @@ void M_ChangeAllowFog(void)
 {
   int i;
   GLfloat FogColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
-  FogColor[0] = ((float)((gl_fog_color >> 16) & 0xff)) / 255.0f;
-  FogColor[1] = ((float)((gl_fog_color >>  8) & 0xff)) / 255.0f;
-  FogColor[2] = ((float)((gl_fog_color >>  0) & 0xff)) / 255.0f;
-  FogColor[3] = 0.0f;
 
   glFogi (GL_FOG_MODE, GL_EXP);
   glFogfv(GL_FOG_COLOR, FogColor);

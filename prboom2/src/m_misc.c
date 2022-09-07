@@ -218,7 +218,6 @@ extern int gl_sky_detail;
 
 //e6y: fog
 extern int gl_fog;
-extern int gl_fog_color;
 
 extern int tran_filter_pct;            // killough 2/21/98
 
@@ -348,7 +347,6 @@ default_t defaults[] =
   { "gl_spriteclip_threshold", {&gl_spriteclip_threshold},  {10},0,100, def_int},
   { "gl_lightmode",{(int*)&gl_lightmode_default},{gl_lightmode_shaders}, gl_lightmode_glboom, gl_lightmode_last-1, def_int},
   { "gl_light_ambient", {&gl_light_ambient},  {20},1,255, def_int},
-  { "gl_fog_color", {&gl_fog_color},  {0},0,0xffffff, def_hex},
   { "useglgamma",{&useglgamma},{0},0,MAX_GLGAMMA, def_int},
   { "gl_shadows_maxdist",{&gl_shadows_maxdist},{1000},0,32767, def_int},
   { "gl_shadows_factor",{&gl_shadows_factor},{128},0,255, def_int},
