@@ -338,7 +338,6 @@ default_t defaults[] =
    { "gl_spriteclip",{(int*)&gl_spriteclip},{spriteclip_smart}, spriteclip_const, spriteclip_smart, def_int},
    { "gl_spriteclip_threshold", {&gl_spriteclip_threshold},  {10},0,100, def_int},
    { "gl_lightmode",{(int*)&gl_lightmode_default},{gl_lightmode_shaders}, gl_lightmode_glboom, gl_lightmode_last-1, def_int},
-  { "gl_light_ambient", {&gl_light_ambient},  {20},1,255, def_int},
   { "useglgamma",{&useglgamma},{0},0,MAX_GLGAMMA, def_int},
   MIGRATED_SETTING(dsda_config_gl_shadows),
   MIGRATED_SETTING(dsda_config_gl_shadows_maxdist),

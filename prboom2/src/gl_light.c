@@ -50,7 +50,6 @@
 gl_lightmode_t gl_lightmode;
 gl_lightmode_t gl_lightmode_default;
 const char *gl_lightmodes[] = {"glboom", "shaders"};
-int gl_light_ambient;
 int gl_rellight;
 
 int gl_fog;

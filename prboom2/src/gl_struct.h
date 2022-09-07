@@ -74,7 +74,6 @@ extern int gl_hardware_gamma;
 extern gl_lightmode_t gl_lightmode;
 extern gl_lightmode_t gl_lightmode_default;
 extern const char *gl_lightmodes[];
-extern int gl_light_ambient;
 extern int useglgamma;
 int gld_SetGammaRamp(int gamma);
 void gld_CheckHardwareGamma(void);
