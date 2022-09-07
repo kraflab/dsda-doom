@@ -59,8 +59,7 @@ typedef struct {
   dsda_config_value_t persistent_value;
 } dsda_config_t;
 
-#define BOOL_DEFAULT_ON dsda_config_int, 0, 1, { 1 }
-#define BOOL_DEFAULT_OFF dsda_config_int, 0, 1, { 0 }
+#define CONF_BOOL(x) dsda_config_int, 0, 1, { x }
 #define CONF_COLOR dsda_config_int, 0, 255
 #define CONF_BYTE dsda_config_int, 0, 255
 
@@ -114,11 +113,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_vanilla_keymap] = {
     "vanilla_keymap", dsda_config_vanilla_keymap,
-    BOOL_DEFAULT_OFF
+    CONF_BOOL(0)
   },
   [dsda_config_menu_background] = {
     "menu_background", dsda_config_menu_background,
-    BOOL_DEFAULT_ON
+    CONF_BOOL(1)
   },
   [dsda_config_process_priority] = {
     "process_priority", dsda_config_process_priority,
@@ -170,11 +169,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_flashing_hom] = {
     "flashing_hom", dsda_config_flashing_hom,
-    BOOL_DEFAULT_OFF
+    CONF_BOOL(0)
   },
   [dsda_config_demo_smoothturns] = {
     "demo_smoothturns", dsda_config_demo_smoothturns,
-    BOOL_DEFAULT_OFF, &demo_smoothturns,
+    CONF_BOOL(0), &demo_smoothturns,
     false, 0, M_ChangeDemoSmoothTurns
   },
   [dsda_config_demo_smoothturnsfactor] = {
@@ -188,63 +187,63 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_sts_always_red] = {
     "sts_always_red", dsda_config_sts_always_red,
-    BOOL_DEFAULT_ON, &sts_always_red
+    CONF_BOOL(1), &sts_always_red
   },
   [dsda_config_sts_pct_always_gray] = {
     "sts_pct_always_gray", dsda_config_sts_pct_always_gray,
-    BOOL_DEFAULT_OFF, &sts_pct_always_gray
+    CONF_BOOL(0), &sts_pct_always_gray
   },
   [dsda_config_sts_traditional_keys] = {
     "sts_traditional_keys", dsda_config_sts_traditional_keys,
-    BOOL_DEFAULT_OFF, &sts_traditional_keys
+    CONF_BOOL(0), &sts_traditional_keys
   },
   [dsda_config_strict_mode] = {
     "dsda_strict_mode", dsda_config_strict_mode,
-    BOOL_DEFAULT_ON, NULL, false, 0, UpdateStrictMode
+    CONF_BOOL(1), NULL, false, 0, UpdateStrictMode
   },
   [dsda_config_vertmouse] = {
     "movement_vertmouse", dsda_config_vertmouse,
-    BOOL_DEFAULT_ON
+    CONF_BOOL(1)
   },
   [dsda_config_mouselook] = {
     "movement_mouselook", dsda_config_mouselook,
-    BOOL_DEFAULT_OFF, NULL, true, 0, M_ChangeMouseLook
+    CONF_BOOL(0), NULL, true, 0, M_ChangeMouseLook
   },
   [dsda_config_autorun] = {
     "autorun", dsda_config_autorun,
-    BOOL_DEFAULT_ON
+    CONF_BOOL(1)
   },
   [dsda_config_show_messages] = {
     "show_messages", dsda_config_show_messages,
-    BOOL_DEFAULT_ON, NULL, false, 0, M_ChangeMessages
+    CONF_BOOL(1), NULL, false, 0, M_ChangeMessages
   },
   [dsda_config_command_display] = {
     "dsda_command_display", dsda_config_command_display,
-    BOOL_DEFAULT_OFF, NULL, true, 0
+    CONF_BOOL(0), NULL, true, 0
   },
   [dsda_config_coordinate_display] = {
     "dsda_coordinate_display", dsda_config_coordinate_display,
-    BOOL_DEFAULT_OFF, NULL, true, 0
+    CONF_BOOL(0), NULL, true, 0
   },
   [dsda_config_show_fps] = {
     "dsda_show_fps", dsda_config_show_fps,
-    BOOL_DEFAULT_OFF, NULL, false, 0, dsda_RefreshExHudFPS
+    CONF_BOOL(0), NULL, false, 0, dsda_RefreshExHudFPS
   },
   [dsda_config_exhud] = {
     "dsda_exhud", dsda_config_exhud,
-    BOOL_DEFAULT_OFF
+    CONF_BOOL(0)
   },
   [dsda_config_mute_sfx] = {
     "dsda_mute_sfx", dsda_config_mute_sfx,
-    BOOL_DEFAULT_OFF, NULL, false, 0, S_ResetSfxVolume
+    CONF_BOOL(0), NULL, false, 0, S_ResetSfxVolume
   },
   [dsda_config_mute_music] = {
     "dsda_mute_music", dsda_config_mute_music,
-    BOOL_DEFAULT_OFF, NULL, false, 0, I_ResetMusicVolume
+    CONF_BOOL(0), NULL, false, 0, I_ResetMusicVolume
   },
   [dsda_config_cheat_codes] = {
     "dsda_cheat_codes", dsda_config_cheat_codes,
-    BOOL_DEFAULT_ON
+    CONF_BOOL(1)
   },
   [dsda_config_script_0] = {
     "dsda_script_0", dsda_config_script_0,
@@ -288,71 +287,71 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_overrun_spechit_warn] = {
     "overrun_spechit_warn", dsda_config_overrun_spechit_warn,
-    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_SPECHIT].warn
+    CONF_BOOL(0), &overflows[OVERFLOW_SPECHIT].warn
   },
   [dsda_config_overrun_spechit_emulate] = {
     "overrun_spechit_emulate", dsda_config_overrun_spechit_emulate,
-    BOOL_DEFAULT_ON, &overflows[OVERFLOW_SPECHIT].emulate
+    CONF_BOOL(1), &overflows[OVERFLOW_SPECHIT].emulate
   },
   [dsda_config_overrun_reject_warn] = {
     "overrun_reject_warn", dsda_config_overrun_reject_warn,
-    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_REJECT].warn
+    CONF_BOOL(0), &overflows[OVERFLOW_REJECT].warn
   },
   [dsda_config_overrun_reject_emulate] = {
     "overrun_reject_emulate", dsda_config_overrun_reject_emulate,
-    BOOL_DEFAULT_ON, &overflows[OVERFLOW_REJECT].emulate
+    CONF_BOOL(1), &overflows[OVERFLOW_REJECT].emulate
   },
   [dsda_config_overrun_intercept_warn] = {
     "overrun_intercept_warn", dsda_config_overrun_intercept_warn,
-    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_INTERCEPT].warn
+    CONF_BOOL(0), &overflows[OVERFLOW_INTERCEPT].warn
   },
   [dsda_config_overrun_intercept_emulate] = {
     "overrun_intercept_emulate", dsda_config_overrun_intercept_emulate,
-    BOOL_DEFAULT_ON, &overflows[OVERFLOW_INTERCEPT].emulate
+    CONF_BOOL(1), &overflows[OVERFLOW_INTERCEPT].emulate
   },
   [dsda_config_overrun_playeringame_warn] = {
     "overrun_playeringame_warn", dsda_config_overrun_playeringame_warn,
-    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_PLAYERINGAME].warn
+    CONF_BOOL(0), &overflows[OVERFLOW_PLAYERINGAME].warn
   },
   [dsda_config_overrun_playeringame_emulate] = {
     "overrun_playeringame_emulate", dsda_config_overrun_playeringame_emulate,
-    BOOL_DEFAULT_ON, &overflows[OVERFLOW_PLAYERINGAME].emulate
+    CONF_BOOL(1), &overflows[OVERFLOW_PLAYERINGAME].emulate
   },
   [dsda_config_overrun_donut_warn] = {
     "overrun_donut_warn", dsda_config_overrun_donut_warn,
-    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_DONUT].warn
+    CONF_BOOL(0), &overflows[OVERFLOW_DONUT].warn
   },
   [dsda_config_overrun_donut_emulate] = {
     "overrun_donut_emulate", dsda_config_overrun_donut_emulate,
-    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_DONUT].emulate
+    CONF_BOOL(0), &overflows[OVERFLOW_DONUT].emulate
   },
   [dsda_config_overrun_missedbackside_warn] = {
     "overrun_missedbackside_warn", dsda_config_overrun_missedbackside_warn,
-    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_MISSEDBACKSIDE].warn
+    CONF_BOOL(0), &overflows[OVERFLOW_MISSEDBACKSIDE].warn
   },
   [dsda_config_overrun_missedbackside_emulate] = {
     "overrun_missedbackside_emulate", dsda_config_overrun_missedbackside_emulate,
-    BOOL_DEFAULT_OFF, &overflows[OVERFLOW_MISSEDBACKSIDE].emulate
+    CONF_BOOL(0), &overflows[OVERFLOW_MISSEDBACKSIDE].emulate
   },
   [dsda_config_comperr_zerotag] = {
     "comperr_zerotag", dsda_config_comperr_zerotag,
-    BOOL_DEFAULT_OFF, &default_comperr[comperr_zerotag]
+    CONF_BOOL(0), &default_comperr[comperr_zerotag]
   },
   [dsda_config_comperr_passuse] = {
     "comperr_passuse", dsda_config_comperr_passuse,
-    BOOL_DEFAULT_OFF, &default_comperr[comperr_passuse]
+    CONF_BOOL(0), &default_comperr[comperr_passuse]
   },
   [dsda_config_comperr_hangsolid] = {
     "comperr_hangsolid", dsda_config_comperr_hangsolid,
-    BOOL_DEFAULT_OFF, &default_comperr[comperr_hangsolid]
+    CONF_BOOL(0), &default_comperr[comperr_hangsolid]
   },
   [dsda_config_comperr_blockmap] = {
     "comperr_blockmap", dsda_config_comperr_blockmap,
-    BOOL_DEFAULT_OFF, &default_comperr[comperr_blockmap]
+    CONF_BOOL(0), &default_comperr[comperr_blockmap]
   },
   [dsda_config_comperr_freeaim] = {
     "comperr_freeaim", dsda_config_comperr_freeaim,
-    BOOL_DEFAULT_OFF, &default_comperr[comperr_freeaim]
+    CONF_BOOL(0), &default_comperr[comperr_freeaim]
   },
   [dsda_config_mapcolor_back] = {
     "mapcolor_back", dsda_config_mapcolor_back,
@@ -456,23 +455,23 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_sprite_blend] = {
     "gl_sprite_blend", dsda_config_gl_sprite_blend,
-    BOOL_DEFAULT_OFF, &gl_sprite_blend
+    CONF_BOOL(0), &gl_sprite_blend
   },
   [dsda_config_render_paperitems] = {
     "render_paperitems", dsda_config_render_paperitems,
-    BOOL_DEFAULT_OFF, &render_paperitems
+    CONF_BOOL(0), &render_paperitems
   },
   [dsda_config_gl_fog] = {
     "gl_fog", dsda_config_gl_fog,
-    BOOL_DEFAULT_ON, &gl_fog, false, 0, M_ChangeAllowFog
+    CONF_BOOL(1), &gl_fog, false, 0, M_ChangeAllowFog
   },
   [dsda_config_gl_shadows] = {
     "gl_shadows", dsda_config_gl_shadows,
-    BOOL_DEFAULT_OFF, NULL, true, false
+    CONF_BOOL(0), NULL, true, false
   },
   [dsda_config_gl_blend_animations] = {
     "gl_blend_animations", dsda_config_gl_blend_animations,
-    BOOL_DEFAULT_OFF, &gl_blend_animations
+    CONF_BOOL(0), &gl_blend_animations
   },
   [dsda_config_gl_shadows_maxdist] = {
     "gl_shadows_maxdist", dsda_config_gl_shadows_maxdist,
