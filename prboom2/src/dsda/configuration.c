@@ -62,6 +62,7 @@ typedef struct {
 #define BOOL_DEFAULT_ON dsda_config_int, 0, 1, { 1 }
 #define BOOL_DEFAULT_OFF dsda_config_int, 0, 1, { 0 }
 #define CONF_COLOR dsda_config_int, 0, 255
+#define CONF_BYTE dsda_config_int, 0, 255
 
 extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
@@ -84,6 +85,7 @@ void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
 void dsda_RefreshExHudFPS(void);
 void M_ChangeAllowFog(void);
+void gld_ResetShadowParameters(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -466,11 +468,19 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_shadows] = {
     "gl_shadows", dsda_config_gl_shadows,
-    BOOL_DEFAULT_OFF, &simple_shadows.enable
+    BOOL_DEFAULT_OFF, NULL, true, false
   },
   [dsda_config_gl_blend_animations] = {
     "gl_blend_animations", dsda_config_gl_blend_animations,
     BOOL_DEFAULT_OFF, &gl_blend_animations
+  },
+  [dsda_config_gl_shadows_maxdist] = {
+    "gl_shadows_maxdist", dsda_config_gl_shadows_maxdist,
+    dsda_config_int, 0, 32767, { 1000 }, NULL, false, 0, gld_ResetShadowParameters
+  },
+  [dsda_config_gl_shadows_factor] = {
+    "gl_shadows_factor", dsda_config_gl_shadows_factor,
+    CONF_BYTE, { 128 }, NULL, false, 0, gld_ResetShadowParameters
   },
 };
 

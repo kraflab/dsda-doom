@@ -229,7 +229,7 @@ dboolean dsda_CrosshairLockTarget(void) {
 }
 
 dboolean dsda_SimpleShadows(void) {
-  return simple_shadows.enable && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_gl_shadows);
 }
 
 dboolean dsda_PainPalette(void) {

@@ -42,17 +42,25 @@
 #include "r_main.h"
 #include "lprintf.h"
 
+#include "dsda/configuration.h"
 #include "dsda/settings.h"
-
-int gl_shadows_maxdist;
-int gl_shadows_factor;
 
 simple_shadow_params_t simple_shadows =
 {
-  0, 0,
+  0,
   -1, 0, 0,
   80, 1000, 0.5f, 0.0044f
 };
+
+void gld_ResetShadowParameters(void)
+{
+  int factor_int = dsda_IntConfig(dsda_config_gl_shadows_factor);
+
+  simple_shadows.max_radius = 80;
+  simple_shadows.max_dist = dsda_IntConfig(dsda_config_gl_shadows_maxdist);
+  simple_shadows.factor = (float) factor_int / 256.0f;
+  simple_shadows.bias = 0.0044f;
+}
 
 //===========================================================================
 // GL_PrepareLightTexture
@@ -68,10 +76,7 @@ void gld_InitShadows(void)
   simple_shadows.width = 0;
   simple_shadows.height = 0;
 
-  simple_shadows.max_radius = 80;
-  simple_shadows.max_dist = gl_shadows_maxdist;
-  simple_shadows.factor = (float)gl_shadows_factor / 256.0f;
-  simple_shadows.bias = 0.0044f;
+  gld_ResetShadowParameters();
 
   lump = (W_CheckNumForName)("GLSHADOW", ns_prboom);
   if (lump != -1)

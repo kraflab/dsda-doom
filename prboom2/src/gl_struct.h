@@ -155,7 +155,6 @@ sector_t* GetBestBleedSector(sector_t* source, int ceiling);
 //shadows
 typedef struct shadow_params_s
 {
-  int enable;
   int loaded;
 
   GLuint tex_id;

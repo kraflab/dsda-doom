@@ -322,7 +322,6 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_sprite_blend),
   MIGRATED_SETTING(dsda_config_render_paperitems),
   MIGRATED_SETTING(dsda_config_gl_fog),
-  MIGRATED_SETTING(dsda_config_gl_shadows),
   MIGRATED_SETTING(dsda_config_gl_blend_animations),
 
   { "gl_colorbuffer_bits",{&gl_colorbuffer_bits},{32},16,32, def_int},
@@ -346,8 +345,9 @@ default_t defaults[] =
   { "gl_lightmode",{(int*)&gl_lightmode_default},{gl_lightmode_shaders}, gl_lightmode_glboom, gl_lightmode_last-1, def_int},
   { "gl_light_ambient", {&gl_light_ambient},  {20},1,255, def_int},
   { "useglgamma",{&useglgamma},{0},0,MAX_GLGAMMA, def_int},
-  { "gl_shadows_maxdist",{&gl_shadows_maxdist},{1000},0,32767, def_int},
-  { "gl_shadows_factor",{&gl_shadows_factor},{128},0,255, def_int},
+  MIGRATED_SETTING(dsda_config_gl_shadows),
+  MIGRATED_SETTING(dsda_config_gl_shadows_maxdist),
+  MIGRATED_SETTING(dsda_config_gl_shadows_factor),
 
   SETTING_HEADING("Mouse settings"),
   { "use_mouse",{&usemouse},{1},0,1, def_bool}, // enables use of mouse with DOOM
