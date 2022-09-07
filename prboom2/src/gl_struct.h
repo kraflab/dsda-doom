@@ -84,7 +84,6 @@ void M_ChangeLightMode(void);
 
 //detail
 extern int gl_detail_maxdist;
-extern int gl_allow_detail_textures;
 
 void gld_InitVertexData();
 void gld_CleanVertexData();

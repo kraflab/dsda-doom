@@ -58,7 +58,6 @@
 #include "i_system.h"
 
 int render_usedetail;
-int gl_allow_detail_textures;
 int gl_detail_maxdist;
 float gl_detail_maxdist_sqrt;
 
@@ -97,7 +96,7 @@ void M_ChangeUseDetail(void)
 
   if (V_IsOpenGLMode())
   {
-    render_usedetail = gl_allow_detail_textures;
+    render_usedetail = true;
     gld_EnableDetail(true);
     gld_EnableDetail(false);
     gld_FlushTextures();
