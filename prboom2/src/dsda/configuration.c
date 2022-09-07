@@ -481,6 +481,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_shadows_factor", dsda_config_gl_shadows_factor,
     CONF_BYTE(128), NULL, false, 0, gld_ResetShadowParameters
   },
+  [dsda_config_useglgamma] = {
+    "useglgamma", dsda_config_useglgamma,
+    dsda_config_int, 0, MAX_GLGAMMA, { 0 }, &useglgamma
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
