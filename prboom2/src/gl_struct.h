@@ -129,9 +129,6 @@ void gld_EndDrawScene(void);
 void gld_ProcessExtraAlpha(void);
 void gld_Finish();
 
-//stuff
-extern int gl_color_mip_levels;
-
 //blend animation from zdoomgl
 extern int gl_blend_animations;
 

@@ -74,7 +74,6 @@ extern int sts_traditional_keys;
 extern int gl_sprite_blend;
 extern int render_paperitems;
 extern int gl_fog;
-extern int gl_color_mip_levels;
 extern int gl_blend_animations;
 
 void I_Init2(void);
@@ -464,10 +463,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_fog] = {
     "gl_fog", dsda_config_gl_fog,
     BOOL_DEFAULT_ON, &gl_fog, false, 0, M_ChangeAllowFog
-  },
-  [dsda_config_gl_color_mip_levels] = {
-    "gl_color_mip_levels", dsda_config_gl_color_mip_levels,
-    BOOL_DEFAULT_OFF, &gl_color_mip_levels
   },
   [dsda_config_gl_shadows] = {
     "gl_shadows", dsda_config_gl_shadows,

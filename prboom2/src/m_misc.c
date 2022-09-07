@@ -324,7 +324,6 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_sprite_blend),
   MIGRATED_SETTING(dsda_config_render_paperitems),
   MIGRATED_SETTING(dsda_config_gl_fog),
-  MIGRATED_SETTING(dsda_config_gl_color_mip_levels),
   MIGRATED_SETTING(dsda_config_gl_shadows),
   MIGRATED_SETTING(dsda_config_gl_blend_animations),
 

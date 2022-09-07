@@ -86,9 +86,6 @@ int gl_tex_format=GL_RGB5_A1;
 //int gl_tex_format=GL_RGBA4;
 //int gl_tex_format=GL_RGBA2;
 
-// e6y: development aid to see texture mip usage
-int gl_color_mip_levels;
-
 int gl_boom_colormaps = -1;
 int gl_boom_colormaps_default = true;
 
@@ -678,50 +675,6 @@ static void gld_BlendOverTexture(byte *data, int pixelCount, byte blend[4])
   }
 }
 
-byte	mipBlendColors[16][4] =
-{
-  {0,0,0,0},
-  {255,0,0,128},
-  {0,255,0,128},
-  {0,0,255,128},
-  {255,0,0,128},
-  {0,255,0,128},
-  {0,0,255,128},
-  {255,0,0,128},
-  {0,255,0,128},
-  {0,0,255,128},
-  {255,0,0,128},
-  {0,255,0,128},
-  {0,0,255,128},
-  {255,0,0,128},
-  {0,255,0,128},
-  {0,0,255,128},
-};
-
-static void gld_RecolorMipLevels(byte *data)
-{
-  //e6y: development aid to see texture mip usage
-  if (gl_color_mip_levels)
-  {
-    int miplevel = 0;
-    unsigned char *buf = NULL;
-
-    for (miplevel = 1; miplevel < 16; miplevel++)
-    {
-      int w, h;
-
-      buf = gld_GetTextureBuffer(0, miplevel, &w, &h);
-
-      if (w <= 0 || h <= 0)
-        break;
-
-      gld_BlendOverTexture((byte *)buf, w * h, mipBlendColors[miplevel]);
-      glTexImage2D( GL_TEXTURE_2D, miplevel, gl_tex_format, w, h,
-        0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-    }
-  }
-}
-
 void gld_SetTexFilters(GLTexture *gltexture)
 {
   int mip, mag_filter, min_filter;
@@ -831,8 +784,6 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
       tex_width, tex_height,
       0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-    gld_RecolorMipLevels(data);
-
     gld_SetTexFilters(gltexture);
 
     result = true;
@@ -843,8 +794,6 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
   {
     gluBuild2DMipmaps(GL_TEXTURE_2D, gl_tex_format,
       width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-    gld_RecolorMipLevels(data);
 
     gld_SetTexFilters(gltexture);
 
