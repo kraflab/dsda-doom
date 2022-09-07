@@ -459,9 +459,6 @@ void gld_SetFog(float fogdensity);
 typedef float (*gld_CalcFogDensity_f)(sector_t *sector, int lightlevel, GLDrawItemType type);
 extern gld_CalcFogDensity_f gld_CalcFogDensity;
 
-//HQ resize
-unsigned char* gld_HQResize(GLTexture *gltexture, unsigned char *inputBuffer, int inWidth, int inHeight, int *outWidth, int *outHeight);
-
 // SkyBox
 #define SKY_NONE    0
 #define SKY_CEILING 1

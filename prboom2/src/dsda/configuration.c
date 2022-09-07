@@ -73,7 +73,6 @@ extern int sts_traditional_keys;
 
 extern int gl_sprite_blend;
 extern int render_paperitems;
-extern int gl_texture_hqresize;
 extern int gl_fog;
 extern int gl_color_mip_levels;
 extern int gl_blend_animations;
@@ -461,10 +460,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_render_paperitems] = {
     "render_paperitems", dsda_config_render_paperitems,
     BOOL_DEFAULT_OFF, &render_paperitems
-  },
-  [dsda_config_gl_texture_hqresize] = {
-    "gl_texture_hqresize", dsda_config_gl_texture_hqresize,
-    BOOL_DEFAULT_OFF, &gl_texture_hqresize
   },
   [dsda_config_gl_fog] = {
     "gl_fog", dsda_config_gl_fog,

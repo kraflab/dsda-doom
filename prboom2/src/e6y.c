@@ -472,11 +472,6 @@ void M_ChangeTextureUseHires(void)
   gld_Precache();
 }
 
-void M_ChangeTextureHQResize(void)
-{
-  gld_FlushTextures();
-}
-
 void M_Mouse(int choice, int *sens);
 void M_MouseMLook(int choice)
 {

@@ -167,7 +167,6 @@ void M_ChangeSpriteClip(void);
 void M_ChangeAllowBoomColormaps(void);
 void M_ChangeTextureUseHires(void);
 void M_ChangeAllowFog(void);
-void M_ChangeTextureHQResize(void);
 void M_ChangeSpeed(void);
 void M_ChangeScreenMultipleFactor(void);
 void M_ChangeInterlacedScanning(void);

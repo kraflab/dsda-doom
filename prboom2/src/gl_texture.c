@@ -931,7 +931,6 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
 {
   const rpatch_t *patch;
   unsigned char *buffer;
-  int w, h;
 
   if (!gltexture || gltexture->textype != GLDT_TEXTURE)
   {
@@ -979,9 +978,7 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
     SmoothEdges(buffer, gltexture->buffer_width, gltexture->buffer_height);
   }
 
-  buffer = gld_HQResize(gltexture, buffer, gltexture->buffer_width, gltexture->buffer_height, &w, &h);
-
-  gld_BuildTexture(gltexture, buffer, false, w, h);
+  gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
 
   gld_SetTexClamp(gltexture, flags);
 }
@@ -1058,7 +1055,6 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
 {
   const rpatch_t *patch;
   unsigned char *buffer;
-  int w, h;
 
   if (!gltexture || gltexture->textype != GLDT_PATCH)
   {
@@ -1120,9 +1116,7 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
 
-  buffer = gld_HQResize(gltexture, buffer, gltexture->buffer_width, gltexture->buffer_height, &w, &h);
-
-  gld_BuildTexture(gltexture, buffer, false, w, h);
+  gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
 
   gld_SetTexClamp(gltexture, GLTEXTURE_CLAMPXY);
 }
@@ -1188,7 +1182,6 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
 {
   const unsigned char *flat;
   unsigned char *buffer;
-  int w, h;
 
   if (!gltexture || gltexture->textype != GLDT_FLAT)
   {
@@ -1231,9 +1224,7 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
 
-  buffer = gld_HQResize(gltexture, buffer, gltexture->buffer_width, gltexture->buffer_height, &w, &h);
-
-  gld_BuildTexture(gltexture, buffer, false, w, h);
+  gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
 
   gld_SetTexClamp(gltexture, flags);
 }

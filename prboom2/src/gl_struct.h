@@ -141,22 +141,6 @@ int gld_wipe_exitMelt(int ticks);
 int gld_wipe_StartScreen(void);
 int gld_wipe_EndScreen(void);
 
-//HQ resize
-typedef enum
-{
-  hq_scale_none,
-  hq_scale_2x,
-  hq_scale_3x,
-  hq_scale_4x,
-
-  hq_scale_max
-} gl_hqresizemode_t;
-extern const char *gl_hqresizemodes[];
-extern int gl_texture_hqresize;
-extern int gl_texture_hqresize_textures;
-extern int gl_texture_hqresize_sprites;
-extern int gl_texture_hqresize_patches;
-
 //clipper
 dboolean gld_clipper_SafeCheckRange(angle_t startAngle, angle_t endAngle);
 void gld_clipper_SafeAddClipRange(angle_t startangle, angle_t endangle);

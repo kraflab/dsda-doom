@@ -433,7 +433,6 @@ function(AddGameExecutable TARGET SOURCES)
         gl_fbo.c
         gl_gamma.c
         gl_hires.c
-        gl_hqresize.c
         gl_intern.h
         gl_light.c
         gl_main.c
