@@ -1108,7 +1108,7 @@ void gld_StartDrawScene(void)
   gl_use_fog = gl_fog && !frame_fixedcolormap && !boom_cm;
 
 //e6y
-  mlook_or_fov = dsda_MouseLook() || (render_fov != FOV90);
+  mlook_or_fov = dsda_MouseLook() || (gl_render_fov != FOV90);
   if(!mlook_or_fov)
   {
     pitch = 0.0f;
@@ -2378,7 +2378,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   const rpatch_t* patch;
 
   int frustum_culling = HaveMouseLook();
-  int mlook = HaveMouseLook() || (render_fov > FOV90);
+  int mlook = HaveMouseLook() || (gl_render_fov > FOV90);
 
   if (R_ViewInterpolation())
   {

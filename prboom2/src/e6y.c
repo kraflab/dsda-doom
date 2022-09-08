@@ -116,7 +116,7 @@ int movement_mousestrafedivisor;
 int mouse_handler;
 int mouse_doubleclick_as_use;
 int mouse_carrytics;
-int render_fov = 90;
+int gl_render_fov = 90;
 int render_wipescreen;
 int mouse_acceleration;
 int quickstart_window_ms;
@@ -364,10 +364,10 @@ void CheckPitch(signed int *pitch)
 }
 
 int render_aspect;
-float render_ratio;
-float render_fovratio;
-float render_fovy = FOV90;
-float render_multiplier;
+float gl_render_ratio;
+float gl_render_fovratio;
+float gl_render_fovy = FOV90;
+float gl_render_multiplier;
 
 void M_ChangeAspectRatio(void)
 {
@@ -391,48 +391,48 @@ void M_ChangeFOV(void)
 {
   float f1, f2;
   dsda_arg_t* arg;
-  int render_aspect_width, render_aspect_height;
+  int gl_render_aspect_width, gl_render_aspect_height;
 
   arg = dsda_Arg(dsda_arg_aspect);
   if (
     arg->found &&
-    sscanf(arg->value.v_string, "%dx%d", &render_aspect_width, &render_aspect_height) == 2
+    sscanf(arg->value.v_string, "%dx%d", &gl_render_aspect_width, &gl_render_aspect_height) == 2
   )
   {
     SetRatio(SCREENWIDTH, SCREENHEIGHT);
-    render_fovratio = (float)render_aspect_width / (float)render_aspect_height;
-    render_ratio = RMUL * render_fovratio;
-    render_multiplier = 64.0f / render_fovratio / RMUL;
+    gl_render_fovratio = (float)gl_render_aspect_width / (float)gl_render_aspect_height;
+    gl_render_ratio = RMUL * gl_render_fovratio;
+    gl_render_multiplier = 64.0f / gl_render_fovratio / RMUL;
   }
   else
   {
     SetRatio(SCREENWIDTH, SCREENHEIGHT);
-    render_ratio = gl_ratio;
-    render_multiplier = (float)ratio_multiplier;
+    gl_render_ratio = gl_ratio;
+    gl_render_multiplier = (float)ratio_multiplier;
     if (!tallscreen)
     {
-      render_fovratio = 1.6f;
+      gl_render_fovratio = 1.6f;
     }
     else
     {
-      render_fovratio = render_ratio;
+      gl_render_fovratio = gl_render_ratio;
     }
   }
 
-  render_fovy = (float)(2 * RAD2DEG(atan(tan(DEG2RAD(render_fov) / 2) / render_fovratio)));
+  gl_render_fovy = (float)(2 * RAD2DEG(atan(tan(DEG2RAD(gl_render_fov) / 2) / gl_render_fovratio)));
 
-  screen_skybox_zplane = 320.0f/2.0f/(float)tan(DEG2RAD(render_fov/2));
+  screen_skybox_zplane = 320.0f/2.0f/(float)tan(DEG2RAD(gl_render_fov/2));
 
-  f1 = (float)(320.0f / 200.0f * (float)render_fov / (float)FOV90 - 0.2f);
-  f2 = (float)tan(DEG2RAD(render_fovy)/2.0f);
+  f1 = (float)(320.0f / 200.0f * (float)gl_render_fov / (float)FOV90 - 0.2f);
+  f2 = (float)tan(DEG2RAD(gl_render_fovy)/2.0f);
   if (f1-f2<1)
     skyUpAngle = (float)-RAD2DEG(asin(f1-f2));
   else
     skyUpAngle = -90.0f;
 
-  skyUpShift = (float)tan(DEG2RAD(render_fovy)/2.0f);
+  skyUpShift = (float)tan(DEG2RAD(gl_render_fovy)/2.0f);
 
-  skyscale = 1.0f / (float)tan(DEG2RAD(render_fov / 2));
+  skyscale = 1.0f / (float)tan(DEG2RAD(gl_render_fov / 2));
 }
 
 void ResolveColormapsHiresConflict(dboolean prefer_colormap)

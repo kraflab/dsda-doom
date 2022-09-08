@@ -817,8 +817,8 @@ void R_SetupMatrix(void)
 
   R_SetupViewport();
 
-  fovy = render_fovy;
-  aspect = render_ratio;
+  fovy = gl_render_fovy;
+  aspect = gl_render_ratio;
   znear = (float)r_nearclip / 100.0f;
 
   R_SetupPerspective(fovy, aspect, znear);

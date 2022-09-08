@@ -99,12 +99,12 @@ extern int render_wipescreen;
 extern int mouse_acceleration;
 extern int quickstart_window_ms;
 
-extern int render_fov;
+extern int gl_render_fov;
 extern int render_aspect;
-extern float render_ratio;
-extern float render_fovratio;
-extern float render_fovy;
-extern float render_multiplier;
+extern float gl_render_ratio;
+extern float gl_render_fovratio;
+extern float gl_render_fovy;
+extern float gl_render_multiplier;
 void M_ChangeAspectRatio(void);
 void M_ChangeStretch(void);
 
