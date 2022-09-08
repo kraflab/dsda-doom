@@ -221,21 +221,30 @@ void gld_InitTextureParams(void)
 
 const int gl_colorbuffer_bits = 32;
 const int gl_depthbuffer_bits = 24;
+int gl_render_multisampling;
 
 void gld_MultisamplingInit(void)
 {
-  if (render_multisampling)
+  gl_render_multisampling = dsda_IntConfig(dsda_config_gl_render_multisampling);
+  gl_render_multisampling -= (gl_render_multisampling % 2);
+
+  if (gl_render_multisampling)
   {
     SDL_GL_SetAttribute( SDL_GL_BUFFER_SIZE, gl_colorbuffer_bits );
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, gl_depthbuffer_bits );
-    SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, render_multisampling );
-    SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 1 );
+    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, gl_render_multisampling );
+    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
+  }
+  else
+  {
+    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, 0 );
+    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 0 );
   }
 }
 
 void gld_MultisamplingSet(void)
 {
-  if (render_multisampling)
+  if (gl_render_multisampling)
   {
     int use_multisampling = map_use_multisamling ||
       (!(automapmode & am_active) || (automapmode & am_overlay));

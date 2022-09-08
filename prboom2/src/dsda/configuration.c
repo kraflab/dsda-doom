@@ -89,6 +89,7 @@ void dsda_RefreshExHudFPS(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
 void M_ChangeTextureParams(void);
+void gld_MultisamplingInit(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -518,6 +519,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_tex_format_string", dsda_config_gl_tex_format_string,
     dsda_config_string, 0, 0, { .v_string = "GL_RGBA" },
     NULL, 0, 0, M_ChangeTextureParams
+  },
+  [dsda_config_gl_render_multisampling] = {
+    "gl_render_multisampling", dsda_config_gl_render_multisampling,
+    dsda_config_int, 0, 8, { 0 },
+    NULL, CONF_EVEN, 0, gld_MultisamplingInit
   },
 };
 
