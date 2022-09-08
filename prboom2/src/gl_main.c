@@ -2280,10 +2280,6 @@ static void gld_DrawSprite(GLSprite *sprite)
 }
 
 int gl_health_bar;
-int gl_health_bar_full_length;
-int gl_health_bar_red;
-int gl_health_bar_yellow;
-int gl_health_bar_green;
 
 static void gld_AddHealthBar(mobj_t* thing, GLSprite *sprite)
 {
@@ -2293,11 +2289,11 @@ static void gld_AddHealthBar(mobj_t* thing, GLSprite *sprite)
     int health_percent = thing->health * 100 / thing->info->spawnhealth;
 
     hbar.cm = -1;
-    if (health_percent <= gl_health_bar_red)
+    if (health_percent <= 50)
       hbar.cm = CR_RED;
-    else if (health_percent <= gl_health_bar_yellow)
+    else if (health_percent <= 99)
       hbar.cm = CR_YELLOW;
-    else if (health_percent <= gl_health_bar_green)
+    else if (health_percent <= 0)
       hbar.cm = CR_GREEN;
 
     if (hbar.cm >= 0)
@@ -2346,19 +2342,16 @@ static void gld_DrawHealthBars(void)
     }
     glEnd();
 
-    if (gl_health_bar_full_length)
+    glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
+    glBegin(GL_LINES);
+    for (i = count - 1; i >= 0; i--)
     {
-      glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
-      glBegin(GL_LINES);
-      for (i = count - 1; i >= 0; i--)
-      {
-        GLHealthBar *hbar = gld_drawinfo.items[GLDIT_HBAR][i].item.hbar;
+      GLHealthBar *hbar = gld_drawinfo.items[GLDIT_HBAR][i].item.hbar;
 
-        glVertex3f(hbar->x1, hbar->y, hbar->z1);
-        glVertex3f(hbar->x3, hbar->y, hbar->z3);
-      }
-      glEnd();
+      glVertex3f(hbar->x1, hbar->y, hbar->z1);
+      glVertex3f(hbar->x3, hbar->y, hbar->z3);
     }
+    glEnd();
 
     gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
   }
