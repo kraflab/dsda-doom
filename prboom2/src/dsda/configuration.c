@@ -75,7 +75,7 @@ extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 
 extern int gl_sprite_blend;
-extern int render_paperitems;
+extern int gl_render_paperitems;
 extern int gl_fog;
 extern int gl_blend_animations;
 
@@ -462,9 +462,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_sprite_blend", dsda_config_gl_sprite_blend,
     CONF_BOOL(0), &gl_sprite_blend
   },
-  [dsda_config_render_paperitems] = {
-    "render_paperitems", dsda_config_render_paperitems,
-    CONF_BOOL(0), &render_paperitems
+  [dsda_config_gl_render_paperitems] = {
+    "gl_render_paperitems", dsda_config_gl_render_paperitems,
+    CONF_BOOL(0), &gl_render_paperitems
   },
   [dsda_config_gl_fog] = {
     "gl_fog", dsda_config_gl_fog,

@@ -95,6 +95,8 @@ extern int tran_filter_pct;
 
 dboolean use_fog=false;
 
+int gl_render_paperitems;
+
 GLfloat gl_texture_filter_anisotropic;
 
 //sprites
@@ -2214,7 +2216,7 @@ static void gld_DrawSprite(GLSprite *sprite)
     }
   }
 
-  if (!render_paperitems && !(sprite->flags & (MF_SOLID | MF_SPAWNCEILING)))
+  if (!gl_render_paperitems && !(sprite->flags & (MF_SOLID | MF_SPAWNCEILING)))
   {
     float x1, x2, x3, x4, z1, z2, z3, z4;
     float y1, y2, cy, ycenter, y1c, y2c;
@@ -2408,7 +2410,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   tx = -(gyt + gxt);
 
   //e6y
-  if (!render_paperitems && mlook)
+  if (!gl_render_paperitems && mlook)
   {
     if (tz >= MINZ && (D_abs(tx) >> 5) > tz)
       return;

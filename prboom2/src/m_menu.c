@@ -3285,7 +3285,7 @@ setup_menu_t opengl_settings[] = {
   { "Sector Light Mode", S_CHOICE, m_null, G_X, G_Y + 4 * 8, { "gl_lightmode" }, 0, M_ChangeLightMode, gl_lightmodes },
   { "Allow Fog", S_YESNO, m_conf, G_X, G_Y + 5 * 8, { .config_id = dsda_config_gl_fog } },
   { "Simple Shadows", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_gl_shadows } },
-  { "Paper Items", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { .config_id = dsda_config_render_paperitems } },
+  { "Paper Items", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { .config_id = dsda_config_gl_render_paperitems } },
   { "Smooth sprite edges", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_gl_sprite_blend } },
   { "Adjust Sprite Clipping", S_CHOICE, m_null, G_X, G_Y + 9 * 8, { "gl_spriteclip" }, 0, NULL, gl_spriteclipmodes },
   { "Health Bar Above Monsters", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "health_bar" } },

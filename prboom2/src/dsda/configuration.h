@@ -113,7 +113,7 @@ typedef enum {
   dsda_config_mapcolor_enemy,
   dsda_config_mapcolor_frnd,
   dsda_config_gl_sprite_blend,
-  dsda_config_render_paperitems,
+  dsda_config_gl_render_paperitems,
   dsda_config_gl_fog,
   dsda_config_gl_shadows,
   dsda_config_gl_blend_animations,

@@ -117,7 +117,6 @@ int mouse_handler;
 int mouse_doubleclick_as_use;
 int mouse_carrytics;
 int render_fov = 90;
-int render_paperitems;
 int render_wipescreen;
 int mouse_acceleration;
 int quickstart_window_ms;
