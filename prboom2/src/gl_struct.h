@@ -180,7 +180,6 @@ void R_SetBoxSkybox(int texture);
 
 //multisampling
 void gld_MultisamplingInit(void);
-void gld_MultisamplingCheck(void);
 void gld_MultisamplingSet(void);
 
 void gld_ProcessTexturedMap(void);

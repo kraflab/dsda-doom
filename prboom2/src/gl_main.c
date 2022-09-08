@@ -233,23 +233,6 @@ void gld_MultisamplingInit(void)
   }
 }
 
-void gld_MultisamplingCheck(void)
-{
-  if (render_multisampling)
-  {
-    int test = -1;
-    SDL_GL_GetAttribute (SDL_GL_MULTISAMPLESAMPLES, &test);
-    if (test!=render_multisampling)
-    {
-      void M_SaveDefaults (void);
-      int i=render_multisampling;
-      render_multisampling = 0;
-      M_SaveDefaults ();
-      I_Error("Couldn't set %dX multisamples for %dx%d video mode", i, SCREENWIDTH, SCREENHEIGHT);
-    }
-  }
-}
-
 void gld_MultisamplingSet(void)
 {
   if (render_multisampling)
