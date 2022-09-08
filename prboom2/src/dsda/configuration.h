@@ -127,6 +127,7 @@ typedef enum {
   dsda_config_gl_texture_filter_anisotropic,
   dsda_config_gl_tex_format_string,
   dsda_config_gl_render_multisampling,
+  dsda_config_gl_render_fov,
   dsda_config_count,
 } dsda_config_identifier_t;
 

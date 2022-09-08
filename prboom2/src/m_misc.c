@@ -312,7 +312,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_texture_filter_anisotropic),
   MIGRATED_SETTING(dsda_config_gl_tex_format_string),
   MIGRATED_SETTING(dsda_config_gl_render_multisampling),
-   { "gl_render_fov", {&gl_render_fov},  {90},20,160, def_int},
+  MIGRATED_SETTING(dsda_config_gl_render_fov),
    { "gl_spriteclip",{(int*)&gl_spriteclip},{spriteclip_smart}, spriteclip_const, spriteclip_smart, def_int},
    { "gl_lightmode",{(int*)&gl_lightmode_default},{gl_lightmode_shaders}, gl_lightmode_glboom, gl_lightmode_last-1, def_int},
   MIGRATED_SETTING(dsda_config_gl_skymode),

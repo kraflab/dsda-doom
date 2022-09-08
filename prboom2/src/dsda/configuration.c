@@ -78,6 +78,7 @@ extern int gl_sprite_blend;
 extern int gl_render_paperitems;
 extern int gl_fog;
 extern int gl_blend_animations;
+extern int gl_render_fov;
 
 void I_Init2(void);
 void M_ChangeDemoSmoothTurns(void);
@@ -90,6 +91,7 @@ void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
 void M_ChangeTextureParams(void);
 void gld_MultisamplingInit(void);
+void M_ChangeFOV(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -523,6 +525,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_render_multisampling] = {
     "gl_render_multisampling", dsda_config_gl_render_multisampling,
     dsda_config_int, 0, 8, { 0 }, NULL, CONF_EVEN, 0, gld_MultisamplingInit
+  },
+  [dsda_config_gl_render_fov] = {
+    "gl_render_fov", dsda_config_gl_render_fov,
+    dsda_config_int, 20, 160, { 90 }, &gl_render_fov, 0, 0, M_ChangeFOV
   },
 };
 
