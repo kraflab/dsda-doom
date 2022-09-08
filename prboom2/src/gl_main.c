@@ -100,9 +100,7 @@ GLfloat gl_texture_filter_anisotropic;
 //sprites
 spriteclipmode_t gl_spriteclip;
 const char *gl_spriteclipmodes[] = {"constant", "full", "smart"};
-float gl_spriteclip_threshold_f;
-int gl_sprite_offset_default;	// item out of floor offset Mead 8/13/03
-float gl_sprite_offset;       // precalcilated float value for gl_sprite_offset_default
+const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
 int gl_sprite_blend;  // e6y: smooth sprite edges
 const float gl_mask_sprite_threshold_f = 0.5f;
 
@@ -2524,9 +2522,6 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   sprite.x =-(float)fx / MAP_SCALE;
   sprite.y = (float)fz / MAP_SCALE;
   sprite.z = (float)fy / MAP_SCALE;
-
-  // Bring items up out of floor by configurable amount times .01 Mead 8/13/03
-  sprite.y += gl_sprite_offset;
 
   sprite.x2 = (float)patch->leftoffset / MAP_COEFF;
   sprite.x1 = sprite.x2 - ((float)patch->width / MAP_COEFF);

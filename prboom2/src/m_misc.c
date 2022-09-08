@@ -311,7 +311,6 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_patch_filter),
   MIGRATED_SETTING(dsda_config_gl_texture_filter_anisotropic),
   MIGRATED_SETTING(dsda_config_gl_tex_format_string),
-   { "gl_sprite_offset",{&gl_sprite_offset_default},{0}, 0, 5, def_int}, // amount to bring items out of floor (GL) Mead 8/13/03
    { "render_multisampling", {&render_multisampling},  {0},0,8, def_int},
    { "render_fov", {&render_fov},  {90},20,160, def_int},
    { "gl_spriteclip",{(int*)&gl_spriteclip},{spriteclip_smart}, spriteclip_const, spriteclip_smart, def_int},
