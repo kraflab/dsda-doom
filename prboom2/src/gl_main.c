@@ -2279,6 +2279,12 @@ static void gld_DrawSprite(GLSprite *sprite)
   }
 }
 
+int gl_health_bar;
+int gl_health_bar_full_length;
+int gl_health_bar_red;
+int gl_health_bar_yellow;
+int gl_health_bar_green;
+
 static void gld_AddHealthBar(mobj_t* thing, GLSprite *sprite)
 {
   if (((thing->flags & (MF_COUNTKILL | MF_CORPSE)) == MF_COUNTKILL) && (thing->health > 0))
@@ -2287,11 +2293,11 @@ static void gld_AddHealthBar(mobj_t* thing, GLSprite *sprite)
     int health_percent = thing->health * 100 / thing->info->spawnhealth;
 
     hbar.cm = -1;
-    if (health_percent <= health_bar_red)
+    if (health_percent <= gl_health_bar_red)
       hbar.cm = CR_RED;
-    else if (health_percent <= health_bar_yellow)
+    else if (health_percent <= gl_health_bar_yellow)
       hbar.cm = CR_YELLOW;
-    else if (health_percent <= health_bar_green)
+    else if (health_percent <= gl_health_bar_green)
       hbar.cm = CR_GREEN;
 
     if (hbar.cm >= 0)
@@ -2340,7 +2346,7 @@ static void gld_DrawHealthBars(void)
     }
     glEnd();
 
-    if (health_bar_full_length)
+    if (gl_health_bar_full_length)
     {
       glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
       glBegin(GL_LINES);

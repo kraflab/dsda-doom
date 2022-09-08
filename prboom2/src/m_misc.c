@@ -230,11 +230,6 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_demo_smoothturns),
   MIGRATED_SETTING(dsda_config_demo_smoothturnsfactor),
   { "screenshot_dir", { NULL, &screenshot_dir }, { 0, "" }, UL, UL, def_str },
-  { "health_bar", { &health_bar }, { 0 }, 0, 1, def_bool },
-  { "health_bar_full_length", { &health_bar_full_length }, { 1 }, 0, 1, def_bool },
-  { "health_bar_red", { &health_bar_red }, { 50 }, 0, 100, def_int },
-  { "health_bar_yellow", { &health_bar_yellow }, { 99 }, 0, 100, def_int },
-  { "health_bar_green", { &health_bar_green }, { 0 }, 0, 100, def_int },
   { "quickstart_window_ms", { &quickstart_window_ms }, { 0 }, 0, 1000, def_int },
 
   SETTING_HEADING("Game settings"),
@@ -320,6 +315,11 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_shadows),
   MIGRATED_SETTING(dsda_config_gl_shadows_maxdist),
   MIGRATED_SETTING(dsda_config_gl_shadows_factor),
+  { "gl_health_bar", { &gl_health_bar }, { 0 }, 0, 1, def_bool },
+  { "gl_health_bar_full_length", { &gl_health_bar_full_length }, { 1 }, 0, 1, def_bool },
+  { "gl_health_bar_red", { &gl_health_bar_red }, { 50 }, 0, 100, def_int },
+  { "gl_health_bar_yellow", { &gl_health_bar_yellow }, { 99 }, 0, 100, def_int },
+  { "gl_health_bar_green", { &gl_health_bar_green }, { 0 }, 0, 100, def_int },
 
   SETTING_HEADING("Mouse settings"),
   { "use_mouse",{&usemouse},{1},0,1, def_bool}, // enables use of mouse with DOOM

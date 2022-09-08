@@ -229,4 +229,10 @@ extern int gl_render_paperitems;
 extern int gl_fog;
 extern int gl_render_fov;
 
+extern int gl_health_bar;
+extern int gl_health_bar_full_length;
+extern int gl_health_bar_red;
+extern int gl_health_bar_yellow;
+extern int gl_health_bar_green;
+
 #endif // _GL_STRUCT_H

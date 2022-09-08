@@ -73,12 +73,6 @@ static const lighttable_t **spritelights;        // killough 1/25/98 made static
 float pspriteyscale_f;
 float pspritexscale_f;
 
-int health_bar;
-int health_bar_full_length;
-int health_bar_red;
-int health_bar_yellow;
-int health_bar_green;
-
 typedef struct drawseg_xrange_item_s
 {
   short x1, x2;
