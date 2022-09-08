@@ -120,6 +120,7 @@ typedef enum {
   dsda_config_gl_shadows_maxdist,
   dsda_config_gl_shadows_factor,
   dsda_config_useglgamma,
+  dsda_config_gl_skymode,
   dsda_config_count,
 } dsda_config_identifier_t;
 

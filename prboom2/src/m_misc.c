@@ -329,12 +329,12 @@ default_t defaults[] =
   // end TODO
    { "gl_tex_format_string", {NULL,&gl_tex_format_string}, {0,"GL_RGBA"},UL,UL, def_str},
    { "gl_sprite_offset",{&gl_sprite_offset_default},{0}, 0, 5, def_int}, // amount to bring items out of floor (GL) Mead 8/13/03
-  { "gl_skymode",{(int*)&gl_skymode}, {skytype_auto}, skytype_auto, skytype_count - 1, def_int},
    { "render_multisampling", {&render_multisampling},  {0},0,8, def_int},
    { "render_fov", {&render_fov},  {90},20,160, def_int},
    { "gl_spriteclip",{(int*)&gl_spriteclip},{spriteclip_smart}, spriteclip_const, spriteclip_smart, def_int},
    { "gl_spriteclip_threshold", {&gl_spriteclip_threshold},  {10},0,100, def_int},
    { "gl_lightmode",{(int*)&gl_lightmode_default},{gl_lightmode_shaders}, gl_lightmode_glboom, gl_lightmode_last-1, def_int},
+  MIGRATED_SETTING(dsda_config_gl_skymode),
   MIGRATED_SETTING(dsda_config_useglgamma),
   MIGRATED_SETTING(dsda_config_gl_shadows),
   MIGRATED_SETTING(dsda_config_gl_shadows_maxdist),

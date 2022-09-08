@@ -302,9 +302,13 @@ void M_ChangeSpeed(void)
 
 void M_ChangeMouseLook(void)
 {
+  int gl_skymode;
+
   viewpitch = 0;
 
   R_InitSkyMap();
+
+  gl_skymode = dsda_IntConfig(dsda_config_gl_skymode);
 
   if (gl_skymode == skytype_auto)
     gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);

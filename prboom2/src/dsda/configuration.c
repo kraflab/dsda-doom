@@ -485,6 +485,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "useglgamma", dsda_config_useglgamma,
     dsda_config_int, 0, MAX_GLGAMMA, { 0 }, &useglgamma
   },
+  [dsda_config_gl_skymode] = {
+    "gl_skymode", dsda_config_gl_skymode,
+    dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
+    false, 0, M_ChangeMouseLook
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

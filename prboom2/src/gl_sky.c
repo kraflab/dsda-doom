@@ -76,7 +76,6 @@ typedef struct
   vbo_vertex_t *data;
 } GLSkyVBO;
 
-int gl_skymode;
 int gl_drawskys;
 // Sky stretching is rather pointless with the GL renderer
 // now that it can handle all sky heights.
