@@ -522,8 +522,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_render_multisampling] = {
     "gl_render_multisampling", dsda_config_gl_render_multisampling,
-    dsda_config_int, 0, 8, { 0 },
-    NULL, CONF_EVEN, 0, gld_MultisamplingInit
+    dsda_config_int, 0, 8, { 0 }, NULL, CONF_EVEN, 0, gld_MultisamplingInit
   },
 };
 
