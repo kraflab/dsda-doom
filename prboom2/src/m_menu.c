@@ -3334,10 +3334,9 @@ setup_menu_t demo_settings[] = {
   { "Quickstart Cache Tics", S_NUM, m_null, G_X, G_Y + 7 * 8, { "dsda_quickstart_cache_tics" } },
   { "Smooth Demo Playback", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_demo_smoothturns } },
   { "Smooth Demo Playback Factor", S_NUM, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_demo_smoothturnsfactor } },
-  { "Quickstart Window (ms)", S_NUM, m_null, G_X, G_Y + 10 * 8, { "quickstart_window_ms" } },
 
-  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 12 * 8 },
-  { "Allow Jumping", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "dsda_allow_jumping" }, 0 },
+  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
+  { "Allow Jumping", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "dsda_allow_jumping" }, 0 },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { mapping_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { tas_settings } },
