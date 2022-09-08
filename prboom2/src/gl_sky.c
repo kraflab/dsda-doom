@@ -521,8 +521,6 @@ static float yMult, yAdd;
 static dboolean foglayer;
 static float delta = 0.0f;
 
-int gl_sky_detail = 16;
-
 //-----------------------------------------------------------------------------
 //
 //
@@ -757,7 +755,7 @@ static void RenderDome(SkyBoxParams_t *sky)
   glRotatef(-180.0f + sky->x_offset, 0.f, 1.f, 0.f);
 
   rows = 4;
-  columns = 4 * gl_sky_detail;
+  columns = 64;
 
   vbosize = 2 * rows * (columns * 2 + 2) + columns * 2;
 

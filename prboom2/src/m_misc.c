@@ -211,7 +211,6 @@ extern int gl_sprite_filter;
 extern int gl_patch_filter;
 extern int gl_texture_filter_anisotropic;
 extern const char *gl_tex_format_string;
-extern int gl_sky_detail;
 
 //e6y: fog
 extern int gl_fog;
@@ -331,7 +330,6 @@ default_t defaults[] =
    { "gl_tex_format_string", {NULL,&gl_tex_format_string}, {0,"GL_RGBA"},UL,UL, def_str},
    { "gl_sprite_offset",{&gl_sprite_offset_default},{0}, 0, 5, def_int}, // amount to bring items out of floor (GL) Mead 8/13/03
   { "gl_skymode",{(int*)&gl_skymode}, {skytype_auto}, skytype_auto, skytype_count - 1, def_int},
-  { "gl_sky_detail",{&gl_sky_detail},{16},1,32, def_int},
    { "render_multisampling", {&render_multisampling},  {0},0,8, def_int},
    { "render_fov", {&render_fov},  {90},20,160, def_int},
    { "gl_spriteclip",{(int*)&gl_spriteclip},{spriteclip_smart}, spriteclip_const, spriteclip_smart, def_int},
