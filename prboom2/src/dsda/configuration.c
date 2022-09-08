@@ -60,6 +60,8 @@ typedef struct {
 } dsda_config_t;
 
 #define CONF_STRICT 0x01
+#define CONF_EVEN   0x02
+
 #define CONF_BOOL(x) dsda_config_int, 0, 1, { x }
 #define CONF_COLOR(x) dsda_config_int, 0, 255, { x }
 #define CONF_BYTE(x) dsda_config_int, 0, 255, { x }
@@ -535,6 +537,9 @@ static void dsda_ConstrainIntConfig(dsda_config_t* conf) {
     conf->transient_value.v_int = conf->upper_limit;
   else if (conf->transient_value.v_int < conf->lower_limit)
     conf->transient_value.v_int = conf->lower_limit;
+
+  if (conf->flags & CONF_EVEN && (conf->transient_value.v_int % 2))
+    conf->transient_value.v_int = conf->default_value.v_int;
 }
 
 static void dsda_PropagateIntConfig(dsda_config_t* conf) {
