@@ -120,7 +120,7 @@ void M_ChangeLightMode(void)
 
   if (gl_hardware_gamma)
   {
-    gld_SetGammaRamp(useglgamma);
+    gld_SetGammaRamp(gl_usegamma);
   }
   else
   {

@@ -54,7 +54,7 @@
 #define HIBYTE(W) (((W) >> 8) & 0xFF)
 #endif
 
-int useglgamma;
+int gl_usegamma;
 int gl_DeviceSupportsGamma = false;
 
 static Uint16 gl_oldHardwareGamma[3][256];

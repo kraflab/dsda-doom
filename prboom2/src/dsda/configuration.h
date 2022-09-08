@@ -119,7 +119,7 @@ typedef enum {
   dsda_config_gl_blend_animations,
   dsda_config_gl_shadows_maxdist,
   dsda_config_gl_shadows_factor,
-  dsda_config_useglgamma,
+  dsda_config_gl_usegamma,
   dsda_config_gl_skymode,
   dsda_config_gl_texture_filter,
   dsda_config_gl_sprite_filter,

@@ -1586,7 +1586,7 @@ static void UpdateFocus(void)
       }
       else
       {
-        gld_SetGammaRamp(useglgamma);
+        gld_SetGammaRamp(gl_usegamma);
       }
     }
   }

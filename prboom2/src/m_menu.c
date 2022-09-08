@@ -4480,10 +4480,10 @@ dboolean M_Responder (event_t* ev) {
       if (V_IsOpenGLMode() && gl_hardware_gamma)
       {
         static char str[200];
-        sprintf(str, "Gamma correction level %d", dsda_CycleConfig(dsda_config_useglgamma, true));
+        sprintf(str, "Gamma correction level %d", dsda_CycleConfig(dsda_config_gl_usegamma, true));
         players[consoleplayer].message = str;
 
-        gld_SetGammaRamp(useglgamma);
+        gld_SetGammaRamp(gl_usegamma);
       }
       else
       {

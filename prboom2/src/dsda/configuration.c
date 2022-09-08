@@ -486,9 +486,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_shadows_factor", dsda_config_gl_shadows_factor,
     CONF_BYTE(128), NULL, 0, 0, gld_ResetShadowParameters
   },
-  [dsda_config_useglgamma] = {
-    "useglgamma", dsda_config_useglgamma,
-    dsda_config_int, 0, MAX_GLGAMMA, { 0 }, &useglgamma
+  [dsda_config_gl_usegamma] = {
+    "gl_usegamma", dsda_config_gl_usegamma,
+    dsda_config_int, 0, MAX_GLGAMMA, { 0 }, &gl_usegamma
   },
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
