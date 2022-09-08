@@ -225,7 +225,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_demo_smoothturns),
   MIGRATED_SETTING(dsda_config_demo_smoothturnsfactor),
   { "screenshot_dir", { NULL, &screenshot_dir }, { 0, "" }, UL, UL, def_str },
-  { "quickstart_window_ms", { &quickstart_window_ms }, { 0 }, 0, 1000, def_int },
+  { "startup_delay_ms", { &startup_delay_ms }, { 0 }, 0, 1000, def_int },
 
   SETTING_HEADING("Game settings"),
   MIGRATED_SETTING(dsda_config_default_complevel),

@@ -519,8 +519,8 @@ void D_Display (fixed_t frac)
 
 static void D_DoomLoop(void)
 {
-  if (quickstart_window_ms > 0)
-    I_uSleep(quickstart_window_ms * 1000);
+  if (startup_delay_ms > 0)
+    I_uSleep(startup_delay_ms * 1000);
 
   for (;;)
   {

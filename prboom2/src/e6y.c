@@ -119,7 +119,7 @@ int mouse_carrytics;
 int gl_render_fov = 90;
 int render_wipescreen;
 int mouse_acceleration;
-int quickstart_window_ms;
+int startup_delay_ms;
 
 int palette_ondamage;
 int palette_onbonus;

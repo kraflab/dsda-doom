@@ -97,7 +97,7 @@ extern int mouse_doubleclick_as_use;
 extern int mouse_carrytics;
 extern int render_wipescreen;
 extern int mouse_acceleration;
-extern int quickstart_window_ms;
+extern int startup_delay_ms;
 
 extern int gl_render_fov;
 extern int render_aspect;
