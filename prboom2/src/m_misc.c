@@ -75,8 +75,6 @@
 #include "r_sky.h"
 
 //e6y
-#include "gl_struct.h"
-#include "g_overflow.h"
 #include "e6y.h"
 
 #include "dsda/args.h"
@@ -197,9 +195,6 @@ int mouse_stutter_correction;
 
 extern int viewwidth;
 extern int viewheight;
-
-//e6y: fog
-extern int gl_fog;
 
 extern int tran_filter_pct;            // killough 2/21/98
 
