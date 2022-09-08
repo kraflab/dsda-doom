@@ -95,10 +95,7 @@ extern int tran_filter_pct;
 
 dboolean use_fog=false;
 
-int gl_texture_filter;
-int gl_sprite_filter;
-int gl_patch_filter;
-int gl_texture_filter_anisotropic = 0;
+GLfloat gl_texture_filter_anisotropic;
 
 //sprites
 spriteclipmode_t gl_spriteclip;
@@ -194,13 +191,21 @@ void gld_InitTextureParams(void)
   };
 
   int i;
-  int *var[MIP_COUNT] = {&gl_texture_filter, &gl_sprite_filter, &gl_patch_filter};
+  int var[MIP_COUNT] = {
+    dsda_IntConfig(dsda_config_gl_texture_filter),
+    dsda_IntConfig(dsda_config_gl_sprite_filter),
+    dsda_IntConfig(dsda_config_gl_patch_filter)
+  };
+  const char* gl_tex_format_string = dsda_StringConfig(dsda_config_gl_tex_format_string);
+
+  gl_texture_filter_anisotropic =
+    (GLfloat) (1 << dsda_IntConfig(dsda_config_gl_texture_filter_anisotropic));
 
   for (i = 0; i < MIP_COUNT; i++)
   {
-    tex_filter[i].mipmap     = params[*var[i]].mipmap;
-    tex_filter[i].mag_filter = params[*var[i]].tex_filter;
-    tex_filter[i].min_filter = params[*var[i]].mipmap_filter;
+    tex_filter[i].mipmap     = params[var[i]].mipmap;
+    tex_filter[i].mag_filter = params[var[i]].tex_filter;
+    tex_filter[i].min_filter = params[var[i]].mipmap_filter;
   }
 
   i = 0;

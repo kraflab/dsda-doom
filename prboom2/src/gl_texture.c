@@ -80,11 +80,7 @@ static GLTexture **gld_GLStaticPatchTextures=NULL;
 
 tex_filter_t tex_filter[MIP_COUNT];
 
-const char *gl_tex_format_string;
-//int gl_tex_format=GL_RGBA8;
 int gl_tex_format=GL_RGB5_A1;
-//int gl_tex_format=GL_RGBA4;
-//int gl_tex_format=GL_RGBA2;
 
 int gl_boom_colormaps = -1;
 int gl_boom_colormaps_default = true;
@@ -703,7 +699,7 @@ void gld_SetTexFilters(GLTexture *gltexture)
   {
     min_filter = tex_filter[mip].min_filter;
     if (gl_ext_texture_filter_anisotropic)
-      aniso_filter = (GLfloat)(1<<gl_texture_filter_anisotropic);
+      aniso_filter = gl_texture_filter_anisotropic;
   }
   else
   {

@@ -195,22 +195,8 @@ int M_ReadFileToString(char const *name, char **buffer) {
 int usemouse;
 int mouse_stutter_correction;
 
-// The available anisotropic
-typedef enum {
-  gl_anisotropic_off = 0,
-  gl_anisotropic_2x  = 1,
-  gl_anisotropic_4x  = 2,
-  gl_anisotropic_8x  = 3,
-  gl_anisotropic_16x = 4,
-} gl_anisotropic_mode_t;
-
 extern int viewwidth;
 extern int viewheight;
-extern int gl_texture_filter;
-extern int gl_sprite_filter;
-extern int gl_patch_filter;
-extern int gl_texture_filter_anisotropic;
-extern const char *gl_tex_format_string;
 
 //e6y: fog
 extern int gl_fog;
@@ -320,12 +306,11 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_render_paperitems),
   MIGRATED_SETTING(dsda_config_gl_fog),
   MIGRATED_SETTING(dsda_config_gl_blend_animations),
-
-   { "gl_texture_filter",{(int*)&gl_texture_filter}, {filter_nearest_mipmap_linear}, filter_nearest, filter_count - 1, def_int},
-   { "gl_sprite_filter",{(int*)&gl_sprite_filter}, {filter_nearest}, filter_nearest, filter_linear_mipmap_nearest, def_int},
-   { "gl_patch_filter",{(int*)&gl_patch_filter}, {filter_nearest}, filter_nearest, filter_linear, def_int},
-   { "gl_texture_filter_anisotropic",{(int*)&gl_texture_filter_anisotropic}, {gl_anisotropic_8x}, gl_anisotropic_off, gl_anisotropic_16x, def_int},
-   { "gl_tex_format_string", {NULL,&gl_tex_format_string}, {0,"GL_RGBA"},UL,UL, def_str},
+  MIGRATED_SETTING(dsda_config_gl_texture_filter),
+  MIGRATED_SETTING(dsda_config_gl_sprite_filter),
+  MIGRATED_SETTING(dsda_config_gl_patch_filter),
+  MIGRATED_SETTING(dsda_config_gl_texture_filter_anisotropic),
+  MIGRATED_SETTING(dsda_config_gl_tex_format_string),
    { "gl_sprite_offset",{&gl_sprite_offset_default},{0}, 0, 5, def_int}, // amount to bring items out of floor (GL) Mead 8/13/03
    { "render_multisampling", {&render_multisampling},  {0},0,8, def_int},
    { "render_fov", {&render_fov},  {90},20,160, def_int},

@@ -336,9 +336,8 @@ void gld_ResetDrawInfo(void);
 extern GLSector *sectorloops;
 extern GLMapSubsector *subsectorloops;
 
-extern const char *gl_tex_format_string;
 extern int gl_tex_format;
-extern int gl_texture_filter_anisotropic;
+extern GLfloat gl_texture_filter_anisotropic;
 extern int transparent_pal_index;
 extern unsigned char gld_palmap[256];
 extern tex_filter_t tex_filter[];

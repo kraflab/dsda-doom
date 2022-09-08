@@ -85,6 +85,7 @@ void I_ResetMusicVolume(void);
 void dsda_RefreshExHudFPS(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
+void M_ChangeTextureParams(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -489,6 +490,31 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
     false, 0, M_ChangeMouseLook
+  },
+  [dsda_config_gl_texture_filter] = {
+    "gl_texture_filter", dsda_config_gl_texture_filter,
+    dsda_config_int, filter_nearest, filter_linear_mipmap_linear, { filter_nearest_mipmap_linear },
+    NULL, false, 0, M_ChangeTextureParams
+  },
+  [dsda_config_gl_sprite_filter] = {
+    "gl_sprite_filter", dsda_config_gl_sprite_filter,
+    dsda_config_int, filter_nearest, filter_linear_mipmap_nearest, { filter_nearest },
+    NULL, false, 0, M_ChangeTextureParams
+  },
+  [dsda_config_gl_patch_filter] = {
+    "gl_patch_filter", dsda_config_gl_patch_filter,
+    dsda_config_int, filter_nearest, filter_linear, { filter_nearest },
+    NULL, false, 0, M_ChangeTextureParams
+  },
+  [dsda_config_gl_texture_filter_anisotropic] = {
+    "gl_texture_filter_anisotropic", dsda_config_gl_texture_filter_anisotropic,
+    dsda_config_int, 0, 4, { 3 },
+    NULL, false, 0, M_ChangeTextureParams
+  },
+  [dsda_config_gl_tex_format_string] = {
+    "gl_tex_format_string", dsda_config_gl_tex_format_string,
+    dsda_config_string, 0, 0, { .v_string = "GL_RGBA" },
+    NULL, false, 0, M_ChangeTextureParams
   },
 };
 
