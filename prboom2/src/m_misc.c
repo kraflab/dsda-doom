@@ -321,12 +321,10 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_fog),
   MIGRATED_SETTING(dsda_config_gl_blend_animations),
 
-  // TODO: add these back to menu
    { "gl_texture_filter",{(int*)&gl_texture_filter}, {filter_nearest_mipmap_linear}, filter_nearest, filter_count - 1, def_int},
    { "gl_sprite_filter",{(int*)&gl_sprite_filter}, {filter_nearest}, filter_nearest, filter_linear_mipmap_nearest, def_int},
    { "gl_patch_filter",{(int*)&gl_patch_filter}, {filter_nearest}, filter_nearest, filter_linear, def_int},
    { "gl_texture_filter_anisotropic",{(int*)&gl_texture_filter_anisotropic}, {gl_anisotropic_8x}, gl_anisotropic_off, gl_anisotropic_16x, def_int},
-  // end TODO
    { "gl_tex_format_string", {NULL,&gl_tex_format_string}, {0,"GL_RGBA"},UL,UL, def_str},
    { "gl_sprite_offset",{&gl_sprite_offset_default},{0}, 0, 5, def_int}, // amount to bring items out of floor (GL) Mead 8/13/03
    { "render_multisampling", {&render_multisampling},  {0},0,8, def_int},
