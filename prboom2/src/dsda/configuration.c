@@ -52,13 +52,14 @@ typedef struct {
   int upper_limit;
   dsda_config_default_t default_value;
   int* int_binding;
-  dboolean strict;
+  int flags;
   int strict_value;
   void (*onUpdate)(void);
   dsda_config_value_t transient_value;
   dsda_config_value_t persistent_value;
 } dsda_config_t;
 
+#define CONF_STRICT 0x01
 #define CONF_BOOL(x) dsda_config_int, 0, 1, { x }
 #define CONF_COLOR(x) dsda_config_int, 0, 255, { x }
 #define CONF_BYTE(x) dsda_config_int, 0, 255, { x }
@@ -102,7 +103,7 @@ static void UpdateStrictMode(void) {
 dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_realtic_clock_rate] = {
     "realtic_clock_rate", dsda_config_realtic_clock_rate,
-    dsda_config_int, 3, 10000, { 100 }, NULL, true, 100, I_Init2
+    dsda_config_int, 3, 10000, { 100 }, NULL, CONF_STRICT, 100, I_Init2
   },
   [dsda_config_default_complevel] = {
     "default_compatibility_level", dsda_config_default_complevel,
@@ -126,7 +127,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_max_player_corpse] = {
     "max_player_corpse", dsda_config_max_player_corpse,
-    dsda_config_int, -1, INT_MAX, { 32 }, NULL, true, 32
+    dsda_config_int, -1, INT_MAX, { 32 }, NULL, CONF_STRICT, 32
   },
   [dsda_config_input_profile] = {
     "input_profile", dsda_config_input_profile,
@@ -175,16 +176,16 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_demo_smoothturns] = {
     "demo_smoothturns", dsda_config_demo_smoothturns,
     CONF_BOOL(0), &demo_smoothturns,
-    false, 0, M_ChangeDemoSmoothTurns
+    0, 0, M_ChangeDemoSmoothTurns
   },
   [dsda_config_demo_smoothturnsfactor] = {
     "demo_smoothturnsfactor", dsda_config_demo_smoothturnsfactor,
     dsda_config_int, 1, SMOOTH_PLAYING_MAXFACTOR, { 6 }, &demo_smoothturnsfactor,
-    false, 0, M_ChangeDemoSmoothTurns
+    0, 0, M_ChangeDemoSmoothTurns
   },
   [dsda_config_weapon_attack_alignment] = {
     "weapon_attack_alignment", dsda_config_weapon_attack_alignment,
-    dsda_config_int, 0, 3, { 0 }, NULL, true, 0
+    dsda_config_int, 0, 3, { 0 }, NULL, CONF_STRICT, 0
   },
   [dsda_config_sts_always_red] = {
     "sts_always_red", dsda_config_sts_always_red,
@@ -200,7 +201,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_strict_mode] = {
     "dsda_strict_mode", dsda_config_strict_mode,
-    CONF_BOOL(1), NULL, false, 0, UpdateStrictMode
+    CONF_BOOL(1), NULL, 0, 0, UpdateStrictMode
   },
   [dsda_config_vertmouse] = {
     "movement_vertmouse", dsda_config_vertmouse,
@@ -208,7 +209,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mouselook] = {
     "movement_mouselook", dsda_config_mouselook,
-    CONF_BOOL(0), NULL, true, 0, M_ChangeMouseLook
+    CONF_BOOL(0), NULL, CONF_STRICT, 0, M_ChangeMouseLook
   },
   [dsda_config_autorun] = {
     "autorun", dsda_config_autorun,
@@ -216,19 +217,19 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_show_messages] = {
     "show_messages", dsda_config_show_messages,
-    CONF_BOOL(1), NULL, false, 0, M_ChangeMessages
+    CONF_BOOL(1), NULL, 0, 0, M_ChangeMessages
   },
   [dsda_config_command_display] = {
     "dsda_command_display", dsda_config_command_display,
-    CONF_BOOL(0), NULL, true, 0
+    CONF_BOOL(0), NULL, CONF_STRICT, 0
   },
   [dsda_config_coordinate_display] = {
     "dsda_coordinate_display", dsda_config_coordinate_display,
-    CONF_BOOL(0), NULL, true, 0
+    CONF_BOOL(0), NULL, CONF_STRICT, 0
   },
   [dsda_config_show_fps] = {
     "dsda_show_fps", dsda_config_show_fps,
-    CONF_BOOL(0), NULL, false, 0, dsda_RefreshExHudFPS
+    CONF_BOOL(0), NULL, 0, 0, dsda_RefreshExHudFPS
   },
   [dsda_config_exhud] = {
     "dsda_exhud", dsda_config_exhud,
@@ -236,11 +237,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mute_sfx] = {
     "dsda_mute_sfx", dsda_config_mute_sfx,
-    CONF_BOOL(0), NULL, false, 0, S_ResetSfxVolume
+    CONF_BOOL(0), NULL, 0, 0, S_ResetSfxVolume
   },
   [dsda_config_mute_music] = {
     "dsda_mute_music", dsda_config_mute_music,
-    CONF_BOOL(0), NULL, false, 0, I_ResetMusicVolume
+    CONF_BOOL(0), NULL, 0, 0, I_ResetMusicVolume
   },
   [dsda_config_cheat_codes] = {
     "dsda_cheat_codes", dsda_config_cheat_codes,
@@ -464,11 +465,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_fog] = {
     "gl_fog", dsda_config_gl_fog,
-    CONF_BOOL(1), &gl_fog, false, 0, M_ChangeAllowFog
+    CONF_BOOL(1), &gl_fog, 0, 0, M_ChangeAllowFog
   },
   [dsda_config_gl_shadows] = {
     "gl_shadows", dsda_config_gl_shadows,
-    CONF_BOOL(0), NULL, true, false
+    CONF_BOOL(0), NULL, CONF_STRICT, false
   },
   [dsda_config_gl_blend_animations] = {
     "gl_blend_animations", dsda_config_gl_blend_animations,
@@ -476,11 +477,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_shadows_maxdist] = {
     "gl_shadows_maxdist", dsda_config_gl_shadows_maxdist,
-    dsda_config_int, 0, 32767, { 1000 }, NULL, false, 0, gld_ResetShadowParameters
+    dsda_config_int, 0, 32767, { 1000 }, NULL, 0, 0, gld_ResetShadowParameters
   },
   [dsda_config_gl_shadows_factor] = {
     "gl_shadows_factor", dsda_config_gl_shadows_factor,
-    CONF_BYTE(128), NULL, false, 0, gld_ResetShadowParameters
+    CONF_BYTE(128), NULL, 0, 0, gld_ResetShadowParameters
   },
   [dsda_config_useglgamma] = {
     "useglgamma", dsda_config_useglgamma,
@@ -489,32 +490,32 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
-    false, 0, M_ChangeMouseLook
+    0, 0, M_ChangeMouseLook
   },
   [dsda_config_gl_texture_filter] = {
     "gl_texture_filter", dsda_config_gl_texture_filter,
     dsda_config_int, filter_nearest, filter_linear_mipmap_linear, { filter_nearest_mipmap_linear },
-    NULL, false, 0, M_ChangeTextureParams
+    NULL, 0, 0, M_ChangeTextureParams
   },
   [dsda_config_gl_sprite_filter] = {
     "gl_sprite_filter", dsda_config_gl_sprite_filter,
     dsda_config_int, filter_nearest, filter_linear_mipmap_nearest, { filter_nearest },
-    NULL, false, 0, M_ChangeTextureParams
+    NULL, 0, 0, M_ChangeTextureParams
   },
   [dsda_config_gl_patch_filter] = {
     "gl_patch_filter", dsda_config_gl_patch_filter,
     dsda_config_int, filter_nearest, filter_linear, { filter_nearest },
-    NULL, false, 0, M_ChangeTextureParams
+    NULL, 0, 0, M_ChangeTextureParams
   },
   [dsda_config_gl_texture_filter_anisotropic] = {
     "gl_texture_filter_anisotropic", dsda_config_gl_texture_filter_anisotropic,
     dsda_config_int, 0, 4, { 3 },
-    NULL, false, 0, M_ChangeTextureParams
+    NULL, 0, 0, M_ChangeTextureParams
   },
   [dsda_config_gl_tex_format_string] = {
     "gl_tex_format_string", dsda_config_gl_tex_format_string,
     dsda_config_string, 0, 0, { .v_string = "GL_RGBA" },
-    NULL, false, 0, M_ChangeTextureParams
+    NULL, 0, 0, M_ChangeTextureParams
   },
 };
 
@@ -652,7 +653,7 @@ const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* val
 int dsda_IntConfig(dsda_config_identifier_t id) {
   dboolean dsda_StrictMode(void);
 
-  if (dsda_config[id].strict && dsda_StrictMode())
+  if (dsda_config[id].flags & CONF_STRICT && dsda_StrictMode())
     return dsda_config[id].strict_value;
 
   return dsda_config[id].transient_value.v_int;
