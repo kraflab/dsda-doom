@@ -129,6 +129,7 @@ typedef enum {
   dsda_config_gl_render_multisampling,
   dsda_config_gl_render_fov,
   dsda_config_gl_lightmode,
+  dsda_config_gl_spriteclip,
   dsda_config_count,
 } dsda_config_identifier_t;
 

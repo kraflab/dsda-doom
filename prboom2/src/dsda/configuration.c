@@ -536,6 +536,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     dsda_config_int, gl_lightmode_glboom, gl_lightmode_last - 1, { gl_lightmode_shaders },
     NULL, 0, 0, M_ChangeLightMode
   },
+  [dsda_config_gl_spriteclip] = {
+    "gl_spriteclip", dsda_config_gl_spriteclip,
+    dsda_config_int, spriteclip_const, spriteclip_smart, { spriteclip_smart }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

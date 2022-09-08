@@ -314,7 +314,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_render_multisampling),
   MIGRATED_SETTING(dsda_config_gl_render_fov),
   MIGRATED_SETTING(dsda_config_gl_lightmode),
-   { "gl_spriteclip",{(int*)&gl_spriteclip},{spriteclip_smart}, spriteclip_const, spriteclip_smart, def_int},
+  MIGRATED_SETTING(dsda_config_gl_spriteclip),
   MIGRATED_SETTING(dsda_config_gl_skymode),
   MIGRATED_SETTING(dsda_config_gl_usegamma),
   MIGRATED_SETTING(dsda_config_gl_shadows),
