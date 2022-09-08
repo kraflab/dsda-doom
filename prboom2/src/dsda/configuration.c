@@ -534,6 +534,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_spriteclip", dsda_config_gl_spriteclip,
     dsda_config_int, spriteclip_const, spriteclip_smart, { spriteclip_smart }
   },
+  [dsda_config_gl_health_bar] = {
+    "gl_health_bar", dsda_config_gl_health_bar,
+    CONF_BOOL(0), NULL, CONF_STRICT, 0
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

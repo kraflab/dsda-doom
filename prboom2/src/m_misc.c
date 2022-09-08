@@ -315,7 +315,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_shadows),
   MIGRATED_SETTING(dsda_config_gl_shadows_maxdist),
   MIGRATED_SETTING(dsda_config_gl_shadows_factor),
-  { "gl_health_bar", { &gl_health_bar }, { 0 }, 0, 1, def_bool },
+  MIGRATED_SETTING(dsda_config_gl_health_bar),
 
   SETTING_HEADING("Mouse settings"),
   { "use_mouse",{&usemouse},{1},0,1, def_bool}, // enables use of mouse with DOOM

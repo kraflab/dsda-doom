@@ -2279,8 +2279,6 @@ static void gld_DrawSprite(GLSprite *sprite)
   }
 }
 
-int gl_health_bar;
-
 static void gld_AddHealthBar(mobj_t* thing, GLSprite *sprite)
 {
   if (((thing->flags & (MF_COUNTKILL | MF_CORPSE)) == MF_COUNTKILL) && (thing->health > 0))

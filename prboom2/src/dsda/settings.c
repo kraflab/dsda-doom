@@ -245,7 +245,7 @@ dboolean dsda_PowerPalette(void) {
 }
 
 dboolean dsda_ShowHealthBars(void) {
-  return gl_health_bar && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_gl_health_bar);
 }
 
 dboolean dsda_WipeAtFullSpeed(void) {
