@@ -49,8 +49,6 @@
 
 #define STSTR_SECRETFOUND   "A secret is revealed!"
 
-#define S_CANT_GL_ARB_MULTISAMPLEFACTOR  0x20000000
-
 #define GL_COMBINE_ARB                    0x8570
 #define GL_RGB_SCALE_ARB                  0x8573
 

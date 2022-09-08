@@ -2152,7 +2152,7 @@ static void M_DrawSetting(const setup_menu_t* s)
 static void M_DrawScreenItems(const setup_menu_t* src)
 {
   if (print_warning_about_changes > 0) { /* killough 8/15/98: print warning */
-    if (warning_about_changes & S_CANT_GL_ARB_MULTISAMPLEFACTOR) {
+    if (warning_about_changes & S_EVEN) {
       strcpy(menu_buffer, "Mast be even number like 0-none, 2, 4, 6");
       M_DrawMenuString(30,176,CR_RED);
     }
@@ -3280,7 +3280,7 @@ setup_menu_t display_settings[] = {
 
 setup_menu_t opengl_settings[] = {
   { "OpenGL Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8},
-  { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_CANT_GL_ARB_MULTISAMPLEFACTOR, m_null, G_X, G_Y + 2 * 8, { "render_multisampling" }, 0, NULL },
+  { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_EVEN, m_null, G_X, G_Y + 2 * 8, { "render_multisampling" }, 0, NULL },
   { "Field Of View", S_NUM, m_null, G_X, G_Y + 3 * 8, { "render_fov" }, 0, M_ChangeFOV },
   { "Sector Light Mode", S_CHOICE, m_null, G_X, G_Y + 4 * 8, { "gl_lightmode" }, 0, M_ChangeLightMode, gl_lightmodes },
   { "Allow Fog", S_YESNO, m_conf, G_X, G_Y + 5 * 8, { .config_id = dsda_config_gl_fog } },
@@ -4752,8 +4752,8 @@ dboolean M_Responder (event_t* ev) {
               value = atoi(gather_buffer);  // Integer value
 
               //e6y
-              if ((ptr1->m_flags&S_CANT_GL_ARB_MULTISAMPLEFACTOR) && value%2!=0)
-                warn_about_changes(ptr1->m_flags & S_CANT_GL_ARB_MULTISAMPLEFACTOR);
+              if ((ptr1->m_flags & S_EVEN) && value % 2 != 0)
+                warn_about_changes(ptr1->m_flags & S_EVEN);
               else if (ptr1->m_group == m_conf)
                 dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
               else if ((ptr1->var.def->minvalue != UL &&
