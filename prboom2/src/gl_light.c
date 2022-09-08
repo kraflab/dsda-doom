@@ -47,8 +47,9 @@
 #include "gl_opengl.h"
 #include "e6y.h"
 
+#include "dsda/configuration.h"
+
 gl_lightmode_t gl_lightmode;
-gl_lightmode_t gl_lightmode_default;
 const char *gl_lightmodes[] = {"glboom", "shaders"};
 int gl_rellight;
 
@@ -102,6 +103,8 @@ gld_CalcFogDensity_f gld_CalcFogDensity = gld_CalcFogDensity_glboom;
 
 void M_ChangeLightMode(void)
 {
+  gl_lightmode_t gl_lightmode_default = dsda_IntConfig(dsda_config_gl_lightmode);
+
   if (gl_lightmode_default == gl_lightmode_shaders)
   {
     if (!glsl_Init())

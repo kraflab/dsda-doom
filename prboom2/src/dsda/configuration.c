@@ -92,6 +92,7 @@ void gld_ResetShadowParameters(void);
 void M_ChangeTextureParams(void);
 void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
+void M_ChangeLightMode(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -529,6 +530,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_render_fov] = {
     "gl_render_fov", dsda_config_gl_render_fov,
     dsda_config_int, 20, 160, { 90 }, &gl_render_fov, 0, 0, M_ChangeFOV
+  },
+  [dsda_config_gl_lightmode] = {
+    "gl_lightmode", dsda_config_gl_lightmode,
+    dsda_config_int, gl_lightmode_glboom, gl_lightmode_last - 1, { gl_lightmode_shaders },
+    NULL, 0, 0, M_ChangeLightMode
   },
 };
 
