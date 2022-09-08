@@ -74,12 +74,6 @@ extern int sts_always_red;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 
-extern int gl_sprite_blend;
-extern int gl_render_paperitems;
-extern int gl_fog;
-extern int gl_blend_animations;
-extern int gl_render_fov;
-
 void I_Init2(void);
 void M_ChangeDemoSmoothTurns(void);
 void M_ChangeMouseLook(void);
