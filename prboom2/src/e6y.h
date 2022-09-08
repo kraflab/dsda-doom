@@ -161,7 +161,6 @@ void M_ChangeMouseInvert(void);
 
 void M_ChangeFOV(void);
 
-void M_ChangeMultiSample(void);
 void M_ChangeAllowBoomColormaps(void);
 void M_ChangeTextureUseHires(void);
 void M_ChangeAllowFog(void);

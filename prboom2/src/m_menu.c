@@ -3280,7 +3280,7 @@ setup_menu_t display_settings[] = {
 
 setup_menu_t opengl_settings[] = {
   { "OpenGL Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8},
-  { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_CANT_GL_ARB_MULTISAMPLEFACTOR, m_null, G_X, G_Y + 2 * 8, { "render_multisampling" }, 0, M_ChangeMultiSample },
+  { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_CANT_GL_ARB_MULTISAMPLEFACTOR, m_null, G_X, G_Y + 2 * 8, { "render_multisampling" }, 0, NULL },
   { "Field Of View", S_NUM, m_null, G_X, G_Y + 3 * 8, { "render_fov" }, 0, M_ChangeFOV },
   { "Sector Light Mode", S_CHOICE, m_null, G_X, G_Y + 4 * 8, { "gl_lightmode" }, 0, M_ChangeLightMode, gl_lightmodes },
   { "Allow Fog", S_YESNO, m_conf, G_X, G_Y + 5 * 8, { .config_id = dsda_config_gl_fog } },

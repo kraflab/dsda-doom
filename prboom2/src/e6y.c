@@ -437,10 +437,6 @@ void M_ChangeFOV(void)
   skyscale = 1.0f / (float)tan(DEG2RAD(render_fov / 2));
 }
 
-void M_ChangeMultiSample(void)
-{
-}
-
 void ResolveColormapsHiresConflict(dboolean prefer_colormap)
 {
   gl_boom_colormaps = !r_have_internal_hires;
