@@ -268,7 +268,6 @@ default_t defaults[] =
   { "custom_resolution",{0,&custom_resolution},{0,""},UL,UL,def_str},
   { "use_fullscreen",{&use_fullscreen},{0},0,1, def_bool},
   { "exclusive_fullscreen",{&exclusive_fullscreen},{0},0,1, def_bool},
-  { "gl_exclusive_fullscreen",{&gl_exclusive_fullscreen},{1},0,1,def_bool},
   { "render_vsync",{&render_vsync},{0},0,1,def_bool},
   { "tran_filter_pct",{&tran_filter_pct},{66},0,100, def_int}, // set percentage of foreground/background translucency mix
   { "screenblocks",{&screenblocks},{10},3,11, def_int},

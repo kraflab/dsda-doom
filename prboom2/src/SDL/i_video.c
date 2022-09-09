@@ -115,7 +115,6 @@ extern void M_QuitDOOM(int choice);
 int use_fullscreen;
 int desired_fullscreen;
 int exclusive_fullscreen;
-int gl_exclusive_fullscreen;
 int render_vsync;
 int render_screen_multiply;
 int integer_scaling;
@@ -137,11 +136,6 @@ extern int     usemouse;        // config file var
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
 
 video_mode_t I_GetModeFromString(const char *modestr);
-
-static int I_ExclusiveFullscreen(void)
-{
-  return V_IsOpenGLMode() ? gl_exclusive_fullscreen : exclusive_fullscreen;
-}
 
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
@@ -807,7 +801,7 @@ static void I_FillScreenResolutionsList(void)
       if (i > count - 1)
       {
         // no hard-coded resolutions for mode-changing fullscreen
-        if (I_ExclusiveFullscreen())
+        if (exclusive_fullscreen)
           continue;
 
         mode.w = canonicals[i - count].w;
@@ -943,7 +937,7 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
 // Calculates the screen resolution, possibly using the supplied guide
 void I_CalculateRes(int width, int height)
 {
-  if (desired_fullscreen && I_ExclusiveFullscreen())
+  if (desired_fullscreen && exclusive_fullscreen)
   {
     I_ClosestResolution(&width, &height);
   }
@@ -1223,7 +1217,7 @@ void I_UpdateVideoMode(void)
 
   if (desired_fullscreen)
   {
-    if (I_ExclusiveFullscreen())
+    if (exclusive_fullscreen)
       init_flags |= SDL_WINDOW_FULLSCREEN;
     else
       init_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;

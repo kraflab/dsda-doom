@@ -99,7 +99,6 @@ void I_StartFrame (void);
 extern int use_fullscreen;  /* proff 21/05/2000 */
 extern int desired_fullscreen; //e6y
 extern int exclusive_fullscreen;
-extern int gl_exclusive_fullscreen;
 extern const char *custom_resolution;
 
 void I_UpdateRenderSize(void);	// Handle potential
