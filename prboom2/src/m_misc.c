@@ -224,7 +224,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_demo_smoothturns),
   MIGRATED_SETTING(dsda_config_demo_smoothturnsfactor),
   MIGRATED_SETTING(dsda_config_screenshot_dir),
-  { "startup_delay_ms", { &startup_delay_ms }, { 0 }, 0, 1000, def_int },
+  MIGRATED_SETTING(dsda_config_startup_delay_ms),
 
   SETTING_HEADING("Game settings"),
   MIGRATED_SETTING(dsda_config_default_complevel),

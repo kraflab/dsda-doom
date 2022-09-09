@@ -88,7 +88,6 @@ extern int hudadd_crosshair_target_color;
 extern int hudadd_crosshair_lock_target;
 extern int mouse_handler;
 extern int render_wipescreen;
-extern int startup_delay_ms;
 
 extern int gl_render_fov;
 extern int render_aspect;

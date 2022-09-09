@@ -110,7 +110,6 @@ int hudadd_crosshair_lock_target;
 int mouse_handler;
 int gl_render_fov = 90;
 int render_wipescreen;
-int startup_delay_ms;
 
 int palette_ondamage;
 int palette_onbonus;

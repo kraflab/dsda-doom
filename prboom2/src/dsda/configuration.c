@@ -613,6 +613,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "screenshot_dir", dsda_config_screenshot_dir,
     CONF_STRING("")
   },
+  [dsda_config_startup_delay_ms] = {
+    "startup_delay_ms", dsda_config_startup_delay_ms,
+    dsda_config_int, 0, 1000, { 0 }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

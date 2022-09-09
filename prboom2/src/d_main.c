@@ -88,6 +88,7 @@
 #include "e6y.h"
 
 #include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/global.h"
 #include "dsda/save.h"
@@ -519,8 +520,8 @@ void D_Display (fixed_t frac)
 
 static void D_DoomLoop(void)
 {
-  if (startup_delay_ms > 0)
-    I_uSleep(startup_delay_ms * 1000);
+  if (dsda_IntConfig(dsda_config_startup_delay_ms) > 0)
+    I_uSleep(dsda_IntConfig(dsda_config_startup_delay_ms) * 1000);
 
   for (;;)
   {
