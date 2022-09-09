@@ -38,7 +38,6 @@ int dsda_tas;
 int dsda_skip_next_wipe;
 int dsda_wipe_at_full_speed;
 int dsda_show_demo_attempts;
-int dsda_fine_sensitivity;
 int dsda_hide_horns;
 int dsda_skip_quit_prompt;
 int dsda_show_split_data;
@@ -123,7 +122,9 @@ void dsda_SetTas(void) {
 }
 
 double dsda_FineSensitivity(int base) {
-  return (double) base + (double) dsda_fine_sensitivity / 100;
+  int fine_sensitivity = dsda_IntConfig(dsda_config_fine_sensitivity);
+
+  return (double) base + (double) fine_sensitivity / 100;
 }
 
 dboolean dsda_ViewBob(void) {

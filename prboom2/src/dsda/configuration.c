@@ -87,6 +87,7 @@ void M_ChangeTextureParams(void);
 void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
 void M_ChangeLightMode(void);
+void I_InitMouse(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -537,6 +538,18 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_health_bar] = {
     "gl_health_bar", dsda_config_gl_health_bar,
     CONF_BOOL(0), NULL, CONF_STRICT, 0
+  },
+  [dsda_config_use_mouse] = {
+    "use_mouse", dsda_config_use_mouse,
+    CONF_BOOL(1), NULL, 0, 0, I_InitMouse
+  },
+  [dsda_config_mouse_stutter_correction] = {
+    "mouse_stutter_correction", dsda_config_mouse_stutter_correction,
+    CONF_BOOL(1), NULL
+  },
+  [dsda_config_fine_sensitivity] = {
+    "dsda_fine_sensitivity", dsda_config_fine_sensitivity,
+    dsda_config_int, 0, 99, { 0 }
   },
 };
 

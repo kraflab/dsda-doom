@@ -3108,9 +3108,8 @@ void M_DrawAutoMap(void)
 // The General table.
 // killough 10/10/98
 
-extern int usejoystick, usemouse, default_mus_card, default_snd_card;
+extern int usejoystick, default_mus_card, default_snd_card;
 extern int tran_filter_pct;
-extern int mouse_stutter_correction;
 
 setup_menu_t audiovideo_settings[], device_settings[], misc_settings[];
 setup_menu_t display_settings[], opengl_settings[];
@@ -3212,7 +3211,7 @@ setup_menu_t audiovideo_settings[] = {
 
 setup_menu_t device_settings[] = {
   { "Input Devices", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Enable Mouse", S_YESNO, m_null, G_X, G_Y + 2 * 8, { "use_mouse" } },
+  { "Enable Mouse", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_use_mouse } },
   { "Enable Joystick", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "use_joystick" } },
 
   { "Mouse", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
@@ -3223,8 +3222,8 @@ setup_menu_t device_settings[] = {
   { "Invert Mouse", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "movement_mouseinvert" }, 0, M_ChangeMouseInvert },
   { "Max View Pitch", S_NUM, m_null, G_X, G_Y + 11 * 8, { "movement_maxviewpitch" }, 0, M_ChangeMaxViewPitch },
   { "Mouse Strafe Divisor", S_NUM,   m_null, G_X, G_Y + 12 * 8, { "movement_mousestrafedivisor" } },
-  { "Fine Sensitivity", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_fine_sensitivity" } },
-  { "Mouse Stutter Correction", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "mouse_stutter_correction" } },
+  { "Fine Sensitivity", S_NUM, m_conf, G_X, G_Y + 13 * 8, { .config_id = dsda_config_fine_sensitivity } },
+  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, G_Y + 14 * 8, { .config_id = dsda_config_mouse_stutter_correction } },
 
   { "Keyboard", S_SKIP | S_TITLE, m_null, G_X, G_Y + 16 * 8 },
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, G_Y + 17 * 8, { .config_id = dsda_config_cheat_codes } },

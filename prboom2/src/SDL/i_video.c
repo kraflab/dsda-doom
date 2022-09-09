@@ -134,7 +134,6 @@ int             leds_always_off = 0; // Expected by m_misc, not relevant
 
 // Mouse handling
 extern int     usemouse;        // config file var
-extern int mouse_stutter_correction;
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
 
 video_mode_t I_GetModeFromString(const char *modestr);
@@ -452,7 +451,7 @@ void I_InitMouse(void)
   static Uint8 empty_cursor_data = 0;
 
   // check if the user wants to use the mouse
-  mouse_enabled = usemouse && !dsda_Flag(dsda_arg_nomouse);
+  mouse_enabled = dsda_IntConfig(dsda_config_use_mouse) && !dsda_Flag(dsda_arg_nomouse);
 
   SDL_PumpEvents();
 
@@ -1452,7 +1451,7 @@ static void CorrectMouseStutter(int *x, int *y)
   int x_remainder, y_remainder;
   fixed_t fractic, correction_factor;
 
-  if (!mouse_stutter_correction)
+  if (!dsda_IntConfig(dsda_config_mouse_stutter_correction))
   {
     return;
   }

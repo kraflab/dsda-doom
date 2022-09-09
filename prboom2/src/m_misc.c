@@ -191,7 +191,6 @@ int M_ReadFileToString(char const *name, char **buffer) {
 //
 
 int usemouse;
-int mouse_stutter_correction;
 
 extern int viewwidth;
 extern int viewheight;
@@ -313,9 +312,10 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_gl_health_bar),
 
   SETTING_HEADING("Mouse settings"),
-  { "use_mouse",{&usemouse},{1},0,1, def_bool}, // enables use of mouse with DOOM
-  { "mouse_stutter_correction",{&mouse_stutter_correction},{1},0,1, def_bool}, // interpolates mouse input to mitigate stuttering
+  MIGRATED_SETTING(dsda_config_use_mouse),
+  MIGRATED_SETTING(dsda_config_mouse_stutter_correction),
   { "mouse_sensitivity_horiz",{&mouseSensitivity_horiz},{10},0,UL, def_int}, /* adjust horizontal (x) mouse sensitivity killough/mead */
+  MIGRATED_SETTING(dsda_config_fine_sensitivity),
   { "mouse_sensitivity_vert",{&mouseSensitivity_vert},{1},0,UL, def_int}, /* adjust vertical (y) mouse sensitivity killough/mead */
   { "mouse_acceleration", { &mouse_acceleration }, { 0 }, 0, UL, def_int },
   { "mouse_sensitivity_mlook", { &mouseSensitivity_mlook }, { 10 }, 0, UL, def_int },
@@ -411,7 +411,6 @@ default_t defaults[] =
   { "dsda_ex_text_scale", { &dsda_ex_text_scale }, { 0 }, 0, 16, def_int },
   { "dsda_wipe_at_full_speed", { &dsda_wipe_at_full_speed }, { 1 }, 0, 1, def_bool },
   { "dsda_show_demo_attempts", { &dsda_show_demo_attempts }, { 1 }, 0, 1, def_bool },
-  { "dsda_fine_sensitivity", { &dsda_fine_sensitivity }, { 0 }, 0, 99, def_int },
   { "dsda_hide_horns", { &dsda_hide_horns }, { 0 }, 0, 1, def_bool },
   { "dsda_organized_saves", { &dsda_organized_saves }, { 1 }, 0, 1, def_bool },
   MIGRATED_SETTING(dsda_config_command_display),
