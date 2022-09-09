@@ -95,7 +95,6 @@
 static SDL_Cursor* cursors[2] = {NULL, NULL};
 
 dboolean window_focused;
-int mouse_currently_grabbed = true;
 
 // Window resize state.
 static void ApplyWindowResize(SDL_Event *resize_event);
@@ -1477,7 +1476,10 @@ static void CorrectMouseStutter(int *x, int *y)
 // motion event.
 static void I_ReadMouse(void)
 {
-  if (mouse_enabled && window_focused)
+  if (!mouse_enabled)
+    return;
+
+  if (window_focused)
   {
     int x, y;
 
@@ -1494,20 +1496,6 @@ static void I_ReadMouse(void)
 
       D_PostEvent(&event);
     }
-  }
-
-  if (!usemouse)
-    return;
-
-  if (!MouseShouldBeGrabbed())
-  {
-    mouse_currently_grabbed = false;
-    return;
-  }
-
-  if (!mouse_currently_grabbed && !desired_fullscreen)
-  {
-    mouse_currently_grabbed = true;
   }
 }
 
