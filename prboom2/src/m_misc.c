@@ -241,8 +241,9 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_movement_shorttics),
 
   SETTING_HEADING("Sound settings"),
-  { "snd_pcspeaker",{&snd_pcspeaker},{0}, 0, 1, def_bool},
-  { "pitched_sounds",{&pitched_sounds},{0},0,1, def_bool}, // enables variable pitch in sound effects (from id's original code)
+  MIGRATED_SETTING(dsda_config_snd_pcspeaker),
+  MIGRATED_SETTING(dsda_config_pitched_sounds),
+  MIGRATED_SETTING(dsda_config_full_sounds),
   { "samplerate",{&snd_samplerate},{44100},11025,48000, def_int},
   { "slice_samplecount",{&snd_samplecount},{512},32,8192, def_int},
   { "sfx_volume",{&snd_SfxVolume},{8},0,15, def_int},
@@ -252,7 +253,6 @@ default_t defaults[] =
   { "snd_midiplayer",{NULL, &snd_midiplayer},{0,"fluidsynth"},UL,UL,def_str},
   { "snd_soundfont",{NULL, &snd_soundfont},{0,""},UL,UL,def_str},
   { "snd_mididev",{NULL, &snd_mididev},{0,""},UL,UL,def_str}, // midi device to use for portmidiplayer
-  { "full_sounds",{&full_sounds},{0},0,1,def_bool}, // disable sound cutoffs
 
 #ifdef _WIN32
   { "mus_extend_volume",{&mus_extend_volume},{0},0,1, def_bool}, // e6y: apply midi volume to all midi devices

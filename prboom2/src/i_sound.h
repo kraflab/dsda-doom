@@ -46,8 +46,6 @@
 #include "l_soundgen.h"
 #endif
 
-extern int snd_pcspeaker;
-
 // Init at program start...
 void I_InitSound(void);
 

@@ -74,6 +74,7 @@ extern int demo_smoothturnsfactor;
 extern int sts_always_red;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
+extern int full_sounds;
 
 void I_Init2(void);
 void M_ChangeDemoSmoothTurns(void);
@@ -94,6 +95,7 @@ void G_UpdateMouseSensitivity(void);
 void I_InitJoystick(void);
 void M_ChangeSpeed(void);
 void M_ChangeShorttics(void);
+void I_InitSoundParams(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -616,6 +618,18 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_startup_delay_ms] = {
     "startup_delay_ms", dsda_config_startup_delay_ms,
     dsda_config_int, 0, 1000, { 0 }
+  },
+  [dsda_config_snd_pcspeaker] = {
+    "snd_pcspeaker", dsda_config_snd_pcspeaker,
+    CONF_BOOL(0), NULL, 0, 0, I_InitSoundParams
+  },
+  [dsda_config_pitched_sounds] = {
+    "pitched_sounds", dsda_config_pitched_sounds,
+    CONF_BOOL(0), NULL, 0, 0, I_InitSoundParams
+  },
+  [dsda_config_full_sounds] = {
+    "full_sounds", dsda_config_full_sounds,
+    CONF_BOOL(0), &full_sounds
   },
 };
 

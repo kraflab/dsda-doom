@@ -77,9 +77,6 @@ extern complevel_t compatibility_level;
 #define mbf_features (compatibility_level>=mbf_compatibility)
 #define mbf21 (compatibility_level == mbf21_compatibility)
 
-// v1.1-like pitched sounds
-extern int pitched_sounds;        // killough
-
 extern int demo_insurance;      // killough 4/5/98
 
 // -------------------------------------------

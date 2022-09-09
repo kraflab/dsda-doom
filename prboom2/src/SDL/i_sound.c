@@ -73,8 +73,6 @@
 
 #include "dsda/settings.h"
 
-int snd_pcspeaker;
-
 static dboolean registered_non_rw = false;
 
 // The number of internal mixing channels,
@@ -134,6 +132,14 @@ SDL_mutex *sfxmutex;
 // lock for updating any params related to music
 SDL_mutex *musmutex;
 
+static int pitched_sounds;
+static int snd_pcspeaker;
+
+void I_InitSoundParams(void)
+{
+  pitched_sounds = dsda_IntConfig(dsda_config_pitched_sounds);
+  snd_pcspeaker = dsda_IntConfig(dsda_config_snd_pcspeaker);
+}
 
 /* cph
  * stopchan
@@ -721,6 +727,8 @@ void I_InitSound(void)
 
   // Secure and configure sound device first.
   lprintf(LO_INFO, "I_InitSound: ");
+
+  I_InitSoundParams();
 
   audio_rate = snd_samplerate;
   audio_channels = 2;

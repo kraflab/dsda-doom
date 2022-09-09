@@ -812,8 +812,8 @@ static void cheat_smart()
 
 static void cheat_pitch()
 {
-  plyr->message=(pitched_sounds = !pitched_sounds) ? "Pitch Effects Enabled" :
-    "Pitch Effects Disabled";
+  plyr->message = dsda_ToggleConfig(dsda_config_pitched_sounds, true) ? "Pitch Effects Enabled"
+                                                                      : "Pitch Effects Disabled";
 }
 
 static void cheat_notarget()

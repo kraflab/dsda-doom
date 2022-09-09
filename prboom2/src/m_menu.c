@@ -3067,10 +3067,10 @@ setup_menu_t audiovideo_settings[] = {
 
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
   { "Number of Sound Channels", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 12 * 8, { "snd_channels" } },
-  { "Enable v1.1 Pitch Effects", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "pitched_sounds" } },
-  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_null, G_X, G_Y + 14 * 8, { "snd_pcspeaker" } },
-  { "Preferred MIDI player", S_CHOICE | S_PRGWARN, m_null, G_X, G_Y + 15 * 8, { "snd_midiplayer" }, 0, M_ChangeMIDIPlayer, midiplayers },
-  { "Disable Sound Cutoffs", S_YESNO, m_null, G_X, G_Y + 16 * 8, { "full_sounds" } },
+  { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, G_Y + 13 * 8, { .config_id = dsda_config_pitched_sounds } },
+  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_conf, G_X, G_Y + 14 * 8, { .config_id = dsda_config_snd_pcspeaker } },
+  { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, G_Y + 15 * 8, { .config_id = dsda_config_full_sounds } },
+  { "Preferred MIDI player", S_CHOICE | S_PRGWARN, m_null, G_X, G_Y + 16 * 8, { "snd_midiplayer" }, 0, M_ChangeMIDIPlayer, midiplayers },
 
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { device_settings } },
   { 0, S_SKIP | S_END, m_null }
