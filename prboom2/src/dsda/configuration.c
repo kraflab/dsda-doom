@@ -631,6 +631,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "full_sounds", dsda_config_full_sounds,
     CONF_BOOL(0), &full_sounds
   },
+  [dsda_config_snd_samplerate] = {
+    "samplerate", dsda_config_snd_samplerate,
+    dsda_config_int, 11025, 48000, { 44100 }, NULL, 0, 0, I_InitSoundParams
+  },
+  [dsda_config_snd_samplecount] = {
+    "slice_samplecount", dsda_config_snd_samplecount,
+    dsda_config_int, 32, 8192, { 512 }, NULL, 0, 0, I_InitSoundParams
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

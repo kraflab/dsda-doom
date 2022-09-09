@@ -244,8 +244,8 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_snd_pcspeaker),
   MIGRATED_SETTING(dsda_config_pitched_sounds),
   MIGRATED_SETTING(dsda_config_full_sounds),
-  { "samplerate",{&snd_samplerate},{44100},11025,48000, def_int},
-  { "slice_samplecount",{&snd_samplecount},{512},32,8192, def_int},
+  MIGRATED_SETTING(dsda_config_snd_samplerate),
+  MIGRATED_SETTING(dsda_config_snd_samplecount),
   { "sfx_volume",{&snd_SfxVolume},{8},0,15, def_int},
   { "music_volume",{&snd_MusicVolume},{8},0,15, def_int},
   { "mus_pause_opt",{&mus_pause_opt},{1},0,2, def_int}, // 0 = kill music when paused, 1 = pause music, 2 = let music continue

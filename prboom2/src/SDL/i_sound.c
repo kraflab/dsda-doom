@@ -83,10 +83,6 @@ static dboolean registered_non_rw = false;
 // Needed for calling the actual sound output.
 #define MAX_CHANNELS    32
 
-// MWM 2000-01-08: Sample rate in samples/second
-int snd_samplerate = 11025;
-int snd_samplecount = 512;
-
 // The actual output device.
 int audio_fd;
 
@@ -134,11 +130,19 @@ SDL_mutex *musmutex;
 
 static int pitched_sounds;
 static int snd_pcspeaker;
+int snd_samplerate; // samples per second
+static int snd_samplecount;
 
 void I_InitSoundParams(void)
 {
   pitched_sounds = dsda_IntConfig(dsda_config_pitched_sounds);
   snd_pcspeaker = dsda_IntConfig(dsda_config_snd_pcspeaker);
+
+  // TODO: can we reinitialize sound with new sample rate / count?
+  if (!snd_samplerate)
+    snd_samplerate = dsda_IntConfig(dsda_config_snd_samplerate);
+  if (!snd_samplecount)
+    snd_samplecount = dsda_IntConfig(dsda_config_snd_samplecount);
 }
 
 /* cph

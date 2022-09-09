@@ -152,6 +152,8 @@ typedef enum {
   dsda_config_snd_pcspeaker,
   dsda_config_pitched_sounds,
   dsda_config_full_sounds,
+  dsda_config_snd_samplerate,
+  dsda_config_snd_samplecount,
   dsda_config_count,
 } dsda_config_identifier_t;
 

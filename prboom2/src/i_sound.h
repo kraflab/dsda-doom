@@ -124,7 +124,6 @@ void I_UnRegisterSong(int handle);
 
 // CPhipps - put these in config file
 extern int snd_samplerate;
-extern int snd_samplecount;
 
 extern int mus_fluidsynth_chorus;
 extern int mus_fluidsynth_reverb;
