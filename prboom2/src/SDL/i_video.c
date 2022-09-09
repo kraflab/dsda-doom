@@ -447,11 +447,7 @@ void I_StartFrame (void)
 {
 }
 
-//
-// I_InitInputs
-//
-
-static void I_InitInputs(void)
+void I_InitMouse(void)
 {
   static Uint8 empty_cursor_data = 0;
 
@@ -469,7 +465,15 @@ static void I_InitInputs(void)
   {
     MouseAccelChanging();
   }
+}
 
+//
+// I_InitInputs
+//
+
+static void I_InitInputs(void)
+{
+  I_InitMouse();
   I_InitJoystick();
 }
 
