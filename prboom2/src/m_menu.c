@@ -110,9 +110,6 @@ extern int g_menu_cr_disable;
 // defaulted values
 //
 
-int mouseSensitivity_horiz; // has default   //  killough
-int mouseSensitivity_vert;  // has default
-
 int hide_setup=1; // killough 5/15/98
 
 // Blocky mode, has default, 0 = high, 1 = normal
@@ -3081,20 +3078,18 @@ setup_menu_t audiovideo_settings[] = {
   { 0, S_SKIP | S_END, m_null }
 };
 
-void MouseAccelChanging(void);
-
 setup_menu_t device_settings[] = {
   { "Input Devices", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Enable Mouse", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_use_mouse } },
   { "Enable Joystick", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "use_joystick" } },
 
   { "Mouse", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
-  { "Horizontal Sensitivity", S_NUM, m_null, G_X, G_Y + 6 * 8, { "mouse_sensitivity_horiz" } },
-  { "Vertical Sensitivity", S_NUM, m_null, G_X, G_Y + 7 * 8, { "mouse_sensitivity_vert" } },
+  { "Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_mouse_sensitivity_horiz } },
+  { "Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 7 * 8, { .config_id = dsda_config_mouse_sensitivity_vert } },
   { "Fine Sensitivity", S_NUM, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_fine_sensitivity } },
-  { "Mouse Acceleration", S_NUM, m_null, G_X, G_Y + 9 * 8, { "mouse_acceleration" }, 0, MouseAccelChanging },
+  { "Mouse Acceleration", S_NUM, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_mouse_acceleration } },
   { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 10 * 8, { .config_id = dsda_config_mouselook } },
-  { "Mouselook Sensitivity", S_NUM, m_null, G_X, G_Y + 11 * 8, { "mouse_sensitivity_mlook" } },
+  { "Mouselook Sensitivity", S_NUM, m_conf, G_X, G_Y + 11 * 8, { .config_id = dsda_config_mouse_sensitivity_mlook } },
   { "Max View Pitch", S_NUM, m_null, G_X, G_Y + 12 * 8, { "movement_maxviewpitch" }, 0, M_ChangeMaxViewPitch },
   { "Invert Mouse", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "movement_mouseinvert" }, 0, M_ChangeMouseInvert },
   { "Dbl-Click As Use", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "mouse_doubleclick_as_use" } },

@@ -96,7 +96,6 @@ extern int mouse_handler;
 extern int mouse_doubleclick_as_use;
 extern int mouse_carrytics;
 extern int render_wipescreen;
-extern int mouse_acceleration;
 extern int startup_delay_ms;
 
 extern int gl_render_fov;
@@ -115,7 +114,6 @@ extern int palette_onpowers;
 extern camera_t walkcamera;
 
 extern int PitchSign;
-extern int mouseSensitivity_mlook;
 extern angle_t viewpitch;
 extern float skyscale;
 extern float screen_skybox_zplane;

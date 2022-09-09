@@ -46,7 +46,6 @@ extern const char* dsda_player_name;
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);
 void dsda_SetTas(void);
-double dsda_FineSensitivity(int base);
 dboolean dsda_ViewBob(void);
 dboolean dsda_WeaponBob(void);
 dboolean dsda_ShowMessages(void);

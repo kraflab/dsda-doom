@@ -46,10 +46,13 @@ int dsda_viewbob;
 int dsda_weaponbob;
 
 void dsda_InitSettings(void) {
+  void G_UpdateMouseSensitivity(void);
+
   I_Init2();
   M_ChangeSpeed();
   dsda_InitKeyFrame();
   M_ChangeMouseLook();
+  G_UpdateMouseSensitivity();
 }
 
 static int dsda_WadCompatibilityLevel(void) {
@@ -119,12 +122,6 @@ int dsda_CompatibilityLevel(void) {
 
 void dsda_SetTas(void) {
   dsda_tas = true;
-}
-
-double dsda_FineSensitivity(int base) {
-  int fine_sensitivity = dsda_IntConfig(dsda_config_fine_sensitivity);
-
-  return (double) base + (double) fine_sensitivity / 100;
 }
 
 dboolean dsda_ViewBob(void) {

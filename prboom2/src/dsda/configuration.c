@@ -88,6 +88,8 @@ void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
 void M_ChangeLightMode(void);
 void I_InitMouse(void);
+void MouseAccelChanging(void);
+void G_UpdateMouseSensitivity(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -543,13 +545,29 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "use_mouse", dsda_config_use_mouse,
     CONF_BOOL(1), NULL, 0, 0, I_InitMouse
   },
+  [dsda_config_mouse_sensitivity_horiz] = {
+    "mouse_sensitivity_horiz", dsda_config_mouse_sensitivity_horiz,
+    dsda_config_int, 0, INT_MAX, { 10 }, NULL, 0, 0, G_UpdateMouseSensitivity
+  },
+  [dsda_config_mouse_sensitivity_vert] = {
+    "mouse_sensitivity_vert", dsda_config_mouse_sensitivity_vert,
+    dsda_config_int, 0, INT_MAX, { 1 }, NULL, 0, 0, G_UpdateMouseSensitivity
+  },
+  [dsda_config_mouse_acceleration] = {
+    "dsda_mouse_acceleration", dsda_config_mouse_acceleration,
+    dsda_config_int, 0, INT_MAX, { 0 }, NULL, 0, 0, MouseAccelChanging
+  },
+  [dsda_config_mouse_sensitivity_mlook] = {
+    "mouse_sensitivity_mlook", dsda_config_mouse_sensitivity_mlook,
+    dsda_config_int, 0, INT_MAX, { 10 }, NULL, 0, 0, G_UpdateMouseSensitivity
+  },
   [dsda_config_mouse_stutter_correction] = {
     "mouse_stutter_correction", dsda_config_mouse_stutter_correction,
     CONF_BOOL(1), NULL
   },
   [dsda_config_fine_sensitivity] = {
     "dsda_fine_sensitivity", dsda_config_fine_sensitivity,
-    dsda_config_int, 0, 99, { 0 }
+    dsda_config_int, 0, 99, { 0 }, NULL, 0, 0, G_UpdateMouseSensitivity
   },
 };
 

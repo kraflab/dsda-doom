@@ -118,14 +118,11 @@ int mouse_doubleclick_as_use;
 int mouse_carrytics;
 int gl_render_fov = 90;
 int render_wipescreen;
-int mouse_acceleration;
 int startup_delay_ms;
 
 int palette_ondamage;
 int palette_onbonus;
 int palette_onpowers;
-
-float mouse_accelfactor;
 
 camera_t walkcamera;
 
@@ -135,7 +132,6 @@ hu_textline_t  w_precache;
 char hud_add[80];
 char hud_centermsg[80];
 
-int mouseSensitivity_mlook;
 angle_t viewpitch;
 float skyscale;
 float screen_skybox_zplane;
@@ -464,11 +460,6 @@ void M_ChangeTextureUseHires(void)
   gld_Precache();
 }
 
-void MouseAccelChanging(void)
-{
-  mouse_accelfactor = (float)mouse_acceleration/100.0f+1.0f;
-}
-
 float viewPitch;
 
 int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
@@ -699,15 +690,23 @@ void e6y_WriteStats(void)
 
 //--------------------------------------------------
 
+static double mouse_accelfactor;
+
+void MouseAccelChanging(void)
+{
+  int mouse_acceleration = dsda_IntConfig(dsda_config_mouse_acceleration);
+  mouse_accelfactor = (double) mouse_acceleration / 100.0 + 1.0;
+}
+
 int AccelerateMouse(int val)
 {
-  if (!mouse_acceleration)
+  if (!mouse_accelfactor)
     return val;
 
   if (val < 0)
     return -AccelerateMouse(-val);
 
-  return M_DoubleToInt(pow((double)val, (double)mouse_accelfactor));
+  return M_DoubleToInt(pow((double) val, mouse_accelfactor));
 }
 
 int mlooky = 0;

@@ -314,11 +314,11 @@ default_t defaults[] =
   SETTING_HEADING("Mouse settings"),
   MIGRATED_SETTING(dsda_config_use_mouse),
   MIGRATED_SETTING(dsda_config_mouse_stutter_correction),
-  { "mouse_sensitivity_horiz",{&mouseSensitivity_horiz},{10},0,UL, def_int}, /* adjust horizontal (x) mouse sensitivity killough/mead */
+  MIGRATED_SETTING(dsda_config_mouse_sensitivity_horiz),
   MIGRATED_SETTING(dsda_config_fine_sensitivity),
-  { "mouse_sensitivity_vert",{&mouseSensitivity_vert},{1},0,UL, def_int}, /* adjust vertical (y) mouse sensitivity killough/mead */
-  { "mouse_acceleration", { &mouse_acceleration }, { 0 }, 0, UL, def_int },
-  { "mouse_sensitivity_mlook", { &mouseSensitivity_mlook }, { 10 }, 0, UL, def_int },
+  MIGRATED_SETTING(dsda_config_mouse_sensitivity_vert),
+  MIGRATED_SETTING(dsda_config_mouse_acceleration),
+  MIGRATED_SETTING(dsda_config_mouse_sensitivity_mlook),
   { "mouse_doubleclick_as_use", { &mouse_doubleclick_as_use }, { 0 }, 0, 1, def_bool },
   { "mouse_carrytics", { &mouse_carrytics }, { 1 }, 0, 1, def_bool },
   MIGRATED_SETTING(dsda_config_mouselook),

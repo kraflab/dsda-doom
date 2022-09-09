@@ -1162,6 +1162,21 @@ static void G_DoLoadLevel (void)
   }
 }
 
+static double mouse_sensitivity_horiz;
+static double mouse_sensitivity_vert;
+static double mouse_sensitivity_mlook;
+
+void G_UpdateMouseSensitivity(void)
+{
+  double horizontal_sensitivity, fine_sensitivity;
+
+  horizontal_sensitivity = dsda_IntConfig(dsda_config_mouse_sensitivity_horiz);
+  fine_sensitivity = dsda_IntConfig(dsda_config_fine_sensitivity);
+
+  mouse_sensitivity_horiz = horizontal_sensitivity + fine_sensitivity / 100;
+  mouse_sensitivity_vert = dsda_IntConfig(dsda_config_mouse_sensitivity_vert);
+  mouse_sensitivity_mlook = dsda_IntConfig(dsda_config_mouse_sensitivity_mlook);
+}
 
 //
 // G_Responder
@@ -1264,11 +1279,11 @@ dboolean G_Responder (event_t* ev)
     {
       double value;
 
-      value = dsda_FineSensitivity(mouseSensitivity_horiz) * AccelerateMouse(ev->data2);
+      value = mouse_sensitivity_horiz * AccelerateMouse(ev->data2);
       mousex += G_CarryDouble(carry_mousex, value);
       if (dsda_MouseLook())
       {
-        value = (double) mouseSensitivity_mlook * AccelerateMouse(ev->data3);
+        value = mouse_sensitivity_mlook * AccelerateMouse(ev->data3);
         if (movement_mouseinvert)
           mlooky += G_CarryDouble(carry_mousey, value);
         else
@@ -1276,7 +1291,7 @@ dboolean G_Responder (event_t* ev)
       }
       else
       {
-        value = (double) mouseSensitivity_vert * AccelerateMouse(ev->data3) / 8;
+        value = mouse_sensitivity_vert * AccelerateMouse(ev->data3) / 8;
         mousey += G_CarryDouble(carry_vertmouse, value);
       }
 

@@ -291,9 +291,6 @@ extern  FILE   *debugfile;
 //  to force a wipe on the next draw
 extern  gamestate_t     wipegamestate;
 
-extern  int             mouseSensitivity_horiz; // killough
-extern  int             mouseSensitivity_vert;
-
 // debug flag to cancel adaptiveness
 extern  dboolean         singletics;
 
