@@ -65,6 +65,7 @@ typedef struct {
 #define CONF_BOOL(x) dsda_config_int, 0, 1, { x }
 #define CONF_COLOR(x) dsda_config_int, 0, 255, { x }
 #define CONF_BYTE(x) dsda_config_int, 0, 255, { x }
+#define CONF_STRING(x) dsda_config_string, 0, 0, { .v_string = x }
 
 extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
@@ -255,43 +256,43 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_script_0] = {
     "dsda_script_0", dsda_config_script_0,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_script_1] = {
     "dsda_script_1", dsda_config_script_1,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_script_2] = {
     "dsda_script_2", dsda_config_script_2,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_script_3] = {
     "dsda_script_3", dsda_config_script_3,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_script_4] = {
     "dsda_script_4", dsda_config_script_4,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_script_5] = {
     "dsda_script_5", dsda_config_script_5,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_script_6] = {
     "dsda_script_6", dsda_config_script_6,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_script_7] = {
     "dsda_script_7", dsda_config_script_7,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_script_8] = {
     "dsda_script_8", dsda_config_script_8,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_script_9] = {
     "dsda_script_9", dsda_config_script_9,
-    dsda_config_string, 0, 0, { .v_string = "" }
+    CONF_STRING("")
   },
   [dsda_config_overrun_spechit_warn] = {
     "overrun_spechit_warn", dsda_config_overrun_spechit_warn,
@@ -520,7 +521,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_tex_format_string] = {
     "gl_tex_format_string", dsda_config_gl_tex_format_string,
-    dsda_config_string, 0, 0, { .v_string = "GL_RGBA" },
+    CONF_STRING("GL_RGBA"),
     NULL, 0, 0, M_ChangeTextureParams
   },
   [dsda_config_gl_render_multisampling] = {
@@ -610,7 +611,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_screenshot_dir] = {
     "screenshot_dir", dsda_config_screenshot_dir,
-    dsda_config_string, 0 , 0, { .v_string = "" }
+    CONF_STRING("")
   },
 };
 
