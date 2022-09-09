@@ -565,6 +565,22 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mouse_stutter_correction", dsda_config_mouse_stutter_correction,
     CONF_BOOL(1), NULL
   },
+  [dsda_config_mouse_doubleclick_as_use] = {
+    "mouse_doubleclick_as_use", dsda_config_mouse_doubleclick_as_use,
+    CONF_BOOL(0)
+  },
+  [dsda_config_mouse_carrytics] = {
+    "mouse_carrytics", dsda_config_mouse_carrytics,
+    CONF_BOOL(1)
+  },
+  [dsda_config_movement_mouseinvert] = {
+    "movement_mouseinvert", dsda_config_movement_mouseinvert,
+    CONF_BOOL(0)
+  },
+  [dsda_config_movement_mousestrafedivisor] = {
+    "movement_mousestrafedivisor", dsda_config_movement_mousestrafedivisor,
+    dsda_config_int, 1, INT_MAX, { 4 }, NULL, 0, 0, G_UpdateMouseSensitivity
+  },
   [dsda_config_fine_sensitivity] = {
     "dsda_fine_sensitivity", dsda_config_fine_sensitivity,
     dsda_config_int, 0, 99, { 0 }, NULL, 0, 0, G_UpdateMouseSensitivity

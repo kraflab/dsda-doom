@@ -319,12 +319,12 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_mouse_sensitivity_vert),
   MIGRATED_SETTING(dsda_config_mouse_acceleration),
   MIGRATED_SETTING(dsda_config_mouse_sensitivity_mlook),
-  { "mouse_doubleclick_as_use", { &mouse_doubleclick_as_use }, { 0 }, 0, 1, def_bool },
-  { "mouse_carrytics", { &mouse_carrytics }, { 1 }, 0, 1, def_bool },
+  MIGRATED_SETTING(dsda_config_mouse_doubleclick_as_use),
+  MIGRATED_SETTING(dsda_config_mouse_carrytics),
   MIGRATED_SETTING(dsda_config_mouselook),
   MIGRATED_SETTING(dsda_config_vertmouse),
-  { "movement_mousestrafedivisor", {&movement_mousestrafedivisor},  {4},1,512, def_int},
-  { "movement_mouseinvert", {&movement_mouseinvert},  {0},0,1, def_bool},
+  MIGRATED_SETTING(dsda_config_movement_mousestrafedivisor),
+  MIGRATED_SETTING(dsda_config_movement_mouseinvert),
 
   SETTING_HEADING("Joystick settings"),
   { "use_joystick",{&usejoystick},{0},0,2, def_int}, // number of joystick to use (0 for none)

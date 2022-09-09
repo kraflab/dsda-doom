@@ -110,11 +110,7 @@ int hudadd_crosshair_lock_target;
 int movement_strafe50;
 int movement_shorttics;
 int movement_strafe50onturns;
-int movement_mouseinvert;
-int movement_mousestrafedivisor;
 int mouse_handler;
-int mouse_doubleclick_as_use;
-int mouse_carrytics;
 int gl_render_fov = 90;
 int render_wipescreen;
 int startup_delay_ms;
@@ -307,10 +303,6 @@ void M_ChangeMouseLook(void)
     gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);
   else
     gl_drawskys = gl_skymode;
-}
-
-void M_ChangeMouseInvert(void)
-{
 }
 
 void M_ChangeMaxViewPitch(void)

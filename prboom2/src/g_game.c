@@ -449,6 +449,24 @@ static int G_NextWeapon(int direction)
   return weapon_order_table[i].weapon_num;
 }
 
+static double mouse_sensitivity_horiz;
+static double mouse_sensitivity_vert;
+static double mouse_sensitivity_mlook;
+static double mouse_strafe_divisor;
+
+void G_UpdateMouseSensitivity(void)
+{
+  double horizontal_sensitivity, fine_sensitivity;
+
+  horizontal_sensitivity = dsda_IntConfig(dsda_config_mouse_sensitivity_horiz);
+  fine_sensitivity = dsda_IntConfig(dsda_config_fine_sensitivity);
+
+  mouse_sensitivity_horiz = horizontal_sensitivity + fine_sensitivity / 100;
+  mouse_sensitivity_vert = dsda_IntConfig(dsda_config_mouse_sensitivity_vert);
+  mouse_sensitivity_mlook = dsda_IntConfig(dsda_config_mouse_sensitivity_mlook);
+  mouse_strafe_divisor = dsda_IntConfig(dsda_config_movement_mousestrafedivisor);
+}
+
 void G_BuildTiccmd(ticcmd_t* cmd)
 {
   int strafe;
@@ -896,7 +914,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // mouse
 
-  if (mouse_doubleclick_as_use) {//e6y
+  if (dsda_IntConfig(dsda_config_mouse_doubleclick_as_use)) {//e6y
     // forward double click
     if (dsda_InputMouseBActive(dsda_input_forward) != dclickstate && dclicktime > 1 )
     {
@@ -955,7 +973,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     double true_delta;
 
     true_delta = mousestrafe_carry +
-                 (double) mousex / movement_mousestrafedivisor;
+                 (double) mousex / mouse_strafe_divisor;
 
     delta = (int) true_delta;
     delta = (delta / 2) * 2;
@@ -1015,7 +1033,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     // Chocolate Doom Mouse Behaviour
     // Don't discard mouse delta even if value is too small to
     // turn the player this tic
-    if (mouse_carrytics) {
+    if (dsda_IntConfig(dsda_config_mouse_carrytics)) {
       static signed short carry = 0;
       signed short desired_angleturn = cmd->angleturn + carry;
       cmd->angleturn = (desired_angleturn + 128) & 0xff00;
@@ -1162,22 +1180,6 @@ static void G_DoLoadLevel (void)
   }
 }
 
-static double mouse_sensitivity_horiz;
-static double mouse_sensitivity_vert;
-static double mouse_sensitivity_mlook;
-
-void G_UpdateMouseSensitivity(void)
-{
-  double horizontal_sensitivity, fine_sensitivity;
-
-  horizontal_sensitivity = dsda_IntConfig(dsda_config_mouse_sensitivity_horiz);
-  fine_sensitivity = dsda_IntConfig(dsda_config_fine_sensitivity);
-
-  mouse_sensitivity_horiz = horizontal_sensitivity + fine_sensitivity / 100;
-  mouse_sensitivity_vert = dsda_IntConfig(dsda_config_mouse_sensitivity_vert);
-  mouse_sensitivity_mlook = dsda_IntConfig(dsda_config_mouse_sensitivity_mlook);
-}
-
 //
 // G_Responder
 // Get info needed to make ticcmd_ts for the players.
@@ -1284,7 +1286,7 @@ dboolean G_Responder (event_t* ev)
       if (dsda_MouseLook())
       {
         value = mouse_sensitivity_mlook * AccelerateMouse(ev->data3);
-        if (movement_mouseinvert)
+        if (dsda_IntConfig(dsda_config_movement_mouseinvert))
           mlooky += G_CarryDouble(carry_mousey, value);
         else
           mlooky -= G_CarryDouble(carry_mousey, value);

@@ -89,11 +89,7 @@ extern int hudadd_crosshair_lock_target;
 extern int movement_strafe50;
 extern int movement_shorttics;
 extern int movement_strafe50onturns;
-extern int movement_mouseinvert;
-extern int movement_mousestrafedivisor;
 extern int mouse_handler;
-extern int mouse_doubleclick_as_use;
-extern int mouse_carrytics;
 extern int render_wipescreen;
 extern int startup_delay_ms;
 
@@ -150,7 +146,6 @@ int G_GotoNextLevel(void);
 
 void M_ChangeMouseLook(void);
 void M_ChangeMaxViewPitch(void);
-void M_ChangeMouseInvert(void);
 
 void M_ChangeFOV(void);
 

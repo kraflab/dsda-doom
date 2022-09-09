@@ -137,6 +137,10 @@ typedef enum {
   dsda_config_mouse_acceleration,
   dsda_config_mouse_sensitivity_mlook,
   dsda_config_mouse_stutter_correction,
+  dsda_config_mouse_doubleclick_as_use,
+  dsda_config_mouse_carrytics,
+  dsda_config_movement_mouseinvert,
+  dsda_config_movement_mousestrafedivisor,
   dsda_config_fine_sensitivity,
   dsda_config_count,
 } dsda_config_identifier_t;

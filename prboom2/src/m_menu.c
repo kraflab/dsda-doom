@@ -3090,10 +3090,10 @@ setup_menu_t device_settings[] = {
   { "Mouse Acceleration", S_NUM, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_mouse_acceleration } },
   { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 10 * 8, { .config_id = dsda_config_mouselook } },
   { "Mouselook Sensitivity", S_NUM, m_conf, G_X, G_Y + 11 * 8, { .config_id = dsda_config_mouse_sensitivity_mlook } },
-  { "Invert Mouse", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "movement_mouseinvert" }, 0, M_ChangeMouseInvert },
-  { "Dbl-Click As Use", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "mouse_doubleclick_as_use" } },
-  { "Mouse Strafe Divisor", S_NUM,   m_null, G_X, G_Y + 14 * 8, { "movement_mousestrafedivisor" } },
-  { "Carry Fractional Tics", S_YESNO, m_null, G_X, G_Y + 15 * 8, { "mouse_carrytics" } },
+  { "Invert Mouse", S_YESNO, m_conf, G_X, G_Y + 12 * 8, { .config_id = dsda_config_movement_mouseinvert } },
+  { "Dbl-Click As Use", S_YESNO, m_conf, G_X, G_Y + 13 * 8, { .config_id = dsda_config_mouse_doubleclick_as_use } },
+  { "Mouse Strafe Divisor", S_NUM,   m_conf, G_X, G_Y + 14 * 8, { .config_id = dsda_config_movement_mousestrafedivisor } },
+  { "Carry Fractional Tics", S_YESNO, m_conf, G_X, G_Y + 15 * 8, { .config_id = dsda_config_mouse_carrytics } },
   { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 16 * 8, { .config_id = dsda_config_vertmouse } },
   { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, G_Y + 17 * 8, { .config_id = dsda_config_mouse_stutter_correction } },
 
@@ -5849,7 +5849,6 @@ void M_Init(void)
   M_ChangeSpeed();
   M_ChangeMaxViewPitch();
   M_ChangeMouseLook();
-  M_ChangeMouseInvert();
   M_ChangeFOV();
   M_ChangeAllowBoomColormaps();
 
