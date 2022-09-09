@@ -368,10 +368,6 @@ default_t defaults[] =
   { "map_textured_trans", {&map_textured_trans}, {100},0,100, def_int},
   { "map_textured_overlay_trans", {&map_textured_overlay_trans}, {66},0,100, def_int},
   { "map_lines_overlay_trans", {&map_lines_overlay_trans}, {100},0,100, def_int},
-  { "map_overlay_pos_x", {&map_overlay_pos_x}, {0},0,319, def_int},
-  { "map_overlay_pos_y", {&map_overlay_pos_y}, {0},0,199, def_int},
-  { "map_overlay_pos_width", {&map_overlay_pos_width}, {320},0,320, def_int},
-  { "map_overlay_pos_height", {&map_overlay_pos_height}, {200},0,200, def_int},
   { "map_things_appearance", {(int*)&map_things_appearance}, {map_things_appearance_max-1},0,map_things_appearance_max-1, def_int},
 
   SETTING_HEADING("Heads-up display settings"),

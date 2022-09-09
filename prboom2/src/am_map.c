@@ -267,10 +267,6 @@ int map_textured;
 int map_textured_trans;
 int map_textured_overlay_trans;
 int map_lines_overlay_trans;
-int map_overlay_pos_x;
-int map_overlay_pos_y;
-int map_overlay_pos_width;
-int map_overlay_pos_height;
 
 map_things_appearance_t map_things_appearance;
 const char *map_things_appearance_list[map_things_appearance_max] =
@@ -715,15 +711,10 @@ void AM_SetPosition(void)
 {
   if (automapmode & am_overlay)
   {
-    f_x = map_overlay_pos_x * SCREENWIDTH / 320;
-    f_y = map_overlay_pos_y * SCREENHEIGHT / 200;
-    f_w = map_overlay_pos_width * SCREENWIDTH / 320;
-    f_h = map_overlay_pos_height * SCREENHEIGHT / 200;
-
-    if (f_x + f_w > SCREENWIDTH)
-      f_w = SCREENWIDTH - f_x;
-    if (f_y + f_h > SCREENHEIGHT)
-      f_h = SCREENHEIGHT - f_y;
+    f_x = 0;
+    f_y = 0;
+    f_w = SCREENWIDTH;
+    f_h = SCREENHEIGHT;
 
     f_x = viewwindowx + f_x * viewwidth / SCREENWIDTH;
     f_y = viewwindowy + f_y * viewheight / SCREENHEIGHT;
