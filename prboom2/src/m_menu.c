@@ -1250,20 +1250,16 @@ void M_SfxVol(int choice)
   switch(choice)
   {
     case 0:
-      if (snd_SfxVolume)
-        snd_SfxVolume--;
+      dsda_DecrementIntConfig(dsda_config_sfx_volume, true);
       break;
     case 1:
-      if (snd_SfxVolume < 15)
-        snd_SfxVolume++;
+      dsda_IncrementIntConfig(dsda_config_sfx_volume, true);
       break;
   }
 
   // Unmute the sfx if we are adjusting the volume
   if (dsda_MuteSfx())
     dsda_ToggleConfig(dsda_config_mute_sfx, true);
-
-  S_SetSfxVolume(snd_SfxVolume);
 }
 
 void M_MusicVol(int choice)
@@ -1271,20 +1267,16 @@ void M_MusicVol(int choice)
   switch(choice)
   {
     case 0:
-      if (snd_MusicVolume)
-        snd_MusicVolume--;
+      dsda_DecrementIntConfig(dsda_config_music_volume, true);
       break;
     case 1:
-      if (snd_MusicVolume < 15)
-        snd_MusicVolume++;
+      dsda_IncrementIntConfig(dsda_config_music_volume, true);
       break;
   }
 
   // Unmute the music if we are adjusting the volume
   if (dsda_MuteMusic())
     dsda_ToggleConfig(dsda_config_mute_music, true);
-
-  S_SetMusicVolume(snd_MusicVolume);
 }
 
 /////////////////////////////

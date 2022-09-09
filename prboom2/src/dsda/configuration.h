@@ -154,6 +154,8 @@ typedef enum {
   dsda_config_full_sounds,
   dsda_config_snd_samplerate,
   dsda_config_snd_samplecount,
+  dsda_config_sfx_volume,
+  dsda_config_music_volume,
   dsda_config_count,
 } dsda_config_identifier_t;
 
@@ -161,6 +163,8 @@ void dsda_InitConfig(void);
 dboolean dsda_ReadConfig(const char* name, const char* string_param, int int_param);
 void dsda_WriteConfig(dsda_config_identifier_t id, int key_length, FILE* file);
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist);
+int dsda_IncrementIntConfig(dsda_config_identifier_t id, dboolean persist);
+int dsda_DecrementIntConfig(dsda_config_identifier_t id, dboolean persist);
 int dsda_CycleConfig(dsda_config_identifier_t id, dboolean persist);
 int dsda_UpdateIntConfig(dsda_config_identifier_t id, int value, dboolean persist);
 const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* value, dboolean persist);

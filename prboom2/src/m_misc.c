@@ -246,8 +246,8 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_full_sounds),
   MIGRATED_SETTING(dsda_config_snd_samplerate),
   MIGRATED_SETTING(dsda_config_snd_samplecount),
-  { "sfx_volume",{&snd_SfxVolume},{8},0,15, def_int},
-  { "music_volume",{&snd_MusicVolume},{8},0,15, def_int},
+  MIGRATED_SETTING(dsda_config_sfx_volume),
+  MIGRATED_SETTING(dsda_config_music_volume),
   { "mus_pause_opt",{&mus_pause_opt},{1},0,2, def_int}, // 0 = kill music when paused, 1 = pause music, 2 = let music continue
   { "snd_channels",{&default_numChannels},{32},1,32, def_int}, // number of audio events simultaneously // killough
   { "snd_midiplayer",{NULL, &snd_midiplayer},{0,"fluidsynth"},UL,UL,def_str},

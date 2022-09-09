@@ -856,7 +856,6 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 static void UpdateMusic (void *buff, unsigned nsamp);
 static int RegisterSong (const void *data, size_t len);
 static int RegisterSongEx (const void *data, size_t len, int try_mus2mid);
-static void SetMusicVolume (int volume);
 static void UnRegisterSong(int handle);
 static void StopSong(int handle);
 static void ResumeSong (int handle);
@@ -965,6 +964,31 @@ void I_InitMusic(void)
   I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
 }
 
+// Derived value (not saved, accounts for muted music)
+static int music_volume;
+
+void I_ResetMusicVolume(void)
+{
+  snd_MusicVolume = dsda_IntConfig(dsda_config_music_volume);
+
+  if (nomusicparm)
+    return;
+
+  if (dsda_MuteMusic())
+    music_volume = 0;
+  else
+    music_volume = snd_MusicVolume;
+
+  Mix_VolumeMusic(music_volume * 8);
+
+  if (music_handle)
+  {
+    SDL_LockMutex(musmutex);
+    music_players[current_player]->setvolume(music_volume);
+    SDL_UnlockMutex(musmutex);
+  }
+}
+
 void I_PlaySong(int handle, int looping)
 {
   if (registered_non_rw)
@@ -978,7 +1002,7 @@ void I_PlaySong(int handle, int looping)
     Mix_PlayMusic(music[handle], looping ? -1 : 0);
 
     // haleyjd 10/28/05: make sure volume settings remain consistent
-    I_SetMusicVolume(snd_MusicVolume);
+    I_ResetMusicVolume();
   }
 }
 
@@ -1109,25 +1133,6 @@ int I_RegisterSong(const void *data, size_t len)
   return (0);
 }
 
-// Derived value (not saved, accounts for muted music)
-static int music_volume;
-
-void I_SetMusicVolume(int volume)
-{
-  if (dsda_MuteMusic())
-    volume = 0;
-
-  music_volume = volume;
-
-  Mix_VolumeMusic(volume*8);
-  SetMusicVolume (volume);
-}
-
-void I_ResetMusicVolume(void)
-{
-  I_SetMusicVolume(snd_MusicVolume);
-}
-
 static void PlaySong(int handle, int looping)
 {
   if (music_handle)
@@ -1204,16 +1209,6 @@ static void UnRegisterSong(int handle)
       Z_Free (mus2mid_conversion_data);
       mus2mid_conversion_data = NULL;
     }
-    SDL_UnlockMutex (musmutex);
-  }
-}
-
-static void SetMusicVolume (int volume)
-{
-  if (music_handle)
-  {
-    SDL_LockMutex (musmutex);
-    music_players[current_player]->setvolume (volume);
     SDL_UnlockMutex (musmutex);
   }
 }

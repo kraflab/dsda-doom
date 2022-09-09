@@ -639,6 +639,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "slice_samplecount", dsda_config_snd_samplecount,
     dsda_config_int, 32, 8192, { 512 }, NULL, 0, 0, I_InitSoundParams
   },
+  [dsda_config_sfx_volume] = {
+    "sfx_volume", dsda_config_sfx_volume,
+    dsda_config_int, 0, 15, { 8 }, NULL, 0, 0, S_ResetSfxVolume
+  },
+  [dsda_config_music_volume] = {
+    "music_volume", dsda_config_music_volume,
+    dsda_config_int, 0, 15, { 8 }, NULL, 0, 0, I_ResetMusicVolume
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
@@ -734,6 +742,14 @@ void dsda_WriteConfig(dsda_config_identifier_t id, int key_length, FILE* file) {
 
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist) {
   return dsda_UpdateIntConfig(id, !dsda_config[id].transient_value.v_int, persist);
+}
+
+int dsda_IncrementIntConfig(dsda_config_identifier_t id, dboolean persist) {
+  return dsda_UpdateIntConfig(id, dsda_config[id].transient_value.v_int + 1, persist);
+}
+
+int dsda_DecrementIntConfig(dsda_config_identifier_t id, dboolean persist) {
+  return dsda_UpdateIntConfig(id, dsda_config[id].transient_value.v_int - 1, persist);
 }
 
 int dsda_CycleConfig(dsda_config_identifier_t id, dboolean persist) {

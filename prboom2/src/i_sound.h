@@ -100,9 +100,6 @@ extern char music_player_order[][200];
 void I_InitMusic(void);
 void I_ShutdownMusic(void);
 
-// Volume.
-void I_SetMusicVolume(int volume);
-
 // PAUSE game handling.
 void I_PauseSong(int handle);
 void I_ResumeSong(int handle);

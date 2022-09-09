@@ -52,6 +52,7 @@
 
 #include "hexen/sn_sonix.h"
 
+#include "dsda/configuration.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/memory.h"
@@ -98,7 +99,7 @@ static degenmobj_t *sobjs;
 
 // Maximum volume of a sound effect.
 // Internal default is max out of 0-15.
-int snd_SfxVolume = 15;
+int snd_SfxVolume;
 
 // Derived value (not saved, accounts for muted sfx)
 static int sfx_volume;
@@ -148,6 +149,19 @@ static void Heretic_S_UpdateSounds(mobj_t *listener);
 static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
 static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
 
+void S_ResetSfxVolume(void)
+{
+  snd_SfxVolume = dsda_IntConfig(dsda_config_sfx_volume);
+
+  if (nosfxparm)
+    return;
+
+  if (dsda_MuteSfx())
+    sfx_volume = 0;
+  else
+    sfx_volume = snd_SfxVolume;
+}
+
 // Initializes sound stuff, including volume
 // Sets channels, SFX and music volume,
 //  allocates channel buffer, sets S_sfx lookup.
@@ -166,7 +180,7 @@ void S_Init(void)
     // Whatever these did with DMX, these are rather dummies now.
     I_SetChannels();
 
-    S_SetSfxVolume(snd_SfxVolume);
+    S_ResetSfxVolume();
 
     // Allocating the internal channels for mixing
     // (the maximum numer of sounds rendered
@@ -192,7 +206,9 @@ void S_Init(void)
 
   // CPhipps - music init reformatted
   if (!nomusicparm) {
-    S_SetMusicVolume(snd_MusicVolume);
+    void I_ResetMusicVolume(void);
+
+    I_ResetMusicVolume();
 
     // no sounds are playing, and they are not mus_paused
     mus_paused = 0;
@@ -520,51 +536,12 @@ void S_UpdateSounds(void* listener_p)
   }
 }
 
-
-
-void S_SetMusicVolume(int volume)
-{
-  //jff 1/22/98 return if music is not enabled
-  if (nomusicparm)
-    return;
-  if (volume < 0 || volume > 15)
-    I_Error("S_SetMusicVolume: Attempt to set music volume at %d", volume);
-  I_SetMusicVolume(volume);
-  snd_MusicVolume = volume;
-}
-
-
-
-void S_SetSfxVolume(int volume)
-{
-  //jff 1/22/98 return if sound is not enabled
-  if (nosfxparm)
-    return;
-
-  if (volume < 0 || volume > 127)
-    I_Error("S_SetSfxVolume: Attempt to set sfx volume at %d", volume);
-
-  snd_SfxVolume = volume;
-
-  if (dsda_MuteSfx())
-    sfx_volume = 0;
-  else
-    sfx_volume = volume;
-}
-
-void S_ResetSfxVolume(void)
-{
-  S_SetSfxVolume(snd_SfxVolume);
-}
-
 // Starts some music with the music id found in sounds.h.
 //
 void S_StartMusic(int m_id)
 {
   S_ChangeMusic(m_id, false);
 }
-
-
 
 void S_ChangeMusic(int musicnum, int looping)
 {
