@@ -608,6 +608,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "movement_shorttics", dsda_config_movement_shorttics,
     CONF_BOOL(0), NULL, 0, 0, M_ChangeShorttics
   },
+  [dsda_config_screenshot_dir] = {
+    "screenshot_dir", dsda_config_screenshot_dir,
+    dsda_config_string, 0 , 0, { .v_string = "" }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

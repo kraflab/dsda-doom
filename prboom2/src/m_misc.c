@@ -223,7 +223,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_flashing_hom),
   MIGRATED_SETTING(dsda_config_demo_smoothturns),
   MIGRATED_SETTING(dsda_config_demo_smoothturnsfactor),
-  { "screenshot_dir", { NULL, &screenshot_dir }, { 0, "" }, UL, UL, def_str },
+  MIGRATED_SETTING(dsda_config_screenshot_dir),
   { "startup_delay_ms", { &startup_delay_ms }, { 0 }, 0, 1000, def_int },
 
   SETTING_HEADING("Game settings"),
@@ -1010,8 +1010,6 @@ void M_LoadDefaults (void)
 // M_DoScreenShot
 // Takes a screenshot into the names file
 
-const char *screenshot_dir;
-
 void M_DoScreenShot (const char* fname)
 {
   if (I_ScreenShot(fname) != 0)
@@ -1076,7 +1074,7 @@ void M_ScreenShot(void)
   if (arg->found)
     shot_dir = M_CheckWritableDir(arg->value.v_string);
   if (!shot_dir)
-    shot_dir = M_CheckWritableDir(screenshot_dir);
+    shot_dir = M_CheckWritableDir(dsda_StringConfig(dsda_config_screenshot_dir));
   if (!shot_dir)
 #ifdef _WIN32
     shot_dir = M_CheckWritableDir(I_DoomExeDir());

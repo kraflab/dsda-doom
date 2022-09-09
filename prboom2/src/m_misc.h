@@ -125,8 +125,6 @@ char* M_Strlwr(char* str);
 char* M_Strupr(char* str);
 char* M_StrRTrim(char* str);
 
-extern const char *screenshot_dir;
-
 typedef struct array_s
 {
   void *data;
