@@ -111,7 +111,6 @@ int movement_strafe50;
 int movement_shorttics;
 int movement_strafe50onturns;
 int movement_mouseinvert;
-int movement_maxviewpitch;
 int movement_mousestrafedivisor;
 int mouse_handler;
 int mouse_doubleclick_as_use;
@@ -320,13 +319,13 @@ void M_ChangeMaxViewPitch(void)
 
   if (V_IsOpenGLMode())
   {
-    max_up = movement_maxviewpitch;
-    max_dn = movement_maxviewpitch;
+    max_up = 90;
+    max_dn = 90;
   }
   else
   {
-    max_up = MIN(movement_maxviewpitch, 56);
-    max_dn = MIN(movement_maxviewpitch, 32);
+    max_up = 56;
+    max_dn = 32;
   }
 
   angle_up = (int)((float)max_up / 45.0f * ANG45);

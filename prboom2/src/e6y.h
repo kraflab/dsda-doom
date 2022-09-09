@@ -90,7 +90,6 @@ extern int movement_strafe50;
 extern int movement_shorttics;
 extern int movement_strafe50onturns;
 extern int movement_mouseinvert;
-extern int movement_maxviewpitch;
 extern int movement_mousestrafedivisor;
 extern int mouse_handler;
 extern int mouse_doubleclick_as_use;

@@ -323,7 +323,6 @@ default_t defaults[] =
   { "mouse_carrytics", { &mouse_carrytics }, { 1 }, 0, 1, def_bool },
   MIGRATED_SETTING(dsda_config_mouselook),
   MIGRATED_SETTING(dsda_config_vertmouse),
-  { "movement_maxviewpitch", {&movement_maxviewpitch},  {90},0,90, def_int},
   { "movement_mousestrafedivisor", {&movement_mousestrafedivisor},  {4},1,512, def_int},
   { "movement_mouseinvert", {&movement_mouseinvert},  {0},0,1, def_bool},
 
