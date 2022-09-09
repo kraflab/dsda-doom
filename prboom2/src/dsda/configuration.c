@@ -590,6 +590,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "use_joystick", dsda_config_use_joystick,
     dsda_config_int, 0, 2, { 0 }, NULL, 0, 0, I_InitJoystick
   },
+  [dsda_config_deh_apply_cheats] = {
+    "deh_apply_cheats", dsda_config_deh_apply_cheats,
+    CONF_BOOL(1)
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

@@ -42,8 +42,6 @@
 #ifndef __D_DEH__
 #define __D_DEH__
 
-extern int deh_apply_cheats;
-
 void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum);
 void PostProcessDeh(void);
 

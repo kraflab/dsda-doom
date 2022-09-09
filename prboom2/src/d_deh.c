@@ -112,9 +112,6 @@ const char * deh_getBitsDelims(void)
   }
 }
 
-// If false, dehacked cheat replacements are ignored.
-int deh_apply_cheats = true;
-
 // killough 10/98: new functions, to allow processing DEH files in-memory
 // (e.g. from wads)
 
@@ -2655,7 +2652,7 @@ static void deh_procCheat(DEHFILE *fpin, char *line) // done
           while (*p == ' ') ++p;
 
           //e6y: ability to ignore cheats in dehacked files.
-          if (deh_apply_cheats && !dsda_Flag(dsda_arg_nocheats))
+          if (dsda_IntConfig(dsda_config_deh_apply_cheats) && !dsda_Flag(dsda_arg_nocheats))
           {
             cheat[iy].cheat = Z_Strdup(p);
             deh_log("Assigned new cheat '%s' to cheat '%s'at index %d\n",

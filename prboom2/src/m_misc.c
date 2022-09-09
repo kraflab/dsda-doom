@@ -235,7 +235,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_sts_traditional_keys),
   MIGRATED_SETTING(dsda_config_show_messages),
   MIGRATED_SETTING(dsda_config_autorun),
-  { "deh_apply_cheats",{&deh_apply_cheats},{1},0,1, def_bool}, // if 0, dehacked cheat replacements are ignored.
+  MIGRATED_SETTING(dsda_config_deh_apply_cheats),
   { "movement_strafe50", { &movement_strafe50 }, { 0 }, 0, 1, def_bool },
   { "movement_strafe50onturns", { &movement_strafe50onturns }, { 0 }, 0, 1, def_bool },
   { "movement_shorttics", { &movement_shorttics }, { 0 }, 0, 1, def_bool },
