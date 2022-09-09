@@ -327,7 +327,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_movement_mouseinvert),
 
   SETTING_HEADING("Joystick settings"),
-  { "use_joystick",{&usejoystick},{0},0,2, def_int}, // number of joystick to use (0 for none)
+  MIGRATED_SETTING(dsda_config_use_joystick),
 
   SETTING_HEADING("Automap settings"),
   MIGRATED_SETTING(dsda_config_mapcolor_back),

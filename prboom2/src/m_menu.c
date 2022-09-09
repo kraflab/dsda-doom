@@ -2977,7 +2977,7 @@ void M_DrawAutoMap(void)
 // The General table.
 // killough 10/10/98
 
-extern int usejoystick, default_mus_card, default_snd_card;
+extern int default_mus_card, default_snd_card;
 extern int tran_filter_pct;
 
 setup_menu_t audiovideo_settings[], device_settings[], misc_settings[];
@@ -3081,7 +3081,7 @@ setup_menu_t audiovideo_settings[] = {
 setup_menu_t device_settings[] = {
   { "Input Devices", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Enable Mouse", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_use_mouse } },
-  { "Enable Joystick", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "use_joystick" } },
+  { "Enable Joystick", S_YESNO, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_use_joystick } },
 
   { "Mouse", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
   { "Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_mouse_sensitivity_horiz } },

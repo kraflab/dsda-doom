@@ -90,6 +90,7 @@ void M_ChangeLightMode(void);
 void I_InitMouse(void);
 void MouseAccelChanging(void);
 void G_UpdateMouseSensitivity(void);
+void I_InitJoystick(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -584,6 +585,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_fine_sensitivity] = {
     "dsda_fine_sensitivity", dsda_config_fine_sensitivity,
     dsda_config_int, 0, 99, { 0 }, NULL, 0, 0, G_UpdateMouseSensitivity
+  },
+  [dsda_config_use_joystick] = {
+    "use_joystick", dsda_config_use_joystick,
+    dsda_config_int, 0, 2, { 0 }, NULL, 0, 0, I_InitJoystick
   },
 };
 
