@@ -210,11 +210,6 @@ void M_SizeDisplay(int choice);
 void M_StartGame(int choice);
 void M_Sound(int choice);
 
-void M_Mouse(int choice, int *sens);      /* killough */
-void M_MouseVert(int choice);
-void M_MouseHoriz(int choice);
-void M_DrawMouse(void);
-
 void M_FinishReadThis(int choice);
 void M_FinishHelp(int choice);            // killough 10/98
 void M_LoadSelect(int choice);
@@ -1078,15 +1073,9 @@ void M_SaveGame (int choice)
 enum
 {
   general, // killough 10/98
-  // killough 4/6/98: move setup to be a sub-menu of OPTIONs
   setup,                                                    // phares 3/21/98
   endgame,
   messages,
-  /*    detail, obsolete -- killough */
-  scrnsize,
-  option_empty1,
-  mousesens,
-  /* option_empty2, submenu now -- killough */
   soundvol,
   opt_end
 } options_e;
@@ -1100,11 +1089,6 @@ menuitem_t OptionsMenu[]=
   {1,"M_SETUP",  M_Setup,   's', "SETUP"},        // phares 3/21/98
   {1,"M_ENDGAM", M_EndGame,'e',  "END GAME"},
   {1,"M_MESSG",  M_ToggleMessages,'m', "MESSAGES:"},
-  /*    {1,"M_DETAIL",  M_ChangeDetail,'g'},  unused -- killough */
-  {2,"M_SCRNSZ", M_SizeDisplay,'s', "SCREEN SIZE"},
-  {-1,"",0},
-  {1,"M_MSENS",  M_ChangeSensitivity,'m', "MOUSE SENSITIVITY"},
-  /* {-1,"",0},  replaced with submenu -- killough */
   {1,"M_SVOL",   M_Sound,'s', "SOUND VOLUME"},
 };
 
@@ -1144,9 +1128,6 @@ void M_DrawOptions(void)
     V_DrawNamePatch(OptionsDef.x + 120, OptionsDef.y+LINEHEIGHT*messages, 0,
       msgNames[dsda_ShowMessages()], CR_DEFAULT, VPT_STRETCH);
   }
-
-  M_DrawThermo(OptionsDef.x,OptionsDef.y+LINEHEIGHT*(scrnsize+1),
-   9,screenSize);
 }
 
 void M_Options(int choice)
@@ -1307,122 +1288,6 @@ void M_MusicVol(int choice)
     dsda_ToggleConfig(dsda_config_mute_music, true);
 
   S_SetMusicVolume(snd_MusicVolume);
-}
-
-/////////////////////////////
-//
-// MOUSE SENSITIVITY MENU -- killough
-//
-
-// numerical values for the Mouse Sensitivity menu items
-// The 'empty' slots are where the sliding scales appear.
-
-enum
-{
-  mouse_horiz,
-  mouse_empty1,
-  mouse_vert,
-  mouse_empty2,
-
-//e6y
-  mouse_mlook,
-  mouse_empty3,
-  mouse_accel,
-  mouse_empty4,
-
-  mouse_end
-} mouse_e;
-
-// The definitions of the Mouse Sensitivity menu
-
-menuitem_t MouseMenu[]=
-{
-  {2,"M_HORSEN",M_MouseHoriz,'h', "HORIZONTAL"},
-  {-1,"",0},
-  {2,"M_VERSEN",M_MouseVert,'v', "VERTICAL"},
-  {-1,"",0}
-
-  //e6y
-  ,
-  {2,"M_LOKSEN",M_MouseMLook,'l', "MOUSE LOOK"},
-  {-1,"",0},
-  {2,"M_ACCEL",M_MouseAccel,'a', "ACCELERATION"},
-  {-1,"",0}
-};
-
-menu_t MouseDef =
-{
-  mouse_end,
-  &OptionsDef,
-  MouseMenu,
-  M_DrawMouse,
-  60,37,//e6y
-  0
-};
-
-//
-// Change Mouse Sensitivities -- killough
-//
-
-void M_DrawMouse(void)
-{
-  if (raven) return MN_DrawMouse();
-
-  // CPhipps - patch drawing updated
-  V_DrawNamePatch(60, 15, 0, "M_MSENS", CR_DEFAULT, VPT_STRETCH);//e6y
-
-  M_DrawThermo(MouseDef.x, MouseDef.y + LINEHEIGHT * (mouse_horiz + 1),
-               200, mouseSensitivity_horiz);
-
-  M_DrawThermo(MouseDef.x, MouseDef.y + LINEHEIGHT * (mouse_vert + 1),
-               200, mouseSensitivity_vert);
-
-  M_DrawThermo(MouseDef.x, MouseDef.y + LINEHEIGHT * (mouse_mlook + 1),
-               200, mouseSensitivity_mlook);
-
-  M_DrawThermo(MouseDef.x, MouseDef.y + LINEHEIGHT * (mouse_accel + 1),
-               200, mouse_acceleration);
-}
-
-void M_ChangeSensitivity(int choice)
-{
-  M_SetupNextMenu(&MouseDef);      // killough
-
-  //  switch(choice)
-  //      {
-  //    case 0:
-  //      if (mouseSensitivity)
-  //        mouseSensitivity--;
-  //      break;
-  //    case 1:
-  //      if (mouseSensitivity < 9)
-  //        mouseSensitivity++;
-  //      break;
-  //      }
-}
-
-void M_MouseHoriz(int choice)
-{
-  M_Mouse(choice, &mouseSensitivity_horiz);
-}
-
-void M_MouseVert(int choice)
-{
-  M_Mouse(choice, &mouseSensitivity_vert);
-}
-
-void M_Mouse(int choice, int *sens)
-{
-  switch(choice)
-    {
-    case 0:
-      if (*sens)
-        --*sens;
-      break;
-    case 1:
-      ++*sens;
-      break;
-    }
 }
 
 /////////////////////////////
@@ -3209,24 +3074,27 @@ setup_menu_t audiovideo_settings[] = {
   { 0, S_SKIP | S_END, m_null }
 };
 
+void MouseAccelChanging(void);
+
 setup_menu_t device_settings[] = {
   { "Input Devices", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Enable Mouse", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_use_mouse } },
   { "Enable Joystick", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "use_joystick" } },
 
   { "Mouse", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
-  { "Dbl-Click As Use", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "mouse_doubleclick_as_use" } },
-  { "Carry Fractional Tics", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "mouse_carrytics" } },
-  { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_mouselook } },
-  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_vertmouse } },
-  { "Invert Mouse", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "movement_mouseinvert" }, 0, M_ChangeMouseInvert },
-  { "Max View Pitch", S_NUM, m_null, G_X, G_Y + 11 * 8, { "movement_maxviewpitch" }, 0, M_ChangeMaxViewPitch },
-  { "Mouse Strafe Divisor", S_NUM,   m_null, G_X, G_Y + 12 * 8, { "movement_mousestrafedivisor" } },
-  { "Fine Sensitivity", S_NUM, m_conf, G_X, G_Y + 13 * 8, { .config_id = dsda_config_fine_sensitivity } },
-  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, G_Y + 14 * 8, { .config_id = dsda_config_mouse_stutter_correction } },
-
-  { "Keyboard", S_SKIP | S_TITLE, m_null, G_X, G_Y + 16 * 8 },
-  { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, G_Y + 17 * 8, { .config_id = dsda_config_cheat_codes } },
+  { "Horizontal Sensitivity", S_NUM, m_null, G_X, G_Y + 6 * 8, { "mouse_sensitivity_horiz" } },
+  { "Vertical Sensitivity", S_NUM, m_null, G_X, G_Y + 7 * 8, { "mouse_sensitivity_vert" } },
+  { "Fine Sensitivity", S_NUM, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_fine_sensitivity } },
+  { "Mouse Acceleration", S_NUM, m_null, G_X, G_Y + 9 * 8, { "mouse_acceleration" }, 0, MouseAccelChanging },
+  { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 10 * 8, { .config_id = dsda_config_mouselook } },
+  { "Mouselook Sensitivity", S_NUM, m_null, G_X, G_Y + 11 * 8, { "mouse_sensitivity_mlook" } },
+  { "Max View Pitch", S_NUM, m_null, G_X, G_Y + 12 * 8, { "movement_maxviewpitch" }, 0, M_ChangeMaxViewPitch },
+  { "Invert Mouse", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "movement_mouseinvert" }, 0, M_ChangeMouseInvert },
+  { "Dbl-Click As Use", S_YESNO, m_null, G_X, G_Y + 14 * 8, { "mouse_doubleclick_as_use" } },
+  { "Mouse Strafe Divisor", S_NUM,   m_null, G_X, G_Y + 15 * 8, { "movement_mousestrafedivisor" } },
+  { "Carry Fractional Tics", S_YESNO, m_null, G_X, G_Y + 16 * 8, { "mouse_carrytics" } },
+  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 17 * 8, { .config_id = dsda_config_vertmouse } },
+  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, G_Y + 18 * 8, { .config_id = dsda_config_mouse_stutter_correction } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { audiovideo_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { misc_settings } },
@@ -3237,17 +3105,18 @@ setup_menu_t misc_settings[] = {
   { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Default skill level", S_CHOICE, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_default_skill }, 0, NULL, gen_skillstrings },
   { "Default compatibility level", S_CHOICE, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_default_complevel }, 0, NULL, &gen_compstrings[1] },
+  { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, G_Y + 4 * 8, { .config_id = dsda_config_cheat_codes } },
 
-  { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
-  { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 6 * 8, { "dsda_auto_key_frame_interval" } },
-  { "Rewind Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 7 * 8, { "dsda_auto_key_frame_depth" } },
-  { "Rewind Timeout (ms)", S_NUM, m_null, G_X, G_Y + 8 * 8, { "dsda_auto_key_frame_timeout" } },
-  { "Organize My Save Files", S_YESNO, m_null, G_X, G_Y + 9 * 8, { "dsda_organized_saves" } },
-  { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "dsda_skip_quit_prompt" } },
-  { "Death Use Action", S_CHOICE, m_null, G_X, G_Y + 11 * 8, { "dsda_death_use_action" }, 0, NULL, death_use_strings },
-  { "Boom Weapon Auto Switch", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "dsda_switch_when_ammo_runs_out" } },
-  { "Parallel Same-Sound Limit", S_NUM, m_null, G_X, G_Y + 13 * 8, { "dsda_parallel_sfx_limit" } },
-  { "Parallel Same-Sound Window", S_NUM, m_null, G_X, G_Y + 14 * 8, { "dsda_parallel_sfx_window" } },
+  { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 6 * 8 },
+  { "Rewind Interval (s)", S_NUM, m_null, G_X, G_Y + 7 * 8, { "dsda_auto_key_frame_interval" } },
+  { "Rewind Depth", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 8 * 8, { "dsda_auto_key_frame_depth" } },
+  { "Rewind Timeout (ms)", S_NUM, m_null, G_X, G_Y + 9 * 8, { "dsda_auto_key_frame_timeout" } },
+  { "Organize My Save Files", S_YESNO, m_null, G_X, G_Y + 10 * 8, { "dsda_organized_saves" } },
+  { "Skip Quit Prompt", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "dsda_skip_quit_prompt" } },
+  { "Death Use Action", S_CHOICE, m_null, G_X, G_Y + 12 * 8, { "dsda_death_use_action" }, 0, NULL, death_use_strings },
+  { "Boom Weapon Auto Switch", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "dsda_switch_when_ammo_runs_out" } },
+  { "Parallel Same-Sound Limit", S_NUM, m_null, G_X, G_Y + 14 * 8, { "dsda_parallel_sfx_limit" } },
+  { "Parallel Same-Sound Window", S_NUM, m_null, G_X, G_Y + 15 * 8, { "dsda_parallel_sfx_window" } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { device_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { display_settings } },

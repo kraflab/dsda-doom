@@ -464,18 +464,6 @@ void M_ChangeTextureUseHires(void)
   gld_Precache();
 }
 
-void M_Mouse(int choice, int *sens);
-void M_MouseMLook(int choice)
-{
-  M_Mouse(choice, &mouseSensitivity_mlook);
-}
-
-void M_MouseAccel(int choice)
-{
-  M_Mouse(choice, &mouse_acceleration);
-  MouseAccelChanging();
-}
-
 void MouseAccelChanging(void)
 {
   mouse_accelfactor = (float)mouse_acceleration/100.0f+1.0f;
