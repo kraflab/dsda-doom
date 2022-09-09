@@ -2977,7 +2977,6 @@ void M_DrawAutoMap(void)
 // The General table.
 // killough 10/10/98
 
-extern int default_mus_card, default_snd_card;
 extern int tran_filter_pct;
 
 setup_menu_t audiovideo_settings[], device_settings[], misc_settings[];
