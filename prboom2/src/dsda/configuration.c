@@ -209,7 +209,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_vertmouse] = {
     "movement_vertmouse", dsda_config_vertmouse,
-    CONF_BOOL(1)
+    CONF_BOOL(0)
   },
   [dsda_config_mouselook] = {
     "movement_mouselook", dsda_config_mouselook,
