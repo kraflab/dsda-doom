@@ -107,9 +107,6 @@ int hudadd_crosshair_health;
 int hudadd_crosshair_target;
 int hudadd_crosshair_target_color;
 int hudadd_crosshair_lock_target;
-int movement_strafe50;
-int movement_shorttics;
-int movement_strafe50onturns;
 int mouse_handler;
 int gl_render_fov = 90;
 int render_wipescreen;
@@ -229,6 +226,11 @@ prboom_comp_t prboom_comp[PC_MAX] = {
   {0x00000000, 0x02050104, 0, dsda_arg_reset_monsterspawner_params_after_loading},
 };
 
+void M_ChangeShorttics(void)
+{
+  shorttics = dsda_IntConfig(dsda_config_movement_shorttics) || dsda_Flag(dsda_arg_shorttics);
+}
+
 void e6y_InitCommandLine(void)
 {
   stats_level = dsda_Flag(dsda_arg_levelstat);
@@ -238,7 +240,7 @@ void e6y_InitCommandLine(void)
 
   dsda_ReadCommandLine();
 
-  shorttics = movement_shorttics || dsda_Flag(dsda_arg_shorttics);
+  M_ChangeShorttics();
 }
 
 int G_ReloadLevel(void)

@@ -91,6 +91,8 @@ void I_InitMouse(void);
 void MouseAccelChanging(void);
 void G_UpdateMouseSensitivity(void);
 void I_InitJoystick(void);
+void M_ChangeSpeed(void);
+void M_ChangeShorttics(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -593,6 +595,18 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_deh_apply_cheats] = {
     "deh_apply_cheats", dsda_config_deh_apply_cheats,
     CONF_BOOL(1)
+  },
+  [dsda_config_movement_strafe50] = {
+    "movement_strafe50", dsda_config_movement_strafe50,
+    CONF_BOOL(0), NULL, CONF_STRICT, 0, M_ChangeSpeed
+  },
+  [dsda_config_movement_strafe50onturns] = {
+    "movement_strafe50onturns", dsda_config_movement_strafe50onturns,
+    CONF_BOOL(0), NULL, 0, 0, M_ChangeSpeed
+  },
+  [dsda_config_movement_shorttics] = {
+    "movement_shorttics", dsda_config_movement_shorttics,
+    CONF_BOOL(0), NULL, 0, 0, M_ChangeShorttics
   },
 };
 

@@ -144,6 +144,9 @@ typedef enum {
   dsda_config_fine_sensitivity,
   dsda_config_use_joystick,
   dsda_config_deh_apply_cheats,
+  dsda_config_movement_strafe50,
+  dsda_config_movement_strafe50onturns,
+  dsda_config_movement_shorttics,
   dsda_config_count,
 } dsda_config_identifier_t;
 

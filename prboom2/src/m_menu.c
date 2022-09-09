@@ -3218,8 +3218,8 @@ setup_menu_t tas_settings[] = {
   { "Command History", S_NUM, m_null, G_X, G_Y + 4 * 8, { "dsda_command_history_size" } },
   { "Hide Empty Commands", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "dsda_hide_empty_commands" } },
   { "Show Coordinate Display", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_coordinate_display } },
-  { "Permanent Strafe50", S_YESNO, m_null, G_X, G_Y + 7 * 8, { "movement_strafe50" }, 0, M_ChangeSpeed },
-  { "Strafe50 On Turns", S_YESNO, m_null, G_X, G_Y + 8 * 8, { "movement_strafe50onturns" }, 0, M_ChangeSpeed },
+  { "Permanent Strafe50", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { .config_id = dsda_config_movement_strafe50 } },
+  { "Strafe50 On Turns", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_movement_strafe50onturns } },
   { "Game speed (%)", S_NUM | S_PRGWARN, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_realtic_clock_rate } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { demo_settings } },

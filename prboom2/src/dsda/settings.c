@@ -169,7 +169,7 @@ dboolean dsda_CycleGhostColors(void) {
 }
 
 dboolean dsda_AlwaysSR50(void) {
-  return movement_strafe50 && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_movement_strafe50);
 }
 
 dboolean dsda_HideHorns(void) {

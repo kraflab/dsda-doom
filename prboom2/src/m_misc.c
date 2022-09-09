@@ -236,9 +236,9 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_show_messages),
   MIGRATED_SETTING(dsda_config_autorun),
   MIGRATED_SETTING(dsda_config_deh_apply_cheats),
-  { "movement_strafe50", { &movement_strafe50 }, { 0 }, 0, 1, def_bool },
-  { "movement_strafe50onturns", { &movement_strafe50onturns }, { 0 }, 0, 1, def_bool },
-  { "movement_shorttics", { &movement_shorttics }, { 0 }, 0, 1, def_bool },
+  MIGRATED_SETTING(dsda_config_movement_strafe50),
+  MIGRATED_SETTING(dsda_config_movement_strafe50onturns),
+  MIGRATED_SETTING(dsda_config_movement_shorttics),
 
   SETTING_HEADING("Sound settings"),
   { "snd_pcspeaker",{&snd_pcspeaker},{0}, 0, 1, def_bool},

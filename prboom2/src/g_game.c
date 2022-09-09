@@ -1008,7 +1008,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       else if (side < -player_class->forwardmove[0])
         side = -player_class->forwardmove[0];
     }
-    else if(!movement_strafe50onturns && !strafe && cmd->angleturn)
+    else if (!dsda_IntConfig(dsda_config_movement_strafe50onturns) && !strafe && cmd->angleturn)
     {
       if (side > player_class->sidemove[1])
         side = player_class->sidemove[1];
