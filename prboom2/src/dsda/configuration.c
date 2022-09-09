@@ -563,7 +563,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mouse_stutter_correction] = {
     "mouse_stutter_correction", dsda_config_mouse_stutter_correction,
-    CONF_BOOL(1), NULL
+    CONF_BOOL(1)
   },
   [dsda_config_mouse_doubleclick_as_use] = {
     "mouse_doubleclick_as_use", dsda_config_mouse_doubleclick_as_use,
