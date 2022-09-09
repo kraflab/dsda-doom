@@ -1984,10 +1984,17 @@ static void M_DrawSetting(const setup_menu_t* s)
   if (flags & S_CHOICE) {
     if (s->m_group == m_conf)
     {
-      if (s->selectstrings == NULL) {
-        sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->var.config_id));
-      } else {
-        strcpy(menu_buffer, s->selectstrings[dsda_PersistentIntConfig(s->var.config_id)]);
+      if (flags & S_STR)
+      {
+        sprintf(menu_buffer, "%s", dsda_PersistentStringConfig(s->var.config_id));
+      }
+      else
+      {
+        if (s->selectstrings == NULL) {
+          sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->var.config_id));
+        } else {
+          strcpy(menu_buffer, s->selectstrings[dsda_PersistentIntConfig(s->var.config_id)]);
+        }
       }
     }
     else if (s->var.def->type == def_int) {
@@ -3148,7 +3155,7 @@ setup_menu_t display_settings[] = {
 
 setup_menu_t opengl_settings[] = {
   { "OpenGL Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8},
-  { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_EVEN, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_gl_render_multisampling }, 0, NULL },
+  { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_EVEN, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_gl_render_multisampling } },
   { "Field Of View", S_NUM, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_gl_render_fov } },
   { "Sector Light Mode", S_CHOICE, m_conf, G_X, G_Y + 4 * 8, { .config_id = dsda_config_gl_lightmode }, 0, NULL, gl_lightmodes },
   { "Allow Fog", S_YESNO, m_conf, G_X, G_Y + 5 * 8, { .config_id = dsda_config_gl_fog } },
@@ -3162,7 +3169,7 @@ setup_menu_t opengl_settings[] = {
   { "Sprite Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 13 * 8, { .config_id = dsda_config_gl_sprite_filter }, 0, NULL, gltexfilters },
   { "Patch Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 14 * 8, { .config_id = dsda_config_gl_patch_filter }, 0, NULL, gltexfilters },
   { "Anisotropic filter", S_CHOICE, m_conf, G_X, G_Y + 15 * 8, { .config_id = dsda_config_gl_texture_filter_anisotropic }, 0, NULL, gltexfilters_anisotropics },
-  { "Texture format", S_CHOICE, m_conf, G_X, G_Y + 16 * 8, { .config_id = dsda_config_gl_tex_format_string }, 0, NULL, gltexformats },
+  { "Texture format", S_CHOICE | S_STR, m_conf, G_X, G_Y + 16 * 8, { .config_id = dsda_config_gl_tex_format_string }, 0, NULL, gltexformats },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { display_settings } },
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { mapping_settings } },
@@ -4660,15 +4667,33 @@ dboolean M_Responder (event_t* ev) {
       {
         if (action == MENU_LEFT) {
           if (ptr1->m_group == m_conf) {
-            int value = dsda_PersistentIntConfig(ptr1->var.config_id);
+            if (ptr1->m_flags & S_STR)
+            {
+              int old_value, value;
 
-            do {
-              --value;
-            } while (value && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
+              old_value = M_IndexInChoices(dsda_PersistentStringConfig(ptr1->var.config_id),
+                                           ptr1->selectstrings);
+              value = old_value - 1;
+              if (value < 0)
+                value = 0;
+              if (old_value != value)
+              {
+                S_StartSound(NULL, g_sfx_menu);
+                dsda_UpdateStringConfig(ptr1->var.config_id, ptr1->selectstrings[value], true);
+              }
+            }
+            else
+            {
+              int value = dsda_PersistentIntConfig(ptr1->var.config_id);
 
-            if (dsda_PersistentIntConfig(ptr1->var.config_id) != value) {
-              S_StartSound(NULL, g_sfx_menu);
-              dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
+              do {
+                --value;
+              } while (value && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
+
+              if (dsda_PersistentIntConfig(ptr1->var.config_id) != value) {
+                S_StartSound(NULL, g_sfx_menu);
+                dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
+              }
             }
           }
           else if (ptr1->var.def->type == def_int) {
@@ -4702,15 +4727,33 @@ dboolean M_Responder (event_t* ev) {
         }
         else if (action == MENU_RIGHT) {
           if (ptr1->m_group == m_conf) {
-            int value = dsda_PersistentIntConfig(ptr1->var.config_id);
+            if (ptr1->m_flags & S_STR)
+            {
+              int old_value, value;
 
-            do {
-              ++value;
-            } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
+              old_value = M_IndexInChoices(dsda_PersistentStringConfig(ptr1->var.config_id),
+                                           ptr1->selectstrings);
+              value = old_value + 1;
+              if (ptr1->selectstrings[value] == NULL)
+                value = old_value;
+              if (old_value != value)
+              {
+                S_StartSound(NULL, g_sfx_menu);
+                dsda_UpdateStringConfig(ptr1->var.config_id, ptr1->selectstrings[value], true);
+              }
+            }
+            else
+            {
+              int value = dsda_PersistentIntConfig(ptr1->var.config_id);
 
-            if (dsda_PersistentIntConfig(ptr1->var.config_id) != value) {
-              S_StartSound(NULL, g_sfx_menu);
-              dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
+              do {
+                ++value;
+              } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
+
+              if (dsda_PersistentIntConfig(ptr1->var.config_id) != value) {
+                S_StartSound(NULL, g_sfx_menu);
+                dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
+              }
             }
           }
           else if (ptr1->var.def->type == def_int) {

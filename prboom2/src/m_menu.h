@@ -114,6 +114,7 @@ extern int warning_about_changes, print_warning_about_changes;
 #define S_DISABLE  0x1000000 // e6y
 #define S_NAME  0x2000000
 #define S_EVEN 0x20000000
+#define S_STR  0x40000000 // need to refactor things...
 
 /* S_SHOWDESC  = the set of items whose description should be displayed
  * S_SHOWSET   = the set of items whose setting should be displayed
