@@ -4672,7 +4672,7 @@ dboolean M_Responder (event_t* ev) {
 
               do {
                 --value;
-              } while (value && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
+              } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
 
               if (dsda_PersistentIntConfig(ptr1->var.config_id) != value) {
                 S_StartSound(NULL, g_sfx_menu);
