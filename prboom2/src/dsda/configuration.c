@@ -96,6 +96,7 @@ void I_InitJoystick(void);
 void M_ChangeSpeed(void);
 void M_ChangeShorttics(void);
 void I_InitSoundParams(void);
+void S_Init(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -650,6 +651,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_mus_pause_opt] = {
     "mus_pause_opt", dsda_config_mus_pause_opt,
     dsda_config_int, 0, 2, { 1 }
+  },
+  [dsda_config_snd_channels] = {
+    "snd_channels", dsda_config_snd_channels,
+    dsda_config_int, 1, 32, { 32 }, NULL, 0, 0, S_Init
   },
 };
 

@@ -3058,7 +3058,7 @@ setup_menu_t audiovideo_settings[] = {
   { "FPS Limit", S_NUM, m_null, G_X, G_Y + 9 * 8, { "dsda_fps_limit" } },
 
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
-  { "Number of Sound Channels", S_NUM | S_PRGWARN, m_null, G_X, G_Y + 12 * 8, { "snd_channels" } },
+  { "Number of Sound Channels", S_NUM, m_conf, G_X, G_Y + 12 * 8, { .config_id = dsda_config_snd_channels } },
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, G_Y + 13 * 8, { .config_id = dsda_config_pitched_sounds } },
   { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_conf, G_X, G_Y + 14 * 8, { .config_id = dsda_config_snd_pcspeaker } },
   { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, G_Y + 15 * 8, { .config_id = dsda_config_full_sounds } },

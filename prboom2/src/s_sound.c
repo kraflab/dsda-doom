@@ -118,10 +118,7 @@ musicinfo_t *mus_playing;
 // music currently should play
 static int musicnum_current;
 
-// following is set
-//  by the defaults code in M_misc:
 // number of channels available
-int default_numChannels;
 int numChannels;
 
 //jff 3/17/98 to keep track of last IDMUS specified music num
@@ -174,7 +171,7 @@ void S_Init(void)
   idmusnum = -1; //jff 3/17/98 insure idmus number is blank
 
   //jff 1/22/98 skip sound init if sound not enabled
-  numChannels = default_numChannels;
+  numChannels = dsda_IntConfig(dsda_config_snd_channels);
   if (!nosfxparm)
   {
     static dboolean first_s_init = true;

@@ -245,7 +245,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_sfx_volume),
   MIGRATED_SETTING(dsda_config_music_volume),
   MIGRATED_SETTING(dsda_config_mus_pause_opt),
-  { "snd_channels",{&default_numChannels},{32},1,32, def_int}, // number of audio events simultaneously // killough
+  MIGRATED_SETTING(dsda_config_snd_channels),
   { "snd_midiplayer",{NULL, &snd_midiplayer},{0,"fluidsynth"},UL,UL,def_str},
   { "snd_soundfont",{NULL, &snd_soundfont},{0,""},UL,UL,def_str},
   { "snd_mididev",{NULL, &snd_mididev},{0,""},UL,UL,def_str}, // midi device to use for portmidiplayer
