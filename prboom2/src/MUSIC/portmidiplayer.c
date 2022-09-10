@@ -96,8 +96,8 @@ static PortMidiStream *pm_stream;
 static unsigned char sysexbuff[SYSEX_BUFF_SIZE];
 static int sysexbufflen;
 
-const char *mus_portmidi_reset_type; // portmidi reset type
-int mus_portmidi_reset_delay; // portmidi delay after reset
+static const char *mus_portmidi_reset_type; // portmidi reset type
+static int mus_portmidi_reset_delay; // portmidi delay after reset
 
 // latency: we're generally writing timestamps slightly in the past (from when the last time
 // render was called to this time.  portmidi latency instruction must be larger than that window
@@ -181,6 +181,9 @@ static int pm_init (int samplerate)
   int i;
   char devname[64];
   const char* snd_mididev;
+
+  mus_portmidi_reset_type = dsda_StringConfig(dsda_config_mus_portmidi_reset_type);
+  mus_portmidi_reset_delay = dsda_IntConfig(dsda_config_mus_portmidi_reset_delay);
 
   if (Pm_Initialize () != pmNoError)
   {

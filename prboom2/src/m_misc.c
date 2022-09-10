@@ -199,9 +199,6 @@ extern int tran_filter_pct;            // killough 2/21/98
 
 extern int screenblocks;
 
-extern const char *mus_portmidi_reset_type;
-extern int mus_portmidi_reset_delay;
-
 /* cph - Some MBF stuff parked here for now
  * killough 10/98
  */
@@ -256,9 +253,8 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_mus_fluidsynth_reverb),
   MIGRATED_SETTING(dsda_config_mus_fluidsynth_gain),
   MIGRATED_SETTING(dsda_config_mus_opl_gain),
-
-  { "mus_portmidi_reset_type",{NULL, &mus_portmidi_reset_type},{0,"gs"},UL,UL,def_str}, // portmidi reset type (gs, gm, gm2, xg)
-  { "mus_portmidi_reset_delay",{&mus_portmidi_reset_delay},{0},0,2000,def_int}, // portmidi delay after reset (milliseconds)
+  MIGRATED_SETTING(dsda_config_mus_portmidi_reset_type),
+  MIGRATED_SETTING(dsda_config_mus_portmidi_reset_delay),
 
   SETTING_HEADING("Video settings"),
   { "videomode",{NULL, &default_videomode},{0,"Software"},UL,UL,def_str},

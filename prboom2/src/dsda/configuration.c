@@ -686,6 +686,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mus_opl_gain", dsda_config_mus_opl_gain,
     dsda_config_int, 0, 1000, { 50 }
   },
+  [dsda_config_mus_portmidi_reset_type] = {
+    "mus_portmidi_reset_type", dsda_config_mus_portmidi_reset_type,
+    CONF_STRING("gs") // gs, gm, gm2, xg
+  },
+  [dsda_config_mus_portmidi_reset_delay] = {
+    "mus_portmidi_reset_delay", dsda_config_mus_portmidi_reset_delay,
+    dsda_config_int, 0, 2000, { 0 }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
