@@ -45,7 +45,6 @@ static const char *pm_name (void)
   return "portmidi midi player (DISABLED)";
 }
 
-
 static int pm_init (int samplerate)
 {
   return 0;
@@ -96,6 +95,9 @@ static PortMidiStream *pm_stream;
 static unsigned char sysexbuff[SYSEX_BUFF_SIZE];
 static int sysexbufflen;
 
+const char *mus_portmidi_reset_type; // portmidi reset type
+int mus_portmidi_reset_delay; // portmidi delay after reset
+
 // latency: we're generally writing timestamps slightly in the past (from when the last time
 // render was called to this time.  portmidi latency instruction must be larger than that window
 // so the messages appear in the future.  ~46-47ms is the nominal length if i_sound.c gets its way
@@ -103,14 +105,10 @@ static int sysexbufflen;
 // driver event buffer needs to be big enough to hold however many events occur in latency time
 #define DRIVER_BUFFER 100 // events
 
-
-
 static const char *pm_name (void)
 {
   return "portmidi midi player";
 }
-
-
 
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
@@ -118,6 +116,62 @@ static const char *pm_name (void)
 #include <delayimp.h>
 #endif
 
+static dboolean use_reset_delay;
+static unsigned char gs_reset[] = {0xf0, 0x41, 0x10, 0x42, 0x12, 0x40, 0x00, 0x7f, 0x00, 0x41, 0xf7};
+static unsigned char gm_system_on[] = {0xf0, 0x7e, 0x7f, 0x09, 0x01, 0xf7};
+static unsigned char gm2_system_on[] = {0xf0, 0x7e, 0x7f, 0x09, 0x03, 0xf7};
+static unsigned char xg_system_on[] = {0xf0, 0x43, 0x10, 0x4c, 0x00, 0x00, 0x7e, 0x00, 0xf7};
+static PmEvent event_buffer[13 * 16];
+
+static void reset_device (unsigned long when)
+{
+  if (!strcasecmp(mus_portmidi_reset_type, "gm"))
+    Pm_WriteSysEx(pm_stream, when, gm_system_on);
+  else if (!strcasecmp(mus_portmidi_reset_type, "gm2"))
+    Pm_WriteSysEx(pm_stream, when, gm2_system_on);
+  else if (!strcasecmp(mus_portmidi_reset_type, "xg"))
+    Pm_WriteSysEx(pm_stream, when, xg_system_on);
+  else // default to "gs"
+    Pm_WriteSysEx(pm_stream, when, gs_reset);
+
+  // additional resets for compatibility with MS GS Wavetable Synth
+  Pm_Write(pm_stream, event_buffer, 13 * 16);
+
+  use_reset_delay = mus_portmidi_reset_delay > 0;
+}
+
+static void init_reset_buffer (void)
+{
+  int i;
+  PmEvent *event = event_buffer;
+  for (i = 0; i < 16; ++i)
+  {
+    // program change to default piano (or drums for ch. 10)
+    event[0].message = Pm_Message(MIDI_EVENT_PROGRAM_CHANGE | i, 0x00, 0x00);
+    // reset all controllers
+    event[1].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x79, 0x00);
+    // all notes off
+    event[2].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x7b, 0x00);
+    // all sound off
+    event[3].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x78, 0x00);
+    // reset aftertouch channel pressure to 0
+    event[4].message = Pm_Message(MIDI_EVENT_CHAN_AFTERTOUCH | i, 0x00, 0x00);
+    // reset expression to 127 (max)
+    event[5].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x0b, 0x7f);
+    // reset pitch bend to 64 (center)
+    event[6].message = Pm_Message(MIDI_EVENT_PITCH_BEND | i, 0x40, 0x00);
+    // RPN sequence to adjust pitch bend range (RPN value 0x0000)
+    event[7].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x65, 0x00);
+    event[8].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x64, 0x00);
+    // reset pitch bend range to central tuning +/- 2 semitones and 0 cents
+    event[9].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x06, 0x02);
+    event[10].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x26, 0x00);
+    // end of RPN sequence
+    event[11].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x64, 0x7f);
+    event[12].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x65, 0x7f);
+    event += 13;
+  }
+}
 
 static int pm_init (int samplerate)
 {
@@ -173,6 +227,8 @@ static int pm_init (int samplerate)
     return 0;
   }
 
+  init_reset_buffer();
+  reset_device(0);
   return 1;
 }
 
@@ -183,7 +239,8 @@ static void pm_shutdown (void)
   if (pm_stream)
   {
     // stop all sound, in case of hanging notes
-    pm_stop();
+    if (pm_playing)
+      pm_stop();
 
     /* ugly deadlock in portmidi win32 implementation:
 
@@ -214,16 +271,9 @@ static void pm_shutdown (void)
   }
 }
 
-
-
-
-static PmEvent event_buffer[14 * 16];
-
 static const void *pm_registersong (const void *data, unsigned len)
 {
-  int i;
   midimem_t mf;
-  PmEvent *event = event_buffer;
 
   mf.len = len;
   mf.pos = 0;
@@ -248,34 +298,6 @@ static const void *pm_registersong (const void *data, unsigned len)
   //spmc = compute_spmc (MIDI_GetFileTimeDivision (midifile), 500000, 1000);
   spmc = MIDI_spmc (midifile, NULL, 1000);
 
-  for (i = 0; i < 16; ++i)
-  {
-    // RPN sequence to adjust pitch bend range (RPN value 0x0000)
-    event[0].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x65, 0x00);
-    event[1].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x64, 0x00);
-    // reset pitch bend range to central tuning +/- 2 semitones and 0 cents
-    event[2].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x06, 0x02);
-    event[3].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x26, 0x00);
-    // end of RPN sequence
-    event[4].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x64, 0x7f);
-    event[5].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x65, 0x7f);
-    // all notes off
-    event[6].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x7b, 0x00);
-    // reset all controllers
-    event[7].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x79, 0x00);
-    // reset pan to 64 (center)
-    event[8].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x0a, 0x40);
-    // reset reverb to 40 and other effect controllers to 0
-    event[9].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5b, 0x28); // reverb
-    event[10].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5c, 0x00); // tremolo
-    event[11].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5d, 0x00); // chorus
-    event[12].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5e, 0x00); // detune
-    event[13].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x5f, 0x00); // phaser
-    event += 14;
-  }
-
-  Pm_Write(pm_stream, event_buffer, 14 * 16);
-
   // handle not used
   return data;
 }
@@ -299,35 +321,30 @@ extern int mus_extend_volume; // from e6y.h
 void I_midiOutSetVolumes (int volume); // from e6y.h
 #endif
 
-static int channelvol[16];
+static int mastervol;
 
-static void pm_setchvolume (int ch, int v, unsigned long when)
+static void set_mastervol (unsigned long when)
 {
-  channelvol[ch] = v;
-  writeevent (when, MIDI_EVENT_CONTROLLER, ch, 7, channelvol[ch] * pm_volume / 15);
+  int vol = mastervol * pm_volume / 15;
+  unsigned char data[] = {0xf0, 0x7f, 0x7f, 0x04, 0x01, vol & 0x7f, vol >> 7, 0xf7};
+  Pm_WriteSysEx(pm_stream, when, data);
 }
 
-static void pm_refreshvolume (void)
+static void refresh_mastervol (void)
 {
-  int i;
   unsigned long when = Pt_Time ();
-
-  for (i = 0; i < 16; i ++)
-    writeevent (when, MIDI_EVENT_CONTROLLER, i, 7, channelvol[i] * pm_volume / 15);
+  set_mastervol(when);
 }
 
-static void pm_clearchvolume (void)
+static void clear_mastervol (void)
 {
-  int i;
-  for (i = 0; i < 16; i++)
-    channelvol[i] = 127; // default: max
-
+  mastervol = 16383; // default: max, 14-bit
 }
+
+static int firsttime = 1;
 
 static void pm_setvolume (int v)
 {
-  static int firsttime = 1;
-
   if (pm_volume == v && !firsttime)
     return;
   firsttime = 0;
@@ -345,9 +362,8 @@ static void pm_setvolume (int v)
     I_midiOutSetVolumes (pm_volume);
   else
   #endif
-    pm_refreshvolume ();
+    refresh_mastervol ();
 }
-
 
 static void pm_unregistersong (const void *handle)
 {
@@ -373,11 +389,13 @@ static void pm_pause (void)
     writeevent (when, MIDI_EVENT_CONTROLLER, i, 123, 0); // all notes off
   }
 }
+
 static void pm_resume (void)
 {
   pm_paused = 0;
   trackstart = Pt_Time ();
 }
+
 static void pm_play (const void *handle, int looping)
 {
   eventpos = 0;
@@ -385,12 +403,30 @@ static void pm_play (const void *handle, int looping)
   pm_playing = 1;
   //pm_paused = 0;
   pm_delta = 0.0;
-  pm_clearchvolume ();
-  pm_refreshvolume ();
+  clear_mastervol();
+  if (!firsttime) // set pm_volume first, see pm_setvolume()
+  {
+    #ifdef _WIN32
+    if (!mus_extend_volume)
+    #endif
+      refresh_mastervol();
+  }
   trackstart = Pt_Time ();
-
 }
 
+static dboolean is_mastervol (unsigned char *data, int len)
+{
+  unsigned char msg[] = {0xf0, 0x7f, 0x7f, 0x04, 0x01, 0x00, 0x00, 0xf7};
+  return (len == 8 && !memcmp(data, msg, 5));
+}
+
+static dboolean is_sysex_reset (unsigned char *data)
+{
+  return (!memcmp(data, gs_reset, sizeof(gs_reset))
+          || !memcmp(data, gm_system_on, sizeof(gm_system_on))
+          || !memcmp(data, gm2_system_on, sizeof(gm2_system_on))
+          || !memcmp(data, xg_system_on, sizeof(xg_system_on)));
+}
 
 static void writesysex (unsigned long when, int etype, unsigned char *data, int len)
 {
@@ -398,7 +434,7 @@ static void writesysex (unsigned long when, int etype, unsigned char *data, int 
   // it's possible to use an auto-resizing buffer here, but a malformed
   // midi file could make it grow arbitrarily large (since it must grow
   // until it hits an 0xf7 terminator)
-  if (len + sysexbufflen > SYSEX_BUFF_SIZE)
+  if (len + sysexbufflen > SYSEX_BUFF_SIZE - 1)
   {
     lprintf (LO_WARN, "portmidiplayer: ignoring large or malformed sysex message\n");
     sysexbufflen = 0;
@@ -408,24 +444,51 @@ static void writesysex (unsigned long when, int etype, unsigned char *data, int 
   sysexbufflen += len;
   if (sysexbuff[sysexbufflen - 1] == 0xf7) // terminator
   {
+    memmove(&sysexbuff[1], &sysexbuff[0], sysexbufflen * sizeof(*sysexbuff));
+    sysexbuff[0] = 0xf0; // start of exclusive (SOX) in front
+    sysexbufflen++;
+
+    #ifdef _WIN32
+    if (!mus_extend_volume)
+    #endif
+    {
+      if (is_mastervol(sysexbuff, sysexbufflen))
+      {
+        // master volume message from midi file, scale by volume slider
+        mastervol = sysexbuff[6] << 7 | sysexbuff[5]; // back to 14-bit
+        set_mastervol(when);
+        sysexbufflen = 0;
+        return;
+      }
+    }
+
     Pm_WriteSysEx (pm_stream, when, sysexbuff);
+
+    if (is_sysex_reset(sysexbuff))
+    {
+      use_reset_delay = mus_portmidi_reset_delay > 0;
+
+      #ifdef _WIN32
+      if (!mus_extend_volume)
+      #endif
+      {
+        // sysex reset from midi file, reapply master volume
+        clear_mastervol();
+        set_mastervol(when);
+      }
+    }
+
     sysexbufflen = 0;
   }
 }
 
 static void pm_stop (void)
 {
-  int i;
   unsigned long when = Pt_Time ();
   pm_playing = 0;
 
-
   // songs can be stopped at any time, so reset everything
-  for (i = 0; i < 16; i++)
-  {
-    writeevent (when, MIDI_EVENT_CONTROLLER, i, 123, 0); // all notes off
-    writeevent (when, MIDI_EVENT_CONTROLLER, i, 121, 0); // reset all parameters
-  }
+  reset_device(when);
   // abort any partial sysex
   sysexbufflen = 0;
 }
@@ -433,7 +496,6 @@ static void pm_stop (void)
 static void pm_render (void *vdest, unsigned bufflen)
 {
   // wherever you see samples in here, think milliseconds
-
   unsigned long newtime = Pt_Time ();
   unsigned long length = newtime - trackstart;
 
@@ -447,34 +509,34 @@ static void pm_render (void *vdest, unsigned bufflen)
 
   memset (vdest, 0, bufflen * 4);
 
-
-
   if (!pm_playing || pm_paused)
     return;
-
 
   while (1)
   {
     double eventdelta;
     currevent = events[eventpos];
 
+    if (use_reset_delay)
+    {
+      // delay after reset, for real devices only (e.g. roland sc-55)
+      currevent->delta_time += mus_portmidi_reset_delay / spmc;
+      use_reset_delay = false;
+    }
+
     // how many samples away event is
     eventdelta = currevent->delta_time * spmc;
 
-
     // how many we will render (rounding down); include delta offset
     samples = (unsigned) (eventdelta + pm_delta);
-
 
     if (samples + sampleswritten > length)
     { // overshoot; render some samples without processing an event
       break;
     }
 
-
     sampleswritten += samples;
     pm_delta -= samples;
-
 
     // process event
     when = trackstart + sampleswritten;
@@ -505,25 +567,11 @@ static void pm_render (void *vdest, unsigned bufflen)
           return;
         }
         break; // not interested in most metas
-      case MIDI_EVENT_CONTROLLER:
-        if (currevent->data.channel.param1 == 7)
-        { // volume event
-          #ifdef _WIN32
-          if (!mus_extend_volume)
-          #endif
-          {
-            pm_setchvolume (currevent->data.channel.channel, currevent->data.channel.param2, when);
-            break;
-          }
-        } // fall through
       default:
         writeevent (when, currevent->event_type, currevent->data.channel.channel, currevent->data.channel.param1, currevent->data.channel.param2);
         break;
 
     }
-    // if the event was a "reset all controllers", we need to additionally re-fix the volume (which itself was reset)
-    if (currevent->event_type == MIDI_EVENT_CONTROLLER && currevent->data.channel.param1 == 121)
-      pm_setchvolume (currevent->data.channel.channel, 127, when);
 
     // event processed so advance midiclock
     pm_delta += eventdelta;
@@ -541,7 +589,6 @@ static void pm_render (void *vdest, unsigned bufflen)
   trackstart = newtime;
 }
 
-
 const music_player_t pm_player =
 {
   pm_name,
@@ -556,6 +603,5 @@ const music_player_t pm_player =
   pm_stop,
   pm_render
 };
-
 
 #endif // HAVE_LIBPORTMIDI

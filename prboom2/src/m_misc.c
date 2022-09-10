@@ -199,6 +199,9 @@ extern int tran_filter_pct;            // killough 2/21/98
 
 extern int screenblocks;
 
+extern const char *mus_portmidi_reset_type;
+extern int mus_portmidi_reset_delay;
+
 /* cph - Some MBF stuff parked here for now
  * killough 10/98
  */
@@ -257,6 +260,8 @@ default_t defaults[] =
   { "mus_fluidsynth_reverb",{&mus_fluidsynth_reverb},{0},0,1,def_bool},
   { "mus_fluidsynth_gain",{&mus_fluidsynth_gain},{50},0,1000,def_int}, // NSM  fine tune fluidsynth output level
   { "mus_opl_gain",{&mus_opl_gain},{50},0,1000,def_int}, // NSM  fine tune opl output level
+  { "mus_portmidi_reset_type",{NULL, &mus_portmidi_reset_type},{0,"gs"},UL,UL,def_str}, // portmidi reset type (gs, gm, gm2, xg)
+  { "mus_portmidi_reset_delay",{&mus_portmidi_reset_delay},{0},0,2000,def_int}, // portmidi delay after reset (milliseconds)
 
   SETTING_HEADING("Video settings"),
   { "videomode",{NULL, &default_videomode},{0,"Software"},UL,UL,def_str},
