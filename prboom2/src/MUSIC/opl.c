@@ -23,12 +23,10 @@
 //
 //-----------------------------------------------------------------------------
 
-
 #include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-
 
 #include "opl.h"
 #include "opl_queue.h"
@@ -40,7 +38,6 @@ static int init_stage_reg_writes = 1;
 
 unsigned int opl_sample_rate = 22050;
 
-
 #define MAX_SOUND_SLICE_TIME 100 /* ms */
 
 typedef struct
@@ -51,51 +48,36 @@ typedef struct
     unsigned int expire_time; // Calculated time that timer will expire.
 } opl_timer_t;
 
-
 // Queue of callbacks waiting to be invoked.
-
 static opl_callback_queue_t *callback_queue;
 
-
 // Current time, in number of samples since startup:
-
 static unsigned int current_time;
 
 // If non-zero, playback is currently paused.
-
 static int opl_paused;
 
 // Time offset (in samples) due to the fact that callbacks
 // were previously paused.
-
 static unsigned int pause_offset;
 
 // OPL software emulator structure.
-
 static Chip opl_chip;
 
 // Temporary mixing buffer used by the mixing callback.
-
 static int *mix_buffer = NULL;
 
 // Register number that was written.
-
 static int register_num = 0;
 
 // Timers; DBOPL does not do timer stuff itself.
-
 static opl_timer_t timer1 = { 12500, 0, 0, 0 };
 static opl_timer_t timer2 = { 3125, 0, 0, 0 };
 
-
-//
-// Init/shutdown code.
-//
 static int mus_opl_gain;
 
 // Initialize the OPL library.  Returns true if initialized
 // successfully.
-
 int OPL_Init (unsigned int rate)
 {
     mus_opl_gain = dsda_IntConfig(dsda_config_mus_opl_gain);
@@ -118,7 +100,6 @@ int OPL_Init (unsigned int rate)
     Chip__Chip(&opl_chip);
     Chip__Setup(&opl_chip, opl_sample_rate);
 
-
     OPL_InitRegisters();
 
     init_stage_reg_writes = 0;
@@ -127,7 +108,6 @@ int OPL_Init (unsigned int rate)
 }
 
 // Shut down the OPL library.
-
 void OPL_Shutdown(void)
 {
     if (callback_queue)
@@ -141,8 +121,8 @@ void OPL_Shutdown(void)
 }
 
 void OPL_SetCallback(unsigned int ms,
-                                opl_callback_t callback,
-                                void *data)
+                     opl_callback_t callback,
+                     void *data)
 {
     OPL_Queue_Push(callback_queue, callback, data,
                    current_time - pause_offset + (ms * opl_sample_rate) / 1000);
@@ -159,7 +139,6 @@ static void OPLTimer_CalculateEndTime(opl_timer_t *timer)
 
     // If the timer is enabled, calculate the time when the timer
     // will expire.
-
     if (timer->enabled)
     {
         tics = 0x100 - timer->value;
@@ -167,7 +146,6 @@ static void OPLTimer_CalculateEndTime(opl_timer_t *timer)
                            + (tics * opl_sample_rate) / timer->rate;
     }
 }
-
 
 static void WriteRegister(unsigned int reg_num, unsigned int value)
 {
@@ -217,9 +195,7 @@ static void OPL_AdvanceTime(unsigned int nsamples)
     opl_callback_t callback;
     void *callback_data;
 
-
     // Advance time.
-
     current_time += nsamples;
 
     if (opl_paused)
@@ -229,17 +205,14 @@ static void OPL_AdvanceTime(unsigned int nsamples)
 
     // Are there callbacks to invoke now?  Keep invoking them
     // until there are none more left.
-
     while (!OPL_Queue_IsEmpty(callback_queue)
         && current_time >= OPL_Queue_Peek(callback_queue) + pause_offset)
     {
         // Pop the callback from the queue to invoke it.
-
         if (!OPL_Queue_Pop(callback_queue, &callback, &callback_data))
         {
             break;
         }
-
 
         callback(callback_data);
 
@@ -258,7 +231,6 @@ static void FillBuffer(int16_t *buffer, unsigned int nsamples)
     Chip__GenerateBlock2(&opl_chip, nsamples, mix_buffer);
 
     // Mix into the destination buffer, doubling up into stereo.
-
     for (i=0; i<nsamples; ++i)
     {
         sampval = mix_buffer[i] * mus_opl_gain / 50;
@@ -272,28 +244,21 @@ static void FillBuffer(int16_t *buffer, unsigned int nsamples)
     }
 }
 
-
 void OPL_Render_Samples (void *dest, unsigned buffer_len)
 {
     unsigned int filled = 0;
-
-
     short *buffer = (short *) dest;
-
 
     // Repeatedly call the OPL emulator update function until the buffer is
     // full.
-
     while (filled < buffer_len)
     {
         unsigned int next_callback_time;
         unsigned int nsamples;
 
-
         // Work out the time until the next callback waiting in
         // the callback queue must be invoked.  We can then fill the
         // buffer with this many samples.
-
         if (opl_paused || OPL_Queue_IsEmpty(callback_queue))
         {
             nsamples = buffer_len - filled;
@@ -310,14 +275,11 @@ void OPL_Render_Samples (void *dest, unsigned buffer_len)
             }
         }
 
-
         // Add emulator output to buffer.
-
         FillBuffer(buffer + filled * 2, nsamples);
         filled += nsamples;
 
         // Invoke callbacks for this point in time.
-
         OPL_AdvanceTime(nsamples);
     }
 }
@@ -357,14 +319,12 @@ unsigned int OPL_ReadPort(opl_port_t port)
 // Higher-level functions, based on the lower-level functions above
 // (register write, etc).
 //
-
 unsigned int OPL_ReadStatus(void)
 {
     return OPL_ReadPort(OPL_REGISTER_PORT);
 }
 
 // Write an OPL register value
-
 void OPL_WriteRegister(int reg, int value)
 {
     int i;
@@ -373,13 +333,11 @@ void OPL_WriteRegister(int reg, int value)
 
     // For timing, read the register port six times after writing the
     // register number to cause the appropriate delay
-
     for (i=0; i<6; ++i)
     {
         // An oddity of the Doom OPL code: at startup initialization,
         // the spacing here is performed by reading from the register
         // port; after initialization, the data port is read, instead.
-
         if (init_stage_reg_writes)
         {
             OPL_ReadPort(OPL_REGISTER_PORT);
@@ -394,22 +352,18 @@ void OPL_WriteRegister(int reg, int value)
 
     // Read the register port 24 times after writing the value to
     // cause the appropriate delay
-
     for (i=0; i<24; ++i)
     {
         OPL_ReadStatus();
     }
 }
 
-
 // Initialize registers on startup
-
 void OPL_InitRegisters(void)
 {
     int r;
 
     // Initialize level registers
-
     for (r=OPL_REGS_LEVEL; r <= OPL_REGS_LEVEL + OPL_NUM_OPERATORS; ++r)
     {
         OPL_WriteRegister(r, 0x3f);
@@ -419,14 +373,12 @@ void OPL_InitRegisters(void)
     // These two loops write to registers that actually don't exist,
     // but this is what Doom does ...
     // Similarly, the <= is also intenational.
-
     for (r=OPL_REGS_ATTACK; r <= OPL_REGS_WAVEFORM + OPL_NUM_OPERATORS; ++r)
     {
         OPL_WriteRegister(r, 0x00);
     }
 
     // More registers ...
-
     for (r=1; r < OPL_REGS_LEVEL; ++r)
     {
         OPL_WriteRegister(r, 0x00);
@@ -444,8 +396,6 @@ void OPL_InitRegisters(void)
     // Keyboard split point on (?)
     OPL_WriteRegister(OPL_REG_FM_MODE,         0x40);
 }
-
-
 
 void OPL_SetPaused(int paused)
 {
