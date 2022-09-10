@@ -23,6 +23,7 @@
 #include "g_overflow.h"
 #include "gl_struct.h"
 #include "r_demo.h"
+#include "s_sound.h"
 #include "z_zone.h"
 
 #include "dsda/input.h"
@@ -654,7 +655,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_snd_channels] = {
     "snd_channels", dsda_config_snd_channels,
-    dsda_config_int, 1, 32, { 32 }, NULL, 0, 0, S_Init
+    dsda_config_int, 1, MAX_CHANNELS, { 32 }, NULL, 0, 0, S_Init
   },
 };
 
