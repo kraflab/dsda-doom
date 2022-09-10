@@ -649,7 +649,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mus_pause_opt] = {
     "mus_pause_opt", dsda_config_mus_pause_opt,
-    dsda_config_int, 0, 2, { 1 },
+    dsda_config_int, 0, 2, { 1 }
   },
 };
 
