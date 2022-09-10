@@ -880,8 +880,6 @@ static SDL_RWops *rwops_stream = NULL;
 // note that the "handle" passed around by s_sound is ignored
 // however, a handle is maintained for the individual music players
 
-const char *snd_soundfont; // soundfont name for synths that use it
-
 static const music_player_t *music_players[] =
 { // until some ui work is done, the order these appear is the autodetect order.
   // of particular importance:  things that play mus have to be last, because

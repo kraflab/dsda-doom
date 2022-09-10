@@ -160,6 +160,7 @@ typedef enum {
   dsda_config_snd_channels,
   dsda_config_snd_midiplayer,
   dsda_config_snd_mididev,
+  dsda_config_snd_soundfont,
   dsda_config_count,
 } dsda_config_identifier_t;
 

@@ -666,6 +666,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "snd_mididev", dsda_config_snd_mididev,
     CONF_STRING("")
   },
+  [dsda_config_snd_soundfont] = {
+    "snd_soundfont", dsda_config_snd_soundfont,
+    CONF_STRING("")
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

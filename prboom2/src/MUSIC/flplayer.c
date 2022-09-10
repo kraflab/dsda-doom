@@ -66,14 +66,16 @@ const music_player_t fl_player =
 #else // HAVE_LIBFLUIDSYNTH
 
 #include <fluidsynth.h>
-#include "i_sound.h" // for snd_soundfont, mus_fluidsynth_gain
+#include <stdlib.h>
+#include <string.h>
+#include "i_sound.h" // for mus_fluidsynth_gain
 #include "i_system.h" // for I_FindFile()
 #include "lprintf.h"
 #include "midifile.h"
 #include "memio.h"
 #include "w_wad.h"
-#include <stdlib.h>
-#include <string.h>
+
+#include "dsda/configuration.h"
 
 static fluid_settings_t *f_set;
 static fluid_synth_t *f_syn;
@@ -235,6 +237,7 @@ static int fl_init (int samplerate)
     int checked_file = false;
     dboolean replaced_soundfont = false;
     const char *checked_f_font = NULL;
+    const char *snd_soundfont;
 
     lumpnum = W_CheckNumForName("SNDFONT");
 
@@ -242,6 +245,8 @@ static int fl_init (int samplerate)
     {
       replaced_soundfont = !W_LumpNumInPortWad(lumpnum);
     }
+
+    snd_soundfont = dsda_StringConfig(dsda_config_snd_soundfont);
 
     if (!replaced_soundfont && snd_soundfont && snd_soundfont[0])
     {
