@@ -64,8 +64,6 @@
 // Does not fit the large outdoor areas.
 #define S_CLIPPING_DIST (1200<<FRACBITS)
 
-#define MAX_CHANNELS 32
-
 // Distance tp origin when sounds should be maxed out.
 // This should relate to movement clipping resolution
 // (see BLOCKMAP handling).

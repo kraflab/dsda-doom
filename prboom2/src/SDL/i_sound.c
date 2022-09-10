@@ -80,9 +80,6 @@ static dboolean registered_non_rw = false;
 //  the size of the 16bit, 2 hardware channel (stereo)
 //  mixing buffer, and the samplerate of the raw data.
 
-// Needed for calling the actual sound output.
-#define MAX_CHANNELS    32
-
 // The actual output device.
 int audio_fd;
 

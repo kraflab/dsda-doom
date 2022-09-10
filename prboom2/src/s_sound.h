@@ -38,6 +38,8 @@
 #pragma interface
 #endif
 
+#define MAX_CHANNELS 32
+
 //
 // Initializes sound stuff, including volume
 // Sets channels, SFX and music volume,
