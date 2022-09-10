@@ -170,6 +170,8 @@ void S_Init(void)
 {
   idmusnum = -1; //jff 3/17/98 insure idmus number is blank
 
+  S_Stop();
+
   numChannels = dsda_IntConfig(dsda_config_snd_channels);
 
   //jff 1/22/98 skip sound init if sound not enabled

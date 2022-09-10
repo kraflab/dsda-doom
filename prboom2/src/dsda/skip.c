@@ -101,7 +101,6 @@ void dsda_ExitSkipMode(void) {
   I_Init2();
   I_InitSound();
   S_Init();
-  S_Stop();
   S_RestartMusic();
 
   if (V_IsOpenGLMode())
