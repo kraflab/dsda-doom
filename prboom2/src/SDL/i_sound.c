@@ -881,7 +881,6 @@ static SDL_RWops *rwops_stream = NULL;
 // however, a handle is maintained for the individual music players
 
 const char *snd_soundfont; // soundfont name for synths that use it
-const char *snd_mididev; // midi device to use (portmidiplayer)
 
 static const music_player_t *music_players[] =
 { // until some ui work is done, the order these appear is the autodetect order.

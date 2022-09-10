@@ -74,7 +74,8 @@ const music_player_t pm_player =
 #include <string.h>
 #include "lprintf.h"
 #include "midifile.h"
-#include "i_sound.h" // for snd_mididev
+
+#include "dsda/configuration.h"
 
 static midi_event_t **events;
 static int eventpos;
@@ -179,6 +180,7 @@ static int pm_init (int samplerate)
   const PmDeviceInfo *oinfo;
   int i;
   char devname[64];
+  const char* snd_mididev;
 
   if (Pm_Initialize () != pmNoError)
   {
@@ -196,6 +198,8 @@ static int pm_init (int samplerate)
   }
 
   // look for a device that matches the user preference
+
+  snd_mididev = dsda_StringConfig(dsda_config_snd_mididev);
 
   lprintf (LO_INFO, "portmidiplayer device list:\n");
   for (i = 0; i < Pm_CountDevices (); i++)

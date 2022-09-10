@@ -662,6 +662,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "snd_midiplayer", dsda_config_snd_midiplayer,
     CONF_STRING("fluidsynth"), NULL, 0, 0, M_ChangeMIDIPlayer
   },
+  [dsda_config_snd_mididev] = {
+    "snd_mididev", dsda_config_snd_mididev,
+    CONF_STRING("")
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
