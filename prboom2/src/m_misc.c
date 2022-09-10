@@ -253,9 +253,6 @@ default_t defaults[] =
   { "snd_soundfont",{NULL, &snd_soundfont},{0,""},UL,UL,def_str},
   { "snd_mididev",{NULL, &snd_mididev},{0,""},UL,UL,def_str}, // midi device to use for portmidiplayer
 
-#ifdef _WIN32
-  { "mus_extend_volume",{&mus_extend_volume},{0},0,1, def_bool}, // e6y: apply midi volume to all midi devices
-#endif
   { "mus_fluidsynth_chorus",{&mus_fluidsynth_chorus},{0},0,1,def_bool},
   { "mus_fluidsynth_reverb",{&mus_fluidsynth_reverb},{0},0,1,def_bool},
   { "mus_fluidsynth_gain",{&mus_fluidsynth_gain},{50},0,1000,def_int}, // NSM  fine tune fluidsynth output level

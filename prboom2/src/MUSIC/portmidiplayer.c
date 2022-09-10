@@ -310,17 +310,6 @@ static void writeevent (unsigned long when, int eve, int channel, int v1, int v2
   Pm_WriteShort (pm_stream, when, m);
 }
 
-/*
-portmidi has no overall volume control.  we have two options:
-1. use a win32-specific hack (only if mus_extend_volume is set)
-2. monitor the controller volume events and tweak them to serve our purpose
-*/
-
-#ifdef _WIN32
-extern int mus_extend_volume; // from e6y.h
-void I_midiOutSetVolumes (int volume); // from e6y.h
-#endif
-
 static int mastervol;
 
 static void set_mastervol (unsigned long when)
@@ -351,18 +340,7 @@ static void pm_setvolume (int v)
 
   pm_volume = v;
 
-  // this is a bit of a hack
-  // fix: add non-win32 version
-  // fix: change win32 version to only modify the device we're using?
-  // (portmidi could know what device it's using, but the numbers
-  //  don't match up with the winapi numbers...)
-
-  #ifdef _WIN32
-  if (mus_extend_volume)
-    I_midiOutSetVolumes (pm_volume);
-  else
-  #endif
-    refresh_mastervol ();
+  refresh_mastervol ();
 }
 
 static void pm_unregistersong (const void *handle)
@@ -406,10 +384,7 @@ static void pm_play (const void *handle, int looping)
   clear_mastervol();
   if (!firsttime) // set pm_volume first, see pm_setvolume()
   {
-    #ifdef _WIN32
-    if (!mus_extend_volume)
-    #endif
-      refresh_mastervol();
+    refresh_mastervol();
   }
   trackstart = Pt_Time ();
 }
@@ -448,18 +423,13 @@ static void writesysex (unsigned long when, int etype, unsigned char *data, int 
     sysexbuff[0] = 0xf0; // start of exclusive (SOX) in front
     sysexbufflen++;
 
-    #ifdef _WIN32
-    if (!mus_extend_volume)
-    #endif
+    if (is_mastervol(sysexbuff, sysexbufflen))
     {
-      if (is_mastervol(sysexbuff, sysexbufflen))
-      {
-        // master volume message from midi file, scale by volume slider
-        mastervol = sysexbuff[6] << 7 | sysexbuff[5]; // back to 14-bit
-        set_mastervol(when);
-        sysexbufflen = 0;
-        return;
-      }
+      // master volume message from midi file, scale by volume slider
+      mastervol = sysexbuff[6] << 7 | sysexbuff[5]; // back to 14-bit
+      set_mastervol(when);
+      sysexbufflen = 0;
+      return;
     }
 
     Pm_WriteSysEx (pm_stream, when, sysexbuff);
@@ -468,14 +438,9 @@ static void writesysex (unsigned long when, int etype, unsigned char *data, int 
     {
       use_reset_delay = mus_portmidi_reset_delay > 0;
 
-      #ifdef _WIN32
-      if (!mus_extend_volume)
-      #endif
-      {
-        // sysex reset from midi file, reapply master volume
-        clear_mastervol();
-        set_mastervol(when);
-      }
+      // sysex reset from midi file, reapply master volume
+      clear_mastervol();
+      set_mastervol(when);
     }
 
     sysexbufflen = 0;
