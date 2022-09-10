@@ -137,7 +137,6 @@ typedef enum
   midi_player_last
 } midi_player_name_t;
 
-extern const char *snd_midiplayer;
 extern const char *midiplayers[];
 
 void M_ChangeMIDIPlayer(void);

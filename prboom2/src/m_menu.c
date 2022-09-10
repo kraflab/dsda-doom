@@ -3062,7 +3062,7 @@ setup_menu_t audiovideo_settings[] = {
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, G_Y + 13 * 8, { .config_id = dsda_config_pitched_sounds } },
   { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_conf, G_X, G_Y + 14 * 8, { .config_id = dsda_config_snd_pcspeaker } },
   { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, G_Y + 15 * 8, { .config_id = dsda_config_full_sounds } },
-  { "Preferred MIDI player", S_CHOICE | S_PRGWARN, m_null, G_X, G_Y + 16 * 8, { "snd_midiplayer" }, 0, M_ChangeMIDIPlayer, midiplayers },
+  { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, G_Y + 16 * 8, { .config_id = dsda_config_snd_midiplayer }, 0, NULL, midiplayers },
 
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, KB_Y + 20 * 8, { device_settings } },
   { 0, S_SKIP | S_END, m_null }

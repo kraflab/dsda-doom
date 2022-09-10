@@ -249,7 +249,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_music_volume),
   MIGRATED_SETTING(dsda_config_mus_pause_opt),
   MIGRATED_SETTING(dsda_config_snd_channels),
-  { "snd_midiplayer",{NULL, &snd_midiplayer},{0,"fluidsynth"},UL,UL,def_str},
+  MIGRATED_SETTING(dsda_config_snd_midiplayer),
   { "snd_soundfont",{NULL, &snd_soundfont},{0,""},UL,UL,def_str},
   { "snd_mididev",{NULL, &snd_mididev},{0,""},UL,UL,def_str}, // midi device to use for portmidiplayer
 

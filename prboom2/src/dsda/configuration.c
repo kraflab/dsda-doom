@@ -98,6 +98,7 @@ void M_ChangeSpeed(void);
 void M_ChangeShorttics(void);
 void I_InitSoundParams(void);
 void S_Init(void);
+void M_ChangeMIDIPlayer(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -656,6 +657,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_snd_channels] = {
     "snd_channels", dsda_config_snd_channels,
     dsda_config_int, 1, MAX_CHANNELS, { 32 }, NULL, 0, 0, S_Init
+  },
+  [dsda_config_snd_midiplayer] = {
+    "snd_midiplayer", dsda_config_snd_midiplayer,
+    CONF_STRING("fluidsynth"), NULL, 0, 0, M_ChangeMIDIPlayer
   },
 };
 

@@ -130,6 +130,8 @@ static int snd_pcspeaker;
 int snd_samplerate; // samples per second
 static int snd_samplecount;
 
+static const char *snd_midiplayer;
+
 void I_InitSoundParams(void)
 {
   pitched_sounds = dsda_IntConfig(dsda_config_pitched_sounds);
@@ -915,9 +917,6 @@ char music_player_order[NUM_MUS_PLAYERS][200] =
   PLAYER_PORTMIDI,
 };
 
-// prefered MIDI device
-const char *snd_midiplayer;
-
 const char *midiplayers[midi_player_last + 1] = {
   "fluidsynth", "opl2", "portmidi", NULL };
 
@@ -1348,6 +1347,8 @@ static void UpdateMusic (void *buff, unsigned nsamp)
 
 void M_ChangeMIDIPlayer(void)
 {
+  snd_midiplayer = dsda_StringConfig(dsda_config_snd_midiplayer);
+
   if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_fluidsynth]))
   {
     strcpy(music_player_order[3], PLAYER_FLUIDSYNTH);

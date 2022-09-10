@@ -158,6 +158,7 @@ typedef enum {
   dsda_config_music_volume,
   dsda_config_mus_pause_opt,
   dsda_config_snd_channels,
+  dsda_config_snd_midiplayer,
   dsda_config_count,
 } dsda_config_identifier_t;
 
