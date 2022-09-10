@@ -647,6 +647,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "music_volume", dsda_config_music_volume,
     dsda_config_int, 0, 15, { 8 }, NULL, 0, 0, I_ResetMusicVolume
   },
+  [dsda_config_mus_pause_opt] = {
+    "mus_pause_opt", dsda_config_mus_pause_opt,
+    dsda_config_int, 0, 2, { 1 },
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

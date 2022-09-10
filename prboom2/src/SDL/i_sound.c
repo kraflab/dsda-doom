@@ -1006,8 +1006,6 @@ void I_PlaySong(int handle, int looping)
   }
 }
 
-extern int mus_pause_opt; // From m_misc.c
-
 void I_PauseSong (int handle)
 {
   if (registered_non_rw)
@@ -1016,7 +1014,7 @@ void I_PauseSong (int handle)
     return;
   }
 
-  switch(mus_pause_opt)
+  switch (dsda_IntConfig(dsda_config_mus_pause_opt))
   {
     case 0:
         I_StopSong(handle);
@@ -1043,7 +1041,7 @@ void I_ResumeSong (int handle)
     return;
   }
 
-  switch(mus_pause_opt) {
+  switch (dsda_IntConfig(dsda_config_mus_pause_opt)) {
     case 0:
         I_PlaySong(handle,1);
       break;
@@ -1144,15 +1142,13 @@ static void PlaySong(int handle, int looping)
   }
 }
 
-extern int mus_pause_opt; // From m_misc.c
-
 static void PauseSong (int handle)
 {
   if (!music_handle)
     return;
 
   SDL_LockMutex (musmutex);
-  switch (mus_pause_opt)
+  switch (dsda_IntConfig(dsda_config_mus_pause_opt))
   {
     case 0:
       music_players[current_player]->stop ();
@@ -1172,7 +1168,7 @@ static void ResumeSong (int handle)
     return;
 
   SDL_LockMutex (musmutex);
-  switch (mus_pause_opt)
+  switch (dsda_IntConfig(dsda_config_mus_pause_opt))
   {
     case 0: // i'm not sure why we can guarantee looping=true here,
             // but that's what the old code did

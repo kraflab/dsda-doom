@@ -199,10 +199,6 @@ extern int tran_filter_pct;            // killough 2/21/98
 
 extern int screenblocks;
 
-#ifndef DJGPP
-int         mus_pause_opt; // 0 = kill music, 1 = pause, 2 = continue
-#endif
-
 /* cph - Some MBF stuff parked here for now
  * killough 10/98
  */
@@ -248,7 +244,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_snd_samplecount),
   MIGRATED_SETTING(dsda_config_sfx_volume),
   MIGRATED_SETTING(dsda_config_music_volume),
-  { "mus_pause_opt",{&mus_pause_opt},{1},0,2, def_int}, // 0 = kill music when paused, 1 = pause music, 2 = let music continue
+  MIGRATED_SETTING(dsda_config_mus_pause_opt),
   { "snd_channels",{&default_numChannels},{32},1,32, def_int}, // number of audio events simultaneously // killough
   { "snd_midiplayer",{NULL, &snd_midiplayer},{0,"fluidsynth"},UL,UL,def_str},
   { "snd_soundfont",{NULL, &snd_soundfont},{0,""},UL,UL,def_str},
