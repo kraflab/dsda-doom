@@ -68,7 +68,6 @@ const music_player_t fl_player =
 #include <fluidsynth.h>
 #include <stdlib.h>
 #include <string.h>
-#include "i_sound.h" // for mus_fluidsynth_gain
 #include "i_system.h" // for I_FindFile()
 #include "lprintf.h"
 #include "midifile.h"
@@ -152,7 +151,14 @@ static long long fl_sftell(void *handle)
 
 static int fl_init (int samplerate)
 {
+  int mus_fluidsynth_chorus;
+  int mus_fluidsynth_reverb;
+  int mus_fluidsynth_gain;
   const char *filename;
+
+  mus_fluidsynth_chorus = dsda_IntConfig(dsda_config_mus_fluidsynth_chorus);
+  mus_fluidsynth_reverb = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb);
+  mus_fluidsynth_gain = dsda_IntConfig(dsda_config_mus_fluidsynth_gain);
 
   f_soundrate = samplerate;
   // fluidsynth 1.1.4 supports sample rates as low as 8000hz.  earlier versions only go down to 22050hz

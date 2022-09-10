@@ -34,7 +34,7 @@
 #include "opl_queue.h"
 #include "dbopl.h"
 
-#include "i_sound.h" // mus_opl_gain
+#include "dsda/configuration.h"
 
 static int init_stage_reg_writes = 1;
 
@@ -91,12 +91,15 @@ static opl_timer_t timer2 = { 3125, 0, 0, 0 };
 //
 // Init/shutdown code.
 //
+static int mus_opl_gain;
 
 // Initialize the OPL library.  Returns true if initialized
 // successfully.
 
 int OPL_Init (unsigned int rate)
 {
+    mus_opl_gain = dsda_IntConfig(dsda_config_mus_opl_gain);
+
     opl_sample_rate = rate;
     opl_paused = 0;
     pause_offset = 0;

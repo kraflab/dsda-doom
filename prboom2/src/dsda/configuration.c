@@ -670,6 +670,22 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "snd_soundfont", dsda_config_snd_soundfont,
     CONF_STRING("")
   },
+  [dsda_config_mus_fluidsynth_chorus] = {
+    "mus_fluidsynth_chorus", dsda_config_mus_fluidsynth_chorus,
+    CONF_BOOL(0)
+  },
+  [dsda_config_mus_fluidsynth_reverb] = {
+    "mus_fluidsynth_reverb", dsda_config_mus_fluidsynth_reverb,
+    CONF_BOOL(0)
+  },
+  [dsda_config_mus_fluidsynth_gain] = {
+    "mus_fluidsynth_gain", dsda_config_mus_fluidsynth_gain,
+    dsda_config_int, 0, 1000, { 50 }
+  },
+  [dsda_config_mus_opl_gain] = {
+    "mus_opl_gain", dsda_config_mus_opl_gain,
+    dsda_config_int, 0, 1000, { 50 }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
