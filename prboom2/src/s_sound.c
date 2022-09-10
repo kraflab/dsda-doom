@@ -195,6 +195,21 @@ void S_Init(void)
         S_sfx[i].lumpnum = -1;
 
       dsda_CacheSoundLumps();
+
+      if (raven)
+      {
+        int lump;
+        int length;
+
+        lump = W_GetNumForName("SNDCURVE");
+        length = W_LumpLength(lump);
+
+        max_snd_dist = length;
+        dist_adjust = max_snd_dist / 10;
+
+        soundCurve = Z_Malloc(max_snd_dist);
+        memcpy(soundCurve, (const byte *) W_LumpByNum(lump), max_snd_dist);
+      }
     }
   }
 
@@ -206,21 +221,6 @@ void S_Init(void)
 
     // no sounds are playing, and they are not mus_paused
     mus_paused = 0;
-  }
-
-  if (raven)
-  {
-    int lump;
-    int length;
-
-    lump = W_GetNumForName("SNDCURVE");
-    length = W_LumpLength(lump);
-
-    max_snd_dist = length;
-    dist_adjust = max_snd_dist / 10;
-
-    soundCurve = Z_Malloc(max_snd_dist);
-    memcpy(soundCurve, (const byte *) W_LumpByNum(lump), max_snd_dist);
   }
 }
 
