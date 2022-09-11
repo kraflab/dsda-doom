@@ -3293,17 +3293,6 @@ void M_DrawGeneral(void)
 #define M_X 230
 #define M_Y  39
 
-// killough 11/98: enumerated
-
-enum {
-  mess_color_play,
-  mess_timer,
-  mess_color_review,
-  mess_lines,
-  mess_scrollup,
-  mess_background,
-};
-
 setup_menu_t mess_settings1[];
 
 setup_menu_t* mess_settings[] =
@@ -3314,23 +3303,13 @@ setup_menu_t* mess_settings[] =
 
 setup_menu_t mess_settings1[] =  // Messages screen
 {
-  {"Message Color During Play", S_CRITEM, m_null, M_X,
-   M_Y + mess_color_play*8, {"hudcolor_mesg"}},
-
-  {"Message Review Color", S_CRITEM, m_null, M_X,
-   M_Y + mess_color_review*8, {"hudcolor_list"}},
-
-  {"Number of Review Message Lines", S_NUM, m_null,  M_X,
-   M_Y + mess_lines*8, {"hud_msg_lines"}},
-
-  {"Message Background",  S_YESNO,  m_null,  M_X,
-   M_Y + mess_background*8, {"hud_list_bgon"}},
-
-  // Final entry
+  { "Message Color During Play", S_CRITEM, m_null, M_X, M_Y, { "hudcolor_mesg" } },
+  { "Message Review Color", S_CRITEM, m_null, M_X, M_Y + 2 * 8, { "hudcolor_list" } },
+  { "Number of Review Message Lines", S_NUM, m_null, M_X, M_Y + 4 * 8, { "hud_msg_lines" } },
+  { "Message Background", S_YESNO, m_null, M_X, M_Y + 6 * 8, { "hud_list_bgon" } },
 
   {0,S_SKIP|S_END,m_null}
 };
-
 
 // Setting up for the Messages screen. Turn on flags, set pointers,
 // locate the first item on the screen where the cursor is allowed to
