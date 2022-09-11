@@ -24,6 +24,7 @@
 #include "gl_struct.h"
 #include "r_demo.h"
 #include "s_sound.h"
+#include "v_video.h"
 #include "z_zone.h"
 
 #include "dsda/input.h"
@@ -67,6 +68,7 @@ typedef struct {
 #define CONF_COLOR(x) dsda_config_int, 0, 255, { x }
 #define CONF_BYTE(x) dsda_config_int, 0, 255, { x }
 #define CONF_STRING(x) dsda_config_string, 0, 0, { .v_string = x }
+#define CONF_CR(x) dsda_config_int, 0, CR_LIMIT - 1, { x }
 
 extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
