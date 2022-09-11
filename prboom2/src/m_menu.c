@@ -1069,7 +1069,6 @@ enum
   general, // killough 10/98
   setup,                                                    // phares 3/21/98
   endgame,
-  messages,
   soundvol,
   opt_end
 } options_e;
@@ -1098,9 +1097,6 @@ menu_t OptionsDef =
 //
 // M_Options
 //
-char detailNames[2][9] = {"M_GDHIGH","M_GDLOW"};
-char msgNames[2][9]  = {"M_MSGOFF","M_MSGON"};
-
 
 void M_DrawOptions(void)
 {
@@ -1109,18 +1105,6 @@ void M_DrawOptions(void)
   // CPhipps - patch drawing updated
   // proff/nicolas 09/20/98 -- changed for hi-res
   V_DrawNamePatch(108, 15, 0, "M_OPTTTL", CR_DEFAULT, VPT_STRETCH);
-
-  if ((W_CheckNumForName("M_GENERL") < 0) || (W_CheckNumForName("M_SETUP") < 0))
-  {
-    M_WriteText(OptionsDef.x + M_StringWidth("MESSAGES: "),
-      OptionsDef.y+8-(M_StringHeight("ONOFF")/2)+LINEHEIGHT*messages,
-      dsda_ShowMessages() ? "ON" : "OFF", CR_DEFAULT);
-  }
-  else
-  {
-    V_DrawNamePatch(OptionsDef.x + 120, OptionsDef.y+LINEHEIGHT*messages, 0,
-      msgNames[dsda_ShowMessages()], CR_DEFAULT, VPT_STRETCH);
-  }
 }
 
 void M_Options(int choice)
@@ -1441,7 +1425,6 @@ dboolean set_keybnd_active = false; // in key binding setup screens
 dboolean set_weapon_active = false; // in weapons setup screen
 dboolean set_status_active = false; // in status bar/hud setup screen
 dboolean set_auto_active   = false; // in automap setup screen
-dboolean set_mess_active   = false; // in messages setup screen
 dboolean setup_select      = false; // changing an item
 dboolean setup_gather      = false; // gathering keys for value
 dboolean colorbox_active   = false; // color palette being shown
@@ -4851,8 +4834,7 @@ dboolean M_Responder (event_t* ev) {
       }
 
     // killough 10/98: consolidate handling into one place:
-    if (setup_select &&
-        set_general_active | set_mess_active | set_status_active)
+    if (setup_select && set_general_active | set_status_active)
     {
       if (ptr1->m_flags & S_STRING) // creating/editing a string?
       {
@@ -5035,7 +5017,6 @@ dboolean M_Responder (event_t* ev) {
       set_weapon_active = false;
       set_status_active = false;
       set_auto_active = false;
-      set_mess_active = false;
       colorbox_active = false;
       set_general_active = false;    // killough 10/98
       HU_Start();    // catch any message changes // phares 4/19/98
