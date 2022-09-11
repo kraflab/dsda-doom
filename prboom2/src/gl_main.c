@@ -248,7 +248,9 @@ void gld_MultisamplingSet(void)
 {
   if (gl_render_multisampling)
   {
-    int use_multisampling = map_use_multisamling ||
+    extern int map_use_multisampling;
+
+    int use_multisampling = map_use_multisampling ||
       (!(automapmode & am_active) || (automapmode & am_overlay));
 
     gld_EnableMultisample(use_multisampling);
@@ -428,6 +430,17 @@ static int visible_subsectors_count_prev = -1;
 void gld_ResetTexturedAutomap(void)
 {
   visible_subsectors_count_prev = -1;
+}
+
+static int map_textured_trans;
+static int map_textured_overlay_trans;
+static int map_lines_overlay_trans;
+
+void gld_ResetAutomapTransparency(void)
+{
+  map_textured_trans = dsda_IntConfig(dsda_config_map_textured_trans);
+  map_textured_overlay_trans = dsda_IntConfig(dsda_config_map_textured_overlay_trans);
+  map_lines_overlay_trans = dsda_IntConfig(dsda_config_map_lines_overlay_trans);
 }
 
 void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my, int fw, int fh, fixed_t scale)

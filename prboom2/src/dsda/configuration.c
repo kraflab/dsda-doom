@@ -110,6 +110,10 @@ void dsda_SetupStretchParams(void);
 void dsda_InitCommandHistory(void);
 void dsda_InitQuickstartCache(void);
 void dsda_InitParallelSFXFilter(void);
+void M_ChangeMapMultisamling(void);
+void M_ChangeMapTextured(void);
+void AM_InitParams(void);
+void gld_ResetAutomapTransparency(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -883,6 +887,59 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_weaponbob] = {
     "dsda_weaponbob", dsda_config_weaponbob,
     CONF_BOOL(1)
+  },
+  [dsda_config_map_secret_after] = {
+    "map_secret_after", dsda_config_map_secret_after,
+    CONF_BOOL(0), NULL, 0, 0, AM_InitParams
+  },
+  [dsda_config_map_point_coord] = {
+    "map_point_coord", dsda_config_map_point_coord,
+    CONF_BOOL(0), NULL, CONF_STRICT, 0
+  },
+  [dsda_config_map_level_stat] = {
+    "map_level_stat", dsda_config_map_level_stat,
+    CONF_BOOL(1)
+  },
+  [dsda_config_automapmode] = { // TODO
+    "automapmode", dsda_config_automapmode,
+    dsda_config_int, 0, 31, { am_follow }
+  },
+  [dsda_config_map_grid_size] = {
+    "map_grid_size", dsda_config_map_grid_size,
+    dsda_config_int, 8, 256, { 128 }, NULL, 0, 0, AM_InitParams
+  },
+  [dsda_config_map_scroll_speed] = {
+    "map_scroll_speed", dsda_config_map_scroll_speed,
+    dsda_config_int, 1, 32, { 8 }, NULL, 0, 0, AM_InitParams
+  },
+  [dsda_config_map_wheel_zoom] = {
+    "map_wheel_zoom", dsda_config_map_wheel_zoom,
+    CONF_BOOL(1), NULL, 0, 0, AM_InitParams
+  },
+  [dsda_config_map_use_multisamling] = {
+    "map_use_multisampling", dsda_config_map_use_multisamling,
+    CONF_BOOL(0), NULL, 0, 0, M_ChangeMapMultisamling
+  },
+  [dsda_config_map_textured] = {
+    "map_textured", dsda_config_map_textured,
+    CONF_BOOL(1), NULL, 0, 0, M_ChangeMapTextured
+  },
+  [dsda_config_map_textured_trans] = {
+    "map_textured_trans", dsda_config_map_textured_trans,
+    dsda_config_int, 0, 100, { 100 }, NULL, 0, 0, gld_ResetAutomapTransparency
+  },
+  [dsda_config_map_textured_overlay_trans] = {
+    "map_textured_overlay_trans", dsda_config_map_textured_overlay_trans,
+    dsda_config_int, 0, 100, { 66 }, NULL, 0, 0, gld_ResetAutomapTransparency
+  },
+  [dsda_config_map_lines_overlay_trans] = {
+    "map_lines_overlay_trans", dsda_config_map_lines_overlay_trans,
+    dsda_config_int, 0, 100, { 100 }, NULL, 0, 0, gld_ResetAutomapTransparency
+  },
+  [dsda_config_map_things_appearance] = {
+    "map_things_appearance", dsda_config_map_things_appearance,
+    dsda_config_int, 0, map_things_appearance_max - 1, { map_things_appearance_max - 1 },
+    NULL, 0, 0, AM_InitParams
   },
 };
 

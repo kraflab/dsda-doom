@@ -255,27 +255,14 @@ static void AM_SetColors(void)
   }
 }
 
-//jff 3/9/98 add option to not show secret sectors until entered
-int map_secret_after;
-
-int map_grid_size;
-int map_scroll_speed;
-int map_wheel_zoom;
-int map_use_multisamling;
+static int map_secret_after;
+static int map_grid_size;
+static int map_scroll_speed;
+static int map_wheel_zoom;
 int map_textured;
-int map_textured_trans;
-int map_textured_overlay_trans;
-int map_lines_overlay_trans;
+int map_use_multisampling;
 
-map_things_appearance_t map_things_appearance;
-const char *map_things_appearance_list[map_things_appearance_max] =
-{
-  "classic",
-  "scaled",
-#if defined(HAVE_LIBSDL2_IMAGE)
-  "icons"
-#endif
-};
+static map_things_appearance_t map_things_appearance;
 
 // drawing stuff
 #define FB    0
@@ -822,6 +809,15 @@ void AM_clearMarks(void)
   markpointnum = 0;
 }
 
+void AM_InitParams(void)
+{
+  map_secret_after = dsda_IntConfig(dsda_config_map_secret_after);
+  map_scroll_speed = dsda_IntConfig(dsda_config_map_scroll_speed);
+  map_grid_size = dsda_IntConfig(dsda_config_map_grid_size);
+  map_wheel_zoom = dsda_IntConfig(dsda_config_map_wheel_zoom);
+  map_things_appearance = dsda_IntConfig(dsda_config_map_things_appearance);
+}
+
 //
 // AM_LevelInit()
 //
@@ -870,6 +866,8 @@ void AM_Stop (void)
 void AM_Start(void)
 {
   static int lastlevel = -1, lastepisode = -1;
+
+  AM_InitParams();
 
   if (!stopped)
     AM_Stop();
@@ -1079,8 +1077,7 @@ dboolean AM_Responder
   }
   else if (dsda_InputActivated(dsda_input_map_textured))
   {
-    map_textured = !map_textured;
-    M_ChangeMapTextured();
+    dsda_ToggleConfig(dsda_config_map_textured, true);
     plr->message = (map_textured ? s_AMSTR_TEXTUREDON : s_AMSTR_TEXTUREDOFF);
 
     return true;
@@ -1422,7 +1419,7 @@ static void AM_drawMline
   if (AM_clipMline(ml, &fl))
   {
     // draws it on frame buffer using fb coords
-    if (!raven && map_use_multisamling)
+    if (!raven && map_use_multisampling)
       V_DrawLineWu(&fl, color);
     else
       V_DrawLine(&fl, color);
@@ -1445,16 +1442,6 @@ static void AM_drawGrid(int color)
   fixed_t minlen, extx, exty;
   fixed_t minx, miny;
   fixed_t gridsize = map_grid_size << MAPBITS;
-
-  if(map_grid_size == -1)
-  {
-    fixed_t oprtimal_gridsize = m_h / 16;
-    gridsize = 8;
-    while (gridsize < oprtimal_gridsize)
-      gridsize <<= 1;
-    if (gridsize - oprtimal_gridsize > oprtimal_gridsize - (gridsize >> 1))
-      gridsize >>= 1;
-  }
 
   // [RH] Calculate a minimum for how long the grid lines should be so that
   // they cover the screen at any rotation.
@@ -2411,17 +2398,11 @@ static void AM_drawCrosshair(int color)
   V_DrawLine(&line, color);
 }
 
-void M_ChangeMapGridSize(void)
-{
-  if (map_grid_size > 0)
-  {
-    map_grid_size = MAX(map_grid_size, 8);
-  }
-}
-
 void M_ChangeMapTextured(void)
 {
-  if (V_IsOpenGLMode())
+  map_textured = dsda_IntConfig(dsda_config_map_textured);
+
+  if (gamestate == GS_LEVEL && V_IsOpenGLMode())
   {
     gld_ProcessTexturedMap();
   }
@@ -2429,7 +2410,9 @@ void M_ChangeMapTextured(void)
 
 void M_ChangeMapMultisamling(void)
 {
-  if (!raven && map_use_multisamling && V_IsSoftwareMode())
+  map_use_multisampling = dsda_IntConfig(dsda_config_map_use_multisamling);
+
+  if (!raven && map_use_multisampling && V_IsSoftwareMode())
   {
     V_InitFlexTranTable();
   }
@@ -2515,7 +2498,7 @@ void AM_Drawer (void)
 
   if (V_IsOpenGLMode())
   {
-    // do not use multisampling in automap mode if map_use_multisamling 0
+    // do not use multisampling in automap mode if map_use_multisampling 0
     gld_MultisamplingSet();
   }
 

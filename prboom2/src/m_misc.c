@@ -195,12 +195,6 @@ extern int tran_filter_pct;            // killough 2/21/98
 
 extern int screenblocks;
 
-/* cph - Some MBF stuff parked here for now
- * killough 10/98
- */
-int map_point_coordinates;
-int map_level_stat;
-
 default_t defaults[] =
 {
   //e6y
@@ -344,19 +338,19 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_mapcolor_me),
   MIGRATED_SETTING(dsda_config_mapcolor_enemy),
   MIGRATED_SETTING(dsda_config_mapcolor_frnd),
-  { "map_secret_after", {&map_secret_after}, {0},0,1, def_bool}, // prevents showing secret sectors till after entered
-  { "map_point_coord", {&map_point_coordinates}, {0},0,1, def_bool},
-  { "map_level_stat", {&map_level_stat}, {1},0,1, def_bool},
-  { "automapmode", {(int*)&automapmode}, {am_follow}, 0, 31, def_hex}, // automap mode
-  { "map_grid_size", {&map_grid_size}, {128},8,256, def_int},
-  { "map_scroll_speed", {&map_scroll_speed}, {8},1,32, def_int},
-  { "map_wheel_zoom", {&map_wheel_zoom}, {1},0,1, def_bool},
-  { "map_use_multisamling", {&map_use_multisamling}, {0},0,1, def_bool},
-  { "map_textured", {&map_textured}, {1},0,1, def_bool},
-  { "map_textured_trans", {&map_textured_trans}, {100},0,100, def_int},
-  { "map_textured_overlay_trans", {&map_textured_overlay_trans}, {66},0,100, def_int},
-  { "map_lines_overlay_trans", {&map_lines_overlay_trans}, {100},0,100, def_int},
-  { "map_things_appearance", {(int*)&map_things_appearance}, {map_things_appearance_max-1},0,map_things_appearance_max-1, def_int},
+  MIGRATED_SETTING(dsda_config_map_secret_after),
+  MIGRATED_SETTING(dsda_config_map_point_coord),
+  MIGRATED_SETTING(dsda_config_map_level_stat),
+  MIGRATED_SETTING(dsda_config_automapmode),
+  MIGRATED_SETTING(dsda_config_map_grid_size),
+  MIGRATED_SETTING(dsda_config_map_scroll_speed),
+  MIGRATED_SETTING(dsda_config_map_wheel_zoom),
+  MIGRATED_SETTING(dsda_config_map_use_multisamling),
+  MIGRATED_SETTING(dsda_config_map_textured),
+  MIGRATED_SETTING(dsda_config_map_textured_trans),
+  MIGRATED_SETTING(dsda_config_map_textured_overlay_trans),
+  MIGRATED_SETTING(dsda_config_map_lines_overlay_trans),
+  MIGRATED_SETTING(dsda_config_map_things_appearance),
 
   SETTING_HEADING("Heads-up display settings"),
   MIGRATED_SETTING(dsda_config_hud_health_red),

@@ -41,11 +41,13 @@ void dsda_InitSettings(void) {
   void G_UpdateMouseSensitivity(void);
   void dsda_InitQuickstartCache(void);
   void dsda_InitParallelSFXFilter(void);
+  void gld_ResetAutomapTransparency(void);
 
   dsda_UpdateStrictMode();
   G_UpdateMouseSensitivity();
   dsda_InitQuickstartCache();
   dsda_InitParallelSFXFilter();
+  gld_ResetAutomapTransparency();
 }
 
 static int dsda_WadCompatibilityLevel(void) {
@@ -206,9 +208,7 @@ dboolean dsda_ShowDemoAttempts(void) {
 }
 
 dboolean dsda_MapPointCoordinates(void) {
-  extern int map_point_coordinates;
-
-  return map_point_coordinates && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_map_point_coord);
 }
 
 dboolean dsda_SimpleShadows(void) {

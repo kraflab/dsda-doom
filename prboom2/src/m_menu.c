@@ -176,9 +176,6 @@ menu_t* currentMenu; // current menudef
 
 int mapcolor_me;    // cph
 
-extern int map_point_coordinates; // killough 10/98
-extern int map_level_stat;
-
 extern default_t defaults[];
 extern int numdefaults;
 
@@ -2691,26 +2688,35 @@ setup_menu_t* auto_settings[] =
   NULL
 };
 
+static const char *map_things_appearance_list[] =
+{
+  "classic",
+  "scaled",
+#if defined(HAVE_LIBSDL2_IMAGE)
+  "icons",
+#endif
+  NULL
+};
+
 setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
 {
-  {"Show Kills/Secrts/Items statistics",      S_YESNO,m_null,AU_X,AU_Y+0*8, {"map_level_stat"}},
-  {"Show coordinates of automap pointer",     S_YESNO,m_null,AU_X,AU_Y+1*8, {"map_point_coord"}},  // killough 10/98
-  {"Show Secrets only after entering",        S_YESNO,m_null,AU_X,AU_Y+2*8, {"map_secret_after"}},
-  {"Grid cell size 8..256, -1 for autosize",  S_NUM,  m_null,AU_X,AU_Y+3*8, {"map_grid_size"}, 0, M_ChangeMapGridSize},
-  {"Scroll / Zoom speed  (1..32)",            S_NUM,  m_null,AU_X,AU_Y+4*8, {"map_scroll_speed"}},
-  {"Use mouse wheel for zooming",             S_YESNO,m_null,AU_X,AU_Y+5*8, {"map_wheel_zoom"}},
-  {"Apply multisampling",                     S_YESNO,m_null,AU_X,AU_Y+6*8, {"map_use_multisamling"}, 0, M_ChangeMapMultisamling},
-  {"Enable textured display",                 S_YESNO,m_null,AU_X,AU_Y+7*8, {"map_textured"}, 0, M_ChangeMapTextured},
-  {"Things appearance",                       S_CHOICE,m_null,AU_X,AU_Y+8*8, {"map_things_appearance"}, 0, NULL, map_things_appearance_list},
-  {"Translucency percentage",                 S_SKIP|S_TITLE,m_null,AU_X,AU_Y+9*8},
-  {"Textured automap",                        S_NUM,  m_null,AU_X,AU_Y+10*8, {"map_textured_trans"}},
-  {"Textured automap in overlay mode",        S_NUM,  m_null,AU_X,AU_Y+11*8, {"map_textured_overlay_trans"}},
-  {"Lines in overlay mode",                   S_NUM,  m_null,AU_X,AU_Y+12*8, {"map_lines_overlay_trans"}},
+  { "Show Kills/Secrts/Items statistics", S_YESNO, m_conf, AU_X, AU_Y + 0 * 8, { .config_id = dsda_config_map_level_stat } },
+  { "Show coordinates of automap pointer", S_YESNO, m_conf, AU_X, AU_Y + 1 * 8, { .config_id = dsda_config_map_point_coord } },
+  { "Show Secrets only after entering", S_YESNO, m_conf, AU_X, AU_Y + 2 * 8, { .config_id = dsda_config_map_secret_after } },
+  { "Grid cell size 8..256, -1 for autosize", S_NUM, m_conf, AU_X, AU_Y + 3 * 8, { .config_id = dsda_config_map_grid_size } },
+  { "Scroll / Zoom speed  (1..32)", S_NUM, m_conf, AU_X, AU_Y + 4 * 8, { .config_id = dsda_config_map_scroll_speed } },
+  { "Use mouse wheel for zooming", S_YESNO, m_conf, AU_X, AU_Y + 5 * 8, { .config_id = dsda_config_map_wheel_zoom } },
+  { "Apply multisampling", S_YESNO, m_conf, AU_X, AU_Y + 6 * 8, { .config_id = dsda_config_map_use_multisamling } },
+  { "Enable textured display", S_YESNO, m_conf, AU_X, AU_Y + 7 * 8, { .config_id = dsda_config_map_textured } },
+  { "Things appearance", S_CHOICE, m_conf, AU_X, AU_Y + 8 * 8, { .config_id = dsda_config_map_things_appearance }, 0, NULL, map_things_appearance_list },
 
-  {"->",S_SKIP|S_NEXT,m_null,AU_NEXT,AU_Y+20*8, {auto_settings2}},
+  { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X, AU_Y + 10 * 8 },
+  { "Textured automap", S_NUM, m_conf, AU_X, AU_Y + 11 * 8, { .config_id = dsda_config_map_textured_trans } },
+  { "Textured automap in overlay mode", S_NUM, m_conf, AU_X, AU_Y + 12 * 8, { .config_id = dsda_config_map_textured_overlay_trans } },
+  { "Lines in overlay mode", S_NUM, m_conf, AU_X, AU_Y + 13 * 8, { .config_id = dsda_config_map_lines_overlay_trans } },
 
-  // Final entry
-  {0,S_SKIP|S_END,m_null}
+  { "->", S_SKIP | S_NEXT, m_null, AU_NEXT, AU_Y + 20 * 8, { auto_settings2 } },
+  { 0, S_SKIP | S_END, m_null }
 };
 
 setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
@@ -5622,6 +5628,7 @@ void M_Init(void)
 
   M_ChangeDemoSmoothTurns();
 
+  M_ChangeMapTextured();
   M_ChangeMapMultisamling();
 
   render_stretch_hud = render_stretch_hud_default;

@@ -1118,6 +1118,8 @@ void gld_PreprocessLevel(void)
 
 void gld_ProcessTexturedMap(void)
 {
+  extern int map_textured;
+
   if (map_textured && subsectorloops && subsectorloops[0].loops == NULL)
   {
     triangulate_subsectors = 1;

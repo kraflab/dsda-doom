@@ -136,9 +136,6 @@ static char hud_keysstr[80];
 static char hud_gkeysstr[80]; //jff 3/7/98 add support for graphic key display
 static char hud_monsecstr[80];
 
-extern int map_point_coordinates;
-extern int map_level_stat;
-
 typedef struct custom_message_s
 {
   int ticks;
@@ -717,7 +714,7 @@ void HU_Drawer(void)
       }
     }
 
-    if (map_level_stat)
+    if (dsda_IntConfig(dsda_config_map_level_stat))
     {
       static char str[32];
       int time = leveltime / TICRATE;
