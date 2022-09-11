@@ -35,7 +35,6 @@
 
 int dsda_tas;
 int dsda_skip_next_wipe;
-int dsda_wipe_at_full_speed;
 int dsda_show_demo_attempts;
 int dsda_hide_horns;
 int dsda_skip_quit_prompt;
@@ -236,7 +235,7 @@ dboolean dsda_ShowHealthBars(void) {
 }
 
 dboolean dsda_WipeAtFullSpeed(void) {
-  return dsda_wipe_at_full_speed;
+  return dsda_IntConfig(dsda_config_wipe_at_full_speed);
 }
 
 int dsda_show_alive_monsters;

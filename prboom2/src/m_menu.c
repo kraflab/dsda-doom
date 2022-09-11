@@ -3076,7 +3076,7 @@ setup_menu_t demo_settings[] = {
 
 setup_menu_t tas_settings[] = {
   { "TAS Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Wipe At Full Speed", S_YESNO, m_null, G_X, G_Y + 2 * 8, { "dsda_wipe_at_full_speed" } },
+  { "Wipe At Full Speed", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_wipe_at_full_speed } },
   { "Show Command Display", S_YESNO, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_command_display } },
   { "Command History", S_NUM, m_null, G_X, G_Y + 4 * 8, { "dsda_command_history_size" } },
   { "Hide Empty Commands", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "dsda_hide_empty_commands" } },
