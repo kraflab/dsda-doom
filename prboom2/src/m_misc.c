@@ -501,7 +501,6 @@ default_t defaults[] =
   INPUT_SETTING("input_toggleweapon", dsda_input_toggleweapon, '0', -1, -1),
   INPUT_SETTING("input_fire", dsda_input_fire, KEYD_RCTRL, 0, 0),
 
-  INPUT_SETTING("input_setup", dsda_input_setup, 0, -1, -1),
   INPUT_SETTING("input_pause", dsda_input_pause, KEYD_PAUSE, -1, -1),
   INPUT_SETTING("input_map", dsda_input_map, KEYD_TAB, -1, -1),
   INPUT_SETTING("input_soundvolume", dsda_input_soundvolume, KEYD_F4, -1, -1),

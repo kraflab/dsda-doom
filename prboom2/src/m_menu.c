@@ -223,7 +223,6 @@ void M_DrawOptions(void);
 void M_DrawSound(void);
 void M_DrawLoad(void);
 void M_DrawSave(void);
-void M_DrawSetup(void);                                     // phares 3/21/98
 void M_DrawHelp (void);                                     // phares 5/04/98
 
 void M_DrawSaveLoadBorder(int x,int y);
@@ -244,7 +243,6 @@ void M_ClearMenus (void);
 // prototypes added to support Setup Menus and Extended HELP screens
 
 int  M_GetKeyString(int,int);
-void M_Setup(int choice);
 void M_KeyBindings(int choice);
 void M_Weapons(int);
 void M_StatusBar(int);
@@ -1067,8 +1065,10 @@ void M_SaveGame (int choice)
 enum
 {
   general, // killough 10/98
-  setup,                                                    // phares 3/21/98
-  endgame,
+  set_key_bindings,
+  set_weapons,
+  set_statbar,
+  set_automap,
   soundvol,
   opt_end
 } options_e;
@@ -1077,11 +1077,12 @@ enum
 
 menuitem_t OptionsMenu[]=
 {
-  // killough 4/6/98: move setup to be a sub-menu of OPTIONs
-  {1,"M_GENERL", M_General, 'g', "GENERAL"},      // killough 10/98
-  {1,"M_SETUP",  M_Setup,   's', "SETUP"},        // phares 3/21/98
-  {1,"M_ENDGAM", M_EndGame,'e',  "END GAME"},
-  {1,"M_SVOL",   M_Sound,'s', "SOUND VOLUME"},
+  { 1, "M_GENERL", M_General, 'g', "GENERAL" }, // killough 10/98
+  { 1, "M_KEYBND", M_KeyBindings,'k', "KEY BINDINGS" },
+  { 1, "M_WEAP", M_Weapons, 'w', "WEAPONS" },
+  { 1, "M_STAT", M_StatusBar, 's', "STATUS BAR / HUD" },
+  { 1, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
+  { 1, "M_SVOL", M_Sound, 's', "SOUND VOLUME" },
 };
 
 menu_t OptionsDef =
@@ -1478,37 +1479,6 @@ static char menu_buffer[66];
 
 /////////////////////////////
 //
-// The setup_e enum is used to provide a unique number for each group of Setup
-// Screens.
-
-enum
-{
-  set_key_bindings,
-  set_weapons,
-  set_statbar,
-  set_automap,
-  set_messages,
-  set_setup_end
-} setup_e;
-
-/////////////////////////////
-//
-// SetupMenu is the definition of what the main Setup Screen should look
-// like. Each entry shows that the cursor can land on each item (1), the
-// built-in graphic lump (i.e. "M_KEYBND") that should be displayed,
-// the program which takes over when an item is selected, and the hotkey
-// associated with the item.
-
-menuitem_t SetupMenu[]=
-{
-  {1,"M_KEYBND",M_KeyBindings,'k', "KEY BINDINGS"},
-  {1,"M_WEAP"  ,M_Weapons,    'w', "WEAPONS"},
-  {1,"M_STAT"  ,M_StatusBar,  's', "STATUS BAR / HUD"},
-  {1,"M_AUTO"  ,M_Automap,    'a', "AUTOMAP"},
-};
-
-/////////////////////////////
-//
 // M_DoNothing does just that: nothing. Just a placeholder.
 
 static void M_DoNothing(int choice)
@@ -1536,34 +1506,10 @@ menuitem_t Generic_Setup[] =
   {1,"",M_DoNothing,0}
 };
 
-/////////////////////////////
-//
-// SetupDef is the menu definition that the mainstream Menu code understands.
-// This is used by M_Setup (below) to define what is drawn and what is done
-// with the main Setup screen.
-
-menu_t  SetupDef =
-{
-  set_setup_end, // number of Setup Menu items (Key Bindings, etc.)
-  &OptionsDef,   // menu to return to when BACKSPACE is hit on this menu
-  SetupMenu,     // definition of items to show on the Setup Screen
-  M_DrawSetup,   // program that draws the Setup Screen
-  59,37,         // x,y position of the skull (modified when the skull is
-                 // drawn). The skull is parked on the upper-left corner
-                 // of the Setup screens, since it isn't needed as a cursor
-  0              // last item the user was on for this menu
-};
-
-/////////////////////////////
-//
-// Here are the definitions of the individual Setup Menu screens. They
-// follow the format of the 'Big Font' menu structures. See the comments
-// for SetupDef (above) to help understand what each of these says.
-
 menu_t KeybndDef =
 {
   generic_setup_end,
-  &SetupDef,
+  &OptionsDef,
   Generic_Setup,
   M_DrawKeybnd,
   34,5,      // skull drawn here
@@ -1573,7 +1519,7 @@ menu_t KeybndDef =
 menu_t WeaponDef =
 {
   generic_setup_end,
-  &SetupDef,
+  &OptionsDef,
   Generic_Setup,
   M_DrawWeapons,
   34,5,      // skull drawn here
@@ -1583,7 +1529,7 @@ menu_t WeaponDef =
 menu_t StatusHUDDef =
 {
   generic_setup_end,
-  &SetupDef,
+  &OptionsDef,
   Generic_Setup,
   M_DrawStatusHUD,
   34,5,      // skull drawn here
@@ -1593,7 +1539,7 @@ menu_t StatusHUDDef =
 menu_t AutoMapDef =
 {
   generic_setup_end,
-  &SetupDef,
+  &OptionsDef,
   Generic_Setup,
   M_DrawAutoMap,
   34,5,      // skull drawn here
@@ -1609,28 +1555,6 @@ menu_t GeneralDef =                                           // killough 10/98
   34,5,      // skull drawn here
   0
 };
-
-/////////////////////////////
-//
-// Draws the Title for the main Setup screen
-
-void M_DrawSetup(void)
-{
-  if (raven) return MN_DrawSetup();
-
-  // CPhipps - patch drawing updated
-  M_DrawTitle(124, 15, "M_SETUP", CR_DEFAULT, "SETUP", CR_GOLD);
-}
-
-/////////////////////////////
-//
-// Uses the SetupDef structure to draw the menu items for the main
-// Setup screen
-
-void M_Setup(int choice)
-{
-  M_SetupNextMenu(&SetupDef);
-}
 
 // Data used by the Automap color selection code
 
@@ -2214,7 +2138,6 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
   {"HELP"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,{0},dsda_input_help},
   {"MENU"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,{0},dsda_input_escape},
   // killough 10/98: hotkey for entering setup menu:
-  {"SETUP"       ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 1*8,{0},dsda_input_setup},
   {"PAUSE"       ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 2*8,{0},dsda_input_pause},
   {"AUTOMAP"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 3*8,{0},dsda_input_map},
   {"VOLUME"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 4*8,{0},dsda_input_soundvolume},
@@ -3553,7 +3476,6 @@ setup_menu_t helpstrings[] =  // HELP screen strings
   {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KT_X1,KT_Y1},
   {"HELP"        ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 1*8,{0},dsda_input_help},
   {"MENU"        ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 2*8,{0},dsda_input_escape},
-  {"SETUP"       ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 3*8,{0},dsda_input_setup},
   {"PAUSE"       ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 4*8,{0},dsda_input_pause},
   {"AUTOMAP"     ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 5*8,{0},dsda_input_map},
   {"SOUND VOLUME",S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 6*8,{0},dsda_input_soundvolume},
@@ -4375,14 +4297,6 @@ dboolean M_Responder (event_t* ev) {
       if (automapmode & am_active)    // jff 2/22/98
         return false;                  // HUD mode control
       M_SizeDisplay(2);
-      return true;
-    }
-
-    /* killough 10/98: allow key shortcut into Setup menu */
-    if (dsda_InputActivated(dsda_input_setup)) {
-      M_StartControlPanel();
-      S_StartSound(NULL,g_sfx_swtchn);
-      M_SetupNextMenu(&SetupDef);
       return true;
     }
   }

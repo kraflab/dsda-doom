@@ -51,7 +51,6 @@ extern menu_t MainDef;
 extern menu_t EpiDef;
 extern menu_t NewDef;
 extern menu_t OptionsDef;
-extern menu_t SetupDef;
 extern menu_t SoundDef;
 extern menu_t LoadDef;
 extern menu_t SaveDef;
@@ -83,9 +82,6 @@ void MN_Init(void)
 
   OptionsDef.x = 88;
   OptionsDef.y = 16;
-
-  SetupDef.x = OptionsDef.x;
-  SetupDef.y = OptionsDef.y;
 
   SoundDef.x = OptionsDef.x;
   SoundDef.y = OptionsDef.y;
@@ -376,19 +372,6 @@ void MN_DrawSkillMenu(void)
 
 void MN_DrawOptions(void)
 {
-    if (dsda_ShowMessages())
-    {
-        MN_DrTextB("ON", 196, OptionsDef.y + 3 * ITEM_HEIGHT);
-    }
-    else
-    {
-        MN_DrTextB("OFF", 196, OptionsDef.y + 3 * ITEM_HEIGHT);
-    }
-}
-
-void MN_DrawSetup(void)
-{
-  // nothing for heretic
 }
 
 void MN_DrawSound(void)
