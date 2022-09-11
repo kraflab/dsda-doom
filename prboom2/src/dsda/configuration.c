@@ -793,6 +793,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "hud_ammo_yellow", dsda_config_hud_ammo_yellow,
     dsda_config_int, 0, 100, { 50 }, NULL, 0, 0, HU_InitThresholds
   },
+  [dsda_config_cycle_ghost_colors] = {
+    "dsda_cycle_ghost_colors", dsda_config_cycle_ghost_colors,
+    CONF_BOOL(0)
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

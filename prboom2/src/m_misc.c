@@ -382,7 +382,7 @@ default_t defaults[] =
 
   SETTING_HEADING("DSDA-Doom settings"),
   MIGRATED_SETTING(dsda_config_strict_mode),
-  { "dsda_cycle_ghost_colors", { &dsda_cycle_ghost_colors }, { 0 }, 0, 1, def_bool },
+  MIGRATED_SETTING(dsda_config_cycle_ghost_colors),
   { "dsda_auto_key_frame_interval", { &dsda_auto_key_frame_interval }, { 1 }, 1, 600, def_int },
   { "dsda_auto_key_frame_depth", { &dsda_auto_key_frame_depth }, { 60 }, 0, 600, def_int },
   { "dsda_auto_key_frame_timeout", { &dsda_auto_key_frame_timeout }, { 10 }, 0, 25, def_int },

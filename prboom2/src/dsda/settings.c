@@ -33,7 +33,6 @@
 
 #include "settings.h"
 
-int dsda_cycle_ghost_colors;
 int dsda_tas;
 int dsda_skip_next_wipe;
 int dsda_wipe_at_full_speed;
@@ -163,7 +162,7 @@ dboolean dsda_ProcessCheatCodes(void) {
 }
 
 dboolean dsda_CycleGhostColors(void) {
-  return dsda_cycle_ghost_colors;
+  return dsda_IntConfig(dsda_config_cycle_ghost_colors);
 }
 
 dboolean dsda_AlwaysSR50(void) {

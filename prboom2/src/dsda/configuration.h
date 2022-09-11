@@ -190,6 +190,7 @@ typedef enum {
   dsda_config_hud_health_green,
   dsda_config_hud_ammo_red,
   dsda_config_hud_ammo_yellow,
+  dsda_config_cycle_ghost_colors,
   dsda_config_count,
 } dsda_config_identifier_t;
 

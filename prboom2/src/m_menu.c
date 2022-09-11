@@ -3058,7 +3058,7 @@ setup_menu_t mapping_settings[] = {
 setup_menu_t demo_settings[] = {
   { "Demo Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Strict Mode", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_strict_mode } },
-  { "Cycle Ghost Colors", S_YESNO, m_null, G_X, G_Y + 3 * 8, { "dsda_cycle_ghost_colors" } },
+  { "Cycle Ghost Colors", S_YESNO, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_cycle_ghost_colors } },
   { "Show Demo Attempts", S_YESNO, m_null, G_X, G_Y + 4 * 8, { "dsda_show_demo_attempts" } },
   { "Show Split Data", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "dsda_show_split_data" } },
   { "Text File Author", S_NAME, m_null, G_X, G_Y + 6 * 8, { "dsda_player_name" } },
