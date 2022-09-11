@@ -250,7 +250,6 @@ void M_KeyBindings(int choice);
 void M_Weapons(int);
 void M_StatusBar(int);
 void M_Automap(int);
-void M_Messages(int);
 void M_InitExtendedHelp(void);
 void M_ExtHelpNextScreen(int);
 void M_ExtHelp(int);
@@ -263,7 +262,6 @@ static void M_DrawStringCentered(int,int,int,const char*);
 void M_DrawStatusHUD(void);
 void M_DrawExtHelp(void);
 void M_DrawAutoMap(void);
-void M_DrawMessages(void);
 void M_ChangeDemoSmoothTurns(void);
 void M_ChangeTextureParams(void);
 void M_General(int);      // killough 10/98
@@ -1441,7 +1439,6 @@ void M_SizeDisplay(int choice)
 //    Weapons
 //    Status Bar / HUD
 //    Automap
-//    Messages
 //
 // killough 10/98: added Compatibility and General menus
 //
@@ -1539,7 +1536,6 @@ menuitem_t SetupMenu[]=
   {1,"M_WEAP"  ,M_Weapons,    'w', "WEAPONS"},
   {1,"M_STAT"  ,M_StatusBar,  's', "STATUS BAR / HUD"},
   {1,"M_AUTO"  ,M_Automap,    'a', "AUTOMAP"},
-  {1,"M_MESS"  ,M_Messages,   'm', "MESSAGES"},
 };
 
 /////////////////////////////
@@ -1631,16 +1627,6 @@ menu_t AutoMapDef =
   &SetupDef,
   Generic_Setup,
   M_DrawAutoMap,
-  34,5,      // skull drawn here
-  0
-};
-
-menu_t MessageDef =                                         // phares 4/08/98
-{
-  generic_setup_end,
-  &SetupDef,
-  Generic_Setup,
-  M_DrawMessages,
   34,5,      // skull drawn here
   0
 };
@@ -2751,6 +2737,9 @@ setup_menu_t stat_settings2[] =
   { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 11 * 8, {"hudadd_crosshair_color" } },
   { "TARGET CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 12 * 8, {"hudadd_crosshair_target_color" } },
 
+  { "Number of Review Message Lines", S_NUM, m_null, HUD_X, SB_Y + 14 * 8, { "hud_msg_lines" } },
+  { "Message Background", S_YESNO, m_null, HUD_X, SB_Y + 15 * 8, { "hud_list_bgon" } },
+
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, SB_Y + 20 * 8, { stat_settings1 } },
   { 0, S_SKIP | S_END, m_null }
 };
@@ -3281,66 +3270,6 @@ void M_DrawGeneral(void)
 
 /////////////////////////////
 //
-// The Messages table.
-
-#define M_X 230
-#define M_Y  39
-
-setup_menu_t mess_settings1[];
-
-setup_menu_t* mess_settings[] =
-{
-  mess_settings1,
-  NULL
-};
-
-setup_menu_t mess_settings1[] =  // Messages screen
-{
-  { "Message Color During Play", S_CRITEM, m_null, M_X, M_Y, { "hudcolor_mesg" } },
-  { "Message Review Color", S_CRITEM, m_null, M_X, M_Y + 2 * 8, { "hudcolor_list" } },
-  { "Number of Review Message Lines", S_NUM, m_null, M_X, M_Y + 4 * 8, { "hud_msg_lines" } },
-  { "Message Background", S_YESNO, m_null, M_X, M_Y + 6 * 8, { "hud_list_bgon" } },
-
-  {0,S_SKIP|S_END,m_null}
-};
-
-// Setting up for the Messages screen. Turn on flags, set pointers,
-// locate the first item on the screen where the cursor is allowed to
-// land.
-
-void M_Messages(int choice)
-{
-  M_SetupNextMenu(&MessageDef);
-
-  setup_active = true;
-  set_mess_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  current_setup_menu = mess_settings[0];
-  set_menu_itemon = M_GetSetupMenuItemOn();
-  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
-}
-
-
-// The drawing part of the Messages Setup initialization. Draw the
-// background, title, instruction line, and items.
-
-void M_DrawMessages(void)
-{
-  M_ChangeMenu(NULL, mnact_full);
-
-  M_DrawBackground(g_menu_flat, 0); // Draw background
-
-  // CPhipps - patch drawing updated
-  M_DrawTitle(103, 2, "M_MESS", CR_DEFAULT, "MESSAGES", CR_GOLD);
-  M_DrawInstructions();
-  M_DrawScreenItems(current_setup_menu);
-}
-
-/////////////////////////////
-//
 // General routines used by the Setup screens.
 //
 
@@ -3370,7 +3299,6 @@ static setup_menu_t **setup_screens[] =
   weap_settings,
   stat_settings,
   auto_settings,
-  mess_settings,
   gen_settings,      // killough 10/98
   NULL,
 };
