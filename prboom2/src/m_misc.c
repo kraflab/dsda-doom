@@ -364,13 +364,6 @@ default_t defaults[] =
   { "map_things_appearance", {(int*)&map_things_appearance}, {map_things_appearance_max-1},0,map_things_appearance_max-1, def_int},
 
   SETTING_HEADING("Heads-up display settings"),
-  { "hudcolor_titl", {&hudcolor_titl}, {5},0,9, def_int}, // color range used for automap level title
-  { "hudcolor_xyco", {&hudcolor_xyco}, {3},0,9, def_int}, // color range used for automap coordinates
-  { "hudcolor_mapstat_title", {&hudcolor_mapstat_title}, {6},0,9, def_int}, // color range used for automap statistics for titles
-  { "hudcolor_mapstat_value", {&hudcolor_mapstat_value}, {2},0,9, def_int}, // color range used for automap statistics for data
-  { "hudcolor_mapstat_time", {&hudcolor_mapstat_time}, {2},0,9, def_int}, // color range used for automap statistics for level time and total time
-  { "hudcolor_mesg", {&hudcolor_mesg}, {6},0,9, def_int}, // color range used for messages during play
-  { "hudcolor_list", {&hudcolor_list}, {5},0,9, def_int}, // color range used for message review
   { "hud_msg_lines", {&hud_msg_lines}, {1},1,16, def_int}, // number of messages in review display (1=disable)
   { "hud_list_bgon", {&hud_list_bgon}, {0},0,1, def_bool}, // enables background window behind message review
   { "health_red", { &health_red }, { 25 }, 0, 200, def_int }, // amount of health for red to yellow transition

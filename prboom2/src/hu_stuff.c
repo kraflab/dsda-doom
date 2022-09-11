@@ -121,16 +121,14 @@ static int         message_counter;
 static int         yellow_message;
 
 //jff 2/16/98 hud supported automap colors added
-int hudcolor_titl;  // color range of automap level title
-int hudcolor_xyco;  // color range of new coords on automap
-int hudcolor_mapstat_title;
-int hudcolor_mapstat_value;
-int hudcolor_mapstat_time;
-//jff 2/16/98 hud text colors, controls added
-int hudcolor_mesg;  // color range of scrolling messages
+const int hudcolor_titl = CR_GOLD;  // color range of automap level title
+const int hudcolor_xyco = CR_GREEN;  // color range of new coords on automap
+const int hudcolor_mapstat_title = CR_DEFAULT;
+const int hudcolor_mapstat_value = CR_GRAY;
+const int hudcolor_mapstat_time = CR_GRAY;
+const int hudcolor_mesg = CR_DEFAULT;  // color range of scrolling messages
+const int hudcolor_list = CR_GOLD;  // list of messages color
 int hud_msg_lines;  // number of message lines in window
-//jff 2/26/98 hud text colors, controls added
-int hudcolor_list;  // list of messages color
 int hud_list_bgon;  // enable for solid window background for message list
 
 //jff 2/16/98 initialization strings for ammo, health, armor widgets

@@ -2850,13 +2850,6 @@ setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
   {"blue door"                          ,S_COLOR,m_conf,AU_X,AU_Y+10*8, { .config_id = dsda_config_mapcolor_bdor }},
   {"yellow door"                        ,S_COLOR,m_conf,AU_X,AU_Y+11*8, { .config_id = dsda_config_mapcolor_ydor }},
 
-  {"AUTOMAP LEVEL TITLE COLOR"      ,S_CRITEM,m_null,AU_X,AU_Y+12*8, {"hudcolor_titl"}},
-  {"AUTOMAP COORDINATES COLOR"      ,S_CRITEM,m_null,AU_X,AU_Y+13*8, {"hudcolor_xyco"}},
-
-  {"Automap Statistics Titles Color",S_CRITEM,m_null,AU_X,AU_Y+14*8, {"hudcolor_mapstat_title"}},
-  {"Automap Statistics Values Color",S_CRITEM,m_null,AU_X,AU_Y+15*8, {"hudcolor_mapstat_value"}},
-  {"Automap Statistics Time Color"  ,S_CRITEM,m_null,AU_X,AU_Y+16*8, {"hudcolor_mapstat_time"}},
-
   {"<-",S_SKIP|S_PREV,m_null,AU_PREV,AU_Y+20*8, {auto_settings1}},
   {"->",S_SKIP|S_NEXT,m_null,AU_NEXT,AU_Y+20*8, {auto_settings3}},
 
