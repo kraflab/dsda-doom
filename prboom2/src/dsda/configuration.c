@@ -105,13 +105,12 @@ void S_Init(void);
 void M_ChangeMIDIPlayer(void);
 void HU_init_crosshair(void);
 void HU_InitThresholds(void);
+void dsda_InitKeyFrame(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
 // TODO: automatically go through strict list
 void dsda_UpdateStrictMode(void) {
-  void dsda_InitKeyFrame(void);
-
   I_Init2(); // side effect of realtic clock rate
   M_ChangeSpeed(); // side effect of always sr50
   dsda_InitKeyFrame();
@@ -796,6 +795,18 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_cycle_ghost_colors] = {
     "dsda_cycle_ghost_colors", dsda_config_cycle_ghost_colors,
     CONF_BOOL(0)
+  },
+  [dsda_config_auto_key_frame_interval] = {
+    "dsda_auto_key_frame_interval", dsda_config_auto_key_frame_interval,
+    dsda_config_int, 1, 600, { 1 }, NULL, 0, 0, dsda_InitKeyFrame
+  },
+  [dsda_config_auto_key_frame_depth] = {
+    "dsda_auto_key_frame_depth", dsda_config_auto_key_frame_depth,
+    dsda_config_int, 0, 600, { 60 }, NULL, CONF_STRICT, 0, dsda_InitKeyFrame
+  },
+  [dsda_config_auto_key_frame_timeout] = {
+    "dsda_auto_key_frame_timeout", dsda_config_auto_key_frame_timeout,
+    dsda_config_int, 0, 25, { 10 }, NULL, 0, 0, dsda_InitKeyFrame
   },
 };
 

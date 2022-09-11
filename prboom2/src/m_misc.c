@@ -89,10 +89,6 @@
 #define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, 0, id, { k, m, j } }
 #define MIGRATED_SETTING(id) { NULL, { NULL }, { 0 }, 0, 0, 0, id }
 
-extern int dsda_auto_key_frame_depth;
-extern int dsda_auto_key_frame_interval;
-extern int dsda_auto_key_frame_timeout;
-
 /* cph - disk icon not implemented */
 static inline void I_BeginRead(void) {}
 static inline void I_EndRead(void) {}
@@ -383,9 +379,9 @@ default_t defaults[] =
   SETTING_HEADING("DSDA-Doom settings"),
   MIGRATED_SETTING(dsda_config_strict_mode),
   MIGRATED_SETTING(dsda_config_cycle_ghost_colors),
-  { "dsda_auto_key_frame_interval", { &dsda_auto_key_frame_interval }, { 1 }, 1, 600, def_int },
-  { "dsda_auto_key_frame_depth", { &dsda_auto_key_frame_depth }, { 60 }, 0, 600, def_int },
-  { "dsda_auto_key_frame_timeout", { &dsda_auto_key_frame_timeout }, { 10 }, 0, 25, def_int },
+  MIGRATED_SETTING(dsda_config_auto_key_frame_interval),
+  MIGRATED_SETTING(dsda_config_auto_key_frame_depth),
+  MIGRATED_SETTING(dsda_config_auto_key_frame_timeout),
   MIGRATED_SETTING(dsda_config_exhud),
   { "dsda_ex_text_scale", { &dsda_ex_text_scale }, { 0 }, 0, 16, def_int },
   { "dsda_wipe_at_full_speed", { &dsda_wipe_at_full_speed }, { 1 }, 0, 1, def_bool },
