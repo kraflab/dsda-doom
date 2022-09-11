@@ -167,6 +167,14 @@ typedef enum {
   dsda_config_mus_opl_gain,
   dsda_config_mus_portmidi_reset_type,
   dsda_config_mus_portmidi_reset_delay,
+  dsda_config_cap_soundcommand,
+  dsda_config_cap_videocommand,
+  dsda_config_cap_muxcommand,
+  dsda_config_cap_tempfile1,
+  dsda_config_cap_tempfile2,
+  dsda_config_cap_remove_tempfiles,
+  dsda_config_cap_wipescreen,
+  dsda_config_cap_fps,
   dsda_config_count,
 } dsda_config_identifier_t;
 

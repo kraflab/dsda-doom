@@ -435,14 +435,14 @@ default_t defaults[] =
 
   // NSM
   SETTING_HEADING("Video capture encoding settings"),
-  { "cap_soundcommand",{NULL, &cap_soundcommand},{0,"ffmpeg -f s16le -ar %s -ac 2 -i - -c:a libopus -y temp_a.nut"},UL,UL,def_str},
-  { "cap_videocommand",{NULL, &cap_videocommand},{0,"ffmpeg -f rawvideo -pix_fmt rgb24 -r %r -s %wx%h -i - -c:v libx264 -y temp_v.nut"},UL,UL,def_str},
-  { "cap_muxcommand",{NULL, &cap_muxcommand},{0,"ffmpeg -i temp_v.nut -i temp_a.nut -c copy -y %f"},UL,UL,def_str},
-  { "cap_tempfile1",{NULL, &cap_tempfile1},{0,"temp_a.nut"},UL,UL,def_str},
-  { "cap_tempfile2",{NULL, &cap_tempfile2},{0,"temp_v.nut"},UL,UL,def_str},
-  { "cap_remove_tempfiles", {&cap_remove_tempfiles},{1},0,1,def_bool},
-  { "cap_fps", {&cap_fps},{60},16,300,def_int},
-  { "cap_wipescreen", {&cap_wipescreen},{0},0,1,def_bool},
+  MIGRATED_SETTING(dsda_config_cap_soundcommand),
+  MIGRATED_SETTING(dsda_config_cap_videocommand),
+  MIGRATED_SETTING(dsda_config_cap_muxcommand),
+  MIGRATED_SETTING(dsda_config_cap_tempfile1),
+  MIGRATED_SETTING(dsda_config_cap_tempfile2),
+  MIGRATED_SETTING(dsda_config_cap_remove_tempfiles),
+  MIGRATED_SETTING(dsda_config_cap_wipescreen),
+  MIGRATED_SETTING(dsda_config_cap_fps),
 
   SETTING_HEADING("Overrun settings"),
   MIGRATED_SETTING(dsda_config_overrun_spechit_warn),
