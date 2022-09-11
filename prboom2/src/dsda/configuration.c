@@ -107,6 +107,7 @@ void HU_init_crosshair(void);
 void HU_InitThresholds(void);
 void dsda_InitKeyFrame(void);
 void dsda_SetupStretchParams(void);
+void dsda_InitCommandHistory(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -828,6 +829,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_organized_saves] = {
     "dsda_organized_saves", dsda_config_organized_saves,
     CONF_BOOL(1)
+  },
+  [dsda_config_command_history_size] = {
+    "dsda_command_history_size", dsda_config_command_history_size,
+    dsda_config_int, 1, 20, { 10 }, NULL, 0, 0, dsda_InitCommandHistory
+  },
+  [dsda_config_hide_empty_commands] = {
+    "dsda_hide_empty_commands", dsda_config_hide_empty_commands,
+    CONF_BOOL(1), NULL, 0, 0, dsda_InitCommandHistory
   },
 };
 

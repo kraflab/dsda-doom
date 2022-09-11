@@ -22,8 +22,6 @@
 
 #define UNSPECIFIED_COMPLEVEL -2
 
-extern int dsda_command_history_size;
-extern int dsda_hide_empty_commands;
 extern int dsda_skip_quit_prompt;
 extern int dsda_show_split_data;
 extern int dsda_fps_limit;
