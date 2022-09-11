@@ -106,6 +106,7 @@ void M_ChangeMIDIPlayer(void);
 void HU_init_crosshair(void);
 void HU_InitThresholds(void);
 void dsda_InitKeyFrame(void);
+void dsda_SetupStretchParams(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -807,6 +808,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_auto_key_frame_timeout] = {
     "dsda_auto_key_frame_timeout", dsda_config_auto_key_frame_timeout,
     dsda_config_int, 0, 25, { 10 }, NULL, 0, 0, dsda_InitKeyFrame
+  },
+  [dsda_config_ex_text_scale] = {
+    "dsda_ex_text_scale", dsda_config_ex_text_scale,
+    dsda_config_int, 0, 16, { 0 }, NULL, 0, 0, dsda_SetupStretchParams
   },
 };
 

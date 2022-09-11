@@ -2989,7 +2989,7 @@ setup_menu_t misc_settings[] = {
 setup_menu_t display_settings[] = {
   { "Display Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Use Extended Hud", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_exhud } },
-  { "Extended Hud Scale", S_NUM, m_null, G_X, G_Y + 3 * 8, { "dsda_ex_text_scale" }, 0, dsda_SetupStretchParams },
+  { "Extended Hud Scale", S_NUM, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_ex_text_scale } },
   { "Hide Status Bar Horns", S_YESNO, m_null, G_X, G_Y + 4 * 8, { "dsda_hide_horns" } },
   { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 5 * 8, { "render_wipescreen" } },
   { "Show FPS", S_YESNO,  m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_show_fps } },

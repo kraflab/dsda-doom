@@ -63,8 +63,6 @@ extern int render_patches_scaley;
 extern int patches_scalex;
 extern int patches_scaley;
 
-extern int dsda_ex_text_scale;
-
 stretch_param_t* dsda_StretchParams(int flags);
 void dsda_SetupStretchParams(void);
 void dsda_EvaluatePatchScale(void);
