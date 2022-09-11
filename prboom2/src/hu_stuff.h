@@ -69,22 +69,6 @@ void HU_Ticker(void);
 void HU_Drawer(void);
 void HU_Erase(void);
 
-typedef struct custom_message_s
-{
-  int ticks;
-  int cm;
-  int sfx;
-  const char *msg;
-} custom_message_t;
-
-typedef struct message_thinker_s
-{
-  thinker_t thinker;
-  int plr;
-  int delay;
-  custom_message_t msg;
-} message_thinker_t;
-
 int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int sfx);
 void ClearMessage(void);
 

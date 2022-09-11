@@ -139,6 +139,22 @@ static char hud_monsecstr[80];
 extern int map_point_coordinates;
 extern int map_level_stat;
 
+typedef struct custom_message_s
+{
+  int ticks;
+  int cm;
+  int sfx;
+  const char *msg;
+} custom_message_t;
+
+typedef struct message_thinker_s
+{
+  thinker_t thinker;
+  int plr;
+  int delay;
+  custom_message_t msg;
+} message_thinker_t;
+
 static custom_message_t custom_message[MAX_MAXPLAYERS];
 static custom_message_t *custom_message_p;
 void HU_init_crosshair(void);
