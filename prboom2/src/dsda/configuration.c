@@ -69,6 +69,7 @@ typedef struct {
 #define CONF_BYTE(x) dsda_config_int, 0, 255, { x }
 #define CONF_STRING(x) dsda_config_string, 0, 0, { .v_string = x }
 #define CONF_CR(x) dsda_config_int, 0, CR_LIMIT - 1, { x }
+#define CONF_WEAPON(x) dsda_config_int, 0, 9, { x }
 
 extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
@@ -149,39 +150,39 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_weapon_choice_1] = {
     "weapon_choice_1", dsda_config_weapon_choice_1,
-    dsda_config_int, 0, 9, { 6 }, &weapon_preferences[0][0]
+    CONF_WEAPON(6), &weapon_preferences[0][0]
   },
   [dsda_config_weapon_choice_2] = {
     "weapon_choice_2", dsda_config_weapon_choice_2,
-    dsda_config_int, 0, 9, { 9 }, &weapon_preferences[0][1]
+    CONF_WEAPON(9), &weapon_preferences[0][1]
   },
   [dsda_config_weapon_choice_3] = {
     "weapon_choice_3", dsda_config_weapon_choice_3,
-    dsda_config_int, 0, 9, { 4 }, &weapon_preferences[0][2]
+    CONF_WEAPON(4), &weapon_preferences[0][2]
   },
   [dsda_config_weapon_choice_4] = {
     "weapon_choice_4", dsda_config_weapon_choice_4,
-    dsda_config_int, 0, 9, { 3 }, &weapon_preferences[0][3]
+    CONF_WEAPON(3), &weapon_preferences[0][3]
   },
   [dsda_config_weapon_choice_5] = {
     "weapon_choice_5", dsda_config_weapon_choice_5,
-    dsda_config_int, 0, 9, { 2 }, &weapon_preferences[0][4]
+    CONF_WEAPON(2), &weapon_preferences[0][4]
   },
   [dsda_config_weapon_choice_6] = {
     "weapon_choice_6", dsda_config_weapon_choice_6,
-    dsda_config_int, 0, 9, { 8 }, &weapon_preferences[0][5]
+    CONF_WEAPON(8), &weapon_preferences[0][5]
   },
   [dsda_config_weapon_choice_7] = {
     "weapon_choice_7", dsda_config_weapon_choice_7,
-    dsda_config_int, 0, 9, { 5 }, &weapon_preferences[0][6]
+    CONF_WEAPON(5), &weapon_preferences[0][6]
   },
   [dsda_config_weapon_choice_8] = {
     "weapon_choice_8", dsda_config_weapon_choice_8,
-    dsda_config_int, 0, 9, { 7 }, &weapon_preferences[0][7]
+    CONF_WEAPON(7), &weapon_preferences[0][7]
   },
   [dsda_config_weapon_choice_9] = {
     "weapon_choice_9", dsda_config_weapon_choice_9,
-    dsda_config_int, 0, 9, { 1 }, &weapon_preferences[0][8]
+    CONF_WEAPON(1), &weapon_preferences[0][8]
   },
   [dsda_config_flashing_hom] = {
     "flashing_hom", dsda_config_flashing_hom,
