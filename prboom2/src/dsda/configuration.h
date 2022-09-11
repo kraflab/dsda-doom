@@ -177,6 +177,13 @@ typedef enum {
   dsda_config_cap_fps,
   dsda_config_hudadd_crosshair_color,
   dsda_config_hudadd_crosshair_target_color,
+  dsda_config_hud_displayed,
+  dsda_config_hudadd_secretarea,
+  dsda_config_hudadd_demoprogressbar,
+  dsda_config_hudadd_crosshair_scale,
+  dsda_config_hudadd_crosshair_health,
+  dsda_config_hudadd_crosshair_target,
+  dsda_config_hudadd_crosshair_lock_target,
   dsda_config_count,
 } dsda_config_identifier_t;
 

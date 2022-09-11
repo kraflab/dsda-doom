@@ -98,13 +98,7 @@ int demo_playerscount;
 int demo_tics_count;
 char demo_len_st[80];
 
-int hudadd_secretarea;
-int hudadd_demoprogressbar;
 int hudadd_crosshair;
-int hudadd_crosshair_scale;
-int hudadd_crosshair_health;
-int hudadd_crosshair_target;
-int hudadd_crosshair_lock_target;
 int mouse_handler;
 int gl_render_fov = 90;
 int render_wipescreen;
@@ -888,7 +882,9 @@ int HU_DrawDemoProgress(int force)
   int len, tics_count, diff;
   unsigned int tick, max_period;
 
-  if (gamestate == GS_DEMOSCREEN || !demoplayback || !hudadd_demoprogressbar)
+  if (gamestate == GS_DEMOSCREEN ||
+      !demoplayback ||
+      !dsda_IntConfig(dsda_config_hudadd_demoprogressbar))
     return false;
 
   tics_count = demo_tics_count * demo_playerscount;

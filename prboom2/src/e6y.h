@@ -77,13 +77,7 @@ extern int demo_tics_count;
 extern int demo_playerscount;
 extern char demo_len_st[80];
 
-extern int hudadd_secretarea;
-extern int hudadd_demoprogressbar;
 extern int hudadd_crosshair;
-extern int hudadd_crosshair_scale;
-extern int hudadd_crosshair_health;
-extern int hudadd_crosshair_target;
-extern int hudadd_crosshair_lock_target;
 extern int mouse_handler;
 extern int render_wipescreen;
 

@@ -1378,16 +1378,16 @@ void M_SizeDisplay(int choice)
       screenSize++;
     }
     else
-      hud_displayed = !hud_displayed;
+      dsda_ToggleConfig(dsda_config_hud_displayed, true);
     break;
   case 2:
     if (screenSize < 8) {
       screenblocks += (8 - screenSize);
       screenSize = 8;
-      hud_displayed = true;
+      dsda_UpdateIntConfig(dsda_config_hud_displayed, true, true);
     }
     else
-      hud_displayed = !hud_displayed;
+      dsda_ToggleConfig(dsda_config_hud_displayed, true);
     break;
   }
   R_SetViewSize (screenblocks /*, detailLevel obsolete -- killough */);
@@ -2683,8 +2683,8 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
   { "HEALTH GOOD/EXTRA", S_NUM, m_null, SB_X, SB_Y + 10 * 8, {"health_green" } },
   { "AMMO LOW/OK", S_NUM, m_null, SB_X, SB_Y + 11 * 8, {"ammo_red" } },
   { "AMMO OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 12 * 8, {"ammo_yellow" } },
-  { "REPORT REVEALED SECRETS", S_YESNO, m_null, SB_X, SB_Y + 13 * 8, {"hudadd_secretarea" } },
-  { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_null, SB_X, SB_Y + 14 * 8, {"hudadd_demoprogressbar" } },
+  { "REPORT REVEALED SECRETS", S_YESNO, m_conf, SB_X, SB_Y + 13 * 8, { .config_id = dsda_config_hudadd_secretarea } },
+  { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_conf, SB_X, SB_Y + 14 * 8, { .config_id = dsda_config_hudadd_demoprogressbar } },
 
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, SB_Y + 20 * 8, { stat_settings2 } },
   { 0, S_SKIP | S_END, m_null }
@@ -2697,10 +2697,10 @@ setup_menu_t stat_settings2[] =
   { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 1 * 8 },
 
   { "ENABLE CROSSHAIR", S_CHOICE, m_null, HUD_X, SB_Y + 2 * 8, { "hudadd_crosshair" }, 0, 0, crosshair_str },
-  { "SCALE CROSSHAIR", S_YESNO, m_null, HUD_X, SB_Y + 3 * 8, { "hudadd_crosshair_scale" } },
-  { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_null, HUD_X, SB_Y + 4 * 8, {"hudadd_crosshair_health" } },
-  { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 5 * 8, {"hudadd_crosshair_target" } },
-  { "LOCK CROSSHAIR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 6 * 8, {"hudadd_crosshair_lock_target" } },
+  { "SCALE CROSSHAIR", S_YESNO, m_conf, HUD_X, SB_Y + 3 * 8, { .config_id = dsda_config_hudadd_crosshair_scale } },
+  { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_conf, HUD_X, SB_Y + 4 * 8, { .config_id = dsda_config_hudadd_crosshair_health } },
+  { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_conf, HUD_X, SB_Y + 5 * 8, { .config_id = dsda_config_hudadd_crosshair_target } },
+  { "LOCK CROSSHAIR ON TARGET", S_YESNO, m_conf, HUD_X, SB_Y + 6 * 8, { .config_id = dsda_config_hudadd_crosshair_lock_target } },
   { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, SB_Y + 7 * 8, { .config_id = dsda_config_hudadd_crosshair_color } },
   { "TARGET CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, SB_Y + 8 * 8, { .config_id = dsda_config_hudadd_crosshair_target_color } },
 

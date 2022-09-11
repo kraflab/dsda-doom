@@ -102,6 +102,7 @@ void M_ChangeShorttics(void);
 void I_InitSoundParams(void);
 void S_Init(void);
 void M_ChangeMIDIPlayer(void);
+void HU_init_crosshair(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -736,6 +737,34 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_hudadd_crosshair_target_color] = {
     "hudadd_crosshair_target_color", dsda_config_hudadd_crosshair_target_color,
     CONF_CR(9)
+  },
+  [dsda_config_hud_displayed] = {
+    "hud_displayed", dsda_config_hud_displayed,
+    CONF_BOOL(0)
+  },
+  [dsda_config_hudadd_secretarea] = {
+    "hudadd_secretarea", dsda_config_hudadd_secretarea,
+    CONF_BOOL(1)
+  },
+  [dsda_config_hudadd_demoprogressbar] = {
+    "hudadd_demoprogressbar", dsda_config_hudadd_demoprogressbar,
+    CONF_BOOL(1)
+  },
+  [dsda_config_hudadd_crosshair_scale] = {
+    "hudadd_crosshair_scale", dsda_config_hudadd_crosshair_scale,
+    CONF_BOOL(0), NULL, 0, 0, HU_init_crosshair
+  },
+  [dsda_config_hudadd_crosshair_health] = {
+    "hudadd_crosshair_health", dsda_config_hudadd_crosshair_health,
+    CONF_BOOL(0), NULL, 0, 0, HU_init_crosshair
+  },
+  [dsda_config_hudadd_crosshair_target] = {
+    "hudadd_crosshair_target", dsda_config_hudadd_crosshair_target,
+    CONF_BOOL(0), NULL, CONF_STRICT, 0, HU_init_crosshair
+  },
+  [dsda_config_hudadd_crosshair_lock_target] = {
+    "hudadd_crosshair_lock_target", dsda_config_hudadd_crosshair_lock_target,
+    CONF_BOOL(0), NULL, CONF_STRICT, 0, HU_init_crosshair
   },
 };
 

@@ -61,10 +61,6 @@
 #include "dsda/stretch.h"
 #include "g_overflow.h"
 
-// global heads up display controls
-
-int hud_displayed;    //jff 2/23/98 turns heads-up display on/off
-
 //
 // Locally used constants, shortcuts.
 //
@@ -445,8 +441,18 @@ const char *crosshair_str[HU_CROSSHAIRS] =
   { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big" };
 crosshair_t crosshair;
 
+static int hudadd_crosshair_scale;
+static int hudadd_crosshair_health;
+static int hudadd_crosshair_target;
+static int hudadd_crosshair_lock_target;
+
 void HU_init_crosshair(void)
 {
+  hudadd_crosshair_scale = dsda_IntConfig(dsda_config_hudadd_crosshair_scale);
+  hudadd_crosshair_health = dsda_IntConfig(dsda_config_hudadd_crosshair_health);
+  hudadd_crosshair_target = dsda_IntConfig(dsda_config_hudadd_crosshair_target);
+  hudadd_crosshair_lock_target = dsda_IntConfig(dsda_config_hudadd_crosshair_lock_target);
+
   if (!hudadd_crosshair || !crosshair_nam[hudadd_crosshair])
     return;
 
@@ -467,7 +473,7 @@ void SetCrosshairTarget(void)
   crosshair.target_screen_x = 0.0f;
   crosshair.target_screen_y = 0.0f;
 
-  if (dsda_CrosshairLockTarget() && crosshair.target_sprite >= 0)
+  if (hudadd_crosshair_lock_target && crosshair.target_sprite >= 0)
   {
     float x, y, z;
     float winx, winy, winz;
@@ -531,7 +537,7 @@ void HU_draw_crosshair(void)
   else
     cm = dsda_IntConfig(dsda_config_hudadd_crosshair_color);
 
-  if (dsda_CrosshairTarget() || dsda_CrosshairLockTarget())
+  if (hudadd_crosshair_target || hudadd_crosshair_lock_target)
   {
     fixed_t slope;
     angle_t an = plr->mo->angle;
@@ -556,7 +562,7 @@ void HU_draw_crosshair(void)
       crosshair.target_z += linetarget->height / 2 + linetarget->height / 8;
       crosshair.target_sprite = linetarget->sprite;
 
-      if (dsda_CrosshairTarget())
+      if (hudadd_crosshair_target)
         cm = dsda_IntConfig(dsda_config_hudadd_crosshair_target_color);
     }
   }

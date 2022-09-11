@@ -70,8 +70,6 @@ dboolean dsda_ShowFPS(void);
 dboolean dsda_ShowDemoAttempts(void);
 dboolean dsda_ShowHealthBars(void);
 dboolean dsda_MapPointCoordinates(void);
-dboolean dsda_CrosshairTarget(void);
-dboolean dsda_CrosshairLockTarget(void);
 dboolean dsda_SimpleShadows(void);
 dboolean dsda_PainPalette(void);
 dboolean dsda_BonusPalette(void);

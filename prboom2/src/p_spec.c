@@ -65,6 +65,7 @@
 
 #include "dsda.h"
 #include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/global.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
@@ -1458,7 +1459,7 @@ static void P_CollectSecretCommon(sector_t *sector, player_t *player)
   player->secretcount++;
   sector->flags &= ~SECF_SECRET;
 
-  if (hudadd_secretarea)
+  if (dsda_IntConfig(dsda_config_hudadd_secretarea))
   {
     int sfx_id = raven ? g_sfx_secret :
                  I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;

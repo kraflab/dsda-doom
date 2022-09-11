@@ -218,14 +218,6 @@ dboolean dsda_MapPointCoordinates(void) {
   return map_point_coordinates && !dsda_StrictMode();
 }
 
-dboolean dsda_CrosshairTarget(void) {
-  return hudadd_crosshair_target && !dsda_StrictMode();
-}
-
-dboolean dsda_CrosshairLockTarget(void) {
-  return hudadd_crosshair_lock_target && !dsda_StrictMode();
-}
-
 dboolean dsda_SimpleShadows(void) {
   return dsda_IntConfig(dsda_config_gl_shadows);
 }

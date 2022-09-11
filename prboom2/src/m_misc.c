@@ -369,16 +369,16 @@ default_t defaults[] =
   { "health_green", { &health_green}, { 100 }, 0, 200, def_int }, // amount of health for green to blue transition
   { "ammo_red", { &ammo_red }, { 25 }, 0, 100, def_int }, // percent of ammo for red to yellow transition
   { "ammo_yellow", { &ammo_yellow }, { 50 }, 0, 100, def_int }, // percent of ammo for yellow to green transition
-  { "hud_displayed", { &hud_displayed },  { 0 }, 0, 1, def_bool },
-  { "hudadd_secretarea", { &hudadd_secretarea }, { 0 }, 0, 1, def_bool },
-  { "hudadd_demoprogressbar", { &hudadd_demoprogressbar }, { 1 }, 0, 1, def_bool },
+  MIGRATED_SETTING(dsda_config_hud_displayed),
+  MIGRATED_SETTING(dsda_config_hudadd_secretarea),
+  MIGRATED_SETTING(dsda_config_hudadd_demoprogressbar),
   { "hudadd_crosshair", { &hudadd_crosshair }, { 0 }, 0, HU_CROSSHAIRS - 1, def_bool },
-  { "hudadd_crosshair_scale", { &hudadd_crosshair_scale }, { 0 }, 0, 1, def_bool },
+  MIGRATED_SETTING(dsda_config_hudadd_crosshair_scale),
   MIGRATED_SETTING(dsda_config_hudadd_crosshair_color),
-  { "hudadd_crosshair_health", { &hudadd_crosshair_health }, { 0 }, 0, 1, def_bool },
-  { "hudadd_crosshair_target", { &hudadd_crosshair_target }, { 0 }, 0, 1, def_bool },
+  MIGRATED_SETTING(dsda_config_hudadd_crosshair_health),
+  MIGRATED_SETTING(dsda_config_hudadd_crosshair_target),
   MIGRATED_SETTING(dsda_config_hudadd_crosshair_target_color),
-  { "hudadd_crosshair_lock_target", { &hudadd_crosshair_lock_target }, { 0 }, 0, 1, def_bool },
+  MIGRATED_SETTING(dsda_config_hudadd_crosshair_lock_target),
 
   SETTING_HEADING("DSDA-Doom settings"),
   MIGRATED_SETTING(dsda_config_strict_mode),

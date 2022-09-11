@@ -71,8 +71,6 @@ void HU_Ticker(void);
 void HU_Drawer(void);
 void HU_Erase(void);
 
-extern int hud_displayed;   /* hud is displayed */
-
 typedef struct custom_message_s
 {
   int ticks;
