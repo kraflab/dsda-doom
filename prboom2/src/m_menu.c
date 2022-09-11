@@ -198,7 +198,6 @@ void M_ReadThis(int choice);
 void M_ReadThis2(int choice);
 void M_QuitDOOM(int choice);
 
-void M_ToggleMessages(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
@@ -1083,7 +1082,6 @@ menuitem_t OptionsMenu[]=
   {1,"M_GENERL", M_General, 'g', "GENERAL"},      // killough 10/98
   {1,"M_SETUP",  M_Setup,   's', "SETUP"},        // phares 3/21/98
   {1,"M_ENDGAM", M_EndGame,'e',  "END GAME"},
-  {1,"M_MESSG",  M_ToggleMessages,'m', "MESSAGES:"},
   {1,"M_SVOL",   M_Sound,'s', "SOUND VOLUME"},
 };
 
@@ -1360,18 +1358,6 @@ void M_EndGame(int choice)
     return;
     }
   M_StartMessage(s_ENDGAME,M_EndGameResponse,true); // Ty 03/27/98 - externalized
-}
-
-/////////////////////////////
-//
-//    Toggle messages on/off
-//
-
-void M_ToggleMessages(int choice)
-{
-  // warning: unused parameter `int choice'
-  choice = 0;
-  dsda_ToggleConfig(dsda_config_show_messages, true);
 }
 
 void M_ChangeMessages(void)
@@ -2708,13 +2694,14 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 
   { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 6 * 8 },
 
-  { "HEALTH LOW/OK", S_NUM, m_null, SB_X, SB_Y + 7 * 8, {"health_red" } },
-  { "HEALTH OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 8 * 8, {"health_yellow" } },
-  { "HEALTH GOOD/EXTRA", S_NUM, m_null, SB_X, SB_Y + 9 * 8, {"health_green" } },
-  { "AMMO LOW/OK", S_NUM, m_null, SB_X, SB_Y + 10 * 8, {"ammo_red" } },
-  { "AMMO OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 11 * 8, {"ammo_yellow" } },
-  { "REPORT REVEALED SECRETS", S_YESNO, m_null, SB_X, SB_Y + 12 * 8, {"hudadd_secretarea" } },
-  { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_null, SB_X, SB_Y + 13 * 8, {"hudadd_demoprogressbar" } },
+  { "SHOW MESSAGES", S_YESNO, m_conf, SB_X, SB_Y + 7 * 8, { .config_id = dsda_config_show_messages } },
+  { "HEALTH LOW/OK", S_NUM, m_null, SB_X, SB_Y + 8 * 8, {"health_red" } },
+  { "HEALTH OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 9 * 8, {"health_yellow" } },
+  { "HEALTH GOOD/EXTRA", S_NUM, m_null, SB_X, SB_Y + 10 * 8, {"health_green" } },
+  { "AMMO LOW/OK", S_NUM, m_null, SB_X, SB_Y + 11 * 8, {"ammo_red" } },
+  { "AMMO OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 12 * 8, {"ammo_yellow" } },
+  { "REPORT REVEALED SECRETS", S_YESNO, m_null, SB_X, SB_Y + 13 * 8, {"hudadd_secretarea" } },
+  { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_null, SB_X, SB_Y + 14 * 8, {"hudadd_demoprogressbar" } },
 
   { "->", S_SKIP | S_NEXT, m_null, KB_NEXT, SB_Y + 20 * 8, { stat_settings2 } },
   { 0, S_SKIP | S_END, m_null }
