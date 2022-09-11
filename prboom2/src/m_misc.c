@@ -372,7 +372,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_hud_displayed),
   MIGRATED_SETTING(dsda_config_hudadd_secretarea),
   MIGRATED_SETTING(dsda_config_hudadd_demoprogressbar),
-  { "hudadd_crosshair", { &hudadd_crosshair }, { 0 }, 0, HU_CROSSHAIRS - 1, def_bool },
+  MIGRATED_SETTING(dsda_config_hudadd_crosshair),
   MIGRATED_SETTING(dsda_config_hudadd_crosshair_scale),
   MIGRATED_SETTING(dsda_config_hudadd_crosshair_color),
   MIGRATED_SETTING(dsda_config_hudadd_crosshair_health),

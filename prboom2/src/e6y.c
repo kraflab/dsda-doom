@@ -98,7 +98,6 @@ int demo_playerscount;
 int demo_tics_count;
 char demo_len_st[80];
 
-int hudadd_crosshair;
 int mouse_handler;
 int gl_render_fov = 90;
 int render_wipescreen;

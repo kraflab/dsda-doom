@@ -184,6 +184,7 @@ typedef enum {
   dsda_config_hudadd_crosshair_health,
   dsda_config_hudadd_crosshair_target,
   dsda_config_hudadd_crosshair_lock_target,
+  dsda_config_hudadd_crosshair,
   dsda_config_count,
 } dsda_config_identifier_t;
 

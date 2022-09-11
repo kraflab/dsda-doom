@@ -20,6 +20,7 @@
 #include "am_map.h"
 #include "doomdef.h"
 #include "doomstat.h"
+#include "hu_stuff.h"
 #include "g_overflow.h"
 #include "gl_struct.h"
 #include "r_demo.h"
@@ -766,6 +767,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_hudadd_crosshair_lock_target] = {
     "hudadd_crosshair_lock_target", dsda_config_hudadd_crosshair_lock_target,
     CONF_BOOL(0), NULL, CONF_STRICT, 0, HU_init_crosshair
+  },
+  [dsda_config_hudadd_crosshair] = {
+    "hudadd_crosshair", dsda_config_hudadd_crosshair,
+    dsda_config_int, 0, HU_CROSSHAIRS - 1, { 0 }, NULL, 0, 0, HU_init_crosshair
   },
 };
 

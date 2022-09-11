@@ -831,6 +831,8 @@ void R_SetupMatrix(void)
 
 static void R_SetupFrame (player_t *player)
 {
+  dboolean HU_CrosshairEnabled(void);
+
   int i, cm;
 
   int FocalTangent = finetangent[FINEANGLES/4 + FieldOfView/2];
@@ -893,7 +895,7 @@ static void R_SetupFrame (player_t *player)
 
   R_SetClipPlanes();
 
-  if (V_IsOpenGLMode() || hudadd_crosshair)
+  if (V_IsOpenGLMode() || HU_CrosshairEnabled())
     R_SetupMatrix();
 
   validcount++;

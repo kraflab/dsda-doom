@@ -77,7 +77,6 @@ extern int demo_tics_count;
 extern int demo_playerscount;
 extern char demo_len_st[80];
 
-extern int hudadd_crosshair;
 extern int mouse_handler;
 extern int render_wipescreen;
 

@@ -435,12 +435,20 @@ int HU_GetHealthColor(int health, int def)
   return result;
 }
 
-const char *crosshair_nam[HU_CROSSHAIRS] =
-  { NULL, "CROSS1", "CROSS2", "CROSS3", "CROSS4", "CROSS5", "CROSS6", "CROSS7" };
-const char *crosshair_str[HU_CROSSHAIRS] =
-  { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big" };
-crosshair_t crosshair;
+typedef struct crosshair_s
+{
+  int lump;
+  int w, h, flags;
+  int target_x, target_y, target_z, target_sprite;
+  float target_screen_x, target_screen_y;
+} crosshair_t;
 
+static crosshair_t crosshair;
+
+static const char *crosshair_nam[HU_CROSSHAIRS] =
+  { NULL, "CROSS1", "CROSS2", "CROSS3", "CROSS4", "CROSS5", "CROSS6", "CROSS7" };
+
+static int hudadd_crosshair;
 static int hudadd_crosshair_scale;
 static int hudadd_crosshair_health;
 static int hudadd_crosshair_target;
@@ -452,6 +460,7 @@ void HU_init_crosshair(void)
   hudadd_crosshair_health = dsda_IntConfig(dsda_config_hudadd_crosshair_health);
   hudadd_crosshair_target = dsda_IntConfig(dsda_config_hudadd_crosshair_target);
   hudadd_crosshair_lock_target = dsda_IntConfig(dsda_config_hudadd_crosshair_lock_target);
+  hudadd_crosshair = dsda_IntConfig(dsda_config_hudadd_crosshair);
 
   if (!hudadd_crosshair || !crosshair_nam[hudadd_crosshair])
     return;
@@ -466,6 +475,11 @@ void HU_init_crosshair(void)
   crosshair.flags = VPT_TRANS;
   if (hudadd_crosshair_scale)
     crosshair.flags |= VPT_STRETCH;
+}
+
+dboolean HU_CrosshairEnabled(void)
+{
+  return hudadd_crosshair > 0;
 }
 
 void SetCrosshairTarget(void)

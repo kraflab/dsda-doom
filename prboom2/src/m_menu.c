@@ -2614,11 +2614,15 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 
 //e6y
 #define HUD_X 284
+
+static const char *crosshair_str[] =
+  { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big", NULL };
+
 setup_menu_t stat_settings2[] =
 {
   { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 1 * 8 },
 
-  { "ENABLE CROSSHAIR", S_CHOICE, m_null, HUD_X, SB_Y + 2 * 8, { "hudadd_crosshair" }, 0, 0, crosshair_str },
+  { "ENABLE CROSSHAIR", S_CHOICE, m_conf, HUD_X, SB_Y + 2 * 8, { .config_id = dsda_config_hudadd_crosshair }, 0, 0, crosshair_str },
   { "SCALE CROSSHAIR", S_YESNO, m_conf, HUD_X, SB_Y + 3 * 8, { .config_id = dsda_config_hudadd_crosshair_scale } },
   { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_conf, HUD_X, SB_Y + 4 * 8, { .config_id = dsda_config_hudadd_crosshair_health } },
   { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_conf, HUD_X, SB_Y + 5 * 8, { .config_id = dsda_config_hudadd_crosshair_target } },
