@@ -104,7 +104,6 @@ static hu_stext_t     w_message;
 static hu_textline_t  w_coordx; //jff 2/16/98 new coord widget for automap
 static hu_textline_t  w_coordy; //jff 3/3/98 split coord widgets automap
 static hu_textline_t  w_coordz; //jff 3/3/98 split coord widgets automap
-static hu_mtext_t     w_rtext;  //jff 2/26/98 text message refresh widget
 
 static hu_textline_t  w_map_monsters;  //e6y monsters widget for automap
 static hu_textline_t  w_map_secrets;   //e6y secrets widgets automap
@@ -128,8 +127,6 @@ const int hudcolor_mapstat_value = CR_GRAY;
 const int hudcolor_mapstat_time = CR_GRAY;
 const int hudcolor_mesg = CR_DEFAULT;  // color range of scrolling messages
 const int hudcolor_list = CR_GOLD;  // list of messages color
-int hud_msg_lines;  // number of message lines in window
-int hud_list_bgon;  // enable for solid window background for message list
 
 //jff 2/16/98 initialization strings for ammo, health, armor widgets
 static char hud_coordstrx[32];
@@ -296,29 +293,6 @@ void HU_Start(void)
     HU_FONTSTART,
     hudcolor_titl,
     VPT_ALIGN_LEFT_BOTTOM
-  );
-
-  // create the hud text refresh widget
-  // scrolling display of last hud_msg_lines messages received
-  if (hud_msg_lines>HU_MAXMESSAGES)
-    hud_msg_lines=HU_MAXMESSAGES;
-  //jff 4/21/98 if setup has disabled message list while active, turn it off
-  message_list = hud_msg_lines > 1; //jff 8/8/98 initialize both ways
-  //jff 2/26/98 add the text refresh widget initialization
-  HUlib_initMText
-  (
-    &w_rtext,
-    0,
-    0,
-    320,
-//    SCREENWIDTH,
-    (hud_msg_lines+2)*HU_REFRESHSPACING,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_list,
-    hu_msgbg,
-    VPT_ALIGN_LEFT_TOP,
-    &message_list
   );
 
   dsda_HUTitle(&s);
@@ -749,21 +723,11 @@ void HU_Drawer(void)
   if (hudadd_crosshair)
     HU_draw_crosshair();
 
-  //jff 4/21/98 if setup has disabled message list while active, turn it off
-  if (hud_msg_lines<=1)
-    message_list = false;
-
-  // if the message review not enabled, show the standard message widget
-  if (!message_list)
-    HUlib_drawSText(&w_message);
+  HUlib_drawSText(&w_message);
 
   //e6y
   if (custom_message_p->ticks > 0)
     HUlib_drawTextLine(&w_centermsg, false);
-
-  // if the message review is enabled show the scrolling message review
-  if (hud_msg_lines>1 && message_list)
-    HUlib_drawMText(&w_rtext);
 
   dsda_DrawHud();
 }
@@ -777,11 +741,8 @@ void HU_Drawer(void)
 //
 void HU_Erase(void)
 {
-  // erase the message display or the message review display
-  if (!message_list)
-    HUlib_eraseSText(&w_message);
-  else
-    HUlib_eraseMText(&w_rtext);
+  // erase the message display
+  HUlib_eraseSText(&w_message);
 
   //e6y
   if (custom_message_p->ticks > 0)
@@ -823,8 +784,6 @@ void HU_Ticker(void)
     {
       //post the message to the message widget
       HUlib_addMessageToSText(&w_message, 0, plr->message);
-      //jff 2/26/98 add message to refresh text widget too
-      HUlib_addMessageToMText(&w_rtext, 0, plr->message);
 
       // clear the message to avoid posting multiple times
       plr->message = 0;
@@ -880,17 +839,8 @@ dboolean HU_Responder(event_t *ev)
 {
   if (dsda_InputActivated(dsda_input_repeat_message)) // phares
   {
-    if (hud_msg_lines>1)  // it posts multi-line messages that will trash
-    {
-      if (message_list) HU_Erase(); //jff 4/28/98 erase behind messages
-      message_list = !message_list; //jff 2/26/98 toggle list of messages
-    }
-
-    if (!message_list)              // if not message list, refresh message
-    {
-      message_on = true;
-      message_counter = HU_MSGTIMEOUT;
-    }
+    message_on = true;
+    message_counter = HU_MSGTIMEOUT;
 
     return true;
   }

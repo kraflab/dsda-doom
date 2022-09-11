@@ -364,8 +364,6 @@ default_t defaults[] =
   { "map_things_appearance", {(int*)&map_things_appearance}, {map_things_appearance_max-1},0,map_things_appearance_max-1, def_int},
 
   SETTING_HEADING("Heads-up display settings"),
-  { "hud_msg_lines", {&hud_msg_lines}, {1},1,16, def_int}, // number of messages in review display (1=disable)
-  { "hud_list_bgon", {&hud_list_bgon}, {0},0,1, def_bool}, // enables background window behind message review
   { "health_red", { &health_red }, { 25 }, 0, 200, def_int }, // amount of health for red to yellow transition
   { "health_yellow", { &health_yellow }, { 50 }, 0, 200, def_int }, // amount of health for yellow to green transition
   { "health_green", { &health_green}, { 100 }, 0, 200, def_int }, // amount of health for green to blue transition

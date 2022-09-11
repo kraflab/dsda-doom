@@ -71,8 +71,6 @@ void HU_Ticker(void);
 void HU_Drawer(void);
 void HU_Erase(void);
 
-extern int hud_list_bgon;   /* solid window background for list of messages    */
-extern int hud_msg_lines;   /* number of message lines in window up to 16      */
 extern int hud_displayed;   /* hud is displayed */
 
 typedef struct custom_message_s
