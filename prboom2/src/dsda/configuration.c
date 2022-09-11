@@ -104,6 +104,7 @@ void I_InitSoundParams(void);
 void S_Init(void);
 void M_ChangeMIDIPlayer(void);
 void HU_init_crosshair(void);
+void HU_InitThresholds(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -771,6 +772,26 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_hudadd_crosshair] = {
     "hudadd_crosshair", dsda_config_hudadd_crosshair,
     dsda_config_int, 0, HU_CROSSHAIRS - 1, { 0 }, NULL, 0, 0, HU_init_crosshair
+  },
+  [dsda_config_hud_health_red] = {
+    "hud_health_red", dsda_config_hud_health_red,
+    dsda_config_int, 0, 200, { 25 }, NULL, 0, 0, HU_InitThresholds
+  },
+  [dsda_config_hud_health_yellow] = {
+    "hud_health_yellow", dsda_config_hud_health_yellow,
+    dsda_config_int, 0, 200, { 50 }, NULL, 0, 0, HU_InitThresholds
+  },
+  [dsda_config_hud_health_green] = {
+    "hud_health_green", dsda_config_hud_health_green,
+    dsda_config_int, 0, 200, { 100 }, NULL, 0, 0, HU_InitThresholds
+  },
+  [dsda_config_hud_ammo_red] = {
+    "hud_ammo_red", dsda_config_hud_ammo_red,
+    dsda_config_int, 0, 100, { 25 }, NULL, 0, 0, HU_InitThresholds
+  },
+  [dsda_config_hud_ammo_yellow] = {
+    "hud_ammo_yellow", dsda_config_hud_ammo_yellow,
+    dsda_config_int, 0, 100, { 50 }, NULL, 0, 0, HU_InitThresholds
   },
 };
 

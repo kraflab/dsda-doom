@@ -364,11 +364,11 @@ default_t defaults[] =
   { "map_things_appearance", {(int*)&map_things_appearance}, {map_things_appearance_max-1},0,map_things_appearance_max-1, def_int},
 
   SETTING_HEADING("Heads-up display settings"),
-  { "health_red", { &health_red }, { 25 }, 0, 200, def_int }, // amount of health for red to yellow transition
-  { "health_yellow", { &health_yellow }, { 50 }, 0, 200, def_int }, // amount of health for yellow to green transition
-  { "health_green", { &health_green}, { 100 }, 0, 200, def_int }, // amount of health for green to blue transition
-  { "ammo_red", { &ammo_red }, { 25 }, 0, 100, def_int }, // percent of ammo for red to yellow transition
-  { "ammo_yellow", { &ammo_yellow }, { 50 }, 0, 100, def_int }, // percent of ammo for yellow to green transition
+  MIGRATED_SETTING(dsda_config_hud_health_red),
+  MIGRATED_SETTING(dsda_config_hud_health_yellow),
+  MIGRATED_SETTING(dsda_config_hud_health_green),
+  MIGRATED_SETTING(dsda_config_hud_ammo_red),
+  MIGRATED_SETTING(dsda_config_hud_ammo_yellow),
   MIGRATED_SETTING(dsda_config_hud_displayed),
   MIGRATED_SETTING(dsda_config_hudadd_secretarea),
   MIGRATED_SETTING(dsda_config_hudadd_demoprogressbar),

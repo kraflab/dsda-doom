@@ -2600,11 +2600,11 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
   { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 6 * 8 },
 
   { "SHOW MESSAGES", S_YESNO, m_conf, SB_X, SB_Y + 7 * 8, { .config_id = dsda_config_show_messages } },
-  { "HEALTH LOW/OK", S_NUM, m_null, SB_X, SB_Y + 8 * 8, {"health_red" } },
-  { "HEALTH OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 9 * 8, {"health_yellow" } },
-  { "HEALTH GOOD/EXTRA", S_NUM, m_null, SB_X, SB_Y + 10 * 8, {"health_green" } },
-  { "AMMO LOW/OK", S_NUM, m_null, SB_X, SB_Y + 11 * 8, {"ammo_red" } },
-  { "AMMO OK/GOOD", S_NUM, m_null, SB_X, SB_Y + 12 * 8, {"ammo_yellow" } },
+  { "HEALTH LOW/OK", S_NUM, m_conf, SB_X, SB_Y + 8 * 8, { .config_id = dsda_config_hud_health_red } },
+  { "HEALTH OK/GOOD", S_NUM, m_conf, SB_X, SB_Y + 9 * 8, { .config_id = dsda_config_hud_health_yellow } },
+  { "HEALTH GOOD/EXTRA", S_NUM, m_conf, SB_X, SB_Y + 10 * 8, { .config_id = dsda_config_hud_health_green } },
+  { "AMMO LOW/OK", S_NUM, m_conf, SB_X, SB_Y + 11 * 8, { .config_id = dsda_config_hud_ammo_red } },
+  { "AMMO OK/GOOD", S_NUM, m_conf, SB_X, SB_Y + 12 * 8, { .config_id = dsda_config_hud_ammo_yellow } },
   { "REPORT REVEALED SECRETS", S_YESNO, m_conf, SB_X, SB_Y + 13 * 8, { .config_id = dsda_config_hudadd_secretarea } },
   { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_conf, SB_X, SB_Y + 14 * 8, { .config_id = dsda_config_hudadd_demoprogressbar } },
 

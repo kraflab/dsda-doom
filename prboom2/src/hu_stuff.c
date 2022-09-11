@@ -240,6 +240,22 @@ void HU_Init(void)
   }
 }
 
+//jff 2/16/98 status color change levels
+int hud_ammo_red;      // ammo percent less than which status is red
+int hud_ammo_yellow;   // ammo percent less is yellow more green
+int hud_health_red;    // health amount less than which status is red
+int hud_health_yellow; // health amount less than which status is yellow
+int hud_health_green;  // health amount above is blue, below is green
+
+void HU_InitThresholds(void)
+{
+  hud_health_red = dsda_IntConfig(dsda_config_hud_health_red);
+  hud_health_yellow = dsda_IntConfig(dsda_config_hud_health_yellow);
+  hud_health_green = dsda_IntConfig(dsda_config_hud_health_green);
+  hud_ammo_red = dsda_IntConfig(dsda_config_hud_ammo_red);
+  hud_ammo_yellow = dsda_IntConfig(dsda_config_hud_ammo_yellow);
+}
+
 //
 // HU_Start(void)
 //
@@ -255,6 +271,8 @@ void HU_Start(void)
 {
   int   i;
   const char* s; /* cph - const */
+
+  HU_InitThresholds();
 
   plr = &players[displayplayer];        // killough 3/7/98
   custom_message_p = &custom_message[displayplayer];
@@ -423,11 +441,11 @@ int HU_GetHealthColor(int health, int def)
 {
   int result;
 
-  if (health < health_red)
+  if (health < hud_health_red)
     result = CR_RED;
-  else if (health < health_yellow)
+  else if (health < hud_health_yellow)
     result = CR_GOLD;
-  else if (health <= health_green)
+  else if (health <= hud_health_green)
     result = CR_GREEN;
   else
     result = def;

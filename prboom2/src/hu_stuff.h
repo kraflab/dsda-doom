@@ -88,4 +88,10 @@ typedef struct message_thinker_s
 int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int sfx);
 void ClearMessage(void);
 
+extern int hud_health_red;    // health amount less than which status is red
+extern int hud_health_yellow; // health amount less than which status is yellow
+extern int hud_health_green;  // health amount above is blue, below is green
+extern int hud_ammo_red;      // ammo percent less than which status is red
+extern int hud_ammo_yellow;   // ammo percent less is yellow more green
+
 #endif
