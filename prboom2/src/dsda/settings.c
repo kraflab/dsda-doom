@@ -35,18 +35,17 @@
 
 int dsda_tas;
 int dsda_skip_next_wipe;
-int dsda_skip_quit_prompt;
-int dsda_show_split_data;
-int dsda_switch_when_ammo_runs_out;
-int dsda_viewbob;
-int dsda_weaponbob;
 
 void dsda_InitSettings(void) {
   void dsda_UpdateStrictMode(void);
   void G_UpdateMouseSensitivity(void);
+  void dsda_InitQuickstartCache(void);
+  void dsda_InitParallelSFXFilter(void);
 
   dsda_UpdateStrictMode();
   G_UpdateMouseSensitivity();
+  dsda_InitQuickstartCache();
+  dsda_InitParallelSFXFilter();
 }
 
 static int dsda_WadCompatibilityLevel(void) {
@@ -119,11 +118,11 @@ void dsda_SetTas(void) {
 }
 
 dboolean dsda_ViewBob(void) {
-  return dsda_viewbob;
+  return dsda_IntConfig(dsda_config_viewbob);
 }
 
 dboolean dsda_WeaponBob(void) {
-  return dsda_weaponbob;
+  return dsda_IntConfig(dsda_config_weaponbob);
 }
 
 dboolean dsda_ShowMessages(void) {
@@ -171,11 +170,11 @@ dboolean dsda_HideHorns(void) {
 }
 
 dboolean dsda_SwitchWhenAmmoRunsOut(void) {
-  return dsda_switch_when_ammo_runs_out;
+  return dsda_IntConfig(dsda_config_switch_when_ammo_runs_out);
 }
 
 dboolean dsda_SkipQuitPrompt(void) {
-  return dsda_skip_quit_prompt;
+  return dsda_IntConfig(dsda_config_skip_quit_prompt);
 }
 
 dboolean dsda_TrackSplits(void) {
@@ -183,7 +182,7 @@ dboolean dsda_TrackSplits(void) {
 }
 
 dboolean dsda_ShowSplitData(void) {
-  return dsda_show_split_data;
+  return dsda_IntConfig(dsda_config_show_split_data);
 }
 
 dboolean dsda_ExHud(void) {

@@ -22,19 +22,8 @@
 
 #define UNSPECIFIED_COMPLEVEL -2
 
-extern int dsda_skip_quit_prompt;
-extern int dsda_show_split_data;
 extern int dsda_fps_limit;
-extern int dsda_quickstart_cache_tics;
-extern int dsda_death_use_action;
-extern int dsda_allow_jumping;
-extern int dsda_parallel_sfx_limit;
-extern int dsda_parallel_sfx_window;
-extern int dsda_switch_when_ammo_runs_out;
-extern int dsda_viewbob;
-extern int dsda_weaponbob;
 extern int dsda_show_alive_monsters;
-extern const char* dsda_player_name;
 
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);

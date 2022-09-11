@@ -108,6 +108,8 @@ void HU_InitThresholds(void);
 void dsda_InitKeyFrame(void);
 void dsda_SetupStretchParams(void);
 void dsda_InitCommandHistory(void);
+void dsda_InitQuickstartCache(void);
+void dsda_InitParallelSFXFilter(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -837,6 +839,50 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_hide_empty_commands] = {
     "dsda_hide_empty_commands", dsda_config_hide_empty_commands,
     CONF_BOOL(1), NULL, 0, 0, dsda_InitCommandHistory
+  },
+  [dsda_config_skip_quit_prompt] = {
+    "dsda_skip_quit_prompt", dsda_config_skip_quit_prompt,
+    CONF_BOOL(0)
+  },
+  [dsda_config_show_split_data] = {
+    "dsda_show_split_data", dsda_config_show_split_data,
+    CONF_BOOL(1)
+  },
+  [dsda_config_player_name] = {
+    "dsda_player_name", dsda_config_player_name,
+    CONF_STRING("Anonymous")
+  },
+  [dsda_config_quickstart_cache_tics] = {
+    "dsda_quickstart_cache_tics", dsda_config_quickstart_cache_tics,
+    dsda_config_int, 0, 35, { 0 }, NULL, 0, 0, dsda_InitQuickstartCache
+  },
+  [dsda_config_death_use_action] = {
+    "dsda_death_use_action", dsda_config_death_use_action,
+    dsda_config_int, 0, 2, { 0 }
+  },
+  [dsda_config_allow_jumping] = {
+    "dsda_allow_jumping", dsda_config_allow_jumping,
+    CONF_BOOL(0)
+  },
+  [dsda_config_parallel_sfx_limit] = {
+    "dsda_parallel_sfx_limit", dsda_config_parallel_sfx_limit,
+    dsda_config_int, 0, 32, { 0 }, NULL, 0, 0, dsda_InitParallelSFXFilter
+  },
+  [dsda_config_parallel_sfx_window] = {
+    "dsda_parallel_sfx_window", dsda_config_parallel_sfx_window,
+    dsda_config_int, 1, 32, { 1 }, NULL, 0, 0, dsda_InitParallelSFXFilter
+  },
+  [dsda_config_switch_when_ammo_runs_out] = {
+    "dsda_switch_when_ammo_runs_out", dsda_config_switch_when_ammo_runs_out,
+    CONF_BOOL(1)
+  },
+  [dsda_config_viewbob] = {
+    "dsda_viewbob", dsda_config_viewbob,
+    CONF_BOOL(1)
+  },
+  [dsda_config_weaponbob] = {
+    "dsda_weaponbob", dsda_config_weaponbob,
+    CONF_BOOL(1)
   },
 };
 

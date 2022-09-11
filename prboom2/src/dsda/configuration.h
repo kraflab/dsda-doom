@@ -201,6 +201,17 @@ typedef enum {
   dsda_config_organized_saves,
   dsda_config_command_history_size,
   dsda_config_hide_empty_commands,
+  dsda_config_skip_quit_prompt,
+  dsda_config_show_split_data,
+  dsda_config_player_name,
+  dsda_config_quickstart_cache_tics,
+  dsda_config_death_use_action,
+  dsda_config_allow_jumping,
+  dsda_config_parallel_sfx_limit,
+  dsda_config_parallel_sfx_window,
+  dsda_config_switch_when_ammo_runs_out,
+  dsda_config_viewbob,
+  dsda_config_weaponbob,
   dsda_config_count,
 } dsda_config_identifier_t;
 
