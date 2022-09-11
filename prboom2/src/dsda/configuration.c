@@ -900,9 +900,21 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "map_level_stat", dsda_config_map_level_stat,
     CONF_BOOL(1)
   },
-  [dsda_config_automapmode] = { // TODO
-    "automapmode", dsda_config_automapmode,
-    dsda_config_int, 0, 31, { am_follow }
+  [dsda_config_automap_overlay] = {
+    "automap_overlay", dsda_config_automap_overlay,
+    CONF_BOOL(0), &automap_overlay
+  },
+  [dsda_config_automap_rotate] = {
+    "automap_rotate", dsda_config_automap_rotate,
+    CONF_BOOL(0), &automap_rotate
+  },
+  [dsda_config_automap_follow] = {
+    "automap_follow", dsda_config_automap_follow,
+    CONF_BOOL(1), &automap_follow
+  },
+  [dsda_config_automap_grid] = {
+    "automap_grid", dsda_config_automap_grid,
+    CONF_BOOL(0), &automap_grid
   },
   [dsda_config_map_grid_size] = {
     "map_grid_size", dsda_config_map_grid_size,

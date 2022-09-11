@@ -495,7 +495,7 @@ void R_InitBuffer(int width, int height)
 
 void R_FillBackScreen (void)
 {
-  int automap = ((automapmode & am_active) && !(automapmode & am_overlay));
+  int automap = automap_on;
 
   if (grnrock.lumpnum == 0)
     return;
@@ -604,7 +604,7 @@ void R_DrawViewBorder(void)
 
   // e6y: wide-res
   if ((ratio_multiplier != ratio_scale || wide_offsety) &&
-     (R_PartialView() || ((automapmode & am_active) && ! (automapmode & am_overlay))))
+     (R_PartialView() || automap_on))
   {
     for (i = (SCREENHEIGHT - ST_SCALED_HEIGHT); i < SCREENHEIGHT; i++)
     {

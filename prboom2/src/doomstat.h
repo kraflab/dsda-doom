@@ -187,18 +187,14 @@ extern int snd_MusicVolume;    // maximum volume for music
 // CPhipps - screen parameters
 extern int desired_screenwidth, desired_screenheight;
 
-// -------------------------
-// Status flags for refresh.
-//
+extern int automap_active;
+extern int automap_overlay;
+extern int automap_rotate;
+extern int automap_follow;
+extern int automap_grid;
 
-enum automapmode_e {
-  am_active = 1,  // currently shown
-  am_overlay= 2,  // covers the screen, i.e. not overlay mode
-  am_rotate = 4,  // rotates to the player facing direction
-  am_follow = 8,  // keep the player centred
-  am_grid   =16,  // show grid
-};
-extern enum automapmode_e automapmode; // Mode that the automap is in
+#define automap_on (automap_active && !automap_overlay)
+#define automap_off (!automap_active || automap_overlay)
 
 typedef enum {
   mnact_nochange = -1,

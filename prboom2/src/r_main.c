@@ -910,7 +910,7 @@ void R_RenderPlayerView (player_t* player)
   // Framerate-independent fuzz progression
   static int fuzzgametic = 0;
   static int savedfuzzpos = 0;
-  dboolean automap = (automapmode & am_active) && !(automapmode & am_overlay);
+  dboolean automap = automap_on;
 
   r_frame_count++;
 

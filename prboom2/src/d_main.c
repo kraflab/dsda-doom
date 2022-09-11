@@ -377,8 +377,8 @@ void D_Display (fixed_t frac)
     HU_Erase();
 
     // Work out if the player view is visible, and if there is a border
-    viewactive = (!(automapmode & am_active) || (automapmode & am_overlay)) && !inhelpscreens;
-    isborder = viewactive ? R_PartialView() : (!inhelpscreens && (automapmode & am_active));
+    viewactive = automap_off && !inhelpscreens;
+    isborder = viewactive ? R_PartialView() : (!inhelpscreens && automap_active);
 
     if (oldgamestate != GS_LEVEL) {
       R_FillBackScreen ();    // draw the pattern into the back screen
@@ -394,8 +394,7 @@ void D_Display (fixed_t frac)
       // e6y
       // I should do it because I call R_RenderPlayerView in all cases,
       // not only if viewactive is true
-      borderwillneedredraw = (borderwillneedredraw) ||
-        (((automapmode & am_active) && !(automapmode & am_overlay)));
+      borderwillneedredraw = borderwillneedredraw || automap_on;
     }
 
     if (redrawborderstuff || V_IsOpenGLMode()) {
@@ -431,7 +430,7 @@ void D_Display (fixed_t frac)
     use_boom_cm=false;
     frame_fixedcolormap = 0;
 
-    if (automapmode & am_active)
+    if (automap_active)
     {
       AM_Drawer();
     }
@@ -439,7 +438,7 @@ void D_Display (fixed_t frac)
     R_RestoreInterpolations();
 
     ST_Drawer(
-        (R_PartialView() || ((automapmode & am_active) && !(automapmode & am_overlay))),
+        (R_PartialView() || automap_on),
         redrawborderstuff || BorderNeedRefresh,
         (menuactive == mnact_full));
 

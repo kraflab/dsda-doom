@@ -569,7 +569,7 @@ void HU_draw_crosshair(void)
   if (
     !crosshair_nam[hudadd_crosshair] ||
     crosshair.lump == -1 ||
-    automapmode & am_active ||
+    automap_active ||
     menuactive ||
     dsda_Paused()
   )
@@ -663,10 +663,10 @@ void HU_Drawer(void)
 
   plr = &players[displayplayer];         // killough 3/7/98
   // draw the automap widgets if automap is displayed
-  if (automapmode & am_active)
+  if (automap_active)
   {
     // Hide title if automap in overlay mode and adv / ex hud is active
-    if (!(automapmode & am_overlay) || (R_PartialView() && !dsda_ExHud()))
+    if (!automap_overlay || (R_PartialView() && !dsda_ExHud()))
     {
       // map title
       HUlib_drawTextLine(&w_title, false);

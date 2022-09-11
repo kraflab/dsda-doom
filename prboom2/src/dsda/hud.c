@@ -88,20 +88,19 @@ void dsda_InitHud(patchnum_t* font) {
 }
 
 static dboolean dsda_ExHudVisible(void) {
-  return dsda_ExHud() && // extended hud turned on
-         (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
+  return dsda_ExHud() && automap_off;
 }
 
 static dboolean dsda_CommandDisplayVisible(void) {
   return (dsda_CommandDisplay() || dsda_BuildMode()) && // command display turned on
          R_PartialView() && // not zoomed in
-         (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
+         automap_off;
 }
 
 static dboolean dsda_CoordinateDisplayVisible(void) {
   return dsda_CoordinateDisplay() && // command display turned on
          R_PartialView() && // not zoomed in
-         (!(automapmode & am_active) || (automapmode & am_overlay)); // automap inactive
+         automap_off;
 }
 
 void dsda_UpdateHud(void) {

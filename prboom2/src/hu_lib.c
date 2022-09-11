@@ -290,7 +290,7 @@ void HUlib_eraseTextLine(hu_textline_t* l)
   // and the text must either need updating or refreshing
   // (because of a recent change back from the automap)
 
-  if (!(automapmode & am_active) && viewwindowx && l->needsupdate)
+  if (!automap_active && viewwindowx && l->needsupdate)
   {
     int top = l->y;
     int bottom = l->y + l->f[0].height - 1;

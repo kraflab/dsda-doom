@@ -333,7 +333,7 @@ void P_SetPitch(player_t *player)
     {
       if (dsda_MouseLook())
       {
-        if (!mo->reactiontime && (!(automapmode & am_active) || (automapmode & am_overlay)))
+        if (!mo->reactiontime && automap_off)
         {
           mo->pitch += (mlooky << 16);
           CheckPitch((signed int *)&mo->pitch);

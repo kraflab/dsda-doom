@@ -250,8 +250,7 @@ void gld_MultisamplingSet(void)
   {
     extern int map_use_multisampling;
 
-    int use_multisampling = map_use_multisampling ||
-      (!(automapmode & am_active) || (automapmode & am_overlay));
+    int use_multisampling = map_use_multisampling || automap_off;
 
     gld_EnableMultisample(use_multisampling);
   }
@@ -454,7 +453,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   float coord_scale;
   GLTexture *gltexture;
 
-  alpha = (float)((automapmode & am_overlay) ? map_textured_overlay_trans : map_textured_trans) / 100.0f;
+  alpha = (float)(automap_overlay ? map_textured_overlay_trans : map_textured_trans) / 100.0f;
   if (alpha == 0)
     return;
 
@@ -502,7 +501,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   glScissor(fx, SCREENHEIGHT - (fy + fh), fw, fh);
   glEnable(GL_SCISSOR_TEST);
 
-  if (automapmode & am_rotate)
+  if (automap_rotate)
   {
     float pivotx = (float)(fx + fw / 2);
     float pivoty = (float)(fy + fh / 2);
@@ -787,7 +786,7 @@ void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
   unsigned char r, g, b, a;
   map_line_t *line;
 
-  a = ((automapmode & am_overlay) ? map_lines_overlay_trans * 255 / 100 : 255);
+  a = (automap_overlay ? map_lines_overlay_trans * 255 / 100 : 255);
   if (a == 0)
     return;
 

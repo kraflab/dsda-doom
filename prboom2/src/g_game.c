@@ -1938,7 +1938,7 @@ void G_DoCompleted (void)
     if (playeringame[i])
       G_PlayerFinishLevel(i);        // take away cards and stuff
 
-  if (automapmode & am_active)
+  if (automap_active)
     AM_Stop();
 
   wminfo.nextep = wminfo.epsd = gameepisode -1;
@@ -1980,7 +1980,7 @@ void G_DoCompleted (void)
   wminfo.totaltimes = (totalleveltimes += (leveltime - leveltime%35));
 
   gamestate = GS_INTERMISSION;
-  automapmode &= ~am_active;
+  automap_active = false;
 
   // lmpwatch.pl engine-side demo testing support
   // print "FINISHED: <mapname>" when the player exits the current map
@@ -2846,7 +2846,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
 
   dsda_ResetPauseMode();
   dsda_ResetCommandHistory();
-  automapmode &= ~am_active;
+  automap_active = false;
   gameskill = skill;
   dsda_UpdateGameMap(episode, map);
 
@@ -4132,7 +4132,7 @@ static void Hexen_G_DoCompleted(void)
         }
     }
 
-    if (automapmode & am_active)
+    if (automap_active)
       AM_Stop();
 
     e6y_G_DoCompleted();
