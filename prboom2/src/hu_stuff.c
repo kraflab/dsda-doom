@@ -555,7 +555,7 @@ void HU_draw_crosshair(void)
   if (hudadd_crosshair_health)
     cm = HU_GetHealthColor(plr->health, CR_BLUE2);
   else
-    cm = hudadd_crosshair_color;
+    cm = dsda_IntConfig(dsda_config_hudadd_crosshair_color);
 
   if (dsda_CrosshairTarget() || dsda_CrosshairLockTarget())
   {
@@ -583,7 +583,7 @@ void HU_draw_crosshair(void)
       crosshair.target_sprite = linetarget->sprite;
 
       if (dsda_CrosshairTarget())
-        cm = hudadd_crosshair_target_color;
+        cm = dsda_IntConfig(dsda_config_hudadd_crosshair_target_color);
     }
   }
 

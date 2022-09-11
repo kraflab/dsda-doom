@@ -729,6 +729,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "cap_fps", dsda_config_cap_fps,
     dsda_config_int, 16, 300, { 60 }
   },
+  [dsda_config_hudadd_crosshair_color] = {
+    "hudadd_crosshair_color", dsda_config_hudadd_crosshair_color,
+    CONF_CR(3)
+  },
+  [dsda_config_hudadd_crosshair_target_color] = {
+    "hudadd_crosshair_target_color", dsda_config_hudadd_crosshair_target_color,
+    CONF_CR(9)
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

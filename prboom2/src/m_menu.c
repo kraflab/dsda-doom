@@ -2725,20 +2725,19 @@ setup_menu_t stat_settings2[] =
   { "HUD SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 1 * 8 },
 
   { "REPORT REVEALED SECRETS", S_YESNO, m_null, HUD_X, SB_Y + 2 * 8, {"hudadd_secretarea" } },
-  { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_null, HUD_X, SB_Y + 3 * 8, {"hudadd_demoprogressbar" } },
+  { "Number of Review Message Lines", S_NUM, m_null, HUD_X, SB_Y + 3 * 8, { "hud_msg_lines" } },
+  { "Message Background", S_YESNO, m_null, HUD_X, SB_Y + 4 * 8, { "hud_list_bgon" } },
+  { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_null, HUD_X, SB_Y + 5 * 8, {"hudadd_demoprogressbar" } },
 
-  { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 5 * 8 },
+  { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 7 * 8 },
 
-  { "ENABLE CROSSHAIR", S_CHOICE, m_null, HUD_X, SB_Y + 6 * 8, { "hudadd_crosshair" }, 0, 0, crosshair_str },
-  { "SCALE CROSSHAIR", S_YESNO, m_null, HUD_X, SB_Y + 7 * 8, { "hudadd_crosshair_scale" } },
-  { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_null, HUD_X, SB_Y + 8 * 8, {"hudadd_crosshair_health" } },
-  { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 9 * 8, {"hudadd_crosshair_target" } },
-  { "LOCK CROSSHAIR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 10 * 8, {"hudadd_crosshair_lock_target" } },
-  { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 11 * 8, {"hudadd_crosshair_color" } },
-  { "TARGET CROSSHAIR COLOR", S_CRITEM, m_null, HUD_X, SB_Y + 12 * 8, {"hudadd_crosshair_target_color" } },
-
-  { "Number of Review Message Lines", S_NUM, m_null, HUD_X, SB_Y + 14 * 8, { "hud_msg_lines" } },
-  { "Message Background", S_YESNO, m_null, HUD_X, SB_Y + 15 * 8, { "hud_list_bgon" } },
+  { "ENABLE CROSSHAIR", S_CHOICE, m_null, HUD_X, SB_Y + 8 * 8, { "hudadd_crosshair" }, 0, 0, crosshair_str },
+  { "SCALE CROSSHAIR", S_YESNO, m_null, HUD_X, SB_Y + 9 * 8, { "hudadd_crosshair_scale" } },
+  { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_null, HUD_X, SB_Y + 10 * 8, {"hudadd_crosshair_health" } },
+  { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 11 * 8, {"hudadd_crosshair_target" } },
+  { "LOCK CROSSHAIR ON TARGET", S_YESNO, m_null, HUD_X, SB_Y + 12 * 8, {"hudadd_crosshair_lock_target" } },
+  { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, SB_Y + 13 * 8, { .config_id = dsda_config_hudadd_crosshair_color } },
+  { "TARGET CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, SB_Y + 14 * 8, { .config_id = dsda_config_hudadd_crosshair_target_color } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, SB_Y + 20 * 8, { stat_settings1 } },
   { 0, S_SKIP | S_END, m_null }
