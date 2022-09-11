@@ -107,13 +107,14 @@ void HU_init_crosshair(void);
 // TODO: migrate all kinds of stuff from M_Init
 
 // TODO: automatically go through strict list
-static void UpdateStrictMode(void) {
-  void M_ChangeSpeed(void);
+void dsda_UpdateStrictMode(void) {
   void dsda_InitKeyFrame(void);
 
   I_Init2(); // side effect of realtic clock rate
   M_ChangeSpeed(); // side effect of always sr50
   dsda_InitKeyFrame();
+  M_ChangeMouseLook();
+  HU_init_crosshair();
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
@@ -217,7 +218,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_strict_mode] = {
     "dsda_strict_mode", dsda_config_strict_mode,
-    CONF_BOOL(1), NULL, 0, 0, UpdateStrictMode
+    CONF_BOOL(1), NULL, 0, 0, dsda_UpdateStrictMode
   },
   [dsda_config_vertmouse] = {
     "movement_vertmouse", dsda_config_vertmouse,

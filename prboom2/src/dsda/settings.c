@@ -46,12 +46,10 @@ int dsda_viewbob;
 int dsda_weaponbob;
 
 void dsda_InitSettings(void) {
+  void dsda_UpdateStrictMode(void);
   void G_UpdateMouseSensitivity(void);
 
-  I_Init2();
-  M_ChangeSpeed();
-  dsda_InitKeyFrame();
-  M_ChangeMouseLook();
+  dsda_UpdateStrictMode();
   G_UpdateMouseSensitivity();
 }
 
