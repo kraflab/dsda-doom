@@ -26,6 +26,7 @@
 #include "s_sound.h"
 
 #include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/data_organizer.h"
 #include "dsda/excmd.h"
 #include "dsda/mapinfo.h"
@@ -33,7 +34,6 @@
 
 #include "save.h"
 
-int dsda_organized_saves;
 static char* dsda_base_save_dir;
 static char* dsda_wad_save_dir;
 
@@ -165,7 +165,7 @@ void dsda_InitSaveDir(void) {
 }
 
 static char* dsda_SaveDir(void) {
-  if (dsda_organized_saves) {
+  if (dsda_IntConfig(dsda_config_organized_saves)) {
     if (!dsda_wad_save_dir)
       dsda_wad_save_dir = dsda_DataDir();
 

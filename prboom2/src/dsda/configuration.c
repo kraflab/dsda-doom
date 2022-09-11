@@ -817,6 +817,18 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_wipe_at_full_speed", dsda_config_wipe_at_full_speed,
     CONF_BOOL(1)
   },
+  [dsda_config_show_demo_attempts] = {
+    "dsda_show_demo_attempts", dsda_config_show_demo_attempts,
+    CONF_BOOL(1)
+  },
+  [dsda_config_hide_horns] = {
+    "dsda_hide_horns", dsda_config_hide_horns,
+    CONF_BOOL(0)
+  },
+  [dsda_config_organized_saves] = {
+    "dsda_organized_saves", dsda_config_organized_saves,
+    CONF_BOOL(1)
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

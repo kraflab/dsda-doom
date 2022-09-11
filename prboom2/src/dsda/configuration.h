@@ -196,6 +196,9 @@ typedef enum {
   dsda_config_auto_key_frame_timeout,
   dsda_config_ex_text_scale,
   dsda_config_wipe_at_full_speed,
+  dsda_config_show_demo_attempts,
+  dsda_config_hide_horns,
+  dsda_config_organized_saves,
   dsda_config_count,
 } dsda_config_identifier_t;
 

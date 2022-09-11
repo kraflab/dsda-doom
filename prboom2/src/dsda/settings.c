@@ -35,8 +35,6 @@
 
 int dsda_tas;
 int dsda_skip_next_wipe;
-int dsda_show_demo_attempts;
-int dsda_hide_horns;
 int dsda_skip_quit_prompt;
 int dsda_show_split_data;
 int dsda_switch_when_ammo_runs_out;
@@ -169,7 +167,7 @@ dboolean dsda_AlwaysSR50(void) {
 }
 
 dboolean dsda_HideHorns(void) {
-  return dsda_hide_horns;
+  return dsda_IntConfig(dsda_config_hide_horns);
 }
 
 dboolean dsda_SwitchWhenAmmoRunsOut(void) {
@@ -205,7 +203,7 @@ dboolean dsda_ShowFPS(void) {
 }
 
 dboolean dsda_ShowDemoAttempts(void) {
-  return dsda_show_demo_attempts && demorecording;
+  return dsda_IntConfig(dsda_config_show_demo_attempts) && demorecording;
 }
 
 dboolean dsda_MapPointCoordinates(void) {
