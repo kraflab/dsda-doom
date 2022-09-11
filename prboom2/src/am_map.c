@@ -258,7 +258,6 @@ static void AM_SetColors(void)
 //jff 3/9/98 add option to not show secret sectors until entered
 int map_secret_after;
 
-int map_always_updates;
 int map_grid_size;
 int map_scroll_speed;
 int map_wheel_zoom;

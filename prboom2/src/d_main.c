@@ -422,9 +422,7 @@ void D_Display (fixed_t frac)
     R_InterpolateView(&players[displayplayer], frac);
 
     // Now do the drawing
-    if (viewactive || map_always_updates) {
-      R_RenderPlayerView (&players[displayplayer]);
-    }
+    R_RenderPlayerView (&players[displayplayer]);
 
     dsda_UpdateRenderStats();
 

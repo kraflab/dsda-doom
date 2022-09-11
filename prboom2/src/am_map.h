@@ -142,7 +142,6 @@ extern int mapcolor_me;       // consoleplayer's chosen colour
 //jff 3/9/98
 extern int map_secret_after;  // secrets do not appear til after bagged
 
-extern int map_always_updates;
 extern int map_grid_size;
 extern int map_scroll_speed;
 extern int map_wheel_zoom;

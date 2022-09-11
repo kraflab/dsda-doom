@@ -348,7 +348,6 @@ default_t defaults[] =
   { "map_point_coord", {&map_point_coordinates}, {0},0,1, def_bool},
   { "map_level_stat", {&map_level_stat}, {1},0,1, def_bool},
   { "automapmode", {(int*)&automapmode}, {am_follow}, 0, 31, def_hex}, // automap mode
-  { "map_always_updates", {&map_always_updates}, {1},0,1, def_bool},
   { "map_grid_size", {&map_grid_size}, {128},8,256, def_int},
   { "map_scroll_speed", {&map_scroll_speed}, {8},1,32, def_int},
   { "map_wheel_zoom", {&map_wheel_zoom}, {1},0,1, def_bool},
