@@ -2933,7 +2933,7 @@ setup_menu_t audiovideo_settings[] = {
   { "Exclusive Fullscreen", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_exclusive_fullscreen } },
   { "Vertical Sync", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { .config_id = dsda_config_render_vsync } },
   { "Uncapped Framerate", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_uncapped_framerate } },
-  { "FPS Limit", S_NUM, m_null, G_X, G_Y + 9 * 8, { "dsda_fps_limit" } },
+  { "FPS Limit", S_NUM, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_fps_limit } },
 
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
   { "Number of Sound Channels", S_NUM, m_conf, G_X, G_Y + 12 * 8, { .config_id = dsda_config_snd_channels } },

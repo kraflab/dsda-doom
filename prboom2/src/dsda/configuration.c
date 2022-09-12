@@ -984,6 +984,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "uncapped_framerate", dsda_config_uncapped_framerate,
     CONF_BOOL(1), NULL, 0, 0, M_ChangeUncappedFrameRate
   },
+  [dsda_config_fps_limit] = {
+    "dsda_fps_limit", dsda_config_fps_limit,
+    dsda_config_int, 0, 1000, { 0 }
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
