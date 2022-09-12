@@ -160,7 +160,7 @@ static void init_reset_buffer (void)
     // reset expression to 127 (max)
     event[5].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x0b, 0x7f);
     // reset pitch bend to 64 (center)
-    event[6].message = Pm_Message(MIDI_EVENT_PITCH_BEND | i, 0x40, 0x00);
+    event[6].message = Pm_Message(MIDI_EVENT_PITCH_BEND | i, 0x00, 0x40);
     // RPN sequence to adjust pitch bend range (RPN value 0x0000)
     event[7].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x65, 0x00);
     event[8].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x64, 0x00);
