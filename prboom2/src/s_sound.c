@@ -773,7 +773,9 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
       return *vol > 0;
     }
 
-  if (approx_dist > S_CLIPPING_DIST)
+  // Sound emitter is too far away from listener.
+  // The <= 0 check is done in case the approx_dist overflows to a negative value.
+  if (approx_dist > S_CLIPPING_DIST || approx_dist <= 0)
     return 0;
 
   // angle of source to listener
