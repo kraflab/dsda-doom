@@ -889,7 +889,6 @@ static void NULL_PlotPixelWu(int scrn, int x, int y, byte color, int weight) {}
 static void NULL_DrawLine(fline_t* fl, int color) {}
 static void NULL_DrawLineWu(fline_t* fl, int color) {}
 
-const char *default_videomode;
 static video_mode_t current_videomode = VID_MODESW;
 
 V_CopyRect_f V_CopyRect = NULL_CopyRect;

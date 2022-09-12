@@ -247,9 +247,9 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_mus_portmidi_reset_delay),
 
   SETTING_HEADING("Video settings"),
-  { "videomode",{NULL, &default_videomode},{0,"Software"},UL,UL,def_str},
-  { "screen_resolution",{NULL, &screen_resolution},{0,"640x480"},UL,UL,def_str},
-  { "custom_resolution",{0,&custom_resolution},{0,""},UL,UL,def_str},
+  MIGRATED_SETTING(dsda_config_videomode),
+  MIGRATED_SETTING(dsda_config_screen_resolution),
+  MIGRATED_SETTING(dsda_config_custom_resolution),
   { "use_fullscreen",{&use_fullscreen},{0},0,1, def_bool},
   { "exclusive_fullscreen",{&exclusive_fullscreen},{0},0,1, def_bool},
   { "render_vsync",{&render_vsync},{0},0,1,def_bool},

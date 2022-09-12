@@ -2925,8 +2925,8 @@ static const char *gltexfilters_anisotropics[] = { "Off", "2x", "4x", "8x", "16x
 
 setup_menu_t audiovideo_settings[] = {
   { "Video", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Video mode", S_CHOICE, m_null, G_X, G_Y + 2 * 8, { "videomode" }, 0, M_ChangeVideoMode, videomodes },
-  { "Screen Resolution", S_CHOICE, m_null, G_X, G_Y + 3 * 8, { "screen_resolution" }, 0, M_ChangeVideoMode, screen_resolutions_list },
+  { "Video mode", S_CHOICE | S_STR, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_videomode }, 0, NULL, videomodes },
+  { "Screen Resolution", S_CHOICE | S_STR, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_screen_resolution }, 0, NULL, screen_resolutions_list },
   { "Aspect Ratio", S_CHOICE, m_null, G_X, G_Y + 4 * 8, { "render_aspect" }, 0, M_ChangeAspectRatio, render_aspects_list },
   { "Fullscreen Video mode", S_YESNO, m_null, G_X, G_Y + 5 * 8, { "use_fullscreen" }, 0, M_ChangeFullScreen },
   { "Exclusive Fullscreen", S_YESNO, m_null, G_X, G_Y + 6 * 8, { "exclusive_fullscreen" }, 0, M_ChangeVideoMode },

@@ -114,6 +114,7 @@ void M_ChangeMapMultisamling(void);
 void M_ChangeMapTextured(void);
 void AM_InitParams(void);
 void gld_ResetAutomapTransparency(void);
+void M_ChangeVideoMode(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -953,6 +954,18 @@ dsda_config_t dsda_config[dsda_config_count] = {
     dsda_config_int, 0, map_things_appearance_max - 1, { map_things_appearance_max - 1 },
     NULL, 0, 0, AM_InitParams
   },
+  [dsda_config_videomode] = {
+    "videomode", dsda_config_videomode,
+    CONF_STRING("Software"), NULL, 0, 0, M_ChangeVideoMode
+  },
+  [dsda_config_screen_resolution] = {
+    "screen_resolution", dsda_config_screen_resolution,
+    CONF_STRING("640x480"), NULL, 0, 0, M_ChangeVideoMode
+  },
+  [dsda_config_custom_resolution] = {
+    "custom_resolution", dsda_config_custom_resolution,
+    CONF_STRING("")
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
@@ -1093,6 +1106,9 @@ const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* val
 
   if (persist)
     dsda_PersistStringConfig(&dsda_config[id]);
+
+  if (dsda_config[id].onUpdate)
+    dsda_config[id].onUpdate();
 
   return dsda_StringConfig(id);
 }

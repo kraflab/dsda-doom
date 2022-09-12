@@ -118,8 +118,6 @@ typedef enum {
   VID_MODEMAX
 } video_mode_t;
 
-extern const char *default_videomode;
-
 void V_InitMode(video_mode_t mode);
 
 // video mode query interface

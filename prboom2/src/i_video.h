@@ -56,7 +56,6 @@ extern SDL_Window *sdl_window;
 extern SDL_Renderer *sdl_renderer;
 
 extern const char *screen_resolutions_list[];
-extern const char *screen_resolution;
 
 extern const char *sdl_video_window_pos;
 
@@ -99,7 +98,6 @@ void I_StartFrame (void);
 extern int use_fullscreen;  /* proff 21/05/2000 */
 extern int desired_fullscreen; //e6y
 extern int exclusive_fullscreen;
-extern const char *custom_resolution;
 
 void I_UpdateRenderSize(void);	// Handle potential
 extern int renderW;		// resolution scaling

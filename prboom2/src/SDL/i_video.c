@@ -666,7 +666,6 @@ void I_InitBuffersRes(void)
 
 #define MAX_RESOLUTIONS_COUNT 128
 const char *screen_resolutions_list[MAX_RESOLUTIONS_COUNT] = {NULL};
-const char *screen_resolution = NULL;
 
 //
 // I_GetScreenResolution
@@ -676,9 +675,12 @@ const char *screen_resolution = NULL;
 void I_GetScreenResolution(void)
 {
   int width, height;
+  const char *screen_resolution;
 
   desired_screenwidth = 640;
   desired_screenheight = 480;
+
+  screen_resolution = dsda_StringConfig(dsda_config_screen_resolution);
 
   if (screen_resolution)
   {
@@ -741,10 +743,12 @@ static void I_AppendResolution(SDL_DisplayMode *mode, int *current_resolution_in
   (*list_size)++;
 }
 
-const char *custom_resolution;
-
 static void I_AppendCustomResolution(int *current_resolution_index, int *list_size)
 {
+  const char *custom_resolution;
+
+  custom_resolution = dsda_StringConfig(dsda_config_custom_resolution);
+
   if (strlen(custom_resolution))
   {
     SDL_DisplayMode mode;
@@ -843,7 +847,9 @@ static void I_FillScreenResolutionsList(void)
   }
 
   screen_resolutions_list[list_size] = NULL;
-  screen_resolution = screen_resolutions_list[current_resolution_index];
+  // TODO: this code is inside of the onUpdate for screen resolution
+  // Using dsda_ReadConfig is a hack to avoid recursion, but this needs a proper solution
+  dsda_ReadConfig("screen_resolution", screen_resolutions_list[current_resolution_index], 0);
 }
 
 // e6y
@@ -1064,7 +1070,7 @@ void I_InitScreenResolution(void)
     h = desired_screenheight;
   }
 
-  mode = (video_mode_t)I_GetModeFromString(default_videomode);
+  mode = (video_mode_t)I_GetModeFromString(dsda_StringConfig(dsda_config_videomode));
   arg = dsda_Arg(dsda_arg_vidmode);
   if (arg->found)
   {
