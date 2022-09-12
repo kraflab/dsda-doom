@@ -236,6 +236,7 @@ typedef enum {
   dsda_config_render_vsync,
   dsda_config_uncapped_framerate,
   dsda_config_fps_limit,
+  dsda_config_usegamma,
   dsda_config_count,
 } dsda_config_identifier_t;
 

@@ -988,6 +988,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_fps_limit", dsda_config_fps_limit,
     dsda_config_int, 0, 1000, { 0 }
   },
+  [dsda_config_usegamma] = {
+    "usegamma", dsda_config_usegamma,
+    dsda_config_int, 0, 4, { 0 }, &usegamma
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

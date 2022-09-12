@@ -4140,9 +4140,7 @@ dboolean M_Responder (event_t* ev) {
       }
       else
       {
-        usegamma++;
-        if (usegamma > 4)
-          usegamma = 0;
+        dsda_CycleConfig(dsda_config_usegamma, true);
         players[consoleplayer].message =
           usegamma == 0 ? s_GAMMALVL0 :
           usegamma == 1 ? s_GAMMALVL1 :
