@@ -191,8 +191,6 @@ int usemouse;
 extern int viewwidth;
 extern int viewheight;
 
-extern int tran_filter_pct;            // killough 2/21/98
-
 default_t defaults[] =
 {
   //e6y
@@ -252,7 +250,7 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_exclusive_fullscreen),
   MIGRATED_SETTING(dsda_config_render_vsync),
   MIGRATED_SETTING(dsda_config_uncapped_framerate),
-  { "tran_filter_pct",{&tran_filter_pct},{66},0,100, def_int}, // set percentage of foreground/background translucency mix
+  MIGRATED_SETTING(dsda_config_tran_filter_pct),
   MIGRATED_SETTING(dsda_config_screenblocks),
   MIGRATED_SETTING(dsda_config_usegamma),
   MIGRATED_SETTING(dsda_config_fps_limit),

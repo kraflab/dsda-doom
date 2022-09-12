@@ -118,6 +118,7 @@ void M_ChangeVideoMode(void);
 void M_ChangeUncappedFrameRate(void);
 void M_ChangeFullScreen(void);
 void R_SetViewSize(void);
+void M_Trans(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -996,6 +997,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_screenblocks] = {
     "screenblocks", dsda_config_screenblocks,
     dsda_config_int, 3, 11, { 10 }, NULL, 0, 0, R_SetViewSize
+  },
+  [dsda_config_tran_filter_pct] = {
+    "tran_filter_pct", dsda_config_tran_filter_pct,
+    dsda_config_int, 0, 100, { 66 }, NULL, 0, 0, M_Trans
   },
 };
 
