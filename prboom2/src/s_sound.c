@@ -727,7 +727,8 @@ void S_StopChannel(int cnum)
 int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
                         int *vol, int *sep, int *pitch)
 {
-  fixed_t adx, ady,approx_dist;
+  fixed_t adx, ady;
+  ufixed_t approx_dist;
   angle_t angle;
 
   //jff 1/22/98 return if sound is not enabled
@@ -773,9 +774,7 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
       return *vol > 0;
     }
 
-  // Sound emitter is too far away from listener.
-  // The <= 0 check is done in case the approx_dist overflows to a negative value.
-  if (approx_dist > S_CLIPPING_DIST || approx_dist <= 0)
+  if (approx_dist > S_CLIPPING_DIST)
     return 0;
 
   // angle of source to listener
