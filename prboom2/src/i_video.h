@@ -48,7 +48,6 @@
 #pragma interface
 #endif
 
-extern int render_vsync;
 extern int render_screen_multiply;
 extern int integer_scaling;
 
@@ -95,7 +94,6 @@ void I_StartTic (void);
 
 void I_StartFrame (void);
 
-extern int use_fullscreen;  /* proff 21/05/2000 */
 extern int desired_fullscreen; //e6y
 extern int exclusive_fullscreen;
 

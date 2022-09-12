@@ -250,13 +250,13 @@ default_t defaults[] =
   MIGRATED_SETTING(dsda_config_videomode),
   MIGRATED_SETTING(dsda_config_screen_resolution),
   MIGRATED_SETTING(dsda_config_custom_resolution),
-  { "use_fullscreen",{&use_fullscreen},{0},0,1, def_bool},
-  { "exclusive_fullscreen",{&exclusive_fullscreen},{0},0,1, def_bool},
-  { "render_vsync",{&render_vsync},{0},0,1,def_bool},
+  MIGRATED_SETTING(dsda_config_use_fullscreen),
+  MIGRATED_SETTING(dsda_config_exclusive_fullscreen),
+  MIGRATED_SETTING(dsda_config_render_vsync),
+  MIGRATED_SETTING(dsda_config_uncapped_framerate),
   { "tran_filter_pct",{&tran_filter_pct},{66},0,100, def_int}, // set percentage of foreground/background translucency mix
   { "screenblocks",{&screenblocks},{10},3,11, def_int},
   { "usegamma",{&usegamma},{0},0,4, def_int}, // gamma correction level // killough 1/18/98
-  { "uncapped_framerate", {&movement_smooth_default},  {1},0,1, def_bool},
   { "dsda_fps_limit", {&dsda_fps_limit}, {0}, 0, 1000, def_int},
   { "sdl_video_window_pos", {NULL,&sdl_video_window_pos}, {0,"center"},UL,UL, def_str},
   { "palette_ondamage", {&palette_ondamage},  {1},0,1, def_bool},

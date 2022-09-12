@@ -46,8 +46,6 @@
 // VIDEO
 //
 
-extern const char *render_aspects_list[];
-
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
 // user preferences. The integer ratio is hardly used anymore, so further

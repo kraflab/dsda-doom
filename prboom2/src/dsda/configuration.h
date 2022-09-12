@@ -231,6 +231,10 @@ typedef enum {
   dsda_config_videomode,
   dsda_config_screen_resolution,
   dsda_config_custom_resolution,
+  dsda_config_use_fullscreen,
+  dsda_config_exclusive_fullscreen,
+  dsda_config_render_vsync,
+  dsda_config_uncapped_framerate,
   dsda_config_count,
 } dsda_config_identifier_t;
 

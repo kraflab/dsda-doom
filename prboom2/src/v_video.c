@@ -56,6 +56,7 @@
 #include "st_stuff.h"
 #include "e6y.h"
 
+#include "dsda/configuration.h"
 #include "dsda/global.h"
 #include "dsda/palette.h"
 #include "dsda/stretch.h"
@@ -69,7 +70,6 @@ unsigned int ratio_multiplier, ratio_scale;
 float gl_ratio;
 int psprite_offset; // Needed for "tallscreen" modes
 
-const char *render_aspects_list[5] = {"auto", "16:9", "16:10", "4:3", "5:4"};
 
 // Each screen is [SCREENWIDTH*SCREENHEIGHT];
 screeninfo_t screens[NUM_SCREENS];
@@ -1491,22 +1491,7 @@ int V_BestColor(const unsigned char *palette, int r, int g, int b)
 // Alt-Enter: fullscreen <-> windowed
 void V_ToggleFullscreen(void)
 {
-  if (desired_fullscreen == use_fullscreen)
-  {
-    use_fullscreen = (use_fullscreen ? 0 : 1);
-    desired_fullscreen = use_fullscreen;
-  }
-  else
-  {
-    desired_fullscreen = (desired_fullscreen ? 0 : 1);
-  }
-
-  I_UpdateVideoMode();
-
-  if (V_IsOpenGLMode())
-  {
-    gld_PreprocessLevel();
-  }
+  dsda_UpdateIntConfig(dsda_config_use_fullscreen, !desired_fullscreen, true);
 }
 
 void V_ChangeScreenResolution(void)

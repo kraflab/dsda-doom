@@ -112,10 +112,8 @@ extern const int gl_colorbuffer_bits;
 extern const int gl_depthbuffer_bits;
 
 extern void M_QuitDOOM(int choice);
-int use_fullscreen;
 int desired_fullscreen;
 int exclusive_fullscreen;
-int render_vsync;
 int render_screen_multiply;
 int integer_scaling;
 SDL_Surface *screen;
@@ -999,6 +997,7 @@ void I_InitScreenResolution(void)
   dsda_arg_t *arg;
   video_mode_t mode;
   int init = (sdl_window == NULL);
+  int use_fullscreen;
 
   I_GetScreenResolution();
 
@@ -1015,6 +1014,8 @@ void I_InitScreenResolution(void)
     arg = dsda_Arg(dsda_arg_height);
     if (arg->found)
       desired_screenheight = arg->value.v_int;
+
+    use_fullscreen = dsda_IntConfig(dsda_config_use_fullscreen);
 
     if (dsda_Flag(dsda_arg_fullscreen))
       use_fullscreen = 1;
@@ -1181,8 +1182,12 @@ void I_UpdateVideoMode(void)
   int init_flags = 0;
   int screen_multiply;
   int actualheight;
+  int render_vsync;
   const dboolean novsync = dsda_Flag(dsda_arg_timedemo) ||
                            dsda_Flag(dsda_arg_fastdemo);
+
+  exclusive_fullscreen = dsda_IntConfig(dsda_config_exclusive_fullscreen);
+  render_vsync = dsda_IntConfig(dsda_config_render_vsync) && !novsync;
 
   if(sdl_window)
   {
@@ -1270,7 +1275,7 @@ void I_UpdateVideoMode(void)
   {
     int flags = SDL_RENDERER_TARGETTEXTURE;
 
-    if (render_vsync && !novsync)
+    if (render_vsync)
       flags |= SDL_RENDERER_PRESENTVSYNC;
 
     sdl_window = SDL_CreateWindow(
@@ -1348,7 +1353,7 @@ void I_UpdateVideoMode(void)
 
   if (V_IsOpenGLMode())
   {
-    SDL_GL_SetSwapInterval(((render_vsync && !novsync) ? 1 : 0));
+    SDL_GL_SetSwapInterval((render_vsync ? 1 : 0));
   }
 
   if (V_IsSoftwareMode())

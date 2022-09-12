@@ -115,6 +115,8 @@ void M_ChangeMapTextured(void);
 void AM_InitParams(void);
 void gld_ResetAutomapTransparency(void);
 void M_ChangeVideoMode(void);
+void M_ChangeUncappedFrameRate(void);
+void M_ChangeFullScreen(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -965,6 +967,22 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_custom_resolution] = {
     "custom_resolution", dsda_config_custom_resolution,
     CONF_STRING("")
+  },
+  [dsda_config_use_fullscreen] = {
+    "use_fullscreen", dsda_config_use_fullscreen,
+    CONF_BOOL(0), NULL, 0, 0, M_ChangeFullScreen
+  },
+  [dsda_config_exclusive_fullscreen] = {
+    "exclusive_fullscreen", dsda_config_exclusive_fullscreen,
+    CONF_BOOL(0), NULL, 0, 0, M_ChangeVideoMode
+  },
+  [dsda_config_render_vsync] = {
+    "render_vsync", dsda_config_render_vsync,
+    CONF_BOOL(0), NULL, 0, 0, M_ChangeVideoMode
+  },
+  [dsda_config_uncapped_framerate] = {
+    "uncapped_framerate", dsda_config_uncapped_framerate,
+    CONF_BOOL(1), NULL, 0, 0, M_ChangeUncappedFrameRate
   },
 };
 
