@@ -503,8 +503,10 @@ void R_FillBackScreen (void)
   // e6y: wide-res
   if (ratio_multiplier != ratio_scale || wide_offsety)
   {
-    extern int screenblocks;
     int only_stbar;
+    int screenblocks;
+
+    screenblocks = R_ViewSize();
 
     if (V_IsOpenGLMode())
     {

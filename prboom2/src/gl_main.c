@@ -1092,8 +1092,6 @@ void gld_Clear(void)
 
 void gld_StartDrawScene(void)
 {
-  extern int screenblocks;
-
   // Progress fuzz time seed
   glsl_SetFuzzTime(gametic);
 

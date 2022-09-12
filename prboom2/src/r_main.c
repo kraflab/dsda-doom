@@ -443,12 +443,17 @@ static void R_InitLightTables (void)
 //
 
 dboolean setsizeneeded;
-int     setblocks;
+static int setblocks;
 
-void R_SetViewSize(int blocks)
+int R_ViewSize(void)
+{
+  return setblocks;
+}
+
+void R_SetViewSize(void)
 {
   setsizeneeded = true;
-  setblocks = blocks;
+  setblocks = dsda_IntConfig(dsda_config_screenblocks);
 }
 
 void R_MultMatrixVecd(const float matrix[16], const float in[4], float out[4])
@@ -503,8 +508,10 @@ int R_Project(float objx, float objy, float objz, float *winx, float *winy, floa
 
 void R_SetupViewport(void)
 {
-  extern int screenblocks;
+  int screenblocks;
   int height;
+
+  screenblocks = R_ViewSize();
 
   if (screenblocks == 11)
     height = SCREENHEIGHT;
@@ -732,8 +739,6 @@ void R_ExecuteSetViewSize (void)
 // R_Init
 //
 
-extern int screenblocks;
-
 void R_Init (void)
 {
   // CPhipps - R_DrawColumn isn't constant anymore, so must
@@ -743,7 +748,7 @@ void R_Init (void)
   R_LoadTrigTables();
   lprintf(LO_INFO, "\nR_InitData: ");
   R_InitData();
-  R_SetViewSize(screenblocks);
+  R_SetViewSize();
   lprintf(LO_INFO, "\nR_Init: R_InitPlanes ");
   R_InitPlanes();
   lprintf(LO_INFO, "R_InitLightTables ");

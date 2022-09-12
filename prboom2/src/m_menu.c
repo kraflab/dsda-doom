@@ -112,12 +112,6 @@ extern int g_menu_cr_disable;
 
 int hide_setup=1; // killough 5/15/98
 
-// Blocky mode, has default, 0 = high, 1 = normal
-//int     detailLevel;    obsolete -- killough
-int screenblocks;    // has default
-
-int screenSize;      // temp for screenblocks (0-9)
-
 #define QUICKSAVESLOT 999
 
 int messageToPrint;  // 1 = message to be printed
@@ -1363,32 +1357,30 @@ void M_ChangeMessages(void)
 
 void M_SizeDisplay(int choice)
 {
+  int screenblocks;
+
+  screenblocks = R_ViewSize();
+
   switch(choice) {
-  case 0:
-    if (screenSize > 0) {
-      screenblocks--;
-      screenSize--;
-    }
-    break;
-  case 1:
-    if (screenSize < 8) {
-      screenblocks++;
-      screenSize++;
-    }
-    else
-      dsda_ToggleConfig(dsda_config_hud_displayed, true);
-    break;
-  case 2:
-    if (screenSize < 8) {
-      screenblocks += (8 - screenSize);
-      screenSize = 8;
-      dsda_UpdateIntConfig(dsda_config_hud_displayed, true, true);
-    }
-    else
-      dsda_ToggleConfig(dsda_config_hud_displayed, true);
-    break;
+    case 0:
+      if (screenblocks > 3)
+        dsda_DecrementIntConfig(dsda_config_screenblocks, true);
+      break;
+    case 1:
+      if (screenblocks < 11)
+        dsda_IncrementIntConfig(dsda_config_screenblocks, true);
+      else
+        dsda_ToggleConfig(dsda_config_hud_displayed, true);
+      break;
+    case 2:
+      if (screenblocks < 11) {
+        dsda_UpdateIntConfig(dsda_config_screenblocks, 11, true);
+        dsda_UpdateIntConfig(dsda_config_hud_displayed, true, true);
+      }
+      else
+        dsda_ToggleConfig(dsda_config_hud_displayed, true);
+      break;
   }
-  R_SetViewSize (screenblocks /*, detailLevel obsolete -- killough */);
 }
 
 //
@@ -5572,7 +5564,6 @@ void M_Init(void)
   itemOn = currentMenu->lastOn;
   whichSkull = 0;
   skullAnimCounter = 10;
-  screenSize = screenblocks - 3;
   messageToPrint = 0;
   messageString = NULL;
   messageLastMenuActive = menuactive;

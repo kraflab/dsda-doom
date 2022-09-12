@@ -350,20 +350,16 @@ float gl_render_multiplier;
 
 void M_ChangeAspectRatio(void)
 {
-  extern int screenblocks;
-
   M_ChangeFOV();
 
-  R_SetViewSize(screenblocks);
+  R_SetViewSize();
 }
 
 void M_ChangeStretch(void)
 {
-  extern int screenblocks;
-
   render_stretch_hud = render_stretch_hud_default;
 
-  R_SetViewSize(screenblocks);
+  R_SetViewSize();
 }
 
 void M_ChangeFOV(void)
