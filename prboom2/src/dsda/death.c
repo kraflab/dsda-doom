@@ -32,12 +32,16 @@ typedef enum {
   death_use_default,
   death_use_nothing,
   death_use_reload,
+  death_use_restart
 } death_use_action_t;
 
 int dsda_death_use_action;
 
 static int dsda_DeathUseAction(void)
 {
+  if (!demoplayback && demorecording && dsda_death_use_action == death_use_restart)
+    return death_use_restart;
+
   if (demorecording || demoplayback)
     return death_use_default;
 
@@ -86,6 +90,9 @@ void dsda_DeathUse(player_t* player) {
         if (slot >= 0)
           G_LoadGame(slot);
       }
+      break;
+    case death_use_restart:
+      G_ReloadLevel();
       break;
   }
 }

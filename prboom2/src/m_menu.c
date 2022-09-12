@@ -3263,7 +3263,7 @@ static const char *gen_compstrings[] =
   NULL
 };
 
-static const char *death_use_strings[] = { "default", "nothing", "reload", NULL };
+static const char *death_use_strings[] = { "default", "nothing", "reload", "restart", NULL };
 
 static const char *renderfilters[] = { "none", "point", "linear", "rounded" };
 static const char *edgetypes[] = { "jagged", "sloped" };
