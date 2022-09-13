@@ -1965,8 +1965,8 @@ static void M_DrawInstructions(void)
   }
 }
 
-#define NEXT_PAGE(x, y, page) { "->", S_SKIP | S_NEXT, m_null, x, y, .menu = keys_settings2 }
-#define PREV_PAGE(x, y, page) { "<-", S_SKIP | S_PREV, m_null, x, y, .menu = keys_settings2 }
+#define NEXT_PAGE(x, y, page) { "->", S_SKIP | S_NEXT, m_null, x, y, .menu = page }
+#define PREV_PAGE(x, y, page) { "<-", S_SKIP | S_PREV, m_null, x, y, .menu = page }
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
 
 /////////////////////////////
