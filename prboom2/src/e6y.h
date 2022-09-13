@@ -78,20 +78,14 @@ extern int demo_playerscount;
 extern char demo_len_st[80];
 
 extern int mouse_handler;
-extern int render_wipescreen;
 
 extern int gl_render_fov;
-extern int render_aspect;
 extern float gl_render_ratio;
 extern float gl_render_fovratio;
 extern float gl_render_fovy;
 extern float gl_render_multiplier;
 void M_ChangeAspectRatio(void);
 void M_ChangeStretch(void);
-
-extern int palette_ondamage;
-extern int palette_onbonus;
-extern int palette_onpowers;
 
 extern camera_t walkcamera;
 

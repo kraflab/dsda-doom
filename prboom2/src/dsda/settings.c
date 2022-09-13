@@ -216,15 +216,15 @@ dboolean dsda_SimpleShadows(void) {
 }
 
 dboolean dsda_PainPalette(void) {
-  return dsda_StrictMode() || palette_ondamage;
+  return dsda_IntConfig(dsda_config_palette_ondamage);
 }
 
 dboolean dsda_BonusPalette(void) {
-  return dsda_StrictMode() || palette_onbonus;
+  return dsda_IntConfig(dsda_config_palette_onbonus);
 }
 
 dboolean dsda_PowerPalette(void) {
-  return dsda_StrictMode() || palette_onpowers;
+  return dsda_IntConfig(dsda_config_palette_onpowers);
 }
 
 dboolean dsda_ShowHealthBars(void) {
@@ -273,8 +273,12 @@ void dsda_SkipNextWipe(void) {
   dsda_skip_next_wipe = 1;
 }
 
+dboolean dsda_RenderWipeScreen(void) {
+  return dsda_IntConfig(dsda_config_render_wipescreen);
+}
+
 dboolean dsda_PendingSkipWipe(void) {
-  return dsda_skip_next_wipe || !render_wipescreen;
+  return dsda_skip_next_wipe || !dsda_RenderWipeScreen();
 }
 
 dboolean dsda_SkipWipe(void) {
@@ -283,5 +287,5 @@ dboolean dsda_SkipWipe(void) {
     return true;
   }
 
-  return !render_wipescreen || hexen;
+  return !dsda_RenderWipeScreen() || hexen;
 }

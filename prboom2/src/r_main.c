@@ -76,7 +76,6 @@
 int LIGHTLEVELS   = 32;
 int LIGHTSEGSHIFT = 3;
 int LIGHTBRIGHT   = 2;
-int render_doom_lightmaps;
 
 int r_frame_count;
 
@@ -395,12 +394,14 @@ static void R_InitTextureMapping (void)
 static void R_InitLightTables (void)
 {
   int i;
+  int render_doom_lightmaps;
 
   // killough 4/4/98: dynamic colormaps
   c_zlight = Z_Malloc(sizeof(*c_zlight) * numcolormaps);
   c_scalelight = Z_Malloc(sizeof(*c_scalelight) * numcolormaps);
 
   // hexen_note: does hexen require render_doom_lightmaps?
+  render_doom_lightmaps = dsda_IntConfig(dsda_config_render_doom_lightmaps);
 
   LIGHTLEVELS   = (render_doom_lightmaps ? 16 : 32);
   LIGHTSEGSHIFT = (render_doom_lightmaps ? 4 : 3);

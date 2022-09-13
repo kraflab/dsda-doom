@@ -100,11 +100,6 @@ char demo_len_st[80];
 
 int mouse_handler;
 int gl_render_fov = 90;
-int render_wipescreen;
-
-int palette_ondamage;
-int palette_onbonus;
-int palette_onpowers;
 
 camera_t walkcamera;
 
@@ -342,7 +337,6 @@ void CheckPitch(signed int *pitch)
   (*pitch) <<= 16;
 }
 
-int render_aspect;
 float gl_render_ratio;
 float gl_render_fovratio;
 float gl_render_fovy = FOV90;
@@ -357,7 +351,7 @@ void M_ChangeAspectRatio(void)
 
 void M_ChangeStretch(void)
 {
-  render_stretch_hud = render_stretch_hud_default;
+  render_stretch_hud = dsda_IntConfig(dsda_config_render_stretch_hud);
 
   R_SetViewSize();
 }

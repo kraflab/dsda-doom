@@ -1348,29 +1348,31 @@ void SetRatio(int width, int height)
   {
     unsigned int new_multiplier = ratio_multiplier;
     unsigned int new_scale = ratio_scale;
+    int render_aspect = dsda_IntConfig(dsda_config_render_aspect);
+
     // Hardcoded to match render_aspects_list
     switch (render_aspect)
     {
-    case 0:
-      break;
-    case 1:
-      new_multiplier = 16;
-      new_scale = 9;
-      break;
-    case 2:
-      new_multiplier = 16;
-      new_scale = 10;
-      break;
-    case 3:
-      new_multiplier = 4;
-      new_scale = 3;
-      break;
-    case 4:
-      new_multiplier = 5;
-      new_scale = 4;
-      break;
-    default:
-      lprintf(LO_ERROR, "SetRatio: render_aspect has invalid value %d\n", render_aspect);
+      case 0:
+        break;
+      case 1:
+        new_multiplier = 16;
+        new_scale = 9;
+        break;
+      case 2:
+        new_multiplier = 16;
+        new_scale = 10;
+        break;
+      case 3:
+        new_multiplier = 4;
+        new_scale = 3;
+        break;
+      case 4:
+        new_multiplier = 5;
+        new_scale = 4;
+        break;
+      default:
+        lprintf(LO_ERROR, "SetRatio: render_aspect has invalid value %d\n", render_aspect);
     }
 
     if (ratio_multiplier != new_multiplier || ratio_scale != new_scale)

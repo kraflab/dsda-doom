@@ -99,8 +99,6 @@ dboolean window_focused;
 // Window resize state.
 static void ApplyWindowResize(SDL_Event *resize_event);
 
-const char *sdl_video_window_pos;
-
 static void ActivateMouse(void);
 static void DeactivateMouse(void);
 //static int AccelerateMouse(int val);
@@ -114,8 +112,6 @@ extern const int gl_depthbuffer_bits;
 extern void M_QuitDOOM(int choice);
 int desired_fullscreen;
 int exclusive_fullscreen;
-int render_screen_multiply;
-int integer_scaling;
 SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
@@ -1183,11 +1179,16 @@ void I_UpdateVideoMode(void)
   int screen_multiply;
   int actualheight;
   int render_vsync;
+  int integer_scaling;
+  const char *sdl_video_window_pos;
   const dboolean novsync = dsda_Flag(dsda_arg_timedemo) ||
                            dsda_Flag(dsda_arg_fastdemo);
 
   exclusive_fullscreen = dsda_IntConfig(dsda_config_exclusive_fullscreen);
   render_vsync = dsda_IntConfig(dsda_config_render_vsync) && !novsync;
+  sdl_video_window_pos = dsda_StringConfig(dsda_config_sdl_video_window_pos);
+  screen_multiply = dsda_IntConfig(dsda_config_render_screen_multiply);
+  integer_scaling = dsda_IntConfig(dsda_config_integer_scaling);
 
   if(sdl_window)
   {
@@ -1217,9 +1218,6 @@ void I_UpdateVideoMode(void)
     buffer = NULL;
     sdl_texture = NULL;
   }
-
-  // e6y: initialisation of screen_multiply
-  screen_multiply = render_screen_multiply;
 
   // Initialize SDL with this graphics mode
   if (V_IsOpenGLMode()) {

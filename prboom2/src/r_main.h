@@ -94,7 +94,6 @@ extern fixed_t viewfocratio;
 extern int LIGHTSEGSHIFT;
 extern int LIGHTBRIGHT;
 extern int LIGHTLEVELS;
-extern int render_doom_lightmaps;
 
 #define MAXLIGHTSCALE     48
 #define LIGHTSCALESHIFT   12

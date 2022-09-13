@@ -53,12 +53,7 @@ extern int wide_offset2x;
 extern int wide_offsety;
 extern int wide_offset2y;
 
-extern const char *render_stretch_list[];
-
 extern int render_stretch_hud;
-extern int render_stretch_hud_default;
-extern int render_patches_scalex;
-extern int render_patches_scaley;
 
 extern int patches_scalex;
 extern int patches_scaley;

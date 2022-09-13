@@ -236,18 +236,22 @@ int wipe_EndScreen(void)
 int wipe_ScreenWipe(int ticks)
 {
   static dboolean go;                               // when zero, stop the wipe
-  if(!render_wipescreen) return 0;//e6y
+
+  if (!dsda_RenderWipeScreen())
+    return 0;//e6y
+
   if (!go)                                         // initial stuff
-    {
-      go = 1;
-      wipe_scr = screens[0];
-      wipe_initMelt(ticks);
-    }
+  {
+    go = 1;
+    wipe_scr = screens[0];
+    wipe_initMelt(ticks);
+  }
+
   // do a piece of wipe-in
   if (wipe_doMelt(ticks))     // final stuff
-    {
-      wipe_exitMelt(ticks);
-      go = 0;
-    }
+  {
+    wipe_exitMelt(ticks);
+    go = 0;
+  }
   return !go;
 }

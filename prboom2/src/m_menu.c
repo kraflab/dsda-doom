@@ -2914,11 +2914,15 @@ static const char *gltexfilters[] = {
 static const char *gltexfilters_anisotropics[] = { "Off", "2x", "4x", "8x", "16x", NULL };
 static const char *render_aspects_list[] = { "auto", "16:9", "16:10", "4:3", "5:4", NULL };
 
+static const char* render_stretch_list[] = {
+  "Not Adjusted", "Doom Format", "Fit to Width", NULL
+};
+
 setup_menu_t audiovideo_settings[] = {
   { "Video", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Video mode", S_CHOICE | S_STR, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_videomode }, 0, NULL, videomodes },
   { "Screen Resolution", S_CHOICE | S_STR, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_screen_resolution }, 0, NULL, screen_resolutions_list },
-  { "Aspect Ratio", S_CHOICE, m_null, G_X, G_Y + 4 * 8, { "render_aspect" }, 0, M_ChangeAspectRatio, render_aspects_list },
+  { "Aspect Ratio", S_CHOICE, m_conf, G_X, G_Y + 4 * 8, { .config_id = dsda_config_render_aspect }, 0, NULL, render_aspects_list },
   { "Fullscreen Video mode", S_YESNO, m_conf, G_X, G_Y + 5 * 8, { .config_id = dsda_config_use_fullscreen } },
   { "Exclusive Fullscreen", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_exclusive_fullscreen } },
   { "Vertical Sync", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { .config_id = dsda_config_render_vsync } },
@@ -2987,17 +2991,17 @@ setup_menu_t display_settings[] = {
   { "Use Extended Hud", S_YESNO, m_conf, G_X, G_Y + 2 * 8, { .config_id = dsda_config_exhud } },
   { "Extended Hud Scale", S_NUM, m_conf, G_X, G_Y + 3 * 8, { .config_id = dsda_config_ex_text_scale } },
   { "Hide Status Bar Horns", S_YESNO, m_conf, G_X, G_Y + 4 * 8, { .config_id = dsda_config_hide_horns } },
-  { "Wipe Screen Effect", S_YESNO,  m_null, G_X, G_Y + 5 * 8, { "render_wipescreen" } },
+  { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, G_Y + 5 * 8, { .config_id = dsda_config_render_wipescreen } },
   { "Show FPS", S_YESNO,  m_conf, G_X, G_Y + 6 * 8, { .config_id = dsda_config_show_fps } },
   { "View Bobbing", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { .config_id = dsda_config_viewbob } },
   { "Weapon Bobbing", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { .config_id = dsda_config_weaponbob } },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, { .config_id = dsda_config_weapon_attack_alignment }, 0, NULL, weapon_attack_alignment_strings },
 
-  { "Change Palette On Pain", S_YESNO, m_null, G_X, G_Y + 11 * 8, { "palette_ondamage" }, 0, M_ChangeApplyPalette },
-  { "Change Palette On Bonus", S_YESNO, m_null, G_X, G_Y + 12 * 8, { "palette_onbonus" }, 0, M_ChangeApplyPalette },
-  { "Change Palette On Powers", S_YESNO, m_null, G_X, G_Y + 13 * 8, { "palette_onpowers" }, 0, M_ChangeApplyPalette },
+  { "Change Palette On Pain", S_YESNO, m_conf, G_X, G_Y + 11 * 8, { .config_id = dsda_config_palette_ondamage } },
+  { "Change Palette On Bonus", S_YESNO, m_conf, G_X, G_Y + 12 * 8, { .config_id = dsda_config_palette_onbonus } },
+  { "Change Palette On Powers", S_YESNO, m_conf, G_X, G_Y + 13 * 8, { .config_id = dsda_config_palette_onpowers } },
 
-  { "Status Bar and Menu Appearance", S_CHOICE, m_null, G_X, G_Y + 15 * 8, { "render_stretch_hud" }, 0, M_ChangeStretch, render_stretch_list },
+  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, G_Y + 15 * 8, { .config_id = dsda_config_render_stretch_hud }, 0, NULL, render_stretch_list },
   { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 16 * 8, { .config_id = dsda_config_menu_background } },
 
   { "<-", S_SKIP | S_PREV, m_null, KB_PREV, KB_Y + 20 * 8, { misc_settings } },
@@ -5619,7 +5623,7 @@ void M_Init(void)
   M_ChangeMapTextured();
   M_ChangeMapMultisamling();
 
-  render_stretch_hud = render_stretch_hud_default;
+  M_ChangeStretch();
 
   M_ChangeMIDIPlayer();
 }

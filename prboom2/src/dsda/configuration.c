@@ -29,6 +29,7 @@
 #include "z_zone.h"
 
 #include "dsda/input.h"
+#include "dsda/stretch.h"
 
 #include "configuration.h"
 
@@ -80,6 +81,7 @@ extern int sts_always_red;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 extern int full_sounds;
+extern int fake_contrast;
 
 void I_Init2(void);
 void M_ChangeDemoSmoothTurns(void);
@@ -119,6 +121,9 @@ void M_ChangeUncappedFrameRate(void);
 void M_ChangeFullScreen(void);
 void R_SetViewSize(void);
 void M_Trans(void);
+void M_ChangeApplyPalette(void);
+void M_ChangeStretch(void);
+void M_ChangeAspectRatio(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -129,6 +134,7 @@ void dsda_UpdateStrictMode(void) {
   dsda_InitKeyFrame();
   M_ChangeMouseLook();
   HU_init_crosshair();
+  M_ChangeApplyPalette();
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
@@ -1001,6 +1007,63 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_tran_filter_pct] = {
     "tran_filter_pct", dsda_config_tran_filter_pct,
     dsda_config_int, 0, 100, { 66 }, NULL, 0, 0, M_Trans
+  },
+  [dsda_config_sdl_video_window_pos] = {
+    "sdl_video_window_pos", dsda_config_sdl_video_window_pos,
+    CONF_STRING("center")
+  },
+  [dsda_config_palette_ondamage] = {
+    "palette_ondamage", dsda_config_palette_ondamage,
+    CONF_BOOL(1), NULL, CONF_STRICT, 1, M_ChangeApplyPalette
+  },
+  [dsda_config_palette_onbonus] = {
+    "palette_onbonus", dsda_config_palette_onbonus,
+    CONF_BOOL(1), NULL, CONF_STRICT, 1, M_ChangeApplyPalette
+  },
+  [dsda_config_palette_onpowers] = {
+    "palette_onpowers", dsda_config_palette_onpowers,
+    CONF_BOOL(1), NULL, CONF_STRICT, 1, M_ChangeApplyPalette
+  },
+  [dsda_config_render_wipescreen] = {
+    "render_wipescreen", dsda_config_render_wipescreen,
+    CONF_BOOL(1), NULL, CONF_STRICT, 1
+  },
+  [dsda_config_render_screen_multiply] = {
+    "render_screen_multiply", dsda_config_render_screen_multiply,
+    dsda_config_int, 1, 5, { 1 }, NULL, 0, 0, M_ChangeVideoMode
+  },
+  [dsda_config_integer_scaling] = {
+    "integer_scaling", dsda_config_integer_scaling,
+    CONF_BOOL(0), NULL, 0, 0, M_ChangeVideoMode
+  },
+  [dsda_config_render_aspect] = {
+    "render_aspect", dsda_config_render_aspect,
+    dsda_config_int, 0, 4, { 0 }, NULL, 0, 0, M_ChangeAspectRatio
+  },
+  [dsda_config_render_doom_lightmaps] = {
+    "render_doom_lightmaps", dsda_config_render_doom_lightmaps,
+    CONF_BOOL(0)
+  },
+  [dsda_config_fake_contrast] = {
+    "fake_contrast", dsda_config_fake_contrast,
+    CONF_BOOL(1), &fake_contrast
+  },
+  [dsda_config_render_stretch_hud] = {
+    "render_stretch_hud", dsda_config_render_stretch_hud,
+    dsda_config_int, patch_stretch_not_adjusted, patch_stretch_fit_to_width, { patch_stretch_doom_format },
+    NULL, 0, 0, M_ChangeStretch
+  },
+  [dsda_config_render_patches_scalex] = {
+    "render_patches_scalex", dsda_config_render_patches_scalex,
+    dsda_config_int, 0, 16, { 0 }
+  },
+  [dsda_config_render_patches_scaley] = {
+    "render_patches_scaley", dsda_config_render_patches_scaley,
+    dsda_config_int, 0, 16, { 0 }
+  },
+  [dsda_config_render_stretchsky] = {
+    "render_stretchsky", dsda_config_render_stretchsky,
+    CONF_BOOL(1)
   },
 };
 

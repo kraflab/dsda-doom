@@ -55,6 +55,7 @@ dboolean dsda_SimpleShadows(void);
 dboolean dsda_PainPalette(void);
 dboolean dsda_BonusPalette(void);
 dboolean dsda_PowerPalette(void);
+dboolean dsda_RenderWipeScreen(void);
 dboolean dsda_WipeAtFullSpeed(void);
 int dsda_ShowAliveMonsters(void);
 int dsda_CycleShowAliveMonsters(void);

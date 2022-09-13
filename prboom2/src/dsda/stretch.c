@@ -30,9 +30,6 @@ int wide_offsety;
 int wide_offset2y;
 
 int render_stretch_hud;
-int render_stretch_hud_default;
-int render_patches_scalex;
-int render_patches_scaley;
 
 int patches_scalex;
 int patches_scaley;
@@ -47,10 +44,6 @@ static stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
 
 static int ex_text_scale;
 static int ex_text_top_displacement;
-
-const char* render_stretch_list[patch_stretch_max_config] = {
-  "Not Adjusted", "Doom Format", "Fit to Width"
-};
 
 static void GenLookup(short* lookup1, short* lookup2, int size, int max, int step) {
   int i;
@@ -228,6 +221,12 @@ void dsda_SetupStretchParams(void) {
 }
 
 void dsda_EvaluatePatchScale(void) {
+  int render_patches_scalex;
+  int render_patches_scaley;
+
+  render_patches_scalex = dsda_IntConfig(dsda_config_render_patches_scalex);
+  render_patches_scaley = dsda_IntConfig(dsda_config_render_patches_scaley);
+
   patches_scalex = MIN(SCREENWIDTH / 320, SCREENHEIGHT / 200);
   patches_scalex = MAX(1, patches_scalex);
   patches_scaley = patches_scalex;

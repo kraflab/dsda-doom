@@ -235,7 +235,7 @@ static void D_Wipe(void)
   int old_realtic_clock_rate = 0;
 
   //e6y
-  if (!render_wipescreen || dsda_SkipWipe())
+  if (!dsda_RenderWipeScreen() || dsda_SkipWipe())
   {
     // If there's no screen wipe, we still need to refresh the status bar
     SB_Start();
