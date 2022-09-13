@@ -470,22 +470,12 @@ static arg_config_t arg_config[dsda_arg_count] = {
   },
   [dsda_arg_fullscreen] = {
     "-fullscreen", NULL, NULL,
-    "turns on fullscreen mode (changes config)",
-    arg_null,
-  },
-  [dsda_arg_nofullscreen] = {
-    "-nofullscreen", NULL, NULL,
-    "turns on windowed mode (changes config)",
+    "temporarily turns on fullscreen mode",
     arg_null,
   },
   [dsda_arg_window] = {
     "-window", NULL, NULL,
     "temporarily turns on windowed mode",
-    arg_null,
-  },
-  [dsda_arg_nowindow] = {
-    "-nowindow", NULL, NULL,
-    "temporarily turns on fullscreen mode",
     arg_null,
   },
   [dsda_arg_width] = {

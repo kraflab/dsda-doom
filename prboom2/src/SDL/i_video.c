@@ -992,28 +992,16 @@ void I_InitScreenResolution(void)
   dsda_arg_t *arg;
   video_mode_t mode;
   int init = (sdl_window == NULL);
-  int use_fullscreen;
 
   I_GetScreenResolution();
 
-  use_fullscreen = dsda_IntConfig(dsda_config_use_fullscreen);
+  desired_fullscreen = dsda_IntConfig(dsda_config_use_fullscreen);
 
   if (dsda_Flag(dsda_arg_fullscreen))
-    use_fullscreen = 1;
+    desired_fullscreen = 1;
 
-  if (dsda_Flag(dsda_arg_nofullscreen))
-    use_fullscreen = 0;
-
-  // e6y
-  // New command-line options for setting a window (-window)
-  // or fullscreen (-nowindow) mode temporarily which is not saved in cfg.
-  // It works like "-geom" switch
-  desired_fullscreen = use_fullscreen;
   if (dsda_Flag(dsda_arg_window))
     desired_fullscreen = 0;
-
-  if (dsda_Flag(dsda_arg_nowindow))
-    desired_fullscreen = 1;
 
   if (init)
   {
