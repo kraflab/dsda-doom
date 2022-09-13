@@ -50,37 +50,17 @@
 
 #include "doomstat.h"
 #include "g_game.h"
-#include "m_menu.h"
-#include "am_map.h"
-#include "w_wad.h"
 #include "i_system.h"
 #include "i_sound.h"
 #include "i_video.h"
-#include "v_video.h"
-#include "hu_stuff.h"
-#include "st_stuff.h"
-#include "dstrings.h"
-#include "m_misc.h"
 #include "s_sound.h"
-#include "sounds.h"
-#include "i_joy.h"
 #include "lprintf.h"
 #include "d_main.h"
-#include "d_deh.h"
-#include "r_draw.h"
-#include "r_demo.h"
-#include "r_fps.h"
-#include "r_main.h"
-#include "r_things.h"
-#include "r_sky.h"
 
-//e6y
-#include "e6y.h"
+#include "m_misc.h"
 
 #include "dsda/args.h"
-#include "dsda/console.h"
 #include "dsda/settings.h"
-#include "dsda/stretch.h"
 
 // NSM
 #include "i_capture.h"
