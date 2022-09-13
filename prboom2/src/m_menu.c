@@ -170,9 +170,6 @@ menu_t* currentMenu; // current menudef
 
 int mapcolor_me;    // cph
 
-extern default_t defaults[];
-extern int numdefaults;
-
 // end of externs added for setup menus
 
 //
@@ -1563,18 +1560,9 @@ menu_t GeneralDef =                                           // killough 10/98
 // killough 10/98: reduced, for more general uses
 #define MAXENTRYWIDTH         272
 
-int   entry_index;
-char* entry_string_index; // points to new strings while editing
-
-/////////////////////////////
-//
-// phares 4/17/98:
-// Added 'Reset to Defaults' Button to Setup Menu screens
-// This is a small button that sits in the upper-right-hand corner of
-// the first screen for each group. It blinks when selected, thus the
-// two patches, which it toggles back and forth.
-
-char ResetButtonName[2][8] = {"M_BUTT1","M_BUTT2"};
+static int entry_index;
+static char entry_string_index[ENTRY_STRING_BFR_SIZE]; // points to new strings while editing
+static int choice_value;
 
 /////////////////////////////
 //
@@ -1650,14 +1638,8 @@ static void M_DrawSetting(const setup_menu_t* s)
   // Is the item a YES/NO item?
 
   if (flags & S_YESNO) {
-    if (s->m_group == m_conf)
-    {
-      strcpy(menu_buffer, dsda_PersistentIntConfig(s->var.config_id) ? "YES" : "NO");
-    }
-    else
-    {
-      strcpy(menu_buffer,*s->var.def->location.pi ? "YES" : "NO");
-    }
+    strcpy(menu_buffer, dsda_PersistentIntConfig(s->var.config_id) ? "YES" : "NO");
+
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");
     M_DrawMenuString(x,y,color);
@@ -1675,10 +1657,7 @@ static void M_DrawSetting(const setup_menu_t* s)
     else {
       int value;
 
-      if (s->m_group == m_conf)
-        value = dsda_PersistentIntConfig(s->var.config_id);
-      else
-        value = *s->var.def->location.pi;
+      value = dsda_PersistentIntConfig(s->var.config_id);
 
       sprintf(menu_buffer, "%d", value);
 
@@ -1778,19 +1757,15 @@ static void M_DrawSetting(const setup_menu_t* s)
 
   // Is the item a string?
   if (flags & S_STRING) {
-    /* cph - cast to char* as it's really a Z_Strdup'd string (see m_misc.h) */
-    union { const char **c; char **s; } u; // type punning via unions
-    char *text;
-
-    u.c = s->var.def->location.ppsz;
-    text = *(u.s);
+    static char text[ENTRY_STRING_BFR_SIZE];
 
     // Are we editing this string? If so, display a cursor under
     // the correct character.
-
     if (setup_select && (s->m_flags & (S_HILITE|S_SELECT))) {
       int cursor_start, char_width;
       char c[2];
+
+      strncpy(text, entry_string_index, ENTRY_STRING_BFR_SIZE - 1);
 
       // If the string is too wide for the screen, trim it back,
       // one char at a time until it fits. This should only occur
@@ -1826,43 +1801,36 @@ static void M_DrawSetting(const setup_menu_t* s)
         V_FillRect(0, xx, yy, ww, hh, PAL_WHITE);
       }
     }
+    else {
+      strncpy(text, dsda_PersistentStringConfig(s->var.config_id), ENTRY_STRING_BFR_SIZE - 1);
+    }
 
     // Draw the setting for the item
 
-    strcpy(menu_buffer,text);
+    strcpy(menu_buffer, text);
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");
-    M_DrawMenuString(x,y,color);
+    M_DrawMenuString(x, y, color);
     return;
   }
 
   // Is the item a selection of choices?
 
   if (flags & S_CHOICE) {
-    if (s->m_group == m_conf)
+    if (flags & S_STR)
     {
-      if (flags & S_STR)
-      {
-        sprintf(menu_buffer, "%s", dsda_PersistentStringConfig(s->var.config_id));
-      }
+      if (setup_select)
+        sprintf(menu_buffer, "%s", entry_string_index);
       else
-      {
-        if (s->selectstrings == NULL) {
-          sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->var.config_id));
-        } else {
-          strcpy(menu_buffer, s->selectstrings[dsda_PersistentIntConfig(s->var.config_id)]);
-        }
-      }
+        sprintf(menu_buffer, "%s", dsda_PersistentStringConfig(s->var.config_id));
     }
-    else if (s->var.def->type == def_int) {
+    else
+    {
       if (s->selectstrings == NULL) {
-        sprintf(menu_buffer,"%d",*s->var.def->location.pi);
+        sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->var.config_id));
       } else {
-        strcpy(menu_buffer,s->selectstrings[*s->var.def->location.pi]);
+        strcpy(menu_buffer, s->selectstrings[dsda_PersistentIntConfig(s->var.config_id)]);
       }
-    }
-    else if (s->var.def->type == def_str) {
-      sprintf(menu_buffer,"%s", *s->var.def->location.ppsz);
     }
 
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
@@ -1926,19 +1894,6 @@ static void M_DrawScreenItems(const setup_menu_t* src)
 #define VERIFYBOXYORG 88
 
 // And the routine to draw it.
-
-static void M_DrawDefVerify(void)
-{
-  // proff 12/6/98: Drawing of verify box changed for hi-res, it now uses a patch
-  V_DrawNamePatch(VERIFYBOXXORG,VERIFYBOXYORG,0,"M_VBOX",CR_DEFAULT,VPT_STRETCH);
-  // The blinking messages is keyed off of the blinking of the
-  // cursor skull.
-
-  if (whichSkull) { // blink the text
-    strcpy(menu_buffer,"Reset to defaults? (Y or N)");
-    M_DrawMenuString(VERIFYBOXXORG+8,VERIFYBOXYORG+8,CR_RED);
-  }
-}
 
 // [FG] delete a savegame
 
@@ -3180,68 +3135,6 @@ static void M_SelectDone(setup_menu_t* ptr)
     print_warning_about_changes--;
 }
 
-// phares 4/21/98:
-// Array of setup screens used by M_InitDefaults()
-
-static setup_menu_t **setup_screens[] =
-{
-  keys_settings,
-  weap_settings,
-  stat_settings,
-  auto_settings,
-  gen_settings,      // killough 10/98
-  NULL,
-};
-
-/* killough 8/15/98: when changes are allowed to sync-critical variables */
-static int allow_changes(void)
-{
- return !(demoplayback || demorecording || netgame);
-}
-
-static void M_SettingUpdated(setup_menu_t *setting, int update_current)
-{
-  if (setting->action)
-    setting->action();
-}
-
-//
-// M_InitDefaults()
-//
-// killough 11/98:
-//
-// This function converts all setup menu entries consisting of cfg
-// variable names, into pointers to the corresponding default[]
-// array entry. var.name becomes converted to var.def.
-//
-
-static void M_InitDefaults(void)
-{
-  setup_menu_t *const *p, *t;
-  default_t *dp;
-  int i;
-  for (i = 0; setup_screens[i]; i++)
-  {
-    for (p = setup_screens[i]; *p; p++)
-    {
-      for (t = *p; !(t->m_flags & S_END); t++)
-      {
-        if (t->m_group == m_conf)
-        {
-          continue;
-        }
-        else if (t->m_flags & S_HASDEFPTR)
-        {
-          if (!(dp = M_LookupDefault(t->var.name)))
-            I_Error("M_InitDefaults: Couldn't find config variable %s", t->var.name);
-          else
-            t->var.def = dp;
-        }
-      }
-    }
-  }
-}
-
 //
 // End of Setup Screens.
 //
@@ -4358,16 +4251,7 @@ dboolean M_Responder (event_t* ev) {
       if (ptr1->m_flags & S_YESNO) // yes or no setting?
       {
         if (action == MENU_ENTER) {
-          if (ptr1->m_group == m_conf)
-          {
-            dsda_ToggleConfig(ptr1->var.config_id, true);
-          }
-          else
-          {
-            *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
-
-            M_SettingUpdated(ptr1, true);
-          }
+          dsda_ToggleConfig(ptr1->var.config_id, true);
         }
         M_SelectDone(ptr1);                           // phares 4/17/98
         return true;
@@ -4391,18 +4275,8 @@ dboolean M_Responder (event_t* ev) {
               //e6y
               if ((ptr1->m_flags & S_EVEN) && value % 2 != 0)
                 warn_about_changes(ptr1->m_flags & S_EVEN);
-              else if (ptr1->m_group == m_conf)
+              else
                 dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
-              else if ((ptr1->var.def->minvalue != UL &&
-                   value < ptr1->var.def->minvalue) ||
-                  (ptr1->var.def->maxvalue != UL &&
-                   value > ptr1->var.def->maxvalue))
-                warn_about_changes(S_BADVAL);
-              else {
-                *ptr1->var.def->location.pi = value;
-
-                M_SettingUpdated(ptr1, true);
-              }
             }
             M_SelectDone(ptr1);     // phares 4/17/98
             setup_gather = false; // finished gathering keys
@@ -4429,129 +4303,71 @@ dboolean M_Responder (event_t* ev) {
       if (ptr1->m_flags & S_CHOICE) // selection of choices?
       {
         if (action == MENU_LEFT) {
-          if (ptr1->m_group == m_conf) {
-            if (ptr1->m_flags & S_STR)
-            {
-              int old_value, value;
-
-              old_value = M_IndexInChoices(dsda_PersistentStringConfig(ptr1->var.config_id),
-                                           ptr1->selectstrings);
-              value = old_value - 1;
-              if (value < 0)
-                value = 0;
-              if (old_value != value)
-              {
-                S_StartSound(NULL, g_sfx_menu);
-                dsda_UpdateStringConfig(ptr1->var.config_id, ptr1->selectstrings[value], true);
-              }
-            }
-            else
-            {
-              int value = dsda_PersistentIntConfig(ptr1->var.config_id);
-
-              do {
-                --value;
-              } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
-
-              if (dsda_PersistentIntConfig(ptr1->var.config_id) != value) {
-                S_StartSound(NULL, g_sfx_menu);
-                dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
-              }
-            }
-          }
-          else if (ptr1->var.def->type == def_int) {
-            int value = *ptr1->var.def->location.pi;
-
-            value = value - 1;
-            if ((ptr1->var.def->minvalue != UL &&
-                 value < ptr1->var.def->minvalue))
-              value = ptr1->var.def->minvalue;
-            if ((ptr1->var.def->maxvalue != UL &&
-                 value > ptr1->var.def->maxvalue))
-              value = ptr1->var.def->maxvalue;
-            while (ptr1->selectstrings && ptr1->selectstrings[value][0] == '~')
-              value--;
-            if (*ptr1->var.def->location.pi != value)
-              S_StartSound(NULL,g_sfx_menu);
-            *ptr1->var.def->location.pi = value;
-          }
-          else if (ptr1->var.def->type == def_str) {
+          if (ptr1->m_flags & S_STR)
+          {
             int old_value, value;
 
-            old_value = M_IndexInChoices(*ptr1->var.def->location.ppsz,
-                                         ptr1->selectstrings);
+            old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
             value = old_value - 1;
             if (value < 0)
               value = 0;
             if (old_value != value)
-              S_StartSound(NULL,g_sfx_menu);
-            *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
+            {
+              S_StartSound(NULL, g_sfx_menu);
+              strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
+            }
+          }
+          else
+          {
+            int value = choice_value;
+
+            do {
+              --value;
+            } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
+
+            if (choice_value != value) {
+              S_StartSound(NULL, g_sfx_menu);
+              choice_value = value;
+            }
           }
         }
         else if (action == MENU_RIGHT) {
-          if (ptr1->m_group == m_conf) {
-            if (ptr1->m_flags & S_STR)
-            {
-              int old_value, value;
-
-              old_value = M_IndexInChoices(dsda_PersistentStringConfig(ptr1->var.config_id),
-                                           ptr1->selectstrings);
-              value = old_value + 1;
-              if (ptr1->selectstrings[value] == NULL)
-                value = old_value;
-              if (old_value != value)
-              {
-                S_StartSound(NULL, g_sfx_menu);
-                dsda_UpdateStringConfig(ptr1->var.config_id, ptr1->selectstrings[value], true);
-              }
-            }
-            else
-            {
-              int value = dsda_PersistentIntConfig(ptr1->var.config_id);
-
-              do {
-                ++value;
-              } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
-
-              if (dsda_PersistentIntConfig(ptr1->var.config_id) != value) {
-                S_StartSound(NULL, g_sfx_menu);
-                dsda_UpdateIntConfig(ptr1->var.config_id, value, true);
-              }
-            }
-          }
-          else if (ptr1->var.def->type == def_int) {
-            int value = *ptr1->var.def->location.pi;
-
-            value = value + 1;
-            if ((ptr1->var.def->minvalue != UL &&
-                 value < ptr1->var.def->minvalue))
-              value = ptr1->var.def->minvalue;
-            if ((ptr1->var.def->maxvalue != UL &&
-                 value > ptr1->var.def->maxvalue))
-              value = ptr1->var.def->maxvalue;
-            while (ptr1->selectstrings && ptr1->selectstrings[value][0] == '~')
-              value++;
-            if (*ptr1->var.def->location.pi != value)
-              S_StartSound(NULL,g_sfx_menu);
-            *ptr1->var.def->location.pi = value;
-          }
-          else if (ptr1->var.def->type == def_str) {
+          if (ptr1->m_flags & S_STR)
+          {
             int old_value, value;
 
-            old_value = M_IndexInChoices(*ptr1->var.def->location.ppsz,
-                                         ptr1->selectstrings);
+            old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
             value = old_value + 1;
             if (ptr1->selectstrings[value] == NULL)
               value = old_value;
             if (old_value != value)
-              S_StartSound(NULL,g_sfx_menu);
-            *ptr1->var.def->location.ppsz = ptr1->selectstrings[value];
+            {
+              S_StartSound(NULL, g_sfx_menu);
+              strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
+            }
+          }
+          else
+          {
+            int value = choice_value;
+
+            do {
+              ++value;
+            } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
+
+            if (choice_value != value) {
+              S_StartSound(NULL, g_sfx_menu);
+              choice_value = value;
+            }
           }
         }
         else if (action == MENU_ENTER) {
-          if (ptr1->m_group != m_conf)
+          if (ptr1->m_flags & S_STR)
           {
-            M_SettingUpdated(ptr1, true);
+            dsda_UpdateStringConfig(ptr1->var.config_id, entry_string_index, true);
+          }
+          else
+          {
+            dsda_UpdateIntConfig(ptr1->var.config_id, choice_value, true);
           }
           M_SelectDone(ptr1);                           // phares 4/17/98
         }
@@ -4777,7 +4593,7 @@ dboolean M_Responder (event_t* ev) {
         }
         else if ((action == MENU_ENTER) || (action == MENU_ESCAPE))
         {
-          *ptr1->var.def->location.ppsz = entry_string_index;
+          dsda_UpdateStringConfig(ptr1->var.config_id, entry_string_index, true);
           M_SelectDone(ptr1);   // phares 4/17/98
         }
 
@@ -4883,29 +4699,22 @@ dboolean M_Responder (event_t* ev) {
       }
       else if (flags & S_STRING)
       {
-        // copy string into working buffer; trim if needed.
-        // free the old string memory and replace it with
-        // the (possibly larger) new memory for editing purposes
-        //
-        // killough 10/98: fix bugs, simplify
+        strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->var.config_id),
+                ENTRY_STRING_BFR_SIZE - 1);
 
-        entry_string_index = Z_Malloc(ENTRY_STRING_BFR_SIZE);
-        strncpy(entry_string_index,
-                *ptr1->var.def->location.ppsz, ENTRY_STRING_BFR_SIZE);
-
-        // guarantee null delimiter
-        entry_string_index[ENTRY_STRING_BFR_SIZE-1] = 0;
-
-        // set string table pointer to working buffer
-        // and free old string's memory.
-        {
-          union { const char **c; char **s; } u; // type punning via unions
-
-          u.c = ptr1->var.def->location.ppsz;
-          Z_Free(*(u.s));
-          *(u.c) = entry_string_index;
-        }
         entry_index = 0; // current cursor position in entry_string_index
+      }
+      else if (flags & S_CHOICE)
+      {
+        if (flags & S_STR)
+        {
+          strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->var.config_id),
+                  ENTRY_STRING_BFR_SIZE - 1);
+        }
+        else
+        {
+          choice_value = dsda_PersistentIntConfig(ptr1->var.config_id);
+        }
       }
 
       ptr1->m_flags |= S_SELECT;
@@ -5561,7 +5370,6 @@ void M_Init(void)
 {
   if (raven) MN_Init();
 
-  M_InitDefaults();                // killough 11/98
   M_ChangeMenu(&MainDef, mnact_inactive);
   itemOn = currentMenu->lastOn;
   whichSkull = 0;

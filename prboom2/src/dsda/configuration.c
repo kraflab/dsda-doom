@@ -1111,6 +1111,23 @@ static void dsda_InitStringConfig(dsda_config_t* conf, const char* value) {
   dsda_PersistStringConfig(conf);
 }
 
+int dsda_MaxConfigLength(void) {
+  int length = 0;
+
+  int i;
+
+  for (i = 1; i < dsda_config_count; ++i) {
+    dsda_config_t* conf;
+
+    conf = &dsda_config[i];
+
+    if (strlen(conf->name) > length)
+      length = strlen(conf->name);
+  }
+
+  return length;
+}
+
 void dsda_InitConfig(void) {
   int i;
 

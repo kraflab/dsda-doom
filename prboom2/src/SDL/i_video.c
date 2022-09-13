@@ -126,7 +126,6 @@ SDL_Rect src_rect = { 0, 0, 0, 0 };
 int             leds_always_off = 0; // Expected by m_misc, not relevant
 
 // Mouse handling
-extern int     usemouse;        // config file var
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
 
 video_mode_t I_GetModeFromString(const char *modestr);

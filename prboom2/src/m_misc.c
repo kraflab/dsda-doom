@@ -85,13 +85,22 @@
 // NSM
 #include "i_capture.h"
 
-#define SETTING_HEADING(str) { str, { NULL }, { 0 }, UL, UL, def_none }
-#define INPUT_SETTING(str, id, k, m, j) { str, { NULL }, { 0 }, UL, UL, def_input, 0, id, { k, m, j } }
-#define MIGRATED_SETTING(id) { NULL, { NULL }, { 0 }, 0, 0, 0, id }
+typedef struct
+{
+  const char* name;
+  dsda_config_identifier_t config_id;
+} cfg_def_t;
 
-/* cph - disk icon not implemented */
-static inline void I_BeginRead(void) {}
-static inline void I_EndRead(void) {}
+typedef struct
+{
+  const char* name;
+  int identifier;
+  dsda_input_default_t input;
+} cfg_input_def_t;
+
+#define SETTING_HEADING(str) { str, 0 }
+#define INPUT_SETTING(str, id, k, m, j) { str, id, { k, m, j } }
+#define MIGRATED_SETTING(id) { NULL, id }
 
 /*
  * M_WriteFile
@@ -108,10 +117,8 @@ dboolean M_WriteFile(char const *name, const void *source, size_t length)
   if (!(fp = fopen(name, "wb")))       // Try opening file
     return 0;                          // Could not open file for writing
 
-  I_BeginRead();                       // Disk icon on
   length = fwrite(source, 1, length, fp) == (size_t)length;   // Write data
   fclose(fp);
-  I_EndRead();                         // Disk icon off
 
   if (!length)                         // Remove partially written file
     remove(name);
@@ -133,7 +140,6 @@ int M_ReadFile(char const *name, byte **buffer)
     {
       size_t length;
 
-      I_BeginRead();
       fseek(fp, 0, SEEK_END);
       length = ftell(fp);
       fseek(fp, 0, SEEK_SET);
@@ -141,7 +147,6 @@ int M_ReadFile(char const *name, byte **buffer)
       if (fread(*buffer, 1, length, fp) == length)
         {
           fclose(fp);
-          I_EndRead();
           return length;
         }
       fclose(fp);
@@ -160,7 +165,6 @@ int M_ReadFileToString(char const *name, char **buffer) {
   {
     size_t length;
 
-    I_BeginRead();
     fseek(fp, 0, SEEK_END);
     length = ftell(fp);
     fseek(fp, 0, SEEK_SET);
@@ -168,7 +172,6 @@ int M_ReadFileToString(char const *name, char **buffer) {
     if (fread(*buffer, 1, length, fp) == length)
     {
       fclose(fp);
-      I_EndRead();
       (*buffer)[length] = '\0';
       return length;
     }
@@ -182,16 +185,7 @@ int M_ReadFileToString(char const *name, char **buffer) {
   return -1;
 }
 
-//
-// DEFAULTS
-//
-
-int usemouse;
-
-extern int viewwidth;
-extern int viewheight;
-
-default_t defaults[] =
+cfg_def_t cfg_defs[] =
 {
   //e6y
   SETTING_HEADING("System settings"),
@@ -457,7 +451,9 @@ default_t defaults[] =
 
   SETTING_HEADING("Input settings"),
   MIGRATED_SETTING(dsda_config_input_profile),
+};
 
+cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_forward", dsda_input_forward, 'w', 2, -1),
   INPUT_SETTING("input_backward", dsda_input_backward, 's', -1, -1),
   INPUT_SETTING("input_turnleft", dsda_input_turnleft, 'e', -1, -1),
@@ -645,118 +641,80 @@ default_t defaults[] =
   INPUT_SETTING("input_script_9", dsda_input_script_9, 0, -1, -1),
 };
 
-int numdefaults;
-static char* defaultfile; // CPhipps - static, const
+static int input_def_count = sizeof(input_defs) / sizeof(input_defs[0]);
+static int def_count = sizeof(cfg_defs) / sizeof(cfg_defs[0]);
 
-//
-// M_SaveDefaults
-//
+static char* defaultfile; // CPhipps - static, const
 
 void M_SaveDefaults (void)
 {
   int   i;
   FILE* f;
-  int maxlen = 0;
+  int maxlen;
 
   f = fopen (defaultfile, "w");
   if (!f)
     return; // can't write the file, but don't complain
 
-  // get maximum config key string length
-  for (i = 0 ; i < numdefaults ; i++) {
+  maxlen = dsda_MaxConfigLength();
+
+  for (i = 0; i < input_def_count; i++) {
     int len;
-    if (defaults[i].type == def_none) {
-      continue;
-    }
-    len = strlen(defaults[i].name);
-    if (len > maxlen && len < 80) {
+
+    len = strlen(input_defs[i].name);
+    if (len > maxlen && len < 80)
       maxlen = len;
-    }
   }
 
   // 3/3/98 explain format of file
 
-  fprintf(f,"# Doom config file\n");
-  fprintf(f,"# Format:\n");
-  fprintf(f,"# variable   value\n");
+  fprintf(f, "# Doom config file\n");
+  fprintf(f, "# Format:\n");
+  fprintf(f, "# variable   value\n");
 
-  for (i = 0 ; i < numdefaults ; i++) {
-    if (defaults[i].config_id)
+  for (i = 0 ; i < def_count ; i++) {
+    if (cfg_defs[i].config_id)
     {
-      dsda_WriteConfig(defaults[i].config_id, maxlen, f);
+      dsda_WriteConfig(cfg_defs[i].config_id, maxlen, f);
     }
-    else
+    else if (cfg_defs[i].name)
     {
-      if (defaults[i].type == def_none) {
-        // CPhipps - pure headers
-        fprintf(f, "\n# %s\n", defaults[i].name);
-      }
-      // CPhipps - modified for new default_t form
-      else if (!IS_STRING(defaults[i])) //jff 4/10/98 kill super-hack on pointer value
+      fprintf(f, "\n# %s\n", cfg_defs[i].name);
+    }
+  }
+
+  fprintf(f, "\n");
+
+  for (i = 0; i < input_def_count; ++i) {
+    int a, j;
+    dsda_input_t* input[DSDA_INPUT_PROFILE_COUNT];
+    dsda_InputCopy(input_defs[i].identifier, input);
+
+    fprintf(f, "%-*s", maxlen, input_defs[i].name);
+
+    for (a = 0; a < DSDA_INPUT_PROFILE_COUNT; ++a)
+    {
+      if (input[a]->num_keys)
       {
-        // CPhipps - remove keycode hack
-        // killough 3/6/98: use spaces instead of tabs for uniform justification
-        if (defaults[i].type == def_hex)
-          fprintf (f,"%-*s 0x%x\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
-        else if (defaults[i].type == def_input)
+        fprintf(f, " %i", input[a]->key[0]);
+        for (j = 1; j < input[a]->num_keys; ++j)
         {
-          int a, j;
-          dsda_input_t* input[DSDA_INPUT_PROFILE_COUNT];
-          dsda_InputCopy(defaults[i].identifier, input);
-
-          fprintf(f, "%-*s", maxlen, defaults[i].name);
-
-          for (a = 0; a < DSDA_INPUT_PROFILE_COUNT; ++a)
-          {
-            if (input[a]->num_keys)
-            {
-              fprintf(f, " %i", input[a]->key[0]);
-              for (j = 1; j < input[a]->num_keys; ++j)
-              {
-                fprintf(f, ",%i", input[a]->key[j]);
-              }
-            }
-            else
-              fprintf(f, " 0");
-
-            fprintf(f, " %i %i", input[a]->mouseb, input[a]->joyb);
-
-            if (a != DSDA_INPUT_PROFILE_COUNT - 1)
-              fprintf(f, " |");
-          }
-
-          fprintf(f, "\n");
+          fprintf(f, ",%i", input[a]->key[j]);
         }
-        else
-          fprintf (f,"%-*s %i\n",maxlen,defaults[i].name,*(defaults[i].location.pi));
       }
       else
-      {
-        fprintf (f,"%-*s \"%s\"\n",maxlen,defaults[i].name,*(defaults[i].location.ppsz));
-      }
+        fprintf(f, " 0");
+
+      fprintf(f, " %i %i", input[a]->mouseb, input[a]->joyb);
+
+      if (a != DSDA_INPUT_PROFILE_COUNT - 1)
+        fprintf(f, " |");
     }
+
+    fprintf(f, "\n");
   }
 
   fclose (f);
-}
-
-/*
- * M_LookupDefault
- *
- * cph - mimic MBF function for now. Yes it's crap.
- */
-
-struct default_s *M_LookupDefault(const char *name)
-{
-  int i;
-  for (i = 0 ; i < numdefaults ; i++)
-  {
-    if ((defaults[i].type != def_none) && !strcmp(name, defaults[i].name))
-      return &defaults[i];
-  }
-
-  I_Error("M_LookupDefault: %s not found",name);
-  return NULL;
 }
 
 //
@@ -776,30 +734,16 @@ void M_LoadDefaults (void)
   char* newstring = NULL;   // killough
   int   parm;
   dsda_arg_t *arg;
-  dboolean isstring;
 
   // set everything to base values
 
   dsda_InitConfig();
 
-  numdefaults = sizeof(defaults)/sizeof(defaults[0]);
-  for (i = 0 ; i < numdefaults ; i++) {
-    if (!defaults[i].config_id) // not handled in dsda_InitConfig (yet)
-    {
-      if (defaults[i].type == def_input)
-      {
-        int c;
-        for (c = 0; c < DSDA_INPUT_PROFILE_COUNT; ++c)
-          dsda_InputSetSpecific(c, defaults[i].identifier, defaults[i].input);
-      }
-      else
-      {
-        if (defaults[i].location.ppsz)
-          *defaults[i].location.ppsz = Z_Strdup(defaults[i].defaultvalue.psz);
-        if (defaults[i].location.pi)
-          *defaults[i].location.pi = defaults[i].defaultvalue.i;
-      }
-    }
+  for (i = 0; i < input_def_count; i++) {
+    int c;
+
+    for (c = 0; c < DSDA_INPUT_PROFILE_COUNT; ++c)
+      dsda_InputSetSpecific(c, input_defs[i].identifier, input_defs[i].input);
   }
 
   // special fallback input values
@@ -838,7 +782,6 @@ void M_LoadDefaults (void)
   {
     while (!feof(f))
     {
-      isstring = false;
       parm = 0;
       fgets(cfgline, CFG_BUFFERMAX, f);
       if (sscanf (cfgline, "%79s %[^\n]\n", def, strparm) == 2)
@@ -851,12 +794,11 @@ void M_LoadDefaults (void)
 
         if (strparm[0] == '"')
         {
-          // get a string default
-          isstring = true;
+          // get a string
           len = strlen(strparm);
           newstring = Z_Malloc(len);
-          strparm[len-1] = 0; // clears trailing double-quote mark
-          strcpy(newstring, strparm+1); // clears leading double-quote mark
+          strparm[len - 1] = 0; // clears trailing double-quote mark
+          strcpy(newstring, strparm + 1); // clears leading double-quote mark
         }
         else if ((strparm[0] == '0') && (strparm[1] == 'x'))
         {
@@ -874,73 +816,47 @@ void M_LoadDefaults (void)
         }
         else
         {
-          for (i = 0 ; i < numdefaults ; i++)
-            if ((defaults[i].type != def_none) && !strcmp(def, defaults[i].name))
+          for (i = 0; i < input_def_count; i++)
+            if (!strcmp(def, input_defs[i].name))
             {
-              // CPhipps - safety check
-              if (isstring != IS_STRING(defaults[i])) {
-                lprintf(LO_WARN, "M_LoadDefaults: Type mismatch reading %s\n", defaults[i].name);
-                continue;
-              }
+              int count;
+              char keys[80];
+              int key, mouseb, joyb;
+              int index = 0;
+              char* key_scan_p;
+              char* config_scan_p;
 
-              if (!isstring)
+              config_scan_p = strparm;
+              do
               {
-                if (defaults[i].type == def_input)
+                count = sscanf(config_scan_p, "%79s %d %d", keys, &mouseb, &joyb);
+
+                if (count != 3)
+                  break;
+
+                dsda_InputResetSpecific(index, input_defs[i].identifier);
+
+                dsda_InputAddSpecificMouseB(index, input_defs[i].identifier, mouseb);
+                dsda_InputAddSpecificJoyB(index, input_defs[i].identifier, joyb);
+
+                key_scan_p = strtok(keys, ",");
+                do
                 {
-                  int count;
-                  char keys[80];
-                  int key, mouseb, joyb;
-                  int index = 0;
-                  char* key_scan_p;
-                  char* config_scan_p;
+                  count = sscanf(key_scan_p, "%d,", &key);
 
-                  config_scan_p = strparm;
-                  do
-                  {
-                    count = sscanf(config_scan_p, "%79s %d %d", keys, &mouseb, &joyb);
+                  if (count != 1)
+                    break;
 
-                    if (count != 3)
-                      break;
+                  dsda_InputAddSpecificKey(index, input_defs[i].identifier, key);
 
-                    dsda_InputResetSpecific(index, defaults[i].identifier);
+                  key_scan_p = strtok(NULL, ",");
+                } while (key_scan_p);
 
-                    dsda_InputAddSpecificMouseB(index, defaults[i].identifier, mouseb);
-                    dsda_InputAddSpecificJoyB(index, defaults[i].identifier, joyb);
-
-                    key_scan_p = strtok(keys, ",");
-                    do
-                    {
-                      count = sscanf(key_scan_p, "%d,", &key);
-
-                      if (count != 1)
-                        break;
-
-                      dsda_InputAddSpecificKey(index, defaults[i].identifier, key);
-
-                      key_scan_p = strtok(NULL, ",");
-                    } while (key_scan_p);
-
-                    index++;
-                    config_scan_p = strchr(config_scan_p, '|');
-                    if (config_scan_p)
-                      config_scan_p++;
-                  } while (config_scan_p && index < DSDA_INPUT_PROFILE_COUNT);
-                }
-
-                //jff 3/4/98 range check numeric parameters
-
-                else if ((defaults[i].minvalue==UL || defaults[i].minvalue<=parm) &&
-                         (defaults[i].maxvalue==UL || defaults[i].maxvalue>=parm))
-                  *(defaults[i].location.pi) = parm;
-              }
-              else
-              {
-                union { const char **c; char **s; } u; // type punning via unions
-
-                u.c = defaults[i].location.ppsz;
-                Z_Free(*(u.s));
-                *(u.s) = newstring;
-              }
+                index++;
+                config_scan_p = strchr(config_scan_p, '|');
+                if (config_scan_p)
+                  config_scan_p++;
+              } while (config_scan_p && index < DSDA_INPUT_PROFILE_COUNT);
 
               break;
             }
@@ -960,11 +876,6 @@ void M_LoadDefaults (void)
   if (!(port_wad_file = I_FindFile(WAD_DATA, "")))
     I_Error("dsda-doom.wad not found. Can't continue.");
 }
-
-
-//
-// SCREEN SHOTS
-//
 
 //
 // M_ScreenShot
@@ -1078,7 +989,6 @@ void M_ScreenShot(void)
   return;
 }
 
-
 // Safe string copy function that works like OpenBSD's strlcpy().
 // Returns true if the string was not truncated.
 
@@ -1115,7 +1025,6 @@ dboolean M_StringConcat(char *dest, const char *src, size_t dest_size)
 
     return M_StringCopy(dest + offset, src, dest_size - offset);
 }
-
 
 int M_StrToInt(const char *s, int *l)
 {

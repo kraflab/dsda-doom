@@ -256,6 +256,7 @@ typedef enum {
   dsda_config_count,
 } dsda_config_identifier_t;
 
+int dsda_MaxConfigLength(void);
 void dsda_InitConfig(void);
 dboolean dsda_ReadConfig(const char* name, const char* string_param, int int_param);
 void dsda_WriteConfig(dsda_config_identifier_t id, int key_length, FILE* file);
