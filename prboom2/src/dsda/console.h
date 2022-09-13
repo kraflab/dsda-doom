@@ -19,6 +19,7 @@
 #define __DSDA_CONSOLE__
 
 #include "doomtype.h"
+#include "m_menu.h"
 
 #define CONSOLE_SCRIPT_COUNT 10
 
