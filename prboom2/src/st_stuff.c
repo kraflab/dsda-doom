@@ -797,7 +797,7 @@ static void ST_doPaletteStuff(void)
 
 void M_ChangeApplyPalette(void)
 {
-  if (gamestate == GS_LEVEL)
+  if (in_game && gamestate == GS_LEVEL)
     ST_doPaletteStuff();
 }
 
