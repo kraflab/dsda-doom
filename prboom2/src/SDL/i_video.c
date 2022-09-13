@@ -996,6 +996,25 @@ void I_InitScreenResolution(void)
 
   I_GetScreenResolution();
 
+  use_fullscreen = dsda_IntConfig(dsda_config_use_fullscreen);
+
+  if (dsda_Flag(dsda_arg_fullscreen))
+    use_fullscreen = 1;
+
+  if (dsda_Flag(dsda_arg_nofullscreen))
+    use_fullscreen = 0;
+
+  // e6y
+  // New command-line options for setting a window (-window)
+  // or fullscreen (-nowindow) mode temporarily which is not saved in cfg.
+  // It works like "-geom" switch
+  desired_fullscreen = use_fullscreen;
+  if (dsda_Flag(dsda_arg_window))
+    desired_fullscreen = 0;
+
+  if (dsda_Flag(dsda_arg_nowindow))
+    desired_fullscreen = 1;
+
   if (init)
   {
     //e6y: ability to change screen resolution from GUI
@@ -1009,25 +1028,6 @@ void I_InitScreenResolution(void)
     arg = dsda_Arg(dsda_arg_height);
     if (arg->found)
       desired_screenheight = arg->value.v_int;
-
-    use_fullscreen = dsda_IntConfig(dsda_config_use_fullscreen);
-
-    if (dsda_Flag(dsda_arg_fullscreen))
-      use_fullscreen = 1;
-
-    if (dsda_Flag(dsda_arg_nofullscreen))
-      use_fullscreen = 0;
-
-    // e6y
-    // New command-line options for setting a window (-window)
-    // or fullscreen (-nowindow) mode temporarily which is not saved in cfg.
-    // It works like "-geom" switch
-    desired_fullscreen = use_fullscreen;
-    if (dsda_Flag(dsda_arg_window))
-      desired_fullscreen = 0;
-
-    if (dsda_Flag(dsda_arg_nowindow))
-      desired_fullscreen = 1;
 
     // e6y
     // change the screen size for the current session only
