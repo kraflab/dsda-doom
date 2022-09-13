@@ -4296,7 +4296,7 @@ dboolean M_Responder (event_t* ev) {
               --value;
             } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
 
-            if (choice_value != value) {
+            if (value >= 0 && choice_value != value) {
               S_StartSound(NULL, g_sfx_menu);
               choice_value = value;
             }
@@ -4325,7 +4325,7 @@ dboolean M_Responder (event_t* ev) {
               ++value;
             } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
 
-            if (choice_value != value) {
+            if (ptr1->selectstrings[value] && choice_value != value) {
               S_StartSound(NULL, g_sfx_menu);
               choice_value = value;
             }
