@@ -174,12 +174,8 @@ typedef struct setup_menu_s
 
   union  /* killough 11/98: The first field is a union of several types */
   {
-    const void          *var;   /* generic variable */
-    int                 *m_key; /* key value, or 0 if not shown */
-    const char          *name;  /* name */
-    struct default_s    *def;   /* default[] table entry */
+    dsda_config_identifier_t config_id;
     struct setup_menu_s *menu;  /* next or prev menu */
-    dsda_config_identifier_t config_id; // migrate to new config process
   } var;
 
   int input; // composite input identifier
