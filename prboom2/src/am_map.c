@@ -2406,7 +2406,7 @@ void M_ChangeMapTextured(void)
 {
   map_textured = dsda_IntConfig(dsda_config_map_textured);
 
-  if (gamestate == GS_LEVEL && V_IsOpenGLMode())
+  if (in_game && gamestate == GS_LEVEL && V_IsOpenGLMode())
   {
     gld_ProcessTexturedMap();
   }
