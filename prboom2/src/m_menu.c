@@ -2539,7 +2539,7 @@ setup_menu_t stat_settings2[] =
 {
   { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 1 * 8 },
 
-  { "ENABLE CROSSHAIR", S_CHOICE, m_conf, HUD_X, SB_Y + 2 * 8, { dsda_config_hudadd_crosshair }, 0, 0, crosshair_str },
+  { "ENABLE CROSSHAIR", S_CHOICE, m_conf, HUD_X, SB_Y + 2 * 8, { dsda_config_hudadd_crosshair }, 0, crosshair_str },
   { "SCALE CROSSHAIR", S_YESNO, m_conf, HUD_X, SB_Y + 3 * 8, { dsda_config_hudadd_crosshair_scale } },
   { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_conf, HUD_X, SB_Y + 4 * 8, { dsda_config_hudadd_crosshair_health } },
   { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_conf, HUD_X, SB_Y + 5 * 8, { dsda_config_hudadd_crosshair_target } },
@@ -2628,7 +2628,7 @@ setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
   { "Use mouse wheel for zooming", S_YESNO, m_conf, AU_X, AU_Y + 5 * 8, { dsda_config_map_wheel_zoom } },
   { "Apply multisampling", S_YESNO, m_conf, AU_X, AU_Y + 6 * 8, { dsda_config_map_use_multisamling } },
   { "Enable textured display", S_YESNO, m_conf, AU_X, AU_Y + 7 * 8, { dsda_config_map_textured } },
-  { "Things appearance", S_CHOICE, m_conf, AU_X, AU_Y + 8 * 8, { dsda_config_map_things_appearance }, 0, NULL, map_things_appearance_list },
+  { "Things appearance", S_CHOICE, m_conf, AU_X, AU_Y + 8 * 8, { dsda_config_map_things_appearance }, 0, map_things_appearance_list },
 
   { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X, AU_Y + 10 * 8 },
   { "Textured automap", S_NUM, m_conf, AU_X, AU_Y + 11 * 8, { dsda_config_map_textured_trans } },
@@ -2841,9 +2841,9 @@ static const char* render_stretch_list[] = {
 
 setup_menu_t audiovideo_settings[] = {
   { "Video", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Video mode", S_CHOICE | S_STR, m_conf, G_X, G_Y + 2 * 8, { dsda_config_videomode }, 0, NULL, videomodes },
-  { "Screen Resolution", S_CHOICE | S_STR, m_conf, G_X, G_Y + 3 * 8, { dsda_config_screen_resolution }, 0, NULL, screen_resolutions_list },
-  { "Aspect Ratio", S_CHOICE, m_conf, G_X, G_Y + 4 * 8, { dsda_config_render_aspect }, 0, NULL, render_aspects_list },
+  { "Video mode", S_CHOICE | S_STR, m_conf, G_X, G_Y + 2 * 8, { dsda_config_videomode }, 0, videomodes },
+  { "Screen Resolution", S_CHOICE | S_STR, m_conf, G_X, G_Y + 3 * 8, { dsda_config_screen_resolution }, 0, screen_resolutions_list },
+  { "Aspect Ratio", S_CHOICE, m_conf, G_X, G_Y + 4 * 8, { dsda_config_render_aspect }, 0, render_aspects_list },
   { "Fullscreen Video mode", S_YESNO, m_conf, G_X, G_Y + 5 * 8, { dsda_config_use_fullscreen } },
   { "Exclusive Fullscreen", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { dsda_config_exclusive_fullscreen } },
   { "Vertical Sync", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { dsda_config_render_vsync } },
@@ -2855,7 +2855,7 @@ setup_menu_t audiovideo_settings[] = {
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, G_Y + 13 * 8, { dsda_config_pitched_sounds } },
   { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_conf, G_X, G_Y + 14 * 8, { dsda_config_snd_pcspeaker } },
   { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, G_Y + 15 * 8, { dsda_config_full_sounds } },
-  { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, G_Y + 16 * 8, { dsda_config_snd_midiplayer }, 0, NULL, midiplayers },
+  { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, G_Y + 16 * 8, { dsda_config_snd_midiplayer }, 0, midiplayers },
 
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, device_settings),
   FINAL_ENTRY
@@ -2887,8 +2887,8 @@ setup_menu_t device_settings[] = {
 
 setup_menu_t misc_settings[] = {
   { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Default skill level", S_CHOICE, m_conf, G_X, G_Y + 2 * 8, { dsda_config_default_skill }, 0, NULL, gen_skillstrings },
-  { "Default compatibility level", S_CHOICE, m_conf, G_X, G_Y + 3 * 8, { dsda_config_default_complevel }, 0, NULL, &gen_compstrings[1] },
+  { "Default skill level", S_CHOICE, m_conf, G_X, G_Y + 2 * 8, { dsda_config_default_skill }, 0, gen_skillstrings },
+  { "Default compatibility level", S_CHOICE, m_conf, G_X, G_Y + 3 * 8, { dsda_config_default_complevel }, 0, &gen_compstrings[1] },
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, G_Y + 4 * 8, { dsda_config_cheat_codes } },
 
   { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 6 * 8 },
@@ -2897,7 +2897,7 @@ setup_menu_t misc_settings[] = {
   { "Rewind Timeout (ms)", S_NUM, m_conf, G_X, G_Y + 9 * 8, { dsda_config_auto_key_frame_timeout } },
   { "Organize My Save Files", S_YESNO, m_conf, G_X, G_Y + 10 * 8, { dsda_config_organized_saves } },
   { "Skip Quit Prompt", S_YESNO, m_conf, G_X, G_Y + 11 * 8, { dsda_config_skip_quit_prompt } },
-  { "Death Use Action", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, { dsda_config_death_use_action }, 0, NULL, death_use_strings },
+  { "Death Use Action", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, { dsda_config_death_use_action }, 0, death_use_strings },
   { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, G_Y + 13 * 8, { dsda_config_switch_when_ammo_runs_out } },
   { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, G_Y + 14 * 8, { dsda_config_parallel_sfx_limit } },
   { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, G_Y + 15 * 8, { dsda_config_parallel_sfx_window } },
@@ -2916,13 +2916,13 @@ setup_menu_t display_settings[] = {
   { "Show FPS", S_YESNO,  m_conf, G_X, G_Y + 6 * 8, { dsda_config_show_fps } },
   { "View Bobbing", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { dsda_config_viewbob } },
   { "Weapon Bobbing", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { dsda_config_weaponbob } },
-  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, { dsda_config_weapon_attack_alignment }, 0, NULL, weapon_attack_alignment_strings },
+  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, { dsda_config_weapon_attack_alignment }, 0, weapon_attack_alignment_strings },
 
   { "Change Palette On Pain", S_YESNO, m_conf, G_X, G_Y + 11 * 8, { dsda_config_palette_ondamage } },
   { "Change Palette On Bonus", S_YESNO, m_conf, G_X, G_Y + 12 * 8, { dsda_config_palette_onbonus } },
   { "Change Palette On Powers", S_YESNO, m_conf, G_X, G_Y + 13 * 8, { dsda_config_palette_onpowers } },
 
-  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, G_Y + 15 * 8, { dsda_config_render_stretch_hud }, 0, NULL, render_stretch_list },
+  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, G_Y + 15 * 8, { dsda_config_render_stretch_hud }, 0, render_stretch_list },
   { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 16 * 8, { dsda_config_menu_background } },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, misc_settings),
@@ -2934,19 +2934,19 @@ setup_menu_t opengl_settings[] = {
   { "OpenGL Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8},
   { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_EVEN, m_conf, G_X, G_Y + 2 * 8, { dsda_config_gl_render_multisampling } },
   { "Field Of View", S_NUM, m_conf, G_X, G_Y + 3 * 8, { dsda_config_gl_render_fov } },
-  { "Sector Light Mode", S_CHOICE, m_conf, G_X, G_Y + 4 * 8, { dsda_config_gl_lightmode }, 0, NULL, gl_lightmodes },
+  { "Sector Light Mode", S_CHOICE, m_conf, G_X, G_Y + 4 * 8, { dsda_config_gl_lightmode }, 0, gl_lightmodes },
   { "Allow Fog", S_YESNO, m_conf, G_X, G_Y + 5 * 8, { dsda_config_gl_fog } },
   { "Simple Shadows", S_YESNO, m_conf, G_X, G_Y + 6 * 8, { dsda_config_gl_shadows } },
   { "Paper Items", S_YESNO, m_conf, G_X, G_Y + 7 * 8, { dsda_config_gl_render_paperitems } },
   { "Smooth sprite edges", S_YESNO, m_conf, G_X, G_Y + 8 * 8, { dsda_config_gl_sprite_blend } },
-  { "Adjust Sprite Clipping", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, { dsda_config_gl_spriteclip }, 0, NULL, gl_spriteclipmodes },
+  { "Adjust Sprite Clipping", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, { dsda_config_gl_spriteclip }, 0, gl_spriteclipmodes },
   { "Health Bar Above Monsters", S_YESNO, m_conf, G_X, G_Y + 10 * 8, { dsda_config_gl_health_bar } },
 
-  { "Texture Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, { dsda_config_gl_texture_filter }, 0, NULL, gltexfilters },
-  { "Sprite Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 13 * 8, { dsda_config_gl_sprite_filter }, 0, NULL, gltexfilters },
-  { "Patch Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 14 * 8, { dsda_config_gl_patch_filter }, 0, NULL, gltexfilters },
-  { "Anisotropic filter", S_CHOICE, m_conf, G_X, G_Y + 15 * 8, { dsda_config_gl_texture_filter_anisotropic }, 0, NULL, gltexfilters_anisotropics },
-  { "Texture format", S_CHOICE | S_STR, m_conf, G_X, G_Y + 16 * 8, { dsda_config_gl_tex_format_string }, 0, NULL, gltexformats },
+  { "Texture Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, { dsda_config_gl_texture_filter }, 0, gltexfilters },
+  { "Sprite Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 13 * 8, { dsda_config_gl_sprite_filter }, 0, gltexfilters },
+  { "Patch Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 14 * 8, { dsda_config_gl_patch_filter }, 0, gltexfilters },
+  { "Anisotropic filter", S_CHOICE, m_conf, G_X, G_Y + 15 * 8, { dsda_config_gl_texture_filter_anisotropic }, 0, gltexfilters_anisotropics },
+  { "Texture format", S_CHOICE | S_STR, m_conf, G_X, G_Y + 16 * 8, { dsda_config_gl_tex_format_string }, 0, gltexformats },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, display_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mapping_settings),

@@ -179,7 +179,6 @@ typedef struct setup_menu_s
   } var;
 
   int input; // composite input identifier
-  void (*action)(void); /* killough 10/98: function to call after changing */
   const char **selectstrings; /* list of strings for choice value */
 } setup_menu_t;
 
