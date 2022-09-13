@@ -406,21 +406,6 @@ typedef enum {
 #define KEYD_MWHEELUP   (0x80 + 0x6b)
 #define KEYD_MWHEELDOWN (0x80 + 0x6c)
 
-// phares 4/19/98:
-// Defines Setup Screen groups that config variables appear in.
-// Used when resetting the defaults for every item in a Setup group.
-
-typedef enum {
-  ss_none,
-  ss_keys,
-  ss_weap,
-  ss_stat,
-  ss_auto,
-  ss_mess,
-  ss_gen,       /* killough 10/98 */
-  ss_max
-} ss_types;
-
 // phares 3/20/98:
 //
 // Player friction is variable, based on controlling

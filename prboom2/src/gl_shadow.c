@@ -42,17 +42,25 @@
 #include "r_main.h"
 #include "lprintf.h"
 
+#include "dsda/configuration.h"
 #include "dsda/settings.h"
-
-int gl_shadows_maxdist;
-int gl_shadows_factor;
 
 simple_shadow_params_t simple_shadows =
 {
-  0, 0,
+  0,
   -1, 0, 0,
   80, 1000, 0.5f, 0.0044f
 };
+
+void gld_ResetShadowParameters(void)
+{
+  int factor_int = dsda_IntConfig(dsda_config_gl_shadows_factor);
+
+  simple_shadows.max_radius = 80;
+  simple_shadows.max_dist = dsda_IntConfig(dsda_config_gl_shadows_maxdist);
+  simple_shadows.factor = (float) factor_int / 256.0f;
+  simple_shadows.bias = 0.0044f;
+}
 
 //===========================================================================
 // GL_PrepareLightTexture
@@ -68,10 +76,7 @@ void gld_InitShadows(void)
   simple_shadows.width = 0;
   simple_shadows.height = 0;
 
-  simple_shadows.max_radius = 80;
-  simple_shadows.max_dist = gl_shadows_maxdist;
-  simple_shadows.factor = (float)gl_shadows_factor / 256.0f;
-  simple_shadows.bias = 0.0044f;
+  gld_ResetShadowParameters();
 
   lump = (W_CheckNumForName)("GLSHADOW", ns_prboom);
   if (lump != -1)
@@ -99,7 +104,7 @@ void gld_InitShadows(void)
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
       if (gl_ext_texture_filter_anisotropic)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLfloat)(1<<gl_texture_filter_anisotropic));
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_texture_filter_anisotropic);
 
       simple_shadows.loaded = true;
       simple_shadows.width = surf->w;
@@ -240,10 +245,7 @@ void gld_RenderShadows(void)
   if (gld_drawinfo.num_items[GLDIT_SHADOW] <= 0)
     return;
 
-  if (!gl_ztrick)
-  {
-    glDepthRange(simple_shadows.bias, 1);
-  }
+  glDepthRange(simple_shadows.bias, 1);
 
   gl_EnableFog(false);
 
@@ -268,10 +270,7 @@ void gld_RenderShadows(void)
     gld_DrawShadow(gld_drawinfo.items[GLDIT_SHADOW][i].item.shadow);
   }
 
-  if (!gl_ztrick)
-  {
-    glDepthRange(0, 1);
-  }
+  glDepthRange(0, 1);
 
   glPopMatrix();
   glDepthMask(GL_TRUE);

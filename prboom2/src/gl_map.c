@@ -163,12 +163,10 @@ void gld_DrawNiceThings(int fx, int fy, int fw, int fh)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   // activate vertex array, texture coord array and color arrays
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_COLOR_ARRAY);
-#endif
 
   for (i = 0; i < am_icon_count; i++)
   {
@@ -179,7 +177,6 @@ void gld_DrawNiceThings(int fx, int fy, int fw, int fh)
 
     glBindTexture(GL_TEXTURE_2D, am_icons[i].tex_id);
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
     {
       map_nice_thing_t *thing = &((map_nice_thing_t*)things->data)[0];
 
@@ -190,35 +187,12 @@ void gld_DrawNiceThings(int fx, int fy, int fw, int fh)
 
       glDrawArrays(GL_QUADS, 0, things->count * 4);
     }
-#else
-    for (j = 0; j < things->count; j++)
-    {
-      map_nice_thing_t *thing = &((map_nice_thing_t*)things->data)[j];
-
-      glColor4ubv(&thing->v[0].r);
-
-      glBegin(GL_TRIANGLE_FAN);
-      {
-        glTexCoord2f(thing->v[0].u, thing->v[0].v);
-        glVertex2f(thing->v[0].x, thing->v[0].y);
-        glTexCoord2f(thing->v[1].u, thing->v[1].v);
-        glVertex2f(thing->v[1].x, thing->v[1].y);
-        glTexCoord2f(thing->v[2].u, thing->v[2].v);
-        glVertex2f(thing->v[2].x, thing->v[2].y);
-        glTexCoord2f(thing->v[3].u, thing->v[3].v);
-        glVertex2f(thing->v[3].x, thing->v[3].y);
-      }
-      glEnd();
-    }
-#endif
   }
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   // deactivate vertex array, texture coord array and color arrays
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_COLOR_ARRAY);
-#endif
 
   gld_ResetLastTexture();
   glDisable(GL_SCISSOR_TEST);
@@ -236,7 +210,6 @@ void gld_ClearNiceThings(void)
 
 void gld_DrawMapLines(void)
 {
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   if (map_lines.count > 0)
   {
     map_point_t *point = (map_point_t*)map_lines.data;
@@ -254,5 +227,4 @@ void gld_DrawMapLines(void)
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
   }
-#endif
 }

@@ -20,6 +20,8 @@
 #include "st_stuff.h"
 #include "v_video.h"
 
+#include "dsda/configuration.h"
+
 #include "stretch.h"
 
 int wide_offsetx;
@@ -28,9 +30,6 @@ int wide_offsety;
 int wide_offset2y;
 
 int render_stretch_hud;
-int render_stretch_hud_default;
-int render_patches_scalex;
-int render_patches_scaley;
 
 int patches_scalex;
 int patches_scaley;
@@ -43,14 +42,8 @@ static cb_video_t video_ex_text;
 static stretch_param_t* stretch_params;
 static stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
 
-int dsda_ex_text_scale;
-
-static int actual_ex_text_scale;
+static int ex_text_scale;
 static int ex_text_top_displacement;
-
-const char* render_stretch_list[patch_stretch_max_config] = {
-  "Not Adjusted", "Doom Format", "Fit to Width"
-};
 
 static void GenLookup(short* lookup1, short* lookup2, int size, int max, int step) {
   int i;
@@ -85,11 +78,13 @@ static void GenLookup(short* lookup1, short* lookup2, int size, int max, int ste
 }
 
 static void EvaluateExTextScale(void) {
-  actual_ex_text_scale = dsda_ex_text_scale ? dsda_ex_text_scale : patches_scalex;
+  ex_text_scale = dsda_IntConfig(dsda_config_ex_text_scale);
+  if (!ex_text_scale)
+    ex_text_scale = patches_scalex;
 
   // Difference between expected scale and actual scale of message text at top
   ex_text_top_displacement = (
-    ((ST_SCALED_HEIGHT << FRACBITS) / g_st_height - (actual_ex_text_scale << FRACBITS)) * 8
+    ((ST_SCALED_HEIGHT << FRACBITS) / g_st_height - (ex_text_scale << FRACBITS)) * 8
   ) >> FRACBITS;
 }
 
@@ -104,9 +99,9 @@ static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e f
   int scale;
   int offsetx, offset2x, offsety, offset2y;
 
-  offset2x = SCREENWIDTH - actual_ex_text_scale * 320;
-  offset2y = (SCREENHEIGHT - actual_ex_text_scale * 200) -
-             (ST_SCALED_HEIGHT - actual_ex_text_scale * g_st_height);
+  offset2x = SCREENWIDTH - ex_text_scale * 320;
+  offset2y = (SCREENHEIGHT - ex_text_scale * 200) -
+             (ST_SCALED_HEIGHT - ex_text_scale * g_st_height);
   offsetx = offset2x / 2;
   offsety = offset2y / 2;
 
@@ -201,8 +196,8 @@ void dsda_SetupStretchParams(void) {
   video_stretch.ystep = ((200 << FRACBITS) / WIDE_SCREENHEIGHT) + 1;
   video_full.xstep = ((320 << FRACBITS) / SCREENWIDTH) + 1;
   video_full.ystep = ((200 << FRACBITS) / SCREENHEIGHT) + 1;
-  video_ex_text.xstep = ((320 << FRACBITS) / 320 / actual_ex_text_scale) + 1;
-  video_ex_text.ystep = ((200 << FRACBITS) / 200 / actual_ex_text_scale) + 1;
+  video_ex_text.xstep = ((320 << FRACBITS) / 320 / ex_text_scale) + 1;
+  video_ex_text.ystep = ((200 << FRACBITS) / 200 / ex_text_scale) + 1;
 
   video.width = 320 * patches_scalex;
   video.height = 200 * patches_scaley;
@@ -219,13 +214,19 @@ void dsda_SetupStretchParams(void) {
   GenLookup(video_full.x1lookup, video_full.x2lookup, video_full.width, 320, video_full.xstep);
   GenLookup(video_full.y1lookup, video_full.y2lookup, video_full.height, 200, video_full.ystep);
 
-  video_ex_text.width = 320 * actual_ex_text_scale;
-  video_ex_text.height = 200 * actual_ex_text_scale;
+  video_ex_text.width = 320 * ex_text_scale;
+  video_ex_text.height = 200 * ex_text_scale;
   GenLookup(video_ex_text.x1lookup, video_ex_text.x2lookup, video_ex_text.width, 320, video_ex_text.xstep);
   GenLookup(video_ex_text.y1lookup, video_ex_text.y2lookup, video_ex_text.height, 200, video_ex_text.ystep);
 }
 
 void dsda_EvaluatePatchScale(void) {
+  int render_patches_scalex;
+  int render_patches_scaley;
+
+  render_patches_scalex = dsda_IntConfig(dsda_config_render_patches_scalex);
+  render_patches_scaley = dsda_IntConfig(dsda_config_render_patches_scaley);
+
   patches_scalex = MIN(SCREENWIDTH / 320, SCREENHEIGHT / 200);
   patches_scalex = MAX(1, patches_scalex);
   patches_scaley = patches_scalex;

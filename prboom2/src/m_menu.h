@@ -36,6 +36,8 @@
 
 #include "d_event.h"
 
+#include "dsda/configuration.h"
+
 //
 // MENUS
 //
@@ -81,8 +83,6 @@ void M_DrawCredits(void);    // killough 11/98
 
 extern int warning_about_changes, print_warning_about_changes;
 
-extern dboolean menu_background;
-
 /****************************
  *
  *  The following #defines are for the m_flags field of each item on every
@@ -95,7 +95,6 @@ extern dboolean menu_background;
 #define S_YESNO      0x8 // Yes or No item
 #define S_CRITEM    0x10 // Message color
 #define S_COLOR     0x20 // Automap color
-#define S_RESET     0x80 // Reset to Defaults Button
 #define S_PREV     0x100 // Previous menu exists
 #define S_NEXT     0x200 // Next menu exists
 #define S_INPUT    0x400 // Composite input binding
@@ -114,6 +113,8 @@ extern dboolean menu_background;
 #define S_CHOICE  0x800000  // this item has several values
 #define S_DISABLE  0x1000000 // e6y
 #define S_NAME  0x2000000
+#define S_EVEN 0x20000000
+#define S_STR  0x40000000 // need to refactor things...
 
 /* S_SHOWDESC  = the set of items whose description should be displayed
  * S_SHOWSET   = the set of items whose setting should be displayed
@@ -121,7 +122,7 @@ extern dboolean menu_background;
  * S_HASDEFPTR = the set of items whose var field points to default array
  */
 
-#define S_SHOWDESC (S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_RESET|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
+#define S_SHOWDESC (S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
 
 #define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_NAME)
 
@@ -143,7 +144,7 @@ typedef enum {
   m_menu,       // action in one group, and another action in another.
   m_build,
 
-  m_dsda,       // use dsda setting logic
+  m_conf,       // migrate to new config process
 } setup_group;
 
 /****************************
@@ -170,19 +171,10 @@ typedef struct setup_menu_s
   setup_group m_group;  /* Group */
   short       m_x;      /* screen x position (left is 0) */
   short       m_y;      /* screen y position (top is 0) */
-
-  union  /* killough 11/98: The first field is a union of several types */
-  {
-    const void          *var;   /* generic variable */
-    int                 *m_key; /* key value, or 0 if not shown */
-    const char          *name;  /* name */
-    struct default_s    *def;   /* default[] table entry */
-    struct setup_menu_s *menu;  /* next or prev menu */
-  } var;
-
+  dsda_config_identifier_t config_id;
   int input; // composite input identifier
-  void (*action)(void); /* killough 10/98: function to call after changing */
   const char **selectstrings; /* list of strings for choice value */
+  struct setup_menu_s *menu;  /* next or prev menu */
 } setup_menu_t;
 
 //

@@ -131,7 +131,7 @@ int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
 // Smooth playing stuff
 //
 
-int demo_smoothturns = false;
+int demo_smoothturns;
 int demo_smoothturnsfactor = 6;
 
 static int smooth_playing_turns[SMOOTH_PLAYING_MAXFACTOR];
@@ -202,8 +202,6 @@ void R_ResetAfterTeleport(player_t *player)
 
 // demo ex
 char demoex_filename[PATH_MAX];
-const char *demo_demoex_filename;
-//wadtbl_t demoex;
 
 int AddString(char **str, const char *val);
 
@@ -705,7 +703,7 @@ void I_DemoExShutdown(void)
 {
   W_ReleaseAllWads();
 
-  if (demoex_filename[0] && !(demo_demoex_filename && *demo_demoex_filename))
+  if (demoex_filename[0])
   {
     lprintf(LO_DEBUG, "I_DemoExShutdown: removing %s\n", demoex_filename);
     if (unlink(demoex_filename) != 0)
@@ -935,46 +933,38 @@ static int G_ReadDemoFooter(const char *filename)
     //the demo has an additional information itself
     size_t i;
     waddata_t waddata;
+    int tmp_fd = -1;
+    const char* tmp_dir;
+    char* tmp_path = NULL;
+    const char* template_format = "%sdsda-doom-demoex2-XXXXXX";
 
-    if (demo_demoex_filename && *demo_demoex_filename)
+    tmp_dir = I_GetTempDir();
+    if (tmp_dir && *tmp_dir != '\0')
     {
-      strncpy(demoex_filename, demo_demoex_filename, PATH_MAX-1);
-    }
-    else
-    {
-      int tmp_fd = -1;
-      const char* tmp_dir;
-      char* tmp_path = NULL;
-      const char* template_format = "%sdsda-doom-demoex2-XXXXXX";
-
-      tmp_dir = I_GetTempDir();
-      if (tmp_dir && *tmp_dir != '\0')
+      tmp_path = Z_Malloc(strlen(tmp_dir) + 2);
+      strcpy(tmp_path, tmp_dir);
+      if (!HasTrailingSlash(tmp_dir))
       {
-        tmp_path = Z_Malloc(strlen(tmp_dir) + 2);
-        strcpy(tmp_path, tmp_dir);
-        if (!HasTrailingSlash(tmp_dir))
-        {
-          strcat(tmp_path, "/");
-        }
-
-        snprintf(demoex_filename, sizeof(demoex_filename), template_format, tmp_path);
-#ifdef HAVE_MKSTEMP
-        if ((tmp_fd = mkstemp(demoex_filename)) == -1)
-#else
-        if (mktemp(demoex_filename) == NULL)
-#endif
-        {
-          demoex_filename[0] = 0;
-        }
-
-        // don't leave file open
-        if (tmp_fd >= 0)
-        {
-          close(tmp_fd);
-        }
-
-        Z_Free(tmp_path);
+        strcat(tmp_path, "/");
       }
+
+      snprintf(demoex_filename, sizeof(demoex_filename), template_format, tmp_path);
+#ifdef HAVE_MKSTEMP
+      if ((tmp_fd = mkstemp(demoex_filename)) == -1)
+#else
+      if (mktemp(demoex_filename) == NULL)
+#endif
+      {
+        demoex_filename[0] = 0;
+      }
+
+      // don't leave file open
+      if (tmp_fd >= 0)
+      {
+        close(tmp_fd);
+      }
+
+      Z_Free(tmp_path);
     }
 
     if (!demoex_filename[0])
@@ -1190,15 +1180,6 @@ void WadDataToWadFiles(waddata_t *waddata)
     if (waddata->wadfiles[i].src == source_pwad)
     {
       const char *file = I_FindFile2(waddata->wadfiles[i].name, ".wad");
-      if (!file && D_TryGetWad(waddata->wadfiles[i].name))
-      {
-        file = I_FindFile2(waddata->wadfiles[i].name, ".wad");
-        if (file)
-        {
-          Z_Free(waddata->wadfiles[i].name);
-          waddata->wadfiles[i].name = Z_Strdup(file);
-        }
-      }
       if (file)
       {
         D_AddFile(waddata->wadfiles[i].name, source_pwad);
@@ -1244,74 +1225,6 @@ int CheckDemoExDemo(void)
 
     Z_Free(filename);
   }
-
-  return result;
-}
-
-const char *getwad_cmdline;
-
-dboolean D_TryGetWad(const char* name)
-{
-  dboolean result = false;
-
-  char wadname[PATH_MAX];
-  char* cmdline = NULL;
-  char* wadname_p = NULL;
-  char* msg = NULL;
-  const char* format =
-    "The necessary wad has not been found\n"
-    "Do you want to search for \'%s\'?\n\n"
-    "Command line:\n%s\n\n"
-    "Be careful! Execution of an unknown program is unsafe.";
-
-  if (!getwad_cmdline || !name || !(*getwad_cmdline) || !(*name))
-    return false;
-
-  strncpy(wadname, PathFindFileName(name), sizeof(wadname) - 4);
-  AddDefaultExtension(wadname, ".wad");
-
-  cmdline = Z_Malloc(strlen(getwad_cmdline) + strlen(wadname) + 2);
-  wadname_p = strstr(getwad_cmdline, "%wadname%");
-  if (wadname_p)
-  {
-    strncpy(cmdline, getwad_cmdline, wadname_p - getwad_cmdline);
-    strcat(cmdline, wadname);
-    strcat(cmdline, wadname_p + strlen("%wadname%"));
-  }
-  else
-  {
-    sprintf(cmdline, "%s %s", getwad_cmdline, wadname);
-  }
-
-  msg = Z_Malloc(strlen(format) + strlen(wadname) + strlen(cmdline));
-  sprintf(msg, format, wadname, cmdline);
-
-  if (PRB_IDYES == I_MessageBox(msg, PRB_MB_DEFBUTTON2 | PRB_MB_YESNO))
-  {
-    int ret;
-
-    lprintf(LO_INFO, "D_TryGetWad: Trying to get %s from somewhere\n", name);
-
-    ret = system(cmdline);
-
-    if (ret != 0)
-    {
-      lprintf(LO_ERROR, "D_TryGetWad: Execution failed - %s\n", strerror(errno));
-    }
-    else
-    {
-      char *str = I_FindFile(name, ".wad");
-      if (str)
-      {
-        lprintf(LO_INFO, "D_TryGetWad: Successfully received\n");
-        Z_Free(str);
-        result = true;
-      }
-    }
-  }
-
-  Z_Free(msg);
-  Z_Free(cmdline);
 
   return result;
 }

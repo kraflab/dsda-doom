@@ -85,17 +85,6 @@ typedef enum
   FirstPersonState
 } st_stateenum_t;
 
-// killough 5/2/98: moved from m_misc.c:
-
-extern int health_red;    // health amount less than which status is red
-extern int health_yellow; // health amount less than which status is yellow
-extern int health_green;  // health amount above is blue, below is green
-extern int ammo_red;      // ammo percent less than which status is red
-extern int ammo_yellow;   // ammo percent less is yellow more green
-extern int sts_always_red;// status numbers do not change colors
-extern int sts_pct_always_gray;// status percents do not change colors
-extern int sts_traditional_keys;  // display keys the traditional way
-
 extern int st_palette;    // cph 2006/04/06 - make palette visible
 
 // e6y: makes sense for wide resolutions

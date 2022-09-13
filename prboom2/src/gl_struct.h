@@ -68,23 +68,16 @@ typedef enum
   gl_lightmode_last
 } gl_lightmode_t;
 
-extern int gl_skymode;
 extern int gl_drawskys;
 extern int gl_hardware_gamma;
 extern gl_lightmode_t gl_lightmode;
-extern gl_lightmode_t gl_lightmode_default;
 extern const char *gl_lightmodes[];
-extern int gl_light_ambient;
-extern int useglgamma;
+extern int gl_usegamma;
 int gld_SetGammaRamp(int gamma);
 void gld_CheckHardwareGamma(void);
 void gld_FlushTextures(void);
 void gld_ApplyGammaRamp(byte *buf, int pitch, int width, int height);
 void M_ChangeLightMode(void);
-
-//detail
-extern int gl_detail_maxdist;
-extern int gl_allow_detail_textures;
 
 void gld_InitVertexData();
 void gld_CleanVertexData();
@@ -130,9 +123,6 @@ void gld_EndDrawScene(void);
 void gld_ProcessExtraAlpha(void);
 void gld_Finish();
 
-//stuff
-extern int gl_color_mip_levels;
-
 //blend animation from zdoomgl
 extern int gl_blend_animations;
 
@@ -141,30 +131,6 @@ int gld_wipe_doMelt(int ticks, int *y_lookup);
 int gld_wipe_exitMelt(int ticks);
 int gld_wipe_StartScreen(void);
 int gld_wipe_EndScreen(void);
-
-// hires
-extern int gl_hires_24bit_colormap;
-extern int gl_texture_external_hires;
-extern int gl_texture_internal_hires;
-extern int gl_hires_override_pwads;
-extern const char *gl_texture_hires_dir;
-int gld_PrecacheGUIPatches(void);
-
-//HQ resize
-typedef enum
-{
-  hq_scale_none,
-  hq_scale_2x,
-  hq_scale_3x,
-  hq_scale_4x,
-
-  hq_scale_max
-} gl_hqresizemode_t;
-extern const char *gl_hqresizemodes[];
-extern int gl_texture_hqresize;
-extern int gl_texture_hqresize_textures;
-extern int gl_texture_hqresize_sprites;
-extern int gl_texture_hqresize_patches;
 
 //clipper
 dboolean gld_clipper_SafeCheckRange(angle_t startAngle, angle_t endAngle);
@@ -183,7 +149,6 @@ sector_t* GetBestBleedSector(sector_t* source, int ceiling);
 //shadows
 typedef struct shadow_params_s
 {
-  int enable;
   int loaded;
 
   GLuint tex_id;
@@ -206,13 +171,7 @@ void gld_DrawMapLines(void);
 typedef enum { spriteclip_const, spriteclip_always, spriteclip_smart } spriteclipmode_t;
 extern spriteclipmode_t gl_spriteclip;
 extern const char *gl_spriteclipmodes[];
-extern int gl_spriteclip_threshold;
-extern float gl_spriteclip_threshold_f;
-extern int gl_sprites_frustum_culling;
-extern int gl_sprite_offset_default;
-extern float gl_sprite_offset;
 extern int gl_sprite_blend;
-extern int gl_mask_sprite_threshold;
 
 //skybox
 int R_BoxSkyboxNumForName(const char *name);
@@ -220,11 +179,7 @@ void R_SetBoxSkybox(int texture);
 
 //multisampling
 void gld_MultisamplingInit(void);
-void gld_MultisamplingCheck(void);
 void gld_MultisamplingSet(void);
-
-//display lists
-extern int gl_use_display_lists;
 
 void gld_ProcessTexturedMap(void);
 void gld_ResetTexturedAutomap(void);
@@ -269,5 +224,9 @@ void gld_AddNiceThing(int type, float x, float y, float radius, float angle,
                      unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 void gld_DrawNiceThings(int fx, int fy, int fw, int fh);
 void gld_ClearNiceThings(void);
+
+extern int gl_render_paperitems;
+extern int gl_fog;
+extern int gl_render_fov;
 
 #endif // _GL_STRUCT_H

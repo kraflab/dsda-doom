@@ -3068,10 +3068,11 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // should be after P_RemoveSlimeTrails, because it changes vertexes
   R_CalcSegsLength();
 
-  // Note: you don't need to clear player queue slots --
-  // a much simpler fix is in g_game.c -- killough 10/98
+  {
+    void A_ResetPlayerCorpseQueue(void);
 
-  bodyqueslot = 0;
+    A_ResetPlayerCorpseQueue();
+  }
 
   po_NumPolyobjs = 0; // hexen
 
@@ -3159,8 +3160,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   dsda_ApplyFadeTable();
 
   // preload graphics
-  if (precache)
-    R_PrecacheLevel();
+  R_PrecacheLevel();
 
   if (V_IsOpenGLMode())
   {

@@ -61,10 +61,6 @@
 #include "dsda/stretch.h"
 #include "g_overflow.h"
 
-// global heads up display controls
-
-int hud_displayed;    //jff 2/23/98 turns heads-up display on/off
-
 //
 // Locally used constants, shortcuts.
 //
@@ -104,7 +100,6 @@ static hu_stext_t     w_message;
 static hu_textline_t  w_coordx; //jff 2/16/98 new coord widget for automap
 static hu_textline_t  w_coordy; //jff 3/3/98 split coord widgets automap
 static hu_textline_t  w_coordz; //jff 3/3/98 split coord widgets automap
-static hu_mtext_t     w_rtext;  //jff 2/26/98 text message refresh widget
 
 static hu_textline_t  w_map_monsters;  //e6y monsters widget for automap
 static hu_textline_t  w_map_secrets;   //e6y secrets widgets automap
@@ -121,17 +116,13 @@ static int         message_counter;
 static int         yellow_message;
 
 //jff 2/16/98 hud supported automap colors added
-int hudcolor_titl;  // color range of automap level title
-int hudcolor_xyco;  // color range of new coords on automap
-int hudcolor_mapstat_title;
-int hudcolor_mapstat_value;
-int hudcolor_mapstat_time;
-//jff 2/16/98 hud text colors, controls added
-int hudcolor_mesg;  // color range of scrolling messages
-int hud_msg_lines;  // number of message lines in window
-//jff 2/26/98 hud text colors, controls added
-int hudcolor_list;  // list of messages color
-int hud_list_bgon;  // enable for solid window background for message list
+const int hudcolor_titl = CR_GOLD;  // color range of automap level title
+const int hudcolor_xyco = CR_GREEN;  // color range of new coords on automap
+const int hudcolor_mapstat_title = CR_DEFAULT;
+const int hudcolor_mapstat_value = CR_GRAY;
+const int hudcolor_mapstat_time = CR_GRAY;
+const int hudcolor_mesg = CR_DEFAULT;  // color range of scrolling messages
+const int hudcolor_list = CR_GOLD;  // list of messages color
 
 //jff 2/16/98 initialization strings for ammo, health, armor widgets
 static char hud_coordstrx[32];
@@ -145,8 +136,21 @@ static char hud_keysstr[80];
 static char hud_gkeysstr[80]; //jff 3/7/98 add support for graphic key display
 static char hud_monsecstr[80];
 
-extern int map_point_coordinates;
-extern int map_level_stat;
+typedef struct custom_message_s
+{
+  int ticks;
+  int cm;
+  int sfx;
+  const char *msg;
+} custom_message_t;
+
+typedef struct message_thinker_s
+{
+  thinker_t thinker;
+  int plr;
+  int delay;
+  custom_message_t msg;
+} message_thinker_t;
 
 static custom_message_t custom_message[MAX_MAXPLAYERS];
 static custom_message_t *custom_message_p;
@@ -249,6 +253,22 @@ void HU_Init(void)
   }
 }
 
+//jff 2/16/98 status color change levels
+int hud_ammo_red;      // ammo percent less than which status is red
+int hud_ammo_yellow;   // ammo percent less is yellow more green
+int hud_health_red;    // health amount less than which status is red
+int hud_health_yellow; // health amount less than which status is yellow
+int hud_health_green;  // health amount above is blue, below is green
+
+void HU_InitThresholds(void)
+{
+  hud_health_red = dsda_IntConfig(dsda_config_hud_health_red);
+  hud_health_yellow = dsda_IntConfig(dsda_config_hud_health_yellow);
+  hud_health_green = dsda_IntConfig(dsda_config_hud_health_green);
+  hud_ammo_red = dsda_IntConfig(dsda_config_hud_ammo_red);
+  hud_ammo_yellow = dsda_IntConfig(dsda_config_hud_ammo_yellow);
+}
+
 //
 // HU_Start(void)
 //
@@ -264,6 +284,8 @@ void HU_Start(void)
 {
   int   i;
   const char* s; /* cph - const */
+
+  HU_InitThresholds();
 
   plr = &players[displayplayer];        // killough 3/7/98
   custom_message_p = &custom_message[displayplayer];
@@ -298,29 +320,6 @@ void HU_Start(void)
     HU_FONTSTART,
     hudcolor_titl,
     VPT_ALIGN_LEFT_BOTTOM
-  );
-
-  // create the hud text refresh widget
-  // scrolling display of last hud_msg_lines messages received
-  if (hud_msg_lines>HU_MAXMESSAGES)
-    hud_msg_lines=HU_MAXMESSAGES;
-  //jff 4/21/98 if setup has disabled message list while active, turn it off
-  message_list = hud_msg_lines > 1; //jff 8/8/98 initialize both ways
-  //jff 2/26/98 add the text refresh widget initialization
-  HUlib_initMText
-  (
-    &w_rtext,
-    0,
-    0,
-    320,
-//    SCREENWIDTH,
-    (hud_msg_lines+2)*HU_REFRESHSPACING,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_list,
-    hu_msgbg,
-    VPT_ALIGN_LEFT_TOP,
-    &message_list
   );
 
   dsda_HUTitle(&s);
@@ -455,11 +454,11 @@ int HU_GetHealthColor(int health, int def)
 {
   int result;
 
-  if (health < health_red)
+  if (health < hud_health_red)
     result = CR_RED;
-  else if (health < health_yellow)
+  else if (health < hud_health_yellow)
     result = CR_GOLD;
-  else if (health <= health_green)
+  else if (health <= hud_health_green)
     result = CR_GREEN;
   else
     result = def;
@@ -467,14 +466,33 @@ int HU_GetHealthColor(int health, int def)
   return result;
 }
 
-const char *crosshair_nam[HU_CROSSHAIRS] =
+typedef struct crosshair_s
+{
+  int lump;
+  int w, h, flags;
+  int target_x, target_y, target_z, target_sprite;
+  float target_screen_x, target_screen_y;
+} crosshair_t;
+
+static crosshair_t crosshair;
+
+static const char *crosshair_nam[HU_CROSSHAIRS] =
   { NULL, "CROSS1", "CROSS2", "CROSS3", "CROSS4", "CROSS5", "CROSS6", "CROSS7" };
-const char *crosshair_str[HU_CROSSHAIRS] =
-  { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big" };
-crosshair_t crosshair;
+
+static int hudadd_crosshair;
+static int hudadd_crosshair_scale;
+static int hudadd_crosshair_health;
+static int hudadd_crosshair_target;
+static int hudadd_crosshair_lock_target;
 
 void HU_init_crosshair(void)
 {
+  hudadd_crosshair_scale = dsda_IntConfig(dsda_config_hudadd_crosshair_scale);
+  hudadd_crosshair_health = dsda_IntConfig(dsda_config_hudadd_crosshair_health);
+  hudadd_crosshair_target = dsda_IntConfig(dsda_config_hudadd_crosshair_target);
+  hudadd_crosshair_lock_target = dsda_IntConfig(dsda_config_hudadd_crosshair_lock_target);
+  hudadd_crosshair = dsda_IntConfig(dsda_config_hudadd_crosshair);
+
   if (!hudadd_crosshair || !crosshair_nam[hudadd_crosshair])
     return;
 
@@ -490,12 +508,17 @@ void HU_init_crosshair(void)
     crosshair.flags |= VPT_STRETCH;
 }
 
+dboolean HU_CrosshairEnabled(void)
+{
+  return hudadd_crosshair > 0;
+}
+
 void SetCrosshairTarget(void)
 {
   crosshair.target_screen_x = 0.0f;
   crosshair.target_screen_y = 0.0f;
 
-  if (dsda_CrosshairLockTarget() && crosshair.target_sprite >= 0)
+  if (hudadd_crosshair_lock_target && crosshair.target_sprite >= 0)
   {
     float x, y, z;
     float winx, winy, winz;
@@ -546,7 +569,7 @@ void HU_draw_crosshair(void)
   if (
     !crosshair_nam[hudadd_crosshair] ||
     crosshair.lump == -1 ||
-    automapmode & am_active ||
+    automap_active ||
     menuactive ||
     dsda_Paused()
   )
@@ -557,9 +580,9 @@ void HU_draw_crosshair(void)
   if (hudadd_crosshair_health)
     cm = HU_GetHealthColor(plr->health, CR_BLUE2);
   else
-    cm = hudadd_crosshair_color;
+    cm = dsda_IntConfig(dsda_config_hudadd_crosshair_color);
 
-  if (dsda_CrosshairTarget() || dsda_CrosshairLockTarget())
+  if (hudadd_crosshair_target || hudadd_crosshair_lock_target)
   {
     fixed_t slope;
     angle_t an = plr->mo->angle;
@@ -584,8 +607,8 @@ void HU_draw_crosshair(void)
       crosshair.target_z += linetarget->height / 2 + linetarget->height / 8;
       crosshair.target_sprite = linetarget->sprite;
 
-      if (dsda_CrosshairTarget())
-        cm = hudadd_crosshair_target_color;
+      if (hudadd_crosshair_target)
+        cm = dsda_IntConfig(dsda_config_hudadd_crosshair_target_color);
     }
   }
 
@@ -640,10 +663,10 @@ void HU_Drawer(void)
 
   plr = &players[displayplayer];         // killough 3/7/98
   // draw the automap widgets if automap is displayed
-  if (automapmode & am_active)
+  if (automap_active)
   {
     // Hide title if automap in overlay mode and adv / ex hud is active
-    if (!(automapmode & am_overlay) || (R_PartialView() && !dsda_ExHud()))
+    if (!automap_overlay || (R_PartialView() && !dsda_ExHud()))
     {
       // map title
       HUlib_drawTextLine(&w_title, false);
@@ -691,7 +714,7 @@ void HU_Drawer(void)
       }
     }
 
-    if (map_level_stat)
+    if (dsda_IntConfig(dsda_config_map_level_stat))
     {
       static char str[32];
       int time = leveltime / TICRATE;
@@ -751,21 +774,11 @@ void HU_Drawer(void)
   if (hudadd_crosshair)
     HU_draw_crosshair();
 
-  //jff 4/21/98 if setup has disabled message list while active, turn it off
-  if (hud_msg_lines<=1)
-    message_list = false;
-
-  // if the message review not enabled, show the standard message widget
-  if (!message_list)
-    HUlib_drawSText(&w_message);
+  HUlib_drawSText(&w_message);
 
   //e6y
   if (custom_message_p->ticks > 0)
     HUlib_drawTextLine(&w_centermsg, false);
-
-  // if the message review is enabled show the scrolling message review
-  if (hud_msg_lines>1 && message_list)
-    HUlib_drawMText(&w_rtext);
 
   dsda_DrawHud();
 }
@@ -779,11 +792,8 @@ void HU_Drawer(void)
 //
 void HU_Erase(void)
 {
-  // erase the message display or the message review display
-  if (!message_list)
-    HUlib_eraseSText(&w_message);
-  else
-    HUlib_eraseMText(&w_rtext);
+  // erase the message display
+  HUlib_eraseSText(&w_message);
 
   //e6y
   if (custom_message_p->ticks > 0)
@@ -825,8 +835,6 @@ void HU_Ticker(void)
     {
       //post the message to the message widget
       HUlib_addMessageToSText(&w_message, 0, plr->message);
-      //jff 2/26/98 add message to refresh text widget too
-      HUlib_addMessageToMText(&w_rtext, 0, plr->message);
 
       // clear the message to avoid posting multiple times
       plr->message = 0;
@@ -882,17 +890,8 @@ dboolean HU_Responder(event_t *ev)
 {
   if (dsda_InputActivated(dsda_input_repeat_message)) // phares
   {
-    if (hud_msg_lines>1)  // it posts multi-line messages that will trash
-    {
-      if (message_list) HU_Erase(); //jff 4/28/98 erase behind messages
-      message_list = !message_list; //jff 2/26/98 toggle list of messages
-    }
-
-    if (!message_list)              // if not message list, refresh message
-    {
-      message_on = true;
-      message_counter = HU_MSGTIMEOUT;
-    }
+    message_on = true;
+    message_counter = HU_MSGTIMEOUT;
 
     return true;
   }

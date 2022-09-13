@@ -19,11 +19,11 @@
 #define __DSDA_CONSOLE__
 
 #include "doomtype.h"
+#include "m_menu.h"
 
 #define CONSOLE_SCRIPT_COUNT 10
 
 extern menu_t dsda_ConsoleDef;
-extern const char* dsda_console_script[CONSOLE_SCRIPT_COUNT];
 
 dboolean dsda_OpenConsole(void);
 void dsda_UpdateConsoleText(char* text);

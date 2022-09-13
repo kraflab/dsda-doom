@@ -54,6 +54,7 @@
 #include "heretic/sb_bar.h"
 
 #include "dsda.h"
+#include "dsda/configuration.h"
 #include "dsda/excmd.h"
 #include "dsda/exhud.h"
 #include "dsda/features.h"
@@ -598,7 +599,7 @@ static void cheat_ddt()
 {
   extern int dsda_reveal_map;
 
-  if (automapmode & am_active)
+  if (automap_active)
   {
     dsda_TrackFeature(UF_IDDT);
 
@@ -610,7 +611,7 @@ static void cheat_reveal_secret()
 {
   static int last_secret = -1;
 
-  if (automapmode & am_active)
+  if (automap_active)
   {
     int i, start_i;
 
@@ -627,7 +628,7 @@ static void cheat_reveal_secret()
 
       if (P_IsSecret(sec))
       {
-        automapmode &= ~am_follow;
+        dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
 
         // This is probably not necessary
         if (sec->lines && sec->lines[0] && sec->lines[0]->v1)
@@ -670,7 +671,7 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
     {
       mobj_t *mobj;
 
-      automapmode &= ~am_follow;
+      dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
 
       mobj = (mobj_t *) th;
 
@@ -686,7 +687,7 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
 
 static void cheat_reveal_kill()
 {
-  if (automapmode & am_active)
+  if (automap_active)
   {
     static int last_count;
     static mobj_t *last_mobj;
@@ -699,7 +700,7 @@ static void cheat_reveal_kill()
 
 static void cheat_reveal_item()
 {
-  if (automapmode & am_active)
+  if (automap_active)
   {
     static int last_count;
     static mobj_t *last_mobj;
@@ -713,8 +714,8 @@ static void cheat_reveal_item()
 // killough 2/7/98: HOM autodetection
 static void cheat_hom()
 {
-  plyr->message = (flashing_hom = !flashing_hom) ? "HOM Detection On" :
-    "HOM Detection Off";
+  plyr->message = dsda_ToggleConfig(dsda_config_flashing_hom, true) ? "HOM Detection On"
+                                                                    : "HOM Detection Off";
 }
 
 // killough 3/6/98: -fast parameter toggle
@@ -811,8 +812,8 @@ static void cheat_smart()
 
 static void cheat_pitch()
 {
-  plyr->message=(pitched_sounds = !pitched_sounds) ? "Pitch Effects Enabled" :
-    "Pitch Effects Disabled";
+  plyr->message = dsda_ToggleConfig(dsda_config_pitched_sounds, true) ? "Pitch Effects Enabled"
+                                                                      : "Pitch Effects Disabled";
 }
 
 static void cheat_notarget()

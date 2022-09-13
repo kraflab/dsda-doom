@@ -88,6 +88,7 @@
 #include "e6y.h"
 
 #include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/global.h"
 #include "dsda/save.h"
@@ -234,18 +235,17 @@ static void D_Wipe(void)
   int old_realtic_clock_rate = 0;
 
   //e6y
-  if (!render_wipescreen || dsda_SkipWipe())
+  if (!dsda_RenderWipeScreen() || dsda_SkipWipe())
   {
     // If there's no screen wipe, we still need to refresh the status bar
     SB_Start();
     return;
   }
 
-  if (realtic_clock_rate != 100 && dsda_WipeAtFullSpeed())
+  if (dsda_RealticClockRate() != 100 && dsda_WipeAtFullSpeed())
   {
-    old_realtic_clock_rate = realtic_clock_rate;
-    realtic_clock_rate = 100;
-    I_Init2();
+    old_realtic_clock_rate = dsda_RealticClockRate();
+    dsda_UpdateRealticClockRate(100);
   }
 
   wipestart = dsda_GetTick() - 1;
@@ -289,8 +289,7 @@ static void D_Wipe(void)
 
   if (old_realtic_clock_rate)
   {
-    realtic_clock_rate = old_realtic_clock_rate;
-    I_Init2();
+    dsda_UpdateRealticClockRate(old_realtic_clock_rate);
   }
 
   force_singletics_to = gametic + BACKUPTICS;
@@ -378,8 +377,8 @@ void D_Display (fixed_t frac)
     HU_Erase();
 
     // Work out if the player view is visible, and if there is a border
-    viewactive = (!(automapmode & am_active) || (automapmode & am_overlay)) && !inhelpscreens;
-    isborder = viewactive ? R_PartialView() : (!inhelpscreens && (automapmode & am_active));
+    viewactive = automap_off && !inhelpscreens;
+    isborder = viewactive ? R_PartialView() : (!inhelpscreens && automap_active);
 
     if (oldgamestate != GS_LEVEL) {
       R_FillBackScreen ();    // draw the pattern into the back screen
@@ -395,8 +394,7 @@ void D_Display (fixed_t frac)
       // e6y
       // I should do it because I call R_RenderPlayerView in all cases,
       // not only if viewactive is true
-      borderwillneedredraw = (borderwillneedredraw) ||
-        (((automapmode & am_active) && !(automapmode & am_overlay)));
+      borderwillneedredraw = borderwillneedredraw || automap_on;
     }
 
     if (redrawborderstuff || V_IsOpenGLMode()) {
@@ -423,9 +421,7 @@ void D_Display (fixed_t frac)
     R_InterpolateView(&players[displayplayer], frac);
 
     // Now do the drawing
-    if (viewactive || map_always_updates) {
-      R_RenderPlayerView (&players[displayplayer]);
-    }
+    R_RenderPlayerView (&players[displayplayer]);
 
     dsda_UpdateRenderStats();
 
@@ -434,7 +430,7 @@ void D_Display (fixed_t frac)
     use_boom_cm=false;
     frame_fixedcolormap = 0;
 
-    if (automapmode & am_active)
+    if (automap_active)
     {
       AM_Drawer();
     }
@@ -442,7 +438,7 @@ void D_Display (fixed_t frac)
     R_RestoreInterpolations();
 
     ST_Drawer(
-        (R_PartialView() || ((automapmode & am_active) && !(automapmode & am_overlay))),
+        (R_PartialView() || automap_on),
         redrawborderstuff || BorderNeedRefresh,
         (menuactive == mnact_full));
 
@@ -521,8 +517,8 @@ void D_Display (fixed_t frac)
 
 static void D_DoomLoop(void)
 {
-  if (quickstart_window_ms > 0)
-    I_uSleep(quickstart_window_ms * 1000);
+  if (dsda_IntConfig(dsda_config_startup_delay_ms) > 0)
+    I_uSleep(dsda_IntConfig(dsda_config_startup_delay_ms) * 1000);
 
   for (;;)
   {
@@ -773,6 +769,7 @@ void D_DoAdvanceDemo(void)
 void D_StartTitle (void)
 {
   gameaction = ga_nothing;
+  in_game = false;
   demosequence = -1;
   D_AdvanceDemo();
 }
@@ -1653,10 +1650,6 @@ static void D_DoomMainSetup(void)
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)
       file = I_FindFile(file_name, ".wad");
-      if (!file && D_TryGetWad(file_name))
-      {
-        file = I_FindFile(file_name, ".wad");
-      }
       if (file)
       {
         D_AddFile(file,source_pwad);

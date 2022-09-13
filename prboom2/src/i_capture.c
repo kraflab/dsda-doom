@@ -39,10 +39,10 @@
 #include "i_system.h"
 #include "i_capture.h"
 
+#include "dsda/configuration.h"
 
 int capturing_video = 0;
 static const char *vid_fname;
-
 
 typedef struct
 { // information on a running pipe
@@ -61,13 +61,6 @@ static pipeinfo_t soundpipe;
 static pipeinfo_t videopipe;
 static pipeinfo_t muxpipe;
 
-
-const char *cap_soundcommand;
-const char *cap_videocommand;
-const char *cap_muxcommand;
-const char *cap_tempfile1;
-const char *cap_tempfile2;
-int cap_remove_tempfiles;
 int cap_fps;
 int cap_frac;
 int cap_wipescreen;
@@ -498,6 +491,16 @@ static int threadstderrproc (void *data)
 // fn is filename passed from command line, typically final output file
 void I_CapturePrep (const char *fn)
 {
+  const char* cap_soundcommand;
+  const char* cap_videocommand;
+  const char* cap_muxcommand;
+
+  cap_soundcommand = dsda_StringConfig(dsda_config_cap_soundcommand);
+  cap_videocommand = dsda_StringConfig(dsda_config_cap_videocommand);
+  cap_muxcommand = dsda_StringConfig(dsda_config_cap_muxcommand);
+  cap_wipescreen = dsda_IntConfig(dsda_config_cap_wipescreen);
+  cap_fps = dsda_IntConfig(dsda_config_cap_fps);
+
   vid_fname = fn;
 
   if (!parsecommand (soundpipe.command, cap_soundcommand, sizeof(soundpipe.command)))
@@ -635,8 +638,14 @@ void I_CaptureFinish (void)
 
 
   // unlink any files user wants gone
-  if (cap_remove_tempfiles)
+  if (dsda_IntConfig(dsda_config_cap_remove_tempfiles))
   {
+    const char* cap_tempfile1;
+    const char* cap_tempfile2;
+
+    cap_tempfile1 = dsda_StringConfig(dsda_config_cap_tempfile1);
+    cap_tempfile2 = dsda_StringConfig(dsda_config_cap_tempfile2);
+
     remove (cap_tempfile1);
     remove (cap_tempfile2);
   }

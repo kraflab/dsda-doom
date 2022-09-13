@@ -62,18 +62,15 @@ static auto_kf_t* last_auto_kf;
 static int auto_kf_size;
 static int restore_key_frame_index = -1;
 
-int dsda_auto_key_frame_depth;
-int dsda_auto_key_frame_interval;
-int dsda_auto_key_frame_timeout;
+static int dsda_auto_key_frame_interval;
+static int dsda_auto_key_frame_depth;
+static int dsda_auto_key_frame_timeout;
 
 static int autoKeyFrameTimeout(void) {
   return dsda_StartInBuildMode() ? 0 : dsda_auto_key_frame_timeout;
 }
 
 static int autoKeyFrameDepth(void) {
-  if (dsda_StrictMode())
-    return 0;
-
   if (dsda_StartInBuildMode() && dsda_auto_key_frame_depth < 60)
     return 60;
 
@@ -168,6 +165,10 @@ void dsda_CopyKeyFrame(dsda_key_frame_t* dest, dsda_key_frame_t* source) {
 
 void dsda_InitKeyFrame(void) {
   int i;
+
+  dsda_auto_key_frame_interval = dsda_IntConfig(dsda_config_auto_key_frame_interval);
+  dsda_auto_key_frame_depth = dsda_IntConfig(dsda_config_auto_key_frame_depth);
+  dsda_auto_key_frame_timeout = dsda_IntConfig(dsda_config_auto_key_frame_timeout);
 
   auto_kf_size = autoKeyFrameDepth();
 

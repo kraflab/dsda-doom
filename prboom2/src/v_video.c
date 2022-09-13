@@ -56,6 +56,7 @@
 #include "st_stuff.h"
 #include "e6y.h"
 
+#include "dsda/configuration.h"
 #include "dsda/global.h"
 #include "dsda/palette.h"
 #include "dsda/stretch.h"
@@ -69,7 +70,6 @@ unsigned int ratio_multiplier, ratio_scale;
 float gl_ratio;
 int psprite_offset; // Needed for "tallscreen" modes
 
-const char *render_aspects_list[5] = {"auto", "16:9", "16:10", "4:3", "5:4"};
 
 // Each screen is [SCREENWIDTH*SCREENHEIGHT];
 screeninfo_t screens[NUM_SCREENS];
@@ -640,10 +640,10 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     drawvars.pitch = screens[scrn].pitch;
 
     if (flags & VPT_TRANS) {
-      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, drawvars.filterpatch, RDRAW_FILTER_NONE);
+      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, RDRAW_FILTER_NONE);
       dcvars.translation = trans;
     } else {
-      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, drawvars.filterpatch, RDRAW_FILTER_NONE);
+      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, RDRAW_FILTER_NONE);
     }
 
     DXI = params->video->xstep;
@@ -670,18 +670,8 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     dcvars.texheight = patch->height;
     dcvars.iscale = DYI;
     dcvars.drawingmasked = MAX(patch->width, patch->height) > 8;
-    dcvars.edgetype = drawvars.patch_edges;
 
-    if (drawvars.filterpatch == RDRAW_FILTER_LINEAR) {
-      // bias the texture u coordinate
-      if (patch->flags&PATCH_ISNOTTILEABLE)
-        col = -(FRACUNIT>>1);
-      else
-        col = (patch->width<<FRACBITS)-(FRACUNIT>>1);
-    }
-    else {
-      col = 0;
-    }
+    col = 0;
 
     for (dcvars.x=left; dcvars.x<=right; dcvars.x++, col+=DXI) {
       int i;
@@ -899,7 +889,6 @@ static void NULL_PlotPixelWu(int scrn, int x, int y, byte color, int weight) {}
 static void NULL_DrawLine(fline_t* fl, int color) {}
 static void NULL_DrawLineWu(fline_t* fl, int color) {}
 
-const char *default_videomode;
 static video_mode_t current_videomode = VID_MODESW;
 
 V_CopyRect_f V_CopyRect = NULL_CopyRect;
@@ -1359,29 +1348,31 @@ void SetRatio(int width, int height)
   {
     unsigned int new_multiplier = ratio_multiplier;
     unsigned int new_scale = ratio_scale;
+    int render_aspect = dsda_IntConfig(dsda_config_render_aspect);
+
     // Hardcoded to match render_aspects_list
     switch (render_aspect)
     {
-    case 0:
-      break;
-    case 1:
-      new_multiplier = 16;
-      new_scale = 9;
-      break;
-    case 2:
-      new_multiplier = 16;
-      new_scale = 10;
-      break;
-    case 3:
-      new_multiplier = 4;
-      new_scale = 3;
-      break;
-    case 4:
-      new_multiplier = 5;
-      new_scale = 4;
-      break;
-    default:
-      lprintf(LO_ERROR, "SetRatio: render_aspect has invalid value %d\n", render_aspect);
+      case 0:
+        break;
+      case 1:
+        new_multiplier = 16;
+        new_scale = 9;
+        break;
+      case 2:
+        new_multiplier = 16;
+        new_scale = 10;
+        break;
+      case 3:
+        new_multiplier = 4;
+        new_scale = 3;
+        break;
+      case 4:
+        new_multiplier = 5;
+        new_scale = 4;
+        break;
+      default:
+        lprintf(LO_ERROR, "SetRatio: render_aspect has invalid value %d\n", render_aspect);
     }
 
     if (ratio_multiplier != new_multiplier || ratio_scale != new_scale)
@@ -1502,22 +1493,7 @@ int V_BestColor(const unsigned char *palette, int r, int g, int b)
 // Alt-Enter: fullscreen <-> windowed
 void V_ToggleFullscreen(void)
 {
-  if (desired_fullscreen == use_fullscreen)
-  {
-    use_fullscreen = (use_fullscreen ? 0 : 1);
-    desired_fullscreen = use_fullscreen;
-  }
-  else
-  {
-    desired_fullscreen = (desired_fullscreen ? 0 : 1);
-  }
-
-  I_UpdateVideoMode();
-
-  if (V_IsOpenGLMode())
-  {
-    gld_PreprocessLevel();
-  }
+  dsda_UpdateIntConfig(dsda_config_use_fullscreen, !desired_fullscreen, true);
 }
 
 void V_ChangeScreenResolution(void)

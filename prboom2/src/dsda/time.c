@@ -20,6 +20,8 @@
 
 #include "i_system.h"
 
+#include "dsda/configuration.h"
+
 #include "time.h"
 
 // clock_gettime implementation for msvc
@@ -88,15 +90,17 @@ static void dsda_Throttle(int timer, unsigned long long target_time) {
   }
 }
 
-int dsda_fps_limit;
-
 void dsda_LimitFPS(void) {
   extern int movement_smooth;
 
-  if (movement_smooth && dsda_fps_limit) {
+  int fps_limit;
+
+  fps_limit = dsda_IntConfig(dsda_config_fps_limit);
+
+  if (movement_smooth && fps_limit) {
     unsigned long long target_time;
 
-    target_time = 1000000 / dsda_fps_limit;
+    target_time = 1000000 / fps_limit;
 
     dsda_Throttle(dsda_timer_fps, target_time);
   }

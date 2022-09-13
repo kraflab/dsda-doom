@@ -61,6 +61,7 @@
 #include "e6y.h"//e6y
 #include "xs_Float.h"
 
+#include "dsda/configuration.h"
 #include "dsda/exhud.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
@@ -75,7 +76,6 @@
 int LIGHTLEVELS   = 32;
 int LIGHTSEGSHIFT = 3;
 int LIGHTBRIGHT   = 2;
-int render_doom_lightmaps;
 
 int r_frame_count;
 
@@ -394,12 +394,14 @@ static void R_InitTextureMapping (void)
 static void R_InitLightTables (void)
 {
   int i;
+  int render_doom_lightmaps;
 
   // killough 4/4/98: dynamic colormaps
   c_zlight = Z_Malloc(sizeof(*c_zlight) * numcolormaps);
   c_scalelight = Z_Malloc(sizeof(*c_scalelight) * numcolormaps);
 
   // hexen_note: does hexen require render_doom_lightmaps?
+  render_doom_lightmaps = dsda_IntConfig(dsda_config_render_doom_lightmaps);
 
   LIGHTLEVELS   = (render_doom_lightmaps ? 16 : 32);
   LIGHTSEGSHIFT = (render_doom_lightmaps ? 4 : 3);
@@ -442,12 +444,17 @@ static void R_InitLightTables (void)
 //
 
 dboolean setsizeneeded;
-int     setblocks;
+static int setblocks;
 
-void R_SetViewSize(int blocks)
+int R_ViewSize(void)
+{
+  return setblocks;
+}
+
+void R_SetViewSize(void)
 {
   setsizeneeded = true;
-  setblocks = blocks;
+  setblocks = dsda_IntConfig(dsda_config_screenblocks);
 }
 
 void R_MultMatrixVecd(const float matrix[16], const float in[4], float out[4])
@@ -502,8 +509,10 @@ int R_Project(float objx, float objy, float objz, float *winx, float *winy, floa
 
 void R_SetupViewport(void)
 {
-  extern int screenblocks;
+  int screenblocks;
   int height;
+
+  screenblocks = R_ViewSize();
 
   if (screenblocks == 11)
     height = SCREENHEIGHT;
@@ -731,8 +740,6 @@ void R_ExecuteSetViewSize (void)
 // R_Init
 //
 
-extern int screenblocks;
-
 void R_Init (void)
 {
   // CPhipps - R_DrawColumn isn't constant anymore, so must
@@ -742,7 +749,7 @@ void R_Init (void)
   R_LoadTrigTables();
   lprintf(LO_INFO, "\nR_InitData: ");
   R_InitData();
-  R_SetViewSize(screenblocks);
+  R_SetViewSize();
   lprintf(LO_INFO, "\nR_Init: R_InitPlanes ");
   R_InitPlanes();
   lprintf(LO_INFO, "R_InitLightTables ");
@@ -816,14 +823,8 @@ void R_SetupMatrix(void)
 
   R_SetupViewport();
 
-  if (V_IsOpenGLMode())
-  {
-    extern int gl_nearclip;
-    r_nearclip = gl_nearclip;
-  }
-
-  fovy = render_fovy;
-  aspect = render_ratio;
+  fovy = gl_render_fovy;
+  aspect = gl_render_ratio;
   znear = (float)r_nearclip / 100.0f;
 
   R_SetupPerspective(fovy, aspect, znear);
@@ -836,6 +837,8 @@ void R_SetupMatrix(void)
 
 static void R_SetupFrame (player_t *player)
 {
+  dboolean HU_CrosshairEnabled(void);
+
   int i, cm;
 
   int FocalTangent = finetangent[FINEANGLES/4 + FieldOfView/2];
@@ -898,7 +901,7 @@ static void R_SetupFrame (player_t *player)
 
   R_SetClipPlanes();
 
-  if (V_IsOpenGLMode() || hudadd_crosshair)
+  if (V_IsOpenGLMode() || HU_CrosshairEnabled())
     R_SetupMatrix();
 
   validcount++;
@@ -913,7 +916,7 @@ void R_RenderPlayerView (player_t* player)
   // Framerate-independent fuzz progression
   static int fuzzgametic = 0;
   static int savedfuzzpos = 0;
-  dboolean automap = (automapmode & am_active) && !(automapmode & am_overlay);
+  dboolean automap = automap_on;
 
   r_frame_count++;
 
@@ -936,7 +939,7 @@ void R_RenderPlayerView (player_t* player)
       gld_StartDrawScene();
     }
   } else {
-    if (flashing_hom)
+    if (dsda_IntConfig(dsda_config_flashing_hom))
     { // killough 2/10/98: add flashing red HOM indicators
       unsigned char color=(gametic % 20) < 9 ? 0xb0 : 0;
       V_FillRect(0, viewwindowx, viewwindowy, viewwidth, viewheight, color);

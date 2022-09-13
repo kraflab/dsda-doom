@@ -98,38 +98,8 @@ int demo_playerscount;
 int demo_tics_count;
 char demo_len_st[80];
 
-int speed_step;
-
-int hudadd_secretarea;
-int hudadd_demoprogressbar;
-int hudadd_crosshair;
-int hudadd_crosshair_scale;
-int hudadd_crosshair_color;
-int hudadd_crosshair_health;
-int hudadd_crosshair_target;
-int hudadd_crosshair_target_color;
-int hudadd_crosshair_lock_target;
-int movement_strafe50;
-int movement_shorttics;
-int movement_strafe50onturns;
-int movement_mouseinvert;
-int movement_maxviewpitch;
-int movement_mousestrafedivisor;
 int mouse_handler;
-int mouse_doubleclick_as_use;
-int mouse_carrytics;
-int render_fov = 90;
-int render_multisampling;
-int render_paperitems;
-int render_wipescreen;
-int mouse_acceleration;
-int quickstart_window_ms;
-
-int palette_ondamage;
-int palette_onbonus;
-int palette_onpowers;
-
-float mouse_accelfactor;
+int gl_render_fov = 90;
 
 camera_t walkcamera;
 
@@ -139,7 +109,6 @@ hu_textline_t  w_precache;
 char hud_add[80];
 char hud_centermsg[80];
 
-int mouseSensitivity_mlook;
 angle_t viewpitch;
 float skyscale;
 float screen_skybox_zplane;
@@ -242,6 +211,11 @@ prboom_comp_t prboom_comp[PC_MAX] = {
   {0x00000000, 0x02050104, 0, dsda_arg_reset_monsterspawner_params_after_loading},
 };
 
+void M_ChangeShorttics(void)
+{
+  shorttics = dsda_IntConfig(dsda_config_movement_shorttics) || dsda_Flag(dsda_arg_shorttics);
+}
+
 void e6y_InitCommandLine(void)
 {
   stats_level = dsda_Flag(dsda_arg_levelstat);
@@ -251,7 +225,7 @@ void e6y_InitCommandLine(void)
 
   dsda_ReadCommandLine();
 
-  shorttics = movement_shorttics || dsda_Flag(dsda_arg_shorttics);
+  M_ChangeShorttics();
 }
 
 int G_ReloadLevel(void)
@@ -304,18 +278,18 @@ void M_ChangeSpeed(void)
 
 void M_ChangeMouseLook(void)
 {
+  int gl_skymode;
+
   viewpitch = 0;
 
   R_InitSkyMap();
+
+  gl_skymode = dsda_IntConfig(dsda_config_gl_skymode);
 
   if (gl_skymode == skytype_auto)
     gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);
   else
     gl_drawskys = gl_skymode;
-}
-
-void M_ChangeMouseInvert(void)
-{
 }
 
 void M_ChangeMaxViewPitch(void)
@@ -324,13 +298,13 @@ void M_ChangeMaxViewPitch(void)
 
   if (V_IsOpenGLMode())
   {
-    max_up = movement_maxviewpitch;
-    max_dn = movement_maxviewpitch;
+    max_up = 90;
+    max_dn = 90;
   }
   else
   {
-    max_up = MIN(movement_maxviewpitch, 56);
-    max_dn = MIN(movement_maxviewpitch, 32);
+    max_up = 56;
+    max_dn = 32;
   }
 
   angle_up = (int)((float)max_up / 45.0f * ANG45);
@@ -363,91 +337,76 @@ void CheckPitch(signed int *pitch)
   (*pitch) <<= 16;
 }
 
-int render_aspect;
-float render_ratio;
-float render_fovratio;
-float render_fovy = FOV90;
-float render_multiplier;
+float gl_render_ratio;
+float gl_render_fovratio;
+float gl_render_fovy = FOV90;
+float gl_render_multiplier;
 
 void M_ChangeAspectRatio(void)
 {
-  extern int screenblocks;
-
   M_ChangeFOV();
 
-  R_SetViewSize(screenblocks);
+  R_SetViewSize();
 }
 
 void M_ChangeStretch(void)
 {
-  extern int screenblocks;
+  render_stretch_hud = dsda_IntConfig(dsda_config_render_stretch_hud);
 
-  render_stretch_hud = render_stretch_hud_default;
-
-  R_SetViewSize(screenblocks);
+  R_SetViewSize();
 }
 
 void M_ChangeFOV(void)
 {
   float f1, f2;
   dsda_arg_t* arg;
-  int render_aspect_width, render_aspect_height;
+  int gl_render_aspect_width, gl_render_aspect_height;
 
   arg = dsda_Arg(dsda_arg_aspect);
   if (
     arg->found &&
-    sscanf(arg->value.v_string, "%dx%d", &render_aspect_width, &render_aspect_height) == 2
+    sscanf(arg->value.v_string, "%dx%d", &gl_render_aspect_width, &gl_render_aspect_height) == 2
   )
   {
     SetRatio(SCREENWIDTH, SCREENHEIGHT);
-    render_fovratio = (float)render_aspect_width / (float)render_aspect_height;
-    render_ratio = RMUL * render_fovratio;
-    render_multiplier = 64.0f / render_fovratio / RMUL;
+    gl_render_fovratio = (float)gl_render_aspect_width / (float)gl_render_aspect_height;
+    gl_render_ratio = RMUL * gl_render_fovratio;
+    gl_render_multiplier = 64.0f / gl_render_fovratio / RMUL;
   }
   else
   {
     SetRatio(SCREENWIDTH, SCREENHEIGHT);
-    render_ratio = gl_ratio;
-    render_multiplier = (float)ratio_multiplier;
+    gl_render_ratio = gl_ratio;
+    gl_render_multiplier = (float)ratio_multiplier;
     if (!tallscreen)
     {
-      render_fovratio = 1.6f;
+      gl_render_fovratio = 1.6f;
     }
     else
     {
-      render_fovratio = render_ratio;
+      gl_render_fovratio = gl_render_ratio;
     }
   }
 
-  render_fovy = (float)(2 * RAD2DEG(atan(tan(DEG2RAD(render_fov) / 2) / render_fovratio)));
+  gl_render_fovy = (float)(2 * RAD2DEG(atan(tan(DEG2RAD(gl_render_fov) / 2) / gl_render_fovratio)));
 
-  screen_skybox_zplane = 320.0f/2.0f/(float)tan(DEG2RAD(render_fov/2));
+  screen_skybox_zplane = 320.0f/2.0f/(float)tan(DEG2RAD(gl_render_fov/2));
 
-  f1 = (float)(320.0f / 200.0f * (float)render_fov / (float)FOV90 - 0.2f);
-  f2 = (float)tan(DEG2RAD(render_fovy)/2.0f);
+  f1 = (float)(320.0f / 200.0f * (float)gl_render_fov / (float)FOV90 - 0.2f);
+  f2 = (float)tan(DEG2RAD(gl_render_fovy)/2.0f);
   if (f1-f2<1)
     skyUpAngle = (float)-RAD2DEG(asin(f1-f2));
   else
     skyUpAngle = -90.0f;
 
-  skyUpShift = (float)tan(DEG2RAD(render_fovy)/2.0f);
+  skyUpShift = (float)tan(DEG2RAD(gl_render_fovy)/2.0f);
 
-  skyscale = 1.0f / (float)tan(DEG2RAD(render_fov / 2));
-}
-
-void M_ChangeMultiSample(void)
-{
-}
-
-void M_ChangeSpriteClip(void)
-{
-  gl_sprite_offset = (gl_spriteclip != spriteclip_const ? 0 : (.01f * (float)gl_sprite_offset_default));
-  gl_spriteclip_threshold_f = (float)gl_spriteclip_threshold / MAP_COEFF;
+  skyscale = 1.0f / (float)tan(DEG2RAD(gl_render_fov / 2));
 }
 
 void ResolveColormapsHiresConflict(dboolean prefer_colormap)
 {
-  gl_boom_colormaps = !r_have_internal_hires && !gl_texture_external_hires;
+  gl_boom_colormaps = !r_have_internal_hires;
 }
 
 void M_ChangeAllowBoomColormaps(void)
@@ -474,31 +433,9 @@ void M_ChangeTextureUseHires(void)
   gld_Precache();
 }
 
-void M_ChangeTextureHQResize(void)
-{
-  gld_FlushTextures();
-}
-
-void M_Mouse(int choice, int *sens);
-void M_MouseMLook(int choice)
-{
-  M_Mouse(choice, &mouseSensitivity_mlook);
-}
-
-void M_MouseAccel(int choice)
-{
-  M_Mouse(choice, &mouse_acceleration);
-  MouseAccelChanging();
-}
-
-void MouseAccelChanging(void)
-{
-  mouse_accelfactor = (float)mouse_acceleration/100.0f+1.0f;
-}
-
 float viewPitch;
 
-int StepwiseSum(int value, int direction, int step, int minval, int maxval, int defval)
+int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
 {
   static int prev_value = 0;
   static int prev_direction = 0;
@@ -511,9 +448,6 @@ int StepwiseSum(int value, int direction, int step, int minval, int maxval, int 
 
   direction = (direction > 0 ? 1 : -1);
 
-  if (step != 0)
-    newvalue = (prev_direction * direction < 0 ? prev_value : value + direction * step);
-  else
   {
     int exp = 1;
     while (exp * 10 <= val)
@@ -729,15 +663,23 @@ void e6y_WriteStats(void)
 
 //--------------------------------------------------
 
+static double mouse_accelfactor;
+
+void MouseAccelChanging(void)
+{
+  int mouse_acceleration = dsda_IntConfig(dsda_config_mouse_acceleration);
+  mouse_accelfactor = (double) mouse_acceleration / 100.0 + 1.0;
+}
+
 int AccelerateMouse(int val)
 {
-  if (!mouse_acceleration)
+  if (!mouse_accelfactor)
     return val;
 
   if (val < 0)
     return -AccelerateMouse(-val);
 
-  return M_DoubleToInt(pow((double)val, (double)mouse_accelfactor));
+  return M_DoubleToInt(pow((double) val, mouse_accelfactor));
 }
 
 int mlooky = 0;
@@ -929,7 +871,9 @@ int HU_DrawDemoProgress(int force)
   int len, tics_count, diff;
   unsigned int tick, max_period;
 
-  if (gamestate == GS_DEMOSCREEN || !demoplayback || !hudadd_demoprogressbar)
+  if (gamestate == GS_DEMOSCREEN ||
+      !demoplayback ||
+      !dsda_IntConfig(dsda_config_hudadd_demoprogressbar))
     return false;
 
   tics_count = demo_tics_count * demo_playerscount;
@@ -991,49 +935,6 @@ int GetFullPath(const char* FileName, const char* ext, char *Buffer, size_t Buff
   }
 
   return false;
-}
-#endif
-
-#ifdef _WIN32
-#include <Mmsystem.h>
-#ifndef __GNUC__
-#pragma comment( lib, "winmm.lib" )
-#endif
-int mus_extend_volume;
-void I_midiOutSetVolumes(int volume)
-{
-  // NSM changed to work on the 0-15 volume scale,
-  // and to check mus_extend_volume itself.
-
-  MMRESULT result;
-  int calcVolume;
-  MIDIOUTCAPS capabilities;
-  unsigned long long i;
-
-  if (volume > 15)
-    volume = 15;
-  if (volume < 0)
-    volume = 0;
-  calcVolume = (65535 * volume / 15);
-
-  //SDL_LockAudio(); // this function doesn't touch anything the audio callback touches
-
-  //Device loop
-  for (i = 0; i < midiOutGetNumDevs(); i++)
-  {
-    //Get device capabilities
-    result = midiOutGetDevCaps(i, &capabilities, sizeof(capabilities));
-    if (result == MMSYSERR_NOERROR)
-    {
-      //Adjust volume on this candidate
-      if ((capabilities.dwSupport & MIDICAPS_VOLUME))
-      {
-        midiOutSetVolume((HMIDIOUT)i, MAKELONG(calcVolume, calcVolume));
-      }
-    }
-  }
-
-  //SDL_UnlockAudio();
 }
 #endif
 

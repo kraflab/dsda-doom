@@ -41,6 +41,7 @@
 #include "r_main.h"
 #include "e6y.h"
 
+#include "dsda/configuration.h"
 #include "dsda/mapinfo.h"
 #include "dsda/settings.h"
 
@@ -51,7 +52,6 @@ int skyflatnum;
 int skytexture;
 int skytexturemid;
 
-int r_stretchsky = 1;
 int skystretch;
 fixed_t freelookviewheight;
 
@@ -61,6 +61,10 @@ fixed_t freelookviewheight;
 //
 void R_InitSkyMap(void)
 {
+  int r_stretchsky;
+
+  r_stretchsky = dsda_IntConfig(dsda_config_render_stretchsky);
+
   if (!dsda_MouseLook())
   {
     skystretch = false;

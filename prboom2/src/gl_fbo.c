@@ -73,7 +73,7 @@ static dboolean gld_CreateScreenSizeFBO(void)
 {
   int status = 0;
   GLenum internalFormat;
-  dboolean attach_stencil = gl_ext_packed_depth_stencil;// && gl_has_hires;
+  dboolean attach_stencil = gl_ext_packed_depth_stencil;
 
   if (!gl_ext_framebuffer_object)
     return false;

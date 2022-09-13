@@ -19,6 +19,7 @@
 #include "d_player.h"
 #include "v_video.h"
 
+#include "dsda/configuration.h"
 #include "dsda/save.h"
 
 #include "death.h"
@@ -34,14 +35,14 @@ typedef enum {
   death_use_reload,
 } death_use_action_t;
 
-int dsda_death_use_action;
+static int dsda_death_use_action;
 
 static int dsda_DeathUseAction(void)
 {
   if (demorecording || demoplayback)
     return death_use_default;
 
-  return dsda_death_use_action;
+  return dsda_IntConfig(dsda_config_death_use_action);
 }
 
 void dsda_DeathUse(player_t* player) {

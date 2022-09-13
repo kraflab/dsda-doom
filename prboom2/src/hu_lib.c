@@ -290,7 +290,7 @@ void HUlib_eraseTextLine(hu_textline_t* l)
   // and the text must either need updating or refreshing
   // (because of a recent change back from the automap)
 
-  if (!(automapmode & am_active) && viewwindowx && l->needsupdate)
+  if (!automap_active && viewwindowx && l->needsupdate)
   {
     int top = l->y;
     int bottom = l->y + l->f[0].height - 1;
@@ -501,7 +501,7 @@ void HUlib_initMText(hu_mtext_t *m, int x, int y, int w, int h,
     (
       &m->l[i],
       x,
-      y + (hud_list_bgon? i+1 : i)*HU_REFRESHSPACING,
+      y + i * HU_REFRESHSPACING,
       font,
       startchar,
       cm,
@@ -521,11 +521,11 @@ void HUlib_initMText(hu_mtext_t *m, int x, int y, int w, int h,
 static void HUlib_addLineToMText(hu_mtext_t* m)
 {
   // add a clear line
-  if (++m->cl == hud_msg_lines)
+  if (++m->cl == 1)
     m->cl = 0;
   HUlib_clearTextLine(&m->l[m->cl]);
 
-  if (m->nl<hud_msg_lines)
+  if (m->nl < 1)
     m->nl++;
 
   // needs updating
@@ -611,9 +611,6 @@ void HUlib_drawMText(hu_mtext_t* m)
   if (!*m->on)
     return; // if not on, don't draw
 
-  // draw everything
-  if (hud_list_bgon)
-    HUlib_drawMBg(m->x,m->y,m->w,m->h,m->bg);
   y = m->y + HU_REFRESHSPACING;
   for (i=0 ; i<m->nl ; i++)
   {
@@ -622,55 +619,11 @@ void HUlib_drawMText(hu_mtext_t* m)
       idx += m->nl; // handle queue of lines
 
     l = &m->l[idx];
-    if (hud_list_bgon)
-    {
-      l->x = m->x + 4;
-      l->y = m->y + (i+1)*HU_REFRESHSPACING;
-    }
-    else
-    {
-      l->x = m->x;
-      l->y = m->y + i*HU_REFRESHSPACING;
-    }
+    l->x = m->x;
+    l->y = m->y + i * HU_REFRESHSPACING;
 
     // need a decision made here on whether to skip the draw
     HUlib_drawTextLine(l, false); // no cursor, please
-  }
-}
-
-//
-// HUlib_eraseMBg()
-//
-// Erases background behind hu_mtext_t widget, when the screen is not fullsize
-//
-// Passed a hu_mtext_t
-// Returns nothing
-//
-static void HUlib_eraseMBg(hu_mtext_t* m)
-{
-  int     lh;
-  int     y;
-
-  // Only erases when NOT in automap and the screen is reduced,
-  // and the text must either need updating or refreshing
-  // (because of a recent change back from the automap)
-
-  if (!(automapmode & am_active) && viewwindowx)
-  {
-    lh = m->l[0].f[0].height + 1;
-    for (y=m->y; y<m->y+lh*(hud_msg_lines+2) ; y++)
-    {
-      if (y < viewwindowy || y >= viewwindowy + viewheight)
-        R_VideoErase(0, y, SCREENWIDTH); // erase entire line
-      else
-      {
-        // erase left border
-        R_VideoErase(0, y, viewwindowx);
-        // erase right border
-        R_VideoErase(viewwindowx + viewwidth, y, viewwindowx);
-
-      }
-    }
   }
 }
 
@@ -685,9 +638,6 @@ static void HUlib_eraseMBg(hu_mtext_t* m)
 void HUlib_eraseMText(hu_mtext_t* m)
 {
   int i;
-
-  if (hud_list_bgon)
-    HUlib_eraseMBg(m);
 
   for (i=0 ; i< m->nl ; i++)
   {

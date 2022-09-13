@@ -23,6 +23,8 @@ set(COMMON_SRC
     dsda/command_display.h
     dsda/compatibility.c
     dsda/compatibility.h
+    dsda/configuration.c
+    dsda/configuration.h
     dsda/console.c
     dsda/console.h
     dsda/coordinate_display.c
@@ -409,7 +411,6 @@ set(EXTRA_FILES
     r_drawcolpipeline.inl
     r_drawcolumn.inl
     r_drawflush.inl
-    r_drawspan.inl
 )
 
 set(PRBOOM_PLUS_SOURCES
@@ -432,7 +433,6 @@ function(AddGameExecutable TARGET SOURCES)
         gl_fbo.c
         gl_gamma.c
         gl_hires.c
-        gl_hqresize.c
         gl_intern.h
         gl_light.c
         gl_main.c

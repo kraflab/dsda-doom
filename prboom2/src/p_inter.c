@@ -983,7 +983,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
       }
     }
 
-    if (target->player == &players[consoleplayer] && (automapmode & am_active))
+    if (target->player == &players[consoleplayer] && automap_active)
       AM_Stop();    // don't die in auto map; switch view prior to dying
   }
 

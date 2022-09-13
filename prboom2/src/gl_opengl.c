@@ -52,12 +52,6 @@ int gl_max_texture_size = 0;
 
 SDL_PixelFormat RGBAFormat;
 
-// obsolete?
-int gl_use_paletted_texture = 0;
-int gl_use_shared_texture_palette = 0;
-int gl_paletted_texture = 0;
-int gl_shared_texture_palette = 0;
-
 dboolean gl_ext_texture_filter_anisotropic = false;
 dboolean gl_arb_texture_non_power_of_two = false;
 dboolean gl_arb_multitexture = false;
@@ -69,19 +63,6 @@ dboolean gl_use_stencil = false;
 dboolean gl_ext_arb_vertex_buffer_object = false;
 dboolean gl_arb_pixel_buffer_object = false;
 dboolean gl_arb_shader_objects = false;
-
-// cfg values
-int gl_ext_texture_filter_anisotropic_default;
-int gl_arb_texture_non_power_of_two_default;
-int gl_arb_multitexture_default;
-int gl_arb_texture_compression_default;
-int gl_ext_framebuffer_object_default;
-int gl_ext_packed_depth_stencil_default;
-int gl_ext_blend_color_default;
-int gl_use_stencil_default;
-int gl_ext_arb_vertex_buffer_object_default;
-int gl_arb_pixel_buffer_object_default;
-int gl_arb_shader_objects_default;
 
 int active_texture_enabled[32];
 int clieant_active_texture_enabled[32];
@@ -179,49 +160,20 @@ void gld_InitOpenGL(void)
 
   gld_InitOpenGLVersion();
 
-  gl_ext_texture_filter_anisotropic = gl_ext_texture_filter_anisotropic_default &&
-    isExtensionSupported("GL_EXT_texture_filter_anisotropic") != NULL;
+  gl_ext_texture_filter_anisotropic = isExtensionSupported("GL_EXT_texture_filter_anisotropic") != NULL;
   if (gl_ext_texture_filter_anisotropic)
     lprintf(LO_INFO, "using GL_EXT_texture_filter_anisotropic\n");
 
   // Any textures sizes are allowed
-  gl_arb_texture_non_power_of_two = gl_arb_texture_non_power_of_two_default &&
-    isExtensionSupported("GL_ARB_texture_non_power_of_two") != NULL;
+  gl_arb_texture_non_power_of_two = isExtensionSupported("GL_ARB_texture_non_power_of_two") != NULL;
   if (gl_arb_texture_non_power_of_two)
     lprintf(LO_INFO, "using GL_ARB_texture_non_power_of_two\n");
-
-  // Paletted textures
-  if (isExtensionSupported("GL_EXT_paletted_texture") != NULL)
-  {
-    if (gl_use_paletted_texture)
-    {
-      gl_paletted_texture = true;
-      GLEXT_glColorTableEXT = SDL_GL_GetProcAddress("glColorTableEXT");
-      if (GLEXT_glColorTableEXT == NULL)
-        gl_paletted_texture = false;
-      else
-        lprintf(LO_INFO,"using GL_EXT_paletted_texture\n");
-    }
-  }
-  else if (isExtensionSupported("GL_EXT_shared_texture_palette") != NULL)
-  {
-    if (gl_use_shared_texture_palette)
-    {
-      gl_shared_texture_palette = true;
-      GLEXT_glColorTableEXT = SDL_GL_GetProcAddress("glColorTableEXT");
-      if (GLEXT_glColorTableEXT == NULL)
-        gl_shared_texture_palette = false;
-      else
-        lprintf(LO_INFO,"using GL_EXT_shared_texture_palette\n");
-    }
-  }
 
   //
   // ARB_multitexture command function pointers
   //
 
-  gl_arb_multitexture = gl_arb_multitexture_default &&
-    isExtensionSupported("GL_ARB_multitexture") != NULL;
+  gl_arb_multitexture = isExtensionSupported("GL_ARB_multitexture") != NULL;
   if (gl_arb_multitexture)
   {
     GLEXT_glActiveTextureARB        = SDL_GL_GetProcAddress("glActiveTextureARB");
@@ -240,8 +192,7 @@ void gld_InitOpenGL(void)
   // ARB_texture_compression
   //
 
-  gl_arb_texture_compression = gl_arb_texture_compression_default &&
-    isExtensionSupported("GL_ARB_texture_compression") != NULL;
+  gl_arb_texture_compression = isExtensionSupported("GL_ARB_texture_compression") != NULL;
   if (gl_arb_texture_compression)
   {
     GLEXT_glCompressedTexImage2DARB = SDL_GL_GetProcAddress("glCompressedTexImage2DARB");
@@ -280,8 +231,7 @@ void gld_InitOpenGL(void)
   if (gl_ext_framebuffer_object)
     lprintf(LO_INFO,"using GL_EXT_framebuffer_object\n");
 
-  gl_ext_packed_depth_stencil = gl_ext_packed_depth_stencil_default &&
-    isExtensionSupported("GL_EXT_packed_depth_stencil") != NULL;
+  gl_ext_packed_depth_stencil = isExtensionSupported("GL_EXT_packed_depth_stencil") != NULL;
   if (gl_ext_packed_depth_stencil)
     lprintf(LO_INFO,"using GL_EXT_packed_depth_stencil\n");
 
@@ -289,8 +239,7 @@ void gld_InitOpenGL(void)
   // Blending
   //
 
-  gl_ext_blend_color = gl_ext_blend_color_default &&
-    isExtensionSupported("GL_EXT_blend_color") != NULL;
+  gl_ext_blend_color = isExtensionSupported("GL_EXT_blend_color") != NULL;
   if (gl_ext_blend_color)
   {
     GLEXT_glBlendColorEXT = SDL_GL_GetProcAddress("glBlendColorEXT");
@@ -303,8 +252,7 @@ void gld_InitOpenGL(void)
 
   // VBO
 #ifdef USE_VBO
-  gl_ext_arb_vertex_buffer_object = gl_ext_arb_vertex_buffer_object_default &&
-    isExtensionSupported("GL_ARB_vertex_buffer_object") != NULL;
+  gl_ext_arb_vertex_buffer_object = isExtensionSupported("GL_ARB_vertex_buffer_object") != NULL;
   if (gl_ext_arb_vertex_buffer_object)
   {
     GLEXT_glGenBuffersARB = SDL_GL_GetProcAddress("glGenBuffersARB");
@@ -322,8 +270,7 @@ void gld_InitOpenGL(void)
   gl_ext_arb_vertex_buffer_object = false;
 #endif
 
-  gl_arb_pixel_buffer_object = gl_arb_pixel_buffer_object_default &&
-    isExtensionSupported("GL_ARB_pixel_buffer_object") != NULL;
+  gl_arb_pixel_buffer_object = isExtensionSupported("GL_ARB_pixel_buffer_object") != NULL;
   if (gl_arb_pixel_buffer_object)
   {
     GLEXT_glGenBuffersARB = SDL_GL_GetProcAddress("glGenBuffersARB");
@@ -348,17 +295,16 @@ void gld_InitOpenGL(void)
   // Stencil support
   //
 
-  gl_use_stencil = gl_use_stencil_default;
+  gl_use_stencil = true;
 
   //
   // GL_ARB_shader_objects
   //
-  gl_arb_shader_objects = gl_arb_shader_objects_default &&
-    (gl_version >= OPENGL_VERSION_2_0) &&
-    isExtensionSupported ("GL_ARB_shader_objects") &&
-    isExtensionSupported ("GL_ARB_vertex_shader") &&
-    isExtensionSupported ("GL_ARB_fragment_shader") &&
-    isExtensionSupported ("GL_ARB_shading_language_100");
+  gl_arb_shader_objects = (gl_version >= OPENGL_VERSION_2_0) &&
+                          isExtensionSupported ("GL_ARB_shader_objects") &&
+                          isExtensionSupported ("GL_ARB_vertex_shader") &&
+                          isExtensionSupported ("GL_ARB_fragment_shader") &&
+                          isExtensionSupported ("GL_ARB_shading_language_100");
   if (gl_arb_shader_objects)
   {
 		GLEXT_glDeleteObjectARB        = SDL_GL_GetProcAddress("glDeleteObjectARB");
@@ -519,7 +465,6 @@ void gld_EnableTexture2D(GLenum texture, int enable)
 
 void gld_EnableClientCoordArray(GLenum texture, int enable)
 {
-#ifdef USE_VERTEX_ARRAYS
   int arb;
 
   if (!gl_arb_multitexture)
@@ -554,7 +499,6 @@ void gld_EnableClientCoordArray(GLenum texture, int enable)
       clieant_active_texture_enabled[arb] = enable;
     }
   }
-#endif
 }
 
 void gld_EnableMultisample(int enable)

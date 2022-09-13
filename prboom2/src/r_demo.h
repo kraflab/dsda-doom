@@ -73,10 +73,6 @@ typedef struct
   size_t numwadfiles;
 } waddata_t;
 
-extern const char *demo_demoex_filename;
-
-extern const char *getwad_cmdline;
-
 int WadDataInit(waddata_t *waddata);
 int WadDataAddItem(waddata_t *waddata, const char *filename, wad_source_t source, int handle);
 void WadDataFree(waddata_t *wadfiles);
@@ -88,8 +84,6 @@ byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size);
 void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl);
 void G_WriteDemoFooter(void);
 void I_DemoExShutdown(void);
-
-dboolean D_TryGetWad(const char* name);
 
 int LoadDemo(const char *name, const byte **buffer, int *length, int *lump);
 

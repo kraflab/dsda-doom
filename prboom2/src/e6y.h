@@ -49,9 +49,6 @@
 
 #define STSTR_SECRETFOUND   "A secret is revealed!"
 
-#define S_CANT_GL_ARB_MULTITEXTURE 0x10000000
-#define S_CANT_GL_ARB_MULTISAMPLEFACTOR  0x20000000
-
 #define GL_COMBINE_ARB                    0x8570
 #define GL_RGB_SCALE_ARB                  0x8573
 
@@ -80,49 +77,19 @@ extern int demo_tics_count;
 extern int demo_playerscount;
 extern char demo_len_st[80];
 
-extern int speed_step;
-
-extern int hudadd_secretarea;
-extern int hudadd_demoprogressbar;
-extern int hudadd_crosshair;
-extern int hudadd_crosshair_scale;
-extern int hudadd_crosshair_color;
-extern int hudadd_crosshair_health;
-extern int hudadd_crosshair_target;
-extern int hudadd_crosshair_target_color;
-extern int hudadd_crosshair_lock_target;
-extern int movement_strafe50;
-extern int movement_shorttics;
-extern int movement_strafe50onturns;
-extern int movement_mouseinvert;
-extern int movement_maxviewpitch;
-extern int movement_mousestrafedivisor;
 extern int mouse_handler;
-extern int mouse_doubleclick_as_use;
-extern int mouse_carrytics;
-extern int render_multisampling;
-extern int render_paperitems;
-extern int render_wipescreen;
-extern int mouse_acceleration;
-extern int quickstart_window_ms;
 
-extern int render_fov;
-extern int render_aspect;
-extern float render_ratio;
-extern float render_fovratio;
-extern float render_fovy;
-extern float render_multiplier;
+extern int gl_render_fov;
+extern float gl_render_ratio;
+extern float gl_render_fovratio;
+extern float gl_render_fovy;
+extern float gl_render_multiplier;
 void M_ChangeAspectRatio(void);
 void M_ChangeStretch(void);
-
-extern int palette_ondamage;
-extern int palette_onbonus;
-extern int palette_onpowers;
 
 extern camera_t walkcamera;
 
 extern int PitchSign;
-extern int mouseSensitivity_mlook;
 extern angle_t viewpitch;
 extern float skyscale;
 extern float screen_skybox_zplane;
@@ -160,17 +127,12 @@ int G_GotoNextLevel(void);
 
 void M_ChangeMouseLook(void);
 void M_ChangeMaxViewPitch(void);
-void M_ChangeMouseInvert(void);
 
 void M_ChangeFOV(void);
 
-void M_ChangeUseDetail(void);
-void M_ChangeMultiSample(void);
-void M_ChangeSpriteClip(void);
 void M_ChangeAllowBoomColormaps(void);
 void M_ChangeTextureUseHires(void);
 void M_ChangeAllowFog(void);
-void M_ChangeTextureHQResize(void);
 void M_ChangeSpeed(void);
 void M_ChangeScreenMultipleFactor(void);
 void M_ChangeInterlacedScanning(void);
@@ -224,7 +186,7 @@ enum
 
 extern prboom_comp_t prboom_comp[];
 
-int StepwiseSum(int value, int direction, int step, int minval, int maxval, int defval);
+int StepwiseSum(int value, int direction, int minval, int maxval, int defval);
 
 enum
 {
@@ -272,7 +234,6 @@ int AccelerateMouse(int val);
 void MouseAccelChanging(void);
 
 extern int mlooky;
-extern int realtic_clock_rate;
 
 void e6y_G_Compatibility(void);
 
@@ -320,10 +281,5 @@ void I_vWarning(const char *message, va_list argList);
 int I_MessageBox(const char* text, unsigned int type);
 
 dboolean SmoothEdges(unsigned char * buffer,int w, int h);
-
-#ifdef _WIN32
-extern int mus_extend_volume;
-void I_midiOutSetVolumes(int volume);
-#endif
 
 #endif

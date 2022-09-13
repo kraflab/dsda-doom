@@ -38,6 +38,8 @@
 #pragma interface
 #endif
 
+#define MAX_CHANNELS 32
+
 //
 // Initializes sound stuff, including volume
 // Sets channels, SFX and music volume,
@@ -92,8 +94,6 @@ void S_ResumeSound(void);
 // Updates music & sounds
 //
 void S_UpdateSounds(void* listener);
-void S_SetMusicVolume(int volume);
-void S_SetSfxVolume(int volume);
 
 // machine-independent sound params
 extern int default_numChannels;

@@ -85,6 +85,7 @@
 #include "i_main.h"
 
 #include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/time.h"
@@ -94,12 +95,9 @@
 static SDL_Cursor* cursors[2] = {NULL, NULL};
 
 dboolean window_focused;
-int mouse_currently_grabbed = true;
 
 // Window resize state.
 static void ApplyWindowResize(SDL_Event *resize_event);
-
-const char *sdl_video_window_pos;
 
 static void ActivateMouse(void);
 static void DeactivateMouse(void);
@@ -108,18 +106,12 @@ static void I_ReadMouse(void);
 static dboolean MouseShouldBeGrabbed();
 static void UpdateFocus(void);
 
-int gl_colorbuffer_bits=16;
-int gl_depthbuffer_bits=16;
+extern const int gl_colorbuffer_bits;
+extern const int gl_depthbuffer_bits;
 
 extern void M_QuitDOOM(int choice);
-int use_fullscreen;
 int desired_fullscreen;
 int exclusive_fullscreen;
-int gl_exclusive_fullscreen;
-int render_vsync;
-int render_screen_multiply;
-int integer_scaling;
-int vanilla_keymap;
 SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
@@ -134,16 +126,9 @@ SDL_Rect src_rect = { 0, 0, 0, 0 };
 int             leds_always_off = 0; // Expected by m_misc, not relevant
 
 // Mouse handling
-extern int     usemouse;        // config file var
-extern int mouse_stutter_correction;
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
 
 video_mode_t I_GetModeFromString(const char *modestr);
-
-static int I_ExclusiveFullscreen(void)
-{
-  return V_IsOpenGLMode() ? gl_exclusive_fullscreen : exclusive_fullscreen;
-}
 
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
@@ -217,7 +202,7 @@ static int I_TranslateKey(SDL_Keysym* key)
 {
   int rc = 0;
 
-  if (vanilla_keymap)
+  if (dsda_IntConfig(dsda_config_vanilla_keymap))
     return VanillaTranslateKey(key);
 
   switch (key->sym) {
@@ -448,16 +433,12 @@ void I_StartFrame (void)
 {
 }
 
-//
-// I_InitInputs
-//
-
-static void I_InitInputs(void)
+void I_InitMouse(void)
 {
   static Uint8 empty_cursor_data = 0;
 
   // check if the user wants to use the mouse
-  mouse_enabled = usemouse && !dsda_Flag(dsda_arg_nomouse);
+  mouse_enabled = dsda_IntConfig(dsda_config_use_mouse) && !dsda_Flag(dsda_arg_nomouse);
 
   SDL_PumpEvents();
 
@@ -470,7 +451,15 @@ static void I_InitInputs(void)
   {
     MouseAccelChanging();
   }
+}
 
+//
+// I_InitInputs
+//
+
+static void I_InitInputs(void)
+{
+  I_InitMouse();
   I_InitJoystick();
 }
 
@@ -670,7 +659,6 @@ void I_InitBuffersRes(void)
 
 #define MAX_RESOLUTIONS_COUNT 128
 const char *screen_resolutions_list[MAX_RESOLUTIONS_COUNT] = {NULL};
-const char *screen_resolution = NULL;
 
 //
 // I_GetScreenResolution
@@ -680,9 +668,12 @@ const char *screen_resolution = NULL;
 void I_GetScreenResolution(void)
 {
   int width, height;
+  const char *screen_resolution;
 
   desired_screenwidth = 640;
   desired_screenheight = 480;
+
+  screen_resolution = dsda_StringConfig(dsda_config_screen_resolution);
 
   if (screen_resolution)
   {
@@ -745,10 +736,12 @@ static void I_AppendResolution(SDL_DisplayMode *mode, int *current_resolution_in
   (*list_size)++;
 }
 
-const char *custom_resolution;
-
 static void I_AppendCustomResolution(int *current_resolution_index, int *list_size)
 {
+  const char *custom_resolution;
+
+  custom_resolution = dsda_StringConfig(dsda_config_custom_resolution);
+
   if (strlen(custom_resolution))
   {
     SDL_DisplayMode mode;
@@ -805,7 +798,7 @@ static void I_FillScreenResolutionsList(void)
       if (i > count - 1)
       {
         // no hard-coded resolutions for mode-changing fullscreen
-        if (I_ExclusiveFullscreen())
+        if (exclusive_fullscreen)
           continue;
 
         mode.w = canonicals[i - count].w;
@@ -847,7 +840,9 @@ static void I_FillScreenResolutionsList(void)
   }
 
   screen_resolutions_list[list_size] = NULL;
-  screen_resolution = screen_resolutions_list[current_resolution_index];
+  // TODO: this code is inside of the onUpdate for screen resolution
+  // Using dsda_ReadConfig is a hack to avoid recursion, but this needs a proper solution
+  dsda_ReadConfig("screen_resolution", screen_resolutions_list[current_resolution_index], 0);
 }
 
 // e6y
@@ -903,8 +898,6 @@ static void I_ClosestResolution (int *width, int *height)
   }
 }
 
-int process_priority;
-
 // e6y
 // It is a simple test of CPU cache misses.
 unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
@@ -943,7 +936,7 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
 // Calculates the screen resolution, possibly using the supplied guide
 void I_CalculateRes(int width, int height)
 {
-  if (desired_fullscreen && I_ExclusiveFullscreen())
+  if (desired_fullscreen && exclusive_fullscreen)
   {
     I_ClosestResolution(&width, &height);
   }
@@ -1002,6 +995,14 @@ void I_InitScreenResolution(void)
 
   I_GetScreenResolution();
 
+  desired_fullscreen = dsda_IntConfig(dsda_config_use_fullscreen);
+
+  if (dsda_Flag(dsda_arg_fullscreen))
+    desired_fullscreen = 1;
+
+  if (dsda_Flag(dsda_arg_window))
+    desired_fullscreen = 0;
+
   if (init)
   {
     //e6y: ability to change screen resolution from GUI
@@ -1015,23 +1016,6 @@ void I_InitScreenResolution(void)
     arg = dsda_Arg(dsda_arg_height);
     if (arg->found)
       desired_screenheight = arg->value.v_int;
-
-    if (dsda_Flag(dsda_arg_fullscreen))
-      use_fullscreen = 1;
-
-    if (dsda_Flag(dsda_arg_nofullscreen))
-      use_fullscreen = 0;
-
-    // e6y
-    // New command-line options for setting a window (-window)
-    // or fullscreen (-nowindow) mode temporarily which is not saved in cfg.
-    // It works like "-geom" switch
-    desired_fullscreen = use_fullscreen;
-    if (dsda_Flag(dsda_arg_window))
-      desired_fullscreen = 0;
-
-    if (dsda_Flag(dsda_arg_nowindow))
-      desired_fullscreen = 1;
 
     // e6y
     // change the screen size for the current session only
@@ -1070,7 +1054,7 @@ void I_InitScreenResolution(void)
     h = desired_screenheight;
   }
 
-  mode = (video_mode_t)I_GetModeFromString(default_videomode);
+  mode = (video_mode_t)I_GetModeFromString(dsda_StringConfig(dsda_config_videomode));
   arg = dsda_Arg(dsda_arg_vidmode);
   if (arg->found)
   {
@@ -1181,8 +1165,17 @@ void I_UpdateVideoMode(void)
   int init_flags = 0;
   int screen_multiply;
   int actualheight;
+  int render_vsync;
+  int integer_scaling;
+  const char *sdl_video_window_pos;
   const dboolean novsync = dsda_Flag(dsda_arg_timedemo) ||
                            dsda_Flag(dsda_arg_fastdemo);
+
+  exclusive_fullscreen = dsda_IntConfig(dsda_config_exclusive_fullscreen);
+  render_vsync = dsda_IntConfig(dsda_config_render_vsync) && !novsync;
+  sdl_video_window_pos = dsda_StringConfig(dsda_config_sdl_video_window_pos);
+  screen_multiply = dsda_IntConfig(dsda_config_render_screen_multiply);
+  integer_scaling = dsda_IntConfig(dsda_config_integer_scaling);
 
   if(sdl_window)
   {
@@ -1213,9 +1206,6 @@ void I_UpdateVideoMode(void)
     sdl_texture = NULL;
   }
 
-  // e6y: initialisation of screen_multiply
-  screen_multiply = render_screen_multiply;
-
   // Initialize SDL with this graphics mode
   if (V_IsOpenGLMode()) {
     init_flags = SDL_WINDOW_OPENGL;
@@ -1223,7 +1213,7 @@ void I_UpdateVideoMode(void)
 
   if (desired_fullscreen)
   {
-    if (I_ExclusiveFullscreen())
+    if (exclusive_fullscreen)
       init_flags |= SDL_WINDOW_FULLSCREEN;
     else
       init_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -1270,7 +1260,7 @@ void I_UpdateVideoMode(void)
   {
     int flags = SDL_RENDERER_TARGETTEXTURE;
 
-    if (render_vsync && !novsync)
+    if (render_vsync)
       flags |= SDL_RENDERER_PRESENTVSYNC;
 
     sdl_window = SDL_CreateWindow(
@@ -1348,7 +1338,7 @@ void I_UpdateVideoMode(void)
 
   if (V_IsOpenGLMode())
   {
-    SDL_GL_SetSwapInterval(((render_vsync && !novsync) ? 1 : 0));
+    SDL_GL_SetSwapInterval((render_vsync ? 1 : 0));
   }
 
   if (V_IsSoftwareMode())
@@ -1451,7 +1441,7 @@ static void CorrectMouseStutter(int *x, int *y)
   int x_remainder, y_remainder;
   fixed_t fractic, correction_factor;
 
-  if (!mouse_stutter_correction)
+  if (!dsda_IntConfig(dsda_config_mouse_stutter_correction))
   {
     return;
   }
@@ -1479,7 +1469,10 @@ static void CorrectMouseStutter(int *x, int *y)
 // motion event.
 static void I_ReadMouse(void)
 {
-  if (mouse_enabled && window_focused)
+  if (!mouse_enabled)
+    return;
+
+  if (window_focused)
   {
     int x, y;
 
@@ -1496,20 +1489,6 @@ static void I_ReadMouse(void)
 
       D_PostEvent(&event);
     }
-  }
-
-  if (!usemouse)
-    return;
-
-  if (!MouseShouldBeGrabbed())
-  {
-    mouse_currently_grabbed = false;
-    return;
-  }
-
-  if (!mouse_currently_grabbed && !desired_fullscreen)
-  {
-    mouse_currently_grabbed = true;
   }
 }
 
@@ -1588,7 +1567,7 @@ static void UpdateFocus(void)
       }
       else
       {
-        gld_SetGammaRamp(useglgamma);
+        gld_SetGammaRamp(gl_usegamma);
       }
     }
   }

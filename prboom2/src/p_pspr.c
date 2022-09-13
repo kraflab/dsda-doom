@@ -205,9 +205,6 @@ int weapon_preferences[2][NUMWEAPONS+1] = {
   {6, 9, 4, 3, 2, 8, 5, 7, 1, 0},  //  compatibility preferences
 };
 
-// Center Weapon when Firing.
-int weapon_attack_alignment=0;
-
 // [XA] fixed version of P_SwitchWeapon that correctly
 // takes each weapon's ammotype and ammopershot into account,
 // instead of blindly assuming both.

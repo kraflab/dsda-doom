@@ -26,74 +26,28 @@
 #include "i_main.h"
 
 #include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/exhud.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 
 #include "settings.h"
 
-extern void S_ResetSfxVolume(void);
-extern void I_ResetMusicVolume(void);
-
-dsda_setting_t dsda_setting[DSDA_SETTING_IDENTIFIER_COUNT] = {
-  [dsda_strict_mode] = { 0, 0, "Strict Mode", dsda_ChangeStrictMode, dsda_ChangeStrictMode },
-  [dsda_novert] = { 0, 0, "Vertical Mouse Movement", NULL, NULL, true },
-  [dsda_mouselook] = { 0, 0, "Mouselook", M_ChangeMouseLook, M_ChangeMouseLook, false, true },
-  [dsda_autorun] = { 0, 0, "Auto Run", NULL, NULL, false, true },
-  [dsda_show_messages] = { 0, 0, NULL, NULL, M_ChangeMessages, false, true },
-  [dsda_command_display] = { 0, 0, "Command Display", NULL, NULL, false, true },
-  [dsda_coordinate_display] = { 0, 0, "Coordinate Display", NULL, NULL, false, true },
-  [dsda_exhud] = { 0, 0, NULL, NULL, NULL, false, true },
-  [dsda_mute_sfx] = { 0, 0, "Sfx", NULL, S_ResetSfxVolume, true, true },
-  [dsda_mute_music] = { 0, 0, "Music", NULL, I_ResetMusicVolume, true, true },
-  [dsda_cheat_codes] = { 0, 0, "Cheat Codes", NULL, NULL, false, true },
-  [dsda_show_fps] = { 0, 0, "FPS", NULL, dsda_RefreshExHudFPS, false, true  },
-};
-
-int dsda_cycle_ghost_colors;
 int dsda_tas;
 int dsda_skip_next_wipe;
-int dsda_wipe_at_full_speed;
-int dsda_show_demo_attempts;
-int dsda_fine_sensitivity;
-int dsda_hide_horns;
-int dsda_skip_quit_prompt;
-int dsda_show_split_data;
-int dsda_switch_when_ammo_runs_out;
-int dsda_viewbob;
-int dsda_weaponbob;
 
 void dsda_InitSettings(void) {
-  int i;
+  void dsda_UpdateStrictMode(void);
+  void G_UpdateMouseSensitivity(void);
+  void dsda_InitQuickstartCache(void);
+  void dsda_InitParallelSFXFilter(void);
+  void gld_ResetAutomapTransparency(void);
 
-  for (i = 0; i < DSDA_SETTING_IDENTIFIER_COUNT; i++) {
-    dsda_ResetTransient(&dsda_setting[i]);
-  }
-}
-
-void dsda_ResetTransient(dsda_setting_t* setting) {
-  setting->transient_value = setting->persistent_value;
-  if (setting->initializer)
-    setting->initializer();
-}
-
-void dsda_ToggleSetting(dsda_setting_identifier_t id) {
-  dsda_setting[id].transient_value = !dsda_setting[id].transient_value;
-
-  if (dsda_setting[id].persist_changes)
-    dsda_setting[id].persistent_value = dsda_setting[id].transient_value;
-
-  if (dsda_setting[id].updater)
-    dsda_setting[id].updater();
-
-  if (dsda_setting[id].name)
-    doom_printf(
-      "%s %s",
-      dsda_setting[id].name,
-      dsda_setting[id].transient_value ?
-        dsda_setting[id].invert_text ? "off" : "on" :
-        dsda_setting[id].invert_text ? "on"  : "off"
-    );
+  dsda_UpdateStrictMode();
+  G_UpdateMouseSensitivity();
+  dsda_InitQuickstartCache();
+  dsda_InitParallelSFXFilter();
+  gld_ResetAutomapTransparency();
 }
 
 static int dsda_WadCompatibilityLevel(void) {
@@ -161,86 +115,68 @@ int dsda_CompatibilityLevel(void) {
   return UNSPECIFIED_COMPLEVEL;
 }
 
-void dsda_ChangeStrictMode(void) {
-  I_Init2(); // side effect of realtic clock rate
-  M_ChangeSpeed(); // side effect of always sr50
-  dsda_InitKeyFrame();
-}
-
 void dsda_SetTas(void) {
   dsda_tas = true;
 }
 
-static int dsda_Transient(dsda_setting_identifier_t id) {
-  return dsda_setting[id].transient_value;
-}
-
-double dsda_FineSensitivity(int base) {
-  return (double) base + (double) dsda_fine_sensitivity / 100;
-}
-
 dboolean dsda_ViewBob(void) {
-  return dsda_viewbob;
+  return dsda_IntConfig(dsda_config_viewbob);
 }
 
 dboolean dsda_WeaponBob(void) {
-  return dsda_weaponbob;
+  return dsda_IntConfig(dsda_config_weaponbob);
 }
 
 dboolean dsda_ShowMessages(void) {
-  return dsda_Transient(dsda_show_messages);
+  return dsda_IntConfig(dsda_config_show_messages);
 }
 
 dboolean dsda_AutoRun(void) {
-  return dsda_Transient(dsda_autorun);
+  return dsda_IntConfig(dsda_config_autorun);
 }
 
 dboolean dsda_MouseLook(void) {
-  return dsda_Transient(dsda_mouselook) && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_mouselook);
 }
 
-dboolean dsda_NoVert(void) {
-  return dsda_Transient(dsda_novert);
+dboolean dsda_VertMouse(void) {
+  return dsda_IntConfig(dsda_config_vertmouse);
 }
 
 dboolean dsda_StrictMode(void) {
-  return dsda_Transient(dsda_strict_mode) && demorecording && !dsda_tas;
+  return dsda_IntConfig(dsda_config_strict_mode) && demorecording && !dsda_tas;
 }
 
 dboolean dsda_MuteSfx(void) {
-  return dsda_Transient(dsda_mute_sfx);
+  return dsda_IntConfig(dsda_config_mute_sfx);
 }
 
 dboolean dsda_MuteMusic(void) {
-  return dsda_Transient(dsda_mute_music);
+  return dsda_IntConfig(dsda_config_mute_music);
 }
 
 dboolean dsda_ProcessCheatCodes(void) {
-  return dsda_Transient(dsda_cheat_codes);
+  return dsda_IntConfig(dsda_config_cheat_codes);
 }
 
 dboolean dsda_CycleGhostColors(void) {
-  return dsda_cycle_ghost_colors;
-}
-
-dboolean dsda_WeaponAttackAlignment(void) {
-  return weapon_attack_alignment && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_cycle_ghost_colors);
 }
 
 dboolean dsda_AlwaysSR50(void) {
-  return movement_strafe50 && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_movement_strafe50);
 }
 
 dboolean dsda_HideHorns(void) {
-  return dsda_hide_horns;
+  return dsda_IntConfig(dsda_config_hide_horns);
 }
 
 dboolean dsda_SwitchWhenAmmoRunsOut(void) {
-  return dsda_switch_when_ammo_runs_out;
+  return dsda_IntConfig(dsda_config_switch_when_ammo_runs_out);
 }
 
 dboolean dsda_SkipQuitPrompt(void) {
-  return dsda_skip_quit_prompt;
+  return dsda_IntConfig(dsda_config_skip_quit_prompt);
 }
 
 dboolean dsda_TrackSplits(void) {
@@ -248,65 +184,55 @@ dboolean dsda_TrackSplits(void) {
 }
 
 dboolean dsda_ShowSplitData(void) {
-  return dsda_show_split_data;
+  return dsda_IntConfig(dsda_config_show_split_data);
 }
 
 dboolean dsda_ExHud(void) {
-  return dsda_Transient(dsda_exhud);
+  return dsda_IntConfig(dsda_config_exhud);
 }
 
 dboolean dsda_CommandDisplay(void) {
-  return dsda_Transient(dsda_command_display) && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_command_display);
 }
 
 dboolean dsda_CoordinateDisplay(void) {
-  return dsda_Transient(dsda_coordinate_display) && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_coordinate_display);
 }
 
 dboolean dsda_ShowFPS(void) {
-  return dsda_Transient(dsda_show_fps);
+  return dsda_IntConfig(dsda_config_show_fps);
 }
 
 dboolean dsda_ShowDemoAttempts(void) {
-  return dsda_show_demo_attempts && demorecording;
+  return dsda_IntConfig(dsda_config_show_demo_attempts) && demorecording;
 }
 
 dboolean dsda_MapPointCoordinates(void) {
-  extern int map_point_coordinates;
-
-  return map_point_coordinates && !dsda_StrictMode();
-}
-
-dboolean dsda_CrosshairTarget(void) {
-  return hudadd_crosshair_target && !dsda_StrictMode();
-}
-
-dboolean dsda_CrosshairLockTarget(void) {
-  return hudadd_crosshair_lock_target && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_map_point_coord);
 }
 
 dboolean dsda_SimpleShadows(void) {
-  return simple_shadows.enable && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_gl_shadows);
 }
 
 dboolean dsda_PainPalette(void) {
-  return dsda_StrictMode() || palette_ondamage;
+  return dsda_IntConfig(dsda_config_palette_ondamage);
 }
 
 dboolean dsda_BonusPalette(void) {
-  return dsda_StrictMode() || palette_onbonus;
+  return dsda_IntConfig(dsda_config_palette_onbonus);
 }
 
 dboolean dsda_PowerPalette(void) {
-  return dsda_StrictMode() || palette_onpowers;
+  return dsda_IntConfig(dsda_config_palette_onpowers);
 }
 
 dboolean dsda_ShowHealthBars(void) {
-  return health_bar && !dsda_StrictMode();
+  return dsda_IntConfig(dsda_config_gl_health_bar);
 }
 
 dboolean dsda_WipeAtFullSpeed(void) {
-  return dsda_wipe_at_full_speed;
+  return dsda_IntConfig(dsda_config_wipe_at_full_speed);
 }
 
 int dsda_show_alive_monsters;
@@ -336,17 +262,23 @@ void dsda_ResetRevealMap(void) {
 }
 
 int dsda_RealticClockRate(void) {
-  if (dsda_StrictMode()) return 100;
+  return dsda_IntConfig(dsda_config_realtic_clock_rate);
+}
 
-  return realtic_clock_rate;
+void dsda_UpdateRealticClockRate(int value) {
+  dsda_UpdateIntConfig(dsda_config_realtic_clock_rate, value, true);
 }
 
 void dsda_SkipNextWipe(void) {
   dsda_skip_next_wipe = 1;
 }
 
+dboolean dsda_RenderWipeScreen(void) {
+  return dsda_IntConfig(dsda_config_render_wipescreen);
+}
+
 dboolean dsda_PendingSkipWipe(void) {
-  return dsda_skip_next_wipe || !render_wipescreen;
+  return dsda_skip_next_wipe || !dsda_RenderWipeScreen();
 }
 
 dboolean dsda_SkipWipe(void) {
@@ -355,5 +287,5 @@ dboolean dsda_SkipWipe(void) {
     return true;
   }
 
-  return !render_wipescreen || hexen;
+  return !dsda_RenderWipeScreen() || hexen;
 }

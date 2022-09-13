@@ -90,6 +90,7 @@
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
 #include "dsda/command_display.h"
+#include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
 #include "dsda/features.h"
@@ -142,6 +143,7 @@ static int demolength; // check for overrun (missing DEMOMARKER)
 
 gameaction_t    gameaction;
 gamestate_t     gamestate;
+dboolean        in_game;
 skill_t         gameskill;
 dboolean         respawnmonsters;
 int             gameepisode;
@@ -258,13 +260,6 @@ static int   joyymove;
 static buttoncode_t special_event; // Event triggered by local player, to send
 static int   savegameslot;         // Slot to load if gameaction == ga_loadgame
 char         savedescription[SAVEDESCLEN];  // Description to save in savegame if gameaction == ga_savegame
-
-//jff 3/24/98 define defaultskill here
-int defaultskill;               //note 1-based
-
-// killough 2/8/98: make corpse queue variable in size
-int    bodyqueslot, bodyquesize;        // killough 2/8/98
-mobj_t **bodyque = 0;                   // phares 8/10/98
 
 // heretic
 #include "p_user.h"
@@ -453,6 +448,24 @@ static int G_NextWeapon(int direction)
   while (i != start_i && !WeaponSelectable(weapon_order_table[i].weapon));
 
   return weapon_order_table[i].weapon_num;
+}
+
+static double mouse_sensitivity_horiz;
+static double mouse_sensitivity_vert;
+static double mouse_sensitivity_mlook;
+static double mouse_strafe_divisor;
+
+void G_UpdateMouseSensitivity(void)
+{
+  double horizontal_sensitivity, fine_sensitivity;
+
+  horizontal_sensitivity = dsda_IntConfig(dsda_config_mouse_sensitivity_horiz);
+  fine_sensitivity = dsda_IntConfig(dsda_config_fine_sensitivity);
+
+  mouse_sensitivity_horiz = horizontal_sensitivity + fine_sensitivity / 100;
+  mouse_sensitivity_vert = dsda_IntConfig(dsda_config_mouse_sensitivity_vert);
+  mouse_sensitivity_mlook = dsda_IntConfig(dsda_config_mouse_sensitivity_mlook);
+  mouse_strafe_divisor = dsda_IntConfig(dsda_config_movement_mousestrafedivisor);
 }
 
 void G_BuildTiccmd(ticcmd_t* cmd)
@@ -902,7 +915,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // mouse
 
-  if (mouse_doubleclick_as_use) {//e6y
+  if (dsda_IntConfig(dsda_config_mouse_doubleclick_as_use)) {//e6y
     // forward double click
     if (dsda_InputMouseBActive(dsda_input_forward) != dclickstate && dclicktime > 1 )
     {
@@ -947,7 +960,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       }
   }
 
-  if (!dsda_NoVert())
+  if (dsda_VertMouse())
   {
     forward += mousey;
   }
@@ -961,7 +974,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     double true_delta;
 
     true_delta = mousestrafe_carry +
-                 (double) mousex / movement_mousestrafedivisor;
+                 (double) mousex / mouse_strafe_divisor;
 
     delta = (int) true_delta;
     delta = (delta / 2) * 2;
@@ -996,7 +1009,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       else if (side < -player_class->forwardmove[0])
         side = -player_class->forwardmove[0];
     }
-    else if(!movement_strafe50onturns && !strafe && cmd->angleturn)
+    else if (!dsda_IntConfig(dsda_config_movement_strafe50onturns) && !strafe && cmd->angleturn)
     {
       if (side > player_class->sidemove[1])
         side = player_class->sidemove[1];
@@ -1021,7 +1034,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     // Chocolate Doom Mouse Behaviour
     // Don't discard mouse delta even if value is too small to
     // turn the player this tic
-    if (mouse_carrytics) {
+    if (dsda_IntConfig(dsda_config_mouse_carrytics)) {
       static signed short carry = 0;
       signed short desired_angleturn = cmd->angleturn + carry;
       cmd->angleturn = (desired_angleturn + 128) & 0xff00;
@@ -1168,7 +1181,6 @@ static void G_DoLoadLevel (void)
   }
 }
 
-
 //
 // G_Responder
 // Get info needed to make ticcmd_ts for the players.
@@ -1270,19 +1282,19 @@ dboolean G_Responder (event_t* ev)
     {
       double value;
 
-      value = dsda_FineSensitivity(mouseSensitivity_horiz) * AccelerateMouse(ev->data2);
+      value = mouse_sensitivity_horiz * AccelerateMouse(ev->data2);
       mousex += G_CarryDouble(carry_mousex, value);
       if (dsda_MouseLook())
       {
-        value = (double) mouseSensitivity_mlook * AccelerateMouse(ev->data3);
-        if (movement_mouseinvert)
+        value = mouse_sensitivity_mlook * AccelerateMouse(ev->data3);
+        if (dsda_IntConfig(dsda_config_movement_mouseinvert))
           mlooky += G_CarryDouble(carry_mousey, value);
         else
           mlooky -= G_CarryDouble(carry_mousey, value);
       }
       else
       {
-        value = (double) mouseSensitivity_vert * AccelerateMouse(ev->data3) / 8;
+        value = mouse_sensitivity_vert * AccelerateMouse(ev->data3) / 8;
         mousey += G_CarryDouble(carry_vertmouse, value);
       }
 
@@ -1742,27 +1754,11 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
   if (!i)
     return false;
 
-  // flush an old corpse if needed
-  // killough 2/8/98: make corpse queue have an adjustable limit
-  // killough 8/1/98: Fix bugs causing strange crashes
-
-  if (bodyquesize > 0)
-    {
-      static int queuesize;
-      if (queuesize < bodyquesize)
   {
-    bodyque = Z_Realloc(bodyque, bodyquesize*sizeof*bodyque);
-    memset(bodyque+queuesize, 0,
-     (bodyquesize-queuesize)*sizeof*bodyque);
-    queuesize = bodyquesize;
+    void A_AddPlayerCorpse(mobj_t * actor);
+
+    A_AddPlayerCorpse(players[playernum].mo);
   }
-      if (bodyqueslot >= bodyquesize)
-  P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
-      bodyque[bodyqueslot++ % bodyquesize] = players[playernum].mo;
-    }
-  else
-    if (!bodyquesize)
-      P_RemoveMobj(players[playernum].mo);
 
   // spawn a teleport fog
   ss = R_PointInSubsector (x,y);
@@ -1943,7 +1939,7 @@ void G_DoCompleted (void)
     if (playeringame[i])
       G_PlayerFinishLevel(i);        // take away cards and stuff
 
-  if (automapmode & am_active)
+  if (automap_active)
     AM_Stop();
 
   wminfo.nextep = wminfo.epsd = gameepisode -1;
@@ -1985,7 +1981,7 @@ void G_DoCompleted (void)
   wminfo.totaltimes = (totalleveltimes += (leveltime - leveltime%35));
 
   gamestate = GS_INTERMISSION;
-  automapmode &= ~am_active;
+  automap_active = false;
 
   // lmpwatch.pl engine-side demo testing support
   // print "FINISHED: <mapname>" when the player exits the current map
@@ -2523,7 +2519,7 @@ void G_ReloadDefaults(void)
 {
   const dsda_options_t* options;
 
-  compatibility_level = default_compatibility_level;
+  compatibility_level = dsda_IntConfig(dsda_config_default_complevel);
   {
     int l;
     l = dsda_CompatibilityLevel();
@@ -2574,8 +2570,8 @@ void G_ReloadDefaults(void)
 
   //jff 3/24/98 set startskill from defaultskill in config file, unless
   // it has already been set by a -skill parameter
-  if (startskill==sk_none)
-    startskill = (skill_t)(defaultskill-1);
+  if (startskill == sk_none)
+    startskill = (skill_t)(dsda_IntConfig(dsda_config_default_skill) - 1);
 
   demoplayback = false;
   singledemo = false;            // killough 9/29/98: don't stop after 1 demo
@@ -2752,6 +2748,8 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     compatibility_level == ultdoom_compatibility ||
     compatibility_level == finaldoom_compatibility;
 
+  in_game = true;
+
   if (prepare)
     dsda_PrepareInitNew();
 
@@ -2851,7 +2849,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
 
   dsda_ResetPauseMode();
   dsda_ResetCommandHistory();
-  automapmode &= ~am_active;
+  automap_active = false;
   gameskill = skill;
   dsda_UpdateGameMap(episode, map);
 
@@ -4137,7 +4135,7 @@ static void Hexen_G_DoCompleted(void)
         }
     }
 
-    if (automapmode & am_active)
+    if (automap_active)
       AM_Stop();
 
     e6y_G_DoCompleted();

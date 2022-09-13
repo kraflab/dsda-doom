@@ -44,12 +44,12 @@
 #include "e6y.h"
 
 #include "dsda/build.h"
+#include "dsda/configuration.h"
 #include "dsda/pause.h"
 #include "dsda/settings.h"
 
 #include "hexen/a_action.h"
 
-int movement_smooth_default;
 int movement_smooth;
 dboolean isExtraDDisplay = false;
 
@@ -69,8 +69,6 @@ typedef struct
   void *address;
 } interpolation_t;
 
-int interpolation_maxobjects;
-
 static int numinterpolations = 0;
 
 tic_vars_t tic_vars;
@@ -84,7 +82,7 @@ void M_ChangeUncappedFrameRate(void)
   if (capturing_video)
     movement_smooth = true;
   else
-    movement_smooth = (singletics ? false : movement_smooth_default);
+    movement_smooth = (singletics ? false : dsda_IntConfig(dsda_config_uncapped_framerate));
 }
 
 typedef fixed_t fixed2_t[2];
@@ -357,11 +355,6 @@ static void R_SetInterpolation(interpolation_type_e type, void *posptr)
     int prevmax = interpolations_max;
 
     interpolations_max = interpolations_max ? interpolations_max * 2 : 256;
-
-    if (interpolation_maxobjects > 0 && interpolations_max > interpolation_maxobjects)
-    {
-      interpolations_max = interpolation_maxobjects;
-    }
 
     if (interpolations_max == prevmax)
     {

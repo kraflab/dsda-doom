@@ -31,17 +31,6 @@
 #ifndef __I_CAPTURE__
 #define __I_CAPTURE__
 
-// commandlines passed to popen()
-// this one recieves raw PCM sound on stdin
-extern const char *cap_soundcommand;
-// this one recieves raw RGB video on stdin
-extern const char *cap_videocommand;
-// this one recieves nothing on stdin and is called after the other two finish
-extern const char *cap_muxcommand;
-// names of two files to remove after muxcommand finishes
-extern const char *cap_tempfile1;
-extern const char *cap_tempfile2;
-extern int cap_remove_tempfiles;
 extern int cap_fps;
 extern int cap_frac;
 extern int cap_wipescreen;

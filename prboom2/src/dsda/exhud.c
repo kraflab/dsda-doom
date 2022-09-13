@@ -259,7 +259,7 @@ void dsda_InitExHud(void) {
     components[i].initialized = false;
   }
 
-  if (R_FullView() && !hud_displayed)
+  if (R_FullView() && !dsda_IntConfig(dsda_config_hud_displayed))
     return;
 
   hud_config = dsda_HUDConfig();

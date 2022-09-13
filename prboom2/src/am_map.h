@@ -39,6 +39,7 @@
 #endif
 
 #include "d_event.h"
+#include "m_fixed.h"
 #include "m_misc.h"
 
 typedef struct map_point_s
@@ -138,25 +139,7 @@ extern int mapcolor_hair;     // crosshair color
 extern int mapcolor_sngl;     // single player arrow color
 extern int mapcolor_plyr[4];  // colors for players in multiplayer
 extern int mapcolor_me;       // consoleplayer's chosen colour
-//jff 3/9/98
-extern int map_secret_after;  // secrets do not appear til after bagged
 
-extern int map_always_updates;
-extern int map_grid_size;
-extern int map_scroll_speed;
-extern int map_wheel_zoom;
-extern int map_use_multisamling;
-
-extern int map_textured;
-extern int map_textured_trans;
-extern int map_textured_overlay_trans;
-extern int map_lines_overlay_trans;
-extern int map_overlay_pos_x;
-extern int map_overlay_pos_y;
-extern int map_overlay_pos_width;
-extern int map_overlay_pos_height;
-extern int map_type;
-void M_ChangeMapGridSize(void);
 void M_ChangeMapTextured(void);
 void M_ChangeMapMultisamling(void);
 void AM_ResetIDDTcheat(void);
@@ -186,7 +169,5 @@ typedef enum
 
   map_things_appearance_max
 } map_things_appearance_t;
-extern map_things_appearance_t map_things_appearance;
-extern const char *map_things_appearance_list[];
 
 #endif

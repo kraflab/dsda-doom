@@ -86,8 +86,6 @@
  * cphipps - much made static
  */
 
-int realtic_clock_rate = 100;
-
 void I_Init(void)
 {
   dsda_ResetTimeFunctions(fastdemo);
@@ -206,6 +204,8 @@ static void I_Quit (void)
 
 void I_SetProcessPriority(void)
 {
+  int process_priority = dsda_IntConfig(dsda_config_process_priority);
+
   if (process_priority)
   {
     const char *errbuf = NULL;

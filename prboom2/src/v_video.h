@@ -46,8 +46,6 @@
 // VIDEO
 //
 
-extern const char *render_aspects_list[];
-
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
 // user preferences. The integer ratio is hardly used anymore, so further
@@ -117,8 +115,6 @@ typedef enum {
   VID_MODEGL,
   VID_MODEMAX
 } video_mode_t;
-
-extern const char *default_videomode;
 
 void V_InitMode(video_mode_t mode);
 

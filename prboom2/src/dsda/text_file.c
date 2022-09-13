@@ -23,11 +23,10 @@
 #include "dsda.h"
 #include "dsda/analysis.h"
 #include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/playback.h"
 
 #include "text_file.h"
-
-const char* dsda_player_name;
 
 extern int gameepisode, gameskill, totalleveltimes, compatibility_level,
            dsda_last_leveltime, dsda_last_gamemap, dsda_startmap;
@@ -126,6 +125,7 @@ void dsda_ExportTextFile(void) {
   char* name;
   const char* iwad = NULL;
   const char* pwad = NULL;
+  const char* dsda_player_name;
   FILE* file;
 
   if (!dsda_Flag(dsda_arg_export_text_file))
@@ -182,6 +182,8 @@ void dsda_ExportTextFile(void) {
   name = dsda_TextFileTime();
   fprintf(file, "Time:      %s\n", name);
   Z_Free(name);
+
+  dsda_player_name = dsda_StringConfig(dsda_config_player_name);
 
   fprintf(file, "\n");
   fprintf(file, "Author:    %s\n", dsda_player_name);

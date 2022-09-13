@@ -21,6 +21,8 @@
 
 #include "doomtype.h"
 
+#include "dsda/configuration.h"
+
 #include "sfx.h"
 
 sfxinfo_t* S_sfx;
@@ -138,8 +140,13 @@ void dsda_FreeDehSFX(void) {
   free(sfx_state);
 }
 
-int dsda_parallel_sfx_limit = 0;
-int dsda_parallel_sfx_window = 1;
+static int dsda_parallel_sfx_limit;
+static int dsda_parallel_sfx_window;
+
+void dsda_InitParallelSFXFilter(void) {
+  dsda_parallel_sfx_limit = dsda_IntConfig(dsda_config_parallel_sfx_limit);
+  dsda_parallel_sfx_window = dsda_IntConfig(dsda_config_parallel_sfx_window);
+}
 
 dboolean dsda_BlockSFX(sfxinfo_t *sfx) {
   extern int gametic;

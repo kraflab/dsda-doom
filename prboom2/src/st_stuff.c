@@ -39,6 +39,7 @@
 #include "i_video.h"
 #include "w_wad.h"
 #include "st_stuff.h"
+#include "hu_stuff.h"
 #include "st_lib.h"
 #include "r_main.h"
 #include "am_map.h"
@@ -317,13 +318,6 @@ static patchnum_t arms[6][2];
 
 // ready-weapon widget
 static st_number_t w_ready;
-
-//jff 2/16/98 status color change levels
-int ammo_red;      // ammo percent less than which status is red
-int ammo_yellow;   // ammo percent less is yellow more green
-int health_red;    // health amount less than which status is red
-int health_yellow; // health amount less than which status is yellow
-int health_green;  // health amount above is blue, below is green
 
  // in deathmatch only, summary of frags stats
 static st_number_t w_frags;
@@ -803,7 +797,7 @@ static void ST_doPaletteStuff(void)
 
 void M_ChangeApplyPalette(void)
 {
-  if (gamestate == GS_LEVEL)
+  if (in_game && gamestate == GS_LEVEL)
     ST_doPaletteStuff();
 }
 
@@ -824,10 +818,10 @@ static void ST_drawWidgets(dboolean refresh)
   else {
     if (plyr->maxammo[weaponinfo[w_ready.data].ammo])
       ammopct = (*w_ready.num*100)/plyr->maxammo[weaponinfo[w_ready.data].ammo];
-    if (ammopct < ammo_red)
+    if (ammopct < hud_ammo_red)
       STlib_updateNum(&w_ready, CR_RED, refresh);
     else
-      if (ammopct < ammo_yellow)
+      if (ammopct < hud_ammo_yellow)
         STlib_updateNum(&w_ready, CR_GOLD, refresh);
       else
         STlib_updateNum(&w_ready, CR_GREEN, refresh);
@@ -839,11 +833,11 @@ static void ST_drawWidgets(dboolean refresh)
     }
 
   //jff 2/16/98 make color of health depend on amount
-  if (*w_health.n.num<health_red)
+  if (*w_health.n.num < hud_health_red)
     STlib_updatePercent(&w_health, CR_RED, refresh);
-  else if (*w_health.n.num<health_yellow)
+  else if (*w_health.n.num < hud_health_yellow)
     STlib_updatePercent(&w_health, CR_GOLD, refresh);
-  else if (*w_health.n.num<=health_green)
+  else if (*w_health.n.num <= hud_health_green)
     STlib_updatePercent(&w_health, CR_GREEN, refresh);
   else
     STlib_updatePercent(&w_health, CR_BLUE2, refresh); //killough 2/28/98
