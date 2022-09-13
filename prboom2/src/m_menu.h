@@ -171,15 +171,10 @@ typedef struct setup_menu_s
   setup_group m_group;  /* Group */
   short       m_x;      /* screen x position (left is 0) */
   short       m_y;      /* screen y position (top is 0) */
-
-  union  /* killough 11/98: The first field is a union of several types */
-  {
-    dsda_config_identifier_t config_id;
-    struct setup_menu_s *menu;  /* next or prev menu */
-  } var;
-
+  dsda_config_identifier_t config_id;
   int input; // composite input identifier
   const char **selectstrings; /* list of strings for choice value */
+  struct setup_menu_s *menu;  /* next or prev menu */
 } setup_menu_t;
 
 //
