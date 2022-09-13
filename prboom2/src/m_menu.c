@@ -1819,17 +1819,24 @@ static void M_DrawSetting(const setup_menu_t* s)
   if (flags & S_CHOICE) {
     if (flags & S_STR)
     {
-      if (setup_select)
+      if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
         sprintf(menu_buffer, "%s", entry_string_index);
       else
         sprintf(menu_buffer, "%s", dsda_PersistentStringConfig(s->config_id));
     }
     else
     {
+      int value;
+
+      if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
+        value = choice_value;
+      else
+        value = dsda_PersistentIntConfig(s->config_id);
+
       if (s->selectstrings == NULL) {
-        sprintf(menu_buffer, "%d", dsda_PersistentIntConfig(s->config_id));
+        sprintf(menu_buffer, "%d", value);
       } else {
-        strcpy(menu_buffer, s->selectstrings[dsda_PersistentIntConfig(s->config_id)]);
+        strcpy(menu_buffer, s->selectstrings[value]);
       }
     }
 
