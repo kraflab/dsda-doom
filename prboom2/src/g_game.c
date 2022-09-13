@@ -143,6 +143,7 @@ static int demolength; // check for overrun (missing DEMOMARKER)
 
 gameaction_t    gameaction;
 gamestate_t     gamestate;
+dboolean        in_game;
 skill_t         gameskill;
 dboolean         respawnmonsters;
 int             gameepisode;
@@ -2746,6 +2747,8 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   dboolean fake_episode_check =
     compatibility_level == ultdoom_compatibility ||
     compatibility_level == finaldoom_compatibility;
+
+  in_game = true;
 
   if (prepare)
     dsda_PrepareInitNew();

@@ -237,6 +237,7 @@ extern  dboolean   timingdemo;
 extern  dboolean   fastdemo;
 
 extern  gamestate_t  gamestate;
+extern  dboolean     in_game;
 
 //-----------------------------
 // Internal parameters, fixed.
