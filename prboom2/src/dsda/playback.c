@@ -41,6 +41,9 @@ static dsda_arg_t* timedemo_arg;
 static dsda_arg_t* recordfromto_arg;
 static const char* playback_name;
 
+dboolean demoplayback;
+dboolean userdemo;
+
 void dsda_RestartPlayback(void) {
   G_StartDemoPlayback(playback_origin_p, playback_length, playback_behaviour);
 }
@@ -70,22 +73,23 @@ void dsda_ExecutePlaybackOptions(void) {
   if (playdemo_arg)
   {
     G_DeferedPlayDemo(playback_name);
-    singledemo = true;
+    userdemo = true;
   }
   else if (fastdemo_arg) {
     G_DeferedPlayDemo(playback_name);
     fastdemo = true;
     timingdemo = true;
-    singledemo = true;
+    userdemo = true;
   }
   else if (timedemo_arg)
   {
     G_DeferedPlayDemo(playback_name);
     singletics = true;
     timingdemo = true;
-    singledemo = true;
+    userdemo = true;
   }
   else if (recordfromto_arg) {
+    userdemo = true;
     G_ContinueDemo(playback_name);
   }
 }
@@ -158,6 +162,7 @@ void dsda_ClearPlaybackStream(void) {
   playback_tics = 0;
 
   demoplayback = false;
+  userdemo = false;
 }
 
 static dboolean dsda_EndOfPlaybackStream(void) {

@@ -1871,7 +1871,7 @@ static void D_DoomMainSetup(void)
 
   dsda_ExecutePlaybackOptions();
 
-  if (!singledemo)               // killough 12/98
+  if (!userdemo)
   {
     if (autostart || netgame)
     {

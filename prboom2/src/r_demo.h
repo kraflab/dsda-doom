@@ -85,6 +85,6 @@ void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl);
 void G_WriteDemoFooter(void);
 void I_DemoExShutdown(void);
 
-int LoadDemo(const char *name, const byte **buffer, int *length, int *lump);
+int LoadDemo(const char *name, const byte **buffer, int *length);
 
 #endif // __R_DEMO__

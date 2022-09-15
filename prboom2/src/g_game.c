@@ -137,7 +137,6 @@ struct
 // The old format is still supported.
 #define NEWFORMATSIG "\xff\xff\xff\xff"
 
-static dboolean  netdemo;
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
 
@@ -168,8 +167,6 @@ int             gametic;
 int             basetic;       /* killough 9/29/98: for demo sync */
 int             totalkills, totallive, totalitems, totalsecret;    // for intermission
 dboolean         demorecording;
-dboolean         demoplayback;
-dboolean         singledemo;           // quit after playing a demo from cmdline
 wbstartstruct_t wminfo;               // parms for world map / intermission
 dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
 int             totalleveltimes;      // CPhipps - total time for all completed levels
@@ -1122,7 +1119,7 @@ static void G_DoLoadLevel (void)
     {
       G_PlayerReborn(0);
     }
-    else if ((demoplayback || netdemo) && !singledemo)
+    else if (reelplayback)
     {
       // no-op - silently ignore pistolstart when playing demo from the
       // demo reel
@@ -2113,8 +2110,8 @@ void G_LoadGame(int slot)
   }
   else
   {
+    dsda_ClearPlaybackStream();
     forced_loadgame = false;
-    demoplayback = false;
     // Don't stay in netgame state if loading single player save
     // while watching multiplayer demo
     netgame = false;
@@ -2222,7 +2219,6 @@ void G_DoLoadGame(void)
   // cheat codes and other single player only specifics.
   if (!load_via_cmd)
   {
-    netdemo = false;
     netgame = false;
     deathmatch = false;
   }
@@ -2276,15 +2272,6 @@ void G_DoLoadGame(void)
   G_AfterLoad();
 
   P_FreeSaveBuffer();
-
-  if (load_via_cmd)
-  {
-    // do nothing
-  }
-  else
-  {
-    singledemo = false;  /* Clear singledemo flag if loading from menu */
-  }
 }
 
 //
@@ -2573,9 +2560,7 @@ void G_ReloadDefaults(void)
   if (startskill == sk_none)
     startskill = (skill_t)(dsda_IntConfig(dsda_config_default_skill) - 1);
 
-  demoplayback = false;
-  singledemo = false;            // killough 9/29/98: don't stop after 1 demo
-  netdemo = false;
+  dsda_ClearPlaybackStream();
 
   // killough 2/21/98:
   memset(playeringame + 1, 0, sizeof(*playeringame) * (MAX_MAXPLAYERS - 1));
@@ -3321,8 +3306,6 @@ void G_DeferedPlayDemo (const char* name)
   gameaction = ga_playdemo;
 }
 
-static int demolumpnum = -1;
-
 static int G_GetOriginalDoomCompatLevel(int ver)
 {
   int level;
@@ -3661,7 +3644,6 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   if (playeringame[1])
   {
     netgame = true;
-    netdemo = true;
   }
 
   if (!(params & RDH_SKIP_HEADER))
@@ -3717,7 +3699,7 @@ void G_StartDemoPlayback(const byte *buffer, int length, int behaviour)
 
 void G_DoPlayDemo(void)
 {
-  if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
+  if (LoadDemo(defdemoname, &demobuffer, &demolength))
   {
     G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_NORMAL);
 
@@ -3770,12 +3752,9 @@ dboolean G_CheckDemoStatus (void)
 
   if (demoplayback)
   {
-    if (singledemo)
+    if (userdemo)
       I_SafeExit(0);  // killough
 
-    if (demolumpnum != -1) {
-      demolumpnum = -1;
-    }
     G_ReloadDefaults();    // killough 3/1/98
     netgame = false;       // killough 3/29/98
     deathmatch = false;
@@ -3968,12 +3947,10 @@ void G_ContinueDemo(const char *playback_name)
 {
   const byte *demo_p;
 
-  if (LoadDemo(playback_name, &demobuffer, &demolength, &demolumpnum))
+  if (LoadDemo(playback_name, &demobuffer, &demolength))
   {
     G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_JOIN_ON_END);
 
-    singledemo = true;
-    autostart = true;
     dsda_InitDemoRecording();
     G_BeginRecording();
   }

@@ -1315,7 +1315,7 @@ static void M_EndGameResponse(int ch)
     return;
 
   // killough 5/26/98: make endgame quit if recording or playing back demo
-  if (demorecording || singledemo)
+  if (demorecording || userplayback)
     G_CheckDemoStatus();
 
   currentMenu->lastOn = itemOn;
@@ -4060,7 +4060,7 @@ dboolean M_Responder (event_t* ev) {
     }
     if (dsda_InputActivated(dsda_input_nextlevel))
     {
-      if (demoplayback && !dsda_SkipMode() && singledemo)
+      if (userplayback && !dsda_SkipMode())
       {
         dsda_SkipToNextMap();
         return true;
@@ -4080,7 +4080,7 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_demo_endlevel))
     {
-      if (demoplayback && !dsda_SkipMode() && singledemo)
+      if (userplayback && !dsda_SkipMode())
       {
         dsda_SkipToEndOfMap();
         return true;
@@ -4089,7 +4089,7 @@ dboolean M_Responder (event_t* ev) {
 
     if (dsda_InputActivated(dsda_input_demo_skip))
     {
-      if (demoplayback && singledemo)
+      if (userplayback)
       {
         dsda_ToggleSkipMode();
         return true;

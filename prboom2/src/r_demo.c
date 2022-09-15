@@ -69,7 +69,7 @@
 #include "dsda/demo.h"
 #include "dsda/playback.h"
 
-int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
+int LoadDemo(const char *name, const byte **buffer, int *length)
 {
   char basename[9];
   char *filename = NULL;
@@ -120,8 +120,6 @@ int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
       *buffer = buf;
     if (length)
       *length = len;
-    if (lump)
-      *lump = num;
   }
 
   return (len > 0);

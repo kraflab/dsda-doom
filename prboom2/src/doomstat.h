@@ -229,8 +229,10 @@ extern  dboolean demoplayback;
 extern  dboolean demorecording;
 extern  int demover;
 
-// Quit after playing a demo from cmdline.
-extern  dboolean   singledemo;
+extern  dboolean userdemo;
+#define userplayback (demoplayback && userdemo)
+#define reelplayback (demoplayback && !userdemo)
+
 // Print timing information after quitting.  killough
 extern  dboolean   timingdemo;
 // Run tick clock at fastest speed possible while playing demo.  killough
