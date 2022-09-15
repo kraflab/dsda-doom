@@ -755,6 +755,15 @@ static dboolean console_Freeze(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_NoSleep(const char* command, const char* args) {
+  int i;
+
+  for (i = 0; i < numsectors; ++i)
+    sectors[i].soundtarget = target_player.mo;
+
+  return true;
+}
+
 static dboolean console_ScriptRunLine(const char* line) {
   if (strlen(line) && line[0] != '#' && line[0] != '!' && line[0] != '/') {
     if (strlen(line) >= CONSOLE_ENTRY_SIZE) {
@@ -969,6 +978,7 @@ static console_command_entry_t console_commands[] = {
   { "fly", console_BasicCheat, CF_DEMO },
   { "fullclip", console_CheatFullClip, CF_NEVER },
   { "freeze", console_Freeze, CF_NEVER },
+  { "nosleep", console_NoSleep, CF_NEVER },
 
   { "quicken", console_BasicCheat, CF_DEMO },
   { "ponce", console_BasicCheat, CF_DEMO },
