@@ -120,7 +120,8 @@ const char* dsda_ParsePlaybackOptions(void) {
   }
 
   arg = dsda_Arg(dsda_arg_recordfromto);
-  if (arg->found && I_RequireFile(arg->value.v_string_array[0], ".lmp")) {
+  if (arg->found) {
+    I_RequireFile(arg->value.v_string_array[0], ".lmp");
     recordfromto_arg = arg;
     dsda_SetDemoBaseName(arg->value.v_string_array[1]);
     playback_name = arg->value.v_string_array[0];
