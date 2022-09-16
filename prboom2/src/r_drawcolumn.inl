@@ -37,26 +37,10 @@
 #if (R_DRAWCOLUMN_PIPELINE & RDC_NOCOLMAP)
   #define GETCOL_DEPTH(col) GETCOL_MAPPED(col)
 #else
-  #if (R_DRAWCOLUMN_PIPELINE & RDC_DITHERZ)
-    #define GETCOL_DEPTH(col) (dither_colormaps[filter_getDitheredPixelLevel(x, y, fracz)][GETCOL_MAPPED(col)])
-  #else
-    #define GETCOL_DEPTH(col) colormap[GETCOL_MAPPED(col)]
-  #endif
+  #define GETCOL_DEPTH(col) colormap[GETCOL_MAPPED(col)]
 #endif
 
-#if (R_DRAWCOLUMN_PIPELINE & RDC_BILINEAR)
- #define GETCOL(frac, nextfrac) GETCOL_DEPTH(filter_getDitheredForColumn(x,y,frac,nextfrac))
-#elif (R_DRAWCOLUMN_PIPELINE & RDC_ROUNDED)
- #define GETCOL(frac, nextfrac) GETCOL_DEPTH(filter_getRoundedForColumn(frac,nextfrac))
-#else
- #define GETCOL(frac, nextfrac) GETCOL_DEPTH(source[(frac)>>FRACBITS])
-#endif
-
-#if (R_DRAWCOLUMN_PIPELINE & (RDC_BILINEAR|RDC_ROUNDED|RDC_DITHERZ))
-  #define INCY(y) (y++)
-#else
-  #define INCY(y)
-#endif
+#define GETCOL(frac) GETCOL_DEPTH(source[(frac)>>FRACBITS])
 
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLUCENT)
 #define COLTYPE (COL_TRANS)
@@ -73,16 +57,6 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
   fixed_t          frac;
   const fixed_t    fracstep = dcvars->iscale;
   const fixed_t    slope_texu = dcvars->texu;
-
-  // drop back to point filtering if we're minifying
-#if (R_DRAWCOLUMN_PIPELINE & (RDC_BILINEAR|RDC_ROUNDED))
-  if (dcvars->iscale > drawvars.mag_threshold) {
-    R_GetDrawColumnFunc(R_DRAWCOLUMN_PIPELINE_TYPE,
-                        RDRAW_FILTER_POINT,
-                        drawvars.filterz)(dcvars);
-    return;
-  }
-#endif
 
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
   // Adjust borders. Low...
@@ -117,52 +91,10 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
     I_Error("R_DrawColumn: %i to %i at %i", dcvars->yl, dcvars->yh, dcvars->x);
 #endif
 
-  // Determine scaling, which is the only mapping to be done.
-  #if (R_DRAWCOLUMN_PIPELINE & RDC_BILINEAR)
-    frac = dcvars->texturemid - (FRACUNIT>>1) + (dcvars->yl-centery)*fracstep;
-  #else
-    if (dcvars->flags & DRAW_COLUMN_ISPATCH)
-      frac = ((dcvars->yl - dcvars->dy) * fracstep) & 0xFFFF;
-    else
-      frac = dcvars->texturemid + (dcvars->yl-centery)*fracstep;
-  #endif
-
-  if (dcvars->drawingmasked && dcvars->edgetype == RDRAW_MASKEDCOLUMNEDGE_SLOPED) {
-    // slope the top and bottom column edge based on the fractional u coordinate
-    // and dcvars->edgeslope, which were set in R_DrawMaskedColumn
-    // in r_things.c
-    if (dcvars->yl != 0) {
-      if (dcvars->edgeslope & RDRAW_EDGESLOPE_TOP_UP) {
-        // [/#]
-        int shift = ((0xffff-(slope_texu & 0xffff))/dcvars->iscale);
-        dcvars->yl += shift;
-        count -= shift;
-        frac += 0xffff-(slope_texu & 0xffff);
-      }
-      else if (dcvars->edgeslope & RDRAW_EDGESLOPE_TOP_DOWN) {
-        // [#\]
-        int shift = ((slope_texu & 0xffff)/dcvars->iscale);
-        dcvars->yl += shift;
-        count -= shift;
-        frac += slope_texu & 0xffff;
-      }
-    }
-    if (dcvars->yh != viewheight-1) {
-      if (dcvars->edgeslope & RDRAW_EDGESLOPE_BOT_UP) {
-        // [#/]
-        int shift = ((0xffff-(slope_texu & 0xffff))/dcvars->iscale);
-        dcvars->yh -= shift;
-        count -= shift;
-      }
-      else if (dcvars->edgeslope & RDRAW_EDGESLOPE_BOT_DOWN) {
-        // [\#]
-        int shift = ((slope_texu & 0xffff)/dcvars->iscale);
-        dcvars->yh -= shift;
-        count -= shift;
-      }
-    }
-    if (count <= 0) return;
-  }
+  if (dcvars->flags & DRAW_COLUMN_ISPATCH)
+    frac = ((dcvars->yl - dcvars->dy) * fracstep) & 0xFFFF;
+  else
+    frac = dcvars->texturemid + (dcvars->yl-centery)*fracstep;
 
   // Framebuffer destination address.
    // SoM: MAGIC
@@ -207,24 +139,6 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
     const byte          *source = dcvars->source;
     const lighttable_t  *colormap = dcvars->colormap;
     const byte          *translation = dcvars->translation;
-#if (R_DRAWCOLUMN_PIPELINE & (RDC_BILINEAR|RDC_ROUNDED|RDC_DITHERZ))
-    int y = dcvars->yl;
-    const int x = dcvars->x;
-#endif
-#if (R_DRAWCOLUMN_PIPELINE & RDC_DITHERZ)
-    const int fracz = (dcvars->z >> 6) & 255;
-    const byte *dither_colormaps[2] = { dcvars->colormap, dcvars->nextcolormap };
-#endif
-#if (R_DRAWCOLUMN_PIPELINE & RDC_BILINEAR)
-  const int yl = dcvars->yl;
-  const byte *dither_sources[2] = { dcvars->source, dcvars->nextsource };
-  const unsigned int filter_fracu = (dcvars->source == dcvars->nextsource) ? 0 : (dcvars->texu>>8) & 0xff;
-#endif
-#if (R_DRAWCOLUMN_PIPELINE & RDC_ROUNDED)
-    const byte          *prevsource = dcvars->prevsource;
-    const byte          *nextsource = dcvars->nextsource;
-    const unsigned int filter_fracu = (dcvars->source == dcvars->nextsource) ? 0 : (dcvars->texu>>8) & 0xff;
-#endif
 
     count++;
 
@@ -237,16 +151,14 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
     if (dcvars->texheight == 128) {
       #define FIXEDT_128MASK ((127<<FRACBITS)|0xffff)
       while(count--) {
-        *dest = GETCOL(frac & FIXEDT_128MASK, (frac+FRACUNIT) & FIXEDT_128MASK);
-        INCY(y);
+        *dest = GETCOL(frac & FIXEDT_128MASK);
         dest += 4;
         frac += fracstep;
       }
     } else if (dcvars->texheight == 0) {
       /* cph - another special case */
       while (count--) {
-        *dest = GETCOL(frac, (frac+FRACUNIT));
-        INCY(y);
+        *dest = GETCOL(frac);
         dest += 4;
         frac += fracstep;
       }
@@ -255,21 +167,16 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
       if (! (dcvars->texheight & heightmask) ) { // power of 2 -- killough
         fixed_t fixedt_heightmask = (heightmask<<FRACBITS)|0xffff;
         while ((count-=2)>=0) { // texture height is a power of 2 -- killough
-          *dest = GETCOL(frac & fixedt_heightmask, (frac+FRACUNIT) & fixedt_heightmask);
-          INCY(y);
+          *dest = GETCOL(frac & fixedt_heightmask);
           dest += 4;
           frac += fracstep;
-          *dest = GETCOL(frac & fixedt_heightmask, (frac+FRACUNIT) & fixedt_heightmask);
-          INCY(y);
+          *dest = GETCOL(frac & fixedt_heightmask);
           dest += 4;
           frac += fracstep;
         }
         if (count & 1)
-          *dest = GETCOL(frac & fixedt_heightmask, (frac+FRACUNIT) & fixedt_heightmask);
-          INCY(y);
+          *dest = GETCOL(frac & fixedt_heightmask);
       } else {
-        fixed_t nextfrac = 0;
-
         heightmask++;
         heightmask <<= FRACBITS;
 
@@ -279,27 +186,16 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
           while (frac >= (int)heightmask)
             frac -= heightmask;
 
-#if (R_DRAWCOLUMN_PIPELINE & (RDC_BILINEAR|RDC_ROUNDED))
-        nextfrac = frac + FRACUNIT;
-        while (nextfrac >= (int)heightmask)
-          nextfrac -= heightmask;
-#endif
-
-#define INCFRAC(f) if ((f += fracstep) >= (int)heightmask) f -= heightmask;
-
         while (count--) {
           // Re-map color indices from wall texture column
           //  using a lighting/special effects LUT.
 
           // heightmask is the Tutti-Frutti fix -- killough
 
-          *dest = GETCOL(frac, nextfrac);
-          INCY(y);
+          *dest = GETCOL(frac);
           dest += 4;
-          INCFRAC(frac);
-#if (R_DRAWCOLUMN_PIPELINE & (RDC_BILINEAR|RDC_ROUNDED))
-          INCFRAC(nextfrac);
-#endif
+          if ((frac += fracstep) >= (int)heightmask)
+            frac -= heightmask;
         }
       }
     }
@@ -310,8 +206,6 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
 #undef GETCOL_MAPPED
 #undef GETCOL_DEPTH
 #undef GETCOL
-#undef INCY
-#undef INCFRAC
 #undef COLTYPE
 #undef R_DRAWCOLUMN_FUNCNAME
 #undef R_DRAWCOLUMN_PIPELINE

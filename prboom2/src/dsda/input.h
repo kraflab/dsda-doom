@@ -26,8 +26,6 @@
 #define MAX_MOUSE_BUTTONS 8
 #define MAX_JOY_BUTTONS 8
 
-extern int dsda_input_profile;
-
 typedef enum {
   dsda_input_null,
   dsda_input_forward,
@@ -78,7 +76,6 @@ typedef enum {
   dsda_input_spy,
   dsda_input_join_demo,
   dsda_input_pause,
-  dsda_input_setup,
   dsda_input_map,
   dsda_input_soundvolume,
   dsda_input_hud,
@@ -110,13 +107,7 @@ typedef enum {
   dsda_input_map_rotate,
   dsda_input_map_overlay,
   dsda_input_map_textured,
-  dsda_input_chat,
-  dsda_input_chat_dest0,
-  dsda_input_chat_dest1,
-  dsda_input_chat_dest2,
-  dsda_input_chat_dest3,
-  dsda_input_chat_backspace,
-  dsda_input_chat_enter,
+  dsda_input_repeat_message,
   dsda_input_speed_up,
   dsda_input_speed_down,
   dsda_input_speed_default,
@@ -175,6 +166,7 @@ typedef enum {
   dsda_input_mute_music,
   dsda_input_cheat_codes,
   dsda_input_notarget,
+  dsda_input_freeze,
   dsda_input_build,
   dsda_input_build_advance_frame,
   dsda_input_build_reverse_frame,
@@ -201,6 +193,17 @@ typedef enum {
   dsda_input_build_fine_backward,
   dsda_input_build_fine_strafe_left,
   dsda_input_build_fine_strafe_right,
+  dsda_input_script_0,
+  dsda_input_script_1,
+  dsda_input_script_2,
+  dsda_input_script_3,
+  dsda_input_script_4,
+  dsda_input_script_5,
+  dsda_input_script_6,
+  dsda_input_script_7,
+  dsda_input_script_8,
+  dsda_input_script_9,
+  dsda_input_fps,
   DSDA_INPUT_IDENTIFIER_COUNT
 } dsda_input_identifier_t;
 
@@ -248,6 +251,5 @@ dboolean dsda_InputActive(int identifer);
 dboolean dsda_InputKeyActive(int identifier);
 dboolean dsda_InputMouseBActive(int identifier);
 dboolean dsda_InputJoyBActive(int identifier);
-void dsda_InputCycleProfile(void);
 
 #endif

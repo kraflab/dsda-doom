@@ -234,7 +234,7 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
 // The weapon name may have a MF_DROPPED flag ored in.
 //
 
-static dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
+dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
 {
   dboolean gaveammo;
   dboolean gaveweapon;
@@ -354,7 +354,7 @@ static dboolean P_GiveArmor(player_t *player, int armortype)
 // P_GiveCard
 //
 
-static void P_GiveCard(player_t *player, card_t card)
+void P_GiveCard(player_t *player, card_t card)
 {
   if (player->cards[card])
     return;
@@ -983,7 +983,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
       }
     }
 
-    if (target->player == &players[consoleplayer] && (automapmode & am_active))
+    if (target->player == &players[consoleplayer] && automap_active)
       AM_Stop();    // don't die in auto map; switch view prior to dying
   }
 
@@ -2764,9 +2764,9 @@ void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg)
     player->yellowMessage = true;
 }
 
-static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
-                            weapontype_t weaponType, mobj_t * weapon,
-                            const char *message)
+void TryPickupWeapon(player_t * player, pclass_t weaponClass,
+                     weapontype_t weaponType, mobj_t * weapon,
+                     const char *message)
 {
     dboolean remove;
     dboolean gaveMana;
@@ -2848,7 +2848,7 @@ static void TryPickupWeapon(player_t * player, pclass_t weaponClass,
         weapon->special = 0;
     }
 
-    if (remove)
+    if (remove && !(weapon->intflags & MIF_FAKE))
     {
         if (deathmatch && !(weapon->flags & MF_DROPPED))
         {

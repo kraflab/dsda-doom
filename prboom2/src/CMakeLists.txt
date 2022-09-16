@@ -13,6 +13,8 @@ set(COMMON_SRC
     dsda.h
     dsda/analysis.c
     dsda/analysis.h
+    dsda/args.c
+    dsda/args.h
     dsda/brute_force.c
     dsda/brute_force.h
     dsda/build.c
@@ -21,6 +23,8 @@ set(COMMON_SRC
     dsda/command_display.h
     dsda/compatibility.c
     dsda/compatibility.h
+    dsda/configuration.c
+    dsda/configuration.h
     dsda/console.c
     dsda/console.h
     dsda/coordinate_display.c
@@ -35,6 +39,8 @@ set(COMMON_SRC
     dsda/excmd.h
     dsda/exhud.c
     dsda/exhud.h
+    dsda/features.c
+    dsda/features.h
     dsda/ghost.c
     dsda/ghost.h
     dsda/gl/render_scale.c
@@ -43,6 +49,51 @@ set(COMMON_SRC
     dsda/global.h
     dsda/hud.c
     dsda/hud.h
+    dsda/hud_components.h
+    dsda/hud_components/ammo_text.c
+    dsda/hud_components/ammo_text.h
+    dsda/hud_components/armor_text.c
+    dsda/hud_components/armor_text.h
+    dsda/hud_components/base.c
+    dsda/hud_components/base.h
+    dsda/hud_components/big_ammo.c
+    dsda/hud_components/big_ammo.h
+    dsda/hud_components/big_armor.c
+    dsda/hud_components/big_armor.h
+    dsda/hud_components/big_health.c
+    dsda/hud_components/big_health.h
+    dsda/hud_components/composite_time.c
+    dsda/hud_components/composite_time.h
+    dsda/hud_components/fps.c
+    dsda/hud_components/fps.h
+    dsda/hud_components/health_text.c
+    dsda/hud_components/health_text.h
+    dsda/hud_components/keys.c
+    dsda/hud_components/keys.h
+    dsda/hud_components/line_distance_tracker.c
+    dsda/hud_components/line_distance_tracker.h
+    dsda/hud_components/line_tracker.c
+    dsda/hud_components/line_tracker.h
+    dsda/hud_components/mobj_tracker.c
+    dsda/hud_components/mobj_tracker.h
+    dsda/hud_components/null.c
+    dsda/hud_components/null.h
+    dsda/hud_components/player_tracker.c
+    dsda/hud_components/player_tracker.h
+    dsda/hud_components/ready_ammo_text.c
+    dsda/hud_components/ready_ammo_text.h
+    dsda/hud_components/render_stats.c
+    dsda/hud_components/render_stats.h
+    dsda/hud_components/sector_tracker.c
+    dsda/hud_components/sector_tracker.h
+    dsda/hud_components/speed_text.c
+    dsda/hud_components/speed_text.h
+    dsda/hud_components/stat_totals.c
+    dsda/hud_components/stat_totals.h
+    dsda/hud_components/tracker.c
+    dsda/hud_components/tracker.h
+    dsda/hud_components/weapon_text.c
+    dsda/hud_components/weapon_text.h
     dsda/input.c
     dsda/input.h
     dsda/intermission_display.c
@@ -82,6 +133,8 @@ set(COMMON_SRC
     dsda/pclass.h
     dsda/playback.c
     dsda/playback.h
+    dsda/render_stats.c
+    dsda/render_stats.h
     dsda/save.c
     dsda/save.h
     dsda/settings.c
@@ -108,6 +161,8 @@ set(COMMON_SRC
     dsda/thing_id.h
     dsda/time.c
     dsda/time.h
+    dsda/tracker.c
+    dsda/tracker.h
     dsda/utility.c
     dsda/utility.h
     dstrings.c
@@ -356,7 +411,6 @@ set(EXTRA_FILES
     r_drawcolpipeline.inl
     r_drawcolumn.inl
     r_drawflush.inl
-    r_drawspan.inl
 )
 
 set(PRBOOM_PLUS_SOURCES
@@ -379,7 +433,6 @@ function(AddGameExecutable TARGET SOURCES)
         gl_fbo.c
         gl_gamma.c
         gl_hires.c
-        gl_hqresize.c
         gl_intern.h
         gl_light.c
         gl_main.c

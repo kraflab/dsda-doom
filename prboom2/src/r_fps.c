@@ -44,12 +44,12 @@
 #include "e6y.h"
 
 #include "dsda/build.h"
+#include "dsda/configuration.h"
 #include "dsda/pause.h"
 #include "dsda/settings.h"
 
 #include "hexen/a_action.h"
 
-int movement_smooth_default;
 int movement_smooth;
 dboolean isExtraDDisplay = false;
 
@@ -69,8 +69,6 @@ typedef struct
   void *address;
 } interpolation_t;
 
-int interpolation_maxobjects;
-
 static int numinterpolations = 0;
 
 tic_vars_t tic_vars;
@@ -84,7 +82,7 @@ void M_ChangeUncappedFrameRate(void)
   if (capturing_video)
     movement_smooth = true;
   else
-    movement_smooth = (singletics ? false : movement_smooth_default);
+    movement_smooth = (singletics ? false : dsda_IntConfig(dsda_config_uncapped_framerate));
 }
 
 typedef fixed_t fixed2_t[2];
@@ -108,7 +106,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
   dboolean NoInterpolate = dsda_CameraPaused() || dsda_PausedViaMenu();
 
   viewplayer = player;
-  angleoffset = viewangleoffset + dsda_BuildModeViewAngleOffset();
+  angleoffset = dsda_BuildModeViewAngleOffset();
 
   if (player->mo != oviewer || NoInterpolate)
   {
@@ -128,7 +126,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
 
       player->prev_viewz = player->viewz;
       player->prev_viewangle = player->mo->angle + angleoffset;
-      player->prev_viewpitch = P_PlayerPitch(player) + viewpitchoffset;
+      player->prev_viewpitch = P_PlayerPitch(player);
 
       P_ResetWalkcam();
     }
@@ -154,7 +152,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     else
     {
       viewangle = player->prev_viewangle + FixedMul (frac, R_SmoothPlaying_Get(player) - player->prev_viewangle) + angleoffset;
-      viewpitch = player->prev_viewpitch + FixedMul (frac, P_PlayerPitch(player) - player->prev_viewpitch) + viewpitchoffset;
+      viewpitch = player->prev_viewpitch + FixedMul (frac, P_PlayerPitch(player) - player->prev_viewpitch);
     }
   }
   else
@@ -179,7 +177,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     else
     {
       viewangle = R_SmoothPlaying_Get(player) + angleoffset;
-      viewpitch = P_PlayerPitch(player) + viewpitchoffset;
+      viewpitch = P_PlayerPitch(player);
     }
   }
 
@@ -357,11 +355,6 @@ static void R_SetInterpolation(interpolation_type_e type, void *posptr)
     int prevmax = interpolations_max;
 
     interpolations_max = interpolations_max ? interpolations_max * 2 : 256;
-
-    if (interpolation_maxobjects > 0 && interpolations_max > interpolation_maxobjects)
-    {
-      interpolations_max = interpolation_maxobjects;
-    }
 
     if (interpolations_max == prevmax)
     {

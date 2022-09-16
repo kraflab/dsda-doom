@@ -52,7 +52,6 @@
 #include "doomstat.h"
 #include "d_net.h"
 #include "f_finale.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "m_cheat.h"
@@ -87,11 +86,14 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
 #include "dsda/command_display.h"
+#include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
+#include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/save.h"
 #include "dsda/settings.h"
@@ -105,9 +107,6 @@
 #include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/split_tracker.h"
-
-#define SAVEGAMESIZE  0x20000
-#define SAVESTRINGSIZE  24
 
 struct
 {
@@ -138,13 +137,12 @@ struct
 // The old format is still supported.
 #define NEWFORMATSIG "\xff\xff\xff\xff"
 
-size_t          savegamesize = SAVEGAMESIZE; // killough
-static dboolean  netdemo;
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
 
 gameaction_t    gameaction;
 gamestate_t     gamestate;
+dboolean        in_game;
 skill_t         gameskill;
 dboolean         respawnmonsters;
 int             gameepisode;
@@ -156,7 +154,6 @@ static dboolean load_via_cmd = false;
 dboolean         timingdemo;    // if true, exit with report on completion
 dboolean         fastdemo;      // if true, run at full speed -- killough
 dboolean         nodrawers;     // for comparative timing purposes
-dboolean         noblit;        // for comparative timing purposes
 int             starttime;     // for comparative timing purposes
 dboolean         deathmatch;    // only if started as net death
 dboolean         netgame;       // only true if packets are broadcast
@@ -169,13 +166,9 @@ int             displayplayer; // view being displayed
 int             gametic;
 int             basetic;       /* killough 9/29/98: for demo sync */
 int             totalkills, totallive, totalitems, totalsecret;    // for intermission
-int             show_alive;
 dboolean         demorecording;
-dboolean         demoplayback;
-dboolean         singledemo;           // quit after playing a demo from cmdline
 wbstartstruct_t wminfo;               // parms for world map / intermission
 dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
-byte            *savebuffer;
 int             totalleveltimes;      // CPhipps - total time for all completed levels
 int             longtics;
 
@@ -264,13 +257,6 @@ static int   joyymove;
 static buttoncode_t special_event; // Event triggered by local player, to send
 static int   savegameslot;         // Slot to load if gameaction == ga_loadgame
 char         savedescription[SAVEDESCLEN];  // Description to save in savegame if gameaction == ga_savegame
-
-//jff 3/24/98 define defaultskill here
-int defaultskill;               //note 1-based
-
-// killough 2/8/98: make corpse queue variable in size
-int    bodyqueslot, bodyquesize;        // killough 2/8/98
-mobj_t **bodyque = 0;                   // phares 8/10/98
 
 // heretic
 #include "p_user.h"
@@ -459,6 +445,24 @@ static int G_NextWeapon(int direction)
   while (i != start_i && !WeaponSelectable(weapon_order_table[i].weapon));
 
   return weapon_order_table[i].weapon_num;
+}
+
+static double mouse_sensitivity_horiz;
+static double mouse_sensitivity_vert;
+static double mouse_sensitivity_mlook;
+static double mouse_strafe_divisor;
+
+void G_UpdateMouseSensitivity(void)
+{
+  double horizontal_sensitivity, fine_sensitivity;
+
+  horizontal_sensitivity = dsda_IntConfig(dsda_config_mouse_sensitivity_horiz);
+  fine_sensitivity = dsda_IntConfig(dsda_config_fine_sensitivity);
+
+  mouse_sensitivity_horiz = horizontal_sensitivity + fine_sensitivity / 100;
+  mouse_sensitivity_vert = dsda_IntConfig(dsda_config_mouse_sensitivity_vert);
+  mouse_sensitivity_mlook = dsda_IntConfig(dsda_config_mouse_sensitivity_mlook);
+  mouse_strafe_divisor = dsda_IntConfig(dsda_config_movement_mousestrafedivisor);
 }
 
 void G_BuildTiccmd(ticcmd_t* cmd)
@@ -769,9 +773,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
   }
 
-  // buttons
-  cmd->chatchar = HU_dequeueChatChar();
-
   if (dsda_InputActive(dsda_input_fire))
     cmd->buttons |= BT_ATTACK;
 
@@ -815,7 +816,10 @@ void G_BuildTiccmd(ticcmd_t* cmd)
               boom_weapon_state_injection
             ) &&
             !done_autoswitch
-          ) || cmd->buttons & BT_ATTACK
+          ) || (
+            cmd->buttons & BT_ATTACK &&
+            players[consoleplayer].pendingweapon == wp_nochange
+          )
         )
       ) || (!hexen && dsda_InputActive(dsda_input_toggleweapon))
     )
@@ -908,7 +912,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   // mouse
 
-  if (mouse_doubleclick_as_use) {//e6y
+  if (dsda_IntConfig(dsda_config_mouse_doubleclick_as_use)) {//e6y
     // forward double click
     if (dsda_InputMouseBActive(dsda_input_forward) != dclickstate && dclicktime > 1 )
     {
@@ -953,10 +957,12 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       }
   }
 
-  if (!dsda_NoVert())
+  if (dsda_VertMouse())
   {
     forward += mousey;
   }
+
+  dsda_ApplyQuickstartMouseCache(&mousex);
 
   if (strafe)
   {
@@ -965,7 +971,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     double true_delta;
 
     true_delta = mousestrafe_carry +
-                 (double) mousex / movement_mousestrafedivisor;
+                 (double) mousex / mouse_strafe_divisor;
 
     delta = (int) true_delta;
     delta = (delta / 2) * 2;
@@ -979,8 +985,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (!walkcamera.type || menuactive) //e6y
     mousex = mousey = 0;
-
-  motion_blur.curr_speed_pow2 = 0;
 
   if (forward > MAXPLMOVE)
     forward = MAXPLMOVE;
@@ -1002,7 +1006,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       else if (side < -player_class->forwardmove[0])
         side = -player_class->forwardmove[0];
     }
-    else if(!movement_strafe50onturns && !strafe && cmd->angleturn)
+    else if (!dsda_IntConfig(dsda_config_movement_strafe50onturns) && !strafe && cmd->angleturn)
     {
       if (side > player_class->sidemove[1])
         side = player_class->sidemove[1];
@@ -1022,14 +1026,12 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   cmd->forwardmove += fudgef((signed char)forward);
   cmd->sidemove += side;
 
-  dsda_ApplyQuickstartMouseCache(cmd);
-
   if ((demorecording && !longtics) || shorttics)
   {
     // Chocolate Doom Mouse Behaviour
     // Don't discard mouse delta even if value is too small to
     // turn the player this tic
-    if (mouse_carrytics) {
+    if (dsda_IntConfig(dsda_config_mouse_carrytics)) {
       static signed short carry = 0;
       signed short desired_angleturn = cmd->angleturn + carry;
       cmd->angleturn = (desired_angleturn + 128) & 0xff00;
@@ -1055,12 +1057,15 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (!dsda_StrictMode()) {
     if (leveltime == 0 && totalleveltimes == 0) {
-      int p = M_CheckParm("-first_input");
+      dsda_arg_t* arg;
 
-      if (p && (p + 3 < myargc)) {
-        cmd->forwardmove = (signed char) atoi(myargv[p + 1]);
-        cmd->sidemove = (signed char) atoi(myargv[p + 2]);
-        cmd->angleturn = (signed short) (atoi(myargv[p + 3]) << 8);
+      arg = dsda_Arg(dsda_arg_first_input);
+      if (arg->found) {
+        dsda_TrackFeature(UF_BUILDZERO);
+
+        cmd->forwardmove = (signed char) arg->value.v_int_array[0];
+        cmd->sidemove = (signed char) arg->value.v_int_array[1];
+        cmd->angleturn = (signed short) (arg->value.v_int_array[2] << 8);
 
         dsda_JoinDemoCmd(cmd);
       }
@@ -1114,7 +1119,7 @@ static void G_DoLoadLevel (void)
     {
       G_PlayerReborn(0);
     }
-    else if ((demoplayback || netdemo) && !singledemo)
+    else if (reelplayback)
     {
       // no-op - silently ignore pistolstart when playing demo from the
       // demo reel
@@ -1172,7 +1177,6 @@ static void G_DoLoadLevel (void)
       }
   }
 }
-
 
 //
 // G_Responder
@@ -1275,19 +1279,19 @@ dboolean G_Responder (event_t* ev)
     {
       double value;
 
-      value = dsda_FineSensitivity(mouseSensitivity_horiz) * AccelerateMouse(ev->data2);
+      value = mouse_sensitivity_horiz * AccelerateMouse(ev->data2);
       mousex += G_CarryDouble(carry_mousex, value);
       if (dsda_MouseLook())
       {
-        value = (double) mouseSensitivity_mlook * AccelerateMouse(ev->data3);
-        if (movement_mouseinvert)
+        value = mouse_sensitivity_mlook * AccelerateMouse(ev->data3);
+        if (dsda_IntConfig(dsda_config_movement_mouseinvert))
           mlooky += G_CarryDouble(carry_mousey, value);
         else
           mlooky -= G_CarryDouble(carry_mousey, value);
       }
       else
       {
-        value = (double) mouseSensitivity_vert * AccelerateMouse(ev->data3) / 8;
+        value = mouse_sensitivity_vert * AccelerateMouse(ev->data3) / 8;
         mousey += G_CarryDouble(carry_vertmouse, value);
       }
 
@@ -1676,7 +1680,6 @@ void G_PlayerReborn (int player)
     SB_Start();             // refresh the status bar
     inv_ptr = 0;            // reset the inventory pointer
     curpos = 0;
-    viewangleoffset = 0;
   }
 
   for (i=0 ; i<NUMAMMO ; i++)
@@ -1748,27 +1751,11 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
   if (!i)
     return false;
 
-  // flush an old corpse if needed
-  // killough 2/8/98: make corpse queue have an adjustable limit
-  // killough 8/1/98: Fix bugs causing strange crashes
-
-  if (bodyquesize > 0)
-    {
-      static int queuesize;
-      if (queuesize < bodyquesize)
   {
-    bodyque = Z_Realloc(bodyque, bodyquesize*sizeof*bodyque);
-    memset(bodyque+queuesize, 0,
-     (bodyquesize-queuesize)*sizeof*bodyque);
-    queuesize = bodyquesize;
+    void A_AddPlayerCorpse(mobj_t * actor);
+
+    A_AddPlayerCorpse(players[playernum].mo);
   }
-      if (bodyqueslot >= bodyquesize)
-  P_RemoveMobj(bodyque[bodyqueslot % bodyquesize]);
-      bodyque[bodyqueslot++ % bodyquesize] = players[playernum].mo;
-    }
-  else
-    if (!bodyquesize)
-      P_RemoveMobj(players[playernum].mo);
 
   // spawn a teleport fog
   ss = R_PointInSubsector (x,y);
@@ -1949,7 +1936,7 @@ void G_DoCompleted (void)
     if (playeringame[i])
       G_PlayerFinishLevel(i);        // take away cards and stuff
 
-  if (automapmode & am_active)
+  if (automap_active)
     AM_Stop();
 
   wminfo.nextep = wminfo.epsd = gameepisode -1;
@@ -1991,7 +1978,7 @@ void G_DoCompleted (void)
   wminfo.totaltimes = (totalleveltimes += (leveltime - leveltime%35));
 
   gamestate = GS_INTERMISSION;
-  automapmode &= ~am_active;
+  automap_active = false;
 
   // lmpwatch.pl engine-side demo testing support
   // print "FINISHED: <mapname>" when the player exits the current map
@@ -2123,8 +2110,8 @@ void G_LoadGame(int slot)
   }
   else
   {
+    dsda_ClearPlaybackStream();
     forced_loadgame = false;
-    demoplayback = false;
     // Don't stay in netgame state if loading single player save
     // while watching multiplayer demo
     netgame = false;
@@ -2141,38 +2128,15 @@ void G_LoadGame(int slot)
 
 static void G_LoadGameErr(const char *msg)
 {
-  Z_Free(savebuffer);                // Free the savegame buffer
+  P_FreeSaveBuffer();
   M_ForcedLoadGame(msg);             // Print message asking for 'Y' to force
 }
-
-// CPhipps - size of version header
-#define VERSIONSIZE   16
-#define SAVEVERSION "DSDA-DOOM 2"
 
 const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
 { "Doom v1.2", "Doom v1.666", "Doom/Doom2 v1.9", "Ultimate Doom/Doom95", "Final Doom",
   "early DosDoom", "TASDoom", "\"boom compatibility\"", "boom v2.01", "boom v2.02", "lxdoom v1.3.2+",
   "MBF", "PrBoom 2.03beta", "PrBoom v2.1.0-2.1.1", "PrBoom v2.1.2-v2.2.6",
   "PrBoom v2.3.x", "PrBoom 2.4.0", "Current PrBoom", "", "", "", "MBF21" };
-
-//e6y
-unsigned int GetPackageVersion(void)
-{
-  static unsigned int PACKAGEVERSION = 0;
-
-  //e6y: "2.4.8.2" -> 0x02040802
-  if (PACKAGEVERSION == 0)
-  {
-    int b[4], i, k = 1;
-    memset(b, 0, sizeof(b));
-    sscanf(PACKAGE_VERSION, "%d.%d.%d.%d", &b[0], &b[1], &b[2], &b[3]);
-    for (i = 3; i >= 0; i--, k *= 256)
-    {
-      PACKAGEVERSION += b[i] * k;
-    }
-  }
-  return PACKAGEVERSION;
-}
 
 //==========================================================================
 //
@@ -2203,123 +2167,11 @@ void RecalculateDrawnSubsectors(void)
   gld_ResetTexturedAutomap();
 }
 
-void G_DoLoadGame(void)
+void G_AfterLoad(void)
 {
-  int  length, i;
-  // CPhipps - do savegame filename stuff here
-  char *name;                // killough 3/22/98
-  int savegame_compatibility = -1;
-  //e6y: numeric version number of package should be zero before initializing from savegame
-  unsigned int packageversion = 0;
-  const char *maplump;
-  int time, ttime;
-  int epi, map;
+  extern int BorderNeedRefresh;
 
-  dsda_SetLastLoadSlot(savegameslot);
-
-  name = dsda_SaveGameName(savegameslot, load_via_cmd);
-
-  // [crispy] loaded game must always be single player.
-  // Needed for ability to use a further game loading, as well as
-  // cheat codes and other single player only specifics.
-  if (!load_via_cmd)
-  {
-    netdemo = false;
-    netgame = false;
-    deathmatch = false;
-  }
-
-  gameaction = ga_nothing;
-
-  length = M_ReadFile(name, &savebuffer);
-  if (length<=0)
-    I_Error("Couldn't read file %s: %s", name, "(Unknown Error)");
-  Z_Free(name);
-  save_p = savebuffer + SAVESTRINGSIZE;
-
-  if (strncmp((char*)save_p, SAVEVERSION, VERSIONSIZE) && !forced_loadgame) {
-    G_LoadGameErr("Unrecognised savegame version!\nAre you sure? (y/n) ");
-    return;
-  }
-
-  save_p += VERSIONSIZE;
-
-  // CPhipps - always check savegames even when forced,
-  //  only print a warning if forced
-  {  // killough 3/16/98: check lump name checksum (independent of order)
-    uint_64_t checksum = 0;
-
-    checksum = G_Signature();
-
-    if (memcmp(&checksum, save_p, sizeof checksum))
-    {
-      if (!forced_loadgame)
-      {
-        char *msg = Z_Malloc(strlen((char*)save_p + sizeof checksum) + 128);
-        strcpy(msg,"Incompatible Savegame!!!\n");
-        if (save_p[sizeof checksum])
-          strcat(strcat(msg,"Wads expected:\n\n"), (char*)save_p + sizeof checksum);
-        strcat(msg, "\nAre you sure?");
-        G_LoadGameErr(msg);
-        Z_Free(msg);
-        return;
-      }
-      else
-        lprintf(LO_WARN, "G_DoLoadGame: Incompatible savegame\n");
-    }
-    save_p += sizeof checksum;
-  }
-
-  save_p += strlen((char*)save_p)+1;
-
-  //e6y: check on new savegame format
-  if (!memcmp(NEWFORMATSIG, save_p, strlen(NEWFORMATSIG)))
-  {
-    save_p += strlen(NEWFORMATSIG);
-    memcpy(&packageversion, save_p, sizeof packageversion);
-    save_p += sizeof packageversion;
-  }
-
-  compatibility_level = *save_p++;
-  gameskill = *save_p++;
-
-  epi = *save_p++;
-  map = *save_p++;
-  dsda_UpdateGameMap(epi, map);
-
-  for (i = 0; i < g_maxplayers; i++)
-    playeringame[i] = *save_p++;
-  save_p += FUTURE_MAXPLAYERS - g_maxplayers;         // killough 2/28/98
-
-  idmusnum = *save_p++;           // jff 3/17/98 restore idmus music
-  if (idmusnum==255) idmusnum=-1; // jff 3/18/98 account for unsigned byte
-
-  /* killough 3/1/98: Read game options
-   * killough 11/98: move down to here
-   */
-  // Avoid assignment of const to non-const: add the difference
-  // between the updated and original pointer onto the original
-  save_p += (G_ReadOptions(save_p) - save_p);
-
-  // load a base level
-  G_InitNew (gameskill, gameepisode, gamemap, false);
-
-  /* get the times - killough 11/98: save entire word */
-  memcpy(&leveltime, save_p, sizeof leveltime);
-  save_p += sizeof leveltime;
-
-  /* cph - total episode time */
-  //e6y: total level times are always saved since 2.4.8.1
-  memcpy(&totalleveltimes, save_p, sizeof totalleveltimes);
-  save_p += sizeof totalleveltimes;
-
-  // killough 11/98: load revenant tracer state
-  basetic = gametic - *save_p++;
-
-  // dearchive all the modifications
-  dsda_UnArchiveAll();
-
-  R_ActivateSectorInterpolations();//e6y
+  R_ActivateSectorInterpolations(); //e6y
   R_SmoothPlaying_Reset(NULL); // e6y
 
   if (musinfo.current_item != -1)
@@ -2328,21 +2180,6 @@ void G_DoLoadGame(void)
   }
 
   RecalculateDrawnSubsectors();
-
-  if (*save_p != 0xe6)
-    I_Error ("G_DoLoadGame: Bad savegame");
-
-  /* Print some information about the save game */
-  maplump = MAPNAME(gameepisode, gamemap);
-  time = leveltime / TICRATE;
-  ttime = (totalleveltimes + leveltime) / TICRATE;
-
-  lprintf(LO_INFO, "G_DoLoadGame: [%d] %s (%s), Skill %d, Level Time %02d:%02d:%02d, Total Time %02d:%02d:%02d\n",
-    savegameslot + 1, maplump, W_GetLumpInfoByNum(W_GetNumForName(maplump))->wadfile->name, gameskill + 1,
-    time/3600, (time%3600)/60, time%60, ttime/3600, (ttime%3600)/60, ttime%60);
-
-  // done
-  Z_Free (savebuffer);
 
   if (hexen)
   {
@@ -2357,17 +2194,84 @@ void G_DoLoadGame(void)
   if (setsizeneeded)
     R_ExecuteSetViewSize ();
 
-  // draw the pattern into the back screen
   R_FillBackScreen ();
 
-  if (load_via_cmd)
+  BorderNeedRefresh = true;
+  ST_Start();
+}
+
+void G_DoLoadGame(void)
+{
+  int  length, i;
+  // CPhipps - do savegame filename stuff here
+  char *name;                // killough 3/22/98
+  int saveversion;
+  int savegame_compatibility = -1;
+  const char *maplump;
+  int time, ttime;
+
+  dsda_SetLastLoadSlot(savegameslot);
+
+  name = dsda_SaveGameName(savegameslot, load_via_cmd);
+
+  // [crispy] loaded game must always be single player.
+  // Needed for ability to use a further game loading, as well as
+  // cheat codes and other single player only specifics.
+  if (!load_via_cmd)
   {
-    // do nothing
+    netgame = false;
+    deathmatch = false;
   }
-  else
-  {
-    singledemo = false;  /* Clear singledemo flag if loading from menu */
+
+  gameaction = ga_nothing;
+
+  length = M_ReadFile(name, &savebuffer);
+  if (length<=0)
+    I_Error("Couldn't read file %s: %s", name, "(Unknown Error)");
+  Z_Free(name);
+  save_p = savebuffer + SAVESTRINGSIZE;
+
+  P_LOAD_X(saveversion);
+  if (saveversion != SAVEVERSION && !forced_loadgame) {
+    G_LoadGameErr("Unrecognised savegame version!\nAre you sure? (y/n) ");
+    return;
   }
+
+  // CPhipps - always check savegames even when forced,
+  //  only print a warning if forced
+  {  // killough 3/16/98: check lump name checksum (independent of order)
+    uint_64_t checksum;
+
+    P_LOAD_X(checksum);
+
+    if (checksum != G_Signature() && !forced_loadgame)
+    {
+      char *msg = Z_Malloc(strlen((char *) save_p) + 128);
+
+      strcpy(msg, "Incompatible Savegame!!!\n");
+      if (*save_p)
+        strcat(strcat(msg, "Wads expected:\n\n"), (char *) save_p);
+      strcat(msg, "\nAre you sure?");
+
+      G_LoadGameErr(msg);
+
+      Z_Free(msg);
+
+      return;
+    }
+  }
+
+  save_p += strlen((char*) save_p) + 1;
+
+  // dearchive all the modifications
+  dsda_UnArchiveAll();
+
+  if (*save_p != 0xe6)
+    I_Error ("G_DoLoadGame: Bad savegame");
+
+  G_AfterLoad();
+
+  P_FreeSaveBuffer();
 }
 
 //
@@ -2391,37 +2295,13 @@ void G_SaveGame(int slot, const char *description)
   }
 }
 
-// Check for overrun and realloc if necessary -- Lee Killough 1/22/98
-void (CheckSaveGame)(size_t size, const char* file, int line)
-{
-  size_t pos = save_p - savebuffer;
-
-#ifdef RANGECHECK
-  /* cph 2006/08/07 - after-the-fact sanity checking of CheckSaveGame calls */
-  static size_t prev_check;
-  static const char* prevf;
-  static int prevl;
-
-  if (pos > prev_check)
-    I_Error("CheckSaveGame at %s:%d called for insufficient buffer (%u < %u)", prevf, prevl, prev_check, pos);
-  prev_check = size + pos;
-  prevf = file;
-  prevl = line;
-#endif
-
-  size += 1024;  // breathing room
-  if (pos+size > savegamesize)
-    save_p = (savebuffer = Z_Realloc(savebuffer,
-           savegamesize += (size+1023) & ~1023)) + pos;
-}
-
 static void G_DoSaveGame(dboolean via_cmd)
 {
   char *name;
   char *description;
+  int saveversion;
+  uint_64_t checksum;
   int  i;
-  //e6y: numeric version number of package
-  unsigned int packageversion = GetPackageVersion();
   const char *maplump;
   int time, ttime;
 
@@ -2433,78 +2313,35 @@ static void G_DoSaveGame(dboolean via_cmd)
   name = dsda_SaveGameName(savegameslot, via_cmd);
 
   description = savedescription;
+  saveversion = SAVEVERSION;
 
-  save_p = savebuffer = Z_Malloc(savegamesize);
+  P_InitSaveBuffer();
 
-  CheckSaveGame(SAVESTRINGSIZE+VERSIONSIZE+sizeof(uint_64_t));
-  memcpy (save_p, description, SAVESTRINGSIZE);
-  save_p += SAVESTRINGSIZE;
+  P_SAVE_SIZE(description, SAVESTRINGSIZE);
+  P_SAVE_X(saveversion);
 
-  memset(save_p, 0, VERSIONSIZE);
-  strncpy(save_p, SAVEVERSION, VERSIONSIZE);
-  save_p += VERSIONSIZE;
-
-  { /* killough 3/16/98, 12/98: store lump name checksum */
-    uint_64_t checksum = G_Signature();
-    memcpy(save_p, &checksum, sizeof checksum);
-    save_p += sizeof checksum;
-  }
+  /* killough 3/16/98, 12/98: store lump name checksum */
+  checksum = G_Signature();
+  P_SAVE_X(checksum);
 
   // killough 3/16/98: store pwad filenames in savegame
   {
     // CPhipps - changed for new wadfiles handling
     size_t i;
     for (i = 0; i<numwadfiles; i++)
-      {
-        const char *const w = wadfiles[i].name;
-        CheckSaveGame(strlen(w)+2);
-        strcpy((char*)save_p, w);
-        save_p += strlen((char*)save_p);
-        *save_p++ = '\n';
-      }
-    *save_p++ = 0;
+    {
+      const char *const w = wadfiles[i].name;
+      size_t size = strlen(w);
+
+      P_SAVE_SIZE(w, size);
+      P_SAVE_BYTE('\n');
+    }
+    P_SAVE_BYTE(0);
   }
-
-  CheckSaveGame(dsda_GameOptionSize()+FUTURE_MAXPLAYERS+14+strlen(NEWFORMATSIG)+sizeof packageversion);
-
-  //e6y: saving of the version number of package
-  strcpy((char*)save_p, NEWFORMATSIG);
-  save_p += strlen(NEWFORMATSIG);
-  memcpy(save_p, &packageversion, sizeof packageversion);
-  save_p += sizeof packageversion;
-
-  *save_p++ = compatibility_level;
-
-  *save_p++ = gameskill;
-  *save_p++ = gameepisode;
-  *save_p++ = gamemap;
-
-  for (i = 0; i < g_maxplayers; i++)
-    *save_p++ = playeringame[i];
-
-  for (;i<FUTURE_MAXPLAYERS;i++)         // killough 2/28/98
-    *save_p++ = 0;
-
-  *save_p++ = idmusnum;               // jff 3/17/98 save idmus state
-
-  save_p = G_WriteOptions(save_p);    // killough 3/1/98: save game options
-
-  /* cph - FIXME - endianness? */
-  /* killough 11/98: save entire word */
-  memcpy(save_p, &leveltime, sizeof leveltime);
-  save_p += sizeof leveltime;
-
-  /* cph - total episode time */
-  //e6y: always saved since 2.4.8
-  memcpy(save_p, &totalleveltimes, sizeof totalleveltimes);
-  save_p += sizeof totalleveltimes;
-
-  // killough 11/98: save revenant tracer state
-  *save_p++ = logictic & 255;
 
   dsda_ArchiveAll();
 
-  *save_p++ = 0xe6;   // consistency marker
+  P_SAVE_BYTE(0xe6);   // consistency marker
 
   doom_printf( "%s", M_WriteFile(name, savebuffer, save_p - savebuffer)
          ? s_GGSAVED /* Ty - externalised */
@@ -2519,8 +2356,7 @@ static void G_DoSaveGame(dboolean via_cmd)
     savegameslot + 1, maplump, W_GetLumpInfoByNum(W_GetNumForName(maplump))->wadfile->name, gameskill + 1,
     time/3600, (time%3600)/60, time%60, ttime/3600, (ttime%3600)/60, ttime%60);
 
-  Z_Free(savebuffer);  // killough
-  savebuffer = save_p = NULL;
+  P_FreeSaveBuffer();
 
   savedescription[0] = 0;
   Z_Free(name);
@@ -2670,7 +2506,7 @@ void G_ReloadDefaults(void)
 {
   const dsda_options_t* options;
 
-  compatibility_level = default_compatibility_level;
+  compatibility_level = dsda_IntConfig(dsda_config_default_complevel);
   {
     int l;
     l = dsda_CompatibilityLevel();
@@ -2721,12 +2557,10 @@ void G_ReloadDefaults(void)
 
   //jff 3/24/98 set startskill from defaultskill in config file, unless
   // it has already been set by a -skill parameter
-  if (startskill==sk_none)
-    startskill = (skill_t)(defaultskill-1);
+  if (startskill == sk_none)
+    startskill = (skill_t)(dsda_IntConfig(dsda_config_default_skill) - 1);
 
-  demoplayback = false;
-  singledemo = false;            // killough 9/29/98: don't stop after 1 demo
-  netdemo = false;
+  dsda_ClearPlaybackStream();
 
   // killough 2/21/98:
   memset(playeringame + 1, 0, sizeof(*playeringame) * (MAX_MAXPLAYERS - 1));
@@ -2865,12 +2699,12 @@ int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap)
   if (gamemode != commercial)
   {
     if (sscanf(mapuname, "E%dM%d", &epi, &map) != 2) return 0;
-    snprintf(lumpname, 9, "E%dM%d", epi, map);
+    snprintf(lumpname, sizeof(lumpname), "E%dM%d", epi, map);
   }
   else
   {
     if (sscanf(mapuname, "MAP%d", &map) != 1) return 0;
-    snprintf(lumpname, 9, "MAP%02d", map);
+    snprintf(lumpname, sizeof(lumpname), "MAP%02d", map);
     epi = 1;
   }
   if (pEpi) *pEpi = epi;
@@ -2898,6 +2732,8 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   dboolean fake_episode_check =
     compatibility_level == ultdoom_compatibility ||
     compatibility_level == finaldoom_compatibility;
+
+  in_game = true;
 
   if (prepare)
     dsda_PrepareInitNew();
@@ -2998,7 +2834,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
 
   dsda_ResetPauseMode();
   dsda_ResetCommandHistory();
-  automapmode &= ~am_active;
+  automap_active = false;
   gameskill = skill;
   dsda_UpdateGameMap(episode, map);
 
@@ -3306,7 +3142,7 @@ void G_BeginRecording (void)
         case mbf21_compatibility:
              v = 221;
              longtics = 1;
-             shorttics = !M_CheckParm("-longtics");
+             shorttics = !dsda_Flag(dsda_arg_longtics);
              break;
         default: I_Error("G_BeginRecording: PrBoom compatibility level unrecognised?");
       }
@@ -3386,7 +3222,7 @@ void G_BeginRecording (void)
       *demo_p++ = 0;
   } else if (!raven) { // cph - write old v1.9 demos (might even sync)
     unsigned char v = 109;
-    longtics = M_CheckParm("-longtics");
+    longtics = dsda_Flag(dsda_arg_longtics);
     if (longtics)
     {
       v = 111;
@@ -3455,8 +3291,6 @@ void G_BeginRecording (void)
   dsda_ContinueKeyFrame();
   dsda_ResetSplits();
 
-  R_DemoEx_ResetMLook();
-
   Z_Free(demostart);
 }
 
@@ -3471,8 +3305,6 @@ void G_DeferedPlayDemo (const char* name)
   defdemoname = name;
   gameaction = ga_playdemo;
 }
-
-static int demolumpnum = -1;
 
 static int G_GetOriginalDoomCompatLevel(int ver)
 {
@@ -3633,9 +3465,9 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       // There is no more desynch on mesh.lmp @ mesh.wad
       // prboom -iwad doom.wad -file mesh.wad -playdemo mesh.lmp -nomonsters
       // http://www.doomworld.com/idgames/index.php?id=13976
-      respawnparm = M_CheckParm("-respawn");
-      fastparm = M_CheckParm("-fast");
-      nomonsters = M_CheckParm("-nomonsters");
+      respawnparm = dsda_Flag(dsda_arg_respawn);
+      fastparm = dsda_Flag(dsda_arg_fast);
+      nomonsters = dsda_Flag(dsda_arg_nomonsters);
 
       // Read special parameter bits from player one byte.
       // This aligns with vvHeretic demo usage:
@@ -3646,7 +3478,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
       {
         if (*demo_p & DEMOHEADER_RESPAWN)
           respawnparm = true;
-        if (*demo_p & DEMOHEADER_LONGTICS || M_CheckParm("-longtics"))
+        if (*demo_p & DEMOHEADER_LONGTICS || dsda_Flag(dsda_arg_longtics))
           longtics = true;
         if (*demo_p & DEMOHEADER_NOMONSTERS)
           nomonsters = true;
@@ -3798,12 +3630,13 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   }
 
   {
-    int p = M_CheckParm("-consoleplayer");
+    dsda_arg_t* arg;
 
-    if (p && (p + 1 < myargc)) {
-      consoleplayer = atoi(myargv[p + 1]);
+    arg = dsda_Arg(dsda_arg_consoleplayer);
+    if (arg->found) {
+      consoleplayer = arg->value.v_int;
 
-      if (consoleplayer < 0 || consoleplayer >= g_maxplayers || !playeringame[consoleplayer])
+      if (consoleplayer >= g_maxplayers || !playeringame[consoleplayer])
         consoleplayer = 0;
     }
   }
@@ -3811,12 +3644,12 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
   if (playeringame[1])
   {
     netgame = true;
-    netdemo = true;
   }
 
   if (!(params & RDH_SKIP_HEADER))
   {
     G_InitNew(skill, episode, map, true);
+    demo_p = dsda_EvaluateDemoStartPoint(demo_p);
   }
 
   for (i = 0; i < g_maxplayers; i++)         // killough 4/24/98
@@ -3866,7 +3699,7 @@ void G_StartDemoPlayback(const byte *buffer, int length, int behaviour)
 
 void G_DoPlayDemo(void)
 {
-  if (LoadDemo(defdemoname, &demobuffer, &demolength, &demolumpnum))
+  if (LoadDemo(defdemoname, &demobuffer, &demolength))
   {
     G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_NORMAL);
 
@@ -3919,12 +3752,9 @@ dboolean G_CheckDemoStatus (void)
 
   if (demoplayback)
   {
-    if (singledemo)
+    if (userdemo)
       I_SafeExit(0);  // killough
 
-    if (demolumpnum != -1) {
-      demolumpnum = -1;
-    }
     G_ReloadDefaults();    // killough 3/1/98
     netgame = false;       // killough 3/29/98
     deathmatch = false;
@@ -3948,7 +3778,7 @@ void doom_printf(const char *s, ...)
   static char msg[MAX_MESSAGE_SIZE];
   va_list v;
   va_start(v,s);
-  doom_vsnprintf(msg,sizeof(msg),s,v);   /* print message in buffer */
+  vsnprintf(msg,sizeof(msg),s,v);   /* print message in buffer */
   va_end(v);
   players[consoleplayer].message = msg;  // set new message
 }
@@ -4117,12 +3947,10 @@ void G_ContinueDemo(const char *playback_name)
 {
   const byte *demo_p;
 
-  if (LoadDemo(playback_name, &demobuffer, &demolength, &demolumpnum))
+  if (LoadDemo(playback_name, &demobuffer, &demolength))
   {
     G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_JOIN_ON_END);
 
-    singledemo = true;
-    autostart = true;
     dsda_InitDemoRecording();
     G_BeginRecording();
   }
@@ -4265,7 +4093,6 @@ void G_PlayerExitMap(int playerNumber)
     if (player == &players[consoleplayer])
     {
         SB_Start();          // refresh the status bar
-        viewangleoffset = 0;
     }
 }
 
@@ -4285,7 +4112,7 @@ static void Hexen_G_DoCompleted(void)
         }
     }
 
-    if (automapmode & am_active)
+    if (automap_active)
       AM_Stop();
 
     e6y_G_DoCompleted();

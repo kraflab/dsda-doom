@@ -83,6 +83,7 @@ const char* I_GetTempDir(void);
 const char *I_DoomExeDir(void); // killough 2/16/98: path to executable's dir
 
 dboolean HasTrailingSlash(const char* dn);
+char* I_RequireFile(const char* wfname, const char* ext);
 char* I_FindFile(const char* wfname, const char* ext);
 char* I_FindFileEx(const char* wfname, const char* ext);
 const char* I_FindFile2(const char* wfname, const char* ext);

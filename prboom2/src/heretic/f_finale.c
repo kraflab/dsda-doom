@@ -39,8 +39,6 @@ static const char *finaleflat;
 
 static int FontABaseLump;
 
-extern enum automapmode_e automapmode;
-
 /*
 =======================
 =
@@ -53,7 +51,7 @@ void Heretic_F_StartFinale(void)
 {
   gameaction = ga_nothing;
   gamestate = GS_FINALE;
-  automapmode &= ~am_active;
+  automap_active = false;
 
   switch (gameepisode)
   {

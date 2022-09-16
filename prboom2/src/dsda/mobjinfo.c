@@ -76,7 +76,7 @@ static deh_mobj_index_entry_t deh_mobj_index_hash[DEH_MOBJ_INDEX_HASH_SIZE];
 static int deh_mobj_index_start;
 static int deh_mobj_index_end;
 
-static int dsda_GetDehMobjIndex(int index) {
+int dsda_GetDehMobjIndex(int index) {
   deh_mobj_index_entry_t* entry;
 
   if (index < deh_mobj_index_start)

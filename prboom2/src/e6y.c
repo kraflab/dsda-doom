@@ -64,7 +64,6 @@
 #include "i_sound.h"
 #include "m_menu.h"
 #include "lprintf.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "i_system.h"
 #include "p_maputl.h"
@@ -85,6 +84,7 @@
 #include "d_deh.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/playback.h"
@@ -98,46 +98,8 @@ int demo_playerscount;
 int demo_tics_count;
 char demo_len_st[80];
 
-int avi_shot_time;
-int avi_shot_num;
-const char *avi_shot_fname;
-
-int speed_step;
-
-int hudadd_gamespeed;
-int hudadd_leveltime;
-int hudadd_demotime;
-int hudadd_secretarea;
-int hudadd_maxtotals;
-int hudadd_demoprogressbar;
-int hudadd_crosshair;
-int hudadd_crosshair_scale;
-int hudadd_crosshair_color;
-int hudadd_crosshair_health;
-int hudadd_crosshair_target;
-int hudadd_crosshair_target_color;
-int hudadd_crosshair_lock_target;
-int movement_strafe50;
-int movement_shorttics;
-int movement_strafe50onturns;
-int movement_mouseinvert;
-int movement_maxviewpitch;
-int movement_mousestrafedivisor;
 int mouse_handler;
-int mouse_doubleclick_as_use;
-int mouse_carrytics;
-int render_fov = 90;
-int render_multisampling;
-int render_paperitems;
-int render_wipescreen;
-int mouse_acceleration;
-int quickstart_window_ms;
-
-int palette_ondamage;
-int palette_onbonus;
-int palette_onpowers;
-
-float mouse_accelfactor;
+int gl_render_fov = 90;
 
 camera_t walkcamera;
 
@@ -147,7 +109,6 @@ hu_textline_t  w_precache;
 char hud_add[80];
 char hud_centermsg[80];
 
-int mouseSensitivity_mlook;
 angle_t viewpitch;
 float skyscale;
 float screen_skybox_zplane;
@@ -211,63 +172,60 @@ void e6y_assert(const char *format, ...)
 void ParamsMatchingCheck()
 {
   dboolean recording_attempt =
-    M_CheckParm("-record") ||
-    M_CheckParm("-recordfromto");
+    dsda_Flag(dsda_arg_record) ||
+    dsda_Flag(dsda_arg_recordfromto);
 
   dboolean playbacking_attempt =
-    M_CheckParm("-playdemo") ||
-    M_CheckParm("-timedemo") ||
-    M_CheckParm("-fastdemo");
+    dsda_Flag(dsda_arg_playdemo) ||
+    dsda_Flag(dsda_arg_timedemo) ||
+    dsda_Flag(dsda_arg_fastdemo);
 
   if (recording_attempt && playbacking_attempt)
     I_Error("Params are not matching: Can not being played back and recorded at the same time.");
 }
 
 prboom_comp_t prboom_comp[PC_MAX] = {
-  {0xffffffff, 0x02020615, 0, "-force_monster_avoid_hazards"},
-  {0x00000000, 0x02040601, 0, "-force_remove_slime_trails"},
-  {0x02020200, 0x02040801, 0, "-force_no_dropoff"},
-  {0x00000000, 0x02040801, 0, "-force_truncated_sector_specials"},
-  {0x00000000, 0x02040802, 0, "-force_boom_brainawake"},
-  {0x00000000, 0x02040802, 0, "-force_prboom_friction"},
-  {0x02020500, 0x02040000, 0, "-reject_pad_with_ff"},
-  {0xffffffff, 0x02040802, 0, "-force_lxdoom_demo_compatibility"},
-  {0x00000000, 0x0202061b, 0, "-allow_ssg_direct"},
-  {0x00000000, 0x02040601, 0, "-treat_no_clipping_things_as_not_blocking"},
-  {0x00000000, 0x02040803, 0, "-force_incorrect_processing_of_respawn_frame_entry"},
-  {0x00000000, 0x02040601, 0, "-force_correct_code_for_3_keys_doors_in_mbf"},
-  {0x00000000, 0x02040601, 0, "-uninitialize_crush_field_for_stairs"},
-  {0x00000000, 0x02040802, 0, "-force_boom_findnexthighestfloor"},
-  {0x00000000, 0x02040802, 0, "-allow_sky_transfer_in_boom"},
-  {0x00000000, 0x02040803, 0, "-apply_green_armor_class_to_armor_bonuses"},
-  {0x00000000, 0x02040803, 0, "-apply_blue_armor_class_to_megasphere"},
-  {0x02020200, 0x02050003, 0, "-force_incorrect_bobbing_in_boom"},
-  {0xffffffff, 0x00000000, 0, "-boom_deh_parser"},
-  {0x00000000, 0x02050007, 0, "-mbf_remove_thinker_in_killmobj"},
-  {0x00000000, 0x02050007, 0, "-do_not_inherit_friendlyness_flag_on_spawn"},
-  {0x00000000, 0x02050007, 0, "-do_not_use_misc12_frame_parameters_in_a_mushroom"},
-  {0x00000000, 0x02050102, 0, "-apply_mbf_codepointers_to_any_complevel"},
-  {0x00000000, 0x02050104, 0, "-reset_monsterspawner_params_after_loading"},
+  {0xffffffff, 0x02020615, 0, dsda_arg_force_monster_avoid_hazards},
+  {0x00000000, 0x02040601, 0, dsda_arg_force_remove_slime_trails},
+  {0x02020200, 0x02040801, 0, dsda_arg_force_no_dropoff},
+  {0x00000000, 0x02040801, 0, dsda_arg_force_truncated_sector_specials},
+  {0x00000000, 0x02040802, 0, dsda_arg_force_boom_brainawake},
+  {0x00000000, 0x02040802, 0, dsda_arg_force_prboom_friction},
+  {0x02020500, 0x02040000, 0, dsda_arg_reject_pad_with_ff},
+  {0xffffffff, 0x02040802, 0, dsda_arg_force_lxdoom_demo_compatibility},
+  {0x00000000, 0x0202061b, 0, dsda_arg_allow_ssg_direct},
+  {0x00000000, 0x02040601, 0, dsda_arg_treat_no_clipping_things_as_not_blocking},
+  {0x00000000, 0x02040803, 0, dsda_arg_force_incorrect_processing_of_respawn_frame_entry},
+  {0x00000000, 0x02040601, 0, dsda_arg_force_correct_code_for_3_keys_doors_in_mbf},
+  {0x00000000, 0x02040601, 0, dsda_arg_uninitialize_crush_field_for_stairs},
+  {0x00000000, 0x02040802, 0, dsda_arg_force_boom_findnexthighestfloor},
+  {0x00000000, 0x02040802, 0, dsda_arg_allow_sky_transfer_in_boom},
+  {0x00000000, 0x02040803, 0, dsda_arg_apply_green_armor_class_to_armor_bonuses},
+  {0x00000000, 0x02040803, 0, dsda_arg_apply_blue_armor_class_to_megasphere},
+  {0x02020200, 0x02050003, 0, dsda_arg_force_incorrect_bobbing_in_boom},
+  {0xffffffff, 0x00000000, 0, dsda_arg_boom_deh_parser},
+  {0x00000000, 0x02050007, 0, dsda_arg_mbf_remove_thinker_in_killmobj},
+  {0x00000000, 0x02050007, 0, dsda_arg_do_not_inherit_friendlyness_flag_on_spawn},
+  {0x00000000, 0x02050007, 0, dsda_arg_do_not_use_misc12_frame_parameters_in_a_mushroom},
+  {0x00000000, 0x02050102, 0, dsda_arg_apply_mbf_codepointers_to_any_complevel},
+  {0x00000000, 0x02050104, 0, dsda_arg_reset_monsterspawner_params_after_loading},
 };
+
+void M_ChangeShorttics(void)
+{
+  shorttics = dsda_IntConfig(dsda_config_movement_shorttics) || dsda_Flag(dsda_arg_shorttics);
+}
 
 void e6y_InitCommandLine(void)
 {
-  int p;
+  stats_level = dsda_Flag(dsda_arg_levelstat);
 
-  if ((p = M_CheckParm("-avidemo")) && (p < myargc-1))
-    avi_shot_fname = myargv[p + 1];
-
-  stats_level = M_CheckParm("-levelstat");
-
-  if ((stroller = M_CheckParm("-stroller")))
-  {
-    M_AddParam("-turbo");
-    M_AddParam("50");
-  }
+  if ((stroller = dsda_Flag(dsda_arg_stroller)))
+    dsda_UpdateIntArg(dsda_arg_turbo, "50");
 
   dsda_ReadCommandLine();
 
-  shorttics = movement_shorttics || M_CheckParm("-shorttics");
+  M_ChangeShorttics();
 }
 
 int G_ReloadLevel(void)
@@ -320,18 +278,18 @@ void M_ChangeSpeed(void)
 
 void M_ChangeMouseLook(void)
 {
+  int gl_skymode;
+
   viewpitch = 0;
 
   R_InitSkyMap();
+
+  gl_skymode = dsda_IntConfig(dsda_config_gl_skymode);
 
   if (gl_skymode == skytype_auto)
     gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);
   else
     gl_drawskys = gl_skymode;
-}
-
-void M_ChangeMouseInvert(void)
-{
 }
 
 void M_ChangeMaxViewPitch(void)
@@ -340,13 +298,13 @@ void M_ChangeMaxViewPitch(void)
 
   if (V_IsOpenGLMode())
   {
-    max_up = movement_maxviewpitch;
-    max_dn = movement_maxviewpitch;
+    max_up = 90;
+    max_dn = 90;
   }
   else
   {
-    max_up = MIN(movement_maxviewpitch, 56);
-    max_dn = MIN(movement_maxviewpitch, 32);
+    max_up = 56;
+    max_dn = 32;
   }
 
   angle_up = (int)((float)max_up / 45.0f * ANG45);
@@ -379,88 +337,76 @@ void CheckPitch(signed int *pitch)
   (*pitch) <<= 16;
 }
 
-int render_aspect;
-float render_ratio;
-float render_fovratio;
-float render_fovy = FOV90;
-float render_multiplier;
+float gl_render_ratio;
+float gl_render_fovratio;
+float gl_render_fovy = FOV90;
+float gl_render_multiplier;
 
 void M_ChangeAspectRatio(void)
 {
-  extern int screenblocks;
-
   M_ChangeFOV();
 
-  R_SetViewSize(screenblocks);
+  R_SetViewSize();
 }
 
 void M_ChangeStretch(void)
 {
-  extern int screenblocks;
+  render_stretch_hud = dsda_IntConfig(dsda_config_render_stretch_hud);
 
-  render_stretch_hud = render_stretch_hud_default;
-
-  R_SetViewSize(screenblocks);
+  R_SetViewSize();
 }
 
 void M_ChangeFOV(void)
 {
   float f1, f2;
-  int p;
-  int render_aspect_width, render_aspect_height;
+  dsda_arg_t* arg;
+  int gl_render_aspect_width, gl_render_aspect_height;
 
-  if ((p = M_CheckParm("-aspect")) && (p+1 < myargc) && (strlen(myargv[p+1]) <= 21) &&
-     (2 == sscanf(myargv[p+1], "%dx%d", &render_aspect_width, &render_aspect_height)))
+  arg = dsda_Arg(dsda_arg_aspect);
+  if (
+    arg->found &&
+    sscanf(arg->value.v_string, "%dx%d", &gl_render_aspect_width, &gl_render_aspect_height) == 2
+  )
   {
     SetRatio(SCREENWIDTH, SCREENHEIGHT);
-    render_fovratio = (float)render_aspect_width / (float)render_aspect_height;
-    render_ratio = RMUL * render_fovratio;
-    render_multiplier = 64.0f / render_fovratio / RMUL;
+    gl_render_fovratio = (float)gl_render_aspect_width / (float)gl_render_aspect_height;
+    gl_render_ratio = RMUL * gl_render_fovratio;
+    gl_render_multiplier = 64.0f / gl_render_fovratio / RMUL;
   }
   else
   {
     SetRatio(SCREENWIDTH, SCREENHEIGHT);
-    render_ratio = gl_ratio;
-    render_multiplier = (float)ratio_multiplier;
+    gl_render_ratio = gl_ratio;
+    gl_render_multiplier = (float)ratio_multiplier;
     if (!tallscreen)
     {
-      render_fovratio = 1.6f;
+      gl_render_fovratio = 1.6f;
     }
     else
     {
-      render_fovratio = render_ratio;
+      gl_render_fovratio = gl_render_ratio;
     }
   }
 
-  render_fovy = (float)(2 * RAD2DEG(atan(tan(DEG2RAD(render_fov) / 2) / render_fovratio)));
+  gl_render_fovy = (float)(2 * RAD2DEG(atan(tan(DEG2RAD(gl_render_fov) / 2) / gl_render_fovratio)));
 
-  screen_skybox_zplane = 320.0f/2.0f/(float)tan(DEG2RAD(render_fov/2));
+  screen_skybox_zplane = 320.0f/2.0f/(float)tan(DEG2RAD(gl_render_fov/2));
 
-  f1 = (float)(320.0f / 200.0f * (float)render_fov / (float)FOV90 - 0.2f);
-  f2 = (float)tan(DEG2RAD(render_fovy)/2.0f);
+  f1 = (float)(320.0f / 200.0f * (float)gl_render_fov / (float)FOV90 - 0.2f);
+  f2 = (float)tan(DEG2RAD(gl_render_fovy)/2.0f);
   if (f1-f2<1)
     skyUpAngle = (float)-RAD2DEG(asin(f1-f2));
   else
     skyUpAngle = -90.0f;
 
-  skyUpShift = (float)tan(DEG2RAD(render_fovy)/2.0f);
+  skyUpShift = (float)tan(DEG2RAD(gl_render_fovy)/2.0f);
 
-  skyscale = 1.0f / (float)tan(DEG2RAD(render_fov / 2));
-}
-
-void M_ChangeMultiSample(void)
-{
-}
-
-void M_ChangeSpriteClip(void)
-{
-  gl_sprite_offset = (gl_spriteclip != spriteclip_const ? 0 : (.01f * (float)gl_sprite_offset_default));
-  gl_spriteclip_threshold_f = (float)gl_spriteclip_threshold / MAP_COEFF;
+  skyscale = 1.0f / (float)tan(DEG2RAD(gl_render_fov / 2));
 }
 
 void ResolveColormapsHiresConflict(dboolean prefer_colormap)
 {
-  gl_boom_colormaps = !r_have_internal_hires && !gl_texture_external_hires;
+  gl_boom_colormaps = !r_have_internal_hires;
 }
 
 void M_ChangeAllowBoomColormaps(void)
@@ -487,31 +433,9 @@ void M_ChangeTextureUseHires(void)
   gld_Precache();
 }
 
-void M_ChangeTextureHQResize(void)
-{
-  gld_FlushTextures();
-}
-
-void M_Mouse(int choice, int *sens);
-void M_MouseMLook(int choice)
-{
-  M_Mouse(choice, &mouseSensitivity_mlook);
-}
-
-void M_MouseAccel(int choice)
-{
-  M_Mouse(choice, &mouse_acceleration);
-  MouseAccelChanging();
-}
-
-void MouseAccelChanging(void)
-{
-  mouse_accelfactor = (float)mouse_acceleration/100.0f+1.0f;
-}
-
 float viewPitch;
 
-int StepwiseSum(int value, int direction, int step, int minval, int maxval, int defval)
+int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
 {
   static int prev_value = 0;
   static int prev_direction = 0;
@@ -524,9 +448,6 @@ int StepwiseSum(int value, int direction, int step, int minval, int maxval, int 
 
   direction = (direction > 0 ? 1 : -1);
 
-  if (step != 0)
-    newvalue = (prev_direction * direction < 0 ? prev_value : value + direction * step);
-  else
   {
     int exp = 1;
     while (exp * 10 <= val)
@@ -553,19 +474,11 @@ int StepwiseSum(int value, int direction, int step, int minval, int maxval, int 
 void I_vWarning(const char *message, va_list argList)
 {
   char msg[1024];
-  doom_vsnprintf(msg,sizeof(msg),message,argList);
+  vsnprintf(msg,sizeof(msg),message,argList);
   lprintf(LO_ERROR, "%s\n", msg);
 #ifdef _WIN32
   I_MessageBox(msg, PRB_MB_OK);
 #endif
-}
-
-void I_Warning(const char *message, ...)
-{
-  va_list argptr;
-  va_start(argptr,message);
-  I_vWarning(message, argptr);
-  va_end(argptr);
 }
 
 int I_MessageBox(const char* text, unsigned int type)
@@ -573,7 +486,7 @@ int I_MessageBox(const char* text, unsigned int type)
   int result = PRB_IDCANCEL;
 
 #ifdef _WIN32
-  if (!M_CheckParm("-no_message_box"))
+  if (!dsda_Flag(dsda_arg_no_message_box))
   {
     HWND current_hwnd = GetForegroundWindow();
     result = MessageBox(GetDesktopWindow(), text, PACKAGE_NAME, type|MB_TASKMODAL|MB_TOPMOST);
@@ -685,13 +598,13 @@ void e6y_WriteStats(void)
         char strtmp[200];
         strcpy(str, tmp.kill[0] == '\0' ? "%s%d" : "%s+%d");
 
-        doom_snprintf(strtmp, sizeof(strtmp), str, tmp.kill, stats[level].kill[i]);
+        snprintf(strtmp, sizeof(strtmp), str, tmp.kill, stats[level].kill[i]);
         strcpy(tmp.kill, strtmp);
 
-        doom_snprintf(strtmp, sizeof(strtmp), str, tmp.item, stats[level].item[i]);
+        snprintf(strtmp, sizeof(strtmp), str, tmp.item, stats[level].item[i]);
         strcpy(tmp.item, strtmp);
 
-        doom_snprintf(strtmp, sizeof(strtmp), str, tmp.secret, stats[level].secret[i]);
+        snprintf(strtmp, sizeof(strtmp), str, tmp.secret, stats[level].secret[i]);
         strcpy(tmp.secret, strtmp);
       }
     }
@@ -719,7 +632,7 @@ void e6y_WriteStats(void)
   max.stat[TT_TOTALTIME] = max.stat[TT_TOTALTIME]/TICRATE/60;
 
   for(i=0; i<TT_MAX; i++) {
-    doom_snprintf(str, 200, "%d", max.stat[i]);
+    snprintf(str, sizeof(str), "%d", max.stat[i]);
     max.stat[i] = strlen(str);
   }
 
@@ -750,15 +663,23 @@ void e6y_WriteStats(void)
 
 //--------------------------------------------------
 
+static double mouse_accelfactor;
+
+void MouseAccelChanging(void)
+{
+  int mouse_acceleration = dsda_IntConfig(dsda_config_mouse_acceleration);
+  mouse_accelfactor = (double) mouse_acceleration / 100.0 + 1.0;
+}
+
 int AccelerateMouse(int val)
 {
-  if (!mouse_acceleration)
+  if (!mouse_accelfactor)
     return val;
 
   if (val < 0)
     return -AccelerateMouse(-val);
 
-  return M_DoubleToInt(pow((double)val, (double)mouse_accelfactor));
+  return M_DoubleToInt(pow((double) val, mouse_accelfactor));
 }
 
 int mlooky = 0;
@@ -767,17 +688,19 @@ void e6y_G_Compatibility(void)
 {
   deh_applyCompatibility();
 
-  if (dsda_PlaybackArg())
+  if (dsda_PlaybackName())
   {
-    int i, p;
+    int i;
+    dsda_arg_t* arg;
 
     //"2.4.8.2" -> 0x02040802
-    if ((p = M_CheckParm("-emulate")) && (p < myargc - 1))
+    arg = dsda_Arg(dsda_arg_emulate);
+    if (arg->found)
     {
       unsigned int emulated_version = 0;
       int b[4], k = 1;
       memset(b, 0, sizeof(b));
-      sscanf(myargv[p + 1], "%d.%d.%d.%d", &b[0], &b[1], &b[2], &b[3]);
+      sscanf(arg->value.v_string, "%d.%d.%d.%d", &b[0], &b[1], &b[2], &b[3]);
       for (i = 3; i >= 0; i--, k *= 256)
       {
 #ifdef RANGECHECK
@@ -797,7 +720,7 @@ void e6y_G_Compatibility(void)
 
     for (i = 0; i < PC_MAX; i++)
     {
-      if (M_CheckParm(prboom_comp[i].cmd))
+      if (dsda_Flag(prboom_comp[i].arg_id))
         prboom_comp[i].state = true;
     }
   }
@@ -948,7 +871,9 @@ int HU_DrawDemoProgress(int force)
   int len, tics_count, diff;
   unsigned int tick, max_period;
 
-  if (gamestate == GS_DEMOSCREEN || !demoplayback || !hudadd_demoprogressbar)
+  if (gamestate == GS_DEMOSCREEN ||
+      !demoplayback ||
+      !dsda_IntConfig(dsda_config_hudadd_demoprogressbar))
     return false;
 
   tics_count = demo_tics_count * demo_playerscount;
@@ -1010,49 +935,6 @@ int GetFullPath(const char* FileName, const char* ext, char *Buffer, size_t Buff
   }
 
   return false;
-}
-#endif
-
-#ifdef _WIN32
-#include <Mmsystem.h>
-#ifndef __GNUC__
-#pragma comment( lib, "winmm.lib" )
-#endif
-int mus_extend_volume;
-void I_midiOutSetVolumes(int volume)
-{
-  // NSM changed to work on the 0-15 volume scale,
-  // and to check mus_extend_volume itself.
-
-  MMRESULT result;
-  int calcVolume;
-  MIDIOUTCAPS capabilities;
-  unsigned long long i;
-
-  if (volume > 15)
-    volume = 15;
-  if (volume < 0)
-    volume = 0;
-  calcVolume = (65535 * volume / 15);
-
-  //SDL_LockAudio(); // this function doesn't touch anything the audio callback touches
-
-  //Device loop
-  for (i = 0; i < midiOutGetNumDevs(); i++)
-  {
-    //Get device capabilities
-    result = midiOutGetDevCaps(i, &capabilities, sizeof(capabilities));
-    if (result == MMSYSERR_NOERROR)
-    {
-      //Adjust volume on this candidate
-      if ((capabilities.dwSupport & MIDICAPS_VOLUME))
-      {
-        midiOutSetVolume((HMIDIOUT)i, MAKELONG(calcVolume, calcVolume));
-      }
-    }
-  }
-
-  //SDL_UnlockAudio();
 }
 #endif
 

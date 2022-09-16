@@ -65,10 +65,11 @@
 #include "g_overflow.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/demo.h"
 #include "dsda/playback.h"
 
-int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
+int LoadDemo(const char *name, const byte **buffer, int *length)
 {
   char basename[9];
   char *filename = NULL;
@@ -119,8 +120,6 @@ int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
       *buffer = buf;
     if (length)
       *length = len;
-    if (lump)
-      *lump = num;
   }
 
   return (len > 0);
@@ -130,7 +129,7 @@ int LoadDemo(const char *name, const byte **buffer, int *length, int *lump)
 // Smooth playing stuff
 //
 
-int demo_smoothturns = false;
+int demo_smoothturns;
 int demo_smoothturnsfactor = 6;
 
 static int smooth_playing_turns[SMOOTH_PLAYING_MAXFACTOR];
@@ -201,26 +200,12 @@ void R_ResetAfterTeleport(player_t *player)
 
 // demo ex
 char demoex_filename[PATH_MAX];
-const char *demo_demoex_filename;
-//wadtbl_t demoex;
-
-typedef struct
-{
-  const char name[9];
-  short *data;
-  int lump;
-  size_t maxtick;
-  size_t tick;
-} mlooklump_t;
-
-mlooklump_t mlook_lump = {DEMOEX_MLOOK_LUMPNAME, NULL, -2, 0, 0};
 
 int AddString(char **str, const char *val);
 
 static void R_DemoEx_AddParams(wadtbl_t *wadtbl);
 static int R_DemoEx_GetVersion(void);
 static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata);
-static void R_DemoEx_AddMouseLookData(wadtbl_t *wadtbl);
 
 static int G_ReadDemoFooter(const char *filename);
 
@@ -356,71 +341,6 @@ void R_DemoEx_ShowComment(void)
   }
 }
 
-angle_t R_DemoEx_ReadMLook(void)
-{
-  angle_t pitch;
-
-  if (!demoplayback)
-    return 0;
-
-  // mlook data must be initialised here
-  if ((mlook_lump.lump == -2))
-  {
-    if (R_DemoEx_GetVersion() < 2)
-    {
-      // unsupported format
-      mlook_lump.lump = -1;
-    }
-    else
-    {
-      mlook_lump.lump = W_CheckNumForName(mlook_lump.name);
-      if (mlook_lump.lump != -1)
-      {
-        const unsigned char *data = W_LumpByName(mlook_lump.name);
-        int size = W_LumpLength(mlook_lump.lump);
-
-        mlook_lump.maxtick = size / sizeof(mlook_lump.data[0]);
-        mlook_lump.data = Z_Malloc(size);
-        memcpy(mlook_lump.data, data, size);
-      }
-    }
-  }
-
-  pitch = 0;
-  if (mlook_lump.data && mlook_lump.tick < mlook_lump.maxtick &&
-    consoleplayer == displayplayer && !walkcamera.type)
-  {
-    pitch = mlook_lump.data[mlook_lump.tick];
-  }
-  mlook_lump.tick++;
-
-  return (pitch << 16);
-}
-
-void R_DemoEx_ResetMLook(void)
-{
-  mlook_lump.tick = 0;
-}
-
-void R_DemoEx_WriteMLook(angle_t pitch)
-{
-  if (!demorecording)
-    return;
-
-  if (mlook_lump.tick >= mlook_lump.maxtick)
-  {
-    int ticks = mlook_lump.maxtick;
-    mlook_lump.maxtick = (mlook_lump.maxtick ? mlook_lump.maxtick * 2 : 8192);
-    if (mlook_lump.tick >= mlook_lump.maxtick)
-      mlook_lump.maxtick = mlook_lump.tick * 2;
-    mlook_lump.data = Z_Realloc(mlook_lump.data, mlook_lump.maxtick * sizeof(mlook_lump.data[0]));
-    memset(mlook_lump.data + ticks, 0, (mlook_lump.maxtick - ticks) * sizeof(mlook_lump.data[0]));
-  }
-
-  mlook_lump.data[mlook_lump.tick] = (short)(pitch >> 16);
-  mlook_lump.tick++;
-}
-
 static int R_DemoEx_GetVersion(void)
 {
   int result = -1;
@@ -492,7 +412,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
 
     M_ParseCmdLine(str, params, ((char*)params) + sizeof(char*) * paramscount, &paramscount, &i);
 
-    if (!M_CheckParm("-iwad") && !M_CheckParm("-file"))
+    if (!dsda_Flag(dsda_arg_iwad) && !dsda_Flag(dsda_arg_file))
     {
       i = 0;
       while (files[i].param)
@@ -517,73 +437,71 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
       }
     }
 
-    if (!M_CheckParm2("-complevel", "-cl"))
+    if (!dsda_Arg(dsda_arg_complevel)->found)
     {
       p = M_CheckParmEx("-complevel", params, paramscount);
       if (p >= 0 && p < (int)paramscount - 1)
       {
-        M_AddParam("-complevel");
-        M_AddParam(params[p + 1]);
+        dsda_UpdateIntArg(dsda_arg_complevel, params[p + 1]);
       }
     }
 
     //for recording or playback using "single-player coop" mode
-    if (!M_CheckParm("-solo-net"))
+    if (!dsda_Flag(dsda_arg_solo_net))
     {
       p = M_CheckParmEx("-solo-net", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-solo-net");
+        dsda_UpdateFlag(dsda_arg_solo_net, true);
       }
     }
 
     //for recording or playback using "coop in single-player" mode
-    if (!M_CheckParm("-coop_spawns"))
+    if (!dsda_Flag(dsda_arg_coop_spawns))
     {
       p = M_CheckParmEx("-coop_spawns", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-coop_spawns");
+        dsda_UpdateFlag(dsda_arg_coop_spawns, true);
       }
     }
 
-    if (!M_CheckParm("-emulate"))
+    if (!dsda_Flag(dsda_arg_emulate))
     {
       p = M_CheckParmEx("-emulate", params, paramscount);
       if (p >= 0 && p < (int)paramscount - 1)
       {
-        M_AddParam("-emulate");
-        M_AddParam(params[p + 1]);
+        dsda_UpdateStringArg(dsda_arg_emulate, params[p + 1]);
       }
     }
 
     // for doom 1.2
-    if (!M_CheckParm("-respawn"))
+    if (!dsda_Flag(dsda_arg_respawn))
     {
       p = M_CheckParmEx("-respawn", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-respawn");
+        dsda_UpdateFlag(dsda_arg_respawn, true);
       }
     }
 
     // for doom 1.2
-    if (!M_CheckParm("-fast"))
+    if (!dsda_Flag(dsda_arg_fast))
     {
       p = M_CheckParmEx("-fast", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-fast");
+        dsda_UpdateFlag(dsda_arg_fast, true);
       }
     }
 
     // for doom 1.2
-    if (!M_CheckParm("-nomonsters"))
+    if (!dsda_Flag(dsda_arg_nomonsters))
     {
       p = M_CheckParmEx("-nomonsters", params, paramscount);
       if (p >= 0)
       {
-        M_AddParam("-nomonsters");
+        dsda_UpdateFlag(dsda_arg_nomonsters, true);
       }
     }
 
@@ -629,6 +547,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
 
 static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
 {
+  dsda_arg_t* arg;
   size_t i;
   int p;
   char buf[200];
@@ -669,14 +588,14 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   }
 
   //dehs
-  p = M_CheckParm ("-deh");
-  if (p)
+  arg = dsda_Arg(dsda_arg_deh);
+  if (arg->found)
   {
-    while (++p != myargc && *myargv[p] != '-')
+    for (i = 0; i < arg->count; ++i)
     {
       char *file = NULL;
-      if ((file = I_FindFile(myargv[p], ".bex")) ||
-          (file = I_FindFile(myargv[p], ".deh")))
+      if ((file = I_FindFile(arg->value.v_string_array[i], ".bex")) ||
+          (file = I_FindFile(arg->value.v_string_array[i], ".deh")))
       {
         filename_p = PathFindFileName(file);
         AddString(&dehs, "\"");
@@ -713,39 +632,40 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   }
 
   //for recording or playback using "single-player coop" mode
-  if (M_CheckParm("-solo-net"))
+  if (dsda_Flag(dsda_arg_solo_net))
   {
     sprintf(buf, "-solo-net ");
     AddString(&files, buf);
   }
 
   //for recording or playback using "coop in single-player" mode
-  if (M_CheckParm("-coop_spawns"))
+  if (dsda_Flag(dsda_arg_coop_spawns))
   {
     sprintf(buf, "-coop_spawns ");
     AddString(&files, buf);
   }
 
-  if ((p = M_CheckParm("-emulate")) && (p < myargc - 1))
+  arg = dsda_Arg(dsda_arg_emulate);
+  if (arg->found)
   {
-    sprintf(buf, "-emulate %s", myargv[p + 1]);
+    sprintf(buf, "-emulate %s", arg->value.v_string);
     AddString(&files, buf);
   }
 
   // doom 1.2 does not store these params in header
   if (compatibility_level == doom_12_compatibility)
   {
-    if (M_CheckParm("-respawn"))
+    if (dsda_Flag(dsda_arg_respawn))
     {
       sprintf(buf, "-respawn ");
       AddString(&files, buf);
     }
-    if (M_CheckParm("-fast"))
+    if (dsda_Flag(dsda_arg_fast))
     {
       sprintf(buf, "-fast ");
       AddString(&files, buf);
     }
-    if (M_CheckParm("-nomonsters"))
+    if (dsda_Flag(dsda_arg_nomonsters))
     {
       sprintf(buf, "-nomonsters ");
       AddString(&files, buf);
@@ -777,31 +697,11 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   }
 }
 
-static void R_DemoEx_AddMouseLookData(wadtbl_t *wadtbl)
-{
-  int i = 0;
-
-  if (!mlook_lump.data)
-    return;
-
-  // search for at least one tic with a nonzero pitch
-  while (i < (int)mlook_lump.tick)
-  {
-    if (mlook_lump.data[i] != 0)
-    {
-      W_AddLump(wadtbl, mlook_lump.name,
-        (const byte*)mlook_lump.data, mlook_lump.tick * sizeof(mlook_lump.data[0]));
-      break;
-    }
-    i++;
-  }
-}
-
 void I_DemoExShutdown(void)
 {
   W_ReleaseAllWads();
 
-  if (demoex_filename[0] && !(demo_demoex_filename && *demo_demoex_filename))
+  if (demoex_filename[0])
   {
     lprintf(LO_DEBUG, "I_DemoExShutdown: removing %s\n", demoex_filename);
     if (unlink(demoex_filename) != 0)
@@ -1031,46 +931,38 @@ static int G_ReadDemoFooter(const char *filename)
     //the demo has an additional information itself
     size_t i;
     waddata_t waddata;
+    int tmp_fd = -1;
+    const char* tmp_dir;
+    char* tmp_path = NULL;
+    const char* template_format = "%sdsda-doom-demoex2-XXXXXX";
 
-    if (demo_demoex_filename && *demo_demoex_filename)
+    tmp_dir = I_GetTempDir();
+    if (tmp_dir && *tmp_dir != '\0')
     {
-      strncpy(demoex_filename, demo_demoex_filename, PATH_MAX-1);
-    }
-    else
-    {
-      int tmp_fd = -1;
-      const char* tmp_dir;
-      char* tmp_path = NULL;
-      const char* template_format = "%sdsda-doom-demoex2-XXXXXX";
-
-      tmp_dir = I_GetTempDir();
-      if (tmp_dir && *tmp_dir != '\0')
+      tmp_path = Z_Malloc(strlen(tmp_dir) + 2);
+      strcpy(tmp_path, tmp_dir);
+      if (!HasTrailingSlash(tmp_dir))
       {
-        tmp_path = Z_Malloc(strlen(tmp_dir) + 2);
-        strcpy(tmp_path, tmp_dir);
-        if (!HasTrailingSlash(tmp_dir))
-        {
-          strcat(tmp_path, "/");
-        }
-
-        doom_snprintf(demoex_filename, sizeof(demoex_filename), template_format, tmp_path);
-#ifdef HAVE_MKSTEMP
-        if ((tmp_fd = mkstemp(demoex_filename)) == -1)
-#else
-        if (mktemp(demoex_filename) == NULL)
-#endif
-        {
-          demoex_filename[0] = 0;
-        }
-
-        // don't leave file open
-        if (tmp_fd >= 0)
-        {
-          close(tmp_fd);
-        }
-
-        Z_Free(tmp_path);
+        strcat(tmp_path, "/");
       }
+
+      snprintf(demoex_filename, sizeof(demoex_filename), template_format, tmp_path);
+#ifdef HAVE_MKSTEMP
+      if ((tmp_fd = mkstemp(demoex_filename)) == -1)
+#else
+      if (mktemp(demoex_filename) == NULL)
+#endif
+      {
+        demoex_filename[0] = 0;
+      }
+
+      // don't leave file open
+      if (tmp_fd >= 0)
+      {
+        close(tmp_fd);
+      }
+
+      Z_Free(tmp_path);
     }
 
     if (!demoex_filename[0])
@@ -1155,10 +1047,6 @@ void G_WriteDemoFooter(void)
 
   //process format version
   W_AddLump(&demoex, DEMOEX_VERSION_LUMPNAME, (const byte*)DEMOEX_VERSION, strlen(DEMOEX_VERSION));
-  W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
-
-  //process mlook
-  R_DemoEx_AddMouseLookData(&demoex);
   W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
 
   //process port name
@@ -1290,15 +1178,6 @@ void WadDataToWadFiles(waddata_t *waddata)
     if (waddata->wadfiles[i].src == source_pwad)
     {
       const char *file = I_FindFile2(waddata->wadfiles[i].name, ".wad");
-      if (!file && D_TryGetWad(waddata->wadfiles[i].name))
-      {
-        file = I_FindFile2(waddata->wadfiles[i].name, ".wad");
-        if (file)
-        {
-          Z_Free(waddata->wadfiles[i].name);
-          waddata->wadfiles[i].name = Z_Strdup(file);
-        }
-      }
       if (file)
       {
         D_AddFile(waddata->wadfiles[i].name, source_pwad);
@@ -1323,16 +1202,16 @@ void WadDataToWadFiles(waddata_t *waddata)
 int CheckDemoExDemo(void)
 {
   int result = false;
-  int p;
+  const char* playback_name;
 
-  p = dsda_PlaybackArg();
+  playback_name = dsda_PlaybackName();
 
-  if (p)
+  if (playback_name)
   {
     char *demoname, *filename;
 
-    filename = Z_Malloc(strlen(myargv[p + 1]) + 16);
-    strcpy(filename, myargv[p + 1]);
+    filename = Z_Malloc(strlen(playback_name) + 16);
+    strcpy(filename, playback_name);
     AddDefaultExtension(filename, ".lmp");
 
     demoname = I_FindFile(filename, NULL);
@@ -1344,74 +1223,6 @@ int CheckDemoExDemo(void)
 
     Z_Free(filename);
   }
-
-  return result;
-}
-
-const char *getwad_cmdline;
-
-dboolean D_TryGetWad(const char* name)
-{
-  dboolean result = false;
-
-  char wadname[PATH_MAX];
-  char* cmdline = NULL;
-  char* wadname_p = NULL;
-  char* msg = NULL;
-  const char* format =
-    "The necessary wad has not been found\n"
-    "Do you want to search for \'%s\'?\n\n"
-    "Command line:\n%s\n\n"
-    "Be careful! Execution of an unknown program is unsafe.";
-
-  if (!getwad_cmdline || !name || !(*getwad_cmdline) || !(*name))
-    return false;
-
-  strncpy(wadname, PathFindFileName(name), sizeof(wadname) - 4);
-  AddDefaultExtension(wadname, ".wad");
-
-  cmdline = Z_Malloc(strlen(getwad_cmdline) + strlen(wadname) + 2);
-  wadname_p = strstr(getwad_cmdline, "%wadname%");
-  if (wadname_p)
-  {
-    strncpy(cmdline, getwad_cmdline, wadname_p - getwad_cmdline);
-    strcat(cmdline, wadname);
-    strcat(cmdline, wadname_p + strlen("%wadname%"));
-  }
-  else
-  {
-    sprintf(cmdline, "%s %s", getwad_cmdline, wadname);
-  }
-
-  msg = Z_Malloc(strlen(format) + strlen(wadname) + strlen(cmdline));
-  sprintf(msg, format, wadname, cmdline);
-
-  if (PRB_IDYES == I_MessageBox(msg, PRB_MB_DEFBUTTON2 | PRB_MB_YESNO))
-  {
-    int ret;
-
-    lprintf(LO_INFO, "D_TryGetWad: Trying to get %s from somewhere\n", name);
-
-    ret = system(cmdline);
-
-    if (ret != 0)
-    {
-      lprintf(LO_ERROR, "D_TryGetWad: Execution failed - %s\n", strerror(errno));
-    }
-    else
-    {
-      char *str = I_FindFile(name, ".wad");
-      if (str)
-      {
-        lprintf(LO_INFO, "D_TryGetWad: Successfully received\n");
-        Z_Free(str);
-        result = true;
-      }
-    }
-  }
-
-  Z_Free(msg);
-  Z_Free(cmdline);
 
   return result;
 }

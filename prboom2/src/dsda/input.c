@@ -20,7 +20,7 @@
 
 #include "input.h"
 
-int dsda_input_profile = 0;
+int dsda_input_profile;
 static dsda_input_t dsda_input[DSDA_INPUT_PROFILE_COUNT][DSDA_INPUT_IDENTIFIER_COUNT];
 
 typedef struct
@@ -384,11 +384,4 @@ dboolean dsda_InputJoyBActive(int identifier) {
   input = &dsda_input[dsda_input_profile][identifier];
 
   return input->joyb >= 0 && joybuttons[input->joyb].game_on;
-}
-
-void dsda_InputCycleProfile(void) {
-  dsda_input_profile++;
-
-  if (dsda_input_profile == DSDA_INPUT_PROFILE_COUNT)
-    dsda_input_profile = 0;
 }

@@ -152,16 +152,6 @@ static void W_AddFile(wadfile_info_t *wadfile)
   // open the file and add to directory
 
   wadfile->handle = open(wadfile->name,O_RDONLY | O_BINARY);
-
-  if (wadfile->handle == -1 &&
-    strlen(wadfile->name) > 4 &&
-    wadfile->src == source_pwad &&
-    !strcasecmp(wadfile->name + strlen(wadfile->name) - 4 , ".wad") &&
-    D_TryGetWad(wadfile->name))
-  {
-    wadfile->handle = open(wadfile->name, O_RDONLY | O_BINARY);
-  }
-
   if (wadfile->handle == -1)
     {
       if (  strlen(wadfile->name)<=4 ||      // add error check -- killough
@@ -595,6 +585,22 @@ void W_ReadLump(int lump, void *dest)
         I_Read(l->wadfile->handle, dest, l->size);
       }
     }
+}
+
+char* W_ReadLumpToString(int lump)
+{
+  char* buffer = NULL;
+  lumpinfo_t *l = lumpinfo + lump;
+
+  if (lump >= 0 && lump < numlumps && l->wadfile)
+  {
+    buffer = Z_Malloc(l->size + 1);
+    lseek(l->wadfile->handle, l->position, SEEK_SET);
+    I_Read(l->wadfile->handle, buffer, l->size);
+    buffer[l->size] = '\0';
+  }
+
+  return buffer;
 }
 
 int W_LumpNumInPortWad(int lump) {

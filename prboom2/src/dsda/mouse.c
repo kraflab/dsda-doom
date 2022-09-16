@@ -15,32 +15,38 @@
 //	DSDA Mouse
 //
 
+#include "dsda/configuration.h"
+
 #include "mouse.h"
 
-int dsda_quickstart_cache_tics;
+static int quickstart_cache_tics;
 static int quickstart_queued;
+static signed short angleturn_cache[35];
+static unsigned int angleturn_cache_index;
 
-void dsda_ApplyQuickstartMouseCache(ticcmd_t* cmd) {
-  static signed short angleturn_cache[35];
-  static unsigned int angleturn_cache_index;
+void dsda_InitQuickstartCache(void) {
+  quickstart_cache_tics = dsda_IntConfig(dsda_config_quickstart_cache_tics);
+}
+
+void dsda_ApplyQuickstartMouseCache(int* mousex) {
   int i;
 
-  if (!dsda_quickstart_cache_tics) return;
+  if (!quickstart_cache_tics) return;
 
   if (quickstart_queued) {
     signed short result = 0;
 
     quickstart_queued = false;
 
-    for (i = 0; i < dsda_quickstart_cache_tics; ++i)
+    for (i = 0; i < quickstart_cache_tics; ++i)
       result += angleturn_cache[i];
 
-    cmd->angleturn = result;
+    *mousex = result;
   }
   else {
-    angleturn_cache[angleturn_cache_index] = cmd->angleturn;
+    angleturn_cache[angleturn_cache_index] = *mousex;
     ++angleturn_cache_index;
-    if (angleturn_cache_index >= dsda_quickstart_cache_tics)
+    if (angleturn_cache_index >= quickstart_cache_tics)
       angleturn_cache_index = 0;
   }
 }

@@ -167,7 +167,7 @@ static void IN_DrawInterpic(void)
 
   if (gameepisode < 1 || gameepisode > 3) return;
 
-  snprintf(name, 9, "MAPE%d", gameepisode);
+  snprintf(name, sizeof(name), "MAPE%d", gameepisode);
 
   // e6y: wide-res
   V_FillBorder(-1, 0);

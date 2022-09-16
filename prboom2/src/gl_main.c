@@ -44,7 +44,6 @@
 #include <SDL.h>
 #include "doomtype.h"
 #include "w_wad.h"
-#include "m_argv.h"
 #include "d_event.h"
 #include "v_video.h"
 #include "doomstat.h"
@@ -63,7 +62,6 @@
 #include "gl_struct.h"
 #include "p_spec.h"
 #include "i_system.h"
-#include "m_argv.h"
 #include "i_video.h"
 #include "i_main.h"
 #include "am_map.h"
@@ -72,12 +70,12 @@
 #include "hu_stuff.h"
 #include "e6y.h"//e6y
 
+#include "dsda/configuration.h"
 #include "dsda/map_format.h"
+#include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 #include "dsda/gl/render_scale.h"
-
-int gl_clear;
 
 int gl_preprocessed = false;
 
@@ -86,21 +84,6 @@ int scene_has_overlapped_sprites;
 
 int gl_blend_animations;
 
-int gl_use_display_lists;
-int flats_display_list;
-int flats_display_list_size = 0;
-int flats_detail_display_list;
-int flats_detail_display_list_size = 0;
-
-int gl_finish = 1;
-
-// e6y
-// This variables toggles the use of a trick to prevent the clearning of the
-// z-buffer between frames. When this variable is set to "1", the game will not
-// clear the z-buffer between frames. This will result in increased performance
-// only on very old hardware and might cause problems for some display hardware.
-int gl_ztrick;
-int gl_ztrickframe = 0;
 float gldepthmin, gldepthmax;
 
 unsigned int invul_method;
@@ -112,26 +95,17 @@ extern int tran_filter_pct;
 
 dboolean use_fog=false;
 
-int gl_nearclip=5;
-int gl_texture_filter;
-int gl_sprite_filter;
-int gl_patch_filter;
-int gl_indexed_filter = filter_nearest;
-int gl_texture_filter_anisotropic = 0;
+int gl_render_paperitems;
+
+GLfloat gl_texture_filter_anisotropic;
 
 //sprites
 spriteclipmode_t gl_spriteclip;
 const char *gl_spriteclipmodes[] = {"constant", "full", "smart"};
-int gl_spriteclip_threshold;
-float gl_spriteclip_threshold_f;
-int gl_sprites_frustum_culling;
-int gl_sprite_offset_default;	// item out of floor offset Mead 8/13/03
-float gl_sprite_offset;       // precalcilated float value for gl_sprite_offset_default
+const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
 int gl_sprite_blend;  // e6y: smooth sprite edges
-int gl_mask_sprite_threshold;
-float gl_mask_sprite_threshold_f;
+const float gl_mask_sprite_threshold_f = 0.5f;
 
-GLuint gld_DisplayList=0;
 int fog_density=200;
 static float extra_red=0.0f;
 static float extra_green=0.0f;
@@ -217,18 +191,22 @@ void gld_InitTextureParams(void)
   };
 
   int i;
-  int *var[MIP_COUNT] = {&gl_texture_filter, &gl_sprite_filter, &gl_patch_filter, &gl_indexed_filter};
+  int var[MIP_COUNT] = {
+    dsda_IntConfig(dsda_config_gl_texture_filter),
+    dsda_IntConfig(dsda_config_gl_sprite_filter),
+    dsda_IntConfig(dsda_config_gl_patch_filter),
+    dsda_IntConfig(dsda_config_gl_indexed_filter)
+  };
+  const char* gl_tex_format_string = dsda_StringConfig(dsda_config_gl_tex_format_string);
+
+  gl_texture_filter_anisotropic =
+    (GLfloat) (1 << dsda_IntConfig(dsda_config_gl_texture_filter_anisotropic));
 
   for (i = 0; i < MIP_COUNT; i++)
   {
-    tex_filter[i].mipmap     = params[*var[i]].mipmap;
-    tex_filter[i].mag_filter = params[*var[i]].tex_filter;
-    tex_filter[i].min_filter = params[*var[i]].mipmap_filter;
-  }
-
-  if (tex_filter[MIP_TEXTURE].mipmap)
-  {
-    gl_shared_texture_palette = false;
+    tex_filter[i].mipmap     = params[var[i]].mipmap;
+    tex_filter[i].mag_filter = params[var[i]].tex_filter;
+    tex_filter[i].min_filter = params[var[i]].mipmap_filter;
   }
 
   i = 0;
@@ -244,48 +222,36 @@ void gld_InitTextureParams(void)
   }
 }
 
+const int gl_colorbuffer_bits = 32;
+const int gl_depthbuffer_bits = 24;
+int gl_render_multisampling;
+
 void gld_MultisamplingInit(void)
 {
-  if (render_multisampling)
-  {
-    extern int gl_colorbuffer_bits;
-    extern int gl_depthbuffer_bits;
+  gl_render_multisampling = dsda_IntConfig(dsda_config_gl_render_multisampling);
+  gl_render_multisampling -= (gl_render_multisampling % 2);
 
-    gl_colorbuffer_bits = 32;
+  if (gl_render_multisampling)
+  {
     SDL_GL_SetAttribute( SDL_GL_BUFFER_SIZE, gl_colorbuffer_bits );
-
-    if (gl_depthbuffer_bits!=8 && gl_depthbuffer_bits!=16 && gl_depthbuffer_bits!=24)
-      gl_depthbuffer_bits = 16;
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, gl_depthbuffer_bits );
-
-    SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, render_multisampling );
-    SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 1 );
+    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, gl_render_multisampling );
+    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
   }
-}
-
-void gld_MultisamplingCheck(void)
-{
-  if (render_multisampling)
+  else
   {
-    int test = -1;
-    SDL_GL_GetAttribute (SDL_GL_MULTISAMPLESAMPLES, &test);
-    if (test!=render_multisampling)
-    {
-      void M_SaveDefaults (void);
-      int i=render_multisampling;
-      render_multisampling = 0;
-      M_SaveDefaults ();
-      I_Error("Couldn't set %dX multisamples for %dx%d video mode", i, SCREENWIDTH, SCREENHEIGHT);
-    }
+    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, 0 );
+    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 0 );
   }
 }
 
 void gld_MultisamplingSet(void)
 {
-  if (render_multisampling)
+  if (gl_render_multisampling)
   {
-    int use_multisampling = map_use_multisamling ||
-      (!(automapmode & am_active) || (automapmode & am_overlay));
+    extern int map_use_multisampling;
+
+    int use_multisampling = map_use_multisampling || automap_off;
 
     gld_EnableMultisample(use_multisampling);
   }
@@ -466,6 +432,17 @@ void gld_ResetTexturedAutomap(void)
   visible_subsectors_count_prev = -1;
 }
 
+static int map_textured_trans;
+static int map_textured_overlay_trans;
+static int map_lines_overlay_trans;
+
+void gld_ResetAutomapTransparency(void)
+{
+  map_textured_trans = dsda_IntConfig(dsda_config_map_textured_trans);
+  map_textured_overlay_trans = dsda_IntConfig(dsda_config_map_textured_overlay_trans);
+  map_lines_overlay_trans = dsda_IntConfig(dsda_config_map_lines_overlay_trans);
+}
+
 void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my, int fw, int fh, fixed_t scale)
 {
   static subsector_t **visible_subsectors = NULL;
@@ -477,7 +454,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   float coord_scale;
   GLTexture *gltexture;
 
-  alpha = (float)((automapmode & am_overlay) ? map_textured_overlay_trans : map_textured_trans) / 100.0f;
+  alpha = (float)(automap_overlay ? map_textured_overlay_trans : map_textured_trans) / 100.0f;
   if (alpha == 0)
     return;
 
@@ -525,7 +502,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   glScissor(fx, SCREENHEIGHT - (fy + fh), fw, fh);
   glEnable(GL_SCISSOR_TEST);
 
-  if (automapmode & am_rotate)
+  if (automap_rotate)
   {
     float pivotx = (float)(fx + fw / 2);
     float pivoty = (float)(fy + fh / 2);
@@ -806,12 +783,11 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
 
 void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
 {
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   const unsigned char *playpal = V_GetPlaypal();
   unsigned char r, g, b, a;
   map_line_t *line;
 
-  a = ((automapmode & am_overlay) ? map_lines_overlay_trans * 255 / 100 : 255);
+  a = (automap_overlay ? map_lines_overlay_trans * 255 / 100 : 255);
   if (a == 0)
     return;
 
@@ -834,22 +810,6 @@ void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
   line->point[1].g = g;
   line->point[1].b = b;
   line->point[1].a = a;
-#else
-  const unsigned char *playpal = V_GetPlaypal();
-
-  float alpha = ((automapmode & am_overlay) ? map_lines_overlay_trans / 100.0f : 1.0f);
-  if (alpha == 0)
-    return;
-
-  glColor4f((float)playpal[3*BaseColor]/255.0f,
-            (float)playpal[3*BaseColor+1]/255.0f,
-            (float)playpal[3*BaseColor+2]/255.0f,
-            alpha);
-  glBegin(GL_LINES);
-    glVertex2f( x0, y0 );
-    glVertex2f( x1, y1 );
-  glEnd();
-#endif
 }
 
 void gld_DrawLine(int x0, int y0, int x1, int y1, int BaseColor)
@@ -892,7 +852,6 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
     glsl_SetFuzzTextureDimensions((float)gltexture->realtexwidth, (float)gltexture->realtexheight);
     glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
     glAlphaFunc(GL_GEQUAL,0.1f);
-    //glColor4f(0.2f,0.2f,0.2f,(float)tran_filter_pct/100.0f);
     glColor4f(0.2f,0.2f,0.2f,0.01f);
   }
   else
@@ -955,107 +914,79 @@ void gld_SetPalette(int palette)
   if (gl_lightmode == gl_lightmode_indexed)
     return;
 
-  if (gl_shared_texture_palette) {
-    const unsigned char *playpal;
-    unsigned char pal[1024];
-    int i;
-
-    playpal = V_GetPlaypal();
-    playpal += (768*palette);
-    for (i=0; i<256; i++) {
-      int col;
-
-      if (fixedcolormap)
-        col = fixedcolormap[i];
-      else if (fullcolormap)
-        col = fullcolormap[i];
-      else
-        col = i;
-      pal[i*4+0] = playpal[col*3+0];
-      pal[i*4+1] = playpal[col*3+1];
-      pal[i*4+2] = playpal[col*3+2];
-      pal[i*4+3] = 255;
-    }
-    pal[transparent_pal_index*4+0]=0;
-    pal[transparent_pal_index*4+1]=0;
-    pal[transparent_pal_index*4+2]=0;
-    pal[transparent_pal_index*4+3]=0;
-    GLEXT_glColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGBA, 256, GL_RGBA, GL_UNSIGNED_BYTE, pal);
-  } else {
-    if (palette > 0)
+  if (palette > 0)
+  {
+    if (palette <= 8)
     {
-      if (palette <= 8)
+      // doom [0] 226 1 1
+      extra_red = 1.0f;
+      extra_green = 0.0f;
+      extra_blue = 0.0f;
+      extra_alpha = (float) palette / 9.0f;
+    }
+    else if (palette <= 12)
+    {
+      // doom [0] 108 94 35
+      palette = palette - 8;
+      extra_red = 1.0f;
+      extra_green = 0.9f;
+      extra_blue = 0.3f;
+      extra_alpha = (float) palette / 10.0f;
+    }
+    else if (!hexen && palette == 13)
+    {
+      extra_red = 0.4f;
+      extra_green = 1.0f;
+      extra_blue = 0.0f;
+      extra_alpha = 0.2f;
+    }
+    else if (hexen)
+    {
+      if (palette <= 20)
       {
-        // doom [0] 226 1 1
-        extra_red = 1.0f;
-        extra_green = 0.0f;
-        extra_blue = 0.0f;
-        extra_alpha = (float) palette / 9.0f;
-      }
-      else if (palette <= 12)
-      {
-        // doom [0] 108 94 35
-        palette = palette - 8;
-        extra_red = 1.0f;
-        extra_green = 0.9f;
-        extra_blue = 0.3f;
-        extra_alpha = (float) palette / 10.0f;
-      }
-      else if (!hexen && palette == 13)
-      {
-        extra_red = 0.4f;
+        // hexen [0] = 35 74 29
+        palette = palette - 12;
+        extra_red = 0.5f;
         extra_green = 1.0f;
-        extra_blue = 0.0f;
-        extra_alpha = 0.2f;
+        extra_blue = 0.4f;
+        extra_alpha = (float) palette / 27.f;
       }
-      else if (hexen)
+      else if (palette == 21)
       {
-        if (palette <= 20)
-        {
-          // hexen [0] = 35 74 29
-          palette = palette - 12;
-          extra_red = 0.5f;
-          extra_green = 1.0f;
-          extra_blue = 0.4f;
-          extra_alpha = (float) palette / 27.f;
-        }
-        else if (palette == 21)
-        {
-          // hexen [0] = 1 1 113
-          extra_red = 0.0f;
-          extra_green = 0.0f;
-          extra_blue = 1.0f;
-          extra_alpha = 0.4f;
-        }
-        else if (palette <= 24)
-        {
-          // hexen [...] = 66, 51, 36
-          palette = 24 - palette;
-          extra_red = 1.0f;
-          extra_green = 1.0f;
-          extra_blue = 1.0f;
-          extra_alpha = 0.14f + 0.06f * palette;
-        }
-        else if (palette <= 27)
-        {
-          // hexen [0] = 76 56 1
-          palette = 27 - palette;
-          extra_red = 1.0f;
-          extra_green = 0.7f;
-          extra_blue = 0.0f;
-          extra_alpha = 0.14f + 0.06f * palette;
-        }
+        // hexen [0] = 1 1 113
+        extra_red = 0.0f;
+        extra_green = 0.0f;
+        extra_blue = 1.0f;
+        extra_alpha = 0.4f;
+      }
+      else if (palette <= 24)
+      {
+        // hexen [...] = 66, 51, 36
+        palette = 24 - palette;
+        extra_red = 1.0f;
+        extra_green = 1.0f;
+        extra_blue = 1.0f;
+        extra_alpha = 0.14f + 0.06f * palette;
+      }
+      else if (palette <= 27)
+      {
+        // hexen [0] = 76 56 1
+        palette = 27 - palette;
+        extra_red = 1.0f;
+        extra_green = 0.7f;
+        extra_blue = 0.0f;
+        extra_alpha = 0.14f + 0.06f * palette;
       }
     }
-    if (extra_red > 1.0f)
-      extra_red = 1.0f;
-    if (extra_green > 1.0f)
-      extra_green = 1.0f;
-    if (extra_blue > 1.0f)
-      extra_blue = 1.0f;
-    if (extra_alpha > 1.0f)
-      extra_alpha = 1.0f;
   }
+  if (extra_red > 1.0f)
+    extra_red = 1.0f;
+  if (extra_green > 1.0f)
+    extra_green = 1.0f;
+  if (extra_blue > 1.0f)
+    extra_blue = 1.0f;
+  if (extra_alpha > 1.0f)
+    extra_alpha = 1.0f;
 }
 
 unsigned char *gld_ReadScreen(void)
@@ -1125,10 +1056,6 @@ void gld_InitDrawScene(void)
 void gld_Finish(void)
 {
   gld_Set2DMode();
-  if (gl_finish && !render_vsync && 0)
-  {
-    glFinish();
-  }
   SDL_GL_SwapWindow(sdl_window);
 }
 
@@ -1157,13 +1084,8 @@ void gld_Clear(void)
 {
   int clearbits = 0;
 
-#ifndef PRBOOM_DEBUG
-  if (gl_clear)
-#endif
-    clearbits |= GL_COLOR_BUFFER_BIT;
-
   // flashing red HOM indicators
-  if (flashing_hom)
+  if (dsda_IntConfig(dsda_config_flashing_hom))
   {
     clearbits |= GL_COLOR_BUFFER_BIT;
     glClearColor (gametic % 20 < 9 ? 1.0f : 0.0f, 0.0f, 0.0f, 1.0f);
@@ -1172,42 +1094,19 @@ void gld_Clear(void)
   if (gl_use_stencil)
     clearbits |= GL_STENCIL_BUFFER_BIT;
 
-  if (!gl_ztrick)
-    clearbits |= GL_DEPTH_BUFFER_BIT;
+  clearbits |= GL_DEPTH_BUFFER_BIT;
 
   if (clearbits)
     glClear(clearbits);
-
-  if (gl_ztrick)
-  {
-    gl_ztrickframe = !gl_ztrickframe;
-    if (gl_ztrickframe)
-    {
-      gldepthmin = 0.0f;
-      gldepthmax = 0.49999f;
-      glDepthFunc(GL_LEQUAL);
-    }
-    else
-    {
-      gldepthmin = 1.0f;
-      gldepthmax = 0.5f;
-      glDepthFunc(GL_GEQUAL);
-    }
-    glDepthRange(gldepthmin, gldepthmax);
-  }
 }
 
 void gld_StartDrawScene(void)
 {
-  extern int screenblocks;
-
   // Progress fuzz time seed
   glsl_SetFuzzTime(gametic);
 
   gld_MultisamplingSet();
 
-  if (gl_shared_texture_palette)
-    glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
   gld_SetPalette(-1);
 
   glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
@@ -1229,7 +1128,7 @@ void gld_StartDrawScene(void)
   gl_use_fog = gl_fog && !frame_fixedcolormap && !boom_cm;
 
 //e6y
-  mlook_or_fov = dsda_MouseLook() || (render_fov != FOV90);
+  mlook_or_fov = dsda_MouseLook() || (gl_render_fov != FOV90);
   if(!mlook_or_fov)
   {
     pitch = 0.0f;
@@ -1251,7 +1150,6 @@ void gld_StartDrawScene(void)
   }
   cos_paperitems_pitch = (float)cos(paperitems_pitch * M_PI / 180.f);
   sin_paperitems_pitch = (float)sin(paperitems_pitch * M_PI / 180.f);
-  gl_mask_sprite_threshold_f = (gl_sprite_blend ? (float)gl_mask_sprite_threshold / 100.0f : 0.5f);
 
   gld_InitFrameSky();
 
@@ -1274,10 +1172,6 @@ void gld_StartDrawScene(void)
       }
     }
   }
-
-  motion_blur.enabled = gl_use_motionblur &&
-    ((motion_blur.curr_speed_pow2 > motion_blur.minspeed_pow2) ||
-    (abs(players[displayplayer].cmd.angleturn) > motion_blur.minangle));
 
   // elim - Always enabled (when supported) for upscaling with GL exclusive disabled
   SceneInTexture = gl_ext_framebuffer_object;
@@ -1354,12 +1248,9 @@ void gld_EndDrawScene(void)
   gl_EnableFog(false);
   gld_Set2DMode();
 
-  if (!viewangleoffset && !viewpitchoffset)
-  { // don't draw on side views
-    glsl_SetMainShaderActive();
-    R_DrawPlayerSprites();
-    glsl_SetActiveShader(NULL);
-  }
+  glsl_SetMainShaderActive();
+  R_DrawPlayerSprites();
+  glsl_SetActiveShader(NULL);
 
   // e6y
   // Effect of invulnerability uses a colormap instead of hard-coding now
@@ -1391,21 +1282,6 @@ void gld_EndDrawScene(void)
       glColor3f(1.0f, 1.0f, 1.0f);
     }
 
-    //e6y: motion bloor effect for strafe50
-    if (motion_blur.enabled)
-    {
-      extern int renderer_fps;
-      static float motionblur_alpha = 1.0f;
-
-      if (realframe)
-      {
-        motionblur_alpha = (float)((atan(-renderer_fps / motion_blur.att_a)) / motion_blur.att_b) + motion_blur.att_c;
-      }
-
-      glBlendFunc(GL_CONSTANT_ALPHA_EXT, GL_ONE_MINUS_CONSTANT_ALPHA_EXT);
-      GLEXT_glBlendColorEXT(1.0f, 1.0f, 1.0f, motionblur_alpha);
-    }
-
     // Setup GL camera for drawing the render texture
     dsda_GLFullscreenOrtho2D();
     dsda_GLSetRenderViewport();
@@ -1425,11 +1301,6 @@ void gld_EndDrawScene(void)
 
     gld_Set2DMode();
 
-    if (motion_blur.enabled)
-    {
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
-
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }
   else
@@ -1447,8 +1318,6 @@ void gld_EndDrawScene(void)
   glColor3f(1.0f,1.0f,1.0f);
   glDisable(GL_SCISSOR_TEST);
   glDisable(GL_ALPHA_TEST);
-  if (gl_shared_texture_palette)
-    glDisable(GL_SHARED_TEXTURE_PALETTE_EXT);
 }
 
 static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
@@ -1513,16 +1382,13 @@ static void gld_DrawWall(GLWall *wall)
   int has_detail;
   unsigned int flags;
 
-  rendered_segs++;
+  dsda_RecordDrawSeg();
 
   has_detail =
     scene_has_details &&
     gl_arb_multitexture &&
     (wall->flag < GLDWF_SKY) &&
-    (wall->gltexture->detail) &&
-    gld_IsDetailVisible(xCamera, yCamera,
-      wall->glseg->x1, wall->glseg->z1,
-      wall->glseg->x2, wall->glseg->z2);
+    (wall->gltexture->detail);
 
   // Do not repeat middle texture vertically
   // to avoid visual glitches for textures with holes
@@ -2061,7 +1927,7 @@ static void gld_DrawFlat(GLFlat *flat)
   int has_offset;
   unsigned int flags;
 
-  rendered_visplanes++;
+  dsda_RecordVisPlane();
 
   has_detail =
     scene_has_details &&
@@ -2081,11 +1947,9 @@ static void gld_DrawFlat(GLFlat *flat)
   gld_BindFlat(flat->gltexture, flags);
   gld_StaticLightAlpha(flat->light, flat->alpha);
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glTranslatef(0.0f,flat->z,0.0f);
-#endif
 
   if (has_offset)
   {
@@ -2121,52 +1985,12 @@ static void gld_DrawFlat(GLFlat *flat)
   if (flat->sectornum>=0)
   {
     // go through all loops of this sector
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
-    if (gl_use_display_lists)
-    {
-      int display_list = (has_detail ? flats_detail_display_list : flats_display_list);
-      glCallList(display_list + flat->sectornum);
-    }
-    else
-    {
-      for (loopnum=0; loopnum<sectorloops[flat->sectornum].loopcount; loopnum++)
-      {
-        // set the current loop
-        currentloop=&sectorloops[flat->sectornum].loops[loopnum];
-        glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
-      }
-    }
-#else
     for (loopnum=0; loopnum<sectorloops[flat->sectornum].loopcount; loopnum++)
     {
-      int vertexnum;
       // set the current loop
       currentloop=&sectorloops[flat->sectornum].loops[loopnum];
-      if (!currentloop)
-        continue;
-      // set the mode (GL_TRIANGLES, GL_TRIANGLE_STRIP or GL_TRIANGLE_FAN)
-      glBegin(currentloop->mode);
-      // go through all vertexes of this loop
-      for (vertexnum=currentloop->vertexindex; vertexnum<(currentloop->vertexindex+currentloop->vertexcount); vertexnum++)
-      {
-        // set texture coordinate of this vertex
-        if (has_detail)
-        {
-          GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE0_ARB, (GLfloat*)&flats_vbo[vertexnum].u);
-          GLEXT_glMultiTexCoord2fvARB(GL_TEXTURE1_ARB, (GLfloat*)&flats_vbo[vertexnum].u);
-        }
-        else
-        {
-          glTexCoord2fv((GLfloat*)&flats_vbo[vertexnum].u);
-        }
-        // set vertex coordinate
-        //glVertex3fv((GLfloat*)&flats_vbo[vertexnum].x);
-        glVertex3f(flats_vbo[vertexnum].x, flat->z, flats_vbo[vertexnum].z);
-      }
-      // end of loop
-      glEnd();
+      glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
     }
-#endif
   }
 
   //e6y
@@ -2181,10 +2005,8 @@ static void gld_DrawFlat(GLFlat *flat)
     glPopMatrix();
   }
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
-#endif
 }
 
 // gld_AddFlat
@@ -2396,7 +2218,7 @@ static void gld_DrawSprite(GLSprite *sprite)
   GLint blend_src, blend_dst;
   int restore = 0;
 
-  rendered_vissprites++;
+  dsda_RecordVisSprite();
 
   gld_BindPatch(sprite->gltexture,sprite->cm);
 
@@ -2409,7 +2231,6 @@ static void gld_DrawSprite(GLSprite *sprite)
       glGetIntegerv(GL_BLEND_SRC, &blend_src);
       glGetIntegerv(GL_BLEND_DST, &blend_dst);
       glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-      //glColor4f(0.2f,0.2f,0.2f,(float)tran_filter_pct/100.0f);
       glAlphaFunc(GL_GEQUAL,0.1f);
       glColor4f(0.2f,0.2f,0.2f,0.33f);
       restore = 1;
@@ -2423,7 +2244,7 @@ static void gld_DrawSprite(GLSprite *sprite)
     }
   }
 
-  if (!render_paperitems && !(sprite->flags & (MF_SOLID | MF_SPAWNCEILING)))
+  if (!gl_render_paperitems && !(sprite->flags & (MF_SOLID | MF_SPAWNCEILING)))
   {
     float x1, x2, x3, x4, z1, z2, z3, z4;
     float y1, y2, cy, ycenter, y1c, y2c;
@@ -2494,11 +2315,11 @@ static void gld_AddHealthBar(mobj_t* thing, GLSprite *sprite)
     int health_percent = thing->health * 100 / thing->info->spawnhealth;
 
     hbar.cm = -1;
-    if (health_percent <= health_bar_red)
+    if (health_percent <= 50)
       hbar.cm = CR_RED;
-    else if (health_percent <= health_bar_yellow)
+    else if (health_percent <= 99)
       hbar.cm = CR_YELLOW;
-    else if (health_percent <= health_bar_green)
+    else if (health_percent <= 0)
       hbar.cm = CR_GREEN;
 
     if (hbar.cm >= 0)
@@ -2547,19 +2368,16 @@ static void gld_DrawHealthBars(void)
     }
     glEnd();
 
-    if (health_bar_full_length)
+    glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
+    glBegin(GL_LINES);
+    for (i = count - 1; i >= 0; i--)
     {
-      glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
-      glBegin(GL_LINES);
-      for (i = count - 1; i >= 0; i--)
-      {
-        GLHealthBar *hbar = gld_drawinfo.items[GLDIT_HBAR][i].item.hbar;
+      GLHealthBar *hbar = gld_drawinfo.items[GLDIT_HBAR][i].item.hbar;
 
-        glVertex3f(hbar->x1, hbar->y, hbar->z1);
-        glVertex3f(hbar->x3, hbar->y, hbar->z3);
-      }
-      glEnd();
+      glVertex3f(hbar->x1, hbar->y, hbar->z1);
+      glVertex3f(hbar->x3, hbar->y, hbar->z3);
     }
+    glEnd();
 
     gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
   }
@@ -2584,8 +2402,8 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   GLSprite sprite;
   const rpatch_t* patch;
 
-  int frustum_culling = HaveMouseLook() && gl_sprites_frustum_culling;
-  int mlook = HaveMouseLook() || (render_fov > FOV90);
+  int frustum_culling = HaveMouseLook();
+  int mlook = HaveMouseLook() || (gl_render_fov > FOV90);
 
   if (R_ViewInterpolation())
   {
@@ -2617,7 +2435,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   tx = -(gyt + gxt);
 
   //e6y
-  if (!render_paperitems && mlook)
+  if (!gl_render_paperitems && mlook)
   {
     if (tz >= MINZ && (D_abs(tx) >> 5) > tz)
       return;
@@ -2724,9 +2542,6 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   sprite.y = (float)fz / MAP_SCALE;
   sprite.z = (float)fy / MAP_SCALE;
 
-  // Bring items up out of floor by configurable amount times .01 Mead 8/13/03
-  sprite.y += gl_sprite_offset;
-
   sprite.x2 = (float)patch->leftoffset / MAP_COEFF;
   sprite.x1 = sprite.x2 - ((float)patch->width / MAP_COEFF);
   sprite.y1 = (float)patch->topoffset / MAP_COEFF;
@@ -2736,7 +2551,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   // if the sprite is below the floor, and it's not a hanger/floater/missile,
   // and it's not a fully dead corpse, move it up
   if ((gl_spriteclip != spriteclip_const) &&
-      (sprite.y2 < 0) && (sprite.y2 >= (float)(-gl_spriteclip_threshold_f)) &&
+      (sprite.y2 < 0) && (sprite.y2 >= -gl_spriteclip_threshold_f) &&
       !(thing->flags & (MF_SPAWNCEILING|MF_FLOAT|MF_MISSILE|MF_NOGRAVITY)) &&
       ((gl_spriteclip == spriteclip_always) || !((thing->flags & MF_CORPSE) && thing->tics == -1)))
   {
@@ -2758,7 +2573,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   }
 
   sprite.scale = FixedDiv(projectiony, tz);;
-  if ((thing->frame & FF_FULLBRIGHT) || show_alive)
+  if ((thing->frame & FF_FULLBRIGHT) || dsda_ShowAliveMonsters())
   {
     sprite.fogdensity = 0.0f;
     sprite.light = 1.0f;
@@ -2918,7 +2733,7 @@ static void gld_DrawItemsSortSprites(GLDrawItemType itemtype)
   static const float delta = 0.2f / MAP_COEFF;
   int i;
 
-  if (scene_has_overlapped_sprites && sprites_doom_order == DOOM_ORDER_STATIC)
+  if (scene_has_overlapped_sprites)
   {
     for (i = 0; i < gld_drawinfo.num_items[itemtype]; i++)
     {
@@ -2928,45 +2743,6 @@ static void gld_DrawItemsSortSprites(GLDrawItemType itemtype)
         sprite->index = gl_spriteindex;
         sprite->x -= delta * sin_inv_yaw;
         sprite->z -= delta * cos_inv_yaw;
-      }
-    }
-  }
-
-  if (sprites_doom_order == DOOM_ORDER_DYNAMIC)
-  {
-    no_overlapped_sprites = true;
-    gld_DrawItemsSort(itemtype, dicmp_sprite_by_pos); // back to front
-
-    if (!no_overlapped_sprites)
-    {
-      // there are overlapped sprites
-      int count = gld_drawinfo.num_items[itemtype];
-
-      i = 1;
-      while (i < count)
-      {
-        GLSprite *sprite1 = gld_drawinfo.items[itemtype][i - 1].item.sprite;
-        GLSprite *sprite2 = gld_drawinfo.items[itemtype][i - 0].item.sprite;
-
-        if (sprite1->xy == sprite2->xy)
-        {
-          GLSprite *sprite = (sprite1->index > sprite2->index ? sprite1 : sprite2);
-          i++;
-          while (i < count && gld_drawinfo.items[itemtype][i].item.sprite->xy == sprite1->xy)
-          {
-            if (gld_drawinfo.items[itemtype][i].item.sprite->index > sprite->index)
-            {
-              sprite = gld_drawinfo.items[itemtype][i].item.sprite;
-            }
-            i++;
-          }
-
-          // 'nearest'
-          sprite->index = gl_spriteindex;
-          sprite->x -= delta * sin_inv_yaw;
-          sprite->z -= delta * cos_inv_yaw;
-        }
-        i++;
       }
     }
   }
@@ -3015,98 +2791,6 @@ void gld_DrawProjectedWalls(GLDrawItemType itemtype)
   }
 }
 
-void gld_InitDisplayLists(void)
-{
-  int i;
-  int loopnum; // current loop number
-  GLLoopDef *currentloop;
-
-  if (gl_use_display_lists)
-  {
-    flats_display_list_size = numsectors;
-    flats_display_list = glGenLists(flats_display_list_size);
-
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-
-    if (gl_ext_arb_vertex_buffer_object)
-    {
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, flats_vbo_id);
-    }
-    glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
-
-    for (i = 0; i < flats_display_list_size; i++)
-    {
-      glNewList(flats_display_list + i, GL_COMPILE);
-
-      for (loopnum = 0; loopnum < sectorloops[i].loopcount; loopnum++)
-      {
-        // set the current loop
-        currentloop = &sectorloops[i].loops[loopnum];
-        glDrawArrays(currentloop->mode, currentloop->vertexindex, currentloop->vertexcount);
-      }
-
-      glEndList();
-    }
-
-    // duplicated display list for flats with enabled detail ARB
-    if (details_count && gl_arb_multitexture)
-    {
-      flats_detail_display_list_size = numsectors;
-      flats_detail_display_list = glGenLists(flats_detail_display_list_size);
-
-      gld_EnableClientCoordArray(GL_TEXTURE1_ARB, true);
-
-      for (i = 0; i < flats_display_list_size; i++)
-      {
-        glNewList(flats_detail_display_list + i, GL_COMPILE);
-
-        for (loopnum = 0; loopnum < sectorloops[i].loopcount; loopnum++)
-        {
-          // set the current loop
-          currentloop = &sectorloops[i].loops[loopnum];
-          glDrawArrays(currentloop->mode, currentloop->vertexindex, currentloop->vertexcount);
-        }
-
-        glEndList();
-      }
-
-      gld_EnableClientCoordArray(GL_TEXTURE1_ARB, false);
-    }
-
-    if (gl_ext_arb_vertex_buffer_object)
-    {
-      // bind with 0, so, switch back to normal pointer operation
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, 0);
-    }
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-  }
-}
-
-void gld_CleanDisplayLists(void)
-{
-  if (gl_use_display_lists)
-  {
-    if (flats_display_list_size > 0)
-    {
-      glDeleteLists(flats_display_list, flats_display_list_size);
-      flats_display_list = 0;
-      flats_display_list_size = 0;
-    }
-
-    if (flats_detail_display_list_size > 0)
-    {
-      glDeleteLists(flats_detail_display_list, flats_detail_display_list_size);
-      flats_detail_display_list = 0;
-      flats_detail_display_list_size = 0;
-    }
-  }
-}
-
 void gld_DrawScene(player_t *player)
 {
   int i;
@@ -3122,14 +2806,9 @@ void gld_DrawScene(player_t *player)
   gld_EnableDetail(false);
   gld_InitFrameDetails();
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
-  if (!gl_use_display_lists)
-  {
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-  }
-#endif
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_COLOR_ARRAY);
 
   //e6y: skybox
   skybox = 0;
@@ -3151,17 +2830,12 @@ void gld_DrawScene(player_t *player)
     }
   }
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
-  if (!gl_use_display_lists)
+  if (gl_ext_arb_vertex_buffer_object)
   {
-    if (gl_ext_arb_vertex_buffer_object)
-    {
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, flats_vbo_id);
-    }
-    glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
+    GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, flats_vbo_id);
   }
-#endif
+  glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
+  glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
 
   glsl_SetMainShaderActive();
 
@@ -3290,7 +2964,7 @@ void gld_DrawScene(player_t *player)
   // normal sky (not a skybox)
   if (!skybox && (gl_drawskys == skytype_none || gl_drawskys == skytype_standard))
   {
-    rendered_segs += gld_drawinfo.num_items[GLDIT_SWALL];
+    dsda_RecordDrawSegs(gld_drawinfo.num_items[GLDIT_SWALL]);
     // fake strips of sky
     glsl_SetActiveShader(NULL);
     gld_DrawStripsSky();
@@ -3308,7 +2982,7 @@ void gld_DrawScene(player_t *player)
   glAlphaFunc(GL_GEQUAL, 0.5f);
 
   // mode for viewing all the alive monsters
-  if (show_alive)
+  if (dsda_ShowAliveMonsters())
   {
     const int period = 250;
     float color;
@@ -3464,19 +3138,14 @@ void gld_DrawScene(player_t *player)
 
   gld_EnableDetail(false);
 
-#if defined(USE_VERTEX_ARRAYS) || defined(USE_VBO)
-  if (!gl_use_display_lists)
+  if (gl_ext_arb_vertex_buffer_object)
   {
-    if (gl_ext_arb_vertex_buffer_object)
-    {
-      // bind with 0, so, switch back to normal pointer operation
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, 0);
-    }
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+    // bind with 0, so, switch back to normal pointer operation
+    GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, 0);
   }
-#endif
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_COLOR_ARRAY);
 
   glsl_SetActiveShader(NULL);
 }

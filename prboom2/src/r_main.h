@@ -77,13 +77,6 @@ extern int      validcount2;
 extern fixed_t viewfocratio;
 
 //
-// Rendering stats
-//
-
-extern int rendered_visplanes, rendered_segs, rendered_vissprites;
-extern dboolean rendering_stats;
-
-//
 // Lighting LUT.
 // Used for z-depth cuing per column/row,
 //  and other lighting effects (sector ambient, flash).
@@ -101,7 +94,6 @@ extern dboolean rendering_stats;
 extern int LIGHTSEGSHIFT;
 extern int LIGHTBRIGHT;
 extern int LIGHTLEVELS;
-extern int render_doom_lightmaps;
 
 #define MAXLIGHTSCALE     48
 #define LIGHTSCALESHIFT   12
@@ -157,11 +149,11 @@ extern int r_have_internal_hires;
 
 void R_RenderPlayerView(player_t *player);   // Called by G_Drawer.
 void R_Init(void);                           // Called by startup code.
-void R_SetViewSize(int blocks);              // Called by M_Responder.
+int R_ViewSize(void);
+void R_SetViewSize(void);              // Called by M_Responder.
 void R_ExecuteSetViewSize(void);             // cph - called by D_Display to complete a view resize
-
-void R_ShowStats(void);
-void R_ClearStats(void);
+dboolean R_FullView(void);
+dboolean R_PartialView(void);
 
 #define Pi 3.14159265358979323846f
 #define DEG2RAD(a) ((a * Pi) / 180.0f)

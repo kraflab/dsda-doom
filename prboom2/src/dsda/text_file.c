@@ -15,7 +15,6 @@
 //	DSDA Text File
 //
 
-#include "m_argv.h"
 #include "doomstat.h"
 #include "r_demo.h"
 #include "lprintf.h"
@@ -23,27 +22,27 @@
 
 #include "dsda.h"
 #include "dsda/analysis.h"
+#include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/playback.h"
 
 #include "text_file.h"
-
-const char* dsda_player_name;
 
 extern int gameepisode, gameskill, totalleveltimes, compatibility_level,
            dsda_last_leveltime, dsda_last_gamemap, dsda_startmap;
 
 static char* dsda_TextFileName(void) {
-  int p;
   int name_length;
   char* name;
   char* playdemo;
+  const char* playback_name;
 
-  p = dsda_PlaybackArg();
+  playback_name = dsda_PlaybackName();
 
-  if (!p)
+  if (!playback_name)
     return NULL;
 
-  playdemo = Z_Strdup(myargv[p + 1]);
+  playdemo = Z_Strdup(playback_name);
   name_length = strlen(playdemo);
 
   if (name_length > 4 && !stricmp(playdemo + name_length - 4, ".lmp")) {
@@ -122,12 +121,14 @@ static char* dsda_TextFileTime(void) {
 
 void dsda_ExportTextFile(void) {
   int p;
+  dsda_arg_t* arg;
   char* name;
   const char* iwad = NULL;
   const char* pwad = NULL;
+  const char* dsda_player_name;
   FILE* file;
 
-  if (!M_CheckParm("-export_text_file"))
+  if (!dsda_Flag(dsda_arg_export_text_file))
     return;
 
   name = dsda_TextFileName();
@@ -141,13 +142,13 @@ void dsda_ExportTextFile(void) {
   if (!file)
     I_Error("Unable to export text file!");
 
-  p = M_CheckParm("-iwad");
-  if (p && (++p < myargc))
-    iwad = PathFindFileName(myargv[p]);
+  arg = dsda_Arg(dsda_arg_iwad);
+  if (arg->found)
+    iwad = PathFindFileName(arg->value.v_string);
 
-  p = M_CheckParm("-file");
-  if (p && (++p < myargc))
-    pwad = PathFindFileName(myargv[p]);
+  arg = dsda_Arg(dsda_arg_file);
+  if (arg->found)
+    pwad = PathFindFileName(arg->value.v_string_array[0]);
 
   fprintf(file, "Doom Speed Demo Archive\n");
   fprintf(file, "https://dsdarchive.com/\n");
@@ -181,6 +182,8 @@ void dsda_ExportTextFile(void) {
   name = dsda_TextFileTime();
   fprintf(file, "Time:      %s\n", name);
   Z_Free(name);
+
+  dsda_player_name = dsda_StringConfig(dsda_config_player_name);
 
   fprintf(file, "\n");
   fprintf(file, "Author:    %s\n", dsda_player_name);

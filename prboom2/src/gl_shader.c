@@ -226,8 +226,8 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
   char *filename = NULL;
   GLShader* shader = NULL;
 
-  vp_fnlen = doom_snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
-  fp_fnlen = doom_snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), fpname);
+  vp_fnlen = snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
+  fp_fnlen = snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), fpname);
   filename = Z_Malloc(MAX(vp_fnlen, fp_fnlen) + 1);
 
   sprintf(filename, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);

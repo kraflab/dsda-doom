@@ -16,13 +16,18 @@
 //
 
 #include "doomstat.h"
+#include "g_game.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
+#include "i_system.h"
+#include "lprintf.h"
 #include "m_cheat.h"
 #include "m_menu.h"
+#include "m_misc.h"
 #include "s_sound.h"
 #include "v_video.h"
 
+#include "dsda.h"
 #include "dsda/build.h"
 #include "dsda/brute_force.h"
 #include "dsda/demo.h"
@@ -30,11 +35,14 @@
 #include "dsda/global.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
+#include "dsda/tracker.h"
 #include "dsda/utility.h"
 
 #include "console.h"
 
 extern patchnum_t hu_font2[HU_FONTSIZE];
+
+#define target_player players[consoleplayer]
 
 #define CONSOLE_ENTRY_SIZE 64
 
@@ -47,9 +55,12 @@ static char console_prompt[CONSOLE_ENTRY_SIZE + 3] = { '$', ' ' };
 static char console_message[CONSOLE_ENTRY_SIZE + 3] = { ' ', ' ' };
 static char* console_entry = console_prompt + 2;
 static char* console_message_entry = console_message + 2;
+static char last_console_entry[CONSOLE_ENTRY_SIZE + 1];
 static int console_entry_index;
 static hu_textline_t hu_console_prompt;
 static hu_textline_t hu_console_message;
+
+static char** dsda_console_script_lines[CONSOLE_SCRIPT_COUNT];
 
 static void dsda_DrawConsole(void) {
   V_FillRect(0, 0, 0, SCREENWIDTH, 16 * SCREENHEIGHT / 200, 0);
@@ -62,8 +73,11 @@ menu_t dsda_ConsoleDef = {
   NULL,
   NULL,
   dsda_DrawConsole,
-  0, 0
+  0, 0,
+  0, MENUF_TEXTINPUT
 };
+
+static dboolean dsda_ExecuteConsole(const char* command_line);
 
 static void dsda_UpdateConsoleDisplay(void) {
   const char* s;
@@ -99,7 +113,7 @@ dboolean dsda_OpenConsole(void) {
       8,
       hu_font2,
       HU_FONTSTART,
-      g_cr_gray,
+      CR_GRAY,
       VPT_ALIGN_LEFT_TOP
     );
 
@@ -109,7 +123,7 @@ dboolean dsda_OpenConsole(void) {
       0,
       hu_font2,
       HU_FONTSTART,
-      g_cr_gray,
+      CR_GRAY,
       VPT_ALIGN_LEFT_TOP
     );
   }
@@ -125,8 +139,8 @@ static dboolean console_PlayerSetHealth(const char* command, const char* args) {
   int health;
 
   if (sscanf(args, "%i", &health)) {
-    players[consoleplayer].mo->health = health;
-    players[consoleplayer].health = health;
+    target_player.mo->health = health;
+    target_player.health = health;
 
     return true;
   }
@@ -141,13 +155,228 @@ static dboolean console_PlayerSetArmor(const char* command, const char* args) {
   arg_count = sscanf(args, "%i %i", &armorpoints, &armortype);
 
   if (arg_count != 2 || (armortype != 1 && armortype != 2))
-    armortype = players[consoleplayer].armortype;
+    armortype = target_player.armortype;
 
   if (arg_count) {
-    players[consoleplayer].armorpoints[ARMOR_ARMOR] = armorpoints;
+    target_player.armorpoints[ARMOR_ARMOR] = armorpoints;
 
     if (armortype == 0) armortype = 1;
-    players[consoleplayer].armortype = armortype;
+    target_player.armortype = armortype;
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerGiveWeapon(const char* command, const char* args) {
+  dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped);
+  void TryPickupWeapon(player_t * player, pclass_t weaponClass,
+                       weapontype_t weaponType, mobj_t * weapon,
+                       const char *message);
+
+  int weapon;
+
+  if (sscanf(args, "%i", &weapon)) {
+    if (hexen) {
+      mobj_t mo;
+
+      if (weapon < 0 || weapon >= HEXEN_NUMWEAPONS)
+        return false;
+
+      memset(&mo, 0, sizeof(mo));
+
+      mo.intflags |= MIF_FAKE;
+
+      TryPickupWeapon(&target_player, target_player.pclass, weapon, &mo, "WEAPON");
+    }
+    else {
+      if (weapon < 0 || weapon >= NUMWEAPONS)
+        return false;
+
+      P_GiveWeapon(&target_player, weapon, false);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerGiveAmmo(const char* command, const char* args) {
+  int ammo;
+  int amount;
+  int arg_count;
+
+  arg_count = sscanf(args, "%i %i", &ammo, &amount);
+
+  if (arg_count == 2) {
+    if (ammo < 0 || ammo >= g_numammo || amount <= 0)
+      return false;
+
+    if (hexen) {
+      target_player.ammo[ammo] += amount;
+      if (target_player.ammo[ammo] > MAX_MANA)
+        target_player.ammo[ammo] = MAX_MANA;
+    }
+    else {
+      target_player.ammo[ammo] += amount;
+      if (target_player.ammo[ammo] > target_player.maxammo[ammo])
+        target_player.ammo[ammo] = target_player.maxammo[ammo];
+    }
+
+    return true;
+  }
+  else if (arg_count == 1) {
+    if (ammo < 0 || ammo >= g_numammo)
+      return false;
+
+    if (hexen)
+      target_player.ammo[ammo] = MAX_MANA;
+    else
+      target_player.ammo[ammo] = target_player.maxammo[ammo];
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerSetAmmo(const char* command, const char* args) {
+  int ammo;
+  int amount;
+
+  if (sscanf(args, "%i %i", &ammo, &amount) == 2) {
+    if (ammo < 0 || ammo >= g_numammo || amount < 0)
+      return false;
+
+    if (hexen) {
+      target_player.ammo[ammo] = amount;
+      if (target_player.ammo[ammo] > MAX_MANA)
+        target_player.ammo[ammo] = MAX_MANA;
+    }
+    else {
+      target_player.ammo[ammo] = amount;
+      if (target_player.ammo[ammo] > target_player.maxammo[ammo])
+        target_player.ammo[ammo] = target_player.maxammo[ammo];
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerGiveKey(const char* command, const char* args) {
+  extern int playerkeys;
+
+  int key;
+
+  if (sscanf(args, "%i", &key)) {
+    if (key < 0 || key >= NUMCARDS)
+      return false;
+
+    target_player.cards[key] = true;
+    playerkeys |= 1 << key;
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerRemoveKey(const char* command, const char* args) {
+  extern int playerkeys;
+
+  int key;
+
+  if (sscanf(args, "%i", &key)) {
+    if (key < 0 || key >= NUMCARDS)
+      return false;
+
+    target_player.cards[key] = false;
+    playerkeys &= ~(1 << key);
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerGivePower(const char* command, const char* args) {
+  dboolean P_GivePower(player_t *player, int power);
+  void SB_Start(void);
+
+  int power;
+  int duration = -1;
+
+  if (sscanf(args, "%i %i", &power, &duration)) {
+    if (power < 0 || power >= NUMPOWERS ||
+        power == pw_shield || power == pw_health2 || power == pw_minotaur)
+      return false;
+
+    target_player.powers[power] = 0;
+    P_GivePower(&target_player, power);
+    if (power != pw_strength)
+      target_player.powers[power] = duration;
+
+    if (raven) SB_Start();
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerRemovePower(const char* command, const char* args) {
+  void SB_Start(void);
+
+  int power;
+
+  if (sscanf(args, "%i", &power)) {
+    if (power < 0 || power >= NUMPOWERS ||
+        power == pw_shield || power == pw_health2 || power == pw_minotaur)
+      return false;
+
+    target_player.powers[power] = 0;
+
+    if (power == pw_invulnerability) {
+      target_player.mo->flags2 &= ~(MF2_INVULNERABLE | MF2_REFLECTIVE);
+      if (target_player.pclass == PCLASS_CLERIC)
+      {
+        target_player.mo->flags2 &= ~(MF2_DONTDRAW | MF2_NONSHOOTABLE);
+        target_player.mo->flags &= ~(MF_SHADOW | MF_ALTSHADOW);
+      }
+    }
+    else if (power == pw_invisibility)
+      target_player.mo->flags &= ~MF_SHADOW;
+    else if (power == pw_flight) {
+      if (target_player.mo->z != target_player.mo->floorz)
+      {
+        target_player.centering = true;
+      }
+      target_player.mo->flags2 &= ~MF2_FLY;
+      target_player.mo->flags &= ~MF_NOGRAVITY;
+    }
+    else if (power == pw_weaponlevel2 && heretic) {
+      if ((target_player.readyweapon == wp_phoenixrod)
+          && (target_player.psprites[ps_weapon].state
+              != &states[HERETIC_S_PHOENIXREADY])
+          && (target_player.psprites[ps_weapon].state
+              != &states[HERETIC_S_PHOENIXUP]))
+      {
+        P_SetPsprite(&target_player, ps_weapon, HERETIC_S_PHOENIXREADY);
+        target_player.ammo[am_phoenixrod] -= USE_PHRD_AMMO_2;
+        target_player.refire = 0;
+      }
+      else if ((target_player.readyweapon == wp_gauntlets)
+               || (target_player.readyweapon == wp_staff))
+      {
+        target_player.pendingweapon = target_player.readyweapon;
+      }
+    }
+
+    if (raven) SB_Start();
 
     return true;
   }
@@ -174,15 +403,15 @@ static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
 }
 
 static dboolean console_PlayerSetX(const char* command, const char* args) {
-  return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->x);
+  return console_PlayerSetCoordinate(args, &target_player.mo->x);
 }
 
 static dboolean console_PlayerSetY(const char* command, const char* args) {
-  return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->y);
+  return console_PlayerSetCoordinate(args, &target_player.mo->y);
 }
 
 static dboolean console_PlayerSetZ(const char* command, const char* args) {
-  return console_PlayerSetCoordinate(args, &players[consoleplayer].mo->z);
+  return console_PlayerSetCoordinate(args, &target_player.mo->z);
 }
 
 static void console_PlayerRoundCoordinate(int* x) {
@@ -204,20 +433,20 @@ static void console_PlayerRoundCoordinate(int* x) {
 }
 
 static dboolean console_PlayerRoundX(const char* command, const char* args) {
-  console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
+  console_PlayerRoundCoordinate(&target_player.mo->x);
 
   return true;
 }
 
 static dboolean console_PlayerRoundY(const char* command, const char* args) {
-  console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
+  console_PlayerRoundCoordinate(&target_player.mo->y);
 
   return true;
 }
 
 static dboolean console_PlayerRoundXY(const char* command, const char* args) {
-  console_PlayerRoundCoordinate(&players[consoleplayer].mo->x);
-  console_PlayerRoundCoordinate(&players[consoleplayer].mo->y);
+  console_PlayerRoundCoordinate(&target_player.mo->x);
+  console_PlayerRoundCoordinate(&target_player.mo->y);
 
   return true;
 }
@@ -229,6 +458,15 @@ static dboolean console_DemoExport(const char* command, const char* args) {
     dsda_ExportDemo(name);
     return true;
   }
+
+  return false;
+}
+
+static dboolean console_DemoStart(const char* command, const char* args) {
+  char name[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%s", name) == 1)
+    return dsda_StartDemoSegment(name);
 
   return false;
 }
@@ -313,12 +551,32 @@ static dboolean console_TrackerRemovePlayer(const char* command, const char* arg
   return dsda_UntrackPlayer(0);
 }
 
-static dboolean console_JumpTic(const char* command, const char* args) {
+static dboolean console_TrackerReset(const char* command, const char* args) {
+  dsda_WipeTrackers();
+
+  return true;
+}
+
+static dboolean console_JumpToTic(const char* command, const char* args) {
   int tic;
 
   if (sscanf(args, "%i", &tic)) {
     if (tic < 0)
-      tic = logictic + tic;
+      return false;
+
+    dsda_JumpToLogicTic(tic);
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_JumpByTic(const char* command, const char* args) {
+  int tic;
+
+  if (sscanf(args, "%i", &tic)) {
+    tic = logictic + tic;
 
     dsda_JumpToLogicTic(tic);
 
@@ -375,7 +633,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
   dsda_ResetBruteForceConditions();
 
   arg_count = sscanf(
-    args, "%i %i,%i %i,%i %i,%i %[^;]", &depth,
+    args, "%i %i:%i %i:%i %i:%i %[^;]", &depth,
     &forwardmove_min, &forwardmove_max,
     &sidemove_min, &sidemove_max,
     &angleturn_min, &angleturn_max,
@@ -396,7 +654,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       dsda_bf_operator_t operator;
       fixed_t value;
       char attr_s[4] = { 0 };
-      char oper_s[5] = { 0 };
+      char oper_s[3] = { 0 };
 
       if (sscanf(conditions[i], "skip %i", &value) == 1) {
         if (value >= numlines || value < 0)
@@ -410,7 +668,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
         dsda_AddMiscBruteForceCondition(dsda_bf_line_activation, value);
       }
-      else if (sscanf(conditions[i], "%3s %4s %i", attr_s, oper_s, &value) == 3) {
+      else if (sscanf(conditions[i], "%3s %2s %i", attr_s, oper_s, &value) == 3) {
         int attr_i, oper_i;
 
         for (attr_i = 0; attr_i < dsda_bf_attribute_max; ++attr_i)
@@ -487,6 +745,134 @@ static dboolean console_BasicCheat(const char* command, const char* args) {
   return M_CheatEntered(command, args);
 }
 
+static dboolean console_CheatFullClip(const char* command, const char* args) {
+  target_player.cheats ^= CF_INFINITE_AMMO;
+  return true;
+}
+
+static dboolean console_Freeze(const char* command, const char* args) {
+  dsda_ToggleFrozenMode();
+  return true;
+}
+
+static dboolean console_NoSleep(const char* command, const char* args) {
+  int i;
+
+  for (i = 0; i < numsectors; ++i)
+    sectors[i].soundtarget = target_player.mo;
+
+  return true;
+}
+
+static dboolean console_ScriptRunLine(const char* line) {
+  if (strlen(line) && line[0] != '#' && line[0] != '!' && line[0] != '/') {
+    if (strlen(line) >= CONSOLE_ENTRY_SIZE) {
+      lprintf(LO_ERROR, "Script line too long: \"%s\" (limit %d)\n", line, CONSOLE_ENTRY_SIZE);
+      return false;
+    }
+
+    if (!dsda_ExecuteConsole(line)) {
+      lprintf(LO_ERROR, "Script line failed: \"%s\"\n", line);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+static dboolean console_ScriptRun(const char* command, const char* args) {
+  char name[CONSOLE_ENTRY_SIZE];
+  dboolean ret = true;
+
+  if (sscanf(args, "%s", name)) {
+    char* filename;
+    char* buffer;
+
+    filename = I_FindFile(name, "");
+
+    if (filename) {
+      if (M_ReadFileToString(filename, &buffer) != -1) {
+        char* line;
+
+        for (line = strtok(buffer, "\n;"); line; line = strtok(NULL, "\n;"))
+          if (!console_ScriptRunLine(line)) {
+            ret = false;
+            break;
+          }
+
+        Z_Free(buffer);
+      }
+      else {
+        lprintf(LO_ERROR, "Unable to read script file (%s)\n", filename);
+        ret = false;
+      }
+
+      Z_Free(filename);
+    }
+    else {
+      lprintf(LO_ERROR, "Cannot find script file (%s)\n", name);
+      ret = false;
+    }
+
+    return ret;
+  }
+
+  return false;
+}
+
+static dboolean console_Check(const char* command, const char* args) {
+  char name[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%s", name)) {
+    char* summary;
+
+    summary = dsda_ConfigSummary(name);
+
+    if (summary) {
+      lprintf(LO_INFO, "%s\n", summary);
+      Z_Free(summary);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static dboolean console_ChangeConfig(const char* command, const char* args, dboolean persist) {
+  char name[CONSOLE_ENTRY_SIZE];
+  char value_string[CONSOLE_ENTRY_SIZE];
+  int value_int;
+
+  if (sscanf(args, "%s %d", name, &value_int)) {
+    int id;
+
+    id = dsda_ConfigIDByName(name);
+    if (id) {
+      dsda_UpdateIntConfig(id, value_int, persist);
+      return true;
+    }
+  }
+  else if (sscanf(args, "%s %s", name, value_string)) {
+    int id;
+
+    id = dsda_ConfigIDByName(name);
+    if (id) {
+      dsda_UpdateStringConfig(id, value_string, persist);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static dboolean console_Assign(const char* command, const char* args) {
+  return console_ChangeConfig(command, args, false);
+}
+
+static dboolean console_Update(const char* command, const char* args) {
+  return console_ChangeConfig(command, args, true);
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -497,42 +883,57 @@ typedef struct {
 
 static console_command_entry_t console_commands[] = {
   // commands
-  { "player.sethealth", console_PlayerSetHealth, CF_NEVER },
-  { "player.setarmor", console_PlayerSetArmor, CF_NEVER },
-  { "player.setx", console_PlayerSetX, CF_NEVER },
-  { "player.sety", console_PlayerSetY, CF_NEVER },
-  { "player.setz", console_PlayerSetZ, CF_NEVER },
-  { "player.roundx", console_PlayerRoundX, CF_NEVER },
-  { "player.roundy", console_PlayerRoundY, CF_NEVER },
-  { "player.roundxy", console_PlayerRoundXY, CF_NEVER },
+  { "player.set_health", console_PlayerSetHealth, CF_NEVER },
+  { "player.set_armor", console_PlayerSetArmor, CF_NEVER },
+  { "player.give_weapon", console_PlayerGiveWeapon, CF_NEVER },
+  { "player.give_ammo", console_PlayerGiveAmmo, CF_NEVER },
+  { "player.set_ammo", console_PlayerSetAmmo, CF_NEVER },
+  { "player.give_key", console_PlayerGiveKey, CF_NEVER },
+  { "player.remove_key", console_PlayerRemoveKey, CF_NEVER },
+  { "player.give_power", console_PlayerGivePower, CF_NEVER },
+  { "player.remove_power", console_PlayerRemovePower, CF_NEVER },
+  { "player.set_x", console_PlayerSetX, CF_NEVER },
+  { "player.set_y", console_PlayerSetY, CF_NEVER },
+  { "player.set_z", console_PlayerSetZ, CF_NEVER },
+  { "player.round_x", console_PlayerRoundX, CF_NEVER },
+  { "player.round_y", console_PlayerRoundY, CF_NEVER },
+  { "player.round_xy", console_PlayerRoundXY, CF_NEVER },
+
+  { "script.run", console_ScriptRun, CF_ALWAYS },
+  { "check", console_Check, CF_ALWAYS },
+  { "assign", console_Assign, CF_ALWAYS },
+  { "update", console_Update, CF_ALWAYS },
 
   // tracking
-  { "tracker.addline", console_TrackerAddLine, CF_DEMO },
+  { "tracker.add_line", console_TrackerAddLine, CF_DEMO },
   { "t.al", console_TrackerAddLine, CF_DEMO },
-  { "tracker.removeline", console_TrackerRemoveLine, CF_DEMO },
+  { "tracker.remove_line", console_TrackerRemoveLine, CF_DEMO },
   { "t.rl", console_TrackerRemoveLine, CF_DEMO },
-  { "tracker.addlinedistance", console_TrackerAddLineDistance, CF_DEMO },
+  { "tracker.add_line_distance", console_TrackerAddLineDistance, CF_DEMO },
   { "t.ald", console_TrackerAddLineDistance, CF_DEMO },
-  { "tracker.removelinedistance", console_TrackerRemoveLineDistance, CF_DEMO },
+  { "tracker.remove_line_distance", console_TrackerRemoveLineDistance, CF_DEMO },
   { "t.rld", console_TrackerRemoveLineDistance, CF_DEMO },
-  { "tracker.addsector", console_TrackerAddSector, CF_DEMO },
+  { "tracker.add_sector", console_TrackerAddSector, CF_DEMO },
   { "t.as", console_TrackerAddSector, CF_DEMO },
-  { "tracker.removesector", console_TrackerRemoveSector, CF_DEMO },
+  { "tracker.remove_sector", console_TrackerRemoveSector, CF_DEMO },
   { "t.rs", console_TrackerRemoveSector, CF_DEMO },
-  { "tracker.addmobj", console_TrackerAddMobj, CF_DEMO },
+  { "tracker.add_mobj", console_TrackerAddMobj, CF_DEMO },
   { "t.am", console_TrackerAddMobj, CF_DEMO },
-  { "tracker.removemobj", console_TrackerRemoveMobj, CF_DEMO },
+  { "tracker.remove_mobj", console_TrackerRemoveMobj, CF_DEMO },
   { "t.rm", console_TrackerRemoveMobj, CF_DEMO },
-  { "tracker.addplayer", console_TrackerAddPlayer, CF_DEMO },
+  { "tracker.add_player", console_TrackerAddPlayer, CF_DEMO },
   { "t.ap", console_TrackerAddPlayer, CF_DEMO },
-  { "tracker.removeplayer", console_TrackerRemovePlayer, CF_DEMO },
+  { "tracker.remove_player", console_TrackerRemovePlayer, CF_DEMO },
   { "t.rp", console_TrackerRemovePlayer, CF_DEMO },
+  { "tracker.reset", console_TrackerReset, CF_DEMO },
+  { "t.r", console_TrackerReset, CF_DEMO },
 
   // traversing time
-  { "jump.tic", console_JumpTic, CF_DEMO },
+  { "jump.to_tic", console_JumpToTic, CF_DEMO },
+  { "jump.by_tic", console_JumpByTic, CF_DEMO },
 
   // build mode
-  { "bruteforce.start", console_BruteForceStart, CF_DEMO },
+  { "brute_force.start", console_BruteForceStart, CF_DEMO },
   { "bf.start", console_BruteForceStart, CF_DEMO },
   { "build.turbo", console_BuildTurbo, CF_DEMO },
   { "b.turbo", console_BuildTurbo, CF_DEMO },
@@ -544,7 +945,8 @@ static console_command_entry_t console_commands[] = {
   { "tl", console_BuildTL, CF_DEMO },
 
   // demos
-  { "demo.export", console_DemoExport, CF_DEMO | CF_STRICT },
+  { "demo.export", console_DemoExport, CF_ALWAYS },
+  { "demo.start", console_DemoStart, CF_NEVER },
 
   // cheats
   { "idchoppers", console_BasicCheat, CF_DEMO },
@@ -559,6 +961,8 @@ static console_command_entry_t console_commands[] = {
   { "iddst", console_BasicCheat, CF_DEMO },
   { "iddkt", console_BasicCheat, CF_DEMO },
   { "iddit", console_BasicCheat, CF_DEMO },
+  { "idclev", console_BasicCheat, CF_DEMO },
+  { "idmus", console_BasicCheat, CF_DEMO },
 
   { "tntcomp", console_BasicCheat, CF_DEMO },
   { "tntem", console_BasicCheat, CF_DEMO },
@@ -572,6 +976,9 @@ static console_command_entry_t console_commands[] = {
 
   { "notarget", console_BasicCheat, CF_DEMO },
   { "fly", console_BasicCheat, CF_DEMO },
+  { "fullclip", console_CheatFullClip, CF_NEVER },
+  { "freeze", console_Freeze, CF_NEVER },
+  { "nosleep", console_NoSleep, CF_NEVER },
 
   { "quicken", console_BasicCheat, CF_DEMO },
   { "ponce", console_BasicCheat, CF_DEMO },
@@ -582,6 +989,8 @@ static console_command_entry_t console_commands[] = {
   { "shazam", console_BasicCheat, CF_DEMO },
   { "ravmap", console_BasicCheat, CF_DEMO },
   { "cockadoodledoo", console_BasicCheat, CF_DEMO },
+  { "gimme", console_BasicCheat, CF_DEMO },
+  { "engage", console_BasicCheat, CF_DEMO },
 
   { "satan", console_BasicCheat, CF_DEMO },
   { "clubmed", console_BasicCheat, CF_DEMO },
@@ -594,6 +1003,9 @@ static console_command_entry_t console_commands[] = {
   { "init", console_BasicCheat, CF_DEMO },
   { "mapsco", console_BasicCheat, CF_DEMO },
   { "deliverance", console_BasicCheat, CF_DEMO },
+  { "shadowcaster", console_BasicCheat, CF_DEMO },
+  { "visit", console_BasicCheat, CF_DEMO },
+  { "puke", console_BasicCheat, CF_DEMO },
 
   // exit
   { "exit", console_Exit, CF_ALWAYS },
@@ -619,12 +1031,13 @@ static dboolean dsda_AuthorizeCommand(console_command_entry_t* entry) {
   return true;
 }
 
-static void dsda_ExecuteConsole(void) {
+static dboolean dsda_ExecuteConsole(const char* command_line) {
   char command[CONSOLE_ENTRY_SIZE];
   char args[CONSOLE_ENTRY_SIZE];
   int scan_count;
+  dboolean ret = true;
 
-  scan_count = sscanf(console_entry, "%s %[^;]", command, args);
+  scan_count = sscanf(command_line, "%s %[^;]", command, args);
 
   if (scan_count) {
     console_command_entry_t* entry;
@@ -640,11 +1053,14 @@ static void dsda_ExecuteConsole(void) {
           }
           else {
             dsda_AddConsoleMessage("command invalid");
+            ret = false;
             S_StartSound(NULL, g_sfx_oof);
           }
         }
-        else
+        else {
           S_StartSound(NULL, g_sfx_oof);
+          ret = false;
+        }
 
         break;
       }
@@ -653,33 +1069,80 @@ static void dsda_ExecuteConsole(void) {
     if (!entry->command) {
       dsda_AddConsoleMessage("command unknown");
       S_StartSound(NULL, g_sfx_oof);
+      ret = false;
     }
   }
 
   dsda_ResetConsoleEntry();
+
+  return ret;
 }
 
-void dsda_UpdateConsole(int ch, int action) {
+void dsda_UpdateConsoleText(char* text) {
+  int i;
+  int length;
+
+  length = strlen(text);
+
+  for (i = 0; i < length; ++i) {
+    if (text[i] < 32 || text[i] > 126)
+      continue;
+
+    console_entry[console_entry_index] = tolower(text[i]);
+    if (console_entry_index < CONSOLE_ENTRY_SIZE)
+      ++console_entry_index;
+  }
+
+  dsda_UpdateConsoleDisplay();
+}
+
+void dsda_UpdateConsole(int action) {
   if (action == MENU_BACKSPACE && console_entry_index > 0) {
     --console_entry_index;
     console_entry[console_entry_index] = '\0';
     dsda_UpdateConsoleDisplay();
   }
   else if (action == MENU_ENTER) {
-    dsda_ExecuteConsole();
-  }
-  else if (ch > 0) {
-    ch = tolower(ch);
-    if (
-      (ch >= 'a' && ch <= 'z') ||
-      (ch >= '0' && ch <= '9') ||
-      (ch == ' ' || ch == '.' || ch == '-' || ch == ';' || ch == ',')
-    ) {
-      console_entry[console_entry_index] = ch;
-      if (console_entry_index < CONSOLE_ENTRY_SIZE)
-        ++console_entry_index;
+    int line;
+    char* entry;
+    char** lines;
 
-      dsda_UpdateConsoleDisplay();
-    }
+    strcpy(last_console_entry, console_entry);
+
+    entry = Z_Strdup(console_entry);
+    lines = dsda_SplitString(entry, ";");
+    for (line = 0; lines[line]; ++line)
+      dsda_ExecuteConsole(lines[line]);
+
+    Z_Free(entry);
+    Z_Free(lines);
   }
+  else if (action == MENU_UP) {
+    strcpy(console_entry, last_console_entry);
+    console_entry_index = strlen(console_entry);
+    dsda_UpdateConsoleDisplay();
+  }
+}
+
+void dsda_ExecuteConsoleScript(int i) {
+  int line;
+
+  if (gamestate != GS_LEVEL || i < 0 || i >= CONSOLE_SCRIPT_COUNT)
+    return;
+
+  if (!dsda_console_script_lines[i]) {
+    char* dup;
+
+    dup = Z_Strdup(dsda_StringConfig(dsda_config_script_0 + i));
+    dsda_console_script_lines[i] = dsda_SplitString(dup, ";");
+  }
+
+  for (line = 0; dsda_console_script_lines[i][line]; ++line)
+    if (!console_ScriptRunLine(dsda_console_script_lines[i][line])) {
+      doom_printf("Script %d failed", i);
+
+      return;
+    }
+
+  doom_printf("Script %d executed", i);
 }

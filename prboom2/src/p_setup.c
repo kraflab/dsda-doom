@@ -36,7 +36,6 @@
 
 #include "doomstat.h"
 #include "m_bbox.h"
-#include "m_argv.h"
 #include "g_game.h"
 #include "w_wad.h"
 #include "r_main.h"
@@ -58,6 +57,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/compatibility.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
@@ -2390,7 +2390,7 @@ static void P_LoadBlockMap (int lump)
 {
   long count;
 
-  if (M_CheckParm("-blockmap") || W_LumpLength(lump)<8 || (count = W_LumpLength(lump)/2) >= 0x10000) //e6y
+  if (dsda_Flag(dsda_arg_blockmap) || W_LumpLength(lump)<8 || (count = W_LumpLength(lump)/2) >= 0x10000) //e6y
     P_CreateBlockMap();
   else
   {
@@ -3068,10 +3068,11 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // should be after P_RemoveSlimeTrails, because it changes vertexes
   R_CalcSegsLength();
 
-  // Note: you don't need to clear player queue slots --
-  // a much simpler fix is in g_game.c -- killough 10/98
+  {
+    void A_ResetPlayerCorpseQueue(void);
 
-  bodyqueslot = 0;
+    A_ResetPlayerCorpseQueue();
+  }
 
   po_NumPolyobjs = 0; // hexen
 
@@ -3159,8 +3160,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   dsda_ApplyFadeTable();
 
   // preload graphics
-  if (precache)
-    R_PrecacheLevel();
+  R_PrecacheLevel();
 
   if (V_IsOpenGLMode())
   {

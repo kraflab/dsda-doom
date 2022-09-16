@@ -38,7 +38,6 @@
 #include "p_inter.h"
 #include "p_tick.h"
 #include "m_cheat.h"
-#include "m_argv.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "dstrings.h"
@@ -54,7 +53,11 @@
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
 
+#include "dsda.h"
+#include "dsda/configuration.h"
 #include "dsda/excmd.h"
+#include "dsda/exhud.h"
+#include "dsda/features.h"
 #include "dsda/input.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
@@ -105,6 +108,7 @@ static void cheat_pitch();
 static void cheat_megaarmour();
 static void cheat_health();
 static void cheat_notarget();
+static void cheat_freeze();
 static void cheat_fly();
 
 // heretic
@@ -159,7 +163,7 @@ cheatseq_t cheat[] = {
   CHEAT("idbehold",   "BEHOLD menu",      not_dm, cheat_behold, 0, false),
   CHEAT("idclev",     "Level Warp",       cht_never | not_menu, cheat_clev, -2, false),
   CHEAT("idmypos",    "Player Position",  not_dm, cheat_mypos, 0, false),
-  CHEAT("idrate",     "Frame rate",       always, cheat_rate, 0, false),
+  CHEAT("idrate",     "Frame rate",       not_dm, cheat_rate, 0, false),
   // phares
   CHEAT("tntcomp",    NULL,               cht_never, cheat_comp, 0, false),
   // jff 2/01/98 kill all monsters
@@ -452,6 +456,12 @@ static void cheat_noclip()
 // 'behold?' power-up cheats (modified for infinite duration -- killough)
 static void cheat_pw(int pw)
 {
+  if (pw == pw_allmap)
+    dsda_TrackFeature(UF_AUTOMAP);
+
+  if (pw == pw_infrared)
+    dsda_TrackFeature(UF_LITEAMP);
+
   if (plyr->powers[pw])
     plyr->powers[pw] = pw!=pw_strength && pw!=pw_allmap;  // killough
   else
@@ -510,7 +520,7 @@ static void cheat_mypos()
 // cph - cheat to toggle frame rate/rendering stats display
 static void cheat_rate()
 {
-  rendering_stats ^= 1;
+  dsda_ToggleRenderStats();
 }
 
 // compatibility cheat
@@ -588,17 +598,24 @@ static void cheat_massacre()    // jff 2/01/98 kill all monsters
 static void cheat_ddt()
 {
   extern int dsda_reveal_map;
-  if (automapmode & am_active)
+
+  if (automap_active)
+  {
+    dsda_TrackFeature(UF_IDDT);
+
     dsda_reveal_map = (dsda_reveal_map+1) % 3;
+  }
 }
 
 static void cheat_reveal_secret()
 {
   static int last_secret = -1;
 
-  if (automapmode & am_active)
+  if (automap_active)
   {
     int i, start_i;
+
+    dsda_TrackFeature(UF_IDDT);
 
     i = last_secret + 1;
     if (i >= numsectors)
@@ -611,7 +628,7 @@ static void cheat_reveal_secret()
 
       if (P_IsSecret(sec))
       {
-        automapmode &= ~am_follow;
+        dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
 
         // This is probably not necessary
         if (sec->lines && sec->lines[0] && sec->lines[0]->v1)
@@ -654,7 +671,7 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
     {
       mobj_t *mobj;
 
-      automapmode &= ~am_follow;
+      dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
 
       mobj = (mobj_t *) th;
 
@@ -670,10 +687,12 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
 
 static void cheat_reveal_kill()
 {
-  if (automapmode & am_active)
+  if (automap_active)
   {
     static int last_count;
     static mobj_t *last_mobj;
+
+    dsda_TrackFeature(UF_IDDT);
 
     cheat_cycle_mobj(&last_mobj, &last_count, MF_COUNTKILL, true);
   }
@@ -681,10 +700,12 @@ static void cheat_reveal_kill()
 
 static void cheat_reveal_item()
 {
-  if (automapmode & am_active)
+  if (automap_active)
   {
     static int last_count;
     static mobj_t *last_mobj;
+
+    dsda_TrackFeature(UF_IDDT);
 
     cheat_cycle_mobj(&last_mobj, &last_count, MF_COUNTITEM, false);
   }
@@ -693,8 +714,8 @@ static void cheat_reveal_item()
 // killough 2/7/98: HOM autodetection
 static void cheat_hom()
 {
-  plyr->message = (flashing_hom = !flashing_hom) ? "HOM Detection On" :
-    "HOM Detection Off";
+  plyr->message = dsda_ToggleConfig(dsda_config_flashing_hom, true) ? "HOM Detection On"
+                                                                    : "HOM Detection Off";
 }
 
 // killough 3/6/98: -fast parameter toggle
@@ -791,8 +812,8 @@ static void cheat_smart()
 
 static void cheat_pitch()
 {
-  plyr->message=(pitched_sounds = !pitched_sounds) ? "Pitch Effects Enabled" :
-    "Pitch Effects Disabled";
+  plyr->message = dsda_ToggleConfig(dsda_config_pitched_sounds, true) ? "Pitch Effects Enabled"
+                                                                      : "Pitch Effects Disabled";
 }
 
 static void cheat_notarget()
@@ -802,6 +823,12 @@ static void cheat_notarget()
     plyr->message = "Notarget Mode ON";
   else
     plyr->message = "Notarget Mode OFF";
+}
+
+static void cheat_freeze()
+{
+  dsda_ToggleFrozenMode();
+  plyr->message = dsda_FrozenMode() ? "FREEZE ON" : "FREEZE OFF";
 }
 
 static void cheat_fly()
@@ -960,12 +987,13 @@ static cheat_input_t cheat_input[] = {
   { dsda_input_idbeholda, not_dm, cheat_pw, pw_allmap },
   { dsda_input_idbeholdl, not_dm, cheat_pw, pw_infrared },
   { dsda_input_idmypos, not_dm, cheat_mypos, 0 },
-  { dsda_input_idrate, always, cheat_rate, 0 },
+  { dsda_input_idrate, not_dm, cheat_rate, 0 },
   { dsda_input_iddt, not_dm, cheat_ddt, 0 },
   { dsda_input_ponce, cht_never, cheat_reset_health, 0 },
   { dsda_input_shazam, cht_never, cheat_tome, 0 },
   { dsda_input_chicken, cht_never, cheat_chicken, 0 },
   { dsda_input_notarget, cht_never, cheat_notarget, 0 },
+  { dsda_input_freeze, cht_never, cheat_freeze, 0 },
   { 0 }
 };
 
@@ -1005,7 +1033,7 @@ dboolean M_CheatEntered(const char* element, const char* value)
 
   for (cheat_i = cheat; cheat_i->cheat; cheat_i++)
   {
-    if (!strcmp(cheat_i->cheat, element) && M_CheatAllowed(cheat_i->when))
+    if (!strcmp(cheat_i->cheat, element) && M_CheatAllowed(cheat_i->when & ~not_menu))
     {
       if (cheat_i->arg >= 0)
         cheat_i->func(cheat_i->arg);
@@ -1236,8 +1264,7 @@ static void cheat_script(char buf[3])
 
   if (P_StartACS(script, 0, script_args, plyr->mo, NULL, 0))
   {
-    doom_snprintf(textBuffer, sizeof(textBuffer),
-                  "RUNNING SCRIPT %.2d", script);
+    snprintf(textBuffer, sizeof(textBuffer), "RUNNING SCRIPT %.2d", script);
     P_SetMessage(plyr, textBuffer, true);
   }
 }

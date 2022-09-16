@@ -29,8 +29,9 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 
+#include "p_anim.h"
+
 #define ANIM_SCRIPT_NAME "ANIMDEFS"
-#define MAX_ANIM_DEFS 20
 #define MAX_FRAME_DEFS 96
 #define ANIM_FLAT 0
 #define ANIM_TEXTURE 1
@@ -50,16 +51,6 @@ typedef struct
     int tics;
 } frameDef_t;
 
-typedef struct
-{
-    int type;
-    int index;
-    int tics;
-    int currentFrameDef;
-    int startFrameDef;
-    int endFrameDef;
-} animDef_t;
-
 static void P_LightningFlash(void);
 
 extern fixed_t Sky1ColumnOffset;
@@ -71,12 +62,12 @@ extern line_t *linespeciallist[];
 fixed_t Sky1ScrollDelta;
 fixed_t Sky2ScrollDelta;
 
-static animDef_t AnimDefs[MAX_ANIM_DEFS];
+animDef_t AnimDefs[MAX_ANIM_DEFS];
 static frameDef_t FrameDefs[MAX_FRAME_DEFS];
 static int AnimDefCount;
 static dboolean LevelHasLightning;
-static int NextLightningFlash;
-static int LightningFlash;
+int NextLightningFlash;
+int LightningFlash;
 static int *LightningLightLevels;
 
 void P_AnimateCompatibleSurfaces(void)

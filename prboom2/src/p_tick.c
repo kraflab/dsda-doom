@@ -265,6 +265,43 @@ static void P_RunThinkers (void)
   T_MAPMusic();
 }
 
+static void P_FrozenTicker (void)
+{
+  int i;
+
+  P_MapStart();
+
+  if (gamestate == GS_LEVEL)
+  {
+    thinker_t* th;
+    mobj_t* mo;
+
+    for (i = 0; i < g_maxplayers; i++)
+      if (playeringame[i])
+        P_PlayerThink(&players[i]);
+
+    for (i = 0; i < g_maxplayers; i++)
+      if (playeringame[i])
+        P_MobjThinker(players[i].mo);
+
+    for (th = thinkercap.next; th != &thinkercap; th = th->next)
+      if (th->function == P_MobjThinker ||
+          th->function == P_BlasterMobjThinker)
+      {
+        mo = (mobj_t *) th;
+
+        if (mo->player && mo->player == &players[displayplayer])
+          continue;
+
+        mo->PrevX = mo->x;
+        mo->PrevY = mo->y;
+        mo->PrevZ = mo->z;
+      }
+  }
+
+  P_MapEnd();
+}
+
 //
 // P_Ticker
 //
@@ -290,20 +327,30 @@ void P_Ticker (void)
 
   R_UpdateInterpolations ();
 
-  P_MapStart();
-               // not if this is an intermission screen
-  if (gamestate == GS_LEVEL)
-    for (i = 0; i < g_maxplayers; i++)
-      if (playeringame[i])
-        P_PlayerThink(&players[i]);
+  if (dsda_FrozenMode())
+  {
+    P_FrozenTicker();
+  }
+  else
+  {
+    P_MapStart();
 
-  P_RunThinkers();
-  P_UpdateSpecials();
-  P_AnimateSurfaces();
-  P_RespawnSpecials();
-  P_AmbientSound();
-  P_MapEnd();
+    // not if this is an intermission screen
+    if (gamestate == GS_LEVEL)
+      for (i = 0; i < g_maxplayers; i++)
+        if (playeringame[i])
+          P_PlayerThink(&players[i]);
 
-  dsda_WatchPTickCompleted();
+    P_RunThinkers();
+    P_UpdateSpecials();
+    P_AnimateSurfaces();
+    P_RespawnSpecials();
+    P_AmbientSound();
+
+    P_MapEnd();
+
+    dsda_WatchPTickCompleted();
+  }
+
   leveltime++;                       // for par times
 }

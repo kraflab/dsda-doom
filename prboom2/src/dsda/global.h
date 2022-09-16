@@ -22,6 +22,7 @@
 
 extern int g_maxplayers;
 extern int g_viewheight;
+extern int g_numammo;
 
 extern int g_mt_player;
 extern int g_mt_tfog;
@@ -97,12 +98,6 @@ extern int g_st_height;
 extern int g_border_offset;
 extern int g_mf_translucent;
 extern int g_mf_shadow;
-
-extern int g_cr_gray; // 2
-extern int g_cr_green; // 3
-extern int g_cr_gold; // 5
-extern int g_cr_red; // 6
-extern int g_cr_blue; // 7
 
 extern const char* g_skyflatname;
 

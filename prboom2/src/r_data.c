@@ -44,6 +44,7 @@
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "p_tick.h"
 
+#include "dsda/configuration.h"
 #include "dsda/map_format.h"
 
 //
@@ -412,13 +413,15 @@ int R_ColormapNumForName(const char *name)
 // By Lee Killough 2/21/98
 //
 
-int tran_filter_pct = 66;       // filter percent
+int tran_filter_pct; // filter percent
 
 #define TSC 12        /* number of fixed point digits in filter percent */
 
 void R_InitTranMap(int progress)
 {
   int lump = W_CheckNumForName("TRANMAP");
+
+  tran_filter_pct = dsda_IntConfig(dsda_config_tran_filter_pct);
 
   // If a tranlucency filter map lump is present, use it
 
@@ -437,9 +440,9 @@ void R_InitTranMap(int progress)
       } cache;
       FILE *cachefp;
 
-      fnlen = doom_snprintf(NULL, 0, "%s/tranmap.dat", I_DoomExeDir());
+      fnlen = snprintf(NULL, 0, "%s/tranmap.dat", I_DoomExeDir());
       fname = Z_Malloc(fnlen+1);
-      doom_snprintf(fname, fnlen+1, "%s/tranmap.dat", I_DoomExeDir());
+      snprintf(fname, fnlen+1, "%s/tranmap.dat", I_DoomExeDir());
       cachefp = fopen(fname, "rb");
 
       main_tranmap = my_tranmap = Z_Malloc(256*256);  // killough 4/11/98
@@ -758,6 +761,16 @@ int R_SetSpriteByIndex(patchnum_t *patchnum, spritenum_t item)
     result = true;
   }
   return result;
+}
+
+int R_NumPatchForSpriteIndex(spritenum_t item)
+{
+  if (item < 0 || item >= num_sprites)
+  {
+    return -1;
+  }
+
+  return firstspritelump + sprites[item].spriteframes->lump[0];
 }
 
 int R_SetSpriteByName(patchnum_t *patchnum, const char *name)

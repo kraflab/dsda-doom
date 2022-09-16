@@ -18,7 +18,6 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "lprintf.h"
-#include "m_argv.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_state.h"
@@ -28,6 +27,7 @@
 #include "v_video.h"
 #include "w_wad.h"
 
+#include "dsda/args.h"
 #include "dsda/global.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
@@ -44,9 +44,9 @@ static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
   unsigned i;
 
   if (gamemode == commercial)
-    snprintf(lumpname, 9, "MAP%02d", gamemap);
+    snprintf(lumpname, sizeof(lumpname), "MAP%02d", gamemap);
   else
-    snprintf(lumpname, 9, "E%dM%d", gameepisode, gamemap);
+    snprintf(lumpname, sizeof(lumpname), "E%dM%d", gameepisode, gamemap);
 
   for (i = 0; i < Maps.mapcount; i++)
     if (!stricmp(lumpname, Maps.maps[i].mapname))
@@ -63,7 +63,7 @@ int dsda_UNewGameMap(int* episode, int* map) {
   return false;
 }
 
-int dsda_UResolveWarp(int arg_p, int* episode, int* map) {
+int dsda_UResolveWarp(int* args, int arg_count, int* episode, int* map) {
   return false;
 }
 
@@ -464,7 +464,7 @@ int dsda_UPrepareFinale(int* result) {
 void dsda_ULoadMapInfo(void) {
   int p;
 
-  if (M_CheckParm("-nomapinfo"))
+  if (dsda_Flag(dsda_arg_nomapinfo))
     return;
 
   p = -1;

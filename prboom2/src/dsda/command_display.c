@@ -22,6 +22,7 @@
 
 #include "dsda.h"
 #include "dsda/build.h"
+#include "dsda/configuration.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/hud.h"
@@ -107,6 +108,9 @@ void dsda_ResetCommandHistory(void) {
 void dsda_InitCommandHistory(void) {
   int i;
 
+  dsda_command_history_size = dsda_IntConfig(dsda_config_command_history_size);
+  dsda_hide_empty_commands = dsda_IntConfig(dsda_config_hide_empty_commands);
+
   for (i = 1; i < MAX_HISTORY; ++i) {
     command_history[i].prev = &command_history[i - 1];
     command_history[i - 1].next = &command_history[i];
@@ -140,9 +144,9 @@ void dsda_InitCommandDisplay(patchnum_t* font) {
     firsttime = 0;
 
     for (i = 0; i < MAX_HISTORY; ++i)
-      dsda_InitCommandDisplayLine(&command_history[i], i + 1, g_cr_gray, font);
+      dsda_InitCommandDisplayLine(&command_history[i], i + 1, CR_GRAY, font);
 
-    dsda_InitCommandDisplayLine(&next_command_display, 1, g_cr_gold, font);
+    dsda_InitCommandDisplayLine(&next_command_display, 1, CR_GOLD, font);
   }
 }
 

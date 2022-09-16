@@ -32,39 +32,10 @@
  *-----------------------------------------------------------------------------*/
 
 #include <string.h>
-// CPhipps - include the correct header
+
 #include "doomtype.h"
-#include "z_zone.h"
+
 #include "m_argv.h"
-
-int    myargc;
-char **myargv;
-
-//
-// M_CheckParm
-// Checks for the given parameter
-// in the program's command line arguments.
-// Returns the argument number (1 to argc-1)
-// or 0 if not present
-//
-
-int M_CheckParm(const char *check)
-{
-  signed int i = myargc;
-  while (--i>0)
-    if (!strcasecmp(check, myargv[i]))
-      return i;
-  return 0;
-}
-
-int M_CheckParm2(const char *check, const char *alias)
-{
-  int i;
-
-  i = M_CheckParm(check);
-
-  return i ? i : M_CheckParm(alias);
-}
 
 //
 // M_CheckParmEx
@@ -86,17 +57,6 @@ int M_CheckParmEx(const char *check, char **params, int paramscount)
   }
 
   return -1;
-}
-
-//
-// Add one parameter to myargv list
-//
-
-void M_AddParam(const char *param)
-{
-  myargv = Z_Realloc(myargv, sizeof(myargv[0]) * (myargc + 1));
-  myargv[myargc] = Z_Strdup(param);
-  myargc++;
 }
 
 //

@@ -44,6 +44,8 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda/configuration.h"
+#include "dsda/render_stats.h"
 #include "dsda/settings.h"
 
 #define BASEYCENTER 100
@@ -70,14 +72,6 @@ static const lighttable_t **spritelights;        // killough 1/25/98 made static
 //e6y: added for GL
 float pspriteyscale_f;
 float pspritexscale_f;
-
-int sprites_doom_order;
-
-int health_bar;
-int health_bar_full_length;
-int health_bar_red;
-int health_bar_yellow;
-int health_bar_green;
 
 typedef struct drawseg_xrange_item_s
 {
@@ -518,19 +512,8 @@ static void R_DrawVisSprite(vissprite_t *vis)
   const rpatch_t *patch = R_PatchByNum(vis->patch+firstspritelump);
   R_DrawColumn_f colfunc;
   draw_column_vars_t dcvars;
-  enum draw_filter_type_e filter;
-  enum draw_filter_type_e filterz;
 
   R_SetDefaultDrawColumnVars(&dcvars);
-  if (vis->mobjflags & MF_PLAYERSPRITE) {
-    dcvars.edgetype = drawvars.patch_edges;
-    filter = drawvars.filterpatch;
-    filterz = RDRAW_FILTER_POINT;
-  } else {
-    dcvars.edgetype = drawvars.sprite_edges;
-    filter = drawvars.filtersprite;
-    filterz = drawvars.filterz;
-  }
 
   dcvars.colormap = vis->colormap;
   dcvars.nextcolormap = dcvars.colormap; // for filtering -- POPE
@@ -568,35 +551,33 @@ static void R_DrawVisSprite(vissprite_t *vis)
 
   if (!dcvars.colormap)   // NULL colormap = shadow draw
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_FUZZ, filter, filterz);    // killough 3/14/98
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_FUZZ, RDRAW_FILTER_POINT);    // killough 3/14/98
   }
   else if (vis->color)
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, filter, filterz);
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, RDRAW_FILTER_POINT);
     dcvars.translation = colrngs[vis->color];
   }
   else if (vis->mobjflags & MF_TRANSLATION)
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, filter, filterz);
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, RDRAW_FILTER_POINT);
     dcvars.translation = translationtables - 256 +
       ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
   }
   else if (vis->mobjflags & g_mf_translucent) // phares
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, filter, filterz);
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, RDRAW_FILTER_POINT);
     tranmap = main_tranmap;       // killough 4/11/98
   }
   else
   {
-    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, filter, filterz); // killough 3/14/98, 4/11/98
+    colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, RDRAW_FILTER_POINT); // killough 3/14/98, 4/11/98
   }
 
 // proff 11/06/98: Changed for high-res
   dcvars.iscale = FixedDiv (FRACUNIT, vis->scale);
   dcvars.texturemid = vis->texturemid;
   frac = vis->startfrac;
-  if (filter == RDRAW_FILTER_LINEAR)
-    frac -= (FRACUNIT>>1);
   spryscale = vis->scale;
   sprtopscreen = centeryfrac - FixedMul(dcvars.texturemid,spryscale);
 
@@ -635,10 +616,12 @@ int r_near_clip_plane = MINZ;
 
 void R_SetClipPlanes(void)
 {
+  extern int gl_render_paperitems;
+
   // thing is behind view plane?
   if ((V_IsOpenGLMode()) &&
-      (HaveMouseLook() || (render_fov > FOV90)) &&
-      (!render_paperitems || simple_shadows.loaded))
+      (HaveMouseLook() || (gl_render_fov > FOV90)) &&
+      (!gl_render_paperitems || simple_shadows.loaded))
   {
     r_near_clip_plane = -(FRACUNIT * MAX(64, simple_shadows.max_radius));
   }
@@ -933,9 +916,9 @@ void R_AddSprites(subsector_t* subsec, int lightlevel)
 
   // Handle all things in sector.
 
-  if (show_alive)
+  if (dsda_ShowAliveMonsters())
   {
-    if (show_alive == 1)
+    if (dsda_ShowAliveMonsters() == 1)
     {
       for (thing = sec->thinglist; thing; thing = thing->snext)
       {
@@ -1064,6 +1047,7 @@ static void R_DrawPSprite (pspdef_t *psp)
   {
     weaponinfo_t *winfo;
     int state;
+    int weapon_attack_alignment;
 
     if (hexen)
     {
@@ -1075,6 +1059,7 @@ static void R_DrawPSprite (pspdef_t *psp)
     }
 
     state = viewplayer->psprites[ps_weapon].state - states;
+    weapon_attack_alignment = dsda_IntConfig(dsda_config_weapon_attack_alignment);
 
     if (!dsda_WeaponBob())
     {
@@ -1093,7 +1078,7 @@ static void R_DrawPSprite (pspdef_t *psp)
         psp_sy -= (last_sy - 32 * FRACUNIT);
       }
     }
-    else if (dsda_WeaponAttackAlignment() && viewplayer->attackdown && !psp->state->misc1)
+    else if (weapon_attack_alignment && viewplayer->attackdown && !psp->state->misc1)
     { // [crispy] center the weapon sprite horizontally and vertically
       R_ApplyWeaponBob(&psp_sx, weapon_attack_alignment == CENTERWEAPON_BOB, NULL, false);
 
@@ -1135,7 +1120,7 @@ static void R_DrawPSprite (pspdef_t *psp)
   vis->texturemid = (BASEYCENTER<<FRACBITS) /* +  FRACUNIT/2 */ -
                     (psp_sy-topoffset);
 
-  if (viewheight == SCREENHEIGHT && raven)
+  if (R_FullView() && raven)
   {
     vis->texturemid -= PSpriteSY[viewplayer->pclass][players[consoleplayer].readyweapon];
   }
@@ -1373,16 +1358,8 @@ void R_SortVisSprites (void)
                                   * sizeof *vissprite_ptrs);
         }
 
-      if (sprites_doom_order)
-      {
-        while (--i>=0)
-          vissprite_ptrs[num_vissprite-i-1] = vissprites+i;
-      }
-      else
-      {
-        while (--i>=0)
-          vissprite_ptrs[i] = vissprites+i;
-      }
+      while (--i>=0)
+        vissprite_ptrs[num_vissprite-i-1] = vissprites+i;
 
       // killough 9/22/98: replace qsort with merge sort, since the keys
       // are roughly in order to begin with, due to BSP rendering.
@@ -1589,7 +1566,8 @@ void R_DrawMasked(void)
 
   // draw all vissprites back to front
 
-  rendered_vissprites = num_vissprite;
+  dsda_RecordVisSprites(num_vissprite);
+
   for (i = num_vissprite ;--i>=0; )
   {
     vissprite_t* spr = vissprite_ptrs[i];
@@ -1626,7 +1604,5 @@ void R_DrawMasked(void)
       R_RenderMaskedSegRange(ds, ds->x1, ds->x2);
 
   // draw the psprites on top of everything
-  //  but does not draw on side views
-  if (!viewangleoffset && !viewpitchoffset)
-    R_DrawPlayerSprites ();
+  R_DrawPlayerSprites ();
 }

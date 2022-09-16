@@ -24,6 +24,11 @@
 
 #include "utility.h"
 
+dboolean dsda_HasFileExt(const char* file, const char* ext) {
+  return strlen(file) > strlen(ext) &&
+         !strcasecmp(file + strlen(file) - strlen(ext), ext);
+}
+
 char** dsda_SplitString(char* str, const char* delimiter) {
   char** result;
   int substring_count = 2;
@@ -83,15 +88,8 @@ void dsda_FixedToString(char* str, fixed_t x) {
 dsda_angle_t dsda_SplitAngle(angle_t x) {
   dsda_angle_t result;
 
-  result.negative = x < 0;
   result.base = x >> 24;
   result.frac = (x >> 16) & 0xff;
-
-  if (result.negative)
-    if (result.frac) {
-      ++result.base;
-      result.frac = 0xff - result.frac + 1;
-    }
 
   return result;
 }

@@ -49,6 +49,7 @@
 #define FRACUNIT (1<<FRACBITS)
 
 typedef int fixed_t;
+typedef unsigned int ufixed_t;
 
 /*
  * Absolute Value

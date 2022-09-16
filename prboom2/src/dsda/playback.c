@@ -18,9 +18,10 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "i_system.h"
-#include "m_argv.h"
+#include "p_saveg.h"
 #include "w_wad.h"
 
+#include "dsda/args.h"
 #include "dsda/demo.h"
 #include "dsda/input.h"
 #include "dsda/key_frame.h"
@@ -34,7 +35,14 @@ static int playback_length;
 static int playback_behaviour;
 static int playback_tics;
 
-static int playdemo_arg, fastdemo_arg, timedemo_arg, recordfromto_arg;
+static dsda_arg_t* playdemo_arg;
+static dsda_arg_t* fastdemo_arg;
+static dsda_arg_t* timedemo_arg;
+static dsda_arg_t* recordfromto_arg;
+static const char* playback_name;
+
+dboolean demoplayback;
+dboolean userdemo;
 
 void dsda_RestartPlayback(void) {
   G_StartDemoPlayback(playback_origin_p, playback_length, playback_behaviour);
@@ -57,76 +65,70 @@ dboolean dsda_JumpToLogicTic(int tic) {
   return true;
 }
 
-int dsda_PlaybackArg(void) {
-  if (playdemo_arg)
-    return playdemo_arg;
-
-  if (fastdemo_arg)
-    return fastdemo_arg;
-
-  if (timedemo_arg)
-    return timedemo_arg;
-
-  if (recordfromto_arg)
-    return recordfromto_arg;
-
-  return 0;
+const char* dsda_PlaybackName(void) {
+  return playback_name;
 }
 
 void dsda_ExecutePlaybackOptions(void) {
   if (playdemo_arg)
   {
-    G_DeferedPlayDemo(myargv[playdemo_arg + 1]);
-    singledemo = true;
+    G_DeferedPlayDemo(playback_name);
+    userdemo = true;
   }
   else if (fastdemo_arg) {
-    G_DeferedPlayDemo(myargv[fastdemo_arg + 1]);
+    G_DeferedPlayDemo(playback_name);
     fastdemo = true;
     timingdemo = true;
-    singledemo = true;
+    userdemo = true;
   }
   else if (timedemo_arg)
   {
-    G_DeferedPlayDemo(myargv[timedemo_arg + 1]);
+    G_DeferedPlayDemo(playback_name);
     singletics = true;
     timingdemo = true;
-    singledemo = true;
+    userdemo = true;
   }
   else if (recordfromto_arg) {
-    G_ContinueDemo(myargv[recordfromto_arg + 1]);
+    userdemo = true;
+    G_ContinueDemo(playback_name);
   }
 }
 
-int dsda_ParsePlaybackOptions(void) {
-  int p;
+const char* dsda_ParsePlaybackOptions(void) {
+  dsda_arg_t* arg;
 
-  p = M_CheckParm("-playdemo");
-  if (p && p < myargc - 1) {
-    playdemo_arg = p;
-    return p;
+  arg = dsda_Arg(dsda_arg_playdemo);
+  if (arg->found) {
+    playdemo_arg = arg;
+    playback_name = arg->value.v_string;
+    return playback_name;
   }
 
-  p = M_CheckParm("-fastdemo");
-  if (p && p < myargc - 1) {
-    fastdemo_arg = p;
+  arg = dsda_Arg(dsda_arg_fastdemo);
+  if (arg->found) {
+    fastdemo_arg = arg;
     fastdemo = true;
-    return p;
+    playback_name = arg->value.v_string;
+    return playback_name;
   }
 
-  p = M_CheckParm("-timedemo");
-  if (p && p < myargc - 1) {
-    timedemo_arg = p;
-    return p;
+  arg = dsda_Arg(dsda_arg_timedemo);
+  if (arg->found) {
+    timedemo_arg = arg;
+    playback_name = arg->value.v_string;
+    return playback_name;
   }
 
-  p = M_CheckParm("-recordfromto");
-  if (p && p < myargc - 2 && I_FindFile(myargv[p + 1], ".lmp")) {
-    recordfromto_arg = p;
-    dsda_SetDemoBaseName(myargv[p + 2]);
-    return p;
+  arg = dsda_Arg(dsda_arg_recordfromto);
+  if (arg->found) {
+    I_RequireFile(arg->value.v_string_array[0], ".lmp");
+    recordfromto_arg = arg;
+    dsda_SetDemoBaseName(arg->value.v_string_array[1]);
+    playback_name = arg->value.v_string_array[0];
+    return playback_name;
   }
 
-  return 0;
+  return NULL;
 }
 
 void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour) {
@@ -143,24 +145,14 @@ int dsda_PlaybackTics(void) {
   return playback_tics;
 }
 
-int dsda_PlaybackPositionSize(void) {
-  return sizeof(playback_tics) + sizeof(playback_p);
+void dsda_StorePlaybackPosition(void) {
+  P_SAVE_X(playback_tics);
+  P_SAVE_X(playback_p);
 }
 
-void dsda_StorePlaybackPosition(byte** save_p) {
-  memcpy(*save_p, &playback_tics, sizeof(playback_tics));
-  *save_p += sizeof(playback_tics);
-
-  memcpy(*save_p, &playback_p, sizeof(playback_p));
-  *save_p += sizeof(playback_p);
-}
-
-void dsda_RestorePlaybackPosition(byte** save_p) {
-  memcpy(&playback_tics, *save_p, sizeof(playback_tics));
-  *save_p += sizeof(playback_tics);
-
-  memcpy(&playback_p, *save_p, sizeof(playback_p));
-  *save_p += sizeof(playback_p);
+void dsda_RestorePlaybackPosition(void) {
+  P_LOAD_X(playback_tics);
+  P_LOAD_X(playback_p);
 }
 
 void dsda_ClearPlaybackStream(void) {
@@ -171,6 +163,7 @@ void dsda_ClearPlaybackStream(void) {
   playback_tics = 0;
 
   demoplayback = false;
+  userdemo = false;
 }
 
 static dboolean dsda_EndOfPlaybackStream(void) {

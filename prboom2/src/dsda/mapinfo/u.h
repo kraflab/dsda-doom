@@ -22,7 +22,7 @@
 
 int dsda_UFirstMap(int* episode, int* map);
 int dsda_UNewGameMap(int* episode, int* map);
-int dsda_UResolveWarp(int arg_p, int* episode, int* map);
+int dsda_UResolveWarp(int* args, int arg_count, int* episode, int* map);
 int dsda_UNextMap(int* episode, int* map);
 int dsda_UShowNextLocBehaviour(int* behaviour);
 int dsda_USkipDrawShowNextLoc(int* skip);

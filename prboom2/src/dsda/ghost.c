@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 
-#include "m_argv.h"
 #include "lprintf.h"
 #include "doomtype.h"
 #include "doomstat.h"
@@ -110,22 +109,22 @@ void dsda_InitGhostExport(const char* name) {
   Z_Free(filename);
 }
 
-void dsda_OpenGhostFile(int arg_i, dsda_ghost_file_t* ghost_file) {
+static void dsda_OpenGhostFile(const char* ghost_name, dsda_ghost_file_t* ghost_file) {
   char* filename;
 
   memset(ghost_file, 0, sizeof(dsda_ghost_file_t));
 
-  filename = Z_Malloc(strlen(myargv[arg_i]) + 4 + 1);
-  AddDefaultExtension(strcpy(filename, myargv[arg_i]), ".gst");
+  filename = Z_Malloc(strlen(ghost_name) + 4 + 1);
+  AddDefaultExtension(strcpy(filename, ghost_name), ".gst");
 
   ghost_file->fstream = fopen(filename, "rb");
 
   if (ghost_file->fstream == NULL)
-    I_Error("dsda_OpenGhostImport: failed to open %s", myargv[arg_i]);
+    I_Error("dsda_OpenGhostImport: failed to open %s", ghost_name);
 
   fread(&ghost_file->version, sizeof(int), 1, ghost_file->fstream);
   if (ghost_file->version < DSDA_GHOST_MIN_VERSION || ghost_file->version > DSDA_GHOST_VERSION)
-    I_Error("dsda_OpenGhostImport: unsupported ghost version %s", myargv[arg_i]);
+    I_Error("dsda_OpenGhostImport: unsupported ghost version %s", ghost_name);
 
   if (ghost_file->version == 1) ghost_file->count = 1;
   else fread(&ghost_file->count, sizeof(int), 1, ghost_file->fstream);
@@ -133,17 +132,17 @@ void dsda_OpenGhostFile(int arg_i, dsda_ghost_file_t* ghost_file) {
   Z_Free(filename);
 }
 
-int dsda_GhostCount(int arg_i) {
+static int dsda_GhostCount(const char* ghost_name) {
   dsda_ghost_file_t ghost_file;
 
-  dsda_OpenGhostFile(arg_i, &ghost_file);
+  dsda_OpenGhostFile(ghost_name, &ghost_file);
 
   fclose(ghost_file.fstream);
 
   return ghost_file.count;
 }
 
-void dsda_InitGhostImport(int option_i) {
+void dsda_InitGhostImport(const char** ghost_names, int count) {
   int arg_i;
   int ghost_i;
   int i;
@@ -151,15 +150,13 @@ void dsda_InitGhostImport(int option_i) {
 
   ghost_i = 0;
 
-  arg_i = option_i;
-  while (++arg_i != myargc && *myargv[arg_i] != '-')
-    dsda_ghost_import.count += dsda_GhostCount(arg_i);
+  for (arg_i = 0; arg_i < count; ++arg_i)
+    dsda_ghost_import.count += dsda_GhostCount(ghost_names[arg_i]);
 
   dsda_ghost_import.ghosts = Z_Calloc(dsda_ghost_import.count, sizeof(dsda_ghost_t));
 
-  arg_i = option_i;
-  while (++arg_i != myargc && *myargv[arg_i] != '-') {
-    dsda_OpenGhostFile(arg_i, &ghost_file);
+  for (arg_i = 0; arg_i < count; ++arg_i) {
+    dsda_OpenGhostFile(ghost_names[arg_i], &ghost_file);
 
     for (i = 0; i < ghost_file.count; ++i) {
       dsda_ghost_import.ghosts[ghost_i].fstream = ghost_file.fstream;

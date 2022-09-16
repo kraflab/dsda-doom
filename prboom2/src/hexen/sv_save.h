@@ -19,7 +19,7 @@
 
 void SV_Init(void);
 void SV_MapTeleport(int map, int position);
-void SV_StoreMapArchive(byte **buffer);
-void SV_RestoreMapArchive(byte **buffer);
+void SV_StoreMapArchive(void);
+void SV_RestoreMapArchive(void);
 
 #endif

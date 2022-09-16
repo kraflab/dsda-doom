@@ -55,7 +55,6 @@
 
 #include "m_swap.h"
 #include "i_sound.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "w_wad.h"
 #include "lprintf.h"
@@ -74,27 +73,12 @@
 
 #include "dsda/settings.h"
 
-int snd_pcspeaker;
+static dboolean registered_non_rw = false;
 
 // The number of internal mixing channels,
 //  the samples calculated for each mixing step,
 //  the size of the 16bit, 2 hardware channel (stereo)
 //  mixing buffer, and the samplerate of the raw data.
-
-// Variables used by Boom from Allegro
-// created here to avoid changes to core Boom files
-int snd_card = 1;
-int mus_card = 1;
-int detect_voices = 0; // God knows
-
-static dboolean registered_non_rw = false;
-
-// Needed for calling the actual sound output.
-#define MAX_CHANNELS    32
-
-// MWM 2000-01-08: Sample rate in samples/second
-int snd_samplerate = 11025;
-int snd_samplecount = 512;
 
 // The actual output device.
 int audio_fd;
@@ -141,6 +125,24 @@ SDL_mutex *sfxmutex;
 // lock for updating any params related to music
 SDL_mutex *musmutex;
 
+static int pitched_sounds;
+static int snd_pcspeaker;
+int snd_samplerate; // samples per second
+static int snd_samplecount;
+
+static const char *snd_midiplayer;
+
+void I_InitSoundParams(void)
+{
+  pitched_sounds = dsda_IntConfig(dsda_config_pitched_sounds);
+  snd_pcspeaker = dsda_IntConfig(dsda_config_snd_pcspeaker);
+
+  // TODO: can we reinitialize sound with new sample rate / count?
+  if (!snd_samplerate)
+    snd_samplerate = dsda_IntConfig(dsda_config_snd_samplerate);
+  if (!snd_samplecount)
+    snd_samplecount = dsda_IntConfig(dsda_config_snd_samplecount);
+}
 
 /* cph
  * stopchan
@@ -729,6 +731,8 @@ void I_InitSound(void)
   // Secure and configure sound device first.
   lprintf(LO_INFO, "I_InitSound: ");
 
+  I_InitSoundParams();
+
   audio_rate = snd_samplerate;
   audio_channels = 2;
   audio_buffers = snd_samplecount * snd_samplerate / 11025;
@@ -851,7 +855,6 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 static void UpdateMusic (void *buff, unsigned nsamp);
 static int RegisterSong (const void *data, size_t len);
 static int RegisterSongEx (const void *data, size_t len, int try_mus2mid);
-static void SetMusicVolume (int volume);
 static void UnRegisterSong(int handle);
 static void StopSong(int handle);
 static void ResumeSong (int handle);
@@ -876,9 +879,6 @@ static SDL_RWops *rwops_stream = NULL;
 
 // note that the "handle" passed around by s_sound is ignored
 // however, a handle is maintained for the individual music players
-
-const char *snd_soundfont; // soundfont name for synths that use it
-const char *snd_mididev; // midi device to use (portmidiplayer)
 
 static const music_player_t *music_players[] =
 { // until some ui work is done, the order these appear is the autodetect order.
@@ -914,9 +914,6 @@ char music_player_order[NUM_MUS_PLAYERS][200] =
   PLAYER_PORTMIDI,
 };
 
-// prefered MIDI device
-const char *snd_midiplayer;
-
 const char *midiplayers[midi_player_last + 1] = {
   "fluidsynth", "opl2", "portmidi", NULL };
 
@@ -924,11 +921,6 @@ static int current_player = -1;
 static const void *music_handle = NULL;
 
 static void *mus2mid_conversion_data = NULL;
-
-int mus_fluidsynth_chorus;
-int mus_fluidsynth_reverb;
-int mus_fluidsynth_gain; // NSM  fine tune fluidsynth output level
-int mus_opl_gain; // NSM  fine tune OPL output level
 
 void I_ShutdownMusic(void)
 {
@@ -960,6 +952,31 @@ void I_InitMusic(void)
   I_AtExit(I_ShutdownMusic, true, "I_ShutdownMusic", exit_priority_normal);
 }
 
+// Derived value (not saved, accounts for muted music)
+static int music_volume;
+
+void I_ResetMusicVolume(void)
+{
+  snd_MusicVolume = dsda_IntConfig(dsda_config_music_volume);
+
+  if (nomusicparm)
+    return;
+
+  if (dsda_MuteMusic())
+    music_volume = 0;
+  else
+    music_volume = snd_MusicVolume;
+
+  Mix_VolumeMusic(music_volume * 8);
+
+  if (music_handle)
+  {
+    SDL_LockMutex(musmutex);
+    music_players[current_player]->setvolume(music_volume);
+    SDL_UnlockMutex(musmutex);
+  }
+}
+
 void I_PlaySong(int handle, int looping)
 {
   if (registered_non_rw)
@@ -973,11 +990,9 @@ void I_PlaySong(int handle, int looping)
     Mix_PlayMusic(music[handle], looping ? -1 : 0);
 
     // haleyjd 10/28/05: make sure volume settings remain consistent
-    I_SetMusicVolume(snd_MusicVolume);
+    I_ResetMusicVolume();
   }
 }
-
-extern int mus_pause_opt; // From m_misc.c
 
 void I_PauseSong (int handle)
 {
@@ -987,7 +1002,7 @@ void I_PauseSong (int handle)
     return;
   }
 
-  switch(mus_pause_opt)
+  switch (dsda_IntConfig(dsda_config_mus_pause_opt))
   {
     case 0:
         I_StopSong(handle);
@@ -1014,7 +1029,7 @@ void I_ResumeSong (int handle)
     return;
   }
 
-  switch(mus_pause_opt) {
+  switch (dsda_IntConfig(dsda_config_mus_pause_opt)) {
     case 0:
         I_PlaySong(handle,1);
       break;
@@ -1104,25 +1119,6 @@ int I_RegisterSong(const void *data, size_t len)
   return (0);
 }
 
-// Derived value (not saved, accounts for muted music)
-static int music_volume;
-
-void I_SetMusicVolume(int volume)
-{
-  if (dsda_MuteMusic())
-    volume = 0;
-
-  music_volume = volume;
-
-  Mix_VolumeMusic(volume*8);
-  SetMusicVolume (volume);
-}
-
-void I_ResetMusicVolume(void)
-{
-  I_SetMusicVolume(snd_MusicVolume);
-}
-
 static void PlaySong(int handle, int looping)
 {
   if (music_handle)
@@ -1134,15 +1130,13 @@ static void PlaySong(int handle, int looping)
   }
 }
 
-extern int mus_pause_opt; // From m_misc.c
-
 static void PauseSong (int handle)
 {
   if (!music_handle)
     return;
 
   SDL_LockMutex (musmutex);
-  switch (mus_pause_opt)
+  switch (dsda_IntConfig(dsda_config_mus_pause_opt))
   {
     case 0:
       music_players[current_player]->stop ();
@@ -1162,7 +1156,7 @@ static void ResumeSong (int handle)
     return;
 
   SDL_LockMutex (musmutex);
-  switch (mus_pause_opt)
+  switch (dsda_IntConfig(dsda_config_mus_pause_opt))
   {
     case 0: // i'm not sure why we can guarantee looping=true here,
             // but that's what the old code did
@@ -1199,16 +1193,6 @@ static void UnRegisterSong(int handle)
       Z_Free (mus2mid_conversion_data);
       mus2mid_conversion_data = NULL;
     }
-    SDL_UnlockMutex (musmutex);
-  }
-}
-
-static void SetMusicVolume (int volume)
-{
-  if (music_handle)
-  {
-    SDL_LockMutex (musmutex);
-    music_players[current_player]->setvolume (volume);
     SDL_UnlockMutex (musmutex);
   }
 }
@@ -1355,6 +1339,8 @@ static void UpdateMusic (void *buff, unsigned nsamp)
 
 void M_ChangeMIDIPlayer(void)
 {
+  snd_midiplayer = dsda_StringConfig(dsda_config_snd_midiplayer);
+
   if (!strcasecmp(snd_midiplayer, midiplayers[midi_player_fluidsynth]))
   {
     strcpy(music_player_order[3], PLAYER_FLUIDSYNTH);

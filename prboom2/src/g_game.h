@@ -98,11 +98,8 @@ void doom_printf(const char *, ...) __attribute__((format(printf,1,2)));
 extern int  key_forward;
 extern int  key_backward;
 
-extern int  defaultskill;      //jff 3/24/98 default skill
 extern dboolean haswolflevels;  //jff 4/18/98 wolf levels present
 extern dboolean secretexit;
-
-extern int  bodyquesize;       // killough 2/8/98: adustable corpse limit
 
 // killough 5/2/98: moved from d_deh.c:
 // Par times (new item with BOOM) - from g_game.c

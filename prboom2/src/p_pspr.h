@@ -91,8 +91,6 @@ enum
     NUM_CENTERWEAPON,
 };
 
-extern int weapon_preferences[2][NUMWEAPONS+1];      /* killough 5/2/98 */
-extern int weapon_attack_alignment;
 int P_WeaponPreferred(int w1, int w2);
 
 struct player_s;

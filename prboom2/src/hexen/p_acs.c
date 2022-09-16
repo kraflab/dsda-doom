@@ -312,7 +312,7 @@ static void ACSAssert(int condition, const char *fmt, ...)
     }
 
     va_start(args, fmt);
-    doom_vsnprintf(buf, sizeof(buf), fmt, args);
+    vsnprintf(buf, sizeof(buf), fmt, args);
     va_end(args);
     I_Error("ACS assertion failure: in %s: %s", EvalContext, buf);
 }
@@ -386,8 +386,7 @@ void P_LoadACScripts(int lump)
     ActionCodeBase = W_LumpByNum(lump);
     ActionCodeSize = W_LumpLength(lump);
 
-    doom_snprintf(EvalContext, sizeof(EvalContext),
-               "header parsing of lump #%d", lump);
+    snprintf(EvalContext, sizeof(EvalContext), "header parsing of lump #%d", lump);
 
     header = (const acsHeader_t *) ActionCodeBase;
     PCodeOffset = LittleLong(header->infoOffset);
@@ -498,8 +497,7 @@ dboolean P_StartACS(int number, int map, byte * args, mobj_t * activator,
     if (infoIndex == -1)
     {                           // Script not found
         //I_Error("P_StartACS: Unknown script number %d", number);
-        doom_snprintf(ErrorMsg, sizeof(ErrorMsg),
-                   "P_STARTACS ERROR: UNKNOWN SCRIPT %d", number);
+        snprintf(ErrorMsg, sizeof(ErrorMsg), "P_STARTACS ERROR: UNKNOWN SCRIPT %d", number);
         P_SetMessage(&players[consoleplayer], ErrorMsg, true);
     }
     statePtr = &ACSInfo[infoIndex].state;
@@ -582,8 +580,8 @@ dboolean P_StartLockedACS(line_t * line, byte * args, mobj_t * mo, int side)
     {
         if (!mo->player->cards[lock - 1])
         {
-            doom_snprintf(LockedBuffer, sizeof(LockedBuffer),
-                       "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
+            snprintf(LockedBuffer, sizeof(LockedBuffer),
+                     "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
             P_SetMessage(mo->player, LockedBuffer, true);
             S_StartSound(mo, hexen_sfx_door_locked);
             return false;
@@ -666,11 +664,11 @@ void T_InterpretACS(acs_t * script)
 
     do
     {
-        doom_snprintf(EvalContext, sizeof(EvalContext), "script %d @0x%x",
-                   ACSInfo[script->infoIndex].number, PCodeOffset);
+        snprintf(EvalContext, sizeof(EvalContext), "script %d @0x%x",
+                 ACSInfo[script->infoIndex].number, PCodeOffset);
         cmd = ReadCodeInt();
-        doom_snprintf(EvalContext, sizeof(EvalContext), "script %d @0x%x, cmd=%d",
-                   ACSInfo[script->infoIndex].number, PCodeOffset, cmd);
+        snprintf(EvalContext, sizeof(EvalContext), "script %d @0x%x, cmd=%d",
+                 ACSInfo[script->infoIndex].number, PCodeOffset, cmd);
         ACSAssert(cmd >= 0, "negative ACS instruction %d", cmd);
         ACSAssert(cmd < arrlen(PCodeCmds),
                   "invalid ACS instruction %d (maybe this WAD is designed "
@@ -1603,7 +1601,7 @@ static int CmdPrintNumber(void)
 {
     char tempStr[16];
 
-    doom_snprintf(tempStr, sizeof(tempStr), "%d", Pop());
+    snprintf(tempStr, sizeof(tempStr), "%d", Pop());
     M_StringConcat(PrintBuffer, tempStr, sizeof(PrintBuffer));
     return SCRIPT_CONTINUE;
 }

@@ -27,7 +27,6 @@
 #include "r_fps.h"
 #include "r_main.h"
 #include "g_game.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "i_system.h"
 #include "lprintf.h"
@@ -36,9 +35,11 @@
 #include "heretic/sb_bar.h"
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/build.h"
 #include "dsda/command_display.h"
 #include "dsda/demo.h"
+#include "dsda/features.h"
 #include "dsda/mapinfo.h"
 #include "dsda/options.h"
 #include "dsda/pause.h"
@@ -48,14 +49,6 @@
 #include "dsda/time.h"
 
 #include "key_frame.h"
-
-// Hook into the save & demo ecosystem
-extern byte* savebuffer;
-extern size_t savegamesize;
-extern dboolean setsizeneeded;
-extern dboolean BorderNeedRefresh;
-extern int inv_ptr;
-void RecalculateDrawnSubsectors(void);
 
 static dboolean auto_kf_timed_out;
 static int auto_kf_timeout_count;
@@ -69,18 +62,15 @@ static auto_kf_t* last_auto_kf;
 static int auto_kf_size;
 static int restore_key_frame_index = -1;
 
-int dsda_auto_key_frame_depth;
-int dsda_auto_key_frame_interval;
-int dsda_auto_key_frame_timeout;
+static int dsda_auto_key_frame_interval;
+static int dsda_auto_key_frame_depth;
+static int dsda_auto_key_frame_timeout;
 
 static int autoKeyFrameTimeout(void) {
   return dsda_StartInBuildMode() ? 0 : dsda_auto_key_frame_timeout;
 }
 
 static int autoKeyFrameDepth(void) {
-  if (dsda_StrictMode())
-    return 0;
-
   if (dsda_StartInBuildMode() && dsda_auto_key_frame_depth < 60)
     return 60;
 
@@ -176,6 +166,10 @@ void dsda_CopyKeyFrame(dsda_key_frame_t* dest, dsda_key_frame_t* source) {
 void dsda_InitKeyFrame(void) {
   int i;
 
+  dsda_auto_key_frame_interval = dsda_IntConfig(dsda_config_auto_key_frame_interval);
+  dsda_auto_key_frame_depth = dsda_IntConfig(dsda_config_auto_key_frame_depth);
+  dsda_auto_key_frame_timeout = dsda_IntConfig(dsda_config_auto_key_frame_timeout);
+
   auto_kf_size = autoKeyFrameDepth();
 
   if (!auto_kf_size) {
@@ -209,11 +203,11 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 
   timestamp = totalleveltimes + leveltime;
 
-  snprintf(name, 40, "backup-%010d.kf", timestamp);
+  snprintf(name, sizeof(name), "backup-%010d.kf", timestamp);
 
   if ((fp = fopen(name, "rb")) != NULL) {
     fclose(fp);
-    snprintf(name, 40, "backup-%010d-%lld.kf", timestamp, time(NULL));
+    snprintf(name, sizeof(name), "backup-%010d-%lld.kf", timestamp, time(NULL));
   }
 
   if (!M_WriteFile(name, buffer, length))
@@ -224,49 +218,18 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export) {
   int i;
 
-  save_p = savebuffer = Z_Malloc(savegamesize);
-
-  CheckSaveGame(1);
-  *save_p++ = complete;
-
-  CheckSaveGame(5 + FUTURE_MAXPLAYERS);
-  *save_p++ = compatibility_level;
-  *save_p++ = gameskill;
-  *save_p++ = gameepisode;
-  *save_p++ = gamemap;
-
-  for (i = 0; i < g_maxplayers; i++)
-    *save_p++ = playeringame[i];
-
-  for (; i < FUTURE_MAXPLAYERS; i++)
-    *save_p++ = 0;
-
-  *save_p++ = idmusnum;
-
-  CheckSaveGame(dsda_GameOptionSize());
-  save_p = G_WriteOptions(save_p);
-
-  // Store state of demo playback buffer
-  CheckSaveGame(dsda_PlaybackPositionSize());
-  dsda_StorePlaybackPosition(&save_p);
-
-  // Store state of demo recording buffer
-  CheckSaveGame(dsda_DemoDataSize(complete));
-  dsda_StoreDemoData(&save_p, complete);
-
-  CheckSaveGame(sizeof(leveltime));
-  memcpy(save_p, &leveltime, sizeof(leveltime));
-  save_p += sizeof(leveltime);
-
-  CheckSaveGame(sizeof(totalleveltimes));
-  memcpy(save_p, &totalleveltimes, sizeof(totalleveltimes));
-  save_p += sizeof(totalleveltimes);
-
   key_frame->game_tic_count = logictic;
 
-  CheckSaveGame(sizeof(key_frame->game_tic_count));
-  memcpy(save_p, &key_frame->game_tic_count, sizeof(key_frame->game_tic_count));
-  save_p += sizeof(key_frame->game_tic_count);
+  P_InitSaveBuffer();
+
+  P_SAVE_BYTE(complete);
+  P_SAVE_X(key_frame->game_tic_count);
+
+  // Store state of demo playback buffer
+  dsda_StorePlaybackPosition();
+
+  // Store state of demo recording buffer
+  dsda_StoreDemoData(complete);
 
   dsda_ArchiveAll();
 
@@ -274,7 +237,8 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export)
 
   key_frame->buffer = savebuffer;
   key_frame->buffer_length = save_p - savebuffer;
-  savebuffer = save_p = NULL;
+
+  P_ForgetSaveBuffer();
 
   dsda_AttachAutoKF(key_frame);
 
@@ -287,8 +251,9 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export)
 }
 
 // Stripped down version of G_DoLoadGame
-// save_p is coopted to use the save logic
 void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
+  void G_AfterLoad(void);
+
   int demo_write_buffer_offset, i;
   int epi, map;
   byte complete;
@@ -298,77 +263,29 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
     return;
   }
 
+  dsda_TrackFeature(UF_KEYFRAME);
+
   if (skip_wipe || dsda_BuildMode())
     dsda_SkipNextWipe();
 
   save_p = key_frame->buffer;
 
-  complete = *save_p++;
-
-  compatibility_level = *save_p++;
-  gameskill = *save_p++;
-
-  epi = *save_p++;
-  map = *save_p++;
-  dsda_UpdateGameMap(epi, map);
-
-  for (i = 0; i < g_maxplayers; i++)
-    playeringame[i] = *save_p++;
-  save_p += FUTURE_MAXPLAYERS - g_maxplayers;
-
-  idmusnum = *save_p++;
-  if (idmusnum == 255) idmusnum = -1;
-
-  save_p += (G_ReadOptions(save_p) - save_p);
+  P_LOAD_BYTE(complete);
+  P_LOAD_X(key_frame->game_tic_count);
 
   // Restore state of demo playback buffer
-  dsda_RestorePlaybackPosition(&save_p);
+  dsda_RestorePlaybackPosition();
 
   // Restore state of demo recording buffer
-  dsda_RestoreDemoData(&save_p, complete);
-
-  G_InitNew(gameskill, gameepisode, gamemap, false);
-
-  memcpy(&leveltime, save_p, sizeof(leveltime));
-  save_p += sizeof(leveltime);
-
-  memcpy(&totalleveltimes, save_p, sizeof(totalleveltimes));
-  save_p += sizeof(totalleveltimes);
-
-  restore_key_frame_index = (totalleveltimes + leveltime) / (35 * autoKeyFrameInterval());
-
-  memcpy(&key_frame->game_tic_count, save_p, sizeof(key_frame->game_tic_count));
-  save_p += sizeof(key_frame->game_tic_count);
-  basetic = gametic - key_frame->game_tic_count;
-
-  dsda_RestoreCommandHistory();
+  dsda_RestoreDemoData(complete);
 
   dsda_UnArchiveAll();
 
-  R_ActivateSectorInterpolations();
-  R_SmoothPlaying_Reset(NULL);
+  dsda_RestoreCommandHistory();
 
-  if (musinfo.current_item != -1)
-    S_ChangeMusInfoMusic(musinfo.current_item, true);
+  restore_key_frame_index = (totalleveltimes + leveltime) / (35 * autoKeyFrameInterval());
 
-  RecalculateDrawnSubsectors();
-
-  if (hexen)
-  {
-    SB_SetClassData();
-  }
-
-  if (raven)
-  {
-    players[consoleplayer].readyArtifact = players[consoleplayer].inventory[inv_ptr].type;
-  }
-
-  if (setsizeneeded) R_ExecuteSetViewSize();
-
-  R_FillBackScreen();
-
-  BorderNeedRefresh = true;
-  ST_Start();
+  G_AfterLoad();
 
   dsda_QueueJoin();
 
@@ -402,25 +319,20 @@ void dsda_RestoreKeyFrameFile(const char* name) {
   char *filename;
   dsda_key_frame_t key_frame = { 0 };
 
-  filename = I_FindFile(name, ".kf");
-  if (filename)
-  {
-    M_ReadFile(filename, &key_frame.buffer);
-    Z_Free(filename);
+  filename = I_RequireFile(name, ".kf");
+  M_ReadFile(filename, &key_frame.buffer);
+  Z_Free(filename);
 
-    dsda_RestoreKeyFrame(&key_frame, false);
-    Z_Free(key_frame.buffer);
-  }
-  else
-    I_Error("dsda_RestoreKeyFrameFile: cannot find %s", name);
+  dsda_RestoreKeyFrame(&key_frame, false);
+  Z_Free(key_frame.buffer);
 }
 
 void dsda_ContinueKeyFrame(void) {
-  int p;
+  dsda_arg_t* arg;
 
-  p = M_CheckParm("-from_key_frame");
-  if (p && (p + 1 < myargc)) {
-    dsda_RestoreKeyFrameFile(myargv[p + 1]);
+  arg = dsda_Arg(dsda_arg_from_key_frame);
+  if (arg->found) {
+    dsda_RestoreKeyFrameFile(arg->value.v_string);
   }
 }
 

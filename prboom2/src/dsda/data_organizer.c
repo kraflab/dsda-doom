@@ -23,12 +23,13 @@
 #include <errno.h>
 
 #include "doomtype.h"
-#include "m_argv.h"
 #include "lprintf.h"
 #include "w_wad.h"
 #include "i_system.h"
 #include "z_zone.h"
 #include "e6y.h"
+
+#include "dsda/args.h"
 
 #include "data_organizer.h"
 
@@ -59,8 +60,8 @@ static void dsda_NormalizeSlashes(char *str)
       str[l] = '/';
 }
 
-char* dsda_DetectDirectory(const char* env_key, const char* param) {
-  int i;
+char* dsda_DetectDirectory(const char* env_key, int arg_id) {
+  dsda_arg_t* arg;
   struct stat sbuf;
   char* result = NULL;
   const char* default_directory;
@@ -70,13 +71,15 @@ char* dsda_DetectDirectory(const char* env_key, const char* param) {
   if (!default_directory)
     default_directory = I_DoomExeDir();
 
-  if ((i = M_CheckParm(param)) && i < myargc - 1) {
-    if (!stat(myargv[i + 1], &sbuf) && S_ISDIR(sbuf.st_mode)) {
+  arg = dsda_Arg(arg_id);
+  if (arg->found) {
+    if (!stat(arg->value.v_string, &sbuf) && S_ISDIR(sbuf.st_mode)) {
       if (result) Z_Free(result);
-      result = Z_Strdup(myargv[i + 1]);
+      result = Z_Strdup(arg->value.v_string);
     }
     else
-      lprintf(LO_ERROR, "Error: %s path does not exist; using %s\n", param, default_directory);
+      lprintf(LO_ERROR, "Error: path %s does not exist. Using %s\n",
+              arg->value.v_string, default_directory);
   }
 
   if (!result)
@@ -106,7 +109,7 @@ static void dsda_CreateDirectory(const char* path) {
 }
 
 void dsda_InitDataDir(void) {
-  dsda_base_data_dir = dsda_DetectDirectory("DOOMDATADIR", "-data");
+  dsda_base_data_dir = dsda_DetectDirectory("DOOMDATADIR", dsda_arg_data);
 }
 
 static void dsda_InitWadDataDir(void) {

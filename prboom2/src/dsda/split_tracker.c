@@ -72,7 +72,7 @@ static char* dsda_SplitTrackerPath(void) {
     dsda_split_tracker_path = Z_Malloc(length);
 
     snprintf(
-      dsda_split_tracker_path, length - 1, "%s/%s_%i_%i_%i_%s_splits.txt",
+      dsda_split_tracker_path, length, "%s/%s_%i_%i_%i_%s_splits.txt",
       dir, name_base, gameskill + 1, gameepisode, gamemap, params
     );
   }
@@ -92,7 +92,7 @@ static void dsda_InitSplitTime(dsda_split_time_t* split_time) {
 
 static void dsda_LoadSplits(void) {
   char* path;
-  byte* buffer;
+  char* buffer;
   static int loaded = false;
 
   if (loaded)
@@ -104,7 +104,7 @@ static void dsda_LoadSplits(void) {
   if (!path)
     return;
 
-  if (M_ReadFile(path, &buffer) != -1) {
+  if (M_ReadFileToString(path, &buffer) != -1) {
     int episode, map, tics, total_tics, exits, count, i, ref_tics, ref_total_tics;
     char* line;
 
