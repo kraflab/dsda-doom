@@ -853,8 +853,7 @@ void M_LoadDefaults (void)
   dsda_InitSettings();
 
   //e6y: Check on existence of dsda-doom.wad
-  if (!(port_wad_file = I_FindFile(WAD_DATA, "")))
-    I_Error("dsda-doom.wad not found. Can't continue.");
+  port_wad_file = I_RequireFile(WAD_DATA, "");
 }
 
 //

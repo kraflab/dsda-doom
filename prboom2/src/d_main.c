@@ -1649,16 +1649,9 @@ static void D_DoomMainSetup(void)
       // e6y
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)
-      file = I_FindFile(file_name, ".wad");
-      if (file)
-      {
-        D_AddFile(file,source_pwad);
-        Z_Free(file);
-      }
-      else
-      {
-        I_Error("D_DoomMainSetup: Cannot find .wad file named %s", file_name);
-      }
+      file = I_RequireFile(file_name, ".wad");
+      D_AddFile(file,source_pwad);
+      Z_Free(file);
     }
   }
 
@@ -1785,18 +1778,14 @@ static void D_DoomMainSetup(void)
     for (i = 0; i < arg->count; ++i)
     {
       char *file = NULL;
-      if ((file = I_FindFile(arg->value.v_string_array[i], ".bex")) ||
-          (file = I_FindFile(arg->value.v_string_array[i], ".deh")))
-      {
-        // during the beta we have debug output to dehout.txt
-        ProcessDehFile(file,D_dehout(),0);
-        Z_Free(file);
-      }
-      else
-      {
-        I_Error("D_DoomMainSetup: Cannot find .deh or .bex file named %s",
-                arg->value.v_string_array[i]);
-      }
+
+      file = I_FindFile(arg->value.v_string_array[i], ".bex");
+      if (!file)
+        file = I_RequireFile(arg->value.v_string_array[i], ".deh");
+
+      // during the beta we have debug output to dehout.txt
+      ProcessDehFile(file,D_dehout(),0);
+      Z_Free(file);
     }
   }
 

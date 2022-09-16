@@ -319,17 +319,12 @@ void dsda_RestoreKeyFrameFile(const char* name) {
   char *filename;
   dsda_key_frame_t key_frame = { 0 };
 
-  filename = I_FindFile(name, ".kf");
-  if (filename)
-  {
-    M_ReadFile(filename, &key_frame.buffer);
-    Z_Free(filename);
+  filename = I_RequireFile(name, ".kf");
+  M_ReadFile(filename, &key_frame.buffer);
+  Z_Free(filename);
 
-    dsda_RestoreKeyFrame(&key_frame, false);
-    Z_Free(key_frame.buffer);
-  }
-  else
-    I_Error("dsda_RestoreKeyFrameFile: cannot find %s", name);
+  dsda_RestoreKeyFrame(&key_frame, false);
+  Z_Free(key_frame.buffer);
 }
 
 void dsda_ContinueKeyFrame(void) {

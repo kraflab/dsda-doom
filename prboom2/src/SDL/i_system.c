@@ -515,6 +515,15 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
   return NULL;
 }
 
+char* I_RequireFile(const char* wfname, const char* ext) {
+  char* result = I_FindFileInternal(wfname, ext, false);
+
+  if (!result)
+    I_Error("Unable to find required file \"%s\"", wfname);
+
+  return result;
+}
+
 char* I_FindFile(const char* wfname, const char* ext)
 {
   return I_FindFileInternal(wfname, ext, false);
