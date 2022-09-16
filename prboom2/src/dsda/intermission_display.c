@@ -80,7 +80,7 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
     if (diff >= 2100) {
       snprintf(
         delta, sizeof(delta),
-        " (%s%d:%04.2f)",
+        " (%s%d:%05.2f)",
         sign, diff / 35 / 60, (float)(diff % (60 * 35)) / 35
       );
     }
