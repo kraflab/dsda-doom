@@ -4034,7 +4034,7 @@ dboolean M_Responder (event_t* ev) {
     }
 
     //e6y
-    if (dsda_InputActivated(dsda_input_speed_default) && (!netgame||demoplayback) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_speed_default) && !dsda_StrictMode())
     {
       int value = StepwiseSum(dsda_RealticClockRate(), 0, 3, 10000, 100);
       dsda_UpdateRealticClockRate(value);
@@ -4042,7 +4042,7 @@ dboolean M_Responder (event_t* ev) {
       // Don't eat the keypress in this case.
       // return true;
     }
-    if (dsda_InputActivated(dsda_input_speed_up) && (!netgame||demoplayback) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_speed_up) && !dsda_StrictMode())
     {
       int value = StepwiseSum(dsda_RealticClockRate(), 1, 3, 10000, 100);
       dsda_UpdateRealticClockRate(value);
@@ -4050,7 +4050,7 @@ dboolean M_Responder (event_t* ev) {
       // Don't eat the keypress in this case.
       // return true;
     }
-    if (dsda_InputActivated(dsda_input_speed_down) && (!netgame||demoplayback) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_speed_down) && !dsda_StrictMode())
     {
       int value = StepwiseSum(dsda_RealticClockRate(), -1, 3, 10000, 100);
       dsda_UpdateRealticClockRate(value);
