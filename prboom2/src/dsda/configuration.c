@@ -544,6 +544,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
     dsda_config_int, filter_nearest, filter_linear, { filter_nearest },
     NULL, 0, 0, M_ChangeTextureParams
   },
+  [dsda_config_gl_indexed_filter] = {
+    "gl_indexed_filter", dsda_config_gl_indexed_filter,
+    dsda_config_int, filter_nearest, filter_linear, { filter_nearest },
+    NULL, 0, 0, M_ChangeTextureParams
+  },
   [dsda_config_gl_texture_filter_anisotropic] = {
     "gl_texture_filter_anisotropic", dsda_config_gl_texture_filter_anisotropic,
     dsda_config_int, 0, 4, { 3 },

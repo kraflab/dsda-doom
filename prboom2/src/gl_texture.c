@@ -1750,7 +1750,6 @@ void gld_CleanMemory(void)
   gld_CleanTexItems(numlumps, &gld_GLPatchTextures);
   gld_CleanTexItems(numtextures, &gld_GLIndexedTextures);
   gld_CleanTexItems(numlumps, &gld_GLIndexedPatchTextures);
-  gld_CleanDisplayLists();
   gl_preprocessed = false;
 }
 

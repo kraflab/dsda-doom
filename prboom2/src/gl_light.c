@@ -50,7 +50,7 @@
 #include "dsda/configuration.h"
 
 gl_lightmode_t gl_lightmode;
-const char *gl_lightmodes[] = {"glboom", "shaders", NULL};
+const char *gl_lightmodes[] = {"glboom", "shaders", "indexed", NULL};
 int gl_rellight;
 
 int gl_fog;

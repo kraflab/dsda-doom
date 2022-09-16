@@ -124,6 +124,7 @@ typedef enum {
   dsda_config_gl_texture_filter,
   dsda_config_gl_sprite_filter,
   dsda_config_gl_patch_filter,
+  dsda_config_gl_indexed_filter,
   dsda_config_gl_texture_filter_anisotropic,
   dsda_config_gl_tex_format_string,
   dsda_config_gl_render_multisampling,
