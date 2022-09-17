@@ -81,7 +81,7 @@ int LoadDemo(const char *name, const byte **buffer, int *length)
   basename[8] = 0;
 
   // check ns_demos namespace first, then ns_global
-  num = (W_CheckNumForName)(basename, ns_demos);
+  num = W_CheckNumForName2(basename, ns_demos);
   if (num == LUMP_NOT_FOUND)
   {
     num = W_CheckNumForName(basename);

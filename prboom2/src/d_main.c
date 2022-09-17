@@ -1719,7 +1719,7 @@ static void D_DoomMainSetup(void)
 
     if (bfgedition)
     {
-      int lump = (W_CheckNumForName)("BFGBEX", ns_prboom);
+      int lump = W_CheckNumForName2("BFGBEX", ns_prboom);
       if (lump != LUMP_NOT_FOUND)
       {
         ProcessDehFile(NULL, D_dehout(), lump);
@@ -1727,7 +1727,7 @@ static void D_DoomMainSetup(void)
     }
     if (gamemission == pack_nerve)
     {
-      int lump = (W_CheckNumForName)("NERVEBEX", ns_prboom);
+      int lump = W_CheckNumForName2("NERVEBEX", ns_prboom);
       if (lump != LUMP_NOT_FOUND)
       {
         ProcessDehFile(NULL, D_dehout(), lump);
@@ -1735,7 +1735,7 @@ static void D_DoomMainSetup(void)
     }
     if (gamemission == chex)
     {
-      int lump = (W_CheckNumForName)("CHEXDEH", ns_prboom);
+      int lump = W_CheckNumForName2("CHEXDEH", ns_prboom);
       if (lump != LUMP_NOT_FOUND)
       {
         ProcessDehFile(NULL, D_dehout(), lump);

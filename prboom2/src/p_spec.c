@@ -5072,7 +5072,7 @@ void P_InitTerrainTypes(void)
     memset(TerrainTypes, 0, size);
     for (i = 0; TerrainTypeDefs[hexen][i].type != -1; i++)
     {
-        lump = (W_CheckNumForName)(TerrainTypeDefs[hexen][i].name, ns_flats);
+        lump = W_CheckNumForName2(TerrainTypeDefs[hexen][i].name, ns_flats);
         if (lump != LUMP_NOT_FOUND)
         {
             TerrainTypes[lump - firstflat] = TerrainTypeDefs[hexen][i].type;

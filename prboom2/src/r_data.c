@@ -160,7 +160,7 @@ static void R_InitTextures (void)
           // appear first in a wad. This is a kludgy solution to the wad
           // lump namespace problem.
 
-          patchlookup[i] = (W_CheckNumForName)(name, ns_sprites);
+          patchlookup[i] = W_CheckNumForName2(name, ns_sprites);
 
           if (patchlookup[i] == LUMP_NOT_FOUND && devparm)
             //jff 8/3/98 use logical output routine
@@ -400,7 +400,7 @@ int R_ColormapNumForName(const char *name)
 {
   register int i = 0;
   if (strncasecmp(name,"COLORMAP",8))     // COLORMAP predefined to return 0
-    if ((i = (W_CheckNumForName)(name, ns_colormaps)) != LUMP_NOT_FOUND)
+    if ((i = W_CheckNumForName2(name, ns_colormaps)) != LUMP_NOT_FOUND)
       i -= firstcolormaplump;
   return i;
 }
@@ -558,14 +558,14 @@ void R_InitData(void)
 
 int R_FlatNumForName(const char *name)    // killough -- const added
 {
-  int i = (W_CheckNumForName)(name, ns_flats);
+  int i = W_CheckNumForName2(name, ns_flats);
   if (i == LUMP_NOT_FOUND)
   {
     // e6y
     // Ability to play wads with wrong flat names
     // Unknown flats will be replaced with "NO TEXTURE" preset from dsda-doom.wad
     lprintf(LO_DEBUG, "R_FlatNumForName: %.8s not found\n", name);
-    i = (W_CheckNumForName)("-N0_TEX-", ns_flats);
+    i = W_CheckNumForName2("-N0_TEX-", ns_flats);
     if (i == LUMP_NOT_FOUND)
     {
       I_Error("R_FlatNumForName: -N0_TEX- not found");
@@ -776,7 +776,7 @@ int R_NumPatchForSpriteIndex(spritenum_t item)
 int R_SetSpriteByName(patchnum_t *patchnum, const char *name)
 {
   int result = false;
-  patchnum->lumpnum = (W_CheckNumForName)(name, ns_sprites);
+  patchnum->lumpnum = W_CheckNumForName2(name, ns_sprites);
   if (patchnum->lumpnum != LUMP_NOT_FOUND)
   {
     R_SetSpriteByNum(patchnum, patchnum->lumpnum);
