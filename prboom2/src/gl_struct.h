@@ -168,9 +168,6 @@ extern int gl_shadows_factor;
 void gld_DrawMapLines(void);
 
 //sprites
-typedef enum { spriteclip_const, spriteclip_always, spriteclip_smart } spriteclipmode_t;
-extern spriteclipmode_t gl_spriteclip;
-extern const char *gl_spriteclipmodes[];
 extern int gl_sprite_blend;
 
 //skybox

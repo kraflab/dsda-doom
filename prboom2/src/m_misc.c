@@ -256,7 +256,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_gl_render_multisampling),
   MIGRATED_SETTING(dsda_config_gl_render_fov),
   MIGRATED_SETTING(dsda_config_gl_lightmode),
-  MIGRATED_SETTING(dsda_config_gl_spriteclip),
   MIGRATED_SETTING(dsda_config_gl_skymode),
   MIGRATED_SETTING(dsda_config_gl_usegamma),
   MIGRATED_SETTING(dsda_config_gl_shadows),

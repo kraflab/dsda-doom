@@ -567,10 +567,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     dsda_config_int, gl_lightmode_glboom, gl_lightmode_last - 1, { gl_lightmode_shaders },
     NULL, 0, 0, M_ChangeLightMode
   },
-  [dsda_config_gl_spriteclip] = {
-    "gl_spriteclip", dsda_config_gl_spriteclip,
-    dsda_config_int, spriteclip_const, spriteclip_smart, { spriteclip_smart }
-  },
   [dsda_config_gl_health_bar] = {
     "gl_health_bar", dsda_config_gl_health_bar,
     CONF_BOOL(0), NULL, CONF_STRICT, 0

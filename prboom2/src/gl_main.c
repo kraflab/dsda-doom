@@ -100,8 +100,6 @@ int gl_render_paperitems;
 GLfloat gl_texture_filter_anisotropic;
 
 //sprites
-spriteclipmode_t gl_spriteclip;
-const char *gl_spriteclipmodes[] = {"constant", "full", "smart"};
 const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
 int gl_sprite_blend;  // e6y: smooth sprite edges
 const float gl_mask_sprite_threshold_f = 0.5f;
@@ -2530,10 +2528,12 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   // e6y
   // if the sprite is below the floor, and it's not a hanger/floater/missile,
   // and it's not a fully dead corpse, move it up
-  if ((gl_spriteclip != spriteclip_const) &&
-      (sprite.y2 < 0) && (sprite.y2 >= -gl_spriteclip_threshold_f) &&
-      !(thing->flags & (MF_SPAWNCEILING|MF_FLOAT|MF_MISSILE|MF_NOGRAVITY)) &&
-      ((gl_spriteclip == spriteclip_always) || !((thing->flags & MF_CORPSE) && thing->tics == -1)))
+  if (
+    sprite.y2 < 0 &&
+    sprite.y2 >= -gl_spriteclip_threshold_f &&
+    !(thing->flags & (MF_SPAWNCEILING|MF_FLOAT|MF_MISSILE|MF_NOGRAVITY)) &&
+    !(thing->flags & MF_CORPSE && thing->tics == -1)
+  )
   {
     sprite.y1 -= sprite.y2;
     sprite.y2 = 0.0f;
